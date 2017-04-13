@@ -36,7 +36,6 @@
 #include "./../WrapperWritingElement.h"
 #include "NvGraphicFramePr.h"
 #include "Xfrm.h"
-#include "ShapeProperties.h"
 #include "Table/Table.h"
 #include "SmartArt.h"
 #include "Pic.h"

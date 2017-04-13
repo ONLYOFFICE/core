@@ -40,7 +40,6 @@
 #include "Logic/DefaultShapeDefinition.h"
 #include "Theme/ExtraClrScheme.h"
 
-#include "Logic/ShapeProperties.h"
 #include "Logic/ClrMap.h"
 
 #include "Presentation.h"
@@ -325,24 +324,6 @@ namespace PPTX
 			return GetABGRFromScheme(m_map->GetColorSchemeIndex(str));
 		}
 
-		virtual void FillShapeProperties(Logic::ShapeProperties& props, const std::wstring& type)const
-		{
-            if(presentation.IsInit())
-			{
-                props.FillFromTextListStyle(presentation->defaultTextStyle);
-				props.SetTextType(0);
-			}
-			if(type == _T("table-cell"))
-				props.FillMasterFontSize(1800);
-			//if(spDef.is_init())
-			//{
-			//	props.FillFromTextListStyle(spDef->lstStyle, true);
-			//	if(spDef->style.is_init())
-			//		props.FillFontRef(spDef->style->fontRef.get());
-			//}
-			props.SetMajorLatin(themeElements.fontScheme.majorFont.latin);
-			props.SetMinorLatin(themeElements.fontScheme.minorFont.latin);
-		}
 		virtual std::wstring GetMediaFullPathNameFromRId(const OOX::RId& rid)const
 		{
 			smart_ptr<OOX::Image> p = GetImage(rid);

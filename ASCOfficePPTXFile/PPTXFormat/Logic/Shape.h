@@ -38,8 +38,6 @@
 #include "SpPr.h"
 #include "ShapeStyle.h"
 #include "TxBody.h"
-#include "ShapeProperties.h"
-#include "ShapeTextProperties.h"
 #include "UniFill.h"
 #include "Ln.h"
 
@@ -303,19 +301,10 @@ namespace PPTX
 			}
 			std::wstring GetText()const{if(txBody.IsInit()) return txBody->GetText(); return _T(""); };
 
-			void GetShapeFullDescription(Shape& shape, int level = 0)const;
-			void GetRect(Aggplus::RECT& pRect)const;
-			DWORD GetFill(UniFill& fill)const;
-			DWORD GetLine(Ln& line)const;
+			void FillLevelUp();
+			void Merge(Shape& shape, bool bIsSlidePlaceholder = false);
 
-			void FillShapeProperties(ShapeProperties& props);
-			void FillShapeTextProperties(CShapeTextProperties& props);
-			void FillLevelUp()const;
-
-			mutable Shape const * levelUp;
-			void Merge(Shape& shape, bool bIsSlidePlaceholder = false)const;
-		public:
-			void SetLevelUpElement(const Shape& p)const{levelUp = &p;};
+			void SetLevelUpElement( Shape* p){m_pLevelUp = p;};
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			void toXmlWriterVML				(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group = false);
@@ -326,8 +315,10 @@ namespace PPTX
 
 //-------------------------------------------------------------------------------------------------
 			std::wstring						m_name;
-			bool								m_bOleShape;
-
+			Shape *								m_pLevelUp;
+			int									m_nMasterTextType;
+			bool								m_bIsFontRefInSlide;
+//-------------------------------------------------------------------------------------------------
 			NvSpPr								nvSpPr;
 			SpPr								spPr;
 			nullable<ShapeStyle>				style;
@@ -338,10 +329,6 @@ namespace PPTX
 			nullable<OOX::Logic::CSdtContent>	oTextBoxShape;
 			nullable<BodyPr>					oTextBoxBodyPr;
 
-			bool								isFontRefInSlide;
-			mutable nullable<TextParagraphPr>	body[10];
- 
-	// Attributes
 			nullable_bool						attrUseBgFill;
 		protected:
 			virtual void FillParentPointersForChilds();

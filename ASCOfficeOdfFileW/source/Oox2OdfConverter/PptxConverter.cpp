@@ -897,23 +897,16 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, bool bPlaceholde
 		smart_ptr<PPTX::WrapperWritingElement>	pElem = oox_slide->spTree.SpTreeElems[i].GetElem();
 		smart_ptr<PPTX::Logic::Shape>			pShape = pElem.smart_dynamic_cast<PPTX::Logic::Shape>();
 		
-		if (pShape.IsInit() && pShape->nvSpPr.nvPr.ph.is_init())
+		if (pShape.IsInit())
 		{
-			if (bPlaceholders)
-			{
-				pShape->FillLevelUp();
-				PPTX::Logic::Shape update_shape;
-				
-				if (pShape->levelUp)
-					pShape->levelUp->Merge(update_shape, true);
-				pShape->Merge(update_shape);
+			pShape->FillLevelUp();
+			if (!bPlaceholders && pShape->nvSpPr.nvPr.ph.is_init())
+				continue;
 
-				OoxConverter::convert(&update_shape);
-			}
-			//else
-			//{
-			//	OoxConverter::convert(pShape.operator->());
-			//}
+			PPTX::Logic::Shape update_shape;
+			pShape->Merge(update_shape);
+
+			OoxConverter::convert(&update_shape);
 		}
 		else 
 		{

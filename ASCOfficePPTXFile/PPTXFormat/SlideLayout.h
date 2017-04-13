@@ -46,7 +46,6 @@
 
 #include "Logic/SpTreeElem.h"
 #include "Logic/Shape.h"
-#include "Logic/ShapeProperties.h"
 
 #include "Theme.h"
 #include "SlideMaster.h"
@@ -73,8 +72,6 @@ namespace PPTX
 		virtual ~SlideLayout()
 		{
 		}
-
-	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			m_sOutputFilename = filename.GetFilename();
@@ -114,7 +111,6 @@ namespace PPTX
 			FileContainer::write(filename, directory, content);
 		}
 
-	public:
 		virtual const OOX::FileType type() const
 		{
 			return OOX::Presentation::FileTypes::SlideLayout;
@@ -128,101 +124,38 @@ namespace PPTX
 			return type().DefaultFileName();
 		}
 
-	public:
-		virtual void GetLevelUp(const Logic::Shape& pShape)const
+		virtual void GetLevelUp(Logic::Shape* pShape)
 		{
-			if(pShape.nvSpPr.nvPr.ph.is_init())
-			{
-				std::wstring idx = /*pShape.nvSpPr->nvPr->ph.is_init()?*/pShape.nvSpPr.nvPr.ph->idx.get_value_or(_T("0"));//:"";
-				std::wstring type = /*pShape.nvSpPr->nvPr->ph.is_init()?*/pShape.nvSpPr.nvPr.ph->type.get_value_or(_T("body"));//:"";
-				if(type == _T("ctrTitle"))
-					type = _T("title");
+			if (!pShape) return;
 
-				size_t count = cSld.spTree.SpTreeElems.size();
-				for(size_t i = 0; i < count; ++i)
+			if(pShape->nvSpPr.nvPr.ph.is_init())
+			{
+				std::wstring idx = pShape->nvSpPr.nvPr.ph->idx.get_value_or(_T("0"));
+				std::wstring type = pShape->nvSpPr.nvPr.ph->type.get_value_or(_T("body"));
+				
+				if(type == L"ctrTitle") type = L"title";
+
+				for(size_t i = 0; i < cSld.spTree.SpTreeElems.size(); ++i)
 				{
-					const PPTX::Logic::SpTreeElem* pElem = &cSld.spTree.SpTreeElems[i];
-					
-					if(pElem->is<Logic::Shape>())
+					smart_ptr<Logic::Shape> pLayoutShape = cSld.spTree.SpTreeElems[i].GetElem().smart_dynamic_cast<Logic::Shape>();
+
+					if(pLayoutShape.IsInit())
 					{
-						const Logic::Shape& LayoutShape = pElem->as<Logic::Shape>();
-						if(LayoutShape.nvSpPr.nvPr.ph.is_init())
+						if(pLayoutShape->nvSpPr.nvPr.ph.is_init())
 						{
-							std::wstring lIdx = /*LayoutShape->nvSpPr->nvPr->ph.is_init()?*/LayoutShape.nvSpPr.nvPr.ph->idx.get_value_or(_T("0"));//:"";
-							std::wstring lType = /*LayoutShape->nvSpPr->nvPr->ph.is_init()?*/LayoutShape.nvSpPr.nvPr.ph->type.get_value_or(_T("body"));//:"";
-							if(lType == _T("ctrTitle"))
-								lType = _T("title");
+							std::wstring lIdx	= pLayoutShape->nvSpPr.nvPr.ph->idx.get_value_or(_T("0"));
+							std::wstring lType	= pLayoutShape->nvSpPr.nvPr.ph->type.get_value_or(_T("body"));
+							
+							if(lType == _T("ctrTitle")) lType = _T("title");
+
 							if((type == lType) && (idx == lIdx))
 							{
-								pShape.SetLevelUpElement(LayoutShape);
+								pShape->SetLevelUpElement(pLayoutShape.operator->());
 								return;
 							}
-
-							//if(lType == "ctrTitle")
-							//	lType = "title";
-							//if(idx == LayoutShape->nvSpPr->nvPr->idx.get_value_or("0"))
-							//{
-							//	if((type == LayoutShape->nvSpPr->nvPr->type.get_value_or("")) || ((type == "") && (LayoutShape->nvSpPr->nvPr->type.get_value_or("") != "")))
-							//		pShape->SetLevelUpElement(LayoutShape);
-							//	return;
-							//}
-							//if((type == lType) && (type != ""))
-							//{
-							//	if(idx == lIdx)
-							//	{
-							//		pShape.SetLevelUpElement(LayoutShape);
-							//		return;
-							//	}
-							//	continue;
-							//}
-							//if((type == lType) && (type == ""))
-							//{
-							//	if((idx == lIdx) && (idx != ""))
-							//	{
-							//		pShape.SetLevelUpElement(LayoutShape);
-							//		return;
-							//	}
-							//}
-							//if(type != lType)
-							//{
-							//	if((idx == lIdx) && (idx != ""))
-							//	{
-							//		pShape.SetLevelUpElement(LayoutShape);
-							//		return;
-							//	}
-							//}
 						}
 					}
 				}
-			}
-		}
-		virtual void FillShapeProperties(Logic::ShapeProperties& props, const std::wstring& type)const
-		{
-			if(Master.IsInit())
-				Master->FillShapeProperties(props, type);
-		}
-		virtual void FillShapeTextProperties(Logic::CShapeTextProperties& props, const std::wstring& type)const
-		{
-			if(Master.IsInit())
-				Master->FillShapeTextProperties(props, type);
-		}
-		virtual void GetBackground(Logic::BgPr& bg, DWORD& ARGB)const
-		{
-			if(cSld.bg.is_init())
-			{
-				if(cSld.bg->bgPr.is_init())
-					bg = cSld.bg->bgPr.get();
-				else if(cSld.bg->bgRef.is_init())
-				{
-					ARGB = cSld.bg->bgRef->Color.GetARGB();
-					theme->themeElements.fmtScheme.GetFillStyle(cSld.bg->bgRef->idx.get_value_or(0), bg.Fill);
-					//bg.SetParentFilePointer(this);
-				}
-			}
-			else//from slideMaster
-			{
-				if(Master.IsInit())
-					Master->GetBackground(bg, ARGB);
 			}
 		}
 		virtual std::wstring GetMediaFullPathNameFromRId(const OOX::RId& rid)const

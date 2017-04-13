@@ -417,15 +417,11 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 		}
 
 		if (type < 0)return;
-	/////////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------
 		odf_context()->drawing_context()->start_shape(type);
 		
-		//if (oox_shape->levelUp)
-		//{
-		//	convert((PPTX::Logic::SpPr *)&oox_shape->levelUp->spPr, oox_shape->levelUp->style.GetPointer());
-		//}
 		convert(&oox_shape->spPr, oox_shape->style.GetPointer());
-	//имя, описалово, номер ...	
+
 		convert(&oox_shape->nvSpPr);	
 
 		if (oox_shape->txXfrm.IsInit() == false)
@@ -453,6 +449,7 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 		odf_context()->drawing_context()->end_drawing();
 	}
 }
+
 void OoxConverter::convert(PPTX::Logic::SpPr *oox_spPr, PPTX::Logic::ShapeStyle* oox_sp_style)
 {
 	if (oox_spPr == NULL) return;
@@ -1074,8 +1071,8 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 													//свойства могут быть приписаны не только к параграфу, но и к самому объекту		
 		if (!paragraph_properties)
 		{
-			odf_context()->styles_context()->create_style(L"", odf_types::style_family::Paragraph, true, false, -1);	
-			paragraph_properties = odf_context()->styles_context()->last_state()->get_paragraph_properties();
+			odf_context()->text_context()->get_styles_context()->create_style(L"", odf_types::style_family::Paragraph, true, false, -1);	
+			paragraph_properties = odf_context()->text_context()->get_styles_context()->last_state()->get_paragraph_properties();
 
 			//if(list_present && oox_list_style)
 			//{
@@ -1196,11 +1193,9 @@ void OoxConverter::convert(PPTX::Logic::TextParagraphPr *oox_paragraph_pr, odf_w
 	//nullable<SimpleTypes::CCoordinate32<> >				m_oDefTabSz;
 	//nullable<SimpleTypes::CTextFontAlignType<>>			m_oFontAlgn;
 
-
-
-	if (oox_paragraph_pr->defRPr.IsInit())//может быть пустым !!!
+	if (oox_paragraph_pr->defRPr.IsInit())
 	{
-		odf_writer::style_text_properties * text_properties = odf_context()->text_context()->get_text_properties();
+		odf_writer::style_text_properties * text_properties = odf_context()->text_context()->get_styles_context()->last_state()->get_text_properties();
 		if (text_properties) 
 			convert(oox_paragraph_pr->defRPr.GetPointer(), text_properties);
 
@@ -1231,6 +1226,8 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 	if (!oox_run_pr)		return;
 	if (!text_properties)	return;
 	
+	PPTX::Theme *theme = oox_theme();
+
 	PPTX::Logic::GradFill*	gradFill = &oox_run_pr->Fill.as<PPTX::Logic::GradFill>();
 	if (gradFill)
 	{
@@ -1243,8 +1240,19 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 			odf_context()->drawing_context()->end_area_properties();
 		}
 	}
+	PPTX::Logic::SolidFill*	solidFill	= &oox_run_pr->Fill.as<PPTX::Logic::SolidFill>();
+	if (solidFill)
+	{
+		std::wstring hexColor;
+		_CP_OPT(double) opacity;
+		convert(&solidFill->Color, hexColor, opacity);
+		
+		int res = 0;
+		if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+		text_properties->content_.fo_color_ = odf_types::color(hexColor);
+	}
 
-	if (oox_run_pr->ln.IsInit())
+	if (oox_run_pr->ln.IsInit() && oox_run_pr->ln->Fill.getType() != OOX::et_a_noFill)
 	{
 		if (odf_context()->drawing_context()->change_text_box_2_wordart())
 		{
@@ -1257,7 +1265,6 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 		}
 	}
 
-//
 	if (oox_run_pr->b.IsInit())
 	{
 		if (oox_run_pr->b.get() == true) 
@@ -1266,17 +1273,6 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 			text_properties->content_.fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WNormal);
 	}
 
-	PPTX::Logic::SolidFill*	solidFill	= &oox_run_pr->Fill.as<PPTX::Logic::SolidFill>();
-	if (solidFill)
-	{
-		std::wstring hexColor;
-		_CP_OPT(double) opacity;
-		convert(&solidFill->Color, hexColor, opacity);
-		
-		int res = 0;
-		if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
-		text_properties->content_.fo_color_ = odf_types::color(hexColor);
-	}
 	if (oox_run_pr->i.IsInit())
 	{
 		if (oox_run_pr->i.get() ==true)
@@ -1293,7 +1289,17 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 	if (oox_run_pr->latin.IsInit())
 	{
 		if (!oox_run_pr->latin->typeface.empty())	
-			text_properties->content_.fo_font_family_ = oox_run_pr->latin->typeface;
+		{
+			std::wstring font = oox_run_pr->latin->typeface;
+			
+			if (font == L"+mj-lt")
+				font = theme->themeElements.fontScheme.majorFont.latin.typeface;
+			else if (font == L"+mn-lt")
+				font = theme->themeElements.fontScheme.minorFont.latin.typeface;
+				
+			if (!font.empty())
+				text_properties->content_.fo_font_family_ = font;
+		}
 		else
 		{
 			text_properties->content_.fo_font_family_ = L"Calibri";//default_font; ???? 
@@ -1302,7 +1308,17 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 	if (oox_run_pr->ea.IsInit())
 	{
 		if (!oox_run_pr->ea->typeface.empty())	
-			text_properties->content_.style_font_family_asian_ = oox_run_pr->ea->typeface;
+		{
+			std::wstring font = oox_run_pr->ea->typeface;
+			
+			if (font == L"+mj-ea")
+				font = theme->themeElements.fontScheme.majorFont.ea.typeface;
+			else if (font == L"+mn-ea")
+				font = theme->themeElements.fontScheme.minorFont.ea.typeface;
+			
+			if (!font.empty())
+				text_properties->content_.style_font_family_asian_ = font;
+		}
 		else
 		{
 		}
@@ -1310,7 +1326,17 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 	if (oox_run_pr->cs.IsInit())
 	{
 		if (!oox_run_pr->cs->typeface.empty())
-			text_properties->content_.style_font_family_complex_ = oox_run_pr->cs->typeface;
+		{
+			std::wstring font = oox_run_pr->cs->typeface;
+
+			if (font == L"+mj-cs")
+				font = theme->themeElements.fontScheme.majorFont.cs.typeface;
+			else if (font == L"+mn-cs")
+				font = theme->themeElements.fontScheme.minorFont.cs.typeface;
+			
+			if (!font.empty())
+				text_properties->content_.style_font_family_complex_ = font;
+		}
 		else
 		{
 		}
@@ -1439,20 +1465,22 @@ void OoxConverter::convert(PPTX::Logic::TxBody *oox_txBody, PPTX::Logic::ShapeSt
 
 	odf_context()->start_text_context();	
 		
+
+
 	for (size_t i = 0; i < oox_txBody->Paragrs.size(); i++)
 	{
 		convert(&oox_txBody->Paragrs[i], oox_txBody->lstStyle.GetPointer());
 	}
 	odf_context()->drawing_context()->set_text( odf_context()->text_context());
 	
-//наложим внешние настройки для текста
+//внешние настройки для текста
+
 	convert(oox_txBody->bodyPr.GetPointer());			
 	
 	if (oox_style)
 	{
 		convert(&oox_style->fontRef);
 	}	
-
 	odf_context()->end_text_context();	
 }
 void OoxConverter::convert(PPTX::Logic::ArcTo *oox_geom_path)
@@ -1585,7 +1613,15 @@ void OoxConverter::convert(PPTX::Logic::FontRef *style_font_ref)
 			style_font = &theme->themeElements.fontScheme.minorFont;
 		}
 		if (style_font)
-			odf_context()->drawing_context()->set_textarea_font(style_font->latin.typeface, style_font->ea.typeface, style_font->cs.typeface);
+		{
+			std::wstring latin	= style_font->latin.typeface;
+			std::wstring ea		= style_font->ea.typeface;
+			std::wstring cs		= style_font->cs.typeface;
+
+			//theme->themeElements.fontScheme
+
+			odf_context()->drawing_context()->set_textarea_font(latin, ea, cs);
+		}
 	}
 }
 

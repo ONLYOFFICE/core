@@ -138,7 +138,6 @@ namespace PPTX
 				pWriter->EndNode(_T("p:txStyles"));
 			}
 
-		public:
 			nullable<TextListStyle> titleStyle;
 			nullable<TextListStyle> bodyStyle;
 			nullable<TextListStyle> otherStyle;

@@ -1887,7 +1887,7 @@ void odf_drawing_context::set_textarea_font(std::wstring & latin, std::wstring &
 	if (!impl_->current_text_properties) return;
 
 	if (!ea.empty())	impl_->current_text_properties->content_.fo_font_family_			= ea;
-	if (!cs.empty())	impl_->current_text_properties->content_.style_font_family_complex_= cs;
+	if (!cs.empty())	impl_->current_text_properties->content_.style_font_family_complex_	= cs;
 	if (!latin.empty())	impl_->current_text_properties->content_.style_font_family_asian_	= latin;
 
 }
@@ -2218,7 +2218,7 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 {
 	if (text_context == NULL || impl_->current_level_.size() < 1 ) return;
 	
-	//if (impl_->is_presentation_ && *impl_->is_presentation_) return; 
+	if (impl_->is_presentation_ && *impl_->is_presentation_) return; 
 
 	for (size_t i = 0; i < text_context->text_elements_list_.size(); i++)
 	{

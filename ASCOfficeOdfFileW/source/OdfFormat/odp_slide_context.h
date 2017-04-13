@@ -53,7 +53,8 @@ public:
     void start_page (office_element_ptr & elm);
     void end_page ();
 
-	void set_styles_context	(odf_style_context*  styles_context);
+	void				set_styles_context(odf_style_context*  styles_context);
+	odf_style_context*	get_styles_context();
 
     odp_page_state & state();
 

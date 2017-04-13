@@ -348,6 +348,7 @@ public:
     CConverter* GetNextConverter();
     void OnConvertFile(CConverter* pConverter, int nCode);
     void Start(int nCores);
+    void Cancel();
 };
 
 class CConverter : public NSThreads::CBaseThread
@@ -371,6 +372,7 @@ public:
         COfficeFileFormatChecker oChecker;
         if (!oChecker.isOfficeFile(m_file))
         {
+            m_bRunThread = FALSE;
             m_pInternal->OnConvertFile(this, -1);
             return 0;
         }
@@ -380,6 +382,7 @@ public:
         std::map<int, bool>::iterator find = m_pInternal->m_formats.find(nFormat);
         if (find == m_pInternal->m_formats.end())
         {
+            m_bRunThread = FALSE;
             m_pInternal->OnConvertFile(this, -1);
             return 0;
         }
@@ -574,7 +577,6 @@ public:
 
 CConverter* CInternalWorker::GetNextConverter()
 {
-    CTemporaryCS oCS(&m_oCS);
     if (m_nCurrent >= m_nCount)
         return NULL;
 
@@ -600,12 +602,20 @@ void CInternalWorker::OnConvertFile(CConverter* pConverter, int nCode)
 
 void CInternalWorker::Start(int nCores)
 {
+    CTemporaryCS oCS(&m_oCS);
+
     int nSizeInit = nCores;
     if (nSizeInit > m_nCount)
         nSizeInit = m_nCount;
 
     for (int i = 0; i < nSizeInit; ++i)
         GetNextConverter();
+}
+
+void CInternalWorker::Cancel()
+{
+    CTemporaryCS oCS(&m_oCS);
+    m_nCount = m_nCurrent;
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -794,6 +804,12 @@ void MainWindow::pushButtonDirectoryClicked()
 
 void MainWindow::pushButtonConvertClicked()
 {
+    if (ui->pushButtonConvert->text() == "CANCEL")
+    {
+        m_pWorker->Cancel();
+        return;
+    }
+
     std::wstring sProcess = NSFile::GetProcessDirectory();
     if (!NSDirectory::Exists(sProcess + L"/fonts"))
         NSDirectory::CreateDirectory(sProcess + L"/fonts");
@@ -810,7 +826,7 @@ void MainWindow::pushButtonConvertClicked()
 
     m_pWorker->m_pParser->Start(0);
 
-    ui->pushButtonConvert->setEnabled(false);
+    ui->pushButtonConvert->setText("CANCEL");
 }
 
 void MainWindow::send_onDirectoryChecked()
@@ -829,7 +845,7 @@ void MainWindow::slot_onFileConverted(int nProgress)
 
     if (nProgress == m_pWorker->m_nCount)
     {
-        ui->pushButtonConvert->setEnabled(true);
+        ui->pushButtonConvert->setText("CONVERT");
         ui->progressBar->setVisible(false);
     }
 }

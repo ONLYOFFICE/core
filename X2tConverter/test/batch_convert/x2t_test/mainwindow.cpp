@@ -21,6 +21,8 @@
 
 #include "../../../../DesktopEditor/fontengine/application_generate_fonts.h"
 
+#include <QDateTime>
+
 class CDirectoryParse : public NSThreads::CBaseThread
 {
 public:
@@ -155,11 +157,178 @@ public:
     }
 };
 
+class CFormatLogger
+{
+public:
+    std::wstring m_name;
+    bool m_need;
+
+    std::list<std::wstring> m_greenSrc;
+    std::list<std::wstring> m_greenDst;
+
+    std::list<std::wstring> m_yellowSrc;
+    std::list<std::wstring> m_yellowDsc;
+
+    std::list<std::wstring> m_redSrc;
+    std::list<std::wstring> m_redDst;
+
+public:
+    CFormatLogger(const std::wstring& name)
+    {
+        m_name = name;
+        clear();
+    }
+    ~CFormatLogger()
+    {
+    }
+
+    void clear()
+    {
+        m_greenSrc.clear();
+        m_greenDst.clear();
+
+        m_yellowSrc.clear();
+        m_yellowDsc.clear();
+
+        m_redSrc.clear();
+        m_redDst.clear();
+    }
+
+    void Add(const int& code, const std::wstring& src, const std::wstring& dst)
+    {
+        if (0 == code)
+        {
+            m_greenSrc.push_back(src);
+            m_greenDst.push_back(dst);
+        }
+        else if (89 == code || 90 == code || 91 == code)
+        {
+            m_yellowSrc.push_back(src);
+            m_yellowDsc.push_back(dst);
+        }
+        else
+        {
+            m_redSrc.push_back(src);
+            m_redDst.push_back(dst);
+        }
+    }
+
+    std::wstring GetMainHtml()
+    {
+        if (!m_need)
+            return L"";
+
+        int nCountG = m_greenSrc.size();
+        int nCountY = m_yellowSrc.size();
+        int nCountR = m_redSrc.size();
+
+        int nCount = nCountG + nCountY + nCountR;
+
+        if (0 == nCount)
+            return L"";
+
+        int nPercentY = 100 * nCountY / nCount; if (nCountY != 0 && nPercentY == 0) nPercentY = 1;
+        int nPercentR = 100 * nCountR / nCount; if (nCountR != 0 && nPercentR == 0) nPercentR = 1;
+        int nPercentG = 100 - nPercentY - nPercentR;
+
+
+        NSStringUtils::CStringBuilder oBuilder;
+        oBuilder.WriteString(L"<tr style=\"height:30px;\"><td style=\"width:200px;\">");
+
+        oBuilder.WriteString(m_name);
+        oBuilder.WriteString(L" (");
+        oBuilder.AddInt(nPercentG);
+        oBuilder.WriteString(L":");
+        oBuilder.AddInt(nCountG);
+        oBuilder.WriteString(L" | ");
+        oBuilder.AddInt(nPercentY);
+        oBuilder.WriteString(L":");
+        oBuilder.AddInt(nCountY);
+        oBuilder.WriteString(L" | ");
+        oBuilder.AddInt(nPercentR);
+        oBuilder.WriteString(L":");
+        oBuilder.AddInt(nCountR);
+        oBuilder.WriteString(L")</td><td style=\"width:800px;\">");
+
+        oBuilder.WriteString(L"<div style=\"font-size: 0;width:800px;height:20px;margin:0;padding:0;\">");
+
+        oBuilder.WriteString(L"<div style=\"display:inline-block;margin:0;padding:0;width:");
+        oBuilder.AddInt(nPercentG);
+        oBuilder.WriteString(L"%;height:100%;background:#00FF00;\"></div>");
+
+        oBuilder.WriteString(L"<div style=\"display:inline-block;margin:0;padding:0;width:");
+        oBuilder.AddInt(nPercentY);
+        oBuilder.WriteString(L"%;height:100%;background:#FFFF00;\"></div>");
+
+        oBuilder.WriteString(L"<div style=\"display:inline-block;margin:0;padding:0;width:");
+        oBuilder.AddInt(nPercentR);
+        oBuilder.WriteString(L"%;height:100%;background:#FF0000;\"></div>");
+
+        oBuilder.WriteString(L"</div>");
+
+        oBuilder.WriteString(L"</td></tr>");
+
+        return oBuilder.GetData();
+    }
+
+    std::wstring GetHtml()
+    {
+        if (!m_need)
+            return L"";
+
+        int nCountG = m_greenSrc.size();
+        int nCountY = m_yellowSrc.size();
+        int nCountR = m_redSrc.size();
+
+        int nCount = nCountG + nCountY + nCountR;
+
+        if (0 == nCount)
+            return L"";
+
+        NSStringUtils::CStringBuilder oBuilder;
+        oBuilder.WriteString(L"<table border=\"1\"><caption>");
+        oBuilder.WriteString(m_name);
+        oBuilder.WriteString(L"</caption>");
+
+        std::list<std::wstring>::iterator i, j;
+        for (i = m_greenSrc.begin(), j = m_greenDst.begin(); i != m_greenSrc.end(); i++, j++)
+        {
+            oBuilder.WriteString(L"<tr style=\"height:20px;background:#00FF00;\"><td style=\"width:500px;\">");
+            oBuilder.WriteEncodeXmlString(*i);
+            oBuilder.WriteString(L"</td><td style=\"width:500px;\">");
+            oBuilder.WriteEncodeXmlString(*j);
+            oBuilder.WriteString(L"</td></tr>");
+        }
+        for (i = m_yellowSrc.begin(), j = m_yellowDsc.begin(); i != m_yellowSrc.end(); i++, j++)
+        {
+            oBuilder.WriteString(L"<tr style=\"height:20px;background:#FFFF00;\"><td style=\"width:500px;\">");
+            oBuilder.WriteEncodeXmlString(*i);
+            oBuilder.WriteString(L"</td><td style=\"width:500px;\">");
+            oBuilder.WriteEncodeXmlString(*j);
+            oBuilder.WriteString(L"</td></tr>");
+        }
+        for (i = m_redSrc.begin(), j = m_redDst.begin(); i != m_redSrc.end(); i++, j++)
+        {
+            oBuilder.WriteString(L"<tr style=\"height:20px;background:#FF0000;\"><td style=\"width:500px;\">");
+            oBuilder.WriteEncodeXmlString(*i);
+            oBuilder.WriteString(L"</td><td style=\"width:500px;\">");
+            oBuilder.WriteEncodeXmlString(*j);
+            oBuilder.WriteString(L"</td></tr>");
+        }
+
+        oBuilder.WriteString(L"</table>");
+
+        return oBuilder.GetData();
+    }
+};
+
 class CConverter;
 class CInternalWorker
 {
 public:
     std::map<int, bool> m_formats;
+    std::map<int, CFormatLogger> m_logger;
+
     CDirectoryParse* m_pParser;
 
     int m_dst_format;
@@ -193,6 +362,27 @@ public:
         m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF, true));
         m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU, true));
         m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS, true));
+
+        m_logger.insert(std::make_pair<int, CFormatLogger>(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX, CFormatLogger(L"DOCX")));
+        m_logger.insert(std::make_pair<int, CFormatLogger>(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC, CFormatLogger(L"DOC")));
+        m_logger.insert(std::make_pair<int, CFormatLogger>(AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT, CFormatLogger(L"ODT")));
+        m_logger.insert(std::make_pair<int, CFormatLogger>(AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF, CFormatLogger(L"RTF")));
+        m_logger.insert(std::make_pair<int, CFormatLogger>(AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT, CFormatLogger(L"TXT")));
+        m_logger.insert(std::make_pair<int, CFormatLogger>(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML, CFormatLogger(L"HTML")));
+
+        m_logger.insert(std::make_pair<int, CFormatLogger>(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX, CFormatLogger(L"PPTX")));
+        m_logger.insert(std::make_pair<int, CFormatLogger>(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX, CFormatLogger(L"PPSX")));
+        m_logger.insert(std::make_pair<int, CFormatLogger>(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT, CFormatLogger(L"PPT")));
+        m_logger.insert(std::make_pair<int, CFormatLogger>(AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP, CFormatLogger(L"ODP")));
+
+        m_logger.insert(std::make_pair<int, CFormatLogger>(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX, CFormatLogger(L"XLSX")));
+        m_logger.insert(std::make_pair<int, CFormatLogger>(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS, CFormatLogger(L"XLS")));
+        m_logger.insert(std::make_pair<int, CFormatLogger>(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS, CFormatLogger(L"ODS")));
+        m_logger.insert(std::make_pair<int, CFormatLogger>(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV, CFormatLogger(L"CSV")));
+
+        m_logger.insert(std::make_pair<int, CFormatLogger>(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF, CFormatLogger(L"PDF")));
+        m_logger.insert(std::make_pair<int, CFormatLogger>(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU, CFormatLogger(L"DJVU")));
+        m_logger.insert(std::make_pair<int, CFormatLogger>(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS, CFormatLogger(L"XPS")));
 
         m_pParser = new CDirectoryParse();
 
@@ -349,6 +539,66 @@ public:
     void OnConvertFile(CConverter* pConverter, int nCode);
     void Start(int nCores);
     void Cancel();
+
+    void Log()
+    {
+        NSStringUtils::CStringBuilder oBuilder;
+
+        oBuilder.WriteString(L"<!DOCTYPE html>\
+<html style=\"background:#FFFFFF;\">\
+<head></head>\
+<body style=\"width:100%height:100%;\">\
+<table border=\"1\" style=\"height:100%\">\
+<caption>Summary</caption>");
+
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX)->second.GetMainHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC)->second.GetMainHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT)->second.GetMainHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF)->second.GetMainHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT)->second.GetMainHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML)->second.GetMainHtml());
+
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX)->second.GetMainHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX)->second.GetMainHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT)->second.GetMainHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP)->second.GetMainHtml());
+
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX)->second.GetMainHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS)->second.GetMainHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS)->second.GetMainHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV)->second.GetMainHtml());
+
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF)->second.GetMainHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU)->second.GetMainHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS)->second.GetMainHtml());
+
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX)->second.GetHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC)->second.GetHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT)->second.GetHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF)->second.GetHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT)->second.GetHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML)->second.GetHtml());
+
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX)->second.GetHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX)->second.GetHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT)->second.GetHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP)->second.GetHtml());
+
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX)->second.GetHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS)->second.GetHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS)->second.GetHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV)->second.GetHtml());
+
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF)->second.GetHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU)->second.GetHtml());
+        oBuilder.WriteString(m_logger.find(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS)->second.GetHtml());
+
+        oBuilder.WriteString(L"</table></body></html>");
+
+        std::wstring sTime = QDateTime::currentDateTime().toString().toStdWString();
+        NSCommon::string_replace(sTime, L":", L".");
+        NSFile::CFileBinary::SaveToFile(NSFile::GetProcessDirectory() + L"/report/" + sTime + L".html", oBuilder.GetData(), true);
+    }
 };
 
 class CConverter : public NSThreads::CBaseThread
@@ -356,6 +606,8 @@ class CConverter : public NSThreads::CBaseThread
 public:
     CInternalWorker* m_pInternal;
     std::wstring m_file;
+    std::wstring m_file_dst;
+    int m_format;
 
 public:
     CConverter(CInternalWorker* pWorker) : NSThreads::CBaseThread()
@@ -377,10 +629,10 @@ public:
             return 0;
         }
 
-        int nFormat = oChecker.nFileType;
+        m_format = oChecker.nFileType;
 
-        std::map<int, bool>::iterator find = m_pInternal->m_formats.find(nFormat);
-        if (find == m_pInternal->m_formats.end())
+        std::map<int, bool>::iterator find = m_pInternal->m_formats.find(m_format);
+        if ((find == m_pInternal->m_formats.end()) || (find->second == false))
         {
             m_bRunThread = FALSE;
             m_pInternal->OnConvertFile(this, -1);
@@ -415,6 +667,8 @@ public:
             sExt = L".bin";
 
         std::wstring sFileDst = sDirectoryDst + L"/result" + sExt;
+
+        m_file_dst = sFileDst;
 
         oBuilder.WriteEncodeXmlString(sFileDst);
         oBuilder.WriteString(L"</m_sFileTo><m_nFormatTo>");
@@ -592,6 +846,13 @@ void CInternalWorker::OnConvertFile(CConverter* pConverter, int nCode)
 {
     CTemporaryCS oCS(&m_oCS);
 
+    if (-1 != nCode)
+    {
+        std::map<int, CFormatLogger>::iterator _logger = m_logger.find(pConverter->m_format);
+        if (_logger != m_logger.end())
+            _logger->second.Add(nCode, pConverter->m_file, pConverter->m_file_dst);
+    }
+
     ++m_nCurrentConvert;
 
     RELEASEOBJECT(pConverter);
@@ -607,6 +868,12 @@ void CInternalWorker::Start(int nCores)
     int nSizeInit = nCores;
     if (nSizeInit > m_nCount)
         nSizeInit = m_nCount;
+
+    for (std::map<int, CFormatLogger>::iterator i = m_logger.begin(); i != m_logger.end(); i++)
+    {
+        i->second.clear();
+        i->second.m_need = m_formats.find(i->first)->second;
+    }
 
     for (int i = 0; i < nSizeInit; ++i)
         GetNextConverter();
@@ -845,6 +1112,7 @@ void MainWindow::slot_onFileConverted(int nProgress)
 
     if (nProgress == m_pWorker->m_nCount)
     {
+        m_pWorker->Log();
         ui->pushButtonConvert->setText("CONVERT");
         ui->progressBar->setVisible(false);
     }

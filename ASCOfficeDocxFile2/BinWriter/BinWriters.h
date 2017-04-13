@@ -5489,9 +5489,15 @@ namespace BinDocxRW
 						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 
 						int nCurPos = m_oBcw.WriteItemWithLengthStart();
+
+						NSCommon::smart_ptr<PPTX::CCommonRels> pOldRels = *m_pOfficeDrawingConverter->m_pBinaryWriter->m_pCommonRels;
+						OOX::CPath chartPath = pChart->GetReadPath();
+						m_pOfficeDrawingConverter->SetRelsPath(chartPath.GetPath());
 						
 						BinXlsxRW::BinaryChartWriter oBinaryChartWriter(m_oBcw.m_oStream, m_pOfficeDrawingConverter);	
 						oBinaryChartWriter.WriteCT_ChartSpace(*pChart);
+
+						*m_pOfficeDrawingConverter->m_pBinaryWriter->m_pCommonRels = pOldRels;
 						
 						m_oBcw.WriteItemWithLengthEnd(nCurPos);
 					}

@@ -1452,6 +1452,6 @@ void MainWindow::stateChanged_DJVU_ALL(bool)
 {
     bool bIsVal = ui->checkBoxDJVU_ALL->isChecked();
     ui->checkBoxPDF->setChecked(bIsVal);
-    ui->checkBoxXLS->setChecked(bIsVal);
+    ui->checkBoxXPS->setChecked(bIsVal);
     ui->checkBoxDJVU->setChecked(bIsVal);
 }

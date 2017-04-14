@@ -1,4 +1,4 @@
-﻿/*
+/*
  * wincecompat.h : wince compatiblity header file 
  *
  * See Copyright for the status of this software.

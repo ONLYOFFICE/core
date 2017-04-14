@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Summary: unfinished XLink detection module
  * Description: unfinished XLink detection module
  *

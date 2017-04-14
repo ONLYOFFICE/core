@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Summary: interfaces to the Catalog handling system
  * Description: the catalog module implements the support for
  * XML Catalogs and SGML catalogs

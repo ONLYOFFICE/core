@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Summary: Internal Interfaces for saving in libxml2
  * Description: this module describes a few interfaces which were
  *              addded along with the API changes in 2.9.0

@@ -1,4 +1,4 @@
-﻿#ifndef __LIBXML_WIN32_CONFIG__
+#ifndef __LIBXML_WIN32_CONFIG__
 #define __LIBXML_WIN32_CONFIG__
 
 #define HAVE_CTYPE_H
@@ -96,7 +96,9 @@ static int isnan (double d) {
 
 #if defined(_MSC_VER)
 #define mkdir(p,m) _mkdir(p)
+#if _MSC_VER < 1900 // Cannot define this in VS 2015 and above!
 #define snprintf _snprintf
+#endif
 #if _MSC_VER < 1500
 #define vsnprintf(b,c,f,a) _vsnprintf(b,c,f,a)
 #endif

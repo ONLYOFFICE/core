@@ -2,7 +2,7 @@
  * section: Parsing
  * synopsis: Parse an XML document chunk by chunk to a tree and free it
  * purpose: Demonstrate the use of xmlCreatePushParserCtxt() and
- *          DoctRenderer() to read an XML file progressively
+ *          xmlParseChunk() to read an XML file progressively
  *          into a tree and and xmlFreeDoc() to free the resulting tree
  * usage: parse4 test3.xml
  * test: parse4 test3.xml
@@ -77,13 +77,13 @@ example4Func(const char *filename) {
      * documents.
      */
     while ((res = readPacket(chars, 4)) > 0) {
-        DoctRenderer(ctxt, chars, res, 0);
+        xmlParseChunk(ctxt, chars, res, 0);
     }
 
     /*
      * there is no more input, indicate the parsing is finished.
      */
-    DoctRenderer(ctxt, chars, 0, 1);
+    xmlParseChunk(ctxt, chars, 0, 1);
 
     /*
      * collect the document back and if it was wellformed

@@ -3425,6 +3425,8 @@ namespace BinXlsxRW
 					WriteIconSet(*pIconSet);
 					m_oBcw.WriteItemEnd(nCurPos);
 					break;
+				default:
+					break;
 				}
 			}
 		}

@@ -418,6 +418,8 @@ namespace PPTX
 					smart_ptr<PPTX::Logic::SpTree> oSpTree = m_elem.smart_dynamic_cast<PPTX::Logic::SpTree>();
 					if (oSpTree.IsInit()) oSpTree->toXmlWriterVML(pWriter, oTheme, oClrMap);
 				}break;
+				default:
+					break;
 			}
 		}
 

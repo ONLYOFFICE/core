@@ -211,7 +211,7 @@ namespace NSBinPptxRW
 		~CDrawingConverter();
 
 		void							SetRels(OOX::IFileContainer *container);
-		void							SetRels(smart_ptr<OOX::IFileContainer> & container);
+		void							SetRels(smart_ptr<OOX::IFileContainer> container);
 		smart_ptr<OOX::IFileContainer>	GetRels();
 		
 		HRESULT SetMainDocument     (BinDocxRW::CDocxSerializer* pDocument);

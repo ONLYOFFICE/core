@@ -5264,7 +5264,7 @@ void CDrawingConverter::Clear()
 	}
 	m_mapShapeTypes.clear();
 }
-void CDrawingConverter::SetRels(smart_ptr<OOX::IFileContainer> &container)
+void CDrawingConverter::SetRels(smart_ptr<OOX::IFileContainer> container)
 {
 	*m_pBinaryWriter->m_pCurrentContainer = container;
 }

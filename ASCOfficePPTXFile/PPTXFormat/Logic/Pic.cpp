@@ -112,9 +112,9 @@ namespace PPTX
 			
 			if(m_oId.IsInit() && ole_file.IsInit() == false) 
 			{
-				FileContainer* pRels = NULL;
-				if (pWriter->m_pCommonRels->is_init())
-					pRels = pWriter->m_pCommonRels->operator ->();
+				OOX::IFileContainer* pRels = NULL;
+				if (pWriter->m_pCurrentContainer->is_init())
+					pRels = pWriter->m_pCurrentContainer->operator ->();
 
 				ole_file = GetOleObject(m_oId.get(), pRels);
 			}			
@@ -163,8 +163,8 @@ namespace PPTX
 					DocWrapper::FontProcessor fp;
 					NSBinPptxRW::CDrawingConverter oDrawingConverter; 
 					
-					NSBinPptxRW::CBinaryFileWriter*			old_writer	= oDrawingConverter.m_pBinaryWriter;
-					NSCommon::smart_ptr<PPTX::CCommonRels>  old_rels	= *pWriter->m_pCommonRels;
+					NSBinPptxRW::CBinaryFileWriter*				old_writer	= oDrawingConverter.m_pBinaryWriter;
+					NSCommon::smart_ptr<OOX::IFileContainer>	old_rels	= *pWriter->m_pCurrentContainer;
 					
 					oDrawingConverter.m_pBinaryWriter = pWriter;
 					
@@ -176,7 +176,7 @@ namespace PPTX
 					pWriter->EndRecord();
 
 					oDrawingConverter.m_pBinaryWriter	= old_writer;
-					*pWriter->m_pCommonRels				= old_rels;
+					*pWriter->m_pCurrentContainer		= old_rels;
 				}
 				else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX)
 				//if ( std::wstring::npos != sProgID.find(L"Excel.Sheet")) //"ET.Xlsx.6" !!!
@@ -189,7 +189,7 @@ namespace PPTX
 					NSBinPptxRW::CDrawingConverter oDrawingConverter;
 					
 					NSBinPptxRW::CBinaryFileWriter*			old_writer	= oDrawingConverter.m_pBinaryWriter;
-					NSCommon::smart_ptr<PPTX::CCommonRels>  old_rels	= *pWriter->m_pCommonRels;
+					NSCommon::smart_ptr<OOX::IFileContainer>	old_rels	= *pWriter->m_pCurrentContainer;
 					
 					oDrawingConverter.m_pBinaryWriter = pWriter;
 
@@ -201,7 +201,7 @@ namespace PPTX
 					pWriter->EndRecord();
 					
 					oDrawingConverter.m_pBinaryWriter	= old_writer;
-					*pWriter->m_pCommonRels				= old_rels;
+					*pWriter->m_pCurrentContainer		= old_rels;
 				}
 				//else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX)
 				//{
@@ -469,7 +469,7 @@ namespace PPTX
 			return m_sProgId.IsInit() && (m_sData.IsInit() || m_oId.IsInit() || m_OleObjectFile.IsInit());
 		}
 
-		smart_ptr<OOX::OleObject> COLEObject::GetOleObject(const OOX::RId& oRId, FileContainer* pRels) const
+		smart_ptr<OOX::OleObject> COLEObject::GetOleObject(const OOX::RId& oRId, OOX::IFileContainer* pRels) const
 		{
 			smart_ptr<OOX::OleObject> ole_file = m_OleObjectFile;
 			if (ole_file.IsInit() == false)

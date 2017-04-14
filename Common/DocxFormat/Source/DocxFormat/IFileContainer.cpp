@@ -35,12 +35,13 @@
 #include "ContentTypes.h"
 
 #include "FileType.h"
+#include "FileTypes.h"
+
 #include "External/External.h"
 #include "External/HyperLink.h"
 #include "Media/Image.h"
 #include "Media/OleObject.h"
-#include "FileTypes.h"
-
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/LegacyDiagramText.h"
 #include "../XlsxFormat/FileFactory_Spreadsheet.h"
 
 namespace OOX
@@ -252,7 +253,13 @@ namespace OOX
 			return smart_ptr<OleObject>();
 		return pPair->second.smart_dynamic_cast<OleObject>();
 	}
-
+	smart_ptr<PPTX::LegacyDiagramText> IFileContainer::GetLegacyDiagramText(const OOX::RId& rId) const 
+	{
+		std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.find(rId.get());
+        if (pPair == m_mContainer.end ())
+			return smart_ptr<PPTX::LegacyDiagramText>();
+		return pPair->second.smart_dynamic_cast<PPTX::LegacyDiagramText>();
+	}
 	const bool IFileContainer::IsExist(const FileType& oType) const
 	{
 		for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator it = m_mContainer.begin(); it != m_mContainer.end(); ++it)

@@ -81,12 +81,14 @@ namespace BinDocxRW
 	void BinaryHeaderFooterTableWriter::WriteHdrFtrItem(OOX::Logic::CSectionProperty* pSectPr, OOX::CHdrFtr* pHdrFtr, bool bHdr)
 	{
 		int nCurPos = 0;
-		//Content
-		ParamsDocumentWriter oParamsDocumentWriter(pHdrFtr, pHdrFtr->m_oReadPath.GetPath());
+	//Content
+		ParamsDocumentWriter oParamsDocumentWriter(pHdrFtr);
 		m_oParamsWriter.m_pCurRels = oParamsDocumentWriter.m_pRels;
-		m_oParamsWriter.m_sCurDocumentPath = oParamsDocumentWriter.m_sDocumentPath;
+
 		BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, m_mapIgnoreComments, NULL);
-		oBinaryDocumentTableWriter.prepareOfficeDrawingConverter(m_pOfficeDrawingConverter, oParamsDocumentWriter.m_sDocumentPath,  pHdrFtr->m_arrShapeTypes);
+		
+		oBinaryDocumentTableWriter.prepareOfficeDrawingConverter(m_pOfficeDrawingConverter, oParamsDocumentWriter.m_pRels,  pHdrFtr->m_arrShapeTypes);
+		
 		nCurPos = m_oBcw.WriteItemStart(c_oSerHdrFtrTypes::HdrFtr_Content);
 		oBinaryDocumentTableWriter.WriteDocumentContent(pHdrFtr->m_arrItems);
 		m_oBcw.WriteItemEnd(nCurPos);

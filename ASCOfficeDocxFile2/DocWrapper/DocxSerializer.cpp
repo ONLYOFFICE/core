@@ -387,7 +387,7 @@ bool BinDocxRW::CDocxSerializer::getBinaryContent(const std::wstring& bsTxConten
 
 	BinDocxRW::BinaryCommonWriter oBinaryCommonWriter(oParamsWriter);
 	int nCurPos = oBinaryCommonWriter.WriteItemWithLengthStart();
-	BinDocxRW::ParamsDocumentWriter oParams(oParamsWriter.m_pCurRels, oParamsWriter.m_sCurDocumentPath);
+	BinDocxRW::ParamsDocumentWriter oParams(oParamsWriter.m_pCurRels);
 	
 	BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(oParamsWriter, oParams, &oParamsWriter.m_mapIgnoreComments, NULL);
 	oBinaryDocumentTableWriter.WriteDocumentContent(oSdtContent.m_arrItems);
@@ -411,7 +411,7 @@ bool BinDocxRW::CDocxSerializer::getBinaryContentElem(OOX::EElementType eElemTyp
 	BinDocxRW::BinaryCommonWriter oBinaryCommonWriter(oParamsWriter);
 	int nCurPos = oBinaryCommonWriter.WriteItemWithLengthStart();
 	
-	BinDocxRW::ParamsDocumentWriter oParams(oParamsWriter.m_pCurRels, oParamsWriter.m_sCurDocumentPath);
+	BinDocxRW::ParamsDocumentWriter oParams(oParamsWriter.m_pCurRels);
 	BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(oParamsWriter, oParams, &oParamsWriter.m_mapIgnoreComments, NULL);
 	if(OOX::et_m_oMathPara == eElemType)
 	{

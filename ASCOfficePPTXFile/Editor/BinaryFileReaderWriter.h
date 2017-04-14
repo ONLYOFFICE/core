@@ -51,6 +51,7 @@ namespace OOX
 	class OleObject;
 	class CContentTypes;
 	class WritingElement;
+	class IFileContainer;
 }
 namespace NSCommon
 {
@@ -63,7 +64,6 @@ namespace NSCommon
 }
 namespace PPTX
 {
-	class CCommonRels;
 	class Theme;
 	namespace Logic
 	{
@@ -226,7 +226,7 @@ namespace NSBinPptxRW
 		CCommonWriter*								m_pCommon;
 		std::wstring								m_strMainFolder;
 
-		NSCommon::smart_ptr<PPTX::CCommonRels>*		m_pCommonRels;
+		NSCommon::smart_ptr<OOX::IFileContainer>*	m_pCurrentContainer;
 		BinDocxRW::CDocxSerializer *				m_pMainDocument;
 
 		NSCommon::smart_ptr<PPTX::Theme>*			m_pTheme;

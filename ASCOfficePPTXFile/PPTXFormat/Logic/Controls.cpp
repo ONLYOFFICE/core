@@ -38,24 +38,23 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		std::wstring Control::GetVmlXmlBySpid(std::wstring spid, std::wstring & rels)  const
+		std::wstring Control::GetVmlXmlBySpid(std::wstring spid, smart_ptr<OOX::IFileContainer> & rels)  const
 		{
 			std::wstring xml;
-			rels = _T("");
 			if(parentFileIs<PPTX::Slide>() && parentFileAs<PPTX::Slide>().Vml.IsInit())
 			{
 				xml		= parentFileAs<PPTX::Slide>().GetVmlXmlBySpid(spid);
-				rels	= parentFileAs<PPTX::Slide>().Vml->GetReadPath().GetPath();
+				rels	= parentFileAs<PPTX::Slide>().Vml.smart_dynamic_cast<OOX::IFileContainer>();
 			}
 			else if(parentFileIs<PPTX::SlideLayout>() && parentFileAs<PPTX::SlideLayout>().Vml.IsInit())
 			{
 				xml= parentFileAs<PPTX::SlideLayout>().GetVmlXmlBySpid(spid);
-				rels	= parentFileAs<PPTX::SlideLayout>().Vml->GetReadPath().GetPath();
+				rels	= parentFileAs<PPTX::SlideLayout>().Vml.smart_dynamic_cast<OOX::IFileContainer>();
 			}
 			else if(parentFileIs<PPTX::SlideMaster>() && parentFileAs<PPTX::SlideMaster>().Vml.IsInit())
 			{
 				xml = parentFileAs<PPTX::SlideMaster>().GetVmlXmlBySpid(spid);
-				rels	= parentFileAs<PPTX::SlideMaster>().Vml->GetReadPath().GetPath();
+				rels	= parentFileAs<PPTX::SlideMaster>().Vml.smart_dynamic_cast<OOX::IFileContainer>();
 			}
 
 			return xml;
@@ -67,7 +66,7 @@ namespace PPTX
 			std::wstring s = *spid;
 			if (s.length() < 8) s = _T("_x0000_s") + s; 
 
-			std::wstring rels;
+			smart_ptr<OOX::IFileContainer> rels;
 			std::wstring xml = GetVmlXmlBySpid(s, rels);
 
 			if (xml.length() > 0)
@@ -82,7 +81,7 @@ namespace PPTX
 				RELEASEOBJECT(oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pImageManager);
 				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pImageManager = pImageManager;
 
-				oDrawingConverter.SetRelsPath(rels);
+				oDrawingConverter.SetRels(rels);
 
 				std::wstring *main_props = NULL;
 				HRESULT hRes = oDrawingConverter.AddObject(temp, &main_props);
@@ -97,7 +96,7 @@ namespace PPTX
 			std::wstring s = *spid;
 			if (s.length() < 8) s = _T("_x0000_s") + s; 
 
-			std::wstring rels;
+			smart_ptr<OOX::IFileContainer> rels;
 			std::wstring xml = GetVmlXmlBySpid(s, rels);
 
 			if (xml.length() > 0)
@@ -113,7 +112,7 @@ namespace PPTX
 	
 				std::wstring *main_props = NULL;
 
-				oDrawingConverter.SetRelsPath(rels);
+				oDrawingConverter.SetRels(rels);
 
 				HRESULT hRes = oDrawingConverter.AddObject(temp, &main_props);
 				if (hRes == S_OK && oDrawingConverter.m_pBinaryWriter->GetPosition() > 10)

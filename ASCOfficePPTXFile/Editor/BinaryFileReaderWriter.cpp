@@ -718,11 +718,12 @@ namespace NSBinPptxRW
 	}
 	CBinaryFileWriter::CBinaryFileWriter()
 	{
-		m_pMainDocument = NULL;
-		m_pCommon		= new CCommonWriter();
-		m_pCommonRels	= new NSCommon::smart_ptr<PPTX::CCommonRels>();
-		m_pTheme		= new NSCommon::smart_ptr<PPTX::Theme>();
-		m_pClrMap		= new NSCommon::smart_ptr<PPTX::Logic::ClrMap>();
+		m_pMainDocument		= NULL;
+		m_pCommon			= new CCommonWriter();
+		//m_pCommonRels		= new NSCommon::smart_ptr<PPTX::CCommonRels>();
+		m_pCurrentContainer = new NSCommon::smart_ptr<OOX::IFileContainer>();
+		m_pTheme			= new NSCommon::smart_ptr<PPTX::Theme>();
+		m_pClrMap			= new NSCommon::smart_ptr<PPTX::Logic::ClrMap>();
 		
 		Clear();
 	}
@@ -730,7 +731,8 @@ namespace NSBinPptxRW
 	{
 		RELEASEARRAYOBJECTS	(m_pStreamData);
 		RELEASEOBJECT		(m_pCommon);
-		RELEASEOBJECT		(m_pCommonRels);
+		//RELEASEOBJECT		(m_pCommonRels);
+		RELEASEOBJECT		(m_pCurrentContainer);
 		
 		RELEASEOBJECT		(m_pTheme);
 		RELEASEOBJECT		(m_pClrMap);

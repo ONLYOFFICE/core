@@ -135,10 +135,10 @@ namespace PPTX
 				double dW = pWriter->GetShapeWidth(); //mm
 				double dH = pWriter->GetShapeHeight();
 
-				FileContainer* pRels = NULL;
+				OOX::IFileContainer* pRels = NULL;
 				
-				if (pWriter->m_pCommonRels->is_init())
-					pRels = pWriter->m_pCommonRels->operator ->();
+				if (pWriter->m_pCurrentContainer->is_init())
+					pRels = pWriter->m_pCurrentContainer->operator ->();
 
 				std::wstring olePath;
 				if(!oleFilepathBin.empty())
@@ -171,8 +171,8 @@ namespace PPTX
 
 				pWriter->EndRecord();
 			}
-			virtual std::wstring GetFullPicName(FileContainer* pRels = NULL)const;
-			virtual std::wstring GetFullOleName(const OOX::RId& pRId, FileContainer* pRels = NULL)const;
+			virtual std::wstring GetFullPicName(OOX::IFileContainer* pRels = NULL)const;
+			virtual std::wstring GetFullOleName(const OOX::RId& pRId, OOX::IFileContainer* pRels = NULL)const;
 
 			std::vector<UniEffect> Effects;
 

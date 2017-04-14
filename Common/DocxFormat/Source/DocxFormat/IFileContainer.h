@@ -48,7 +48,12 @@ namespace OOX
 	class Image;
 	class HyperLink;
 	class OleObject;
-} // OOX
+}
+
+namespace PPTX
+{
+	class LegacyDiagramText;
+}
 
 namespace OOX
 {
@@ -76,9 +81,10 @@ namespace OOX
 		void Read (const OOX::CPath& oRootPath, const OOX::CPath& oPath);
 		void ExtractPictures(const OOX::CPath& oPath) const;
 
-		virtual smart_ptr<Image>     GetImage    (const RId& rId) const;
-		virtual smart_ptr<HyperLink> GetHyperlink(const RId& rId) const;
-		virtual smart_ptr<OleObject> GetOleObject(const RId& rId) const;
+		virtual smart_ptr<Image>					GetImage    (const RId& rId) const;
+		virtual smart_ptr<HyperLink>				GetHyperlink(const RId& rId) const;
+		virtual smart_ptr<OleObject>				GetOleObject(const RId& rId) const;
+		virtual smart_ptr<PPTX::LegacyDiagramText>	GetLegacyDiagramText (const OOX::RId& rId) const;
 		
 		OOX::CRels* GetCurRls()
 		{

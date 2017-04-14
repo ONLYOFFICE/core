@@ -98,7 +98,7 @@ namespace PPTX
 
 			SpTreeElem				element;
 
-			std::wstring GetVmlXmlBySpid(std::wstring & rels)	const;
+			std::wstring GetVmlXmlBySpid(smart_ptr<OOX::IFileContainer> & rels)	const;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

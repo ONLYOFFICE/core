@@ -1798,16 +1798,14 @@ namespace BinXlsxRW
 				{
 					OOX::Spreadsheet::CDrawing* pDrawing = (OOX::Spreadsheet::CDrawing*)oFile.operator->();
 					
-                    std::wstring sOldRelsPath = m_pOfficeDrawingConverter->GetRelsPath();
-                    std::wstring sDrawingRelsPath = pDrawing->GetReadPath().GetPath();
-					
-					m_pOfficeDrawingConverter->SetRelsPath(sDrawingRelsPath);
+					smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
+					m_pOfficeDrawingConverter->SetRels(pDrawing);
 					
 					nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawings);
-					WriteDrawings(oWorksheet, pDrawing, sDrawingRelsPath, currentVmlDrawing);
+					WriteDrawings(oWorksheet, pDrawing, currentVmlDrawing);
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 
-					m_pOfficeDrawingConverter->SetRelsPath(sOldRelsPath);
+					m_pOfficeDrawingConverter->SetRels(oldRels);
 				}
 			}
 			//Autofilter
@@ -2600,7 +2598,7 @@ namespace BinXlsxRW
 			}
 		};
 
-        void WriteDrawings(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, std::wstring& sDrawingRelsPath, OOX::CVmlDrawing *pVmlDrawing = NULL)
+        void WriteDrawings(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::CVmlDrawing *pVmlDrawing = NULL)
 		{
 			for (size_t i = 0, length = pDrawing->m_arrItems.size(); i  < length ; ++i)
 			{
@@ -2611,7 +2609,7 @@ namespace BinXlsxRW
 				if (!pCellAnchor->m_bShapeOle && pCellAnchor->isValid())
 				{
 					int nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
-					WriteDrawing(oWorksheet, pDrawing, pCellAnchor, sDrawingRelsPath, pVmlDrawing);
+					WriteDrawing(oWorksheet, pDrawing, pCellAnchor, pVmlDrawing);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
 			}
@@ -2727,7 +2725,7 @@ namespace BinXlsxRW
 					if (pCellAnchor)
 					{
 						int nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
-						WriteDrawing(oWorksheet, pDrawing, pCellAnchor, sDrawingRelsPath, pVmlDrawing, pOleObject);
+						WriteDrawing(oWorksheet, pDrawing, pCellAnchor, pVmlDrawing, pOleObject);
 						m_oBcw.WriteItemEnd(nCurPos);
 						
 						delete pCellAnchor;
@@ -2764,7 +2762,7 @@ namespace BinXlsxRW
 										pCellAnchor->m_sSpId->append(it->first);
 
 										int nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
-										WriteDrawing(oWorksheet, pDrawing, pCellAnchor, sDrawingRelsPath, pVmlDrawing, NULL);
+										WriteDrawing(oWorksheet, pDrawing, pCellAnchor, pVmlDrawing, NULL);
 										m_oBcw.WriteItemEnd(nCurPos);
 										
 										delete pCellAnchor;
@@ -2776,7 +2774,7 @@ namespace BinXlsxRW
 				}
 			}
 		}
-        void WriteDrawing(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::Spreadsheet::CCellAnchor* pCellAnchor, std::wstring& sDrawingRelsPath, OOX::CVmlDrawing *pVmlDrawing = NULL, OOX::Spreadsheet::COleObject* pOleObject = NULL)
+        void WriteDrawing(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::Spreadsheet::CCellAnchor* pCellAnchor, OOX::CVmlDrawing *pVmlDrawing = NULL, OOX::Spreadsheet::COleObject* pOleObject = NULL)
 		{
 			if (!pCellAnchor) return;
 
@@ -2839,17 +2837,19 @@ namespace BinXlsxRW
 					}
 					sVmlXml += L"</v:object>";
 
-                    std::wstring keepRels = m_pOfficeDrawingConverter->GetRelsPath();
-					m_pOfficeDrawingConverter->SetRelsPath(pVmlDrawing->GetReadPath().GetPath());
+                    smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
+					m_pOfficeDrawingConverter->SetRels(pVmlDrawing);
 
 					std::wstring* bstrOutputXml = NULL;
 					m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingType::pptxDrawing);
 					int nCurPos = m_oBcw.WriteItemWithLengthStart();
-					m_pOfficeDrawingConverter->AddObject(sVmlXml, &bstrOutputXml);
-					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 					
+					m_pOfficeDrawingConverter->AddObject(sVmlXml, &bstrOutputXml);
+					
+					m_pOfficeDrawingConverter->SetRels(oldRels);
+
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);					
 					RELEASEOBJECT(bstrOutputXml);
-					m_pOfficeDrawingConverter->SetRelsPath(keepRels);
 				}
 			}
 			else if (pCellAnchor->m_oElement.IsInit())
@@ -2857,9 +2857,15 @@ namespace BinXlsxRW
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingType::pptxDrawing);
 				int nCurPos = m_oBcw.WriteItemWithLengthStart();
 
+				smart_ptr<OOX::IFileContainer> oldRels = *m_oBcw.m_oStream.m_pCurrentContainer;
+				*m_oBcw.m_oStream.m_pCurrentContainer = pDrawing;
+				m_oBcw.m_oStream.m_pCurrentContainer->AddRef();
+
 				m_oBcw.m_oStream.StartRecord(0);
 				m_oBcw.m_oStream.WriteRecord2(1, pCellAnchor->m_oElement->GetElem());
 				m_oBcw.m_oStream.EndRecord();
+
+				*m_oBcw.m_oStream.m_pCurrentContainer = oldRels;
 
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}

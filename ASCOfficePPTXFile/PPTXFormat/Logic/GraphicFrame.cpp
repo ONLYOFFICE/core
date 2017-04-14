@@ -375,8 +375,8 @@ namespace PPTX
 				return;
 			}
 
-			std::wstring xml_object_vml;
-			std::wstring xml_object_rels;
+			std::wstring					xml_object_vml;
+			smart_ptr<OOX::IFileContainer>	xml_object_rels;
 
 			if (oleSpid.is_init())
 			{
@@ -452,7 +452,7 @@ namespace PPTX
 	
 				std::wstring *main_props = NULL;
 
-				oDrawingConverter.SetRelsPath(xml_object_rels);
+				oDrawingConverter.SetRels(xml_object_rels);
                 oDrawingConverter.SetAdditionalParam(L"xfrm_override", (BYTE*)xfrm.GetPointer(), sizeof(xfrm));
 
 				HRESULT hRes = oDrawingConverter.AddObject(temp, &main_props);
@@ -613,35 +613,29 @@ namespace PPTX
 		{
 			nvGraphicFramePr.SetParentPointer(this);
            
-			if (xfrm.IsInit())
-				xfrm->SetParentPointer(this);
-			if(table.IsInit())
-                table->SetParentPointer(this);
-			if (smartArt.is_init())
-				smartArt->SetParentPointer(this);
-			if (chartRec.is_init())
-				chartRec->SetParentPointer(this);
-			if (olePic.is_init())
-				olePic->SetParentPointer(this);
+			if (xfrm.IsInit())			xfrm->SetParentPointer(this);
+			if (table.IsInit())			table->SetParentPointer(this);
+			if (smartArt.is_init())		smartArt->SetParentPointer(this);
+			if (chartRec.is_init())		chartRec->SetParentPointer(this);
+			if (olePic.is_init())		olePic->SetParentPointer(this);
 		}
-		std::wstring GraphicFrame::GetVmlXmlBySpid(std::wstring & rels)const
+		std::wstring GraphicFrame::GetVmlXmlBySpid(smart_ptr<OOX::IFileContainer> & rels)const
 		{
             std::wstring xml;
-			rels = L"";
 			if(parentFileIs<PPTX::Slide>() && parentFileAs<PPTX::Slide>().Vml.IsInit())
 			{
 				xml		= parentFileAs<PPTX::Slide>().GetVmlXmlBySpid(oleSpid.get_value_or(L""));
-				rels	= parentFileAs<PPTX::Slide>().Vml->GetReadPath().GetPath();
+				rels	= parentFileAs<PPTX::Slide>().Vml.smart_dynamic_cast<OOX::IFileContainer>();
 			}
 			else if(parentFileIs<PPTX::SlideLayout>() && parentFileAs<PPTX::SlideLayout>().Vml.IsInit())
 			{
-				xml= parentFileAs<PPTX::SlideLayout>().GetVmlXmlBySpid(oleSpid.get_value_or(L""));
-				rels	= parentFileAs<PPTX::SlideLayout>().Vml->GetReadPath().GetPath();
+				xml		= parentFileAs<PPTX::SlideLayout>().GetVmlXmlBySpid(oleSpid.get_value_or(L""));
+				rels	= parentFileAs<PPTX::SlideLayout>().Vml.smart_dynamic_cast<OOX::IFileContainer>();
 			}
 			else if(parentFileIs<PPTX::SlideMaster>() && parentFileAs<PPTX::SlideMaster>().Vml.IsInit())
 			{
-				xml = parentFileAs<PPTX::SlideMaster>().GetVmlXmlBySpid(oleSpid.get_value_or(L""));
-				rels	= parentFileAs<PPTX::SlideMaster>().Vml->GetReadPath().GetPath();
+				xml		= parentFileAs<PPTX::SlideMaster>().GetVmlXmlBySpid(oleSpid.get_value_or(L""));
+				rels	= parentFileAs<PPTX::SlideMaster>().Vml.smart_dynamic_cast<OOX::IFileContainer>();
 			}
 
 			return xml;

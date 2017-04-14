@@ -234,7 +234,7 @@ void OoxConverter::convert(PPTX::Logic::SmartArt *oox_smart_art)
 		odf_context()->drawing_context()->get_size (width, height);
 		odf_context()->drawing_context()->get_position (x, y);
 
-		oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(oox_smart_art->m_oCommonRels.operator->());
+		oox_current_child_document = oox_smart_art->m_pFileContainer.operator->();
 
 		odf_context()->drawing_context()->start_group();
 

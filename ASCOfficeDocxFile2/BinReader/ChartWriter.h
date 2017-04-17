@@ -47,13 +47,11 @@ namespace Writers
 		};
 		std::vector<ChartElem*> m_aCharts;
         ContentTypesWriter&     m_oContentTypesWriter;
-		int nChartCount;
 	public:
         std::wstring m_sDir;
 	public:
         ChartWriter(std::wstring sDir, ContentTypesWriter& oContentTypesWriter):m_sDir(sDir),m_oContentTypesWriter(oContentTypesWriter)
 		{
-			nChartCount = 0;
 		}
 		~ChartWriter()
 		{
@@ -91,27 +89,17 @@ namespace Writers
 				}
 			}
 		}
-		void AddChart(std::wstring& content, std::wstring& sRelsName, std::wstring& sFileName, int& index)
+		void AddChart(std::wstring& content, std::wstring& sRelsName, std::wstring& sFileName, int index)
 		{
 			ChartElem* pChartElem = new ChartElem();
 			pChartElem->content = content;
-			pChartElem->index = nChartCount + 1;
-			nChartCount++;
+			pChartElem->index = index;
             pChartElem->filename = L"chart" + std::to_wstring(pChartElem->index) + L".xml";
 			
 			sRelsName = L"charts/" + pChartElem->filename;
 			sFileName = pChartElem->filename;
-			index = pChartElem->index;
 
 			m_aCharts.push_back(pChartElem);
-		}
-		int getChartCount()
-		{
-			return nChartCount;
-		}
-		void setChartCount(int val)
-		{
-			nChartCount = val;
 		}
 	};
 }

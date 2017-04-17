@@ -80,22 +80,14 @@ namespace PPTX
 				
 				Normalize();
 			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("type"), type.get());
-				oAttr.Write(_T("startAt"), startAt);
-
-				return XmlUtils::CreateNode(_T("a:buAutoNum"), oAttr);
-			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("a:buAutoNum"));
+				pWriter->StartNode(L"a:buAutoNum");
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("type"), type.get());
-				pWriter->WriteAttribute(_T("startAt"), startAt);
+				pWriter->WriteAttribute(L"type", type.get());
+				pWriter->WriteAttribute(L"startAt", startAt);
 				pWriter->EndAttributes();
-				pWriter->EndNode(_T("a:buAutoNum"));
+				pWriter->EndNode(L"a:buAutoNum");
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

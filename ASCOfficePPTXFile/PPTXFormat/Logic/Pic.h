@@ -182,32 +182,38 @@ namespace PPTX
 		class COLEObject : public WrapperWritingElement
 		{
 		public:
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_pic;
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			void toXmlWriterXlsx(NSBinPptxRW::CXmlWriter* pWriter) const;
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			
+			virtual void toXmlWriter (NSBinPptxRW::CXmlWriter* pWriter) const;
+			
+			virtual void toPPTY (NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY (NSBinPptxRW::CBinaryFileReader* pReader);
+			
 			virtual void FillParentPointersForChilds();
+			
 			bool isValid();
-			std::wstring GetFullOleName(const OOX::RId& oRId, FileContainer* pRels)const;
-			std::wstring GetOleData(const std::wstring& sFilePath)const;
+			
+			smart_ptr<OOX::OleObject>	GetOleObject(const OOX::RId& oRId, OOX::IFileContainer* pRels)const;
+			std::wstring				GetOleData	(const std::wstring& sFilePath)const;
 
-		public:
-			// Attributes
-			nullable_limit<Limit::OLEDrawAspectType>	m_oDrawAspect;
-			nullable<OOX::RId>					m_oId;
-			nullable_string                     m_sObjectId;
-			nullable_string                     m_sProgId;
-			nullable_string                     m_sShapeId;
+			nullable_limit<Limit::OLEDrawAspectType>m_oDrawAspect;
+			nullable<OOX::RId>						m_oId;
+			nullable_string							m_sObjectId;
+			nullable_string							m_sProgId;
+			nullable_string							m_sShapeId;
 			nullable_limit<Limit::OLEType>			m_oType;
-			nullable_limit<Limit::OLEUpdateMode>		m_oUpdateMode;
+			nullable_limit<Limit::OLEUpdateMode>	m_oUpdateMode;
 
-			//internal
+	//internal
 			nullable_string						m_sData;
-			nullable_string						m_sFilepathBin;
-			nullable_string						m_sFilepathImg;
-			nullable<OOX::RId>					m_oIdImg;
+			
+			smart_ptr<OOX::OleObject>			m_OleObjectFile;
+		
 			nullable_int						m_oDxaOrig;
 			nullable_int						m_oDyaOrig;
 		};
@@ -289,7 +295,6 @@ namespace PPTX
 
 						pWriter->StartNode(_T("p:oleObj"));
 						pWriter->WriteAttribute(L"name", (std::wstring)L"oleObj");
-						pWriter->WriteAttribute(L"showAsIcon", (std::wstring)L"1");
 						if(oleObject->m_oId.IsInit())
 						{
 							pWriter->WriteAttribute2(L"r:id", oleObject->m_oId->get());
@@ -342,67 +347,10 @@ namespace PPTX
 				}
 			}
 
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
-
-				nvPicPr.cNvPr.id = -1;
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							nvPicPr.fromPPTY(pReader);
-							break;
-						}
-						case 1:
-						{
-							blipFill.fromPPTY(pReader);
-							break;
-						}
-						case 2:
-						{
-							spPr.fromPPTY(pReader);
-							break;
-						}
-						case 3:
-						{
-							style = new ShapeStyle(L"p");
-							style->fromPPTY(pReader);
-							break;
-						}
-						case 4:
-						{
-							oleObject = new COLEObject();
-							oleObject->fromPPTY(pReader);
-							if(oleObject->m_sData.IsInit())
-							{
-								blipFill.oleData = oleObject->m_sData.get();
-							}
-							break;
-						}
-						default:
-						{
-							break;
-						}
-					}
-				}
-				if(blipFill.blip.IsInit() && !blipFill.blip->oleRid.empty() && oleObject.IsInit())
-				{
-					oleObject->m_oId = OOX::RId(blipFill.blip->oleRid);
-					oleObject->m_sFilepathBin = blipFill.blip->oleFilepathBin;
-					oleObject->m_sFilepathImg = blipFill.blip->oleFilepathImg;
-					oleObject->m_oIdImg = OOX::RId(blipFill.blip->oleRidImg);
-				}
-
-				pReader->Seek(_end_rec);
-			}
-
-			void toXmlWriterVML(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::WrapperFile>& oTheme, smart_ptr<PPTX::WrapperWritingElement>& oClrMap, bool in_group = false);
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			void toXmlWriterVML(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group = false);
 			void fromXMLOle(XmlUtils::CXmlNode& node);
-
+//----------------------------------------------------------------------
 			NvPicPr					nvPicPr;
 			BlipFill				blipFill;
 			SpPr					spPr;
@@ -410,6 +358,7 @@ namespace PPTX
 		//internal
 			std::wstring			m_namespace;
 			nullable<COLEObject>	oleObject;
+			nullable_string			m_sClientDataXml;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

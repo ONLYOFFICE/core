@@ -228,8 +228,6 @@ namespace odf_writer
 			}
 
 		}
-
-
 		void object_files::set_content(content_content_ptr & _content)
 		{
 			content_.set_content(_content);

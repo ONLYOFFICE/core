@@ -77,15 +77,16 @@ namespace OOX
 		class CAuthors : public WritingElementWithChilds<std::wstring>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CAuthors)
+			WritingElement_AdditionConstructors(CAuthors)
 			CAuthors()
 			{
 			}
 			virtual ~CAuthors()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring      toXML() const
 			{
 				return _T("");
@@ -120,7 +121,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Authors;
+				return et_x_Authors;
 			}
 
 		private:
@@ -131,16 +132,17 @@ namespace OOX
 		class CComment : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CComment)
+			WritingElement_AdditionConstructors(CComment)
 			CComment()
 			{
 			}
 			virtual ~CComment()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -159,7 +161,7 @@ namespace OOX
 					writer.WriteString(L"</comment>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -178,7 +180,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Comment;
+				return et_x_Comment;
 			}
 
 		private:
@@ -201,16 +203,17 @@ namespace OOX
 		class CCommentList : public WritingElementWithChilds<CComment>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CCommentList)
+			WritingElement_AdditionConstructors(CCommentList)
 			CCommentList()
 			{
 			}
 			virtual ~CCommentList()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -223,7 +226,7 @@ namespace OOX
 				}
 				writer.WriteString(L"</commentList>");
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -242,7 +245,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_CommentList;
+				return et_x_CommentList;
 			}
 
 		private:
@@ -250,14 +253,16 @@ namespace OOX
 			{
 			}
 		};
-		class CComments : public OOX::FileGlobalEnumerated, public OOX::Spreadsheet::IFileContainer
+		class CComments : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
 			CComments()
 			{
+				m_bSpreadsheets = true;
 			}
 			CComments(const CPath& oRootPath, const CPath& oPath)
 			{
+				m_bSpreadsheets = true;
 				read( oRootPath, oPath );
 			}
 			virtual ~CComments()
@@ -349,16 +354,17 @@ namespace OOX
 		class CLegacyDrawingWorksheet : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CLegacyDrawingWorksheet)
+			WritingElement_AdditionConstructors(CLegacyDrawingWorksheet)
 			CLegacyDrawingWorksheet()
 			{
 			}
 			virtual ~CLegacyDrawingWorksheet()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -372,7 +378,7 @@ namespace OOX
 				}
 				
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -382,7 +388,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_LegacyDrawingWorksheet;
+				return et_x_LegacyDrawingWorksheet;
 			}
 
 		private:

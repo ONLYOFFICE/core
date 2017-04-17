@@ -1,0 +1,189 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>XML Security Library: XML Digital Signature Online Verifier</title>
+<style type="text/css">
+table.CALSTABLE > tbody > tr:nth-child(1) > td:nth-child(1) {
+    width: 20em;
+}
+</style>
+<style type="text/css">
+table.CALSTABLE > tbody > tr:nth-child(1) > td:nth-child(1) {
+    width: 20em;
+}
+.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+}
+.programlisting {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation a {
+    color: initial;
+}
+.navigation a:visited {
+    color: initial;
+}
+</style>
+<style type="text/css">
+table.CALSTABLE > tbody > tr:nth-child(1) > td:nth-child(1) {
+    width: 20em;
+}
+.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+}
+.programlisting {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation a {
+    color: initial;
+}
+.navigation a:visited {
+    color: initial;
+}
+</style>
+</head>
+<body><table width="100%" valign="top"><tr valign="top">
+<td valign="top" align="left" width="210">
+<img src="images/logo.gif" alt="XML Security Library" border="0"><p></p>
+<ul>
+<li><a href="index.html">Home</a></li>
+<li><a href="download.html">Download</a></li>
+<li><a href="news.html">News</a></li>
+<li><a href="documentation.html">Documentation</a></li>
+<ul>
+<li><a href="faq.html">FAQ</a></li>
+<li><a href="api/xmlsec-notes.html">Tutorial</a></li>
+<li><a href="api/xmlsec-reference.html">API reference</a></li>
+<li><a href="api/xmlsec-examples.html">Examples</a></li>
+</ul>
+<li><a href="xmldsig.html">XML Digital Signature</a></li>
+<ul><li><a href="http://www.aleksey.com/xmlsec/xmldsig-verifier.html">Online Verifier</a></li></ul>
+<li><a href="xmlenc.html">XML Encryption</a></li>
+<li><a href="c14n.html">XML Canonicalization</a></li>
+<li><a href="bugs.html">Reporting Bugs</a></li>
+<li><a href="http://www.aleksey.com/pipermail/xmlsec">Mailing list</a></li>
+<li><a href="related.html">Related</a></li>
+<li><a href="authors.html">Authors</a></li>
+</ul>
+<table width="100%">
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/"><img src="images/libxml2-logo.png" alt="LibXML2" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/XSLT"><img src="images/libxslt-logo.png" alt="LibXSLT" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://www.openssl.org/"><img src="images/openssl-logo.png" alt="OpenSSL" border="0"></a></td>
+</tr>
+<!--Links - start--><!--Links - end-->
+</table>
+</td>
+<td valign="top"><table width="100%" valign="top"><tr><td valign="top" align="left" id="xmlsecContent"><div align="Center">              
+      <h2>Online XML Digital Signature Verifer</h2>
+      <div align="Left">The online XML Digital Signature Verifier is a simple
+cgi script that demonstrates how to use XML Security Library in real applications.
+
+<h4>Copy/Paste the Signed XML Document in the input field below:</h4>
+Please note that <b>all</b> white spaces and carriage returns are <b>significant</b>.
+
+    <form action="https://www.aleksey.com/cgi-bin/xmldsigverify" method="POST">
+    <center>
+	<table width="85%">
+<tr><td>
+		<textarea name="_xmldoc" style="WIDTH: 85%; HEIGHT: 300px"></textarea>
+</td></tr>
+<tr><td>
+		<input type="submit" value="Verify Signature">
+</td></tr>
+</table>
+</center>
+    </form>
+
+<h4>Allowed root certificates and signature keys</h4>
+In order to successfully verify your message 
+using XML Digital Signature Online Verifier you should sign it using any of
+following keys:
+<ul>
+<li>any x509 certificate (or certificates chain) based on
+root certificates from standard root CA authorities (Verisign, etc.),
+Merlin's root CA used to sign interoperability 
+tests from <a href="tests/keys-certs/merlin.pem">merlin-xmldsig-twenty-three.tar.gz</a>
+or "fake" <a href="tests/keys-certs/cacert.pem">root certificate</a> 
+(the corresponding <a href="tests/keys-certs/cakey.pem">private key</a>
+is encrypted using passphrase "secret");
+</li>
+<li>HMAC key "secret" (in hex, 73 65 63 72 65 74);
+</li>
+<li>any key public DSA/RSA key provided in the KeyInfo element of the signature.
+</li>
+</ul>
+<p></p>
+<h4>A small list of signed XML documents from XML DSig Interop 
+tests suites</h4>
+ATTENTION: some of these signatures use external resource located on other 
+Web servers and may fail if these resource are not available by some 
+reasons.
+
+<ul>
+<li>
+<a href="tests/aleksey-xmldsig-01/enveloping-dsa-x509chain.xml">aleksey-xmldsig-01/enveloping-dsa-x509chain.xml</a>
+</li>
+<li>
+<a href="tests/aleksey-xmldsig-01/enveloping-ripemd160-hmac-ripemd160-64.xml">aleksey-xmldsig-01/enveloping-ripemd160-hmac-ripemd160-64.xml</a>
+</li>
+<li>
+<a href="tests/aleksey-xmldsig-01/enveloping-ripemd160-hmac-ripemd160.xml">aleksey-xmldsig-01/enveloping-ripemd160-hmac-ripemd160.xml</a>
+</li>
+<li>
+<a href="tests/aleksey-xmldsig-01/enveloping-rsa-x509chain.xml">aleksey-xmldsig-01/enveloping-rsa-x509chain.xml</a>
+</li>
+<li>
+<a href="tests/merlin-exc-c14n-one/exc-signature.xml">merlin-exc-c14n-one/exc-signature.xml</a>
+</li>
+<li>
+<a href="tests/merlin-xmldsig-twenty-three/signature-enveloped-dsa.xml">merlin-xmldsig-twenty-three/signature-enveloped-dsa.xml</a>
+</li>
+<li>
+<a href="tests/merlin-xmldsig-twenty-three/signature-enveloping-b64-dsa.xml">merlin-xmldsig-twenty-three/signature-enveloping-b64-dsa.xml</a>
+</li>
+<li>
+<a href="tests/merlin-xmldsig-twenty-three/signature-enveloping-dsa.xml">merlin-xmldsig-twenty-three/signature-enveloping-dsa.xml</a>
+</li>
+<li>
+<a href="tests/merlin-xmldsig-twenty-three/signature-enveloping-hmac-sha1-40.xml">merlin-xmldsig-twenty-three/signature-enveloping-hmac-sha1-40.xml</a>
+</li>
+<li>
+<a href="tests/merlin-xmldsig-twenty-three/signature-enveloping-hmac-sha1.xml">merlin-xmldsig-twenty-three/signature-enveloping-hmac-sha1.xml</a>
+</li>
+<li>
+<a href="tests/merlin-xmldsig-twenty-three/signature-enveloping-rsa.xml">merlin-xmldsig-twenty-three/signature-enveloping-rsa.xml</a>
+</li>
+<li>
+<a href="tests/merlin-xmldsig-twenty-three/signature-external-b64-dsa.xml">merlin-xmldsig-twenty-three/signature-external-b64-dsa.xml</a>
+</li>
+<li>
+<a href="tests/merlin-xmldsig-twenty-three/signature-external-dsa.xml">merlin-xmldsig-twenty-three/signature-external-dsa.xml</a>
+</li>
+<li>
+<a href="tests/merlin-xmldsig-twenty-three/signature.xml">merlin-xmldsig-twenty-three/signature.xml</a>
+</li>
+</ul>
+</div>
+        </div></td></tr></table></td>
+</tr></table></body>
+</html>

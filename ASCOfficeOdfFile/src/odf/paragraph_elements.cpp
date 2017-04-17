@@ -340,7 +340,7 @@ std::wostream & span::text_to_stream(std::wostream & _Wostream) const
 
 void span::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	CP_APPLY_ATTR(L"text:style-name", text_style_name_, style_ref(L""));
+	CP_APPLY_ATTR(L"text:style-name", text_style_name_, std::wstring(L""));
     
     const std::wstring classNames = Attributes->get_val< std::wstring >(L"text:class-names").get_value_or(L"");
     std::vector< std::wstring > classNamesArray;
@@ -351,7 +351,7 @@ void span::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
         BOOST_FOREACH(const std::wstring & name, classNamesArray)
         {
-            text_class_names_.push_back( style_ref(name) );        
+            text_class_names_.push_back( name );        
         }
     }
 }
@@ -374,10 +374,10 @@ void span::docx_convert(oox::docx_conversion_context & Context)
 
     std::wostream & _Wostream = Context.output_stream();
 
-    if (!text_style_name_.style_name().empty()/* && !drawing*/)
+    if (!text_style_name_.empty()/* && !drawing*/)
     {
         if (style_instance * styleInst 
-            = Context.root()->odf_context().styleContainer().style_by_name(text_style_name_.style_name(), style_family::Text,Context.process_headers_footers_)
+            = Context.root()->odf_context().styleContainer().style_by_name(text_style_name_, style_family::Text,Context.process_headers_footers_)
             )
         {
             if (styleInst->is_automatic())
@@ -418,7 +418,7 @@ void span::docx_convert(oox::docx_conversion_context & Context)
 
 void span::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    Context.start_span(text_style_name_.style_name());
+    Context.start_span(text_style_name_);
     BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
         elm->xlsx_convert(Context);
@@ -427,10 +427,10 @@ void span::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void span::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    if (style_instance * styleInst = Context.root()->odf_context().styleContainer().style_by_name(text_style_name_.style_name(), style_family::Text,false))
+    if (style_instance * styleInst = Context.root()->odf_context().styleContainer().style_by_name(text_style_name_, style_family::Text,false))
 		Context.get_text_context().get_styles_context().start_process_style(styleInst);
    
-	Context.get_text_context().start_span(text_style_name_.style_name());
+	Context.get_text_context().start_span(text_style_name_);
     BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
         elm->pptx_convert(Context);
@@ -456,10 +456,10 @@ void a::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	common_xlink_attlist_.add_attributes(Attributes);
 
-    CP_APPLY_ATTR(L"office:name", office_name_, std::wstring(L""));
-    CP_APPLY_ATTR(L"office:target-frame-name", office_target_frame_name_);
-    CP_APPLY_ATTR(L"text:style-name", text_style_name_, style_ref(L""));
-    CP_APPLY_ATTR(L"text:visited-style-name", text_visited_style_name_, style_ref(L""));
+    CP_APPLY_ATTR(L"office:name",				office_name_,			std::wstring(L""));
+    CP_APPLY_ATTR(L"office:target-frame-name",	office_target_frame_name_);
+    CP_APPLY_ATTR(L"text:style-name",			text_style_name_,		std::wstring(L""));
+    CP_APPLY_ATTR(L"text:visited-style-name",	text_visited_style_name_,std::wstring(L""));
 }
 
 void a::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -491,8 +491,8 @@ void a::docx_convert(oox::docx_conversion_context & Context)
 
     style_instance * styleInst = NULL;
     
-    if (!text_style_name_.style_name().empty())
-        styleInst = Context.root()->odf_context().styleContainer().style_by_name(text_style_name_.style_name(), style_family::Text,Context.process_headers_footers_);
+    if (!text_style_name_.empty())
+        styleInst = Context.root()->odf_context().styleContainer().style_by_name(text_style_name_, style_family::Text,Context.process_headers_footers_);
     else
         styleInst = Context.root()->odf_context().styleContainer().hyperlink_style();
         
@@ -540,7 +540,7 @@ void a::docx_convert(oox::docx_conversion_context & Context)
 
 void a::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    Context.start_hyperlink(text_style_name_.style_name());
+    Context.start_hyperlink(text_style_name_);
     BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
         elm->xlsx_convert(Context);
@@ -675,7 +675,7 @@ std::wostream & ruby::text_to_stream(std::wostream & _Wostream) const
 
 void ruby::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    text_style_name_ = style_ref( Attributes->get_val< std::wstring >(L"text:style-name").get_value_or(L"") );
+    text_style_name_ = Attributes->get_val< std::wstring >(L"text:style-name").get_value_or(L"") ;
 }
 
 void ruby::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)

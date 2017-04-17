@@ -39,15 +39,16 @@ namespace Writers
 	class DefaultThemeWriter
 	{
 	public:
-		DefaultThemeWriter()
+ 		std::wstring m_sContent;
+		
+		DefaultThemeWriter( )
 		{
 		}
         void Write(std::wstring sThemeFilePath)
 		{
-            std::wstring s_Common;
-
-			s_Common = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?> \
-<a:theme xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" name=\"Office Theme\"> \
+			if (m_sContent.empty())
+			{
+				m_sContent = _T("<a:theme xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" name=\"Office Theme\">\
   <a:themeElements> \
     <a:clrScheme name=\"Office\"> \
       <a:dk1> \
@@ -87,7 +88,7 @@ namespace Writers
         <a:srgbClr val=\"800080\"/> \
       </a:folHlink> \
     </a:clrScheme> ");
-s_Common +=
+m_sContent +=
    _T("<a:fontScheme name=\"Office\"> \
       <a:majorFont> \
         <a:latin typeface=\"Cambria\"/> \
@@ -158,7 +159,7 @@ s_Common +=
         <a:font script=\"Uigh\" typeface=\"Microsoft Uighur\"/> \
       </a:minorFont> \
     </a:fontScheme>");
-s_Common +=
+m_sContent +=
     _T("<a:fmtScheme name=\"Office\"> \
       <a:fillStyleLst> \
         <a:solidFill> \
@@ -329,13 +330,14 @@ s_Common +=
   <a:objectDefaults/> \
   <a:extraClrSchemeLst/> \
 </a:theme>");
-
+			}
 
             OOX::CPath fileName = sThemeFilePath;
 
-            CFile oFile;
-            oFile.CreateFile(fileName.GetPath());
-			oFile.WriteStringUTF8(s_Common);
+			NSFile::CFileBinary oFile;
+            oFile.CreateFileW(fileName.GetPath());
+			oFile.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+			oFile.WriteStringUTF8(m_sContent);
 			oFile.CloseFile();
 		}
 	};

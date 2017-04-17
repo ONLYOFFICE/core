@@ -65,11 +65,6 @@ namespace PPTX
 			{
 
 			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				return XmlUtils::CreateNode(L"a:rtl", oAttr);
-			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{			
@@ -142,6 +137,8 @@ namespace PPTX
 						sym = oReader;		
 					else if ( _T("hlinkClick") == sName )
 						hlinkClick = oReader;			
+					else if (_T("hlinkMouseOver") == sName)
+						hlinkMouseOver = oReader;
 					else if ( _T("rtl") == sName )
 						rtl = oReader;
 					else if (	L"effectDag"	== sName	||
@@ -239,43 +236,6 @@ namespace PPTX
 				WritingElement_ReadAttributes_End	( oReader )		
 				
 				Normalize();
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("kumimoji"), kumimoji);
-				oAttr.Write(_T("lang"), lang);
-				oAttr.Write(_T("altLang"), altLang);
-				oAttr.Write(_T("sz"), sz);
-				oAttr.Write(_T("b"), b);
-				oAttr.Write(_T("i"), i);
-				oAttr.WriteLimitNullable(_T("u"), u);
-				oAttr.WriteLimitNullable(_T("strike"), strike);
-				oAttr.Write(_T("kern"), kern);
-				oAttr.WriteLimitNullable(_T("cap"), cap);
-				oAttr.Write(_T("spc"), spc);
-				oAttr.Write(_T("normalizeH"), normalizeH);
-				oAttr.Write(_T("baseline"), baseline);
-				oAttr.Write(_T("noProof"), noProof);
-				oAttr.Write(_T("dirty"), dirty);
-				oAttr.Write(_T("err"), err);
-				oAttr.Write(_T("smtClean"), smtClean);
-				oAttr.Write(_T("smtId"), smtId);
-				oAttr.Write(_T("bmk"), bmk);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(ln);
-				oValue.Write(Fill);
-				oValue.Write(EffectList);
-				oValue.WriteNullable(latin);
-				oValue.WriteNullable(ea);
-				oValue.WriteNullable(cs);
-				oValue.WriteNullable(sym);
-				oValue.WriteNullable(hlinkClick);
-				oValue.WriteNullable(hlinkMouseOver);
-				oValue.WriteNullable(rtl);
-
-				return XmlUtils::CreateNode(m_name, oAttr, oValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -577,15 +537,14 @@ namespace PPTX
 						}
 						case 7:
 						{
-							hlinkClick = new Logic::Hyperlink();
-							hlinkClick->m_name = _T("hlinkClick");
+							hlinkClick = new Logic::Hyperlink(L"hlinkClick");
 							hlinkClick->fromPPTY(pReader);
 							break;
 						}
 						case 8:
 						{
-							// TODO:
-							pReader->SkipRecord();
+							hlinkMouseOver = new Logic::Hyperlink(L"hlinkMouseOver");
+							hlinkMouseOver->fromPPTY(pReader);
 						}
 						default:
 						{

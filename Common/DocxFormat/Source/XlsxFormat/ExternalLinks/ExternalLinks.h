@@ -52,11 +52,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 				
@@ -88,7 +88,7 @@ namespace OOX
 			}
 			virtual EElementType getType() const
 			{
-				return OOX::Spreadsheet::et_ExternalBook;
+				return et_x_ExternalBook;
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -101,7 +101,7 @@ namespace OOX
 			nullable<SimpleTypes::CRelationshipId > m_oRid;
 		};
 
-		class CExternalLink : public OOX::FileGlobalEnumerated, public OOX::Spreadsheet::IFileContainer
+		class CExternalLink : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
 			CExternalLink()
@@ -197,13 +197,12 @@ namespace OOX
 				return m_oReadPath;
 			}
 
+			nullable<CExternalBook>					m_oExternalBook;
 		private:
 			CPath									m_oReadPath;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
-		public:
-			nullable<CExternalBook>		m_oExternalBook;
 		};
 	} //ExternalLink
 } // namespace OOX

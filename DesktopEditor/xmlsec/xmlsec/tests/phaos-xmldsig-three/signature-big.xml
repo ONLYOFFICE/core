@@ -1,0 +1,39 @@
+<dsig:Signature xmlns="http://www.w3.org/2000/09/xmldsig#" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#"><dsig:SignedInfo><dsig:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><dsig:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><dsig:Reference Id="reference-0" URI="document.xml"><dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><dsig:DigestValue>5KcCsBlhsIP4iMmHcaU2dXJPU8k=</dsig:DigestValue></dsig:Reference><dsig:Reference Id="reference-b64" URI="document.b64"><dsig:Transforms><dsig:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#base64"/></dsig:Transforms><dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><dsig:DigestValue>5KcCsBlhsIP4iMmHcaU2dXJPU8k=</dsig:DigestValue></dsig:Reference><dsig:Reference Id="reference-xslt" URI="document-stylesheet.xml"><dsig:Transforms><dsig:Transform Algorithm="http://www.w3.org/TR/1999/REC-xslt-19991116"><xsl:stylesheet version="1.0" xmlns="http://www.w3.org/TR/xhtml1/strict" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+<xsl:strip-space elements="player name position team"/>
+<xsl:output encoding="iso-8859-1" indent="no" method="xml"/>
+
+<xsl:template match="player">
+ <html>
+   <head>
+     <title>
+       <xsl:value-of select="name"/>
+     </title>
+   </head>
+   <body>
+     <xsl:apply-templates/>
+   </body>
+ </html>
+</xsl:template>
+
+<xsl:template match="player/name">
+  <h1>
+    <xsl:apply-templates/>
+  </h1>
+</xsl:template>
+
+<xsl:template match="player/position">
+  <h2>
+    <xsl:apply-templates/>
+  </h2>
+</xsl:template>
+
+<xsl:template match="player/team">
+  <h3>
+    <xsl:apply-templates/>
+  </h3>
+</xsl:template>
+
+
+
+</xsl:stylesheet></dsig:Transform><dsig:Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/></dsig:Transforms><dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><dsig:DigestValue>2HiTcKdfZ9O83wthUFP8ISRdRXQ=</dsig:DigestValue></dsig:Reference><dsig:Reference Id="reference-xpath" URI="document.xml"><dsig:Transforms><dsig:Transform Algorithm="http://www.w3.org/TR/1999/REC-xpath-19991116"><dsig:XPath xmlns:dsig="http://www.w3.org/2000/09/xmldsig#">@*</dsig:XPath></dsig:Transform><dsig:Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments"/></dsig:Transforms><dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><dsig:DigestValue>TReY52bmpNnv+3gET3YhgJXTImk=</dsig:DigestValue></dsig:Reference><dsig:Reference Id="reference-manifest" Type="http://www.w3.org/2000/09/xmldsig#Manifest" URI="#manifest-0"><dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><dsig:DigestValue>Zk5dsGelTgg61hMSPfKYRRYZvr8=</dsig:DigestValue></dsig:Reference><dsig:Reference Id="reference-object-0" Type="http://www.w3.org/2000/09/xmldsig#Object" URI="#object-0"><dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><dsig:DigestValue>BGhr3V/fMiTscUgZVMEMmeQvQpI=</dsig:DigestValue></dsig:Reference><dsig:Reference Id="reference-key-info" URI="#key-info"><dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><dsig:DigestValue>k08/9AdPEuZyBRJhHKyjH1px3IQ=</dsig:DigestValue></dsig:Reference><dsig:Reference Id="reference-key-name" URI=""><dsig:Transforms><dsig:Transform Algorithm="http://www.w3.org/TR/1999/REC-xpath-19991116"><dsig:XPath xmlns:ds="http://www.w3.org/2000/09/xmldsig#">ancestor-or-self::ds:KeyName</dsig:XPath></dsig:Transform><dsig:Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/></dsig:Transforms><dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><dsig:DigestValue>4ehoLl+KxYvqlwPGRaPcpxprLeA=</dsig:DigestValue></dsig:Reference><dsig:Reference Id="reference-xpointer-0" URI="#xpointer(id('reference-b64'))"><dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><dsig:DigestValue>CBCjDfHcpu7cWHr6zD0y/Y62fso=</dsig:DigestValue></dsig:Reference><dsig:Reference Id="reference-xpointer-1" URI="#xpointer(id('reference-object-0'))"><dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><dsig:DigestValue>RwemIyLY5WSPgXA3OZiZLhGCyTo=</dsig:DigestValue></dsig:Reference></dsig:SignedInfo><dsig:SignatureValue>EUqZ5jMNvD/dHHi90X//yL7r7t6WpyY0fChIAaUPPXsbDHeNgzfsDe8AZYYD6klroeYJRuHXHtY1PdB5b9+XfwO3oduznLYVN3bmeLMvdYMWlw4SGYtbvyNZtovgA8qcEAQ29sQ+aA9pvCQgSKpTJF8DuYv6fKlktZtPyYh7HRk=</dsig:SignatureValue><dsig:KeyInfo Id="key-info"><dsig:KeyName>CN=Test Client (RSA),OU=Engineering,O=Phaos Technology,L=New York,ST=New York,C=US</dsig:KeyName></dsig:KeyInfo><dsig:Object Id="object-0"><dsig:Manifest Id="manifest-0"><dsig:Reference Id="reference-raw-x509-cert" Type="http://www.w3.org/2000/09/xmldsig#rawX509Certificate" URI="certs/rsa-cert.der"><dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><dsig:DigestValue>RtIlTB3BmyCRFTr7sRtOyPni0Ig=</dsig:DigestValue></dsig:Reference><dsig:Reference Id="reference-rfc3161" URI="http://www.ietf.org/rfc/rfc3161.txt"><dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><dsig:DigestValue>eT5ZU9fkIwQ9b9XAYq+iIYnj0DQ=</dsig:DigestValue></dsig:Reference></dsig:Manifest></dsig:Object></dsig:Signature>

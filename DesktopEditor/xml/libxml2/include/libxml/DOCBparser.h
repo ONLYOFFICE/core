@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Summary: old DocBook SGML parser
  * Description: interface for a DocBook SGML non-verifying parser
  * This code is DEPRECATED, and should not be used anymore.

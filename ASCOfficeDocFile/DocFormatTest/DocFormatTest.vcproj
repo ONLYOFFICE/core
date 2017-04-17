@@ -386,6 +386,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\BinReader\Readers.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp"
 				>
 			</File>
@@ -432,6 +436,10 @@
 		</File>
 		<File
 			RelativePath="..\..\Common\FileDownloader\FileDownloader_win.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Common\OfficeFileFormatChecker2.cpp"
 			>
 		</File>
 		<File

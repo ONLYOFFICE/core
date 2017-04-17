@@ -30,7 +30,7 @@
  *
  */
 #pragma once
-#include "OOXPictureGraphicReader.h"
+#include "OOXDrawingGraphicReader.h"
 
 class OOXDrawingInlineReader
 {
@@ -78,13 +78,9 @@ public:
 			}
 		}
 		
-		int result = 0;
-		if(m_ooxInline->m_oGraphic.IsInit())
-		{
-			OOXGraphicReader oGraphicReader(m_ooxInline->m_oGraphic.GetPointer());
+		OOXGraphicReader oGraphicReader(&m_ooxInline->m_oGraphic);
 			
-			result = oGraphicReader.Parse( oParam, pOutput);			
-		}
+		int result = oGraphicReader.Parse( oParam, pOutput);			
 		return result;
 	}
 };

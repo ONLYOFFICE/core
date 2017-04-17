@@ -165,7 +165,7 @@ namespace PPTX
 
 				pWriter->Write(ph);
 				media.toXmlWriter(pWriter);
-				pWriter->WriteArray(_T("p:extLst"), extLst);				
+				pWriter->WriteArray(strNS + _T(":extLst"), extLst);				
 				
                 pWriter->EndNode(strNS + _T(":nvPr"));
 			}

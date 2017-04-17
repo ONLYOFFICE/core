@@ -47,7 +47,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(TxStyles)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNodes oNodes;
@@ -139,7 +138,6 @@ namespace PPTX
 				pWriter->EndNode(_T("p:txStyles"));
 			}
 
-		public:
 			nullable<TextListStyle> titleStyle;
 			nullable<TextListStyle> bodyStyle;
 			nullable<TextListStyle> otherStyle;

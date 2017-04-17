@@ -53,12 +53,12 @@ namespace PPTX
 		{
 		}
 
-	public:
 		virtual void read(const OOX::CPath& filename)
 		{
 			return;
 		}
 		virtual void read(const OOX::CPath&, FileMap& map) = 0;
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content) const;
 
 	protected:
 		mutable bool			m_written;

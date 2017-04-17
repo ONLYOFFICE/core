@@ -30,8 +30,6 @@
  *
  */
 
-#include "../Source/DocxFormat/Drawing/DrawingCoreInfo.cpp"
-#include "../Source/DocxFormat/Drawing/DrawingEffects.cpp"
 #include "../Source/DocxFormat/Logic/AlternateContent.cpp"
 #include "../Source/DocxFormat/Logic/Annotations.cpp"
 #include "../Source/DocxFormat/Logic/Bdo.cpp"
@@ -57,7 +55,6 @@
 #include "../Source/DocxFormat/FileFactory.cpp"
 #include "../Source/DocxFormat/IFileContainer.cpp"
 #include "../Source/XlsxFormat/FileFactory_Spreadsheet.cpp"
-#include "../Source/XlsxFormat/IFileContainer_Spreadsheet.cpp"
 #include "../Source/DocxFormat/Drawing/DrawingExt.cpp"
 #include "../Source/Common/Align.cpp"
 #include "../Source/Common/Color.cpp"

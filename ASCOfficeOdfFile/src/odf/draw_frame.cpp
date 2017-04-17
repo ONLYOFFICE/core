@@ -166,13 +166,9 @@ void draw_frame::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
  	idx_in_owner = -1;
 
-	common_presentation_attlist_.add_attributes(Attributes);
-    
 	common_draw_attlists_.shape_with_text_and_styles_.add_attributes(Attributes);
     common_draw_attlists_.position_.add_attributes(Attributes);
     common_draw_attlists_.rel_size_.add_attributes(Attributes);
-    
-	presentation_shape_attlist_.add_attributes(Attributes);
     
 	draw_frame_attlist_.add_attributes(Attributes);
 }

@@ -1,0 +1,86 @@
+# Makefile for xmlsec, specific for Windows, MSVC and NMAKE.
+#
+# Take a look at the beginning and modify the variables to suit your 
+# environment.
+XMLSEC_STATIC          = yes
+XMLSEC_DEFAULT_CRYPTO  = openssl
+XMLSEC_CFLAGS          =
+XMLSEC_LIBS            =
+
+# There should never be a need to modify anything below this line.
+XMLSEC_OBJS_DIR = build
+XMLSEC_EXAMPLES = \
+	$(XMLSEC_OBJS_DIR)\sign1.exe \
+	$(XMLSEC_OBJS_DIR)\sign2.exe \
+	$(XMLSEC_OBJS_DIR)\sign3.exe \
+	$(XMLSEC_OBJS_DIR)\verify1.exe \
+	$(XMLSEC_OBJS_DIR)\verify2.exe \
+	$(XMLSEC_OBJS_DIR)\verify3.exe \
+	$(XMLSEC_OBJS_DIR)\verify4.exe \
+	$(XMLSEC_OBJS_DIR)\encrypt1.exe \
+	$(XMLSEC_OBJS_DIR)\encrypt2.exe \
+	$(XMLSEC_OBJS_DIR)\encrypt3.exe \
+	$(XMLSEC_OBJS_DIR)\decrypt1.exe \
+	$(XMLSEC_OBJS_DIR)\decrypt2.exe \
+	$(XMLSEC_OBJS_DIR)\decrypt3.exe \
+
+# 
+!IF "$(XMLSEC_DEFAULT_CRYPTO)" == "openssl"
+XMLSEC_CFLAGS = $(XMLSEC_CFLAGS) /D "XMLSEC_CRYPTO_OPENSSL" /D "XMLSEC_DEFAULT_CRYPTO=\"openssl\""
+XMLSEC_SOLIBS = libxmlsec-openssl.lib libeay32.lib wsock32.lib user32.lib gdi32.lib 
+XMLSEC_ALIBS  = libxmlsec-openssl_a.lib libeay32.lib wsock32.lib user32.lib gdi32.lib 
+!ENDIF
+
+!IF "$(XMLSEC_DEFAULT_CRYPTO)" == "nss"
+XMLSEC_CFLAGS = $(XMLSEC_CFLAGS) /D "XMLSEC_CRYPTO_NSS" /D "XMLSEC_DEFAULT_CRYPTO=\"nss\""
+XMLSEC_SOLIBS = libxmlsec-nss.lib nss3.lib nspr4.lib plds4.lib plc4.lib
+XMLSEC_ALIBS  = libxmlsec-nss_a.lib nss3.lib nspr4.lib plds4.lib plc4.lib
+!ENDIF
+
+!IF "$(XMLSEC_DEFAULT_CRYPTO)" == "mscrypto"
+XMLSEC_CFLAGS = $(XMLSEC_CFLAGS) /D "XMLSEC_CRYPTO_MSCRYPTO" /D "XMLSEC_DEFAULT_CRYPTO=\"mscrypto\""
+XMLSEC_SOLIBS = libxmlsec-mscrypto.lib user32.lib gdi32.lib crypt32.lib advapi32.lib
+XMLSEC_ALIBS  = libxmlsec-mscrypto_a.lib user32.lib gdi32.lib crypt32.lib advapi32.lib
+!ENDIF
+
+!IF "$(XMLSEC_STATIC)" == "yes"
+XMLSEC_CFLAGS = $(XMLSEC_CFLAGS) /D "LIBXML_STATIC" /D "LIBXSLT_STATIC" /D "XMLSEC_STATIC"
+XMLSEC_LIBS   = $(XMLSEC_LIBS) $(XMLSEC_ALIBS) libxmlsec_a.lib \
+		libxml2_a.lib libxslt_a.lib libexslt_a.lib 
+!ELSE
+XMLSEC_LIBS   = $(XMLSEC_LIBS) $(XMLSEC_SOLIBS) libxmlsec.lib libxml2.lib \
+		libxslt.lib libexslt.lib
+!ENDIF
+
+# The preprocessor and its options.
+CPP = cl.exe /EP
+CPPFLAGS = /nologo
+
+# The compiler and its options.
+CC = cl.exe
+CFLAGS = /nologo /D "WIN32" /D "_WINDOWS" /D "_MBCS" /DWIN32_SOCKETS /W1 /MD $(XMLSEC_CFLAGS)  
+
+# The linker and its options.
+LD = link.exe
+LDFLAGS = /nologo $(XMLSEC_LIBS) wsock32.lib
+
+# Optimisation and debug symbols.
+!if "$(DEBUG)" == "1"
+CFLAGS = $(CFLAGS) /D "_DEBUG" /Od /Z7
+LDFLAGS = $(LDFLAGS) /DEBUG
+!else
+CFLAGS = $(CFLAGS) /D "NDEBUG" /O2 
+LDFLAGS = $(LDFLAGS) /OPT:NOWIN98
+!endif
+
+all : $(XMLSEC_OBJS_DIR) $(XMLSEC_EXAMPLES)
+
+$(XMLSEC_OBJS_DIR) :
+	if not exist $(XMLSEC_OBJS_DIR) mkdir $(XMLSEC_OBJS_DIR)
+
+.c{$(XMLSEC_OBJS_DIR)}.exe :
+	$(CC) /c $(CFLAGS) /Fo$(XMLSEC_OBJS_DIR)\ $<
+	$(LD) $(LDFLAGS) /OUT:$*.exe $*.obj
+
+clean:
+	if exist $(XMLSEC_OBJS_DIR) rmdir /S /Q $(XMLSEC_OBJS_DIR)

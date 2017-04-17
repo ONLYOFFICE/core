@@ -34,7 +34,7 @@
 #define OOX_CONDITIONALFORMATTING_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
-
+#include "../Styles/dxf.h"
 
 namespace OOX
 {
@@ -45,15 +45,16 @@ namespace OOX
 		class CConditionalFormatValueObject : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CConditionalFormatValueObject)
+			WritingElement_AdditionConstructors(CConditionalFormatValueObject)
 			CConditionalFormatValueObject()
 			{
 			}
 			virtual ~CConditionalFormatValueObject()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -80,7 +81,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_ConditionalFormatValueObject;
+				return et_x_ConditionalFormatValueObject;
 			}
 
 		private:
@@ -106,15 +107,16 @@ namespace OOX
 		class CColorScale : public WritingElementWithChilds<WritingElement>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CColorScale)
+			WritingElement_AdditionConstructors(CColorScale)
 			CColorScale()
 			{
 			}
 			virtual ~CColorScale()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -150,7 +152,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_ColorScale;
+				return et_x_ColorScale;
 			}
 
 		public:
@@ -159,15 +161,16 @@ namespace OOX
 		class CDataBar : public WritingElementWithChilds<CConditionalFormatValueObject>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CDataBar)
+			WritingElement_AdditionConstructors(CDataBar)
 			CDataBar()
 			{
 			}
 			virtual ~CDataBar()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -215,7 +218,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_DataBar;
+				return et_x_DataBar;
 			}
 
 		private:
@@ -243,15 +246,16 @@ namespace OOX
 		class CFormulaCF : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CFormulaCF)
+			WritingElement_AdditionConstructors(CFormulaCF)
 			CFormulaCF()
 			{
 			}
 			virtual ~CFormulaCF()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -272,7 +276,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_FormulaCF;
+				return et_x_FormulaCF;
 			}
 
 		public:
@@ -282,15 +286,16 @@ namespace OOX
 		class CIconSet : public WritingElementWithChilds<CConditionalFormatValueObject>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CIconSet)
+			WritingElement_AdditionConstructors(CIconSet)
 			CIconSet()
 			{
 			}
 			virtual ~CIconSet()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -341,7 +346,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_IconSet;
+				return et_x_IconSet;
 			}
 
 		private:
@@ -371,15 +376,16 @@ namespace OOX
 		class CConditionalFormattingRule : public WritingElementWithChilds<WritingElement>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CConditionalFormattingRule)
+			WritingElement_AdditionConstructors(CConditionalFormattingRule)
 			CConditionalFormattingRule()
 			{
 			}
 			virtual ~CConditionalFormattingRule()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -427,20 +433,23 @@ namespace OOX
 				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-					if (_T("colorScale") == sName)
+					if (L"colorScale" == sName)
 						m_arrItems.push_back(new CColorScale(oReader));
-					else if (_T("dataBar") == sName)
+					else if (L"dataBar" == sName)
 						m_arrItems.push_back(new CDataBar(oReader));
-					else if (_T("formula") == sName)
+					else if (L"formula" == sName || L"f" == sName)
 						m_arrItems.push_back(new CFormulaCF(oReader));
-					else if (_T("iconSet") == sName)
+					else if (L"iconSet" == sName)
 						m_arrItems.push_back(new CIconSet(oReader));
+					else if (L"dxf" == sName)
+						m_oDxf = oReader;
+
 				}
 			}
 
 			virtual EElementType getType () const
 			{
-				return et_ConditionalFormattingRule;
+				return et_x_ConditionalFormattingRule;
 			}
 
 			bool isValid () const
@@ -473,6 +482,7 @@ namespace OOX
 			}
 
 		public:
+			nullable<CDxf>										m_oDxf;
 			nullable<SimpleTypes::COnOff<>>						m_oAboveAverage;
 			nullable<SimpleTypes::COnOff<>>						m_oBottom;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oDxfId;
@@ -493,15 +503,16 @@ namespace OOX
 		class CConditionalFormatting  : public WritingElementWithChilds<CConditionalFormattingRule>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CConditionalFormatting)
+			WritingElement_AdditionConstructors(CConditionalFormatting)
 			CConditionalFormatting()
 			{
 			}
 			virtual ~CConditionalFormatting()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -549,12 +560,14 @@ namespace OOX
 
 					if (_T("cfRule") == sName)
 						m_arrItems.push_back(new CConditionalFormattingRule(oReader));
+					if (_T("sqref") == sName)
+						m_oSqRef = oReader.GetText2();
 				}
 			}
 
 			virtual EElementType getType () const
 			{
-				return et_ConditionalFormatting;
+				return et_x_ConditionalFormatting;
 			}
 		
 		private:

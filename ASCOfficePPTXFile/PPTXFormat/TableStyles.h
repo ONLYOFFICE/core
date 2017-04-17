@@ -53,8 +53,6 @@ namespace PPTX
 		virtual ~TableStyles()
 		{
 		}
-
-	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			XmlUtils::CXmlNode oNode;
@@ -85,20 +83,7 @@ namespace PPTX
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
-			std::wstring strValue = _T("");
-			for (std::map<std::wstring, Logic::TableStyle>::const_iterator pPair = Styles.begin(); pPair != Styles.end(); ++pPair)
-			{
-				pPair->second.toXML();
-			}
-
-			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("def"), def);
-
-			XmlUtils::SaveToFile(filename.m_strFilename, XmlUtils::CreateNode(_T("a:tblStyleLst"), oAttr, strValue));
-			
-			content.Registration(type().OverrideType(), directory, filename);
-			m_written = true;
-			m_WrittenFileName = filename.GetFilename();
+			WrapperFile::write(filename, directory, content);
 		}
 
 	public:

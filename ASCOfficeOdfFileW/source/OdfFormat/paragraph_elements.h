@@ -39,7 +39,6 @@
 
 #include "office_elements_create.h"
 
-#include "style_ref.h"
 #include "targetframename.h"
 #include "noteclass.h"
 
@@ -322,8 +321,8 @@ public:
    
 	office_element_ptr_array paragraph_content_;
     
-	_CP_OPT(odf_types::style_ref)	text_style_name_;//ваще то это такой элемент где стиль должОн быть всегда
-    odf_types::style_ref_array		text_class_names_;
+	_CP_OPT(std::wstring)		text_style_name_;//ваще то это такой элемент где стиль должОн быть всегда
+    std::vector<std::wstring>	text_class_names_;
 
     virtual void add_text(const std::wstring & Text);
 };
@@ -357,8 +356,8 @@ public:
     _CP_OPT(std::wstring)					office_name_;
     _CP_OPT(odf_types::target_frame_name)	office_target_frame_name_;
 
-    _CP_OPT(odf_types::style_ref)			text_style_name_;
-    _CP_OPT(odf_types::style_ref)			text_visited_style_name_;
+    _CP_OPT(std::wstring)					text_style_name_;
+    _CP_OPT(std::wstring)					text_visited_style_name_;
 
     office_element_ptr_array				paragraph_content_;
 };
@@ -467,10 +466,10 @@ public:
 
     virtual void add_text(const std::wstring & Text);
 
-	odf_types::style_ref text_style_name_;
+	std::wstring		text_style_name_;
 
-    office_element_ptr text_ruby_base_;
-    office_element_ptr text_ruby_text_;
+    office_element_ptr	text_ruby_base_;
+    office_element_ptr	text_ruby_text_;
   
 };
 

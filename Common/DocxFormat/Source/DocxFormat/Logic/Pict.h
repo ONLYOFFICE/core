@@ -140,13 +140,12 @@ namespace OOX
 			{
 			}
 
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode &oNode)
+			virtual void fromXML(XmlUtils::CXmlNode &oNode)
 			{
 				// TO DO: Реализовать CPicture::fromXML(XmlUtils::CXmlNode &oNode)
 			}
 
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{			
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -380,7 +379,7 @@ namespace OOX
 				}
 			}
 
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<w:pict>");
 

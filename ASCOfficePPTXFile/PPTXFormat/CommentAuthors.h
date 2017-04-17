@@ -44,7 +44,7 @@ namespace PPTX
 		{
 		public:
 			PPTX_LOGIC_BASE(CommentAuthor)
-		private:
+
 			nullable_int	id;
 			nullable_int	last_idx;
 			nullable_int	clr_idx;
@@ -52,8 +52,6 @@ namespace PPTX
 			nullable_string	name;
 			nullable_string	initials;			
 
-		public:
-			
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"id", id);
@@ -138,10 +136,9 @@ namespace PPTX
 	
 	class Authors : public WrapperFile
 	{
-	private:
+	public:
 		std::vector<PPTX::Logic::CommentAuthor> m_arAuthors;
 
-	public:
 		Authors()
 		{
 		}
@@ -152,8 +149,6 @@ namespace PPTX
 		virtual ~Authors()
 		{
 		}
-
-	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			XmlUtils::CXmlNode oNode;
@@ -174,10 +169,9 @@ namespace PPTX
 			}		
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
-		{			
+		{		
+			WrapperFile::write(filename, directory, content);
 		}
-		
-	public:
 		virtual const OOX::FileType type() const
 		{
 			return OOX::Presentation::FileTypes::CommentAuthors;
@@ -190,8 +184,6 @@ namespace PPTX
 		{
 			return type().DefaultFileName();
 		}
-
-	public:
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			pWriter->WriteRecordArray(0, 0, m_arAuthors);

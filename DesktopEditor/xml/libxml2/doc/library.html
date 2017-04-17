@@ -34,7 +34,7 @@ functions:</p><pre>xmlParserCtxtPtr xmlCreatePushParserCtxt(xmlSAXHandlerPtr sax
                                          const char *chunk,
                                          int size,
                                          const char *filename);
-int              DoctRenderer          (xmlParserCtxtPtr ctxt,
+int              xmlParseChunk          (xmlParserCtxtPtr ctxt,
                                          const char *chunk,
                                          int size,
                                          int terminate);</pre><p>and here is a simple example showing how to use the interface:</p><pre>            FILE *f;
@@ -50,9 +50,9 @@ int              DoctRenderer          (xmlParserCtxtPtr ctxt,
                     ctxt = xmlCreatePushParserCtxt(NULL, NULL,
                                 chars, res, filename);
                     while ((res = fread(chars, 1, size, f)) &gt; 0) {
-                        DoctRenderer(ctxt, chars, res, 0);
+                        xmlParseChunk(ctxt, chars, res, 0);
                     }
-                    DoctRenderer(ctxt, chars, 0, 1);
+                    xmlParseChunk(ctxt, chars, 0, 1);
                     doc = ctxt-&gt;myDoc;
                     xmlFreeParserCtxt(ctxt);
                 }

@@ -40,11 +40,7 @@
 #include "../WritingElement.h"
 #include "../RId.h"
 
-#include "DrawingExt.h"
-#include "DrawingColors.h"
-#include "DrawingEffects.h"
-#include "DrawingCoreInfo.h"
-#include "DrawingGraphic.h"
+#include "../../../../../ASCOfficePPTXFile/PPTXFormat/Logic/GraphicFrame.h"
 
 #include "../../SystemUtility/SystemUtility.h"
 
@@ -52,65 +48,6 @@ namespace OOX
 {
 	namespace Drawing
 	{
-		//--------------------------------------------------------------------------------
-		// CNonVisualGraphicFrameProperties 20.4.2.4 (Part 1)
-		//--------------------------------------------------------------------------------	
-		class CNonVisualGraphicFrameProperties : public WritingElement
-		{
-		public:
-			WritingElement_AdditionConstructors(CNonVisualGraphicFrameProperties)
-			CNonVisualGraphicFrameProperties()
-			{
-			}
-			virtual ~CNonVisualGraphicFrameProperties()
-			{
-			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				// TO DO: Реализовать
-			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-                    std::wstring sName = oReader.GetName();
-					if ( _T("a:extLst") == sName )
-						m_oExtLst = oReader;
-					else if ( _T("a:graphicFrameLocks") == sName )
-						m_oGraphicFrameLocks = oReader;
-				}
-			}
-            virtual std::wstring      toXML() const
-			{
-                std::wstring sResult = _T("<wp:cNvGraphicFramePr>");
-
-				if ( m_oExtLst.IsInit() )
-					sResult += m_oExtLst->toXML();
-				if ( m_oGraphicFrameLocks.IsInit() )
-					sResult += m_oGraphicFrameLocks->toXML();
-
-				sResult += _T("</wp:cNvGraphicFramePr>");
-
-				return sResult;
-			}
-			virtual EElementType getType() const
-			{
-				return OOX::et_wp_cNvGraphicFramePr;
-			}
-
-		public:
-
-			// Childs
-			nullable<OOX::Drawing::COfficeArtExtensionList     > m_oExtLst;
-			nullable<OOX::Drawing::CGraphicalObjectFrameLocking> m_oGraphicFrameLocks;
-		};
 		//-----------------------------------------------------------------------
 		// EffectExtent 20.4.2.6
 		//-----------------------------------------------------------------------
@@ -124,24 +61,21 @@ namespace OOX
 			virtual ~CEffectExtent()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("l"), m_oL );
 				oNode.ReadAttributeBase( _T("t"), m_oT );
 				oNode.ReadAttributeBase( _T("r"), m_oR );
 				oNode.ReadAttributeBase( _T("b"), m_oB );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<wp:effectExtent ");
 
@@ -158,9 +92,7 @@ namespace OOX
 			{
 				return OOX::et_wp_effectExtent;
 			}
-
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
@@ -171,14 +103,11 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("b"), m_oB )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
-
 			SimpleTypes::CCoordinate m_oB;
 			SimpleTypes::CCoordinate m_oL;
 			SimpleTypes::CCoordinate m_oR;
 			SimpleTypes::CCoordinate m_oT;
-
 		};
 		//--------------------------------------------------------------------------------
 		// CPosH 20.4.2.10 (Part 1)
@@ -193,14 +122,11 @@ namespace OOX
 			virtual ~CPosH()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -228,7 +154,7 @@ namespace OOX
 					}
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<wp:positionH ");
 
@@ -253,19 +179,15 @@ namespace OOX
 			{
 				return OOX::et_wp_positionH;
 			}
-
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+	// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("relativeFrom"), m_oRelativeFrom )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
-
 			bool IsAlign() const
 			{
 				return m_bAlign;
@@ -275,17 +197,13 @@ namespace OOX
 				return !m_bAlign;
 			}
 
-		public:
-
-			bool                                     m_bAlign; // используем Align или (PosOffset или PctOffset)
-
-			// Attributes
-			nullable<SimpleTypes::CRelFromH<>      > m_oRelativeFrom;
-
-			// Childs
-			nullable<SimpleTypes::CAlignH<>			>	m_oAlign;
-			nullable<SimpleTypes::CPositionOffset<>	>	m_oPosOffset;
-			nullable<SimpleTypes::CPercentage		>	m_oPctOffset;
+			bool										m_bAlign; // используем Align или (PosOffset или PctOffset)
+	// Attributes
+			nullable<SimpleTypes::CRelFromH<>>			m_oRelativeFrom;
+	// Childs
+			nullable<SimpleTypes::CAlignH<>>			m_oAlign;
+			nullable<SimpleTypes::CPositionOffset<>>	m_oPosOffset;
+			nullable<SimpleTypes::CPercentage>			m_oPctOffset;
 		};
 		//--------------------------------------------------------------------------------
 		// CPosV 20.4.2.11 (Part 1)
@@ -302,12 +220,11 @@ namespace OOX
 			}
 
 		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -335,7 +252,7 @@ namespace OOX
 					}
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<wp:positionV ");
 
@@ -359,12 +276,9 @@ namespace OOX
 			{
 				return OOX::et_wp_positionV;
 			}
-
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("relativeFrom"), m_oRelativeFrom )
 				WritingElement_ReadAttributes_End( oReader )
@@ -381,17 +295,13 @@ namespace OOX
 				return !m_bAlign;
 			}
 
-		public:
-
-			bool                                     m_bAlign; // используем Align или PosOffset
-
-			// Attributes
-			nullable<SimpleTypes::CRelFromV<>		> m_oRelativeFrom;
-
-			// Childs
-			nullable<SimpleTypes::CAlignV<>			> m_oAlign;
-			nullable<SimpleTypes::CPositionOffset<>	> m_oPosOffset;
-			nullable<SimpleTypes::CPercentage		>	m_oPctOffset;
+			bool										m_bAlign; // используем Align или PosOffset
+	// Attributes
+			nullable<SimpleTypes::CRelFromV<>>			m_oRelativeFrom;
+	// Childs
+			nullable<SimpleTypes::CAlignV<>>			m_oAlign;
+			nullable<SimpleTypes::CPositionOffset<>>	m_oPosOffset;
+			nullable<SimpleTypes::CPercentage>			m_oPctOffset;
 		};
 
 		class CSizeRelH : public WritingElement
@@ -404,14 +314,12 @@ namespace OOX
 			virtual ~CSizeRelH()
 			{
 			}
-
 		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -428,7 +336,7 @@ namespace OOX
 					}
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<wp14:sizeRelH ");
 
@@ -454,17 +362,15 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("relativeFrom"), m_oRelativeFrom )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			// Attributes
-			nullable<SimpleTypes::CSizeRelFromH<>      > m_oRelativeFrom;
-
-			// Childs
-			nullable<SimpleTypes::CPercentage		>	m_oPctWidth;
+	// Attributes
+			nullable<SimpleTypes::CSizeRelFromH<>>	m_oRelativeFrom;
+	// Childs
+			nullable<SimpleTypes::CPercentage>		m_oPctWidth;
 		};
 		class CSizeRelV : public WritingElement
 		{
@@ -476,14 +382,12 @@ namespace OOX
 			virtual ~CSizeRelV()
 			{
 			}
-
 		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -500,7 +404,7 @@ namespace OOX
 					}
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<wp14:sizeRelV ");
 
@@ -521,22 +425,18 @@ namespace OOX
 			{
 				return OOX::et_wp_sizeRelH;
 			}
-
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("relativeFrom"), m_oRelativeFrom )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			// Attributes
-			nullable<SimpleTypes::CSizeRelFromV<>      > m_oRelativeFrom;
-
-			// Childs
-			nullable<SimpleTypes::CPercentage		>	m_oPctHeight;
+	// Attributes
+			nullable<SimpleTypes::CSizeRelFromV<>>	m_oRelativeFrom;
+	// Childs
+			nullable<SimpleTypes::CPercentage>		m_oPctHeight;
 		};
 		//--------------------------------------------------------------------------------
 		// CWrapNone 20.4.2.15 (Part 1)
@@ -554,13 +454,13 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -584,12 +484,11 @@ namespace OOX
 			}
 
 		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -626,12 +525,9 @@ namespace OOX
 			{
 				return OOX::et_wp_wrapSquare;
 			}
-
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("distB"),    m_oDistB )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("distL"),    m_oDistL )
@@ -640,17 +536,15 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("wrapText"), m_oWrapText )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
 
-			// Attributes
+	// Attributes
 			nullable<SimpleTypes::CWrapDistance<>> m_oDistB;
 			nullable<SimpleTypes::CWrapDistance<>> m_oDistL;
 			nullable<SimpleTypes::CWrapDistance<>> m_oDistR;
 			nullable<SimpleTypes::CWrapDistance<>> m_oDistT;
 			nullable<SimpleTypes::CWrapText<>>     m_oWrapText;
-
-			// Childs
+	// Childs
 			nullable<OOX::Drawing::CEffectExtent>  m_oEffectExtent;
 		};
 		//--------------------------------------------------------------------------------
@@ -675,11 +569,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -704,7 +598,7 @@ namespace OOX
 					}
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("");
                 //std::wstring sResult = _T("<wp:wrapPolygon ");
@@ -725,23 +619,17 @@ namespace OOX
 			{
 				return OOX::et_wp_wrapPolygon;
 			}
-
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("edited"), m_oEdited )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
-
-			// Attributes
+	// Attributes
 			nullable<SimpleTypes::COnOff<> >				m_oEdited;
-
-			// Childs
+	// Childs
 			nullable<ComplexTypes::Drawing::CPoint2D>       m_oStart;
 			std::vector<ComplexTypes::Drawing::CPoint2D*>	m_arrLineTo;
 		};
@@ -761,11 +649,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -780,7 +668,7 @@ namespace OOX
 						m_oWrapPolygon = oReader;
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<wp:wrapThrough ");
 				
@@ -799,28 +687,22 @@ namespace OOX
 			{
 				return OOX::et_wp_wrapThrough;
 			}
-
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("distL"),    m_oDistL )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("distR"),    m_oDistR )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("wrapText"), m_oWrapText )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
-
-			// Attributes
-			nullable<SimpleTypes::CWrapDistance<> >  m_oDistL;
-			nullable<SimpleTypes::CWrapDistance<> >  m_oDistR;
-			nullable<SimpleTypes::CWrapText<>     >  m_oWrapText;
-
-			// Childs
-			nullable<OOX::Drawing::CWrapPath>     m_oWrapPolygon;
+	// Attributes
+			nullable<SimpleTypes::CWrapDistance<>>  m_oDistL;
+			nullable<SimpleTypes::CWrapDistance<>>	m_oDistR;
+			nullable<SimpleTypes::CWrapText<>>		m_oWrapText;
+	// Childs
+			nullable<OOX::Drawing::CWrapPath>		m_oWrapPolygon;
 		};
 		//--------------------------------------------------------------------------------
 		// CWrapTight 20.4.2.19 (Part 1)
@@ -835,14 +717,11 @@ namespace OOX
 			virtual ~CWrapTight()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -857,7 +736,7 @@ namespace OOX
 						m_oWrapPolygon = oReader;
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<wp:wrapTight ");
 				
@@ -876,28 +755,22 @@ namespace OOX
 			{
 				return OOX::et_wp_wrapTight;
 			}
-
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("distL"),    m_oDistL )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("distR"),    m_oDistR )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("wrapText"), m_oWrapText )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
-
-			// Attributes
-            nullable<SimpleTypes::CWrapDistance<> > m_oDistL;
-            nullable<SimpleTypes::CWrapDistance<> > m_oDistR;
-            nullable<SimpleTypes::CWrapText<>     > m_oWrapText;
-
-			// Childs
-            nullable<OOX::Drawing::CWrapPath>       m_oWrapPolygon;
+	// Attributes
+            nullable<SimpleTypes::CWrapDistance<>>	m_oDistL;
+            nullable<SimpleTypes::CWrapDistance<>>	m_oDistR;
+            nullable<SimpleTypes::CWrapText<>>		m_oWrapText;
+	// Childs
+            nullable<OOX::Drawing::CWrapPath>		m_oWrapPolygon;
 		};
 		//--------------------------------------------------------------------------------
 		// CWrapTopBottom 20.4.2.20 (Part 1)
@@ -912,14 +785,11 @@ namespace OOX
 			virtual ~CWrapTopBottom()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -934,7 +804,7 @@ namespace OOX
 						m_oEffectExtent = oReader;
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<wp:wrapTopAndBottom ");
 				
@@ -954,25 +824,19 @@ namespace OOX
 			{
 				return OOX::et_wp_wrapTopAndBottom;
 			}
-
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("distB"), m_oDistB )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("distT"), m_oDistT )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
-
-			// Attributes
+	// Attributes
 			nullable<SimpleTypes::CWrapDistance<>> m_oDistB;
 			nullable<SimpleTypes::CWrapDistance<>> m_oDistT;
-
-			// Childs
+	// Childs
 			nullable<OOX::Drawing::CEffectExtent>  m_oEffectExtent;
 		};
 		//--------------------------------------------------------------------------------
@@ -998,16 +862,13 @@ namespace OOX
 			virtual ~CAnchor()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eWrapType = anchorwrapUnknown;
 
 				// TO DO: Реализовать
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -1018,16 +879,12 @@ namespace OOX
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
                     std::wstring sName = oReader.GetName();
-					if ( _T("wp:cNvGraphicFramePr") == sName )
-						m_oCNvGraphicFramePr = oReader;
-					else if ( _T("wp:docPr") == sName )
+					if ( _T("wp:docPr") == sName )
 						m_oDocPr = oReader;
 					else if ( _T("wp:effectExtent") == sName )
 						m_oEffectExtent = oReader;
 					else if ( _T("wp:extent") == sName )
 						m_oExtent = oReader;
-					else if ( _T("a:graphic") == sName )
-						m_oGraphic = oReader;
 					else if ( _T("wp:positionH") == sName )
 						m_oPositionH = oReader;
 					else if ( _T("wp:positionV") == sName )
@@ -1096,131 +953,24 @@ namespace OOX
 							m_eWrapType = anchorwrapTopAndBottom;
 						}
 					}
+					else
+					{
+						m_oGraphic.fromXML2(oReader);
+					}
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("");
-                //std::wstring sResult = _T("<wp:anchor ");
-				//
-				//sResult += _T("allowOverlap=\"") + m_oAllowOverlap.ToString()   + _T("\" ");
-				//sResult += _T("behindDoc=\"")    + m_oBehindDoc.ToString()      + _T("\" ");
-				//if ( m_oDistB.IsInit() ) sResult += _T("distB=\"") + m_oDistB->ToString() + _T("\" ");
-				//if ( m_oDistL.IsInit() ) sResult += _T("distL=\"") + m_oDistL->ToString() + _T("\" ");
-				//if ( m_oDistR.IsInit() ) sResult += _T("distR=\"") + m_oDistR->ToString() + _T("\" ");
-				//if ( m_oDistT.IsInit() ) sResult += _T("distT=\"") + m_oDistT->ToString() + _T("\" ");
-				//sResult += _T("hidden=\"")         + m_oHidden.ToString()         + _T("\" ");
-				//sResult += _T("layoutInCell=\"")   + m_oLayoutInCell.ToString()   + _T("\" ");
-				//sResult += _T("locked=\"")         + m_oLocked.ToString()         + _T("\" ");
-				//sResult += _T("relativeHeight=\"") + m_oRelativeHeight.ToString() + _T("\" ");
-				//sResult += _T("simplePos=\"")      + m_bSimplePos.ToString()      + _T("\" ");
-
-				//sResult += _T(">");
-				//
-				//if ( m_oSimplePos.IsInit() )
-				//	sResult += _T("<wp:simplePos ") + m_oSimplePos->ToString() + _T("/>");
-
-				//if ( m_oPositionH.IsInit() )
-				//	sResult += m_oPositionH->toXML();
-
-				//if ( m_oPositionV.IsInit() )
-				//	sResult += m_oPositionV->toXML();
-
-				//if ( m_oExtent.IsInit() )  
-				//	sResult += _T("<wp:extent ") + m_oExtent->ToString() + _T("/>");
-
-				//if ( m_oEffectExtent.IsInit() )
-				//	sResult += m_oEffectExtent->toXML();
-
-				//switch( m_eWrapType )
-				//{
-				//case anchorwrapNone:
-				//	{
-				//		if ( m_oWrapNone.IsInit() )
-				//			sResult += m_oWrapNone->toXML();
-
-				//		break;
-				//	}
-				//case anchorwrapSquare:
-				//	{
-				//		if ( m_oWrapSquare.IsInit() )
-				//			sResult += m_oWrapSquare->toXML();
-
-				//		break;
-				//	}
-
-				//case anchorwrapThrough:
-				//	{
-				//		if ( m_oWrapThrough.IsInit() )
-				//			sResult += m_oWrapThrough->toXML();
-
-				//		break;
-				//	}
-				//case anchorwrapTight:
-				//	{
-				//		if ( m_oWrapTight.IsInit() )
-				//			sResult += m_oWrapTight->toXML();
-
-				//		break;
-				//	}
-				//case anchorwrapTopAndBottom:
-				//	{
-				//		if ( m_oWrapTopAndBottom.IsInit() )
-				//			sResult += m_oWrapTopAndBottom->toXML();
-
-				//		break;
-				//	}
-				//}
-
-				//if ( m_oDocPr.IsInit() )
-				//	sResult += m_oDocPr->toXML();
-
-				//if ( m_oCNvGraphicFramePr.IsInit() )
-				//	sResult += m_oCNvGraphicFramePr->toXML();
-
-				//sResult += m_oGraphic.toXML();
-				//
-				//sResult += _T("</wp:anchor>");
-
 				return sResult;
 			}
 			virtual EElementType getType() const
 			{
 				return OOX::et_wp_anchor;
 			}
-
-		public:
-
-			//void SetWrapType(const EAnchorWrapType& eType)
-			//{
-			//	m_eWrapType = eType;
-
-			//	m_oWrapNone.reset();
-			//	m_oWrapSquare.reset();
-			//	m_oWrapThrough.reset();
-			//	m_oWrapTight.reset();
-			//	m_oWrapTopAndBottom.reset();
-
-			//	switch ( m_eWrapType )
-			//	{
-			//	case anchorwrapNone: m_oWrapNone.Init(); break;
-			//	case anchorwrapSquare: m_oWrapSquare.Init(); break;
-			//	case anchorwrapThrough: m_oWrapThrough.Init(); break;
-			//	case anchorwrapTight: m_oWrapTight.Init(); break;
-			//	case anchorwrapTopAndBottom: m_oWrapTopAndBottom.Init(); break;
-			//	}
-			//}
-
-			//EAnchorWrapType GetWrapType() const
-			//{
-			//	return m_eWrapType;
-			//}
-
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("allowOverlap"),   m_oAllowOverlap )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("behindDoc"),      m_oBehindDoc )
@@ -1235,41 +985,38 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("simplePos"),      m_bSimplePos )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
+			nullable<EAnchorWrapType>								m_eWrapType;
 
-			nullable<EAnchorWrapType> m_eWrapType;
+	// Attributes
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>	m_oAllowOverlap;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>	m_oBehindDoc;
+			nullable<SimpleTypes::CWrapDistance<>>					m_oDistB;
+			nullable<SimpleTypes::CWrapDistance<>>					m_oDistL;
+			nullable<SimpleTypes::CWrapDistance<>>					m_oDistR;
+			nullable<SimpleTypes::CWrapDistance<>>					m_oDistT;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>	m_oHidden;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>	m_oLayoutInCell;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>	m_oLocked;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<0> >		m_oRelativeHeight;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>	m_bSimplePos;
 
-			// Attributes
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>> m_oAllowOverlap;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>> m_oBehindDoc;
-			nullable<SimpleTypes::CWrapDistance<>      > m_oDistB;
-			nullable<SimpleTypes::CWrapDistance<>      > m_oDistL;
-			nullable<SimpleTypes::CWrapDistance<>      > m_oDistR;
-			nullable<SimpleTypes::CWrapDistance<>      > m_oDistT;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>> m_oHidden;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>> m_oLayoutInCell;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>> m_oLocked;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<0> >      m_oRelativeHeight;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>> m_bSimplePos;
+	// Childs
+			nullable<PPTX::Logic::CNvPr>						m_oDocPr;			
+			nullable<OOX::Drawing::CEffectExtent>				m_oEffectExtent;
+			nullable<ComplexTypes::Drawing::CPositiveSize2D>	m_oExtent;
+			nullable<OOX::Drawing::CPosH>						m_oPositionH;
+			nullable<OOX::Drawing::CPosV>						m_oPositionV;
+			nullable<OOX::Drawing::CSizeRelH>					m_oSizeRelH;
+			nullable<OOX::Drawing::CSizeRelV>					m_oSizeRelV;
+			nullable<ComplexTypes::Drawing::CPoint2D>			m_oSimplePos;
+			nullable<OOX::Drawing::CWrapNone>					m_oWrapNone;
+			nullable<OOX::Drawing::CWrapSquare>					m_oWrapSquare;
+			nullable<OOX::Drawing::CWrapThrough>				m_oWrapThrough;
+			nullable<OOX::Drawing::CWrapTight>					m_oWrapTight;
+			nullable<OOX::Drawing::CWrapTopBottom>				m_oWrapTopAndBottom;
 
-			// Childs
-			nullable<OOX::Drawing::CNonVisualGraphicFrameProperties> m_oCNvGraphicFramePr;
-			nullable<OOX::Drawing::CNonVisualDrawingProps          > m_oDocPr;
-			nullable<OOX::Drawing::CEffectExtent                   > m_oEffectExtent;
-			nullable<ComplexTypes::Drawing::CPositiveSize2D        > m_oExtent;
-			nullable<OOX::Drawing::CGraphic                        > m_oGraphic;
-			nullable<OOX::Drawing::CPosH                           > m_oPositionH;
-			nullable<OOX::Drawing::CPosV                           > m_oPositionV;
-			nullable<OOX::Drawing::CSizeRelH                       > m_oSizeRelH;
-			nullable<OOX::Drawing::CSizeRelV                       > m_oSizeRelV;
-			nullable<ComplexTypes::Drawing::CPoint2D               > m_oSimplePos;
-			nullable<OOX::Drawing::CWrapNone                       > m_oWrapNone;
-			nullable<OOX::Drawing::CWrapSquare                     > m_oWrapSquare;
-			nullable<OOX::Drawing::CWrapThrough                    > m_oWrapThrough;
-			nullable<OOX::Drawing::CWrapTight                      > m_oWrapTight;
-			nullable<OOX::Drawing::CWrapTopBottom                  > m_oWrapTopAndBottom;
-
+			PPTX::Logic::GraphicFrame							m_oGraphic;
 		};
 		//--------------------------------------------------------------------------------
 		// CInline 20.4.2.8 (Part 1)
@@ -1284,14 +1031,11 @@ namespace OOX
 			virtual ~CInline()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -1302,19 +1046,19 @@ namespace OOX
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
                     std::wstring sName = oReader.GetName();
-					if ( _T("wp:cNvGraphicFramePr") == sName )
-						m_oCNvGraphicFramePr = oReader;
-					else if ( _T("wp:docPr") == sName )
+					if ( _T("wp:docPr") == sName )
 						m_oDocPr = oReader;
 					else if ( _T("wp:effectExtent") == sName )
 						m_oEffectExtent = oReader;
 					else if ( _T("wp:extent") == sName )
 						m_oExtent = oReader;
-					else if ( _T("a:graphic") == sName )
-						m_oGraphic = oReader;
+					else
+					{
+						m_oGraphic.fromXML2(oReader);
+					}
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<wp:inline ");
 				
@@ -1334,12 +1078,9 @@ namespace OOX
 				if ( m_oDocPr.IsInit() )
 					sResult += m_oDocPr->toXML();
 
-				if ( m_oCNvGraphicFramePr.IsInit() )
-					sResult += m_oCNvGraphicFramePr->toXML();
+				m_oGraphic.m_namespace == L"wp"; 
+				sResult += m_oGraphic.toXML2();	
 
-				if ( m_oGraphic.IsInit() )
-					sResult += m_oGraphic->toXML();
-				
 				sResult += _T("</wp:inline>");
 
 				return sResult;
@@ -1348,12 +1089,9 @@ namespace OOX
 			{
 				return OOX::et_wp_inline;
 			}
-
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("distB"),          m_oDistB )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("distL"),          m_oDistL )
@@ -1361,21 +1099,17 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("distT"),          m_oDistT )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
-
-			// Attributes
-			nullable<SimpleTypes::CWrapDistance<>      > m_oDistB;
-			nullable<SimpleTypes::CWrapDistance<>      > m_oDistL;
-			nullable<SimpleTypes::CWrapDistance<>      > m_oDistR;
-			nullable<SimpleTypes::CWrapDistance<>      > m_oDistT;
-
-			// Childs
-			nullable<OOX::Drawing::CNonVisualGraphicFrameProperties> m_oCNvGraphicFramePr;
-			nullable<OOX::Drawing::CNonVisualDrawingProps          > m_oDocPr;
-			nullable<OOX::Drawing::CEffectExtent                   > m_oEffectExtent;
-			nullable<ComplexTypes::Drawing::CPositiveSize2D        > m_oExtent;
-			nullable<OOX::Drawing::CGraphic>                         m_oGraphic;
+	// Attributes
+			nullable<SimpleTypes::CWrapDistance<>>				m_oDistB;
+			nullable<SimpleTypes::CWrapDistance<>>				m_oDistL;
+			nullable<SimpleTypes::CWrapDistance<>>				m_oDistR;
+			nullable<SimpleTypes::CWrapDistance<>>				m_oDistT;
+	// Childs
+			nullable<PPTX::Logic::CNvPr>						m_oDocPr;
+			nullable<OOX::Drawing::CEffectExtent>				m_oEffectExtent;
+			nullable<ComplexTypes::Drawing::CPositiveSize2D>	m_oExtent;
+			PPTX::Logic::GraphicFrame							m_oGraphic;
 		};
 	} // Drawing
 } // OOX
@@ -1401,141 +1135,6 @@ namespace OOX
 			{
 				fromXML( oReader );
 			}
-			//CDrawing(const RId& rId, const OOX::CPath& oFileName, const long lWidth, const long lHeight)
-			//{
-			//	m_bAnchor = false;
-
-			//	if ( !m_oInline.Init() ) return;
-
-			//	if ( !m_oInline->m_oDistB.Init() ) return;
-			//	if ( !m_oInline->m_oDistT.Init() ) return;
-			//	if ( !m_oInline->m_oDistR.Init() ) return;
-			//	if ( !m_oInline->m_oDistL.Init() ) return;
-
-			//	if ( !m_oInline->m_oExtent.Init() ) return;
-			//	if ( !m_oInline->m_oEffectExtent.Init() ) return;
-
-			//	int nNewH, nNewW, nDpi = 96;
-			//	double dHeightPage = 25.7; // в сантиметрах
-			//	double dWidthPage  = 16.5; // в сантиметрах
-			//	double dMaximum = max( lWidth / ( dWidthPage / 2.54 * nDpi ), lHeight / ( dHeightPage / 2.54 * nDpi ) );
-
-			//	if ( dMaximum < 1 )
-			//	{				
-			//		nNewH = (int)(lWidth  * 2.54 * 72 * 100 * 1000 / 20 / 96); // from px to sx 
-			//		nNewW = (int)(lHeight * 2.54 * 72 * 100 * 1000 / 20 / 96); // from px to sx 
-			//	}
-			//	else
-			//	{				
-			//		nNewH = (int)(lWidth  / dMaximum * 2.54 * 72 * 100 * 1000 / 20 / 96); //from px to sx
-			//		nNewW = (int)(lHeight / dMaximum * 2.54 * 72 * 100 * 1000 / 20 / 96); //from px to sx
-			//	}
-
-			//	m_oInline->m_oExtent->m_oCx.SetValue( nNewW );
-			//	m_oInline->m_oExtent->m_oCy.SetValue( nNewH );
-
-			//	m_oInline->m_oEffectExtent->m_oL.FromEmu( 19050 );
-			//	m_oInline->m_oEffectExtent->m_oT.FromEmu( 0 );
-			//	m_oInline->m_oEffectExtent->m_oR.FromEmu( 3175 );
-			//	m_oInline->m_oEffectExtent->m_oB.FromEmu( 0 );
-
-			//	if ( !m_oInline->m_oDocPr.Init() ) return;
-			//	if ( !m_oInline->m_oDocPr->m_oId.Init() ) return;
-			//	m_oInline->m_oDocPr->m_oId->SetValue( 1 );
-			//	m_oInline->m_oDocPr->m_sName  = _T("Image 0");
-            //	m_oInline->m_oDocPr->m_sDescr = std::wstringW( Encoding::unicode2utf8( oFileName.m_strFilename ) );
-
-			//	if ( !m_oInline->m_oCNvGraphicFramePr.Init() ) return;
-			//	if ( !m_oInline->m_oCNvGraphicFramePr->m_oGraphicFrameLocks.Init() ) return;
-			//	m_oInline->m_oCNvGraphicFramePr->m_oGraphicFrameLocks->m_oNoChangeAspect.SetValue( SimpleTypes::onoffTrue );
-			//	
-			//	m_oInline->m_oGraphic.m_sUri = _T("http://schemas.openxmlformats.org/drawingml/2006/picture");
-			//	//m_oInline->m_oGraphic->Pic->Id = 0;
-			//	//m_oInline->m_oGraphic->Pic->Name = Encoding::unicode2utf8(filename.filename());
-			//	//m_oInline->m_oGraphic->Pic->rId = rId;
-
-			//	//m_oInline->m_oGraphic->Pic->Off.init();
-			//	//m_oInline->m_oGraphic->Pic->Off->X = 0;
-			//	//m_oInline->m_oGraphic->Pic->Off->Y = 0;
-
-			//	//m_oInline->m_oGraphic->Pic->Ext.init();
-			//	//m_oInline->m_oGraphic->Pic->Ext->Width  = nNewW;
-			//	//m_oInline->m_oGraphic->Pic->Ext->Height = nNewH;
-			//	//m_oInline->m_oGraphic->Pic->Prst = "rect" ;
-			//}
-			//CDrawing(const RId& rId, const OOX::CPath& oFileName, const long lEmuX, const SimpleTypes::ERelFromH& eRelFromH, const long lEmuY, const SimpleTypes::ERelFromV& eRelFromV, const long lEmuWidth, const long lEmuHeight)
-			//{
-			//	m_bAnchor = true;
-
-			//	if ( !m_oAnchor.Init() ) return;
-
-			//	if ( !m_oAnchor->m_oDistB.Init() ) return;
-			//	if ( !m_oAnchor->m_oDistT.Init() ) return;
-			//	if ( !m_oAnchor->m_oDistR.Init() ) return;
-			//	if ( !m_oAnchor->m_oDistL.Init() ) return;
-
-			//	if ( !m_oAnchor->m_oPositionH.Init() ) return;
-			//	if ( !m_oAnchor->m_oPositionV.Init() ) return;
-
-			//	if ( !m_oAnchor->m_oPositionH->m_oRelativeFrom.Init() ) return;
-			//	if ( !m_oAnchor->m_oPositionH->m_oPosOffset.Init() ) return;
-			//	if ( !m_oAnchor->m_oPositionV->m_oRelativeFrom.Init() ) return;
-			//	if ( !m_oAnchor->m_oPositionV->m_oPosOffset.Init() ) return;
-			//	
-			//	m_oAnchor->m_oPositionH->m_oPosOffset->SetValue( lEmuX );
-			//	m_oAnchor->m_oPositionH->m_oRelativeFrom->SetValue( eRelFromH );
-			//	m_oAnchor->m_oPositionV->m_oPosOffset->SetValue( lEmuY );
-			//	m_oAnchor->m_oPositionV->m_oRelativeFrom->SetValue( eRelFromV );
-
-			//	m_oAnchor->SetWrapType( OOX::Drawing::anchorwrapTopAndBottom );
-
-			//	m_oAnchor->m_bSimplePos.SetValue( SimpleTypes::onoffFalse );
-			//	m_oAnchor->m_oRelativeHeight.SetValue( 0 );
-			//	m_oAnchor->m_oBehindDoc.SetValue( SimpleTypes::onoffFalse );
-			//	m_oAnchor->m_oLocked.SetValue( SimpleTypes::onoffFalse );
-			//	m_oAnchor->m_oLayoutInCell.SetValue( SimpleTypes::onoffFalse );
-			//	m_oAnchor->m_oAllowOverlap.SetValue( SimpleTypes::onoffFalse );
-
-			//	if ( !m_oAnchor->m_oSimplePos.Init() ) return;
-			//	m_oAnchor->m_oSimplePos->m_oX.FromEmu( 0 );
-			//	m_oAnchor->m_oSimplePos->m_oY.FromEmu( 0 );
-
-			//	if ( !m_oAnchor->m_oExtent.Init() ) return;
-			//	m_oAnchor->m_oExtent->m_oCx.FromEmu( lEmuWidth );
-			//	m_oAnchor->m_oExtent->m_oCy.FromEmu( lEmuHeight );
-
-			//	if ( !m_oAnchor->m_oEffectExtent.Init() ) return;				
-			//	m_oAnchor->m_oEffectExtent->m_oL.FromEmu( 19050 );
-			//	m_oAnchor->m_oEffectExtent->m_oT.FromEmu( 0 );
-			//	m_oAnchor->m_oEffectExtent->m_oR.FromEmu( 3175 );
-			//	m_oAnchor->m_oEffectExtent->m_oB.FromEmu( 0 );
-
-			//	if ( !m_oAnchor->m_oDocPr.Init() ) return;
-			//	if ( !m_oAnchor->m_oDocPr->m_oId.Init() ) return;
-
-			//	m_oAnchor->m_oDocPr->m_oId->SetValue( 1 );
-			//	m_oAnchor->m_oDocPr->m_sName  = _T("Image 0");
-            //	m_oAnchor->m_oDocPr->m_sDescr = std::wstringW( Encoding::unicode2utf8( oFileName.m_strFilename ) );
-
-			//	if ( !m_oAnchor->m_oCNvGraphicFramePr.Init() ) return;
-			//	if ( !m_oAnchor->m_oCNvGraphicFramePr->m_oGraphicFrameLocks.Init() ) return;
-			//	m_oAnchor->m_oCNvGraphicFramePr->m_oGraphicFrameLocks->m_oNoChangeAspect.SetValue( SimpleTypes::onoffTrue );
-			//	
-			//	m_oAnchor->m_oGraphic.m_sUri = _T("http://schemas.openxmlformats.org/drawingml/2006/picture");
-
-			//	//m_oAnchor->m_oGraphic->Pic->Id = 0;
-			//	//m_oAnchor->m_oGraphic->Pic->Name = Encoding::unicode2utf8(filename.filename());
-			//	//m_oAnchor->m_oGraphic->Pic->rId = rId;
-
-			//	//m_oAnchor->m_oGraphic->Pic->Off.init();
-			//	//m_oAnchor->m_oGraphic->Pic->Off->X = 0;
-			//	//m_oAnchor->m_oGraphic->Pic->Off->Y = 0;
-
-			//	//m_oAnchor->m_oGraphic->Pic->Ext.init();
-			//	//m_oAnchor->m_oGraphic->Pic->Ext->Width  = lEmuWidth;
-			//	//m_oAnchor->m_oGraphic->Pic->Ext->Height = lEmuHeight;
-			//	//m_oAnchor->m_oGraphic->Pic->Prst = "rect";			
-			//}
 			virtual ~CDrawing()
 			{
 			}
@@ -1549,63 +1148,32 @@ namespace OOX
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML2(oReader, false);
-			}
-			void fromXML2(XmlUtils::CXmlLiteReader& oReader, bool bDoNotReadXml)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
-				XmlUtils::CXmlLiteReader* pReader = NULL;
-				if(bDoNotReadXml)
+			
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					pReader = &oReader;
-				}
-				else
-				{
-                    m_sXml.Init();
-                    *m_sXml= oReader.GetOuterXml();
-
-                    std::wstring sBegin(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">"));
-                    
-                    std::wstring sEnd(_T("</root>"));
-                    std::wstring sXml = sBegin + m_sXml.get() + sEnd;
-                    
-					pReader = new XmlUtils::CXmlLiteReader();
-					pReader->FromString(sXml);
-					pReader->ReadNextNode();//root
-					pReader->ReadNextNode();//drawing
-				}
-
-				int nCurDepth = pReader->GetDepth();
-				while( pReader->ReadNextSiblingNode( nCurDepth ) )
-				{
-                    std::wstring sName = pReader->GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("wp:inline") == sName )
 					{
-						m_oInline = *pReader;
+						m_oInline = oReader;
 						m_bAnchor = false;
 					}
 					else if ( _T("wp:anchor") == sName )
 					{
-						m_oAnchor = *pReader;
+						m_oAnchor = oReader;
 						m_bAnchor = true;
 					}
 				}
-				if(false == bDoNotReadXml)
-				{
-					delete pReader;
-				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<w:drawing>");
 
@@ -1622,9 +1190,6 @@ namespace OOX
 			{
 				return OOX::et_w_drawing;
 			}
-
-		public:
-
 			bool IsAnchor() const
 			{
 				return m_bAnchor;
@@ -1634,12 +1199,8 @@ namespace OOX
 				return !m_bAnchor;
 			}
 
-		public:
-
 			bool                            m_bAnchor; // используем Anchor или Inline
-
-            nullable<std::wstring> m_sXml;
-			// Childs
+	// Childs
 			nullable<OOX::Drawing::CAnchor> m_oAnchor;
 			nullable<OOX::Drawing::CInline> m_oInline;
 		};

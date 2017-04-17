@@ -40,7 +40,7 @@ namespace OOX
 	class Audio : public Media
 	{
 	public:
-		Audio()
+		Audio(bool bDocument = true) : Media (bDocument)
 		{
 		}
 		Audio(const CPath& filename)
@@ -57,7 +57,8 @@ namespace OOX
 		}
 		virtual const CPath DefaultDirectory() const
 		{
-			return type().DefaultDirectory();
+			if (m_bDocument) return type().DefaultDirectory();
+			else	return L"../" + type().DefaultDirectory();
 		}
 		virtual const CPath DefaultFileName() const
 		{

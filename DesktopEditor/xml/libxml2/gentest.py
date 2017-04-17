@@ -257,7 +257,7 @@ extra_post_call = {
    "htmlParseChunk": "if (ctxt != NULL) {xmlFreeDoc(ctxt->myDoc); ctxt->myDoc = NULL;}",
    "htmlParseDocument": "if (ctxt != NULL) {xmlFreeDoc(ctxt->myDoc); ctxt->myDoc = NULL;}",
    "xmlParseDocument": "if (ctxt != NULL) {xmlFreeDoc(ctxt->myDoc); ctxt->myDoc = NULL;}",
-   "DoctRenderer": "if (ctxt != NULL) {xmlFreeDoc(ctxt->myDoc); ctxt->myDoc = NULL;}",
+   "xmlParseChunk": "if (ctxt != NULL) {xmlFreeDoc(ctxt->myDoc); ctxt->myDoc = NULL;}",
    "xmlParseExtParsedEnt": "if (ctxt != NULL) {xmlFreeDoc(ctxt->myDoc); ctxt->myDoc = NULL;}",
    "xmlDOMWrapAdoptNode": "if ((node != NULL) && (node->parent == NULL)) {xmlUnlinkNode(node);xmlFreeNode(node);node = NULL;}",
    "xmlBufferSetAllocationScheme": "if ((buf != NULL) && (scheme == XML_BUFFER_ALLOC_IMMUTABLE) && (buf->content != NULL) && (buf->content != static_buf_content)) { xmlFree(buf->content); buf->content = NULL;}"

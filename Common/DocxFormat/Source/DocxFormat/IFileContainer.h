@@ -48,18 +48,23 @@ namespace OOX
 	class Image;
 	class HyperLink;
 	class OleObject;
-} // OOX
+}
+
+namespace PPTX
+{
+	class LegacyDiagramText;
+}
 
 namespace OOX
 {
 	class IFileContainer
 	{
 	public:
+		IFileContainer();
+		virtual ~IFileContainer();
 
-		IFileContainer()
-		{
-			m_lMaxRid = 0;
-		}
+		bool											m_bSpreadsheets;
+		static std::map<std::wstring, size_t>			m_mapEnumeratedGlobal;
 	protected:
         std::map<std::wstring, smart_ptr<OOX::File>>	m_mContainer;
 		size_t											m_lMaxRid;
@@ -76,35 +81,47 @@ namespace OOX
 		void Read (const OOX::CPath& oRootPath, const OOX::CPath& oPath);
 		void ExtractPictures(const OOX::CPath& oPath) const;
 
-		virtual smart_ptr<Image>     GetImage    (const RId& rId) const;
-		virtual smart_ptr<HyperLink> GetHyperlink(const RId& rId) const;
-		virtual smart_ptr<OleObject> GetOleObject(const RId& rId) const;
-
+		virtual smart_ptr<Image>					GetImage    (const RId& rId) const;
+		virtual smart_ptr<HyperLink>				GetHyperlink(const RId& rId) const;
+		virtual smart_ptr<OleObject>				GetOleObject(const RId& rId) const;
+		virtual smart_ptr<PPTX::LegacyDiagramText>	GetLegacyDiagramText (const OOX::RId& rId) const;
+		
+		OOX::CRels* GetCurRls()
+		{
+			return m_pCurRels;
+		}
+		
 		template<typename T>
 		const bool IsExist() const;
 		const bool IsExist(const FileType& oType) const;
 		const bool IsExist(const OOX::RId& rId) const;
 		const bool IsExternal(const OOX::RId& rId) const;
+		std::wstring IsExistHyperlink(smart_ptr<OOX::HyperLink>& pHyperLink);
 
 		smart_ptr<OOX::File>	Get(const FileType& oType);
 		void					Get(const FileType& oType, std::vector<smart_ptr<OOX::File>> & files);
 
 		const RId Add(smart_ptr<OOX::File>& pFile);
-		void      Add(const OOX::RId& rId, const smart_ptr<OOX::File>& pFile);
+		void      Add(const OOX::RId& rId, smart_ptr<OOX::File>& pFile);
 
 		template<typename T> 
         T&                   Find();
 		smart_ptr<OOX::File> Find(const FileType& type) const;
 		smart_ptr<OOX::File> Find(const OOX::RId& type) const;
 
+		void FindAllByType(const FileType& oType, std::map<std::wstring, smart_ptr<OOX::File>>& aOutput) const;
+
 		smart_ptr<OOX::File> operator [](const OOX::RId rId);
 		smart_ptr<OOX::File> operator [](const FileType& oType);
+		
+		void SetGlobalNumberByType(const std::wstring& sOverrideType, int val);
+		int GetGlobalNumberByType(const std::wstring& sOverrideType);
 	protected:
-
 		static UnknowTypeFile Unknown;
-
 	private:
-		const RId GetMaxRId();
+		std::map<std::wstring, size_t>	m_mapAddNamePair;
+		OOX::CRels*						m_pCurRels;
+		const RId						GetMaxRId();
 	};
 
 } // namespace OOX

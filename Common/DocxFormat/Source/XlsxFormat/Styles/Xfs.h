@@ -42,7 +42,7 @@ namespace OOX
 		class CAligment : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CAligment)
+			WritingElement_AdditionConstructors(CAligment)
 			CAligment()
 			{
 			}
@@ -50,8 +50,10 @@ namespace OOX
 			{
 			}
 
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -69,7 +71,7 @@ namespace OOX
 				WritingStringNullableAttrBool(L"wrapText", m_oWrapText);
 				writer.WriteString(_T("/>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -79,7 +81,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Aligment;
+				return et_x_Aligment;
 			}
 			bool IsEmpty()
 			{
@@ -118,23 +120,24 @@ namespace OOX
 		class CProtection : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CProtection)
+			WritingElement_AdditionConstructors(CProtection)
 			CProtection()
 			{
 			}
 			virtual ~CProtection()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -144,7 +147,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Protection;
+				return et_x_Protection;
 			}
 
 		private:
@@ -167,16 +170,17 @@ namespace OOX
 		class CXfs : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CXfs)
+			WritingElement_AdditionConstructors(CXfs)
 			CXfs()
 			{
 			}
 			virtual ~CXfs()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -203,7 +207,7 @@ namespace OOX
 				else
 					writer.WriteString(_T("/>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 				if ( oReader.IsEmptyNode() )
@@ -223,7 +227,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Xfs;
+				return et_x_Xfs;
 			}
 
 		private:
@@ -272,16 +276,17 @@ namespace OOX
 		class CCellXfs  : public WritingElementWithChilds<CXfs>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CCellXfs)
+			WritingElement_AdditionConstructors(CCellXfs)
 			CCellXfs()
 			{
 			}
 			virtual ~CCellXfs()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -297,7 +302,7 @@ namespace OOX
 				}
 				writer.WriteString(_T("</cellXfs>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -316,7 +321,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_CellXfs;
+				return et_x_CellXfs;
 			}
 
 		private:
@@ -335,16 +340,17 @@ namespace OOX
 		class CCellStyleXfs  : public WritingElementWithChilds<CXfs>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CCellStyleXfs)
+			WritingElement_AdditionConstructors(CCellStyleXfs)
 			CCellStyleXfs()
 			{
 			}
 			virtual ~CCellStyleXfs()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -357,7 +363,7 @@ namespace OOX
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</cellStyleXfs>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -376,7 +382,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_CellStyleXfs;
+				return et_x_CellStyleXfs;
 			}
 
 		private:

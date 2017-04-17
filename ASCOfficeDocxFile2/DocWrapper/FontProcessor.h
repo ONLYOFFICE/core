@@ -30,26 +30,29 @@
  *
  */
 #pragma once
-//#include "../stdafx.h"
 
 #include <map>
 
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 
-//#include "DocWrapper/Base.h"
 namespace NSCommon{
 	template<class Type> class nullable;
 }
-namespace ComplexTypes{
-    namespace Spreadsheet{
+namespace ComplexTypes
+{
+    namespace Spreadsheet
+	{
         class String;
     }
+}
+namespace PPTX
+{
+	class Theme;
 }
 namespace OOX
 {
 	class CFont;
 	class CFontTable;
-	class CTheme;
 	namespace Spreadsheet
 	{
 		class CFont;
@@ -61,9 +64,10 @@ namespace OOX
 	}
 }
 
-namespace DocWrapper {
-	
-	class FontProcessor {
+namespace DocWrapper 
+{
+	class FontProcessor 
+	{
 		CFontManager* m_pFontManager;
         std::map<std::wstring, std::wstring> fontMap;
 
@@ -76,7 +80,7 @@ namespace DocWrapper {
 		void setFontTable(OOX::CFontTable* fontTable);
 		
         std::wstring getFont(const std::wstring& name);
-        std::wstring getFont(const NSCommon::nullable<OOX::Spreadsheet::CFontScheme>& oScheme, const NSCommon::nullable<ComplexTypes::Spreadsheet::String>& oRFont, const NSCommon::nullable<OOX::Spreadsheet::CCharset>& oCharset, const NSCommon::nullable<OOX::Spreadsheet::CFontFamily >& oFamily, OOX::CTheme* pTheme);
+		std::wstring getFont(const NSCommon::nullable<OOX::Spreadsheet::CFontScheme>& oScheme, const NSCommon::nullable<ComplexTypes::Spreadsheet::String>& oRFont, const NSCommon::nullable<OOX::Spreadsheet::CCharset>& oCharset, const NSCommon::nullable<OOX::Spreadsheet::CFontFamily >& oFamily, PPTX::Theme* pTheme);
 	private:
 		void addToFontMap(OOX::CFont& font);
 	};

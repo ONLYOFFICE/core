@@ -43,7 +43,6 @@
 #include "datatypes/textdisplay.h"
 
 #include "datatypes/common_attlists.h"
-#include "datatypes/style_ref.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -189,7 +188,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-    odf_types::style_ref		text_style_name_;
+    std::wstring				text_style_name_;
     _CP_OPT(bool)				text_continue_numbering_;
 
     office_element_ptr          text_list_header_;
@@ -225,7 +224,7 @@ class text_section_attr
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-    _CP_OPT(odf_types::style_ref)	text_style_name_;
+    _CP_OPT(std::wstring)			text_style_name_;
     std::wstring					text_name_;
     _CP_OPT(bool)					text_protected_;
     _CP_OPT(std::wstring)			text_protection_key_;

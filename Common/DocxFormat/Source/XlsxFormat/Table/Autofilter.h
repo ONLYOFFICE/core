@@ -43,7 +43,7 @@ namespace OOX
 		class CSortCondition : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CSortCondition)
+			WritingElement_AdditionConstructors(CSortCondition)
 			CSortCondition()
 			{
 			}
@@ -51,8 +51,10 @@ namespace OOX
 			{
 			}
 
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -68,7 +70,7 @@ namespace OOX
 					writer.WriteString(L"/>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -78,7 +80,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_SortCondition;
+				return et_x_SortCondition;
 			}
 
 		private:
@@ -103,15 +105,16 @@ namespace OOX
 		class CSortState : public WritingElementWithChilds<CSortCondition>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CSortState)
+			WritingElement_AdditionConstructors(CSortState)
 			CSortState()
 			{
 			}
 			virtual ~CSortState()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -150,7 +153,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_SortState;
+				return et_x_SortState;
 			}
 
 		private:
@@ -173,16 +176,17 @@ namespace OOX
 		class CColorFilter : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CColorFilter)
+			WritingElement_AdditionConstructors(CColorFilter)
 			CColorFilter()
 			{
 			}
 			virtual ~CColorFilter()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -197,7 +201,7 @@ namespace OOX
 					writer.WriteString(L"/>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -207,7 +211,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_ColorFilter;
+				return et_x_ColorFilter;
 			}
 
 		private:
@@ -228,16 +232,17 @@ namespace OOX
 		class CDynamicFilter : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CDynamicFilter)
+			WritingElement_AdditionConstructors(CDynamicFilter)
 			CDynamicFilter()
 			{
 			}
 			virtual ~CDynamicFilter()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -252,7 +257,7 @@ namespace OOX
 					writer.WriteString(L"/>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -262,7 +267,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_DynamicFilter;
+				return et_x_DynamicFilter;
 			}
 
 		private:
@@ -285,16 +290,17 @@ namespace OOX
 		class CCustomFilter : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CCustomFilter)
+			WritingElement_AdditionConstructors(CCustomFilter)
 			CCustomFilter()
 			{
 			}
 			virtual ~CCustomFilter()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -309,7 +315,7 @@ namespace OOX
 					writer.WriteString(L"\"/>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -319,7 +325,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_CustomFilters;
+				return et_x_CustomFilters;
 			}
 
 		private:
@@ -340,15 +346,16 @@ namespace OOX
 		class CCustomFilters : public WritingElementWithChilds<CCustomFilter>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CCustomFilters)
+			WritingElement_AdditionConstructors(CCustomFilters)
 			CCustomFilters()
 			{
 			}
 			virtual ~CCustomFilters()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -387,7 +394,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_CustomFilters;
+				return et_x_CustomFilters;
 			}
 
 		private:
@@ -406,16 +413,17 @@ namespace OOX
 		class CFilter : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CFilter)
+			WritingElement_AdditionConstructors(CFilter)
 			CFilter()
 			{
 			}
 			virtual ~CFilter()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -426,7 +434,7 @@ namespace OOX
 					WritingStringValAttrEncodeXmlString(L"filter", m_oVal.get());
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -436,7 +444,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Filter;
+				return et_x_Filter;
 			}
 
 		private:
@@ -455,16 +463,17 @@ namespace OOX
 		class CDateGroupItem : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CDateGroupItem)
+			WritingElement_AdditionConstructors(CDateGroupItem)
 			CDateGroupItem()
 			{
 			}
 			virtual ~CDateGroupItem()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -483,7 +492,7 @@ namespace OOX
 					writer.WriteString(L"/>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -493,7 +502,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_DateGroupItem;
+				return et_x_DateGroupItem;
 			}
 
 		private:
@@ -524,15 +533,16 @@ namespace OOX
 		class CFilters : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CFilters)
+			WritingElement_AdditionConstructors(CFilters)
 			CFilters()
 			{
 			}
 			virtual ~CFilters()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -572,7 +582,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Filters;
+				return et_x_Filters;
 			}
 
 		private:
@@ -591,16 +601,17 @@ namespace OOX
 		class CTop10 : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CTop10)
+			WritingElement_AdditionConstructors(CTop10)
 			CTop10()
 			{
 			}
 			virtual ~CTop10()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -618,7 +629,7 @@ namespace OOX
 					writer.WriteString(L"/>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -628,7 +639,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_ColorFilter;
+				return et_x_ColorFilter;
 			}
 
 		private:
@@ -653,16 +664,17 @@ namespace OOX
 		class CFilterColumn : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CFilterColumn)
+			WritingElement_AdditionConstructors(CFilterColumn)
 			CFilterColumn()
 			{
 			}
 			virtual ~CFilterColumn()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -690,7 +702,7 @@ namespace OOX
 					writer.WriteString(L"</filterColumn>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -717,7 +729,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_FilterColumn;
+				return et_x_FilterColumn;
 			}
 
 		private:
@@ -746,7 +758,7 @@ namespace OOX
 		class CAutofilter : public WritingElementWithChilds<CFilterColumn>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CAutofilter)
+			WritingElement_AdditionConstructors(CAutofilter)
 			CAutofilter()
 			{
 			}
@@ -754,8 +766,10 @@ namespace OOX
 			{
 			}
 
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -775,7 +789,7 @@ namespace OOX
 					writer.WriteString(L"</autoFilter>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -796,7 +810,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Autofilter;
+				return et_x_Autofilter;
 			}
 
 		private:

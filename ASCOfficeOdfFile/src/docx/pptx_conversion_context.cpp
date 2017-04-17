@@ -118,21 +118,22 @@ void pptx_conversion_context::process_layouts()
 		{
 			for (size_t i = 0; i < master->content_.size(); i++)			
 			{
-				odf_reader::office_element_ptr elm = master->content_[i];
-				if (elm->get_type() == odf_reader::typeDrawFrame)
+				odf_reader::draw_frame* frame = dynamic_cast<odf_reader::draw_frame*>(master->content_[i].get());
+				if (frame)
 				{
-					odf_reader::draw_frame* frame = dynamic_cast<odf_reader::draw_frame *>(elm.get());
-
-					if ((frame) && (frame->common_presentation_attlist_.presentation_class_))
+					odf_types::common_presentation_attlist	&common_presentation_attlist_= frame->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_;
+					
+					if (common_presentation_attlist_.presentation_class_)
 					{
-						odf_types::presentation_class::type type = frame->common_presentation_attlist_.presentation_class_->get_type();
+						odf_types::presentation_class::type type = common_presentation_attlist_.presentation_class_->get_type();
 
-						if (type==odf_types::presentation_class::footer ||
-							type==odf_types::presentation_class::date_time ||
-							type==odf_types::presentation_class::header ||
-							type==odf_types::presentation_class::page_number)
+						if (type == odf_types::presentation_class::footer		||
+							type == odf_types::presentation_class::date_time	||
+							type == odf_types::presentation_class::header		||
+							type == odf_types::presentation_class::page_number)
 						{
-							if (frame->idx_in_owner <0)frame->idx_in_owner = last_idx_placeHolder++;
+							if (frame->idx_in_owner <0)
+								frame->idx_in_owner = last_idx_placeHolder++;
 
 							frame->pptx_convert_placeHolder(*this);
 						}
@@ -271,9 +272,9 @@ void pptx_conversion_context::end_document()
     odf_reader::odf_read_context & context =  root()->odf_context();
     odf_reader::page_layout_container & pageLayouts = context.pageLayoutContainer();
 	
-	if ((pageLayouts.master_pages().size()>0) && (pageLayouts.master_pages()[0]->style_master_page_attlist_.style_name_))//default
+	if ((pageLayouts.master_pages().size() > 0) && (pageLayouts.master_pages()[0]->style_master_page_attlist_.style_name_))//default
 	{
-		const std::wstring masterStyleName = pageLayouts.master_pages()[0]->style_master_page_attlist_.style_name_->style_name();
+		const std::wstring masterStyleName = pageLayouts.master_pages()[0]->style_master_page_attlist_.style_name_.get();
 		const std::wstring pageProperties = root()->odf_context().pageLayoutContainer().page_layout_name_by_style(masterStyleName);
 
 		odf_reader::page_layout_instance *pages_layouts = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);

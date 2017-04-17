@@ -333,21 +333,23 @@ namespace PPTX
 										pReader->Skip(6); // len + start attributes + type
 
 										// -------------------
-										std::wstring strUrl = pReader->GetString2();
-										std::wstring strOrigBase64 = _T("");
+										std::wstring strImagePath = pReader->GetString2();
 
-                                        std::wstring strTempFile = _T("");
+										std::wstring strOrigBase64;
+                                        std::wstring strTempFile ;
+
 										bool bIsUrl = false;
-										if (0 == strUrl.find(_T("data:")))
+										
+										if (0 == strImagePath.find(_T("data:")))
 										{
 											bool bBase64 = false;
 											
-											strOrigBase64 = strUrl;
-											int nFind = (int)strUrl.find(_T(","));
+											strOrigBase64 = strImagePath;
+											int nFind = (int)strImagePath.find(_T(","));
 
 											std::wstring sImageExtension;
 
-											std::wstring sFormatDataString = XmlUtils::GetLower(strUrl.substr(5,nFind-5));
+											std::wstring sFormatDataString = XmlUtils::GetLower(strImagePath.substr(5,nFind-5));
 											{
 												int nFind1 = (int)sFormatDataString.find(_T("base64"));
 												if (nFind1 >=0 ) bBase64 = true;
@@ -361,9 +363,9 @@ namespace PPTX
 													sImageExtension = sFormatDataString.substr(nFind1 + 6, nFind2 - 6 - nFind1);
 												}
 											}
-											strUrl.erase(0, nFind + 1);
+											strImagePath.erase(0, nFind + 1);
 
-											std::string __s = std::string(strUrl.begin(), strUrl.end());
+											std::string __s = std::string(strImagePath.begin(), strImagePath.end());
 											int len = (int)__s.length();
 											BYTE* pDstBuffer = NULL;
 											int dstLen = 0;
@@ -397,7 +399,7 @@ namespace PPTX
 											oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
 											oTempFile.CloseFile();
 											
-											strUrl = strTempFile =pathTemp.GetPath(); // strTempFile для удаления
+											strImagePath = strTempFile =pathTemp.GetPath(); // strTempFile для удаления
 											if (bBase64)
 											{
 												RELEASEARRAYOBJECTS(pDstBuffer);
@@ -405,18 +407,18 @@ namespace PPTX
 										}
 										else
 										{
-											if (0 != strUrl.find(_T("http:")) &&
-												0 != strUrl.find(_T("https:")) &&
-												0 != strUrl.find(_T("ftp:")) &&
-												0 != strUrl.find(_T("file:")))
+											if (0 != strImagePath.find(_T("http:")) &&
+												0 != strImagePath.find(_T("https:")) &&
+												0 != strImagePath.find(_T("ftp:")) &&
+												0 != strImagePath.find(_T("file:")))
 											{
-												if (0 == strUrl.find(_T("theme")))
+												if (0 == strImagePath.find(_T("theme")))
 												{
-                                                    strUrl = pReader->m_strFolderExternalThemes + FILE_SEPARATOR_STR  + strUrl;
+                                                    strImagePath = pReader->m_strFolderExternalThemes + FILE_SEPARATOR_STR  + strImagePath;
 												}
 												else
 												{
-                                                    strUrl = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + strUrl;
+                                                    strImagePath = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + strImagePath;
 												}
 											}
 											else
@@ -426,11 +428,11 @@ namespace PPTX
 										//в случае url не надо нормализовать путь
 										if(!bIsUrl)
 										{
-											OOX::CPath pathUrl = strUrl;
-											strUrl = pathUrl.GetPath();
+											OOX::CPath pathUrl = strImagePath;
+											strImagePath = pathUrl.GetPath();
 										}
 
-										NSBinPptxRW::CRelsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strUrl, oleData, strOrigBase64);
+										NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, oleFile, oleData, strOrigBase64);
 
 										// -------------------
 										if (strTempFile != _T(""))
@@ -442,14 +444,13 @@ namespace PPTX
 										if (!blip.is_init())
 											blip = new PPTX::Logic::Blip();
 
-										blip->embed = new OOX::RId((size_t)oRelsGeneratorInfo.m_nImageRId);
-
-										if(oRelsGeneratorInfo.m_nOleRId > 0)
+										blip->embed = new OOX::RId((size_t)oRelsGeneratorInfo.nImageRId);
+										blip->oleFilepathImage	= oRelsGeneratorInfo.sFilepathImage;
+										
+										if(oRelsGeneratorInfo.nOleRId > 0)
 										{
-											blip->oleRid = OOX::RId((size_t)oRelsGeneratorInfo.m_nOleRId).get();
-											blip->oleFilepathBin = oRelsGeneratorInfo.m_sFilepathBin;
-											blip->oleFilepathImg = oRelsGeneratorInfo.m_sFilepathImg;
-											blip->oleRidImg = blip->embed->get();
+											blip->oleRid			= OOX::RId((size_t)oRelsGeneratorInfo.nOleRId).get();
+											blip->oleFilepathBin	= oRelsGeneratorInfo.sFilepathOle;
 										}
 
 										pReader->Skip(1); // end attribute
@@ -494,8 +495,9 @@ namespace PPTX
 
 				pReader->Seek(_e);
 			}
+			
+			mutable std::wstring m_namespace;
 
-		public:
 			nullable<Blip>		blip;
 			nullable<Rect>		srcRect;
 			nullable<Tile>		tile;
@@ -504,9 +506,9 @@ namespace PPTX
 			nullable_int		dpi;
 			nullable_bool		rotWithShape;
 
-			mutable std::wstring m_namespace;
-			//internal
-			std::wstring oleData;
+	//internal
+			smart_ptr<OOX::OleObject>	oleFile;
+			std::wstring				oleData;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

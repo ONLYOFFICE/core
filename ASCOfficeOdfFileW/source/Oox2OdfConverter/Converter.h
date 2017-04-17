@@ -69,64 +69,15 @@ namespace cpdoccore
 namespace OOX
 {
 	class WritingElement;
-	class CTheme;
 	class IFileContainer;
 	class File;
 
 	namespace Drawing
 	{
-		class CDiagrammParts;
-		class CPresetTextShape;
-		class CShape;
-		class CLockedCanvas;
-		//class CObject;
-		class CPicture;
-		class CChart;
-		class CGraphic;
+		//class CDiagrammParts;
+		//class CPresetTextShape;
 		class CInline;
 		class CAnchor;
-		class CNonVisualDrawingProps;
-		class CShapeProperties;
-		class CGroupShapeProperties;
-		class CCustomGeometry2D;
-		class CPresetGeometry2D;
-		class CBlipFillProperties;
-		class CGradientFillProperties;
-		class CPatternFillProperties;
-		class CSolidColorFillProperties;
-		class CPath2D;
-		class CPath2DLineTo;
-		class CPath2DMoveTo;
-		class CPath2DArcTo;
-		class CPath2DQuadBezierTo;
-		class CPath2DCubicBezierTo;
-		class CPath2DClose;
-		class CHslColor;
-		class CSchemeColor;
-		class CScRgbColor;
-		class CSRgbColor;
-		class CSystemColor;
-		class CPresetColor;
-		class CLineProperties;
-		class CTextBodyProperties;
-		class CParagraph;
-		class CParagraphProperty;
-		class CRun;
-		class CRunProperty;
-		class CLineSpacing;
-		class CColor;
-		class CShapeStyle;
-		class CStyleMatrixReference;
-		class CEffectList;
-		class COuterShadowEffect;
-		class CInnerShadowEffect;
-		class CFontReference;
-		class CFontCollection;
-
-		namespace Colors
-		{
-			class CColorTransform;
-		}
 	}
 	namespace Spreadsheet
 	{
@@ -309,12 +260,21 @@ namespace SimpleTypes
 }
 namespace PPTX
 {
+	class Theme;
 	namespace Logic
 	{
+		class ClrMap;
+		class SpTreeElem;
 		class GraphicFrame;
 		class SpTree;
 		class Shape;
+		class CxnSp;
+		class Pic;
+		class SmartArt;
+		class ChartRec;
 		class SpPr;
+		class GrpSpPr;
+		class Xfrm;
 		class ShapeStyle;
 		class PrstTxWarp;
 		class PrstGeom;
@@ -324,6 +284,8 @@ namespace PPTX
 		class SolidFill;
 		class PattFill;
 		class EffectLst;
+		class FontRef;
+		class StyleRef;
 		class Ln;
 		class Path2D;
 		class PathBase;
@@ -334,8 +296,14 @@ namespace PPTX
 		class NvSpPr;
 		class CNvPr;
 		class CNvSpPr;
+		class CNvCxnSpPr;
+		class CNvGrpSpPr;
+		class NvCxnSpPr;
+		class NvGrpSpPr;
 		class NvPr;
 		class Paragraph;
+		class TxBody;
+		class TextListStyle;
 		class TextParagraphPr;
 		class TextSpacing;
 		class RunProperties;
@@ -344,9 +312,18 @@ namespace PPTX
 		class Br;
 		class MathParaWrapper;
 		class NvGraphicFramePr;
-		class Table;
-		class ChartRec;
-		class SmartArt;
+		class LineTo;
+		class MoveTo;
+		class ArcTo;
+		class QuadBezTo;
+		class CubicBezTo;
+		class Close;
+		class EffectStyle;
+		class InnerShdw;
+		class OuterShdw;
+		class PrstShdw;
+		class AhXY;
+		class AhPolar;
 	}
 }
 
@@ -358,7 +335,7 @@ public:
 		virtual void convertDocument() = 0;
 		virtual void write(const std::wstring & path) = 0;
 		
-		OoxConverter(const ProgressCallback* CallBack = NULL){	oox_current_child_document_spreadsheet = NULL; 
+		OoxConverter(const ProgressCallback* CallBack = NULL){
 																oox_current_child_document = NULL; 
 																
 																pCallBack = CallBack;
@@ -376,97 +353,81 @@ public:
 		double	getSystemDPI();
 	
 //.......................................................................................................................
-		virtual cpdoccore::odf_writer::odf_conversion_context		*odf_context() = 0;
-		virtual OOX::CTheme									*oox_theme() = 0;
-        virtual std::wstring								find_link_by_id(std::wstring sId, int t) = 0;
+		virtual cpdoccore::odf_writer::odf_conversion_context	*odf_context()	= 0;		
+		virtual PPTX::Theme										*oox_theme()	= 0;
+		virtual PPTX::Logic::ClrMap								*oox_clrMap()	{return NULL;}
+        
+		virtual std::wstring								find_link_by_id(std::wstring sId, int t) = 0;
 		virtual NSCommon::smart_ptr<OOX::File>				find_file_by_id(std::wstring sId) = 0;
 		
-		OOX::Spreadsheet::IFileContainer					*oox_current_child_document_spreadsheet;
 		OOX::IFileContainer									*oox_current_child_document;
 		
 		void convert (double oox_font_size, _CP_OPT(cpdoccore::odf_types::font_size) & odf_font_size);	
-		bool convert (int indexSchemeColor, BYTE& ucA, BYTE& ucG, BYTE& ucB, BYTE& ucR);
+		bool convert (std::wstring sSchemeColor, DWORD & argb);
 //.......................................................................................................................
 		void convert(OOX::WritingElement  *oox_unknown);
-//.drawing......................................................................................................................
-		void convert(OOX::Drawing::CDiagrammParts				*oox_diagramm);
-		void convert(OOX::Drawing::CLockedCanvas				*oox_canvas);
-		void convert(OOX::Drawing::CShape						*oox_shape);
-		void convert(OOX::Drawing::CNonVisualDrawingProps		*oox_cnvPr);
-		void convert(OOX::Drawing::CShapeProperties				*oox_spPr,		OOX::Drawing::CShapeStyle* oox_sp_style = NULL);
-		void convert(OOX::Drawing::CGroupShapeProperties		*oox_groupSpPr);
-		void convert(OOX::Drawing::CTextBodyProperties			*oox_bodyPr);
-		
-		void convert(OOX::Drawing::CCustomGeometry2D			*oox_cust_geom);
-		void convert(OOX::Drawing::CPresetGeometry2D			*oox_prst_geom);
-		int	 convert(OOX::Drawing::CPresetTextShape				*oox_text_preset);
-
-        void convert(OOX::Drawing::CLineProperties				*oox_line_prop,		std::wstring *change_sheme_color = NULL);
-		
-        void convert(OOX::Drawing::CBlipFillProperties			*oox_bitmap_fill,	std::wstring *change_sheme_color = NULL);
-        void convert(OOX::Drawing::CGradientFillProperties		*oox_grad_fill	,	std::wstring *change_sheme_color = NULL);
-        void convert(OOX::Drawing::CPatternFillProperties		*oox_pattern_fill,	std::wstring *change_sheme_color = NULL);
-        void convert(OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill	,	std::wstring *change_sheme_color = NULL);
-
-        void convert(OOX::Drawing::CEffectList					*oox_effect_list,	std::wstring *change_sheme_color = NULL);
-        void convert(OOX::Drawing::COuterShadowEffect			*oox_shadow,		std::wstring *change_sheme_color = NULL);
-        void convert(OOX::Drawing::CInnerShadowEffect			*oox_shadow,		std::wstring *change_sheme_color = NULL);
-
-        void convert(OOX::Drawing::CFontCollection				*style_font,		std::wstring *change_sheme_color = NULL);
-		void convert(OOX::Drawing::CFontReference				*style_font_ref);
-		void convert(OOX::Drawing::CStyleMatrixReference		*style_matrix_ref);
-		void convert(OOX::Drawing::CPath2D						*oox_geom_path);
-		void convert(OOX::Drawing::CPath2DLineTo				*oox_geom_path);
-		void convert(OOX::Drawing::CPath2DMoveTo				*oox_geom_path);
-		void convert(OOX::Drawing::CPath2DArcTo					*oox_geom_path);
-		void convert(OOX::Drawing::CPath2DQuadBezierTo			*oox_geom_path);
-		void convert(OOX::Drawing::CPath2DCubicBezierTo			*oox_geom_path);
-		void convert(OOX::Drawing::CPath2DClose					*oox_geom_path);
-		void convert(OOX::Drawing::CColor						*oox_color,		std::wstring & hexColor , _CP_OPT(double) &opacity);
-		void convert(OOX::Drawing::CSchemeColor					*oox_ShemeClr,	std::wstring & hexString, _CP_OPT(double) &opacity);
-		void convert(OOX::Drawing::Colors::CColorTransform      *oox_ScrgbClr,	std::wstring & hexString, _CP_OPT(double) &opacity);
-		void convert(OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill,std::wstring & hexColor , _CP_OPT(double) &opacity);
-
-		void convert(OOX::Drawing::CParagraph					*oox_paragraph);
-		void convert(OOX::Drawing::CParagraphProperty			*oox_paragraph_pr, cpdoccore::odf_writer::style_paragraph_properties * paragraph_properties);
-		void convert(OOX::Drawing::CRun							*oox_run);
-		void convert(OOX::Drawing::CRunProperty					*oox_run_pr, cpdoccore::odf_writer::style_text_properties	* text_properties);
-		void convert(OOX::Drawing::CLineSpacing					*oox_spacing, cpdoccore::odf_types::length_or_percent & length_or_percent);
 //drawingML & pptx................................................................................................................................
+		void convert(PPTX::Logic::SpTreeElem					*oox_element);
 		void convert(PPTX::Logic::GraphicFrame					*oox_graphicFrame);
 		void convert(PPTX::Logic::SpTree						*oox_shape_tree);
 		void convert(PPTX::Logic::Shape							*oox_shape);
+		void convert(PPTX::Logic::CxnSp							*oox_connect);
+		void convert(PPTX::Logic::Pic							*oox_pic);
+		void convert(PPTX::Logic::GrpSpPr						*oox_grpSpPr);
 		void convert(PPTX::Logic::SpPr							*oox_spPr, PPTX::Logic::ShapeStyle* oox_sp_style = NULL);
 		void convert(PPTX::Logic::TextSpacing					*oox_spacing, cpdoccore::odf_types::length_or_percent & length_or_percent);
+		void convert(PPTX::Logic::Xfrm							*oox_xfrm);
+		void convert(PPTX::Logic::Xfrm							*oox_txbx, PPTX::Logic::Xfrm *oox_xfrm);
 		int	 convert(PPTX::Logic::PrstTxWarp					*oox_text_preset);
 		void convert(PPTX::Logic::PrstGeom						*oox_geom);
 		void convert(PPTX::Logic::CustGeom						*oox_geom);
 		void convert(PPTX::Logic::BlipFill						*oox_fill);
-		void convert(PPTX::Logic::GradFill						*oox_fill);
-		void convert(PPTX::Logic::SolidFill						*oox_fill);
-		void convert(PPTX::Logic::PattFill						*oox_fill);
-		void convert(PPTX::Logic::EffectLst						*oox_effect_lst);
-		void convert(PPTX::Logic::Ln							*oox_line);
+        void convert(PPTX::Logic::GradFill						*oox_fill, DWORD ARGB = 0);
+        void convert(PPTX::Logic::SolidFill						*oox_fill, DWORD ARGB = 0);
+        void convert(PPTX::Logic::PattFill						*oox_fill, DWORD ARGB = 0);
+		void convert(PPTX::Logic::Ln							*oox_line, DWORD ARGB = 0, PPTX::Logic::ShapeStyle* oox_sp_style = NULL);
+		void convert(PPTX::Logic::FontRef						*oox_fontRef);
+		void convert(PPTX::Logic::StyleRef						*oox_styleRef, int type);
 		void convert(PPTX::Logic::Path2D						*oox_path2D);
 		void convert(PPTX::Logic::PathBase						*oox_path);
 		void convert(PPTX::Logic::BodyPr						*oox_bodyPr);
-		void convert(PPTX::Logic::UniFill						*oox_fill,	PPTX::Logic::ShapeStyle* oox_sp_style = NULL);
-		void convert(PPTX::Logic::UniColor						*color,		std::wstring & hexString, _CP_OPT(double) & opacity);
+        void convert(PPTX::Logic::UniFill						*oox_fill, DWORD ARGB = 0);
+		void convert(PPTX::Logic::UniColor						*color, DWORD & nARGB);
+        void convert(PPTX::Logic::UniColor						*color, std::wstring & hexString, _CP_OPT(double) & opacity, DWORD ARGB = 0);
 		void convert(PPTX::Logic::NvSpPr						*oox_nvSpPr);
 		void convert(PPTX::Logic::CNvPr							*oox_cnvPr);
+		void convert(PPTX::Logic::CNvCxnSpPr					*oox_cnvPr);
 		void convert(PPTX::Logic::CNvSpPr						*oox_cnvSpPr);
+		void convert(PPTX::Logic::CNvGrpSpPr					*oox_cnvGrpSpPr);
+		void convert(PPTX::Logic::NvCxnSpPr						*oox_nvSpPr);
+		void convert(PPTX::Logic::NvGrpSpPr						*oox_nvSpPr);
 		void convert(PPTX::Logic::NvPr							*oox_nvPr);
-		void convert(PPTX::Logic::Paragraph						*oox_para);
+		void convert(PPTX::Logic::Paragraph						*oox_para, PPTX::Logic::TextListStyle *oox_list_style = NULL);
+		void convert(PPTX::Logic::TextListStyle					*oox_list_style, int level, cpdoccore::odf_writer::style_paragraph_properties * paragraph_properties);
 		void convert(PPTX::Logic::TextParagraphPr				*oox_para_props, cpdoccore::odf_writer::style_paragraph_properties * paragraph_properties);
 		void convert(PPTX::Logic::RunProperties					*oox_run_props, cpdoccore::odf_writer::style_text_properties * text_properties);
 		void convert(PPTX::Logic::Run							*oox_run);
 		void convert(PPTX::Logic::Fld							*oox_fld);
 		void convert(PPTX::Logic::Br							*oox_br);
+		void convert(PPTX::Logic::TxBody						*oox_txBody, PPTX::Logic::ShapeStyle* oox_style = NULL);
 		void convert(PPTX::Logic::MathParaWrapper				*oox_math);
 		void convert(PPTX::Logic::NvGraphicFramePr				*oox_framePr);
 		void convert(PPTX::Logic::ChartRec						*oox_chart);
 		void convert(PPTX::Logic::SmartArt						*oox_smart_art);
-		void convert(PPTX::Logic::Table							*oox_table);
+		void convert(PPTX::Logic::LineTo						*oox_geom_path);
+		void convert(PPTX::Logic::MoveTo						*oox_geom_path);
+		void convert(PPTX::Logic::ArcTo							*oox_geom_path);
+		void convert(PPTX::Logic::QuadBezTo						*oox_geom_path);
+		void convert(PPTX::Logic::CubicBezTo					*oox_geom_path);
+		void convert(PPTX::Logic::Close							*oox_geom_path);
+		void convert(PPTX::Logic::AhXY							*oox_handle);
+		void convert(PPTX::Logic::AhPolar						*oox_handle);
+		void convert(PPTX::Logic::EffectStyle					*oox_effect);
+		void convert(PPTX::Logic::EffectLst						*oox_effect_list);
+		void convert(PPTX::Logic::InnerShdw						*oox_effect);
+		void convert(PPTX::Logic::OuterShdw						*oox_effect);
+		void convert(PPTX::Logic::PrstShdw						*oox_effect);
+		
 //.chart............................................................................................................................
 		void convert(OOX::Spreadsheet::CT_ChartSpace			*oox_chart);
 		void convert(OOX::Spreadsheet::CT_Title					*ct_title);

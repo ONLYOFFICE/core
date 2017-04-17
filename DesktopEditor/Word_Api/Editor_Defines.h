@@ -664,6 +664,10 @@
 #define c_oAscSectionBreakType_Continuous		0x03
 #define c_oAscSectionBreakType_Column			0x04
 
+#define c_oAscAdvancedOptionsID_CSV             0
+#define c_oAscAdvancedOptionsID_TXT             1
+#define c_oAscAdvancedOptionsID_DRM             2
+
 #define INSERT_PAGE_NUM_PARAM(AlignV, AlignH)	((AlignV << 16) | AlignH)
 
 // MENU COMMANDS
@@ -759,5 +763,8 @@
 
 #define ASC_COAUTH_EVENT_TYPE_INSERT_URL_IMAGE      21000
 #define ASC_COAUTH_EVENT_TYPE_LOAD_URL_IMAGE        21001
+
+#define ASC_MENU_EVENT_TYPE_ADVANCED_OPTIONS        22000
+#define ASC_MENU_EVENT_TYPE_SET_PASSWORD            22001
 
 #endif //_BUILD_EDITOR_DEFINES_CROSSPLATFORM_H_

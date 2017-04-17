@@ -57,7 +57,7 @@ namespace OOX
 		public:
 			virtual const FileType type() const
 			{
-				return FileTypes::ExternalLinkPath;
+				return OOX::FileTypes::ExternalLinkPath;
 			}
 			virtual const CPath DefaultDirectory() const
 			{

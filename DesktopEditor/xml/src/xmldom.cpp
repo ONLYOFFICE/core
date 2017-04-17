@@ -434,6 +434,15 @@ namespace XmlUtils
 	{
 		return GetAttribute(std::wstring(strAttributeName), strDefaultValue);
 	}
+	int CXmlNode::GetAttributesCount()
+	{
+		if (IsValid())
+		{
+			return m_pBase->m_attributes.size();
+		}
+		else 
+			return 0;
+	}
 	bool CXmlNode::GetAttributeIfExist(const std::wstring& sName, std::wstring& sOutput)
 	{
 		bool bRes = false;

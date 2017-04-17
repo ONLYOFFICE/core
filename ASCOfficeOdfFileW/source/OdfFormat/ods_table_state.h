@@ -300,6 +300,7 @@ public:
     int		is_cell_hyperlink	(int col, int row);
 	bool	is_cell_comment		();
     int		is_cell_comment		(int col, int row, short repeate_col = 1);
+	int		is_row_comment		(int row, int repeate_row = 1);
 
 	ods_hyperlink_state & current_hyperlink();
 
@@ -316,7 +317,8 @@ public:
 
 	odf_drawing_context   *	drawing_context(){return  &drawing_context_;}
 
-	std::wstring		office_table_name_;
+	std::wstring					office_table_name_;
+	std::vector<ods_comment_state>	comments_;
 private:
 
     odf_conversion_context * context_;   
@@ -342,9 +344,7 @@ private:
 	std::list<ods_cell_state>	cells_;
 	long						cells_size_;
 	
-	std::vector<ods_hyperlink_state>	hyperlinks_;
-	std::vector<ods_comment_state>		comments_;
-
+	std::vector<ods_hyperlink_state>		hyperlinks_;
 	std::vector<ods_shared_formula_state>	shared_formulas_;
 
 	odf_drawing_context		drawing_context_;	

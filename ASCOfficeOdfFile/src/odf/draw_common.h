@@ -106,8 +106,8 @@ private:
     std::wstring							office_name_;
     _CP_OPT(odf_types::target_frame_name)	office_target_frame_name_;
 
-    odf_types::style_ref					text_style_name_;
-    odf_types::style_ref					text_visited_style_name_;
+    std::wstring					text_style_name_;
+    std::wstring					text_visited_style_name_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_a);

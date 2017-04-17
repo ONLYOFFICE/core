@@ -121,8 +121,7 @@ public:
 
 	odf_types::common_rotation_angle_attlist       common_rotation_angle_attlist_;
 };
-/// \class  style_chart_properties
-///         style:chart-properties
+
 class style_chart_properties : public office_element_impl<style_chart_properties>//стили чарта не наследуются
 {
 public:
@@ -137,12 +136,8 @@ public:
 	virtual void add_child_element( const office_element_ptr & child){}
 
 	virtual void serialize(std::wostream & strm);
-	chart_format_properties & content() { return chart_format_properties_; }
-
-private:	
-	chart_format_properties chart_format_properties_;
-
-
+	
+	chart_format_properties content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_chart_properties);

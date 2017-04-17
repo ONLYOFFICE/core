@@ -108,16 +108,16 @@ void oox_serialize_solid_fill(std::wostream & strm, const _oox_fill & val)
 }
 void vml_serialize_solid_fill(std::wostream & strm, const _oox_fill & val)
 {
-	if (!val.solid)return;
+	if (!val.solid)	return;
+	if (!val.opacity) return;
+	
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"v:fill")
 		{
-			oox_serialize_srgb(CP_XML_STREAM(), val.solid->color, val.opacity);
-			CP_XML_ATTR(L"v:fill",		val.solid->color);
 			if (val.opacity)
 			{
-				CP_XML_ATTR(L"v:opacity",	*val.opacity);
+				CP_XML_ATTR(L"opacity",	(int)(*val.opacity));
 			}
 		}
 

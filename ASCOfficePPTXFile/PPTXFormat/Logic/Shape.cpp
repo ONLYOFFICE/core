@@ -43,7 +43,9 @@ namespace PPTX
 	{
 		Shape::Shape(std::wstring name_)
 		{
-			m_name = name_;
+			m_name				= name_;
+			m_pLevelUp			= NULL;
+			m_nMasterTextType	= -1;
 		}
 
 		Shape::~Shape()
@@ -52,19 +54,31 @@ namespace PPTX
 
 		Shape::Shape(XmlUtils::CXmlNode& node)
 		{
+			m_pLevelUp			= NULL;
+			m_nMasterTextType	= -1;
+			
 			fromXML(node);
-		}
-		const Shape& Shape::operator =(XmlUtils::CXmlNode& node)
-		{
-			fromXML(node);
-			return *this;
 		}
 		Shape::Shape(XmlUtils::CXmlLiteReader& oReader)
 		{
+			m_pLevelUp			= NULL;
+			m_nMasterTextType	= -1;
+			
 			fromXML(oReader);
+		}		
+		const Shape& Shape::operator =(XmlUtils::CXmlNode& node)
+		{
+			m_pLevelUp			= NULL;
+			m_nMasterTextType	= -1;
+
+			fromXML(node);
+			return *this;
 		}
 		const Shape& Shape::operator =(XmlUtils::CXmlLiteReader& oReader)
 		{
+			m_pLevelUp			= NULL;
+			m_nMasterTextType	= -1;
+
 			fromXML(oReader);
 			return *this;
 		}
@@ -93,7 +107,22 @@ namespace PPTX
 				else if (_T("txXfrm")  == strName)
 					txXfrm = oReader;
 				else if (_T("txbx") == strName || _T("textbox") == strName)
-					txBody = oReader;
+				{
+					if ( oReader.IsEmptyNode() )
+						return;
+							
+					int nParentDepth1 = oReader.GetDepth();
+					while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+					{
+						std::wstring strName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+
+						if (strName1 == L"txbxContent")
+						{
+							oTextBoxShape = oReader;
+							break;
+						}
+					}
+				}
 				else if (_T("cNvPr") == strName)
 					nvSpPr.cNvPr = oReader;
 				else if (_T("cNvSpPr") == strName)
@@ -101,7 +130,7 @@ namespace PPTX
 				else if (_T("txSp") == strName)
 					txBody = oReader;
 				else if (_T("bodyPr") == strName)
-					TextBoxBodyPr = oReader;
+					oTextBoxBodyPr = oReader;
 			}
 			FillParentPointersForChilds();
 		}
@@ -133,27 +162,15 @@ namespace PPTX
 					else if (_T("txXfrm")  == strName)
 						txXfrm = oNode;
 					else if (_T("txbx") == strName || _T("textbox") == strName)
-					{
-						XmlUtils::CXmlNode _node = oNode.ReadNode(_T("w:txbxContent"));
-						if (_node.IsValid())
-							TextBoxShape = _node.GetXml();
-					}
+						oTextBoxShape = oNode.ReadNode(_T("w:txbxContent"));
 					else if (_T("cNvPr") == strName)
-					{
 						nvSpPr.cNvPr = oNode;
-					}
 					else if (_T("cNvSpPr") == strName)
-					{
 						nvSpPr.cNvSpPr = oNode;
-					}
 					else if (_T("txSp") == strName)
-					{
 						txBody = oNode.ReadNodeNoNS(_T("txBody"));
-					}
 					else if (_T("bodyPr") == strName)
-					{
-						TextBoxBodyPr = oNode;
-					}
+						oTextBoxBodyPr = oNode;
 				}
 			}
 
@@ -226,16 +243,17 @@ namespace PPTX
 			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
 			{	
 				bool bIsWritedBodyPr = false;
-				if (TextBoxShape.is_init())
+				if (strTextBoxShape.is_init())
 				{
-					pWriter->WriteString(_T("<wps:txbx>"));
-					pWriter->WriteString(*TextBoxShape);
+					pWriter->WriteString(_T("<wps:txbx>"));					
+					//pWriter->WriteString(oTextBoxShape->toXML());
+					pWriter->WriteString(*strTextBoxShape);
 					pWriter->WriteString(_T("</wps:txbx>"));
 
-					if (TextBoxBodyPr.is_init())
+					if (oTextBoxBodyPr.is_init())
 					{
-						TextBoxBodyPr->m_namespace = _T("wps");
-						TextBoxBodyPr->toXmlWriter(pWriter);
+						oTextBoxBodyPr->m_namespace = _T("wps");
+						oTextBoxBodyPr->toXmlWriter(pWriter);
 						bIsWritedBodyPr = true;
 					}
 				}
@@ -321,7 +339,7 @@ namespace PPTX
 							std::wstring strC = _T("<w:txbxContent>");
 							strC += sXmlContent;
 							strC += _T("</w:txbxContent>");
-							TextBoxShape = strC;
+							strTextBoxShape = strC;
 
 							//pReader->Seek(lPosition + lLenRec);
 							pReader->Init(pData_Reader, lPosition + lLenRec, lSize_Reader - (lPosition + lLenRec));
@@ -334,8 +352,8 @@ namespace PPTX
 					}
 					case 5:
 					{
-						TextBoxBodyPr = new PPTX::Logic::BodyPr();
-						TextBoxBodyPr->fromPPTY(pReader);
+						oTextBoxBodyPr = new PPTX::Logic::BodyPr();
+						oTextBoxBodyPr->fromPPTY(pReader);
 						break;
 					}
 					case 6:
@@ -360,11 +378,11 @@ namespace PPTX
 		{
 			nvSpPr.SetParentPointer(this);
 			spPr.SetParentPointer(this);
-			if(style.IsInit())
+			
+			if (style.IsInit())
 				style->SetParentPointer(this);
-			if(txBody.IsInit())
-				txBody->SetParentPointer(this);
-			levelUp = NULL;
+			if (txBody.IsInit())
+				txBody->SetParentPointer(this);			
 		}
 		
 		void Shape::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter)const
@@ -381,25 +399,28 @@ namespace PPTX
 
 			if (pWriter->m_pMainDocument != NULL)
 			{
-				if (TextBoxShape.is_init())
-				{					
+				if (oTextBoxShape.is_init())
+				{	
                     long lDataSize = 0;
                     ULONG lPos = pWriter->GetPosition();
 					pWriter->SetPosition(lPos);
+					
 					pWriter->StartRecord(4);
-					pWriter->m_pMainDocument->getBinaryContent(TextBoxShape.get(), *pWriter, lDataSize);
+					pWriter->m_pMainDocument->getBinaryContentElem(OOX::et_w_sdtContent, oTextBoxShape.GetPointer(), *pWriter, lDataSize);
+					//pWriter->m_pMainDocument->getBinaryContent(TextBoxShape.get(), *pWriter, lDataSize);
 					pWriter->EndRecord();
 					
-					if (TextBoxBodyPr.is_init())
+					if (oTextBoxBodyPr.is_init())
 					{
 						pWriter->StartRecord(5);
-						TextBoxBodyPr->toPPTY(pWriter);
+						oTextBoxBodyPr->toPPTY(pWriter);
 						pWriter->EndRecord();
 					}
 				}
 				else if (txBody.is_init())
 				{
 					std::wstring strContent = txBody->GetDocxTxBoxContent(pWriter, style);
+					//tooooo convert a:p -> w:p
 
                     long lDataSize = 0;
                     ULONG lPos = pWriter->GetPosition();
@@ -422,266 +443,107 @@ namespace PPTX
 		}
 
 
-		void Shape::GetRect(Aggplus::RECT& pRect)const
+		void Shape::FillLevelUp()
 		{
-			pRect.bottom = 0;
-			pRect.left = 0;
-			pRect.right = 0;
-			pRect.top = 0;
-
-			if(spPr.xfrm.is_init())
+			if ((m_pLevelUp == NULL) && (nvSpPr.nvPr.ph.IsInit()))
 			{
-				pRect.left		= spPr.xfrm->offX.get_value_or(0);
-				pRect.top		= spPr.xfrm->offY.get_value_or(0);
-				pRect.right		= pRect.left + spPr.xfrm->extX.get_value_or(0);
-				pRect.bottom	= pRect.top + spPr.xfrm->extY.get_value_or(0);
-			}
-			//else
-			//{
-			//	if(bMergeWithLevelUp)
-			//	{
-			//		FillLevelUp();
-			//		if(levelUp != NULL)
-			//			levelUp->GetRect(pRect);
-			//	}
-			//}
-			if(parentIs<Logic::SpTree>())
-				parentAs<Logic::SpTree>().NormalizeRect(pRect);
-		}
-
-		void Shape::FillLevelUp()const
-		{
-			if((levelUp == NULL) && (nvSpPr.nvPr.ph.IsInit()))
-			{
-				if((nvSpPr.nvPr.ph->type.IsInit()) || (nvSpPr.nvPr.ph->idx.IsInit()))
+				if ((nvSpPr.nvPr.ph->type.IsInit()) || (nvSpPr.nvPr.ph->idx.IsInit()))
 				{
-					if(parentFileIs<Slide>())
-						parentFileAs<Slide>().Layout->GetLevelUp(*this);
+					if (parentFileIs<Slide>())
+						parentFileAs<Slide>().Layout->GetLevelUp(this);
 					else if(parentFileIs<SlideLayout>())
-						parentFileAs<SlideLayout>().Master->GetLevelUp(*this);
+						parentFileAs<SlideLayout>().Master->GetLevelUp(this);
 				}
 			}
 		}
 
-		void Shape::FillShapeProperties(ShapeProperties& props)
+		void Shape::Merge(Shape& shape, bool bIsSlidePlaceholder)
 		{
-			//props.SetParentFilePointer(*parentFile);
-			if(parentFileIs<SlideMaster>())
-			{
-				std::wstring type = nvSpPr.nvPr.ph.IsInit()?nvSpPr.nvPr.ph->type.get_value_or(_T("body")):_T("");
-				//if( (nvSpPr->cNvSpPr->txBox.get_value_or(false)) && (type == "") )
-				//	type = "text-box";
-				parentFileAs<SlideMaster>().FillShapeProperties(props, type);
-				props.FillFromTextBody(txBody);
-				if(style.IsInit())
-					props.FillFontRef(style->fontRef);
+			if (m_pLevelUp)
+				m_pLevelUp->Merge(shape, true);
 
-				//props.SetParentFilePointer(parentFile);
-			}
-			else if(parentFileIs<SlideLayout>())
-			{
-				//FillLevelUp();
-				//if(levelUp != NULL)
-				//	levelUp->GetShapeProperties(props);
-				//else
-				//{
-					std::wstring type = nvSpPr.nvPr.ph.IsInit()?nvSpPr.nvPr.ph->type.get_value_or(_T("body")):_T("");
-					//if( (nvSpPr->cNvSpPr->txBox.get_value_or(false)) && (type == "") )
-					//	type = "text-box";
-					parentFileAs<SlideLayout>().FillShapeProperties(props, type);
-				//}
-
-				props.FillFromTextBody(txBody);
-				if(style.IsInit())
-					props.FillFontRef(style->fontRef);
-
-				//props.SetParentFilePointer(parentFile);
-			}
-			else if(parentFileIs<Slide>())
-			{
-				//FillLevelUp();
-				//if(levelUp != NULL)
-				//	levelUp->GetShapeProperties(props);
-				//else
-				//{
-					std::wstring type = nvSpPr.nvPr.ph.is_init()?nvSpPr.nvPr.ph->type.get_value_or(_T("body")):_T("");
-					//if( (nvSpPr->cNvSpPr->txBox.get_value_or(false)) && (type == "") )
-					//	type = "text-box";
-					parentFileAs<Slide>().FillShapeProperties(props, type);
-				//}
-
-				props.FillFromTextBody(txBody);
-				if(style.IsInit())
-					props.FillFontRef(style->fontRef);
-
-				//props.SetParentFilePointer(parentFile);
-			}
-			props.SetParentFilePointer(parentFile);
-		}
-
-		void Shape::FillShapeTextProperties(CShapeTextProperties& props)
-		{
-			std::wstring type = nvSpPr.nvPr.ph.IsInit()?nvSpPr.nvPr.ph->type.get_value_or(_T("body")):_T("");
-			if (parentFileIs<SlideMaster>())
-			{
-				parentFileAs<SlideMaster>().FillShapeTextProperties(props, type);
-				props.FillFromTextBody(txBody, NULL);
-				if (style.IsInit())
-					props.FillFontRef(style->fontRef, isFontRefInSlide);
-			}
-			else if (parentFileIs<SlideLayout>())
-			{
-				parentFileAs<SlideLayout>().FillShapeTextProperties(props, type);
-				props.FillFromTextBody(txBody, NULL);
-				if(style.IsInit())
-					props.FillFontRef(style->fontRef, isFontRefInSlide);
-			}
-			else if (parentFileIs<Slide>())
-			{
-				parentFileAs<Slide>().FillShapeTextProperties(props, type);
-				props.FillFromTextBody(txBody, body);
-				if(style.IsInit())
-					props.FillFontRef(style->fontRef, isFontRefInSlide);
-			}
-
-			props.SetParentFilePointer(parentFile);
-		}
-
-		DWORD Shape::GetFill(UniFill& fill)const
-		{
-			DWORD BGRA = 0;
-			//fill.SetParentFilePointer(*parentFile);
-
-			if(style.IsInit())
-			{
-				if(parentFileIs<PPTX::Slide>())
-					parentFileAs<PPTX::Slide>().theme->GetFillStyle(style->fillRef.idx.get_value_or(0), fill);
-				else if(parentFileIs<PPTX::SlideLayout>())
-					parentFileAs<PPTX::SlideLayout>().theme->GetFillStyle(style->fillRef.idx.get_value_or(0), fill);
-				else if(parentFileIs<PPTX::SlideMaster>())
-					parentFileAs<PPTX::SlideMaster>().theme->GetFillStyle(style->fillRef.idx.get_value_or(0), fill);
-
-				if (style->fillRef.Color.is_init())
-				{
-					if (fill.is<PPTX::Logic::SolidFill>())
-					{
-						fill.as<PPTX::Logic::SolidFill>().Color = style->fillRef.Color;
-					}
-				}
-				BGRA = style->fillRef.Color.GetBGRA();
-			}
-
-			if(spPr.Fill.is_init())
-				spPr.Fill.Merge(fill);
-
-			//if((!fill.is_init()) && (bMergeWithLevelUp))
-			//{
-			//	FillLevelUp();
-			//	if(levelUp != NULL)
-			//		BGRA = levelUp->GetFill(fill);
-			//}
-
-			return BGRA;
-		}
-
-		DWORD Shape::GetLine(Ln& line)const
-		{
-			DWORD BGRA = 0;
-			//line.SetParentFilePointer(*parentFile);
-
-			//if(bMergeWithLevelUp)
-			//{
-			//	FillLevelUp();
-			//	if(levelUp != NULL)
-			//		BGRA = levelUp->GetLine(line);
-			//}
-			if(style.IsInit())
-			{
-				if(parentFileIs<PPTX::Slide>())
-					parentFileAs<PPTX::Slide>().theme->GetLineStyle(style->lnRef.idx.get_value_or(0), line);
-				else if(parentFileIs<PPTX::SlideLayout>())
-					parentFileAs<PPTX::SlideLayout>().theme->GetLineStyle(style->lnRef.idx.get_value_or(0), line);
-				else if(parentFileIs<PPTX::SlideMaster>())
-					parentFileAs<PPTX::SlideMaster>().theme->GetLineStyle(style->lnRef.idx.get_value_or(0), line);
-
-				BGRA = style->lnRef.Color.GetBGRA();
-			}
-
-			if(spPr.ln.IsInit())
-				spPr.ln->Merge(line);
-			return BGRA;
-		}
-
-		void Shape::Merge(Shape& shape, bool bIsSlidePlaceholder)const
-		{
-			shape.nvSpPr = nvSpPr;
+			shape.m_name			= m_name;
+			shape.m_nMasterTextType	= m_nMasterTextType;
+		
+			shape.nvSpPr			= nvSpPr;			
 			spPr.Merge(shape.spPr);
-			if(style.is_init())
+
+			if (parentFileIs<SlideMaster>() && (parentFileAs<SlideMaster>()).txStyles.IsInit())
 			{
-				shape.isFontRefInSlide = bIsSlidePlaceholder;
+				TextListStyle * listMasterStyle = NULL;
+			
+				std::wstring type	= nvSpPr.nvPr.ph->type.get_value_or(_T("body"));				
+				if ((type == L"title") || (type == L"ctrTitle"))
+				{
+					m_nMasterTextType = 1;
+					listMasterStyle = (parentFileAs<SlideMaster>()).txStyles->titleStyle.GetPointer();
+				}
+				else if ((type == L"body") || (type == L"subTitle") || (type == L"obj"))
+				{
+					m_nMasterTextType = 2;
+					listMasterStyle = (parentFileAs<SlideMaster>()).txStyles->bodyStyle.GetPointer();
+				}
+				else if (type != L"")
+				{
+					m_nMasterTextType = 3;
+					listMasterStyle = (parentFileAs<SlideMaster>()).txStyles->otherStyle.GetPointer();
+				}
+
+				if (listMasterStyle)
+				{
+					if(!txBody.is_init())
+						txBody = new TxBody();
+					
+					TextListStyle *newListStyle = new TextListStyle();
+
+					for (int i = 0; i < 10; i++)
+					{
+						if(listMasterStyle->levels[i].is_init())
+							listMasterStyle->levels[i]->Merge(newListStyle->levels[i]);
+						if(txBody->lstStyle->levels[i].is_init())
+							txBody->lstStyle->levels[i]->Merge(newListStyle->levels[i]);
+					}
+					txBody->lstStyle.reset(newListStyle);
+				}
+			}
+			shape.m_nMasterTextType	= m_nMasterTextType;
+			
+			if (style.is_init())
+			{
+				shape.m_bIsFontRefInSlide = bIsSlidePlaceholder;
 				shape.style = style;
 				shape.style->SetParentFilePointer(parentFile);
 			}
-			if (!bIsSlidePlaceholder)
+
+			if (txBody.IsInit())
 			{
-				if(txBody.IsInit())
-					txBody->Merge(shape.txBody);
-			}
-			else
-			{
-				if (txBody.is_init())
-				{				
-					if(!shape.txBody.is_init())
-						shape.txBody = new TxBody();
+				if(!shape.txBody.is_init())
+					shape.txBody = new TxBody();
 				
+				if (!bIsSlidePlaceholder)
+				{					
+					txBody->Merge(shape.txBody);
+					shape.txBody->Paragrs = txBody->Paragrs;
+				}
+				else
+				{
 					if (txBody->bodyPr.IsInit())
-						txBody->bodyPr->Merge(shape.txBody->bodyPr);
-					
-					if(txBody->lstStyle.is_init())
+						txBody->bodyPr->Merge(shape.txBody->bodyPr);					
+				}
+				if (txBody->lstStyle.is_init())
+				{
+					if(!shape.txBody->lstStyle.is_init())
+						shape.txBody->lstStyle = new TextListStyle();
+					for (int i = 0; i < 10; i++)
 					{
-						for (int i = 0; i < 10; i++)
-							if(txBody->lstStyle->levels[i].is_init())
-								txBody->lstStyle->levels[i]->Merge(body[i]);
+						if(txBody->lstStyle->levels[i].is_init())
+							txBody->lstStyle->levels[i]->Merge(shape.txBody->lstStyle->levels[i]);
 					}
 				}
 			}
 		}
 
-		void Shape::GetShapeFullDescription(Shape& shape, int level)const
-		{
-			if(level == 0)
-				//shape.SetParentFilePointer(*parentFile);
-				shape.SetParentPointer(parentElement);
-
-			if(!nvSpPr.nvPr.ph.is_init())
-			{
-				Merge(shape);
-				return;
-			}
-			if(parentFileIs<PPTX::SlideMaster>())
-			{
-				Merge(shape);
-				return;
-			}
-			if(parentFileIs<PPTX::SlideLayout>())
-			{
-				FillLevelUp();
-				if(levelUp != NULL)
-					levelUp->GetShapeFullDescription(shape, level + 1);
-				Merge(shape);
-				return;
-			}
-			if(parentFileIs<PPTX::Slide>())
-			{
-				FillLevelUp();
-				if(levelUp != NULL)
-					levelUp->GetShapeFullDescription(shape, level + 1);
-				Merge(shape, true);
-				return;
-			}
-		}
-
-		void Shape::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::WrapperFile>& oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& oClrMap, bool in_group)
+		void Shape::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group)
 		{
 			std::wstring strPath, strTextRect;
 			bool bOle = false;
@@ -710,9 +572,10 @@ namespace PPTX
 			}
 
 			spPr.Geometry.ConvertToCustomVML(pWriter->m_pOOXToVMLRenderer, strPath, strTextRect, lW, lH);
-
-            std::wstring strId		= L"shape " + std::to_wstring(pWriter->m_lObjectIdVML);
-            std::wstring strSpid	= L"_x" + std::to_wstring(0xFFFF & (pWriter->m_lObjectIdVML >> 16)) + L"_s" + std::to_wstring(0xFFFF & pWriter->m_lObjectIdVML);
+            
+			std::wstring strId		= L"shape "		+ std::to_wstring(pWriter->m_lObjectIdVML);
+			std::wstring strSpid	= L"_x0000_s"	+ XmlUtils::IntToString(0xFFFF & (pWriter->m_lObjectIdVML >> 16), L"%04d");
+			
 			pWriter->m_lObjectIdVML++;
 
             std::wstring strFillAttr;
@@ -788,11 +651,11 @@ namespace PPTX
 						oStylesWriter.WriteAttributeCSS(L"v-text-anchor", L"middle");
 				}
 			}
-			else if (TextBoxBodyPr.is_init())
+			else if (oTextBoxBodyPr.is_init())
 			{
-				if (TextBoxBodyPr->anchor.is_init())
+				if (oTextBoxBodyPr->anchor.is_init())
 				{
-					std::wstring _strAnchor = TextBoxBodyPr->anchor->get();
+					std::wstring _strAnchor = oTextBoxBodyPr->anchor->get();
 					if (_strAnchor == L"t")
 						oStylesWriter.WriteAttributeCSS(L"v-text-anchor", L"top");
 					else if (_strAnchor == L"b")
@@ -840,11 +703,11 @@ namespace PPTX
 			pWriter->WriteString(pWriter->m_strNodes);
 			pWriter->m_strNodes.clear();
 
-			if (TextBoxShape.is_init())
+			if (strTextBoxShape.is_init())
 			{
 				pWriter->StartNode(L"v:textbox");
 				pWriter->EndAttributes();
-				pWriter->WriteString(*TextBoxShape);
+				pWriter->WriteString(*strTextBoxShape); //??? todooo -> oTextBoxShape
 				pWriter->EndNode(L"v:textbox");
 			}
 
@@ -852,7 +715,7 @@ namespace PPTX
 
 			pWriter->m_strStyleMain.clear();
 		}
-		void Shape::toXmlWriterVMLBackground(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::WrapperFile>& oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& oClrMap)
+		void Shape::toXmlWriterVMLBackground(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap)
 		{
 			std::wstring strFillAttr, strFillNode;
 			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false);

@@ -1,0 +1,240 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Klasses and objects.</title>
+<meta name="GENERATOR" content="Modular DocBook HTML Stylesheet Version 1.79">
+<link rel="HOME" title="XML Security Library Reference Manual" href="index.html">
+<link rel="UP" title="Adding support for new cryptographic library." href="xmlsec-notes-new-crypto.html">
+<link rel="PREVIOUS" title="xmlSecCryptoApp* functions." href="xmlsec-notes-new-crypto-functions.html">
+<link rel="NEXT" title="Cryptographic transforms." href="xmlsec-notes-new-crypto-transforms.html">
+<style type="text/css">.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+    padding: 0.5em;
+}
+.programlisting {
+    background: #eeeeff;
+    border: solid 1px #aaaaff;
+    padding: 0.5em;
+}
+.variablelist {
+    padding: 4px;
+    margin-left: 3em;
+}
+.navigation {
+    background: #ffeeee;
+    border: solid 1px #ffaaaa;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.navigation a {
+    color: #770000;
+}
+.navigation a:visited {
+    color: #550000;
+}
+.navigation .title {
+    font-size: 200%;
+}</style>
+<style type="text/css">
+table.CALSTABLE > tbody > tr:nth-child(1) > td:nth-child(1) {
+    width: 20em;
+}
+.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+}
+.programlisting {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation a {
+    color: initial;
+}
+.navigation a:visited {
+    color: initial;
+}
+</style>
+</head>
+<body><table width="100%" valign="top"><tr valign="top">
+<td valign="top" align="left" width="210">
+<img src="../images/logo.gif" alt="XML Security Library" border="0"><p></p>
+<ul>
+<li><a href="../index.html">Home</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="../news.html">News</a></li>
+<li><a href="../documentation.html">Documentation</a></li>
+<ul>
+<li><a href="../faq.html">FAQ</a></li>
+<li><a href="../api/xmlsec-notes.html">Tutorial</a></li>
+<li><a href="../api/xmlsec-reference.html">API reference</a></li>
+<li><a href="../api/xmlsec-examples.html">Examples</a></li>
+</ul>
+<li><a href="../xmldsig.html">XML Digital Signature</a></li>
+<ul><li><a href="http://www.aleksey.com/xmlsec/xmldsig-verifier.html">Online Verifier</a></li></ul>
+<li><a href="../xmlenc.html">XML Encryption</a></li>
+<li><a href="../c14n.html">XML Canonicalization</a></li>
+<li><a href="../bugs.html">Reporting Bugs</a></li>
+<li><a href="http://www.aleksey.com/pipermail/xmlsec">Mailing list</a></li>
+<li><a href="../related.html">Related</a></li>
+<li><a href="../authors.html">Authors</a></li>
+</ul>
+<table width="100%">
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/"><img src="../images/libxml2-logo.png" alt="LibXML2" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/XSLT"><img src="../images/libxslt-logo.png" alt="LibXSLT" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://www.openssl.org/"><img src="../images/openssl-logo.png" alt="OpenSSL" border="0"></a></td>
+</tr>
+<!--Links - start--><!--Links - end-->
+</table>
+</td>
+<td valign="top"><table width="100%" valign="top"><tr><td valign="top" align="left" id="xmlsecContent">
+<table width="100%" class="navigation" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="xmlsec-notes-new-crypto-functions.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="xmlsec-notes-new-crypto.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<th width="100%" align="center">XML Security Library Reference Manual</th>
+<td><a accesskey="n" href="xmlsec-notes-new-crypto-transforms.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<br clear="all"><div class="SECT1">
+<h1 class="SECT1"><a name="XMLSEC-NOTES-NEW-CRYPTO-KLASSES">Klasses and objects.</a></h1>
+<p>The XML Security Library is written in C but it uses some OOP techniques:
+	the objects in the library have "klasses" and there is "klasses" inheritance.
+	(see <a href="xmlsec-signature-klasses.html">signature</a> and
+	<a href="xmlsec-encryption-klasses.html">encryption</a> klasses 
+	diagrams). The "klass" is different from C++ "class" (btw, this is 
+	one of the reasons why it is spelled differently). The idea of "klasses" 
+	used in XML Security Library are close to one in the GLIB/GTK/GNOME
+	and many other C projects. If you ever seen an OOP code written in C
+	you should find everything familiar.
+	</p>
+<p>XML Security Library "klass" includes three main parts:
+	</p>
+<p></p>
+<ul>
+<li>
+<p>"Klass" declaration structure that defines "klass" interfaces
+	and global constant data (for example, the human-readable name of 
+	the "klass").
+	</p>
+<div class="EXAMPLE">
+<a name="AEN562"></a><p><b>Example 6. Base transform "klass" and its child XPath transform "klass" structure.</b></p>
+<pre class="PROGRAMLISTING">struct _xmlSecTransformKlass {
+    /* data */
+    size_t				klassSize;
+    size_t				objSize;
+    const xmlChar*			name;
+    const xmlChar*			href;
+    xmlSecTransformUsage		usage;
+
+    /* methods */
+    xmlSecTransformInitializeMethod	initialize;
+    xmlSecTransformFinalizeMethod	finalize;
+
+    xmlSecTransformNodeReadMethod	readNode;
+    xmlSecTransformNodeWriteMethod	writeNode;
+
+    ...
+};
+
+...
+
+static xmlSecTransformKlass xmlSecTransformXPathKlass = {
+    /* klass/object sizes */
+    sizeof(xmlSecTransformKlass),	/* size_t klassSize */
+    xmlSecXPathTransformSize,		/* size_t objSize */
+
+    xmlSecNameXPath,			/* const xmlChar* name; */
+    xmlSecXPathNs, 			/* const xmlChar* href; */
+    xmlSecTransformUsageDSigTransform,	/* xmlSecTransformUsage	usage; */
+
+    xmlSecTransformXPathInitialize,	/* xmlSecTransformInitializeMethod initialize; */
+    xmlSecTransformXPathFinalize,	/* xmlSecTransformFinalizeMethod finalize; */
+    xmlSecTransformXPathNodeRead,	/* xmlSecTransformNodeReadMethod readNode; */
+    NULL,				/* xmlSecTransformNodeWriteMethod writeNode; */
+    
+    ...
+};
+	    </pre>
+</div>
+	</li>
+<li>
+<p>"Klass" id which is simply a pointer to the "klass"
+	declaration strucutre. "Klass" id is used to bind "klass" objects 
+	to the "klass" declaration and to pass "klass" strucutre to functions.
+	</p>
+<div class="EXAMPLE">
+<a name="AEN567"></a><p><b>Example 7. Base transform "klass" id declaration and its child XPath transform "klass" id implementation.</b></p>
+<pre class="PROGRAMLISTING">typedef const struct _xmlSecTransformKlass		xmlSecTransformKlass, *xmlSecTransformId;
+
+...
+
+#define xmlSecTransformXPathId 		xmlSecTransformXPathGetKlass()
+
+...
+
+xmlSecTransformId 
+xmlSecTransformXPathGetKlass(void) {
+    return(&amp;xmlSecTransformXPathKlass);
+}
+	    </pre>
+</div>
+	</li>
+<li>
+<p>"Klass" object structure that contains object specific
+	data. The child object specific data are placed after the parent "klass"
+	object data.
+	</p>
+<div class="EXAMPLE">
+<a name="AEN572"></a><p><b>Example 8. Base transform object strucutre and its child XPath transform object.</b></p>
+<pre class="PROGRAMLISTING">struct _xmlSecTransform {
+    xmlSecTransformId 			id; 
+    xmlSecTransformOperation		operation;
+    xmlSecTransformStatus		status;
+    xmlNodePtr				hereNode;
+
+    /* transforms chain */
+    xmlSecTransformPtr			next;
+    xmlSecTransformPtr			prev;
+    
+    ...
+};
+
+...
+
+/******************************************************************************
+ *
+ * XPath/XPointer transforms
+ *
+ * xmlSecPtrList with XPath expressions is located after xmlSecTransform structure
+ * 
+ *****************************************************************************/
+#define xmlSecXPathTransformSize	\
+    (sizeof(xmlSecTransform) + sizeof(xmlSecPtrList))
+#define xmlSecXPathTransformGetDataList(transform) \
+    ((xmlSecTransformCheckSize((transform), xmlSecXPathTransformSize)) ? \
+	(xmlSecPtrListPtr)(((unsigned char*)(transform)) + sizeof(xmlSecTransform)) : \
+	(xmlSecPtrListPtr)NULL)
+	    </pre>
+</div>
+	</li>
+</ul>
+	</div>
+<table class="navigation" width="100%" summary="Navigation footer" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td align="left"><a accesskey="p" href="xmlsec-notes-new-crypto-functions.html"><b>&lt;&lt;&lt; xmlSecCryptoApp* functions.</b></a></td>
+<td align="right"><a accesskey="n" href="xmlsec-notes-new-crypto-transforms.html"><b>Cryptographic transforms. &gt;&gt;&gt;</b></a></td>
+</tr></table>
+</td></tr></table></td>
+</tr></table></body>
+</html>

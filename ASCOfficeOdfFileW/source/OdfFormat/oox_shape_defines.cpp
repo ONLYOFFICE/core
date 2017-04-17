@@ -50,6 +50,12 @@
 namespace cpdoccore 
 {
 
+oox_shape::oox_shape()
+{
+	odf_type_name	= L"ooxml-non-primitive";
+	view_box		= L"0 0 0 0";
+}
+
 oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 {
 	switch (ooxPrstGeomType)
@@ -79,6 +85,8 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 
 	case SimpleTypes::shapetypePlaque:				return boost::make_shared<oox_shape_Plaque>();
 	case SimpleTypes::shapetypeDoubleWave:			return boost::make_shared<oox_shape_DoubleWave>();
+	case SimpleTypes::shapetypePieWedge:			return boost::make_shared<oox_shape_PieWedge>();
+		
 		
 
 	//case (2001 + SimpleTypes::textshapetypeTextArchDown): 
@@ -125,7 +133,7 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 
 	default:
 		if (ooxPrstGeomType > 2000) return boost::make_shared<oox_shape_textPlain>();
-		else return boost::make_shared<oox_shape>();
+		else return oox_shape_ptr();
 		
 	}
 }

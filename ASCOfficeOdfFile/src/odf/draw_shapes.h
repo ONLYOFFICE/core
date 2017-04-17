@@ -63,7 +63,7 @@ public:
 	static const ElementType type = typeDrawShape;
 	static const xml::NodeType xml_type = xml::typeElement;
 
-	draw_shape() : bad_shape_(false), word_art_(false) {}
+	draw_shape() : bad_shape_(false), word_art_(false), idx_in_owner(-1) {}
 
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -75,12 +75,12 @@ public:
 	void common_xlsx_convert(oox::xlsx_conversion_context & Context); 
 	void common_docx_convert(oox::docx_conversion_context & Context) ;
 	void common_pptx_convert(oox::pptx_conversion_context & Context) ;
-
-	odf_types::common_xlink_attlist			common_xlink_attlist_;
-	odf_types::common_presentation_attlist	common_presentation_attlist_;
+	
 	odf_types::union_common_draw_attlists	common_draw_attlists_;
+
 	draw_shape_attlist						draw_shape_attlist_;
-	_CP_OPT(std::wstring)					draw_id_;//используется для анимашек
+	odf_types::common_xlink_attlist			common_xlink_attlist_;
+	_CP_OPT(std::wstring)					draw_id_;				//используется для анимашек
   
 	office_element_ptr_array content_;
 
@@ -91,8 +91,7 @@ public:
 	bool								word_art_;
 	int									sub_type_;
 	std::vector<odf_reader::_property>	additional_;
-
-
+	int									idx_in_owner;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////

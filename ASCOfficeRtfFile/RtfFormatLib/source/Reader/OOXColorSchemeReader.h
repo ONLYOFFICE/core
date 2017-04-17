@@ -36,9 +36,9 @@
 class OOXColorSchemeReader
 {
 private:
-	OOX::Drawing::CColorScheme * m_ooxColorScheme;
+	PPTX::nsTheme::ClrScheme * m_ooxColorScheme;
 public: 
-	OOXColorSchemeReader(OOX::Drawing::CColorScheme * ooxColorScheme)
+	OOXColorSchemeReader(PPTX::nsTheme::ClrScheme * ooxColorScheme)
 	{
 		m_ooxColorScheme = ooxColorScheme;
 	}
@@ -48,53 +48,53 @@ public:
 		if (m_ooxColorScheme == NULL) return false;
 
 		RtfColor		oNewColor; 
-		OOXColorReader	oColorReader;
+		OOXColorReader	oColorReader(m_ooxColorScheme);
 
-		oColorReader.Parse( oParam, m_ooxColorScheme->m_oAccent1, oNewColor);
+		oColorReader.Parse( oParam, L"accent1", oNewColor);
 			oNewColor.m_eTheme = RtfColor::caccentone;
 			oParam.oRtf->m_oColorTable.AddItem( oNewColor );
 
-		oColorReader.Parse( oParam, m_ooxColorScheme->m_oAccent2, oNewColor);
+		oColorReader.Parse( oParam, L"accent2", oNewColor);
 			oNewColor.m_eTheme = RtfColor::caccenttwo;
 			oParam.oRtf->m_oColorTable.AddItem( oNewColor );
 
-		oColorReader.Parse( oParam, m_ooxColorScheme->m_oAccent3, oNewColor);
+		oColorReader.Parse( oParam, L"accent3", oNewColor);
 			oNewColor.m_eTheme = RtfColor::caccentthree;
 			oParam.oRtf->m_oColorTable.AddItem( oNewColor );
 		
-		oColorReader.Parse( oParam, m_ooxColorScheme->m_oAccent4, oNewColor);
+		oColorReader.Parse( oParam, L"accent4", oNewColor);
 			oNewColor.m_eTheme = RtfColor::caccentfour;
 			oParam.oRtf->m_oColorTable.AddItem( oNewColor );
 
-		oColorReader.Parse( oParam, m_ooxColorScheme->m_oAccent5, oNewColor);
+		oColorReader.Parse( oParam, L"accent5", oNewColor);
 			oNewColor.m_eTheme = RtfColor::caccentfive;
 			oParam.oRtf->m_oColorTable.AddItem( oNewColor );
 
-		oColorReader.Parse( oParam, m_ooxColorScheme->m_oAccent6, oNewColor);
+		oColorReader.Parse( oParam, L"accent6", oNewColor);
 			oNewColor.m_eTheme = RtfColor::caccentsix;
 			oParam.oRtf->m_oColorTable.AddItem( oNewColor );
 
-		oColorReader.Parse( oParam, m_ooxColorScheme->m_oDk1, oNewColor);
+		oColorReader.Parse( oParam, L"dk1", oNewColor);
 			oNewColor.m_eTheme = RtfColor::cmaindarkone;
 			oParam.oRtf->m_oColorTable.AddItem( oNewColor );
 		
-		oColorReader.Parse( oParam, m_ooxColorScheme->m_oDk2, oNewColor);
+		oColorReader.Parse( oParam, L"dk2", oNewColor);
 			oNewColor.m_eTheme = RtfColor::cmaindarktwo;
 			oParam.oRtf->m_oColorTable.AddItem( oNewColor );
 
-		oColorReader.Parse( oParam, m_ooxColorScheme->m_oLt1, oNewColor);
+		oColorReader.Parse( oParam, L"lt1", oNewColor);
 			oNewColor.m_eTheme = RtfColor::cmainlightone;
 			oParam.oRtf->m_oColorTable.AddItem( oNewColor );
 
-		oColorReader.Parse( oParam, m_ooxColorScheme->m_oLt2, oNewColor);
+		oColorReader.Parse( oParam, L"lt2", oNewColor);
 			oNewColor.m_eTheme = RtfColor::cmainlighttwo;
 			oParam.oRtf->m_oColorTable.AddItem( oNewColor );
 
-		oColorReader.Parse( oParam, m_ooxColorScheme->m_oHlink, oNewColor);
+		oColorReader.Parse( oParam, L"hlink", oNewColor);
 			oNewColor.m_eTheme = RtfColor::chyperlink;
 			oParam.oRtf->m_oColorTable.AddItem( oNewColor );
 
-		oColorReader.Parse( oParam, m_ooxColorScheme->m_oFolHlink, oNewColor);
+		oColorReader.Parse( oParam, L"folHlink", oNewColor);
 			oNewColor.m_eTheme = RtfColor::cfollowedhyperlink;
 			oParam.oRtf->m_oColorTable.AddItem( oNewColor );
 

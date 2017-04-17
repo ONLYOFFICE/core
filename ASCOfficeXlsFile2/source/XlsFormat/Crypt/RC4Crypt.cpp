@@ -38,7 +38,7 @@
 namespace CRYPT
 {
 
-RC4Crypt::RC4Crypt(CRYPT::CryptRC4Data & data, std::wstring password, int type)
+RC4Crypt::RC4Crypt(CRYPT::_rc4CryptData & data, std::wstring password, int type)
 {
 	m_VerifyPassword = false;
 

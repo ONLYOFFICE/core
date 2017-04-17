@@ -41,15 +41,16 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		//необработанные child:
-		class CSharedStrings : public OOX::File, public OOX::Spreadsheet::IFileContainer
+		class CSharedStrings : public OOX::File, public OOX::IFileContainer
 		{
 		public:
 			CSharedStrings()
 			{
+				m_bSpreadsheets = true;
 			}
 			CSharedStrings(const CPath& oRootPath, const CPath& oPath)
 			{
+				m_bSpreadsheets = true;
 				read( oRootPath, oPath );
 			}
 			virtual ~CSharedStrings()

@@ -96,7 +96,7 @@ void process_paragraph_drop_cap_attr(const paragraph_attrs & Attr, oox::docx_con
     if (Attr.text_style_name_.empty())return;
 
 	style_instance * styleInst 
-            = Context.root()->odf_context().styleContainer().style_by_name(Attr.text_style_name_.style_name(), style_family::Paragraph,Context.process_headers_footers_);
+            = Context.root()->odf_context().styleContainer().style_by_name(Attr.text_style_name_, style_family::Paragraph,Context.process_headers_footers_);
     if ((!styleInst) || (styleInst->is_automatic() == false))return;
 
 	style_content * styleContent = styleInst->content();
@@ -147,7 +147,7 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 	if (!Attr.text_style_name_.empty())
     {
         if (style_instance * styleInst =
-				Context.root()->odf_context().styleContainer().style_by_name(Attr.text_style_name_.style_name(), style_family::Paragraph, Context.process_headers_footers_)
+				Context.root()->odf_context().styleContainer().style_by_name(Attr.text_style_name_, style_family::Paragraph, Context.process_headers_footers_)
             )
         {
             process_page_break_after(styleInst, Context);
@@ -342,7 +342,7 @@ void paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 		span* first_span_in_paragraph = dynamic_cast<span*>(content_[0].get());
 		if (Context.get_drop_cap_context().FontSize < 1)
 		{
-			style_instance * styleInst = Context.root()->odf_context().styleContainer().style_by_name(first_span_in_paragraph->text_style_name_.style_name(), style_family::Text,Context.process_headers_footers_);
+			style_instance * styleInst = Context.root()->odf_context().styleContainer().style_by_name(first_span_in_paragraph->text_style_name_, style_family::Text,Context.process_headers_footers_);
 			if ((styleInst) && (styleInst->is_automatic()))
 			{
 				style_content * styleContent = styleInst->content();
@@ -368,7 +368,7 @@ void paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 }
 void paragraph::docx_convert(oox::docx_conversion_context & Context)
 {
-    const std::wstring & styleName = attrs_.text_style_name_.style_name();
+    const std::wstring & styleName = attrs_.text_style_name_;
 	
 	bool in_drawing	= false;
 
@@ -408,7 +408,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
         // если да — устанавливаем контексту флаг на то что необходимо в конце текущего параграфа 
         // распечатать свойства секции
 		//проверить ... не она ли основная - может быть прописан дубляж - и тогда разрыв нарисуется ненужный
-        const std::wstring & next_styleName				= next_par_->attrs_.text_style_name_.style_name();
+        const std::wstring & next_styleName				= next_par_->attrs_.text_style_name_;
         const _CP_OPT(std::wstring) next_masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(next_styleName);
 
         if ((next_masterPageName)  && (Context.get_master_page_name() != *next_masterPageName))
@@ -509,7 +509,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 
 void paragraph::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    Context.start_paragraph(attrs_.text_style_name_.style_name());
+    Context.start_paragraph(attrs_.text_style_name_);
     BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
         elm->xlsx_convert(Context); 
@@ -518,7 +518,7 @@ void paragraph::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void paragraph::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    Context.get_text_context().start_paragraph(attrs_.text_style_name_.style_name());
+    Context.get_text_context().start_paragraph(attrs_.text_style_name_);
     
 	BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
@@ -647,8 +647,8 @@ std::wostream & list::text_to_stream(std::wostream & _Wostream) const
 
 void list::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    text_style_name_ = style_ref( Attributes->get_val< std::wstring >(L"text:style-name").get_value_or(L"") );
-    text_continue_numbering_ = Attributes->get_val< bool >(L"text:continue-numbering");
+    text_style_name_			= Attributes->get_val< std::wstring >(L"text:style-name").get_value_or(L"");
+    text_continue_numbering_	= Attributes->get_val< bool >(L"text:continue-numbering");
     // TODO
 }
 
@@ -672,7 +672,7 @@ void list::add_text(const std::wstring & Text)
 void list::docx_convert(oox::docx_conversion_context & Context)
 {
     bool continue_ = text_continue_numbering_.get_value_or(false);
-    Context.start_list(text_style_name_.style_name(), continue_);
+    Context.start_list(text_style_name_, continue_);
 
     if (text_list_header_)
         text_list_header_->docx_convert(Context);
@@ -687,7 +687,7 @@ void list::docx_convert(oox::docx_conversion_context & Context)
 void list::pptx_convert(oox::pptx_conversion_context & Context)
 {
     bool continue_ = text_continue_numbering_.get_value_or(false);
-    Context.get_text_context().start_list(text_style_name_.style_name(), continue_);
+    Context.get_text_context().start_list(text_style_name_, continue_);
 
     if (text_list_header_)
         text_list_header_->pptx_convert(Context);
@@ -784,12 +784,9 @@ void text_section::docx_convert(oox::docx_conversion_context & Context)
 {
 	std::wstring current_page_properties = Context.get_page_properties();
    
-	Context.get_section_context().add_section(
-        text_section_attr_.text_name_, 
-        text_section_attr_.text_style_name_.get_value_or(style_ref()).style_name(),
-		current_page_properties
-        );
-	 Context.add_page_properties(current_page_properties);
+	Context.get_section_context().add_section (text_section_attr_.text_name_, text_section_attr_.text_style_name_.get_value_or(L""), current_page_properties);
+	
+	Context.add_page_properties(current_page_properties);
 
     BOOST_FOREACH(const office_element_ptr & elm, text_content_)
     {
@@ -1000,12 +997,9 @@ void text_illustration_index::docx_convert(oox::docx_conversion_context & Contex
 {
 	std::wstring current_page_properties = Context.get_page_properties();
    
-	Context.get_section_context().add_section(
-		text_section_attr_.text_name_, 
-		text_section_attr_.text_style_name_.get_value_or(style_ref()).style_name(),
-		current_page_properties
-		);
-	 Context.add_page_properties(current_page_properties);
+	Context.get_section_context().add_section (text_section_attr_.text_name_,text_section_attr_.text_style_name_.get_value_or(L""), current_page_properties);
+	
+	Context.add_page_properties(current_page_properties);
 
 	 if (text_index_body_)
         text_index_body_->docx_convert(Context);
@@ -1068,12 +1062,9 @@ void text_alphabetical_index::docx_convert(oox::docx_conversion_context & Contex
 {
 	std::wstring current_page_properties = Context.get_page_properties();
    
-	Context.get_section_context().add_section(
-		text_section_attr_.text_name_, 
-		text_section_attr_.text_style_name_.get_value_or(style_ref()).style_name(),
-		current_page_properties
-		);
-	 Context.add_page_properties(current_page_properties);
+	Context.get_section_context().add_section (text_section_attr_.text_name_, text_section_attr_.text_style_name_.get_value_or(L""), current_page_properties);
+	
+	Context.add_page_properties(current_page_properties);
 
 	 if (text_index_body_)
         text_index_body_->docx_convert(Context);
@@ -1135,12 +1126,9 @@ void text_bibliography::docx_convert(oox::docx_conversion_context & Context)
 {
 	std::wstring current_page_properties = Context.get_page_properties();
    
-	Context.get_section_context().add_section(
-		text_section_attr_.text_name_, 
-		text_section_attr_.text_style_name_.get_value_or(style_ref()).style_name(),
-		current_page_properties
-		);
-	 Context.add_page_properties(current_page_properties);
+	Context.get_section_context().add_section (text_section_attr_.text_name_, text_section_attr_.text_style_name_.get_value_or(L""), current_page_properties);
+	
+	Context.add_page_properties(current_page_properties);
 
 	 if (text_index_body_)
         text_index_body_->docx_convert(Context);

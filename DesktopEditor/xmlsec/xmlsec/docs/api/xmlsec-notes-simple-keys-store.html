@@ -1,0 +1,200 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Simple keys store.</title>
+<meta name="GENERATOR" content="Modular DocBook HTML Stylesheet Version 1.79">
+<link rel="HOME" title="XML Security Library Reference Manual" href="index.html">
+<link rel="UP" title="Keys manager." href="xmlsec-notes-keysmngr.html">
+<link rel="PREVIOUS" title="Keys manager." href="xmlsec-notes-keysmngr.html">
+<link rel="NEXT" title="Using keys manager for signatures/encryption." href="xmlsec-notes-keys-manager-sign-enc.html">
+<style type="text/css">.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+    padding: 0.5em;
+}
+.programlisting {
+    background: #eeeeff;
+    border: solid 1px #aaaaff;
+    padding: 0.5em;
+}
+.variablelist {
+    padding: 4px;
+    margin-left: 3em;
+}
+.navigation {
+    background: #ffeeee;
+    border: solid 1px #ffaaaa;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.navigation a {
+    color: #770000;
+}
+.navigation a:visited {
+    color: #550000;
+}
+.navigation .title {
+    font-size: 200%;
+}</style>
+<style type="text/css">
+table.CALSTABLE > tbody > tr:nth-child(1) > td:nth-child(1) {
+    width: 20em;
+}
+.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+}
+.programlisting {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation a {
+    color: initial;
+}
+.navigation a:visited {
+    color: initial;
+}
+</style>
+</head>
+<body><table width="100%" valign="top"><tr valign="top">
+<td valign="top" align="left" width="210">
+<img src="../images/logo.gif" alt="XML Security Library" border="0"><p></p>
+<ul>
+<li><a href="../index.html">Home</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="../news.html">News</a></li>
+<li><a href="../documentation.html">Documentation</a></li>
+<ul>
+<li><a href="../faq.html">FAQ</a></li>
+<li><a href="../api/xmlsec-notes.html">Tutorial</a></li>
+<li><a href="../api/xmlsec-reference.html">API reference</a></li>
+<li><a href="../api/xmlsec-examples.html">Examples</a></li>
+</ul>
+<li><a href="../xmldsig.html">XML Digital Signature</a></li>
+<ul><li><a href="http://www.aleksey.com/xmlsec/xmldsig-verifier.html">Online Verifier</a></li></ul>
+<li><a href="../xmlenc.html">XML Encryption</a></li>
+<li><a href="../c14n.html">XML Canonicalization</a></li>
+<li><a href="../bugs.html">Reporting Bugs</a></li>
+<li><a href="http://www.aleksey.com/pipermail/xmlsec">Mailing list</a></li>
+<li><a href="../related.html">Related</a></li>
+<li><a href="../authors.html">Authors</a></li>
+</ul>
+<table width="100%">
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/"><img src="../images/libxml2-logo.png" alt="LibXML2" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/XSLT"><img src="../images/libxslt-logo.png" alt="LibXSLT" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://www.openssl.org/"><img src="../images/openssl-logo.png" alt="OpenSSL" border="0"></a></td>
+</tr>
+<!--Links - start--><!--Links - end-->
+</table>
+</td>
+<td valign="top"><table width="100%" valign="top"><tr><td valign="top" align="left" id="xmlsecContent">
+<table width="100%" class="navigation" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="xmlsec-notes-keysmngr.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="xmlsec-notes-keysmngr.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<th width="100%" align="center">XML Security Library Reference Manual</th>
+<td><a accesskey="n" href="xmlsec-notes-keys-manager-sign-enc.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<br clear="all"><div class="SECT1">
+<h1 class="SECT1"><a name="XMLSEC-NOTES-SIMPLE-KEYS-STORE">Simple keys store.</a></h1>
+<p>	XML Security Library has a built-in simple keys store 
+	implemented using a keys list. You can use it in your application
+	if you have a small number of keys. However, this might be not a 
+	best option from performance point of view if you have a lot of keys.
+	In this case, you probably should implement your own keys store
+	using an SQL database or some other keys storage.
+	</p>
+<p>	     </p>
+<div class="EXAMPLE">
+<a name="AEN363"></a><p><b>Example 1. Initializing keys manager and loading keys from PEM files.</b></p>
+<pre class="PROGRAMLISTING">/**
+ * load_keys:
+ * @files:		the list of filenames.
+ * @files_size:		the number of filenames in #files.
+ *
+ * Creates default keys manager and load PEM keys from #files in it.
+ * The caller is responsible for destroing returned keys manager using
+ * @xmlSecKeysMngrDestroy.
+ *
+ * Returns the pointer to newly created keys manager or NULL if an error
+ * occurs.
+ */
+xmlSecKeysMngrPtr 
+load_keys(char** files, int files_size) {
+    xmlSecKeysMngrPtr mngr;
+    xmlSecKeyPtr key;
+    int i;
+    
+    assert(files);
+    assert(files_size &gt; 0);
+    
+    /* create and initialize keys manager, we use a default list based
+     * keys manager, implement your own xmlSecKeysStore klass if you need
+     * something more sophisticated 
+     */
+    mngr = xmlSecKeysMngrCreate();
+    if(mngr == NULL) {
+	fprintf(stderr, "Error: failed to create keys manager.\n");
+	return(NULL);
+    }
+    if(xmlSecCryptoAppDefaultKeysMngrInit(mngr) &lt; 0) {
+	fprintf(stderr, "Error: failed to initialize keys manager.\n");
+	xmlSecKeysMngrDestroy(mngr);
+	return(NULL);
+    }    
+    
+    for(i = 0; i &lt; files_size; ++i) {
+	assert(files[i]);
+
+	/* load key */
+	key = xmlSecCryptoAppKeyLoad(files[i], xmlSecKeyDataFormatPem, NULL, NULL, NULL);
+	if(key == NULL) {
+    	    fprintf(stderr,"Error: failed to load pem key from \"%s\"\n", files[i]);
+	    xmlSecKeysMngrDestroy(mngr);
+	    return(NULL);
+	}
+
+	/* set key name to the file name, this is just an example! */
+	if(xmlSecKeySetName(key, BAD_CAST files[i]) &lt; 0) {
+    	    fprintf(stderr,"Error: failed to set key name for key from \"%s\"\n", files[i]);
+	    xmlSecKeyDestroy(key);
+	    xmlSecKeysMngrDestroy(mngr);
+	    return(NULL);
+	}
+	
+	/* add key to keys manager, from now on keys manager is responsible 
+	 * for destroying key 
+	 */
+	if(xmlSecCryptoAppDefaultKeysMngrAdoptKey(mngr, key) &lt; 0) {
+    	    fprintf(stderr,"Error: failed to add key from \"%s\" to keys manager\n", files[i]);
+	    xmlSecKeyDestroy(key);
+	    xmlSecKeysMngrDestroy(mngr);
+	    return(NULL);
+	}
+    }
+
+    return(mngr);
+}
+		</pre>
+<p><a href="xmlsec-verify-with-keys-mngr.html#XMLSEC-EXAMPLE-VERIFY2">Full program listing</a></p>
+</div>
+	</div>
+<table class="navigation" width="100%" summary="Navigation footer" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td align="left"><a accesskey="p" href="xmlsec-notes-keysmngr.html"><b>&lt;&lt;&lt; Keys manager.</b></a></td>
+<td align="right"><a accesskey="n" href="xmlsec-notes-keys-manager-sign-enc.html"><b>Using keys manager for signatures/encryption. &gt;&gt;&gt;</b></a></td>
+</tr></table>
+</td></tr></table></td>
+</tr></table></body>
+</html>

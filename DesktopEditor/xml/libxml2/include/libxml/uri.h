@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Summary: library of generic URI related routines
  * Description: library of generic URI related routines
  *              Implements RFC 2396

@@ -42,8 +42,9 @@ namespace OOX
 	class Media : public File
 	{
 	public:
-		Media()
+		Media(bool bDocument = true)
 		{
+			m_bDocument = bDocument;
 		}
 		Media(const CPath& filename)
 		{
@@ -53,45 +54,34 @@ namespace OOX
 		{
 		}
 
-	public:
 		virtual void read(const CPath& filename)
 		{
 			m_filename = filename;
 		}
 		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const
 		{
-			//std::wstring newFilename = filename.filename();
-			//boost::filesystem::wpath newFilePath = filename.parent_path();
-			//boost::replace_all(newFilename, L" ", L"_");
-			//if (boost::filesystem::exists(m_filename) && !boost::filesystem::exists(newFilePath/newFilename))	
-			//{
-			//	if (m_filename.extension() == L".svm")
-			//		ConvertSvmToImage(m_filename, replace_extension(newFilePath/newFilename, L"png"));
-			//	else
-			//		boost::filesystem::copy_file(m_filename, newFilePath/newFilename);
-			//}
-			//if (m_filename.extension() == L".svm")
-			//	content.Default->add(replace_extension(newFilePath/newFilename, L"png"));
-			//else
-			//	content.Default->add(m_filename);
 		}
-
-	public:
-		const CPath filename() const
+		void set_filename(const std::wstring & file_path)
+		{
+			m_filename			= file_path;
+			m_sOutputFilename	= m_filename.GetFilename();
+		}
+		void set_filename(CPath & file_path)
+		{
+			m_filename			= file_path;
+			m_sOutputFilename	= file_path.GetFilename();
+		}
+		CPath filename()
 		{
 			return m_filename;
 		}
 		void copy_to(const CPath& path) const
 		{
-			//std::wstring newFilename = m_filename.filename();
-			//boost::replace_all(newFilename, L" ", L"_");
-
-			//if (boost::filesystem::exists(m_filename) && !boost::filesystem::exists(path/m_filename.filename()))
-			//	boost::filesystem::copy_file(m_filename, path/newFilename);
 		}
 
 	protected:
 		CPath	m_filename;
+		bool	m_bDocument; //for upper/lower level rels (defaultDirectory)
 	};
 } // namespace OOX
 

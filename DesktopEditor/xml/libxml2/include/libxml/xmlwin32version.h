@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Summary: compile-time version informations on Windows
  * Description: compile-time version informations for the XML library
  *              when compiled on the Windows platform

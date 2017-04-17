@@ -41,7 +41,6 @@
 
 
 #include "color.h"
-#include "style_ref.h"
 #include "iconset_type.h"
 #include "calcext_type.h"
 
@@ -65,7 +64,7 @@ public:
    	void serialize(CP_ATTR_NODE);   
 
 	_CP_OPT(std::wstring)	calcext_base_cell_address_;
-	_CP_OPT(odf_types::style_ref)		calcext_apply_style_name_;
+	_CP_OPT(std::wstring)	calcext_apply_style_name_;
 	_CP_OPT(std::wstring)	calcext_value_;
 
 };
@@ -83,7 +82,7 @@ class calcext_date_is_attr
 public:
    	void serialize(CP_ATTR_NODE);   
 
-	_CP_OPT(odf_types::style_ref)		calcext_style_;
+	_CP_OPT(std::wstring)	calcext_style_;
 	_CP_OPT(std::wstring)	calcext_date_;
 
 };

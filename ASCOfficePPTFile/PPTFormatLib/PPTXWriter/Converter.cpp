@@ -196,6 +196,8 @@ void NSPresentationEditor::CPPTXWriter::WriteContentTypes()
 <Default Extension=\"xml\" ContentType=\"application/xml\" />\
 <Default Extension=\"gif\" ContentType=\"image/gif\"/>\
 <Default Extension=\"emf\" ContentType=\"image/x-emf\"/>\
+<Default Extension=\"xls\" ContentType=\"application/vnd.ms-excel\"/>\
+<Default Extension=\"xlsx\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"/>\
 <Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\" />\
 <Default Extension=\"jpg\" ContentType=\"application/octet-stream\"/>");
 
@@ -551,7 +553,7 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 		oFile.WriteStringUTF8(oStringWriter.GetData());
 		oFile.CloseFile();
 
-		// теперь masterslide
+	// теперь masterslide
 		CRelsGenerator oRels(&m_oManager);
 		int nCountLayouts = (int)pTheme->m_arLayouts.size();
 		
@@ -767,6 +769,7 @@ void NSPresentationEditor::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRe
 void NSPresentationEditor::CPPTXWriter::WriteLayout(CLayout& oLayout, int nIndexLayout, int nStartLayout, int nIndexTheme)
 {
 	CStringWriter oWriter;
+	
 	CRelsGenerator oRels(&m_oManager);
 	oRels.StartLayout(nIndexTheme);
 

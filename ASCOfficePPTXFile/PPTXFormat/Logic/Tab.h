@@ -75,14 +75,6 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("pos"), pos);
-				oAttr.WriteLimitNullable(_T("algn"), algn);
-
-				return XmlUtils::CreateNode(_T("a:tab"), oAttr);
-			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{

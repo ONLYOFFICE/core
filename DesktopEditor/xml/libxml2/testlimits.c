@@ -10,11 +10,8 @@
  * daniel@veillard.com
  */
 
-#ifdef HAVE_CONFIG_H
 #include "libxml.h"
-#else
 #include <stdio.h>
-#endif
 
 #if !defined(_WIN32) || defined(__CYGWIN__)
 #include <unistd.h>
@@ -1287,13 +1284,14 @@ saxTest(const char *filename, size_t limit, int options, int fail) {
         if (fail)
             res = 0;
         else {
-            fprintf(stderr, "Failed to parse '%s' %lu\n", filename, limit);
+            fprintf(stderr, "Failed to parse '%s' %lu\n", filename,
+                    (unsigned long) limit);
             res = 1;
         }
     } else {
         if (fail) {
             fprintf(stderr, "Failed to get failure for '%s' %lu\n",
-                    filename, limit);
+                    filename, (unsigned long) limit);
             res = 1;
         } else
             res = 0;
@@ -1342,7 +1340,7 @@ readerTest(const char *filename, size_t limit, int options, int fail) {
                         filename, crazy_indx);
             else
                 fprintf(stderr, "Failed to parse '%s' %lu\n",
-                        filename, limit);
+                        filename, (unsigned long) limit);
             res = 1;
         }
     } else {
@@ -1352,7 +1350,7 @@ readerTest(const char *filename, size_t limit, int options, int fail) {
                         filename, crazy_indx);
             else
                 fprintf(stderr, "Failed to get failure for '%s' %lu\n",
-                        filename, limit);
+                        filename, (unsigned long) limit);
             res = 1;
         } else
             res = 0;

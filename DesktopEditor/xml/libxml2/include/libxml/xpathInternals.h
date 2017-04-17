@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Summary: internal interfaces for XML Path Language implementation
  * Description: internal interfaces for XML Path Language implementation
  *              used to build new modules on top of XPath like XPointer and
@@ -229,7 +229,7 @@ XMLPUBFUN void * XMLCALL
  * Empties a node-set.
  */
 #define xmlXPathEmptyNodeSet(ns)					\
-    { while ((ns)->nodeNr > 0) (ns)->nodeTab[(ns)->nodeNr--] = NULL; }
+    { while ((ns)->nodeNr > 0) (ns)->nodeTab[--(ns)->nodeNr] = NULL; }
 
 /**
  * CHECK_ERROR:

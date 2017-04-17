@@ -60,12 +60,14 @@ namespace odf_writer {
 	if (style_)
 	{
 		style_->style_family_ = style_family(style_family_);
+		style_->content_.style_family_ = style_family_;
 	}
 	default_style* default_style_ = dynamic_cast<default_style*>(elm.get());
 
 	if (default_style_)
 	{
 		default_style_->style_family_ = style_family(style_family_);
+		default_style_->content_.style_family_ = style_family_;
 	}
 
 	list_style_exist = false;
@@ -112,6 +114,12 @@ style_family::type odf_style_state::get_family_type()
 {
 	return style_family_;
 }
+
+void odf_style_state::set_family_type (odf_types::style_family::type type)
+{
+	 style_family_ = type;
+}
+
 void odf_style_state::set_parent_style_name(std::wstring name)
 {
 	if (name.length() < 1) return;
@@ -202,18 +210,18 @@ void odf_style_state::apply_from(style* other_style)
 
 	//style_->style_parent_style_name_ = other_style->style_parent_style_name_;
 
-	//style_paragraph_properties * props = style_->style_content_.get_style_text_properties();
-	//if (props)props->apply_from(other_style->style_content_.get_style_paragraph_properties());
+	//style_paragraph_properties * props = style_->content_.get_style_text_properties();
+	//if (props)props->apply_from(other_style->content_.get_style_paragraph_properties());
 	
 }
 //////////////////////////////////////////////////////////////////
 style_text_properties * odf_style_state::get_text_properties() 
 {
 	style* style_ = dynamic_cast<style*>(odf_style_.get());
-	if (style_)	return style_->style_content_.get_style_text_properties();   
+	if (style_)	return style_->content_.get_style_text_properties();   
 
 	default_style* style_d_ = dynamic_cast<default_style*>(odf_style_.get());
-	if (style_d_)return style_d_->style_content_.get_style_text_properties(); 
+	if (style_d_)return style_d_->content_.get_style_text_properties(); 
 		
 	return NULL;
 }
@@ -221,31 +229,32 @@ style_text_properties * odf_style_state::get_text_properties()
 style_paragraph_properties * odf_style_state::get_paragraph_properties()
 {
 	style* style_ = dynamic_cast<style*>(odf_style_.get());
-	if (style_) return style_->style_content_.get_style_paragraph_properties(); 
+	if (style_) return style_->content_.get_style_paragraph_properties(); 
 	
 	default_style* style_d = dynamic_cast<default_style*>(odf_style_.get());
-	if (style_d) return style_d->style_content_.get_style_paragraph_properties(); 
+	if (style_d) return style_d->content_.get_style_paragraph_properties(); 
 	
 	return NULL;
 }
 
-style_graphic_properties * odf_style_state::get_graphic_properties() 
+graphic_format_properties * odf_style_state::get_graphic_properties() 
 {
 	style* style_ = dynamic_cast<style*>(odf_style_.get());
-	if (style_)return style_->style_content_.get_style_graphic_properties();  
+	if (style_)return style_->content_.get_graphic_properties();  
 	
 	default_style* default_style_ = dynamic_cast<default_style*>(odf_style_.get());
-	if (default_style_)return default_style_->style_content_.get_style_graphic_properties();  
+	if (default_style_)return default_style_->content_.get_graphic_properties();  
 
 	return NULL;
 }
+
 style_table_properties * odf_style_state::get_table_properties()
 {
 	style* style_ = dynamic_cast<style*>(odf_style_.get());
-	if (style_) return style_->style_content_.get_style_table_properties(); 
+	if (style_) return style_->content_.get_style_table_properties(); 
 
 	default_style* default_style_ = dynamic_cast<default_style*>(odf_style_.get());
-	if (default_style_) return default_style_->style_content_.get_style_table_properties(); 
+	if (default_style_) return default_style_->content_.get_style_table_properties(); 
 
 	return NULL;
 }
@@ -253,10 +262,10 @@ style_table_properties * odf_style_state::get_table_properties()
 style_section_properties * odf_style_state::get_section_properties()
 {
 	style* style_ = dynamic_cast<style*>(odf_style_.get());
-	if (style_) return style_->style_content_.get_style_section_properties();   
+	if (style_) return style_->content_.get_style_section_properties();   
 
 	default_style* default_style_ = dynamic_cast<default_style*>(odf_style_.get());
-	if (default_style_) return default_style_->style_content_.get_style_section_properties();   
+	if (default_style_) return default_style_->content_.get_style_section_properties();   
 
 	return NULL;
 }
@@ -264,10 +273,10 @@ style_section_properties * odf_style_state::get_section_properties()
 style_table_cell_properties * odf_style_state::get_table_cell_properties()
 {
 	style* style_ = dynamic_cast<style*>(odf_style_.get());
-	if (style_) return style_->style_content_.get_style_table_cell_properties();
+	if (style_) return style_->content_.get_style_table_cell_properties();
 
 	default_style* default_style_ = dynamic_cast<default_style*>(odf_style_.get());
-	if (default_style_) return default_style_->style_content_.get_style_table_cell_properties();
+	if (default_style_) return default_style_->content_.get_style_table_cell_properties();
 
 	return NULL;
 }
@@ -275,10 +284,10 @@ style_table_cell_properties * odf_style_state::get_table_cell_properties()
 style_table_row_properties * odf_style_state::get_table_row_properties() 
 {
 	style* style_ = dynamic_cast<style*>(odf_style_.get());
-	if (style_) return style_->style_content_.get_style_table_row_properties(); 
+	if (style_) return style_->content_.get_style_table_row_properties(); 
 	
 	default_style* default_style_ = dynamic_cast<default_style*>(odf_style_.get());
-	if (default_style_) return default_style_->style_content_.get_style_table_row_properties(); 
+	if (default_style_) return default_style_->content_.get_style_table_row_properties(); 
 
 	return NULL;
 }
@@ -286,10 +295,10 @@ style_table_row_properties * odf_style_state::get_table_row_properties()
 style_table_column_properties * odf_style_state::get_table_column_properties() 
 {
 	style* style_ = dynamic_cast<style*>(odf_style_.get());
-	if (style_) return style_->style_content_.get_style_table_column_properties();
+	if (style_) return style_->content_.get_style_table_column_properties();
 
 	default_style* default_style_ = dynamic_cast<default_style*>(odf_style_.get());
-	if (default_style_) return default_style_->style_content_.get_style_table_column_properties();
+	if (default_style_) return default_style_->content_.get_style_table_column_properties();
 
 	return NULL;
 }
@@ -297,20 +306,21 @@ style_table_column_properties * odf_style_state::get_table_column_properties()
 style_chart_properties * odf_style_state::get_chart_properties() 
 {
 	style* style_ = dynamic_cast<style*>(odf_style_.get());
-	if (style_) return style_->style_content_.get_style_chart_properties(); 
+	if (style_) return style_->content_.get_style_chart_properties(); 
 
 	default_style* default_style_ = dynamic_cast<default_style*>(odf_style_.get());
-	if (default_style_) return default_style_->style_content_.get_style_chart_properties(); 
+	if (default_style_) return default_style_->content_.get_style_chart_properties(); 
 
 	return NULL;
 }
-//style_drawing_page_properties * odf_style_state::get_drawing_page_properties()
-//{
-//	style* style_ = dynamic_cast<style*>(odf_style_.get());
-//	if (!style_)return NULL;
-//
-//	return style_->style_content_.get_style_drawing_page_properties();
-//}
+
+style_drawing_page_properties * odf_style_state::get_drawing_page_properties()
+{
+	style* style_ = dynamic_cast<style*>(odf_style_.get());
+	if (!style_)return NULL;
+
+	return style_->content_.get_style_drawing_page_properties();
+}
 
 ///////////////////////
 

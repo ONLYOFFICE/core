@@ -37,7 +37,7 @@
 
 namespace CRYPT
 {
-	RC4Decryptor::RC4Decryptor(CryptRC4Data & header, std::wstring _password, int _type) :
+	RC4Decryptor::RC4Decryptor(_rc4CryptData & header, std::wstring _password, int _type) :
 													crypt(new RC4Crypt(header, _password, _type))
 	{
 		crypt_data	= header;

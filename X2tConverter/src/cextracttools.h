@@ -131,7 +131,12 @@ namespace NExtractTools
         TCD_XLST2ODS,
         TCD_XLST_BIN2ODS,
 
-        TCD_XML2DOCX,
+//2 odp
+        TCD_PPTX2ODP,
+        TCD_PPTT2ODP,
+        TCD_PPTX_BIN2ODP,
+		
+		TCD_XML2DOCX,
         TCD_DOCX2XML,
 //
 		TCD_MSCRYPT2,

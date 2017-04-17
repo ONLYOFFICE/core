@@ -50,7 +50,6 @@ namespace NSBinPptxRW
 
 #include "../../../Common/DocxFormat/Source/SystemUtility/File.h"
 
-#include "../../../DesktopEditor/common/Path.h"
 #include "../../../ASCOfficeDocxFile2/DocWrapper/FontProcessor.h"
 
 #include "../../../ASCOfficeDocxFile2/BinReader/FileWriter.h"
@@ -211,7 +210,7 @@ void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::F
 
 //default files
 
-	pDocxWriter->m_oDefaultTheme.Write(pathTheme.GetPath());
+	pDocxWriter->m_oTheme.Write(pathTheme.GetPath());
 
 	OOX::CContentTypes oContentTypes;
 	//docProps
@@ -224,7 +223,7 @@ void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::F
 	if (pApp)
 	{
 		pApp->SetApplication(_T("OnlyOffice"));
-		pApp->SetAppVersion(_T("3.0000"));
+		pApp->SetAppVersion(_T("4.3000"));
 		pApp->SetDocSecurity(0);
 		pApp->SetScaleCrop(false);
 		pApp->SetLinksUpToDate(false);
@@ -243,20 +242,24 @@ void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::F
 		delete pCore;
 	} 
 /////////////////////////////////////////////////////////////////////////////////////
-
-	pDocxWriter->m_oCommentsWriter.Write();
-	pDocxWriter->m_oChartWriter.Write();
+	pDocxWriter->m_oTheme.Write(strDirectory);
 	pDocxWriter->m_oStylesWriter.Write();
-	pDocxWriter->m_oNumberingWriter.Write();
 	pDocxWriter->m_oFontTableWriter.Write();
-	pDocxWriter->m_oHeaderFooterWriter.Write();
-	//Setting пишем после HeaderFooter, чтобы заполнить evenAndOddHeaders
+	
 	pDocxWriter->m_oSettingWriter.Write();
 	pDocxWriter->m_oWebSettingsWriter.Write();
-	//Document пишем после HeaderFooter, чтобы заполнить sectPr
+	
 	pDocxWriter->m_oDocumentWriter.Write();
-	//Rels и ContentTypes пишем в конце
+	
 	pDocxWriter->m_oDocumentRelsWriter.Write();
-	pDocxWriter->m_oContentTypesWriter.Write();
+
+	oContentTypes.Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml",	OOX::CPath(L"/word"),		OOX::CPath(L"document.xml"));
+	oContentTypes.Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml",		OOX::CPath(L"/word"),		OOX::CPath(L"styles.xml"));
+	oContentTypes.Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml",		OOX::CPath(L"/word"),		OOX::CPath(L"settings.xml"));
+	oContentTypes.Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml",	OOX::CPath(L"/word"),		OOX::CPath(L"webSettings.xml"));
+	oContentTypes.Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml",		OOX::CPath(L"/word"),		OOX::CPath(L"fontTable.xml"));
+	oContentTypes.Registration(L"application/vnd.openxmlformats-officedocument.theme+xml",							OOX::CPath(L"/word/theme"), OOX::CPath(L"theme1.xml"));
+
+	oContentTypes.Write(strDirectory);
 }
 

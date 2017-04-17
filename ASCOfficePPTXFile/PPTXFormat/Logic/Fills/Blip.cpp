@@ -99,7 +99,7 @@ namespace PPTX
 				Effects[i].SetParentPointer(this);
 		}
 
-		std::wstring Blip::GetFullPicName(FileContainer* pRels)const
+		std::wstring Blip::GetFullPicName(OOX::IFileContainer* pRels)const
 		{
 			if(embed.IsInit())
 			{
@@ -141,24 +141,20 @@ namespace PPTX
 			}
 			return _T("");
 		}
-		std::wstring Blip::GetFullOleName(const OOX::RId& oRId, FileContainer* pRels)const
+		std::wstring Blip::GetFullOleName(const OOX::RId& oRId, OOX::IFileContainer* pRels)const
 		{
-			if (pRels != NULL)
-			{
-				smart_ptr<OOX::OleObject> p = pRels->GetOleObject(oRId);
-				if (p.is_init())
-					return p->filename().m_strFilename;
-			}
-
-			if(parentFileIs<Slide>())
-				return parentFileAs<Slide>().GetOleFromRId(oRId);
-			else if(parentFileIs<SlideLayout>())
-				return parentFileAs<SlideLayout>().GetOleFromRId(oRId);
-			else if(parentFileIs<SlideMaster>())
-				return parentFileAs<SlideMaster>().GetOleFromRId(oRId);
-			else if(parentFileIs<Theme>())
-				return parentFileAs<Theme>().GetOleFromRId(oRId);
-			return _T("");
+			smart_ptr<OOX::OleObject> pOleObject;
+			
+			if (pRels != NULL)						pOleObject = pRels->GetOleObject(oRId);
+			else if(parentFileIs<Slide>())			pOleObject = parentFileAs<Slide>().GetOleObject(oRId);
+			else if(parentFileIs<SlideLayout>())	pOleObject = parentFileAs<SlideLayout>().GetOleObject(oRId);
+			else if(parentFileIs<SlideMaster>())	pOleObject = parentFileAs<SlideMaster>().GetOleObject(oRId);
+			else if(parentFileIs<Theme>())			pOleObject = parentFileAs<Theme>().GetOleObject(oRId);
+			
+			if (pOleObject.IsInit())
+				return pOleObject->filename().m_strFilename;
+			
+			return L"";
 		}
 	} // namespace Logic
 } // namespace PPTX

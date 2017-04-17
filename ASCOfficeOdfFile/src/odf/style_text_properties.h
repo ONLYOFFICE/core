@@ -40,7 +40,6 @@
 
 #include "office_elements_create.h"
 
-#include "datatypes/style_ref.h"
 #include "datatypes/fontvariant.h"
 #include "datatypes/texttransform.h"
 #include "datatypes/color.h"
@@ -106,7 +105,7 @@ public:
     _CP_OPT(odf_types::line_width)			style_text_line_through_width_;
     _CP_OPT(odf_types::color)				style_text_line_through_color_;
     _CP_OPT(std::wstring)					style_text_line_through_text_;
-    _CP_OPT(odf_types::style_ref)			style_text_line_through_text_style_;
+    _CP_OPT(std::wstring)					style_text_line_through_text_style_;
     _CP_OPT(odf_types::text_position)		style_text_position_;
     _CP_OPT(std::wstring)					style_font_name_;    
     _CP_OPT(std::wstring)					style_font_name_asian_;  

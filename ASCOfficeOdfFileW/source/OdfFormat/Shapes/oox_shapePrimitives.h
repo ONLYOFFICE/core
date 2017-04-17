@@ -44,7 +44,7 @@
 //	shapetypeHeptagon,
 //	shapetypeNonIsoscelesTrapezoid,
 //	shapetypePie,
-//	shapetypePieWedge,
+//+	shapetypePieWedge,
 //+	shapetypePlaque,
 //	shapetypePlaqueTabs,
 //	shapetypeSquareTabs,
@@ -324,7 +324,7 @@ public:
 	}
 };
 
-class  oox_shape_Gear6 : public oox_shape
+class oox_shape_Gear6 : public oox_shape
 {
 public:
 	oox_shape_Gear6()
@@ -411,7 +411,7 @@ public:
 /////////////////////////////////////////////////////////
 	}
 };
-class  oox_shape_Gear9 : public oox_shape
+class oox_shape_Gear9 : public oox_shape
 {
 public:
 	oox_shape_Gear9()
@@ -755,6 +755,33 @@ public:
  		add(L"f189", L"if(?f148, ?f166, ?f183)");
  		add(L"f190", L"if(?f148, ?f167, ?f181)");
  		add(L"f191", L"if(?f148, ?f168, ?f183)");
+/////////////////////////////////////////////////////////
+	}
+};
+
+class oox_shape_PieWedge : public oox_shape
+{
+public:
+	oox_shape_PieWedge()
+	{
+		odf_type_name	=L"ooxml-PieWedge";
+
+		enhanced_path	= L"M 0 ?f7 G ?f8 ?f9 ?f10 ?f11 L ?f4 ?f7 Z N";
+		text_areas		= L"?f2 ?f3 ?f4 ?f7";
+		view_box		= L"0 0 0 0";
+		
+		add(L"f0", L"logwidth*cos(pi*(13500000)/10800000)");
+		add(L"f1", L"logheight*sin(pi*(13500000)/10800000)");
+		add(L"f2", L"logwidth+?f0 -0");
+		add(L"f3", L"logheight+?f1 -0");
+		add(L"f4", L"logwidth");
+		add(L"f5", L"logheight/2");
+		add(L"f6", L"logwidth/2");
+		add(L"f7", L"logheight");
+		add(L"f8", L"logwidth");
+		add(L"f9", L"logheight");
+		add(L"f10", L"(10800000)/60000.0");
+		add(L"f11", L"(5400000)/60000.0");
 /////////////////////////////////////////////////////////
 	}
 };

@@ -67,8 +67,7 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
     
     const _CP_OPT(std::wstring) name = 
         common_draw_attlists_.shape_with_text_and_styles_.
-        common_draw_shape_with_styles_attlist_.
-        common_draw_name_attlist_.draw_name_;
+        common_shape_draw_attlist_.draw_name_;
 	
 	Context.get_drawing_context().add_name_object(name.get_value_or(L"Shape"));
 

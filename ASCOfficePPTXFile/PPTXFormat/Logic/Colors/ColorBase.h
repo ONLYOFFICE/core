@@ -44,6 +44,7 @@ namespace PPTX
 
 	namespace Logic
 	{
+		class ClrMap;
 		class ColorBase : public WrapperWritingElement
 		{
 		public:
@@ -102,7 +103,7 @@ namespace PPTX
 				return ApplyModifiers(ctABGR);
 			}
 
-			virtual DWORD GetRGBColor(NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, DWORD ARGB = 0)
+			virtual DWORD GetRGBColor(NSCommon::smart_ptr<PPTX::Theme>& _oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& _oClrMap, DWORD ARGB = 0)
 			{
 				return GetARGB(ARGB);
 			}

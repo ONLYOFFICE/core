@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Summary: Unicode character APIs
  * Description: API for the Unicode character APIs
  *

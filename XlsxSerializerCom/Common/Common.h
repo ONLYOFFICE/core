@@ -32,8 +32,8 @@
 #ifndef SERIALIZER_COMMON
 #define SERIALIZER_COMMON
 
-#include "../../DesktopEditor/common/File.h"
 #include "../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 
 #include <string>
 #include <vector>

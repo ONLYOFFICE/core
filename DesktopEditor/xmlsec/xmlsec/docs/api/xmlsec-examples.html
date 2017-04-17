@@ -1,0 +1,142 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Examples.</title>
+<meta name="GENERATOR" content="Modular DocBook HTML Stylesheet Version 1.79">
+<link rel="HOME" title="XML Security Library Reference Manual" href="index.html">
+<link rel="UP" title="XML Security Library Tutorial" href="xmlsec-notes.html">
+<link rel="PREVIOUS" title="Sharing the results." href="xmlsec-notes-new-crypto-sharing-results.html">
+<link rel="NEXT" title="Signing a template file." href="xmlsec-examples-sign-template-file.html">
+<style type="text/css">.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+    padding: 0.5em;
+}
+.programlisting {
+    background: #eeeeff;
+    border: solid 1px #aaaaff;
+    padding: 0.5em;
+}
+.variablelist {
+    padding: 4px;
+    margin-left: 3em;
+}
+.navigation {
+    background: #ffeeee;
+    border: solid 1px #ffaaaa;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.navigation a {
+    color: #770000;
+}
+.navigation a:visited {
+    color: #550000;
+}
+.navigation .title {
+    font-size: 200%;
+}</style>
+<style type="text/css">
+table.CALSTABLE > tbody > tr:nth-child(1) > td:nth-child(1) {
+    width: 20em;
+}
+.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+}
+.programlisting {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation a {
+    color: initial;
+}
+.navigation a:visited {
+    color: initial;
+}
+</style>
+</head>
+<body><table width="100%" valign="top"><tr valign="top">
+<td valign="top" align="left" width="210">
+<img src="../images/logo.gif" alt="XML Security Library" border="0"><p></p>
+<ul>
+<li><a href="../index.html">Home</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="../news.html">News</a></li>
+<li><a href="../documentation.html">Documentation</a></li>
+<ul>
+<li><a href="../faq.html">FAQ</a></li>
+<li><a href="../api/xmlsec-notes.html">Tutorial</a></li>
+<li><a href="../api/xmlsec-reference.html">API reference</a></li>
+<li><a href="../api/xmlsec-examples.html">Examples</a></li>
+</ul>
+<li><a href="../xmldsig.html">XML Digital Signature</a></li>
+<ul><li><a href="http://www.aleksey.com/xmlsec/xmldsig-verifier.html">Online Verifier</a></li></ul>
+<li><a href="../xmlenc.html">XML Encryption</a></li>
+<li><a href="../c14n.html">XML Canonicalization</a></li>
+<li><a href="../bugs.html">Reporting Bugs</a></li>
+<li><a href="http://www.aleksey.com/pipermail/xmlsec">Mailing list</a></li>
+<li><a href="../related.html">Related</a></li>
+<li><a href="../authors.html">Authors</a></li>
+</ul>
+<table width="100%">
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/"><img src="../images/libxml2-logo.png" alt="LibXML2" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/XSLT"><img src="../images/libxslt-logo.png" alt="LibXSLT" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://www.openssl.org/"><img src="../images/openssl-logo.png" alt="OpenSSL" border="0"></a></td>
+</tr>
+<!--Links - start--><!--Links - end-->
+</table>
+</td>
+<td valign="top"><table width="100%" valign="top"><tr><td valign="top" align="left" id="xmlsecContent">
+<table width="100%" class="navigation" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="xmlsec-notes-new-crypto-sharing-results.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="xmlsec-notes.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<th width="100%" align="center">XML Security Library Reference Manual</th>
+<td><a accesskey="n" href="xmlsec-examples-sign-template-file.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="CHAPTER">
+<h1>
+<a name="XMLSEC-EXAMPLES"></a>Examples.</h1>
+<div class="TOC"><dl>
+<dt><b>Table of Contents</b></dt>
+<dt><a href="xmlsec-examples.html#XMLSEC-EXAMPLES-OVERVIEW">XML Security Library Examples.</a></dt>
+<dt><a href="xmlsec-examples-sign-template-file.html">Signing a template file.</a></dt>
+<dt><a href="xmlsec-examples-sign-dynamimc-template.html">Signing a dynamicaly created template.</a></dt>
+<dt><a href="xmlsec-examples-sign-x509.html">Signing with X509 certificate.</a></dt>
+<dt><a href="xmlsec-verify-with-key.html">Verifying a signature with a single key.</a></dt>
+<dt><a href="xmlsec-verify-with-keys-mngr.html">Verifying a signature with keys manager.</a></dt>
+<dt><a href="xmlsec-verify-with-x509.html">Verifying a signature with X509 certificates.</a></dt>
+<dt><a href="xmlsec-verify-with-restrictions.html">Verifying a signature with additional restrictions.</a></dt>
+<dt><a href="xmlsec-encrypt-template-file.html">Encrypting data with a template file.</a></dt>
+<dt><a href="xmlsec-encrypt-dynamic-template.html">Encrypting data with a dynamicaly created template.</a></dt>
+<dt><a href="xmlsec-encrypt-with-session-key.html">Encrypting data with a session key.</a></dt>
+<dt><a href="xmlsec-decrypt-with-signle-key.html">Decrypting data with a single key.</a></dt>
+<dt><a href="xmlsec-decrypt-with-keys-mngr.html">Decrypting data with keys manager.</a></dt>
+<dt><a href="xmlsec-custom-keys-manager.html">Writing a custom keys manager.</a></dt>
+</dl></div>
+<br clear="all"><div class="SECT1">
+<h1 class="SECT1"><a name="XMLSEC-EXAMPLES-OVERVIEW">XML Security Library Examples.</a></h1>
+<p>This section contains several examples of using XML Security Library
+	to sign, veiryf, encrypt or decrypt XML documents.</p>
+</div>
+</div>
+<table class="navigation" width="100%" summary="Navigation footer" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td align="left"><a accesskey="p" href="xmlsec-notes-new-crypto-sharing-results.html"><b>&lt;&lt;&lt; Sharing the results.</b></a></td>
+<td align="right"><a accesskey="n" href="xmlsec-examples-sign-template-file.html"><b>Signing a template file. &gt;&gt;&gt;</b></a></td>
+</tr></table>
+</td></tr></table></td>
+</tr></table></body>
+</html>

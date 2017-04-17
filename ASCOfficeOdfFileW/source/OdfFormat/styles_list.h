@@ -86,7 +86,7 @@ class text_list_level_style_number_attr
 public:
     text_list_level_style_number_attr()  {}
 
-	_CP_OPT(odf_types::style_ref) text_style_name_;
+	_CP_OPT(std::wstring) text_style_name_;
     
 	odf_types::common_num_format_attlist				common_num_format_attlist_;
     odf_types::common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
@@ -204,7 +204,7 @@ class text_list_level_style_bullet_attr
 {
 public:
 
-    _CP_OPT(odf_types::style_ref)		text_style_name_;
+    _CP_OPT(std::wstring)		text_style_name_;
     _CP_OPT(wchar_t)		text_bullet_char_;
     _CP_OPT(odf_types::percent)		text_bullet_relative_size_;
 
@@ -242,7 +242,7 @@ class text_list_level_style_image_attr
 {
 public:
 
-    _CP_OPT(odf_types::style_ref)		text_style_name_;
+    _CP_OPT(std::wstring)			text_style_name_;
 	odf_types::common_xlink_attlist	common_xlink_attlist_;
 
  	void serialize(CP_ATTR_NODE);

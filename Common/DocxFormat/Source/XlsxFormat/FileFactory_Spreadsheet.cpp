@@ -29,13 +29,11 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "stdafx.h"
 #include "CommonInclude.h"
 
 #include "FileTypes_Spreadsheet.h"
 
-#include "../DocxFormat/Theme/Theme.h"
-#include "../DocxFormat/Theme/ThemeOverride.h"
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 #include "../DocxFormat/VmlDrawing.h"
 #include "../DocxFormat/Media/OleObject.h"
 
@@ -45,7 +43,7 @@
 #include "Workbook/Workbook.h"
 #include "Worksheets/Worksheet.h"
 #include "CalcChain/CalcChain.h"
-#include "Drawing/Image.h"
+
 #include "Table/Table.h"
 #include "ExternalLinks/ExternalLinks.h"
 #include "ExternalLinks/ExternalLinkPath.h"
@@ -58,8 +56,9 @@ namespace OOX
 	{
 		smart_ptr<OOX::File> CreateFile(const OOX::CPath& oRootPath, const OOX::CPath& oPath, const OOX::Rels::CRelationShip& oRelation)
 		{
-			OOX::CPath oRelationFilename = oRelation.Filename();
-			CPath oFileName;
+			OOX::CPath	oRelationFilename = oRelation.Filename();
+			CPath		oFileName;
+			
 			if(oRelationFilename.GetIsRoot() && oRootPath.GetPath().length() > 0)
 				oFileName = oRootPath / oRelationFilename;
 			else
@@ -73,36 +72,39 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CStyles( oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::Worksheet )
 				return smart_ptr<OOX::File>(new CWorksheet( oRootPath, oFileName ));
-			else if ( oRelation.Type() == OOX::FileTypes::Theme )
-				return smart_ptr<OOX::File>(new CTheme( oFileName ));
-			else if ( oRelation.Type() == OOX::FileTypes::ThemeOverride )
-				return smart_ptr<OOX::File>(new CThemeOverride( oFileName ));
 			else if ( oRelation.Type() == FileTypes::Drawings )
 				return smart_ptr<OOX::File>(new CDrawing( oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::CalcChain )
 				return smart_ptr<OOX::File>(new CCalcChain( oRootPath, oFileName ));
-			else if ( oRelation.Type() == OOX::FileTypes::Image )
-				return smart_ptr<OOX::File>(new Image( oFileName ));
 			else if ( oRelation.Type() == FileTypes::Chartsheets )
 				return smart_ptr<OOX::File>(new CWorksheet( oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::Table )
 				return smart_ptr<OOX::File>(new CTableFile( oRootPath, oFileName ));
-			else if ( oRelation.Type() == OOX::FileTypes::VmlDrawing )
-				return smart_ptr<OOX::File>(new CVmlDrawing( oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::Comments )
 				return smart_ptr<OOX::File>(new CComments( oRootPath, oFileName ));
-			else if ( oRelation.Type() == FileTypes::Charts )
-				return smart_ptr<OOX::File>(new CChartSpace( oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::ExternalLinks )
 				return smart_ptr<OOX::File>(new CExternalLink( oRootPath, oFileName ));
-			else if ( oRelation.Type() == FileTypes::ExternalLinkPath)
+			else if ( oRelation.Type() == OOX::FileTypes::Chart )
+				return smart_ptr<OOX::File>(new CChartSpace( oRootPath, oFileName ));
+			else if ( oRelation.Type() == OOX::FileTypes::ExternalLinkPath)
 				return smart_ptr<OOX::File>(new ExternalLinkPath( oRelation.Target()));
-			else if (  oRelation.Type() == FileTypes::OleObject)
-				return smart_ptr<OOX::File>(new OOX::OleObject( oFileName ));
-			else if (	oRelation.Type() == OOX::FileTypes::Data)			
-				return smart_ptr<OOX::File>(new OOX::CDiagramData( oRootPath, oFileName ));
-			else if (	oRelation.Type() == OOX::FileTypes::DiagDrawing)
-				return smart_ptr<OOX::File>(new OOX::CDiagramDrawing( oRootPath, oFileName )); 
+//common			
+			//else if ( oRelation.Type() == OOX::FileTypes::VmlDrawing )
+			//	return smart_ptr<OOX::File>(new CVmlDrawing( oRootPath, oFileName ));
+			//else if ( oRelation.Type() == OOX::FileTypes::Theme )
+			//	return smart_ptr<OOX::File>(new PPTX::Theme( oFileName ));
+			//else if ( oRelation.Type() == OOX::FileTypes::Image )
+			//	return smart_ptr<OOX::File>(new Image( oFileName ));
+			//else if ( oRelation.Type() == OOX::FileTypes::ThemeOverride )
+			//	return smart_ptr<OOX::File>(new PPTX::Theme( oFileName ));
+			//else if (  oRelation.Type() == OOX::FileTypes::OleObject)
+			//	return smart_ptr<OOX::File>(new OOX::OleObject( oFileName ));
+			//else if (	oRelation.Type() == OOX::FileTypes::Data)			
+			//	return smart_ptr<OOX::File>(new OOX::CDiagramData( oRootPath, oFileName ));
+			//else if (	oRelation.Type() == OOX::FileTypes::DiagDrawing)
+			//	return smart_ptr<OOX::File>(new OOX::CDiagramDrawing( oRootPath, oFileName )); 
+			//else if (	oRelation.Type() == OOX::FileTypes::MicrosoftOfficeUnknown) //ms package
+			//	return smart_ptr<OOX::File>(new OOX::OleObject( oFileName, true ));
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile() );
 		}
@@ -126,9 +128,9 @@ namespace OOX
 			else if ( pRelation->Type() == FileTypes::Worksheet )
 				return smart_ptr<OOX::File>(new CWorksheet( oRootPath, oFileName ));
 			else if ( pRelation->Type() == OOX::FileTypes::Theme )
-				return smart_ptr<OOX::File>(new CTheme( oFileName ));
+				return smart_ptr<OOX::File>(new PPTX::Theme( oFileName ));
 			else if ( pRelation->Type() == OOX::FileTypes::ThemeOverride )
-				return smart_ptr<OOX::File>(new CThemeOverride( oFileName ));
+				return smart_ptr<OOX::File>(new PPTX::Theme( oFileName ));
 			else if ( pRelation->Type() == FileTypes::Drawings )
 				return smart_ptr<OOX::File>(new CDrawing( oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::CalcChain )
@@ -143,18 +145,20 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CVmlDrawing( oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::Comments )
 				return smart_ptr<OOX::File>(new CComments( oRootPath, oFileName ));
-			else if ( pRelation->Type() == FileTypes::Charts )
+			else if ( pRelation->Type() == OOX::FileTypes::Chart )
 				return smart_ptr<OOX::File>(new CChartSpace( oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::ExternalLinks )
 				return smart_ptr<OOX::File>(new CExternalLink( oRootPath, oFileName ));
-			else if (  pRelation->Type() == FileTypes::ExternalLinkPath)
+			else if (  pRelation->Type() == OOX::FileTypes::ExternalLinkPath)
 				return smart_ptr<OOX::File>(new ExternalLinkPath( oRelationFilename ));
-			else if (  pRelation->Type() == FileTypes::OleObject)
+			else if (  pRelation->Type() == OOX::FileTypes::OleObject)
 				return smart_ptr<OOX::File>(new OOX::OleObject( oFileName ));
 			else if (	pRelation->Type() == OOX::FileTypes::Data)
 				return smart_ptr<OOX::File>(new OOX::CDiagramData( oRootPath, oFileName ));
 			else if (	pRelation->Type() == OOX::FileTypes::DiagDrawing)
 				return smart_ptr<OOX::File>(new OOX::CDiagramDrawing( oRootPath, oFileName )); 
+			else if (	pRelation->Type() == OOX::FileTypes::MicrosoftOfficeUnknown) //ms package
+				return smart_ptr<OOX::File>(new OOX::OleObject( oFileName, true ));
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile() );
 		}

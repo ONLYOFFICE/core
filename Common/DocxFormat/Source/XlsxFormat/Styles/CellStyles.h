@@ -44,7 +44,7 @@ namespace OOX
 		class CCellStyle : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CCellStyle)
+			WritingElement_AdditionConstructors(CCellStyle)
 			CCellStyle()
 			{
 			}
@@ -52,8 +52,10 @@ namespace OOX
 			{
 			}
 
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -65,7 +67,7 @@ namespace OOX
 				WritingStringNullableAttrInt(L"builtinId", m_oBuiltinId, m_oBuiltinId->GetValue());
 				writer.WriteString(_T("/>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -75,7 +77,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_CellStyle;
+				return et_x_CellStyle;
 			}
 
 		private:
@@ -105,16 +107,17 @@ namespace OOX
 		class CCellStyles : public WritingElementWithChilds<CCellStyle>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CCellStyles)
+			WritingElement_AdditionConstructors(CCellStyles)
 			CCellStyles()
 			{
 			}
 			virtual ~CCellStyles()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -127,7 +130,7 @@ namespace OOX
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</cellStyles>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -146,7 +149,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_CellStyles;
+				return et_x_CellStyles;
 			}
 
 		private:

@@ -14389,7 +14389,8 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_TextLanguageID::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_TextLanguageID::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -14399,7 +14400,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_TextLanguageID::getType(){return et_ct_textlanguageid;}
-		void CT_TextLanguageID::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_TextLanguageID::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -14422,7 +14424,8 @@ namespace OOX{
 			if(NULL != m_Fallback)
 				delete m_Fallback;
 		}
-		void AlternateContent::fromXML(XmlUtils::CXmlLiteReader& oReader){
+		void AlternateContent::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
 			if ( oReader.IsEmptyNode() )
 				return;
 			int nParentDepth = oReader.GetDepth();
@@ -14443,7 +14446,8 @@ namespace OOX{
 				}
 			}
 		}
-		void AlternateContent::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void AlternateContent::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -14465,7 +14469,10 @@ namespace OOX{
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
-		EElementType AlternateContent::getType(){return et_alternatecontent;}
+		EElementType AlternateContent::getType()
+		{
+			return et_ct_alternatecontent;
+		}
 		AlternateContentChoice::AlternateContentChoice()
 		{
 			m_style = NULL;
@@ -14478,7 +14485,8 @@ namespace OOX{
 			if(NULL != m_Requires)
 				delete m_Requires;
 		}
-		void AlternateContentChoice::fromXML(XmlUtils::CXmlLiteReader& oReader){
+		void AlternateContentChoice::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
 				ReadAttributes(oReader);
 
 					if ( oReader.IsEmptyNode() )
@@ -14495,7 +14503,8 @@ namespace OOX{
 					}
 				}
 		}
-		void AlternateContentChoice::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void AlternateContentChoice::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_Requires)
@@ -14512,8 +14521,12 @@ namespace OOX{
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
-		EElementType AlternateContentChoice::getType(){return et_alternatecontentchoice;}
-		void AlternateContentChoice::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		EElementType AlternateContentChoice::getType()
+		{
+			return et_ct_alternatecontentchoice;
+		}
+		void AlternateContentChoice::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("Requires") == wsName)
 				{
@@ -14533,7 +14546,8 @@ namespace OOX{
 			if(NULL != m_style)
 				delete m_style;
 		}
-		void AlternateContentFallback::fromXML(XmlUtils::CXmlLiteReader& oReader){
+		void AlternateContentFallback::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
 			if ( oReader.IsEmptyNode() )
 				return;
 			int nParentDepth = oReader.GetDepth();
@@ -14548,7 +14562,8 @@ namespace OOX{
 				}
 			}
 		}
-		void AlternateContentFallback::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void AlternateContentFallback::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -14561,6 +14576,9 @@ namespace OOX{
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
-		EElementType AlternateContentFallback::getType(){return et_alternatecontentfallback;}
+		EElementType AlternateContentFallback::getType()
+		{
+			return et_ct_alternatecontentfallback;
+		}
 	}
 }

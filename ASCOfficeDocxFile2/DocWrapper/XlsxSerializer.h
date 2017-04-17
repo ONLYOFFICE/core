@@ -59,13 +59,12 @@ namespace BinXlsxRW {
 		CXlsxSerializer();
 		~CXlsxSerializer();
 		
-        void CreateXlsxFolders  (const std::wstring& sXmlOptions, const std::wstring& sDstPath, std::wstring& sMediaPath, std::wstring& sEmbedPath);
+        static void CreateXlsxFolders  (const std::wstring& sXmlOptions, const std::wstring& sDstPath, std::wstring& sMediaPath, std::wstring& sEmbedPath);
 
         bool loadFromFile       (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedPath);
         bool saveToFile         (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions);
 		
-        bool loadChart          (const std::wstring& sChartPath, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize);
-        bool saveChart          (NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, const std::wstring& sFilename, const std::wstring& sContentTypePath, std::wstring** sContentTypeElement, const long& lChartNumber);
+        bool saveChart          (NSBinPptxRW::CBinaryFileReader* pReader, long lLength, const std::wstring& sFilename, const long& lChartNumber);
 		
         void setFontDir			(const std::wstring& sFontDir);
         void setEmbeddedFontsDir(const std::wstring& sEmbeddedFontsDir);

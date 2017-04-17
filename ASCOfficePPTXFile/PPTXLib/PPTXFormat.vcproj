@@ -493,7 +493,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\DocxFormat\Source\DocxFormat\FileTypes.h"
+				RelativePath="..\PPTXFormat\FileTypes.h"
 				>
 			</File>
 			<File
@@ -2517,6 +2517,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
+								AdditionalOptions="/bigobj&#x0D;&#x0A;"
 								PrecompiledHeaderThrough="./StdAfx.h"
 							/>
 						</FileConfiguration>
@@ -2756,121 +2757,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\.\PPTXFormat\Logic\ShapeProperties.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								PrecompiledHeaderThrough="./StdAfx.h"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Debug|x64"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								PrecompiledHeaderThrough="./StdAfx.h"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								PrecompiledHeaderThrough="./StdAfx.h"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|x64"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								PrecompiledHeaderThrough="./StdAfx.h"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="ReleaseASC|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								PrecompiledHeaderThrough="./StdAfx.h"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="ReleaseOpenSource|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								PrecompiledHeaderThrough="./StdAfx.h"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\.\PPTXFormat\Logic\ShapeProperties.h"
-						>
-					</File>
-					<File
 						RelativePath="..\.\PPTXFormat\Logic\ShapeStyle.h"
-						>
-					</File>
-					<File
-						RelativePath="..\.\PPTXFormat\Logic\ShapeTextProperties.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								PrecompiledHeaderThrough="./StdAfx.h"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Debug|x64"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								PrecompiledHeaderThrough="./StdAfx.h"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								PrecompiledHeaderThrough="./StdAfx.h"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|x64"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								PrecompiledHeaderThrough="./StdAfx.h"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="ReleaseASC|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								PrecompiledHeaderThrough="./StdAfx.h"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="ReleaseOpenSource|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								PrecompiledHeaderThrough="./StdAfx.h"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\.\PPTXFormat\Logic\ShapeTextProperties.h"
 						>
 					</File>
 					<File

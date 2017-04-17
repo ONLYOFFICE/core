@@ -58,7 +58,6 @@ public:
 
     odp_page_state & state();
 
-	odf_comment_context				* comment_context(); 
 	odf_table_context				* table_context();
 
 	void start_table				();

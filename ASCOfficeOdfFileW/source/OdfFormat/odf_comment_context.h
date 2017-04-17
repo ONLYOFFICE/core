@@ -66,8 +66,11 @@ public:
 	void start_comment_content	();
 	void end_comment_content	();
 
-	void set_author	(std::wstring author);
-	void set_date	(std::wstring author);
+	void set_author		(std::wstring author);
+	void set_initials	(std::wstring author);
+	void set_date		(std::wstring author);
+	
+	void set_position (double x, double y);
 
 private:
 	std::wstring find_name_by_id(int oox_id);

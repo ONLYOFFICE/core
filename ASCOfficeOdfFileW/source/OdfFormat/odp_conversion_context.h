@@ -67,11 +67,17 @@ public:
 	virtual odf_drawing_context		* drawing_context()	{return current_slide().drawing_context();}
 	virtual odf_text_context		* text_context()	{return text_context_; }
 			odp_slide_context		* slide_context()	{return &slide_context_;}
+	odf_comment_context				* comment_context()	{return current_slide().comment_context();} 
 
 	void start_drawings();
 	void end_drawings();
 
     virtual void start_image(const std::wstring & image_file_name);
+
+	void start_comment			(int oox_comment_id);
+	void end_comment			();
+	void start_comment_content	();
+	void end_comment_content	();
 
 private:
 	odp_slide_context			slide_context_;

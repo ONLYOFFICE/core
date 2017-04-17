@@ -58,7 +58,7 @@ namespace odf_writer {
 ///////////////////////////////////////////////////////////////
 
 odp_page_state::odp_page_state(odf_conversion_context * Context, office_element_ptr & elm) 
-		 : context_(Context), drawing_context_(Context)
+		 : context_(Context), drawing_context_(Context), comment_context_(Context)
 {     
 	page_elm_ = elm; 
 

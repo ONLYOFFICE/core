@@ -938,7 +938,7 @@ void odf_drawing_context::end_shape()
 					enhanced->draw_enhanced_geometry_attlist_.draw_glue_points_		= shape_define->glue_points;
 					enhanced->draw_enhanced_geometry_attlist_.draw_sub_view_size_	= shape_define->sub_view_size;
 
-					if (!impl_->current_drawing_state_.oox_shape_->modifiers.empty())
+					if (impl_->current_drawing_state_.oox_shape_ && !impl_->current_drawing_state_.oox_shape_->modifiers.empty())
 					{
 						enhanced->draw_enhanced_geometry_attlist_.draw_modifiers_ = impl_->current_drawing_state_.oox_shape_->modifiers;
 					}

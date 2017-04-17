@@ -40,9 +40,9 @@
 #include"../../../Common/DocxFormat/Source/XML/Utils.h"
 
 #include "odf_drawing_context.h"
+#include "odf_comment_context.h"
 
 #include "office_elements_create.h"
-
 
 
 namespace cpdoccore {
@@ -57,7 +57,6 @@ namespace odf_writer {
 class odp_conversion_context;
 class odf_text_context;
 
-//class table_table;
 class style;
 
 
@@ -85,6 +84,7 @@ public:
 
 ///////////////////////////////
 	odf_drawing_context   *	drawing_context(){return  &drawing_context_;}
+	odf_comment_context   *	comment_context(){return  &comment_context_;}
 
 	std::wstring		office_page_name_;
 	office_element_ptr	page_elm_;
@@ -94,6 +94,7 @@ private:
     odf_conversion_context * context_;   
 	
 	odf_drawing_context		drawing_context_;	
+	odf_comment_context		comment_context_;	
 
 	friend class odp_slide_context;
 

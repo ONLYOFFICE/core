@@ -3392,7 +3392,7 @@ void DocxConverter::convert(OOX::Logic::CCommentRangeStart* oox_comm_start)
 
 	bool added = odt_context->start_comment(oox_comm_id);
 
-	if (added==false)
+	if (added == false)
 	{
 		convert_comment(oox_comm_id);
 	}

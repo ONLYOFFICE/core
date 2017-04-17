@@ -46,7 +46,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Timing)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				tnLst	= node.ReadNode(_T("p:tnLst"));
@@ -76,7 +75,6 @@ namespace PPTX
 				pWriter->EndNode(_T("p:timing"));
 			}
 
-		public:
 			nullable<TnLst>		tnLst;
 			nullable<BldLst>	bldLst;
 		protected:

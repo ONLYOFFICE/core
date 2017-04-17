@@ -47,9 +47,11 @@ namespace Writers
 		std::vector<_chartElem> m_aCharts;
 	public:
         std::wstring m_sDir;
+		int nEmbeddedCount;
 
 		ChartWriter(std::wstring sDir) : m_sDir(sDir)
 		{
+			nEmbeddedCount = 1000;
 		}
 		~ChartWriter()
 		{

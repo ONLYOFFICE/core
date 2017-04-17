@@ -371,16 +371,21 @@ void PptxConverter::convert_slides()
 		//nullable_bool		showMasterSp;
 		
 		convert_slide	(slide->cSld.GetPointer(), true);
-		convert			(slide->transition.GetPointer());
-		
 		convert			(slide->comments.operator->());
+		convert			(slide->Note.operator->());
+		
+		convert			(slide->transition.GetPointer());
+		convert			(slide->timing.GetPointer());
 
-		//nullable<Logic::Timing>		timing;
-		//smart_ptr<NotesSlide>			Note;
 
 		odp_context->end_slide();
 	}
 }
+void PptxConverter::convert(PPTX::NotesSlide *oox_note)
+{
+	if (!oox_note) return;
+}
+
 void PptxConverter::convert(OOX::WritingElement  *oox_unknown)
 {
 	if (oox_unknown == NULL)return;
@@ -433,6 +438,16 @@ void PptxConverter::convert(PPTX::Logic::Transition *oox_transition)
 	if (!oox_transition) return;
 	
 
+}
+void PptxConverter::convert(PPTX::Logic::Timing *oox_timing)
+{
+	if (!oox_timing) return;
+	if (!oox_timing->tnLst.IsInit()) return;
+	
+	for (size_t i = 0; i < oox_timing->tnLst->list.size(); i++)
+	{
+		//oox_timing->tnLst[0]
+	}
 }
 void PptxConverter::convert(PPTX::Logic::TableProperties *oox_table_pr)
 {

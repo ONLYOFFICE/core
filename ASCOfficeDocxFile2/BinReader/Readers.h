@@ -6824,8 +6824,7 @@ public:
 				std::wstring strDstEmbeddedTemp = strDstEmbedded + FILE_SEPARATOR_STR + L"Temp";
 				NSDirectory::CreateDirectory(strDstEmbeddedTemp);
 
-				int id = m_oFileWriter.m_oChartWriter.getChartCount();
-				m_oFileWriter.m_oChartWriter.setChartCount(id + 1);
+				int id = m_oFileWriter.m_oChartWriter.nEmbeddedCount++;
 
 				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring( id + 1) + L".xlsx";
 				BinXlsxRW::SaveParams oSaveParams(m_oFileWriter.m_sThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());//???

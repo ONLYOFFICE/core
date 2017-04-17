@@ -55,8 +55,6 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				name = XmlUtils::GetNameNoNS(node.GetName());
@@ -72,9 +70,8 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:") + name, oValue);
 			}
-		public:
 			std::vector<TimeNodeBase>		list;
-			std::wstring						name;
+			std::wstring					name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

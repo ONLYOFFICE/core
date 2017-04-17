@@ -181,6 +181,14 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			{
 				convert(dynamic_cast<PPTX::Logic::CustGeom*>(oox_unknown));
 			}break;
+			case OOX::et_a_ahXY:
+			{
+				convert(dynamic_cast<PPTX::Logic::AhXY*>(oox_unknown));
+			}break;
+			case OOX::et_a_ahPolar:
+			{
+				convert(dynamic_cast<PPTX::Logic::AhPolar*>(oox_unknown));
+			}break;
 			case OOX::et_a_lnTo:
 			{
 				convert(dynamic_cast<PPTX::Logic::LineTo*>(oox_unknown));

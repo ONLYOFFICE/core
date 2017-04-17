@@ -136,7 +136,8 @@ void xlsx_text_context::Impl::serialize_shared_strings(std::wostream & strm)
 xlsx_text_context::Impl::Impl(odf_reader::styles_container & styles): paragraphs_cout_(0),styles_(styles),
 				in_comment(false),in_draw(false),in_paragraph(false),in_span(false),in_cell_content(false)
 {
-	text_properties_cell_ = NULL;
+	local_styles_ptr_		= NULL;
+	text_properties_cell_	= NULL;
 }
 
 void xlsx_text_context::Impl::add_text(const std::wstring & text)

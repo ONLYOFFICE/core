@@ -139,6 +139,7 @@ public:
 	void start_object(std::wstring name);
 	void end_object();
 
+	bool isLineShape();
 	void corrected_line_fill();
 
 	office_element_ptr & get_root_element();
@@ -149,8 +150,12 @@ public:
 	bool is_exist_content();
 //////////////////////////////////////////////////////////////////////////////////////
 	void set_path			(std::wstring path_string);
-	void add_path_element	(std::wstring command, const std::wstring & elm);
+	void add_path_element	(std::wstring command, std::wstring elm);
 	void add_modifier		(std::wstring modifier);
+	void add_formula		(std::wstring name, std::wstring fmla);
+	void set_textarea		(std::wstring l, std::wstring t, std::wstring r, std::wstring b);
+	void add_handle			(std::wstring x, std::wstring y, std::wstring refX, std::wstring refY,
+							std::wstring minX, std::wstring maxX, std::wstring minY, std::wstring maxY);
 	
 	void set_viewBox		(double W, double H);
 

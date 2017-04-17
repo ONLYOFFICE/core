@@ -136,8 +136,8 @@ ods_table_state::ods_table_state(odf_conversion_context * Context, office_elemen
 {     
 	office_table_ = elm; 
 
-	current_table_row_ =0;
-	current_table_column_ =0;
+	current_table_row_ = 0;
+	current_table_column_ = 0;
 
 	current_level_.push_back(office_table_);
 
@@ -395,7 +395,7 @@ bool ods_table_state::is_cell_hyperlink()
 bool ods_table_state::is_cell_comment()
 {
 	if (cells_size_ <1)return false;
-	return cells_.back().comment_idx >=0 ? true : false;
+	return cells_.back().comment_idx >= 0 ? true : false;
 }
 
 int ods_table_state::is_cell_hyperlink(int col, int row)
@@ -413,7 +413,18 @@ int ods_table_state::is_cell_comment(int col, int row, short repeate_col)
 {
 	for (size_t i = 0; i < comments_.size(); i++)
 	{
-		if ((comments_[i].col < col+repeate_col && comments_[i].col >= col) && comments_[i].row == row)
+		if ((comments_[i].col < col + repeate_col && comments_[i].col >= col) && comments_[i].row == row)
+		{
+			return  i;
+		}
+	}
+	return -1;
+}
+int ods_table_state::is_row_comment(int row, int repeate_row)
+{
+	for (size_t i = 0; i < comments_.size(); i++)
+	{
+		if (comments_[i].row < row + repeate_row && comments_[i].row >= row)
 		{
 			return  i;
 		}
@@ -489,10 +500,10 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 	
 	state.empty = true;
 	state.elm = elm;  state.repeated = 1;  state.style_name = style_name; state.style_elm = style_elm;
-	state.row=current_table_row_;  state.col =current_table_column_+1; 
+	state.row = current_table_row_;  state.col =current_table_column_ + 1; 
 
 	state.hyperlink_idx = is_cell_hyperlink(state.col, state.row);
-	state.comment_idx = is_cell_comment(state.col, state.row);
+	state.comment_idx	= is_cell_comment(state.col, state.row);
 
 	current_table_column_ +=  state.repeated;  
     cells_.push_back(state);
@@ -1016,8 +1027,8 @@ void ods_table_state::end_cell()
 
 void ods_table_state::add_default_cell( short repeated)
 {
-    int comment_idx = is_cell_comment(current_table_column_+1 , current_table_row_, repeated);
-	if (comment_idx  >=0 && repeated >1)
+    int comment_idx = is_cell_comment(current_table_column_ + 1 , current_table_row_, repeated);
+	if (comment_idx  >= 0 && repeated > 1)
 	{
 		//делим на 3 - до, с комметом, после;
         int c = current_table_column_;

@@ -36,8 +36,11 @@
 #include "../SlideMaster.h"
 
 #include "../../ASCOfficeDrawingConverter.h"
+
 #include "../../../XlsxSerializerCom/Reader/ChartFromToBinary.h"
 #include "../../../ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.h"
+#include "../../../ASCOfficeDocxFile2/BinWriter/BinWriters.h"
+
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
 
@@ -86,10 +89,10 @@ namespace PPTX
 					}
 				}
 
-				if (id_drawing.IsInit())
+				if (id_drawing.IsInit() && pDiagramData)
 				{
 					if		(parentFileIs<OOX::IFileContainer>())	oFileDrawing = parentFileAs<OOX::IFileContainer>().Find(*id_drawing);
-					else if (pRels != NULL)							oFileDrawing = pRels->Find(*id_data);
+					else if (pRels != NULL)							oFileDrawing = pRels->Find(*id_drawing);
 				}
 				else
 				{
@@ -97,10 +100,7 @@ namespace PPTX
 					//пробуем по тому же пути с номером data.xml - ниже			
  				}
 			}
-            if (oFileDrawing.IsInit())
-			{
-                pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.operator->());
-			}
+			pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.operator->());
 
 			if (!pDiagramDrawing && pDiagramData)
 			{
@@ -122,7 +122,7 @@ namespace PPTX
 				m_diag = pDiagramDrawing->m_oShapeTree;
 				FillParentPointersForChilds();
 
-				m_pFileContainer = smart_ptr<OOX::IFileContainer>(pDiagramDrawing);
+				m_pFileContainer = oFileDrawing.smart_dynamic_cast<OOX::IFileContainer>();
 
 				if (!m_diag->grpSpPr.xfrm.IsInit())
 					m_diag->grpSpPr.xfrm = new PPTX::Logic::Xfrm;
@@ -132,7 +132,22 @@ namespace PPTX
 				//parse pDiagramData !!
 			}
 		}
-
+		void SmartArt::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			if (m_diag.is_init())
+			{
+				smart_ptr<OOX::IFileContainer> old = *pWriter->m_pCurrentContainer;
+				*pWriter->m_pCurrentContainer = m_pFileContainer;
+				if (pWriter->m_pMainDocument)
+					pWriter->m_pMainDocument->m_pParamsWriter->m_pCurRels = (OOX::IFileContainer*)m_pFileContainer.operator->();
+				
+				m_diag->toPPTY(pWriter);
+				
+				*pWriter->m_pCurrentContainer = old;
+				if (pWriter->m_pMainDocument)
+					pWriter->m_pMainDocument->m_pParamsWriter->m_pCurRels = old.operator->();
+			}
+		}
 		void ChartRec::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			OOX::IFileContainer* pRels = NULL;

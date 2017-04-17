@@ -93,19 +93,7 @@ namespace PPTX
 			{				
 			}
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				if (m_diag.is_init())
-				{
-					smart_ptr<OOX::IFileContainer> old = *pWriter->m_pCurrentContainer;
-					*pWriter->m_pCurrentContainer = m_pFileContainer;
-					
-					m_diag->toPPTY(pWriter);
-					
-					*pWriter->m_pCurrentContainer = old;
-				}
-			}
-
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
 				pReader->SkipRecord();

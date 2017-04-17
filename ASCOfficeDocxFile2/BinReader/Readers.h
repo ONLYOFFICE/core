@@ -6292,14 +6292,10 @@ public:
         std::wstring sDrawingProperty = oCDrawingProperty.Write();
         if(false == sDrawingProperty.empty())
 		{
-            m_oFileWriter.m_pDrawingConverter->SetDocumentChartsCount(m_oFileWriter.m_oChartWriter.getChartCount());
-
 			long nCurPos = m_oBufferedStream.GetPos();
             std::wstring sDrawingXml;
             m_oFileWriter.m_pDrawingConverter->SaveObjectEx(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength, sDrawingProperty, XMLWRITER_DOC_TYPE_DOCX, sDrawingXml);
 			m_oBufferedStream.Seek(nCurPos);
-
-            m_oFileWriter.m_oChartWriter.setChartCount(m_oFileWriter.m_pDrawingConverter->GetDocumentChartsCount());
 
             if( false == sDrawingXml.empty())
 			{
@@ -6606,8 +6602,11 @@ public:
 				OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace();
 				oBinaryChartReader.ReadCT_ChartSpace(length, &pChartSpace->m_oChartSpace);
 
-		//save xlsx
-				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(m_oFileWriter.m_oChartWriter.getChartCount() + 1) + L".xlsx";
+				//save xlsx
+				_INT32 nChartCount = m_oFileWriter.m_pDrawingConverter->GetDocumentChartsCount();
+				_INT32 nChartIndex = nChartCount + 1;
+				m_oFileWriter.m_pDrawingConverter->SetDocumentChartsCount(nChartCount + 1);
+				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(nChartIndex) + L".xlsx";
 				std::wstring sXlsxPath = pathChartsWorksheetDir.GetPath() + FILE_SEPARATOR_STR + sXlsxFilename;
 				BinXlsxRW::CXlsxSerializer oXlsxSerializer;
 				oXlsxSerializer.writeChartXlsx(sXlsxPath, *pChartSpace);
@@ -6632,7 +6631,6 @@ public:
 			
 				std::wstring sFilename;
 				std::wstring sRelsName;
-				int nChartIndex;
                 std::wstring sContent = sw.GetData();
                 
 				m_oFileWriter.m_oChartWriter.AddChart(sContent, sRelsName, sFilename, nChartIndex);

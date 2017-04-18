@@ -652,6 +652,9 @@ void OoxConverter::convert(PPTX::Logic::Path2D *oox_geom_path)
 		convert(pathBase);
 	}
 
+	if (oox_geom_path->stroke.IsInit() && *oox_geom_path->stroke == false)
+		odf_context()->drawing_context()->add_path_element(std::wstring(L"S"), L"");
+	
 	odf_context()->drawing_context()->add_path_element(std::wstring(L"N"), L"");
 }
 
@@ -1084,13 +1087,19 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 
 	if (oox_paragraph->pPr.IsInit() || oox_list_style)
 	{
-		if (oox_paragraph->pPr.IsInit() && (oox_paragraph->pPr->lvl.IsInit() || oox_paragraph->pPr->ParagraphBullet.is_init()))
+		if (oox_paragraph->pPr.IsInit())
 		{
-			list_present = true;
-		
-			list_level = 1;
+			if (oox_paragraph->pPr->ParagraphBullet.is_init())
+			{
+				list_present = true;		
+				list_level = 1;
+			}
 			if (oox_paragraph->pPr->lvl.IsInit())
-				list_level = *oox_paragraph->pPr->lvl;		
+			{
+				list_level = *oox_paragraph->pPr->lvl;	
+				if (list_level > 0)
+					list_present = true;
+			}
 		}
 
 		odf_writer::style_paragraph_properties	* paragraph_properties = odf_context()->text_context()->get_paragraph_properties();
@@ -1442,7 +1451,7 @@ void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 	
 	odf_context()->text_context()->start_span(styled);	
 
-	if ((oox_run->rPr->hlinkClick.IsInit()) && (oox_run->rPr->hlinkClick->id.IsInit()))
+	if ((oox_run->rPr.IsInit()) && (oox_run->rPr->hlinkClick.IsInit()) && (oox_run->rPr->hlinkClick->id.IsInit()))
 	{
 		std::wstring hlink = find_link_by_id(oox_run->rPr->hlinkClick->id.get(), 2);
 		odf_context()->text_context()->add_hyperlink(hlink, oox_run->GetText());

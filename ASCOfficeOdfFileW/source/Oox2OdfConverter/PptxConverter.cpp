@@ -295,15 +295,18 @@ void PptxConverter::convert_slides()
         {
             continue;// странное ... слайд 38 в FY10_September_Partner_Call.pptx
         }
+
 		current_theme	= slide->theme.operator->();
 		current_clrMap	= NULL;
 
 		std::wstring master_style_name;
 		std::wstring layout_style_name;
 
+		PPTX::Logic::TxStyles* current_txStyles = NULL;
 		if (slide->Master.IsInit())
 		{
-			current_clrMap	= &slide->Master->clrMap;					
+			current_clrMap		= &slide->Master->clrMap;
+			current_txStyles	= slide->Master->txStyles.GetPointer();
 
 			std::map<std::wstring, std::wstring>::iterator pFind = m_mapMasters.find(slide->Master->m_sOutputFilename + slide->Layout->m_sOutputFilename);
 			if (pFind == m_mapMasters.end())
@@ -323,12 +326,12 @@ void PptxConverter::convert_slides()
 					//if (slide->Layout->showMasterSp.IsInit() ? *slide->Layout->showMasterSp : true)
 					{
 						current_slide = slide->Master.operator->();
-						convert_slide(&slide->Master->cSld, false);
+						convert_slide(&slide->Master->cSld, current_txStyles, false);
 					}			
 					if (slide->Layout->clrMapOvr.IsInit() && slide->Layout->clrMapOvr->overrideClrMapping.IsInit())
 						current_clrMap	= slide->Layout->clrMapOvr->overrideClrMapping.GetPointer();
 					current_slide = slide->Layout.operator->();
-					convert_slide(&slide->Layout->cSld, true);		
+					convert_slide(&slide->Layout->cSld, current_txStyles, true);		
 				odp_context->end_master_slide();
 				
 				m_mapMasters.insert(std::make_pair(slide->Master->m_sOutputFilename + slide->Layout->m_sOutputFilename, master_style_name));
@@ -370,12 +373,11 @@ void PptxConverter::convert_slides()
 		//nullable_bool		showMasterPhAnim;
 		//nullable_bool		showMasterSp;
 		
-		convert_slide	(slide->cSld.GetPointer(), true);
+		convert_slide	(slide->cSld.GetPointer(), current_txStyles, true);
 		convert			(slide->comments.operator->());
 		convert			(slide->Note.operator->());
 		
-		convert			(slide->transition.GetPointer());
-		convert			(slide->timing.GetPointer());
+		convert			(slide->timing.GetPointer(), slide->transition.GetPointer());
 
 
 		odp_context->end_slide();
@@ -433,13 +435,7 @@ void PptxConverter::convert(PPTX::Comments *oox_comments)
 		odp_context->end_comment();
 	}
 }
-void PptxConverter::convert(PPTX::Logic::Transition *oox_transition)
-{
-	if (!oox_transition) return;
-	
-
-}
-void PptxConverter::convert(PPTX::Logic::Timing *oox_timing)
+void PptxConverter::convert(PPTX::Logic::Timing *oox_timing, PPTX::Logic::Transition *oox_transition)
 {
 	if (!oox_timing) return;
 	if (!oox_timing->tnLst.IsInit()) return;
@@ -933,13 +929,12 @@ void PptxConverter::convert(PPTX::Logic::Bg *oox_background)
 	odp_context->end_drawings();
 }
 
-void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, bool bPlaceholders)
+void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxStyles* txStyles, bool bPlaceholders)
 {
 	if (oox_slide == NULL) return;
 
 	if (current_theme && current_clrMap)
 		current_theme->SetColorMap(*current_clrMap);
-
 
 	if (oox_slide->attrName.IsInit())
 		odp_context->current_slide().set_page_name(oox_slide->attrName.get());
@@ -951,13 +946,41 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, bool bPlaceholde
 		smart_ptr<PPTX::WrapperWritingElement>	pElem = oox_slide->spTree.SpTreeElems[i].GetElem();
 		smart_ptr<PPTX::Logic::Shape>			pShape = pElem.smart_dynamic_cast<PPTX::Logic::Shape>();
 		
-		if (pShape.IsInit())
+		if (pShape.IsInit() && pShape->nvSpPr.nvPr.ph.is_init())
 		{
 			pShape->FillLevelUp();
-			if (!bPlaceholders && pShape->nvSpPr.nvPr.ph.is_init())
+
+			if (!bPlaceholders)
 				continue;
 
+			PPTX::Logic::TextListStyle * listMasterStyle = NULL;
+			
+			if (txStyles)
+			{
+				std::wstring type = pShape->nvSpPr.nvPr.ph->type.get_value_or(_T("body"));
+				if ((type == L"title") || (type == L"ctrTitle"))
+					listMasterStyle = txStyles->titleStyle.GetPointer();
+				else if ((type == L"body") || (type == L"subTitle") || (type == L"obj"))
+					listMasterStyle = txStyles->bodyStyle.GetPointer();
+				else if (type != L"")
+					listMasterStyle = txStyles->otherStyle.GetPointer();
+			}
 			PPTX::Logic::Shape update_shape;
+			
+			if (listMasterStyle)
+			{
+				update_shape.txBody = new PPTX::Logic::TxBody();
+				
+				PPTX::Logic::TextListStyle *newListStyle = new PPTX::Logic::TextListStyle();
+
+				for (int i = 0; i < 10; i++)
+				{
+					if(listMasterStyle->levels[i].is_init())
+						listMasterStyle->levels[i]->Merge(newListStyle->levels[i]);
+				}
+				update_shape.txBody->lstStyle.reset(newListStyle);
+			}
+
 			pShape->Merge(update_shape);
 
 			OoxConverter::convert(&update_shape);

@@ -120,7 +120,7 @@ docbParseChunk(docbParserCtxtPtr ctxt ATTRIBUTE_UNUSED,
         deprecated = 1;
     }
 
-    return (DoctRenderer(ctxt, chunk, size, terminate));
+    return (xmlParseChunk(ctxt, chunk, size, terminate));
 }
 
 /**

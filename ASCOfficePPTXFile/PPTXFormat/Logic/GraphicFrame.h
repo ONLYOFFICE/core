@@ -36,7 +36,6 @@
 #include "./../WrapperWritingElement.h"
 #include "NvGraphicFramePr.h"
 #include "Xfrm.h"
-#include "ShapeProperties.h"
 #include "Table/Table.h"
 #include "SmartArt.h"
 #include "Pic.h"
@@ -99,7 +98,7 @@ namespace PPTX
 
 			SpTreeElem				element;
 
-			std::wstring GetVmlXmlBySpid(std::wstring & rels)	const;
+			std::wstring GetVmlXmlBySpid(smart_ptr<OOX::IFileContainer> & rels)	const;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

@@ -198,7 +198,7 @@ namespace PPTX
 			
 			bool isValid();
 			
-			smart_ptr<OOX::OleObject>	GetOleObject(const OOX::RId& oRId, FileContainer* pRels)const;
+			smart_ptr<OOX::OleObject>	GetOleObject(const OOX::RId& oRId, OOX::IFileContainer* pRels)const;
 			std::wstring				GetOleData	(const std::wstring& sFilePath)const;
 
 			nullable_limit<Limit::OLEDrawAspectType>m_oDrawAspect;

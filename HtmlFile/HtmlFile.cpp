@@ -104,6 +104,15 @@ static bool IsLinuxXVFB()
                 return false;
         }
     }
+    else if (oNode.FromXmlFile(sProcess + L"converter/DoctRenderer.config"))
+    {
+        XmlUtils::CXmlNodes oNodes;
+        if (oNode.GetNodes(L"htmlnoxvfb", oNodes))
+        {
+            if (oNodes.GetCount() == 1)
+                return false;
+        }
+    }
     return true;
 }
 

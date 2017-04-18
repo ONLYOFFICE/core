@@ -50,6 +50,12 @@
 namespace cpdoccore 
 {
 
+oox_shape::oox_shape()
+{
+	odf_type_name	= L"ooxml-non-primitive";
+	view_box		= L"0 0 0 0";
+}
+
 oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 {
 	switch (ooxPrstGeomType)
@@ -127,7 +133,7 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 
 	default:
 		if (ooxPrstGeomType > 2000) return boost::make_shared<oox_shape_textPlain>();
-		else return boost::make_shared<oox_shape>();
+		else return oox_shape_ptr();
 		
 	}
 }

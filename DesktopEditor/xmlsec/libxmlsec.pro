@@ -6,19 +6,19 @@
 
 QT       -= core gui
 
-TARGET = libxml
+TARGET = libxmlsec
 TEMPLATE = lib
-CONFIG += staticlib
 QMAKE_CXXFLAGS += -Wall -g
+
+#CONFIG += shared
+#CONFIG += plugin
+CONFIG += staticlib
 
 CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 
 INCLUDEPATH += \
-    $$CORE_ROOT_DIR/DesktopEditor/xml/libxml2/include \
-    $$CORE_ROOT_DIR/DesktopEditor/xml/libxml2/include/libxml \
-    \
     $$PWD_ROOT_DIR/xmlsec/include
 
 DEFINES += \
@@ -27,19 +27,36 @@ DEFINES += \
     LIBXML_HTML_ENABLED \
     LIBXML_XPATH_ENABLED \
     LIBXML_OUTPUT_ENABLED \
-    LIBXML_C14N_ENABLED
+    LIBXML_C14N_ENABLED \
+    LIBXML_SAX1_ENABLED \
+    LIBXML_TREE_ENABLED \
+    LIBXML_XPTR_ENABLED \
+    IN_LIBXML \
+    LIBXML_STATIC
+
+include($$CORE_ROOT_DIR/DesktopEditor/xml/build/qt/libxml2_src.pri)
 
 DEFINES += PACKAGE=\\\"xmlsec1\\\"
 DEFINES += VERSION=\\\"1.2.23\\\"
-DEFINES += XMLSEC_DEFAULT_CRYPTO=\\\"openssl\\\"
+DEFINES += XMLSEC_DEFAULT_CRYPTO=\\\"mscrypto\\\"
 
-config += use_gcrypt
-config += use_gnutls
-#config += use_mscrypto
-#config += use_nss
-config += use_openssl
-#config += use_skeleton
-#config += use_xslt
+DEFINES += \
+    IN_XMLSEC \
+    XMLSEC_STATIC
+
+core_linux {
+    CONFIG += use_gcrypt
+    CONFIG += use_gnutls
+    #CONFIG += use_mscrypto
+    #CONFIG += use_nss
+    CONFIG += use_openssl
+    #CONFIG += use_skeleton
+    #CONFIG += use_xslt
+}
+
+core_windows {
+    CONFIG += use_mscrypto
+}
 
 HEADERS += \
     xmlsec/include/xmlsec/app.h \
@@ -160,6 +177,8 @@ SOURCES += \
 }
 
 use_mscrypto {
+
+DEFINES += XMLSEC_CRYPTO_MSCRYPTO
 
 HEADERS += \
     xmlsec/include/xmlsec/mscrypto/app.h \

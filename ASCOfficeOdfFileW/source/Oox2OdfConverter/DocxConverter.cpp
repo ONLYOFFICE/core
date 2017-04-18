@@ -2248,32 +2248,25 @@ void DocxConverter::convert(SimpleTypes::CTheme<>* oox_font_theme, _CP_OPT(std::
 	case SimpleTypes::themeMajorAscii:
 	case SimpleTypes::themeMajorHAnsi :
 		font = docx_theme->themeElements.fontScheme.majorFont.latin.typeface;
-		if (font.length() > 0) odf_font_name = font;
 		break;
 	case SimpleTypes::themeMajorBidi:
 		font = docx_theme->themeElements.fontScheme.majorFont.cs.typeface;
-		if (font.length() > 0) odf_font_name = font;
 		break;
 	case SimpleTypes::themeMajorEastAsia:
 		font = docx_theme->themeElements.fontScheme.majorFont.ea.typeface;
-		if (font.length() > 0) odf_font_name = font;
 		break;
 	case SimpleTypes::themeMinorAscii:
 	case SimpleTypes::themeMinorHAnsi:
 		font = docx_theme->themeElements.fontScheme.minorFont.latin.typeface;
-		if (font.length() > 0) odf_font_name = font;
 		break;
 	case SimpleTypes::themeMinorBidi:
 		font = docx_theme->themeElements.fontScheme.minorFont.cs.typeface;
-		if (font.length() > 0) odf_font_name = font;
 		break;
 	case SimpleTypes::themeMinorEastAsia:
 		font = docx_theme->themeElements.fontScheme.minorFont.ea.typeface;
-		if (font.length() > 0) odf_font_name = font;
 		break;
 	}
-
-
+	if (!font.empty()) odf_font_name = font;
 }
 
 void DocxConverter::convert(OOX::Logic::CText *oox_text)
@@ -3399,7 +3392,7 @@ void DocxConverter::convert(OOX::Logic::CCommentRangeStart* oox_comm_start)
 
 	bool added = odt_context->start_comment(oox_comm_id);
 
-	if (added==false)
+	if (added == false)
 	{
 		convert_comment(oox_comm_id);
 	}

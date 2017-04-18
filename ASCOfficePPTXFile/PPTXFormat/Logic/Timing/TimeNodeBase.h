@@ -47,7 +47,6 @@ namespace PPTX
 			explicit TimeNodeBase(XmlUtils::CXmlNode& node);
 			const TimeNodeBase& operator =(XmlUtils::CXmlNode& node);
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void GetTimeNodeFrom(XmlUtils::CXmlNode& element);
 			virtual bool is_init()const{return (m_node.IsInit());};
@@ -61,7 +60,6 @@ namespace PPTX
 			template<class T> AVSINLINE const T&	as() const 	{ return m_node.as<T>(); }
 
 			virtual std::wstring toXML() const;
-		//public:
 		private:
 			smart_ptr<WrapperWritingElement> m_node;
 		protected:

@@ -53,6 +53,11 @@ void odp_slide_context::set_styles_context(odf_style_context*  styles_context)
 	styles_context_ = styles_context;
 }
 
+odf_style_context* odp_slide_context::get_styles_context()
+{
+	return styles_context_;
+}
+
 odp_page_state & odp_slide_context::state()
 {
     return page_state_list_.back();

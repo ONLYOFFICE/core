@@ -64,7 +64,6 @@ namespace BinXlsxRW {
         bool loadFromFile       (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedPath);
         bool saveToFile         (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions);
 		
-        bool loadChart          (const std::wstring& sChartPath, NSBinPptxRW::CBinaryFileWriter* pWriter, long& lDataSize);
         bool saveChart          (NSBinPptxRW::CBinaryFileReader* pReader, long lLength, const std::wstring& sFilename, const long& lChartNumber);
 		
         void setFontDir			(const std::wstring& sFontDir);

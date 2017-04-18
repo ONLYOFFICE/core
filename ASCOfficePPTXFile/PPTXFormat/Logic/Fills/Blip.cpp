@@ -99,7 +99,7 @@ namespace PPTX
 				Effects[i].SetParentPointer(this);
 		}
 
-		std::wstring Blip::GetFullPicName(FileContainer* pRels)const
+		std::wstring Blip::GetFullPicName(OOX::IFileContainer* pRels)const
 		{
 			if(embed.IsInit())
 			{
@@ -141,7 +141,7 @@ namespace PPTX
 			}
 			return _T("");
 		}
-		std::wstring Blip::GetFullOleName(const OOX::RId& oRId, FileContainer* pRels)const
+		std::wstring Blip::GetFullOleName(const OOX::RId& oRId, OOX::IFileContainer* pRels)const
 		{
 			smart_ptr<OOX::OleObject> pOleObject;
 			

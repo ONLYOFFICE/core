@@ -37,8 +37,6 @@
 #include "./../Logic/NvGrpSpPr.h"
 #include "./../Logic/GrpSpPr.h"
 #include "SpTreeElem.h"
-#include "ShapeProperties.h"
-#include "ShapeTextProperties.h"
 
 #include "../../../DesktopEditor/graphics/aggplustypes.h"
 

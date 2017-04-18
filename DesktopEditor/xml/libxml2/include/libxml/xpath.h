@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Summary: XML Path Language implementation
  * Description: API for the XML Path Language implementation
  *

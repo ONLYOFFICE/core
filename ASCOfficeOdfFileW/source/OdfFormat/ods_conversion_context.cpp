@@ -238,11 +238,11 @@ void ods_conversion_context::end_row()
 //////////////////////
 void ods_conversion_context::start_comment(int col, int row, std::wstring & author)
 {
-	current_table().start_comment(col,row,author);
+	current_table().start_comment(col, row, author);
 	start_text_context();
 ////////////////
 	office_element_ptr paragr_elm;
-	create_element(L"text", L"p",paragr_elm,this);
+	create_element(L"text", L"p", paragr_elm, this);
 	
 	current_text_context_->start_paragraph(paragr_elm);
 }
@@ -309,7 +309,7 @@ void ods_conversion_context::add_merge_cells(const std::wstring & ref)
 
 void ods_conversion_context::start_cell(std::wstring & ref, int xfd_style)
 {
-	int col=0, row=0;
+	int col = 0, row = 0;
 	utils::parsing_ref ( ref, col,row);
 
 	if (col > current_table().current_column()+1)
@@ -389,11 +389,31 @@ void ods_conversion_context::start_rows()
 void ods_conversion_context::end_rows()
 {
 	//add default last row
-    int repeat = (std::max)(current_table().dimension_row,64) - current_table().current_row();
-	if (repeat < 0) repeat = 1;
+    int repeated = (std::max)(current_table().dimension_row, 64) - current_table().current_row();
+	if (repeated < 0) repeated = 1;
 
-	start_row(current_table().current_row()+1,repeat,0,true);
-	end_row();
+	while(true)
+	{
+		//делим на 3 - до, с комметом, после;
+		int comment_idx = current_table().is_row_comment(current_table().current_row() + 1, repeated);
+		
+		if (comment_idx < 0) break;
+		int rows = current_table().comments_[comment_idx].row - current_table().current_row() - 1;
+
+		start_row(current_table().current_row() + 1, rows, 0, true);
+		end_row();
+		
+		start_row(current_table().current_row() + 1, 1, 0, true);
+		end_row();
+
+		repeated -= (1 + rows);
+	}
+
+	if (repeated > 0)
+	{
+		start_row(current_table().current_row() + 1, repeated, 0, true);
+		end_row();
+	}
 }
 
 void ods_conversion_context::add_column(int start_column, int repeated, int level, bool _default)

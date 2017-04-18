@@ -52,7 +52,6 @@
 #include "Logic/CxnSp.h"
 #include "Logic/GraphicFrame.h"
 #include "Logic/TxBody.h"
-#include "Logic/ShapeProperties.h"
 #include "Logic/SpTree.h"
 #include "Logic/UniFill.h"
 #include "Logic/UniColor.h"

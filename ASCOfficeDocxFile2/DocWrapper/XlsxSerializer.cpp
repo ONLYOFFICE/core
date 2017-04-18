@@ -139,31 +139,7 @@ namespace BinXlsxRW{
 		RELEASEOBJECT(pFontPicker);
 		return true;
 	}
-    bool CXlsxSerializer::loadChart(const std::wstring& sChartPath, NSBinPptxRW::CBinaryFileWriter* pWriter, long& lDataSize)
-	{
-		if (NULL == pWriter) return false;
-		if (NULL == m_pExternalDrawingConverter) return false;
-			
-		OOX::CPath						oRootPath;
-		OOX::Spreadsheet::CChartSpace	oChart(oRootPath, sChartPath);
-		
-		long nStartPos = pWriter->GetPosition();
-		BinXlsxRW::BinaryCommonWriter oBcw(*pWriter);
-
-        std::wstring sOldRelsPath = m_pExternalDrawingConverter->GetRelsPath();
-		m_pExternalDrawingConverter->SetRelsPath(sChartPath);
-
-		BinXlsxRW::BinaryChartWriter oBinaryChartWriter(*pWriter, m_pExternalDrawingConverter);	
-		oBinaryChartWriter.WriteCT_ChartSpace(oChart);
-
-		m_pExternalDrawingConverter->SetRelsPath(sOldRelsPath);
-
-		long nEndPos = pWriter->GetPosition();
-		lDataSize = nEndPos - nStartPos;
-
-		return true;
-	}
-	bool CXlsxSerializer::saveChart(NSBinPptxRW::CBinaryFileReader* pReader, long lLength, const std::wstring& sFilepath, const long& lChartNumber)
+ 	bool CXlsxSerializer::saveChart(NSBinPptxRW::CBinaryFileReader* pReader, long lLength, const std::wstring& sFilepath, const long& lChartNumber)
 	{
 		if (NULL == pReader) return false;
 		if (NULL == m_pExternalDrawingConverter) return false;

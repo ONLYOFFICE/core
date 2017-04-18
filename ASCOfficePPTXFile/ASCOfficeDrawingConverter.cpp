@@ -912,16 +912,7 @@ HRESULT CDrawingConverter::SetMainDocument(BinDocxRW::CDocxSerializer* pDocument
 	m_pImageManager->m_nDocumentType = XMLWRITER_DOC_TYPE_DOCX;
 	return S_OK;
 }
-HRESULT CDrawingConverter::SetRelsPath(const std::wstring& bsRelsPath)
-{
-	// чтобы не переоткрывать рельсы - посмотрим - может у нас уже есть такой??
-	m_strCurrentRelsPath = bsRelsPath;
-	return SetCurrentRelsPath();
-}
-std::wstring CDrawingConverter::GetRelsPath()
-{
-	return m_strCurrentRelsPath;
-}
+
 HRESULT CDrawingConverter::SetMediaDstPath(const std::wstring& bsMediaPath)
 {
 	m_pBinaryWriter->m_pCommon->m_pImageManager->m_strDstMedia = (std::wstring)bsMediaPath;
@@ -1062,9 +1053,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::ObjectFromXml(const std::wstring& sXm
 							XmlUtils::CXmlNode oNodeContent;
 							oChilds.GetAt(0, oNodeContent);
 
-							std::wstring strCurrentRelsPath = m_strCurrentRelsPath;
-
-                            if (L"dgm:relIds" == oNodeContent.GetName() && m_pBinaryWriter->m_pCommonRels->is_init())
+                            if (L"dgm:relIds" == oNodeContent.GetName() && m_pBinaryWriter->m_pCurrentContainer->is_init())
 							{
 								doc_LoadDiagram(&oElem, oNodeContent, ppMainProps, true);
 							}
@@ -1597,7 +1586,7 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 	
 	if (id_data.IsInit())
 	{
-		oFileData = (*m_pBinaryWriter->m_pCommonRels)->Find(*id_data);
+		oFileData = (*m_pBinaryWriter->m_pCurrentContainer)->Find(*id_data);
 		
 		if (oFileData.is_init())
 		{
@@ -1616,7 +1605,7 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 		}
 		if (id_drawing.is_init())
 		{
-			oFileDrawing = (*m_pBinaryWriter->m_pCommonRels)->Find(*id_drawing);
+			oFileDrawing = (*m_pBinaryWriter->m_pCurrentContainer)->Find(*id_drawing);
 			pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.operator->());
 		}
 		if (!pDiagramDrawing && pDiagramData)
@@ -1641,8 +1630,7 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 	{
 		result->InitElem(new PPTX::Logic::SpTree(*pDiagramDrawing->m_oShapeTree));
 		//to correct write blipFill rId to binary
-		m_strCurrentRelsPath = pDiagramDrawing->GetReadPath().GetPath();
-		SetCurrentRelsPath();
+		SetRels(pDiagramDrawing);
 	}
 	else
 	{//BG-FSC1.docx
@@ -2604,10 +2592,10 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 		{
             std::wstring sId = oNodeTextData.GetAttribute(L"id");
 
-			if (sId.length() > 0 && m_pBinaryWriter->m_pCommonRels->IsInit())
+			if (sId.length() > 0 && m_pBinaryWriter->m_pCurrentContainer->IsInit())
 			{
 				OOX::RId rId(sId);
-				smart_ptr<PPTX::LegacyDiagramText> pExt = (*m_pBinaryWriter->m_pCommonRels)->legacyDiagramText(rId);
+				smart_ptr<PPTX::LegacyDiagramText> pExt = (*m_pBinaryWriter->m_pCurrentContainer)->GetLegacyDiagramText(rId);
 
 				if (pExt.IsInit())
 				{
@@ -5275,27 +5263,19 @@ void CDrawingConverter::Clear()
 		RELEASEOBJECT(pMem);
 	}
 	m_mapShapeTypes.clear();
-	m_mapRels.clear();
 }
-
-HRESULT CDrawingConverter::SetCurrentRelsPath()
+void CDrawingConverter::SetRels(smart_ptr<OOX::IFileContainer> container)
 {
-	std::map<std::wstring, smart_ptr<PPTX::CCommonRels>>::iterator pPair = m_mapRels.find(m_strCurrentRelsPath);
-
-	if (m_mapRels.end() == pPair)
-	{
-		smart_ptr<PPTX::CCommonRels> pCR = new PPTX::CCommonRels();
-		m_mapRels.insert(std::pair<std::wstring, NSCommon::smart_ptr<PPTX::CCommonRels>>(m_strCurrentRelsPath, pCR));
-
-		pPair = m_mapRels.find(m_strCurrentRelsPath);
-		
-		OOX::CPath filename = m_strCurrentRelsPath;	
-		pPair->second->_read(filename);
-	}
-
-	*m_pBinaryWriter->m_pCommonRels = pPair->second;
-
-	return S_OK;
+	*m_pBinaryWriter->m_pCurrentContainer = container;
+}
+void CDrawingConverter::SetRels(OOX::IFileContainer *container)
+{
+	*m_pBinaryWriter->m_pCurrentContainer = smart_ptr<OOX::IFileContainer>(container);
+	m_pBinaryWriter->m_pCurrentContainer->AddRef();
+}
+smart_ptr<OOX::IFileContainer> CDrawingConverter::GetRels()
+{
+	return *m_pBinaryWriter->m_pCurrentContainer;
 }
 void CDrawingConverter::SetFontManager(CFontManager* pFontManager)
 {

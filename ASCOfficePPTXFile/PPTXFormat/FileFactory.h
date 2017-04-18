@@ -42,6 +42,5 @@ namespace PPTX
 	{
 	public:
 		static const smart_ptr<OOX::File> CreateFilePPTX(const OOX::CPath& path, OOX::Rels::CRelationShip& relation, FileMap& map);
-		static const smart_ptr<OOX::File> CreateFilePPTX_OnlyMedia(const OOX::CPath& path, OOX::Rels::CRelationShip& relation);
 	};
 } // namespace PPTX

@@ -23,7 +23,7 @@ if "%platform%" == "win_64" (
 if exist "%SCRIPTPATH%%platform%\icu.zip" (
     echo "icu already downloaded"
 ) else (
-    Powershell.exe Invoke-WebRequest -OutFile %platform%\icu.zip "%URL%"
+    Powershell.exe Invoke-WebRequest -OutFile %platform%\icu.zip -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox "%URL%"
 )
 
 SET UNSIP_PROGRAMM="C:\Program Files\7-Zip\7z.exe"

@@ -45,7 +45,6 @@
 #include "Logic/XmlId.h"
 
 #include "Logic/Shape.h"
-#include "Logic/ShapeProperties.h"
 #include "Logic/TxBody.h"
 #include "Logic/UniColor.h"
 
@@ -72,8 +71,6 @@ namespace PPTX
 		virtual ~SlideMaster()
 		{
 		}
-
-	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			m_sOutputFilename = filename.GetFilename();
@@ -121,8 +118,6 @@ namespace PPTX
 			WrapperFile::write(filename, directory, content);
 			FileContainer::write(filename, directory, content);
 		}
-
-	public:
 		virtual const OOX::FileType type() const
 		{
 			return OOX::Presentation::FileTypes::SlideMaster;
@@ -135,167 +130,35 @@ namespace PPTX
 		{
 			return type().DefaultFileName();
 		}
-
-	public:
-		void GetLevelUp(const Logic::Shape& pShape)const
+		void GetLevelUp(Logic::Shape* pShape)
 		{
-			if(pShape.nvSpPr.nvPr.ph.is_init())
-			{
-				std::wstring idx = /*pShape.nvSpPr->nvPr->ph.is_init()?*/pShape.nvSpPr.nvPr.ph->idx.get_value_or(_T("0"));//:"";
-				std::wstring type = /*pShape.nvSpPr->nvPr->ph.is_init()?*/pShape.nvSpPr.nvPr.ph->type.get_value_or(_T("body"));//:"";
-				if(type == _T("ctrTitle"))
-					type = _T("title");
+			if (!pShape) return;
 
-				size_t count = cSld.spTree.SpTreeElems.size();
-				for (size_t i = 0; i < count; ++i)
+			if(pShape->nvSpPr.nvPr.ph.is_init())
+			{
+				std::wstring idx = pShape->nvSpPr.nvPr.ph->idx.get_value_or(_T("0"));
+				std::wstring type = pShape->nvSpPr.nvPr.ph->type.get_value_or(_T("body"));
+				
+				if (type == _T("ctrTitle")) type = _T("title");
+
+				for (size_t i = 0; i < cSld.spTree.SpTreeElems.size(); ++i)
 				{
-					const PPTX::Logic::SpTreeElem* pElem = &cSld.spTree.SpTreeElems[i];
-					if(pElem->is<Logic::Shape>())
+					smart_ptr<Logic::Shape> pMasterShape = cSld.spTree.SpTreeElems[i].GetElem().smart_dynamic_cast<Logic::Shape>();
+					if (pMasterShape.IsInit())
 					{
-						const Logic::Shape& MasterShape = pElem->as<Logic::Shape>();
-						if(MasterShape.nvSpPr.nvPr.ph.is_init())
+						if (pMasterShape->nvSpPr.nvPr.ph.is_init())
 						{
-							std::wstring lIdx = /*MasterShape->nvSpPr->nvPr->ph.is_init()?*/MasterShape.nvSpPr.nvPr.ph->idx.get_value_or(_T("0"));//:"";
-							std::wstring lType = /*MasterShape->nvSpPr->nvPr->ph.is_init()?*/MasterShape.nvSpPr.nvPr.ph->type.get_value_or(_T("body"));//:"";
-							if(lType == _T("ctrTitle"))
-								lType = _T("title");
-							if(type == lType)
+							std::wstring lIdx	= pMasterShape->nvSpPr.nvPr.ph->idx.get_value_or(_T("0"));
+							std::wstring lType	= pMasterShape->nvSpPr.nvPr.ph->type.get_value_or(_T("body"));
+							
+							if (lType == L"ctrTitle")	lType = L"title";
+							if (type == lType)
 							{
-								pShape.SetLevelUpElement(MasterShape);
+								pShape->SetLevelUpElement(pMasterShape.operator->());
 								return;
 							}
-
-							//if(idx == MasterShape->nvSpPr->nvPr->idx.get_value_or("0"))
-							//{
-							//	if((type == MasterShape->nvSpPr->nvPr->type.get_value_or("")) || ((type == "") && (MasterShape->nvSpPr->nvPr->type.get_value_or("") != "")))
-							//		pShape->SetLevelUpElement(MasterShape);
-							//	return;
-							//}
-							//if((type == lType) && (type != ""))
-							//{
-							//	//if(idx == lIdx)
-							//	//{
-							//		pShape.SetLevelUpElement(MasterShape);
-							//		return;
-							//	//}
-							//	//continue;
-							//}
-							//if((type == lType) && (type == ""))
-							//{
-							//	if((idx == lType) && (idx != ""))
-							//	{
-							//		pShape.SetLevelUpElement(MasterShape);
-							//		return;
-							//	}
-							//}
-							//if(type != lType)
-							//{
-							//	if((idx == lIdx) && (idx != ""))
-							//	{
-							//		pShape.SetLevelUpElement(MasterShape);
-							//		return;
-							//	}
-							//}
 						}
 					}
-				}
-			}
-		}
-		void FillShapeProperties(Logic::ShapeProperties& props, const std::wstring& type)const
-		{
-            if((theme.IsInit()) && (theme->presentation.IsInit()))
-			{
-                PPTX::Presentation* pPres = const_cast<PPTX::Presentation*>(theme->presentation.operator->());
-
-				pPres->SetClrMap(clrMap);
-                pPres->SetClrScheme(theme->themeElements.clrScheme);
-			}
-            if((theme.IsInit()) && (type != _T("")))
-                theme->FillShapeProperties(props, type);
-
-			if(txStyles.is_init())
-			{
-	//			props.FillFromTextListStyle(txStyles->otherStyle, true);
-
-				//if(type == "")
-				//{
-				//	if(Theme->spDef.is_init())
-				//	{
-				//		props.FillFromTextListStyle(Theme->spDef->lstStyle, true);
-				//		if(Theme->spDef->style.is_init())
-				//			props.FillFontRef(Theme->spDef->style->fontRef.get());
-				//	}
-				//	else
-				//		props.FillFromTextListStyle(txStyles->otherStyle, true);
-				//	return;
-				//}
-
-				if((type == _T("title")) || (type == _T("ctrTitle")))
-				{
-					props.FillFromTextListStyle(txStyles->titleStyle);
-					props.SetTextType(1);
-				}
-				else if((type == _T("body")) || (type == _T("subTitle")) || (type == _T("obj")))
-				{
-					props.FillFromTextListStyle(txStyles->bodyStyle);
-					props.SetTextType(2);
-				}
-				else if(type != _T(""))
-				{
-					props.FillFromTextListStyle(txStyles->otherStyle);
-					props.SetTextType(3);
-				}
-				else
-				{
-					props.FillFromTextListStyle(txStyles->otherStyle);
-					props.SetTextType(3);
-
-                    if(theme.IsInit())
-                        theme->FillShapeProperties(props, type);
-				}
-			}
-		}
-		void FillShapeTextProperties(Logic::CShapeTextProperties& props, const std::wstring& type)const
-		{
-            if((theme.IsInit()) && (theme->presentation.IsInit()))
-			{
-                PPTX::Presentation* pPres = const_cast<PPTX::Presentation*>(theme->presentation.operator->());
-
-				pPres->SetClrMap(clrMap);
-                pPres->SetClrScheme(theme->themeElements.clrScheme);
-			}
-
-			if (type == _T("table-cell"))
-				props.FillMasterFontSize(1800);
-
-			if ((type == _T("title")) || (type == _T("ctrTitle")))
-			{
-				props.FillTextType(1);
-			}
-			else if ((type == _T("body")) || (type == _T("subTitle")) || (type == _T("obj")))
-			{
-				props.FillTextType(2);
-			}
-			else if (type != _T(""))
-			{
-				props.FillTextType(3);
-			}
-			else
-			{
-				props.FillTextType(0);
-			}
-		}
-		void GetBackground(Logic::BgPr& bg, DWORD& ARGB)const
-		{
-			if(cSld.bg.is_init())
-			{
-				if(cSld.bg->bgPr.is_init())
-					bg = cSld.bg->bgPr.get();
-				else if(cSld.bg->bgRef.is_init())
-				{
-					ARGB = cSld.bg->bgRef->Color.GetARGB();
-                    theme->themeElements.fmtScheme.GetFillStyle(cSld.bg->bgRef->idx.get_value_or(0), bg.Fill);
-	//					bg.SetParentFilePointer(this);
 				}
 			}
 		}
@@ -321,8 +184,7 @@ namespace PPTX
 			return p->filename().m_strFilename;
 		}
 
-		//---------------------Colors from map---------------------------------------
-
+//---------------------Colors from map---------------------------------------
 		DWORD GetRGBAFromMap(const std::wstring& str)const
 		{
             return theme->GetRGBAFromScheme(clrMap.GetColorSchemeIndex(str));
@@ -342,9 +204,7 @@ namespace PPTX
 		{
             return theme->GetABGRFromScheme(clrMap.GetColorSchemeIndex(str));
 		}
-
-		//---------------------------Colors from scheme------------------------------
-
+//---------------------------Colors from scheme------------------------------
 		DWORD GetRGBAFromScheme(const std::wstring& str)const
 		{
             return theme->GetRGBAFromScheme(str);
@@ -365,7 +225,7 @@ namespace PPTX
             return theme->GetABGRFromScheme(str);
 		}
 
-		//void ApplyColors();
+
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			pWriter->StartRecord(NSBinPptxRW::NSMainTables::SlideMasters);
@@ -476,7 +336,8 @@ namespace PPTX
 			pReader->Seek(end);
 		}
 
-	public:
+
+		
 		Logic::CSld					cSld;
 		Logic::ClrMap				clrMap;
 		std::vector<Logic::XmlId>	sldLayoutIdLst;
@@ -490,7 +351,6 @@ namespace PPTX
         smart_ptr<TableStyles>		tableStyles;
 		smart_ptr<OOX::CVmlDrawing>	Vml;
 		
-	public:		
 		void ApplyRels()
 		{
             theme = (FileContainer::Get(OOX::FileTypes::Theme)).smart_dynamic_cast<PPTX::Theme>();

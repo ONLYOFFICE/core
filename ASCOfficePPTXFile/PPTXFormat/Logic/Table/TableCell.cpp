@@ -114,16 +114,5 @@ namespace PPTX
 				CellProperties->SetParentPointer(this);
 		}
 
-		void TableCell::GetShapeProperties(ShapeProperties& props)const
-		{
-			if(parentFileIs<Slide>())
-			{
-				parentFileAs<Slide>().FillShapeProperties(props, _T("table-cell"));
-                props.FillFromTextBody(txBody);
-
-				//props.SetParentFilePointer(parentFile);
-			}
-		}
-
 	} // namespace Logic
 } // namespace PPTX

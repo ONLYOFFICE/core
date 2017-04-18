@@ -112,7 +112,7 @@ void odp_conversion_context::end_layout_slide()
 void odp_conversion_context::start_text_context()
 {
 	text_context_ = new odf_text_context(this);
-
+	text_context_->set_styles_context(slide_context_.get_styles_context());
 }
 void odp_conversion_context::end_text_context()
 {
@@ -136,5 +136,40 @@ void odp_conversion_context::start_image(const std::wstring & image_file_name)
 
 	current_slide().drawing_context()->start_image(odf_ref_name);
 }
+void odp_conversion_context::start_comment(int oox_comm_id)
+{
+	office_element_ptr comm_elm;
+	create_element(L"office", L"annotation", comm_elm, this);
+
+	current_slide().comment_context()->start_comment(comm_elm, oox_comm_id);
+	
+	current_slide().drawing_context()->start_drawing();
+	current_slide().drawing_context()->start_element(comm_elm);
+}
+void odp_conversion_context::start_comment_content()
+{
+	current_slide().comment_context()->start_comment_content();
+	
+	office_element_ptr & root_comm_element = current_slide().drawing_context()->get_current_element();
+	start_text_context();
+
+	text_context()->start_element(root_comm_element);
+	text_context()->start_paragraph();
+}
+void odp_conversion_context::end_comment_content()
+{
+	text_context()->end_paragraph();
+
+	current_slide().comment_context()->end_comment_content();
+
+	text_context()->end_element();
+	end_text_context();
+}
+void odp_conversion_context::end_comment()
+{
+	current_slide().drawing_context()->end_element();
+	current_slide().drawing_context()->end_drawing();
+}
+
 }
 }

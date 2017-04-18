@@ -41,7 +41,7 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		std::wstring Hyperlink::GetFullHyperlinkName(FileContainer* pRels)const
+		std::wstring Hyperlink::GetFullHyperlinkName(OOX::IFileContainer* pRels)const
 		{
 			if(id.IsInit() && *id != _T(""))
 			{

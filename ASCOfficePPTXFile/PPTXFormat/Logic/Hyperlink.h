@@ -113,9 +113,9 @@ namespace PPTX
 
 				if (id.is_init())
 				{
-					FileContainer* pRels = NULL;
-					if (pWriter->m_pCommonRels->is_init())
-						pRels = pWriter->m_pCommonRels->operator ->();
+					OOX::IFileContainer* pRels = NULL;
+					if (pWriter->m_pCurrentContainer->is_init())
+						pRels = pWriter->m_pCurrentContainer->operator ->();
 
 					std::wstring str = GetFullHyperlinkName(pRels);
 					pWriter->WriteString1(0, str);
@@ -256,7 +256,7 @@ namespace PPTX
 					snd->SetParentPointer(this);
 			}
 
-			virtual std::wstring GetFullHyperlinkName(FileContainer* pRels)const;
+			virtual std::wstring GetFullHyperlinkName(OOX::IFileContainer* pRels)const;
 		};
 	} // namespace Logic
 } // namespace PPTX

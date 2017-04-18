@@ -322,6 +322,8 @@ namespace PPTX
 		class InnerShdw;
 		class OuterShdw;
 		class PrstShdw;
+		class AhXY;
+		class AhPolar;
 	}
 }
 
@@ -390,6 +392,7 @@ public:
 		void convert(PPTX::Logic::PathBase						*oox_path);
 		void convert(PPTX::Logic::BodyPr						*oox_bodyPr);
         void convert(PPTX::Logic::UniFill						*oox_fill, DWORD ARGB = 0);
+		void convert(PPTX::Logic::UniColor						*color, DWORD & nARGB);
         void convert(PPTX::Logic::UniColor						*color, std::wstring & hexString, _CP_OPT(double) & opacity, DWORD ARGB = 0);
 		void convert(PPTX::Logic::NvSpPr						*oox_nvSpPr);
 		void convert(PPTX::Logic::CNvPr							*oox_cnvPr);
@@ -417,6 +420,8 @@ public:
 		void convert(PPTX::Logic::QuadBezTo						*oox_geom_path);
 		void convert(PPTX::Logic::CubicBezTo					*oox_geom_path);
 		void convert(PPTX::Logic::Close							*oox_geom_path);
+		void convert(PPTX::Logic::AhXY							*oox_handle);
+		void convert(PPTX::Logic::AhPolar						*oox_handle);
 		void convert(PPTX::Logic::EffectStyle					*oox_effect);
 		void convert(PPTX::Logic::EffectLst						*oox_effect_list);
 		void convert(PPTX::Logic::InnerShdw						*oox_effect);

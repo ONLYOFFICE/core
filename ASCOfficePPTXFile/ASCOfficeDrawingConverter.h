@@ -63,6 +63,7 @@ namespace BinDocxRW
 namespace OOX
 {
 	class CContentTypes;
+	class IFileContainer;
 }
 namespace NSBinPptxRW
 {
@@ -186,9 +187,7 @@ namespace NSBinPptxRW
 		};
 
 
-        std::map<std::wstring, CShape*>                                 m_mapShapeTypes;
-		std::map<std::wstring, NSCommon::smart_ptr<PPTX::CCommonRels>>	m_mapRels;
-        std::wstring                                                    m_strCurrentRelsPath;
+        std::map<std::wstring, CShape*>						m_mapShapeTypes;
 
         NSBinPptxRW::CBinaryFileWriter*                     m_pBinaryWriter;
         int                                                 m_lNextId;
@@ -211,9 +210,11 @@ namespace NSBinPptxRW
 
 		~CDrawingConverter();
 
-        HRESULT SetMainDocument     (BinDocxRW::CDocxSerializer* pDocument);
-        HRESULT SetRelsPath         (const std::wstring& sRelsPath);
-        std::wstring GetRelsPath    ();
+		void							SetRels(OOX::IFileContainer *container);
+		void							SetRels(smart_ptr<OOX::IFileContainer> container);
+		smart_ptr<OOX::IFileContainer>	GetRels();
+		
+		HRESULT SetMainDocument     (BinDocxRW::CDocxSerializer* pDocument);
         HRESULT SetMediaDstPath     (const std::wstring& sMediaPath);
         HRESULT SetEmbedDstPath     (const std::wstring& sEmbedPath);
 

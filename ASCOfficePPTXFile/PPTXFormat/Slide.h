@@ -41,7 +41,6 @@
 #include "Logic/Transitions/Transition.h"
 #include "Logic/Timing/Timing.h"
 
-#include "Logic/ShapeProperties.h"
 #include "Logic/Bg.h"
 
 #include "Theme.h"
@@ -73,8 +72,6 @@ namespace PPTX
 		virtual ~Slide()
 		{
 		}
-
-	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			//FileContainer::read(filename, map);
@@ -147,38 +144,7 @@ namespace PPTX
 			return type().DefaultFileName();
 		}
 //-------------------------------------------------
-		virtual void FillShapeProperties(Logic::ShapeProperties& props, const std::wstring& type)const
-		{
-			if (Layout.IsInit())
-				Layout->FillShapeProperties(props, type);
-		}
-		virtual void FillShapeTextProperties(Logic::CShapeTextProperties& props, const std::wstring& type)const
-		{
-			if (Layout.IsInit())
-				Layout->FillShapeTextProperties(props, type);
-		}
-		virtual bool GetBackground(Logic::BgPr& bg, DWORD& ARGB)const
-		{
-			if (cSld->bg.is_init())
-			{
-				if(cSld->bg->bgPr.is_init())
-					bg = cSld->bg->bgPr.get();
-				else if(cSld->bg->bgRef.is_init())
-				{
-					ARGB = cSld->bg->bgRef->Color.GetARGB();
-					theme->themeElements.fmtScheme.GetFillStyle(cSld->bg->bgRef->idx.get_value_or(0), bg.Fill);
-				}
-				return true;
-			}
-			else//from slideLayout
-			{
-				if (Layout.IsInit())
-					Layout->GetBackground(bg, ARGB);
-				return false;
-			}
-			return false;
-		}
-		
+
 		virtual std::wstring GetMediaFullPathNameFromRId(const OOX::RId& rid)const
 		{
 			smart_ptr<OOX::Image> p = GetImage(rid);
@@ -362,7 +328,6 @@ namespace PPTX
 			pReader->Seek(end);
 		}
 
-	public:
 		nullable_bool		show;
 		nullable_bool		showMasterPhAnim;
 		nullable_bool		showMasterSp;
@@ -380,8 +345,7 @@ namespace PPTX
 		smart_ptr<TableStyles>		tableStyles_;
 
 		smart_ptr<PPTX::Comments>	comments;
-
-	public:
+//--------------------------------------------------------------------------------------
 		void ApplyRels()
 		{
 			Layout		= FileContainer::Get(OOX::Presentation::FileTypes::SlideLayout).smart_dynamic_cast<PPTX::SlideLayout>();//boost::shared_dynamic_cast<PPTX::SlideLayout, PPTX::File>(FileContainer::get(OOX::Presentation::FileTypes::SlideLayout));

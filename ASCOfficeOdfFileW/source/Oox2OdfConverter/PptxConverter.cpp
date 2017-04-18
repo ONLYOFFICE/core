@@ -35,6 +35,7 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Folder.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Presentation.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Slide.h"
+
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Table/Table.h"
 
 #include <boost/lexical_cast.hpp>
@@ -369,19 +370,22 @@ void PptxConverter::convert_slides()
 		//nullable_bool		showMasterPhAnim;
 		//nullable_bool		showMasterSp;
 		
-		convert_slide(slide->cSld.GetPointer(), true);
+		convert_slide	(slide->cSld.GetPointer(), true);
+		convert			(slide->comments.operator->());
+		convert			(slide->Note.operator->());
+		
+		convert			(slide->transition.GetPointer());
+		convert			(slide->timing.GetPointer());
 
-
-		//nullable<Logic::Transition>	transition;
-		//nullable<Logic::Timing>		timing;
-
-		//smart_ptr<NotesSlide>			Note;
-
-		//smart_ptr<PPTX::Comments>		comments;
 
 		odp_context->end_slide();
 	}
 }
+void PptxConverter::convert(PPTX::NotesSlide *oox_note)
+{
+	if (!oox_note) return;
+}
+
 void PptxConverter::convert(OOX::WritingElement  *oox_unknown)
 {
 	if (oox_unknown == NULL)return;
@@ -394,7 +398,57 @@ void PptxConverter::convert(OOX::WritingElement  *oox_unknown)
 		}break;
 	}
 }
+void PptxConverter::convert(PPTX::Comments *oox_comments)
+{
+	if (!oox_comments) return;
 
+	for (size_t i = 0; i < oox_comments->m_arComments.size(); i++)
+	{
+		PPTX::Logic::Comment & oox_comment = oox_comments->m_arComments[i];
+
+		odp_context->start_comment(oox_comment.idx.get_value_or(-1));
+		odp_context->start_comment_content();
+
+			if (oox_comment.pos_x.IsInit() && oox_comment.pos_y.IsInit())
+				odp_context->comment_context()->set_position (*oox_comment.pos_x / 10., *oox_comment.pos_y / 10.); //pt
+		
+			if (oox_comment.authorId.IsInit() && presentation->commentAuthors.IsInit())
+			{
+				for (size_t a = 0; a < presentation->commentAuthors->m_arAuthors.size(); a++)
+				{
+					PPTX::Logic::CommentAuthor & autor = presentation->commentAuthors->m_arAuthors[a];
+
+					if (autor.id.IsInit() && autor.id.get() == oox_comment.authorId.get())
+					{
+						odp_context->comment_context()->set_author(autor.name.get_value_or(L""));
+						odp_context->comment_context()->set_initials(autor.initials.get_value_or(L""));
+						break;
+					}
+				}				
+			}
+			if (oox_comment.dt.IsInit())	odp_context->comment_context()->set_date(*oox_comment.dt);
+			if (oox_comment.text.IsInit())	odp_context->text_context()->add_text_content(*oox_comment.text);
+
+		odp_context->end_comment_content();
+		odp_context->end_comment();
+	}
+}
+void PptxConverter::convert(PPTX::Logic::Transition *oox_transition)
+{
+	if (!oox_transition) return;
+	
+
+}
+void PptxConverter::convert(PPTX::Logic::Timing *oox_timing)
+{
+	if (!oox_timing) return;
+	if (!oox_timing->tnLst.IsInit()) return;
+	
+	for (size_t i = 0; i < oox_timing->tnLst->list.size(); i++)
+	{
+		//oox_timing->tnLst[0]
+	}
+}
 void PptxConverter::convert(PPTX::Logic::TableProperties *oox_table_pr)
 {
 	if (!oox_table_pr) return;
@@ -897,23 +951,16 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, bool bPlaceholde
 		smart_ptr<PPTX::WrapperWritingElement>	pElem = oox_slide->spTree.SpTreeElems[i].GetElem();
 		smart_ptr<PPTX::Logic::Shape>			pShape = pElem.smart_dynamic_cast<PPTX::Logic::Shape>();
 		
-		if (pShape.IsInit() && pShape->nvSpPr.nvPr.ph.is_init())
+		if (pShape.IsInit())
 		{
-			if (bPlaceholders)
-			{
-				pShape->FillLevelUp();
-				PPTX::Logic::Shape update_shape;
-				
-				if (pShape->levelUp)
-					pShape->levelUp->Merge(update_shape, true);
-				pShape->Merge(update_shape);
+			pShape->FillLevelUp();
+			if (!bPlaceholders && pShape->nvSpPr.nvPr.ph.is_init())
+				continue;
 
-				OoxConverter::convert(&update_shape);
-			}
-			//else
-			//{
-			//	OoxConverter::convert(pShape.operator->());
-			//}
+			PPTX::Logic::Shape update_shape;
+			pShape->Merge(update_shape);
+
+			OoxConverter::convert(&update_shape);
 		}
 		else 
 		{

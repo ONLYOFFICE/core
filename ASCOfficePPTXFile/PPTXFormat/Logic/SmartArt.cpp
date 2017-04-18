@@ -36,7 +36,11 @@
 #include "../SlideMaster.h"
 
 #include "../../ASCOfficeDrawingConverter.h"
+
+#include "../../../XlsxSerializerCom/Reader/ChartFromToBinary.h"
 #include "../../../ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.h"
+#include "../../../ASCOfficeDocxFile2/BinWriter/BinWriters.h"
+
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
 
@@ -49,11 +53,11 @@ namespace PPTX
 			if (m_diag.IsInit()) 
 				return ;
 
-			FileContainer* pRels = NULL;
+			OOX::IFileContainer* pRels = NULL;
 			if (pWriter)
 			{
-				if (pWriter->m_pCommonRels->is_init())
-					pRels = pWriter->m_pCommonRels->operator ->();
+				if (pWriter->m_pCurrentContainer->is_init())
+					pRels = pWriter->m_pCurrentContainer->operator ->();
 			}
 
 			smart_ptr<OOX::File>	oFileData;
@@ -65,11 +69,8 @@ namespace PPTX
 
 			if(id_data.IsInit())
 			{
-				if		(parentFileIs<Slide>())			oFileData = parentFileAs<Slide>().Find(*id_data);
-				else if	(parentFileIs<SlideLayout>())	oFileData = parentFileAs<SlideLayout>().Find(*id_data);
-				else if	(parentFileIs<SlideMaster>())	oFileData = parentFileAs<SlideMaster>().Find(*id_data);
-				else if	(parentFileIs<Theme>())			oFileData = parentFileAs<Theme>().Find(*id_data);
-				else if (pRels != NULL)					oFileData = pRels->Find(*id_data);
+				if		(parentFileIs<OOX::IFileContainer>())	oFileData = parentFileAs<OOX::IFileContainer>().Find(*id_data);
+				else if (pRels != NULL)							oFileData = pRels->Find(*id_data);
 			}
 			
 			if (oFileData.IsInit())
@@ -88,13 +89,10 @@ namespace PPTX
 					}
 				}
 
-				if (id_drawing.IsInit())
+				if (id_drawing.IsInit() && pDiagramData)
 				{
-					if		(parentFileIs<Slide>())			oFileDrawing = parentFileAs<Slide>().Find(*id_drawing);
-					else if	(parentFileIs<SlideLayout>())	oFileDrawing = parentFileAs<SlideLayout>().Find(*id_drawing);
-					else if	(parentFileIs<SlideMaster>())	oFileDrawing = parentFileAs<SlideMaster>().Find(*id_drawing);
-					else if	(parentFileIs<Theme>())			oFileDrawing = parentFileAs<Theme>().Find(*id_drawing);
-					else if (pRels != NULL)					oFileDrawing = pRels->Find(*id_data);
+					if		(parentFileIs<OOX::IFileContainer>())	oFileDrawing = parentFileAs<OOX::IFileContainer>().Find(*id_drawing);
+					else if (pRels != NULL)							oFileDrawing = pRels->Find(*id_drawing);
 				}
 				else
 				{
@@ -102,10 +100,7 @@ namespace PPTX
 					//пробуем по тому же пути с номером data.xml - ниже			
  				}
 			}
-            if (oFileDrawing.IsInit())
-			{
-                pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.operator->());
-			}
+			pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.operator->());
 
 			if (!pDiagramDrawing && pDiagramData)
 			{
@@ -127,8 +122,7 @@ namespace PPTX
 				m_diag = pDiagramDrawing->m_oShapeTree;
 				FillParentPointersForChilds();
 
-				m_oCommonRels	= smart_ptr<PPTX::CCommonRels>( new PPTX::CCommonRels());
-				m_oCommonRels->_read(pDiagramDrawing->m_oReadPath);
+				m_pFileContainer = oFileDrawing.smart_dynamic_cast<OOX::IFileContainer>();
 
 				if (!m_diag->grpSpPr.xfrm.IsInit())
 					m_diag->grpSpPr.xfrm = new PPTX::Logic::Xfrm;
@@ -138,46 +132,48 @@ namespace PPTX
 				//parse pDiagramData !!
 			}
 		}
-
+		void SmartArt::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			if (m_diag.is_init())
+			{
+				smart_ptr<OOX::IFileContainer> old = *pWriter->m_pCurrentContainer;
+				*pWriter->m_pCurrentContainer = m_pFileContainer;
+				if (pWriter->m_pMainDocument)
+					pWriter->m_pMainDocument->m_pParamsWriter->m_pCurRels = (OOX::IFileContainer*)m_pFileContainer.operator->();
+				
+				m_diag->toPPTY(pWriter);
+				
+				*pWriter->m_pCurrentContainer = old;
+				if (pWriter->m_pMainDocument)
+					pWriter->m_pMainDocument->m_pParamsWriter->m_pCurRels = old.operator->();
+			}
+		}
 		void ChartRec::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
-			FileContainer* pRels = NULL;
-			if (pWriter->m_pCommonRels->is_init())
-				pRels = pWriter->m_pCommonRels->operator ->();
+			OOX::IFileContainer* pRels = NULL;
+			if (pWriter->m_pCurrentContainer->is_init())
+				pRels = pWriter->m_pCurrentContainer->operator ->();
 
-            std::wstring strDataPath = L"";
+			smart_ptr<OOX::File> file;
 			if(id_data.IsInit())
 			{
-				if(parentFileIs<Slide>())
-					strDataPath = parentFileAs<Slide>().GetMediaFullPathNameFromRId(*id_data);
-				else if(parentFileIs<SlideLayout>())
-					strDataPath = parentFileAs<SlideLayout>().GetMediaFullPathNameFromRId(*id_data);
-				else if(parentFileIs<SlideMaster>())
-					strDataPath = parentFileAs<SlideMaster>().GetMediaFullPathNameFromRId(*id_data);
-				else if(parentFileIs<Theme>())
-					strDataPath = parentFileAs<Theme>().GetMediaFullPathNameFromRId(*id_data);
-				else if (pRels != NULL)
-				{
-					smart_ptr<OOX::Image> p = pRels->GetImage(*id_data);
-					if (p.is_init())
-						strDataPath = p->filename().m_strFilename;
-				}
+				if(parentFileIs<OOX::IFileContainer>())	file = parentFileAs<OOX::IFileContainer>().Find(*id_data);
+				else if (pRels != NULL)					file = pRels->Find(*id_data);
 			}
+			smart_ptr<OOX::Spreadsheet::CChartSpace> pChart = file.smart_dynamic_cast<OOX::Spreadsheet::CChartSpace>();
 
-            if (strDataPath.empty())
+            if (pChart.IsInit() == false)
 				return;
 
-			BinXlsxRW::CXlsxSerializer oXlsxSerializer;
 			NSBinPptxRW::CDrawingConverter oDrawingConverter;
 			NSBinPptxRW::CBinaryFileWriter* pOldWriter = oDrawingConverter.m_pBinaryWriter;
+			
 			oDrawingConverter.m_pBinaryWriter = pWriter;
-			NSCommon::smart_ptr<PPTX::CCommonRels> pOldRels = *oDrawingConverter.m_pBinaryWriter->m_pCommonRels;
+			oDrawingConverter.SetRels(pChart.smart_dynamic_cast<OOX::IFileContainer>());
+		
+			BinXlsxRW::BinaryChartWriter oBinaryChartWriter(*pWriter, &oDrawingConverter);	
+			oBinaryChartWriter.WriteCT_ChartSpace(*pChart);
 
-			oXlsxSerializer.setDrawingConverter(&oDrawingConverter);
-
-			long lDataSize = 0;
-			oXlsxSerializer.loadChart(strDataPath, pWriter, lDataSize);
-			*oDrawingConverter.m_pBinaryWriter->m_pCommonRels = pOldRels;
 			oDrawingConverter.m_pBinaryWriter = pOldWriter;
 		}
 		std::wstring ChartRec::toXML() const

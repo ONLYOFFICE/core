@@ -44,7 +44,7 @@ namespace PPTX
 		{
 		public:
 			PPTX_LOGIC_BASE(Comment)
-		private:
+
 			nullable_int	authorId;
 			nullable_int	idx;
 			nullable_string dt;
@@ -59,8 +59,6 @@ namespace PPTX
 
 			nullable_string additional_data; // teamlab editor information!!!
 
-		public:
-			
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"authorId", authorId);
@@ -276,10 +274,9 @@ namespace PPTX
 	
 	class Comments : public WrapperFile
 	{
-	private:
+	public:
 		std::vector<PPTX::Logic::Comment> m_arComments;
 
-	public:
 		Comments()
 		{
 		}
@@ -291,7 +288,6 @@ namespace PPTX
 		{
 		}
 
-	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			XmlUtils::CXmlNode oNode;
@@ -315,7 +311,6 @@ namespace PPTX
 			WrapperFile::write(filename, directory, content);
 		}
 		
-	public:
 		virtual const OOX::FileType type() const
 		{
 			return OOX::Presentation::FileTypes::SlideComments;
@@ -328,8 +323,6 @@ namespace PPTX
 		{
 			return type().DefaultFileName();
 		}
-
-	public:
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			pWriter->WriteRecordArray(0, 0, m_arComments);

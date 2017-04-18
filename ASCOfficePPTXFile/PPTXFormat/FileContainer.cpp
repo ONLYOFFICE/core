@@ -34,7 +34,6 @@
 #include "FileContainer.h"
 #include "FileTypes.h"
 
-#include "LegacyDiagramText.h"
 #include "FileFactory.h"
 #include "WrapperFile.h"
 
@@ -241,13 +240,7 @@ namespace PPTX
 			}
 		}
 	}
-	smart_ptr<PPTX::LegacyDiagramText> FileContainer::legacyDiagramText(const OOX::RId& rId) const 
-	{
-        std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.find(rId.get());
-        if (pPair == m_mContainer.end ())
-            return smart_ptr<LegacyDiagramText>();
-        return pPair->second.smart_dynamic_cast<LegacyDiagramText>();
-	}
+
 	void FileContainer::read(const OOX::CPath& filename, FileMap& map, IPPTXEvent* Event)
 	{
 		OOX::CRels rels(filename);
@@ -304,25 +297,5 @@ namespace PPTX
 		content.Registration(type().OverrideType(), directory, m_WrittenFileName);
 		m_written = true;
 	}
-//---------------------------------------------------------------------------------------------------------------------------
-	void CCommonRels::_read(const OOX::CRels& rels, const OOX::CPath& path)
-	{
-		size_t nCount = rels.m_arrRelations.size();
-		for (size_t i = 0; i < nCount; ++i)
-		{
-			OOX::Rels::CRelationShip* pRelation = rels.m_arrRelations[i];
 
-			OOX::CPath normPath = CorrectPathRels(path, pRelation);
-
-			smart_ptr<OOX::File> _file = PPTX::FileFactory::CreateFilePPTX_OnlyMedia(normPath, *pRelation);
-			Add(pRelation->rId(), _file);	
-		}
-	}
-
-	void CCommonRels::_read(const OOX::CPath& filename)
-	{
-		OOX::CRels rels(filename);
-		OOX::CPath path = filename.GetDirectory();
-		_read(rels, path);
-	}
 } // namespace PPTX

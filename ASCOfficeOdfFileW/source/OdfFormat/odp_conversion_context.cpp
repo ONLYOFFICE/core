@@ -56,7 +56,26 @@ odp_conversion_context::odp_conversion_context(package::odf_document * outputDoc
 	:	odf_conversion_context (PresentationDocument, outputDocument), slide_context_(*this), text_context_(NULL)
 {
 }
-
+odf_text_context* odp_conversion_context::text_context()
+{
+	return text_context_; 
+}
+odp_slide_context* odp_conversion_context::slide_context()
+{
+	return &slide_context_;
+}
+odf_drawing_context* odp_conversion_context::drawing_context()
+{
+	if (slide_context_.page_state_list_.empty()) return NULL;
+	
+	return slide_context_.state().drawing_context();
+}
+odf_comment_context* odp_conversion_context::comment_context()
+{
+	if (slide_context_.page_state_list_.empty()) return NULL;
+	
+	return slide_context_.state().comment_context();
+}
 
 void odp_conversion_context::start_document()
 {

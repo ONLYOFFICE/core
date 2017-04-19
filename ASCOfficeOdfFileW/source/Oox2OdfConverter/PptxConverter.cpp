@@ -219,21 +219,20 @@ void PptxConverter::convert_styles()
 	odf_writer::style_paragraph_properties	* paragraph_properties	= odp_context->styles_context()->last_state()->get_paragraph_properties();
 	odf_writer::style_text_properties		* text_properties		= odp_context->styles_context()->last_state()->get_text_properties();
 
-	if (text_properties)
+	if (presentation->defaultTextStyle.IsInit())
 	{
-		text_properties->content_.fo_font_size_ = odf_types::font_size(odf_types::length(18, odf_types::length::pt));
-	}
-
-	if (slide->theme.IsInit() && text_properties)
-	{
-		if (slide->theme->themeElements.fontScheme.majorFont.latin.typeface.empty() == false)
-			text_properties->content_.fo_font_family_ = slide->theme->themeElements.fontScheme.majorFont.latin.typeface;
-
-		if (slide->theme->themeElements.fontScheme.majorFont.cs.typeface.empty() == false)
-			text_properties->content_.style_font_family_complex_ = slide->theme->themeElements.fontScheme.majorFont.cs.typeface;
+		OoxConverter::convert(presentation->defaultTextStyle->levels[9].GetPointer(), paragraph_properties, text_properties); //defPPr
+		OoxConverter::convert(presentation->defaultTextStyle->levels[0].GetPointer(), paragraph_properties, text_properties); //default text
 		
-		if (slide->theme->themeElements.fontScheme.majorFont.ea.typeface.empty() == false)
-			text_properties->content_.style_font_family_asian_ = slide->theme->themeElements.fontScheme.majorFont.ea.typeface;
+		odp_context->styles_context()->create_default_style(odf_types::style_family::Paragraph);		
+		paragraph_properties	= odp_context->styles_context()->last_state()->get_paragraph_properties();
+		
+		OoxConverter::convert(presentation->defaultTextStyle->levels[0].GetPointer(), paragraph_properties, text_properties); //default text
+		
+		odp_context->styles_context()->create_default_style(odf_types::style_family::Text);
+		text_properties			= odp_context->styles_context()->last_state()->get_text_properties();
+
+		OoxConverter::convert(presentation->defaultTextStyle->levels[0].GetPointer(), paragraph_properties, text_properties); //default text
 	}
 	//convert(presentation->defaultTextStyle.GetPointer()); //стили дефалтовых списков
 
@@ -302,19 +301,27 @@ void PptxConverter::convert_slides()
 		std::wstring master_style_name;
 		std::wstring layout_style_name;
 
+		bool bShow				= slide->show.get_value_or(true);
+		bool bShowMasterAnim	= slide->showMasterPhAnim.get_value_or(true);
+		bool bShowMasterSp		= slide->showMasterSp.get_value_or(true);
+
 		PPTX::Logic::TxStyles* current_txStyles = NULL;
 		if (slide->Master.IsInit())
 		{
 			current_clrMap		= &slide->Master->clrMap;
 			current_txStyles	= slide->Master->txStyles.GetPointer();
 
-			std::map<std::wstring, std::wstring>::iterator pFind = m_mapMasters.find(slide->Master->m_sOutputFilename + slide->Layout->m_sOutputFilename);
+			std::wstring master_name = (bShowMasterSp ? slide->Master->m_sOutputFilename : L"") + slide->Layout->m_sOutputFilename;
+
+			std::map<std::wstring, std::wstring>::iterator pFind = m_mapMasters.find(master_name);
 			if (pFind == m_mapMasters.end())
 			{
 				master_style_name = L"MasterPage";
-				if (slide->Master->cSld.attrName.IsInit())	master_style_name = slide->Master->cSld.attrName.get();
-				else if (current_theme->name.IsInit())		master_style_name = current_theme->name.get();
-				
+				if (bShowMasterSp)
+				{
+					if (slide->Master->cSld.attrName.IsInit())	master_style_name = slide->Master->cSld.attrName.get();
+					else if (current_theme->name.IsInit())		master_style_name = current_theme->name.get();
+				}	
 				master_style_name += L"_" ;
 				if (slide->Layout->cSld.attrName.IsInit())	master_style_name += slide->Layout->cSld.attrName.get();
 				else if (slide->Layout->attrType.IsInit())	master_style_name += slide->Layout->attrType->get();
@@ -323,18 +330,20 @@ void PptxConverter::convert_slides()
 				
 				odp_context->start_master_slide(master_style_name);
 					convert_common();
-					//if (slide->Layout->showMasterSp.IsInit() ? *slide->Layout->showMasterSp : true)
-					{
-						current_slide = slide->Master.operator->();
+
+					current_slide = slide->Master.operator->();
+					if (bShowMasterSp)
 						convert_slide(&slide->Master->cSld, current_txStyles, false);
-					}			
+					else
+						convert(slide->Master->cSld.bg.GetPointer());
+
 					if (slide->Layout->clrMapOvr.IsInit() && slide->Layout->clrMapOvr->overrideClrMapping.IsInit())
 						current_clrMap	= slide->Layout->clrMapOvr->overrideClrMapping.GetPointer();
 					current_slide = slide->Layout.operator->();
 					convert_slide(&slide->Layout->cSld, current_txStyles, true);		
 				odp_context->end_master_slide();
 				
-				m_mapMasters.insert(std::make_pair(slide->Master->m_sOutputFilename + slide->Layout->m_sOutputFilename, master_style_name));
+				m_mapMasters.insert(std::make_pair(master_name, master_style_name));
 			}
 			else
 			{
@@ -369,9 +378,6 @@ void PptxConverter::convert_slides()
 		
 		odp_context->current_slide().set_master_page (master_style_name);
 		odp_context->current_slide().set_layout_page (layout_style_name);
-		//nullable_bool		show;
-		//nullable_bool		showMasterPhAnim;
-		//nullable_bool		showMasterSp;
 		
 		convert_slide	(slide->cSld.GetPointer(), current_txStyles, true);
 		convert			(slide->comments.operator->());

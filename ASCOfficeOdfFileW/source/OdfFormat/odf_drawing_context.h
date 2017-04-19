@@ -52,6 +52,7 @@ namespace odf_writer
 class odf_conversion_context;
 class odf_style_context;
 class odf_text_context;
+class style_paragraph_properties;
 
 class odf_drawing_context
 {
@@ -124,16 +125,18 @@ public:
 	void start_frame	();
 	void end_frame		();
 
-	bool change_text_box_2_wordart();
-
 	void start_image	(std::wstring file_path);
 	void end_image		();
+	
+	bool change_text_box_2_wordart	();
+	bool is_wordart					();
+	void set_paragraph_properties	(style_paragraph_properties *paragraph_properties);
 	
 	void start_text_box					();
 		void set_text_box_min_size		(bool val);
 		void set_text_box_min_size		(double w_pt, double h_pt);
 		void set_text_box_parent_style	(std::wstring style_name);
-		void set_text_box_tableframe	(bool val);
+		void set_text_box_tableframe	(bool val);		
 	void end_text_box					();
 
 	void start_object(std::wstring name);

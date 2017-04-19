@@ -364,6 +364,7 @@ public:
 		
 		void convert (double oox_font_size, _CP_OPT(cpdoccore::odf_types::font_size) & odf_font_size);	
 		bool convert (std::wstring sSchemeColor, DWORD & argb);
+		void convert_font(PPTX::Theme *theme, std::wstring & font);
 //.......................................................................................................................
 		void convert(OOX::WritingElement  *oox_unknown);
 //drawingML & pptx................................................................................................................................
@@ -403,9 +404,12 @@ public:
 		void convert(PPTX::Logic::NvGrpSpPr						*oox_nvSpPr);
 		void convert(PPTX::Logic::NvPr							*oox_nvPr);
 		void convert(PPTX::Logic::Paragraph						*oox_para, PPTX::Logic::TextListStyle *oox_list_style = NULL);
-		void convert(PPTX::Logic::TextListStyle					*oox_list_style, int level, cpdoccore::odf_writer::style_paragraph_properties * paragraph_properties);
-		void convert(PPTX::Logic::TextParagraphPr				*oox_para_props, cpdoccore::odf_writer::style_paragraph_properties * paragraph_properties);
-		void convert(PPTX::Logic::RunProperties					*oox_run_props, cpdoccore::odf_writer::style_text_properties * text_properties);
+
+		void convert(PPTX::Logic::TextListStyle					*oox_list_style, int level, cpdoccore::odf_writer::style_paragraph_properties	*paragraph_properties,
+																							cpdoccore::odf_writer::style_text_properties		*text_properties);
+		void convert(PPTX::Logic::TextParagraphPr				*oox_para_props,			cpdoccore::odf_writer::style_paragraph_properties	*paragraph_properties, 
+																							cpdoccore::odf_writer::style_text_properties		*text_properties);
+		void convert(PPTX::Logic::RunProperties					*oox_run_props,				cpdoccore::odf_writer::style_text_properties		*text_properties);
 		void convert(PPTX::Logic::Run							*oox_run);
 		void convert(PPTX::Logic::Fld							*oox_fld);
 		void convert(PPTX::Logic::Br							*oox_br);

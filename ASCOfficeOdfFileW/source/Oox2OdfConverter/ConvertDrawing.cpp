@@ -75,6 +75,22 @@ void OoxConverter::convert(PPTX::Logic::SpTreeElem *oox_element)
 	convert (elem.operator->());
 }
 
+void OoxConverter::convert_font(PPTX::Theme *theme, std::wstring & font)
+{
+	if (font == L"+mj-lt")
+		font = theme ? theme->themeElements.fontScheme.majorFont.latin.typeface : L"";
+	else if (font == L"+mn-lt")
+		font = theme ? theme->themeElements.fontScheme.minorFont.latin.typeface : L"";
+	else if (font == L"+mj-ea")
+		font = theme ? theme->themeElements.fontScheme.majorFont.ea.typeface : L"";
+	else if (font == L"+mn-ea")
+		font = theme ? theme->themeElements.fontScheme.minorFont.ea.typeface : L"";
+	else if (font == L"+mj-cs")
+		font = theme ? theme->themeElements.fontScheme.majorFont.cs.typeface : L"";
+	else if (font == L"+mn-cs")
+		font = theme ? theme->themeElements.fontScheme.minorFont.cs.typeface : L"";
+}
+
 void OoxConverter::convert(PPTX::Logic::GraphicFrame *oox_graphic_frame)
 {
 	if (!oox_graphic_frame)return;
@@ -156,11 +172,42 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 {
 	if (!oox_picture)return;
 
-	odf_context()->drawing_context()->start_drawing();
+	bool bImage = true;
+	if (oox_picture->spPr.Geometry.is_init())
+	{
+		int type = SimpleTypes::shapetypeRect;
+		if ( oox_picture->spPr.Geometry.is<PPTX::Logic::CustGeom>() )
+		{
+			type = 1000;
+		}
+		else if ( oox_picture->spPr.Geometry.is<PPTX::Logic::PrstGeom>() )
+		{
+			const PPTX::Logic::PrstGeom& prstGeom = oox_picture->spPr.Geometry.as<PPTX::Logic::PrstGeom>();
+			
+			SimpleTypes::CShapeType<> preset;
+			preset.FromString(prstGeom.prst.get());
+			type = preset.GetValue();
+		}
+
+		if (type != SimpleTypes::shapetypeRect)
+		{
+			odf_context()->drawing_context()->start_drawing();
+			odf_context()->drawing_context()->start_shape(type);			
+				
+				convert(&oox_picture->spPr, oox_picture->style.GetPointer());
+				convert(&oox_picture->nvPicPr);	
+				
+				odf_context()->drawing_context()->start_area_properties();
+					convert(&oox_picture->blipFill);
+				odf_context()->drawing_context()->end_area_properties();				
+
+			odf_context()->drawing_context()->end_shape();
+			odf_context()->drawing_context()->end_drawing();
+			return;
+		}
+	}
 
     std::wstring pathImage;
-	double Width=0, Height = 0;
-
 	if (oox_picture->blipFill.blip.IsInit())
 	{
         std::wstring sID;
@@ -174,10 +221,13 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		{
 			pathImage = oox_picture->blipFill.blip->link->get();	
 		}
-        _graphics_utils_::GetResolution(pathImage.c_str(), Width, Height);
 	}
+	odf_context()->drawing_context()->start_drawing();	
 	odf_context()->start_image(pathImage);
 	{
+		double Width = 0, Height = 0;
+        _graphics_utils_::GetResolution(pathImage.c_str(), Width, Height);
+		
 		if (oox_picture->blipFill.tile.IsInit()) 
 		{
 			odf_context()->drawing_context()->set_image_style_repeat(2);
@@ -196,24 +246,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		}		
 
 		OoxConverter::convert(&oox_picture->nvPicPr.cNvPr);		
-
-		//oox_picture->m_oNvPicPr.m_oCNvPicPr
-		//oox_picture->m_oNvPicPr.m_oCNvPicPr.m_oPicLocks
-		{
-			//if (oox_picture->m_oNvPicPr.m_oCNvPicPr.m_oPicLocks->m_oNoChangeAspect)
-			//{
-			//}
-			//if (oox_picture->m_oNvPicPr.m_oCNvPicPr.m_oPicLocks->m_oNoCrop))
-			//{
-			//}
-			//if (oox_picture->m_oNvPicPr.m_oCNvPicPr.m_oPicLocks->m_oNoResize)
-			//{
-			//}
-		}	
-		//m_oExtLst
-
-
-		OoxConverter::convert(&oox_picture->spPr, NULL);
+		OoxConverter::convert(&oox_picture->spPr, oox_picture->style.GetPointer());
 
 	}
 	odf_context()->drawing_context()->end_image();
@@ -401,7 +434,6 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 
 		if (oox_shape->spPr.Geometry.is_init())
 		{
-
 			if ( oox_shape->spPr.Geometry.is<PPTX::Logic::PrstGeom>() )
 			{
 				const PPTX::Logic::PrstGeom& prstGeom = oox_shape->spPr.Geometry.as<PPTX::Logic::PrstGeom>();
@@ -812,11 +844,11 @@ void OoxConverter::convert(PPTX::Logic::GradFill *oox_grad_fill, DWORD nARGB)
 						odf_context()->drawing_context()->set_opacity_start	(*opacityStart);
 						odf_context()->drawing_context()->set_opacity_end	(*opacityEnd);
 						
-						if (grad_style == odf_types::gradient_style::linear)
+						if (oox_grad_fill->lin.is_init())
 						{
 							odf_context()->drawing_context()->set_opacity_angle(oox_grad_fill->lin->ang.get()/60000.);
 						}
-						else
+						else if (oox_grad_fill->path.is_init())
 						{
 							odf_context()->drawing_context()->set_opacity_rect ( XmlUtils::GetInteger(oox_grad_fill->path->rect->l.get_value_or(L"")),
 																				 XmlUtils::GetInteger(oox_grad_fill->path->rect->t.get_value_or(L"")),
@@ -1102,12 +1134,15 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 			}
 		}
 
-		odf_writer::style_paragraph_properties	* paragraph_properties = odf_context()->text_context()->get_paragraph_properties();
 													//свойства могут быть приписаны не только к параграфу, но и к самому объекту		
+		odf_writer::style_paragraph_properties* paragraph_properties = odf_context()->text_context()->get_paragraph_properties();
+		odf_writer::style_text_properties*		text_properties = NULL;
 		if (!paragraph_properties)
 		{
 			odf_context()->text_context()->get_styles_context()->create_style(L"", odf_types::style_family::Paragraph, true, false, -1);	
-			paragraph_properties = odf_context()->text_context()->get_styles_context()->last_state()->get_paragraph_properties();
+			
+			paragraph_properties	= odf_context()->text_context()->get_styles_context()->last_state()->get_paragraph_properties();
+			text_properties			= odf_context()->text_context()->get_styles_context()->last_state()->get_text_properties();
 
 			//if(list_present && oox_list_style)
 			//{
@@ -1116,8 +1151,11 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 			//}
 			styled = true;
 		}
-		convert(oox_list_style, list_level, paragraph_properties);
-		convert(oox_paragraph->pPr.GetPointer(), paragraph_properties);
+		convert(oox_list_style, list_level, paragraph_properties, text_properties);
+		convert(oox_paragraph->pPr.GetPointer(), paragraph_properties, text_properties);
+
+		if (odf_context()->drawing_context()->is_wordart())
+			odf_context()->drawing_context()->set_paragraph_properties(paragraph_properties);
 	}
 	
 	if(list_present)
@@ -1162,77 +1200,79 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 		odf_context()->text_context()->end_list_item();
 	}
 }
-void OoxConverter::convert(PPTX::Logic::TextListStyle *oox_list_style, int level, odf_writer::style_paragraph_properties * paragraph_properties)
+void OoxConverter::convert(PPTX::Logic::TextListStyle *oox_list_style, int level, odf_writer::style_paragraph_properties * paragraph_properties
+																				, odf_writer::style_text_properties * text_properties)
 {
 	if (!oox_list_style)		return;
 	if (!paragraph_properties)	return;
 
-	convert(oox_list_style->levels[9].GetPointer(), paragraph_properties);
+	convert(oox_list_style->levels[9].GetPointer(), paragraph_properties, text_properties);
 	if (level < 0 || level > 9) return;
 
-	convert(oox_list_style->levels[level].GetPointer(), paragraph_properties);
+	convert(oox_list_style->levels[level].GetPointer(), paragraph_properties, text_properties);
 }
-void OoxConverter::convert(PPTX::Logic::TextParagraphPr *oox_paragraph_pr, odf_writer::style_paragraph_properties * paragraph_properties)
+void OoxConverter::convert(PPTX::Logic::TextParagraphPr *oox_paragraph_pr	, odf_writer::style_paragraph_properties * paragraph_properties
+																			, odf_writer::style_text_properties * text_properties)
 {
-	if (!oox_paragraph_pr)		return;
-	if (!paragraph_properties)	return;
-
-	if (oox_paragraph_pr->lnSpc.IsInit())
+	if (!oox_paragraph_pr) return;
+	
+	if (paragraph_properties)
 	{
-		odf_types::length_or_percent length;
-		convert(oox_paragraph_pr->lnSpc.GetPointer(), length);
-		paragraph_properties->content_.fo_line_height_ = odf_types::line_width(length);
-	}
-	if (oox_paragraph_pr->spcAft.IsInit())
-	{
- 		odf_types::length_or_percent length;
-		convert(oox_paragraph_pr->spcAft.GetPointer(), length);
-		paragraph_properties->content_.fo_margin_bottom_ = length;
-	}
-	if (oox_paragraph_pr->spcBef.IsInit())
-	{
- 		odf_types::length_or_percent length;
-		convert(oox_paragraph_pr->spcBef.GetPointer(), length);
-		paragraph_properties->content_.fo_margin_top_ = length;
-	}
-	if (oox_paragraph_pr->algn.IsInit())
-	{
-		switch(oox_paragraph_pr->algn->GetBYTECode())
+		if (oox_paragraph_pr->lnSpc.IsInit())
 		{
-			case 0 : paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Center);		break;
-			case 1 : 
-			case 2 : 
-			case 3 : paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Justify);	break;
-			case 5 : paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Right);		break;
-			case 4 : 
-			default:
-				paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Left);			break;
+			odf_types::length_or_percent length;
+			convert(oox_paragraph_pr->lnSpc.GetPointer(), length);
+			paragraph_properties->content_.fo_line_height_ = odf_types::line_width(length);
 		}
+		if (oox_paragraph_pr->spcAft.IsInit())
+		{
+ 			odf_types::length_or_percent length;
+			convert(oox_paragraph_pr->spcAft.GetPointer(), length);
+			paragraph_properties->content_.fo_margin_bottom_ = length;
+		}
+		if (oox_paragraph_pr->spcBef.IsInit())
+		{
+ 			odf_types::length_or_percent length;
+			convert(oox_paragraph_pr->spcBef.GetPointer(), length);
+			paragraph_properties->content_.fo_margin_top_ = length;
+		}
+		if (oox_paragraph_pr->algn.IsInit())
+		{
+			switch(oox_paragraph_pr->algn->GetBYTECode())
+			{
+				case 0 : paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Center);	break;
+				case 1 : 
+				case 2 : 
+				case 3 : paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Justify);	break;
+				case 5 : paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Right);	break;
+				case 4 : 
+				default:
+					paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Left);			break;
+			}
+		}
+		if (oox_paragraph_pr->marL.IsInit())
+		{
+			paragraph_properties->content_.fo_margin_left_ = odf_types::length_or_percent(odf_types::length(oox_paragraph_pr->marL.get() / 12700., odf_types::length::pt));
+		}
+		if (oox_paragraph_pr->marR.IsInit())
+		{
+			paragraph_properties->content_.fo_margin_right_ = odf_types::length_or_percent(odf_types::length(oox_paragraph_pr->marR.get() / 12700., odf_types::length::pt));
+		}
+		if (oox_paragraph_pr->indent.IsInit())
+		{
+			paragraph_properties->content_.fo_text_indent_ = odf_types::length_or_percent(odf_types::length(oox_paragraph_pr->indent.get() / 12700., odf_types::length::pt));
+		}
+		if (oox_paragraph_pr->rtl.IsInit())
+		{
+		}	
 	}
-	if (oox_paragraph_pr->marL.IsInit())
-	{
-		paragraph_properties->content_.fo_margin_left_ = odf_types::length_or_percent(odf_types::length(oox_paragraph_pr->marL.get() / 12700., odf_types::length::pt));
-	}
-	if (oox_paragraph_pr->marR.IsInit())
-	{
-		paragraph_properties->content_.fo_margin_right_ = odf_types::length_or_percent(odf_types::length(oox_paragraph_pr->marR.get() / 12700., odf_types::length::pt));
-	}
-	if (oox_paragraph_pr->indent.IsInit())
-	{
-		paragraph_properties->content_.fo_text_indent_ = odf_types::length_or_percent(odf_types::length(oox_paragraph_pr->indent.get() / 12700., odf_types::length::pt));
-	}
-	if (oox_paragraph_pr->rtl.IsInit())
-	{
-	}	
 	//nullable<SimpleTypes::CDecimalNumber<> >				m_oLvl;
 	//nullable<SimpleTypes::CCoordinate32<> >				m_oDefTabSz;
 	//nullable<SimpleTypes::CTextFontAlignType<>>			m_oFontAlgn;
 
 	if (oox_paragraph_pr->defRPr.IsInit())
 	{
-		odf_writer::style_text_properties * text_properties = odf_context()->text_context()->get_styles_context()->last_state()->get_text_properties();
-		if (text_properties) 
-			convert(oox_paragraph_pr->defRPr.GetPointer(), text_properties);
+		convert(oox_paragraph_pr->defRPr.GetPointer(), text_properties);
 
 		//надо подумать как брать последний по family !!! 
 		//convert(oox_paragraph_pr->m_oDefRunProperty.GetPointer());
@@ -1251,7 +1291,7 @@ void OoxConverter::convert(PPTX::Logic::TextSpacing *oox_spacing, cpdoccore::odf
 	}
 	if ( oox_spacing->spcPts.IsInit() )
 	{
-		odf_types::length length = odf_types::length(oox_spacing->GetVal() / 12700., odf_types::length::pt);
+		odf_types::length length = odf_types::length(-oox_spacing->GetVal() / 100., odf_types::length::pt);
 		length_or_percent = odf_types::length_or_percent(length);
 	}
 }
@@ -1263,43 +1303,59 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 	
 	PPTX::Theme *theme = oox_theme();
 
-	PPTX::Logic::GradFill*	gradFill = &oox_run_pr->Fill.as<PPTX::Logic::GradFill>();
-	if (gradFill)
-	{
-		if (odf_context()->drawing_context()->change_text_box_2_wordart())
+//------------------------------------------------------	
+	odf_writer::odf_drawing_context *drawing = odf_context()->drawing_context(); 
+	if (drawing)	//from styles impossible(
+	{	
+		if ((oox_run_pr->Fill.is<PPTX::Logic::GradFill>()) ||
+			((oox_run_pr->ln.IsInit()) && (oox_run_pr->ln->Fill.is_init() && oox_run_pr->ln->Fill.getType() != OOX::et_a_noFill)))
 		{
-			odf_context()->drawing_context()->start_area_properties();
-			{		
-				convert(gradFill);
-			}
-			odf_context()->drawing_context()->end_area_properties();
+			drawing->change_text_box_2_wordart();
 		}
+
+		if (drawing->is_wordart())
+		{
+			if (oox_run_pr->Fill.is_init())
+			{
+				drawing->start_area_properties();
+					convert(&oox_run_pr->Fill);
+				drawing->end_area_properties();
+			}
+			if (oox_run_pr->ln.is_init())
+			{
+				drawing->start_line_properties();
+				if (oox_run_pr->ln->Fill.is_init() && oox_run_pr->ln->Fill.getType() != OOX::et_a_noFill )
+				{
+					drawing->set_line_dash_preset(6);
+					convert(oox_run_pr->ln.GetPointer());
+				}
+				else if (drawing->is_wordart())
+					drawing->set_no_fill();
+				drawing->end_line_properties();
+			}
+		}
+	}
+//---------------------------------------
+	_CP_OPT(double) opacityText;
+	std::wstring	hexColorText;
+			
+	PPTX::Logic::GradFill*	gradFill = &oox_run_pr->Fill.as<PPTX::Logic::GradFill>();
+	if (gradFill && !gradFill->GsLst.empty())
+	{
+		convert(&gradFill->GsLst[0].color, hexColorText, opacityText);
 	}
 	PPTX::Logic::SolidFill*	solidFill	= &oox_run_pr->Fill.as<PPTX::Logic::SolidFill>();
 	if (solidFill)
 	{
-		std::wstring hexColor;
-		_CP_OPT(double) opacity;
-		convert(&solidFill->Color, hexColor, opacity);
-		
+		convert(&solidFill->Color, hexColorText, opacityText);
+	}	
+	if (!hexColorText.empty())
+	{		
 		int res = 0;
-		if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
-		text_properties->content_.fo_color_ = odf_types::color(hexColor);
+		if ((res = hexColorText.find(L"#")) < 0) hexColorText = std::wstring(L"#") + hexColorText;
+		text_properties->content_.fo_color_ = odf_types::color(hexColorText);
 	}
-
-	if (oox_run_pr->ln.IsInit() && oox_run_pr->ln->Fill.getType() != OOX::et_a_noFill)
-	{
-		if (odf_context()->drawing_context()->change_text_box_2_wordart())
-		{
-			odf_context()->drawing_context()->start_line_properties();
-			{		
-				odf_context()->drawing_context()->set_line_dash_preset(6);
-				convert(oox_run_pr->ln.GetPointer());
-			}
-			odf_context()->drawing_context()->end_line_properties();
-		}
-	}
-
+//---------------------------------------
 	if (oox_run_pr->b.IsInit())
 	{
 		if (oox_run_pr->b.get() == true) 
@@ -1326,12 +1382,8 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 		if (!oox_run_pr->latin->typeface.empty())	
 		{
 			std::wstring font = oox_run_pr->latin->typeface;
-			
-			if (font == L"+mj-lt")
-				font = theme->themeElements.fontScheme.majorFont.latin.typeface;
-			else if (font == L"+mn-lt")
-				font = theme->themeElements.fontScheme.minorFont.latin.typeface;
-				
+			convert_font(theme, font);
+							
 			if (!font.empty())
 				text_properties->content_.fo_font_family_ = font;
 		}
@@ -1345,11 +1397,7 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 		if (!oox_run_pr->ea->typeface.empty())	
 		{
 			std::wstring font = oox_run_pr->ea->typeface;
-			
-			if (font == L"+mj-ea")
-				font = theme->themeElements.fontScheme.majorFont.ea.typeface;
-			else if (font == L"+mn-ea")
-				font = theme->themeElements.fontScheme.minorFont.ea.typeface;
+			convert_font(theme, font);
 			
 			if (!font.empty())
 				text_properties->content_.style_font_family_asian_ = font;
@@ -1363,11 +1411,7 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 		if (!oox_run_pr->cs->typeface.empty())
 		{
 			std::wstring font = oox_run_pr->cs->typeface;
-
-			if (font == L"+mj-cs")
-				font = theme->themeElements.fontScheme.majorFont.cs.typeface;
-			else if (font == L"+mn-cs")
-				font = theme->themeElements.fontScheme.minorFont.cs.typeface;
+			convert_font(theme, font);
 			
 			if (!font.empty())
 				text_properties->content_.style_font_family_complex_ = font;
@@ -1382,12 +1426,12 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
         int res = oox_language.find(L"-");
         if (res >= 0)
 		{
-            oox_country = oox_language.substr(res);
+            oox_country = oox_language.substr(res + 1);
             oox_language = oox_language.substr(0, res);
 		}
 		
 		text_properties->content_.fo_language_ = oox_language;
-        if (oox_country.length() > 0)
+        if (!oox_country.empty())
 			text_properties->content_.fo_country_ = oox_country;
 
 	}
@@ -1499,8 +1543,6 @@ void OoxConverter::convert(PPTX::Logic::TxBody *oox_txBody, PPTX::Logic::ShapeSt
 	if (oox_txBody->Paragrs.empty()) return;
 
 	odf_context()->start_text_context();	
-		
-
 
 	for (size_t i = 0; i < oox_txBody->Paragrs.size(); i++)
 	{

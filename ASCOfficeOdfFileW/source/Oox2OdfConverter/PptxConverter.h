@@ -65,6 +65,7 @@ namespace PPTX
 		class TableCell;
 		class TableCellProperties;
 		class TcBdr;
+		class TxStyles;
 	}
 }
 
@@ -105,14 +106,13 @@ namespace Oox2Odf
 
 		void convert(OOX::WritingElement *oox_unknown);
  		
-		void convert_slide	(PPTX::Logic::CSld			*oox_slide, bool bPlaceholders = true);
+		void convert_slide	(PPTX::Logic::CSld			*oox_slide, PPTX::Logic::TxStyles* txStyles, bool bPlaceholders = true);
 		void convert_layout	(PPTX::Logic::CSld			*oox_slide);
 		void convert		(PPTX::Comments				*oox_comments);
 		void convert		(PPTX::NotesSlide			*oox_note);
 
 		void convert(PPTX::Logic::Bg					*oox_background);
-		void convert(PPTX::Logic::Transition			*oox_transition);
-		void convert(PPTX::Logic::Timing				*oox_timing);
+		void convert(PPTX::Logic::Timing				*oox_timing, PPTX::Logic::Transition *oox_transition);
 		
 		void convert(PPTX::Logic::Table					*oox_table);
 		void convert(PPTX::Logic::TableRow				*oox_table_row);

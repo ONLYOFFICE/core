@@ -84,10 +84,10 @@ public:
 
     void serialize_shared_strings(std::wostream & strm);
 	
-	void ApplyTextProperties		(std::wstring style, odf_reader::text_format_properties_content & propertiesOut, odf_types::style_family::type Type);
-	void ApplyParagraphProperties	(std::wstring style, odf_reader::paragraph_format_properties & propertiesOut, odf_types::style_family::type Type);
+	void ApplyTextProperties		(std::wstring style, std::wstring para_style, odf_reader::text_format_properties_content & propertiesOut);
+	void ApplyParagraphProperties	(std::wstring style, odf_reader::paragraph_format_properties & propertiesOut);
 
-	void set_local_styles_container(odf_reader::styles_container*  local_styles_);//это если стили объектов содержатся в другом документе
+	void set_local_styles_container	(odf_reader::styles_container*  local_styles_);//это если стили объектов содержатся в другом документе
 
 	bool is_drawing_context(){return in_draw;}
 
@@ -237,48 +237,54 @@ void xlsx_text_context::Impl::end_hyperlink(std::wstring hId)
 	hyperlink_hId = hId;
 }
 
-void xlsx_text_context::Impl::ApplyParagraphProperties	(std::wstring style, odf_reader::paragraph_format_properties & propertiesOut, odf_types::style_family::type Type)
+void xlsx_text_context::Impl::ApplyParagraphProperties	(std::wstring style, odf_reader::paragraph_format_properties & propertiesOut)
 {
 	std::vector<const odf_reader::style_instance *> instances;
 
+	odf_reader::style_instance*	defaultStyle	= NULL;
+	odf_reader::style_instance*	paraStyle		= NULL;
+
 	if (local_styles_ptr_)
 	{
-		odf_reader::style_instance * defaultStyle = local_styles_ptr_->style_default_by_type(Type);
-		if (defaultStyle)instances.push_back(defaultStyle);
-
-		odf_reader::style_instance* styleInst = local_styles_ptr_->style_by_name(style, Type,false/*process_headers_footers_*/);
-		if(styleInst)instances.push_back(styleInst);
+		defaultStyle	= local_styles_ptr_->style_default_by_type(odf_types::style_family::Paragraph);
+		paraStyle		= local_styles_ptr_->style_by_name(style, odf_types::style_family::Paragraph, false/*process_headers_footers_*/);
 	}
 	else
 	{
-		odf_reader::style_instance * defaultStyle = styles_.style_default_by_type(Type);
-		if (defaultStyle)instances.push_back(defaultStyle);
-
-		odf_reader::style_instance* styleInst = styles_.style_by_name(style, Type,false/*process_headers_footers_*/);
-		if(styleInst)instances.push_back(styleInst);
+		defaultStyle	= styles_.style_default_by_type(odf_types::style_family::Paragraph);
+		paraStyle		= styles_.style_by_name(style, odf_types::style_family::Paragraph, false/*process_headers_footers_*/);
 	}
+	
+	if (defaultStyle)	instances.push_back(defaultStyle);
+	if (paraStyle)		instances.push_back(paraStyle);
+	
 	propertiesOut.apply_from(calc_paragraph_properties_content(instances));
 }
-void xlsx_text_context::Impl::ApplyTextProperties(std::wstring style, odf_reader::text_format_properties_content & propertiesOut, odf_types::style_family::type Type)
+void xlsx_text_context::Impl::ApplyTextProperties(std::wstring style, std::wstring para_style, odf_reader::text_format_properties_content & propertiesOut)
 {
 	std::vector<const odf_reader::style_instance *> instances;
 
+	odf_reader::style_instance* defaultStyle = NULL;
+	odf_reader::style_instance* textStyle	 = NULL;
+	odf_reader::style_instance* paraStyle	 = NULL;
+	
 	if (local_styles_ptr_)
 	{
-		odf_reader::style_instance * defaultStyle = local_styles_ptr_->style_default_by_type(Type);
-		if (defaultStyle)instances.push_back(defaultStyle);
-
-		odf_reader::style_instance* styleInst = local_styles_ptr_->style_by_name(style, Type,false/*process_headers_footers_*/);
-		if(styleInst)instances.push_back(styleInst);
+		defaultStyle	= local_styles_ptr_->style_default_by_type(odf_types::style_family::Text);
+		paraStyle		= local_styles_ptr_->style_by_name(para_style, odf_types::style_family::Paragraph, false/*process_headers_footers_*/);
+		textStyle		= local_styles_ptr_->style_by_name(style, odf_types::style_family::Text, false/*process_headers_footers_*/);
 	}
 	else
 	{
-		odf_reader::style_instance * defaultStyle = styles_.style_default_by_type(Type);
-		if (defaultStyle)instances.push_back(defaultStyle);
-
-		odf_reader::style_instance* styleInst = styles_.style_by_name(style, Type,false/*process_headers_footers_*/);
-		if(styleInst)instances.push_back(styleInst);
+		defaultStyle	= styles_.style_default_by_type(odf_types::style_family::Text);
+		paraStyle		= styles_.style_by_name(para_style, odf_types::style_family::Paragraph, false/*process_headers_footers_*/);
+		textStyle		= styles_.style_by_name(style, odf_types::style_family::Text, false/*process_headers_footers_*/);
 	}
+	
+	if (defaultStyle)	instances.push_back(defaultStyle);
+	if (paraStyle)		instances.push_back(paraStyle);
+	if (textStyle)		instances.push_back(textStyle);
+
 	propertiesOut.apply_from(calc_text_properties_content(instances));
 }
 
@@ -291,10 +297,10 @@ void xlsx_text_context::Impl::write_pPr	(std::wostream & strm)
 {
 	if (paragraph_style_name_.empty())return;
 
-	odf_reader::paragraph_format_properties		paragraph_format_properties_;	
+	odf_reader::paragraph_format_properties paragraph_format_properties_;	
 	
-	ApplyParagraphProperties	(paragraph_style_name_,	paragraph_format_properties_	, odf_types::style_family::Paragraph);
-	paragraph_format_properties_.xlsx_convert(strm, in_draw);
+	ApplyParagraphProperties (paragraph_style_name_,	paragraph_format_properties_);
+	paragraph_format_properties_.xlsx_convert (strm, in_draw);
 }
 
 void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
@@ -303,20 +309,13 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 			&& !(!hyperlink_hId.empty()	&& in_draw) 
 			&& !(text_properties_cell_	&& in_cell_content))return;
 
-	odf_reader::text_format_properties_content		text_properties_paragraph_;	
-	odf_reader::text_format_properties_content		text_properties_span_;
-	
-	ApplyTextProperties	(paragraph_style_name_,	text_properties_paragraph_	, odf_types::style_family::Paragraph);
-	ApplyTextProperties (span_style_name_,		text_properties_span_		, odf_types::style_family::Text);
-
 	odf_reader::text_format_properties_content text_properties_;
-
 	if (in_cell_content && text_properties_cell_)
 	{
 		text_properties_.apply_from(*text_properties_cell_);
-	}
-	text_properties_.apply_from(text_properties_paragraph_);
-	text_properties_.apply_from(text_properties_span_);
+	}	
+
+	ApplyTextProperties (span_style_name_, paragraph_style_name_, text_properties_);
 
 	_CP_OPT(double)	dValFontSize;
 	if (text_properties_.fo_font_size_)

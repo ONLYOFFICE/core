@@ -76,7 +76,7 @@ struct 	odf_group_state
 		scale_cx = scale_cy = 1.;
 		flipH = flipV = false;
 
-		elm = elm_;
+		elm		= elm_;
 		level = level_;
 		
 		prev_group = prev;
@@ -185,19 +185,19 @@ struct odf_drawing_state
 		presentation_class_			= boost::none;
 		presentation_placeholder_	= boost::none;
 
-		rotateAngle			= boost::none;
+		rotateAngle_		= boost::none;
 		
 		path_				= L"";
 		view_box_			= L"";
 		path_last_command_	= L"";
 
-		oox_shape_preset	= -1;
+		oox_shape_preset_	= -1;
 		oox_shape_.reset();
 
-		in_group			= false;
-		text_box_tableframe = false;
+		in_group_			= false;
+		text_box_tableframe_= false;
 
-		flipH = flipV		= false;
+		flipH_ = flipV_		= false;
 
 	}
 	std::vector<odf_element_state>	elements_;
@@ -207,28 +207,29 @@ struct odf_drawing_state
 	_CP_OPT(length) svg_height_;
 	_CP_OPT(length) svg_width_;	
 
+	bool flipH_;
+	bool flipV_;
+
 	std::wstring	name_;
 	std::wstring	description_;
 	int				z_order_;
 	bool			hidden_;
 
-	_CP_OPT(double)			rotateAngle;
+	_CP_OPT(double)			rotateAngle_;
 	_CP_OPT(unsigned int)	fill_color_;
 	
 	_CP_OPT(presentation_class)	presentation_class_;
 	_CP_OPT(std::wstring)		presentation_placeholder_;
 
-	bool flipH;
-	bool flipV;
 
 	std::wstring				path_;
 	std::wstring				view_box_;
 	std::wstring				path_last_command_;
 	oox_shape_ptr				oox_shape_;
 ///////////////////////
-	int oox_shape_preset;
-	bool in_group;
-	bool text_box_tableframe;
+	int oox_shape_preset_;
+	bool in_group_;
+	bool text_box_tableframe_;
 };
 
 class odf_drawing_context::Impl
@@ -461,7 +462,7 @@ void odf_drawing_context::start_drawing()
 	//else 
 	if (impl_->current_level_.size() > 0)
 	{
-		impl_->current_drawing_state_.in_group = true;
+		impl_->current_drawing_state_.in_group_ = true;
 	}
 
 }
@@ -509,20 +510,20 @@ void odf_drawing_context::end_drawing()
 
 		std::wstring strTransform;
 
-		if (impl_->current_drawing_state_.in_group && impl_->current_group_)
+		if (impl_->current_drawing_state_.in_group_ && impl_->current_group_)
 		{
 			double rotate = impl_->current_group_->rotate;
-			if (impl_->current_drawing_state_.rotateAngle )
-				rotate += *impl_->current_drawing_state_.rotateAngle;
+			if (impl_->current_drawing_state_.rotateAngle_)
+				rotate += *impl_->current_drawing_state_.rotateAngle_;
 
-			if (fabs(rotate)>0.001)impl_->current_drawing_state_.rotateAngle = rotate;
+			if (fabs(rotate)>0.001)impl_->current_drawing_state_.rotateAngle_ = rotate;
 		}
         double x = impl_->current_drawing_state_.svg_x_ ? impl_->current_drawing_state_.svg_x_->get_value() : 0;
         double y = impl_->current_drawing_state_.svg_y_ ? impl_->current_drawing_state_.svg_y_->get_value() : 0;
 
-		if (impl_->current_drawing_state_.rotateAngle)
+		if (impl_->current_drawing_state_.rotateAngle_)
 		{
-			if (impl_->current_drawing_state_.in_group)
+			if (impl_->current_drawing_state_.in_group_)
 			{
 				if (impl_->current_drawing_state_.svg_width_ && impl_->current_drawing_state_.svg_height_)
 				{
@@ -532,7 +533,7 @@ void odf_drawing_context::end_drawing()
 				}
 
 			}
-			strTransform += std::wstring(L"rotate(") + boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.rotateAngle.get()) + std::wstring(L")");
+			strTransform += std::wstring(L"rotate(") + boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.rotateAngle_.get()) + std::wstring(L")");
 			//так как вращения все в мс относительно центра фигуры, а не от начала координат - убираем смещение
 
 			if (impl_->current_drawing_state_.svg_x_ && impl_->current_drawing_state_.svg_y_)
@@ -576,14 +577,14 @@ void odf_drawing_context::end_drawing()
 		placeholder->svg_height_			= impl_->current_drawing_state_.svg_height_;
 		placeholder->svg_width_				= impl_->current_drawing_state_.svg_width_;
 	}
-	if (impl_->current_drawing_state_.in_group)
+	if (impl_->current_drawing_state_.in_group_)
 	{
 		odf_group_state_ptr gr = impl_->current_group_;
 
 		while(gr)
 		{
-			impl_->current_drawing_state_.flipH = impl_->current_drawing_state_.flipH ^ gr->flipH;
-			impl_->current_drawing_state_.flipV = impl_->current_drawing_state_.flipV ^ gr->flipV;
+			impl_->current_drawing_state_.flipH_ = impl_->current_drawing_state_.flipH_ ^ gr->flipH;
+			impl_->current_drawing_state_.flipV_ = impl_->current_drawing_state_.flipV_ ^ gr->flipV;
 			
 			gr = gr->prev_group;
 		}
@@ -594,8 +595,8 @@ void odf_drawing_context::end_drawing()
 		draw_enhanced_geometry* enhan = dynamic_cast<draw_enhanced_geometry*>(custom->draw_enhanced_geometry_.get());
 		if(enhan)
 		{
-			if (impl_->current_drawing_state_.flipV) enhan->draw_enhanced_geometry_attlist_.draw_mirror_vertical_ = true;
-			if (impl_->current_drawing_state_.flipH) enhan->draw_enhanced_geometry_attlist_.draw_mirror_horizontal_ = true;
+			if (impl_->current_drawing_state_.flipV_) enhan->draw_enhanced_geometry_attlist_.draw_mirror_vertical_ = true;
+			if (impl_->current_drawing_state_.flipH_) enhan->draw_enhanced_geometry_attlist_.draw_mirror_horizontal_ = true;
 		}
 	}else
 	{
@@ -615,7 +616,7 @@ void odf_drawing_context::end_drawing()
 		impl_->current_graphic_properties->common_horizontal_margin_attlist_.fo_margin_right_	= impl_->anchor_settings_.fo_margin_right_; 
 		impl_->current_graphic_properties->common_vertical_margin_attlist_.fo_margin_bottom_	= impl_->anchor_settings_.fo_margin_bottom_; 
 
-		if (draw && !impl_->current_drawing_state_.in_group)
+		if (draw && !impl_->current_drawing_state_.in_group_)
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
 
 		impl_->current_graphic_properties->style_wrap_			= impl_->anchor_settings_.style_wrap_;
@@ -728,7 +729,7 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 
 void odf_drawing_context::start_shape(int type)
 {
-	impl_->current_drawing_state_.oox_shape_preset = type;
+	impl_->current_drawing_state_.oox_shape_preset_ = type;
 	
 	if (type < sizeof(Shape_Types_Mapping)/sizeof(_sh_typ))
 	{
@@ -756,12 +757,21 @@ void odf_drawing_context::start_shape(int type)
 	}
 }
 
-bool odf_drawing_context::change_text_box_2_wordart()
+bool odf_drawing_context::is_wordart()
 {
-	if (impl_->current_drawing_state_.oox_shape_preset > 2000 && impl_->current_drawing_state_.oox_shape_preset < 3000)
+	if (impl_->current_drawing_state_.oox_shape_preset_ > 2000 && impl_->current_drawing_state_.oox_shape_preset_ < 3000)
 		return true;	
 
-	if (impl_->current_drawing_state_.text_box_tableframe)	return false;	
+	return false;
+}
+
+bool odf_drawing_context::change_text_box_2_wordart()
+{
+	if (impl_->current_drawing_state_.oox_shape_preset_ > 2000 && impl_->current_drawing_state_.oox_shape_preset_ < 3000)
+		return true;	
+
+	if (impl_->current_drawing_state_.presentation_class_)	return false;	
+	if (impl_->current_drawing_state_.text_box_tableframe_)	return false;	
 	if (impl_->current_drawing_state_.elements_.empty())	return false;
 
 	draw_text_box* t = dynamic_cast<draw_text_box*>(impl_->current_drawing_state_.elements_.back().elm.get());
@@ -799,7 +809,7 @@ bool odf_drawing_context::change_text_box_2_wordart()
 	impl_->current_drawing_state_.elements_.erase(impl_->current_drawing_state_.elements_.end() - 2, impl_->current_drawing_state_.elements_.end());
 	impl_->current_drawing_state_.elements_.push_back( state);
 
-	impl_->current_drawing_state_.oox_shape_preset = 2031;//plain text
+	impl_->current_drawing_state_.oox_shape_preset_ = 2031;//plain text
 
 	if (sz == 2)	impl_->root_element_ = draw_elm;
 	return true;
@@ -810,8 +820,8 @@ void odf_drawing_context::end_shape()
 	if (impl_->current_drawing_state_.elements_.empty()) 
 		return;
 
-	if (impl_->current_drawing_state_.oox_shape_preset == 2000) return end_text_box();
-	if (impl_->current_drawing_state_.oox_shape_preset == 3000) return end_image();
+	if (impl_->current_drawing_state_.oox_shape_preset_ == 2000) return end_text_box();
+	if (impl_->current_drawing_state_.oox_shape_preset_ == 3000) return end_image();
 	//вторичные, вычисляемые свойства шейпов
 
 	if (isLineShape())
@@ -848,7 +858,7 @@ void odf_drawing_context::end_shape()
 		impl_->current_drawing_state_.svg_x_ = boost::none;
 		impl_->current_drawing_state_.svg_y_ = boost::none;
 	
-		if (impl_->current_drawing_state_.flipV)
+		if (impl_->current_drawing_state_.flipV_)
 		{
 			_CP_OPT(length) tmp;
 			
@@ -856,7 +866,7 @@ void odf_drawing_context::end_shape()
 			line->draw_line_attlist_.svg_y1_ = line->draw_line_attlist_.svg_y2_;
 			line->draw_line_attlist_.svg_y2_ = tmp;
 		}
-		if (impl_->current_drawing_state_.flipH)
+		if (impl_->current_drawing_state_.flipH_)
 		{
 			_CP_OPT(length) tmp;
 			
@@ -881,11 +891,11 @@ void odf_drawing_context::end_shape()
 		std::wstring sub_type;
 		bool text_shape = false;
 
-		if (impl_->current_drawing_state_.oox_shape_preset < sizeof(Shape_Types_Mapping)/sizeof(_sh_typ))
+		if (impl_->current_drawing_state_.oox_shape_preset_ < sizeof(Shape_Types_Mapping)/sizeof(_sh_typ))
 		{
-			sub_type = Shape_Types_Mapping[impl_->current_drawing_state_.oox_shape_preset].first;
+			sub_type = Shape_Types_Mapping[impl_->current_drawing_state_.oox_shape_preset_].first;
 		}
-		else if (impl_->current_drawing_state_.oox_shape_preset > 2000 && impl_->current_drawing_state_.oox_shape_preset < 3000)// 3000 - все равно сюда не попадет
+		else if (impl_->current_drawing_state_.oox_shape_preset_ > 2000 && impl_->current_drawing_state_.oox_shape_preset_ < 3000)// 3000 - все равно сюда не попадет
 		{
 			text_shape = true;
 		}
@@ -925,7 +935,7 @@ void odf_drawing_context::end_shape()
 			}
 			else
 			{
-				oox_shape_ptr shape_define = oox_shape::create(impl_->current_drawing_state_.oox_shape_preset);
+				oox_shape_ptr shape_define = oox_shape::create(impl_->current_drawing_state_.oox_shape_preset_);
 				
 				if (!shape_define) shape_define = impl_->current_drawing_state_.oox_shape_;
 				
@@ -1001,7 +1011,7 @@ bool odf_drawing_context::isLineShape()
 	draw_path* path = dynamic_cast<draw_path*>(impl_->current_level_.back().get());
 	if (path) return true;
 
-	switch(impl_->current_drawing_state_.oox_shape_preset)
+	switch(impl_->current_drawing_state_.oox_shape_preset_)
 	{
 	case 20:	//SimpleTypes::shapetypeBentConnector2:
 	case 21:	//SimpleTypes::shapetypeBentConnector3:
@@ -1453,11 +1463,11 @@ void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)
 			break;
 	}
 
-	XmlUtils::replace_all(odf_fmla, L"gd", L"?f");
+	//XmlUtils::replace_all(odf_fmla, L"gd", L"?f");
 	XmlUtils::replace_all(odf_fmla, L"h", L"logheight");
 	XmlUtils::replace_all(odf_fmla, L"w", L"logwidth");
 	XmlUtils::replace_all(odf_fmla, L"adj", L"$");
-	XmlUtils::replace_all(name, L"gd", L"f");
+	//XmlUtils::replace_all(name, L"gd", L"f");
 
 	impl_->current_drawing_state_.oox_shape_->add(name, odf_fmla);
 }
@@ -1486,7 +1496,7 @@ void odf_drawing_context::set_viewBox (double W, double H)
 }
 void odf_drawing_context::set_flip_H(bool bVal)
 {
-	impl_->current_drawing_state_.flipH = bVal;
+	impl_->current_drawing_state_.flipH_ = bVal;
 
 	if (impl_->current_graphic_properties == NULL) return;
 	if (bVal == false)return;
@@ -1498,7 +1508,7 @@ void odf_drawing_context::set_flip_H(bool bVal)
 }
 void odf_drawing_context::set_flip_V(bool bVal)
 {
-	impl_->current_drawing_state_.flipV = bVal;
+	impl_->current_drawing_state_.flipV_ = bVal;
 
 	if (impl_->current_graphic_properties == NULL) return;
 	if (bVal == false)return;
@@ -1513,7 +1523,7 @@ void odf_drawing_context::set_rotate(double dVal)
 {
 	if (dVal > 180) dVal = dVal - 360;
 	double dRotate = dVal / 180. * 3.14159265358979323846;
-	impl_->current_drawing_state_.rotateAngle = dRotate;
+	impl_->current_drawing_state_.rotateAngle_ = dRotate;
 }
 
 void odf_drawing_context::set_drawings_rect(_CP_OPT(double) x_pt, _CP_OPT(double) y_pt, _CP_OPT(double) width_pt, _CP_OPT(double) height_pt)// "- 1" не задано
@@ -1742,7 +1752,7 @@ void odf_drawing_context::set_group_flip_V(bool bVal)
 {
 	if ( impl_->group_list_.empty() )return;
 
-	impl_->current_group_->flipV= bVal;
+	impl_->current_group_->flipV = bVal;
 }
 void odf_drawing_context::set_group_z_order(int Val)
 {
@@ -1767,7 +1777,7 @@ void odf_drawing_context::set_group_flip_H(bool bVal)
 {
 	if ( impl_->group_list_.empty() )return;
 
-	impl_->current_group_->flipH= bVal;
+	impl_->current_group_->flipH = bVal;
 }
 
 void odf_drawing_context::set_group_rotate(int iVal)
@@ -1794,14 +1804,14 @@ void odf_drawing_context::set_position_line(_CP_OPT(double) & x_pt, _CP_OPT(doub
 	draw_line* line = dynamic_cast<draw_line*>(impl_->current_level_.back().get());
 	if (line == NULL) return;
 
-	if (impl_->current_drawing_state_.in_group && impl_->current_group_ && x_pt)
+	if (impl_->current_drawing_state_.in_group_ && impl_->current_group_ && x_pt)
 		x_pt = *x_pt * impl_->current_group_->scale_cx + impl_->current_group_->shift_x ;			
 			// +  (impl_->current_group_->flipH ? (impl_->current_group_->cx - 2 * x_pt): 0);
 	
 	if (x_pt && !line->draw_line_attlist_.svg_x1_) 
 		line->draw_line_attlist_.svg_x1_ = length(length(*x_pt,length::pt).get_value_unit(length::cm),length::cm);
 
-	if (impl_->current_drawing_state_.in_group && impl_->current_group_ && y_pt)
+	if (impl_->current_drawing_state_.in_group_ && impl_->current_group_ && y_pt)
 		y_pt = *y_pt * impl_->current_group_->scale_cy + impl_->current_group_->shift_y;
 			 //+  (impl_->current_group_->flipV ? (impl_->current_group_->cy - 2 * y_pt): 0);
 
@@ -1809,13 +1819,13 @@ void odf_drawing_context::set_position_line(_CP_OPT(double) & x_pt, _CP_OPT(doub
 		line->draw_line_attlist_.svg_y1_ = length(length(*y_pt,length::pt).get_value_unit(length::cm),length::cm);
 
 ///////////////////////////////////////
-	if (impl_->current_drawing_state_.in_group && impl_->current_group_ && x2_pt)
+	if (impl_->current_drawing_state_.in_group_ && impl_->current_group_ && x2_pt)
 		x2_pt = *x2_pt * impl_->current_group_->scale_cx + impl_->current_group_->shift_x ;			
 			// +  (impl_->current_group_->flipH ? (impl_->current_group_->cx - 2 * x_pt): 0);
 
 	if (x2_pt && !line->draw_line_attlist_.svg_x2_) line->draw_line_attlist_.svg_x2_ = length(length(*x2_pt,length::pt).get_value_unit(length::cm),length::cm);
 
-	if (impl_->current_drawing_state_.in_group && impl_->current_group_ && y2_pt)
+	if (impl_->current_drawing_state_.in_group_ && impl_->current_group_ && y2_pt)
 		y2_pt = *y2_pt * impl_->current_group_->scale_cy + impl_->current_group_->shift_y;
 			 //+  (impl_->current_group_->flipV ? (impl_->current_group_->cy - 2 * y_pt): 0);
 
@@ -1841,14 +1851,14 @@ void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) &
 	{
 		double x = *x_pt;
 		
-		if (impl_->current_drawing_state_.in_group)
+		if (impl_->current_drawing_state_.in_group_)
 		{
 			for( int i = impl_->group_list_.size() - 1; i >= 0 ; i--)
 			{
 				x = (x + impl_->group_list_[i]->shift_x) * impl_->group_list_[i]->scale_cx ;	
 			}
 		}
-		if (!impl_->current_drawing_state_.svg_x_ || impl_->current_drawing_state_.in_group)
+		if (!impl_->current_drawing_state_.svg_x_ || impl_->current_drawing_state_.in_group_)
 		{
 			impl_->current_drawing_state_.svg_x_ = length(length(x , length::pt).get_value_unit(length::cm), length::cm);
 		}	
@@ -1858,7 +1868,7 @@ void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) &
 	{
 		double y = *y_pt;
 
-		if (impl_->current_drawing_state_.in_group)
+		if (impl_->current_drawing_state_.in_group_)
 		{
 			for( int i = impl_->group_list_.size() - 1; i >= 0 ; i--)
 			{
@@ -1866,7 +1876,7 @@ void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) &
 			}
 		}
 
-		if (!impl_->current_drawing_state_.svg_y_ || impl_->current_drawing_state_.in_group)
+		if (!impl_->current_drawing_state_.svg_y_ || impl_->current_drawing_state_.in_group_)
 		{
 			impl_->current_drawing_state_.svg_y_ = length(length(y, length::pt).get_value_unit(length::cm),length::cm);
 		}
@@ -1887,7 +1897,7 @@ void odf_drawing_context::get_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 }
 void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt)
 {
-	if (impl_->current_drawing_state_.in_group)
+	if (impl_->current_drawing_state_.in_group_)
 	{
 		if (width_pt)
 		{
@@ -2129,7 +2139,7 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 		style* style_ = NULL;
 		if(!draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
 		{
-			impl_->styles_context_->create_style(L"",style_family::Paragraph, true, false, -1);		
+			impl_->styles_context_->create_style(L"", style_family::Paragraph, true, false, -1);		
 		
 			office_element_ptr & style_shape_elm = impl_->styles_context_->last_state()->get_office_element();
 			style_ = dynamic_cast<style*>(style_shape_elm.get());
@@ -2168,10 +2178,37 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 			impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
 			break;
 	}
-
-
 }
+void odf_drawing_context::set_paragraph_properties(style_paragraph_properties *paragraph_properties)
+{
+	if (impl_->current_drawing_state_.elements_.empty()) return;
 
+	if (!impl_->current_paragraph_properties)
+	{
+		draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
+		if (draw)
+		{
+			if(!draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
+			{
+				impl_->styles_context_->create_style(L"", style_family::Paragraph, true, false, -1);		
+			
+				office_element_ptr & style_shape_elm = impl_->styles_context_->last_state()->get_office_element();
+				style* style_ = dynamic_cast<style*>(style_shape_elm.get());
+				if (style_)
+				{
+					impl_->current_paragraph_properties = style_->content_.get_style_paragraph_properties();
+					draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_ = style_->style_name_;
+				}
+			}
+			else
+			{
+				//??? find by name
+			}
+		}
+	}
+	if (impl_->current_paragraph_properties)
+		impl_->current_paragraph_properties ->apply_from(paragraph_properties);
+}
 void odf_drawing_context::set_textarea_padding(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom)//in pt
 {
 	if (!impl_->current_graphic_properties)return;
@@ -2200,7 +2237,7 @@ void odf_drawing_context::start_image(std::wstring odf_path)
 		return;
 	}
 
-	impl_->current_drawing_state_.oox_shape_preset = 3000;
+	impl_->current_drawing_state_.oox_shape_preset_ = 3000;
 	
 	start_frame();
 
@@ -2247,7 +2284,7 @@ void odf_drawing_context::start_object(std::wstring name)
 
 void odf_drawing_context::start_text_box()
 {	
-	impl_->current_drawing_state_.oox_shape_preset = 2000;
+	impl_->current_drawing_state_.oox_shape_preset_ = 2000;
 
 	start_frame();
 
@@ -2292,7 +2329,7 @@ void odf_drawing_context::set_text_box_tableframe(bool val)
 {
 	if (impl_->current_drawing_state_.elements_.empty()) return;
 
-	impl_->current_drawing_state_.text_box_tableframe = val;
+	impl_->current_drawing_state_.text_box_tableframe_ = val;
 
 }
 void odf_drawing_context::set_text_box_parent_style(std::wstring style_name)
@@ -2437,7 +2474,7 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 
 	}
 
-	if (impl_->current_drawing_state_.oox_shape_preset > 2000 && impl_->current_drawing_state_.oox_shape_preset < 3000)
+	if (impl_->current_drawing_state_.oox_shape_preset_ > 2000 && impl_->current_drawing_state_.oox_shape_preset_ < 3000)
 	{
 		//настройки цвета - перетащить в линии и заливки - так уж нужно wordart-у оо
 		style_text_properties *text_properties_ = text_context->get_text_properties();
@@ -2947,7 +2984,7 @@ void odf_drawing_context::end_hatch_style()
 void odf_drawing_context::start_bitmap_style()
 {
 	if (!impl_->current_graphic_properties) return;
-	if (impl_->current_drawing_state_.oox_shape_preset == 3000) return;
+	if (impl_->current_drawing_state_.oox_shape_preset_ == 3000) return;
 
 	odf_writer::office_element_ptr fill_image_element;
 
@@ -3043,7 +3080,7 @@ void odf_drawing_context::set_bitmap_link(std::wstring file_path)
 	std::wstring odf_ref_name ;	
 	impl_->odf_context_->mediaitems()->add_or_find(file_path, _mediaitems::typeImage, odf_ref_name);
 	
-	if (impl_->current_drawing_state_.oox_shape_preset == 3000)
+	if (impl_->current_drawing_state_.oox_shape_preset_ == 3000)
 	{
 		if (impl_->current_level_.size() < 1) return;
 		

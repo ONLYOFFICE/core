@@ -458,7 +458,7 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 		{
 			CP_XML_NODE(L"a:spcBef")
 			{
-				if (fo_margin_bottom_->get_type() == length_or_percent::Length)
+				if (fo_margin_top_->get_type() == length_or_percent::Length)
 				{
                     std::wstring w_before = pptx_process_margin(fo_margin_top_, length::pt, 100.0);
 					CP_XML_NODE(L"a:spcPts")

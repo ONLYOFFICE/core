@@ -45,7 +45,6 @@ namespace PPTX
 		{
 			m_name				= name_;
 			m_pLevelUp			= NULL;
-			m_nMasterTextType	= -1;
 		}
 
 		Shape::~Shape()
@@ -55,21 +54,18 @@ namespace PPTX
 		Shape::Shape(XmlUtils::CXmlNode& node)
 		{
 			m_pLevelUp			= NULL;
-			m_nMasterTextType	= -1;
 			
 			fromXML(node);
 		}
 		Shape::Shape(XmlUtils::CXmlLiteReader& oReader)
 		{
 			m_pLevelUp			= NULL;
-			m_nMasterTextType	= -1;
 			
 			fromXML(oReader);
 		}		
 		const Shape& Shape::operator =(XmlUtils::CXmlNode& node)
 		{
 			m_pLevelUp			= NULL;
-			m_nMasterTextType	= -1;
 
 			fromXML(node);
 			return *this;
@@ -77,7 +73,6 @@ namespace PPTX
 		const Shape& Shape::operator =(XmlUtils::CXmlLiteReader& oReader)
 		{
 			m_pLevelUp			= NULL;
-			m_nMasterTextType	= -1;
 
 			fromXML(oReader);
 			return *this;
@@ -462,52 +457,10 @@ namespace PPTX
 			if (m_pLevelUp)
 				m_pLevelUp->Merge(shape, true);
 
-			shape.m_name			= m_name;
-			shape.m_nMasterTextType	= m_nMasterTextType;
-		
-			shape.nvSpPr			= nvSpPr;			
+			shape.m_name = m_name;	
+			shape.nvSpPr = nvSpPr;			
 			spPr.Merge(shape.spPr);
 
-			if (parentFileIs<SlideMaster>() && (parentFileAs<SlideMaster>()).txStyles.IsInit())
-			{
-				TextListStyle * listMasterStyle = NULL;
-			
-				std::wstring type	= nvSpPr.nvPr.ph->type.get_value_or(_T("body"));				
-				if ((type == L"title") || (type == L"ctrTitle"))
-				{
-					m_nMasterTextType = 1;
-					listMasterStyle = (parentFileAs<SlideMaster>()).txStyles->titleStyle.GetPointer();
-				}
-				else if ((type == L"body") || (type == L"subTitle") || (type == L"obj"))
-				{
-					m_nMasterTextType = 2;
-					listMasterStyle = (parentFileAs<SlideMaster>()).txStyles->bodyStyle.GetPointer();
-				}
-				else if (type != L"")
-				{
-					m_nMasterTextType = 3;
-					listMasterStyle = (parentFileAs<SlideMaster>()).txStyles->otherStyle.GetPointer();
-				}
-
-				if (listMasterStyle)
-				{
-					if(!txBody.is_init())
-						txBody = new TxBody();
-					
-					TextListStyle *newListStyle = new TextListStyle();
-
-					for (int i = 0; i < 10; i++)
-					{
-						if(listMasterStyle->levels[i].is_init())
-							listMasterStyle->levels[i]->Merge(newListStyle->levels[i]);
-						if(txBody->lstStyle->levels[i].is_init())
-							txBody->lstStyle->levels[i]->Merge(newListStyle->levels[i]);
-					}
-					txBody->lstStyle.reset(newListStyle);
-				}
-			}
-			shape.m_nMasterTextType	= m_nMasterTextType;
-			
 			if (style.is_init())
 			{
 				shape.m_bIsFontRefInSlide = bIsSlidePlaceholder;

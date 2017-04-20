@@ -20,6 +20,12 @@ void MyHandleError(char *s);
 bool Sign(HCERTSTORE hStoreHandle, PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile);
 bool Verify(HCERTSTORE hStoreHandle, PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile);
 
+void ConvertEndian(const BYTE* src, BYTE* dst, DWORD size)
+{
+    for(BYTE* p = dst + size - 1; p >= dst; ++src, --p)
+        (*p) = (*src);
+}
+
 void main(void)
 {
 
@@ -312,8 +318,8 @@ void main(void)
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     bool bRes = true;
-    bRes = Sign(hCertStore, pCertContext, NSFile::GetProcessDirectory() + L"/document.xml", NSFile::GetProcessDirectory() + L"/result.txt");
-    bRes = Verify(hCertStore, pCertContext, NSFile::GetProcessDirectory() + L"/document.xml", NSFile::GetProcessDirectory() + L"/result.txt");
+    bRes = Sign(hCertStore, pCertContext, NSFile::GetProcessDirectory() + L"/document2.xml", NSFile::GetProcessDirectory() + L"/result.txt");
+    bRes = Verify(hCertStore, pCertContext, NSFile::GetProcessDirectory() + L"/document2.xml", NSFile::GetProcessDirectory() + L"/result.txt");
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     CertFreeCertificateContext(pCertContext);
@@ -342,8 +348,6 @@ bool Sign(HCERTSTORE hStoreHandle, PCCERT_CONTEXT pCertContext, std::wstring sFi
     DWORD       dwSigLen = 0;
     BYTE*       pbSignature = NULL;
 
-    // Open the certificate store.
-
     bResult = CryptAcquireCertificatePrivateKey(pCertContext, 0, NULL, &hCryptProv, &dwKeySpec, NULL);
 
     bool bIsResult = ((dwKeySpec & AT_SIGNATURE) == AT_SIGNATURE);
@@ -357,6 +361,23 @@ bool Sign(HCERTSTORE hStoreHandle, PCCERT_CONTEXT pCertContext, std::wstring sFi
 
     bResult = CryptHashData(hHash, pDataSrc, dwFileSrcLen, 0);
 
+    if (true)
+    {
+        DWORD cbHashSize = 0, dwCount = sizeof(DWORD);
+
+        BOOL b1 = CryptGetHashParam(hHash, HP_HASHSIZE, (BYTE*)&cbHashSize, &dwCount, 0);
+
+        BYTE* pDataHashRaw = new BYTE[dwCount];
+
+        BOOL b2 = CryptGetHashParam(hHash, HP_HASHVAL, pDataHashRaw, &cbHashSize, 0);
+
+        char* pBase64_hash = NULL;
+        int nBase64Len_hash = 0;
+        NSFile::CBase64Converter::Encode(pDataHashRaw, (int)cbHashSize, pBase64_hash, nBase64Len_hash, NSBase64::B64_BASE64_FLAG_NONE);
+
+        delete [] pBase64_hash;
+    }
+
     // Sign the hash object
     dwSigLen = 0;
     bResult = CryptSignHash(hHash, dwKeySpec, NULL, 0, NULL, &dwSigLen);
@@ -364,18 +385,27 @@ bool Sign(HCERTSTORE hStoreHandle, PCCERT_CONTEXT pCertContext, std::wstring sFi
     pbSignature = new BYTE[dwSigLen];
     bResult = CryptSignHash(hHash, dwKeySpec, NULL, 0, pbSignature, &dwSigLen);
 
+    NSFile::CFileBinary oFileTmp;
+    oFileTmp.CreateFileW(NSFile::GetProcessDirectory() + L"/HASH.bin");
+    oFileTmp.WriteFile(pbSignature, dwSigLen);
+    oFileTmp.CloseFile();
+
+    BYTE* pbSignatureMem = new BYTE[dwSigLen];
+    ConvertEndian(pbSignature, pbSignatureMem, dwSigLen);
+
     NSFile::CFileBinary oFile;
     oFile.CreateFileW(sSignatureFile);
 
     //oFile.WriteFile(pbSignature, dwSigLen);
     char* pBase64 = NULL;
     int nBase64Len = 0;
-    NSFile::CBase64Converter::Encode(pbSignature, (int)dwSigLen, pBase64, nBase64Len, NSBase64::B64_BASE64_FLAG_NONE);
+    NSFile::CBase64Converter::Encode(pbSignatureMem, (int)dwSigLen, pBase64, nBase64Len, NSBase64::B64_BASE64_FLAG_NONE);
     oFile.WriteFile((BYTE*)pBase64, (DWORD)nBase64Len);
 
     oFile.CloseFile();
 
     delete[] pbSignature;
+    delete[] pbSignatureMem;
     delete[] pDataSrc;
 
     bResult = CryptDestroyHash(hHash);
@@ -409,18 +439,22 @@ bool Verify(HCERTSTORE hStoreHandle, PCCERT_CONTEXT pCertContext, std::wstring s
     NSFile::CBase64Converter::Decode((char*)pDataHashBase64, (int)dwFileHashSrcLenBase64, pDataHash, nTmp);
     dwHashLen = (DWORD)nTmp;
 
+    BYTE* pDataHashMem = new BYTE[dwHashLen];
+    ConvertEndian(pDataHash, pDataHashMem, dwHashLen);
+
     bResult = CryptHashData(hHash, pDataSrc, dwFileSrcLen, 0);
 
     // Get the public key from the certificate
     CryptImportPublicKeyInfo(hCryptProv, PKCS_7_ASN_ENCODING | X509_ASN_ENCODING, &pCertContext->pCertInfo->SubjectPublicKeyInfo, &hPubKey);
 
-    bResult = CryptVerifySignature(hHash, pDataHash, dwHashLen, hPubKey, NULL, 0);
+    BOOL bResultRet = CryptVerifySignature(hHash, pDataHashMem, dwHashLen, hPubKey, NULL, 0);
 
     delete[] pDataSrc;
     delete[] pDataHash;
+    delete[] pDataHashMem;
     delete[] pDataHashBase64;
 
     bResult = CryptDestroyHash(hHash);
 
-    return bResult;
+    return bResultRet && bResult;
 }

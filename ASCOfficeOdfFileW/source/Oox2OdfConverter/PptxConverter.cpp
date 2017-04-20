@@ -986,8 +986,15 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 				}
 				update_shape.txBody->lstStyle.reset(newListStyle);
 			}
-
+			
 			pShape->Merge(update_shape);
+
+			//if (pShape->IsListStyleEmpty() == false)
+			//{
+			//	//create list style
+			//}else if (listMasterStyle)
+			//{
+			//}
 
 			OoxConverter::convert(&update_shape);
 		}

@@ -3049,7 +3049,7 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 	int type_list = odt_context->styles_context()->lists_styles().start_style_level(oox_num_lvl->m_oIlvl->GetValue(), oox_type_list );
 	if (type_list < 0) return;
 
-	odf_writer::style_list_level_properties		* level_props		= odt_context->styles_context()->lists_styles().get_list_level_properties();
+	odf_writer::style_list_level_properties			* level_props		= odt_context->styles_context()->lists_styles().get_list_level_properties();
 	odf_writer::style_list_level_label_alignment	* aligment_props	= odt_context->styles_context()->lists_styles().get_list_level_alignment_properties();
 	
 	if (level_props		== NULL)return;
@@ -3101,8 +3101,8 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 			}	
 		}else
 		{
-			aligment_props->fo_text_indent_ = odf_types::length(0,odf_types::length::cm);
-			aligment_props->fo_margin_left_ = odf_types::length(0,odf_types::length::cm);
+			aligment_props->fo_text_indent_ = odf_types::length(0, odf_types::length::cm);
+			aligment_props->fo_margin_left_ = odf_types::length(0, odf_types::length::cm);
 
 		}
 	}
@@ -3114,7 +3114,7 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 		convert(oox_num_lvl->m_oRPr.GetPointer(), text_props);
 
 		//create text style for symbols list НА ЛОКАЛЬНОМ контексте - иначе пересечение имен стилей (todoo вытащить генерацию имен в общую часть)
-		styles_context->create_style(L"",odf_types::style_family::Text, false, true, -1);					
+		styles_context->create_style(L"", odf_types::style_family::Text, false, true, -1);					
 		odf_writer::odf_style_state_ptr style_state = styles_context->last_state(odf_types::style_family::Text);
 		if (style_state)
 		{

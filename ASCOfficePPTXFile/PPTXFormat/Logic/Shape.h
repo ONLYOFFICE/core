@@ -303,6 +303,7 @@ namespace PPTX
 
 			void FillLevelUp();
 			void Merge(Shape& shape, bool bIsSlidePlaceholder = false);
+			bool IsListStyleEmpty();
 
 			void SetLevelUpElement( Shape* p){m_pLevelUp = p;};
 

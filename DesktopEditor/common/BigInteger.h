@@ -55,18 +55,10 @@ public:
 
         for (int i = 0; i < size; i++)
         {
-            int val = 0;
-            char _c = data[i];
-            if (_c >= '0' && _c <= '9')
-                val = _c - '0';
-            else if (_c >= 'A' && _c <= 'F')
-                val = 10 + _c - 'A';
-            else if (_c >= 'a' && _c <= 'f')
-                val = 10 + _c - 'a';
+            CBigInteger tmp((int)data[i]);
 
-            CBigInteger tmp(val);
             for (int j = size - 1 - i; j > 0; --j)
-                tmp *= 10;
+                tmp *= 256;
 
             *this += tmp;
         }

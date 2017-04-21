@@ -3184,7 +3184,9 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 
 	}
 	if (type_list == 2 || type_list == 3)
+	{
 		odt_context->styles_context()->lists_styles().set_bullet_image_size(size_bullet_number_marker);
+	}
 
 	if (oox_num_lvl->m_oLvlRestart.IsInit() && oox_num_lvl->m_oLvlRestart->m_oVal.IsInit() && type_list == 1)
 	{

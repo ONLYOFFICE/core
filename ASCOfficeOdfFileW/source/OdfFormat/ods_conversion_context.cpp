@@ -527,14 +527,7 @@ void ods_conversion_context::end_drawings()
 {
 	current_table().drawing_context()->clear();
 }
-void ods_conversion_context::start_image(const std::wstring & image_file_name)
-{
-	std::wstring odf_ref_name ;
-	
-	mediaitems()->add_or_find(image_file_name,_mediaitems::typeImage,odf_ref_name);
 
-	current_table().drawing_context()->start_image(odf_ref_name);
-}
 double ods_conversion_context::convert_symbol_width(double val)
 {
 	//width = ((int)((column_width * Digit_Width + 5) / Digit_Width * 256 )) / 256.;

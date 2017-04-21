@@ -125,7 +125,7 @@ public:
 	void start_frame	();
 	void end_frame		();
 
-	void start_image	(std::wstring file_path);
+	void start_image	(std::wstring odf_file_path);
 	void end_image		();
 	
 	bool change_text_box_2_wordart	();

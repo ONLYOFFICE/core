@@ -9,17 +9,53 @@
 #include "../../../common/File.h"
 #include "../../../common/BigInteger.h"
 
+#include "../../../xml/include/xmlutils.h"
+#include "../../../xml/libxml2/include/libxml/c14n.h"
+
 #pragma comment (lib, "crypt32.lib")
 #pragma comment (lib, "cryptui.lib")
 #pragma comment (lib, "Advapi32.lib")
 
 //#define ENUMS_CERTS
 
+//////////////////////
+class CXmlBuffer
+{
+public:
+    NSStringUtils::CStringBuilderA builder;
+
+public:
+    CXmlBuffer()
+    {
+    }
+    ~CXmlBuffer()
+    {
+    }
+};
+
+static int xmlBufferIOWrite(CXmlBuffer* buf, const char* buffer, int len)
+{
+    buf->builder.WriteString(buffer, (size_t)len);
+    return len;
+}
+
+static int xmlBufferIOClose(CXmlBuffer* buf)
+{
+    return 0;
+}
+
+int	xmlC14NIsVisibleCallbackMy(void * user_data, xmlNodePtr node, xmlNodePtr parent)
+{
+    return 1;
+}
+
+//////////////////////
+
 #define MY_ENCODING_TYPE  (PKCS_7_ASN_ENCODING | X509_ASN_ENCODING)
 void MyHandleError(char *s);
 
-bool Sign(HCERTSTORE hStoreHandle, PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile);
-bool Verify(HCERTSTORE hStoreHandle, PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile);
+bool Sign(PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile);
+bool Verify(PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile);
 
 void ConvertEndian(const BYTE* src, BYTE* dst, DWORD size)
 {
@@ -335,8 +371,8 @@ void main(void)
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     bool bRes = true;
-    bRes = Sign(hCertStore, pCertContext, NSFile::GetProcessDirectory() + L"/document2.xml", NSFile::GetProcessDirectory() + L"/result.txt");
-    bRes = Verify(hCertStore, pCertContext, NSFile::GetProcessDirectory() + L"/document2.xml", NSFile::GetProcessDirectory() + L"/result.txt");
+    bRes = Sign(pCertContext, NSFile::GetProcessDirectory() + L"/test.xml", NSFile::GetProcessDirectory() + L"/result.txt");
+    bRes = Verify(pCertContext, NSFile::GetProcessDirectory() + L"/test.xml", NSFile::GetProcessDirectory() + L"/result.txt");
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     CertFreeCertificateContext(pCertContext);
@@ -353,7 +389,7 @@ void MyHandleError(LPTSTR psz)
     exit(1);
 } // End of MyHandleError.
 
-bool Sign(HCERTSTORE hStoreHandle, PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile)
+bool Sign(PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile)
 {
     // Variables
     HCRYPTPROV  hCryptProv = NULL;
@@ -376,7 +412,25 @@ bool Sign(HCERTSTORE hStoreHandle, PCCERT_CONTEXT pCertContext, std::wstring sFi
     DWORD dwFileSrcLen = 0;
     NSFile::CFileBinary::ReadAllBytes(sFileXml, &pDataSrc, dwFileSrcLen);
 
-    bResult = CryptHashData(hHash, pDataSrc, dwFileSrcLen, 0);
+    xmlDocPtr xmlDoc = xmlParseMemory((char*)pDataSrc, (int)dwFileSrcLen);
+
+    CXmlBuffer _bufferC14N;
+    xmlOutputBufferPtr _buffer = xmlOutputBufferCreateIO((xmlOutputWriteCallback)xmlBufferIOWrite,
+                                                         (xmlOutputCloseCallback)xmlBufferIOClose,
+                                                         &_bufferC14N,
+                                                         NULL);
+
+    xmlC14NExecute(xmlDoc, xmlC14NIsVisibleCallbackMy, NULL, XML_C14N_1_1, NULL, 0, _buffer);
+
+    xmlOutputBufferClose(_buffer);
+
+    NSFile::CFileBinary oFileDump;
+    oFileDump.CreateFileW(NSFile::GetProcessDirectory() + L"/123.txt");
+    oFileDump.WriteFile((BYTE*)_bufferC14N.builder.GetBuffer(), (DWORD)_bufferC14N.builder.GetCurSize());
+    oFileDump.CloseFile();
+
+    //bResult = CryptHashData(hHash, pDataSrc, dwFileSrcLen, 0);
+    bResult = CryptHashData(hHash, (BYTE*)_bufferC14N.builder.GetBuffer(), (DWORD)_bufferC14N.builder.GetCurSize(), 0);
 
     if (true)
     {
@@ -430,7 +484,7 @@ bool Sign(HCERTSTORE hStoreHandle, PCCERT_CONTEXT pCertContext, std::wstring sFi
     return (bResult == TRUE);
 }
 
-bool Verify(HCERTSTORE hStoreHandle, PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile)
+bool Verify(PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile)
 {
     DWORD dwKeySpec = 0;
     HCRYPTPROV hCryptProv = NULL;

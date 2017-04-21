@@ -262,6 +262,7 @@ void odf_conversion_context::process_settings(_object & object, bool isRoot)
 void odf_conversion_context::process_styles(_object & object, bool isRoot)
 {
 	create_element(L"office", L"styles", object.styles, this, true);//общие стили
+	
 	object.style_context->process_office_styles(object.styles.back());
 	page_layout_context()->process_office_styles(object.styles.back());
 	

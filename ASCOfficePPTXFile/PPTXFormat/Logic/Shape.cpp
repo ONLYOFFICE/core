@@ -437,7 +437,6 @@ namespace PPTX
 			pWriter->EndRecord();
 		}
 
-
 		void Shape::FillLevelUp()
 		{
 			if ((m_pLevelUp == NULL) && (nvSpPr.nvPr.ph.IsInit()))
@@ -450,6 +449,21 @@ namespace PPTX
 						parentFileAs<SlideLayout>().Master->GetLevelUp(this);
 				}
 			}
+		}
+
+		bool Shape::IsListStyleEmpty()
+		{
+			if ((m_pLevelUp) && (m_pLevelUp->IsListStyleEmpty() == false)) return false;
+
+			if (txBody.IsInit()				== false) return true;
+			if (txBody->lstStyle.IsInit()	== false) return true;
+
+			for (int i = 0; i < 10; i++)
+			{
+				if (txBody->lstStyle->levels[i].IsInit())
+					return false;
+			}
+			return true;
 		}
 
 		void Shape::Merge(Shape& shape, bool bIsSlidePlaceholder)

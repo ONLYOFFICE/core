@@ -54,11 +54,12 @@ void odf_lists_styles_context::set_odf_context(odf_conversion_context * Context)
 	odf_context_ = Context;
 }
 
-void odf_lists_styles_context::process_styles(office_element_ptr root )
+void odf_lists_styles_context::process_styles(office_element_ptr root, bool automatic)
 {
 	for (size_t i = 0; i < lists_format_array_.size(); i++)
 	{
-		if (lists_format_array_[i].elements.size() < 1) continue;
+		if (lists_format_array_[i].elements.size() < 1)		continue;
+		if (lists_format_array_[i].automatic != automatic)	continue;
 
 		root->add_child_element(lists_format_array_[i].elements[0]);
 	}
@@ -92,7 +93,13 @@ std::wstring odf_lists_styles_context::get_style_name1(int oox_style_num)
 }
 std::wstring odf_lists_styles_context::get_style_name(int oox_style_num)
 {
-    if (link_format_map_.count(oox_style_num) > 0)
+	if (lists_format_array_.empty()) return L"";
+
+	if (oox_style_num < 0)
+	{
+		return lists_format_array_.back().odf_list_style_name;
+	}
+    else if (link_format_map_.count(oox_style_num) > 0)
 	{
         return link_format_map_.at(oox_style_num);
 	}
@@ -109,21 +116,30 @@ void odf_lists_styles_context::start_style(int based_number)
 	create_element(L"text", L"list-style", elm, odf_context_);
 	state.elements.push_back(elm);
 	
-	state.oox_based_number = based_number;
-	state.odf_list_style_name = std::wstring(L"WWNum") + boost::lexical_cast<std::wstring>(based_number + 1);
+	if (based_number < 0) 
+	{
+		state.oox_based_number		= lists_format_array_.size();
+		state.odf_list_style_name	= std::wstring(L"L") + boost::lexical_cast<std::wstring>(state.oox_based_number + 1);
+		state.automatic				= true; //document automatic style
+	}
+	else
+	{
+		state.oox_based_number		= based_number;
+		state.odf_list_style_name	= std::wstring(L"WWNum") + boost::lexical_cast<std::wstring>(state.oox_based_number + 1);
+		state.automatic				= false; //office style
+	}
 
 	text_list_style *style = dynamic_cast<text_list_style *>(elm.get());
 	if (style == NULL)return;
 
 	style->text_list_style_attr_.style_name_ = state.odf_list_style_name;
-
 	lists_format_array_.push_back(state); //перенести в end??
 }
 
 style_list_level_properties * odf_lists_styles_context::get_list_level_properties()
 {
-	if (lists_format_array_.size() < 1) return NULL;
-	if (lists_format_array_.back().elements.size() <1) return NULL;
+	if (lists_format_array_.empty()) return NULL;
+	if (lists_format_array_.back().elements.empty()) return NULL;
 	
 	text_list_level_style_number *style_number_ = dynamic_cast<text_list_level_style_number *>(lists_format_array_.back().elements.back().get());
 	text_list_level_style_bullet *style_bullet_ = dynamic_cast<text_list_level_style_bullet *>(lists_format_array_.back().elements.back().get());
@@ -156,8 +172,8 @@ style_list_level_properties * odf_lists_styles_context::get_list_level_propertie
 }
 style_text_properties * odf_lists_styles_context::get_text_properties()
 {
-	if (lists_format_array_.size() < 1) return NULL;
-	if (lists_format_array_.back().elements.size() <1) return NULL;
+	if (lists_format_array_.empty()) return NULL;
+	if (lists_format_array_.back().elements.empty()) return NULL;
 	
 	text_list_level_style_number *style_number_ = dynamic_cast<text_list_level_style_number *>(lists_format_array_.back().elements.back().get());
 	text_list_level_style_bullet *style_bullet_ = dynamic_cast<text_list_level_style_bullet *>(lists_format_array_.back().elements.back().get());
@@ -167,14 +183,14 @@ style_text_properties * odf_lists_styles_context::get_text_properties()
 	if (style_number_)
 	{
  		if (!style_number_->style_text_properties_)
-			create_element(L"style", L"text-properties",style_number_->style_text_properties_,odf_context_);
+			create_element(L"style", L"text-properties", style_number_->style_text_properties_, odf_context_);
 
 		props = dynamic_cast<style_text_properties *>(style_number_->style_text_properties_.get());    
 	}
 	if (style_bullet_)
 	{
  		if (!style_bullet_->style_text_properties_)
-			create_element(L"style", L"text-properties",style_bullet_->style_text_properties_,odf_context_);
+			create_element(L"style", L"text-properties", style_bullet_->style_text_properties_, odf_context_);
 
 		props =  dynamic_cast<style_text_properties *>(style_bullet_->style_text_properties_.get());    
 	}
@@ -190,8 +206,8 @@ style_text_properties * odf_lists_styles_context::get_text_properties()
 
 style_list_level_label_alignment * odf_lists_styles_context::get_list_level_alignment_properties()
 {
-	if (lists_format_array_.size() < 1) return NULL;
-	if (lists_format_array_.back().elements.size() <1) return NULL;
+	if (lists_format_array_.empty()) return NULL;
+	if (lists_format_array_.back().elements.empty()) return NULL;
 	
 	text_list_level_style_number *style_number_ = dynamic_cast<text_list_level_style_number *>(lists_format_array_.back().elements.back().get());
 	text_list_level_style_bullet *style_bullet_ = dynamic_cast<text_list_level_style_bullet *>(lists_format_array_.back().elements.back().get());
@@ -201,21 +217,21 @@ style_list_level_label_alignment * odf_lists_styles_context::get_list_level_alig
 	if (style_number_)
 	{
  		if (!style_number_->style_list_level_properties_)
-			create_element(L"style", L"list-level-properties",style_number_->style_list_level_properties_,odf_context_);
+			create_element(L"style", L"list-level-properties", style_number_->style_list_level_properties_, odf_context_);
 
 		props = dynamic_cast<style_list_level_properties *>(style_number_->style_list_level_properties_.get());    
 	}
 	if (style_bullet_)
 	{
  		if (!style_bullet_->style_list_level_properties_)
-			create_element(L"style", L"list-level-properties",style_bullet_->style_list_level_properties_,odf_context_);
+			create_element(L"style", L"list-level-properties", style_bullet_->style_list_level_properties_, odf_context_);
 
 		props =  dynamic_cast<style_list_level_properties *>(style_bullet_->style_list_level_properties_.get());    
 	}
 	if (style_image_)
 	{
  		if (!style_image_->style_list_level_properties_)
-			create_element(L"style", L"list-level-properties",style_image_->style_list_level_properties_,odf_context_);
+			create_element(L"style", L"list-level-properties", style_image_->style_list_level_properties_, odf_context_);
 
 		props =  dynamic_cast<style_list_level_properties *>(style_image_->style_list_level_properties_.get());    
 	}
@@ -223,14 +239,15 @@ style_list_level_label_alignment * odf_lists_styles_context::get_list_level_alig
 
 	if (!props->style_list_level_label_alignment_)
 	{
-		create_element(L"style", L"list-level-label-alignment" ,props->style_list_level_label_alignment_,odf_context_);
+		create_element(L"style", L"list-level-label-alignment" , props->style_list_level_label_alignment_, odf_context_);
 	}
 	return dynamic_cast<style_list_level_label_alignment *>(props->style_list_level_label_alignment_.get());
 }
 
 int odf_lists_styles_context::start_style_level(int level, int type)
 {
-	if (lists_format_array_.size() < 1) return -1;
+	if (lists_format_array_.empty()) return -1;
+	
 	int odf_type =1;
 	int format_type = -1;
 
@@ -451,10 +468,10 @@ wchar_t convert_bullet_char(wchar_t c)
 }
 void odf_lists_styles_context::set_numeric_format(std::wstring val)
 {
-	if (lists_format_array_.size() < 1) return;
-	if (lists_format_array_.back().elements.size() <1) return ;
-	if ( val.length() <1 ) 
-		return;
+	if ( lists_format_array_.empty() ) return;
+	if ( lists_format_array_.back().elements.empty() ) return;
+
+	if ( val.empty() ) return;
 
 	text_list_level_style_number *style_number_ = dynamic_cast<text_list_level_style_number *>(lists_format_array_.back().elements.back().get());
 	if (style_number_)
@@ -522,10 +539,10 @@ void odf_lists_styles_context::set_numeric_format(std::wstring val)
 }
 void odf_lists_styles_context::set_bullet_char(std::wstring val)
 {
-	if (lists_format_array_.size() < 1) return;
-	if (lists_format_array_.back().elements.size() <1) return ;
-	if ( val.length() <1 ) 
-		return;
+	if ( lists_format_array_.empty() ) return;
+	if ( lists_format_array_.back().elements.empty() ) return ;
+	
+	if ( val.empty() ) return;
 	
 	text_list_level_style_bullet *style_bullet_ = dynamic_cast<text_list_level_style_bullet *>(lists_format_array_.back().elements.back().get());
 
@@ -536,8 +553,8 @@ void odf_lists_styles_context::set_bullet_char(std::wstring val)
 void odf_lists_styles_context::set_bullet_image_size(double size)
 {
 	if (size < 0.1) return;
-	if (lists_format_array_.size() < 1) return;
-	if (lists_format_array_.back().elements.size() <1) return ;
+	if (lists_format_array_.empty()) return;
+	if (lists_format_array_.back().elements.empty()) return ;
 
 	style_list_level_properties *props = get_list_level_properties();
 
@@ -548,8 +565,8 @@ void odf_lists_styles_context::set_bullet_image_size(double size)
 }
 void odf_lists_styles_context::set_bullet_image	(std::wstring ref)
 {
-	if (lists_format_array_.size() < 1) return;
-	if (lists_format_array_.back().elements.size() <1) return ;
+	if (lists_format_array_.empty()) return;
+	if (lists_format_array_.back().elements.empty()) return ;
 	
 	text_list_level_style_image *style_image_ = dynamic_cast<text_list_level_style_image *>(lists_format_array_.back().elements.back().get());
 
@@ -563,8 +580,8 @@ void odf_lists_styles_context::set_bullet_image	(std::wstring ref)
 }
 void odf_lists_styles_context::set_start_number(int val)
 {
-	if (lists_format_array_.size() < 1) return;
-	if (lists_format_array_.back().elements.size() <1) return ;
+	if (lists_format_array_.empty()) return;
+	if (lists_format_array_.back().elements.empty()) return ;
 
 	text_list_level_style_number *style_number_ = dynamic_cast<text_list_level_style_number *>(lists_format_array_.back().elements.back().get());
 
@@ -574,8 +591,8 @@ void odf_lists_styles_context::set_start_number(int val)
 }
 void odf_lists_styles_context::set_text_style_name(std::wstring name)
 {
-	if (lists_format_array_.size() < 1) return;
-	if (lists_format_array_.back().elements.size() <1) return ;
+	if (lists_format_array_.empty()) return;
+	if (lists_format_array_.back().elements.empty()) return ;
 	
 	text_list_level_style_number *style_number_ = dynamic_cast<text_list_level_style_number *>(lists_format_array_.back().elements.back().get());
 	text_list_level_style_bullet *style_bullet_ = dynamic_cast<text_list_level_style_bullet *>(lists_format_array_.back().elements.back().get());

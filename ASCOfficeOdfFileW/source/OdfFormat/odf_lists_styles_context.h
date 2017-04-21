@@ -55,7 +55,7 @@ struct list_format_state
 	std::vector<office_element_ptr> elements;
 
 	std::wstring					odf_list_style_name;
-
+	bool							automatic;
 };
 
 class odf_lists_styles_context
@@ -64,7 +64,7 @@ public:
     odf_lists_styles_context();
 	void set_odf_context(odf_conversion_context * Context);
 
-	void start_style(int abstract_number);
+	void start_style(int abstract_number = -1);
 		int start_style_level(int level, int type);
 			style_list_level_properties			* get_list_level_properties();
 			style_list_level_label_alignment	* get_list_level_alignment_properties();
@@ -84,9 +84,9 @@ public:
 
 	void add_style(int oox_style_num, int oox_based_num);
 	
-	void process_styles(office_element_ptr root );
+	void process_styles(office_element_ptr root, bool automatic);
 
-	std::wstring get_style_name(int oox_style_num);
+	std::wstring get_style_name(int oox_style_num = -1);
 	std::wstring get_style_name1(int oox_style_num);
 private:
 	std::vector<list_format_state>			lists_format_array_;	

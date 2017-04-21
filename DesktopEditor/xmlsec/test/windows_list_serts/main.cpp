@@ -7,6 +7,7 @@
 #include <string>
 
 #include "../../../common/File.h"
+#include "../../../common/BigInteger.h"
 
 #pragma comment (lib, "crypt32.lib")
 #pragma comment (lib, "cryptui.lib")
@@ -28,6 +29,22 @@ void ConvertEndian(const BYTE* src, BYTE* dst, DWORD size)
 
 void main(void)
 {
+    if (false)
+    {
+        CBigInteger int1("345097");
+        CBigInteger int2("87960324");
+
+        CBigInteger val1 = int1 + int2;
+        CBigInteger val2 = int1 - int2;
+        CBigInteger val3 = int1 * int2;
+
+        CBigInteger int3("66A1F302407647974D18D489855371B5", 16);
+
+        unsigned char buffer[16] = { 0x66, 0xA1, 0xF3, 0x02, 0x40, 0x76, 0x47, 0x97, 0x4D, 0x18, 0xD4, 0x89, 0x85, 0x53, 0x71, 0xB5 };
+        CBigInteger val4(buffer, 16);
+
+        std::string sValue = int3.ToString();
+    }
 
     //-------------------------------------------------------------------
     // Copyright (C) Microsoft.  All rights reserved.

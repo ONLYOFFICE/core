@@ -46,6 +46,16 @@ static int xmlBufferIOClose(CXmlBuffer* buf)
 
 int	xmlC14NIsVisibleCallbackMy(void * user_data, xmlNodePtr node, xmlNodePtr parent)
 {
+    if (node->type == XML_TEXT_NODE)
+    {
+        std::string sTmp((char*)node->content);
+        if (std::string::npos != sTmp.find('\n') ||
+            std::string::npos != sTmp.find('\r') ||
+            std::string::npos != sTmp.find('\t'))
+        {
+            return 0;
+        }
+    }
     return 1;
 }
 
@@ -420,7 +430,7 @@ bool Sign(PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSign
                                                          &_bufferC14N,
                                                          NULL);
 
-    xmlC14NExecute(xmlDoc, xmlC14NIsVisibleCallbackMy, NULL, XML_C14N_1_1, NULL, 0, _buffer);
+    xmlC14NExecute(xmlDoc, xmlC14NIsVisibleCallbackMy, NULL, XML_C14N_1_0, NULL, 0, _buffer);
 
     xmlOutputBufferClose(_buffer);
 

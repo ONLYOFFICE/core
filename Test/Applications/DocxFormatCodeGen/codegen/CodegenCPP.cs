@@ -51,7 +51,6 @@ namespace codegen
         StringBuilder m_oDocxFromToBinaryCPP = new StringBuilder();
         StringBuilder m_oDocxTypesH = new StringBuilder();
         Dictionary<string, GenClass> m_mapProcessedClasses = new Dictionary<string, GenClass>();
-        Dictionary<string, string> m_mapNamespaceToPrefix = new Dictionary<string, string>() { { "http://purl.oclc.org/ooxml/drawingml/chart", "c:" }, { "http://purl.oclc.org/ooxml/drawingml/main", "a:" }, { "http://purl.oclc.org/ooxml/officeDocument/relationships", "r:" }, { "http://schemas.openxmlformats.org/markup-compatibility/2006", "mc:" }, { "http://schemas.microsoft.com/office/drawing/2007/8/2/chart", "c14:" } };
          
         string gc_sNamespaceToXml = " xmlns:c=\\\"http://schemas.openxmlformats.org/drawingml/2006/chart\\\" xmlns:a=\\\"http://schemas.openxmlformats.org/drawingml/2006/main\\\" xmlns:r=\\\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\\\" xmlns:mc=\\\"http://schemas.openxmlformats.org/markup-compatibility/2006\\\" xmlns:c14=\\\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\\\"";
         string gc_sTypePattern = "et_";
@@ -573,7 +572,7 @@ namespace codegen
             if (null != sMemberNamespace && oGenMember.bQualified)
             {
                 string sShortNamespace;
-                if (m_mapNamespaceToPrefix.TryGetValue(sMemberNamespace, out sShortNamespace))
+                if (Utils.m_mapNamespaceToPrefix.TryGetValue(sMemberNamespace, out sShortNamespace))
                     sElemName = sShortNamespace + sElemName;
             }
 

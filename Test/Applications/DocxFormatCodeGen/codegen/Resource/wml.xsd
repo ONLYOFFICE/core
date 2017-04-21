@@ -42,7 +42,7 @@
     </xsd:restriction>
   </xsd:simpleType>
   <xsd:complexType name="CT_Charset">
-    <xsd:attribute name="characterSet" type="s:ST_String" use="optional"/>
+    <xsd:attribute name="characterSet" type="s:ST_String" use="optional" default="ISO-8859-1"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_DecimalNumberOrPercent">
     <xsd:union memberTypes="s:ST_Percentage"/>
@@ -185,7 +185,7 @@
   </xsd:simpleType>
   <xsd:complexType name="CT_Underline">
     <xsd:attribute name="val" type="ST_Underline" use="optional"/>
-    <xsd:attribute name="color" type="ST_HexColor" use="optional"/>
+    <xsd:attribute name="color" type="ST_HexColor" use="optional" default="auto"/>
     <xsd:attribute name="themeColor" type="ST_ThemeColor" use="optional"/>
     <xsd:attribute name="themeTint" type="ST_UcharHexNumber" use="optional"/>
     <xsd:attribute name="themeShade" type="ST_UcharHexNumber" use="optional"/>
@@ -403,12 +403,12 @@
   </xsd:simpleType>
   <xsd:complexType name="CT_Border">
     <xsd:attribute name="val" type="ST_Border" use="required"/>
-    <xsd:attribute name="color" type="ST_HexColor" use="optional"/>
+    <xsd:attribute name="color" type="ST_HexColor" use="optional" default="auto"/>
     <xsd:attribute name="themeColor" type="ST_ThemeColor" use="optional"/>
     <xsd:attribute name="themeTint" type="ST_UcharHexNumber" use="optional"/>
     <xsd:attribute name="themeShade" type="ST_UcharHexNumber" use="optional"/>
     <xsd:attribute name="sz" type="ST_EighthPointMeasure" use="optional"/>
-    <xsd:attribute name="space" type="ST_PointMeasure" use="optional"/>
+    <xsd:attribute name="space" type="ST_PointMeasure" use="optional" default="0"/>
     <xsd:attribute name="shadow" type="s:ST_OnOff" use="optional"/>
     <xsd:attribute name="frame" type="s:ST_OnOff" use="optional"/>
   </xsd:complexType>
@@ -594,14 +594,14 @@
     </xsd:restriction>
   </xsd:simpleType>
   <xsd:complexType name="CT_Spacing">
-    <xsd:attribute name="before" type="s:ST_TwipsMeasure" use="optional"/>
-    <xsd:attribute name="beforeLines" type="ST_DecimalNumber" use="optional"/>
-    <xsd:attribute name="beforeAutospacing" type="s:ST_OnOff" use="optional"/>
-    <xsd:attribute name="after" type="s:ST_TwipsMeasure" use="optional"/>
-    <xsd:attribute name="afterLines" type="ST_DecimalNumber" use="optional"/>
-    <xsd:attribute name="afterAutospacing" type="s:ST_OnOff" use="optional"/>
-    <xsd:attribute name="line" type="ST_SignedTwipsMeasure" use="optional"/>
-    <xsd:attribute name="lineRule" type="ST_LineSpacingRule" use="optional"/>
+    <xsd:attribute name="before" type="s:ST_TwipsMeasure" use="optional" default="0"/>
+    <xsd:attribute name="beforeLines" type="ST_DecimalNumber" use="optional" default="0"/>
+    <xsd:attribute name="beforeAutospacing" type="s:ST_OnOff" use="optional" default="off"/>
+    <xsd:attribute name="after" type="s:ST_TwipsMeasure" use="optional" default="0"/>
+    <xsd:attribute name="afterLines" type="ST_DecimalNumber" use="optional" default="0"/>
+    <xsd:attribute name="afterAutospacing" type="s:ST_OnOff" use="optional" default="off"/>
+    <xsd:attribute name="line" type="ST_SignedTwipsMeasure" use="optional" default="0"/>
+    <xsd:attribute name="lineRule" type="ST_LineSpacingRule" use="optional" default="auto"/>
   </xsd:complexType>
   <xsd:complexType name="CT_Ind">
     <xsd:attribute name="start" type="ST_SignedTwipsMeasure" use="optional"/>
@@ -669,7 +669,7 @@
     <xsd:attribute name="lang" type="s:ST_Lang" use="required"/>
     <xsd:attribute name="vendorID" type="s:ST_String" use="required"/>
     <xsd:attribute name="dllVersion" type="s:ST_String" use="required"/>
-    <xsd:attribute name="nlCheck" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="nlCheck" type="s:ST_OnOff" use="optional" default="off"/>
     <xsd:attribute name="checkStyle" type="s:ST_OnOff" use="required"/>
     <xsd:attribute name="appName" type="s:ST_String" use="required"/>
   </xsd:complexType>
@@ -1101,7 +1101,7 @@
     <xsd:sequence>
       <xsd:element name="drawing" type="CT_Drawing" minOccurs="0"/>
     </xsd:sequence>
-    <xsd:attribute name="color" type="ST_HexColor" use="optional"/>
+    <xsd:attribute name="color" type="ST_HexColor" use="optional" default="auto"/>
     <xsd:attribute name="themeColor" type="ST_ThemeColor" use="optional"/>
     <xsd:attribute name="themeTint" type="ST_UcharHexNumber" use="optional"/>
     <xsd:attribute name="themeShade" type="ST_UcharHexNumber" use="optional"/>
@@ -1405,9 +1405,9 @@
       <xsd:element name="bottom" type="CT_BottomPageBorder" minOccurs="0"/>
       <xsd:element name="right" type="CT_PageBorder" minOccurs="0"/>
     </xsd:sequence>
-    <xsd:attribute name="zOrder" type="ST_PageBorderZOrder" use="optional"/>
+    <xsd:attribute name="zOrder" type="ST_PageBorderZOrder" use="optional" default="front"/>
     <xsd:attribute name="display" type="ST_PageBorderDisplay" use="optional"/>
-    <xsd:attribute name="offsetFrom" type="ST_PageBorderOffset" use="optional"/>
+    <xsd:attribute name="offsetFrom" type="ST_PageBorderOffset" use="optional" default="text"/>
   </xsd:complexType>
   <xsd:complexType name="CT_PageBorder">
     <xsd:complexContent>
@@ -1450,27 +1450,27 @@
   </xsd:simpleType>
   <xsd:complexType name="CT_LineNumber">
     <xsd:attribute name="countBy" type="ST_DecimalNumber" use="optional"/>
-    <xsd:attribute name="start" type="ST_DecimalNumber" use="optional"/>
+    <xsd:attribute name="start" type="ST_DecimalNumber" use="optional" default="1"/>
     <xsd:attribute name="distance" type="s:ST_TwipsMeasure" use="optional"/>
-    <xsd:attribute name="restart" type="ST_LineNumberRestart" use="optional"/>
+    <xsd:attribute name="restart" type="ST_LineNumberRestart" use="optional" default="newPage"/>
   </xsd:complexType>
   <xsd:complexType name="CT_PageNumber">
-    <xsd:attribute name="fmt" type="ST_NumberFormat" use="optional"/>
+    <xsd:attribute name="fmt" type="ST_NumberFormat" use="optional" default="decimal"/>
     <xsd:attribute name="start" type="ST_DecimalNumber" use="optional"/>
     <xsd:attribute name="chapStyle" type="ST_DecimalNumber" use="optional"/>
-    <xsd:attribute name="chapSep" type="ST_ChapterSep" use="optional"/>
+    <xsd:attribute name="chapSep" type="ST_ChapterSep" use="optional" default="hyphen"/>
   </xsd:complexType>
   <xsd:complexType name="CT_Column">
     <xsd:attribute name="w" type="s:ST_TwipsMeasure" use="optional"/>
-    <xsd:attribute name="space" type="s:ST_TwipsMeasure" use="optional"/>
+    <xsd:attribute name="space" type="s:ST_TwipsMeasure" use="optional" default="0"/>
   </xsd:complexType>
   <xsd:complexType name="CT_Columns">
     <xsd:sequence minOccurs="0">
       <xsd:element name="col" type="CT_Column" maxOccurs="45"/>
     </xsd:sequence>
     <xsd:attribute name="equalWidth" type="s:ST_OnOff" use="optional"/>
-    <xsd:attribute name="space" type="s:ST_TwipsMeasure" use="optional"/>
-    <xsd:attribute name="num" type="ST_DecimalNumber" use="optional"/>
+    <xsd:attribute name="space" type="s:ST_TwipsMeasure" use="optional" default="720"/>
+    <xsd:attribute name="num" type="ST_DecimalNumber" use="optional" default="1"/>
     <xsd:attribute name="sep" type="s:ST_OnOff" use="optional"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_VerticalJc">
@@ -1713,7 +1713,6 @@
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="default"/>
       <xsd:enumeration value="eastAsia"/>
-      <xsd:enumeration value="cs"/>
     </xsd:restriction>
   </xsd:simpleType>
   <xsd:simpleType name="ST_Theme">
@@ -1941,7 +1940,7 @@
     <xsd:sequence>
       <xsd:element name="listItem" type="CT_SdtListItem" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
-    <xsd:attribute name="lastValue" type="s:ST_String" use="optional"/>
+    <xsd:attribute name="lastValue" type="s:ST_String" use="optional" default=""/>
   </xsd:complexType>
   <xsd:complexType name="CT_SdtDocPart">
     <xsd:sequence>
@@ -1954,7 +1953,7 @@
     <xsd:sequence>
       <xsd:element name="listItem" type="CT_SdtListItem" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
-    <xsd:attribute name="lastValue" type="s:ST_String" use="optional"/>
+    <xsd:attribute name="lastValue" type="s:ST_String" use="optional" default=""/>
   </xsd:complexType>
   <xsd:complexType name="CT_Placeholder">
     <xsd:sequence>

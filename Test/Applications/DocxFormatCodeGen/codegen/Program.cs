@@ -45,7 +45,8 @@ namespace codegen
         static string sDirJsBinOut = @"..\..\gen\";
         static void Main(string[] args)
         {
-            (new codegen.CodeGen()).Start(sDirIn, sDirCppXmlOut, sDirCppBinOut, sDirJsBinOut, ValidationCallback);
+            //(new codegen.CodeGen()).Start(sDirIn, sDirCppXmlOut, sDirCppBinOut, sDirJsBinOut, ValidationCallback);
+            (new codegen.CodeGenPivot()).Start(sDirIn, sDirCppXmlOut, sDirCppBinOut, sDirJsBinOut, ValidationCallback);
         }
         static void ValidationCallback(object sender, ValidationEventArgs args)
         {

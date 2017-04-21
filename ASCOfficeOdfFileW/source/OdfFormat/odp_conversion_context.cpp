@@ -147,14 +147,7 @@ void odp_conversion_context::end_drawings()
 {
 	current_slide().drawing_context()->clear();
 }
-void odp_conversion_context::start_image(const std::wstring & image_file_name)
-{
-	std::wstring odf_ref_name ;
-	
-	mediaitems()->add_or_find(image_file_name,_mediaitems::typeImage,odf_ref_name);
 
-	current_slide().drawing_context()->start_image(odf_ref_name);
-}
 void odp_conversion_context::start_comment(int oox_comm_id)
 {
 	office_element_ptr comm_elm;

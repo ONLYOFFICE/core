@@ -45,6 +45,7 @@ namespace codegen
         public static string gc_sSerToBinEnumPrefix = "c_oSer";
         public static string gc_sItemsChoiceType = "ItemsChoiceType";
         public static string gc_sItemsElementName = "ItemsElementName";
+        public static Dictionary<string, string> m_mapNamespaceToPrefix = new Dictionary<string, string>() { { "http://purl.oclc.org/ooxml/drawingml/chart", "c:" }, { "http://purl.oclc.org/ooxml/drawingml/main", "a:" }, { "http://purl.oclc.org/ooxml/officeDocument/relationships", "r:" }, { "http://schemas.openxmlformats.org/markup-compatibility/2006", "mc:" }, { "http://schemas.microsoft.com/office/drawing/2007/8/2/chart", "c14:" } };
         public static string GetEnumElemName(string sEnumName, string sElemName)
         {
             return sEnumName.ToLower() + sElemName.ToUpper();

@@ -560,8 +560,8 @@ void odf_lists_styles_context::set_bullet_image_size(double size)
 
 	if(!props) return;
 	
-	props->fo_width_  = length(length(size,length::pt).get_value_unit(length::cm),length::cm);
-	props->fo_height_ = length(length(size,length::pt).get_value_unit(length::cm),length::cm);
+	props->fo_width_  = length(length(size, length::pt).get_value_unit(length::cm), length::cm);
+	props->fo_height_ = length(length(size, length::pt).get_value_unit(length::cm), length::cm);
 }
 void odf_lists_styles_context::set_bullet_image	(std::wstring ref)
 {
@@ -574,9 +574,9 @@ void odf_lists_styles_context::set_bullet_image	(std::wstring ref)
 
 	style_image_->text_list_level_style_image_attr_.common_xlink_attlist_.href_ = ref;
 	
-	style_image_->text_list_level_style_image_attr_.common_xlink_attlist_.type_= xlink_type::Simple;
-	style_image_->text_list_level_style_image_attr_.common_xlink_attlist_.show_ = xlink_show::Embed;
-	style_image_->text_list_level_style_image_attr_.common_xlink_attlist_.actuate_= xlink_actuate::OnLoad;
+	style_image_->text_list_level_style_image_attr_.common_xlink_attlist_.type_		= xlink_type::Simple;
+	style_image_->text_list_level_style_image_attr_.common_xlink_attlist_.show_		= xlink_show::Embed;
+	style_image_->text_list_level_style_image_attr_.common_xlink_attlist_.actuate_	= xlink_actuate::OnLoad;
 }
 void odf_lists_styles_context::set_start_number(int val)
 {

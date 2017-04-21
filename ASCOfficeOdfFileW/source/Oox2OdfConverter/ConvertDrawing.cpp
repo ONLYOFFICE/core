@@ -223,8 +223,10 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 			pathImage = oox_picture->blipFill.blip->link->get();	
 		}
 	}
+	std::wstring odf_ref = odf_context()->add_image(pathImage);
+	
 	odf_context()->drawing_context()->start_drawing();	
-	odf_context()->start_image(pathImage);
+	odf_context()->drawing_context()->start_image(odf_ref);
 	{
 		double Width = 0, Height = 0;
         _graphics_utils_::GetResolution(pathImage.c_str(), Width, Height);
@@ -1120,18 +1122,19 @@ void OoxConverter::convert_list_level(PPTX::Logic::TextParagraphPr	*oox_para_pro
 
 	if (bullet.is<PPTX::Logic::BuNone>())return;
 
+	int odf_list_type = 13; // 1, 2, 3 ...
+
 	if (bullet.is<PPTX::Logic::BuAutoNum>())
 	{
 		const PPTX::Logic::BuAutoNum & buAutoNum = bullet.as<PPTX::Logic::BuAutoNum>();
-		int type = 13;
 		int pptx_type = buAutoNum.type.GetBYTECode();
 
-		if (				  pptx_type < 3) type = 46;
-		if (pptx_type > 2  && pptx_type < 6) type = 60;
-		if (pptx_type > 28 && pptx_type < 32) type = 47;
-		if (pptx_type > 31 && pptx_type < 35) type = 61;
+		if (				  pptx_type < 3) odf_list_type = 46;
+		if (pptx_type > 2  && pptx_type < 6) odf_list_type = 60;
+		if (pptx_type > 28 && pptx_type < 32) odf_list_type = 47;
+		if (pptx_type > 31 && pptx_type < 35) odf_list_type = 61;
 
-		odf_context()->styles_context()->lists_styles().start_style_level(level, type); 
+		odf_context()->styles_context()->lists_styles().start_style_level(level, odf_list_type); 
 
 		if (buAutoNum.startAt.IsInit())
 		{
@@ -1142,18 +1145,34 @@ void OoxConverter::convert_list_level(PPTX::Logic::TextParagraphPr	*oox_para_pro
 	}
 	if (bullet.is<PPTX::Logic::BuChar>())
 	{
+		odf_list_type = 5;
+
 		const PPTX::Logic::BuChar & buChar = bullet.as<PPTX::Logic::BuChar>();
-		odf_context()->styles_context()->lists_styles().start_style_level(level, 5 );
+		odf_context()->styles_context()->lists_styles().start_style_level(level, odf_list_type);
 	
 		odf_context()->styles_context()->lists_styles().set_bullet_char(buChar.Char);
 	}
 	if (bullet.is<PPTX::Logic::BuBlip>())
 	{
+		odf_list_type = 1000;
+
 		const PPTX::Logic::BuBlip & buBlip = bullet.as<PPTX::Logic::BuBlip>();
-
-		odf_context()->styles_context()->lists_styles().start_style_level(level, 1000 );
-
-		odf_context()->styles_context()->lists_styles().set_bullet_image(odf_context()->mediaitems()->items().back().odf_ref);
+		std::wstring pathImage;
+		std::wstring sID;
+			
+		if (buBlip.blip.embed.IsInit())
+		{
+			sID = buBlip.blip.embed->get();
+			pathImage = find_link_by_id(sID, 1);
+		}
+		else if (buBlip.blip.link.IsInit())
+		{
+			pathImage = buBlip.blip.link->get();	
+		}
+		std::wstring odf_ref = odf_context()->add_image(pathImage);
+		
+		odf_context()->styles_context()->lists_styles().start_style_level(level, odf_list_type );
+		odf_context()->styles_context()->lists_styles().set_bullet_image(odf_ref);
 	}
 
 	//odf_writer::style_list_level_label_alignment	* aligment_props	= odf_context()->styles_context()->lists_styles().get_list_level_alignment_properties();
@@ -1164,8 +1183,8 @@ void OoxConverter::convert_list_level(PPTX::Logic::TextParagraphPr	*oox_para_pro
 
 	if (oox_para_props->indent.IsInit())
 	{
-		level_props->text_space_before_		= odf_types::length(- oox_para_props->indent.get() / 12700., odf_types::length::pt);
-		level_props->text_min_label_width_	= odf_types::length(1, odf_types::length::pt);
+		level_props->text_min_label_width_	= odf_types::length(- oox_para_props->indent.get() / 12700., odf_types::length::pt);
+		level_props->text_space_before_		= odf_types::length(1, odf_types::length::pt);
 			
 	}else
 	{
@@ -1192,26 +1211,68 @@ void OoxConverter::convert_list_level(PPTX::Logic::TextParagraphPr	*oox_para_pro
 			text_properties->content_.fo_color_ = odf_types::color(hexColor);
 		}
 	}
-	if (oox_para_props->buSize.is<PPTX::Logic::BuSzTx>())
-	{
-		const PPTX::Logic::BuSzTx & buSzTx = oox_para_props->buSize.as<PPTX::Logic::BuSzTx>();
-	}
-	else if (oox_para_props->buSize.is<PPTX::Logic::BuSzPct>())
-	{
-		const PPTX::Logic::BuSzPct & buSzPct = oox_para_props->buSize.as<PPTX::Logic::BuSzPct>();
-		if (buSzPct.val.IsInit())
-			text_properties->content_.fo_font_size_ = odf_types::percent(*buSzPct.val / 1000.);
-	}
-	else 
-		text_properties->content_.fo_font_size_ = odf_types::percent(100.);
-
+//-----------------------------------
 	if (oox_para_props->buSize.is<PPTX::Logic::BuSzPts>())
 	{
 		const PPTX::Logic::BuSzPts & buSzPts = oox_para_props->buSize.as<PPTX::Logic::BuSzPts>();
 		if (buSzPts.val.IsInit())
-			text_properties->content_.fo_font_size_ = odf_types::length(*buSzPts.val, odf_types::length::pt);
+		{
+			if (text_properties)
+				text_properties->content_.fo_font_size_ = odf_types::length(*buSzPts.val, odf_types::length::pt);
+			else if (odf_list_type == 1000)
+				odf_context()->styles_context()->lists_styles().set_bullet_image_size(*buSzPts.val);
+		}
 	}
-	else if (oox_para_props->buTypeface.is<PPTX::Logic::BuFontTx>())
+	else
+	{
+		double size_pt = oox_para_props->defRPr.IsInit() ? (oox_para_props->defRPr->sz.IsInit() ? *oox_para_props->defRPr->sz /100. : 0) : 0;
+		
+		if (size_pt < 0.001 && odf_list_type == 1000)
+		{
+			odf_writer::style_text_properties * text_props = odf_context()->styles_context()->last_state(odf_types::style_family::Paragraph)->get_text_properties();
+			if (text_props && text_props->content_.fo_font_size_)
+			{
+				size_pt = text_props->content_.fo_font_size_->get_length().get_value_unit(odf_types::length::pt);
+			}		
+			if (size_pt < 0.001)
+			{
+				odf_writer::odf_style_state_ptr style_state;
+				odf_context()->styles_context()->find_odf_default_style_state(odf_types::style_family::Text, style_state);
+				if (style_state)
+					text_props = style_state->get_text_properties();
+
+				if (text_props && text_props->content_.fo_font_size_)
+				{
+					size_pt = text_props->content_.fo_font_size_->get_length().get_value_unit(odf_types::length::pt);
+				}	
+			}
+		}		
+		
+		if (oox_para_props->buSize.is<PPTX::Logic::BuSzTx>())
+		{
+			//equal tet size
+		}
+		
+		if (oox_para_props->buSize.is<PPTX::Logic::BuSzPct>())
+		{
+			const PPTX::Logic::BuSzPct & buSzPct = oox_para_props->buSize.as<PPTX::Logic::BuSzPct>();
+			if (buSzPct.val.IsInit())
+			{
+				if (text_properties)
+					text_properties->content_.fo_font_size_ = odf_types::percent(*buSzPct.val / 1000.);
+
+				size_pt *= *buSzPct.val / 100000.;
+			}
+		}
+		if (text_properties && !text_properties->content_.fo_font_size_)
+			text_properties->content_.fo_font_size_ = odf_types::percent(100.);	
+		else if (odf_list_type == 1000)
+		{
+			odf_context()->styles_context()->lists_styles().set_bullet_image_size(size_pt);
+		}
+	}
+//----------------	
+	if (oox_para_props->buTypeface.is<PPTX::Logic::BuFontTx>())
 	{
 		const PPTX::Logic::BuFontTx & buFontTx = oox_para_props->buTypeface.as<PPTX::Logic::BuFontTx>();
 	}
@@ -1221,7 +1282,8 @@ void OoxConverter::convert_list_level(PPTX::Logic::TextParagraphPr	*oox_para_pro
 
 		std::wstring font = textFont.typeface;
 		convert_font(theme, font);
-		if (!font.empty())	text_properties->content_.fo_font_family_ = font;	
+		if (!font.empty() && text_properties)
+			text_properties->content_.fo_font_family_ = font;	
 	}
 
 	odf_context()->styles_context()->lists_styles().end_style_level();
@@ -1245,6 +1307,7 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 
 	bool		 styled			= false;
 
+	bool		 list_local		= false;
 	bool		 list_present	= false;
 	std::wstring list_style_name;
 
@@ -1252,10 +1315,14 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 	
 	NSCommon::nullable<PPTX::Logic::TextParagraphPr> paraPr;
 
-	if (oox_paragraph->pPr.IsInit() && oox_paragraph->pPr->lvl.IsInit())
+	if (oox_paragraph->pPr.IsInit())
 	{
-		list_level = *oox_paragraph->pPr->lvl;	
+		if (oox_paragraph->pPr->lvl.IsInit())
+			list_level = *oox_paragraph->pPr->lvl;	
+		if (oox_paragraph->pPr->ParagraphBullet.is_init())
+			list_local = true;	
 	}
+
 	if (oox_list_style && list_level >= 0 && list_level < 10)
 	{
 		if (oox_list_style->levels[list_level].IsInit())
@@ -1312,11 +1379,18 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 
 		if (odf_context()->text_context()->list_state_.started_list == false)
 		{
-			odf_context()->styles_context()->lists_styles().start_style();
-				convert_list_level(paraPr.GetPointer(), list_level - 1);
-			odf_context()->styles_context()->lists_styles().end_style();
-
-			list_style_name = odf_context()->styles_context()->lists_styles().get_style_name();
+			if (list_local)
+			{
+				odf_context()->styles_context()->lists_styles().start_style();
+					convert_list_level(oox_paragraph->pPr.GetPointer(), list_level - 1);
+				odf_context()->styles_context()->lists_styles().end_style();
+		
+				list_style_name = odf_context()->styles_context()->lists_styles().get_style_name(); //last added
+			}
+			else
+			{
+				// !!!
+			}
 			
 			odf_context()->text_context()->start_list(list_style_name);
 		}

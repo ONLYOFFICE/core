@@ -289,7 +289,14 @@ office_element_ptr odf_conversion_context::start_tabs()
 	create_element(L"style", L"tab-stops", temporary_.elm, this,true);
 	return temporary_.elm;
 }
+std::wstring odf_conversion_context::add_image(const std::wstring & image_file_name)
+{
+	std::wstring odf_ref_name ;
+	
+	mediaitems()->add_or_find(image_file_name,_mediaitems::typeImage, odf_ref_name);
 
+	return odf_ref_name;
+}
 void odf_conversion_context::add_tab(_CP_OPT(int) type, _CP_OPT(length) _length, _CP_OPT(int) leader)
 {
 	if (!temporary_.elm) return;

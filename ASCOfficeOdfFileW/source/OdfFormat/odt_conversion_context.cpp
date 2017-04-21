@@ -915,14 +915,6 @@ void odt_conversion_context::end_change (int id, int type)
 //	return (text_changes_state_.current_types.back() == 2);
 //}
 //--------------------------------------------------------------------------------------------------------
-void odt_conversion_context::start_image(const std::wstring & image_file_name)
-{
-	std::wstring odf_ref_name ;
-	
-	mediaitems()->add_or_find(image_file_name, _mediaitems::typeImage,odf_ref_name);
-
-	drawing_context()->start_image(odf_ref_name);
-}
 
 void odt_conversion_context::start_drop_cap(style_paragraph_properties *paragraph_properties)
 {

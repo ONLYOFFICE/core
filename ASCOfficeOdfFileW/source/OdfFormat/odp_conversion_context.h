@@ -72,8 +72,6 @@ public:
 	void start_drawings();
 	void end_drawings();
 
-    virtual void start_image(const std::wstring & image_file_name);
-
 	void start_comment			(int oox_comment_id);
 	void end_comment			();
 	void start_comment_content	();

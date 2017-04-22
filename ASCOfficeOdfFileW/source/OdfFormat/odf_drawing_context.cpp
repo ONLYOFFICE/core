@@ -1747,8 +1747,8 @@ void odf_drawing_context::set_group_position(_CP_OPT(double) x, _CP_OPT(double) 
 	impl_->current_group_->x = *change_x ;
 	impl_->current_group_->y = *change_y ; 
 
-	impl_->current_group_->shift_x = (*x - *change_x) ;
-	impl_->current_group_->shift_y = (*y - *change_y) ;
+	impl_->current_group_->shift_x = (*x /impl_->current_group_->scale_cx - *change_x) ;
+	impl_->current_group_->shift_y = (*y /impl_->current_group_->scale_cy - *change_y) ;
 }
 
 void odf_drawing_context::set_group_size( _CP_OPT(double) cx, _CP_OPT(double) cy, _CP_OPT(double) change_cx, _CP_OPT(double) change_cy)

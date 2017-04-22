@@ -341,7 +341,7 @@ void PptxConverter::convert_slides()
 
 					if (slide->Layout->clrMapOvr.IsInit() && slide->Layout->clrMapOvr->overrideClrMapping.IsInit())
 						current_clrMap	= slide->Layout->clrMapOvr->overrideClrMapping.GetPointer();
-					//current_slide = slide->Layout.operator->();
+					current_slide = slide->Layout.operator->();
 					convert_slide(&slide->Layout->cSld, current_txStyles, true);		
 					//add note master
 				odp_context->end_master_slide();
@@ -999,8 +999,9 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 			}
 			
 			pShape->Merge(update_shape);
-
 			OoxConverter::convert(&update_shape);
+
+			//OoxConverter::convert(pShape.operator->());
 		}
 		else 
 		{

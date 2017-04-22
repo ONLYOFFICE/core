@@ -3017,7 +3017,7 @@ void DocxConverter::convert(OOX::Numbering::CAbstractNum* oox_num_style)
 	if (oox_num_style->m_oAbstractNumId.IsInit() == false) return;
 
 
-	odt_context->styles_context()->lists_styles().start_style(oox_num_style->m_oAbstractNumId->GetValue());
+	odt_context->styles_context()->lists_styles().start_style(false, oox_num_style->m_oAbstractNumId->GetValue());
 	//// Childs
 	//std::vector<OOX::Numbering::CLvl                            >  m_arrLvl;
 	//nullable<ComplexTypes::Word::CMultiLevelType                 > m_oMultiLevelType;

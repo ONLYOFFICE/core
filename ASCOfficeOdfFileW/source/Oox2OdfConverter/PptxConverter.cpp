@@ -259,6 +259,8 @@ void PptxConverter::convert_styles()
 	odp_context->page_layout_context()->create_layer_sets();
 }
 
+
+
 void PptxConverter::convert_settings()
 {
 
@@ -339,8 +341,9 @@ void PptxConverter::convert_slides()
 
 					if (slide->Layout->clrMapOvr.IsInit() && slide->Layout->clrMapOvr->overrideClrMapping.IsInit())
 						current_clrMap	= slide->Layout->clrMapOvr->overrideClrMapping.GetPointer();
-					current_slide = slide->Layout.operator->();
+					//current_slide = slide->Layout.operator->();
 					convert_slide(&slide->Layout->cSld, current_txStyles, true);		
+					//add note master
 				odp_context->end_master_slide();
 				
 				m_mapMasters.insert(std::make_pair(master_name, master_style_name));
@@ -379,7 +382,7 @@ void PptxConverter::convert_slides()
 		odp_context->current_slide().set_master_page (master_style_name);
 		odp_context->current_slide().set_layout_page (layout_style_name);
 		
-		convert_slide	(slide->cSld.GetPointer(), current_txStyles, true);
+		convert_slide	(slide->cSld.GetPointer(), current_txStyles);
 		convert			(slide->comments.operator->());
 		convert			(slide->Note.operator->());
 		
@@ -955,6 +958,14 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 		if (pShape.IsInit() && pShape->nvSpPr.nvPr.ph.is_init())
 		{
 			pShape->FillLevelUp();
+			
+			if (pShape->nvSpPr.nvPr.ph->type.IsInit())
+				odf_context()->drawing_context()->set_placeholder_type(pShape->nvSpPr.nvPr.ph->type->GetBYTECode());
+			else
+				odf_context()->drawing_context()->set_placeholder_type(0);
+
+			if (pShape->nvSpPr.nvPr.ph->idx.IsInit())
+				odf_context()->drawing_context()->set_placeholder_id(pShape->nvSpPr.nvPr.ph->idx.get());
 
 			if (!bPlaceholders)
 				continue;
@@ -989,20 +1000,12 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 			
 			pShape->Merge(update_shape);
 
-			//if (pShape->IsListStyleEmpty() == false)
-			//{
-			//	//create list style
-			//}else if (listMasterStyle)
-			//{
-			//}
-
 			OoxConverter::convert(&update_shape);
 		}
 		else 
 		{
 			OoxConverter::convert(pElem.operator->());
 		}
-		//convert(oox_slide->spTree.SpTreeElems[i].GetElem().operator->());
 	}
 	convert(oox_slide->controls.GetPointer());
 }
@@ -1030,7 +1033,11 @@ void PptxConverter::convert_layout(PPTX::Logic::CSld *oox_slide)
 				odf_context()->drawing_context()->start_drawing();			
 				odf_context()->drawing_context()->start_element(elm);
 					
-				OoxConverter::convert(&pShape->nvSpPr.nvPr);
+				odf_context()->drawing_context()->set_placeholder_type(type);
+
+				if (pShape->nvSpPr.nvPr.ph->idx.IsInit())
+					odf_context()->drawing_context()->set_placeholder_id(*pShape->nvSpPr.nvPr.ph->idx);
+
 				OoxConverter::convert(pShape->spPr.xfrm.GetPointer());
 
 				odf_context()->drawing_context()->end_element();			

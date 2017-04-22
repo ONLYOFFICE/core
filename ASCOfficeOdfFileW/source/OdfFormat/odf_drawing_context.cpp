@@ -317,6 +317,11 @@ void odf_drawing_context::set_presentation (bool bMaster)
 	impl_->is_presentation_ = bMaster;
 }
 
+_CP_OPT(bool) odf_drawing_context::get_presentation ()
+{
+	return impl_->is_presentation_;
+}
+
 void odf_drawing_context::set_footer_state(bool Val)
 {
 	impl_->is_footer_ = Val;
@@ -491,14 +496,20 @@ void odf_drawing_context::end_drawing()
 			_CP_OPT(std::wstring) draw_layer;
 			if (impl_->is_presentation_.get() == true)
 			{//master				
-				if (impl_->current_drawing_state_.presentation_class_)	
-						draw_layer = L"backgroundobjects";
-				else	draw_layer = L"layout";
+				draw_layer = L"backgroundobjects";
+				//if (impl_->current_drawing_state_.presentation_class_)	
+				//	draw_layer = L"backgroundobjects";
+				//else	draw_layer = L"layout";
+				if (!impl_->current_drawing_state_.presentation_class_)	
+					impl_->current_drawing_state_.presentation_class_ = presentation_class::outline;
+
+				draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_user_transformed_ = true;
+				draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_placeholder_ = false;
 			}
 			else
 			{//slide
 				if (impl_->current_drawing_state_.presentation_class_)	
-						draw_layer = L"layout";
+					draw_layer = L"layout";
 			}
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_class_ = impl_->current_drawing_state_.presentation_class_;
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_layer_ = draw_layer;
@@ -696,7 +707,10 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 	draw_base* draw = dynamic_cast<draw_base*>(draw_elm.get());
 	if (draw == NULL)return;
 //////////	
-	styles_context_->create_style(L"", style_family::Graphic, true, false, -1);		
+	if (is_presentation_ && current_drawing_state_.presentation_class_)
+		styles_context_->create_style(L"", style_family::Presentation, true, false, -1);		
+	else
+		styles_context_->create_style(L"", style_family::Graphic, true, false, -1);		
 	
 	office_element_ptr & style_shape_elm = styles_context_->last_state()->get_office_element();
 	std::wstring style_name;
@@ -708,7 +722,10 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 		current_graphic_properties = style_->content_.get_graphic_properties();
 	}
 
-	draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_style_name_ = style_name;
+	if (is_presentation_ && current_drawing_state_.presentation_class_)
+		draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_style_name_ = style_name;
+	else
+		draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_style_name_ = style_name;
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	int level = current_level_.size();
@@ -1175,16 +1192,16 @@ void odf_drawing_context::set_placeholder_type (int val)
 {
 	switch(val)
 	{
-		case 0:		impl_->current_drawing_state_.presentation_class_ = presentation_class::text; 		break;
-		case 1:		impl_->current_drawing_state_.presentation_class_ = presentation_class::chart; 	break;
+		case 0:		impl_->current_drawing_state_.presentation_class_ = presentation_class::outline; 	break;
+		case 1:		impl_->current_drawing_state_.presentation_class_ = presentation_class::chart; 		break;
 		case 2:		impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic; 	break;
 		case 3:		impl_->current_drawing_state_.presentation_class_ = presentation_class::title;		break;
 		case 4:		impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic;	break;
 		case 5:		impl_->current_drawing_state_.presentation_class_ = presentation_class::date_time;	break;
-		case 6:		impl_->current_drawing_state_.presentation_class_ = presentation_class::footer;	break;
-		case 7:		impl_->current_drawing_state_.presentation_class_ = presentation_class::header;	break;
-		case 8:		impl_->current_drawing_state_.presentation_class_ = presentation_class::object;	break;
-		case 9:		impl_->current_drawing_state_.presentation_class_ = presentation_class::object;	break;
+		case 6:		impl_->current_drawing_state_.presentation_class_ = presentation_class::footer;		break;
+		case 7:		impl_->current_drawing_state_.presentation_class_ = presentation_class::header;		break;
+		case 8:		impl_->current_drawing_state_.presentation_class_ = presentation_class::object;		break;
+		case 9:		impl_->current_drawing_state_.presentation_class_ = presentation_class::object;		break;
 		case 10:	impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic;	break;
 		case 11:	impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic;	break;
 		case 12:	impl_->current_drawing_state_.presentation_class_ = presentation_class::page_number;break;
@@ -1192,7 +1209,7 @@ void odf_drawing_context::set_placeholder_type (int val)
 		case 14:	impl_->current_drawing_state_.presentation_class_ = presentation_class::table;		break;
 		case 15:	impl_->current_drawing_state_.presentation_class_ = presentation_class::title;		break;
 		default:		
-			impl_->current_drawing_state_.presentation_class_ = presentation_class::text; 				break;
+			impl_->current_drawing_state_.presentation_class_ = presentation_class::outline; 			break;
 	}
 	//todooo draw_layer for master for sldnum, datetime ...
 }
@@ -2455,7 +2472,7 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 {
 	if (text_context == NULL || impl_->current_level_.size() < 1 ) return;
 	
-	if (impl_->is_presentation_ && *impl_->is_presentation_) return; 
+	//if (impl_->is_presentation_ && *impl_->is_presentation_) return; 
 
 	for (size_t i = 0; i < text_context->text_elements_list_.size(); i++)
 	{

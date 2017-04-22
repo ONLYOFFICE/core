@@ -457,13 +457,8 @@ namespace PPTX
 
 			if (txBody.IsInit()				== false) return true;
 			if (txBody->lstStyle.IsInit()	== false) return true;
-
-			for (int i = 0; i < 10; i++)
-			{
-				if (txBody->lstStyle->levels[i].IsInit())
-					return false;
-			}
-			return true;
+			
+			return txBody->lstStyle->IsListStyleEmpty();
 		}
 
 		void Shape::Merge(Shape& shape, bool bIsSlidePlaceholder)

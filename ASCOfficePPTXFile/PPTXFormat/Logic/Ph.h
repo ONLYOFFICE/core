@@ -63,8 +63,6 @@ namespace PPTX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("sz"),	sz)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("type"),	type)
 				WritingElement_ReadAttributes_End( oReader )
-
-				if (idx.IsInit() && *idx == L"4294967295") idx = L"0"; //100818_건강보험과_보건의료_김용익_최종.pptx
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
@@ -73,8 +71,6 @@ namespace PPTX
 				node.ReadAttributeBase(L"orient", orient);
 				node.ReadAttributeBase(L"sz", sz);
 				node.ReadAttributeBase(L"type", type);
-				
-				if (idx.IsInit() && *idx == L"4294967295") idx = L"0";
 			}
 			virtual std::wstring toXML() const
 			{

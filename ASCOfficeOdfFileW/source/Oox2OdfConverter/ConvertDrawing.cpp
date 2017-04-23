@@ -1357,7 +1357,6 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 		if (odf_context()->drawing_context()->is_wordart())
 			odf_context()->drawing_context()->set_paragraph_properties(paragraph_properties);
 	}	
-	//list_level++;
 
 	if (oox_paragraph->RunElems.empty() && list_present) list_present = false; // ms не обозначает присутствие списка, libra - показывает значек
 	
@@ -1374,21 +1373,16 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 			odf_context()->text_context()->list_state_.style_name	= L"";
 		}
 
-		if (odf_context()->text_context()->list_state_.started_list == false)
+		if (list_local)
 		{
-			if (list_local)
-			{
-				_CP_OPT(bool) inStyles = odf_context()->drawing_context()->get_presentation();
+			_CP_OPT(bool) inStyles = odf_context()->drawing_context()->get_presentation();
 
-				odf_context()->styles_context()->lists_styles().start_style(inStyles && *inStyles);
-					convert_list_level(oox_paragraph->pPr.GetPointer(), list_level /*- 1*/);
-				odf_context()->styles_context()->lists_styles().end_style();
-		
-			}
-			list_style_name = odf_context()->styles_context()->lists_styles().get_style_name(); //last added
-			
-			//odf_context()->text_context()->start_list(list_style_name);
-		}
+			odf_context()->styles_context()->lists_styles().start_style(inStyles && *inStyles);
+				convert_list_level(oox_paragraph->pPr.GetPointer(), list_level /*- 1*/);
+			odf_context()->styles_context()->lists_styles().end_style();
+	
+		}		
+		list_style_name = odf_context()->styles_context()->lists_styles().get_style_name(); //last added
 
 		list_level++;
 

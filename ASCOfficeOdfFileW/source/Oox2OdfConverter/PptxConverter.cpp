@@ -955,53 +955,66 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 		smart_ptr<PPTX::WrapperWritingElement>	pElem = oox_slide->spTree.SpTreeElems[i].GetElem();
 		smart_ptr<PPTX::Logic::Shape>			pShape = pElem.smart_dynamic_cast<PPTX::Logic::Shape>();
 		
-		if (pShape.IsInit() && pShape->nvSpPr.nvPr.ph.is_init())
+		if (pShape.IsInit())
 		{
-			pShape->FillLevelUp();
-			
-			if (pShape->nvSpPr.nvPr.ph->type.IsInit())
-				odf_context()->drawing_context()->set_placeholder_type(pShape->nvSpPr.nvPr.ph->type->GetBYTECode());
-			else
-				odf_context()->drawing_context()->set_placeholder_type(0);
-
-			if (pShape->nvSpPr.nvPr.ph->idx.IsInit())
-				odf_context()->drawing_context()->set_placeholder_id(pShape->nvSpPr.nvPr.ph->idx.get());
-
-			if (!bPlaceholders)
-				continue;
-
-			PPTX::Logic::TextListStyle * listMasterStyle = NULL;
-			
-			if (txStyles)
+			if (pShape->nvSpPr.nvPr.ph.is_init())
 			{
-				std::wstring type = pShape->nvSpPr.nvPr.ph->type.get_value_or(_T("body"));
-				if ((type == L"title") || (type == L"ctrTitle"))
-					listMasterStyle = txStyles->titleStyle.GetPointer();
-				else if ((type == L"body") || (type == L"subTitle") || (type == L"obj"))
-					listMasterStyle = txStyles->bodyStyle.GetPointer();
-				else if (type != L"")
-					listMasterStyle = txStyles->otherStyle.GetPointer();
-			}
-			PPTX::Logic::Shape update_shape;
-			
-			if (listMasterStyle)
-			{
-				update_shape.txBody = new PPTX::Logic::TxBody();
+				pShape->FillLevelUp();
 				
-				PPTX::Logic::TextListStyle *newListStyle = new PPTX::Logic::TextListStyle();
+				if (pShape->nvSpPr.nvPr.ph->type.IsInit())
+					odf_context()->drawing_context()->set_placeholder_type(pShape->nvSpPr.nvPr.ph->type->GetBYTECode());
+				else
+					odf_context()->drawing_context()->set_placeholder_type(0);
 
-				for (int i = 0; i < 10; i++)
+				if (pShape->nvSpPr.nvPr.ph->idx.IsInit())
+					odf_context()->drawing_context()->set_placeholder_id(pShape->nvSpPr.nvPr.ph->idx.get());
+
+				if (!bPlaceholders)
+					continue;
+
+				PPTX::Logic::TextListStyle * listMasterStyle = NULL;
+				
+				if (txStyles)
 				{
-					if(listMasterStyle->levels[i].is_init())
-						listMasterStyle->levels[i]->Merge(newListStyle->levels[i]);
+					std::wstring type = pShape->nvSpPr.nvPr.ph->type.get_value_or(_T("body"));
+					if ((type == L"title") || (type == L"ctrTitle"))
+						listMasterStyle = txStyles->titleStyle.GetPointer();
+					else if ((type == L"body") || (type == L"subTitle") || (type == L"obj"))
+						listMasterStyle = txStyles->bodyStyle.GetPointer();
+					else if (type != L"")
+						listMasterStyle = txStyles->otherStyle.GetPointer();
 				}
-				update_shape.txBody->lstStyle.reset(newListStyle);
-			}
-			
-			pShape->Merge(update_shape);
-			OoxConverter::convert(&update_shape);
+				PPTX::Logic::Shape update_shape;
+				
+				if (listMasterStyle)
+				{
+					update_shape.txBody = new PPTX::Logic::TxBody();
+					
+					PPTX::Logic::TextListStyle *newListStyle = new PPTX::Logic::TextListStyle();
 
-			//OoxConverter::convert(pShape.operator->());
+					for (int i = 0; i < 10; i++)
+					{
+						if(listMasterStyle->levels[i].is_init())
+							listMasterStyle->levels[i]->Merge(newListStyle->levels[i]);
+					}
+					update_shape.txBody->lstStyle.reset(newListStyle);
+				}
+				pShape->Merge(update_shape);
+				OoxConverter::convert(&update_shape);
+			}
+			else if (pShape->txBody.IsInit() && presentation->defaultTextStyle.IsInit())
+			{//default text style with master clrScheme
+				PPTX::Logic::Shape update_shape;
+				
+				update_shape.txBody = new PPTX::Logic::TxBody();
+
+				presentation->defaultTextStyle->Merge(update_shape.txBody->lstStyle);
+
+				pShape->Merge(update_shape);
+				OoxConverter::convert(&update_shape);
+			}
+			else
+				OoxConverter::convert(pShape.operator->());
 		}
 		else 
 		{

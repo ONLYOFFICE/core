@@ -154,13 +154,35 @@ void odf_text_context::add_text_content(const std::wstring & text)
 	std::wstring last = text.substr(pos);
 	if (last.length() > 0)current_level_.back().elm->add_text(last);
 }
+void odf_text_context::add_text_date(const std::wstring & text)
+{
+	office_element_ptr s_elm;
+	create_element(L"text", L"date", s_elm, odf_context_);
+	
+	text_date* s = dynamic_cast<text_date*>(s_elm.get());
+	if (s) s->add_text(text);
+
+	if (current_level_.size()>0)
+		current_level_.back().elm->add_child_element(s_elm);
+}
+void odf_text_context::add_text_page_number(const std::wstring & text)
+{
+	office_element_ptr s_elm;
+	create_element(L"text", L"page-number", s_elm, odf_context_);
+	
+	text_page_number* s = dynamic_cast<text_page_number*>(s_elm.get());
+	if (s) s->add_text(text);
+
+	if (current_level_.size()>0)
+		current_level_.back().elm->add_child_element(s_elm);
+}
 void odf_text_context::add_text_space(int count)
 {
 	office_element_ptr s_elm;
 	create_element(L"text", L"s", s_elm, odf_context_);
 
 	text_s* s = dynamic_cast<text_s*>(s_elm.get());
-	if (s)s->text_c_ = count;
+	if (s) s->text_c_ = count;
 
 	//необязательно хранить..
 	//int level = current_level_.size();

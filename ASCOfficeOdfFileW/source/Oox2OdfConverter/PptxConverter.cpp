@@ -319,12 +319,15 @@ void PptxConverter::convert_slides()
 			if (pFind == m_mapMasters.end())
 			{
 				master_style_name = L"MasterPage";
-				if (bShowMasterSp)
-				{
-					if (slide->Master->cSld.attrName.IsInit())	master_style_name = slide->Master->cSld.attrName.get();
-					else if (current_theme->name.IsInit())		master_style_name = current_theme->name.get();
-				}	
+				
+				bool bShowLayoutMasterAnim	= slide->Layout->showMasterPhAnim.get_value_or(true);
+				bool bShowLayoutMasterSp	= slide->Layout->showMasterSp.get_value_or(true);
+				
+				if (slide->Master->cSld.attrName.IsInit())	master_style_name = slide->Master->cSld.attrName.get();
+				else if (current_theme->name.IsInit())		master_style_name = current_theme->name.get();
+
 				master_style_name += L"_" ;
+				
 				if (slide->Layout->cSld.attrName.IsInit())	master_style_name += slide->Layout->cSld.attrName.get();
 				else if (slide->Layout->attrType.IsInit())	master_style_name += slide->Layout->attrType->get();
 				else
@@ -334,7 +337,8 @@ void PptxConverter::convert_slides()
 					convert_common();
 
 					current_slide = slide->Master.operator->();
-					if (bShowMasterSp)
+					
+					if (bShowLayoutMasterSp && bShowMasterSp)
 						convert_slide(&slide->Master->cSld, current_txStyles, false);
 					else
 						convert(slide->Master->cSld.bg.GetPointer());
@@ -342,6 +346,7 @@ void PptxConverter::convert_slides()
 					if (slide->Layout->clrMapOvr.IsInit() && slide->Layout->clrMapOvr->overrideClrMapping.IsInit())
 						current_clrMap	= slide->Layout->clrMapOvr->overrideClrMapping.GetPointer();
 					current_slide = slide->Layout.operator->();
+					
 					convert_slide(&slide->Layout->cSld, current_txStyles, true);		
 					//add note master
 				odp_context->end_master_slide();
@@ -949,6 +954,8 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 		odp_context->current_slide().set_page_name(oox_slide->attrName.get());
 
 	convert(oox_slide->bg.GetPointer());
+		
+	bool bMaster = *odf_context()->drawing_context()->get_presentation();
 
 	for (size_t i = 0 ; i < oox_slide->spTree.SpTreeElems.size(); i++)
 	{
@@ -962,7 +969,14 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 				pShape->FillLevelUp();
 				
 				if (pShape->nvSpPr.nvPr.ph->type.IsInit())
-					odf_context()->drawing_context()->set_placeholder_type(pShape->nvSpPr.nvPr.ph->type->GetBYTECode());
+				{
+					int ph_type = pShape->nvSpPr.nvPr.ph->type->GetBYTECode();
+
+					if (!bMaster && (ph_type == 5 || ph_type == 6 || ph_type == 7 || ph_type == 12))
+						continue;
+
+					odf_context()->drawing_context()->set_placeholder_type(ph_type);
+				}
 				else
 					odf_context()->drawing_context()->set_placeholder_type(0);
 

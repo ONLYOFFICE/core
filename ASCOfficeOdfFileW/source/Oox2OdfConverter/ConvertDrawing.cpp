@@ -1727,6 +1727,45 @@ void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 void OoxConverter::convert(PPTX::Logic::Fld *oox_fld)
 {
 	if (!oox_fld) return;
+
+	bool styled = false;
+
+	if (oox_fld->rPr.IsInit())
+	{
+		odf_writer::style_text_properties * text_properties = odf_context()->text_context()->get_text_properties();
+		
+		if (!text_properties)
+		{
+			odf_context()->styles_context()->create_style(L"", odf_types::style_family::Text, true, false, -1);	
+			text_properties = odf_context()->styles_context()->last_state()->get_text_properties();
+			styled = true;
+		}
+		convert(oox_fld->rPr.GetPointer(), text_properties);
+	}
+	
+	odf_context()->text_context()->start_span(styled);	
+
+	std::wstring fld_type = oox_fld->type.get_value_or(L"");
+
+	if ((oox_fld->rPr.IsInit()) && (oox_fld->rPr->hlinkClick.IsInit()) && (oox_fld->rPr->hlinkClick->id.IsInit()))
+	{
+		std::wstring hlink = find_link_by_id(oox_fld->rPr->hlinkClick->id.get(), 2);
+		odf_context()->text_context()->add_hyperlink(hlink, oox_fld->GetText());
+
+	}
+	else if (fld_type == L"slidenum")
+	{
+		odf_context()->text_context()->add_text_page_number( oox_fld->GetText());
+	}
+	else if (fld_type == L"datetime1")
+	{
+		odf_context()->text_context()->add_text_date( oox_fld->GetText());
+	}
+	else
+	{
+		odf_context()->text_context()->add_text_content( oox_fld->GetText());
+	}
+	odf_context()->text_context()->end_span();
 }
 void OoxConverter::convert(PPTX::Logic::Br *oox_br)
 {

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "../../../common/File.h"
+#include "../../../common/Directory.h"
 #include "../../../common/BigInteger.h"
 
 #include "../../../xml/include/xmlutils.h"
@@ -307,8 +308,8 @@ public:
         return GetHash(m_context->pbCertEncoded, (int)m_context->cbCertEncoded);
     }
 
-private:
-    void ConvertEndian(const BYTE* src, BYTE* dst, DWORD size)
+public:
+    static void ConvertEndian(const BYTE* src, BYTE* dst, DWORD size)
     {
         for(BYTE* p = dst + size - 1; p >= dst; ++src, --p)
             (*p) = (*src);
@@ -320,6 +321,7 @@ void MyHandleError(char *s);
 
 bool Sign(PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile);
 bool Verify(PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile);
+bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext);
 
 void main(void)
 {
@@ -627,14 +629,18 @@ void main(void)
         MyHandleError("Select UI failed." );
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    bool bRes = true;
-    bRes = Sign(pCertContext, NSFile::GetProcessDirectory() + L"/test.xml", NSFile::GetProcessDirectory() + L"/result.txt");
-    bRes = Verify(pCertContext, NSFile::GetProcessDirectory() + L"/test.xml", NSFile::GetProcessDirectory() + L"/result.txt");
+    if (false)
+    {
+        bool bRes = true;
+        bRes = Sign(pCertContext, NSFile::GetProcessDirectory() + L"/test.xml", NSFile::GetProcessDirectory() + L"/result.txt");
+        bRes = Verify(pCertContext, NSFile::GetProcessDirectory() + L"/test.xml", NSFile::GetProcessDirectory() + L"/result.txt");
 
-    CXmlSigner oSigner(pCertContext);
-    std::string sCertBase64 = oSigner.GetCertificateBase64();
-    std::string sCertHash = oSigner.GetCertificateHash();
+        CXmlSigner oSigner(pCertContext);
+        std::string sCertBase64 = oSigner.GetCertificateBase64();
+        std::string sCertHash = oSigner.GetCertificateHash();
+    }
+
+    SignDocument(NSFile::GetProcessDirectory() + L"/ImageStamp", pCertContext);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -805,8 +811,8 @@ bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext)
     }
 
 
-    std::wstring sImageValid = oOOXMLSigner.GetImageBase64(sFolder + L"/../../../resources/valig.png");
-    std::wstring sImageInValid = oOOXMLSigner.GetImageBase64(sFolder + L"/../../../resources/invalig.png");
+    std::wstring sImageValid = oOOXMLSigner.GetImageBase64(sFolder + L"/../../../resources/valid.png");
+    std::wstring sImageInValid = oOOXMLSigner.GetImageBase64(sFolder + L"/../../../resources/invalid.png");
 
     if (true)
     {
@@ -814,7 +820,7 @@ bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext)
         std::wstring sXml = L"<SignatureProperties>\
 <SignatureProperty Id=\"idOfficeV1Details\" Target=\"#idPackageSignature\">\
 <SignatureInfoV1 xmlns=\"http://schemas.microsoft.com/office/2006/digsig\">\
-<SetupID>{A3CE98BA-4553-442D-8E43-CB07A2F83B85}</SetupID>\
+<SetupID>{39B6B9C7-60AD-45A2-9F61-40C74A24042E}</SetupID>\
 <SignatureText></SignatureText>\
 <SignatureImage>" + sImageValid + L"</SignatureImage>\
 <SignatureComments/>\
@@ -841,9 +847,17 @@ bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext)
 
     if (true)
     {
-        std::string sNameA((char*)pCertContext->pCertInfo->Issuer.pbData, (int)pCertContext->pCertInfo->Issuer.cbData);
-        std::wstring sName = UTF8_TO_U(sNameA);
-        CBigInteger oInteger(pCertContext->pCertInfo->SerialNumber.pbData, (int)pCertContext->pCertInfo->SerialNumber.cbData);
+        DWORD dwNameLen = CertGetNameStringW(pCertContext, CERT_NAME_SIMPLE_DISPLAY_TYPE, CERT_NAME_ISSUER_FLAG, NULL, NULL, 0);
+        wchar_t* pNameData = new wchar_t[dwNameLen];
+        CertGetNameStringW(pCertContext, CERT_NAME_SIMPLE_DISPLAY_TYPE, CERT_NAME_ISSUER_FLAG, NULL, pNameData, dwNameLen);
+        std::wstring sName(pNameData);
+        RELEASEARRAYOBJECTS(pNameData);
+
+        int nNumberLen = (int)pCertContext->pCertInfo->SerialNumber.cbData;
+        BYTE* pNumberData = new BYTE[nNumberLen];
+        CXmlSigner::ConvertEndian(pCertContext->pCertInfo->SerialNumber.pbData, pNumberData, (DWORD)nNumberLen);
+        CBigInteger oInteger(pNumberData, nNumberLen);
+        delete[] pNumberData;
 
         std::string sKeyA = oInteger.ToString();
         std::wstring sKey = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sKeyA.c_str(), (LONG)sKeyA.length());
@@ -874,7 +888,7 @@ bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext)
         sXmlData += L"<Object><xd:QualifyingProperties xmlns:xd=\"http://uri.etsi.org/01903/v1.3.2#\" Target=\"#idPackageSignature\">\
 <xd:SignedProperties Id=\"idSignedProperties\">";
         sXmlData += sXml;
-        sXmlData += L"</xd:SignedProperties></Object>";
+        sXmlData += L"</xd:SignedProperties></xd:QualifyingProperties></Object>";
 
         sSignedData += "<Reference Type=\"http://uri.etsi.org/01903#SignedProperties\" URI=\"#idSignedProperties\">\
 <Transforms><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>\
@@ -913,10 +927,28 @@ bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext)
     sXmlPrepend += "<SignatureValue>";
     sXmlPrepend += oOOXMLSigner.m_signer->Sign("<SignedInfo xmlns=\"http://www.w3.org/2000/09/xmldsig#\">" + sSignedData + "</SignedInfo>");
     sXmlPrepend += "</SignatureValue>";
-    sXmlPrepend += ("<KeyInfo><X509Data><X509Certificate>" + oOOXMLSigner.m_signer->GetCertificateBase64() + "</X509Certificate></X509Data>");
+    sXmlPrepend += ("<KeyInfo><X509Data><X509Certificate>" + oOOXMLSigner.m_signer->GetCertificateBase64() + "</X509Certificate></X509Data></KeyInfo>");
 
     sXmlData = (UTF8_TO_U(sXmlPrepend) + sXmlData);
     sXmlData += L"</Signature>";
+
+    std::wstring sDirectory = sFolderOOXML + L"/_xmlsignatures";
+    NSDirectory::CreateDirectory(sDirectory);
+
+    NSFile::CFileBinary oFile;
+    oFile.CreateFileW(sDirectory + L"/origin.sigs");
+    oFile.CloseFile();
+
+    NSFile::CFileBinary::SaveToFile(sDirectory + L"/sig1.xml", sXmlData, true);
+
+    NSDirectory::CreateDirectory(sDirectory + L"/_rels");
+
+    std::wstring sRels = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
+<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/signature\" Target=\"sig1.xml\"/>\
+</Relationships>";
+
+    NSFile::CFileBinary::SaveToFile(sDirectory + L"/_rels/origin.sigs.rels", sRels, true);
 
     return true;
 }

@@ -302,8 +302,13 @@ namespace DocFileFormat
 			case metroBlob:
 				{
 					//встроенная неведомая хуйня
-					m_isEmbedded = true;
-					m_embeddedData = std::string((char*)iter->opComplex, iter->op);
+					m_isEmbedded	= true;
+					m_embeddedData	= std::string((char*)iter->opComplex, iter->op);
+					
+					//if (ParseEmbeddedBlob( m_embeddedData, m_blobXml)) // todoooo
+					//{
+					//	m_isEmbedded = false;
+					//}
 				}break;
 //BORDERS
 			case borderBottomColor:

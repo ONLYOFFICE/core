@@ -170,7 +170,7 @@ public:
         return sReturn;
     }
 
-    std::string GetHash(std::string& sXml)
+    std::string GetHash(BYTE* pData, DWORD dwSize)
     {
         BOOL bResult = TRUE;
         DWORD dwKeySpec = 0;
@@ -186,7 +186,7 @@ public:
         if (!bResult)
             return "";
 
-        bResult = CryptHashData(hHash, (BYTE*)sXml.c_str(), (DWORD)sXml.length(), 0);
+        bResult = CryptHashData(hHash, pData, dwSize, 0);
         if (!bResult)
         {
             CryptDestroyHash(hHash);
@@ -206,11 +206,11 @@ public:
 
         bResult = CryptGetHashParam(hHash, HP_HASHVAL, pDataHashRaw, &cbHashSize, 0);
 
-        delete[] pDataHashRaw;
-        CryptDestroyHash(hHash);
-
         if (!bResult)
+        {
+            CryptDestroyHash(hHash);
             return "";
+        }
 
         char* pBase64_hash = NULL;
         int nBase64Len_hash = 0;
@@ -219,21 +219,19 @@ public:
         std::string sReturn(pBase64_hash, nBase64Len_hash);
         delete [] pBase64_hash;
 
+        //delete [] pDataHashRaw;
+        CryptDestroyHash(hHash);
+
         return sReturn;
+    }
+
+    std::string GetHash(std::string& sXml)
+    {
+        return GetHash((BYTE*)sXml.c_str(), (DWORD)sXml.length());
     }
 
     std::string GetHash(std::wstring& sXmlFile)
     {
-        BOOL bResult = TRUE;
-        DWORD dwKeySpec = 0;
-        HCRYPTHASH  hHash = NULL;
-
-        if (NULL == m_hCryptProv)
-            bResult = CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &m_hCryptProv, &dwKeySpec, NULL);
-
-        if (!bResult)
-            return "";
-
         BYTE* pFileData = NULL;
         DWORD dwFileDataLen = 0;
         NSFile::CFileBinary::ReadAllBytes(sXmlFile, &pFileData, dwFileDataLen);
@@ -241,50 +239,9 @@ public:
         if (0 == dwFileDataLen)
             return "";
 
-        bResult = CryptCreateHash(m_hCryptProv, CALG_SHA1, 0, 0, &hHash);
-        if (!bResult)
-        {
-            RELEASEARRAYOBJECTS(pFileData);
-            return "";
-        }
-
-        bResult = CryptHashData(hHash, pFileData, dwFileDataLen, 0);
-        if (!bResult)
-        {
-            RELEASEARRAYOBJECTS(pFileData);
-            CryptDestroyHash(hHash);
-            return "";
-        }
-
-        DWORD cbHashSize = 0, dwCount = sizeof(DWORD);
-        bResult = CryptGetHashParam(hHash, HP_HASHSIZE, (BYTE*)&cbHashSize, &dwCount, 0);
-
-        if (!bResult)
-        {
-            RELEASEARRAYOBJECTS(pFileData);
-            CryptDestroyHash(hHash);
-            return "";
-        }
+        std::string sReturn = GetHash(pFileData, dwFileDataLen);
 
         RELEASEARRAYOBJECTS(pFileData);
-
-        BYTE* pDataHashRaw = new BYTE[dwCount];
-
-        bResult = CryptGetHashParam(hHash, HP_HASHVAL, pDataHashRaw, &cbHashSize, 0);
-
-        delete[] pDataHashRaw;
-        CryptDestroyHash(hHash);
-
-        if (!bResult)
-            return "";
-
-        char* pBase64_hash = NULL;
-        int nBase64Len_hash = 0;
-        NSFile::CBase64Converter::Encode(pDataHashRaw, (int)cbHashSize, pBase64_hash, nBase64Len_hash, NSBase64::B64_BASE64_FLAG_NOCRLF);
-
-        std::string sReturn(pBase64_hash, nBase64Len_hash);
-        delete [] pBase64_hash;
-
         return sReturn;
     }
 
@@ -320,7 +277,7 @@ public:
         bResult = CryptHashData(hHash, (BYTE*)sXml.c_str(), (DWORD)sXml.length(), 0);
 
         // Get the public key from the certificate
-        CryptImportPublicKeyInfo(m_hCryptProv, PKCS_7_ASN_ENCODING | X509_ASN_ENCODING, &m_context->pCertInfo->SubjectPublicKeyInfo, &hPubKey);
+        CryptImportPublicKeyInfo(m_hCryptProv, m_context->dwCertEncodingType, &m_context->pCertInfo->SubjectPublicKeyInfo, &hPubKey);
 
         BOOL bResultRet = CryptVerifySignature(hHash, pDataHashMem, dwHashLen, hPubKey, NULL, 0);
 
@@ -331,6 +288,21 @@ public:
         CryptDestroyKey(hPubKey);
 
         return bResultRet && bResult;
+    }
+
+    std::string GetCertificateBase64()
+    {
+        char* pData = NULL;
+        int nDataLen = 0;
+        NSFile::CBase64Converter::Encode(m_context->pbCertEncoded, (int)m_context->cbCertEncoded, pData, nDataLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
+        std::string sReturn(pData, nDataLen);
+        RELEASEARRAYOBJECTS(pData);
+        return sReturn;
+    }
+
+    std::string GetCertificateHash()
+    {
+        return GetHash(m_context->pbCertEncoded, (int)m_context->cbCertEncoded);
     }
 
 private:
@@ -657,6 +629,11 @@ void main(void)
     bool bRes = true;
     bRes = Sign(pCertContext, NSFile::GetProcessDirectory() + L"/test.xml", NSFile::GetProcessDirectory() + L"/result.txt");
     bRes = Verify(pCertContext, NSFile::GetProcessDirectory() + L"/test.xml", NSFile::GetProcessDirectory() + L"/result.txt");
+
+    CXmlSigner oSigner(pCertContext);
+    std::string sCertBase64 = oSigner.GetCertificateBase64();
+    std::string sCertHash = oSigner.GetCertificateHash();
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     CertFreeCertificateContext(pCertContext);

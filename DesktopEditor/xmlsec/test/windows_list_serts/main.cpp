@@ -12,6 +12,8 @@
 #include "../../../xml/include/xmlutils.h"
 #include "../../../xml/libxml2/include/libxml/c14n.h"
 
+#include <vector>
+
 #pragma comment (lib, "crypt32.lib")
 #pragma comment (lib, "cryptui.lib")
 #pragma comment (lib, "Advapi32.lib")
@@ -682,7 +684,239 @@ bool Verify(PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSi
     return (TRUE == oSigner.Verify(sXmlUtf8Prepare, sXmlUtf8Signature));
 }
 
+class COOXMLSigner
+{
+public:
+    PCCERT_CONTEXT m_context;
+    std::wstring m_sFolder;
+
+    CXmlSigner* m_signer;
+
+public:
+    COOXMLSigner(const std::wstring& sFolder, PCCERT_CONTEXT pContext)
+    {
+        m_sFolder = sFolder;
+        m_context = pContext;
+        m_signer = new CXmlSigner(pContext);
+    }
+    ~COOXMLSigner()
+    {
+        RELEASEOBJECT(m_signer);
+    }
+
+    std::wstring GetReference(const std::wstring& file, const std::wstring& content_type)
+    {
+        std::wstring sXml = L"<Reference URI=\">" + file + L"?ContentType=" + content_type + L"\">";
+        sXml += L"<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/>";
+        sXml += L"<DigestValue>";
+        sXml += UTF8_TO_U(m_signer->GetHash(m_sFolder + file));
+        sXml += L"</DigestValue>";
+        sXml += L"</Reference>";
+        return sXml;
+    }
+
+    std::string GetHashXml(const std::wstring& xml)
+    {
+        std::string sXmlSigned = U_TO_UTF8(xml);
+        sXmlSigned = CXmlCanonicalizator::Execute(sXmlSigned, XML_C14N_1_0);
+        return m_signer->GetHash(sXmlSigned);
+    }
+
+    std::string GetReferenceMain(const std::wstring& xml, const std::wstring& id, const bool& isCannon = true)
+    {
+        std::wstring sXml1 = L"<Object xmlns=\"http://www.w3.org/2000/09/xmldsig#\"";
+        if (id.empty())
+            sXml1 += L">";
+        else
+            sXml1 += (L" Id=\"#" + id + L"\">");
+        sXml1 += xml;
+        sXml1 += L"</Object>";
+
+        std::string sHash = GetHashXml(sXml1);
+
+        std::string sRet;
+        if (isCannon)
+            sRet = "<Transforms><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>";
+
+        sRet += ("<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/><DigestValue>" + sHash + "</DigestValue>");
+
+        return sRet;
+    }
+
+    std::wstring GetImageBase64(const std::wstring& file)
+    {
+        BYTE* pData = NULL;
+        DWORD dwLen = 0;
+        if (!NSFile::CFileBinary::ReadAllBytes(file, &pData, dwLen))
+            return L"";
+
+        char* pDataC = NULL;
+        int nLen = 0;
+        NSFile::CBase64Converter::Encode(pData, (int)dwLen, pDataC, nLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
+
+        std::wstring sReturn = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pDataC, (LONG)nLen, FALSE);
+
+        RELEASEARRAYOBJECTS(pData);
+        RELEASEARRAYOBJECTS(pDataC);
+
+        return sReturn;
+    }
+};
+
 bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext)
 {
+    std::wstring sFolder = NSFile::GetProcessDirectory();
+
+    COOXMLSigner oOOXMLSigner(sFolderOOXML, pCertContext);
+
+    std::string sSignedData;
+    std::wstring sXmlData;
+
+    std::wstring sDataSign = L"2017-04-21T08:30:21Z";
+
+    sSignedData += "<CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/>\
+<SignatureMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#rsa-sha1\"/>";
+
+    if (true)
+    {
+        // idPackageObject
+        std::wstring sXml = L"<Manifect>";
+
+        // TODO: rels
+        sXml += oOOXMLSigner.GetReference(L"/word/document.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
+        sXml += oOOXMLSigner.GetReference(L"/word/fontTable.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml");
+        sXml += oOOXMLSigner.GetReference(L"/word/settings.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml");
+        sXml += oOOXMLSigner.GetReference(L"/word/styles.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml");
+        sXml += oOOXMLSigner.GetReference(L"/word/theme/theme1.xml", L"application/vnd.openxmlformats-officedocument.theme+xml");
+        sXml += oOOXMLSigner.GetReference(L"/word/webSettings.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml");
+
+        sXml += L"</Manifect>";
+
+        sXml += L"<SignatureProperties><SignatureProperty Id=\"idSignatureTime\" Target=\"#idPackageSignature\">";
+        sXml += (L"<mdssi:SignatureTime xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\">\
+<mdssi:Format>YYYY-MM-DDThh:mm:ssTZD</mdssi:Format>\
+<mdssi:Value>" + sDataSign + L"</mdssi:Value>\
+</mdssi:SignatureTime></SignatureProperty></SignatureProperties>");
+
+        sXmlData += (L"<Object Id=\"idPackageObject\">" + sXml + L"</Object>");
+
+        sSignedData += ("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idPackageObject\">" +
+                        oOOXMLSigner.GetReferenceMain(sXml, L"idPackageObject") + "</Reference>");
+    }
+
+
+    std::wstring sImageValid = oOOXMLSigner.GetImageBase64(sFolder + L"/../../../resources/valig.png");
+    std::wstring sImageInValid = oOOXMLSigner.GetImageBase64(sFolder + L"/../../../resources/invalig.png");
+
+    if (true)
+    {
+        // idOfficeObject
+        std::wstring sXml = L"<SignatureProperties>\
+<SignatureProperty Id=\"idOfficeV1Details\" Target=\"#idPackageSignature\">\
+<SignatureInfoV1 xmlns=\"http://schemas.microsoft.com/office/2006/digsig\">\
+<SetupID>{A3CE98BA-4553-442D-8E43-CB07A2F83B85}</SetupID>\
+<SignatureText></SignatureText>\
+<SignatureImage>" + sImageValid + L"</SignatureImage>\
+<SignatureComments/>\
+<WindowsVersion>10.0</WindowsVersion>\
+<OfficeVersion>16.0</OfficeVersion>\
+<ApplicationVersion>16.0</ApplicationVersion>\
+<Monitors>2</Monitors>\
+<HorizontalResolution>1680</HorizontalResolution>\
+<VerticalResolution>1050</VerticalResolution>\
+<ColorDepth>32</ColorDepth>\
+<SignatureProviderId>{00000000-0000-0000-0000-000000000000}</SignatureProviderId>\
+<SignatureProviderUrl/>\
+<SignatureProviderDetails>9</SignatureProviderDetails>\
+<SignatureType>2</SignatureType>\
+</SignatureInfoV1>\
+</SignatureProperty>\
+</SignatureProperties>";
+
+        sXmlData += (L"<Object Id=\"idOfficeObject\">" + sXml + L"</Object>");
+
+        sSignedData += ("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idOfficeObject\">" +
+                        oOOXMLSigner.GetReferenceMain(sXml, L"idOfficeObject") + "</Reference>");
+    }
+
+    if (true)
+    {
+        std::string sNameA((char*)pCertContext->pCertInfo->Issuer.pbData, (int)pCertContext->pCertInfo->Issuer.cbData);
+        std::wstring sName = UTF8_TO_U(sNameA);
+        CBigInteger oInteger(pCertContext->pCertInfo->SerialNumber.pbData, (int)pCertContext->pCertInfo->SerialNumber.cbData);
+
+        std::string sKeyA = oInteger.ToString();
+        std::wstring sKey = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sKeyA.c_str(), (LONG)sKeyA.length());
+
+        std::wstring sXml = (L"<xd:SignedSignatureProperties>\
+<xd:SigningTime>" + sDataSign + L"</xd:SigningTime>\
+<xd:SigningCertificate>\
+<xd:Cert>\
+<xd:CertDigest>\
+<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/>\
+<DigestValue>MJJT2Y0iMxaPGVXBmOLb9bY60pA=</DigestValue>\
+</xd:CertDigest>\
+<xd:IssuerSerial>\
+<X509IssuerName>CN=" + sName + L"</X509IssuerName>\
+<X509SerialNumber>" + sKey + L"</X509SerialNumber>\
+</xd:IssuerSerial>\
+</xd:Cert>\
+</xd:SigningCertificate>\
+<xd:SignaturePolicyIdentifier>\
+<xd:SignaturePolicyImplied/>\
+</xd:SignaturePolicyIdentifier>\
+</xd:SignedSignatureProperties>");
+
+        std::wstring sSignedXml = L"<xd:SignedProperties xmlns=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:xd=\"http://uri.etsi.org/01903/v1.3.2#\" Id=\"idSignedProperties\">";
+        sSignedXml += sXml;
+        sSignedXml += L"</xd:SignedProperties>";
+
+        sXmlData += L"<Object><xd:QualifyingProperties xmlns:xd=\"http://uri.etsi.org/01903/v1.3.2#\" Target=\"#idPackageSignature\">\
+<xd:SignedProperties Id=\"idSignedProperties\">";
+        sXmlData += sXml;
+        sXmlData += L"</xd:SignedProperties></Object>";
+
+        sSignedData += "<Reference Type=\"http://uri.etsi.org/01903#SignedProperties\" URI=\"#idSignedProperties\">\
+<Transforms><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>\
+<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/><DigestValue>";
+
+        std::string sXmlTmp = CXmlCanonicalizator::Execute(U_TO_UTF8(sSignedXml), XML_C14N_1_0);
+        sSignedData += oOOXMLSigner.m_signer->GetHash(sXmlTmp);
+
+        sSignedData += "</DigestValue></Reference>";
+    }
+
+    if (true)
+    {
+        std::wstring sXml = sImageValid;
+
+        sXmlData += (L"<Object Id=\"idValidSigLnImg\">" + sXml + L"</Object>");
+
+        sSignedData += ("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idValidSigLnImg\">" +
+                        oOOXMLSigner.GetReferenceMain(sXml, L"idValidSigLnImg", false) + "</Reference>");
+    }
+
+    if (true)
+    {
+        std::wstring sXml = sImageInValid;
+
+        sXmlData += (L"<Object Id=\"idInvalidSigLnImg\">" + sXml + L"</Object>");
+
+        sSignedData += ("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idInvalidSigLnImg\">" +
+                        oOOXMLSigner.GetReferenceMain(sXml, L"idInvalidSigLnImg", false) + "</Reference>");
+    }
+
+    std::string sXmlPrepend = ("<Signature xmlns=\"http://www.w3.org/2000/09/xmldsig#\" Id=\"idPackageSignature\"><SignedInfo>");
+    sXmlPrepend += sSignedData;
+    sXmlPrepend += "</SignedInfo>";
+
+    sXmlPrepend += "<SignatureValue>";
+    sXmlPrepend += oOOXMLSigner.m_signer->Sign("<SignedInfo xmlns=\"http://www.w3.org/2000/09/xmldsig#\">" + sSignedData + "</SignedInfo>");
+    sXmlPrepend += "</SignatureValue>";
+    sXmlPrepend += ("<KeyInfo><X509Data><X509Certificate>" + oOOXMLSigner.m_signer->GetCertificateBase64() + "</X509Certificate></X509Data>");
+
+    sXmlData = (UTF8_TO_U(sXmlPrepend) + sXmlData);
+    sXmlData += L"</Signature>";
+
     return true;
 }

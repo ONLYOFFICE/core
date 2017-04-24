@@ -433,6 +433,8 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 {
 	if (oox_shape == NULL) return;
 
+	_CP_OPT(bool) bMasterPresentation = odf_context()->drawing_context()->get_presentation();
+
 	odf_context()->drawing_context()->start_drawing();
 	
 		int type = 1000; //custom
@@ -448,7 +450,8 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 				type = preset.GetValue();
 			}
 
-			if (type == SimpleTypes::shapetypeRect && oox_shape->txBody.IsInit()) type = 2000;
+			if (type == SimpleTypes::shapetypeRect && oox_shape->txBody.IsInit()) 
+				type = 2000;
 
 			if (type == 2000 && oox_shape->txBody->bodyPr.IsInit() 
 				&& oox_shape->txBody->bodyPr->fromWordArt.get_value_or(false))

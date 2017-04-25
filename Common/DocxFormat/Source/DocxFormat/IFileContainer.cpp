@@ -110,9 +110,11 @@ namespace OOX
 				OOX::CPath oName   = pFile->DefaultFileName();
 				if(false == pFile->m_sOutputFilename.empty())
 					oName.SetName(pFile->m_sOutputFilename, false);
-		
-				OOX::CSystemUtility::CreateDirectories( oCurrent / oDefDir );
-				pFile->write( oCurrent / oDefDir / oName, oDir / oDefDir, oContent );
+				if(m_mNoWriteContainer.end() == m_mNoWriteContainer.find(pPair->first))
+				{
+					OOX::CSystemUtility::CreateDirectories( oCurrent / oDefDir );
+					pFile->write( oCurrent / oDefDir / oName, oDir / oDefDir, oContent );
+				}
 					if(true != pFile->m_bDoNotAddRels)
                     {
                         if (oDefDir.GetPath().length() > 0)//todooo перенести в CPath
@@ -187,16 +189,18 @@ namespace OOX
 					mNamepair [oName.m_strFilename] = 1;
 				else
 					oName = oName + pNamePair->first;
-
-				OOX::CSystemUtility::CreateDirectories( oCurrent / oDefDir );				
-				smart_ptr<OOX::IFileBuilder> pFileBuilder = pFile.smart_dynamic_cast<OOX::IFileBuilder>(); 
-				if ( pFileBuilder.is_init() )
+				if(m_mNoWriteContainer.end() == m_mNoWriteContainer.find(it->first))
 				{
-					pFileBuilder->Finalize( oCurrent / oDefDir / oName, oDir / oDefDir, oContent );
-				}
-				else
-				{
-					pFile->write( oCurrent / oDefDir / oName, oDir / oDefDir, oContent );
+					OOX::CSystemUtility::CreateDirectories( oCurrent / oDefDir );
+					smart_ptr<OOX::IFileBuilder> pFileBuilder = pFile.smart_dynamic_cast<OOX::IFileBuilder>();
+					if ( pFileBuilder.is_init() )
+					{
+						pFileBuilder->Finalize( oCurrent / oDefDir / oName, oDir / oDefDir, oContent );
+					}
+					else
+					{
+						pFile->write( oCurrent / oDefDir / oName, oDir / oDefDir, oContent );
+					}
 				}
 
 				oRels.Registration( it->first, pFile->type(), oDefDir / oName );
@@ -384,6 +388,20 @@ namespace OOX
 
 		m_lMaxRid = (std::max)( m_lMaxRid, rId.getNumber() );
 		m_mContainer [rId.get()] = pFile;
+	}
+
+	const RId IFileContainer::AddNoWrite(const smart_ptr<OOX::File>& pFile)
+	{
+		const RId rId = GetMaxRId().next();
+		AddNoWrite( rId, pFile );
+		return rId;
+	}
+
+	void IFileContainer::AddNoWrite (const OOX::RId& rId, const smart_ptr<OOX::File>& pFile)
+	{
+		m_lMaxRid = (std::max)( m_lMaxRid, rId.getNumber() );
+		m_mContainer [rId.get()] = pFile;
+		m_mNoWriteContainer[rId.get()] = true;
 	}
 
 	smart_ptr<OOX::File> IFileContainer::Find(const FileType& oType) const

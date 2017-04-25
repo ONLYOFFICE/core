@@ -122,13 +122,13 @@ namespace codegen
 
             sb.AppendFormat("function {0}(){{\r\n", oGenClass.sName);
             ProcessProperty(sb, aAttributes, aMembers, bNeedTextNode, bNeedDoubleArray);
-            sb.AppendFormat("}}\r\n", oGenClass.sName);
+            sb.AppendFormat("}}\r\n");
 
             if (aAttributes.Count > 0)
             {
                 sb.AppendFormat("{0}.prototype.readAttributes = function(attr, uq) {{\r\n", oGenClass.sName);
                 ProcessAttributesFromXml(sb, oGenClass, aAttributes);
-                sb.AppendFormat("}};\r\n", oGenClass.sName);
+                sb.AppendFormat("}};\r\n");
             }
             if (aMembers.Count > 0)
             {
@@ -144,19 +144,19 @@ namespace codegen
                 sb.AppendFormat("newContext = null;\r\n");
                 sb.AppendFormat("}}\r\n");
                 sb.AppendFormat("return newContext;\r\n");
-                sb.AppendFormat("}};\r\n", oGenClass.sName);
+                sb.AppendFormat("}};\r\n");
 
                 if (bNeedTextNode)
                 {
                     sb.AppendFormat("{0}.prototype.onTextNode = function(text, uq) {{\r\n", oGenClass.sName);
                     ProcessOnTextNodeFromXml(sb, oGenClass, aMembers);
-                    sb.AppendFormat("}};\r\n", oGenClass.sName);
+                    sb.AppendFormat("}};\r\n");
                 }
                 if (bNeedDoubleArray)
                 {
                     sb.AppendFormat("{0}.prototype.onEndNode = function(prevContext, elem) {{\r\n", oGenClass.sName);
                     ProcessOnEndNodeFromXml(sb, oGenClass, aMembers);
-                    sb.AppendFormat("}};\r\n", oGenClass.sName);
+                    sb.AppendFormat("}};\r\n");
                 }
             }
             if (aAttributes.Count > 0 || aMembers.Count > 0)
@@ -302,7 +302,9 @@ namespace codegen
             if (!string.IsNullOrEmpty(sName))
             {
                 sb.AppendFormat("if(\"{0}\" === {1}){{\r\n", sName, sCodeName);
-                sb.AppendFormat("newContext.readAttributes(attr, uq);\r\n", sName, sCodeName);
+                sb.AppendFormat("if(newContext.readAttributes){{\r\n");
+                sb.AppendFormat("newContext.readAttributes(attr, uq);\r\n");
+                sb.AppendFormat("}}\r\n");
                 sb.AppendFormat("}}\r\n", sName, sCodeName);
                 return true;
             }
@@ -328,8 +330,8 @@ namespace codegen
                         else
                         {
                             sb.AppendFormat("//todo check name duplication\r\n", getNameWithPrefix(oGenClass, oGenMember), sCodeName);
+                            sb.AppendFormat("this.{0} = [];\r\n", oGenMember.sName);
                         }
-                        sb.AppendFormat("this.{0} = [];\r\n", oGenMember.sName);
                         sb.AppendFormat("}}\r\n", getNameWithPrefix(oGenClass, oGenMember), sCodeName);
                         nCounter++;
                     }
@@ -481,6 +483,9 @@ namespace codegen
                         sb.AppendFormat("else ");
                     sb.AppendFormat("if(\"{0}\" === elem){{\r\n", getNameWithPrefix(oGenClass, oGenMember));
                     sb.AppendFormat("if(this._curArray && this._curArray.length > 0){{\r\n");
+                    sb.AppendFormat("if(!this.{0}){{\r\n", oGenMember.sName);
+                    sb.AppendFormat("this.{0} = [];\r\n", oGenMember.sName);
+                    sb.AppendFormat("}}\r\n");
                     sb.AppendFormat("this.{0}.push(this._curArray);\r\n", oGenMember.sName);
                     sb.AppendFormat("this._curArray  = null;\r\n");
                     sb.AppendFormat("}}\r\n");
@@ -586,21 +591,17 @@ namespace codegen
                 {
                     GenMemberPivot oGenMember = aMembers[i];
                     bool bNullCheck = true;
-                    string sCodeElem;
+                    string sCodeElem  = "this." + oGenMember.sName;
                     if (oGenMember.nArrayRank > 0)
                     {
                         if (false == oGenMember.bIsArrayTypesHidden)
                         {
-                            sb.AppendFormat("if(null !== {0}){{\r\n", oGenMember.sName);
+                            sb.AppendFormat("if(null !== {0}){{\r\n", sCodeElem);
                         }
-                        sb.AppendFormat("for(var i = 0; i < this.{0}.length; ++i){{\r\n", oGenMember.sName);
-                        sb.AppendFormat("var elem = this.{0}[i];\r\n", oGenMember.sName);
+                        sb.AppendFormat("for(var i = 0; i < {0}.length; ++i){{\r\n", sCodeElem);
+                        sb.AppendFormat("var elem = {0}[i];\r\n", sCodeElem);
                         sCodeElem = "elem";
                         bNullCheck = false;
-                    }
-                    else
-                    {
-                        sCodeElem = "this." + oGenMember.sName;
                     }
                     if (null != oGenMember.aArrayTypes)
                     {
@@ -608,7 +609,7 @@ namespace codegen
                         {
                             if (bNullCheck)
                                 sb.AppendFormat("if(null !== {0}){{\r\n", sCodeElem);
-                            sb.AppendFormat("writer.WriteXmlNodeEnd(\"{0}\", true);\r\n", getNameWithPrefix(oGenClass, oGenMember));
+                            sb.AppendFormat("writer.WriteXmlNodeStart(\"{0}\", true);\r\n", getNameWithPrefix(oGenClass, oGenMember));
                         }
                         if (oGenMember.nArrayRank.HasValue)
                         {
@@ -669,7 +670,7 @@ namespace codegen
                         sb.AppendFormat("}}\r\n");
                         if (false == oGenMember.bIsArrayTypesHidden)
                         {
-                            sb.AppendFormat("}}\r\n", oGenMember.sName);
+                            sb.AppendFormat("}}\r\n");
                         }
                     }
                 }
@@ -756,12 +757,12 @@ namespace codegen
                 default:
                     if (bAttribute)
                     {
-                        sb.AppendFormat("writer.WriteXmlAttributeString(\"{0}\", {1});\r\n", sName, sVal);
+                        sb.AppendFormat("writer.WriteXmlAttributeStringEncode(\"{0}\", {1});\r\n", sName, sVal);
                     }
                     else
                     {
                         sb.AppendFormat("writer.WriteXmlNodeStart(\"{0}\", true);\r\n", sName);
-                        sb.AppendFormat("writer.WriteXmlString({0});\r\n", sVal);
+                        sb.AppendFormat("writer.WriteXmlStringEncode({0});\r\n", sVal);
                         sb.AppendFormat("writer.WriteXmlNodeEnd(\"{0}\");\r\n", sName);
                     }
                     break;

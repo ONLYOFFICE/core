@@ -45,9 +45,34 @@ namespace TestDocsWithChart
     {
         static void Main(string[] args)
         {
-            getFilesAlternateContent();
+            getFilesPivot();
+            //getFilesAlternateContent();
             //getFiles();
             //convertFiles();
+        }
+        static void getFilesPivot()
+        {
+            string sDirInput = @"\\192.168.3.208\allusers\Files\XLSX";
+            string sDirOutput = @"D:\Files\Pivot";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (-1 != entry.FullName.IndexOf("pivotTable", StringComparison.OrdinalIgnoreCase))
+                        {
+                            System.IO.File.Copy(file, Path.Combine(sDirOutput, Path.GetFileName(file)), true);
+                            break;
+                        }
+                    }
+                }
+                catch { }
+
+            }
         }
         static void getFilesAlternateContent()
         {

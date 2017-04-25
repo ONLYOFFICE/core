@@ -137,6 +137,8 @@ namespace OOX
 					m_oDefinedNames->toXML(sXml);
 
 				sXml.WriteString(_T("<calcPr calcId=\"145621\"/>"));
+				if(m_oPivotCachesXml.IsInit())
+					sXml.WriteString(m_oPivotCachesXml.get());
 				sXml.WriteString(_T("</workbook>"));
 
                 std::wstring sPath = oPath.GetPath();
@@ -208,7 +210,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CSheets>				m_oSheets;
 			nullable<OOX::Spreadsheet::CWorkbookPr>			m_oWorkbookPr;
 			nullable<OOX::Spreadsheet::CExternalReferences>	m_oExternalReferences;
-
+			nullable<std::wstring>							m_oPivotCachesXml;
 		};
 	} //Spreadsheet
 } // namespace OOX

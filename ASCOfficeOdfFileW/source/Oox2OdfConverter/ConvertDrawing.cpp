@@ -30,6 +30,8 @@
  *
  */
 #include "PptxConverter.h"
+#include "DocxConverter.h"
+
 #include "../utils.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
@@ -450,15 +452,20 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 				type = preset.GetValue();
 			}
 
-			if (type == SimpleTypes::shapetypeRect && oox_shape->txBody.IsInit()) 
+			if (type == SimpleTypes::shapetypeRect && (oox_shape->txBody.IsInit() || oox_shape->oTextBoxShape.IsInit())) 
 				type = 2000;
 
-			if (type == 2000 && oox_shape->txBody->bodyPr.IsInit() 
-				&& oox_shape->txBody->bodyPr->fromWordArt.get_value_or(false))
+			if (type == 2000)
 			{
-				int wordart_type = convert(oox_shape->txBody->bodyPr->prstTxWarp.GetPointer());
-
-				if (wordart_type > 0) type = wordart_type;
+				PPTX::Logic::BodyPr *bodyPr = NULL;
+				if (oox_shape->txBody.IsInit())		bodyPr = oox_shape->txBody->bodyPr.GetPointer();
+				else								bodyPr = oox_shape->oTextBoxBodyPr.GetPointer();
+				
+				if (bodyPr && bodyPr->fromWordArt.get_value_or(false))
+				{
+					int wordart_type = convert(bodyPr->prstTxWarp.GetPointer());
+					if (wordart_type > 0) type = wordart_type;
+				}
 			}
 		}
 		else if (oox_shape->nvSpPr.nvPr.ph.is_init())
@@ -476,7 +483,24 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 
 		if (oox_shape->txXfrm.IsInit() == false)
 		{
-			convert(oox_shape->txBody.GetPointer(), oox_shape->style.GetPointer());
+			if (oox_shape->oTextBoxShape.IsInit()) //docx sdt
+			{
+				DocxConverter *docx_converter = dynamic_cast<DocxConverter*>(this);
+				if (docx_converter)
+				{
+					odf_context()->start_text_context();	
+						docx_converter->convert(oox_shape->oTextBoxShape.GetPointer());
+						odf_context()->drawing_context()->set_text( odf_context()->text_context());
+					
+						convert(oox_shape->oTextBoxBodyPr.GetPointer());
+						
+						if (oox_shape->style.IsInit())
+							convert(&oox_shape->style->fontRef);
+					odf_context()->end_text_context();	
+				}
+			}
+			else
+				convert(oox_shape->txBody.GetPointer(), oox_shape->style.GetPointer());
 		}
 
 	odf_context()->drawing_context()->end_shape();
@@ -887,12 +911,19 @@ void OoxConverter::convert(PPTX::Logic::UniColor * color, std::wstring & hexStri
 	if (!color) return;
 
     convert(color, nARGB);
-	
-    hexString = XmlUtils::IntToString(nARGB & 0x00FFFFFF, L"#%06X");
 
-    if ((nARGB >> 24) != 0xff)
+	if (nARGB != 0)
+	{	
+		hexString = XmlUtils::IntToString(nARGB & 0x00FFFFFF, L"#%06X");
+
+		if ((nARGB >> 24) != 0xff)
+		{
+			opacity = ((nARGB >> 24) /255.) * 100.;
+		}
+	}
+	else 
 	{
-        opacity = ((nARGB >> 24) /255.) * 100.;
+		//not found in theme
 	}
 }
 

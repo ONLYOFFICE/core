@@ -1260,7 +1260,8 @@ _CP_OPT(odf_types::color) odf_drawing_context::get_line_color()
 }
 void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 {
-	if (!impl_->current_graphic_properties)return;
+	if (!impl_->current_graphic_properties)	return;
+	if (hexColor.empty()) return;
 	
 	int res = 0;
 	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
@@ -2177,27 +2178,47 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 			paragraph_properties = style_->content_.get_style_paragraph_properties();
 		}
 	}
-	if (paragraph_properties == NULL && impl_->current_paragraph_properties == NULL)return;	
 	
-	switch(mode)
+	if (paragraph_properties)
 	{
-		case 5://textverticaltypeWordArtVert:
-		case 6://textverticaltypeWordArtVertRtl:
-		case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
-		case 3://SimpleTypes::textverticaltypeVert: 
-		case 2://SimpleTypes::textverticaltypeMongolianVert:
-			paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
-			impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
-			break;
-		case 0://SimpleTypes::textverticaltypeEaVert: 
-			paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
-			impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
-			break;
-		case 1://SimpleTypes::textverticaltypeHorz: 
-		default:
-			paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
-			impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
-			break;
+		switch(mode)
+		{
+			case 5://textverticaltypeWordArtVert:
+			case 6://textverticaltypeWordArtVertRtl:
+			case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
+			case 3://SimpleTypes::textverticaltypeVert: 
+			case 2://SimpleTypes::textverticaltypeMongolianVert:
+				
+				paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+				break;
+			case 0://SimpleTypes::textverticaltypeEaVert: 
+				paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+				break;
+			case 1://SimpleTypes::textverticaltypeHorz: 
+			default:
+				paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
+				break;
+		}
+	}
+	if (impl_->current_paragraph_properties)
+	{
+		switch(mode)
+		{
+			case 5://textverticaltypeWordArtVert:
+			case 6://textverticaltypeWordArtVertRtl:
+			case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
+			case 3://SimpleTypes::textverticaltypeVert: 
+			case 2://SimpleTypes::textverticaltypeMongolianVert:
+				impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+				break;
+			case 0://SimpleTypes::textverticaltypeEaVert: 
+				impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+				break;
+			case 1://SimpleTypes::textverticaltypeHorz: 
+			default:
+				impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
+				break;
+		}
 	}
 }
 void odf_drawing_context::set_paragraph_properties(style_paragraph_properties *paragraph_properties)

@@ -437,6 +437,7 @@ public:
 	_CP_OPT(std::wstring)	draw_modifiers_;
 	_CP_OPT(bool)			draw_text_path_;
 	_CP_OPT(std::wstring)	draw_enhanced_path_;
+	_CP_OPT(std::wstring)	drawooo_enhanced_path_;
 	_CP_OPT(std::wstring)	drawooo_sub_view_size_;
 };
 /////////////////////////////////////////////////////////////////////////
@@ -464,7 +465,9 @@ public:
 	_CP_OPT(int)			sub_type_;
 	_CP_OPT(int)			draw_type_oox_index_;
 	_CP_OPT(std::wstring)	svg_viewbox_;
+	
 	bool					word_art_;
+	bool					bOoxType_;
 
 	typedef std::pair<std::wstring,std::wstring> pair_string_value;
 

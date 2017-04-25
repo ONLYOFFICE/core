@@ -245,6 +245,7 @@ namespace OOX
 		class CTextPath;
 		class CGroup;
 		class CVmlCommonElements;
+		class CFormulas;
 	}
 	namespace VmlWord
 	{	
@@ -510,6 +511,7 @@ public:
 		void convert(OOX::VmlWord::CWrap				*vml_wrap);
 		void convert(OOX::Vml::CGroup					*vml_group);
 		void convert(OOX::Vml::CVmlCommonElements		*vml_attr);
+		void convert(OOX::Vml::CFormulas				*vml_formulas);
 	};
 
 } // namespace Oox2Odf

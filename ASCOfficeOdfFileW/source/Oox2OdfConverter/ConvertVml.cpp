@@ -70,7 +70,7 @@ void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 	}	
 	//m_oPreferRelative//типо можно менять размер 
 
-	for (unsigned int i=0 ; i < vml_shape_type->m_arrItems.size();i++)
+	for (size_t i = 0; i < vml_shape_type->m_arrItems.size(); i++)
 	{
 		convert(vml_shape_type->m_arrItems[i]);
 	}
@@ -86,6 +86,18 @@ void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 	//m_arrItems
 	//CVmlCommonElements
 }
+void OoxConverter::convert(OOX::Vml::CFormulas *vml_formulas)
+{
+	if (vml_formulas == NULL) return;
+
+	for (size_t i = 0; i < vml_formulas->m_arrItems.size(); i++)
+	{	
+		OOX::Vml::CF *cf = dynamic_cast<OOX::Vml::CF *>(vml_formulas->m_arrItems[i]);
+		if (cf == NULL) continue;
+
+		//odf_context()->drawing_context()->add_formula(L"", cf->m_sEqn);
+	}
+}
 
 void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 {
@@ -95,7 +107,7 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 
 	_CP_OPT(int) anchor_type_x, anchor_type_y;
 
-	for (unsigned int i=0; i < vml_style->m_arrProperties.size(); i++)
+	for (size_t i = 0; i < vml_style->m_arrProperties.size(); i++)
 	{
 		if (vml_style->m_arrProperties[i] == NULL) continue;
 
@@ -693,17 +705,18 @@ void OoxConverter::convert(OOX::Vml::CTextbox *vml_textbox)
 	odf_context()->drawing_context()->set_textarea_wrap(true);
 	
 	DocxConverter *docx_converter = dynamic_cast<DocxConverter*>(this);
-
-	odf_context()->start_text_context();
+	if (docx_converter)
 	{
-		for (unsigned int i=0 ; i < vml_textbox->m_oTxtbxContent->m_arrItems.size();i++)
+		odf_context()->start_text_context();
 		{
-			if (docx_converter)
+			for (size_t i = 0; i < vml_textbox->m_oTxtbxContent->m_arrItems.size(); i++)
+			{
 				docx_converter->convert(vml_textbox->m_oTxtbxContent->m_arrItems[i]);
+			}
+			odf_context()->drawing_context()->set_text( odf_context()->text_context());
 		}
-		odf_context()->drawing_context()->set_text( odf_context()->text_context());
+		odf_context()->end_text_context();	
 	}
-	odf_context()->end_text_context();	
 
 }
 void OoxConverter::convert(OOX::Vml::CTextPath *vml_textpath)
@@ -869,7 +882,7 @@ void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 			delete oRgbColor;
 		}
 	}
-	for (unsigned int i=0 ; i < vml_common->m_arrItems.size();i++)
+	for (size_t i = 0; i < vml_common->m_arrItems.size(); i++)
 	{
 		convert(vml_common->m_arrItems[i]);
 	}
@@ -899,7 +912,7 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 			odf_context()->drawing_context()->set_group_shift(vml_group->m_oCoordOrigin->GetX(), vml_group->m_oCoordOrigin->GetY());
 		}		
 
-		for (unsigned int i=0; i < vml_group->m_arrItems.size(); i++)
+		for (size_t i  = 0; i < vml_group->m_arrItems.size(); i++)
 		{
 			if (vml_group->m_arrItems[i] == NULL) continue;
 

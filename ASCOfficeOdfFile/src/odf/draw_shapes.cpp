@@ -453,6 +453,7 @@ void draw_enhanced_geometry_attlist::add_attributes( const xml::attributes_wc_pt
     CP_APPLY_ATTR(L"draw:modifiers"			, draw_modifiers_);
 	CP_APPLY_ATTR(L"draw:text-path"			, draw_text_path_);
 	CP_APPLY_ATTR(L"draw:enhanced-path"		, draw_enhanced_path_);
+	CP_APPLY_ATTR(L"drawooo:enhanced-path"	, drawooo_enhanced_path_);
 	CP_APPLY_ATTR(L"drawooo:sub-view-size"	, drawooo_sub_view_size_);
 }
 // draw:enhanced_geometry
@@ -485,6 +486,9 @@ void draw_enhanced_geometry::add_child_element( xml::sax * Reader, const std::ws
 }
 void draw_enhanced_geometry::find_draw_type_oox()
 {
+	word_art_ = false;
+	bOoxType_ = false;
+	
 	if (draw_enhanced_geometry_attlist_.draw_text_path_ &&
 			*draw_enhanced_geometry_attlist_.draw_text_path_ == true)
 	{
@@ -501,7 +505,7 @@ void draw_enhanced_geometry::find_draw_type_oox()
 		{
 			int count = sizeof(_OO_OOX_wordart) / sizeof(_shape_converter);
 
-			for (long i=0; i< count; i++)
+			for (int i = 0; i < count; i++)
 			{
 				if (_OO_OOX_wordart[i].odf_reader == odf_type)
 				{
@@ -518,7 +522,7 @@ void draw_enhanced_geometry::find_draw_type_oox()
 
 			if (pos < 0)
 			{
-				for (long i=0; i< count; i++)
+				for (long i = 0; i< count; i++)
 				{
 					if (_OO_OOX_custom_shapes[i].odf_reader == odf_type)
 					{
@@ -529,8 +533,9 @@ void draw_enhanced_geometry::find_draw_type_oox()
 			}
 			else
 			{
+				bOoxType_ = true;
 				std::wstring oox_type = odf_type.substr(pos + 6);
-				for (long i=0; i< count; i++)
+				for (long i = 0; i< count; i++)
 				{
 					if (_OO_OOX_custom_shapes[i].oox == oox_type)
 					{
@@ -547,18 +552,18 @@ void draw_enhanced_geometry::find_draw_type_oox()
 	}
 	std::wstringstream str;
 
-    BOOST_FOREACH(const office_element_ptr & parElement, draw_handle_)
+    for (size_t i = 0; i < draw_handle_.size(); i++)
     {
-		draw_handle * handle = dynamic_cast<draw_handle *>(parElement.get());
-        
-		int min = -1;
-		int max = -1;
+		draw_handle * handle = dynamic_cast<draw_handle *>(draw_handle_[i].get());        
+		if (!handle) continue;
+
+		int min = -1, max = -1;
 		
 		try
 		{
 			min = parsing(handle->draw_handle_attlist_.draw_handle_range_y_minimum_);//пока статик .. и выдается только цыфровое значение
-			if (min<0)min = parsing(handle->draw_handle_attlist_.draw_handle_range_x_minimum_);
-			if (min<0)min = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_minimum_);
+			if (min < 0) min = parsing(handle->draw_handle_attlist_.draw_handle_range_x_minimum_);
+			if (min < 0) min = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_minimum_);
 		}
 		catch(...)
 		{
@@ -574,7 +579,7 @@ void draw_enhanced_geometry::find_draw_type_oox()
 		catch(...)
 		{
 		}		
-		draw_handle_geometry elm={min, max};
+		draw_handle_geometry elm = {min, max};
 		draw_handle_geometry_.push_back(elm);
     }
 }

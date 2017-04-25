@@ -253,13 +253,19 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 
 		set_shape = true;
 	}
+
 	if (sub_type_)
 	{
 		shape->sub_type_ = sub_type_.get();
 		set_shape = true;
 	}
+	std::wstring odf_path;
+	if (draw_enhanced_geometry_attlist_.drawooo_enhanced_path_)
+		odf_path = draw_enhanced_geometry_attlist_.drawooo_enhanced_path_.get();
+	else if (draw_enhanced_geometry_attlist_.draw_enhanced_path_)
+		odf_path = draw_enhanced_geometry_attlist_.draw_enhanced_path_.get();
 	
-	if (draw_enhanced_geometry_attlist_.draw_enhanced_path_)
+	if (!odf_path.empty())
 	{
 		std::vector<::svg_path::_polyline> o_Polyline;
 	
@@ -267,7 +273,7 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 		
 		try
 		{
-			res = ::svg_path::parseSvgD(o_Polyline, draw_enhanced_geometry_attlist_.draw_enhanced_path_.get(), true);
+			res = ::svg_path::parseSvgD(o_Polyline, odf_path, true);
 		}
 		catch(...)
 		{
@@ -316,8 +322,8 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 		{
 			if (draw_handle_geometry_[0].min < draw_handle_geometry_[0].max)
 			{
-				shape->additional_.push_back(_property(L"draw-modifiers-min",draw_handle_geometry_[0].min));	
-				shape->additional_.push_back(_property(L"draw-modifiers-max",draw_handle_geometry_[0].max));	
+				shape->additional_.push_back(_property(L"draw-modifiers-min", draw_handle_geometry_[0].min));	
+				shape->additional_.push_back(_property(L"draw-modifiers-max", draw_handle_geometry_[0].max));	
 			}
 		}
 	}
@@ -326,7 +332,6 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 	{
 		shape->bad_shape_ = true;
 	}
-
 }
 }
 }

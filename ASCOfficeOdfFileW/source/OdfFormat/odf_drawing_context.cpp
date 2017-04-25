@@ -336,6 +336,7 @@ void odf_drawing_context::set_background_state(bool Val)
 	impl_->is_background_ = Val;
 
 	impl_->current_graphic_properties = new graphic_format_properties();
+	start_area_properties();
 }
 
 void odf_drawing_context::check_anchor()
@@ -473,6 +474,7 @@ void odf_drawing_context::start_drawing()
 }
 void odf_drawing_context::end_drawing_background(odf_types::common_draw_fill_attlist & common_draw_attlist)
 {
+	end_area_properties();
 	if (impl_->current_drawing_state_.elements_.empty() == false) return;
 
 	if (!impl_->is_background_ || !impl_->current_graphic_properties) return;
@@ -491,15 +493,13 @@ void odf_drawing_context::end_drawing()
 	draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
 	if (draw)
 	{
-		if (impl_->is_presentation_)
+		if (impl_->current_drawing_state_.presentation_class_ || impl_->current_drawing_state_.presentation_placeholder_)
 		{
 			_CP_OPT(std::wstring) draw_layer;
 			if (impl_->is_presentation_.get() == true)
 			{//master				
 				draw_layer = L"backgroundobjects";
-				//if (impl_->current_drawing_state_.presentation_class_)	
-				//	draw_layer = L"backgroundobjects";
-				//else	draw_layer = L"layout";
+
 				if (!impl_->current_drawing_state_.presentation_class_)	
 					impl_->current_drawing_state_.presentation_class_ = presentation_class::outline;
 
@@ -1186,10 +1186,14 @@ void odf_drawing_context::set_shadow(int type, std::wstring hexColor, _CP_OPT(do
 
 void odf_drawing_context::set_placeholder_id (std::wstring val)
 {
+	if (!impl_->is_presentation_) return;
+
 	impl_->current_drawing_state_.presentation_placeholder_ = val;
 }
 void odf_drawing_context::set_placeholder_type (int val)
 {
+	if (!impl_->is_presentation_) return;
+	
 	switch(val)
 	{
 		case 0:		impl_->current_drawing_state_.presentation_class_ = presentation_class::outline; 	break;

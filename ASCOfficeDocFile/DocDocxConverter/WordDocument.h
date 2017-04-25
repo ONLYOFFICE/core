@@ -86,6 +86,7 @@ namespace DocFileFormat
 		friend class Table;
 		friend class TableRow;
 		friend class VMLShapeMapping;
+		friend class VMLPictureMapping;
 		friend class OpenXmlPackage;
 		friend class TextboxMapping;
 

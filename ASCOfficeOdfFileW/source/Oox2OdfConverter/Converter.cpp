@@ -130,6 +130,8 @@ bool  OoxConverter::UpdateProgress(long nComplete)
 
 void OoxConverter::set_fonts_directory(const std::wstring &fontsPath)
 {
+	if (odf_context() == NULL) return;
+
     odf_context()->set_fonts_directory(fontsPath);
 }
 

@@ -75,23 +75,23 @@ namespace codegen
         }
         public void merge(GenMemberPivot val)
         {
-            if (!string.IsNullOrEmpty(val.sName))
+            if (string.IsNullOrEmpty(this.sName))
                 sName = val.sName;
-            if (!string.IsNullOrEmpty(val.sNamespace))
+            if (string.IsNullOrEmpty(this.sNamespace))
                 sNamespace = val.sNamespace;
-            if (!string.IsNullOrEmpty(val.sType))
+            if (string.IsNullOrEmpty(this.sType))
                 sType = val.sType;
-            if (null != val.oSystemType)
+            if (null == this.oSystemType)
                 oSystemType = val.oSystemType;
-            if (val.bIsAttribute.HasValue)
+            if (!this.bIsAttribute.HasValue)
                 bIsAttribute = val.bIsAttribute;
-            if (!string.IsNullOrEmpty(val.sDefAttribute))
+            if (string.IsNullOrEmpty(this.sDefAttribute))
                 sDefAttribute = val.sDefAttribute;
-            if (val.bQualified.HasValue)
+            if (!this.bQualified.HasValue)
                 bQualified = val.bQualified;
-            if (val.nArrayRank.HasValue)
+            if (!this.nArrayRank.HasValue)
                 nArrayRank = val.nArrayRank;
-            if (val.bIsArrayTypesHidden.HasValue)
+            if (!this.bIsArrayTypesHidden.HasValue)
                 bIsArrayTypesHidden = val.bIsArrayTypesHidden;
         }
         public void completeDefaults()
@@ -105,7 +105,7 @@ namespace codegen
 
     //[System.Xml.Serialization.XmlElementAttribute("c")]
     //public CT_CalcCell[] c {
-    //bIsArray=true;aArrayTypes=[CT_CalcCell]
+    //nArrayRank=0;aArrayTypes=[CT_CalcCell];bIsArrayTypesHidden=true
 
     //[System.Xml.Serialization.XmlElementAttribute("b", typeof(CT_Boolean))]
     //[System.Xml.Serialization.XmlElementAttribute("d", typeof(CT_DateTime))]
@@ -114,9 +114,18 @@ namespace codegen
     //[System.Xml.Serialization.XmlElementAttribute("n", typeof(CT_Number))]
     //[System.Xml.Serialization.XmlElementAttribute("s", typeof(CT_String))]
     //public object[] Items {
+    //nArrayRank=0;aArrayTypes=[CT_Boolean, CT_DateTime, CT_Error, CT_Missing, CT_Number, CT_String];bIsArrayTypesHidden=true
+
+    //[System.Xml.Serialization.XmlElementAttribute("consolidation", typeof(CT_Consolidation))]
+    //[System.Xml.Serialization.XmlElementAttribute("extLst", typeof(CT_ExtensionList))]
+    //[System.Xml.Serialization.XmlElementAttribute("worksheetSource", typeof(CT_WorksheetSource))]
+    //public object Item
+    //{
+    //nArrayRank=null;aArrayTypes=[CT_Consolidation, CT_ExtensionList, CT_WorksheetSource];bIsArrayTypesHidden=true
 
     //[System.Xml.Serialization.XmlArrayItemAttribute("author", IsNullable=false)]
     //public string[] authors {
+    //nArrayRank=0;aArrayTypes=[string];bIsArrayTypesHidden=false
 
     //[System.Xml.Serialization.XmlArrayItemAttribute("b", typeof(CT_Boolean), IsNullable=false)]
     //[System.Xml.Serialization.XmlArrayItemAttribute("d", typeof(CT_DateTime), IsNullable=false)]
@@ -126,12 +135,7 @@ namespace codegen
     //[System.Xml.Serialization.XmlArrayItemAttribute("s", typeof(CT_String), IsNullable=false)]
     //[System.Xml.Serialization.XmlArrayItemAttribute("x", typeof(CT_Index), IsNullable=false)]
     //public object[][] r {
-
-    //[System.Xml.Serialization.XmlElementAttribute("consolidation", typeof(CT_Consolidation))]
-    //[System.Xml.Serialization.XmlElementAttribute("extLst", typeof(CT_ExtensionList))]
-    //[System.Xml.Serialization.XmlElementAttribute("worksheetSource", typeof(CT_WorksheetSource))]
-    //public object Item
-    //{
+    //nArrayRank=1;aArrayTypes=[CT_Boolean, CT_DateTime, CT_Error, CT_Missing, CT_Number, CT_String, CT_Index];bIsArrayTypesHidden=false
 
     public class GenClassPivot
     {
@@ -222,6 +226,9 @@ namespace codegen
             Queue<GenClassPivot> aTemp = new Queue<GenClassPivot>();
             List<GenClassPivot> aRes = new List<GenClassPivot>();
             string[] aTargetTypes = new string[] { "CT_PivotCacheDefinition", "CT_PivotCacheRecords", "CT_pivotTableDefinition" };
+            //string[] aTargetTypes = new string[] { "CT_Workbook" };
+            //string[] aTargetTypes = new string[] { "CT_Comments" };
+
             Dictionary<string, bool> mapTargetSubTypes = new Dictionary<string, bool>();
             Dictionary<string, bool> namspaces = new Dictionary<string, bool>();
 
@@ -419,16 +426,19 @@ namespace codegen
                 {
                     if (1 == aTempMemebers.Count)
                     {
-                        oGenMember.merge(aTempMemebers[0]);
+                        GenMemberPivot TempMember = aTempMemebers[0];
+                        TempMember.merge(oGenMember);
+                        TempMember.nArrayRank = null;
                     }
-                    else
-                    {
                         oGenMember.aArrayTypes = aTempMemebers;
                         if (bXmlElementAttribute)
                             oGenMember.bIsArrayTypesHidden = true;
                         else
                             oGenMember.bIsArrayTypesHidden = false;
-                    }
+                }
+                else
+                {
+                    oGenMember.nArrayRank = null;
                 }
                 oGenMember.completeDefaults();
                 return oGenMember;

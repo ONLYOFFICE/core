@@ -156,6 +156,16 @@ namespace PPTX
 						}
 					}
 				}
+
+				if (pShape->nvSpPr.nvPr.ph->idx.IsInit())
+				{
+					//not found in layout !! 100818_건강보험과_보건의료_김용익_최종.pptx
+					bool bShapeMaster = showMasterSp.get_value_or(true);
+					if (Master.IsInit() && bShapeMaster)
+					{
+						Master->GetLevelUp(pShape);
+					}
+				}
 			}
 		}
 		virtual std::wstring GetMediaFullPathNameFromRId(const OOX::RId& rid)const

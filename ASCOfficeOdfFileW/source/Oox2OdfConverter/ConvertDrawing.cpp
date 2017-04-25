@@ -267,7 +267,7 @@ void OoxConverter::convert(PPTX::Logic::SmartArt *oox_smart_art)
 
 	if (oox_smart_art->m_diag.IsInit())
 	{
-		_CP_OPT(double) x, y, width, height, cx, cy;
+        _CP_OPT(double) x, y, width, height, cx = 1., cy= 1.;
 
 		odf_context()->drawing_context()->get_size (width, height);
 		odf_context()->drawing_context()->get_position (x, y);

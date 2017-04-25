@@ -120,21 +120,29 @@ namespace PPTX
 				oAttr.Write(_T("noResize"),			noResize);
 				oAttr.Write(_T("noSelect"),			noSelect);
 
-				return XmlUtils::CreateNode(m_namespace + L":cNvGraphicFramePr", oAttr.m_strValue.empty() ? L"" : XmlUtils::CreateNode(L"a:graphicFrameLocks", oAttr));
+				std::wstring namespaceLocks = L"a";
+				if (m_namespace == L"wp") namespaceLocks = L"wp";
+
+				return XmlUtils::CreateNode(m_namespace + L":cNvGraphicFramePr", oAttr.m_strValue.empty() ? L"" : XmlUtils::CreateNode(namespaceLocks + L":graphicFrameLocks", oAttr));
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				std::wstring namespace_ = m_namespace;
+				std::wstring namespace_		= m_namespace;
+				std::wstring namespaceLock_ = L"a";
 
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_ = L"wp";
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+				{
+					namespaceLock_	= L"wp";
+					namespace_		= L"wp";
+				}
 
 				pWriter->StartNode(namespace_ + L":cNvGraphicFramePr");
 				
 				pWriter->EndAttributes();
 				
-				pWriter->StartNode(_T("a:graphicFrameLocks"));
+				pWriter->StartNode(namespaceLock_ + L"graphicFrameLocks");
 
 				pWriter->StartAttributes();
 
@@ -147,7 +155,7 @@ namespace PPTX
 
 				pWriter->EndAttributes();
 
-				pWriter->EndNode(_T("a:graphicFrameLocks"));
+				pWriter->EndNode(namespaceLock_ + L":graphicFrameLocks");
 
 				pWriter->EndNode(namespace_ + L":cNvGraphicFramePr");
 			}

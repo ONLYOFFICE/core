@@ -64,6 +64,27 @@ namespace BinXlsxRW {
 			nIndex = _nIndex;
 		}
 	};
+	class PivotCachesTemp
+	{
+	public:
+		long nId;
+		BYTE* pDefinitionData;
+		long nDefinitionLength;
+		OOX::Spreadsheet::CPivotCacheRecords* pRecords;
+		long nCacheId;
+		OOX::Spreadsheet::CPivotTable* pTable;
+	public:
+		PivotCachesTemp()
+		{
+			nId = -1;
+			pDefinitionData = NULL;
+			nDefinitionLength = 0;
+			pRecords = NULL;
+			nCacheId = -1;
+			pTable = NULL;
+		}
+	};
+
 	class Binary_CommonReader2
 	{
 	protected:
@@ -1477,8 +1498,9 @@ namespace BinXlsxRW {
 	class BinaryWorkbookTableReader : public Binary_CommonReader<BinaryWorkbookTableReader>
 	{
 		OOX::Spreadsheet::CWorkbook& m_oWorkbook;
+		std::map<long, NSCommon::smart_ptr<OOX::File>>& m_mapPivotCacheDefinitions;
 	public:
-		BinaryWorkbookTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook):Binary_CommonReader(oBufferedStream), m_oWorkbook(oWorkbook)
+		BinaryWorkbookTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook, std::map<long, NSCommon::smart_ptr<OOX::File>>& mapPivotCacheDefinitions):Binary_CommonReader(oBufferedStream), m_oWorkbook(oWorkbook), m_mapPivotCacheDefinitions(mapPivotCacheDefinitions)
 		{
 		}
 		int Read()
@@ -1507,6 +1529,13 @@ namespace BinXlsxRW {
 			{
 				m_oWorkbook.m_oExternalReferences.Init();
 				res = Read1(length, &BinaryWorkbookTableReader::ReadExternalReferences, this, poResult);
+			}
+			else if(c_oSerWorkbookTypes::PivotCaches == type)
+			{
+				m_oWorkbook.m_oPivotCachesXml.Init();
+				m_oWorkbook.m_oPivotCachesXml->append(L"<pivotCaches>");
+				res = Read1(length, &BinaryWorkbookTableReader::ReadPivotCaches, this, poResult);
+				m_oWorkbook.m_oPivotCachesXml->append(L"</pivotCaches>");
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1633,7 +1662,67 @@ namespace BinXlsxRW {
             {
 				pDefinedName->m_oComment.Init();
 				pDefinedName->m_oComment->append(m_oBufferedStream.GetString4(length));
-            }
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		};
+		int ReadPivotCaches(BYTE type, long length, void* poResult)
+		{
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSerWorkbookTypes::PivotCache == type)
+			{
+				PivotCachesTemp oPivotCachesTemp;
+				res = Read1(length, &BinaryWorkbookTableReader::ReadPivotCache, this, &oPivotCachesTemp);
+				if(-1 != oPivotCachesTemp.nId && NULL != oPivotCachesTemp.pDefinitionData)
+				{
+					OOX::Spreadsheet::CPivotCacheDefinition* pDefinition = new OOX::Spreadsheet::CPivotCacheDefinition();
+					std::wstring srIdRecords;
+					if(NULL != oPivotCachesTemp.pRecords)
+					{
+						NSCommon::smart_ptr<OOX::File> pFileRecords(oPivotCachesTemp.pRecords);
+						srIdRecords = pDefinition->Add(pFileRecords).ToString();
+					}
+					pDefinition->setData(oPivotCachesTemp.pDefinitionData, oPivotCachesTemp.nDefinitionLength, srIdRecords);
+					NSCommon::smart_ptr<OOX::File> pFileDefinition(pDefinition);
+					OOX::RId rIdDefinition = m_oWorkbook.Add(pFileDefinition);
+					m_oWorkbook.m_oPivotCachesXml->append(L"<pivotCache cacheId=\"");
+					m_oWorkbook.m_oPivotCachesXml->append(std::to_wstring(oPivotCachesTemp.nId));
+					m_oWorkbook.m_oPivotCachesXml->append(L"\" r:id=\"");
+					m_oWorkbook.m_oPivotCachesXml->append(rIdDefinition.ToString());
+					m_oWorkbook.m_oPivotCachesXml->append(L"\"/>");
+
+					m_mapPivotCacheDefinitions[oPivotCachesTemp.nId] = pFileDefinition;
+				}
+				else
+				{
+					RELEASEOBJECT(oPivotCachesTemp.pRecords);
+				}
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		};
+		int ReadPivotCache(BYTE type, long length, void* poResult)
+		{
+			PivotCachesTemp* pPivotCachesTemp = static_cast<PivotCachesTemp*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_PivotTypes::id == type)
+			{
+				pPivotCachesTemp->nId = m_oBufferedStream.GetLong();
+			}
+			else if(c_oSer_PivotTypes::cache == type)
+			{
+				pPivotCachesTemp->pDefinitionData = m_oBufferedStream.GetPointer(length);
+				pPivotCachesTemp->nDefinitionLength = length;
+			}
+			else if(c_oSer_PivotTypes::record == type)
+			{
+				pPivotCachesTemp->pRecords = new OOX::Spreadsheet::CPivotCacheRecords();
+				pPivotCachesTemp->pRecords->setData(m_oBufferedStream.GetPointer(length), length);
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
 			return res;
 		};
 	};
@@ -1876,14 +1965,15 @@ namespace BinXlsxRW {
 		NSBinPptxRW::CDrawingConverter*		m_pOfficeDrawingConverter;
 
 		std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>&  m_mapWorksheets;
+		std::map<long, NSCommon::smart_ptr<OOX::File>>& m_mapPivotCacheDefinitions;
 		
 	public:
 		BinaryWorksheetsTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook,
 			OOX::Spreadsheet::CSharedStrings* pSharedStrings, std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets,
             std::map<long, ImageObject*>& mapMedia, const std::wstring& sDestinationDir, const std::wstring& sMediaDir, SaveParams& oSaveParams,
-			NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter) 
+			NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, std::map<long, NSCommon::smart_ptr<OOX::File>>& mapPivotCacheDefinitions)
 	: Binary_CommonReader(oBufferedStream), m_oWorkbook(oWorkbook), m_oBcr2(oBufferedStream), m_sMediaDir(sMediaDir), m_oSaveParams(oSaveParams), 
-		m_mapMedia(mapMedia), m_sDestinationDir(sDestinationDir), m_mapWorksheets(mapWorksheets), m_pSharedStrings(pSharedStrings)
+		m_mapMedia(mapMedia), m_sDestinationDir(sDestinationDir), m_mapWorksheets(mapWorksheets), m_pSharedStrings(pSharedStrings),m_mapPivotCacheDefinitions(mapPivotCacheDefinitions)
 		{
 			m_pCurSheet			= NULL;
 			m_pCurWorksheet		= NULL;
@@ -2110,10 +2200,45 @@ namespace BinXlsxRW {
                 m_pCurWorksheet->m_oExtLst.Init();
                 m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
             }
+			else if(c_oSerWorksheetsTypes::PivotTable == type)
+			{
+				PivotCachesTemp oPivotCachesTemp;
+				res = Read1(length, &BinaryWorksheetsTableReader::ReadPivotTable, this, &oPivotCachesTemp);
+				std::map<long, NSCommon::smart_ptr<OOX::File>>::const_iterator pair = m_mapPivotCacheDefinitions.find(oPivotCachesTemp.nCacheId);
+				if(m_mapPivotCacheDefinitions.end() != pair && NULL != oPivotCachesTemp.pTable)
+				{
+					NSCommon::smart_ptr<OOX::File> pFileTable(oPivotCachesTemp.pTable);
+					oPivotCachesTemp.pTable->AddNoWrite(pair->second);
+					m_pCurWorksheet->Add(pFileTable);
+				}
+				else
+				{
+					RELEASEOBJECT(oPivotCachesTemp.pTable);
+				}
+			}
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
         }
+		int ReadPivotTable(BYTE type, long length, void* poResult)
+		{
+			PivotCachesTemp* pPivotCachesTemp = static_cast<PivotCachesTemp*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_PivotTypes::cacheId == type)
+			{
+				pPivotCachesTemp->nCacheId =m_oBufferedStream.GetLong();
+			}
+			else if(c_oSer_PivotTypes::table == type)
+			{
+				OOX::Spreadsheet::CPivotTable* pPivotTable = new OOX::Spreadsheet::CPivotTable();
+				pPivotTable->setData(m_oBufferedStream.GetPointer(length), length);
+				pPivotCachesTemp->pTable = pPivotTable;
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		}
+
 		int ReadWorksheetProp(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
@@ -3841,6 +3966,7 @@ namespace BinXlsxRW {
 			std::vector<long> aOffBits;
 			long nOtherOffBits = -1;
 			long nSharedStringsOffBits = -1;
+			long nWorkbookOffBits = -1;
 			BYTE mtLen = oBufferedStream.GetUChar();
 			
 			for(int i = 0; i < mtLen; ++i)
@@ -3855,6 +3981,8 @@ namespace BinXlsxRW {
 					nOtherOffBits = mtiOffBits;
 				else if(c_oSerTableTypes::SharedStrings == mtiType)
 					nSharedStringsOffBits = mtiOffBits;
+				else if(c_oSerTableTypes::Workbook == mtiType)
+					nWorkbookOffBits = mtiOffBits;
 				else
 				{
 					aTypes.push_back(mtiType);
@@ -3883,8 +4011,16 @@ namespace BinXlsxRW {
 				if(c_oSerConstants::ReadOk != res)
 					return res;
 			}
-
 			OOX::Spreadsheet::CWorkbook* pWorkbook = oXlsx.CreateWorkbook();
+			std::map<long, NSCommon::smart_ptr<OOX::File>> m_mapPivotCacheDefinitions;
+			if(-1 != nWorkbookOffBits)
+			{
+				oBufferedStream.Seek(nWorkbookOffBits);
+				res = BinaryWorkbookTableReader(oBufferedStream, *pWorkbook, m_mapPivotCacheDefinitions).Read();
+				if(c_oSerConstants::ReadOk != res)
+					return res;
+			}
+
 			for(size_t i = 0, length = aTypes.size(); i < length; ++i)
 			{
 				BYTE mtiType = aTypes[i];
@@ -3899,14 +4035,9 @@ namespace BinXlsxRW {
 						res = BinaryStyleTableReader(oBufferedStream, *pStyles).Read();
 					}
 					break;
-				case c_oSerTableTypes::Workbook:
-					{
-						res = BinaryWorkbookTableReader(oBufferedStream, *pWorkbook).Read();
-					}
-					break;
 				case c_oSerTableTypes::Worksheets:
 					{
-						res = BinaryWorksheetsTableReader(oBufferedStream, *pWorkbook, pSharedStrings, oXlsx.GetWorksheets(), mapMedia, sOutDir, sMediaDir, oSaveParams, pOfficeDrawingConverter).Read();
+						res = BinaryWorksheetsTableReader(oBufferedStream, *pWorkbook, pSharedStrings, oXlsx.GetWorksheets(), mapMedia, sOutDir, sMediaDir, oSaveParams, pOfficeDrawingConverter, m_mapPivotCacheDefinitions).Read();
 					}
 					break;
 				}

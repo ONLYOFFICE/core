@@ -246,4 +246,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Worksheets/Sparkline.h \
     ../Source/XlsxFormat/Ole/OleObjects.h \
     ../Source/DocxFormat/Diagram/DiagramData.h \
-    ../Source/DocxFormat/Diagram/DiagramDrawing.h
+    ../Source/DocxFormat/Diagram/DiagramDrawing.h \
+    ../Source/XlsxFormat/Pivot/PivotTable.h \
+    ../Source/XlsxFormat/Pivot/PivotCacheDefinition.h \
+    ../Source/XlsxFormat/Pivot/PivotCacheRecords.h

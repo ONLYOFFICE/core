@@ -147,6 +147,7 @@ namespace Oox2Odf
 		virtual void convertDocument();
 		virtual void write(const std::wstring & path);
 		
+ 		virtual OOX::IFileContainer						*current_document();
 		virtual odf_writer::odf_conversion_context		*odf_context();
 		virtual PPTX::Theme								*oox_theme();
         virtual std::wstring							find_link_by_id (std::wstring sId, int t);

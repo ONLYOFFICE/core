@@ -103,7 +103,16 @@ PPTX::Theme* DocxConverter::oox_theme()
 	else
 		return NULL;
 }
-
+OOX::IFileContainer* DocxConverter::current_document()
+{
+	if (oox_current_child_document)
+		return oox_current_child_document;
+	else
+	{
+		OOX::CDocument  *oox_doc = docx_document->GetDocument();
+		return dynamic_cast<OOX::IFileContainer*>(oox_doc);
+	}
+}
 NSCommon::smart_ptr<OOX::File> DocxConverter::find_file_by_id(std::wstring sId)
 {
 	OOX::CDocument  *oox_doc = docx_document->GetDocument();
@@ -2705,9 +2714,12 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 		int id = oox_anchor->m_oRelativeHeight->GetValue();
 		odf_context()->drawing_context()->set_z_order(id);
 	}
+	
 	OoxConverter::convert(oox_anchor->m_oDocPr.GetPointer());
 	
-	convert(&oox_anchor->m_oGraphic);
+	odf_context()->drawing_context()->start_drawing();
+		OoxConverter::convert(&oox_anchor->m_oGraphic);
+	odf_context()->drawing_context()->end_drawing();
 
 	odf_context()->drawing_context()->check_anchor();
 }
@@ -2737,9 +2749,12 @@ void DocxConverter::convert(OOX::Drawing::CInline *oox_inline)
 
 	odt_context->drawing_context()->set_vertical_rel(2);//line
 	odt_context->drawing_context()->set_vertical_pos(1);//middle
-
+	
 	OoxConverter::convert(oox_inline->m_oDocPr.GetPointer());
-	convert(&oox_inline->m_oGraphic);
+	
+	odf_context()->drawing_context()->start_drawing();
+		OoxConverter::convert(&oox_inline->m_oGraphic);
+	odf_context()->drawing_context()->end_drawing();
 }
 
 void DocxConverter::convert(SimpleTypes::CHexColor<>		*color, 

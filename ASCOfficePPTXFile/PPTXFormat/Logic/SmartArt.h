@@ -115,6 +115,7 @@ namespace PPTX
 
 		public:
 			void LoadDrawing(NSBinPptxRW::CBinaryFileWriter* pWriter = NULL);
+			bool LoadDrawing(OOX::IFileContainer* pRels);
 		};
 
 		class ChartRec : public WrapperWritingElement

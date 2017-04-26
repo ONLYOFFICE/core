@@ -127,7 +127,15 @@ PPTX::Logic::ClrMap* PptxConverter::oox_clrMap()
 {
 	return current_clrMap;
 }
-
+OOX::IFileContainer* PptxConverter::current_document()
+{
+	if (oox_current_child_document)
+		return oox_current_child_document;
+	else if (current_slide)
+		return current_slide;
+	else
+		return pptx_document;
+}
 NSCommon::smart_ptr<OOX::File> PptxConverter::find_file_by_id(std::wstring sId)
 {
 	smart_ptr<OOX::File> oFile;
@@ -966,6 +974,8 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 		smart_ptr<PPTX::WrapperWritingElement>	pElem = oox_slide->spTree.SpTreeElems[i].GetElem();
 		smart_ptr<PPTX::Logic::Shape>			pShape = pElem.smart_dynamic_cast<PPTX::Logic::Shape>();
 		
+		odf_context()->drawing_context()->start_drawing();
+		
 		if (pShape.IsInit())
 		{
 			if (pShape->nvSpPr.nvPr.ph.is_init())
@@ -1039,6 +1049,7 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 		{
 			OoxConverter::convert(pElem.operator->());
 		}
+		odf_context()->drawing_context()->end_drawing();
 	}
 	convert(oox_slide->controls.GetPointer());
 }

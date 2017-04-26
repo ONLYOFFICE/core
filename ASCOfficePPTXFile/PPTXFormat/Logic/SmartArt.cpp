@@ -48,17 +48,15 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		void SmartArt::LoadDrawing(NSBinPptxRW::CBinaryFileWriter* pWriter)
+		bool SmartArt::LoadDrawing(OOX::IFileContainer* pRels)
 		{
 			if (m_diag.IsInit()) 
-				return ;
+				return true;
 
-			OOX::IFileContainer* pRels = NULL;
-			if (pWriter)
-			{
-				if (pWriter->m_pCurrentContainer->is_init())
-					pRels = pWriter->m_pCurrentContainer->operator ->();
-			}
+			if(id_data.IsInit() == false) return false;
+			if (pRels == NULL) return false;
+
+			bool result = false;
 
 			smart_ptr<OOX::File>	oFileData;
 			smart_ptr<OOX::File>	oFileDrawing;
@@ -67,15 +65,12 @@ namespace PPTX
 			OOX::CDiagramData*		pDiagramData	= NULL;
 			OOX::CDiagramDrawing*	pDiagramDrawing	= NULL;
 
-			if(id_data.IsInit())
-			{
-				if		(parentFileIs<OOX::IFileContainer>())	oFileData = parentFileAs<OOX::IFileContainer>().Find(*id_data);
-				else if (pRels != NULL)							oFileData = pRels->Find(*id_data);
-			}
+			oFileData = pRels->Find(*id_data);
 			
 			if (oFileData.IsInit())
 			{
                 pDiagramData = dynamic_cast<OOX::CDiagramData*>(oFileData.operator->());
+				if (pDiagramData) result = true; // это smart art ..есть у него drawing или нет - неважно
 
 				if ((pDiagramData) && (pDiagramData->m_oExtLst.IsInit()))
 				{
@@ -131,6 +126,25 @@ namespace PPTX
 			{
 				//parse pDiagramData !!
 			}
+			return true;
+		}
+		void SmartArt::LoadDrawing(NSBinPptxRW::CBinaryFileWriter* pWriter)
+		{
+			if (m_diag.IsInit()) 
+				return ;
+
+			OOX::IFileContainer	& pRelsPPTX	= parentFileAs<OOX::IFileContainer>();
+			OOX::IFileContainer	* pRels		= NULL;
+			
+			if (pWriter)
+			{
+				if (pWriter->m_pCurrentContainer->is_init())
+					pRels = pWriter->m_pCurrentContainer->operator ->();
+			}
+			
+			bool result = LoadDrawing(&pRelsPPTX);
+			if (!result)
+				result	= LoadDrawing( pRels );
 		}
 		void SmartArt::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{

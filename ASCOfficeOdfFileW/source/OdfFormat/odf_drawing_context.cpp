@@ -1152,7 +1152,6 @@ void odf_drawing_context::set_hidden (bool bVal)
 void odf_drawing_context::set_opacity(double percent_)
 {
 	if (!impl_->current_graphic_properties)return;
-	if (percent_ < 0.01) return;
 
 	switch(impl_->current_drawing_part_)
 	{
@@ -1270,7 +1269,7 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 	{
 		case Area:
 			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_color_				= hexColor;
-			impl_->current_graphic_properties->common_background_color_attlist_.fo_background_color_	= color(hexColor);
+			//impl_->current_graphic_properties->common_background_color_attlist_.fo_background_color_	= color(hexColor); - default transparent
 			//последнее нужно - что если будут вводить текст - под текстом будет цвет фона (или он поменяется в полях текста)
 			
 			if ((impl_->is_footer_ || impl_->is_header_ || impl_->is_background_) && 

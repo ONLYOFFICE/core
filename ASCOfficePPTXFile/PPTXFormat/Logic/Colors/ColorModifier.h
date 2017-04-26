@@ -53,11 +53,13 @@ namespace PPTX
 			{
 				name = oReader.GetName();
 
-				ReadAttributes( oReader );
-
 				if (XmlUtils::GetNameNoNS(name) == _T("alpha"))
 				{
 					ReadAttributes2( oReader );
+				}
+				else
+				{
+					ReadAttributes( oReader );
 				}
 			}
 			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader)
@@ -67,8 +69,14 @@ namespace PPTX
 					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("val"), sTmp)
 				WritingElement_ReadAttributes_End( oReader )
 
-                if (val.is_init() && sTmp.is_init() && sTmp->find(wchar_t('%')) != -1)
-					*val = (*val) * 1000; 
+				if (sTmp.is_init())
+				{
+					val = sTmp.get();
+					if (val.is_init() && std::wstring::npos != sTmp->find(L"%"))
+					{
+						*val = (*val) * 1000; 
+					}
+				}
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -86,7 +94,7 @@ namespace PPTX
 					nullable_string sTmp;
 					node.ReadAttributeBase(L"val", sTmp);
 
-                    if (val.is_init() && sTmp.is_init() && sTmp->find(wchar_t('%')) != -1)
+                    if (val.is_init() && sTmp.is_init() && std::wstring::npos != sTmp->find(L"%"))
 						*val = (*val) * 1000;
 				}
 			}

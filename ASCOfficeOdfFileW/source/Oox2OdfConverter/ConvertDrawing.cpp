@@ -918,7 +918,7 @@ void OoxConverter::convert(PPTX::Logic::UniColor * color, std::wstring & hexStri
 
 		if ((nARGB >> 24) != 0xff)
 		{
-			opacity = ((nARGB >> 24) /255.) * 100.;
+			opacity = 100 - ((nARGB >> 24) /255.) * 100.;
 		}
 	}
 	else 

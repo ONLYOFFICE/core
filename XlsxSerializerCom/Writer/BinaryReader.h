@@ -1233,6 +1233,11 @@ namespace BinXlsxRW {
 				pXfs->m_oQuotePrefix.Init();
 				pXfs->m_oQuotePrefix->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 			}
+			else if(c_oSerXfsTypes::PivotButton == type)
+			{
+				pXfs->m_oPivotButton.Init();
+				pXfs->m_oPivotButton->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+			}
 			else if(c_oSerXfsTypes::Aligment == type)
 			{
 				pXfs->m_oAligment.Init();
@@ -2208,7 +2213,7 @@ namespace BinXlsxRW {
 				if(m_mapPivotCacheDefinitions.end() != pair && NULL != oPivotCachesTemp.pTable)
 				{
 					NSCommon::smart_ptr<OOX::File> pFileTable(oPivotCachesTemp.pTable);
-					oPivotCachesTemp.pTable->AddNoWrite(pair->second);
+					oPivotCachesTemp.pTable->AddNoWrite(pair->second, L"../pivotCache");
 					m_pCurWorksheet->Add(pFileTable);
 				}
 				else

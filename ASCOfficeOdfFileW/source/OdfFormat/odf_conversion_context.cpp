@@ -291,8 +291,9 @@ office_element_ptr odf_conversion_context::start_tabs()
 }
 std::wstring odf_conversion_context::add_image(const std::wstring & image_file_name)
 {
-	std::wstring odf_ref_name ;
+	if (image_file_name.empty()) return L"";
 	
+	std::wstring odf_ref_name ;	
 	mediaitems()->add_or_find(image_file_name,_mediaitems::typeImage, odf_ref_name);
 
 	return odf_ref_name;

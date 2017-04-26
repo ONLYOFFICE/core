@@ -95,6 +95,7 @@ namespace OOX
 		class CTcBorders;
 		class CTblBorders;
 		class CSdt;
+		class CSdtContent;
 		class CBackground;
 		class CLockedCanvas;
 
@@ -151,7 +152,8 @@ namespace Oox2Odf
         virtual std::wstring							find_link_by_id (std::wstring sId, int t);
 		virtual NSCommon::smart_ptr<OOX::File>			find_file_by_id(std::wstring sId);
 
-		void convert(OOX::WritingElement *oox_unknown);
+		void convert(OOX::WritingElement		*oox_unknown);
+		void convert(OOX::Logic::CSdtContent	*oox_sdt);
     private:
 		struct _section
 		{
@@ -220,7 +222,7 @@ namespace Oox2Odf
 		
 		void convert(OOX::Drawing::CAnchor				*oox_anchor);
 		void convert(OOX::Drawing::CInline				*oox_inline);
-		
+	
 		void convert(SimpleTypes::CTheme<>				*oox_font_theme,_CP_OPT(std::wstring)				& odf_font_name);
 		void convert(ComplexTypes::Word::CColor			*color,			_CP_OPT(odf_types::color)			& odf_color);
 		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf_types::length)			& odf_size);

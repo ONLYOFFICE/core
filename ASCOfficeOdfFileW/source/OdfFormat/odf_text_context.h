@@ -67,8 +67,10 @@ public:
 	
     void add_text_content	(const std::wstring & text);
 	void add_text_space		(int count);
-
-    void set_symbol_font	(const std::wstring & font);
+	void add_text_date		(const std::wstring & text);
+	void add_text_page_number(const std::wstring & text);
+    
+	void set_symbol_font	(const std::wstring & font);
  	void set_symbol_text	(int sym);
    
 	void start_paragraph	(bool styled = false);

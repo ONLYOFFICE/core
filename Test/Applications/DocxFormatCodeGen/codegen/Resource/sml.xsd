@@ -568,7 +568,7 @@
     <xsd:attribute name="optimizeMemory" type="xsd:boolean" use="optional" default="false"/>
     <xsd:attribute name="enableRefresh" type="xsd:boolean" use="optional" default="true"/>
     <xsd:attribute name="refreshedBy" type="s:ST_Xstring" use="optional"/>
-    <xsd:attribute name="refreshedDateIso" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="refreshedDate" type="xsd:double" use="optional"/>
     <xsd:attribute name="backgroundQuery" type="xsd:boolean" default="false"/>
     <xsd:attribute name="missingItemsLimit" type="xsd:unsignedInt" use="optional"/>
     <xsd:attribute name="createdVersion" type="xsd:unsignedByte" use="optional" default="0"/>

@@ -64,7 +64,7 @@ public:
     odf_lists_styles_context();
 	void set_odf_context(odf_conversion_context * Context);
 
-	void start_style(int abstract_number = -1);
+	void start_style(bool bMaster, int abstract_number = -1);
 		int start_style_level(int level, int type);
 			style_list_level_properties			* get_list_level_properties();
 			style_list_level_label_alignment	* get_list_level_alignment_properties();

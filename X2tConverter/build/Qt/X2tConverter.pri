@@ -7,11 +7,10 @@
 QT       -= core
 QT       -= gui
 
-VERSION = 2.4.448.000
+VERSION = 2.4.451.0
 DEFINES += INTVER=$$VERSION
 
 TARGET = x2t
-
 CORE_ROOT_DIR = $$PWD/../../..
 PWD_ROOT_DIR = $$PWD
 

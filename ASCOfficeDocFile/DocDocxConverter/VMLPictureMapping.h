@@ -46,7 +46,6 @@ namespace DocFileFormat
 {
 	class OleObject;
 
-	bool ParseEmbeddedEquation( const std::string & xmlString, std::wstring & newXmlString );
 
 	class VMLPictureMapping: public PropertiesMapping, public IMapping
 	{
@@ -58,6 +57,7 @@ namespace DocFileFormat
 		/// Writes a border element
 		void writePictureBorder (const std::wstring & name, const BorderCode* brc);
 		void appendStyleProperty( std::wstring* b, const std::wstring& propName, const std::wstring& propValue ) const;
+		bool ParseEmbeddedEquation( const std::string & xmlString, std::wstring & newXmlString );
 	protected:
 		/// Copies the picture from the binary stream to the zip archive 
 		/// and creates the relationships for the image.

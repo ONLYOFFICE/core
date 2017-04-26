@@ -863,6 +863,13 @@ namespace BinXlsxRW
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 				m_oBcw.m_oStream.WriteBOOL(xfs.m_oQuotePrefix->ToBool());
 			}
+			//PivotButton
+			if(false != xfs.m_oPivotButton.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::PivotButton);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+				m_oBcw.m_oStream.WriteBOOL(xfs.m_oPivotButton->ToBool());
+			}
 			//XfId
 			if (false != xfs.m_oXfId.IsInit())
 			{

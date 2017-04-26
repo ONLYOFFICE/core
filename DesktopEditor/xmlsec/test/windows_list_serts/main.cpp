@@ -7,25 +7,336 @@
 #include <string>
 
 #include "../../../common/File.h"
+#include "../../../common/Directory.h"
 #include "../../../common/BigInteger.h"
+
+#include "../../../xml/include/xmlutils.h"
+#include "../../../xml/libxml2/include/libxml/c14n.h"
+
+#include <vector>
 
 #pragma comment (lib, "crypt32.lib")
 #pragma comment (lib, "cryptui.lib")
 #pragma comment (lib, "Advapi32.lib")
 
-//#define ENUMS_CERTS
+class CXmlCanonicalizator
+{
+private:
+    class CXmlBuffer
+    {
+    public:
+        NSStringUtils::CStringBuilderA builder;
+
+    public:
+        CXmlBuffer()
+        {
+        }
+        ~CXmlBuffer()
+        {
+        }
+    };
+
+    static int buffer_xmlBufferIOWrite(CXmlBuffer* buf, const char* buffer, int len)
+    {
+        buf->builder.WriteString(buffer, (size_t)len);
+        return len;
+    }
+
+    static int buffer_xmlBufferIOClose(CXmlBuffer* buf)
+    {
+        return 0;
+    }
+
+    static int buffer_xmlC14NIsVisibleCallback(void * user_data, xmlNodePtr node, xmlNodePtr parent)
+    {
+        if (node->type == XML_TEXT_NODE)
+        {
+            const char* cur = (char*)node->content;
+            size_t size = strlen(cur);
+            for (size_t i = 0; i < size; ++i, ++cur)
+            {
+                if (*cur != '\n' && *cur != '\r' && *cur != '\t')
+                    return 1;
+            }
+            return 0;
+        }
+        return 1;
+    }
+
+public:
+    static std::string Execute(const std::string& sXml, int mode)
+    {
+        xmlDocPtr xmlDoc = xmlParseMemory((char*)sXml.c_str(), (int)sXml.length());
+
+        CXmlBuffer bufferC14N;
+        xmlOutputBufferPtr _buffer = xmlOutputBufferCreateIO((xmlOutputWriteCallback)buffer_xmlBufferIOWrite,
+                                                             (xmlOutputCloseCallback)buffer_xmlBufferIOClose,
+                                                             &bufferC14N,
+                                                             NULL);
+
+        xmlC14NExecute(xmlDoc, buffer_xmlC14NIsVisibleCallback, NULL, mode, NULL, 0, _buffer);
+
+        xmlOutputBufferClose(_buffer);
+
+        return bufferC14N.builder.GetData();
+    }
+
+    static std::string Execute(const std::wstring& sXmlFile, int mode)
+    {
+        std::string sXml;
+        NSFile::CFileBinary::ReadAllTextUtf8A(sXmlFile, sXml);
+
+        xmlDocPtr xmlDoc = xmlParseMemory((char*)sXml.c_str(), (int)sXml.length());
+
+        return Execute(sXml, mode);
+    }
+};
+
+class CXmlSigner
+{
+private:
+    PCCERT_CONTEXT m_context;
+
+public:
+    CXmlSigner(PCCERT_CONTEXT pCertContext)
+    {
+        m_context = pCertContext;        
+    }
+    ~CXmlSigner()
+    {        
+    }
+
+public:
+
+    std::string Sign(std::string sXml)
+    {
+        BOOL bResult = TRUE;
+        DWORD dwKeySpec = 0;
+        HCRYPTHASH  hHash = NULL;
+
+        HCRYPTPROV hCryptProv = NULL;
+        bResult = CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL);
+
+        if (!bResult)
+            return "";
+
+        bResult = CryptCreateHash(hCryptProv, CALG_SHA1, 0, 0, &hHash);
+        if (!bResult)
+        {
+            CryptReleaseContext(hCryptProv, 0);
+            return "";
+        }
+
+        bResult = CryptHashData(hHash, (BYTE*)sXml.c_str(), (DWORD)sXml.length(), 0);
+        if (!bResult)
+        {
+            CryptDestroyHash(hHash);
+            CryptReleaseContext(hCryptProv, 0);
+            return "";
+        }
+
+        DWORD dwSigLen = 0;
+        BYTE* pbSignature = NULL;
+        bResult = CryptSignHash(hHash, dwKeySpec, NULL, 0, NULL, &dwSigLen);
+
+        if (!bResult)
+        {
+            CryptDestroyHash(hHash);
+            CryptReleaseContext(hCryptProv, 0);
+            return "";
+        }
+
+        pbSignature = new BYTE[dwSigLen];
+        bResult = CryptSignHash(hHash, dwKeySpec, NULL, 0, pbSignature, &dwSigLen);
+
+        if (!bResult)
+        {
+            CryptDestroyHash(hHash);
+            CryptReleaseContext(hCryptProv, 0);
+            return "";
+        }
+
+        BYTE* pbSignatureMem = new BYTE[dwSigLen];
+        ConvertEndian(pbSignature, pbSignatureMem, dwSigLen);
+
+        char* pBase64 = NULL;
+        int nBase64Len = 0;
+        NSFile::CBase64Converter::Encode(pbSignatureMem, (int)dwSigLen, pBase64, nBase64Len, NSBase64::B64_BASE64_FLAG_NONE);
+
+        delete[] pbSignature;
+        delete[] pbSignatureMem;
+
+        bResult = CryptDestroyHash(hHash);
+
+        std::string sReturn(pBase64, nBase64Len);
+
+        delete[] pBase64;
+
+        CryptReleaseContext(hCryptProv, 0);
+
+        return sReturn;
+    }
+
+    std::string GetHash(BYTE* pData, DWORD dwSize)
+    {
+        BOOL bResult = TRUE;
+        DWORD dwKeySpec = 0;
+        HCRYPTHASH  hHash = NULL;
+
+        HCRYPTPROV hCryptProv = NULL;
+
+        bResult = CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL);
+
+        if (!bResult)
+            return "";
+
+        bResult = CryptCreateHash(hCryptProv, CALG_SHA1, 0, 0, &hHash);
+        if (!bResult)
+        {
+            CryptReleaseContext(hCryptProv, 0);
+            return "";
+        }
+
+        bResult = CryptHashData(hHash, pData, dwSize, 0);
+        if (!bResult)
+        {
+            CryptDestroyHash(hHash);
+            CryptReleaseContext(hCryptProv, 0);
+            return "";
+        }
+
+        DWORD cbHashSize = 0, dwCount = sizeof(DWORD);
+        bResult = CryptGetHashParam(hHash, HP_HASHSIZE, (BYTE*)&cbHashSize, &dwCount, 0);
+
+        if (!bResult)
+        {
+            CryptDestroyHash(hHash);
+            CryptReleaseContext(hCryptProv, 0);
+            return "";
+        }
+
+        BYTE* pDataHashRaw = new BYTE[dwCount];
+
+        bResult = CryptGetHashParam(hHash, HP_HASHVAL, pDataHashRaw, &cbHashSize, 0);
+
+        if (!bResult)
+        {
+            CryptDestroyHash(hHash);
+            CryptReleaseContext(hCryptProv, 0);
+            return "";
+        }
+
+        char* pBase64_hash = NULL;
+        int nBase64Len_hash = 0;
+        NSFile::CBase64Converter::Encode(pDataHashRaw, (int)cbHashSize, pBase64_hash, nBase64Len_hash, NSBase64::B64_BASE64_FLAG_NOCRLF);
+
+        std::string sReturn(pBase64_hash, nBase64Len_hash);
+        delete [] pBase64_hash;
+
+        //delete [] pDataHashRaw;
+        CryptDestroyHash(hHash);
+        CryptReleaseContext(hCryptProv, 0);
+
+        return sReturn;
+    }
+
+    std::string GetHash(std::string& sXml)
+    {
+        return GetHash((BYTE*)sXml.c_str(), (DWORD)sXml.length());
+    }
+
+    std::string GetHash(std::wstring& sXmlFile)
+    {
+        BYTE* pFileData = NULL;
+        DWORD dwFileDataLen = 0;
+        NSFile::CFileBinary::ReadAllBytes(sXmlFile, &pFileData, dwFileDataLen);
+
+        if (0 == dwFileDataLen)
+            return "";
+
+        std::string sReturn = GetHash(pFileData, dwFileDataLen);
+
+        RELEASEARRAYOBJECTS(pFileData);
+        return sReturn;
+    }
+
+    BOOL Verify(std::string& sXml, std::string& sXmlSignature)
+    {
+        DWORD dwKeySpec = 0;
+        HCRYPTHASH hHash = NULL;
+        HCRYPTKEY hPubKey = NULL;
+
+        HCRYPTPROV hCryptProv = NULL;
+        BOOL bResult = CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL);
+
+        if (!bResult)
+            return FALSE;
+
+        bResult = CryptCreateHash(hCryptProv, CALG_SHA1, 0, 0, &hHash);
+
+        if (!bResult)
+        {
+            CryptReleaseContext(hCryptProv, 0);
+            return FALSE;
+        }
+
+        BYTE* pDataHash = NULL;
+        DWORD dwHashLen = 0;
+        int nTmp = 0;
+        NSFile::CBase64Converter::Decode((char*)sXmlSignature.c_str(), (int)sXmlSignature.length(), pDataHash, nTmp);
+        dwHashLen = (DWORD)nTmp;
+
+        BYTE* pDataHashMem = new BYTE[dwHashLen];
+        ConvertEndian(pDataHash, pDataHashMem, dwHashLen);
+
+        RELEASEARRAYOBJECTS(pDataHash);
+
+        bResult = CryptHashData(hHash, (BYTE*)sXml.c_str(), (DWORD)sXml.length(), 0);
+
+        // Get the public key from the certificate
+        CryptImportPublicKeyInfo(hCryptProv, m_context->dwCertEncodingType, &m_context->pCertInfo->SubjectPublicKeyInfo, &hPubKey);
+
+        BOOL bResultRet = CryptVerifySignature(hHash, pDataHashMem, dwHashLen, hPubKey, NULL, 0);
+
+        delete[] pDataHashMem;
+
+        bResult = CryptDestroyHash(hHash);
+
+        CryptDestroyKey(hPubKey);
+        CryptReleaseContext(hCryptProv, 0);
+
+        return bResultRet && bResult;
+    }
+
+    std::string GetCertificateBase64()
+    {
+        char* pData = NULL;
+        int nDataLen = 0;
+        NSFile::CBase64Converter::Encode(m_context->pbCertEncoded, (int)m_context->cbCertEncoded, pData, nDataLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
+        std::string sReturn(pData, nDataLen);
+        RELEASEARRAYOBJECTS(pData);
+        return sReturn;
+    }
+
+    std::string GetCertificateHash()
+    {
+        return GetHash(m_context->pbCertEncoded, (int)m_context->cbCertEncoded);
+    }
+
+public:
+    static void ConvertEndian(const BYTE* src, BYTE* dst, DWORD size)
+    {
+        for(BYTE* p = dst + size - 1; p >= dst; ++src, --p)
+            (*p) = (*src);
+    }
+};
 
 #define MY_ENCODING_TYPE  (PKCS_7_ASN_ENCODING | X509_ASN_ENCODING)
 void MyHandleError(char *s);
 
-bool Sign(HCERTSTORE hStoreHandle, PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile);
-bool Verify(HCERTSTORE hStoreHandle, PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile);
-
-void ConvertEndian(const BYTE* src, BYTE* dst, DWORD size)
-{
-    for(BYTE* p = dst + size - 1; p >= dst; ++src, --p)
-        (*p) = (*src);
-}
+bool Sign(PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile);
+bool Verify(PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile);
+bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext);
 
 void main(void)
 {
@@ -333,10 +644,19 @@ void main(void)
         MyHandleError("Select UI failed." );
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    bool bRes = true;
-    bRes = Sign(hCertStore, pCertContext, NSFile::GetProcessDirectory() + L"/document2.xml", NSFile::GetProcessDirectory() + L"/result.txt");
-    bRes = Verify(hCertStore, pCertContext, NSFile::GetProcessDirectory() + L"/document2.xml", NSFile::GetProcessDirectory() + L"/result.txt");
+    if (false)
+    {
+        bool bRes = true;
+        bRes = Sign(pCertContext, NSFile::GetProcessDirectory() + L"/test.xml", NSFile::GetProcessDirectory() + L"/result.txt");
+        bRes = Verify(pCertContext, NSFile::GetProcessDirectory() + L"/test.xml", NSFile::GetProcessDirectory() + L"/result.txt");
+
+        CXmlSigner oSigner(pCertContext);
+        std::string sCertBase64 = oSigner.GetCertificateBase64();
+        std::string sCertHash = oSigner.GetCertificateHash();
+    }
+
+    SignDocument(NSFile::GetProcessDirectory() + L"/ImageStamp", pCertContext);
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     CertFreeCertificateContext(pCertContext);
@@ -353,125 +673,325 @@ void MyHandleError(LPTSTR psz)
     exit(1);
 } // End of MyHandleError.
 
-bool Sign(HCERTSTORE hStoreHandle, PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile)
+bool Sign(PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile)
 {
-    // Variables
-    HCRYPTPROV  hCryptProv = NULL;
-    DWORD       dwKeySpec = 0;
-    HCRYPTHASH  hHash = NULL;
+    std::string sXmlPrepare = CXmlCanonicalizator::Execute(sFileXml, XML_C14N_1_0);
 
-    BOOL        bResult = FALSE;
-
-    DWORD       dwSigLen = 0;
-    BYTE*       pbSignature = NULL;
-
-    bResult = CryptAcquireCertificatePrivateKey(pCertContext, 0, NULL, &hCryptProv, &dwKeySpec, NULL);
-
-    bool bIsResult = ((dwKeySpec & AT_SIGNATURE) == AT_SIGNATURE);
-
-    // Create the hash object.
-    bResult = CryptCreateHash(hCryptProv, CALG_SHA1, 0, 0, &hHash);
-
-    BYTE* pDataSrc = NULL;
-    DWORD dwFileSrcLen = 0;
-    NSFile::CFileBinary::ReadAllBytes(sFileXml, &pDataSrc, dwFileSrcLen);
-
-    bResult = CryptHashData(hHash, pDataSrc, dwFileSrcLen, 0);
-
-    if (true)
-    {
-        DWORD cbHashSize = 0, dwCount = sizeof(DWORD);
-
-        BOOL b1 = CryptGetHashParam(hHash, HP_HASHSIZE, (BYTE*)&cbHashSize, &dwCount, 0);
-
-        BYTE* pDataHashRaw = new BYTE[dwCount];
-
-        BOOL b2 = CryptGetHashParam(hHash, HP_HASHVAL, pDataHashRaw, &cbHashSize, 0);
-
-        char* pBase64_hash = NULL;
-        int nBase64Len_hash = 0;
-        NSFile::CBase64Converter::Encode(pDataHashRaw, (int)cbHashSize, pBase64_hash, nBase64Len_hash, NSBase64::B64_BASE64_FLAG_NONE);
-
-        delete [] pBase64_hash;
-    }
-
-    // Sign the hash object
-    dwSigLen = 0;
-    bResult = CryptSignHash(hHash, dwKeySpec, NULL, 0, NULL, &dwSigLen);
-
-    pbSignature = new BYTE[dwSigLen];
-    bResult = CryptSignHash(hHash, dwKeySpec, NULL, 0, pbSignature, &dwSigLen);
-
-    NSFile::CFileBinary oFileTmp;
-    oFileTmp.CreateFileW(NSFile::GetProcessDirectory() + L"/HASH.bin");
-    oFileTmp.WriteFile(pbSignature, dwSigLen);
-    oFileTmp.CloseFile();
-
-    BYTE* pbSignatureMem = new BYTE[dwSigLen];
-    ConvertEndian(pbSignature, pbSignatureMem, dwSigLen);
+    CXmlSigner oSigner(pCertContext);
+    std::string sXmlSigned = oSigner.Sign(sXmlPrepare);
 
     NSFile::CFileBinary oFile;
     oFile.CreateFileW(sSignatureFile);
-
-    //oFile.WriteFile(pbSignature, dwSigLen);
-    char* pBase64 = NULL;
-    int nBase64Len = 0;
-    NSFile::CBase64Converter::Encode(pbSignatureMem, (int)dwSigLen, pBase64, nBase64Len, NSBase64::B64_BASE64_FLAG_NONE);
-    oFile.WriteFile((BYTE*)pBase64, (DWORD)nBase64Len);
-
+    oFile.WriteFile((BYTE*)sXmlSigned.c_str(), (DWORD)sXmlSigned.length());
     oFile.CloseFile();
 
-    delete[] pbSignature;
-    delete[] pbSignatureMem;
-    delete[] pDataSrc;
-
-    bResult = CryptDestroyHash(hHash);
-
-    return (bResult == TRUE);
+    return (!sXmlSigned.empty());
 }
 
-bool Verify(HCERTSTORE hStoreHandle, PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile)
+bool Verify(PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile)
 {
-    DWORD dwKeySpec = 0;
-    HCRYPTPROV hCryptProv = NULL;
-    HCRYPTHASH hHash = NULL;
-    HCRYPTKEY hPubKey = NULL;
+    std::string sXmlUtf8;
+    NSFile::CFileBinary::ReadAllTextUtf8A(sFileXml, sXmlUtf8);
 
-    BOOL bResult = CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
+    std::string sXmlUtf8Prepare = CXmlCanonicalizator::Execute(sXmlUtf8, XML_C14N_1_0);
 
-    // Create the hash object.
-    bResult = CryptCreateHash(hCryptProv, CALG_SHA1, 0, 0, &hHash);
+    std::string sXmlUtf8Signature;
+    NSFile::CFileBinary::ReadAllTextUtf8A(sSignatureFile, sXmlUtf8Signature);
 
-    BYTE* pDataSrc = NULL;
-    DWORD dwFileSrcLen = 0;
-    NSFile::CFileBinary::ReadAllBytes(sFileXml, &pDataSrc, dwFileSrcLen);
+    if (sXmlUtf8Prepare.empty() || sXmlUtf8Signature.empty())
+        return false;
 
-    BYTE* pDataHashBase64 = NULL;
-    DWORD dwFileHashSrcLenBase64 = 0;
-    NSFile::CFileBinary::ReadAllBytes(sSignatureFile, &pDataHashBase64, dwFileHashSrcLenBase64);
+    CXmlSigner oSigner(pCertContext);
+    return (TRUE == oSigner.Verify(sXmlUtf8Prepare, sXmlUtf8Signature));
+}
 
-    BYTE* pDataHash = NULL;
-    DWORD dwHashLen = 0;
-    int nTmp = 0;
-    NSFile::CBase64Converter::Decode((char*)pDataHashBase64, (int)dwFileHashSrcLenBase64, pDataHash, nTmp);
-    dwHashLen = (DWORD)nTmp;
+class COOXMLSigner
+{
+public:
+    PCCERT_CONTEXT m_context;
+    std::wstring m_sFolder;
 
-    BYTE* pDataHashMem = new BYTE[dwHashLen];
-    ConvertEndian(pDataHash, pDataHashMem, dwHashLen);
+    CXmlSigner* m_signer;
 
-    bResult = CryptHashData(hHash, pDataSrc, dwFileSrcLen, 0);
+public:
+    COOXMLSigner(const std::wstring& sFolder, PCCERT_CONTEXT pContext)
+    {
+        m_sFolder = sFolder;
+        m_context = pContext;
+        m_signer = new CXmlSigner(pContext);
+    }
+    ~COOXMLSigner()
+    {
+        RELEASEOBJECT(m_signer);
+    }
 
-    // Get the public key from the certificate
-    CryptImportPublicKeyInfo(hCryptProv, PKCS_7_ASN_ENCODING | X509_ASN_ENCODING, &pCertContext->pCertInfo->SubjectPublicKeyInfo, &hPubKey);
+    std::wstring GetReference(const std::wstring& file, const std::wstring& content_type)
+    {
+        std::wstring sXml = L"<Reference URI=\"" + file + L"?ContentType=" + content_type + L"\">";
+        sXml += L"<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/>";
+        sXml += L"<DigestValue>";
+        sXml += UTF8_TO_U(m_signer->GetHash(m_sFolder + file));
+        sXml += L"</DigestValue>";
+        sXml += L"</Reference>";
+        return sXml;
+    }
 
-    BOOL bResultRet = CryptVerifySignature(hHash, pDataHashMem, dwHashLen, hPubKey, NULL, 0);
+    std::string GetHashXml(const std::wstring& xml)
+    {
+        std::string sXmlSigned = U_TO_UTF8(xml);
+        sXmlSigned = CXmlCanonicalizator::Execute(sXmlSigned, XML_C14N_1_0);
+        return m_signer->GetHash(sXmlSigned);
+    }
 
-    delete[] pDataSrc;
-    delete[] pDataHash;
-    delete[] pDataHashMem;
-    delete[] pDataHashBase64;
+    std::string GetReferenceMain(const std::wstring& xml, const std::wstring& id, const bool& isCannon = true)
+    {
+        std::wstring sXml1 = L"<Object xmlns=\"http://www.w3.org/2000/09/xmldsig#\"";
+        if (id.empty())
+            sXml1 += L">";
+        else
+            sXml1 += (L" Id=\"" + id + L"\">");
+        sXml1 += xml;
+        sXml1 += L"</Object>";
 
-    bResult = CryptDestroyHash(hHash);
+        std::string sHash = GetHashXml(sXml1);
 
-    return bResultRet && bResult;
+        std::string sRet;
+        if (isCannon)
+            sRet = "<Transforms><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>";
+
+        sRet += ("<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/><DigestValue>" + sHash + "</DigestValue>");
+
+        return sRet;
+    }
+
+    std::wstring GetImageBase64(const std::wstring& file)
+    {
+        BYTE* pData = NULL;
+        DWORD dwLen = 0;
+        if (!NSFile::CFileBinary::ReadAllBytes(file, &pData, dwLen))
+            return L"";
+
+        char* pDataC = NULL;
+        int nLen = 0;
+        NSFile::CBase64Converter::Encode(pData, (int)dwLen, pDataC, nLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
+
+        std::wstring sReturn = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pDataC, (LONG)nLen, FALSE);
+
+        RELEASEARRAYOBJECTS(pData);
+        RELEASEARRAYOBJECTS(pDataC);
+
+        return sReturn;
+    }
+};
+
+bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext)
+{
+    std::wstring sFolder = NSFile::GetProcessDirectory();
+
+    COOXMLSigner oOOXMLSigner(sFolderOOXML, pCertContext);
+
+    std::string sSignedData;
+    std::wstring sXmlData;
+
+    std::wstring sDataSign = L"2017-04-21T08:30:21Z";
+
+    sSignedData += "<CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/>\
+<SignatureMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#rsa-sha1\"/>";
+
+    if (true)
+    {
+        // idPackageObject
+        std::wstring sXml = L"<Manifest>";
+
+        // TODO: rels
+        if (true)
+        {
+            sXml += L"<Reference URI=\"/_rels/.rels?ContentType=application/vnd.openxmlformats-package.relationships+xml\">\
+<Transforms><Transform Algorithm=\"http://schemas.openxmlformats.org/package/2006/RelationshipTransform\">\
+<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId1\"/>\
+</Transform><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>\
+<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/>\
+<DigestValue>1vWU/YTF/7t6ZjnE44gAFTbZvvA=</DigestValue>\
+</Reference>";
+
+            sXml += L"<Reference URI=\"/word/_rels/document.xml.rels?ContentType=application/vnd.openxmlformats-package.relationships+xml\">\
+<Transforms><Transform Algorithm=\"http://schemas.openxmlformats.org/package/2006/RelationshipTransform\">\
+<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId3\"/>\
+<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId2\"/>\
+<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId1\"/>\
+<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId6\"/>\
+<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId5\"/>\
+<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId4\"/>\
+</Transform><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>\
+<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/>\
+<DigestValue>kVYCpjZZG3SU5+sOsB1PRnQSCzk=</DigestValue>\
+</Reference>";
+        }
+
+
+        sXml += oOOXMLSigner.GetReference(L"/word/document.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
+        sXml += oOOXMLSigner.GetReference(L"/word/fontTable.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml");
+        sXml += oOOXMLSigner.GetReference(L"/word/media/image1.emf", L"image/x-emf");
+        sXml += oOOXMLSigner.GetReference(L"/word/settings.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml");
+        sXml += oOOXMLSigner.GetReference(L"/word/styles.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml");
+        sXml += oOOXMLSigner.GetReference(L"/word/theme/theme1.xml", L"application/vnd.openxmlformats-officedocument.theme+xml");
+        sXml += oOOXMLSigner.GetReference(L"/word/webSettings.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml");        
+
+        sXml += L"</Manifest>";
+
+        sXml += L"<SignatureProperties><SignatureProperty Id=\"idSignatureTime\" Target=\"#idPackageSignature\">";
+        sXml += (L"<mdssi:SignatureTime xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\">\
+<mdssi:Format>YYYY-MM-DDThh:mm:ssTZD</mdssi:Format>\
+<mdssi:Value>" + sDataSign + L"</mdssi:Value>\
+</mdssi:SignatureTime></SignatureProperty></SignatureProperties>");
+
+        sXmlData += (L"<Object Id=\"idPackageObject\">" + sXml + L"</Object>");
+
+        sSignedData += ("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idPackageObject\">" +
+                        oOOXMLSigner.GetReferenceMain(sXml, L"idPackageObject", false) + "</Reference>");
+    }
+
+
+    std::wstring sImageValid = oOOXMLSigner.GetImageBase64(sFolder + L"/../../../resources/valid.png");
+    std::wstring sImageInValid = oOOXMLSigner.GetImageBase64(sFolder + L"/../../../resources/invalid.png");
+
+    if (true)
+    {
+        // idOfficeObject
+        std::wstring sXml = L"<SignatureProperties>\
+<SignatureProperty Id=\"idOfficeV1Details\" Target=\"#idPackageSignature\">\
+<SignatureInfoV1 xmlns=\"http://schemas.microsoft.com/office/2006/digsig\">\
+<SetupID>{39B6B9C7-60AD-45A2-9F61-40C74A24042E}</SetupID>\
+<SignatureText></SignatureText>\
+<SignatureImage>" + sImageValid + L"</SignatureImage>\
+<SignatureComments/>\
+<WindowsVersion>10.0</WindowsVersion>\
+<OfficeVersion>16.0</OfficeVersion>\
+<ApplicationVersion>16.0</ApplicationVersion>\
+<Monitors>2</Monitors>\
+<HorizontalResolution>1680</HorizontalResolution>\
+<VerticalResolution>1050</VerticalResolution>\
+<ColorDepth>32</ColorDepth>\
+<SignatureProviderId>{00000000-0000-0000-0000-000000000000}</SignatureProviderId>\
+<SignatureProviderUrl/>\
+<SignatureProviderDetails>9</SignatureProviderDetails>\
+<SignatureType>2</SignatureType>\
+</SignatureInfoV1>\
+</SignatureProperty>\
+</SignatureProperties>";
+
+        sXmlData += (L"<Object Id=\"idOfficeObject\">" + sXml + L"</Object>");
+
+        sSignedData += ("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idOfficeObject\">" +
+                        oOOXMLSigner.GetReferenceMain(sXml, L"idOfficeObject", false) + "</Reference>");
+    }
+
+    if (true)
+    {
+        DWORD dwNameLen = CertGetNameStringW(pCertContext, CERT_NAME_SIMPLE_DISPLAY_TYPE, CERT_NAME_ISSUER_FLAG, NULL, NULL, 0);
+        wchar_t* pNameData = new wchar_t[dwNameLen];
+        CertGetNameStringW(pCertContext, CERT_NAME_SIMPLE_DISPLAY_TYPE, CERT_NAME_ISSUER_FLAG, NULL, pNameData, dwNameLen);
+        std::wstring sName(pNameData);
+        RELEASEARRAYOBJECTS(pNameData);
+
+        int nNumberLen = (int)pCertContext->pCertInfo->SerialNumber.cbData;
+        BYTE* pNumberData = new BYTE[nNumberLen];
+        CXmlSigner::ConvertEndian(pCertContext->pCertInfo->SerialNumber.pbData, pNumberData, (DWORD)nNumberLen);
+        CBigInteger oInteger(pNumberData, nNumberLen);
+        delete[] pNumberData;
+
+        std::string sKeyA = oInteger.ToString();
+        std::wstring sKey = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sKeyA.c_str(), (LONG)sKeyA.length());
+
+        std::wstring sXml = (L"<xd:SignedSignatureProperties>\
+<xd:SigningTime>" + sDataSign + L"</xd:SigningTime>\
+<xd:SigningCertificate>\
+<xd:Cert>\
+<xd:CertDigest>\
+<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/>\
+<DigestValue>MJJT2Y0iMxaPGVXBmOLb9bY60pA=</DigestValue>\
+</xd:CertDigest>\
+<xd:IssuerSerial>\
+<X509IssuerName>CN=" + sName + L"</X509IssuerName>\
+<X509SerialNumber>" + sKey + L"</X509SerialNumber>\
+</xd:IssuerSerial>\
+</xd:Cert>\
+</xd:SigningCertificate>\
+<xd:SignaturePolicyIdentifier>\
+<xd:SignaturePolicyImplied/>\
+</xd:SignaturePolicyIdentifier>\
+</xd:SignedSignatureProperties>");
+
+        std::wstring sSignedXml = L"<xd:SignedProperties xmlns=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:xd=\"http://uri.etsi.org/01903/v1.3.2#\" Id=\"idSignedProperties\">";
+        sSignedXml += sXml;
+        sSignedXml += L"</xd:SignedProperties>";
+
+        sXmlData += L"<Object><xd:QualifyingProperties xmlns:xd=\"http://uri.etsi.org/01903/v1.3.2#\" Target=\"#idPackageSignature\">\
+<xd:SignedProperties Id=\"idSignedProperties\">";
+        sXmlData += sXml;
+        sXmlData += L"</xd:SignedProperties></xd:QualifyingProperties></Object>";
+
+        sSignedData += "<Reference Type=\"http://uri.etsi.org/01903#SignedProperties\" URI=\"#idSignedProperties\">\
+<Transforms><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>\
+<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/><DigestValue>";
+
+        std::string sXmlTmp = CXmlCanonicalizator::Execute(U_TO_UTF8(sSignedXml), XML_C14N_1_0);
+        sSignedData += oOOXMLSigner.m_signer->GetHash(sXmlTmp);
+
+        sSignedData += "</DigestValue></Reference>";
+    }
+
+    if (true)
+    {
+        std::wstring sXml = sImageValid;
+
+        sXmlData += (L"<Object Id=\"idValidSigLnImg\">" + sXml + L"</Object>");
+
+        sSignedData += ("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idValidSigLnImg\">" +
+                        oOOXMLSigner.GetReferenceMain(sXml, L"idValidSigLnImg", false) + "</Reference>");
+    }
+
+    if (true)
+    {
+        std::wstring sXml = sImageInValid;
+
+        sXmlData += (L"<Object Id=\"idInvalidSigLnImg\">" + sXml + L"</Object>");
+
+        sSignedData += ("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idInvalidSigLnImg\">" +
+                        oOOXMLSigner.GetReferenceMain(sXml, L"idInvalidSigLnImg", false) + "</Reference>");
+    }
+
+    std::string sXmlPrepend = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Signature xmlns=\"http://www.w3.org/2000/09/xmldsig#\" Id=\"idPackageSignature\"><SignedInfo>");
+    sXmlPrepend += sSignedData;
+    sXmlPrepend += "</SignedInfo>";
+
+    sXmlPrepend += "<SignatureValue>";
+    std::string sSignedInfo = "<SignedInfo xmlns=\"http://www.w3.org/2000/09/xmldsig#\">" + sSignedData + "</SignedInfo>";
+    sSignedInfo = CXmlCanonicalizator::Execute(sSignedInfo, XML_C14N_1_0);
+    sXmlPrepend += oOOXMLSigner.m_signer->Sign(sSignedInfo);
+    sXmlPrepend += "</SignatureValue>";
+    sXmlPrepend += ("<KeyInfo><X509Data><X509Certificate>" + oOOXMLSigner.m_signer->GetCertificateBase64() + "</X509Certificate></X509Data></KeyInfo>");
+
+    sXmlData = (UTF8_TO_U(sXmlPrepend) + sXmlData);
+    sXmlData += L"</Signature>";
+
+    std::wstring sDirectory = sFolderOOXML + L"/_xmlsignatures";
+    NSDirectory::CreateDirectory(sDirectory);
+
+    NSFile::CFileBinary oFile;
+    oFile.CreateFileW(sDirectory + L"/origin.sigs");
+    oFile.CloseFile();
+
+    NSFile::CFileBinary::SaveToFile(sDirectory + L"/sig1.xml", sXmlData, false);
+
+    NSDirectory::CreateDirectory(sDirectory + L"/_rels");
+
+    std::wstring sRels = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
+<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/signature\" Target=\"sig1.xml\"/>\
+</Relationships>";
+
+    NSFile::CFileBinary::SaveToFile(sDirectory + L"/_rels/origin.sigs.rels", sRels, false);
+
+    return true;
 }

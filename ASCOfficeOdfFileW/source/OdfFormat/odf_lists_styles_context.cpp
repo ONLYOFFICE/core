@@ -108,7 +108,7 @@ std::wstring odf_lists_styles_context::get_style_name(int oox_style_num)
 		return L"";
 	}
 }
-void odf_lists_styles_context::start_style(int based_number)
+void odf_lists_styles_context::start_style(bool bMaster, int based_number)
 {
 	list_format_state state;
 
@@ -120,14 +120,13 @@ void odf_lists_styles_context::start_style(int based_number)
 	{
 		state.oox_based_number		= lists_format_array_.size();
 		state.odf_list_style_name	= std::wstring(L"L") + boost::lexical_cast<std::wstring>(state.oox_based_number + 1);
-		state.automatic				= true; //document automatic style
 	}
 	else
 	{
 		state.oox_based_number		= based_number;
 		state.odf_list_style_name	= std::wstring(L"WWNum") + boost::lexical_cast<std::wstring>(state.oox_based_number + 1);
-		state.automatic				= false; //office style
 	}
+	state.automatic	= !bMaster; 
 
 	text_list_style *style = dynamic_cast<text_list_style *>(elm.get());
 	if (style == NULL)return;

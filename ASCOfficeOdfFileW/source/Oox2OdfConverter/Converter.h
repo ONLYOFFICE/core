@@ -245,6 +245,7 @@ namespace OOX
 		class CTextPath;
 		class CGroup;
 		class CVmlCommonElements;
+		class CFormulas;
 	}
 	namespace VmlWord
 	{	
@@ -405,9 +406,9 @@ public:
 		void convert(PPTX::Logic::NvGrpSpPr						*oox_nvSpPr);
 		void convert(PPTX::Logic::NvPr							*oox_nvPr);
 		void convert(PPTX::Logic::Paragraph						*oox_para, PPTX::Logic::TextListStyle *oox_list_style = NULL);		
+		void convert(PPTX::Logic::TextListStyle					*oox_list_style);
 		
 		void convert_list_level	(PPTX::Logic::TextParagraphPr	*oox_para_props, int level);
-		void convert_list		(PPTX::Logic::TextListStyle		*oox_list_style);
 
 		void convert(PPTX::Logic::TextListStyle					*oox_list_style, int level, cpdoccore::odf_writer::style_paragraph_properties	*paragraph_properties,
 																							cpdoccore::odf_writer::style_text_properties		*text_properties);
@@ -510,6 +511,7 @@ public:
 		void convert(OOX::VmlWord::CWrap				*vml_wrap);
 		void convert(OOX::Vml::CGroup					*vml_group);
 		void convert(OOX::Vml::CVmlCommonElements		*vml_attr);
+		void convert(OOX::Vml::CFormulas				*vml_formulas);
 	};
 
 } // namespace Oox2Odf

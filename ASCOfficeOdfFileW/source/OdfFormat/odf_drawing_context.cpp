@@ -317,6 +317,11 @@ void odf_drawing_context::set_presentation (bool bMaster)
 	impl_->is_presentation_ = bMaster;
 }
 
+_CP_OPT(bool) odf_drawing_context::get_presentation ()
+{
+	return impl_->is_presentation_;
+}
+
 void odf_drawing_context::set_footer_state(bool Val)
 {
 	impl_->is_footer_ = Val;
@@ -331,6 +336,7 @@ void odf_drawing_context::set_background_state(bool Val)
 	impl_->is_background_ = Val;
 
 	impl_->current_graphic_properties = new graphic_format_properties();
+	start_area_properties();
 }
 
 void odf_drawing_context::check_anchor()
@@ -468,6 +474,7 @@ void odf_drawing_context::start_drawing()
 }
 void odf_drawing_context::end_drawing_background(odf_types::common_draw_fill_attlist & common_draw_attlist)
 {
+	end_area_properties();
 	if (impl_->current_drawing_state_.elements_.empty() == false) return;
 
 	if (!impl_->is_background_ || !impl_->current_graphic_properties) return;
@@ -486,19 +493,23 @@ void odf_drawing_context::end_drawing()
 	draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
 	if (draw)
 	{
-		if (impl_->is_presentation_)
+		if (impl_->current_drawing_state_.presentation_class_ || impl_->current_drawing_state_.presentation_placeholder_)
 		{
 			_CP_OPT(std::wstring) draw_layer;
 			if (impl_->is_presentation_.get() == true)
 			{//master				
-				if (impl_->current_drawing_state_.presentation_class_)	
-						draw_layer = L"backgroundobjects";
-				else	draw_layer = L"layout";
+				draw_layer = L"backgroundobjects";
+
+				if (!impl_->current_drawing_state_.presentation_class_)	
+					impl_->current_drawing_state_.presentation_class_ = presentation_class::outline;
+
+				draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_user_transformed_ = true;
+				draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_placeholder_ = false;
 			}
 			else
 			{//slide
 				if (impl_->current_drawing_state_.presentation_class_)	
-						draw_layer = L"layout";
+					draw_layer = L"layout";
 			}
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_class_ = impl_->current_drawing_state_.presentation_class_;
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_layer_ = draw_layer;
@@ -696,7 +707,10 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 	draw_base* draw = dynamic_cast<draw_base*>(draw_elm.get());
 	if (draw == NULL)return;
 //////////	
-	styles_context_->create_style(L"", style_family::Graphic, true, false, -1);		
+	if (is_presentation_ && current_drawing_state_.presentation_class_)
+		styles_context_->create_style(L"", style_family::Presentation, true, false, -1);		
+	else
+		styles_context_->create_style(L"", style_family::Graphic, true, false, -1);		
 	
 	office_element_ptr & style_shape_elm = styles_context_->last_state()->get_office_element();
 	std::wstring style_name;
@@ -708,7 +722,10 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 		current_graphic_properties = style_->content_.get_graphic_properties();
 	}
 
-	draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_style_name_ = style_name;
+	if (is_presentation_ && current_drawing_state_.presentation_class_)
+		draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_style_name_ = style_name;
+	else
+		draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_style_name_ = style_name;
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	int level = current_level_.size();
@@ -1169,22 +1186,26 @@ void odf_drawing_context::set_shadow(int type, std::wstring hexColor, _CP_OPT(do
 
 void odf_drawing_context::set_placeholder_id (std::wstring val)
 {
+	if (!impl_->is_presentation_) return;
+
 	impl_->current_drawing_state_.presentation_placeholder_ = val;
 }
 void odf_drawing_context::set_placeholder_type (int val)
 {
+	if (!impl_->is_presentation_) return;
+	
 	switch(val)
 	{
-		case 0:		impl_->current_drawing_state_.presentation_class_ = presentation_class::text; 		break;
-		case 1:		impl_->current_drawing_state_.presentation_class_ = presentation_class::chart; 	break;
+		case 0:		impl_->current_drawing_state_.presentation_class_ = presentation_class::outline; 	break;
+		case 1:		impl_->current_drawing_state_.presentation_class_ = presentation_class::chart; 		break;
 		case 2:		impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic; 	break;
 		case 3:		impl_->current_drawing_state_.presentation_class_ = presentation_class::title;		break;
 		case 4:		impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic;	break;
 		case 5:		impl_->current_drawing_state_.presentation_class_ = presentation_class::date_time;	break;
-		case 6:		impl_->current_drawing_state_.presentation_class_ = presentation_class::footer;	break;
-		case 7:		impl_->current_drawing_state_.presentation_class_ = presentation_class::header;	break;
-		case 8:		impl_->current_drawing_state_.presentation_class_ = presentation_class::object;	break;
-		case 9:		impl_->current_drawing_state_.presentation_class_ = presentation_class::object;	break;
+		case 6:		impl_->current_drawing_state_.presentation_class_ = presentation_class::footer;		break;
+		case 7:		impl_->current_drawing_state_.presentation_class_ = presentation_class::header;		break;
+		case 8:		impl_->current_drawing_state_.presentation_class_ = presentation_class::object;		break;
+		case 9:		impl_->current_drawing_state_.presentation_class_ = presentation_class::object;		break;
 		case 10:	impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic;	break;
 		case 11:	impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic;	break;
 		case 12:	impl_->current_drawing_state_.presentation_class_ = presentation_class::page_number;break;
@@ -1192,7 +1213,7 @@ void odf_drawing_context::set_placeholder_type (int val)
 		case 14:	impl_->current_drawing_state_.presentation_class_ = presentation_class::table;		break;
 		case 15:	impl_->current_drawing_state_.presentation_class_ = presentation_class::title;		break;
 		default:		
-			impl_->current_drawing_state_.presentation_class_ = presentation_class::text; 				break;
+			impl_->current_drawing_state_.presentation_class_ = presentation_class::outline; 			break;
 	}
 	//todooo draw_layer for master for sldnum, datetime ...
 }
@@ -1239,7 +1260,8 @@ _CP_OPT(odf_types::color) odf_drawing_context::get_line_color()
 }
 void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 {
-	if (!impl_->current_graphic_properties)return;
+	if (!impl_->current_graphic_properties)	return;
+	if (hexColor.empty()) return;
 	
 	int res = 0;
 	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
@@ -1730,8 +1752,8 @@ void odf_drawing_context::set_group_position(_CP_OPT(double) x, _CP_OPT(double) 
 	impl_->current_group_->x = *change_x ;
 	impl_->current_group_->y = *change_y ; 
 
-	impl_->current_group_->shift_x = (*x - *change_x) ;
-	impl_->current_group_->shift_y = (*y - *change_y) ;
+	impl_->current_group_->shift_x = (*x /impl_->current_group_->scale_cx - *change_x) ;
+	impl_->current_group_->shift_y = (*y /impl_->current_group_->scale_cy - *change_y) ;
 }
 
 void odf_drawing_context::set_group_size( _CP_OPT(double) cx, _CP_OPT(double) cy, _CP_OPT(double) change_cx, _CP_OPT(double) change_cy)
@@ -2156,27 +2178,47 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 			paragraph_properties = style_->content_.get_style_paragraph_properties();
 		}
 	}
-	if (paragraph_properties == NULL && impl_->current_paragraph_properties == NULL)return;	
 	
-	switch(mode)
+	if (paragraph_properties)
 	{
-		case 5://textverticaltypeWordArtVert:
-		case 6://textverticaltypeWordArtVertRtl:
-		case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
-		case 3://SimpleTypes::textverticaltypeVert: 
-		case 2://SimpleTypes::textverticaltypeMongolianVert:
-			paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
-			impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
-			break;
-		case 0://SimpleTypes::textverticaltypeEaVert: 
-			paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
-			impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
-			break;
-		case 1://SimpleTypes::textverticaltypeHorz: 
-		default:
-			paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
-			impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
-			break;
+		switch(mode)
+		{
+			case 5://textverticaltypeWordArtVert:
+			case 6://textverticaltypeWordArtVertRtl:
+			case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
+			case 3://SimpleTypes::textverticaltypeVert: 
+			case 2://SimpleTypes::textverticaltypeMongolianVert:
+				
+				paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+				break;
+			case 0://SimpleTypes::textverticaltypeEaVert: 
+				paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+				break;
+			case 1://SimpleTypes::textverticaltypeHorz: 
+			default:
+				paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
+				break;
+		}
+	}
+	if (impl_->current_paragraph_properties)
+	{
+		switch(mode)
+		{
+			case 5://textverticaltypeWordArtVert:
+			case 6://textverticaltypeWordArtVertRtl:
+			case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
+			case 3://SimpleTypes::textverticaltypeVert: 
+			case 2://SimpleTypes::textverticaltypeMongolianVert:
+				impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+				break;
+			case 0://SimpleTypes::textverticaltypeEaVert: 
+				impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+				break;
+			case 1://SimpleTypes::textverticaltypeHorz: 
+			default:
+				impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
+				break;
+		}
 	}
 }
 void odf_drawing_context::set_paragraph_properties(style_paragraph_properties *paragraph_properties)
@@ -2455,7 +2497,7 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 {
 	if (text_context == NULL || impl_->current_level_.size() < 1 ) return;
 	
-	if (impl_->is_presentation_ && *impl_->is_presentation_) return; 
+	//if (impl_->is_presentation_ && *impl_->is_presentation_) return; 
 
 	for (size_t i = 0; i < text_context->text_elements_list_.size(); i++)
 	{

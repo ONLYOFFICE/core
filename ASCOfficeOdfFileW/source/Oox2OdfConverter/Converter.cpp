@@ -130,6 +130,8 @@ bool  OoxConverter::UpdateProgress(long nComplete)
 
 void OoxConverter::set_fonts_directory(const std::wstring &fontsPath)
 {
+	if (odf_context() == NULL) return;
+
     odf_context()->set_fonts_directory(fontsPath);
 }
 
@@ -143,18 +145,15 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 		{
 			case OOX::et_graphicFrame:
 			{
-				PPTX::Logic::GraphicFrame* pGraphicFrame= dynamic_cast<PPTX::Logic::GraphicFrame*>(oox_unknown);
-				convert(pGraphicFrame);
+				convert(dynamic_cast<PPTX::Logic::GraphicFrame*>(oox_unknown));
 			}break;
 			case OOX::et_pic:
 			{
-				PPTX::Logic::Pic* pPic= dynamic_cast<PPTX::Logic::Pic*>(oox_unknown);
-				convert(pPic);
+				convert(dynamic_cast<PPTX::Logic::Pic*>(oox_unknown));
 			}break;
 			case OOX::et_dgm_DiagrammParts:
 			{
-				PPTX::Logic::SmartArt* pDiagrammParts = dynamic_cast<PPTX::Logic::SmartArt*>(oox_unknown);
-				convert(pDiagrammParts);
+				convert(dynamic_cast<PPTX::Logic::SmartArt*>(oox_unknown));
 			}break;
 			case OOX::et_a_Shape:
 			case OOX::et_p_Shape:
@@ -266,18 +265,19 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			}break;	
 			case OOX::et_v_fill:
 			{
-				OOX::Vml::CFill *vml = dynamic_cast<OOX::Vml::CFill*>(oox_unknown);
-				convert(vml);
+				convert(dynamic_cast<OOX::Vml::CFill*>(oox_unknown));
 			}break;
 			case OOX::et_v_stroke:
 			{
-				OOX::Vml::CStroke *vml = dynamic_cast<OOX::Vml::CStroke*>(oox_unknown);
-				convert(vml);
+				convert(dynamic_cast<OOX::Vml::CStroke*>(oox_unknown));
+			}break;
+			case OOX::et_v_formulas:
+			{
+				convert(dynamic_cast<OOX::Vml::CFormulas*>(oox_unknown));
 			}break;
 			case OOX::et_v_shadow:
 			{
-				OOX::Vml::CShadow *vml = dynamic_cast<OOX::Vml::CShadow*>(oox_unknown);
-				convert(vml);
+				convert(dynamic_cast<OOX::Vml::CShadow*>(oox_unknown));
 			}break;
 			case OOX::et_v_image:
 			{

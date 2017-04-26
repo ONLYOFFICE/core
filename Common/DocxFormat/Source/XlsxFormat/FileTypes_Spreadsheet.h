@@ -81,6 +81,18 @@ namespace OOX
 			const FileType ExternalLinks	(L"externalLinks", L"externalLink.xml",
 												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.externalLink+xml"),
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLink"), true, true);
+
+			const FileType PivotTable		(L"../pivotTables", L"pivotTable.xml",
+												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.pivotTable+xml"),
+												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotTable"), true, true);
+
+			const FileType PivotCacheDefinition(L"pivotCache", L"pivotCacheDefinition.xml",
+												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheDefinition+xml"),
+												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition"), true);
+
+			const FileType PivotCacheRecords(L"", L"pivotCacheRecords.xml",
+												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheRecords+xml"),
+												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheRecords"), true, true);
 		
 
 		} // namespace FileTypes

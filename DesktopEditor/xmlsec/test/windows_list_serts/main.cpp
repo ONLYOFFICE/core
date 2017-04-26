@@ -96,18 +96,14 @@ class CXmlSigner
 {
 private:
     PCCERT_CONTEXT m_context;
-    HCRYPTPROV m_hCryptProv;
 
 public:
     CXmlSigner(PCCERT_CONTEXT pCertContext)
     {
-        m_context = pCertContext;
-        m_hCryptProv = NULL;
+        m_context = pCertContext;        
     }
     ~CXmlSigner()
-    {
-        if (NULL != m_hCryptProv)
-            CryptReleaseContext(m_hCryptProv, 0);
+    {        
     }
 
 public:
@@ -118,20 +114,24 @@ public:
         DWORD dwKeySpec = 0;
         HCRYPTHASH  hHash = NULL;
 
-        if (NULL == m_hCryptProv)
-            bResult = CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &m_hCryptProv, &dwKeySpec, NULL);
+        HCRYPTPROV hCryptProv = NULL;
+        bResult = CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL);
 
         if (!bResult)
             return "";
 
-        bResult = CryptCreateHash(m_hCryptProv, CALG_SHA1, 0, 0, &hHash);
+        bResult = CryptCreateHash(hCryptProv, CALG_SHA1, 0, 0, &hHash);
         if (!bResult)
+        {
+            CryptReleaseContext(hCryptProv, 0);
             return "";
+        }
 
         bResult = CryptHashData(hHash, (BYTE*)sXml.c_str(), (DWORD)sXml.length(), 0);
         if (!bResult)
         {
             CryptDestroyHash(hHash);
+            CryptReleaseContext(hCryptProv, 0);
             return "";
         }
 
@@ -142,6 +142,7 @@ public:
         if (!bResult)
         {
             CryptDestroyHash(hHash);
+            CryptReleaseContext(hCryptProv, 0);
             return "";
         }
 
@@ -151,6 +152,7 @@ public:
         if (!bResult)
         {
             CryptDestroyHash(hHash);
+            CryptReleaseContext(hCryptProv, 0);
             return "";
         }
 
@@ -170,6 +172,8 @@ public:
 
         delete[] pBase64;
 
+        CryptReleaseContext(hCryptProv, 0);
+
         return sReturn;
     }
 
@@ -179,20 +183,25 @@ public:
         DWORD dwKeySpec = 0;
         HCRYPTHASH  hHash = NULL;
 
-        if (NULL == m_hCryptProv)
-            bResult = CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &m_hCryptProv, &dwKeySpec, NULL);
+        HCRYPTPROV hCryptProv = NULL;
+
+        bResult = CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL);
 
         if (!bResult)
             return "";
 
-        bResult = CryptCreateHash(m_hCryptProv, CALG_SHA1, 0, 0, &hHash);
+        bResult = CryptCreateHash(hCryptProv, CALG_SHA1, 0, 0, &hHash);
         if (!bResult)
+        {
+            CryptReleaseContext(hCryptProv, 0);
             return "";
+        }
 
         bResult = CryptHashData(hHash, pData, dwSize, 0);
         if (!bResult)
         {
             CryptDestroyHash(hHash);
+            CryptReleaseContext(hCryptProv, 0);
             return "";
         }
 
@@ -202,6 +211,7 @@ public:
         if (!bResult)
         {
             CryptDestroyHash(hHash);
+            CryptReleaseContext(hCryptProv, 0);
             return "";
         }
 
@@ -212,6 +222,7 @@ public:
         if (!bResult)
         {
             CryptDestroyHash(hHash);
+            CryptReleaseContext(hCryptProv, 0);
             return "";
         }
 
@@ -224,6 +235,7 @@ public:
 
         //delete [] pDataHashRaw;
         CryptDestroyHash(hHash);
+        CryptReleaseContext(hCryptProv, 0);
 
         return sReturn;
     }
@@ -254,17 +266,19 @@ public:
         HCRYPTHASH hHash = NULL;
         HCRYPTKEY hPubKey = NULL;
 
-        BOOL bResult = TRUE;
-        if (NULL == m_hCryptProv)
-            bResult = CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &m_hCryptProv, &dwKeySpec, NULL);
+        HCRYPTPROV hCryptProv = NULL;
+        BOOL bResult = CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL);
 
         if (!bResult)
             return FALSE;
 
-        bResult = CryptCreateHash(m_hCryptProv, CALG_SHA1, 0, 0, &hHash);
+        bResult = CryptCreateHash(hCryptProv, CALG_SHA1, 0, 0, &hHash);
 
         if (!bResult)
+        {
+            CryptReleaseContext(hCryptProv, 0);
             return FALSE;
+        }
 
         BYTE* pDataHash = NULL;
         DWORD dwHashLen = 0;
@@ -280,7 +294,7 @@ public:
         bResult = CryptHashData(hHash, (BYTE*)sXml.c_str(), (DWORD)sXml.length(), 0);
 
         // Get the public key from the certificate
-        CryptImportPublicKeyInfo(m_hCryptProv, m_context->dwCertEncodingType, &m_context->pCertInfo->SubjectPublicKeyInfo, &hPubKey);
+        CryptImportPublicKeyInfo(hCryptProv, m_context->dwCertEncodingType, &m_context->pCertInfo->SubjectPublicKeyInfo, &hPubKey);
 
         BOOL bResultRet = CryptVerifySignature(hHash, pDataHashMem, dwHashLen, hPubKey, NULL, 0);
 
@@ -289,6 +303,7 @@ public:
         bResult = CryptDestroyHash(hHash);
 
         CryptDestroyKey(hPubKey);
+        CryptReleaseContext(hCryptProv, 0);
 
         return bResultRet && bResult;
     }
@@ -712,7 +727,7 @@ public:
 
     std::wstring GetReference(const std::wstring& file, const std::wstring& content_type)
     {
-        std::wstring sXml = L"<Reference URI=\">" + file + L"?ContentType=" + content_type + L"\">";
+        std::wstring sXml = L"<Reference URI=\"" + file + L"?ContentType=" + content_type + L"\">";
         sXml += L"<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/>";
         sXml += L"<DigestValue>";
         sXml += UTF8_TO_U(m_signer->GetHash(m_sFolder + file));
@@ -734,7 +749,7 @@ public:
         if (id.empty())
             sXml1 += L">";
         else
-            sXml1 += (L" Id=\"#" + id + L"\">");
+            sXml1 += (L" Id=\"" + id + L"\">");
         sXml1 += xml;
         sXml1 += L"</Object>";
 
@@ -786,17 +801,43 @@ bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext)
     if (true)
     {
         // idPackageObject
-        std::wstring sXml = L"<Manifect>";
+        std::wstring sXml = L"<Manifest>";
 
         // TODO: rels
+        if (true)
+        {
+            sXml += L"<Reference URI=\"/_rels/.rels?ContentType=application/vnd.openxmlformats-package.relationships+xml\">\
+<Transforms><Transform Algorithm=\"http://schemas.openxmlformats.org/package/2006/RelationshipTransform\">\
+<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId1\"/>\
+</Transform><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>\
+<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/>\
+<DigestValue>1vWU/YTF/7t6ZjnE44gAFTbZvvA=</DigestValue>\
+</Reference>";
+
+            sXml += L"<Reference URI=\"/word/_rels/document.xml.rels?ContentType=application/vnd.openxmlformats-package.relationships+xml\">\
+<Transforms><Transform Algorithm=\"http://schemas.openxmlformats.org/package/2006/RelationshipTransform\">\
+<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId3\"/>\
+<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId2\"/>\
+<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId1\"/>\
+<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId6\"/>\
+<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId5\"/>\
+<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId4\"/>\
+</Transform><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>\
+<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/>\
+<DigestValue>kVYCpjZZG3SU5+sOsB1PRnQSCzk=</DigestValue>\
+</Reference>";
+        }
+
+
         sXml += oOOXMLSigner.GetReference(L"/word/document.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
         sXml += oOOXMLSigner.GetReference(L"/word/fontTable.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml");
+        sXml += oOOXMLSigner.GetReference(L"/word/media/image1.emf", L"image/x-emf");
         sXml += oOOXMLSigner.GetReference(L"/word/settings.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml");
         sXml += oOOXMLSigner.GetReference(L"/word/styles.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml");
         sXml += oOOXMLSigner.GetReference(L"/word/theme/theme1.xml", L"application/vnd.openxmlformats-officedocument.theme+xml");
-        sXml += oOOXMLSigner.GetReference(L"/word/webSettings.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml");
+        sXml += oOOXMLSigner.GetReference(L"/word/webSettings.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml");        
 
-        sXml += L"</Manifect>";
+        sXml += L"</Manifest>";
 
         sXml += L"<SignatureProperties><SignatureProperty Id=\"idSignatureTime\" Target=\"#idPackageSignature\">";
         sXml += (L"<mdssi:SignatureTime xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\">\
@@ -807,7 +848,7 @@ bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext)
         sXmlData += (L"<Object Id=\"idPackageObject\">" + sXml + L"</Object>");
 
         sSignedData += ("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idPackageObject\">" +
-                        oOOXMLSigner.GetReferenceMain(sXml, L"idPackageObject") + "</Reference>");
+                        oOOXMLSigner.GetReferenceMain(sXml, L"idPackageObject", false) + "</Reference>");
     }
 
 
@@ -842,7 +883,7 @@ bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext)
         sXmlData += (L"<Object Id=\"idOfficeObject\">" + sXml + L"</Object>");
 
         sSignedData += ("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idOfficeObject\">" +
-                        oOOXMLSigner.GetReferenceMain(sXml, L"idOfficeObject") + "</Reference>");
+                        oOOXMLSigner.GetReferenceMain(sXml, L"idOfficeObject", false) + "</Reference>");
     }
 
     if (true)
@@ -920,12 +961,14 @@ bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext)
                         oOOXMLSigner.GetReferenceMain(sXml, L"idInvalidSigLnImg", false) + "</Reference>");
     }
 
-    std::string sXmlPrepend = ("<Signature xmlns=\"http://www.w3.org/2000/09/xmldsig#\" Id=\"idPackageSignature\"><SignedInfo>");
+    std::string sXmlPrepend = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Signature xmlns=\"http://www.w3.org/2000/09/xmldsig#\" Id=\"idPackageSignature\"><SignedInfo>");
     sXmlPrepend += sSignedData;
     sXmlPrepend += "</SignedInfo>";
 
     sXmlPrepend += "<SignatureValue>";
-    sXmlPrepend += oOOXMLSigner.m_signer->Sign("<SignedInfo xmlns=\"http://www.w3.org/2000/09/xmldsig#\">" + sSignedData + "</SignedInfo>");
+    std::string sSignedInfo = "<SignedInfo xmlns=\"http://www.w3.org/2000/09/xmldsig#\">" + sSignedData + "</SignedInfo>";
+    sSignedInfo = CXmlCanonicalizator::Execute(sSignedInfo, XML_C14N_1_0);
+    sXmlPrepend += oOOXMLSigner.m_signer->Sign(sSignedInfo);
     sXmlPrepend += "</SignatureValue>";
     sXmlPrepend += ("<KeyInfo><X509Data><X509Certificate>" + oOOXMLSigner.m_signer->GetCertificateBase64() + "</X509Certificate></X509Data></KeyInfo>");
 
@@ -939,7 +982,7 @@ bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext)
     oFile.CreateFileW(sDirectory + L"/origin.sigs");
     oFile.CloseFile();
 
-    NSFile::CFileBinary::SaveToFile(sDirectory + L"/sig1.xml", sXmlData, true);
+    NSFile::CFileBinary::SaveToFile(sDirectory + L"/sig1.xml", sXmlData, false);
 
     NSDirectory::CreateDirectory(sDirectory + L"/_rels");
 
@@ -948,7 +991,7 @@ bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext)
 <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/signature\" Target=\"sig1.xml\"/>\
 </Relationships>";
 
-    NSFile::CFileBinary::SaveToFile(sDirectory + L"/_rels/origin.sigs.rels", sRels, true);
+    NSFile::CFileBinary::SaveToFile(sDirectory + L"/_rels/origin.sigs.rels", sRels, false);
 
     return true;
 }

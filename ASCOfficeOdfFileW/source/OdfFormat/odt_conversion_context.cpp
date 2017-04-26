@@ -266,8 +266,11 @@ void odt_conversion_context::end_drawings()
 	}
 	else
 	{		
-		text_context()->start_element(elm);
-		text_context()->end_element();
+		if (elm)
+		{
+			text_context()->start_element(elm);
+			text_context()->end_element();
+		}
 
 		drawing_context()->clear();
 		drawing_context_.pop_back();

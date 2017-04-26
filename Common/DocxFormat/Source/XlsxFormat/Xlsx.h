@@ -47,6 +47,9 @@
 #include "CalcChain/CalcChain.h"
 #include "ExternalLinks/ExternalLinks.h"
 #include "ExternalLinks/ExternalLinkPath.h"
+#include "Pivot/PivotTable.h"
+#include "Pivot/PivotCacheDefinition.h"
+#include "Pivot/PivotCacheRecords.h"
 
 #include "../../../DesktopEditor/common/Directory.h"
 

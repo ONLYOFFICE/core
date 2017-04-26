@@ -198,6 +198,7 @@ namespace OOX
 				WritingStringNullableAttrBool(L"applyBorder", m_oApplyBorder);
 				WritingStringNullableAttrBool(L"applyAlignment", m_oApplyAlignment);
 				WritingStringNullableAttrBool(L"quotePrefix", m_oQuotePrefix);
+				WritingStringNullableAttrBool(L"pivotButton", m_oPivotButton);
 				if(m_oAligment.IsInit())
 				{
 					writer.WriteString(_T(">"));

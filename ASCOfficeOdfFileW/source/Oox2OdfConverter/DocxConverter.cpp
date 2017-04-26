@@ -317,16 +317,16 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		//	OOX::Logic::CShape* pShape = dynamic_cast<OOX::Logic::CShape*>(oox_unknown);
 		//	convert(pShape);
 		//}break;
-		//case OOX::et_w_pict:
-		//{
-		//	OOX::Logic::CPicture* pPic = dynamic_cast<OOX::Logic::CPicture*>(oox_unknown);
-		//	convert(pPic);
-		//}break;
-		//case OOX::et_w_object:
-		//{
-		//	OOX::Logic::CObject* pObj = dynamic_cast<OOX::Logic::CObject*>(oox_unknown);
-		//	convert(pObj);
-		//}break;
+		case OOX::et_w_pict:
+		{
+			OOX::Logic::CPicture* pPic = dynamic_cast<OOX::Logic::CPicture*>(oox_unknown);
+			convert(pPic);
+		}break;
+		case OOX::et_w_object:
+		{
+			OOX::Logic::CObject* pObj = dynamic_cast<OOX::Logic::CObject*>(oox_unknown);
+			convert(pObj);
+		}break;
 		case OOX::et_pic_pic:
 		case OOX::et_pic:
 		case OOX::et_p_pic:
@@ -353,23 +353,27 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		}break;
 		case OOX::et_w_commentReference:
 		{
-			OOX::Logic::CCommentReference* pCommRef = dynamic_cast<OOX::Logic::CCommentReference*>(oox_unknown);
-			convert(pCommRef);		//если нет Start - означает начало с предыдущего Run
+			convert(dynamic_cast<OOX::Logic::CCommentReference*>(oox_unknown));		//если нет Start - означает начало с предыдущего Run
 		}break;
 		case OOX::et_w_footnoteReference:
 		{
-			OOX::Logic::CFootnoteReference* pRef= dynamic_cast<OOX::Logic::CFootnoteReference*>(oox_unknown);
-			convert(pRef);
+			convert(dynamic_cast<OOX::Logic::CFootnoteReference*>(oox_unknown));
 		}break;
 		case OOX::et_w_endnoteReference:
 		{
-			OOX::Logic::CEndnoteReference* pRef= dynamic_cast<OOX::Logic::CEndnoteReference*>(oox_unknown);
-			convert(pRef);
+			convert(dynamic_cast<OOX::Logic::CEndnoteReference*>(oox_unknown));
+		}break;
+		case OOX::et_w_endnoteRef:
+		{
+			//add ref ??? todoooo
+		}break;
+		case OOX::et_w_footnoteRef:
+		{
+			//add ref 
 		}break;
 		case OOX::et_w_tbl:
 		{
-			OOX::Logic::CTbl* pTable= dynamic_cast<OOX::Logic::CTbl*>(oox_unknown);
-			convert(pTable);
+			convert(dynamic_cast<OOX::Logic::CTbl*>(oox_unknown));
 		}break;
 		case OOX::et_w_tr:
 		{
@@ -380,6 +384,12 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		{
 			OOX::Logic::CTc* pCell= dynamic_cast<OOX::Logic::CTc*>(oox_unknown);
 			convert(pCell);
+		}break;
+		case OOX::et_w_bookmarkStart:
+		{
+		}break;
+		case OOX::et_w_bookmarkEnd:
+		{
 		}break;
 		default:
 		{
@@ -394,12 +404,15 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 	//nullable<OOX::Logic::CSdtEndPr  > m_oSdtEndPr;
 	//nullable<OOX::Logic::CSdtPr     > m_oSdtPr;
 
-	if (oox_sdt->m_oSdtContent.IsInit())
+	convert(oox_sdt->m_oSdtContent.GetPointer());
+}
+void DocxConverter::convert(OOX::Logic::CSdtContent *oox_sdt)
+{
+	if (oox_sdt == NULL) return;
+
+	for (size_t i = 0; i < oox_sdt->m_arrItems.size(); i++)
 	{
-		for (unsigned int i=0; i< oox_sdt->m_oSdtContent->m_arrItems.size(); i++)
-		{
-			convert(oox_sdt->m_oSdtContent->m_arrItems[i]);
-		}
+		convert(oox_sdt->m_arrItems[i]);
 	}
 }
 void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
@@ -3017,7 +3030,7 @@ void DocxConverter::convert(OOX::Numbering::CAbstractNum* oox_num_style)
 	if (oox_num_style->m_oAbstractNumId.IsInit() == false) return;
 
 
-	odt_context->styles_context()->lists_styles().start_style(false, oox_num_style->m_oAbstractNumId->GetValue());
+	odt_context->styles_context()->lists_styles().start_style(true, oox_num_style->m_oAbstractNumId->GetValue());
 	//// Childs
 	//std::vector<OOX::Numbering::CLvl                            >  m_arrLvl;
 	//nullable<ComplexTypes::Word::CMultiLevelType                 > m_oMultiLevelType;

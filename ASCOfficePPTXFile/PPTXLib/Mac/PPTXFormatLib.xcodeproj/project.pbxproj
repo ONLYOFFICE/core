@@ -26,10 +26,8 @@
 		17C1FCBE1ACC429D006B99B3 /* EffectProperties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A443D1AC57B83005A27F7 /* EffectProperties.cpp */; };
 		17C1FCBF1ACC429D006B99B3 /* EffectLst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A443B1AC57B83005A27F7 /* EffectLst.cpp */; };
 		17C1FCC11ACC429D006B99B3 /* FileMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A43A31AC57B83005A27F7 /* FileMap.cpp */; };
-		17C1FCC21ACC429D006B99B3 /* ShapeTextProperties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44AC1AC57B83005A27F7 /* ShapeTextProperties.cpp */; };
 		17C1FCC31ACC429D006B99B3 /* TransitionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A45051AC57B83005A27F7 /* TransitionBase.cpp */; };
 		17C1FCC51ACC429D006B99B3 /* Shape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44A71AC57B83005A27F7 /* Shape.cpp */; };
-		17C1FCC61ACC429D006B99B3 /* ShapeProperties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44A91AC57B83005A27F7 /* ShapeProperties.cpp */; };
 		17C1FCC71ACC429D006B99B3 /* BuildNodeBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44DE1AC57B83005A27F7 /* BuildNodeBase.cpp */; };
 		17C1FCC81ACC429D006B99B3 /* ContentPart.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44311AC57B83005A27F7 /* ContentPart.cpp */; };
 		17C1FCC91ACC429D006B99B3 /* CNvGrpSpPr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44241AC57B83005A27F7 /* CNvGrpSpPr.cpp */; };
@@ -306,7 +304,6 @@
 		17C1FDFE1ACC429D006B99B3 /* XfrmEffect.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A445C1AC57B83005A27F7 /* XfrmEffect.h */; };
 		17C1FDFF1ACC429D006B99B3 /* ChartBuildType.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A43B51AC57B83005A27F7 /* ChartBuildType.h */; };
 		17C1FE001ACC429D006B99B3 /* SndAc.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A45011AC57B83005A27F7 /* SndAc.h */; };
-		17C1FE011ACC429D006B99B3 /* ShapeProperties.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44AA1AC57B83005A27F7 /* ShapeProperties.h */; };
 		17C1FE021ACC429D006B99B3 /* AlphaModFix.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44451AC57B83005A27F7 /* AlphaModFix.h */; };
 		17C1FE041ACC429D006B99B3 /* Duotone.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A444D1AC57B83005A27F7 /* Duotone.h */; };
 		17C1FE061ACC429D006B99B3 /* ColorBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A442A1AC57B83005A27F7 /* ColorBase.h */; };
@@ -396,7 +393,6 @@
 		17C1FE601ACC429D006B99B3 /* Set.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44EB1AC57B83005A27F7 /* Set.h */; };
 		17C1FE611ACC429D006B99B3 /* ShapeStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44AB1AC57B83005A27F7 /* ShapeStyle.h */; };
 		17C1FE621ACC429D006B99B3 /* BaseLimit.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A43AE1AC57B83005A27F7 /* BaseLimit.h */; };
-		17C1FE631ACC429D006B99B3 /* ShapeTextProperties.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44AD1AC57B83005A27F7 /* ShapeTextProperties.h */; };
 		17C1FE641ACC429D006B99B3 /* BinReaderWriterDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91A171AC5A4DF0096D788 /* BinReaderWriterDefines.h */; };
 		17C1FE651ACC429D006B99B3 /* ClrMapOvr.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44211AC57B83005A27F7 /* ClrMapOvr.h */; };
 		17C1FE661ACC429D006B99B3 /* Glow.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44511AC57B83005A27F7 /* Glow.h */; };
@@ -705,11 +701,7 @@
 		179A44A61AC57B83005A27F7 /* Scene3d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scene3d.h; sourceTree = "<group>"; };
 		179A44A71AC57B83005A27F7 /* Shape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shape.cpp; sourceTree = "<group>"; };
 		179A44A81AC57B83005A27F7 /* Shape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shape.h; sourceTree = "<group>"; };
-		179A44A91AC57B83005A27F7 /* ShapeProperties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShapeProperties.cpp; sourceTree = "<group>"; };
-		179A44AA1AC57B83005A27F7 /* ShapeProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShapeProperties.h; sourceTree = "<group>"; };
 		179A44AB1AC57B83005A27F7 /* ShapeStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShapeStyle.h; sourceTree = "<group>"; };
-		179A44AC1AC57B83005A27F7 /* ShapeTextProperties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShapeTextProperties.cpp; sourceTree = "<group>"; };
-		179A44AD1AC57B83005A27F7 /* ShapeTextProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShapeTextProperties.h; sourceTree = "<group>"; };
 		179A44AE1AC57B83005A27F7 /* SmartArt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SmartArt.cpp; sourceTree = "<group>"; };
 		179A44AF1AC57B83005A27F7 /* SmartArt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartArt.h; sourceTree = "<group>"; };
 		179A44B01AC57B83005A27F7 /* Sp3d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sp3d.h; sourceTree = "<group>"; };
@@ -1176,11 +1168,7 @@
 				179A44A61AC57B83005A27F7 /* Scene3d.h */,
 				179A44A71AC57B83005A27F7 /* Shape.cpp */,
 				179A44A81AC57B83005A27F7 /* Shape.h */,
-				179A44A91AC57B83005A27F7 /* ShapeProperties.cpp */,
-				179A44AA1AC57B83005A27F7 /* ShapeProperties.h */,
 				179A44AB1AC57B83005A27F7 /* ShapeStyle.h */,
-				179A44AC1AC57B83005A27F7 /* ShapeTextProperties.cpp */,
-				179A44AD1AC57B83005A27F7 /* ShapeTextProperties.h */,
 				179A44AE1AC57B83005A27F7 /* SmartArt.cpp */,
 				179A44AF1AC57B83005A27F7 /* SmartArt.h */,
 				179A44B01AC57B83005A27F7 /* Sp3d.h */,
@@ -1783,7 +1771,6 @@
 				17C1FDFE1ACC429D006B99B3 /* XfrmEffect.h in Headers */,
 				17C1FDFF1ACC429D006B99B3 /* ChartBuildType.h in Headers */,
 				17C1FE001ACC429D006B99B3 /* SndAc.h in Headers */,
-				17C1FE011ACC429D006B99B3 /* ShapeProperties.h in Headers */,
 				17C1FE021ACC429D006B99B3 /* AlphaModFix.h in Headers */,
 				17C1FE041ACC429D006B99B3 /* Duotone.h in Headers */,
 				17C1FE061ACC429D006B99B3 /* ColorBase.h in Headers */,
@@ -1873,7 +1860,6 @@
 				17C1FE601ACC429D006B99B3 /* Set.h in Headers */,
 				17C1FE611ACC429D006B99B3 /* ShapeStyle.h in Headers */,
 				17C1FE621ACC429D006B99B3 /* BaseLimit.h in Headers */,
-				17C1FE631ACC429D006B99B3 /* ShapeTextProperties.h in Headers */,
 				17C1FE641ACC429D006B99B3 /* BinReaderWriterDefines.h in Headers */,
 				17C1FE651ACC429D006B99B3 /* ClrMapOvr.h in Headers */,
 				17C1FE661ACC429D006B99B3 /* Glow.h in Headers */,
@@ -1981,11 +1967,9 @@
 				17C1FCBF1ACC429D006B99B3 /* EffectLst.cpp in Sources */,
 				695BC03A1C070DEF00817D7E /* ASCSVGWriter.cpp in Sources */,
 				17C1FCC11ACC429D006B99B3 /* FileMap.cpp in Sources */,
-				17C1FCC21ACC429D006B99B3 /* ShapeTextProperties.cpp in Sources */,
 				696791821D9E8B81002CA4BA /* MathParaWrapper.cpp in Sources */,
 				17C1FCC31ACC429D006B99B3 /* TransitionBase.cpp in Sources */,
 				17C1FCC51ACC429D006B99B3 /* Shape.cpp in Sources */,
-				17C1FCC61ACC429D006B99B3 /* ShapeProperties.cpp in Sources */,
 				17C1FCC71ACC429D006B99B3 /* BuildNodeBase.cpp in Sources */,
 				17C1FCC81ACC429D006B99B3 /* ContentPart.cpp in Sources */,
 				17C1FCC91ACC429D006B99B3 /* CNvGrpSpPr.cpp in Sources */,

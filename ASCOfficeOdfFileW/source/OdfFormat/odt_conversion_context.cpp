@@ -163,6 +163,11 @@ odf_table_context* odt_conversion_context::table_context()
 {
 	return &table_context_;
 }
+	
+odf_notes_context* odt_conversion_context::notes_context()
+{
+	return &notes_context_;
+}
 
 odf_text_context* odt_conversion_context::text_context()	
 {

@@ -79,6 +79,7 @@ public:
 	odf_comment_context				* comment_context(); 
 	odf_table_context				* table_context();
 	
+	odf_notes_context				* notes_context();
 	void start_drawings		();
 	void end_drawings		();
 

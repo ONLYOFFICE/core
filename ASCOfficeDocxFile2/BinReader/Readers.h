@@ -61,6 +61,26 @@ enum ETblStyleOverrideType
 	tblstyleoverridetypeSwCell     = 11,
 	tblstyleoverridetypeWholeTable = 12
 };
+class SdtWraper
+{
+public:
+
+	OOX::Logic::CSdt m_oSdt;
+	rPr* m_oEndPr;
+	rPr* m_oRPr;
+	int m_nType;
+	SdtWraper(int nType)
+	{
+		m_nType = nType;
+		m_oEndPr = NULL;
+		m_oRPr = NULL;
+	}
+	~SdtWraper()
+	{
+		RELEASEOBJECT(m_oEndPr)
+		RELEASEOBJECT(m_oRPr)
+	}
+};
 
 #define READ1_DEF(stLen, fReadFunction, arg, res) {\
 	res = c_oSerConstants::ReadOk;\
@@ -3635,6 +3655,11 @@ public:
 		//сбрасываем Shd
             oBinary_tblPrReader.m_sCurTableShd.clear();
 		}
+		else if(c_oSerParType::Sdt == type)
+		{
+			SdtWraper oSdt(0);
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdt, this, &oSdt);
+		}
 		else if ( c_oSerParType::sectPr == type )
 		{
 			SectPr oSectPr;
@@ -3745,6 +3770,11 @@ public:
 			TrackRevision oTrackRevision;
 			res = Read1(length, &Binary_DocumentTableReader::ReadDelIns, this, &oTrackRevision);
 			oTrackRevision.Write(&GetRunStringWriter(), _T("w:del"));
+		}
+		else if(c_oSerParType::Sdt == type)
+		{
+			SdtWraper oSdt(1);
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdt, this, &oSdt);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -6412,6 +6442,11 @@ public:
 			res = Read1(length, &Binary_DocumentTableReader::Read_Row, this, poResult);
             pCStringWriter->WriteString(std::wstring(_T("</w:tr>")));
 		}
+		else if(c_oSerDocTableType::Sdt == type)
+		{
+			SdtWraper oSdt(2);
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdt, this, &oSdt);
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -6443,6 +6478,11 @@ public:
             pCStringWriter->WriteString(std::wstring(_T("<w:tc>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadCell, this, poResult);
             pCStringWriter->WriteString(std::wstring(_T("</w:tc>")));
+		}
+		else if(c_oSerDocTableType::Sdt == type)
+		{
+			SdtWraper oSdt(3);
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdt, this, &oSdt);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -7146,6 +7186,306 @@ public:
 	int Read_SecPr(BYTE type, long length, void* poResult)
 	{
 		return oBinary_pPrReader.Read_SecPr(type, length, poResult);
+	}
+	int ReadSdt(BYTE type, long length, void* poResult)
+	{
+		int res = 0;
+		SdtWraper* pSdt = static_cast<SdtWraper*>(poResult);
+		if (c_oSerSdt::Pr == type)
+		{
+			pSdt->m_oSdt.m_oSdtPr.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdtPr, this, pSdt);
+		}
+		else if (c_oSerSdt::EndPr == type)
+		{
+			pSdt->m_oEndPr = new rPr(m_oFontTableWriter.m_mapFonts);
+			res = oBinary_rPrReader.Read(length, pSdt->m_oEndPr);
+		}
+		else if (c_oSerSdt::Content == type)
+		{
+			m_oDocumentWriter.m_oContent.WriteString(L"<w:sdt>");
+			if ( pSdt->m_oSdt.m_oSdtPr.IsInit() )
+			{
+				m_oDocumentWriter.m_oContent.WriteString(pSdt->m_oSdt.m_oSdtPr->toXMLStart());
+				if (NULL != pSdt->m_oRPr)
+				{
+					pSdt->m_oRPr->Write(&m_oDocumentWriter.m_oContent);
+				}
+				m_oDocumentWriter.m_oContent.WriteString(pSdt->m_oSdt.m_oSdtPr->toXMLEnd());
+			}
+			if (NULL != pSdt->m_oEndPr)
+			{
+				m_oDocumentWriter.m_oContent.WriteString(L"<w:sdtEndPr>");
+				pSdt->m_oEndPr->Write(&m_oDocumentWriter.m_oContent);
+				m_oDocumentWriter.m_oContent.WriteString(L"</w:sdtEndPr>");
+			}
+
+			m_oDocumentWriter.m_oContent.WriteString(L"<w:sdtContent>");
+			switch(pSdt->m_nType)
+			{
+			case 0:
+				res = Read1(length, &Binary_DocumentTableReader::ReadDocumentContent, this, this);
+				break;
+			case 1:
+				res = Read1(length, &Binary_DocumentTableReader::ReadParagraphContent, this, this);
+				break;
+			case 2:
+				res = Read1(length, &Binary_DocumentTableReader::Read_TableContent, this, &m_oDocumentWriter.m_oContent);
+				break;
+			case 3:
+				res = Read1(length, &Binary_DocumentTableReader::ReadRowContent, this, &m_oDocumentWriter.m_oContent);
+				break;
+			}
+			m_oDocumentWriter.m_oContent.WriteString(L"</w:sdtContent>");
+			m_oDocumentWriter.m_oContent.WriteString(L"</w:sdt>");
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadSdtPr(BYTE type, long length, void* poResult)
+	{
+		int res = 0;
+		SdtWraper* pSdtWraper = static_cast<SdtWraper*>(poResult);
+		OOX::Logic::CSdtPr* pSdtPr = pSdtWraper->m_oSdt.m_oSdtPr.GetPointer();
+		if (c_oSerSdt::Type == type)
+		{
+			pSdtPr->m_eType = (OOX::Logic::ESdtType)m_oBufferedStream.GetUChar();
+		}
+		else if (c_oSerSdt::Alias == type)
+		{
+			pSdtPr->m_oAlias.Init();
+			pSdtPr->m_oAlias->m_sVal.Init();
+			pSdtPr->m_oAlias->m_sVal->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::ComboBox == type)
+		{
+			pSdtPr->m_oComboBox.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdtComboBox, this, pSdtPr->m_oComboBox.GetPointer());
+		}
+		else if (c_oSerSdt::DataBinding == type)
+		{
+			pSdtPr->m_oDataBinding.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdtPrDataBinding, this, pSdtPr->m_oDataBinding.GetPointer());
+		}
+		else if (c_oSerSdt::PrDate == type)
+		{
+			pSdtPr->m_oDate.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdtPrDate, this, pSdtPr->m_oDate.GetPointer());
+		}
+		else if (c_oSerSdt::DocPartList == type)
+		{
+			pSdtPr->m_oDocPartList.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadDocPartList, this, pSdtPr->m_oDocPartList.GetPointer());
+		}
+		else if (c_oSerSdt::DocPartObj == type)
+		{
+			pSdtPr->m_oDocPartObj.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadDocPartList, this, pSdtPr->m_oDocPartObj.GetPointer());
+		}
+		else if (c_oSerSdt::DropDownList == type)
+		{
+			pSdtPr->m_oDropDownList.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadDropDownList, this, pSdtPr->m_oDropDownList.GetPointer());
+		}
+		else if (c_oSerSdt::Id == type)
+		{
+			pSdtPr->m_oId.Init();
+			pSdtPr->m_oId->m_oVal.Init();
+			pSdtPr->m_oId->m_oVal->SetValue(m_oBufferedStream.GetULong());
+		}
+		else if (c_oSerSdt::Label == type)
+		{
+			pSdtPr->m_oLabel.Init();
+			pSdtPr->m_oLabel->m_oVal.Init();
+			pSdtPr->m_oLabel->m_oVal->SetValue(m_oBufferedStream.GetULong());
+		}
+		else if (c_oSerSdt::Lock == type)
+		{
+			pSdtPr->m_oLock.Init();
+			pSdtPr->m_oLock->m_oVal.SetValue((SimpleTypes::ELock)m_oBufferedStream.GetUChar());
+		}
+		else if (c_oSerSdt::PlaceHolder == type)
+		{
+			pSdtPr->m_oPlaceHolder.Init();
+			pSdtPr->m_oPlaceHolder->m_oDocPart.Init();
+			pSdtPr->m_oPlaceHolder->m_oDocPart->m_sVal.Init();
+			pSdtPr->m_oPlaceHolder->m_oDocPart->m_sVal->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::RPr == type)
+		{
+			pSdtWraper->m_oRPr = new rPr(m_oFontTableWriter.m_mapFonts);
+			res = oBinary_rPrReader.Read(length, pSdtWraper->m_oRPr);
+		}
+		else if (c_oSerSdt::ShowingPlcHdr == type)
+		{
+			pSdtPr->m_oShowingPlcHdr.Init();
+			pSdtPr->m_oShowingPlcHdr->m_oVal.FromBool(m_oBufferedStream.GetBool());
+		}
+		else if (c_oSerSdt::TabIndex == type)
+		{
+			pSdtPr->m_oTabIndex.Init();
+			pSdtPr->m_oTabIndex->m_oVal.Init();
+			pSdtPr->m_oTabIndex->m_oVal->SetValue(m_oBufferedStream.GetULong());
+		}
+		else if (c_oSerSdt::Tag == type)
+		{
+			pSdtPr->m_oTag.Init();
+			pSdtPr->m_oTag->m_sVal.Init();
+			pSdtPr->m_oTag->m_sVal->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::Temporary == type)
+		{
+			pSdtPr->m_oTemporary.Init();
+			pSdtPr->m_oTemporary->m_oVal.FromBool(m_oBufferedStream.GetBool());
+		}
+		else if (c_oSerSdt::MultiLine == type)
+		{
+			pSdtPr->m_oText.Init();
+			pSdtPr->m_oText->m_oMultiLine.Init();
+			pSdtPr->m_oText->m_oMultiLine->FromBool(m_oBufferedStream.GetBool());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadSdtComboBox(BYTE type, long length, void* poResult)
+	{
+		int res = 0;
+		OOX::Logic::CSdtComboBox* pSdtComboBox = static_cast<OOX::Logic::CSdtComboBox*>(poResult);
+		if (c_oSerSdt::LastValue == type)
+		{
+			pSdtComboBox->m_sLastValue.Init();
+			pSdtComboBox->m_sLastValue->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::SdtListItem == type)
+		{
+			ComplexTypes::Word::CSdtListItem* pSdtListItem = new ComplexTypes::Word::CSdtListItem();
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdtListItem, this, pSdtListItem);
+			pSdtComboBox->m_arrListItem.push_back(pSdtListItem);		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadSdtListItem(BYTE type, long length, void* poResult)
+	{
+		int res = 0;
+		ComplexTypes::Word::CSdtListItem* pSdtListItem = static_cast<ComplexTypes::Word::CSdtListItem*>(poResult);
+		if (c_oSerSdt::DisplayText == type)
+		{
+			pSdtListItem->m_sDisplayText.Init();
+			pSdtListItem->m_sDisplayText->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::Value == type)
+		{
+			pSdtListItem->m_sValue.Init();
+			pSdtListItem->m_sValue->append(m_oBufferedStream.GetString3(length));
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadSdtPrDataBinding(BYTE type, long length, void* poResult)
+	{
+		int res = 0;
+		ComplexTypes::Word::CDataBinding* pDataBinding = static_cast<ComplexTypes::Word::CDataBinding*>(poResult);
+		if (c_oSerSdt::PrefixMappings == type)
+		{
+			pDataBinding->m_sPrefixMappings.Init();
+			pDataBinding->m_sPrefixMappings->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::StoreItemID == type)
+		{
+			pDataBinding->m_sStoreItemID.Init();
+			pDataBinding->m_sStoreItemID->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::XPath == type)
+		{
+			pDataBinding->m_sXPath.Init();
+			pDataBinding->m_sXPath->append(m_oBufferedStream.GetString3(length));
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadSdtPrDate(BYTE type, long length, void* poResult)
+	{
+		int res = 0;
+		OOX::Logic::CDate* pDate = static_cast<OOX::Logic::CDate*>(poResult);
+		if (c_oSerSdt::FullDate == type)
+		{
+			pDate->m_oFullDate.Init();
+			pDate->m_oFullDate->SetValue(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::Calendar == type)
+		{
+			pDate->m_oCalendar.Init();
+			pDate->m_oCalendar->m_oVal.SetValue((SimpleTypes::ECalendarType)m_oBufferedStream.GetUChar());
+		}
+		else if (c_oSerSdt::DateFormat == type)
+		{
+			pDate->m_oDateFormat.Init();
+			pDate->m_oDateFormat->m_sVal.Init();
+			pDate->m_oDateFormat->m_sVal->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::Lid == type)
+		{
+			pDate->m_oLid.Init();
+			pDate->m_oLid->m_oVal.Init();
+			pDate->m_oLid->m_oVal->SetValue(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::StoreMappedDataAs == type)
+		{
+			pDate->m_oStoreMappedDateAs.Init();
+			pDate->m_oStoreMappedDateAs->m_oVal.SetValue((SimpleTypes::ESdtDateMappingType)m_oBufferedStream.GetUChar());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadDocPartList(BYTE type, long length, void* poResult)
+	{
+		int res = 0;
+		OOX::Logic::CSdtDocPart* pDocPart = static_cast<OOX::Logic::CSdtDocPart*>(poResult);
+		if (c_oSerSdt::DocPartCategory == type)
+		{
+			pDocPart->m_oDocPartCategory.Init();
+			pDocPart->m_oDocPartCategory->m_sVal.Init();
+			pDocPart->m_oDocPartCategory->m_sVal->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::DocPartGallery == type)
+		{
+			pDocPart->m_oDocPartGallery.Init();
+			pDocPart->m_oDocPartGallery->m_sVal.Init();
+			pDocPart->m_oDocPartGallery->m_sVal->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::DocPartUnique == type)
+		{
+			pDocPart->m_oDocPartUnique.Init();
+			pDocPart->m_oDocPartUnique->m_oVal.FromBool(m_oBufferedStream.GetBool());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadDropDownList(BYTE type, long length, void* poResult)
+	{
+		int res = 0;
+		OOX::Logic::CSdtDropDownList* pDropDownList = static_cast<OOX::Logic::CSdtDropDownList*>(poResult);
+		if (c_oSerSdt::LastValue == type)
+		{
+			pDropDownList->m_sLastValue.Init();
+			pDropDownList->m_sLastValue->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::SdtListItem == type)
+		{
+			ComplexTypes::Word::CSdtListItem* pSdtListItem = new ComplexTypes::Word::CSdtListItem();
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdtListItem, this, pSdtListItem);
+			pDropDownList->m_arrListItem.push_back(pSdtListItem);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
 	}
 };
 class Binary_NotesTableReader : public Binary_CommonReader<Binary_NotesTableReader>

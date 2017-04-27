@@ -340,7 +340,11 @@ namespace ComplexTypes
 			}
 			virtual std::wstring ToString() const
 			{
-				std::wstring sResult = _T("w:multiLine=\"") + m_oMultiLine.ToString() + _T("\"");
+				std::wstring sResult;
+				if(m_oMultiLine.IsInit())
+				{
+					sResult = _T("w:multiLine=\"") + m_oMultiLine->ToString() + _T("\"");
+				}
 
 				return sResult;
 			}
@@ -356,7 +360,7 @@ namespace ComplexTypes
 
 		public:
 
-			SimpleTypes::COnOff<SimpleTypes::onoffFalse> m_oMultiLine;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>> m_oMultiLine;
 		};
 
 	} // Word
@@ -503,7 +507,7 @@ namespace OOX
 				WritingElement_ReadNode( oNode, oChild, _T("w:calendar"),          m_oCalendar );
 				WritingElement_ReadNode( oNode, oChild, _T("w:dateFormat"),        m_oDateFormat );
 				WritingElement_ReadNode( oNode, oChild, _T("w:lid"),               m_oLid );
-				WritingElement_ReadNode( oNode, oChild, _T("w:storeMappedDataAs"), m_oStoreMappedDataAs );
+				WritingElement_ReadNode( oNode, oChild, _T("w:storeMappedDateAs"), m_oStoreMappedDateAs );
 			}
 
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
@@ -523,8 +527,8 @@ namespace OOX
 						m_oDateFormat = oReader;
 					else if ( _T("w:lid") == sName )
 						m_oLid = oReader;
-					else if ( _T("w:storeMappedDataAs") == sName )
-						m_oStoreMappedDataAs = oReader;
+					else if ( _T("w:storeMappedDateAs") == sName )
+						m_oStoreMappedDateAs = oReader;
 				}
 			}
 			virtual std::wstring      toXML() const
@@ -543,7 +547,7 @@ namespace OOX
 				WritingElement_WriteNode_1( _T("<w:calendar "),          m_oCalendar );
 				WritingElement_WriteNode_1( _T("<w:dateFormat "),        m_oDateFormat );
 				WritingElement_WriteNode_1( _T("<w:lid "),               m_oLid );
-				WritingElement_WriteNode_1( _T("<w:storeMappedDataAs "), m_oStoreMappedDataAs );
+				WritingElement_WriteNode_1( _T("<w:storeMappedDateAs "), m_oStoreMappedDateAs );
 
 				sResult += _T("</w:date>");
 
@@ -573,7 +577,7 @@ namespace OOX
 			nullable<ComplexTypes::Word::CCalendarType      > m_oCalendar;
 			nullable<ComplexTypes::Word::String           > m_oDateFormat;
 			nullable<ComplexTypes::Word::CLang              > m_oLid;
-			nullable<ComplexTypes::Word::CSdtDateMappingType> m_oStoreMappedDataAs;
+			nullable<ComplexTypes::Word::CSdtDateMappingType> m_oStoreMappedDateAs;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -627,6 +631,18 @@ namespace OOX
 				WritingElement_WriteNode_1( _T("<w:docPartUnique "),   m_oDocPartUnique );
 
 				sResult += _T("</w:docPartList>");
+
+				return sResult;
+			}
+			std::wstring      toXML2(const std::wstring& sName) const
+			{
+				std::wstring sResult = L"<" + sName + L">";
+
+				WritingElement_WriteNode_1( _T("<w:docPartCategory "), m_oDocPartCategory );
+				WritingElement_WriteNode_1( _T("<w:docPartGallery "),  m_oDocPartGallery );
+				WritingElement_WriteNode_1( _T("<w:docPartUnique "),   m_oDocPartUnique );
+
+				sResult += L"</" + sName + L">";;
 
 				return sResult;
 			}
@@ -1013,7 +1029,7 @@ namespace OOX
 						m_eType = sdttypeBibliography;
 					else if ( sdttypeUnknown == m_eType && _T("w:citation") == sName )
 						m_eType = sdttypeCitation;
-					else if ( sdttypeUnknown == m_eType && _T("w:alias") == sName )
+					else if ( sdttypeUnknown == m_eType && _T("w:comboBox") == sName )
 					{
 						m_oComboBox = oReader;
 						m_eType = sdttypeComboBox;
@@ -1073,7 +1089,7 @@ namespace OOX
 					}
 				}
 			}
-			virtual std::wstring      toXML() const
+			std::wstring      toXMLStart() const
 			{
 				std::wstring sResult = _T("<w:sdtPr>");
 
@@ -1093,7 +1109,7 @@ namespace OOX
 				{
 				case sdttypeBibliography:
 					{
-						sResult += _T("<bibliography/>");
+						sResult += _T("<w:bibliography/>");
 						break;
 					}
 				case sdttypeCitation:
@@ -1118,14 +1134,14 @@ namespace OOX
 				case sdttypeDocPartList:
 					{
 						if ( m_oDocPartList.IsInit() )
-							sResult += m_oDocPartList->toXML();
+							sResult += m_oDocPartList->toXML2(L"w:docPartList");
 
 						break;
 					}
 				case sdttypeDocPartObj:
 					{
 						if ( m_oDocPartObj.IsInit() )
-							sResult += m_oDocPartObj->toXML();
+							sResult += m_oDocPartObj->toXML2(L"w:docPartObj");
 
 						break;
 					}
@@ -1158,21 +1174,27 @@ namespace OOX
 					}
 				case sdttypeText:
 					{
+						sResult += _T("<w:text ");
 						if ( m_oText.IsInit() )
 						{
-							sResult += _T("<w:text ");
 							sResult += m_oText->ToString();
-							sResult += _T("/>");
 						}
+						sResult += _T("/>");
 						break;
 					}
 				}
 
-				sResult += _T("</w:sdtPr>");
-
 				return sResult;
 			}
+			std::wstring      toXMLEnd() const
+			{
+				return _T("</w:sdtPr>");
+			}
 
+			virtual std::wstring      toXML() const
+			{
+				return toXMLStart() + toXMLEnd();
+			}
 			virtual EElementType getType() const
 			{
 				return et_w_sdtPr;

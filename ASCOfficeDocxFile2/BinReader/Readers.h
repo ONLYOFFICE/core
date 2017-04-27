@@ -7414,8 +7414,10 @@ public:
 		OOX::Logic::CDate* pDate = static_cast<OOX::Logic::CDate*>(poResult);
 		if (c_oSerSdt::FullDate == type)
 		{
-			pDate->m_oFullDate.Init();
-			pDate->m_oFullDate->SetValue(m_oBufferedStream.GetString3(length));
+            std::wstring sVal = m_oBufferedStream.GetString3(length);
+
+            pDate->m_oFullDate.Init();
+            pDate->m_oFullDate->SetValue(sVal);
 		}
 		else if (c_oSerSdt::Calendar == type)
 		{
@@ -7432,7 +7434,8 @@ public:
 		{
 			pDate->m_oLid.Init();
 			pDate->m_oLid->m_oVal.Init();
-			pDate->m_oLid->m_oVal->SetValue(m_oBufferedStream.GetString3(length));
+            std::wstring sVal = m_oBufferedStream.GetString3(length);
+            pDate->m_oLid->m_oVal->SetValue(sVal);
 		}
 		else if (c_oSerSdt::StoreMappedDataAs == type)
 		{

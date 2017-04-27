@@ -124,6 +124,13 @@ namespace OOX
 	}\
 	Reader.MoveToElement();
 
+#define WritingElement_ReadAttributes_End_No_NS(Reader) \
+		if ( !Reader.MoveToNextAttribute() ) \
+			break;\
+		wsName = XmlUtils::GetNameNoNS(Reader.GetName());\
+	}\
+	Reader.MoveToElement();
+
 	enum EElementType
 	{
 		et_Unknown,

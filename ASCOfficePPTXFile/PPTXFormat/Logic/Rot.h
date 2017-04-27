@@ -62,7 +62,7 @@ namespace PPTX
 					WritingElement_ReadAttributes_Read_if		( oReader, _T("lat"), lat_)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("lon"), lon_)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("rev"), rev_)
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 			
 				lat = lat_.get_value_or(0);
 				lon = lon_.get_value_or(0);

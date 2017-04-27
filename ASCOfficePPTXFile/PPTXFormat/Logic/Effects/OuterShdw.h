@@ -99,7 +99,7 @@ namespace PPTX
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("rotWithShape"), rotWithShape)
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("sx"), sx)
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("sy"), sy)
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 				
 				Normalize();
 			}

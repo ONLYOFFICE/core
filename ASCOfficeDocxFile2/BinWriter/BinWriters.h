@@ -3047,8 +3047,9 @@ namespace BinDocxRW
 					case OOX::et_w_sdt:
 					{
 						OOX::Logic::CSdt* pStd = static_cast<OOX::Logic::CSdt*>(item);
-						if(pStd->m_oSdtContent.IsInit())
-							WriteDocumentContent(pStd->m_oSdtContent.get().m_arrItems);
+						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Sdt);
+						WriteSdt(pStd, 0, NULL, 0, 0, 0);
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
 					}break;
 					case OOX::et_w_smartTag:
 					{
@@ -3189,8 +3190,9 @@ namespace BinDocxRW
 				case OOX::et_w_sdt:
 					{
 						OOX::Logic::CSdt* pStd = static_cast<OOX::Logic::CSdt*>(item);
-						if(pStd->m_oSdtContent.IsInit())
-							WriteParagraphContent(pStd->m_oSdtContent.get().m_arrItems);
+						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Sdt);
+						WriteSdt(pStd, 1, NULL, 0, 0, 0);
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
 						break;
 					}
 				case OOX::et_w_smartTag:
@@ -6366,8 +6368,9 @@ namespace BinDocxRW
 				else if(OOX::et_w_sdt == item->getType())
 				{
 					OOX::Logic::CSdt* pStd = static_cast<OOX::Logic::CSdt*>(item);
-					if(pStd->m_oSdtContent.IsInit())
-						WriteTableContent(pStd->m_oSdtContent->m_arrItems, pTblPr, nRows, nCols);
+					nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::Sdt);
+					WriteSdt(pStd, 2, pTblPr, 0, nRows, nCols);
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
 				else if(OOX::et_w_smartTag == item->getType())
 				{
@@ -6425,8 +6428,9 @@ namespace BinDocxRW
 				else if(OOX::et_w_sdt == item->getType())
 				{
 					OOX::Logic::CSdt* pStd = static_cast<OOX::Logic::CSdt*>(item);
-					if(pStd->m_oSdtContent.IsInit())
-						WriteRowContent(pStd->m_oSdtContent.get().m_arrItems, pTblPr, nCurRowIndex, nRows, nCols);
+					nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::Sdt);
+					WriteSdt(pStd, 3, pTblPr, nCurRowIndex, nRows, nCols);
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
 				else if(OOX::et_w_smartTag == item->getType())
 				{
@@ -6461,6 +6465,287 @@ namespace BinDocxRW
 			nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::Cell_Content);
 				oBinaryDocumentTableWriter.WriteDocumentContent(tc.m_arrItems);
 			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		void WriteSdt(OOX::Logic::CSdt* pStd, int type, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex, int nRows, int nCols)
+		{
+			int nCurPos = 0;
+			if(pStd->m_oSdtPr.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::Pr);
+				WriteSdtPr(pStd->m_oSdtPr.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(pStd->m_oSdtEndPr.IsInit() && pStd->m_oSdtEndPr->m_oRPr.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::EndPr);
+				brPrs.Write_rPr(pStd->m_oSdtEndPr->m_oRPr.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(pStd->m_oSdtContent.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::Content);
+				switch(type)
+				{
+					case 0:
+					{
+						BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, m_oParamsDocumentWriter, m_mapIgnoreComments, bpPrs.m_oBinaryHeaderFooterTableWriter);
+						oBinaryDocumentTableWriter.WriteDocumentContent(pStd->m_oSdtContent.get().m_arrItems);
+						break;
+					}
+					case 1:
+					{
+						WriteParagraphContent(pStd->m_oSdtContent.get().m_arrItems);
+						break;
+					}
+					case 2:
+					{
+						WriteTableContent(pStd->m_oSdtContent->m_arrItems, pTblPr, nRows, nCols);
+						break;
+					}
+					case 3:
+					{
+						WriteRowContent(pStd->m_oSdtContent.get().m_arrItems, pTblPr, nCurRowIndex, nRows, nCols);
+						break;
+					}
+				}
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+		}
+		void WriteSdtPr(const OOX::Logic::CSdtPr& oStdPr)
+		{
+			int nCurPos = 0;
+			nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::Type);
+			m_oBcw.m_oStream.WriteBYTE(oStdPr.m_eType);
+			m_oBcw.WriteItemEnd(nCurPos);
+
+			if(oStdPr.m_oAlias.IsInit() && oStdPr.m_oAlias->m_sVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::Alias);
+				m_oBcw.m_oStream.WriteStringW3(oStdPr.m_oAlias->m_sVal.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oStdPr.m_oComboBox.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::ComboBox);
+				WriteSdtComboBox(oStdPr.m_oComboBox.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oStdPr.m_oDataBinding.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::DataBinding);
+				WriteSdtPrDataBinding(oStdPr.m_oDataBinding.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oStdPr.m_oDate.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PrDate);
+				WriteSdtPrDate(oStdPr.m_oDate.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oStdPr.m_oDocPartList.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::DocPartList);
+				WriteDocPartList(oStdPr.m_oDocPartList.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oStdPr.m_oDocPartObj.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::DocPartObj);
+				WriteDocPartList(oStdPr.m_oDocPartObj.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oStdPr.m_oDropDownList.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::DropDownList);
+				WriteDropDownList(oStdPr.m_oDropDownList.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oStdPr.m_oId.IsInit() && oStdPr.m_oId->m_oVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::Id);
+				m_oBcw.m_oStream.WriteULONG(oStdPr.m_oId->m_oVal->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oStdPr.m_oLabel.IsInit() && oStdPr.m_oLabel->m_oVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::Label);
+				m_oBcw.m_oStream.WriteULONG(oStdPr.m_oLabel->m_oVal->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oStdPr.m_oLock.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::Lock);
+				m_oBcw.m_oStream.WriteBYTE(oStdPr.m_oLock->m_oVal.GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oStdPr.m_oPlaceHolder.IsInit() && oStdPr.m_oPlaceHolder->m_oDocPart.IsInit() && oStdPr.m_oPlaceHolder->m_oDocPart->m_sVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PlaceHolder);
+				m_oBcw.m_oStream.WriteStringW3(oStdPr.m_oPlaceHolder->m_oDocPart->m_sVal.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oStdPr.m_oRPr.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::RPr);
+				brPrs.Write_rPr(oStdPr.m_oRPr.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oStdPr.m_oShowingPlcHdr.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::ShowingPlcHdr);
+				m_oBcw.m_oStream.WriteBOOL(oStdPr.m_oShowingPlcHdr->m_oVal.ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oStdPr.m_oTabIndex.IsInit() && oStdPr.m_oTabIndex->m_oVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TabIndex);
+				m_oBcw.m_oStream.WriteULONG(oStdPr.m_oTabIndex->m_oVal->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oStdPr.m_oTag.IsInit() && oStdPr.m_oTag->m_sVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::Tag);
+				m_oBcw.m_oStream.WriteStringW3(oStdPr.m_oTag->m_sVal.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oStdPr.m_oTemporary.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::Temporary);
+				m_oBcw.m_oStream.WriteBOOL(oStdPr.m_oTemporary->m_oVal.ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oStdPr.m_oText.IsInit() && oStdPr.m_oText->m_oMultiLine.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::MultiLine);
+				m_oBcw.m_oStream.WriteBOOL(oStdPr.m_oText->m_oMultiLine->ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+		}
+		void WriteSdtComboBox(const OOX::Logic::CSdtComboBox& oSdtComboBox)
+		{
+			int nCurPos = 0;
+			if(oSdtComboBox.m_sLastValue.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::LastValue);
+				m_oBcw.m_oStream.WriteStringW3(oSdtComboBox.m_sLastValue.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			for(size_t i = 0; i < oSdtComboBox.m_arrListItem.size(); ++i)
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::SdtListItem);
+				WriteSdtListItem(*oSdtComboBox.m_arrListItem[i]);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+		}
+		void WriteSdtListItem(const ComplexTypes::Word::CSdtListItem& oSdtListItem)
+		{
+			int nCurPos = 0;
+			if(oSdtListItem.m_sDisplayText.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::DisplayText);
+				m_oBcw.m_oStream.WriteStringW3(oSdtListItem.m_sDisplayText.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oSdtListItem.m_sValue.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::Value);
+				m_oBcw.m_oStream.WriteStringW3(oSdtListItem.m_sValue.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+		}
+		void WriteSdtPrDataBinding(const ComplexTypes::Word::CDataBinding& oDataBinding)
+		{
+			int nCurPos = 0;
+			if(oDataBinding.m_sPrefixMappings.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PrefixMappings);
+				m_oBcw.m_oStream.WriteStringW3(oDataBinding.m_sPrefixMappings.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oDataBinding.m_sStoreItemID.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::StoreItemID);
+				m_oBcw.m_oStream.WriteStringW3(oDataBinding.m_sStoreItemID.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oDataBinding.m_sXPath.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::XPath);
+				m_oBcw.m_oStream.WriteStringW3(oDataBinding.m_sXPath.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+		}
+		void WriteSdtPrDate(const OOX::Logic::CDate& oDate)
+		{
+			int nCurPos = 0;
+			if(oDate.m_oFullDate.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FullDate);
+				m_oBcw.m_oStream.WriteStringW3(oDate.m_oFullDate->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oDate.m_oCalendar.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::Calendar);
+				m_oBcw.m_oStream.WriteBYTE(oDate.m_oCalendar->m_oVal.GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oDate.m_oDateFormat.IsInit() && oDate.m_oDateFormat->m_sVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::DateFormat);
+				m_oBcw.m_oStream.WriteStringW3(oDate.m_oDateFormat->m_sVal.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oDate.m_oLid.IsInit() && oDate.m_oLid->m_oVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::Lid);
+				m_oBcw.m_oStream.WriteStringW3(oDate.m_oLid->m_oVal->GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oDate.m_oStoreMappedDateAs.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::StoreMappedDataAs);
+				m_oBcw.m_oStream.WriteBYTE(oDate.m_oStoreMappedDateAs->m_oVal.GetValue());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+		}
+		void WriteDocPartList(const OOX::Logic::CSdtDocPart& oSdtDocPart)
+		{
+			int nCurPos = 0;
+			if(oSdtDocPart.m_oDocPartCategory.IsInit() && oSdtDocPart.m_oDocPartCategory->m_sVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::DocPartCategory);
+				m_oBcw.m_oStream.WriteStringW3(oSdtDocPart.m_oDocPartCategory->m_sVal.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oSdtDocPart.m_oDocPartGallery.IsInit() && oSdtDocPart.m_oDocPartGallery->m_sVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::DocPartGallery);
+				m_oBcw.m_oStream.WriteStringW3(oSdtDocPart.m_oDocPartGallery->m_sVal.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			if(oSdtDocPart.m_oDocPartUnique.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::DocPartUnique);
+				m_oBcw.m_oStream.WriteBOOL(oSdtDocPart.m_oDocPartUnique->m_oVal.ToBool());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+		}
+		void WriteDropDownList(const OOX::Logic::CSdtDropDownList& oDropDownList)
+		{
+			int nCurPos = 0;
+			if(oDropDownList.m_sLastValue.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::LastValue);
+				m_oBcw.m_oStream.WriteStringW3(oDropDownList.m_sLastValue.get());
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+			for(size_t i = 0; i < oDropDownList.m_arrListItem.size(); ++i)
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::SdtListItem);
+				WriteSdtListItem(*oDropDownList.m_arrListItem[i]);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
 		}
 	};
 	class BinaryCommentsTableWriter

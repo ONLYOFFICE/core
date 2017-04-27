@@ -142,7 +142,7 @@ namespace PPTX
 				
 				pWriter->EndAttributes();
 				
-				pWriter->StartNode(namespaceLock_ + L"graphicFrameLocks");
+				pWriter->StartNode(namespaceLock_ + L":graphicFrameLocks");
 
 				pWriter->StartAttributes();
 

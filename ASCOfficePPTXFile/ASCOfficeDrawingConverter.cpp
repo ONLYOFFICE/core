@@ -4309,7 +4309,7 @@ HRESULT CDrawingConverter::LoadClrMap(const std::wstring& bsXml)
 
 	if (oNode.IsValid())
 	{
-        pClrMap->fromXMLW(oNode.ReadNode(L"w:clrSchemeMapping"));
+        pClrMap->fromXML(oNode.ReadNode(L"w:clrSchemeMapping"));
 	}
 	
 	*m_pClrMap = pClrMap;

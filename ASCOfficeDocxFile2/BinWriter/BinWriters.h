@@ -7194,80 +7194,94 @@ namespace BinDocxRW
                 }
 			}			
 		}
-		void WriteColorSchemeMapping(const OOX::Settings::CColorSchemeMapping& oColorSchemeMapping)
+		void WriteColorSchemeMapping(const PPTX::Logic::ClrMap& oColorSchemeMapping)
 		{
 			int nCurPos = 0;
-			if(oColorSchemeMapping.m_oAccent1.IsInit())
+			std::map<std::wstring, PPTX::Limit::ColorSchemeIndex>::const_iterator pFind;
+
+			pFind = oColorSchemeMapping.ColorMap.find(L"accent1");
+			if(pFind != oColorSchemeMapping.ColorMap.end())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_ClrSchemeMappingType::Accent1);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBYTE(oColorSchemeMapping.m_oAccent1->GetValue());
+				m_oBcw.m_oStream.WriteBYTE(pFind->second.GetBYTECode());
 			}
-			if(oColorSchemeMapping.m_oAccent2.IsInit())
+			pFind = oColorSchemeMapping.ColorMap.find(L"accent2");
+			if(pFind != oColorSchemeMapping.ColorMap.end())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_ClrSchemeMappingType::Accent2);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBYTE(oColorSchemeMapping.m_oAccent2->GetValue());
+				m_oBcw.m_oStream.WriteBYTE(pFind->second.GetBYTECode());
 			}
-			if(oColorSchemeMapping.m_oAccent3.IsInit())
+			pFind = oColorSchemeMapping.ColorMap.find(L"accent3");
+			if(pFind != oColorSchemeMapping.ColorMap.end())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_ClrSchemeMappingType::Accent3);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBYTE(oColorSchemeMapping.m_oAccent3->GetValue());
+				m_oBcw.m_oStream.WriteBYTE(pFind->second.GetBYTECode());
 			}
-			if(oColorSchemeMapping.m_oAccent4.IsInit())
+			pFind = oColorSchemeMapping.ColorMap.find(L"accent4");
+			if(pFind != oColorSchemeMapping.ColorMap.end())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_ClrSchemeMappingType::Accent4);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBYTE(oColorSchemeMapping.m_oAccent4->GetValue());
+				m_oBcw.m_oStream.WriteBYTE(pFind->second.GetBYTECode());
 			}
-			if(oColorSchemeMapping.m_oAccent5.IsInit())
+			pFind = oColorSchemeMapping.ColorMap.find(L"accent5");
+			if(pFind != oColorSchemeMapping.ColorMap.end())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_ClrSchemeMappingType::Accent5);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBYTE(oColorSchemeMapping.m_oAccent5->GetValue());
+				m_oBcw.m_oStream.WriteBYTE(pFind->second.GetBYTECode());
 			}
-			if(oColorSchemeMapping.m_oAccent6.IsInit())
+			pFind = oColorSchemeMapping.ColorMap.find(L"accent6");
+			if(pFind != oColorSchemeMapping.ColorMap.end())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_ClrSchemeMappingType::Accent6);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBYTE(oColorSchemeMapping.m_oAccent6->GetValue());
+				m_oBcw.m_oStream.WriteBYTE(pFind->second.GetBYTECode());
 			}
-			if(oColorSchemeMapping.m_oBg1.IsInit())
+			pFind = oColorSchemeMapping.ColorMap.find(L"bg1");
+			if(pFind != oColorSchemeMapping.ColorMap.end())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_ClrSchemeMappingType::Bg1);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBYTE(oColorSchemeMapping.m_oBg1->GetValue());
+				m_oBcw.m_oStream.WriteBYTE(pFind->second.GetBYTECode());
 			}
-			if(oColorSchemeMapping.m_oBg2.IsInit())
+			pFind = oColorSchemeMapping.ColorMap.find(L"bg2");
+			if(pFind != oColorSchemeMapping.ColorMap.end())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_ClrSchemeMappingType::Bg2);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBYTE(oColorSchemeMapping.m_oBg2->GetValue());
+				m_oBcw.m_oStream.WriteBYTE(pFind->second.GetBYTECode());
 			}
-			if(oColorSchemeMapping.m_oFollowedHyperlink.IsInit())
+			pFind = oColorSchemeMapping.ColorMap.find(L"folHlink");
+			if(pFind != oColorSchemeMapping.ColorMap.end())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_ClrSchemeMappingType::FollowedHyperlink);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBYTE(oColorSchemeMapping.m_oFollowedHyperlink->GetValue());
+				m_oBcw.m_oStream.WriteBYTE(pFind->second.GetBYTECode());
 			}
-			if(oColorSchemeMapping.m_oHyperlink.IsInit())
+			pFind = oColorSchemeMapping.ColorMap.find(L"hlink");
+			if(pFind != oColorSchemeMapping.ColorMap.end())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_ClrSchemeMappingType::Hyperlink);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBYTE(oColorSchemeMapping.m_oHyperlink->GetValue());
+				m_oBcw.m_oStream.WriteBYTE(pFind->second.GetBYTECode());
 			}
-			if(oColorSchemeMapping.m_oT1.IsInit())
+			pFind = oColorSchemeMapping.ColorMap.find(L"tx1");
+			if(pFind != oColorSchemeMapping.ColorMap.end())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_ClrSchemeMappingType::T1);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBYTE(oColorSchemeMapping.m_oT1->GetValue());
+				m_oBcw.m_oStream.WriteBYTE(pFind->second.GetBYTECode());
 			}
-			if(oColorSchemeMapping.m_oT2.IsInit())
+			pFind = oColorSchemeMapping.ColorMap.find(L"tx2");
+			if(pFind != oColorSchemeMapping.ColorMap.end())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_ClrSchemeMappingType::T2);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBYTE(oColorSchemeMapping.m_oT2->GetValue());
+				m_oBcw.m_oStream.WriteBYTE(pFind->second.GetBYTECode());
 			}
 		};
 	};

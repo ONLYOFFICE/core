@@ -2809,11 +2809,19 @@ void DocxConverter::convert(ComplexTypes::Word::CColor *color, _CP_OPT(odf_types
 	if (!color)return;
 	convert(color->m_oVal.GetPointer(), color->m_oThemeColor.GetPointer(),color->m_oThemeTint.GetPointer(),color->m_oThemeShade.GetPointer(), odf_color);
 }
+PPTX::Logic::ClrMap* DocxConverter::oox_clrMap()
+{
+	//return current_clrMap; todoooo
+	OOX::CSettings * docx_settings = docx_document->GetSettings();
+	if (!docx_settings) return NULL;
+	
+	return docx_settings->m_oClrSchemeMapping.GetPointer();
+}
 void DocxConverter::convert_settings()
 {
 	if (!odt_context) return;
-	OOX::CSettings * docx_settings = docx_document->GetSettings();
 
+	OOX::CSettings * docx_settings = docx_document->GetSettings();
 	if (!docx_settings) return;
 
 	if (docx_settings->m_oZoom.IsInit())

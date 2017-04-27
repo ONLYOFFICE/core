@@ -245,7 +245,7 @@ namespace PPTX
 
 			std::map<std::wstring, Limit::ColorSchemeIndex> ColorMap;
 
-			std::wstring			m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

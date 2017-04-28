@@ -114,11 +114,11 @@ namespace OOX
                                 memcpy(m_pData, pData, nTreshold);
                                 memcpy(m_pData + nTreshold, rIdAttr.c_str(), rIdAttr.length());
                                 memcpy(m_pData + nTreshold + rIdAttr.length(), pData + nTreshold, length - nTreshold);
-
                             }
                             else
                             {
                                 m_nDataLength = length;
+                                m_pData = new BYTE[m_nDataLength];
                                 memcpy(m_pData, pData, length);
                             }
                         }

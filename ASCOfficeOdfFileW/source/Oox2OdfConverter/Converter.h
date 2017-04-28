@@ -355,10 +355,11 @@ public:
 		double	getSystemDPI();
 	
 //.......................................................................................................................
+ 		virtual OOX::IFileContainer								*current_document() = 0;
 		virtual cpdoccore::odf_writer::odf_conversion_context	*odf_context()	= 0;		
 		virtual PPTX::Theme										*oox_theme()	= 0;
 		virtual PPTX::Logic::ClrMap								*oox_clrMap()	{return NULL;}
-        
+       
 		virtual std::wstring								find_link_by_id(std::wstring sId, int t) = 0;
 		virtual NSCommon::smart_ptr<OOX::File>				find_file_by_id(std::wstring sId) = 0;
 		

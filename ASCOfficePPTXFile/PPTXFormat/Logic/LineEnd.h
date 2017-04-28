@@ -62,7 +62,7 @@ namespace PPTX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("w"), w )
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("type"), type )
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("len"), len )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{

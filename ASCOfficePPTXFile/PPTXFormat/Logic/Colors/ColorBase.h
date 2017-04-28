@@ -496,13 +496,13 @@ namespace PPTX
 
 			static void HSL2RGB(unsigned char* HSL, unsigned char* RGB)
 			{
-				if ( HSL[1] == 0 )
-				{
-				   RGB[0] = HSL[2];
-				   RGB[1] = HSL[2];
-				   RGB[2] = HSL[2];
-				}
-				else
+				//if ( HSL[1] == 0 )
+				//{
+				//   RGB[0] = HSL[2];
+				//   RGB[1] = HSL[2];
+				//   RGB[2] = HSL[2];
+				//}
+				//else
 				{
 					double H = double(HSL[0])/240.0;
 					double S = double(HSL[1])/240.0;

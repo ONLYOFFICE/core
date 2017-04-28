@@ -98,9 +98,6 @@ void OoxConverter::convert(PPTX::Logic::GraphicFrame *oox_graphic_frame)
 {
 	if (!oox_graphic_frame)return;
 
-//----------------------------------------------------------------------------------
-	odf_context()->drawing_context()->start_drawing();
-	
 	convert(&oox_graphic_frame->nvGraphicFramePr);		
 	convert(oox_graphic_frame->xfrm.GetPointer());		
 	
@@ -126,7 +123,6 @@ void OoxConverter::convert(PPTX::Logic::GraphicFrame *oox_graphic_frame)
 	{
 		OoxConverter::convert(oox_graphic_frame->element.GetElem().operator->());
 	}
-	odf_context()->drawing_context()->end_drawing();
 }
 void OoxConverter::convert(PPTX::Logic::NvGraphicFramePr *oox_framePr)
 {
@@ -194,7 +190,6 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 
 		if (type != SimpleTypes::shapetypeRect)
 		{
-			odf_context()->drawing_context()->start_drawing();
 			odf_context()->drawing_context()->start_shape(type);			
 				
 				convert(&oox_picture->spPr, oox_picture->style.GetPointer());
@@ -205,7 +200,6 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 				odf_context()->drawing_context()->end_area_properties();				
 
 			odf_context()->drawing_context()->end_shape();
-			odf_context()->drawing_context()->end_drawing();
 			return;
 		}
 	}
@@ -229,7 +223,6 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		}
 	}
 
-	odf_context()->drawing_context()->start_drawing();	
 	odf_context()->drawing_context()->start_image(odf_ref);
 	{
 		double Width = 0, Height = 0;
@@ -257,7 +250,6 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 
 	}
 	odf_context()->drawing_context()->end_image();
-	odf_context()->drawing_context()->end_drawing();
 }
 
 void OoxConverter::convert(PPTX::Logic::SmartArt *oox_smart_art)
@@ -265,7 +257,7 @@ void OoxConverter::convert(PPTX::Logic::SmartArt *oox_smart_art)
 	if (oox_smart_art == NULL) return;
 	if (oox_smart_art->id_data.IsInit() == false) return;
 
-	oox_smart_art->LoadDrawing();
+	oox_smart_art->LoadDrawing(current_document());
 
 	if (oox_smart_art->m_diag.IsInit())
 	{
@@ -283,7 +275,9 @@ void OoxConverter::convert(PPTX::Logic::SmartArt *oox_smart_art)
 
 		for (size_t i = 0; i < oox_smart_art->m_diag->SpTreeElems.size(); i++)
 		{
-			convert(&oox_smart_art->m_diag->SpTreeElems[i]);
+			odf_context()->drawing_context()->start_drawing();
+				convert(&oox_smart_art->m_diag->SpTreeElems[i]);
+			odf_context()->drawing_context()->end_drawing();
 		}
 
 		odf_context()->drawing_context()->end_group();
@@ -400,7 +394,9 @@ void OoxConverter::convert(PPTX::Logic::SpTree *oox_shape_tree)
 
 	for (size_t i = 0; i < oox_shape_tree->SpTreeElems.size(); i++)
 	{
-		convert(oox_shape_tree->SpTreeElems[i].GetElem().operator->());
+		odf_context()->drawing_context()->start_drawing();
+			convert(oox_shape_tree->SpTreeElems[i].GetElem().operator->());
+		odf_context()->drawing_context()->end_drawing();
 	}
 
 	odf_context()->drawing_context()->end_group();	
@@ -410,105 +406,105 @@ void OoxConverter::convert(PPTX::Logic::CxnSp *oox_connect)
 {
 	if (oox_connect == NULL) return;
 
-	odf_context()->drawing_context()->start_drawing();
-	
-		int type = SimpleTypes::shapetypeLine;
+	int type = SimpleTypes::shapetypeLine;
 
-		if ( oox_connect->spPr.Geometry.is<PPTX::Logic::PrstGeom>() )
-		{
-			const PPTX::Logic::PrstGeom& prstGeom = oox_connect->spPr.Geometry.as<PPTX::Logic::PrstGeom>();
-			
-			SimpleTypes::CShapeType<> preset;
-			preset.FromString(prstGeom.prst.get());
-			type = preset.GetValue();
-		}
-		odf_context()->drawing_context()->start_shape(type);
+	if ( oox_connect->spPr.Geometry.is<PPTX::Logic::PrstGeom>() )
+	{
+		const PPTX::Logic::PrstGeom& prstGeom = oox_connect->spPr.Geometry.as<PPTX::Logic::PrstGeom>();
 		
+		SimpleTypes::CShapeType<> preset;
+		preset.FromString(prstGeom.prst.get());
+		type = preset.GetValue();
+	}
+	odf_context()->drawing_context()->start_shape(type);
+	
 		convert(&oox_connect->spPr, oox_connect->style.GetPointer());
 		convert(&oox_connect->nvCxnSpPr);
 
 	odf_context()->drawing_context()->end_shape();
-	
-	odf_context()->drawing_context()->end_drawing();
 }
 void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 {
 	if (oox_shape == NULL) return;
 
 	_CP_OPT(bool) bMasterPresentation = odf_context()->drawing_context()->get_presentation();
-
-	odf_context()->drawing_context()->start_drawing();
 	
-		int type = 1000; //custom
+	if (oox_shape->txXfrm.IsInit())
+	{
+		odf_context()->drawing_context()->start_group();
+		odf_context()->drawing_context()->start_drawing();
+	}
+	
+	int type = 1000; //custom
 
-		if (oox_shape->spPr.Geometry.is_init())
+	if (oox_shape->spPr.Geometry.is_init())
+	{
+		if ( oox_shape->spPr.Geometry.is<PPTX::Logic::PrstGeom>() )
 		{
-			if ( oox_shape->spPr.Geometry.is<PPTX::Logic::PrstGeom>() )
-			{
-				const PPTX::Logic::PrstGeom& prstGeom = oox_shape->spPr.Geometry.as<PPTX::Logic::PrstGeom>();
-				
-				SimpleTypes::CShapeType<> preset;
-				preset.FromString(prstGeom.prst.get());
-				type = preset.GetValue();
-			}
-
-			if (type == SimpleTypes::shapetypeRect && (oox_shape->txBody.IsInit() || oox_shape->oTextBoxShape.IsInit())) 
-				type = 2000;
-
-			if (type == 2000)
-			{
-				PPTX::Logic::BodyPr *bodyPr = NULL;
-				if (oox_shape->txBody.IsInit())		bodyPr = oox_shape->txBody->bodyPr.GetPointer();
-				else								bodyPr = oox_shape->oTextBoxBodyPr.GetPointer();
-				
-				if (bodyPr && bodyPr->fromWordArt.get_value_or(false))
-				{
-					int wordart_type = convert(bodyPr->prstTxWarp.GetPointer());
-					if (wordart_type > 0) type = wordart_type;
-				}
-			}
+			const PPTX::Logic::PrstGeom& prstGeom = oox_shape->spPr.Geometry.as<PPTX::Logic::PrstGeom>();
+			
+			SimpleTypes::CShapeType<> preset;
+			preset.FromString(prstGeom.prst.get());
+			type = preset.GetValue();
 		}
-		else if (oox_shape->nvSpPr.nvPr.ph.is_init())
-		{
+
+		if (type == SimpleTypes::shapetypeRect && (oox_shape->txBody.IsInit() || oox_shape->oTextBoxShape.IsInit())) 
 			type = 2000;
-		}
 
-		if (type < 0)return;
-//-----------------------------------------------------------------------------
-		odf_context()->drawing_context()->start_shape(type);
-		
-		convert(&oox_shape->spPr, oox_shape->style.GetPointer());
-
-		convert(&oox_shape->nvSpPr);	
-
-		if (oox_shape->txXfrm.IsInit() == false)
+		if (type == 2000)
 		{
-			if (oox_shape->oTextBoxShape.IsInit()) //docx sdt
+			PPTX::Logic::BodyPr *bodyPr = NULL;
+			if (oox_shape->txBody.IsInit())		bodyPr = oox_shape->txBody->bodyPr.GetPointer();
+			else								bodyPr = oox_shape->oTextBoxBodyPr.GetPointer();
+			
+			if (bodyPr && bodyPr->fromWordArt.get_value_or(false))
 			{
-				DocxConverter *docx_converter = dynamic_cast<DocxConverter*>(this);
-				if (docx_converter)
-				{
-					odf_context()->start_text_context();	
-						docx_converter->convert(oox_shape->oTextBoxShape.GetPointer());
-						odf_context()->drawing_context()->set_text( odf_context()->text_context());
-					
-						convert(oox_shape->oTextBoxBodyPr.GetPointer());
-						
-						if (oox_shape->style.IsInit())
-							convert(&oox_shape->style->fontRef);
-					odf_context()->end_text_context();	
-				}
+				int wordart_type = convert(bodyPr->prstTxWarp.GetPointer());
+				if (wordart_type > 0) type = wordart_type;
 			}
-			else
-				convert(oox_shape->txBody.GetPointer(), oox_shape->style.GetPointer());
 		}
+	}
+	else if (oox_shape->nvSpPr.nvPr.ph.is_init())
+	{
+		type = 2000;
+	}
+
+	if (type < 0)return;
+//-----------------------------------------------------------------------------
+	odf_context()->drawing_context()->start_shape(type);
+	
+	convert(&oox_shape->spPr, oox_shape->style.GetPointer());
+
+	convert(&oox_shape->nvSpPr);	
+
+	if (oox_shape->txXfrm.IsInit() == false)
+	{
+		if (oox_shape->oTextBoxShape.IsInit()) //docx sdt
+		{
+			DocxConverter *docx_converter = dynamic_cast<DocxConverter*>(this);
+			if (docx_converter)
+			{
+				odf_context()->start_text_context();	
+					docx_converter->convert(oox_shape->oTextBoxShape.GetPointer());
+					odf_context()->drawing_context()->set_text( odf_context()->text_context());
+				
+					convert(oox_shape->oTextBoxBodyPr.GetPointer());
+					
+					if (oox_shape->style.IsInit())
+						convert(&oox_shape->style->fontRef);
+				odf_context()->end_text_context();	
+			}
+		}
+		else
+			convert(oox_shape->txBody.GetPointer(), oox_shape->style.GetPointer());
+	}
 
 	odf_context()->drawing_context()->end_shape();
 	
-	odf_context()->drawing_context()->end_drawing();
-
 	if (oox_shape->txXfrm.IsInit())
 	{
+		odf_context()->drawing_context()->end_drawing();
+		
 		odf_context()->drawing_context()->start_drawing();
 		odf_context()->drawing_context()->start_text_box();	
 
@@ -521,6 +517,8 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 		
 		odf_context()->drawing_context()->end_text_box();	
 		odf_context()->drawing_context()->end_drawing();
+		
+		odf_context()->drawing_context()->end_group();	
 	}
 }
 

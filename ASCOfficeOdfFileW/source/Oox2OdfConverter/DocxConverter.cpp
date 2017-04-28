@@ -103,7 +103,16 @@ PPTX::Theme* DocxConverter::oox_theme()
 	else
 		return NULL;
 }
-
+OOX::IFileContainer* DocxConverter::current_document()
+{
+	if (oox_current_child_document)
+		return oox_current_child_document;
+	else
+	{
+		OOX::CDocument  *oox_doc = docx_document->GetDocument();
+		return dynamic_cast<OOX::IFileContainer*>(oox_doc);
+	}
+}
 NSCommon::smart_ptr<OOX::File> DocxConverter::find_file_by_id(std::wstring sId)
 {
 	OOX::CDocument  *oox_doc = docx_document->GetDocument();
@@ -1282,6 +1291,15 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 		//	}
 		//}
 
+	}
+
+	if (odt_context->notes_context()->is_started())
+	{
+		paragraph_properties->content_.fo_margin_left_			= odf_types::length( 0.5, odf_types::length::cm);	
+		paragraph_properties->content_.fo_text_indent_			= odf_types::length(-0.5, odf_types::length::cm);
+		paragraph_properties->content_.fo_line_height_			= odf_types::percent(100.); 
+		paragraph_properties->content_.style_auto_text_indent_	= false;
+		//loext:contextual-spacing="false" 
 	}
 
 	if (oox_paragraph_pr->m_oTabs.IsInit())
@@ -2705,9 +2723,12 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 		int id = oox_anchor->m_oRelativeHeight->GetValue();
 		odf_context()->drawing_context()->set_z_order(id);
 	}
+	
 	OoxConverter::convert(oox_anchor->m_oDocPr.GetPointer());
 	
-	convert(&oox_anchor->m_oGraphic);
+	odf_context()->drawing_context()->start_drawing();
+		OoxConverter::convert(&oox_anchor->m_oGraphic);
+	odf_context()->drawing_context()->end_drawing();
 
 	odf_context()->drawing_context()->check_anchor();
 }
@@ -2737,9 +2758,12 @@ void DocxConverter::convert(OOX::Drawing::CInline *oox_inline)
 
 	odt_context->drawing_context()->set_vertical_rel(2);//line
 	odt_context->drawing_context()->set_vertical_pos(1);//middle
-
+	
 	OoxConverter::convert(oox_inline->m_oDocPr.GetPointer());
-	convert(&oox_inline->m_oGraphic);
+	
+	odf_context()->drawing_context()->start_drawing();
+		OoxConverter::convert(&oox_inline->m_oGraphic);
+	odf_context()->drawing_context()->end_drawing();
 }
 
 void DocxConverter::convert(SimpleTypes::CHexColor<>		*color, 
@@ -2794,11 +2818,19 @@ void DocxConverter::convert(ComplexTypes::Word::CColor *color, _CP_OPT(odf_types
 	if (!color)return;
 	convert(color->m_oVal.GetPointer(), color->m_oThemeColor.GetPointer(),color->m_oThemeTint.GetPointer(),color->m_oThemeShade.GetPointer(), odf_color);
 }
+PPTX::Logic::ClrMap* DocxConverter::oox_clrMap()
+{
+	//return current_clrMap; todoooo
+	OOX::CSettings * docx_settings = docx_document->GetSettings();
+	if (!docx_settings) return NULL;
+	
+	return docx_settings->m_oClrSchemeMapping.GetPointer();
+}
 void DocxConverter::convert_settings()
 {
 	if (!odt_context) return;
-	OOX::CSettings * docx_settings = docx_document->GetSettings();
 
+	OOX::CSettings * docx_settings = docx_document->GetSettings();
 	if (!docx_settings) return;
 
 	if (docx_settings->m_oZoom.IsInit())

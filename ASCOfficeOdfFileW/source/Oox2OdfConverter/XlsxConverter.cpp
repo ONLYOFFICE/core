@@ -94,6 +94,15 @@ PPTX::Theme* XlsxConverter::oox_theme()
 	else
 		return NULL;
 }
+OOX::IFileContainer* XlsxConverter::current_document()
+{
+	if (xlsx_current_container)
+		return xlsx_current_container;
+	else if (oox_current_child_document)
+		return oox_current_child_document;
+	else
+		return NULL;
+}
 smart_ptr<OOX::File> XlsxConverter::find_file_by_id(std::wstring sId)
 {
 	smart_ptr<OOX::File> oFile;
@@ -1718,7 +1727,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
 	if (oox_anchor->m_oExt.IsInit())
 	{
 	}
-	OoxConverter::convert(oox_anchor->m_oElement.GetPointer());
+	odf_context()->drawing_context()->start_drawing();
+		OoxConverter::convert(oox_anchor->m_oElement.GetPointer());
+	odf_context()->drawing_context()->end_drawing();
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing)

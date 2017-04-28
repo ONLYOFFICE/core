@@ -580,134 +580,6 @@ namespace OOX
 			SimpleTypes::CCharacterSpacing<> m_oVal;
 		};
 		//--------------------------------------------------------------------------------
-		// CColorSchemeMapping 17.15.1.20 (Part 1)
-		//--------------------------------------------------------------------------------	
-		class CColorSchemeMapping : public WritingElement
-		{
-		public:
-			WritingElement_AdditionConstructors(CColorSchemeMapping)
-			CColorSchemeMapping()
-			{
-			}
-			virtual ~CColorSchemeMapping()
-			{
-			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				// TO DO: Реализовать CColorSchemeMapping::fromXML(XmlUtils::CXmlNode& oNode)
-			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring      toXML() const
-			{
-                std::wstring sResult = _T("<w:clrSchemeMapping ");
-
-				ComplexTypes_WriteAttribute( _T("w:bg1=\""), m_oBg1 );
-				ComplexTypes_WriteAttribute( _T("w:t1=\""),  m_oT1 );
-				ComplexTypes_WriteAttribute( _T("w:bg2=\""), m_oBg2 );
-				ComplexTypes_WriteAttribute( _T("w:t2=\""),  m_oT2 );
-				ComplexTypes_WriteAttribute( _T("w:accent1=\""),  m_oAccent1 );
-				ComplexTypes_WriteAttribute( _T("w:accent2=\""),  m_oAccent2 );
-				ComplexTypes_WriteAttribute( _T("w:accent3=\""),  m_oAccent3 );
-				ComplexTypes_WriteAttribute( _T("w:accent4=\""),  m_oAccent4 );
-				ComplexTypes_WriteAttribute( _T("w:accent5=\""),  m_oAccent5 );
-				ComplexTypes_WriteAttribute( _T("w:accent6=\""),  m_oAccent6 );
-				ComplexTypes_WriteAttribute( _T("w:hyperlink=\""), m_oHyperlink );
-				ComplexTypes_WriteAttribute( _T("w:followedHyperlink=\""), m_oFollowedHyperlink );
-
-				sResult += _T("/>");
-
-				return sResult;
-			}
-			virtual EElementType getType() const
-			{
-				return OOX::et_w_clrSchemeMapping;
-			}
-
-		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				if ( oReader.GetAttributesCount() <= 0 )
-					return;
-				
-				if ( !oReader.MoveToFirstAttribute() )
-					return;
-				
-				std::wstring wsName = oReader.GetName();
-				while( !wsName.empty() )
-				{
-					wchar_t wsChar0 = wsName[0]; 
-					wchar_t wsChar2 = wsName[2]; // w:_
-
-					if ( 'w' == wsChar0 )
-					{
-						switch ( wsChar2 )
-						{
-						case 'a':
-							if      ( _T("w:accent1") == wsName ) m_oAccent1 = oReader.GetText();
-							else if ( _T("w:accent2") == wsName ) m_oAccent2 = oReader.GetText();
-							else if ( _T("w:accent3") == wsName ) m_oAccent3 = oReader.GetText();
-							else if ( _T("w:accent4") == wsName ) m_oAccent4 = oReader.GetText();
-							else if ( _T("w:accent5") == wsName ) m_oAccent5 = oReader.GetText();
-							else if ( _T("w:accent6") == wsName ) m_oAccent6 = oReader.GetText();
-							break;
-
-						case 'b':
-							if      ( _T("w:bg1")     == wsName ) m_oBg1     = oReader.GetText();
-							else if ( _T("w:bg2")     == wsName ) m_oBg2     = oReader.GetText();
-							break;
-
-						case 'f':
-							if      ( _T("w:followedHyperlink") == wsName ) m_oFollowedHyperlink = oReader.GetText();
-							break;
-
-						case 'h':
-							if      ( _T("w:hyperlink") == wsName ) m_oHyperlink = oReader.GetText();
-							break;
-
-						case 't':
-							if      ( _T("w:t1") == wsName ) m_oT1 = oReader.GetText();
-							else if ( _T("w:t2") == wsName ) m_oT2 = oReader.GetText();
-							break;
-						}
-
-					}
-
-					if ( !oReader.MoveToNextAttribute() )
-						break;
-
-					wsName = oReader.GetName();
-				}
-				oReader.MoveToElement();
-			}
-
-		public:
-
-			// Attributes
-			nullable<SimpleTypes::CWmlColorSchemeIndex<>> m_oAccent1;
-			nullable<SimpleTypes::CWmlColorSchemeIndex<>> m_oAccent2;
-			nullable<SimpleTypes::CWmlColorSchemeIndex<>> m_oAccent3;
-			nullable<SimpleTypes::CWmlColorSchemeIndex<>> m_oAccent4;
-			nullable<SimpleTypes::CWmlColorSchemeIndex<>> m_oAccent5;
-			nullable<SimpleTypes::CWmlColorSchemeIndex<>> m_oAccent6;
-			nullable<SimpleTypes::CWmlColorSchemeIndex<>> m_oBg1;
-			nullable<SimpleTypes::CWmlColorSchemeIndex<>> m_oBg2;
-			nullable<SimpleTypes::CWmlColorSchemeIndex<>> m_oFollowedHyperlink;
-			nullable<SimpleTypes::CWmlColorSchemeIndex<>> m_oHyperlink;
-			nullable<SimpleTypes::CWmlColorSchemeIndex<>> m_oT1;
-			nullable<SimpleTypes::CWmlColorSchemeIndex<>> m_oT2;
-		};
-		//--------------------------------------------------------------------------------
 		// CCompatSetting 17.15.3.4 (Part 1)
 		//--------------------------------------------------------------------------------	
 		class CCompatSetting : public WritingElement
@@ -3225,189 +3097,142 @@ namespace OOX
 			if ( m_oAlignBordersAndEdges.IsInit() )
 				sXml += _T("<w:alignBordersAndEdges ") + m_oAlignBordersAndEdges->ToString() + _T("/>");
 
-			// 17
 			if ( m_oBordersDoNotSurroundHeader.IsInit() )
 				sXml += _T("<w:bordersDoNotSurroundHeader ") + m_oBordersDoNotSurroundHeader->ToString() + _T("/>");
 
-			// 18
-			if ( m_oBordersDoNotSurroundFooter.IsInit() )
 				sXml += _T("<w:bordersDoNotSurroundFooter ") + m_oBordersDoNotSurroundFooter->ToString() + _T("/>");
 
-			// 19
 			if ( m_oGutterAtTop.IsInit() )
 				sXml += _T("<w:gutterAtTop ") + m_oGutterAtTop->ToString() + _T("/>");
 
-			// 20
 			if ( m_oHideSpellingErrors.IsInit() )
 				sXml += _T("<w:hideSpellingErrors ") + m_oHideSpellingErrors->ToString() + _T("/>");
 
-			// 21
 			if ( m_oHideGrammaticalErrors.IsInit() )
 				sXml += _T("<w:hideGrammaticalErrors ") + m_oHideGrammaticalErrors->ToString() + _T("/>");
 
-			// 22
 			if ( m_oActiveWritingStyle.IsInit() )
 				sXml += m_oActiveWritingStyle->toXML();
 
-			// 23
 			if ( m_oProofState.IsInit() )
 				sXml += m_oProofState->toXML();
 
-			// 24
 			if ( m_oFormsDesign.IsInit() )
 				sXml += _T("<w:formsDesign ") + m_oFormsDesign->ToString() + _T("/>");
 
-			// 25
 			if ( m_oAttachedTemplate.IsInit() )
 				sXml += _T("<w:attachedTemplate ") + m_oAttachedTemplate->ToString() + _T("/>");
 
-			// 26
 			if ( m_oLinkStyles.IsInit() )
 				sXml += _T("<w:linkStyles ") + m_oLinkStyles->ToString() + _T("/>");
 
-			// 27
 			if ( m_oStylePaneFormatFilter.IsInit() )
 				sXml += m_oStylePaneFormatFilter->toXML();
 
-			// 28
 			if ( m_oStylePaneSortMethod.IsInit() )
 				sXml += m_oStylePaneSortMethod->toXML();
 
-			// 29
 			if ( m_oDocumentType.IsInit() )
 				sXml += m_oDocumentType->toXML();
 
 			// TO DO: Здесь вставить запись w:mailMerge
 
-			// 31
 			if ( m_oRevisionView.IsInit() )
 				sXml += m_oRevisionView->toXML();
 
-			// 32
 			if ( m_oTrackRevisions.IsInit() )
 				sXml += _T("<w:trackRevisions ") + m_oTrackRevisions->ToString() + _T("/>");
 
-			// 33
 			if ( m_oDoNotTrackMoves.IsInit() )
 				sXml += _T("<w:doNotTrackMoves ") + m_oDoNotTrackMoves->ToString() + _T("/>");
 
-			// 34
 			if ( m_oDoNotTrackFormatting.IsInit() )
 				sXml += _T("<w:doNotTrackFormatting ") + m_oDoNotTrackFormatting->ToString() + _T("/>");
 
-			// 35
 			if ( m_oDocumentProtection.IsInit() )
 				sXml += m_oDocumentProtection->toXML();
 
-			// 36
 			if ( m_oAutoFormatOverride.IsInit() )
 				sXml += _T("<w:autoFormatOverride ") + m_oAutoFormatOverride->ToString() + _T("/>");
 
-			// 37
 			if ( m_oStyleLockTheme.IsInit() )
 				sXml += _T("<w:styleLockTheme ") + m_oStyleLockTheme->ToString() + _T("/>");
 
-			// 38
 			if ( m_oStyleLockQFSet.IsInit() )
 				sXml += _T("<w:styleLockQFSet ") + m_oStyleLockQFSet->ToString() + _T("/>");
 
-			// 39
 			if ( m_oDefaultTabStop.IsInit() )
 				sXml += _T("<w:defaultTabStop ") + m_oDefaultTabStop->ToString() + _T("/>");
 
-			// 40
 			if ( m_oAutoHyphenation.IsInit() )
 				sXml += _T("<w:autoHyphenation ") + m_oAutoHyphenation->ToString() + _T("/>");
 
-			// 41
 			if ( m_oConsecutiveHyphenLimit.IsInit() )
 				sXml += _T("<w:consecutiveHyphenLimit ") + m_oConsecutiveHyphenLimit->ToString() + _T("/>");
 
-			// 42
 			if ( m_oHyphenationZone.IsInit() )
 				sXml += _T("<w:hyphenationZone ") + m_oHyphenationZone->ToString() + _T("/>");
 
-			// 43
 			if ( m_oDoNotHyphenateCaps.IsInit() )
 				sXml += _T("<w:doNotHyphenateCaps ") + m_oDoNotHyphenateCaps->ToString() + _T("/>");
 
-			// 44
 			if ( m_oShowEnvelope.IsInit() )
 				sXml += _T("<w:showEnvelope ") + m_oShowEnvelope->ToString() + _T("/>");
 
-			// 45
 			if ( m_oSummaryLength.IsInit() )
 				sXml += _T("<w:summaryLength ") + m_oSummaryLength->ToString() + _T("/>");
 
-			// 46
 			if ( m_oClickAndTypeStyle.IsInit() )
 				sXml += _T("<w:clickAndTypeStyle ") + m_oClickAndTypeStyle->ToString() + _T("/>");
 
-			// 47
 			if ( m_oDefaultTableStyle.IsInit() )
 				sXml += _T("<w:defaultTableStyle ") + m_oDefaultTableStyle->ToString() + _T("/>");
 
-			// 48
 			if ( m_oEvenAndOddHeaders.IsInit() )
 				sXml += _T("<w:evenAndOddHeaders ") + m_oEvenAndOddHeaders->ToString() + _T("/>");
 
-			// 49
 			if ( m_oBookFoldRevPrinting.IsInit() )
 				sXml += _T("<w:bookFoldRevPrinting ") + m_oBookFoldRevPrinting->ToString() + _T("/>");
 
-			// 50
 			if ( m_oBookFoldPrinting.IsInit() )
 				sXml += _T("<w:bookFoldPrinting ") + m_oBookFoldPrinting->ToString() + _T("/>");
 
-			// 51
 			if ( m_oBookFoldPrintingSheets.IsInit() )
 				sXml += _T("<w:bookFoldPrintingSheets ") + m_oBookFoldPrintingSheets->ToString() + _T("/>");
 
-			// 52
 			if ( m_oDrawingGridHorizontalSpacing.IsInit() )
 				sXml += _T("<w:drawingGridHorizontalSpacing ") + m_oDrawingGridHorizontalSpacing->ToString() + _T("/>");
 
-			// 53
 			if ( m_oDrawingGridVerticalSpacing.IsInit() )
 				sXml += _T("<w:drawingGridVerticalSpacing ") + m_oDrawingGridVerticalSpacing->ToString() + _T("/>");
 
-			// 54
 			if ( m_oDisplayHorizontalDrawingGridEvery.IsInit() )
 				sXml += _T("<w:displayHorizontalDrawingGridEvery ") + m_oDisplayHorizontalDrawingGridEvery->ToString() + _T("/>");
 
-			// 55
 			if ( m_oDisplayVerticalDrawingGridEvery.IsInit() )
 				sXml += _T("<w:displayVerticalDrawingGridEvery ") + m_oDisplayVerticalDrawingGridEvery->ToString() + _T("/>");
 
-			// 56
 			if ( m_oDoNotUseMarginsForDrawingGridOrigin.IsInit() )
 				sXml += _T("<w:doNotUseMarginsForDrawingGridOrigin ") + m_oDoNotUseMarginsForDrawingGridOrigin->ToString() + _T("/>");
 
-			// 57
 			if ( m_oDrawingGridHorizontalOrigin.IsInit() )
 				sXml += _T("<w:drawingGridHorizontalOrigin ") + m_oDrawingGridHorizontalOrigin->ToString() + _T("/>");
 
-			// 58
 			if ( m_oDrawingGridVerticalOrigin.IsInit() )
 				sXml += _T("<w:drawingGridVerticalOrigin ") + m_oDrawingGridVerticalOrigin->ToString() + _T("/>");
 
-			// 59
 			if ( m_oDoNotShadeFormData.IsInit() )
 				sXml += _T("<w:doNotShadeFormData ") + m_oDoNotShadeFormData->ToString() + _T("/>");
 
-			// 60
 			if ( m_oNoPunctuationKerning.IsInit() )
 				sXml += _T("<w:noPunctuationKerning ") + m_oNoPunctuationKerning->ToString() + _T("/>");
 
-			// 61
 			if ( m_oCharacterSpacingControl.IsInit() )
 				sXml += m_oCharacterSpacingControl->toXML();
 
-			// 62
 			if ( m_oPrintTwoOnOne.IsInit() )
 				sXml += _T("<w:printTwoOnOne ") + m_oPrintTwoOnOne->ToString() + _T("/>");
 
-			// 63
 			if ( m_oStrictFirstAndLastChars.IsInit() )
 				sXml += _T("<w:strictFirstAndLastChars ") + m_oStrictFirstAndLastChars->ToString() + _T("/>");
 
@@ -3415,138 +3240,105 @@ namespace OOX
 			if ( m_oNoLineBreaksAfter.IsInit() )
 				sXml += m_oNoLineBreaksAfter->toXML();
 
-			// 65
 			if ( m_oNoLineBreaksBefore.IsInit() )
 				sXml += m_oNoLineBreaksBefore->toXML();
 
-			// 66
 			if ( m_oSavePreviewPicture.IsInit() )
 				sXml += _T("<w:savePreviewPicture ") + m_oSavePreviewPicture->ToString() + _T("/>");
 
-			// 67
 			if ( m_oDoNotValidateAgainstSchema.IsInit() )
 				sXml += _T("<w:doNotValidateAgainstSchema ") + m_oDoNotValidateAgainstSchema->ToString() + _T("/>");
 
-			// 68
 			if ( m_oSaveInvalidXml.IsInit() )
 				sXml += _T("<w:saveInvalidXml ") + m_oSaveInvalidXml->ToString() + _T("/>");
 
-			// 69
 			if ( m_oIgnoreMixedContent.IsInit() )
 				sXml += _T("<w:ignoreMixedContent ") + m_oIgnoreMixedContent->ToString() + _T("/>");
 
-			// 70
 			if ( m_oAlwaysShowPlaceholderText.IsInit() )
 				sXml += _T("<w:alwaysShowPlaceholderText ") + m_oAlwaysShowPlaceholderText->ToString() + _T("/>");
 
-			// 71
 			if ( m_oDoNotDemarcateInvalidXml.IsInit() )
 				sXml += _T("<w:doNotDemarcateInvalidXml ") + m_oDoNotDemarcateInvalidXml->ToString() + _T("/>");
 
-			// 72
 			if ( m_oSaveXmlDataOnly.IsInit() )
 				sXml += _T("<w:saveXmlDataOnly ") + m_oSaveXmlDataOnly->ToString() + _T("/>");
 
-			// 73
 			if ( m_oUseXSLTWhenSaving.IsInit() )
 				sXml += _T("<w:useXSLTWhenSaving ") + m_oUseXSLTWhenSaving->ToString() + _T("/>");
 
-			// 74
 			if ( m_oSaveThroughtXslt.IsInit() )
 				sXml += m_oSaveThroughtXslt->toXML();
 
-			// 75
 			if ( m_oShowXMLTags.IsInit() )
 				sXml += _T("<w:showXMLTags ") + m_oShowXMLTags->ToString() + _T("/>");
 
-			// 76
 			if ( m_oAlwaysMergeEmptyNamespace.IsInit() )
 				sXml += _T("<w:alwaysMergeEmptyNamespace ") + m_oAlwaysMergeEmptyNamespace->ToString() + _T("/>");
 
-			// 77
 			if ( m_oUpdateFields.IsInit() )
 				sXml += _T("<w:updateFields ") + m_oUpdateFields->ToString() + _T("/>");
 
-			// 78
 			if ( m_oHdrShapeDefaults.IsInit() )
 				sXml += m_oHdrShapeDefaults->toXML();
 
-			// 79
 			if ( m_oFootnotePr.IsInit() )
 				sXml += m_oFootnotePr->toXML();
 
-			// 80
 			if ( m_oEndnotePr.IsInit() )
 				sXml += m_oEndnotePr->toXML();
 
-			// 81
 			if ( m_oCompat.IsInit() )
 				sXml += m_oCompat->toXML();
 
-			// 82
 			if ( m_oDocVars.IsInit() )
 				sXml += m_oDocVars->toXML();
 
-			// 83
 			if ( m_oRsids.IsInit() )
 				sXml += m_oRsids->toXML();
 
-			// 85
 			if ( m_oMathPr.IsInit() )
 				sXml += m_oMathPr->toXML();
 
-			// 86
 			if ( m_oAttachedSchema.IsInit() )
 				sXml += _T("<w:attachedSchema ") + m_oAttachedSchema->ToString() + _T("/>");
 
-			// 87
 			if ( m_oThemeFontLang.IsInit() )
 				sXml += _T("<w:themeFontLang ") + m_oThemeFontLang->ToString() + _T("/>");
 
-			// 88
 			if ( m_oClrSchemeMapping.IsInit() )
 				sXml += m_oClrSchemeMapping->toXML();
 
-			// 89
 			if ( m_oDoNotIncludeSubdocsInStats.IsInit() )
 				sXml += _T("<w:doNotIncludeSubdocsInStats ") + m_oDoNotIncludeSubdocsInStats->ToString() + _T("/>");
 
-			// 90
 			if ( m_oDoNotAutoCompressPictures.IsInit() )
 				sXml += _T("<w:doNotAutoCompressPictures ") + m_oDoNotAutoCompressPictures->ToString() + _T("/>");
 
-			// 91
 			if ( m_oForceUpgrade.IsInit() )
 				sXml += _T("<<w:forceUpgrade/>");
 
-			// 92
 			if ( m_oCaptions.IsInit() )
 				sXml += m_oCaptions->toXML();
 
-			// 93
 			if ( m_oReadModeInkLockDown.IsInit() )
 				sXml += m_oReadModeInkLockDown->toXML();
 
-			// 94
 			for ( unsigned int nIndex = 0; nIndex < m_arrSmartTagType.size(); nIndex++ )
 			{
 				if (m_arrSmartTagType[nIndex])
 					sXml += m_arrSmartTagType[nIndex]->toXML();
 			}
 
-			// 95
 			if ( m_oSchemaLibrary.IsInit() )
 				sXml += m_oSchemaLibrary->toXML();
 
-			// 96
 			if ( m_oShapeDefaults.IsInit() )
 				sXml += m_oShapeDefaults->toXML();
 
-			// 97
 			if ( m_oDoNotEmbedSmartTags.IsInit() )
 				sXml += _T("<w:doNotEmbedSmartTags ") + m_oDoNotEmbedSmartTags->ToString() + _T("/>");
 
-			// 98
 			if ( m_oDecimalSymbol.IsInit() )
 				sXml += _T("<w:decimalSymbol ") + m_oDecimalSymbol->ToString() + _T("/>");
 
@@ -3560,7 +3352,6 @@ namespace OOX
 			oContent.Registration( type().OverrideType(), oDirectory, oFilePath );
 		}
 
-	public:
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::Setting;
@@ -3574,9 +3365,6 @@ namespace OOX
 			return type().DefaultFileName();
 		}
 
-	public:
-
-		// Childs
 		nullable<OOX::Settings::CWritingStyle>                        m_oActiveWritingStyle;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oAlignBordersAndEdges;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oAlwaysMergeEmptyNamespace;
@@ -3590,14 +3378,14 @@ namespace OOX
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oBookFoldRevPrinting;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oBordersDoNotSurroundFooter;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oBordersDoNotSurroundHeader;
-		nullable<OOX::Settings::CCaptions>                            m_oCaptions;
-		nullable<OOX::Settings::CCharacterSpacing>                    m_oCharacterSpacingControl;
-		nullable<ComplexTypes::Word::String>                        m_oClickAndTypeStyle;
-		nullable<OOX::Settings::CColorSchemeMapping>                  m_oClrSchemeMapping;
-		nullable<OOX::Settings::CCompat>                              m_oCompat;
-		nullable<ComplexTypes::Word::CDecimalNumber>                  m_oConsecutiveHyphenLimit;
-		nullable<ComplexTypes::Word::String>                        m_oDecimalSymbol;
-		nullable<ComplexTypes::Word::String>                        m_oDefaultTableStyle;
+		nullable<OOX::Settings::CCaptions>								m_oCaptions;
+		nullable<OOX::Settings::CCharacterSpacing>						m_oCharacterSpacingControl;
+		nullable<ComplexTypes::Word::String>							m_oClickAndTypeStyle;
+		nullable<PPTX::Logic::ClrMap>									m_oClrSchemeMapping;
+		nullable<OOX::Settings::CCompat>								m_oCompat;
+		nullable<ComplexTypes::Word::CDecimalNumber>					m_oConsecutiveHyphenLimit;
+		nullable<ComplexTypes::Word::String>							m_oDecimalSymbol;
+		nullable<ComplexTypes::Word::String>							m_oDefaultTableStyle;
 		nullable<ComplexTypes::Word::CTwipsMeasure>                   m_oDefaultTabStop;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDisplayBackgroundShape;
 		nullable<ComplexTypes::Word::CDecimalNumber>                  m_oDisplayHorizontalDrawingGridEvery;
@@ -3634,8 +3422,8 @@ namespace OOX
 		nullable<ComplexTypes::Word::CTwipsMeasure>                   m_oHyphenationZone;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oIgnoreMixedContent;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oLinkStyles;
-		nullable<ComplexTypes::Word::String>                        m_oListSeparator;
-		// TO DO: Settings::mailMerge
+		nullable<ComplexTypes::Word::String>							m_oListSeparator;
+	// TO DO: Settings::mailMerge
 		nullable<OOX::Logic::CMathPr>								  m_oMathPr;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oMirrorMargins;
 		nullable<OOX::Settings::CKinsoku>                             m_oNoLineBreaksAfter;

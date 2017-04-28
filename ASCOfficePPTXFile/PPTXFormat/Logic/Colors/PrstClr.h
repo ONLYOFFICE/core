@@ -71,7 +71,7 @@ namespace PPTX
 			{
 				WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("val"), val)
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{

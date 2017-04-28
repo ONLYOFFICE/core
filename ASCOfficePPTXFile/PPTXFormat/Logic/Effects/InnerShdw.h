@@ -84,7 +84,7 @@ namespace PPTX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("blurRad"), blurRad)
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("dir"), dir)
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("dist"), dist)
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 				
 				Normalize();
 			}

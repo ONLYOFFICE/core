@@ -43,7 +43,7 @@
 //	shapetypeHalfFrame,
 //	shapetypeHeptagon,
 //	shapetypeNonIsoscelesTrapezoid,
-//	shapetypePie,
+//+	shapetypePie,
 //+	shapetypePieWedge,
 //+	shapetypePlaque,
 //	shapetypePlaqueTabs,
@@ -783,6 +783,59 @@ public:
 		add(L"f10", L"(10800000)/60000.0");
 		add(L"f11", L"(5400000)/60000.0");
 /////////////////////////////////////////////////////////
+	}
+};
+class oox_shape_Pie : public oox_shape
+{
+public:
+	oox_shape_Pie()
+	{
+		odf_type_name	=L"ooxml-pie";
+
+		enhanced_path	= L"M ?f12 ?f14 G ?f5 ?f7 ?f29 ?f30 L ?f11 ?f13 Z N";
+		text_areas		= L"?f23 ?f24 ?f25 ?f26";
+		view_box		= L"0 0 0 0";
+		modifiers		= L"9000000 16200000";
+		
+		add(L"f0", L"if(0-$0 ,0,if(21599999-$0 ,$0 ,21599999))");
+		add(L"f1", L"if(0-$1 ,0,if(21599999-$1 ,$1 ,21599999))");
+		add(L"f2", L"?f1 +0-?f0 ");
+		add(L"f3", L"?f2 +21600000-0");
+		add(L"f4", L"if(?f2 ,?f2 ,?f3 )");
+		add(L"f5", L"logwidth/2");
+		add(L"f6", L"?f5 *sin(pi*(?f0 )/10800000)");
+		add(L"f7", L"logheight/2");
+		add(L"f8", L"?f7 *cos(pi*(?f0 )/10800000)");
+		add(L"f9", L"?f5 *(cos(atan2(?f6 ,?f8 )))");
+		add(L"f10", L"?f7 *(sin(atan2(?f6 ,?f8 )))");
+		add(L"f11", L"logwidth/2");
+		add(L"f12", L"?f11 +?f9 -0");
+		add(L"f13", L"logheight/2");
+		add(L"f14", L"?f13 +?f10 -0");
+		add(L"f15", L"?f5 *sin(pi*(?f1 )/10800000)");
+		add(L"f16", L"?f7 *cos(pi*(?f1 )/10800000)");
+		add(L"f17", L"?f5 *(cos(atan2(?f15 ,?f16 )))");
+		add(L"f18", L"?f7 *(sin(atan2(?f15 ,?f16 )))");
+		add(L"f19", L"?f11 +?f17 -0");
+		add(L"f20", L"?f13 +?f18 -0");
+		add(L"f21", L"?f5 *cos(pi*(2700000)/10800000)");
+		add(L"f22", L"?f7 *sin(pi*(2700000)/10800000)");
+		add(L"f23", L"?f11 +0-?f21 ");
+		add(L"f24", L"?f11 +?f21 -0");
+		add(L"f25", L"?f13 +0-?f22 ");
+		add(L"f26", L"?f13 +?f22 -0");
+		add(L"f27", L"logwidth");
+		add(L"f28", L"logheight");
+		add(L"f29", L"(?f0 )/60000.0");
+		add(L"f30", L"(?f4 )/60000.0");
+/////////////////////////////////////////////////////////
+		_handle h;
+
+		h.position = L"?f12 ?f14";
+		handles.push_back(h);
+
+		h.position = L"?f19 ?f20";
+		handles.push_back(h);
 	}
 };
 }

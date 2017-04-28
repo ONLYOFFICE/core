@@ -104,6 +104,7 @@ public:
 	void end_drawing();
 	void end_drawing_background(odf_types::common_draw_fill_attlist & common_draw_attlist);
 	
+	int	get_group_level();	
 	void start_group();		
 		void set_group_flip_H	(bool bVal);
 		void set_group_flip_V	(bool bVal);
@@ -166,8 +167,6 @@ public:
 	void finalize(office_element_ptr & root_elm);
 
 ///////////////////////////////////////////////////////////////////////////////////////
-
-	
 	void get_position		(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt);
 	void set_position		(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt);
 	void set_position_line	(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt, _CP_OPT(double) & x1_pt, _CP_OPT(double) & y1_pt); 

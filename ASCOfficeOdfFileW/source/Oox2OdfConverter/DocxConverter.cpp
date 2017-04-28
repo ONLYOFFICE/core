@@ -1293,13 +1293,13 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 
 	}
 
-	if (odt_context->notes_context()->is_started())
+	if (odt_context->notes_context()->is_started()	&& !paragraph_properties->content_.fo_margin_left_ 
+													&& !paragraph_properties->content_.fo_text_indent_)
 	{
-		paragraph_properties->content_.fo_margin_left_			= odf_types::length( 0.5, odf_types::length::cm);	
-		paragraph_properties->content_.fo_text_indent_			= odf_types::length(-0.5, odf_types::length::cm);
+		paragraph_properties->content_.fo_margin_left_			= odf_types::length( 0.2, odf_types::length::cm);	
+		paragraph_properties->content_.fo_text_indent_			= odf_types::length(-0.2, odf_types::length::cm);
 		paragraph_properties->content_.fo_line_height_			= odf_types::percent(100.); 
 		paragraph_properties->content_.style_auto_text_indent_	= false;
-		//loext:contextual-spacing="false" 
 	}
 
 	if (oox_paragraph_pr->m_oTabs.IsInit())

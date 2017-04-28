@@ -174,7 +174,7 @@ static const _sh_typ Shape_Types_Mapping[] = // index === OOX::Drawing::EShapeTy
 	{	L"octagon"						,  7},			//	shapetypeOctagon,
 	{	L"parallelogram"				,  7},			//	shapetypeParallelogram,
 	{	L"pentagon"						,  7},			//	shapetypePentagon,
-	{	L"mso-spt100"					,  7},			//	shapetypePie,
+	{	L""								,  7},			//	shapetypePie,
 	{	L""								,  7},			//	shapetypePieWedge,
 	{	L""								,  7},			//	shapetypePlaque,
 	{	L""								,  7},			//	shapetypePlaqueTabs,

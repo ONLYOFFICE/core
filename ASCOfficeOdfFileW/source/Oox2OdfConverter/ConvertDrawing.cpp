@@ -358,7 +358,7 @@ void OoxConverter::convert(PPTX::Logic::GrpSpPr *oox_grpSpPr)
 
 		odf_context()->drawing_context()->set_group_size( cx, cy, ch_cx, ch_cy );
 
-		_CP_OPT(double) x, y, ch_x, ch_y;
+		_CP_OPT(double) x, y, ch_x, ch_y, ext_x, ext_y;
 			
 		if (oox_grpSpPr->xfrm->offX.IsInit())
 			x =	oox_grpSpPr->xfrm->offX.get() / 12700.;
@@ -369,6 +369,16 @@ void OoxConverter::convert(PPTX::Logic::GrpSpPr *oox_grpSpPr)
 			ch_x = oox_grpSpPr->xfrm->chOffX.get() / 12700.;
 		if (oox_grpSpPr->xfrm->chOffY.IsInit())
 			ch_y = oox_grpSpPr->xfrm->chOffY.get() / 12700.;
+
+		int group_level = odf_context()->drawing_context()->get_group_level();
+
+		odf_context()->drawing_context()->get_position(ext_x, ext_y);
+
+		if (ext_x && ext_y && group_level < 2)
+		{
+			x = ext_x;
+			y = ext_y;
+		}
 
 		odf_context()->drawing_context()->set_group_position( x, y, ch_x, ch_y );
 
@@ -484,14 +494,21 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 			DocxConverter *docx_converter = dynamic_cast<DocxConverter*>(this);
 			if (docx_converter)
 			{
-				odf_context()->start_text_context();	
-					docx_converter->convert(oox_shape->oTextBoxShape.GetPointer());
+				odf_context()->start_text_context();
+
+					//docx_converter->convert(oox_shape->oTextBoxShape.GetPointer());
+					
+					for (size_t i = 0; i < oox_shape->oTextBoxShape->m_arrItems.size(); i++)
+					{
+						docx_converter->convert(oox_shape->oTextBoxShape->m_arrItems[i]);
+				
+						convert(oox_shape->oTextBoxBodyPr.GetPointer());
+						
+						if (oox_shape->style.IsInit())
+							convert(&oox_shape->style->fontRef);
+					}				
 					odf_context()->drawing_context()->set_text( odf_context()->text_context());
 				
-					convert(oox_shape->oTextBoxBodyPr.GetPointer());
-					
-					if (oox_shape->style.IsInit())
-						convert(&oox_shape->style->fontRef);
 				odf_context()->end_text_context();	
 			}
 		}

@@ -353,6 +353,10 @@ void odf_drawing_context::check_anchor()
 			set_vertical_pos(0);
 	}
 }
+int odf_drawing_context::get_group_level()
+{
+	return impl_->current_level_.size();
+}
 void odf_drawing_context::start_group()
 {
     office_element_ptr group_elm = impl_->create_draw_element(5000);
@@ -849,7 +853,7 @@ void odf_drawing_context::end_shape()
 	draw_path* path = dynamic_cast<draw_path*>(impl_->current_drawing_state_.elements_[0].elm.get());
 	if (path)
 	{
-		if (impl_->current_drawing_state_.view_box_.length() < 1 && impl_->current_drawing_state_.svg_width_ && impl_->current_drawing_state_.svg_height_)
+		if (impl_->current_drawing_state_.view_box_.empty() && impl_->current_drawing_state_.svg_width_ && impl_->current_drawing_state_.svg_height_)
 			set_viewBox( impl_->current_drawing_state_.svg_width_->get_value_unit(length::cm) * 1000, 
 						 impl_->current_drawing_state_.svg_height_->get_value_unit(length::cm) *1000);
 		
@@ -958,7 +962,11 @@ void odf_drawing_context::end_shape()
 				
 				if (shape_define)
 				{
-					enhanced->svg_viewbox_											= shape_define->view_box;
+					if (impl_->current_drawing_state_.oox_shape_ && impl_->current_drawing_state_.oox_shape_->view_box)
+						enhanced->svg_viewbox_										= impl_->current_drawing_state_.oox_shape_->view_box;
+					else
+						enhanced->svg_viewbox_										= shape_define->view_box;
+
 					enhanced->draw_enhanced_geometry_attlist_.draw_type_			= shape_define->odf_type_name;
 					enhanced->draw_enhanced_geometry_attlist_.draw_text_areas_		= shape_define->text_areas;
 					
@@ -1004,6 +1012,9 @@ void odf_drawing_context::end_shape()
 							if (shape_define->handles[i].y_maximum)	h->draw_handle_attlist_.draw_handle_range_y_maximum_ = *shape_define->handles[i].y_maximum;
 							if (shape_define->handles[i].x_minimum)	h->draw_handle_attlist_.draw_handle_range_x_minimum_ = *shape_define->handles[i].x_minimum;
 							if (shape_define->handles[i].x_maximum)	h->draw_handle_attlist_.draw_handle_range_x_maximum_ = *shape_define->handles[i].x_maximum;
+
+							if (shape_define->handles[i].r_maximum)	h->draw_handle_attlist_.draw_handle_radius_range_maximum_ = *shape_define->handles[i].r_maximum;
+							if (shape_define->handles[i].r_minimum)	h->draw_handle_attlist_.draw_handle_radius_range_minimum_ = *shape_define->handles[i].r_minimum;
 						}
 						end_element();
 					}
@@ -1509,6 +1520,8 @@ void odf_drawing_context::set_viewBox (double W, double H)
 	
 	if (impl_->current_drawing_state_.oox_shape_)
 	{
+		impl_->current_drawing_state_.oox_shape_->view_box  = impl_->current_drawing_state_.view_box_;
+
 		if (impl_->current_drawing_state_.oox_shape_->sub_view_size)
 			impl_->current_drawing_state_.oox_shape_->sub_view_size = *impl_->current_drawing_state_.oox_shape_->sub_view_size + L" " + std::to_wstring((int)W) + L" " + std::to_wstring((int)H);
 		else
@@ -2102,17 +2115,15 @@ void odf_drawing_context::set_textarea_wrap(bool Val)
 		impl_->current_graphic_properties->fo_wrap_option_ = wrap_option(wrap_option::NoWrap);
 
 }
+
 void odf_drawing_context::set_textarea_font(std::wstring & latin, std::wstring & cs, std::wstring & ea)
 {
 	if (impl_->current_drawing_state_.elements_.empty())return;
 
-	if (!impl_->current_text_properties)
+	odf_style_state_ptr style_state = impl_->styles_context_->last_state(style_family::Paragraph);
+	if (style_state)
 	{
-		odf_style_state_ptr style_state = impl_->styles_context_->last_state(style_family::Paragraph);
-		if (style_state)
-		{
-			impl_->current_text_properties = style_state->get_text_properties();
-		}
+		impl_->current_text_properties = style_state->get_text_properties();
 	}
 
 	if (!impl_->current_text_properties) return;
@@ -2126,13 +2137,10 @@ void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)
 {
 	if (impl_->current_drawing_state_.elements_.empty())return;
 
-	if (!impl_->current_text_properties)
+	odf_style_state_ptr style_state = impl_->styles_context_->last_state(style_family::Paragraph);
+	if (style_state)
 	{
-		odf_style_state_ptr style_state = impl_->styles_context_->last_state(style_family::Paragraph);
-		if (style_state)
-		{
-			impl_->current_text_properties = style_state->get_text_properties();
-		}
+		impl_->current_text_properties = style_state->get_text_properties();
 	}
 
 	if (!impl_->current_text_properties) return;

@@ -98,7 +98,7 @@ static const _sh_typ Shape_Types_Mapping[] = // index === OOX::Drawing::EShapeTy
 	{	L""								,  7},			//	shapetypeDiagStripe,
 	{	L"diamond"						,  7},			//	shapetypeDiamond,
 	{	L""								,  7},			//	shapetypeDodecagon,
-	{	L"ring"							,  7},			//	shapetypeDonut,
+	{	L""								,  7},			//	shapetypeDonut,
 	{	L""								,  7},			//	shapetypeDoubleWave,
 	{	L"down-arrow"					,  7},			//	shapetypeDownArrow,
 	{	L"down-arrow-callout"			,  7},			//	shapetypeDownArrowCallout,

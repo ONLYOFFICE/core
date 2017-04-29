@@ -32,7 +32,7 @@
 #include "../oox_shape_defines.h"
 	//	+shapetypeLeftCircularArrow,
 	//	shapetypeLeftRightCircularArrow,
-	//	shapetypeSwooshArrow,
+	//	+shapetypeSwooshArrow,
 	//	+shapetypeCircularArrow
 namespace cpdoccore 
 {
@@ -513,6 +513,65 @@ public:
 		h.r_minimum = L"0";
 		h.r_maximum = L"25000";
 		handles.push_back(h);
+	}
+};
+class oox_shape_SwooshArrow : public oox_shape
+{
+public:
+	oox_shape_SwooshArrow()
+	{
+		odf_type_name	= L"ooxml-swooshArrow";
+
+		enhanced_path	= L"M 0 ?f30 Q ?f25 ?f23 ?f6 ?f8 L ?f11 0 ?f31 ?f20 ?f15 ?f16 ?f14 ?f13 Q ?f29 ?f27 0 ?f30 Z N";
+		text_areas		= L"0 0 ?f31 ?f30";
+		modifiers		= L"25000 25000";
+		view_box		= L"0 0 0 0";
+		
+		add(L"f0", L"if(1-$0 ,1,if(75000-$0 ,$0 ,75000))");
+		add(L"f1", L"min(logwidth,logheight)");
+		add(L"f2", L"70000*logwidth/?f1 ");
+		add(L"f3", L"if(0-$1 ,0,if(?f2 -$1 ,$1 ,?f2 ))");
+		add(L"f4", L"logheight*?f0 /100000");
+		add(L"f5", L"?f1 *?f3 /100000");
+		add(L"f6", L"logwidth+0-?f5 ");
+		add(L"f7", L"min(logwidth,logheight)/8");
+		add(L"f8", L"0+?f7 -0");
+		add(L"f9", L"5400000*1/14");
+		add(L"f10", L"?f7 *tan(pi*(?f9 )/10800000)");
+		add(L"f11", L"?f6 +0-?f10 ");
+		add(L"f12", L"?f4 *tan(pi*(?f9 )/10800000)");
+		add(L"f13", L"?f8 +?f4 -0");
+		add(L"f14", L"?f6 +?f12 -0");
+		add(L"f15", L"?f14 +?f10 -0");
+		add(L"f16", L"?f13 +?f7 -0");
+		add(L"f17", L"?f16 +0-0");
+		add(L"f18", L"?f17 *1/2");
+		add(L"f19", L"logheight*1/20");
+		add(L"f20", L"0+?f18 -?f19 ");
+		add(L"f21", L"logheight/6");
+		add(L"f22", L"?f21 *1/1");
+		add(L"f23", L"?f21 +?f22 -0");
+		add(L"f24", L"logwidth/6");
+		add(L"f25", L"?f24 ");
+		add(L"f26", L"?f21 *1/2");
+		add(L"f27", L"?f13 +?f26 -0");
+		add(L"f28", L"logwidth/4");
+		add(L"f29", L"?f28 ");
+		add(L"f30", L"logheight");
+		add(L"f31", L"logwidth");
+/////////////////////////////////////////////////////////
+		_handle h1, h2;
+
+		h1.position = L"?f54 ?f55";
+		h1.y_minimum = L"1";
+		h1.y_maximum = L"75000";
+		
+		handles.push_back(h1);
+
+ 		h2.position = L"?f60 ?f61";
+		h2.x_minimum = L"0";
+		h2.x_maximum = L"?f2";
+		handles.push_back(h2);
 	}
 };
 }

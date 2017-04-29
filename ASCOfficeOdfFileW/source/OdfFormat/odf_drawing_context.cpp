@@ -2014,7 +2014,7 @@ std::wstring odf_drawing_context::add_marker_style(int type)
 {
 	if (type == 2) return L"";
 
-	std::wstring str_types [] = {L"ArrowMarker", L"DiamondMarker", L"None", L"OvalMarker", L"StealthMarker", L"TriangleMarker"};
+	std::wstring str_types [] = {L"None", L"ArrowMarker", L"DiamondMarker", L"OvalMarker", L"StealthMarker", L"TriangleMarker"};
 
 	style * style_=NULL;
 	if (impl_->styles_context_->find_odf_style(str_types[type],style_family::Marker,style_)) return str_types[type];
@@ -2035,7 +2035,7 @@ std::wstring odf_drawing_context::add_marker_style(int type)
 
 	switch(type)
 	{
-	case 1:
+	case 2:
 		marker->svg_d_ = L"M0 564l564 567 567-567-567-564z";
 		marker->svg_viewBox_ = L"0 0 1131 1131";
 		break;
@@ -2051,7 +2051,7 @@ std::wstring odf_drawing_context::add_marker_style(int type)
 		marker->svg_d_ = L"M1321 3493h-1321l702-3493z";
 		marker->svg_viewBox_ = L"0 0 1321 3493";
 		break;
-	case 0:
+	case 1:
 	default:
 		marker->svg_d_ =L"M0 2108v17 17l12 42 30 34 38 21 43 4 29-8 30-21 25-26 13-34 343-1532 339 1520 13 42 29 34 39 21 42 4 42-12 34-30 21-42v-39-12l-4 4-440-1998-9-42-25-39-38-25-43-8-42 8-38 25-26 39-8 42z";
 		marker->svg_viewBox_ = L"0 0 1122 2243";

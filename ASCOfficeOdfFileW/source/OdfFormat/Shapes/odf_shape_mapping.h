@@ -65,7 +65,7 @@ static const _sh_typ Shape_Types_Mapping[] = // index === OOX::Drawing::EShapeTy
 	{	L"mso-spt36"					,  7},			//	shapetypeBentConnector5,
 	{	L"mso-spt90"					,  7},			//	shapetypeBentUpArrow,
 	{	L"quad-bevel"					,  7},			//	shapetypeBevel,
-	{	L"block-arc"					,  7},			//	shapetypeBlockArc,
+	{	L""								,  7},			//	shapetypeBlockArc,
 	{	L"mso-spt49"					,  7},			//	shapetypeBorderCallout1,
 	{	L"mso-spt50"					,  7},			//	shapetypeBorderCallout2,
 	{	L"mso-spt51"					,  7},			//	shapetypeBorderCallout3,

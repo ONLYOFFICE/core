@@ -1011,7 +1011,7 @@ void OoxConverter::convert(PPTX::Logic::Ln *oox_line_prop, DWORD ARGB, PPTX::Log
 	{
 		if (oox_line_prop->headEnd->len.IsInit() || oox_line_prop->headEnd->type.IsInit() || oox_line_prop->headEnd->w.IsInit())
 		{
-			int type = 0, w = 1, len = 1;//medium arrow
+			int type = 1, w = 1, len = 1;//medium arrow
 			if (oox_line_prop->headEnd->len.IsInit())	len		= oox_line_prop->headEnd->len->GetBYTECode();
 			if (oox_line_prop->headEnd->type.IsInit())	type	= oox_line_prop->headEnd->type->GetBYTECode();
 			if (oox_line_prop->headEnd->w.IsInit())		w		= oox_line_prop->headEnd->w->GetBYTECode();
@@ -1023,11 +1023,11 @@ void OoxConverter::convert(PPTX::Logic::Ln *oox_line_prop, DWORD ARGB, PPTX::Log
 	{
 		if (oox_line_prop->tailEnd->len.IsInit() || oox_line_prop->tailEnd->type.IsInit() || oox_line_prop->tailEnd->w.IsInit())
 		{
-			int type = 0, w = 1, len = 1;//medium arrow
+			int type = 1, w = 1, len = 1;//medium arrow
 			if (oox_line_prop->tailEnd->len.IsInit())	len		= oox_line_prop->tailEnd->len->GetBYTECode();
 			if (oox_line_prop->tailEnd->type.IsInit())	type	= oox_line_prop->tailEnd->type->GetBYTECode();
 			if (oox_line_prop->tailEnd->w.IsInit())		w		= oox_line_prop->tailEnd->w->GetBYTECode();
-			
+
 			odf_context()->drawing_context()->set_line_tail(type, len, w);
 		}
 	}
@@ -1883,8 +1883,11 @@ void OoxConverter::convert(PPTX::Logic::TxBody *oox_txBody, PPTX::Logic::ShapeSt
 void OoxConverter::convert(PPTX::Logic::ArcTo *oox_geom_path)
 {
 	if (!oox_geom_path) return;
+
+	int stAng = XmlUtils::GetInteger(oox_geom_path->stAng);
+	int swAng = XmlUtils::GetInteger(oox_geom_path->swAng);
 	
-	std::wstring path_elm = oox_geom_path->hR + L" " + oox_geom_path->wR + L" " + oox_geom_path->swAng + L" " + oox_geom_path->stAng;
+	std::wstring path_elm = oox_geom_path->wR + L" " + oox_geom_path->hR + L" " + std::to_wstring(stAng/60000) + L" " + std::to_wstring(swAng /60000);
 	
 	odf_context()->drawing_context()->add_path_element(std::wstring(L"G"), path_elm);
 }

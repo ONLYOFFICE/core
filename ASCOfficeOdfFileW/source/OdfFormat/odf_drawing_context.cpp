@@ -3037,8 +3037,8 @@ void odf_drawing_context::start_bitmap_style()
 
 	odf_writer::office_element_ptr fill_image_element;
 
-	odf_writer::create_element(L"draw",L"fill-image", fill_image_element, impl_->odf_context_);
-	impl_->styles_context_->add_style(fill_image_element,false,true, style_family::FillImage);
+	odf_writer::create_element(L"draw", L"fill-image", fill_image_element, impl_->odf_context_);
+	impl_->styles_context_->add_style(fill_image_element, false, true, style_family::FillImage);
 
 	draw_fill_image * fill_image = dynamic_cast<draw_fill_image *>(fill_image_element.get());
 	if (!fill_image) return;

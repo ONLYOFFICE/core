@@ -88,6 +88,7 @@ namespace OOX
 		class CPageMargins;
 		class CSi;
 		class CWorkbookView;
+		class CPictureWorksheet;
 	}
 }
 
@@ -151,6 +152,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CWorksheet			*oox_sheet);
 		void convert(OOX::Spreadsheet::CDefinedName			*oox_defined);
 		void convert(OOX::Spreadsheet::CTable				*oox_table_part);
+		void convert(OOX::Spreadsheet::CPictureWorksheet	*oox_background);
 
 		void convert(OOX::Spreadsheet::CCol					*oox_column);
 		void convert(OOX::Spreadsheet::CRow					*oox_row);

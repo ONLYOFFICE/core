@@ -153,7 +153,7 @@ length ComputeContextWidth(const style_page_layout_properties			* pageProperties
             if (pagePropertiesNode)
             {
                 if (const style_columns * styleColumns 
-                    = dynamic_cast<const style_columns*>( pagePropertiesNode->style_page_layout_properties_elements_.style_columns_.get()))
+                    = dynamic_cast<const style_columns*>( pagePropertiesNode->elements_.style_columns_.get()))
                 {
                     columnsCount = styleColumns->fo_column_count_.get_value_or(1);
                     if (!columnsCount)
@@ -784,7 +784,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
     style_page_layout_properties_attlist	emptyPageProperties;
     
 	const style_page_layout_properties_attlist &	pageProperties =
-		pagePropertiesNode ? pagePropertiesNode->style_page_layout_properties_attlist_ : emptyPageProperties;
+		pagePropertiesNode ? pagePropertiesNode->attlist_ : emptyPageProperties;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 

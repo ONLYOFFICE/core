@@ -442,7 +442,6 @@ public:
     _CP_OPT(std::wstring)	style_next_style_name_;
 };
 
-//  style:master-page
 class style_master_page;
 typedef boost::shared_ptr<style_master_page> style_master_page_ptr;
 
@@ -465,7 +464,7 @@ private:
 public:
 	int find_placeHolderIndex(odf_types::presentation_class::type placeHolder,int & last_idx);
    
-	style_master_page_attlist	style_master_page_attlist_;
+	style_master_page_attlist	attlist_;
 
     office_element_ptr			style_header_;  
     office_element_ptr			style_header_left_; 
@@ -975,15 +974,17 @@ public:
     static const ElementType type = typeStylePageLayout;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    void docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context);
-    void pptx_convert(oox::pptx_conversion_context & Context);
+    void docx_convert_serialize	(std::wostream & strm, oox::docx_conversion_context & Context);
+    void pptx_convert			(oox::pptx_conversion_context & Context);
+    void xlsx_convert			(oox::xlsx_conversion_context & Context);
     
 	bool docx_background_serialize(std::wostream & strm, oox::docx_conversion_context & Context, oox::_oox_fill & fill, int id);
+	void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
 
     style_page_layout_properties() { }
 
-    style_page_layout_properties_attlist	style_page_layout_properties_attlist_;
-    style_page_layout_properties_elements	style_page_layout_properties_elements_;
+    style_page_layout_properties_attlist	attlist_;
+    style_page_layout_properties_elements	elements_;
 
 private:
 

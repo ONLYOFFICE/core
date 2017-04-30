@@ -161,7 +161,7 @@ style_table_cell_properties_attlist calc_table_cell_properties(const std::vector
     BOOST_FOREACH(const style_table_cell_properties* v, props)
     {
         if (v)
-            result.apply_from(v->style_table_cell_properties_attlist_);
+            result.apply_from(v->attlist_);
     }
     return result;
 }

@@ -126,12 +126,12 @@ void style_background_image::serialize(std::wostream & strm)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR_OPT(L"style:repeat", style_repeat_);
-			CP_XML_ATTR_OPT(L"style:position", style_position_);
-			CP_XML_ATTR_OPT(L"filter:name", filter_name_);
-			CP_XML_ATTR_OPT(L"draw:opacity", draw_opacity_);
+			CP_XML_ATTR_OPT(L"style:repeat",	style_repeat_);
+			CP_XML_ATTR_OPT(L"style:position",	style_position_);
+			CP_XML_ATTR_OPT(L"filter:name",		filter_name_);
+			CP_XML_ATTR_OPT(L"draw:opacity",	draw_opacity_);
 
-			if (common_xlink_attlist_)	common_xlink_attlist_->serialize(CP_GET_XML_NODE());
+			if (xlink_attlist_)	xlink_attlist_->serialize(CP_GET_XML_NODE());
 			if (office_binary_data_)	office_binary_data_->serialize(CP_XML_STREAM());
 		}
 	}

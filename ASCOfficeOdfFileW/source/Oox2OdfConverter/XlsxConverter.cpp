@@ -1063,14 +1063,62 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPageSetup *oox_page)
 		type = (int)oox_page->m_oOrientation->GetValue();
 	}
 	ods_context->page_layout_context()->set_page_orientation(type);
+
+	_CP_OPT(odf_types::length) width, height;
+	if (oox_page->m_oPaperWidth.IsInit() && oox_page->m_oPaperHeight.IsInit())
+	{
+		double w	= oox_page->m_oPaperWidth->GetValue();
+		double h	= oox_page->m_oPaperHeight->GetValue();
+		int unit = oox_page->m_oPaperUnits.IsInit() ? oox_page->m_oPaperUnits->GetValue() : 0;
+
+		switch(unit)
+		{
+		case 1:
+			width	= odf_types::length(w, odf_types::length::cm);
+			height	= odf_types::length(h, odf_types::length::cm);
+		case 2:
+			width	= odf_types::length(w, odf_types::length::inch);
+			height	= odf_types::length(h, odf_types::length::inch);
+		case 3:
+			width	= odf_types::length(w, odf_types::length::pt);
+			height	= odf_types::length(h, odf_types::length::pt);
+		case 4:
+			width	= odf_types::length(w, odf_types::length::px);
+			height	= odf_types::length(h, odf_types::length::px);
+		case 0:
+		default:
+			width	= odf_types::length(w, odf_types::length::mm);
+			height	= odf_types::length(h, odf_types::length::mm);
+		}
+	}
+	else if (oox_page->m_oPaperSize.IsInit())
+	{
+		switch(oox_page->m_oPaperSize->GetValue())
+		{
+		case SimpleTypes::Spreadsheet::pagesizeLetterPaper:
+			width	= odf_types::length(8.5, odf_types::length::inch);
+			height	= odf_types::length(11, odf_types::length::inch);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeA3Paper:
+			width	= odf_types::length(210, odf_types::length::mm);
+			height	= odf_types::length(297, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeA4Paper:
+			width	= odf_types::length(297, odf_types::length::mm);
+			height	= odf_types::length(420, odf_types::length::mm);
+			break;
+			//todooo
+		}
+	}
+	ods_context->page_layout_context()->set_page_size(width, height);
 }
 
-void XlsxConverter::convert(OOX::Spreadsheet::CPageMargins			*oox_page)
+void XlsxConverter::convert(OOX::Spreadsheet::CPageMargins *oox_page)
 {
 	if (!oox_page) return;
 	_CP_OPT(double) top, left,right,header,footer,bottom;
 
-	ods_context->page_layout_context()->set_page_margin(top,left,bottom, right,header,footer);
+	ods_context->page_layout_context()->set_page_margin(top, left, bottom, right, header, footer);
 
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_pr)

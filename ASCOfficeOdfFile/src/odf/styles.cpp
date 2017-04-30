@@ -900,11 +900,11 @@ void style_page_layout_properties_attlist::add_attributes( const xml::attributes
 {
     CP_APPLY_ATTR(L"fo:page-width",		fo_page_width_);
     CP_APPLY_ATTR(L"fo:page-height",	fo_page_height_);
-    common_num_format_attlist_.add_attributes(Attributes);
-    common_num_format_prefix_suffix_attlist_.add_attributes(Attributes);
     CP_APPLY_ATTR(L"style:paper-tray-name",		style_paper_tray_name_);
     CP_APPLY_ATTR(L"style:print-orientation",	style_print_orientation_);
    
+    common_num_format_attlist_.add_attributes(Attributes);
+    common_num_format_prefix_suffix_attlist_.add_attributes(Attributes);
 	common_horizontal_margin_attlist_.add_attributes(Attributes);
     common_vertical_margin_attlist_.add_attributes(Attributes);
     common_margin_attlist_.add_attributes(Attributes);
@@ -1160,7 +1160,7 @@ void style_page_layout_properties_attlist::pptx_convert(oox::pptx_conversion_con
 			h = fo_page_height_->get_value_unit(length::emu);
 			if (h < 914400) h = 914400;
 
-			w_h = boost::lexical_cast<std::wstring>(h);
+			w_h = std::to_wstring(h);
 		}
                 
         std::wstring w_orient = L"custom";
@@ -1260,6 +1260,55 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 {
 	CP_XML_WRITER(strm)
 	{
+		odf_types::common_horizontal_margin_attlist		horizontal_margins	= attlist_.common_horizontal_margin_attlist_;
+		odf_types::common_vertical_margin_attlist		vertical_margins	= attlist_.common_vertical_margin_attlist_;
+		
+		if (horizontal_margins.fo_margin_left_	|| horizontal_margins.fo_margin_right_	||
+			vertical_margins.fo_margin_top_		|| vertical_margins.fo_margin_bottom_ )
+		{
+			//_CP_OPT(odf_types::length)  margin_top, margin_bottom;
+
+			//margin_top	= Context.get_header_footer_context().header();
+			//margin_bottom = Context.get_header_footer_context().footer();
+
+			CP_XML_NODE(L"pageMargins")
+			{
+				if (horizontal_margins.fo_margin_left_ && horizontal_margins.fo_margin_left_->get_type() == odf_types::length_or_percent::Length)
+					CP_XML_ATTR(L"left"		, horizontal_margins.fo_margin_left_->get_length().get_value_unit(odf_types::length::inch));
+				if (horizontal_margins.fo_margin_right_ && horizontal_margins.fo_margin_right_->get_type() == odf_types::length_or_percent::Length)
+					CP_XML_ATTR(L"right"	, horizontal_margins.fo_margin_right_->get_length().get_value_unit(odf_types::length::inch));
+				
+				if (vertical_margins.fo_margin_top_ && vertical_margins.fo_margin_top_->get_type() == odf_types::length_or_percent::Length)
+					CP_XML_ATTR(L"top"		, vertical_margins.fo_margin_top_->get_length().get_value_unit(odf_types::length::inch));
+				if (vertical_margins.fo_margin_bottom_ && vertical_margins.fo_margin_bottom_->get_type() == odf_types::length_or_percent::Length)
+					CP_XML_ATTR(L"bottom"	, vertical_margins.fo_margin_bottom_->get_length().get_value_unit(odf_types::length::inch));
+				
+				CP_XML_ATTR(L"header"	, vertical_margins.fo_margin_top_->get_length().get_value_unit(odf_types::length::inch));
+				CP_XML_ATTR(L"footer"	, vertical_margins.fo_margin_bottom_->get_length().get_value_unit(odf_types::length::inch));
+			}
+		}
+		if (attlist_.fo_page_width_ || attlist_.fo_page_height_ || attlist_.style_print_orientation_)
+		{
+			CP_XML_NODE(L"pageSetup")
+			{
+				double h = 0, w = 0;
+				if (attlist_.fo_page_width_)
+				{
+					w =  attlist_.fo_page_width_->get_value_unit(length::mm);
+					CP_XML_ATTR(L"paperWidth", (int)w);
+				}
+				if (attlist_.fo_page_height_)
+				{
+					h = attlist_.fo_page_height_->get_value_unit(length::mm);
+					CP_XML_ATTR(L"paperHeight", (int)h);
+				}
+				CP_XML_ATTR(L"paperUnits", L"mm");
+				if (attlist_.style_print_orientation_)
+				{
+					CP_XML_ATTR(L"orientation", *attlist_.style_print_orientation_);
+				}
+			}
+		}
 		if (elements_.style_background_image_)
 		{
 			oox::_oox_fill fill;

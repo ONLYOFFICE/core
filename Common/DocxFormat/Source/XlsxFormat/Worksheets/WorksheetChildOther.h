@@ -159,12 +159,18 @@ namespace OOX
 				WritingElement_ReadAttributes_Start( oReader )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("orientation"),	m_oOrientation)
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("paperSize"),	m_oPaperSize)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("paperUnits"),	m_oPaperUnits)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("paperWidth"),	m_oPaperWidth)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("paperHeight"),	m_oPaperHeight)
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),		m_oRId)
 				WritingElement_ReadAttributes_End( oReader )
 			}
-			nullable<SimpleTypes::CRelationshipId>			m_oRId;
-			nullable<SimpleTypes::CPageOrientation<>>		m_oOrientation;
-			nullable<SimpleTypes::Spreadsheet::CPageSize<>>	m_oPaperSize;
+			nullable<SimpleTypes::CRelationshipId>				m_oRId;
+			nullable<SimpleTypes::CPageOrientation<>>			m_oOrientation;
+			nullable<SimpleTypes::Spreadsheet::CPageSize<>>		m_oPaperSize;
+			nullable<SimpleTypes::Spreadsheet::CPageUnits<>>	m_oPaperUnits;
+			nullable<SimpleTypes::CDouble>						m_oPaperWidth;
+			nullable<SimpleTypes::CDouble>						m_oPaperHeight;
 		};
 		class CPrintOptions : public WritingElement
 		{

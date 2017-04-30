@@ -200,7 +200,11 @@ double pt_to_cm(double Val)
     return Val / 28.34467120181406;
     
 }
-
+double pt_to_mm(double Val)
+{
+    return Val / 2.834467120181406;
+    
+}
 double to_pt(const length & Val)
 {
     switch(Val.get_unit())
@@ -247,7 +251,11 @@ double length::get_value_unit(unit Unit) const
     {
         return pt_to_cm( to_pt(*this) );
     }
-    else
+    else if (Unit == mm)
+    {
+        return pt_to_mm( to_pt(*this) );
+    }
+	else
     {
         return 0.0;
     }

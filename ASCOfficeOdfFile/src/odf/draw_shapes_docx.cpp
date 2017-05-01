@@ -259,7 +259,7 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 		shape->sub_type_ = sub_type_.get();
 		set_shape = true;
 	}
-	std::wstring odf_path;
+	std::wstring odf_path; //общая часть - объединить ...
 	if (draw_enhanced_geometry_attlist_.drawooo_enhanced_path_)
 		odf_path = draw_enhanced_geometry_attlist_.drawooo_enhanced_path_.get();
 	else if (draw_enhanced_geometry_attlist_.draw_enhanced_path_)
@@ -280,7 +280,7 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 			res = false; 
 		}
 		
-		if (o_Polyline.size() > 1 && res )
+		if (!o_Polyline.empty() && res )
 		{
 			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
 			std::wstringstream output_;   

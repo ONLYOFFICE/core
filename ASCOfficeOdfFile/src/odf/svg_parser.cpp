@@ -455,6 +455,45 @@ namespace svg_path
                     }                    
                 }break;
 
+				case 'G':
+				{
+                    nPos++;
+                    skipSpaces(nPos, rSvgDStatement, nLen);
+
+                    while(nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+                    {
+                        double nX, nY;
+                        double A1, A2;
+
+						if(!importDoubleAndSpaces(nX, nPos, rSvgDStatement, nLen))	return false;
+                        if(!importDoubleAndSpaces(nY, nPos, rSvgDStatement, nLen))	return false;
+                        if(!importDoubleAndSpaces(A1, nPos, rSvgDStatement, nLen))	return false;
+                        if(!importDoubleAndSpaces(A2, nPos, rSvgDStatement, nLen))	return false;
+
+                        if(bRelative)
+                        {
+                            nX += nLastX;
+                            nY += nLastY;
+                        }
+
+ 						aCurrPoly.command = L"a:ArcTo";
+                       // append curved edge
+						aCurrPoly.points.push_back(_point(nX, nY));
+						aCurrPoly.points.push_back(_point(A1, A2));
+
+                        Polyline.push_back(aCurrPoly);
+						aCurrPoly.points.clear();   
+
+                        // set last position
+                        nLastX = nX;
+                        nLastY = nY;
+
+						//keep control point
+						nLastControlX = nX;
+						nLastControlY = nY;
+                    }                    
+				}break;
+
                 // #100617# quadratic beziers are imported as cubic ones
                 //case 'q' :
                 //{

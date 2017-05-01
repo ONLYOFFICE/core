@@ -317,77 +317,58 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 
 	ApplyTextProperties (span_style_name_, paragraph_style_name_, text_properties_);
 
-	_CP_OPT(double)	dValFontSize;
-	if (text_properties_.fo_font_size_)
-		dValFontSize=text_properties_.fo_font_size_->get_length().get_value();
-	
-	_CP_OPT(std::wstring) sValFontFamily;	
-	if (text_properties_.fo_font_family_)	
+	if (in_draw)
 	{
-		std::wstring val =text_properties_.fo_font_family_.get();
-		//'Arial' глючит
-		removeCharsFromString(val, _T("'"));
-
-		sValFontFamily=text_properties_.fo_font_family_.get();
+		odf_reader::fonts_container fonts;
+		text_properties_.drawing_serialize(strm, L"a:rPr", fonts);
 	}
-	//else if (text_properties_.style_font_name_) - тут может быть отсылка к font_face)decl !!!!
-	//	sValFontFamily=text_properties_.style_font_name_.get();
-
-	_CP_OPT(std::wstring) sValFontColor;
-	if (text_properties_.fo_color_)		
-		sValFontColor=text_properties_.fo_color_->get_hex_value();
-
-	_CP_OPT(int)	iValFontWeight;
-	if (text_properties_.fo_font_weight_)
-		iValFontWeight=text_properties_.fo_font_weight_->get_type();
-
-	_CP_OPT(int)	iValFontStyle;
-	if(text_properties_.fo_font_style_)
-		iValFontStyle=text_properties_.fo_font_style_->get_type();
-
-	CP_XML_WRITER(strm)
-    {
-		if (in_draw)
-		{
-			//oox_serialize_style_text(strm,text_properties_);
-			//oox_serialize_style_text(strm,odf_reader::text_format_properties_content & properties);
-			CP_XML_NODE(L"a:rPr")
-			{
-				//стр 3197
-				if (dValFontSize)									{CP_XML_ATTR(L"sz", (int)(dValFontSize.get()*100));}
-				if ((iValFontStyle) && (iValFontStyle.get() >0))	{CP_XML_ATTR(L"i", "1");} //"true");} Exercícios de Aprendizagem.ods
-				if ((iValFontWeight) && (iValFontWeight.get() >0))	{CP_XML_ATTR(L"b", "1");} //"true");} Exercícios de Aprendizagem.ods				
-				if (sValFontColor)
-				{
-					CP_XML_NODE(L"a:solidFill")	{CP_XML_NODE(L"a:srgbClr"){CP_XML_ATTR(L"val", sValFontColor.get());}}
-				}
-				if (sValFontFamily)									
-				{
-					CP_XML_NODE(L"a:latin"){CP_XML_ATTR(L"typeface", sValFontFamily.get());}
-				} 
-				
-
-				if (hyperlink_hId.length()>0)
-				{
-					CP_XML_NODE(L"a:hlinkClick ")
-					{
-						CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-						CP_XML_ATTR(L"r:id", hyperlink_hId);
-					}
-				}
-			}
-		}
-		else
+	else
+	{
+		CP_XML_WRITER(strm)
 		{
 			CP_XML_NODE(L"rPr")
 			{
-				if (sValFontFamily)				{CP_XML_NODE(L"rFont")	{CP_XML_ATTR(L"val", sValFontFamily.get());}}
-				if (dValFontSize)				{CP_XML_NODE(L"sz")		{CP_XML_ATTR(L"val", (int)(dValFontSize.get()));}}
-				if (sValFontColor)				{CP_XML_NODE(L"color")	{CP_XML_ATTR(L"rgb", sValFontColor.get());}}
-				if ((iValFontStyle) &&
-					(iValFontStyle.get() >0))	{CP_XML_NODE(L"i")		{CP_XML_ATTR(L"val", "true");}}
-				if ((iValFontWeight) && 
-					(iValFontWeight.get() >0))	{CP_XML_NODE(L"b")		{CP_XML_ATTR(L"val", "true");}}
+				if (text_properties_.fo_font_family_)
+				{
+					CP_XML_NODE(L"rFont")	
+					{
+						CP_XML_ATTR(L"val", text_properties_.fo_font_family_.get());
+					}
+				}
+				if (text_properties_.fo_font_size_)
+				{
+					CP_XML_NODE(L"sz")		
+					{
+						CP_XML_ATTR(L"val", (int)text_properties_.fo_font_size_->get_length().get_value());
+					}
+				}
+				if (text_properties_.fo_color_)
+				{
+					CP_XML_NODE(L"color")	
+					{
+						CP_XML_ATTR(L"rgb", text_properties_.fo_color_->get_hex_value());
+					}
+				}
+				if (text_properties_.fo_font_style_)
+				{
+					CP_XML_NODE(L"i")		
+					{
+						if (text_properties_.fo_font_style_->get_type() > 0)
+							CP_XML_ATTR(L"val", "true");
+						else 
+							CP_XML_ATTR(L"val", "false");
+					}
+				}
+				if (text_properties_.fo_font_weight_)
+				{
+					CP_XML_NODE(L"b")		
+					{
+						if (text_properties_.fo_font_weight_->get_type() > 0)
+							CP_XML_ATTR(L"val", "true");
+						else
+							CP_XML_ATTR(L"val", "false");
+					}
+				}
 			}
 		}
     }

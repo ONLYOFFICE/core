@@ -330,6 +330,8 @@ namespace OOX
 		et_a_txDef, // <a:txDef>
 		et_a_up, // <a:up>
 		et_a_xfrm, // <a:xfrm>
+		et_a_uFillTx,
+		et_a_highlight,
 	
 		et_a_groupSpPr,			// <a:groupSpPr>
 		et_a_Shape,				// <a:sp>

@@ -89,6 +89,7 @@ namespace OOX
 		class CSi;
 		class CWorkbookView;
 		class CPictureWorksheet;
+		class CHeaderFooter;
 	}
 }
 
@@ -153,6 +154,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CDefinedName			*oox_defined);
 		void convert(OOX::Spreadsheet::CTable				*oox_table_part);
 		void convert(OOX::Spreadsheet::CPictureWorksheet	*oox_background);
+		void convert(OOX::Spreadsheet::CHeaderFooter		*oox_header_footer);
 
 		void convert(OOX::Spreadsheet::CCol					*oox_column);
 		void convert(OOX::Spreadsheet::CRow					*oox_row);

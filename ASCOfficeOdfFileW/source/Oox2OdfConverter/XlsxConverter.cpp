@@ -347,11 +347,17 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	}
 /////////////////////////////////////////////////////////////////////////
 	convert(oox_sheet->m_oSheetViews.GetPointer());
+	convert(oox_sheet->m_oHeaderFooter.GetPointer());
 	convert(oox_sheet->m_oPageSetup.GetPointer());
 	convert(oox_sheet->m_oPageMargins.GetPointer());
 	convert(oox_sheet->m_oPicture.GetPointer());
 
 	xlsx_current_container = old_container;
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CHeaderFooter * oox_header_footer)
+{
+	if (!oox_header_footer) return;
+
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CPictureWorksheet *oox_background)
 {

@@ -80,7 +80,9 @@ public:
 	void pptx_convert			(oox::pptx_conversion_context & Context);
 	void pptx_convert_as_list	(oox::pptx_conversion_context & Context);
 	
-	void oox_convert			(std::wostream & stream, bool graphic, fonts_container & fonts);
+	void oox_serialize			(std::wostream & stream, bool graphic, fonts_container & fonts);
+    void docx_serialize			(std::wostream & stream, fonts_container & fonts);
+	void drawing_serialize		(std::wostream & stream, std::wstring node, fonts_container & fonts, const odf_reader::style_instance *current_style = NULL, std::wstring hlink = L"");
 
     void apply_from			(const text_format_properties_content & Other);
 	void apply_to			(std::vector<_property> & properties);

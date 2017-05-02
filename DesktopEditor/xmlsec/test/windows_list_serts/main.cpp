@@ -336,7 +336,7 @@ void MyHandleError(char *s);
 
 bool Sign(PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile);
 bool Verify(PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSignatureFile);
-bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext);
+bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext, std::wstring sign_id);
 
 void main(void)
 {
@@ -655,7 +655,7 @@ void main(void)
         std::string sCertHash = oSigner.GetCertificateHash();
     }
 
-    SignDocument(NSFile::GetProcessDirectory() + L"/ImageStamp", pCertContext);
+    SignDocument(NSFile::GetProcessDirectory() + L"/ImageStamp", pCertContext, L"{39B6B9C7-60AD-45A2-9F61-40C74A24042E}");
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -712,6 +712,166 @@ public:
     std::wstring m_sFolder;
 
     CXmlSigner* m_signer;
+
+public:
+    class COOXMLRelationship
+    {
+    public:
+        std::wstring rid;
+        std::wstring type;
+        std::wstring target;
+        std::wstring target_mode;
+
+    public:
+
+        COOXMLRelationship()
+        {
+        }
+
+        COOXMLRelationship(XmlUtils::CXmlNode& node)
+        {
+            rid = node.GetAttribute("Id");
+            type = node.GetAttribute("Type");
+            target = node.GetAttribute("Target");
+
+            CheckTargetMode();
+        }
+
+        std::wstring GetXml()
+        {
+            NSStringUtils::CStringBuilder builder;
+            builder.WriteString(L"<Relationship Id=\"");
+            builder.WriteEncodeXmlString(rid);
+            builder.WriteString(L"\" Type=\"");
+            builder.WriteEncodeXmlString(type);
+            builder.WriteString(L"\" Target=\"");
+            builder.WriteEncodeXmlString(target);
+            builder.WriteString(L"\" TargetMode=\"");
+            builder.WriteEncodeXmlString(target_mode);
+            builder.WriteString(L"\" />");
+            return builder.GetData();
+        }
+
+        static bool Compare(const COOXMLRelationship& i, const COOXMLRelationship& j)
+        {
+            return i.rid < j.rid;
+        }
+
+    protected:
+
+        void CheckTargetMode()
+        {
+            if (0 == target.find(L"http") || 0 == target.find(L"www") || 0 == target.find(L"ftp"))
+                target_mode = L"External";
+            else
+                target_mode = L"Internal";
+        }
+    };
+
+    class COOXMLRelationships
+    {
+    public:
+        std::vector<COOXMLRelationship> rels;
+
+    public:
+
+        COOXMLRelationships()
+        {
+        }
+
+        COOXMLRelationships(std::wstring& file)
+        {
+            XmlUtils::CXmlNode oNode;
+            if (!oNode.FromXmlFile(file))
+                return;
+
+            XmlUtils::CXmlNodes oNodes;
+            if (!oNode.GetNodes(L"Relationship", oNodes))
+                return;
+
+            int nCount = oNodes.GetCount();
+            for (int i = 0; i < nCount; ++i)
+            {
+                XmlUtils::CXmlNode oRel;
+                oNodes.GetAt(i, oRel);
+                rels.push_back(COOXMLRelationship(oRel));
+            }
+        }
+
+        std::wstring GetXml()
+        {
+            NSStringUtils::CStringBuilder builder;
+
+            builder.WriteString(L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
+
+            // sort by rId
+            std::sort(rels.begin(), rels.end(), COOXMLRelationship::Compare);
+
+            for (std::vector<COOXMLRelationship>::iterator i = rels.begin(); i != rels.end(); i++)
+                builder.WriteString(i->GetXml());
+
+            builder.WriteString(L"</Relationships>");
+
+            return builder.GetData();
+        }
+
+        std::wstring GetTransforms()
+        {
+            NSStringUtils::CStringBuilder builder;
+
+            builder.WriteString(L"<Transforms><Transform Algorithm=\"http://schemas.openxmlformats.org/package/2006/RelationshipTransform\">");
+
+            for (std::vector<COOXMLRelationship>::iterator i = rels.begin(); i != rels.end(); i++)
+            {
+                builder.WriteString(L"<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"");
+                builder.WriteEncodeXmlString(i->rid);
+                builder.WriteString(L"\" />");
+            }
+
+            builder.WriteString(L"</Transform><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>");
+
+            return builder.GetData();
+        }
+
+        void CheckOriginSigs(std::wstring& file)
+        {
+            int rId = 0;
+            std::vector<COOXMLRelationship>::iterator i = rels.begin();
+            while (i != rels.end())
+            {
+                if (0 == i->target.find(L"_xmlsignatures/"))
+                    return;
+
+                std::wstring rid = i->rid;
+                rid = rid.substr(3);
+
+                int nTemp = std::stoi(rid);
+
+                if (nTemp > rId)
+                    rId = nTemp;
+            }
+
+            std::string sXmlA;
+            NSFile::CFileBinary::ReadAllTextUtf8A(file, sXmlA);
+
+            std::string::size_type pos = sXmlA.rfind("</Relationships>");
+            if (pos == std::string::npos)
+                return;
+
+            rId++;
+            std::string sRet = sXmlA.substr(0, pos);
+            sRet += ("<Relationship Id=\"rId" + std::to_string(rId) + "\" \
+Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/origin\" Target=\"_xmlsignatures/origin.sigs\"/>\
+</Relationships>");
+
+            NSFile::CFileBinary::Remove(file);
+
+            NSFile::CFileBinary oFile;
+            oFile.CreateFileW(file);
+            oFile.WriteFile((BYTE*)sRet.c_str(), (DWORD)sRet.length());
+            oFile.CloseFile();
+        }
+    };
 
 public:
     COOXMLSigner(const std::wstring& sFolder, PCCERT_CONTEXT pContext)
@@ -782,9 +942,89 @@ public:
 
         return sReturn;
     }
+
+    std::wstring GetRelsReference(const std::wstring& file)
+    {
+        COOXMLRelationships oRels(m_sFolder + file);
+
+        if (L"/_rels/.rels" == file)
+        {
+            // удалим все лишнее
+            std::vector<COOXMLRelationship>::iterator i = oRels.rels.begin();
+            while (i != oRels.rels.end())
+            {
+                if (0 == i->target.find(L"docProps/"))
+                    i = oRels.rels.erase(i);
+                else if (0 == i->target.find(L"_xmlsignatures/"))
+                    i = oRels.rels.erase(i);
+                else
+                    i++;
+            }
+        }
+
+        NSStringUtils::CStringBuilder builder;
+        builder.WriteString(L"<Reference URI=\"");
+        builder.WriteString(file);
+        builder.WriteString(L"?ContentType=application/vnd.openxmlformats-package.relationships+xml\">");
+        builder.WriteString(oRels.GetTransforms());
+        builder.WriteString(L"<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/><DigestValue>");
+
+        std::wstring sXml = oRels.GetXml();
+        std::string sHash = GetHashXml(sXml);
+
+        std::wstring sHashW = UTF8_TO_U(sHash);
+        builder.WriteString(sHashW);
+
+        builder.WriteString(L"</DigestValue></Reference>");
+
+        return builder.GetData();
+    }
+
+    int GetCountSigns(const std::wstring& file)
+    {
+        if (!NSFile::CFileBinary::Exists(file))
+        {
+            std::wstring sRels = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
+<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/signature\" Target=\"sig1.xml\"/>\
+</Relationships>";
+
+            NSFile::CFileBinary::SaveToFile(file, sRels, false);
+            return 1;
+        }
+
+        XmlUtils::CXmlNode oNode;
+        oNode.FromXmlFile(file);
+
+        XmlUtils::CXmlNodes oNodes;
+        oNode.GetNodes(L"Relationship", oNodes);
+
+        int rId = oNodes.GetCount() + 1;
+
+        std::string sXmlA;
+        NSFile::CFileBinary::ReadAllTextUtf8A(file, sXmlA);
+
+        std::string::size_type pos = sXmlA.rfind("</Relationships>");
+        if (pos == std::string::npos)
+            return 1;
+
+        std::string sRet = sXmlA.substr(0, pos);
+        sRet += ("<Relationship Id=\"rId" + std::to_string(rId) + "\" \
+Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/signature\" Target=\"sig" + std::to_string(rId) + ".xml\"/>\
+</Relationships>");
+
+        NSFile::CFileBinary::Remove(file);
+
+        NSFile::CFileBinary oFile;
+        oFile.CreateFileW(file);
+        oFile.WriteFile((BYTE*)sRet.c_str(), (DWORD)sRet.length());
+        oFile.CloseFile();
+
+        return rId;
+    }
 };
 
-bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext)
+bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext, std::wstring sign_id)
 {
     std::wstring sFolder = NSFile::GetProcessDirectory();
 
@@ -803,31 +1043,11 @@ bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext)
         // idPackageObject
         std::wstring sXml = L"<Manifest>";
 
-        // TODO: rels
         if (true)
         {
-            sXml += L"<Reference URI=\"/_rels/.rels?ContentType=application/vnd.openxmlformats-package.relationships+xml\">\
-<Transforms><Transform Algorithm=\"http://schemas.openxmlformats.org/package/2006/RelationshipTransform\">\
-<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId1\"/>\
-</Transform><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>\
-<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/>\
-<DigestValue>1vWU/YTF/7t6ZjnE44gAFTbZvvA=</DigestValue>\
-</Reference>";
-
-            sXml += L"<Reference URI=\"/word/_rels/document.xml.rels?ContentType=application/vnd.openxmlformats-package.relationships+xml\">\
-<Transforms><Transform Algorithm=\"http://schemas.openxmlformats.org/package/2006/RelationshipTransform\">\
-<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId3\"/>\
-<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId2\"/>\
-<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId1\"/>\
-<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId6\"/>\
-<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId5\"/>\
-<mdssi:RelationshipReference xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\" SourceId=\"rId4\"/>\
-</Transform><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>\
-<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/>\
-<DigestValue>kVYCpjZZG3SU5+sOsB1PRnQSCzk=</DigestValue>\
-</Reference>";
+            sXml += oOOXMLSigner.GetRelsReference(L"/_rels/.rels");
+            sXml += oOOXMLSigner.GetRelsReference(L"/word/_rels/document.xml.rels");
         }
-
 
         sXml += oOOXMLSigner.GetReference(L"/word/document.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
         sXml += oOOXMLSigner.GetReference(L"/word/fontTable.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml");
@@ -861,7 +1081,7 @@ bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext)
         std::wstring sXml = L"<SignatureProperties>\
 <SignatureProperty Id=\"idOfficeV1Details\" Target=\"#idPackageSignature\">\
 <SignatureInfoV1 xmlns=\"http://schemas.microsoft.com/office/2006/digsig\">\
-<SetupID>{39B6B9C7-60AD-45A2-9F61-40C74A24042E}</SetupID>\
+<SetupID>" + sign_id + L"</SetupID>\
 <SignatureText></SignatureText>\
 <SignatureImage>" + sImageValid + L"</SignatureImage>\
 <SignatureComments/>\
@@ -976,22 +1196,22 @@ bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext)
     sXmlData += L"</Signature>";
 
     std::wstring sDirectory = sFolderOOXML + L"/_xmlsignatures";
-    NSDirectory::CreateDirectory(sDirectory);
 
-    NSFile::CFileBinary oFile;
-    oFile.CreateFileW(sDirectory + L"/origin.sigs");
-    oFile.CloseFile();
+    if (!NSDirectory::Exists(sDirectory))
+        NSDirectory::CreateDirectory(sDirectory);
 
-    NSFile::CFileBinary::SaveToFile(sDirectory + L"/sig1.xml", sXmlData, false);
+    if (!NSFile::CFileBinary::Exists(sDirectory + L"/origin.sigs"))
+    {
+        NSFile::CFileBinary oFile;
+        oFile.CreateFileW(sDirectory + L"/origin.sigs");
+        oFile.CloseFile();
+    }
 
-    NSDirectory::CreateDirectory(sDirectory + L"/_rels");
+    if (!NSDirectory::Exists(sDirectory + L"/_rels"))
+        NSDirectory::CreateDirectory(sDirectory + L"/_rels");
 
-    std::wstring sRels = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
-<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/signature\" Target=\"sig1.xml\"/>\
-</Relationships>";
+    int nSignNum = oOOXMLSigner.GetCountSigns(sDirectory + L"/_rels/origin.sigs.rels");
 
-    NSFile::CFileBinary::SaveToFile(sDirectory + L"/_rels/origin.sigs.rels", sRels, false);
-
+    NSFile::CFileBinary::SaveToFile(sDirectory + L"/sig" + std::to_wstring(nSignNum) + L".xml", sXmlData, false);
     return true;
 }

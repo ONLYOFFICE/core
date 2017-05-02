@@ -655,7 +655,8 @@ void main(void)
         std::string sCertHash = oSigner.GetCertificateHash();
     }
 
-    SignDocument(NSFile::GetProcessDirectory() + L"/ImageStamp", pCertContext, L"{39B6B9C7-60AD-45A2-9F61-40C74A24042E}");
+    //SignDocument(NSFile::GetProcessDirectory() + L"/ImageStamp", pCertContext, L"{39B6B9C7-60AD-45A2-9F61-40C74A24042E}");
+    SignDocument(L"D:\\555", pCertContext, L"{58CBB483-BC48-4EFF-B742-44379E8D913E}");
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -849,6 +850,8 @@ public:
 
                 if (nTemp > rId)
                     rId = nTemp;
+
+                i++;
             }
 
             std::string sXmlA;
@@ -949,6 +952,8 @@ public:
 
         if (L"/_rels/.rels" == file)
         {
+            oRels.CheckOriginSigs(m_sFolder + file);
+
             // удалим все лишнее
             std::vector<COOXMLRelationship>::iterator i = oRels.rels.begin();
             while (i != oRels.rels.end())
@@ -1062,7 +1067,7 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
             XmlUtils::CXmlNode node;
             nodesOverrides.GetAt(i, node);
 
-            if ("application/vnd.openxmlformats-package.digital-signature-origin" == node.GetAttributeA("ContentType"))
+            if ("application/vnd.openxmlformats-package.digital-signature-xmlsignature+xml" == node.GetAttributeA("ContentType"))
             {
                 ++nCountSigs;
             }

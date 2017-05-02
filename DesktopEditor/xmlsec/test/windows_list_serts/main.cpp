@@ -1022,6 +1022,77 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
 
         return rId;
     }
+
+    void CorrectContentTypes(int nCountSigsNeeds)
+    {
+        std::wstring file = m_sFolder + L"/[Content_Types].xml";
+        XmlUtils::CXmlNode oNode;
+        oNode.FromXmlFile(file);
+
+        XmlUtils::CXmlNodes nodesDefaults;
+        oNode.GetNodes(L"Default", nodesDefaults);
+
+        XmlUtils::CXmlNodes nodesOverrides;
+        oNode.GetNodes(L"Override", nodesOverrides);
+
+        std::string sAddition = "";
+
+        bool bIsSigsExist = false;
+        int nCount = nodesDefaults.GetCount();
+        for (int i = 0; i < nCount; ++i)
+        {
+            XmlUtils::CXmlNode node;
+            nodesDefaults.GetAt(i, node);
+
+            if ("sigs" == node.GetAttributeA("Extension") &&
+                "application/vnd.openxmlformats-package.digital-signature-origin" == node.GetAttributeA("ContentType"))
+            {
+                bIsSigsExist = true;
+                break;
+            }
+        }
+
+        if (!bIsSigsExist)
+            sAddition += "<Default Extension=\"sigs\" ContentType=\"application/vnd.openxmlformats-package.digital-signature-origin\"/>";
+
+        int nCountSigs = 0;
+        nCount = nodesOverrides.GetCount();
+        for (int i = 0; i < nCount; ++i)
+        {
+            XmlUtils::CXmlNode node;
+            nodesOverrides.GetAt(i, node);
+
+            if ("application/vnd.openxmlformats-package.digital-signature-origin" == node.GetAttributeA("ContentType"))
+            {
+                ++nCountSigs;
+            }
+        }
+
+        for (int i = nCountSigs; i < nCountSigsNeeds; ++i)
+        {
+            sAddition += "<Override PartName=\"/_xmlsignatures/sig";
+            sAddition += std::to_string(i + 1);
+            sAddition += ".xml\" ContentType=\"application/vnd.openxmlformats-package.digital-signature-xmlsignature+xml\"/>";
+        }
+
+        std::string sXmlA;
+        NSFile::CFileBinary::ReadAllTextUtf8A(file, sXmlA);
+
+        std::string::size_type pos = sXmlA.rfind("</Types>");
+        if (pos == std::string::npos)
+            return;
+
+        std::string sRet = sXmlA.substr(0, pos);
+        sRet += sAddition;
+        sRet += "</Types>";
+
+        NSFile::CFileBinary::Remove(file);
+
+        NSFile::CFileBinary oFile;
+        oFile.CreateFileW(file);
+        oFile.WriteFile((BYTE*)sRet.c_str(), (DWORD)sRet.length());
+        oFile.CloseFile();
+    }
 };
 
 bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext, std::wstring sign_id)
@@ -1211,6 +1282,8 @@ bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext, std::w
         NSDirectory::CreateDirectory(sDirectory + L"/_rels");
 
     int nSignNum = oOOXMLSigner.GetCountSigns(sDirectory + L"/_rels/origin.sigs.rels");
+
+    oOOXMLSigner.CorrectContentTypes(nSignNum);
 
     NSFile::CFileBinary::SaveToFile(sDirectory + L"/sig" + std::to_wstring(nSignNum) + L".xml", sXmlData, false);
     return true;

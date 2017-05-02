@@ -463,9 +463,13 @@ void text_format_properties_content::drawing_serialize(std::wostream & strm, std
 	//nodes
 			if (fo_color_)
 			{
-				CP_XML_NODE(L"a:solidFill")
+				std::wstring strRGB = fo_color_->get_hex_value(); //auto ... не нужно
+				if (!strRGB.empty())
 				{
-					CP_XML_NODE(L"a:srgbClr") {CP_XML_ATTR(L"val",fo_color_->get_hex_value());}
+					CP_XML_NODE(L"a:solidFill")
+					{
+						CP_XML_NODE(L"a:srgbClr") {CP_XML_ATTR(L"val", strRGB);}
+					}
 				}
 			}
 			if (style_font_name_ || style_font_name_asian_ || style_font_name_complex_ || fo_font_family_)

@@ -167,15 +167,23 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 			{ 			
 				if (fill != L"a:noFill")
 				{
-					if		(color.length() < 1 && always_draw)	color = L"000000";
-					else if (color.length() <1 )				color = L"ffffff";
+					if ( color.empty() )
+					{
+						if (always_draw)	color = L"000000";
+						else				color = L"ffffff";
+					}
 					
 					CP_XML_NODE(L"a:srgbClr")
 					{
 						CP_XML_ATTR(L"val",color);
 						
-						if (dStrokeOpacity)	CP_XML_NODE(L"a:alpha"){CP_XML_ATTR(L"val", *dStrokeOpacity);}
-
+						if (dStrokeOpacity)	
+						{
+							CP_XML_NODE(L"a:alpha")
+							{
+								CP_XML_ATTR(L"val", (int)(*dStrokeOpacity * 1000));
+							}
+						}
 					}
 				}
 			}

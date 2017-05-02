@@ -87,17 +87,14 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("left"),      m_oLeft)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("top"),      m_oTop)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("right"),      m_oRight)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("bottom"),      m_oBottom)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("header"),      m_oHeader)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("footer"),      m_oFooter)
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("left"),	m_oLeft)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("top"),		m_oTop)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("right"),	m_oRight)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("bottom"),	m_oBottom)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("header"),	m_oHeader)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("footer"),	m_oFooter)
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
@@ -121,7 +118,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -138,10 +135,14 @@ namespace OOX
                         writer.WriteString(sOrientation.c_str());
 						writer.WriteString(L"\"");
 					}
+					if (m_oRId.IsInit())
+					{
+						WritingStringAttrString(L"r:id", m_oRId->ToString());
+					}
 					writer.WriteString(L"/>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -153,23 +154,23 @@ namespace OOX
 			{
 				return et_x_PageSetup;
 			}
-
-		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("orientation"),      m_oOrientation)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("paperSize"),      m_oPaperSize)
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("orientation"),	m_oOrientation)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("paperSize"),	m_oPaperSize)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("paperUnits"),	m_oPaperUnits)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("paperWidth"),	m_oPaperWidth)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("paperHeight"),	m_oPaperHeight)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),		m_oRId)
+				WritingElement_ReadAttributes_End( oReader )
 			}
-
-		public:
-			nullable<SimpleTypes::CPageOrientation<>>	m_oOrientation;
-			nullable<SimpleTypes::Spreadsheet::CPageSize<>>	m_oPaperSize;
+			nullable<SimpleTypes::CRelationshipId>				m_oRId;
+			nullable<SimpleTypes::CPageOrientation<>>			m_oOrientation;
+			nullable<SimpleTypes::Spreadsheet::CPageSize<>>		m_oPaperSize;
+			nullable<SimpleTypes::Spreadsheet::CPageUnits<>>	m_oPaperUnits;
+			nullable<SimpleTypes::CDouble>						m_oPaperWidth;
+			nullable<SimpleTypes::CDouble>						m_oPaperHeight;
 		};
 		class CPrintOptions : public WritingElement
 		{
@@ -193,8 +194,8 @@ namespace OOX
 				if(m_oGridLines.IsInit() || m_oGridLinesSet.IsInit() || m_oHeadings.IsInit())
 				{
 					writer.WriteString(L"<printOptions");
-					WritingStringNullableAttrBool(L"headings", m_oHeadings);
-					WritingStringNullableAttrBool(L"gridLines", m_oGridLines);
+					WritingStringNullableAttrBool(L"headings",	m_oHeadings);
+					WritingStringNullableAttrBool(L"gridLines",	m_oGridLines);
 					WritingStringNullableAttrBool(L"gridLinesSet", m_oGridLinesSet);
 					writer.WriteString(L"/>");
 				}
@@ -216,16 +217,13 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("gridLines"),      m_oGridLines)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("gridLinesSet"),      m_oGridLinesSet)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("headings"),      m_oHeadings)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("horizontalCentered"),      m_oHorizontalCentered)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("verticalCentered"),      m_oVerticalCentered)
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("gridLines"),			m_oGridLines)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("gridLinesSet"),		m_oGridLinesSet)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("headings"),			m_oHeadings)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("horizontalCentered"),	m_oHorizontalCentered)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("verticalCentered"),	m_oVerticalCentered)
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
@@ -272,12 +270,9 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"),      m_oRef)
-
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
@@ -315,7 +310,7 @@ namespace OOX
 				WritingStringNullableAttrBool(L"zeroHeight", m_oZeroHeight);
 				writer.WriteString(_T("/>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -332,20 +327,17 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("baseColWidth"),      m_oBaseColWidth)	// ToDo Excel не воспринимает значения не uint (мы приводим к uint)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customHeight"),      m_oCustomHeight )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("defaultColWidth"),      m_oDefaultColWidth )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("defaultRowHeight"),      m_oDefaultRowHeight )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("outlineLevelCol"),      m_oOutlineLevelCol )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("outlineLevelRow"),      m_oOutlineLevelRow )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("thickBottom"),      m_oThickBottom )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("thickTop"),      m_oThickTop )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("zeroHeight"),      m_oZeroHeight )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("baseColWidth"),		m_oBaseColWidth)	// ToDo Excel не воспринимает значения не uint (мы приводим к uint)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customHeight"),		m_oCustomHeight )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("defaultColWidth"),		m_oDefaultColWidth )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("defaultRowHeight"),	m_oDefaultRowHeight )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("outlineLevelCol"),		m_oOutlineLevelCol )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("outlineLevelRow"),		m_oOutlineLevelRow )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("thickBottom"),			m_oThickBottom )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("thickTop"),			m_oThickTop )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("zeroHeight"),			m_oZeroHeight )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
@@ -402,22 +394,19 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("activePane")	, m_oActivePane)
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("state")		, m_oState)
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("topLeftCell")	, m_oTopLeftCell)
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("xSplit")		, m_oXSplit)
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("ySplit")		, m_oYSplit)	
-
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("activePane")	, m_oActivePane)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("state")		, m_oState)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("topLeftCell")	, m_oTopLeftCell)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("xSplit")		, m_oXSplit)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ySplit")		, m_oYSplit)	
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
             nullable<SimpleTypes::Spreadsheet::CActivePane<>>   m_oActivePane;
             nullable<SimpleTypes::Spreadsheet::CPaneState<>>    m_oState;
-            nullable<std::wstring>                                   m_oTopLeftCell;
+            nullable<std::wstring>								m_oTopLeftCell;
             nullable<SimpleTypes::CDouble>                      m_oXSplit;
             nullable<SimpleTypes::CDouble>                      m_oYSplit;
 		};
@@ -464,21 +453,18 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("activeCell")	, m_oActiveCell)
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("activeCellId")	, m_oActiveCellId)
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("sqref")		, m_oSqref)
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("pane")			, m_oPane)
-
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("activeCell")	, m_oActiveCell)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("activeCellId")	, m_oActiveCellId)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("sqref")		, m_oSqref)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("pane")			, m_oPane)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-			nullable<std::wstring>									m_oActiveCell;
+			nullable<std::wstring>								m_oActiveCell;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oActiveCellId;
-			nullable<std::wstring>									m_oSqref;
+			nullable<std::wstring>								m_oSqref;
 			nullable<SimpleTypes::Spreadsheet::CActivePane<>>	m_oPane;
 		};
 
@@ -566,30 +552,27 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("colorId"),      m_oColorId)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("defaultGridColor"),      m_oDefaultGridColor)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rightToLeft"),      m_oRightToLeft)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showFormulas"),      m_oShowFormulas)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showGridLines"),      m_oShowGridLines)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showOutlineSymbols"),      m_oShowOutlineSymbols)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showRowColHeaders"),      m_oShowRowColHeaders)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showRuler"),      m_oShowRuler)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showWhiteSpace"),      m_oShowWhiteSpace)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showZeros"),      m_oShowZeros)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("tabSelected"),      m_oTabSelected)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("topLeftCell"),      m_oTopLeftCell)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("view"),      m_oView)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("windowProtection"),      m_oWindowProtection)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("workbookViewId"),      m_oWorkbookViewId)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("zoomScale"),      m_oZoomScale)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("zoomScaleNormal"),      m_oZoomScaleNormal)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("zoomScalePageLayoutView"),      m_oZoomScalePageLayoutView)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("zoomScaleSheetLayoutView"),      m_oZoomScaleSheetLayoutView)		
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("colorId"),				m_oColorId)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("defaultGridColor"),	m_oDefaultGridColor)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rightToLeft"),			m_oRightToLeft)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showFormulas"),		m_oShowFormulas)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showGridLines"),		m_oShowGridLines)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showOutlineSymbols"),	m_oShowOutlineSymbols)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showRowColHeaders"),	m_oShowRowColHeaders)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showRuler"),			m_oShowRuler)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showWhiteSpace"),		m_oShowWhiteSpace)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showZeros"),			m_oShowZeros)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("tabSelected"),			m_oTabSelected)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("topLeftCell"),			m_oTopLeftCell)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("view"),				m_oView)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("windowProtection"),	m_oWindowProtection)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("workbookViewId"),		m_oWorkbookViewId)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("zoomScale"),			m_oZoomScale)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("zoomScaleNormal"),		m_oZoomScaleNormal)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("zoomScalePageLayoutView"),		m_oZoomScalePageLayoutView)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("zoomScaleSheetLayoutView"),	m_oZoomScaleSheetLayoutView)		
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
@@ -606,7 +589,7 @@ namespace OOX
 				nullable<SimpleTypes::COnOff<>>						m_oShowWhiteSpace;
 				nullable<SimpleTypes::COnOff<>>						m_oShowZeros;
 				nullable<SimpleTypes::COnOff<>>						m_oTabSelected;
-				nullable<std::wstring>									m_oTopLeftCell;
+				nullable<std::wstring>								m_oTopLeftCell;
 				nullable<SimpleTypes::Spreadsheet::CSheetViewType<>>m_oView;
 				nullable<SimpleTypes::COnOff<>>						m_oWindowProtection;
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oWorkbookViewId;
@@ -746,12 +729,12 @@ namespace OOX
 		public:
 			nullable<CColor>					m_oTabColor;
 
-			nullable<std::wstring>					m_oCodeName;
+			nullable<std::wstring>				m_oCodeName;
 			nullable<SimpleTypes::COnOff<>>		m_oEnableFormatConditionsCalculation;
 			nullable<SimpleTypes::COnOff<>>		m_oFilterMode;
 			nullable<SimpleTypes::COnOff<>>		m_oPublished;
 			nullable<SimpleTypes::COnOff<>>		m_oSyncHorizontal;
-			nullable<std::wstring>					m_oSyncRef;
+			nullable<std::wstring>				m_oSyncRef;
 			nullable<SimpleTypes::COnOff<>>		m_oSyncVertical;
 			nullable<SimpleTypes::COnOff<>>		m_oTransitionEntry;
 			nullable<SimpleTypes::COnOff<>>		m_oTransitionEvaluation;
@@ -1070,10 +1053,8 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),      m_oId )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"), m_oId )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oId;

@@ -1164,13 +1164,13 @@ void style_page_layout::serialize(std::wostream & strm)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 void style_footnote_sep_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"style:width", style_width_);
-    CP_XML_ATTR_OPT(L"style:rel-width", style_rel_width_);
-    CP_XML_ATTR_OPT(L"style:color", style_color_);
-    CP_XML_ATTR_OPT(L"style:line-style", style_line_style_);
-    CP_XML_ATTR_OPT(L"style:type", style_adjustment_); // default Left
-    CP_XML_ATTR_OPT(L"style:distance-before-sep", style_distance_before_sep_);
-    CP_XML_ATTR_OPT(L"style:distance-after-sep", style_distance_after_sep_);
+    CP_XML_ATTR_OPT(L"style:width",			style_width_);
+    CP_XML_ATTR_OPT(L"style:rel-width",		style_rel_width_);
+    CP_XML_ATTR_OPT(L"style:color",			style_color_);
+    CP_XML_ATTR_OPT(L"style:line-style",	style_line_style_);
+    CP_XML_ATTR_OPT(L"style:type",					style_adjustment_);		// default Left
+    CP_XML_ATTR_OPT(L"style:distance-before-sep",	style_distance_before_sep_);
+    CP_XML_ATTR_OPT(L"style:distance-after-sep",	style_distance_after_sep_);
 }
 
 const wchar_t * style_footnote_sep::ns = L"style";

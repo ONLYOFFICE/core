@@ -169,13 +169,14 @@ public:
 
 	virtual void serialize(std::wostream & strm);
     
-    _CP_OPT(odf_types::style_repeat) style_repeat_;
-    _CP_OPT(odf_types::style_position) style_position_;
-    _CP_OPT(std::wstring) filter_name_;
-    _CP_OPT(odf_types::percent) draw_opacity_;
+    _CP_OPT(odf_types::style_repeat)		style_repeat_;
+    _CP_OPT(odf_types::style_position)		style_position_;
+    _CP_OPT(std::wstring)					filter_name_;
+    _CP_OPT(odf_types::percent)				draw_opacity_;
 
-    _CP_OPT(odf_types::common_xlink_attlist) common_xlink_attlist_;
-    office_element_ptr office_binary_data_;
+    _CP_OPT(odf_types::common_xlink_attlist) xlink_attlist_;
+    
+	office_element_ptr office_binary_data_;
 
 };
 

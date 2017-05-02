@@ -462,8 +462,8 @@ void odf_document::Impl::parse_styles()
                     continue;
                 }
 
-                const std::wstring styleName = masterPage->style_master_page_attlist_.style_name_.get_value_or(L"");
-                const std::wstring pageLayoutName = masterPage->style_master_page_attlist_.style_page_layout_name_.get_value_or(L"");
+                const std::wstring styleName = masterPage->attlist_.style_name_.get_value_or(L"");
+                const std::wstring pageLayoutName = masterPage->attlist_.style_page_layout_name_.get_value_or(L"");
 
                 context_->pageLayoutContainer().add_master_page(styleName, pageLayoutName, masterPage);
             }        

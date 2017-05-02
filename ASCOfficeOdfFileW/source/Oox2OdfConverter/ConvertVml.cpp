@@ -651,15 +651,15 @@ void OoxConverter::convert(OOX::Vml::CStroke *vml_stroke)
 	switch(vml_stroke->m_oStartArrow.GetValue())
 	{
 		case SimpleTypes::strokearrowtypeBlock:
-			odf_context()->drawing_context()->set_line_head(SimpleTypes::lineendtypeStealth,vml_stroke->m_oStartArrowLength.GetValue(),vml_stroke->m_oStartArrowWidth.GetValue()); break;
+			odf_context()->drawing_context()->set_line_head(4, vml_stroke->m_oStartArrowLength.GetValue(), vml_stroke->m_oStartArrowWidth.GetValue()); break;
 		case SimpleTypes::strokearrowtypeClassic:
-			odf_context()->drawing_context()->set_line_head(SimpleTypes::lineendtypeArrow,vml_stroke->m_oStartArrowLength.GetValue(),vml_stroke->m_oStartArrowWidth.GetValue()); break;
+			odf_context()->drawing_context()->set_line_head(1, vml_stroke->m_oStartArrowLength.GetValue(), vml_stroke->m_oStartArrowWidth.GetValue()); break;
 		case SimpleTypes::strokearrowtypeDiamond:
-			odf_context()->drawing_context()->set_line_head(SimpleTypes::lineendtypeDiamond,vml_stroke->m_oStartArrowLength.GetValue(),vml_stroke->m_oStartArrowWidth.GetValue()); break;
+			odf_context()->drawing_context()->set_line_head(2, vml_stroke->m_oStartArrowLength.GetValue(), vml_stroke->m_oStartArrowWidth.GetValue()); break;
 		case SimpleTypes::strokearrowtypeOpen:
-			odf_context()->drawing_context()->set_line_head(SimpleTypes::lineendtypeTriangle,vml_stroke->m_oStartArrowLength.GetValue(),vml_stroke->m_oStartArrowWidth.GetValue()); break;
+			odf_context()->drawing_context()->set_line_head(5, vml_stroke->m_oStartArrowLength.GetValue(), vml_stroke->m_oStartArrowWidth.GetValue()); break;
 		case SimpleTypes::strokearrowtypeOval:
-			odf_context()->drawing_context()->set_line_head(SimpleTypes::lineendtypeOval,vml_stroke->m_oStartArrowLength.GetValue(),vml_stroke->m_oStartArrowWidth.GetValue()); break;
+			odf_context()->drawing_context()->set_line_head(3, vml_stroke->m_oStartArrowLength.GetValue(), vml_stroke->m_oStartArrowWidth.GetValue()); break;
 		case SimpleTypes::strokearrowtypeNone:
 		default:
 				break;
@@ -667,15 +667,15 @@ void OoxConverter::convert(OOX::Vml::CStroke *vml_stroke)
 	switch(vml_stroke->m_oEndArrow.GetValue())
 	{
 		case SimpleTypes::strokearrowtypeBlock:
-			odf_context()->drawing_context()->set_line_tail(SimpleTypes::lineendtypeStealth,vml_stroke->m_oEndArrowLength.GetValue(),vml_stroke->m_oEndArrowWidth.GetValue()); break;
+			odf_context()->drawing_context()->set_line_tail(4, vml_stroke->m_oEndArrowLength.GetValue(), vml_stroke->m_oEndArrowWidth.GetValue()); break;
 		case SimpleTypes::strokearrowtypeClassic:
-			odf_context()->drawing_context()->set_line_tail(SimpleTypes::lineendtypeArrow,vml_stroke->m_oEndArrowLength.GetValue(),vml_stroke->m_oEndArrowWidth.GetValue()); break;
+			odf_context()->drawing_context()->set_line_tail(1, vml_stroke->m_oEndArrowLength.GetValue(), vml_stroke->m_oEndArrowWidth.GetValue()); break;
 		case SimpleTypes::strokearrowtypeDiamond:
-			odf_context()->drawing_context()->set_line_tail(SimpleTypes::lineendtypeDiamond,vml_stroke->m_oEndArrowLength.GetValue(),vml_stroke->m_oEndArrowWidth.GetValue()); break;
+			odf_context()->drawing_context()->set_line_tail(2, vml_stroke->m_oEndArrowLength.GetValue(), vml_stroke->m_oEndArrowWidth.GetValue()); break;
 		case SimpleTypes::strokearrowtypeOpen:
-			odf_context()->drawing_context()->set_line_tail(SimpleTypes::lineendtypeTriangle,vml_stroke->m_oEndArrowLength.GetValue(),vml_stroke->m_oEndArrowWidth.GetValue()); break;
+			odf_context()->drawing_context()->set_line_tail(5, vml_stroke->m_oEndArrowLength.GetValue(), vml_stroke->m_oEndArrowWidth.GetValue()); break;
 		case SimpleTypes::strokearrowtypeOval:
-			odf_context()->drawing_context()->set_line_tail(SimpleTypes::lineendtypeOval,vml_stroke->m_oEndArrowLength.GetValue(),vml_stroke->m_oEndArrowWidth.GetValue()); break;
+			odf_context()->drawing_context()->set_line_tail(3, vml_stroke->m_oEndArrowLength.GetValue(), vml_stroke->m_oEndArrowWidth.GetValue()); break;
 		case SimpleTypes::strokearrowtypeNone:
 		default:
 				break;

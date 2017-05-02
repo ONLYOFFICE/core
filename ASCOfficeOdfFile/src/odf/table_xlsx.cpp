@@ -120,12 +120,12 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
     if ((rowStyle) && (rowStyle->content()))
 	{
 		const odf_reader::style_table_row_properties * prop = rowStyle->content()->get_style_table_row_properties();
-		if ((prop) && (prop->style_table_row_properties_attlist_.style_row_height_))
+		if ((prop) && (prop->attlist_.style_row_height_))
 		{
-			row_height = prop->style_table_row_properties_attlist_.style_row_height_->get_value_unit(odf_types::length::pt);
+			row_height = prop->attlist_.style_row_height_->get_value_unit(odf_types::length::pt);
 
-			if ((prop->style_table_row_properties_attlist_.style_use_optimal_row_height_) && 
-						(*prop->style_table_row_properties_attlist_.style_use_optimal_row_height_==true))
+			if ((prop->attlist_.style_use_optimal_row_height_) && 
+						(*prop->attlist_.style_use_optimal_row_height_==true))
 			{
 				//автоматическая подстройка высоты.
 				//нету в оох
@@ -478,11 +478,11 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
                     {
                         if (const style_table_column_properties * prop = inst->content()->get_style_table_column_properties())
                         {  
-                            if (prop->style_table_column_properties_attlist_.style_column_width_)
+                            if (prop->attlist_.style_column_width_)
                             {
-                                pt_width = prop->style_table_column_properties_attlist_.style_column_width_->get_value_unit(length::pt);                        
-                                cm_width = prop->style_table_column_properties_attlist_.style_column_width_->get_value_unit(length::cm);        
-								in_width = prop->style_table_column_properties_attlist_.style_column_width_->get_value_unit(length::inch);
+                                pt_width = prop->attlist_.style_column_width_->get_value_unit(length::pt);                        
+                                cm_width = prop->attlist_.style_column_width_->get_value_unit(length::cm);        
+								in_width = prop->attlist_.style_column_width_->get_value_unit(length::inch);
 
                                 if (collapsed)
                                 {
@@ -492,7 +492,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
                                 const double pixDpi = in_width * 96.;                
                                 width = pixToSize(pixDpi, Context.getMaxDigitSize().first); 
 
-								//const double width = cmToChars(prop->style_table_column_properties_attlist_.style_column_width_->get_value_unit(length::cm));
+								//const double width = cmToChars(prop->attlist_.style_column_width_->get_value_unit(length::cm));
                               
 								// see ECMA-376 page 1768
                                 if (in_width > 0)

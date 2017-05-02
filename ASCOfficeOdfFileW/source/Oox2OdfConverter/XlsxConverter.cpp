@@ -30,9 +30,7 @@
  *
  */
 #include "XlsxConverter.h"
-#include "../utils.h"
-
-#include <boost/foreach.hpp>
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 
 #include "../OdfFormat/ods_conversion_context.h"
 
@@ -45,8 +43,9 @@
 #include "../OdfFormat/style_text_properties.h"
 #include "../OdfFormat/style_paragraph_properties.h"
 #include "../OdfFormat/style_graphic_properties.h"
+#include "../OdfFormat/style_page_layout_properties.h"
 
-#include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
+#include "../utils.h"
 
 using namespace cpdoccore;
 
@@ -241,10 +240,14 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 {
 	if (!oox_sheet) return;
 
+	OOX::IFileContainer* old_container = xlsx_current_container;
+	xlsx_current_container = dynamic_cast<OOX::IFileContainer*>(oox_sheet);
+	
 	if (oox_sheet->m_oDimension.IsInit())
 	{
 		ods_context->set_sheet_dimension(oox_sheet->m_oDimension->m_oRef.get());
 	}
+
 	convert(oox_sheet->m_oSheetFormatPr.GetPointer());
 	convert(oox_sheet->m_oSheetPr.GetPointer());
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -344,10 +347,45 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	}
 /////////////////////////////////////////////////////////////////////////
 	convert(oox_sheet->m_oSheetViews.GetPointer());
+	convert(oox_sheet->m_oHeaderFooter.GetPointer());
 	convert(oox_sheet->m_oPageSetup.GetPointer());
 	convert(oox_sheet->m_oPageMargins.GetPointer());
-}
+	convert(oox_sheet->m_oPicture.GetPointer());
 
+	xlsx_current_container = old_container;
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CHeaderFooter * oox_header_footer)
+{
+	if (!oox_header_footer) return;
+
+}
+void XlsxConverter::convert(OOX::Spreadsheet::CPictureWorksheet *oox_background)
+{
+	if (!oox_background) return;
+	if (!oox_background->m_oId.IsInit())return;
+
+	std::wstring sID, pathImage, href;
+	sID         = oox_background->m_oId->GetValue();
+	pathImage   = find_link_by_id(sID, 1);
+	href		= ods_context->add_image(pathImage);
+
+	if (href.empty()) return;
+
+	odf_writer::office_element_ptr fill_image_element;
+
+	odf_writer::create_element(L"style", L"background-image", fill_image_element, ods_context);
+
+	odf_writer::style_background_image * fill_image = dynamic_cast<odf_writer::style_background_image*>(fill_image_element.get());
+	if (!fill_image) return;
+
+	fill_image->xlink_attlist_				= odf_types::common_xlink_attlist();
+	fill_image->xlink_attlist_->type_		= odf_types::xlink_type::Simple;
+	fill_image->xlink_attlist_->actuate_	= odf_types::xlink_actuate::OnLoad;	
+	fill_image->xlink_attlist_->href_		= href;
+
+	odf_writer::style_page_layout_properties* page_props = ods_context->page_layout_context()->last_layout()->get_properties();
+	page_props->add_child_element(fill_image_element);
+}
 void XlsxConverter::convert(OOX::Spreadsheet::CTable *oox_table_part)
 {
 	if (!oox_table_part) return;
@@ -1012,7 +1050,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 		//nullable<SimpleTypes::COnOff<>>						m_oDefaultGridColor;
 		//nullable<SimpleTypes::COnOff<>>						m_oShowRuler;
 		//nullable<SimpleTypes::COnOff<>>						m_oShowWhiteSpace;
-        //nullable<std::wstring>										m_oTopLeftCell;
+        //nullable<std::wstring>								m_oTopLeftCell;
 		//nullable<SimpleTypes::Spreadsheet::CSheetViewType<>>	m_oView;
 		//nullable<SimpleTypes::COnOff<>>						m_oWindowProtection;
 		//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScaleNormal;
@@ -1026,15 +1064,67 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPageSetup *oox_page)
 	if (!oox_page) return;
 
 	int type = 1;	
+	if (oox_page->m_oOrientation.IsInit())
+	{
+		type = (int)oox_page->m_oOrientation->GetValue();
+	}
 	ods_context->page_layout_context()->set_page_orientation(type);
+
+	_CP_OPT(odf_types::length) width, height;
+	if (oox_page->m_oPaperWidth.IsInit() && oox_page->m_oPaperHeight.IsInit())
+	{
+		double w	= oox_page->m_oPaperWidth->GetValue();
+		double h	= oox_page->m_oPaperHeight->GetValue();
+		int unit = oox_page->m_oPaperUnits.IsInit() ? oox_page->m_oPaperUnits->GetValue() : 0;
+
+		switch(unit)
+		{
+		case 1:
+			width	= odf_types::length(w, odf_types::length::cm);
+			height	= odf_types::length(h, odf_types::length::cm);
+		case 2:
+			width	= odf_types::length(w, odf_types::length::inch);
+			height	= odf_types::length(h, odf_types::length::inch);
+		case 3:
+			width	= odf_types::length(w, odf_types::length::pt);
+			height	= odf_types::length(h, odf_types::length::pt);
+		case 4:
+			width	= odf_types::length(w, odf_types::length::px);
+			height	= odf_types::length(h, odf_types::length::px);
+		case 0:
+		default:
+			width	= odf_types::length(w, odf_types::length::mm);
+			height	= odf_types::length(h, odf_types::length::mm);
+		}
+	}
+	else if (oox_page->m_oPaperSize.IsInit())
+	{
+		switch(oox_page->m_oPaperSize->GetValue())
+		{
+		case SimpleTypes::Spreadsheet::pagesizeLetterPaper:
+			width	= odf_types::length(8.5, odf_types::length::inch);
+			height	= odf_types::length(11, odf_types::length::inch);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeA3Paper:
+			width	= odf_types::length(210, odf_types::length::mm);
+			height	= odf_types::length(297, odf_types::length::mm);
+			break;
+		case SimpleTypes::Spreadsheet::pagesizeA4Paper:
+			width	= odf_types::length(297, odf_types::length::mm);
+			height	= odf_types::length(420, odf_types::length::mm);
+			break;
+			//todooo
+		}
+	}
+	ods_context->page_layout_context()->set_page_size(width, height);
 }
 
-void XlsxConverter::convert(OOX::Spreadsheet::CPageMargins			*oox_page)
+void XlsxConverter::convert(OOX::Spreadsheet::CPageMargins *oox_page)
 {
 	if (!oox_page) return;
 	_CP_OPT(double) top, left,right,header,footer,bottom;
 
-	ods_context->page_layout_context()->set_page_margin(top,left,bottom, right,header,footer);
+	ods_context->page_layout_context()->set_page_margin(top, left, bottom, right, header, footer);
 
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_pr)
@@ -1736,6 +1826,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing)
 {
 	if (!oox_drawing)return;
 	
+	OOX::IFileContainer* old_container = xlsx_current_container;
 	xlsx_current_container = dynamic_cast<OOX::IFileContainer*>(oox_drawing);
 
 	for (unsigned int dr = 0 ; dr < oox_drawing->m_arrItems.size(); dr++)
@@ -1745,7 +1836,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing)
 		ods_context->end_drawings();
 	}
 
-	xlsx_current_container = NULL;
+	xlsx_current_container = old_container;
 }
 
 

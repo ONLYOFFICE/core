@@ -341,11 +341,26 @@ double charsToSize(unsigned int charsCount, double maxDigitSize)
 	return 1.0 * int((maxDigitSize * charsCount + 5.0) / maxDigitSize * 256.0) / 256.0;
 }
 
-void xlsx_table_state::serialize_table_format(std::wostream & _Wostream)
+void xlsx_table_state::serialize_page_properties (std::wostream & strm)
+{
+	_CP_OPT(std::wstring) masterPageName = context_->root()->odf_context().styleContainer().master_page_name_by_name(table_style_);
+	if (!masterPageName) return;
+
+	odf_reader::style_master_page* master_style_ = context_->root()->odf_context().pageLayoutContainer().master_page_by_name(*masterPageName);
+	if (!master_style_) return;
+	if (!master_style_->attlist_.style_page_layout_name_) return;
+
+	odf_reader::page_layout_instance * page_layout = context_->root()->odf_context().pageLayoutContainer().page_layout_by_name(*master_style_->attlist_.style_page_layout_name_);
+	if (!page_layout) return;
+
+	page_layout->xlsx_serialize(strm, *context_);
+}
+
+void xlsx_table_state::serialize_table_format (std::wostream & strm)
 {
 	odf_reader::odf_read_context & odfContext = context_->root()->odf_context();
 
-	CP_XML_WRITER(_Wostream)
+	CP_XML_WRITER(strm)
 	{
 		odf_reader::style_table_properties	* table_prop = NULL;
 		odf_reader::style_instance			* tableStyle = odfContext.styleContainer().style_by_name(table_style_, odf_types::style_family::Table, false);
@@ -435,9 +450,9 @@ void xlsx_table_state::serialize_table_format(std::wostream & _Wostream)
 		{
 			const odf_reader::style_table_row_properties * prop = rowDefStyle->content()->get_style_table_row_properties();
 
-			if ( (prop) &&  (prop->style_table_row_properties_attlist_.style_row_height_))
+			if ( (prop) &&  (prop->attlist_.style_row_height_))
 			{
-				default_height = prop->style_table_row_properties_attlist_.style_row_height_->get_value_unit(odf_types::length::pt);
+				default_height = prop->attlist_.style_row_height_->get_value_unit(odf_types::length::pt);
 			}
 			std::wstringstream ht_s;
 			ht_s.precision(1);
@@ -451,21 +466,21 @@ void xlsx_table_state::serialize_table_format(std::wostream & _Wostream)
 	}
 
 }
-void xlsx_table_state::serialize_merge_cells(std::wostream & _Wostream)
+void xlsx_table_state::serialize_merge_cells(std::wostream & strm)
 {
-    return xlsx_merge_cells_.xlsx_serialize(_Wostream);
+    return xlsx_merge_cells_.xlsx_serialize(strm);
 }
-void xlsx_table_state::serialize_ole_objects(std::wostream & _Wostream)
+void xlsx_table_state::serialize_ole_objects(std::wostream & strm)
 {
-    return xlsx_drawing_context_.get_drawings()->serialize_objects(_Wostream);
+    return xlsx_drawing_context_.get_drawings()->serialize_objects(strm);
 }
-void xlsx_table_state::serialize_hyperlinks(std::wostream & _Wostream)
+void xlsx_table_state::serialize_hyperlinks(std::wostream & strm)
 {
-    return xlsx_hyperlinks_.xlsx_serialize(_Wostream);
+    return xlsx_hyperlinks_.xlsx_serialize(strm);
 }
-void xlsx_table_state::serialize_conditionalFormatting(std::wostream & _Wostream)
+void xlsx_table_state::serialize_conditionalFormatting(std::wostream & strm)
 {
-    return xlsx_conditionalFormatting_context_.serialize(_Wostream);
+    return xlsx_conditionalFormatting_context_.serialize(strm);
 }
 void xlsx_table_state::dump_rels_hyperlinks(rels & Rels)
 {

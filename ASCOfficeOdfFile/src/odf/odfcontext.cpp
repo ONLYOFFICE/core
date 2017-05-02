@@ -40,23 +40,24 @@ namespace cpdoccore {
 namespace odf_reader {
 
 style_instance::style_instance(
-    styles_container   *Container,
-    const std::wstring  &Name,
-    style_family::type	Type,
-    style_content      *Content,
-    bool IsAutomatic,
-    bool IsDefault,
-    const std::wstring & ParentStyleName,
-    const std::wstring & NextStyleName,
-    const std::wstring & DataStyleName
-    ) : container_(Container),
-    name_(Name),
-    style_type_(Type),
-    content_(Content),
-    is_automatic_(IsAutomatic),
-    is_default_(IsDefault),
-    next_name_(NextStyleName),
-    next_(Container->style_by_name(NextStyleName, style_type_,false)),
+		styles_container   *Container,
+		const std::wstring  &Name,
+		style_family::type	Type,
+		style_content      *Content,
+		bool IsAutomatic,
+		bool IsDefault,
+		const std::wstring & ParentStyleName,
+		const std::wstring & NextStyleName,
+		const std::wstring & DataStyleName
+		) :
+	container_		(Container),
+    name_			(Name),
+    style_type_		(Type),
+    content_		(Content),
+    is_automatic_	(IsAutomatic),
+    is_default_		(IsDefault),
+    next_name_		(NextStyleName),
+    next_			(Container->style_by_name(NextStyleName, style_type_, false)),
     data_style_name_(DataStyleName)
 {
 	parent_name_ = ParentStyleName;
@@ -64,8 +65,7 @@ style_instance::style_instance(
 	{
 		parent_name_ = L"Standard";
 	}
-    parent_ = Container->style_by_name(parent_name_, style_type_,false);
-
+    parent_ = Container->style_by_name(parent_name_, style_type_, false);
 }
    
 style_instance * styles_container::hyperlink_style()
@@ -325,6 +325,13 @@ style_page_layout_properties * page_layout_instance::properties() const
     return dynamic_cast<style_page_layout_properties *>(style_page_layout_->style_page_layout_properties_.get());
 }
 
+void page_layout_instance::xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context)
+{
+	style_page_layout_properties * props = properties();
+	if (props)
+		props->xlsx_serialize(strm, Context);   
+}
+
 void page_layout_instance::docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context)
 {
     const style_header_style * headerStyle = dynamic_cast<style_header_style *>(style_page_layout_->style_header_style_.get());
@@ -348,8 +355,10 @@ void page_layout_instance::docx_convert_serialize(std::wostream & strm, oox::doc
         _CP_OPT(length) bottom = attr.fo_min_height_ ? attr.fo_min_height_ : attr.svg_height_;
         Context.get_header_footer_context().set_footer(bottom);
     }
-
-    properties()->docx_convert_serialize(strm, Context);   
+	
+	style_page_layout_properties * props = properties();
+    if (props)
+		props->docx_convert_serialize(strm, Context);   
 }
 void page_layout_instance::pptx_convert(oox::pptx_conversion_context & Context)
 {

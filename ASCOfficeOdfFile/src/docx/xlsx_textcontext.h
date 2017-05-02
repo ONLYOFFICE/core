@@ -54,10 +54,9 @@ class xlsx_conversion_context;
 class xlsx_text_context: boost::noncopyable
 {
 public:
-    //xlsx_text_context();
-	xlsx_text_context(odf_reader::styles_container & styles_);
-    ~xlsx_text_context();
-public:
+	xlsx_text_context	(odf_reader::styles_container & styles_);
+    ~xlsx_text_context	();
+
 	void set_local_styles_container	(odf_reader::styles_container *local_styles_);
 	void set_cell_text_properties	(odf_reader::text_format_properties_content *text_properties);    
     

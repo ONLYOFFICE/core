@@ -169,9 +169,7 @@ namespace codegen
                 {
                     sb.AppendFormat("{0}.prototype.toXml = function(writer, name) {{\r\n", oGenClass.sName);
                 }
-                sb.AppendFormat("var res = \"\";\r\n");
                 ProcessToXml(sb, oGenClass);
-                sb.AppendFormat("return res;\r\n");
                 sb.AppendFormat("}};\r\n");
             }
         }
@@ -708,7 +706,7 @@ namespace codegen
                     else
                     {
                         if (!bIsAttribute)
-                            sb.AppendFormat("res += {0}.toXml(writer, \"{1}\");\r\n", sElemName, sElemXmlName);
+                            sb.AppendFormat("{0}.toXml(writer, \"{1}\");\r\n", sElemName, sElemXmlName);
                     }
                 }
             }

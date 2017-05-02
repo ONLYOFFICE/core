@@ -30,11 +30,11 @@
  *
  */
 #include "../oox_shape_defines.h"
-		//	shapetypeMathDivide,
-		//	shapetypeMathEqual,
-		//	shapetypeMathMinus,
-	//+	//	shapetypeMathMultiply,
-		//	shapetypeMathNotEqual,
+//	shapetypeMathDivide,
+//+	shapetypeMathEqual,
+//	shapetypeMathMinus,
+//+	shapetypeMathMultiply,
+//	shapetypeMathNotEqual,
 namespace cpdoccore 
 {
 class oox_shape_mathMultiply : public oox_shape
@@ -114,6 +114,49 @@ public:
 		h.y_maximum= L"51965";
 		h.y_minimum= L"0";
 
+		handles.push_back(h);
+	}
+};
+class oox_shape_mathEqual : public oox_shape
+{
+public:
+	oox_shape_mathEqual()
+	{
+		odf_type_name	=L"ooxml-mathEqual";
+
+		enhanced_path	= L"M ?f13 ?f10 L ?f14 ?f10 ?f14 ?f8 ?f13 ?f8 Z M ?f13 ?f9 L ?f14 ?f9 ?f14 ?f11 ?f13 ?f11 Z N";
+		text_areas		= L"?f13 ?f10 ?f14 ?f11";
+		view_box		= L"0 0 0 0";
+		modifiers		= L"23520 11760";
+		
+		add(L"f0", L"if(0-$0 ,0,if(36745-$0 ,$0 ,36745))");
+		add(L"f1", L"?f0 *2/1");
+		add(L"f2", L"100000+0-2");
+		add(L"f3", L"if(0-$1 ,0,if(?f2 -$1 ,$1 ,?f2 ))");
+		add(L"f4", L"logheight*?f0 /100000");
+		add(L"f5", L"logheight*?f3 /200000");
+		add(L"f6", L"logwidth*73490/200000");
+		add(L"f7", L"logheight/2");
+		add(L"f8", L"?f7 +0-?f5 ");
+		add(L"f9", L"?f7 +?f5 -0");
+		add(L"f10", L"?f8 +0-?f4 ");
+		add(L"f11", L"?f9 +?f4 -0");
+		add(L"f12", L"logwidth/2");
+		add(L"f13", L"?f12 +0-?f6 ");
+		add(L"f14", L"?f12 +?f6 -0");
+		add(L"f15", L"(?f10 +?f8 )/2");
+		add(L"f16", L"(?f9 +?f11 )/2");
+		add(L"f17", L"logwidth");
+/////////////////////////////////////////////////////////
+		_handle h;
+		h.position = L"0 ?f10";
+		h.y_maximum= L"36745";
+		h.y_minimum= L"0";
+		handles.push_back(h);
+
+		h.position = L"?f17 ?f8";
+		h.y_maximum= L"?f2";
+		h.y_minimum= L"0";
 		handles.push_back(h);
 	}
 };

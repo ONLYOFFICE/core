@@ -53,7 +53,6 @@ namespace cpdoccore
 oox_shape::oox_shape()
 {
 	odf_type_name	= L"ooxml-non-primitive";
-	view_box		= L"0 0 0 0";
 }
 
 oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
@@ -61,6 +60,7 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 	switch (ooxPrstGeomType)
 	{
 	case SimpleTypes::shapetypeMathMultiply:		return boost::make_shared<oox_shape_mathMultiply>();
+	case SimpleTypes::shapetypeMathEqual:			return boost::make_shared<oox_shape_mathEqual>();
 	case SimpleTypes::shapetypeSun:					return boost::make_shared<oox_shape_sun>();
 	case SimpleTypes::shapetypeRound1Rect:			return boost::make_shared<oox_shape_round1Rect>();
 	case SimpleTypes::shapetypeRound2DiagRect:		return boost::make_shared<oox_shape_round2DiagRect>();
@@ -82,11 +82,17 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 	case SimpleTypes::shapetypeCurvedLeftArrow:		return boost::make_shared<oox_shape_curvedLeftArrow>();
 	case SimpleTypes::shapetypeCurvedDownArrow:		return boost::make_shared<oox_shape_curvedDownArrow>();
 	case SimpleTypes::shapetypeLeftCircularArrow:	return boost::make_shared<oox_shape_LeftCircularArrow>();
+	case SimpleTypes::shapetypeSwooshArrow:			return boost::make_shared<oox_shape_SwooshArrow>();
+	case SimpleTypes::shapetypeBlockArc:			return boost::make_shared<oox_shape_BlockArc>();
+	case SimpleTypes::shapetypeCorner:				return boost::make_shared<oox_shape_Corner>();
+	case SimpleTypes::shapetypeChord:				return boost::make_shared<oox_shape_Chord>();
 
 	case SimpleTypes::shapetypePlaque:				return boost::make_shared<oox_shape_Plaque>();
 	case SimpleTypes::shapetypeDoubleWave:			return boost::make_shared<oox_shape_DoubleWave>();
 	case SimpleTypes::shapetypePieWedge:			return boost::make_shared<oox_shape_PieWedge>();
-		
+	case SimpleTypes::shapetypePie:					return boost::make_shared<oox_shape_Pie>();
+	case SimpleTypes::shapetypeDonut:				return boost::make_shared<oox_shape_Donut>();	
+	case SimpleTypes::shapetypeLeftRightRibbon:		return boost::make_shared<oox_shape_LeftRightRibbon>();	
 		
 
 	//case (2001 + SimpleTypes::textshapetypeTextArchDown): 

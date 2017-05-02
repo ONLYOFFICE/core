@@ -57,9 +57,25 @@ namespace svg_path
 		{
 			CP_XML_NODE(val.command)
 			{
-				for (size_t i = 0; i < val.points.size(); i++)
-				{	
-					oox_serialize(CP_XML_STREAM(), val.points[i]);
+				if (val.command == L"a:ArcTo")
+				{
+					if (val.points.size() > 0)
+					{
+						CP_XML_ATTR(L"wR", (int)(val.points[0].x.get()));
+						CP_XML_ATTR(L"hR", (int)(val.points[0].y.get()));
+					}	
+					if (val.points.size() > 1)
+					{
+						CP_XML_ATTR(L"stAng", (int)(val.points[1].x.get() * 60000));
+						CP_XML_ATTR(L"swAng", (int)(val.points[1].y.get() * 60000));
+					}
+				}
+				else
+				{
+					for (size_t i = 0; i < val.points.size(); i++)
+					{	
+						oox_serialize(CP_XML_STREAM(), val.points[i]);
+					}
 				}
 			}
 		}
@@ -342,13 +358,14 @@ void _oox_drawing::serialize_bodyPr(std::wostream & strm, const std::wstring & n
 
 void _oox_drawing::serialize_shape(std::wostream & strm)
 {
-	_CP_OPT(std::wstring)	strVal;
+	_CP_OPT(std::wstring)	strVal, strPath;
 	_CP_OPT(double)			dVal;
 
  	std::wstring	shapeType;
 	_CP_OPT(bool)	bWordArt;
 	
 	odf_reader::GetProperty(additional,L"wordArt", bWordArt);
+	odf_reader::GetProperty(additional, L"custom_path", strPath);
 	
 	if (sub_type == 7)//custom 
 	{
@@ -373,9 +390,10 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 	
 	if (bWordArt) sub_type = 1;
 
+
 	CP_XML_WRITER(strm)
     {
-		if (sub_type == 6 || sub_type == 8)
+		if ((sub_type == 6 || sub_type == 8) && strPath && !strPath->empty())
 		{
 			CP_XML_NODE(L"a:custGeom")
 			{        
@@ -391,31 +409,28 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 					CP_XML_ATTR(L"t", 0);
 				}
 				//<a:rect b="b" l="0" r="r" t="0"/>
-				if (odf_reader::GetProperty(additional, L"custom_path", strVal))
-				{
-					_CP_OPT(int) w, h;
-					odf_reader::GetProperty(additional, L"custom_path_w", w);
-					odf_reader::GetProperty(additional, L"custom_path_h", h);
+				_CP_OPT(int) w, h;
+				odf_reader::GetProperty(additional, L"custom_path_w", w);
+				odf_reader::GetProperty(additional, L"custom_path_h", h);
 					
-					CP_XML_NODE(L"a:pathLst")
-					{ 	
-						CP_XML_NODE(L"a:path")
-						{
-							CP_XML_ATTR(L"w", w ? *w : cx);
-							CP_XML_ATTR(L"h", h ? *h : cy);
-							
-							CP_XML_STREAM() << strVal.get();
-						}
+				CP_XML_NODE(L"a:pathLst")
+				{ 	
+					CP_XML_NODE(L"a:path")
+					{
+						CP_XML_ATTR(L"w", w ? *w : cx);
+						CP_XML_ATTR(L"h", h ? *h : cy);
+						
+						CP_XML_STREAM() << *strPath;
 					}
-				}         
+				}       
 			}
 		}
 		else
 		{
-			if (shapeType.length() < 1)
+			if (shapeType.empty())
 			{
-				shapeType	 = L"rect";
-				sub_type = 2;
+				shapeType	= L"rect";
+				sub_type	= 2;
 			}
 			CP_XML_NODE(L"a:prstGeom")//автофигура
 			{        

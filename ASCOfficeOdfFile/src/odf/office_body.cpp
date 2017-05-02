@@ -98,7 +98,7 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
     std::vector<style_master_page*> & masterPages = Context.root()->odf_context().pageLayoutContainer().master_pages();
     if (!masterPages.empty())
     {
-        Context.set_master_page_name(masterPages[0]->style_master_page_attlist_.style_name_.get_value_or(L"Standard"));
+        Context.set_master_page_name(masterPages[0]->attlist_.style_name_.get_value_or(L"Standard"));
     }
 
 	const page_layout_instance * layout = Context.root()->odf_context().pageLayoutContainer().page_layout_first();
@@ -116,15 +116,15 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
 //background (for all pages) 
     if (page_layout_instance * firtsPageLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_by_name(Context.get_page_properties()))
 	{
-        if (style_page_layout_properties * prop = firtsPageLayout->properties())
+        if (style_page_layout_properties * layout_properties = firtsPageLayout->properties())
 		{
 			oox::_oox_fill fill;
 			
-			Compute_GraphicFill(prop->style_page_layout_properties_attlist_.common_draw_fill_attlist_, 
-								prop->style_page_layout_properties_elements_.style_background_image_, 
+			Compute_GraphicFill(layout_properties->attlist_.common_draw_fill_attlist_, 
+								layout_properties->elements_.style_background_image_, 
 								Context.root()->odf_context().drawStyles(), fill);
 
-			if (prop->style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_ || fill.type != 0)
+			if (layout_properties->attlist_.common_background_color_attlist_.fo_background_color_ || fill.type != 0)
 			{
 				if ((fill.bitmap) && (fill.bitmap->rId.empty()))
 				{
@@ -132,7 +132,7 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
 					fill.bitmap->rId = Context.add_mediaitem(href, oox::typeImage, fill.bitmap->isInternal, href);
 				}		
 				int id = Context.get_drawing_context().get_current_shape_id();
-				if (prop->docx_background_serialize(Context.output_stream(), Context, fill, id))
+				if (layout_properties->docx_background_serialize(Context.output_stream(), Context, fill, id))
 				{
 					Context.set_settings_property(odf_reader::_property(L"displayBackgroundShape", true));
 				}

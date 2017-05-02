@@ -272,9 +272,9 @@ void pptx_conversion_context::end_document()
     odf_reader::odf_read_context & context =  root()->odf_context();
     odf_reader::page_layout_container & pageLayouts = context.pageLayoutContainer();
 	
-	if ((pageLayouts.master_pages().size() > 0) && (pageLayouts.master_pages()[0]->style_master_page_attlist_.style_name_))//default
+	if ((pageLayouts.master_pages().size() > 0) && (pageLayouts.master_pages()[0]->attlist_.style_name_))//default
 	{
-		const std::wstring masterStyleName = pageLayouts.master_pages()[0]->style_master_page_attlist_.style_name_.get();
+		const std::wstring masterStyleName = pageLayouts.master_pages()[0]->attlist_.style_name_.get();
 		const std::wstring pageProperties = root()->odf_context().pageLayoutContainer().page_layout_name_by_style(masterStyleName);
 
 		odf_reader::page_layout_instance *pages_layouts = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);

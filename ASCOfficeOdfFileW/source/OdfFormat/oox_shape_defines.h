@@ -64,6 +64,8 @@ namespace cpdoccore
 			_CP_OPT(std::wstring) y_maximum;
 			_CP_OPT(std::wstring) x_minimum;
 			_CP_OPT(std::wstring) x_maximum;
+			_CP_OPT(std::wstring) r_minimum;
+			_CP_OPT(std::wstring) r_maximum;
 		};
 
 		void add(std::wstring name,std::wstring frmla)
@@ -78,7 +80,8 @@ namespace cpdoccore
 		std::wstring			enhanced_path;
 		std::wstring			modifiers;
 		std::wstring			text_areas;
-		std::wstring			view_box;
+
+		_CP_OPT(std::wstring)	view_box;
 		_CP_OPT(std::wstring)	sub_view_size;
 		_CP_OPT(std::wstring)	glue_points;
 

@@ -81,7 +81,7 @@ void table_table_row::pptx_convert(oox::pptx_conversion_context & Context)
 	
 		if ((inst) && (inst->content()) && (inst->content()->get_style_table_row_properties()))
 		{
-			style_table_row_properties_attlist & row_attlist = inst->content()->get_style_table_row_properties()->style_table_row_properties_attlist_;
+			style_table_row_properties_attlist & row_attlist = inst->content()->get_style_table_row_properties()->attlist_;
 			if (row_attlist.style_row_height_)
 			{
 				height = (int)( 0.5 +row_attlist.style_row_height_->get_value_unit(length::emu) );

@@ -325,7 +325,13 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 		set_shape = true;
 	}
 
-	if (draw_enhanced_geometry_attlist_.draw_enhanced_path_)
+	std::wstring odf_path;
+	if (draw_enhanced_geometry_attlist_.drawooo_enhanced_path_)
+		odf_path = draw_enhanced_geometry_attlist_.drawooo_enhanced_path_.get();
+	else if (draw_enhanced_geometry_attlist_.draw_enhanced_path_)
+		odf_path = draw_enhanced_geometry_attlist_.draw_enhanced_path_.get();
+	
+	if (!odf_path.empty())
 	{
 		std::vector<::svg_path::_polyline> o_Polyline;
 	
@@ -333,7 +339,7 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 		
 		try
 		{
-			res = ::svg_path::parseSvgD(o_Polyline, draw_enhanced_geometry_attlist_.draw_enhanced_path_.get(), true);
+			res = ::svg_path::parseSvgD(o_Polyline, odf_path, true);
 		}
 		catch(...)
 		{

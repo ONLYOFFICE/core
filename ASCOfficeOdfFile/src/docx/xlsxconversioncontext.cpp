@@ -369,6 +369,7 @@ void xlsx_conversion_context::end_table()
     current_sheet().cols() << L"</cols>";
     
 	get_table_context().serialize_table_format			(current_sheet().sheetFormat());
+	get_table_context().serialize_page_properties		(current_sheet().page_properties());
 	get_table_context().serialize_conditionalFormatting	(current_sheet().conditionalFormatting());
     get_table_context().serialize_autofilter			(current_sheet().autofilter());
     get_table_context().serialize_sort					(current_sheet().sort());
@@ -420,7 +421,7 @@ void xlsx_conversion_context::end_table()
         current_sheet().set_comments_link(commentsName.first, commentsName.second);
         current_sheet().set_vml_drawing_link(vml_drawingName.first, vml_drawingName.second);
     }    
-
+//background picture
     get_table_context().end_table();
 }
 

@@ -128,7 +128,8 @@ public:
 	void serialize_merge_cells				(std::wostream & _Wostream);
     void serialize_hyperlinks				(std::wostream & _Wostream);
     void serialize_ole_objects				(std::wostream & _Wostream);
-    
+	void serialize_page_properties			(std::wostream & _Wostream);
+
 	void dump_rels_hyperlinks				(rels & Rels);
 	void dump_rels_ole_objects				(rels & Rels);
 

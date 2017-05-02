@@ -958,7 +958,8 @@ void odf_drawing_context::end_shape()
 			{
 				oox_shape_ptr shape_define = oox_shape::create(impl_->current_drawing_state_.oox_shape_preset_);
 				
-				if (!shape_define) shape_define = impl_->current_drawing_state_.oox_shape_;
+				if (!shape_define) 
+					shape_define = impl_->current_drawing_state_.oox_shape_;
 				
 				if (shape_define)
 				{

@@ -35,202 +35,386 @@
 //	shapetypeCurvedConnector5,
 //+	shapetypeCurvedDownArrow,
 //+	shapetypeCurvedLeftArrow,
-//	shapetypeCurvedRightArrow,
-//	shapetypeCurvedUpArrow,
+//+	shapetypeCurvedRightArrow,
+//+	shapetypeCurvedUpArrow,
 
 #include "../oox_shape_defines.h"
 
 namespace cpdoccore 
 {
-class oox_shape_curvedLeftArrow : public oox_shape
+class oox_shape_CurvedLeftArrow : public oox_shape
 {
 public:
-	oox_shape_curvedLeftArrow()
+	oox_shape_CurvedLeftArrow()
 	{
 		odf_type_name	=L"ooxml-curvedLeftArrow";
 
-		//modifiers		= L"23520";
-		enhanced_path	= L"M ?f2 ?f8 A ?f65 ?f66 ?f67 ?f68 ?f2 ?f8 ?f62 ?f64  W ?f69 ?f70 ?f71 ?f72 ?f2 ?f8 ?f62 ?f64 Z N";
-		text_areas		= L"?f22 ?f24 ?f23 ?f25";
-		glue_points		= L"?f22 ?f24 ?f22 ?f25 ?f23 ?f25 ?f23 ?f24";
-		view_box		= L"0 0 21600 21600";
+		enhanced_path	= L"M 0 ?f31 L ?f32 ?f28 ?f32 ?f24 G ?f44 ?f8 ?f45 ?f46 ?f44 ?f8 ?f47 ?f48 L ?f32 ?f29 Z S N M ?f42 ?f18 G ?f44 ?f8 ?f49 ?f50 L 0 0 G ?f44 ?f8 ?f51 ?f52 Z I S N M ?f42 ?f18 G ?f44 ?f8 ?f53 ?f54 L 0 0 G ?f44 ?f8 ?f55 ?f56 L ?f42 ?f18 G ?f44 ?f8 ?f57 ?f58 L ?f32 ?f29 0 ?f31 ?f32 ?f28 ?f32 ?f24 G ?f44 ?f8 ?f59 ?f60 F N";
+		text_areas		= L"0 0 ?f42 ?f43";
+		view_box		= L"0 0 0 0";
+		modifiers		= L"25000 50000 25000";
 		
-		add(L"f0", L"10800000");
-		add(L"f0", L"10800000");
-		add(L"f1", L"5400000");
-		add(L"f2", L"left");
-		add(L"f3", L"right");
-		add(L"f4", L"top");
-		add(L"f5", L"bottom");
-		add(L"f6", L"?f5 - ?f4");
-		add(L"f7", L"?f6 / 2");
-		add(L"f8", L"?f4 + ?f7");
-		add(L"f9", L"?f3 - ?f2");
-		add(L"f10", L"?f9 / 2");
-		add(L"f11", L"?f2 + ?f10");
-		add(L"f12", L"5419351 / 1725033");
-		add(L"f13", L"2700000 + ?f1");
-		add(L"f14", L"?f13 * ?f12 / ?f0");
-		add(L"f15", L"0 - ?f14");
-		add(L"f16", L"sin(?f15)");
-		add(L"f17", L"0 - ?f16");
-		add(L"f18", L"?f17 * ?f10");
-		add(L"f19", L"cos(?f15)");
-		add(L"f20", L"0 - ?f19");
-		add(L"f21", L"?f20 * ?f7");
-		add(L"f22", L"?f11 - ?f18");
-		add(L"f23", L"?f11 + ?f18");
-		add(L"f24", L"?f8 - ?f21");
-		add(L"f25", L"?f8 + ?f21");
-		add(L"f26", L"21550000 - 21600000");
-		add(L"f27", L"if(?f26, 21600000, 21550000)");
-		add(L"f28", L"-21550000 - ?f27");
-		add(L"f29", L"if(?f28, -21550000, ?f27)");
-		add(L"f30", L"?f0 + ?f29");
-		add(L"f31", L"?f0 + ?f1");
-		add(L"f32", L"?f31 * ?f12 / ?f0");
-		add(L"f33", L"0 - ?f32");
-		add(L"f34", L"cos(?f33)");
-		add(L"f35", L"0 - ?f34");
-		add(L"f36", L"?f35 * ?f10");
-		add(L"f37", L"sin(?f33)");
-		add(L"f38", L"0 - ?f37");
-		add(L"f39", L"?f38 * ?f7");
-		add(L"f40", L"sqrt(?f36 * ?f36 + ?f39 * ?f39 + 0 * 0)");
-		add(L"f41", L"?f10 * ?f7 / ?f40");
-		add(L"f42", L"?f38 * ?f41");
-		add(L"f43", L"?f2 - ?f42");
-		add(L"f44", L"?f35 * ?f41");
-		add(L"f45", L"?f8 - ?f44");
-		add(L"f46", L"?f43 - ?f10");
-		add(L"f47", L"?f45 - ?f7");
-		add(L"f48", L"?f43 + ?f10");
-		add(L"f49", L"?f45 + ?f7");
-		add(L"f50", L"?f30 + ?f1");
-		add(L"f51", L"?f50 * ?f12 / ?f0");
-		add(L"f52", L"0 - ?f51");
-		add(L"f53", L"cos(?f52)");
-		add(L"f54", L"0 - ?f53");
-		add(L"f55", L"?f54 * ?f10");
-		add(L"f56", L"sin(?f52)");
-		add(L"f57", L"0 - ?f56");
-		add(L"f58", L"?f57 * ?f7");
-		add(L"f59", L"sqrt(?f55 * ?f55 + ?f58 * ?f58 + 0 * 0)");
-		add(L"f60", L"?f10 * ?f7 / ?f59");
-		add(L"f61", L"?f57 * ?f60");
-		add(L"f62", L"?f43 + ?f61");
-		add(L"f63", L"?f54 * ?f60");
-		add(L"f64", L"?f45 + ?f63");
-		add(L"f65", L"if(?f29, ?f2, ?f46)");
-		add(L"f66", L"if(?f29, ?f8, ?f47)");
-		add(L"f67", L"if(?f29, ?f2, ?f48)");
-		add(L"f68", L"if(?f29, ?f8, ?f49)");
-		add(L"f69", L"if(?f29, ?f46, ?f62)");
-		add(L"f70", L"if(?f29, ?f47, ?f64)");
-		add(L"f71", L"if(?f29, ?f48, ?f62)");
-		add(L"f72", L"if(?f29, ?f49, ?f64)");
+		add(L"f0", L"min(logwidth,logheight)");
+		add(L"f1", L"50000*logheight/?f0 ");
+		add(L"f2", L"if(0-$1 ,0,if(?f1 -$1 ,$1 ,?f1 ))");
+		add(L"f3", L"if(0-$0 ,0,if(?f2 -$0 ,$0 ,?f2 ))");
+		add(L"f4", L"?f0 *?f3 /100000");
+		add(L"f5", L"?f0 *?f2 /100000");
+		add(L"f6", L"(?f4 +?f5 )/4");
+		add(L"f7", L"logheight/2");
+		add(L"f8", L"?f7 +0-?f6 ");
+		add(L"f9", L"?f8 *2/1");
+		add(L"f10", L"?f9 *?f9 /1");
+		add(L"f11", L"?f4 *?f4 /1");
+		add(L"f12", L"?f10 +0-?f11 ");
+		add(L"f13", L"sqrt(?f12 )");
+		add(L"f14", L"?f13 *logwidth/?f9 ");
+		add(L"f15", L"100000*?f14 /?f0 ");
+		add(L"f16", L"if(0-$2 ,0,if(?f15 -$2 ,$2 ,?f15 ))");
+		add(L"f17", L"?f0 *?f16 /100000");
+		add(L"f18", L"?f8 +?f4 -0");
+		add(L"f19", L"logwidth*logwidth/1");
+		add(L"f20", L"?f17 *?f17 /1");
+		add(L"f21", L"?f19 +0-?f20 ");
+		add(L"f22", L"sqrt(?f21 )");
+		add(L"f23", L"?f22 *?f8 /logwidth");
+		add(L"f24", L"?f8 +?f23 -0");
+		add(L"f25", L"?f18 +?f23 -0");
+		add(L"f26", L"?f5 +0-?f4 ");
+		add(L"f27", L"?f26 *1/2");
+		add(L"f28", L"?f24 +0-?f27 ");
+		add(L"f29", L"?f25 +?f27 -0");
+		add(L"f30", L"?f5 *1/2");
+		add(L"f31", L"logheight+0-?f30 ");
+		add(L"f32", L"0+?f17 -0");
+		add(L"f33", L"(10800000*atan2(?f23 ,?f17 ))/pi");
+		add(L"f34", L"0+0-?f33 ");
+		add(L"f35", L"0+?f14 -0");
+		add(L"f36", L"(?f8 +?f18 )/2");
+		add(L"f37", L"?f4 *1/2");
+		add(L"f38", L"(10800000*atan2(?f37 ,?f14 ))/pi");
+		add(L"f39", L"?f38 +0-?f33 ");
+		add(L"f40", L"?f33 +?f38 -0");
+		add(L"f41", L"0+0-?f38 ");
+		add(L"f42", L"logwidth");
+		add(L"f43", L"logheight");
+		add(L"f44", L"logwidth");
+		add(L"f45", L"(?f33 )/60000.0");
+		add(L"f46", L"(?f39 )/60000.0");
+		add(L"f47", L"(?f41 )/60000.0");
+		add(L"f48", L"(?f40 )/60000.0");
+		add(L"f49", L"(0)/60000.0");
+		add(L"f50", L"(-5400000)/60000.0");
+		add(L"f51", L"(16200000)/60000.0");
+		add(L"f52", L"(5400000)/60000.0");
+		add(L"f53", L"(0)/60000.0");
+		add(L"f54", L"(-5400000)/60000.0");
+		add(L"f55", L"(16200000)/60000.0");
+		add(L"f56", L"(5400000)/60000.0");
+		add(L"f57", L"(0)/60000.0");
+		add(L"f58", L"(?f33 )/60000.0");
+		add(L"f59", L"(?f33 )/60000.0");
+		add(L"f60", L"(?f39 )/60000.0");
 /////////////////////////////////////////////////////////
-		_handle h;
-		h.position = L"0 ?f2";
-		h.y_maximum= L"51965";
-		h.y_minimum= L"0";
+		_handle h1, h2;
+		
+		h1.position = L"?f32 ?f24";
+		h1.y_maximum= L"?f2";
+		h1.y_minimum= L"0";
+		handles.push_back(h1);
 
-		handles.push_back(h);
+		h1.position = L"?f42 ?f28";
+		h1.y_maximum= L"?f1";
+		h1.y_minimum= L"0";
+		handles.push_back(h1);
+		
+		h2.position = L"?f32 ?f43";
+		h2.x_maximum= L"?f15";
+		h2.x_minimum= L"0";
+		handles.push_back(h2);
 	}
 };
-class oox_shape_curvedDownArrow : public oox_shape
+class oox_shape_CurvedRightArrow : public oox_shape
 {
 public:
-	oox_shape_curvedDownArrow()
+	oox_shape_CurvedRightArrow()
+	{
+		odf_type_name	=L"ooxml-curvedRightArrow";
+
+		enhanced_path	= L"M 0 ?f8 G ?f45 ?f8 ?f46 ?f47 L ?f32 ?f28 ?f43 ?f31 ?f32 ?f29 ?f32 ?f25 G ?f45 ?f8 ?f48 ?f49 Z S N M ?f43 ?f4 G ?f45 ?f8 ?f50 ?f51 ?f45 ?f8 ?f52 ?f53 Z I S N M 0 ?f8 G ?f45 ?f8 ?f54 ?f55 L ?f32 ?f28 ?f43 ?f31 ?f32 ?f29 ?f32 ?f25 G ?f45 ?f8 ?f56 ?f57 L 0 ?f8 G ?f45 ?f8 ?f58 ?f59 L ?f43 ?f4 G ?f45 ?f8 ?f60 ?f61 F N";
+		text_areas		= L"0 0 ?f43 ?f44";
+		view_box		= L"0 0 0 0";
+		modifiers		= L"25000 50000 25000";
+		
+		add(L"f0", L"min(logwidth,logheight)");
+		add(L"f1", L"50000*logheight/?f0 ");
+		add(L"f2", L"if(0-$1 ,0,if(?f1 -$1 ,$1 ,?f1 ))");
+		add(L"f3", L"if(0-$0 ,0,if(?f2 -$0 ,$0 ,?f2 ))");
+		add(L"f4", L"?f0 *?f3 /100000");
+		add(L"f5", L"?f0 *?f2 /100000");
+		add(L"f6", L"(?f4 +?f5 )/4");
+		add(L"f7", L"logheight/2");
+		add(L"f8", L"?f7 +0-?f6 ");
+		add(L"f9", L"?f8 *2/1");
+		add(L"f10", L"?f9 *?f9 /1");
+		add(L"f11", L"?f4 *?f4 /1");
+		add(L"f12", L"?f10 +0-?f11 ");
+		add(L"f13", L"sqrt(?f12 )");
+		add(L"f14", L"?f13 *logwidth/?f9 ");
+		add(L"f15", L"100000*?f14 /?f0 ");
+		add(L"f16", L"if(0-$2 ,0,if(?f15 -$2 ,$2 ,?f15 ))");
+		add(L"f17", L"?f0 *?f16 /100000");
+		add(L"f18", L"?f8 +?f4 -0");
+		add(L"f19", L"logwidth*logwidth/1");
+		add(L"f20", L"?f17 *?f17 /1");
+		add(L"f21", L"?f19 +0-?f20 ");
+		add(L"f22", L"sqrt(?f21 )");
+		add(L"f23", L"?f22 *?f8 /logwidth");
+		add(L"f24", L"?f8 +?f23 -0");
+		add(L"f25", L"?f18 +?f23 -0");
+		add(L"f26", L"?f5 +0-?f4 ");
+		add(L"f27", L"?f26 *1/2");
+		add(L"f28", L"?f24 +0-?f27 ");
+		add(L"f29", L"?f25 +?f27 -0");
+		add(L"f30", L"?f5 *1/2");
+		add(L"f31", L"logheight+0-?f30 ");
+		add(L"f32", L"logwidth+0-?f17 ");
+		add(L"f33", L"(10800000*atan2(?f23 ,?f17 ))/pi");
+		add(L"f34", L"10800000+0-?f33 ");
+		add(L"f35", L"0+0-?f33 ");
+		add(L"f36", L"logwidth+0-?f14 ");
+		add(L"f37", L"(?f8 +?f18 )/2");
+		add(L"f38", L"?f4 *1/2");
+		add(L"f39", L"(10800000*atan2(?f38 ,?f14 ))/pi");
+		add(L"f40", L"?f39 +0-5400000");
+		add(L"f41", L"5400000+?f39 -0");
+		add(L"f42", L"10800000+0-?f39 ");
+		add(L"f43", L"logwidth");
+		add(L"f44", L"logheight");
+		add(L"f45", L"logwidth");
+		add(L"f46", L"(10800000)/60000.0");
+		add(L"f47", L"(?f35 )/60000.0");
+		add(L"f48", L"(?f34 )/60000.0");
+		add(L"f49", L"(?f33 )/60000.0");
+		add(L"f50", L"(16200000)/60000.0");
+		add(L"f51", L"(?f40 )/60000.0");
+		add(L"f52", L"(?f42 )/60000.0");
+		add(L"f53", L"(?f41 )/60000.0");
+		add(L"f54", L"(10800000)/60000.0");
+		add(L"f55", L"(?f35 )/60000.0");
+		add(L"f56", L"(?f34 )/60000.0");
+		add(L"f57", L"(?f33 )/60000.0");
+		add(L"f58", L"(10800000)/60000.0");
+		add(L"f59", L"(5400000)/60000.0");
+		add(L"f60", L"(16200000)/60000.0");
+		add(L"f61", L"(?f40 )/60000.0");
+/////////////////////////////////////////////////////////
+		_handle h1, h2;
+		
+		h1.position = L"?f32 ?f24";
+		h1.y_maximum= L"?f2";
+		h1.y_minimum= L"0";
+		handles.push_back(h1);
+
+		h1.position = L"?f43 ?f28";
+		h1.y_maximum= L"?f1";
+		h1.y_minimum= L"0";
+		handles.push_back(h1);
+		
+		h2.position = L"?f32 ?f43";
+		h2.x_maximum= L"?f15";
+		h2.x_minimum= L"0";
+		handles.push_back(h2);
+	}
+};
+class oox_shape_CurvedDownArrow : public oox_shape
+{
+public:
+	oox_shape_CurvedDownArrow()
 	{
 		odf_type_name	=L"ooxml-curvedDownArrow";
 
-		//modifiers		= L"23520";
-		enhanced_path	= L"M ?f2 ?f8 A ?f65 ?f66 ?f67 ?f68 ?f2 ?f8 ?f62 ?f64  W ?f69 ?f70 ?f71 ?f72 ?f2 ?f8 ?f62 ?f64 Z N";
-		text_areas		= L"?f22 ?f24 ?f23 ?f25";
-		glue_points		= L"?f22 ?f24 ?f22 ?f25 ?f23 ?f25 ?f23 ?f24";
-		view_box		= L"0 0 21600 21600";
+		enhanced_path	= L"M ?f31 ?f43 L ?f28 ?f32 ?f24 ?f32 G ?f8 ?f45 ?f46 ?f47 L ?f18 0 G ?f8 ?f45 ?f48 ?f49 L ?f29 ?f32 Z S N M ?f36 ?f35 G ?f8 ?f45 ?f50 ?f51 L 0 ?f43 G ?f8 ?f45 ?f52 ?f53 Z I S N M ?f36 ?f35 G ?f8 ?f45 ?f54 ?f55 L 0 ?f43 G ?f8 ?f45 ?f56 ?f57 L ?f18 0 G ?f8 ?f45 ?f58 ?f59 L ?f29 ?f32 ?f31 ?f43 ?f28 ?f32 ?f24 ?f32 G ?f8 ?f45 ?f60 ?f61 F N";
+		text_areas		= L"0 0 ?f44 ?f43";
+		view_box		= L"0 0 0 0";
+		modifiers		= L"25000 50000 25000";
 		
-		add(L"f0", L"10800000");
-		add(L"f1", L"5400000");
-		add(L"f2", L"left");
-		add(L"f3", L"right");
-		add(L"f4", L"top");
-		add(L"f5", L"bottom");
-		add(L"f6", L"?f5 - ?f4");
-		add(L"f7", L"?f6 / 2");
-		add(L"f8", L"?f4 + ?f7");
-		add(L"f9", L"?f3 - ?f2");
-		add(L"f10", L"?f9 / 2");
-		add(L"f11", L"?f2 + ?f10");
-		add(L"f12", L"5419351 / 1725033");
-		add(L"f13", L"2700000 + ?f1");
-		add(L"f14", L"?f13 * ?f12 / ?f0");
-		add(L"f15", L"0 - ?f14");
-		add(L"f16", L"sin(?f15)");
-		add(L"f17", L"0 - ?f16");
-		add(L"f18", L"?f17 * ?f10");
-		add(L"f19", L"cos(?f15)");
-		add(L"f20", L"0 - ?f19");
-		add(L"f21", L"?f20 * ?f7");
-		add(L"f22", L"?f11 - ?f18");
-		add(L"f23", L"?f11 + ?f18");
-		add(L"f24", L"?f8 - ?f21");
-		add(L"f25", L"?f8 + ?f21");
-		add(L"f26", L"21550000 - 21600000");
-		add(L"f27", L"if(?f26, 21600000, 21550000)");
-		add(L"f28", L"-21550000 - ?f27");
-		add(L"f29", L"if(?f28, -21550000, ?f27)");
-		add(L"f30", L"?f0 + ?f29");
-		add(L"f31", L"?f0 + ?f1");
-		add(L"f32", L"?f31 * ?f12 / ?f0");
-		add(L"f33", L"0 - ?f32");
-		add(L"f34", L"cos(?f33)");
-		add(L"f35", L"0 - ?f34");
-		add(L"f36", L"?f35 * ?f10");
-		add(L"f37", L"sin(?f33)");
-		add(L"f38", L"0 - ?f37");
-		add(L"f39", L"?f38 * ?f7");
-		add(L"f40", L"sqrt(?f36 * ?f36 + ?f39 * ?f39 + 0 * 0)");
-		add(L"f41", L"?f10 * ?f7 / ?f40");
-		add(L"f42", L"?f38 * ?f41");
-		add(L"f43", L"?f2 - ?f42");
-		add(L"f44", L"?f35 * ?f41");
-		add(L"f45", L"?f8 - ?f44");
-		add(L"f46", L"?f43 - ?f10");
-		add(L"f47", L"?f45 - ?f7");
-		add(L"f48", L"?f43 + ?f10");
-		add(L"f49", L"?f45 + ?f7");
-		add(L"f50", L"?f30 + ?f1");
-		add(L"f51", L"?f50 * ?f12 / ?f0");
-		add(L"f52", L"0 - ?f51");
-		add(L"f53", L"cos(?f52)");
-		add(L"f54", L"0 - ?f53");
-		add(L"f55", L"?f54 * ?f10");
-		add(L"f56", L"sin(?f52)");
-		add(L"f57", L"0 - ?f56");
-		add(L"f58", L"?f57 * ?f7");
-		add(L"f59", L"sqrt(?f55 * ?f55 + ?f58 * ?f58 + 0 * 0)");
-		add(L"f60", L"?f10 * ?f7 / ?f59");
-		add(L"f61", L"?f57 * ?f60");
-		add(L"f62", L"?f43 + ?f61");
-		add(L"f63", L"?f54 * ?f60");
-		add(L"f64", L"?f45 + ?f63");
-		add(L"f65", L"if(?f29, ?f2, ?f46)");
-		add(L"f66", L"if(?f29, ?f8, ?f47)");
-		add(L"f67", L"if(?f29, ?f2, ?f48)");
-		add(L"f68", L"if(?f29, ?f8, ?f49)");
-		add(L"f69", L"if(?f29, ?f46, ?f62)");
-		add(L"f70", L"if(?f29, ?f47, ?f64)");
-		add(L"f71", L"if(?f29, ?f48, ?f62)");
-		add(L"f72", L"if(?f29, ?f49, ?f64)");
+		add(L"f0", L"min(logwidth,logheight)");
+		add(L"f1", L"50000*logwidth/?f0 ");
+		add(L"f2", L"if(0-$1 ,0,if(?f1 -$1 ,$1 ,?f1 ))");
+		add(L"f3", L"if(0-$0 ,0,if(100000-$0 ,$0 ,100000))");
+		add(L"f4", L"?f0 *?f3 /100000");
+		add(L"f5", L"?f0 *?f2 /100000");
+		add(L"f6", L"(?f4 +?f5 )/4");
+		add(L"f7", L"logwidth/2");
+		add(L"f8", L"?f7 +0-?f6 ");
+		add(L"f9", L"?f8 *2/1");
+		add(L"f10", L"?f9 *?f9 /1");
+		add(L"f11", L"?f4 *?f4 /1");
+		add(L"f12", L"?f10 +0-?f11 ");
+		add(L"f13", L"sqrt(?f12 )");
+		add(L"f14", L"?f13 *logheight/?f9 ");
+		add(L"f15", L"100000*?f14 /?f0 ");
+		add(L"f16", L"if(0-$2 ,0,if(?f15 -$2 ,$2 ,?f15 ))");
+		add(L"f17", L"?f0 *$2 /100000");
+		add(L"f18", L"?f8 +?f4 -0");
+		add(L"f19", L"logheight*logheight/1");
+		add(L"f20", L"?f17 *?f17 /1");
+		add(L"f21", L"?f19 +0-?f20 ");
+		add(L"f22", L"sqrt(?f21 )");
+		add(L"f23", L"?f22 *?f8 /logheight");
+		add(L"f24", L"?f8 +?f23 -0");
+		add(L"f25", L"?f18 +?f23 -0");
+		add(L"f26", L"?f5 +0-?f4 ");
+		add(L"f27", L"?f26 *1/2");
+		add(L"f28", L"?f24 +0-?f27 ");
+		add(L"f29", L"?f25 +?f27 -0");
+		add(L"f30", L"?f5 *1/2");
+		add(L"f31", L"logwidth+0-?f30 ");
+		add(L"f32", L"logheight+0-?f17 ");
+		add(L"f33", L"(10800000*atan2(?f23 ,?f17 ))/pi");
+		add(L"f34", L"0+0-?f33 ");
+		add(L"f35", L"logheight+0-?f14 ");
+		add(L"f36", L"(?f8 +?f18 )/2");
+		add(L"f37", L"?f4 *1/2");
+		add(L"f38", L"(10800000*atan2(?f37 ,?f14 ))/pi");
+		add(L"f39", L"16200000+?f33 -0");
+		add(L"f40", L"16200000+0-?f38 ");
+		add(L"f41", L"?f38 +0-5400000");
+		add(L"f42", L"5400000+?f38 -0");
+		add(L"f43", L"logheight");
+		add(L"f44", L"logwidth");
+		add(L"f45", L"logheight");
+		add(L"f46", L"(?f39 )/60000.0");
+		add(L"f47", L"(?f34 )/60000.0");
+		add(L"f48", L"(16200000)/60000.0");
+		add(L"f49", L"(?f33 )/60000.0");
+		add(L"f50", L"(?f40 )/60000.0");
+		add(L"f51", L"(?f41 )/60000.0");
+		add(L"f52", L"(10800000)/60000.0");
+		add(L"f53", L"(?f42 )/60000.0");
+		add(L"f54", L"(?f40 )/60000.0");
+		add(L"f55", L"(?f41 )/60000.0");
+		add(L"f56", L"(10800000)/60000.0");
+		add(L"f57", L"(5400000)/60000.0");
+		add(L"f58", L"(16200000)/60000.0");
+		add(L"f59", L"(?f33 )/60000.0");
+		add(L"f60", L"(?f39 )/60000.0");
+		add(L"f61", L"(?f34 )/60000.0");
 /////////////////////////////////////////////////////////
-		_handle h;
-		h.position = L"0 ?f2";
-		h.y_maximum= L"51965";
-		h.y_minimum= L"0";
+		_handle h1, h2;
+		
+		h1.position = L"?f25 ?f32";
+		h1.x_maximum= L"$1";
+		h1.x_minimum= L"0";
+		handles.push_back(h1);
 
-		handles.push_back(h);
+		h1.position = L"?f28 ?f43";
+		h1.x_maximum= L"?f1";
+		h1.x_minimum= L"0";
+		handles.push_back(h1);
+		
+		h2.position = L"?f44 ?f32";
+		h2.y_maximum= L"?f15";
+		h2.y_minimum= L"0";
+		handles.push_back(h2);
+
 	}
 };
+class oox_shape_CurvedUpArrow : public oox_shape
+{
+public:
+	oox_shape_CurvedUpArrow()
+	{
+		odf_type_name	=L"ooxml-curvedUpArrow";
+
+		enhanced_path	= L"M ?f31 0 L ?f29 ?f32 ?f25 ?f32 G ?f8 ?f46 ?f47 ?f48 ?f8 ?f46 ?f49 ?f50 L ?f28 ?f32 Z S N M ?f8 ?f45 G ?f8 ?f46 ?f51 ?f52 L ?f4 0 G ?f8 ?f46 ?f53 ?f54 Z I S N M ?f36 ?f35 G ?f8 ?f46 ?f55 ?f56 L ?f28 ?f32 ?f31 0 ?f29 ?f32 ?f25 ?f32 G ?f8 ?f46 ?f57 ?f58 L ?f8 ?f45 G ?f8 ?f46 ?f59 ?f60 L ?f4 0 G ?f8 ?f46 ?f61 ?f62 F N";
+		text_areas		= L"0 0 ?f44 ?f45";
+		view_box		= L"0 0 0 0";
+		modifiers		= L"25000 50000 25000";
+		
+		add(L"f0", L"min(logwidth,logheight)");
+		add(L"f1", L"50000*logwidth/?f0 ");
+		add(L"f2", L"if(0-$1 ,0,if(?f1 -$1 ,$1 ,?f1 ))");
+		add(L"f3", L"if(0-$0 ,0,if(100000-$0 ,$0 ,100000))");
+		add(L"f4", L"?f0 *?f3 /100000");
+		add(L"f5", L"?f0 *?f2 /100000");
+		add(L"f6", L"(?f4 +?f5 )/4");
+		add(L"f7", L"logwidth/2");
+		add(L"f8", L"?f7 +0-?f6 ");
+		add(L"f9", L"?f8 *2/1");
+		add(L"f10", L"?f9 *?f9 /1");
+		add(L"f11", L"?f4 *?f4 /1");
+		add(L"f12", L"?f10 +0-?f11 ");
+		add(L"f13", L"sqrt(?f12 )");
+		add(L"f14", L"?f13 *logheight/?f9 ");
+		add(L"f15", L"100000*?f14 /?f0 ");
+		add(L"f16", L"if(0-$2 ,0,if(?f15 -$2 ,$2 ,?f15 ))");
+		add(L"f17", L"?f0 *$2 /100000");
+		add(L"f18", L"?f8 +?f4 -0");
+		add(L"f19", L"logheight*logheight/1");
+		add(L"f20", L"?f17 *?f17 /1");
+		add(L"f21", L"?f19 +0-?f20 ");
+		add(L"f22", L"sqrt(?f21 )");
+		add(L"f23", L"?f22 *?f8 /logheight");
+		add(L"f24", L"?f8 +?f23 -0");
+		add(L"f25", L"?f18 +?f23 -0");
+		add(L"f26", L"?f5 +0-?f4 ");
+		add(L"f27", L"?f26 *1/2");
+		add(L"f28", L"?f24 +0-?f27 ");
+		add(L"f29", L"?f25 +?f27 -0");
+		add(L"f30", L"?f5 *1/2");
+		add(L"f31", L"logwidth+0-?f30 ");
+		add(L"f32", L"0+?f17 -0");
+		add(L"f33", L"(10800000*atan2(?f23 ,?f17 ))/pi");
+		add(L"f34", L"0+0-?f33 ");
+		add(L"f35", L"0+?f14 -0");
+		add(L"f36", L"(?f8 +?f18 )/2");
+		add(L"f37", L"?f4 *1/2");
+		add(L"f38", L"(10800000*atan2(?f37 ,?f14 ))/pi");
+		add(L"f39", L"?f38 +0-?f33 ");
+		add(L"f40", L"0+0-?f39 ");
+		add(L"f41", L"5400000+0-?f33 ");
+		add(L"f42", L"?f33 +?f38 -0");
+		add(L"f43", L"5400000+0-?f38 ");
+		add(L"f44", L"logwidth");
+		add(L"f45", L"logheight");
+		add(L"f46", L"logheight");
+		add(L"f47", L"(?f41 )/60000.0");
+		add(L"f48", L"(?f42 )/60000.0");
+		add(L"f49", L"(?f43 )/60000.0");
+		add(L"f50", L"(?f39 )/60000.0");
+		add(L"f51", L"(5400000)/60000.0");
+		add(L"f52", L"(5400000)/60000.0");
+		add(L"f53", L"(10800000)/60000.0");
+		add(L"f54", L"(-5400000)/60000.0");
+		add(L"f55", L"(?f43 )/60000.0");
+		add(L"f56", L"(?f39 )/60000.0");
+		add(L"f57", L"(?f41 )/60000.0");
+		add(L"f58", L"(?f33 )/60000.0");
+		add(L"f59", L"(5400000)/60000.0");
+		add(L"f60", L"(5400000)/60000.0");
+		add(L"f61", L"(10800000)/60000.0");
+		add(L"f62", L"(-5400000)/60000.0");
+/////////////////////////////////////////////////////////
+		_handle h1, h2;
+		
+		h1.position = L"?f25 ?f32";
+		h1.x_maximum= L"?f2";
+		h1.x_minimum= L"0";
+		handles.push_back(h1);
+
+		h1.position = L"?f28 0";
+		h1.x_maximum= L"?f1";
+		h1.x_minimum= L"0";
+		handles.push_back(h1);
+		
+		h2.position = L"?f44 ?f32";
+		h2.y_maximum= L"?f15";
+		h2.y_minimum= L"0";
+		handles.push_back(h2);
+
+	}
+};
+
 }

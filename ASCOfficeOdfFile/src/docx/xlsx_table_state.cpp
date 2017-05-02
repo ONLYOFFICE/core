@@ -421,8 +421,8 @@ void xlsx_table_state::serialize_table_format (std::wostream & strm)
 					int col = -1, row = -1;
 					try
 					{
-						col =  boost::lexical_cast<int>(s_col);
-						row =  boost::lexical_cast<int>(s_row);
+						if (!s_col.empty())		col =  boost::lexical_cast<int>(s_col);
+						if (!s_row.empty())		row =  boost::lexical_cast<int>(s_row);
 					}
 					catch(...){}
 

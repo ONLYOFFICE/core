@@ -163,10 +163,10 @@ void draw_line::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 void draw_line::reset_svg_attributes()
 {
-	double x1=draw_line_attlist_.svg_x1_.get_value_or(length(0)).get_value_unit(length::pt);
-	double y1=draw_line_attlist_.svg_y1_.get_value_or(length(0)).get_value_unit(length::pt);
-	double x2=draw_line_attlist_.svg_x2_.get_value_or(length(0)).get_value_unit(length::pt);
-	double y2=draw_line_attlist_.svg_y2_.get_value_or(length(0)).get_value_unit(length::pt);
+	double x1 = draw_line_attlist_.svg_x1_.get_value_or(length(0)).get_value_unit(length::pt);
+	double y1 = draw_line_attlist_.svg_y1_.get_value_or(length(0)).get_value_unit(length::pt);
+	double x2 = draw_line_attlist_.svg_x2_.get_value_or(length(0)).get_value_unit(length::pt);
+	double y2 = draw_line_attlist_.svg_y2_.get_value_or(length(0)).get_value_unit(length::pt);
 	
 	if (x1 > x2)
 	{
@@ -431,8 +431,8 @@ void draw_equation::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 int draw_enhanced_geometry::parsing(_CP_OPT(std::wstring) val) 
 {
-	int pos=0, res=-1;
-	if (!val)return res;
+	int pos = 0, res = -1;
+	if (!val) return res;
 
 	BOOST_FOREACH(wchar_t c, val.get())
     {
@@ -533,12 +533,12 @@ void draw_enhanced_geometry::find_draw_type_oox()
 			}
 			else
 			{
-				bOoxType_ = true;
 				std::wstring oox_type = odf_type.substr(pos + 6);
 				for (long i = 0; i< count; i++)
 				{
 					if (_OO_OOX_custom_shapes[i].oox == oox_type)
 					{
+						bOoxType_ = true;
 						draw_type_oox_index_ = i;
 						break;
 					}	
@@ -550,38 +550,36 @@ void draw_enhanced_geometry::find_draw_type_oox()
 			}
 		}
 	}
-	std::wstringstream str;
+  //  for (size_t i = 0; i < draw_handle_.size(); i++)
+  //  {
+		//draw_handle * handle = dynamic_cast<draw_handle *>(draw_handle_[i].get());        
+		//if (!handle) continue;
 
-    for (size_t i = 0; i < draw_handle_.size(); i++)
-    {
-		draw_handle * handle = dynamic_cast<draw_handle *>(draw_handle_[i].get());        
-		if (!handle) continue;
+		//int min = -1, max = -1;
+		//
+		//try
+		//{
+		//	min = parsing(handle->draw_handle_attlist_.draw_handle_range_y_minimum_);//пока статик .. и выдается только цыфровое значение
+		//	if (min < 0) min = parsing(handle->draw_handle_attlist_.draw_handle_range_x_minimum_);
+		//	if (min < 0) min = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_minimum_);
+		//}
+		//catch(...)
+		//{
+		//}
+		//if (min < 0 ) min=0;
 
-		int min = -1, max = -1;
-		
-		try
-		{
-			min = parsing(handle->draw_handle_attlist_.draw_handle_range_y_minimum_);//пока статик .. и выдается только цыфровое значение
-			if (min < 0) min = parsing(handle->draw_handle_attlist_.draw_handle_range_x_minimum_);
-			if (min < 0) min = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_minimum_);
-		}
-		catch(...)
-		{
-		}
-		if (min < 0 ) min=0;
-
-		try
-		{	
-			max = parsing(handle->draw_handle_attlist_.draw_handle_range_y_maximum_);
-			if (max < 0) max = parsing(handle->draw_handle_attlist_.draw_handle_range_x_maximum_);
-			if (max < 0) max = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_maximum_);
-		}
-		catch(...)
-		{
-		}		
-		draw_handle_geometry elm = {min, max};
-		draw_handle_geometry_.push_back(elm);
-    }
+		//try
+		//{	
+		//	max = parsing(handle->draw_handle_attlist_.draw_handle_range_y_maximum_);
+		//	if (max < 0) max = parsing(handle->draw_handle_attlist_.draw_handle_range_x_maximum_);
+		//	if (max < 0) max = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_maximum_);
+		//}
+		//catch(...)
+		//{
+		//}		
+		//draw_handle_geometry elm = {min, max};
+		//draw_handle_geometry_.push_back(elm);
+  //  }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// draw-caption-attlist

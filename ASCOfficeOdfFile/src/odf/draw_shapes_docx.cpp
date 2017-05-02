@@ -246,7 +246,8 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 
 	if (draw_type_oox_index_)
 	{
-		shape->additional_.push_back(_property(L"odf-custom-draw-index", draw_type_oox_index_.get()));	
+		shape->additional_.push_back(_property(L"oox-geom-index", draw_type_oox_index_.get()));	
+		shape->additional_.push_back(_property(L"oox-geom", bOoxType_));	
 
 		if (shape->word_art_ == true)
 			shape->additional_.push_back(_property(L"wordArt", true));
@@ -317,14 +318,10 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 
 	if (draw_enhanced_geometry_attlist_.draw_modifiers_)
 	{
-		shape->additional_.push_back(_property(L"draw-modifiers",draw_enhanced_geometry_attlist_.draw_modifiers_.get()));	
-		if (draw_handle_geometry_.size()>0)
+		if (bOoxType_)
+			shape->additional_.push_back(_property(L"oox-draw-modifiers", draw_enhanced_geometry_attlist_.draw_modifiers_.get()));	
+		else
 		{
-			if (draw_handle_geometry_[0].min < draw_handle_geometry_[0].max)
-			{
-				shape->additional_.push_back(_property(L"draw-modifiers-min", draw_handle_geometry_[0].min));	
-				shape->additional_.push_back(_property(L"draw-modifiers-max", draw_handle_geometry_[0].max));	
-			}
 		}
 	}
 

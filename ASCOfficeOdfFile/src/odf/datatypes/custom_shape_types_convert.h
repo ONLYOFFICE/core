@@ -251,7 +251,11 @@ static const _shape_converter _OO_OOX_custom_shapes[]=
 {L""						,L"accentBorderCallout3",0	,0	,0	},
 {L""						,L"accentBorderCallout2",0	,0	,0	},
 {L""						,L"accentBorderCallout1",0	,0	,0	},
-{L""						,L"halfFrame"		,0	,0	,0	}
+{L""						,L"halfFrame"		,0	,0	,0	},
+{L""						,L"leftCircularArrow",0	,0	,0	},
+{L""						,L"leftRightRibbon",0	,0	,0	},
+{L""						,L"pieWedge",0	,0	,0	},
+{L""						,L"swooshArrow",0	,0	,0	}
 
 };
 

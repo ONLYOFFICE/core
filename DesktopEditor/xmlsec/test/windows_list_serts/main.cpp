@@ -656,7 +656,7 @@ void main(void)
     }
 
     //SignDocument(NSFile::GetProcessDirectory() + L"/ImageStamp", pCertContext, L"{39B6B9C7-60AD-45A2-9F61-40C74A24042E}");
-    SignDocument(L"D:\\555", pCertContext, L"{58CBB483-BC48-4EFF-B742-44379E8D913E}");
+    SignDocument(L"D:\\555", pCertContext, L"{9792D33F-AB37-4E5B-A465-481B9465818B}");
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -709,10 +709,22 @@ bool Verify(PCCERT_CONTEXT pCertContext, std::wstring sFileXml, std::wstring sSi
 class COOXMLSigner
 {
 public:
-    PCCERT_CONTEXT m_context;
-    std::wstring m_sFolder;
+    PCCERT_CONTEXT                          m_context;
+    std::wstring                            m_sFolder;
 
-    CXmlSigner* m_signer;
+    CXmlSigner*                             m_signer;
+
+    std::wstring                            m_date;
+    std::map<std::wstring, std::wstring>    m_content_types;
+    std::vector<std::wstring>               m_rels;
+    std::vector<std::wstring>               m_files;
+
+    NSStringUtils::CStringBuilderA          m_signed_info;
+
+    std::wstring                            m_image_valid;
+    std::wstring                            m_image_invalid;
+
+    std::wstring                            m_guid;
 
 public:
     class COOXMLRelationship
@@ -882,6 +894,11 @@ public:
         m_sFolder = sFolder;
         m_context = pContext;
         m_signer = new CXmlSigner(pContext);
+
+        m_date = L"2017-04-21T08:30:21Z";
+
+        m_signed_info.WriteString("<CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/>");
+        m_signed_info.WriteString("<SignatureMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#rsa-sha1\"/>");
     }
     ~COOXMLSigner()
     {
@@ -1028,6 +1045,126 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
         return rId;
     }
 
+    void ParseContentTypes()
+    {
+        std::wstring file = m_sFolder + L"/[Content_Types].xml";
+        XmlUtils::CXmlNode oNode;
+        oNode.FromXmlFile(file);
+
+        XmlUtils::CXmlNodes nodesDefaults;
+        oNode.GetNodes(L"Default", nodesDefaults);
+
+        XmlUtils::CXmlNodes nodesOverrides;
+        oNode.GetNodes(L"Override", nodesOverrides);
+
+        int nCount = nodesDefaults.GetCount();
+        for (int i = 0; i < nCount; ++i)
+        {
+            XmlUtils::CXmlNode node;
+            nodesDefaults.GetAt(i, node);
+
+            m_content_types.insert(std::pair<std::wstring, std::wstring>(node.GetAttribute("Extension"), node.GetAttribute("ContentType")));
+        }
+
+        nCount = nodesOverrides.GetCount();
+        for (int i = 0; i < nCount; ++i)
+        {
+            XmlUtils::CXmlNode node;
+            nodesOverrides.GetAt(i, node);
+
+            m_content_types.insert(std::pair<std::wstring, std::wstring>(node.GetAttribute("PartName"), node.GetAttribute("ContentType")));
+        }
+    }
+
+    void Parse()
+    {
+        // 1) Parse Content_Types.xml
+        ParseContentTypes();
+
+        // 2) Parse files in directory
+        std::vector<std::wstring> files = NSDirectory::GetFiles(m_sFolder, true);
+
+        // 3) Check each file
+        std::wstring sFolder = m_sFolder;
+        NSStringUtils::string_replace(sFolder, L"\\", L"/");
+        for (std::vector<std::wstring>::iterator i = files.begin(); i != files.end(); i++)
+        {
+            std::wstring sCheckFile = *i;
+            NSStringUtils::string_replace(sCheckFile, L"\\", L"/");
+
+            if (0 != sCheckFile.find(sFolder))
+                continue;
+
+            // make cool filename
+            sCheckFile = sCheckFile.substr(sFolder.length());
+
+            // check needed file
+            if (0 == sCheckFile.find(L"/_xmlsignatures") ||
+                0 == sCheckFile.find(L"/docProps") ||
+                0 == sCheckFile.find(L"/[Content_Types].xml"))
+                continue;
+
+            // check rels and add to needed array
+            std::wstring::size_type posExt = sCheckFile.rfind(L".");
+            if (std::wstring::npos == posExt)
+                continue;
+
+            std::wstring sExt = sCheckFile.substr(posExt + 1);
+            if (sExt == L"rels")
+                m_rels.push_back(sCheckFile);
+            else
+                m_files.push_back(sCheckFile);
+        }
+
+        std::sort(m_rels.begin(), m_rels.end());
+        std::sort(m_files.begin(), m_files.end());
+    }
+
+    void WriteRelsReferences(NSStringUtils::CStringBuilder& builder)
+    {
+        for (std::vector<std::wstring>::iterator i = m_rels.begin(); i != m_rels.end(); i++)
+        {
+            builder.WriteString(GetRelsReference(*i));
+        }
+    }
+
+    void WriteFilesReferences(NSStringUtils::CStringBuilder& builder)
+    {
+        for (std::vector<std::wstring>::iterator i = m_files.begin(); i != m_files.end(); i++)
+        {
+            std::wstring sFile = *i;
+            std::wstring sContentType = L"application/xml";
+
+            std::map<std::wstring, std::wstring>::iterator _find = m_content_types.find(sFile);
+            if (_find != m_content_types.end())
+            {
+                sContentType = _find->second;
+            }
+            else
+            {
+                std::wstring::size_type posExt = sFile.rfind(L".");
+                if (std::wstring::npos != posExt)
+                {
+                    std::wstring sExt = sFile.substr(posExt + 1);
+
+                    _find = m_content_types.find(sExt);
+                    if (_find != m_content_types.end())
+                        sContentType = _find->second;
+                }
+            }
+
+            builder.WriteString(GetReference(sFile, sContentType));
+        }
+    }
+
+    void WriteManifest(NSStringUtils::CStringBuilder& builder)
+    {
+        builder.WriteString(L"<Manifest>");
+        WriteRelsReferences(builder);
+        WriteFilesReferences(builder);
+        builder.WriteString(L"</Manifest>");
+    }
+
     void CorrectContentTypes(int nCountSigsNeeds)
     {
         std::wstring file = m_sFolder + L"/[Content_Types].xml";
@@ -1098,69 +1235,55 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
         oFile.WriteFile((BYTE*)sRet.c_str(), (DWORD)sRet.length());
         oFile.CloseFile();
     }
-};
 
-bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext, std::wstring sign_id)
-{
-    std::wstring sFolder = NSFile::GetProcessDirectory();
-
-    COOXMLSigner oOOXMLSigner(sFolderOOXML, pCertContext);
-
-    std::string sSignedData;
-    std::wstring sXmlData;
-
-    std::wstring sDataSign = L"2017-04-21T08:30:21Z";
-
-    sSignedData += "<CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/>\
-<SignatureMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#rsa-sha1\"/>";
-
-    if (true)
+    void SetGuid(const std::wstring& guid)
     {
-        // idPackageObject
-        std::wstring sXml = L"<Manifest>";
-
-        if (true)
-        {
-            sXml += oOOXMLSigner.GetRelsReference(L"/_rels/.rels");
-            sXml += oOOXMLSigner.GetRelsReference(L"/word/_rels/document.xml.rels");
-        }
-
-        sXml += oOOXMLSigner.GetReference(L"/word/document.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
-        sXml += oOOXMLSigner.GetReference(L"/word/fontTable.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml");
-        sXml += oOOXMLSigner.GetReference(L"/word/media/image1.emf", L"image/x-emf");
-        sXml += oOOXMLSigner.GetReference(L"/word/settings.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml");
-        sXml += oOOXMLSigner.GetReference(L"/word/styles.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml");
-        sXml += oOOXMLSigner.GetReference(L"/word/theme/theme1.xml", L"application/vnd.openxmlformats-officedocument.theme+xml");
-        sXml += oOOXMLSigner.GetReference(L"/word/webSettings.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml");        
-
-        sXml += L"</Manifest>";
-
-        sXml += L"<SignatureProperties><SignatureProperty Id=\"idSignatureTime\" Target=\"#idPackageSignature\">";
-        sXml += (L"<mdssi:SignatureTime xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\">\
-<mdssi:Format>YYYY-MM-DDThh:mm:ssTZD</mdssi:Format>\
-<mdssi:Value>" + sDataSign + L"</mdssi:Value>\
-</mdssi:SignatureTime></SignatureProperty></SignatureProperties>");
-
-        sXmlData += (L"<Object Id=\"idPackageObject\">" + sXml + L"</Object>");
-
-        sSignedData += ("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idPackageObject\">" +
-                        oOOXMLSigner.GetReferenceMain(sXml, L"idPackageObject", false) + "</Reference>");
+        m_guid = guid;
+    }
+    void SetImageValid(const std::wstring& file)
+    {
+        m_image_valid = GetImageBase64(file);
+    }
+    void SetImageInvalid(const std::wstring& file)
+    {
+        m_image_invalid = GetImageBase64(file);
     }
 
-
-    std::wstring sImageValid = oOOXMLSigner.GetImageBase64(sFolder + L"/../../../resources/valid.png");
-    std::wstring sImageInValid = oOOXMLSigner.GetImageBase64(sFolder + L"/../../../resources/invalid.png");
-
-    if (true)
+    std::wstring GeneratePackageObject()
     {
-        // idOfficeObject
-        std::wstring sXml = L"<SignatureProperties>\
-<SignatureProperty Id=\"idOfficeV1Details\" Target=\"#idPackageSignature\">\
-<SignatureInfoV1 xmlns=\"http://schemas.microsoft.com/office/2006/digsig\">\
-<SetupID>" + sign_id + L"</SetupID>\
-<SignatureText></SignatureText>\
-<SignatureImage>" + sImageValid + L"</SignatureImage>\
-<SignatureComments/>\
+        NSStringUtils::CStringBuilder builder;
+        WriteManifest(builder);
+
+        builder.WriteString(L"<SignatureProperties><SignatureProperty Id=\"idSignatureTime\" Target=\"#idPackageSignature\">");
+        builder.WriteString(L"<mdssi:SignatureTime xmlns:mdssi=\"http://schemas.openxmlformats.org/package/2006/digital-signature\">");
+        builder.WriteString(L"<mdssi:Format>YYYY-MM-DDThh:mm:ssTZD</mdssi:Format>");
+        builder.WriteString(L"<mdssi:Value>");
+        builder.WriteString(m_date);
+        builder.WriteString(L"</mdssi:Value>");
+        builder.WriteString(L"</mdssi:SignatureTime></SignatureProperty></SignatureProperties>");
+
+        std::wstring sXml = builder.GetData();
+
+        m_signed_info.WriteString("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idPackageObject\">");
+        m_signed_info.WriteString(GetReferenceMain(sXml, L"idPackageObject", false));
+        m_signed_info.WriteString("</Reference>");
+
+        return (L"<Object Id=\"idPackageObject\">" + sXml + L"</Object>");
+    }
+    std::wstring GenerateOfficeObject()
+    {
+        NSStringUtils::CStringBuilder builder;
+
+        builder.WriteString(L"<SignatureProperties><SignatureProperty Id=\"idOfficeV1Details\" Target=\"#idPackageSignature\">");
+        builder.WriteString(L"<SignatureInfoV1 xmlns=\"http://schemas.microsoft.com/office/2006/digsig\">");
+        builder.WriteString(L"<SetupID>");
+        builder.WriteString(m_guid);
+        builder.WriteString(L"</SetupID>");
+        builder.WriteString(L"<SignatureText></SignatureText>");
+        builder.WriteString(L"<SignatureImage>");
+        builder.WriteString(m_image_valid);
+        builder.WriteString(L"</SignatureImage>");
+        builder.WriteString(L"<SignatureComments/>\
 <WindowsVersion>10.0</WindowsVersion>\
 <OfficeVersion>16.0</OfficeVersion>\
 <ApplicationVersion>16.0</ApplicationVersion>\
@@ -1174,33 +1297,50 @@ bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext, std::w
 <SignatureType>2</SignatureType>\
 </SignatureInfoV1>\
 </SignatureProperty>\
-</SignatureProperties>";
+</SignatureProperties>");
 
-        sXmlData += (L"<Object Id=\"idOfficeObject\">" + sXml + L"</Object>");
+        m_signed_info.WriteString("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idOfficeObject\">");
+        m_signed_info.WriteString(GetReferenceMain(builder.GetData(), L"idOfficeObject", false));
+        m_signed_info.WriteString("</Reference>");
 
-        sSignedData += ("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idOfficeObject\">" +
-                        oOOXMLSigner.GetReferenceMain(sXml, L"idOfficeObject", false) + "</Reference>");
+        return (L"<Object Id=\"idOfficeObject\">" + builder.GetData() + L"</Object>");
     }
 
-    if (true)
+    std::wstring GenerateImageObject()
     {
-        DWORD dwNameLen = CertGetNameStringW(pCertContext, CERT_NAME_SIMPLE_DISPLAY_TYPE, CERT_NAME_ISSUER_FLAG, NULL, NULL, 0);
+        if (m_image_valid.empty())
+            return L"";
+
+        m_signed_info.WriteString("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idValidSigLnImg\">");
+        m_signed_info.WriteString(GetReferenceMain(m_image_valid, L"idValidSigLnImg", false));
+        m_signed_info.WriteString("</Reference>");
+
+        m_signed_info.WriteString("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idInvalidSigLnImg\">");
+        m_signed_info.WriteString(GetReferenceMain(m_image_invalid, L"idInvalidSigLnImg", false));
+        m_signed_info.WriteString("</Reference>");
+
+        return (L"<Object Id=\"idValidSigLnImg\">" + m_image_valid + L"</Object><Object Id=\"idInvalidSigLnImg\">" + m_image_invalid + L"</Object>");
+    }
+
+    std::wstring GenerateSignPropertiesObject()
+    {
+        DWORD dwNameLen = CertGetNameStringW(m_context, CERT_NAME_SIMPLE_DISPLAY_TYPE, CERT_NAME_ISSUER_FLAG, NULL, NULL, 0);
         wchar_t* pNameData = new wchar_t[dwNameLen];
-        CertGetNameStringW(pCertContext, CERT_NAME_SIMPLE_DISPLAY_TYPE, CERT_NAME_ISSUER_FLAG, NULL, pNameData, dwNameLen);
+        CertGetNameStringW(m_context, CERT_NAME_SIMPLE_DISPLAY_TYPE, CERT_NAME_ISSUER_FLAG, NULL, pNameData, dwNameLen);
         std::wstring sName(pNameData);
         RELEASEARRAYOBJECTS(pNameData);
 
-        int nNumberLen = (int)pCertContext->pCertInfo->SerialNumber.cbData;
+        int nNumberLen = (int)m_context->pCertInfo->SerialNumber.cbData;
         BYTE* pNumberData = new BYTE[nNumberLen];
-        CXmlSigner::ConvertEndian(pCertContext->pCertInfo->SerialNumber.pbData, pNumberData, (DWORD)nNumberLen);
+        CXmlSigner::ConvertEndian(m_context->pCertInfo->SerialNumber.pbData, pNumberData, (DWORD)nNumberLen);
         CBigInteger oInteger(pNumberData, nNumberLen);
         delete[] pNumberData;
 
         std::string sKeyA = oInteger.ToString();
-        std::wstring sKey = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sKeyA.c_str(), (LONG)sKeyA.length());
+        std::wstring sKey = UTF8_TO_U(sKeyA);
 
         std::wstring sXml = (L"<xd:SignedSignatureProperties>\
-<xd:SigningTime>" + sDataSign + L"</xd:SigningTime>\
+<xd:SigningTime>" + m_date + L"</xd:SigningTime>\
 <xd:SigningCertificate>\
 <xd:Cert>\
 <xd:CertDigest>\
@@ -1222,74 +1362,88 @@ bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext, std::w
         sSignedXml += sXml;
         sSignedXml += L"</xd:SignedProperties>";
 
-        sXmlData += L"<Object><xd:QualifyingProperties xmlns:xd=\"http://uri.etsi.org/01903/v1.3.2#\" Target=\"#idPackageSignature\">\
-<xd:SignedProperties Id=\"idSignedProperties\">";
-        sXmlData += sXml;
-        sXmlData += L"</xd:SignedProperties></xd:QualifyingProperties></Object>";
-
-        sSignedData += "<Reference Type=\"http://uri.etsi.org/01903#SignedProperties\" URI=\"#idSignedProperties\">\
-<Transforms><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>\
-<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/><DigestValue>";
-
         std::string sXmlTmp = CXmlCanonicalizator::Execute(U_TO_UTF8(sSignedXml), XML_C14N_1_0);
-        sSignedData += oOOXMLSigner.m_signer->GetHash(sXmlTmp);
 
-        sSignedData += "</DigestValue></Reference>";
+        m_signed_info.WriteString("<Reference Type=\"http://uri.etsi.org/01903#SignedProperties\" URI=\"#idSignedProperties\">");
+        m_signed_info.WriteString("<Transforms><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>");
+        m_signed_info.WriteString("<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/><DigestValue>");
+        m_signed_info.WriteString(m_signer->GetHash(sXmlTmp));
+        m_signed_info.WriteString("</DigestValue></Reference>");
+
+        return (L"<Object><xd:QualifyingProperties xmlns:xd=\"http://uri.etsi.org/01903/v1.3.2#\" Target=\"#idPackageSignature\">\
+<xd:SignedProperties Id=\"idSignedProperties\">" + sXml + L"</xd:SignedProperties></xd:QualifyingProperties></Object>");
     }
 
-    if (true)
+    int AddSignatureReference()
     {
-        std::wstring sXml = sImageValid;
+        std::wstring sDirectory = m_sFolder + L"/_xmlsignatures";
 
-        sXmlData += (L"<Object Id=\"idValidSigLnImg\">" + sXml + L"</Object>");
+        if (!NSDirectory::Exists(sDirectory))
+            NSDirectory::CreateDirectory(sDirectory);
 
-        sSignedData += ("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idValidSigLnImg\">" +
-                        oOOXMLSigner.GetReferenceMain(sXml, L"idValidSigLnImg", false) + "</Reference>");
+        if (!NSFile::CFileBinary::Exists(sDirectory + L"/origin.sigs"))
+        {
+            NSFile::CFileBinary oFile;
+            oFile.CreateFileW(sDirectory + L"/origin.sigs");
+            oFile.CloseFile();
+        }
+
+        if (!NSDirectory::Exists(sDirectory + L"/_rels"))
+            NSDirectory::CreateDirectory(sDirectory + L"/_rels");
+
+        int nSignNum = GetCountSigns(sDirectory + L"/_rels/origin.sigs.rels");
+
+        CorrectContentTypes(nSignNum);
+
+        return nSignNum;
     }
 
-    if (true)
+    void Sign()
     {
-        std::wstring sXml = sImageInValid;
+        Parse();
 
-        sXmlData += (L"<Object Id=\"idInvalidSigLnImg\">" + sXml + L"</Object>");
+        std::string sSignedData;
 
-        sSignedData += ("<Reference Type=\"http://www.w3.org/2000/09/xmldsig#Object\" URI=\"#idInvalidSigLnImg\">" +
-                        oOOXMLSigner.GetReferenceMain(sXml, L"idInvalidSigLnImg", false) + "</Reference>");
+        NSStringUtils::CStringBuilder builderMain;
+
+        builderMain.WriteString(GeneratePackageObject());
+        builderMain.WriteString(GenerateOfficeObject());
+        builderMain.WriteString(GenerateSignPropertiesObject());
+        builderMain.WriteString(GenerateImageObject());
+
+        std::string sSignedInfoData = m_signed_info.GetData();
+        std::string sSignedXml = "<SignedInfo xmlns=\"http://www.w3.org/2000/09/xmldsig#\">" + sSignedInfoData + "</SignedInfo>";
+        sSignedXml = CXmlCanonicalizator::Execute(sSignedXml, XML_C14N_1_0);
+        sSignedXml = m_signer->Sign(sSignedXml);
+
+        NSStringUtils::CStringBuilder builderResult;
+        builderResult.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><Signature xmlns=\"http://www.w3.org/2000/09/xmldsig#\" Id=\"idPackageSignature\"><SignedInfo>");
+        builderResult.WriteString(UTF8_TO_U(sSignedInfoData));
+        builderResult.WriteString(L"</SignedInfo>");
+        builderResult.WriteString(L"<SignatureValue>");
+        builderResult.WriteString(UTF8_TO_U(sSignedXml));
+        builderResult.WriteString(L"</SignatureValue>");
+        builderResult.WriteString(L"<KeyInfo><X509Data><X509Certificate>");
+        builderResult.WriteString(UTF8_TO_U(m_signer->GetCertificateBase64()));
+        builderResult.WriteString(L"</X509Certificate></X509Data></KeyInfo>");
+
+        builderResult.Write(builderMain);
+        builderResult.WriteString(L"</Signature>");
+
+        int nSignNum = AddSignatureReference();
+
+        NSFile::CFileBinary::SaveToFile(m_sFolder + L"/_xmlsignatures/sig" + std::to_wstring(nSignNum) + L".xml", builderResult.GetData(), false);
     }
+};
 
-    std::string sXmlPrepend = ("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Signature xmlns=\"http://www.w3.org/2000/09/xmldsig#\" Id=\"idPackageSignature\"><SignedInfo>");
-    sXmlPrepend += sSignedData;
-    sXmlPrepend += "</SignedInfo>";
+bool SignDocument(std::wstring sFolderOOXML, PCCERT_CONTEXT pCertContext, std::wstring sign_id)
+{
+    COOXMLSigner oOOXMLSigner(sFolderOOXML, pCertContext);
 
-    sXmlPrepend += "<SignatureValue>";
-    std::string sSignedInfo = "<SignedInfo xmlns=\"http://www.w3.org/2000/09/xmldsig#\">" + sSignedData + "</SignedInfo>";
-    sSignedInfo = CXmlCanonicalizator::Execute(sSignedInfo, XML_C14N_1_0);
-    sXmlPrepend += oOOXMLSigner.m_signer->Sign(sSignedInfo);
-    sXmlPrepend += "</SignatureValue>";
-    sXmlPrepend += ("<KeyInfo><X509Data><X509Certificate>" + oOOXMLSigner.m_signer->GetCertificateBase64() + "</X509Certificate></X509Data></KeyInfo>");
+    oOOXMLSigner.SetGuid(sign_id);
+    oOOXMLSigner.SetImageValid(NSFile::GetProcessDirectory() + L"/../../../resources/valid.png");
+    oOOXMLSigner.SetImageInvalid(NSFile::GetProcessDirectory() + L"/../../../resources/invalid.png");
 
-    sXmlData = (UTF8_TO_U(sXmlPrepend) + sXmlData);
-    sXmlData += L"</Signature>";
-
-    std::wstring sDirectory = sFolderOOXML + L"/_xmlsignatures";
-
-    if (!NSDirectory::Exists(sDirectory))
-        NSDirectory::CreateDirectory(sDirectory);
-
-    if (!NSFile::CFileBinary::Exists(sDirectory + L"/origin.sigs"))
-    {
-        NSFile::CFileBinary oFile;
-        oFile.CreateFileW(sDirectory + L"/origin.sigs");
-        oFile.CloseFile();
-    }
-
-    if (!NSDirectory::Exists(sDirectory + L"/_rels"))
-        NSDirectory::CreateDirectory(sDirectory + L"/_rels");
-
-    int nSignNum = oOOXMLSigner.GetCountSigns(sDirectory + L"/_rels/origin.sigs.rels");
-
-    oOOXMLSigner.CorrectContentTypes(nSignNum);
-
-    NSFile::CFileBinary::SaveToFile(sDirectory + L"/sig" + std::to_wstring(nSignNum) + L".xml", sXmlData, false);
+    oOOXMLSigner.Sign();
     return true;
 }

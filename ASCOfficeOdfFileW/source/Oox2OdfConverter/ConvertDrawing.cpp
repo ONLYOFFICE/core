@@ -1825,9 +1825,27 @@ void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 
 	if ((oox_run->rPr.IsInit()) && (oox_run->rPr->hlinkClick.IsInit()) && (oox_run->rPr->hlinkClick->id.IsInit()))
 	{
+		odf_writer::style_text_properties * text_properties = odf_context()->text_context()->get_text_properties();
+		
+		if (!text_properties->content_.fo_color_)
+		{
+			PPTX::Logic::UniColor colorLink;
+			colorLink.Color.reset(new PPTX::Logic::SchemeClr());
+
+			PPTX::Logic::SchemeClr & clr = colorLink.as<PPTX::Logic::SchemeClr>();
+			clr.val.set(L"hlink");
+
+			std::wstring	strHexColor;
+			_CP_OPT(double) opacity;
+			convert(&colorLink, strHexColor, opacity);
+			if (!strHexColor.empty())
+				text_properties->content_.fo_color_ = strHexColor;
+		}
+		text_properties->content_.style_text_underline_type_	= odf_types::line_type::Single;
+		text_properties->content_.style_text_underline_style_	= odf_types::line_style::Solid;
+		
 		std::wstring hlink = find_link_by_id(oox_run->rPr->hlinkClick->id.get(), 2);
 		odf_context()->text_context()->add_hyperlink(hlink, oox_run->GetText());
-
 	}
 	else
 	{

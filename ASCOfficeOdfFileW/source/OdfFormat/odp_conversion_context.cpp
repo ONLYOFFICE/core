@@ -147,7 +147,16 @@ void odp_conversion_context::end_drawings()
 {
 	current_slide().drawing_context()->clear();
 }
-
+void odp_conversion_context::start_note()
+{
+	office_element_ptr note_elm;
+	create_element(L"presentation", L"notes", note_elm, this);
+	
+	current_slide().drawing_context()->start_drawing();
+	current_slide().drawing_context()->start_element(note_elm);
+	
+	slide_context_.start_page(note_elm);	
+}
 void odp_conversion_context::start_comment(int oox_comm_id)
 {
 	office_element_ptr comm_elm;
@@ -179,6 +188,15 @@ void odp_conversion_context::end_comment_content()
 }
 void odp_conversion_context::end_comment()
 {
+	current_slide().drawing_context()->end_element();
+	current_slide().drawing_context()->end_drawing();
+}
+void odp_conversion_context::end_note()
+{
+	slide_context_.end_page();
+
+	slide_context_.remove_page();
+
 	current_slide().drawing_context()->end_element();
 	current_slide().drawing_context()->end_drawing();
 }

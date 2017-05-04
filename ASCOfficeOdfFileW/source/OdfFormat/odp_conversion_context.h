@@ -77,6 +77,9 @@ public:
 	void start_comment_content	();
 	void end_comment_content	();
 
+	void start_note();
+	void end_note();
+
 private:
 	odp_slide_context			slide_context_;
 	

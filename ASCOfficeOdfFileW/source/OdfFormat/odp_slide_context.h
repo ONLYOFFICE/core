@@ -53,6 +53,8 @@ public:
     void start_page (office_element_ptr & elm);
     void end_page ();
 
+	void remove_page();
+
 	void				set_styles_context(odf_style_context*  styles_context);
 	odf_style_context*	get_styles_context();
 
@@ -81,6 +83,7 @@ private:
 	odf_comment_context			comment_context_;
 	
 	std::list<odp_page_state>	page_state_list_;
+	int							count_slides_;
 
 	friend class odp_conversion_context;
 

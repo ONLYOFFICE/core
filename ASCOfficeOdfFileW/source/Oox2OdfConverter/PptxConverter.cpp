@@ -412,6 +412,18 @@ void PptxConverter::convert_slides()
 void PptxConverter::convert(PPTX::NotesSlide *oox_note)
 {
 	if (!oox_note) return;
+	
+	odp_context->start_note();
+	
+	current_slide = dynamic_cast<OOX::IFileContainer*>(oox_note);
+
+	if (oox_note->clrMapOvr.IsInit() && oox_note->clrMapOvr->overrideClrMapping.IsInit())
+		current_clrMap	= oox_note->clrMapOvr->overrideClrMapping.GetPointer();
+	//current_txStyles	= oox_note->Master->txStyles.GetPointer();
+	
+	convert_slide(&oox_note->cSld, NULL, true, true);
+	
+	odp_context->end_note();
 }
 
 void PptxConverter::convert(OOX::WritingElement  *oox_unknown)

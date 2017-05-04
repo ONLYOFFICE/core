@@ -1947,17 +1947,17 @@ void OoxConverter::convert(PPTX::Logic::TxBody *oox_txBody, PPTX::Logic::ShapeSt
 	for (size_t i = 0; i < oox_txBody->Paragrs.size(); i++)
 	{
 		convert(&oox_txBody->Paragrs[i], oox_txBody->lstStyle.GetPointer());
+	
+	//внешние настройки для текста
+		convert(oox_txBody->bodyPr.GetPointer());			
+		
+		if (oox_style)
+		{
+			convert(&oox_style->fontRef);
+		}		
 	}
 	odf_context()->drawing_context()->set_text( odf_context()->text_context());
 	
-//внешние настройки для текста
-
-	convert(oox_txBody->bodyPr.GetPointer());			
-	
-	if (oox_style)
-	{
-		convert(&oox_style->fontRef);
-	}	
 	odf_context()->end_text_context();	
 }
 void OoxConverter::convert(PPTX::Logic::ArcTo *oox_geom_path)

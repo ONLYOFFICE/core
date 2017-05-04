@@ -44,8 +44,9 @@ namespace cpdoccore {
 
 namespace odf_writer {
 
-odp_slide_context::odp_slide_context(odp_conversion_context & Context): context_(Context), table_context_(&Context), comment_context_(&Context)
+odp_slide_context::odp_slide_context(odp_conversion_context & Context) : context_(Context), table_context_(&Context), comment_context_(&Context)
 {       
+	count_slides_	= 0;
 	styles_context_ = Context.styles_context();
 }
 void odp_slide_context::set_styles_context(odf_style_context*  styles_context)
@@ -67,22 +68,23 @@ void odp_slide_context::start_page(office_element_ptr & elm)
 {
 	page_state_list_.push_back( odp_page_state(&context_, elm) );
 	
-	std::wstring style_name_new = L"dp" + boost::lexical_cast<std::wstring>(page_state_list_.size());
+	std::wstring style_name_new = L"dp" + std::to_wstring(++count_slides_);
+	
 	office_element_ptr & style = styles_context_->add_or_find(style_name_new, style_family::DrawingPage, true);
 	style->create_child_element(L"style", L"drawing-page-properties");
 
 	state().set_page_style(style);
 	state().drawing_context()->set_styles_context(styles_context_);
-
-	//для свойств страницы, а не таблицы - нужно создать master-page c page layout и связать по имени со стилем таблицы
-	//причем здесь, т.к. с другой стороны это ВСЕ еще свойства листа. то есть совйства листа разделить на свйства страницы и таблицы ..
-	//todooo
-	//????
 }
 
 void odp_slide_context::end_page()
 {
 	state().drawing_context()->finalize(state().page_elm_);
+}
+
+void odp_slide_context::remove_page()
+{
+	page_state_list_.pop_back();
 }
 
 odf_table_context* odp_slide_context::table_context()

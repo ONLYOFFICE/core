@@ -385,6 +385,7 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 				odf_reader::GetProperty(additional, L"custom_path_w", w);
 				odf_reader::GetProperty(additional, L"custom_path_h", h);
 					
+
 				CP_XML_NODE(L"a:pathLst")
 				{ 	
 					CP_XML_NODE(L"a:path")
@@ -392,7 +393,10 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 						CP_XML_ATTR(L"w", w ? *w : cx);
 						CP_XML_ATTR(L"h", h ? *h : cy);
 						
-						CP_XML_STREAM() << *sCustomPath;
+						if (sCustomPath)
+						{	
+							CP_XML_STREAM() << *sCustomPath;
+						}
 					}
 				}       
 			}

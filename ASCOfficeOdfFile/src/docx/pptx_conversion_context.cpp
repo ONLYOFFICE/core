@@ -530,6 +530,48 @@ void pptx_conversion_context::end_page()
 
 	get_slide_context().end_slide();
 }
+bool pptx_conversion_context::start_note(const std::wstring & pageName,	const std::wstring & pageStyleName,
+																		const std::wstring & pageLayoutName,
+																		const std::wstring & pageMasterName)
+{
+	//   create_new_slide(pageName);
+	//get_slide_context().start_note();//pageName, pageStyleName);
+
+	//current_master_page_name_ = pageMasterName;
+	//current_layout_page_name_ = pageLayoutName;
+	//
+	////const std::wstring masterPageNameLayout = root()->odf_context().pageLayoutContainer().page_layout_name_by_style(current_master_page_name_);
+
+	//std::pair<int,std::wstring> layout_id =
+	//				root()->odf_context().styleContainer().presentation_layouts().add_or_find(pageLayoutName,pageMasterName);
+
+	//current_slide().Rels().add(relationship(layout_id.second, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout",
+	//	std::wstring(L"../slideLayouts/slideLayout")  + boost::lexical_cast<std::wstring>(layout_id.first) + L".xml"));
+
+	   return true;
+}
+
+void pptx_conversion_context::end_note()
+{
+	//if (!get_comments_context().empty())
+	//   {
+	//       std::wstringstream strm;
+	//       get_comments_context().serialize(strm);        
+	//	
+	//	const std::pair<std::wstring, std::wstring> commentsName =
+	//           comments_context_handle_.add_comments_xml(strm.str(), get_comments_context().get_comments() );
+
+	//	get_slide_context().add_rels(false, commentsName.second, L"../comments/" + commentsName.first, typeComment);
+	//   } 
+
+	//get_slide_context().serialize_background(current_slide().Background());
+	//get_slide_context().serialize_objects	(current_slide().Data());
+	//get_slide_context().serialize_animations(current_slide().Timing());
+	//
+	//get_slide_context().dump_rels(current_slide().Rels());//hyperlinks, mediaitems, ...
+
+	//get_slide_context().end_slide();
+}
 void pptx_conversion_context::end_layout()
 {
 	get_slide_context().serialize_objects(current_layout().Data());

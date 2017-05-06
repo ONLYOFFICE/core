@@ -79,11 +79,10 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-private:
-    office_element_ptr_array content_;
-	office_element_ptr animation_;
+    office_element_ptr_array	content_;
+	office_element_ptr			animation_;
 
-	draw_page_attr draw_page_attr_;
+	draw_page_attr				attlist_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_page);
@@ -139,5 +138,28 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(presentation_date_time_decl);
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//presentation:date-time-decl
+class presentation_notes : public office_element_impl<presentation_notes>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typePresentationNotes;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    
+	virtual void pptx_convert(oox::pptx_conversion_context & Context);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+
+
+    office_element_ptr_array	content_;
+	draw_page_attr				attlist_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(presentation_notes);
 }
 }

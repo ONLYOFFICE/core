@@ -32,12 +32,8 @@
 
 #include "draw_page.h"
 
-#include <boost/make_shared.hpp>
 #include <cpdoccore/xml/xmlchar.h>
-
 #include <cpdoccore/xml/attributes.h>
-
-#include <boost/lexical_cast.hpp>
 
 #include "serialize_elements.h"
 #include "odfcontext.h"
@@ -84,7 +80,7 @@ void draw_page::add_child_element( xml::sax * Reader, const std::wstring & Ns, c
 
 void draw_page::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    draw_page_attr_.add_attributes(Attributes);
+    attlist_.add_attributes(Attributes);
 }
 
 void draw_page::pptx_convert_placeHolder(oox::pptx_conversion_context & Context, std::wstring styleName, presentation_class::type PresentationClass)
@@ -96,7 +92,7 @@ void draw_page::pptx_convert_placeHolder(oox::pptx_conversion_context & Context,
 
 	int index=-1;
 
-    const std::wstring masterName = draw_page_attr_.master_page_name_.get_value_or(L"");
+    const std::wstring masterName = attlist_.master_page_name_.get_value_or(L"");
 	style_master_page * master = Context.root()->odf_context().pageLayoutContainer().master_page_by_name(masterName);
 
 	if (master)
@@ -129,16 +125,16 @@ void draw_page::pptx_convert_placeHolder(oox::pptx_conversion_context & Context,
 
 void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	const std::wstring pageStyleName	= draw_page_attr_.draw_style_name_.get_value_or(L"");
-    const std::wstring pageName			= draw_page_attr_.draw_name_.get_value_or(L"");
-    const std::wstring layoutName		= draw_page_attr_.page_layout_name_.get_value_or(L"");
-    const std::wstring masterName		= draw_page_attr_.master_page_name_.get_value_or(L"");
+	const std::wstring pageStyleName	= attlist_.draw_style_name_.get_value_or(L"");
+    const std::wstring pageName			= attlist_.draw_name_.get_value_or(L"");
+    const std::wstring layoutName		= attlist_.page_layout_name_.get_value_or(L"");
+    const std::wstring masterName		= attlist_.master_page_name_.get_value_or(L"");
 
-    _CP_LOG << L"[info][xlsx] process page(slide) \"" << pageName /*L"" */<< L"\"" << std::endl;
+    _CP_LOG << L"[info][pptx] process page(slide) \"" << pageName /*L"" */<< L"\"" << std::endl;
 
     Context.start_page(pageName, pageStyleName, layoutName,masterName);
 
-	if (draw_page_attr_.draw_style_name_)
+	if (attlist_.draw_style_name_)
 	{
 		style_instance * style_inst = Context.root()->odf_context().styleContainer().style_by_name(pageStyleName,style_family::DrawingPage,false);
 
@@ -191,19 +187,19 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 		animation_->pptx_convert(Context);
 	}
 /////////////////////////
-	BOOST_FOREACH(const office_element_ptr& elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-		elm->pptx_convert(Context);
+		content_[i]->pptx_convert(Context);
 	}
 
-	if (draw_page_attr_.use_footer_name_)//from master_page
+	if (attlist_.use_footer_name_)//from master_page
 	{
-		std::wstring name = L"footer:" + *draw_page_attr_.use_footer_name_;
+		std::wstring name = L"footer:" + *attlist_.use_footer_name_;
 		pptx_convert_placeHolder(Context, name, presentation_class::footer);
 	}
-	if (draw_page_attr_.use_date_time_name_)//from master_page
+	if (attlist_.use_date_time_name_)//from master_page
 	{
-		std::wstring name = L"datetime:" + *draw_page_attr_.use_date_time_name_;
+		std::wstring name = L"datetime:" + *attlist_.use_date_time_name_;
 		pptx_convert_placeHolder(Context, name, presentation_class::date_time);
 	}
 
@@ -242,6 +238,121 @@ void presentation_date_time_decl::add_text(const std::wstring & text)
 void presentation_date_time_decl::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	Context.get_text_context().add_text(text_);
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * presentation_notes::ns = L"presentation";
+const wchar_t * presentation_notes::name = L"notes";
+
+void presentation_notes::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
+
+void presentation_notes::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    attlist_.add_attributes(Attributes);
+}
+
+//void presentation_notes::pptx_convert_placeHolder(oox::pptx_conversion_context & Context, std::wstring styleName, presentation_class::type PresentationClass)
+//{
+//	office_element_ptr elm = Context.root()->odf_context().drawStyles().find_by_style_name(styleName);
+//	//todooo если это элемент datatime -нужно вытащить формат поля
+//
+//	if (!elm)return;
+//
+//	int index=-1;
+//
+//    const std::wstring masterName = attlist_.master_page_name_.get_value_or(L"");
+//	style_master_page * master = Context.root()->odf_context().pageLayoutContainer().master_page_by_name(masterName);
+//
+//	//if (master)
+//	//	index = master->find_placeHolderIndex(PresentationClass, Context.last_idx_placeHolder);
+//
+//
+//	Context.get_slide_context().start_shape(1);
+//	Context.get_slide_context().set_placeHolder_type(presentation_class(PresentationClass).get_type_ms());
+//	Context.get_slide_context().set_placeHolder_idx(index);
+//	
+//	Context.get_text_context().start_object();
+//	
+//	if (PresentationClass == presentation_class::date_time)
+//	{
+//		Context.get_text_context().start_field(oox::datetime, L"");
+//	}
+//	
+//	elm->pptx_convert(Context);
+//	
+//	std::wstring text_content_ = Context.get_text_context().end_object();
+//
+//	if (text_content_.length()>0)
+//	{
+//		Context.get_slide_context().set_property(_property(L"text-content",text_content_));
+//	}
+//	Context.get_slide_context().set_property(_property(L"no_rect",true));
+//	Context.get_slide_context().end_shape();
+//
+//}
+//
+void presentation_notes::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	const std::wstring pageStyleName	= attlist_.draw_style_name_.get_value_or(L"");
+    const std::wstring pageName			= attlist_.draw_name_.get_value_or(L"");
+    const std::wstring layoutName		= attlist_.page_layout_name_.get_value_or(L"");
+    const std::wstring masterName		= attlist_.master_page_name_.get_value_or(L"");
+
+    _CP_LOG << L"[info][pptx] process note slide" << std::endl;
+
+    Context.start_note(pageName, pageStyleName, layoutName, masterName);
+
+	if (attlist_.draw_style_name_)
+	{
+		style_instance * style_inst = Context.root()->odf_context().styleContainer().style_by_name(pageStyleName,style_family::DrawingPage, false);
+
+		if ((style_inst) && (style_inst->content()))
+		{
+			const style_drawing_page_properties * properties = style_inst->content()->get_style_drawing_page_properties();
+
+			if (properties)
+			{				
+				oox::_oox_fill fill;
+				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, office_element_ptr(), 
+																	Context.root()->odf_context().drawStyles() ,fill);
+				Context.get_slide_context().add_background(fill);
+			
+	////////////////////////////////////////////////
+				if ((properties->content().presentation_display_footer_) && (*properties->content().presentation_display_footer_))
+					Context.get_slide_context().set_footer();
+					
+				if ((properties->content().presentation_display_header_) && (*properties->content().presentation_display_header_))
+					Context.get_slide_context().set_header();			
+				
+				if ((properties->content().presentation_display_page_number_) && (*properties->content().presentation_display_page_number_))
+					Context.get_slide_context().set_page_number();
+				
+				if ((properties->content().presentation_display_date_time_) && (*properties->content().presentation_display_date_time_))
+					Context.get_slide_context().set_date_time();			
+			}
+		}
+	}
+
+/////////////////////////
+	for (size_t i = 0; i < content_.size(); i++)
+    {
+		content_[i]->pptx_convert(Context);
+	}
+
+	//if (attlist_.use_footer_name_)//from master_page
+	//{
+	//	std::wstring name = L"footer:" + *attlist_.use_footer_name_;
+	//	pptx_convert_placeHolder(Context, name, presentation_class::footer);
+	//}
+	//if (attlist_.use_date_time_name_)//from master_page
+	//{
+	//	std::wstring name = L"datetime:" + *attlist_.use_date_time_name_;
+	//	pptx_convert_placeHolder(Context, name, presentation_class::date_time);
+	//}
+
+    Context.end_note();
 }
 
 }

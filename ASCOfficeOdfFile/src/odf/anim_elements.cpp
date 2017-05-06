@@ -32,17 +32,13 @@
 
 #include "anim_elements.h"
 
-#include <boost/make_shared.hpp>
 #include <cpdoccore/xml/xmlchar.h>
 
 #include <cpdoccore/xml/attributes.h>
 
-#include <boost/lexical_cast.hpp>
-
 #include "serialize_elements.h"
 #include "odfcontext.h"
 #include <cpdoccore/odf/odf_document.h>
-
 
 #include "draw_common.h"
 
@@ -74,16 +70,16 @@ void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
 	}
 ///////////////////////// последовательности .. (если один элемент - основная последовательность, иное - взаимодействующая анимация)
 	//slide_context().animation_context().start_sequence();
-	BOOST_FOREACH(const office_element_ptr& elm, anim_seq_array_)
+	for (size_t i = 0; i < anim_seq_array_.size(); i++)
     {
-		elm->pptx_convert(Context);
+		anim_seq_array_[i]->pptx_convert(Context);
 	}
 	//slide_context().animation_context().end_sequence();
 /////////////////////////////////////////////////////////////////
 //внутренние эффекты - те что внутри одной последовательности
-	BOOST_FOREACH(const office_element_ptr& elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-		elm->pptx_convert(Context);
+		content_[i]->pptx_convert(Context);
 	}
 }
 void anim_par::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -106,9 +102,9 @@ void anim_seq::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void anim_seq::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	BOOST_FOREACH(const office_element_ptr& elm, anim_par_array_)
+	for (size_t i = 0; i < anim_par_array_.size(); i++)
     {
-		elm->pptx_convert(Context);
+		anim_par_array_[i]->pptx_convert(Context);
 	}
 }
 void anim_seq::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)

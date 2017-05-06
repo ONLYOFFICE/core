@@ -88,6 +88,12 @@ public:
 							const std::wstring & pageMasterName);
 	void end_page();
 	
+    bool start_note(const std::wstring & pageName, 
+							const std::wstring & pageStyleName,
+							const std::wstring & pageLayoutName,
+							const std::wstring & pageMasterName);
+	void end_note();
+
 	bool start_layout(	int layout_index);
 	void end_layout();
 

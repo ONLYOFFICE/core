@@ -7196,7 +7196,7 @@ namespace BinDocxRW
 		}
 		void WriteColorSchemeMapping(const PPTX::Logic::ClrMap& oColorSchemeMapping)
 		{
-			int re_index[] = {0, 1, 2, 3, 4, 5, 10, 11, 6, 7, 8, 9, 10, 6, 7};
+			int re_index[] = {0, 1, 2, 3, 4, 5, 10, 11, 6, 7, 8, 9, 10, 11, 10, 6, 7};
 			
 			int nCurPos = 0;
 			std::map<std::wstring, PPTX::Limit::ColorSchemeIndex>::const_iterator pFind;

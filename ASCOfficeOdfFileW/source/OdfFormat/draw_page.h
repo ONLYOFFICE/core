@@ -54,12 +54,13 @@ public:
 	_CP_OPT(std::wstring)		draw_name_;
 	_CP_OPT(std::wstring)		draw_id_;
 	_CP_OPT(std::wstring)		draw_style_name_;
+	_CP_OPT(std::wstring)		draw_master_page_name_;
 
-	_CP_OPT(std::wstring)		page_layout_name_;
-	_CP_OPT(std::wstring)		master_page_name_;
+	_CP_OPT(std::wstring)		style_page_layout_name_;
 
-	_CP_OPT(std::wstring)		use_footer_name_;
-	_CP_OPT(std::wstring)		use_date_time_name_;
+	_CP_OPT(std::wstring)		presentation_use_footer_name_;
+	_CP_OPT(std::wstring)		presentation_use_date_time_name_;
+	_CP_OPT(std::wstring)		presentation_page_layout_name_;
 };
 
 class draw_page : public office_element_impl<draw_page>

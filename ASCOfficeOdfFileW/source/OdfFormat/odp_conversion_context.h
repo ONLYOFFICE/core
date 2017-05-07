@@ -77,7 +77,7 @@ public:
 	void start_comment_content	();
 	void end_comment_content	();
 
-	void start_note();
+	void start_note(bool bMaster = false);
 	void end_note();
 
 private:

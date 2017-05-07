@@ -36,6 +36,7 @@
 
 #include "odp_conversion_context.h"
 #include "office_presentation.h"
+#include "draw_page.h"
 
 #include "styles.h"
 #include "style_table_properties.h"
@@ -95,7 +96,7 @@ void odp_conversion_context::start_slide()
 	create_element(L"draw", L"page", root_presentation_->pages_, this);		
 	slide_context_.start_page(root_presentation_->pages_.back());	
 	
-	drawing_context()->set_presentation(false);
+	drawing_context()->set_presentation(0);
 }
 void odp_conversion_context::end_slide()
 {
@@ -108,7 +109,7 @@ void odp_conversion_context::start_master_slide(std::wstring name)
 	page_layout_context()->add_master_page(name);	
 	slide_context_.start_page(page_layout_context()->last_master()->get_root());
 	
-	drawing_context()->set_presentation(true);	
+	drawing_context()->set_presentation(1);	
 }
 void odp_conversion_context::end_master_slide()
 {
@@ -122,7 +123,7 @@ void odp_conversion_context::start_layout_slide()
 	
 	slide_context_.start_page(elm);
 	
-	drawing_context()->set_presentation(true);	
+	drawing_context()->set_presentation(1);	
 }
 void odp_conversion_context::end_layout_slide()
 {
@@ -147,7 +148,7 @@ void odp_conversion_context::end_drawings()
 {
 	current_slide().drawing_context()->clear();
 }
-void odp_conversion_context::start_note()
+void odp_conversion_context::start_note(bool bMaster)
 {
 	office_element_ptr note_elm;
 	create_element(L"presentation", L"notes", note_elm, this);
@@ -156,6 +157,18 @@ void odp_conversion_context::start_note()
 	current_slide().drawing_context()->start_element(note_elm);
 	
 	slide_context_.start_page(note_elm);	
+
+	if (bMaster)
+	{
+		page_layout_context()->create_layout_page();
+
+		odf_writer::presentation_notes* notes = dynamic_cast<odf_writer::presentation_notes*>(note_elm.get());
+		notes->attlist_.style_page_layout_name_ = page_layout_context()->last_layout()->get_name();
+	
+		drawing_context()->set_presentation(2);	
+	}
+	else
+		drawing_context()->set_presentation(0);	
 }
 void odp_conversion_context::start_comment(int oox_comm_id)
 {

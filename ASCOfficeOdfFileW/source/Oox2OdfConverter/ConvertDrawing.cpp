@@ -437,8 +437,6 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 {
 	if (oox_shape == NULL) return;
 
-	_CP_OPT(bool) bMasterPresentation = odf_context()->drawing_context()->get_presentation();
-	
 	if (oox_shape->txXfrm.IsInit())
 	{
 		odf_context()->drawing_context()->start_group();
@@ -1424,9 +1422,9 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 
 		if (list_local)
 		{
-			_CP_OPT(bool) inStyles = odf_context()->drawing_context()->get_presentation();
+			_CP_OPT(int) inStyles = odf_context()->drawing_context()->get_presentation();
 
-			odf_context()->styles_context()->lists_styles().start_style(inStyles && *inStyles);
+			odf_context()->styles_context()->lists_styles().start_style(inStyles && *inStyles > 0);
 				convert_list_level(oox_paragraph->pPr.GetPointer(), list_level /*- 1*/);
 			odf_context()->styles_context()->lists_styles().end_style();
 	
@@ -1926,9 +1924,9 @@ void OoxConverter::convert(PPTX::Logic::TextListStyle *oox_list_style)
 	if (!oox_list_style) return;
 	if (oox_list_style->IsListStyleEmpty()) return;
 
-	_CP_OPT(bool) inStyles = odf_context()->drawing_context()->get_presentation();
+	_CP_OPT(int) inStyles = odf_context()->drawing_context()->get_presentation();
 
-	odf_context()->styles_context()->lists_styles().start_style(inStyles && *inStyles);
+	odf_context()->styles_context()->lists_styles().start_style(inStyles && *inStyles > 0); // masters 
 	for (int i = 0; i < 9; i++)
 	{
 		OoxConverter::convert_list_level(oox_list_style->levels[i].GetPointer(), i);

@@ -35,6 +35,7 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Folder.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Presentation.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Slide.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/NotesMaster.h"
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Table/Table.h"
 
@@ -359,7 +360,14 @@ void PptxConverter::convert_slides()
 						current_clrMap	= slide->Layout->clrMapOvr->overrideClrMapping.GetPointer();
 					current_slide = slide->Layout.operator->();
 					
-					convert_slide(&slide->Layout->cSld, current_txStyles, true, bShowLayoutMasterSp);		
+					convert_slide(&slide->Layout->cSld, current_txStyles, true, bShowLayoutMasterSp);	
+
+					if (!presentation->notesMasterIdLst.empty())
+					{
+						rId = presentation->notesMasterIdLst[0].rid.get();
+						smart_ptr<PPTX::NotesMaster> notes_master = ((*presentation)[rId]).smart_dynamic_cast<PPTX::NotesMaster>();
+						convert(notes_master.operator->());
+					}
 					//add note master
 				odp_context->end_master_slide();
 				
@@ -409,19 +417,49 @@ void PptxConverter::convert_slides()
 		odp_context->end_slide();
 	}
 }
-void PptxConverter::convert(PPTX::NotesSlide *oox_note)
+void PptxConverter::convert(PPTX::NotesMaster *oox_notes)
 {
-	if (!oox_note) return;
+	if (!oox_notes) return;
+	
+	odp_context->start_note(true);
+	
+	current_slide	= dynamic_cast<OOX::IFileContainer*>(oox_notes);
+	current_clrMap	= &oox_notes->clrMap;
+	//PPTX::Logic::TxStyles* current_txStyles = oox_notes->notesStyle.GetPointer();
+	
+	if (presentation->notesSz.IsInit())
+	{
+		_CP_OPT(odf_types::length) width	= odf_types::length(presentation->notesSz->cx / 12700., odf_types::length::pt);
+		_CP_OPT(odf_types::length) height	= odf_types::length(presentation->notesSz->cy / 12700., odf_types::length::pt);
+		
+		odf_context()->page_layout_context()->set_page_size(width, height);
+		//if (presentation->notesSz->type.IsInit())
+		//{
+		//	switch(presentation->notesSz->type->GetBYTECode())
+		//	{
+		//	default:
+		//		break;
+		//	}
+		//	odf_context()->page_layout_context()->set_page_orientation
+		//}
+	}
+	convert_slide(&oox_notes->cSld, NULL, true, true);
+	
+	odp_context->end_note();
+}
+void PptxConverter::convert(PPTX::NotesSlide *oox_notes)
+{
+	if (!oox_notes) return;
 	
 	odp_context->start_note();
 	
-	current_slide = dynamic_cast<OOX::IFileContainer*>(oox_note);
+	current_slide = dynamic_cast<OOX::IFileContainer*>(oox_notes);
 
-	if (oox_note->clrMapOvr.IsInit() && oox_note->clrMapOvr->overrideClrMapping.IsInit())
-		current_clrMap	= oox_note->clrMapOvr->overrideClrMapping.GetPointer();
-	//current_txStyles	= oox_note->Master->txStyles.GetPointer();
+	if (oox_notes->clrMapOvr.IsInit() && oox_notes->clrMapOvr->overrideClrMapping.IsInit())
+		current_clrMap	= oox_notes->clrMapOvr->overrideClrMapping.GetPointer();
+	//current_txStyles	= oox_notes->Master->txStyles.GetPointer();
 	
-	convert_slide(&oox_note->cSld, NULL, true, true);
+	convert_slide(&oox_notes->cSld, NULL, true, true);
 	
 	odp_context->end_note();
 }
@@ -979,8 +1017,6 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 
 	convert(oox_slide->bg.GetPointer());
 		
-	bool bMaster = *odf_context()->drawing_context()->get_presentation();
-
 	for (size_t i = 0 ; i < oox_slide->spTree.SpTreeElems.size(); i++)
 	{
 		smart_ptr<PPTX::WrapperWritingElement>	pElem = oox_slide->spTree.SpTreeElems[i].GetElem();
@@ -998,9 +1034,6 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 				if (pShape->nvSpPr.nvPr.ph->type.IsInit())
 				{
 					int ph_type = pShape->nvSpPr.nvPr.ph->type->GetBYTECode();
-
-					//if (!bMaster && (ph_type == 5 || ph_type == 6 || ph_type == 7 || ph_type == 12))
-					//	continue;
 
 					odf_context()->drawing_context()->set_placeholder_type(ph_type);
 				}

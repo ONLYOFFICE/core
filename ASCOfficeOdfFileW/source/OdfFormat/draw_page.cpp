@@ -46,17 +46,17 @@ namespace odf_writer {
 
 void draw_page_attr::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"draw:id",			draw_id_);
+    CP_XML_ATTR_OPT(L"draw:id",					draw_id_);
 
-    CP_XML_ATTR_OPT(L"draw:name",		draw_name_);
-    CP_XML_ATTR_OPT(L"draw:style-name",	draw_style_name_);
+    CP_XML_ATTR_OPT(L"draw:name",				draw_name_);
+    CP_XML_ATTR_OPT(L"draw:style-name",			draw_style_name_);
+	CP_XML_ATTR_OPT(L"draw:master-page-name",	draw_master_page_name_);
     
-	CP_XML_ATTR_OPT(L"presentation:presentation-page-layout-name",	page_layout_name_);
-    CP_XML_ATTR_OPT(L"draw:master-page-name",						master_page_name_);
-    
-	CP_XML_ATTR_OPT(L"presentation:use-date-time-name",	use_date_time_name_);
-    CP_XML_ATTR_OPT(L"presentation:use-footer-name",	use_footer_name_);
-
+ 	CP_XML_ATTR_OPT(L"style:page-layout-name",	style_page_layout_name_); 
+	
+	CP_XML_ATTR_OPT(L"presentation:presentation-page-layout-name",	presentation_page_layout_name_);    
+	CP_XML_ATTR_OPT(L"presentation:use-date-time-name",				presentation_use_date_time_name_);
+    CP_XML_ATTR_OPT(L"presentation:use-footer-name",				presentation_use_footer_name_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

@@ -48,6 +48,7 @@ namespace PPTX
 {
 	class TableStyles;
 	class NotesSlide;
+	class NotesMaster;
 	class Presentation;
 	class Comments;
 	class Folder;
@@ -110,7 +111,8 @@ namespace Oox2Odf
 		void convert_slide	(PPTX::Logic::CSld			*oox_slide, PPTX::Logic::TxStyles* txStyles, bool bPlaceholders, bool bFillUp);
 		void convert_layout	(PPTX::Logic::CSld			*oox_slide);
 		void convert		(PPTX::Comments				*oox_comments);
-		void convert		(PPTX::NotesSlide			*oox_note);
+		void convert		(PPTX::NotesSlide			*oox_notes);
+		void convert		(PPTX::NotesMaster			*oox_notes);
 
 		void convert(PPTX::Logic::Bg					*oox_background);
 		void convert(PPTX::Logic::Timing				*oox_timing, PPTX::Logic::Transition *oox_transition);

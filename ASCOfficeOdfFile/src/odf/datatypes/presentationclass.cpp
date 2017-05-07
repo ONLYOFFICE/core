@@ -126,12 +126,14 @@ std::wstring presentation_class::get_type_ms()
 			res = L"sldNum";
 			break;
         case subtitle:
-		case page:
 		case notes:
 		case handout:
         case outline:
 		case text:
 			res = L"body";
+			break;
+		case page:
+			res = L"sldImg";
 			break;
 	}
 	return res;

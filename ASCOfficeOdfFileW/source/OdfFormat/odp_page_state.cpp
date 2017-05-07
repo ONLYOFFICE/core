@@ -88,7 +88,7 @@ void odp_page_state::set_layout_page(std::wstring name)
 	draw_page* page = dynamic_cast<draw_page*>(page_elm_.get());
 	if (page == NULL)return;
 
-	page->attlist_.page_layout_name_ = name;
+	page->attlist_.presentation_page_layout_name_ = name;
 }
 
 void odp_page_state::set_master_page(std::wstring name)
@@ -98,7 +98,7 @@ void odp_page_state::set_master_page(std::wstring name)
 	draw_page* page = dynamic_cast<draw_page*>(page_elm_.get());
 	if (page == NULL)return;
 
-	page->attlist_.master_page_name_ = name;
+	page->attlist_.draw_master_page_name_ = name;
 }
 
 void odp_page_state::set_page_style(office_element_ptr & elm)

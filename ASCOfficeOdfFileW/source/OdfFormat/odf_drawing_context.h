@@ -60,8 +60,8 @@ public:
 	odf_drawing_context		(odf_conversion_context *odf_context);
     ~odf_drawing_context	();
 
-	void			set_presentation (bool bMaster);
-	_CP_OPT(bool)	get_presentation ();
+	void			set_presentation (int type);
+	_CP_OPT(int)	get_presentation ();
 
 	void set_drawings_rect	(_CP_OPT(double) x_pt, _CP_OPT(double) y_pt, _CP_OPT(double) width_pt, _CP_OPT(double) height_pt);
 	void clear				();

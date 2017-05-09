@@ -49,6 +49,8 @@ struct _rect
 
 struct drawing_object_description
 {
+	bool									bNotes_;
+
 	oox::RelsType							type_;
 
 	std::wstring							name_;	

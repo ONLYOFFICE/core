@@ -1519,10 +1519,11 @@ void style_master_page::pptx_convert(oox::pptx_conversion_context & Context)
 		}
 	}
 	
-	BOOST_FOREACH(office_element_ptr elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-		elm->pptx_convert(Context);
+		content_[i]->pptx_convert(Context);
 	}
+
 }
 ////////////////
 
@@ -1698,9 +1699,9 @@ void style_presentation_page_layout::add_child_element( xml::sax * Reader, const
 }
 void style_presentation_page_layout::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    BOOST_FOREACH(office_element_ptr elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-		elm->pptx_convert(Context);
+		content_[i]->pptx_convert(Context);
 	}
 }
 

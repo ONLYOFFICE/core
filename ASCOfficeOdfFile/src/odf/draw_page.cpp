@@ -74,6 +74,8 @@ void draw_page::add_child_element( xml::sax * Reader, const std::wstring & Ns, c
 {
 	if	CP_CHECK_NAME(L"anim", L"par") 
 		CP_CREATE_ELEMENT(animation_);
+    else if (L"presentation" == Ns && L"notes" == Name)
+        CP_CREATE_ELEMENT(presentation_notes_); 
 	else
 		CP_CREATE_ELEMENT(content_);
 }
@@ -202,8 +204,15 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 		std::wstring name = L"datetime:" + *attlist_.use_date_time_name_;
 		pptx_convert_placeHolder(Context, name, presentation_class::date_time);
 	}
+	
+	Context.end_page();
 
-    Context.end_page();
+ 	if (presentation_notes_)
+	{
+		Context.start_page_notes();
+		presentation_notes_->pptx_convert(Context);
+		Context.end_page_notes();
+	}  
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * presentation_footer_decl::ns = L"presentation";
@@ -296,13 +305,10 @@ void presentation_notes::add_attributes( const xml::attributes_wc_ptr & Attribut
 void presentation_notes::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	const std::wstring pageStyleName	= attlist_.draw_style_name_.get_value_or(L"");
-    const std::wstring pageName			= attlist_.draw_name_.get_value_or(L"");
     const std::wstring layoutName		= attlist_.page_layout_name_.get_value_or(L"");
     const std::wstring masterName		= attlist_.master_page_name_.get_value_or(L"");
 
     _CP_LOG << L"[info][pptx] process note slide" << std::endl;
-
-    Context.start_note(pageName, pageStyleName, layoutName, masterName);
 
 	if (attlist_.draw_style_name_)
 	{
@@ -352,7 +358,6 @@ void presentation_notes::pptx_convert(oox::pptx_conversion_context & Context)
 	//	pptx_convert_placeHolder(Context, name, presentation_class::date_time);
 	//}
 
-    Context.end_note();
 }
 
 }

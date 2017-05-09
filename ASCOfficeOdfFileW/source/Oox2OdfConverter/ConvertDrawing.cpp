@@ -854,10 +854,10 @@ void OoxConverter::convert(PPTX::Logic::GradFill *oox_grad_fill, DWORD nARGB)
 			}	
 			if (oox_grad_fill->path->rect.IsInit())
 			{
-				odf_context()->drawing_context()->set_gradient_rect( XmlUtils::GetInteger(oox_grad_fill->path->rect->l.get_value_or(L"")),
-																	 XmlUtils::GetInteger(oox_grad_fill->path->rect->t.get_value_or(L"")),
-																	 XmlUtils::GetInteger(oox_grad_fill->path->rect->r.get_value_or(L"")),
-																	 XmlUtils::GetInteger(oox_grad_fill->path->rect->b.get_value_or(L"")));			
+				odf_context()->drawing_context()->set_gradient_rect( XmlUtils::GetInteger(oox_grad_fill->path->rect->l.get_value_or(L"")) / 1000.,
+																	 XmlUtils::GetInteger(oox_grad_fill->path->rect->t.get_value_or(L"")) / 1000.,
+																	 XmlUtils::GetInteger(oox_grad_fill->path->rect->r.get_value_or(L"")) / 1000.,
+																	 XmlUtils::GetInteger(oox_grad_fill->path->rect->b.get_value_or(L"")) / 1000.);			
 			}
 		}	
 		odf_context()->drawing_context()->set_gradient_type(grad_style);

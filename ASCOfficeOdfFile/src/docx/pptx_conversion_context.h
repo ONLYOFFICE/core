@@ -88,11 +88,11 @@ public:
 							const std::wstring & pageMasterName);
 	void end_page();
 	
-    bool start_note(const std::wstring & pageName, 
-							const std::wstring & pageStyleName,
-							const std::wstring & pageLayoutName,
-							const std::wstring & pageMasterName);
-	void end_note();
+    bool start_page_notes();
+	void end_page_notes();
+
+    bool start_master_notes();
+	void end_master_notes();
 
 	bool start_layout(	int layout_index);
 	void end_layout();
@@ -113,10 +113,13 @@ public:
         return odf_document_;
     }
 
-    pptx_xml_slide			& current_slide();
-	pptx_xml_slideLayout	& current_layout();
-	pptx_xml_slideMaster	& current_master();
-    pptx_xml_theme			& current_theme();
+    pptx_xml_slide					& current_slide();
+	pptx_xml_slideLayout			& current_layout();
+	pptx_xml_slideMaster			& current_master();
+    pptx_xml_theme					& current_theme();
+	pptx_xml_slideNotes				& current_notes();
+	pptx_xml_slideNotesMaster		& current_notesMaster();
+
     pptx_xml_presentation	& current_presentation();//собственно она одна
   
 	oox_chart_context	& current_chart();
@@ -144,6 +147,8 @@ private:
     void	create_new_slide(std::wstring const & name);
 	void	create_new_slideLayout(int id);
 	void	create_new_slideMaster(int id);
+    void	create_new_slideNotes();
+    void	create_new_slideNotesMaster();
 
 	package::pptx_document		* output_document_; 
     odf_reader::odf_document	* odf_document_;    
@@ -158,10 +163,12 @@ private:
 	std::vector<oox_chart_context_ptr> charts_;
 	
 	std::vector<pptx_xml_slide_ptr>			slides_;
+	std::vector<pptx_xml_slideNotes_ptr>	notes_;
 	std::vector<pptx_xml_slideMaster_ptr>	slideMasters_;
 	std::vector<pptx_xml_slideLayout_ptr>	slideLayouts_;
 	std::vector<pptx_xml_theme_ptr>			themes_;
 	
+	pptx_xml_slideNotesMaster_ptr			slideNotesMaster_;
 	pptx_xml_authors_comments_ptr			authors_comments_;
 	pptx_xml_presentation					presentation_;
 

@@ -49,7 +49,7 @@ class pptx_xml_slide: noncopyable
 public:
     pptx_xml_slide(std::wstring const & name,std::wstring const & id);
     ~pptx_xml_slide();
-public:
+
     std::wstring name() const;
     std::wstring rId() const;
    
@@ -72,19 +72,47 @@ private:
 
 	rels rels_;
 };
-////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------
+class pptx_xml_slideNotes;
+typedef _CP_PTR(pptx_xml_slideNotes) pptx_xml_slideNotes_ptr;
+
+class pptx_xml_slideNotes: noncopyable
+{
+public:
+    pptx_xml_slideNotes(std::wstring const & id);
+    ~pptx_xml_slideNotes();
+
+	std::wstring rId() const;
+   
+    std::wostream & Data();
+    std::wostream & Background();
+	
+	rels & Rels();
+    
+    void write_to(std::wostream & strm);
+
+    static pptx_xml_slideNotes_ptr create(int id);
+
+private:
+    std::wstringstream  slideData_;
+    std::wstringstream  slideBackground_;
+	std::wstring rId_;
+
+	rels rels_;
+};
+//------------------------------------------------------------------------------------
 class pptx_xml_presentation: noncopyable
 {
 public:
 	pptx_xml_presentation(){}
 	~pptx_xml_presentation(){}
 
-	std::wstringstream  & slidesData(){return slidesData_;}
-    std::wstringstream  & slideMastersData(){return slideMastersData_;}
-    std::wstringstream  & notesSlidesData(){return notesSlidesData_;}
+	std::wstringstream  & slidesData()			{return slidesData_;}
+    std::wstringstream  & slideMastersData()	{return slideMastersData_;}
+    std::wstringstream  & notesSlidesData()		{return notesSlidesData_;}
 
-    std::wstringstream  & slidesProperties(){return slidesProperties_;}
-    std::wstringstream  & notesSlidesSize(){return notesSlidesSize_;}
+    std::wstringstream  & slidesProperties()	{return slidesProperties_;}
+    std::wstringstream  & notesSlidesSize()		{return notesSlidesSize_;}
 
 	void write_to(std::wostream & strm);
 
@@ -92,14 +120,13 @@ private:
     std::wstringstream  slidesProperties_;
 	std::wstringstream  notesSlidesSize_;
 
-
     std::wstringstream  slidesData_;
     std::wstringstream  slideMastersData_;
     std::wstringstream  notesSlidesData_;
 	std::wstringstream  handoutMasterData_;
 };
 
-//////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------
 class pptx_xml_slideLayout;
 typedef _CP_PTR(pptx_xml_slideLayout) pptx_xml_slideLayout_ptr;
 
@@ -126,7 +153,7 @@ private:
 
 	rels rels_;
 };
-///////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------
 class pptx_xml_slideMaster;
 typedef _CP_PTR(pptx_xml_slideMaster) pptx_xml_slideMaster_ptr;
 
@@ -135,7 +162,7 @@ class pptx_xml_slideMaster: noncopyable
 public:
     pptx_xml_slideMaster(std::wstring const & rId, int id);
     ~pptx_xml_slideMaster();
-public:
+
     std::wstring rId() const;
    
     std::wostream & Data();
@@ -163,7 +190,40 @@ private:
 
 	rels rels_;
 };
-////////////////////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------
+class pptx_xml_slideNotesMaster;
+typedef _CP_PTR(pptx_xml_slideNotesMaster) pptx_xml_slideNotesMaster_ptr;
+
+class pptx_xml_slideNotesMaster: noncopyable
+{
+public:
+    pptx_xml_slideNotesMaster(std::wstring const & rId, int id);
+    ~pptx_xml_slideNotesMaster();
+
+    std::wstring rId() const;
+   
+    std::wostream & Data();
+	std::wostream & Background();
+	rels & Rels();
+
+ 	void add_theme(int id, const std::wstring & tId);
+   
+    void write_to(std::wostream & strm);
+
+    static pptx_xml_slideNotesMaster_ptr create();
+
+private:
+    std::wstringstream  slideMasterData_;
+    std::wstringstream  slideMasterBackground_;
+	
+	std::wstring rId_;
+	int id_;
+
+	std::wstring themeId_;
+
+	rels rels_;
+};
+//------------------------------------------------------------------------------------
 class pptx_xml_theme;
 typedef _CP_PTR(pptx_xml_theme) pptx_xml_theme_ptr;
 
@@ -192,7 +252,7 @@ private:
 	std::wstring name_;
 	int id_;
 };
-////////////////////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------
 class pptx_xml_authors_comments;
 typedef _CP_PTR(pptx_xml_authors_comments) pptx_xml_authors_comments_ptr;
 

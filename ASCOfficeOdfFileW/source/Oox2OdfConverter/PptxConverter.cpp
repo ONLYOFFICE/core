@@ -423,8 +423,13 @@ void PptxConverter::convert(PPTX::NotesMaster *oox_notes)
 	
 	odp_context->start_note(true);
 	
-	current_slide	= dynamic_cast<OOX::IFileContainer*>(oox_notes);
+	PPTX::Theme*			old_theme	= current_theme;
+	PPTX::Logic::ClrMap*	old_clrMap	= current_clrMap;
+
+	current_theme	= oox_notes->theme_.operator->();
 	current_clrMap	= &oox_notes->clrMap;
+	
+	current_slide	= dynamic_cast<OOX::IFileContainer*>(oox_notes);
 	//PPTX::Logic::TxStyles* current_txStyles = oox_notes->notesStyle.GetPointer();
 	
 	if (presentation->notesSz.IsInit())
@@ -433,35 +438,46 @@ void PptxConverter::convert(PPTX::NotesMaster *oox_notes)
 		_CP_OPT(odf_types::length) height	= odf_types::length(presentation->notesSz->cy / 12700., odf_types::length::pt);
 		
 		odf_context()->page_layout_context()->set_page_size(width, height);
-		//if (presentation->notesSz->type.IsInit())
-		//{
-		//	switch(presentation->notesSz->type->GetBYTECode())
-		//	{
-		//	default:
-		//		break;
-		//	}
-		//	odf_context()->page_layout_context()->set_page_orientation
-		//}
 	}
 	convert_slide(&oox_notes->cSld, NULL, true, true);
 	
 	odp_context->end_note();
+
+	current_clrMap	= old_clrMap;
+	current_theme	= old_theme;
 }
 void PptxConverter::convert(PPTX::NotesSlide *oox_notes)
 {
 	if (!oox_notes) return;
-	
+
+	PPTX::Theme*			old_theme	= current_theme;
+	PPTX::Logic::ClrMap*	old_clrMap	= current_clrMap;
+
+	smart_ptr<PPTX::NotesMaster> notes_master;
+	if (!presentation->notesMasterIdLst.empty())
+	{
+		std::wstring rId = presentation->notesMasterIdLst[0].rid.get();
+		notes_master = ((*presentation)[rId]).smart_dynamic_cast<PPTX::NotesMaster>();
+	}	
 	odp_context->start_note();
 	
-	current_slide = dynamic_cast<OOX::IFileContainer*>(oox_notes);
+	if (notes_master.IsInit())
+	{
+		current_theme	= notes_master->theme_.operator->();
+		current_clrMap	= &notes_master->clrMap;
+	}
+
+	current_slide	= dynamic_cast<OOX::IFileContainer*>(oox_notes);
 
 	if (oox_notes->clrMapOvr.IsInit() && oox_notes->clrMapOvr->overrideClrMapping.IsInit())
 		current_clrMap	= oox_notes->clrMapOvr->overrideClrMapping.GetPointer();
-	//current_txStyles	= oox_notes->Master->txStyles.GetPointer();
 	
 	convert_slide(&oox_notes->cSld, NULL, true, true);
 	
 	odp_context->end_note();
+	
+	current_clrMap	= old_clrMap;
+	current_theme	= old_theme;
 }
 
 void PptxConverter::convert(OOX::WritingElement  *oox_unknown)

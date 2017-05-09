@@ -41,7 +41,7 @@
 namespace cpdoccore {
 namespace oox {
 
-
+//---------------------------------------------------------------------------------------------------------
 std::wstring pptx_xml_slide::name() const
 {
     return name_;
@@ -53,7 +53,7 @@ std::wstring pptx_xml_slide::rId() const
 
 pptx_xml_slide_ptr pptx_xml_slide::create(std::wstring const & name,int id)
 {
-	const std::wstring rId = std::wstring(L"sId") + boost::lexical_cast<std::wstring>(id);
+	const std::wstring rId = std::wstring(L"sId") + std::to_wstring(id);
     return boost::make_shared<pptx_xml_slide>(name,rId);
 }
 
@@ -115,7 +115,7 @@ void pptx_xml_slide::write_to(std::wostream & strm)
 		}
 	}
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------------
 std::wstring pptx_xml_slideLayout::rId() const
 {
     return rId_;
@@ -123,7 +123,7 @@ std::wstring pptx_xml_slideLayout::rId() const
 
 pptx_xml_slideLayout_ptr pptx_xml_slideLayout::create(int id)
 {
-	const std::wstring rId = std::wstring(L"lrId") + boost::lexical_cast<std::wstring>(id);
+	const std::wstring rId = std::wstring(L"lrId") + std::to_wstring(id);
     return boost::make_shared<pptx_xml_slideLayout>(rId);
 }
 
@@ -189,7 +189,7 @@ void pptx_xml_slideLayout::write_to(std::wostream & strm)
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------------
 std::wstring pptx_xml_slideMaster::rId() const
 {
     return rId_;
@@ -197,7 +197,7 @@ std::wstring pptx_xml_slideMaster::rId() const
 
 pptx_xml_slideMaster_ptr pptx_xml_slideMaster::create(int id)
 {
-	const std::wstring rId = std::wstring(L"smId") + boost::lexical_cast<std::wstring>(id);
+	const std::wstring rId = std::wstring(L"smId") + std::to_wstring(id);
     return boost::make_shared<pptx_xml_slideMaster>(rId,id);
 }
 
@@ -229,7 +229,7 @@ rels & pptx_xml_slideMaster::Rels()
 void pptx_xml_slideMaster::add_theme(int id, const std::wstring & tId)
 {
 	rels_.add(relationship( tId, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme",
-			std::wstring(L"../theme/theme")  + boost::lexical_cast<std::wstring>(id) + L".xml"));
+			std::wstring(L"../theme/theme")  + std::to_wstring(id) + L".xml"));
 }
 
 void pptx_xml_slideMaster::add_layout(int id, const std::wstring & rId, const unsigned int & uniqId)
@@ -237,7 +237,7 @@ void pptx_xml_slideMaster::add_layout(int id, const std::wstring & rId, const un
 	layoutsId_.push_back(std::pair<std::wstring, unsigned int>(rId, uniqId));
 
 	rels_.add(relationship( rId,L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout",
-			std::wstring(L"../slideLayouts/slideLayout")  + boost::lexical_cast<std::wstring>(id) + L".xml"));
+			std::wstring(L"../slideLayouts/slideLayout")  + std::to_wstring(id) + L".xml"));
 }
 
 void pptx_xml_slideMaster::write_to(std::wostream & strm)
@@ -299,6 +299,7 @@ void pptx_xml_slideMaster::write_to(std::wostream & strm)
 	}
 }
 
+//---------------------------------------------------------------------------------------------------------
 pptx_xml_theme_ptr pptx_xml_theme::create(std::wstring const & name,int id)
 {
     return boost::make_shared<pptx_xml_theme>(name,id);
@@ -336,6 +337,7 @@ void pptx_xml_theme::write_to(std::wostream & strm)
 		}
 	}
 }
+//---------------------------------------------------------------------------------------------------------
 pptx_xml_authors_comments_ptr pptx_xml_authors_comments::create()
 {
     return boost::make_shared<pptx_xml_authors_comments>();
@@ -399,6 +401,7 @@ void pptx_xml_authors_comments::write_to(std::wostream & strm)
 	}
 }
 
+//---------------------------------------------------------------------------------------------------------
 void pptx_xml_presentation::write_to(std::wostream & strm)
 {
     CP_XML_WRITER(strm)
@@ -428,5 +431,152 @@ void pptx_xml_presentation::write_to(std::wostream & strm)
         }
 	}
 }
+//---------------------------------------------------------------------------------------------------------
+std::wstring pptx_xml_slideNotes::rId() const
+{
+    return rId_;
+}
+
+pptx_xml_slideNotes_ptr pptx_xml_slideNotes::create(int id)
+{
+	const std::wstring rId = std::wstring(L"nId") + std::to_wstring(id);
+    return boost::make_shared<pptx_xml_slideNotes>(rId);
+}
+
+pptx_xml_slideNotes::pptx_xml_slideNotes(std::wstring const & id)
+{
+	rId_ = id;
+}
+
+pptx_xml_slideNotes::~pptx_xml_slideNotes()
+{
+}
+std::wostream & pptx_xml_slideNotes::Data()
+{
+    return slideData_;
+}
+std::wostream & pptx_xml_slideNotes::Background()
+{
+    return slideBackground_;
+}
+
+rels & pptx_xml_slideNotes::Rels()
+{
+    return rels_;
+}
+
+void pptx_xml_slideNotes::write_to(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE(L"p:notes")
+        {
+			CP_XML_ATTR(L"xmlns:a",		L"http://schemas.openxmlformats.org/drawingml/2006/main"); 
+			CP_XML_ATTR(L"xmlns:p",		L"http://schemas.openxmlformats.org/presentationml/2006/main");
+			CP_XML_ATTR(L"xmlns:r",		L"http://schemas.openxmlformats.org/officeDocument/2006/relationships"); 
+			CP_XML_ATTR(L"xmlns:p14",	L"http://schemas.microsoft.com/office/powerpoint/2010/main"); 
+			CP_XML_ATTR(L"xmlns:p15",	L"http://schemas.microsoft.com/office/powerpoint/2012/main"); 
+			CP_XML_ATTR(L"xmlns:mc",	L"http://schemas.openxmlformats.org/markup-compatibility/2006");
+           
+			CP_XML_NODE(L"p:cSld")
+            {
+				CP_XML_STREAM() << slideBackground_.str();
+
+				CP_XML_NODE(L"p:spTree")
+				{
+					CP_XML_STREAM() << slideData_.str();
+				}
+            }
+			CP_XML_NODE(L"p:clrMapOvr")
+			{
+				CP_XML_NODE(L"a:masterClrMapping");
+			}
+		}
+	}
+}
+//---------------------------------------------------------------------------------------------------------
+std::wstring pptx_xml_slideNotesMaster::rId() const
+{
+    return rId_;
+}
+
+pptx_xml_slideNotesMaster_ptr pptx_xml_slideNotesMaster::create()
+{
+	const std::wstring rId = std::wstring(L"nmId1");
+    return boost::make_shared<pptx_xml_slideNotesMaster>(rId, 1);
+}
+
+pptx_xml_slideNotesMaster::pptx_xml_slideNotesMaster(std::wstring const & rId, int id)
+{
+	rId_ = rId;
+	id_ = id;
+}
+
+pptx_xml_slideNotesMaster::~pptx_xml_slideNotesMaster()
+{
+}
+std::wostream & pptx_xml_slideNotesMaster::Data()
+{
+    return slideMasterData_;
+}
+
+std::wostream & pptx_xml_slideNotesMaster::Background()
+{
+    return slideMasterBackground_;
+}
+rels & pptx_xml_slideNotesMaster::Rels()
+{
+    return rels_;
+}
+void pptx_xml_slideNotesMaster::add_theme(int id, const std::wstring & tId)
+{
+	rels_.add(relationship( tId, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme",
+		std::wstring(L"../theme/theme")  + std::to_wstring(id) + L".xml"));
+}
+
+void pptx_xml_slideNotesMaster::write_to(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE(L"p:notesMaster")
+        {
+			CP_XML_ATTR(L"xmlns:a",		L"http://schemas.openxmlformats.org/drawingml/2006/main"); 
+			CP_XML_ATTR(L"xmlns:p",		L"http://schemas.openxmlformats.org/presentationml/2006/main");
+			CP_XML_ATTR(L"xmlns:r",		L"http://schemas.openxmlformats.org/officeDocument/2006/relationships"); 
+			CP_XML_ATTR(L"xmlns:p14",	L"http://schemas.microsoft.com/office/powerpoint/2010/main"); 
+			CP_XML_ATTR(L"xmlns:p15",	L"http://schemas.microsoft.com/office/powerpoint/2012/main"); 
+			CP_XML_ATTR(L"xmlns:mc",	L"http://schemas.openxmlformats.org/markup-compatibility/2006");
+           
+			CP_XML_NODE(L"p:cSld")
+            {
+				CP_XML_STREAM() << slideMasterBackground_.str();
+
+				CP_XML_NODE(L"p:spTree")
+				{
+					CP_XML_STREAM() << slideMasterData_.str();
+				}
+            }
+			CP_XML_NODE(L"p:clrMap")
+			{
+				CP_XML_ATTR(L"folHlink",L"folHlink");
+				CP_XML_ATTR(L"hlink",L"hlink");
+				CP_XML_ATTR(L"accent6",L"accent6");
+				CP_XML_ATTR(L"accent5",L"accent5");
+				CP_XML_ATTR(L"accent4",L"accent4");
+				CP_XML_ATTR(L"accent3",L"accent5");
+				CP_XML_ATTR(L"accent2",L"accent2");
+				CP_XML_ATTR(L"accent1",L"accent1");
+				CP_XML_ATTR(L"tx2",L"dk2");
+				CP_XML_ATTR(L"tx1",L"dk1");
+				CP_XML_ATTR(L"bg2",L"lt2");
+				CP_XML_ATTR(L"bg1",L"lt1");
+			}
+			CP_XML_NODE(L"p:notesStyle")
+			{
+			}
+		}
+	}
+}
+//---------------------------------------------------------------------------------------------------------
 }
 }

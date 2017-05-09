@@ -2627,15 +2627,15 @@ void odf_drawing_context::set_gradient_angle(double angle)
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 
-	gradient->draw_angle_ = (270-  angle) * 10;//(int)((360 - angle)/180. * 3.14159265358979323846);
+	gradient->draw_angle_ = (270 - angle) * 10;//(int)((360 - angle)/180. * 3.14159265358979323846);
 }
-void odf_drawing_context::set_gradient_rect(double l, double t, double r,double b)
+void odf_drawing_context::set_gradient_rect(double l, double t, double r, double b)
 {
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 	
-	gradient->draw_cy_ = percent((b-t)/2. + 50.);
-	gradient->draw_cx_ = percent((r-l)/2. + 50.);
+	gradient->draw_cy_ = percent((b - t)/2. + 50.);
+	gradient->draw_cx_ = percent((r - l)/2. + 50.);
 }
 void odf_drawing_context::set_gradient_center(double cx, double cy)
 {

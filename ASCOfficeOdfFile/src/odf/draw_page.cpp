@@ -262,46 +262,46 @@ void presentation_notes::add_attributes( const xml::attributes_wc_ptr & Attribut
     attlist_.add_attributes(Attributes);
 }
 
-//void presentation_notes::pptx_convert_placeHolder(oox::pptx_conversion_context & Context, std::wstring styleName, presentation_class::type PresentationClass)
-//{
-//	office_element_ptr elm = Context.root()->odf_context().drawStyles().find_by_style_name(styleName);
-//	//todooo если это элемент datatime -нужно вытащить формат поля
-//
-//	if (!elm)return;
-//
-//	int index=-1;
-//
-//    const std::wstring masterName = attlist_.master_page_name_.get_value_or(L"");
-//	style_master_page * master = Context.root()->odf_context().pageLayoutContainer().master_page_by_name(masterName);
-//
-//	//if (master)
-//	//	index = master->find_placeHolderIndex(PresentationClass, Context.last_idx_placeHolder);
-//
-//
-//	Context.get_slide_context().start_shape(1);
-//	Context.get_slide_context().set_placeHolder_type(presentation_class(PresentationClass).get_type_ms());
-//	Context.get_slide_context().set_placeHolder_idx(index);
-//	
-//	Context.get_text_context().start_object();
-//	
-//	if (PresentationClass == presentation_class::date_time)
-//	{
-//		Context.get_text_context().start_field(oox::datetime, L"");
-//	}
-//	
-//	elm->pptx_convert(Context);
-//	
-//	std::wstring text_content_ = Context.get_text_context().end_object();
-//
-//	if (text_content_.length()>0)
-//	{
-//		Context.get_slide_context().set_property(_property(L"text-content",text_content_));
-//	}
-//	Context.get_slide_context().set_property(_property(L"no_rect",true));
-//	Context.get_slide_context().end_shape();
-//
-//}
-//
+void presentation_notes::pptx_convert_placeHolder(oox::pptx_conversion_context & Context, std::wstring styleName, presentation_class::type PresentationClass)
+{
+	office_element_ptr elm = Context.root()->odf_context().drawStyles().find_by_style_name(styleName);
+	//todooo если это элемент datatime -нужно вытащить формат поля
+
+	if (!elm)return;
+
+	int index=-1;
+
+    const std::wstring masterName = attlist_.master_page_name_.get_value_or(L"");
+	style_master_page * master = Context.root()->odf_context().pageLayoutContainer().master_page_by_name(masterName);
+
+	//if (master)
+	//	index = master->find_placeHolderIndex(PresentationClass, Context.last_idx_placeHolder);
+
+
+	Context.get_slide_context().start_shape(1);
+	Context.get_slide_context().set_placeHolder_type(presentation_class(PresentationClass).get_type_ms());
+	Context.get_slide_context().set_placeHolder_idx(index);
+	
+	Context.get_text_context().start_object();
+	
+	if (PresentationClass == presentation_class::date_time)
+	{
+		Context.get_text_context().start_field(oox::datetime, L"");
+	}
+	
+	elm->pptx_convert(Context);
+	
+	std::wstring text_content_ = Context.get_text_context().end_object();
+
+	if (text_content_.length()>0)
+	{
+		Context.get_slide_context().set_property(_property(L"text-content",text_content_));
+	}
+	Context.get_slide_context().set_property(_property(L"no_rect",true));
+	Context.get_slide_context().end_shape();
+
+}
+
 void presentation_notes::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	const std::wstring pageStyleName	= attlist_.draw_style_name_.get_value_or(L"");
@@ -312,7 +312,7 @@ void presentation_notes::pptx_convert(oox::pptx_conversion_context & Context)
 
 	if (attlist_.draw_style_name_)
 	{
-		style_instance * style_inst = Context.root()->odf_context().styleContainer().style_by_name(pageStyleName,style_family::DrawingPage, false);
+		style_instance * style_inst = Context.root()->odf_context().styleContainer().style_by_name(pageStyleName, style_family::DrawingPage, Context.process_masters_);
 
 		if ((style_inst) && (style_inst->content()))
 		{
@@ -347,16 +347,16 @@ void presentation_notes::pptx_convert(oox::pptx_conversion_context & Context)
 		content_[i]->pptx_convert(Context);
 	}
 
-	//if (attlist_.use_footer_name_)//from master_page
-	//{
-	//	std::wstring name = L"footer:" + *attlist_.use_footer_name_;
-	//	pptx_convert_placeHolder(Context, name, presentation_class::footer);
-	//}
-	//if (attlist_.use_date_time_name_)//from master_page
-	//{
-	//	std::wstring name = L"datetime:" + *attlist_.use_date_time_name_;
-	//	pptx_convert_placeHolder(Context, name, presentation_class::date_time);
-	//}
+	if (attlist_.use_footer_name_)//from master_page_notes
+	{
+		std::wstring name = L"footer:" + *attlist_.use_footer_name_;
+		pptx_convert_placeHolder(Context, name, presentation_class::footer);
+	}
+	if (attlist_.use_date_time_name_)//from master_page_notes
+	{
+		std::wstring name = L"datetime:" + *attlist_.use_date_time_name_;
+		pptx_convert_placeHolder(Context, name, presentation_class::date_time);
+	}
 
 }
 

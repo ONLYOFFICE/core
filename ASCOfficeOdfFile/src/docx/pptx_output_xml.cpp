@@ -68,15 +68,15 @@ pptx_xml_slide::~pptx_xml_slide()
 }
 std::wostream & pptx_xml_slide::Data()
 {
-    return slideData_;
+    return strmData_;
 }
 std::wostream & pptx_xml_slide::Background()
 {
-    return slideBackground_;
+    return strmBackground_;
 }
 std::wostream & pptx_xml_slide::Timing()
 {
-    return slideTiming_;
+    return strmTiming_;
 }
 rels & pptx_xml_slide::Rels()
 {
@@ -100,14 +100,14 @@ void pptx_xml_slide::write_to(std::wostream & strm)
             {
    				CP_XML_ATTR(L"name", name());   
 				
-				CP_XML_STREAM() << slideBackground_.str();
+				CP_XML_STREAM() << strmBackground_.str();
 
 				CP_XML_NODE(L"p:spTree")
 				{
-					CP_XML_STREAM() << slideData_.str();
+					CP_XML_STREAM() << strmData_.str();
 				}
             }
-			CP_XML_STREAM() << slideTiming_.str();
+			CP_XML_STREAM() << strmTiming_.str();
 			CP_XML_NODE(L"p:clrMapOvr")
 			{
 				CP_XML_NODE(L"a:masterClrMapping");
@@ -137,7 +137,7 @@ pptx_xml_slideLayout::~pptx_xml_slideLayout()
 }
 std::wostream & pptx_xml_slideLayout::Data()
 {
-    return slideLayoutData_;
+    return strmData_;
 }
 rels & pptx_xml_slideLayout::Rels()
 {
@@ -166,7 +166,7 @@ void pptx_xml_slideLayout::write_to(std::wostream & strm)
             {
 				CP_XML_NODE(L"p:spTree")
 				{
-					CP_XML_STREAM() << slideLayoutData_.str();
+					CP_XML_STREAM() << strmData_.str();
 
 //в slideLayoutData_
 //contentPart (Content Part) §19.3.1.14
@@ -212,15 +212,19 @@ pptx_xml_slideMaster::~pptx_xml_slideMaster()
 }
 std::wostream & pptx_xml_slideMaster::Data()
 {
-    return slideMasterData_;
+    return strmData_;
 }
 std::wostream & pptx_xml_slideMaster::DataExtra()
 {
-    return slideMasterDataExtra_;
+    return strmDataExtra_;
 }
 std::wostream & pptx_xml_slideMaster::Background()
 {
-    return slideMasterBackground_;
+    return strmBackground_;
+}
+std::wstringstream & pptx_xml_slideMaster::Sizes()
+{
+    return strmSizes_;
 }
 rels & pptx_xml_slideMaster::Rels()
 {
@@ -255,11 +259,11 @@ void pptx_xml_slideMaster::write_to(std::wostream & strm)
            
 			CP_XML_NODE(L"p:cSld")
             {
-				CP_XML_STREAM() << slideMasterBackground_.str();
+				CP_XML_STREAM() << strmBackground_.str();
 
 				CP_XML_NODE(L"p:spTree")
 				{
-					CP_XML_STREAM() << slideMasterData_.str();
+					CP_XML_STREAM() << strmData_.str();
 				}
             }
 			CP_XML_NODE(L"p:clrMap")
@@ -288,7 +292,7 @@ void pptx_xml_slideMaster::write_to(std::wostream & strm)
 					}
 				}
 			}
-			CP_XML_STREAM() << slideMasterDataExtra_.str();
+			CP_XML_STREAM() << strmDataExtra_.str();
 			CP_XML_NODE(L"p:txStyles")
 			{
 				CP_XML_NODE(L"p:titleStyle");
@@ -415,14 +419,18 @@ void pptx_xml_presentation::write_to(std::wostream & strm)
             CP_XML_NODE(L"p:sldMasterIdLst")
             {
                 CP_XML_STREAM() << slideMastersData_.str();
-            }            
+            }       
+            CP_XML_NODE(L"p:notesMasterIdLst")
+            {
+                CP_XML_STREAM() << slideNotesMastersData_.str();
+            } 
 			CP_XML_NODE(L"p:sldIdLst")
             {
                 CP_XML_STREAM() << slidesData_.str();
             }
 			CP_XML_STREAM() << slidesProperties_.str();
 
-			CP_XML_STREAM() << notesSlidesSize_.str();
+			CP_XML_STREAM() << slidesNotesProperties_.str();
 
 			CP_XML_NODE(L"p:defaultTextStyle")//??
 			{
@@ -453,11 +461,11 @@ pptx_xml_slideNotes::~pptx_xml_slideNotes()
 }
 std::wostream & pptx_xml_slideNotes::Data()
 {
-    return slideData_;
+    return strmData_;
 }
 std::wostream & pptx_xml_slideNotes::Background()
 {
-    return slideBackground_;
+    return strmBackground_;
 }
 
 rels & pptx_xml_slideNotes::Rels()
@@ -480,11 +488,11 @@ void pptx_xml_slideNotes::write_to(std::wostream & strm)
            
 			CP_XML_NODE(L"p:cSld")
             {
-				CP_XML_STREAM() << slideBackground_.str();
+				CP_XML_STREAM() << strmBackground_.str();
 
 				CP_XML_NODE(L"p:spTree")
 				{
-					CP_XML_STREAM() << slideData_.str();
+					CP_XML_STREAM() << strmData_.str();
 				}
             }
 			CP_XML_NODE(L"p:clrMapOvr")
@@ -517,12 +525,15 @@ pptx_xml_slideNotesMaster::~pptx_xml_slideNotesMaster()
 }
 std::wostream & pptx_xml_slideNotesMaster::Data()
 {
-    return slideMasterData_;
+    return strmData_;
 }
-
 std::wostream & pptx_xml_slideNotesMaster::Background()
 {
-    return slideMasterBackground_;
+    return strmBackground_;
+}
+std::wostream & pptx_xml_slideNotesMaster::Sizes()
+{
+    return strmSizes_;
 }
 rels & pptx_xml_slideNotesMaster::Rels()
 {
@@ -549,11 +560,11 @@ void pptx_xml_slideNotesMaster::write_to(std::wostream & strm)
            
 			CP_XML_NODE(L"p:cSld")
             {
-				CP_XML_STREAM() << slideMasterBackground_.str();
+				CP_XML_STREAM() << strmBackground_.str();
 
 				CP_XML_NODE(L"p:spTree")
 				{
-					CP_XML_STREAM() << slideMasterData_.str();
+					CP_XML_STREAM() << strmData_.str();
 				}
             }
 			CP_XML_NODE(L"p:clrMap")

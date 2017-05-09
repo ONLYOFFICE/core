@@ -195,7 +195,7 @@ public:
     
 	void docx_convert_serialize	(std::wostream & strm, oox::docx_conversion_context & Context);
  	void xlsx_serialize			(std::wostream & strm, oox::xlsx_conversion_context & Context);
-	void pptx_convert			(oox::pptx_conversion_context & Context);
+	void pptx_serialize			(std::wostream & strm, oox::pptx_conversion_context & Context);
    
     const style_page_layout * style_page_layout_;
 

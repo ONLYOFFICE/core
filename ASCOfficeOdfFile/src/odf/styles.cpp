@@ -1378,6 +1378,50 @@ void style_page_layout_properties::pptx_convert(oox::pptx_conversion_context & C
     attlist_.pptx_convert(Context);        
 }
 
+void style_page_layout_properties::pptx_serialize(std::wostream & strm, oox::pptx_conversion_context & Context)
+{
+    if (attlist_.fo_page_width_ || attlist_.fo_page_height_ || attlist_.style_print_orientation_)
+    {
+        std::wstring w_w, w_h;
+
+		_INT64 h = 0, w = 0;
+		
+		if (attlist_.fo_page_width_)
+		{
+			w =  attlist_.fo_page_width_->get_value_unit(length::emu);
+			if (w < 914400) w = 914400;
+
+			w_w = boost::lexical_cast<std::wstring>(w);
+		}
+        if (attlist_.fo_page_height_)
+		{
+			h = attlist_.fo_page_height_->get_value_unit(length::emu);
+			if (h < 914400) h = 914400;
+
+			w_h = std::to_wstring(h);
+		}
+                
+        std::wstring w_orient = L"custom";
+
+		//if (w && h)
+		//{
+		//	double ratio = (double)w/(double)h;
+		//	if (abs(ratio - 16./9.)<0.01)	w_orient = L"screen16x9";
+		//	if (abs(ratio - 4./3.)<0.01)	w_orient = L"screen4x3";
+		//}
+        
+        strm << L"<p:sldSz ";
+        if (!w_h.empty())
+            strm << L"cy=\"" << w_h << L"\" ";
+
+        if (!w_w.empty())
+            strm << L"cx=\"" << w_w << L"\" ";
+	
+		strm << L"type=\"" << w_orient << L"\" ";
+
+        strm << L"/>";
+    }
+}
 
 // style-page-layout-properties-elements
 //////////////////////////////////////////////////////////////////////////////////////////////////

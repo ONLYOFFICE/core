@@ -65,9 +65,9 @@ public:
 
 private:
 	std::wstring name_;
-    std::wstringstream  slideData_;
-    std::wstringstream  slideBackground_;
-    std::wstringstream  slideTiming_;
+    std::wstringstream  strmData_;
+    std::wstringstream  strmBackground_;
+    std::wstringstream  strmTiming_;
 	std::wstring rId_;
 
 	rels rels_;
@@ -94,8 +94,8 @@ public:
     static pptx_xml_slideNotes_ptr create(int id);
 
 private:
-    std::wstringstream  slideData_;
-    std::wstringstream  slideBackground_;
+    std::wstringstream  strmData_;
+    std::wstringstream  strmBackground_;
 	std::wstring rId_;
 
 	rels rels_;
@@ -107,23 +107,23 @@ public:
 	pptx_xml_presentation(){}
 	~pptx_xml_presentation(){}
 
-	std::wstringstream  & slidesData()			{return slidesData_;}
-    std::wstringstream  & slideMastersData()	{return slideMastersData_;}
-    std::wstringstream  & notesSlidesData()		{return notesSlidesData_;}
+	std::wstringstream  & slidesData()				{return slidesData_;}
+    std::wstringstream  & slideMastersData()		{return slideMastersData_;}
+    std::wstringstream  & slideNotesMastersData()	{return slideNotesMastersData_;}
 
-    std::wstringstream  & slidesProperties()	{return slidesProperties_;}
-    std::wstringstream  & notesSlidesSize()		{return notesSlidesSize_;}
+    std::wstringstream  & slidesProperties()		{return slidesProperties_;}
+    std::wstringstream  & slidesNotesProperties()	{return slidesNotesProperties_;}
 
 	void write_to(std::wostream & strm);
 
 private:
     std::wstringstream  slidesProperties_;
-	std::wstringstream  notesSlidesSize_;
+	std::wstringstream  slidesNotesProperties_;
 
     std::wstringstream  slidesData_;
     std::wstringstream  slideMastersData_;
-    std::wstringstream  notesSlidesData_;
-	std::wstringstream  handoutMasterData_;
+    std::wstringstream  slideNotesMastersData_;
+	std::wstringstream  slideHandoutMasterData_;
 };
 
 //------------------------------------------------------------------------------------
@@ -148,7 +148,7 @@ public:
     static pptx_xml_slideLayout_ptr create(int id);
 
 private:
-    std::wstringstream  slideLayoutData_;
+    std::wstringstream  strmData_;
 	std::wstring rId_;
 
 	rels rels_;
@@ -165,9 +165,10 @@ public:
 
     std::wstring rId() const;
    
-    std::wostream & Data();
-	std::wostream & DataExtra();
-	std::wostream & Background();
+    std::wostream		& Data();
+	std::wostream		& DataExtra();
+	std::wostream		& Background();
+	std::wstringstream	& Sizes();
 	rels & Rels();
 
 	void add_layout(int id, const std::wstring & rId, const unsigned int & uniqId);
@@ -178,9 +179,10 @@ public:
     static pptx_xml_slideMaster_ptr create(int id);
 
 private:
-    std::wstringstream  slideMasterData_;
-	std::wstringstream  slideMasterDataExtra_;
-    std::wstringstream  slideMasterBackground_;
+    std::wstringstream  strmData_;
+	std::wstringstream  strmDataExtra_;
+    std::wstringstream  strmBackground_;
+    std::wstringstream  strmSizes_;
 	
 	std::vector<std::pair<std::wstring, unsigned int>> layoutsId_;
 	std::wstring rId_;
@@ -204,6 +206,7 @@ public:
    
     std::wostream & Data();
 	std::wostream & Background();
+	std::wostream & Sizes();
 	rels & Rels();
 
  	void add_theme(int id, const std::wstring & tId);
@@ -213,8 +216,9 @@ public:
     static pptx_xml_slideNotesMaster_ptr create();
 
 private:
-    std::wstringstream  slideMasterData_;
-    std::wstringstream  slideMasterBackground_;
+    std::wstringstream  strmData_;
+    std::wstringstream  strmBackground_;
+    std::wstringstream  strmSizes_;
 	
 	std::wstring rId_;
 	int id_;

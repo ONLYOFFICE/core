@@ -150,13 +150,13 @@ public:
     static const ElementType type = typePresentationNotes;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	void pptx_convert_placeHolder(oox::pptx_conversion_context & Context, std::wstring styleName, odf_types::presentation_class::type PresentationClass);
+    
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
 
     office_element_ptr_array	content_;
 	draw_page_attr				attlist_;

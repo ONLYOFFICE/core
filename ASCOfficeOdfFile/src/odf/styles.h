@@ -980,6 +980,7 @@ public:
     
 	bool docx_background_serialize(std::wostream & strm, oox::docx_conversion_context & Context, oox::_oox_fill & fill, int id);
 	void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
+	void pptx_serialize(std::wostream & strm, oox::pptx_conversion_context & Context);
 
     style_page_layout_properties() { }
 

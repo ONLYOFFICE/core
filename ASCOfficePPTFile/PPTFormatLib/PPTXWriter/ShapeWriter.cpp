@@ -68,9 +68,6 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 	{
 		std::wstring strProp = std::to_wstring(pPF->leftMargin.get());
 		oWriter.WriteString(L" marL=\"" + strProp + L"\"");
-
-		if (pPF->indent.is_init() == false)
-            pPF->indent = (LONG)0;
 	}
 	if (pPF->indent.is_init())
 	{
@@ -798,11 +795,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 		if (pPF->leftMargin.is_init())
 		{
             std::wstring strProp = std::to_wstring( pPF->leftMargin.get() );
-			m_oWriter.WriteString(L" marL=\"" + strProp + L"\"");
-			
-			if (pPF->indent.is_init() == false)
-				pPF->indent = (LONG)0;
-
+			m_oWriter.WriteString(L" marL=\"" + strProp + L"\"");			
 		}
 		if (pPF->indent.is_init())
 		{

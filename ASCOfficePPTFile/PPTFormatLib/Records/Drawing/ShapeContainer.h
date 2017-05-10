@@ -2198,7 +2198,7 @@ protected:
 						pTextSettings->m_oStyles.ApplyAfter(pThemeWrapper->m_pStyles[nIndexType].get());
 				}
 			}
-			if (eTypeOwn != NSOfficePPT::NoPresent && eTypeOwn != NSOfficePPT::Other && eTypeOwn != eTypePersist && eTypeOwn != eTypeMaster)
+			if (eTypeOwn != NSOfficePPT::NoPresent/* && eTypeOwn != NSOfficePPT::Other*/ && eTypeOwn != eTypePersist && eTypeOwn != eTypeMaster)
 			{
 				int nIndexType = (int)eTypeOwn;
 				

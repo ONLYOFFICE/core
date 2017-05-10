@@ -505,7 +505,7 @@ public:
 
 	int find_placeHolderIndex(odf_types::presentation_class::type placeHolder,int & last_idx);
    
-	style_master_page_attlist style_master_page_attlist_;
+	style_master_page_attlist attlist_;
 
     office_element_ptr style_header_;  
     office_element_ptr style_header_left_; 

@@ -153,7 +153,9 @@ void pptx_conversion_context::process_master_pages()
 	get_text_context().set_process_layouts(true);
 
 	//берем только актуальные
-	for (size_t master_index =0; master_index < masters.content.size();master_index++)
+	odf_reader::office_element_ptr master_notes_;
+	
+	for (size_t master_index = 0; master_index < masters.content.size(); master_index++)
 	{
 		start_master(master_index);
 		
@@ -163,9 +165,20 @@ void pptx_conversion_context::process_master_pages()
 		if (master)
 		{
 			master->pptx_convert(*this);
+		
+			if (!master_notes_ && master->presentation_notes_)
+				master_notes_ = master->presentation_notes_;
 		}
+
 		
 		end_master();	
+	}
+
+	if (master_notes_)
+	{
+		start_master_notes();
+			master_notes_->pptx_convert(*this);
+		end_master_notes();
 	}
 	process_masters_ = false;
 	get_text_context().set_process_layouts(false);
@@ -180,15 +193,15 @@ void pptx_conversion_context::process_theme(std::wstring  name)
 {
 	int current = themes_.size() + 1;
 
-	if (name.length()<1)
+	if (name.empty())
 	{
 		name = L"User Theme: " + boost::lexical_cast<std::wstring>(current);
 	}
  	start_theme(name);
 	//
-		pptx_serialize_clrScheme(current_theme().clrSchemeData());
-		pptx_serialize_fmtScheme(current_theme().fmtSchemeData());
-		pptx_serialize_fontScheme(current_theme().fontSchemeData());
+		pptx_serialize_clrScheme	(current_theme().clrSchemeData());
+		pptx_serialize_fmtScheme	(current_theme().fmtSchemeData());
+		pptx_serialize_fontScheme	(current_theme().fontSchemeData());
 	//
 	end_theme();
 
@@ -209,8 +222,6 @@ void pptx_conversion_context::start_document()
 
 void pptx_conversion_context::end_document()
 {
-    unsigned int count = 1;
-   
 	for (size_t i = 0; i < slideMasters_.size(); i++)
     {
 		pptx_xml_slideMaster_ptr& slideM = slideMasters_[i];
@@ -230,10 +241,11 @@ void pptx_conversion_context::end_document()
                 CP_XML_ATTR(L"r:id", slideM->rId());            
             }
         }
-		count++;
 	}
+	if (!slideMasters_.empty())
+		presentation_.slidesProperties() << slideMasters_[0]->Sizes().str();
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-	count=0;
 	for (size_t i = 0; i < slides_.size(); i++)
     {
 		pptx_xml_slide_ptr& slide = slides_[i];
@@ -249,13 +261,12 @@ void pptx_conversion_context::end_document()
         {
             CP_XML_NODE(L"p:sldId")
             {
-                CP_XML_ATTR(L"id", 0x100 + count); 
+                CP_XML_ATTR(L"id", 0x100 + i); 
                 CP_XML_ATTR(L"r:id", slide->rId());            
             }
         }
-		count++;
     }
-///////////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------
 	for (size_t i = 0; i < slideLayouts_.size(); i++)
     {
 		pptx_xml_slideLayout_ptr& slideL = slideLayouts_[i];
@@ -267,30 +278,42 @@ void pptx_conversion_context::end_document()
 
         output_document_->get_ppt_files().add_slideLayout(content);//slideMaster.xml
 	}
-//////////////////////////////////////////////////////////////////////////////////////////////////
-	//размеры страниц в презентации
-    odf_reader::odf_read_context & context =  root()->odf_context();
-    odf_reader::page_layout_container & pageLayouts = context.pageLayoutContainer();
-	
-	if ((pageLayouts.master_pages().size() > 0) && (pageLayouts.master_pages()[0]->attlist_.style_name_))//default
-	{
-		const std::wstring masterStyleName = pageLayouts.master_pages()[0]->attlist_.style_name_.get();
-		const std::wstring pageProperties = root()->odf_context().pageLayoutContainer().page_layout_name_by_style(masterStyleName);
+//----------------------------------------------------------------------------------
+	for (size_t i = 0; i < notes_.size(); i++)
+    {
+		pptx_xml_slideNotes_ptr& slideN = notes_[i];
 
-		odf_reader::page_layout_instance *pages_layouts = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);
-		
-		if (pages_layouts)pages_layouts->pptx_convert(*this);
+        package::slide_content_ptr content = package::slide_content::create();
+
+		slideN->write_to(content->content());
+        content->add_rels(slideN->Rels());//media & links rels
+
+        output_document_->get_ppt_files().add_notes(content);
 	}
-	/////////////////////////////////////////////////////////////////////////////////////////////
-	pptx_serialize_size(current_presentation().notesSlidesSize(),6858000,9144000,L"p:notesSz");
+	if (slideNotesMaster_)
+	{
+		package::slide_content_ptr content = package::slide_content::create();
+
+		slideNotesMaster_->write_to(content->content());
+        content->add_rels(slideNotesMaster_->Rels());//media & links rels
+
+        output_document_->get_ppt_files().add_notesMaster(content);
+		
+		CP_XML_WRITER(presentation_.slideNotesMastersData())//presentation.xml
+		{
+			CP_XML_NODE(L"p:notesMasterId")
+			{
+				CP_XML_ATTR(L"r:id", slideNotesMaster_->rId());            
+			}
+		}
+	}
+	//else
+		pptx_serialize_size(current_presentation().slidesNotesProperties(), 6858000, 9144000, L"p:notesSz");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//добавляем диаграммы
 
-	count = 0;
 	for (size_t i = 0; i < charts_.size(); i++)
     {
-		count++;
 		package::chart_content_ptr content = package::chart_content::create();
 
 		charts_[i]->serialize(content->content());
@@ -300,7 +323,6 @@ void pptx_conversion_context::end_document()
 	
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//добавляем темы
 	for (size_t i=0; i < themes_.size(); i++)
     {
 		output_document_->get_ppt_files().add_theme(themes_[i]);
@@ -308,10 +330,10 @@ void pptx_conversion_context::end_document()
 	}
     package::ppt_comments_files_ptr comments = package::ppt_comments_files::create(comments_context_handle_.content());
     
-	output_document_->get_ppt_files().set_presentation(presentation_);       
-	output_document_->get_ppt_files().set_comments(comments);
-	output_document_->get_ppt_files().set_authors_comments(authors_comments_);
-	output_document_->get_ppt_files().set_media(get_mediaitems(), applicationFonts_);
+	output_document_->get_ppt_files().set_presentation (presentation_);       
+	output_document_->get_ppt_files().set_comments (comments);
+	output_document_->get_ppt_files().set_authors_comments (authors_comments_);
+	output_document_->get_ppt_files().set_media (get_mediaitems(), applicationFonts_);
 
 	output_document_->get_content_types_file().set_media(get_mediaitems());
 }
@@ -321,7 +343,28 @@ void pptx_conversion_context::start_body()
 
 void pptx_conversion_context::end_body()
 {}
-
+pptx_xml_slideNotesMaster & pptx_conversion_context::current_notesMaster()
+{
+    if (slideNotesMaster_)
+    {
+        return *slideNotesMaster_;
+    }
+    else
+    {
+        throw std::runtime_error("internal error");
+    }
+}
+pptx_xml_slideNotes & pptx_conversion_context::current_notes()
+{
+    if (!notes_.empty())
+    {
+        return *notes_.back().get();
+    }
+    else
+    {
+        throw std::runtime_error("internal error");
+    }
+}
 pptx_xml_slide & pptx_conversion_context::current_slide()
 {
     if (!slides_.empty())
@@ -384,8 +427,17 @@ pptx_xml_slideMaster & pptx_conversion_context::current_master()
 }
 void pptx_conversion_context::create_new_slide(std::wstring const & name)
 {
-	pptx_xml_slide_ptr s = pptx_xml_slide::create(name,slides_.size()+1);
+	pptx_xml_slide_ptr s = pptx_xml_slide::create(name,slides_.size() + 1);
     slides_.push_back(s);
+}
+void pptx_conversion_context::create_new_slideNotes()
+{
+	pptx_xml_slideNotes_ptr s = pptx_xml_slideNotes::create( notes_.size() + 1);
+    notes_.push_back(s);
+}
+void pptx_conversion_context::create_new_slideNotesMaster()
+{
+	slideNotesMaster_ = pptx_xml_slideNotesMaster::create();
 }
 void pptx_conversion_context::create_new_slideLayout(int id)
 {
@@ -397,7 +449,6 @@ void pptx_conversion_context::create_new_slideMaster(int id)
 	pptx_xml_slideMaster_ptr s = pptx_xml_slideMaster::create(id);
     slideMasters_.push_back(s);
 }
-
 bool pptx_conversion_context::start_page(const std::wstring & pageName,	const std::wstring & pageStyleName,
 																		const std::wstring & pageLayoutName,
 																		const std::wstring & pageMasterName)
@@ -414,7 +465,7 @@ bool pptx_conversion_context::start_page(const std::wstring & pageName,	const st
 					root()->odf_context().styleContainer().presentation_layouts().add_or_find(pageLayoutName,pageMasterName);
 
 	current_slide().Rels().add(relationship(layout_id.second, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout",
-		std::wstring(L"../slideLayouts/slideLayout")  + boost::lexical_cast<std::wstring>(layout_id.first) + L".xml"));
+		std::wstring(L"../slideLayouts/slideLayout")  + std::to_wstring(layout_id.first) + L".xml"));
 
     return true;
 }
@@ -506,6 +557,14 @@ bool pptx_conversion_context::start_master(int master_index)
 		current_master().add_layout(masters.content[master_index].layouts[i].Id, masters.content[master_index].layouts[i].rId, 0x80000000 + last_uniq_big_id++);
 	}
 
+//----------------------------------------------------------------------------------
+//размеры страниц в презентации
+	const std::wstring pageProperties = root()->odf_context().pageLayoutContainer().page_layout_name_by_style(masters.content[master_index].master_name);
+
+	odf_reader::page_layout_instance *pages_layouts = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);
+	
+	if (pages_layouts)
+		pages_layouts->pptx_serialize(current_master().Sizes(), *this);
 
 	return true;
 }
@@ -529,6 +588,59 @@ void pptx_conversion_context::end_page()
 	get_slide_context().dump_rels(current_slide().Rels());//hyperlinks, mediaitems, ...
 
 	get_slide_context().end_slide();
+}
+bool pptx_conversion_context::start_page_notes()
+{
+	create_new_slideNotes( );
+
+	current_slide().Rels().add(relationship(notes_.back()->rId(), L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide",
+								L"../notesSlides/notesSlide"  + std::to_wstring(notes_.size()) + L".xml"));
+
+	get_slide_context().start_slide();
+	
+	current_notes().Rels().add(relationship(L"nId1", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide",
+								L"../slides/slide"  + std::to_wstring(slides_.size()) + L".xml"));
+	
+	return true;
+}
+
+void pptx_conversion_context::end_page_notes()
+{
+	get_slide_context().serialize_background(current_notes().Background());
+	get_slide_context().serialize_objects(current_notes().Data());
+
+	get_slide_context().dump_rels(current_notes().Rels());//hyperlinks, mediaitems, ...
+
+	get_slide_context().end_slide();
+}
+bool pptx_conversion_context::start_master_notes()
+{
+	create_new_slideNotesMaster( );
+	
+	get_slide_context().start_slide();
+
+	process_theme(L"");//add default theme - одинаковые но под разными именами
+	current_notesMaster().add_theme(current_theme().id(), L"tId1");	
+
+	get_slide_context().start_slide();
+	return true;
+}
+
+void pptx_conversion_context::end_master_notes()
+{
+	get_slide_context().serialize_background(current_notesMaster().Background());
+	get_slide_context().serialize_objects(current_notesMaster().Data());
+
+	get_slide_context().dump_rels(current_notesMaster().Rels());//hyperlinks, mediaitems, ...
+
+	get_slide_context().end_slide();
+	
+	for (size_t i = 0; i < notes_.size(); i++)
+	{
+		notes_[i]->Rels().add(relationship(L"nmId1", 
+			L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster",
+			L"../notesMasters/notesMaster1.xml"));
+	}
 }
 void pptx_conversion_context::end_layout()
 {

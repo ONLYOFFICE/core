@@ -46,17 +46,17 @@ namespace odf_writer {
 
 void draw_page_attr::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"draw:id",			draw_id_);
+    CP_XML_ATTR_OPT(L"draw:id",					draw_id_);
 
-    CP_XML_ATTR_OPT(L"draw:name",		draw_name_);
-    CP_XML_ATTR_OPT(L"draw:style-name",	draw_style_name_);
+    CP_XML_ATTR_OPT(L"draw:name",				draw_name_);
+    CP_XML_ATTR_OPT(L"draw:style-name",			draw_style_name_);
+	CP_XML_ATTR_OPT(L"draw:master-page-name",	draw_master_page_name_);
     
-	CP_XML_ATTR_OPT(L"presentation:presentation-page-layout-name",	page_layout_name_);
-    CP_XML_ATTR_OPT(L"draw:master-page-name",						master_page_name_);
-    
-	CP_XML_ATTR_OPT(L"presentation:use-date-time-name",	use_date_time_name_);
-    CP_XML_ATTR_OPT(L"presentation:use-footer-name",	use_footer_name_);
-
+ 	CP_XML_ATTR_OPT(L"style:page-layout-name",	style_page_layout_name_); 
+	
+	CP_XML_ATTR_OPT(L"presentation:presentation-page-layout-name",	presentation_page_layout_name_);    
+	CP_XML_ATTR_OPT(L"presentation:use-date-time-name",				presentation_use_date_time_name_);
+    CP_XML_ATTR_OPT(L"presentation:use-footer-name",				presentation_use_footer_name_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,7 +85,7 @@ void draw_page::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			draw_page_attr_.serialize(CP_GET_XML_NODE());
+			attlist_.serialize(CP_GET_XML_NODE());
 			for (int i = 0; i < content_.size(); i++)
 			{
 				content_[i]->serialize(CP_XML_STREAM());
@@ -107,7 +107,7 @@ const wchar_t * presentation_footer_decl::name = L"footer-decl";
 //	CP_XML_ATTR_OPT(L"presentation:name",	presentation_name_);
 //}
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------
 const wchar_t * presentation_date_time_decl::ns = L"presentation";
 const wchar_t * presentation_date_time_decl::name = L"date-time-decl";
 //
@@ -118,6 +118,34 @@ const wchar_t * presentation_date_time_decl::name = L"date-time-decl";
 //	CP_XML_ATTR_OPT(L"style:data-style-name",	style_data_style_name_);
 //}
 //
+
+//------------------------------------------------------
+const wchar_t * presentation_notes::ns = L"presentation";
+const wchar_t * presentation_notes::name = L"notes";
+
+void presentation_notes::create_child_element( const std::wstring & Ns, const std::wstring & Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
+void presentation_notes::add_child_element( const office_element_ptr & child_element)
+{
+	content_.push_back(child_element);
+}
+
+void presentation_notes::serialize(std::wostream & _Wostream)
+{
+    CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			attlist_.serialize(CP_GET_XML_NODE());
+			for (int i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
 
 }
 }

@@ -264,7 +264,7 @@ public:
 	bool			is_footer_;
 	bool			is_header_;
 	bool			is_background_;
-	_CP_OPT(bool)	is_presentation_;
+	_CP_OPT(int)	is_presentation_;
 
 	void				create_draw_base(int type);
 	office_element_ptr	create_draw_element(int type);
@@ -312,12 +312,12 @@ void odf_drawing_context::set_styles_context(odf_style_context*  styles_context)
 	impl_->styles_context_ = styles_context;
 }
 
-void odf_drawing_context::set_presentation (bool bMaster)
+void odf_drawing_context::set_presentation (int type)
 {
-	impl_->is_presentation_ = bMaster;
+	impl_->is_presentation_ = type;
 }
 
-_CP_OPT(bool) odf_drawing_context::get_presentation ()
+_CP_OPT(int) odf_drawing_context::get_presentation ()
 {
 	return impl_->is_presentation_;
 }
@@ -500,8 +500,8 @@ void odf_drawing_context::end_drawing()
 		if (impl_->current_drawing_state_.presentation_class_ || impl_->current_drawing_state_.presentation_placeholder_)
 		{
 			_CP_OPT(std::wstring) draw_layer;
-			if (impl_->is_presentation_.get() == true)
-			{//master				
+			if (impl_->is_presentation_.get() > 0)
+			{//masters				
 				draw_layer = L"backgroundobjects";
 
 				if (!impl_->current_drawing_state_.presentation_class_)	
@@ -958,7 +958,8 @@ void odf_drawing_context::end_shape()
 			{
 				oox_shape_ptr shape_define = oox_shape::create(impl_->current_drawing_state_.oox_shape_preset_);
 				
-				if (!shape_define) shape_define = impl_->current_drawing_state_.oox_shape_;
+				if (!shape_define) 
+					shape_define = impl_->current_drawing_state_.oox_shape_;
 				
 				if (shape_define)
 				{
@@ -1206,7 +1207,15 @@ void odf_drawing_context::set_placeholder_type (int val)
 	
 	switch(val)
 	{
-		case 0:		impl_->current_drawing_state_.presentation_class_ = presentation_class::outline; 	break;
+		case 0:
+		{
+			if (impl_->is_presentation_ == 2) //notes master
+				impl_->current_drawing_state_.presentation_class_ = presentation_class::notes; 
+			else if (impl_->is_presentation_ == 3) //handout master
+				impl_->current_drawing_state_.presentation_class_ = presentation_class::handout; 
+			else
+				impl_->current_drawing_state_.presentation_class_ = presentation_class::outline; 		
+		}break;
 		case 1:		impl_->current_drawing_state_.presentation_class_ = presentation_class::chart; 		break;
 		case 2:		impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic; 	break;
 		case 3:		impl_->current_drawing_state_.presentation_class_ = presentation_class::title;		break;
@@ -1217,7 +1226,7 @@ void odf_drawing_context::set_placeholder_type (int val)
 		case 8:		impl_->current_drawing_state_.presentation_class_ = presentation_class::object;		break;
 		case 9:		impl_->current_drawing_state_.presentation_class_ = presentation_class::object;		break;
 		case 10:	impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic;	break;
-		case 11:	impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic;	break;
+		case 11:	impl_->current_drawing_state_.presentation_class_ = presentation_class::page;		break;
 		case 12:	impl_->current_drawing_state_.presentation_class_ = presentation_class::page_number;break;
 		case 13:	impl_->current_drawing_state_.presentation_class_ = presentation_class::subtitle;	break;
 		case 14:	impl_->current_drawing_state_.presentation_class_ = presentation_class::table;		break;
@@ -2618,15 +2627,15 @@ void odf_drawing_context::set_gradient_angle(double angle)
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 
-	gradient->draw_angle_ = (270-  angle) * 10;//(int)((360 - angle)/180. * 3.14159265358979323846);
+	gradient->draw_angle_ = (270 - angle) * 10;//(int)((360 - angle)/180. * 3.14159265358979323846);
 }
-void odf_drawing_context::set_gradient_rect(double l, double t, double r,double b)
+void odf_drawing_context::set_gradient_rect(double l, double t, double r, double b)
 {
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 	
-	gradient->draw_cy_ = percent((b-t)/2. + 50.);
-	gradient->draw_cx_ = percent((r-l)/2. + 50.);
+	gradient->draw_cy_ = percent((b - t)/2. + 50.);
+	gradient->draw_cx_ = percent((r - l)/2. + 50.);
 }
 void odf_drawing_context::set_gradient_center(double cx, double cy)
 {

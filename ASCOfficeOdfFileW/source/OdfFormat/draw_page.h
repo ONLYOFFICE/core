@@ -54,12 +54,13 @@ public:
 	_CP_OPT(std::wstring)		draw_name_;
 	_CP_OPT(std::wstring)		draw_id_;
 	_CP_OPT(std::wstring)		draw_style_name_;
+	_CP_OPT(std::wstring)		draw_master_page_name_;
 
-	_CP_OPT(std::wstring)		page_layout_name_;
-	_CP_OPT(std::wstring)		master_page_name_;
+	_CP_OPT(std::wstring)		style_page_layout_name_;
 
-	_CP_OPT(std::wstring)		use_footer_name_;
-	_CP_OPT(std::wstring)		use_date_time_name_;
+	_CP_OPT(std::wstring)		presentation_use_footer_name_;
+	_CP_OPT(std::wstring)		presentation_use_date_time_name_;
+	_CP_OPT(std::wstring)		presentation_page_layout_name_;
 };
 
 class draw_page : public office_element_impl<draw_page>
@@ -79,7 +80,7 @@ public:
     office_element_ptr_array	content_;
 	office_element_ptr			animation_;
 
-	draw_page_attr				draw_page_attr_;
+	draw_page_attr				attlist_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_page);
@@ -127,6 +128,26 @@ public:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(presentation_date_time_decl);
+//---------------------------------------------------------------------
+class presentation_notes : public office_element_impl<presentation_notes>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typePresentationNotes;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+
+    office_element_ptr_array	content_;
+	draw_page_attr				attlist_;
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(presentation_notes);
 
 }
 }

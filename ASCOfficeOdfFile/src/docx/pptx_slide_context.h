@@ -89,16 +89,19 @@ public:
     void end_table();
 
 	void start_shape(int type);
-    void end_shape();
+    void end_shape	();
 	
 	void set_use_image_replacement();
 
 	bool empty() const;
 //////////////////////////////////////////////////////////////////////////////////////////////
-	void serialize_objects(std::wostream & strm);
-	void serialize_HeaderFooter(std::wostream & strm);
-	void serialize_background(std::wostream & strm, bool always=false);
-	void serialize_animations(std::wostream & strm);
+	
+	void serialize_HeaderFooter	(std::wostream & strm);
+	void serialize_animations	(std::wostream & strm);	
+	
+	void serialize_objects		(std::wostream & strm);
+	
+	void serialize_background	(std::wostream & strm, bool always = false);
 
 	void dump_rels(rels & Rels);
 
@@ -106,7 +109,7 @@ public:
 
 	mediaitems & get_mediaitems();
 
-	void add_background(_oox_fill & fill);
+	void add_background			(_oox_fill & fill);
 
 	void add_rels( bool isInternal,
         std::wstring const & rid,

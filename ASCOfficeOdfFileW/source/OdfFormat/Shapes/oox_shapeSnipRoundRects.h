@@ -719,4 +719,45 @@ public:
         add(L"f198", L"if(?f26, ?f175, ?f190)");
 	}
 };
+class oox_shape_roundRect : public oox_shape
+{
+public:
+	oox_shape_roundRect()
+	{
+		odf_type_name	=L"ooxml-roundRect";
+		
+		enhanced_path	= L"M 0 ?f2 G ?f2 ?f2 ?f12 ?f13 L ?f3 0 G ?f2 ?f2 ?f14 ?f15 L ?f11 ?f4 G ?f2 ?f2 ?f16 ?f17 L ?f2 ?f10 G ?f2 ?f2 ?f18 ?f19 Z N";
+		text_areas		= L"?f5 ?f5 ?f6 ?f7";
+		view_box		= L"0 0 0 0";
+		modifiers		= L"16667";
+		
+		add(L"f0", L"if(0-$0 ,0,if(50000-$0 ,$0 ,50000))");
+		add(L"f1", L"min(logwidth,logheight)");
+		add(L"f2", L"?f1 *?f0 /100000");
+		add(L"f3", L"logwidth+0-?f2 ");
+		add(L"f4", L"logheight+0-?f2 ");
+		add(L"f5", L"?f2 *29289/100000");
+		add(L"f6", L"logwidth+0-?f5 ");
+		add(L"f7", L"logheight+0-?f5 ");
+		add(L"f8", L"logwidth/2");
+		add(L"f9", L"logheight/2");
+		add(L"f10", L"logheight");
+		add(L"f11", L"logwidth");
+		add(L"f12", L"(10800000)/60000.0");
+		add(L"f13", L"(5400000)/60000.0");
+		add(L"f14", L"(16200000)/60000.0");
+		add(L"f15", L"(5400000)/60000.0");
+		add(L"f16", L"(0)/60000.0");
+		add(L"f17", L"(5400000)/60000.0");
+		add(L"f18", L"(5400000)/60000.0");
+		add(L"f19", L"(5400000)/60000.0");
+//-----------------------------------------------------------------		
+		_handle h1;
+		
+		h1.position = L"?f2 0";
+		h1.x_maximum= L"50000";
+		h1.x_minimum= L"0";
+		handles.push_back(h1);
+	}
+};
 }

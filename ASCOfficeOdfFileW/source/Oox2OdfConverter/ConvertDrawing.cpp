@@ -437,8 +437,6 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 {
 	if (oox_shape == NULL) return;
 
-	_CP_OPT(bool) bMasterPresentation = odf_context()->drawing_context()->get_presentation();
-	
 	if (oox_shape->txXfrm.IsInit())
 	{
 		odf_context()->drawing_context()->start_group();
@@ -856,10 +854,10 @@ void OoxConverter::convert(PPTX::Logic::GradFill *oox_grad_fill, DWORD nARGB)
 			}	
 			if (oox_grad_fill->path->rect.IsInit())
 			{
-				odf_context()->drawing_context()->set_gradient_rect( XmlUtils::GetInteger(oox_grad_fill->path->rect->l.get_value_or(L"")),
-																	 XmlUtils::GetInteger(oox_grad_fill->path->rect->t.get_value_or(L"")),
-																	 XmlUtils::GetInteger(oox_grad_fill->path->rect->r.get_value_or(L"")),
-																	 XmlUtils::GetInteger(oox_grad_fill->path->rect->b.get_value_or(L"")));			
+				odf_context()->drawing_context()->set_gradient_rect( XmlUtils::GetInteger(oox_grad_fill->path->rect->l.get_value_or(L"")) / 1000.,
+																	 XmlUtils::GetInteger(oox_grad_fill->path->rect->t.get_value_or(L"")) / 1000.,
+																	 XmlUtils::GetInteger(oox_grad_fill->path->rect->r.get_value_or(L"")) / 1000.,
+																	 XmlUtils::GetInteger(oox_grad_fill->path->rect->b.get_value_or(L"")) / 1000.);			
 			}
 		}	
 		odf_context()->drawing_context()->set_gradient_type(grad_style);
@@ -1424,9 +1422,9 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 
 		if (list_local)
 		{
-			_CP_OPT(bool) inStyles = odf_context()->drawing_context()->get_presentation();
+			_CP_OPT(int) inStyles = odf_context()->drawing_context()->get_presentation();
 
-			odf_context()->styles_context()->lists_styles().start_style(inStyles && *inStyles);
+			odf_context()->styles_context()->lists_styles().start_style(inStyles && *inStyles > 0);
 				convert_list_level(oox_paragraph->pPr.GetPointer(), list_level /*- 1*/);
 			odf_context()->styles_context()->lists_styles().end_style();
 	
@@ -1825,9 +1823,27 @@ void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 
 	if ((oox_run->rPr.IsInit()) && (oox_run->rPr->hlinkClick.IsInit()) && (oox_run->rPr->hlinkClick->id.IsInit()))
 	{
+		odf_writer::style_text_properties * text_properties = odf_context()->text_context()->get_text_properties();
+		
+		if (!text_properties->content_.fo_color_)
+		{
+			PPTX::Logic::UniColor colorLink;
+			colorLink.Color.reset(new PPTX::Logic::SchemeClr());
+
+			PPTX::Logic::SchemeClr & clr = colorLink.as<PPTX::Logic::SchemeClr>();
+			clr.val.set(L"hlink");
+
+			std::wstring	strHexColor;
+			_CP_OPT(double) opacity;
+			convert(&colorLink, strHexColor, opacity);
+			if (!strHexColor.empty())
+				text_properties->content_.fo_color_ = strHexColor;
+		}
+		text_properties->content_.style_text_underline_type_	= odf_types::line_type::Single;
+		text_properties->content_.style_text_underline_style_	= odf_types::line_style::Solid;
+		
 		std::wstring hlink = find_link_by_id(oox_run->rPr->hlinkClick->id.get(), 2);
 		odf_context()->text_context()->add_hyperlink(hlink, oox_run->GetText());
-
 	}
 	else
 	{
@@ -1908,9 +1924,9 @@ void OoxConverter::convert(PPTX::Logic::TextListStyle *oox_list_style)
 	if (!oox_list_style) return;
 	if (oox_list_style->IsListStyleEmpty()) return;
 
-	_CP_OPT(bool) inStyles = odf_context()->drawing_context()->get_presentation();
+	_CP_OPT(int) inStyles = odf_context()->drawing_context()->get_presentation();
 
-	odf_context()->styles_context()->lists_styles().start_style(inStyles && *inStyles);
+	odf_context()->styles_context()->lists_styles().start_style(inStyles && *inStyles > 0); // masters 
 	for (int i = 0; i < 9; i++)
 	{
 		OoxConverter::convert_list_level(oox_list_style->levels[i].GetPointer(), i);
@@ -1929,17 +1945,17 @@ void OoxConverter::convert(PPTX::Logic::TxBody *oox_txBody, PPTX::Logic::ShapeSt
 	for (size_t i = 0; i < oox_txBody->Paragrs.size(); i++)
 	{
 		convert(&oox_txBody->Paragrs[i], oox_txBody->lstStyle.GetPointer());
+	
+	//внешние настройки для текста
+		convert(oox_txBody->bodyPr.GetPointer());			
+		
+		if (oox_style)
+		{
+			convert(&oox_style->fontRef);
+		}		
 	}
 	odf_context()->drawing_context()->set_text( odf_context()->text_context());
 	
-//внешние настройки для текста
-
-	convert(oox_txBody->bodyPr.GetPointer());			
-	
-	if (oox_style)
-	{
-		convert(&oox_style->fontRef);
-	}	
 	odf_context()->end_text_context();	
 }
 void OoxConverter::convert(PPTX::Logic::ArcTo *oox_geom_path)

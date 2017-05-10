@@ -584,7 +584,8 @@ void odf_page_layout_context::set_pages_mirrored(bool val)
 
 style_page_layout_properties * odf_page_layout_context::get_properties()
 {
-	if (layout_state_list_.size() < 1) return NULL;
+	if (layout_state_list_.empty()) return NULL;
+	
 	style_page_layout_properties * props = layout_state_list_.back().get_properties();
 	if (props == NULL)
 	{

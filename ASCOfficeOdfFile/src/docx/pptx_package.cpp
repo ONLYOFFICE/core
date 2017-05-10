@@ -105,10 +105,11 @@ void slide_content::add_rels(rels & _r)
 		rels_->get_rels().add(r[i]);
 	}
 }
-////////////
-
+//---------------------------------------------------------------------------
 slides_files::slides_files()
-{}
+{
+	rels_ = NULL;
+}
 
 void slides_files::add_slide(slide_content_ptr slide)
 {
@@ -127,13 +128,13 @@ void slides_files::write(const std::wstring & RootPath)
     {
         if (!slides_[i]) continue;
 
-        const std::wstring fileName = std::wstring(L"slide") + boost::lexical_cast<std::wstring>( i + 1 ) + L".xml";
+        const std::wstring fileName = std::wstring(L"slide") + std::to_wstring( i + 1 ) + L".xml";
        
 		contentTypes->add_override(std::wstring(L"/ppt/slides/") + fileName, kWSConType);
 
         if (rels_)
         {
-            const std::wstring id = std::wstring(L"sId") + boost::lexical_cast<std::wstring>( i + 1);
+            const std::wstring id = std::wstring(L"sId") + std::to_wstring( i + 1);
             static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide";
             const std::wstring fileRef = std::wstring(L"slides/") + fileName;
             rels_->add(id, kWSRel, fileRef);
@@ -149,7 +150,42 @@ void slides_files::write(const std::wstring & RootPath)
     }
 }
 
-////////////////////////////////////////////
+//---------------------------------------------------------------------------
+void notes_files::write(const std::wstring & RootPath)
+{
+    std::wstring path = RootPath + FILE_SEPARATOR_STR + L"notesSlides" ;
+    NSDirectory::CreateDirectory(path.c_str());
+
+	content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
+	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml";
+    
+    for (int i = 0; i < slides_.size(); i++)
+    {
+        if (!slides_[i]) continue;
+
+		const std::wstring fileName = std::wstring(L"notesSlide") + std::to_wstring( i + 1 ) + L".xml";
+       
+		contentTypes->add_override(std::wstring(L"/ppt/notesSlides/") + fileName, kWSConType);
+
+        if (rels_)
+        {
+            const std::wstring id = std::wstring(L"nId") + std::to_wstring( i + 1);
+            static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide";
+            const std::wstring fileRef = std::wstring(L"notesSlides/") + fileName;
+            rels_->add(id, kWSRel, fileRef);
+        }
+
+        slides_[i]->get_rel_file()->set_file_name(fileName + L".rels");//внитренние релсы
+        
+		rels_files relFiles;
+        relFiles.add_rel_file(slides_[i]->get_rel_file());
+        relFiles.write(path);           
+
+        package::simple_element(fileName, slides_[i]->str()).write(path);
+    }
+}
+
+//---------------------------------------------------------------------------
 slideMasters_files::slideMasters_files()
 {}
 
@@ -170,12 +206,12 @@ void slideMasters_files::write(const std::wstring & RootPath)
     {
         if (!slides_[i]) continue;
 
-        const std::wstring fileName = std::wstring(L"slideMaster") + boost::lexical_cast<std::wstring>( i + 1 ) + L".xml";
+		const std::wstring fileName = std::wstring(L"slideMaster") + std::to_wstring( i + 1 ) + L".xml";
         contentTypes->add_override(std::wstring(L"/ppt/slideMasters/") + fileName, kWSConType);
 
         if (rels_)
         {
-            const std::wstring id = std::wstring(L"smId") + boost::lexical_cast<std::wstring>( i + 1);
+            const std::wstring id = std::wstring(L"smId") + std::to_wstring( i + 1);
             static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster";
             const std::wstring fileRef = std::wstring(L"slideMasters/") + fileName;
             rels_->add(id, kWSRel, fileRef);
@@ -191,7 +227,41 @@ void slideMasters_files::write(const std::wstring & RootPath)
     }
 }
 
-////////////////////////////////////////////
+//---------------------------------------------------------------------------
+void notesMaster_files::write(const std::wstring & RootPath)
+{
+    std::wstring path = RootPath + FILE_SEPARATOR_STR + L"notesMasters" ;
+    NSDirectory::CreateDirectory(path.c_str());
+
+	content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
+	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml";
+   
+    for (int i = 0; i < slides_.size(); i++)
+    {
+        if (!slides_[i]) continue;
+
+		const std::wstring fileName = std::wstring(L"notesMaster") + std::to_wstring( i + 1 ) + L".xml";
+        contentTypes->add_override(std::wstring(L"/ppt/notesMasters/") + fileName, kWSConType);
+
+        if (rels_)
+        {
+            const std::wstring id = std::wstring(L"nmId") + std::to_wstring( i + 1);
+            static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster";
+            const std::wstring fileRef = std::wstring(L"notesMasters/") + fileName;
+            rels_->add(id, kWSRel, fileRef);
+        }
+
+        slides_[i]->get_rel_file()->set_file_name(fileName + L".rels");//внитренние релсы
+        
+		rels_files relFiles;
+        relFiles.add_rel_file(slides_[i]->get_rel_file());
+        relFiles.write(path);           
+
+        package::simple_element(fileName, slides_[i]->str()).write(path);
+    }
+}
+
+
 slideLayouts_files::slideLayouts_files()
 {}
 
@@ -209,7 +279,7 @@ void slideLayouts_files::write(const std::wstring & RootPath)
     {
         if (!slides_[i]) continue;
 
-        const std::wstring fileName		= std::wstring(L"slideLayout") + boost::lexical_cast<std::wstring>( i + 1 ) + L".xml";
+        const std::wstring fileName		= std::wstring(L"slideLayout") + std::to_wstring( i + 1 ) + L".xml";
         const std::wstring kWSConType	= L"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml";
        
 		content_type_content * contentTypes = get_main_document()->get_content_types_file().content();
@@ -225,7 +295,7 @@ void slideLayouts_files::write(const std::wstring & RootPath)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------
 authors_comments_element::authors_comments_element(pptx_xml_authors_comments_ptr & authors_comments) : authors_comments_(authors_comments)
 {
 }
@@ -261,7 +331,7 @@ void ppt_charts_files::write(const std::wstring & RootPath)
     {
         if (!charts_[i]) continue;
 		
-		const std::wstring fileName = std::wstring(L"chart") + boost::lexical_cast<std::wstring>( i + 1 ) + L".xml";
+		const std::wstring fileName = std::wstring(L"chart") + std::to_wstring( i + 1 ) + L".xml";
         content_type_content * contentTypes = get_main_document()->get_content_types_file().content();
        
 		static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
@@ -291,7 +361,7 @@ void ppt_themes_files::write(const std::wstring & RootPath)
     {
         if (!themes_[i]) continue;
             
-		const std::wstring fileName		= std::wstring(L"theme") + boost::lexical_cast<std::wstring>( i + 1) + L".xml";
+		const std::wstring fileName		= std::wstring(L"theme") + std::to_wstring( i + 1) + L".xml";
 		const std::wstring kWSConType	= L"application/vnd.openxmlformats-officedocument.theme+xml";
        
 		content_type_content * contentTypes = get_main_document()->get_content_types_file().content();
@@ -345,6 +415,12 @@ void ppt_files::write(const std::wstring & RootPath)
     slideMasters_files_.set_main_document( this->get_main_document() );
     slideMasters_files_.write(path);
 	
+    notes_files_.set_main_document( this->get_main_document() );
+    notes_files_.write(path);
+
+    notesMaster_files_.set_rels(&rels_files_);
+    notesMaster_files_.set_main_document( this->get_main_document() );
+    notesMaster_files_.write(path);
 
 	//rels_files_.add( relationship( L"hId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument", L"ppt/presentation.xml" ) );
 
@@ -412,6 +488,10 @@ void ppt_files::add_slide(slide_content_ptr slide)
 {
     slides_files_.add_slide(slide);
 }
+void ppt_files::add_notes(slide_content_ptr slide)
+{
+    notes_files_.add_slide(slide);
+}
 void ppt_files::add_slideLayout(slide_content_ptr slide)
 {
     slideLayouts_files_.add_slide(slide);
@@ -420,7 +500,10 @@ void ppt_files::add_slideMaster(slide_content_ptr slide)
 {
     slideMasters_files_.add_slide(slide);
 }
-
+void ppt_files::add_notesMaster(slide_content_ptr slide)
+{
+    notesMaster_files_.add_slide(slide);
+}
 void ppt_files::set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts)
 {
 	if (_Mediaitems.count_image + _Mediaitems.count_media > 0)

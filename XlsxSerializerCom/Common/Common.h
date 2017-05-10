@@ -72,7 +72,7 @@ namespace SerializeCommon
 			aReplies.clear();
 		}
 	};
-    void ReadFileType(const std::wstring& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter, BYTE& saveFileType);
+	void ReadFileType(const std::wstring& sXMLOptions, BYTE& result, UINT& nCodePage, std::wstring& wcDelimiter, BYTE& saveFileType);
 }
 
 #endif //SERIALIZER_COMMON

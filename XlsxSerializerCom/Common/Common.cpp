@@ -40,10 +40,6 @@
 #endif
 #include "../../DesktopEditor/common/File.h"
 
-#ifndef CP_UTF8
-#define CP_UTF8 65001
-#endif
-
 namespace SerializeCommon
 {
     std::wstring DownloadImage(const std::wstring& strFile)
@@ -99,11 +95,11 @@ namespace SerializeCommon
             return sSourcePath.substr(0, nIndex + 1) + sTargetExt;
 		return sSourcePath;
 	}
-    void ReadFileType(const std::wstring& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter, BYTE& cSaveFileType)
+	void ReadFileType(const std::wstring& sXMLOptions, BYTE& result, UINT& nCodePage, std::wstring& sDelimiter, BYTE& cSaveFileType)
 	{
 		result = BinXlsxRW::c_oFileTypes::XLSX;
-		nCodePage = CP_UTF8;
-		wcDelimiter = _T(',');
+		nCodePage = 46;//todo 46 временно CP_UTF8
+		sDelimiter = _T("");
 		cSaveFileType = BinXlsxRW::c_oFileTypes::XLSX;
 
 		nullable<SimpleTypes::CUnsignedDecimalNumber<>> fileType;
@@ -142,9 +138,7 @@ namespace SerializeCommon
 					cSaveFileType = (BYTE)saveFileType->GetValue();
 				if (delimiter.IsInit())
 				{
-                    const std::wstring& sDelimiter = delimiter.get();
-                    if (0 < sDelimiter.length())
-                        wcDelimiter = sDelimiter[0];
+					sDelimiter = delimiter.get();
 				}
 				break;
 			}

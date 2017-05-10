@@ -157,8 +157,6 @@ enum ElementType
 	typeStylePresentationPlaceholder,
 	typeStyleDrawingPageProperties,
 	
-	typePresentationNotes,
-
     typeStyleColumns,
     typeStyleColumn,
     typeStyleColumnSep,
@@ -264,6 +262,7 @@ enum ElementType
 	typeDrawPage,    
 	typePresentationFooterDecl,
 	typePresentationDateTimeDecl,
+	typePresentationNotes,
 
 	typeAnimPar,
 	typeAnimSeq,

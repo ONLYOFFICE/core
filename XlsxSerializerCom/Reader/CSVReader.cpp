@@ -81,7 +81,7 @@ namespace CSVReader
 		pCell->setRowCol(nRow, nCol);
 		oRow.m_arrItems.push_back(pCell);
 	}
-    void ReadFromCsvToXlsx(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter)
+	void ReadFromCsvToXlsx(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& sDelimiter)
 	{
 		// Создадим Workbook
 		oXlsx.CreateWorkbook();
@@ -169,6 +169,20 @@ namespace CSVReader
             INT nSize = sFileDataW.length();
             const WCHAR *pTemp =sFileDataW.c_str();
 
+			WCHAR wcDelimiterLeading = L'\0';
+			WCHAR wcDelimiterTrailing = L'\0';
+			int nDelimiterSize = 0;
+			if (sDelimiter.length() > 0)
+			{
+				wcDelimiterLeading = sDelimiter[0];
+				nDelimiterSize = 1;
+				if (2 == sizeof(wchar_t) && 0xD800 <= wcDelimiterLeading && wcDelimiterLeading <= 0xDBFF && sDelimiter.length() > 1)
+				{
+					wcDelimiterTrailing = sDelimiter[1];
+					nDelimiterSize = 2;
+				}
+			}
+
             const WCHAR wcNewLineN = _T('\n');
             const WCHAR wcNewLineR = _T('\r');
             const WCHAR wcQuote = _T('"');
@@ -188,7 +202,7 @@ namespace CSVReader
 			for (INT nIndex = 0; nIndex < nSize; ++nIndex)
 			{
 				wcCurrent = pTemp[nIndex];
-				if (wcDelimiter == wcCurrent)
+				if (wcDelimiterLeading == wcCurrent && (L'\0' == wcDelimiterTrailing || (nIndex + 1 < nSize && wcDelimiterTrailing == pTemp[nIndex + 1])))
 				{
 					if (bInQuote)
 						continue;
@@ -197,7 +211,7 @@ namespace CSVReader
 					AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
                     bIsWrap = false;
 
-					nStartCell = nIndex + 1;
+					nStartCell = nIndex + nDelimiterSize;
 					if (nStartCell == nSize)
 					{
 						pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);

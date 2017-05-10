@@ -316,6 +316,7 @@ enum ElementType
 	typeDrawPage,    
 	typePresentationFooterDecl,
 	typePresentationDateTimeDecl,
+	typePresentationNotes,
 
 	typeAnimPar,
 	typeAnimSeq,

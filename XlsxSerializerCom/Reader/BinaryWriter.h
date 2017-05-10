@@ -3926,16 +3926,16 @@ namespace BinXlsxRW
 			// File Type
 			BYTE fileType;
 			UINT nCodePage;
-			WCHAR wcDelimiter;
+			std::wstring sDelimiter;
 			BYTE saveFileType;
-			SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, wcDelimiter, saveFileType);
+			SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, sDelimiter, saveFileType);
 
 			OOX::Spreadsheet::CXlsx *pXlsx = NULL;
 			switch(fileType)
 			{
 			case BinXlsxRW::c_oFileTypes::CSV:
 				pXlsx = new OOX::Spreadsheet::CXlsx();
-				CSVReader::ReadFromCsvToXlsx(sInputDir, *pXlsx, nCodePage, wcDelimiter);
+				CSVReader::ReadFromCsvToXlsx(sInputDir, *pXlsx, nCodePage, sDelimiter);
 				break;
 			case BinXlsxRW::c_oFileTypes::XLSX:
 			default:
@@ -3946,8 +3946,8 @@ namespace BinXlsxRW
 
 			if (BinXlsxRW::c_oFileTypes::JSON == saveFileType)
 			{
-	//todo 46 временно CP_UTF8
-                CSVWriter::WriteFromXlsxToCsv(sFileDst, *pXlsx, 46, _T(','), true);
+				//todo 46 временно CP_UTF8
+				CSVWriter::WriteFromXlsxToCsv(sFileDst, *pXlsx, 46, std::wstring(L","), true);
 			}
 			else
 			{

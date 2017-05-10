@@ -312,8 +312,9 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 
 	if (draw_type_oox_index_)
 	{
-		Context.get_slide_context().set_property(_property(L"odf-custom-draw-index", draw_type_oox_index_.get()));	
-
+		Context.get_slide_context().set_property(_property(L"oox-geom-index", draw_type_oox_index_.get()));	
+		Context.get_slide_context().set_property(_property(L"oox-geom", bOoxType_));	
+		
 		if (word_art_ == true)
 			Context.get_slide_context().set_property(_property(L"wordArt", true));	
 
@@ -381,16 +382,20 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 	}
 	if (draw_enhanced_geometry_attlist_.draw_modifiers_)
 	{
-		Context.get_slide_context().set_property(_property(L"draw-modifiers",draw_enhanced_geometry_attlist_.draw_modifiers_.get()));	
-
-		if (draw_handle_geometry_.size()>0)
+		if (bOoxType_)
+			Context.get_slide_context().set_property(_property(L"oox-draw-modifiers", draw_enhanced_geometry_attlist_.draw_modifiers_.get()));	
+		else
 		{
-			if (draw_handle_geometry_[0].min < draw_handle_geometry_[0].max)
-			{
-				Context.get_slide_context().set_property(_property(L"draw-modifiers-min",draw_handle_geometry_[0].min));	
-				Context.get_slide_context().set_property(_property(L"draw-modifiers-max",draw_handle_geometry_[0].max));	
-			}
 		}
+
+		//if (draw_handle_geometry_.size()>0)
+		//{
+		//	if (draw_handle_geometry_[0].min < draw_handle_geometry_[0].max)
+		//	{
+		//		Context.get_slide_context().set_property(_property(L"draw-modifiers-min",draw_handle_geometry_[0].min));	
+		//		Context.get_slide_context().set_property(_property(L"draw-modifiers-max",draw_handle_geometry_[0].max));	
+		//	}
+		//}
 	}
 	if (!set_shape)
 	{

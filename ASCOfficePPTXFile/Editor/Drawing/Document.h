@@ -41,10 +41,9 @@ namespace NSPresentationEditor
 	public:
 		std::vector<CTheme>		m_arThemes;
 		std::vector<CSlide*>	m_arSlides;
+		std::vector<CSlide*>	m_arNotes;
 
 		CMetricInfo				m_oInfo;
-
-	public:
 
 		CDocument() : m_arThemes(), m_arSlides()
 		{
@@ -56,8 +55,9 @@ namespace NSPresentationEditor
 
 		CDocument& operator=(const CDocument& oSrc)
 		{
-			m_arThemes = oSrc.m_arThemes;
-			m_arSlides = oSrc.m_arSlides;	
+			m_arThemes	= oSrc.m_arThemes;
+			m_arSlides	= oSrc.m_arSlides;	
+			m_arNotes	= oSrc.m_arNotes;	
 
 			m_oInfo = oSrc.m_oInfo;
 
@@ -69,19 +69,18 @@ namespace NSPresentationEditor
 			*this = oSrc;
 		}
 
-	public:
 		inline void Clear()
 		{
 			ClearThemes();
 			try
 			{
 				ClearSlides();
+				ClearNotes();
 			}catch(...)
 			{
 			}
 		}
 
-		// работа с темами
 		inline void ClearThemes()
 		{
 			m_arThemes.clear();
@@ -97,26 +96,27 @@ namespace NSPresentationEditor
 
 			m_arThemes[nIndex] = oTheme;
 		}
-		// работа со слайдом
 		inline void ClearSlides()
 		{
-			for (int i = 0 ; i < m_arSlides.size(); i++)
+			for (size_t i = 0 ; i < m_arSlides.size(); i++)
 			{
 				RELEASEOBJECT(m_arSlides[i]);
 			}
 			m_arSlides.clear();
 		}
-		inline void AddSlide(CSlide* oSlide)
+		inline void ClearNotes()
 		{
-			m_arSlides.push_back(oSlide);
+			for (size_t i = 0 ; i < m_arNotes.size(); i++)
+			{
+				RELEASEOBJECT(m_arNotes[i]);
+			}
+			m_arNotes.clear();
 		}
 
-	public:
-
-		// функция производит расчет по теме и слайдам
-                std::wstring GetXmlSlideTransition ( CSlide& oSlide/*, CAudioOverlay& oAudioOverlay*/ )
+#if defined (_DEBUG)
+		std::wstring GetXmlSlideTransition ( CSlide& oSlide/*, CAudioOverlay& oAudioOverlay*/ )
 		{
-                        std::wstring Source	=	std::wstring ( _T("") );
+			std::wstring Source	=	std::wstring ( _T("") );
 
 			int EffectID	=	1;
 			int lEffectDirection = oSlide.m_oSlideShow.m_oTransition.m_nEffectDirection;
@@ -314,7 +314,7 @@ namespace NSPresentationEditor
 				break;
 			}
 
-                        Source = L"<VideoCompose Time=\"" + std::to_wstring(oSlide.m_oSlideShow.m_oTransition.m_dSpeed) + L"\" effectid=\"" + std::to_wstring(EffectID) + L"\"/>";
+			Source = L"<VideoCompose Time=\"" + std::to_wstring(oSlide.m_oSlideShow.m_oTransition.m_dSpeed) + L"\" effectid=\"" + std::to_wstring(EffectID) + L"\"/>";
 
 			/*
 
@@ -338,7 +338,7 @@ namespace NSPresentationEditor
 			
 			return Source;
 		}
-
+#endif
 		double CalculateTimes(CAudioOverlay& oAudioOverlay)
 		{
 			CaclulateSlideTimes();
@@ -486,7 +486,6 @@ namespace NSPresentationEditor
 			}
 		}
 
-	public:
 		void ResetAutoText(IElement *pElement, vector_string const (&placeholdersReplaceString)[3])
 		{
 			CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement);

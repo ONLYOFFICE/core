@@ -97,11 +97,10 @@ void CPPTUserInfo::Clear()
 	m_mapNotes.clear();
 	m_arrNotesOrder.clear();
 
-
 	m_oExMedia.Clear();
 	m_arrFonts.clear();
 
-	for (int nIndex = 0; nIndex < m_mapAnimations.size(); ++nIndex)
+	for (size_t nIndex = 0; nIndex < m_mapAnimations.size(); ++nIndex)
 	{
 		RELEASEOBJECT ( m_mapAnimations[nIndex]);
 	}
@@ -271,7 +270,7 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 	std::vector<CRecordFontEntityAtom*> oArrayFonts;
 	m_oDocument.GetRecordsByType(&oArrayFonts, true);
 
-	for (int nIndex = 0; nIndex < oArrayFonts.size(); ++nIndex)
+	for (size_t nIndex = 0; nIndex < oArrayFonts.size(); ++nIndex)
 	{
 		CFont oFont;
 		oFont.Name = oArrayFonts[nIndex]->m_strFaceName;
@@ -371,7 +370,7 @@ void CPPTUserInfo::FromDocument()
 	double DurationSlide	=	PPT_DEFAULT_SLIDE_DURATION;
 
 	m_arSlides.reserve(m_arrSlidesOrder.size());
-	for (int i=0; i< m_arrSlidesOrder.size(); i++)
+	for (size_t i = 0; i < m_arrSlidesOrder.size(); i++)
 	{
 		std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapSlides.find(m_arrSlidesOrder[i]);
 		
@@ -382,12 +381,10 @@ void CPPTUserInfo::FromDocument()
 
 		DurationSlide	=	PPT_DEFAULT_SLIDE_DURATION;
 
-		CSlide *elm = new CSlide();
-		m_arSlides.push_back(elm);
-		// тут его заполняем...
+		m_arSlides.push_back(new CSlide());
 
 		// если на слайде есть анимации
-		std::map <DWORD, Animations::CSlideTimeLine*>::iterator pTimeLine		=	m_mapAnimations.find( pPair->first);
+		std::map <DWORD, Animations::CSlideTimeLine*>::iterator pTimeLine =	m_mapAnimations.find( pPair->first);
 
 		if ( m_mapAnimations.end() != pTimeLine )
 		{
@@ -409,10 +406,194 @@ void CPPTUserInfo::FromDocument()
 		pSlide->m_lWidth			= (LONG)(c_dMasterUnitsToMillimetreKoef * lOriginWidth);
 		pSlide->m_lHeight			= (LONG)(c_dMasterUnitsToMillimetreKoef * lOriginHeight);
 
-		LoadSlide ( pPair->first, m_arSlides.back());
+		LoadSlide ( pPair->first, pSlide);
 	}
 
+	m_arNotes.reserve(m_arrNotesOrder.size());
+	for (size_t i = 0; i< m_arrNotesOrder.size(); i++)
+	{
+		std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapNotes.find(m_arrNotesOrder[i]);
+		
+		if (pPair ==  m_mapNotes.end()) 
+			continue;
+
+		LoadNoteFromPrevUsers	( pPair->first );
+
+		DurationSlide	=	PPT_DEFAULT_SLIDE_DURATION;
+
+		m_arNotes.push_back(new CSlide());
+
+		CSlide* pSlide = m_arNotes.back();
+
+		pSlide->m_lOriginalWidth	= lOriginWidth;
+		pSlide->m_lOriginalHeight	= lOriginHeight;
+
+		pSlide->m_lWidth			= (LONG)(c_dMasterUnitsToMillimetreKoef * lOriginWidth);
+		pSlide->m_lHeight			= (LONG)(c_dMasterUnitsToMillimetreKoef * lOriginHeight);
+
+		LoadNotes ( pPair->first, pSlide);
+	}
+	
 	CalculateEditor(m_oInfo);
+}
+
+void CPPTUserInfo::LoadNotes(DWORD dwNoteID, CSlide* pNotes)
+{
+	std::map<DWORD, CRecordSlide*>::iterator pPairNotes = m_mapNotes.find(dwNoteID);
+
+	if (pPairNotes == m_mapNotes.end()) return;
+	
+	CRecordSlide* pRecordSlide = pPairNotes->second;
+
+	if (NULL == pRecordSlide) return;
+
+	pNotes->m_bUseLayoutColorScheme = true;
+
+	CSlideInfo slide_info;
+	m_arNotesWrapper.push_back(slide_info);
+	
+	CSlideInfo* pNotesWrapper = &m_arNotesWrapper.back();
+
+	int indexUser						= pRecordSlide->m_IndexUser;
+
+	pNotesWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures;
+	pNotesWrapper->m_mapFilePictures	= &m_pDocumentInfo->m_mapStoreImageFile;
+
+	//грузим placeholder
+	pNotesWrapper->m_arTextPlaceHolders = pRecordSlide->m_oPersist.m_arTextAttrs;
+
+	std::vector<CRecordNotesAtom*> oArrayNotesAtoms;
+	pRecordSlide->GetRecordsByType(&oArrayNotesAtoms, false, true);
+	if (0 == oArrayNotesAtoms.size())
+	{
+		// ошибка!!!
+		return;
+	}
+    bool bMasterColorScheme = oArrayNotesAtoms[0]->m_bMasterScheme;
+    bool bMasterBackGround	= oArrayNotesAtoms[0]->m_bMasterBackground;
+    bool bMasterObjects		= oArrayNotesAtoms[0]->m_bMasterObjects;
+
+	std::map<DWORD, CRecordSlide*>::iterator pPairSlide = m_mapSlides.find(oArrayNotesAtoms[0]->m_nSlideIDRef);
+
+	if (pPairSlide == m_mapSlides.end())
+	{
+		//????? у заметок нет слайда !!!
+	}
+//-----------------------------------------------------
+	CSlide* pSlide		= m_arSlides[pPairSlide->second->m_Index];
+
+	pNotes->m_lSlideID	= pPairSlide->second->m_Index;
+	pSlide->m_lNotesID	= m_arNotes.size() - 1;
+//-----------------------------------------------------
+
+	CTheme		* pTheme		= &m_arThemes		[pSlide->m_lThemeID];
+	CSlideInfo	* pThemeWrapper	= &m_arMasterWrapper[pSlide->m_lThemeID];
+
+	CLayout* pLayout	= NULL;
+//-----------------------------------------------------
+	std::vector<NSPresentationEditor::CColor>* pArrayColorScheme = &pTheme->m_arColorScheme;
+
+// читаем цветовую схему -----------------------------------------------------------
+	pNotes->m_bUseLayoutColorScheme = true;
+	if (!bMasterColorScheme)
+	{
+		std::vector<CRecordColorSchemeAtom*> oArrayColors;
+		pRecordSlide->GetRecordsByType(&oArrayColors, false);
+
+		for (size_t i = 0; i < oArrayColors.size(); ++i)
+		{
+			if (0x01 == oArrayColors[i]->m_oHeader.RecInstance)
+			{
+				pNotes->m_bUseLayoutColorScheme = false;
+				oArrayColors[i]->ToArray(&pNotes->m_arColorScheme);
+				CorrectColorScheme(pNotes->m_arColorScheme);
+
+				// проверим на совпадение
+				size_t nCountC = pNotes->m_arColorScheme.size();
+				size_t nIndexC = 0;
+				if (nCountC == pArrayColorScheme->size())
+				{
+					for (; nIndexC < nCountC; ++nIndexC)
+					{
+						if (pNotes->m_arColorScheme[i].IsEqual(pArrayColorScheme->at(i)))
+							break;
+					}
+				}
+
+				if (nIndexC == nCountC)
+				{
+					pNotes->m_bUseLayoutColorScheme = true;
+					pNotes->m_arColorScheme.clear();
+				}
+
+				break;
+			}
+		}
+	}
+//------------------------------------------------------------------------------------
+	bool	bHasDate		= false;
+	bool	bHasSlideNumber = false;
+	bool	bHasFooter		= false;
+	int		nFormatDate		= 1;	
+	
+	std::vector<CRecordHeadersFootersContainer*> oArrayHeadersFootersInfo;
+	pRecordSlide->GetRecordsByType(&oArrayHeadersFootersInfo, true, false);
+
+	if (!oArrayHeadersFootersInfo.empty())
+	{
+		if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
+		{
+			bHasDate		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate ||
+								oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate || 
+								oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate;
+			bHasFooter		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasFooter;
+			bHasSlideNumber	=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasSlideNumber;
+
+			if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate)	nFormatDate = 2;
+		}
+		for (int i = 0 ; i < 3; i++) 
+			pNotes->m_PlaceholdersReplaceString[i] = oArrayHeadersFootersInfo[0]->m_HeadersFootersString[i];
+	}
+//------------- читаем все элементы ------------------------------------------------------------------------------------------
+	pNotes->m_bIsBackground		= false;
+	
+	std::vector<CRecordShapeContainer*> oArrayShapes;
+	pRecordSlide->GetRecordsByType(&oArrayShapes, true);
+
+	for (size_t nShape = 0; nShape < oArrayShapes.size(); ++nShape)
+	{
+		IElement* pElement = NULL;
+		
+		oArrayShapes[nShape]->GetElement(&pElement, &m_oExMedia, pNotes->m_lOriginalWidth, pNotes->m_lOriginalHeight,
+												pTheme, pLayout, pThemeWrapper, pNotesWrapper, pNotes);
+		
+		if (NULL != pElement)
+		{
+			if (pElement->m_bIsBackground && !pElement->m_bHaveAnchor && !bMasterBackGround)
+			{
+				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement);
+				if (NULL != pShape)
+				{
+					pShape->SetupProperties(pNotes, pTheme, pLayout);
+
+					pNotes->m_bIsBackground = true;
+					pNotes->m_oBackground	= pShape->m_oBrush;
+				}
+				RELEASEOBJECT(pElement);
+				continue;			
+
+			}
+
+			if (pElement->m_bHaveAnchor)
+			{
+				pNotes->m_arElements.push_back(pElement);
+			}
+			if ( pElement->m_lPlaceholderType >0)
+			{
+				pNotes->m_mapPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pNotes->m_arElements.size()-1)); 
+			}
+		}
+	}
 }
 
 
@@ -562,7 +743,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 		std::vector<CRecordColorSchemeAtom*> oArrayColors;
 		pRecordSlide->GetRecordsByType(&oArrayColors, false);
 
-		for (int i = 0; i < oArrayColors.size(); ++i)
+		for (size_t i = 0; i < oArrayColors.size(); ++i)
 		{
 			if (0x01 == oArrayColors[i]->m_oHeader.RecInstance)
 			{
@@ -628,7 +809,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 	std::vector<CRecordCString*> oArrayStrings;
 	pRecordSlide->GetRecordsByType(&oArrayStrings, false, false);
 	
-	for (int i=0; i < oArrayStrings.size(); i++)
+	for (size_t i = 0; i < oArrayStrings.size(); i++)
 	{
 		if (oArrayStrings[i]->m_oHeader.RecType == 0x0fba)
 		{
@@ -642,7 +823,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 
 	pSlide->m_bIsBackground		= false;
 
-	for (int nShape = 0; nShape < oArrayShapes.size(); ++nShape)
+	for (size_t nShape = 0; nShape < oArrayShapes.size(); ++nShape)
 	{
 		IElement* pElement = NULL;
 		
@@ -1029,7 +1210,8 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	}
 	std::vector<CRecordCString*> oArrayStrings;
 	pMaster->GetRecordsByType(&oArrayStrings, false, false);
-	for (int i=0; i < oArrayStrings.size(); i++)
+	
+	for (size_t i = 0; i < oArrayStrings.size(); i++)
 	{
 		if (oArrayStrings[i]->m_oHeader.RecType == 0x0fba)
 		{
@@ -1100,7 +1282,7 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	std::vector<CRecordTextMasterStyleAtom*> oArrayTextMasters;
 	pMaster->GetRecordsByType(&oArrayTextMasters, true, false);
 
-	for (int i = 0; i < oArrayTextMasters.size(); ++i)
+	for (size_t i = 0; i < oArrayTextMasters.size(); ++i)
 	{
 		LONG lType = (LONG)oArrayTextMasters[i]->m_oHeader.RecInstance; 
 		if ((0 > lType) || (lType > 8))
@@ -1142,7 +1324,7 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	
 	CLayout* pLayout = NULL; // ну нету тут разметок ...!!
 
-	for (int nShape = 0; nShape < oArrayShapes.size(); ++nShape)
+	for (size_t nShape = 0; nShape < oArrayShapes.size(); ++nShape)
 	{
 		NSPresentationEditor::IElement* pElement = NULL;
 		oArrayShapes[nShape]->GetElement(&pElement, &m_oExMedia, lOriginWidth, lOriginHeight, pTheme, pLayout, pMasterWrapper, pMasterWrapper);
@@ -1177,7 +1359,7 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 
 void CPPTUserInfo::LoadMasters(const LONG& lOriginWidth, const LONG& lOriginHeight)
 {
-	for (long i=0; i< m_arrMastersOrder.size(); i++)
+	for (size_t i = 0; i< m_arrMastersOrder.size(); i++)
 	{
 		std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapMasters.find(m_arrMastersOrder[i]);
 		if (pPair == m_mapMasters.end())continue;			
@@ -1185,7 +1367,7 @@ void CPPTUserInfo::LoadMasters(const LONG& lOriginWidth, const LONG& lOriginHeig
 		LoadMainMaster(pPair->first, lOriginWidth, lOriginHeight);
 	}
 
-	for (long i=0; i< m_arrMastersOrder.size(); i++)
+	for (size_t i = 0; i< m_arrMastersOrder.size(); i++)
 	{
 		std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapMasters.find(m_arrMastersOrder[i]);
 		if (pPair == m_mapMasters.end())continue;			
@@ -1281,7 +1463,7 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 		pCurMaster->GetRecordsByType(&oArrayColors, false);
 
 		pLayout->m_arColorScheme.clear();
-		for (int i = 0; i < oArrayColors.size(); ++i)
+		for (size_t i = 0; i < oArrayColors.size(); ++i)
 		{
 			if (0x01 == oArrayColors[i]->m_oHeader.RecInstance)
 			{
@@ -1341,7 +1523,7 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 	std::vector<CRecordCString*> oArrayStrings;
 	pCurMaster->GetRecordsByType(&oArrayStrings, false, false);
 	
-	for (int i=0; i < oArrayStrings.size(); i++)
+	for (size_t i = 0; i < oArrayStrings.size(); i++)
 	{
 		if (oArrayStrings[i]->m_oHeader.RecType == 0x0fba)
 		{
@@ -1352,7 +1534,7 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 	std::vector<CRecordShapeContainer*> oArrayShapes;
 	pCurMaster->GetRecordsByType(&oArrayShapes, true);
 
-	for (int nShape = 0; nShape < oArrayShapes.size(); ++nShape)
+	for (size_t nShape = 0; nShape < oArrayShapes.size(); ++nShape)
 	{
 		IElement* pElement = NULL;
 		oArrayShapes[nShape]->GetElement(&pElement, &m_oExMedia, lOriginWidth, lOriginHeight, pTheme, pLayout, pThemeWrapper, pMasterWrapper);
@@ -1467,7 +1649,7 @@ void CPPTUserInfo::LoadMasterFromPrevUsers(DWORD dwMasterID)
 
 	size_t lUsersCount = m_pDocumentInfo->m_arUsers.size();
 	
-	for (int lIndexUser = m_lIndexThisUser + 1; lIndexUser < lUsersCount; ++lIndexUser)
+	for (size_t lIndexUser = m_lIndexThisUser + 1; lIndexUser < lUsersCount; ++lIndexUser)
 	{
 		std::map<DWORD, CRecordSlide*>::iterator pPair = m_pDocumentInfo->m_arUsers[lIndexUser]->m_mapMasters.find(dwMasterID);
 
@@ -1569,7 +1751,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 	std::vector<CRecordExVideoContainer*> oArray;
 	pExObjects->GetRecordsByType(&oArray, true);
 
-	for (int nIndex = 0; nIndex < oArray.size(); ++nIndex)
+	for (size_t nIndex = 0; nIndex < oArray.size(); ++nIndex)
 	{
 		LoadExVideo(oArray[nIndex]);
 	}
@@ -1588,15 +1770,15 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 	pExObjects->GetRecordsByType(&oArrayWAVLink			, true);
 	pExObjects->GetRecordsByType(&oArrayAudioEmbedded	, true);
 
-	for (int nIndex = 0; nIndex < oArrayAudioMIDI.size(); ++nIndex)
+	for (size_t nIndex = 0; nIndex < oArrayAudioMIDI.size(); ++nIndex)
 	{
 		LoadExAudio(oArrayAudioMIDI[nIndex]);
 	}
-	for (int nIndex = 0; nIndex < oArrayWAVLink.size(); ++nIndex)
+	for (size_t nIndex = 0; nIndex < oArrayWAVLink.size(); ++nIndex)
 	{
 		LoadExAudio(oArrayWAVLink[nIndex]);
 	}
-	for (int nIndex = 0; nIndex < oArrayAudioEmbedded.size(); ++nIndex)
+	for (size_t nIndex = 0; nIndex < oArrayAudioEmbedded.size(); ++nIndex)
 	{
 		DWORD dwKeySound	= oArrayAudioEmbedded[nIndex]->m_nSoundID;
 		DWORD dwKeyObj		= oArrayAudioEmbedded[nIndex]->m_oMedia.m_nExObjID;
@@ -1613,7 +1795,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 			m_oExMedia.m_arAudios.push_back(oAudio);
 		}
 	}
-	for (int nIndex = 0; nIndex < oArrayAudioCD.size(); ++nIndex)
+	for (size_t nIndex = 0; nIndex < oArrayAudioCD.size(); ++nIndex)
 	{
 		DWORD dwKeyObj			= oArrayAudioCD[nIndex]->m_oMedia.m_nExObjID;
 
@@ -1633,7 +1815,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 
 	pExObjects->GetRecordsByType(&oArrayHyperlinkContainer		, true);
 	
-	for (int nIndex = 0; nIndex < oArrayHyperlinkContainer.size(); ++nIndex)
+	for (size_t nIndex = 0; nIndex < oArrayHyperlinkContainer.size(); ++nIndex)
 	{
 		std::vector<CRecordExHyperlinkAtom*>	oArrayHyperlink;		
 		std::vector<CRecordCString*>			oArrayCString;		
@@ -1645,8 +1827,8 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 		{
 			NSPresentationEditor::CExFilesInfo oInfo;
 
-			oInfo.m_dwID			= oArrayHyperlink[0]->m_nHyperlinkID;
-			for (int i = 0 ; i < oArrayCString.size(); i++)
+			oInfo.m_dwID = oArrayHyperlink[0]->m_nHyperlinkID;
+			for (size_t i = 0 ; i < oArrayCString.size(); i++)
 			{
 				if (oArrayCString[i]->m_oHeader.RecInstance == 1)
 					oInfo.m_strFilePath		= oArrayCString[i]->m_strText;

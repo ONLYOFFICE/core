@@ -39,9 +39,7 @@ public:
 	std::vector<SSlidePersist> m_arNotePersists;
 	std::vector<SSlidePersist> m_arSlidePersists;
 
-public:
-	
-	CRecordDocument() : m_arMasterPersists(), m_arNotePersists(), m_arSlidePersists()
+	CRecordDocument() 
 	{
 	}
 
@@ -145,31 +143,26 @@ public:
 		std::vector<CRecordSlideListWithText*> oArraySlideWithText;
 		this->GetRecordsByType(&oArraySlideWithText, true, false);
 
-		for (int nIndexList = 0; nIndexList < oArraySlideWithText.size(); ++nIndexList)
+		for (size_t nIndexList = 0; nIndexList < oArraySlideWithText.size(); ++nIndexList)
 		{
 			CRecordSlideListWithText* pAtom = oArraySlideWithText[nIndexList];
 			std::vector<SSlidePersist>* pArray = NULL;
 
 			switch (pAtom->m_Type)
             {
-			case CRecordSlideListWithText::CollectionOfMasterSlides:
+				case CRecordSlideListWithText::CollectionOfMasterSlides:
 				{
-					pArray = &m_arMasterPersists;
-                    break;
-				}
-
-			case CRecordSlideListWithText::CollectionOfNotesSlides:
+					pArray = &m_arMasterPersists;                    
+				}break;
+				case CRecordSlideListWithText::CollectionOfNotesSlides:
 				{
-					pArray = &m_arNotePersists;
-                    break;
-				}
-
-			case CRecordSlideListWithText::CollectionOfSlides:
+					pArray = &m_arNotePersists;                
+				}break;
+				case CRecordSlideListWithText::CollectionOfSlides:
 				{
-					pArray = &m_arSlidePersists;
-                    break;
-				}
-			default:
+					pArray = &m_arSlidePersists;                
+				}break;
+				default:
 				{
 					// этого не может быть...
 					continue;

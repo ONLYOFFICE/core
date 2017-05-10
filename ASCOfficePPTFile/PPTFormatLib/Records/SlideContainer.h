@@ -129,7 +129,7 @@ public:
 
     bool IsSlide()
 	{
-		for (int nIndex = 0; nIndex < m_arRecords.size(); ++nIndex)
+		for (size_t nIndex = 0; nIndex < m_arRecords.size(); ++nIndex)
 		{
 			if ((RECORD_TYPE_SLIDE			== m_arRecords[nIndex]->m_oHeader.RecType) ||
 				(RECORD_TYPE_MAINMASTER		== m_arRecords[nIndex]->m_oHeader.RecType) ||

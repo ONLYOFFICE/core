@@ -34,9 +34,8 @@
 
 class CRecordRoundTripThemeAtom : public CUnknownRecord
 {
-    std::wstring m_strData;
-
 public:
+    std::string m_strData;
 	
 	CRecordRoundTripThemeAtom()
 	{
@@ -48,6 +47,7 @@ public:
 
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
+		m_oHeader = oHeader;
+		m_strData = StreamUtils::ReadStringA(pStream, (long)m_oHeader.RecLen);
 	}
 };

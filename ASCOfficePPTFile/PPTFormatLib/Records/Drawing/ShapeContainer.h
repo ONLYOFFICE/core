@@ -1890,7 +1890,7 @@ protected:
 		
 		if (master_levels)
 		{
-			for (int i = 0; i < pText->m_arParagraphs.size(); i++)
+			for (size_t i = 0; i < pText->m_arParagraphs.size(); i++)
 			{
 				if (i >= master_levels->m_arrProps.size()) break;
 				

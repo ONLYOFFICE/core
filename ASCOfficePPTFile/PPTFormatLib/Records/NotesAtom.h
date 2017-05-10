@@ -34,13 +34,12 @@
 
 class CRecordNotesAtom : public CUnknownRecord
 {
+public:
 	UINT m_nSlideIDRef;
 	
 	bool m_bMasterObjects;
 	bool m_bMasterScheme;
 	bool m_bMasterBackground;
-
-public:
 	
 	CRecordNotesAtom()
 	{
@@ -54,11 +53,11 @@ public:
 	{
 		m_oHeader = oHeader;
 
-		m_nSlideIDRef = (UINT)StreamUtils::ReadDWORD(pStream);
+		m_nSlideIDRef	= (UINT)StreamUtils::ReadDWORD(pStream);
 
-		USHORT nFlag = StreamUtils::ReadWORD(pStream);
-		m_bMasterObjects = ((nFlag & 0x01) == 0x01);
-		m_bMasterScheme = ((nFlag & 0x02) == 0x02);
+		USHORT nFlag		= StreamUtils::ReadWORD(pStream);
+		m_bMasterObjects	= ((nFlag & 0x01) == 0x01);
+		m_bMasterScheme		= ((nFlag & 0x02) == 0x02);
 		m_bMasterBackground = ((nFlag & 0x04) == 0x04);
 
 		StreamUtils::StreamSkip(2, pStream);

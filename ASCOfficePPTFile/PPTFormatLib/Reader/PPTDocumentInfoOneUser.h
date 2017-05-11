@@ -131,7 +131,7 @@ public:
 	void LoadNoMainMaster	(DWORD dwMasterID, const LONG& lOriginWidth, const LONG& lOriginHeight);
 	void LoadMainMaster		(DWORD dwMasterID, const LONG& lOriginWidth, const LONG& lOriginHeight);
 	
-	void CPPTUserInfo::LoadMaster(CRecordSlide* pMaster, CSlideInfo *& pMasterWrapper, CTheme *& pTheme);
+    void LoadMaster(CRecordSlide* pMaster, CSlideInfo *& pMasterWrapper, CTheme *& pTheme);
 
 	void LoadSlideFromPrevUsers			(DWORD dwSlideID);
 	void LoadMasterFromPrevUsers		(DWORD dwSlideID);

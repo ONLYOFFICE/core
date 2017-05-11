@@ -43,58 +43,35 @@ namespace NSPresentationEditor
 		std::vector<CSlide*>	m_arSlides;
 		std::vector<CSlide*>	m_arNotes;
 
+		CTheme*					m_pNotesMaster;
+		CTheme*					m_pHandoutMaster;
+
 		CMetricInfo				m_oInfo;
 
 		CDocument() : m_arThemes(), m_arSlides()
 		{
+			m_pHandoutMaster	= NULL;
+			m_pNotesMaster		= NULL;
 		}
 
 		~CDocument()
 		{
-		}
-
-		CDocument& operator=(const CDocument& oSrc)
-		{
-			m_arThemes	= oSrc.m_arThemes;
-			m_arSlides	= oSrc.m_arSlides;	
-			m_arNotes	= oSrc.m_arNotes;	
-
-			m_oInfo = oSrc.m_oInfo;
-
-			return *this;
-		}
-
-		CDocument(const CDocument& oSrc)
-		{
-			*this = oSrc;
+			Clear();
 		}
 
 		inline void Clear()
 		{
-			ClearThemes();
+			m_arThemes.clear();
 			try
 			{
 				ClearSlides();
 				ClearNotes();
+				
+				RELEASEOBJECT(m_pHandoutMaster);				
+				RELEASEOBJECT(m_pNotesMaster);
 			}catch(...)
 			{
 			}
-		}
-
-		inline void ClearThemes()
-		{
-			m_arThemes.clear();
-		}
-		inline void AddTheme(const CTheme& oTheme)
-		{
-			m_arThemes.push_back(oTheme);
-		}
-		inline void UpdateTheme(size_t nIndex, const CTheme& oTheme)
-		{
-			if (nIndex >= m_arThemes.size())
-				return;
-
-			m_arThemes[nIndex] = oTheme;
 		}
 		inline void ClearSlides()
 		{

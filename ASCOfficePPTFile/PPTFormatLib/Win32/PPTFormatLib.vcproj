@@ -463,10 +463,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Document.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Reader\PPTDocumentInfo.h"
 				>
 			</File>

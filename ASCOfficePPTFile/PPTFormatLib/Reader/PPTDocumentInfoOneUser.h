@@ -51,6 +51,9 @@ public:
 	std::map<DWORD, CRecordSlide*>					m_mapMasters;
 	std::map<DWORD, CRecordSlide*>					m_mapNotes;
 
+	std::map<DWORD, CRecordSlide*>					m_mapNotesMasters;
+	std::map<DWORD, CRecordSlide*>					m_mapHandoutMasters;
+
 	std::vector<DWORD>								m_arrSlidesOrder;
 	std::vector<DWORD>								m_arrMastersOrder;
 	std::vector<DWORD>								m_arrNotesOrder;
@@ -65,6 +68,9 @@ public:
 	std::vector<CSlideInfo>							m_arSlideWrapper;
 	std::vector<CSlideInfo>							m_arMasterWrapper;
 	std::vector<CSlideInfo>							m_arNotesWrapper;
+
+	CSlideInfo*										m_pNotesMasterWrapper;
+	CSlideInfo*										m_pHandoutMasterWrapper;
 
 	// эти параметры - одни на весь документ. 
 	// чтобы поддержать нашу схему (пптх) - копируем их в темы
@@ -124,10 +130,14 @@ public:
 	
 	void LoadNoMainMaster	(DWORD dwMasterID, const LONG& lOriginWidth, const LONG& lOriginHeight);
 	void LoadMainMaster		(DWORD dwMasterID, const LONG& lOriginWidth, const LONG& lOriginHeight);
+	
+	void CPPTUserInfo::LoadMaster(CRecordSlide* pMaster, CSlideInfo *& pMasterWrapper, CTheme *& pTheme);
 
-	void LoadSlideFromPrevUsers	(DWORD dwSlideID);
-	void LoadMasterFromPrevUsers(DWORD dwSlideID);
-	void LoadNoteFromPrevUsers	(DWORD dwSlideID);
+	void LoadSlideFromPrevUsers			(DWORD dwSlideID);
+	void LoadMasterFromPrevUsers		(DWORD dwSlideID);
+	void LoadNotesFromPrevUsers			(DWORD dwSlideID);
+	void LoadNotesMasterFromPrevUsers	(DWORD dwSlideID);
+	void LoadHandoutMasterFromPrevUsers	(DWORD dwSlideID);
 
 	void LoadExternal(CRecordExObjListContainer* pExObjects);
 

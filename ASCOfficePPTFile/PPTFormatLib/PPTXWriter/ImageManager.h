@@ -170,12 +170,11 @@ namespace NSPresentationEditor
 
 			m_oWriter.WriteString(str1);
 
-			int nCurrent = nStartLayoutIndex;
 			for (int i = 0; i < nCountLayouts; ++i)
 			{
                 std::wstring str = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout"
-                        + std::to_wstring(nCurrent + 1) + L".xml\"/>";
-				++nCurrent;
+                        + std::to_wstring(nStartLayoutIndex + 1) + L".xml\"/>";
+				nStartLayoutIndex++;
 				m_oWriter.WriteString(str);
 			}
 
@@ -196,16 +195,20 @@ namespace NSPresentationEditor
 
 			m_oWriter.WriteString(str);
 		}
-         inline void StartNotes(int nIndexSlide)
+         inline void StartNotes(int nIndexSlide, bool bMaster)
 		{
-            m_oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
-                                  <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
-
+			m_oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
+							<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
+			if (bMaster)
+			{
+				m_oWriter.WriteString(L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+						L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"../notesMasters/notesMaster1.xml\"/>");
+			}
 			if (nIndexSlide >= 0)
 			{
 				m_oWriter.WriteString(L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
-									  L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide\" Target=\"../slides/slide"
-									  + std::to_wstring(nIndexSlide + 1) + L".xml\"/>");
+							L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"../slides/slide"
+							+ std::to_wstring(nIndexSlide + 1) + L".xml\"/>");
 			}
 		}
 		 inline void StartSlide(int nIndexLayout, int nIndexNotes)

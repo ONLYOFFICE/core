@@ -67,12 +67,35 @@ public:
     {
     }
 
-    COOXMLRelationships(const std::wstring& file, std::map<std::wstring, bool>* check_need = NULL)
+    COOXMLRelationships(const std::string& xml, std::map<std::wstring, bool>* check_need = NULL)
     {
         XmlUtils::CXmlNode oNode;
-        if (!oNode.FromXmlFile(file))
+        if (!oNode.FromXmlStringA(xml))
             return;
 
+        FromXmlNode(oNode, check_need);
+    }
+
+    COOXMLRelationships(const std::wstring& xml, const bool& is_file, std::map<std::wstring, bool>* check_need = NULL)
+    {
+        XmlUtils::CXmlNode oNode;
+
+        if (!is_file)
+        {
+            if (!oNode.FromXmlString(xml))
+                return;
+        }
+        else
+        {
+            if (!oNode.FromXmlFile(xml))
+                return;
+        }
+
+        FromXmlNode(oNode, check_need);
+    }
+
+    void FromXmlNode(XmlUtils::CXmlNode& oNode, std::map<std::wstring, bool>* check_need = NULL)
+    {
         XmlUtils::CXmlNodes oNodes;
         if (!oNode.GetNodes(L"Relationship", oNodes))
             return;

@@ -99,7 +99,7 @@ public:
 
     std::wstring GetRelsReference(const std::wstring& file)
     {
-        COOXMLRelationships oRels(m_sFolder + file);
+        COOXMLRelationships oRels(m_sFolder + file, true);
 
         if (L"/_rels/.rels" == file)
         {

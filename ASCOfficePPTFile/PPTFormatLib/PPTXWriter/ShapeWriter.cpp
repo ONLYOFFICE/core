@@ -293,20 +293,78 @@ NSPresentationEditor::CShapeWriter::CShapeWriter()
 	m_pImageElement = NULL;
 	m_pShapeElement = NULL;
 }
-std::wstring	NSPresentationEditor::CShapeWriter::ConvertLine(CPen & pen)
+std::wstring NSPresentationEditor::CShapeWriter::ConvertLine(CPen & pen)
 {
 	NSPresentationEditor::CStringWriter line_writer;
 
-	std::wstring str = std::to_wstring(	(int)(pen.Size * 36000));
-	line_writer.WriteString(L"<a:ln w=\"" + str + L"\">");
+	std::wstring strL;
+	switch(pen.LineStyle)
+	{
+		case 1: strL = L"  cmpd=\"dbl\"";		break;
+		case 2: strL = L"  cmpd=\"thickThin\""; break;
+		case 3: strL = L"  cmpd=\"thinThick\"";	break;
+		case 4: strL = L"  cmpd=\"tri\"";		break;
+	}
+	line_writer.WriteString(L"<a:ln w=\"" + std::to_wstring((int)(pen.Size * 36000)) + L"\"" + strL + L">");
 
 	line_writer.WriteString(L"<a:solidFill>");
 		line_writer.WriteString(ConvertColor(pen.Color, pen.Alpha));
 	line_writer.WriteString(L"</a:solidFill>");
 
-	line_writer.WriteString(L"<a:round/><a:headEnd/><a:tailEnd/></a:ln>");
+	switch(pen.DashStyle)
+	{
+		case 1:	line_writer.WriteString(L"<a:prstDash val=\"sysDash\"/>");			break;
+		case 2:	line_writer.WriteString(L"<a:prstDash val=\"sysDot\"/>");			break;
+		case 3:	line_writer.WriteString(L"<a:prstDash val=\"sysDashDot\"/>");		break;
+		case 4:	line_writer.WriteString(L"<a:prstDash val=\"sysDashDotDot\"/>");	break;
+		case 5:	line_writer.WriteString(L"<a:prstDash val=\"dot\"/>");				break;
+		case 6:	line_writer.WriteString(L"<a:prstDash val=\"dash\"/>");				break;
+		case 7:	line_writer.WriteString(L"<a:prstDash val=\"lgDash\"/>");			break;
+		case 8:	line_writer.WriteString(L"<a:prstDash val=\"dashDot\"/>");			break;
+		case 9:	line_writer.WriteString(L"<a:prstDash val=\"lgDashDot\"/>");		break;
+		case 10:line_writer.WriteString(L"<a:prstDash val=\"lgDashDotDot\"/>");		break;
+	}
+	switch(pen.LineJoin)
+	{
+		case 0:	line_writer.WriteString(L"<a:bevel/>");	break;
+		case 1:	line_writer.WriteString(L"<a:miter/>");	break;
+		case 2:	line_writer.WriteString(L"<a:round/>");	break;
+	}
+
+	line_writer.WriteString(L"<a:headEnd" + ConvertLineEnd(pen.LineStartCap, pen.LineStartLength, pen.LineStartWidth)	+ L"/>");
+	line_writer.WriteString(L"<a:tailEnd" + ConvertLineEnd(pen.LineEndCap, pen.LineEndLength, pen.LineEndWidth)			+ L"/>");
+		
+	line_writer.WriteString(L"</a:ln>");
 
 	return line_writer.GetData();
+}
+std::wstring NSPresentationEditor::CShapeWriter::ConvertLineEnd(unsigned char cap, unsigned char length, unsigned char width)
+{
+	if (cap < 1) return L"";
+
+	std::wstring sResult;
+
+	switch(cap)
+	{
+		case 1: sResult += L" type=\"triangle\"";	break;
+		case 2: sResult += L" type=\"stealth\"";	break;
+		case 3: sResult += L" type=\"diamond\"";	break;
+		case 4: sResult += L" type=\"oval\"";		break;
+		case 5: sResult += L" type=\"arrow\"";		break;
+	}
+	switch(length)
+	{
+		case 0: sResult += L" len=\"sm\"";	break;
+		case 1: sResult += L" len=\"med\"";	break;
+		case 2: sResult += L" len=\"lg\"";	break;
+	}
+	switch(width)
+	{
+		case 0: sResult += L" w=\"sm\"";	break;
+		case 1: sResult += L" w=\"med\"";	break;
+		case 2: sResult += L" w=\"lg\"";	break;
+	}
+	return sResult;
 }
 std::wstring	NSPresentationEditor::CShapeWriter::ConvertBrush(CBrush & brush)
 {

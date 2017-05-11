@@ -995,6 +995,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Shapes\BaseShape\PPTShape\PPTShape.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Slide.h"
 				>
 			</File>

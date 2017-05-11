@@ -213,6 +213,7 @@ namespace NSPresentationEditor
             std::wstring	ConvertShadow	(CShadow	& shadow);
             std::wstring	ConvertBrush	(CBrush		& brush);
     static	std::wstring	ConvertColor	(CColor		& color, long alpha);
+			std::wstring ConvertLineEnd(unsigned char cap, unsigned char length, unsigned char width);
 // тип рендерера-----------------------------------------------------------------------------
     virtual HRESULT get_Type(LONG* lType)	;
 //-------- Функции для работы со страницей --------------------------------------------------

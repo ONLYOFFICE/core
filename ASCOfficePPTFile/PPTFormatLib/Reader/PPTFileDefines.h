@@ -401,48 +401,47 @@ static std::string GetRecordName(DWORD dwType)
 	case RECORD_TYPE_ROUNDTRIPNOTESMASTERTEXTSTYLES12				: { strName = ("RoundTripNotesMasterTextStyles12"); break; }
 	case RECORD_TYPE_ROUNDTRIPCUSTOMTABLESTYLES12					: { strName = ("RoundTripCustomTableStyles12"); break; }
 
-	//records greater then 0xF000 belong to with Microsoft Office Drawing format also known as Escher
-	case RECORD_TYPE_ESCHER_DGG_CONTAINER							: { strName = ("Escher_DrawingGroupContainer"); break; }
-	case RECORD_TYPE_ESCHER_DGG										: { strName = ("Escher_DrawingGroupRecord"); break; }
-	case RECORD_TYPE_ESCHER_CLSID									: { strName = ("Escher_CLSID_Record"); break; }
-	case RECORD_TYPE_ESCHER_OPT										: { strName = ("Escher_OPT"); break; }
-	case RECORD_TYPE_ESCHER_BSTORE_CONTAINER						: { strName = ("Escher_BlipStoreContainer"); break; }
-	case RECORD_TYPE_ESCHER_BSE										: { strName = ("Escher_BlipStoreEntry"); break; }
-	case RECORD_TYPE_ESCHER_BLIP_START								: { strName = ("Escher_BlipStart"); break; }
-	case RECORD_TYPE_ESCHER_BLIP_END								: { strName = ("Escher_BlipEnd"); break; }
-	case RECORD_TYPE_ESCHER_DG_CONTAINER							: { strName = ("Escher_DrawingContainer"); break; }
-	case RECORD_TYPE_ESCHER_DG										: { strName = ("Escher_DrawingRecord"); break; }
-	case RECORD_TYPE_ESCHER_REGROUPITEMS							: { strName = ("Escher_RegGroupItems"); break; }
-	case RECORD_TYPE_ESCHER_COLORSCHEME								: { strName = ("Escher_ColorSheme"); break; }
-	case RECORD_TYPE_ESCHER_SPGR_CONTAINER							: { strName = ("Escher_GroupShapeContainer"); break; }
-	case RECORD_TYPE_ESCHER_SP_CONTAINER							: { strName = ("Escher_ShapeContainer"); break; }
-	case RECORD_TYPE_ESCHER_SPGR									: { strName = ("Escher_GroupShapeRecord"); break; }
-	case RECORD_TYPE_ESCHER_SP										: { strName = ("Escher_ShapeRecord"); break; }
-	case RECORD_TYPE_ESCHER_TEXTBOX									: { strName = ("Escher_TextBox"); break; }
-	case RECORD_TYPE_ESCHER_CLIENTTEXTBOX							: { strName = ("Escher_ClientTextBox"); break; }
-	case RECORD_TYPE_ESCHER_ANCHOR									: { strName = ("Escher_Anchor"); break; }
-	case RECORD_TYPE_ESCHER_CHILDANCHOR								: { strName = ("Escher_ChildAnchor"); break; }
-	case RECORD_TYPE_ESCHER_CLIENTANCHOR							: { strName = ("Escher_ClientAnchor"); break; }
-	case RECORD_TYPE_ESCHER_CLIENTDATA								: { strName = ("Escher_ClientData"); break; }
-	case RECORD_TYPE_ESCHER_SOLVERCONTAINER							: { strName = ("Escher_SolverContainer"); break; }
-	case RECORD_TYPE_ESCHER_CONNECTORRULE							: { strName = ("Escher_ConnectorRule"); break; }
-	case RECORD_TYPE_ESCHER_ALIGNRULE								: { strName = ("Escher_AlignRule"); break; }
-	case RECORD_TYPE_ESCHER_ARCRULE									: { strName = ("Escher_ArcRule"); break; }
-	case RECORD_TYPE_ESCHER_CLIENTRULE								: { strName = ("Escher_ClientRule"); break; }
-	case RECORD_TYPE_ESCHER_CALLOUTRULE								: { strName = ("Escher_CallOutRule"); break; }
-	case RECORD_TYPE_ESCHER_SELECTION								: { strName = ("Escher_Selection"); break; }
-	case RECORD_TYPE_ESCHER_COLORMRU								: { strName = ("Escher_ColorMRU"); break; }
-	case RECORD_TYPE_ESCHER_DELETEDPSPL								: { strName = ("Escher_DeletedPSPL"); break; }
-	case RECORD_TYPE_ESCHER_SPLITMENUCOLORS							: { strName = ("Escher_SplitMenuColors"); break; }
-	case RECORD_TYPE_ESCHER_OLEOBJECT								: { strName = ("Escher_OleObject"); break; }
-	case RECORD_TYPE_ESCHER_SECONDARY_OPT							: { strName = ("Escher_SecondaryOPT"); break; }
-	case RECORD_TYPE_ESCHER_TETRIARY_OPT							: { strName = ("Escher_TetriaryOPT"); break; }
+	case RECORD_TYPE_ESCHER_DGG_CONTAINER							: { strName = ("DrawingGroupContainer"); break; }
+	case RECORD_TYPE_ESCHER_DGG										: { strName = ("DrawingGroupRecord"); break; }
+	case RECORD_TYPE_ESCHER_CLSID									: { strName = ("CLSID_Record"); break; }
+	case RECORD_TYPE_ESCHER_OPT										: { strName = ("OPT"); break; }
+	case RECORD_TYPE_ESCHER_BSTORE_CONTAINER						: { strName = ("BlipStoreContainer"); break; }
+	case RECORD_TYPE_ESCHER_BSE										: { strName = ("BlipStoreEntry"); break; }
+	case RECORD_TYPE_ESCHER_BLIP_START								: { strName = ("BlipStart"); break; }
+	case RECORD_TYPE_ESCHER_BLIP_END								: { strName = ("BlipEnd"); break; }
+	case RECORD_TYPE_ESCHER_DG_CONTAINER							: { strName = ("DrawingContainer"); break; }
+	case RECORD_TYPE_ESCHER_DG										: { strName = ("DrawingRecord"); break; }
+	case RECORD_TYPE_ESCHER_REGROUPITEMS							: { strName = ("RegGroupItems"); break; }
+	case RECORD_TYPE_ESCHER_COLORSCHEME								: { strName = ("ColorSheme"); break; }
+	case RECORD_TYPE_ESCHER_SPGR_CONTAINER							: { strName = ("GroupShapeContainer"); break; }
+	case RECORD_TYPE_ESCHER_SP_CONTAINER							: { strName = ("ShapeContainer"); break; }
+	case RECORD_TYPE_ESCHER_SPGR									: { strName = ("GroupShapeRecord"); break; }
+	case RECORD_TYPE_ESCHER_SP										: { strName = ("ShapeRecord"); break; }
+	case RECORD_TYPE_ESCHER_TEXTBOX									: { strName = ("TextBox"); break; }
+	case RECORD_TYPE_ESCHER_CLIENTTEXTBOX							: { strName = ("ClientTextBox"); break; }
+	case RECORD_TYPE_ESCHER_ANCHOR									: { strName = ("Anchor"); break; }
+	case RECORD_TYPE_ESCHER_CHILDANCHOR								: { strName = ("ChildAnchor"); break; }
+	case RECORD_TYPE_ESCHER_CLIENTANCHOR							: { strName = ("ClientAnchor"); break; }
+	case RECORD_TYPE_ESCHER_CLIENTDATA								: { strName = ("ClientData"); break; }
+	case RECORD_TYPE_ESCHER_SOLVERCONTAINER							: { strName = ("SolverContainer"); break; }
+	case RECORD_TYPE_ESCHER_CONNECTORRULE							: { strName = ("ConnectorRule"); break; }
+	case RECORD_TYPE_ESCHER_ALIGNRULE								: { strName = ("AlignRule"); break; }
+	case RECORD_TYPE_ESCHER_ARCRULE									: { strName = ("ArcRule"); break; }
+	case RECORD_TYPE_ESCHER_CLIENTRULE								: { strName = ("ClientRule"); break; }
+	case RECORD_TYPE_ESCHER_CALLOUTRULE								: { strName = ("CallOutRule"); break; }
+	case RECORD_TYPE_ESCHER_SELECTION								: { strName = ("Selection"); break; }
+	case RECORD_TYPE_ESCHER_COLORMRU								: { strName = ("ColorMRU"); break; }
+	case RECORD_TYPE_ESCHER_DELETEDPSPL								: { strName = ("DeletedPSPL"); break; }
+	case RECORD_TYPE_ESCHER_SPLITMENUCOLORS							: { strName = ("SplitMenuColors"); break; }
+	case RECORD_TYPE_ESCHER_OLEOBJECT								: { strName = ("OleObject"); break; }
+	case RECORD_TYPE_ESCHER_SECONDARY_OPT							: { strName = ("SecondaryOPT"); break; }
+	case RECORD_TYPE_ESCHER_TETRIARY_OPT							: { strName = ("TetriaryOPT"); break; }
 	default: break;
 	};
 
 	if ((dwType > RECORD_TYPE_ESCHER_BLIP_START) && (dwType < RECORD_TYPE_ESCHER_BLIP_END))
 	{
-		strName = ("Escher_Blip");
+		strName = ("Blip");
 	}
 
 	return strName;

@@ -326,7 +326,7 @@ private:
         if (differenceInLength < 0)
             differenceInLength = -differenceInLength;
 
-        for (int i = number1.size() - 1; i >= 0; --i)
+        for (int i = (int)(number1.size()) - 1; i >= 0; --i)
         {
             add[i] = ((carry-'0')+(number1[i]-'0')+(number2[i]-'0')) + '0';
 
@@ -364,7 +364,7 @@ private:
         if (differenceInLength < 0)
             differenceInLength = -differenceInLength;
 
-        for (int i = number1.length() - 1; i >= 0; --i)
+        for (int i = (int)(number1.length()) - 1; i >= 0; --i)
         {
             if (number1[i] < number2[i])
             {
@@ -386,13 +386,13 @@ private:
             n1.swap(n2);
 
         std::string res = "0";
-        for (int i = n1.length() - 1; i >= 0; --i)
+        for (int i = (int)(n1.length()) - 1; i >= 0; --i)
         {
             std::string temp = n2;
             int currentDigit = n1[i] - '0';
             int carry = 0;
 
-            for (int j = temp.length() - 1; j >= 0; --j)
+            for (int j = (int)(temp.length()) - 1; j >= 0; --j)
             {
                 temp[j] = ((temp[j]-'0') * currentDigit) + carry;
 

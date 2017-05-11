@@ -8,6 +8,10 @@
 #include "../../xml/include/xmlutils.h"
 #include "../../xml/libxml2/include/libxml/c14n.h"
 
+#ifndef XML_UNUSED
+#define XML_UNUSED( arg )  ( (arg) = (arg) )
+#endif
+
 class CXmlCanonicalizator
 {
 private:
@@ -33,11 +37,14 @@ private:
 
     static int buffer_xmlBufferIOClose(CXmlBuffer* buf)
     {
+        XML_UNUSED(buf);
         return 0;
     }
 
     static int buffer_xmlC14NIsVisibleCallback(void * user_data, xmlNodePtr node, xmlNodePtr parent)
     {
+        XML_UNUSED(user_data);
+        XML_UNUSED(parent);
         if (node->type == XML_TEXT_NODE)
         {
             const char* cur = (char*)node->content;
@@ -53,7 +60,7 @@ private:
     }
 
 public:
-    static std::string Execute(const std::string& sXml, int mode)
+    static std::string Execute(const std::string& sXml, int mode = XML_C14N_1_0, bool withComments = false)
     {
         xmlDocPtr xmlDoc = xmlParseMemory((char*)sXml.c_str(), (int)sXml.length());
 
@@ -63,21 +70,18 @@ public:
                                                              &bufferC14N,
                                                              NULL);
 
-        xmlC14NExecute(xmlDoc, buffer_xmlC14NIsVisibleCallback, NULL, mode, NULL, 0, _buffer);
+        xmlC14NExecute(xmlDoc, buffer_xmlC14NIsVisibleCallback, NULL, mode, NULL, withComments ? 1 : 0, _buffer);
 
         xmlOutputBufferClose(_buffer);
 
         return bufferC14N.builder.GetData();
     }
 
-    static std::string Execute(const std::wstring& sXmlFile, int mode)
+    static std::string Execute(const std::wstring& sXmlFile, int mode = XML_C14N_1_0, bool withComments = false)
     {
         std::string sXml;
         NSFile::CFileBinary::ReadAllTextUtf8A(sXmlFile, sXml);
-
-        xmlDocPtr xmlDoc = xmlParseMemory((char*)sXml.c_str(), (int)sXml.length());
-
-        return Execute(sXml, mode);
+        return Execute(sXml, mode, withComments);
     }
 };
 

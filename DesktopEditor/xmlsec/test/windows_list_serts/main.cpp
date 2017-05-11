@@ -8,6 +8,43 @@
 
 void main(void)
 {
+    if (false)
+    {
+        BYTE* pData = NULL;
+        DWORD dwDataLen = 0;
+        bool bRes = NSFile::CFileBinary::ReadAllBytes(L"D:\\cert2.bin", &pData, dwDataLen);
+
+        if (!bRes)
+            return;
+
+        PCCERT_CONTEXT context = CertCreateCertificateContext(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, pData, dwDataLen);
+
+        if (!context)
+        {
+            RELEASEARRAYOBJECTS(pData);
+            return;
+        }
+
+        BOOL result = CryptUIDlgViewContext(CERT_STORE_CERTIFICATE_CONTEXT, context, NULL, NULL, 0, NULL);
+        result;
+
+        if (context)
+            CertFreeCertificateContext(context);
+
+        RELEASEARRAYOBJECTS(pData);
+        return;
+    }
+
+    if (false)
+    {
+        xmlLoadExtDtdDefaultValue = XML_DETECT_IDS | XML_COMPLETE_ATTRS;
+        xmlSubstituteEntitiesDefault(1);
+
+        std::string sXmlCan = CXmlCanonicalizator::Execute(L"D:\\1.xml", XML_C14N_1_0);
+        NSFile::CFileBinary::SaveToFile(L"D:\\2.xml", UTF8_TO_U(sXmlCan));
+        return;
+    }
+
     //std::wstring sFolderOOOXML = NSFile::GetProcessDirectory() + L"/ImageStamp";
     //std::wstring sSignId = L"{39B6B9C7-60AD-45A2-9F61-40C74A24042E}";
 

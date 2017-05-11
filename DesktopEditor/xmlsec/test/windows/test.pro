@@ -6,7 +6,9 @@ TEMPLATE = app
 CONFIG   += console
 CONFIG   -= app_bundle
 
-DEFINES += UNICODE
+DEFINES -= \
+    UNICODE \
+    _UNICODE
 
 CORE_ROOT_DIR = $$PWD/../../../..
 PWD_ROOT_DIR = $$PWD

@@ -141,4 +141,46 @@ IXmlTransform* IXmlTransform::GetFromType(const std::string& alg)
     return NULL;
 }
 
+class CXmlTransforms
+{
+protected:
+    std::vector<IXmlTransform*> m_transforms;
+    bool m_valid;
+
+public:
+    CXmlTransforms(XmlUtils::CXmlNode& node)
+    {
+        m_valid = true;
+
+        XmlUtils::CXmlNodes oNodes = node.GetNodes(L"Transform");
+        int nCount = oNodes.GetCount();
+        for (int i = 0; i < nCount; ++i)
+        {
+            XmlUtils::CXmlNode nodeTransform;
+            oNodes.GetAt(i, nodeTransform);
+
+            IXmlTransform* pTransform = IXmlTransform::GetFromType(nodeTransform.GetAttributeA("Algorithm"));
+            if (NULL == pTransform)
+            {
+                m_valid = false;
+                return;
+            }
+
+            pTransform->LoadFromXml(nodeTransform);
+            m_transforms.push_back(pTransform);
+        }
+    }
+
+    ~CXmlTransforms()
+    {
+        for (std::vector<IXmlTransform*>::iterator i = m_transforms.begin(); i != m_transforms.end(); i++)
+        {
+            IXmlTransform* t = *i;
+            RELEASEOBJECT(t);
+        }
+        m_transforms.clear();
+    }
+
+};
+
 #endif //_XML_TRANSFORM_H_

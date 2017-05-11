@@ -1,4 +1,3 @@
-#include "../../src/XmlCanonicalizator.h"
 #include "../../src/XmlSigner_mscrypto.h"
 #include "../../src/OOXMLSigner.h"
 

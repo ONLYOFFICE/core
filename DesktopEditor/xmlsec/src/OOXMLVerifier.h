@@ -89,7 +89,8 @@ private:
 
                 for (int i = 0; i < nCount; i++)
                 {
-                    CXmlStackNamespaces _retRecursion = GetByIdRec(ret, id);
+                    oNodes.GetAt(i, ret.m_node);
+                    CXmlStackNamespaces _retRecursion = ret.GetByIdRec(ret, id);
                     if (_retRecursion.m_node.IsValid())
                         return _retRecursion;
                 }
@@ -165,7 +166,25 @@ public:
             return;
         }
 
+        // 2) Objects
+        XmlUtils::CXmlNodes nodesReferences;
+        m_node.ReadNode(L"SignedInfo").GetNodes(L"Reference", nodesReferences);
 
+        CXmlStackNamespaces stack(m_node);
+        int nCount = nodesReferences.GetCount();
+        for (int i = 0; i < nCount; i++)
+        {
+            XmlUtils::CXmlNode nodeRef;
+            nodesReferences.GetAt(i, nodeRef);
+
+            std::string sId = nodeRef.GetAttributeA("URI");
+            if (0 == sId.find("#"))
+                sId = sId.substr(1);
+
+            CXmlStackNamespaces _stack = stack.GetById(sId);
+            std::string sTmp = _stack.GetXml();
+            XML_UNUSED(sTmp);
+        }
     }
 
     friend class COOXMLVerifier;

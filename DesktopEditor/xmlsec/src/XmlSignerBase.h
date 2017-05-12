@@ -33,6 +33,9 @@ public:
     virtual std::string GetHash(std::wstring& sXmlFile)                     = 0;
     virtual bool Verify(std::string& sXml, std::string& sXmlSignature)      = 0;
 
+    virtual bool LoadFromBase64Data(const std::string& data)                = 0;
+    virtual int ShowCertificate()                                           = 0;
+
 public:
     virtual bool ShowSelectDialog()             = 0;
 };

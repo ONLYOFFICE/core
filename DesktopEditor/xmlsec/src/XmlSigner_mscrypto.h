@@ -14,27 +14,40 @@ public:
     HCERTSTORE     m_store;
     PCCERT_CONTEXT m_context;
 
+protected:
+    BYTE*           m_rawData;
+    int             m_rawDataLen;
+
 public:
     CCertificate_mscrypto() : ICertificate()
     {
         m_store = NULL;
         m_context = NULL;
+
+        m_rawData = NULL;
+        m_rawDataLen = 0;
     }
     CCertificate_mscrypto(PCCERT_CONTEXT ctx) : ICertificate()
     {
         m_store = NULL;
         m_context = ctx;
+
+        m_rawData = NULL;
+        m_rawDataLen = 0;
     }
 
     virtual ~CCertificate_mscrypto()
     {
-        if (m_store != NULL)
+        if (m_store != NULL || m_rawData != NULL)
         {
             if (NULL != m_context)
                 CertFreeCertificateContext(m_context);
 
-            CertCloseStore(m_store, 0);
+            RELEASEARRAYOBJECTS(m_rawData);
         }
+
+        if (m_store != NULL)
+            CertCloseStore(m_store, 0);
     }
 
 public:
@@ -284,6 +297,28 @@ public:
         CryptReleaseContext(hCryptProv, 0);
 
         return bResultRet && bResult;
+    }
+
+    virtual bool LoadFromBase64Data(const std::string& data)
+    {
+        RELEASEARRAYOBJECTS(m_rawData);
+        if (!NSFile::CBase64Converter::Decode(data.c_str(), (int)data.length(), m_rawData, m_rawDataLen))
+            return false;
+
+        m_context = CertCreateCertificateContext(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, m_rawData, m_rawDataLen);
+        if (!m_context)
+        {
+            RELEASEARRAYOBJECTS(m_rawData);
+            m_rawDataLen = 0;
+            return false;
+        }
+
+        return true;
+    }
+
+    virtual int ShowCertificate()
+    {
+        return (int)CryptUIDlgViewContext(CERT_STORE_CERTIFICATE_CONTEXT, m_context, NULL, NULL, 0, NULL);
     }
 
 public:

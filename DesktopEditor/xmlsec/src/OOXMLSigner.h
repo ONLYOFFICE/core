@@ -44,7 +44,7 @@ public:
         std::wstring sXml = L"<Reference URI=\"" + file + L"?ContentType=" + content_type + L"\">";
         sXml += L"<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/>";
         sXml += L"<DigestValue>";
-        sXml += UTF8_TO_U(m_certificate->GetHash(m_sFolder + file));
+        sXml += UTF8_TO_U(m_certificate->GetHash(m_sFolder + file, OOXML_HASH_ALG_SHA1));
         sXml += L"</DigestValue>";
         sXml += L"</Reference>";
         return sXml;
@@ -54,7 +54,7 @@ public:
     {
         std::string sXmlSigned = U_TO_UTF8(xml);
         sXmlSigned = CXmlCanonicalizator::Execute(sXmlSigned, XML_C14N_1_0);
-        return m_certificate->GetHash(sXmlSigned);
+        return m_certificate->GetHash(sXmlSigned, OOXML_HASH_ALG_SHA1);
     }
 
     std::string GetReferenceMain(const std::wstring& xml, const std::wstring& id, const bool& isCannon = true)
@@ -491,7 +491,7 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
         m_signed_info.WriteString("<Reference Type=\"http://uri.etsi.org/01903#SignedProperties\" URI=\"#idSignedProperties\">");
         m_signed_info.WriteString("<Transforms><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>");
         m_signed_info.WriteString("<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/><DigestValue>");
-        m_signed_info.WriteString(m_certificate->GetHash(sXmlTmp));
+        m_signed_info.WriteString(m_certificate->GetHash(sXmlTmp, OOXML_HASH_ALG_SHA1));
         m_signed_info.WriteString("</DigestValue></Reference>");
 
         return (L"<Object><xd:QualifyingProperties xmlns:xd=\"http://uri.etsi.org/01903/v1.3.2#\" Target=\"#idPackageSignature\">\

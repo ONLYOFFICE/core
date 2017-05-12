@@ -305,6 +305,19 @@ namespace XmlUtils
                         strValues.push_back (NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->second.c_str(), (long)p->second.length()));
                     }
                 }
+                template<typename T>
+                void ReadAllAttributesA(T& strNames, T& strValues)
+                {
+                    if (!IsValid())
+                        return;
+
+                    std::map<std::string, std::string>::iterator p;
+                    for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+                    {
+                        strNames.push_back(p->first);
+                        strValues.push_back(p->second);
+                    }
+                }
                 template <typename T>
                 void ReadNodeValueBase(const wchar_t* bsName, T& value)
                 {

@@ -37,6 +37,7 @@ void main(void)
         for (std::vector<COOXMLSignature*>::iterator i = oVerifier.m_arSignatures.begin(); i != oVerifier.m_arSignatures.end(); i++)
         {
             COOXMLSignature* pSign = *i;
+            XML_UNUSED(pSign);
         }
 
         XML_UNUSED(nCount);

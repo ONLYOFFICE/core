@@ -188,37 +188,6 @@ public:
     }
 
     friend class COOXMLVerifier;
-
-private:
-    XmlUtils::CXmlNode GetById(const std::string& id)
-    {
-        return GetByIdRec(m_node, id);
-    }
-    XmlUtils::CXmlNode GetByIdRec(XmlUtils::CXmlNode& node, const std::string& id)
-    {
-        XmlUtils::CXmlNode retNode;
-
-        XmlUtils::CXmlNodes oNodes;
-        if (node.GetChilds(oNodes))
-        {
-            int nCount = oNodes.GetCount();
-
-            for (int i = 0; i < nCount; i++)
-            {
-                XmlUtils::CXmlNode _node;
-                oNodes.GetAt(i, _node);
-
-                if (_node.GetAttributeA("Id") == id)
-                    return _node;
-
-                retNode = GetByIdRec(_node, id);
-                if (retNode.IsValid())
-                    return retNode;
-            }
-        }
-
-        return retNode;
-    }
 };
 
 class COOXMLVerifier

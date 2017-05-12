@@ -57,7 +57,10 @@ public:
     }
 
 public:
-    void Check();
+    void Check()
+    {
+
+    }
 
     friend class COOXMLVerifier;
 };

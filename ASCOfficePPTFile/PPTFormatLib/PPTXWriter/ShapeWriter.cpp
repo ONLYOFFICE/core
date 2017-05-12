@@ -1226,7 +1226,8 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertShape()
 			}
 		m_oWriter.WriteString(std::wstring(L">"));
 
-        m_oWriter.WriteString(L"<a:off x=\"" + std::to_wstring((int)m_pShapeElement->m_rcBoundsOriginal.left) + L"\" y=\"" + std::to_wstring((int)m_pShapeElement->m_rcBoundsOriginal.top) + L"\"/>");
+        m_oWriter.WriteString(L"<a:off x=\"" + std::to_wstring((int)m_pShapeElement->m_rcBoundsOriginal.left) + 
+								L"\" y=\"" + std::to_wstring((int)m_pShapeElement->m_rcBoundsOriginal.top) + L"\"/>");
 
 		int width	= m_pShapeElement->m_rcBoundsOriginal.right - m_pShapeElement->m_rcBoundsOriginal.left;
 		int height	= m_pShapeElement->m_rcBoundsOriginal.bottom - m_pShapeElement->m_rcBoundsOriginal.top;

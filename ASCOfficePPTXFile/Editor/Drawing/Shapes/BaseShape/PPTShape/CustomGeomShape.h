@@ -488,6 +488,9 @@ namespace NSCustomVML
         std::vector<CSegment>			m_arSegments;
         std::vector<CGuide>				m_arGuides;
         std::vector<LONG>*				m_pAdjustValues;
+        std::vector<Aggplus::POINT>		m_arConnectionSites;
+		std::vector<Aggplus::RECT>		m_arInscribe;
+        std::vector<double>				m_arConnectionSitesDir;
 
         bool m_bIsVerticesPresent;
         bool m_bIsPathPresent;
@@ -496,7 +499,7 @@ namespace NSCustomVML
         CPen	m_oPen;
 
     public:
-        CCustomVML() : m_arVertices(), m_arSegments(), m_arGuides(), m_pAdjustValues(NULL)
+        CCustomVML() : m_pAdjustValues(NULL)
         {
             m_ePath = rtCurveTo/*rtLineTo*/;
 
@@ -579,6 +582,63 @@ namespace NSCustomVML
                 m_arVertices.push_back(oPoint);
             }
         }
+		void LoadConnectionSitesDir(CProperty* pProperty)
+        {
+            NSOfficeDrawing::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
+            m_arConnectionSitesDir.clear();
+           
+			WORD lCount = (WORD)(pProperty->m_lValue / 4);
+            
+			for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
+            {
+                DWORD v = oReader.ReadLONG();
+				double val = (double)((WORD)(v >> 16) + ((WORD)(v) / 65536.0));
+				m_arConnectionSitesDir.push_back(val);
+			}
+		}
+		void LoadConnectionSites(CProperty* pProperty)
+        {
+            NSOfficeDrawing::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
+            m_arConnectionSites.clear();
+
+            WORD lCount = (WORD)(pProperty->m_lValue / 8);
+            if (pProperty->m_bIsTruncated)
+            {
+                lCount = (WORD)(pProperty->m_lValue / 4);
+            }
+
+            for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
+            {
+                Aggplus::POINT oPoint;
+                if (pProperty->m_bIsTruncated)
+                {
+                    oPoint.x = (short)oReader.ReadWORD();
+                    oPoint.y = (short)oReader.ReadWORD();
+                }
+                else
+                {
+                    oPoint.x = oReader.ReadLONG();
+                    oPoint.y = oReader.ReadLONG();
+                }
+
+                LONG lMinF = (LONG)0x80000000;
+                LONG lMaxF = (LONG)0x8000007F;
+                if (lMinF <= oPoint.x)
+                {
+                    int nGuideIndex = (DWORD)oPoint.x - 0x80000000;
+
+                    bool b = false;
+                }
+                if (lMinF <= oPoint.y)
+                {
+                    int nGuideIndex = (DWORD)oPoint.y - 0x80000000;
+
+                    bool b = false;
+                }
+
+                m_arConnectionSites.push_back(oPoint);
+            }
+		}
         void LoadVertices(CProperty* pProperty)
         {
             NSOfficeDrawing::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
@@ -704,8 +764,38 @@ namespace NSCustomVML
                 oInfo.Read(oReader);
                 m_arGuides.push_back(oInfo);
             }
-
         }
+		void LoadInscribe(CProperty* pProperty)
+		{
+            NSOfficeDrawing::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
+            m_arInscribe.clear();
+
+            WORD lCount = (WORD)(pProperty->m_lValue / 16);
+            if (pProperty->m_bIsTruncated)
+            {
+                lCount = (WORD)(pProperty->m_lValue / 8);
+            }
+
+            for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
+            {
+                Aggplus::RECT oRect;
+                if (pProperty->m_bIsTruncated)
+                {
+                    oRect.left		= (short)oReader.ReadWORD();
+                    oRect.right		= (short)oReader.ReadWORD();
+					oRect.top		= (short)oReader.ReadWORD();
+					oRect.bottom	= (short)oReader.ReadWORD();
+               }
+                else
+                {
+                    oRect.left		= (short)oReader.ReadLONG();
+                    oRect.right		= (short)oReader.ReadLONG();
+					oRect.top		= (short)oReader.ReadLONG();
+					oRect.bottom	= (short)oReader.ReadLONG();
+                }
+                m_arInscribe.push_back(oRect);
+            }
+		}
         void LoadAdjusts(LONG lIndex, LONG lValue)
         {
             if (NULL == m_pAdjustValues)

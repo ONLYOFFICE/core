@@ -871,65 +871,80 @@ public:
 
 		switch (pProperty->m_ePID)
 		{
-			// здесь просто применяем проперти...
-			// geometry ----------------------------------------------------
-			// top, left, right, bottom logic
 		case NSOfficeDrawing::metroBlob:
-			{
-				//альтернатива в формате oox
-				//NSFile::CFileBinary f;
-				//f.CreateFileW(L"d:\\test.zip");
-				//f.WriteFile(pProperty->m_pOptions, pProperty->m_lValue);
-				//f.CloseFile();
-			}break;
+		{
+			//альтернатива в формате oox
+			//NSFile::CFileBinary f;
+			//f.CreateFileW(L"d:\\test.zip");
+			//f.WriteFile(pProperty->m_pOptions, pProperty->m_lValue);
+			//f.CloseFile();
+		}break;
 		case NSOfficeDrawing::geoRight:
-			{
-				if (0 < pProperty->m_lValue)
-					pParentShape->m_dWidthLogic = (double)(pProperty->m_lValue);				
-			}break;
+		{
+			if (0 < pProperty->m_lValue)
+				pParentShape->m_dWidthLogic = (double)(pProperty->m_lValue);				
+		}break;
 		case NSOfficeDrawing::geoBottom:
-			{
-				if (0 < pProperty->m_lValue)
-					pParentShape->m_dHeightLogic = (double)(pProperty->m_lValue);				
-			}break;
-			// shapePath
+		{
+			if (0 < pProperty->m_lValue)
+				pParentShape->m_dHeightLogic = (double)(pProperty->m_lValue);				
+		}break;
 		case NSOfficeDrawing::shapePath:
-			{
-				pShape->m_oCustomVML.SetPath((RulesType)pProperty->m_lValue);				
-				pShape->m_bCustomShape = true;
-			}break;
-			// segmentsInfo
+		{
+			pShape->m_oCustomVML.SetPath((RulesType)pProperty->m_lValue);				
+			pShape->m_bCustomShape = true;
+		}break;
 		case NSOfficeDrawing::pSegmentInfo:
+		{
+			if (pProperty->m_bComplex)
 			{
-				if (pProperty->m_bComplex)
-				{
-					pShape->m_oCustomVML.LoadSegments(pProperty);
-					pShape->m_bCustomShape = true;
-				}				
-			}break;
-			// verticesInfo
+				pShape->m_oCustomVML.LoadSegments(pProperty);
+				pShape->m_bCustomShape = true;
+			}				
+		}break;
 		case NSOfficeDrawing::pVertices:
+		{
+			if (pProperty->m_bComplex)
 			{
-				if (pProperty->m_bComplex)
-				{
-					pShape->m_oCustomVML.LoadVertices(pProperty);
-					pShape->m_bCustomShape = true;
-				}				
-			}break;
+				pShape->m_oCustomVML.LoadVertices(pProperty);
+				pShape->m_bCustomShape = true;
+			}				
+		}break;
+		case NSOfficeDrawing::pConnectionSites:
+		{
+			if (pProperty->m_bComplex)
+			{
+				pShape->m_oCustomVML.LoadConnectionSites(pProperty);
+			}				
+		}break;
+		case NSOfficeDrawing::pConnectionSitesDir:
+		{
+			if (pProperty->m_bComplex)
+			{
+				pShape->m_oCustomVML.LoadConnectionSitesDir(pProperty);
+			}				
+		}break;
 		case NSOfficeDrawing::pGuides:
+		{
+			if (pProperty->m_bComplex/* && pShape->m_eType != sptNotchedCircularArrow*/)
+			{//Тікбұрышты үшбұрыштарды.ppt - slide 25
+				pShape->m_oCustomVML.LoadGuides(pProperty);
+			}				
+		}break;
+		case NSOfficeDrawing::pInscribe:
+		{
+			if (pProperty->m_bComplex)
 			{
-				if (pProperty->m_bComplex && pShape->m_eType != sptNotchedCircularArrow)
-				{//Тікбұрышты үшбұрыштарды.ppt - slide 25
-					pShape->m_oCustomVML.LoadGuides(pProperty);
-				}				
-			}break;
+				pShape->m_oCustomVML.LoadInscribe(pProperty);
+			}
+		}break;
 		case NSOfficeDrawing::pAdjustHandles:
+		{
+			if (pProperty->m_bComplex)
 			{
-				if (pProperty->m_bComplex)
-				{
-					pShape->m_oCustomVML.LoadAHs(pProperty);
-				}				
-			}break;
+				pShape->m_oCustomVML.LoadAHs(pProperty);
+			}				
+		}break;
 		case NSOfficeDrawing::adjustValue:
 		case NSOfficeDrawing::adjust2Value:
 		case NSOfficeDrawing::adjust3Value:

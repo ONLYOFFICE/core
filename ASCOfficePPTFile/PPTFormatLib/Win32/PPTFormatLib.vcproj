@@ -463,10 +463,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Document.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Reader\PPTDocumentInfo.h"
 				>
 			</File>
@@ -1030,6 +1026,26 @@
 				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\XmlWriter.h"
 				>
 			</File>
+			<Filter
+				Name="ppt shapes"
+				>
+				<File
+					RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Shapes\BaseShape\PPTShape\customgeomshape.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Shapes\BaseShape\PPTShape\elementsettings.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Shapes\BaseShape\PPTShape\formula.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Shapes\BaseShape\PPTShape\PPTShape.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="OOXWriter"

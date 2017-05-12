@@ -170,12 +170,11 @@ namespace NSPresentationEditor
 
 			m_oWriter.WriteString(str1);
 
-			int nCurrent = nStartLayoutIndex;
 			for (int i = 0; i < nCountLayouts; ++i)
 			{
                 std::wstring str = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout"
-                        + std::to_wstring(nCurrent + 1) + L".xml\"/>";
-				++nCurrent;
+                        + std::to_wstring(nStartLayoutIndex + 1) + L".xml\"/>";
+				nStartLayoutIndex++;
 				m_oWriter.WriteString(str);
 			}
 
@@ -196,7 +195,23 @@ namespace NSPresentationEditor
 
 			m_oWriter.WriteString(str);
 		}
-        inline void StartSlide(int nIndexLayout, int nIndexSlide)
+         inline void StartNotes(int nIndexSlide, bool bMaster)
+		{
+			m_oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
+							<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
+			if (bMaster)
+			{
+				m_oWriter.WriteString(L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+						L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"../notesMasters/notesMaster1.xml\"/>");
+			}
+			if (nIndexSlide >= 0)
+			{
+				m_oWriter.WriteString(L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+							L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"../slides/slide"
+							+ std::to_wstring(nIndexSlide + 1) + L".xml\"/>");
+			}
+		}
+		 inline void StartSlide(int nIndexLayout, int nIndexNotes)
 		{
             m_oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
                                   <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
@@ -204,51 +219,14 @@ namespace NSPresentationEditor
             m_oWriter.WriteString(L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout"
                                   + std::to_wstring(nIndexLayout + 1) + L".xml\"/>");
 
-            m_oWriter.WriteString(L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
-                                  L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide\" Target=\"../notesSlides/notesSlide"
-                                  + std::to_wstring(nIndexSlide + 1) + L".xml\"/>");
+			if (nIndexNotes >= 0)
+			{
+				m_oWriter.WriteString(L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+									  L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide\" Target=\"../notesSlides/notesSlide"
+									  + std::to_wstring(nIndexNotes + 1) + L".xml\"/>");
+			}
 		}
-        static inline void StartNotes(int nIndexSlide, std::wstring strDirectory, std::wstring strComment)
-		{
-            std::wstring sNum = std::to_wstring( nIndexSlide + 1);
-
-            std::wstring strNoteSlideRels = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
-<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
-<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"../slides/slide") + sNum + _T(".xml\"/>\
-<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"../notesMasters/notesMaster1.xml\"/>\
-</Relationships>");
-
-            std::wstring strNoteRels = strDirectory	+ FILE_SEPARATOR_STR + _T("ppt") +
-												+ FILE_SEPARATOR_STR + _T("notesSlides")
-												+ FILE_SEPARATOR_STR + _T("_rels")
-												+ FILE_SEPARATOR_STR + _T("notesSlide") + sNum + _T(".xml.rels");
-			CFile oFile;
-			oFile.CreateFile(strNoteRels);
-			oFile.WriteStringUTF8(strNoteSlideRels);
-			oFile.CloseFile();
-
-            std::wstring strNoteSlide = strDirectory + FILE_SEPARATOR_STR + _T("ppt") +
-												+ FILE_SEPARATOR_STR + _T("notesSlides")
-												+ FILE_SEPARATOR_STR + _T("notesSlide") + sNum + _T(".xml");
-			oFile.CreateFile(strNoteSlide);
-
-            std::wstring strW1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-<p:notes xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">\
-<p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id=\"1\" name=\"\"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x=\"0\" y=\"0\"/>\
-<a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr><p:sp><p:nvSpPr><p:cNvPr id=\"100000\" name=\"\"/>\
-<p:cNvSpPr><a:spLocks noGrp=\"1\" noChangeArrowheads=\"1\"/></p:cNvSpPr><p:nvPr><p:ph type=\"body\" idx=\"1\"/></p:nvPr></p:nvSpPr><p:spPr/>\
-<p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:r><a:rPr smtClean=\"0\"/><a:t>");
-            std::wstring strW2 = _T("</a:t></a:r><a:endParaRPr/></a:p></p:txBody></p:sp></p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:notes>");
-
-			CorrectXmlString(strComment);
-
-			oFile.WriteStringUTF8(strW1);
-			oFile.WriteStringUTF8(strComment);
-			oFile.WriteStringUTF8(strW2);
-
-			oFile.CloseFile();
-		}
-        inline void CloseRels()
+         inline void CloseRels()
 		{
             std::wstring str = _T("</Relationships>");
 			m_oWriter.WriteString(str);

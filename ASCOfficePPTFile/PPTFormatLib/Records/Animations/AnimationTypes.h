@@ -206,7 +206,7 @@ namespace Animations
             std::vector<std::wstring> arMovePath;
             boost::algorithm::split(arMovePath, MovePath, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 
-            for (int i = 0 ; i < arMovePath.size(); i++)
+            for (size_t i = 0 ; i < arMovePath.size(); i++)
 			{
 				ActionPoint	aPoint;
                 aPoint.TYPE		=	arMovePath[i++][0];
@@ -245,7 +245,7 @@ namespace Animations
 		{
             std::wstring	MovePath;
 
-			for ( int i = 0; i < m_Points.size(); ++i )
+			for ( size_t i = 0; i < m_Points.size(); ++i )
 			{
                 std::wstring NextPoint;
 

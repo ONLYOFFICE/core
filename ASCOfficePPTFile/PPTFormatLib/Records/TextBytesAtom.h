@@ -59,7 +59,7 @@ public:
 		{
 			pStream->read(pUTF16_low, m_oHeader.RecLen);
 
-			for (int i = 0 ; i < m_oHeader.RecLen; i++)
+			for (UINT i = 0 ; i < m_oHeader.RecLen; i++)
 			{
 				pUTF16[i] = pUTF16_low[i];
 			}

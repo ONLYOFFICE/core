@@ -54,8 +54,6 @@ namespace NSPresentationEditor
 
 		CShapeWriter*	m_pShapeWriter;
 
-
-	public:
 		CPPTXWriter();
 		~CPPTXWriter();
 
@@ -74,9 +72,12 @@ namespace NSPresentationEditor
 		void WritePresInfo		();
 		void WriteAll			();
 		void WriteThemes		();
+		void WriteTheme			(CTheme* pTheme, int & nIndexTheme, int & nStartLayout, int Type = 1);
 		void WriteSlides		();
+		void WriteNotes			();
 		void WriteLayout		(CLayout& oLayout, int nIndexLayout, int nStartLayout, int nIndexTheme);
 		void WriteSlide			(int nIndexSlide);
+		void WriteNotes			(int nIndexNotes);
 		
 		void WriteColorScheme	(CStringWriter& oWriter, const std::wstring & name, const std::vector<CColor> & colors, bool extra = false);
 		void WriteBackground	(CStringWriter& oWriter, CRelsGenerator& oRels, CBrush& oBackground);

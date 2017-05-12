@@ -478,10 +478,17 @@ namespace NSPresentationEditor
         long Alpha;
         double Size;
 
-        BYTE DashStyle;
-        BYTE LineStartCap;
-        BYTE LineEndCap;
-        BYTE LineJoin;
+		unsigned char DashStyle;
+		unsigned char LineStyle;
+		unsigned char LineJoin;
+		
+		unsigned char LineEndCap;
+		unsigned char LineEndLength;
+		unsigned char LineEndWidth;
+
+		unsigned char LineStartCap;
+		unsigned char LineStartLength;
+		unsigned char LineStartWidth;
 
         double* DashPattern;
         long Count;
@@ -492,9 +499,8 @@ namespace NSPresentationEditor
         double MiterLimit;
 
         CColor Color2;	//backLine
-    public:
 
-        void GetDashPattern(double* arrDashPattern, long& nCount) const
+		void GetDashPattern(double* arrDashPattern, long& nCount) const
         {
             if (nCount == Count)
             {
@@ -579,10 +585,16 @@ namespace NSPresentationEditor
             Alpha = 255;
             Size  = 0.26458;
 
-            DashStyle    = 0;
-            LineStartCap = 0;
-            LineEndCap   = 0;
-            LineJoin     = 0;
+			LineStyle	= 0; //single(Simple)
+			DashStyle	= 0; //Solid
+			LineJoin	= 2; //round
+
+			LineStartCap	= 0;
+			LineEndCap		= 0;
+			LineEndLength	= 1; //med
+			LineStartLength	= 1;
+			LineEndWidth	= 1;
+			LineStartWidth	= 1;
 
             DashPattern = NULL;
             Count       = 0;

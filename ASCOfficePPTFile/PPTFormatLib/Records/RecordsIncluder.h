@@ -91,6 +91,7 @@
 #include "RoundTripColorMappingAtom.h"
 #include "RoundTripNewPlaceholderId12Atom.h"
 #include "RoundTripThemeAtom.h"
+#include "RoundTripNotesMasterTextStyles12Atom.h"
 #include "TextRulerAtom.h"
 #include "ShapeFlags10Atom.h"
 #include "ShapeFlagsAtom.h"

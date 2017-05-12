@@ -29,48 +29,25 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-// PptFormatTest.cpp : Defines the entry point for the console application.
-//
-#include "../PPTFormatLib/PPTFormatLib.h"
-#include "../../OfficeUtils/src/OfficeUtils.h"
+#pragma once
+#include "../Reader/Records.h"
 
-#include "../../DesktopEditor/common/Directory.h"
-
-#include <tchar.h>
-
-#if defined(_WIN64)
-	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
-#elif defined (_WIN32)
-	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
-#endif
-
-int _tmain(int argc, _TCHAR* argv[])
+class CRecordRoundTripNotesMasterTextStyles12Atom : public CUnknownRecord
 {
-	if (argc < 2) return 1;
-
-	std::wstring sSrcPpt	= argv[1];
-    std::wstring sDstPptx	= argc > 2 ? argv[2] : sSrcPpt + L"-my.pptx";
-
-	std::wstring outputDir		= NSDirectory::GetFolderPath(sDstPptx);
-	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
-
-	std::wstring tempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
-
-	COfficePPTFile pptFile;
+public:
+    std::string m_strData;
 	
-	pptFile.put_TempDirectory(tempPath);
-
-	HRESULT hRes = pptFile.LoadFromFile(sSrcPpt, dstTempPath);
-	
-	if (hRes == S_OK)
+	CRecordRoundTripNotesMasterTextStyles12Atom()
 	{
-		COfficeUtils oCOfficeUtils(NULL);		
-		hRes = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), sDstPptx, -1);
 	}
-		
-	NSDirectory::DeleteDirectory(dstTempPath);
-	NSDirectory::DeleteDirectory(tempPath);
 
-	return hRes;
-}
+	~CRecordRoundTripNotesMasterTextStyles12Atom()
+	{
+	}
 
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		m_oHeader = oHeader;
+		m_strData = StreamUtils::ReadStringA(pStream, (long)m_oHeader.RecLen);
+	}
+};

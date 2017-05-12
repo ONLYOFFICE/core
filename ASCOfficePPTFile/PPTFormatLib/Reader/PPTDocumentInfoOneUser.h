@@ -47,11 +47,12 @@ public:
 	std::map<DWORD, DWORD>							m_mapOffsetInPIDs;
 	CRecordDocument									m_oDocument;
 
-	//todooo при переходе на C++11 использовать НУЖНЫЙ здесь unsorted_map - m_arr .. Order уберутся
-
 	std::map<DWORD, CRecordSlide*>					m_mapSlides;
 	std::map<DWORD, CRecordSlide*>					m_mapMasters;
 	std::map<DWORD, CRecordSlide*>					m_mapNotes;
+
+	std::map<DWORD, CRecordSlide*>					m_mapNotesMasters;
+	std::map<DWORD, CRecordSlide*>					m_mapHandoutMasters;
 
 	std::vector<DWORD>								m_arrSlidesOrder;
 	std::vector<DWORD>								m_arrMastersOrder;
@@ -66,6 +67,10 @@ public:
 	// это как бы ППT-шная обертка над слайдом
 	std::vector<CSlideInfo>							m_arSlideWrapper;
 	std::vector<CSlideInfo>							m_arMasterWrapper;
+	std::vector<CSlideInfo>							m_arNotesWrapper;
+
+	CSlideInfo*										m_pNotesMasterWrapper;
+	CSlideInfo*										m_pHandoutMasterWrapper;
 
 	// эти параметры - одни на весь документ. 
 	// чтобы поддержать нашу схему (пптх) - копируем их в темы
@@ -106,8 +111,8 @@ public:
 	nullable<WORD>									m_wLanguage;	// язык пользователя (редактора)
 	bool											m_bRtl;
 	bool											m_bShowComments;
-public:
 
+//-----------------------------------------------------------------------------------------------------
 	CPPTUserInfo();
 	~CPPTUserInfo();
 
@@ -119,15 +124,20 @@ public:
 	void NormalizeCoords(long lWidth, long lHeight);
 
 	void LoadSlide(DWORD dwSlideID, CSlide* pSlide);
+	void LoadNotes(DWORD dwNotesID, CSlide* pSlide);
 	
 	void LoadMasters(const LONG& lOriginWidth, const LONG& lOriginHeight);
 	
 	void LoadNoMainMaster	(DWORD dwMasterID, const LONG& lOriginWidth, const LONG& lOriginHeight);
 	void LoadMainMaster		(DWORD dwMasterID, const LONG& lOriginWidth, const LONG& lOriginHeight);
+	
+    void LoadMaster(CRecordSlide* pMaster, CSlideInfo *& pMasterWrapper, CTheme *& pTheme);
 
-	void LoadSlideFromPrevUsers	(DWORD dwSlideID);
-	void LoadMasterFromPrevUsers(DWORD dwSlideID);
-	void LoadNoteFromPrevUsers	(DWORD dwSlideID);
+	void LoadSlideFromPrevUsers			(DWORD dwSlideID);
+	void LoadMasterFromPrevUsers		(DWORD dwSlideID);
+	void LoadNotesFromPrevUsers			(DWORD dwSlideID);
+	void LoadNotesMasterFromPrevUsers	(DWORD dwSlideID);
+	void LoadHandoutMasterFromPrevUsers	(DWORD dwSlideID);
 
 	void LoadExternal(CRecordExObjListContainer* pExObjects);
 
@@ -169,7 +179,6 @@ public:
 
 		oScheme  = oArrayMem;
 	}
-
 	
 	std::wstring ConvertLayoutType(INT nGeom, BYTE* pPlaceholders)
 	{
@@ -287,6 +296,7 @@ public:
 		return _T("blank");
 	}
 
+	
 	void AddAnimation		(DWORD dwSlideID, double Width, double Height, IElement* pElement);
 	void AddAudioTransition (DWORD dwSlideID, CTransition* pTransition, const std::wstring& strFilePath);
 

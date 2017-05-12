@@ -575,212 +575,134 @@ public:
 			}
 // line --------------------------------------------------------
 		case lineBoolean: //Line Style Boolean Properties
-			{
-				bool bNoLineDrawDash		= GETBIT(pProperty->m_lValue, 0);
-				bool bLineFillShape			= GETBIT(pProperty->m_lValue, 1);
-				bool bHitTestLine			= GETBIT(pProperty->m_lValue, 2);
-				bool bLine					= GETBIT(pProperty->m_lValue, 3);
-				bool bArrowheadsOK			= GETBIT(pProperty->m_lValue, 4);
-				bool bInsetPenOK			= GETBIT(pProperty->m_lValue, 5);
-				bool bInsetPen				= GETBIT(pProperty->m_lValue, 6);
-				bool bLineOpaqueBackColor	= GETBIT(pProperty->m_lValue, 9);
+		{
+			bool bNoLineDrawDash		= GETBIT(pProperty->m_lValue, 0);
+			bool bLineFillShape			= GETBIT(pProperty->m_lValue, 1);
+			bool bHitTestLine			= GETBIT(pProperty->m_lValue, 2);
+			bool bLine					= GETBIT(pProperty->m_lValue, 3);
+			bool bArrowheadsOK			= GETBIT(pProperty->m_lValue, 4);
+			bool bInsetPenOK			= GETBIT(pProperty->m_lValue, 5);
+			bool bInsetPen				= GETBIT(pProperty->m_lValue, 6);
+			bool bLineOpaqueBackColor	= GETBIT(pProperty->m_lValue, 9);
 
-				bool bUsefNoLineDrawDash	= GETBIT(pProperty->m_lValue, 16);
-				bool bUsefLineFillShape		= GETBIT(pProperty->m_lValue, 17);
-				bool bUsefHitTestLine		= GETBIT(pProperty->m_lValue, 18);
-				bool bUsefLine				= GETBIT(pProperty->m_lValue, 19);
-				bool bUsefArrowheadsOK		= GETBIT(pProperty->m_lValue, 20);
-				bool bUsefInsetPenOK		= GETBIT(pProperty->m_lValue, 21);
-				bool bUsefInsetPen			= GETBIT(pProperty->m_lValue, 22);
-				bool bUsefLineOpaqueBackColor = GETBIT(pProperty->m_lValue, 25);
+			bool bUsefNoLineDrawDash	= GETBIT(pProperty->m_lValue, 16);
+			bool bUsefLineFillShape		= GETBIT(pProperty->m_lValue, 17);
+			bool bUsefHitTestLine		= GETBIT(pProperty->m_lValue, 18);
+			bool bUsefLine				= GETBIT(pProperty->m_lValue, 19);
+			bool bUsefArrowheadsOK		= GETBIT(pProperty->m_lValue, 20);
+			bool bUsefInsetPenOK		= GETBIT(pProperty->m_lValue, 21);
+			bool bUsefInsetPen			= GETBIT(pProperty->m_lValue, 22);
+			bool bUsefLineOpaqueBackColor = GETBIT(pProperty->m_lValue, 25);
 
-				if (bUsefLine)
-					pElement->m_bLine = bLine;				
-			}break;
-		case lineStyle:
+			if (bUsefLine)
+				pElement->m_bLine = bLine;				
+		}break;
 		case lineDashStyle://from Complex
-			{
-				pElement->m_bLine = true;	
-			}break;
+		{
+			pElement->m_bLine = true;	
+		}break;
 		case lineColor:
-			{
-				SColorAtom oAtom;
-				oAtom.FromValue(pProperty->m_lValue);
-				
-				if (oAtom.bSysIndex)
-					pElement->m_oPen.Color = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
-				else
-					oAtom.ToColor(&pElement->m_oPen.Color);
-				break;
-			}
+		{
+			SColorAtom oAtom;
+			oAtom.FromValue(pProperty->m_lValue);
+			
+			if (oAtom.bSysIndex)
+				pElement->m_oPen.Color = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+			else
+				oAtom.ToColor(&pElement->m_oPen.Color);			
+		}break;
 		case lineOpacity:
-			{
-                pElement->m_oPen.Alpha = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
-				break;
-			}
+		{
+            pElement->m_oPen.Alpha = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));				
+		}break;
 		case lineBackColor:
-			{
-				SColorAtom oAtom;
-				oAtom.FromValue(pProperty->m_lValue);
-				
-				if (oAtom.bSysIndex)
-					pElement->m_oPen.Color2 = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
-				else 
-					oAtom.ToColor(&pElement->m_oPen.Color2);
+		{
+			SColorAtom oAtom;
+			oAtom.FromValue(pProperty->m_lValue);
+			
+			if (oAtom.bSysIndex)
+				pElement->m_oPen.Color2 = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+			else 
+				oAtom.ToColor(&pElement->m_oPen.Color2);
 
-			}break;
+		}break;
 		case lineWidth:
-			{
-				pElement->m_oPen.Size	= (double)pProperty->m_lValue / EMU_MM;
-				pElement->m_bLine		= true;
-				break;
-			}
+		{
+			pElement->m_oPen.Size	= (double)pProperty->m_lValue / EMU_MM;
+			pElement->m_bLine		= true;				
+		}break;
+		case lineStyle:
+		{
+			pElement->m_bLine			= true;
+			pElement->m_oPen.LineStyle	= pProperty->m_lValue;				
+		}break;
 		case lineDashing:
-			{
-				BYTE nDashStyle = 0;
-				switch (pProperty->m_lValue)
-				{
-				case 0: 
-					{ 
-						nDashStyle = 0; // solid 						 
-					}break;
-				case 1: 
-				case 6:
-				case 7:
-					{ 
-						nDashStyle = 1; // dash 						
-					}break; 
-				case 2:
-				case 5:
-					{ 
-						nDashStyle = 2; // dot 						 
-					}break;
-				case 3:
-				case 8:
-				case 9:
-					{ 
-						nDashStyle = 3; // dashdot 						
-					}break; 
-				case 4:
-				case 10:
-					{ 
-						nDashStyle = 4;// dashdotdot 						
-					}break; 
-				default:
-						break; 
-				};
-				pElement->m_bLine				= true;
-				pElement->m_oPen.DashStyle	= nDashStyle;
-				break;
-			}
+		{
+			pElement->m_bLine			= true;
+			pElement->m_oPen.DashStyle	= pProperty->m_lValue;				
+		}break;
 		case lineJoinStyle:
-			{
-				BYTE nLineJoin = 2;
-				switch (pProperty->m_lValue)
-				{
-				case 0: 
-					{ 
-						nLineJoin = 1; // bevel 						 
-					}break;
-				case 1: 
-					{ 
-						nLineJoin = 1; // Miter 						 
-					}break;
-				case 2:
-					{ 
-						nLineJoin = 2; // round 						 
-					}break;	
-				default:
-						break; 
-				};
-
-				pElement->m_oPen.LineJoin = nLineJoin;
-				break;
-			}
+		{
+			pElement->m_oPen.LineJoin = pProperty->m_lValue;				
+		}break;
+		case lineStartArrowLength:
+		{
+			pElement->m_oPen.LineStartLength = pProperty->m_lValue;				
+		}break;
+		case lineEndArrowLength:
+		{
+			pElement->m_oPen.LineEndLength = pProperty->m_lValue;				
+		}break;
+		case lineStartArrowWidth:
+		{
+			pElement->m_oPen.LineStartWidth = pProperty->m_lValue;				
+		}break;
+		case lineEndArrowWidth:
+		{
+			pElement->m_oPen.LineEndWidth = pProperty->m_lValue;				
+		}break;
 		case lineStartArrowhead:
-			{
-				BYTE nStartCap = 0;
-				switch (pProperty->m_lValue)
-				{
-				case 1: 
-				case 2:
-				case 5:
-					{ 
-						nStartCap = 0x14; 
-					}break;
-				case 3:
-				case 4:
-
-					{ 
-						nStartCap = 2; 
-					}break; 
-				default:
-						break; 
-				};
-
-				pElement->m_oPen.LineStartCap = nStartCap;
-
-				break;
-			}
+		{
+			pElement->m_oPen.LineStartCap = pProperty->m_lValue;				
+		}break;
 		case lineEndArrowhead:
-			{
-				BYTE nEndCap = 0;
-				switch (pProperty->m_lValue)
-				{
-				case 1: 
-				case 2:
-				case 5:
-					{ 
-						nEndCap = 0x14; 						
-					}break; 
-				case 3:
-				case 4:
-
-					{ 
-						nEndCap = 2; 
-					}break; 
-				default:
-					break; 
-				};
-
-				pElement->m_oPen.LineEndCap = nEndCap;
-				break;
-			}
+		{
+			pElement->m_oPen.LineEndCap = pProperty->m_lValue;			
+		}break;
 		case shadowType:
-			{
-				pElement->m_oShadow.Type = pProperty->m_lValue;
-
-			}break;
+		{
+			pElement->m_oShadow.Type = pProperty->m_lValue;
+		}break;
 		case shadowOriginX://in emu, relative from center shape
-			{
-				pElement->m_oShadow.OriginX = FixedPointToDouble(pProperty->m_lValue);
-			}break;
+		{
+			pElement->m_oShadow.OriginX = FixedPointToDouble(pProperty->m_lValue);
+		}break;
 		case shadowOriginY:
-			{
-				pElement->m_oShadow.OriginY = FixedPointToDouble(pProperty->m_lValue);
-			}break;
+		{
+			pElement->m_oShadow.OriginY = FixedPointToDouble(pProperty->m_lValue);
+		}break;
 		case shadowColor:
-			{
-				SColorAtom oAtom;
-				oAtom.FromValue(pProperty->m_lValue);
+		{
+			SColorAtom oAtom;
+			oAtom.FromValue(pProperty->m_lValue);
 
-				if (oAtom.bSysIndex)
-					pElement->m_oShadow.Color = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
-				else
-					oAtom.ToColor(&pElement->m_oShadow.Color);
+			if (oAtom.bSysIndex)
+				pElement->m_oShadow.Color = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+			else
+				oAtom.ToColor(&pElement->m_oShadow.Color);
 
-			}break;
+		}break;
 		case shadowWeight:
 			{
 			}break;
 		case shadowOpacity:
-			{
-                pElement->m_oShadow.Alpha = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
-			}break;
+		{
+            pElement->m_oShadow.Alpha = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
+		}break;
 		case shadowHighlight:
-			{
-				//оттенок двойной тени
-			}break;
+		{
+			//оттенок двойной тени
+		}break;
 		case shadowOffsetX:
 			{
 				pElement->m_oShadow.DistanceX = ((int)pProperty->m_lValue) / EMU_MM;
@@ -949,65 +871,80 @@ public:
 
 		switch (pProperty->m_ePID)
 		{
-			// здесь просто применяем проперти...
-			// geometry ----------------------------------------------------
-			// top, left, right, bottom logic
 		case NSOfficeDrawing::metroBlob:
-			{
-				//альтернатива в формате oox
-				//NSFile::CFileBinary f;
-				//f.CreateFileW(L"d:\\test.zip");
-				//f.WriteFile(pProperty->m_pOptions, pProperty->m_lValue);
-				//f.CloseFile();
-			}break;
+		{
+			//альтернатива в формате oox
+			//NSFile::CFileBinary f;
+			//f.CreateFileW(L"d:\\test.zip");
+			//f.WriteFile(pProperty->m_pOptions, pProperty->m_lValue);
+			//f.CloseFile();
+		}break;
 		case NSOfficeDrawing::geoRight:
-			{
-				if (0 < pProperty->m_lValue)
-					pParentShape->m_dWidthLogic = (double)(pProperty->m_lValue);				
-			}break;
+		{
+			if (0 < pProperty->m_lValue)
+				pParentShape->m_dWidthLogic = (double)(pProperty->m_lValue);				
+		}break;
 		case NSOfficeDrawing::geoBottom:
-			{
-				if (0 < pProperty->m_lValue)
-					pParentShape->m_dHeightLogic = (double)(pProperty->m_lValue);				
-			}break;
-			// shapePath
+		{
+			if (0 < pProperty->m_lValue)
+				pParentShape->m_dHeightLogic = (double)(pProperty->m_lValue);				
+		}break;
 		case NSOfficeDrawing::shapePath:
-			{
-				pShape->m_oCustomVML.SetPath((RulesType)pProperty->m_lValue);				
-				pShape->m_bCustomShape = true;
-			}break;
-			// segmentsInfo
+		{
+			pShape->m_oCustomVML.SetPath((RulesType)pProperty->m_lValue);				
+			pShape->m_bCustomShape = true;
+		}break;
 		case NSOfficeDrawing::pSegmentInfo:
+		{
+			if (pProperty->m_bComplex)
 			{
-				if (pProperty->m_bComplex)
-				{
-					pShape->m_oCustomVML.LoadSegments(pProperty);
-					pShape->m_bCustomShape = true;
-				}				
-			}break;
-			// verticesInfo
+				pShape->m_oCustomVML.LoadSegments(pProperty);
+				pShape->m_bCustomShape = true;
+			}				
+		}break;
 		case NSOfficeDrawing::pVertices:
+		{
+			if (pProperty->m_bComplex)
 			{
-				if (pProperty->m_bComplex)
-				{
-					pShape->m_oCustomVML.LoadVertices(pProperty);
-					pShape->m_bCustomShape = true;
-				}				
-			}break;
+				pShape->m_oCustomVML.LoadVertices(pProperty);
+				pShape->m_bCustomShape = true;
+			}				
+		}break;
+		case NSOfficeDrawing::pConnectionSites:
+		{
+			if (pProperty->m_bComplex)
+			{
+				pShape->m_oCustomVML.LoadConnectionSites(pProperty);
+			}				
+		}break;
+		case NSOfficeDrawing::pConnectionSitesDir:
+		{
+			if (pProperty->m_bComplex)
+			{
+				pShape->m_oCustomVML.LoadConnectionSitesDir(pProperty);
+			}				
+		}break;
 		case NSOfficeDrawing::pGuides:
+		{
+			if (pProperty->m_bComplex/* && pShape->m_eType != sptNotchedCircularArrow*/)
+			{//Тікбұрышты үшбұрыштарды.ppt - slide 25
+				pShape->m_oCustomVML.LoadGuides(pProperty);
+			}				
+		}break;
+		case NSOfficeDrawing::pInscribe:
+		{
+			if (pProperty->m_bComplex)
 			{
-				if (pProperty->m_bComplex && pShape->m_eType != sptNotchedCircularArrow)
-				{//Тікбұрышты үшбұрыштарды.ppt - slide 25
-					pShape->m_oCustomVML.LoadGuides(pProperty);
-				}				
-			}break;
+				pShape->m_oCustomVML.LoadInscribe(pProperty);
+			}
+		}break;
 		case NSOfficeDrawing::pAdjustHandles:
+		{
+			if (pProperty->m_bComplex)
 			{
-				if (pProperty->m_bComplex)
-				{
-					pShape->m_oCustomVML.LoadAHs(pProperty);
-				}				
-			}break;
+				pShape->m_oCustomVML.LoadAHs(pProperty);
+			}				
+		}break;
 		case NSOfficeDrawing::adjustValue:
 		case NSOfficeDrawing::adjust2Value:
 		case NSOfficeDrawing::adjust3Value:
@@ -1890,7 +1827,7 @@ protected:
 		
 		if (master_levels)
 		{
-			for (int i = 0; i < pText->m_arParagraphs.size(); i++)
+			for (size_t i = 0; i < pText->m_arParagraphs.size(); i++)
 			{
 				if (i >= master_levels->m_arrProps.size()) break;
 				
@@ -2198,7 +2135,7 @@ protected:
 						pTextSettings->m_oStyles.ApplyAfter(pThemeWrapper->m_pStyles[nIndexType].get());
 				}
 			}
-			if (eTypeOwn != NSOfficePPT::NoPresent && eTypeOwn != NSOfficePPT::Other && eTypeOwn != eTypePersist && eTypeOwn != eTypeMaster)
+			if (eTypeOwn != NSOfficePPT::NoPresent/* && eTypeOwn != NSOfficePPT::Other*/ && eTypeOwn != eTypePersist && eTypeOwn != eTypeMaster)
 			{
 				int nIndexType = (int)eTypeOwn;
 				

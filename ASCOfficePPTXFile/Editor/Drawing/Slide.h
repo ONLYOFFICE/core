@@ -41,6 +41,9 @@ namespace NSPresentationEditor
 		LONG m_lThemeID;
 		LONG m_lLayoutID;
 
+		LONG m_lSlideID;	//for notes rels
+		LONG m_lNotesID;	//for slide rels
+
 		std::vector<IElement*>	m_arElements;
 		CSlideShowInfo			m_oSlideShow;
 		std::multimap<int,int>	m_mapPlaceholders;
@@ -91,6 +94,8 @@ namespace NSPresentationEditor
 			
 			m_lThemeID			= -1;
 			m_lLayoutID			= -1;
+			m_lSlideID			= -1;
+			m_lNotesID			= -1;
 
 			m_lWidth			= 270;   
 			m_lHeight			= 190; 
@@ -125,6 +130,8 @@ namespace NSPresentationEditor
 
 			m_lThemeID			= oSrc.m_lThemeID;
 			m_lLayoutID			= oSrc.m_lLayoutID;
+			m_lNotesID			= oSrc.m_lNotesID;
+			m_lSlideID			= oSrc.m_lSlideID;
 
 			m_lWidth			= oSrc.m_lWidth;
 			m_lHeight			= oSrc.m_lHeight;

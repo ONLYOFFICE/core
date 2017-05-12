@@ -71,7 +71,7 @@ public:
 			oArrayShapes[0]->bGroupShape = true;//тут описание самой группы
 
 		int nIndexBreak = -1;
-		for (int nIndex = 0; nIndex < oArrayShapes.size(); ++nIndex)
+		for (size_t nIndex = 0; nIndex < oArrayShapes.size(); ++nIndex)
 		{
 			std::vector<CRecordGroupShape*> oArrayGroupShapes;
 			oArrayShapes[nIndex]->GetRecordsByType(&oArrayGroupShapes, false, true);
@@ -120,7 +120,7 @@ public:
         bool bIsRecalc = ((lW1 > 0) && (lH1 > 0) && (lW2 > 0) && (lH2 > 0));
 		if (bIsRecalc)
 		{
-			for (int nIndex = 0; nIndex < oArrayShapes.size(); ++nIndex)
+			for (size_t nIndex = 0; nIndex < oArrayShapes.size(); ++nIndex)
 			{
 				if (nIndex != nIndexBreak)
 				{

@@ -32,7 +32,6 @@
 #pragma once
 #include "Structures.h"
 #include "Layout.h"
-//#include "../PPTXWriter/CSS.h"
 
 namespace NSPresentationEditor
 {

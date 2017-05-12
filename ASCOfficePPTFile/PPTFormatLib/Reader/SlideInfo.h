@@ -85,7 +85,6 @@ public:
 	std::map<int, std::wstring>*						m_mapFilePictures;
 	nullable_base<NSPresentationEditor::CTextStyles>	m_pStyles[9];
 
-public:
 	CSlideInfo()
 	{
 	}

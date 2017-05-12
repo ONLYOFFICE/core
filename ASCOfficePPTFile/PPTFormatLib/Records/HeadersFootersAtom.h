@@ -198,7 +198,7 @@ public:
 	{
 		CRecordsContainer::ReadFromStream(oHeader, pStream);
 
-		for (int i = 0 ; i < m_arRecords.size(); i++)
+		for (size_t i = 0 ; i < m_arRecords.size(); i++)
 		{
 			switch(m_arRecords[i]->m_oHeader.RecType)
 			{

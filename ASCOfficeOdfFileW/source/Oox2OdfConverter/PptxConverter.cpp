@@ -352,7 +352,7 @@ void PptxConverter::convert_slides()
 					current_slide = slide->Master.operator->();
 					
 					if (bShowLayoutMasterSp && bShowMasterSp)
-						convert_slide(&slide->Master->cSld, current_txStyles, false, true);
+						convert_slide(&slide->Master->cSld, current_txStyles, false, true, 2);
 					else
 						convert(slide->Master->cSld.bg.GetPointer());
 
@@ -360,7 +360,7 @@ void PptxConverter::convert_slides()
 						current_clrMap	= slide->Layout->clrMapOvr->overrideClrMapping.GetPointer();
 					current_slide = slide->Layout.operator->();
 					
-					convert_slide(&slide->Layout->cSld, current_txStyles, true, bShowLayoutMasterSp);	
+					convert_slide(&slide->Layout->cSld, current_txStyles, true, bShowLayoutMasterSp, 3);	
 
 					if (!presentation->notesMasterIdLst.empty())
 					{
@@ -407,7 +407,7 @@ void PptxConverter::convert_slides()
 		odp_context->current_slide().set_master_page (master_style_name);
 		odp_context->current_slide().set_layout_page (layout_style_name);
 		
-		convert_slide	(slide->cSld.GetPointer(), current_txStyles, true, bShowMasterSp);
+		convert_slide	(slide->cSld.GetPointer(), current_txStyles, true, bShowMasterSp, 1);
 		convert			(slide->comments.operator->());
 		convert			(slide->Note.operator->());
 		
@@ -439,7 +439,7 @@ void PptxConverter::convert(PPTX::NotesMaster *oox_notes)
 		
 		odf_context()->page_layout_context()->set_page_size(width, height);
 	}
-	convert_slide(&oox_notes->cSld, NULL, true, true);
+	convert_slide(&oox_notes->cSld, NULL, true, true, 2);
 	
 	odp_context->end_note();
 
@@ -472,7 +472,7 @@ void PptxConverter::convert(PPTX::NotesSlide *oox_notes)
 	if (oox_notes->clrMapOvr.IsInit() && oox_notes->clrMapOvr->overrideClrMapping.IsInit())
 		current_clrMap	= oox_notes->clrMapOvr->overrideClrMapping.GetPointer();
 	
-	convert_slide(&oox_notes->cSld, NULL, true, true);
+	convert_slide(&oox_notes->cSld, NULL, true, true, 1);
 	
 	odp_context->end_note();
 	
@@ -1021,7 +1021,7 @@ void PptxConverter::convert(PPTX::Logic::Bg *oox_background)
 	odp_context->end_drawings();
 }
 
-void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxStyles* txStyles, bool bPlaceholders, bool bFillUp)
+void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxStyles* txStyles, bool bPlaceholders, bool bFillUp, int type)
 {
 	if (oox_slide == NULL) return;
 
@@ -1050,6 +1050,9 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 				if (pShape->nvSpPr.nvPr.ph->type.IsInit())
 				{
 					int ph_type = pShape->nvSpPr.nvPr.ph->type->GetBYTECode();
+
+					if (type == 3 && (ph_type == 5 || ph_type == 6 || ph_type == 7 || ph_type == 12))
+						continue;
 
 					odf_context()->drawing_context()->set_placeholder_type(ph_type);
 				}

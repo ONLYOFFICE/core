@@ -106,21 +106,20 @@ namespace DocFileFormat
 			return new ShapeContainer( _reader, bodySize, typeCode, version, instance );
 		}
 
-		std::list<OptionEntry> ExtractOptions() const
+		std::vector<OptionEntryPtr> ExtractOptions() const
 		{
-			std::list<OptionEntry> ret;
+			std::vector<OptionEntryPtr> ret;
 
 			//build the list of all option entries of this shape
 			for ( std::vector<Record*>::const_iterator iter = this->Children.begin(); iter != this->Children.end(); iter++ )
 			{
 				ShapeOptions* opt = dynamic_cast<ShapeOptions*>( *iter );
 
-				if ( opt != NULL )
+				if ( opt == NULL ) continue;
+				
+				for ( size_t i = 0; i < opt->Options.size(); i++)
 				{
-					for ( std::vector<OptionEntry>::iterator oeIter = opt->Options.begin(); oeIter != opt->Options.end(); oeIter++ )
-					{
-						ret.push_back( *oeIter );
-					}
+					ret.push_back( opt->Options[i]);
 				}
 			}
 

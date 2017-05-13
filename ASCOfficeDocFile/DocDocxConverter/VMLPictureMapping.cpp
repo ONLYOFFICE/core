@@ -241,7 +241,7 @@ namespace DocFileFormat
 		std::wstring strHeight = FormatUtils::DoubleToWideString( height.ToPoints() );
 		std::wstring strStyle;
 	
-		std::list<OptionEntry> options;
+		std::vector<OptionEntryPtr> options;
 		
 		PictureFrameType type;
 		if ((pict->shapeContainer || pict->blipStoreEntry) && pict->shapeContainer->Children.size() > 0)
@@ -282,9 +282,9 @@ namespace DocFileFormat
 		}
 //todooo oбъединить с shape_mapping		
 
-		std::list<OptionEntry>::iterator end = options.end();
-		for (std::list<OptionEntry>::iterator iter = options.begin(); iter != end; ++iter)
+		for (size_t i = 0; i < options.size(); i++)
 		{
+			OptionEntryPtr & iter = options[i];
 			switch ( iter->pid )
 			{
 			case wzEquationXML:
@@ -292,7 +292,7 @@ namespace DocFileFormat
 					m_isEquation = true;
 					m_isEmbedded = true;
 					
-					m_embeddedData = std::string((char*)iter->opComplex, iter->op);
+					m_embeddedData = std::string((char*)iter->opComplex.get(), iter->op);
 
 					if (ParseEmbeddedEquation( m_embeddedData, m_equationXml))
 					{
@@ -303,7 +303,7 @@ namespace DocFileFormat
 				{
 					//встроенная неведомая хуйня
 					m_isEmbedded	= true;
-					m_embeddedData	= std::string((char*)iter->opComplex, iter->op);
+					m_embeddedData	= std::string((char*)iter->opComplex.get(), iter->op);
 					
 					//if (ParseEmbeddedBlob( m_embeddedData, m_blobXml)) // todoooo
 					//{

@@ -56,9 +56,11 @@ public:
     static const ElementType type = typeAnimPar;
     CPDOCCORE_DEFINE_VISITABLE();
 
-  	office_element_ptr		 anim_par_;
-	office_element_ptr_array anim_seq_array_;
-	office_element_ptr_array content_;
+	odf_types::common_anim_smil_attlist		attlist_;
+  	
+	office_element_ptr						anim_par_;
+	office_element_ptr_array				anim_seq_array_;
+	office_element_ptr_array				content_;
 
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
@@ -79,7 +81,8 @@ public:
     static const ElementType type = typeAnimSeq;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	office_element_ptr_array anim_par_array_;
+	odf_types::common_anim_smil_attlist		attlist_;
+	office_element_ptr_array				anim_par_array_;
    
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
@@ -103,12 +106,12 @@ class anim_transition_filter_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	
-	_CP_OPT(std::wstring)	smil_direction_;
-	_CP_OPT(std::wstring)	smil_subtype_; 
+	_CP_OPT(std::wstring)						smil_direction_;
+	_CP_OPT(std::wstring)						smil_subtype_; 
 	_CP_OPT(odf_types::smil_transition_type)	smil_type_;
-	_CP_OPT(std::wstring)	smil_mode_;
-	_CP_OPT(odf_types::color)			smil_fadeColor_;
-	_CP_OPT(odf_types::clockvalue)		smil_dur_;
+	_CP_OPT(std::wstring)						smil_mode_;
+	_CP_OPT(odf_types::color)					smil_fadeColor_;
+	_CP_OPT(odf_types::clockvalue)				smil_dur_;
 };
 
 //anim:transitionFilter
@@ -122,11 +125,8 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
-///////////////////////////////////////////////////////////	
-	odf_types::common_anim_smil_attlist		common_anim_smil_attlist_;
-	anim_transition_filter_attlist			anim_transition_filter_attlist_;
 
-
+	anim_transition_filter_attlist	attlist_;
 private:
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );

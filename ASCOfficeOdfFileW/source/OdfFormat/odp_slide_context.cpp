@@ -73,6 +73,7 @@ void odp_slide_context::start_page(office_element_ptr & elm)
 	office_element_ptr & style = styles_context_->add_or_find(style_name_new, style_family::DrawingPage, true);
 	style->create_child_element(L"style", L"drawing-page-properties");
 
+	state().set_page_id(count_slides_);
 	state().set_page_style(style);
 	state().drawing_context()->set_styles_context(styles_context_);
 }

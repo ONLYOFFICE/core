@@ -53,9 +53,10 @@ public:
     static const ElementType type = typeAnimPar;
     CPDOCCORE_DEFINE_VISITABLE();
 
-  	office_element_ptr		 anim_par_;
-	office_element_ptr_array anim_seq_array_;
-	office_element_ptr_array content_;
+	odf_types::common_anim_smil_attlist		attlist_;
+  	office_element_ptr						anim_par_;
+	office_element_ptr_array				anim_seq_array_;
+	office_element_ptr_array				content_;
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child);
@@ -73,7 +74,8 @@ public:
     static const ElementType type = typeAnimSeq;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	office_element_ptr_array anim_par_array_;
+	odf_types::common_anim_smil_attlist		attlist_;
+	office_element_ptr_array				anim_par_array_;
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child);
@@ -81,13 +83,10 @@ public:
 	virtual void serialize(std::wostream & strm);
 };
 CP_REGISTER_OFFICE_ELEMENT2(anim_seq);
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //anim:iterate 
 //class anim_iterate : public office_element_impl<anim_iterate>//Итеративные анимации
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//----------------------------------------------------------------------------------------------------------------/
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class anim_transition_filter_attlist
 {
@@ -117,8 +116,7 @@ public:
 
 	virtual void serialize(std::wostream & strm);
 ///////////////////////////////////////////////////////////	
-	odf_types::common_anim_smil_attlist		common_anim_smil_attlist_;
-	anim_transition_filter_attlist			anim_transition_filter_attlist_;
+	anim_transition_filter_attlist attlist_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(anim_transitionFilter);
 

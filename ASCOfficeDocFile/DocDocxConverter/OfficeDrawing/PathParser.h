@@ -35,11 +35,23 @@
 
 namespace DocFileFormat
 {
+	struct _guides
+	{
+		unsigned char type;
+
+		unsigned char param_type1;
+		unsigned char param_type2;
+		unsigned char param_type3;
+
+		WORD param1;
+		WORD param2;
+		WORD param3;
+	};
 	class PathParser
 	{
 	public:
 
-		PathParser (const unsigned char* pSegmentInfo, unsigned int pSegmentInfoSize, const unsigned char* pVertices, unsigned int pVerticesSize)
+		PathParser (const unsigned char* pSegmentInfo, unsigned int pSegmentInfoSize, const unsigned char* pVertices, unsigned int pVerticesSize, std::vector<_guides> & guides)
 		{
 			if ((pSegmentInfo != NULL) && (pSegmentInfoSize > 0))
 			{
@@ -105,31 +117,40 @@ namespace DocFileFormat
 				unsigned short nElemsAlloc	=	FormatUtils::BytesToUInt16(pVertices, 2, pVerticesSize);
 				unsigned short cb			=	FormatUtils::BytesToUInt16(pVertices, 4, pVerticesSize);
 
-				if (0xfff0 == cb)
-				{
-					cb	=	4;
-
-					for (unsigned short i = 0; i < nElems; ++i)
+				for (unsigned short i = 0; i < nElems; ++i)
+				{				
+					POINT point;	
+					if (0xfff0 == cb)
 					{
-						POINT point;
-
+						cb	=	4;						
 						point.x	= FormatUtils::BytesToInt16(pVertices + 6, (i * cb), pVerticesSize);
 						point.y	= FormatUtils::BytesToInt16(pVertices + 6, (i * cb) + (cb / 2), pVerticesSize);
-
-						m_arPoints.push_back(point);
 					}
-				}
-				else
-				{
-					for (unsigned short i = 0; i < nElems; ++i)
+					else
 					{
-						POINT point;
-
 						point.x	= FormatUtils::BytesToInt32(pVertices + 6, (i * cb), pVerticesSize);
 						point.y	= FormatUtils::BytesToInt32(pVertices + 6, (i * cb) + (cb / 2), pVerticesSize);
-
-						m_arPoints.push_back(point);
 					}
+
+					LONG lMinF = (LONG)0x80000000;
+					if (lMinF <= point.x)
+					{
+						int index = (DWORD)point.x - 0x80000000;
+						if (index >= 0 && index < guides.size())
+						{
+							point.x = guides[index].param3;
+						}
+					}
+					if (lMinF <= point.y)
+					{
+						int index = (DWORD)point.y - 0x80000000;
+						if (index >= 0 && index < guides.size())
+						{
+							point.y = guides[index].param3;
+						}
+					}
+
+					m_arPoints.push_back(point);
 				}
 			}
 		}

@@ -74,6 +74,8 @@ void anim_par::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {   
+			attlist_.serialize(CP_GET_XML_NODE());
+
 			if (anim_par_)
 				anim_par_->serialize(CP_XML_STREAM());
 			
@@ -98,6 +100,8 @@ void anim_seq::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {   
+			attlist_.serialize(CP_GET_XML_NODE());
+			
 			for (size_t i = 0; i < anim_par_array_.size(); i++)
 			{
 				anim_par_array_[i]->serialize(CP_XML_STREAM());
@@ -136,8 +140,7 @@ void anim_transitionFilter::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {   
-			common_anim_smil_attlist_.serialize(CP_GET_XML_NODE());
-			anim_transition_filter_attlist_.serialize(CP_GET_XML_NODE());
+			attlist_.serialize(CP_GET_XML_NODE());
 		}
 	}
 }

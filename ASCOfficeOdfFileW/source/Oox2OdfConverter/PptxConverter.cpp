@@ -38,6 +38,9 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/NotesMaster.h"
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Table/Table.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Par.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Seq.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/CTn.h"
 
 #include <boost/lexical_cast.hpp>
 
@@ -352,7 +355,7 @@ void PptxConverter::convert_slides()
 					current_slide = slide->Master.operator->();
 					
 					if (bShowLayoutMasterSp && bShowMasterSp)
-						convert_slide(&slide->Master->cSld, current_txStyles, false, true);
+						convert_slide(&slide->Master->cSld, current_txStyles, false, true, 2);
 					else
 						convert(slide->Master->cSld.bg.GetPointer());
 
@@ -360,7 +363,7 @@ void PptxConverter::convert_slides()
 						current_clrMap	= slide->Layout->clrMapOvr->overrideClrMapping.GetPointer();
 					current_slide = slide->Layout.operator->();
 					
-					convert_slide(&slide->Layout->cSld, current_txStyles, true, bShowLayoutMasterSp);	
+					convert_slide(&slide->Layout->cSld, current_txStyles, true, bShowLayoutMasterSp, 3);	
 
 					if (!presentation->notesMasterIdLst.empty())
 					{
@@ -407,11 +410,12 @@ void PptxConverter::convert_slides()
 		odp_context->current_slide().set_master_page (master_style_name);
 		odp_context->current_slide().set_layout_page (layout_style_name);
 		
-		convert_slide	(slide->cSld.GetPointer(), current_txStyles, true, bShowMasterSp);
+		convert_slide	(slide->cSld.GetPointer(), current_txStyles, true, bShowMasterSp, 1);
 		convert			(slide->comments.operator->());
 		convert			(slide->Note.operator->());
 		
-		convert			(slide->timing.GetPointer(), slide->transition.GetPointer());
+		convert			(slide->transition.GetPointer());
+		convert			(slide->timing.GetPointer());
 
 
 		odp_context->end_slide();
@@ -439,7 +443,7 @@ void PptxConverter::convert(PPTX::NotesMaster *oox_notes)
 		
 		odf_context()->page_layout_context()->set_page_size(width, height);
 	}
-	convert_slide(&oox_notes->cSld, NULL, true, true);
+	convert_slide(&oox_notes->cSld, NULL, true, true, 2);
 	
 	odp_context->end_note();
 
@@ -472,7 +476,7 @@ void PptxConverter::convert(PPTX::NotesSlide *oox_notes)
 	if (oox_notes->clrMapOvr.IsInit() && oox_notes->clrMapOvr->overrideClrMapping.IsInit())
 		current_clrMap	= oox_notes->clrMapOvr->overrideClrMapping.GetPointer();
 	
-	convert_slide(&oox_notes->cSld, NULL, true, true);
+	convert_slide(&oox_notes->cSld, NULL, true, true, 1);
 	
 	odp_context->end_note();
 	
@@ -527,15 +531,109 @@ void PptxConverter::convert(PPTX::Comments *oox_comments)
 		odp_context->end_comment();
 	}
 }
-void PptxConverter::convert(PPTX::Logic::Timing *oox_timing, PPTX::Logic::Transition *oox_transition)
+void PptxConverter::convert( PPTX::Logic::Transition *oox_transition )
+{
+	if (!oox_transition) return;
+	if (oox_transition->base.is_init() == false) return;
+
+	odp_context->current_slide().start_transition();
+	if (oox_transition->spd.is_init())
+		odp_context->current_slide().set_transition_speed(oox_transition->spd->GetBYTECode());
+	if (oox_transition->dur.is_init())
+		odp_context->current_slide().set_transition_duration(*oox_transition->dur);
+	
+	odp_context->current_slide().set_transition_type(5);
+	//convert(oox_transition->base.operator->());
+	
+	//if (oox_transition->sndAc.is_init() && oox_transition->sndAc->stSnd.is_init())
+	//{
+	//	std::wstring sID = oox_transition->sndAc->stSnd->embed->get();
+	//	pathAudio = find_link_by_id(sID, 1);
+	//	
+	//	std::wstring odf_ref = odf_context()->add_media(pathAudio);
+
+	//	odp_context->current_slide().set_transition_sound(odf_ref, oox_transition->sndAc->stSnd->loop.get_value_or(false));
+	//}
+
+	odp_context->current_slide().end_transition();
+}
+void PptxConverter::convert(PPTX::Logic::Timing *oox_timing)
 {
 	if (!oox_timing) return;
 	if (!oox_timing->tnLst.IsInit()) return;
 	
+	odp_context->start_timing();
 	for (size_t i = 0; i < oox_timing->tnLst->list.size(); i++)
 	{
-		//oox_timing->tnLst[0]
+		if (oox_timing->tnLst->list[i].is_init() == false) continue;
+
+		convert(&oox_timing->tnLst->list[i]);
 	}
+	odp_context->end_timing();
+}
+void PptxConverter::convert(PPTX::Logic::TimeNodeBase *oox_time_base)
+{
+	if (!oox_time_base) return;
+
+	if (oox_time_base->is<PPTX::Logic::Par>()) //Parallel Time
+	{
+		PPTX::Logic::Par & par = oox_time_base->as<PPTX::Logic::Par>();
+
+		odp_context->current_slide().start_timing_par();
+			convert(&par.cTn);
+		odp_context->current_slide().end_timing_par();
+	}
+	else if (oox_time_base->is<PPTX::Logic::Seq>()) //Sequence Time
+	{
+		PPTX::Logic::Seq & seq = oox_time_base->as<PPTX::Logic::Seq>();
+		odp_context->current_slide().start_timing_seq();
+			convert(&seq.cTn);
+		odp_context->current_slide().end_timing_seq();
+	}	
+}
+void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
+{
+	if (!oox_time_common) return;
+
+	if (oox_time_common->id.IsInit())
+	{
+		odp_context->current_slide().set_anim_id(*oox_time_common->id);
+	}
+	if (oox_time_common->nodeType.IsInit())
+	{
+		odp_context->current_slide().set_anim_type(oox_time_common->nodeType->get());
+	}
+	if (oox_time_common->dur.IsInit())
+	{
+		odp_context->current_slide().set_anim_duration(*oox_time_common->dur);
+	}
+	if (oox_time_common->restart.IsInit())
+	{
+		odp_context->current_slide().set_anim_restart(oox_time_common->restart->get());
+	}	
+
+	//nullable<CondLst>			stCondLst;
+	//nullable<CondLst>			endCondLst;
+	//nullable<Cond>			endSync;
+	//nullable<Iterate>			iterate;
+	if (oox_time_common->childTnLst.IsInit())
+	{
+		for (size_t i = 0; i < oox_time_common->childTnLst->list.size(); i++)
+		{
+			if (oox_time_common->childTnLst->list[i].is_init() == false) continue;
+
+			convert(&oox_time_common->childTnLst->list[i]);
+		}
+	}
+	//if (oox_time_common->subTnLst.IsInit())
+	//{
+	//	for (size_t i = 0; i < oox_time_common->subTnLst->list.size(); i++)
+	//	{
+	//		if (oox_time_common->subTnLst->list[i].is_init() == false) continue;
+
+	//		convert(&oox_time_common->subTnLst->list[i]);
+	//	}
+	//}
 }
 void PptxConverter::convert(PPTX::Logic::TableProperties *oox_table_pr)
 {
@@ -1021,7 +1119,7 @@ void PptxConverter::convert(PPTX::Logic::Bg *oox_background)
 	odp_context->end_drawings();
 }
 
-void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxStyles* txStyles, bool bPlaceholders, bool bFillUp)
+void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxStyles* txStyles, bool bPlaceholders, bool bFillUp, int type)
 {
 	if (oox_slide == NULL) return;
 
@@ -1050,6 +1148,9 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 				if (pShape->nvSpPr.nvPr.ph->type.IsInit())
 				{
 					int ph_type = pShape->nvSpPr.nvPr.ph->type->GetBYTECode();
+
+					if (type == 3 && (ph_type == 5 || ph_type == 6 || ph_type == 7 || ph_type == 12))
+						continue;
 
 					odf_context()->drawing_context()->set_placeholder_type(ph_type);
 				}

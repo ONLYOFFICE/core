@@ -49,7 +49,6 @@ namespace PPTX
 			explicit TransitionBase(XmlUtils::CXmlNode& node);
 			const TransitionBase& operator =(XmlUtils::CXmlNode& node);
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void GetTransitionTypeFrom(XmlUtils::CXmlNode& element);
 			virtual bool is_init()const{return (base.IsInit());};
@@ -59,8 +58,7 @@ namespace PPTX
 			template<class T> const T& as() const	{ return base.as<T>(); }
 
 			virtual std::wstring toXML() const;
-		//public:
-		private:
+
 			smart_ptr<WrapperWritingElement> base;
 		protected:
 			virtual void FillParentPointersForChilds(){};

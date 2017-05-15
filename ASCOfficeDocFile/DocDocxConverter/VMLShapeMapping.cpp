@@ -143,8 +143,9 @@ namespace DocFileFormat
 			ShapeContainer* groupShape		=	static_cast<ShapeContainer*>(container->Children[0]);
 			GroupShapeRecord* gsr			=	static_cast<GroupShapeRecord*>(groupShape->Children[0]);
 			Shape* shape					=	static_cast<Shape*>(groupShape->Children[1]);
-			std::list<OptionEntry> options	=	groupShape->ExtractOptions();
-			ChildAnchor* anchor				=	groupShape->FirstChildWithType<ChildAnchor>();
+			
+			ChildAnchor* anchor					=	groupShape->FirstChildWithType<ChildAnchor>();			
+			std::vector<OptionEntryPtr> options	=	groupShape->ExtractOptions();
 
 			m_shapeId = GetShapeID(shape);
 
@@ -155,14 +156,13 @@ namespace DocFileFormat
 			m_pXmlWriter->WriteAttribute( L"coordsize", ( FormatUtils::IntToWideString(gsr->rcgBounds.size.cx) + L"," + FormatUtils::IntToWideString(gsr->rcgBounds.size.cy)));
 
 			// Write wrap coords			
-			std::list<OptionEntry>::const_iterator end = options.end();
-			for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
+			for (size_t i = 0; i < options.size(); i++)
 			{
-				switch (iter->pid)
+				switch (options[i]->pid)
 				{
-				case pWrapPolygonVertices:
+					case pWrapPolygonVertices:
 					{
-						std::wstring wrapCoords	= getWrapCoords(*iter);
+						std::wstring wrapCoords	= GetWrapCoords(options[i]);
 						if (wrapCoords.length())
 							m_pXmlWriter->WriteAttribute(L"wrapcoords", wrapCoords);
 					}
@@ -226,9 +226,9 @@ namespace DocFileFormat
 		bool			freeform =	true;
 		std::wstring	sShapeId;
 
-		std::list<OptionEntry> options	=	pContainer->ExtractOptions();
-		ChildAnchor* pAnchor			=	pContainer->FirstChildWithType<ChildAnchor>();
-		ClientAnchor* clientAnchor		=	pContainer->FirstChildWithType<ClientAnchor>();
+		std::vector<OptionEntryPtr> options	=	pContainer->ExtractOptions();
+		ChildAnchor* pAnchor				=	pContainer->FirstChildWithType<ChildAnchor>();
+		ClientAnchor* clientAnchor			=	pContainer->FirstChildWithType<ClientAnchor>();
 
 		WriteBeginShapeNode (pShape);
 
@@ -294,13 +294,17 @@ namespace DocFileFormat
 
 		std::wstring					sTextboxStyle;
 		
-		std::wstring					adjValues[8];
 		ShadowStyleBooleanProperties	shadowBoolean(0);
-		std::vector<std::wstring>		arrInscribe;
+		
+		OptionEntryPtr				opSegmentInfo;
+		OptionEntryPtr				opVerticles;
+		OptionEntryPtr				opInscribe;
+		OptionEntryPtr				opConnectAngles;
+		OptionEntryPtr				opConnectLocs;
 
-		std::list<OptionEntry>::const_iterator end = options.end();
-		for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
+		for (size_t i = 0; i < options.size(); i++)
 		{
+			OptionEntryPtr & iter = options[i];
 			switch (iter->pid)
 			{
 	//BOOLEANS
@@ -335,19 +339,16 @@ namespace DocFileFormat
 					}
 				}
 				break;
-
 			case protectionBooleans:
 				{
 					ProtectionBooleanProperties booleans(iter->op);
 				}
 				break;
-
 			case diagramBooleans:
 				{
 					DiagramBooleanProperties booleans(iter->op);
 				}
 				break;
-
 			case groupShapeBooleans:
 				{
 					GroupShapeBooleanProperties booleans(iter->op);
@@ -357,56 +358,80 @@ namespace DocFileFormat
 					}
 				}
 				break;
-
-				// GEOMETRY
-
+// GEOMETRY
+			case shapePath :
+				{
+					bHavePath =	true;
+				}break;
+			case pVertices:
+				{
+					opVerticles = iter;
+				}break;
+			case pSegmentInfo:
+				{
+					opSegmentInfo = iter;
+				}break;
+			case pGuides:
+				{
+					GetGuides(iter);
+				}break;
+			case pConnectionSites:
+				{
+					opConnectLocs = iter;
+				}break;
+			case pConnectionSitesDir:
+				{
+					opConnectAngles	= iter;
+				}break;
+			case pInscribe:
+				{
+					opInscribe	= iter;
+				}break;
 			case adjustValue:
 				{
-					adjValues[0]	=	FormatUtils::IntToWideString( (int)iter->op );
-                    nAdjValues		=	(std::max)(nAdjValues,1);
+					m_nAdjValues[0] = (int)iter->op;
+                    nAdjValues		= (std::max)(nAdjValues,1);
 				}
 				break;
-
 			case adjust2Value:
 				{
-					adjValues[1]	=	FormatUtils::IntToWideString( (int)iter->op );
-                    nAdjValues		=	(std::max)(nAdjValues,2);
+					m_nAdjValues[1] = (int)iter->op;
+                    nAdjValues		= (std::max)(nAdjValues, 2);
 				}
 				break;
-
 			case adjust3Value:
 				{
-					adjValues[2]	=	FormatUtils::IntToWideString( (int)iter->op );
-                    nAdjValues		=	(std::max)(nAdjValues,3);
+					m_nAdjValues[2] = (int)iter->op;
+                    nAdjValues		=(std::max)(nAdjValues, 3);
 				}break;
 			case adjust4Value:
 				{
-					adjValues[3]	=	FormatUtils::IntToWideString( (int)iter->op );
-                    nAdjValues		=	(std::max)(nAdjValues,4);
+					m_nAdjValues[3] = (int)iter->op;
+                    nAdjValues		= (std::max)(nAdjValues, 4);
 				}break;
 			case adjust5Value:
 				{
-					adjValues[4]	=	FormatUtils::IntToWideString( (int)iter->op );
-                    nAdjValues		=	(std::max)(nAdjValues,5);
+					m_nAdjValues[4] = (int)iter->op;
+                    nAdjValues		= (std::max)(nAdjValues, 5);
 				}break;
 			case adjust6Value:
 				{
-					adjValues[5]	=	FormatUtils::IntToWideString( (int)iter->op );
-                    nAdjValues		=	(std::max)(nAdjValues,6);
+					m_nAdjValues[5] = (int)iter->op;
+                    nAdjValues		= (std::max)(nAdjValues, 6);
 				}break;
 			case adjust7Value:
 				{
-					adjValues[6]	=	FormatUtils::IntToWideString( (int)iter->op );
-                    nAdjValues		=	(std::max)(nAdjValues,7);
+					m_nAdjValues[6] = (int)iter->op;
+                    nAdjValues		= (std::max)(nAdjValues, 7);
 				}break;
 			case adjust8Value:
 				{
-					adjValues[7]	=	FormatUtils::IntToWideString( (int)iter->op );
-                    nAdjValues		=	(std::max)(nAdjValues,8);
+					m_nAdjValues[7] = (int)iter->op;
+                    nAdjValues		= (std::max)(nAdjValues, 8);
 				}break;
 			case pWrapPolygonVertices:
 				{
-					std::wstring wrapCoords = getWrapCoords(*iter);
+					std::wstring wrapCoords = GetWrapCoords(iter);
 
 					if (!wrapCoords.empty())
 					{
@@ -420,13 +445,6 @@ namespace DocFileFormat
 			case geoBottom:
 				{
 					yCoord = iter->op;
-				}break;
-			case pGuides:
-				{
-				}break;
-			case pInscribe:
-				{
-					arrInscribe = GetTextRectangles(*iter);
 				}break;
 // OUTLINE
 			case lineColor:
@@ -497,7 +515,7 @@ namespace DocFileFormat
 				}break;
 			case fillShadeColors:
 				{
-					appendValueAttribute(&m_fill, L"colors", getFillColorString( iter->opComplex, iter->op ));
+					appendValueAttribute(&m_fill, L"colors", getFillColorString( iter->opComplex.get(), iter->op ));
 				}break;
 			case fillFocus:
 				{
@@ -602,7 +620,7 @@ namespace DocFileFormat
 			case pibName:
 				{
 					std::wstring name;
-					FormatUtils::GetSTLCollectionFromBytes<std::wstring>(&name, iter->opComplex, iter->op, ENCODING_UTF16);
+					FormatUtils::GetSTLCollectionFromBytes<std::wstring>(&name, iter->opComplex.get(), iter->op, ENCODING_UTF16);
 					if (!name.empty())
 						appendValueAttribute(&m_imagedata, L"o:title", FormatUtils::XmlEncode(name));
 				}break;
@@ -676,10 +694,10 @@ namespace DocFileFormat
 					hasTextbox	=	true;
 					nLTxID		=	(((iter->op) >> 16) & 0xFFFF);
 				}break;
-			case dxTextLeft:	{ndxTextLeft	= (int)iter->op;break;}
-			case dyTextTop:		{ndyTextTop		= (int)iter->op;break;}
-			case dxTextRight:	{ndxTextRight	= (int)iter->op;break;}
-			case dyTextBottom:	{ndyTextBottom	= (int)iter->op;break;}
+			case dxTextLeft:	{ndxTextLeft	= (int)iter->op;	break;}
+			case dyTextTop:		{ndyTextTop		= (int)iter->op;	break;}
+			case dxTextRight:	{ndxTextRight	= (int)iter->op;	break;}
+			case dyTextBottom:	{ndyTextBottom	= (int)iter->op;	break;}
 			case txflTextFlow:
 				{
 					switch(iter->op)
@@ -700,7 +718,7 @@ namespace DocFileFormat
 // Word Art
 			case gtextUNICODE:
 				{
-					std::wstring text = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op)/2);
+					std::wstring text = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex.get(), (iter->op)/2);
 
 					text = FormatUtils::XmlEncode(text);
 
@@ -713,7 +731,7 @@ namespace DocFileFormat
 				}break;
 			case gtextFont:
 				{
-					std::wstring font = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op)/2);
+					std::wstring font = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex.get(), (iter->op)/2);
 					int i = font.size();
 					while (i > 0)
 					{
@@ -764,31 +782,31 @@ namespace DocFileFormat
 						appendStyleProperty(&m_textPathStyle, L"font-weight", L"bold");
 					}
 				}break;
-  // PATH
-				case shapePath :
-				{
-					bHavePath			=	true;
-
-					std::wstring path	=	ParsePath(options);
-
-					if (false == path.empty())
-						m_pXmlWriter->WriteAttribute (L"path", path);
-				}break;
-				default:
+			default:
 				{
 					int val = iter->op;
 				}break;
 			}
 		}
 
-		if (false == bHavePath)		//	фигура может быть задана только наборами вершин и индексов
+		if (opVerticles && opSegmentInfo)
 		{
-			std::wstring path	=	ParsePath(options);
+			const unsigned char*	pVP	=	opVerticles->opComplex.get();
+			unsigned int			nVP	=	opVerticles->op;
+			const unsigned char*	pSI	=	opSegmentInfo->opComplex.get();
+			unsigned int			nSI	=	opSegmentInfo->op;
+		
+			PathParser oParser (pSI, nSI, pVP, nVP, m_arrGuides);
+			std::wstring path	=	oParser.GetVmlPath();
 
 			if (false == path.empty())
 				m_pXmlWriter->WriteAttribute (L"path", path);
 		}
-
+		if (freeform && (xCoord == 0 || yCoord == 0 ))
+		{
+			xCoord = 21600;
+			yCoord = 21600;
+		}
 		if ( !filled )
 		{
 			m_pXmlWriter->WriteAttribute( L"filled", L"f" );
@@ -804,10 +822,10 @@ namespace DocFileFormat
 			m_pXmlWriter->WriteAttribute(L"o:allowincell", L"f");
 		}
 
-		if ( ( xCoord > 0 ) && ( yCoord > 0 ) )
+		if ( xCoord > 0 && yCoord > 0 )
 		{
 			m_pXmlWriter->WriteAttribute( L"coordsize", ( FormatUtils::IntToWideString( xCoord ) + L"," + FormatUtils::IntToWideString( yCoord ) ));
-		}
+		} 
 
 		int nCode	=	0;
 		if (pShape->GetShapeType())
@@ -819,17 +837,17 @@ namespace DocFileFormat
 		{
 			if (nAdjValues)												
 			{
-				m_pXmlWriter->WriteAttribute(L"arcsize", adjValues[0]);
+				m_pXmlWriter->WriteAttribute(L"arcsize", m_nAdjValues[0]);
 			}
 		}
 		else
 		{
-			if (nAdjValues)												
+			if (nAdjValues > 0)												
 			{
-				std::wstring adjTag	= adjValues[0];
+				std::wstring adjTag	= std::to_wstring(m_nAdjValues[0]);
 
 				for (int i = 1; i < nAdjValues; ++i)
-					adjTag += std::wstring(L",") + adjValues[i];
+					adjTag += L"," + std::to_wstring(m_nAdjValues[i]);
 
 				m_pXmlWriter->WriteAttribute(L"adj", adjTag);
 			}
@@ -982,10 +1000,24 @@ namespace DocFileFormat
 		}
 		if (freeform)
 		{
-			if (arrInscribe.size())
+			if (opInscribe || opConnectAngles || opConnectLocs)
 			{
+				std::vector<std::wstring>	arrInscribe			= GetTextRectangles(opInscribe);
+				std::wstring				strConnectAngles	= GetConnectAngles(opConnectAngles);
+				std::wstring				strConnectLocs		= GetConnectLocs(opConnectLocs);
+				
 				m_pXmlWriter->WriteNodeBegin(L"v:path", true);
-				m_pXmlWriter->WriteAttribute(L"textboxrect", arrInscribe[0]);
+				if (!arrInscribe.empty())
+					m_pXmlWriter->WriteAttribute(L"textboxrect", arrInscribe[0]);
+				if (!strConnectAngles.empty() || !strConnectLocs.empty())
+				{
+					m_pXmlWriter->WriteAttribute(L"o:connecttype", L"custom");
+					if (!strConnectLocs.empty())
+						m_pXmlWriter->WriteAttribute(L"o:connectlocs", strConnectLocs);
+					if (!strConnectAngles.empty())
+						m_pXmlWriter->WriteAttribute(L"o:connectangles", strConnectAngles);
+				}
+
 				m_pXmlWriter->WriteNodeEnd(L"", true);
 			}
 		}
@@ -1182,11 +1214,13 @@ namespace DocFileFormat
 	}
 
 	/// Build the VML wrapcoords string for a given pWrapPolygonVertices
-	std::wstring VMLShapeMapping::getWrapCoords(const OptionEntry& pWrapPolygonVertices) const
+	std::wstring VMLShapeMapping::GetWrapCoords(const OptionEntryPtr& pWrapPolygonVertices) const
 	{
+		if (!pWrapPolygonVertices) return L"";
+
 		std::wstring coords;
 
-		MemoryStream oStream(pWrapPolygonVertices.opComplex, pWrapPolygonVertices.op);
+		MemoryStream oStream(pWrapPolygonVertices->opComplex.get(), pWrapPolygonVertices->op);
 		std::list<int> arrVertices;
 
 		unsigned short nElems		=	oStream.ReadUInt16();
@@ -1498,7 +1532,7 @@ namespace DocFileFormat
 		}
 	}
 
-	void VMLShapeMapping::AppendOptionsToStyle (std::wstring* oStyle, const std::list<OptionEntry>& options, int zIndex) const
+	void VMLShapeMapping::AppendOptionsToStyle (std::wstring* oStyle, const std::vector<OptionEntryPtr>& options, int zIndex) const
 	{
 		bool bRelH = false;
 		bool bRelV = false;
@@ -1508,9 +1542,9 @@ namespace DocFileFormat
 
 		bool bZIndex = false;
 
-		std::list<OptionEntry>::const_iterator end = options.end();
-		for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
+		for (size_t i = 0; i < options.size(); i++)
 		{
+			const OptionEntryPtr & iter = options[i];
 			switch (iter->pid)
 			{
 //	POSITIONING
@@ -1616,15 +1650,16 @@ namespace DocFileFormat
 	}
 
 	//
-	std::wstring VMLShapeMapping::buildStyle (const Shape* shape, const ChildAnchor* anchor, const std::list<OptionEntry>& options, int zIndex) const
+	std::wstring VMLShapeMapping::buildStyle (const Shape* shape, const ChildAnchor* anchor, const std::vector<OptionEntryPtr>& options, int zIndex) const
 	{
 		std::wstring style;
 
-		// Check if some properties are set that cause the dimensions to be twisted
 		bool twistDimensions = false;
-		std::list<OptionEntry>::const_iterator end = options.end();
-		for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
+		
+		for (size_t i = 0; i < options.size(); i++)
 		{
+			const OptionEntryPtr & iter = options[i];
+
 			if (geometryTextBooleanProperties ==  iter->pid)
 			{
 				GeometryTextBooleanProperties props(iter->op);
@@ -1860,61 +1895,210 @@ namespace DocFileFormat
 
 		return wrapType;
 	}
-
-	std::wstring VMLShapeMapping::ParsePath (const std::list<OptionEntry>& options) const
+	std::wstring VMLShapeMapping::GetConnectAngles(const OptionEntryPtr& opAngles) const
 	{
-		const unsigned char* pVP		=	NULL;
-		unsigned int nVP	=	0;
-		const unsigned char* pSI		=	NULL;
-		unsigned int nSI	=	0;
+		if (!opAngles)				return L"";
+		if (!opAngles->opComplex)	return L"";
 		
-		std::list<OptionEntry>::const_iterator end = options.end();
-		for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
+		MemoryStream reader(opAngles->opComplex.get(), opAngles->op);
+
+		unsigned short nElems		=	reader.ReadUInt16();
+		unsigned short nElemsAlloc	=	reader.ReadUInt16();
+		unsigned short nElemSize	=	reader.ReadUInt16();
+
+		bool bTruncated = false;
+
+        if (0xFFF0 == nElemSize)
+        {
+            nElemSize = 4;
+            bTruncated = true;
+        }
+
+        long dwSize = nElems * nElemSize;
+
+        if (opAngles->op - 6 != (dwSize))
+        {
+            bool b = false;
+        }
+		if (nElemSize < 1) return L"";
+
+		int count = dwSize / nElemSize; 
+
+		std::wstring angles;
+		for (int i = 0; i < count; ++i)
 		{
-			if (iter->pid == pVertices)
-			{
-				pVP =	iter->opComplex;
-				nVP	=	iter->op;	
-			}
-
-			if (iter->pid == pSegmentInfo)
-			{
-				pSI =	iter->opComplex;
-				nSI	=	iter->op;	
-			}
+            DWORD v = reader.ReadUInt32();
+			double val = (double)((WORD)(v >> 16) + ((WORD)(v) / 65536.0));
+			angles += std::to_wstring((int)val) + (i < (count - 1) ? L"," : L"");
 		}
+		return angles;
+	}
+	int VMLShapeMapping::UpdateFromGuides(const int val)  const
+	{
+		int new_val = val;
+        LONG lMinF = (LONG)0x80000000;
+        if (lMinF <= val)
+        {
+            int index = (DWORD)val - 0x80000000;
+		
+			if (index >= 0 && index < m_arrGuides.size())
+			{
+				new_val = m_arrGuides[index].param3;
+			}
 
-		PathParser oParser (pSI, nSI, pVP, nVP);
-		return oParser.GetVmlPath();
+        }
+		return new_val;
+	}
+	void VMLShapeMapping::GetGuides( const OptionEntryPtr& opGuides )
+	{
+		if (!opGuides)				return;
+		if (!opGuides->opComplex)	return;
+		
+		MemoryStream reader(opGuides->opComplex.get(), opGuides->op);
+
+		unsigned short nElems		=	reader.ReadUInt16();
+		unsigned short nElemsAlloc	=	reader.ReadUInt16();
+		unsigned short nElemSize	=	reader.ReadUInt16();
+
+		bool bTruncated = false;
+
+        if (0xFFF0 == nElemSize)
+        {
+            nElemSize = 4;
+            bTruncated = true;
+        }
+        long dwSize = nElems * nElemSize;
+
+        if (opGuides->op - 6 != (dwSize))
+        {
+            bool b = false;
+        }
+		int count = dwSize / nElemSize;  //1x (int or short)
+		for (int i = 0; i < count; ++i)
+		{
+			_guides g;
+			WORD flags	= reader.ReadUInt16();
+
+			g.type = flags & 0x1FFF;
+
+			g.param_type1 = (unsigned char)(flags & 0x04);
+			g.param_type2 = (unsigned char)(flags & 0x02);
+			g.param_type3 = (unsigned char)(flags & 0x01);
+
+			g.param1	= reader.ReadUInt16();
+			g.param2	= reader.ReadUInt16();
+			g.param3	= reader.ReadUInt16();
+
+			m_arrGuides.push_back(g);
+		}
 	}
 
-	//
-	std::vector<std::wstring> VMLShapeMapping::GetTextRectangles(const OptionEntry& inscribe) const 
+	std::wstring VMLShapeMapping::GetConnectLocs( const OptionEntryPtr& opLocs ) const
 	{
-		MemoryStream reader(inscribe.opComplex, inscribe.op + 6);
+		if (!opLocs)			return L"";
+		if (!opLocs->opComplex) return L"";
 
-		unsigned short elems		=	reader.ReadUInt16();
-		unsigned short allocElems	=	reader.ReadUInt16();
-		unsigned short cb			=	reader.ReadUInt16();
-	
+		MemoryStream reader(opLocs->opComplex.get(), opLocs->op);
+
+		unsigned short nElems		=	reader.ReadUInt16();
+		unsigned short nElemsAlloc	=	reader.ReadUInt16();
+		unsigned short nElemSize	=	reader.ReadUInt16();
+
+		bool bTruncated = false;
+
+        if (0xFFF0 == nElemSize)
+        {
+            nElemSize = 4;
+            bTruncated = true;
+        }
+
+        long dwSize = nElems * nElemSize;
+
+        if (opLocs->op - 6 != (dwSize))
+        {
+            bool b = false;
+        }
+		int count = dwSize / nElemSize;  //2x (int or short)
+		
+		std::wstring locs;
+		for (int i = 0; i < count; ++i)
+		{
+			POINT pt;
+
+			if (bTruncated)
+			{
+				pt.x =	reader.ReadInt16();
+				pt.y =	reader.ReadInt16();
+			}
+			else
+			{
+				pt.x =	reader.ReadInt32();
+				pt.y =	reader.ReadInt32();
+			}
+           
+			pt.x = UpdateFromGuides(pt.x);
+			pt.y = UpdateFromGuides(pt.y);
+			
+			locs += std::to_wstring(pt.x) + L"," + std::to_wstring(pt.y) + (i < (count - 1) ? L";" : L"");
+		}
+
+		return locs;
+	}
+
+	std::vector<std::wstring> VMLShapeMapping::GetTextRectangles( const OptionEntryPtr& opInscribe ) const
+	{
 		std::vector<std::wstring> rectangles;
+		
+		if (!opInscribe) return rectangles;
+		if (!opInscribe->opComplex) return rectangles;
 
-		if (16 != cb) return rectangles; // TODO: доделать
+		MemoryStream reader(opInscribe->opComplex.get(), opInscribe->op);
 
-		int count = (inscribe.op) / 16;
+		unsigned short nElems		=	reader.ReadUInt16();
+		unsigned short nElemsAlloc	=	reader.ReadUInt16();
+		unsigned short nElemSize	=	reader.ReadUInt16();
 
+		bool bTruncated = false;
+
+        if (0xFFF0 == nElemSize)
+        {
+            nElemSize = 4;
+            bTruncated = true;
+        }
+
+        long dwSize = nElems * nElemSize;
+
+        if (opInscribe->op - 6 != (dwSize))
+        {
+            bool b = false;
+        }
+		int count = dwSize / nElemSize; //4x (int or short)
+		
 		for (int i = 0; i < count; ++i)
 		{
 			RECT rc;
 
-			rc.top		=	reader.ReadInt32();
-			rc.left		=	reader.ReadInt32();
-			rc.right	=	reader.ReadInt32();
-			rc.bottom	=	reader.ReadInt32();
+			if (bTruncated)
+			{
+				rc.top		=	reader.ReadInt16();
+				rc.left		=	reader.ReadInt16();
+				rc.right	=	reader.ReadInt16();
+				rc.bottom	=	reader.ReadInt16();
+			}
+			else
+			{
+				rc.top		=	reader.ReadInt32();
+				rc.left		=	reader.ReadInt32();
+				rc.right	=	reader.ReadInt32();
+				rc.bottom	=	reader.ReadInt32();
+			}
+			rc.top		= UpdateFromGuides(rc.top);
+			rc.left		= UpdateFromGuides(rc.left);
+			rc.right	= UpdateFromGuides(rc.right);
+			rc.bottom	= UpdateFromGuides(rc.bottom);
 
-			std::wstringstream sstream;
-			sstream << boost::wformat(L"%d,%d,%d,%d") % rc.top % rc.left % rc.right % rc.bottom; 
-			rectangles.push_back(sstream.str());
+			rectangles.push_back(	std::to_wstring(rc.top)		+ L","	+ std::to_wstring(rc.left) + L"," + 
+									std::to_wstring(rc.right)	+ L","	+ std::to_wstring(rc.bottom));
 		}
 
 		return rectangles;

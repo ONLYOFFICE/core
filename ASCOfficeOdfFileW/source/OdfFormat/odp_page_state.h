@@ -60,13 +60,15 @@ class odf_text_context;
 class style;
 
 
-struct odp_element_state
+struct anim_state
 {
-	office_element_ptr	elm;
+	anim_state() : empty(true),  attlist(NULL), id(-1) {}
 	
-    short				repeated;
-	std::wstring		style_name;
-	office_element_ptr	style_elm;
+	int										id;
+	office_element_ptr						elm;	
+	odf_types::common_anim_smil_attlist*	attlist;
+
+	bool empty;
 };
 
 
@@ -74,8 +76,9 @@ class odp_page_state
 {
 public:
 	odp_page_state(odf_conversion_context * Context, office_element_ptr & elm);
-		void set_page_name(std::wstring name);
-		void set_page_style(office_element_ptr & _style);
+		void set_page_name	(std::wstring name);
+		void set_page_id	(int id);
+		void set_page_style	(office_element_ptr & _style);
 		
 		void set_master_page(std::wstring name);
 		void set_layout_page(std::wstring name);
@@ -86,9 +89,31 @@ public:
 	odf_drawing_context   *	drawing_context(){return  &drawing_context_;}
 	odf_comment_context   *	comment_context(){return  &comment_context_;}
 
-	std::wstring		office_page_name_;
-	office_element_ptr	page_elm_;
-	office_element_ptr	page_style_elm_;
+	std::wstring			page_name_;
+	int						page_id_;
+	office_element_ptr		page_elm_;
+	office_element_ptr		page_style_elm_;
+
+	std::vector<anim_state> anim_levels;
+	office_element_ptr		page_transaction;
+
+	void set_anim_id		(int val);
+	void set_anim_type		(std::wstring val);
+	void set_anim_duration	(std::wstring val);
+	void set_anim_restart	(std::wstring val);
+
+	void start_timing_par();
+	void end_timing_par();
+
+	void start_timing_seq();
+	void end_timing_seq();
+
+	void start_transition();
+		void set_transition_type	(int val);
+		void set_transition_subtype	(std::wstring val);
+		void set_transition_speed	(int val);
+		void set_transition_duration(int val);
+	void end_transition(){}
 private:
 
     odf_conversion_context * context_;   

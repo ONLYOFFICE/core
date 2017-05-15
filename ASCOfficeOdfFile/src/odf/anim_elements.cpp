@@ -129,8 +129,7 @@ const wchar_t * anim_transitionFilter::name = L"transitionFilter";
 
 void anim_transitionFilter::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	common_anim_smil_attlist_.add_attributes(Attributes);
-	anim_transition_filter_attlist_.add_attributes(Attributes);
+	attlist_.add_attributes(Attributes);
 }
 
 void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
@@ -142,20 +141,20 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 
 	_CP_OPT(std::wstring) param;
 
-	if (anim_transition_filter_attlist_.smil_dur_)
+	if (attlist_.smil_dur_)
 	{
-		time = anim_transition_filter_attlist_.smil_dur_->get_value();
+		time = attlist_.smil_dur_->get_value();
 	}	
-	if (anim_transition_filter_attlist_.smil_fadeColor_)
+	if (attlist_.smil_fadeColor_)
 	{
-		color =anim_transition_filter_attlist_.smil_fadeColor_->get_hex_value();
+		color =attlist_.smil_fadeColor_->get_hex_value();
 	}
 
 	smil_transition_type::type transition_type;
 
-	if (anim_transition_filter_attlist_.smil_type_)
+	if (attlist_.smil_type_)
 	{
-		transition_type = anim_transition_filter_attlist_.smil_type_->get_type();
+		transition_type = attlist_.smil_type_->get_type();
 	}
 
 	switch(transition_type)
@@ -164,13 +163,13 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 			type = L"split";
 			break; 
 		case smil_transition_type::irisWipe: 
-			if ((anim_transition_filter_attlist_.smil_subtype_) && (anim_transition_filter_attlist_.smil_subtype_.get()==L"diamond"))
+			if ((attlist_.smil_subtype_) && (attlist_.smil_subtype_.get()==L"diamond"))
 				type = L"diamond";
 			else
 				type = L"zoom";
 			break; 
 		case smil_transition_type::miscDiagonalWipe: 
-			if ((anim_transition_filter_attlist_.smil_subtype_) && (anim_transition_filter_attlist_.smil_subtype_.get()==L"doubleDiamond"))
+			if ((attlist_.smil_subtype_) && (attlist_.smil_subtype_.get()==L"doubleDiamond"))
 				type = L"diamond";
 			else
 				type = L"zoom";
@@ -197,10 +196,10 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 		case smil_transition_type::singleSweepWipe: //
 		case smil_transition_type::doubleFanWipe: //
 			type = L"wheel";
-			if ((anim_transition_filter_attlist_.smil_subtype_)  && (anim_transition_filter_attlist_.smil_subtype_.get()==L"oneBlade"))	 param = L"1";
-			if ((anim_transition_filter_attlist_.smil_subtype_)  && (anim_transition_filter_attlist_.smil_subtype_.get()==L"threeBlade"))param = L"3";
-			if ((anim_transition_filter_attlist_.smil_subtype_)  && (anim_transition_filter_attlist_.smil_subtype_.get()==L"fourBlade")) param = L"4";
-			if ((anim_transition_filter_attlist_.smil_subtype_)  && (anim_transition_filter_attlist_.smil_subtype_.get()==L"eightBlade"))param = L"8";
+			if ((attlist_.smil_subtype_)  && (attlist_.smil_subtype_.get()==L"oneBlade"))	param = L"1";
+			if ((attlist_.smil_subtype_)  && (attlist_.smil_subtype_.get()==L"threeBlade"))	param = L"3";
+			if ((attlist_.smil_subtype_)  && (attlist_.smil_subtype_.get()==L"fourBlade"))	param = L"4";
+			if ((attlist_.smil_subtype_)  && (attlist_.smil_subtype_.get()==L"eightBlade"))	param = L"8";
 			break; 
 		case smil_transition_type::fanWipe: 
 			type = L"wedge";
@@ -211,22 +210,22 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 			break;
 		case smil_transition_type::checkerBoardWipe:
 			type = L"checker";
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"across")	dir = L"horz";
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"down")	dir = L"vert";
+			if (attlist_.smil_subtype_.get()==L"across")	dir = L"horz";
+			if (attlist_.smil_subtype_.get()==L"down")	dir = L"vert";
 			break;
 		case smil_transition_type::blindsWipe:
 			type = L"blinds";
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"vertical")	dir = L"vert";
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"horizontal")	dir = L"horz";
+			if (attlist_.smil_subtype_.get()==L"vertical")	dir = L"vert";
+			if (attlist_.smil_subtype_.get()==L"horizontal")	dir = L"horz";
 			break;
 		case smil_transition_type::diagonalWipe:
 		case smil_transition_type::waterfallWipe:
 			type = L"strips";			
-			if (anim_transition_filter_attlist_.smil_subtype_)
+			if (attlist_.smil_subtype_)
 			{
-				if	(anim_transition_filter_attlist_.smil_subtype_.get()==L"horizontalLeft")	dir = L"rd";	
-				else if(anim_transition_filter_attlist_.smil_subtype_.get()==L"horizontalRight")dir = L"lu";	
-				else if(anim_transition_filter_attlist_.smil_subtype_.get()==L"verticalRight")	dir = L"ld";
+				if		(attlist_.smil_subtype_.get() == L"horizontalLeft")	dir = L"rd";	
+				else if (attlist_.smil_subtype_.get() == L"horizontalRight")	dir = L"lu";	
+				else if (attlist_.smil_subtype_.get() == L"verticalRight")	dir = L"ld";
 				else dir = L"ru";	
 			}
 			break;
@@ -235,13 +234,13 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 			break;		
 		case smil_transition_type::randomBarWipe:
 			type = L"randomBar";
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"vertical")	dir = L"vert";
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"horizontal")	dir = L"horz";
+			if (attlist_.smil_subtype_.get() == L"vertical")	dir = L"vert";
+			if (attlist_.smil_subtype_.get() == L"horizontal")dir = L"horz";
 			break;	
 		case smil_transition_type::pushWipe: 
 			type = L"push";
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"combVertical")	{type = L"comb"; dir = L"vert";};
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"combHorizontal")	{type = L"comb"; dir = L"horz";};
+			if (attlist_.smil_subtype_.get()==L"combVertical")	{type = L"comb"; dir = L"vert";};
+			if (attlist_.smil_subtype_.get()==L"combHorizontal")	{type = L"comb"; dir = L"horz";};
 			break;	
 		case smil_transition_type::slideWipe: 
 			type = L"pull";
@@ -251,19 +250,19 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 			break;
 		case smil_transition_type::barnDoorWipe: 
 			type = L"split";
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"vertical")	param = L"vert";
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"horizontal")	param = L"horz";			
+			if (attlist_.smil_subtype_.get()==L"vertical")	param = L"vert";
+			if (attlist_.smil_subtype_.get()==L"horizontal")	param = L"horz";			
 			break;
 		case smil_transition_type::barWipe:
 			type = L"wipe";
-			if (anim_transition_filter_attlist_.smil_subtype_)
+			if (attlist_.smil_subtype_)
 			{
-				if (anim_transition_filter_attlist_.smil_subtype_.get()==L"fromTopLeft")	{type = L"strips"; dir = L"rd";}
-				if (anim_transition_filter_attlist_.smil_subtype_.get()==L"fromBottomLeft")	{type = L"strips"; dir = L"ru";}
-				if (anim_transition_filter_attlist_.smil_subtype_.get()==L"fromTopRight")	{type = L"strips"; dir = L"ld";}
-				if (anim_transition_filter_attlist_.smil_subtype_.get()==L"fromBottomRight"){type = L"strips"; dir = L"lu";}
+				if (attlist_.smil_subtype_.get()==L"fromTopLeft")	{type = L"strips"; dir = L"rd";}
+				if (attlist_.smil_subtype_.get()==L"fromBottomLeft"){type = L"strips"; dir = L"ru";}
+				if (attlist_.smil_subtype_.get()==L"fromTopRight")	{type = L"strips"; dir = L"ld";}
+				if (attlist_.smil_subtype_.get()==L"fromBottomRight"){type = L"strips"; dir = L"lu";}
 				
-				if (anim_transition_filter_attlist_.smil_subtype_.get()==L"fadeOverColor")	{type = L"fade"; param = L"0";}
+				if (attlist_.smil_subtype_.get()==L"fadeOverColor")	{type = L"fade"; param = L"0";}
 			}
 			break;
 ///////////////////////////////////////////////////////
@@ -281,39 +280,39 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 			break;
 //////////////////////////////////////////////////////
 	}
-	if (anim_transition_filter_attlist_.smil_subtype_)
+	if (attlist_.smil_subtype_)
 	{
 		if (!dir)
 		{
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"leftToRight")
+			if (attlist_.smil_subtype_.get()==L"leftToRight")
 			{
-				if ((anim_transition_filter_attlist_.smil_direction_) && (anim_transition_filter_attlist_.smil_direction_.get()==L"reverse"))dir = L"l";
+				if ((attlist_.smil_direction_) && (attlist_.smil_direction_.get()==L"reverse"))dir = L"l";
 				else dir = L"r";
 			}
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"topToBottom")
+			if (attlist_.smil_subtype_.get()==L"topToBottom")
 			{
-				if ((anim_transition_filter_attlist_.smil_direction_) && (anim_transition_filter_attlist_.smil_direction_.get()==L"reverse"))dir = L"u";
+				if ((attlist_.smil_direction_) && (attlist_.smil_direction_.get()==L"reverse"))dir = L"u";
 				else dir = L"d";	
 			}
 
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"fromTop")		dir = L"d";	
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"fromLeft")		dir = L"r";	
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"fromRight")		dir = L"l";			
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"fromBottom")		dir = L"u";	
+			if (attlist_.smil_subtype_.get()==L"fromTop")		dir = L"d";	
+			if (attlist_.smil_subtype_.get()==L"fromLeft")		dir = L"r";	
+			if (attlist_.smil_subtype_.get()==L"fromRight")		dir = L"l";			
+			if (attlist_.smil_subtype_.get()==L"fromBottom")		dir = L"u";	
 			
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"topRight")		dir = L"ld";	
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"bottomLeft")		dir = L"lu";	
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"bottomRight")	dir = L"ru";
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"topLeft")		dir = L"rd";	
+			if (attlist_.smil_subtype_.get()==L"topRight")		dir = L"ld";	
+			if (attlist_.smil_subtype_.get()==L"bottomLeft")		dir = L"lu";	
+			if (attlist_.smil_subtype_.get()==L"bottomRight")	dir = L"ru";
+			if (attlist_.smil_subtype_.get()==L"topLeft")		dir = L"rd";	
 		
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"fromTopLeft")	dir = L"rd";
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"fromBottomLeft")	dir = L"ru";
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"fromTopRight")	dir = L"ld";
-			if (anim_transition_filter_attlist_.smil_subtype_.get()==L"fromBottomRight")dir = L"lu";
+			if (attlist_.smil_subtype_.get()==L"fromTopLeft")	dir = L"rd";
+			if (attlist_.smil_subtype_.get()==L"fromBottomLeft")	dir = L"ru";
+			if (attlist_.smil_subtype_.get()==L"fromTopRight")	dir = L"ld";
+			if (attlist_.smil_subtype_.get()==L"fromBottomRight")dir = L"lu";
 
 		}
 		
-		if (!dir && (anim_transition_filter_attlist_.smil_direction_) && (anim_transition_filter_attlist_.smil_direction_.get()==L"reverse"))
+		if (!dir && (attlist_.smil_direction_) && (attlist_.smil_direction_.get()==L"reverse"))
 			dir = L"in";
 	}
 

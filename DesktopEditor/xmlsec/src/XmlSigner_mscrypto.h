@@ -93,7 +93,7 @@ public:
 
     virtual std::string GetCertificateHash()
     {
-        return GetHash(m_context->pbCertEncoded, (unsigned int)m_context->cbCertEncoded);
+        return GetHash(m_context->pbCertEncoded, (unsigned int)m_context->cbCertEncoded, OOXML_HASH_ALG_SHA1);
     }
 
 public:
@@ -166,8 +166,11 @@ public:
         return sReturn;
     }
 
-    virtual std::string GetHash(unsigned char* pData, unsigned int nSize)
+    virtual std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlg)
     {
+        if (nAlg == OOXML_HASH_ALG_INVALID)
+            return "";
+
         BOOL bResult = TRUE;
         DWORD dwKeySpec = 0;
         HCRYPTHASH  hHash = NULL;
@@ -181,7 +184,7 @@ public:
         if (!bResult)
             return "";
 
-        bResult = CryptCreateHash(hCryptProv, CALG_SHA1, 0, 0, &hHash);
+        bResult = CryptCreateHash(hCryptProv, GetHashId(nAlg), 0, 0, &hHash);
         if (!bResult)
         {
             CryptReleaseContext(hCryptProv, 0);
@@ -231,12 +234,12 @@ public:
         return sReturn;
     }
 
-    virtual std::string GetHash(std::string& sXml)
+    virtual std::string GetHash(std::string& sXml, int nAlg)
     {
-        return GetHash((BYTE*)sXml.c_str(), (DWORD)sXml.length());
+        return GetHash((BYTE*)sXml.c_str(), (DWORD)sXml.length(), nAlg);
     }
 
-    virtual std::string GetHash(std::wstring& sXmlFile)
+    virtual std::string GetHash(std::wstring& sXmlFile, int nAlg)
     {
         BYTE* pFileData = NULL;
         DWORD dwFileDataLen = 0;
@@ -245,13 +248,13 @@ public:
         if (0 == dwFileDataLen)
             return "";
 
-        std::string sReturn = GetHash(pFileData, dwFileDataLen);
+        std::string sReturn = GetHash(pFileData, dwFileDataLen, nAlg);
 
         RELEASEARRAYOBJECTS(pFileData);
         return sReturn;
     }
 
-    virtual bool Verify(std::string& sXml, std::string& sXmlSignature)
+    virtual bool Verify(std::string& sXml, std::string& sXmlSignature, int nAlg)
     {
         DWORD dwKeySpec = 0;
         HCRYPTHASH hHash = NULL;
@@ -263,7 +266,7 @@ public:
         if (!bResult)
             return FALSE;
 
-        bResult = CryptCreateHash(hCryptProv, CALG_SHA1, 0, 0, &hHash);
+        bResult = CryptCreateHash(hCryptProv, GetHashId(nAlg), 0, 0, &hHash);
 
         if (!bResult)
         {
@@ -343,6 +346,17 @@ private:
     {
         for(BYTE* p = dst + size - 1; p >= dst; ++src, --p)
             (*p) = (*src);
+    }
+
+    ALG_ID GetHashId(int nAlg)
+    {
+        switch (nAlg)
+        {
+        case OOXML_HASH_ALG_SHA1:
+            return CALG_SHA1;
+        default:
+            return CALG_SHA1;
+        }
     }
 };
 

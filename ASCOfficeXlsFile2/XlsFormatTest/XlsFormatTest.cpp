@@ -45,6 +45,12 @@
 #pragma comment(lib,"Shell32.lib")	
 #pragma comment(lib,"Advapi32.lib")
 
+#if defined(_WIN64)
+	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
+#elif defined (_WIN32)
+	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
+#endif
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	HRESULT hr = S_OK;

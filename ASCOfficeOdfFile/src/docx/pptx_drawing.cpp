@@ -155,8 +155,11 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing & val)
 				odf_reader::GetProperty(val.additional,L"no_rect",bNoRect);
 
 				if (!bNoRect)
-				{					
-					val.serialize_xfrm(CP_XML_STREAM(), L"a", true);
+				{	
+					if (val.cx != 0 || val.cy != 0) //layout
+					{
+						val.serialize_xfrm(CP_XML_STREAM(), L"a", true);
+					}
 					val.serialize_shape(CP_XML_STREAM());
 
 					oox_serialize_ln(CP_XML_STREAM(), val.additional);

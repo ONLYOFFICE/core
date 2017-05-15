@@ -99,7 +99,7 @@ private:
                 for (int i = 0; i < nCount; i++)
                 {
                     oNodes.GetAt(i, ret.m_node);
-                    CXmlStackNamespaces _retRecursion = ret.GetByIdRec(ret, id);
+                    CXmlStackNamespaces _retRecursion = ret.GetByIdRec(ret, id, isNameUse);
                     if (_retRecursion.m_node.IsValid())
                         return _retRecursion;
                 }
@@ -117,7 +117,15 @@ private:
 
                 std::wstring sXmlFind = L"<" + sName + L" ";
                 if (0 == sXml.find(sXmlFind))
+                {
                     sXml.replace(0, sXmlFind.length(), L"<" + sName + L" " + m_namespaces + L" ");
+                }
+                else
+                {
+                    sXmlFind = L"<" + sName + L">";
+                    if (0 == sXml.find(sXmlFind))
+                        sXml.replace(0, sXmlFind.length(), L"<" + sName + L" " + m_namespaces + L">");
+                }
             }
 
             return U_TO_UTF8(sXml);
@@ -223,7 +231,7 @@ public:
         std::string sXml = stackRes.GetXml();
 
         std::string sCanonicalizationMethod = m_node.ReadNode(L"SignedInfo").ReadNode(L"CanonicalizationMethod").GetAttributeA("Algorithm");
-        std::string sSignatureMethod = m_node.ReadNode(L"SignedInfo").ReadNode(L"CanonicalizationMethod").GetAttributeA("Algorithm");
+        std::string sSignatureMethod = m_node.ReadNode(L"SignedInfo").ReadNode(L"SignatureMethod").GetAttributeA("Algorithm");
 
         int nSignatureMethod = ICertificate::GetOOXMLHashAlg(sSignatureMethod);
         if (OOXML_HASH_ALG_INVALID == nSignatureMethod)
@@ -244,7 +252,7 @@ public:
 
         std::string sSignatureValue = U_TO_UTF8((m_node.ReadValueString(L"SignatureValue")));
 
-        if (sSignatureCalcValue != sSignatureValue)
+        if (!m_cert->Verify(sSignatureCalcValue, sSignatureValue, nSignatureMethod))
             m_valid = OOXML_SIGNATURE_INVALID;
     }
 

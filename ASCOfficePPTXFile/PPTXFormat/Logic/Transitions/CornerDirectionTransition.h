@@ -45,7 +45,11 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(CornerDirectionTransition)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_CornerDirectionTransition;
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				name	= XmlUtils::GetNameNoNS(node.GetName());
@@ -61,8 +65,8 @@ namespace PPTX
 			}
 
 		public:
-			std::wstring											name;
-			nullable_limit<Limit::CornerDirectionVal>		dir;
+			std::wstring								name;
+			nullable_limit<Limit::CornerDirectionVal>	dir;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

@@ -191,7 +191,7 @@ void odp_page_state::set_transition_type(int val)
 {
 	anim_transitionFilter *trans = dynamic_cast<anim_transitionFilter*>(page_transaction.get());
 	if (trans)
-		trans->attlist_.smil_type_ = odf_types::smil_transition_type(odf_types::smil_transition_type::dissolve);
+		trans->attlist_.smil_type_ = odf_types::smil_transition_type((odf_types::smil_transition_type::type)val);
 }
 void odp_page_state::set_transition_subtype(std::wstring val)
 {

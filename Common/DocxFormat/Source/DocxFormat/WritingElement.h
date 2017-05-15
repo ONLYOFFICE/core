@@ -375,6 +375,16 @@ namespace OOX
         et_p_fld,
         et_p_br,
         et_p_MathPara,
+		
+		et_p_EmptyTransition,
+		et_p_OrientationTransition,
+		et_p_EightDirectionTransition,
+		et_p_OptionalBlackTransition,
+		et_p_CornerDirectionTransition,
+		et_p_SideDirectionTransition,
+		et_p_WheelTransition,
+		et_p_SplitTransition,
+		et_p_ZoomTransition,
 
         et_a_textFit,
         et_a_hyperlink,

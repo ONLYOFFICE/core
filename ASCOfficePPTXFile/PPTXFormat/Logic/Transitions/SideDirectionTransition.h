@@ -45,7 +45,11 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(SideDirectionTransition)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_SideDirectionTransition;
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				name	= XmlUtils::GetNameNoNS(node.GetName());
@@ -60,8 +64,7 @@ namespace PPTX
 				return XmlUtils::CreateNode(_T("p:") + name, oAttr);
 			}
 
-		public:
-			std::wstring										name;
+			std::wstring								name;
 			nullable_limit<Limit::SideDirectionVal>		dir;
 		protected:
 			virtual void FillParentPointersForChilds(){};

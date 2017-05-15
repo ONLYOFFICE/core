@@ -69,7 +69,15 @@ namespace PPTX
 		class TxStyles;
 		class TimeNodeBase;
 		class CTn;
-
+		class EmptyTransition;
+		class OrientationTransition;
+		class EightDirectionTransition;
+		class OptionalBlackTransition;
+		class CornerDirectionTransition;
+		class SideDirectionTransition;
+		class WheelTransition;
+		class SplitTransition;
+		class ZoomTransition;
 	}
 }
 
@@ -136,6 +144,16 @@ namespace Oox2Odf
 
 		void convert(PPTX::Logic::Ln *oox_ln_border, std::wstring & odf_border);
 private:
+		void convert(PPTX::Logic::EmptyTransition			*oox_transition);
+		void convert(PPTX::Logic::OrientationTransition		*oox_transition);
+		void convert(PPTX::Logic::EightDirectionTransition	*oox_transition);
+		void convert(PPTX::Logic::OptionalBlackTransition	*oox_transition);
+		void convert(PPTX::Logic::CornerDirectionTransition	*oox_transition);
+		void convert(PPTX::Logic::SideDirectionTransition	*oox_transition);
+		void convert(PPTX::Logic::WheelTransition			*oox_transition);
+		void convert(PPTX::Logic::SplitTransition			*oox_transition);
+		void convert(PPTX::Logic::ZoomTransition			*oox_transition);
+
 		PPTX::Folder									*pptx_document;
 		PPTX::Presentation								*presentation;
 		cpdoccore::odf_writer::package::odf_document	*output_document;

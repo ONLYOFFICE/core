@@ -20,6 +20,8 @@ private:
     std::string     m_sImageValidBase64;
     std::string     m_sImageInvalidBase64;
 
+    std::wstring    m_sFolder;
+
 private:
     XmlUtils::CXmlNode   m_node; // signature file
 
@@ -50,15 +52,22 @@ private:
             return *this;
         }
 
-        CXmlStackNamespaces GetById(const std::string& id)
+        CXmlStackNamespaces GetById(const std::string& id, const bool& isNameUse = false)
         {
-            return GetByIdRec(*this, id);
+            return GetByIdRec(*this, id, isNameUse);
         }
 
-        CXmlStackNamespaces GetByIdRec(CXmlStackNamespaces& stack, const std::string& id)
+        CXmlStackNamespaces GetByIdRec(CXmlStackNamespaces& stack, const std::string& id, const bool& isNameUse = false)
         {
             if (stack.m_node.GetAttributeA("Id") == id)
                 return stack;
+
+            if (isNameUse)
+            {
+                std::string sName = U_TO_UTF8((stack.m_node.GetName()));
+                if (sName == id)
+                    return stack;
+            }
 
             CXmlStackNamespaces ret = stack;
 
@@ -90,7 +99,7 @@ private:
                 for (int i = 0; i < nCount; i++)
                 {
                     oNodes.GetAt(i, ret.m_node);
-                    CXmlStackNamespaces _retRecursion = ret.GetByIdRec(ret, id);
+                    CXmlStackNamespaces _retRecursion = ret.GetByIdRec(ret, id, isNameUse);
                     if (_retRecursion.m_node.IsValid())
                         return _retRecursion;
                 }
@@ -108,7 +117,15 @@ private:
 
                 std::wstring sXmlFind = L"<" + sName + L" ";
                 if (0 == sXml.find(sXmlFind))
+                {
                     sXml.replace(0, sXmlFind.length(), L"<" + sName + L" " + m_namespaces + L" ");
+                }
+                else
+                {
+                    sXmlFind = L"<" + sName + L">";
+                    if (0 == sXml.find(sXmlFind))
+                        sXml.replace(0, sXmlFind.length(), L"<" + sName + L" " + m_namespaces + L">");
+                }
             }
 
             return U_TO_UTF8(sXml);
@@ -152,7 +169,7 @@ public:
 public:
     void Check()
     {
-        // 1) get cert
+        // 1) Certificate
         XmlUtils::CXmlNode oNodeCert = m_node.ReadNode(L"KeyInfo").ReadNode(L"X509Data").ReadNode(L"X509Certificate");
         if (!oNodeCert.IsValid())
         {
@@ -166,28 +183,212 @@ public:
             return;
         }
 
-        // 2) Objects
+        // 2) Check files (Manifect)
+        XmlUtils::CXmlNode nodeManifect = GetObjectById("idPackageObject");
+        if (!nodeManifect.IsValid())
+        {
+            m_valid = OOXML_SIGNATURE_INVALID;
+            return;
+        }
+
+        XmlUtils::CXmlNodes nodesManifestRefs = nodeManifect.ReadNode(L"Manifest").GetNodes(L"Reference");
+        int nRefsCount = nodesManifestRefs.GetCount();
+        for (int i = 0; i < nRefsCount; i++)
+        {
+            XmlUtils::CXmlNode tmp;
+            nodesManifestRefs.GetAt(i, tmp);
+
+            m_valid = CheckManifestReference(tmp);
+            if (OOXML_SIGNATURE_VALID != m_valid)
+                return;
+        }
+
+        // 3) Images
+        XmlUtils::CXmlNode nodeImageValid = GetObjectById("idValidSigLnImg");
+        if (nodeImageValid.IsValid())
+            m_sImageValidBase64 = U_TO_UTF8(nodeImageValid.GetText());
+        XmlUtils::CXmlNode nodeImageInvalid = GetObjectById("idInvalidSigLnImg");
+        if (nodeImageInvalid.IsValid())
+            m_sImageInvalidBase64 = U_TO_UTF8(nodeImageInvalid.GetText());
+
+        // 4) Objects
         XmlUtils::CXmlNodes nodesReferences;
         m_node.ReadNode(L"SignedInfo").GetNodes(L"Reference", nodesReferences);
+        nRefsCount = nodesReferences.GetCount();
+        for (int i = 0; i < nRefsCount; i++)
+        {
+            XmlUtils::CXmlNode tmp;
+            nodesReferences.GetAt(i, tmp);
 
+            m_valid = CheckObjectReference(tmp);
+            if (OOXML_SIGNATURE_VALID != m_valid)
+                return;
+        }
+
+        // 5) Check signature
         CXmlStackNamespaces stack(m_node);
-        int nCount = nodesReferences.GetCount();
+        CXmlStackNamespaces stackRes = stack.GetById("SignedInfo", true);
+        std::string sXml = stackRes.GetXml();
+
+        std::string sCanonicalizationMethod = m_node.ReadNode(L"SignedInfo").ReadNode(L"CanonicalizationMethod").GetAttributeA("Algorithm");
+        std::string sSignatureMethod = m_node.ReadNode(L"SignedInfo").ReadNode(L"SignatureMethod").GetAttributeA("Algorithm");
+
+        int nSignatureMethod = ICertificate::GetOOXMLHashAlg(sSignatureMethod);
+        if (OOXML_HASH_ALG_INVALID == nSignatureMethod)
+        {
+            m_valid = OOXML_SIGNATURE_NOTSUPPORTED;
+            return;
+        }
+
+        IXmlTransform* pCanonicalizationMethodTransform = IXmlTransform::GetFromType(sCanonicalizationMethod);
+        if (NULL == pCanonicalizationMethodTransform)
+        {
+            m_valid = OOXML_SIGNATURE_NOTSUPPORTED;
+            return;
+        }
+
+        std::string sSignatureCalcValue = pCanonicalizationMethodTransform->Transform(sXml);
+        RELEASEOBJECT(pCanonicalizationMethodTransform);
+
+        std::string sSignatureValue = U_TO_UTF8((m_node.ReadValueString(L"SignatureValue")));
+
+        if (!m_cert->Verify(sSignatureCalcValue, sSignatureValue, nSignatureMethod))
+            m_valid = OOXML_SIGNATURE_INVALID;
+    }
+
+    XmlUtils::CXmlNode GetObjectById(std::string sId)
+    {
+        XmlUtils::CXmlNodes oNodes = m_node.GetNodes(L"Object");
+        int nCount = oNodes.GetCount();
         for (int i = 0; i < nCount; i++)
         {
-            XmlUtils::CXmlNode nodeRef;
-            nodesReferences.GetAt(i, nodeRef);
-
-            std::string sId = nodeRef.GetAttributeA("URI");
-            if (0 == sId.find("#"))
-                sId = sId.substr(1);
-
-            CXmlStackNamespaces _stack = stack.GetById(sId);
-            std::string sTmp = _stack.GetXml();
-            XML_UNUSED(sTmp);
+            XmlUtils::CXmlNode tmp;
+            oNodes.GetAt(i, tmp);
+            if (sId == tmp.GetAttributeA("Id"))
+                return tmp;
         }
+        XmlUtils::CXmlNode ret;
+        return ret;
     }
 
     friend class COOXMLVerifier;
+
+private:
+
+    int CheckManifestReference(XmlUtils::CXmlNode& node)
+    {
+        std::wstring sFile = node.GetAttribute("URI");
+        std::wstring::size_type nPos = sFile.find(L"?");
+        if (nPos == std::wstring::npos)
+            return OOXML_SIGNATURE_INVALID;
+
+        sFile = sFile.substr(0, nPos);
+        sFile = m_sFolder + sFile;
+
+        if (!NSFile::CFileBinary::Exists(sFile))
+            return OOXML_SIGNATURE_INVALID;
+
+        XmlUtils::CXmlNode nodeMethod = node.ReadNode(L"DigestMethod");
+        if (!nodeMethod.IsValid())
+            return OOXML_SIGNATURE_INVALID;
+
+        int nAlg = ICertificate::GetOOXMLHashAlg(nodeMethod.GetAttributeA("Algorithm"));
+
+        if (OOXML_HASH_ALG_INVALID == nAlg)
+            return OOXML_SIGNATURE_NOTSUPPORTED;
+
+        std::string sValue = U_TO_UTF8((node.ReadNodeText(L"DigestValue")));
+        std::string sCalcValue = "";
+
+        XmlUtils::CXmlNode nodeTransform = node.ReadNode(L"Transforms");
+        if (!nodeTransform.IsValid())
+        {
+            // simple hash
+            sCalcValue = m_cert->GetHash(sFile, nAlg);
+            sValue = U_TO_UTF8((node.ReadNodeText(L"DigestValue")));
+        }
+        else
+        {
+            // XML
+            CXmlTransforms oTransforms(nodeTransform);
+            if (!oTransforms.GetValid())
+                return OOXML_SIGNATURE_NOTSUPPORTED;
+
+            std::string sXml;
+            NSFile::CFileBinary::ReadAllTextUtf8A(sFile, sXml);
+
+            sXml = oTransforms.Transform(sXml);
+
+            sCalcValue = m_cert->GetHash(sXml, nAlg);
+            sValue = U_TO_UTF8((node.ReadNodeText(L"DigestValue")));
+        }
+
+        if (sCalcValue != sValue)
+            return OOXML_SIGNATURE_INVALID;
+
+        return OOXML_SIGNATURE_VALID;
+    }
+
+    int CheckObjectReference(XmlUtils::CXmlNode& node)
+    {
+        std::string sURI = node.GetAttributeA("URI");
+        if ("" == sURI)
+            return OOXML_SIGNATURE_INVALID;
+
+        if (0 == sURI.find("#"))
+            sURI = sURI.substr(1);
+
+        std::string sValue = U_TO_UTF8((node.ReadNodeText(L"DigestValue")));
+
+        CXmlTransforms oTransforms;
+
+        CXmlTransformC14N* pTransform = new CXmlTransformC14N();
+        pTransform->CheckC14NTransform("http://www.w3.org/TR/2001/REC-xml-c14n-20010315");
+        oTransforms.AddTransform(pTransform);
+
+#if 0
+        XmlUtils::CXmlNode nodeTransform = node.ReadNode(L"Transforms");
+        if (!nodeTransform.IsValid())
+        {
+            // simple hash
+            sCalcValue = m_cert->GetHash(sFile, nAlg);
+            sValue = U_TO_UTF8((node.ReadNodeText(L"DigestValue")));
+        }
+        else
+        {
+            // XML
+            CXmlTransforms oTransforms(nodeTransform);
+            if (!oTransforms.GetValid())
+                return OOXML_SIGNATURE_NOTSUPPORTED;
+
+            std::string sXml;
+            NSFile::CFileBinary::ReadAllTextUtf8A(sFile, sXml);
+
+            sXml = oTransforms.Transform(sXml);
+
+            sCalcValue = m_cert->GetHash(sXml, nAlg);
+            sValue = U_TO_UTF8((node.ReadNodeText(L"DigestValue")));
+        }
+#endif
+
+        CXmlStackNamespaces stack(m_node);
+        CXmlStackNamespaces stackRes = stack.GetById(sURI);
+        std::string sXml = stackRes.GetXml();
+
+        sXml = oTransforms.Transform(sXml);
+
+        XmlUtils::CXmlNode nodeMethod = node.ReadNode(L"DigestMethod");
+        if (!nodeMethod.IsValid())
+            return OOXML_SIGNATURE_INVALID;
+
+        int nAlg = ICertificate::GetOOXMLHashAlg(nodeMethod.GetAttributeA("Algorithm"));
+        std::string sCalcValue = m_cert->GetHash(sXml, nAlg);
+
+        if (sCalcValue != sValue)
+            return OOXML_SIGNATURE_INVALID;
+
+        return OOXML_SIGNATURE_VALID;
+    }
 };
 
 class COOXMLVerifier
@@ -229,6 +430,7 @@ public:
 
             COOXMLSignature* pSignature = new COOXMLSignature();
             pSignature->m_node = nodeSig;
+            pSignature->m_sFolder = m_sFolder;
             pSignature->Check();
 
             m_arSignatures.push_back(pSignature);

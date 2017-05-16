@@ -182,6 +182,9 @@ public:
         bResult = CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL);
 
         if (!bResult)
+            bResult = CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
+
+        if (!bResult)
             return "";
 
         bResult = CryptCreateHash(hCryptProv, GetHashId(nAlg), 0, 0, &hHash);
@@ -264,14 +267,17 @@ public:
         BOOL bResult = CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL);
 
         if (!bResult)
-            return FALSE;
+            bResult = CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
+
+        if (!bResult)
+            return false;
 
         bResult = CryptCreateHash(hCryptProv, GetHashId(nAlg), 0, 0, &hHash);
 
         if (!bResult)
         {
             CryptReleaseContext(hCryptProv, 0);
-            return FALSE;
+            return false;
         }
 
         BYTE* pDataHash = NULL;

@@ -912,7 +912,8 @@ extern int g_nCurFormatVersion;
 	namespace c_oSer_FldSimpleType{ enum c_oSer_FldSimpleType
 	{
 		Content = 0,
-		Instr = 1
+		Instr = 1,
+		FFData = 2
 	};}
 	namespace c_oSer_ColorThemeType{ enum c_oSer_ColorThemeType
 	{
@@ -1043,6 +1044,34 @@ extern int g_nCurFormatVersion;
 		Tag = 33,
 		Temporary = 34,
 		MultiLine = 35
+	};}
+	namespace c_oSerFFData{enum c_oSerFFData
+	{
+		CalcOnExit = 0,
+		CheckBox = 1,
+		DDList = 2,
+		Enabled = 3,
+		EntryMacro = 4,
+		ExitMacro = 5,
+		HelpText = 6,
+		Label = 7,
+		Name = 8,
+		StatusText = 9,
+		TabIndex = 10,
+		TextInput = 11,
+		CBChecked = 12,
+		CBDefault = 13,
+		CBSize = 14,
+		CBSizeAuto = 15,
+		DLDefault = 16,
+		DLResult = 17,
+		DLListEntry = 18,
+		HTType = 19,
+		HTVal = 20,
+		TIDefault = 21,
+		TIFormat = 22,
+		TIMaxLength = 23,
+		TIType = 24,
 	};}
 }
 

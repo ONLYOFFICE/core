@@ -253,116 +253,88 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 	{
 		case OOX::et_w_ptab:
 		{
-			OOX::Logic::CPTab* pT= dynamic_cast<OOX::Logic::CPTab*>(oox_unknown);
-			convert(pT);
+			convert(dynamic_cast<OOX::Logic::CPTab*>(oox_unknown));
 		}break;
 		case OOX::et_w_sdt:
 		{
-			OOX::Logic::CSdt* pP= dynamic_cast<OOX::Logic::CSdt*>(oox_unknown);
-			convert(pP);
+			convert(dynamic_cast<OOX::Logic::CSdt*>(oox_unknown));
 		}break;
 		case OOX::et_w_fldSimple:	
 		{
-			OOX::Logic::CFldSimple* pFldS= dynamic_cast<OOX::Logic::CFldSimple*>(oox_unknown);
-			convert(pFldS);
+			convert(dynamic_cast<OOX::Logic::CFldSimple*>(oox_unknown));
 		}break;
 		case OOX::et_w_r:
 		{
-			OOX::Logic::CRun* pRun= dynamic_cast<OOX::Logic::CRun*>(oox_unknown);
-			convert(pRun);
+			convert(dynamic_cast<OOX::Logic::CRun*>(oox_unknown));
 		}break;
 		case OOX::et_w_p:
 		{
-			OOX::Logic::CParagraph* pP= dynamic_cast<OOX::Logic::CParagraph*>(oox_unknown);
-			convert(pP);
+			convert(dynamic_cast<OOX::Logic::CParagraph*>(oox_unknown));
 		}break;
 		case OOX::et_w_ins:
 		{
-			OOX::Logic::CIns* pIns= dynamic_cast<OOX::Logic::CIns*>(oox_unknown);
-			convert(pIns);
+			convert(dynamic_cast<OOX::Logic::CIns*>(oox_unknown));
 		}break;
 		case OOX::et_w_del:
 		{
-			OOX::Logic::CDel* pDel= dynamic_cast<OOX::Logic::CDel*>(oox_unknown);
-			convert(pDel);
+			convert(dynamic_cast<OOX::Logic::CDel*>(oox_unknown));
 		}break;
 		case OOX::et_w_smartTag:
 		{
-			OOX::Logic::CSmartTag* pTag= dynamic_cast<OOX::Logic::CSmartTag*>(oox_unknown);
-			convert(pTag);
+			convert(dynamic_cast<OOX::Logic::CSmartTag*>(oox_unknown));
 		}break;
 		case OOX::et_w_pPr:
 		{
-			OOX::Logic::CParagraphProperty* pPProp= dynamic_cast<OOX::Logic::CParagraphProperty*>(oox_unknown);
-			convert(pPProp);
+			convert(dynamic_cast<OOX::Logic::CParagraphProperty*>(oox_unknown));
 		}break;
 		case OOX::et_w_hyperlink:
 		{
-			OOX::Logic::CHyperlink* pH= dynamic_cast<OOX::Logic::CHyperlink*>(oox_unknown);
-			convert(pH);
+			convert(dynamic_cast<OOX::Logic::CHyperlink*>(oox_unknown));
 		}break;
 		case OOX::et_w_rPr:
 		{
-			OOX::Logic::CRunProperty* pRProp= dynamic_cast<OOX::Logic::CRunProperty*>(oox_unknown);
-			convert(pRProp);
+			convert(dynamic_cast<OOX::Logic::CRunProperty*>(oox_unknown));
 		}break;
 		case OOX::et_mc_alternateContent:
 		{
-			OOX::Logic::CAlternateContent* pAltCont= dynamic_cast<OOX::Logic::CAlternateContent*>(oox_unknown);
-			convert(pAltCont);
+			convert(dynamic_cast<OOX::Logic::CAlternateContent*>(oox_unknown));
 		}break;
 		case OOX::et_w_drawing:
 		{
-			OOX::Logic::CDrawing* pDrawing= dynamic_cast<OOX::Logic::CDrawing*>(oox_unknown);
-			convert(pDrawing);
+			convert(dynamic_cast<OOX::Logic::CDrawing*>(oox_unknown));
 		}break;
-		//case OOX::et_c_chart:
-		//{
-		//	PPTX::Logic::ChartRec* pChart = dynamic_cast<PPTX::Logic::ChartRec*>(oox_unknown);
-		//	convert(pChart);
-		//}break;
-		//case OOX::et_w_Shape:
-		//{
-		//	OOX::Logic::CShape* pShape = dynamic_cast<OOX::Logic::CShape*>(oox_unknown);
-		//	convert(pShape);
-		//}break;
 		case OOX::et_w_pict:
 		{
-			OOX::Logic::CPicture* pPic = dynamic_cast<OOX::Logic::CPicture*>(oox_unknown);
-			convert(pPic);
+			convert(dynamic_cast<OOX::Logic::CPicture*>(oox_unknown));
 		}break;
 		case OOX::et_w_object:
 		{
-			OOX::Logic::CObject* pObj = dynamic_cast<OOX::Logic::CObject*>(oox_unknown);
-			convert(pObj);
+			convert(dynamic_cast<OOX::Logic::CObject*>(oox_unknown));
 		}break;
 		case OOX::et_pic_pic:
 		case OOX::et_pic:
 		case OOX::et_p_pic:
 		{
-			PPTX::Logic::Pic* pPic = dynamic_cast<PPTX::Logic::Pic*>(oox_unknown);
-			convert(pPic);
+			convert(dynamic_cast<PPTX::Logic::Pic*>(oox_unknown));
 		}break;
 		case OOX::et_w_GroupShape:
 		case OOX::et_p_ShapeTree:
 		{
-			PPTX::Logic::SpTree* pGroupShape= dynamic_cast<PPTX::Logic::SpTree*>(oox_unknown);
-			convert(pGroupShape);
+			convert(dynamic_cast<PPTX::Logic::SpTree*>(oox_unknown));
 		}break;
 
 		case OOX::et_w_commentRangeEnd:
 		{
-			OOX::Logic::CCommentRangeEnd* pCommEnd = dynamic_cast<OOX::Logic::CCommentRangeEnd*>(oox_unknown);
-			convert(pCommEnd);
+			convert(dynamic_cast<OOX::Logic::CCommentRangeEnd*>(oox_unknown));
 		}break;
 		case OOX::et_w_commentRangeStart:
 		{
-			OOX::Logic::CCommentRangeStart* pCommStart = dynamic_cast<OOX::Logic::CCommentRangeStart*>(oox_unknown);
-			convert(pCommStart);
+			convert(dynamic_cast<OOX::Logic::CCommentRangeStart*>(oox_unknown));
 		}break;
 		case OOX::et_w_commentReference:
 		{
-			convert(dynamic_cast<OOX::Logic::CCommentReference*>(oox_unknown));		//если нет Start - означает начало с предыдущего Run
+			convert(dynamic_cast<OOX::Logic::CCommentReference*>(oox_unknown));		
+					//если нет Start - означает начало с предыдущего Run
 		}break;
 		case OOX::et_w_footnoteReference:
 		{
@@ -386,13 +358,11 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		}break;
 		case OOX::et_w_tr:
 		{
-			OOX::Logic::CTr* pRow= dynamic_cast<OOX::Logic::CTr*>(oox_unknown);
-			convert(pRow);
+			convert(dynamic_cast<OOX::Logic::CTr*>(oox_unknown));
 		}break;
 		case OOX::et_w_tc:
 		{
-			OOX::Logic::CTc* pCell= dynamic_cast<OOX::Logic::CTc*>(oox_unknown);
-			convert(pCell);
+			convert(dynamic_cast<OOX::Logic::CTc*>(oox_unknown));
 		}break;
 		case OOX::et_w_bookmarkStart:
 		{

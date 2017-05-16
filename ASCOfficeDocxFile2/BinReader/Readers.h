@@ -3801,19 +3801,223 @@ public:
 	{
 		int res = c_oSerConstants::ReadOk;
 		CFldSimple* pFldSimple = static_cast<CFldSimple*>(poResult);
-		if ( c_oSer_HyperlinkType::Link == type )
+		if ( c_oSer_FldSimpleType::Instr == type )
 			pFldSimple->sInstr = m_oBufferedStream.GetString3(length);
-		else if ( c_oSer_HyperlinkType::Content == type )
+		else if ( c_oSer_FldSimpleType::Content == type )
 		{
 			XmlUtils::CStringWriter* pPrevWriter = m_pCurWriter;
 			m_pCurWriter = &pFldSimple->writer;
 			res = Read1(length, &Binary_DocumentTableReader::ReadParagraphContent, this, NULL);
 			m_pCurWriter = pPrevWriter;
 		}
+		else if ( c_oSer_FldSimpleType::FFData == type )
+		{
+			OOX::Logic::CFFData oFFData;
+			res = Read1(length, &Binary_DocumentTableReader::ReadFFData, this, &oFFData);
+			pFldSimple->writer.WriteString(oFFData.toXML());
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
+	int ReadFFData(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CFFData* pFFData = static_cast<OOX::Logic::CFFData*>(poResult);
+		if ( c_oSerFFData::CalcOnExit == type )
+		{
+			pFFData->m_oCalcOnExit.Init();
+			pFFData->m_oCalcOnExit->m_oVal.FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerFFData::CheckBox == type )
+		{
+			pFFData->m_oCheckBox.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadFFCheckBox, this, pFFData->m_oCheckBox.GetPointer());
+		}
+		else if ( c_oSerFFData::DDList == type )
+		{
+			pFFData->m_oDDList.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadDDList, this, pFFData->m_oDDList.GetPointer());
+		}
+		else if ( c_oSerFFData::Enabled == type )
+		{
+			pFFData->m_oEnabled.Init();
+			pFFData->m_oEnabled->m_oVal.FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerFFData::EntryMacro == type )
+		{
+			pFFData->m_oEntryMacro.Init();
+			pFFData->m_oEntryMacro->m_oVal.Init();
+			pFFData->m_oEntryMacro->m_oVal->SetValue(m_oBufferedStream.GetString3(length));
+		}
+		else if ( c_oSerFFData::ExitMacro == type )
+		{
+			pFFData->m_oExitMacro.Init();
+			pFFData->m_oExitMacro->m_oVal.Init();
+			pFFData->m_oExitMacro->m_oVal->SetValue(m_oBufferedStream.GetString3(length));
+		}
+		else if ( c_oSerFFData::HelpText == type )
+		{
+			pFFData->m_oHelpText.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadFFHelpText, this, pFFData->m_oHelpText.GetPointer());
+		}
+		else if ( c_oSerFFData::Label == type )
+		{
+			pFFData->m_oLabel.Init();
+			pFFData->m_oLabel->m_oVal.Init();
+			pFFData->m_oLabel->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if ( c_oSerFFData::Name == type )
+		{
+			pFFData->m_oName.Init();
+			pFFData->m_oName->m_oVal.Init();
+			pFFData->m_oName->m_oVal->SetValue(m_oBufferedStream.GetString3(length));
+		}
+		else if ( c_oSerFFData::StatusText == type )
+		{
+			pFFData->m_oStatusText.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadFFStatusText, this, pFFData->m_oStatusText.GetPointer());
+		}
+		else if ( c_oSerFFData::TabIndex == type )
+		{
+			pFFData->m_oTabIndex.Init();
+			pFFData->m_oTabIndex->m_oVal.Init();
+			pFFData->m_oTabIndex->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if ( c_oSerFFData::TextInput == type )
+		{
+			pFFData->m_oTextInput.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadTextInput, this, pFFData->m_oTextInput.GetPointer());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadFFCheckBox(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CFFCheckBox* pFFCheckBox = static_cast<OOX::Logic::CFFCheckBox*>(poResult);
+		if ( c_oSerFFData::CBChecked == type )
+		{
+			pFFCheckBox->m_oChecked.Init();
+			pFFCheckBox->m_oChecked->m_oVal.FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerFFData::CBDefault == type )
+		{
+			pFFCheckBox->m_oDefault.Init();
+			pFFCheckBox->m_oDefault->m_oVal.FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerFFData::CBSize == type )
+		{
+			pFFCheckBox->m_oSize.Init();
+			pFFCheckBox->m_oSize->m_oVal.Init();
+			pFFCheckBox->m_oSize->m_oVal->FromHps(m_oBufferedStream.GetULong());
+		}
+		else if ( c_oSerFFData::CBSizeAuto == type )
+		{
+			pFFCheckBox->m_oSizeAuto.Init();
+			pFFCheckBox->m_oSizeAuto->m_oVal.FromBool(m_oBufferedStream.GetBool());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadDDList(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CFFDDList* pDDList = static_cast<OOX::Logic::CFFDDList*>(poResult);
+		if ( c_oSerFFData::DLDefault == type )
+		{
+			pDDList->m_oDefault.Init();
+			pDDList->m_oDefault->m_oVal.Init();
+			pDDList->m_oDefault->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if ( c_oSerFFData::DLResult == type )
+		{
+			pDDList->m_oResult.Init();
+			pDDList->m_oResult->m_oVal.Init();
+			pDDList->m_oResult->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if ( c_oSerFFData::DLListEntry == type )
+		{
+			ComplexTypes::Word::String* pVal = new ComplexTypes::Word::String();
+			pVal->m_sVal.Init();
+			pVal->m_sVal->append(m_oBufferedStream.GetString3(length));
+			pDDList->m_arrListEntry.push_back(pVal);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadFFHelpText(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		ComplexTypes::Word::CFFHelpText* pHelpText = static_cast<ComplexTypes::Word::CFFHelpText*>(poResult);
+		if ( c_oSerFFData::HTType == type )
+		{
+			pHelpText->m_oType.Init();
+			pHelpText->m_oType->SetValue((SimpleTypes::EInfoTextType)m_oBufferedStream.GetUChar());
+		}
+		else if ( c_oSerFFData::HTVal == type )
+		{
+			pHelpText->m_oVal.Init();
+			pHelpText->m_oVal->SetValue(m_oBufferedStream.GetString3(length));
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadFFStatusText(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		ComplexTypes::Word::CFFStatusText* pStatusText = static_cast<ComplexTypes::Word::CFFStatusText*>(poResult);
+		if ( c_oSerFFData::HTType == type )
+		{
+			pStatusText->m_oType.Init();
+			pStatusText->m_oType->SetValue((SimpleTypes::EInfoTextType)m_oBufferedStream.GetUChar());
+		}
+		else if ( c_oSerFFData::HTVal == type )
+		{
+			pStatusText->m_oVal.Init();
+			pStatusText->m_oVal->SetValue(m_oBufferedStream.GetString3(length));
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadTextInput(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CFFTextInput* pTextInput = static_cast<OOX::Logic::CFFTextInput*>(poResult);
+		if ( c_oSerFFData::TIDefault == type )
+		{
+			pTextInput->m_oDefault.Init();
+			pTextInput->m_oDefault->m_sVal.Init();
+			pTextInput->m_oDefault->m_sVal->append(m_oBufferedStream.GetString3(length));
+		}
+		else if ( c_oSerFFData::TIFormat == type )
+		{
+			pTextInput->m_oFormat.Init();
+			pTextInput->m_oFormat->m_sVal.Init();
+			pTextInput->m_oFormat->m_sVal->append(m_oBufferedStream.GetString3(length));
+		}
+		else if ( c_oSerFFData::TIMaxLength == type )
+		{
+			pTextInput->m_oMaxLength.Init();
+			pTextInput->m_oMaxLength->m_oVal.Init();
+			pTextInput->m_oMaxLength->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if ( c_oSerFFData::TIType == type )
+		{
+			pTextInput->m_oType.Init();
+			pTextInput->m_oType->m_oVal.Init();
+			pTextInput->m_oType->m_oVal->SetValue((SimpleTypes::EFFTextType)m_oBufferedStream.GetUChar());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+
 	int ReadHyperlink(BYTE type, long length, void* poResult)
 	{		
 		int res = c_oSerConstants::ReadOk;

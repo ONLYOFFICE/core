@@ -110,8 +110,9 @@ public:
 
     virtual std::string Transform(const std::string& xml)
     {
-        // TODO
-        return xml;
+        if (-1 == m_mode)
+            return xml;
+        return CXmlCanonicalizator::Execute(xml, m_mode, m_comments);
     }
 
     virtual void LoadFromXml(XmlUtils::CXmlNode& node)
@@ -148,6 +149,11 @@ protected:
     bool m_valid;
 
 public:
+    CXmlTransforms()
+    {
+        m_valid = true;
+    }
+
     CXmlTransforms(XmlUtils::CXmlNode& node)
     {
         m_valid = true;
@@ -181,6 +187,25 @@ public:
         m_transforms.clear();
     }
 
+    bool GetValid()
+    {
+        return m_valid;
+    }
+
+    std::string Transform(const std::string& xml)
+    {
+        std::string sResult = xml;
+        for (std::vector<IXmlTransform*>::iterator i = m_transforms.begin(); i != m_transforms.end(); i++)
+        {
+            sResult = (*i)->Transform(sResult);
+        }
+        return sResult;
+    }
+
+    void AddTransform(IXmlTransform* transform)
+    {
+        m_transforms.push_back(transform);
+    }
 };
 
 #endif //_XML_TRANSFORM_H_

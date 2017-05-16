@@ -3321,10 +3321,207 @@ namespace BinDocxRW
 			nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::Instr);
                 m_oBcw.m_oStream.WriteStringW3(*pFldSimple->m_sInstr);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			//FFData
+			if(pFldSimple->m_oFFData.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::FFData);
+				WriteFFData(pFldSimple->m_oFFData.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
 			//Content
 			nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::Content);
 				WriteParagraphContent(pFldSimple->m_arrItems);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+		}
+		void WriteFFData(const OOX::Logic::CFFData& oFFData)
+		{
+			int nCurPos = 0;
+			if(oFFData.m_oCalcOnExit.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::CalcOnExit);
+				m_oBcw.m_oStream.WriteBOOL(oFFData.m_oCalcOnExit->m_oVal.ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oFFData.m_oCheckBox.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::CheckBox);
+				WriteFFCheckBox(oFFData.m_oCheckBox.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oFFData.m_oDDList.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::DDList);
+				WriteDDList(oFFData.m_oDDList.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oFFData.m_oEnabled.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::Enabled);
+				m_oBcw.m_oStream.WriteBOOL(oFFData.m_oEnabled->m_oVal.ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oFFData.m_oEntryMacro.IsInit() && oFFData.m_oEntryMacro->m_oVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::EntryMacro);
+				m_oBcw.m_oStream.WriteStringW3(oFFData.m_oEntryMacro->m_oVal->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oFFData.m_oExitMacro.IsInit() && oFFData.m_oExitMacro->m_oVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::ExitMacro);
+				m_oBcw.m_oStream.WriteStringW3(oFFData.m_oExitMacro->m_oVal->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oFFData.m_oHelpText.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::HelpText);
+				WriteFFHelpText(oFFData.m_oHelpText.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oFFData.m_oLabel.IsInit() && oFFData.m_oLabel->m_oVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::Label);
+				m_oBcw.m_oStream.WriteLONG(oFFData.m_oLabel->m_oVal->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oFFData.m_oName.IsInit() && oFFData.m_oName->m_oVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::Name);
+				m_oBcw.m_oStream.WriteStringW3(oFFData.m_oName->m_oVal->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oFFData.m_oStatusText.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::StatusText);
+				WriteFFStatusText(oFFData.m_oStatusText.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oFFData.m_oTabIndex.IsInit() && oFFData.m_oTabIndex->m_oVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::TabIndex);
+				m_oBcw.m_oStream.WriteLONG(oFFData.m_oTabIndex->m_oVal->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oFFData.m_oTextInput.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::TextInput);
+				WriteTextInput(oFFData.m_oTextInput.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+		void WriteFFCheckBox(const OOX::Logic::CFFCheckBox& oCheckBox)
+		{
+			int nCurPos = 0;
+			if(oCheckBox.m_oChecked.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::CBChecked);
+				m_oBcw.m_oStream.WriteBOOL(oCheckBox.m_oChecked->m_oVal.ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oCheckBox.m_oDefault.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::CBDefault);
+				m_oBcw.m_oStream.WriteBOOL(oCheckBox.m_oDefault->m_oVal.ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oCheckBox.m_oSize.IsInit() && oCheckBox.m_oSize->m_oVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::CBSize);
+				m_oBcw.m_oStream.WriteULONG(oCheckBox.m_oSize->m_oVal->ToHps());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oCheckBox.m_oSizeAuto.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::CBSizeAuto);
+				m_oBcw.m_oStream.WriteBOOL(oCheckBox.m_oSizeAuto->m_oVal.ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+		void WriteDDList(const OOX::Logic::CFFDDList& oDDList)
+		{
+			int nCurPos = 0;
+			if(oDDList.m_oDefault.IsInit() && oDDList.m_oDefault->m_oVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::DLDefault);
+				m_oBcw.m_oStream.WriteLONG(oDDList.m_oDefault->m_oVal->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oDDList.m_oResult.IsInit() && oDDList.m_oResult->m_oVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::DLResult);
+				m_oBcw.m_oStream.WriteLONG(oDDList.m_oResult->m_oVal->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			for(int i = 0 ; i < oDDList.m_arrListEntry.size(); ++i)
+			{
+				ComplexTypes::Word::String* pVal = oDDList.m_arrListEntry[i];
+				if(pVal->m_sVal.IsInit())
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::DLListEntry);
+					m_oBcw.m_oStream.WriteStringW3(pVal->m_sVal.get());
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+			}
+		}
+		void WriteFFHelpText(const ComplexTypes::Word::CFFHelpText& oHelpText)
+		{
+			int nCurPos = 0;
+			if(oHelpText.m_oType.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::HTType);
+				m_oBcw.m_oStream.WriteBYTE(oHelpText.m_oType->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oHelpText.m_oVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::HTVal);
+				m_oBcw.m_oStream.WriteStringW3(oHelpText.m_oVal->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+		void WriteFFStatusText(const ComplexTypes::Word::CFFStatusText& oStatusText)
+		{
+			int nCurPos = 0;
+			if(oStatusText.m_oType.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::HTType);
+				m_oBcw.m_oStream.WriteBYTE(oStatusText.m_oType->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oStatusText.m_oVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::HTVal);
+				m_oBcw.m_oStream.WriteStringW3(oStatusText.m_oVal->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+		void WriteTextInput(const OOX::Logic::CFFTextInput& oTextInput)
+		{
+			int nCurPos = 0;
+			if(oTextInput.m_oDefault.IsInit() && oTextInput.m_oDefault->m_sVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::TIDefault);
+				m_oBcw.m_oStream.WriteStringW3(oTextInput.m_oDefault->m_sVal.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oTextInput.m_oFormat.IsInit() && oTextInput.m_oFormat->m_sVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::TIFormat);
+				m_oBcw.m_oStream.WriteStringW3(oTextInput.m_oFormat->m_sVal.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oTextInput.m_oMaxLength.IsInit() && oTextInput.m_oMaxLength->m_oVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::TIMaxLength);
+				m_oBcw.m_oStream.WriteLONG(oTextInput.m_oMaxLength->m_oVal->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oTextInput.m_oType.IsInit() && oTextInput.m_oType->m_oVal.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::TIType);
+				m_oBcw.m_oStream.WriteBYTE(oTextInput.m_oType->m_oVal->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
 		}
 		
 		void WriteHyperlink(OOX::Logic::CHyperlink* pHyperlink)

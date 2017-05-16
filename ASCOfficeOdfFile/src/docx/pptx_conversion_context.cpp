@@ -132,7 +132,7 @@ void pptx_conversion_context::process_layouts()
 							type == odf_types::presentation_class::header		||
 							type == odf_types::presentation_class::page_number)
 						{
-							if (frame->idx_in_owner <0)
+							if (frame->idx_in_owner < 0)
 								frame->idx_in_owner = last_idx_placeHolder++;
 
 							frame->pptx_convert_placeHolder(*this);

@@ -42,6 +42,16 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Seq.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/CTn.h"
 
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/EmptyTransition.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/OrientationTransition.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/EightDirectionTransition.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/OptionalBlackTransition.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/SideDirectionTransition.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/CornerDirectionTransition.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/WheelTransition.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/SplitTransition.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/ZoomTransition.h"
+
 #include <boost/lexical_cast.hpp>
 
 #include "../OdfFormat/odp_conversion_context.h"
@@ -365,13 +375,18 @@ void PptxConverter::convert_slides()
 					
 					convert_slide(&slide->Layout->cSld, current_txStyles, true, bShowLayoutMasterSp, 3);	
 
+					if (slide->Layout->transition.IsInit())	convert	(slide->Layout->transition.GetPointer());
+					else									convert	(slide->Master->transition.GetPointer());
+					
+					if (slide->Layout->timing.IsInit())		convert	(slide->Layout->timing.GetPointer());
+					else									convert	(slide->Master->timing.GetPointer());
+
 					if (!presentation->notesMasterIdLst.empty())
 					{
 						rId = presentation->notesMasterIdLst[0].rid.get();
 						smart_ptr<PPTX::NotesMaster> notes_master = ((*presentation)[rId]).smart_dynamic_cast<PPTX::NotesMaster>();
 						convert(notes_master.operator->());
 					}
-					//add note master
 				odp_context->end_master_slide();
 				
 				m_mapMasters.insert(std::make_pair(master_name, master_style_name));
@@ -490,6 +505,24 @@ void PptxConverter::convert(OOX::WritingElement  *oox_unknown)
 
 	switch(oox_unknown->getType())
 	{
+		case OOX::et_p_EmptyTransition:
+			convert(dynamic_cast<PPTX::Logic::EmptyTransition*>(oox_unknown)); break;
+		case OOX::et_p_OrientationTransition:
+			convert(dynamic_cast<PPTX::Logic::OrientationTransition*>(oox_unknown)); break;
+		case OOX::et_p_EightDirectionTransition:
+			convert(dynamic_cast<PPTX::Logic::EightDirectionTransition*>(oox_unknown)); break;
+		case OOX::et_p_OptionalBlackTransition:
+			convert(dynamic_cast<PPTX::Logic::OptionalBlackTransition*>(oox_unknown)); break;
+		case OOX::et_p_CornerDirectionTransition:
+			convert(dynamic_cast<PPTX::Logic::CornerDirectionTransition*>(oox_unknown)); break;
+		case OOX::et_p_SideDirectionTransition:
+			convert(dynamic_cast<PPTX::Logic::SideDirectionTransition*>(oox_unknown)); break;
+		case OOX::et_p_WheelTransition:
+			convert(dynamic_cast<PPTX::Logic::WheelTransition*>(oox_unknown)); break;
+		case OOX::et_p_SplitTransition:
+			convert(dynamic_cast<PPTX::Logic::SplitTransition*>(oox_unknown)); break;
+		case OOX::et_p_ZoomTransition:
+			convert(dynamic_cast<PPTX::Logic::ZoomTransition*>(oox_unknown)); break;
 		default:
 		{
 			OoxConverter::convert(oox_unknown);
@@ -542,8 +575,7 @@ void PptxConverter::convert( PPTX::Logic::Transition *oox_transition )
 	if (oox_transition->dur.is_init())
 		odp_context->current_slide().set_transition_duration(*oox_transition->dur);
 	
-	odp_context->current_slide().set_transition_type(5);
-	//convert(oox_transition->base.operator->());
+	convert(oox_transition->base.base.operator->());
 	
 	//if (oox_transition->sndAc.is_init() && oox_transition->sndAc->stSnd.is_init())
 	//{
@@ -591,6 +623,127 @@ void PptxConverter::convert(PPTX::Logic::TimeNodeBase *oox_time_base)
 		odp_context->current_slide().end_timing_seq();
 	}	
 }
+void PptxConverter::convert(PPTX::Logic::EmptyTransition *oox_transition)
+{
+	if (!oox_transition) return;
+	
+	if (oox_transition->name == L"random")
+		odp_context->current_slide().set_transition_type(40);
+	if (oox_transition->name == L"circle")
+		odp_context->current_slide().set_transition_type(16);
+	if (oox_transition->name == L"dissolve")
+		odp_context->current_slide().set_transition_type(39);
+	if (oox_transition->name == L"diamond")
+	{
+		odp_context->current_slide().set_transition_type(11);
+		odp_context->current_slide().set_transition_subtype(L"diamond");
+	}
+	if (oox_transition->name == L"newsflash")
+		odp_context->current_slide().set_transition_type(5);
+	if (oox_transition->name == L"plus")
+		odp_context->current_slide().set_transition_type(2);//??
+	if (oox_transition->name == L"wedge")
+		odp_context->current_slide().set_transition_type(24);
+}
+void PptxConverter::convert(PPTX::Logic::OrientationTransition *oox_transition)
+{
+	if (!oox_transition) return;
+
+	if (oox_transition->name == L"blinds")
+		odp_context->current_slide().set_transition_type(38);
+	if (oox_transition->name == L"checker")
+		odp_context->current_slide().set_transition_type(37);
+	if (oox_transition->name == L"comb")
+	{
+		odp_context->current_slide().set_transition_type(34);
+
+		if (oox_transition->dir.IsInit())
+		{
+			if (oox_transition->dir->get() == L"horz")
+				odp_context->current_slide().set_transition_subtype(L"combHorizontal");
+			if (oox_transition->dir->get() == L"vert")
+				odp_context->current_slide().set_transition_subtype(L"combVertical");
+		}
+	}
+	if (oox_transition->name == L"randomBar")
+		odp_context->current_slide().set_transition_type(40);
+}
+void PptxConverter::convert(PPTX::Logic::EightDirectionTransition	*oox_transition)
+{
+	if (!oox_transition) return;
+
+	if (oox_transition->name == L"cover")
+		odp_context->current_slide().set_transition_type(1);
+	if (oox_transition->name == L"pull")
+		odp_context->current_slide().set_transition_type(35);
+}
+void PptxConverter::convert(PPTX::Logic::OptionalBlackTransition *oox_transition)
+{
+	if (!oox_transition) return;
+
+	if (oox_transition->name == L"cut")
+		odp_context->current_slide().set_transition_type(36);
+	if (oox_transition->name == L"fade")
+		odp_context->current_slide().set_transition_type(36);
+}
+void PptxConverter::convert(PPTX::Logic::SideDirectionTransition *oox_transition)
+{
+	if (!oox_transition) return;
+
+	std::wstring dir;
+	if (oox_transition->dir.IsInit()) dir = oox_transition->dir->get();
+	
+	if (oox_transition->name == L"push")
+	{
+		odp_context->current_slide().set_transition_type(34);
+		if (dir == L"d") odp_context->current_slide().set_transition_subtype(L"fromTop");
+		if (dir == L"l") odp_context->current_slide().set_transition_subtype(L"fromRight");
+		if (dir == L"r") odp_context->current_slide().set_transition_subtype(L"fromLeft");
+		if (dir == L"u") odp_context->current_slide().set_transition_subtype(L"fromBottom");
+	}
+	if (oox_transition->name == L"wipe")
+		odp_context->current_slide().set_transition_type(0);
+}
+void PptxConverter::convert(PPTX::Logic::CornerDirectionTransition	*oox_transition)
+{
+	if (!oox_transition) return;
+	//name == strips
+	odp_context->current_slide().set_transition_type(4);
+
+	if (oox_transition->dir.IsInit())
+	{
+		if (oox_transition->dir->get() == L"rd") odp_context->current_slide().set_transition_subtype(L"horizontalLeft");
+		if (oox_transition->dir->get() == L"lu") odp_context->current_slide().set_transition_subtype(L"horizontalRight");
+		if (oox_transition->dir->get() == L"ld") odp_context->current_slide().set_transition_subtype(L"verticalRight");
+	}
+}
+void PptxConverter::convert(PPTX::Logic::WheelTransition *oox_transition)
+{
+	if (!oox_transition) return;
+	//name == wheel
+	odp_context->current_slide().set_transition_type(21);
+
+	switch (oox_transition->spokes.get_value_or(0))
+	{
+	case 1: odp_context->current_slide().set_transition_subtype(L"oneBlade");	break;
+	case 3: odp_context->current_slide().set_transition_subtype(L"threeBlade");	break;
+	case 4: odp_context->current_slide().set_transition_subtype(L"fourBlade");	break;
+	case 8: odp_context->current_slide().set_transition_subtype(L"eightBlade");	break;
+	}
+}
+void PptxConverter::convert(PPTX::Logic::SplitTransition *oox_transition)
+{
+	if (!oox_transition) return;
+	//name == split
+	odp_context->current_slide().set_transition_type(8);
+}
+void PptxConverter::convert(PPTX::Logic::ZoomTransition *oox_transition)
+{
+	if (!oox_transition) return;
+	//name == zoom
+	odp_context->current_slide().set_transition_type(11);
+}
+
 void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 {
 	if (!oox_time_common) return;

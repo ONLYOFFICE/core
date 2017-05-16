@@ -58,6 +58,7 @@ const wchar_t * anim_par::name = L"par";
 
 void anim_par::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	attlist_.add_attributes(Attributes);
 }
 
 void anim_par::pptx_convert(oox::pptx_conversion_context & Context)
@@ -98,6 +99,7 @@ const wchar_t * anim_seq::name = L"seq";
 
 void anim_seq::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	attlist_.add_attributes(Attributes);
 }
 
 void anim_seq::pptx_convert(oox::pptx_conversion_context & Context)
@@ -211,11 +213,11 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 		case smil_transition_type::checkerBoardWipe:
 			type = L"checker";
 			if (attlist_.smil_subtype_.get()==L"across")	dir = L"horz";
-			if (attlist_.smil_subtype_.get()==L"down")	dir = L"vert";
+			if (attlist_.smil_subtype_.get()==L"down")		dir = L"vert";
 			break;
 		case smil_transition_type::blindsWipe:
 			type = L"blinds";
-			if (attlist_.smil_subtype_.get()==L"vertical")	dir = L"vert";
+			if (attlist_.smil_subtype_.get()==L"vertical")		dir = L"vert";
 			if (attlist_.smil_subtype_.get()==L"horizontal")	dir = L"horz";
 			break;
 		case smil_transition_type::diagonalWipe:
@@ -223,9 +225,9 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 			type = L"strips";			
 			if (attlist_.smil_subtype_)
 			{
-				if		(attlist_.smil_subtype_.get() == L"horizontalLeft")	dir = L"rd";	
+				if		(attlist_.smil_subtype_.get() == L"horizontalLeft")		dir = L"rd";	
 				else if (attlist_.smil_subtype_.get() == L"horizontalRight")	dir = L"lu";	
-				else if (attlist_.smil_subtype_.get() == L"verticalRight")	dir = L"ld";
+				else if (attlist_.smil_subtype_.get() == L"verticalRight")		dir = L"ld";
 				else dir = L"ru";	
 			}
 			break;
@@ -235,11 +237,11 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 		case smil_transition_type::randomBarWipe:
 			type = L"randomBar";
 			if (attlist_.smil_subtype_.get() == L"vertical")	dir = L"vert";
-			if (attlist_.smil_subtype_.get() == L"horizontal")dir = L"horz";
+			if (attlist_.smil_subtype_.get() == L"horizontal")	dir = L"horz";
 			break;	
 		case smil_transition_type::pushWipe: 
 			type = L"push";
-			if (attlist_.smil_subtype_.get()==L"combVertical")	{type = L"comb"; dir = L"vert";};
+			if (attlist_.smil_subtype_.get()==L"combVertical")		{type = L"comb"; dir = L"vert";};
 			if (attlist_.smil_subtype_.get()==L"combHorizontal")	{type = L"comb"; dir = L"horz";};
 			break;	
 		case smil_transition_type::slideWipe: 
@@ -250,7 +252,7 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 			break;
 		case smil_transition_type::barnDoorWipe: 
 			type = L"split";
-			if (attlist_.smil_subtype_.get()==L"vertical")	param = L"vert";
+			if (attlist_.smil_subtype_.get()==L"vertical")		param = L"vert";
 			if (attlist_.smil_subtype_.get()==L"horizontal")	param = L"horz";			
 			break;
 		case smil_transition_type::barWipe:
@@ -298,15 +300,15 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 			if (attlist_.smil_subtype_.get()==L"fromTop")		dir = L"d";	
 			if (attlist_.smil_subtype_.get()==L"fromLeft")		dir = L"r";	
 			if (attlist_.smil_subtype_.get()==L"fromRight")		dir = L"l";			
-			if (attlist_.smil_subtype_.get()==L"fromBottom")		dir = L"u";	
+			if (attlist_.smil_subtype_.get()==L"fromBottom")	dir = L"u";	
 			
 			if (attlist_.smil_subtype_.get()==L"topRight")		dir = L"ld";	
-			if (attlist_.smil_subtype_.get()==L"bottomLeft")		dir = L"lu";	
+			if (attlist_.smil_subtype_.get()==L"bottomLeft")	dir = L"lu";	
 			if (attlist_.smil_subtype_.get()==L"bottomRight")	dir = L"ru";
 			if (attlist_.smil_subtype_.get()==L"topLeft")		dir = L"rd";	
 		
 			if (attlist_.smil_subtype_.get()==L"fromTopLeft")	dir = L"rd";
-			if (attlist_.smil_subtype_.get()==L"fromBottomLeft")	dir = L"ru";
+			if (attlist_.smil_subtype_.get()==L"fromBottomLeft")dir = L"ru";
 			if (attlist_.smil_subtype_.get()==L"fromTopRight")	dir = L"ld";
 			if (attlist_.smil_subtype_.get()==L"fromBottomRight")dir = L"lu";
 

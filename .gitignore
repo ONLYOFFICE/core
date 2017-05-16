@@ -43,3 +43,4 @@ OfficeUtils/win32/OfficeUtilsLib/OfficeUtilsLib/ReadMe.txt
 *.pdb
 *.tlb
 *.idb
+**/.hg

@@ -799,7 +799,7 @@ namespace ComplexTypes
 				if ( m_oVal.IsInit() )
 				{
 					sResult += _T("w:val=\"");
-					sResult += m_oVal->ToString();
+					sResult += std::to_wstring(m_oVal->ToHps());
 					sResult += _T("\" ");
 				}
 

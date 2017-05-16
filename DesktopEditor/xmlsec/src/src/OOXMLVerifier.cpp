@@ -1,18 +1,10 @@
-#ifndef _XML_OOXMLVERIFIER_H_
-#define _XML_OOXMLVERIFIER_H_
-
 #include "./XmlCanonicalizator.h"
 #include "./XmlTransform.h"
-#include "./XmlCertificate.h"
+#include "./../include/OOXMLVerifier.h"
 
-#define OOXML_SIGNATURE_VALID           0
-#define OOXML_SIGNATURE_INVALID         1
-#define OOXML_SIGNATURE_NOTSUPPORTED    2
-#define OOXML_SIGNATURE_BAD             3
-
-class COOXMLSignature
+class COOXMLSignature_private
 {
-private:
+public:
     int             m_valid;
     std::string     m_guid;
     ICertificate*   m_cert;
@@ -22,7 +14,6 @@ private:
 
     std::wstring    m_sFolder;
 
-private:
     XmlUtils::CXmlNode   m_node; // signature file
 
     class CXmlStackNamespaces
@@ -133,13 +124,13 @@ private:
     };
 
 public:
-    COOXMLSignature()
+    COOXMLSignature_private()
     {
         m_valid = OOXML_SIGNATURE_INVALID;
         m_guid = "";
         m_cert = NULL;
     }
-    ~COOXMLSignature()
+    ~COOXMLSignature_private()
     {
         RELEASEOBJECT(m_cert);
     }
@@ -176,7 +167,7 @@ public:
             m_valid = OOXML_SIGNATURE_NOTSUPPORTED;
             return;
         }
-        m_cert = new CCertificate();
+        m_cert = ICertificate::CreateInstance();
         if (!m_cert->LoadFromBase64Data(U_TO_UTF8(oNodeCert.GetText())))
         {
             m_valid = OOXML_SIGNATURE_NOTSUPPORTED;
@@ -273,7 +264,7 @@ public:
 
     friend class COOXMLVerifier;
 
-private:
+public:
 
     int CheckManifestReference(XmlUtils::CXmlNode& node)
     {
@@ -391,14 +382,54 @@ private:
     }
 };
 
-class COOXMLVerifier
+COOXMLSignature::COOXMLSignature()
+{
+    m_internal = new COOXMLSignature_private();
+}
+
+COOXMLSignature::~COOXMLSignature()
+{
+    RELEASEOBJECT(m_internal);
+}
+
+int COOXMLSignature::GetValid()
+{
+    return m_internal->GetValid();
+}
+
+std::string COOXMLSignature::GetGuid()
+{
+    return m_internal->GetGuid();
+}
+
+ICertificate* COOXMLSignature::GetCertificate()
+{
+    return m_internal->GetCertificate();
+}
+
+std::string COOXMLSignature::GetImageValidBase64()
+{
+    return m_internal->GetImageValidBase64();
+}
+
+std::string COOXMLSignature::GetImageInvalidBase64()
+{
+    return m_internal->GetImageInvalidBase64();
+}
+
+void COOXMLSignature::Check()
+{
+    m_internal->Check();
+}
+
+class COOXMLVerifier_private
 {
 public:
     std::wstring                            m_sFolder;
     std::vector<COOXMLSignature*>           m_arSignatures;
 
 public:
-    COOXMLVerifier(const std::wstring& sFolder)
+    COOXMLVerifier_private(const std::wstring& sFolder)
     {
         m_sFolder = sFolder;
 
@@ -429,14 +460,14 @@ public:
                 continue;
 
             COOXMLSignature* pSignature = new COOXMLSignature();
-            pSignature->m_node = nodeSig;
-            pSignature->m_sFolder = m_sFolder;
+            pSignature->m_internal->m_node = nodeSig;
+            pSignature->m_internal->m_sFolder = m_sFolder;
             pSignature->Check();
 
             m_arSignatures.push_back(pSignature);
         }
     }
-    ~COOXMLVerifier()
+    ~COOXMLVerifier_private()
     {
         for (std::vector<COOXMLSignature*>::iterator i = m_arSignatures.begin(); i != m_arSignatures.end(); i++)
         {
@@ -447,4 +478,22 @@ public:
     }
 };
 
-#endif //_XML_OOXMLVERIFIER_H_
+COOXMLVerifier::COOXMLVerifier(const std::wstring& sFolder)
+{
+    m_internal = new COOXMLVerifier_private(sFolder);
+}
+
+COOXMLVerifier::~COOXMLVerifier()
+{
+    RELEASEOBJECT(m_internal);
+}
+
+int COOXMLVerifier::GetSignatureCount()
+{
+    return (int)m_internal->m_arSignatures.size();
+}
+
+COOXMLSignature* COOXMLVerifier::GetSignature(const int& index)
+{
+    return m_internal->m_arSignatures[index];
+}

@@ -1,12 +1,15 @@
 #ifndef _XMLSIGNER_MSCRYPTO_H_
 #define _XMLSIGNER_MSCRYPTO_H_
 
-#include "./XmlSignerBase.h"
+#include "./include/XmlCertificate.h"
 
 #include <stdio.h>
 #include <windows.h>
 #include <wincrypt.h>
 #include <cryptuiapi.h>
+
+#include "../../../common/File.h"
+#include "../../../common/BigInteger.h"
 
 class CCertificate_mscrypto : public ICertificate
 {

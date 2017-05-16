@@ -1,11 +1,7 @@
-#ifndef _XML_OOXMLSIGNER_H_
-#define _XML_OOXMLSIGNER_H_
+#include "./../include/OOXMLSigner.h"
+#include "./../src/XmlTransform.h"
 
-#include "./XmlCanonicalizator.h"
-#include "./XmlSignerBase.h"
-#include "./XmlTransform.h"
-
-class COOXMLSigner
+class COOXMLSigner_private
 {
 public:
     ICertificate*                           m_certificate;
@@ -25,7 +21,7 @@ public:
     std::wstring                            m_guid;
 
 public:
-    COOXMLSigner(const std::wstring& sFolder, ICertificate* pContext)
+    COOXMLSigner_private(const std::wstring& sFolder, ICertificate* pContext)
     {
         m_sFolder = sFolder;
         m_certificate = pContext;
@@ -35,7 +31,7 @@ public:
         m_signed_info.WriteString("<CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/>");
         m_signed_info.WriteString("<SignatureMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#rsa-sha1\"/>");
     }
-    ~COOXMLSigner()
+    ~COOXMLSigner_private()
     {
     }
 
@@ -560,4 +556,32 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
     }
 };
 
-#endif //_XML_OOXMLSIGNER_H_
+COOXMLSigner::COOXMLSigner(const std::wstring& sFolder, ICertificate* pContext)
+{
+    m_internal = new COOXMLSigner_private(sFolder, pContext);
+}
+
+COOXMLSigner::~COOXMLSigner()
+{
+    RELEASEOBJECT(m_internal);
+}
+
+void COOXMLSigner::SetGuid(const std::wstring& guid)
+{
+    m_internal->SetGuid(guid);
+}
+
+void COOXMLSigner::SetImageValid(const std::wstring& file)
+{
+    m_internal->SetImageValid(file);
+}
+
+void COOXMLSigner::SetImageInvalid(const std::wstring& file)
+{
+    m_internal->SetImageInvalid(file);
+}
+
+void COOXMLSigner::Sign()
+{
+    m_internal->Sign();
+}

@@ -144,6 +144,9 @@ public:
 	void start_object(std::wstring name);
 	void end_object();
 
+	void start_media(std::wstring name);
+	void end_media();
+
 	bool isLineShape();
 	void corrected_line_fill();
 
@@ -259,6 +262,11 @@ public:
 	void set_bitmap_tile_scale_y	(double scale_y);
 	void set_bitmap_tile_translate_y(double y);
 	void set_bitmap_tile_translate_x(double x);
+
+	void start_action(std::wstring value);
+		void add_sound	(std::wstring href);
+		void add_link	(std::wstring href);
+	void end_action();
 
 	std::map<std::wstring, OOX::Vml::CShapeType*>	m_mapVmlShapeTypes;
 

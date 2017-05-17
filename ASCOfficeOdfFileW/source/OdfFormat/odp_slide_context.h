@@ -31,6 +31,7 @@
  */
 #pragma once
 
+#include <list>
 #include "odp_page_state.h"
 
 #include "odf_table_context.h"

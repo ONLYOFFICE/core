@@ -185,12 +185,12 @@ namespace odf_writer
 		{
 			if (mediaitems_.count_media < 1)return;
 
-			std::wstring path = RootPath + FILE_SEPARATOR_STR + L"media";
+			std::wstring path = RootPath + FILE_SEPARATOR_STR + L"Media";
             NSDirectory::CreateDirectory(path);
 
 			BOOST_FOREACH( _mediaitems::item & item, mediaitems_.items() )
 			{
-				if (item.type == _mediaitems::typeAudio || item.type == _mediaitems::typeVideo)
+				if (item.type == _mediaitems::typeMedia)
 				{
 					std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + item.odf_ref;
 
@@ -346,13 +346,13 @@ namespace odf_writer
 					CP_XML_ATTR(L"xmlns:anim",			L"urn:oasis:names:tc:opendocument:xmlns:animation:1.0" );
 					CP_XML_ATTR(L"xmlns:calcext",		L"urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" );
 					CP_XML_ATTR(L"xmlns:field",			L"urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" );
-					CP_XML_ATTR(L"xmlns:formx",			L"urn:openoffice:names:experimental:ooxml-odf_writer-interop:xmlns:form:1.0" );
+					CP_XML_ATTR(L"xmlns:formx",			L"urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" );
 					CP_XML_ATTR(L"xmlns:loext",			L"urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" ); 
 					CP_XML_ATTR(L"xmlns:css3t",			L"http://www.w3.org/TR/css3-text/" );
 					
 					CP_XML_ATTR(L"office:version",		L"1.2");				
 	
-					//CP_XML_NODE(L"office:scripts");
+					CP_XML_NODE(L"office:font-face-decls");
 					if (content_)
 					{
 						CP_XML_STREAM() << content_->styles_str();
@@ -414,7 +414,7 @@ namespace odf_writer
 					CP_XML_ATTR(L"xmlns:chartooo",		L"http://openoffice.org/2010/chart" );
 					CP_XML_ATTR(L"xmlns:calcext",		L"urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" );
 					CP_XML_ATTR(L"xmlns:field",			L"urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" );
-					CP_XML_ATTR(L"xmlns:formx",			L"urn:openoffice:names:experimental:ooxml-odf_writer-interop:xmlns:form:1.0" );
+					CP_XML_ATTR(L"xmlns:formx",			L"urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" );
 					CP_XML_ATTR(L"xmlns:loext",			L"urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" ); 
 					CP_XML_ATTR(L"xmlns:css3t",			L"http://www.w3.org/TR/css3-text/" );
 					CP_XML_ATTR(L"office:version",		L"1.2");		

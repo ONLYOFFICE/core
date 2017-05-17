@@ -42,7 +42,7 @@ namespace cpdoccore {
 
 namespace odf_writer {
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------
 const wchar_t * presentation_placeholder::ns = L"presentation";
 const wchar_t * presentation_placeholder::name = L"placeholder";
 
@@ -59,6 +59,20 @@ void presentation_placeholder::serialize(std::wostream & strm)
 			CP_XML_ATTR_OPT(L"svg:x", svg_x_);
 			CP_XML_ATTR_OPT(L"svg:y", svg_y_);
 
+		}
+	}
+}
+//----------------------------------------------------------------------------------
+const wchar_t * presentation_sound::ns = L"presentation";
+const wchar_t * presentation_sound::name = L"sound";
+
+void presentation_sound::serialize(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			common_xlink_attlist_.serialize(CP_GET_XML_NODE());
 		}
 	}
 }
@@ -85,17 +99,20 @@ void drawing_page_properties::serialize(std::wostream & strm, const wchar_t * ns
 			CP_XML_ATTR_OPT(L"presentation:display-page-number",presentation_display_page_number_);
 			CP_XML_ATTR_OPT(L"presentation:display-date-time",	presentation_display_date_time_);
 			CP_XML_ATTR_OPT(L"presentation:display-header",		presentation_display_header_);
+
+			if (presentation_sound_)
+				presentation_sound_->serialize(CP_XML_STREAM());
 		}
 	}
 }
 
 //-----------------------------------------------------------------------------------------------------------------------
-const wchar_t * style_drawing_page_properties::ns = L"style";
+const wchar_t * style_drawing_page_properties::ns	= L"style";
 const wchar_t * style_drawing_page_properties::name = L"drawing-page-properties";
 
 void style_drawing_page_properties::serialize(std::wostream & strm)
 {
-	content_.serialize(strm,ns,name);
+	content_.serialize(strm, ns, name);
 }
 
 }

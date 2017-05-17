@@ -31,19 +31,13 @@
  */
 #pragma once
 
-#include <string>
 #include <vector>
-
-#include <boost/regex.hpp>
-#include <boost/lexical_cast.hpp>
 
 #include"../../../Common/DocxFormat/Source/XML/Utils.h"
 
 #include "odf_drawing_context.h"
 #include "odf_comment_context.h"
-
-#include "office_elements_create.h"
-
+#include "style_presentation.h"
 
 namespace cpdoccore {
 
@@ -84,7 +78,7 @@ public:
 		void set_layout_page(std::wstring name);
 	
 	void add_child_element( const office_element_ptr & child_element);
-
+	void finalize_page();
 ///////////////////////////////
 	odf_drawing_context   *	drawing_context(){return  &drawing_context_;}
 	odf_comment_context   *	comment_context(){return  &comment_context_;}
@@ -94,32 +88,37 @@ public:
 	office_element_ptr		page_elm_;
 	office_element_ptr		page_style_elm_;
 
-	std::vector<anim_state> anim_levels;
-	office_element_ptr		page_transaction;
+	std::vector<anim_state>			anim_levels;
+	std::vector<office_element_ptr>	transactions;
 
-	void set_anim_id		(int val);
-	void set_anim_type		(std::wstring val);
-	void set_anim_duration	(std::wstring val);
-	void set_anim_restart	(std::wstring val);
+	void start_timing();
+		void start_timing_par();
+		void end_timing_par();
 
-	void start_timing_par();
-	void end_timing_par();
+		void start_timing_seq();
+		void end_timing_seq();
 
-	void start_timing_seq();
-	void end_timing_seq();
+		void set_anim_id		(int val);
+		void set_anim_type		(std::wstring val);
+		void set_anim_duration	(int val);
+		void set_anim_restart	(std::wstring val);
+	void end_timing();
 
 	void start_transition();
 		void set_transition_type	(int val);
 		void set_transition_subtype	(std::wstring val);
 		void set_transition_speed	(int val);
 		void set_transition_duration(int val);
+		void set_transition_sound	(std::wstring ref, bool loop);
 	void end_transition(){}
 private:
 
-    odf_conversion_context * context_;   
+    odf_conversion_context *		context_;   
 	
-	odf_drawing_context		drawing_context_;	
-	odf_comment_context		comment_context_;	
+	odf_drawing_context				drawing_context_;	
+	odf_comment_context				comment_context_;	
+	
+	style_drawing_page_properties*	page_properties_;
 
 	friend class odp_slide_context;
 

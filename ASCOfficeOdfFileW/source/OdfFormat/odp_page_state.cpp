@@ -61,8 +61,8 @@ namespace odf_writer {
 odp_page_state::odp_page_state(odf_conversion_context * Context, office_element_ptr & elm) 
 		 : context_(Context), drawing_context_(Context), comment_context_(Context)
 {     
-	page_elm_ = elm; 
-
+	page_elm_			= elm;
+	page_properties_	= NULL;
 }
 void odp_page_state::set_page_id(int id)
 {
@@ -113,6 +113,8 @@ void odp_page_state::set_page_style(office_element_ptr & elm)
 
 	if (!office_page_style_)return;
 
+	page_properties_ = office_page_style_->content_.get_style_drawing_page_properties();
+
 	draw_page* page = dynamic_cast<draw_page*>(page_elm_.get());
 	if (page)
 		page->attlist_.draw_style_name_ = office_page_style_->style_name_;
@@ -142,6 +144,19 @@ void odp_page_state::set_anim_id (int val)
 
 	//anim_levels.back().attlist->smil_begin_ = L"id" + std::to_wstring(val) + L".begin";
 }
+void odp_page_state::finalize_page()
+{
+	if (transactions.empty() == false)
+	{
+		start_timing();
+			start_timing_par();
+				set_anim_duration(-1);
+				set_anim_restart(L"never");
+				set_anim_type(L"tmRoot");
+			end_timing_par();
+		end_timing();
+	}
+}
 void odp_page_state::set_anim_type(std::wstring val)
 {
 	if (anim_levels.empty())		return;
@@ -150,7 +165,7 @@ void odp_page_state::set_anim_type(std::wstring val)
 	if (val == L"tmRoot")
 	{
 		anim_levels.back().attlist->presentation_node_type_ = L"timing-root";
-		if (page_transaction)
+		if (transactions.empty() == false)
 		{
 			std::wstring slide_id = L"slide_id" + std::to_wstring(page_id_);
 
@@ -161,19 +176,22 @@ void odp_page_state::set_anim_type(std::wstring val)
 				
 				start_timing_par();
 					anim_levels.back().attlist->smil_begin_ = slide_id + L".begin";
-					anim_levels.back().elm->add_child_element(	page_transaction );
+					while(!transactions.empty())
+					{
+						anim_levels.back().elm->add_child_element(	transactions[0] );
+						transactions.erase(transactions.begin());
+					}
 				end_timing_par();
 			}
 		}
 	}
 }
-void odp_page_state::set_anim_duration(std::wstring val)
+void odp_page_state::set_anim_duration(int val)
 {
 	if (anim_levels.empty())		return;
 	if (!anim_levels.back().attlist)return;
 
-	//if (val == L"indefinite")
-		anim_levels.back().attlist->smil_dur_ = val;
+	anim_levels.back().attlist->smil_dur_ = odf_types::clockvalue(val);
 
 }
 void odp_page_state::set_anim_restart(std::wstring val)
@@ -185,36 +203,93 @@ void odp_page_state::set_anim_restart(std::wstring val)
 }
 void odp_page_state::start_transition()
 {
-	create_element(L"anim", L"transitionFilter", page_transaction, context_);
+	office_element_ptr elm;
+	create_element(L"anim", L"transitionFilter", elm, context_);
+	
+	transactions.push_back(elm);
 }
 void odp_page_state::set_transition_type(int val)
 {
-	anim_transitionFilter *trans = dynamic_cast<anim_transitionFilter*>(page_transaction.get());
+	if (transactions.empty()) return;
+
+	anim_transitionFilter *trans = dynamic_cast<anim_transitionFilter*>(transactions.back().get());
 	if (trans)
-		trans->attlist_.smil_type_ = odf_types::smil_transition_type((odf_types::smil_transition_type::type)val);
+		trans->filter_attlist_.smil_type_ = odf_types::smil_transition_type((odf_types::smil_transition_type::type)val);
 }
 void odp_page_state::set_transition_subtype(std::wstring val)
 {
-	anim_transitionFilter *trans = dynamic_cast<anim_transitionFilter*>(page_transaction.get());
+	if (transactions.empty()) return;
+	
+	anim_transitionFilter *trans = dynamic_cast<anim_transitionFilter*>(transactions.back().get());
 	if (trans)
-		trans->attlist_.smil_subtype_ = val;
+		trans->filter_attlist_.smil_subtype_ = val;
 }
 void odp_page_state::set_transition_speed(int val)
 {
-	anim_transitionFilter *trans = dynamic_cast<anim_transitionFilter*>(page_transaction.get());
+	if (transactions.empty()) return;
+
+	anim_transitionFilter *trans = dynamic_cast<anim_transitionFilter*>(transactions.back().get());
 	if (trans)
 	{
-		if (val == 0)	trans->attlist_.smil_dur_ = odf_types::clockvalue(3000);
-		if (val == 1)	trans->attlist_.smil_dur_ = odf_types::clockvalue(4000);
-		if (val == 2)	trans->attlist_.smil_dur_ = odf_types::clockvalue(5000);
+		if (val == 0)
+		{
+			if (page_properties_)
+				page_properties_->content_.presentation_transition_speed_ = L"fast";
+			trans->common_attlist_.smil_dur_ = odf_types::clockvalue(2000);
+		}
+		if (val == 1)
+		{
+			if (page_properties_)
+				page_properties_->content_.presentation_transition_speed_ = L"medium";
+			trans->common_attlist_.smil_dur_ = odf_types::clockvalue(3000);
+		}
+		if (val == 2)
+		{
+			if (page_properties_)
+				page_properties_->content_.presentation_transition_speed_ = L"slow";
+			trans->common_attlist_.smil_dur_ = odf_types::clockvalue(4000);
+		}
 	}
 }
 void odp_page_state::set_transition_duration(int val)
 {
-	anim_transitionFilter *trans = dynamic_cast<anim_transitionFilter*>(page_transaction.get());
+	if (transactions.empty()) return;
+
+	anim_transitionFilter *trans = dynamic_cast<anim_transitionFilter*>(transactions.back().get());
 	if (trans)
-		trans->attlist_.smil_dur_ = odf_types::clockvalue(val * 1000);
+		trans->common_attlist_.smil_dur_ = odf_types::clockvalue(val);
 }
+
+void odp_page_state::set_transition_sound(std::wstring ref, bool loop)
+{
+	if (transactions.empty())	return;
+	if (ref.empty())			return;
+	
+	office_element_ptr elm;
+	create_element(L"anim", L"audio", elm, context_);
+
+	anim_audio *audio = dynamic_cast<anim_audio*>(elm.get());
+	if (audio) 
+	{
+		audio->audio_attlist_.xlink_href_ = ref;
+	}
+	
+	transactions.push_back(elm);
+
+	if (page_properties_)
+	{
+		create_element(L"presentation", L"sound", page_properties_->content_.presentation_sound_, context_);
+		presentation_sound *sound = dynamic_cast<presentation_sound*>(page_properties_->content_.presentation_sound_.get());
+		if (sound) 
+		{
+			sound->common_xlink_attlist_.href_		= ref;
+			sound->common_xlink_attlist_.type_		= xlink_type::Simple;
+			sound->common_xlink_attlist_.show_		= xlink_show::New;
+			sound->common_xlink_attlist_.actuate_	= xlink_actuate::OnRequest;
+		}
+	}
+}
+
 void odp_page_state::start_timing_seq()
 {
 	if (anim_levels.empty()) return;
@@ -231,10 +306,24 @@ void odp_page_state::start_timing_seq()
 	
 	anim_levels.push_back(anim);
 }
+void odp_page_state::start_timing()
+{
+	if (!anim_levels.empty()) return;
+	
+	anim_state anim;
+	anim.elm = page_elm_;
+	
+	anim_levels.push_back(anim);
+}
+void odp_page_state::end_timing()
+{
+	if (anim_levels.empty()) return;
+	anim_levels.pop_back();	
+}
 void odp_page_state::end_timing_seq()
 {
-	anim_levels.pop_back();
-	
+	if (anim_levels.empty()) return;
+	anim_levels.pop_back();	
 }
 void odp_page_state::start_timing_par()
 {
@@ -254,8 +343,8 @@ void odp_page_state::start_timing_par()
 }
 void odp_page_state::end_timing_par()
 {
-	anim_levels.pop_back();
-	
+	if (anim_levels.empty())		return;
+	anim_levels.pop_back();	
 }
 }
 }

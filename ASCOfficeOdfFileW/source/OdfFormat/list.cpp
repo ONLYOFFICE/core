@@ -102,6 +102,8 @@ void text_list_item::create_child_element(const std::wstring & Ns, const std::ws
 }
 void text_list_item::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeTextNumber)
@@ -148,6 +150,8 @@ void text_list_header::create_child_element(const std::wstring & Ns, const std::
 }
 void text_list_header::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeTextNumber)

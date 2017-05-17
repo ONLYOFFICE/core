@@ -73,10 +73,9 @@ void draw_chart_attlist::serialize(CP_ATTR_NODE)
     //CP_XML_ATTR_OPT(L"draw:filter-name", draw_filter_name_);
 }
 
-// draw:image
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * draw_image::ns = L"draw";
-const wchar_t * draw_image::name = L"image";
+//-----------------------------------------------------------------------
+const wchar_t * draw_image::ns		= L"draw";
+const wchar_t * draw_image::name	= L"image";
 
 void draw_image::serialize(std::wostream & _Wostream)
 {
@@ -111,6 +110,8 @@ void draw_image::create_child_element(const std::wstring & Ns, const std::wstrin
 }
 void draw_image::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeOfficeBinaryData)
@@ -154,8 +155,7 @@ void draw_chart::add_child_element( const office_element_ptr & child_element)
 	content_.push_back(child_element);
 }
 
-// draw:g
-//////////////////////////////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------
 const wchar_t * draw_g::ns = L"draw";
 const wchar_t * draw_g::name = L"g";
 
@@ -207,12 +207,12 @@ void draw_frame::serialize(std::wostream & _Wostream)
 void draw_frame::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
     if (CP_CHECK_NAME(L"draw", L"text-box") ||
-        CP_CHECK_NAME(L"draw", L"image") ||//копия чарта в виде картинки ну.. или просто картинка
-        CP_CHECK_NAME(L"draw", L"object") ||//месторасположение чарта
+        CP_CHECK_NAME(L"draw", L"image")	||//копия чарта в виде картинки ну.. или просто картинка
+        CP_CHECK_NAME(L"draw", L"object")	||//месторасположение чарта
         CP_CHECK_NAME(L"draw", L"object-ole") ||
-        CP_CHECK_NAME(L"draw", L"applet") ||
+        CP_CHECK_NAME(L"draw", L"applet")	||
         CP_CHECK_NAME(L"draw", L"floating-frame") ||
-        CP_CHECK_NAME(L"draw", L"plugin") ||
+        CP_CHECK_NAME(L"draw", L"plugin")	||
         CP_CHECK_NAME(L"table", L"table") 
         )
     {
@@ -242,9 +242,16 @@ void draw_frame::create_child_element(  const std::wstring & Ns, const std::wstr
 }
 void draw_frame::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
-    if (type == typeDrawImage || type == typeDrawTextBox || type == typeDrawObject || type == typeDrawObjectOle || type == typeTableTable)
+    if (type == typeDrawImage		|| 
+		type == typeDrawTextBox		|| 
+		type == typeDrawObject		|| 
+		type == typeDrawObjectOle	|| 
+		type == typeDrawPlugin	|| 
+		type == typeTableTable)
     {
 		draw_base::add_child_element(child_element);
     } 
@@ -259,8 +266,6 @@ void draw_frame::add_child_element( const office_element_ptr & child_element)
 
 }
 
-///////////////////////
-
 void draw_text_box_attlist::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR_OPT(L"draw:chain-next-name", draw_chain_next_name_);
@@ -271,9 +276,8 @@ void draw_text_box_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"fo:max-height", fo_max_height_);
 }
 
-// draw:text-box
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * draw_text_box::ns = L"draw";
+//-----------------------------------------------------------------------
+const wchar_t * draw_text_box::ns	= L"draw";
 const wchar_t * draw_text_box::name = L"text-box";
 
 
@@ -285,9 +289,9 @@ void draw_text_box::serialize(std::wostream & _Wostream)
         {
 			draw_text_box_attlist_.serialize(CP_GET_XML_NODE());
 
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -302,8 +306,7 @@ void draw_text_box::add_child_element( const office_element_ptr & child_element)
    content_.push_back(child_element);
 }
 
-// draw:object
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------
 const wchar_t * draw_object::ns = L"draw";
 const wchar_t * draw_object::name = L"object";
 
@@ -326,10 +329,9 @@ void draw_object::add_child_element( const office_element_ptr & child_element)
 {
 	//CP_NOT_APPLICABLE_ELM();
 }
-// draw:object
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * draw_object_ole::ns = L"draw";
-const wchar_t * draw_object_ole::name = L"object-ole";
+//-----------------------------------------------------------------------
+const wchar_t * draw_object_ole::ns		= L"draw";
+const wchar_t * draw_object_ole::name	= L"object-ole";
 
 void draw_object_ole::serialize(std::wostream & _Wostream)
 {
@@ -350,6 +352,38 @@ void draw_object_ole::create_child_element( const std::wstring & Ns, const std::
 void draw_object_ole::add_child_element( const office_element_ptr & child_element)
 {
 	//CP_NOT_APPLICABLE_ELM();
+}
+//-----------------------------------------------------------------------
+const wchar_t * draw_plugin::ns		= L"draw";
+const wchar_t * draw_plugin::name	= L"plugin";
+
+void draw_plugin::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			common_xlink_attlist_.serialize(CP_GET_XML_NODE());
+			CP_XML_ATTR_OPT(L"draw:mime-type", draw_mime_type_);
+			
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
+
+void draw_plugin::create_child_element( const std::wstring & Ns, const std::wstring & Name)
+{
+	if CP_CHECK_NAME(L"draw", L"param")
+    {
+        CP_CREATE_ELEMENT(content_);
+    }
+}
+void draw_plugin::add_child_element( const office_element_ptr & child_element)
+{
+	content_.push_back(child_element);
 }
 }
 }

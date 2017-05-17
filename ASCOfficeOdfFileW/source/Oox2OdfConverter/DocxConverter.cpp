@@ -131,48 +131,23 @@ NSCommon::smart_ptr<OOX::File> DocxConverter::find_file_by_id(std::wstring sId)
 
 std::wstring DocxConverter::find_link_by_id (std::wstring sId, int type)
 {
+	if (!docx_document) return L"";
+
+    std::wstring			ref;
+	smart_ptr<OOX::File>	oFile;
+
+    if (oox_current_child_document)
+	{
+		oFile	= oox_current_child_document->Find(sId);
+		ref		= OoxConverter::find_link_by(oFile, type);
+	}
+	if (!ref.empty()) return ref;
+
 	OOX::CDocument  *oox_doc = docx_document->GetDocument();
-
-	if (oox_doc == NULL)return L"";
-		
-    std::wstring ref;
-
-    if (ref.empty() && oox_current_child_document)
-	{
-		smart_ptr<OOX::File> oFile = oox_current_child_document->Find(sId);
-		if (oFile.IsInit())
-		{		
-			if (type==1 && OOX::FileTypes::Image == oFile->type())
-			{
-				OOX::Image* pImage = (OOX::Image*)oFile.operator->();
-
-				ref = pImage->filename().GetPath();
-			}
-			if (type==2 && oFile.IsInit() && OOX::FileTypes::HyperLink == oFile->type())
-			{
-				OOX::HyperLink* pHyperlink = (OOX::HyperLink*)oFile.operator->();
-
-				ref = pHyperlink->Uri().GetPath();
-			}
-		}
-	}
-
-	smart_ptr<OOX::File> oFile = docx_document->GetDocument()->Find(sId);
-    if (ref.empty() && oFile.IsInit())
-	{
-		if (type==1 && OOX::FileTypes::Image == oFile->type())
-		{
-			OOX::Image* pImage = (OOX::Image*)oFile.operator->();
-
-			ref = pImage->filename().GetPath();
-		}
-		if (type == 2 && OOX::FileTypes::HyperLink == oFile->type())
-		{
-			OOX::HyperLink* pHyperlink = (OOX::HyperLink*)oFile.operator->();
-
-			ref = pHyperlink->Uri().GetPath();
-		}
-	}
+	if (oox_doc == NULL) return L"";
+	
+	oFile	= oox_doc->Find(sId);
+	ref		= OoxConverter::find_link_by(oFile, type);
 
 	return ref;
 }

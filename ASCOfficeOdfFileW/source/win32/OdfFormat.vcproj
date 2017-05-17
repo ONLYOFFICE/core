@@ -402,11 +402,27 @@
 				>
 			</File>
 			<File
+				RelativePath="..\OdfFormat\office_event_listeners.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\office_event_listeners.h"
+				>
+			</File>
+			<File
 				RelativePath="..\OdfFormat\office_presentation.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\OdfFormat\office_presentation.h"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\office_scripts.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\office_scripts.h"
 				>
 			</File>
 			<File

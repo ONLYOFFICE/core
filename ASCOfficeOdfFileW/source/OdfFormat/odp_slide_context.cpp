@@ -81,6 +81,7 @@ void odp_slide_context::start_page(office_element_ptr & elm)
 void odp_slide_context::end_page()
 {
 	state().drawing_context()->finalize(state().page_elm_);
+	state().finalize_page();
 }
 
 void odp_slide_context::remove_page()

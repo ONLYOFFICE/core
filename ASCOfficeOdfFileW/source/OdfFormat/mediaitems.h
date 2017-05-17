@@ -42,7 +42,7 @@ class rels;
 class _mediaitems
 {
 public:
-    enum Type { typeUnknown = 0, typeImage, typeAudio, typeVideo};
+    enum Type { typeUnknown = 0, typeImage, typeMedia};
 	//oleObject ???
 
     _mediaitems()

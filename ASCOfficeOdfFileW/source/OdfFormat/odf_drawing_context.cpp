@@ -42,6 +42,7 @@
 #include "odf_text_context.h"
 #include "odf_style_context.h"
 #include "odf_conversion_context.h"
+#include "office_event_listeners.h"
 
 #include "draw_frame.h"
 #include "draw_shapes.h"
@@ -2332,14 +2333,37 @@ void odf_drawing_context::start_object(std::wstring name)
 	draw_object* object = dynamic_cast<draw_object*>(object_elm.get());
 	if (object == NULL)return;
 
-    object->common_xlink_attlist_.href_= std::wstring(L"./") + name;
-	object->common_xlink_attlist_.type_= xlink_type::Simple;
-	object->common_xlink_attlist_.show_ = xlink_show::Embed;
-	object->common_xlink_attlist_.actuate_= xlink_actuate::OnLoad;
+    object->common_xlink_attlist_.href_		= std::wstring(L"./") + name;
+	object->common_xlink_attlist_.type_		= xlink_type::Simple;
+	object->common_xlink_attlist_.show_		= xlink_show::Embed;
+	object->common_xlink_attlist_.actuate_	= xlink_actuate::OnLoad;
 
 	start_element(object_elm);
 }
+void odf_drawing_context::start_media(std::wstring name)
+{
+	start_frame();
 
+	office_element_ptr plugin_elm;
+	create_element(L"draw", L"plugin", plugin_elm, impl_->odf_context_);
+
+	draw_plugin* plugin = dynamic_cast<draw_plugin*>(plugin_elm.get());
+	if (plugin == NULL)return;
+
+    plugin->common_xlink_attlist_.href_		= name;
+	plugin->common_xlink_attlist_.type_		= xlink_type::Simple;
+	plugin->common_xlink_attlist_.show_		= xlink_show::Embed;
+	plugin->common_xlink_attlist_.actuate_	= xlink_actuate::OnLoad;
+
+	plugin->draw_mime_type_ = L"application/vnd.sun.star.media";
+	
+	start_element(plugin_elm);
+}
+void odf_drawing_context::end_media()
+{
+	end_element();
+	end_frame();
+}
 void odf_drawing_context::start_text_box()
 {	
 	impl_->current_drawing_state_.oox_shape_preset_ = 2000;
@@ -2369,6 +2393,94 @@ void odf_drawing_context::set_text_box_min_size(bool val)
 	}
 }
 
+void odf_drawing_context::start_action(std::wstring value)
+{
+	office_element_ptr elm_listeners;
+	create_element(L"office", L"event-listeners", elm_listeners, impl_->odf_context_);
+
+	start_element(elm_listeners);
+	
+	office_element_ptr elm;
+	create_element(L"presentation", L"event-listener", elm, impl_->odf_context_);
+
+	start_element(elm);
+	
+	presentation_event_listener * event_ = dynamic_cast<presentation_event_listener*>(impl_->current_level_.back().get());
+
+	if (event_)
+	{
+		event_->attlist_.script_event_name_ = L"dom:click";
+		
+		if (std::wstring::npos != value.find(L"noaction") ||
+			std::wstring::npos != value.find(L"media"))
+		{
+			event_->attlist_.script_event_name_ = boost::none;
+		}
+		else if (std::wstring::npos != value.find(L"program"))
+		{
+			event_->attlist_.presentation_action_ = L"execute";
+		}
+		else if (std::wstring::npos != value.find(L"hlinkshowjump"))
+		{
+			if (std::wstring::npos != value.find(L"previousslide"))
+				event_->attlist_.presentation_action_ = L"previous-page";
+			if (std::wstring::npos != value.find(L"nextslide"))
+				event_->attlist_.presentation_action_ = L"next-page";
+		}
+		else if (std::wstring::npos != value.find(L"hlinksldjump"))
+		{
+			event_->attlist_.presentation_action_ = L"previous-page";
+		}
+		else
+		{//hyperlink
+			event_->attlist_.presentation_action_	= L"show";
+		}
+	}
+}
+
+void odf_drawing_context::add_link(std::wstring href)
+{
+	if (href.empty()) return;
+
+	presentation_event_listener * event_ = dynamic_cast<presentation_event_listener*>(impl_->current_level_.back().get());
+
+	if (event_)
+	{
+		event_->attlist_.common_xlink_attlist_.href_	= href;
+		event_->attlist_.common_xlink_attlist_.type_	= xlink_type::Simple;
+		event_->attlist_.common_xlink_attlist_.show_	= xlink_show::Embed;
+		event_->attlist_.common_xlink_attlist_.actuate_	= xlink_actuate::OnRequest;
+	}
+}
+
+void odf_drawing_context::add_sound(std::wstring href)
+{
+	presentation_event_listener * event_ = dynamic_cast<presentation_event_listener*>(impl_->current_level_.back().get());
+	if (event_)
+	{
+		event_->attlist_.presentation_action_	= L"sound";
+	}
+
+	office_element_ptr elm;
+	create_element(L"presentation", L"sound", elm, impl_->odf_context_);
+
+	start_element(elm);
+
+	presentation_sound *sound = dynamic_cast<presentation_sound*>(elm.get());
+	if (sound)
+	{
+		sound->common_xlink_attlist_.href_		= href;
+		sound->common_xlink_attlist_.type_		= xlink_type::Simple;
+		sound->common_xlink_attlist_.show_		= xlink_show::New;
+		sound->common_xlink_attlist_.actuate_	= xlink_actuate::OnRequest;
+	}
+	end_element();
+}
+void odf_drawing_context::end_action()
+{
+	end_element();
+	end_element();
+}
 void odf_drawing_context::set_text_box_min_size(double w_pt, double h_pt)
 {
 	if (impl_->current_drawing_state_.elements_.empty()) return;

@@ -577,17 +577,14 @@ public:
     void apply_from		(const common_anim_smil_attlist & Other);
 	void serialize		(CP_ATTR_NODE);
 
-	_CP_OPT(std::wstring)	presentation_node_type_;
-	_CP_OPT(std::wstring)	smil_direction_;
-	_CP_OPT(std::wstring)	smil_restart_;
-	_CP_OPT(std::wstring)	smil_subtype_; 
-	_CP_OPT(std::wstring)	smil_type_;
-	_CP_OPT(std::wstring)	smil_dur_;
+	_CP_OPT(std::wstring)			presentation_node_type_;
 
-	_CP_OPT(std::wstring)	smil_begin_;
+	_CP_OPT(std::wstring)			smil_direction_;
+	_CP_OPT(std::wstring)			smil_restart_;
+	_CP_OPT(odf_types::clockvalue)	smil_dur_;
 
-	_CP_OPT(color)			smil_fadeColor;
-
+	_CP_OPT(std::wstring)			smil_begin_;
+	_CP_OPT(std::wstring)			smil_end_;
 };
 
 }

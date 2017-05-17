@@ -80,9 +80,6 @@ public:
 	void start_note(bool bMaster = false);
 	void end_note();
 
-	void start_timing();
-	void end_timing();
-
 private:
 	odp_slide_context			slide_context_;
 	

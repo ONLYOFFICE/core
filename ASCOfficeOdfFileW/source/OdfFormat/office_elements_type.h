@@ -153,6 +153,7 @@ enum ElementType
     typeStyleFooterStyle,
 	typeStyleHeaderFooterProperties,
 
+	typeStylePresentationSound,
 	typeStylePresentationPageLayout,
 	typeStylePresentationPlaceholder,
 	typeStyleDrawingPageProperties,
@@ -235,6 +236,7 @@ enum ElementType
     typeDrawObject,
     typeDrawObjectOle,
  	typeDrawChart,
+	typeDrawPlugin,
 
 	typeDrawBase,
 	typeDrawShape,
@@ -267,6 +269,9 @@ enum ElementType
 	typeAnimPar,
 	typeAnimSeq,
 	typeAnimTransitionFilter,
+	typeAnimAudio,
+	typeAnimCommand,
+	typeAnimIterator,
 
 	typeStyleGraphicPropertis,
 	typeStyleDrawGradient,

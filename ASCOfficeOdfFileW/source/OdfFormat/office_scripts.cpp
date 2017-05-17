@@ -30,8 +30,7 @@
  *
  */
 
-#include "office_presentation.h"
-#include "draw_page.h"
+#include "office_scripts.h"
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
@@ -40,57 +39,67 @@
 
 #include <cpdoccore/xml/simple_xml_writer.h>
 
+
 namespace cpdoccore { 
 namespace odf_writer {
 
-// office:presentation
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * office_presentation::ns = L"office";
-const wchar_t * office_presentation::name = L"presentation";
+const wchar_t * office_scripts::ns		= L"office";
+const wchar_t * office_scripts::name	= L"scripts";
 
 
-void office_presentation::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+void office_scripts::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
-	if	CP_CHECK_NAME(L"draw", L"page") 
-		CP_CREATE_ELEMENT(pages_);
-	else if CP_CHECK_NAME(L"presentation", L"footer-decl") 
-		CP_CREATE_ELEMENT(footer_decls_);
-	else if CP_CHECK_NAME(L"presentation", L"date-time-decl") 
-		CP_CREATE_ELEMENT(date_time_decls_);
+	CP_CREATE_ELEMENT(content_);
 }
-
-void office_presentation::add_child_element( const office_element_ptr & child_element)
+void office_scripts::add_child_element( const office_element_ptr & child_element)
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
-
-    if (type == typePresentationDateTimeDecl)
-    {
-		date_time_decls_.push_back(child_element);
-    } 
-    else if ( type == typePresentationFooterDecl)
-    {
-        footer_decls_.push_back(child_element);
-    }   
-	else if ( type == typeDrawPage)
-    {
-        pages_.push_back(child_element);
-    }
-
+	content_.push_back(child_element);
 }
-void office_presentation::serialize(std::wostream & _Wostream)
+void office_scripts::serialize(std::wostream & _Wostream)
 {
     CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			for (size_t i = 0; i < pages_.size(); i++)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				pages_[i]->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
 }
+//-------------------------------------------------------------------------------------------
+const wchar_t * office_script::ns	= L"office";
+const wchar_t * office_script::name = L"script";
+
+
+void office_script::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(content_);
+}
+void office_script::add_child_element( const office_element_ptr & child_element)
+{
+	if (!child_element) return;
+
+	content_.push_back(child_element);
+}
+void office_script::serialize(std::wostream & _Wostream)
+{
+    CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"script:language", script_language_);
+
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
+
 }
 }

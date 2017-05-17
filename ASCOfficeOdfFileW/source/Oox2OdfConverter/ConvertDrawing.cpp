@@ -1149,8 +1149,9 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 			if (oox_cnvPr->hlinkClick->snd.IsInit())
 			{
 				std::wstring sound = find_link_by_id(oox_cnvPr->hlinkClick->snd->embed.get(), 3);
-				
-				odf_context()->drawing_context()->add_sound(sound);	
+
+				std::wstring href = odf_context()->add_media(sound);				
+				odf_context()->drawing_context()->add_sound(href);	
 			}
 			if (oox_cnvPr->hlinkClick->id.IsInit())
 			{

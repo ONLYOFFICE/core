@@ -2458,6 +2458,7 @@ void odf_drawing_context::add_sound(std::wstring href)
 	presentation_event_listener * event_ = dynamic_cast<presentation_event_listener*>(impl_->current_level_.back().get());
 	if (event_)
 	{
+		event_->attlist_.script_event_name_		= L"dom:click";
 		event_->attlist_.presentation_action_	= L"sound";
 	}
 

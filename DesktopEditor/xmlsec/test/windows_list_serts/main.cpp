@@ -4,7 +4,7 @@
 
 #include "../../../common/File.h"
 
-void main(void)
+int main(void)
 {
     //std::wstring sFolderOOOXML = NSFile::GetProcessDirectory() + L"/ImageStamp";
     //std::wstring sSignId = L"{39B6B9C7-60AD-45A2-9F61-40C74A24042E}";
@@ -19,7 +19,7 @@ void main(void)
         if (!pCertificate->ShowSelectDialog())
         {
             RELEASEOBJECT(pCertificate);
-            return;
+            return 0;
         }
 
         COOXMLSigner oOOXMLSigner(sFolderOOXML, pCertificate);
@@ -45,4 +45,5 @@ void main(void)
             nRes = nRes;
         }
     }
+    return 0;
 }

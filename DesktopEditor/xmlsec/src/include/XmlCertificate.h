@@ -27,11 +27,11 @@ public:
     virtual std::string GetCertificateHash()    = 0;
 
 public:
-    virtual std::string Sign(std::string sXml)                                          = 0;
+    virtual std::string Sign(const std::string& sXml)                                   = 0;
     virtual std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlg)     = 0;
-    virtual std::string GetHash(std::string& sXml, int nAlg)                            = 0;
-    virtual std::string GetHash(std::wstring& sXmlFile, int nAlg)                       = 0;
-    virtual bool Verify(std::string& sXml, std::string& sXmlSignature, int nAlg)        = 0;
+    virtual std::string GetHash(const std::string& sXml, int nAlg)                      = 0;
+    virtual std::string GetHash(const std::wstring& sXmlFile, int nAlg)                 = 0;
+    virtual bool Verify(const std::string& sXml, std::string& sXmlSignature, int nAlg)  = 0;
 
     virtual bool LoadFromBase64Data(const std::string& data)                            = 0;    
 

@@ -4,11 +4,13 @@
 #endif
 
 #if defined(_LINUX) && !defined(_MAC)
-
+#include "./XmlSigner_openssl.h"
+#define CCertificate CCertificate_openssl
 #endif
 
 #ifdef _MAC
-
+#include "./XmlSigner_openssl.h"
+#define CCertificate CCertificate_openssl
 #endif
 
 int ICertificate::GetOOXMLHashAlg(const std::string& sAlg)

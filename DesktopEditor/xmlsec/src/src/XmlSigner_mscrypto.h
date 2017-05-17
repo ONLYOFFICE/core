@@ -100,7 +100,7 @@ public:
     }
 
 public:
-    virtual std::string Sign(std::string sXml)
+    virtual std::string Sign(const std::string& sXml)
     {
         BOOL bResult = TRUE;
         DWORD dwKeySpec = 0;
@@ -240,12 +240,12 @@ public:
         return sReturn;
     }
 
-    virtual std::string GetHash(std::string& sXml, int nAlg)
+    virtual std::string GetHash(const std::string& sXml, int nAlg)
     {
         return GetHash((BYTE*)sXml.c_str(), (DWORD)sXml.length(), nAlg);
     }
 
-    virtual std::string GetHash(std::wstring& sXmlFile, int nAlg)
+    virtual std::string GetHash(const std::wstring& sXmlFile, int nAlg)
     {
         BYTE* pFileData = NULL;
         DWORD dwFileDataLen = 0;
@@ -260,7 +260,7 @@ public:
         return sReturn;
     }
 
-    virtual bool Verify(std::string& sXml, std::string& sXmlSignature, int nAlg)
+    virtual bool Verify(const std::string& sXml, std::string& sXmlSignature, int nAlg)
     {
         DWORD dwKeySpec = 0;
         HCRYPTHASH hHash = NULL;

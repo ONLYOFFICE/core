@@ -43,7 +43,6 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-//  office:event-listeners
 class office_event_listeners : public office_element_impl<office_event_listeners>
 {
 public:
@@ -62,20 +61,17 @@ private:
 private:
     office_element_ptr_array presentation_event_listeners_;
     office_element_ptr_array script_event_listeners_;
-
-    
+  
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(office_event_listeners);
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// presentation-event-listener-attlist
+//-------------------------------------------------------------------------------------
 class presentation_event_listener_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-public:
 	odf_types::common_xlink_attlist common_xlink_attlist_;
 
 	_CP_OPT(std::wstring)	script_event_name_;
@@ -87,7 +83,6 @@ public:
 	//presentation:effect
 };
 
-//  presentation:event-listeners_
 class presentation_event_listener : public office_element_impl<presentation_event_listener>
 {
 public:
@@ -104,9 +99,9 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 private:
-    //office_element_ptr_array content_;
-	office_element_ptr presentation_sound_;
-	presentation_event_listener_attlist presentation_event_listener_attlist_;
+    //office_element_ptr_array				content_;
+	office_element_ptr						presentation_sound_;
+	presentation_event_listener_attlist		attlist_;
 
     
 };

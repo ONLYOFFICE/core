@@ -82,7 +82,7 @@ public:
 		record r;
         r.ref = ref;      
 		r.display = display;
-		r.id = std::wstring(L"hId") + boost::lexical_cast<std::wstring>(records_.size()+1);
+		r.id = std::wstring(L"hId") + std::to_wstring(records_.size()+1);
 
 		int pos_target = target.find(L"#");
         if (pos_target == 0)//ссыль на страницу или метку в текущем документе

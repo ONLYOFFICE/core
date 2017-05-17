@@ -239,7 +239,7 @@ std::pair<int,std::wstring> presentation_layouts_instance::add_or_find(const std
 		item.layout_name = layout_name;
 		item.master_name = master_name;
 		item.Id = content.size() +1;
-		item.rId = std::wstring(L"lrId") + boost::lexical_cast<std::wstring>(item.Id);
+		item.rId = std::wstring(L"lrId") + std::to_wstring(item.Id);
 	
 		content.push_back(item);
 		index = content.size()-1;
@@ -265,7 +265,7 @@ std::pair<int,std::wstring> presentation_masters_instance::add_or_find(const std
 		presentation_masters_instance::_master item;
 		item.master_name = master_name;
 		item.Id = content.size() +1;
-		item.rId = std::wstring(L"smId") + boost::lexical_cast<std::wstring>(item.Id);
+		item.rId = std::wstring(L"smId") + std::to_wstring(item.Id);
 	
 		content.push_back(item);
 		index = content.size()-1;

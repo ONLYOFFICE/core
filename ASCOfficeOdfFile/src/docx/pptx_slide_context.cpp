@@ -160,6 +160,7 @@ void pptx_slide_context::Impl::process_drawings()
 			case typeChart:		process_chart(objects_[i], drawing);	break;
 			case typeShape:		process_shape(objects_[i], drawing);	break;
 			case typeTable:		process_table(objects_[i], drawing);	break;
+			case typeMedia:	
 			case typeMsObject:	
 			case typeOleObject:	process_object(objects_[i], drawing);	break;
 		}
@@ -228,6 +229,8 @@ void pptx_slide_context::default_set()
 	impl_->object_description_.svg_rect_	= boost::none;
 
 	impl_->object_description_.hlinks_.clear();
+	impl_->object_description_.action_.clear();
+
 	impl_->object_description_.additional_.clear();
 
 	impl_->object_description_.fill_.clear();
@@ -323,15 +326,15 @@ void pptx_slide_context::set_fill(_oox_fill & fill)
 	impl_->object_description_.fill_= fill;
 }
 
-std::wstring pptx_slide_context::add_hyperlink(std::wstring const & href,bool object)
+std::wstring pptx_slide_context::add_hyperlink(std::wstring const & href)
 {
 	++hlinks_size_;
-	std::wstring hId=std::wstring(L"hId") + boost::lexical_cast<std::wstring>(hlinks_size_);
+	std::wstring hId = L"hId" + std::to_wstring(hlinks_size_);
 	
 	std::wstring href_correct = xml::utils::replace_text_to_xml(href);
 	XmlUtils::replace_all( href_correct, L" .", L".");//1 (130).odt
 
-	_hlink_desc desc={hId, href_correct, object};
+	_hlink_desc desc = {hId, href_correct};
 	impl_->object_description_.hlinks_.push_back(desc);
 
 	return hId;
@@ -347,20 +350,74 @@ void pptx_slide_context::add_background(_oox_fill & fill)
 		fill.bitmap->rId = get_mediaitems().add_or_find(fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
 		add_rels(isMediaInternal, fill.bitmap->rId, ref, typeImage);
 	}	
-	
 	impl_->background_fill_ = fill;
 }
 
 void pptx_slide_context::set_name(std::wstring const & name)
 {
 	impl_->object_description_.name_ = name;
-
 }
 
 void pptx_slide_context::start_shape(int type)
 {
 	impl_->object_description_.type_		= typeShape;
 	impl_->object_description_.shape_type_	= type; //2,3... 
+}
+void pptx_slide_context::start_action(std::wstring action)
+{
+	impl_->object_description_.action_.enabled	= true;
+
+	if (action == L"sound")
+	{
+		impl_->object_description_.action_.typeRels = typeAudio;
+		impl_->object_description_.action_.highlightClick = true;
+	}
+	else if (action == L"next-page")
+	{
+		impl_->object_description_.action_.action = L"ppaction://hlinkshowjump?jump=nextslide";
+		impl_->object_description_.action_.highlightClick = true;
+	}
+	else if (action == L"previous-page")
+	{
+		impl_->object_description_.action_.action = L"ppaction://hlinkshowjump?jump=previousslide";
+		impl_->object_description_.action_.highlightClick = true;
+	}
+	else if (action == L"first-page")
+	{
+		impl_->object_description_.action_.action = L"ppaction://hlinkshowjump?jump=firstslide";
+		impl_->object_description_.action_.highlightClick = true;
+	}
+	else if (action == L"last-page")
+	{
+		impl_->object_description_.action_.action = L"ppaction://hlinkshowjump?jump=lastslide";
+		impl_->object_description_.action_.highlightClick = true;
+	}
+	//ppaction://hlinkshowjump?jump=endshow
+	else if (action == L"execute")
+	{
+		impl_->object_description_.action_.action	= L"ppaction://program";
+		impl_->object_description_.action_.typeRels = typeHyperlink;
+		impl_->object_description_.action_.highlightClick = true;
+	}
+}
+void pptx_slide_context::set_link(std::wstring link, RelsType typeRels)
+{
+	++hlinks_size_;
+	std::wstring hId = L"hId" + std::to_wstring(hlinks_size_);
+	
+	link = xml::utils::replace_text_to_xml(link);
+	
+	if (typeRels == typeHyperlink)
+		XmlUtils::replace_all( link, L" .", L".");		//1 (130).odt
+
+	impl_->object_description_.action_.highlightClick = true;
+
+	impl_->object_description_.action_.hId		= hId;
+	impl_->object_description_.action_.hRef		= link;
+	impl_->object_description_.action_.typeRels	= typeRels;
+}
+void pptx_slide_context::end_action()
+{
 }
 
 void pptx_slide_context::start_table()
@@ -384,6 +441,20 @@ void pptx_slide_context::set_ole_object(const std::wstring & path, const std::ws
 	impl_->object_description_.type_		= typeOleObject;
 	impl_->object_description_.xlink_href_	= path; 
 	impl_->object_description_.descriptor_	= progId;
+}
+void pptx_slide_context::set_media(const std::wstring & path)
+{
+	if (path.empty()) return;
+
+	impl_->object_description_.type_		= typeMedia;
+	impl_->object_description_.xlink_href_	= path; 
+
+	impl_->object_description_.action_.enabled	= true;
+	impl_->object_description_.action_.action	= L"ppaction://media";
+}
+
+void pptx_slide_context::set_media_param(std::wstring name, std::wstring value)
+{
 }
 
 void pptx_slide_context::set_image(const std::wstring & path)
@@ -532,7 +603,6 @@ void pptx_slide_context::Impl::process_shape(drawing_object_description & obj, _
 
 	add_drawing(drawing, isMediaInternal, rId, ref, typeShape);
 }
-
 void pptx_slide_context::Impl::process_object(drawing_object_description& obj, _pptx_drawing & drawing)
 {
     std::wstring ref;
@@ -557,23 +627,22 @@ void pptx_slide_context::Impl::process_common_properties(drawing_object_descript
 	{
 		//todooo непонятки с отрицательными значениями
 		int val = (int)(0.5 + odf_types::length(pic.svg_rect_->x, odf_types::length::pt).get_value_unit(odf_types::length::emu));
-		if (val >= 0) drawing.x = val;
+		if ( val >= 0) drawing.x = val;
 		
 		val = (int)(0.5 + odf_types::length(pic.svg_rect_->y, odf_types::length::pt).get_value_unit(odf_types::length::emu));
-		if (val >= 0) drawing.y = val;
+		if ( val >= 0 ) drawing.y = val;
 
 		val = (int)(0.5 + odf_types::length(pic.svg_rect_->cx, odf_types::length::pt).get_value_unit(odf_types::length::emu));
-		if (val >=0) drawing.cx = val;
+		if ( val >=0 ) drawing.cx = val;
 		
 		val = (int)(0.5 + odf_types::length(pic.svg_rect_->cy, odf_types::length::pt).get_value_unit(odf_types::length::emu));
-		if (val >=0) drawing.cy = val;
+		if ( val >=0 ) drawing.cy = val;
 	}
 	
-	drawing.additional = pic.additional_;
-
-	drawing.hlinks = pic.hlinks_;
-
-	drawing.fill = pic.fill_;
+	drawing.additional	= pic.additional_;
+	drawing.hlinks		= pic.hlinks_;
+	drawing.action		= pic.action_;
+	drawing.fill		= pic.fill_;
 }
 
 void pptx_slide_context::dump_rels(rels & Rels)

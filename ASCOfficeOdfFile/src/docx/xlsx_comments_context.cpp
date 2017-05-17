@@ -54,21 +54,21 @@ public:
 
     std::pair<std::wstring, std::wstring> add_comments_xml(std::wstring const & content, std::wstring const & vml_content,xlsx_comments_ptr comments)
     {
- 		const std::wstring file_id = boost::lexical_cast<std::wstring>(next_file_id_++);
+ 		const std::wstring file_id = std::to_wstring(next_file_id_++);
       
 		const std::wstring fileName = std::wstring(L"comments") + file_id + L".xml";
         const std::wstring vml_fileName = std::wstring(L"vmlDrawing") + file_id + L".vml";
         
 		comments_.push_back(comment_elm(fileName,vml_fileName, content, vml_content, comments));
         
-		const std::wstring id = boost::lexical_cast<std::wstring>(next_comments_id_++);
+		const std::wstring id = std::to_wstring(next_comments_id_++);
 		const std::wstring rId = std::wstring(L"comId") + id; 
         return std::pair<std::wstring, std::wstring>(fileName, rId);
     }
 
     std::pair<std::wstring, std::wstring> get_vml_drawing_xml()
     {
-        const std::wstring id = boost::lexical_cast<std::wstring>(next_comments_id_++);		
+        const std::wstring id = std::to_wstring(next_comments_id_++);		
  		const std::wstring rId = std::wstring(L"comId") + id; 
 		return std::pair<std::wstring, std::wstring>(comments_.back().vml_filename, rId);
 	}

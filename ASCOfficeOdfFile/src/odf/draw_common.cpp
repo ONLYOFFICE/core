@@ -112,9 +112,10 @@ bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & c
 	std::vector<length>			Points_pt;
 	
 	boost::algorithm::split(Points,strClipping, boost::algorithm::is_any_of(L" ,"), boost::algorithm::token_compress_on);
-	BOOST_FOREACH(std::wstring const & p, Points)
+	
+	for (size_t i = 0; i < Points.size(); i++)
 	{
-		Points_pt.push_back(length::parse(p) );
+		Points_pt.push_back(length::parse(Points[i]) );
 		
 		if (Points_pt.back().get_value() > 0.00001) bEnableCrop = true;
 	}
@@ -124,8 +125,6 @@ bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & c
 	int fileWidth=0,fileHeight=0;
 
 	if (!_image_file_::GetResolution(fileName.data(), fileWidth, fileHeight, appFonts) || fileWidth<1 || fileHeight<1)	return false;
-
-
 
 	if (Points_pt.size() > 3)//если другое количество точек .. попозже
 	{
@@ -561,30 +560,33 @@ void draw_a::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void draw_a::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    Context.get_drawing_context().add_hyperlink(common_xlink_attlist_.href_.get_value_or(L""),true);
-				//стиль на текст не нужен ..текста то нет - ссылка с объекта
+	Context.get_drawing_context().start_action(L"");
+		Context.get_drawing_context().set_link(common_xlink_attlist_.href_.get_value_or(L""));
+ 	Context.get_drawing_context().end_action();
    
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->xlsx_convert(Context);
+        content_[i]->xlsx_convert(Context);
     }
 }
 void draw_a::pptx_convert(oox::pptx_conversion_context & Context)
 {
-   Context.get_slide_context().add_hyperlink(common_xlink_attlist_.href_.get_value_or(L""),true);//стиль на текст не нужен ..текста то нет - ссылка с объекта
-   
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
+	Context.get_slide_context().start_action(L"");
+		Context.get_slide_context().set_link(common_xlink_attlist_.href_.get_value_or(L""));
+ 	Context.get_slide_context().end_action();
+  
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        content_[i]->pptx_convert(Context);
     }
 }
 void draw_a::docx_convert(oox::docx_conversion_context & Context) 
 {
 	std::wstring rId = Context.add_hyperlink(common_xlink_attlist_.href_.get_value_or(L""), true);//гиперлинк с объекта, а не с текста .. 
 	
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
-    {
-        elm->docx_convert(Context);
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+        content_[i]->docx_convert(Context);
     }
 
 }
@@ -596,9 +598,9 @@ void parse_string_to_points(std::wstring str, std::vector<length> & Points)
 
 	boost::algorithm::split(Points_s,str, boost::algorithm::is_any_of(L" ,"), boost::algorithm::token_compress_on);
 
-	BOOST_FOREACH(std::wstring const & p, Points_s)
+	for (size_t i = 0; i < Points_s.size(); i++)
 	{
-		Points.push_back(length::parse(p) );
+		Points.push_back(length::parse(Points_s[i]) );
 	}
 }
 
@@ -608,12 +610,12 @@ void oox_convert_transforms(std::wstring transformStr,std::vector<odf_reader::_p
 	
 	boost::algorithm::split(transforms,transformStr, boost::algorithm::is_any_of(L")"), boost::algorithm::token_compress_on);
 	
-	BOOST_FOREACH(std::wstring const & t, transforms)
+	for (size_t i = 0; i < transforms.size(); i++)
 	{			
         //_CP_LOG << "[info] : transform = " << t << L"\n";
 		std::vector<std::wstring> transform;
 		
-		boost::algorithm::split(transform,t, boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);
+		boost::algorithm::split(transform, transforms[i], boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);
 		
 		if (transform.size() > 1)//тока с аргументами
 		{
@@ -725,11 +727,11 @@ void pptx_convert_transforms(std::wstring transformStr, oox::pptx_conversion_con
 	
 	boost::algorithm::split(transforms,transformStr, boost::algorithm::is_any_of(L")"), boost::algorithm::token_compress_on);
 	
-	BOOST_FOREACH(std::wstring const & t, transforms)
+	for (size_t i = 0; i < transforms.size(); i++)
 	{			
         //_CP_LOG << "[info] : transform = " << t << L"\n";
 		std::vector<std::wstring> transform;
-		boost::algorithm::split(transform,t, boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);
+		boost::algorithm::split(transform, transforms[i], boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);
 
 		if (transform.size()>1)//тока с аргументами
 		{

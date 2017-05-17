@@ -46,7 +46,40 @@ std::wostream & operator << (std::wostream & _Wostream, const clockvalue & _Val)
 		_Wostream << L"indefinite";
 	else
 	{
-		_Wostream << _Val.get_value() << "ms"; // todoooo усложнить ..
+		int ms	= _Val.get_value();
+		int sec = 0;
+		int min = 0;
+		int h	= 0;
+
+		if (ms > 1000)
+		{
+			sec = ms / 1000;
+			ms	-= sec * 1000;
+
+			if (sec > 60)
+			{
+				min = sec / 60;
+				sec -= min * 60;
+
+				if (min > 60)
+				{
+					h = min / 60;
+					min -= h * 60;
+				}			
+			}
+
+		}
+		if ( h > 0)
+			_Wostream <<  h  << "h"; 
+		if ( min > 0)
+			_Wostream <<  min  << "min"; 
+		if ( sec > 0)
+			_Wostream <<  sec  << "s"; 
+		if ( ms > 0)
+			_Wostream <<  ms  << "ms"; 
+
+		if (h == 0 && min == 0 && ms == 0 && sec == 0)
+			_Wostream << "0s"; 
 	}
     return _Wostream;    
 }
@@ -131,11 +164,11 @@ clockvalue clockvalue::parse(const std::wstring & Str)
 	{
 		int v=0;
 
-		int ms=0;
-		double h=0,m=0,s =0;
-		bool res = parseTime(Str,h,m,s,ms);
+		int ms = 0;
+		double h = 0, m = 0, s = 0;
+		bool res = parseTime(Str, h, m, s, ms);
 
-		v = (((h*60)+m)*60+s)*1000+ms;
+		v = (((h * 60) + m) * 60 + s) * 1000 + ms;
 
 		return clockvalue(v);
 	}

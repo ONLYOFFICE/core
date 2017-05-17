@@ -52,7 +52,10 @@ enum RelsType
 	typeMedia, 
 	typeGroupShape, 
 	typeMsObject, 
-	typeOleObject
+	typeOleObject,
+	typeSlide,
+	typeVideo, 
+	typeAudio
 };
 
 struct _rel

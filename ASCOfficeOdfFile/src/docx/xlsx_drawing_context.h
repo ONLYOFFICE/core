@@ -111,7 +111,7 @@ public:
 
 	std::vector<odf_reader::_property> & get_properties();
 
-	std::wstring add_hyperlink(std::wstring const & ref, bool object);
+	std::wstring add_hyperlink(std::wstring const & ref);
 
 	void set_use_image_replacement();
 	
@@ -124,6 +124,10 @@ public:
     xlsx_drawings_ptr get_drawings();
     
 	void process_objects(xlsx_table_metrics & table_metrics);
+
+	void start_action(std::wstring action);
+		void set_link(std::wstring link, RelsType typeRels = typeHyperlink); 
+	void end_action();
 
 private:
     class Impl;

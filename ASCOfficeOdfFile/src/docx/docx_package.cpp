@@ -223,7 +223,7 @@ void docx_charts_files::write(const std::wstring & RootPath)
         if (item)
         {
             count++;
-            const std::wstring fileName = std::wstring(L"chart") + boost::lexical_cast<std::wstring>(count) + L".xml";
+            const std::wstring fileName = std::wstring(L"chart") + std::to_wstring(count) + L".xml";
 			const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
            
 			content_type_content * contentTypes = get_main_document()->get_content_types_file().content();           

@@ -91,11 +91,11 @@ std::wstring process_border(const border_style	& borderStyle,
         int szInt = (int)(0.5 + 8.0 * width); //eighths of a point (ST_EighthPointMeasure)
         if (szInt <= 0)      szInt = 1;
 
-		w_sz = boost::lexical_cast<std::wstring>( szInt );
+		w_sz = std::to_wstring( szInt );
 		w_color = borderStyle.get_color().get_hex_value() ;
 
         if (borderPadding)
-            w_space = boost::lexical_cast<std::wstring>((int)(borderPadding->get_value_unit(length::pt) + 0.5) );
+            w_space = std::to_wstring((int)(borderPadding->get_value_unit(length::pt) + 0.5) );
 
         switch(borderStyle.get_style())
         {
@@ -135,7 +135,7 @@ std::wstring process_margin(const _CP_OPT(length_or_percent) & margin, double Mu
         if (margin->get_type() == length_or_percent::Length)
         {
             int val = (int)(0.5 + Mul * margin->get_length().get_value_unit(length::pt));
-            return boost::lexical_cast<std::wstring>( val );
+            return std::to_wstring( val );
         }
         else
         {
@@ -950,7 +950,7 @@ std::wstring process_page_margin(const _CP_OPT(length_or_percent)	& Val,
     double dAddVal = 20.0 * AddVal.get_value_or(length(0, length::pt)).get_value_unit(length::pt) + 0.5;
 
 	if (dAddVal < 0 ) dAddVal = 0;
-    return boost::lexical_cast<std::wstring>( (int)( v + dAddVal));
+    return std::to_wstring( (int)( v + dAddVal));
 }
 
 }
@@ -979,7 +979,7 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
 		{
 			int val = 0.5 + 20.0 * fo_page_height_->get_value_unit(length::pt);
 			if (val > 31680) val =31680;//22"
-			w_h = boost::lexical_cast<std::wstring>(val);
+			w_h = std::to_wstring(val);
 
 			height_page = val;
 		}
@@ -1153,7 +1153,7 @@ void style_page_layout_properties_attlist::pptx_convert(oox::pptx_conversion_con
 			w =  fo_page_width_->get_value_unit(length::emu);
 			if (w < 914400) w = 914400;
 
-			w_w = boost::lexical_cast<std::wstring>(w);
+			w_w = std::to_wstring(w);
 		}
         if (fo_page_height_)
 		{
@@ -1391,7 +1391,7 @@ void style_page_layout_properties::pptx_serialize(std::wostream & strm, oox::ppt
 			w =  attlist_.fo_page_width_->get_value_unit(length::emu);
 			if (w < 914400) w = 914400;
 
-			w_w = boost::lexical_cast<std::wstring>(w);
+			w_w = std::to_wstring(w);
 		}
         if (attlist_.fo_page_height_)
 		{

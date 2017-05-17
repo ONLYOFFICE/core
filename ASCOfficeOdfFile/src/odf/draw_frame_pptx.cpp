@@ -92,6 +92,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
     const std::wstring name				= common_draw_attlist_.draw_name_.get_value_or(L"");
     const std::wstring textStyleName	= common_draw_attlist_.draw_text_style_name_.get_value_or(L"");
 
+	Context.get_slide_context().set_name(name);
 //////////////////////////////////////////////////////////////////////////
 	const _CP_OPT(length) svg_widthVal =  common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_;    
     const _CP_OPT(length) svg_heightVal = common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_;
@@ -248,9 +249,9 @@ void draw_text_box::pptx_convert(oox::pptx_conversion_context & Context)
 	
 	std::wstring text_content_ = Context.get_text_context().end_object();
 
-	if (text_content_.length()>0)
+	if (!text_content_.empty())
 	{
-		Context.get_slide_context().set_property(_property(L"text-content",text_content_));
+		Context.get_slide_context().set_property(_property(L"text-content", text_content_));
 	}
 }
 void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
@@ -358,6 +359,28 @@ void draw_object_ole::pptx_convert(oox::pptx_conversion_context & Context)
 		Context.get_slide_context().set_ole_object(href, detectObject(objectPath));
 }
 
+void draw_param::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	if (!draw_name_ && !draw_value_) return;
+
+	Context.get_slide_context().set_media_param(*draw_name_, *draw_value_);
+}
+
+void draw_plugin::pptx_convert(oox::pptx_conversion_context & Context)
+{
+//	Context.get_slide_context().set_use_image_replacement();
+//	
+//	std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
+//	std::wstring folderPath = Context.root()->get_folder();
+//	std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
+//
+//	Context.get_slide_context().set_media(href);
+////params	
+//	for (size_t i = 0; i < content_.size(); i++)
+//    {
+//        content_[i]->pptx_convert(Context);
+//    }
+}
 }
 }
 

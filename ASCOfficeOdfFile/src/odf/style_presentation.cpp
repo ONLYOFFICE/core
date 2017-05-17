@@ -42,12 +42,8 @@ namespace cpdoccore {
 
 namespace odf_reader {
 
-// 
-
-// style:chart-properties
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * presentation_placeholder::ns = L"presentation";
-const wchar_t * presentation_placeholder::name = L"placeholder";
+const wchar_t * presentation_placeholder::ns	= L"presentation";
+const wchar_t * presentation_placeholder::name	= L"placeholder";
 
 void presentation_placeholder::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -88,9 +84,26 @@ void presentation_placeholder::pptx_convert(oox::pptx_conversion_context & Conte
 
 	Context.get_slide_context().end_shape();
 }
+//-------------------------------------------------------------------------------------------------
+const wchar_t * presentation_sound::ns		= L"presentation";
+const wchar_t * presentation_sound::name	= L"sound";
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * style_drawing_page_properties::ns = L"style";
+void presentation_sound::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	common_xlink_attlist_.add_attributes(Attributes);
+}
+
+void presentation_sound::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_NOT_APPLICABLE_ELM();
+}
+
+void presentation_sound::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	Context.get_slide_context().set_link(common_xlink_attlist_.href_.get_value_or(L""), oox::typeAudio);
+}
+//-------------------------------------------------------------------------------------------------
+const wchar_t * style_drawing_page_properties::ns	= L"style";
 const wchar_t * style_drawing_page_properties::name = L"drawing-page-properties";
 
 void style_drawing_page_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -99,7 +112,10 @@ void style_drawing_page_properties::add_attributes( const xml::attributes_wc_ptr
 }
 void style_drawing_page_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    CP_NOT_APPLICABLE_ELM();
+	if CP_CHECK_NAME(L"presentation", L"sound")
+        CP_CREATE_ELEMENT(drawing_page_properties_.presentation_sound_);
+    else
+        CP_NOT_APPLICABLE_ELM();
 }
 
 void drawing_page_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -119,6 +135,7 @@ void drawing_page_properties::add_attributes( const xml::attributes_wc_ptr & Att
 	CP_APPLY_ATTR(L"presentation:display-page-number",	presentation_display_page_number_);
 	CP_APPLY_ATTR(L"presentation:display-date-time",	presentation_display_date_time_);
 	CP_APPLY_ATTR(L"presentation:display-header",		presentation_display_header_);
+	CP_APPLY_ATTR(L"presentation:page-duration",		presentation_page_duration_);
 }
 void drawing_page_properties::apply_from(const drawing_page_properties & Other)
 {
@@ -137,6 +154,8 @@ void drawing_page_properties::apply_from(const drawing_page_properties & Other)
 	_CP_APPLY_PROP2(presentation_display_page_number_);
 	_CP_APPLY_PROP2(presentation_display_date_time_);
 	_CP_APPLY_PROP2(presentation_display_header_);
+	
+	_CP_APPLY_PROP2(presentation_page_duration_);
 
 }
 }

@@ -140,7 +140,7 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, RelsType typ
 	if (type == typeOleObject && sExt.empty())
 		sExt = L".bin";
    
-	return get_default_file_name(type) + boost::lexical_cast<std::wstring>(Num) + sExt;
+	return get_default_file_name(type) + std::to_wstring(Num) + sExt;
 }
 
 std::wstring mediaitems::detectImageFileExtension(std::wstring &fileName)
@@ -219,7 +219,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 	{
 		if ( type == typeChart)
 		{
-			id = std::wstring(L"chId") + boost::lexical_cast<std::wstring>(count_charts + 1);
+			id = std::wstring(L"chId") + std::to_wstring(count_charts + 1);
 			count_charts++;
 		}
 		else if ( type == typeImage)
@@ -232,17 +232,17 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 //------------------------------------------------
 			if (inputFileName.empty()) return L"";
 
-			id = std::wstring(L"picId") + boost::lexical_cast<std::wstring>(count_image + 1);
+			id = std::wstring(L"picId") + std::to_wstring(count_image + 1);
 			count_image++;
 		}
 		else if ( type == typeMsObject || type == typeOleObject)
 		{
-			id = std::wstring(L"objId") + boost::lexical_cast<std::wstring>(count_object + 1);
+			id = std::wstring(L"objId") + std::to_wstring(count_object + 1);
 			count_object++;
 		}
 		else
 		{
-			id = std::wstring(L"rId") + boost::lexical_cast<std::wstring>(count_shape + 1);	
+			id = std::wstring(L"rId") + std::to_wstring(count_shape + 1);	
 			count_shape++;
 		}
 		

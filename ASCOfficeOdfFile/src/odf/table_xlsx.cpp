@@ -156,9 +156,9 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 					if (Context.get_table_context().state()->group_row_.enabled)
 					{
-						//std::wstring str_spans = boost::lexical_cast<std::wstring>(Context.get_table_context().state()->group_row_.count);
+						//std::wstring str_spans = std::to_wstring(Context.get_table_context().state()->group_row_.count);
 						//str_spans = str_spans + L":";
-						std::wstring str_spans = L"1:" + boost::lexical_cast<std::wstring>(Context.get_table_context().columns_count());
+						std::wstring str_spans = L"1:" + std::to_wstring(Context.get_table_context().columns_count());
 						ht = L"";
 
 						CP_XML_ATTR(L"collapsed",	Context.get_table_context().state()->group_row_.collapsed);

@@ -383,6 +383,38 @@ std::wstring draw_object::office_convert(odf_document * odfDocument, int type)
 	
 	return href_result;
 }
+// draw:param
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * draw_param::ns = L"draw";
+const wchar_t * draw_param::name = L"param";
+
+void draw_param::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"draw:name", draw_name_);
+	CP_APPLY_ATTR(L"draw:value", draw_value_);
+}
+
+void draw_param::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_NOT_APPLICABLE_ELM(); 
+}
+// draw:plugin
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * draw_plugin::ns = L"draw";
+const wchar_t * draw_plugin::name = L"plugin";
+
+void draw_plugin::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"draw:mime-type", draw_mime_type_);
+
+    common_xlink_attlist_.add_attributes(Attributes);
+}
+
+void draw_plugin::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(content_); 
+}
+
 
 }
 }

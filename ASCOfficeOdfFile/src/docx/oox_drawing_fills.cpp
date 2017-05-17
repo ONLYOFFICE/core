@@ -71,7 +71,7 @@ void oox_serialize_srgb(std::wostream & strm,std::wstring color,_CP_OPT(double) 
 			{
 				CP_XML_NODE(L"a:alpha")
 				{
-					CP_XML_ATTR(L"val", boost::lexical_cast<std::wstring>((int)(*opacity)*1000));// + L"%");
+					CP_XML_ATTR(L"val", std::to_wstring((int)(*opacity)*1000));// + L"%");
 				}
 			}
 		}
@@ -88,7 +88,7 @@ void oox_serialize_srgb(std::wostream & strm,std::wstring color,_CP_OPT(odf_type
 			{
 				CP_XML_NODE(L"a:alpha")
 				{
-					CP_XML_ATTR(L"val", boost::lexical_cast<std::wstring>((int)opacity->get_value()*1000));// + L"%");
+					CP_XML_ATTR(L"val", std::to_wstring((int)opacity->get_value()*1000));// + L"%");
 				}
 			}
 		}

@@ -62,7 +62,9 @@ struct drawing_object_description
     double									anchor_x_;
     double									anchor_y_;
 
+	_action_desc							action_;
 	std::vector<_hlink_desc>				hlinks_;
+
 	std::vector<odf_reader::_property>		additional_;	//shape properties
 	
 	std::wstring							xlink_href_;	//ссылка на внешний объект

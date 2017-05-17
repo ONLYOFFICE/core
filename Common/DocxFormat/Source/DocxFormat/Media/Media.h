@@ -53,7 +53,10 @@ namespace OOX
 		virtual ~Media()
 		{
 		}
-
+		virtual const FileType type() const
+		{
+			return FileTypes::Media;
+		}
 		virtual void read(const CPath& filename)
 		{
 			m_filename = filename;
@@ -78,7 +81,15 @@ namespace OOX
 		void copy_to(const CPath& path) const
 		{
 		}
-
+		virtual const CPath DefaultDirectory() const
+		{
+			if (m_bDocument) return type().DefaultDirectory();
+			else	return L"../" + type().DefaultDirectory();
+		}
+		virtual const CPath DefaultFileName() const
+		{
+			return m_filename.GetFilename();
+		}
 	protected:
 		CPath	m_filename;
 		bool	m_bDocument; //for upper/lower level rels (defaultDirectory)

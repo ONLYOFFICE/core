@@ -167,7 +167,7 @@ void odp_page_state::set_anim_type(std::wstring val)
 		anim_levels.back().attlist->presentation_node_type_ = L"timing-root";
 		if (transactions.empty() == false)
 		{
-			std::wstring slide_id = L"slide_id" + std::to_wstring(page_id_);
+			std::wstring slide_id = L"slide" + std::to_wstring(page_id_) + L"id";
 
 			draw_page* page = dynamic_cast<draw_page*>(page_elm_.get());
 			if (page) 
@@ -284,7 +284,7 @@ void odp_page_state::set_transition_sound(std::wstring ref, bool loop)
 		{
 			sound->common_xlink_attlist_.href_		= ref;
 			sound->common_xlink_attlist_.type_		= xlink_type::Simple;
-			sound->common_xlink_attlist_.show_		= xlink_show::New;
+			sound->common_xlink_attlist_.show_		= xlink_show::Embed;
 			sound->common_xlink_attlist_.actuate_	= xlink_actuate::OnRequest;
 		}
 	}

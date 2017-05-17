@@ -2424,12 +2424,29 @@ void odf_drawing_context::start_action(std::wstring value)
 		{
 			if (std::wstring::npos != value.find(L"previousslide"))
 				event_->attlist_.presentation_action_ = L"previous-page";
-			if (std::wstring::npos != value.find(L"nextslide"))
+			else if (std::wstring::npos != value.find(L"nextslide"))
 				event_->attlist_.presentation_action_ = L"next-page";
+			else if (std::wstring::npos != value.find(L"firstslide"))
+				event_->attlist_.presentation_action_ = L"first-page";
+			else if (std::wstring::npos != value.find(L"lastslide"))
+				event_->attlist_.presentation_action_ = L"last-page";
+			else if (std::wstring::npos != value.find(L"endshow"))
+				event_->attlist_.presentation_action_ = L"end";
+			else if (std::wstring::npos != value.find(L"endshow"))
+				event_->attlist_.presentation_action_ = L"end";
 		}
 		else if (std::wstring::npos != value.find(L"hlinksldjump"))
 		{
 			event_->attlist_.presentation_action_ = L"previous-page";
+		}
+		else if (std::wstring::npos != value.find(L"macro"))
+		{
+		}
+		else if (std::wstring::npos != value.find(L"hlinkfile"))
+		{
+		}
+		else if (std::wstring::npos != value.find(L"hlinkpres"))
+		{
 		}
 		else
 		{//hyperlink
@@ -2472,7 +2489,7 @@ void odf_drawing_context::add_sound(std::wstring href)
 	{
 		sound->common_xlink_attlist_.href_		= href;
 		sound->common_xlink_attlist_.type_		= xlink_type::Simple;
-		sound->common_xlink_attlist_.show_		= xlink_show::New;
+		sound->common_xlink_attlist_.show_		= xlink_show::Embed;
 		sound->common_xlink_attlist_.actuate_	= xlink_actuate::OnRequest;
 	}
 	end_element();

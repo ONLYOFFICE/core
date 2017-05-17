@@ -129,6 +129,8 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new OOX::Image(filename));
 		else if (relation.Type() == OOX::FileTypes::Audio)
 			return smart_ptr<OOX::File>(new OOX::Audio(filename));
+		else if (relation.Type() == OOX::FileTypes::Media)
+			return smart_ptr<OOX::File>(new OOX::Media(filename));
 		else if (relation.Type() == OOX::FileTypes::Video)
 			return smart_ptr<OOX::File>(new OOX::Video(filename));
 		else if (relation.Type() == OOX::FileTypes::Data) 

@@ -35,6 +35,7 @@
 #include <boost/lexical_cast.hpp>
  
 #include "office_spreadsheet.h"
+#include "office_scripts.h"
 #include "office_chart.h"
 
 #include "office_elements_create.h"
@@ -128,6 +129,10 @@ void odf_conversion_context::end_document()
 		process_settings(object, isRoot);
 
 		package::content_content_ptr content_root_ = package::content_content::create();		
+
+		if (objects_.back().scripts)
+			objects_.back().scripts->serialize(content_root_->styles());	
+
 		object.content->serialize(content_root_->content());	
 		BOOST_FOREACH(const office_element_ptr & elm, object.content_styles)
 		{
@@ -193,6 +198,8 @@ void odf_conversion_context::start_presentation()
 {
 	create_object();
 	create_element(L"office", L"presentation", objects_.back().content, this, true);
+
+	create_element(L"office", L"scripts", objects_.back().scripts, this);
 }
 void odf_conversion_context::create_object()
 {
@@ -295,6 +302,15 @@ std::wstring odf_conversion_context::add_image(const std::wstring & image_file_n
 	
 	std::wstring odf_ref_name ;	
 	mediaitems()->add_or_find(image_file_name,_mediaitems::typeImage, odf_ref_name);
+
+	return odf_ref_name;
+}
+std::wstring odf_conversion_context::add_media(const std::wstring & file_name)
+{
+	if (file_name.empty()) return L"";
+	
+	std::wstring odf_ref_name ;	
+	mediaitems()->add_or_find(file_name,_mediaitems::typeMedia, odf_ref_name);
 
 	return odf_ref_name;
 }

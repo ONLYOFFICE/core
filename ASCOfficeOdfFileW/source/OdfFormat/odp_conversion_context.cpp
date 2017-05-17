@@ -214,17 +214,7 @@ void odp_conversion_context::end_note()
 	current_slide().drawing_context()->end_element();
 	current_slide().drawing_context()->end_drawing();
 }
-void odp_conversion_context::start_timing()
-{
-	anim_state anim;
-	anim.elm = current_slide().page_elm_;
-	current_slide().anim_levels.push_back(anim);
-}
-void odp_conversion_context::end_timing()
-{
-	current_slide().anim_levels.pop_back();
-	
-}
+
 
 }
 }

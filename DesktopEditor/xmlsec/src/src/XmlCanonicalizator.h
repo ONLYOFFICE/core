@@ -1,12 +1,12 @@
 #ifndef _XML_CANONICALIZATOR_H_
 #define _XML_CANONICALIZATOR_H_
 
-#include "../../common/File.h"
-#include "../../common/Directory.h"
+#include "../../../common/File.h"
+#include "../../../common/Directory.h"
 
-#include "../../common/StringBuilder.h"
-#include "../../xml/include/xmlutils.h"
-#include "../../xml/libxml2/include/libxml/c14n.h"
+#include "../../../common/StringBuilder.h"
+#include "../../../xml/include/xmlutils.h"
+#include "../../../xml/libxml2/include/libxml/c14n.h"
 
 #ifndef XML_UNUSED
 #define XML_UNUSED( arg )  ( (arg) = (arg) )

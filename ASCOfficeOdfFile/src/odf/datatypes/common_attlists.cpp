@@ -804,28 +804,32 @@ void common_presentation_attlist::serialize(CP_ATTR_NODE)
 
 void common_anim_smil_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	CP_APPLY_ATTR(L"smil:direction",	smil_direction_);
-    CP_APPLY_ATTR(L"smil:subtype",		smil_subtype_);
-    CP_APPLY_ATTR(L"smil:type",			smil_type_);
-	CP_APPLY_ATTR(L"smil:dur",			smil_dur_);
+	CP_APPLY_ATTR(L"presentation:node-type",	presentation_node_type_);
+	CP_APPLY_ATTR(L"smil:direction",			smil_direction_);
+    CP_APPLY_ATTR(L"smil:begin",				smil_begin_);
+	CP_APPLY_ATTR(L"smil:end",					smil_end_);
+	CP_APPLY_ATTR(L"smil:restart",				smil_restart_);
+	CP_APPLY_ATTR(L"smil:dur",					smil_dur_);
 
 }
 void common_anim_smil_attlist::apply_from(const common_anim_smil_attlist & Other)
 {
+	_CP_APPLY_PROP(presentation_node_type_, Other.presentation_node_type_);
+
     _CP_APPLY_PROP(smil_direction_,		Other.smil_direction_);
-    _CP_APPLY_PROP(smil_subtype_,		Other.smil_subtype_);
-    _CP_APPLY_PROP(smil_type_,			Other.smil_type_);
+    _CP_APPLY_PROP(smil_begin_,			Other.smil_begin_);
+	_CP_APPLY_PROP(smil_end_,			Other.smil_end_);
+	_CP_APPLY_PROP(smil_restart_,		Other.smil_restart_);
     _CP_APPLY_PROP(smil_dur_,			Other.smil_dur_);
 }
 void common_anim_smil_attlist::serialize(CP_ATTR_NODE)
 {
 	CP_XML_ATTR_OPT(L"smil:direction",			smil_direction_);
-	CP_XML_ATTR_OPT(L"smil:subtype",			smil_subtype_);
-    CP_XML_ATTR_OPT(L"smil:type",				smil_type_);
 	CP_XML_ATTR_OPT(L"smil:restart",			smil_restart_);
 	CP_XML_ATTR_OPT(L"smil:dur",				smil_dur_);
 	CP_XML_ATTR_OPT(L"presentation:node-type",	presentation_node_type_);
 	CP_XML_ATTR_OPT(L"smil:begin",				smil_begin_);
+	CP_XML_ATTR_OPT(L"smil:end",				smil_end_);
 }
 void union_common_draw_attlists::serialize(CP_ATTR_NODE)
 {

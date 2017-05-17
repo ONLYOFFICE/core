@@ -360,6 +360,7 @@ public:
 		virtual PPTX::Theme										*oox_theme()	= 0;
 		virtual PPTX::Logic::ClrMap								*oox_clrMap()	{return NULL;}
        
+				std::wstring								find_link_by (NSCommon::smart_ptr<OOX::File> & oFile, int type);
 		virtual std::wstring								find_link_by_id(std::wstring sId, int t) = 0;
 		virtual NSCommon::smart_ptr<OOX::File>				find_file_by_id(std::wstring sId) = 0;
 		

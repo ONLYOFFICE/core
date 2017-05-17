@@ -86,19 +86,24 @@ CP_REGISTER_OFFICE_ELEMENT2(anim_seq);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //anim:iterate 
-//class anim_iterate : public office_element_impl<anim_iterate>//Итеративные анимации
+class anim_audio_attlist
+{
+public:
+	void serialize(CP_ATTR_NODE);
+	
+	_CP_OPT(std::wstring)			xlink_href_;
+	_CP_OPT(std::wstring)			anim_audio_level_; 
+};
 
 class anim_transition_filter_attlist
 {
 public:
 	void serialize(CP_ATTR_NODE);
 
-	_CP_OPT(std::wstring)						smil_direction_;
 	_CP_OPT(std::wstring)						smil_subtype_; 
 	_CP_OPT(odf_types::smil_transition_type)	smil_type_;
 	_CP_OPT(std::wstring)						smil_mode_;
 	_CP_OPT(odf_types::color)					smil_fadeColor_;
-	_CP_OPT(odf_types::clockvalue)				smil_dur_;
 };
 
 
@@ -116,11 +121,29 @@ public:
 
 	virtual void serialize(std::wostream & strm);
 ///////////////////////////////////////////////////////////	
-	anim_transition_filter_attlist attlist_;
+	odf_types::common_anim_smil_attlist		common_attlist_;
+	anim_transition_filter_attlist			filter_attlist_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(anim_transitionFilter);
 
-//anim:audio
+class anim_audio : public office_element_impl<anim_audio>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeAnimAudio;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element( const office_element_ptr & child){}
+
+	virtual void serialize(std::wostream & strm);
+///////////////////////////////////////////////////////////	
+	odf_types::common_anim_smil_attlist		common_attlist_;
+	anim_audio_attlist						audio_attlist_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(anim_audio);
 //anim:command
 
 }

@@ -3846,15 +3846,17 @@ public:
 		}
 		else if ( c_oSerFFData::EntryMacro == type )
 		{
+			std::wstring sVal = m_oBufferedStream.GetString3(length);
 			pFFData->m_oEntryMacro.Init();
 			pFFData->m_oEntryMacro->m_oVal.Init();
-			pFFData->m_oEntryMacro->m_oVal->SetValue(m_oBufferedStream.GetString3(length));
+			pFFData->m_oEntryMacro->m_oVal->SetValue(sVal);
 		}
 		else if ( c_oSerFFData::ExitMacro == type )
 		{
+			std::wstring sVal = m_oBufferedStream.GetString3(length);
 			pFFData->m_oExitMacro.Init();
 			pFFData->m_oExitMacro->m_oVal.Init();
-			pFFData->m_oExitMacro->m_oVal->SetValue(m_oBufferedStream.GetString3(length));
+			pFFData->m_oExitMacro->m_oVal->SetValue(sVal);
 		}
 		else if ( c_oSerFFData::HelpText == type )
 		{
@@ -3869,9 +3871,10 @@ public:
 		}
 		else if ( c_oSerFFData::Name == type )
 		{
+			std::wstring sVal = m_oBufferedStream.GetString3(length);
 			pFFData->m_oName.Init();
 			pFFData->m_oName->m_oVal.Init();
-			pFFData->m_oName->m_oVal->SetValue(m_oBufferedStream.GetString3(length));
+			pFFData->m_oName->m_oVal->SetValue(sVal);
 		}
 		else if ( c_oSerFFData::StatusText == type )
 		{
@@ -3960,8 +3963,9 @@ public:
 		}
 		else if ( c_oSerFFData::HTVal == type )
 		{
+			std::wstring sVal = m_oBufferedStream.GetString3(length);
 			pHelpText->m_oVal.Init();
-			pHelpText->m_oVal->SetValue(m_oBufferedStream.GetString3(length));
+			pHelpText->m_oVal->SetValue(sVal);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3978,8 +3982,9 @@ public:
 		}
 		else if ( c_oSerFFData::HTVal == type )
 		{
+			std::wstring sVal = m_oBufferedStream.GetString3(length);
 			pStatusText->m_oVal.Init();
-			pStatusText->m_oVal->SetValue(m_oBufferedStream.GetString3(length));
+			pStatusText->m_oVal->SetValue(sVal);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

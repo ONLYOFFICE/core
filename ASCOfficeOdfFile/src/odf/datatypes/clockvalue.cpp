@@ -41,8 +41,13 @@ namespace cpdoccore { namespace odf_types {
 
 std::wostream & operator << (std::wostream & _Wostream, const clockvalue & _Val)
 {
- //  5ms     = 5 milliseconds
-	_Wostream << _Val.get_value() << "ms"; // todoooo усложнить ..
+ //  5ms = 5 milliseconds
+	if (_Val.get_value() < 0)	
+		_Wostream << L"indefinite";
+	else
+	{
+		_Wostream << _Val.get_value() << "ms"; // todoooo усложнить ..
+	}
     return _Wostream;    
 }
 
@@ -120,15 +125,20 @@ static bool parseTime(const std::wstring & Time, double & Hours, double & Minute
 }
 clockvalue clockvalue::parse(const std::wstring & Str)
 {
-    int v=0;
+ 	if (Str == L"indefinite")
+		return clockvalue(-1);
+	else
+	{
+		int v=0;
 
-	int ms=0;
-	double h=0,m=0,s =0;
-	bool res = parseTime(Str,h,m,s,ms);
+		int ms=0;
+		double h=0,m=0,s =0;
+		bool res = parseTime(Str,h,m,s,ms);
 
-	v = (((h*60)+m)*60+s)*1000+ms;
+		v = (((h*60)+m)*60+s)*1000+ms;
 
-    return clockvalue(v);
+		return clockvalue(v);
+	}
 }
 
 

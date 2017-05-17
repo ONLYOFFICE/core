@@ -115,30 +115,20 @@ smart_ptr<OOX::File> XlsxConverter::find_file_by_id(std::wstring sId)
 }
 std::wstring XlsxConverter::find_link_by_id (std::wstring sId, int type)
 {
-    std::wstring ref;
+    smart_ptr<OOX::File>	oFile;
+	std::wstring			ref;
 
-	if (type == 1)
+	if (xlsx_current_container)
 	{
-		if (ref.empty() && xlsx_current_container)
-		{
-			smart_ptr<OOX::File> oFile = xlsx_current_container->Find(sId);
-			if (oFile.IsInit() && OOX::FileTypes::Image == oFile->type())
-			{
-				OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+		oFile	= xlsx_current_container->Find(sId);
+		ref		= OoxConverter::find_link_by(oFile, type);
+	}
+	if (!ref.empty()) return ref;
 
-				ref = pImage->filename().GetPath();
-			}
-		}
-        if (ref.empty() && oox_current_child_document)
-		{
-			smart_ptr<OOX::File> oFile = oox_current_child_document->Find(sId);
-			if (oFile.IsInit() && OOX::FileTypes::Image == oFile->type())
-			{
-				OOX::Image* pImage = (OOX::Image*)oFile.operator->();
-
-				ref = pImage->filename().GetPath();
-			}
-		}
+	if (oox_current_child_document)
+	{
+		oFile	= oox_current_child_document->Find(sId);
+		ref		= OoxConverter::find_link_by(oFile, type);
 	}
 	return ref;
 }

@@ -171,7 +171,6 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 {
 	if (!oox_picture)return;
 
-	bool bImage = true;
 	if (oox_picture->spPr.Geometry.is_init())
 	{
 		int type = SimpleTypes::shapetypeRect;
@@ -203,7 +202,33 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 			return;
 		}
 	}
+//--------------------------------------------------------------------------------------
+	if (oox_picture->nvPicPr.nvPr.media.is_init())
+	{
+		if (oox_picture->nvPicPr.nvPr.media.is<PPTX::Logic::MediaFile>())
+		{
+			PPTX::Logic::MediaFile & media = oox_picture->nvPicPr.nvPr.media.as<PPTX::Logic::MediaFile>();
 
+			std::wstring sID		= media.link.get();
+			std::wstring pathMedia	= find_link_by_id(sID, 3);
+			
+			std::wstring odf_ref	= odf_context()->add_media(pathMedia);
+
+			if (!odf_ref.empty())
+			{
+				odf_context()->drawing_context()->start_media(odf_ref);
+				//... params
+				
+				OoxConverter::convert(&oox_picture->nvPicPr.cNvPr);		
+				OoxConverter::convert(&oox_picture->spPr, oox_picture->style.GetPointer());
+				
+				odf_context()->drawing_context()->end_media();
+
+				return;
+			}			
+		}
+	}
+//--------------------------------------------------------------------------------------
 	std::wstring odf_ref;
 	std::wstring pathImage;
 	if (oox_picture->blipFill.blip.IsInit())
@@ -222,7 +247,6 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 			bEmbedded = false;
 		}
 	}
-
 	odf_context()->drawing_context()->start_image(odf_ref);
 	{
 		double Width = 0, Height = 0;
@@ -1120,6 +1144,22 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 	}
 	if (oox_cnvPr->hlinkClick.IsInit())
 	{
+		odf_context()->drawing_context()->start_action(oox_cnvPr->hlinkClick->action.get_value_or(L""));
+
+			if (oox_cnvPr->hlinkClick->snd.IsInit())
+			{
+				std::wstring sound = find_link_by_id(oox_cnvPr->hlinkClick->snd->embed.get(), 3);
+
+				std::wstring href = odf_context()->add_media(sound);				
+				odf_context()->drawing_context()->add_sound(href);	
+			}
+			if (oox_cnvPr->hlinkClick->id.IsInit())
+			{
+				std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2);
+				
+				odf_context()->drawing_context()->add_link(hlink);	
+			}
+		odf_context()->drawing_context()->end_action();
 	}
 	//nullable_string		title;
 	//nullable<Hyperlink>	hlinkHover;
@@ -1146,8 +1186,11 @@ void OoxConverter::convert(PPTX::Logic::NvCxnSpPr *oox_nvSpPr)
 void OoxConverter::convert(PPTX::Logic::NvPr *oox_nvPr)
 {
 	if (!oox_nvPr) return;
+	
+
 
 //ph уровнем выше
+
 }
 
 void OoxConverter::convert_list_level(PPTX::Logic::TextParagraphPr	*oox_para_props, int level)

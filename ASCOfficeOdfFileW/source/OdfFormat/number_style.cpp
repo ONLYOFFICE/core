@@ -123,6 +123,8 @@ void number_style_base::create_child_element( const std::wstring & Ns, const std
 }
 void number_style_base::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeStyleTextProperties)

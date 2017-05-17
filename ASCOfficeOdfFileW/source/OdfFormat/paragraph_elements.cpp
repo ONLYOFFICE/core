@@ -435,6 +435,8 @@ void text_note::create_child_element(  const std::wstring & Ns, const std::wstri
 }
 void text_note::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeTextNoteCitation)
@@ -487,6 +489,8 @@ void text_ruby::create_child_element( const std::wstring & Ns, const std::wstrin
 }
 void text_ruby::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeTextRubyBase)

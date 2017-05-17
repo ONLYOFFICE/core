@@ -161,6 +161,8 @@ void office_change_info::create_child_element( const std::wstring & Ns, const st
 }
 void office_change_info::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeDcCreator)

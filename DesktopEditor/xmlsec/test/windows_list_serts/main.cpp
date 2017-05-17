@@ -1,12 +1,10 @@
-#include "../../src/XmlCertificate.h"
-#include "../../src/OOXMLSigner.h"
-#include "../../src/OOXMLVerifier.h"
+#include "../../src/include/XmlCertificate.h"
+#include "../../src/include/OOXMLSigner.h"
+#include "../../src/include/OOXMLVerifier.h"
 
-#pragma comment (lib, "crypt32.lib")
-#pragma comment (lib, "cryptui.lib")
-#pragma comment (lib, "Advapi32.lib")
+#include "../../../common/File.h"
 
-void main(void)
+int main(void)
 {
     //std::wstring sFolderOOOXML = NSFile::GetProcessDirectory() + L"/ImageStamp";
     //std::wstring sSignId = L"{39B6B9C7-60AD-45A2-9F61-40C74A24042E}";
@@ -17,31 +15,35 @@ void main(void)
     {
         std::wstring sSignId = L"{9792D33F-AB37-4E5B-A465-481B9465818B}";
 
-        CCertificate oCertificate;
-        if (!oCertificate.ShowSelectDialog())
-            return;
+        ICertificate* pCertificate = ICertificate::CreateInstance();
+        if (!pCertificate->ShowSelectDialog())
+        {
+            RELEASEOBJECT(pCertificate);
+            return 0;
+        }
 
-        COOXMLSigner oOOXMLSigner(sFolderOOXML, &oCertificate);
+        COOXMLSigner oOOXMLSigner(sFolderOOXML, pCertificate);
 
         oOOXMLSigner.SetGuid(sSignId);
         oOOXMLSigner.SetImageValid(NSFile::GetProcessDirectory() + L"/../../../resources/valid.png");
         oOOXMLSigner.SetImageInvalid(NSFile::GetProcessDirectory() + L"/../../../resources/invalid.png");
 
         oOOXMLSigner.Sign();
+
+        RELEASEOBJECT(pCertificate);
     }
     else
     {
         COOXMLVerifier oVerifier(sFolderOOXML);
 
-        size_t nCount = oVerifier.m_arSignatures.size();
-        for (std::vector<COOXMLSignature*>::iterator i = oVerifier.m_arSignatures.begin(); i != oVerifier.m_arSignatures.end(); i++)
+        int nCount = oVerifier.GetSignatureCount();
+        for (int i = 0; i < nCount; i++)
         {
-            COOXMLSignature* pSign = *i;
+            COOXMLSignature* pSign = oVerifier.GetSignature(i);
             int nRes = pSign->GetValid();
-            XML_UNUSED(pSign);
-            XML_UNUSED(nRes);
+            pSign = pSign;
+            nRes = nRes;
         }
-
-        XML_UNUSED(nCount);
     }
+    return 0;
 }

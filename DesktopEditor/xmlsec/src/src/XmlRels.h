@@ -154,7 +154,7 @@ public:
         return builder.GetData();
     }
 
-    void CheckOriginSigs(std::wstring& file)
+    void CheckOriginSigs(const std::wstring& file)
     {
         int rId = 0;
         std::vector<COOXMLRelationship>::iterator i = rels.begin();

@@ -59,6 +59,8 @@ void anim_par::create_child_element(const std::wstring & Ns, const std::wstring 
 }
 void anim_par::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
 	if (type == typeAnimPar)
@@ -122,16 +124,18 @@ void anim_seq::add_child_element( const office_element_ptr & child)
 ////////////////////////////////////////////////////////////////
 void anim_transition_filter_attlist::serialize(CP_ATTR_NODE)
 {
-	CP_XML_ATTR_OPT(L"smil:direction",	smil_direction_);
     CP_XML_ATTR_OPT(L"smil:subtype",	smil_subtype_);
     CP_XML_ATTR_OPT(L"smil:type",		smil_type_);
 	CP_XML_ATTR_OPT(L"smil:fadeColor",	smil_fadeColor_);
 	CP_XML_ATTR_OPT(L"smil:mode",		smil_mode_);
-	CP_XML_ATTR_OPT(L"smil:dur",		smil_dur_);
 
 }
-
-const wchar_t * anim_transitionFilter::ns = L"anim";
+void anim_audio_attlist::serialize(CP_ATTR_NODE)
+{
+	CP_XML_ATTR_OPT(L"xlink:href",		xlink_href_);
+	CP_XML_ATTR_OPT(L"anim:audio-level",anim_audio_level_);
+}
+const wchar_t * anim_transitionFilter::ns	= L"anim";
 const wchar_t * anim_transitionFilter::name = L"transitionFilter";
 
 void anim_transitionFilter::serialize(std::wostream & _Wostream)
@@ -140,11 +144,26 @@ void anim_transitionFilter::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {   
-			attlist_.serialize(CP_GET_XML_NODE());
+			common_attlist_.serialize(CP_GET_XML_NODE());
+			filter_attlist_.serialize(CP_GET_XML_NODE());
+		}
+	}
+}
+//------------------------------------------------------------------------------------------------
+const wchar_t * anim_audio::ns = L"anim";
+const wchar_t * anim_audio::name = L"audio";
+
+void anim_audio::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {   
+			common_attlist_.serialize(CP_GET_XML_NODE());
+			audio_attlist_.serialize(CP_GET_XML_NODE());
 		}
 	}
 }
 
-////////////////////////////////////////////////////////////////
 }
 }

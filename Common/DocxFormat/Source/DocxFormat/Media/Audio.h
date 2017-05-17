@@ -45,6 +45,7 @@ namespace OOX
 		}
 		Audio(const CPath& filename)
 		{
+			read(filename);
 		}
 		virtual ~Audio()
 		{

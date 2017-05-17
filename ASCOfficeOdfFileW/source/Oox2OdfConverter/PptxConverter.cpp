@@ -168,43 +168,20 @@ NSCommon::smart_ptr<OOX::File> PptxConverter::find_file_by_id(std::wstring sId)
 
 std::wstring PptxConverter::find_link_by_id (std::wstring sId, int type)
 {
-    std::wstring ref;
+	if(!pptx_document) return L"";
 
-    if (ref.empty() && oox_current_child_document)
+    std::wstring			ref;
+	smart_ptr<OOX::File>	oFile;
+
+	if (oox_current_child_document)
 	{
-		smart_ptr<OOX::File> oFile = oox_current_child_document->Find(sId);
-		if (oFile.IsInit())
-		{		
-			if (type==1 && OOX::FileTypes::Image == oFile->type())
-			{
-				OOX::Image* pImage = (OOX::Image*)oFile.operator->();
-
-				ref = pImage->filename().GetPath();
-			}
-			if (type==2 && oFile.IsInit() && OOX::FileTypes::HyperLink == oFile->type())
-			{
-				OOX::HyperLink* pHyperlink = (OOX::HyperLink*)oFile.operator->();
-
-				ref = pHyperlink->Uri().GetPath();
-			}
-		}
+		oFile	= oox_current_child_document->Find(sId);
+		ref		= OoxConverter::find_link_by(oFile, type);
 	}
-	smart_ptr<OOX::File> oFile = current_slide ? current_slide->Find(sId) : pptx_document->Find(sId);
-    if (ref.empty() && oFile.IsInit())
-	{
-		if (type==1 && OOX::FileTypes::Image == oFile->type())
-		{
-			OOX::Image* pImage = (OOX::Image*)oFile.operator->();
+	if (!ref.empty()) return ref;
 
-			ref = pImage->filename().GetPath();
-		}
-		if (type == 2 && OOX::FileTypes::HyperLink == oFile->type())
-		{
-			OOX::HyperLink* pHyperlink = (OOX::HyperLink*)oFile.operator->();
-
-			ref = pHyperlink->Uri().GetPath();
-		}
-	}
+	oFile	= current_slide ? current_slide->Find(sId) : pptx_document->Find(sId);
+	ref		= OoxConverter::find_link_by(oFile, type);
 
 	return ref;
 }
@@ -378,8 +355,8 @@ void PptxConverter::convert_slides()
 					if (slide->Layout->transition.IsInit())	convert	(slide->Layout->transition.GetPointer());
 					else									convert	(slide->Master->transition.GetPointer());
 					
-					if (slide->Layout->timing.IsInit())		convert	(slide->Layout->timing.GetPointer());
-					else									convert	(slide->Master->timing.GetPointer());
+					//if (slide->Layout->timing.IsInit())	convert	(slide->Layout->timing.GetPointer());
+					//else									convert	(slide->Master->timing.GetPointer());
 
 					if (!presentation->notesMasterIdLst.empty())
 					{
@@ -430,7 +407,7 @@ void PptxConverter::convert_slides()
 		convert			(slide->Note.operator->());
 		
 		convert			(slide->transition.GetPointer());
-		convert			(slide->timing.GetPointer());
+		//convert		(slide->timing.GetPointer());
 
 
 		odp_context->end_slide();
@@ -577,15 +554,15 @@ void PptxConverter::convert( PPTX::Logic::Transition *oox_transition )
 	
 	convert(oox_transition->base.base.operator->());
 	
-	//if (oox_transition->sndAc.is_init() && oox_transition->sndAc->stSnd.is_init())
-	//{
-	//	std::wstring sID = oox_transition->sndAc->stSnd->embed->get();
-	//	pathAudio = find_link_by_id(sID, 1);
-	//	
-	//	std::wstring odf_ref = odf_context()->add_media(pathAudio);
+	if (oox_transition->sndAc.is_init() && oox_transition->sndAc->stSnd.is_init())
+	{
+		std::wstring sID		= oox_transition->sndAc->stSnd->embed.get();
+		std::wstring pathAudio	= find_link_by_id(sID, 3);
+		
+		std::wstring odf_ref	= odf_context()->add_media(pathAudio);
 
-	//	odp_context->current_slide().set_transition_sound(odf_ref, oox_transition->sndAc->stSnd->loop.get_value_or(false));
-	//}
+		odp_context->current_slide().set_transition_sound(odf_ref, oox_transition->sndAc->stSnd->loop.get_value_or(false));
+	}
 
 	odp_context->current_slide().end_transition();
 }
@@ -594,14 +571,14 @@ void PptxConverter::convert(PPTX::Logic::Timing *oox_timing)
 	if (!oox_timing) return;
 	if (!oox_timing->tnLst.IsInit()) return;
 	
-	odp_context->start_timing();
+	odp_context->current_slide().start_timing();
 	for (size_t i = 0; i < oox_timing->tnLst->list.size(); i++)
 	{
 		if (oox_timing->tnLst->list[i].is_init() == false) continue;
 
 		convert(&oox_timing->tnLst->list[i]);
 	}
-	odp_context->end_timing();
+	odp_context->current_slide().end_timing();
 }
 void PptxConverter::convert(PPTX::Logic::TimeNodeBase *oox_time_base)
 {
@@ -630,7 +607,10 @@ void PptxConverter::convert(PPTX::Logic::EmptyTransition *oox_transition)
 	if (oox_transition->name == L"random")
 		odp_context->current_slide().set_transition_type(40);
 	if (oox_transition->name == L"circle")
+	{
 		odp_context->current_slide().set_transition_type(16);
+		odp_context->current_slide().set_transition_subtype(L"circle");
+	}
 	if (oox_transition->name == L"dissolve")
 		odp_context->current_slide().set_transition_type(39);
 	if (oox_transition->name == L"diamond")
@@ -639,9 +619,12 @@ void PptxConverter::convert(PPTX::Logic::EmptyTransition *oox_transition)
 		odp_context->current_slide().set_transition_subtype(L"diamond");
 	}
 	if (oox_transition->name == L"newsflash")
-		odp_context->current_slide().set_transition_type(5);
+		odp_context->current_slide().set_transition_type(24);
 	if (oox_transition->name == L"plus")
-		odp_context->current_slide().set_transition_type(2);//??
+	{
+		odp_context->current_slide().set_transition_type(19);
+		odp_context->current_slide().set_transition_subtype(L"fourPoint");
+	}
 	if (oox_transition->name == L"wedge")
 		odp_context->current_slide().set_transition_type(24);
 }
@@ -649,10 +632,6 @@ void PptxConverter::convert(PPTX::Logic::OrientationTransition *oox_transition)
 {
 	if (!oox_transition) return;
 
-	if (oox_transition->name == L"blinds")
-		odp_context->current_slide().set_transition_type(38);
-	if (oox_transition->name == L"checker")
-		odp_context->current_slide().set_transition_type(37);
 	if (oox_transition->name == L"comb")
 	{
 		odp_context->current_slide().set_transition_type(34);
@@ -665,8 +644,23 @@ void PptxConverter::convert(PPTX::Logic::OrientationTransition *oox_transition)
 				odp_context->current_slide().set_transition_subtype(L"combVertical");
 		}
 	}
-	if (oox_transition->name == L"randomBar")
-		odp_context->current_slide().set_transition_type(40);
+	else
+	{
+		if (oox_transition->name == L"blinds")
+			odp_context->current_slide().set_transition_type(38);
+		else if (oox_transition->name == L"checker")
+			odp_context->current_slide().set_transition_type(37);
+		else if (oox_transition->name == L"randomBar")
+			odp_context->current_slide().set_transition_type(40);
+		
+		//if (oox_transition->dir.IsInit())
+		//{
+		//	if (oox_transition->dir->get() == L"horz")
+		//		odp_context->current_slide().set_transition_subtype(L"combHorizontal");
+		//	if (oox_transition->dir->get() == L"vert")
+		//		odp_context->current_slide().set_transition_subtype(L"combVertical");
+		//}
+	}
 }
 void PptxConverter::convert(PPTX::Logic::EightDirectionTransition	*oox_transition)
 {
@@ -676,6 +670,19 @@ void PptxConverter::convert(PPTX::Logic::EightDirectionTransition	*oox_transitio
 		odp_context->current_slide().set_transition_type(1);
 	if (oox_transition->name == L"pull")
 		odp_context->current_slide().set_transition_type(35);
+
+	if (oox_transition->dir.IsInit())
+	{
+			 if (oox_transition->dir->get() == L"d")	odp_context->current_slide().set_transition_subtype(L"fromTop");
+		else if (oox_transition->dir->get() == L"l")	odp_context->current_slide().set_transition_subtype(L"fromRight");
+		else if (oox_transition->dir->get() == L"r")	odp_context->current_slide().set_transition_subtype(L"fromLeft");
+		else if (oox_transition->dir->get() == L"u")	odp_context->current_slide().set_transition_subtype(L"fromBottom");
+
+		else if (oox_transition->dir->get() == L"rd")	odp_context->current_slide().set_transition_subtype(L"horizontalLeft");
+		else if (oox_transition->dir->get() == L"lu")	odp_context->current_slide().set_transition_subtype(L"horizontalRight");
+		else if (oox_transition->dir->get() == L"ld")	odp_context->current_slide().set_transition_subtype(L"verticalRight");
+		else if (oox_transition->dir->get() == L"ru")	odp_context->current_slide().set_transition_subtype(L"verticalLeft");
+	}
 }
 void PptxConverter::convert(PPTX::Logic::OptionalBlackTransition *oox_transition)
 {
@@ -690,19 +697,18 @@ void PptxConverter::convert(PPTX::Logic::SideDirectionTransition *oox_transition
 {
 	if (!oox_transition) return;
 
-	std::wstring dir;
-	if (oox_transition->dir.IsInit()) dir = oox_transition->dir->get();
-	
 	if (oox_transition->name == L"push")
-	{
 		odp_context->current_slide().set_transition_type(34);
-		if (dir == L"d") odp_context->current_slide().set_transition_subtype(L"fromTop");
-		if (dir == L"l") odp_context->current_slide().set_transition_subtype(L"fromRight");
-		if (dir == L"r") odp_context->current_slide().set_transition_subtype(L"fromLeft");
-		if (dir == L"u") odp_context->current_slide().set_transition_subtype(L"fromBottom");
-	}
 	if (oox_transition->name == L"wipe")
 		odp_context->current_slide().set_transition_type(0);
+	
+	if (oox_transition->dir.IsInit())
+	{
+			 if (oox_transition->dir->get() == L"d")	odp_context->current_slide().set_transition_subtype(L"fromTop");
+		else if (oox_transition->dir->get() == L"l")	odp_context->current_slide().set_transition_subtype(L"fromRight");
+		else if (oox_transition->dir->get() == L"r")	odp_context->current_slide().set_transition_subtype(L"fromLeft");
+		else if (oox_transition->dir->get() == L"u")	odp_context->current_slide().set_transition_subtype(L"fromBottom");
+	}
 }
 void PptxConverter::convert(PPTX::Logic::CornerDirectionTransition	*oox_transition)
 {
@@ -712,16 +718,17 @@ void PptxConverter::convert(PPTX::Logic::CornerDirectionTransition	*oox_transiti
 
 	if (oox_transition->dir.IsInit())
 	{
-		if (oox_transition->dir->get() == L"rd") odp_context->current_slide().set_transition_subtype(L"horizontalLeft");
-		if (oox_transition->dir->get() == L"lu") odp_context->current_slide().set_transition_subtype(L"horizontalRight");
-		if (oox_transition->dir->get() == L"ld") odp_context->current_slide().set_transition_subtype(L"verticalRight");
+			 if (oox_transition->dir->get() == L"rd") odp_context->current_slide().set_transition_subtype(L"horizontalLeft");
+		else if (oox_transition->dir->get() == L"lu") odp_context->current_slide().set_transition_subtype(L"horizontalRight");
+		else if (oox_transition->dir->get() == L"ld") odp_context->current_slide().set_transition_subtype(L"verticalRight");
+		else if (oox_transition->dir->get() == L"ru") odp_context->current_slide().set_transition_subtype(L"verticalLeft");
 	}
 }
 void PptxConverter::convert(PPTX::Logic::WheelTransition *oox_transition)
 {
 	if (!oox_transition) return;
 	//name == wheel
-	odp_context->current_slide().set_transition_type(21);
+	odp_context->current_slide().set_transition_type(22);
 
 	switch (oox_transition->spokes.get_value_or(0))
 	{
@@ -758,7 +765,10 @@ void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 	}
 	if (oox_time_common->dur.IsInit())
 	{
-		odp_context->current_slide().set_anim_duration(*oox_time_common->dur);
+		if (*oox_time_common->dur == L"indefinite")
+			odp_context->current_slide().set_anim_duration(-1);
+		else
+			odp_context->current_slide().set_anim_duration(XmlUtils::GetInteger(*oox_time_common->dur));
 	}
 	if (oox_time_common->restart.IsInit())
 	{

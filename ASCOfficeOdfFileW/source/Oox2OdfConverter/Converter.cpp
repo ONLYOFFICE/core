@@ -304,28 +304,31 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
         _CP_LOG << L"[error] :  no convert element(" << (oox_unknown ? oox_unknown->getType() : -1 ) << L")\n";
 	}
 }
+std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type)
+{
+	if (!oFile.IsInit()) return L"";
+	
+    std::wstring ref;
+	if (type == 1 && OOX::FileTypes::Image == oFile->type())
+	{
+		OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 
-//void OoxConverter::convert(OOX::Drawing::CLockedCanvas  *oox_canvas)
-//{
-//	if (oox_canvas == NULL)return;
-//
-//	odf_context()->drawing_context()->start_group();
-//		if (oox_canvas->m_oNvGroupSpPr.IsInit() && oox_canvas->m_oNvGroupSpPr->m_oCNvPr.IsInit())
-//		{	
-//			if (oox_canvas->m_oNvGroupSpPr->m_oCNvPr->m_sName.IsInit())
-//				odf_context()->drawing_context()->set_group_name(*oox_canvas->m_oNvGroupSpPr->m_oCNvPr->m_sName);
-//			if (oox_canvas->m_oNvGroupSpPr->m_oCNvPr->m_oId.IsInit())
-//				odf_context()->drawing_context()->set_group_z_order(oox_canvas->m_oNvGroupSpPr->m_oCNvPr->m_oId->GetValue());
-//		}
-//		convert(oox_canvas->m_oGroupSpPr.GetPointer());
-//		convert(oox_canvas->m_oSpPr.GetPointer());
-//
-//		for (size_t i = 0; i < oox_canvas->m_arrItems.size(); i++)
-//		{
-//			convert(oox_canvas->m_arrItems[i]);
-//		}
-//	odf_context()->drawing_context()->end_group();
-//}
+		ref = pImage->filename().GetPath();
+	}
+	if (type == 2 && OOX::FileTypes::HyperLink == oFile->type())
+	{
+		OOX::HyperLink* pHyperlink = (OOX::HyperLink*)oFile.operator->();
+		if (pHyperlink->bHyperlink)
+			ref = pHyperlink->Uri().GetPath();
+	}
+	if (type == 3)
+	{
+		OOX::Media* pMedia = (OOX::Media*)oFile.operator->();
+
+		ref = pMedia->filename().GetPath();
+	}
+	return ref;
+}
 
 bool OoxConverter::convert(std::wstring sSchemeColor, DWORD & argb)
 {

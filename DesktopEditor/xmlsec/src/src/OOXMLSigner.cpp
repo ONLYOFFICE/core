@@ -40,7 +40,8 @@ public:
         std::wstring sXml = L"<Reference URI=\"" + file + L"?ContentType=" + content_type + L"\">";
         sXml += L"<DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/>";
         sXml += L"<DigestValue>";
-        sXml += UTF8_TO_U(m_certificate->GetHash(m_sFolder + file, OOXML_HASH_ALG_SHA1));
+        std::string sTmp = m_certificate->GetHash(m_sFolder + file, OOXML_HASH_ALG_SHA1);
+        sXml += UTF8_TO_U(sTmp);
         sXml += L"</DigestValue>";
         sXml += L"</Reference>";
         return sXml;

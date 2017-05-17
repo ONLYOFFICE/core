@@ -91,3 +91,5 @@
 #include "../source/OdfFormat/odp_slide_context.cpp"
 #include "../source/OdfFormat/office_presentation.cpp"
 #include "../source/OdfFormat/style_presentation.cpp"
+#include "../source/OdfFormat/office_scripts.cpp"
+#include "../source/OdfFormat/office_event_listeners.cpp"

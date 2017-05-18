@@ -131,7 +131,7 @@ void table_format_properties::docx_convert(oox::docx_conversion_context & Contex
 			}
 		}
         else //if (table_align_->get_type() == table_align::Center)
-            w_val = boost::lexical_cast<std::wstring>(*table_align_);
+			w_val = boost::lexical_cast<std::wstring>(*table_align_);
 
         _tblPr << L"<w:jc w:val=\"" << w_val << "\" />";
     }
@@ -432,7 +432,7 @@ void insert_cell_border(oox::docx_conversion_context & Context,
 				else if (w_sz_ > 96.0)
 					w_sz_ = 96.0;
 
-				w_sz = boost::lexical_cast<std::wstring>( w_sz_ );
+				w_sz = std::to_wstring( w_sz_ );
 			}
         } 
     }
@@ -510,7 +510,7 @@ void insert_cell_border(oox::pptx_conversion_context & Context,
             else if (w_sz_ > 96.0)
                 w_sz_ = 96.0;
 
-            w_sz = boost::lexical_cast<std::wstring>( w_sz_ );
+            w_sz = std::to_wstring( w_sz_ );
             
         } 
         while (0);

@@ -516,23 +516,24 @@ void _oox_drawing::serialize_xfrm(std::wostream & strm, const std::wstring & nam
 		}
     }
 }
-void oox_serialize_hlink(std::wostream & strm, std::vector<_hlink_desc> const & val)
+void oox_serialize_action(std::wostream & strm, _action_desc const & val)
 {
+	if (val.enabled == false) return;
+
     CP_XML_WRITER(strm)
     {
-		BOOST_FOREACH(const _hlink_desc & h, val)
+		CP_XML_NODE(L"a:hlinkClick")
 		{
-			if (h.in_object == true)
-			{
-				CP_XML_NODE(L"a:hlinkClick")
-				{
-					CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-					CP_XML_ATTR(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");
-					
-					CP_XML_ATTR(L"r:id", h.hId);
-				}
-				break;
-			}
+			//CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+			//CP_XML_ATTR(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");
+			
+			CP_XML_ATTR(L"r:id", val.hId);
+
+			if (!val.action.empty())
+				CP_XML_ATTR(L"action", val.action);
+			
+			if (val.highlightClick)
+				CP_XML_ATTR(L"highlightClick", val.highlightClick);
 		}
 	}
 }

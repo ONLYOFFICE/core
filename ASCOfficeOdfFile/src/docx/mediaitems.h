@@ -88,16 +88,19 @@ public:
 	{
 		switch (type)
 		{
-		case typeImage:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image";
-		case typeChart:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
-		case typeMsObject:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package";
-		case typeOleObject:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject";
-		case typeHyperlink:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink";
-		default:
-			return L"";
+			case typeImage:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image";
+			case typeChart:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
+			case typeMsObject:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package";
+			case typeOleObject:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject";
+			case typeHyperlink:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink";
+			case typeMedia:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/media";
+			case typeAudio:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio";
+			case typeVideo:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video";
+			case typeSlide:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide";
+			default:
+				return L"";
 		}
 	}
-
 private:
 	std::wstring create_file_name			(const std::wstring & uri, RelsType type, bool & isInternal, size_t Num);
 	std::wstring detectImageFileExtension	(std::wstring &fileName);

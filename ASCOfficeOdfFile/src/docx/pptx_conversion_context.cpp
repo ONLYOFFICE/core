@@ -195,7 +195,7 @@ void pptx_conversion_context::process_theme(std::wstring  name)
 
 	if (name.empty())
 	{
-		name = L"User Theme: " + boost::lexical_cast<std::wstring>(current);
+		name = L"User Theme: " + std::to_wstring(current);
 	}
  	start_theme(name);
 	//
@@ -489,7 +489,7 @@ bool pptx_conversion_context::start_layout(int layout_index)
 		root()->odf_context().styleContainer().presentation_masters().add_layout_to(layouts.content[layout_index].master_name,layouts.content[layout_index]);
 
 		current_layout().Rels().add(relationship(L"smId1"/*master_id.second*/, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster",
-			std::wstring(L"../slideMasters/slideMaster")  + boost::lexical_cast<std::wstring>(master_id.first) + L".xml"));
+			std::wstring(L"../slideMasters/slideMaster")  + std::to_wstring(master_id.first) + L".xml"));
 
 		//
 	}

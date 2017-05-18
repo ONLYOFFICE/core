@@ -51,10 +51,28 @@ namespace oox {
     {
         std::wstring hId;
         std::wstring hRef;
+   };
+    struct _action_desc
+    {
+		_action_desc() : enabled(false), highlightClick(false) {}
+		void clear()
+		{
+			enabled			= false;
+			highlightClick	= false;
+			
+			hId.clear(); 
+			hRef.clear();
+			action.clear();
+		}
+		bool			enabled;
         
-		bool in_object;
-    };
+		std::wstring	hId;
+        std::wstring	hRef;
+        std::wstring	action;
 
+		RelsType		typeRels;
+		bool			highlightClick;
+    };
 	class _oox_drawing
     {
 	public:
@@ -74,10 +92,12 @@ namespace oox {
 
         _oox_fill		fill;
 
-        std::wstring				objectId;
-		std::wstring				objectProgId; 
+        std::wstring	objectId;
+		std::wstring	objectProgId; 
 
-		std::vector<_hlink_desc>			hlinks;
+		_action_desc				action;
+		std::vector<_hlink_desc>	hlinks;
+
         std::vector<odf_reader::_property>	additional;
 
 		virtual void serialize	(std::wostream & strm) = 0;
@@ -90,7 +110,7 @@ namespace oox {
 
 	void oox_serialize_ln		(std::wostream & strm, const std::vector<odf_reader::_property> & val, bool always_draw = false);
 	void oox_serialize_aLst		(std::wostream & strm, const std::vector<odf_reader::_property> & val);
-    void oox_serialize_hlink	(std::wostream & strm, const std::vector<_hlink_desc> & val);
+    void oox_serialize_action	(std::wostream & strm, const _action_desc & val);
     
 }
 }

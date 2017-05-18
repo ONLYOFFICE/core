@@ -345,6 +345,7 @@ namespace NExtractTools
 		int* m_nDoctParams;
 		std::wstring* m_sHtmlFileInternalPath;
 		std::wstring* m_sPassword;
+		std::wstring* m_sTempDir;
 		//output params
 		mutable bool m_bOutputConvertCorrupted;
 	public:
@@ -369,6 +370,7 @@ namespace NExtractTools
 			m_nDoctParams = NULL;
 			m_sHtmlFileInternalPath = NULL;
 			m_sPassword = NULL;
+			m_sTempDir = NULL;
 
 			m_bOutputConvertCorrupted = false;
 		}
@@ -393,6 +395,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_nDoctParams);
 			RELEASEOBJECT(m_sHtmlFileInternalPath);
 			RELEASEOBJECT(m_sPassword);
+			RELEASEOBJECT(m_sTempDir);
 		}
 		
 		bool FromXmlFile(const std::wstring& sFilename)
@@ -479,6 +482,8 @@ namespace NExtractTools
 									m_sHtmlFileInternalPath = new std::wstring(sValue);
 								else if(_T("m_sPassword") == sName)
 									m_sPassword = new std::wstring(sValue);
+								else if(_T("m_sTempDir") == sName)
+									m_sTempDir = new std::wstring(sValue);
 							}
 							else if(_T("m_nCsvDelimiterChar") == sName)
 							{

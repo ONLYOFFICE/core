@@ -44,7 +44,8 @@ namespace oox {
 hyperlinks::_ref  hyperlinks::last()
 {
 	_ref r={};
-	if (hrefs_.size()>0)
+	
+	if (!hrefs_.empty())
 		r = hrefs_.back();
 
 	return r;
@@ -52,9 +53,9 @@ hyperlinks::_ref  hyperlinks::last()
 
 std::wstring hyperlinks::add(const std::wstring & href, _type_place type_place, bool drawing)
 {
-	std::wstring id = std::wstring(L"rHpId") + boost::lexical_cast<std::wstring>(hrefs_.size()+1);
+	std::wstring id = std::wstring(L"rHpId") + std::to_wstring(hrefs_.size() + 1);
 	
-	_ref r ={xml::utils::replace_text_to_xml(href), type_place, drawing, id, false};
+	_ref r = {xml::utils::replace_text_to_xml(href), type_place, drawing, id};
 	
 	hrefs_.push_back(r);
 
@@ -65,14 +66,14 @@ std::wstring hyperlinks::add(const std::wstring & href, _type_place type_place, 
 void hyperlinks::dump_rels(rels & Rels, _type_place type)
 {
     size_t i = 0;
-    BOOST_FOREACH(_ref & elm, hrefs_)
+    for (size_t i = 0; i < hrefs_.size(); i++)
     {
- 		if (elm.used_rels)continue; // уже использовали этот релс
+ 		if (hrefs_[i].used_rels)continue; // уже использовали этот релс
 
-		if (elm.type_place == type)
+		if (hrefs_[i].type_place == type)
 		{
-			Rels.add( relationship(elm.id, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink", elm.href, L"External" ) );
-			elm.used_rels = true;
+			Rels.add( relationship(hrefs_[i].id, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink", hrefs_[i].href, L"External" ) );
+			hrefs_[i].used_rels = true;
 		}
     }
 }

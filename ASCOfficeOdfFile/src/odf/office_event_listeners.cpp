@@ -47,8 +47,8 @@ namespace odf_reader {
 
 // office:event_listeners
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * office_event_listeners::ns = L"office";
-const wchar_t * office_event_listeners::name = L"event-listeners";
+const wchar_t * office_event_listeners::ns		= L"office";
+const wchar_t * office_event_listeners::name	= L"event-listeners";
 
 void office_event_listeners::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -56,18 +56,18 @@ void office_event_listeners::add_attributes( const xml::attributes_wc_ptr & Attr
 
 void office_event_listeners::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-	if	CP_CHECK_NAME(L"presentation", L"event-listener")
-        CP_CREATE_ELEMENT(presentation_event_listeners_);
-	else if CP_CHECK_NAME(L"script", L"event-listener")
-        CP_CREATE_ELEMENT(script_event_listeners_);
-    else
+	if	CP_CHECK_NAME (L"presentation", L"event-listener")
+        CP_CREATE_ELEMENT (presentation_event_listeners_);
+	else if CP_CHECK_NAME (L"script", L"event-listener")
+        CP_CREATE_ELEMENT (script_event_listeners_);
+	else
         CP_NOT_APPLICABLE_ELM();
 }
 void office_event_listeners::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, presentation_event_listeners_)
+    for (size_t i = 0; i < presentation_event_listeners_.size(); i++)
     {
-		elm->pptx_convert(Context);
+		presentation_event_listeners_[i]->pptx_convert(Context);
 	}
 }
 // presentation:event-listener-attlist
@@ -77,7 +77,7 @@ void presentation_event_listener_attlist::add_attributes( const xml::attributes_
 {
 	common_xlink_attlist_.add_attributes(Attributes);
 
-	CP_APPLY_ATTR(L"script:event_name", script_event_name_);
+	CP_APPLY_ATTR(L"script:event-name", script_event_name_);
 	CP_APPLY_ATTR(L"presentation:action", presentation_action_);
 	
 	//...
@@ -89,7 +89,7 @@ const wchar_t * presentation_event_listener::name = L"event-listener";
 
 void presentation_event_listener::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	presentation_event_listener_attlist_.add_attributes(Attributes);
+	attlist_.add_attributes(Attributes);
 }
 
 void presentation_event_listener::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -101,12 +101,16 @@ void presentation_event_listener::add_child_element( xml::sax * Reader, const st
 }
 void presentation_event_listener::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	common_xlink_attlist & xlink = presentation_event_listener_attlist_.common_xlink_attlist_;
+	Context.get_slide_context().start_action(attlist_.presentation_action_.get_value_or(L""));
+	
+	if (attlist_.common_xlink_attlist_.href_)
+		Context.get_slide_context().set_link(*attlist_.common_xlink_attlist_.href_);
 
-	if (xlink.href_)
+	if (presentation_sound_)
 	{
-		Context.get_slide_context().add_hyperlink(*xlink.href_,true);
+		presentation_sound_->pptx_convert(Context);
 	}
+	Context.get_slide_context().end_action();
 }
 
 // script:event-listener

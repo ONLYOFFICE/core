@@ -271,7 +271,7 @@ std::wstring GetLevelText(unsigned int displayLevels,
     if (displayLevels > 1)
         res += L".";
     res += L"%";
-    res += boost::lexical_cast<std::wstring>(textLevel);
+    res += std::to_wstring(textLevel);
     return res;
 }
 

@@ -75,7 +75,7 @@ public:
 	void set_placeHolder_type	(std::wstring typeHolder);
 	void set_placeHolder_idx	(int idx);
 
-	std::wstring add_hyperlink(std::wstring const & ref, bool object);
+	std::wstring add_hyperlink(std::wstring const & ref);
 
 	void start_frame();
 		void set_image		(const std::wstring & path);
@@ -83,7 +83,13 @@ public:
 		void set_ms_object	(const std::wstring & path, const std::wstring & progId);
 		void set_ole_object	(const std::wstring & path, const std::wstring & progId);
 		void set_text_box	();
+		void set_media		(const std::wstring & path);
+		void set_media_param(std::wstring name, std::wstring value);
 	void end_frame();
+
+	void start_action	(std::wstring action);
+		void set_link	(std::wstring link, RelsType typeRels = typeHyperlink); 
+	void end_action		();
 
  	void start_table();
     void end_table();

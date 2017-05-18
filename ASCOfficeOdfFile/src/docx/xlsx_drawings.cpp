@@ -50,10 +50,12 @@ public:
 		
 		add (isInternal, rid, ref, type, sheet_rel);
         
-		for (int i = 0 ; i < d.hlinks.size(); i++)
+        for (size_t i = 0; i < d.hlinks.size(); i++)
         {
 			xlsx_drawing_rels_.push_back(_rel(false, d.hlinks[i].hId, d.hlinks[i].hRef, typeHyperlink));
 		}
+		if (!d.action.hId.empty())
+ 			xlsx_drawing_rels_.push_back(_rel(false, d.action.hId, d.action.hRef, d.action.typeRels));
     }
     void add( bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type, bool sheet_rel) //не объект
     {

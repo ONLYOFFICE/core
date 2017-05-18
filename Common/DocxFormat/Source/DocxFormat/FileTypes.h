@@ -144,6 +144,10 @@ namespace OOX
 												_T(""), 
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/video"));
 
+		const FileType Media			(L"media", L"media", 
+												_T(""), 
+												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/media"));
+
 		const FileType Data				(L"diagrams", L"data.xml",
 												_T("application/vnd.openxmlformats-officedocument.drawingml.diagramData+xml"),
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramData"));

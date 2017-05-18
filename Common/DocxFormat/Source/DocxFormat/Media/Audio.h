@@ -50,8 +50,6 @@ namespace OOX
 		virtual ~Audio()
 		{
 		}
-
-	public:
 		virtual const FileType type() const
 		{
 			return FileTypes::Audio;

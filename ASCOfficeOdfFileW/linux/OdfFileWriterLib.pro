@@ -99,6 +99,8 @@ SOURCES += \
     ../source/OdfFormat/odf_settings_context.cpp \
     ../source/OdfFormat/office_settings.cpp \
     ../source/OdfFormat/mediaitems_utils.cpp \
+    ../source/OdfFormat/office_scripts.cpp \
+    ../source/OdfFormat/office_event_listeners.cpp \
     ../source/OdfFormat/anim_elements.cpp \
     ../source/OdfFormat/draw_page.cpp \
     ../source/OdfFormat/odp_conversion_context.cpp \
@@ -208,4 +210,6 @@ HEADERS += \
     ../source/OdfFormat/style_presentation.h \
     ../source/Oox2OdfConverter/PptxConverter.h \
     ../source/OdfFormat/anim_elements.h \
+    ../source/OdfFormat/office_event_listeners.h \
+    ../source/OdfFormat/office_scripts.h \
     ../source/OdfFormat/style_presentation.h

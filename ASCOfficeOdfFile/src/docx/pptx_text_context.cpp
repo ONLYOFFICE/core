@@ -631,7 +631,7 @@ void pptx_text_context::Impl::start_list_item(bool restart)
     if (restart && !list_style_stack_.empty())
     {
         const std::wstring curStyleName = current_list_style();
-        const std::wstring newStyleName = curStyleName + boost::lexical_cast<std::wstring>(new_list_style_number_++);
+        const std::wstring newStyleName = curStyleName + std::to_wstring(new_list_style_number_++);
         list_style_renames_[curStyleName] = newStyleName;
 
         odf_reader::list_style_container & lists = odf_context_.listStyleContainer();

@@ -65,11 +65,15 @@ public:
 		{
 			pptx_drawing_rels_.push_back(_rel(isInternal, rid, ref, type));
 		}
-        for (int i = 0; i < d.hlinks.size(); i++)
+        for (size_t i = 0; i < d.hlinks.size(); i++)
         {
 			pptx_drawing_rels_.push_back(_rel(false, d.hlinks[i].hId, d.hlinks[i].hRef, typeHyperlink));
 		}
-    }
+        if (!d.action.hId.empty())
+        {
+			pptx_drawing_rels_.push_back(_rel(false, d.action.hId, d.action.hRef, d.action.typeRels));
+		}    
+	}
 
     void add(/**/
         bool isInternal,

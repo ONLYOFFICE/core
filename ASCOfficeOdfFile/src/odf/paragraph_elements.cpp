@@ -555,7 +555,7 @@ void a::pptx_convert(oox::pptx_conversion_context & Context)
         elm->pptx_convert(Context);
     }
 	
-	std::wstring hId = Context.get_slide_context().add_hyperlink(common_xlink_attlist_.href_.get_value_or(L""),false);
+	std::wstring hId = Context.get_slide_context().add_hyperlink(common_xlink_attlist_.href_.get_value_or(L""));
 	Context.get_text_context().end_hyperlink(hId);
 
 }

@@ -100,7 +100,7 @@ void slide_content::add_rels(rels & _r)
 {
 	std::vector<relationship> & r =  _r.relationships();
 	
-	for (int i = 0; i < r.size(); i++)
+	for (size_t i = 0; i < r.size(); i++)
 	{
 		rels_->get_rels().add(r[i]);
 	}

@@ -128,7 +128,7 @@ void sheets_files::write(const std::wstring & RootPath)
         if (item)
         {
             count++;
-            const std::wstring fileName		= std::wstring(L"sheet") + boost::lexical_cast<std::wstring>(count) + L".xml";
+            const std::wstring fileName		= std::wstring(L"sheet") + std::to_wstring(count) + L".xml";
 			const std::wstring kWSConType	= L"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml";
             
 			content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
@@ -136,7 +136,7 @@ void sheets_files::write(const std::wstring & RootPath)
 
             if (rels_)
             {
-                const std::wstring id = std::wstring(L"sId") + boost::lexical_cast<std::wstring>(count);
+                const std::wstring id = std::wstring(L"sId") + std::to_wstring(count);
                 static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet";
                 const std::wstring fileRef = std::wstring(L"worksheets/") + fileName;
                 rels_->add(id, kWSRel, fileRef);
@@ -286,7 +286,7 @@ void xl_charts_files::write(const std::wstring & RootPath)
         if (item)
         {
             count++;
-            const std::wstring fileName = std::wstring(L"chart") + boost::lexical_cast<std::wstring>(count) + L".xml";
+            const std::wstring fileName = std::wstring(L"chart") + std::to_wstring(count) + L".xml";
             content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
            
 			static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";

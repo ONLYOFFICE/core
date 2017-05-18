@@ -56,18 +56,6 @@ std::wostream & relationship::xml_to_stream(std::wostream & _Wostream) const
                 CP_XML_ATTR(L"TargetMode", target_mode());
         }    
     }
-
-    //_Wostream << L"<Relationship ";
-    //CP_XML_SERIALIZE_ATTR(L"Id", id());
-    //CP_XML_SERIALIZE_ATTR(L"Type", type());
-    //CP_XML_SERIALIZE_ATTR(L"Target", target());
-    //
-    //if (!target_mode().empty())
-    //{
-    //    CP_XML_SERIALIZE_ATTR(L"TargetMode", target_mode());
-    //}
-
-    //_Wostream << L" />";
     return _Wostream;
 }
 
@@ -82,23 +70,12 @@ std::wostream & rels::xml_to_stream(std::wostream & _Wostream) const
         {
             CP_XML_ATTR(L"xmlns", xmlns::rels.value);
 
-            BOOST_FOREACH(const relationship & r, relationship_)
+            for (size_t i = 0; i < relationship_.size(); i++)
             {
-                r.xml_to_stream(CP_XML_STREAM());
+                relationship_[i].xml_to_stream(CP_XML_STREAM());
             }
-        } // "Relationships"
+        }
     }
-
-    //_Wostream << L"<Relationships ";
-    //CP_XML_SERIALIZE_ATTR(L"xmlns", xmlns::rels.value);
-    //_Wostream << L">";
-
-    //BOOST_FOREACH(const relationship & r, relationship_)
-    //{
-    //    r.xml_to_stream(_Wostream);
-    //}
-
-    //_Wostream << L"</Relationships>";
     return _Wostream;
 }
 

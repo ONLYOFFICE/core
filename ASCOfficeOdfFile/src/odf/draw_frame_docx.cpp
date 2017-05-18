@@ -831,7 +831,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
             if (*zIndex < 0) 
                 drawing->relativeHeight = L"0";
             else
-                drawing->relativeHeight = boost::lexical_cast<std::wstring>( 2 + *zIndex );
+				drawing->relativeHeight = std::to_wstring( 2 + *zIndex );
         }
 
         if (drawing->styleWrap && drawing->styleWrap->get_type() == style_wrap::RunThrough 
@@ -1111,10 +1111,13 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	oox::hyperlinks::_ref hyperlink = Context.last_hyperlink();
 	//нужно еще систему конроля - могут придте уже "использованные" линки с картинок - из колонтитулов (но на них уже использовали релсы)
 	//дыра осталась если картинка в картинке - линк продублируется с внутренней на внешнюю 
+	
 	if (hyperlink.drawing == true && hyperlink.used_rels == false)
-	{
-		oox::_hlink_desc desc = {hyperlink.id, hyperlink.href, true};
-		drawing->hlinks.push_back(desc);
+	{//link from object
+		drawing->action.enabled = true;
+		drawing->action.hId		= hyperlink.id;
+		drawing->action.hRef	= hyperlink.href;
+		drawing->action.typeRels= oox::typeHyperlink;
 	}
 /////////
 	drawing->fill.bitmap = oox::oox_bitmap_fill::create();

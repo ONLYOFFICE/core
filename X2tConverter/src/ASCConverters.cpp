@@ -2550,9 +2550,18 @@ namespace NExtractTools
 		if(NULL != oInputParams.m_oMailMergeSend)
 			oMailMerge = oInputParams.m_oMailMergeSend;
 
-        std::wstring sTempDir = NSDirectory::GetFolderPath(sFileFrom) + FILE_SEPARATOR_STR + _T("Temp");
-		NSDirectory::CreateDirectory(sTempDir);
-
+		bool bExternalTempDir = false;
+		std::wstring sTempDir;
+		if (NULL != oInputParams.m_sTempDir)
+		{
+			bExternalTempDir = true;
+			sTempDir = *oInputParams.m_sTempDir;
+		}
+		else
+		{
+			sTempDir = NSDirectory::GetFolderPath(sFileFrom) + FILE_SEPARATOR_STR + _T("Temp");
+			NSDirectory::CreateDirectory(sTempDir);
+		}
 		if (sTempDir.empty())
 		{
 			std::cerr << "Couldn't create temp folder" << std::endl;
@@ -2795,7 +2804,10 @@ namespace NExtractTools
 		}
 
 		// delete temp dir
-		NSDirectory::DeleteDirectory(sTempDir);
+		if (!bExternalTempDir)
+		{
+			NSDirectory::DeleteDirectory(sTempDir);
+		}
 
 		//clean up v8
 		NSDoctRenderer::CDocBuilder::Dispose();

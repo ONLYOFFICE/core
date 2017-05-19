@@ -119,7 +119,7 @@ public:
 	_CP_OPT(bool)							presentation_display_page_number_;
 	_CP_OPT(bool)							presentation_display_date_time_;
 	_CP_OPT(bool)							presentation_display_header_;
-	_CP_OPT(std::wstring)					presentation_page_duration_;
+	_CP_OPT(odf_types::clockvalue)			presentation_page_duration_;
 
 	office_element_ptr						presentation_sound_;
 	

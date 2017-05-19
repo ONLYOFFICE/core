@@ -141,11 +141,17 @@ public:
 		void set_text_box_tableframe	(bool val);		
 	void end_text_box					();
 
-	void start_object(std::wstring name);
+	void start_object(std::wstring ref); //формулы, диаграммы ... 
 	void end_object();
 
-	void start_media(std::wstring name);
+	void start_object_ole(std::wstring ref);
+	void end_object_ole();
+
+	void start_media(std::wstring ref);
 	void end_media();
+
+	void add_image_replacement();
+	void set_image_replacement(std::wstring ref);
 
 	bool isLineShape();
 	void corrected_line_fill();

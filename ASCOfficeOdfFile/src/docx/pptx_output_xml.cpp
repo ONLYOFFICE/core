@@ -54,7 +54,7 @@ std::wstring pptx_xml_slide::rId() const
 pptx_xml_slide_ptr pptx_xml_slide::create(std::wstring const & name,int id)
 {
 	const std::wstring rId = std::wstring(L"sId") + std::to_wstring(id);
-    return boost::make_shared<pptx_xml_slide>(name,rId);
+    return boost::make_shared<pptx_xml_slide>(name, rId);
 }
 
 pptx_xml_slide::pptx_xml_slide(std::wstring const & name,std::wstring const & id)

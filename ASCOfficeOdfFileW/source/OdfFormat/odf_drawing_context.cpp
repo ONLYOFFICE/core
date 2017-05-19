@@ -161,10 +161,10 @@ struct anchor_settings
 
 enum _drawing_part
 {
-	Unknown=0,
-	Area,
-	Line,
-	Shadow
+	Unknown	= 0,
+	Area	= 1,
+	Line	= 2,
+	Shadow	= 3
 };
 struct odf_drawing_state
 {
@@ -192,6 +192,7 @@ struct odf_drawing_state
 		view_box_			= L"";
 		path_last_command_	= L"";
 
+		replacement_		= L"";
 		oox_shape_preset_	= -1;
 		oox_shape_.reset();
 
@@ -222,12 +223,12 @@ struct odf_drawing_state
 	_CP_OPT(presentation_class)	presentation_class_;
 	_CP_OPT(std::wstring)		presentation_placeholder_;
 
-
+	std::wstring				replacement_;
 	std::wstring				path_;
 	std::wstring				view_box_;
 	std::wstring				path_last_command_;
 	oox_shape_ptr				oox_shape_;
-///////////////////////
+//----------------------------------------------------------
 	int oox_shape_preset_;
 	bool in_group_;
 	bool text_box_tableframe_;
@@ -236,7 +237,7 @@ struct odf_drawing_state
 class odf_drawing_context::Impl
 {
 public:
-	Impl(odf_conversion_context *odf_context) :odf_context_(odf_context)
+	Impl(odf_conversion_context *odf_context) : odf_context_(odf_context)
     {	
 		current_drawing_state_.clear();
 		styles_context_ = odf_context_->styles_context();
@@ -250,7 +251,7 @@ public:
 		is_header_		= false;
 		is_footer_		= false;
 		is_background_	= false;
-	  //некоторые свойства для объектов графики не поддерживаюися в редакторах Liber && OpenOffice.net
+	  //некоторые свойства для объектов графики не поддерживаюися в редакторах Libre && OpenOffice.net
 									//в MS Office и в нашем - проблем таких нет.
 	} 
 	
@@ -295,8 +296,7 @@ public:
 
 };
 
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------------------------
 odf_drawing_context::odf_drawing_context(odf_conversion_context *odf_context)  
 	: impl_(new  odf_drawing_context::Impl(odf_context))
 {
@@ -2277,9 +2277,7 @@ void odf_drawing_context::set_textarea_padding(_CP_OPT(double) & left, _CP_OPT(d
 	if (right)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_right_	= length(*right,length::pt);
 	if (bottom)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_bottom_	= length(*bottom,length::pt);
 }
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//вложенные элементы
+//------------------------------------------------------------------------------------------------------------------
 void odf_drawing_context::start_image(std::wstring odf_path)
 {	
 	if (impl_->is_footer_ || impl_->is_header_ || impl_->is_background_)
@@ -2359,9 +2357,31 @@ void odf_drawing_context::start_media(std::wstring name)
 	
 	start_element(plugin_elm);
 }
+void odf_drawing_context::add_image_replacement()
+{
+	if (impl_->current_drawing_state_.replacement_.empty()) return;
+
+	office_element_ptr image_elm;
+	create_element(L"draw", L"image", image_elm, impl_->odf_context_);
+
+	draw_image* image = dynamic_cast<draw_image*>(image_elm.get());
+	if (image == NULL)return;
+
+	image->common_xlink_attlist_.href_		= impl_->current_drawing_state_.replacement_;
+	image->common_xlink_attlist_.type_		= xlink_type::Simple;
+	image->common_xlink_attlist_.show_		= xlink_show::Embed;
+	image->common_xlink_attlist_.actuate_	= xlink_actuate::OnLoad;
+	
+	start_element(image_elm);			
+		set_image_style_repeat(1);//default
+	end_element();
+}
 void odf_drawing_context::end_media()
 {
 	end_element();
+	
+	add_image_replacement();
+
 	end_frame();
 }
 void odf_drawing_context::start_text_box()
@@ -2475,8 +2495,10 @@ void odf_drawing_context::add_sound(std::wstring href)
 	presentation_event_listener * event_ = dynamic_cast<presentation_event_listener*>(impl_->current_level_.back().get());
 	if (event_)
 	{
-		event_->attlist_.script_event_name_		= L"dom:click";
-		event_->attlist_.presentation_action_	= L"sound";
+		event_->attlist_.script_event_name_	= L"dom:click";
+
+		if (!event_->attlist_.presentation_action_)
+			event_->attlist_.presentation_action_ = L"sound";
 	}
 
 	office_element_ptr elm;
@@ -2618,6 +2640,36 @@ void odf_drawing_context::end_object()
 	end_element();
 
 	end_frame();
+}
+void odf_drawing_context::start_object_ole(std::wstring ref)
+{
+	start_frame();
+	
+	office_element_ptr object_elm;
+	create_element(L"draw", L"object-ole", object_elm, impl_->odf_context_);
+
+	draw_object_ole* object = dynamic_cast<draw_object_ole*>(object_elm.get());
+	if (object == NULL)return;
+
+    object->common_xlink_attlist_.href_		= ref;
+	object->common_xlink_attlist_.type_		= xlink_type::Simple;
+	object->common_xlink_attlist_.show_		= xlink_show::Embed;
+	object->common_xlink_attlist_.actuate_	= xlink_actuate::OnLoad;
+
+	start_element(object_elm);
+}
+void odf_drawing_context::end_object_ole()
+{
+	end_element();
+
+	add_image_replacement();
+
+	end_frame();
+}
+
+void odf_drawing_context::set_image_replacement(std::wstring ref)
+{
+	impl_->current_drawing_state_.replacement_ = ref;
 }
 
 bool odf_drawing_context::is_exist_content()

@@ -84,6 +84,12 @@ void odp_page_state::set_page_name(std::wstring name)
 		//	master_page->attlist_.style_display_name_ = name;
 	}
 }
+void odp_page_state::set_page_duration(int id)
+{
+	if (!page_properties_) return;
+
+	page_properties_->content_.presentation_page_duration_  = id;
+}
 
 void odp_page_state::set_layout_page(std::wstring name)
 {
@@ -223,6 +229,14 @@ void odp_page_state::set_transition_subtype(std::wstring val)
 	anim_transitionFilter *trans = dynamic_cast<anim_transitionFilter*>(transactions.back().get());
 	if (trans)
 		trans->filter_attlist_.smil_subtype_ = val;
+}
+void odp_page_state::set_transition_direction(std::wstring val)
+{
+	if (transactions.empty()) return;
+	
+	anim_transitionFilter *trans = dynamic_cast<anim_transitionFilter*>(transactions.back().get());
+	if (trans)
+		trans->common_attlist_.smil_direction_ = val;
 }
 void odp_page_state::set_transition_speed(int val)
 {

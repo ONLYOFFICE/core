@@ -130,9 +130,29 @@ void pptx_serialize_media(std::wostream & strm, _pptx_drawing & val)
 				}
 				CP_XML_NODE(L"p:nvPr")
 				{
-					CP_XML_NODE(L"a:videoFile")
+					std::wstring strNode; 
+					
+					if		(val.type == typeVideo)	strNode = L"a:videoFile"; 
+					else if (val.type == typeAudio) strNode = L"a:audioFile"; 
+
+					if (strNode.empty() == false)
 					{
-						CP_XML_ATTR(L"r:link",	val.objectId);
+						CP_XML_NODE(strNode)
+						{
+							CP_XML_ATTR(L"r:link",	val.objectId);
+						}
+					}
+					CP_XML_NODE(L"p:extLst")
+					{
+						CP_XML_NODE(L"p:ext")
+						{
+							CP_XML_ATTR(L"uri",	L"{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}");
+							CP_XML_NODE(L"p14:media")
+							{	
+								CP_XML_ATTR(L"xmlns:p14", L"http://schemas.microsoft.com/office/powerpoint/2010/main");
+								CP_XML_ATTR(L"r:embed",	val.extId);
+							}
+						}
 					}
 				}
             } 
@@ -359,12 +379,11 @@ void _pptx_drawing::serialize(std::wostream & strm)
 	{
 		pptx_serialize_table(strm, *this);
 	}
-	else if (type == typeMsObject || 
-				type == typeOleObject)
+	else if (type == typeMsObject || type == typeOleObject)
 	{
 		pptx_serialize_object(strm, *this);
 	}
-	else if (type == typeMedia)
+	else if (type == typeMedia || type == typeAudio || type == typeVideo )
 	{
 		pptx_serialize_media(strm, *this);
 	}

@@ -653,6 +653,11 @@ void PptxConverter::convert(PPTX::Logic::EmptyTransition *oox_transition)
 		odp_context->current_slide().set_transition_type(20);	//miscShapeWipe
 		odp_context->current_slide().set_transition_subtype(L"cornersOut");
 	}
+	else if (oox_transition->name == L"switch")
+	{
+		odp_context->current_slide().set_transition_type(20);	//miscShapeWipe
+		odp_context->current_slide().set_transition_subtype(L"topToBottom");
+	}
 	else 
 	{
 		odp_context->current_slide().set_transition_type(36);	//fade
@@ -772,7 +777,8 @@ void PptxConverter::convert(PPTX::Logic::SplitTransition *oox_transition)
 {
 	if (!oox_transition) return;
 	//name == split
-	odp_context->current_slide().set_transition_type(8);
+	odp_context->current_slide().set_transition_type(3);
+	odp_context->current_slide().set_transition_subtype(L"vertical");
 }
 void PptxConverter::convert(PPTX::Logic::ZoomTransition *oox_transition)
 {

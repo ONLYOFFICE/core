@@ -273,7 +273,7 @@ void pptx_xml_slideMaster::write_to(std::wostream & strm)
 				CP_XML_ATTR(L"accent6",L"accent6");
 				CP_XML_ATTR(L"accent5",L"accent5");
 				CP_XML_ATTR(L"accent4",L"accent4");
-				CP_XML_ATTR(L"accent3",L"accent5");
+				CP_XML_ATTR(L"accent3",L"accent3");
 				CP_XML_ATTR(L"accent2",L"accent2");
 				CP_XML_ATTR(L"accent1",L"accent1");
 				CP_XML_ATTR(L"tx2",L"dk2");
@@ -283,7 +283,7 @@ void pptx_xml_slideMaster::write_to(std::wostream & strm)
 			}
 			CP_XML_NODE(L"p:sldLayoutIdLst")
 			{
-				for (int i = 0; i < layoutsId_.size(); i++)
+				for (size_t i = 0; i < layoutsId_.size(); i++)
 				{
 					CP_XML_NODE(L"p:sldLayoutId")
 					{
@@ -420,10 +420,14 @@ void pptx_xml_presentation::write_to(std::wostream & strm)
             {
                 CP_XML_STREAM() << slideMastersData_.str();
             }       
-            CP_XML_NODE(L"p:notesMasterIdLst")
-            {
-                CP_XML_STREAM() << slideNotesMastersData_.str();
-            } 
+			std::wstring notesMaster = slideNotesMastersData_.str();
+			if (notesMaster.empty() == false)
+			{
+				CP_XML_NODE(L"p:notesMasterIdLst")
+				{
+					CP_XML_STREAM() << notesMaster;
+				} 
+			}
 			CP_XML_NODE(L"p:sldIdLst")
             {
                 CP_XML_STREAM() << slidesData_.str();

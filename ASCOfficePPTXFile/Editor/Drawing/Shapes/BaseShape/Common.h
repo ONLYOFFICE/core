@@ -629,12 +629,12 @@ public:
 	virtual HRESULT put_BrushType(const LONG& lType){ return S_OK; }
 	virtual HRESULT get_BrushColor1(LONG* lColor){ return S_OK; }
 	virtual HRESULT put_BrushColor1(const LONG& lColor){ return S_OK; }
-	virtual HRESULT get_BrushAlpha1(LONG* lAlpha)
+	virtual HRESULT get_BrushAlpha1(LONG* lAlpha){ return S_OK; }
+	virtual HRESULT put_BrushAlpha1(const LONG& lAlpha)
 	{
-                m_bIsFillPart = (0 != lAlpha) ? true : false;
-		return S_OK; 
+		m_bIsFillPart = (0 != lAlpha) ? true : false;
+		return S_OK;
 	}
-	virtual HRESULT put_BrushAlpha1(const LONG& lAlpha){ return S_OK; }
 	virtual HRESULT get_BrushColor2(LONG* lColor){ return S_OK; }
 	virtual HRESULT put_BrushColor2(const LONG& lColor){ return S_OK; }
 	virtual HRESULT get_BrushAlpha2(LONG* lAlpha){ return S_OK; }

@@ -44,6 +44,7 @@
 #include "../../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
 #include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Vml.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Logic/Sdt.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Logic/VmlOfficeDrawing.h"
 
 namespace OOX
 {
@@ -308,7 +309,7 @@ namespace PPTX
 			void SetLevelUpElement( Shape* p){m_pLevelUp = p;};
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			void toXmlWriterVML				(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group = false);
+			void toXmlWriterVML				(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group = false, bool bSignature = false);
 			void toXmlWriterVMLBackground	(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap);
 
 			virtual void toXmlWriter	(NSBinPptxRW::CXmlWriter* pWriter) const;			
@@ -330,6 +331,7 @@ namespace PPTX
 			nullable<BodyPr>					oTextBoxBodyPr;
 
 			nullable_bool						attrUseBgFill;
+			nullable<OOX::VmlOffice::CSignatureLine> signatureLine;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

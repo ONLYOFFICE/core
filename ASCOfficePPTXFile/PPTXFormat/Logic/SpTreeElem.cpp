@@ -178,7 +178,7 @@ namespace PPTX
 			*/
 		}
         void CalculateLine(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::Theme>& oTheme,
-			NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle)
+			NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle, bool bSignature)
 		{
 			PPTX::Logic::Ln line;
 			DWORD ARGB = 0;
@@ -196,7 +196,7 @@ namespace PPTX
 				ARGB = line.Fill.as<SolidFill>().Color.GetRGBColor(oTheme, oClrMap, ARGB);
 				strAttr = _T(" strokecolor=\"") + GetHexColor(ARGB) + _T("\"");
 			}
-			else if (bOle)
+			else if (bOle || bSignature)
 				strAttr = _T(" stroked=\"f\"");
 
 			if (line.w.is_init())

@@ -293,6 +293,31 @@ NSPresentationEditor::CShapeWriter::CShapeWriter()
 	m_pImageElement = NULL;
 	m_pShapeElement = NULL;
 }
+bool NSPresentationEditor::CShapeWriter::SetElement(IElement* pElem)
+{
+    m_pShapeElement = dynamic_cast<CShapeElement*>(pElem);
+    m_pImageElement = dynamic_cast<CImageElement*>(pElem);
+	
+	m_pSimpleGraphicsConverter->PathCommandEnd();
+
+	m_oMetricInfo	= pElem->m_oMetric;
+	m_oBounds		= pElem->m_rcBounds;
+	m_oTextRect		= m_oBounds;
+
+	m_bWordArt		= false;
+	m_bTextBox		= false;
+
+	if (m_pShapeElement)
+	{
+		m_pShapeElement->m_oShape.GetTextRect(m_oTextRect);
+	}
+
+	m_oWriter.ClearNoAttack();
+	m_oWriterPath.ClearNoAttack();
+	m_oWriterVML.ClearNoAttack();	
+
+	return (m_pShapeElement || m_pImageElement);
+}
 std::wstring NSPresentationEditor::CShapeWriter::ConvertLine(CPen & pen)
 {
 	NSPresentationEditor::CStringWriter line_writer;
@@ -366,7 +391,7 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertLineEnd(unsigned char ca
 	}
 	return sResult;
 }
-std::wstring	NSPresentationEditor::CShapeWriter::ConvertBrush(CBrush & brush)
+std::wstring NSPresentationEditor::CShapeWriter::ConvertBrush(CBrush & brush)
 {
 	NSPresentationEditor::CStringWriter brush_writer;
 	
@@ -458,7 +483,7 @@ std::wstring	NSPresentationEditor::CShapeWriter::ConvertBrush(CBrush & brush)
 	return brush_writer.GetData();
 }
 
-std::wstring	NSPresentationEditor::CShapeWriter::ConvertShadow(CShadow	& shadow)
+std::wstring NSPresentationEditor::CShapeWriter::ConvertShadow(CShadow	& shadow)
 {
 	std::wstring	Preset;
 	bool			Inner = false;
@@ -575,7 +600,7 @@ std::wstring	NSPresentationEditor::CShapeWriter::ConvertShadow(CShadow	& shadow)
 	return shadow_writer.GetData();
 }
 
-std::wstring  NSPresentationEditor::CShapeWriter::ConvertColor(CColor & color, long alpha)
+std::wstring NSPresentationEditor::CShapeWriter::ConvertColor(CColor & color, long alpha)
 {
 	NSPresentationEditor::CStringWriter color_writer;
 	if (color.m_lSchemeIndex == -1)
@@ -606,6 +631,9 @@ std::wstring  NSPresentationEditor::CShapeWriter::ConvertColor(CColor & color, l
 }
 void NSPresentationEditor::CShapeWriter::WriteImageInfo()
 {
+	CAudioElement*	pAudioElement = dynamic_cast<CAudioElement*>(m_pImageElement);
+    CVideoElement*	pVideoElement = dynamic_cast<CVideoElement*>(m_pImageElement);
+	
 	m_oWriter.WriteString(std::wstring(L"<p:nvPicPr>"));
 
 	std::wstring strShapeID = std::to_wstring(m_lNextShapeID);	
@@ -613,7 +641,11 @@ void NSPresentationEditor::CShapeWriter::WriteImageInfo()
 	m_oWriter.WriteString(std::wstring(L"<p:cNvPr id=\"") + strShapeID + L"\"" );
 	
 	if (m_pImageElement->m_sName.empty()) 
-		m_pImageElement->m_sName = std::wstring(L"Image ") + strShapeID;
+	{
+		if (pAudioElement)		m_pImageElement->m_sName = std::wstring(L"Audio ") + strShapeID;
+		else if (pVideoElement)	m_pImageElement->m_sName = std::wstring(L"Video ") + strShapeID;
+		else					m_pImageElement->m_sName = std::wstring(L"Image ") + strShapeID;
+	}
 	
 	if (m_pImageElement->m_bHidden)	m_oWriter.WriteString(std::wstring(L" hidden=\"1\""));
 
@@ -627,14 +659,22 @@ void NSPresentationEditor::CShapeWriter::WriteImageInfo()
 	//		m_oWriter.WriteStringXML(m_pImageElement->m_sDescription);
 	//	m_oWriter.WriteString(std::wstring(L"\""));
 	//}
+	m_oWriter.WriteString(std::wstring(L">"));
 
-	m_oWriter.WriteString(std::wstring(L"></p:cNvPr><p:cNvPicPr><a:spLocks noGrp=\"1\" noChangeAspect=\"1\"/></p:cNvPicPr>"));
+	if (pVideoElement || pAudioElement)
+	{
+		m_oWriter.WriteString(std::wstring(L"<a:hlinkClick r:id=\"\" action=\"ppaction://media\"/>"));
+	}
+
+	m_oWriter.WriteString(std::wstring(L"</p:cNvPr><p:cNvPicPr><a:picLocks noGrp=\"1\" noChangeAspect=\"1\"/></p:cNvPicPr>"));
 
 	++m_lNextShapeID;
 
+	m_oWriter.WriteString(std::wstring(L"<p:nvPr>"));
+	
 	if (-1 != m_pImageElement->m_lPlaceholderType)
 	{
-		m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph"));
+		m_oWriter.WriteString(std::wstring(L"<p:ph"));
 		if (m_pImageElement->m_lPlaceholderType > 0)
 			m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(m_pImageElement->m_lPlaceholderType) + L"\"");
 		
@@ -644,12 +684,39 @@ void NSPresentationEditor::CShapeWriter::WriteImageInfo()
 			m_oWriter.WriteString(std::wstring(L" idx=\"") + strIdx + L"\"");
 
 		}
-		m_oWriter.WriteString(std::wstring(L"/></p:nvPr>"));
+		m_oWriter.WriteString(std::wstring(L"/>"));
 	}
-	else
+
+	std::wstring sMediaFile;
+	
+	if ((pVideoElement) && (!pVideoElement->m_strVideoFileName.empty()))
 	{
-		m_oWriter.WriteString(std::wstring(L"<p:nvPr/>"));
+		std::wstring strRid = m_pRels->WriteVideo(pVideoElement->m_strVideoFileName);
+	
+		m_oWriter.WriteString(L"<a:videoFile r:link=\"" + strRid + L"\"/>");
+
+		sMediaFile = pVideoElement->m_strVideoFileName;
 	}
+
+	if ((pAudioElement) && (!pAudioElement->m_strAudioFileName.empty()))
+	{
+		std::wstring strRid = m_pRels->WriteAudio(pAudioElement->m_strAudioFileName);
+
+		m_oWriter.WriteString(L"<a:audioFile r:link=\"" + strRid + L"\"/>");
+		
+		sMediaFile = pAudioElement->m_strAudioFileName;
+	}
+	if (sMediaFile.empty() == false)
+	{
+		std::wstring strRid = m_pRels->WriteMedia(sMediaFile);
+		if (!strRid.empty())
+		{
+			m_oWriter.WriteString(L"<p:extLst><p:ext uri=\"{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}\">\
+<p14:media xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" r:embed=\"" + strRid + L"\"/></p:ext></p:extLst>");
+		}
+	}
+
+	m_oWriter.WriteString(std::wstring(L"</p:nvPr>"));
 	
     std::wstring str2 = _T("</p:nvPicPr>");
 	m_oWriter.WriteString(str2);
@@ -1306,7 +1373,7 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertImage()
 		strRid = m_pRels->WriteHyperlinkImage(CorrectXmlString3(m_pImageElement->m_sImageName));
 	}	
 	
-    if (strRid.empty()) return _T("");
+	if (strRid.empty()) return _T("");
 
 	m_oWriter.WriteString(std::wstring(L"<p:pic>"));
 

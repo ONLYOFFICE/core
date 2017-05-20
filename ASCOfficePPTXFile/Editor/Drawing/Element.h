@@ -200,8 +200,6 @@ namespace NSPresentationEditor
 			return m_lCountRef;
 		}
 
-	public:
-
 		IElement()
 		{
 			m_bIsBackground				= false;
@@ -338,12 +336,5 @@ namespace NSPresentationEditor
 		virtual void SetupProperty(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout, CElementProperty* pProperty)	= 0;
 		virtual IElement* CreateDublicate()																			= 0;
 
-        virtual std::wstring SerializeToXml()
-		{
-            std::wstring strElement;
-//			strElement.Format(_T("<Element type='%d' id='%d' lid='%d' pid='%d' ptp='%d' />"),
-//				(int)m_etType, m_lID, m_lLayoutID, m_lPlaceholderID, m_lPlaceholderType);
-			return strElement;
-		}
 	};
 }

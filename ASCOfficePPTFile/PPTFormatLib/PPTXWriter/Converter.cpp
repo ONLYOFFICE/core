@@ -196,6 +196,15 @@ void NSPresentationEditor::CPPTXWriter::WriteContentTypes()
 <Default Extension=\"xml\" ContentType=\"application/xml\" />\
 <Default Extension=\"gif\" ContentType=\"image/gif\"/>\
 <Default Extension=\"emf\" ContentType=\"image/x-emf\"/>\
+<Default Extension=\"wav\" ContentType=\"audio/wav\"/>\
+<Default Extension=\"wma\" ContentType=\"audio/x-ms-wma\"/>\
+<Default Extension=\"mp3\" ContentType=\"audio/unknown\"/>\
+<Default Extension=\"m4a\" ContentType=\"audio/unknown\"/>\
+<Default Extension=\"wmv\" ContentType=\"video/x-ms-wmv\"/>\
+<Default Extension=\"avi\" ContentType=\"video/avi\"/>\
+<Default Extension=\"m4v\" ContentType=\"video/unknown\"/>\
+<Default Extension=\"mp4\" ContentType=\"video/unknown\"/>\
+<Default Extension=\"mov\" ContentType=\"video/unknown\"/>\
 <Default Extension=\"xls\" ContentType=\"application/vnd.ms-excel\"/>\
 <Default Extension=\"xlsx\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"/>\
 <Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\" />\
@@ -770,25 +779,14 @@ void NSPresentationEditor::CPPTXWriter::WriteBackground(CStringWriter& oWriter, 
 
 void NSPresentationEditor::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerator& oRels, IElement* pElement, CLayout* pLayout)
 {
-	CImageElement* pImageElem = dynamic_cast<CImageElement*>(pElement);
-	if (pImageElem)
-	{
-		pImageElem->m_oMetric = m_pDocument->m_oInfo;
-		pImageElem->NormalizeCoordsByMetric();
+	if (!pElement) return;
 
-		m_pShapeWriter->SetShape(pImageElem);
-	}
+	pElement->m_oMetric = m_pDocument->m_oInfo;
+	pElement->NormalizeCoordsByMetric();
 
-	CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElement);
-	if (pShapeElem)
-	{
-		pShapeElem->m_oMetric = m_pDocument->m_oInfo;
-		pShapeElem->NormalizeCoordsByMetric();
+	bool bObject = m_pShapeWriter->SetElement(pElement);
 
-		m_pShapeWriter->SetShape(pShapeElem);
-	}
-
-	if (pImageElem || pShapeElem)
+	if (bObject)
 	{
 		m_pShapeWriter->SetRelsGenerator(&oRels);
 

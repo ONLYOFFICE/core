@@ -50,7 +50,7 @@ namespace NSPresentationEditor
 
 		CDocument	*	m_pDocument;
 		CPPTUserInfo*	m_pUserInfo;
-		CImageManager	m_oManager;
+		CMediaManager	m_oManager;
 
 		CShapeWriter*	m_pShapeWriter;
 

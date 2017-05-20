@@ -37,56 +37,89 @@
 
 namespace NSPresentationEditor
 {
-	class CImageManager
+	class CMediaManager
 	{
 	private:
-		std::map<std::wstring, std::wstring>	m_mapImages;
+		std::map<std::wstring, std::wstring>	m_mapMedia;
 
-        long									m_lIndexNextImage;
+		long									m_lIndexNextAudio;
+		long									m_lIndexNextVideo;
+		long									m_lIndexNextImage;
+
 		std::wstring							m_strDstMedia;
 
 	public:
-		CImageManager() : m_lIndexNextImage(0)
+		CMediaManager() : m_lIndexNextImage(0), m_lIndexNextAudio(0), m_lIndexNextVideo(0)
 		{
 		}
-		~CImageManager()
+		~CMediaManager()
 		{
 		}
         inline void Clear()
 		{
-			m_mapImages.clear();
+			m_mapMedia.clear();
+
 			m_lIndexNextImage = 0;
+			m_lIndexNextAudio = 0;
+			m_lIndexNextVideo = 0;
+		}
+		inline std::wstring FindMedia(const std::wstring& strInput)
+		{
+			std::map<std::wstring, std::wstring>::iterator pPair = m_mapMedia.find(strInput);
+			if (m_mapMedia.end() != pPair)
+			{
+				return pPair->second;
+			}
+			return L"";
 		}
         inline void SetDstMedia(const std::wstring& strDst)
 		{
 			m_strDstMedia = strDst;
 		}
-
-	public:
-        inline std::wstring GenerateImage(const std::wstring& strInput)
+		inline std::wstring GenerateVideo(const std::wstring& strInput)
 		{
-			std::map<std::wstring, std::wstring>::iterator pPair = m_mapImages.find(strInput);
-			if (m_mapImages.end() != pPair)
+			return GenerateMedia(strInput, L"video", m_lIndexNextVideo, L".avi");
+		}
+		inline std::wstring GenerateAudio(const std::wstring& strInput)
+		{
+			return GenerateMedia(strInput, L"audio", m_lIndexNextAudio, L".wav");
+		}
+		inline std::wstring GenerateImage(const std::wstring& strInput)
+		{
+			return GenerateMedia(strInput, L"image", m_lIndexNextImage, L".png");
+		}        
+		inline std::wstring GenerateMedia(const std::wstring& strInput, const std::wstring& Template, long & Indexer, const std::wstring& strDefaultExt)
+		{
+			std::map<std::wstring, std::wstring>::iterator pPair = m_mapMedia.find(strInput);
+			if (m_mapMedia.end() != pPair)
 			{
 				return pPair->second;
 			}
 
 			if (IsNeedDownload(strInput))
-				return DownloadImage(strInput);
+			{
+#ifndef DISABLE_FILE_DOWNLOADER
+				CFileDownloader oDownloader(strInput, TRUE);
+				if ( oDownloader.DownloadSync() )
+				{
+					return GenerateMedia( oDownloader.GetFilePath(), Template, Indexer, strDefaultExt);
+				}
+#endif
+			}
 
-			std::wstring strExts = _T(".jpg");
-            int nIndexExt = strInput.rfind(wchar_t('.'));
+			std::wstring strExts = strDefaultExt;
+			int nIndexExt = strInput.rfind(wchar_t('.'));
 			if (-1 != nIndexExt)
 				strExts = strInput.substr(nIndexExt);
 
-			if (strExts == _T(".tmp"))	strExts = _T(".png");
+			if (strExts == _T(".tmp"))	strExts = strDefaultExt;
 
-			std::wstring strImage = L"image" + std::to_wstring(m_lIndexNextImage++);
+			std::wstring strMediaName = Template + std::to_wstring(++Indexer);
 
-			std::wstring strOutput = m_strDstMedia + strImage + strExts;		
-			strImage  = _T("../media/") + strImage + strExts;
+			std::wstring strOutput = m_strDstMedia + strMediaName + strExts;		
+			strMediaName  = _T("../media/") + strMediaName + strExts;
 
-			// теперь нужно скопировать картинку
+			// теперь нужно скопировать
 			if (strOutput != strInput)
 			{
                 if (CDirectory::CopyFile(strInput, strOutput) == false)
@@ -94,8 +127,8 @@ namespace NSPresentationEditor
 					return L"";
 				}
 			}
-			m_mapImages[strInput] = strImage;
-			return strImage;
+			m_mapMedia[strInput] = strMediaName;
+			return strMediaName;
 		}
 
         inline bool IsNeedDownload(const std::wstring& strFile)
@@ -108,18 +141,8 @@ namespace NSPresentationEditor
 				return true;
 			return false;
 		}
-        inline std::wstring DownloadImage(const std::wstring& strFile)
-		{
-#ifndef DISABLE_FILE_DOWNLOADER
-            CFileDownloader oDownloader(strFile, TRUE);
-			if ( oDownloader.DownloadSync() )
-			{
-				return GenerateImage( oDownloader.GetFilePath() );
-			}
-#endif
-			return _T("");
-		}
 	};
+
 	static std::wstring CorrectXmlString3(const std::wstring & str)
 	{
 		std::wstring buffer;
@@ -128,12 +151,12 @@ namespace NSPresentationEditor
 		{
 			switch(str[pos])
 			{
-			case '&':  buffer.append(_T("&amp;"));      break;
-			case '\"': buffer.append(_T("&quot;"));     break;
-			case '\'': buffer.append(_T("&apos;"));     break;
-			case '<':  buffer.append(_T("&lt;"));       break;
-			case '>':  buffer.append(_T("&gt;"));       break;
-			default:   buffer.append(&str[pos], 1);	break;
+				case '&':  buffer.append(_T("&amp;"));      break;
+				case '\"': buffer.append(_T("&quot;"));     break;
+				case '\'': buffer.append(_T("&apos;"));     break;
+				case '<':  buffer.append(_T("&lt;"));       break;
+				case '>':  buffer.append(_T("&gt;"));       break;
+				default:   buffer.append(&str[pos], 1);	break;
 			}
 		}
 		return buffer;
@@ -143,12 +166,12 @@ namespace NSPresentationEditor
 	private:
 		NSPresentationEditor::CStringWriter		m_oWriter;
 		int										m_lNextRelsID;
-		std::map<std::wstring, int>				m_mapImages;
-		CImageManager*							m_pManager;
+		std::map<std::wstring, int>				m_mapMediaRelsID;
+		CMediaManager*							m_pManager;
 		std::map<std::wstring, std::wstring>	m_mapHyperlinks;
 
 	public:
-		CRelsGenerator(CImageManager* pManager) : m_oWriter(), m_lNextRelsID(1)
+		CRelsGenerator(CMediaManager* pManager) : m_oWriter(), m_lNextRelsID(1)
 		{
 			m_pManager = pManager;
 		}
@@ -159,7 +182,7 @@ namespace NSPresentationEditor
 		{
 			m_oWriter.ClearNoAttack();
 			m_lNextRelsID = 1;
-			m_mapImages.clear();
+			m_mapMediaRelsID.clear();
 			m_mapHyperlinks.clear();
 		}
 
@@ -262,23 +285,25 @@ namespace NSPresentationEditor
             return strRid;
         }
 
-        inline std::wstring WriteHyperlinkImage(const std::wstring& strImage, bool bExternal = true)
+		inline std::wstring WriteHyperlinkMedia(const std::wstring& strMedia, bool bExternal = true, bool newRIdAlways = false, std::wstring strRelsType = L"http://schemas.microsoft.com/office/2007/relationships/media")
 		{
-			std::map<std::wstring, int>::iterator pPair = m_mapImages.find(strImage);
-
-			if (m_mapImages.end() != pPair)
+			if (!newRIdAlways)
 			{
-                std::wstring strRid = L"rId" + std::to_wstring(pPair->second);
-				return strRid;
+				std::map<std::wstring, int>::iterator pPair = m_mapMediaRelsID.find(strMedia);
+
+				if (m_mapMediaRelsID.end() != pPair)
+				{
+					std::wstring strRid = L"rId" + std::to_wstring(pPair->second);
+					return strRid;
+				}
+
+				m_mapMediaRelsID[strMedia] = m_lNextRelsID;
 			}
 
-			m_mapImages[strImage] = m_lNextRelsID;
-
-			std::wstring strRid		= L"rId" + std::to_wstring(m_lNextRelsID++);
+			std::wstring strRid	= L"rId" + std::to_wstring(m_lNextRelsID++);			
 			
-			std::wstring strRels	= L"<Relationship Id=\"" + strRid + L"\"";
-            strRels += L" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\"";
-            strRels += L" Target=\"" + strImage + L"\"";
+			std::wstring strRels = L"<Relationship Id=\"" + strRid + L"\"" + L" Type=\"" + strRelsType + L"\"" 
+				+ L" Target=\"" + strMedia + L"\"";
 
 			if (bExternal)
 				strRels += L" TargetMode=\"External\"";
@@ -288,13 +313,45 @@ namespace NSPresentationEditor
 
 			return strRid;
 		}
-        inline std::wstring WriteImage(const std::wstring& strImagePath)
+        inline std::wstring WriteHyperlinkImage(const std::wstring& strImage, bool bExternal = true)
+		{
+			return WriteHyperlinkMedia(strImage, bExternal, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
+		}
+        inline std::wstring WriteHyperlinkAudio(const std::wstring& strImage, bool bExternal = true)
+		{
+			return WriteHyperlinkMedia(strImage, bExternal, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
+		}
+        inline std::wstring WriteHyperlinkVideo(const std::wstring& strImage, bool bExternal = true)
+		{
+			return WriteHyperlinkMedia(strImage, bExternal, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video");
+		}
+		inline std::wstring WriteMedia(const std::wstring& strMediaPath)
+		{
+			std::wstring strMedia = m_pManager->FindMedia(strMediaPath);
+
+			if (strMedia.empty())	return WriteHyperlinkMedia(CorrectXmlString3(strMediaPath), true, true);			
+									return WriteHyperlinkMedia(strMedia, false, true);
+		}
+		inline std::wstring WriteImage(const std::wstring& strImagePath)
 		{
 			std::wstring strImage = m_pManager->GenerateImage(strImagePath);
 
-			if (strImage.empty()) return WriteHyperlinkImage(CorrectXmlString3(strImagePath), true);			
-			return WriteHyperlinkImage(strImage, false);
+			if (strImage.empty())	return WriteHyperlinkImage(CorrectXmlString3(strImagePath), true);			
+									return WriteHyperlinkImage(strImage, false);
 		}
-		
+        inline std::wstring WriteAudio(const std::wstring& strAudioPath)
+		{
+			std::wstring strAudio = m_pManager->GenerateAudio(strAudioPath);
+
+			if (strAudio.empty())	return WriteHyperlinkAudio(CorrectXmlString3(strAudioPath), true);			
+									return WriteHyperlinkAudio(strAudio, false);
+		}		
+        inline std::wstring WriteVideo(const std::wstring& strVideoPath)
+		{
+			std::wstring strVideo = m_pManager->GenerateVideo(strVideoPath);
+
+			if (strVideo.empty())	return WriteHyperlinkVideo(CorrectXmlString3(strVideoPath), true);			
+									return WriteHyperlinkVideo(strVideo, false);
+		}
 	};
 }

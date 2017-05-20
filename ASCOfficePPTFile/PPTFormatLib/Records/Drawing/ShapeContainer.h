@@ -236,7 +236,6 @@ public:
 		{
 		case NSPresentationEditor::etVideo:
 			{
-				//default -> line = false
 				pElement->m_bLine = false;
 				for (long i = 0; i < lCount; ++i)
 				{
@@ -246,7 +245,6 @@ public:
 			}
 		case NSPresentationEditor::etPicture:
 			{
-				//default -> line = false
 				pElement->m_oBrush.Type = c_BrushTypeTexture;
 				pElement->m_bLine = false;
 				for (long i = 0; i < lCount; ++i)
@@ -257,7 +255,6 @@ public:
 			}
 		case NSPresentationEditor::etAudio:
 			{
-				//default -> line = false
 				pElement->m_bLine = false;
 				for (long i = 0; i < lCount; ++i)
 				{
@@ -806,7 +803,7 @@ public:
 	}
 	inline void SetUpPropertyAudio(CAudioElement* pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
 	{
-		SetUpProperty((IElement*)pElement, pTheme, pInfo, pSlide, pProperty);
+		SetUpPropertyImage((CImageElement*)pElement, pTheme, pInfo, pSlide, pProperty);
 	}
 	inline void SetUpPropertyImage(CImageElement* pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
 	{
@@ -1362,8 +1359,8 @@ public:
 					{
 						CVideoElement* pVideoElem		= new CVideoElement();
 						
-						pVideoElem->m_strVideoFileName	= oInfo.m_strFilePath			+ FILE_SEPARATOR_STR;
-						pVideoElem->m_strImageFileName	= oInfoDefault.m_strFilePath	+ FILE_SEPARATOR_STR;
+						pVideoElem->m_strVideoFileName	= oInfo.m_strFilePath ;
+						pVideoElem->m_strImageFileName	= oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
 
 						pElem							= (IElement*)pVideoElem;
 					}
@@ -1371,7 +1368,8 @@ public:
 					{
 						CAudioElement* pAudioElem		= new CAudioElement();
 						
-						pAudioElem->m_strAudioFileName	= oInfo.m_strFilePath + FILE_SEPARATOR_STR;
+						pAudioElem->m_strAudioFileName	= oInfo.m_strFilePath;
+						pAudioElem->m_strImageFileName	= oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
 
 						pAudioElem->m_dClipStartTime	= oInfo.m_dStartTime;
 						pAudioElem->m_dClipEndTime		= oInfo.m_dEndTime;

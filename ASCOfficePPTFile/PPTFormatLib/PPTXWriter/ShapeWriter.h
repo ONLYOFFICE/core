@@ -167,53 +167,16 @@ namespace NSPresentationEditor
 		{
 			m_lNextShapeID = 1000;
 		}
-		AVSINLINE void SetShape(CImageElement* pShapeElem)
-		{
-			m_pSimpleGraphicsConverter->PathCommandEnd();
-			m_pImageElement = pShapeElem;
-            m_pShapeElement = NULL;
 
-			m_oMetricInfo	= m_pImageElement->m_oMetric;
-			m_oBounds		= m_pImageElement->m_rcBounds;
-			m_oTextRect		= m_oBounds;
-
-			m_bWordArt		= false;
-			m_bTextBox		= false;
-
-			m_oWriter.ClearNoAttack();
-			m_oWriterPath.ClearNoAttack();
-			m_oWriterVML.ClearNoAttack();	
-		}
-		AVSINLINE void SetShape(CShapeElement* pShapeElem)
-		{
-			m_pSimpleGraphicsConverter->PathCommandEnd();
-			m_pShapeElement = pShapeElem;
-            m_pImageElement = NULL;
-
-			m_oMetricInfo	= m_pShapeElement->m_oMetric;
-			m_oBounds		= m_pShapeElement->m_rcBounds;
-			m_oTextRect		= m_oBounds;
-
-			m_bWordArt		= false;
-			m_bTextBox		= false;
-
-			if (m_pShapeElement)
-			{
-				m_pShapeElement->m_oShape.GetTextRect(m_oTextRect);
-			}
-
-			m_oWriter.ClearNoAttack();
-			m_oWriterPath.ClearNoAttack();
-			m_oWriterVML.ClearNoAttack();
-		}
+		bool SetElement(IElement* pElem);
 //--------------------------------------------------------------------
-            std::wstring ConvertShape	();
-            std::wstring ConvertImage	();
-            std::wstring ConvertLine		(CPen		& pen);
+            std::wstring	ConvertShape	();
+            std::wstring	ConvertImage	();
+            std::wstring	ConvertLine		(CPen		& pen);
             std::wstring	ConvertShadow	(CShadow	& shadow);
             std::wstring	ConvertBrush	(CBrush		& brush);
+			std::wstring	ConvertLineEnd	(unsigned char cap, unsigned char length, unsigned char width);
     static	std::wstring	ConvertColor	(CColor		& color, long alpha);
-			std::wstring ConvertLineEnd(unsigned char cap, unsigned char length, unsigned char width);
 // тип рендерера-----------------------------------------------------------------------------
     virtual HRESULT get_Type(LONG* lType)	;
 //-------- Функции для работы со страницей --------------------------------------------------

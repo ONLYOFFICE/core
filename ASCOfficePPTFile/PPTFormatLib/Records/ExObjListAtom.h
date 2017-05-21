@@ -34,16 +34,22 @@
 
 class CRecordExObjListAtom : public CUnknownRecord
 {
+public:
 	INT m_nObjectIdSeed;
 
-public:
-	
 	CRecordExObjListAtom()
 	{
 	}
 
 	~CRecordExObjListAtom()
 	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		m_oHeader = oHeader;
+
+		m_nObjectIdSeed = StreamUtils::ReadDWORD(pStream);
 	}
 
 };

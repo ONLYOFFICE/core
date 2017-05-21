@@ -37,7 +37,7 @@
 #include "../../Reader/Records.h"
 #include "../../../../ASCOfficePPTXFile/Editor/Drawing/Document.h"
 
-#define __USE_ANIMATION__
+#define MIN_SLIDE_TIME	5000.0
 
 inline int sort (const long* a, const long* b) { return *a > *b ? 1 : -1; }
 
@@ -369,7 +369,13 @@ namespace Animations
 			delayTime					=	StreamUtils::ReadDWORD ( pStream );
 		}
 
-		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x1 && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == RT_ParaBuildAtom && m_oHeader.RecLen == 0x00000010; }
+		virtual bool IsCorrect () 
+		{ 
+			return	m_oHeader.RecVersion == 0x1 && 
+					m_oHeader.RecInstance == 0x0 && 
+					m_oHeader.RecType == RT_ParaBuildAtom && 
+					m_oHeader.RecLen == 0x00000010; 
+		}
 
 	public:
 
@@ -3097,9 +3103,6 @@ namespace Animations
 			{	
 				Clear ();
 
-#if defined(_DEBUG_LOG) && (defined(_WIN32) || defined(_WIN64))
-				ATLTRACE(_T("======================================== Slide ========================================\n"));
-#endif
                 m_bSaveEffect		=	false;
                 m_HaveAfterEffect	=	false;
 
@@ -3115,15 +3118,13 @@ namespace Animations
             return false;
 		}
 
-		inline EffectsMap&		GetAnimation ()
+		inline EffectsMap& GetAnimation ()
 		{
 			return m_oAnimation;
 		}
 
-		inline double			GetTime ()
+		inline double GetTime ()
 		{
-#define MIN_SLIDE_TIME	5000.0
-
 			double dTime	=	m_oNodeTiming.GetTimeLine ();
 			if (dTime < MIN_SLIDE_TIME)
 				return MIN_SLIDE_TIME;
@@ -3137,12 +3138,12 @@ namespace Animations
 	private:
 		inline void	ExploreTree (ExtTimeNodeContainer* pContainer)
 		{	
-			unsigned long nNodeType				=	pContainer->GetEffectNodeType ();
+			unsigned long nNodeType =	pContainer->GetEffectNodeType ();
 			if (nNodeType)
 			{
 				if (CNodeTiming::MainSequenceNode != nNodeType && CNodeTiming::TimingRootNode != nNodeType)
 				{
-					m_oTopEffect				=	CreateEffectFromNode ( pContainer->timePropertyList );
+					m_oTopEffect =	CreateEffectFromNode ( pContainer->timePropertyList );
 
 					m_ComposeEffectMothionPath	=	_T("");
 
@@ -3200,7 +3201,7 @@ namespace Animations
 				}
 			}
 
-			int nID					=	GetShapeID ( pContainer );
+			int nID =	GetShapeID ( pContainer );
 			if ( -1 != nID )
 			{
 				//	TODO : 
@@ -3448,7 +3449,7 @@ namespace Animations
 					{
 						if (pChild->timeNodeAtom.m_bDurationProperty)		
 						{
-							m_dEffectDuration			=	pChild->timeNodeAtom.m_nDuration;
+							m_dEffectDuration =	pChild->timeNodeAtom.m_nDuration;
 						}
 					}
 				}
@@ -3649,9 +3650,9 @@ namespace Animations
 		//
 		inline void ProcessMediaCall (ExtTimeNodeContainer* pContainer)
 		{			
-			if (MediaCallEffect == m_oTopEffect.m_nEffectType)															//	если анимация применена к VIDEO или AUDIO элементу
+			if (MediaCallEffect == m_oTopEffect.m_nEffectType)		//	если анимация применена к VIDEO или AUDIO элементу
 			{
-				m_nMediaPush		=	GetAttachedShapeToVideo (pContainer);											//	если к видео добавлена картинка, надо учитывать смещение при поиск ID
+				m_nMediaPush		=	GetAttachedShapeToVideo (pContainer);	//	если к видео добавлена картинка, надо учитывать смещение при поиск ID
 
 				if (GetMediaID (pContainer))
 				{
@@ -3844,8 +3845,6 @@ public:
 
 		if ( RECORD_PROG_BINARY_TAG == m_oHeaderChild.RecType )
 		{
-#ifdef __USE_ANIMATION__
-
 			SRecordHeader rgSubRec;
 			
 			rgSubRec.ReadFromStream(pStream) ;	
@@ -3874,7 +3873,6 @@ public:
 
 				}
 			}
-#endif
 		}
 
 		StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );

@@ -163,6 +163,8 @@ namespace NSPresentationEditor
 			RELEASEOBJECT(m_pSimpleGraphicsConverter);
 		}
 
+		friend class CPPTXWriter;
+
 		AVSINLINE void InitNextId()
 		{
 			m_lNextShapeID = 1000;

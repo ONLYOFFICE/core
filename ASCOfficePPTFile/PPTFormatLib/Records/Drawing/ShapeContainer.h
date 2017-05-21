@@ -861,8 +861,6 @@ public:
 		CShape* pParentShape	= &pElement->m_oShape;
 		CPPTShape* pShape		= dynamic_cast<CPPTShape*>(pParentShape->m_pShape);
 
-		CElementProperties* pElemProps = &pElement->m_oProperties;
-
 		if (NULL == pShape)
 			return;
 
@@ -1196,7 +1194,9 @@ public:
 
 			}break;
 		default:
-			break;
+			{
+				int unknown_value = pProperty->m_lValue;
+			}break;			
 		}
 	}
 };
@@ -1665,11 +1665,43 @@ public:
 				pShapeElem->m_oShape.m_oText.m_oRuler = oArrayTextRuler[0]->m_oTextRuler;
 			}
 
-			std::vector<CRecordTextInteractiveInfoAtom*> oArrayTextInteractive;
-			this->GetRecordsByType(&oArrayTextInteractive, true);
-			if (0 != oArrayTextInteractive.size())
+			std::vector<CRecordInteractiveInfoAtom*> oArrayInteractive;
+			GetRecordsByType(&oArrayInteractive, true, true);
+
+			if (!oArrayInteractive.empty())
 			{
 				pShapeElem->m_oActions.m_bPresent = true;
+				
+				if (pMapIDs)
+				{
+					CExFilesInfo* pInfo1 = pMapIDs->LockAudioFromCollection(oArrayInteractive[0]->m_nSoundIdRef);
+					if (NULL != pInfo1)
+					{
+						pShapeElem->m_oActions.m_strAudioFileName = pInfo1->m_strFilePath;
+					}
+					CExFilesInfo* pInfo2 = pMapIDs->LockHyperlink(oArrayInteractive[0]->m_nExHyperlinkIdRef);
+					if (NULL != pInfo2)
+					{
+						pShapeElem->m_oActions.m_strHyperlink = pInfo2->m_strFilePath;
+					}
+				}
+				
+				pShapeElem->m_oActions.m_lType				= oArrayInteractive[0]->m_nAction;
+				pShapeElem->m_oActions.m_lOleVerb			= oArrayInteractive[0]->m_nOleVerb;
+				pShapeElem->m_oActions.m_lJump				= oArrayInteractive[0]->m_nJump;
+				pShapeElem->m_oActions.m_lHyperlinkType		= oArrayInteractive[0]->m_nHyperlinkType;
+				
+				pShapeElem->m_oActions.m_bAnimated			= oArrayInteractive[0]->m_bAnimated;
+				pShapeElem->m_oActions.m_bStopSound			= oArrayInteractive[0]->m_bStopSound;
+				pShapeElem->m_oActions.m_bCustomShowReturn	= oArrayInteractive[0]->m_bCustomShowReturn;
+				pShapeElem->m_oActions.m_bVisited			= oArrayInteractive[0]->m_bVisited;
+			}
+			
+			std::vector<CRecordTextInteractiveInfoAtom*> oArrayTextInteractive;
+			this->GetRecordsByType(&oArrayTextInteractive, true);
+			if (!oArrayTextInteractive.empty())
+			{
+				pShapeElem->m_oTextActions.m_bPresent = true;
 
 				int nSize = oArrayTextInteractive.size();
 				for (int i = 0; i < nSize; ++i)
@@ -1679,7 +1711,7 @@ public:
 					oRange.m_lStart = oArrayTextInteractive[i]->m_lStart;
 					oRange.m_lEnd	= oArrayTextInteractive[i]->m_lEnd;
 
-					pShapeElem->m_oActions.m_arRanges.push_back(oRange);
+					pShapeElem->m_oTextActions.m_arRanges.push_back(oRange);
 				}
 			}
 			double dAngle = pShapeElem->m_dRotate;
@@ -1924,11 +1956,11 @@ protected:
 			eTypePersist = (NSOfficePPT::TextType)pSettings->m_nTextType;
 			strText = pSettings->ApplyProperties(pTextSettings);
 
-			if ((0 != pSettings->m_arRanges.size()) && (0 == pShape->m_oActions.m_arRanges.size()))
+			if ((0 != pSettings->m_arRanges.size()) && (0 == pShape->m_oTextActions.m_arRanges.size()))
 			{
-				pShape->m_oActions.m_bPresent = true;
+				pShape->m_oTextActions.m_bPresent = true;
 				
-				pShape->m_oActions.m_arRanges = pSettings->m_arRanges;
+				pShape->m_oTextActions.m_arRanges = pSettings->m_arRanges;
 			}
 
 			bIsPersistPresentSettings = ((NULL != pSettings->m_pTextStyleProp) && (0 < pSettings->m_pTextStyleProp->m_lCount));
@@ -2202,7 +2234,7 @@ protected:
 		
 		ApplyThemeStyle(pElem, pTheme, master_levels);
 
-		if (pShape->m_oActions.m_bPresent)
+		if (pShape->m_oTextActions.m_bPresent)
 		{
 			//todooo разобраться нужно ли менять цвет на гиперлинк - 1-(34).ppt
 			NSPresentationEditor::CColor oColor;
@@ -2277,8 +2309,8 @@ protected:
 
 	void ApplyHyperlink(CShapeElement* pShape, CColor& oColor)
 	{
-		std::vector<CTextRange>* pRanges					= &pShape->m_oActions.m_arRanges;
-		CTextAttributesEx* pTextAttributes					= &pShape->m_oShape.m_oText;
+		std::vector<CTextRange>* pRanges	= &pShape->m_oTextActions.m_arRanges;
+		CTextAttributesEx* pTextAttributes	= &pShape->m_oShape.m_oText;
 
 		int lCountHyper	= pRanges->size();
 

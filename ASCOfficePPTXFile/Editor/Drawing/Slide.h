@@ -72,7 +72,7 @@ namespace NSPresentationEditor
 		vector_string			m_PlaceholdersReplaceString[3];
 		std::wstring			m_strComment;
 		std::wstring			m_sName;
-	public:
+
 		CSlide() : m_arElements(), m_oSlideShow()
 		{
 			Clear(); 
@@ -154,7 +154,7 @@ namespace NSPresentationEditor
 			m_sName				= oSrc.m_sName;
 		}
 
-	public:
+
 		void SetMetricInfo(const CMetricInfo& oInfo)
 		{
 			m_oInfo  = oInfo;
@@ -162,13 +162,6 @@ namespace NSPresentationEditor
 			m_lHeight			= m_oInfo.m_lMillimetresVer;
 			m_lOriginalWidth	= m_oInfo.m_lUnitsHor;
 			m_lOriginalHeight	= m_oInfo.m_lUnitsVer;
-		}
-
-		virtual void ReadFromXml(XmlUtils::CXmlNode& oNode)
-		{
-		}
-		virtual void WriteToXml(XmlUtils::CXmlWriter& oWriter)
-		{
 		}
 
 		void SetUpPlaceholderStyles(NSPresentationEditor::CLayout* pLayout)

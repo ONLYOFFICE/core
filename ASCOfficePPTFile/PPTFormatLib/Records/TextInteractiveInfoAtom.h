@@ -38,8 +38,6 @@ public:
 	LONG m_lStart;
 	LONG m_lEnd;
 
-public:
-	
 	CRecordTextInteractiveInfoAtom()
 	{
 		m_lStart	= 0;

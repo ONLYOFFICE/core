@@ -636,7 +636,10 @@ void NSPresentationEditor::CShapeWriter::WriteImageInfo()
 	
 	m_oWriter.WriteString(std::wstring(L"<p:nvPicPr>"));
 
-	std::wstring strShapeID = std::to_wstring(m_lNextShapeID);	
+	if (m_pImageElement->m_lID < 0) 
+		m_pImageElement->m_lID = m_lNextShapeID;
+
+	std::wstring strShapeID = std::to_wstring(m_pImageElement->m_lID);	
 	
 	m_oWriter.WriteString(std::wstring(L"<p:cNvPr id=\"") + strShapeID + L"\"" );
 	

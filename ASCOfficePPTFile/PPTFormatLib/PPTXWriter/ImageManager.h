@@ -112,7 +112,13 @@ namespace NSPresentationEditor
 			if (-1 != nIndexExt)
 				strExts = strInput.substr(nIndexExt);
 
-			if (strExts == _T(".tmp"))	strExts = strDefaultExt;
+			if (strExts == _T(".video") || strExts == _T(".audio"))
+			{
+				std::wstring strInput1 = strInput.substr(0, nIndexExt);
+				nIndexExt = strInput1.rfind(wchar_t('.'));
+				strExts =  nIndexExt < 0 ? L"" : strInput1.substr(nIndexExt);
+			}
+			if (strExts == _T(".tmp"))		strExts = strDefaultExt;
 
 			std::wstring strMediaName = Template + std::to_wstring(++Indexer);
 

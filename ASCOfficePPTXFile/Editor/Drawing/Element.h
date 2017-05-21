@@ -33,7 +33,6 @@
 #include "TextAttributesEx.h"
 #include "Interactive.h"
 #include "Animations.h"
-#include "ElementProperties.h"
 
 namespace NSPresentationEditor
 {
@@ -127,6 +126,9 @@ namespace NSPresentationEditor
 
 	class IElement
 	{
+	protected:
+		ULONG m_lCountRef;
+	
 	public:
 		ElementType			m_etType;
 		CDoubleRect			m_rcBounds;
@@ -136,7 +138,9 @@ namespace NSPresentationEditor
 		double				m_dStartTime;
 		double				m_dEndTime;
 
+		CTextInteractiveInfo m_oTextActions;
 		CInteractiveInfo	m_oActions;
+
 		CAnimationInfo		m_oAnimations;
 		CEffects			m_oEffects;
 
@@ -169,8 +173,6 @@ namespace NSPresentationEditor
 
 		bool				m_bIsChangeable;	// можно ли редактировать элемент
 
-		CElementProperties	m_oProperties;
-
 		CTheme*				m_pTheme;
 		CLayout*			m_pLayout;
 
@@ -179,11 +181,6 @@ namespace NSPresentationEditor
 
 		std::wstring		m_sHyperlink;
 
-	protected:
-		ULONG m_lCountRef;
-
-	public:	
-		
 		virtual ULONG AddRef()
 		{
 			++m_lCountRef;
@@ -266,6 +263,7 @@ namespace NSPresentationEditor
 			m_rcBoundsOriginal.top		= dScaleY * m_rcBounds.top;
 			m_rcBoundsOriginal.bottom	= dScaleY * m_rcBounds.bottom;
 		}
+		virtual IElement* CreateDublicate() = 0;
 
 	protected:
 		virtual void SetProperiesToDublicate(IElement* pDublicate)
@@ -293,6 +291,7 @@ namespace NSPresentationEditor
 			pDublicate->m_lLayoutID					= m_lLayoutID;
 
 			pDublicate->m_oActions					= m_oActions;
+			pDublicate->m_oTextActions				= m_oTextActions;
 			pDublicate->m_oAnimations				= m_oAnimations;
 			pDublicate->m_oEffects					= m_oEffects;
 
@@ -305,7 +304,6 @@ namespace NSPresentationEditor
 			pDublicate->m_nFormatDate				= m_nFormatDate;
 
 			pDublicate->m_oMetric					= m_oMetric;
-			pDublicate->m_oProperties				= m_oProperties;
 
 			pDublicate->m_dRotate					= m_dRotate;
 			pDublicate->m_bFlipH					= m_bFlipH;
@@ -319,22 +317,5 @@ namespace NSPresentationEditor
 			pDublicate->m_oBrush					= m_oBrush;
 			pDublicate->m_oShadow					= m_oShadow;
 		}
-
-	public:
-
-		virtual void SetupProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
-		{
-			std::map<CElementProperty::Type, CElementProperty>* pMap = &m_oProperties.m_arProperties;
-			
-			for (std::map<CElementProperty::Type, CElementProperty>::iterator pPair = pMap->begin(); pPair != pMap->end(); ++pPair)
-			{
-				CElementProperty oProperty = pPair->second;
-				SetupProperty(pSlide, pTheme, pLayout, &oProperty);
-			}
-		}
-
-		virtual void SetupProperty(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout, CElementProperty* pProperty)	= 0;
-		virtual IElement* CreateDublicate()																			= 0;
-
 	};
 }

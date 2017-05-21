@@ -36,8 +36,6 @@ class CRecordTripOriginalMasterId12Atom : public CUnknownRecord
 {
 public:
 	DWORD m_dwID;
-
-public:
 	
 	CRecordTripOriginalMasterId12Atom()
 	{

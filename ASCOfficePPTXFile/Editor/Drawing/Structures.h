@@ -329,7 +329,6 @@ namespace NSPresentationEditor
 
         LONG m_lID;
 
-    public:
         CElemInfo()
         {
             m_bIsBackground = false;

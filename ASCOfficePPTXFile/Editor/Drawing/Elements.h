@@ -310,7 +310,6 @@ namespace NSPresentationEditor
 
 		std::wstring	m_sImageName;
 
-	public:
 		CImageElement() : IElement()
 		{
 			m_etType = etPicture;
@@ -355,10 +354,6 @@ namespace NSPresentationEditor
 			pImageElement->m_bOLE					= m_bOLE;
 
 			return (IElement*)pImageElement;
-		}
-
-		virtual void SetupProperty(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout, CElementProperty* pProperty)
-		{
 		}
 		
 #ifdef ENABLE_PPT_TO_PPTX_CONVERT
@@ -471,14 +466,6 @@ namespace NSPresentationEditor
 		
 		virtual void SetupProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
 		{
-			std::map<CElementProperty::Type, CElementProperty>* pMap = &m_oProperties.m_arProperties;
-			
-			for (std::map<CElementProperty::Type, CElementProperty>::iterator pPair = pMap->begin(); pPair != pMap->end(); ++pPair)
-			{
-				CElementProperty oProperty = pPair->second;
-				SetupProperty(pSlide, pTheme, pLayout, &oProperty);
-			}
-
 			m_oShape.m_oText.m_lPlaceholderType = m_lPlaceholderType;
 			m_oShape.m_oText.m_lPlaceholderID	= m_lPlaceholderID;
 
@@ -494,169 +481,6 @@ namespace NSPresentationEditor
 		virtual void SetupTextProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout);
 
 		void CalculateColor(CColor& oColor, CSlide* pSlide, CTheme* pTheme, CLayout* pLayout);
-
-		virtual void SetupProperty(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout, CElementProperty* pProperty)
-		{
-			const LONG _EMU_MM = 36000;
-
-			switch (pProperty->m_ID)
-			{
-			case CElementProperty::epTextMarginLeft:
-				{
-					m_oShape.m_dTextMarginX		= (double)pProperty->m_dwValue / _EMU_MM;
-					break;
-				}
-			case CElementProperty::epTextMarginTop:
-				{
-					m_oShape.m_dTextMarginY			= (double)pProperty->m_dwValue / _EMU_MM;
-					break;
-				}
-			case CElementProperty::epTextMarginRight:
-				{
-					m_oShape.m_dTextMarginRight		= (double)pProperty->m_dwValue / _EMU_MM;
-					break;
-				}
-			case CElementProperty::epTextMarginBottom:
-				{
-					m_oShape.m_dTextMarginBottom	= (double)pProperty->m_dwValue / _EMU_MM;
-					break;
-				}
-			case CElementProperty::epText:
-				{
-					//m_oShape.m_oText.m_sText		= pProperty->m_strAdvanced;
-				}
-			case CElementProperty::epTextWrap:
-				{
-					m_oShape.m_oText.m_lWrapMode	= (LONG)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epBrushType:
-				{
-					m_oBrush.Type			= (LONG)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epBrushColor1:
-				{
-					m_oBrush.Color1.SetSBGR(pProperty->m_dwValue);
-					CalculateColor(m_oBrush.Color1, pSlide, pTheme, pLayout);
-					break;
-				}
-			case CElementProperty::epBrushColor2:
-				{
-					m_oBrush.Color2.SetSBGR(pProperty->m_dwValue);
-					CalculateColor(m_oBrush.Color2, pSlide, pTheme, pLayout);
-					break;
-				}
-			case CElementProperty::epBrushAlpha1:
-				{
-					m_oBrush.Alpha1 = (BYTE)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epBrushAlpha2:
-				{
-					m_oBrush.Alpha2 = (BYTE)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epBrushTxPath:
-				{
-					m_oBrush.TexturePath = pProperty->m_strAdvanced;
-					break;
-				}
-			case CElementProperty::epBrushTxMode:
-				{
-					m_oBrush.TextureMode	= (LONG)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epFilled:
-				{
-					if (0 == pProperty->m_dwValue)
-					{
-						m_oBrush.Alpha1		= 0;
-					}
-					break;
-				}
-			case CElementProperty::epPenColor:
-				{
-					m_oPen.Color.SetSBGR(pProperty->m_dwValue);
-					CalculateColor(m_oPen.Color, pSlide, pTheme, pLayout);
-					break;
-				}
-			case CElementProperty::epPenAlpha:
-				{
-					m_oPen.Alpha		= (BYTE)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epPenWidth:
-				{
-					m_oPen.Size		= (double)pProperty->m_dwValue / 0xFFFF;
-					break;
-				}
-			case CElementProperty::epPenJoin:
-				{
-					m_oPen.LineJoin	= (BYTE)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epLineDash:
-				{
-					m_oPen.DashStyle	= (BYTE)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epLineStartCap:
-				{
-					m_oPen.LineStartCap	= (BYTE)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epLineEndCap:
-				{
-					m_oPen.LineEndCap		= (BYTE)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epStroked:
-				{
-					if (0 == pProperty->m_dwValue)
-						m_oPen.Alpha = 0;
-
-					break;
-				}
-			case CElementProperty::epFontName:
-				{
-					m_oShape.m_oText.m_oAttributes.m_oFont.Name = pProperty->m_strAdvanced;
-					break;
-				}
-			case CElementProperty::epFontHorAlign:
-				{
-					m_oShape.m_oText.m_oAttributes.m_nTextAlignHorizontal = (int)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epFontVertAlign:
-				{
-					m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical	  = (int)pProperty->m_dwValue;	
-					break;
-				}
-			case CElementProperty::epFontSize:
-				{
-					m_oShape.m_oText.m_oAttributes.m_oFont.Size			= (double)pProperty->m_dwValue / 0xFFFF;
-					break;
-				}
-			case CElementProperty::epFontBold:
-				{
-					m_oShape.m_oText.m_oAttributes.m_oFont.Bold			= (pProperty->m_dwValue != 0);
-					break;
-				}
-			case CElementProperty::epFontItalic:
-				{
-					m_oShape.m_oText.m_oAttributes.m_oFont.Italic		= (pProperty->m_dwValue != 0);
-					break;
-				}
-			case CElementProperty::epFontStrikeout:
-				{
-					m_oShape.m_oText.m_oAttributes.m_oFont.Strikeout	= (BYTE)pProperty->m_dwValue;
-					break;
-				}
-			default:
-				break;
-			}
-		}
 
 #ifdef ENABLE_PPT_TO_PPTX_CONVERT
 
@@ -910,10 +734,6 @@ namespace NSPresentationEditor
 
 			return (IElement*)pAudioElement;
 		}
-
-		virtual void SetupProperty(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout, CElementProperty* pProperty)
-		{
-		}
 	};
 	class CVideoElement : public CImageElement
 	{
@@ -959,10 +779,6 @@ namespace NSPresentationEditor
 			pVideoElement->m_bLoop				=	m_bLoop;
 
 			return (IElement*)pVideoElement;
-		}
-
-		virtual void SetupProperty(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout, CElementProperty* pProperty)
-		{
 		}
 	};
 

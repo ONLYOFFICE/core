@@ -686,29 +686,9 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 		pTransition->m_bStopSound		= pAtom->m_bStopSound;
 		pTransition->m_nEffectDirection = pAtom->m_nEffectDirection;
 		pTransition->m_nEffectType		= pAtom->m_nEffectType;  // тут нужно сконвертить тип
+		pTransition->m_nSpeed			= pAtom->m_nSpeed;
 
 		pSlide->m_oSlideShow.m_dSlideDuration = pAtom->m_nSlideTime;
-
-		switch (pAtom->m_nSpeed)
-		{
-		case 0x00:
-			pTransition->m_dSpeed = 750.0;
-			break;
-		case 0x01:
-			pTransition->m_dSpeed = 500.0;	
-			break;
-		case 0x02:
-			pTransition->m_dSpeed = 250.0;
-			break;
-		default:
-			pTransition->m_dSpeed = 500.0;
-			break;
-		};
-	
-	}
-	else
-	{
-		pTransition->m_dSpeed = 0.0;
 	}
 
 	CSlideShowSlideInfoAtom* pAtom	= &pRecordSlide->m_oSlideShowSlideInfoAtom;

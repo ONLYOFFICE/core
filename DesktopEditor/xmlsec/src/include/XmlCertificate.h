@@ -8,6 +8,22 @@
 #define OOXML_HASH_ALG_SHA1         0
 #define OOXML_HASH_ALG_INVALID      1
 
+class Q_DECL_EXPORT CCertificateInfo
+{
+public:
+    std::wstring m_name;
+    std::string m_date;
+    std::string m_id;
+
+public:
+    CCertificateInfo()
+    {
+    }
+    ~CCertificateInfo()
+    {
+    }
+};
+
 class Q_DECL_EXPORT ICertificate
 {
 public:
@@ -26,6 +42,9 @@ public:
     virtual std::string GetCertificateBase64()  = 0;
     virtual std::string GetCertificateHash()    = 0;
 
+    virtual std::string GetDate()               = 0;
+    virtual std::string GetId()                 = 0;
+
 public:
     virtual std::string Sign(const std::string& sXml)                                   = 0;
     virtual std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlg)     = 0;
@@ -38,6 +57,18 @@ public:
 public:
     virtual bool ShowSelectDialog()             = 0;
     virtual int ShowCertificate()               = 0;
+
+    static CCertificateInfo GetDefault();
+    static ICertificate* GetById(const std::string& id);
+
+    virtual CCertificateInfo GetInfo()
+    {
+        CCertificateInfo info;
+        info.m_name = GetSignerName();
+        info.m_date = GetDate();
+        info.m_id = GetId();
+        return info;
+    }
 
 public:
     static int GetOOXMLHashAlg(const std::string& sAlg);

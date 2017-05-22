@@ -543,5 +543,7 @@ int COOXMLVerifier::GetSignatureCount()
 
 COOXMLSignature* COOXMLVerifier::GetSignature(const int& index)
 {
+    if (index >= (int)m_internal->m_arSignatures.size())
+        return NULL;
     return m_internal->m_arSignatures[index];
 }

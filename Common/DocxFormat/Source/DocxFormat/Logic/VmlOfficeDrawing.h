@@ -2165,7 +2165,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CSignatureLine 14.2.2.30 (Part 4)
 		//--------------------------------------------------------------------------------	
-		class CSignatureLine : public WritingElement, public PPTX::WrapperWritingElement
+        class CSignatureLine : public PPTX::WrapperWritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CSignatureLine)

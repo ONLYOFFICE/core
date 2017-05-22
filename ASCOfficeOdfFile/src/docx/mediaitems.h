@@ -33,7 +33,7 @@
 
 #include "oox_rels.h"
 
-#include "../../../Common/DocxFormat/Source/XML/utils.h"
+#include "../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore { 
 namespace oox {

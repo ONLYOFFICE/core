@@ -488,7 +488,6 @@ HEADERS += pptxformatlib.h \
     ../../../Editor/imagemanager.h \
     ../../../Editor/PPTXWriter.h \
     ../../../Editor/WMFToImageConverter.h \
-    ../../../Editor/XmlStringWriter.h \
     ../../../Editor/PresentationDrawingsDef.h \
     ../../../Editor/DefaultNotesMaster.h \
     ../../../Editor/DefaultNotesTheme.h \

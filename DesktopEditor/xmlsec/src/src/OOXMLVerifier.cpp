@@ -174,6 +174,9 @@ public:
             return;
         }
 
+        std::wstring sSetupID = FindFirstChild(GetObjectById("idOfficeObject"), L"SetupID").GetText();
+        m_guid = U_TO_UTF8(sSetupID);
+
         // 2) Check files (Manifect)
         XmlUtils::CXmlNode nodeManifect = GetObjectById("idPackageObject");
         if (!nodeManifect.IsValid())
@@ -197,10 +200,10 @@ public:
         // 3) Images
         XmlUtils::CXmlNode nodeImageValid = GetObjectById("idValidSigLnImg");
         if (nodeImageValid.IsValid())
-            m_sImageValidBase64 = U_TO_UTF8(nodeImageValid.GetText());
+            m_sImageValidBase64 = GetBase64Image(nodeImageValid);
         XmlUtils::CXmlNode nodeImageInvalid = GetObjectById("idInvalidSigLnImg");
         if (nodeImageInvalid.IsValid())
-            m_sImageInvalidBase64 = U_TO_UTF8(nodeImageInvalid.GetText());
+            m_sImageInvalidBase64 = GetBase64Image(nodeImageInvalid);
 
         // 4) Objects
         XmlUtils::CXmlNodes nodesReferences;
@@ -244,7 +247,7 @@ public:
         std::string sSignatureValue = U_TO_UTF8((m_node.ReadValueString(L"SignatureValue")));
 
         if (!m_cert->Verify(sSignatureCalcValue, sSignatureValue, nSignatureMethod))
-            m_valid = OOXML_SIGNATURE_INVALID;
+            m_valid = OOXML_SIGNATURE_INVALID;                
     }
 
     XmlUtils::CXmlNode GetObjectById(std::string sId)
@@ -260,6 +263,51 @@ public:
         }
         XmlUtils::CXmlNode ret;
         return ret;
+    }
+
+    XmlUtils::CXmlNode FindFirstChild(XmlUtils::CXmlNode& node, const std::wstring& sName)
+    {
+        if (node.GetName() == sName)
+            return node;
+
+        XmlUtils::CXmlNodes childs;
+        if (node.GetChilds(childs))
+        {
+            int nCount = childs.GetCount();
+            for (int i = 0; i < nCount; i++)
+            {
+                XmlUtils::CXmlNode child;
+                childs.GetAt(i, child);
+
+                XmlUtils::CXmlNode ret = FindFirstChild(child, sName);
+                if (ret.IsValid())
+                    return ret;
+            }
+        }
+
+        XmlUtils::CXmlNode ret;
+        return ret;
+    }
+
+    std::string GetBase64Image(XmlUtils::CXmlNode& node)
+    {
+        std::wstring sW = node.GetText();
+        std::string s = U_TO_UTF8(sW);
+
+        int len = (int)s.length();
+        int j = 0;
+
+        for (int i = 0; i < len;)
+        {
+            char c = s.at(i);
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || (c == '+') || (c == '/'))
+                s.at(j++) = s.at(i++);
+            else
+                i++;
+        }
+        s.resize(j);
+
+        return s;
     }
 
     friend class COOXMLVerifier;

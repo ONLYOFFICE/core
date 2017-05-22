@@ -303,15 +303,15 @@ void anim_transitionFilter::pptx_convert(oox::pptx_conversion_context & Context)
 				 if (filter_attlist_.smil_subtype_.get()==L"fromTop")		dir = L"d";	
 			else if (filter_attlist_.smil_subtype_.get()==L"fromLeft")		dir = L"r";	
 			else if (filter_attlist_.smil_subtype_.get()==L"fromRight")		dir = L"l";			
-			else if (filter_attlist_.smil_subtype_.get()==L"fromBottom")		dir = L"u";	
+			else if (filter_attlist_.smil_subtype_.get()==L"fromBottom")	dir = L"u";	
 			
 			else if (filter_attlist_.smil_subtype_.get()==L"topRight")		dir = L"ld";	
-			else if (filter_attlist_.smil_subtype_.get()==L"bottomLeft")		dir = L"lu";	
+			else if (filter_attlist_.smil_subtype_.get()==L"bottomLeft")	dir = L"lu";	
 			else if (filter_attlist_.smil_subtype_.get()==L"bottomRight")	dir = L"ru";
 			else if (filter_attlist_.smil_subtype_.get()==L"topLeft")		dir = L"rd";	
 		
 			else if (filter_attlist_.smil_subtype_.get()==L"fromTopLeft")	dir = L"rd";
-			else if (filter_attlist_.smil_subtype_.get()==L"fromBottomLeft")	dir = L"ru";
+			else if (filter_attlist_.smil_subtype_.get()==L"fromBottomLeft")dir = L"ru";
 			else if (filter_attlist_.smil_subtype_.get()==L"fromTopRight")	dir = L"ld";
 			else if (filter_attlist_.smil_subtype_.get()==L"fromBottomRight")dir = L"lu";
 

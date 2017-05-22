@@ -368,18 +368,18 @@ void draw_param::pptx_convert(oox::pptx_conversion_context & Context)
 
 void draw_plugin::pptx_convert(oox::pptx_conversion_context & Context)
 {
-//	Context.get_slide_context().set_use_image_replacement();
-//	
-//	std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
-//	std::wstring folderPath = Context.root()->get_folder();
-//	std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
-//
-//	Context.get_slide_context().set_media(href);
-////params	
-//	for (size_t i = 0; i < content_.size(); i++)
-//    {
-//        content_[i]->pptx_convert(Context);
-//    }
+	Context.get_slide_context().set_use_image_replacement();
+	
+	std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
+	std::wstring folderPath = Context.root()->get_folder();
+	std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
+
+	Context.get_slide_context().set_media(href);
+//params	
+	for (size_t i = 0; i < content_.size(); i++)
+    {
+        content_[i]->pptx_convert(Context);
+    }
 }
 }
 }

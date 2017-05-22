@@ -357,8 +357,15 @@ namespace PPTX
 						txXfrm->fromPPTY(pReader);
 						break;
 					}
+					case 7:
+					{
+						signatureLine = new OOX::VmlOffice::CSignatureLine();
+						signatureLine->fromPPTY(pReader);
+						break;
+					}
 					default:
 					{
+						pReader->SkipRecord();
 						break;
 					}
 				}
@@ -433,6 +440,7 @@ namespace PPTX
 			}
 
 			pWriter->WriteRecord2(6, txXfrm);
+			pWriter->WriteRecord2(7, signatureLine);
 			
 			pWriter->EndRecord();
 		}
@@ -505,7 +513,7 @@ namespace PPTX
 			}
 		}
 
-		void Shape::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group)
+		void Shape::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group, bool bSignature)
 		{
 			std::wstring strPath, strTextRect;
 			bool bOle = false;
@@ -546,7 +554,7 @@ namespace PPTX
             std::wstring strStrokeNode;;
 
 			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, bOle);
-			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, bOle);
+			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, bOle, bSignature);
 
 			pWriter->StartNode(L"v:shape");
 
@@ -637,7 +645,7 @@ namespace PPTX
 				//oStylesWriter.m_oWriter.AddCharNoCheck(WCHAR(','));
 				//oStylesWriter.m_oWriter.AddIntNoCheck(dH / 100);
 				//pWriter->WriteAttribute(L"coordsize", oStylesWriter.GetXmlString());
-				pWriter->WriteAttribute(L"coordsize", L"100000,100000");
+				pWriter->WriteAttribute(L"coordsize", (std::wstring)L"100000,100000");
 
 				pWriter->WriteAttribute(L"path", strPath);
 			}
@@ -671,6 +679,10 @@ namespace PPTX
 				pWriter->EndAttributes();
 				pWriter->WriteString(*strTextBoxShape); //??? todooo -> oTextBoxShape
 				pWriter->EndNode(L"v:textbox");
+			}
+			if (signatureLine.is_init())
+			{
+				signatureLine->toXmlWriter(pWriter);
 			}
 
 			pWriter->EndNode(L"v:shape");

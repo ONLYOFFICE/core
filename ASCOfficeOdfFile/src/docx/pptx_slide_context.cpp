@@ -60,6 +60,7 @@ public:
 
 		_CP_OPT(std::wstring)	Speed;
 		_CP_OPT(int)			Time;
+		_CP_OPT(int)			PageTime;
 		_CP_OPT(std::wstring)	Dir;
 		_CP_OPT(std::wstring)	Param;
 		bool					onClick;
@@ -135,6 +136,7 @@ private:
 	void process_chart	(drawing_object_description& obj, _pptx_drawing & drawing);
 	void process_table	(drawing_object_description& obj, _pptx_drawing & drawing);
 	void process_object	(drawing_object_description& obj, _pptx_drawing & drawing);
+	void process_media	(drawing_object_description& obj, _pptx_drawing & drawing);
 	
 	size_t				rId_;
 	mediaitems			mediaitems_;
@@ -160,7 +162,7 @@ void pptx_slide_context::Impl::process_drawings()
 			case typeChart:		process_chart(objects_[i], drawing);	break;
 			case typeShape:		process_shape(objects_[i], drawing);	break;
 			case typeTable:		process_table(objects_[i], drawing);	break;
-			case typeMedia:	
+			case typeMedia:		process_media(objects_[i], drawing);	break;
 			case typeMsObject:	
 			case typeOleObject:	process_object(objects_[i], drawing);	break;
 		}
@@ -369,6 +371,7 @@ void pptx_slide_context::start_action(std::wstring action)
 
 	if (action == L"sound")
 	{
+		impl_->object_description_.action_.action = L"ppaction://noaction";
 		impl_->object_description_.action_.typeRels = typeAudio;
 		impl_->object_description_.action_.highlightClick = true;
 	}
@@ -403,18 +406,29 @@ void pptx_slide_context::start_action(std::wstring action)
 void pptx_slide_context::set_link(std::wstring link, RelsType typeRels)
 {
 	++hlinks_size_;
-	std::wstring hId = L"hId" + std::to_wstring(hlinks_size_);
 	
-	link = xml::utils::replace_text_to_xml(link);
-	
-	if (typeRels == typeHyperlink)
-		XmlUtils::replace_all( link, L" .", L".");		//1 (130).odt
-
 	impl_->object_description_.action_.highlightClick = true;
 
-	impl_->object_description_.action_.hId		= hId;
-	impl_->object_description_.action_.hRef		= link;
-	impl_->object_description_.action_.typeRels	= typeRels;
+	if (typeRels == typeAudio)
+	{
+		bool isMediaInternal = true;
+		
+		impl_->object_description_.action_.hSoundId = get_mediaitems().add_or_find(link, typeAudio, isMediaInternal, impl_->object_description_.action_.hSoundRef);		
+		impl_->add_additional_rels(isMediaInternal, impl_->object_description_.action_.hSoundId, impl_->object_description_.action_.hSoundRef, typeAudio);
+	}
+	else
+	{
+		impl_->object_description_.action_.typeRels	= typeRels;
+		
+		std::wstring hId = L"hId" + std::to_wstring(hlinks_size_);
+		link = xml::utils::replace_text_to_xml(link);
+		
+		if (typeRels == typeHyperlink)
+			XmlUtils::replace_all( link, L" .", L".");		//1 (130).odt
+
+		impl_->object_description_.action_.hId	= hId;
+		impl_->object_description_.action_.hRef	= link;
+	}
 }
 void pptx_slide_context::end_action()
 {
@@ -620,7 +634,26 @@ void pptx_slide_context::Impl::process_object(drawing_object_description& obj, _
 		add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);
 	}
 }
+void pptx_slide_context::Impl::process_media(drawing_object_description& obj, _pptx_drawing & drawing)
+{
+    std::wstring ref;
+    bool isMediaInternal = true;
 
+	drawing.type = mediaitems::detectMediaType(obj.xlink_href_); //reset from Media to Audio, Video, ... QuickTime? AudioCD? ...   
+	
+	drawing.objectId = get_mediaitems().add_or_find(obj.xlink_href_, drawing.type, isMediaInternal, ref);    
+	drawing.extId	 = L"ext" + drawing.objectId;
+	
+	add_drawing(drawing, false, drawing.objectId, L"NULL", drawing.type);
+	add_additional_rels( true, drawing.extId, ref, typeMedia);
+
+	if (drawing.fill.bitmap)
+	{
+		drawing.fill.bitmap->rId = get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
+		
+		add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);
+	}
+}
 void pptx_slide_context::Impl::process_common_properties(drawing_object_description & pic, _pptx_drawing & drawing)
 {
 	if (pic.svg_rect_)
@@ -714,8 +747,12 @@ void pptx_slide_context::serialize_animations(std::wostream & strm)
 				}
 				if (impl_->transition_.Time)
 				{
-					CP_XML_ATTR(L"advTm",impl_->transition_.Time.get());
-				}				
+					CP_XML_ATTR(L"p14:dur", impl_->transition_.Time.get());
+				}	
+				if (impl_->transition_.PageTime)
+				{
+					CP_XML_ATTR(L"advTm", impl_->transition_.PageTime.get());
+				}
 				CP_XML_ATTR(L"advClick", impl_->transition_.onClick);
 				
 				CP_XML_NODE(std::wstring(L"p:" + impl_->transition_.Type))
@@ -738,9 +775,22 @@ void pptx_slide_context::serialize_animations(std::wostream & strm)
 				//p:sndAc
 			}
 		}
-		//CP_XML_NODE(L"p:timing")- последовательности p:par
-		//{
-		//}
+		CP_XML_NODE(L"p:timing")
+		{
+			CP_XML_NODE(L"p:tnLst")
+			{
+				CP_XML_NODE(L"p:par")
+				{
+					CP_XML_NODE(L"p:cTn")
+					{
+						CP_XML_ATTR(L"nodeType", L"tmRoot");
+						CP_XML_ATTR(L"id", 1);
+						CP_XML_ATTR(L"dur", L"indefinite");
+						CP_XML_ATTR(L"restart", L"never");
+					}
+				}
+			}
+		}
 	}
 }
 

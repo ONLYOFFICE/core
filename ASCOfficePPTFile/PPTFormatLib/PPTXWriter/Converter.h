@@ -50,7 +50,7 @@ namespace NSPresentationEditor
 
 		CDocument	*	m_pDocument;
 		CPPTUserInfo*	m_pUserInfo;
-		CImageManager	m_oManager;
+		CMediaManager	m_oManager;
 
 		CShapeWriter*	m_pShapeWriter;
 
@@ -79,6 +79,7 @@ namespace NSPresentationEditor
 		void WriteSlide			(int nIndexSlide);
 		void WriteNotes			(int nIndexNotes);
 		
+		void WriteTransition	(CStringWriter& oWriter, CTransition& transition);		
 		void WriteColorScheme	(CStringWriter& oWriter, const std::wstring & name, const std::vector<CColor> & colors, bool extra = false);
 		void WriteBackground	(CStringWriter& oWriter, CRelsGenerator& oRels, CBrush& oBackground);
 		void WriteElement		(CStringWriter& oWriter, CRelsGenerator& oRels, IElement* pElement, CLayout* pLayout = NULL);

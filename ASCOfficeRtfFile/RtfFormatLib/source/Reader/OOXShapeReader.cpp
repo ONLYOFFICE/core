@@ -534,10 +534,10 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 				OOX::VmlOffice::CSignatureLine *signature = dynamic_cast<OOX::VmlOffice::CSignatureLine*>(m_arrElement->m_arrItems[i]);
 				if ( signature )
 				{
-					if (signature->m_oIsSignatureLine.GetValue() == SimpleTypes::booleanTrue)
+					if (signature->m_oIsSignatureLine.IsInit() && signature->m_oIsSignatureLine->ToBool())
 						pOutput->m_bIsSignatureLine = 1;
 
-					if (signature->m_oAllowComments.GetValue() == SimpleTypes::booleanTrue)
+					if (signature->m_oAllowComments.IsInit() && signature->m_oAllowComments->ToBool())
 						pOutput->m_bSigSetupAllowComments = 1;
 
 					if (signature->m_oProvId.IsInit())

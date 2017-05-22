@@ -33,9 +33,6 @@
 #include "mediaitems.h"
 
 #include <boost/regex.hpp>
-#include <boost/foreach.hpp>
-#include <boost/algorithm/string/case_conv.hpp>
-#include <boost/lexical_cast.hpp>
 
 #include <cpdoccore/xml/utils.h>
 
@@ -92,12 +89,18 @@ std::wstring static get_default_file_name(RelsType type)
         return L"image";
     case typeChart:
         return L"chart";
-    case typeMedia:
-        return L"media";
     case typeMsObject:
        return L"msObject";
 	case typeOleObject:
        return L"oleObject";
+    case typeMedia:
+        return L"media";
+	case typeSlide:
+        return L"slide";
+	case typeVideo:
+        return L"video"; 
+	case typeAudio:
+        return L"audio";
 	default:
         return L"";
     }
@@ -142,8 +145,7 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, RelsType typ
    
 	return get_default_file_name(type) + std::to_wstring(Num) + sExt;
 }
-
-std::wstring mediaitems::detectImageFileExtension(std::wstring &fileName)
+std::wstring mediaitems::detectImageFileExtension(const std::wstring &fileName)
 {
 	CFile file;
 
@@ -187,6 +189,9 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 	else if ( type == typeImage)		number = count_image	+ 1;
 	else if ( type == typeShape)		number = count_shape	+ 1;
 	else if ( type == typeMedia)		number = count_media	+ 1;
+	else if ( type == typeAudio)		number = count_audio	+ 1;
+	else if ( type == typeVideo)		number = count_video	+ 1;
+	else if ( type == typeSlide)		number = count_slide	+ 1;
 	else if ( type == typeMsObject ||
 			  type == typeOleObject)	number = count_object	+ 1;
 	else
@@ -239,6 +244,21 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 		{
 			id = std::wstring(L"objId") + std::to_wstring(count_object + 1);
 			count_object++;
+		}
+		else if ( type == typeAudio)
+		{
+			id = std::wstring(L"aId") + std::to_wstring(count_audio + 1);
+			count_audio++;
+		}
+		else if ( type == typeVideo)
+		{
+			id = std::wstring(L"vId") + std::to_wstring(count_video + 1);
+			count_video++;
+		}
+		else if ( type == typeMedia)
+		{
+			id = std::wstring(L"mId") + std::to_wstring(count_media + 1);
+			count_media++;
 		}
 		else
 		{

@@ -1026,12 +1026,12 @@ namespace PPTX
 				}
 				if(bOle)
 				{
-					pWriter->WriteAttribute(L"filled", L"f");
+					pWriter->WriteAttribute(L"filled", (std::wstring)L"f");
 				}
 				std::wstring strNodeVal;
 				if (!spPr.ln.is_init())
 				{
-					pWriter->WriteAttribute(L"stroked", L"false");
+					pWriter->WriteAttribute(L"stroked", (std::wstring)L"false");
 				}
 				else
 				{
@@ -1061,7 +1061,7 @@ namespace PPTX
 					{
 						pWriter->WriteAttribute(L"r:id", blipFill.blip->embed->ToString());
 					}
-					pWriter->WriteAttribute(L"o:title", L"");
+					pWriter->WriteAttribute(L"o:title", (std::wstring)L"");
 					pWriter->EndAttributes();
 					pWriter->EndNode(L"v:imagedata");
 				}
@@ -1097,8 +1097,8 @@ namespace PPTX
 				}
 				if(bOle)
 				{
-					pWriter->WriteAttribute(L"filled", L"f");
-					pWriter->WriteAttribute(L"stroked", L"f");
+					pWriter->WriteAttribute(L"filled", (std::wstring)L"f");
+					pWriter->WriteAttribute(L"stroked", (std::wstring)L"f");
 				}
 
 				pWriter->EndAttributes();
@@ -1108,7 +1108,7 @@ namespace PPTX
 					pWriter->StartNode(L"v:imagedata");
 					pWriter->StartAttributes();
 					pWriter->WriteAttribute(L"r:id", blipFill.blip->embed->ToString());
-					pWriter->WriteAttribute(L"o:title", L"");
+					pWriter->WriteAttribute(L"o:title", (std::wstring)L"");
 					pWriter->EndAttributes();
 					pWriter->EndNode(L"v:imagedata");
 				}

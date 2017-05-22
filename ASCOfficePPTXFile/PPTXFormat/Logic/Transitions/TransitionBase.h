@@ -50,7 +50,6 @@ namespace PPTX
 			const TransitionBase& operator =(XmlUtils::CXmlNode& node);
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual void GetTransitionTypeFrom(XmlUtils::CXmlNode& element);
 			virtual bool is_init()const{return (base.IsInit());};
 			
 			template<class T> const bool is() const { return base.is<T>(); }
@@ -75,7 +74,6 @@ namespace PPTX
 		public:
 			TransitionSerialize()
 			{
-				m_strNodeName = _T("");
 			}
 			virtual ~TransitionSerialize()
 			{
@@ -94,10 +92,7 @@ namespace PPTX
 				m_strAttributesValues = src.m_strAttributesValues;
 				return *this;
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual void GetTransitionTypeFrom(XmlUtils::CXmlNode& element);
 
 			virtual std::wstring toXML() const;
 
@@ -253,8 +248,9 @@ namespace PPTX
 				pWriter->EndNode(name);
 			}
 
-		public:
-			std::wstring				m_strNodeName;
+
+			std::wstring			m_strNodeName;
+
 			std::list<std::wstring>	m_strAttributesNames;
 			std::list<std::wstring>	m_strAttributesValues;
 

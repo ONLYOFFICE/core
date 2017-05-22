@@ -751,10 +751,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Records\SlideNumberMCAtom.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Records\SlidePersistAtom.h"
 				>
 			</File>
@@ -967,19 +963,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\ElementProperties.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Elements.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Elements.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Enums.h"
 				>
 			</File>
 			<File
@@ -1056,10 +1044,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\CommentsWriter.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\ContentTypesWriter.h"
 				>
 			</File>
 			<File

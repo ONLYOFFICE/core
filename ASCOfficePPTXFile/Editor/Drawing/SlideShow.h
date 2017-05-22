@@ -46,21 +46,19 @@ namespace NSPresentationEditor
 		bool	m_bLoopSound;			// зациклить аудио
 		bool	m_bStopSound;			// перед транзишном перестать играть все аудио до этого
 
-		double	m_dSpeed;				// длительность в миллисекундах
-
-	public:
+		int		m_nSpeed;
 
 		CTransition() : m_oAudio()
 		{
 			m_bAudioPresent		= false;
 			
-			m_nEffectType		= 0;
+			m_nEffectType		= 0xff;
 			m_nEffectDirection	= 0;
 
 			m_bLoopSound		= false;
 			m_bStopSound		= false;
 
-			m_dSpeed			= 500.0;
+			m_nSpeed			= 2;
 		}
 		~CTransition()
 		{
@@ -76,7 +74,7 @@ namespace NSPresentationEditor
 			m_bLoopSound		= oSrc.m_bLoopSound;
 			m_bStopSound		= oSrc.m_bStopSound;
 
-			m_dSpeed			= oSrc.m_dSpeed;
+			m_nSpeed			= oSrc.m_nSpeed;
 
 			return *this;
 		}
@@ -96,8 +94,6 @@ namespace NSPresentationEditor
 		CTransition	m_oTransition;	// переход
 
 		bool	m_bOnlyClick;		// переход на следующий по щелчку
-
-	public:
 
 		CSlideShowInfo() : m_oTransition()
 		{

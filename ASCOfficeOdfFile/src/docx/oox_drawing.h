@@ -60,15 +60,22 @@ namespace oox {
 			enabled			= false;
 			highlightClick	= false;
 			
+			hSoundId.clear();
+			hSoundRef.clear();
+
 			hId.clear(); 
 			hRef.clear();
+
 			action.clear();
 		}
 		bool			enabled;
+        std::wstring	action;
         
+		std::wstring	hSoundId;
+		std::wstring	hSoundRef;
+
 		std::wstring	hId;
         std::wstring	hRef;
-        std::wstring	action;
 
 		RelsType		typeRels;
 		bool			highlightClick;
@@ -94,6 +101,8 @@ namespace oox {
 
         std::wstring	objectId;
 		std::wstring	objectProgId; 
+
+		std::wstring	extId;
 
 		_action_desc				action;
 		std::vector<_hlink_desc>	hlinks;

@@ -310,7 +310,6 @@ namespace NSPresentationEditor
 
 		std::wstring	m_sImageName;
 
-	public:
 		CImageElement() : IElement()
 		{
 			m_etType = etPicture;
@@ -330,73 +329,9 @@ namespace NSPresentationEditor
 			m_bImagePresent			= false;
 
 		}
-
 		virtual ~CImageElement()
 		{
 		}
-
-		virtual void WriteToXml(XmlUtils::CXmlWriter& oWriter)
-		{
-            std::wstring strXml = SaveToXML();
-			oWriter.WriteString(strXml);
-		}
-		virtual void ReadFromXml(XmlUtils::CXmlNode& oNode)
-		{
-		}
-
-        virtual std::wstring SaveToXML()
-		{
-            std::wstring strEffect;
-
-//			if (!m_oAnimations.m_arAnimations.empty())
-//				return ToAnimationXml();
-			
-//			LONG lFlags = 0;
-//			if (m_bFlipH)
-//				lFlags |= 0x0001;
-//			if (m_bFlipV)
-//				lFlags |= 0x0002;
-
-//            strEffect.Format(_T("<ImagePaint-DrawImageFromFile left='%d' top='%d' right='%d' bottom='%d' angle='%lf' flags='%d' filepath='%ls' metric='0' backcolor='-1' scaletype='-1' scalecolor='255' widthmetric='%d' heightmetric='%d'>\
-//					<timeline type='1' begin='%lf' end='%lf' fadein='0' fadeout='0' completeness='1.0' /></ImagePaint-DrawImageFromFile>"),
-//					(LONG)m_rcBounds.left, (LONG)m_rcBounds.top, (LONG)m_rcBounds.right, (LONG)m_rcBounds.bottom,
-//					m_dRotate, lFlags, m_strImageFileName,
-//					m_oMetric.m_lMillimetresHor, m_oMetric.m_lMillimetresVer,
-//					m_dStartTime, m_dEndTime);
-
-			return strEffect;
-		}
-
-//        std::wstring ToAnimationXml()
-//		{
-//			LONG lFlags = 0;
-//			if (m_bFlipH)
-//				lFlags |= 0x0001;
-//			if (m_bFlipV)
-//				lFlags |= 0x0002;
-
-//            std::wstring strEffect = _T("");
-//            strEffect.Format(_T("<ImagePaint-DrawImageFromFile left='%d' top='%d' right='%d' bottom='%d' angle='%lf' flags='%d' filepath='%ls' metric='0' backcolor='-1' scaletype='-1' scalecolor='255' widthmetric='%d' heightmetric='%d'>\
-//					<timeline type='1' begin='%lf' end='%lf' fadein='0' fadeout='0' completeness='1.0' /></ImagePaint-DrawImageFromFile>"),
-//					(LONG)m_rcBounds.left, (LONG)m_rcBounds.top, (LONG)m_rcBounds.right, (LONG)m_rcBounds.bottom,
-//					m_dRotate, lFlags, m_strImageFileName,
-//					m_oMetric.m_lMillimetresHor, m_oMetric.m_lMillimetresVer,
-//					m_dStartTime, m_dEndTime);
-
-//            std::wstring TimeLine;
-//			TimeLine.Format ( _T("<timeline type = \"1\"  begin=\"%f\" end=\"%f\" fadein=\"0\" fadeout=\"0\" completeness=\"1.0\"/> "),
-//				m_dStartTime, m_dEndTime );
-
-//            std::wstring Source	= m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
-//			Source	+=	TimeLine;
-//			Source	+=	_T("</ImagePaint-DrawImageFromFileAnimate>");
-
-//			strEffect.Replace ( _T("</ImagePaint-DrawImageFromFile>"), Source );
-//			strEffect.Replace ( _T("<ImagePaint-DrawImageFromFile"), _T("<ImagePaint-DrawImageFromFileAnimate") );
-
-//			return strEffect;
-//		}
-
 		virtual IElement* CreateDublicate()
 		{
 			CImageElement* pImageElement = new CImageElement();
@@ -419,10 +354,6 @@ namespace NSPresentationEditor
 			pImageElement->m_bOLE					= m_bOLE;
 
 			return (IElement*)pImageElement;
-		}
-
-		virtual void SetupProperty(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout, CElementProperty* pProperty)
-		{
 		}
 		
 #ifdef ENABLE_PPT_TO_PPTX_CONVERT
@@ -535,14 +466,6 @@ namespace NSPresentationEditor
 		
 		virtual void SetupProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
 		{
-			std::map<CElementProperty::Type, CElementProperty>* pMap = &m_oProperties.m_arProperties;
-			
-			for (std::map<CElementProperty::Type, CElementProperty>::iterator pPair = pMap->begin(); pPair != pMap->end(); ++pPair)
-			{
-				CElementProperty oProperty = pPair->second;
-				SetupProperty(pSlide, pTheme, pLayout, &oProperty);
-			}
-
 			m_oShape.m_oText.m_lPlaceholderType = m_lPlaceholderType;
 			m_oShape.m_oText.m_lPlaceholderID	= m_lPlaceholderID;
 
@@ -558,169 +481,6 @@ namespace NSPresentationEditor
 		virtual void SetupTextProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout);
 
 		void CalculateColor(CColor& oColor, CSlide* pSlide, CTheme* pTheme, CLayout* pLayout);
-
-		virtual void SetupProperty(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout, CElementProperty* pProperty)
-		{
-			const LONG _EMU_MM = 36000;
-
-			switch (pProperty->m_ID)
-			{
-			case CElementProperty::epTextMarginLeft:
-				{
-					m_oShape.m_dTextMarginX		= (double)pProperty->m_dwValue / _EMU_MM;
-					break;
-				}
-			case CElementProperty::epTextMarginTop:
-				{
-					m_oShape.m_dTextMarginY			= (double)pProperty->m_dwValue / _EMU_MM;
-					break;
-				}
-			case CElementProperty::epTextMarginRight:
-				{
-					m_oShape.m_dTextMarginRight		= (double)pProperty->m_dwValue / _EMU_MM;
-					break;
-				}
-			case CElementProperty::epTextMarginBottom:
-				{
-					m_oShape.m_dTextMarginBottom	= (double)pProperty->m_dwValue / _EMU_MM;
-					break;
-				}
-			case CElementProperty::epText:
-				{
-					//m_oShape.m_oText.m_sText		= pProperty->m_strAdvanced;
-				}
-			case CElementProperty::epTextWrap:
-				{
-					m_oShape.m_oText.m_lWrapMode	= (LONG)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epBrushType:
-				{
-					m_oBrush.Type			= (LONG)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epBrushColor1:
-				{
-					m_oBrush.Color1.SetSBGR(pProperty->m_dwValue);
-					CalculateColor(m_oBrush.Color1, pSlide, pTheme, pLayout);
-					break;
-				}
-			case CElementProperty::epBrushColor2:
-				{
-					m_oBrush.Color2.SetSBGR(pProperty->m_dwValue);
-					CalculateColor(m_oBrush.Color2, pSlide, pTheme, pLayout);
-					break;
-				}
-			case CElementProperty::epBrushAlpha1:
-				{
-					m_oBrush.Alpha1 = (BYTE)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epBrushAlpha2:
-				{
-					m_oBrush.Alpha2 = (BYTE)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epBrushTxPath:
-				{
-					m_oBrush.TexturePath = pProperty->m_strAdvanced;
-					break;
-				}
-			case CElementProperty::epBrushTxMode:
-				{
-					m_oBrush.TextureMode	= (LONG)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epFilled:
-				{
-					if (0 == pProperty->m_dwValue)
-					{
-						m_oBrush.Alpha1		= 0;
-					}
-					break;
-				}
-			case CElementProperty::epPenColor:
-				{
-					m_oPen.Color.SetSBGR(pProperty->m_dwValue);
-					CalculateColor(m_oPen.Color, pSlide, pTheme, pLayout);
-					break;
-				}
-			case CElementProperty::epPenAlpha:
-				{
-					m_oPen.Alpha		= (BYTE)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epPenWidth:
-				{
-					m_oPen.Size		= (double)pProperty->m_dwValue / 0xFFFF;
-					break;
-				}
-			case CElementProperty::epPenJoin:
-				{
-					m_oPen.LineJoin	= (BYTE)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epLineDash:
-				{
-					m_oPen.DashStyle	= (BYTE)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epLineStartCap:
-				{
-					m_oPen.LineStartCap	= (BYTE)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epLineEndCap:
-				{
-					m_oPen.LineEndCap		= (BYTE)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epStroked:
-				{
-					if (0 == pProperty->m_dwValue)
-						m_oPen.Alpha = 0;
-
-					break;
-				}
-			case CElementProperty::epFontName:
-				{
-					m_oShape.m_oText.m_oAttributes.m_oFont.Name = pProperty->m_strAdvanced;
-					break;
-				}
-			case CElementProperty::epFontHorAlign:
-				{
-					m_oShape.m_oText.m_oAttributes.m_nTextAlignHorizontal = (int)pProperty->m_dwValue;
-					break;
-				}
-			case CElementProperty::epFontVertAlign:
-				{
-					m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical	  = (int)pProperty->m_dwValue;	
-					break;
-				}
-			case CElementProperty::epFontSize:
-				{
-					m_oShape.m_oText.m_oAttributes.m_oFont.Size			= (double)pProperty->m_dwValue / 0xFFFF;
-					break;
-				}
-			case CElementProperty::epFontBold:
-				{
-					m_oShape.m_oText.m_oAttributes.m_oFont.Bold			= (pProperty->m_dwValue != 0);
-					break;
-				}
-			case CElementProperty::epFontItalic:
-				{
-					m_oShape.m_oText.m_oAttributes.m_oFont.Italic		= (pProperty->m_dwValue != 0);
-					break;
-				}
-			case CElementProperty::epFontStrikeout:
-				{
-					m_oShape.m_oText.m_oAttributes.m_oFont.Strikeout	= (BYTE)pProperty->m_dwValue;
-					break;
-				}
-			default:
-				break;
-			}
-		}
 
 #ifdef ENABLE_PPT_TO_PPTX_CONVERT
 
@@ -925,7 +685,7 @@ namespace NSPresentationEditor
 		
 	};
 
-	class CAudioElement : public IElement
+	class CAudioElement : public CImageElement
 	{
 	public:
 		std::wstring	m_strAudioFileName;
@@ -938,8 +698,7 @@ namespace NSPresentationEditor
 		double			m_dClipEndTime;
         bool			m_bLoop;
 
-	public:
-		CAudioElement() : IElement()
+		CAudioElement() : CImageElement()
 		{
 			m_etType			= etAudio;
 			
@@ -957,60 +716,11 @@ namespace NSPresentationEditor
 		{
 		}
 
-        virtual std::wstring SaveToXML()
-		{
-            std::wstring element;
-//			element.Format(_T("<AudioSource StartTime='%lf' Duration='%lf' Amplify='%lf'>"), m_dStartTime, m_dEndTime-m_dStartTime, (double)m_nAmplify);
-
-//			int lIndex = m_strAudioFileName.find(L"file:///");
-//			if (0 == lIndex)
-//			{
-//				m_strAudioFileName = m_strAudioFileName.substr(8);
-//				//m_strFileName.Replace('/', '\\');
-//				//m_strFileName.Replace(L"%20", L" ");
-//			}
-
-//			std::wstring strFileName = m_strAudioFileName;
-//			CorrectXmlString(strFileName);
-
-//            std::wstring source;
-//            source.Format(_T("<Source StartTime='%lf' EndTime='%lf' FilePath='%ls' loop='%d' />"), m_dClipStartTime, m_dClipEndTime, strFileName, m_bLoop);
-//			element	+=	source;
-
-//            std::wstring animations;
-//			if(!m_oAnimations.m_arAnimations.empty())								//	для audio только "media call's" - play - pause - stop
-//			{
-//				m_oAnimations.m_dSlideWidth		=	m_oMetric.m_lMillimetresHor;
-//				m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;
-//				animations						=	m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
-
-//				element		+=	animations;
-//			}
-			
-//            std::wstring timeLine;
-//			timeLine.Format ( _T("<timeline type = \"1\"  begin=\"%f\" end=\"%f\" fadein=\"0\" fadeout=\"0\" completeness=\"1.0\"/> "),	m_dStartTime, m_dEndTime );
-			
-//			element			+=	timeLine;
-//			element			+=	_T("</AudioSource>");
-
-			return element;
-		}
-
-		virtual void WriteToXml(XmlUtils::CXmlWriter& oWriter)
-		{
-            std::wstring strXml = SaveToXML();
-			oWriter.WriteString(strXml);
-		}
-
-		virtual void ReadFromXml(XmlUtils::CXmlNode& oNode)
-		{
-		}
-
 		virtual IElement* CreateDublicate()
 		{
 			CAudioElement* pAudioElement = new CAudioElement();
 			
-			SetProperiesToDublicate((IElement*)pAudioElement);
+			SetProperiesToDublicate((CImageElement*)pAudioElement);
 
 			pAudioElement->m_strAudioFileName	= m_strAudioFileName;
 			pAudioElement->m_nAmplify			= m_nAmplify;
@@ -1023,10 +733,6 @@ namespace NSPresentationEditor
 			pAudioElement->m_dClipEndTime		= m_dClipEndTime;
 
 			return (IElement*)pAudioElement;
-		}
-
-		virtual void SetupProperty(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout, CElementProperty* pProperty)
-		{
 		}
 	};
 	class CVideoElement : public CImageElement
@@ -1041,7 +747,6 @@ namespace NSPresentationEditor
 
 		bool			m_bLoop;
 
-	public:
 		CVideoElement() : CImageElement()
 		{
 			m_etType			=	etVideo;
@@ -1057,31 +762,12 @@ namespace NSPresentationEditor
 		virtual ~CVideoElement()
 		{
 		}
-
-		virtual void WriteToXml(XmlUtils::CXmlWriter& oWriter)
-		{
-            std::wstring strXml = SaveToXML();
-			oWriter.WriteString(strXml);
-		}
-		virtual void ReadFromXml(XmlUtils::CXmlNode& oNode)
-		{
-		}
 		
-        virtual std::wstring SaveToXML()
-		{
-            return L""; //GetVideoStream () + GetAudioStream ();
-		}
-		
-        std::wstring ToAnimationXml()
-		{
-            return L"";
-		}
-
 		virtual IElement* CreateDublicate()
 		{
 			CVideoElement* pVideoElement = new CVideoElement();
 			
-			SetProperiesToDublicate((IElement*)pVideoElement);
+			SetProperiesToDublicate((CImageElement*)pVideoElement);
 
 			pVideoElement->m_strVideoFileName	=	m_strVideoFileName;
 			pVideoElement->m_nAlpha				=	m_nAlpha;
@@ -1094,87 +780,6 @@ namespace NSPresentationEditor
 
 			return (IElement*)pVideoElement;
 		}
-
-		virtual void SetupProperty(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout, CElementProperty* pProperty)
-		{
-		}
-
-//        inline std::wstring GetVideoStream ()
-//		{
-//			int lIndex = m_strVideoFileName.find(L"file:///");
-//			if (0 == lIndex)
-//			{
-//				m_strVideoFileName = m_strVideoFileName.substr(8);
-//				/*m_strFileName.Replace('/', '\\');*/
-//			}
-			
-//			std::wstring strFileName = m_strVideoFileName;
-//			CorrectXmlString(strFileName);
-
-//            std::wstring element;
-//			element.Format ( L"<VideoStream left='%d' top='%d' right='%d' bottom='%d' angle='%f' loop='%d' \
-//widthmetric='%d' heightmetric='%d' file='%ls' begin='%f' end='%f' >",
-//				(LONG)m_rcBounds.left, (LONG)m_rcBounds.top, (LONG)m_rcBounds.right, (LONG)m_rcBounds.bottom, m_dRotate, m_bLoop,
-//				m_oMetric.m_lMillimetresHor, m_oMetric.m_lMillimetresVer,
-//				strFileName, m_dClipStartTime, m_dClipEndTime );
-
-//            std::wstring animations;
-//			if(!m_oAnimations.m_arAnimations.empty())
-//			{
-//                                m_oAnimations.m_dSlideWidth	=	m_oMetric.m_lMillimetresHor;
-//				m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;
-//                                animations		=	m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
-
-//				element		+=	animations;
-//			}
-
-//            std::wstring timeLine;
-//			timeLine.Format ( L"<timeline type = \"1\"  begin=\"%f\" end=\"%f\" fadein=\"0\" fadeout=\"0\" completeness=\"1.0\"/> ",	m_dStartTime, m_dEndTime );
-
-//			element			+=	timeLine;
-//			element			+=	L"</VideoStream>";
-
-//			return element;
-//		}
-
-//        inline std::wstring GetAudioStream ()
-//		{
-//            std::wstring element;
-//			element.Format(L"<AudioSource StartTime='%lf' Duration='%lf' Amplify='%lf' loop='%d' >", m_dStartTime, m_dEndTime - m_dStartTime, 100.0, m_bLoop);
-
-//			int lIndex = m_strVideoFileName.find(L"file:///");
-//			if (0 == lIndex)
-//			{
-//				m_strVideoFileName = m_strVideoFileName.substr(8);
-//				//m_strFileName.Replace('/', '\\');
-//				//m_strFileName.Replace(L"%20", L" ");
-//			}
-
-//			std::wstring strFileName = m_strVideoFileName;
-//			CorrectXmlString(strFileName);
-
-//            std::wstring source;
-//            source.Format(L"<Source StartTime='%lf' EndTime='%lf' FilePath='%ls'/>", m_dClipStartTime, m_dClipEndTime, strFileName);
-//			element	+=	source;
-
-//            std::wstring animations;
-//			if(!m_oAnimations.m_arAnimations.empty())								//	для audio только "media call's" - play - pause - stop
-//			{
-//                                m_oAnimations.m_dSlideWidth	=	m_oMetric.m_lMillimetresHor;
-//				m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;
-//                                animations		=	m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
-
-//				element		+=	animations;
-//			}
-			
-//            std::wstring timeLine;
-//			timeLine.Format ( L"<timeline type = \"1\"  begin=\"%f\" end=\"%f\" fadein=\"0\" fadeout=\"0\" completeness=\"1.0\"/> ",	m_dStartTime, m_dEndTime );
-			
-//			element			+=	timeLine;
-//			element			+=	L"</AudioSource>";
-
-//			return element;
-//		}
 	};
 
 }

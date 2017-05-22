@@ -203,6 +203,25 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		}
 	}
 //--------------------------------------------------------------------------------------
+	std::wstring odf_ref_image;
+	std::wstring pathImage;
+	if (oox_picture->blipFill.blip.IsInit())
+	{
+		bool bEmbedded = true;
+		if (oox_picture->blipFill.blip->embed.IsInit())
+		{
+			std::wstring sID = oox_picture->blipFill.blip->embed->get();
+			pathImage = find_link_by_id(sID, 1);
+			
+			odf_ref_image = odf_context()->add_image(pathImage);
+		}
+		else if (oox_picture->blipFill.blip->link.IsInit())
+		{
+			odf_ref_image = oox_picture->blipFill.blip->link->get();	
+			bEmbedded = false;
+		}
+	}
+//--------------------------------------------------------------------------------------
 	if (oox_picture->nvPicPr.nvPr.media.is_init())
 	{
 		if (oox_picture->nvPicPr.nvPr.media.is<PPTX::Logic::MediaFile>())
@@ -226,15 +245,17 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 				if (ext.end.IsInit())	end		= *ext.end;
 			}
 			
-			std::wstring odf_ref = odf_context()->add_media(pathMedia);
+			std::wstring odf_ref_media = odf_context()->add_media(pathMedia);
 
-			if (!odf_ref.empty())
+			if (!odf_ref_media.empty())
 			{
-				odf_context()->drawing_context()->start_media(odf_ref);
+				odf_context()->drawing_context()->start_media(odf_ref_media);
 				//... params
 				
 				OoxConverter::convert(&oox_picture->nvPicPr.cNvPr);		
 				OoxConverter::convert(&oox_picture->spPr, oox_picture->style.GetPointer());
+
+				odf_context()->drawing_context()->set_image_replacement(odf_ref_image);
 				
 				odf_context()->drawing_context()->end_media();
 
@@ -242,26 +263,18 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 			}			
 		}
 	}
-//--------------------------------------------------------------------------------------
-	std::wstring odf_ref;
-	std::wstring pathImage;
-	if (oox_picture->blipFill.blip.IsInit())
+	if (oox_picture->oleObject.IsInit())
 	{
-		bool bEmbedded = true;
-		if (oox_picture->blipFill.blip->embed.IsInit())
-		{
-			std::wstring sID = oox_picture->blipFill.blip->embed->get();
-			pathImage = find_link_by_id(sID, 1);
-			
-			odf_ref = odf_context()->add_image(pathImage);
-		}
-		else if (oox_picture->blipFill.blip->link.IsInit())
-		{
-			odf_ref = oox_picture->blipFill.blip->link->get();	
-			bEmbedded = false;
-		}
+			//nullable_limit<Limit::OLEDrawAspectType>m_oDrawAspect;
+			//nullable<OOX::RId>						m_oId;
+			//nullable_string							m_sObjectId;
+			//nullable_string							m_sProgId;
+			//nullable_string							m_sShapeId;
+			//nullable_limit<Limit::OLEType>			m_oType;
+			//nullable_limit<Limit::OLEUpdateMode>	m_oUpdateMode;
 	}
-	odf_context()->drawing_context()->start_image(odf_ref);
+//--------------------------------------------------------------------------------------
+	odf_context()->drawing_context()->start_image(odf_ref_image);
 	{
 		double Width = 0, Height = 0;
         _graphics_utils_::GetResolution(pathImage.c_str(), Width, Height);

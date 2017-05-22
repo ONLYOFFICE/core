@@ -2754,6 +2754,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 		{
 			pShape->nvSpPr.cNvPr.id = -1;
 		}
+		pShape->signatureLine = pPPTShape->m_oSignatureLine;
 
 		elem->InitElem(pShape);
 
@@ -4374,6 +4375,15 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 			bOle = oPic.oleObject->isValid();
 		}
 	}
+	bool bSignatureLine = false;
+	if (oElem.is<PPTX::Logic::Shape>())
+	{
+		PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
+		if(oShape.signatureLine.IsInit())
+		{
+			bSignatureLine = true;
+		}
+	}
 	
 	m_pReader->m_nDocumentType = XMLWRITER_DOC_TYPE_PPTX;
 
@@ -4392,6 +4402,12 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 	if(bOle)
 	{
 		ConvertPicVML(oElem, bsMainProps, oXmlWriter);
+	}
+	else if(bSignatureLine)
+	{
+		oXmlWriter.WriteString(L"<w:pict>");
+		ConvertShapeVML(oElem, bsMainProps, oXmlWriter, true);
+		oXmlWriter.WriteString(L"</w:pict>");
 	}
 	else
 	{
@@ -4586,13 +4602,13 @@ void CDrawingConverter::ConvertPicVML(PPTX::Logic::SpTreeElem& oElem, const std:
 	oPic.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap);
 }
 
-void CDrawingConverter::ConvertShapeVML(PPTX::Logic::SpTreeElem& oElem, const std::wstring& bsMainProps, NSBinPptxRW::CXmlWriter& oWriter)
+void CDrawingConverter::ConvertShapeVML(PPTX::Logic::SpTreeElem& oElem, const std::wstring& bsMainProps, NSBinPptxRW::CXmlWriter& oWriter, bool bSignature)
 {
     ConvertMainPropsToVML(bsMainProps, oWriter, oElem);
 
 	oWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе
 	PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
-	oShape.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap);
+	oShape.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap, false, bSignature);
 }
 
 void CDrawingConverter::ConvertGroupVML(PPTX::Logic::SpTreeElem& oElem, const std::wstring& bsMainProps, NSBinPptxRW::CXmlWriter& oWriter)

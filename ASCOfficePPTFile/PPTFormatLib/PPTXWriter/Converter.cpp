@@ -196,6 +196,15 @@ void NSPresentationEditor::CPPTXWriter::WriteContentTypes()
 <Default Extension=\"xml\" ContentType=\"application/xml\" />\
 <Default Extension=\"gif\" ContentType=\"image/gif\"/>\
 <Default Extension=\"emf\" ContentType=\"image/x-emf\"/>\
+<Default Extension=\"wav\" ContentType=\"audio/wav\"/>\
+<Default Extension=\"wma\" ContentType=\"audio/x-ms-wma\"/>\
+<Default Extension=\"mp3\" ContentType=\"audio/unknown\"/>\
+<Default Extension=\"m4a\" ContentType=\"audio/unknown\"/>\
+<Default Extension=\"wmv\" ContentType=\"video/x-ms-wmv\"/>\
+<Default Extension=\"avi\" ContentType=\"video/avi\"/>\
+<Default Extension=\"m4v\" ContentType=\"video/unknown\"/>\
+<Default Extension=\"mp4\" ContentType=\"video/unknown\"/>\
+<Default Extension=\"mov\" ContentType=\"video/unknown\"/>\
 <Default Extension=\"xls\" ContentType=\"application/vnd.ms-excel\"/>\
 <Default Extension=\"xlsx\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"/>\
 <Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\" />\
@@ -770,25 +779,14 @@ void NSPresentationEditor::CPPTXWriter::WriteBackground(CStringWriter& oWriter, 
 
 void NSPresentationEditor::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerator& oRels, IElement* pElement, CLayout* pLayout)
 {
-	CImageElement* pImageElem = dynamic_cast<CImageElement*>(pElement);
-	if (pImageElem)
-	{
-		pImageElem->m_oMetric = m_pDocument->m_oInfo;
-		pImageElem->NormalizeCoordsByMetric();
+	if (!pElement) return;
 
-		m_pShapeWriter->SetShape(pImageElem);
-	}
+	pElement->m_oMetric = m_pDocument->m_oInfo;
+	pElement->NormalizeCoordsByMetric();
 
-	CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElement);
-	if (pShapeElem)
-	{
-		pShapeElem->m_oMetric = m_pDocument->m_oInfo;
-		pShapeElem->NormalizeCoordsByMetric();
+	bool bObject = m_pShapeWriter->SetElement(pElement);
 
-		m_pShapeWriter->SetShape(pShapeElem);
-	}
-
-	if (pImageElem || pShapeElem)
+	if (bObject)
 	{
 		m_pShapeWriter->SetRelsGenerator(&oRels);
 
@@ -920,7 +918,11 @@ void NSPresentationEditor::CPPTXWriter::WriteSlide(int nIndexSlide)
 	oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
 
 	oWriter.WriteString(std::wstring(L"<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>"));
+	
+	WriteTransition(oWriter, pSlide->m_oSlideShow.m_oTransition);
+
 	oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));
+	
 	oWriter.WriteString(std::wstring(L"</p:sld>"));
 
 	oRels.CloseRels();
@@ -937,6 +939,193 @@ void NSPresentationEditor::CPPTXWriter::WriteSlide(int nIndexSlide)
     strFile = L"slide" + std::to_wstring(nIndexSlide + 1) + L".xml.rels";
 	oRels.SaveRels(strFileSlidePath + _T("_rels") + FILE_SEPARATOR_STR + strFile);
 }
+
+void NSPresentationEditor::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CTransition& transition)
+{
+	if (!transition.m_nEffectType == 0xFF)	return;
+
+	std::wstring type;
+	
+	std::wstring param_name, param_value;
+	std::wstring param_name2, param_value2;
+	
+	switch(transition.m_nEffectType)
+	{
+	case 0:
+		{
+			type		= L"p:cut";		
+			param_name	= L"thruBlk";
+			param_value = transition.m_nEffectDirection ? L"true" : L"false";
+		}break;
+	case 1:
+		{
+			type		= L"p:random";		
+		}break;
+	case 2:	
+		{
+			type		= L"p:blinds";		
+			param_name	= L"dir";
+			param_value = transition.m_nEffectDirection ? L"vert" : L"horz";
+		}break;
+	case 3:	
+		{
+			type		= L"p:checker";		
+			param_name	= L"dir";
+			param_value = transition.m_nEffectDirection ? L"vert" : L"horz";
+		}break;
+	case 5:
+		{
+			type		= L"p:dissolve";		
+			param_name	= L"thruBlk";
+			param_value = transition.m_nEffectDirection ? L"true" : L"false";
+		}break;
+	case 6:
+		{
+			type		= L"p:fade";		
+			param_name	= L"thruBlk";
+			param_value = transition.m_nEffectDirection ? L"true" : L"false";
+		}break;
+	case 4:
+	case 7:
+		{
+			if (transition.m_nEffectType == 4)	type = L"p:cover";		
+			if (transition.m_nEffectType == 7)	type = L"p:pull";		
+			param_name	= L"dir";
+			switch(transition.m_nEffectDirection)
+			{
+				case 0:	param_value = L"r"; break;
+				case 1:	param_value = L"b"; break;
+				case 2:	param_value = L"l"; break;
+				case 3:	param_value = L"t"; break;
+				case 4:	param_value = L"br"; break;
+				case 5:	param_value = L"bl"; break;
+				case 6:	param_value = L"tr"; break;
+				case 7:	param_value = L"tl"; break;
+			}
+		}break;
+	case 8:
+		{
+			type		= L"p:randomBars";		
+			param_name	= L"dir";
+			param_value = transition.m_nEffectDirection ? L"vert" : L"horz";
+		}break;
+	case 9:
+		{
+			type		= L"p:strips";		
+			param_name	= L"dir";
+			switch(transition.m_nEffectDirection)
+			{
+				case 0:	param_value = L"ru"; break;
+				case 1:	param_value = L"lu"; break;
+				case 2:	param_value = L"rd"; break;
+				case 3:	param_value = L"ld"; break;
+			}
+		}break;
+	case 10:
+	case 20:
+		{
+			if (transition.m_nEffectType == 10)	type = L"p:wipe";		
+			if (transition.m_nEffectType == 20)	type = L"p:push";		
+		
+			param_name	= L"dir";
+			switch(transition.m_nEffectDirection)
+			{
+				case 0:	param_value = L"l"; break;
+				case 1:	param_value = L"u"; break;
+				case 2:	param_value = L"r"; break;
+				case 3:	param_value = L"d"; break;
+			}
+		}break;	
+	case 11:
+		{
+			type		= L"p:zoom";		
+			param_name	= L"dir";
+			param_value = transition.m_nEffectDirection ? L"in" : L"out";
+		}break;
+	case 13:
+		{
+			type		= L"p:split";		
+			param_name	= L"dir";
+			param_name2	= L"orient";
+			switch(transition.m_nEffectDirection)
+			{
+				case 0:	param_value = L"horz";	param_value2 = L"out";	break;
+				case 1:	param_value = L"horz";	param_value2 = L"in";	break;
+				case 2:	param_value = L"vert";	param_value2 = L"out";	break;
+				case 3:	param_value = L"vert";	param_value2 = L"in";	break;
+			}
+		}break;
+	case 17:
+		{
+			type = L"p:diamond";		
+		}break;
+	case 18:
+		{
+			type = L"p:plus";		
+		}break;
+	case 19:
+		{
+			type = L"p:wedge";		
+		}break;
+
+	case 21:
+		{
+			type		= L"p:comb";		
+			param_name	= L"dir";
+			param_value = transition.m_nEffectDirection ? L"vert" : L"horz";
+		}break;
+	case 22:
+		{
+			type = L"p:newsflash";		
+		}break;
+	case 23:
+		{
+			type = L"p:alphaFade";		
+		}break;
+	case 26:
+		{
+			type		= L"p:wheel";		
+			param_name	= L"spokes";
+			param_value = std::to_wstring(transition.m_nEffectDirection);
+		}break;
+	case 27:
+		{
+			type = L"p:circle";		
+		}break;
+	default:
+		break;
+	}
+
+	if (type.empty()) return;
+	oWriter.WriteString(std::wstring(L"<p:transition"));	
+		switch (transition.m_nSpeed)
+		{
+		case 0x00:	oWriter.WriteString(L" spd=\"fast\"");	break;
+		case 0x01:	oWriter.WriteString(L" spd=\"med\"");	break;
+		case 0x02:	
+		default:	oWriter.WriteString(L" spd=\"slow\"");	break;
+		}
+	oWriter.WriteString(L">");
+	oWriter.WriteString(L"<" + type);
+		if (!param_name.empty() && !param_value.empty())
+		{
+			oWriter.WriteString(L" " + param_name + L"=\"" + param_value + L"\"");
+		}
+		if (!param_name2.empty() && !param_value2.empty())
+		{
+			oWriter.WriteString(L" " + param_name2 + L"=\"" + param_value2 + L"\"");
+		}
+	oWriter.WriteString(L"/>");
+	if (transition.m_bAudioPresent)
+	{
+		std::wstring rId = m_pShapeWriter->m_pRels->WriteAudio(transition.m_oAudio.m_strAudioFileName);
+		oWriter.WriteString(std::wstring(L"<p:sndAc><p:stSnd>"));
+		oWriter.WriteString(L"<p:snd r:embed=\"" + rId + L"\" name=\"" + transition.m_oAudio.m_sImageName + L"\"/>");
+		oWriter.WriteString(std::wstring(L"</p:stSnd></p:sndAc>"));
+	}
+	oWriter.WriteString(std::wstring(L"</p:transition>"));
+}
+
 void NSPresentationEditor::CPPTXWriter::WriteNotes(int nIndexNotes)
 {
 	CStringWriter oWriter;

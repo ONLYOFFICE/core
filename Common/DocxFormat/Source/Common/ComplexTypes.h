@@ -76,6 +76,14 @@ namespace ComplexTypes
 		sResult += _T("\" ");\
 	}
 
+#define ComplexTypes_WriteAttribute2Encode( sStartString, oValue ) \
+	if ( oValue.IsInit() )\
+	{\
+		sResult += sStartString;\
+		sResult += XmlUtils::EncodeXmlString(oValue.get2());\
+		sResult += _T("\" ");\
+	}
+
 	class ComplexType
 	{
 	public:

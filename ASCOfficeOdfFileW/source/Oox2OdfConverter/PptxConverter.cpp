@@ -544,14 +544,24 @@ void PptxConverter::convert(PPTX::Comments *oox_comments)
 void PptxConverter::convert( PPTX::Logic::Transition *oox_transition )
 {
 	if (!oox_transition) return;
-	if (oox_transition->base.is_init() == false) return;
 
+	if (oox_transition->advTm.is_init())
+	{
+		odp_context->current_slide().set_page_duration(*oox_transition->dur);
+	}	
+
+	if (oox_transition->base.is_init() == false) return;
+	
 	odp_context->current_slide().start_transition();
 	if (oox_transition->spd.is_init())
+	{
 		odp_context->current_slide().set_transition_speed(oox_transition->spd->GetBYTECode());
+	}
 	if (oox_transition->dur.is_init())
+	{
 		odp_context->current_slide().set_transition_duration(*oox_transition->dur);
-	
+	}
+
 	convert(oox_transition->base.base.operator->());
 	
 	if (oox_transition->sndAc.is_init() && oox_transition->sndAc->stSnd.is_init())
@@ -606,27 +616,52 @@ void PptxConverter::convert(PPTX::Logic::EmptyTransition *oox_transition)
 	
 	if (oox_transition->name == L"random")
 		odp_context->current_slide().set_transition_type(40);
-	if (oox_transition->name == L"circle")
+	else if (oox_transition->name == L"circle")
 	{
 		odp_context->current_slide().set_transition_type(16);
 		odp_context->current_slide().set_transition_subtype(L"circle");
 	}
-	if (oox_transition->name == L"dissolve")
+	else if (oox_transition->name == L"dissolve")
 		odp_context->current_slide().set_transition_type(39);
-	if (oox_transition->name == L"diamond")
+	else if (oox_transition->name == L"diamond")
 	{
 		odp_context->current_slide().set_transition_type(11);
 		odp_context->current_slide().set_transition_subtype(L"diamond");
 	}
-	if (oox_transition->name == L"newsflash")
-		odp_context->current_slide().set_transition_type(24);
-	if (oox_transition->name == L"plus")
+	else if (oox_transition->name == L"newsflash")
+		odp_context->current_slide().set_transition_type(24);	//fanWipe
+	else if (oox_transition->name == L"plus")
 	{
-		odp_context->current_slide().set_transition_type(19);
+		odp_context->current_slide().set_transition_type(19);	//starWipe
 		odp_context->current_slide().set_transition_subtype(L"fourPoint");
 	}
-	if (oox_transition->name == L"wedge")
-		odp_context->current_slide().set_transition_type(24);
+	else if (oox_transition->name == L"wedge")
+		odp_context->current_slide().set_transition_type(24);	//fanWipe
+	else if (oox_transition->name == L"vortex")
+	{
+		odp_context->current_slide().set_transition_type(20);	//miscShapeWipe
+		odp_context->current_slide().set_transition_subtype(L"vertical");
+	}
+	else if (oox_transition->name == L"doors")
+	{
+		odp_context->current_slide().set_transition_type(0);	//barWipe	
+		odp_context->current_slide().set_transition_subtype(L"topToBottom");
+		odp_context->current_slide().set_transition_direction(L"reverse");
+	}
+	else if (oox_transition->name == L"prism")
+	{
+		odp_context->current_slide().set_transition_type(20);	//miscShapeWipe
+		odp_context->current_slide().set_transition_subtype(L"cornersOut");
+	}
+	else if (oox_transition->name == L"switch")
+	{
+		odp_context->current_slide().set_transition_type(20);	//miscShapeWipe
+		odp_context->current_slide().set_transition_subtype(L"topToBottom");
+	}
+	else 
+	{
+		odp_context->current_slide().set_transition_type(36);	//fade
+	}
 }
 void PptxConverter::convert(PPTX::Logic::OrientationTransition *oox_transition)
 {
@@ -742,7 +777,8 @@ void PptxConverter::convert(PPTX::Logic::SplitTransition *oox_transition)
 {
 	if (!oox_transition) return;
 	//name == split
-	odp_context->current_slide().set_transition_type(8);
+	odp_context->current_slide().set_transition_type(3);
+	odp_context->current_slide().set_transition_subtype(L"vertical");
 }
 void PptxConverter::convert(PPTX::Logic::ZoomTransition *oox_transition)
 {

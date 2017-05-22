@@ -70,9 +70,10 @@ class odp_page_state
 {
 public:
 	odp_page_state(odf_conversion_context * Context, office_element_ptr & elm);
-		void set_page_name	(std::wstring name);
-		void set_page_id	(int id);
-		void set_page_style	(office_element_ptr & _style);
+		void set_page_name		(std::wstring name);
+		void set_page_id		(int id);
+		void set_page_style		(office_element_ptr & _style);
+		void set_page_duration	(int id);
 		
 		void set_master_page(std::wstring name);
 		void set_layout_page(std::wstring name);
@@ -107,6 +108,7 @@ public:
 	void start_transition();
 		void set_transition_type	(int val);
 		void set_transition_subtype	(std::wstring val);
+		void set_transition_direction(std::wstring val);
 		void set_transition_speed	(int val);
 		void set_transition_duration(int val);
 		void set_transition_sound	(std::wstring ref, bool loop);

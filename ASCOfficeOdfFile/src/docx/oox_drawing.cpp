@@ -526,14 +526,23 @@ void oox_serialize_action(std::wostream & strm, _action_desc const & val)
 		{
 			//CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 			//CP_XML_ATTR(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");
-			
-			CP_XML_ATTR(L"r:id", val.hId);
 
 			if (!val.action.empty())
 				CP_XML_ATTR(L"action", val.action);
 			
 			if (val.highlightClick)
 				CP_XML_ATTR(L"highlightClick", val.highlightClick);
+		
+			CP_XML_ATTR(L"r:id", val.hId);
+			
+			if (!val.hSoundId.empty())
+			{
+				CP_XML_NODE(L"a:snd")
+				{
+					CP_XML_ATTR(L"r:embed", val.hSoundId);
+					CP_XML_ATTR(L"name", L"sound");
+				}
+			}
 		}
 	}
 }

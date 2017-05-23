@@ -45,8 +45,9 @@ namespace PPTX
 		public:			
 			WritingElement_AdditionConstructors(MediaFile)
 
-			MediaFile()
+			MediaFile(std::wstring name_)
 			{
+				name = name_;
 			}
 
 			MediaFile& operator=(const MediaFile& oSrc)
@@ -75,19 +76,28 @@ namespace PPTX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("r:link"),	link)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("contentType"),	contentType)
+					WritingElement_ReadAttributes_Read_if		( oReader, L"r:link",	link)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"contentType",	contentType)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("r:link"), link.ToString());
-				oAttr.Write(_T("contentType"), contentType);
+				oAttr.Write(L"r:link", link.ToString());
+				oAttr.Write(L"contentType", contentType);
 
-				return XmlUtils::CreateNode(_T("a:") + name, oAttr);
+				return XmlUtils::CreateNode(L"a:" + name, oAttr);
 			}
-		public:
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"a:" + name);
+					pWriter->StartAttributes();
+						pWriter->WriteAttribute (L"r:link", link.ToString());
+						pWriter->WriteAttribute (L"contentType", contentType);
+					pWriter->EndAttributes();
+				pWriter->EndNode(L"a:" + name);
+			}
+
 			std::wstring		name;
 			OOX::RId			link;
 			nullable_string		contentType;

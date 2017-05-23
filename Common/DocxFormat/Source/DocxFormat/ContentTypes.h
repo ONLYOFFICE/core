@@ -66,7 +66,14 @@ namespace OOX
                 m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("wmf"),  _T("image/x-wmf")));
                 m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("svm"),  _T("image/svm")));
                 m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("wav"),  _T("audio/wav")));
-                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("xls"),  _T("application/vnd.ms-excel")));
+				m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("wma"),  _T("audio/x-wma")));    
+				m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("m4a"),  _T("audio/unknown"))); 
+				m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("mp3"),  _T("audio/mpeg"))); 
+				m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("mp4"),  _T("video/unknown"))); 
+				m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("mov"),  _T("video/unknown"))); 
+				m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("avi"),  _T("video/avi"))); 
+				m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("wmv"),  _T("video/x-wmv"))); 
+				m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("xls"),  _T("application/vnd.ms-excel")));
                 m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("xlsm"), _T("application/vnd.ms-excel.sheet.macroEnabled.12")));
                 m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("xlsb"), _T("application/vnd.ms-excel.sheet.binary.macroEnabled.12")));
                 m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("xlsx"), _T("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")));

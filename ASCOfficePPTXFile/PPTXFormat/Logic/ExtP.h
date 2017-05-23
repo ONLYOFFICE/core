@@ -165,12 +165,26 @@ namespace PPTX
 				XmlUtils::CAttribute oAttr;
 				XmlUtils::CNodeValue oValue;
 
-				return XmlUtils::CreateNode(_T("p:ext"), oValue);
+				return XmlUtils::CreateNode(L"p:ext", oValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				// TODO:
+				if (link.IsInit() && uri.IsInit())
+				{
+					pWriter->StartNode(L"p:ext");
+						pWriter->StartAttributes();
+						pWriter->WriteAttribute(L"uri", *uri);
+						pWriter->EndAttributes();
+
+						pWriter->StartNode(L"p14:media");
+							pWriter->StartAttributes();
+							pWriter->WriteAttribute(L"xmlns:p14", std::wstring(L"http://schemas.microsoft.com/office/powerpoint/2010/main"));
+							pWriter->WriteAttribute(L"r:embed", link->get());
+							pWriter->EndAttributes();
+						pWriter->EndNode(L"p14:media");
+					pWriter->EndNode(L"p:ext");
+				}
 			}
 			
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

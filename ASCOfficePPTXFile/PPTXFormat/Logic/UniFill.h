@@ -455,7 +455,11 @@ namespace PPTX
 														pFill->blip->oleRid			= OOX::RId((size_t)oRelsGeneratorInfo.nOleRId).get();
 														pFill->blip->oleFilepathBin	= oRelsGeneratorInfo.sFilepathOle;
 													}
-
+													if(oRelsGeneratorInfo.nMediaRId > 0)
+													{
+														pFill->blip->mediaRid		= OOX::RId((size_t)oRelsGeneratorInfo.nMediaRId).get();
+														pFill->blip->mediaFilepath	= oRelsGeneratorInfo.sFilepathMedia;
+													}
 													pReader->Skip(1); // end attribute
 													break;
 												}

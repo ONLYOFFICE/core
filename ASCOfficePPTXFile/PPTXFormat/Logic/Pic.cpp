@@ -832,16 +832,53 @@ namespace PPTX
 					}
 				}
 			}
-			if(blipFill.blip.IsInit() && !blipFill.blip->oleRid.empty() && oleObject.IsInit())
+			if(blipFill.blip.IsInit()  && blipFill.additionalFile.IsInit())
 			{
-				oleObject->m_oId = OOX::RId(blipFill.blip->oleRid);
-
-				if (oleObject->m_OleObjectFile.IsInit() == false)
+				if (!blipFill.blip->oleRid.empty() && oleObject.IsInit())
 				{
-					oleObject->m_OleObjectFile = new OOX::OleObject(false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
-					
-					oleObject->m_OleObjectFile->set_filename		(blipFill.blip->oleFilepathBin);
-					oleObject->m_OleObjectFile->set_filename_cache	(blipFill.blip->oleFilepathImage);
+					oleObject->m_oId = OOX::RId(blipFill.blip->oleRid);
+
+					if (oleObject->m_OleObjectFile.IsInit() == false)
+					{
+						oleObject->m_OleObjectFile = new OOX::OleObject(false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+						
+						oleObject->m_OleObjectFile->set_filename		(blipFill.blip->oleFilepathBin);
+						oleObject->m_OleObjectFile->set_filename_cache	(blipFill.blip->oleFilepathImage);
+					}
+				}
+				if (!blipFill.blip->mediaRid.empty())
+				{
+					PPTX::Logic::Ext ext;
+					ext.link	= OOX::RId(blipFill.blip->mediaRid);
+					ext.uri		= L"{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}"; 
+					nvPicPr.nvPr.extLst.push_back(ext);
+
+					int nRId = -1;
+					if (blipFill.additionalFile.is<OOX::Audio>())
+					{
+						nvPicPr.nvPr.media.Media = new PPTX::Logic::MediaFile(L"audioFile");
+						nRId = pReader->m_pRels->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio",
+							L"NULL", L"External");
+
+					}
+					if (blipFill.additionalFile.is<OOX::Video>())
+					{
+						nvPicPr.nvPr.media.Media = new PPTX::Logic::MediaFile(L"videoFile");
+						nRId = pReader->m_pRels->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video",
+							L"NULL", L"External");
+					}
+
+					if (nvPicPr.nvPr.media.Media.IsInit() && nRId > 0)
+					{
+						PPTX::Logic::MediaFile& mediaFile = nvPicPr.nvPr.media.Media.as<PPTX::Logic::MediaFile>();
+						mediaFile.link = OOX::RId((size_t)nRId);
+
+					}
+					if (nvPicPr.cNvPr.hlinkClick.IsInit() == false)
+						nvPicPr.cNvPr.hlinkClick.Init();
+
+					nvPicPr.cNvPr.hlinkClick->id		= L"";
+					nvPicPr.cNvPr.hlinkClick->action	= L"ppaction://media";
 				}
 			}
 

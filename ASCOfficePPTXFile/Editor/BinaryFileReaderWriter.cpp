@@ -178,7 +178,13 @@ namespace NSBinPptxRW
 		std::map<std::wstring, _imageManager2Info>::const_iterator pPair = m_mapImages.find ((strBase64Image.empty()) ? strInput : strBase64Image);
 
 		if (pPair != m_mapImages.end())
+		{
+			smart_ptr<OOX::Media> mediaFile = additionalFile.smart_dynamic_cast<OOX::Media>();
+			if (mediaFile.IsInit())
+				mediaFile->set_filename(pPair->second.sFilepathAdditional);
+
 			return pPair->second;
+		}
 
 		std::wstring strExts = _T(".jpg");
         int nIndexExt = (int)strInput.rfind(wchar_t('.'));
@@ -1279,7 +1285,29 @@ namespace NSBinPptxRW
 				}
 			}
 		}
+		if(additionalFile.is<OOX::Media>())
+		{
+			smart_ptr<OOX::Media> mediaFile = additionalFile.smart_dynamic_cast<OOX::Media>();
+			
+			std::wstring strMediaRelsPath;
+			
+			oRelsGeneratorInfo.nMediaRId	= m_lNextRelsID++;
+			oRelsGeneratorInfo.sFilepathOle	= mediaFile->filename().GetPath();
 
+			if	(m_pManager->m_nDocumentType != XMLWRITER_DOC_TYPE_XLSX)
+			{
+				std::wstring strRid = L"rId" + std::to_wstring(oRelsGeneratorInfo.nMediaRId);
+
+				if (m_pManager->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX)	strMediaRelsPath = L"media/";		
+				else														strMediaRelsPath = L"../media/";
+				
+				strMediaRelsPath += mediaFile->filename().GetFilename();
+
+				m_pWriter->WriteString( L"<Relationship Id=\"" + strRid
+					+ L"\" Type=\"http://schemas.microsoft.com/office/2007/relationships/media\" Target=\"" +
+					strMediaRelsPath + L"\"/>");
+			}
+		}
 		m_mapImages.insert(std::pair<std::wstring, _relsGeneratorInfo>(strImageRelsPath, oRelsGeneratorInfo));
 		return oRelsGeneratorInfo;
 	}

@@ -224,6 +224,11 @@ namespace PPTX
 				additionalPath	= this->GetFullOleName(OOX::RId(oleRid), pRels);
 				additionalType	= 1;
 			}
+			else if(!mediaRid.empty())
+			{
+				additionalPath	= this->GetFullOleName(OOX::RId(mediaRid), pRels);
+				additionalType	= 2;
+			}
 			else if(!mediaFilepath.empty())
 			{
 				additionalPath	= mediaFilepath;

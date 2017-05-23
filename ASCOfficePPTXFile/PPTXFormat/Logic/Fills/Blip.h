@@ -67,6 +67,7 @@ namespace PPTX
 				oleRid			= oSrc.oleRid;
 				oleFilepathBin	= oSrc.oleFilepathBin;
 
+				mediaRid		= oSrc.mediaRid;
 				mediaFilepath	= oSrc.mediaFilepath;
 
 				return *this;
@@ -100,11 +101,11 @@ namespace PPTX
 			nullable<OOX::RId>	embed;
 			nullable<OOX::RId>	link;
 			std::wstring		m_namespace;
+	//internal
+			std::wstring		mediaRid;
+			std::wstring		mediaFilepath;
 
 			std::wstring		oleRid;
-
-			std::wstring		mediaFilepath;
-	//internal
 			std::wstring		oleFilepathBin;
 			std::wstring		oleFilepathImage;
 		protected:

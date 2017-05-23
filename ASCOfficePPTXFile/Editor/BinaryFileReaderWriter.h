@@ -48,7 +48,7 @@ class COfficeFontPicker;
 
 namespace OOX
 {
-	class OleObject;
+	class File;
 	class CContentTypes;
 	class WritingElement;
 	class IFileContainer;
@@ -91,7 +91,7 @@ namespace NSBinPptxRW
 
 	struct _imageManager2Info
 	{
-		std::wstring sFilepathOle;
+		std::wstring sFilepathAdditional;
 		std::wstring sFilepathImage;
 	};
 
@@ -99,7 +99,9 @@ namespace NSBinPptxRW
 	{
 		int			nImageRId;
 		int			nOleRId;
+		int			nMediaRId;
 		
+		std::wstring sFilepathMedia;
 		std::wstring sFilepathOle;
 		std::wstring sFilepathImage;
 	
@@ -107,6 +109,7 @@ namespace NSBinPptxRW
 		{
 			nImageRId	= -1;
 			nOleRId		= -1;
+			nMediaRId	= -1;
 		}
 	};
 
@@ -158,17 +161,13 @@ namespace NSBinPptxRW
 
 		NSShapeImageGen::CImageManager*	m_pImageManager;
 		
-		//NSFontCutter::CFontDstManager	m_oFontPicker;
-
 		NSFontCutter::CFontDstManager*	m_pNativePicker;
 		COfficeFontPicker*				m_pFontPicker;
 		bool m_bDeleteFontPicker;
 
-	public:
 		CCommonWriter();
 		~CCommonWriter();
 
-	public:
 		void CreateFontPicker(COfficeFontPicker* pPicker);
 		void CheckFontPicker();
 	};
@@ -178,7 +177,7 @@ namespace NSBinPptxRW
 	private:
         std::map<std::wstring, _imageManager2Info>	m_mapImages;
 		_INT32										m_lIndexNextImage;
-		_INT32										m_lIndexNextOle;
+		_INT32										m_lIndexCounter;
 		std::wstring								m_strDstMedia;
 		std::wstring								m_strDstEmbed;
 	public:
@@ -197,8 +196,8 @@ namespace NSBinPptxRW
 		
 		int IsDisplayedImage(const std::wstring& strInput);
 
-		_imageManager2Info GenerateImage(const std::wstring& strInput, NSCommon::smart_ptr<OOX::OleObject> & oleFile, const std::wstring& oleData, std::wstring strBase64Image);
-		_imageManager2Info GenerateImageExec(const std::wstring& strInput, const std::wstring& strExts, const std::wstring& strOleImage, const std::wstring& oleData);
+		_imageManager2Info GenerateImage(const std::wstring& strInput, NSCommon::smart_ptr<OOX::File> & additionalFile, const std::wstring& oleData, std::wstring strBase64Image);
+		_imageManager2Info GenerateImageExec(const std::wstring& strInput, const std::wstring& strExts, const std::wstring& strAdditionalImage, int nAdditionalType, const std::wstring& oleData);
 
 		void SaveImageAsPng(const std::wstring& strFileSrc, const std::wstring& strFileDst);
 		void SaveImageAsJPG(const std::wstring& strFileSrc, const std::wstring& strFileDst);
@@ -426,7 +425,7 @@ namespace NSBinPptxRW
 		void AddRels (const std::wstring& strRels);
 		void SaveRels (const std::wstring& strFile);
 
-		_relsGeneratorInfo WriteImage (const std::wstring& strImage, NSCommon::smart_ptr<OOX::OleObject>& strOle, const std::wstring& oleData, std::wstring strBase64Image);
+		_relsGeneratorInfo WriteImage (const std::wstring& strImage, NSCommon::smart_ptr<OOX::File>& additionalFile, const std::wstring& oleData, std::wstring strBase64Image);
 	};
 
 	class CBinaryFileReader

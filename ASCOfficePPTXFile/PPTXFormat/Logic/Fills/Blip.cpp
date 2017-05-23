@@ -156,5 +156,101 @@ namespace PPTX
 			
 			return L"";
 		}
+		void Blip::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			std::wstring strName = (_T("") == m_namespace) ? _T("blip") : (m_namespace + _T(":blip"));
+			pWriter->StartNode(strName);
+
+			pWriter->StartAttributes();
+			if (embed.IsInit())
+				pWriter->WriteAttribute(_T("r:embed"), embed->ToString());
+			if (link.IsInit())
+				pWriter->WriteAttribute(_T("r:link"), link->ToString());
+			pWriter->WriteAttribute(_T("cstate"), cstate);
+			pWriter->EndAttributes();
+
+			// TODO:
+			size_t nCount = Effects.size();
+			for (size_t i = 0; i < nCount; ++i)
+			{
+				Effects[i].toXmlWriter(pWriter);
+			}
+
+			pWriter->EndNode(strName);
+		}
+		
+		void Blip::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteLimit2(0, cstate);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+			if (embed.is_init())
+				pWriter->WriteString1(10, embed->get());
+			if (link.is_init())
+				pWriter->WriteString1(11, link->get());
+
+			pWriter->StartRecord(2);
+			ULONG len = (ULONG)Effects.size();
+			pWriter->WriteULONG(len);
+
+			for (ULONG i = 0; i < len; ++i)
+			{
+				pWriter->WriteRecord1(3, Effects[i]);
+			}
+
+			pWriter->EndRecord();
+
+			double dX = pWriter->GetShapeX(); //mm
+			double dY = pWriter->GetShapeY();
+
+			double dW = pWriter->GetShapeWidth(); //mm
+			double dH = pWriter->GetShapeHeight();
+
+			OOX::IFileContainer* pRels = NULL;
+			
+			if (pWriter->m_pCurrentContainer->is_init())
+				pRels = pWriter->m_pCurrentContainer->operator ->();
+
+			std::wstring	additionalPath;
+			int				additionalType = 0;
+			if(!oleFilepathBin.empty())
+			{
+				additionalPath = oleFilepathBin;
+				additionalType = 1;
+			}
+			else if(!oleRid.empty())
+			{
+				additionalPath	= this->GetFullOleName(OOX::RId(oleRid), pRels);
+				additionalType	= 1;
+			}
+			else if(!mediaFilepath.empty())
+			{
+				additionalPath	= mediaFilepath;
+				additionalType	= 2;
+			}
+
+			std::wstring imagePath;
+			if(!oleFilepathImage.empty())
+			{
+				imagePath = oleFilepathImage;
+			}
+			else
+			{
+				imagePath = this->GetFullPicName(pRels);
+			}
+
+			NSShapeImageGen::CImageInfo oId = pWriter->m_pCommon->m_pImageManager->WriteImage(imagePath, dX, dY, dW, dH, additionalPath, additionalType);
+			std::wstring s = oId.GetPath2();
+
+			pWriter->StartRecord(3);
+
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteString1(0, s);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);				
+
+			pWriter->EndRecord();
+		}
+
 	} // namespace Logic
 } // namespace PPTX

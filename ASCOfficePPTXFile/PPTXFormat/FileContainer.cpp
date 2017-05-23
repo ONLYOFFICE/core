@@ -86,12 +86,12 @@ namespace PPTX
 
 	void FileContainer::read(const OOX::CPath& filename)
 	{
-		//not implement FileContainer.read
+		//OOX::IFileContainer::read(filename);
 	}
 
 	void FileContainer::read(const OOX::CRels& rels, const OOX::CPath& path)
 	{
-		//not implement FileContainer.read
+		//OOX::IFileContainer::read(rels, path);
 	}
 	void FileContainer::read(const OOX::CRels& rels, const OOX::CPath& path, FileMap& map, IPPTXEvent* Event)
 	{
@@ -157,8 +157,6 @@ namespace PPTX
 						pContainer->read(normPath, map, Event);
 						m_bCancelled = pContainer->m_bCancelled;
 					}
-                    //todo детально разобраться и вернуть проверку res.(до перехода на cross platform все было хорошо)
-                    //на презентация с hyperlink выходим при достижении 100%. Проценты считаются от количества обработанных файлов, а hyperlink не файл(Ligninger_og_uligheder.pptx)
                     if (m_bCancelled)
                     {
                        break;

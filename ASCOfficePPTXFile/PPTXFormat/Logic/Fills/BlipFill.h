@@ -69,6 +69,9 @@ namespace PPTX
 				dpi				= oSrc.dpi;
 				rotWithShape	= oSrc.rotWithShape;
 
+				additionalFile	= oSrc.additionalFile;
+				oleData			= oSrc.oleData;
+
 				m_namespace = oSrc.m_namespace;
 				return *this;
 			}
@@ -432,10 +435,10 @@ namespace PPTX
 											strImagePath = pathUrl.GetPath();
 										}
 
-										NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, oleFile, oleData, strOrigBase64);
+										NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFile, oleData, strOrigBase64);
 
 										// -------------------
-										if (strTempFile != _T(""))
+										if (!strTempFile.empty())
 										{
                                             CDirectory::DeleteFile(strTempFile);
 										}
@@ -445,14 +448,18 @@ namespace PPTX
 											blip = new PPTX::Logic::Blip();
 
 										blip->embed = new OOX::RId((size_t)oRelsGeneratorInfo.nImageRId);
-										blip->oleFilepathImage	= oRelsGeneratorInfo.sFilepathImage;
 										
 										if(oRelsGeneratorInfo.nOleRId > 0)
 										{
 											blip->oleRid			= OOX::RId((size_t)oRelsGeneratorInfo.nOleRId).get();
 											blip->oleFilepathBin	= oRelsGeneratorInfo.sFilepathOle;
+											blip->oleFilepathImage	= oRelsGeneratorInfo.sFilepathImage;
 										}
-
+										if(oRelsGeneratorInfo.nMediaRId > 0)
+										{
+											//blip->nMediaRId	= OOX::RId((size_t)oRelsGeneratorInfo.nOleRId).get();
+											blip->mediaFilepath	= oRelsGeneratorInfo.sFilepathMedia;
+										}
 										pReader->Skip(1); // end attribute
 										break;
 									}
@@ -507,8 +514,8 @@ namespace PPTX
 			nullable_bool		rotWithShape;
 
 	//internal
-			smart_ptr<OOX::OleObject>	oleFile;
-			std::wstring				oleData;
+			mutable smart_ptr<OOX::File>	additionalFile;
+			std::wstring					oleData;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

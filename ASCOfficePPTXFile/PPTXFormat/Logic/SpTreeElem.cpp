@@ -37,8 +37,11 @@
 #include "CxnSp.h"
 #include "SpTree.h"
 #include "GraphicFrame.h"
-#include "./../SlideMaster.h"
 
+#include "../SlideMaster.h"
+
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/Audio.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/Video.h"
 namespace PPTX
 {
 	namespace Logic
@@ -346,8 +349,22 @@ namespace PPTX
 				}
 			case SPTREE_TYPE_OLE:
 			case SPTREE_TYPE_PIC:
+			case SPTREE_TYPE_AUDIO:
+			case SPTREE_TYPE_VIDEO:
 				{
 					Logic::Pic* p = new Logic::Pic();
+
+					if (_type == SPTREE_TYPE_AUDIO)	
+					{
+						OOX::Audio *pAudio = new OOX::Audio(pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+						p->blipFill.additionalFile = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(pAudio));
+					}
+					else if (_type == SPTREE_TYPE_VIDEO)
+					{
+						OOX::Video* pVideo = new OOX::Video(pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+						p->blipFill.additionalFile = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(pVideo));
+					}
+					
 					p->fromPPTY(pReader);
 					m_elem.reset(p);
 					break;

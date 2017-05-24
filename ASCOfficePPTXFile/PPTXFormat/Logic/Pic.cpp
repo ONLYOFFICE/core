@@ -41,7 +41,10 @@
 #include "Media/MediaFile.h"
 #include "Media/WavAudioFile.h"
 
+#include "../../../Common/DocxFormat/Source/DocxFormat/Media/Audio.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Media/Video.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
+
 #include "../../../Common/DocxFormat/Source/MathEquation/MathEquation.h"
 
 #include "../../../ASCOfficeDocxFile2/BinWriter/BinEquationWriter.h"
@@ -136,7 +139,9 @@ namespace PPTX
 				pWriter->WriteLimit2(6, m_oUpdateMode);
 				if (ole_file.IsInit() == false || ole_file->isMsPackage() == false)
 				{
-					pWriter->WriteString1(7, ole_file->filename().GetFilename()); //OleObject Binary FileName (bin, xls, doc, ... other stream file)
+					std::wstring sExt = ole_file->filename().GetExtention(false);
+					if (!sExt.empty())
+						pWriter->WriteString1(7, L"maskFile." + sExt); //OleObject Binary FileName Extension (bin, xls, doc, ... other stream file)
 				}
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			
@@ -608,6 +613,137 @@ namespace PPTX
 
 			return XmlUtils::CreateNode(m_namespace + L":pic", oValue);
 		}
+		
+		void Pic::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			if(oleObject.IsInit())
+			{
+				pWriter->StartRecord(SPTREE_TYPE_OLE);
+			}
+			else if (nvPicPr.nvPr.media.is_init())
+			{
+				blipFill.additionalFile = GetMediaLink();  
+
+				smart_ptr<OOX::Media> mediaFile = blipFill.additionalFile.smart_dynamic_cast<OOX::Media>();
+				if (mediaFile.IsInit() && blipFill.blip.IsInit())
+				{
+					blipFill.blip->mediaFilepath = mediaFile->filename().GetPath();
+				}
+
+				if (nvPicPr.nvPr.media.as<MediaFile>().name == L"audioFile")
+					pWriter->StartRecord(SPTREE_TYPE_AUDIO);
+				else if (nvPicPr.nvPr.media.as<MediaFile>().name == L"videoFile")
+					pWriter->StartRecord(SPTREE_TYPE_VIDEO);
+				else
+					pWriter->StartRecord(SPTREE_TYPE_PIC);
+			}
+			else
+			{
+				pWriter->StartRecord(SPTREE_TYPE_PIC);
+			}
+
+			if (blipFill.additionalFile.is<OOX::Media>())
+			{
+				smart_ptr<OOX::Media> mediaFile = blipFill.additionalFile.smart_dynamic_cast<OOX::Media>();
+				
+				pWriter->StartRecord(5);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					std::wstring sExt = mediaFile->filename().GetExtention(false);
+					if (!sExt.empty())
+						pWriter->WriteString1(0, L"maskFile." + sExt);
+				//todoo start, end positions ..
+
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+				pWriter->EndRecord();
+			}
+
+			pWriter->WriteRecord2(4, oleObject);
+			pWriter->WriteRecord1(0, nvPicPr);
+			pWriter->WriteRecord1(1, blipFill);
+			pWriter->WriteRecord1(2, spPr);
+			pWriter->WriteRecord2(3, style);
+
+			pWriter->EndRecord();
+		}
+
+		void Pic::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			std::wstring namespace_ = m_namespace;
+			bool bOle = false;
+			
+			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_ = L"pic";
+
+			if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_XLSX && 
+				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
+			{
+				if(oleObject.IsInit() && oleObject->isValid())
+				{
+					bOle = true;
+					pWriter->WriteString(L"<p:graphicFrame><p:nvGraphicFramePr><p:cNvPr id=\"0\" name=\"\"/><p:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect=\"1\"/></p:cNvGraphicFramePr><p:nvPr><p:extLst><p:ext uri=\"{D42A27DB-BD31-4B8C-83A1-F6EECF244321}\"><p14:modId xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" val=\"2157879785\"/></p:ext></p:extLst></p:nvPr></p:nvGraphicFramePr>");
+					if(spPr.xfrm.IsInit())
+					{
+						std::wstring oldNamespace = spPr.xfrm->m_ns;
+						spPr.xfrm->m_ns = _T("p");
+						spPr.xfrm->toXmlWriter(pWriter);
+						spPr.xfrm->m_ns = oldNamespace;
+					}
+					pWriter->WriteString(L"<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/presentationml/2006/ole\">");
+
+					pWriter->StartNode(_T("p:oleObj"));
+					pWriter->WriteAttribute(L"name", (std::wstring)L"oleObj");
+					if(oleObject->m_oId.IsInit())
+					{
+						pWriter->WriteAttribute2(L"r:id", oleObject->m_oId->get());
+					}
+					if(oleObject->m_oDxaOrig.IsInit())
+					{
+						int nDxaOrig = oleObject->m_oDxaOrig.get();
+						pWriter->WriteAttribute(L"imgW", 635 * nDxaOrig); //twips to emu
+					}
+					if(oleObject->m_oDyaOrig.IsInit())
+					{
+						int nDyaOrig = oleObject->m_oDyaOrig.get();
+						pWriter->WriteAttribute(L"imgH", 635 * nDyaOrig); //twips to emu
+					}
+					pWriter->WriteAttribute2(L"progId", oleObject->m_sProgId);
+					pWriter->EndAttributes();
+
+					pWriter->WriteString(L"<p:embed/>");
+				}
+			}
+			pWriter->StartNode(namespace_ + L":pic");
+
+			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+			{
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(_T("xmlns:pic"), (std::wstring)_T("http://schemas.openxmlformats.org/drawingml/2006/picture"));
+			}
+			pWriter->EndAttributes();
+
+			nvPicPr.toXmlWriter(pWriter);
+
+			blipFill.m_namespace = namespace_;
+			blipFill.toXmlWriter(pWriter);
+
+			pWriter->m_lFlag = 1;
+			spPr.toXmlWriter(pWriter);
+			pWriter->m_lFlag = 0;
+			
+			pWriter->Write(style);
+
+			pWriter->EndNode(namespace_ + L":pic");
+			
+			if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_XLSX &&
+				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
+			{
+				if(bOle)
+				{
+					pWriter->WriteString(L"</p:oleObj></a:graphicData></a:graphic></p:graphicFrame>");
+				}
+			}
+		}
+
 
 		void Pic::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -621,9 +757,8 @@ namespace PPTX
 				{
 					case 0:
 					{
-						nvPicPr.fromPPTY(pReader);
-						break;
-					}
+						nvPicPr.fromPPTY(pReader);						
+					}break;
 					case 1:
 					{
 						blipFill.fromPPTY(pReader);
@@ -637,19 +772,23 @@ namespace PPTX
 							if (NSFile::CFileBinary::Exists(oleObject->m_OleObjectFile->filename().GetPath()) == false)
 								oleObject->m_OleObjectFile->set_filename (blipFill.blip->oleFilepathBin);
 						}
-						break;
-					}
+
+						smart_ptr<OOX::Media> mediaFile = blipFill.additionalFile.smart_dynamic_cast<OOX::Media>();
+						if (mediaFile.IsInit() && blipFill.blip.IsInit())
+						{
+							if (NSFile::CFileBinary::Exists(mediaFile->filename().GetPath()) == false)
+								mediaFile->set_filename (blipFill.blip->mediaFilepath);
+						}						
+					}break;
 					case 2:
 					{
-						spPr.fromPPTY(pReader);
-						break;
-					}
+						spPr.fromPPTY(pReader);						
+					}break;
 					case 3:
 					{
 						style = new ShapeStyle(L"p");
-						style->fromPPTY(pReader);
-						break;
-					}
+						style->fromPPTY(pReader);						
+					}break;
 					case 4:
 					{
 						oleObject = new COLEObject();
@@ -658,15 +797,34 @@ namespace PPTX
 						if(oleObject->m_sData.IsInit())
 							blipFill.oleData = oleObject->m_sData.get();
 
-						blipFill.oleFile = oleObject->m_OleObjectFile;
+						blipFill.additionalFile = oleObject->m_OleObjectFile.smart_dynamic_cast<OOX::File>();
+					}break;
+					case 5:
+					{
+						LONG _end_rec1 = pReader->GetPos() + pReader->GetLong() + 4;
 
-						//if (oleObject->m_OleObjectFile.IsInit())
-						//{
-						//	blipFill.olePath = oleObject->m_OleObjectFile->filename().GetPath();
-						//	if (NSFile::CFileBinary::Exists(blipFill.olePath))
-						//		blipFill.olePath.clear();
-						//}
-						break;
+						pReader->Skip(1); // start attributes
+
+						while (true)
+						{
+							BYTE _at = pReader->GetUChar_TypeNode();
+							if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+								break;
+
+							if (0 == _at)		
+							{
+								std::wstring strMediaFileMask = pReader->GetString2();
+
+								smart_ptr<OOX::Media> mediaFile = blipFill.additionalFile.smart_dynamic_cast<OOX::Media>();
+								if (mediaFile.IsInit())
+								{
+									mediaFile->set_filename(strMediaFileMask);
+								}
+							}
+							else
+								break;
+						}
+						pReader->Seek(_end_rec1);
 					}
 					default:
 					{
@@ -674,16 +832,53 @@ namespace PPTX
 					}
 				}
 			}
-			if(blipFill.blip.IsInit() && !blipFill.blip->oleRid.empty() && oleObject.IsInit())
+			if(blipFill.blip.IsInit()  && blipFill.additionalFile.IsInit())
 			{
-				oleObject->m_oId = OOX::RId(blipFill.blip->oleRid);
-
-				if (oleObject->m_OleObjectFile.IsInit() == false)
+				if (!blipFill.blip->oleRid.empty() && oleObject.IsInit())
 				{
-					oleObject->m_OleObjectFile = new OOX::OleObject(false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
-					
-					oleObject->m_OleObjectFile->set_filename		(blipFill.blip->oleFilepathBin);
-					oleObject->m_OleObjectFile->set_filename_cache	(blipFill.blip->oleFilepathImage);
+					oleObject->m_oId = OOX::RId(blipFill.blip->oleRid);
+
+					if (oleObject->m_OleObjectFile.IsInit() == false)
+					{
+						oleObject->m_OleObjectFile = new OOX::OleObject(false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+						
+						oleObject->m_OleObjectFile->set_filename		(blipFill.blip->oleFilepathBin);
+						oleObject->m_OleObjectFile->set_filename_cache	(blipFill.blip->oleFilepathImage);
+					}
+				}
+				if (!blipFill.blip->mediaRid.empty())
+				{
+					PPTX::Logic::Ext ext;
+					ext.link	= OOX::RId(blipFill.blip->mediaRid);
+					ext.uri		= L"{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}"; 
+					nvPicPr.nvPr.extLst.push_back(ext);
+
+					int nRId = -1;
+					if (blipFill.additionalFile.is<OOX::Audio>())
+					{
+						nvPicPr.nvPr.media.Media = new PPTX::Logic::MediaFile(L"audioFile");
+						nRId = pReader->m_pRels->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio",
+							L"NULL", L"External");
+
+					}
+					if (blipFill.additionalFile.is<OOX::Video>())
+					{
+						nvPicPr.nvPr.media.Media = new PPTX::Logic::MediaFile(L"videoFile");
+						nRId = pReader->m_pRels->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video",
+							L"NULL", L"External");
+					}
+
+					if (nvPicPr.nvPr.media.Media.IsInit() && nRId > 0)
+					{
+						PPTX::Logic::MediaFile& mediaFile = nvPicPr.nvPr.media.Media.as<PPTX::Logic::MediaFile>();
+						mediaFile.link = OOX::RId((size_t)nRId);
+
+					}
+					if (nvPicPr.cNvPr.hlinkClick.IsInit() == false)
+						nvPicPr.cNvPr.hlinkClick.Init();
+
+					nvPicPr.cNvPr.hlinkClick->id		= L"";
+					nvPicPr.cNvPr.hlinkClick->action	= L"ppaction://media";
 				}
 			}
 
@@ -726,57 +921,28 @@ namespace PPTX
 				return blipFill.blip->GetFullPicName();
 			return _T("");
 		}
-
-		std::wstring Pic::GetVideoLink()const
+		smart_ptr<OOX::File> Pic::GetMediaLink()const
 		{
-			std::wstring file = _T("");
-			if (parentFileIs<Slide>())
+			smart_ptr<OOX::File>  file;
+			
+			if (!parentFileIs<Slide>()) return file;
+
+			if (nvPicPr.nvPr.media.is<WavAudioFile>())
 			{
-				if (nvPicPr.nvPr.media.is<MediaFile>())
-				{
-					if ((nvPicPr.nvPr.media.as<MediaFile>().name == _T("videoFile")) || (nvPicPr.nvPr.media.as<MediaFile>().name == _T("quickTimeFile")))
-					{
-						file = parentFileAs<Slide>().GetLinkFromRId(nvPicPr.nvPr.media.as<MediaFile>().link.get());						
-						if (std::wstring (_T("NULL")) == file)	//	HAVE TRIM
-						{
-							if(nvPicPr.nvPr.extLst.size())
-							{
-								file = parentFileAs<Slide>().GetLinkFromRId(nvPicPr.nvPr.extLst[0].link.get());
-							}
-						}		
-					}
-				}
+				return parentFileAs<Slide>().Find(nvPicPr.nvPr.media.as<WavAudioFile>().embed.get());
 			}
 
-			return file;
-		}
-
-		std::wstring Pic::GetAudioLink()const
-		{
-			std::wstring file = _T("");
-			if (parentFileIs<Slide>())
+			if (nvPicPr.nvPr.media.is<MediaFile>())
 			{
-				if (nvPicPr.nvPr.media.is<WavAudioFile>())
+				file = parentFileAs<Slide>().Find(nvPicPr.nvPr.media.as<MediaFile>().link.get());		
+				smart_ptr<OOX::Media> mediaFile = file.smart_dynamic_cast<OOX::Media>();
+				
+				if ( mediaFile.IsInit() == false && !nvPicPr.nvPr.extLst.empty())
 				{
-					return parentFileAs<Slide>().GetLinkFromRId(nvPicPr.nvPr.media.as<WavAudioFile>().embed.get());
-				}
-
-				if (nvPicPr.nvPr.media.is<MediaFile>())
-				{
-					if (nvPicPr.nvPr.media.as<MediaFile>().name == _T("audioFile"))
-					{
-						file = parentFileAs<Slide>().GetLinkFromRId(nvPicPr.nvPr.media.as<MediaFile>().link.get());		
-
-						if (std::wstring (_T("NULL")) == file)	//	HAVE TRIM
-						{
-							if(nvPicPr.nvPr.extLst.size())
-							{
-								file = parentFileAs<Slide>().GetLinkFromRId(nvPicPr.nvPr.extLst[0].link.get());
-							}
-						}		
-					}
-				}
-			}
+					//todooo - почему везде нулевой то? - сделать по всем поиск по uri
+					file = parentFileAs<Slide>().Find(nvPicPr.nvPr.extLst[0].link.get());
+				}		
+			}//удалять ли c UnknownType ???? (если не найден щас генерится)
 			return file;
 		}
 

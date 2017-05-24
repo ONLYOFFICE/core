@@ -36,6 +36,8 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
 
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/Audio.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/Video.h"
 
 #include "../../Common/Base64.h"
 
@@ -106,7 +108,7 @@ namespace NSBinPptxRW
 			CreateFontPicker(NULL);
 	}
 
-	CImageManager2::CImageManager2() : m_mapImages(), m_lIndexNextImage(0), m_lIndexNextOle(0)
+	CImageManager2::CImageManager2() : m_mapImages(), m_lIndexNextImage(0), m_lIndexCounter(0)
 	{
         m_nDocumentType = XMLWRITER_DOC_TYPE_PPTX;
 		m_pContentTypes = new OOX::CContentTypes();
@@ -118,8 +120,8 @@ namespace NSBinPptxRW
 	void CImageManager2::Clear()
 	{
 		m_mapImages.clear();
-		m_lIndexNextImage = 1;
-		m_lIndexNextOle = 1;
+		m_lIndexNextImage	= 0;
+		m_lIndexCounter		= 0;
 	}
 	void CImageManager2::SetDstMedia(const std::wstring& strDst)
 	{
@@ -147,34 +149,50 @@ namespace NSBinPptxRW
 		{
 			if(nIndex1 + sFind1.length() < strInput.length())
 			{
-                wchar_t cRes = strInput[nIndex1 + sFind1.length()];
-				if('1' <= cRes && cRes <= '6')
+                wchar_t cRes1 = strInput[nIndex1 + sFind1.length()];
+				if('1' <= cRes1 && cRes1 <= '9')
 				{
+					wchar_t cRes2 = strInput[nIndex1 + sFind1.length() + 1];
+	
 					int nImageIndex = nIndex1 + (int)sFind1.length() + 1;
-					if(nImageIndex == (int)strInput.find(_T("image"), nImageIndex))
-						nRes = cRes - '0';
+					if (std::wstring::npos != strInput.find(_T("image"), nImageIndex))
+					{
+						nRes = cRes1 - '0';
+						if('0' <= cRes2 && cRes2 <= '9')
+						{
+							 nRes = nRes * 10 + (cRes2 - '0');
+						}	
+					}
+
 				}
 
 			}
 		}
 		return nRes;
 	}
-	_imageManager2Info CImageManager2::GenerateImage(const std::wstring& strInput, NSCommon::smart_ptr<OOX::OleObject> & oleFile, const std::wstring& oleData, std::wstring strBase64Image)
+	_imageManager2Info CImageManager2::GenerateImage(const std::wstring& strInput, NSCommon::smart_ptr<OOX::File> & additionalFile, const std::wstring& oleData, std::wstring strBase64Image)
 	{
 		if (IsNeedDownload(strInput))
 			return DownloadImage(strInput);
 
-		std::map<std::wstring, _imageManager2Info>::const_iterator pPair = m_mapImages.find ((_T("") == strBase64Image) ? strInput : strBase64Image);
+		std::map<std::wstring, _imageManager2Info>::const_iterator pPair = m_mapImages.find ((strBase64Image.empty()) ? strInput : strBase64Image);
 
 		if (pPair != m_mapImages.end())
+		{
+			smart_ptr<OOX::Media> mediaFile = additionalFile.smart_dynamic_cast<OOX::Media>();
+			if (mediaFile.IsInit())
+				mediaFile->set_filename(pPair->second.sFilepathAdditional);
+
 			return pPair->second;
+		}
 
 		std::wstring strExts = _T(".jpg");
         int nIndexExt = (int)strInput.rfind(wchar_t('.'));
 		if (-1 != nIndexExt)
 			strExts = strInput.substr(nIndexExt);
 
-		std::wstring strOleBin;
+		int	typeAdditional = 0;
+		std::wstring strAdditional;
 		std::wstring strImage = strInput;
 
 		int nDisplayType = IsDisplayedImage(strInput);
@@ -208,21 +226,52 @@ namespace NSBinPptxRW
 			}
 			if(0 != (nDisplayType & 4))
 			{
+				smart_ptr<OOX::OleObject> oleFile = additionalFile.smart_dynamic_cast<OOX::OleObject>();
 				if (oleFile.IsInit())
 				{
 					if (OOX::CSystemUtility::IsFileExist(oleFile->filename()) == false)
 					{
+						typeAdditional = 1;
+						
 						std::wstring strOle = strFolder + strFileName + oleFile->filename().GetExtention();
 						if (OOX::CSystemUtility::IsFileExist(strOle))
 						{
 							m_pContentTypes->AddDefault(oleFile->filename().GetExtention(false));
-							strOleBin = strOle;
+							strAdditional = strOle;
 						}
 						else
 						{
 							strOle = strFolder + strFileName + L".bin";
 							if (OOX::CSystemUtility::IsFileExist(strOle))
-								strOleBin = strOle;
+								strAdditional = strOle;
+						}
+					}
+				}
+			}
+			if(0 != (nDisplayType & 8))
+			{
+				smart_ptr<OOX::Media> mediaFile = additionalFile.smart_dynamic_cast<OOX::Media>();
+				if (mediaFile.IsInit())
+				{
+					if (OOX::CSystemUtility::IsFileExist(mediaFile->filename()) == false)
+					{
+						typeAdditional = 2;
+
+						std::wstring strMedia = strFolder + strFileName + mediaFile->filename().GetExtention();
+						if (OOX::CSystemUtility::IsFileExist(strMedia))
+						{
+							m_pContentTypes->AddDefault(mediaFile->filename().GetExtention(false));
+							strAdditional = strMedia;
+						}
+						else
+						{
+							strMedia = strFolder + strFileName;
+							
+							if (mediaFile.is<OOX::Audio>()) strMedia += L".wav";
+							if (mediaFile.is<OOX::Video>()) strMedia += L".avi";
+							
+							if (OOX::CSystemUtility::IsFileExist(strMedia))
+								strAdditional = strMedia;
 						}
 					}
 				}
@@ -233,10 +282,14 @@ namespace NSBinPptxRW
 			m_pContentTypes->AddDefault(strExts.substr(1));
 		}
 
-		_imageManager2Info oImageManagerInfo = GenerateImageExec(strImage, strExts, strOleBin, oleData);
+		_imageManager2Info oImageManagerInfo = GenerateImageExec(strImage, strExts, strAdditional, typeAdditional, oleData);
 
-		if (!oImageManagerInfo.sFilepathOle.empty()) 
-			oleFile->set_filename(oImageManagerInfo.sFilepathOle);
+		if (!oImageManagerInfo.sFilepathAdditional.empty()) 
+		{
+			smart_ptr<OOX::Media> mediaFile = additionalFile.smart_dynamic_cast<OOX::Media>();
+			if (mediaFile.IsInit())
+				mediaFile->set_filename(oImageManagerInfo.sFilepathAdditional);
+		}
 			
 		if (strBase64Image.empty())
 			m_mapImages[strInput] = oImageManagerInfo;
@@ -281,7 +334,7 @@ namespace NSBinPptxRW
 		}
 		return bRes;
 	}
-	_imageManager2Info CImageManager2::GenerateImageExec(const std::wstring& strInput, const std::wstring& sExts, const std::wstring& strOleImage, const std::wstring& oleData)
+	_imageManager2Info CImageManager2::GenerateImageExec(const std::wstring& strInput, const std::wstring& sExts, const std::wstring& strAdditionalImage, int nAdditionalType, const std::wstring& oleData)
 	{
 		OOX::CPath			oPathOutput;
 		_imageManager2Info	oImageManagerInfo;
@@ -305,29 +358,45 @@ namespace NSBinPptxRW
 		}		
 		oImageManagerInfo.sFilepathImage = oPathOutput.GetPath();
 		
-		if (!strOleImage.empty() || !oleData.empty() )
+		if ((!strAdditionalImage.empty() || !oleData.empty() ) && (nAdditionalType == 1))
 		{
-			std::wstring strExtsOle  = L".bin";
+			std::wstring strAdditionalExt  = L".bin";
 
-			int pos = (int)strOleImage.rfind(L".");
-			if (pos >= 0) strExtsOle = strOleImage.substr(pos);
+			int pos = (int)strAdditionalImage.rfind(L".");
+			if (pos >= 0) strAdditionalExt = strAdditionalImage.substr(pos);
 
-            std::wstring strImageOle = L"oleObject" + std::to_wstring(++m_lIndexNextOle) + strExtsOle;
+			std::wstring strImageAdditional = L"oleObject" + std::to_wstring(++m_lIndexCounter) + strAdditionalExt;
 			
-			OOX::CPath pathOutputOle = m_strDstEmbed + FILE_SEPARATOR_STR + strImageOle;
+			OOX::CPath pathOutput = m_strDstEmbed + FILE_SEPARATOR_STR + strImageAdditional;
 			
-			std::wstring strOleImageOut = pathOutputOle.GetPath();
+			std::wstring strAdditionalImageOut = pathOutput.GetPath();
 			
 			if(!oleData.empty())
 			{
-				WriteOleData(strOleImageOut, oleData);
+				WriteOleData(strAdditionalImageOut, oleData);
 			}
 			else
 			{
-                CDirectory::CopyFile(strOleImage, strOleImageOut);
+                CDirectory::CopyFile(strAdditionalImage, strAdditionalImageOut);
 			}
 
-			oImageManagerInfo.sFilepathOle = strOleImageOut;
+			oImageManagerInfo.sFilepathAdditional = strAdditionalImageOut;
+		}
+		else if (!strAdditionalImage.empty() && nAdditionalType == 2)
+		{			
+			std::wstring strAdditionalExt;
+
+			int pos = (int)strAdditionalImage.rfind(L".");
+			if (pos >= 0) strAdditionalExt = strAdditionalImage.substr(pos);
+
+			std::wstring strImageAdditional = L"media" + std::to_wstring(++m_lIndexCounter) + strAdditionalExt;
+			
+			OOX::CPath pathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImageAdditional;
+			
+			std::wstring strAdditionalImageOut = pathOutput.GetPath();
+
+			CDirectory::CopyFile(strAdditionalImage, strAdditionalImageOut);
+			oImageManagerInfo.sFilepathAdditional = strAdditionalImageOut;
 		}
 
 		return oImageManagerInfo;
@@ -372,7 +441,6 @@ namespace NSBinPptxRW
 			strExts = strUrl.substr(nIndexExt);
 
 		std::wstring strImage;
-		std::wstring strOleImage;
 		
 		int nDisplayType = IsDisplayedImage(strUrl);
 		
@@ -380,11 +448,6 @@ namespace NSBinPptxRW
 		{
 			std::wstring strInputMetafile = strUrl.substr(0, strUrl.length() - strExts.length());
 			std::wstring sDownloadRes;
-			//todo
-			if(0 != (nDisplayType & 4))
-			{
-				strOleImage = DownloadImageExec(strInputMetafile + _T(".bin"));
-			}
 
 			if(0 != (nDisplayType & 1))
 			{
@@ -414,11 +477,9 @@ namespace NSBinPptxRW
 		_imageManager2Info oImageManagerInfo;
 		if (!strImage.empty())
 		{
-			oImageManagerInfo = GenerateImageExec(strImage, strExts, strOleImage, L"");
+			oImageManagerInfo = GenerateImageExec(strImage, strExts, L"", 0, L"");
 			CDirectory::DeleteFile(strImage);
 		}
-		if (!strOleImage.empty())
-			CDirectory::DeleteFile(strOleImage);
 
 		m_mapImages[strUrl] = oImageManagerInfo;
 		return oImageManagerInfo;
@@ -1166,9 +1227,9 @@ namespace NSBinPptxRW
 		oFile.CloseFile();
 	}
 
-	_relsGeneratorInfo CRelsGenerator::WriteImage(const std::wstring& strImage, smart_ptr<OOX::OleObject> & oleFile, const std::wstring& oleData, std::wstring strBase64Image = _T(""))
+	_relsGeneratorInfo CRelsGenerator::WriteImage(const std::wstring& strImage, smart_ptr<OOX::File> & additionalFile, const std::wstring& oleData, std::wstring strBase64Image = _T(""))
 	{
-		_imageManager2Info oImageManagerInfo = m_pManager->GenerateImage(strImage, oleFile, oleData, strBase64Image);
+		_imageManager2Info oImageManagerInfo = m_pManager->GenerateImage(strImage, additionalFile, oleData, strBase64Image);
 		
 		std::wstring strImageRelsPath; 
 		
@@ -1194,8 +1255,10 @@ namespace NSBinPptxRW
 			L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"" + strImageRelsPath +
 			L"\"/>");
 
-		if( oleFile.IsInit() )
+		if(additionalFile.is<OOX::OleObject>())
 		{
+			smart_ptr<OOX::OleObject> oleFile = additionalFile.smart_dynamic_cast<OOX::OleObject>();
+			
 			std::wstring strOleRelsPath;
 			
 			oRelsGeneratorInfo.nOleRId		= m_lNextRelsID++;
@@ -1222,7 +1285,29 @@ namespace NSBinPptxRW
 				}
 			}
 		}
+		if(additionalFile.is<OOX::Media>())
+		{
+			smart_ptr<OOX::Media> mediaFile = additionalFile.smart_dynamic_cast<OOX::Media>();
+			
+			std::wstring strMediaRelsPath;
+			
+			oRelsGeneratorInfo.nMediaRId	= m_lNextRelsID++;
+			oRelsGeneratorInfo.sFilepathOle	= mediaFile->filename().GetPath();
 
+			if	(m_pManager->m_nDocumentType != XMLWRITER_DOC_TYPE_XLSX)
+			{
+				std::wstring strRid = L"rId" + std::to_wstring(oRelsGeneratorInfo.nMediaRId);
+
+				if (m_pManager->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX)	strMediaRelsPath = L"media/";		
+				else														strMediaRelsPath = L"../media/";
+				
+				strMediaRelsPath += mediaFile->filename().GetFilename();
+
+				m_pWriter->WriteString( L"<Relationship Id=\"" + strRid
+					+ L"\" Type=\"http://schemas.microsoft.com/office/2007/relationships/media\" Target=\"" +
+					strMediaRelsPath + L"\"/>");
+			}
+		}
 		m_mapImages.insert(std::pair<std::wstring, _relsGeneratorInfo>(strImageRelsPath, oRelsGeneratorInfo));
 		return oRelsGeneratorInfo;
 	}

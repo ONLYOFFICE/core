@@ -434,10 +434,10 @@ namespace PPTX
 													}
 													// -------------------													
 													
-													NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strUrl, pFill->oleFile, pFill->oleData, strOrigBase64);
+													NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strUrl, pFill->additionalFile, pFill->oleData, strOrigBase64);
 
 													// -------------------
-													if (strTempFile != _T(""))
+													if (!strTempFile.empty())
 													{
                                                         CDirectory::DeleteFile(strTempFile);
 													}
@@ -455,7 +455,11 @@ namespace PPTX
 														pFill->blip->oleRid			= OOX::RId((size_t)oRelsGeneratorInfo.nOleRId).get();
 														pFill->blip->oleFilepathBin	= oRelsGeneratorInfo.sFilepathOle;
 													}
-
+													if(oRelsGeneratorInfo.nMediaRId > 0)
+													{
+														pFill->blip->mediaRid		= OOX::RId((size_t)oRelsGeneratorInfo.nMediaRId).get();
+														pFill->blip->mediaFilepath	= oRelsGeneratorInfo.sFilepathMedia;
+													}
 													pReader->Skip(1); // end attribute
 													break;
 												}

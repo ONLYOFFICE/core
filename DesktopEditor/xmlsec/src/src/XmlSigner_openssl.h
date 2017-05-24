@@ -45,6 +45,16 @@ public:
         return "";
     }
 
+    virtual std::string GetDate()
+    {
+        return "";
+    }
+
+    virtual std::string GetId()
+    {
+        return "";
+    }
+
 public:
     virtual std::string Sign(const std::string& sXml)
     {

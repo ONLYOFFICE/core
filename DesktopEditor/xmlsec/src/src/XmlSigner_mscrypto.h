@@ -16,6 +16,7 @@ class CCertificate_mscrypto : public ICertificate
 public:
     HCERTSTORE     m_store;
     PCCERT_CONTEXT m_context;
+    bool           m_release;
 
 protected:
     BYTE*           m_rawData;
@@ -29,6 +30,8 @@ public:
 
         m_rawData = NULL;
         m_rawDataLen = 0;
+
+        m_release = false;
     }
     CCertificate_mscrypto(PCCERT_CONTEXT ctx) : ICertificate()
     {
@@ -37,11 +40,13 @@ public:
 
         m_rawData = NULL;
         m_rawDataLen = 0;
+
+        m_release = false;
     }
 
     virtual ~CCertificate_mscrypto()
     {
-        if (m_store != NULL || m_rawData != NULL)
+        if (m_store != NULL || m_rawData != NULL || m_release)
         {
             if (NULL != m_context)
                 CertFreeCertificateContext(m_context);
@@ -97,6 +102,33 @@ public:
     virtual std::string GetCertificateHash()
     {
         return GetHash(m_context->pbCertEncoded, (unsigned int)m_context->cbCertEncoded, OOXML_HASH_ALG_SHA1);
+    }
+
+    virtual std::string GetDate()
+    {
+        SYSTEMTIME t1;
+        FileTimeToSystemTime(&m_context->pCertInfo->NotBefore, &t1);
+        SYSTEMTIME t2;
+        FileTimeToSystemTime(&m_context->pCertInfo->NotAfter, &t2);
+
+        std::string sRet = std::to_string(t1.wDay) +
+                "/" +
+                std::to_string(t1.wMonth) +
+                "/" +
+                std::to_string(t1.wYear) +
+                " - " +
+                std::to_string(t1.wDay) +
+                "/" +
+                std::to_string(t2.wMonth) +
+                "/" +
+                std::to_string(t2.wYear);
+        return sRet;
+    }
+
+    virtual std::string GetId()
+    {
+        // TODO: + public key?
+        return GetNumber();
     }
 
 public:

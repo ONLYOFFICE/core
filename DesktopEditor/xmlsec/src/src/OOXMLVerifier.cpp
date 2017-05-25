@@ -177,7 +177,15 @@ public:
         std::wstring sSetupID = FindFirstChild(GetObjectById("idOfficeObject"), L"SetupID").GetText();
         m_guid = U_TO_UTF8(sSetupID);
 
-        // 2) Check files (Manifect)
+        // 2) Images
+        XmlUtils::CXmlNode nodeImageValid = GetObjectById("idValidSigLnImg");
+        if (nodeImageValid.IsValid())
+            m_sImageValidBase64 = GetBase64Image(nodeImageValid);
+        XmlUtils::CXmlNode nodeImageInvalid = GetObjectById("idInvalidSigLnImg");
+        if (nodeImageInvalid.IsValid())
+            m_sImageInvalidBase64 = GetBase64Image(nodeImageInvalid);
+
+        // 3) Check files (Manifect)
         XmlUtils::CXmlNode nodeManifect = GetObjectById("idPackageObject");
         if (!nodeManifect.IsValid())
         {
@@ -196,14 +204,6 @@ public:
             if (OOXML_SIGNATURE_VALID != m_valid)
                 return;
         }
-
-        // 3) Images
-        XmlUtils::CXmlNode nodeImageValid = GetObjectById("idValidSigLnImg");
-        if (nodeImageValid.IsValid())
-            m_sImageValidBase64 = GetBase64Image(nodeImageValid);
-        XmlUtils::CXmlNode nodeImageInvalid = GetObjectById("idInvalidSigLnImg");
-        if (nodeImageInvalid.IsValid())
-            m_sImageInvalidBase64 = GetBase64Image(nodeImageInvalid);
 
         // 4) Objects
         XmlUtils::CXmlNodes nodesReferences;

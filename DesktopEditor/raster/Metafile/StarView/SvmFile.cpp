@@ -50,7 +50,7 @@
 namespace MetaFile
 {
 
-static const struct ActionNames 
+static const struct ActionNamesSmv
 {
     int     actionNumber;
     std::wstring actionName;

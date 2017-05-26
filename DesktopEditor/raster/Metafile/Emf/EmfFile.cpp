@@ -41,7 +41,7 @@
 
 namespace MetaFile
 {
-static const struct ActionNames 
+static const struct ActionNamesEmf
 {
     int     actionNumber;
     std::wstring actionName;

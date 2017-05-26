@@ -54,7 +54,7 @@ static const struct ActionNamesSmv
 {
     int     actionNumber;
     std::wstring actionName;
-} actionNames[] = 
+} actionNamesSmv[] =
 {
 	{ META_NULL_ACTION,					 L"META_NULL_ACTION" },
     { META_PIXEL_ACTION,                 L"META_PIXEL_ACTION" },
@@ -224,7 +224,7 @@ void CSvmFile::PlayMetaFile()
 #ifdef _DEBUG
 		if (100 <= actionType && actionType <= META_LAST_ACTION && need_skip > 0 && !m_pOutput)
 		{
-			std::wstring name = actionNames[actionType - 99].actionName;
+                        std::wstring name = actionNamesSmv[actionType - 99].actionName;
 
 			std::wcout << name << L"\t\t" << actionType << L"\t(version = " << m_currentActionVersion << L")\t; skiped = " << need_skip << L"\n";
 		}			

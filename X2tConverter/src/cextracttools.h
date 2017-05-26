@@ -487,7 +487,11 @@ namespace NExtractTools
 							}
 							else if(_T("m_nCsvDelimiterChar") == sName)
 							{
-								m_sCsvDelimiterChar = new std::wstring(L"");
+								std::wstring sNil;
+								if (!oXmlNode.GetAttributeIfExist(L"xsi:nil", sNil))
+								{
+									m_sCsvDelimiterChar = new std::wstring(L"");
+								}
 							}
 						}
 					}

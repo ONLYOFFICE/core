@@ -644,7 +644,12 @@ namespace MetaFile
 				dKoefG = 255.0 / (ulMaskG >> ulShiftG);
 				dKoefB = 255.0 / (ulMaskB >> ulShiftB);
 
-				bMask = true;
+				if ((ulMaskR >> ulShiftR) == 255 && (ulMaskG >> ulShiftG) == 255 && (ulMaskB >> ulShiftB) == 255)
+				{
+					bMask = false; // Proper_Attire_CALT2.odt
+				}
+				else
+					bMask = true;
 			}
 			else
 				return false;

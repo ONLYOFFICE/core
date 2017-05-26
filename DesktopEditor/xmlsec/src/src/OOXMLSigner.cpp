@@ -77,6 +77,11 @@ public:
 
     std::wstring GetImageBase64(const std::wstring& file)
     {
+        if (0 == file.find(L"data:image/"))
+        {
+            return file.substr(file.find(L",") + 1);
+        }
+
         BYTE* pData = NULL;
         DWORD dwLen = 0;
         if (!NSFile::CFileBinary::ReadAllBytes(file, &pData, dwLen))
@@ -97,6 +102,8 @@ public:
     std::wstring GetRelsReference(const std::wstring& file)
     {
         COOXMLRelationships oRels(m_sFolder + file, true);
+        if (oRels.rels.size() == 0)
+            return L"";
 
         if (L"/_rels/.rels" == file)
         {

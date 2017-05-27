@@ -553,7 +553,7 @@ namespace PPTX
             std::wstring strFillNode;
             std::wstring strStrokeNode;;
 
-			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, bOle);
+			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, bOle, bSignature);
 			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, bOle, bSignature);
 
 			pWriter->StartNode(L"v:shape");

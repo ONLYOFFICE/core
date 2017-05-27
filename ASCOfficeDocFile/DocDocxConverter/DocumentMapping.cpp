@@ -811,10 +811,10 @@ namespace DocFileFormat
 			{
 				Symbol s = getSymbol( chpx );
 
-                m_pXmlWriter->WriteNodeBegin(L"w:sym", true);
-                m_pXmlWriter->WriteAttribute(L"w:font", FormatUtils::XmlEncode(s.FontName));
-                m_pXmlWriter->WriteAttribute(L"w:char", FormatUtils::XmlEncode(s.HexValue));
-                m_pXmlWriter->WriteNodeEnd(L"", true);
+                //m_pXmlWriter->WriteNodeBegin(L"w:sym", true);
+                //m_pXmlWriter->WriteAttribute(L"w:font", FormatUtils::XmlEncode(s.FontName));
+                //m_pXmlWriter->WriteAttribute(L"w:char", FormatUtils::XmlEncode(s.HexValue));
+                //m_pXmlWriter->WriteNodeEnd(L"", true);
 			}
 			else if ((TextMark::DrawnObject == code) && fSpec)
 			{
@@ -1663,10 +1663,15 @@ namespace DocFileFormat
 				FontFamilyName* ffn = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( fontIndex ) );
 
 				ret.FontName = ffn->xszFtn;
-                ret.HexValue = L"f0" + FormatUtils::IntToFormattedWideString( code, L"%02x" );
+                ret.HexValue = L"f0" + FormatUtils::IntToFormattedWideString( code, L"%02x" );//-123 - ShortToFormattedWideString
 
 				break;
 			}		
+		}
+
+		if (ret.HexValue.length() > 4)
+		{
+			ret.HexValue = ret.HexValue.substr(ret.HexValue.length() - 4, 4);
 		}
 
 		return ret;

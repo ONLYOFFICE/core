@@ -59,7 +59,7 @@ namespace PPTX
 		}
 
         void CalculateFill(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::Theme>& oTheme,
-			NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle)
+			NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle, bool bSignature)
 		{
 			PPTX::Logic::UniFill fill;
 			DWORD ARGB = 0;
@@ -113,7 +113,7 @@ namespace PPTX
 
 					std::wstring strId = oBlip.blip->embed->ToString();
 
-					if(bOle)
+					if (bOle || bSignature)
 					{
 						strAttr = _T(" filled=\"f\"");
 						strNode = _T("<v:imagedata r:id=\"") + strId + _T("\" o:title=\"\" />");

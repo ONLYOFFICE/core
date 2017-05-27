@@ -307,6 +307,7 @@ namespace
 			content << L"<w:" << Node <<    L"s \
 								xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
 								xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+								xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
 								xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
 								xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
 								xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \

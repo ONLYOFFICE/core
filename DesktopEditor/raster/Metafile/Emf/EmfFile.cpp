@@ -63,7 +63,13 @@ namespace MetaFile
 			m_ulRecordSize = ulSize - 8;
 
 			if (ulType < EMR_MIN || ulType > EMR_MAX)
-				return SetError();
+            {
+                if (ENHMETA_SIGNATURE != m_oHeader.ulSignature || 0x00010000 != m_oHeader.ulVersion)
+                    return SetError();
+                else
+                    break;
+            }
+
 
 			if (0 == ulRecordIndex && EMR_HEADER != ulType)
 				return SetError();

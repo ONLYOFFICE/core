@@ -622,7 +622,7 @@ void xlsx_drawing_context::serialize_group()
 				//serialize_line(CP_XML_STREAM(), drawing_state);		
 			}
 
-			for (int i = 1; i < current_drawing_states->size(); i++)
+			for (size_t i = 1; i < current_drawing_states->size(); i++)
 			{
 				CP_XML_STREAM() << current_drawing_states->at(i)->shape;
 				//todooo current_drawing_states->at(i).shape.erase(); // память поэкономить
@@ -1033,7 +1033,7 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 	
 	shape->m_oCustomVML.m_bIsVerticesPresent = drawing_state->custom_verticles.empty() ? false : true;
 	
-	for (int i = 0 ; i < drawing_state->custom_verticles.size(); i++)
+	for (size_t i = 0 ; i < drawing_state->custom_verticles.size(); i++)
 	{
 		 Aggplus::POINT p;
 		
@@ -1043,7 +1043,7 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 		 shape->m_oCustomVML.m_arVertices.push_back(p);
 	}
 	
-	for (int i = 0 ; i < drawing_state->custom_guides.size(); i++)
+	for (size_t i = 0 ; i < drawing_state->custom_guides.size(); i++)
 	{//todooo объеденить/срастить !!
 		NSCustomShapesConvert::CGuide guid;
 		
@@ -1058,7 +1058,7 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 		shape->m_oCustomVML.addGuide(guid);
 	}	
 	
-	for (int i = 0 ; i < drawing_state->custom_segments.size(); i++)
+	for (size_t i = 0 ; i < drawing_state->custom_segments.size(); i++)
 	{
 		if (0 == drawing_state->custom_segments[i].m_nCount)
 		{
@@ -1076,7 +1076,7 @@ std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & dra
 	//{//todooo - ранее этого не было ?????
 	//	shape->m_oCustomVML.addHandle(i, *drawing_state->custom_adjustHandles[i]);
 	//}
-	for (int i = 0; i < drawing_state->custom_adjustValues.size(); i++)
+	for (size_t i = 0; i < drawing_state->custom_adjustValues.size(); i++)
 	{
 		if (drawing_state->custom_adjustValues[i])
 		{
@@ -1301,7 +1301,7 @@ void xlsx_drawing_context::serialize_gradient_fill(std::wostream & stream, _draw
 
 				if ( !fill.colorsPosition.empty() )
 				{
-					for (int i = 0; i < fill.colorsPosition.size(); i++)
+					for (size_t i = 0; i < fill.colorsPosition.size(); i++)
 					{
 						CP_XML_NODE(L"a:gs")
 						{
@@ -1600,6 +1600,13 @@ void xlsx_drawing_context::serialize_line(std::wostream & stream, _drawing_state
 			else
 				CP_XML_ATTR(L"w", 9525); //default
 
+			switch(line.endcap)
+			{	
+			case 0:		CP_XML_ATTR(L"cap", L"rnd");	break;
+			case 1:		CP_XML_ATTR(L"cap", L"sq");		break;
+			case 2:		CP_XML_ATTR(L"cap", L"flat");	break;
+			}
+
 			serialize_fill(CP_XML_STREAM(), line.fill);
 
 			CP_XML_NODE(L"a:prstDash")
@@ -1613,6 +1620,18 @@ void xlsx_drawing_context::serialize_line(std::wostream & stream, _drawing_state
 				case lineDashDotDot:CP_XML_ATTR(L"val", L"lgDashDotDot"); break;
 				}
 			}
+			switch(line.join)
+			{	
+			case 0:		CP_XML_NODE(L"a:bevel");	break;				
+			case 1:
+						CP_XML_NODE(L"a:miter")
+						{		
+							if (line.miter > 0)
+								CP_XML_ATTR(L"lim", line.miter * 1000);
+						}break;				
+			case 2:		CP_XML_NODE(L"a:round");	break;
+			}
+
 			if (line.arrow.enabled)
 			{
 				serialize_arrow(CP_XML_STREAM(), L"a:headEnd", line.arrow.start, line.arrow.start_width, line.arrow.start_length);
@@ -2019,7 +2038,27 @@ void xlsx_drawing_context::set_line_width (int val)
 
 	current_drawing_states->back()->line.width = val;
 }
+void xlsx_drawing_context::set_line_miter(int val)
+{
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
+	current_drawing_states->back()->line.miter = val;
+}
+void xlsx_drawing_context::set_line_join(int val)
+{
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->line.join = val;
+}
+void xlsx_drawing_context::set_line_endcap(int val)
+{
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->line.endcap = val;
+}
 void xlsx_drawing_context::set_line_arrow(bool val)
 {
 	if (current_drawing_states == NULL) return;	
@@ -2032,7 +2071,8 @@ void xlsx_drawing_context::set_arrow_start (int val)
 	if (current_drawing_states == NULL) return;	
 	if (current_drawing_states->empty()) return;
 
-	current_drawing_states->back()->line.arrow.start = val;
+	current_drawing_states->back()->line.arrow.start	= val;
+	current_drawing_states->back()->line.arrow.enabled	= true;
 }
 void xlsx_drawing_context::set_arrow_end (int val)
 {
@@ -2040,6 +2080,7 @@ void xlsx_drawing_context::set_arrow_end (int val)
 	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->line.arrow.end = val;
+	current_drawing_states->back()->line.arrow.enabled	= true;
 }
 void xlsx_drawing_context::set_arrow_start_width (int val)
 {
@@ -2375,6 +2416,41 @@ void xlsx_drawing_context::set_custom_path (int type_path)
 
 	current_drawing_states->back()->custom_path = type_path;
 }
+void xlsx_drawing_context::set_custom_connection(std::vector<ODRAW::MSOPOINT>& points)
+{
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->custom_connection = points;
+}
+void xlsx_drawing_context::set_custom_connectionDir(std::vector<ODRAW::FixedPoint>& points)
+{
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->custom_connectionDir = points;
+}
+void xlsx_drawing_context::set_custom_inscribe(std::vector<ODRAW::MSORECT>& rects)
+{
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->custom_inscribe = rects;
+}
+void xlsx_drawing_context::set_custom_x_limo(int val)
+{
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->custom_x_limo = val;
+}
+void xlsx_drawing_context::set_custom_y_limo(int val)
+{
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->custom_y_limo = val;
+}
 //----------------------------------------------------------------------------------------------------------
 bool xlsx_drawing_context::get_mode_vmlwrite ()
 {//comment, shapes in header/footer, ....
@@ -2435,7 +2511,7 @@ void xlsx_drawing_context::serialize_vml_HF(std::wostream & strm)
             CP_XML_ATTR(L"xmlns:o"	, L"urn:schemas-microsoft-com:office:office");
             CP_XML_ATTR(L"xmlns:x"	, L"urn:schemas-microsoft-com:office:excel");
 
-			for (int i = 0 ; i < drawing_states_vml_HF.size(); i++)
+			for (size_t i = 0 ; i < drawing_states_vml_HF.size(); i++)
 			{
 				serialize_vml(CP_XML_STREAM(), drawing_states_vml_HF[i]);
 			}
@@ -2471,7 +2547,7 @@ void xlsx_drawing_context::serialize_vml_comments(std::wostream & strm)
 				}
 			}				
 
-			for (int i = 0 ; i < drawing_states_vml_comments.size(); i++)
+			for (size_t i = 0 ; i < drawing_states_vml_comments.size(); i++)
 			{
 				serialize_vml(CP_XML_STREAM(), drawing_states_vml_comments[i]);
 			}
@@ -2490,7 +2566,7 @@ void xlsx_drawing_context::serialize(std::wostream & strm)
             CP_XML_ATTR(L"xmlns:r"	, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 			CP_XML_ATTR(L"xmlns:mc"	, L"http://schemas.openxmlformats.org/markup-compatibility/2006");
 
-			for (int i = 0 ; i < drawing_states.size(); i++)
+			for (size_t i = 0 ; i < drawing_states.size(); i++)
 			{
 				serialize(CP_XML_STREAM(), drawing_states[i]);
 			}

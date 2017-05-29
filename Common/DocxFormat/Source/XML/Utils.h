@@ -369,6 +369,71 @@ namespace XmlUtils
 
         return buffer;
 	}
+	AVSINLINE static std::wstring EncodeXmlStringExtend(const std::wstring& data, bool bDeleteNoUnicode = false)
+	{
+		std::wstring buffer;
+		buffer.reserve(data.size());
+
+		if(bDeleteNoUnicode)
+		{
+			for(size_t pos = 0; pos < data.size(); ++pos)
+			{
+				switch(data[pos])
+				{
+					case '&':  buffer.append(L"&amp;");      break;
+					case '\"': buffer.append(L"&quot;");     break;
+					case '\'': buffer.append(L"&apos;");     break;
+					case '<':  buffer.append(L"&lt;");       break;
+					case '>':  buffer.append(L"&gt;");       break;
+					case '\n': buffer.append(L"&#xA;");      break;
+					case '\r': buffer.append(L"&#xD;");      break;
+					case '\t': buffer.append(L"&#x9;");      break;
+					case 160:  buffer.append(L"&#160;");     break;
+					default:
+					{
+						if ( false == IsUnicodeSymbol( data[pos] ) )
+						{
+							wchar_t symbol1 = data[pos];
+							if(0xD800 <= symbol1 && symbol1 <= 0xDFFF && pos + 1 < data.size())
+							{
+								pos++;
+								wchar_t symbol2 = data[pos];
+								if (symbol1 < 0xDC00 && symbol2 >= 0xDC00 && symbol2 <= 0xDFFF)
+								{
+									buffer.append(&data[pos-1], 2);
+								}
+							}
+						}
+						else
+							buffer.append(&data[pos], 1);
+					}break;
+				}
+			}
+		}
+		else
+		{
+			for(size_t pos = 0; pos < data.size(); ++pos)
+			{
+				switch(data[pos])
+				{
+					case '&':  buffer.append(L"&amp;");      break;
+					case '\"': buffer.append(L"&quot;");     break;
+					case '\'': buffer.append(L"&apos;");     break;
+					case '<':  buffer.append(L"&lt;");       break;
+					case '>':  buffer.append(L"&gt;");       break;
+					case '\n': buffer.append(L"&#xA;");      break;
+					case '\r': buffer.append(L"&#xD;");      break;
+					case '\t': buffer.append(L"&#x9;");      break;
+					case 160:  buffer.append(L"&#160;");     break;
+					case '\0':
+						return buffer;
+					default:   buffer.append(&data[pos], 1);	break;
+				}
+			}
+		}
+
+		return buffer;
+	}
 //#ifndef _USE_LIBXML2_READER_
 	class CStringWriter
 	{

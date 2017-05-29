@@ -544,7 +544,7 @@ namespace NExtractTools
             }
             sRes  = L"<xmlOptions><fileOptions fileType='" + std::to_wstring(nFileType);
             sRes += L"' codePage='" + std::to_wstring(nCsvEncoding);
-			sRes += L"' delimiter='" + XmlUtils::EncodeXmlString(cDelimiter) + L"' " + sSaveType;
+			sRes += L"' delimiter='" + XmlUtils::EncodeXmlStringExtend(cDelimiter) + L"' " + sSaveType;
             sRes += L"/><TXTOptions><Encoding>" + std::to_wstring(nCsvEncoding) + L"</Encoding></TXTOptions></xmlOptions>";
 
             return sRes;

@@ -88,7 +88,10 @@ class fillColor : public OfficeArtFOPTE
 
 class FixedPoint : public OfficeArtFOPTE
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillColor)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FixedPoint)
+	
+	FixedPoint();
+	FixedPoint(unsigned short cbElement_); //fixed always!!
 	virtual void load(XLS::CFRecord& record);
 	
 	double dVal;
@@ -574,6 +577,28 @@ class MSOPOINT : public XLS::BiffStructure
 	int cbElement;
 };
 
+class MSORECT : public XLS::BiffStructure  
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(MSORECT)
+	
+	MSORECT(unsigned short cbElement_);
+	MSORECT();
+
+	XLS::BiffStructurePtr clone();
+
+	virtual void load(XLS::CFRecord& record);
+
+	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
+
+    _INT32 l;
+    _INT32 t;
+    _INT32 r;
+    _INT32 b;
+
+	int cbElement;
+};
+
+
 class MSOPATHINFO : public XLS::BiffStructure 
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(MSOPATHINFO)
@@ -710,6 +735,40 @@ class pAdjustHandles : public OfficeArtFOPTE
 	IMsoArray<ADJH> complex;
 };
 
+class pConnectionSites : public OfficeArtFOPTE 
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(pConnectionSites)
+	
+	virtual void ReadComplexData(XLS::CFRecord& record);
+
+	IMsoArray<MSOPOINT> complex;
+};
+
+class pConnectionSitesDir : public OfficeArtFOPTE 
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(pConnectionSitesDir)
+	
+	virtual void ReadComplexData(XLS::CFRecord& record);
+
+	IMsoArray<ODRAW::FixedPoint> complex;
+};
+
+class pInscribe : public OfficeArtFOPTE 
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(pInscribe)
+	
+	virtual void ReadComplexData(XLS::CFRecord& record);
+
+	IMsoArray<MSORECT> complex;
+};
+//class cxk : public OfficeArtFOPTE 
+//{
+//	BASE_STRUCTURE_DEFINE_CLASS_NAME(cxk)
+//	
+//	virtual void ReadComplexData(XLS::CFRecord& record);
+//
+//	IMsoArray<MSOCXK> complex;
+//};
 class lineOpacity : public OfficeArtFOPTE 
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineOpacity)

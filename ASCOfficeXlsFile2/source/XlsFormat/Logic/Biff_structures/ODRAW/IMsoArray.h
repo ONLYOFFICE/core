@@ -56,8 +56,11 @@ public:
 		unsigned short nElems, nElemsAlloc;
 		unsigned short cbElem;
 		
+		int pos1 = record.getRdPtr();
+		
 		record >> nElems >> nElemsAlloc >> cbElem;
-		while(nElems--)
+		
+		for (unsigned short i = 0; i < nElems; i++)
 		{
 			Type element(cbElem);
 			record >> element;

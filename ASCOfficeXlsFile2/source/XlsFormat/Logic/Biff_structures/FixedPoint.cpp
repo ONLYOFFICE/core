@@ -32,7 +32,6 @@
 
 #include "FixedPoint.h"
 #include <Binary/CFRecord.h>
-//#include <Exception/AttributeDataWrong.h>
 
 namespace OSHARED
 {
@@ -40,15 +39,20 @@ namespace OSHARED
 
 FixedPoint::FixedPoint()
 {
+	Integral	= 0;
+	Fractional	= 0;
 }
-
+FixedPoint::FixedPoint(unsigned short cbElement_)
+{
+	Integral	= 0;
+	Fractional	= 0;
+}
 
 FixedPoint::FixedPoint(const int raw_data)
 {
 	Fractional = static_cast<unsigned char>(raw_data & 0xFFFF);
 	Integral = static_cast<unsigned char>(raw_data >> 16);
 }
-
 
 XLS::BiffStructurePtr FixedPoint::clone()
 {

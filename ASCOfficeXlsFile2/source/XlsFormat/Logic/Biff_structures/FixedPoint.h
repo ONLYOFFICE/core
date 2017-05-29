@@ -41,6 +41,7 @@ class CFRecord;
 class FixedPoint : public XLS::BiffAttribute
 {
 public:
+	FixedPoint(unsigned short cbElement_); //fixed always!!
 	FixedPoint();
     FixedPoint(const int raw_data);
 	XLS::BiffStructurePtr clone();

@@ -223,18 +223,26 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 			fopte = OfficeArtFOPTEPtr(new AdjustValue);
 			break;
 		case 0x0151:
+			fopte = OfficeArtFOPTEPtr(new pConnectionSites);
+			break;
+		case 0x0152:
+			fopte = OfficeArtFOPTEPtr(new pConnectionSitesDir);
+			break;
+		case 0x0153:
+		case 0x0154:
+			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
+			break;
+		case 0x0155:
 			fopte = OfficeArtFOPTEPtr(new pAdjustHandles);
 			break;
 		case 0x0156:
 			fopte = OfficeArtFOPTEPtr(new pGuides);
 			break;
-		case 0x0152:
-		case 0x0153:
-		case 0x0154:
-		case 0x0155:
 		case 0x0157:
+			fopte = OfficeArtFOPTEPtr(new pInscribe);
+			break;
 		case 0x0158:
-			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
+			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);//cxk
 			break;
 		case 0x017f:
 			fopte = OfficeArtFOPTEPtr(new GeometryBooleanProperties);
@@ -426,6 +434,14 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 	fopte->load(record);
 
 	return fopte;
+}
+FixedPoint::FixedPoint()
+{
+	dVal = 0;
+}
+FixedPoint::FixedPoint(unsigned short cbElement_)
+{
+	dVal = 0;
 }
 void FixedPoint::load(XLS::CFRecord& record)
 {
@@ -642,17 +658,6 @@ void pihlShape::ReadComplexData(XLS::CFRecord& record)
 	int pos = record.getRdPtr();
 
 	record >> complex;
-
-	int pos2 = record.getRdPtr() - pos;
-
-	if (pos2 > 0 && pos2 < op)
-	{
-		record.skipNunBytes(op - pos2);
-	}
-	if (pos2 > 0 && pos2 > op)
-	{
-		record.RollRdPtrBack( pos2 - op);
-	}
 }
 //---------------------------------------------------------------------------------------------
 MSOPOINT::MSOPOINT()
@@ -688,6 +693,44 @@ void MSOPOINT::load(XLS::CFRecord& record)
 		
 		x = x_;
 		y = y_;
+	}
+}
+//---------------------------------------------------------------------------------------------
+MSORECT::MSORECT()
+{
+	cbElement = 8;
+}
+
+MSORECT::MSORECT(unsigned short cbElement_)
+{
+	cbElement = 8;
+
+	if (cbElement_ == 0xfff0)
+	{
+		cbElement = 4;
+	}
+}
+
+XLS::BiffStructurePtr MSORECT::clone() 
+{
+	return XLS::BiffStructurePtr(new MSORECT(*this));
+}
+
+void MSORECT::load(XLS::CFRecord& record)
+{
+	if (cbElement == 8)
+	{
+		record >> l >> t >> r >> b;
+	}
+	else
+	{
+		unsigned short l_, t_, r_, b_;
+		record >> l_ >> t_ >> r_ >> b_;
+		
+		l = l_;
+		t = t_;
+		r = r_;
+		b = b_;
 	}
 }
 //---------------------------------------------------------------------------------------------
@@ -926,17 +969,6 @@ void PVertices::ReadComplexData(XLS::CFRecord& record)
 	int pos = record.getRdPtr();
 
 	record >> complex;
-
-	int pos2 = record.getRdPtr() - pos;
-
-	if (pos2 > 0 && pos2 < op)
-	{
-		record.skipNunBytes(op - pos2);
-	}
-	if (pos2 > 0 && pos2 > op)
-	{
-		record.RollRdPtrBack( pos2 - op);
-	}
 }
 
 void PSegmentInfo::ReadComplexData(XLS::CFRecord& record)
@@ -945,17 +977,6 @@ void PSegmentInfo::ReadComplexData(XLS::CFRecord& record)
 	int pos = record.getRdPtr();
 
 	record >> complex;
-
-	int pos2 = record.getRdPtr() - pos;
-
-	if (pos2 > 0 && pos2 < op)
-	{
-		record.skipNunBytes(op - pos2);
-	}
-	if (pos2 > 0 && pos2 > op)
-	{
-		record.RollRdPtrBack( pos2 - op);
-	}
 }
 
 void pGuides::ReadComplexData(XLS::CFRecord& record)
@@ -964,17 +985,6 @@ void pGuides::ReadComplexData(XLS::CFRecord& record)
 	int pos = record.getRdPtr();
 
 	record >> complex;
-
-	int pos2 = record.getRdPtr() - pos;
-
-	if (pos2 > 0 && pos2 < op)
-	{
-		record.skipNunBytes(op - pos2);
-	}
-	if (pos2 > 0 && pos2 > op)
-	{
-		record.RollRdPtrBack( pos2 - op);
-	}
 }
 void pAdjustHandles::ReadComplexData(XLS::CFRecord& record)
 {
@@ -983,16 +993,26 @@ void pAdjustHandles::ReadComplexData(XLS::CFRecord& record)
 	int pos = record.getRdPtr();
 
 	record >> complex;
+}
+void pConnectionSites::ReadComplexData(XLS::CFRecord& record)
+{
+	complex.op = op;
+	int pos = record.getRdPtr();
 
-	int pos2 = record.getRdPtr() - pos;
+	record >> complex;
+}
+void pConnectionSitesDir::ReadComplexData(XLS::CFRecord& record)
+{
+	complex.op = op;
+	int pos = record.getRdPtr();
 
-	if (pos2 > 0 && pos2 < op)
-	{
-		record.skipNunBytes(op - pos2);
-	}
-	if (pos2 > 0 && pos2 > op)
-	{
-		record.RollRdPtrBack( pos2 - op);
-	}
+	record >> complex;
+}
+void pInscribe::ReadComplexData(XLS::CFRecord& record)
+{
+	complex.op = op;
+	int pos = record.getRdPtr();
+
+	record >> complex;
 }
 } 

@@ -115,30 +115,30 @@ public:
 		m_strRect	= Shape->m_strRect;
 		
 		m_arAdjustments.clear();
-		for(int i = 0; i < Shape->m_arAdjustments.size(); i++)
+		for(size_t  i = 0; i < Shape->m_arAdjustments.size(); i++)
 			m_arAdjustments.push_back(Shape->m_arAdjustments[i]);
 
 		m_arGuides.clear();
-		for(int i = 0; i < Shape->m_arGuides.size(); i++)
+		for(size_t  i = 0; i < Shape->m_arGuides.size(); i++)
 			m_arGuides.push_back(Shape->m_arGuides[i]);
 
 		m_eJoin				= Shape->m_eJoin;
 		m_bConcentricFill	= Shape->m_bConcentricFill;
 
 		m_arConnectors.clear();
-		for(int i = 0; i < Shape->m_arConnectors.size(); i++)
+		for(size_t  i = 0; i < Shape->m_arConnectors.size(); i++)
 			m_arConnectors.push_back(Shape->m_arConnectors[i]);
 
 		m_arConnectorAngles.clear();
-		for(int i = 0; i < Shape->m_arConnectorAngles.size(); i++)
+		for(size_t  i = 0; i < Shape->m_arConnectorAngles.size(); i++)
 			m_arConnectorAngles.push_back(Shape->m_arConnectorAngles[i]);
 
 		m_arTextRects.clear();
-		for(int i = 0; i < Shape->m_arTextRects.size(); i++)
+		for(size_t  i = 0; i < Shape->m_arTextRects.size(); i++)
 			m_arTextRects.push_back(Shape->m_arTextRects[i]);
 
 		m_arHandles.clear();
-		for(int i = 0; i < Shape->m_arHandles.size(); i++)
+		for(size_t  i = 0; i < Shape->m_arHandles.size(); i++)
 			m_arHandles.push_back(Shape->m_arHandles[i]);
 
 
@@ -157,26 +157,26 @@ public:
 	//	Shape->m_strRect	= m_strRect;
 	//	
 	//	Shape->m_arAdjustments.clear();
-	//	for(int i = 0; i < m_arAdjustments.size(); i++)
+	//	for(size_t  i = 0; i < m_arAdjustments.size(); i++)
 	//		Shape->m_arAdjustments.push_back(m_arAdjustments[i]);
 
 	//	Shape->Guides.clear();
-	//	for(int i = 0; i < Guides.size(); i++)
+	//	for(size_t  i = 0; i < Guides.size(); i++)
 	//		Shape->Guides.push_back(Guides[i]);
 
 	//	Shape->m_eJoin				= m_eJoin;
 	//	Shape->m_bConcentricFill	= m_bConcentricFill;
 
 	//	Shape->m_arConnectors.clear();
-	//	for(int i = 0; i < m_arConnectors.size(); i++)
+	//	for(size_t  i = 0; i < m_arConnectors.size(); i++)
 	//		Shape->m_arConnectors.push_back(m_arConnectors[i]);
 
 	//	Shape->m_arConnectorAngles.clear();
-	//	for(int i = 0; i < m_arConnectorAngles.size(); i++)
+	//	for(size_t  i = 0; i < m_arConnectorAngles.size(); i++)
 	//		Shape->m_arConnectorAngles.push_back(m_arConnectorAngles[i]);
 
 	//	Shape->m_arTextRects.clear();
-	//	for(int i = 0; i < m_arTextRects.size(); i++)
+	//	for(size_t  i = 0; i < m_arTextRects.size(); i++)
 	//		Shape->m_arTextRects.push_back(m_arTextRects[i]);
 	//	Shape->m_strRect = m_strRect;
 

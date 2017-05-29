@@ -351,12 +351,12 @@ private:
 			m_lShapeHeight	= oSrc.m_lShapeHeight;
 
 			m_arResults.clear();
-			for (int nIndex = 0; nIndex < oSrc.m_arResults.size(); ++nIndex)
+			for (size_t nIndex = 0; nIndex < oSrc.m_arResults.size(); ++nIndex)
 			{
 				m_arResults.push_back(oSrc.m_arResults[nIndex]);
 			}
 			m_arFormulas.clear();
-			for (int nIndex = 0; nIndex < oSrc.m_arFormulas.size(); ++nIndex)
+			for (size_t nIndex = 0; nIndex < oSrc.m_arFormulas.size(); ++nIndex)
 			{
 				m_arFormulas.push_back(oSrc.m_arFormulas[nIndex]);
 			}
@@ -379,7 +379,7 @@ private:
 			
 			//m_arFormulas.clear();
 			//m_arResults.clear();
-			for (int nIndex = 0; nIndex < m_arResults.size(); ++nIndex)
+			for (size_t nIndex = 0; nIndex < m_arResults.size(); ++nIndex)
 			{
 				m_arResults[nIndex] = 0xFFFFFFFF;
 			}
@@ -399,7 +399,7 @@ private:
 		}
 		void CalculateResults()
 		{
-			for (int index = 0; index < m_arFormulas.size(); ++index)
+			for (size_t index = 0; index < m_arFormulas.size(); ++index)
 			{
                 LONG lResult = m_arFormulas[index].CalculateFormula(this);
 			}

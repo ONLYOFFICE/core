@@ -426,7 +426,7 @@ namespace NSCustomShapesConvert
 			{
 				m_eType	= oSrc.m_eType;
                 this->m_arPoints.clear();
-                for (int nIndex = 0; nIndex < oSrc.m_arPoints.size(); ++nIndex)
+                for (size_t nIndex = 0; nIndex < oSrc.m_arPoints.size(); ++nIndex)
 				{
                     this->m_arPoints.push_back(oSrc.m_arPoints[nIndex]);
 				}
@@ -771,7 +771,7 @@ namespace NSCustomShapesConvert
 				case rtAngleEllipseTo:
 					{
 						int nFigure = 0;
-                        while ((nFigure + 3) <= this->m_arPoints.size())
+                        while ((nFigure + 3) <= (int)this->m_arPoints.size())
 						{
                             double nLeft	= this->m_arPoints[nFigure].dX - this->m_arPoints[nFigure + 1].dX / 2;
                             double nTop		= this->m_arPoints[nFigure].dY - this->m_arPoints[nFigure + 1].dY / 2;
@@ -790,7 +790,7 @@ namespace NSCustomShapesConvert
 					{
 						pRenderer->PathCommandStart();
 						int nFigure = 0;
-                        while ((nFigure + 3) <= this->m_arPoints.size())
+                        while ((nFigure + 3) <= (int)this->m_arPoints.size())
 						{
                             double nLeft	= this->m_arPoints[nFigure].dX - this->m_arPoints[nFigure + 1].dX / 2;
                             double nTop		= this->m_arPoints[nFigure].dY - this->m_arPoints[nFigure + 1].dY / 2;
@@ -809,7 +809,7 @@ namespace NSCustomShapesConvert
 					{
 						pRenderer->PathCommandStart();
 						int nFigure = 0;
-                        while ((nFigure + 4) <= this->m_arPoints.size())
+                        while ((nFigure + 4) <= (int)this->m_arPoints.size())
 						{
                             double nCentreX = (this->m_arPoints[nFigure].dX + this->m_arPoints[nFigure + 1].dX) / 2;
                             double nCentreY = (this->m_arPoints[nFigure].dY + this->m_arPoints[nFigure + 1].dY) / 2;
@@ -834,7 +834,7 @@ namespace NSCustomShapesConvert
 				case rtArcTo:
 					{
 						int nFigure = 0;
-                        while ((nFigure + 4) <= this->m_arPoints.size())
+                        while ((nFigure + 4) <= (int)this->m_arPoints.size())
 						{
                             double nCentreX = (this->m_arPoints[nFigure].dX + this->m_arPoints[nFigure + 1].dX) / 2;
                             double nCentreY = (this->m_arPoints[nFigure].dY + this->m_arPoints[nFigure + 1].dY) / 2;
@@ -859,7 +859,7 @@ namespace NSCustomShapesConvert
 				case rtClockwiseArcTo:
 					{
 						int nFigure = 0;
-                        while ((nFigure + 4) <= this->m_arPoints.size())
+                        while ((nFigure + 4) <= (int)this->m_arPoints.size())
 						{
                             double nCentreX = (this->m_arPoints[nFigure].dX + this->m_arPoints[nFigure + 1].dX) / 2;
                             double nCentreY = (this->m_arPoints[nFigure].dY + this->m_arPoints[nFigure + 1].dY) / 2;
@@ -885,7 +885,7 @@ namespace NSCustomShapesConvert
 					{
 						pRenderer->PathCommandStart();
 						int nFigure = 0;
-                        while ((nFigure + 4) <= this->m_arPoints.size())
+                        while ((nFigure + 4) <= (int)this->m_arPoints.size())
 						{
                             double nCentreX = (this->m_arPoints[nFigure].dX + this->m_arPoints[nFigure + 1].dX) / 2;
                             double nCentreY = (this->m_arPoints[nFigure].dY + this->m_arPoints[nFigure + 1].dY) / 2;

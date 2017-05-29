@@ -72,6 +72,7 @@ using namespace cpdoccore;
 
 namespace Oox2Odf
 {
+
 PptxConverter::PptxConverter(const std::wstring & path, const ProgressCallback* CallBack)
 {
  	current_clrMap		= NULL;
@@ -342,7 +343,7 @@ void PptxConverter::convert_slides()
 					current_slide = slide->Master.operator->();
 					
 					if (bShowLayoutMasterSp && bShowMasterSp)
-						convert_slide(&slide->Master->cSld, current_txStyles, false, true, 2);
+						convert_slide(&slide->Master->cSld, current_txStyles, false, true, Master);
 					else
 						convert(slide->Master->cSld.bg.GetPointer());
 
@@ -350,7 +351,7 @@ void PptxConverter::convert_slides()
 						current_clrMap	= slide->Layout->clrMapOvr->overrideClrMapping.GetPointer();
 					current_slide = slide->Layout.operator->();
 					
-					convert_slide(&slide->Layout->cSld, current_txStyles, true, bShowLayoutMasterSp, 3);	
+					convert_slide(&slide->Layout->cSld, current_txStyles, true, bShowLayoutMasterSp, Layout);	
 
 					if (slide->Layout->transition.IsInit())	convert	(slide->Layout->transition.GetPointer());
 					else									convert	(slide->Master->transition.GetPointer());
@@ -402,7 +403,7 @@ void PptxConverter::convert_slides()
 		odp_context->current_slide().set_master_page (master_style_name);
 		odp_context->current_slide().set_layout_page (layout_style_name);
 		
-		convert_slide	(slide->cSld.GetPointer(), current_txStyles, true, bShowMasterSp, 1);
+		convert_slide	(slide->cSld.GetPointer(), current_txStyles, true, bShowMasterSp, Slide);
 		convert			(slide->comments.operator->());
 		convert			(slide->Note.operator->());
 		
@@ -435,7 +436,7 @@ void PptxConverter::convert(PPTX::NotesMaster *oox_notes)
 		
 		odf_context()->page_layout_context()->set_page_size(width, height);
 	}
-	convert_slide(&oox_notes->cSld, NULL, true, true, 2);
+	convert_slide(&oox_notes->cSld, NULL, true, true, NotesMaster);
 	
 	odp_context->end_note();
 
@@ -468,7 +469,7 @@ void PptxConverter::convert(PPTX::NotesSlide *oox_notes)
 	if (oox_notes->clrMapOvr.IsInit() && oox_notes->clrMapOvr->overrideClrMapping.IsInit())
 		current_clrMap	= oox_notes->clrMapOvr->overrideClrMapping.GetPointer();
 	
-	convert_slide(&oox_notes->cSld, NULL, true, true, 1);
+	convert_slide(&oox_notes->cSld, NULL, true, true, Notes);
 	
 	odp_context->end_note();
 	
@@ -1312,13 +1313,19 @@ void PptxConverter::convert(PPTX::Logic::Bg *oox_background)
 		}
 	odf_writer::style* page_style_ = dynamic_cast<odf_writer::style*>(odp_context->current_slide().page_style_elm_.get());
 	odf_writer::style_drawing_page_properties* page_props = page_style_->content_.get_style_drawing_page_properties();
+	
+	//необязательно
+	//if (page_props->content_.common_draw_fill_attlist_.draw_fill_image_name_)
+	//{
+	//	page_props->content_.draw_background_size_ = L"border";
+	//}
 
 	odp_context->drawing_context()->end_drawing_background(page_props->content_.common_draw_fill_attlist_);
 
 	odp_context->end_drawings();
 }
 
-void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxStyles* txStyles, bool bPlaceholders, bool bFillUp, int type)
+void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxStyles* txStyles, bool bPlaceholders, bool bFillUp, _typePages type)
 {
 	if (oox_slide == NULL) return;
 
@@ -1328,7 +1335,10 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 	if (oox_slide->attrName.IsInit())
 		odp_context->current_slide().set_page_name(oox_slide->attrName.get());
 
-	convert(oox_slide->bg.GetPointer());
+	if (type != Notes && type != NotesMaster)
+	{
+		convert(oox_slide->bg.GetPointer());
+	}
 		
 	for (size_t i = 0 ; i < oox_slide->spTree.SpTreeElems.size(); i++)
 	{
@@ -1348,7 +1358,7 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 				{
 					int ph_type = pShape->nvSpPr.nvPr.ph->type->GetBYTECode();
 
-					if (type == 3 && (ph_type == 5 || ph_type == 6 || ph_type == 7 || ph_type == 12))
+					if (type == Layout && (ph_type == 5 || ph_type == 6 || ph_type == 7 || ph_type == 12))
 						continue;
 
 					odf_context()->drawing_context()->set_placeholder_type(ph_type);

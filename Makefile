@@ -59,6 +59,7 @@ UNICODECONVERTER := $(LIBDIR)/libUnicodeConverter$(SHARED_EXT)
 ASCDOCUMENTSCORE := $(LIBDIR)/libascdocumentscore$(SHARED_EXT)
 LIBXML := $(LIBDIR)/liblibxml$(LIB_EXT)
 LICENSEMANAGER := $(LIBDIR)/libLicenceManager$(LIB_EXT)
+OOXMLSIGNATURE := $(LIBDIR)/libooxmlsignature$(LIB_EXT)
 
 TARGETS += $(ALLFONTSGEN)
 TARGETS += $(X2T)
@@ -86,6 +87,7 @@ TARGETS += $(UNICODECONVERTER)
 TARGETS += $(ASCDOCUMENTSCORE)
 TARGETS += $(LIBXML)
 TARGETS += $(LICENSEMANAGER)
+TARGETS += $(OOXMLSIGNATURE)
 
 X2T_PRO := $(abspath X2tConverter/build/Qt/X2tSLN.pro)
 HTMLFILEINTERNAL_PRO := $(abspath ../desktop-sdk/HtmlFile/Internal/Internal.pro)
@@ -113,6 +115,7 @@ UNICODECONVERTER_PRO := $(abspath UnicodeConverter/UnicodeConverter.pro)
 ASCDOCUMENTSCORE_PRO := $(abspath ../desktop-sdk/ChromiumBasedEditors/lib/AscDocumentsCore_$(PLATFORM).pro)
 LIBXML_PRO := $(abspath DesktopEditor/xml/build/qt/libxml2.pro)
 LICENSEMANAGER_PRO := $(abspath LicenceManager/linux/LicenseManager.pro)
+OOXMLSIGNATURE_PRO := $(abspath DesktopEditor/xmlsec/src/ooxmlsignature.pro)
 
 # PROS += $(basename $(X2T_PRO)).build
 # PROS += ALLFONTSGEN_PRO
@@ -211,6 +214,9 @@ ASCDOCUMENTSCORE_DEP += $(DJVUFILE)
 ASCDOCUMENTSCORE_DEP += $(XPSFILE)
 #ASCDOCUMENTSCORE_DEP += $(LICENSEMANAGER)
 ASCDOCUMENTSCORE_DEP += $(LIBXML)
+ASCDOCUMENTSCORE_DEP += $(OOXMLSIGNATURE)
+
+OOXMLSIGNATURE_DEP += $(LIBXML)
 
 PDFREADER_DEP += $(HTMLRENDERER)
 
@@ -261,6 +267,8 @@ $(ASCDOCUMENTSCORE): $(ASCDOCUMENTSCORE_DEP)
 $(PDFREADER): $(PDFREADER_DEP)
 
 $(PDFWRITER): $(PDFWRITER_DEP)
+
+$(OOXMLSIGNATURE): $(OOXMLSIGNATURE_DEP)
 
 %.build/Makefile: %.pro
 	mkdir -p $(dir $@) && cd $(dir $@) && qmake -r $<

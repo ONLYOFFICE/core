@@ -488,8 +488,10 @@ void ECMADecryptor::Decrypt(char* data	, const size_t size, const unsigned long 
 		}
 	}
 }
-bool ECMADecryptor::IsDataIntegrity(unsigned char* data, int  size)
+bool ECMADecryptor::CheckDataIntegrity(unsigned char* data, int  size)
 {
+	if (cryptData.bAgile == false) return true;
+
 	_buf pBlockKey		((unsigned char*)encrKeyValueBlockKey, 8);	
 	_buf pBlockHmacKey	((unsigned char*)encrDataIntegritySaltBlockKey, 8);	
 	_buf pBlockHmacValue((unsigned char*)encrDataIntegrityHmacValueBlockKey, 8);	
@@ -522,7 +524,7 @@ bool ECMADecryptor::IsDataIntegrity(unsigned char* data, int  size)
 
 	std::string sData((char*)data, size);
 	_buf hmac = Hmac(salt, cryptData.hashAlgorithm, sData);
-	
+		
 	return (hmac == expected);
 }
 void ECMADecryptor::Decrypt(unsigned char* data_ptr, int  data_size, unsigned char*& data_out)
@@ -540,8 +542,6 @@ void ECMADecryptor::Decrypt(unsigned char* data_ptr, int  data_size, unsigned ch
 
 	if (cryptData.bAgile)
 	{	
-		bool isDataIntegrity = IsDataIntegrity(data_ptr, data_size);
-
 		_buf pBlockKey	((unsigned char*)encrKeyValueBlockKey, 8);	
 		_buf pDataSalt	(cryptData.dataSaltValue);
 		_buf pKeyValue	(cryptData.encryptedKeyValue);
@@ -603,6 +603,7 @@ void ECMADecryptor::Decrypt(unsigned char* data_ptr, int  data_size, unsigned ch
 		DecryptCipher(hashKey, empty, pInp, pOut, cryptData.cipherAlgorithm);
 	}
 }
+
 //-----------------------------------------------------------------------------------------------------------
 ECMAEncryptor::ECMAEncryptor()
 {
@@ -622,6 +623,7 @@ void ECMAEncryptor::GetCryptData(_ecmaCryptData &data)
 {
 	data = cryptData;
 }
+
 void ECMAEncryptor::UpdateDataIntegrity(unsigned char* data, int  size)
 {
 	if (cryptData.bAgile == false) return;
@@ -636,31 +638,32 @@ void ECMAEncryptor::UpdateDataIntegrity(unsigned char* data, int  size)
 
 	_buf pDataSalt		(cryptData.dataSaltValue);
 	_buf pKeyValue		(cryptData.encryptedKeyValue);
-	_buf pEncHmacKey	(cryptData.encryptedHmacKey);
-	_buf pEncHmacValue	(cryptData.encryptedHmacValue);
-
+	
 	_buf agileKey = GenerateAgileKey( pSalt, pPassword, pBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm);  
 
 	_buf secretKey;
 	DecryptCipher( agileKey, pSalt, pKeyValue, secretKey, cryptData.cipherAlgorithm);  
-//----			
+	
 	_buf iv1 = HashAppend(pDataSalt, pBlockHmacKey, cryptData.hashAlgorithm);
 	CorrectHashSize(iv1, cryptData.blockSize, 0x36);
 	
 	_buf iv2 = HashAppend(pDataSalt, pBlockHmacValue, cryptData.hashAlgorithm);
 	CorrectHashSize(iv2, cryptData.blockSize, 0x36);
 
-	_buf salt;
-	DecryptCipher(secretKey,  iv1, pEncHmacKey, salt, cryptData.cipherAlgorithm);
-	
-	_buf expected;
-	DecryptCipher(secretKey,  iv2, pEncHmacValue, expected, cryptData.cipherAlgorithm);
-
+//----
 	std::string sData((char*)data, size);
-	_buf hmac = Hmac(salt, cryptData.hashAlgorithm, sData);
-	
-	//return (hmac == expected);
+	_buf hmac = Hmac(pSalt, cryptData.hashAlgorithm, sData);
+
+	_buf pEncHmacKey;
+	EncryptCipher(secretKey,  iv1, pSalt, pEncHmacKey, cryptData.cipherAlgorithm);
+
+	_buf pEncHmacValue;
+	EncryptCipher(secretKey,  iv2, hmac, pEncHmacValue, cryptData.cipherAlgorithm);
+
+	cryptData.encryptedHmacKey		= std::string((char*)pEncHmacKey.ptr, pEncHmacKey.size);
+	cryptData.encryptedHmacValue	= std::string((char*)pEncHmacValue.ptr, pEncHmacValue.size);
 }
+
 int ECMAEncryptor::Encrypt(unsigned char* data_inp_ptr, int size, unsigned char*& data_out_ptr)
 {
 	data_out_ptr = NULL;

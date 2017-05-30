@@ -133,11 +133,12 @@ public:
 	virtual bool SetPassword (std::wstring password);
 	virtual bool IsVerify();
 
+	bool CheckDataIntegrity(unsigned char* data, int  size);
+
 	void SetCryptData(_ecmaCryptData &data);
 	
 private:
-	bool IsDataIntegrity(unsigned char* data, int  size);
-	
+
 	std::wstring	password;
 	_ecmaCryptData	cryptData;
 	bool			bVerify;

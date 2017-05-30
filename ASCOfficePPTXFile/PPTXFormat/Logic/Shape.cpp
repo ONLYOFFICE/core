@@ -409,7 +409,6 @@ namespace PPTX
 					
 					pWriter->StartRecord(4);
 					pWriter->m_pMainDocument->getBinaryContentElem(OOX::et_w_sdtContent, oTextBoxShape.GetPointer(), *pWriter, lDataSize);
-					//pWriter->m_pMainDocument->getBinaryContent(TextBoxShape.get(), *pWriter, lDataSize);
 					pWriter->EndRecord();
 					
 					if (oTextBoxBodyPr.is_init())
@@ -419,6 +418,24 @@ namespace PPTX
 						pWriter->EndRecord();
 					}
 				}
+				else if (strTextBoxShape.is_init())//после конвертации старого шейпа (vml)
+				{
+                    long lDataSize = 0;
+                    ULONG lPos = pWriter->GetPosition();
+					pWriter->SetPosition(lPos);
+					
+					pWriter->StartRecord(4);
+					pWriter->m_pMainDocument->getBinaryContent(strTextBoxShape.get(), *pWriter, lDataSize);
+					pWriter->EndRecord();		
+					
+					if (oTextBoxBodyPr.is_init())
+					{
+						pWriter->StartRecord(5);
+						oTextBoxBodyPr->toPPTY(pWriter);
+						pWriter->EndRecord();
+					}
+				}
+
 				else if (txBody.is_init())
 				{
 					std::wstring strContent = txBody->GetDocxTxBoxContent(pWriter, style);

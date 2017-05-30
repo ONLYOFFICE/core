@@ -178,7 +178,9 @@ namespace BinXlsxRW{
 			{
 				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(lChartNumber) + L".xlsx";
 				std::wstring sXlsxPath = sEmbedingPath + FILE_SEPARATOR_STR + sXlsxFilename;
+				
 				writeChartXlsx(sXlsxPath, oChartSpace);
+				pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(L"xlsx");
 
 				std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
 				long rId;

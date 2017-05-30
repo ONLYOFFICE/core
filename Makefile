@@ -59,7 +59,7 @@ UNICODECONVERTER := $(LIBDIR)/libUnicodeConverter$(SHARED_EXT)
 ASCDOCUMENTSCORE := $(LIBDIR)/libascdocumentscore$(SHARED_EXT)
 LIBXML := $(LIBDIR)/liblibxml$(LIB_EXT)
 LICENSEMANAGER := $(LIBDIR)/libLicenceManager$(LIB_EXT)
-OOXMLSIGNATURE := $(LIBDIR)/libooxmlsignature$(LIB_EXT)
+OOXMLSIGNATURE := $(LIBDIR)/libooxmlsignature$(SHARED_EXT)
 
 TARGETS += $(ALLFONTSGEN)
 TARGETS += $(X2T)

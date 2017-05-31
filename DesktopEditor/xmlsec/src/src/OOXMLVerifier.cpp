@@ -174,7 +174,8 @@ public:
             return;
         }
 
-        std::wstring sSetupID = FindFirstChild(GetObjectById("idOfficeObject"), L"SetupID").GetText();
+        XmlUtils::CXmlNode firstChild = GetObjectById("idOfficeObject");
+        std::wstring sSetupID = FindFirstChild(firstChild, L"SetupID").GetText();
         m_guid = U_TO_UTF8(sSetupID);
 
         // 2) Images

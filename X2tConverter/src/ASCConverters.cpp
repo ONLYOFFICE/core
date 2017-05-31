@@ -1514,6 +1514,20 @@ namespace NExtractTools
 		}
 		return AVS_FILEUTILS_ERROR_CONVERT;
 	}
+	int oox2mscrypt	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
+	{
+        std::wstring password = params.getPassword();
+
+		ECMACryptFile cryptReader;
+		bool bDataIntegrity = false;
+
+        if (cryptReader.EncryptOfficeFile(sFrom, sTo, password) == false)
+		{
+			return AVS_FILEUTILS_ERROR_CONVERT;
+		}
+
+		return S_OK;
+	}
     int fromMscrypt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
         std::wstring password = params.getPassword();
@@ -1570,7 +1584,7 @@ namespace NExtractTools
         }
         return nRes;
 	}
-	//html
+ 	//html
 	int html2doct_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
        std::vector<std::wstring> arFiles;

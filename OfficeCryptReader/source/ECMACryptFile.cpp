@@ -42,7 +42,7 @@
 #include "../../ASCOfficeDocFile/DocDocxConverter/MemoryStream.h"
 #include "simple_xml_writer.h"
 
-CRYPT::_ecmaCryptData cryptDataGlobal;
+//CRYPT::_ecmaCryptData cryptDataGlobal; for Test
 
 using namespace CRYPT;
 
@@ -489,18 +489,18 @@ bool ECMACryptFile::EncryptOfficeFile(std::wstring file_name_inp, std::wstring f
 	_ecmaCryptData cryptData;
 	
 	cryptData.bAgile		= true;
-	cryptData.hashAlgorithm = CRYPT_METHOD::SHA256;
+	cryptData.hashAlgorithm = CRYPT_METHOD::SHA512;
 	cryptData.keySize		= 0x20;
 	cryptData.hashSize		= 0x40;
 	cryptData.blockSize		= 0x10;
 	cryptData.saltSize		= 0x10;
 
 	ECMAEncryptor cryptor;	
+
+	//cryptor.SetCryptData(cryptDataGlobal);	//for test !!! 
+	cryptor.SetCryptData(cryptData);			//basic settings
 	
 	cryptor.SetPassword(password);
-
-	cryptor.SetCryptData(cryptDataGlobal);	//for test !!! 
-	//cryptor.SetCryptData(cryptData);		//basic settings
 
 	NSFile::CFileBinary file;
 	if (!file.OpenFile(file_name_inp)) return false;
@@ -737,7 +737,7 @@ bool ECMACryptFile::DecryptOfficeFile(std::wstring file_name_inp, std::wstring f
 //-------------------------------------------------------------------
 	delete pStorage;
 
-	cryptDataGlobal = cryptData; // for encrypt like sample
+	//cryptDataGlobal = cryptData; // for encrypt like sample & test
 
 	return result;
 }

@@ -42,7 +42,7 @@
 #include "../../ASCOfficeDocFile/DocDocxConverter/MemoryStream.h"
 #include "simple_xml_writer.h"
 
-CRYPT::_ecmaCryptData cryptDataGlobal;
+//CRYPT::_ecmaCryptData cryptDataGlobal; for Test
 
 using namespace CRYPT;
 
@@ -489,18 +489,18 @@ bool ECMACryptFile::EncryptOfficeFile(std::wstring file_name_inp, std::wstring f
 	_ecmaCryptData cryptData;
 	
 	cryptData.bAgile		= true;
-	cryptData.hashAlgorithm = CRYPT_METHOD::SHA256;
+	cryptData.hashAlgorithm = CRYPT_METHOD::SHA512;
 	cryptData.keySize		= 0x20;
 	cryptData.hashSize		= 0x40;
 	cryptData.blockSize		= 0x10;
 	cryptData.saltSize		= 0x10;
 
 	ECMAEncryptor cryptor;	
+
+	//cryptor.SetCryptData(cryptDataGlobal);	//for test !!! 
+	cryptor.SetCryptData(cryptData);			//basic settings
 	
 	cryptor.SetPassword(password);
-
-	cryptor.SetCryptData(cryptDataGlobal);	//for test !!! 
-	//cryptor.SetCryptData(cryptData);		//basic settings
 
 	NSFile::CFileBinary file;
 	if (!file.OpenFile(file_name_inp)) return false;
@@ -575,6 +575,9 @@ bool ECMACryptFile::EncryptOfficeFile(std::wstring file_name_inp, std::wstring f
 	{
 		unsigned char* data_out2	= NULL;
 		decryptor.Decrypt(data_out, lengthData, data_out2);
+		
+		bool bDataIntegrity = decryptor.CheckDataIntegrity(data_out, lengthData);
+		
 		NSFile::CFileBinary test;
 
 		test.CreateFileW(file_name_out + L"-back.oox");
@@ -586,8 +589,10 @@ bool ECMACryptFile::EncryptOfficeFile(std::wstring file_name_inp, std::wstring f
 	return true;
 }
 
-bool ECMACryptFile::DecryptOfficeFile(std::wstring file_name_inp, std::wstring file_name_out, std::wstring password)
+bool ECMACryptFile::DecryptOfficeFile(std::wstring file_name_inp, std::wstring file_name_out, std::wstring password, bool & bDataIntegrity)
 {
+	bDataIntegrity = false;
+
 	POLE::Storage *pStorage = new POLE::Storage(file_name_inp.c_str());
 	
 	if (!pStorage)return false;
@@ -597,45 +602,10 @@ bool ECMACryptFile::DecryptOfficeFile(std::wstring file_name_inp, std::wstring f
 		delete pStorage;
 		return false;
 	}
-	_ecmaCryptData cryptData;
+//-------------------------------------------------------------------------------------------
+	_ecmaCryptData cryptData;	
 	bool result = false;
 
-//------------------------------------------------------------------------
-	//{
-	//	std::wstring f = file_name_out + L"-1.docx";
-	//	POLE::Storage *pStorage1 = new POLE::Storage(f.c_str());
-	//	pStorage1->open(true, true);
-
-	//	POLE::Stream *pStrIn = new POLE::Stream(pStorage, "EncryptionInfo");
-	//	POLE::uint64 sz = pStrIn->size();
-	//	POLE::Stream *pStrOut = new POLE::Stream(pStorage1, "EncryptionInfo", true, sz);
-
-	//	BYTE *d = new BYTE [sz];
-	//	pStrIn->read(d, sz);
-	//	pStrOut->write(d, sz);
-	//	delete d;
-
-	//	pStrOut->flush();
-	//	delete pStrOut;
-	//	delete pStrIn;
-
-	//	pStrIn = new POLE::Stream(pStorage, "EncryptedPackage");
-	//	sz = pStrIn->size();
-	//	pStrOut = new POLE::Stream(pStorage1, "EncryptedPackage", true, sz);
-
-	//	d = new BYTE [sz];
-	//	pStrIn->read(d, sz);
-	//	pStrOut->write(d, sz);
-	//	delete d;
-
-	//	pStrOut->flush();
-	//	delete pStrOut;
-	//	delete pStrIn;
-
-	//	pStorage1->close();
-	//	delete pStorage1;
-	//}
-//----------------------------------------------------------------------------
 	POLE::Stream *pStream = new POLE::Stream(pStorage, "EncryptionInfo");
 
 	if (pStream)
@@ -747,8 +717,6 @@ bool ECMACryptFile::DecryptOfficeFile(std::wstring file_name_inp, std::wstring f
 		lengthData = *((_UINT64*)data);
 
 		decryptor.Decrypt(data, readTrue, data_out);//todoo сделать покусочное чтение декриптование
-		delete pStream;
-		delete []data;
 
 		if (data_out)
 		{
@@ -760,11 +728,16 @@ bool ECMACryptFile::DecryptOfficeFile(std::wstring file_name_inp, std::wstring f
 			delete []data_out;
 			result = true;
 		}
+
+		bDataIntegrity = decryptor.CheckDataIntegrity(data, readTrue);
+		
+		delete pStream;
+		delete []data;
 	}
 //-------------------------------------------------------------------
 	delete pStorage;
 
-	cryptDataGlobal = cryptData;
+	//cryptDataGlobal = cryptData; // for encrypt like sample & test
 
 	return result;
 }

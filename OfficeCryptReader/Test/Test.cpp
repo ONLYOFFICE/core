@@ -12,9 +12,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::wstring password = L"password";
 
 	ECMACryptFile crypt_file;
-	crypt_file.DecryptOfficeFile(srcFileName, dstFileName, password);
+	bool result, bDataIntegrity;
+		
+	result = crypt_file.DecryptOfficeFile(srcFileName, dstFileName, password, bDataIntegrity);
 
-	crypt_file.EncryptOfficeFile(dstFileName, dstFileName2, password);
+	result = crypt_file.EncryptOfficeFile(dstFileName, dstFileName2, password);
 
 	return 0;
 }

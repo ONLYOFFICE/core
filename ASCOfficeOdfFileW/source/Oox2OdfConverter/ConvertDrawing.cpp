@@ -602,17 +602,24 @@ void OoxConverter::convert(PPTX::Logic::SpPr *oox_spPr, PPTX::Logic::ShapeStyle*
 
 	bool bLine = odf_context()->drawing_context()->isLineShape();
 
-	if (!bLine)
+	if (custGeom && !custGeom->cxnLst.empty())
+		bLine = true;
+
+	odf_context()->drawing_context()->start_area_properties();
 	{
-		odf_context()->drawing_context()->start_area_properties();
+		if (bLine)
+		{	
+			odf_context()->drawing_context()->set_no_fill();
+		}
+		else
 		{
 			if (oox_spPr->Fill.is_init())
 				convert(&oox_spPr->Fill);
 			else if (oox_sp_style)
 				convert(&oox_sp_style->fillRef, 1);
 		}
-		odf_context()->drawing_context()->end_area_properties();
 	}
+	odf_context()->drawing_context()->end_area_properties();
 
 	odf_context()->drawing_context()->start_line_properties();
 	{

@@ -177,34 +177,40 @@ void CorrectHashSize(_buf & hashBuf, int size, unsigned char padding)
 }
 _buf Hmac(_buf &  buf, CRYPT_METHOD::_hashAlgorithm algorithm, std::string & plain)
 {
+	std::string mac;
 	if (algorithm == CRYPT_METHOD::SHA1)
 	{
 		CryptoPP::HMAC<CryptoPP::SHA1> hmac(buf.ptr, buf.size);
-
-		//return _buf(mac.BytePtr(), mac.SizeInBytes());
-	}
-	else if (algorithm == CRYPT_METHOD::SHA256)
-	{
-		CryptoPP::HMAC<CryptoPP::SHA256> hmac(buf.ptr, buf.size);
-
-		//return _buf(mac.BytePtr(), mac.SizeInBytes());
-	}
-	else if (algorithm == CRYPT_METHOD::SHA512)
-	{
-		CryptoPP::HMAC<CryptoPP::SHA512> hmac(buf.ptr, buf.size);
-		
-		std::string mac;
 		CryptoPP::StringSource(plain, true, 
 					new CryptoPP::HashFilter(hmac,
 						new CryptoPP::StringSink(mac)
 					) // HashFilter      
 				); // StringSource
 
-		return _buf(mac);
+	}
+	else if (algorithm == CRYPT_METHOD::SHA256)
+	{
+		CryptoPP::HMAC<CryptoPP::SHA256> hmac(buf.ptr, buf.size);
+		CryptoPP::StringSource(plain, true, 
+					new CryptoPP::HashFilter(hmac,
+						new CryptoPP::StringSink(mac)
+					) // HashFilter      
+				); // StringSource
 
 	}
-	//else
-		return _buf();
+	else if (algorithm == CRYPT_METHOD::SHA512)
+	{
+		CryptoPP::HMAC<CryptoPP::SHA512> hmac(buf.ptr, buf.size);
+		
+		CryptoPP::StringSource(plain, true, 
+					new CryptoPP::HashFilter(hmac,
+						new CryptoPP::StringSink(mac)
+					) // HashFilter      
+				); // StringSource
+
+	}
+	
+	return _buf(mac);
 }
 
 
@@ -488,8 +494,10 @@ void ECMADecryptor::Decrypt(char* data	, const size_t size, const unsigned long 
 		}
 	}
 }
-bool ECMADecryptor::IsDataIntegrity(unsigned char* data, int  size)
+bool ECMADecryptor::CheckDataIntegrity(unsigned char* data, int  size)
 {
+	if (cryptData.bAgile == false) return true;
+
 	_buf pBlockKey		((unsigned char*)encrKeyValueBlockKey, 8);	
 	_buf pBlockHmacKey	((unsigned char*)encrDataIntegritySaltBlockKey, 8);	
 	_buf pBlockHmacValue((unsigned char*)encrDataIntegrityHmacValueBlockKey, 8);	
@@ -514,15 +522,15 @@ bool ECMADecryptor::IsDataIntegrity(unsigned char* data, int  size)
 	_buf iv2 = HashAppend(pDataSalt, pBlockHmacValue, cryptData.hashAlgorithm);
 	CorrectHashSize(iv2, cryptData.blockSize, 0x36);
 
-	_buf salt;
-	DecryptCipher(secretKey,  iv1, pEncHmacKey, salt, cryptData.cipherAlgorithm);
+	_buf pSaltHmac;
+	DecryptCipher(secretKey,  iv1, pEncHmacKey, pSaltHmac, cryptData.cipherAlgorithm);
 	
 	_buf expected;
 	DecryptCipher(secretKey,  iv2, pEncHmacValue, expected, cryptData.cipherAlgorithm);
 
 	std::string sData((char*)data, size);
-	_buf hmac = Hmac(salt, cryptData.hashAlgorithm, sData);
-	
+	_buf hmac = Hmac(pSaltHmac, cryptData.hashAlgorithm, sData);
+		
 	return (hmac == expected);
 }
 void ECMADecryptor::Decrypt(unsigned char* data_ptr, int  data_size, unsigned char*& data_out)
@@ -540,8 +548,6 @@ void ECMADecryptor::Decrypt(unsigned char* data_ptr, int  data_size, unsigned ch
 
 	if (cryptData.bAgile)
 	{	
-		bool isDataIntegrity = IsDataIntegrity(data_ptr, data_size);
-
 		_buf pBlockKey	((unsigned char*)encrKeyValueBlockKey, 8);	
 		_buf pDataSalt	(cryptData.dataSaltValue);
 		_buf pKeyValue	(cryptData.encryptedKeyValue);
@@ -603,6 +609,7 @@ void ECMADecryptor::Decrypt(unsigned char* data_ptr, int  data_size, unsigned ch
 		DecryptCipher(hashKey, empty, pInp, pOut, cryptData.cipherAlgorithm);
 	}
 }
+
 //-----------------------------------------------------------------------------------------------------------
 ECMAEncryptor::ECMAEncryptor()
 {
@@ -611,6 +618,65 @@ ECMAEncryptor::ECMAEncryptor()
 void ECMAEncryptor::SetPassword(std::wstring _password)
 {
 	password = _password;
+
+//---------
+	CryptoPP::RandomPool prng;
+	
+	//сгенерить соль
+	CryptoPP::SecByteBlock seed_salt(cryptData.saltSize);
+	CryptoPP::OS_GenerateRandomBlock(false, seed_salt, seed_salt.size());
+	prng.IncorporateEntropy(seed_salt, seed_salt.size());
+	
+	CryptoPP::SecByteBlock seed_datasalt(cryptData.saltSize);
+	CryptoPP::OS_GenerateRandomBlock(false, seed_datasalt, seed_datasalt.size());
+	prng.IncorporateEntropy(seed_datasalt, seed_datasalt.size());
+
+	//сгенерить ключ
+	CryptoPP::SecByteBlock seed_key(cryptData.keySize);
+	CryptoPP::OS_GenerateRandomBlock(false, seed_key, seed_key.size());
+	prng.IncorporateEntropy(seed_key, seed_key.size());
+
+	//сгенерить проверочный
+	CryptoPP::SecByteBlock seed_verify(cryptData.saltSize);
+	CryptoPP::OS_GenerateRandomBlock(false, seed_verify, seed_verify.size());
+	prng.IncorporateEntropy(seed_verify, seed_verify.size());
+//---------
+	_buf pPassword		(password);
+	_buf empty			(NULL, 0, false);
+	
+	_buf pBlockKey		((unsigned char*)encrKeyValueBlockKey, 8);	
+	_buf pInputBlockKey ((unsigned char*)encrVerifierHashInputBlockKey, 8);
+	_buf pValueBlockKey ((unsigned char*)encrVerifierHashValueBlockKey, 8);
+	
+	_buf pSalt			(seed_salt.m_ptr, seed_salt.m_size);
+	_buf pDataSalt		(seed_datasalt.m_ptr, seed_datasalt.m_size);
+	_buf pDecryptedKey	(seed_key.m_ptr, seed_key.m_size);
+	
+//------------------------------------------------------------------------------------------------
+	_buf agileKey = GenerateAgileKey( pSalt, pPassword, pBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm);  
+
+	_buf pKeyValue;
+	EncryptCipher( agileKey, pSalt, pDecryptedKey, pKeyValue, cryptData.cipherAlgorithm);  
+	
+//--------------------------------------------
+	_buf decryptedVerifierHashInputBytes(seed_verify.m_ptr, seed_verify.m_size);
+	_buf verifierInputKey = GenerateAgileKey( pSalt, pPassword, pInputBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm );
+	
+	_buf pEncVerInput;
+	EncryptCipher( verifierInputKey, pSalt, decryptedVerifierHashInputBytes, pEncVerInput, cryptData.cipherAlgorithm);  
+//--------------------------------------------
+
+	_buf decryptedVerifierHashBytes = HashAppend(decryptedVerifierHashInputBytes, empty, cryptData.hashAlgorithm);
+	_buf verifierHashKey = GenerateAgileKey(pSalt, pPassword, pValueBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm);
+	
+	_buf pEncVerValue;
+	EncryptCipher( verifierHashKey, pSalt, decryptedVerifierHashBytes, pEncVerValue, cryptData.cipherAlgorithm);  
+
+	cryptData.saltValue					= std::string((char*)pSalt.ptr, pSalt.size);
+	cryptData.dataSaltValue				= std::string((char*)pDataSalt.ptr, pDataSalt.size);
+	cryptData.encryptedKeyValue			= std::string((char*)pKeyValue.ptr, pKeyValue.size);
+	cryptData.encryptedVerifierInput	= std::string((char*)pEncVerInput.ptr, pEncVerInput.size);
+	cryptData.encryptedVerifierValue	= std::string((char*)pEncVerValue.ptr, pEncVerValue.size);
 }
 
 void ECMAEncryptor::SetCryptData(_ecmaCryptData	& data)
@@ -622,6 +688,7 @@ void ECMAEncryptor::GetCryptData(_ecmaCryptData &data)
 {
 	data = cryptData;
 }
+
 void ECMAEncryptor::UpdateDataIntegrity(unsigned char* data, int  size)
 {
 	if (cryptData.bAgile == false) return;
@@ -636,31 +703,41 @@ void ECMAEncryptor::UpdateDataIntegrity(unsigned char* data, int  size)
 
 	_buf pDataSalt		(cryptData.dataSaltValue);
 	_buf pKeyValue		(cryptData.encryptedKeyValue);
-	_buf pEncHmacKey	(cryptData.encryptedHmacKey);
-	_buf pEncHmacValue	(cryptData.encryptedHmacValue);
-
+	
+//----
 	_buf agileKey = GenerateAgileKey( pSalt, pPassword, pBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm);  
 
 	_buf secretKey;
 	DecryptCipher( agileKey, pSalt, pKeyValue, secretKey, cryptData.cipherAlgorithm);  
-//----			
+	
 	_buf iv1 = HashAppend(pDataSalt, pBlockHmacKey, cryptData.hashAlgorithm);
 	CorrectHashSize(iv1, cryptData.blockSize, 0x36);
 	
 	_buf iv2 = HashAppend(pDataSalt, pBlockHmacValue, cryptData.hashAlgorithm);
 	CorrectHashSize(iv2, cryptData.blockSize, 0x36);
 
-	_buf salt;
-	DecryptCipher(secretKey,  iv1, pEncHmacKey, salt, cryptData.cipherAlgorithm);
+//----
+	CryptoPP::RandomPool prng;
+	CryptoPP::SecByteBlock seed(cryptData.hashSize);
+
+	CryptoPP::OS_GenerateRandomBlock(false, seed, seed.size());
+	prng.IncorporateEntropy(seed, seed.size());
 	
-	_buf expected;
-	DecryptCipher(secretKey,  iv2, pEncHmacValue, expected, cryptData.cipherAlgorithm);
+	_buf pSaltHmac(seed.m_ptr, seed.m_size);
 
 	std::string sData((char*)data, size);
-	_buf hmac = Hmac(salt, cryptData.hashAlgorithm, sData);
-	
-	//return (hmac == expected);
+	_buf hmac = Hmac(pSaltHmac, cryptData.hashAlgorithm, sData);
+
+	_buf pEncHmacKey;
+	EncryptCipher(secretKey,  iv1, pSaltHmac, pEncHmacKey, cryptData.cipherAlgorithm);
+
+	_buf pEncHmacValue;
+	EncryptCipher(secretKey,  iv2, hmac, pEncHmacValue, cryptData.cipherAlgorithm);
+
+	cryptData.encryptedHmacKey		= std::string((char*)pEncHmacKey.ptr, pEncHmacKey.size);
+	cryptData.encryptedHmacValue	= std::string((char*)pEncHmacValue.ptr, pEncHmacValue.size);
 }
+
 int ECMAEncryptor::Encrypt(unsigned char* data_inp_ptr, int size, unsigned char*& data_out_ptr)
 {
 	data_out_ptr = NULL;
@@ -686,19 +763,17 @@ int ECMAEncryptor::Encrypt(unsigned char* data_inp_ptr, int size, unsigned char*
 	_buf pKeyValue	(cryptData.encryptedKeyValue);
 	
 //------------------------------------------------------------------------------------------------
-	//соль нужно сгенерить
-
 	_buf agileKey = GenerateAgileKey( pSalt, pPassword, pBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm);  
 
 	//тут нужно именно дешифрованый генерить  - пока их файла берем
 	_buf pDecryptedKey;
 	DecryptCipher( agileKey, pSalt, pKeyValue, pDecryptedKey, cryptData.cipherAlgorithm);  
 
-	//зашифровать ключь
-	_buf pEncryptedKey;
-	EncryptCipher( agileKey, pSalt, pDecryptedKey, pEncryptedKey, cryptData.cipherAlgorithm);  
+	////зашифровать ключь
+	//_buf pEncryptedKey;
+	//EncryptCipher( agileKey, pSalt, pDecryptedKey, pEncryptedKey, cryptData.cipherAlgorithm);  
 
-	//??? pEncryptedKey == pKeyValue;
+	////??? pEncryptedKey == pKeyValue;
 
 //-------------------------------------------------------------------------------------------------
 	_buf iv(cryptData.blockSize);

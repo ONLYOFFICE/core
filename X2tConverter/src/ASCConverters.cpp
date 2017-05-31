@@ -1457,12 +1457,19 @@ namespace NExtractTools
 	int mscrypt2oox	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
         std::wstring password = params.getPassword();
-        //decrypt to sTo
+
 		ECMACryptFile cryptReader;
-        if (cryptReader.DecryptOfficeFile(sFrom, sTo, password) == false)
+		bool bDataIntegrity = false;
+
+        if (cryptReader.DecryptOfficeFile(sFrom, sTo, password, bDataIntegrity) == false)
 		{
              if (password.empty())	return AVS_FILEUTILS_ERROR_CONVERT_DRM;
             else					return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
+		}
+
+		if (bDataIntegrity == false)
+		{
+			//было несанкционированое вешательство в файл
 		}
 
 		return S_OK;
@@ -1473,8 +1480,15 @@ namespace NExtractTools
         std::wstring sResultDecryptFile = sTemp	+ FILE_SEPARATOR_STR + L"uncrypt_file.oox";
 
 		ECMACryptFile cryptReader;
-		if (cryptReader.DecryptOfficeFile(sFrom, sResultDecryptFile, params.getPassword()) == false)
+		bool bDataIntegrity = false;
+
+		if (cryptReader.DecryptOfficeFile(sFrom, sResultDecryptFile, params.getPassword(), bDataIntegrity) == false)
 			return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
+
+		if (bDataIntegrity == false)
+		{
+			//было несанкционированое вешательство в файл
+		}
 
 		COfficeFileFormatChecker OfficeFileFormatChecker;
 
@@ -1499,6 +1513,19 @@ namespace NExtractTools
 			}
 		}
 		return AVS_FILEUTILS_ERROR_CONVERT;
+	}
+	int oox2mscrypt	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
+	{
+        std::wstring password = params.getPassword();
+
+		ECMACryptFile cryptReader;
+
+        if (cryptReader.EncryptOfficeFile(sFrom, sTo, password) == false)
+		{
+			return AVS_FILEUTILS_ERROR_CONVERT;
+		}
+
+		return S_OK;
 	}
     int fromMscrypt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
@@ -1556,7 +1583,7 @@ namespace NExtractTools
         }
         return nRes;
 	}
-	//html
+ 	//html
 	int html2doct_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
        std::vector<std::wstring> arFiles;

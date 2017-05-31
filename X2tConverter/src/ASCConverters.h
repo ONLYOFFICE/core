@@ -128,6 +128,8 @@ namespace NExtractTools
 	int mscrypt2oox		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 	int mscrypt2oot		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 	int mscrypt2oot_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+	
+	int oox2mscrypt		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
     int dir2zip			(const std::wstring &sFrom, const std::wstring &sTo);

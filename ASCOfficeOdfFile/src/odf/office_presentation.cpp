@@ -34,8 +34,6 @@
 #include "office_presentation.h"
 #include "draw_page.h"
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/xmlchar.h>
 
 #include <cpdoccore/xml/attributes.h>
@@ -76,9 +74,10 @@ void office_presentation::docx_convert(oox::docx_conversion_context & Context)
 {
     Context.start_office_text();
 	_CP_LOG << L"[info][docx] process pages (" << pages_.size() << L" elmements)" << std::endl;
-	BOOST_FOREACH(const office_element_ptr & elm, pages_)
-    {
-        elm->docx_convert(Context);
+	
+	for (size_t i = 0; i < pages_.size(); i++)
+	{
+        pages_[i]->docx_convert(Context);
     }
     Context.end_office_text();
 }
@@ -87,9 +86,10 @@ void office_presentation::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     Context.start_office_spreadsheet(this);
     _CP_LOG << L"[info][xlsx] process pages (" << pages_.size() << L" elmements)" << std::endl;
-    BOOST_FOREACH(const office_element_ptr & elm, pages_)
-    {
-        elm->xlsx_convert(Context);
+	
+	for (size_t i = 0; i < pages_.size(); i++)
+	{
+        pages_[i]->xlsx_convert(Context);
     }
     Context.end_office_spreadsheet();
 }
@@ -100,29 +100,29 @@ void office_presentation::pptx_convert(oox::pptx_conversion_context & Context)
 
     _CP_LOG << L"[info][pptx] process pages(" << pages_.size() << L" elmements)" << std::endl;
 	
-    BOOST_FOREACH(const office_element_ptr & elm, footer_decls_)
+	for (size_t i = 0; i < footer_decls_.size(); i++)
     {
-		presentation_footer_decl * style = dynamic_cast<presentation_footer_decl *>(elm.get());
+		presentation_footer_decl * style = dynamic_cast<presentation_footer_decl *>(footer_decls_[i].get());
 
         if (!style)
             continue;
 
 		std::wstring style_name_ = L"footer:" + style->presentation_name_.get_value_or(L"");
-		Context.root()->odf_context().drawStyles().add(style_name_, elm);
+		Context.root()->odf_context().drawStyles().add(style_name_, footer_decls_[i]);
     }
-    BOOST_FOREACH(const office_element_ptr & elm, date_time_decls_)
-    {
-		presentation_date_time_decl * style = dynamic_cast<presentation_date_time_decl *>(elm.get());
+	for (size_t i = 0; i < date_time_decls_.size(); i++)
+	{
+		presentation_date_time_decl * style = dynamic_cast<presentation_date_time_decl *>(date_time_decls_[i].get());
 
         if (!style)
             continue;
 
 		std::wstring style_name_ = L"datetime:" + style->presentation_name_.get_value_or(L"");
-		Context.root()->odf_context().drawStyles().add(style_name_, elm);
+		Context.root()->odf_context().drawStyles().add(style_name_, date_time_decls_[i]);
     }
-    BOOST_FOREACH(const office_element_ptr & elm, pages_)
+    for (size_t i = 0; i < pages_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        pages_[i]->pptx_convert(Context);
     }
     Context.end_office_presentation();
 }

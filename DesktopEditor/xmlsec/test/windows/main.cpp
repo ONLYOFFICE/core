@@ -42,6 +42,8 @@
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
 
+#include "../../../common/File.h"
+
 int sign_file(const char* xml_file, const char* key_file, const char* cert_file);
 
 int
@@ -50,13 +52,11 @@ main(int argc, char **argv) {
     xsltSecurityPrefsPtr xsltSecPrefs = NULL;
 #endif /* XMLSEC_NO_XSLT */
 
-    assert(argv);
-
-    if(argc != 4) {
-        fprintf(stderr, "Error: wrong number of arguments.\n");
-        fprintf(stderr, "Usage: %s <xml-file> <key-file> <cert-file>\n", argv[0]);
-        return(1);
-    }
+    std::wstring sFolderW = NSFile::GetProcessDirectory();
+    std::string sFolder = U_TO_UTF8(sFolderW);
+    std::string __file = sFolder + "/settings.xml";
+    std::string __key = sFolder + "/rsakey.pem";
+    std::string __cert = sFolder + "/rsacert.pem";
 
     /* Init libxml and libxslt libraries */
     xmlInitParser();
@@ -117,7 +117,7 @@ main(int argc, char **argv) {
         return(-1);
     }
 
-    if(sign_file(argv[1], argv[2], argv[3]) < 0) {
+    if(sign_file(__file.c_str(), __key.c_str(), __cert.c_str()) < 0) {
         return(-1);
     }
 

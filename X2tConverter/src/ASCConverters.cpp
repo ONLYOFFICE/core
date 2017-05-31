@@ -1519,7 +1519,6 @@ namespace NExtractTools
         std::wstring password = params.getPassword();
 
 		ECMACryptFile cryptReader;
-		bool bDataIntegrity = false;
 
         if (cryptReader.EncryptOfficeFile(sFrom, sTo, password) == false)
 		{

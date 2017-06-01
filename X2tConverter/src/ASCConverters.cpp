@@ -2521,7 +2521,54 @@ namespace NExtractTools
         }
         return AVS_FILEUTILS_ERROR_CONVERT;
    }
+	int html2doct_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
+	{
+		std::wstring sResultDoctDir = NSFile::GetDirectoryName(sTo);
 
+        int nRes = html2doct_dir(sFrom, sResultDoctDir, sTemp, params);
+		
+		return nRes;
+	}
+	int html2doct(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
+	{
+        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
+        std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+
+        NSDirectory::CreateDirectory(sResultDoctDir);
+
+        int nRes = html2doct_dir(sFrom, sResultDoctDir, sTemp, params);
+
+        if (SUCCEEDED_X2T(nRes))
+        {
+            COfficeUtils oCOfficeUtils(NULL);
+            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDoctDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+        }
+		return nRes;
+	}
+    int html2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
+	{
+        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
+        std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+
+        NSDirectory::CreateDirectory(sResultDoctDir);
+
+        int nRes = html2doct_dir(sFrom, sResultDoctDir, sTemp, params);
+        if (SUCCEEDED_X2T(nRes))
+		{
+			std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
+			NSDirectory::CreateDirectory(sDocxDir);
+
+			nRes = doct_bin2docx_dir(sResultDoctFileEditor, L"", sDocxDir, false, L"", params);
+			if (SUCCEEDED_X2T(nRes))
+			{
+				COfficeUtils oCOfficeUtils(NULL);
+				nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sDocxDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+			}
+		}
+		return nRes;
+	}
+
+//------------------------------------------------------------------------------------------------------------------
 	int fromInputParams(InputParams& oInputParams)
 	{
 		TConversionDirection conversion  = oInputParams.getConversionDirection();
@@ -2828,6 +2875,26 @@ namespace NExtractTools
 				result =  mscrypt2oot_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
 			{
 			}break;
+			case TCD_HTML2DOCX:
+			{
+				result = html2docx (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_HTML2DOCT:
+			{
+				result = html2doct (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_HTML2DOCT_BIN:
+			{
+				result = html2doct_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			
+			//TCD_FB22DOCX,
+			//TCD_FB22DOCT,
+			//TCD_FB22DOCT_BIN,
+
+			//TCD_EPUB2DOCX,
+			//TCD_EPUB2DOCT,
+			//TCD_EPUB2DOCT_BIN,
 		}
 
 		// delete temp dir

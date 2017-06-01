@@ -138,22 +138,158 @@ namespace ParseAllCultureInfo
                 {
                     var index = aTemp[i];
                     if(nIndexD == index)
-                        sShortDatePattern += "0";
-                    else if (nIndexM == index)
-                        sShortDatePattern += "1";
+                    {
+                        if (nIndexD + 1 < ShortDatePatternLower.Length && 'd' == ShortDatePatternLower[nIndexD + 1])
+                        {
+                            sShortDatePattern += "1";
+                        }
+                        else
+                        {
+                            sShortDatePattern += "0";
+                        }
+                    } else if (nIndexM == index)
+                    {
+                        if (nIndexM + 1 < ShortDatePatternLower.Length && 'm' == ShortDatePatternLower[nIndexM + 1])
+                        {
+                            sShortDatePattern += "3";
+                        }
+                        else
+                        {
+                            sShortDatePattern += "2";
+                        }
+                    }
                     else if (nIndexY == index)
-                        sShortDatePattern += "2";
+                    {
+                        if (nIndexY + 2 < ShortDatePatternLower.Length && 'y' == ShortDatePatternLower[nIndexY + 2])
+                        {
+                            sShortDatePattern += "5";
+                        }
+                        else
+                        {
+                            sShortDatePattern += "4";
+                        }
+                    }
                 }
                 ShortDatePattern = sShortDatePattern;
             }
         }
+        static Dictionary<int, int> g_mapUsedValues = new Dictionary<int, int>() {
+            {4, 1},
+            {5, 1},
+            {7, 1},
+            {8, 1},
+            {9, 1},
+            {10, 1},
+            {11, 1},
+            {12, 1},
+            {16, 1},
+            {17, 1},
+            {18, 1},
+            {21, 1},
+            {22, 1},
+            {25, 1},
+            {31, 1},
+            {34, 1},
+            {36, 1},
+            {38, 1},
+            {42, 1},
+            {44, 1},
+            {1028, 1},
+            {1029, 1},
+            {1031, 1},
+            {1032, 1},
+            {1033, 1},
+            {1035, 1},
+            {1036, 1},
+            {1040, 1},
+            {1041, 1},
+            {1042, 1},
+            {1045, 1},
+            {1046, 1},
+            {1049, 1},
+            {1055, 1},
+            {1058, 1},
+            {1060, 1},
+            {1062, 1},
+            {1066, 1},
+            {1068, 1},
+            {2052, 1},
+            {2055, 1},
+            {2057, 1},
+            {2058, 1},
+            {2060, 1},
+            {2064, 1},
+            {2070, 1},
+            {2073, 1},
+            {2092, 1},
+            {3076, 1},
+            {3079, 1},
+            {3081, 1},
+            {3082, 1},
+            {3084, 1},
+            {4100, 1},
+            {4103, 1},
+            {4105, 1},
+            {4106, 1},
+            {4108, 1},
+            {5124, 1},
+            {5127, 1},
+            {5129, 1},
+            {5130, 1},
+            {5132, 1},
+            {6153, 1},
+            {6154, 1},
+            {6156, 1},
+            {7177, 1},
+            {7178, 1},
+            {7180, 1},
+            {8201, 1},
+            {8202, 1},
+            {8204, 1},
+            {9225, 1},
+            {9226, 1},
+            {9228, 1},
+            {10249, 1},
+            {10250, 1},
+            {10252, 1},
+            {11273, 1},
+            {11274, 1},
+            {11276, 1},
+            {12297, 1},
+            {12298, 1},
+            {12300, 1},
+            {13321, 1},
+            {13322, 1},
+            {13324, 1},
+            {14345, 1},
+            {14346, 1},
+            {14348, 1},
+            {15369, 1},
+            {15370, 1},
+            {15372, 1},
+            {16393, 1},
+            {16394, 1},
+            {17417, 1},
+            {17418, 1},
+            {18441, 1},
+            {18442, 1},
+            {19466, 1},
+            {20490, 1},
+            {21514, 1},
+            {22538, 1},
+            {23562, 1},
+            {29740, 1},
+            {30724, 1},
+            {30764, 1},
+            {31748, 1}
+        };
         public static void parse()
         {
             List<int> aLcid = new List<int>();
             Dictionary<int, CultureInfo> aInfos = new Dictionary<int, CultureInfo>();
             foreach (CultureInfo ci in CultureInfo.GetCultures(CultureTypes.AllCultures))
             {
-                if (!aInfos.ContainsKey(ci.LCID))
+                if (!aInfos.ContainsKey(ci.LCID) && g_mapUsedValues.ContainsKey(ci.LCID))
                 {
                     aLcid.Add(ci.LCID);
                     aInfos[ci.LCID] = ci;

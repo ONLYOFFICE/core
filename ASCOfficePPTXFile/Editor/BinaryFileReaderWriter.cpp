@@ -282,6 +282,12 @@ namespace NSBinPptxRW
 			m_pContentTypes->AddDefault(strExts.substr(1));
 		}
 
+		if (oleData.empty() == false)
+		{
+			//plugins data - generate ole
+			typeAdditional = 1;
+		}
+
 		_imageManager2Info oImageManagerInfo = GenerateImageExec(strImage, strExts, strAdditional, typeAdditional, oleData);
 
 		if (!oImageManagerInfo.sFilepathAdditional.empty()) 

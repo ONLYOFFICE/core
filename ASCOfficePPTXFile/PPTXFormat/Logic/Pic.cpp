@@ -1136,8 +1136,18 @@ namespace PPTX
 				}
 			}
 
-			if (spPr.Geometry.is_init())
+			bool bRect = bOle; //ole ВСЕГДА rect
+
+			if (spPr.Geometry.is<PPTX::Logic::PrstGeom>())
 			{
+				const PPTX::Logic::PrstGeom & lpGeom = spPr.Geometry.as<PPTX::Logic::PrstGeom>();
+
+				if( lpGeom.prst.get() == L"rect" ) 
+					bRect = true;
+			}
+
+			if (bRect == false)
+			{//custom vml shape
                 std::wstring strPath;
                 std::wstring strTextRect;
 

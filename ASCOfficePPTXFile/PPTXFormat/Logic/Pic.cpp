@@ -1324,7 +1324,9 @@ namespace PPTX
 			}
 			if(oleObject->m_oId.IsInit())
 			{
-				blipFill.blip->oleRid = oleObject->m_oId.get().ToString();
+				if (blipFill.blip.IsInit() == false)
+					blipFill.blip.Init();
+				blipFill.blip->oleRid = oleObject->m_oId->get();
 			}
 		}
 	} // namespace Logic

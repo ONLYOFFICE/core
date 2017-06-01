@@ -19,7 +19,8 @@ PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 
 INCLUDEPATH += \
-    $$PWD_ROOT_DIR/xmlsec/include
+    $$PWD_ROOT_DIR/xmlsec/include \
+    $$CORE_ROOT_DIR/DesktopEditor/xml/build/qt
 
 DEFINES += \
     LIBXML_READER_ENABLED \
@@ -38,15 +39,15 @@ include($$CORE_ROOT_DIR/DesktopEditor/xml/build/qt/libxml2_src.pri)
 
 DEFINES += PACKAGE=\\\"xmlsec1\\\"
 DEFINES += VERSION=\\\"1.2.23\\\"
-DEFINES += XMLSEC_DEFAULT_CRYPTO=\\\"mscrypto\\\"
+DEFINES += XMLSEC_DEFAULT_CRYPTO=\\\"openssl\\\"
 
 DEFINES += \
     IN_XMLSEC \
     XMLSEC_STATIC
 
 core_linux {
-    CONFIG += use_gcrypt
-    CONFIG += use_gnutls
+    #CONFIG += use_gcrypt
+    #CONFIG += use_gnutls
     #CONFIG += use_mscrypto
     #CONFIG += use_nss
     CONFIG += use_openssl
@@ -246,6 +247,10 @@ SOURCES += \
 
 use_openssl {
 
+    DEFINES += XMLSEC_OPENSSL_110
+
+    INCLUDEPATH += $$PWD/openssl/include
+
 HEADERS += \
     xmlsec/include/xmlsec/openssl/app.h \
     xmlsec/include/xmlsec/openssl/bn.h \
@@ -258,21 +263,21 @@ HEADERS += \
     xmlsec/src/openssl/openssl11_wrapper.h
 
 SOURCES += \
-    xmlsec/src/openssl/app.c \
-    xmlsec/src/openssl/bn.c \
-    xmlsec/src/openssl/ciphers.c \
-    xmlsec/src/openssl/crypto.c \
-    xmlsec/src/openssl/digests.c \
-    xmlsec/src/openssl/evp.c \
-    xmlsec/src/openssl/evp_signatures.c \
-    xmlsec/src/openssl/hmac.c \
-    xmlsec/src/openssl/kt_rsa.c \
-    xmlsec/src/openssl/kw_aes.c \
-    xmlsec/src/openssl/kw_des.c \
-    xmlsec/src/openssl/signatures.c \
-    xmlsec/src/openssl/symkeys.c \
-    xmlsec/src/openssl/x509.c \
-    xmlsec/src/openssl/x509vfy.c
+    xmlsec/src/openssl/_app.c \
+    xmlsec/src/openssl/_bn.c \
+    xmlsec/src/openssl/_ciphers.c \
+    xmlsec/src/openssl/_crypto.c \
+    xmlsec/src/openssl/_digests.c \
+    xmlsec/src/openssl/_evp.c \
+    xmlsec/src/openssl/_evp_signatures.c \
+    xmlsec/src/openssl/_hmac.c \
+    xmlsec/src/openssl/_kt_rsa.c \
+    xmlsec/src/openssl/_kw_aes.c \
+    xmlsec/src/openssl/_kw_des.c \
+    xmlsec/src/openssl/_signatures.c \
+    xmlsec/src/openssl/_symkeys.c \
+    xmlsec/src/openssl/_x509.c \
+    xmlsec/src/openssl/_x509vfy.c
 
 }
 

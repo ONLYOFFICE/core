@@ -15,7 +15,7 @@ PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 
 #DEFINES += XMLSEC_CRYPTO_DYNAMIC_LOADING
-DEFINES += XMLSEC_CRYPTO_MSCRYPTO
+DEFINES += XMLSEC_CRYPTO_OPENSSL
 
 INCLUDEPATH += \
     $$CORE_ROOT_DIR/DesktopEditor/xml/libxml2/include \
@@ -40,8 +40,8 @@ DEFINES += XMLSEC_STATIC
 
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -llibxmlsec
 
-LIBS += -lcrypt32
-LIBS += -lcryptui
-LIBS += -lAdvapi32
+LIBS += -L$$PWD/../../openssl -lcrypto -lssl
+
+LIBS += -ldl
 
 SOURCES += main.cpp

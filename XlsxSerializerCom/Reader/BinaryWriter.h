@@ -2686,10 +2686,11 @@ namespace BinXlsxRW
 
 							if (olePic->oleObject->m_OleObjectFile.IsInit())
 							{
-								//if (olePic->oleObject->m_OleObjectFile->isMsPackage() == false)
 								olePic->blipFill.blip->oleFilepathBin = olePic->oleObject->m_OleObjectFile->filename().GetPath();
 							}
 						}
+						OOX::Image*		pImageFileCache = NULL;
+						std::wstring	sIdImageFileCache;
 						if ((NULL != pShapeElem) && (OOX::et_v_shapetype != pShapeElem->getType()))
 						{
 							OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pShapeElem);
@@ -2704,26 +2705,44 @@ namespace BinXlsxRW
 								if(OOX::et_v_imagedata == pChildElemShape->getType())
 								{
 									OOX::Vml::CImageData* pImageData = static_cast<OOX::Vml::CImageData*>(pChildElemShape);									
-															
-									if (pImageData->m_oRelId.IsInit())
+														
+									if (pImageData->m_oRelId.IsInit())		sIdImageFileCache = pImageData->m_oRelId->GetValue();
+									else if (pImageData->m_rId.IsInit())	sIdImageFileCache = pImageData->m_rId->GetValue();
+																		
+									if (!sIdImageFileCache.empty())
 									{
-										olePic->blipFill.blip->embed = new OOX::RId(pImageData->m_oRelId->GetValue()); 
-									//ищем физический файл ( rId относительно vml_drawing)
-										smart_ptr<OOX::File> pFile = pVmlDrawing->Find(olePic->blipFill.blip->embed.get());
+										//ищем физический файл ( rId относительно vml_drawing)									
+										smart_ptr<OOX::File> pFile = pVmlDrawing->Find(sIdImageFileCache);
 										
 										if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
 										{
-											OOX::Image* pImageFile = static_cast<OOX::Image*>(pFile.operator->());
-
-                                            OOX::CPath pathImage = pImageFile->filename();
-                                            olePic->oleObject->m_OleObjectFile->set_filename_cache(pathImage);
-											olePic->blipFill.blip->oleFilepathImage = pImageFile->filename().GetPath();
+											pImageFileCache = static_cast<OOX::Image*>(pFile.operator->());
+											break;
 										}
-									}
+ 									}
 								}
 							}	
 						}
 						
+						if (pImageFileCache == NULL && pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oRid.IsInit())
+						{
+							sIdImageFileCache = pOleObject->m_oObjectPr->m_oRid->GetValue();
+							
+							smart_ptr<OOX::File> pFile = oWorksheet.Find(sIdImageFileCache);
+							if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
+							{
+								pImageFileCache = static_cast<OOX::Image*>(pFile.operator->());
+							}
+						}
+						if (pImageFileCache)
+						{
+							OOX::CPath pathImage = pImageFileCache->filename();
+
+                            olePic->oleObject->m_OleObjectFile->set_filename_cache(pathImage);
+							
+							olePic->blipFill.blip->embed = new OOX::RId(sIdImageFileCache); //ваще то тут не важно что - приоритет у того что ниже..
+							olePic->blipFill.blip->oleFilepathImage = pathImage.GetPath();
+						}
 
 						pCellAnchor->m_oElement = new PPTX::Logic::SpTreeElem();
 						pCellAnchor->m_oElement->InitElem(olePic);

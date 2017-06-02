@@ -511,6 +511,10 @@ namespace NExtractTools
 			}
 			return true;
 		}
+		bool hasPassword() const
+		{
+			return NULL != m_sPassword;
+		}
 		std::wstring getPassword() const
         {
             return (NULL != m_sPassword) ? (*m_sPassword) : L"";

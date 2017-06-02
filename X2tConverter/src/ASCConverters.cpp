@@ -1935,7 +1935,19 @@ namespace NExtractTools
        {
            if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo)
            {
-               nRes = dir2zip(sFrom, sTo);
+				if(params.hasPassword())
+				{
+					std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.docx");
+					nRes = dir2zip(sFrom, sToMscrypt);
+					if(SUCCEEDED_X2T(nRes))
+					{
+						nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
+					}
+				}
+				else
+				{
+					nRes = dir2zip(sFrom, sTo);
+				}
            }
            else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC == nFormatTo)
            {
@@ -2104,7 +2116,19 @@ namespace NExtractTools
        {
            if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatTo)
            {
-               nRes = dir2zip(sFrom, sTo);
+				if(params.hasPassword())
+				{
+					std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.xlsx");
+					nRes = dir2zip(sFrom, sToMscrypt);
+					if(SUCCEEDED_X2T(nRes))
+					{
+						nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
+					}
+				}
+				else
+				{
+					nRes = dir2zip(sFrom, sTo);
+				}
            }
            //else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS == nFormatTo)
            else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS == nFormatTo)
@@ -2246,7 +2270,19 @@ namespace NExtractTools
 		{
 			if(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX == nFormatTo)
 			{
-				nRes = dir2zip(sFrom, sTo);
+				if(params.hasPassword())
+				{
+					std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.pptx");
+					nRes = dir2zip(sFrom, sToMscrypt);
+					if(SUCCEEDED_X2T(nRes))
+					{
+						nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
+					}
+				}
+				else
+				{
+					nRes = dir2zip(sFrom, sTo);
+				}
 			}
 			//else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT == nFormatTo)
 			else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP == nFormatTo)

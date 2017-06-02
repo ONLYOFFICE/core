@@ -2717,7 +2717,6 @@ namespace BinXlsxRW
 										if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
 										{
 											pImageFileCache = static_cast<OOX::Image*>(pFile.operator->());
-											break;
 										}
  									}
 								}

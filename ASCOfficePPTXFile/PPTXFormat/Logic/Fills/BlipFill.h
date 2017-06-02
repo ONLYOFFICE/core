@@ -447,7 +447,7 @@ namespace PPTX
 										if (!blip.is_init())
 											blip = new PPTX::Logic::Blip();
 
-										if (oRelsGeneratorInfo.nImageRId >= 0)
+										if (oRelsGeneratorInfo.nImageRId > 0)
 										{
 											blip->embed = new OOX::RId((size_t)oRelsGeneratorInfo.nImageRId);
 										}

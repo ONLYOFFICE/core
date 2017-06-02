@@ -257,5 +257,129 @@ namespace PPTX
 			pWriter->EndRecord();
 		}
 
+		void Blip::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _s2 = pReader->GetPos();
+			LONG _e2 = _s2 + pReader->GetLong() + 4;
+
+			pReader->Skip(1);
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (NSBinPptxRW::g_nodeAttributeEnd == _at)
+					break;
+
+				if (_at == 0)
+					pReader->Skip(1);
+			}
+
+			while (pReader->GetPos() < _e2)
+			{
+				BYTE _t = pReader->GetUChar();
+
+				switch (_t)
+				{
+					case 0:
+					case 1:
+					{
+						// id. embed / link
+						pReader->Skip(4);
+						break;
+					}
+					case 10:
+					case 11:
+					{
+						// id. embed / link
+						pReader->GetString2();
+						break;
+					}
+					case 2:
+					{
+						pReader->Skip(4);
+						ULONG count_effects = pReader->GetULong();
+						for (ULONG _eff = 0; _eff < count_effects; ++_eff)
+						{
+							pReader->Skip(1); // type 
+							ULONG rec_len = pReader->GetULong();
+							if (0 == rec_len)
+								continue;
+							
+							BYTE rec = pReader->GetUChar();
+							
+							if (rec == EFFECT_TYPE_ALPHAMODFIX)
+							{
+								// alpha!!!
+								LONG _e22 = pReader->GetPos() + pReader->GetLong() + 4;
+
+								pReader->Skip(1); // startattr
+
+								PPTX::Logic::AlphaModFix* pEffect = new PPTX::Logic::AlphaModFix();
+								while (true)
+								{
+									BYTE _at = pReader->GetUChar_TypeNode();
+									if (NSBinPptxRW::g_nodeAttributeEnd == _at)
+										break;
+
+									if (_at == 0)
+										pEffect->amt = pReader->GetLong();
+								}
+
+								Effects.push_back(UniEffect());
+								Effects[0].InitPointer(pEffect);
+
+								pReader->Seek(_e22);
+							}
+							else
+							{
+								pReader->SkipRecord();
+							}
+						}
+						break;
+					}
+					case 3:
+					{
+						pReader->Skip(6); // len + start attributes + type
+
+						std::wstring strImagePath = pReader->GetString2();
+
+						if (0 != strImagePath.find(_T("http:")) &&
+							0 != strImagePath.find(_T("https:")) &&
+							0 != strImagePath.find(_T("ftp:")) &&
+							0 != strImagePath.find(_T("file:")))
+						{
+							if (0 == strImagePath.find(_T("theme")))
+							{
+                                strImagePath = pReader->m_strFolderExternalThemes + FILE_SEPARATOR_STR  + strImagePath;
+							}
+							else
+							{
+                                strImagePath = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + strImagePath;
+							}
+
+							OOX::CPath pathUrl = strImagePath;
+							strImagePath = pathUrl.GetPath();
+						}
+	
+						smart_ptr<OOX::File> additionalFile;
+						NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFile, L"", L"");
+
+						if (oRelsGeneratorInfo.nImageRId > 0)
+						{
+							embed = new OOX::RId((size_t)oRelsGeneratorInfo.nImageRId);
+						}
+						pReader->Skip(1); // end attribute
+						break;
+					}
+					default:
+					{
+						pReader->SkipRecord();
+						break;
+					}
+				}
+			}
+
+			pReader->Seek(_e2);
+		}
 	} // namespace Logic
 } // namespace PPTX

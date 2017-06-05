@@ -1583,13 +1583,13 @@ namespace BinXlsxRW
 				if(pExternalReference->m_oRid.IsInit())
 				{
 					smart_ptr<OOX::File> pFile = workbook.Find( OOX::RId(pExternalReference->m_oRid->GetValue()));
-				
+
 					if (pFile.IsInit() && OOX::Spreadsheet::FileTypes::ExternalLinks == pFile->type())
 					{
 						OOX::Spreadsheet::CExternalLink* pExternalLink = static_cast<OOX::Spreadsheet::CExternalLink*>(pFile.operator ->());
 						if ((pExternalLink) && (pExternalLink->m_oExternalBook.IsInit()))
 						{
-                            std::wstring sLink;
+							std::wstring sLink;
 							if (pExternalLink->m_oExternalBook->m_oRid.IsInit())
 							{
 								smart_ptr<OOX::File> pFile = pExternalLink->Find( OOX::RId(pExternalLink->m_oExternalBook->m_oRid.get().GetValue()));
@@ -1597,12 +1597,12 @@ namespace BinXlsxRW
 								{
 									OOX::Spreadsheet::ExternalLinkPath* pLinkFile = static_cast<OOX::Spreadsheet::ExternalLinkPath*>(pFile.operator ->());
 									sLink = pLinkFile->Uri().GetPath();
-								}						
+								}
 							}
-                            if(!sLink.empty())
+							if(!sLink.empty())
 							{
-								nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalReference);
-									m_oBcw.m_oStream.WriteStringW3(sLink);
+								nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalBook);
+								WriteExternalBook(pExternalLink->m_oExternalBook.get(), sLink);
 								m_oBcw.WriteItemWithLengthEnd(nCurPos);
 							}
 						}
@@ -1610,7 +1610,144 @@ namespace BinXlsxRW
 				}
 			}
 		};
+		void WriteExternalBook(const OOX::Spreadsheet::CExternalBook& externalBook, const std::wstring& sLink)
+		{
+			int nCurPos = 0;
+			nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::Id);
+			m_oBcw.m_oStream.WriteStringW3(sLink);
+			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 
+			if (externalBook.m_oSheetNames.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::SheetNames);
+				WriteExternalSheetNames(externalBook.m_oSheetNames.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (externalBook.m_oDefinedNames.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::DefinedNames);
+				WriteExternalDefinedNames(externalBook.m_oDefinedNames.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (externalBook.m_oSheetDataSet.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::SheetDataSet);
+				WriteExternalSheetDataSet(externalBook.m_oSheetDataSet.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+		void WriteExternalSheetNames(const OOX::Spreadsheet::CExternalSheetNames& sheetNames)
+		{
+			int nCurPos = 0;
+			for (size_t i = 0, length = sheetNames.m_arrItems.size(); i < length; ++i)
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::SheetName);
+				m_oBcw.m_oStream.WriteStringW3(sheetNames.m_arrItems[i]->ToString2());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+		void WriteExternalDefinedNames(const OOX::Spreadsheet::CExternalDefinedNames& definedNames)
+		{
+			int nCurPos = 0;
+			for (size_t i = 0, length = definedNames.m_arrItems.size(); i < length; ++i)
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::DefinedName);
+				WriteExternalDefinedName(*definedNames.m_arrItems[i]);
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+		void WriteExternalDefinedName(const OOX::Spreadsheet::CExternalDefinedName& definedName)
+		{
+			int nCurPos = 0;
+			if (definedName.m_oName.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::DefinedNameName);
+				m_oBcw.m_oStream.WriteStringW3(definedName.m_oName.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (definedName.m_oRefersTo.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::DefinedNameRefersTo);
+				m_oBcw.m_oStream.WriteStringW3(definedName.m_oRefersTo.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (definedName.m_oSheetId.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::DefinedNameSheetId);
+				m_oBcw.m_oStream.WriteULONG(definedName.m_oSheetId->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+		void WriteExternalSheetDataSet(const OOX::Spreadsheet::CExternalSheetDataSet& sheetDataSet)
+		{
+			int nCurPos = 0;
+			for (size_t i = 0, length = sheetDataSet.m_arrItems.size(); i < length; ++i)
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::SheetData);
+				WriteExternalSheetData(*sheetDataSet.m_arrItems[i]);
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+		void WriteExternalSheetData(const OOX::Spreadsheet::CExternalSheetData& sheetData)
+		{
+			int nCurPos = 0;
+			if(sheetData.m_oSheetId.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::SheetDataSheetId);
+				m_oBcw.m_oStream.WriteULONG(sheetData.m_oSheetId->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(sheetData.m_oRefreshError.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::SheetDataRefreshError);
+				m_oBcw.m_oStream.WriteBOOL(sheetData.m_oRefreshError->ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			for (size_t i = 0, length = sheetData.m_arrItems.size(); i < length; ++i)
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::SheetDataRow);
+				WriteExternalRow(*sheetData.m_arrItems[i]);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+		}
+		void WriteExternalRow(const OOX::Spreadsheet::CExternalRow& row)
+		{
+			int nCurPos = 0;
+			if(row.m_oR.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::SheetDataRowR);
+				m_oBcw.m_oStream.WriteULONG(row.m_oR->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			for (size_t i = 0, length = row.m_arrItems.size(); i < length; ++i)
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::SheetDataRowCell);
+				WriteExternalCell(*row.m_arrItems[i]);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
+		}
+		void WriteExternalCell(const OOX::Spreadsheet::CExternalCell& cell)
+		{
+			int nCurPos = 0;
+			if(cell.m_oRef.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::SheetDataRowCellRef);
+				m_oBcw.m_oStream.WriteStringW3(cell.m_oRef.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(cell.m_oType.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::SheetDataRowCellType);
+				m_oBcw.m_oStream.WriteBYTE(cell.m_oType->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(cell.m_oValue.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ExternalLinkTypes::SheetDataRowCellValue);
+				m_oBcw.m_oStream.WriteStringW3(cell.m_oValue->ToString());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
 		void WriteDefinedName(const OOX::Spreadsheet::CDefinedName& definedName)
 		{
 			int nCurPos = 0;

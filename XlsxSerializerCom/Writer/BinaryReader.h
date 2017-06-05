@@ -1592,34 +1592,27 @@ namespace BinXlsxRW {
 		int ReadExternalReferences(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
-			if(c_oSerWorkbookTypes::ExternalReference == type)
+			if(c_oSerWorkbookTypes::ExternalBook == type)
 			{
-                std::wstring sName(m_oBufferedStream.GetString3(length));
-
-                if (sName.empty() == false)
+				OOX::Spreadsheet::CExternalLink *extLink = new OOX::Spreadsheet::CExternalLink();
+				extLink->m_oExternalBook.Init();
+				res = Read1(length, &BinaryWorkbookTableReader::ReadExternalBook, this, extLink);
+				if (extLink->m_oExternalBook->m_oRid.IsInit())
 				{
 					OOX::Spreadsheet::CExternalReference* pExternalReference = new OOX::Spreadsheet::CExternalReference();
-					
-						OOX::Spreadsheet::CExternalLink *extLink= new OOX::Spreadsheet::CExternalLink();
-						smart_ptr<OOX::File> oCurFile(extLink);
-						
-						const OOX::RId oRId = m_oWorkbook.Add(oCurFile);
-						
-						pExternalReference->m_oRid.Init();
-						pExternalReference->m_oRid->SetValue(oRId.get());
 
-						extLink->m_oExternalBook.Init();
+					smart_ptr<OOX::File> oCurFile(extLink);
+					const OOX::RId oRId = m_oWorkbook.Add(oCurFile);
 
-						OOX::Spreadsheet::ExternalLinkPath *link = new OOX::Spreadsheet::ExternalLinkPath(sName);
-						smart_ptr<OOX::File> oLinkFile(link);
-						const OOX::RId oRIdLink = extLink->Add(oLinkFile);
-
-						extLink->m_oExternalBook->m_oRid.Init();
-						extLink->m_oExternalBook->m_oRid->SetValue(oRIdLink.get());
+					pExternalReference->m_oRid.Init();
+					pExternalReference->m_oRid->SetValue(oRId.get());
 
 
 					m_oWorkbook.m_oExternalReferences->m_arrItems.push_back(pExternalReference);
-
+				}
+				else
+				{
+					RELEASEOBJECT(extLink)
 				}
 			}
 			else
@@ -1672,6 +1665,174 @@ namespace BinXlsxRW {
 				res = c_oSerConstants::ReadUnknown;
 			return res;
 		};
+		int ReadExternalBook(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CExternalLink* extLink = static_cast<OOX::Spreadsheet::CExternalLink*>(poResult);
+			OOX::Spreadsheet::CExternalBook* pExternalBook = extLink->m_oExternalBook.GetPointer();
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_ExternalLinkTypes::Id == type)
+			{
+				std::wstring sName(m_oBufferedStream.GetString3(length));
+
+				OOX::Spreadsheet::ExternalLinkPath *link = new OOX::Spreadsheet::ExternalLinkPath(sName);
+				smart_ptr<OOX::File> oLinkFile(link);
+				const OOX::RId oRIdLink = extLink->Add(oLinkFile);
+
+				pExternalBook->m_oRid.Init();
+				pExternalBook->m_oRid->SetValue(oRIdLink.get());
+			}
+			else if(c_oSer_ExternalLinkTypes::SheetNames == type)
+			{
+				pExternalBook->m_oSheetNames.Init();
+				res = Read1(length, &BinaryWorkbookTableReader::ReadExternalSheetNames, this, pExternalBook->m_oSheetNames.GetPointer());
+			}
+			else if(c_oSer_ExternalLinkTypes::DefinedNames == type)
+			{
+				pExternalBook->m_oDefinedNames.Init();
+				res = Read1(length, &BinaryWorkbookTableReader::ReadExternalDefinedNames, this, pExternalBook->m_oDefinedNames.GetPointer());
+			}
+			else if(c_oSer_ExternalLinkTypes::SheetDataSet == type)
+			{
+				pExternalBook->m_oSheetDataSet.Init();
+				res = Read1(length, &BinaryWorkbookTableReader::ReadExternalSheetDataSet, this, pExternalBook->m_oSheetDataSet.GetPointer());
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		};
+		int ReadExternalSheetNames(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CExternalSheetNames* pSheetNames = static_cast<OOX::Spreadsheet::CExternalSheetNames*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_ExternalLinkTypes::SheetName == type)
+			{
+				ComplexTypes::Spreadsheet::String* pSheetName = new ComplexTypes::Spreadsheet::String();
+				pSheetName->m_sVal.Init();
+				pSheetName->m_sVal->append(m_oBufferedStream.GetString4(length));
+				pSheetNames->m_arrItems.push_back(pSheetName);
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		};
+		int ReadExternalDefinedNames(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CExternalDefinedNames* pDefinedNames = static_cast<OOX::Spreadsheet::CExternalDefinedNames*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_ExternalLinkTypes::DefinedName == type)
+			{
+				OOX::Spreadsheet::CExternalDefinedName* pDefinedName = new OOX::Spreadsheet::CExternalDefinedName();
+				res = Read1(length, &BinaryWorkbookTableReader::ReadExternalDefinedName, this, pDefinedName);
+				pDefinedNames->m_arrItems.push_back(pDefinedName);
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		};
+		int ReadExternalDefinedName(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CExternalDefinedName* pDefinedName = static_cast<OOX::Spreadsheet::CExternalDefinedName*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_ExternalLinkTypes::DefinedNameName == type)
+			{
+				pDefinedName->m_oName.Init();
+				pDefinedName->m_oName->append(m_oBufferedStream.GetString3(length));
+			}
+			else if(c_oSer_ExternalLinkTypes::DefinedNameRefersTo == type)
+			{
+				pDefinedName->m_oRefersTo.Init();
+				pDefinedName->m_oRefersTo->append(m_oBufferedStream.GetString3(length));
+			}
+			else if(c_oSer_ExternalLinkTypes::DefinedNameSheetId == type)
+			{
+				pDefinedName->m_oSheetId.Init();
+				pDefinedName->m_oSheetId->SetValue(m_oBufferedStream.GetULong());
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		};
+		int ReadExternalSheetDataSet(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CExternalSheetDataSet* pSheetDataSet = static_cast<OOX::Spreadsheet::CExternalSheetDataSet*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_ExternalLinkTypes::SheetData == type)
+			{
+				OOX::Spreadsheet::CExternalSheetData* pSheetData = new OOX::Spreadsheet::CExternalSheetData();
+				res = Read1(length, &BinaryWorkbookTableReader::ReadExternalSheetData, this, pSheetData);
+				pSheetDataSet->m_arrItems.push_back(pSheetData);
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		};
+		int ReadExternalSheetData(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CExternalSheetData* pSheetData = static_cast<OOX::Spreadsheet::CExternalSheetData*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_ExternalLinkTypes::SheetDataSheetId == type)
+			{
+				pSheetData->m_oSheetId.Init();
+				pSheetData->m_oSheetId->SetValue(m_oBufferedStream.GetULong());
+			}
+			else if(c_oSer_ExternalLinkTypes::SheetDataRefreshError == type)
+			{
+				pSheetData->m_oRefreshError.Init();
+				pSheetData->m_oRefreshError->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_ExternalLinkTypes::SheetDataRow == type)
+			{
+				OOX::Spreadsheet::CExternalRow* pRow = new OOX::Spreadsheet::CExternalRow();
+				res = Read1(length, &BinaryWorkbookTableReader::ReadExternalRow, this, pRow);
+				pSheetData->m_arrItems.push_back(pRow);
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		};
+		int ReadExternalRow(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CExternalRow* pRow = static_cast<OOX::Spreadsheet::CExternalRow*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_ExternalLinkTypes::SheetDataRowR == type)
+			{
+				pRow->m_oR.Init();
+				pRow->m_oR->SetValue(m_oBufferedStream.GetULong());
+			}
+			else if(c_oSer_ExternalLinkTypes::SheetDataRowCell == type)
+			{
+				OOX::Spreadsheet::CExternalCell* pCell = new OOX::Spreadsheet::CExternalCell();
+				res = Read1(length, &BinaryWorkbookTableReader::ReadExternalCell, this, pCell);
+				pRow->m_arrItems.push_back(pCell);
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		};
+		int ReadExternalCell(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CExternalCell* pCell = static_cast<OOX::Spreadsheet::CExternalCell*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_ExternalLinkTypes::SheetDataRowCellRef == type)
+			{
+				pCell->m_oRef.Init();
+				pCell->m_oRef->append(m_oBufferedStream.GetString3(length));
+			}
+			else if(c_oSer_ExternalLinkTypes::SheetDataRowCellType == type)
+			{
+				pCell->m_oType.Init();
+				pCell->m_oType->SetValue((SimpleTypes::Spreadsheet::ECellTypeType)m_oBufferedStream.GetUChar());
+			}
+			else if(c_oSer_ExternalLinkTypes::SheetDataRowCellValue == type)
+			{
+				pCell->m_oValue.Init();
+				pCell->m_oValue->m_sText.append(m_oBufferedStream.GetString3(length));
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		};
+
 		int ReadPivotCaches(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;

@@ -8,7 +8,42 @@
 
 #include "../../../common/File.h"
 
-#if 0
+static time_t ASN1_GetTimeT(ASN1_TIME* time)
+{
+    struct tm t;
+    const char* str = (const char*) time->data;
+    size_t i = 0;
+
+    memset(&t, 0, sizeof(t));
+
+    if (time->type == V_ASN1_UTCTIME) {/* two digit year */
+        t.tm_year = (str[i++] - '0') * 10;
+        t.tm_year += (str[i++] - '0');
+        if (t.tm_year < 70)
+            t.tm_year += 100;
+    } else if (time->type == V_ASN1_GENERALIZEDTIME) {/* four digit year */
+        t.tm_year = (str[i++] - '0') * 1000;
+        t.tm_year+= (str[i++] - '0') * 100;
+        t.tm_year+= (str[i++] - '0') * 10;
+        t.tm_year+= (str[i++] - '0');
+        t.tm_year -= 1900;
+    }
+    t.tm_mon  = (str[i++] - '0') * 10;
+    t.tm_mon += (str[i++] - '0') - 1; // -1 since January is 0 not 1.
+    t.tm_mday = (str[i++] - '0') * 10;
+    t.tm_mday+= (str[i++] - '0');
+    t.tm_hour = (str[i++] - '0') * 10;
+    t.tm_hour+= (str[i++] - '0');
+    t.tm_min  = (str[i++] - '0') * 10;
+    t.tm_min += (str[i++] - '0');
+    t.tm_sec  = (str[i++] - '0') * 10;
+    t.tm_sec += (str[i++] - '0');
+
+    /* Note: we did not adjust the time based on time zone information */
+    return mktime(&t);
+}
+
+#if 1
 int main()
 {
     std::wstring sFolderW = NSFile::GetProcessDirectory();
@@ -54,6 +89,10 @@ int main()
     asn1_serial = X509_get_serialNumber(cert);
     if (asn1_serial == NULL)
         BIO_printf(outbio, "Error getting serial number from certificate");
+
+    ASN1_TIME* _time = X509_get_notBefore(cert);
+    const char* s = (const char*)_time->data;
+    time_t time1 = ASN1_GetTimeT(_time);
 
     /* ---------------------------------------------------------- *
     * Print the serial number value, openssl x509 -serial style  *
@@ -194,7 +233,7 @@ int main()
 }
 #endif
 
-#if 1
+#if 0
 int main()
 {
     std::wstring sFolderW = NSFile::GetProcessDirectory();

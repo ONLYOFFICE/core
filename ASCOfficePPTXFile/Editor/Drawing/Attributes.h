@@ -478,10 +478,17 @@ namespace NSPresentationEditor
         long Alpha;
         double Size;
 
-        BYTE DashStyle;
-        BYTE LineStartCap;
-        BYTE LineEndCap;
-        BYTE LineJoin;
+		unsigned char DashStyle;
+		unsigned char LineStyle;
+		unsigned char LineJoin;
+		
+		unsigned char LineEndCap;
+		unsigned char LineEndLength;
+		unsigned char LineEndWidth;
+
+		unsigned char LineStartCap;
+		unsigned char LineStartLength;
+		unsigned char LineStartWidth;
 
         double* DashPattern;
         long Count;
@@ -492,9 +499,8 @@ namespace NSPresentationEditor
         double MiterLimit;
 
         CColor Color2;	//backLine
-    public:
 
-        void GetDashPattern(double* arrDashPattern, long& nCount) const
+		void GetDashPattern(double* arrDashPattern, long& nCount) const
         {
             if (nCount == Count)
             {
@@ -579,10 +585,16 @@ namespace NSPresentationEditor
             Alpha = 255;
             Size  = 0.26458;
 
-            DashStyle    = 0;
-            LineStartCap = 0;
-            LineEndCap   = 0;
-            LineJoin     = 0;
+			LineStyle	= 0; //single(Simple)
+			DashStyle	= 0; //Solid
+			LineJoin	= 2; //round
+
+			LineStartCap	= 0;
+			LineEndCap		= 0;
+			LineEndLength	= 1; //med
+			LineStartLength	= 1;
+			LineEndWidth	= 1;
+			LineStartWidth	= 1;
 
             DashPattern = NULL;
             Count       = 0;
@@ -893,8 +905,6 @@ namespace NSPresentationEditor
         std::wstring	Panose;
         bool			Monospace;
 
-    public:
-
         bool IsEqual(CFont* pFont)
         {
             if (NULL == pFont)
@@ -962,8 +972,7 @@ namespace NSPresentationEditor
             Monospace	= false;
         }
 
-    public:
-        CFont()
+		CFont()
         {
             SetDefaultParams();
         }
@@ -1022,8 +1031,6 @@ namespace NSPresentationEditor
         int				PerspectiveX;
         int				PerspectiveY;
 
-    public:
-
         void SetDefaultParams()
         {
             Visible		= false;
@@ -1047,8 +1054,6 @@ namespace NSPresentationEditor
 
             Color.SetRGB(0x80, 0x80, 0x80);
         }
-
-    public:
 
         CShadow()
         {
@@ -1111,8 +1116,6 @@ namespace NSPresentationEditor
         CColor Color;
         long Alpha;
 
-    public:
-
         void SetDefaultParams()
         {
             Visible = 0;
@@ -1120,8 +1123,6 @@ namespace NSPresentationEditor
             Color   = 0;
             Alpha   = 255;
         }
-
-    public:
 
         CEdgeText()
         {
@@ -1160,7 +1161,6 @@ namespace NSPresentationEditor
         int			m_nTextAlignVertical;
         double		m_dTextRotate;
 
-    public:
         CTextAttributes() : m_oFont(), m_oTextBrush(), m_oTextShadow(), m_oTextEdge()
         {
             m_oFont.Size = 36;
@@ -1184,4 +1184,6 @@ namespace NSPresentationEditor
             return (*this);
         }
     };
+	
+
 }

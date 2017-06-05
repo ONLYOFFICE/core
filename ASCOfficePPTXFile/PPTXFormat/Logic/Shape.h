@@ -38,13 +38,13 @@
 #include "SpPr.h"
 #include "ShapeStyle.h"
 #include "TxBody.h"
-#include "ShapeProperties.h"
-#include "ShapeTextProperties.h"
 #include "UniFill.h"
 #include "Ln.h"
 
 #include "../../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
 #include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Vml.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Logic/Sdt.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Logic/VmlOfficeDrawing.h"
 
 namespace OOX
 {
@@ -302,44 +302,36 @@ namespace PPTX
 			}
 			std::wstring GetText()const{if(txBody.IsInit()) return txBody->GetText(); return _T(""); };
 
-			void GetShapeFullDescription(Shape& shape, int level = 0)const;
-			void GetRect(Aggplus::RECT& pRect)const;
-			DWORD GetFill(UniFill& fill)const;
-			DWORD GetLine(Ln& line)const;
+			void FillLevelUp();
+			void Merge(Shape& shape, bool bIsSlidePlaceholder = false);
+			bool IsListStyleEmpty();
 
-			void FillShapeProperties(ShapeProperties& props);
-			void FillShapeTextProperties(CShapeTextProperties& props);
-
-		private:
-			void FillLevelUp()const;
-			mutable Shape const * levelUp;
-			void Merge(Shape& shape, bool bIsSlidePlaceholder = false)const;
-		public:
-			void SetLevelUpElement(const Shape& p)const{levelUp = &p;};
+			void SetLevelUpElement( Shape* p){m_pLevelUp = p;};
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			void toXmlWriterVML				(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::WrapperFile>& oTheme, smart_ptr<PPTX::WrapperWritingElement>& oClrMap, bool in_group = false);
-			void toXmlWriterVMLBackground	(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::WrapperFile>& oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& oClrMap);
+			void toXmlWriterVML				(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group = false, bool bSignature = false);
+			void toXmlWriterVMLBackground	(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap);
 
 			virtual void toXmlWriter	(NSBinPptxRW::CXmlWriter* pWriter) const;			
 			virtual void fromPPTY		(NSBinPptxRW::CBinaryFileReader* pReader);
 
-			std::wstring			m_name;
+//-------------------------------------------------------------------------------------------------
+			std::wstring						m_name;
+			Shape *								m_pLevelUp;
+			bool								m_bIsFontRefInSlide;
+//-------------------------------------------------------------------------------------------------
+			NvSpPr								nvSpPr;
+			SpPr								spPr;
+			nullable<ShapeStyle>				style;
+			nullable<TxBody>					txBody;
+			nullable<Xfrm>						txXfrm;
 
-			NvSpPr					nvSpPr;
-			SpPr					spPr;
-			nullable<ShapeStyle>	style;
-			nullable<TxBody>		txBody;
-			nullable<Xfrm>			txXfrm;
+			nullable_string						strTextBoxShape;
+			nullable<OOX::Logic::CSdtContent>	oTextBoxShape;
+			nullable<BodyPr>					oTextBoxBodyPr;
 
-			nullable_string			TextBoxShape;
-			nullable<BodyPr>		TextBoxBodyPr;
-
-			bool								isFontRefInSlide;
-			mutable nullable<TextParagraphPr>	body[10];
- 
-	// Attributes
-			nullable_bool			attrUseBgFill;
+			nullable_bool						attrUseBgFill;
+			nullable<OOX::VmlOffice::CSignatureLine> signatureLine;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

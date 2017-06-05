@@ -463,10 +463,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Document.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Reader\PPTDocumentInfo.h"
 				>
 			</File>
@@ -755,10 +751,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Records\SlideNumberMCAtom.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Records\SlidePersistAtom.h"
 				>
 			</File>
@@ -971,19 +963,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\ElementProperties.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Elements.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Elements.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Enums.h"
 				>
 			</File>
 			<File
@@ -1030,6 +1014,26 @@
 				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\XmlWriter.h"
 				>
 			</File>
+			<Filter
+				Name="ppt shapes"
+				>
+				<File
+					RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Shapes\BaseShape\PPTShape\customgeomshape.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Shapes\BaseShape\PPTShape\elementsettings.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Shapes\BaseShape\PPTShape\formula.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Shapes\BaseShape\PPTShape\PPTShape.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="OOXWriter"
@@ -1040,10 +1044,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\CommentsWriter.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\ContentTypesWriter.h"
 				>
 			</File>
 			<File

@@ -114,71 +114,13 @@ namespace PPTX
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
-			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("xmlns"), PPTX::g_Namespaces.xmlns.m_strLink);
-			oAttr.Write(_T("xmlns:vt"), PPTX::g_Namespaces.vt.m_strLink);
-
-			XmlUtils::CNodeValue oValue;
-			oValue.Write2(_T("Template"), Template);
-			oValue.Write2(_T("TotalTime"), TotalTime);
-			oValue.Write2(_T("Words"), Words);
-			oValue.Write2(_T("Application"), Application);
-			oValue.Write2(_T("PresentationFormat"), PresentationFormat);
-			oValue.Write2(_T("Paragraphs"), Paragraphs);
-			oValue.Write2(_T("Slides"), Slides);
-			oValue.Write2(_T("Notes"), Notes);
-			oValue.Write2(_T("HiddenSlides"), HiddenSlides);
-			oValue.Write2(_T("MMClips"), MMClips);
-			oValue.Write2(_T("ScaleCrop"), ScaleCrop);
-
-			XmlUtils::CAttribute oAttr1;
-			oAttr1.Write(_T("size"), m_Headings);
-			oAttr1.Write(_T("baseType"), _T("variant"));
-
-			XmlUtils::CNodeValue oValue1;
-			oValue1.WriteArray(HeadingPairs);
-
-			oValue.Write2(_T("HeadingPairs"), XmlUtils::CreateNode(_T("vt:vector"), oAttr1, oValue1));
-
-			XmlUtils::CAttribute oAttr2;
-			oAttr2.Write(_T("size"), m_Headings);
-			oAttr2.Write(_T("baseType"), _T("lpstr"));
-
-			XmlUtils::CNodeValue oValue2;
-			oValue2.WriteArray(HeadingPairs);
-
-			oValue.Write2(_T("TitlesOfParts"), XmlUtils::CreateNode(_T("vt:vector"), oAttr2, oValue2));
-			
-			oValue.Write2(_T("Company"), Company);
-			oValue.Write2(_T("LinksUpToDate"), LinksUpToDate);
-			oValue.Write2(_T("SharedDoc"), SharedDoc);
-			oValue.Write2(_T("HyperlinksChanged"), HyperlinksChanged);
-			oValue.Write2(_T("AppVersion"), AppVersion);
-
-			XmlUtils::SaveToFile(filename.m_strFilename, XmlUtils::CreateNode(_T("Properties"), oAttr, oValue));
-
-			//if(DocSecurity.is_init())
-			//	root.push_back(XML::XElement("DocSecurity", XML::XText(DocSecurity)));
-			//if(Manager.is_init())
-			//	root.push_back(XML::XElement("Manager", XML::XText(Manager)));
-			//if(HyperlinkBase.is_init())
-			//	root.push_back(XML::XElement("HyperlinkBase", XML::XText(HyperlinkBase)));
-			//XML::XElement("Characters", XML::XText(Characters)) +
-			//XML::XElement("Lines", XML::XText(Lines)) +
-			//XML::XElement("CharactersWithSpaces", XML::XText(CharactersWithSpaces))
-			//DigSig (Digital Signature)
-			//HLinks
-			
-			content.Registration(type().OverrideType(), directory, filename);
-			m_written = true;
-
-			m_WrittenFileName.m_strFilename = filename.GetFilename();
+			WrapperFile::write(filename, directory, content);
 		}
 
 	public:
 		virtual const OOX::FileType type() const
 		{
-			return OOX::Presentation::FileTypes::App;
+			return OOX::FileTypes::App;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -291,7 +233,7 @@ namespace PPTX
 		nullable_int						MMClips;				// (Total Number of Multimedia Clips)
 		nullable_bool						ScaleCrop;				// (Thumbnail Display Mode)
 		std::vector<Logic::HeadingVariant>	HeadingPairs;			// (Heading Pairs)
-		std::vector<Logic::PartTitle>			TitlesOfParts;			// (Part Titles)
+		std::vector<Logic::PartTitle>		TitlesOfParts;			// (Part Titles)
 		nullable_string						Company;				// (Name of Company)
 		nullable_bool						LinksUpToDate;			// (Links Up-to-Date)
 		nullable_bool						SharedDoc;				// (Shared Document)

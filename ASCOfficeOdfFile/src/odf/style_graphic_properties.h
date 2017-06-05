@@ -68,11 +68,10 @@ class graphic_format_properties
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-    void apply_from(const graphic_format_properties & Other);
+    void apply_from(const graphic_format_properties * Other);
+	
 	void apply_to(std::vector<_property> & properties);
 
-public:
-    
 	_CP_OPT(odf_types::length_or_percent)	fo_min_width_;
     _CP_OPT(odf_types::length_or_percent)	fo_min_height_;
     
@@ -138,7 +137,6 @@ public:
         
 };
 
-///         style:graphic-properties
 class style_graphic_properties : public office_element_impl<style_graphic_properties>
 {
 public:
@@ -149,20 +147,34 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-   const graphic_format_properties & content() const { return graphic_format_properties_; }
-
+    graphic_format_properties content_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
  
-private:
-    graphic_format_properties graphic_format_properties_;
-
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_graphic_properties);
 
+class loext_graphic_properties : public office_element_impl<style_graphic_properties>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeStyleGraphicPropertis;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	graphic_format_properties content_;
+
+private:
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+ 
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(loext_graphic_properties);
 
 }
 }

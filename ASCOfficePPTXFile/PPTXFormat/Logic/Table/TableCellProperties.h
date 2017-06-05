@@ -52,6 +52,7 @@ namespace PPTX
 
 			TableCellProperties()
 			{
+				is_empty = true;
 			}
 
 			TableCellProperties& operator=(const TableCellProperties& oSrc)
@@ -76,6 +77,9 @@ namespace PPTX
 				Anchor			= oSrc.Anchor;
 				AnchorCtr		= oSrc.AnchorCtr;
 				HorzOverflow	= oSrc.HorzOverflow;
+
+				is_empty		= oSrc.is_empty;
+				
 				return *this;
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -107,9 +111,13 @@ namespace PPTX
 					else
 						Fill.fromXML(oReader);
 				}
+				
+				FillParentPointersForChilds();
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
+				is_empty = (oReader.GetAttributesCount() == 0);
+
 				WritingElement_ReadAttributes_Start	( oReader )
 					WritingElement_ReadAttributes_Read_if		( oReader, _T("marL"), MarL )
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("marR"), MarR )
@@ -123,6 +131,8 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
+				is_empty = (node.GetAttributesCount() == 0);
+				
 				LnL				= node.ReadNode(_T("a:lnL"));
 				LnR				= node.ReadNode(_T("a:lnR"));
 				LnT				= node.ReadNode(_T("a:lnT"));
@@ -143,31 +153,6 @@ namespace PPTX
 				node.ReadAttributeBase(L"horzOverflow", HorzOverflow);
 
 				FillParentPointersForChilds();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("marL"), MarL);
-				oAttr.Write(_T("marR"), MarR);
-				oAttr.Write(_T("marT"), MarT);
-				oAttr.Write(_T("marB"), MarB);
-				oAttr.WriteLimitNullable(_T("vert"), Vert);
-				oAttr.WriteLimitNullable(_T("anchor"), Anchor);
-				oAttr.Write(_T("anchorCtr"), AnchorCtr);
-				oAttr.WriteLimitNullable(_T("horzOverflow"), HorzOverflow);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(LnL);
-				oValue.WriteNullable(LnR);
-				oValue.WriteNullable(LnT);
-				oValue.WriteNullable(LnB);
-				oValue.WriteNullable(LnTlToBr);
-				oValue.WriteNullable(LnBlToTr);
-                oValue.WriteNullable(cell3D);
-				oValue.Write(Fill);
-
-				return XmlUtils::CreateNode(_T("a:tcPr"), oAttr, oValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -349,7 +334,6 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-		public:
 			nullable<Ln>		LnL;
 			nullable<Ln>		LnR;
 			nullable<Ln>		LnT;
@@ -360,17 +344,22 @@ namespace PPTX
 			UniFill				Fill;
 //			<xsd:element name="headers" type="CT_Headers" minOccurs="0"/> 
 
-			nullable_int							MarL;//default="91440"
-			nullable_int							MarR;//default="91440"
-			nullable_int							MarT;//default="45720"
-			nullable_int							MarB;//default="45720"
-			nullable_limit<Limit::TextVerticalType> Vert;//default="horz"
-			nullable_limit<Limit::TextAnchor>		Anchor;//default="t"
-			nullable_bool							AnchorCtr;//default="false"
-			nullable_limit<Limit::HorzOverflow>		HorzOverflow;//default="clip"
+			nullable_int							MarL;			//default="91440"
+			nullable_int							MarR;			//default="91440"
+			nullable_int							MarT;			//default="45720"
+			nullable_int							MarB;			//default="45720"
+			nullable_limit<Limit::TextVerticalType> Vert;			//default="horz"
+			nullable_limit<Limit::TextAnchor>		Anchor;			//default="t"
+			nullable_bool							AnchorCtr;		//default="false"
+			nullable_limit<Limit::HorzOverflow>		HorzOverflow;	//default="clip"
+
+			bool is_empty;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
+				is_empty = is_empty & !(LnL.IsInit() || LnR.IsInit() || LnT.IsInit() || LnB.IsInit() || LnTlToBr.IsInit() || LnBlToTr.IsInit() ||
+							cell3D.IsInit() || Fill.is_init());
+				
 				if(LnL.IsInit())
 					LnL->SetParentPointer(this);
 				if(LnR.IsInit())

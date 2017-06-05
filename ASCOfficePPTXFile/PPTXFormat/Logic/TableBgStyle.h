@@ -56,14 +56,6 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(fill);
-				oValue.WriteNullable(fillRef);
-
-				return XmlUtils::CreateNode(_T("a:tblBg"), oValue);
-			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{

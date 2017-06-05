@@ -77,17 +77,10 @@ namespace DocFileFormat
 
 		void WritePrimitiveProps(DrawingPrimitive	* primitive, bool root);
 
-		// Converts a group of shapes
 		void WriteGroup(const GroupContainer* pContainer);
-		// Converts a single shape
 		void WriteShape (const ShapeContainer* pContainer);
 
-		/// Generates a string id for the given shape
 		std::wstring GenShapeId(const Shape* pShape) const;
-		/// Build the VML wrapcoords string for a given pWrapPolygonVertices
-		std::wstring getWrapCoords( const OptionEntry& pWrapPolygonVertices ) const;
-		/// Copies the picture from the binary stream to the zip archive 
-		/// and creates the relationships for the image.
 		bool copyPicture( const BlipStoreEntry* bse );
 		std::wstring GetTargetExt( Global::BlipType _type ) const;
 		
@@ -98,21 +91,22 @@ namespace DocFileFormat
 		
 		std::wstring getTextboxAnchor( unsigned int anchor ) const;
 				
-		void AppendOptionsToStyle( std::wstring* style, const std::list<OptionEntry>& options, int zIndex ) const;
+		std::wstring buildStyle		( const Shape* shape, const ChildAnchor* anchor, const std::vector<OptionEntryPtr>& options, int zIndex ) const;
+		void AppendOptionsToStyle	( std::wstring* style, const std::vector<OptionEntryPtr>& options, int zIndex ) const;
 		
-		std::wstring buildStyle		( const Shape* shape, const ChildAnchor* anchor, const std::list<OptionEntry>& options, int zIndex ) const;
+		int UpdateFromGuides(const int val) const;
+
 		std::wstring getLineStyle	( unsigned int p ) const;
 		std::wstring getArrowStyle	( unsigned int op ) const;
 		std::wstring getArrowLength	( unsigned int op ) const;
 		std::wstring getArrowWidth	( unsigned int op ) const;
 		std::wstring getFillMethod	( unsigned int p ) const;
 		std::wstring getFillColorString( const unsigned char* p, unsigned int size ) const;
-		/// Returns the OpenXML fill type of a fill effect
+
 		std::wstring getFillType	( unsigned int p ) const;
 		std::wstring getShadowType	( unsigned int p ) const;
-		/// Returns the OpenXML wrap type of the shape
+
 		std::wstring getWrapType	(const Spa* pSpa) const;
-		std::wstring ParsePath		(const std::list<OptionEntry>& options) const;
 
 		void WriteBeginShapeNode	(const Shape* pShape);
 		void WriteEndShapeNode		(const Shape* pShape);
@@ -121,9 +115,15 @@ namespace DocFileFormat
 		std::wstring GetLineFrom	(const ChildAnchor* pAnchor) const;
 		std::wstring GetLineTo		(const ChildAnchor* pAnchor) const;
 
-		std::vector<std::wstring> GetTextRectangles(const OptionEntry& inscribe) const;
+		std::wstring				GetWrapCoords		( const OptionEntryPtr& pOpt ) const;
+		std::vector<std::wstring>	GetTextRectangles	( const OptionEntryPtr& pOpt ) const;
+		std::wstring				GetConnectAngles	( const OptionEntryPtr& pOpt ) const;
+		std::wstring				GetConnectLocs		( const OptionEntryPtr& pOpt ) const;
+		void						GetGuides			( const OptionEntryPtr& pOpt );
 
-	private: 
+		int								m_nAdjValues[8];
+		std::vector<_guides>			m_arrGuides;
+		
 		bool							m_isInlineShape;
 		Spa*							m_pSpa;
 		IMapping*						m_pCaller;

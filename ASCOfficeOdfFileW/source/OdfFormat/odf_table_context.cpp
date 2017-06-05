@@ -44,10 +44,10 @@
 #include "table.h"
 
 #include "style_table_properties.h"
+#include "style_graphic_properties.h"
+#include "style_text_properties.h"
 
-//#include "style_text_properties.h"
 //#include "style_paragraph_properties.h"
-//#include "style_graphic_properties.h"
 
 
 namespace cpdoccore 
@@ -151,7 +151,9 @@ void odf_table_context::start_table(office_element_ptr &elm, bool styled)
 	if (!table)return;	
 	
 	odf_table_state state;
-	state.table.elm = elm;
+	
+	state.table.elm					= elm;
+	state.default_cell_properties	= impl_->default_cell_properties; //write in row default cell props
 
 	if (styled)
 	{
@@ -160,14 +162,12 @@ void odf_table_context::start_table(office_element_ptr &elm, bool styled)
 		{
 			state.table.style_elm = style_state->get_office_element();
 			state.table.style_name = style_state->get_name();
+			
 			table->table_table_attlist_.table_style_name_ = state.table.style_name;		
 		}
 	}
-	state.default_cell_properties = impl_->default_cell_properties;
 	impl_->default_cell_properties = L"";
-
 	impl_->start_table(state);
-
 }
 void odf_table_context::end_table()
 {
@@ -183,7 +183,7 @@ void odf_table_context::end_table()
 	{
 		if (impl_->current_table().table_width > 0)
 		{
-			style_table_properties * table_props = style_->style_content_.get_style_table_properties();
+			style_table_properties * table_props = style_->content_.get_style_table_properties();
 			if (table_props)
 			{
 				table_props->table_format_properties_.style_width_ = length(length(impl_->current_table().table_width,length::pt).get_value_unit(length::cm),length::cm);
@@ -196,27 +196,31 @@ void odf_table_context::start_row(office_element_ptr &elm, bool styled)
 {
 	if (impl_->empty()) return;
 
-	table_table_row * row = dynamic_cast<table_table_row *>(elm.get());;
+	table_table_row * row = dynamic_cast<table_table_row *>(elm.get());
 	if (!row)return;
 	
 	odf_element_state state;
 
 	state.elm = elm;
+
 	if (styled)
 	{
 		odf_style_state_ptr style_state = impl_->styles_context()->last_state(style_family::TableRow);
 		if (style_state)
 		{
-			state.style_elm = style_state->get_office_element();
-			state.style_name = style_state->get_name();
+			state.style_elm		= style_state->get_office_element();
+			state.style_name	= style_state->get_name();
+			
 			row->table_table_row_attlist_.table_style_name_ = state.style_name;		
 		}
 	}
+	if (!impl_->current_table().default_cell_properties.empty())
+		row->table_table_row_attlist_.table_default_cell_style_name_ = impl_->current_table().default_cell_properties;
 
 
 	impl_->current_table().rows.push_back(state);
 
-	impl_->current_table().current_column =0;
+	impl_->current_table().current_column = 0;
 	impl_->current_table().current_row ++;
 }
 
@@ -313,7 +317,7 @@ void odf_table_context::set_column_optimal(bool val)
 	style *style_ = dynamic_cast<style*>(impl_->current_table().columns.back().style_elm.get());
 
 	if (style_ == NULL) return;
-	style_table_column_properties *properties = style_->style_content_.get_style_table_column_properties();
+	style_table_column_properties *properties = style_->content_.get_style_table_column_properties();
 	if (properties == NULL) return;
 
 	properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = val;
@@ -330,7 +334,7 @@ void odf_table_context::change_current_column_width(double width)
 	style *style_ = dynamic_cast<style*>(impl_->current_table().columns[index].style_elm.get());
 
 	if (style_ == NULL) return;
-	style_table_column_properties *properties = style_->style_content_.get_style_table_column_properties();
+	style_table_column_properties *properties = style_->content_.get_style_table_column_properties();
 	if (properties == NULL) return;
 
 	length length_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);
@@ -353,7 +357,7 @@ void odf_table_context::set_column_width(double width)
 	style *style_ = dynamic_cast<style*>(impl_->current_table().columns.back().style_elm.get());
 
 	if (style_ == NULL) return;
-	style_table_column_properties *properties = style_->style_content_.get_style_table_column_properties();
+	style_table_column_properties *properties = style_->content_.get_style_table_column_properties();
 	if (properties == NULL) return;
 
 	if (width > 0)
@@ -411,8 +415,9 @@ void odf_table_context::start_cell(office_element_ptr &elm, bool styled)
 {
 	if (impl_->empty()) return;
 
-	table_table_cell * cell = dynamic_cast<table_table_cell *>(elm.get());;
-	table_covered_table_cell * covered_cell = dynamic_cast<table_covered_table_cell *>(elm.get());
+	table_table_cell*			cell			= dynamic_cast<table_table_cell *>(elm.get());;
+	table_covered_table_cell*	covered_cell	= dynamic_cast<table_covered_table_cell *>(elm.get());
+	
 	if (!cell && !covered_cell)return;
 	
 	odf_element_state state;
@@ -423,9 +428,31 @@ void odf_table_context::start_cell(office_element_ptr &elm, bool styled)
 		odf_style_state_ptr style_state = impl_->styles_context()->last_state(style_family::TableCell);
 		if (style_state)
 		{
-			state.style_elm = style_state->get_office_element();
-			state.style_name = style_state->get_name();
+			state.style_elm		= style_state->get_office_element();
+			state.style_name	= style_state->get_name();
+			
 			cell->table_table_cell_attlist_.table_style_name_ = state.style_name;		
+		}
+
+		if (!impl_->current_table().default_cell_properties.empty())
+		{
+			odf_style_state_ptr default_style_state; 
+			impl_->styles_context()->find_odf_style_state(impl_->current_table().default_cell_properties, style_family::TableCell, default_style_state);
+
+			if (default_style_state && style_state)
+			{
+				graphic_format_properties *		g = style_state->get_graphic_properties() ;  
+				style_text_properties *			t = style_state->get_text_properties();
+				style_table_cell_properties *	c = style_state->get_table_cell_properties();
+
+				graphic_format_properties *		d_g = default_style_state->get_graphic_properties() ;  
+				style_text_properties *			d_t = default_style_state->get_text_properties();
+				style_table_cell_properties *	d_c = default_style_state->get_table_cell_properties();
+
+				if (g && d_g) g->apply_from(*d_g);
+				if (t && d_t) t->apply_from(d_t);
+				if (c && d_c) c->apply_from(d_c);
+			}
 		}
 	}
 	//if (cell)
@@ -438,6 +465,7 @@ void odf_table_context::start_cell(office_element_ptr &elm, bool styled)
 
 	impl_->current_table().current_column++;
 }
+
 void odf_table_context::set_cell_column_span(int spanned)
 {
 	if (impl_->empty()) return;
@@ -449,16 +477,24 @@ void odf_table_context::set_cell_column_span(int spanned)
 
 	cell->table_table_cell_attlist_extra_.table_number_columns_spanned_ = spanned;
 
-	//impl_->current_table().current_column += spanned-1;
-				
+	//impl_->current_table().current_column += spanned - 1;			
 }
 
-void odf_table_context::set_cell_row_span()
+void odf_table_context::set_cell_row_span(int spanned)
 {
-	int col = impl_->current_table().current_column-1;
-	odf_column_state & state = impl_->current_table().columns[col];
+	if (spanned > 0)
+	{
+		table_table_cell * cell = dynamic_cast<table_table_cell *>(impl_->current_table().cells.back().elm.get());
+		if (cell)
+			cell->table_table_cell_attlist_extra_.table_number_rows_spanned_ = spanned;
+	}
+	else
+	{
+		int col = impl_->current_table().current_column - 1;
+		odf_column_state & state = impl_->current_table().columns[col];
 
-	state.spanned_row_cell.push_back(impl_->current_table().cells.back().elm);
+		state.spanned_row_cell.push_back(impl_->current_table().cells.back().elm);
+	}
 }
 
 void odf_table_context::set_cell_row_span_restart()

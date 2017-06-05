@@ -35,6 +35,7 @@
 #include <boost/lexical_cast.hpp>
  
 #include "office_spreadsheet.h"
+#include "office_scripts.h"
 #include "office_chart.h"
 
 #include "office_elements_create.h"
@@ -128,6 +129,10 @@ void odf_conversion_context::end_document()
 		process_settings(object, isRoot);
 
 		package::content_content_ptr content_root_ = package::content_content::create();		
+
+		if (objects_.back().scripts)
+			objects_.back().scripts->serialize(content_root_->styles());	
+
 		object.content->serialize(content_root_->content());	
 		BOOST_FOREACH(const office_element_ptr & elm, object.content_styles)
 		{
@@ -189,6 +194,13 @@ void odf_conversion_context::start_text()
 	create_object();
 	create_element(L"office", L"text", objects_.back().content, this, true);
 }
+void odf_conversion_context::start_presentation()
+{
+	create_object();
+	create_element(L"office", L"presentation", objects_.back().content, this, true);
+
+	create_element(L"office", L"scripts", objects_.back().scripts, this);
+}
 void odf_conversion_context::create_object()
 {
 	_object obj;
@@ -220,6 +232,10 @@ void odf_conversion_context::end_spreadsheet()
 {
 	end_object();
 }
+void odf_conversion_context::end_presentation()
+{
+	end_object();
+}
 void odf_conversion_context::end_object()
 {
 	current_object_ = 0;//main
@@ -227,6 +243,11 @@ void odf_conversion_context::end_object()
 
 office_element_ptr & odf_conversion_context::get_current_object_element()
 {
+	if (objects_.empty())
+	{
+		create_object();
+	}
+
 	return objects_[current_object_].content;
 }
 
@@ -248,6 +269,7 @@ void odf_conversion_context::process_settings(_object & object, bool isRoot)
 void odf_conversion_context::process_styles(_object & object, bool isRoot)
 {
 	create_element(L"office", L"styles", object.styles, this, true);//общие стили
+	
 	object.style_context->process_office_styles(object.styles.back());
 	page_layout_context()->process_office_styles(object.styles.back());
 	
@@ -274,7 +296,24 @@ office_element_ptr odf_conversion_context::start_tabs()
 	create_element(L"style", L"tab-stops", temporary_.elm, this,true);
 	return temporary_.elm;
 }
+std::wstring odf_conversion_context::add_image(const std::wstring & image_file_name)
+{
+	if (image_file_name.empty()) return L"";
+	
+	std::wstring odf_ref_name ;	
+	mediaitems()->add_or_find(image_file_name,_mediaitems::typeImage, odf_ref_name);
 
+	return odf_ref_name;
+}
+std::wstring odf_conversion_context::add_media(const std::wstring & file_name)
+{
+	if (file_name.empty()) return L"";
+	
+	std::wstring odf_ref_name ;	
+	mediaitems()->add_or_find(file_name,_mediaitems::typeMedia, odf_ref_name);
+
+	return odf_ref_name;
+}
 void odf_conversion_context::add_tab(_CP_OPT(int) type, _CP_OPT(length) _length, _CP_OPT(int) leader)
 {
 	if (!temporary_.elm) return;

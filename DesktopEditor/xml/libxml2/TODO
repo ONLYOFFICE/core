@@ -221,7 +221,7 @@ Done:
   ID and removes it from the table.
 - push mode parsing i.e. non-blocking state based parser
   done, both for XML and HTML parsers. Use xmlCreatePushParserCtxt()
-  and DoctRenderer() and html counterparts.
+  and xmlParseChunk() and html counterparts.
   The tester program now has a --push option to select that parser 
   front-end. Douplicated tests to use both and check results are similar.
 

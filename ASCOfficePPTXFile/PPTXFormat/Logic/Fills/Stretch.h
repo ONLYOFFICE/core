@@ -61,6 +61,9 @@ namespace PPTX
 			}			
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
+				if ( oReader.IsEmptyNode() )
+					return;
+
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{

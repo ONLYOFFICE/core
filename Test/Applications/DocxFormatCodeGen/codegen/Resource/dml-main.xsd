@@ -1441,7 +1441,7 @@
       <xsd:group ref="EG_ShadeProperties" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="tileRect" type="CT_RelativeRect" minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
-    <xsd:attribute name="flip" type="ST_TileFlipMode" use="optional"/>
+    <xsd:attribute name="flip" type="ST_TileFlipMode" use="optional" default="none"/>
     <xsd:attribute name="rotWithShape" type="xsd:boolean" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_TileInfoProperties">
@@ -1449,7 +1449,7 @@
     <xsd:attribute name="ty" type="ST_Coordinate" use="optional"/>
     <xsd:attribute name="sx" type="ST_Percentage" use="optional"/>
     <xsd:attribute name="sy" type="ST_Percentage" use="optional"/>
-    <xsd:attribute name="flip" type="ST_TileFlipMode" use="optional"/>
+    <xsd:attribute name="flip" type="ST_TileFlipMode" use="optional" default="none"/>
     <xsd:attribute name="algn" type="ST_RectAlignment" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_StretchInfoProperties">
@@ -2118,7 +2118,7 @@
     </xsd:restriction>
   </xsd:simpleType>
   <xsd:complexType name="CT_LineEndProperties">
-    <xsd:attribute name="type" type="ST_LineEndType" use="optional"/>
+    <xsd:attribute name="type" type="ST_LineEndType" use="optional" default="none"/>
     <xsd:attribute name="w" type="ST_LineEndWidth" use="optional"/>
     <xsd:attribute name="len" type="ST_LineEndLength" use="optional"/>
   </xsd:complexType>
@@ -2896,7 +2896,7 @@
     <xsd:attribute name="u" type="ST_TextUnderlineType" use="optional"/>
     <xsd:attribute name="strike" type="ST_TextStrikeType" use="optional"/>
     <xsd:attribute name="kern" type="ST_TextNonNegativePoint" use="optional"/>
-    <xsd:attribute name="cap" type="ST_TextCapsType" use="optional"/>
+    <xsd:attribute name="cap" type="ST_TextCapsType" use="optional" default="none"/>
     <xsd:attribute name="spc" type="ST_TextPoint" use="optional"/>
     <xsd:attribute name="normalizeH" type="xsd:boolean" use="optional"/>
     <xsd:attribute name="baseline" type="ST_Percentage" use="optional"/>

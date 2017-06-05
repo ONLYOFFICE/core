@@ -1,0 +1,374 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>io</title>
+<meta name="GENERATOR" content="Modular DocBook HTML Stylesheet Version 1.79">
+<link rel="HOME" title="XML Security Library Reference Manual" href="index.html">
+<link rel="UP" title="XML Security Core Library API Reference." href="xmlsec-ref.html">
+<link rel="PREVIOUS" title="errors" href="xmlsec-errors.html">
+<link rel="NEXT" title="keyinfo" href="xmlsec-keyinfo.html">
+<style type="text/css">.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+    padding: 0.5em;
+}
+.programlisting {
+    background: #eeeeff;
+    border: solid 1px #aaaaff;
+    padding: 0.5em;
+}
+.variablelist {
+    padding: 4px;
+    margin-left: 3em;
+}
+.navigation {
+    background: #ffeeee;
+    border: solid 1px #ffaaaa;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.navigation a {
+    color: #770000;
+}
+.navigation a:visited {
+    color: #550000;
+}
+.navigation .title {
+    font-size: 200%;
+}</style>
+<style type="text/css">
+table.CALSTABLE > tbody > tr:nth-child(1) > td:nth-child(1) {
+    width: 20em;
+}
+.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+}
+.programlisting {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation a {
+    color: initial;
+}
+.navigation a:visited {
+    color: initial;
+}
+</style>
+</head>
+<body><table width="100%" valign="top"><tr valign="top">
+<td valign="top" align="left" width="210">
+<img src="../images/logo.gif" alt="XML Security Library" border="0"><p></p>
+<ul>
+<li><a href="../index.html">Home</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="../news.html">News</a></li>
+<li><a href="../documentation.html">Documentation</a></li>
+<ul>
+<li><a href="../faq.html">FAQ</a></li>
+<li><a href="../api/xmlsec-notes.html">Tutorial</a></li>
+<li><a href="../api/xmlsec-reference.html">API reference</a></li>
+<li><a href="../api/xmlsec-examples.html">Examples</a></li>
+</ul>
+<li><a href="../xmldsig.html">XML Digital Signature</a></li>
+<ul><li><a href="http://www.aleksey.com/xmlsec/xmldsig-verifier.html">Online Verifier</a></li></ul>
+<li><a href="../xmlenc.html">XML Encryption</a></li>
+<li><a href="../c14n.html">XML Canonicalization</a></li>
+<li><a href="../bugs.html">Reporting Bugs</a></li>
+<li><a href="http://www.aleksey.com/pipermail/xmlsec">Mailing list</a></li>
+<li><a href="../related.html">Related</a></li>
+<li><a href="../authors.html">Authors</a></li>
+</ul>
+<table width="100%">
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/"><img src="../images/libxml2-logo.png" alt="LibXML2" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/XSLT"><img src="../images/libxslt-logo.png" alt="LibXSLT" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://www.openssl.org/"><img src="../images/openssl-logo.png" alt="OpenSSL" border="0"></a></td>
+</tr>
+<!--Links - start--><!--Links - end-->
+</table>
+</td>
+<td valign="top"><table width="100%" valign="top"><tr><td valign="top" align="left" id="xmlsecContent">
+<table width="100%" class="navigation" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="xmlsec-errors.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="xmlsec-ref.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<th width="100%" align="center">XML Security Library Reference Manual</th>
+<td><a accesskey="n" href="xmlsec-keyinfo.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<h1>
+<a name="XMLSEC-IO"></a>io</h1>
+<div class="REFNAMEDIV">
+<a name="AEN7144"></a><h2>Name</h2>io -- Input/output support.</div>
+<div class="REFSECT1">
+<a name="XMLSEC-IO.FUNCTIONS"></a><h2>Functions</h2>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN7149"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<tbody>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-io.html#XMLSECIOINIT">xmlSecIOInit</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">void</span></font></td>
+<td>
+<a href="xmlsec-io.html#XMLSECIOSHUTDOWN">xmlSecIOShutdown</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">void</span></font></td>
+<td>
+<a href="xmlsec-io.html#XMLSECIOCLEANUPCALLBACKS">xmlSecIOCleanupCallbacks</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-io.html#XMLSECIOREGISTERDEFAULTCALLBACKS">xmlSecIORegisterDefaultCallbacks</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-io.html#XMLSECIOREGISTERCALLBACKS">xmlSecIORegisterCallbacks</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">xmlSecTransformId</span></font></td>
+<td>
+<a href="xmlsec-io.html#XMLSECTRANSFORMINPUTURIGETKLASS">xmlSecTransformInputURIGetKlass</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-io.html#XMLSECTRANSFORMINPUTURIOPEN">xmlSecTransformInputURIOpen</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-io.html#XMLSECTRANSFORMINPUTURICLOSE">xmlSecTransformInputURIClose</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT1">
+<a name="XMLSEC-IO.OTHER"></a><h2>Types and Values</h2>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN7210"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<tbody><tr>
+<td>#define</td>
+<td><a href="xmlsec-io.html#XMLSECTRANSFORMINPUTURIID">xmlSecTransformInputURIId</a></td>
+</tr></tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT1">
+<a name="XMLSEC-IO.DESCRIPTION"></a><h2>Description</h2>
+<p>Input/output support.</p>
+</div>
+<div class="REFSECT1">
+<a name="XMLSEC-IO.FUNCTIONS_DETAILS"></a><h2>Functions</h2>
+<div class="REFSECT2">
+<a name="XMLSECIOINIT"></a><h3>xmlSecIOInit ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecIOInit (<code class="PARAMETER"><span class="TYPE">void</span></code>);</pre>
+<p>The IO initialization (called from <a href="xmlsec-xmlsec.html#XMLSECINIT"><span class="TYPE">xmlSecInit</span></a> function).
+Applications should not call this function directly.</p>
+<div class="REFSECT3">
+<a name="AEN7234"></a><h4>Returns</h4>
+<p> 0 on success or a negative value otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECIOSHUTDOWN"></a><h3>xmlSecIOShutdown ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">void</span></font>
+xmlSecIOShutdown (<code class="PARAMETER"><span class="TYPE">void</span></code>);</pre>
+<p>The IO clenaup (called from <a href="xmlsec-xmlsec.html#XMLSECSHUTDOWN"><span class="TYPE">xmlSecShutdown</span></a> function).
+Applications should not call this function directly.</p>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECIOCLEANUPCALLBACKS"></a><h3>xmlSecIOCleanupCallbacks ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">void</span></font>
+xmlSecIOCleanupCallbacks (<code class="PARAMETER"><span class="TYPE">void</span></code>);</pre>
+<p>Clears the entire input callback table. this includes the
+compiled-in I/O.</p>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECIOREGISTERDEFAULTCALLBACKS"></a><h3>xmlSecIORegisterDefaultCallbacks ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecIORegisterDefaultCallbacks (<code class="PARAMETER"><span class="TYPE">void</span></code>);</pre>
+<p>Registers the default compiled-in I/O handlers.</p>
+<div class="REFSECT3">
+<a name="AEN7269"></a><h4>Returns</h4>
+<p> 0 on success or a negative value otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECIOREGISTERCALLBACKS"></a><h3>xmlSecIORegisterCallbacks ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecIORegisterCallbacks (<code class="PARAMETER"><font><span class="TYPE">xmlInputMatchCallback</span></font> matchFunc</code>,
+                           <code class="PARAMETER"><font><span class="TYPE">xmlInputOpenCallback</span></font> openFunc</code>,
+                           <code class="PARAMETER"><font><span class="TYPE">xmlInputReadCallback</span></font> readFunc</code>,
+                           <code class="PARAMETER"><font><span class="TYPE">xmlInputCloseCallback</span></font> closeFunc</code>);</pre>
+<p>Register a new set of I/O callback for handling parser input.</p>
+<div class="REFSECT3">
+<a name="AEN7292"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN7294"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>matchFunc</p></td>
+<td><p>the protocol match callback.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>openFunc</p></td>
+<td><p>the open stream callback.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>readFunc</p></td>
+<td><p>the read from stream callback.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>closeFunc</p></td>
+<td><p>the close stream callback.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN7321"></a><h4>Returns</h4>
+<p> the 0 on success or a negative value if an error occurs.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECTRANSFORMINPUTURIGETKLASS"></a><h3>xmlSecTransformInputURIGetKlass ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">xmlSecTransformId</span></font>
+xmlSecTransformInputURIGetKlass (<code class="PARAMETER"><span class="TYPE">void</span></code>);</pre>
+<p>The input uri transform klass. Reads binary data from an uri.</p>
+<div class="REFSECT3">
+<a name="AEN7334"></a><h4>Returns</h4>
+<p> input URI transform id.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECTRANSFORMINPUTURIOPEN"></a><h3>xmlSecTransformInputURIOpen ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecTransformInputURIOpen (<code class="PARAMETER"><a href="xmlsec-transforms.html#XMLSECTRANSFORM"><span class="TYPE">xmlSecTransformPtr</span></a> transform</code>,
+                             <code class="PARAMETER">const <font><span class="TYPE">xmlChar</span></font> *uri</code>);</pre>
+<p>Opens the given <code class="PARAMETER">uri</code>
+ for reading.</p>
+<div class="REFSECT3">
+<a name="AEN7352"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN7354"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>transform</p></td>
+<td><p>the pointer to IO transform.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>uri</p></td>
+<td><p>the URL to open.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN7369"></a><h4>Returns</h4>
+<p> 0 on success or a negative value otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECTRANSFORMINPUTURICLOSE"></a><h3>xmlSecTransformInputURIClose ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecTransformInputURIClose (<code class="PARAMETER"><a href="xmlsec-transforms.html#XMLSECTRANSFORM"><span class="TYPE">xmlSecTransformPtr</span></a> transform</code>);</pre>
+<p>Closes the given <code class="PARAMETER">transform</code>
+ and frees up resourses.</p>
+<div class="REFSECT3">
+<a name="AEN7384"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN7386"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody><tr>
+<td><p>transform</p></td>
+<td><p>the pointer to IO transform.</p></td>
+<td> </td>
+</tr></tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN7395"></a><h4>Returns</h4>
+<p> 0 on success or a negative value otherwise.</p>
+</div>
+</div>
+</div>
+<div class="REFSECT1">
+<a name="XMLSEC-IO.OTHER_DETAILS"></a><h2>Types and Values</h2>
+<div class="REFSECT2">
+<a name="XMLSECTRANSFORMINPUTURIID"></a><h3>xmlSecTransformInputURIId</h3>
+<pre class="PROGRAMLISTING">#define             xmlSecTransformInputURIId</pre>
+<p>The Input URI transform id.</p>
+</div>
+</div>
+<table class="navigation" width="100%" summary="Navigation footer" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td align="left"><a accesskey="p" href="xmlsec-errors.html"><b>&lt;&lt;&lt; errors</b></a></td>
+<td align="right"><a accesskey="n" href="xmlsec-keyinfo.html"><b>keyinfo &gt;&gt;&gt;</b></a></td>
+</tr></table>
+</td></tr></table></td>
+</tr></table></body>
+</html>

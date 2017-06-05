@@ -136,14 +136,18 @@ namespace DocFileFormat
 		}
 		return btWin32;
 	}
-	bool ParseEmbeddedEquation( const std::string & xmlString, std::wstring & newXmlString)
+	bool VMLPictureMapping::ParseEmbeddedEquation( const std::string & xmlString, std::wstring & newXmlString)
 	{
 		newXmlString.clear();
-        std::wstring sTempXmlFile = NSDirectory::CreateTempFileWithUniqueName(
-                                                    NSDirectory::GetTempPath(), L"emb");
 
-		sTempXmlFile += L".xml";
-		
+		std::wstring sTempFolder = m_ctx->_doc->m_sTempFolder;
+		if (sTempFolder.empty())
+		{
+            sTempFolder = NSFile::CFileBinary::GetTempPath();
+		}
+
+		std::wstring sTempXmlFile = NSDirectory::CreateTempFileWithUniqueName(sTempFolder, L"emb");
+
 		NSFile::CFileBinary file; 
 		file.CreateFileW(sTempXmlFile);
 		file.WriteFile((BYTE*)xmlString.c_str(), xmlString.size());
@@ -186,6 +190,7 @@ namespace DocFileFormat
 				if (res) break;
 			}
 		}
+		NSFile::CFileBinary::Remove(sTempXmlFile);
 		return res;
 	}
 //---------------------------------------------------------------
@@ -236,7 +241,7 @@ namespace DocFileFormat
 		std::wstring strHeight = FormatUtils::DoubleToWideString( height.ToPoints() );
 		std::wstring strStyle;
 	
-		std::list<OptionEntry> options;
+		std::vector<OptionEntryPtr> options;
 		
 		PictureFrameType type;
 		if ((pict->shapeContainer || pict->blipStoreEntry) && pict->shapeContainer->Children.size() > 0)
@@ -277,9 +282,9 @@ namespace DocFileFormat
 		}
 //todooo oбъединить с shape_mapping		
 
-		std::list<OptionEntry>::iterator end = options.end();
-		for (std::list<OptionEntry>::iterator iter = options.begin(); iter != end; ++iter)
+		for (size_t i = 0; i < options.size(); i++)
 		{
+			OptionEntryPtr & iter = options[i];
 			switch ( iter->pid )
 			{
 			case wzEquationXML:
@@ -287,7 +292,7 @@ namespace DocFileFormat
 					m_isEquation = true;
 					m_isEmbedded = true;
 					
-					m_embeddedData = std::string((char*)iter->opComplex, iter->op);
+					m_embeddedData = std::string((char*)iter->opComplex.get(), iter->op);
 
 					if (ParseEmbeddedEquation( m_embeddedData, m_equationXml))
 					{
@@ -297,8 +302,13 @@ namespace DocFileFormat
 			case metroBlob:
 				{
 					//встроенная неведомая хуйня
-					m_isEmbedded = true;
-					m_embeddedData = std::string((char*)iter->opComplex, iter->op);
+					m_isEmbedded	= true;
+					m_embeddedData	= std::string((char*)iter->opComplex.get(), iter->op);
+					
+					//if (ParseEmbeddedBlob( m_embeddedData, m_blobXml)) // todoooo
+					//{
+					//	m_isEmbedded = false;
+					//}
 				}break;
 //BORDERS
 			case borderBottomColor:

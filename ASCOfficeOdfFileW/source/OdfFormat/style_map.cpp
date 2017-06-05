@@ -32,16 +32,11 @@
 
 #include "style_map.h"
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/xmlchar.h>
-
 #include <cpdoccore/xml/attributes.h>
 
 
 namespace cpdoccore { 
-
-	using namespace odf_types;
 
 namespace odf_writer {
 

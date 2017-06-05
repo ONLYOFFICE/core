@@ -66,8 +66,6 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             virtual void fromXML(XmlUtils::CXmlNode& node);
 
-            virtual std::wstring toXML() const;
-
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(_T("a:effectStyle"));

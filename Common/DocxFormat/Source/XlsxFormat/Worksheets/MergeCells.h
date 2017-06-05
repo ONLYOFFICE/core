@@ -45,16 +45,17 @@ namespace OOX
 		class CMergeCell : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CMergeCell)
+			WritingElement_AdditionConstructors(CMergeCell)
 			CMergeCell()
 			{
 			}
 			virtual ~CMergeCell()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -64,7 +65,7 @@ namespace OOX
 				WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef.get());
 				writer.WriteString(_T("/>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -74,7 +75,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_MergeCell;
+				return et_x_MergeCell;
 			}
 
 		private:
@@ -96,15 +97,16 @@ namespace OOX
 		class CMergeCells  : public WritingElementWithChilds<CMergeCell>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CMergeCells)
+			WritingElement_AdditionConstructors(CMergeCells)
 			CMergeCells()
 			{
 			}
 			virtual ~CMergeCells()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -142,7 +144,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_MergeCells;
+				return et_x_MergeCells;
 			}
 		
 		private:

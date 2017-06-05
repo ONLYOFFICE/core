@@ -82,17 +82,6 @@ namespace PPTX
 				swAng	= node.GetAttribute(_T("swAng"));
 			}
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("wR"), wR);
-				oAttr.Write(_T("hR"), hR);
-				oAttr.Write(_T("stAng"), stAng);
-				oAttr.Write(_T("swAng"), swAng);
-
-				return XmlUtils::CreateNode(_T("a:arcTo"), oAttr);
-			}
-
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(_T("a:arcTo"));

@@ -39,13 +39,13 @@ namespace oox {
 
 std::wstring headers_footers::create_id(size_t i)
 {
-    return std::wstring(L"rHFId") + boost::lexical_cast<std::wstring>(i); 
+    return std::wstring(L"rHFId") + std::to_wstring(i); 
 }
 
 std::wstring headers_footers::create_name(size_t i, headers_footers::Type _Type)
 {
     return ((_Type == header || _Type == headerLeft || _Type == headerFirst) ?  std::wstring(L"header") : std::wstring(L"footer") )
-        + boost::lexical_cast<std::wstring>(i) + L".xml";
+        + std::to_wstring(i) + L".xml";
 }
 
 std::wstring headers_footers::add(const std::wstring & StyleName,
@@ -64,9 +64,10 @@ std::wstring headers_footers::add(const std::wstring & StyleName,
 	}
     instance_ptr inst = instance_ptr( new instance(id, Content, type, name) );
   
-	BOOST_FOREACH(const relationship & r, _rels.relationships())
+	std::vector<relationship> & rels = _rels.relationships();
+	for (size_t i = 0; i < rels.size(); i++)
     {
-		inst->rels_.add(r);
+		inst->rels_.add(rels[i]);
 	}
     instances_[StyleName].push_back(inst);
 	return id;

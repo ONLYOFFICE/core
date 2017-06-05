@@ -44,18 +44,31 @@
 #include "Shapes/oox_shapeConnectors.h"
 #include "Shapes/oox_shapeWordArt.h"
 #include "Shapes/oox_shapeCurvedArrows.h"
+#include "Shapes/oox_shapeCallouts.h"
+#include "Shapes/oox_shapeBents.h"
 
 #include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Drawing.h"
 
 namespace cpdoccore 
 {
 
+oox_shape::oox_shape()
+{
+	odf_type_name	= L"ooxml-non-primitive";
+}
+
 oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 {
 	switch (ooxPrstGeomType)
 	{
 	case SimpleTypes::shapetypeMathMultiply:		return boost::make_shared<oox_shape_mathMultiply>();
-	case SimpleTypes::shapetypeSun:					return boost::make_shared<oox_shape_sun>();
+	case SimpleTypes::shapetypeMathEqual:			return boost::make_shared<oox_shape_mathEqual>();
+	case SimpleTypes::shapetypeMathPlus:			return boost::make_shared<oox_shape_mathPlus>();
+	case SimpleTypes::shapetypeMathNotEqual:		return boost::make_shared<oox_shape_mathNotEqual>();
+	case SimpleTypes::shapetypeMathDivide:			return boost::make_shared<oox_shape_mathDivide>();
+	case SimpleTypes::shapetypeMathMinus:			return boost::make_shared<oox_shape_mathMinus>();
+	
+	case SimpleTypes::shapetypeRoundRect:			return boost::make_shared<oox_shape_roundRect>();
 	case SimpleTypes::shapetypeRound1Rect:			return boost::make_shared<oox_shape_round1Rect>();
 	case SimpleTypes::shapetypeRound2DiagRect:		return boost::make_shared<oox_shape_round2DiagRect>();
 	case SimpleTypes::shapetypeRound2SameRect:		return boost::make_shared<oox_shape_round2SameRect>();
@@ -63,23 +76,62 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 	case SimpleTypes::shapetypeSnip2DiagRect:		return boost::make_shared<oox_shape_snip2DiagRect>();
 	case SimpleTypes::shapetypeSnip2SameRect:		return boost::make_shared<oox_shape_snip2SameRect>();
 	case SimpleTypes::shapetypeSnipRoundRect:		return boost::make_shared<oox_shape_snipRoundRect>();
+	
 	case SimpleTypes::shapetypeStar6:				return boost::make_shared<oox_shape_star6>();
 	case SimpleTypes::shapetypeStar7:				return boost::make_shared<oox_shape_star7>();
 	case SimpleTypes::shapetypeStar10:				return boost::make_shared<oox_shape_star10>();
 	case SimpleTypes::shapetypeStar12:				return boost::make_shared<oox_shape_star12>();
 	case SimpleTypes::shapetypeStar16:				return boost::make_shared<oox_shape_star16>();
 	case SimpleTypes::shapetypeStar32:				return boost::make_shared<oox_shape_star32>();
+	case SimpleTypes::shapetypeSun:					return boost::make_shared<oox_shape_sun>();
+	
+	case SimpleTypes::shapetypeCircularArrow:		return boost::make_shared<oox_shape_CircularArrow>();
+	case SimpleTypes::shapetypeCurvedLeftArrow:		return boost::make_shared<oox_shape_CurvedLeftArrow>();
+	case SimpleTypes::shapetypeCurvedRightArrow:	return boost::make_shared<oox_shape_CurvedRightArrow>();
+	case SimpleTypes::shapetypeCurvedDownArrow:		return boost::make_shared<oox_shape_CurvedDownArrow>();
+	case SimpleTypes::shapetypeLeftCircularArrow:	return boost::make_shared<oox_shape_LeftCircularArrow>();
+	case SimpleTypes::shapetypeSwooshArrow:			return boost::make_shared<oox_shape_SwooshArrow>();
+	case SimpleTypes::shapetypeLeftArrow:			return boost::make_shared<oox_shape_LeftArrow>();
+	case SimpleTypes::shapetypeLeftRightArrow:		return boost::make_shared<oox_shape_LeftRightArrow>();
+	case SimpleTypes::shapetypeLeftUpArrow:			return boost::make_shared<oox_shape_LeftUpArrow>();
+	case SimpleTypes::shapetypeUpDownArrow:			return boost::make_shared<oox_shape_UpDownArrow>();
+	case SimpleTypes::shapetypeRightArrow:			return boost::make_shared<oox_shape_RightArrow>();
+	case SimpleTypes::shapetypeDownArrow:			return boost::make_shared<oox_shape_DownArrow>();
+	case SimpleTypes::shapetypeUpArrow:				return boost::make_shared<oox_shape_UpArrow>();
+	case SimpleTypes::shapetypeNotchedRightArrow:	return boost::make_shared<oox_shape_NotchedRightArrow>();
+
 	case SimpleTypes::shapetypeFunnel:				return boost::make_shared<oox_shape_Funnel>();
 	case SimpleTypes::shapetypeGear6:				return boost::make_shared<oox_shape_Gear6>();
 	case SimpleTypes::shapetypeGear9:				return boost::make_shared<oox_shape_Gear9>();
-	case SimpleTypes::shapetypeCircularArrow:		return boost::make_shared<oox_shape_CircularArrow>();
-	case SimpleTypes::shapetypeCurvedLeftArrow:		return boost::make_shared<oox_shape_curvedLeftArrow>();
-	case SimpleTypes::shapetypeCurvedDownArrow:		return boost::make_shared<oox_shape_curvedDownArrow>();
-	case SimpleTypes::shapetypeLeftCircularArrow:	return boost::make_shared<oox_shape_LeftCircularArrow>();
+	case SimpleTypes::shapetypeBlockArc:			return boost::make_shared<oox_shape_BlockArc>();
+	case SimpleTypes::shapetypeCorner:				return boost::make_shared<oox_shape_Corner>();
+	case SimpleTypes::shapetypeChord:				return boost::make_shared<oox_shape_Chord>();
+	case SimpleTypes::shapetypeChevron:				return boost::make_shared<oox_shape_Chevron>();
+	case SimpleTypes::shapetypeHomePlate:			return boost::make_shared<oox_shape_HomePlate>();
+	case SimpleTypes::shapetypeBevel:				return boost::make_shared<oox_shape_Bevel>();
+	case SimpleTypes::shapetypeArc:					return boost::make_shared<oox_shape_Arc>();
+	case SimpleTypes::shapetypeTrapezoid:			return boost::make_shared<oox_shape_Trapezoid>();
+	case SimpleTypes::shapetypeTriangle:			return boost::make_shared<oox_shape_Triangle>();
+	case SimpleTypes::shapetypeRtTriangle:			return boost::make_shared<oox_shape_RtTriangle>();
+	case SimpleTypes::shapetypeParallelogram:		return boost::make_shared<oox_shape_Parallelogram>();
+	case SimpleTypes::shapetypeDiamond:				return boost::make_shared<oox_shape_Diamond>();
+	case SimpleTypes::shapetypePlus:				return boost::make_shared<oox_shape_Plus>();
 
 	case SimpleTypes::shapetypePlaque:				return boost::make_shared<oox_shape_Plaque>();
 	case SimpleTypes::shapetypeDoubleWave:			return boost::make_shared<oox_shape_DoubleWave>();
-		
+	case SimpleTypes::shapetypePieWedge:			return boost::make_shared<oox_shape_PieWedge>();
+	case SimpleTypes::shapetypePie:					return boost::make_shared<oox_shape_Pie>();
+	case SimpleTypes::shapetypeDonut:				return boost::make_shared<oox_shape_Donut>();	
+	case SimpleTypes::shapetypeLeftRightRibbon:		return boost::make_shared<oox_shape_LeftRightRibbon>();	
+
+	case SimpleTypes::shapetypeFlowChartExtract:	return boost::make_shared<oox_shape_FlowChartExtract>();	
+
+	case SimpleTypes::shapetypeLeftArrowCallout:	return boost::make_shared<oox_shape_LeftArrowCallout>();	
+	case SimpleTypes::shapetypeRightArrowCallout:	return boost::make_shared<oox_shape_RightArrowCallout>();	
+	case SimpleTypes::shapetypeUpArrowCallout:		return boost::make_shared<oox_shape_UpArrowCallout>();	
+	case SimpleTypes::shapetypeDownArrowCallout:	return boost::make_shared<oox_shape_DownArrowCallout>();	
+
+	case SimpleTypes::shapetypeBentUpArrow:			return boost::make_shared<oox_shape_BentUpArrow>();	
 
 	//case (2001 + SimpleTypes::textshapetypeTextArchDown): 
 	//case (2001 + SimpleTypes::textshapetypeTextArchDownPour): 
@@ -125,7 +177,7 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 
 	default:
 		if (ooxPrstGeomType > 2000) return boost::make_shared<oox_shape_textPlain>();
-		else return boost::make_shared<oox_shape>();
+		else return oox_shape_ptr();
 		
 	}
 }

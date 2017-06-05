@@ -36,7 +36,6 @@
 #include "./../WrapperWritingElement.h"
 #include "NvGraphicFramePr.h"
 #include "Xfrm.h"
-#include "ShapeProperties.h"
 #include "Table/Table.h"
 #include "SmartArt.h"
 #include "Pic.h"
@@ -63,10 +62,12 @@ namespace PPTX
 			const GraphicFrame& operator =(XmlUtils::CXmlNode& node);
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);
+					bool fromXML3(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 					void fromXML2(XmlUtils::CXmlLiteReader& oReader);
 					bool fromXML3(XmlUtils::CXmlLiteReader& oReader);
 
+			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader);
 			void ReadAttributes3(XmlUtils::CXmlLiteReader& oReader);
 			
 			virtual std::wstring toXML() const;
@@ -80,20 +81,24 @@ namespace PPTX
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
+			bool IsEmpty()const;
+
 			std::wstring			m_namespace;
 
 			NvGraphicFramePr		nvGraphicFramePr;
 
 			nullable<Xfrm>			xfrm;
 
-			nullable_string			spid;
+			nullable_string			oleSpid;
+			nullable<Pic>			olePic;
+
             nullable<Table>			table;
 			nullable<SmartArt>		smartArt;
 			nullable<ChartRec>		chartRec;
-			nullable<Pic>			pic;
-			nullable<SpTreeElem>	element;
 
-			std::wstring GetVmlXmlBySpid(std::wstring & rels)	const;
+			SpTreeElem				element;
+
+			std::wstring GetVmlXmlBySpid(smart_ptr<OOX::IFileContainer> & rels)	const;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

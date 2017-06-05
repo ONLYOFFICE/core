@@ -43,16 +43,16 @@ namespace OOX
 	public:
 		HyperLink()
 		{
+			bHyperlink = true;
 		}
 		HyperLink(const CPath& uri)
 		{
+			bHyperlink = true;
 			read(uri);
 		}
 		~HyperLink()
 		{
 		}
-
-	public:
 		virtual const FileType type() const
 		{
 			return FileTypes::HyperLink;
@@ -65,6 +65,8 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
+
+		bool bHyperlink; // in pptx link to slide perhaps
 	};
 } // namespace OOX
 

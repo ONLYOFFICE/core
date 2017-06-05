@@ -1681,27 +1681,73 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual std::wstring     ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
                 return std::to_wstring(this->m_eValue );
 			}
 
 			SimpleType_FromString     (EPageSize)
-				SimpleType_Operator_Equal (CPageSize)
+			SimpleType_Operator_Equal (CPageSize)
+		};
+		
+		enum EPageUnits
+		{
+			mm		= 0,
+			cm		= 1,
+			inch	= 2,
+			pt		= 3,
+			px		= 4,
+			emu		= 5
+
+		};
+		template<EPageUnits eDefValue = mm>
+		class CPageUnits : public CSimpleType<EPageUnits, eDefValue>
+		{
+		public:
+			CPageUnits() {}
+
+            virtual EPageUnits FromString(std::wstring &sValue)
+			{
+					 if	(sValue == L"in")	this->m_eValue = inch;
+				else if (sValue == L"mm")	this->m_eValue = mm;
+				else if (sValue == L"cm")	this->m_eValue = cm;
+				else if (sValue == L"pt")	this->m_eValue = pt;
+				else if (sValue == L"px")	this->m_eValue = px;
+
+                return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const 
+			{
+                std::wstring sResult;
+                switch(this->m_eValue)
+				{
+                case mm:	sResult = L"mm";break;
+                case cm:	sResult = L"cm";break;
+                case pt:	sResult = L"pt";break;
+                case px:	sResult = L"px";break;
+                case inch:	sResult = L"in";break;
+				}
+				return sResult;
+			}
+
+			SimpleType_FromString     (EPageUnits)
+			SimpleType_Operator_Equal (CPageUnits)
 		};
 		enum ETotalsRowFunction
 		{
-			totalrowfunctionAverage	=  1,
-			totalrowfunctionCount =  2,
-			totalrowfunctionCountNums =  3,
-			totalrowfunctionCustom =  4,
-			totalrowfunctionMax =  5,
-			totalrowfunctionMin =  6,
-			totalrowfunctionNone =  7,
-			totalrowfunctionStdDev =  8,
-			totalrowfunctionSum =  9,
-			totalrowfunctionVar =  10
+			totalrowfunctionAverage		=  1,
+			totalrowfunctionCount		=  2,
+			totalrowfunctionCountNums	=  3,
+			totalrowfunctionCustom		=  4,
+			totalrowfunctionMax			=  5,
+			totalrowfunctionMin			=  6,
+			totalrowfunctionNone		=  7,
+			totalrowfunctionStdDev		=  8,
+			totalrowfunctionSum			=  9,
+			totalrowfunctionVar			=  10
 		};
+
 		template<ETotalsRowFunction eDefValue = totalrowfunctionNone>
 		class CTotalsRowFunction : public CSimpleType<ETotalsRowFunction, eDefValue>
 		{

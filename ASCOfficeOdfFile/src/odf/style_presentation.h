@@ -49,7 +49,6 @@ namespace cpdoccore {
 namespace odf_reader {
 
 
-// presentation:placeholder 
 class presentation_placeholder : public office_element_impl<presentation_placeholder>
 {
 public:
@@ -76,13 +75,34 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(presentation_placeholder);
+//-------------------------------------------------------------------------------------------
 
-//////////////////////////////////////////////
+class presentation_sound : public office_element_impl<presentation_sound>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeStylePresentationSound;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    odf_types::common_xlink_attlist common_xlink_attlist_;
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(presentation_sound);
+
+//-------------------------------------------------------------------------------------------
 class drawing_page_properties
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const drawing_page_properties & Other);
+   
+	void apply_from(const drawing_page_properties & Other);
 
 	odf_types::common_draw_fill_attlist		common_draw_fill_attlist_;
 	anim_transition_filter_attlist			anim_transition_filter_attlist_;
@@ -90,27 +110,28 @@ public:
 	_CP_OPT(odf_types::length_or_percent)	draw_fill_image_height_;
 	_CP_OPT(odf_types::length_or_percent)	draw_fill_image_width_;
 	
-	_CP_OPT(std::wstring)					draw_background_size_;//"border" or "full"
+	_CP_OPT(std::wstring)					draw_background_size_;			//"border" or "full"
 
-	_CP_OPT(std::wstring)					presentation_transition_type_;//manual, automatic, semi-automatic (переход отделен от эффектов кликом)
-	_CP_OPT(std::wstring)					presentation_transition_style_;//none, fade, move, uncover,clockwise, .... игнор если smil
-	_CP_OPT(std::wstring)					presentation_transition_speed_;//slow, medium, fast
+	_CP_OPT(std::wstring)					presentation_transition_type_;	//manual, automatic, semi-automatic (переход отделен от эффектов кликом)
+	_CP_OPT(std::wstring)					presentation_transition_style_;	//none, fade, move, uncover,clockwise, .... игнор если smil
+	_CP_OPT(std::wstring)					presentation_transition_speed_;	//slow, medium, fast
 	
 	_CP_OPT(bool)							presentation_display_footer_;
 	_CP_OPT(bool)							presentation_display_page_number_;
 	_CP_OPT(bool)							presentation_display_date_time_;
 	_CP_OPT(bool)							presentation_display_header_;
+	_CP_OPT(std::wstring)					presentation_page_duration_;
+
+	office_element_ptr						presentation_sound_;
 
 	//presentation:background-objects-visible
 	//presentation:background-visible
 	//style:repeat
-	//presentation:page-duration
 	//presentation:visibility.
-	//presentation:sound.
 	//draw:background-size
 
 };
-//style:drawing-page-properties
+
 class style_drawing_page_properties : public office_element_impl<style_drawing_page_properties>
 {
 public:

@@ -196,6 +196,17 @@ void NSPresentationEditor::CPPTXWriter::WriteContentTypes()
 <Default Extension=\"xml\" ContentType=\"application/xml\" />\
 <Default Extension=\"gif\" ContentType=\"image/gif\"/>\
 <Default Extension=\"emf\" ContentType=\"image/x-emf\"/>\
+<Default Extension=\"wav\" ContentType=\"audio/wav\"/>\
+<Default Extension=\"wma\" ContentType=\"audio/x-ms-wma\"/>\
+<Default Extension=\"mp3\" ContentType=\"audio/unknown\"/>\
+<Default Extension=\"m4a\" ContentType=\"audio/unknown\"/>\
+<Default Extension=\"wmv\" ContentType=\"video/x-ms-wmv\"/>\
+<Default Extension=\"avi\" ContentType=\"video/avi\"/>\
+<Default Extension=\"m4v\" ContentType=\"video/unknown\"/>\
+<Default Extension=\"mp4\" ContentType=\"video/unknown\"/>\
+<Default Extension=\"mov\" ContentType=\"video/unknown\"/>\
+<Default Extension=\"xls\" ContentType=\"application/vnd.ms-excel\"/>\
+<Default Extension=\"xlsx\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"/>\
 <Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\" />\
 <Default Extension=\"jpg\" ContentType=\"application/octet-stream\"/>");
 
@@ -206,40 +217,48 @@ void NSPresentationEditor::CPPTXWriter::WriteContentTypes()
 <Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\" />\
 <Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\" />");
 
-	int nThemes = (int)m_pDocument->m_arThemes.size();
-	int nIndexLayout = 0;
-	for (int nT = 0; nT < nThemes; ++nT)
+	int nIndexLayout = 1, nIndexTheme = 1;
+	
+	for (size_t nT = 0; nT < m_pDocument->m_arThemes.size(); nT++, nIndexTheme++)
 	{
-        strContentTypes += L"<Override PartName=\"/ppt/theme/theme" + std::to_wstring(nT + 1) +
-                L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\" />\
-<Override PartName=\"/ppt/slideMasters/slideMaster" + std::to_wstring(nT + 1) +
+        strContentTypes += L"<Override PartName=\"/ppt/theme/theme" + std::to_wstring(nIndexTheme) + \
+                L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\" />";
+		
+		strContentTypes += L"<Override PartName=\"/ppt/slideMasters/slideMaster" + std::to_wstring(nIndexTheme) + \
                 L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml\"/>";
 
 
-		int nCountL = (int)m_pDocument->m_arThemes[nT].m_arLayouts.size();
-		for (int nL = 0; nL < nCountL; ++nL, ++nIndexLayout)
+		for (size_t nL = 0; nL < m_pDocument->m_arThemes[nT].m_arLayouts.size(); nL++, nIndexLayout++)
 		{
-            strContentTypes += L"<Override PartName=\"/ppt/slideLayouts/slideLayout" + std::to_wstring(nIndexLayout + 1) +
+            strContentTypes += L"<Override PartName=\"/ppt/slideLayouts/slideLayout" + std::to_wstring(nIndexLayout) +
                 L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml\"/>";
 		}
 	}
-    std::wstring strNotesTheme = L"<Override PartName=\"/ppt/theme/theme" + std::to_wstring(nThemes + 1) + L".xml\" \
-ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>";
 
+	if (m_pDocument->m_pNotesMaster)
+	{
+		strContentTypes += L"<Override PartName=\"/ppt/theme/theme" + std::to_wstring(nIndexTheme++) + L".xml\" \
+	ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>";
+		strContentTypes += L"<Override PartName=\"/ppt/notesMasters/notesMaster1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml\"/>";
+	}
+	if (m_pDocument->m_pHandoutMaster)
+	{
+		strContentTypes += L"<Override PartName=\"/ppt/theme/theme" + std::to_wstring(nIndexTheme++) + L".xml\" \
+	ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>";
+		strContentTypes += L"<Override PartName=\"/ppt/handoutMasters/handoutMaster1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.handoutMaster+xml\"/>";
+	}
 
-	strContentTypes += strNotesTheme;
-	strContentTypes += _T("<Override PartName=\"/ppt/notesMasters/notesMaster1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml\"/>");
-
-	int nCountS = (int)m_pDocument->m_arSlides.size();
-	for (int nS = 0; nS < nCountS; ++nS)
+	for (size_t nS = 0; nS < m_pDocument->m_arSlides.size(); ++nS)
 	{
         strContentTypes += L"<Override PartName=\"/ppt/slides/slide" + std::to_wstring( nS + 1)
                 + L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slide+xml\"/>";
+	}
 
+	for (size_t nS = 0; nS < m_pDocument->m_arNotes.size(); ++nS)
+	{
         strContentTypes += L"<Override PartName=\"/ppt/notesSlides/notesSlide" + std::to_wstring( nS + 1)
                     + L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml\"/>";
 	}
-
 	strContentTypes += _T("</Types>");
 
 	CFile oFile;
@@ -262,9 +281,9 @@ void NSPresentationEditor::CPPTXWriter::WriteApp(CFile& oFile)
 	oFile.WriteStringUTF8(str1);
 
     oFile.WriteStringUTF8(L"<Slides>" + std::to_wstring(m_pDocument->m_arSlides.size()) + L"</Slides>");
+    oFile.WriteStringUTF8(L"<Notes>" + std::to_wstring(m_pDocument->m_arNotes.size()) + L"</Notes>");
 
-    oFile.WriteStringUTF8(L"<Notes>0</Notes>\
-                          <HiddenSlides>0</HiddenSlides>\
+    oFile.WriteStringUTF8(L"<HiddenSlides>0</HiddenSlides>\
                           <MMClips>2</MMClips>\
                           <ScaleCrop>false</ScaleCrop>\
                           <HeadingPairs>\
@@ -299,7 +318,7 @@ void NSPresentationEditor::CPPTXWriter::WriteApp(CFile& oFile)
 <LinksUpToDate>false</LinksUpToDate>\
 <SharedDoc>false</SharedDoc>\
 <HyperlinksChanged>false</HyperlinksChanged>\
-<AppVersion>1.0000</AppVersion>\
+<AppVersion>4.4000</AppVersion>\
 </Properties>");
 
 	strMemory += str5;
@@ -342,12 +361,14 @@ void NSPresentationEditor::CPPTXWriter::WritePresInfo()
 	// presentation.xml + _rels/presentation.xml.rels
     std::wstring strPresRels;
 
-    std::wstring strPresMasters	= _T("");
-    std::wstring strPresSlides	= _T("");
+    std::wstring strPresMasters;
+    std::wstring strPresSlides;
+	std::wstring strNotesIDs;
+    std::wstring strHandoutIDs;
 
 	size_t nCountLayouts = 0;
-	size_t nCountThemes = m_pDocument->m_arThemes.size();
-	for (size_t nIndexTheme = 0; nIndexTheme < nCountThemes; ++nIndexTheme)
+
+	for (size_t nIndexTheme = 0; nIndexTheme < m_pDocument->m_arThemes.size(); ++nIndexTheme)
 	{
         strPresRels += L"<Relationship Id=\"rId" + std::to_wstring(2 * nIndexTheme + 1) +
                 L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster\" Target=\"slideMasters/slideMaster" +
@@ -363,9 +384,21 @@ void NSPresentationEditor::CPPTXWriter::WritePresInfo()
 		nCountLayouts += 1;
 	}
 
-	int nCurrentRels = (int)(2 * nCountThemes + 1);
-	size_t nCountSlides = m_pDocument->m_arSlides.size();
-	for (size_t nIndexSlide = 0; nIndexSlide < nCountSlides; ++nIndexSlide, ++nCurrentRels)
+	int nCurrentRels = (int)(2 * m_pDocument->m_arThemes.size() + 1);
+    	
+	if (m_pDocument->m_pNotesMaster)
+	{
+		strNotesIDs = L"<p:notesMasterIdLst><p:notesMasterId r:id=\"rId" + std::to_wstring(nCurrentRels) + L"\"/></p:notesMasterIdLst>";
+		strPresRels += L"<Relationship Id=\"rId" + std::to_wstring(nCurrentRels) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"notesMasters/notesMaster1.xml\"/>";
+		++nCurrentRels;
+	}
+	if (m_pDocument->m_pHandoutMaster)
+	{
+		strHandoutIDs = L"<p:handoutMasterIdLst><p:handoutMasterId r:id=\"rId" + std::to_wstring(nCurrentRels) + L"\"/></p:handoutMasterIdLst>";
+		strPresRels += L"<Relationship Id=\"rId" + std::to_wstring(nCurrentRels) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/handoutMaster\" Target=\"handoutMasters/handoutMaster1.xml\"/>";
+		++nCurrentRels;
+	}	
+	for (size_t nIndexSlide = 0; nIndexSlide < m_pDocument->m_arSlides.size(); ++nIndexSlide, ++nCurrentRels)
 	{
         strPresRels += L"<Relationship Id=\"rId" + std::to_wstring(nCurrentRels) +
                        L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"slides/slide" +
@@ -374,17 +407,12 @@ void NSPresentationEditor::CPPTXWriter::WritePresInfo()
         strPresSlides += L"<p:sldId id=\"" + std::to_wstring(256 + nIndexSlide) + L"\" r:id=\"rId" + std::to_wstring(nCurrentRels) + L"\"/>";
 	}
 
-    std::wstring strNotesIDs = L"<p:notesMasterIdLst><p:notesMasterId r:id=\"rId" + std::to_wstring(nCurrentRels) + L"\"/></p:notesMasterIdLst>";
+    strPresRels += L"<Relationship Id=\"rId" + std::to_wstring(nCurrentRels++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/presProps\" Target=\"presProps.xml\"/>";
+    strPresRels += L"<Relationship Id=\"rId" + std::to_wstring(nCurrentRels++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/tableStyles\" Target=\"tableStyles.xml\"/>";
+    strPresRels += L"<Relationship Id=\"rId" + std::to_wstring(nCurrentRels++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/viewProps\" Target=\"viewProps.xml\"/>";
 
-    std::wstring strRels0 = L"<Relationship Id=\"rId" + std::to_wstring(nCurrentRels) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"notesMasters/notesMaster1.xml\"/>";
-
-	++nCurrentRels;
-
-    std::wstring strRels1 = L"<Relationship Id=\"rId" + std::to_wstring(nCurrentRels++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/presProps\" Target=\"presProps.xml\"/>";
-    std::wstring strRels2 = L"<Relationship Id=\"rId" + std::to_wstring(nCurrentRels++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/tableStyles\" Target=\"tableStyles.xml\"/>";
-    std::wstring strRels3 = L"<Relationship Id=\"rId" + std::to_wstring(nCurrentRels++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/viewProps\" Target=\"viewProps.xml\"/>";
-
-	strPresRels = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">") + strPresRels + strRels0 + strRels1 + strRels2 + strRels3 + _T("</Relationships>");
+	strPresRels = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">" 
+		+ strPresRels + L"</Relationships>";
 
     std::wstring strPptRels = m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("_rels");
 
@@ -399,7 +427,8 @@ void NSPresentationEditor::CPPTXWriter::WritePresInfo()
             L"\" cy=\"" + std::to_wstring(m_pDocument->m_oInfo.m_lUnitsHor) + L"\"/>";
 
     std::wstring strDefaultTextStyle = _T("<p:defaultTextStyle>");
-    if (m_pDocument->m_arThemes.size() > 0)
+   
+	if (m_pDocument->m_arThemes.size() > 0)
 	{
 		strDefaultTextStyle += CStylesWriter::ConvertStyles(m_pDocument->m_arThemes[0].m_pStyles[0], m_pDocument->m_oInfo, 9);
 	}
@@ -414,6 +443,7 @@ void NSPresentationEditor::CPPTXWriter::WritePresInfo()
 		strPres += _T(">");
 		strPres += _T("<p:sldMasterIdLst>") + strPresMasters + _T("</p:sldMasterIdLst>");
 		strPres += strNotesIDs ;
+		strPres += strHandoutIDs ;
 		strPres +=_T("<p:sldIdLst>") + strPresSlides + _T("</p:sldIdLst>");
 		strPres += strSizePres;
 		strPres += strDefaultTextStyle;
@@ -435,79 +465,73 @@ void NSPresentationEditor::CPPTXWriter::WriteAll()
     NSDirectory::CreateDirectory(strPptDirectory + _T("slideLayouts"));
     NSDirectory::CreateDirectory(strPptDirectory + _T("slideLayouts")		+ FILE_SEPARATOR_STR + _T("_rels"));
     NSDirectory::CreateDirectory(strPptDirectory + _T("slides"));
-    NSDirectory::CreateDirectory(strPptDirectory + _T("slides")			+ FILE_SEPARATOR_STR + _T("_rels"));
-    NSDirectory::CreateDirectory(strPptDirectory + _T("notesMasters"));
-    NSDirectory::CreateDirectory(strPptDirectory + _T("notesMasters")		+ FILE_SEPARATOR_STR + _T("_rels"));
-    NSDirectory::CreateDirectory(strPptDirectory + _T("notesSlides"));
-    NSDirectory::CreateDirectory(strPptDirectory + _T("notesSlides")		+ FILE_SEPARATOR_STR + _T("_rels"));
-	
-    std::wstring strNotesTheme = L"theme" + std::to_wstring((int)m_pDocument->m_arThemes.size() + 1) + L".xml";
-	strNotesTheme = strPptDirectory + _T("theme") + FILE_SEPARATOR_STR + strNotesTheme;
-
-	Writers::DefaultNotesThemeWriter writerNotesTheme;
-	writerNotesTheme.Write( strNotesTheme);
-
-    std::wstring strNotesMaster	= strPptDirectory + _T("notesMasters") + FILE_SEPARATOR_STR + _T("notesMaster1.xml");
-	Writers::DefaultNotesMasterWriter writerNotesMaster;
-	writerNotesMaster.Write(strNotesMaster);
-
-    std::wstring strNotesMasterRels = strPptDirectory + _T("notesMasters") + FILE_SEPARATOR_STR +_T("_rels");
-    NSDirectory::CreateDirectory(strNotesMasterRels);
-
-    std::wstring strThemeNotesNum = std::to_wstring((int)m_pDocument->m_arThemes.size() + 1);
-	
-    std::wstring strVal = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
-<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"../theme/theme") + strThemeNotesNum + _T(".xml\"/></Relationships>");
-	
-    std::wstring strNotesMasterRelsFile = strNotesMasterRels+ FILE_SEPARATOR_STR + _T("notesMaster1.xml.rels");
-	CFile oFileRels;
-	oFileRels.CreateFile(strNotesMasterRelsFile);
-	oFileRels.WriteStringUTF8(strVal);
-	oFileRels.CloseFile();
-	// -----------------------------------------------------
-
+    NSDirectory::CreateDirectory(strPptDirectory + _T("slides")				+ FILE_SEPARATOR_STR + _T("_rels"));
+    
+	if (m_pDocument->m_pHandoutMaster)
+	{
+		NSDirectory::CreateDirectory(strPptDirectory + _T("handoutMasters"));
+		NSDirectory::CreateDirectory(strPptDirectory + _T("handoutMasters")	+ FILE_SEPARATOR_STR + _T("_rels"));
+	}
+	if (m_pDocument->m_pNotesMaster)
+	{
+		NSDirectory::CreateDirectory(strPptDirectory + _T("notesMasters"));
+		NSDirectory::CreateDirectory(strPptDirectory + _T("notesMasters")	+ FILE_SEPARATOR_STR + _T("_rels"));
+	}
+	if (!m_pDocument->m_arNotes.empty())
+	{
+		NSDirectory::CreateDirectory(strPptDirectory + _T("notesSlides"));
+		NSDirectory::CreateDirectory(strPptDirectory + _T("notesSlides")	+ FILE_SEPARATOR_STR + _T("_rels"));
+	}
 	WriteThemes();
 	
 	WriteSlides();
+	WriteNotes();
 }
 
 void NSPresentationEditor::CPPTXWriter::WriteThemes()
 {
-    std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
+	int nStartLayout = 0, nIndexTheme = 0;
 
-	int nCount = (int)m_pDocument->m_arThemes.size();
-	int nStartLayout = 0;
-
-	for (int nIndexTheme = 0; nIndexTheme < nCount; ++nIndexTheme)
+	for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
 	{
-		CTheme* pTheme = &m_pDocument->m_arThemes[nIndexTheme];
-		
-        std::wstring strThemeFile = L"theme" + std::to_wstring(nIndexTheme + 1) + L".xml";
-		strThemeFile = strPptDirectory + _T("theme") + FILE_SEPARATOR_STR + strThemeFile;
-		
-		CFile oFile;
-		oFile.CreateFile(strThemeFile);
+		WriteTheme(&m_pDocument->m_arThemes[i], nIndexTheme, nStartLayout, 1);
+	}
 
-		NSPresentationEditor::CStringWriter oStringWriter;
+	WriteTheme(m_pDocument->m_pNotesMaster, nIndexTheme, nStartLayout, 2);
+	WriteTheme(m_pDocument->m_pHandoutMaster, nIndexTheme, nStartLayout, 3);
+}
 
-		oStringWriter.WriteString(std::wstring(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><a:theme xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" name=\""));
-		oStringWriter.WriteStringXML(pTheme->m_sThemeName);
-		oStringWriter.WriteString(std::wstring(L"\"><a:themeElements>"));
+void NSPresentationEditor::CPPTXWriter::WriteTheme(CTheme* pTheme, int & nIndexTheme, int & nStartLayout, int Type)
+{		
+	if (!pTheme) return;
+
+	std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
 	
-		WriteColorScheme(oStringWriter, L"Default", pTheme->m_arColorScheme);
+	std::wstring strThemeFile = L"theme" + std::to_wstring(nIndexTheme + 1) + L".xml";
+	strThemeFile = strPptDirectory + _T("theme") + FILE_SEPARATOR_STR + strThemeFile;
+	
+	CFile oFile;
+	oFile.CreateFile(strThemeFile);
 
-		oStringWriter.WriteString(std::wstring(L"<a:fontScheme name=\"default\"><a:majorFont><a:latin typeface=\""));
-		oStringWriter.WriteStringXML(pTheme->m_arFonts[0].Name);
-		oStringWriter.WriteString(std::wstring(L"\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/></a:majorFont>"));
+	NSPresentationEditor::CStringWriter oStringWriter;
 
-		oStringWriter.WriteString(std::wstring(L"<a:minorFont><a:latin typeface=\""));
-		
-		if (pTheme->m_arFonts.size() >1 )	oStringWriter.WriteString(pTheme->m_arFonts[1].Name);
-		else oStringWriter.WriteStringXML(pTheme->m_arFonts[0].Name);
+	oStringWriter.WriteString(std::wstring(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><a:theme xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" name=\""));
+	oStringWriter.WriteStringXML(pTheme->m_sThemeName);
+	oStringWriter.WriteString(std::wstring(L"\"><a:themeElements>"));
 
-		oStringWriter.WriteString(std::wstring(L"\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/></a:minorFont>"));
-		oStringWriter.WriteString(std::wstring(L"</a:fontScheme>"));
+	WriteColorScheme(oStringWriter, L"Default", pTheme->m_arColorScheme);
+
+	oStringWriter.WriteString(std::wstring(L"<a:fontScheme name=\"default\"><a:majorFont><a:latin typeface=\""));
+	oStringWriter.WriteStringXML(pTheme->m_arFonts[0].Name);
+	oStringWriter.WriteString(std::wstring(L"\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/></a:majorFont>"));
+
+	oStringWriter.WriteString(std::wstring(L"<a:minorFont><a:latin typeface=\""));
+	
+	if (pTheme->m_arFonts.size() > 1 )	oStringWriter.WriteString	(pTheme->m_arFonts[1].Name);
+	else								oStringWriter.WriteStringXML(pTheme->m_arFonts[0].Name);
+
+	oStringWriter.WriteString(std::wstring(L"\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/></a:minorFont>"));
+	oStringWriter.WriteString(std::wstring(L"</a:fontScheme>"));
  
 		oStringWriter.WriteString(std::wstring(L"<a:fmtScheme name=\"Default\">\
 <a:fillStyleLst><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:gradFill rotWithShape=\"1\"><a:gsLst><a:gs pos=\"0\"><a:schemeClr val=\"phClr\">\
@@ -536,58 +560,67 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 <a:shade val=\"30000\"/><a:satMod val=\"200000\"/></a:schemeClr></a:gs></a:gsLst><a:path path=\"circle\">\
 <a:fillToRect l=\"50000\" t=\"50000\" r=\"50000\" b=\"50000\"/></a:path></a:gradFill></a:bgFillStyleLst></a:fmtScheme>"));
 
-		oStringWriter.WriteString(std::wstring(L"</a:themeElements><a:objectDefaults/>"));
-		oStringWriter.WriteString(std::wstring(L"<a:extraClrSchemeLst>"));
+	oStringWriter.WriteString(std::wstring(L"</a:themeElements><a:objectDefaults/>"));
+	oStringWriter.WriteString(std::wstring(L"<a:extraClrSchemeLst>"));
+	
+	for (size_t i = 0 ; i < pTheme->m_arExtraColorScheme.size(); i++)
+	{
+		std::wstring str = L" " + std::to_wstring(i + 1);
+		WriteColorScheme(oStringWriter, pTheme->m_sThemeName + str, pTheme->m_arExtraColorScheme[i], true); //extra
+	}
+	
+	oStringWriter.WriteString(std::wstring(L"</a:extraClrSchemeLst>"));
+	oStringWriter.WriteString(std::wstring(L"</a:theme>"));
+
+	oFile.WriteStringUTF8(oStringWriter.GetData());
+	oFile.CloseFile();
+
+	CRelsGenerator oRels(&m_oManager);
+	int nCountLayouts = (int)pTheme->m_arLayouts.size();
+	oRels.StartMaster(nIndexTheme, nStartLayout, nCountLayouts);
 		
-		for (int i = 0 ; i < pTheme->m_arExtraColorScheme.size(); i++)
-		{
-			std::wstring str = L" " + std::to_wstring(i + 1);
-			WriteColorScheme(oStringWriter, pTheme->m_sThemeName + str, pTheme->m_arExtraColorScheme[i], true); //extra
-		}
-		
-		oStringWriter.WriteString(std::wstring(L"</a:extraClrSchemeLst>"));
-		oStringWriter.WriteString(std::wstring(L"</a:theme>"));
+	CStringWriter oWriter;
+	oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
+	
+	if (Type == 1)
+	{
+		oWriter.WriteString(L"<p:sldMaster xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">");
+	}
+	else if (Type == 2)
+	{
+		oWriter.WriteString(L"<p:notesMaster xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">");
+	}
+	else if (Type == 3)
+	{
+		oWriter.WriteString(L"<p:handoutMaster xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">");
+	}
+	oWriter.WriteString(L"<p:cSld>");
 
-		oFile.WriteStringUTF8(oStringWriter.GetData());
-		oFile.CloseFile();
-
-		// теперь masterslide
-		CRelsGenerator oRels(&m_oManager);
-		int nCountLayouts = (int)pTheme->m_arLayouts.size();
-		
-		oRels.StartMaster(nIndexTheme, nStartLayout, nCountLayouts);
-
-		CStringWriter oWriter;
-        std::wstring str1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
-<p:sldMaster xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">\
-<p:cSld>");
-		oWriter.WriteString(str1);
-
-		if (pTheme->m_bIsBackground)
-		{
-			WriteBackground(oWriter, oRels, pTheme->m_oBackground);
-		}
-        std::wstring strElems = _T("<p:spTree><p:nvGrpSpPr><p:cNvPr id=\"1\" name=\"\"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr>\
+	if (pTheme->m_bIsBackground)
+	{
+		WriteBackground(oWriter, oRels, pTheme->m_oBackground);
+	}
+    oWriter.WriteString(L"<p:spTree><p:nvGrpSpPr><p:cNvPr id=\"1\" name=\"\"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr>\
 <a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr>");
-		oWriter.WriteString(strElems);
 
-		size_t nElements = pTheme->m_arElements.size();
-		for (size_t nEl = 0; nEl < nElements; ++nEl)
-		{
-			if (isBodyPlaceholder(pTheme->m_arElements[nEl]->m_lPlaceholderType))
-				pTheme->m_arElements[nEl]->m_lPlaceholderType =100; //body тип прописывать !!
+	for (size_t nEl = 0; nEl < pTheme->m_arElements.size(); ++nEl)
+	{
+		if (isBodyPlaceholder(pTheme->m_arElements[nEl]->m_lPlaceholderType))
+			pTheme->m_arElements[nEl]->m_lPlaceholderType =100; //body тип прописывать !!
 
-			if (pTheme->m_arElements[nEl]->m_bBoundsEnabled == false)
-				continue;
-			
-			WriteElement(oWriter, oRels, pTheme->m_arElements[nEl]);
-		}
+		if (pTheme->m_arElements[nEl]->m_bBoundsEnabled == false)
+			continue;
+		
+		WriteElement(oWriter, oRels, pTheme->m_arElements[nEl]);
+	}
 
-		oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
+	oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
 
-        std::wstring strOverrideColorScheme = _T("<p:clrMap bg1=\"lt1\" tx1=\"dk1\" bg2=\"lt2\" tx2=\"dk2\" accent1=\"accent1\" accent2=\"accent2\" accent3=\"accent3\" accent4=\"accent4\" accent5=\"accent5\" accent6=\"accent6\" hlink=\"hlink\" folHlink=\"folHlink\"/>");
-		oWriter.WriteString(strOverrideColorScheme);
+    std::wstring strOverrideColorScheme = _T("<p:clrMap bg1=\"lt1\" tx1=\"dk1\" bg2=\"lt2\" tx2=\"dk2\" accent1=\"accent1\" accent2=\"accent2\" accent3=\"accent3\" accent4=\"accent4\" accent5=\"accent5\" accent6=\"accent6\" hlink=\"hlink\" folHlink=\"folHlink\"/>");
+	oWriter.WriteString(strOverrideColorScheme);
 
+	if (Type == 1)
+	{	
 		oWriter.WriteString(std::wstring(L"<p:sldLayoutIdLst>"));
 
 		size_t __nCountLayouts = 0;
@@ -599,17 +632,19 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 		}
 
 		oWriter.WriteString(std::wstring(L"</p:sldLayoutIdLst>"));
+	}
 
-		if (pTheme->m_bHasDate || pTheme->m_bHasFooter || pTheme->m_bHasSlideNumber)
-		{
-			oWriter.WriteString(std::wstring(L"<p:hf"));
-			if (!pTheme->m_bHasDate)		oWriter.WriteString(std::wstring(L" dt=\"0\""));
-			if (!pTheme->m_bHasSlideNumber) oWriter.WriteString(std::wstring(L" sldNum=\"0\""));
-											oWriter.WriteString(std::wstring(L" hdr=\"0\""));
-			if (!pTheme->m_bHasFooter)		oWriter.WriteString(std::wstring(L" ftr=\"0\""));
-			oWriter.WriteString(std::wstring(L"/>"));
-		}
-
+	if (pTheme->m_bHasDate || pTheme->m_bHasFooter || pTheme->m_bHasSlideNumber)
+	{
+		oWriter.WriteString(std::wstring(L"<p:hf"));
+		if (!pTheme->m_bHasDate)		oWriter.WriteString(std::wstring(L" dt=\"0\""));
+		if (!pTheme->m_bHasSlideNumber) oWriter.WriteString(std::wstring(L" sldNum=\"0\""));
+										oWriter.WriteString(std::wstring(L" hdr=\"0\""));
+		if (!pTheme->m_bHasFooter)		oWriter.WriteString(std::wstring(L" ftr=\"0\""));
+		oWriter.WriteString(std::wstring(L"/>"));
+	}
+	if (Type == 1)
+	{	
 		oWriter.WriteString(std::wstring(L"<p:txStyles>"));
 
 		oWriter.WriteString(std::wstring(L"<p:titleStyle>"));
@@ -624,25 +659,57 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 		CStylesWriter::ConvertStyles(pTheme->m_pStyles[3], pTheme->m_oInfo, oWriter, 9);
 		oWriter.WriteString(std::wstring(L"</p:otherStyle>"));
 		
-		oWriter.WriteString(std::wstring(L"</p:txStyles></p:sldMaster>"));
-
-        std::wstring strSlideMasterFile = L"slideMaster" + std::to_wstring(nIndexTheme + 1) + L".xml";
-		strSlideMasterFile = strPptDirectory + _T("slideMasters") + FILE_SEPARATOR_STR + strSlideMasterFile;
-
-		oFile.CreateFile(strSlideMasterFile);
-        std::wstring strMaster = oWriter.GetData();
-		oFile.WriteStringUTF8(strMaster);
-		oFile.CloseFile();
-
-		oRels.CloseRels();
-
-        std::wstring strSlideMasterRelsFile = L"slideMaster" + std::to_wstring(nIndexTheme + 1) + L".xml.rels";
-		strSlideMasterRelsFile = strPptDirectory + _T("slideMasters") + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + strSlideMasterRelsFile;
-
-		oRels.SaveRels(strSlideMasterRelsFile);				
-
-		nStartLayout += nCountLayouts;
+		oWriter.WriteString(std::wstring(L"</p:txStyles>"));
 	}
+	else if (Type == 2)
+	{	
+		oWriter.WriteString(std::wstring(L"<p:notesStyle>"));
+		CStylesWriter::ConvertStyles(pTheme->m_pStyles[1], pTheme->m_oInfo, oWriter, 9);
+		oWriter.WriteString(std::wstring(L"</p:notesStyle>"));
+	}
+
+	std::wstring strSlideMasterFile;
+	std::wstring strSlideMasterRelsFile;
+	if (Type == 1)
+	{
+		oWriter.WriteString(std::wstring(L"</p:sldMaster>"));
+		
+		strSlideMasterFile = L"slideMaster" + std::to_wstring(nIndexTheme + 1) + L".xml";
+		strSlideMasterFile = strPptDirectory + _T("slideMasters") + FILE_SEPARATOR_STR + strSlideMasterFile;
+		
+		strSlideMasterRelsFile = L"slideMaster" + std::to_wstring(nIndexTheme + 1) + L".xml.rels";
+		strSlideMasterRelsFile = strPptDirectory + _T("slideMasters") + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + strSlideMasterRelsFile;
+	}
+	else if (Type == 2)
+	{
+		oWriter.WriteString(std::wstring(L"</p:notesMaster>"));
+	
+		strSlideMasterFile = L"notesMaster1.xml";
+		strSlideMasterFile = strPptDirectory + _T("notesMasters") + FILE_SEPARATOR_STR + strSlideMasterFile;
+		
+		strSlideMasterRelsFile = L"notesMaster1.xml.rels";
+		strSlideMasterRelsFile = strPptDirectory + _T("notesMasters") + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + strSlideMasterRelsFile;
+	}
+	else if (Type == 3)
+	{
+		oWriter.WriteString(std::wstring(L"</p:handoutMaster>"));
+	
+		strSlideMasterFile = L"handoutMaster1.xml";
+		strSlideMasterFile = strPptDirectory + _T("handoutMasters") + FILE_SEPARATOR_STR + strSlideMasterFile;
+		
+		strSlideMasterRelsFile = L"handoutMaster1.xml.rels";
+		strSlideMasterRelsFile = strPptDirectory + _T("handoutMasters") + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + strSlideMasterRelsFile;
+	}
+	oFile.CreateFile(strSlideMasterFile);
+		std::wstring strMaster = oWriter.GetData();
+		oFile.WriteStringUTF8(strMaster);
+	oFile.CloseFile();
+
+	oRels.CloseRels();
+	oRels.SaveRels(strSlideMasterRelsFile);				
+
+	nStartLayout += nCountLayouts;
+	nIndexTheme++;
 }
 
 void NSPresentationEditor::CPPTXWriter::WriteColorScheme(CStringWriter& oStringWriter, const std::wstring & name, const std::vector<CColor> & colors, bool extra)
@@ -712,25 +779,14 @@ void NSPresentationEditor::CPPTXWriter::WriteBackground(CStringWriter& oWriter, 
 
 void NSPresentationEditor::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerator& oRels, IElement* pElement, CLayout* pLayout)
 {
-	CImageElement* pImageElem = dynamic_cast<CImageElement*>(pElement);
-	if (pImageElem)
-	{
-		pImageElem->m_oMetric = m_pDocument->m_oInfo;
-		pImageElem->NormalizeCoordsByMetric();
+	if (!pElement) return;
 
-		m_pShapeWriter->SetShape(pImageElem);
-	}
+	pElement->m_oMetric = m_pDocument->m_oInfo;
+	pElement->NormalizeCoordsByMetric();
 
-	CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElement);
-	if (pShapeElem)
-	{
-		pShapeElem->m_oMetric = m_pDocument->m_oInfo;
-		pShapeElem->NormalizeCoordsByMetric();
+	bool bObject = m_pShapeWriter->SetElement(pElement);
 
-		m_pShapeWriter->SetShape(pShapeElem);
-	}
-
-	if (pImageElem || pShapeElem)
+	if (bObject)
 	{
 		m_pShapeWriter->SetRelsGenerator(&oRels);
 
@@ -767,6 +823,7 @@ void NSPresentationEditor::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRe
 void NSPresentationEditor::CPPTXWriter::WriteLayout(CLayout& oLayout, int nIndexLayout, int nStartLayout, int nIndexTheme)
 {
 	CStringWriter oWriter;
+	
 	CRelsGenerator oRels(&m_oManager);
 	oRels.StartLayout(nIndexTheme);
 
@@ -823,14 +880,14 @@ void NSPresentationEditor::CPPTXWriter::WriteSlide(int nIndexSlide)
 	CSlide* pSlide = m_pDocument->m_arSlides[nIndexSlide];
 	
 	if (0 == pSlide->m_lThemeID)
-		oRels.StartSlide(pSlide->m_lLayoutID, nIndexSlide);
+		oRels.StartSlide(pSlide->m_lLayoutID, pSlide->m_lNotesID);
 	else
 	{
 		int nLayout = pSlide->m_lLayoutID;
 		for (int i = 0; i < pSlide->m_lThemeID; ++i)
 			nLayout += (int)m_pDocument->m_arThemes[i].m_arLayouts.size();
 
-		oRels.StartSlide(nLayout, nIndexSlide);
+		oRels.StartSlide(nLayout, pSlide->m_lNotesID);
 	}
 
 	oWriter.WriteString(std::wstring(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
@@ -861,7 +918,11 @@ void NSPresentationEditor::CPPTXWriter::WriteSlide(int nIndexSlide)
 	oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
 
 	oWriter.WriteString(std::wstring(L"<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>"));
+	
+	WriteTransition(oWriter, pSlide->m_oSlideShow.m_oTransition);
+
 	oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));
+	
 	oWriter.WriteString(std::wstring(L"</p:sld>"));
 
 	oRels.CloseRels();
@@ -879,14 +940,252 @@ void NSPresentationEditor::CPPTXWriter::WriteSlide(int nIndexSlide)
 	oRels.SaveRels(strFileSlidePath + _T("_rels") + FILE_SEPARATOR_STR + strFile);
 }
 
+void NSPresentationEditor::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CTransition& transition)
+{
+	if (!transition.m_nEffectType == 0xFF)	return;
+
+	std::wstring type;
+	
+	std::wstring param_name, param_value;
+	std::wstring param_name2, param_value2;
+	
+	switch(transition.m_nEffectType)
+	{
+	case 0:
+		{
+			type		= L"p:cut";		
+			param_name	= L"thruBlk";
+			param_value = transition.m_nEffectDirection ? L"true" : L"false";
+		}break;
+	case 1:
+		{
+			type		= L"p:random";		
+		}break;
+	case 2:	
+		{
+			type		= L"p:blinds";		
+			param_name	= L"dir";
+			param_value = transition.m_nEffectDirection ? L"vert" : L"horz";
+		}break;
+	case 3:	
+		{
+			type		= L"p:checker";		
+			param_name	= L"dir";
+			param_value = transition.m_nEffectDirection ? L"vert" : L"horz";
+		}break;
+	case 5:
+		{
+			type		= L"p:dissolve";		
+			param_name	= L"thruBlk";
+			param_value = transition.m_nEffectDirection ? L"true" : L"false";
+		}break;
+	case 6:
+		{
+			type		= L"p:fade";		
+			param_name	= L"thruBlk";
+			param_value = transition.m_nEffectDirection ? L"true" : L"false";
+		}break;
+	case 4:
+	case 7:
+		{
+			if (transition.m_nEffectType == 4)	type = L"p:cover";		
+			if (transition.m_nEffectType == 7)	type = L"p:pull";		
+			param_name	= L"dir";
+			switch(transition.m_nEffectDirection)
+			{
+				case 0:	param_value = L"r"; break;
+				case 1:	param_value = L"b"; break;
+				case 2:	param_value = L"l"; break;
+				case 3:	param_value = L"t"; break;
+				case 4:	param_value = L"br"; break;
+				case 5:	param_value = L"bl"; break;
+				case 6:	param_value = L"tr"; break;
+				case 7:	param_value = L"tl"; break;
+			}
+		}break;
+	case 8:
+		{
+			type		= L"p:randomBars";		
+			param_name	= L"dir";
+			param_value = transition.m_nEffectDirection ? L"vert" : L"horz";
+		}break;
+	case 9:
+		{
+			type		= L"p:strips";		
+			param_name	= L"dir";
+			switch(transition.m_nEffectDirection)
+			{
+				case 0:	param_value = L"ru"; break;
+				case 1:	param_value = L"lu"; break;
+				case 2:	param_value = L"rd"; break;
+				case 3:	param_value = L"ld"; break;
+			}
+		}break;
+	case 10:
+	case 20:
+		{
+			if (transition.m_nEffectType == 10)	type = L"p:wipe";		
+			if (transition.m_nEffectType == 20)	type = L"p:push";		
+		
+			param_name	= L"dir";
+			switch(transition.m_nEffectDirection)
+			{
+				case 0:	param_value = L"l"; break;
+				case 1:	param_value = L"u"; break;
+				case 2:	param_value = L"r"; break;
+				case 3:	param_value = L"d"; break;
+			}
+		}break;	
+	case 11:
+		{
+			type		= L"p:zoom";		
+			param_name	= L"dir";
+			param_value = transition.m_nEffectDirection ? L"in" : L"out";
+		}break;
+	case 13:
+		{
+			type		= L"p:split";		
+			param_name	= L"dir";
+			param_name2	= L"orient";
+			switch(transition.m_nEffectDirection)
+			{
+				case 0:	param_value = L"horz";	param_value2 = L"out";	break;
+				case 1:	param_value = L"horz";	param_value2 = L"in";	break;
+				case 2:	param_value = L"vert";	param_value2 = L"out";	break;
+				case 3:	param_value = L"vert";	param_value2 = L"in";	break;
+			}
+		}break;
+	case 17:
+		{
+			type = L"p:diamond";		
+		}break;
+	case 18:
+		{
+			type = L"p:plus";		
+		}break;
+	case 19:
+		{
+			type = L"p:wedge";		
+		}break;
+
+	case 21:
+		{
+			type		= L"p:comb";		
+			param_name	= L"dir";
+			param_value = transition.m_nEffectDirection ? L"vert" : L"horz";
+		}break;
+	case 22:
+		{
+			type = L"p:newsflash";		
+		}break;
+	case 23:
+		{
+			type = L"p:alphaFade";		
+		}break;
+	case 26:
+		{
+			type		= L"p:wheel";		
+			param_name	= L"spokes";
+			param_value = std::to_wstring(transition.m_nEffectDirection);
+		}break;
+	case 27:
+		{
+			type = L"p:circle";		
+		}break;
+	default:
+		break;
+	}
+
+	if (type.empty()) return;
+	oWriter.WriteString(std::wstring(L"<p:transition"));	
+		switch (transition.m_nSpeed)
+		{
+		case 0x00:	oWriter.WriteString(L" spd=\"fast\"");	break;
+		case 0x01:	oWriter.WriteString(L" spd=\"med\"");	break;
+		case 0x02:	
+		default:	oWriter.WriteString(L" spd=\"slow\"");	break;
+		}
+	oWriter.WriteString(L">");
+	oWriter.WriteString(L"<" + type);
+		if (!param_name.empty() && !param_value.empty())
+		{
+			oWriter.WriteString(L" " + param_name + L"=\"" + param_value + L"\"");
+		}
+		if (!param_name2.empty() && !param_value2.empty())
+		{
+			oWriter.WriteString(L" " + param_name2 + L"=\"" + param_value2 + L"\"");
+		}
+	oWriter.WriteString(L"/>");
+	if (transition.m_bAudioPresent)
+	{
+		std::wstring rId = m_pShapeWriter->m_pRels->WriteAudio(transition.m_oAudio.m_strAudioFileName);
+		oWriter.WriteString(std::wstring(L"<p:sndAc><p:stSnd>"));
+		oWriter.WriteString(L"<p:snd r:embed=\"" + rId + L"\" name=\"" + transition.m_oAudio.m_sImageName + L"\"/>");
+		oWriter.WriteString(std::wstring(L"</p:stSnd></p:sndAc>"));
+	}
+	oWriter.WriteString(std::wstring(L"</p:transition>"));
+}
+
+void NSPresentationEditor::CPPTXWriter::WriteNotes(int nIndexNotes)
+{
+	CStringWriter oWriter;
+	CRelsGenerator oRels(&m_oManager);
+	
+	CSlide* pNotes = m_pDocument->m_arNotes[nIndexNotes];
+	
+	oRels.StartNotes(pNotes->m_lSlideID, m_pDocument->m_pNotesMaster != NULL);
+
+	oWriter.WriteString(std::wstring(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
+	oWriter.WriteString(std::wstring(L"<p:notes xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\""));
+	if (!pNotes->m_bShowMasterShapes)
+		oWriter.WriteString(std::wstring(L" showMasterSp=\"0\""));
+	oWriter.WriteString(std::wstring(L">"));
+	
+	oWriter.WriteString(std::wstring(L"<p:cSld>"));
+
+	if (pNotes->m_bIsBackground)
+	{
+		WriteBackground(oWriter, oRels, pNotes->m_oBackground);
+	}
+
+	oWriter.WriteString(std::wstring(L"<p:spTree><p:nvGrpSpPr><p:cNvPr id=\"1\" name=\"\"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr>\
+<a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr>"));
+
+	for (size_t nEl = 0; nEl < pNotes->m_arElements.size(); ++nEl)
+	{
+		WriteElement(oWriter, oRels,  pNotes->m_arElements[nEl], NULL);
+	}
+	oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
+
+	oWriter.WriteString(std::wstring(L"<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>"));
+	oWriter.WriteString(std::wstring(L"</p:notes>"));
+
+	oRels.CloseRels();
+
+    std::wstring strXml = oWriter.GetData();
+    std::wstring strFile = L"notesSlide" + std::to_wstring(nIndexNotes + 1) + L".xml";
+    std::wstring strFileSlidePath = m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("notesSlides")  + FILE_SEPARATOR_STR;
+
+	CFile oFile;
+	oFile.CreateFile(strFileSlidePath + strFile);
+	oFile.WriteStringUTF8(strXml);
+	oFile.CloseFile();
+
+    strFile = L"notesSlide" + std::to_wstring(nIndexNotes + 1) + L".xml.rels";
+	oRels.SaveRels(strFileSlidePath + _T("_rels") + FILE_SEPARATOR_STR + strFile);
+}
 
 void NSPresentationEditor::CPPTXWriter::WriteSlides()
 {
-	size_t nCountSlides = m_pDocument->m_arSlides.size();
-
-	for (size_t nIndexS = 0; nIndexS < nCountSlides; ++nIndexS)
+	for (size_t nIndexS = 0; nIndexS < m_pDocument->m_arSlides.size(); ++nIndexS)
 	{
-		CRelsGenerator::StartNotes((int)nIndexS, m_strTempDirectory, m_pDocument->m_arSlides[nIndexS]->m_strComment);
 		WriteSlide((int)nIndexS);
+	}
+}
+void NSPresentationEditor::CPPTXWriter::WriteNotes()
+{
+	for (size_t nIndexS = 0; nIndexS < m_pDocument->m_arNotes.size(); ++nIndexS)
+	{
+		WriteNotes((int)nIndexS);
 	}
 }

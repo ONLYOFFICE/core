@@ -1,0 +1,220 @@
+##----------------------------------------------------------------------##
+#
+# Errors to suppress by default with NSS
+#
+# Format of this file is:
+# {
+#     name_of_suppression
+#     kind: one of Param Value1 Value2 Value4 Value8
+#                   Free Addr1 Addr2 Addr4 Addr8
+#                   Cond (previously known as Value0)
+#     (if Param: name of system call param, if Free: name of free-ing fn)
+#     caller0 name, or /name/of/so/file.so
+#     caller1 name, or ditto
+#     (optionally: caller2 name)
+#     (optionally: caller3 name)
+#  }
+
+##----------------------------------------------------------------------##
+{
+   NSS memcmp/prng_RandomUpdate
+   Memcheck:Cond
+   fun:memcmp
+   fun:prng_RandomUpdate
+}
+
+{
+   NSS alg_fips*/prng_RandomUpdate
+   Memcheck:Cond
+   fun:alg_fips*
+   fun:prng_RandomUpdate
+}
+
+{
+   NSS sec_asn1d_parse_leaf/SEC_ASN1*
+   Memcheck:Cond
+   fun:sec_asn1d*
+   fun:SEC_ASN1*
+}
+
+{
+   NSS DES_Do1Block
+   Memcheck:Value4
+   fun:DES_Do1Block
+   fun:DES_EDE*
+}
+
+{
+   NSS *mp*
+   Memcheck:Cond
+   fun:*
+   fun:*mp_*
+}
+
+{
+   NSS *mp*
+   Memcheck:Cond
+   fun:*mp*
+   fun:*
+}
+
+{
+   NSS *mp*
+   Memcheck:Value4
+   fun:*
+   fun:*mp*
+}
+
+{
+   NSS *mp*
+   Memcheck:Value4
+   fun:*mp*
+   fun:*dsa*
+}
+
+{
+   NSS *alg_fips*
+   Memcheck:Cond
+   fun:*alg_fips*
+   fun:*
+}
+
+{
+   NSS memcmp/prng
+   Memcheck:Value4
+   fun:memcmp
+   fun:*prng*
+}
+
+{
+   NSS *alg_fips*
+   Memcheck:Value4
+   fun:*alg_fips*
+   fun:*prng*
+}
+
+{
+   NSS *DSA_Generate*
+   Memcheck:Value4
+   fun:*DSA_Generate*
+   fun:*DSA*
+}
+
+{
+   NSS *DSA_Generate*
+   Memcheck:Cond
+   fun:*DSA_Generate*
+   fun:*DSA*
+}
+
+{
+   NSS *memset/SECITEM*
+   Memcheck:Value4
+   fun:*mem*
+   fun:*SECITEM*
+}
+
+{
+   NSS *FreeArena*
+   Memcheck:Cond
+   fun:*Arena*
+   fun:*Arena*
+}
+
+{
+   NSS *memcpy/sec*
+   Memcheck:Cond
+   fun:*mem*
+   fun:*sec*
+}
+
+{
+   NSS *memcpy/sec*
+   Memcheck:Value4
+   fun:*mem*
+   fun:*sec*
+}
+
+{
+   NSS *sec*
+   Memcheck:Value4
+   fun:*sec*
+   fun:*
+}
+
+{
+   NSS *sec*
+   Memcheck:Cond
+   fun:*sec*
+   fun:*
+}
+
+
+{
+   NSS *PL_Hash*
+   Memcheck:Value4
+   fun:*PL_Hash*
+   fun:*
+}
+
+{
+   NSS *PL_Hash*
+   Memcheck:Cond
+   fun:*PL_Hash*
+   fun:*
+}
+
+{
+   NSS *SEC*
+   Memcheck:Value4
+   fun:*SEC*
+   fun:*
+}
+
+{
+   NSS *SEC*
+   Memcheck:Cond
+   fun:*SEC*
+   fun:*
+}
+
+{
+   NSS *PORT*
+   Memcheck:Value4
+   fun:*PORT*
+   fun:*
+}
+
+{
+   NSS *PORT*
+   Memcheck:Cond
+   fun:*PORT*
+   fun:*
+}
+
+{
+   NSS *DES*
+   Memcheck:Value4
+   fun:*DES*
+   fun:*
+}
+
+{
+   NSS *__GI__*
+   Addrcheck,Memcheck:Param
+   write(buf)
+   obj:*libc-2.2*so
+}
+
+{
+   NSS xmlSecBase64*
+   Memcheck:Value4
+   fun:xmlSecBase64*
+}
+
+{
+   NSS rijndael*
+   Memcheck:Value4
+   fun:rijndael*
+}
+

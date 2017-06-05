@@ -137,10 +137,12 @@ public:
 						type_anchor(0),
 						vmlwrite_mode_(false)
 	{
-		id			= -1;		
-		rotation	= 0;
-		parent_drawing_states = NULL;
-		custom_path = -1;
+		id						= -1;		
+		rotation				= 0;
+		parent_drawing_states	= NULL;
+		custom_path				= -1;
+		custom_x_limo			= 0x80000000;		
+		custom_y_limo			= 0x80000000;		
 	}
 
 	external_items::Type	type;
@@ -179,10 +181,15 @@ public:
 	std::vector<ODRAW::MSOSG>		custom_guides;
 	std::vector<ODRAW::MSOPOINT>	custom_verticles;
 	std::vector<ODRAW::ADJH>		custom_adjustHandles;
+	std::vector<ODRAW::MSOPOINT>	custom_connection;
+	std::vector<ODRAW::FixedPoint>	custom_connectionDir;
+	std::vector<ODRAW::MSORECT>		custom_inscribe;
 
 	_rect							custom_rect;
 	std::vector<_CP_OPT(int)>		custom_adjustValues;
 	int								custom_path;
+	int								custom_x_limo;
+	int								custom_y_limo;
 //-----------------------------------------------
 	std::wstring					hyperlink;
 	struct _text
@@ -265,12 +272,15 @@ public:
 	};
 	struct _line
 	{
-		_line() { fill.color.SetRGB(0, 0, 0); width = 0; }
+		_line() : join(-1), endcap(-1), miter(0), width(0) { fill.color.SetRGB(0, 0, 0);  }
 		std::wstring	style;
         int             width;
 		_line_typeDash	typeDash;
 		_fill			fill;
 		_arrow			arrow;
+		int				miter;
+		int				join;
+		int				endcap;
 	}line;	
 	struct _object
 	{
@@ -357,6 +367,9 @@ public:
 		void set_arrow_end_width	(int val);
 		void set_arrow_start_length	(int val);
 		void set_arrow_end_length	(int val);
+		void set_line_miter			(int val);
+		void set_line_join			(int val);
+		void set_line_endcap		(int val);
 
 		void set_fill_old_version	(_UINT32 val);
 		void set_line_old_version	(_UINT32 val);
@@ -399,6 +412,11 @@ public:
 		void set_custom_adjustHandles(std::vector<ODRAW::ADJH>		& handles);
 		void set_custom_adjustValues(std::vector<_CP_OPT(int)>		& values);
 		void set_custom_path		(int type_path);
+		void set_custom_connection	(std::vector<ODRAW::MSOPOINT>	& points);
+		void set_custom_connectionDir(std::vector<ODRAW::FixedPoint>& points);
+		void set_custom_inscribe	(std::vector<ODRAW::MSORECT>	& rects);
+		void set_custom_x_limo		(int val);
+		void set_custom_y_limo		(int val);
 //------------------------------------------------------------------------------	
 		void serialize_group		();
 		void serialize_shape		(_drawing_state_ptr & drawing_state);

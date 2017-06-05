@@ -33,6 +33,7 @@
 #define HEADER_FOOTER_WRITER
 
 #include "../../XlsxSerializerCom/Common/Common.h"
+#include "../../Common/DocxFormat/Source/Common/SimpleTypes_Word.h"
 
 namespace Writers
 {
@@ -54,10 +55,10 @@ namespace Writers
 		{
             return m_sFilename.empty();
 		}
-        std::wstring m_sFilename;
-		ContentWriter Header;
-        std::wstring rId;
-		SimpleTypes::EHdrFtr eType;
+        std::wstring			m_sFilename;
+		ContentWriter			Header;
+        std::wstring			rId;
+		SimpleTypes::EHdrFtr	eType;
 	};
     static  std::wstring g_string_hdr_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:hdr xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 wp14\">");
     static  std::wstring g_string_hdr_End = _T("</w:hdr>");
@@ -74,12 +75,11 @@ namespace Writers
 	class HeaderFooterWriter 
 	{
          std::wstring	m_sDir;
-		ContentTypesWriter& m_oContentTypesWriter;
 	public:
 		std::vector<HdrFtrItem*> m_aHeaders;
 		std::vector<HdrFtrItem*> m_aFooters;
-	public:
-        HeaderFooterWriter( std::wstring sDir, ContentTypesWriter& oContentTypesWriter) : m_sDir(sDir),m_oContentTypesWriter(oContentTypesWriter)
+
+		HeaderFooterWriter( std::wstring sDir) : m_sDir(sDir) 
 		{
 		}
 		~HeaderFooterWriter()
@@ -109,8 +109,8 @@ namespace Writers
 		{
             OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + sFilename;
 
-			CFile oFile;
-			oFile.CreateFile(filePath.GetPath());
+			NSFile::CFileBinary oFile;
+			oFile.CreateFileW(filePath.GetPath());
 
 			if(bHeader)
 				oFile.WriteStringUTF8(g_string_hdr_Start);
@@ -122,43 +122,33 @@ namespace Writers
 			else
 				oFile.WriteStringUTF8(g_string_ftr_End);
 			oFile.CloseFile();
-
-			//Content_Types
-			m_oContentTypesWriter.AddOverride(L"/word/" + sFilename, L"application/vnd.openxmlformats-officedocument.wordprocessingml." + sHeader + L"+xml");
-
-			//Rels
-			//return m_oDocumentRelsWriter.AddRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/") + sHeader, sFilename);
 		}
 	};
 	class FootnotesWriter
 	{
          std::wstring m_sDir;
-		ContentTypesWriter& m_oContentTypesWriter;
 	public:
 		ContentWriter	m_oNotesWriter;
-        FootnotesWriter( std::wstring sDir, ContentTypesWriter& oContentTypesWriter):m_sDir(sDir),m_oContentTypesWriter(oContentTypesWriter)
+
+        FootnotesWriter( std::wstring sDir ):m_sDir(sDir)
 		{
 		}
 		void Write()
 		{
-			if(!IsEmpty())
-			{
-                 std::wstring sFilename = getFilename();
+			if(IsEmpty()) return;
 
-                 std::wstring filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + sFilename;
+			std::wstring sFilename = getFilename();
 
-				CFile oFile;
-				oFile.CreateFile(filePath);
-				oFile.WriteStringUTF8(g_string_footnotes_Start);
-				oFile.WriteStringUTF8(m_oNotesWriter.m_oContent.GetData());
-				oFile.WriteStringUTF8(g_string_footnotes_End);
-				oFile.CloseFile();
+             std::wstring filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + sFilename;
 
-				//ContentType
-				m_oContentTypesWriter.AddOverride(L"/word/" + sFilename, L"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml");
-			}
+			NSFile::CFileBinary oFile;
+			oFile.CreateFileW (filePath);
+			oFile.WriteStringUTF8 (g_string_footnotes_Start);
+			oFile.WriteStringUTF8 (m_oNotesWriter.m_oContent.GetData());
+			oFile.WriteStringUTF8 (g_string_footnotes_End);
+			oFile.CloseFile();
 		}
-         std::wstring getFilename()
+		std::wstring getFilename()
 		{
 			return _T("footnotes.xml");
 		}
@@ -169,33 +159,29 @@ namespace Writers
 	};
 	class EndnotesWriter
 	{
-         std::wstring m_sDir;
-		ContentTypesWriter& m_oContentTypesWriter;
+		std::wstring m_sDir;
 	public:
 		ContentWriter	m_oNotesWriter;
-        EndnotesWriter( std::wstring sDir, ContentTypesWriter& oContentTypesWriter):m_sDir(sDir),m_oContentTypesWriter(oContentTypesWriter)
+
+        EndnotesWriter( std::wstring sDir ) : m_sDir(sDir) 
 		{
 		}
 		void Write()
 		{
-			if(!IsEmpty())
-			{
-                 std::wstring sFilename = getFilename();
+			if(IsEmpty()) return;
 
-                 std::wstring filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + sFilename;
+			std::wstring sFilename = getFilename();
 
-				CFile oFile;
-				oFile.CreateFile(filePath);
-				oFile.WriteStringUTF8(g_string_endnotes_Start);
-				oFile.WriteStringUTF8(m_oNotesWriter.m_oContent.GetData());
-				oFile.WriteStringUTF8(g_string_endnotes_End);
-				oFile.CloseFile();
+             std::wstring filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + sFilename;
 
-				//ContentType
-				m_oContentTypesWriter.AddOverride(_T("/word/") + sFilename, _T("application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml"));
-			}
+			NSFile::CFileBinary oFile;
+			oFile.CreateFileW(filePath);
+			oFile.WriteStringUTF8(g_string_endnotes_Start);
+			oFile.WriteStringUTF8(m_oNotesWriter.m_oContent.GetData());
+			oFile.WriteStringUTF8(g_string_endnotes_End);
+			oFile.CloseFile();
 		}
-         std::wstring getFilename()
+		std::wstring getFilename()
 		{
 			return _T("endnotes.xml");
 		}

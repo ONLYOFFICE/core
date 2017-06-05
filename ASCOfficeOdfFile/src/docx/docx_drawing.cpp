@@ -317,7 +317,8 @@ void docx_serialize_common(std::wostream & strm, _docx_drawing & val)
 		{
 			CP_XML_ATTR(L"name",	val.name);
 			CP_XML_ATTR(L"id",		val.id + 1);
-			oox_serialize_hlink(CP_XML_STREAM(), val.hlinks);
+			
+			oox_serialize_action(CP_XML_STREAM(), val.action);
 		}
 
 		CP_XML_NODE(L"wp:cNvGraphicFramePr")
@@ -529,7 +530,7 @@ mso-position-vertical-relative:text;";
 				strStyle += L"margin-top:"  + boost::lexical_cast<std::wstring>(val.y / 12700.) + L"pt;";
 				strStyle += L"width:"		+ boost::lexical_cast<std::wstring>(val.cx / 12700.) + L"pt;"; 
 				strStyle += L"height:"		+ boost::lexical_cast<std::wstring>(val.cy / 12700.) + L"pt;"; 
-				strStyle += L"z-index:"		+ boost::lexical_cast<std::wstring>(0xF000800 - val.id);
+				strStyle += L"z-index:"		+ std::to_wstring(0xF000800 - val.id);
 			
 				CP_XML_ATTR(L"id",				L"Rect"		+ std::to_wstring(val.id));
 				CP_XML_ATTR(L"o:spid",			L"_x0000_s" + std::to_wstring(1024 + val.id));

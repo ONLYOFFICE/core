@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP:Envelope xmlns:SOAP="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsse="http://schemas.xmlsoap.org/ws/2002/07/secext"><SOAP:Header><wsse:Security><Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+<SignedInfo>
+  <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+  <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#hmac-sha1">
+    <HMACOutputLength>91</HMACOutputLength>
+  </SignatureMethod>
+  <Reference URI="#Body">
+    <Transforms>
+      <Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+    </Transforms>
+    <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+    <DigestValue>KlK8TF9wnLYvXz008MJV4umoHhE=</DigestValue>
+  </Reference>
+</SignedInfo>
+    <SignatureValue>gmtoF50KWNUTGQCg</SignatureValue><KeyInfo><KeyName>name:KEY</KeyName></KeyInfo></Signature></wsse:Security></SOAP:Header><SOAP:Body id="Body">
+<echo xmlns="http://www.example.org">
+this
+is
+a
+test
+of
+echoing
+simple-91
+</echo>
+</SOAP:Body></SOAP:Envelope>
+

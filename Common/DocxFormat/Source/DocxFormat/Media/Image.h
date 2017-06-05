@@ -40,7 +40,7 @@ namespace OOX
 	class Image : public Media
 	{
 	public:
-		Image()
+		Image(bool bDocument = true) : Media (bDocument)
 		{
 		}
 		Image(const CPath& filename)
@@ -57,7 +57,7 @@ namespace OOX
             std::wstring newFilename = filename.GetFilename();
 			CPath newFilePath = filename.GetDirectory();
 
-            XmlUtils::replace_all(newFilename, L"", L"_");
+            XmlUtils::replace_all(newFilename, L" ", L"_");
 			if (CSystemUtility::IsFileExist(m_filename) && !CSystemUtility::IsFileExist(newFilePath/newFilename))	
 			{
 				//if (m_filename.GetExtention(true) == _T(".svm"))
@@ -87,7 +87,8 @@ namespace OOX
 		}
 		virtual const CPath DefaultDirectory() const
 		{
-			return type().DefaultDirectory();
+			if (m_bDocument) return type().DefaultDirectory();
+			else	return L"../" + type().DefaultDirectory();
 		}
 		virtual const CPath DefaultFileName() const
 		{

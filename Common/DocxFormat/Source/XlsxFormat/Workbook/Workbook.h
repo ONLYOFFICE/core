@@ -61,20 +61,21 @@ namespace OOX
 		//<webPublishObjects>
 		//<workbookPr>
 		//<workbookProtection>
-		class CWorkbook : public OOX::File, public OOX::Spreadsheet::IFileContainer
+		class CWorkbook : public OOX::File, public OOX::IFileContainer
 		{
 		public:
 			CWorkbook()
 			{
+				m_bSpreadsheets = true;
 			}
 			CWorkbook(const CPath& oRootPath, const CPath& oPath)
 			{
+				m_bSpreadsheets = true;				
 				read(oRootPath, oPath);
 			}
 			virtual ~CWorkbook()
 			{
 			}
-		public:
 
 			virtual void read(const CPath& oPath)
 			{
@@ -136,6 +137,8 @@ namespace OOX
 					m_oDefinedNames->toXML(sXml);
 
 				sXml.WriteString(_T("<calcPr calcId=\"145621\"/>"));
+				if(m_oPivotCachesXml.IsInit())
+					sXml.WriteString(m_oPivotCachesXml.get());
 				sXml.WriteString(_T("</workbook>"));
 
                 std::wstring sPath = oPath.GetPath();
@@ -207,7 +210,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CSheets>				m_oSheets;
 			nullable<OOX::Spreadsheet::CWorkbookPr>			m_oWorkbookPr;
 			nullable<OOX::Spreadsheet::CExternalReferences>	m_oExternalReferences;
-
+			nullable<std::wstring>							m_oPivotCachesXml;
 		};
 	} //Spreadsheet
 } // namespace OOX

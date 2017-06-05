@@ -135,26 +135,6 @@ namespace PPTX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("contourW"), contourW);
-				oAttr.Write(_T("extrusionH"), extrusionH);
-				oAttr.WriteLimitNullable(_T("prstMaterial"), prstMaterial);
-				oAttr.Write(_T("z"), z);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(bevelT);
-				oValue.WriteNullable(bevelB);
-
-				if (extrusionClr.is_init())
-					oValue.Write(_T("a:extrusionClr"), extrusionClr);
-				if (contourClr.is_init())
-					oValue.Write(_T("a:contourClr"), contourClr);
-
-				return XmlUtils::CreateNode(_T("a:sp3d"), oAttr, oValue);
-			}
-
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(_T("a:sp3d"));

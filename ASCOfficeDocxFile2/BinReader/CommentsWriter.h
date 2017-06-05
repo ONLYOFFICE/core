@@ -46,20 +46,19 @@ namespace Writers
 	class CommentsWriter
 	{
         std::wstring	m_sDir;
-		ContentTypesWriter& m_oContentTypesWriter;
 	public:
-        std::wstring m_sComment;
-        std::wstring m_sCommentExt;
-        std::wstring m_sPeople;
-	public:
-        CommentsWriter(std::wstring sDir, ContentTypesWriter& oContentTypesWriter):m_sDir(sDir),m_oContentTypesWriter(oContentTypesWriter)
+        std::wstring	m_sComment;
+        std::wstring	m_sCommentExt;
+        std::wstring	m_sPeople;
+
+		CommentsWriter(std::wstring sDir) : m_sDir(sDir)
 		{
 		}
         void setElements(std::wstring& sComment, std::wstring& sCommentExt, std::wstring& sPeople)
 		{
-			m_sComment = sComment;
-			m_sCommentExt = sCommentExt;
-			m_sPeople = sPeople;
+			m_sComment		= sComment;
+			m_sCommentExt	= sCommentExt;
+			m_sPeople		= sPeople;
 		}
 		void Write()
 		{
@@ -67,42 +66,30 @@ namespace Writers
 			{
                 OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("comments.xml");
 
-				CFile oFile;
-				oFile.CreateFile(filePath.GetPath());
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(filePath.GetPath());
 					oFile.WriteStringUTF8(g_string_comment_Start);
 					oFile.WriteStringUTF8(m_sComment);
 					oFile.WriteStringUTF8(g_string_comment_End);
 				oFile.CloseFile();
-
-				//Content_Types
-                m_oContentTypesWriter.AddOverride(std::wstring(_T("/word/comments.xml")), std::wstring(_T("application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml")));
-
-				//Rels
-				//m_oDocumentRelsWriter.AddRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments"), _T("comments.xml"));
 			}
             if(false == m_sCommentExt.empty())
 			{
-				CFile oFile;
-                oFile.CreateFile(m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("commentsExtended.xml"));
+				NSFile::CFileBinary oFile;
+                oFile.CreateFileW(m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("commentsExtended.xml"));
 				oFile.WriteStringUTF8(g_string_commentExt_Start);
 				oFile.WriteStringUTF8(m_sCommentExt);
 				oFile.WriteStringUTF8(g_string_commentExt_End);
 				oFile.CloseFile();
-
-				//Content_Types
-                m_oContentTypesWriter.AddOverride(std::wstring(_T("/word/commentsExtended.xml")), std::wstring(_T("application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtended+xml")));
 			}
             if(false == m_sPeople.empty())
 			{
-				CFile oFile;
-                oFile.CreateFile(m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("people.xml"));
+				NSFile::CFileBinary oFile;
+                oFile.CreateFileW(m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("people.xml"));
 				oFile.WriteStringUTF8(g_string_people_Start);
 				oFile.WriteStringUTF8(m_sPeople);
 				oFile.WriteStringUTF8(g_string_people_End);
 				oFile.CloseFile();
-
-				//Content_Types
-                m_oContentTypesWriter.AddOverride(std::wstring(_T("/word/people.xml")), std::wstring(_T("application/vnd.openxmlformats-officedocument.wordprocessingml.people+xml")));
 			}
 		}
 	};

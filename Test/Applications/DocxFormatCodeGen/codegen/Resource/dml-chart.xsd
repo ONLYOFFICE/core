@@ -5,7 +5,6 @@
   xmlns="http://purl.oclc.org/ooxml/drawingml/chart"
   xmlns:cdr="http://purl.oclc.org/ooxml/drawingml/chartDrawing"
   xmlns:s="http://purl.oclc.org/ooxml/officeDocument/sharedTypes"
-  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   targetNamespace="http://purl.oclc.org/ooxml/drawingml/chart" elementFormDefault="qualified"
   attributeFormDefault="unqualified" blockDefault="#all">
   <xsd:import namespace="http://purl.oclc.org/ooxml/officeDocument/relationships"
@@ -15,7 +14,6 @@
     schemaLocation="dml-chartDrawing.xsd"/>
   <xsd:import namespace="http://purl.oclc.org/ooxml/officeDocument/sharedTypes"
     schemaLocation="shared-commonSimpleTypes.xsd"/>
-  <xsd:import namespace="http://schemas.openxmlformats.org/markup-compatibility/2006" schemaLocation="mce.xsd"/>
   <xsd:complexType name="CT_Boolean">
     <xsd:attribute name="val" type="xsd:boolean" use="optional" default="true"/>
   </xsd:complexType>
@@ -1432,7 +1430,6 @@
       <xsd:element name="date1904" type="CT_Boolean" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="lang" type="CT_TextLanguageID" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="roundedCorners" type="CT_Boolean" minOccurs="0" maxOccurs="1"/>
-      <xsd:element ref="mc:AlternateContent" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="style" type="CT_Style" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="clrMapOvr" type="a:CT_ColorMapping" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="pivotSource" type="CT_PivotSource" minOccurs="0" maxOccurs="1"/>

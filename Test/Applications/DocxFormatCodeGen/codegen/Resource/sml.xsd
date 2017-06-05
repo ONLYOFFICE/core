@@ -568,7 +568,7 @@
     <xsd:attribute name="optimizeMemory" type="xsd:boolean" use="optional" default="false"/>
     <xsd:attribute name="enableRefresh" type="xsd:boolean" use="optional" default="true"/>
     <xsd:attribute name="refreshedBy" type="s:ST_Xstring" use="optional"/>
-    <xsd:attribute name="refreshedDateIso" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="refreshedDate" type="xsd:double" use="optional"/>
     <xsd:attribute name="backgroundQuery" type="xsd:boolean" default="false"/>
     <xsd:attribute name="missingItemsLimit" type="xsd:unsignedInt" use="optional"/>
     <xsd:attribute name="createdVersion" type="xsd:unsignedByte" use="optional" default="0"/>
@@ -3374,8 +3374,8 @@
   </xsd:complexType>
   <xsd:complexType name="CT_CellAlignment">
     <xsd:attribute name="horizontal" type="ST_HorizontalAlignment" use="optional"/>
-    <xsd:attribute name="vertical" type="ST_VerticalAlignment" use="optional"/>
-    <xsd:attribute name="textRotation" type="xsd:unsignedInt" use="optional"/>
+    <xsd:attribute name="vertical" type="ST_VerticalAlignment" default="bottom" use="optional"/>
+    <xsd:attribute name="textRotation" type="ST_TextRotation" use="optional"/>
     <xsd:attribute name="wrapText" type="xsd:boolean" use="optional"/>
     <xsd:attribute name="indent" type="xsd:unsignedInt" use="optional"/>
     <xsd:attribute name="relativeIndent" type="xsd:int" use="optional"/>
@@ -3383,6 +3383,20 @@
     <xsd:attribute name="shrinkToFit" type="xsd:boolean" use="optional"/>
     <xsd:attribute name="readingOrder" type="xsd:unsignedInt" use="optional"/>
   </xsd:complexType>
+  <xsd:simpleType name="ST_TextRotation">
+    <xsd:union>
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:nonNegativeInteger">
+          <xsd:maxInclusive value="180"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:nonNegativeInteger">
+          <xsd:enumeration value="255"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
   <xsd:simpleType name="ST_BorderStyle">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="none"/>

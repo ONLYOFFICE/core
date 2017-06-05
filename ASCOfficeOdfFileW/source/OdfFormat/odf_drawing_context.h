@@ -39,10 +39,9 @@
 
 #include "office_elements_create.h"
 
-#include "length.h"
-#include "anchortype.h"
 #include "stylewrap.h"
 #include "gradientstyle.h"
+#include "common_attlists.h"
 
 namespace OOX {namespace Vml { class CShapeType; }}
 
@@ -53,12 +52,16 @@ namespace odf_writer
 class odf_conversion_context;
 class odf_style_context;
 class odf_text_context;
+class style_paragraph_properties;
 
 class odf_drawing_context
 {
 public:
 	odf_drawing_context		(odf_conversion_context *odf_context);
     ~odf_drawing_context	();
+
+	void			set_presentation (int type);
+	_CP_OPT(int)	get_presentation ();
 
 	void set_drawings_rect	(_CP_OPT(double) x_pt, _CP_OPT(double) y_pt, _CP_OPT(double) width_pt, _CP_OPT(double) height_pt);
 	void clear				();
@@ -99,12 +102,14 @@ public:
 
 	void start_drawing();
 	void end_drawing();
+	void end_drawing_background(odf_types::common_draw_fill_attlist & common_draw_attlist);
 	
+	int	get_group_level();	
 	void start_group();		
 		void set_group_flip_H	(bool bVal);
 		void set_group_flip_V	(bool bVal);
 		void set_group_z_order	(int Val);
-		void set_group_name		(std::wstring name);
+		void set_group_name		(const std::wstring & name);
 
 		void set_group_rotate	(int iVal);
 		void set_group_size		(_CP_OPT(double) cx, _CP_OPT(double) cy, _CP_OPT(double) change_cx, _CP_OPT(double) change_cy);
@@ -119,41 +124,58 @@ public:
 	void start_shape	(int type);
 	void end_shape		();
 
-	bool change_text_box_2_wordart();
+	void start_frame	();
+	void end_frame		();
 
-	void start_image	(std::wstring file_path);
+	void start_image	(std::wstring odf_file_path);
 	void end_image		();
-		
+	
+	bool change_text_box_2_wordart	();
+	bool is_wordart					();
+	void set_paragraph_properties	(style_paragraph_properties *paragraph_properties);
+	
 	void start_text_box					();
 		void set_text_box_min_size		(bool val);
 		void set_text_box_min_size		(double w_pt, double h_pt);
 		void set_text_box_parent_style	(std::wstring style_name);
-		void set_text_box_tableframe	(bool val);
+		void set_text_box_tableframe	(bool val);		
 	void end_text_box					();
 
-	void start_object(std::wstring name);
+	void start_object(std::wstring ref); //формулы, диаграммы ... 
 	void end_object();
 
+	void start_object_ole(std::wstring ref);
+	void end_object_ole();
+
+	void start_media(std::wstring ref);
+	void end_media();
+
+	void add_image_replacement();
+	void set_image_replacement(std::wstring ref);
+
+	bool isLineShape();
 	void corrected_line_fill();
 
 	office_element_ptr & get_root_element();
 
-	void start_element	(office_element_ptr & elm, office_element_ptr  style_elm = office_element_ptr());
+	void start_element	(office_element_ptr elm, office_element_ptr  style_elm = office_element_ptr());
     void end_element	();
 
 	bool is_exist_content();
 //////////////////////////////////////////////////////////////////////////////////////
 	void set_path			(std::wstring path_string);
-	void add_path_element	(std::wstring command, const std::wstring & elm);
+	void add_path_element	(std::wstring command, std::wstring elm);
 	void add_modifier		(std::wstring modifier);
+	void add_formula		(std::wstring name, std::wstring fmla);
+	void set_textarea		(std::wstring l, std::wstring t, std::wstring r, std::wstring b);
+	void add_handle			(std::wstring x, std::wstring y, std::wstring refX, std::wstring refY,
+							std::wstring minX, std::wstring maxX, std::wstring minY, std::wstring maxY);
 	
 	void set_viewBox		(double W, double H);
 
 	void finalize(office_element_ptr & root_elm);
 
 ///////////////////////////////////////////////////////////////////////////////////////
-
-	
 	void get_position		(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt);
 	void set_position		(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt);
 	void set_position_line	(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt, _CP_OPT(double) & x1_pt, _CP_OPT(double) & y1_pt); 
@@ -169,7 +191,7 @@ public:
 	void set_flip_H			(bool bVal);
 	void set_flip_V			(bool bVal);
 
-	void set_rotate			(double iVal);
+	void set_rotate			(double dVal);
 
 	void set_no_fill		();
 	void set_type_fill		(int type);//for area - temp for objects
@@ -192,6 +214,8 @@ public:
 	
 	_CP_OPT(unsigned int)	get_fill_color ();
 	void					set_fill_color (unsigned int color);
+
+	_CP_OPT(odf_types::color) get_line_color();
 	//void start_shadow_properties();
 	//void end_shadow_properties();
 // пока одной функией ..
@@ -199,11 +223,14 @@ public:
 
 	void set_text					(odf_text_context* text_context);
 	void set_textarea_vertical_align(int align);
-	void set_textarea_padding		(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom);//in cm
+	void set_textarea_padding		(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom);//in pt
 	void set_textarea_writing_mode	(int mode);
 	void set_textarea_wrap			(bool val);
 	void set_textarea_fontcolor		(std::wstring hexColor);
-	void set_textarea_font			(_CP_OPT(std::wstring) & latin, _CP_OPT(std::wstring) & cs, _CP_OPT(std::wstring) & ea);
+	void set_textarea_font			(std::wstring & latin, std::wstring & cs, std::wstring & ea);
+
+	void set_placeholder_id			(std::wstring val);
+	void set_placeholder_type		(int val);
 //////////////////////////////////////////////////////////////////////////////////////
 	void start_gradient_style	();
 		void set_gradient_type	(odf_types::gradient_style::type style);
@@ -242,13 +269,15 @@ public:
 	void set_bitmap_tile_translate_y(double y);
 	void set_bitmap_tile_translate_x(double x);
 
+	void start_action(std::wstring value);
+		void add_sound	(std::wstring href);
+		void add_link	(std::wstring href);
+	void end_action();
+
 	std::map<std::wstring, OOX::Vml::CShapeType*>	m_mapVmlShapeTypes;
 
 private:
 	
-	void start_frame();
-	void end_frame();
-
     class Impl;
     _CP_PTR(Impl) impl_;
 

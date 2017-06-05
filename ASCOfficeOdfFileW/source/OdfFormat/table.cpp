@@ -184,6 +184,8 @@ void table_table::create_child_element(const std::wstring & Ns, const std::wstri
 
 void table_table::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeTableTableSource)
@@ -277,6 +279,8 @@ void table_table_columns::create_child_element(const std::wstring & Ns, const st
 }
 void table_table_columns::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeTableTableColumn) 
@@ -312,6 +316,8 @@ void table_table_header_columns::create_child_element( const std::wstring & Ns, 
 }
 void table_table_header_columns::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeTableTableColumn) 
@@ -348,6 +354,8 @@ void table_columns::create_child_element( const std::wstring & Ns, const std::ws
 }
 void table_columns::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeTableTableColumns) 
@@ -400,6 +408,8 @@ void table_columns_no_group::create_child_element(  const std::wstring & Ns, con
 }
 void table_columns_no_group::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeTableTableColumns || type == typeTableTableColumn) 
@@ -489,6 +499,8 @@ void table_columns_and_groups::create_child_element(const std::wstring & Ns, con
 }
 void table_columns_and_groups::add_child_element( const office_element_ptr & child_element, odf_conversion_context * Context)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeTableTableColumnGroup) 
@@ -608,6 +620,8 @@ void table_table_row::create_child_element( const std::wstring & Ns, const std::
 }
 void table_table_row::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeTableTableCell || type == typeTableCoveredTableCell )
@@ -672,6 +686,8 @@ void table_table_header_rows::create_child_element( const std::wstring & Ns, con
 }
 void table_table_header_rows::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeTableTableRow)
@@ -709,6 +725,8 @@ void table_rows::create_child_element(const std::wstring & Ns, const std::wstrin
 }
 void table_rows::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeTableTableRows)
@@ -761,6 +779,8 @@ void table_rows_no_group::create_child_element( const std::wstring & Ns, const s
 }
 void table_rows_no_group::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeTableTableRows || type == typeTableTableRow)
@@ -816,6 +836,8 @@ void table_rows_and_groups::create_child_element( const std::wstring & Ns, const
 }
 void table_rows_and_groups::add_child_element( const office_element_ptr & child_element, odf_conversion_context * Context)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
 	if (type == typeTableTableRowGroup)

@@ -53,7 +53,6 @@ namespace cpdoccore {
 
 	namespace odf_types
 	{
-		class style_ref;
 		class length_or_percent;
 	}
 	namespace odf_reader 

@@ -45,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\Common\OfficeDrawing;&quot;..\..\DesktopEditor\freetype-2.5.2\include&quot;;..\..\Common\OfficeDrawing\Shapes"
-				PreprocessorDefinitions="_DEBUG;_CONSOLE;USE_ATL_CSTRINGS;_USE_MATH_DEFINES;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;PPT_FORMAT;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;_PRESENTATION_WRITER_;_SVG_CONVERT_TO_IMAGE_"
+				PreprocessorDefinitions="_DEBUG;_CONSOLE;USE_ATL_CSTRINGS;_USE_MATH_DEFINES;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;PPT_FORMAT;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;_PRESENTATION_WRITER_;_SVG_CONVERT_TO_IMAGE_;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -340,14 +340,34 @@
 	<References>
 	</References>
 	<Files>
-		<File
-			RelativePath="..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.cpp"
+		<Filter
+			Name="common"
 			>
-		</File>
-		<File
-			RelativePath="..\..\build\bin\icu\win_32\icuuc.lib"
-			>
-		</File>
+			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\OfficeFileFormatChecker2.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\BinReader\Readers.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\UnicodeConverter\UnicodeConverter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DesktopEditor\xml\src\xmldom.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DesktopEditor\xml\src\xmllight.cpp"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath="PptFormatTest.cpp"
 			>

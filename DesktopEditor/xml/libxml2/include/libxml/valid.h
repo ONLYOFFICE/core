@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Summary: The DTD validation
  * Description: API for the DTD handling and the validity checking
  *

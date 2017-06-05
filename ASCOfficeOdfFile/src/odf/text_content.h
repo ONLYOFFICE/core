@@ -41,7 +41,6 @@
 #include <cpdoccore/xml/nodetype.h>
 
 #include "office_elements.h"
-#include "datatypes/style_ref.h"
 
 namespace cpdoccore { 
 namespace xml {
@@ -63,9 +62,9 @@ class paragraph_attrs
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-    odf_types::style_ref		text_style_name_;
-    odf_types::style_ref_array	text_class_names_;
-    odf_types::style_ref		text_cond_style_name_;
+    std::wstring				text_style_name_;
+	std::vector<std::wstring>	text_class_names_;
+    std::wstring				text_cond_style_name_;
 
 	_CP_OPT(unsigned int)		outline_level_; //from header attr
 

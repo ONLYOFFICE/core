@@ -131,7 +131,7 @@ void table_format_properties::docx_convert(oox::docx_conversion_context & Contex
 			}
 		}
         else //if (table_align_->get_type() == table_align::Center)
-            w_val = boost::lexical_cast<std::wstring>(*table_align_);
+			w_val = boost::lexical_cast<std::wstring>(*table_align_);
 
         _tblPr << L"<w:jc w:val=\"" << w_val << "\" />";
     }
@@ -155,17 +155,17 @@ const wchar_t * style_table_properties::name = L"table-properties";
 
 void style_table_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    table_format_properties_.add_attributes(Attributes);
+    content_.add_attributes(Attributes);
 }
 
 void style_table_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    table_format_properties_.add_child_element(Reader, Ns, Name, getContext());
+    content_.add_child_element(Reader, Ns, Name, getContext());
 }
 
 void style_table_properties::docx_convert(oox::docx_conversion_context & Context)
 {
-    table_format_properties_.docx_convert(Context);
+    content_.docx_convert(Context);
 }
 
 // style-table-column-properties-attlist
@@ -186,7 +186,7 @@ const wchar_t * style_table_column_properties::name = L"table-column-properties"
 
 void style_table_column_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    style_table_column_properties_attlist_.add_attributes(Attributes);
+    attlist_.add_attributes(Attributes);
 }
 
 void style_table_column_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -199,14 +199,14 @@ void style_table_column_properties::docx_convert(oox::docx_conversion_context & 
     std::wostream & strm = Context.output_stream();
 
 
-    if (style_table_column_properties_attlist_.style_column_width_)
+    if (attlist_.style_column_width_)
     {
 		double kf_max_width_ms =1.;
 
 		const page_layout_instance * pp = Context.root()->odf_context().pageLayoutContainer().page_layout_first();//
 		if (pp)
 		{
-			style_page_layout_properties_attlist & attr_page = pp->properties()->style_page_layout_properties_attlist_;
+			style_page_layout_properties_attlist & attr_page = pp->properties()->attlist_;
 			if (attr_page.fo_page_width_)
 			{
 				int val =  0.5 + 20.0 * attr_page.fo_page_width_->get_value_unit(length::pt);
@@ -215,7 +215,7 @@ void style_table_column_properties::docx_convert(oox::docx_conversion_context & 
 			}
 		}
 
-		int val = style_table_column_properties_attlist_.style_column_width_->get_value_unit(length::pt);
+		int val = attlist_.style_column_width_->get_value_unit(length::pt);
 
 
 		//_CP_OPT(int) iUnormalWidth;
@@ -236,9 +236,9 @@ void style_table_column_properties::pptx_convert(oox::pptx_conversion_context & 
     std::wostream & strm = Context.get_table_context().tableData();
 
 
-    if (style_table_column_properties_attlist_.style_column_width_)
+    if (attlist_.style_column_width_)
     {
-		int val = style_table_column_properties_attlist_.style_column_width_->get_value_unit(length::emu);
+		int val = attlist_.style_column_width_->get_value_unit(length::emu);
 
         strm << L"<a:gridCol w=\"" << val << "\"/>";
     }
@@ -289,7 +289,7 @@ const wchar_t * style_table_cell_properties::name = L"table-cell-properties";
 
 void style_table_cell_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    style_table_cell_properties_attlist_.add_attributes(Attributes);
+    attlist_.add_attributes(Attributes);
 }
 
 void style_table_cell_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -351,7 +351,7 @@ const wchar_t * style_table_row_properties::name = L"table-row-properties";
 
 void style_table_row_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    style_table_row_properties_attlist_.add_attributes(Attributes);
+    attlist_.add_attributes(Attributes);
 }
 
 void style_table_row_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -368,7 +368,7 @@ void style_table_row_properties::add_child_element( xml::sax * Reader, const std
 
 void style_table_row_properties::docx_convert(oox::docx_conversion_context & Context) 
 {
-    style_table_row_properties_attlist_.docx_convert(Context);
+    attlist_.docx_convert(Context);
 }
 
 /////
@@ -432,7 +432,7 @@ void insert_cell_border(oox::docx_conversion_context & Context,
 				else if (w_sz_ > 96.0)
 					w_sz_ = 96.0;
 
-				w_sz = boost::lexical_cast<std::wstring>( w_sz_ );
+				w_sz = std::to_wstring( w_sz_ );
 			}
         } 
     }
@@ -510,7 +510,7 @@ void insert_cell_border(oox::pptx_conversion_context & Context,
             else if (w_sz_ > 96.0)
                 w_sz_ = 96.0;
 
-            w_sz = boost::lexical_cast<std::wstring>( w_sz_ );
+            w_sz = std::to_wstring( w_sz_ );
             
         } 
         while (0);
@@ -654,7 +654,7 @@ void style_table_cell_properties_attlist::pptx_serialize(oox::pptx_conversion_co
 
 void style_table_cell_properties::docx_convert(oox::docx_conversion_context & Context) 
 {
-    style_table_cell_properties_attlist_.docx_convert(Context);    
+    attlist_.docx_convert(Context);    
 }
 
 void style_table_cell_properties_attlist::apply_from(const style_table_cell_properties_attlist & Other)

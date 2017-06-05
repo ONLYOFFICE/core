@@ -177,15 +177,6 @@ namespace PPTX
 			{
 				fromXML2(node, true);
 			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(pPr);
-				oValue.WriteArray(RunElems);
-				oValue.WriteNullable(endParaRPr);
-
-				return XmlUtils::CreateNode(_T("a:p"), oValue);
-			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{

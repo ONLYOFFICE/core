@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+XML Security Library example: Encrypted XML file (encrypt2 example). 
+-->
+<EncryptedData xmlns="http://www.w3.org/2001/04/xmlenc#" Type="http://www.w3.org/2001/04/xmlenc#Element">
+<EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#tripledes-cbc"/>
+<KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+<KeyName>deskey.bin</KeyName>
+</KeyInfo>
+<CipherData>
+<CipherValue>WXlDyktaADlUe+PywKwS3KdKlahCteEKxi/hRlHcXNQlGwNGrYKy8aQ6dLtX1bKg
+IgL/XoAQN3B27zD91b1ZLGh6QQ9CjnVD98+hYJ9TPp4piPnII4vGUA==</CipherValue>
+</CipherData>
+</EncryptedData>

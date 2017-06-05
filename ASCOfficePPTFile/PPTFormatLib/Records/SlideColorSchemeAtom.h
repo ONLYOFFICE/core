@@ -34,9 +34,8 @@
 
 class CRecordSlideColorSchemeAtom : public CUnknownRecord
 {
-	SColorAtom m_arColors[8];
-
 public:
+	SColorAtom m_arColors[8];
 	
 	CRecordSlideColorSchemeAtom()
 	{

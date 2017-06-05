@@ -59,7 +59,6 @@ public:
     virtual void serialize(std::wostream & _Wostream);
     virtual void serialize_attlist(CP_ATTR_NODE);
 
-	odf_types::common_presentation_attlist common_presentation_attlist_;
 	odf_types::union_common_draw_attlists  common_draw_attlists_;
 
     office_element_ptr_array content_;

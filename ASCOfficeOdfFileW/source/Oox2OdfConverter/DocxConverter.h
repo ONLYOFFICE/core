@@ -68,8 +68,9 @@ namespace OOX
 		class CText;
 		class CAlternateContent;
 		class CDrawing;	
-		class CGroupShape;
-		class CShape;
+//		class CGroupShape;
+//		class CShape;
+		class CControl;
 		class CPicture;
 		class CObject;
 		class CPBdr;
@@ -94,6 +95,7 @@ namespace OOX
 		class CTcBorders;
 		class CTblBorders;
 		class CSdt;
+		class CSdtContent;
 		class CBackground;
 		class CLockedCanvas;
 
@@ -145,12 +147,15 @@ namespace Oox2Odf
 		virtual void convertDocument();
 		virtual void write(const std::wstring & path);
 		
+ 		virtual OOX::IFileContainer						*current_document();
 		virtual odf_writer::odf_conversion_context		*odf_context();
-		virtual OOX::CTheme								*oox_theme();
+		virtual PPTX::Theme								*oox_theme();
+		virtual PPTX::Logic::ClrMap						*oox_clrMap();
         virtual std::wstring							find_link_by_id (std::wstring sId, int t);
 		virtual NSCommon::smart_ptr<OOX::File>			find_file_by_id(std::wstring sId);
 
-		void convert(OOX::WritingElement *oox_unknown);
+		void convert(OOX::WritingElement		*oox_unknown);
+		void convert(OOX::Logic::CSdtContent	*oox_sdt);
     private:
 		struct _section
 		{
@@ -214,18 +219,12 @@ namespace Oox2Odf
 		
 		void convert(OOX::Logic::CAlternateContent		*oox_alt_content);
 		void convert(OOX::Logic::CDrawing				*oox_drawing);
-		void convert(OOX::Logic::CGroupShape			*oox_group_shape);
-		void convert(OOX::Logic::CShape					*oox_shape);
-		void convert(OOX::Logic::CPicture				*oox_picture);
-		void convert(OOX::Logic::CLockedCanvas			*oox_canvas);
+		void convert(OOX::Logic::CPicture				*oox_pict);
 		void convert(OOX::Logic::CObject				*oox_obj);
 		
 		void convert(OOX::Drawing::CAnchor				*oox_anchor);
 		void convert(OOX::Drawing::CInline				*oox_inline);
-		void convert(OOX::Drawing::CGraphic				*oox_graphic);		
-		void convert(OOX::Drawing::CChart				*oox_chart);
-		void convert(OOX::Drawing::CPicture				*oox_picture);
-		
+	
 		void convert(SimpleTypes::CTheme<>				*oox_font_theme,_CP_OPT(std::wstring)				& odf_font_name);
 		void convert(ComplexTypes::Word::CColor			*color,			_CP_OPT(odf_types::color)			& odf_color);
 		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf_types::length)			& odf_size);

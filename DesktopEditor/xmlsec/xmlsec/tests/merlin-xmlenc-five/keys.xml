@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<Keys xmlns="http://www.aleksey.com/xmlsec/2002" >
+
+<KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+    <KeyName>bob</KeyName>
+    <KeyValue>
+	<DESKeyValue xmlns="http://www.aleksey.com/xmlsec/2002">
+	    YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4
+	</DESKeyValue>
+    </KeyValue>
+</KeyInfo>
+
+<KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+    <KeyName>jed</KeyName>
+    <KeyValue>
+	<AESKeyValue xmlns="http://www.aleksey.com/xmlsec/2002">
+	    YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXowMTIzNDU=
+	</AESKeyValue>
+    </KeyValue>
+</KeyInfo>
+
+<KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+    <KeyName>job</KeyName>
+    <KeyValue>
+	<AESKeyValue xmlns="http://www.aleksey.com/xmlsec/2002">
+	    YWJjZGVmZ2hpamtsbW5vcA==
+	</AESKeyValue>
+    </KeyValue>
+</KeyInfo>
+
+<KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+    <KeyName>jeb</KeyName>
+    <KeyValue>
+	<AESKeyValue xmlns="http://www.aleksey.com/xmlsec/2002">
+	    YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4
+	</AESKeyValue>
+    </KeyValue>
+</KeyInfo>
+
+
+
+</Keys>

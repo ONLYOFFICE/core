@@ -45,16 +45,17 @@ class style;
 class odf_conversion_context;
 class odf_style_context;
 
+class graphic_format_properties;
+
 class style_text_properties;
 class style_paragraph_properties;
-class style_graphic_properties;
 class style_table_properties;
 class style_section_properties;
 class style_table_cell_properties;
 class style_table_row_properties;
 class style_table_column_properties;
 class style_chart_properties;
-//class style_drawing_page_properties;
+class style_drawing_page_properties;
 
 class odf_style_state;
 typedef shared_ptr<odf_style_state>::Type odf_style_state_ptr;
@@ -80,7 +81,8 @@ public:
     void			set_name(std::wstring name);
 	std::wstring 	get_name();
 
-	odf_types::style_family::type get_family_type();
+	odf_types::style_family::type	get_family_type	();
+	void							set_family_type	(odf_types::style_family::type type);
 
 	void	set_number_format(int id)	{num_fmt_id_ = id;}
 	int		get_number_format()			{return num_fmt_id_;}
@@ -91,16 +93,17 @@ public:
 
     void	set_display_name(std::wstring name);
 //////////////////////////////////////////////////////////////////////////////////////////
-    style_text_properties *			get_text_properties();
+    graphic_format_properties *		get_graphic_properties() ;
+    
+	style_text_properties *			get_text_properties();
     style_paragraph_properties *	get_paragraph_properties() ;
-    style_graphic_properties *		get_graphic_properties() ;
     style_table_properties *		get_table_properties();
     style_section_properties *		get_section_properties();
     style_table_cell_properties *	get_table_cell_properties();
     style_table_row_properties *	get_table_row_properties() ;
     style_table_column_properties * get_table_column_properties() ;
     style_chart_properties *		get_chart_properties() ;
-	//style_drawing_page_properties*	get_drawing_page_properties();
+	style_drawing_page_properties*	get_drawing_page_properties();
 
 	bool	get_list_style_exist();
 	int		get_list_style_level();

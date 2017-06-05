@@ -163,6 +163,11 @@ odf_table_context* odt_conversion_context::table_context()
 {
 	return &table_context_;
 }
+	
+odf_notes_context* odt_conversion_context::notes_context()
+{
+	return &notes_context_;
+}
 
 odf_text_context* odt_conversion_context::text_context()	
 {
@@ -200,8 +205,8 @@ void odt_conversion_context::add_text_content(const std::wstring & text)
 			style_text_properties * props = text_context()->get_text_properties();
 			if (props)
 			{
-				std::wstring f_name = props->content().fo_font_family_.get_value_or(L"Arial");
-				double f_size = props->content().fo_font_size_.get_value_or(font_size(length(12,length::pt))).get_length().get_value_unit(length::pt);
+				std::wstring f_name = props->content_.fo_font_family_.get_value_or(L"Arial");
+				double f_size = props->content_.fo_font_size_.get_value_or(font_size(length(12,length::pt))).get_length().get_value_unit(length::pt);
 				
                 drop_cap_state_.characters_size_pt += utils::calculate_size_font_symbols(text, f_name, f_size, applicationFonts_);
 			}
@@ -235,7 +240,7 @@ void odt_conversion_context::start_drawings()
 }
 void odt_conversion_context::end_drawings()
 {
-	if (drawing_context_.size() < 1) return;
+	if (drawing_context_.empty()) return;
 
 	office_element_ptr & elm = drawing_context()->get_root_element();
 
@@ -266,8 +271,11 @@ void odt_conversion_context::end_drawings()
 	}
 	else
 	{		
-		text_context()->start_element(elm);
-		text_context()->end_element();
+		if (elm)
+		{
+			text_context()->start_element(elm);
+			text_context()->end_element();
+		}
 
 		drawing_context()->clear();
 		drawing_context_.pop_back();
@@ -322,7 +330,7 @@ void odt_conversion_context::add_paragraph_break(int type)
 		//		if (styles_context()->last_state())
 		//		{// нужна именно копия св-в так как будет добавочные свойства
 		//			new_props = styles_context()->last_state()->get_paragraph_properties();				
-		//			if (new_props)new_props->apply_from(style_->style_content_.get_style_paragraph_properties());
+		//			if (new_props)new_props->apply_from(style_->content_.get_style_paragraph_properties());
 		//			
 		//			if (style_->style_parent_style_name_)
 		//				styles_context()->last_state()->set_parent_style_name(*style_->style_parent_style_name_);
@@ -465,7 +473,7 @@ void odt_conversion_context::add_section(bool continuous)
 	state.style_name	= styles_context()->last_state()->get_name();
 	
 	text_section* section = dynamic_cast<text_section*>(state.elm.get());
-	if (section)section->text_section_attr_.text_style_name_ = style_ref(state.style_name);	
+	if (section)section->text_section_attr_.text_style_name_ = state.style_name;	
 
 	sections_.push_back(state);
 }
@@ -476,7 +484,7 @@ void odt_conversion_context::add_section_columns(int count, double space_pt, boo
 	style* style_ = dynamic_cast<style*>(sections_.back().style_elm.get());
 	if (!style_)return;
 
-	style_section_properties	* section_properties	= style_->style_content_.get_style_section_properties();
+	style_section_properties	* section_properties	= style_->content_.get_style_section_properties();
 	
 	create_element(L"style", L"columns",section_properties->style_columns_,this);	
 	style_columns* columns = dynamic_cast<style_columns*>(section_properties->style_columns_.get());
@@ -506,7 +514,7 @@ void odt_conversion_context::add_section_column(std::vector<std::pair<double,dou
 	style* style_ = dynamic_cast<style*>(sections_.back().style_elm.get());
 	if (!style_)return;
 
-	style_section_properties	* section_properties		= style_->style_content_.get_style_section_properties();
+	style_section_properties	* section_properties		= style_->content_.get_style_section_properties();
 	//section_properties->text_dont_balance_text_columns_	= true;
 	
 	style_columns* columns = dynamic_cast<style_columns*>(section_properties->style_columns_.get());
@@ -648,9 +656,9 @@ void odt_conversion_context::flush_section()
 					//style *style_ = dynamic_cast<style*>(current_root_elements_[paragraph_break].style_elm.get());
 					//if (style_)
 					//{
-					//	style_paragraph_properties *props = style_->style_content_.get_style_paragraph_properties();
-					//	props->content().fo_break_before_ = fo_break(fo_break::Auto);
-					//	props->content().fo_break_after_  = fo_break(fo_break::Auto);
+					//	style_paragraph_properties *props = style_->content_.get_style_paragraph_properties();
+					//	props->content_.fo_break_before_ = fo_break(fo_break::Auto);
+					//	props->content_.fo_break_after_  = fo_break(fo_break::Auto);
 					//}
 					continue;
 				}
@@ -915,14 +923,6 @@ void odt_conversion_context::end_change (int id, int type)
 //	return (text_changes_state_.current_types.back() == 2);
 //}
 //--------------------------------------------------------------------------------------------------------
-void odt_conversion_context::start_image(const std::wstring & image_file_name)
-{
-	std::wstring odf_ref_name ;
-	
-	mediaitems()->add_or_find(image_file_name, _mediaitems::typeImage,odf_ref_name);
-
-	drawing_context()->start_image(odf_ref_name);
-}
 
 void odt_conversion_context::start_drop_cap(style_paragraph_properties *paragraph_properties)
 {
@@ -935,7 +935,7 @@ void odt_conversion_context::start_drop_cap(style_paragraph_properties *paragrap
 	drop_cap_state_.paragraph_properties = paragraph_properties;
 
 	office_element_ptr comm_elm;
-	create_element(L"style", L"drop-cap", drop_cap_state_.paragraph_properties->content().style_drop_cap_, this);
+	create_element(L"style", L"drop-cap", drop_cap_state_.paragraph_properties->content_.style_drop_cap_, this);
 }
 
 void odt_conversion_context::set_drop_cap_lines(int lines)
@@ -943,7 +943,7 @@ void odt_conversion_context::set_drop_cap_lines(int lines)
 	if (!drop_cap_state_.enabled) return;
 	if (!drop_cap_state_.paragraph_properties) return;
 
-	style_drop_cap *drop_cap = dynamic_cast<style_drop_cap*>(drop_cap_state_.paragraph_properties->content().style_drop_cap_.get());
+	style_drop_cap *drop_cap = dynamic_cast<style_drop_cap*>(drop_cap_state_.paragraph_properties->content_.style_drop_cap_.get());
 	if (drop_cap)drop_cap->style_lines_ = lines;
 }
 void odt_conversion_context::set_drop_cap_margin(bool val)
@@ -957,7 +957,7 @@ void odt_conversion_context::end_drop_cap()
 
 	if (drop_cap_state_.characters >0 && drop_cap_state_.paragraph_properties)
 	{
-		style_drop_cap *drop_cap = dynamic_cast<style_drop_cap*>(drop_cap_state_.paragraph_properties->content().style_drop_cap_.get());
+		style_drop_cap *drop_cap = dynamic_cast<style_drop_cap*>(drop_cap_state_.paragraph_properties->content_.style_drop_cap_.get());
 		if (drop_cap)
 		{
 			drop_cap->style_length_ = drop_cap_length(drop_cap_state_.characters);
@@ -967,15 +967,15 @@ void odt_conversion_context::end_drop_cap()
 			//сдвинуть первую строку - так чтоб буквица вся (что поместится) была на поле
 			//double indent_pt = 0;
 			//double indent_percent = 0;
-			//if (drop_cap_state_.paragraph_properties->content().fo_text_indent_)
+			//if (drop_cap_state_.paragraph_properties->content_.fo_text_indent_)
 			//{
-			//	if ( drop_cap_state_.paragraph_properties->content().fo_text_indent_->get_type() == length_or_percent::Length)
-			//		indent_pt = drop_cap_state_.paragraph_properties->content().fo_text_indent_->get_length().get_value_unit(length::pt);
+			//	if ( drop_cap_state_.paragraph_properties->content_.fo_text_indent_->get_type() == length_or_percent::Length)
+			//		indent_pt = drop_cap_state_.paragraph_properties->content_.fo_text_indent_->get_length().get_value_unit(length::pt);
 			//	else
-			//		indent_percent = drop_cap_state_.paragraph_properties->content().fo_text_indent_->get_percent()->get_value();
+			//		indent_percent = drop_cap_state_.paragraph_properties->content_.fo_text_indent_->get_percent()->get_value();
 			//}
 			
-			drop_cap_state_.paragraph_properties->content().fo_text_indent_ = length(length(-drop_cap_state_.characters_size_pt,length::pt).get_value_unit(length::cm),length::cm);
+			drop_cap_state_.paragraph_properties->content_.fo_text_indent_ = length(length(-drop_cap_state_.characters_size_pt,length::pt).get_value_unit(length::cm),length::cm);
 			//drop_cap_state_.characters * size_char;
 		}
 	}
@@ -1029,7 +1029,7 @@ void odt_conversion_context::add_table_column(double width)
 	//	
 	//	if (styles_context()->find_odf_style(parent_name,style_family::TableCell,style_))
 	//	{
-	//		style_table_cell_properties * parent = style_->style_content_.get_style_table_cell_properties();
+	//		style_table_cell_properties * parent = style_->content_.get_style_table_cell_properties();
 	//		props->apply_from(parent);
 	//	}
 	//}

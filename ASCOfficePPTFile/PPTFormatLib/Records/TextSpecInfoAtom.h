@@ -86,11 +86,12 @@ public:
 
 		int pos_text = 0, pos_si = 0;
 		int ind = 0;
-		for (int i = 0; i < pText->m_arParagraphs.size(); i++)
+		
+		for (size_t i = 0; i < pText->m_arParagraphs.size(); i++)
 		{
 			if (ind >= m_arrSIs.size()) break;
 			
-			for (int j = 0 ; j < pText->m_arParagraphs[i].m_arSpans.size(); j++)
+			for (size_t j = 0 ; j < pText->m_arParagraphs[i].m_arSpans.size(); j++)
 			{
 				if (pos_text + pText->m_arParagraphs[i].m_arSpans[j].m_strText.length() > pos_si + m_arrSIs[ind].lCount )
 				{

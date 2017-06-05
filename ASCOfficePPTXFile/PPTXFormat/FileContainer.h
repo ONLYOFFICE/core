@@ -52,7 +52,6 @@ namespace PPTX
 		virtual ~FileContainer()
 		{
 		}
-		smart_ptr<PPTX::LegacyDiagramText> legacyDiagramText (const OOX::RId& rId) const;
 
 	protected:
 		void read(const OOX::CPath& filename);
@@ -60,6 +59,7 @@ namespace PPTX
 
 		void read(const OOX::CPath& filename, FileMap& map, IPPTXEvent* Event);
 		void read(const OOX::CRels& rels, const OOX::CPath& path, FileMap& map, IPPTXEvent* Event);
+		
 		void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content) const;
 		void write(OOX::CRels& rels, const OOX::CPath& current, const OOX::CPath& directory, OOX::CContentTypes& content) const;
 
@@ -70,16 +70,6 @@ namespace PPTX
 		bool m_bCancelled;
 	};
 
-	class CCommonRels : public PPTX::FileContainer
-	{
-	public:
-		CCommonRels() : PPTX::FileContainer()
-		{
-		}
-	
-		void _read(const OOX::CPath& filename);
-		void _read(const OOX::CRels& rels, const OOX::CPath& path);
-	};
 } // namespace PPTX
 
 #endif // PPTX_IFILE_CONTAINER_INCLUDE_H_

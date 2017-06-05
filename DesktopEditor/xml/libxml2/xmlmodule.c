@@ -115,7 +115,7 @@ xmlModuleSymbol(xmlModulePtr module, const char *name, void **symbol)
 {
     int rc = -1;
 
-    if ((NULL == module) || (symbol == NULL)) {
+    if ((NULL == module) || (symbol == NULL) || (name == NULL)) {
         __xmlRaiseError(NULL, NULL, NULL, NULL, NULL, XML_FROM_MODULE,
                         XML_MODULE_OPEN, XML_ERR_FATAL, NULL, 0, 0,
                         NULL, NULL, 0, 0, "null parameter\n");
@@ -296,7 +296,7 @@ xmlModulePlatformSymbol(void *handle, const char *name, void **symbol)
 #endif /* HAVE_SHLLOAD */
 #endif /* ! HAVE_DLOPEN */
 
-#if defined(_WIN32) || defined (_WIN64)
+#ifdef _WIN32
 
 #include <windows.h>
 

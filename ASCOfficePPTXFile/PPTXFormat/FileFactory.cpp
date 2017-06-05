@@ -54,6 +54,7 @@
 #include "NotesMaster.h"
 #include "LegacyDiagramText.h"
 
+#include "../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
@@ -79,13 +80,13 @@ namespace PPTX
 			return smart_ptr<OOX::File>(NULL);
 		}
 		
-		if (relation.Type() == OOX::Presentation::FileTypes::App)
+		if (relation.Type() == OOX::FileTypes::App)
 			return smart_ptr<OOX::File>(new PPTX::App(filename, map));
-		else if (relation.Type() == OOX::Presentation::FileTypes::Core)
+		else if (relation.Type() == OOX::FileTypes::Core)
 			return smart_ptr<OOX::File>(new PPTX::Core(filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::Presentation)
 			return smart_ptr<OOX::File>(new PPTX::Presentation(filename, map));
-		else if (relation.Type() == OOX::Presentation::FileTypes::Theme)
+		else if (relation.Type() == OOX::FileTypes::Theme)
 			return smart_ptr<OOX::File>(new PPTX::Theme(filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::SlideMaster)
 			return smart_ptr<OOX::File>(new PPTX::SlideMaster(filename, map));
@@ -105,19 +106,17 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new PPTX::ViewProps(filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::TableStyles)
 			return smart_ptr<OOX::File>(new PPTX::TableStyles(filename, map));
-		else if (relation.Type() == OOX::Presentation::FileTypes::LegacyDiagramText)
+		else if (relation.Type() == OOX::FileTypes::LegacyDiagramText)
 			return smart_ptr<OOX::File>(new PPTX::LegacyDiagramText(filename));
-		else if (relation.Type() == OOX::Presentation::FileTypes::VmlDrawing)
+		else if (relation.Type() == OOX::FileTypes::VmlDrawing)
 			return smart_ptr<OOX::File>(new OOX::CVmlDrawing(OOX::CPath(), filename));
-		else if (relation.Type() == OOX::Presentation::FileTypes::Media)				// FOR NONE OPTIMIZED PPTX FILES
-			return smart_ptr<OOX::File>(new OOX::HyperLink(filename));		
-		else if (relation.Type() == OOX::FileTypes::Chart)
-			return smart_ptr<OOX::File>(new OOX::Image(filename)); // нужен только filepath
 		else if (relation.Type() == OOX::Presentation::FileTypes::CommentAuthors)
 			return smart_ptr<OOX::File>(new PPTX::Authors(filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::SlideComments)
 			return smart_ptr<OOX::File>(new PPTX::Comments(filename, map));
 
+		else if (relation.Type() == OOX::FileTypes::Chart)
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace(filename, filename));
 		else if (relation.Type() == OOX::FileTypes::HyperLink)
 			return smart_ptr<OOX::File>(new OOX::HyperLink(relation.Target()));
 		else if ((relation.Type() == OOX::FileTypes::ExternalImage) && (relation.IsExternal()))
@@ -130,6 +129,8 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new OOX::Image(filename));
 		else if (relation.Type() == OOX::FileTypes::Audio)
 			return smart_ptr<OOX::File>(new OOX::Audio(filename));
+		else if (relation.Type() == OOX::FileTypes::Media)
+			return smart_ptr<OOX::File>(new OOX::Media(filename));
 		else if (relation.Type() == OOX::FileTypes::Video)
 			return smart_ptr<OOX::File>(new OOX::Video(filename));
 		else if (relation.Type() == OOX::FileTypes::Data) 
@@ -138,52 +139,9 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new OOX::CDiagramDrawing(filename)); 
 		else if (relation.Type() == OOX::FileTypes::OleObject)
 			return smart_ptr<OOX::File>(new OOX::OleObject(filename));
+		else if (relation.Type() == OOX::FileTypes::MicrosoftOfficeUnknown) //ms package
+			return smart_ptr<OOX::File>(new OOX::OleObject( filename, true ));
 
-		return smart_ptr<OOX::File>(new OOX::UnknowTypeFile());
-	}
-
-	const smart_ptr<OOX::File> FileFactory::CreateFilePPTX_OnlyMedia(const OOX::CPath& norm_filename, OOX::Rels::CRelationShip& relation)
-	{
-		bool bIsDownload = false;
-		std::wstring strFile = relation.Filename().GetPath();
-		
-		int n1 = (int)strFile.find(_T("www"));
-		int n2 = (int)strFile.find(_T("http"));
-		int n3 = (int)strFile.find(_T("ftp"));
-		int n4 = (int)strFile.find(_T("https://"));
-
-        //если nI сранивать не с 0, то будут проблемы
-        //потому что в инсталяции мы кладем файлы в /var/www...
-        if (0 == n1 || 0 == n2 || 0 == n3 || 0 == n4)
-			bIsDownload = true;
-		
-		OOX::CPath filename = norm_filename;
-
-		if (bIsDownload)
-			filename = relation.Filename();
-
-		std::wstring strT = relation.Type();
-
-		if (strT == OOX::FileTypes::Image ||
-			strT == OOX::FileTypes::Chart)
-		{
-			return smart_ptr<OOX::File>(new OOX::Image(filename));
-		}
-		else if(strT == OOX::FileTypes::Data)
-			return smart_ptr<OOX::File>(new OOX::CDiagramData(filename));
-
-		else if(strT == OOX::FileTypes::DiagDrawing)
-			return smart_ptr<OOX::File>(new OOX::CDiagramDrawing(filename));
-			
-		else if(strT == OOX::FileTypes::HyperLink)
-			return smart_ptr<OOX::File>(new OOX::HyperLink(relation.Target()));
-		
-		else if(strT == OOX::FileTypes::LegacyDiagramText)
-			return smart_ptr<OOX::File>(new PPTX::LegacyDiagramText(filename));
-
-		else if(strT == OOX::FileTypes::OleObject)
-			return smart_ptr<OOX::File>(new OOX::OleObject(filename));
-		
 		return smart_ptr<OOX::File>(new OOX::UnknowTypeFile());
 	}
 

@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<Keys xmlns="http://www.aleksey.com/xmlsec/2002">
+    <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+	<KeyName>my-rsa-key</KeyName>
+	<KeyValue>
+	    <RSAKeyValue>
+		<Modulus>
+		    gj3TOyUtgg99oEfsm8h9JTZBxUkzYkXVUOHxIwnkFwp4y9ZnrGja/j+kpRyKvYP5
+		    CkNdq0e58/r7GLXj45iqd03XjsFNTdjy4OIOgf7JxMG7z+hEB1LT2swTs10GILFW
+		    PByRl3/BEsnekLZdoqNoJrvnttVkxgu3x80Ji3/AZD8Ub/kBGOSPyu6pn3OdnMTc
+		    5q4r1qUe985lQzCZvCMw6AoGeCyJodNu2MbveNeH+YPjRgLCQfzvOFRq+9qMtE8X
+		    fUJZdNhPZhgdsOGf8uJauTcIHbAyw7BhxPy6RikWW5yiWUmBya+7t4y1TQJzham/
+		    0y0zU3TAA7b/rDrU7xmNPw==
+		</Modulus>
+		<Exponent>
+		    AQAB
+		</Exponent>
+		<PrivateExponent xmlns="http://www.aleksey.com/xmlsec/2002">
+		    Ur48iILiGpME2ONY6s/A0fdaaaBLyM9c6nng3MXX5tt8SuP4EYy8NHLygwNTEXva
+		    qC6MP9jdxqdZByXnlhzTj+AgZk1gc2i1RTHYzbW1Mg9y5m9FaPGyLnsguP8MeZCw
+		    nJf51yoO24TspTt22XC/JnyShZGk6D1hkMoumjWbYRPRGPI0Sb1++3qbdnBJrAD1
+		    i7TFJW9Ui6Q0iXt6KZDMFh4ZDAbCEyAyjJtBaPAg6mdu9xF9P+ICH2f8DJdyO04w
+		    bBaGJ+N6X5TVcwyGtwveYDnFv6AZClntNOhN+Y4Ql5UKH0FEqmCeIfglUKWGJM54
+		    3hVMtliD8EaYZOOsRkpfgQ==
+		</PrivateExponent>
+	    </RSAKeyValue>
+	</KeyValue>
+    </KeyInfo>
+    <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+    <KeyName>my-3des-key</KeyName>
+	<KeyValue>
+	    <DESKeyValue xmlns="http://www.aleksey.com/xmlsec/2002">
+		yI+J1f3puYAERjIcT6vfg6RitmKX8nD0
+	    </DESKeyValue>
+	</KeyValue>
+    </KeyInfo>
+    <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+    <KeyName>my-aes256-key</KeyName>
+	<KeyValue>
+	    <AESKeyValue xmlns="http://www.aleksey.com/xmlsec/2002">
+		ZhZ4v3RlwTlCEOpIrHfLKVyJOBDtEJOOQDat/4xR1bA=
+	    </AESKeyValue>
+	</KeyValue>
+    </KeyInfo>
+    <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+	<KeyName>my-aes192-key</KeyName>
+	<KeyValue>
+	    <AESKeyValue xmlns="http://www.aleksey.com/xmlsec/2002">
+		IlfuS40LvStVU0Mj8ePrrGHVhAb48y++
+	    </AESKeyValue>
+	</KeyValue>
+    </KeyInfo>
+    <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+	<KeyName>my-aes128-key</KeyName>
+	<KeyValue>
+	    <AESKeyValue xmlns="http://www.aleksey.com/xmlsec/2002">
+		01+yuQ2huPS1+Qv0LH+zaQ==
+	    </AESKeyValue>
+	</KeyValue>
+    </KeyInfo>
+</Keys>

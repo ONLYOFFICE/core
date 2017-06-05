@@ -81,8 +81,10 @@
  */
 #ifdef	O_BINARY
 #define RD_FLAGS	O_RDONLY | O_BINARY
+#define WR_FLAGS	O_WRONLY | O_CREAT | O_TRUNC | O_BINARY
 #else
-#define	RD_FLAGS	O_RDONLY
+#define RD_FLAGS	O_RDONLY
+#define WR_FLAGS	O_WRONLY | O_CREAT | O_TRUNC
 #endif
 
 typedef int (*functest) (const char *filename, const char *result,
@@ -100,6 +102,7 @@ struct testDesc {
     int     options;  /* parser options for the test */
 };
 
+static int update_results = 0;
 static int checkTestFile(const char *filename);
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -604,11 +607,33 @@ static int checkTestFile(const char *filename) {
     return(1);
 }
 
-static int compareFiles(const char *r1, const char *r2) {
+static int compareFiles(const char *r1 /* temp */, const char *r2 /* result */) {
     int res1, res2;
     int fd1, fd2;
     char bytes1[4096];
     char bytes2[4096];
+
+    if (update_results) {
+        fd1 = open(r1, RD_FLAGS);
+        if (fd1 < 0)
+            return(-1);
+        fd2 = open(r2, WR_FLAGS, 0644);
+        if (fd2 < 0) {
+            close(fd1);
+            return(-1);
+        }
+        do {
+            res1 = read(fd1, bytes1, 4096);
+            if (res1 <= 0)
+                break;
+            res2 = write(fd2, bytes1, res1);
+            if (res2 <= 0 || res2 != res1)
+                break;
+        } while (1);
+        close(fd2);
+        close(fd1);
+        return(res1 != 0);
+    }
 
     fd1 = open(r1, RD_FLAGS);
     if (fd1 < 0)
@@ -646,13 +671,31 @@ static int compareFileMem(const char *filename, const char *mem, int size) {
     int idx = 0;
     struct stat info;
 
-    if (stat(filename, &info) < 0)
+    if (update_results) {
+        fd = open(filename, WR_FLAGS, 0644);
+        if (fd < 0) {
+	    fprintf(stderr, "failed to open %s for writing", filename);
+            return(-1);
+	}
+        res = write(fd, mem, size);
+        close(fd);
+        return(res != size);
+    }
+
+    if (stat(filename, &info) < 0) {
+        fprintf(stderr, "failed to stat %s\n", filename);
 	return(-1);
-    if (info.st_size != size)
+    }
+    if (info.st_size != size) {
+        fprintf(stderr, "file %s is %ld bytes, result is %d bytes\n",
+	        filename, (long) info.st_size, size);
         return(-1);
+    }
     fd = open(filename, RD_FLAGS);
-    if (fd < 0)
+    if (fd < 0) {
+	fprintf(stderr, "failed to open %s for reading", filename);
         return(-1);
+    }
     while (idx < size) {
         res = read(fd, bytes, 4096);
 	if (res <= 0)
@@ -671,6 +714,9 @@ static int compareFileMem(const char *filename, const char *mem, int size) {
 	idx += res;
     }
     close(fd);
+    if (idx != size) {
+	fprintf(stderr,"Compare error index %d, size %d\n", idx, size);
+    }
     return(idx != size);
 }
 
@@ -1679,7 +1725,8 @@ saxParseTest(const char *filename, const char *result,
     }
     if (ret != 0) {
         fprintf(stderr, "Failed to parse %s\n", filename);
-	return(1);
+	ret = 1;
+	goto done;
     }
 #ifdef LIBXML_HTML_ENABLED
     if (options & XML_PARSE_HTML) {
@@ -1701,6 +1748,8 @@ saxParseTest(const char *filename, const char *result,
         fprintf(stderr, "Got a difference for %s\n", filename);
         ret = 1;
     }
+
+done:
     if (temp != NULL) {
         unlink(temp);
         free(temp);
@@ -1824,14 +1873,14 @@ pushParseTest(const char *filename, const char *result,
     ctxt = xmlCreatePushParserCtxt(NULL, NULL, base + cur, 4, filename);
     xmlCtxtUseOptions(ctxt, options);
     cur += 4;
-    while (cur < size) {
+    do {
         if (cur + 1024 >= size) {
 #ifdef LIBXML_HTML_ENABLED
 	    if (options & XML_PARSE_HTML)
 		htmlParseChunk(ctxt, base + cur, size - cur, 1);
 	    else
 #endif
-	    DoctRenderer(ctxt, base + cur, size - cur, 1);
+	    xmlParseChunk(ctxt, base + cur, size - cur, 1);
 	    break;
 	} else {
 #ifdef LIBXML_HTML_ENABLED
@@ -1839,10 +1888,10 @@ pushParseTest(const char *filename, const char *result,
 		htmlParseChunk(ctxt, base + cur, 1024, 0);
 	    else
 #endif
-	    DoctRenderer(ctxt, base + cur, 1024, 0);
+	    xmlParseChunk(ctxt, base + cur, 1024, 0);
 	    cur += 1024;
 	}
-    }
+    } while (cur < size);
     doc = ctxt->myDoc;
 #ifdef LIBXML_HTML_ENABLED
     if (options & XML_PARSE_HTML)
@@ -1868,7 +1917,7 @@ pushParseTest(const char *filename, const char *result,
     if ((base == NULL) || (res != 0)) {
 	if (base != NULL)
 	    xmlFree((char *)base);
-        fprintf(stderr, "Result for %s failed\n", filename);
+        fprintf(stderr, "Result for %s failed in %s\n", filename, result);
 	return(-1);
     }
     xmlFree((char *)base);
@@ -1923,7 +1972,7 @@ memParseTest(const char *filename, const char *result,
     if ((base == NULL) || (res != 0)) {
 	if (base != NULL)
 	    xmlFree((char *)base);
-        fprintf(stderr, "Result for %s failed\n", filename);
+        fprintf(stderr, "Result for %s failed in %s\n", filename, result);
 	return(-1);
     }
     xmlFree((char *)base);
@@ -2034,15 +2083,15 @@ errParseTest(const char *filename, const char *result, const char *err,
 	    xmlDocDumpMemory(doc, (xmlChar **) &base, &size);
 	}
 	res = compareFileMem(result, base, size);
+	if (res != 0) {
+	    fprintf(stderr, "Result for %s failed in %s\n", filename, result);
+	    return(-1);
+	}
     }
     if (doc != NULL) {
 	if (base != NULL)
 	    xmlFree((char *)base);
 	xmlFreeDoc(doc);
-    }
-    if (res != 0) {
-        fprintf(stderr, "Result for %s failed\n", filename);
-	return(-1);
     }
     if (err != NULL) {
 	res = compareFileMem(err, testErrors, testErrorsSize);
@@ -2156,7 +2205,7 @@ streamProcessTest(const char *filename, const char *result, const char *err,
             free(temp);
         }
 	if (ret) {
-	    fprintf(stderr, "Result for %s failed\n", filename);
+	    fprintf(stderr, "Result for %s failed in %s\n", filename, result);
 	    return(-1);
 	}
     }
@@ -2268,9 +2317,18 @@ static FILE *xpathOutput;
 static xmlDocPtr xpathDocument;
 
 static void
+ignoreGenericError(void *ctx ATTRIBUTE_UNUSED,
+        const char *msg ATTRIBUTE_UNUSED, ...) {
+}
+
+static void
 testXPath(const char *str, int xptr, int expr) {
+    xmlGenericErrorFunc handler = ignoreGenericError;
     xmlXPathObjectPtr res;
     xmlXPathContextPtr ctxt;
+
+    /* Don't print generic errors to stderr. */
+    initGenericErrorDefaultFunc(&handler);
 
     nb_tests++;
 #if defined(LIBXML_XPTR_ENABLED)
@@ -2300,6 +2358,9 @@ testXPath(const char *str, int xptr, int expr) {
     xmlXPathDebugDumpObject(xpathOutput, res, 0);
     xmlXPathFreeObject(res);
     xmlXPathFreeContext(ctxt);
+
+    /* Reset generic error handler. */
+    initGenericErrorDefaultFunc(NULL);
 }
 
 /**
@@ -2359,7 +2420,7 @@ xpathCommonTest(const char *filename, const char *result,
     if (result != NULL) {
 	ret = compareFiles(temp, result);
 	if (ret) {
-	    fprintf(stderr, "Result for %s failed\n", filename);
+	    fprintf(stderr, "Result for %s failed in %s\n", filename, result);
 	}
     }
 
@@ -2530,7 +2591,7 @@ xmlidDocTest(const char *filename,
     if (result != NULL) {
 	ret = compareFiles(temp, result);
 	if (ret) {
-	    fprintf(stderr, "Result for %s failed\n", filename);
+	    fprintf(stderr, "Result for %s failed in %s\n", filename, result);
 	    res = 1;
 	}
     }
@@ -2658,7 +2719,7 @@ uriCommonTest(const char *filename,
     if (result != NULL) {
 	ret = compareFiles(temp, result);
 	if (ret) {
-	    fprintf(stderr, "Result for %s failed\n", filename);
+	    fprintf(stderr, "Result for %s failed in %s\n", filename, result);
 	    res = 1;
 	}
     }
@@ -3427,11 +3488,11 @@ patternTest(const char *filename,
     result[499] = 0;
     memcpy(xml + len, ".xml", 5);
 
-    if (!checkTestFile(xml)) {
+    if (!checkTestFile(xml) && !update_results) {
 	fprintf(stderr, "Missing xml file %s\n", xml);
 	return(-1);
     }
-    if (!checkTestFile(result)) {
+    if (!checkTestFile(result) && !update_results) {
 	fprintf(stderr, "Missing result file %s\n", result);
 	return(-1);
     }
@@ -3530,7 +3591,7 @@ patternTest(const char *filename,
 
     ret = compareFiles(temp, result);
     if (ret) {
-	fprintf(stderr, "Result for %s failed\n", filename);
+	fprintf(stderr, "Result for %s failed in %s\n", filename, result);
 	ret = 1;
     }
     if (temp != NULL) {
@@ -3802,7 +3863,7 @@ c14nCommonTest(const char *filename, int with_comments, int mode,
     prefix[len] = 0;
 
     snprintf(buf, 499, "result/c14n/%s/%s", subdir,prefix);
-    if (!checkTestFile(buf)) {
+    if (!checkTestFile(buf) && !update_results) {
         fprintf(stderr, "Missing result file %s", buf);
 	return(-1);
     }
@@ -4351,9 +4412,9 @@ launchTests(testDescPtr tst) {
 	    } else {
 	        error = NULL;
 	    }
-	    if ((result) &&(!checkTestFile(result))) {
+	    if ((result) &&(!checkTestFile(result)) && !update_results) {
 	        fprintf(stderr, "Missing result file %s\n", result);
-	    } else if ((error) &&(!checkTestFile(error))) {
+	    } else if ((error) &&(!checkTestFile(error)) && !update_results) {
 	        fprintf(stderr, "Missing error file %s\n", error);
 	    } else {
 		mem = xmlMemUsed();
@@ -4437,6 +4498,8 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
     for (a = 1; a < argc;a++) {
         if (!strcmp(argv[a], "-v"))
 	    verbose = 1;
+        else if (!strcmp(argv[a], "-u"))
+	    update_results = 1;
         else if (!strcmp(argv[a], "-quiet"))
 	    tests_quiet = 1;
 	else {

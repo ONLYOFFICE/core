@@ -66,7 +66,7 @@ namespace PPTX
         m_lPercent = (long)floor(1000000. / files);
 		FileContainer::read(rels, path, map, Event);
 
-        long percent = Event->GetPercent();
+		long percent = Event ? Event->GetPercent() : 0;
 
         if(m_bCancelled  && percent < 1000000)
 			return;
@@ -81,7 +81,7 @@ namespace PPTX
         {
             const OOX::FileType& curType = pPair->second->type();
 
-            if (OOX::Presentation::FileTypes::ThemePPTX == curType)
+            if (OOX::FileTypes::Theme == curType)
             {
                 smart_ptr<PPTX::Theme> pTheme = pPair->second.smart_dynamic_cast<PPTX::Theme>();
                 if (pTheme.IsInit())
@@ -141,7 +141,8 @@ namespace PPTX
             }
         }
 
-		Event->Progress(0, 1000000);
+		if (Event)
+			Event->Progress(0, 1000000);
 	}
 
 	void Folder::write(const OOX::CPath& path)

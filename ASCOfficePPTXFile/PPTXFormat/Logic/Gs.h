@@ -80,7 +80,7 @@ namespace PPTX
 				nullable_int tmp;
 				WritingElement_ReadAttributes_Start_No_NS	( oReader )
 					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("pos"), tmp)
-				WritingElement_ReadAttributes_End	( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 
 				pos = tmp.get_value_or(0);
 			}

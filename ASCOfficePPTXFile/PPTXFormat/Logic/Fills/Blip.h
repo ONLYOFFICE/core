@@ -62,11 +62,13 @@ namespace PPTX
 				embed	= oSrc.embed;
 				link	= oSrc.link;
 
-				m_namespace	= oSrc.m_namespace;
-				oleRid = oSrc.oleRid;
-				oleFilepathBin = oSrc.oleFilepathBin;
-				oleFilepathImg = oSrc.oleFilepathImg;
-				oleRidImg = oSrc.oleRidImg;
+				m_namespace		= oSrc.m_namespace;
+				
+				oleRid			= oSrc.oleRid;
+				oleFilepathBin	= oSrc.oleFilepathBin;
+
+				mediaRid		= oSrc.mediaRid;
+				mediaFilepath	= oSrc.mediaFilepath;
 
 				return *this;
 			}
@@ -74,7 +76,9 @@ namespace PPTX
 			{
 				return OOX::et_a_blip;
 			}			
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -83,112 +87,28 @@ namespace PPTX
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("cstate"), cstate )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				std::wstring strName = (_T("") == m_namespace) ? _T("blip") : (m_namespace + _T(":blip"));
-				pWriter->StartNode(strName);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			
+			virtual std::wstring GetFullPicName(OOX::IFileContainer* pRels = NULL)const;
+			virtual std::wstring GetFullOleName(const OOX::RId& pRId, OOX::IFileContainer* pRels = NULL)const;
 
-				pWriter->StartAttributes();
-				if (embed.IsInit())
-					pWriter->WriteAttribute(_T("r:embed"), embed->ToString());
-				if (link.IsInit())
-					pWriter->WriteAttribute(_T("r:link"), link->ToString());
-				pWriter->WriteAttribute(_T("cstate"), cstate);
-				pWriter->EndAttributes();
-
-				// TODO:
-				size_t nCount = Effects.size();
-				for (size_t i = 0; i < nCount; ++i)
-				{
-					Effects[i].toXmlWriter(pWriter);
-				}
-
-				pWriter->EndNode(strName);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteLimit2(0, cstate);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				/*
-				old version
-				if (embed.is_init())
-					embed->toPPTY(0, pWriter);
-				if (link.is_init())
-					link->toPPTY(1, pWriter);
-				*/
-
-				// new version
-				if (embed.is_init())
-					pWriter->WriteString1(10, embed->get());
-				if (link.is_init())
-					pWriter->WriteString1(11, link->get());
-
-				pWriter->StartRecord(2);
-				ULONG len = (ULONG)Effects.size();
-				pWriter->WriteULONG(len);
-
-				for (ULONG i = 0; i < len; ++i)
-				{
-					pWriter->WriteRecord1(3, Effects[i]);
-				}
-
-				pWriter->EndRecord();
-
-				double dX = pWriter->GetShapeX(); //mm
-				double dY = pWriter->GetShapeY();
-
-				double dW = pWriter->GetShapeWidth(); //mm
-				double dH = pWriter->GetShapeHeight();
-
-				FileContainer* pRels = NULL;
-				
-				if (pWriter->m_pCommonRels->is_init())
-					pRels = pWriter->m_pCommonRels->operator ->();
-
-				std::wstring olePath;
-				if(!oleFilepathBin.empty())
-				{
-					olePath = oleFilepathBin;
-				}
-				else if(!oleRid.empty())
-				{
-					olePath= this->GetFullOleName(OOX::RId(oleRid), pRels);
-				}
-
-				NSShapeImageGen::CImageInfo oId = pWriter->m_pCommon->m_pImageManager->WriteImage(this->GetFullPicName(pRels), olePath, dX, dY, dW, dH);
-				std::wstring s = oId.GetPath2();
-
-				pWriter->StartRecord(3);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString1(0, s);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);				
-
-				pWriter->EndRecord();
-			}
-		public:
-			virtual std::wstring GetFullPicName(FileContainer* pRels = NULL)const;
-			virtual std::wstring GetFullOleName(const OOX::RId& pRId, FileContainer* pRels = NULL)const;
-
-		public:
 			std::vector<UniEffect> Effects;
 
 			nullable_limit<Limit::BlipCompression> cstate;
-			nullable<OOX::RId> embed;
-			nullable<OOX::RId> link;
-		public:
-			std::wstring m_namespace;
+			nullable<OOX::RId>	embed;
+			nullable<OOX::RId>	link;
+			std::wstring		m_namespace;
+	//internal
+			std::wstring		mediaRid;
+			std::wstring		mediaFilepath;
 
-			std::wstring oleRid;
-			std::wstring oleFilepathBin;
-			std::wstring oleFilepathImg;
-			std::wstring oleRidImg;
+			std::wstring		oleRid;
+			std::wstring		oleFilepathBin;
+			std::wstring		oleFilepathImage;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

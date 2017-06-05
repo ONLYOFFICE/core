@@ -121,11 +121,19 @@ namespace NExtractTools
     int docx_dir2odt    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
     int xlsx2ods        (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
     int xlsx_dir2ods    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+    int pptx2odp        (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+    int pptx_dir2odp    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 
 	int fromMscrypt		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 	int mscrypt2oox		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 	int mscrypt2oot		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 	int mscrypt2oot_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+	
+	int oox2mscrypt		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+
+	int html2doct_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+	int html2doct		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+    int html2docx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
     int dir2zip			(const std::wstring &sFrom, const std::wstring &sTo);
@@ -150,6 +158,7 @@ namespace NExtractTools
     int fromCanvasPdf(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params);
 
 	int fromInputParams(InputParams& oInputParams);
+	
 	X2T_DECL_EXPORT int FromFile(const std::wstring& file);
 	X2T_DECL_EXPORT int FromXml(const std::wstring& xml);
 }

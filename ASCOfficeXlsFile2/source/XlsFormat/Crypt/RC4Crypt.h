@@ -41,7 +41,7 @@ namespace CRYPT
 class RC4Crypt : public Crypt
 {
 public:
-	RC4Crypt(CRYPT::CryptRC4Data & data, std::wstring password, int type);
+	RC4Crypt(CRYPT::_rc4CryptData & data, std::wstring password, int type);
 
 	virtual void Encrypt(char* data, const size_t size);
 	virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos);

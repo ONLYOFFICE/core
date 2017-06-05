@@ -40,7 +40,6 @@
 
 #include "office_elements_create.h"
 
-#include "datatypes/style_ref.h"
 #include "datatypes/fontvariant.h"
 #include "datatypes/texttransform.h"
 #include "datatypes/color.h"
@@ -81,7 +80,9 @@ public:
 	void pptx_convert			(oox::pptx_conversion_context & Context);
 	void pptx_convert_as_list	(oox::pptx_conversion_context & Context);
 	
-	void oox_convert			(std::wostream & stream, bool graphic, fonts_container & fonts);
+	void oox_serialize			(std::wostream & stream, bool graphic, fonts_container & fonts);
+    void docx_serialize			(std::wostream & stream, fonts_container & fonts);
+	void drawing_serialize		(std::wostream & stream, std::wstring node, fonts_container & fonts, const odf_reader::style_instance *current_style = NULL, std::wstring hlink = L"");
 
     void apply_from			(const text_format_properties_content & Other);
 	void apply_to			(std::vector<_property> & properties);
@@ -106,7 +107,7 @@ public:
     _CP_OPT(odf_types::line_width)			style_text_line_through_width_;
     _CP_OPT(odf_types::color)				style_text_line_through_color_;
     _CP_OPT(std::wstring)					style_text_line_through_text_;
-    _CP_OPT(odf_types::style_ref)			style_text_line_through_text_style_;
+    _CP_OPT(std::wstring)					style_text_line_through_text_style_;
     _CP_OPT(odf_types::text_position)		style_text_position_;
     _CP_OPT(std::wstring)					style_font_name_;    
     _CP_OPT(std::wstring)					style_font_name_asian_;  

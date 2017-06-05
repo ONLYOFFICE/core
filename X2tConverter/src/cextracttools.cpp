@@ -128,6 +128,7 @@ namespace NExtractTools
 							 if (0 == sExt2.compare(_T(".bin")))		res = TCD_PPTX2PPTT_BIN;
 						else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_PPTX2PPTT;
 						else if (0 == sExt2.compare(_T(".pptx")))		res = TCD_PPSX2PPTX;
+                        else if (0 == sExt2.compare(_T(".odp")))		res = TCD_PPTX2ODP;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY:
 					{
@@ -221,6 +222,24 @@ namespace NExtractTools
                         else if (0 == sExt2.compare(_T(".xlst")))		res = TCD_MSCRYPT2XLST;
                         else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_MSCRYPT2PPTT;
  						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_MSCRYPT2BIN;
+					}break;
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML:
+					{
+							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_HTML2DOCX;
+						else if (0 == sExt2.compare(_T(".doct")))		res = TCD_HTML2DOCT;
+						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_HTML2DOCT_BIN;
+					}break;
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2:
+					{
+							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_FB22DOCX;
+						else if (0 == sExt2.compare(_T(".doct")))		res = TCD_FB22DOCT;
+						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_FB22DOCT_BIN;
+					}break;
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB:
+					{
+							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_EPUB2DOCX;
+						else if (0 == sExt2.compare(_T(".doct")))		res = TCD_EPUB2DOCT;
+						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_EPUB2DOCT_BIN;
 					}break;
                 }
             }

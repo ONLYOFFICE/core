@@ -96,7 +96,7 @@ void odf_comment_context::start_comment(office_element_ptr &elm, int oox_id)
 
 	impl_->comments_.push_back(state);
 	impl_->comments_.back().elements_.push_back(elm);//"0" - root comment eleemnt
-	impl_->comments_.back().oox_id = oox_id;
+	impl_->comments_.back().oox_id = oox_id < 0 ? impl_->comments_.back().elements_.size() : oox_id;
 	impl_->comments_.back().odf_name = L"comment_" + boost::lexical_cast<std::wstring>(oox_id);
 
 	impl_->comments_.back().is_started = false;
@@ -159,14 +159,14 @@ std::wstring odf_comment_context::find_name_by_id(int oox_id)
 }
 bool odf_comment_context::is_started()
 {
-	if (impl_->comments_.size()>0)
+	if (!impl_->comments_.empty())
 		return 	impl_->comments_.back().is_started;
 	else return false;
 
 }
 void odf_comment_context::set_author(std::wstring author)
 {
-	if ((impl_->comments_.size()<1) || !is_started()) return;
+	if ((impl_->comments_.empty()) || !is_started()) return;
 
 	office_element_ptr elm;
 	create_element(L"dc", L"creator", elm, impl_->odf_context_);
@@ -178,11 +178,15 @@ void odf_comment_context::set_author(std::wstring author)
 
 	impl_->comments_.back().elements_[0]->add_child_element(elm);
 	impl_->comments_.back().elements_.push_back(elm);
+}
+void odf_comment_context::set_initials(std::wstring initials)
+{
+	if ((impl_->comments_.empty()) || !is_started()) return;
 
 }
 void odf_comment_context::set_date(std::wstring _date)
 {
-	if ((impl_->comments_.size()<1) || !is_started()) return;
+	if ((impl_->comments_.empty()) || !is_started()) return;
 	
 	office_element_ptr elm;
 	create_element(L"dc", L"date", elm, impl_->odf_context_);
@@ -195,5 +199,18 @@ void odf_comment_context::set_date(std::wstring _date)
 	impl_->comments_.back().elements_[0]->add_child_element(elm);
 	impl_->comments_.back().elements_.push_back(elm);
 }
+void odf_comment_context::set_position (double x, double y)
+{
+	if ((impl_->comments_.empty()) || !is_started()) return;
+
+	office_annotation* comm = dynamic_cast<office_annotation*>(impl_->comments_.back().elements_.back().get());
+
+	if (comm)
+	{
+		comm->office_annotation_attr_.svg_x_ = odf_types::length(x, odf_types::length::pt);
+		comm->office_annotation_attr_.svg_y_ = odf_types::length(y, odf_types::length::pt);
+	}
+}
+
 }
 }

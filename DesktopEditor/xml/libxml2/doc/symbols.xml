@@ -660,7 +660,7 @@
     <symbol file="parser">xmlNewIOInputStream</symbol>
     <symbol file="parser">xmlParseBalancedChunkMemory</symbol>
     <symbol file="parser">xmlParseBalancedChunkMemoryRecover</symbol>
-    <symbol file="parser">DoctRenderer</symbol>
+    <symbol file="parser">xmlParseChunk</symbol>
     <symbol file="parser">xmlParseCtxtExternalEntity</symbol>
     <symbol file="parser">xmlParseDTD</symbol>
     <symbol file="parser">xmlParseDoc</symbol>

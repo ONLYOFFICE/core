@@ -46,7 +46,11 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(SplitTransition)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_SplitTransition;
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"dir", dir);
@@ -62,7 +66,6 @@ namespace PPTX
 				return XmlUtils::CreateNode(_T("p:split"), oAttr);
 			}
 
-		public:
 			nullable_limit<Limit::InOutDirectionVal>	dir;
 			nullable_limit<Limit::Orient>				orient;
 		protected:

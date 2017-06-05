@@ -45,7 +45,8 @@
 	#include <windows.h>
 #endif
 
-#define U_TO_UTF8(val) NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(val.c_str(), val.length())
+#define U_TO_UTF8(val) NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(val.c_str(), (LONG)val.length())
+#define UTF8_TO_U(val) NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)val.c_str(), (LONG)val.length())
 
 #if defined(__linux__) || defined(_MAC) && !defined(_IOS)
 #include <unistd.h>

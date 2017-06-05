@@ -120,7 +120,7 @@ namespace OOX {
                 // Ищем файл с темами
                 pFile = pDocumentContainer->Find(OOX::FileTypes::Theme);
                 if (pFile.IsInit() && OOX::FileTypes::Theme == pFile->type())
-                    m_pTheme = (OOX::CTheme*)pFile.operator->();
+					m_pTheme = (PPTX::Theme*)pFile.operator->();
                 else
                     m_pTheme = NULL;
             }

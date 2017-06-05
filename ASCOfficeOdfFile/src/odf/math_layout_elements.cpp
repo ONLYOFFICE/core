@@ -292,7 +292,7 @@ void math_mstyle::oox_convert(oox::math_context & Context)
 		{ 
 			CP_XML_NODE(L"m:ctrlPr")
 			{
-				Context.text_properties_->content().oox_convert(CP_XML_STREAM(), Context.graphRPR_, Context.fonts_container_);
+				Context.text_properties_->content().oox_serialize(CP_XML_STREAM(), Context.graphRPR_, Context.fonts_container_);
 			}
 		}
 	}
@@ -317,7 +317,7 @@ void math_mstyle::oox_convert(oox::math_context & Context)
 		{ 
 			CP_XML_NODE(L"m:ctrlPr")
 			{
-				Context.text_properties_->content().oox_convert(CP_XML_STREAM(), Context.graphRPR_, Context.fonts_container_);
+				Context.text_properties_->content().oox_serialize(CP_XML_STREAM(), Context.graphRPR_, Context.fonts_container_);
 			}
 		}
 	}

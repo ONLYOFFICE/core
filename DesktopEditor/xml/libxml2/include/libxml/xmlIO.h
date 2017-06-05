@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Summary: interface for the I/O interfaces used by the parser
  * Description: interface for the I/O interfaces used by the parser
  *
@@ -209,7 +209,7 @@ XMLPUBFUN int XMLCALL
 
 xmlParserInputBufferPtr
 	__xmlParserInputBufferCreateFilename(const char *URI,
-										xmlCharEncoding enc);
+						xmlCharEncoding enc);
 
 #ifdef LIBXML_OUTPUT_ENABLED
 /*
@@ -296,6 +296,14 @@ XMLPUBFUN xmlParserInputPtr XMLCALL
  */
 XMLPUBFUN xmlParserInputPtr XMLCALL
 	xmlNoNetExternalEntityLoader	(const char *URL,
+					 const char *ID,
+					 xmlParserCtxtPtr ctxt);
+
+/*
+ * A predefined entity loader external entity expansion
+ */
+XMLPUBFUN xmlParserInputPtr XMLCALL
+	xmlNoXxeExternalEntityLoader	(const char *URL,
 					 const char *ID,
 					 xmlParserCtxtPtr ctxt);
 

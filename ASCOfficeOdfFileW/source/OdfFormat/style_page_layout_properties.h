@@ -78,7 +78,7 @@ public:
     odf_types::common_background_color_attlist			common_background_color_attlist_;
     odf_types::common_writing_mode_attlist				common_writing_mode_attlist_;
     
-	_CP_OPT(odf_types::style_ref)						style_register_truth_ref_style_name_;
+	_CP_OPT(std::wstring)								style_register_truth_ref_style_name_;
     _CP_OPT(std::wstring)								style_print_;
 	_CP_OPT(std::wstring)								style_paper_tray_name_;
     _CP_OPT(std::wstring)								style_print_orientation_; 
@@ -131,8 +131,8 @@ public:
 
 	virtual void serialize(std::wostream & strm);
 
-    style_page_layout_properties_attlist	style_page_layout_properties_attlist_;
-    style_page_layout_properties_elements	style_page_layout_properties_elements_;
+    style_page_layout_properties_attlist	attlist_;
+    style_page_layout_properties_elements	elements_;
     
 };
 

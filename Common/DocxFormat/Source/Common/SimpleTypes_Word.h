@@ -3085,6 +3085,11 @@ namespace SimpleTypes
 			m_dValue = fabs( dValue * 72.0 );
 			return m_dValue;
 		}
+		virtual double FromHps(double dValue)
+		{
+			m_dValue = dValue / 2;
+			return m_dValue;
+		}
 		SimpleType_FromString          (double)
 		SimpleType_Operator_Equal      (CHpsMeasure)
 		UniversalMeasure_AdditionalOpearators(CHpsMeasure)

@@ -63,6 +63,7 @@ public:
 	std::wostream & conditionalFormatting();
 	std::wostream & sort();
 	std::wostream & ole_objects();
+	std::wostream & page_properties();
 	
 	rels & hyperlinks_rels();
 	rels & ole_objects_rels();

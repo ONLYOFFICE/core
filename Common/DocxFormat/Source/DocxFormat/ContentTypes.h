@@ -66,7 +66,14 @@ namespace OOX
                 m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("wmf"),  _T("image/x-wmf")));
                 m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("svm"),  _T("image/svm")));
                 m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("wav"),  _T("audio/wav")));
-                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("xls"),  _T("application/vnd.ms-excel")));
+				m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("wma"),  _T("audio/x-wma")));    
+				m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("m4a"),  _T("audio/unknown"))); 
+				m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("mp3"),  _T("audio/mpeg"))); 
+				m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("mp4"),  _T("video/unknown"))); 
+				m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("mov"),  _T("video/unknown"))); 
+				m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("avi"),  _T("video/avi"))); 
+				m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("wmv"),  _T("video/x-wmv"))); 
+				m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("xls"),  _T("application/vnd.ms-excel")));
                 m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("xlsm"), _T("application/vnd.ms-excel.sheet.macroEnabled.12")));
                 m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("xlsb"), _T("application/vnd.ms-excel.sheet.binary.macroEnabled.12")));
                 m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("xlsx"), _T("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")));
@@ -108,18 +115,18 @@ namespace OOX
 			}
 
 		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_sExtension = oNode.GetAttribute(_T("Extension"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				static const CExtensionTable oTable;
 				
@@ -134,7 +141,7 @@ namespace OOX
 				return et_Default;
 			}
 
-            std::wstring	m_sExtension;
+            std::wstring m_sExtension;
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -216,8 +223,8 @@ namespace OOX
 
 		private:
 
-            std::wstring				m_sType;
-			OOX::CPath					m_oPart;
+            std::wstring	m_sType;
+			OOX::CPath		m_oPart;
 
 		};
 	} // namespace ContentTypes
@@ -229,18 +236,17 @@ namespace OOX
 	public:
 		CContentTypes()
 		{
-			AddDefault(OOX::CPath(_T(".bin")));
-			AddDefault(OOX::CPath(_T(".rels")));
-			AddDefault(OOX::CPath(_T(".bmp")));
-			AddDefault(OOX::CPath(_T(".jpg")));
-			AddDefault(OOX::CPath(_T(".jpeg")));
-			AddDefault(OOX::CPath(_T(".jpe")));
-			AddDefault(OOX::CPath(_T(".png")));
-			AddDefault(OOX::CPath(_T(".gif")));
-			AddDefault(OOX::CPath(_T(".emf")));
-			AddDefault(OOX::CPath(_T(".wmf")));
-			AddDefault(OOX::CPath(_T(".jpeg")));
-			AddDefault(OOX::CPath(_T(".xlsx")));
+			AddDefault(L"bin");
+			AddDefault(L"rels");
+			AddDefault(L"jpeg");
+			AddDefault(L"png");
+			AddDefault(L"wmf");
+			//AddDefault(L"bmp");
+			//AddDefault(OOX::CPath(_T(".jpg")));
+			//AddDefault(OOX::CPath(_T(".jpe")));
+			//AddDefault(OOX::CPath(_T(".gif")));
+			//AddDefault(OOX::CPath(_T(".emf")));
+			//AddDefault(OOX::CPath(_T(".xlsx")));
 		}
 		CContentTypes(const CPath& oPath)
 		{
@@ -248,15 +254,7 @@ namespace OOX
 		}
 		~CContentTypes()
 		{
-            for ( unsigned int nIndex = 0; nIndex < m_arrDefault.size(); nIndex++ )
-			{
-				if ( m_arrDefault[nIndex] ) delete m_arrDefault[nIndex];
-				m_arrDefault[nIndex] = NULL;
-			}
-			m_arrDefault.clear();
 		}
-
-	public:
 
 		bool Read (const CPath& oDirPath)
 		{
@@ -264,30 +262,42 @@ namespace OOX
 
 			XmlUtils::CXmlLiteReader oReader;
 			if ( !oReader.FromFile( oFullPath.m_strFilename ) )
-                                return false;
+				return false;
 			return ReadFromReader(oReader);
 		}
         bool ReadFromString (std::wstring& sXml)
 		{
 			XmlUtils::CXmlLiteReader oReader;
 			if ( !oReader.FromString( sXml ) )
-                                return false;
+				return false;
 			return ReadFromReader(oReader);
+		}
+		void Merge(CContentTypes * pSrcContentTypes)
+		{
+			if (pSrcContentTypes == NULL) return;
+
+			for (std::map<std::wstring, ContentTypes::CDefault>::iterator it = pSrcContentTypes->m_mapDefaults.begin(); it != pSrcContentTypes->m_mapDefaults.end(); ++it)
+            {
+                AddDefault(it->first);
+            }
+			for (std::map<std::wstring, ContentTypes::COverride>::iterator it = pSrcContentTypes->m_mapOverrides.begin(); it != pSrcContentTypes->m_mapOverrides.end(); ++it)
+            {
+				if (m_mapOverrides.find(it->first) == m_mapOverrides.end())
+				{
+					m_mapOverrides [it->first] = it->second;
+				}
+            }
 		}
 		bool Write(const CPath& oDirPath) const
 		{
             std::wstring sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
 
-			for (unsigned  int nIndex = 0; nIndex < m_arrDefault.size(); nIndex++ )
-			{
-				if (m_arrDefault[nIndex])
-				{
-					sXml += m_arrDefault[nIndex]->toXML();
-				}
-			}
+			for (std::map<std::wstring, ContentTypes::CDefault>::const_iterator it = m_mapDefaults.begin(); it != m_mapDefaults.end(); ++it)
+            {
+                sXml += it->second.toXML();
+            }
 
-
-            for (std::map<std::wstring, ContentTypes::COverride>::const_iterator it = m_arrOverride.begin(); it != m_arrOverride.end(); ++it)
+            for (std::map<std::wstring, ContentTypes::COverride>::const_iterator it = m_mapOverrides.begin(); it != m_mapOverrides.end(); ++it)
             {
                 sXml += it->second.toXML();
             }
@@ -299,36 +309,26 @@ namespace OOX
 
 			return true;
 		}
-
-	public:
         void Registration(const std::wstring& sType, const CPath& oDirectory, const CPath& oFilename)
 		{
             OOX::CPath oFullPath = oDirectory / oFilename;
 
             AddOverride( sType, oFullPath.m_strFilename );
-			AddDefault ( oFullPath );
+			AddDefault ( oFullPath.GetExtention(false) );
 		}
-
-		void AddDefault(const OOX::CPath& oPath)
+        void Registration(const std::wstring& sType, const std::wstring& sDirectory, const std::wstring& sFilename)
 		{
-            std::wstring sExt(oPath.GetExtention().c_str());
-            const std::wstring sExtension = sExt.substr( 1 );
-
-			size_t nCount = m_arrDefault.size();
-			size_t nIndex = 0;	
-
-			while ( nIndex < nCount )
-			{
-				if (( m_arrDefault[(int) nIndex]) && (m_arrDefault[(int) nIndex]->m_sExtension == sExtension ))
-					break;
-
-				++nIndex;
-			}
-
-			if ( nIndex == nCount )
-				m_arrDefault.push_back(new ContentTypes::CDefault( sExtension ) );
+			Registration(sType, OOX::CPath(sDirectory), OOX::CPath(sFilename));
 		}
+		void AddDefault(const std::wstring& sExtension)
+		{
+			if (sExtension.empty()) return;
 
+			if (m_mapDefaults.find (sExtension) == m_mapDefaults.end())
+			{
+				m_mapDefaults [sExtension] = ContentTypes::CDefault( sExtension );
+			}
+		}
 	private:
 		bool ReadFromReader (XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -343,13 +343,13 @@ namespace OOX
 
 				if ( _T("Default") == sName )
 				{
-					ContentTypes::CDefault *oDefault = new ContentTypes::CDefault(oReader);
-					if (oDefault) m_arrDefault.push_back( oDefault );
+					ContentTypes::CDefault oDefault = oReader;
+					m_mapDefaults [ oDefault.m_sExtension] = oDefault ;
 				}
 				else if ( _T("Override") == sName )
 				{
 					ContentTypes::COverride oOverride = oReader;
-                    m_arrOverride [oOverride.filename().GetPath()] = oOverride;
+                    m_mapOverrides [oOverride.filename().GetPath()] = oOverride;
 				}
 			}
 			return true;
@@ -361,13 +361,14 @@ namespace OOX
 				sPath.erase(0, 1);
             }
 			ContentTypes::COverride oOverride( sType, sPath );
-            m_arrOverride [oOverride.filename().GetPath()] = oOverride;
+
+            m_mapOverrides [oOverride.filename().GetPath()] = oOverride;
 		}
 
 	public:
 
-		std::vector<ContentTypes::CDefault*>			m_arrDefault;
-        std::map<std::wstring, ContentTypes::COverride>	m_arrOverride;
+		std::map<std::wstring, ContentTypes::CDefault>	m_mapDefaults;
+        std::map<std::wstring, ContentTypes::COverride>	m_mapOverrides;
 	};
 } // namespace OOX
 

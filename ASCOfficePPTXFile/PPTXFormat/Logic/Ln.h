@@ -129,7 +129,7 @@ namespace PPTX
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("cap"),  cap )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("cmpd"), cmpd )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w"),    w )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 				
 				Normalize();				
 			}

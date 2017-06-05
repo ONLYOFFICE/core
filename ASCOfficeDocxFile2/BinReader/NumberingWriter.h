@@ -32,7 +32,6 @@
 #ifndef NUMBERING_WRITER
 #define NUMBERING_WRITER
 
-#include "ContentTypesWriter.h"
 #include "DocumentRelsWriter.h"
 
 namespace Writers
@@ -43,13 +42,12 @@ namespace Writers
 	class NumberingWriter
 	{
 		XmlUtils::CStringWriter	m_oWriter;
-         std::wstring	m_sDir;
-		ContentTypesWriter& m_oContentTypesWriter;
+		std::wstring			m_sDir;
 	public:
 		XmlUtils::CStringWriter	m_oANum;
 		XmlUtils::CStringWriter	m_oNumList;
-	public:
-        NumberingWriter( std::wstring sDir, ContentTypesWriter& oContentTypesWriter):m_sDir(sDir),m_oContentTypesWriter(oContentTypesWriter)
+
+		NumberingWriter( std::wstring sDir) : m_sDir(sDir)
 		{
 		}
 		bool IsEmpty()
@@ -58,26 +56,20 @@ namespace Writers
 		}
 		void Write()
 		{
-			if(false == IsEmpty())
-			{
-				m_oWriter.WriteString(g_string_n_Start);
-				m_oWriter.Write(m_oANum);
-				m_oWriter.Write(m_oNumList);
-				m_oWriter.WriteString(g_string_n_End);
+			if(IsEmpty()) return;
 
-                OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + _T("numbering.xml");
+			m_oWriter.WriteString(g_string_n_Start);
+			m_oWriter.Write(m_oANum);
+			m_oWriter.Write(m_oNumList);
+			m_oWriter.WriteString(g_string_n_End);
 
-				CFile oFile;
-				oFile.CreateFile(filePath.GetPath());
+            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + _T("numbering.xml");
 
-				oFile.WriteStringUTF8(m_oWriter.GetData());
-				oFile.CloseFile();
+			NSFile::CFileBinary oFile;
+			oFile.CreateFileW(filePath.GetPath());
 
-				//ContentType
-                m_oContentTypesWriter.AddOverride( std::wstring(_T("/word/numbering.xml")),  std::wstring(_T("application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml")));
-				//Rels
-				//m_oDocumentRelsWriter.AddRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering"), _T("numbering.xml"));
-			}
+			oFile.WriteStringUTF8(m_oWriter.GetData());
+			oFile.CloseFile();
 		}
 	};
 }

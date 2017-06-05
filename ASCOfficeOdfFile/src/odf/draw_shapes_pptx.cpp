@@ -65,14 +65,12 @@ namespace odf_reader {
 
 void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 {
-	common_draw_shape_with_styles_attlist common_draw_attlist_ = common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_;
+	common_shape_draw_attlist	&common_draw_attlist_		= common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_;
+	common_presentation_attlist	&common_presentation_attlist_= common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_;
 
-    const int z_index = common_draw_attlist_.common_draw_z_index_attlist_.draw_z_index_.get_value_or(0);
-
-    const std::wstring name = common_draw_attlist_.common_draw_name_attlist_.draw_name_.get_value_or(L"");
-
-    const std::wstring textStyleName = common_draw_attlists_.shape_with_text_and_styles_.
-        common_draw_text_style_name_attlist_.draw_text_style_name_.get_value_or(style_ref(L"")).style_name();
+    const int z_index				= common_draw_attlist_.draw_z_index_.get_value_or(0);
+    const std::wstring name			= common_draw_attlist_.draw_name_.get_value_or(L"");
+    const std::wstring textStyleName = common_draw_attlist_.draw_text_style_name_.get_value_or(L"");
 
  ///////////////////////////////////////////	
 	Context.get_slide_context().set_name(name);
@@ -91,27 +89,27 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 		Context.get_slide_context().set_rect(width_pt, height_pt, x_pt, y_pt);
 	}
 ////////////////////////////////////////////////////////////
-	if (common_draw_attlist_.common_draw_transform_attlist_.draw_transform_)
+	if (common_draw_attlist_.draw_transform_)
 	{
-		std::wstring transformStr = common_draw_attlist_.common_draw_transform_attlist_.draw_transform_.get();
+		std::wstring transformStr = common_draw_attlist_.draw_transform_.get();
 		pptx_convert_transforms(transformStr,Context);
 		//oox_convert_transforms(transformStr, additional_);
 	}
 ////////////////////////////////////////
 	std::wstring Anchor;
-	if (common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_cell_address_)
+	if (common_draw_attlists_.shape_with_text_and_styles_.common_shape_table_attlist_.table_end_cell_address_)
 	{
-		Anchor = common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_cell_address_.get();
-		const double a_x_pt = common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_x_.get_value_or(length(0)).get_value_unit(length::pt);
-		const double a_y_pt = common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_y_.get_value_or(length(0)).get_value_unit(length::pt);
+		Anchor = common_draw_attlists_.shape_with_text_and_styles_.common_shape_table_attlist_.table_end_cell_address_.get();
+		const double a_x_pt = common_draw_attlists_.shape_with_text_and_styles_.common_shape_table_attlist_.table_end_x_.get_value_or(length(0)).get_value_unit(length::pt);
+		const double a_y_pt = common_draw_attlists_.shape_with_text_and_styles_.common_shape_table_attlist_.table_end_y_.get_value_or(length(0)).get_value_unit(length::pt);
 
 		Context.get_slide_context().set_anchor(Anchor,a_x_pt,a_y_pt);
 	}
 /////////////////////////////////////////////////////////////////////////////////
 	std::vector<const odf_reader::style_instance *> instances;
 
-	const std::wstring grStyleName = common_draw_attlist_.common_draw_style_name_attlist_.draw_style_name_.get_value_or(style_ref(L"")).style_name();
-	const std::wstring baseStyleName = common_draw_attlist_.common_draw_style_name_attlist_.presentation_style_name_.get_value_or(style_ref(L"")).style_name();
+	const std::wstring grStyleName		= common_draw_attlist_.draw_style_name_.get_value_or(L"");
+	const std::wstring baseStyleName	= common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_style_name_.get_value_or(L"");
 
 	odf_reader::style_instance* grStyleInst = 
 		Context.root()->odf_context().styleContainer().style_by_name(grStyleName, odf_types::style_family::Graphic,Context.process_masters_);
@@ -154,6 +152,14 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 	Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_, 
 																		Context.root()->odf_context().drawStyles() ,fill);	
 	Context.get_slide_context().set_fill(fill);
+
+	if (common_presentation_attlist_.presentation_class_)
+	{
+		Context.get_slide_context().set_placeHolder_type(common_presentation_attlist_.presentation_class_->get_type_ms());
+		
+		if (idx_in_owner >= 0)
+			Context.get_slide_context().set_placeHolder_idx(idx_in_owner);
+	}
 ////////////////////////////////////////////////////////////////////////////////////
 	Context.get_text_context().start_object();
 	BOOST_FOREACH(office_element_ptr const & elm, content_)
@@ -244,7 +250,7 @@ void draw_custom_shape::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_caption::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	//const std::wstring style = common_draw_text_style_name_attlist_.draw_text_style_name_.get_value_or(style_ref(L"")).style_name();
+	//const std::wstring style = common_shape_draw_attlist_.draw_text_style_name_.get_value_or(L"");
 
 	Context.get_slide_context().start_shape(sub_type_);//rect с наваротами-атрибутами .. а-ля TextBox
 	
@@ -306,8 +312,9 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 
 	if (draw_type_oox_index_)
 	{
-		Context.get_slide_context().set_property(_property(L"odf-custom-draw-index", draw_type_oox_index_.get()));	
-
+		Context.get_slide_context().set_property(_property(L"oox-geom-index", draw_type_oox_index_.get()));	
+		Context.get_slide_context().set_property(_property(L"oox-geom", bOoxType_));	
+		
 		if (word_art_ == true)
 			Context.get_slide_context().set_property(_property(L"wordArt", true));	
 
@@ -319,7 +326,13 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 		set_shape = true;
 	}
 
-	if (draw_enhanced_geometry_attlist_.draw_enhanced_path_)
+	std::wstring odf_path;
+	if (draw_enhanced_geometry_attlist_.drawooo_enhanced_path_)
+		odf_path = draw_enhanced_geometry_attlist_.drawooo_enhanced_path_.get();
+	else if (draw_enhanced_geometry_attlist_.draw_enhanced_path_)
+		odf_path = draw_enhanced_geometry_attlist_.draw_enhanced_path_.get();
+	
+	if (!odf_path.empty())
 	{
 		std::vector<::svg_path::_polyline> o_Polyline;
 	
@@ -327,7 +340,7 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 		
 		try
 		{
-			res = ::svg_path::parseSvgD(o_Polyline, draw_enhanced_geometry_attlist_.draw_enhanced_path_.get(), true);
+			res = ::svg_path::parseSvgD(o_Polyline, odf_path, true);
 		}
 		catch(...)
 		{
@@ -369,16 +382,20 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 	}
 	if (draw_enhanced_geometry_attlist_.draw_modifiers_)
 	{
-		Context.get_slide_context().set_property(_property(L"draw-modifiers",draw_enhanced_geometry_attlist_.draw_modifiers_.get()));	
-
-		if (draw_handle_geometry_.size()>0)
+		if (bOoxType_)
+			Context.get_slide_context().set_property(_property(L"oox-draw-modifiers", draw_enhanced_geometry_attlist_.draw_modifiers_.get()));	
+		else
 		{
-			if (draw_handle_geometry_[0].min < draw_handle_geometry_[0].max)
-			{
-				Context.get_slide_context().set_property(_property(L"draw-modifiers-min",draw_handle_geometry_[0].min));	
-				Context.get_slide_context().set_property(_property(L"draw-modifiers-max",draw_handle_geometry_[0].max));	
-			}
 		}
+
+		//if (draw_handle_geometry_.size()>0)
+		//{
+		//	if (draw_handle_geometry_[0].min < draw_handle_geometry_[0].max)
+		//	{
+		//		Context.get_slide_context().set_property(_property(L"draw-modifiers-min",draw_handle_geometry_[0].min));	
+		//		Context.get_slide_context().set_property(_property(L"draw-modifiers-max",draw_handle_geometry_[0].max));	
+		//	}
+		//}
 	}
 	if (!set_shape)
 	{

@@ -52,8 +52,6 @@ namespace OOX
 		~External()
 		{
 		}
-
-	public:
 		virtual void read(const CPath& uri)
 		{
 			m_uri = uri;
@@ -61,9 +59,7 @@ namespace OOX
 		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const
 		{
 		}
-
-	public:
-		 CPath Uri() const
+		CPath Uri() const
 		{
 			return m_uri;
 		}

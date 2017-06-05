@@ -142,6 +142,8 @@ namespace OOX
 							pItem = new CSmartTag( oItem );
 						//else if ( _T("w:subDoc") == sName )
 						//	pItem = new CSubDoc( oItem );
+						else if ( _T("w:ffData") == sName )
+							m_oFFData = new CFFData( oItem );
 
 						if ( pItem )
 							m_arrItems.push_back( pItem );
@@ -232,6 +234,8 @@ namespace OOX
 					pItem = new CSmartTag( oReader );
 				//else if ( _T("w:subDoc") == sName )
 				//	pItem = new CSubDoc( oReader );
+				else if ( _T("w:ffData") == sName )
+					m_oFFData = new CFFData( oReader );
 
 				if ( pItem )
 					m_arrItems.push_back( pItem );
@@ -258,6 +262,11 @@ namespace OOX
 				}
 
 				sResult += _T(">");
+
+				if (m_oFFData.IsInit())
+				{
+					sResult += m_oFFData->toXML();
+				}
 
 				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{

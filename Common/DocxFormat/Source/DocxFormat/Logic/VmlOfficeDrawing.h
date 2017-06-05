@@ -44,6 +44,8 @@
 #include "../WritingElement.h"
 #include "../RId.h"
 
+#include "../../../../../ASCOfficePPTXFile/PPTXFormat/WrapperWritingElement.h"
+
 namespace OOX
 {
 	namespace VmlOffice
@@ -2163,7 +2165,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CSignatureLine 14.2.2.30 (Part 4)
 		//--------------------------------------------------------------------------------	
-		class CSignatureLine : public WritingElement
+        class CSignatureLine : public PPTX::WrapperWritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CSignatureLine)
@@ -2178,7 +2180,19 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать CSignatureLine::fromXML(XmlUtils::CXmlNode& oNode)
+				oNode.ReadAttributeBase(L"o:addlxml", m_sAddXml);
+				oNode.ReadAttributeBase(L"allowcomments", m_oAllowComments);
+				oNode.ReadAttributeBase(L"v:ext", m_oExt);
+				oNode.ReadAttributeBase(L"id", m_oId);
+				oNode.ReadAttributeBase(L"issignatureline", m_oIsSignatureLine);
+				oNode.ReadAttributeBase(L"provid", m_oProvId);
+				oNode.ReadAttributeBase(L"showsigndate", m_oShowSignDate);
+				oNode.ReadAttributeBase(L"o:signinginstructions", m_sSigningInstructions);
+				oNode.ReadAttributeBase(L"signinginstructionsset", m_oSigningInstructionsSet);
+				oNode.ReadAttributeBase(L"o:sigprovurl", m_sSigProvUrl);
+				oNode.ReadAttributeBase(L"o:suggestedsigner", m_sSuggestedSigner);
+				oNode.ReadAttributeBase(L"o:suggestedsigner2", m_sSuggestedSigner2);
+				oNode.ReadAttributeBase(L"o:suggestedsigneremail", m_sSuggestedSignerEmail);
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -2193,27 +2207,27 @@ namespace OOX
 
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
 
-				if ( SimpleTypes::booleanTrue != m_oIsSignatureLine.GetValue() )
-					sResult += _T("issignatureline=\"") + m_oIsSignatureLine.ToString() + _T("\" ");
+				if ( m_oIsSignatureLine.IsInit() )
+					sResult += _T("issignatureline=\"") + m_oIsSignatureLine->ToString2(SimpleTypes::onofftostringT) + _T("\" ");
 
 				ComplexTypes_WriteAttribute ( _T("id=\""),     m_oId );
 				ComplexTypes_WriteAttribute ( _T("provid=\""), m_oProvId );
 
-				if ( SimpleTypes::booleanFalse != m_oSigningInstructionsSet.GetValue() )
-					sResult += _T("signinginstructionsset=\"") + m_oSigningInstructionsSet.ToString() + _T("\" ");
+				if ( m_oSigningInstructionsSet.IsInit() )
+					sResult += _T("signinginstructionsset=\"") + m_oSigningInstructionsSet->ToString2(SimpleTypes::onofftostringT) + _T("\" ");
 
-				if ( SimpleTypes::booleanFalse != m_oAllowComments.GetValue() )
-					sResult += _T("allowcomments=\"") + m_oAllowComments.ToString() + _T("\" ");
+				if ( m_oAllowComments.IsInit() )
+					sResult += _T("allowcomments=\"") + m_oAllowComments->ToString2(SimpleTypes::onofftostringT) + _T("\" ");
 
-				if ( SimpleTypes::booleanTrue != m_oShowSignDate.GetValue() )
-					sResult += _T("showsigndate=\"") + m_oShowSignDate.ToString() + _T("\" ");
+				if ( m_oShowSignDate.IsInit() )
+					sResult += _T("showsigndate=\"") + m_oShowSignDate->ToString2(SimpleTypes::onofftostringT) + _T("\" ");
 
-				ComplexTypes_WriteAttribute2( _T("o:suggestedsigner=\""),      m_sSuggestedSigner );
-				ComplexTypes_WriteAttribute2( _T("o:suggestedsigner2=\""),     m_sSuggestedSigner2 );
-				ComplexTypes_WriteAttribute2( _T("o:suggestedsigneremail=\""), m_sSuggestedSignerEmail );
-				ComplexTypes_WriteAttribute2( _T("o:signinginstructions=\""),  m_sSigningInstructions );
-				ComplexTypes_WriteAttribute2( _T("o:addlxml=\""),              m_sAddXml );
-				ComplexTypes_WriteAttribute2( _T("o:sigprovurl=\""),           m_sSigProvUrl );
+				ComplexTypes_WriteAttribute2Encode( _T("o:suggestedsigner=\""),      m_sSuggestedSigner );
+				ComplexTypes_WriteAttribute2Encode( _T("o:suggestedsigner2=\""),     m_sSuggestedSigner2 );
+				ComplexTypes_WriteAttribute2Encode( _T("o:suggestedsigneremail=\""), m_sSuggestedSignerEmail );
+				ComplexTypes_WriteAttribute2Encode( _T("o:signinginstructions=\""),  m_sSigningInstructions );
+				ComplexTypes_WriteAttribute2Encode( _T("o:addlxml=\""),              m_sAddXml );
+				ComplexTypes_WriteAttribute2Encode( _T("o:sigprovurl=\""),           m_sSigProvUrl );
 
 				sResult += _T("/>");
 
@@ -2222,6 +2236,135 @@ namespace OOX
 			virtual EElementType getType() const
 			{
 				return OOX::et_o_signatureline;
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						case 0:
+						{
+							m_sAddXml = pReader->GetString2();
+							break;
+						}
+						case 1:
+						{
+							m_oAllowComments.Init();
+							m_oAllowComments->FromBool(pReader->GetBool());
+							break;
+						}
+						case 2:
+						{
+							m_oExt.Init();
+							m_oExt->SetValue((SimpleTypes::EExt)pReader->GetUChar());
+							break;
+						}
+						case 3:
+						{
+							m_oId = pReader->GetString2();
+							break;
+						}
+						case 4:
+						{
+							m_oIsSignatureLine.Init();
+							m_oIsSignatureLine->FromBool(pReader->GetBool());
+							break;
+						}
+						case 5:
+						{
+							m_oProvId = pReader->GetString2();
+							break;
+						}
+						case 6:
+						{
+							m_oShowSignDate.Init();
+							m_oShowSignDate->FromBool(pReader->GetBool());
+							break;
+						}
+						case 7:
+						{
+							m_sSigningInstructions = pReader->GetString2();
+							break;
+						}
+						case 8:
+						{
+							m_oSigningInstructionsSet.Init();
+							m_oSigningInstructionsSet->FromBool(pReader->GetBool());
+							break;
+						}
+						case 9:
+						{
+							m_sSigProvUrl = pReader->GetString2();
+							break;
+						}
+						case 10:
+						{
+							m_sSuggestedSigner = pReader->GetString2();
+							break;
+						}
+						case 11:
+						{
+							m_sSuggestedSigner2 = pReader->GetString2();
+							break;
+						}
+						case 12:
+						{
+							m_sSuggestedSignerEmail = pReader->GetString2();
+							break;
+						}
+						default:
+							break;
+					}
+				}
+
+				pReader->Seek(_end_rec);
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				if (m_sAddXml.IsInit())
+					pWriter->WriteString1(0, m_sAddXml.get());
+				if (m_oAllowComments.IsInit())
+					pWriter->WriteBool1(1, m_oAllowComments->ToBool());
+				if (m_oExt.IsInit())
+				{
+					pWriter->WriteBYTE(2);
+					pWriter->WriteBYTE(m_oExt->GetValue());
+				}
+				if (m_oId.IsInit())
+					pWriter->WriteString1(3, m_oId->ToString());
+				if (m_oIsSignatureLine.IsInit())
+					pWriter->WriteBool1(4, m_oIsSignatureLine->ToBool());
+				if (m_oProvId.IsInit())
+					pWriter->WriteString1(5, m_oProvId->ToString());
+				if (m_oShowSignDate.IsInit())
+					pWriter->WriteBool1(6, m_oShowSignDate->ToBool());
+				if (m_sSigningInstructions.IsInit())
+					pWriter->WriteString1(7, m_sSigningInstructions.get());
+				if (m_oSigningInstructionsSet.IsInit())
+					pWriter->WriteBool1(8, m_oSigningInstructionsSet->ToBool());
+				if (m_sSigProvUrl.IsInit())
+					pWriter->WriteString1(9, m_sSigProvUrl.get());
+				if (m_sSuggestedSigner.IsInit())
+					pWriter->WriteString1(10, m_sSuggestedSigner.get());
+				if (m_sSuggestedSigner2.IsInit())
+					pWriter->WriteString1(11, m_sSuggestedSigner2.get());
+				if (m_sSuggestedSignerEmail.IsInit())
+					pWriter->WriteString1(12, m_sSuggestedSignerEmail.get());
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
 			}
 
 		private:
@@ -2249,19 +2392,19 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<std::wstring>								m_sAddXml;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>	m_oAllowComments;
-			nullable<SimpleTypes::CExt<>>						m_oExt;
-			nullable<SimpleTypes::CGuid>						m_oId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>	m_oIsSignatureLine;
-			nullable<SimpleTypes::CGuid>						m_oProvId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>	m_oShowSignDate;
-			nullable<std::wstring>								m_sSigningInstructions;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>	m_oSigningInstructionsSet;
-			nullable<std::wstring>								m_sSigProvUrl;
-			nullable<std::wstring>								m_sSuggestedSigner;
-			nullable<std::wstring>								m_sSuggestedSigner2;
-			nullable<std::wstring>								m_sSuggestedSignerEmail;
+			nullable<std::wstring>				m_sAddXml;
+			nullable<SimpleTypes::COnOff<>>		m_oAllowComments;
+			nullable<SimpleTypes::CExt<>>		m_oExt;
+			nullable<SimpleTypes::CGuid>		m_oId;
+			nullable<SimpleTypes::COnOff<>>		m_oIsSignatureLine;
+			nullable<SimpleTypes::CGuid>		m_oProvId;
+			nullable<SimpleTypes::COnOff<>>		m_oShowSignDate;
+			nullable<std::wstring>				m_sSigningInstructions;
+			nullable<SimpleTypes::COnOff<>>		m_oSigningInstructionsSet;
+			nullable<std::wstring>				m_sSigProvUrl;
+			nullable<std::wstring>				m_sSuggestedSigner;
+			nullable<std::wstring>				m_sSuggestedSigner2;
+			nullable<std::wstring>				m_sSuggestedSignerEmail;
 		};
 		//--------------------------------------------------------------------------------
 		// CSkew 14.2.2.31 (Part 4)

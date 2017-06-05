@@ -34,7 +34,6 @@
 		17C1FEB11ACC42C4006B99B3 /* Common.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F1F1AC4549B00BEA2EA /* Common.h */; };
 		17C1FEB21ACC42C4006B99B3 /* XlsxSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F131AC4546100BEA2EA /* XlsxSerializer.h */; };
 		17C1FEB31ACC42C4006B99B3 /* CSVReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F271AC4549B00BEA2EA /* CSVReader.h */; };
-		17C1FEB41ACC42C4006B99B3 /* ContentTypesWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EED1AC4544900BEA2EA /* ContentTypesWriter.h */; };
 		17C1FEB51ACC42C4006B99B3 /* HeaderFooterWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF41AC4544900BEA2EA /* HeaderFooterWriter.h */; };
 		17C1FEB61ACC42C4006B99B3 /* webSettingsWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EFB1AC4544900BEA2EA /* webSettingsWriter.h */; };
 		17C1FEB71ACC42C4006B99B3 /* SettingWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF91AC4544900BEA2EA /* SettingWriter.h */; };
@@ -43,6 +42,7 @@
 		17C1FEBC1ACC42C4006B99B3 /* DocxSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F0F1AC4546100BEA2EA /* DocxSerializer.h */; };
 		17C1FEBD1ACC42C4006B99B3 /* FileWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF21AC4544900BEA2EA /* FileWriter.h */; };
 		17C1FEBE1ACC42C4006B99B3 /* CSVWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F301AC4549B00BEA2EA /* CSVWriter.h */; };
+		690FE0851E9BBD68004B26D0 /* Readers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 690FE0841E9BBD68004B26D0 /* Readers.cpp */; };
 		69414A301CB51666003E771B /* ChartWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69414A2E1CB51666003E771B /* ChartWriter.cpp */; };
 		69414A311CB51666003E771B /* ChartWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 69414A2F1CB51666003E771B /* ChartWriter.h */; };
 		6967917C1D9E8AEE002CA4BA /* BinEquationWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 696791781D9E8AEE002CA4BA /* BinEquationWriter.h */; };
@@ -58,7 +58,6 @@
 		17C1FEC21ACC42C4006B99B3 /* libASCOfficeDocxFile2Lib_ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libASCOfficeDocxFile2Lib_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17E17EEB1AC4544900BEA2EA /* ChartWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChartWriter.h; sourceTree = "<group>"; };
 		17E17EEC1AC4544900BEA2EA /* CommentsWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentsWriter.h; sourceTree = "<group>"; };
-		17E17EED1AC4544900BEA2EA /* ContentTypesWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentTypesWriter.h; sourceTree = "<group>"; };
 		17E17EF01AC4544900BEA2EA /* DocumentRelsWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentRelsWriter.h; sourceTree = "<group>"; };
 		17E17EF11AC4544900BEA2EA /* DocumentWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentWriter.h; sourceTree = "<group>"; };
 		17E17EF21AC4544900BEA2EA /* FileWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileWriter.h; sourceTree = "<group>"; };
@@ -91,6 +90,7 @@
 		17E17F2E1AC4549B00BEA2EA /* BinaryReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinaryReader.h; sourceTree = "<group>"; };
 		17E17F2F1AC4549B00BEA2EA /* CSVWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVWriter.cpp; sourceTree = "<group>"; };
 		17E17F301AC4549B00BEA2EA /* CSVWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVWriter.h; sourceTree = "<group>"; };
+		690FE0841E9BBD68004B26D0 /* Readers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Readers.cpp; sourceTree = "<group>"; };
 		69414A2E1CB51666003E771B /* ChartWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChartWriter.cpp; sourceTree = "<group>"; };
 		69414A2F1CB51666003E771B /* ChartWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChartWriter.h; sourceTree = "<group>"; };
 		696791781D9E8AEE002CA4BA /* BinEquationWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BinEquationWriter.h; path = ../../BinWriter/BinEquationWriter.h; sourceTree = "<group>"; };
@@ -145,7 +145,6 @@
 			children = (
 				17E17EEB1AC4544900BEA2EA /* ChartWriter.h */,
 				17E17EEC1AC4544900BEA2EA /* CommentsWriter.h */,
-				17E17EED1AC4544900BEA2EA /* ContentTypesWriter.h */,
 				17A765271B0F3DC30046BC0B /* DefaultThemeWriter.h */,
 				17E17EF01AC4544900BEA2EA /* DocumentRelsWriter.h */,
 				17E17EF11AC4544900BEA2EA /* DocumentWriter.h */,
@@ -159,6 +158,7 @@
 				17E17EF91AC4544900BEA2EA /* SettingWriter.h */,
 				17E17EFA1AC4544900BEA2EA /* StylesWriter.h */,
 				17E17EFB1AC4544900BEA2EA /* webSettingsWriter.h */,
+				690FE0841E9BBD68004B26D0 /* Readers.cpp */,
 			);
 			name = BinReader;
 			path = ../../BinReader;
@@ -277,7 +277,6 @@
 				17C1FEB31ACC42C4006B99B3 /* CSVReader.h in Headers */,
 				6967917D1D9E8AEE002CA4BA /* BinReaderWriterDefines.h in Headers */,
 				69414A311CB51666003E771B /* ChartWriter.h in Headers */,
-				17C1FEB41ACC42C4006B99B3 /* ContentTypesWriter.h in Headers */,
 				17C1FEB51ACC42C4006B99B3 /* HeaderFooterWriter.h in Headers */,
 				17C1FEB61ACC42C4006B99B3 /* webSettingsWriter.h in Headers */,
 				17C1FEB71ACC42C4006B99B3 /* SettingWriter.h in Headers */,
@@ -350,6 +349,7 @@
 				69414A301CB51666003E771B /* ChartWriter.cpp in Sources */,
 				6967917E1D9E8AEE002CA4BA /* BinWriters.cpp in Sources */,
 				17C1FE9C1ACC42C4006B99B3 /* XlsxSerializer.cpp in Sources */,
+				690FE0851E9BBD68004B26D0 /* Readers.cpp in Sources */,
 				17C1FE9D1ACC42C4006B99B3 /* FontProcessor.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

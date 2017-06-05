@@ -32,8 +32,8 @@
 #ifndef SERIALIZER_COMMON
 #define SERIALIZER_COMMON
 
-#include "../../DesktopEditor/common/File.h"
 #include "../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 
 #include <string>
 #include <vector>
@@ -72,7 +72,7 @@ namespace SerializeCommon
 			aReplies.clear();
 		}
 	};
-    void ReadFileType(const std::wstring& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter, BYTE& saveFileType);
+	void ReadFileType(const std::wstring& sXMLOptions, BYTE& result, UINT& nCodePage, std::wstring& wcDelimiter, BYTE& saveFileType);
 }
 
 #endif //SERIALIZER_COMMON

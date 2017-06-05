@@ -87,7 +87,7 @@ std::wostream & ruby_text::text_to_stream(std::wostream & _Wostream) const
 
 void ruby_text::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	text_style_name_ = odf_types::style_ref( Attributes->get_val< std::wstring >(L"text:style-name").get_value_or(L"") );
+	text_style_name_ =  Attributes->get_val< std::wstring >(L"text:style-name").get_value_or(L"");
 }
 
 void ruby_text::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)

@@ -87,10 +87,32 @@ namespace PPTX
 			
 			FillParentPointersForChilds();
 		}
+		void GraphicFrame::ReadAttributes2(XmlUtils::CXmlLiteReader& oReader)
+		{
+			//todooo нормальный объект сделать!!
+			if (!olePic.IsInit())				olePic.Init();
+			if (!olePic->oleObject.IsInit())	olePic->oleObject.Init();
+
+			WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("progId"),	olePic->oleObject->m_sProgId)
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:id"),	olePic->oleObject->m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("imgW"),	olePic->oleObject->m_oDxaOrig )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("imgH"),	olePic->oleObject->m_oDyaOrig )
+			WritingElement_ReadAttributes_End( oReader )
+
+			if(olePic->oleObject->m_oDxaOrig.IsInit())
+			{
+				olePic->oleObject->m_oDxaOrig = (int)Emu_To_Twips(olePic->oleObject->m_oDxaOrig.get());
+			}
+			if(olePic->oleObject->m_oDyaOrig.IsInit())
+			{
+				olePic->oleObject->m_oDyaOrig = (int)Emu_To_Twips(olePic->oleObject->m_oDyaOrig.get());
+			}
+		}
 		void GraphicFrame::ReadAttributes3(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("spid"), spid )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("spid"), oleSpid )
 			WritingElement_ReadAttributes_End( oReader )
 		}
 		void GraphicFrame::fromXML2(XmlUtils::CXmlLiteReader& oReader)
@@ -100,8 +122,8 @@ namespace PPTX
 			
 			if (L"xfrm" == strName && strNamespace != L"xdr")
 				xfrm = oReader;
-			else if (L"nvGraphicFramePr" == strName)
-				nvGraphicFramePr.fromXML( oReader );
+			else if (L"cNvGraphicFramePr" == strName)
+				nvGraphicFramePr.cNvGraphicFramePr.fromXML( oReader );
 				
 			else if (L"graphic" == strName)
 			{
@@ -135,7 +157,10 @@ namespace PPTX
 
 				else if (strName == L"oleObj")
 				{
-					ReadAttributes3(oReader);
+					ReadAttributes2(oReader);
+
+					if ( oReader.IsEmptyNode() )
+						continue;
 
 					int nCurDepth1 = oReader.GetDepth();
 					while( oReader.ReadNextSiblingNode( nCurDepth1 ) )
@@ -144,11 +169,12 @@ namespace PPTX
 						if (strName1 == L"pic")
 						{
 							result = true;
-							pic = oReader;
-							//pic->fromXMLOle(oNode2);
+							if (!olePic.IsInit()) //создается уровнем выше 
+								olePic.Init();
+							olePic->fromXML(oReader);
 							
 							if (xfrm.IsInit())
-								xfrm->Merge(pic->spPr.xfrm);
+								xfrm->Merge(olePic->spPr.xfrm);
 						}
 					}
 				}
@@ -169,6 +195,9 @@ namespace PPTX
 				}
 				else if (strName == L"AlternateContent")
 				{
+					if ( oReader.IsEmptyNode() )
+						continue;
+
 					int nCurDepth1 = oReader.GetDepth();
 					while( oReader.ReadNextSiblingNode( nCurDepth1 ) )
 					{
@@ -190,14 +219,71 @@ namespace PPTX
 				}
 				else
 				{
-					element = oReader;
-					if (element.IsInit())
+					element.fromXML( oReader );
+					if (element.is_init())
 						result = true;
 				}
 			}
 			return result;
 		}
+		bool GraphicFrame::fromXML3(XmlUtils::CXmlNode& node)
+		{
+			bool result = false;
+			
+			XmlUtils::CXmlNodes oNodes;
+			if (node.GetNodes(_T("*"), oNodes))
+			{
+				int count = oNodes.GetCount();
+				for (int i = 0; i < count; ++i)
+				{
+					XmlUtils::CXmlNode oNode;
+					oNodes.GetAt(i, oNode);
 
+					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+					if (L"tbl" == strName)
+					{
+						table = oNode;
+						if (table.IsInit()) result = true;
+					}
+					else if (L"oleObj" == strName)
+					{
+						olePic = oNode.ReadNode(L"p:pic");
+						if (olePic.IsInit())
+						{
+							olePic->fromXMLOle(oNode);
+							result = true;
+						}
+					}
+					else if (L"AlternateContent" == strName)
+					{
+						XmlUtils::CXmlNode oNodeChoice;
+						if (!result && oNode.GetNode(L"mc:Choice", oNodeChoice))
+							result = fromXML3(oNodeChoice);
+
+						XmlUtils::CXmlNode oNodeFallback;
+						if (!result && oNode.GetNode(L"mc:Fallback", oNodeFallback))
+							result = fromXML3(oNodeFallback);
+					}
+					else if (L"relIds" == strName)
+					{
+						smartArt = oNode;
+						result = true;
+					}
+					else if (L"chart" == strName)
+					{
+						chartRec = oNode;
+						result = true;
+					}
+					else if (L"legacyDrawing" == strName)
+					{
+						oNode.ReadAttributeBase(L"spid", oleSpid);
+						result = true;
+					}
+				}
+			}
+			return result;
+		}
 		void GraphicFrame::fromXML(XmlUtils::CXmlNode& node)
 		{
 			m_namespace = XmlUtils::GetNamespace(node.GetName());
@@ -223,70 +309,7 @@ namespace PPTX
 						XmlUtils::CXmlNode oNodeData;
 						if (oNode.GetNode(L"a:graphicData", oNodeData))
 						{
-							XmlUtils::CXmlNode oNode1 = oNodeData.ReadNodeNoNS(L"tbl");
-							if (oNode1.IsValid())
-							{
-                                table = oNode1;
-								return;
-							}
-							XmlUtils::CXmlNode oNode2 = oNodeData.ReadNodeNoNS(L"oleObj");
-							if (oNode2.IsValid())
-							{
-								oNode2.ReadAttributeBase(L"spid", spid);
-								pic = oNode2.ReadNode(L"p:pic");
-
-								if (pic.is_init())
-								{
-									pic->fromXMLOle(oNode2);
-									if (xfrm.IsInit())
-										xfrm->Merge(pic->spPr.xfrm);
-								}
-							}
-							XmlUtils::CXmlNode oNode3 = oNodeData.ReadNodeNoNS(L"AlternateContent");
-							if (oNode3.IsValid())
-							{
-								XmlUtils::CXmlNode oNodeC;
-								if (oNode3.GetNode(L"mc:Choice", oNodeC))
-								{
-									XmlUtils::CXmlNode oNodeO;
-									if (oNodeC.GetNode(L"p:oleObj", oNodeO))
-									{
-										oNodeO.ReadAttributeBase(L"spid", spid);
-									}
-								}
-
-								XmlUtils::CXmlNode oNodeFallback;
-								if (oNode3.GetNode(L"mc:Fallback", oNodeFallback))
-								{
-									XmlUtils::CXmlNode oNodeO;
-									if (oNodeFallback.GetNode(L"p:oleObj", oNodeO))
-									{
-										pic = oNodeO.ReadNode(L"p:pic");
-
-										if (pic.is_init())
-										{
-											pic->fromXMLOle(oNode2);
-											if (xfrm.IsInit())
-												xfrm->Merge(pic->spPr.xfrm);
-										}
-									}
-								}
-							}
-							XmlUtils::CXmlNode oNode4 = oNodeData.ReadNode(L"dgm:relIds");
-							if (oNode4.IsValid())
-							{
-								smartArt = oNode4;
-							}
-							XmlUtils::CXmlNode oNode5 = oNodeData.ReadNode(L"c:chart");
-							if (oNode5.IsValid())
-							{
-								chartRec = oNode5;
-							}
-							XmlUtils::CXmlNode oNode6 = oNodeData.ReadNode(L"com:legacyDrawing");
-							if (oNode6.IsValid())
-							{
-								oNode6.ReadAttributeBase(L"spid", spid);
-							}
+							fromXML3(oNodeData);
 						}
 					}
 				}
@@ -336,25 +359,31 @@ namespace PPTX
 			pWriter->EndNode(namespace_ + L":graphicFrame");
 		}
 
+		bool GraphicFrame::IsEmpty() const
+		{
+			return !olePic.is_init() && !smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !oleSpid.is_init() && !element.is_init();
+		}
+
 		void GraphicFrame::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
-			if (pic.is_init())
+			if (IsEmpty()) 
+				return;
+
+			if (olePic.is_init())
 			{
-				pic->toPPTY(pWriter);
+				olePic->toPPTY(pWriter);
 				return;
 			}
-			if (!smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !spid.is_init() ) 
-				return;
 
-			std::wstring xml_object_vml;
-			std::wstring xml_object_rels;
+			std::wstring					xml_object_vml;
+			smart_ptr<OOX::IFileContainer>	xml_object_rels;
 
-			if (spid.is_init())
+			if (oleSpid.is_init())
 			{
 				xml_object_vml = GetVmlXmlBySpid(xml_object_rels);
 			}
 
-            if (smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !spid.is_init())
+            if (smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !oleSpid.is_init())
 			{
 				smartArt->LoadDrawing(pWriter);
 				
@@ -423,7 +452,7 @@ namespace PPTX
 	
 				std::wstring *main_props = NULL;
 
-				oDrawingConverter.SetRelsPath(xml_object_rels);
+				oDrawingConverter.SetRels(xml_object_rels);
                 oDrawingConverter.SetAdditionalParam(L"xfrm_override", (BYTE*)xfrm.GetPointer(), sizeof(xfrm));
 
 				HRESULT hRes = oDrawingConverter.AddObject(temp, &main_props);
@@ -437,19 +466,27 @@ namespace PPTX
 			pWriter->StartRecord(SPTREE_TYPE_GRFRAME);
 
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteString2(0, spid);
+			pWriter->WriteString2(0, oleSpid);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord1(0, nvGraphicFramePr);
 			pWriter->WriteRecord2(1, xfrm);
-            pWriter->WriteRecord2(2, table);
 
-			if (chartRec.is_init())
+			if (table.is_init())
+			{
+				pWriter->WriteRecord2(2, table);
+			}
+			else if (chartRec.is_init())
 			{
 				pWriter->WriteRecord2(3, chartRec);
 			}
-            else if (xml_object_vml.empty() == false)
+			else if (element.is_init())
 			{
+ 				pWriter->WriteRecord1(4, element);
+			}
+			else
+			{
+				//????
 			}
 
 			pWriter->EndRecord();
@@ -470,7 +507,7 @@ namespace PPTX
 				{
 					case 0:
 					{
-						spid = pReader->GetString2();
+						oleSpid = pReader->GetString2();
 						break;
 					}	
 					default:
@@ -576,35 +613,29 @@ namespace PPTX
 		{
 			nvGraphicFramePr.SetParentPointer(this);
            
-			if (xfrm.IsInit())
-				xfrm->SetParentPointer(this);
-			if(table.IsInit())
-                table->SetParentPointer(this);
-			if (smartArt.is_init())
-				smartArt->SetParentPointer(this);
-			if (chartRec.is_init())
-				chartRec->SetParentPointer(this);
-			if (pic.is_init())
-				pic->SetParentPointer(this);
+			if (xfrm.IsInit())			xfrm->SetParentPointer(this);
+			if (table.IsInit())			table->SetParentPointer(this);
+			if (smartArt.is_init())		smartArt->SetParentPointer(this);
+			if (chartRec.is_init())		chartRec->SetParentPointer(this);
+			if (olePic.is_init())		olePic->SetParentPointer(this);
 		}
-		std::wstring GraphicFrame::GetVmlXmlBySpid(std::wstring & rels)const
+		std::wstring GraphicFrame::GetVmlXmlBySpid(smart_ptr<OOX::IFileContainer> & rels)const
 		{
             std::wstring xml;
-			rels = L"";
 			if(parentFileIs<PPTX::Slide>() && parentFileAs<PPTX::Slide>().Vml.IsInit())
 			{
-				xml		= parentFileAs<PPTX::Slide>().GetVmlXmlBySpid(spid.get_value_or(L""));
-				rels	= parentFileAs<PPTX::Slide>().Vml->GetReadPath().GetPath();
+				xml		= parentFileAs<PPTX::Slide>().GetVmlXmlBySpid(oleSpid.get_value_or(L""));
+				rels	= parentFileAs<PPTX::Slide>().Vml.smart_dynamic_cast<OOX::IFileContainer>();
 			}
 			else if(parentFileIs<PPTX::SlideLayout>() && parentFileAs<PPTX::SlideLayout>().Vml.IsInit())
 			{
-				xml= parentFileAs<PPTX::SlideLayout>().GetVmlXmlBySpid(spid.get_value_or(L""));
-				rels	= parentFileAs<PPTX::SlideLayout>().Vml->GetReadPath().GetPath();
+				xml		= parentFileAs<PPTX::SlideLayout>().GetVmlXmlBySpid(oleSpid.get_value_or(L""));
+				rels	= parentFileAs<PPTX::SlideLayout>().Vml.smart_dynamic_cast<OOX::IFileContainer>();
 			}
 			else if(parentFileIs<PPTX::SlideMaster>() && parentFileAs<PPTX::SlideMaster>().Vml.IsInit())
 			{
-				xml = parentFileAs<PPTX::SlideMaster>().GetVmlXmlBySpid(spid.get_value_or(L""));
-				rels	= parentFileAs<PPTX::SlideMaster>().Vml->GetReadPath().GetPath();
+				xml		= parentFileAs<PPTX::SlideMaster>().GetVmlXmlBySpid(oleSpid.get_value_or(L""));
+				rels	= parentFileAs<PPTX::SlideMaster>().Vml.smart_dynamic_cast<OOX::IFileContainer>();
 			}
 
 			return xml;

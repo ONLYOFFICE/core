@@ -44,7 +44,7 @@ namespace OOX
 		class CSparkline : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CSparkline)
+			WritingElement_AdditionConstructors(CSparkline)
 			CSparkline()
 			{
 			}
@@ -52,8 +52,10 @@ namespace OOX
 			{
 			}
 
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -74,7 +76,7 @@ namespace OOX
 				}
 				writer.WriteString(_T("</x14:sparkline>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -95,7 +97,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Sparkline;
+				return et_x_Sparkline;
 			}
 
 		private:
@@ -111,7 +113,7 @@ namespace OOX
 		class CSparklines  : public WritingElementWithChilds<CSparkline>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CSparklines)
+			WritingElement_AdditionConstructors(CSparklines)
 			CSparklines()
 			{
 			}
@@ -119,8 +121,10 @@ namespace OOX
 			{
 			}
 
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -131,7 +135,7 @@ namespace OOX
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</x14:sparklines>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -150,7 +154,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Sparklines;
+				return et_x_Sparklines;
 			}
 
 		private:
@@ -161,16 +165,17 @@ namespace OOX
 		class CSparklineGroup : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CSparklineGroup)
+			WritingElement_AdditionConstructors(CSparklineGroup)
 			CSparklineGroup()
 			{
 			}
 			virtual ~CSparklineGroup()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -327,7 +332,7 @@ namespace OOX
 				}
 				writer.WriteString(_T("</x14:sparklineGroup>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -364,7 +369,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_SparklineGroup;
+				return et_x_SparklineGroup;
 			}
 
 		private:
@@ -438,7 +443,7 @@ namespace OOX
 		class CSparklineGroups  : public WritingElementWithChilds<CSparklineGroup>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CSparklineGroups)
+			WritingElement_AdditionConstructors(CSparklineGroups)
 			CSparklineGroups()
 			{
 			}
@@ -446,8 +451,10 @@ namespace OOX
 			{
 			}
 
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -458,7 +465,7 @@ namespace OOX
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</x14:sparklineGroups>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -477,7 +484,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_SparklineGroups;
+				return et_x_SparklineGroups;
 			}
 		
 		private:

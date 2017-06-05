@@ -33,7 +33,9 @@
 #ifndef PPTX_SLIDES_SLIDE_SHAPETREEELEM_INCLUDE_H_
 #define PPTX_SLIDES_SLIDE_SHAPETREEELEM_INCLUDE_H_
 
-#include "./../WrapperWritingElement.h"
+#include "../WrapperWritingElement.h"
+#include "../Theme.h"
+
 #include "SpPr.h"
 #include "ShapeStyle.h"
 
@@ -41,10 +43,11 @@ namespace PPTX
 {
 	namespace Logic
 	{
-        void CalculateFill(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, smart_ptr<PPTX::WrapperFile>& oTheme,
-                           smart_ptr<PPTX::WrapperWritingElement>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle = false);
+        void CalculateFill(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, smart_ptr<PPTX::Theme>& oTheme,
+				smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle = false, bool bSignature = false);
+
         void CalculateLine(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle,
-                           smart_ptr<PPTX::WrapperFile>& oTheme, smart_ptr<PPTX::WrapperWritingElement>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle = false);
+				smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle = false, bool bSignature = false);
 
 		class SpTreeElem : public WrapperWritingElement
 		{
@@ -85,14 +88,14 @@ namespace PPTX
 				m_elem.reset(pElem);
 			}
 			
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			virtual void fromPPTY	(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY		(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				if (m_elem.is_init())
 					m_elem->toPPTY(pWriter);
 			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+					void toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap) const;
+			virtual void toXmlWriter	(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				if (m_elem.is_init())
 					m_elem->toXmlWriter(pWriter);
@@ -102,14 +105,11 @@ namespace PPTX
 			{
 				return m_elem;
 			}
-
-		//public:
+			virtual void SetParentPointer(const WrapperWritingElement* pParent) {if(is_init()) m_elem->SetParentPointer(pParent);};
 		private:
 			smart_ptr<WrapperWritingElement> m_elem;
 		protected:
 			virtual void FillParentPointersForChilds(){};
-		public:
-			virtual void SetParentPointer(const WrapperWritingElement* pParent) {if(is_init()) m_elem->SetParentPointer(pParent);};
 		};
 	} // namespace Logic
 } // namespace PPTX

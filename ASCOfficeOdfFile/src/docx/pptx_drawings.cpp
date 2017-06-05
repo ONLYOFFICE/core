@@ -65,11 +65,16 @@ public:
 		{
 			pptx_drawing_rels_.push_back(_rel(isInternal, rid, ref, type));
 		}
-        for (int i = 0; i < d.hlinks.size(); i++)
+        for (size_t i = 0; i < d.hlinks.size(); i++)
         {
 			pptx_drawing_rels_.push_back(_rel(false, d.hlinks[i].hId, d.hlinks[i].hRef, typeHyperlink));
 		}
-    }
+        if (!d.action.hId.empty())
+        {
+			bool bInternal = (d.action.typeRels != typeHyperlink);
+			pptx_drawing_rels_.push_back(_rel(bInternal, d.action.hId, d.action.hRef, d.action.typeRels));
+		}    
+	}
 
     void add(/**/
         bool isInternal,
@@ -120,10 +125,13 @@ public:
 			}
 			else
 			{
+				std::wstring ref = pptx_drawing_rels_[i].ref;
+				if (pptx_drawing_rels_[i].is_internal && ref != L"NULL")
+				{
+					ref =  L"../" + ref;
+				}
 				Rels.add(relationship( pptx_drawing_rels_[i].rid, 
-							mediaitems::get_rel_type(pptx_drawing_rels_[i].type),
-							(pptx_drawing_rels_[i].is_internal ? std::wstring(L"../") + pptx_drawing_rels_[i].ref : pptx_drawing_rels_[i].ref),
-							(pptx_drawing_rels_[i].is_internal ? L"" : L"External")) );
+							mediaitems::get_rel_type(pptx_drawing_rels_[i].type), ref, (pptx_drawing_rels_[i].is_internal ? L"" : L"External")) );
 			}
 		}
 	}

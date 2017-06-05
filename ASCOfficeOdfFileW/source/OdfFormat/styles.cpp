@@ -48,10 +48,7 @@
 #include "style_chart_properties.h"
 #include "style_section_properties.h"
 #include "style_page_layout_properties.h"
-
-//#include "style_presentation.h"
-
-
+#include "style_presentation.h"
 
 namespace cpdoccore { 
 
@@ -65,7 +62,7 @@ style_text_properties * style_content::get_style_text_properties()
 {
 	//если запросили .. значит надо - создаем
 	if (!style_text_properties_)
-		create_element(L"style", L"text-properties",style_text_properties_,Context);
+		create_element(L"style", L"text-properties",style_text_properties_, Context);
 	
 	return dynamic_cast<style_text_properties *>(style_text_properties_.get());    
 }
@@ -73,22 +70,38 @@ style_text_properties * style_content::get_style_text_properties()
 style_paragraph_properties * style_content::get_style_paragraph_properties()
 {
  	if (!style_paragraph_properties_)
-		create_element(L"style", L"paragraph-properties",style_paragraph_properties_,Context);
+		create_element(L"style", L"paragraph-properties",style_paragraph_properties_, Context);
 
 	return dynamic_cast<style_paragraph_properties *>(style_paragraph_properties_.get());    
 }
 
-style_graphic_properties * style_content::get_style_graphic_properties() 
+graphic_format_properties * style_content::get_graphic_properties() 
 {
-  	if (!style_graphic_properties_)
-		create_element(L"style", L"graphic-properties",style_graphic_properties_,Context);
+	if (!style_graphic_properties_)
+	{
+		if (style_family_ == odf_types::style_family::TableCell)
+			create_element(L"loext", L"graphic-properties", style_graphic_properties_, Context);
+		else
+			create_element(L"style", L"graphic-properties", style_graphic_properties_, Context);
+	}
+	style_graphic_properties * style_gr = dynamic_cast<style_graphic_properties *>(style_graphic_properties_.get());
+	loext_graphic_properties * loext_gr = dynamic_cast<loext_graphic_properties *>(style_graphic_properties_.get());
+	
+	if (style_gr)
+	{
+		return &style_gr->content_;    
+	}
+	else if (loext_gr)
+	{
+		return &loext_gr->content_;
+	}
+	return NULL;
 
-	return dynamic_cast<style_graphic_properties *>(style_graphic_properties_.get());    
 }
 style_table_properties * style_content::get_style_table_properties()
 {
   	if (!style_table_properties_)
-		create_element(L"style", L"table-properties",style_table_properties_,Context);
+		create_element(L"style", L"table-properties", style_table_properties_, Context);
 
     return dynamic_cast<style_table_properties *>(style_table_properties_.get());    
 }
@@ -96,7 +109,7 @@ style_table_properties * style_content::get_style_table_properties()
 style_section_properties * style_content::get_style_section_properties()
 {
   	if (!style_section_properties_)
-		create_element(L"style", L"section-properties",style_section_properties_,Context);
+		create_element(L"style", L"section-properties",style_section_properties_, Context);
 
 	return dynamic_cast<style_section_properties *>(style_section_properties_.get());
 }
@@ -105,7 +118,7 @@ style_table_cell_properties * style_content::get_style_table_cell_properties()
 {
 	//если запросили .. значит надо - создаем
 	if (!style_table_cell_properties_)
-		create_element(L"style", L"table-cell-properties",style_table_cell_properties_,Context);
+		create_element(L"style", L"table-cell-properties",style_table_cell_properties_, Context);
     
 	return dynamic_cast<style_table_cell_properties *>(style_table_cell_properties_.get());
 }
@@ -113,7 +126,7 @@ style_table_cell_properties * style_content::get_style_table_cell_properties()
 style_table_row_properties * style_content::get_style_table_row_properties() 
 {
   	if (!style_table_row_properties_)
-		create_element(L"style", L"table-row-properties",style_table_row_properties_,Context);
+		create_element(L"style", L"table-row-properties",style_table_row_properties_, Context);
 
 	return dynamic_cast<style_table_row_properties *>(style_table_row_properties_.get());
 }
@@ -121,7 +134,7 @@ style_table_row_properties * style_content::get_style_table_row_properties()
 style_table_column_properties * style_content::get_style_table_column_properties() 
 {
    	if (!style_table_column_properties_)
-		create_element(L"style", L"table-column-properties",style_table_column_properties_,Context);
+		create_element(L"style", L"table-column-properties",style_table_column_properties_, Context);
 
 	return dynamic_cast<style_table_column_properties *>(style_table_column_properties_.get());
 }
@@ -129,17 +142,17 @@ style_table_column_properties * style_content::get_style_table_column_properties
 style_chart_properties * style_content::get_style_chart_properties() 
 {
    	if (!style_chart_properties_)
-		create_element(L"style", L"chart-properties",style_chart_properties_,Context);
+		create_element(L"style", L"chart-properties",style_chart_properties_, Context);
 
 	return dynamic_cast<style_chart_properties *>(style_chart_properties_.get());    
 }
-//style_drawing_page_properties * style_content::get_style_drawing_page_properties()
-//{
-//    if (!style_drawing_page_properties_)
-//		create_element(L"style", L"drawing-page-properties",style_drawing_page_properties_,Context);
-//
-//   return dynamic_cast<style_drawing_page_properties *>(style_drawing_page_properties_.get());
-//}
+style_drawing_page_properties * style_content::get_style_drawing_page_properties()
+{
+    if (!style_drawing_page_properties_)
+		create_element(L"style", L"drawing-page-properties",style_drawing_page_properties_, Context);
+
+   return dynamic_cast<style_drawing_page_properties *>(style_drawing_page_properties_.get());
+}
 
 void style_content::add_child_element( const office_element_ptr & child)
 {
@@ -233,11 +246,11 @@ const wchar_t * default_style::name = L"default-style";
 
 void default_style::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
-    style_content_.create_child_element(Ns, Name);
+    content_.create_child_element(Ns, Name);
 }
 void default_style::add_child_element( const office_element_ptr & child)
 {
-	style_content_.add_child_element(child);
+	content_.add_child_element(child);
 }
 void default_style::serialize(std::wostream & strm)
 {
@@ -246,7 +259,7 @@ void default_style::serialize(std::wostream & strm)
 		CP_XML_NODE_SIMPLE()
         {
 			CP_XML_ATTR(L"style:family", style_family_);
-			style_content_.serialize(CP_XML_STREAM());
+			content_.serialize(CP_XML_STREAM());
 		}
 	}
 }
@@ -379,6 +392,52 @@ void draw_opacity::serialize(std::wostream & strm)
 		}
 	}
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * draw_layer::ns = L"draw";
+const wchar_t * draw_layer::name = L"layer";
+
+void draw_layer::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_NOT_APPLICABLE_ELM();
+}
+void draw_layer::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"draw:name",	draw_name_);
+		}
+	}
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * draw_layer_set::ns		= L"draw";
+const wchar_t * draw_layer_set::name	= L"layer-set";
+
+void draw_layer_set::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
+{
+	CP_CREATE_ELEMENT(content_);     
+}
+
+void draw_layer_set::add_child_element( const office_element_ptr & child)
+{
+    content_.push_back(child); 
+}
+
+void draw_layer_set::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
 // style:style
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style::ns = L"style";
@@ -391,7 +450,7 @@ void style::create_child_element(  const std::wstring & Ns, const std::wstring &
         CP_CREATE_ELEMENT(style_map_);
     }
     else
-        style_content_.create_child_element(Ns, Name);
+        content_.create_child_element(Ns, Name);
 }
 
 void style::add_child_element( const office_element_ptr & child)
@@ -405,7 +464,7 @@ void style::add_child_element( const office_element_ptr & child)
         style_map_.push_back(child);
     } 
     else
-        style_content_.add_child_element(child);
+        content_.add_child_element(child);
 }
 void style::serialize(std::wostream & strm)
 {
@@ -425,7 +484,7 @@ void style::serialize(std::wostream & strm)
 			CP_XML_ATTR(L"style:family",					style_family_);
 			CP_XML_ATTR(L"style:name",						style_name_);
 			
-			style_content_.serialize(CP_XML_STREAM());
+			content_.serialize(CP_XML_STREAM());
 		}
 	}
 }
@@ -720,7 +779,6 @@ void office_master_styles::serialize(std::wostream & strm)
 const wchar_t * office_styles::ns = L"office";
 const wchar_t * office_styles::name = L"styles";
 
-
 void office_styles::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if (CP_CHECK_NAME(L"style",		L"style") ||
@@ -814,12 +872,17 @@ void office_styles::serialize(std::wostream & strm)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			BOOST_FOREACH(office_element_ptr & elm, style_default_style_)
+			for (size_t i = 0 ; i < style_default_style_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				style_default_style_[i]->serialize(CP_XML_STREAM());
 			}
 			
 			draw_styles_.serialize(CP_XML_STREAM());
+
+			for (size_t i = 0 ; i < style_presentation_page_layout_.size(); i++)
+			{
+				style_presentation_page_layout_[i]->serialize(CP_XML_STREAM());
+			}
 
 			templates_.serialize(CP_XML_STREAM());
 			
@@ -854,7 +917,6 @@ void style_header::serialize(std::wostream & strm)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_footer::ns = L"style";
 const wchar_t * style_footer::name = L"footer";
-
 
 void style_footer::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
@@ -1102,13 +1164,13 @@ void style_page_layout::serialize(std::wostream & strm)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 void style_footnote_sep_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"style:width", style_width_);
-    CP_XML_ATTR_OPT(L"style:rel-width", style_rel_width_);
-    CP_XML_ATTR_OPT(L"style:color", style_color_);
-    CP_XML_ATTR_OPT(L"style:line-style", style_line_style_);
-    CP_XML_ATTR_OPT(L"style:type", style_adjustment_); // default Left
-    CP_XML_ATTR_OPT(L"style:distance-before-sep", style_distance_before_sep_);
-    CP_XML_ATTR_OPT(L"style:distance-after-sep", style_distance_after_sep_);
+    CP_XML_ATTR_OPT(L"style:width",			style_width_);
+    CP_XML_ATTR_OPT(L"style:rel-width",		style_rel_width_);
+    CP_XML_ATTR_OPT(L"style:color",			style_color_);
+    CP_XML_ATTR_OPT(L"style:line-style",	style_line_style_);
+    CP_XML_ATTR_OPT(L"style:type",					style_adjustment_);		// default Left
+    CP_XML_ATTR_OPT(L"style:distance-before-sep",	style_distance_before_sep_);
+    CP_XML_ATTR_OPT(L"style:distance-after-sep",	style_distance_after_sep_);
 }
 
 const wchar_t * style_footnote_sep::ns = L"style";
@@ -1208,7 +1270,7 @@ void style_master_page::serialize(std::wostream & strm)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			style_master_page_attlist_.serialize( CP_GET_XML_NODE());
+			attlist_.serialize( CP_GET_XML_NODE());
 			
 			if (style_footer_)			style_footer_->serialize(CP_XML_STREAM());
 			if (style_header_)			style_header_->serialize(CP_XML_STREAM());
@@ -1221,13 +1283,13 @@ void style_master_page::serialize(std::wostream & strm)
 			
 			if (office_forms_)			office_forms_->serialize(CP_XML_STREAM());
 			
-			BOOST_FOREACH(const office_element_ptr & elm, style_style_)
+			for (size_t i = 0; i < style_style_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				style_style_[i]->serialize(CP_XML_STREAM());
 			}
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -1292,5 +1354,25 @@ void style_presentation_page_layout::create_child_element( const std::wstring & 
     }
 }
 
+void style_presentation_page_layout::add_child_element( const office_element_ptr & child)
+{
+	content_.push_back(child);
+}
+
+void style_presentation_page_layout::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"style:name", style_name_);
+			
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
 }
 }

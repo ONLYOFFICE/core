@@ -41,6 +41,9 @@ namespace NSPresentationEditor
 		LONG m_lThemeID;
 		LONG m_lLayoutID;
 
+		LONG m_lSlideID;	//for notes rels
+		LONG m_lNotesID;	//for slide rels
+
 		std::vector<IElement*>	m_arElements;
 		CSlideShowInfo			m_oSlideShow;
 		std::multimap<int,int>	m_mapPlaceholders;
@@ -69,7 +72,7 @@ namespace NSPresentationEditor
 		vector_string			m_PlaceholdersReplaceString[3];
 		std::wstring			m_strComment;
 		std::wstring			m_sName;
-	public:
+
 		CSlide() : m_arElements(), m_oSlideShow()
 		{
 			Clear(); 
@@ -91,6 +94,8 @@ namespace NSPresentationEditor
 			
 			m_lThemeID			= -1;
 			m_lLayoutID			= -1;
+			m_lSlideID			= -1;
+			m_lNotesID			= -1;
 
 			m_lWidth			= 270;   
 			m_lHeight			= 190; 
@@ -125,6 +130,8 @@ namespace NSPresentationEditor
 
 			m_lThemeID			= oSrc.m_lThemeID;
 			m_lLayoutID			= oSrc.m_lLayoutID;
+			m_lNotesID			= oSrc.m_lNotesID;
+			m_lSlideID			= oSrc.m_lSlideID;
 
 			m_lWidth			= oSrc.m_lWidth;
 			m_lHeight			= oSrc.m_lHeight;
@@ -147,7 +154,7 @@ namespace NSPresentationEditor
 			m_sName				= oSrc.m_sName;
 		}
 
-	public:
+
 		void SetMetricInfo(const CMetricInfo& oInfo)
 		{
 			m_oInfo  = oInfo;
@@ -155,13 +162,6 @@ namespace NSPresentationEditor
 			m_lHeight			= m_oInfo.m_lMillimetresVer;
 			m_lOriginalWidth	= m_oInfo.m_lUnitsHor;
 			m_lOriginalHeight	= m_oInfo.m_lUnitsVer;
-		}
-
-		virtual void ReadFromXml(XmlUtils::CXmlNode& oNode)
-		{
-		}
-		virtual void WriteToXml(XmlUtils::CXmlWriter& oWriter)
-		{
 		}
 
 		void SetUpPlaceholderStyles(NSPresentationEditor::CLayout* pLayout)

@@ -33,6 +33,7 @@
 #include "./../BaseShape.h"
 #include "CustomGeomShape.h"
 #include "PPTShapeEnum.h"
+#include "../../../../../../Common/DocxFormat/Source/DocxFormat/Logic/VmlOfficeDrawing.h"
 
 using namespace NSOfficeDrawing;
 using namespace NSPresentationEditor;
@@ -53,6 +54,7 @@ public:
 
     bool m_bIsFilled;
     bool m_bIsStroked;
+    nullable<OOX::VmlOffice::CSignatureLine> m_oSignatureLine;
 
 public:
     CPPTShape() : CBaseShape(), m_arStringTextRects()
@@ -277,6 +279,11 @@ public:
                 m_bIsStroked = false;
             else
                 m_bIsStroked = true;
+        }
+        XmlUtils::CXmlNode oNodeSignature;
+        if (oNodeShapeType.GetNode(_T("o:signatureline"), oNodeSignature))
+        {
+            m_oSignatureLine = oNodeSignature;
         }
 
         ReCalculate();

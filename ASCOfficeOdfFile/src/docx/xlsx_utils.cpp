@@ -66,7 +66,7 @@ std::wstring getColAddress(size_t col)
 
 std::wstring getRowAddress(size_t row)
 {
-    return boost::lexical_cast<std::wstring>(row + 1);
+    return std::to_wstring(row + 1);
 }
 
 std::wstring getCellAddress(size_t col, size_t row)

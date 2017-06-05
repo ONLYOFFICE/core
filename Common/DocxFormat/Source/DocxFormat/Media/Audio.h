@@ -40,24 +40,24 @@ namespace OOX
 	class Audio : public Media
 	{
 	public:
-		Audio()
+		Audio(bool bDocument = true) : Media (bDocument)
 		{
 		}
 		Audio(const CPath& filename)
 		{
+			read(filename);
 		}
 		virtual ~Audio()
 		{
 		}
-
-	public:
 		virtual const FileType type() const
 		{
 			return FileTypes::Audio;
 		}
 		virtual const CPath DefaultDirectory() const
 		{
-			return type().DefaultDirectory();
+			if (m_bDocument) return type().DefaultDirectory();
+			else	return L"../" + type().DefaultDirectory();
 		}
 		virtual const CPath DefaultFileName() const
 		{

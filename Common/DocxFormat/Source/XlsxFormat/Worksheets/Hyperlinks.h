@@ -45,16 +45,17 @@ namespace OOX
 		class CHyperlink : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CHyperlink)
+			WritingElement_AdditionConstructors(CHyperlink)
 			CHyperlink()
 			{
 			}
 			virtual ~CHyperlink()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -68,7 +69,7 @@ namespace OOX
 				WritingStringNullableAttrEncodeXmlString(L"tooltip", m_oTooltip, m_oTooltip.get());
 				writer.WriteString(_T("/>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -78,7 +79,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Hyperlink;
+				return et_x_Hyperlink;
 			}
 
 		private:
@@ -108,15 +109,16 @@ namespace OOX
 		class CHyperlinks  : public WritingElementWithChilds<CHyperlink>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CHyperlinks)
+			WritingElement_AdditionConstructors(CHyperlinks)
 			CHyperlinks()
 			{
 			}
 			virtual ~CHyperlinks()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -152,7 +154,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Hyperlinks;
+				return et_x_Hyperlinks;
 			}
 		
 		private:

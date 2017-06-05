@@ -1,4 +1,4 @@
-﻿/*
+/*
  * elfgcchack.h: hack by Arjan van de Ven <arjanv@redhat.com> to speed
  *               up the code when using gcc for call within the library.
  *
@@ -1061,7 +1061,7 @@ extern __typeof (xmlAddNotationDecl) xmlAddNotationDecl__internal_alias __attrib
 #endif
 #endif
 
-#if defined(LIBXML_TREE_ENABLED) || defined(LIBXML_HTML_ENABLED) || defined(LIBXML_SCHEMAS_ENABLED)
+#if defined(LIBXML_TREE_ENABLED) || defined(LIBXML_HTML_ENABLED) || defined(LIBXML_SCHEMAS_ENABLED) || defined(LIBXML_XINCLUDE_ENABLED)
 #ifdef bottom_tree
 #undef xmlAddPrevSibling
 extern __typeof (xmlAddPrevSibling) xmlAddPrevSibling __attribute((alias("xmlAddPrevSibling__internal_alias")));
@@ -6547,6 +6547,16 @@ extern __typeof (xmlNoNetExternalEntityLoader) xmlNoNetExternalEntityLoader__int
 #endif
 #endif
 
+#ifdef bottom_xmlIO
+#undef xmlNoXxeExternalEntityLoader
+extern __typeof (xmlNoXxeExternalEntityLoader) xmlNoXxeExternalEntityLoader __attribute((alias("xmlNoXxeExternalEntityLoader__internal_alias")));
+#else
+#ifndef xmlNoXxeExternalEntityLoader
+extern __typeof (xmlNoXxeExternalEntityLoader) xmlNoXxeExternalEntityLoader__internal_alias __attribute((visibility("hidden")));
+#define xmlNoXxeExternalEntityLoader xmlNoXxeExternalEntityLoader__internal_alias
+#endif
+#endif
+
 #ifdef bottom_tree
 #undef xmlNodeAddContent
 extern __typeof (xmlNodeAddContent) xmlNodeAddContent __attribute((alias("xmlNodeAddContent__internal_alias")));
@@ -7037,12 +7047,12 @@ extern __typeof (xmlParseCharRef) xmlParseCharRef__internal_alias __attribute((v
 
 #if defined(LIBXML_PUSH_ENABLED)
 #ifdef bottom_parser
-#undef DoctRenderer
-extern __typeof (DoctRenderer) DoctRenderer __attribute((alias("DoctRenderer__internal_alias")));
+#undef xmlParseChunk
+extern __typeof (xmlParseChunk) xmlParseChunk __attribute((alias("xmlParseChunk__internal_alias")));
 #else
-#ifndef DoctRenderer
-extern __typeof (DoctRenderer) DoctRenderer__internal_alias __attribute((visibility("hidden")));
-#define DoctRenderer DoctRenderer__internal_alias
+#ifndef xmlParseChunk
+extern __typeof (xmlParseChunk) xmlParseChunk__internal_alias __attribute((visibility("hidden")));
+#define xmlParseChunk xmlParseChunk__internal_alias
 #endif
 #endif
 #endif
@@ -8885,7 +8895,7 @@ extern __typeof (xmlSAX2EndDocument) xmlSAX2EndDocument__internal_alias __attrib
 #endif
 #endif
 
-#if defined(LIBXML_SAX1_ENABLED) || defined(LIBXML_HTML_ENABLED) || defined(LIBXML_WRITER_ENABLED) || defined(LIBXML_DOCB_ENABLED)
+#if defined(LIBXML_SAX1_ENABLED) || defined(LIBXML_HTML_ENABLED) || defined(LIBXML_WRITER_ENABLED) || defined(LIBXML_DOCB_ENABLED) || defined(LIBXML_LEGACY_ENABLED)
 #ifdef bottom_SAX2
 #undef xmlSAX2EndElement
 extern __typeof (xmlSAX2EndElement) xmlSAX2EndElement __attribute((alias("xmlSAX2EndElement__internal_alias")));
@@ -9131,7 +9141,7 @@ extern __typeof (xmlSAX2StartDocument) xmlSAX2StartDocument__internal_alias __at
 #endif
 #endif
 
-#if defined(LIBXML_SAX1_ENABLED) || defined(LIBXML_HTML_ENABLED) || defined(LIBXML_WRITER_ENABLED) || defined(LIBXML_DOCB_ENABLED)
+#if defined(LIBXML_SAX1_ENABLED) || defined(LIBXML_HTML_ENABLED) || defined(LIBXML_WRITER_ENABLED) || defined(LIBXML_DOCB_ENABLED) || defined(LIBXML_LEGACY_ENABLED)
 #ifdef bottom_SAX2
 #undef xmlSAX2StartElement
 extern __typeof (xmlSAX2StartElement) xmlSAX2StartElement __attribute((alias("xmlSAX2StartElement__internal_alias")));
@@ -15363,7 +15373,7 @@ extern __typeof (xmlValidateElementDecl) xmlValidateElementDecl__internal_alias 
 #endif
 #endif
 
-#if defined(LIBXML_TREE_ENABLED) || defined(LIBXML_XPATH_ENABLED) || defined(LIBXML_SCHEMAS_ENABLED) || defined(LIBXML_DEBUG_ENABLED) || defined (LIBXML_HTML_ENABLED) || defined(LIBXML_SAX1_ENABLED) || defined(LIBXML_HTML_ENABLED) || defined(LIBXML_WRITER_ENABLED) || defined(LIBXML_DOCB_ENABLED)
+#if defined(LIBXML_TREE_ENABLED) || defined(LIBXML_XPATH_ENABLED) || defined(LIBXML_SCHEMAS_ENABLED) || defined(LIBXML_DEBUG_ENABLED) || defined (LIBXML_HTML_ENABLED) || defined(LIBXML_SAX1_ENABLED) || defined(LIBXML_HTML_ENABLED) || defined(LIBXML_WRITER_ENABLED) || defined(LIBXML_DOCB_ENABLED) || defined(LIBXML_LEGACY_ENABLED)
 #ifdef bottom_tree
 #undef xmlValidateNCName
 extern __typeof (xmlValidateNCName) xmlValidateNCName __attribute((alias("xmlValidateNCName__internal_alias")));
@@ -16769,6 +16779,18 @@ extern __typeof (xmlXPathNextSelf) xmlXPathNextSelf__internal_alias __attribute(
 
 #if defined(LIBXML_XPATH_ENABLED)
 #ifdef bottom_xpath
+#undef xmlXPathNodeEval
+extern __typeof (xmlXPathNodeEval) xmlXPathNodeEval __attribute((alias("xmlXPathNodeEval__internal_alias")));
+#else
+#ifndef xmlXPathNodeEval
+extern __typeof (xmlXPathNodeEval) xmlXPathNodeEval__internal_alias __attribute((visibility("hidden")));
+#define xmlXPathNodeEval xmlXPathNodeEval__internal_alias
+#endif
+#endif
+#endif
+
+#if defined(LIBXML_XPATH_ENABLED)
+#ifdef bottom_xpath
 #undef xmlXPathNodeLeading
 extern __typeof (xmlXPathNodeLeading) xmlXPathNodeLeading __attribute((alias("xmlXPathNodeLeading__internal_alias")));
 #else
@@ -17267,6 +17289,18 @@ extern __typeof (xmlXPathRoundFunction) xmlXPathRoundFunction __attribute((alias
 #ifndef xmlXPathRoundFunction
 extern __typeof (xmlXPathRoundFunction) xmlXPathRoundFunction__internal_alias __attribute((visibility("hidden")));
 #define xmlXPathRoundFunction xmlXPathRoundFunction__internal_alias
+#endif
+#endif
+#endif
+
+#if defined(LIBXML_XPATH_ENABLED)
+#ifdef bottom_xpath
+#undef xmlXPathSetContextNode
+extern __typeof (xmlXPathSetContextNode) xmlXPathSetContextNode __attribute((alias("xmlXPathSetContextNode__internal_alias")));
+#else
+#ifndef xmlXPathSetContextNode
+extern __typeof (xmlXPathSetContextNode) xmlXPathSetContextNode__internal_alias __attribute((visibility("hidden")));
+#define xmlXPathSetContextNode xmlXPathSetContextNode__internal_alias
 #endif
 #endif
 #endif

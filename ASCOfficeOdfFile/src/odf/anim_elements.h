@@ -45,7 +45,6 @@ namespace cpdoccore {
 namespace odf_reader {
 
 
-
 //anim:par
 class anim_par : public office_element_impl<anim_par>//Параллельные анимации
 {
@@ -56,9 +55,11 @@ public:
     static const ElementType type = typeAnimPar;
     CPDOCCORE_DEFINE_VISITABLE();
 
-  	office_element_ptr		 anim_par_;
-	office_element_ptr_array anim_seq_array_;
-	office_element_ptr_array content_;
+	odf_types::common_anim_smil_attlist		attlist_;
+  	
+	office_element_ptr						anim_par_;
+	office_element_ptr_array				anim_seq_array_;
+	office_element_ptr_array				content_;
 
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
@@ -79,7 +80,8 @@ public:
     static const ElementType type = typeAnimSeq;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	office_element_ptr_array anim_par_array_;
+	odf_types::common_anim_smil_attlist		attlist_;
+	office_element_ptr_array				anim_par_array_;
    
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
@@ -92,26 +94,25 @@ private:
 CP_REGISTER_OFFICE_ELEMENT2(anim_seq);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //anim:iterate 
-//class anim_iterate : public office_element_impl<anim_iterate>//Итеративные анимации
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//----------------------------------------------------------------------------------------------------------------/
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//anim-transition-filter-attlist
+//-------------------------------------------------------------------------------
+class anim_audio_attlist
+{
+public:
+    void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	
+	_CP_OPT(std::wstring)						xlink_href_;
+	_CP_OPT(std::wstring)						anim_audio_level_; 
+};
 class anim_transition_filter_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	
-	_CP_OPT(std::wstring)	smil_direction_;
-	_CP_OPT(std::wstring)	smil_subtype_; 
+	_CP_OPT(std::wstring)						smil_subtype_; 
 	_CP_OPT(odf_types::smil_transition_type)	smil_type_;
-	_CP_OPT(std::wstring)	smil_mode_;
-	_CP_OPT(odf_types::color)			smil_fadeColor_;
-	_CP_OPT(odf_types::clockvalue)		smil_dur_;
+	_CP_OPT(std::wstring)						smil_mode_;
+	_CP_OPT(odf_types::color)					smil_fadeColor_;
 };
-
-//anim:transitionFilter
 class anim_transitionFilter : public office_element_impl<anim_transitionFilter>
 {
 public:
@@ -122,11 +123,9 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
-///////////////////////////////////////////////////////////	
-	odf_types::common_anim_smil_attlist		common_anim_smil_attlist_;
-	anim_transition_filter_attlist			anim_transition_filter_attlist_;
 
-
+	odf_types::common_anim_smil_attlist		common_attlist_;
+	anim_transition_filter_attlist			filter_attlist_;
 private:
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -135,7 +134,26 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(anim_transitionFilter);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//anim:audio
+class anim_audio : public office_element_impl<anim_audio>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeAnimAudio;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void pptx_convert(oox::pptx_conversion_context & Context);
+
+	odf_types::common_anim_smil_attlist		common_attlist_;
+	anim_audio_attlist						audio_attlist_;
+private:
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(anim_audio);
 //anim:command
 
 }

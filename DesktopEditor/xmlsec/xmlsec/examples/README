@@ -1,0 +1,114 @@
+This folder contains XML Security Library examples. 
+
+1. Files List
+-------------------------
+
+    README              This file.
+    Makefile            *nix makefile.
+    Makefile.w32        Win32 makefile.
+    cacert.pem          Root (trusted) certificate
+    ca2cert.pem         CA (trusted) certificate (signed with cacert.pem)
+    rsakey.pem          Private PEM key file
+    rsapub.pem          Public PEM key file
+    rsacert.pem         Certificate for rsakey.pem signed with ca2cert.pem
+    deskey.bin          A DES keys
+    sign1.c             Signing with a template file
+    sign1-tmpl.xml      An example template file for sign1 example
+    sign1-res.xml       The result of processing sign1_tmpl.xml by sign1.c
+    sign2.c             Signing a file with a dynamicaly created template
+    sign2-doc.xml       An example XML file for signing by sign2.c
+    sign2-res.xml       The result of signing sign2-doc.xml by sign2.c
+    sign3.c             Signing a file with a dynamicaly created template and an X509 certificate
+    sign3-doc.xml       An example XML file for signing by sign3.c
+    sign3-res.xml       The result of signing sign3-doc.xml by sign3.c
+    verify1.c           Verifying a signed document with a single key
+    verify2.c           Verifying a signed document using keys manager
+    verify3.c           Verifying a signed document using X509 certificate
+    verify4.c           Verifying a simple SAML response using X509 certificate
+    verify4-tmpl.xml    An example template file with a simple SAML response for verify4 example
+    verify4-res.xml     Signed simple SAML response for verification by verify4.c 
+    encrypt1.c          Encrypting binary data with a template file
+    encrypt1-res.xml    An example template file for encrypt1.c
+    encrypt1-tmpl.xml   The result of processing encrypt1_tmpl.xml by encrypt1.c
+    encrypt2.c          Encrypting XML file using a dynamicaly created template
+    encrypt2-doc.xml    An example XML file for encryption by encrypt2.c
+    encrypt2-res.xml    The result of encryptin encrypt2-doc.xml by encrypt2.c
+    encrypt2.c          Encrypting XML file using a session DES key
+    encrypt2-doc.xml    An example XML file for encryption by encrypt3.c
+    encrypt2-res.xml    The result of encryptin encrypt3-doc.xml by encrypt3.c
+    decrypt1.c          Decrypting binary data using a single key
+    decrypt2.c          Decrypting binary data using keys manager
+    decrypt3.c          Decrypting binary file using custom keys manager
+    xmldsigverify.c     CGI script for signatures verifications
+
+2. Building Examples 
+-------------------------
+
+Unixes:  
+    Just run the usual 'make' command (assuming that xmlsec, libxml and 
+    all other required libraries are already installed).
+
+Windows:
+    - Add paths to include and library files for xmlsec, libxml2, libexslt and 
+    openssl or nss to the environment variables INCLUDE and LIB.
+    - Edit 'Makefile.w32' file and specify correct crypto engine (openssl or 
+    nss for now). You can also specify necessary include and library paths
+    or change from static linking to using DLLs.
+    - Run 'nmake -f Makefile.w32'
+
+    If something does not work, check the README file in the top level 
+    "win32" folder and have fun :)
+    
+Other platforms:
+    If none of the above works for you and you've managed to compile xmlsec
+    library by yourself then you probably know what to do.
+
+
+
+3. Runnning Examples.
+-------------------------
+
+The following are just examples and you can use the programs from this
+folder with any other input files:
+    
+    ./sign1    sign1-tmpl.xml    rsakey.pem
+    ./sign2    sign2-doc.xml     rsakey.pem
+    ./sign3    sign3-doc.xml     rsakey.pem rsacert.pem
+
+    ./verify1  sign1-res.xml     rsapub.pem
+    ./verify1  sign2-res.xml     rsapub.pem
+    ./verify2  sign1-res.xml     rsapub.pem
+    ./verify2  sign2-res.xml     rsapub.pem
+    ./verify3  sign3-res.xml     ca2cert.pem cacert.pem 
+    ./verify4  verify4-res.xml   ca2cert.pem cacert.pem 
+
+    ./encrypt1 encrypt1-tmpl.xml deskey.bin
+    ./encrypt2 encrypt2-doc.xml  deskey.bin 
+    ./encrypt3 encrypt3-doc.xml  rsakey.pem
+
+    ./decrypt1 encrypt1-res.xml  deskey.bin
+    ./decrypt1 encrypt2-res.xml  deskey.bin
+    ./decrypt2 encrypt1-res.xml  deskey.bin
+    ./decrypt2 encrypt2-res.xml  deskey.bin
+    ./decrypt3 encrypt1-res.xml
+    ./decrypt3 encrypt2-res.xml
+    ./decrypt3 encrypt3-res.xml
+    
+4. Using xmlsec command line tool.
+-------------------------
+For Windows, use "xmlsec" instead of "xmlsec1":
+
+    xmlsec1 sign --privkey rsakey.pem --output sign1.xml sign1-tmpl.xml
+    xmlsec1 verify --pubkey rsapub.pem sign1.xml
+    xmlsec1 verify --pubkey rsapub.pem sign1-res.xml
+    xmlsec1 verify --pubkey rsapub.pem sign2-res.xml
+    xmlsec1 verify --trusted ca2cert.pem --trusted cacert.pem sign3-res.xml
+    xmlsec1 verify --trusted ca2cert.pem --trusted cacert.pem verify4-res.xml
+     
+    xmlsec1 encrypt --deskey deskey.bin  --binary-data binary.dat --output encrypt1.xml encrypt1-tmpl.xml
+    xmlsec1 decrypt --deskey deskey.bin encrypt1.xml
+    xmlsec1 decrypt --deskey deskey.bin encrypt1-res.xml
+    xmlsec1 decrypt --deskey deskey.bin encrypt2-res.xml
+    xmlsec1 decrypt --privkey rsakey.pem encrypt3-res.xml
+ 
+

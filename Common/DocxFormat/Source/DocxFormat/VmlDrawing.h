@@ -57,22 +57,21 @@ namespace OOX
 			OOX::WritingElement*	pElement;	// for docx/xlsx
 			bool					bUsed;		// for single drawing
 		};
-		CVmlDrawing(bool bSpreadsheet_ = false)
+		CVmlDrawing(bool bDocument = true)
 		{
-			bSpreadsheet	= bSpreadsheet_;
+			m_bDocument		= bDocument;
 			m_mapComments	= NULL;
-			m_lObjectIdVML = 0;
+			m_lObjectIdVML	= 0;
 		}
 		CVmlDrawing(const CPath& oRootPath, const CPath& oPath)
 		{
+			m_bDocument = false;
 			m_mapComments = NULL;
 			read( oRootPath, oPath );
 		}
 		virtual ~CVmlDrawing()
 		{
 		}
-	public:
-
 		virtual void read(const CPath& oPath)
 		{
 			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -319,7 +318,8 @@ namespace OOX
 				{
 					sXml.WriteString(m_aXml[i]);
 				}
-				long nIndex = m_lObjectIdVML;
+				
+				long nIndex = m_lObjectIdVML + 1;
 				if(NULL != m_mapComments && m_mapComments->size() > 0)
 				{
 					for (std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_mapComments->begin(); it != m_mapComments->end(); ++it)
@@ -399,18 +399,18 @@ namespace OOX
 				sXml.WriteString(L"</xml>");
 
                 NSFile::CFileBinary::SaveToFile( oPath.GetPath(), sXml.GetData() );
-				oContent.AddDefault( oPath.GetFilename() );
+				oContent.AddDefault( oPath.GetExtention(false) );
 				IFileContainer::Write(oPath, oDirectory, oContent);
 			}
 		}
 		virtual const OOX::FileType type() const
 		{
-			if (bSpreadsheet)	return OOX::Spreadsheet::FileTypes::VmlDrawing;
-			else				return OOX::FileTypes::VmlDrawing;
+			return OOX::FileTypes::VmlDrawing;
 		}
 		virtual const CPath DefaultDirectory() const
 		{
-			return type().DefaultDirectory();
+			if (m_bDocument) return type().DefaultDirectory();
+			else	return L"../" + type().DefaultDirectory();
 		}
 		virtual const CPath DefaultFileName() const
 		{
@@ -426,7 +426,7 @@ namespace OOX
 		{
 		}
 
-		bool bSpreadsheet;
+		bool m_bDocument;
 
 	public:
 //reading

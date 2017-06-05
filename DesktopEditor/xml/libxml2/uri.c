@@ -314,7 +314,7 @@ xmlParse3986Query(xmlURIPtr uri, const char **str)
  * @uri:  pointer to an URI structure
  * @str:  the string to analyze
  *
- * Parse a port  part and fills in the appropriate fields
+ * Parse a port part and fills in the appropriate fields
  * of the @uri structure
  *
  * port          = *DIGIT
@@ -325,15 +325,16 @@ static int
 xmlParse3986Port(xmlURIPtr uri, const char **str)
 {
     const char *cur = *str;
+    unsigned port = 0; /* unsigned for defined overflow behavior */
 
     if (ISA_DIGIT(cur)) {
-	if (uri != NULL)
-	    uri->port = 0;
 	while (ISA_DIGIT(cur)) {
-	    if (uri != NULL)
-		uri->port = uri->port * 10 + (*cur - '0');
+	    port = port * 10 + (*cur - '0');
+
 	    cur++;
 	}
+	if (uri != NULL)
+	    uri->port = port & INT_MAX; /* port value modulo INT_MAX+1 */
 	*str = cur;
 	return(0);
     }
@@ -759,6 +760,8 @@ xmlParse3986HierPart(xmlURIPtr uri, const char **str)
         cur += 2;
 	ret = xmlParse3986Authority(uri, &cur);
 	if (ret != 0) return(ret);
+	if (uri->server == NULL)
+	    uri->port = -1;
 	ret = xmlParse3986PathAbEmpty(uri, &cur);
 	if (ret != 0) return(ret);
 	*str = cur;
@@ -1106,7 +1109,7 @@ xmlSaveUri(xmlURIPtr uri) {
 	    }
 	}
     } else {
-	if (uri->server != NULL) {
+	if ((uri->server != NULL) || (uri->port == -1)) {
 	    if (len + 3 >= max) {
                 temp = xmlSaveUriRealloc(ret, &max);
                 if (temp == NULL) goto mem_error;
@@ -1143,22 +1146,24 @@ xmlSaveUri(xmlURIPtr uri) {
 		}
 		ret[len++] = '@';
 	    }
-	    p = uri->server;
-	    while (*p != 0) {
-		if (len >= max) {
-                    temp = xmlSaveUriRealloc(ret, &max);
-                    if (temp == NULL) goto mem_error;
-                    ret = temp;
+	    if (uri->server != NULL) {
+		p = uri->server;
+		while (*p != 0) {
+		    if (len >= max) {
+			temp = xmlSaveUriRealloc(ret, &max);
+			if (temp == NULL) goto mem_error;
+			ret = temp;
+		    }
+		    ret[len++] = *p++;
 		}
-		ret[len++] = *p++;
-	    }
-	    if (uri->port > 0) {
-		if (len + 10 >= max) {
-                    temp = xmlSaveUriRealloc(ret, &max);
-                    if (temp == NULL) goto mem_error;
-                    ret = temp;
+		if (uri->port > 0) {
+		    if (len + 10 >= max) {
+			temp = xmlSaveUriRealloc(ret, &max);
+			if (temp == NULL) goto mem_error;
+			ret = temp;
+		    }
+		    len += snprintf((char *) &ret[len], max - len, ":%d", uri->port);
 		}
-		len += snprintf((char *) &ret[len], max - len, ":%d", uri->port);
 	    }
 	} else if (uri->authority != NULL) {
 	    if (len + 3 >= max) {
@@ -1194,8 +1199,6 @@ xmlSaveUri(xmlURIPtr uri) {
                 if (temp == NULL) goto mem_error;
                 ret = temp;
 	    }
-	    ret[len++] = '/';
-	    ret[len++] = '/';
 	}
 	if (uri->path != NULL) {
 	    p = uri->path;

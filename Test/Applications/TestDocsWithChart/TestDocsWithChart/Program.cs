@@ -45,9 +45,74 @@ namespace TestDocsWithChart
     {
         static void Main(string[] args)
         {
-            getFilesAlternateContent();
+            getFilesConditional();
+            //getFilesPivot();
+            //getFilesAlternateContent();
             //getFiles();
             //convertFiles();
+        }
+        static void getFilesPivot()
+        {
+            string sDirInput = @"\\192.168.3.208\allusers\Files\XLSX";
+            string sDirOutput = @"D:\Files\Pivot";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (-1 != entry.FullName.IndexOf("pivotTable", StringComparison.OrdinalIgnoreCase))
+                        {
+                            System.IO.File.Copy(file, Path.Combine(sDirOutput, Path.GetFileName(file)), true);
+                            break;
+                        }
+                    }
+                }
+                catch { }
+
+            }
+        }
+        static void getFilesConditional()
+        {
+            //string sFindText = "conditionalFormatting";
+            //string sDirInput = @"\\192.168.3.208\allusers\Files\XLSX";
+            //string sDirOutput = @"D:\Files\Conditional";
+            string sFindText = "type=\"expression\"";
+            string sDirInput = @"D:\Files\Conditional";
+            string sDirOutput = @"D:\Files\ConditionalFormulaExpression";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    string sOutputPath = Path.Combine(sDirOutput, Path.GetFileName(file));
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (entry.FullName.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
+                        {
+                            using (StreamReader reader = new StreamReader(entry.Open(), Encoding.UTF8))
+                            {
+                                string sXml = reader.ReadToEnd();
+                                if (-1 != sXml.IndexOf(sFindText))
+                                {
+                                    System.IO.File.Copy(file, sOutputPath, true);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+
         }
         static void getFilesAlternateContent()
         {

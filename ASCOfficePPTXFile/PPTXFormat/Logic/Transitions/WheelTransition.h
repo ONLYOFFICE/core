@@ -44,7 +44,11 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(WheelTransition)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_WheelTransition;
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"spokes", spokes);
@@ -58,7 +62,6 @@ namespace PPTX
 				return XmlUtils::CreateNode(_T("p:wheel"), oAttr);
 			}
 
-		public:
 			nullable_int	spokes;
 		protected:
 			virtual void FillParentPointersForChilds(){};

@@ -93,7 +93,7 @@ xmlVErrMemory(xmlValidCtxtPtr ctxt, const char *extra)
  *
  * Handle a validation error
  */
-static void
+static void LIBXML_ATTR_FORMAT(3,0)
 xmlErrValid(xmlValidCtxtPtr ctxt, xmlParserErrors error,
             const char *msg, const char *extra)
 {
@@ -137,7 +137,7 @@ xmlErrValid(xmlValidCtxtPtr ctxt, xmlParserErrors error,
  *
  * Handle a validation error, provide contextual informations
  */
-static void
+static void LIBXML_ATTR_FORMAT(4,0)
 xmlErrValidNode(xmlValidCtxtPtr ctxt,
                 xmlNodePtr node, xmlParserErrors error,
                 const char *msg, const xmlChar * str1,
@@ -180,7 +180,7 @@ xmlErrValidNode(xmlValidCtxtPtr ctxt,
  *
  * Handle a validation error, provide contextual informations
  */
-static void
+static void LIBXML_ATTR_FORMAT(4,0)
 xmlErrValidNodeNr(xmlValidCtxtPtr ctxt,
                 xmlNodePtr node, xmlParserErrors error,
                 const char *msg, const xmlChar * str1,
@@ -221,7 +221,7 @@ xmlErrValidNodeNr(xmlValidCtxtPtr ctxt,
  *
  * Handle a validation error, provide contextual information
  */
-static void
+static void LIBXML_ATTR_FORMAT(4,0)
 xmlErrValidWarning(xmlValidCtxtPtr ctxt,
                 xmlNodePtr node, xmlParserErrors error,
                 const char *msg, const xmlChar * str1,
@@ -1798,6 +1798,7 @@ xmlCopyEnumeration(xmlEnumerationPtr cur) {
 
     if (cur == NULL) return(NULL);
     ret = xmlCreateEnumeration((xmlChar *) cur->name);
+    if (ret == NULL) return(NULL);
 
     if (cur->next != NULL) ret->next = xmlCopyEnumeration(cur->next);
     else ret->next = NULL;
@@ -2531,7 +2532,7 @@ xmlDumpNotationTable(xmlBufferPtr buf, xmlNotationTablePtr table) {
  * DICT_FREE:
  * @str:  a string
  *
- * Free a string if it is not owned by the "dict" dictionnary in the
+ * Free a string if it is not owned by the "dict" dictionary in the
  * current scope
  */
 #define DICT_FREE(str)						\
@@ -2633,10 +2634,9 @@ xmlAddID(xmlValidCtxtPtr ctxt, xmlDocPtr doc, const xmlChar *value,
 	/*
 	 * The id is already defined in this DTD.
 	 */
-	if ((ctxt != NULL) && (ctxt->error != NULL)) {
+	if (ctxt != NULL) {
 	    xmlErrValidNode(ctxt, attr->parent, XML_DTD_ID_REDEFINED,
-	                    "ID %s already defined\n",
-			    value, NULL, NULL);
+			    "ID %s already defined\n", value, NULL, NULL);
 	}
 #endif /* LIBXML_VALID_ENABLED */
 	xmlFreeID(ret);
@@ -6949,7 +6949,7 @@ xmlValidGetValidElements(xmlNode *prev, xmlNode *next, const xmlChar **names,
                          int max) {
     xmlValidCtxt vctxt;
     int nb_valid_elements = 0;
-    const xmlChar *elements[256];
+    const xmlChar *elements[256]={0};
     int nb_elements = 0, i;
     const xmlChar *name;
 
@@ -6999,6 +6999,9 @@ xmlValidGetValidElements(xmlNode *prev, xmlNode *next, const xmlChar **names,
      * Creates a dummy node and insert it into the tree
      */
     test_node = xmlNewDocNode (ref_node->doc, NULL, BAD_CAST "<!dummy?>", NULL);
+    if (test_node == NULL)
+        return(-1);
+
     test_node->parent = parent;
     test_node->prev = prev;
     test_node->next = next;

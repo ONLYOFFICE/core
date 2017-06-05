@@ -41,16 +41,14 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		void SpTree::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, bool in_group)
+		void SpTree::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group)
 		{
-			smart_ptr<PPTX::Theme>			oTheme	= _oTheme.smart_dynamic_cast<PPTX::Theme>();
-			smart_ptr<PPTX::Logic::ClrMap>	oClrMap = oTheme.smart_dynamic_cast<PPTX::Logic::ClrMap>();
-
 			pWriter->StartNode(_T("v:group"));
 			pWriter->StartAttributes();
 
-            std::wstring strId   = L"group " + std::to_wstring(pWriter->m_lObjectIdVML);
-            std::wstring strSpid = L"_x" + std::to_wstring(0xFFFF & (pWriter->m_lObjectIdVML >> 16)) + L"_s" + std::to_wstring(0xFFFF & pWriter->m_lObjectIdVML);
+			std::wstring strId			= L"group " + std::to_wstring(pWriter->m_lObjectIdVML);
+			std::wstring strSpid		= L"_x0000_s"	+ XmlUtils::IntToString(0xFFFF & (pWriter->m_lObjectIdVML >> 16), L"%04d");
+
 			pWriter->m_lObjectIdVML++;
 
             pWriter->WriteAttribute(L"id", strId);
@@ -183,15 +181,15 @@ namespace PPTX
 			{
 				if (SpTreeElems[i].is<PPTX::Logic::Shape>())
 				{
-					SpTreeElems[i].as<PPTX::Logic::Shape>().toXmlWriterVML(pWriter, _oTheme, _oClrMap, true);
+					SpTreeElems[i].as<PPTX::Logic::Shape>().toXmlWriterVML(pWriter, oTheme, oClrMap, true);
 				}
 				else if (SpTreeElems[i].is<PPTX::Logic::Pic>())
 				{
-					SpTreeElems[i].as<PPTX::Logic::Pic>().toXmlWriterVML(pWriter, _oTheme, _oClrMap, true);
+					SpTreeElems[i].as<PPTX::Logic::Pic>().toXmlWriterVML(pWriter, oTheme, oClrMap, true);
 				}
 				else if (SpTreeElems[i].is<PPTX::Logic::SpTree>())
 				{
-					SpTreeElems[i].as<PPTX::Logic::SpTree>().toXmlWriterVML(pWriter, _oTheme, _oClrMap, true);
+					SpTreeElems[i].as<PPTX::Logic::SpTree>().toXmlWriterVML(pWriter, oTheme, oClrMap, true);
 				}				
 			}
 

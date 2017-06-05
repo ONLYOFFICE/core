@@ -143,9 +143,9 @@ public:
 					
 					std::wstring style = std::wstring(L"position:absolute;");
 					
-					style += std::wstring(L"margin-left:")	+ boost::lexical_cast<std::wstring>(c.left_)		+ std::wstring(L"pt;");
+					style += std::wstring(L"margin-left:")	+ boost::lexical_cast<std::wstring>(c.left_)	+ std::wstring(L"pt;");
 					style += std::wstring(L"margin-top:")	+ boost::lexical_cast<std::wstring>(c.top_)		+ std::wstring(L"pt;");
-					style += std::wstring(L"width:")		+ boost::lexical_cast<std::wstring>(c.width_)		+ std::wstring(L"pt;");
+					style += std::wstring(L"width:")		+ boost::lexical_cast<std::wstring>(c.width_)	+ std::wstring(L"pt;");
 					style += std::wstring(L"height:")		+ boost::lexical_cast<std::wstring>(c.height_)	+ std::wstring(L"pt;");
 
 					if (c.visibly_ == false)style += std::wstring(L"visibility:hidden;");
@@ -227,14 +227,14 @@ public:
 			if (c.author_ == author_list_[i])
 			{
 				find=true;
-				c.author_ =  boost::lexical_cast<std::wstring>(i);
+				c.author_ =  std::to_wstring(i);
 				break;
 			}
 		}
 		if (!find)
 		{
 			author_list_.push_back(c.author_);
-			c.author_ = boost::lexical_cast<std::wstring>(author_list_.size()-1);
+			c.author_ = std::to_wstring(author_list_.size()-1);
 		}
 		xlsx_comment_.push_back(c);
 	}

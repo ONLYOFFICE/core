@@ -67,8 +67,7 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
     
     const _CP_OPT(std::wstring) name = 
         common_draw_attlists_.shape_with_text_and_styles_.
-        common_draw_shape_with_styles_attlist_.
-        common_draw_name_attlist_.draw_name_;
+        common_shape_draw_attlist_.draw_name_;
 	
 	Context.get_drawing_context().add_name_object(name.get_value_or(L"Shape"));
 
@@ -247,20 +246,27 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 
 	if (draw_type_oox_index_)
 	{
-		shape->additional_.push_back(_property(L"odf-custom-draw-index", draw_type_oox_index_.get()));	
+		shape->additional_.push_back(_property(L"oox-geom-index", draw_type_oox_index_.get()));	
+		shape->additional_.push_back(_property(L"oox-geom", bOoxType_));	
 
 		if (shape->word_art_ == true)
 			shape->additional_.push_back(_property(L"wordArt", true));
 
 		set_shape = true;
 	}
+
 	if (sub_type_)
 	{
 		shape->sub_type_ = sub_type_.get();
 		set_shape = true;
 	}
+	std::wstring odf_path; //общая часть - объединить ...
+	if (draw_enhanced_geometry_attlist_.drawooo_enhanced_path_)
+		odf_path = draw_enhanced_geometry_attlist_.drawooo_enhanced_path_.get();
+	else if (draw_enhanced_geometry_attlist_.draw_enhanced_path_)
+		odf_path = draw_enhanced_geometry_attlist_.draw_enhanced_path_.get();
 	
-	if (draw_enhanced_geometry_attlist_.draw_enhanced_path_)
+	if (!odf_path.empty())
 	{
 		std::vector<::svg_path::_polyline> o_Polyline;
 	
@@ -268,14 +274,14 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 		
 		try
 		{
-			res = ::svg_path::parseSvgD(o_Polyline, draw_enhanced_geometry_attlist_.draw_enhanced_path_.get(), true);
+			res = ::svg_path::parseSvgD(o_Polyline, odf_path, true);
 		}
 		catch(...)
 		{
 			res = false; 
 		}
 		
-		if (o_Polyline.size() > 1 && res )
+		if (!o_Polyline.empty() && res )
 		{
 			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
 			std::wstringstream output_;   
@@ -312,14 +318,10 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 
 	if (draw_enhanced_geometry_attlist_.draw_modifiers_)
 	{
-		shape->additional_.push_back(_property(L"draw-modifiers",draw_enhanced_geometry_attlist_.draw_modifiers_.get()));	
-		if (draw_handle_geometry_.size()>0)
+		if (bOoxType_)
+			shape->additional_.push_back(_property(L"oox-draw-modifiers", draw_enhanced_geometry_attlist_.draw_modifiers_.get()));	
+		else
 		{
-			if (draw_handle_geometry_[0].min < draw_handle_geometry_[0].max)
-			{
-				shape->additional_.push_back(_property(L"draw-modifiers-min",draw_handle_geometry_[0].min));	
-				shape->additional_.push_back(_property(L"draw-modifiers-max",draw_handle_geometry_[0].max));	
-			}
 		}
 	}
 
@@ -327,7 +329,6 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 	{
 		shape->bad_shape_ = true;
 	}
-
 }
 }
 }

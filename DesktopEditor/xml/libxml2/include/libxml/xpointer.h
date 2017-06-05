@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Summary: API to handle XML Pointers
  * Description: API to handle XML Pointers
  * Base implementation was made accordingly to

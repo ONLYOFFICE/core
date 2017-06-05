@@ -42,16 +42,17 @@ namespace OOX
 		class CFromTo : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CFromTo)
+			WritingElement_AdditionConstructors(CFromTo)
 			CFromTo()
 			{
 			}
 			virtual ~CFromTo()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -108,7 +109,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_FromTo;
+				return et_x_FromTo;
 			}
 
 		private:
@@ -124,16 +125,17 @@ namespace OOX
 		class CExt : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CExt)
+			WritingElement_AdditionConstructors(CExt)
 			CExt()
 			{
 			}
 			virtual ~CExt()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -144,7 +146,7 @@ namespace OOX
 				WritingStringNullableAttrInt64(L"cy", m_oCy, m_oCy->ToEmu());
 				writer.WriteString(_T("/>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -154,7 +156,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Ext;
+				return et_x_Ext;
 			}
 
 		private:

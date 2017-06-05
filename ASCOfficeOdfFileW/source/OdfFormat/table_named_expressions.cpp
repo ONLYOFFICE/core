@@ -40,8 +40,6 @@
 
 namespace cpdoccore { 
 
-	using namespace odf_types;
-
 namespace odf_writer {
 
 using xml::xml_char_wc;
@@ -68,7 +66,9 @@ void table_named_expressions::create_child_element(const std::wstring & Ns, cons
 
 void table_named_expressions::add_child_element( const office_element_ptr & child_element)
 {
- 	ElementType type = child_element->get_type();
+ 	if (!child_element) return;
+
+	ElementType type = child_element->get_type();
 
     if (type == typeTableNamedRange)
 	{

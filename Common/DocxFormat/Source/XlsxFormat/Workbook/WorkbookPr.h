@@ -45,16 +45,17 @@ namespace OOX
 		class CWorkbookPr : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CWorkbookPr)
+			WritingElement_AdditionConstructors(CWorkbookPr)
 			CWorkbookPr()
 			{
 			}
 			virtual ~CWorkbookPr()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -66,7 +67,7 @@ namespace OOX
 				WritingStringNullableAttrBool(L"dateCompatibility", m_oDateCompatibility);
 				writer.WriteString(_T("/>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -76,7 +77,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_WorkbookPr;
+				return et_x_WorkbookPr;
 			}
 
 		private:

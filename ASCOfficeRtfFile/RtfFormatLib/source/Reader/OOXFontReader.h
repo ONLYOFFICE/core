@@ -175,12 +175,12 @@ private:
 class OOXFontReader3
 {
 private:
-	OOX::Drawing::CTextFont		*m_asciiFont;
-	OOX::Drawing::CTextFont		*m_csFont;
-	OOX::Drawing::CTextFont		*m_asianFont;
+	PPTX::Logic::TextFont		*m_asciiFont;
+	PPTX::Logic::TextFont		*m_csFont;
+	PPTX::Logic::TextFont		*m_asianFont;
 public: 
 
-	OOXFontReader3(OOX::Drawing::CTextFont * asciiFont, OOX::Drawing::CTextFont * asianFont, OOX::Drawing::CTextFont * csFont)
+	OOXFontReader3(PPTX::Logic::TextFont * asciiFont, PPTX::Logic::TextFont * asianFont, PPTX::Logic::TextFont * csFont)
 	{
 		m_asciiFont	= asciiFont;
 		m_asianFont	= asianFont;
@@ -192,9 +192,9 @@ public:
 
 		std::wstring sAscii, sCs, sEastAsia;
 		
-		if ((m_asciiFont)	&& (m_asciiFont->m_oTypeFace.IsInit()))	sAscii		= m_asciiFont->m_oTypeFace->GetValue();
-		if ((m_csFont)		&& (m_csFont->m_oTypeFace.IsInit()))	sCs			= m_csFont->m_oTypeFace->GetValue();
-		if ((m_asianFont)	&& (m_asianFont->m_oTypeFace.IsInit()))	sEastAsia	= m_asianFont->m_oTypeFace->GetValue();
+		if (m_asciiFont)	sAscii		= m_asciiFont->typeface;
+		if (m_csFont)		sCs			= m_csFont->typeface;
+		if (m_asianFont)	sEastAsia	= m_asianFont->typeface;
 
 		std::wstring sFont;	
 		std::wstring sTempFont;
@@ -215,27 +215,28 @@ public:
 				oCurFont.m_nID		= nFont;
 				oCurFont.m_sName	= sFont;
 				
-				if( !sAscii.empty() )
-				{
-					if (m_asciiFont->m_oPanose.IsInit())	
-						oCurFont.m_sPanose	= m_asciiFont->m_oPanose->GetValue();
-					oCurFont.m_nCharset	= m_asciiFont->m_oCharset.GetValue();
-					oCurFont.m_nPitch	= m_asciiFont->m_oPitchFamily.GetValue();
-				}
-				else if( !sCs.empty() )
-				{
-					if (m_csFont->m_oPanose.IsInit())	
-						oCurFont.m_sPanose	= m_csFont->m_oPanose->GetValue();
-					oCurFont.m_nCharset = m_csFont->m_oCharset.GetValue();
-					oCurFont.m_nPitch	= m_csFont->m_oPitchFamily.GetValue();
-				}
-				else if( !sEastAsia.empty() )
-				{
-					if (m_asianFont->m_oPanose.IsInit())	
-						oCurFont.m_sPanose	= m_asianFont->m_oPanose->GetValue();
-					oCurFont.m_nCharset = m_asianFont->m_oCharset.GetValue();
-					oCurFont.m_nPitch	= m_asianFont->m_oPitchFamily.GetValue();
-				}
+				//if( !sAscii.empty() )
+				//{
+				//	if (m_asciiFont->m_oPanose.IsInit())	
+				//		oCurFont.m_sPanose	= m_asciiFont->m_oPanose->GetValue();
+				//	if (m_asciiFont->charset.IsInit())
+				//		oCurFont.m_nCharset	= m_asciiFont->charset.get();
+				//	oCurFont.m_nPitch	= m_asciiFont->m_oPitchFamily.GetValue();
+				//}
+				//else if( !sCs.empty() )
+				//{
+				//	if (m_csFont->m_oPanose.IsInit())	
+				//		oCurFont.m_sPanose	= m_csFont->m_oPanose->GetValue();
+				//	oCurFont.m_nCharset = m_csFont->m_oCharset.GetValue();
+				//	oCurFont.m_nPitch	= m_csFont->m_oPitchFamily.GetValue();
+				//}
+				//else if( !sEastAsia.empty() )
+				//{
+				//	if (m_asianFont->m_oPanose.IsInit())	
+				//		oCurFont.m_sPanose	= m_asianFont->m_oPanose->GetValue();
+				//	oCurFont.m_nCharset = m_asianFont->m_oCharset.GetValue();
+				//	oCurFont.m_nPitch	= m_asianFont->m_oPitchFamily.GetValue();
+				//}
 				oParam.oRtf->m_oFontTable.AddItem( oCurFont );
 			}
 		}

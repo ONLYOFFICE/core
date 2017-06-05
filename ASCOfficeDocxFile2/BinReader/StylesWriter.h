@@ -58,7 +58,6 @@ namespace Writers
 		}
 		void Write()
 		{
-
 			m_oWriter.WriteString(g_string_st_Start);
             m_oWriter.WriteString(std::wstring(_T("<w:docDefaults>")));
             m_oWriter.WriteString(std::wstring(_T("<w:rPrDefault>")));
@@ -81,8 +80,8 @@ namespace Writers
 
             OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + _T("styles.xml");
 
-			CFile oFile;
-			oFile.CreateFile(filePath.GetPath());
+			NSFile::CFileBinary oFile;
+			oFile.CreateFileW(filePath.GetPath());
 
 			oFile.WriteStringUTF8(m_oWriter.GetData());
 			oFile.CloseFile();

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EncryptedData xmlns="http://www.w3.org/2001/04/xmlenc#" MimeType="text/plain">
+  <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#tripledes-cbc"/>
+  <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+     <KeyName>test-des</KeyName>
+  </KeyInfo>   
+  <CipherData>
+<CipherValue>
+EBCx80yc0F+4nrNYevpf5dkHioi9j0QT
+</CipherValue>
+</CipherData>
+</EncryptedData>

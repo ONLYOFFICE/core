@@ -568,17 +568,18 @@ namespace DocFileFormat
 
 	struct OptionEntry
 	{
-		OptionEntry() :	pid(PropertyId_left), fBid(false), fComplex(false), op(0), opComplex(NULL) 
+		OptionEntry() :	pid(PropertyId_left), fBid(false), fComplex(false), op(0)
 		{
-
 		}
 
 		PropertyId		pid;
 		bool			fBid;
 		bool			fComplex;
 		unsigned int	op;
-		unsigned char*			opComplex;
+		std::shared_ptr<unsigned char>	opComplex;
 	};
+
+	typedef std::shared_ptr<OptionEntry> OptionEntryPtr;
 
 	class ShapeOptions: public Record
 	{
@@ -587,8 +588,8 @@ namespace DocFileFormat
 		static const unsigned short TYPE_CODE_0xF121 = 0xF121;
 		static const unsigned short TYPE_CODE_0xF122 = 0xF122;
 
-		std::vector<OptionEntry>			Options;
-		std::map<PropertyId, OptionEntry>	OptionsByID;
+		std::vector<OptionEntryPtr>				Options;
+		std::map<PropertyId, OptionEntryPtr>	OptionsByID;
 
 		ShapeOptions() : Record()
 		{
@@ -596,8 +597,8 @@ namespace DocFileFormat
 
 		virtual ~ShapeOptions()
 		{
-			for (std::vector<OptionEntry>::iterator iter = Options.begin(); iter != Options.end(); ++iter)
-				RELEASEARRAYOBJECTS( iter->opComplex );
+			//for (std::vector<OptionEntry>::iterator iter = Options.begin(); iter != Options.end(); ++iter)
+			//	RELEASEARRAYOBJECTS( iter->opComplex );
 		}
 
 		ShapeOptions (IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance) : Record (_reader, size, typeCode, version, instance)
@@ -606,16 +607,16 @@ namespace DocFileFormat
 
 			//instance is the count of properties stored in this record
 
-			OptionEntry entry;
 			//parse the flags and the simple values
 			for (unsigned int i = 0; i < instance; ++i)
 			{
+				OptionEntryPtr entry = std::shared_ptr<OptionEntry>(new OptionEntry());
 				unsigned short flag	=	Reader->ReadUInt16();
 
-				entry.pid			=	(PropertyId)FormatUtils::BitmaskToInt (flag, 0x3FFF);
-				entry.fBid			=	FormatUtils::BitmaskToBool (flag, 0x4000);
-				entry.fComplex		=	FormatUtils::BitmaskToBool (flag, 0x8000);
-				entry.op			=	Reader->ReadUInt32();
+				entry->pid			=	(PropertyId)FormatUtils::BitmaskToInt (flag, 0x3FFF);
+				entry->fBid			=	FormatUtils::BitmaskToBool (flag, 0x4000);
+				entry->fComplex		=	FormatUtils::BitmaskToBool (flag, 0x8000);
+				entry->op			=	Reader->ReadUInt32();
 
 				Options.push_back( entry );
 			}
@@ -625,21 +626,12 @@ namespace DocFileFormat
 			//of the OptionEntry arry, sorted by pid
 			for (unsigned int i = 0; i < instance; ++i)
 			{
-				if (Options[i].fComplex)
-				{
-					int read_size =  (int)Options[i].op + 6 ; //???? 	
-					//todooo !!!! проверить все остальные !! тут размер в зависимости от типа Complex!!!		
-					switch(Options[i].pid)
-					{
-					case PropertyId::gtextUNICODE:
-					case PropertyId::gtextFont:
-						read_size =  (int)Options[i].op;
-						break;
-					}
-					Options[i].opComplex = Reader->ReadBytes( read_size, true );
+				if (Options[i]->fComplex && Options[i]->op > 0)
+				{			
+					Options[i]->opComplex = std::shared_ptr<unsigned char>(Reader->ReadBytes( Options[i]->op, true ));
 				}
 
-				OptionsByID.insert(std::pair<PropertyId, OptionEntry>(Options[i].pid, Options[i]));
+				OptionsByID.insert(std::make_pair(Options[i]->pid, Options[i]));
 			}
 
             Reader->Seek(( pos + size ), 0/*STREAM_SEEK_SET*/);

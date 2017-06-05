@@ -65,6 +65,7 @@ class odf_conversion_context : boost::noncopyable
 		std::wstring						name;
 
 		office_element_ptr					content;
+		office_element_ptr					scripts;
 		std::vector<office_element_ptr>		content_styles;
 		std::vector<office_element_ptr>		styles;	
 		office_element_ptr					settings;	
@@ -95,7 +96,8 @@ public:
 	virtual void					start_text_context()	= 0;
 	virtual void					end_text_context()		= 0;
 
-    virtual void start_image(const std::wstring & image_file_name) = 0;
+    std::wstring add_image(const std::wstring & image_file_name);
+    std::wstring add_media(const std::wstring & file_name);
 	
 	virtual odf_style_context		* styles_context();
 	
@@ -114,6 +116,9 @@ public:
 	
 	void start_text();
 	void end_text();
+
+	void start_presentation();
+	void end_presentation();
 
 	void create_object();
 	void end_object();

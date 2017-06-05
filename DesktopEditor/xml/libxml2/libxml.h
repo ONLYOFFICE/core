@@ -1,4 +1,4 @@
-﻿/*
+/*
  * libxml.h: internal header only used during the compilation of libxml
  *
  * See COPYRIGHT for the status of this software
@@ -9,13 +9,15 @@
 #ifndef __XML_LIBXML_H__
 #define __XML_LIBXML_H__
 
+#include <libxml/xmlstring.h>
+
 #ifndef NO_LARGEFILE_SOURCE
-	#ifndef _LARGEFILE_SOURCE
-		#define _LARGEFILE_SOURCE
-	#endif
-	#ifndef _FILE_OFFSET_BITS
-		#define _FILE_OFFSET_BITS 64
-	#endif
+#ifndef _LARGEFILE_SOURCE
+#define _LARGEFILE_SOURCE
+#endif
+#ifndef _FILE_OFFSET_BITS
+#define _FILE_OFFSET_BITS 64
+#endif
 #endif
 
 #if defined(macintosh)
@@ -27,20 +29,15 @@
  * At least I tested it with WinCE 5.0 for Emulator and WinCE 4.2/SH4 target
  */
 #include <win32config.h>
-    #include <libxml/xmlversion.h>
+#include <libxml/xmlversion.h>
 #else
 /*
  * Currently supported platforms use either autoconf or
  * copy to config.h own "preset" configuration file.
  * As result ifdef HAVE_CONFIG_H is omited here.
  */
-	#if defined(_WIN32) || defined (_WIN64)
-		#include "config.h"
-	#else
-        #include <inttypes.h>
-        #include "config.h"
-    #endif
-    #include <libxml/xmlversion.h>
+#include "config.h"
+#include <libxml/xmlversion.h>
 #endif
 
 #if defined(__Lynx__)
@@ -73,7 +70,7 @@ extern int __xmlRegisterCallbacks;
  * internal error reporting routines, shared but not partof the API.
  */
 void __xmlIOErr(int domain, int code, const char *extra);
-void __xmlLoaderErr(void *ctx, const char *msg, const char *filename);
+void __xmlLoaderErr(void *ctx, const char *msg, const char *filename) LIBXML_ATTR_FORMAT(2,0);
 #ifdef LIBXML_HTML_ENABLED
 /*
  * internal function of HTML parser needed for xmlParseInNodeContext
@@ -98,6 +95,7 @@ int __xmlInitializeDict(void);
 int __xmlRandom(void);
 #endif
 
+XMLPUBFUN xmlChar * XMLCALL xmlEscapeFormatString(xmlChar **msg);
 int xmlNop(void);
 
 #ifdef IN_LIBXML

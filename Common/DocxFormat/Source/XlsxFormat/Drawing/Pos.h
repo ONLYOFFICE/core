@@ -44,16 +44,17 @@ namespace OOX
 		class CPos : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CPos)
+			WritingElement_AdditionConstructors(CPos)
 			CPos()
 			{
 			}
 			virtual ~CPos()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -64,7 +65,7 @@ namespace OOX
 				WritingStringNullableAttrInt64(L"y", m_oY, m_oY->ToEmu());
 				writer.WriteString(_T("/>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -74,7 +75,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_FromTo;
+				return et_x_FromTo;
 			}
 
 		private:

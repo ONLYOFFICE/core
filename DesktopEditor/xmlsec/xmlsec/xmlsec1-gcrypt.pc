@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: xmlsec1-gcrypt
+Version: 1.2.23
+Description: XML Security Library implements XML Signature and XML Encryption standards
+Requires: libxml-2.0 >= 2.7.4 libxslt >= 1.0.20
+Cflags:  -D__XMLSEC_FUNCTION__=__func__ -DXMLSEC_NO_GOST=1 -DXMLSEC_NO_GOST2012=1 -DXMLSEC_DL_LIBLTDL=1 -I${prefix}/include/xmlsec1    -I/home/aleksey/local/include -DXMLSEC_CRYPTO_GCRYPT=1
+Libs: -L${exec_prefix}/lib -lxmlsec1-gcrypt -lxmlsec1 -lltdl   -L/home/aleksey/local/lib -lgcrypt -L/usr/lib/i386-linux-gnu -lgpg-error

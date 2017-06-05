@@ -30,6 +30,12 @@
  *
  */
 #include "../oox_shape_defines.h"
+
 	//	shapetypeAccentBorderCallout1,
 	//	shapetypeAccentBorderCallout2,
 	//	shapetypeAccentBorderCallout3,
+
+namespace cpdoccore 
+{
+
+}

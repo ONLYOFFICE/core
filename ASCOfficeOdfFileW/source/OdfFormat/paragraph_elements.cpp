@@ -435,6 +435,8 @@ void text_note::create_child_element(  const std::wstring & Ns, const std::wstri
 }
 void text_note::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeTextNoteCitation)
@@ -461,7 +463,7 @@ void text_ruby::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
-		    CP_XML_ATTR(L"text:style-name", text_style_name_.style_name());
+		    CP_XML_ATTR(L"text:style-name", text_style_name_);
 
 			if (text_ruby_base_)
 				text_ruby_base_->serialize(CP_XML_STREAM());
@@ -487,6 +489,8 @@ void text_ruby::create_child_element( const std::wstring & Ns, const std::wstrin
 }
 void text_ruby::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeTextRubyBase)

@@ -107,16 +107,13 @@ namespace PPTX
 					return Media->toXML();
 				return _T("");
 			}
-
 			
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
-				// TODO:
 			}
 
-			virtual void toPPTY(NSBinPptxRW::CXmlWriter* pWriter) const
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				// TODO:
 				if (Media.is_init())
 					Media->toXmlWriter(pWriter);
 			}
@@ -126,8 +123,7 @@ namespace PPTX
 			template<class T> AVSINLINE const bool	is() const	{ return Media.is<T>(); }
 			template<class T> AVSINLINE T&			as()		{ return Media.as<T>(); }
 			template<class T> AVSINLINE const T&	as() const 	{ return Media.as<T>(); }
-		//public:
-		private:
+
 			smart_ptr<WrapperWritingElement> Media;
 		protected:
 			virtual void FillParentPointersForChilds(){};

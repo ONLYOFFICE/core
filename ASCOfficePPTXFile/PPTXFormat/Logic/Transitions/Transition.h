@@ -48,17 +48,36 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Transition)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"advClick", advClick);
-				node.ReadAttributeBase(L"advTm", advTm);
-				node.ReadAttributeBase(L"p14:dur", dur);	
-				node.ReadAttributeBase(L"spd", spd);
+				node.ReadAttributeBase(L"advTm",	advTm);
+				node.ReadAttributeBase(L"p14:dur",	dur);	
+				node.ReadAttributeBase(L"spd",		spd);
 
-				base.GetTransitionTypeFrom(node);
-				trSerialize.GetTransitionTypeFrom(node);
-				sndAc		= node.ReadNode(_T("p:sndAc"));
+				XmlUtils::CXmlNodes oNodes;
+				
+				if (node.GetNodes(_T("*"), oNodes))
+				{
+					int count = oNodes.GetCount();
+					
+					for (int i = 0; i < count; ++i)
+					{
+						XmlUtils::CXmlNode oNode;
+						oNodes.GetAt(i, oNode);
+
+						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+						if (strName == L"sndAc")
+							sndAc = oNode;
+						else
+						{
+							trSerialize.fromXML(oNode);
+							base.fromXML(oNode);
+						}
+					}
+				}
+				
 				FillParentPointersForChilds();
 			}
 
@@ -136,7 +155,6 @@ namespace PPTX
 						}
 					}
 				}
-
 				pReader->Seek(end);
 			}
 
@@ -174,16 +192,14 @@ namespace PPTX
 
 				pWriter->WriteString(_T("</mc:Fallback></mc:AlternateContent>"));
 			}
+			TransitionBase			base;
+			nullable<SndAc>			sndAc;
 
-		public:
-			/*nullable<*/TransitionBase/*>*/		base;
-			nullable<SndAc>							sndAc;
+			TransitionSerialize		trSerialize;
 
-			TransitionSerialize						trSerialize;
-
-			nullable_bool advClick;
-			nullable_int advTm;
-			nullable_int dur;
+			nullable_bool			advClick;
+			nullable_int			advTm;
+			nullable_int			dur;
 			nullable_limit<Limit::TransitionSpeed> spd;
 		protected:
 			virtual void FillParentPointersForChilds()

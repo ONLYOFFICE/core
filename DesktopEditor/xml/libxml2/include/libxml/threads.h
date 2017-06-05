@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Summary: interfaces for thread handling
  * Description: set of generic threading related routines
  *              should work with pthreads, Windows native or TLS threads

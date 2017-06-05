@@ -73,7 +73,7 @@ bool OOXReader::Parse()
 		oFontTableReader.Parse( oReaderParameter );
 	}
 	
-	OOX::CTheme* theme = inputDocxFile.GetTheme();		
+	PPTX::Theme* theme = inputDocxFile.GetTheme();		
 	if (theme)
 	{
 		OOXThemeReader oThemeReader( theme );

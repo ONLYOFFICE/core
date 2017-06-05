@@ -91,21 +91,7 @@ namespace PPTX
 
 				Normalize();
 			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CNodeValue oValue;
-				
-				if (spcPct.is_init())
-				{
-                    oValue.m_strValue = L"<a:spcPct val=\"" + std::to_wstring(*spcPct) + L"\"/>";
-				}
-				else
-				{
-                    oValue.m_strValue = L"<a:spcPts val=\"" + std::to_wstring(spcPts.get_value_or(0)) + L"\"/>";
-				}
 
-				return XmlUtils::CreateNode(m_name, oValue);
-			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(m_name);				

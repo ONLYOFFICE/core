@@ -518,7 +518,7 @@
       <xsd:element name="cBhvr" type="CT_TLCommonBehaviorData" minOccurs="1" maxOccurs="1"/>
       <xsd:element name="progress" type="CT_TLAnimVariant" minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
-    <xsd:attribute name="transition" type="ST_TLAnimateEffectTransition" use="optional"/>
+    <xsd:attribute name="transition" type="ST_TLAnimateEffectTransition" default="in" use="optional"/>
     <xsd:attribute name="filter" type="xsd:string" use="optional"/>
     <xsd:attribute name="prLst" type="xsd:string" use="optional"/>
   </xsd:complexType>

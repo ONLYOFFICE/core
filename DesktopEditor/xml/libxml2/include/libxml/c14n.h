@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Summary: Provide Canonical XML and Exclusive XML Canonicalization
  * Description: the c14n modules provides a
  *

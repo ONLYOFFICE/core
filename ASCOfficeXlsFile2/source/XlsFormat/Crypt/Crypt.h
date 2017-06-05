@@ -37,7 +37,7 @@
 
 namespace CRYPT
 {
-	struct CryptRC4Data
+	struct _rc4CryptData
 	{
 		struct SALT_TAG 
 		{

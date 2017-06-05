@@ -34,6 +34,7 @@
 
 class CRecordNormalViewSetInfoAtom : public CUnknownRecord
 {
+public:
 	SRatioAtom m_oLeftPortion;
 	SRatioAtom m_oTopPortion;
 
@@ -43,7 +44,6 @@ class CRecordNormalViewSetInfoAtom : public CUnknownRecord
 	BOOL1 m_fPreferSingleSet;
 	BYTE m_nFlags;
 
-public:
 	
 	CRecordNormalViewSetInfoAtom()
 	{

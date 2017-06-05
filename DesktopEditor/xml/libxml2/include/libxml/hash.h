@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Summary: Chained hash tables
  * Description: This module implements the hash table support used in
  *		various places in the library.

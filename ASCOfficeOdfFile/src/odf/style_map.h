@@ -39,7 +39,6 @@
 
 #include "office_elements.h"
 #include "office_elements_create.h"
-#include "datatypes/style_ref.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -59,10 +58,10 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     
 public:
-    std::wstring			style_condition_;
-    odf_types::style_ref	style_name_;
-    std::wstring			style_base_cell_address_;
-    odf_types::style_ref	style_apply_style_name_;
+    std::wstring	style_condition_;
+    std::wstring	style_name_;
+    std::wstring	style_base_cell_address_;
+    std::wstring	style_apply_style_name_;
 
 };
 

@@ -35,9 +35,9 @@
 namespace BinDocxRW
 {
 	BinaryHeaderFooterTableWriter::BinaryHeaderFooterTableWriter(ParamsWriter& oParamsWriter, OOX::IFileContainer* oDocumentRels, std::map<int, bool>* mapIgnoreComments):
-	m_oBcw(oParamsWriter), m_oParamsWriter(oParamsWriter), m_poTheme(oParamsWriter.m_poTheme), m_oFontProcessor(*oParamsWriter.m_pFontProcessor), m_oSettings(oParamsWriter.m_oSettings),m_pOfficeDrawingConverter(oParamsWriter.m_pOfficeDrawingConverter), m_oDocumentRels(oDocumentRels),m_mapIgnoreComments(mapIgnoreComments)
+	m_oBcw(oParamsWriter), m_oParamsWriter(oParamsWriter), m_poTheme(oParamsWriter.m_poTheme), m_oFontProcessor(*oParamsWriter.m_pFontProcessor), m_oSettings(oParamsWriter.m_oSettings), m_pOfficeDrawingConverter(oParamsWriter.m_pOfficeDrawingConverter), m_oDocumentRels(oDocumentRels),m_mapIgnoreComments(mapIgnoreComments)
 	{
-	};
+	}
 	void BinaryHeaderFooterTableWriter::Write()
 	{
 		int nStart = m_oBcw.WriteItemWithLengthStart();
@@ -57,7 +57,7 @@ namespace BinDocxRW
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		m_oBcw.WriteItemWithLengthEnd(nStart);
-	};
+	}
 	void BinaryHeaderFooterTableWriter::WriteHdrFtrContent(std::vector<OOX::CHdrFtr*>& aHdrFtrs, std::vector<SimpleTypes::EHdrFtr>& aHdrFtrTypes, std::vector<OOX::Logic::CSectionProperty*>& aHdrSectPrs, bool bHdr)
 	{
 		int nCurPos = 0;
@@ -69,26 +69,28 @@ namespace BinDocxRW
 			BYTE byteHdrFtrType = c_oSerHdrFtrTypes::HdrFtr_Odd;
 			switch(eType)
 			{
-			case SimpleTypes::hdrftrFirst: byteHdrFtrType = c_oSerHdrFtrTypes::HdrFtr_First;break;
-			case SimpleTypes::hdrftrEven: byteHdrFtrType = c_oSerHdrFtrTypes::HdrFtr_Even;break;
-			default: byteHdrFtrType = c_oSerHdrFtrTypes::HdrFtr_Odd;break;
+				case SimpleTypes::hdrftrFirst:	byteHdrFtrType = c_oSerHdrFtrTypes::HdrFtr_First;	break;
+				case SimpleTypes::hdrftrEven:	byteHdrFtrType = c_oSerHdrFtrTypes::HdrFtr_Even;	break;
+				default:						byteHdrFtrType = c_oSerHdrFtrTypes::HdrFtr_Odd;		break;
 			}
 			nCurPos = m_oBcw.WriteItemStart(byteHdrFtrType);
 			WriteHdrFtrItem(pSectPr, pHdrFtr, bHdr);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-	};
+	}
 	void BinaryHeaderFooterTableWriter::WriteHdrFtrItem(OOX::Logic::CSectionProperty* pSectPr, OOX::CHdrFtr* pHdrFtr, bool bHdr)
-		{
-			int nCurPos = 0;
-			//Content
-			ParamsDocumentWriter oParamsDocumentWriter(pHdrFtr, pHdrFtr->m_oReadPath.GetPath());
-			m_oParamsWriter.m_pCurRels = oParamsDocumentWriter.m_pRels;
-			m_oParamsWriter.m_sCurDocumentPath = oParamsDocumentWriter.m_sDocumentPath;
-			BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, m_mapIgnoreComments, NULL);
-			oBinaryDocumentTableWriter.prepareOfficeDrawingConverter(m_pOfficeDrawingConverter, oParamsDocumentWriter.m_sDocumentPath,  pHdrFtr->m_arrShapeTypes);
-			nCurPos = m_oBcw.WriteItemStart(c_oSerHdrFtrTypes::HdrFtr_Content);
-			oBinaryDocumentTableWriter.WriteDocumentContent(pHdrFtr->m_arrItems);
-			m_oBcw.WriteItemEnd(nCurPos);
-		};
+	{
+		int nCurPos = 0;
+	//Content
+		ParamsDocumentWriter oParamsDocumentWriter(pHdrFtr);
+		m_oParamsWriter.m_pCurRels = oParamsDocumentWriter.m_pRels;
+
+		BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, m_mapIgnoreComments, NULL);
+		
+		oBinaryDocumentTableWriter.prepareOfficeDrawingConverter(m_pOfficeDrawingConverter, oParamsDocumentWriter.m_pRels,  pHdrFtr->m_arrShapeTypes);
+		
+		nCurPos = m_oBcw.WriteItemStart(c_oSerHdrFtrTypes::HdrFtr_Content);
+		oBinaryDocumentTableWriter.WriteDocumentContent(pHdrFtr->m_arrItems);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }

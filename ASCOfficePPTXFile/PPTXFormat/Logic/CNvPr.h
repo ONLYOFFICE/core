@@ -34,8 +34,9 @@
 #define PPTX_LOGIC_C_NV_PROPERTIES_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
-#include "Hyperlink.h"
 
+#include "Hyperlink.h"
+#include "ExtP.h"
 
 namespace PPTX
 {
@@ -81,11 +82,29 @@ namespace PPTX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					std::wstring sName = oReader.GetName();
-					if (sName == L"a:hlinkClick")
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+					if (strName == L"hlinkClick")
 						hlinkClick = oReader;
-					else if (sName == L"a:hlinkHover")
+					else if (strName == L"hlinkHover")
 						hlinkHover = oReader;
+					else if (strName == L"extLst")
+					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							Ext ext;
+							ext.fromXML(oReader);
+							if (ext.spid.IsInit())
+							{
+								oleSpid = ext.spid;
+								break;
+							}
+						}
+					}
+
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
@@ -101,6 +120,29 @@ namespace PPTX
 
 				hlinkClick = node.ReadNode(_T("a:hlinkClick"));
 				hlinkHover = node.ReadNode(_T("a:hlinkHover"));
+
+				XmlUtils::CXmlNode list = node.ReadNodeNoNS(_T("extLst"));
+				if (list.IsValid())
+				{		
+					XmlUtils::CXmlNodes oNodes;
+					if (list.GetNodes(_T("*"), oNodes))
+					{
+						int nCount = oNodes.GetCount();
+						for (int i = 0; i < nCount; ++i)
+						{
+							XmlUtils::CXmlNode oNode;
+							oNodes.GetAt(i, oNode);	
+
+							Ext ext;
+							ext.fromXML(oNode);
+							if (ext.spid.IsInit())
+							{
+								oleSpid = ext.spid;
+								break;
+							}
+						}
+					}
+				}
 
 				Normalize();
 			}
@@ -163,12 +205,13 @@ namespace PPTX
 				pWriter->StartAttributes();
 									pWriter->WriteAttribute (_T("id"),      _id);
 									pWriter->WriteAttribute (_T("name"),    XmlUtils::EncodeXmlString(name));
-                if (descr.IsInit())
-                {
-                    std::wstring d = XmlUtils::EncodeXmlString(descr.get());
-                    XmlUtils::replace_all(d, L"\n", L"&#xA;");
-                    pWriter->WriteAttribute	(_T("descr"),   d);
-                }
+				if (descr.IsInit())
+				{
+					std::wstring d = XmlUtils::EncodeXmlString(descr.get());
+					XmlUtils::replace_all(d, L"\n", L"&#xA;");	
+
+					pWriter->WriteAttribute	(_T("descr"), d);
+				}
 									pWriter->WriteAttribute (_T("hidden"),  hidden);
 				if (title.IsInit())	pWriter->WriteAttribute (_T("title"),   XmlUtils::EncodeXmlString(title.get()));
 
@@ -239,8 +282,29 @@ namespace PPTX
 							break;
 					}
 				}
-
-				// TODO: пока без гиперссылок
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _at = pReader->GetUChar();
+					switch (_at)
+					{
+						case 0:
+						{
+							hlinkClick = new PPTX::Logic::Hyperlink(L"hlinkClick");
+							hlinkClick->fromPPTY(pReader);
+							break;
+						}
+						case 1:
+						{
+							hlinkHover = new PPTX::Logic::Hyperlink(L"hlinkHover");
+							hlinkHover->fromPPTY(pReader);
+							break;
+						}
+						default:
+						{
+							break;
+						}
+					}
+				}
 
 				pReader->Seek(_end_rec);
 			}
@@ -254,6 +318,9 @@ namespace PPTX
 			nullable_string		title;
 			nullable<Hyperlink> hlinkClick;
 			nullable<Hyperlink> hlinkHover;
+			
+			//std::vector<Ext>	extLst;
+			nullable_string		oleSpid;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

@@ -45,16 +45,17 @@ namespace OOX
 		class CDefinedName : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CDefinedName)
+			WritingElement_AdditionConstructors(CDefinedName)
 			CDefinedName()
 			{
 			}
 			virtual ~CDefinedName()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -69,7 +70,7 @@ namespace OOX
 					writer.WriteEncodeXmlString(m_oRef.get());
 				writer.WriteString(_T("</definedName>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -81,7 +82,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_DefinedName;
+				return et_x_DefinedName;
 			}
 
 		private:
@@ -135,15 +136,16 @@ namespace OOX
 		class CDefinedNames  : public WritingElementWithChilds<CDefinedName>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CDefinedNames)
+			WritingElement_AdditionConstructors(CDefinedNames)
 			CDefinedNames()
 			{
 			}
 			virtual ~CDefinedNames()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -179,7 +181,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_BookViews;
+				return et_x_BookViews;
 			}
 		
 		private:

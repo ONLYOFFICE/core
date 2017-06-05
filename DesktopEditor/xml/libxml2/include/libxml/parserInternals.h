@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Summary: internals routines and limits exported by the parser.
  * Description: this module exports a number of internal parsing routines
  *              they are not really all intended for applications but
@@ -351,7 +351,7 @@ XMLPUBFUN void XMLCALL
 						 xmlParserErrors xmlerr,
 						 const char *msg,
 						 const xmlChar * str1,
-						 const xmlChar * str2);
+						 const xmlChar * str2) LIBXML_ATTR_FORMAT(3,0);
 #endif
 
 /**

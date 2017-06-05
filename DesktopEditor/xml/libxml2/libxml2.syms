@@ -744,7 +744,7 @@ LIBXML2_2.4.30 {
   xmlNewIOInputStream;
   xmlParseBalancedChunkMemory;
   xmlParseBalancedChunkMemoryRecover;
-  DoctRenderer;
+  xmlParseChunk;
   xmlParseCtxtExternalEntity;
   xmlParseDTD;
   xmlParseDoc;

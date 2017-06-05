@@ -345,9 +345,9 @@ namespace PPTX
 													pReader->Skip(6); // len + start attributes + type
 
 													// -------------------
-													std::wstring strUrl = pReader->GetString2();
-													std::wstring strTempFile = _T("");
-													std::wstring strOrigBase64 = _T("");
+													std::wstring strUrl		= pReader->GetString2();
+													std::wstring strTempFile;
+													std::wstring strOrigBase64;
 
 
 													if (0 == strUrl.find(_T("data:")))
@@ -434,10 +434,10 @@ namespace PPTX
 													}
 													// -------------------													
 													
-													NSBinPptxRW::CRelsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strUrl, pFill->oleData, strOrigBase64);
+													NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strUrl, pFill->additionalFile, pFill->oleData, strOrigBase64);
 
 													// -------------------
-													if (strTempFile != _T(""))
+													if (!strTempFile.empty())
 													{
                                                         CDirectory::DeleteFile(strTempFile);
 													}
@@ -446,18 +446,20 @@ namespace PPTX
 													if (!pFill->blip.is_init())
 														pFill->blip = new PPTX::Logic::Blip();
 
-													pFill->blip->embed = new OOX::RId((size_t)oRelsGeneratorInfo.m_nImageRId);
+													pFill->blip->embed = new OOX::RId((size_t)oRelsGeneratorInfo.nImageRId);
 													if (pFill->blip.is_init())
 														pFill->blip->m_namespace = _T("a");
 
-													if(oRelsGeneratorInfo.m_nOleRId > 0)
+													if(oRelsGeneratorInfo.nOleRId > 0)
 													{
-														pFill->blip->oleRid = OOX::RId((size_t)oRelsGeneratorInfo.m_nOleRId).get();
-														pFill->blip->oleFilepathBin = oRelsGeneratorInfo.m_sFilepathBin;
-														pFill->blip->oleFilepathImg = oRelsGeneratorInfo.m_sFilepathImg;
-														pFill->blip->oleRidImg = pFill->blip->embed->get();
+														pFill->blip->oleRid			= OOX::RId((size_t)oRelsGeneratorInfo.nOleRId).get();
+														pFill->blip->oleFilepathBin	= oRelsGeneratorInfo.sFilepathOle;
 													}
-
+													if(oRelsGeneratorInfo.nMediaRId > 0)
+													{
+														pFill->blip->mediaRid		= OOX::RId((size_t)oRelsGeneratorInfo.nMediaRId).get();
+														pFill->blip->mediaFilepath	= oRelsGeneratorInfo.sFilepathMedia;
+													}
 													pReader->Skip(1); // end attribute
 													break;
 												}

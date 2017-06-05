@@ -45,16 +45,17 @@ namespace OOX
 		class CCol : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CCol)
+			WritingElement_AdditionConstructors(CCol)
 			CCol()
 			{
 			}
 			virtual ~CCol()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -83,7 +84,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Col;
+				return et_x_Col;
 			}
 
 		private:
@@ -93,16 +94,16 @@ namespace OOX
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("bestFit"),      m_oBestFit)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("collapsed"),      m_oCollapsed )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customWidth"),      m_oCustomWidth )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("hidden"),      m_oHidden )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("max"),      m_oMax )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("min"),      m_oMin )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("outlineLevel"),      m_oOutlineLevel )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("phonetic"),      m_oPhonetic )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("style"),      m_oStyle )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("width"),      m_oWidth )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("bestFit"),		m_oBestFit)
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("collapsed"),	m_oCollapsed )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customWidth"),	m_oCustomWidth )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("hidden"),		m_oHidden )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("max"),			m_oMax )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("min"),			m_oMin )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("outlineLevel"),m_oOutlineLevel )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("phonetic"),	m_oPhonetic )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("style"),		m_oStyle )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("width"),		m_oWidth )
 
 					WritingElement_ReadAttributes_End( oReader )
 			}
@@ -123,15 +124,16 @@ namespace OOX
 		class CCols  : public WritingElementWithChilds<CCol>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CCols)
+			WritingElement_AdditionConstructors(CCols)
 			CCols()
 			{
 			}
 			virtual ~CCols()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -167,7 +169,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Cols;
+				return et_x_Cols;
 			}
 		
 		private:

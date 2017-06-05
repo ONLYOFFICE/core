@@ -70,7 +70,7 @@ namespace PPTX
 				{
 					std::wstring sName = oReader.GetName();
 
-					if (sName == L"a:pos")
+					if (sName == L"a:pt")
 					{
 						ReadAttributes2(oReader);
 					}
@@ -92,12 +92,6 @@ namespace PPTX
 					y = oNode.GetAttribute(_T("y"));
 				}
 			}
-
-			virtual std::wstring toXML() const
-			{
-				return _T("<a:lnTo><a:pt x=\"") + x + L"\" y=\"" + y + _T("\"/></a:lnTo>");
-			}
-
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(_T("a:lnTo"));

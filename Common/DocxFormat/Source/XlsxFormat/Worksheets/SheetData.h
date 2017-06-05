@@ -98,16 +98,17 @@ namespace OOX
 		class CFormula : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CFormula)
+			WritingElement_AdditionConstructors(CFormula)
 			CFormula()
 			{
 			}
 			virtual ~CFormula()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -130,7 +131,7 @@ namespace OOX
                 writer.WriteEncodeXmlString(m_sText);
 				writer.WriteString(_T("</f>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -142,7 +143,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Formula;
+				return et_x_Formula;
 			}
 
 		private:
@@ -188,16 +189,17 @@ namespace OOX
 		class CCell : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CCell)
+			WritingElement_AdditionConstructors(CCell)
 			CCell()
 			{
 			}
 			virtual ~CCell()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -267,7 +269,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Cell;
+				return et_x_Cell;
 			}
 
 			bool isInitRef() const
@@ -460,15 +462,16 @@ namespace OOX
 		class CRow : public WritingElementWithChilds<CCell>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CRow)
+			WritingElement_AdditionConstructors(CRow)
 			CRow()
 			{
 			}
 			virtual ~CRow()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -513,7 +516,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Row;
+				return et_x_Row;
 			}
 
 		private:
@@ -558,15 +561,16 @@ namespace OOX
 		class CSheetData  : public WritingElementWithChilds<CRow>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CSheetData)
+			WritingElement_AdditionConstructors(CSheetData)
 			CSheetData()
 			{
 			}
 			virtual ~CSheetData()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -599,7 +603,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_SheetData;
+				return et_x_SheetData;
 			}
 		
 		private:

@@ -150,7 +150,16 @@ namespace OOX
 		else if ( pRelation->Type() == FileTypes::Document)
 			return smart_ptr<OOX::File>(new CDocument( oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Theme)
-			return smart_ptr<OOX::File>(new CTheme( oFileName ));
+		{
+			if(NSFile::CFileBinary::Exists(oFileName.GetPath()))
+			{
+				return smart_ptr<OOX::File>(new CTheme( oFileName ));
+			}
+			else
+			{
+				return smart_ptr<OOX::File>( new UnknowTypeFile() );
+			}
+		}
 		else if ( pRelation->Type() == FileTypes::ThemeOverride)
 			return smart_ptr<OOX::File>(new CThemeOverride( oFileName ));
 		else if ( pRelation->Type() == FileTypes::Setting)

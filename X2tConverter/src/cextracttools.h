@@ -136,7 +136,7 @@ namespace NExtractTools
         TCD_PPTT2ODP,
         TCD_PPTX_BIN2ODP,
 		
-		TCD_XML2DOCX,
+	TCD_XML2DOCX,
         TCD_DOCX2XML,
 //
 		TCD_MSCRYPT2,
@@ -145,6 +145,18 @@ namespace NExtractTools
 		TCD_MSCRYPT2PPTT,
 		TCD_MSCRYPT2BIN,
 //
+		TCD_HTML2DOCX,
+		TCD_HTML2DOCT,
+		TCD_HTML2DOCT_BIN,
+		
+		TCD_FB22DOCX,
+		TCD_FB22DOCT,
+		TCD_FB22DOCT_BIN,
+
+		TCD_EPUB2DOCX,
+		TCD_EPUB2DOCT,
+		TCD_EPUB2DOCT_BIN,
+
         TCD_MAILMERGE,
         TCD_T2,
         TCD_DOCT_BIN2,
@@ -498,6 +510,10 @@ namespace NExtractTools
 				}
 			}
 			return true;
+		}
+		bool hasPassword() const
+		{
+			return NULL != m_sPassword;
 		}
 		std::wstring getPassword() const
         {

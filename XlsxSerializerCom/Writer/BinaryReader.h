@@ -2766,7 +2766,7 @@ namespace BinXlsxRW {
 				res = Read1(length, &BinaryWorksheetsTableReader::ReadDrawing, this, pCellAnchor);
 				
 				pCellAnchor->m_bShapeOle = false;
-				if (pCellAnchor->m_oElement->is<PPTX::Logic::Pic>())
+				if (pCellAnchor->m_oElement.is_init() && pCellAnchor->m_oElement->is<PPTX::Logic::Pic>())
 				{
 					PPTX::Logic::Pic& oPic = pCellAnchor->m_oElement->as<PPTX::Logic::Pic>();
 					if(oPic.oleObject.IsInit() && oPic.oleObject->m_OleObjectFile.IsInit())
@@ -2825,24 +2825,29 @@ namespace BinXlsxRW {
 								m_pCurVmlDrawing->m_lObjectIdVML = oWriter.m_lObjectIdVML;
 
 								pOleObject->m_oShapeId = *oPic.oleObject->m_sShapeId;
-						//add image rels to VmlDrawing
-                                OOX::CPath pathImageCache = pOleObject->m_OleObjectFile->filename_cache();
-
-                                NSCommon::smart_ptr<OOX::Image> pImageFileVml(new OOX::Image(false));
-                                pImageFileVml->set_filename(pathImageCache);
+                               
+								OOX::CPath pathImageCache = pOleObject->m_OleObjectFile->filename_cache();
+								smart_ptr<OOX::RId> oRIdImg;
 								
-                                smart_ptr<OOX::File> pFileVml = pImageFileVml.smart_dynamic_cast<OOX::File>();
-                                m_pCurVmlDrawing->Add(*oPic.blipFill.blip->embed, pFileVml);
+								if (pathImageCache.GetPath().empty() == false)
+								{
+								//add image rels to VmlDrawing
+									NSCommon::smart_ptr<OOX::Image> pImageFileVml(new OOX::Image(false));
+									pImageFileVml->set_filename(pathImageCache);
+									
+									smart_ptr<OOX::File> pFileVml = pImageFileVml.smart_dynamic_cast<OOX::File>();
+									m_pCurVmlDrawing->Add(*oPic.blipFill.blip->embed, pFileVml);
+						
+								//add image rels to Worksheet
+									NSCommon::smart_ptr<OOX::Image> pImageFileWorksheet(new OOX::Image(false));
 
-						//add image rels to Worksheet
-								NSCommon::smart_ptr<OOX::Image> pImageFileWorksheet(new OOX::Image(false));
-
-                                pImageFileWorksheet->set_filename(pathImageCache);
-								
-                                smart_ptr<OOX::File> pFileWorksheet = pImageFileWorksheet.smart_dynamic_cast<OOX::File>();
-                                const OOX::RId oRIdImg = m_pCurWorksheet->Add(pFileWorksheet);
-
-						//add oleObject rels
+									pImageFileWorksheet->set_filename(pathImageCache);
+									
+									smart_ptr<OOX::File> pFileWorksheet = pImageFileWorksheet.smart_dynamic_cast<OOX::File>();
+									
+									oRIdImg = new OOX::RId(m_pCurWorksheet->Add(pFileWorksheet));
+								}
+							//add oleObject rels
 								if(!m_pCurWorksheet->m_oOleObjects.IsInit())
 								{
 									m_pCurWorksheet->m_oOleObjects.Init();
@@ -2861,7 +2866,10 @@ namespace BinXlsxRW {
 								pOleObject->m_oObjectPr->m_oDefaultSize.Init();
 								pOleObject->m_oObjectPr->m_oDefaultSize->FromBool(false);
 								pOleObject->m_oObjectPr->m_oRid.Init();
-								pOleObject->m_oObjectPr->m_oRid->SetValue(oRIdImg.get());
+								
+								if (oRIdImg.IsInit())
+									pOleObject->m_oObjectPr->m_oRid->SetValue(oRIdImg->get());
+
 								pOleObject->m_oObjectPr->m_oAnchor.Init();
 								
 								SimpleTypes::Spreadsheet::ECellAnchorType eAnchorType = pCellAnchor->m_oAnchorType.GetValue();

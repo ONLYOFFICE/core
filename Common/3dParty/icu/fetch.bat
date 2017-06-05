@@ -6,6 +6,10 @@ if defined ProgramFiles(x86) (
 	SET platform=win_64
 )
 
+if defined TARGET (
+	SET platform=%TARGET%
+)
+
 if not exist "%platform%" (
 	md "%platform%"
 )

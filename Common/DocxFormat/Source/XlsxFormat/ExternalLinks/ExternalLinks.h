@@ -77,7 +77,7 @@ namespace OOX
 				for (size_t i = 0; i < m_arrItems.size(); ++i)
 				{
 					writer.WriteString(L"<sheetName ");
-					writer.WriteString(m_arrItems[i]->ToString());
+					writer.WriteEncodeXmlString(m_arrItems[i]->ToString());
 					writer.WriteString(L"/>");
 				}
 				writer.WriteString(L"</sheetNames>");
@@ -121,8 +121,8 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(L"<definedName");
-				WritingStringNullableAttrString(L"name", m_oName, m_oName.get());
-				WritingStringNullableAttrString(L"refersTo", m_oRefersTo, m_oRefersTo.get());
+				WritingStringNullableAttrEncodeXmlString(L"name", m_oName, m_oName.get());
+				WritingStringNullableAttrEncodeXmlString(L"refersTo", m_oRefersTo, m_oRefersTo.get());
 				WritingStringNullableAttrInt(L"sheetId", m_oSheetId, m_oSheetId->GetValue());
 				writer.WriteString(L"/>");
 			}

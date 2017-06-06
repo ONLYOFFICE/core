@@ -1,1 +1,10 @@
 language: cpp
+jobs:
+  include:
+    - stage: Fetch and build v8 dependencies
+      script:
+        - cd Common/3dParty && ./make.sh
+    - stage: Build core
+      script:
+        - cd ../../
+        - make

@@ -11,6 +11,7 @@ jobs:
   include:
     - stage: Fetch and build v8 dependencies
       script:
+        - g++ --version
         - cd Common/3dParty && ./make.sh
     - stage: Build core
       script:

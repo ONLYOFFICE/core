@@ -39,6 +39,427 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CExternalSheetNames : public WritingElementWithChilds<ComplexTypes::Spreadsheet::String>
+		{
+		public:
+			WritingElement_AdditionConstructors(CExternalSheetNames)
+			CExternalSheetNames()
+			{
+			}
+			virtual ~CExternalSheetNames()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				// TO DO: Реализовать
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+					if (L"sheetName" == sName)
+					{
+						m_arrItems.push_back(new ComplexTypes::Spreadsheet::String(oReader));
+					}
+				}
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<sheetNames>");
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					writer.WriteString(L"<sheetName ");
+					writer.WriteEncodeXmlString(m_arrItems[i]->ToString());
+					writer.WriteString(L"/>");
+				}
+				writer.WriteString(L"</sheetNames>");
+			}
+			virtual std::wstring      toXML() const
+			{
+				NSStringUtils::CStringBuilder writer;
+				toXML(writer);
+				return writer.GetData().c_str();
+			}
+			virtual EElementType getType() const
+			{
+				return et_x_ExternalSheetNames;
+			}
+		};
+
+		class CExternalDefinedName : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CExternalDefinedName)
+			CExternalDefinedName()
+			{
+			}
+			virtual ~CExternalDefinedName()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				// TO DO: Реализовать
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<definedName");
+				WritingStringNullableAttrEncodeXmlString(L"name", m_oName, m_oName.get());
+				WritingStringNullableAttrEncodeXmlString(L"refersTo", m_oRefersTo, m_oRefersTo.get());
+				WritingStringNullableAttrInt(L"sheetId", m_oSheetId, m_oSheetId->GetValue());
+				writer.WriteString(L"/>");
+			}
+			virtual std::wstring      toXML() const
+			{
+				NSStringUtils::CStringBuilder writer;
+				toXML(writer);
+				return writer.GetData().c_str();
+			}
+			virtual EElementType getType() const
+			{
+				return et_x_ExternalDefinedName;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if( oReader, _T("name"), m_oName )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("refersTo"), m_oRefersTo )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("sheetId"), m_oSheetId )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<std::wstring> m_oName;
+			nullable<std::wstring> m_oRefersTo;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSheetId;
+		};
+
+		class CExternalDefinedNames : public WritingElementWithChilds<CExternalDefinedName>
+		{
+		public:
+			WritingElement_AdditionConstructors(CExternalDefinedNames)
+			CExternalDefinedNames()
+			{
+			}
+			virtual ~CExternalDefinedNames()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				// TO DO: Реализовать
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+					if (L"definedName" == sName)
+					{
+						m_arrItems.push_back(new CExternalDefinedName(oReader));
+					}
+				}
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<definedNames>");
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+				writer.WriteString(L"</definedNames>");
+			}
+			virtual std::wstring      toXML() const
+			{
+				NSStringUtils::CStringBuilder writer;
+				toXML(writer);
+				return writer.GetData().c_str();
+			}
+			virtual EElementType getType() const
+			{
+				return et_x_ExternalDefinedNames;
+			}
+		};
+
+		class CExternalCell : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CExternalCell)
+			CExternalCell()
+			{
+			}
+			virtual ~CExternalCell()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				// TO DO: Реализовать
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+					if (L"v" == sName)
+					{
+						m_oValue = oReader;
+					}
+				}
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<cell");
+				WritingStringNullableAttrString(L"r", m_oRef, m_oRef.get());
+				WritingStringNullableAttrString(L"t", m_oType, m_oType->ToString());
+				WritingStringNullableAttrInt(L"vm", m_oValueMetadata, m_oValueMetadata->GetValue());
+				writer.WriteString(L">");
+				if(m_oValue.IsInit())
+					m_oValue->toXML2(writer, _T("v"));
+				writer.WriteString(L"</cell>");
+			}
+			virtual std::wstring      toXML() const
+			{
+				NSStringUtils::CStringBuilder writer;
+				toXML(writer);
+				return writer.GetData().c_str();
+			}
+			virtual EElementType getType() const
+			{
+				return et_x_ExternalCell;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if( oReader, _T("r"), m_oRef )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("t"), m_oType )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("vm"), m_oValueMetadata )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<std::wstring>								m_oRef;
+			nullable<SimpleTypes::Spreadsheet::CCellTypeType<>>	m_oType;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oValueMetadata;
+
+			nullable<CText>		m_oValue;
+		};
+
+		class CExternalRow : public WritingElementWithChilds<CExternalCell>
+		{
+		public:
+			WritingElement_AdditionConstructors(CExternalRow)
+			CExternalRow()
+			{
+			}
+			virtual ~CExternalRow()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				// TO DO: Реализовать
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+					if (L"cell" == sName)
+					{
+						m_arrItems.push_back(new CExternalCell(oReader));
+					}
+				}
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<row");
+				WritingStringNullableAttrInt(L"r", m_oR, m_oR->GetValue());
+				writer.WriteString(L">");
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+				writer.WriteString(L"</row>");
+			}
+			virtual std::wstring      toXML() const
+			{
+				NSStringUtils::CStringBuilder writer;
+				toXML(writer);
+				return writer.GetData().c_str();
+			}
+			virtual EElementType getType() const
+			{
+				return et_x_ExternalRow;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("r"), m_oR )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oR;
+		};
+
+		class CExternalSheetData : public WritingElementWithChilds<CExternalRow>
+		{
+		public:
+			WritingElement_AdditionConstructors(CExternalSheetData)
+			CExternalSheetData()
+			{
+			}
+			virtual ~CExternalSheetData()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				// TO DO: Реализовать
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+					if (L"row" == sName)
+					{
+						m_arrItems.push_back(new CExternalRow(oReader));
+					}
+				}
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<sheetData");
+				WritingStringNullableAttrInt(L"sheetId", m_oSheetId, m_oSheetId->GetValue());
+				WritingStringNullableAttrBool(L"refreshError", m_oRefreshError);
+				writer.WriteString(L">");
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+				writer.WriteString(L"</sheetData>");
+			}
+			virtual std::wstring      toXML() const
+			{
+				NSStringUtils::CStringBuilder writer;
+				toXML(writer);
+				return writer.GetData().c_str();
+			}
+			virtual EElementType getType() const
+			{
+				return et_x_ExternalSheetData;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if( oReader, _T("sheetId"), m_oSheetId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("refreshError"), m_oRefreshError )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSheetId;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oRefreshError;
+		};
+
+		class CExternalSheetDataSet : public WritingElementWithChilds<CExternalSheetData>
+		{
+		public:
+			WritingElement_AdditionConstructors(CExternalSheetDataSet)
+			CExternalSheetDataSet()
+			{
+			}
+			virtual ~CExternalSheetDataSet()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				// TO DO: Реализовать
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+					if (L"sheetData" == sName)
+					{
+						m_arrItems.push_back(new CExternalSheetData(oReader));
+					}
+				}
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<sheetDataSet>");
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+				writer.WriteString(L"</sheetDataSet>");
+			}
+			virtual std::wstring      toXML() const
+			{
+				NSStringUtils::CStringBuilder writer;
+				toXML(writer);
+				return writer.GetData().c_str();
+			}
+			virtual EElementType getType() const
+			{
+				return et_x_ExternalSheetDataSet;
+			}
+		};
+
 		class CExternalBook : public WritingElement
 		{
 		public:
@@ -67,6 +488,19 @@ namespace OOX
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
                     std::wstring sName = oReader.GetName();
+
+					if (L"sheetNames" == sName)
+					{
+						m_oSheetNames = oReader;
+					}
+					else if (L"definedNames" == sName)
+					{
+						m_oDefinedNames = oReader;
+					}
+					else if (L"sheetDataSet" == sName)
+					{
+						m_oSheetDataSet = oReader;
+					}
 				}
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
@@ -78,7 +512,20 @@ namespace OOX
 					writer.WriteString(m_oRid->ToString());
 					writer.WriteString(L"\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"");
 				}
-				writer.WriteString(L"/>");
+				writer.WriteString(L">");
+				if (m_oSheetNames.IsInit())
+				{
+					m_oSheetNames->toXML(writer);
+				}
+				if (m_oDefinedNames.IsInit())
+				{
+					m_oDefinedNames->toXML(writer);
+				}
+				if (m_oSheetDataSet.IsInit())
+				{
+					m_oSheetDataSet->toXML(writer);
+				}
+				writer.WriteString(L"</externalBook>");
 			}
             virtual std::wstring      toXML() const
 			{
@@ -99,6 +546,10 @@ namespace OOX
 		public:
 
 			nullable<SimpleTypes::CRelationshipId > m_oRid;
+
+			nullable<CExternalSheetNames > m_oSheetNames;
+			nullable<CExternalDefinedNames > m_oDefinedNames;
+			nullable<CExternalSheetDataSet > m_oSheetDataSet;
 		};
 
 		class CExternalLink : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
@@ -106,9 +557,11 @@ namespace OOX
 		public:
 			CExternalLink()
 			{
+				m_bSpreadsheets = true;
 			}
 			CExternalLink(const CPath& oRootPath, const CPath& oPath)
 			{
+				m_bSpreadsheets = true;
 				read( oRootPath, oPath );
 			}
 			virtual ~CExternalLink()

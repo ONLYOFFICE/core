@@ -18,7 +18,7 @@ DEFINES += XMLSEC_OPENSSL_110
 
 INCLUDEPATH += $$PWD/../../openssl/include
 
-LIBS += -L$$PWD/../../openssl -lcrypto -lssl
+LIBS += -L$$PWD/../../openssl -lssl -lcrypto
 LIBS += -ldl
 
 SOURCES += main.cpp

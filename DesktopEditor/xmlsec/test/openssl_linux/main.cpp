@@ -5,6 +5,7 @@
 #include <openssl/pkcs12.h>
 
 #include <openssl/sha.h>
+#include <openssl/ssl.h>
 
 #include "../../../common/File.h"
 
@@ -43,7 +44,7 @@ static time_t ASN1_GetTimeT(ASN1_TIME* time)
     return mktime(&t);
 }
 
-#if 1
+#if 0
 int main()
 {
     std::wstring sFolderW = NSFile::GetProcessDirectory();
@@ -140,7 +141,7 @@ int main()
 }
 #endif
 
-#if 0
+#if 1
 int main(int argc, char **argv)
 {
     std::wstring sFolderW = NSFile::GetProcessDirectory();
@@ -157,6 +158,7 @@ int main(int argc, char **argv)
     STACK_OF(X509) *ca = NULL;
     PKCS12 *p12;
 
+    SSL_library_init();
     OpenSSL_add_all_algorithms();
     ERR_load_crypto_strings();
 

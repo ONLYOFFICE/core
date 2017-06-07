@@ -173,5 +173,75 @@ int COpenssl_library::LoadKey(std::wstring file, std::string password)
 
 int COpenssl_library::LoadCert(std::wstring file, std::string password)
 {
+    BYTE* pData = NULL;
+    DWORD dwDataLen;
+    if (!NSFile::CFileBinary::ReadAllBytes(file, &pData, dwDataLen))
+        return OPEN_SSL_WARNING_ERR;
+
+    X509* pCert = NULL;
+    char* pPassword = (password.empty()) ? NULL : (char*)password.c_str();
+
+    BIO* bio = BIO_new_mem_buf((void*)pData, (int)dwDataLen);
+    if (PEM_read_bio_X509(bio, &pCert, NULL, (void*)pPassword))
+    {
+        X509_free(pCert);
+        BIO_free(bio);
+        return OPEN_SSL_WARNING_OK;
+    }
+    std::string sError = GetOpenSslErrors();
+    if (IsOpenSslPasswordError(sError))
+    {
+        X509_free(pCert);
+        BIO_free(bio);
+        return OPEN_SSL_WARNING_PASS;
+    }
+
+    BIO_free(bio);
+    bio = BIO_new_mem_buf((void*)pData, (int)dwDataLen);
+    if (d2i_X509_bio(bio, &pCert))
+    {
+        X509_free(pCert);
+        BIO_free(bio);
+        return OPEN_SSL_WARNING_OK;
+    }
+    sError = GetOpenSslErrors();
+    if (IsOpenSslPasswordError(sError))
+    {
+        X509_free(pCert);
+        BIO_free(bio);
+        return OPEN_SSL_WARNING_PASS;
+    }
+
+    BIO_free(bio);
+    bio = BIO_new_mem_buf((void*)pData, (int)dwDataLen);
+
+    PKCS12* p12 = d2i_PKCS12_bio(bio, NULL);
+    if (p12)
+    {
+        EVP_PKEY* pKey = NULL;
+        STACK_OF(X509)* pCa = NULL;
+
+        if (PKCS12_parse(p12, pPassword, &pKey, &pCert, &pCa))
+        {
+            sk_X509_pop_free(pCa, X509_free);
+            X509_free(pCert);
+            EVP_PKEY_free(pKey);
+            PKCS12_free(p12);
+            BIO_free(bio);
+            return OPEN_SSL_WARNING_ALL_OK;
+        }
+
+        sError = GetOpenSslErrors();
+        if (IsOpenSslPasswordError(sError))
+        {
+            PKCS12_free(p12);
+            BIO_free(bio);
+            return OPEN_SSL_WARNING_PASS;
+        }
+
+        PKCS12_free(p12);
+    }
+
+    BIO_free(bio);
     return OPEN_SSL_WARNING_ERR;
 }

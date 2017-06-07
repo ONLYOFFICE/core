@@ -1,1 +1,11 @@
 language: cpp
+compiler: gcc
+dist: trusty
+addons:
+  apt:
+    packages:
+      - p7zip-full
+script:
+  - cd Common/3dParty && ./make.sh
+  - cd ../../
+  - make

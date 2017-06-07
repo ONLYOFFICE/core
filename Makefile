@@ -21,11 +21,11 @@ else
 		LIB_PREFIX := lib
 		MAKE := make -j $(shell grep -c ^processor /proc/cpuinfo)
 	endif
-	UNAME_P := $(shell uname -p)
-	ifeq ($(UNAME_P),x86_64)
+	UNAME_M := $(shell uname -m)
+	ifeq ($(UNAME_M),x86_64)
 		ARCHITECTURE := 64
 	endif
-	ifneq ($(filter %86,$(UNAME_P)),)
+	ifneq ($(filter %86,$(UNAME_M)),)
 		ARCHITECTURE := 32
 	endif
 endif

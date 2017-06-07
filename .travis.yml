@@ -7,6 +7,11 @@ addons:
       - p7zip-full
 jobs:
   include:
+    - stage: Fetch and build only v8
+      script:
+        - cd Common/3dParty/v8
+        - bash fetch.sh
+        - bash build.sh
     - stage: Fetch and build v8 dependencies
       script:
         - cd Common/3dParty && ./make.sh

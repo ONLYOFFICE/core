@@ -44,7 +44,7 @@ static time_t ASN1_GetTimeT(ASN1_TIME* time)
     return mktime(&t);
 }
 
-#if 0
+#if 1
 int main()
 {
     std::wstring sFolderW = NSFile::GetProcessDirectory();
@@ -141,7 +141,7 @@ int main()
 }
 #endif
 
-#if 1
+#if 0
 int main(int argc, char **argv)
 {
     std::wstring sFolderW = NSFile::GetProcessDirectory();

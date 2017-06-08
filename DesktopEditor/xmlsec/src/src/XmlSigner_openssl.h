@@ -281,14 +281,41 @@ public:
 public:
     virtual bool ShowSelectDialog()
     {
-        if (m_pDialog)
-            return m_pDialog->ShowSelectDialog();
-        return false;
+        if (!m_pDialog)
+            return false;
+
+        bool bResult = m_pDialog->ShowSelectDialog();
+
+        std::wstring sKeyPath = m_pDialog->GetKeyPath();
+        std::wstring sKeyPasswordW = m_pDialog->GetKeyPassword();
+        std::string sKeyPassword = U_TO_UTF8(sKeyPasswordW);
+
+        std::wstring sCertPath = m_pDialog->GetCertificatePath();
+        std::wstring sCertPasswordW = m_pDialog->GetCertificatePassword();
+        std::string sCertPassword = U_TO_UTF8(sCertPasswordW);
+
+        if (sCertPath.empty())
+        {
+            sCertPath = sKeyPath;
+            sCertPassword = sKeyPassword;
+        }
+
+        int nErr = LoadKey(sKeyPath, sKeyPassword, &m_key);
+
+        if (nErr != OPEN_SSL_WARNING_OK && nErr != OPEN_SSL_WARNING_ALL_OK)
+            return false;
+
+        nErr = LoadCert(sCertPath, sCertPassword, &m_cert);
+
+        if (nErr != OPEN_SSL_WARNING_OK && nErr != OPEN_SSL_WARNING_ALL_OK)
+            return false;
+
+        return true;
     }
     virtual int ShowCertificate()
     {
         if (m_pDialog)
-            return m_pDialog->ShowCertificate();
+            return m_pDialog->ShowCertificate(this);
         return 1;
     }
 

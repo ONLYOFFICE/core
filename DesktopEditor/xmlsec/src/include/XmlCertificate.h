@@ -8,6 +8,7 @@
 #define OOXML_HASH_ALG_SHA1         0
 #define OOXML_HASH_ALG_INVALID      1
 
+class ICertificate;
 class Q_DECL_EXPORT ICertificateSelectDialogOpenSsl
 {
 public:
@@ -26,7 +27,7 @@ public:
     virtual std::wstring GetKeyPassword() = 0;
 
     virtual bool ShowSelectDialog() = 0;
-    virtual int ShowCertificate() = 0;
+    virtual int ShowCertificate(ICertificate* pCert) = 0;
 };
 
 class Q_DECL_EXPORT CCertificateInfo

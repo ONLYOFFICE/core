@@ -137,7 +137,7 @@ namespace PPTX
 				pWriter->WriteLimit2(4, m_oDrawAspect);
 				pWriter->WriteLimit2(5, m_oType);
 				pWriter->WriteLimit2(6, m_oUpdateMode);
-				if (ole_file.IsInit() == false || ole_file->isMsPackage() == false)
+				if (ole_file.IsInit() && ole_file->isMsPackage() == false)
 				{
 					std::wstring sExt = ole_file->filename().GetExtention(false);
 					if (!sExt.empty())

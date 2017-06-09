@@ -68,6 +68,34 @@ namespace OOX
 				return type().DefaultFileName();
 			}
 		};
+		class ExternalOleObject : public External
+		{
+		public:
+			ExternalOleObject()
+			{
+			}
+			ExternalOleObject(const CPath& uri)
+			{
+				read(uri);
+			}
+			~ExternalOleObject()
+			{
+			}
+
+		public:
+			virtual const FileType type() const
+			{
+				return OOX::FileTypes::OleObject;
+			}
+			virtual const CPath DefaultDirectory() const
+			{
+				return type().DefaultDirectory();
+			}
+			virtual const CPath DefaultFileName() const
+			{
+				return type().DefaultFileName();
+			}
+		};
 	}// namespace Spreadsheet
 } // namespace OOX
 

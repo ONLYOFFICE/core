@@ -241,6 +241,10 @@ namespace PdfReader
 		m_nPermissionFlags = DefaultPermissionFlags;
 		m_bOwnerPassword = false;
 
+		// Если нет ссылки на данный объект, а ссылка нам нужна как идентефикатор, то выбираем некотый уникальный номер
+		// (поскольку корректное версионное число состоит из 5 цифр, поэтому любое 6-циферное число будет безопасным решением)
+		m_unRefGenCounter = 100000;
+
 		// Читаем Trailer
 		m_pStream = pStream;
 		m_nStart  = m_pStream->GetStartPos();

@@ -8,6 +8,28 @@
 #define OOXML_HASH_ALG_SHA1         0
 #define OOXML_HASH_ALG_INVALID      1
 
+class ICertificate;
+class Q_DECL_EXPORT ICertificateSelectDialogOpenSsl
+{
+public:
+    ICertificateSelectDialogOpenSsl()
+    {
+    }
+    virtual ~ICertificateSelectDialogOpenSsl()
+    {
+    }
+
+public:
+    virtual std::wstring GetCertificatePath() = 0;
+    virtual std::wstring GetCertificatePassword() = 0;
+
+    virtual std::wstring GetKeyPath() = 0;
+    virtual std::wstring GetKeyPassword() = 0;
+
+    virtual bool ShowSelectDialog() = 0;
+    virtual int ShowCertificate(ICertificate* pCert) = 0;
+};
+
 class Q_DECL_EXPORT CCertificateInfo
 {
 public:
@@ -57,6 +79,8 @@ public:
 public:
     virtual bool ShowSelectDialog()             = 0;
     virtual int ShowCertificate()               = 0;
+
+    virtual void SetOpenSslDialog(ICertificateSelectDialogOpenSsl* pDialog) {}
 
     static CCertificateInfo GetDefault();
     static ICertificate* GetById(const std::string& id);

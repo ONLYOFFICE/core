@@ -76,8 +76,8 @@ namespace OOX
 				writer.WriteString(L"<sheetNames>");
 				for (size_t i = 0; i < m_arrItems.size(); ++i)
 				{
-					writer.WriteString(L"<sheetName ");
-					writer.WriteEncodeXmlString(m_arrItems[i]->ToString());
+					writer.WriteString(L"<sheetName");
+					WritingStringAttrEncodeXmlString(L"val", m_arrItems[i]->ToString2());
 					writer.WriteString(L"/>");
 				}
 				writer.WriteString(L"</sheetNames>");
@@ -552,6 +552,529 @@ namespace OOX
 			nullable<CExternalSheetDataSet > m_oSheetDataSet;
 		};
 
+		class CDdeValue : public WritingElementWithChilds<CText>
+		{
+		public:
+			WritingElement_AdditionConstructors(CDdeValue)
+			CDdeValue()
+			{
+			}
+			virtual ~CDdeValue()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				// TO DO: Реализовать
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (L"val" == sName)
+					{
+						m_arrItems.push_back(new CText(oReader));
+					}
+				}
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<value");
+				WritingStringNullableAttrString(L"t", m_oType, m_oType->ToString());
+				writer.WriteString(L">");
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					m_arrItems[i]->toXML2(writer, L"val");
+				}
+				writer.WriteString(L"</value>");
+			}
+			virtual std::wstring      toXML() const
+			{
+				NSStringUtils::CStringBuilder writer;
+				toXML(writer);
+				return writer.GetData().c_str();
+			}
+			virtual EElementType getType() const
+			{
+				return et_x_DdeValue;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("t"), m_oType )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<SimpleTypes::Spreadsheet::CDdeValueType<> > m_oType;
+		};
+
+		class CDdeValues : public WritingElementWithChilds<CDdeValue>
+		{
+		public:
+			WritingElement_AdditionConstructors(CDdeValues)
+			CDdeValues()
+			{
+			}
+			virtual ~CDdeValues()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				// TO DO: Реализовать
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (L"value" == sName)
+					{
+						m_arrItems.push_back(new CDdeValue(oReader));
+					}
+				}
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<values");
+				WritingStringNullableAttrInt(L"rows", m_oRows, m_oRows->GetValue());
+				WritingStringNullableAttrInt(L"cols", m_oCols, m_oCols->GetValue());
+				writer.WriteString(L">");
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+				writer.WriteString(L"</values>");
+			}
+			virtual std::wstring      toXML() const
+			{
+				NSStringUtils::CStringBuilder writer;
+				toXML(writer);
+				return writer.GetData().c_str();
+			}
+			virtual EElementType getType() const
+			{
+				return et_x_DdeValues;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if( oReader, _T("rows"), m_oRows )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("cols"), m_oCols )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oRows;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCols;
+		};
+
+		class CDdeItem : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CDdeItem)
+			CDdeItem()
+			{
+			}
+			virtual ~CDdeItem()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				// TO DO: Реализовать
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (L"values" == sName)
+					{
+						m_oDdeValues = oReader;
+					}
+				}
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<ddeItem");
+				WritingStringNullableAttrEncodeXmlString(L"name", m_oName, m_oName.get());
+				WritingStringNullableAttrBool(L"ole", m_oOle);
+				WritingStringNullableAttrBool(L"advise", m_oAdvise);
+				WritingStringNullableAttrBool(L"preferPic", m_oPreferPic);
+				writer.WriteString(L">");
+				if (m_oDdeValues.IsInit())
+				{
+					m_oDdeValues->toXML(writer);
+				}
+				writer.WriteString(L"</ddeItem>");
+			}
+			virtual std::wstring      toXML() const
+			{
+				NSStringUtils::CStringBuilder writer;
+				toXML(writer);
+				return writer.GetData().c_str();
+			}
+			virtual EElementType getType() const
+			{
+				return et_x_OleItem;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if( oReader, _T("name"), m_oName )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("ole"), m_oOle )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("advise"), m_oAdvise )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("preferPic"), m_oPreferPic )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<std::wstring > m_oName;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oOle;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oAdvise;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oPreferPic;
+
+			nullable<CDdeValues> m_oDdeValues;
+		};
+
+		class CDdeItems : public WritingElementWithChilds<CDdeItem>
+		{
+		public:
+			WritingElement_AdditionConstructors(CDdeItems)
+			CDdeItems()
+			{
+			}
+			virtual ~CDdeItems()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				// TO DO: Реализовать
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (L"ddeItem" == sName)
+					{
+						m_arrItems.push_back(new CDdeItem(oReader));
+					}
+				}
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<ddeItems>");
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+				writer.WriteString(L"</ddeItems>");
+			}
+			virtual std::wstring      toXML() const
+			{
+				NSStringUtils::CStringBuilder writer;
+				toXML(writer);
+				return writer.GetData().c_str();
+			}
+			virtual EElementType getType() const
+			{
+				return et_x_DdeItems;
+			}
+		};
+
+		class CDdeLink : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CDdeLink)
+			CDdeLink()
+			{
+			}
+			virtual ~CDdeLink()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				// TO DO: Реализовать
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (L"ddeItems" == sName)
+					{
+						m_oDdeItems = oReader;
+					}
+				}
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<ddeLink xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"");
+				WritingStringNullableAttrEncodeXmlString(L"ddeService", m_oDdeService, m_oDdeService.get());
+				WritingStringNullableAttrEncodeXmlString(L"ddeTopic", m_oDdeTopic, m_oDdeTopic.get());
+				writer.WriteString(L">");
+				if (m_oDdeItems.IsInit())
+				{
+					m_oDdeItems->toXML(writer);
+				}
+				writer.WriteString(L"</ddeLink>");
+			}
+			virtual std::wstring      toXML() const
+			{
+				NSStringUtils::CStringBuilder writer;
+				toXML(writer);
+				return writer.GetData().c_str();
+			}
+			virtual EElementType getType() const
+			{
+				return et_x_DdeLink;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if( oReader, _T("ddeService"), m_oDdeService )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("ddeTopic"), m_oDdeTopic )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+
+			nullable<std::wstring > m_oDdeService;
+			nullable<std::wstring > m_oDdeTopic;
+
+			nullable<CDdeItems > m_oDdeItems;
+		};
+
+		class COleItem : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(COleItem)
+			COleItem()
+			{
+			}
+			virtual ~COleItem()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				// TO DO: Реализовать
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<oleItem");
+				WritingStringNullableAttrEncodeXmlString(L"name", m_oName, m_oName.get());
+				WritingStringNullableAttrBool(L"icon", m_oIcon);
+				WritingStringNullableAttrBool(L"advise", m_oAdvise);
+				WritingStringNullableAttrBool(L"preferPic", m_oPreferPic);
+				writer.WriteString(L"/>");
+			}
+			virtual std::wstring      toXML() const
+			{
+				NSStringUtils::CStringBuilder writer;
+				toXML(writer);
+				return writer.GetData().c_str();
+			}
+			virtual EElementType getType() const
+			{
+				return et_x_OleItem;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if( oReader, _T("name"), m_oName )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("icon"), m_oIcon )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("advise"), m_oAdvise )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("preferPic"), m_oPreferPic )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<std::wstring > m_oName;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oIcon;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oAdvise;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oPreferPic;
+		};
+
+		class COleItems : public WritingElementWithChilds<COleItem>
+		{
+		public:
+			WritingElement_AdditionConstructors(COleItems)
+			COleItems()
+			{
+			}
+			virtual ~COleItems()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				// TO DO: Реализовать
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (L"oleItem" == sName)
+					{
+						m_arrItems.push_back(new COleItem(oReader));
+					}
+				}
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<oleItems>");
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+				writer.WriteString(L"</oleItems>");
+			}
+			virtual std::wstring      toXML() const
+			{
+				NSStringUtils::CStringBuilder writer;
+				toXML(writer);
+				return writer.GetData().c_str();
+			}
+			virtual EElementType getType() const
+			{
+				return et_x_OleItems;
+			}
+		};
+
+		class COleLink : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(COleLink)
+			COleLink()
+			{
+			}
+			virtual ~COleLink()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+				// TO DO: Реализовать
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (L"oleItems" == sName)
+					{
+						m_oOleItems = oReader;
+					}
+				}
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<oleLink xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"");
+				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
+				WritingStringNullableAttrEncodeXmlString(L"progId", m_oProgId, m_oProgId.get());
+				writer.WriteString(L">");
+				if (m_oOleItems.IsInit())
+				{
+					m_oOleItems->toXML(writer);
+				}
+				writer.WriteString(L"</oleLink>");
+			}
+			virtual std::wstring      toXML() const
+			{
+				NSStringUtils::CStringBuilder writer;
+				toXML(writer);
+				return writer.GetData().c_str();
+			}
+			virtual EElementType getType() const
+			{
+				return et_x_OleLink;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if( oReader, _T("r:id"), m_oRid )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("progId"), m_oProgId )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+
+			nullable<SimpleTypes::CRelationshipId > m_oRid;
+			nullable<std::wstring > m_oProgId;
+
+			nullable<COleItems > m_oOleItems;
+		};
+
 		class CExternalLink : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
@@ -604,6 +1127,14 @@ namespace OOX
 							{
 								m_oExternalBook = oReader;
 							}
+							else if ( _T("oleLink") == sName )
+							{
+								m_oOleLink = oReader;
+							}
+							else if ( _T("ddeLink") == sName )
+							{
+								m_oDdeLink = oReader;
+							}
 						}
 					}
 				}		
@@ -615,9 +1146,17 @@ namespace OOX
 				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
 				sXml.WriteString(_T("<externalLink xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">"));
 			
-				if(m_oExternalBook.IsInit())
+				if (m_oExternalBook.IsInit())
 				{
 					m_oExternalBook->toXML(sXml);
+				}
+				if (m_oOleLink.IsInit())
+				{
+					m_oOleLink->toXML(sXml);
+				}
+				if (m_oDdeLink.IsInit())
+				{
+					m_oDdeLink->toXML(sXml);
 				}
 				
 				sXml.WriteString(_T("</externalLink>"));
@@ -651,6 +1190,8 @@ namespace OOX
 			}
 
 			nullable<CExternalBook>					m_oExternalBook;
+			nullable<COleLink>						m_oOleLink;
+			nullable<CDdeLink>						m_oDdeLink;
 		private:
 			CPath									m_oReadPath;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

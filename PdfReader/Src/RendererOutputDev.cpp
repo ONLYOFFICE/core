@@ -345,7 +345,7 @@ namespace PdfReader
 		m_bTransparentGroupSoftMask = false;
 		m_pTransparentGroupSoftMask = NULL;
 
-        m_bDrawOnlyText = false;
+		m_bDrawOnlyText = false;
 
 		//m_oFontList.LoadFromFile( m_pGlobalParams->GetTempFolder() );
 		//// Тестовый пример
@@ -461,7 +461,7 @@ namespace PdfReader
         if (c_nHtmlRendrerer2 == m_lRendererType)
             m_bDrawOnlyText = ((NSHtmlRenderer::CASCHTMLRenderer3*)m_pRenderer)->GetOnlyTextMode();
         else
-            m_bDrawOnlyText = false;
+			m_bDrawOnlyText = false;
 	}
 	void RendererOutputDev::EndPage()
 	{
@@ -3003,7 +3003,7 @@ namespace PdfReader
 		//m_oFont.Size *= dTextScale;
 		double dOldSize = 10.0;
 		m_pRenderer->get_FontSize(&dOldSize);
-		m_pRenderer->put_FontSize(dOldSize * dTextScale);
+		m_pRenderer->put_FontSize(std::fabs(dOldSize * dTextScale));
 
 		pNewTm[0] =  pTm[0] * dITextScale;
 		pNewTm[1] =  pTm[1] * dITextScale;
@@ -3032,22 +3032,24 @@ namespace PdfReader
 
 		if (true)
 		{
-			double dDet = sqrt(arrMatrix[0] * arrMatrix[3] - arrMatrix[1] * arrMatrix[2]);
-			arrMatrix[0] /= dDet;
-			arrMatrix[1] /= dDet;
-			arrMatrix[2] /= dDet;
-			arrMatrix[3] /= dDet;
+			double dNorma = min(sqrt(arrMatrix[0] * arrMatrix[0] + arrMatrix[1] * arrMatrix[1]), sqrt(arrMatrix[2] * arrMatrix[2] + arrMatrix[3] * arrMatrix[3]));
+			if (dNorma > 0.001)
+			{
+				arrMatrix[0] /= dNorma;
+				arrMatrix[1] /= dNorma;
+				arrMatrix[2] /= dNorma;
+				arrMatrix[3] /= dNorma;
 
-			double dSize = 1;
-			m_pRenderer->get_FontSize(&dSize);
-			m_pRenderer->put_FontSize(dSize * dDet);
+				double dSize = 1;
+				m_pRenderer->get_FontSize(&dSize);
+				m_pRenderer->put_FontSize(dSize * dNorma);
+			}
 		}
 
 		double dShiftX = 0, dShiftY = 0;
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 
 		// Здесь мы посылаем координаты текста в пунктах
-
 		double dPageHeight = pGState->GetPageHeight();
 
 		std::wstring wsUnicodeText;

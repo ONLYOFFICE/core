@@ -2608,5 +2608,48 @@ namespace SimpleTypes
             SimpleType_FromString     (EPaneState)
             SimpleType_Operator_Equal (CPaneState)
 		};
+
+		enum EDdeValueType
+		{
+			ddevaluetypeNil = 0,
+			ddevaluetypeB = 1,
+			ddevaluetypeN = 2,
+			ddevaluetypeE = 3,
+			ddevaluetypeStr = 4
+		};
+
+		template<EDdeValueType eDefValue = ddevaluetypeNil>
+		class CDdeValueType : public CSimpleType<EDdeValueType, eDefValue>
+		{
+		public:
+			CDdeValueType() {}
+
+			virtual EDdeValueType FromString(std::wstring &sValue)
+			{
+				if      ( _T("nil") == sValue ) this->m_eValue = ddevaluetypeNil;
+				else if ( _T("b")  == sValue ) this->m_eValue = ddevaluetypeB;
+				else if ( _T("n")  == sValue ) this->m_eValue = ddevaluetypeN;
+				else if ( _T("e")  == sValue ) this->m_eValue = ddevaluetypeE;
+				else if ( _T("str")  == sValue ) this->m_eValue = ddevaluetypeStr;
+				else                                  this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring          ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+				case ddevaluetypeNil : return _T("nil");
+				case ddevaluetypeB  : return _T("b");
+				case ddevaluetypeN  : return _T("n");
+				case ddevaluetypeE  : return _T("e");
+				case ddevaluetypeStr  : return _T("str");
+				default                  : return _T("nil");
+				}
+			}
+
+			SimpleType_FromString     (EDdeValueType)
+			SimpleType_Operator_Equal (CDdeValueType)
+		};
 	};// Spreadsheet
 } // SimpleTypes

@@ -161,7 +161,16 @@ namespace OOX
 			else if (  pRelation->Type() == OOX::FileTypes::ExternalLinkPath)
 				return smart_ptr<OOX::File>(new ExternalLinkPath( oRelationFilename ));
 			else if (  pRelation->Type() == OOX::FileTypes::OleObject)
-				return smart_ptr<OOX::File>(new OOX::OleObject( oFileName ));
+			{
+				if (pRelation->IsExternal())
+				{
+					return smart_ptr<OOX::File>(new OOX::OleObject( oRelationFilename ));
+				}
+				else
+				{
+					return smart_ptr<OOX::File>(new OOX::OleObject( oFileName ));
+				}
+			}
 			else if (	pRelation->Type() == OOX::FileTypes::Data)
 				return smart_ptr<OOX::File>(new OOX::CDiagramData( oRootPath, oFileName ));
 			else if (	pRelation->Type() == OOX::FileTypes::DiagDrawing)

@@ -142,6 +142,10 @@ namespace PdfReader
 		{
 			return &m_oTrailerDict;
 		}
+		unsigned int GenerateUniqueRefGen()
+		{
+			return m_unRefGenCounter++;
+		}
 
 	private:
 
@@ -180,6 +184,8 @@ namespace PdfReader
 		int            m_nKeyLength;        // Размер ключа в байтах
 		int            m_nEncryptVersion;   // Версия шифровки
 		CryptAlgorithm m_eEncryptAlgorithm;	// Алгоритм шифрования
+
+		unsigned int   m_unRefGenCounter;   // Специальный счетчик для генерации уникальных ссылок для встроенных объектов
 
 		NSCriticalSection::CRITICAL_SECTION m_oCS;
 	};

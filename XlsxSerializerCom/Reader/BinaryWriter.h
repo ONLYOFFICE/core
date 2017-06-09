@@ -1587,22 +1587,50 @@ namespace BinXlsxRW
 					if (pFile.IsInit() && OOX::Spreadsheet::FileTypes::ExternalLinks == pFile->type())
 					{
 						OOX::Spreadsheet::CExternalLink* pExternalLink = static_cast<OOX::Spreadsheet::CExternalLink*>(pFile.operator ->());
-						if ((pExternalLink) && (pExternalLink->m_oExternalBook.IsInit()))
+						if (pExternalLink)
 						{
-							std::wstring sLink;
-							if (pExternalLink->m_oExternalBook->m_oRid.IsInit())
+							if(pExternalLink->m_oExternalBook.IsInit())
 							{
-								smart_ptr<OOX::File> pFile = pExternalLink->Find( OOX::RId(pExternalLink->m_oExternalBook->m_oRid.get().GetValue()));
-								if (pFile.IsInit() && OOX::FileTypes::ExternalLinkPath == pFile->type())
+								std::wstring sLink;
+								if (pExternalLink->m_oExternalBook->m_oRid.IsInit())
 								{
-									OOX::Spreadsheet::ExternalLinkPath* pLinkFile = static_cast<OOX::Spreadsheet::ExternalLinkPath*>(pFile.operator ->());
-									sLink = pLinkFile->Uri().GetPath();
+									smart_ptr<OOX::File> pFile = pExternalLink->Find( OOX::RId(pExternalLink->m_oExternalBook->m_oRid.get().GetValue()));
+									if (pFile.IsInit() && OOX::FileTypes::ExternalLinkPath == pFile->type())
+									{
+										OOX::Spreadsheet::ExternalLinkPath* pLinkFile = static_cast<OOX::Spreadsheet::ExternalLinkPath*>(pFile.operator ->());
+										sLink = pLinkFile->Uri().GetPath();
+									}
+								}
+								if(!sLink.empty())
+								{
+									nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalBook);
+									WriteExternalBook(pExternalLink->m_oExternalBook.get(), sLink);
+									m_oBcw.WriteItemWithLengthEnd(nCurPos);
 								}
 							}
-							if(!sLink.empty())
+							else if(pExternalLink->m_oOleLink.IsInit())
 							{
-								nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalBook);
-								WriteExternalBook(pExternalLink->m_oExternalBook.get(), sLink);
+								std::wstring sLink;
+								if (pExternalLink->m_oOleLink->m_oRid.IsInit())
+								{
+									smart_ptr<OOX::File> pFile = pExternalLink->Find( OOX::RId(pExternalLink->m_oOleLink->m_oRid.get().GetValue()));
+									if (pFile.IsInit() && OOX::FileTypes::OleObject == pFile->type())
+									{
+										OOX::OleObject* pLinkFile = static_cast<OOX::OleObject*>(pFile.operator ->());
+										sLink = pLinkFile->filename().GetPath();
+									}
+								}
+								if(!sLink.empty())
+								{
+									nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::OleLink);
+									WriteOleLink(pExternalLink->m_oOleLink.get(), sLink);
+									m_oBcw.WriteItemWithLengthEnd(nCurPos);
+								}
+							}
+							else if(pExternalLink->m_oDdeLink.IsInit())
+							{
+								nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::DdeLink);
+								WriteDdeLink(pExternalLink->m_oDdeLink.get());
 								m_oBcw.WriteItemWithLengthEnd(nCurPos);
 							}
 						}
@@ -1748,6 +1776,155 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 		}
+		void WriteOleLink(const OOX::Spreadsheet::COleLink& oleLink, const std::wstring& sLink)
+		{
+			int nCurPos = 0;
+			nCurPos = m_oBcw.WriteItemStart(c_oSer_OleLinkTypes::Id);
+			m_oBcw.m_oStream.WriteStringW3(sLink);
+			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+
+			if (oleLink.m_oProgId.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_OleLinkTypes::ProgId);
+				m_oBcw.m_oStream.WriteStringW3(oleLink.m_oProgId.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (oleLink.m_oOleItems.IsInit())
+			{
+				for(size_t i = 0; i < oleLink.m_oOleItems->m_arrItems.size(); ++i)
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSer_OleLinkTypes::OleItem);
+					WriteOleItem(*oleLink.m_oOleItems->m_arrItems[i]);
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+			}
+		}
+		void WriteOleItem(const OOX::Spreadsheet::COleItem& oleItem)
+		{
+			int nCurPos = 0;
+			if (oleItem.m_oName.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_OleLinkTypes::Name);
+				m_oBcw.m_oStream.WriteStringW3(oleItem.m_oName.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (oleItem.m_oIcon.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_OleLinkTypes::Icon);
+				m_oBcw.m_oStream.WriteBOOL(oleItem.m_oIcon->ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (oleItem.m_oAdvise.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_OleLinkTypes::Advise);
+				m_oBcw.m_oStream.WriteBOOL(oleItem.m_oAdvise->ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (oleItem.m_oPreferPic.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_OleLinkTypes::PreferPic);
+				m_oBcw.m_oStream.WriteBOOL(oleItem.m_oPreferPic->ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+		void WriteDdeLink(const OOX::Spreadsheet::CDdeLink& ddeLink)
+		{
+			int nCurPos = 0;
+			if (ddeLink.m_oDdeService.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_DdeLinkTypes::DdeService);
+				m_oBcw.m_oStream.WriteStringW3(ddeLink.m_oDdeService.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (ddeLink.m_oDdeTopic.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_DdeLinkTypes::DdeTopic);
+				m_oBcw.m_oStream.WriteStringW3(ddeLink.m_oDdeTopic.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (ddeLink.m_oDdeItems.IsInit())
+			{
+				for(size_t i = 0; i < ddeLink.m_oDdeItems->m_arrItems.size(); ++i)
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSer_DdeLinkTypes::DdeItem);
+					WriteDdeItem(*ddeLink.m_oDdeItems->m_arrItems[i]);
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+			}
+		}
+		void WriteDdeItem(const OOX::Spreadsheet::CDdeItem& ddeItem)
+		{
+			int nCurPos = 0;
+			if (ddeItem.m_oName.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_DdeLinkTypes::Name);
+				m_oBcw.m_oStream.WriteStringW3(ddeItem.m_oName.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (ddeItem.m_oOle.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_DdeLinkTypes::Ole);
+				m_oBcw.m_oStream.WriteBOOL(ddeItem.m_oOle->ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (ddeItem.m_oAdvise.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_DdeLinkTypes::Advise);
+				m_oBcw.m_oStream.WriteBOOL(ddeItem.m_oAdvise->ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (ddeItem.m_oPreferPic.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_DdeLinkTypes::PreferPic);
+				m_oBcw.m_oStream.WriteBOOL(ddeItem.m_oPreferPic->ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (ddeItem.m_oDdeValues.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_DdeLinkTypes::DdeValues);
+				WriteDdeValues(ddeItem.m_oDdeValues.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+		void WriteDdeValues(const OOX::Spreadsheet::CDdeValues& ddeValues)
+		{
+			int nCurPos = 0;
+			if (ddeValues.m_oRows.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_DdeLinkTypes::DdeValuesRows);
+				m_oBcw.m_oStream.WriteULONG(ddeValues.m_oRows->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (ddeValues.m_oCols.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_DdeLinkTypes::DdeValuesCols);
+				m_oBcw.m_oStream.WriteULONG(ddeValues.m_oCols->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			for(size_t i = 0; i < ddeValues.m_arrItems.size(); ++i)
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_DdeLinkTypes::DdeValue);
+				WriteDdeValue(*ddeValues.m_arrItems[i]);
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+		void WriteDdeValue(const OOX::Spreadsheet::CDdeValue& ddeValue)
+		{
+			int nCurPos = 0;
+			if (ddeValue.m_oType.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_DdeLinkTypes::DdeValueType);
+				m_oBcw.m_oStream.WriteBYTE(ddeValue.m_oType->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			for (size_t i = 0; i < ddeValue.m_arrItems.size(); ++i)
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_DdeLinkTypes::DdeValueVal);
+				m_oBcw.m_oStream.WriteStringW3(ddeValue.m_arrItems[i]->ToString());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+
 		void WriteDefinedName(const OOX::Spreadsheet::CDefinedName& definedName)
 		{
 			int nCurPos = 0;
@@ -2874,7 +3051,10 @@ namespace BinXlsxRW
 						{
 							OOX::CPath pathImage = pImageFileCache->filename();
 
-                            olePic->oleObject->m_OleObjectFile->set_filename_cache(pathImage);
+							if (olePic->oleObject->m_OleObjectFile.IsInit())
+							{
+								olePic->oleObject->m_OleObjectFile->set_filename_cache(pathImage);
+							}
 							
 							olePic->blipFill.blip->embed = new OOX::RId(sIdImageFileCache); //ваще то тут не важно что - приоритет у того что ниже..
 							olePic->blipFill.blip->oleFilepathImage = pathImage.GetPath();

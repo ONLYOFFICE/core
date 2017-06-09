@@ -262,9 +262,9 @@ namespace PdfReader
 	}
     void CPdfReader::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
 	{
-        CFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
+		CFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
 		CFontsCache* pFontCache = new CFontsCache();
-        pFontCache->SetStreams(m_pInternal->m_pAppFonts->GetStreams());
+		pFontCache->SetStreams(m_pInternal->m_pAppFonts->GetStreams());
 		pFontManager->SetOwnerCache(pFontCache);
 
 		CGraphicsRenderer oRenderer;

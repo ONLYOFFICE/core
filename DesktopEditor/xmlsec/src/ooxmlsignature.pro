@@ -21,6 +21,13 @@ include($$CORE_ROOT_DIR/DesktopEditor/xml/build/qt/libxml2.pri)
 
 DEFINES -= UNICODE
 
+core_linux {
+    CONFIG += signature_openssl
+}
+core_mac {
+    CONFIG += signature_openssl
+}
+
 HEADERS += \
     include/XmlCertificate.h \
     include/OOXMLSigner.h \
@@ -29,9 +36,7 @@ HEADERS += \
 HEADERS += \
     src/XmlCanonicalizator.h \
     src/XmlRels.h \    
-    src/XmlTransform.h \
-    src/XmlSigner_mscrypto.h \
-    src/XmlSigner_openssl.h
+    src/XmlTransform.h
 
 SOURCES += \
     src/XmlTransform.cpp \
@@ -41,13 +46,26 @@ SOURCES += \
 
 core_windows {
 
+HEADERS += \
+    src/XmlSigner_mscrypto.h
+
     LIBS += -lcrypt32
     LIBS += -lcryptui
     LIBS += -lAdvapi32
 
 }
 
-core_linux {
+signature_openssl {
+
+HEADERS += \
+    src/XmlSigner_openssl.h
+
+SOURCES += \
+    src/XmlSigner_openssl.cpp
+
+}
+
+signature_openssl {
 
 DEFINES += XMLSEC_OPENSSL_110
 INCLUDEPATH += $$CORE_ROOT_DIR/Common/3dParty/openssl/openssl/include

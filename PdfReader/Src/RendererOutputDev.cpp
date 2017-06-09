@@ -2982,39 +2982,36 @@ namespace PdfReader
 		double *pCTM      = pGState->GetCTM();
 		double *pTm       = pGState->GetTextMatrix();
 		GrFont *pFont     = pGState->GetFont();
-		//double  dTfs      = pGState->GetFontSize();
-		//double  dTh       = pGState->GetHorizScaling();
-		//double  dTrise    = pGState->GetRise();
-		//double *pFontBBox = pGState->GetFont()->GetFontBBox(); 
 
-		//double  dAcsentFactor = ( ( fabs(pFontBBox[1]) + fabs(pFontBBox[3]) ) - ( pFont->GetAscent() + fabs( pFont->GetDescent() ) ) ) / 2 + pFont->GetAscent();  
 		double pNewTm[6], arrMatrix[6];
-		//double dKoef = 0;//( pFont->GetAscent() - fabs( pFont->GetDescent() ) ) * dTfs;
 
 		double dTextScale = min(sqrt(pTm[2] * pTm[2] + pTm[3] * pTm[3]), sqrt(pTm[0] * pTm[0] + pTm[1] * pTm[1]));
 		double dITextScale = 1 / dTextScale;
-
-		//pTm[0] *= dITextScale;
-		//pTm[1] *= dITextScale;
-		//pTm[2] *= dITextScale;
-		//pTm[3] *= dITextScale;
-
-		//double dOldSize = m_oFont.Size;
-		//m_oFont.Size *= dTextScale;
 		double dOldSize = 10.0;
 		m_pRenderer->get_FontSize(&dOldSize);
-		m_pRenderer->put_FontSize(std::fabs(dOldSize * dTextScale));
+		if (dOldSize * dTextScale > 0)
+		{
+			m_pRenderer->put_FontSize(dOldSize * dTextScale);
 
-		pNewTm[0] =  pTm[0] * dITextScale;
-		pNewTm[1] =  pTm[1] * dITextScale;
-		pNewTm[2] = -pTm[2] * dITextScale;
-		pNewTm[3] = -pTm[3] * dITextScale;
-		//pNewTm[0] =  pTm[0];
-		//pNewTm[1] =  pTm[1];
-		//pNewTm[2] = -pTm[2];
-		//pNewTm[3] = -pTm[3];
-		pNewTm[4] =  dX;//+ pTm[2] * dKoef;
-		pNewTm[5] =  dY;//+ pTm[3] * dKoef;
+			pNewTm[0] =  pTm[0] * dITextScale;
+			pNewTm[1] =  pTm[1] * dITextScale;
+			pNewTm[2] = -pTm[2] * dITextScale;
+			pNewTm[3] = -pTm[3] * dITextScale;
+			pNewTm[4] =  dX;
+			pNewTm[5] =  dY;
+		}
+		else
+		{
+			m_pRenderer->put_FontSize(-dOldSize * dTextScale);
+
+			pNewTm[0] = pTm[0] * dITextScale;
+			pNewTm[1] = pTm[1] * dITextScale;
+			pNewTm[2] = pTm[2] * dITextScale;
+			pNewTm[3] = pTm[3] * dITextScale;
+			pNewTm[4] = dX;
+			pNewTm[5] = dY;
+		}
+
 
 		arrMatrix[0] =   pNewTm[0] * pCTM[0] + pNewTm[1] * pCTM[2];
 		arrMatrix[1] = -(pNewTm[0] * pCTM[1] + pNewTm[1] * pCTM[3]);
@@ -3022,13 +3019,6 @@ namespace PdfReader
 		arrMatrix[3] = -(pNewTm[2] * pCTM[1] + pNewTm[3] * pCTM[3]);
 		arrMatrix[4] =   pNewTm[4] * pCTM[0] + pNewTm[5] * pCTM[2] + pCTM[4];
 		arrMatrix[5] = -(pNewTm[4] * pCTM[1] + pNewTm[5] * pCTM[3] + pCTM[5]) + pGState->GetPageHeight();
-
-		//double dAscentShiftX = arrMatrix[2] * pFont->GetDescent();
-		//double dAscentShiftY = arrMatrix[3] * pFont->GetDescent();
-
-		//arrMatrix[4] += dAscentShiftX;
-		//arrMatrix[5] += dAscentShiftY;
-
 
 		if (true)
 		{

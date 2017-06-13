@@ -652,12 +652,12 @@ void CCertificate_openssl::SetOpenSslDialog(ICertificateSelectDialogOpenSsl* pDi
     return m_internal->SetOpenSslDialog(pDialog);
 }
 
-int LoadKey(std::wstring file, std::string password)
+int ICertificateSelectDialogOpenSsl::LoadKey(std::wstring file, std::string password)
 {
     return CCertificate_openssl_private::LoadKey(file, password, NULL);
 }
 
-int LoadCert(std::wstring file, std::string password)
+int ICertificateSelectDialogOpenSsl::LoadCert(std::wstring file, std::string password)
 {
     return CCertificate_openssl_private::LoadCert(file, password, NULL);
 }

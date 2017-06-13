@@ -33,6 +33,9 @@ public:
 
     virtual bool ShowSelectDialog() = 0;
     virtual int ShowCertificate(ICertificate* pCert) = 0;
+
+    static int LoadKey(std::wstring file, std::string password);
+    static int LoadCert(std::wstring file, std::string password);
 };
 
 class Q_DECL_EXPORT CCertificateInfo

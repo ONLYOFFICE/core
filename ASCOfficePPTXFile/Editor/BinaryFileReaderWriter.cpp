@@ -1120,6 +1120,16 @@ namespace NSBinPptxRW
                 std::to_wstring(nIndexTheme + 1) + L".xml\"/>";
 		m_pWriter->WriteString(s);
 	}
+	void CRelsGenerator::StartNotesMaster(int nIndexTheme)
+	{
+		m_pWriter->WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
+		m_pWriter->WriteString(_T("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"));
+
+        std::wstring s = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+                L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"../theme/theme" +
+                std::to_wstring(nIndexTheme + 1) + L".xml\"/>";
+		m_pWriter->WriteString(s);
+	}
 	void CRelsGenerator::StartLayout(int nIndexTheme)
 	{
 		m_pWriter->WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
@@ -1130,7 +1140,7 @@ namespace NSBinPptxRW
                 std::to_wstring(nIndexTheme + 1) + L".xml\"/>";
 		m_pWriter->WriteString(str);
 	}
-	void CRelsGenerator::StartSlide(int nIndexSlide, int nIndexLayout)
+	void CRelsGenerator::StartSlide(int nIndexSlide, int nIndexLayout, int nIndexNotes)
 	{
 		m_pWriter->WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
 		m_pWriter->WriteString(_T("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"));
@@ -1140,12 +1150,15 @@ namespace NSBinPptxRW
                 std::to_wstring(nIndexLayout + 1) + L".xml\"/>";
 		m_pWriter->WriteString(str);
 
-        str = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
-                L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide\" Target=\"../notesSlides/notesSlide" +
-                std::to_wstring(nIndexSlide + 1) + L".xml\"/>";
+		if (nIndexNotes >= 0)
+		{
+			str = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+			        L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide\" Target=\"../notesSlides/notesSlide" +
+			        std::to_wstring(nIndexNotes + 1) + L".xml\"/>";
+		}
 		m_pWriter->WriteString(str);
 	}
-	void CRelsGenerator::StartNote(int nIndexSlide)
+	void CRelsGenerator::StartNotes(int nIndexSlide)
 	{
 		m_pWriter->WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
 		m_pWriter->WriteString(L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");

@@ -407,8 +407,9 @@ namespace NSBinPptxRW
 
 		void StartMaster (int nIndexTheme, const _slideMasterInfo& oInfo);
 		void StartLayout (int nIndexTheme);
-		void StartSlide (int nIndexSlide, int nIndexLayout);
-		void StartNote (int nIndexSlide);
+		void StartSlide (int nIndexSlide, int nIndexLayout, int nIndexNotes);
+		void StartNotes	(int nIndexSlide);
+		void StartNotesMaster(int nIndexTheme);
 		
 		void WriteMasters (int nCount);
 		void WriteThemes (int nCount);

@@ -46,9 +46,9 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(TextListStyle)
 
-			TextListStyle()
+			TextListStyle(std::wstring name = L"a:lstStyle")
 			{
-				m_name = L"a:lstStyle";
+				m_name = name;
 			}
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)

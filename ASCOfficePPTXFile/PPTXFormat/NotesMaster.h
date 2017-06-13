@@ -131,11 +131,11 @@ namespace PPTX
 			pWriter->StartAttributes();
 			pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
 			pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:m"), PPTX::g_Namespaces.m.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:w"), PPTX::g_Namespaces.w.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
 			pWriter->EndAttributes();
 
 			cSld.toXmlWriter(pWriter);
+
 			clrMap.toXmlWriter(pWriter);
 			pWriter->Write(hf);
 			pWriter->Write(notesStyle);
@@ -172,7 +172,7 @@ namespace PPTX
 					}
 					case 3:
 					{
-						notesStyle = new Logic::TextListStyle();
+						notesStyle = new Logic::TextListStyle(L"p:notesStyle");
 						notesStyle->fromPPTY(pReader);
 						break;
 					}

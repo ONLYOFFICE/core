@@ -162,8 +162,7 @@ namespace PPTX2EditorAdvanced
 		}
 
 		// записываем все слайды
-		size_t nCount = presentation->sldIdLst.size();
-		for (size_t i = 0; i < nCount; ++i)
+		for (size_t i = 0; i < presentation->sldIdLst.size(); ++i)
 		{
             std::wstring rId = presentation->sldIdLst[i].rid.get();
             smart_ptr<PPTX::Slide> slide = ((*presentation)[rId]).smart_dynamic_cast<PPTX::Slide>();

@@ -36,6 +36,7 @@ public:
 
     static int LoadKey(std::wstring file, std::string password);
     static int LoadCert(std::wstring file, std::string password);
+    static void SetOpenSslDialogApplication(ICertificateSelectDialogOpenSsl* pDialog);
 };
 
 class Q_DECL_EXPORT CCertificateInfo
@@ -131,7 +132,7 @@ public:
 
 public:
     static int GetOOXMLHashAlg(const std::string& sAlg);
-    static ICertificate* CreateInstance();
+    static ICertificate* CreateInstance();    
 };
 
 #endif // _XML_SERTIFICATE_BASE_H_

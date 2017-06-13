@@ -8,6 +8,11 @@
 #define OOXML_HASH_ALG_SHA1         0
 #define OOXML_HASH_ALG_INVALID      1
 
+#define OPEN_SSL_WARNING_OK         0
+#define OPEN_SSL_WARNING_ERR        1
+#define OPEN_SSL_WARNING_ALL_OK     2
+#define OPEN_SSL_WARNING_PASS       4
+
 class ICertificate;
 class Q_DECL_EXPORT ICertificateSelectDialogOpenSsl
 {
@@ -32,7 +37,7 @@ public:
 
 class Q_DECL_EXPORT CCertificateInfo
 {
-public:
+private:
     std::wstring m_name;
     std::string m_date;
     std::string m_id;
@@ -43,6 +48,33 @@ public:
     }
     ~CCertificateInfo()
     {
+    }
+
+    std::wstring GetName()
+    {
+        return m_name;
+    }
+    void SetName(const std::wstring& name)
+    {
+        m_name = name;
+    }
+
+    std::string GetDate()
+    {
+        return m_date;
+    }
+    void SetDate(const std::string& date)
+    {
+        m_date = date;
+    }
+
+    std::string GetId()
+    {
+        return m_id;
+    }
+    void SetId(const std::string& id)
+    {
+        m_id = id;
     }
 };
 
@@ -88,9 +120,9 @@ public:
     virtual CCertificateInfo GetInfo()
     {
         CCertificateInfo info;
-        info.m_name = GetSignerName();
-        info.m_date = GetDate();
-        info.m_id = GetId();
+        info.SetName(GetSignerName());
+        info.SetDate(GetDate());
+        info.SetId(GetId());
         return info;
     }
 

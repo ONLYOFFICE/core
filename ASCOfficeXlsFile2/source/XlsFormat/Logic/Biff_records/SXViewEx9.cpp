@@ -53,9 +53,8 @@ BaseObjectPtr SXViewEx9::clone()
 
 void SXViewEx9::readFields(CFRecord& record)
 {
-#pragma message("####################### SXViewEx9 record is not implemented")
 	Log::error("SXViewEx9 record is not implemented.");
-	//record >> some_value;
+
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 

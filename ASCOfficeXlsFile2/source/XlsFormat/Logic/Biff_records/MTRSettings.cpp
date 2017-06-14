@@ -54,7 +54,7 @@ void MTRSettings::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);
 	_UINT32 temp1, temp2;
-#pragma message("############################ frtHeader skipped here")
+
 	record >> temp1 >> temp2 >> cUserThreadCount;
 
 	fMTREnabled			= temp1;

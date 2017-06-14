@@ -47,13 +47,18 @@ public:
 	~SXVS();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 	
 	static const ElementType	type = typeSXVS;
 
+	short sxvs;
 
+//enum
+//SHEET			0x0001
+//EXTERNAL		0x0002
+//CONSOLIDATION	0x0004
+//SCENARIO		0x0010
 };
 
 } // namespace XLS

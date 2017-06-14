@@ -75,6 +75,7 @@ public:
 	std::vector<BaseObjectPtr>		m_arMergeCells;
 	std::vector<BaseObjectPtr>		m_arWINDOW;
 	std::vector<BaseObjectPtr>		m_arCUSTOMVIEW;
+	std::vector<BaseObjectPtr>		m_arPIVOTVIEW;
 	std::vector<BaseObjectPtr>		m_arFEAT;
 	std::vector<BaseObjectPtr>		m_arFEAT11;
 	std::vector<BaseObjectPtr>		m_arNote;

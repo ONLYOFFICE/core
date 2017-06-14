@@ -53,9 +53,8 @@ BaseObjectPtr SXString::clone()
 
 void SXString::readFields(CFRecord& record)
 {
-#pragma message("####################### SXString record is not implemented")
 	Log::error("SXString record is not implemented.");
-	//record >> some_value;
+
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 

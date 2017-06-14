@@ -53,9 +53,8 @@ BaseObjectPtr SXTH::clone()
 
 void SXTH::readFields(CFRecord& record)
 {
-#pragma message("####################### SXTH record is not implemented")
 	Log::error("SXTH record is not implemented.");
-	//record >> some_value;
+
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 

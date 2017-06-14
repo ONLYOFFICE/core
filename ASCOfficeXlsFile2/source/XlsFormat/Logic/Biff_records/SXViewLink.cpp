@@ -52,9 +52,8 @@ BaseObjectPtr SXViewLink::clone()
 
 void SXViewLink::readFields(CFRecord& record)
 {
-#pragma message("####################### SXViewLink record is not implemented")
 	Log::error("SXViewLink record is not implemented.");
-	//record >> some_value;
+
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 

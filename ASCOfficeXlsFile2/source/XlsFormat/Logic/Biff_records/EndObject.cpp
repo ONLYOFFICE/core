@@ -31,7 +31,7 @@
  */
 
 #include "EndObject.h"
-#include <Logic/Biff_structures/FrtHeaderOld.h>
+#include "../Biff_structures/FrtHeaderOld.h"
 
 namespace XLS
 {

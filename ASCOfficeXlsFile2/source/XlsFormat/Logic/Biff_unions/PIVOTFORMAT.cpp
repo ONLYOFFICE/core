@@ -62,8 +62,12 @@ const bool PIVOTFORMAT::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.mandatory<PIVOTRULE>();
-	proc.optional<SxDXF>();
+	if (proc.mandatory<PIVOTRULE>())
+	{
+	}
+	if (proc.optional<SxDXF>())
+	{
+	}
 
 	return true;
 }

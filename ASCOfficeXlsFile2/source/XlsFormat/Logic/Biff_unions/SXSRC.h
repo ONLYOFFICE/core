@@ -50,7 +50,8 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeSXSRC;
-	
+
+	BaseObjectPtr	m_source;	
 };
 
 } // namespace XLS

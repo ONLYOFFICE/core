@@ -37,6 +37,7 @@ namespace XLS
 
 Sxvd::Sxvd()
 {
+	cchName = 0;
 }
 
 
@@ -52,12 +53,31 @@ BaseObjectPtr Sxvd::clone()
 
 void Sxvd::readFields(CFRecord& record)
 {
-#pragma message("####################### Sxvd record is not implemented")
-	//Log::error("Sxvd record is not implemented.");
-	//record >> some_value;
+	short flags;
+	record >> sxaxis >> cSub >> flags;
+	
+	fDefault	= GETBIT(flags, 0);
+	fSum		= GETBIT(flags, 1);
+	fCounta		= GETBIT(flags, 2);
+	fAverage	= GETBIT(flags, 3);
+	fMax		= GETBIT(flags, 4);
+	fMin		= GETBIT(flags, 5);
+	fProduct	= GETBIT(flags, 6);
+	fCount		= GETBIT(flags, 7);
+	fStdev		= GETBIT(flags, 8);
+	fStdevp		= GETBIT(flags, 9);
+	fVariance	= GETBIT(flags, 10);
+	fVariancep	= GETBIT(flags, 11);
 
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
-}
+	record >> cItm >> cchName;
+
+	if(cchName && cchName != 0xffff)
+	{
+		stName.setSize(cchName);
+		record >> stName;
+	}
+	int skip = record.getDataSize() - record.getRdPtr();
+	record.skipNunBytes(skip);}
 
 } // namespace XLS
 

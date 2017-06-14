@@ -57,14 +57,14 @@ BaseObjectPtr PIVOTFRT::clone()
 // PIVOTFRT = PIVOTFRT9 [PIVOTADDL]
 const bool PIVOTFRT::loadContent(BinProcessor& proc)
 {
-
 	if(!proc.mandatory<PIVOTFRT9>())
 	{
 		return false;
 	}
-#pragma message("####################### PIVOTFRT union is not implemented")
-	Log::info("PIVOTFRT union is not implemented!!!!!!!!!!!!!!!");
-	proc.optional<PIVOTADDL>();
+	
+	if (proc.optional<PIVOTADDL>())
+	{
+	}
 	return true;
 }
 

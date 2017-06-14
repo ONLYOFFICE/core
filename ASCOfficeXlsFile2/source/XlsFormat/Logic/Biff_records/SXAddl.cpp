@@ -52,10 +52,65 @@ BaseObjectPtr SXAddl::clone()
 
 void SXAddl::readFields(CFRecord& record)
 {
-#pragma message("####################### SXAddl record is not implemented")
-	//Log::error("SXAddl record is not implemented.");
-	//record >> some_value;
+	m_SXAddlHdr.load(record);
+
+	Log::error("SXAddl record is not implemented.");
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+}
+//-------------------------------------------------------------------------------------------------------
+void SXAddl_SXCCache_SXDId::readFields(CFRecord& record)
+{
+	m_SXAddlHdr.load(record);
+	
+	short reserved;
+	record >> idCache >> reserved;
+}
+
+void SXAddl_SXCCache_SXDEnd::readFields(CFRecord& record)
+{
+	m_SXAddlHdr.load(record);
+
+	_UINT32	reserved1;
+	short	reserved2;	
+	record >> reserved1 >> reserved2;
+}
+
+void SXAddl_SXCCache_SXDVer10Info::readFields(CFRecord& record)
+{
+	m_SXAddlHdr.load(record);
+
+	_UINT32	reserved1;
+	short	reserved2;	
+	record >> reserved1 >> reserved2;
+
+	record >> citmGhostMax >> bVerCacheLastRefresh >> bVerCacheRefreshableMin;
+
+	for (int i = 0; i < 8; i++)
+		record >> numDateCopy[i];
+
+	record >> reserved2;
+}
+void SXAddl_SXCCache_SXDInfo12::readFields(CFRecord& record)
+{
+	m_SXAddlHdr.load(record);
+
+	_UINT32	flags;
+	short	reserved;	
+	
+	record >> flags >> reserved;
+	
+	fSheetData				= GETBIT(flags, 0);
+	fSrvSupportAttribDrill	= GETBIT(flags, 1);
+	fSrvSupportSubQuery		= GETBIT(flags, 2);
+}
+void SXAddl_SXCCache_SXDVerSXMacro::readFields(CFRecord& record)
+{
+	m_SXAddlHdr.load(record);
+
+	unsigned char	reserved1;
+	short			reserved2, reserved3;	
+	
+	record >> dwVer >> reserved1 >> reserved2 >> reserved3;
 }
 
 } // namespace XLS

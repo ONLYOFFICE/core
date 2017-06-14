@@ -52,9 +52,8 @@ BaseObjectPtr SXLI::clone()
 
 void SXLI::readFields(CFRecord& record)
 {
-#pragma message("####################### SXLI record is not implemented")
 	Log::error("SXLI record is not implemented.");
-	//record >> some_value;
+
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 

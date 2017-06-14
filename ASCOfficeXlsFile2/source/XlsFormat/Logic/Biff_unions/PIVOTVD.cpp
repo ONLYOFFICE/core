@@ -62,8 +62,20 @@ const bool PIVOTVD::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.repeated<SXVI>(0, 0);
-	proc.mandatory<SXVDEx>();
+	m_Sxvd = elements_.back();
+	elements_.pop_back();
+	
+	int count  = proc.repeated<SXVI>(0, 0);
+	while(count--)
+	{
+		m_arSXVI.push_back(elements_.front());	elements_.pop_front();
+	}
+
+	if (proc.mandatory<SXVDEx>())
+	{
+		m_SXVDEx = elements_.back();
+		elements_.pop_back();
+	}
 
 	return true;
 }

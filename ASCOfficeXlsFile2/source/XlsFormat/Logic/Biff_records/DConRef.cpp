@@ -37,6 +37,8 @@ namespace XLS
 
 DConRef::DConRef()
 {
+	bFilePath = false;
+	bSheetName = false;
 }
 
 
@@ -52,10 +54,33 @@ BaseObjectPtr DConRef::clone()
 
 void DConRef::readFields(CFRecord& record)
 {
-#pragma message("####################### DConRef record is not implemented")
-	Log::error("DConRef record is not implemented.");
+	record >> ref >> cchFile;
 	
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	if (cchFile > 1)
+	{
+		XLUnicodeStringNoCch	stFile_;
+		stFile_.setSize(cchFile);
+		record >> stFile_;
+//dcon-file				= external-virt-path / self-reference
+//external-virt-path	= volume / unc-volume / rel-volume / transfer-protocol / startup / alt-startup / library / simple-file-path-dcon
+//simple-file-path-dcon = %x0001 file-path
+//self-reference		= %x0002 sheet-name
+
+		stFile = stFile_.value();
+		if (stFile.substr(0, 1) == L"\x0001")
+		{
+			bFilePath	= true;
+			stFile		= stFile.substr(1);
+		}
+		else if (stFile.substr(0, 1) == L"\x0002")
+		{
+			bSheetName	= true;
+			stFile		= stFile.substr(1);
+		}	
+	}
+
+	int unused = record.getDataSize() - record.getRdPtr();
+	record.skipNunBytes(unused);
 }
 
 } // namespace XLS

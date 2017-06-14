@@ -64,7 +64,7 @@ const bool PRFILTER::loadContent(BinProcessor& proc)
 	}
 	if(proc.optional<SxItm>())
 	{
-		proc.repeated<Continue>(0, 0);
+		int count = proc.repeated<Continue>(0, 0);
 	}
 
 	return true;

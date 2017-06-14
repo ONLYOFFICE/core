@@ -52,9 +52,8 @@ BaseObjectPtr SXVDTEx::clone()
 
 void SXVDTEx::readFields(CFRecord& record)
 {
-#pragma message("####################### SXVDTEx record is not implemented")
 	Log::error("SXVDTEx record is not implemented.");
-	//record >> some_value;
+
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 

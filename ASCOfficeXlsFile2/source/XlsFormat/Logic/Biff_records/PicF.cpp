@@ -53,9 +53,8 @@ BaseObjectPtr PicF::clone()
 
 void PicF::readFields(CFRecord& record)
 {
-#pragma message("####################### PicF record is not implemented")
 	Log::error("PicF record is not implemented.");
-	//record >> some_value;
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

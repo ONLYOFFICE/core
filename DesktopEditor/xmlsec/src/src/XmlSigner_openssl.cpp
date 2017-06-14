@@ -17,6 +17,15 @@
 #include <openssl/evp.h>
 #include <openssl/conf.h>
 
+void BIO_FREE(BIO*& bio)
+{
+    if (bio)
+    {
+        BIO_free(bio);
+        bio = NULL;
+    }
+}
+
 class CCertificate_openssl_private
 {
 protected:
@@ -401,7 +410,7 @@ public:
             goto end;
         }
 
-        BIO_free(bio);
+        BIO_FREE(bio);
         bio = BIO_new_mem_buf((void*)pData, (int)dwDataLen);
         if (d2i_PrivateKey_bio(bio, &pKey))
         {
@@ -415,7 +424,7 @@ public:
             goto end;
         }
 
-        BIO_free(bio);
+        BIO_FREE(bio);
         bio = BIO_new_mem_buf((void*)pData, (int)dwDataLen);
         if (d2i_PKCS8PrivateKey_bio(bio, &pKey, NULL, (void*)pPassword))
         {
@@ -429,7 +438,7 @@ public:
             goto end;
         }
 
-        BIO_free(bio);
+        BIO_FREE(bio);
         bio = BIO_new_mem_buf((void*)pData, (int)dwDataLen);
 
         p12 = d2i_PKCS12_bio(bio, NULL);
@@ -462,7 +471,7 @@ end:
         else
             *ppKey = pKey;
 
-        BIO_free(bio);
+        BIO_FREE(bio);
         return nErr;
     }
 
@@ -500,7 +509,7 @@ end:
             goto end;
         }
 
-        BIO_free(bio);
+        BIO_FREE(bio);
         bio = BIO_new_mem_buf((void*)pData, (int)dwDataLen);
         if (d2i_X509_bio(bio, &pCert))
         {
@@ -514,7 +523,7 @@ end:
             goto end;
         }
 
-        BIO_free(bio);
+        BIO_FREE(bio);
         bio = BIO_new_mem_buf((void*)pData, (int)dwDataLen);
 
         p12 = d2i_PKCS12_bio(bio, NULL);
@@ -528,7 +537,7 @@ end:
                 sk_X509_pop_free(pCa, X509_free);
                 EVP_PKEY_free(pKey);
                 PKCS12_free(p12);
-                BIO_free(bio);
+                BIO_FREE(bio);
                 nErr = OPEN_SSL_WARNING_ALL_OK;
                 goto end;
             }
@@ -548,7 +557,7 @@ end:
         else
             *ppCert = pCert;
 
-        BIO_free(bio);
+        BIO_FREE(bio);
         return nErr;
     }
 

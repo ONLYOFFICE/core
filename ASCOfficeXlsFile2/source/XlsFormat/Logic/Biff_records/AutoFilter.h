@@ -48,7 +48,6 @@ public:
 	~AutoFilter();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 

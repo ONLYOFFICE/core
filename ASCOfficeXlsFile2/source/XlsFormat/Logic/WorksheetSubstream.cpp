@@ -284,7 +284,16 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					count--;
 				}
 			}break;
-			case rt_SxView:			proc.repeated<PIVOTVIEW>(0, 0);		break;
+			case rt_SxView:			
+			{
+				count = proc.repeated<PIVOTVIEW>(0, 0);		
+				while(count > 0)
+				{
+					m_arPIVOTVIEW.insert(m_arPIVOTVIEW.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
 			case rt_DCon:			proc.optional<DCON>		();			break;
 			case rt_UserSViewBegin:
 			{

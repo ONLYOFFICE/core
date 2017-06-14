@@ -61,7 +61,10 @@ const bool PIVOTIVD::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.repeated<Continue>(0, 0);
+	m_SxIvd = elements_.back();
+	elements_.pop_back();
+
+	int count = proc.repeated<Continue>(0, 0);
 
 	return true;
 }

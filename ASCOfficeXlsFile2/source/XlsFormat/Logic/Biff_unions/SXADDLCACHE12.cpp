@@ -57,7 +57,7 @@ BaseObjectPtr SXADDLCACHE12::clone()
 }
 
 
-//                 *SXADDLCACHEFIELD [SXADDLSXDH] [SXADDLSXMGS] SXAddl_SXCCache_SXDVerUpdInv
+//   *SXADDLCACHEFIELD [SXADDLSXDH] [SXADDLSXMGS] SXAddl_SXCCache_SXDVerUpdInv
 const bool SXADDLCACHE12::loadContent(BinProcessor& proc)
 {
 
@@ -65,12 +65,24 @@ const bool SXADDLCACHE12::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.mandatory<SXAddl_SXCCache_SXDInfo12>();
-	proc.mandatory<SXAddl_SXCCache_SXDInvRefreshReal>();
-	proc.repeated<SXADDLCACHEFIELD>(0, 0);
-	proc.optional<SXADDLSXDH>();
-	proc.optional<SXADDLSXMGS>();
-	proc.mandatory<SXAddl_SXCCache_SXDVerUpdInv>();
+	if (proc.mandatory<SXAddl_SXCCache_SXDInfo12>())
+	{
+	}
+	if (proc.mandatory<SXAddl_SXCCache_SXDInvRefreshReal>())
+	{
+	}
+	
+	int count  =  proc.repeated<SXADDLCACHEFIELD>(0, 0);
+	
+	if (proc.optional<SXADDLSXDH>())
+	{
+	}
+	if (proc.optional<SXADDLSXMGS>())
+	{
+	}
+	if (proc.mandatory<SXAddl_SXCCache_SXDVerUpdInv>())
+	{
+	}
 
 	return true;
 }

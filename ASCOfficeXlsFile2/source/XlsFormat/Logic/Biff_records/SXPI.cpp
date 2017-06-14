@@ -52,9 +52,8 @@ BaseObjectPtr SXPI::clone()
 
 void SXPI::readFields(CFRecord& record)
 {
-#pragma message("####################### SXPI record is not implemented")
 	Log::error("SXPI record is not implemented.");
-	//record >> some_value;
+
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 

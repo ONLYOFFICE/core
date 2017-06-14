@@ -63,9 +63,27 @@ const bool PIVOTVIEWEX::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.repeated<PIVOTTH>(0, 0);
-	proc.repeated<SXPIEx>(0, 0);
-	proc.repeated<PIVOTVDTEX>(0, 0);
+	m_SXViewEx = elements_.back();
+	elements_.pop_back();
+	
+	int count = 0;
+	count = proc.repeated<PIVOTTH>(0, 0);
+	while(count--)
+	{
+		m_arPIVOTTH.push_back(elements_.front());	elements_.pop_front();
+	}
+
+	count = proc.repeated<SXPIEx>(0, 0);
+	while(count--)
+	{
+		m_arSXPIEx.push_back(elements_.front());	elements_.pop_front();
+	}
+
+	count = proc.repeated<PIVOTVDTEX>(0, 0);
+	while(count--)
+	{
+		m_arPIVOTVDTEX.push_back(elements_.front());	elements_.pop_front();
+	}
 
 	return true;
 }

@@ -53,9 +53,8 @@ BaseObjectPtr SxFilt::clone()
 
 void SxFilt::readFields(CFRecord& record)
 {
-#pragma message("####################### SxFilt record is not implemented")
 	Log::error("SxFilt record is not implemented.");
-	//record >> some_value;
+
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 

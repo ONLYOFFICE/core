@@ -57,8 +57,8 @@ void ExtPtgRef3D::load(CFRecord& record)
 
 void ExtPtgRef3D::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref )
 {
-#pragma message("####################### ExtPtgRef3D record is not implemented")
 	Log::info("ExtPtgRef3D record is not implemented.");
+	
 	ptg_stack.push(L"#REF!");
 }
 

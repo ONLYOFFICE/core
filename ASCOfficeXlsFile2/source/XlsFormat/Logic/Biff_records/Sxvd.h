@@ -31,13 +31,11 @@
  */
 #pragma once
 
-#include "BiffRecord.h"
+#include "SxView.h"
 
 namespace XLS
 {
 
-
-// Logical representation of Sxvd record in BIFF8
 class Sxvd: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Sxvd)
@@ -47,11 +45,30 @@ public:
 	~Sxvd();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeSxvd;
+
+	SXAxis			sxaxis;
+	unsigned short	cSub;
+	
+	bool			fDefault;
+	bool			fSum;
+	bool			fCounta;
+	bool			fAverage;
+	bool			fMax;
+	bool			fMin;
+	bool			fProduct;
+	bool			fCount;
+	bool			fStdev;
+	bool			fStdevp;
+	bool			fVariance;
+	bool			fVariancep;
+
+	short					cItm;
+	unsigned short			cchName;
+	XLUnicodeStringNoCch	stName;
 
 };
 

@@ -318,6 +318,7 @@ enum ElementType
 	typeSXVDTEx,
 	typeSXVI,
 	typeSxView,
+	typeSXAxis,
 	typeSXViewEx,
 	typeSXViewEx9,
 	typeSXViewLink,

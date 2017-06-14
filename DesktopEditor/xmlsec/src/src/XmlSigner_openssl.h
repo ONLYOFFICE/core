@@ -44,10 +44,6 @@ public:
     virtual int ShowCertificate();
 
     virtual void SetOpenSslDialog(ICertificateSelectDialogOpenSsl* pDialog);
-
-public:
-    static int LoadKey(std::wstring file, std::string password);
-    static int LoadCert(std::wstring file, std::string password);
 };
 
 #endif // _XMLSIGNER_OPENSSL_H_

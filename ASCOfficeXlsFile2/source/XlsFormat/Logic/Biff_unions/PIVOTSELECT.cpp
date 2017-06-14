@@ -61,7 +61,9 @@ const bool PIVOTSELECT::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.mandatory<PIVOTRULE>();
+	if (proc.mandatory<PIVOTRULE>())
+	{
+	}
 
 	return true;
 }

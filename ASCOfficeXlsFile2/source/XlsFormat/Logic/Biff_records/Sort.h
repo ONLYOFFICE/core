@@ -48,7 +48,6 @@ public:
 	~Sort();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 

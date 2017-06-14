@@ -47,13 +47,10 @@ public:
 	~SxRule();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeSxRule;
-
-
 };
 
 } // namespace XLS

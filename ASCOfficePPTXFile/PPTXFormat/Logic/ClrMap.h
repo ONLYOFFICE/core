@@ -44,7 +44,11 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(ClrMap)
-			PPTX_LOGIC_BASE2(ClrMap)
+			
+			ClrMap(std::wstring name = L"p:clrMap")
+			{
+				m_name = name;
+			}
 
 			virtual OOX::EElementType getType() const
 			{

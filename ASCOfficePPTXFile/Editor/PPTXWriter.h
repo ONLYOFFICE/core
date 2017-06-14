@@ -58,10 +58,12 @@ namespace NSBinPptxRW
 
 		std::vector<PPTX::Slide>			m_arSlides;
 		std::vector<LONG>					m_arSlides_Layout;
+		std::vector<LONG>					m_arSlides_Notes;
 
 		std::vector<PPTX::NotesMaster>		m_arNotesMasters;
 		std::vector<PPTX::NotesSlide>		m_arNotesSlides;
 		std::vector<LONG>					m_arNotesSlides_Master;
+		std::vector<LONG>					m_arNotesMasters_Theme;
 		
 		PPTX::Presentation				m_oPresentation;
 		PPTX::TableStyles				m_oTableStyles;
@@ -175,10 +177,9 @@ namespace NSBinPptxRW
 
 			std::map<BYTE, LONG>::iterator pPair;
 
-			// writer
 			CXmlWriter oXmlWriter;
 
-			// первым делом определим количество необходимого. если хоть одно из этих чисел - ноль, то ппту не корректный
+	// первым делом определим количество необходимого. если хоть одно из этих чисел - ноль, то ппту не корректный
 			LONG nCountThemes = 0;
 			LONG nCountMasters = 0;
 			LONG nCountLayouts = 0;
@@ -214,7 +215,7 @@ namespace NSBinPptxRW
 				return;
 			}
 
-			// теперь создадим массивы для рельсов
+	// теперь создадим массивы для рельсов
 			for (LONG i = 0; i < nCountMasters; ++i)
 			{
 				_slideMasterInfo elm;
@@ -226,8 +227,11 @@ namespace NSBinPptxRW
 			}
 			for (LONG i = 0; i < nCountSlides; ++i)
 				m_arSlides_Layout.push_back(0);
+			
+			for (LONG i = 0; i < nCountSlides; ++i)
+				m_arSlides_Notes.push_back(-1);			
 
-			// ThemeRels
+	// ThemeRels
 			pPair = m_mainTables.find(NSMainTables::ThemeRels);
 			if (m_mainTables.end()  != pPair)
 			{
@@ -242,7 +246,7 @@ namespace NSBinPptxRW
 				}
 			}
 
-			// нужно проставить всем шаблонам мастер.
+	// нужно проставить всем шаблонам мастер.
 			for (LONG i = 0; i < nCountMasters; ++i)
 			{
 				size_t _countL = m_arSlideMasters_Theme[i].m_arLayouts.size();				
@@ -252,7 +256,7 @@ namespace NSBinPptxRW
 				}
 			}
 
-			// готово, теперь нужно слайдам проставить шаблоны
+	// готово, теперь нужно слайдам проставить шаблоны
 			pPair = m_mainTables.find(NSMainTables::SlideRels);
 			if (m_mainTables.end()  != pPair)
 			{
@@ -271,11 +275,46 @@ namespace NSBinPptxRW
 						m_arSlides_Layout[index++] = m_oReader.GetULong();
 				}
 			}
+			pPair = m_mainTables.find(NSMainTables::SlideNotesRels);
+			if (m_mainTables.end()  != pPair)
+			{
+				m_oReader.Seek(pPair->second);
+				m_oReader.Skip(6); // type + len + start attr
 
-			// теперь нужно удалить все themes, которые не ведут на мастерслайд
+				size_t index =0;
+				while (true)
+				{
+					BYTE _at = m_oReader.GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					//m_arSlides_Layout[_at] = m_oReader.GetULong(); тут прописан не индекс, а тип - смотри - oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oSlide_Layout_Rels[i]);
+					if (index < m_arSlides_Notes.size())
+						m_arSlides_Notes[index++] = m_oReader.GetULong();
+				}
+			}
+
+			pPair = m_mainTables.find(NSMainTables::NotesMastersRels);
+			if (m_mainTables.end()  != pPair)
+			{
+				m_oReader.Seek(pPair->second);
+				m_oReader.Skip(6); // type + len + start attr
+
+				size_t index =0;
+				while (true)
+				{
+					BYTE _at = m_oReader.GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					m_arNotesMasters_Theme.push_back( m_oReader.GetULong());
+				}
+			}
+	// теперь нужно удалить все themes, которые не ведут на мастерслайды
 			std::vector<LONG> arThemes;
 			std::vector<LONG> arThemesDst;
 			std::vector<bool> arThemesSave;
+			
 			for (LONG i = 0; i < nCountThemes; ++i)
 			{
 				arThemes.push_back(i);
@@ -285,6 +324,11 @@ namespace NSBinPptxRW
 			for (LONG i = 0; i < nCountMasters; ++i)
 			{
 				arThemesSave[m_arSlideMasters_Theme[i].m_lThemeIndex] = true;
+			}
+
+			for (size_t i = 0; i < m_arNotesMasters_Theme.size(); i++)
+			{
+				arThemesSave[m_arNotesMasters_Theme[i]] = true;
 			}
 			LONG lCurrectTheme = 0;
 			for (LONG i = 0; i < nCountMasters; ++i)
@@ -298,9 +342,8 @@ namespace NSBinPptxRW
 			for (LONG i = 0; i < nCountMasters; ++i)
 			{
 				m_arSlideMasters_Theme[i].m_lThemeIndex = arThemesDst[i];
-			}
-			
-			// themes
+			}			
+	// themes
 			pPair = m_mainTables.find(NSMainTables::Themes);
 			if (m_mainTables.end()  != pPair)
 			{
@@ -343,7 +386,7 @@ namespace NSBinPptxRW
 				}
 			}
 
-			// slideMasters
+	// slideMasters
 			pPair = m_mainTables.find(NSMainTables::SlideMasters);
 			if (m_mainTables.end()  != pPair)
 			{
@@ -396,7 +439,7 @@ namespace NSBinPptxRW
 				}
 			}
 
-			// slideLayouts
+	// slideLayouts
 			pPair = m_mainTables.find(NSMainTables::SlideLayouts);
 			if (m_mainTables.end()  != pPair)
 			{
@@ -431,8 +474,99 @@ namespace NSBinPptxRW
 					m_oReader.m_pRels->SaveRels(pathFileRels.GetPath());	
 				}
 			}
+	// notes
+			pPair = m_mainTables.find(NSMainTables::NotesSlides);
+			if (m_mainTables.end()  != pPair)
+			{
+				m_oReader.Seek(pPair->second);
+				LONG lCount = m_oReader.GetLong();
 
-			// slides
+				if ( lCount > 0 )
+				{                
+					OOX::CPath pathFolder = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("notesSlides");
+					OOX::CPath pathFolderRels = pathFolder + FILE_SEPARATOR_STR + _T("_rels");
+
+					NSDirectory::CreateDirectory (pathFolder.GetPath());
+					NSDirectory::CreateDirectory (pathFolderRels.GetPath());
+			
+					for (LONG i = 0; i < lCount; ++i)
+					{
+						PPTX::NotesSlide elm;
+						m_arNotesSlides.push_back(elm);
+						
+						m_oReader.m_pRels->Clear();
+
+						size_t indexSlide = 0;
+						for (indexSlide = 0; indexSlide < m_arSlides_Notes.size(); indexSlide++) 
+						{//todooo -> make map
+							if (m_arSlides_Notes[indexSlide] == i)
+							{
+								break;
+							}
+						}
+						m_oReader.m_pRels->StartNotes(indexSlide);
+						
+						m_arNotesSlides[i].fromPPTY(&m_oReader);
+
+						m_oReader.m_pRels->CloseRels();
+
+						std::wstring strNotesXml = L"notesSlide" + std::to_wstring(i + 1) + L".xml";
+						oXmlWriter.ClearNoAttack();
+
+						m_arNotesSlides[i].toXmlWriter(&oXmlWriter);
+
+						OOX::CPath pathFile = pathFolder + FILE_SEPARATOR_STR + strNotesXml;
+						oXmlWriter.SaveToFile(pathFile.GetPath());
+
+						OOX::CPath pathFileRels = pathFolderRels + FILE_SEPARATOR_STR + strNotesXml + _T(".rels");
+						m_oReader.m_pRels->SaveRels(pathFileRels.GetPath());	
+					}
+				}
+			}
+	// noteMasters
+			pPair = m_mainTables.find(NSMainTables::NotesMasters);
+			if (m_mainTables.end()  != pPair)
+			{
+				m_oReader.Seek(pPair->second);
+				LONG lCount = m_oReader.GetLong();
+ 				
+				if (lCount > 0 || m_arNotesSlides.size() > 0)//один элемент
+				{
+					OOX::CPath pathFolder = m_strDstFolder  + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("notesMasters");
+					OOX::CPath pathFolderRels = pathFolder  + FILE_SEPARATOR_STR + _T("_rels");
+
+					NSDirectory::CreateDirectory(pathFolder.GetPath());
+					NSDirectory::CreateDirectory(pathFolderRels.GetPath());
+					
+					PPTX::NotesMaster elm;
+					m_arNotesMasters.push_back(elm);
+					
+					m_oReader.m_pRels->Clear();
+					m_oReader.m_pRels->StartNotesMaster(m_arSlideMasters_Theme.size());
+					
+					if (lCount > 0)
+					{
+						m_arNotesMasters.back().fromPPTY(&m_oReader);
+						m_oReader.m_pRels->CloseRels();
+						
+						std::wstring strMasterNotesXml = L"notesMaster1.xml";
+						oXmlWriter.ClearNoAttack();
+
+						m_arNotesMasters.back().toXmlWriter(&oXmlWriter);
+
+						OOX::CPath pathFile = pathFolder + FILE_SEPARATOR_STR + strMasterNotesXml;
+						oXmlWriter.SaveToFile(pathFile.GetPath());
+
+						OOX::CPath pathFileRels = pathFolderRels + FILE_SEPARATOR_STR + strMasterNotesXml + _T(".rels");
+						m_oReader.m_pRels->SaveRels(pathFileRels.GetPath());	
+					}
+					else
+					{
+						CreateDefaultNotesMasters(m_arSlideMasters_Theme.size());
+					}
+				}
+			}
+	// slides
 			int nComment = 1;
 			pPair = m_mainTables.find(NSMainTables::Slides);
 			if (m_mainTables.end()  != pPair)
@@ -452,7 +586,7 @@ namespace NSBinPptxRW
 					m_arSlides.push_back(elm);
 
 					m_oReader.m_pRels->Clear();
-					m_oReader.m_pRels->StartSlide(i, m_arSlides_Layout[i]);
+					m_oReader.m_pRels->StartSlide(i, m_arSlides_Layout[i], m_arSlides_Notes[i]);
 					m_arSlides[i].fromPPTY(&m_oReader);
 
 					if (m_arSlides[i].comments.is_init())
@@ -488,71 +622,6 @@ namespace NSBinPptxRW
 					m_oReader.m_pRels->SaveRels(pathFileRels.GetPath());	
 				}
 			}
-
-            if (false)
-			{
-				// noteMasters
-				pPair = m_mainTables.find(NSMainTables::NotesMasters);
-				if (m_mainTables.end()  != pPair)
-				{
-					m_oReader.Seek(pPair->second);
-					LONG lCount = m_oReader.GetLong();
-					
-					for (LONG i = 0; i < lCount; ++i)
-					{
-						PPTX::NotesMaster elm;
-						m_arNotesMasters.push_back(elm);
-						m_arNotesMasters[i].fromPPTY(&m_oReader);
-					}
-				}
-
-				// notes
-				pPair = m_mainTables.find(NSMainTables::NotesSlides);
-				if (m_mainTables.end()  != pPair)
-				{
-					m_oReader.Seek(pPair->second);
-					LONG lCount = m_oReader.GetLong();
-					
-					for (LONG i = 0; i < lCount; ++i)
-					{
-						PPTX::NotesSlide elm;
-						m_arNotesSlides.push_back(elm);
-						m_arNotesSlides[i].fromPPTY(&m_oReader);
-					}
-				}
-			}
-			else
-			{
-				// create default
-				CreateDefaultNotesMasters((int)m_arThemes.size() + 1);
-				CreateDefaultNote();
-
-                OOX::CPath pathFolder		= m_strDstFolder + FILE_SEPARATOR_STR  + _T("ppt")  + FILE_SEPARATOR_STR + _T("notesSlides");
-                OOX::CPath pathFolderRels	= pathFolder + FILE_SEPARATOR_STR  + _T("_rels");
-
-                NSDirectory::CreateDirectory (pathFolder.GetPath());
-                NSDirectory::CreateDirectory (pathFolderRels.GetPath());
-
-				LONG lCount = (LONG)m_arSlides.size();				
-				for (LONG i = 0; i < lCount; ++i)
-				{
-					m_oReader.m_pRels->Clear();
-					m_oReader.m_pRels->StartNote(i);
-					m_oReader.m_pRels->CloseRels();
-
-                    std::wstring strMasterXml = L"notesSlide" + std::to_wstring(i + 1) + L".xml";
-					oXmlWriter.ClearNoAttack();
-
-					m_oDefaultNote.toXmlWriter(&oXmlWriter);
-
-					OOX::CPath pathFile = pathFolder + FILE_SEPARATOR_STR + strMasterXml;
-					oXmlWriter.SaveToFile(pathFile.GetPath());
-				
-					OOX::CPath pathFileRels = pathFolderRels + FILE_SEPARATOR_STR + strMasterXml + _T(".rels");
-					m_oReader.m_pRels->SaveRels(pathFileRels.GetPath());	
-				}
-			}
-
             if (false)
 			{
 				// app
@@ -595,15 +664,13 @@ namespace NSBinPptxRW
 					m_oViewProps.fromPPTY(&m_oReader);
 				}
 
-				//CreateDefaultPresProps();
 			}
 			else
 			{
 		// create default
 				CreateDefaultApp();
 				CreateDefaultCore();
-				//CreateDefaultPresProps();
-				//CreateDefaultTableStyles();
+
 				CreateDefaultViewProps();
 
 		// presProps
@@ -760,15 +827,13 @@ namespace NSBinPptxRW
 			pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.extended-properties+xml",	L"/docProps", L"app.xml");
 
 	// themes
-			for (LONG i = 0; i < (LONG)m_arThemes.size(); ++i)
+			for (size_t i = 0; i < m_arThemes.size(); ++i)
 			{
 				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.theme+xml", L"/ppt/theme", L"theme" + std::to_wstring(i + 1) + L".xml");
 			}
-            if (true)
-			{
-	// notes theme
-				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.theme+xml", L"/ppt/theme", L"theme" + std::to_wstring((int)m_arThemes.size() + 1) + L".xml");
 	// notes master
+            if (!m_arNotesMasters.empty())
+			{
 				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml", L"/ppt/notesMasters", L"notesMaster1.xml");
 			}
 
@@ -785,13 +850,13 @@ namespace NSBinPptxRW
 			}
 
 	// slides
-			for (LONG i = 0; i < nCountSlides; ++i)
+			for (size_t i = 0; i < m_arSlides.size(); ++i)
 			{
 				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.slide+xml", L"/ppt/slides", L"slide" + std::to_wstring(i + 1) + L".xml");
 			}
 
 	// notes
-			for (LONG i = 0; i < nCountSlides; ++i)
+			for (size_t i = 0; i < m_arNotesSlides.size(); ++i)
 			{
 				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml", L"/ppt/notesSlides", L"notesSlide" + std::to_wstring(i + 1) + L".xml");
 			}

@@ -32,12 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/CellRangeRef.h"
 
 namespace XLS
 {
 
-
-// Logical representation of SXEx record in BIFF8
 class SXEx: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXEx)
@@ -47,13 +47,41 @@ public:
 	~SXEx();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSXEx;
+	static const ElementType type = typeSXEx;
 
+	unsigned short	csxformat;
+	unsigned short	cchErrorString;
+	unsigned short	cchNullString;
+	unsigned short	cchTag;
+	unsigned short	csxselect;
 
+	DRw				crwPage;
+	ColU			ccolPage;
+
+	bool			fAcrossPageLay;
+	unsigned char	cWrapPage;
+	bool			fEnableWizard;
+	bool			fEnableDrilldown;
+	bool			fEnableFieldDialog;
+	bool			fPreserveFormatting;
+	bool			fMergeLabels;
+	bool			fDisplayErrorString;
+	bool			fDisplayNullString;
+	bool			fSubtotalHiddenPageItems;
+
+	unsigned short	cchPageFieldStyle;
+	unsigned short	cchTableStyle;
+	unsigned short	cchVacateStyle;
+
+	XLUnicodeStringNoCch	stError;
+	XLUnicodeStringNoCch	stDisplayNull;
+	XLUnicodeStringNoCch	stTag;
+	XLUnicodeStringNoCch	stPageFieldStyle;
+	XLUnicodeStringNoCch	stTableStyle;
+	XLUnicodeStringNoCch	stVacateStyle;
 };
 
 } // namespace XLS

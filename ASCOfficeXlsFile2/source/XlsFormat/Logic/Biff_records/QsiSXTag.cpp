@@ -52,9 +52,22 @@ BaseObjectPtr QsiSXTag::clone()
 
 void QsiSXTag::readFields(CFRecord& record)
 {
-#pragma message("####################### QsiSXTag record is not implemented")
-	Log::error("QsiSXTag record is not implemented.");
-	//record >> some_value;
+	unsigned char	reserved1;
+	unsigned short	flags, reserved2;
+
+	record >> frtHeaderOld >> fSx >> flags;
+
+	fEnableRefresh	= GETBIT(flags, 0);
+	fInvalid		= GETBIT(flags, 1);
+	fTensorEx		= GETBIT(flags, 2);
+	
+	record >> dwQsiFuture >> verSxLastUpdated >> verSxUpdatableMin >> obCchName >> reserved1;
+	record >> stName;
+
+	record >> reserved2;
+
+	int skip = record.getDataSize() - record.getRdPtr();
+	record.skipNunBytes(skip);
 }
 
 } // namespace XLS

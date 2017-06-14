@@ -1,6 +1,17 @@
 #ifdef WIN32
 #include "./XmlSigner_mscrypto.h"
 #define CCertificate CCertificate_mscrypto
+
+int ICertificateSelectDialogOpenSsl::LoadKey(std::wstring file, std::string password)
+{
+    return 0;
+}
+
+int ICertificateSelectDialogOpenSsl::LoadCert(std::wstring file, std::string password)
+{
+    return 0;
+}
+
 #endif
 
 #if defined(_LINUX) && !defined(_MAC)
@@ -13,6 +24,16 @@
 #define CCertificate CCertificate_openssl
 #endif
 
+namespace
+{
+    ICertificateSelectDialogOpenSsl* g_application_openssl_gialog = NULL;
+}
+
+void ICertificateSelectDialogOpenSsl::SetOpenSslDialogApplication(ICertificateSelectDialogOpenSsl* pDialog)
+{
+    g_application_openssl_gialog = pDialog;
+}
+
 int ICertificate::GetOOXMLHashAlg(const std::string& sAlg)
 {
     if ("http://www.w3.org/2000/09/xmldsig#rsa-sha1" == sAlg ||
@@ -24,25 +45,34 @@ int ICertificate::GetOOXMLHashAlg(const std::string& sAlg)
 
 ICertificate* ICertificate::CreateInstance()
 {
-    return new CCertificate();
+    ICertificate* pCert = new CCertificate();
+    pCert->SetOpenSslDialog(g_application_openssl_gialog);
+    return pCert;
+}
+
+CCertificateInfo ICertificate::GetInfo()
+{
+    CCertificateInfo info;
+    info.SetName(GetSignerName());
+    info.SetDate(GetDate());
+    info.SetId(GetId());
+    return info;
 }
 
 CCertificateInfo ICertificate::GetDefault()
 {
     CCertificateInfo info;
 
+#ifdef WIN32
     // detect user name
     std::wstring sUserName;
-#ifdef WIN32
+
     DWORD dwUserNameLen = 1024;
     wchar_t* _name = new wchar_t[dwUserNameLen + 1];
     GetUserNameW(_name, &dwUserNameLen);
     sUserName = std::wstring(_name);
     delete []_name;
-#endif
-    ////////////////////
 
-#ifdef WIN32
     HANDLE hStoreHandle = CertOpenSystemStoreA(NULL, "MY");
     if (!hStoreHandle)
         return info;

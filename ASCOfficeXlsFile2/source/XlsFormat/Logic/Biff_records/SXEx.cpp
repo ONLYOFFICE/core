@@ -52,9 +52,57 @@ BaseObjectPtr SXEx::clone()
 
 void SXEx::readFields(CFRecord& record)
 {
-#pragma message("####################### SXEx record is not implemented")
-	Log::error("SXEx record is not implemented.");
-	//record >> some_value;
+	record >> csxformat >> cchErrorString >> cchNullString >> cchTag >> csxselect;
+
+	_UINT32 flags;
+	record >> crwPage >> ccolPage >> flags;
+
+	fAcrossPageLay				= GETBIT(flags, 0);
+	cWrapPage					= GETBITS(flags, 1, 9);
+	fEnableWizard				= GETBIT(flags, 16);
+	fEnableDrilldown			= GETBIT(flags, 17);
+	fEnableFieldDialog			= GETBIT(flags, 18);
+	fPreserveFormatting			= GETBIT(flags, 19);
+	fMergeLabels				= GETBIT(flags, 20);
+	fDisplayErrorString			= GETBIT(flags, 21);
+	fDisplayNullString			= GETBIT(flags, 22);
+	fSubtotalHiddenPageItems	= GETBIT(flags, 23);
+
+	record >> cchPageFieldStyle >> cchTableStyle >> cchVacateStyle;
+
+	if (cchErrorString > 0 && cchErrorString != 0xffff)
+	{
+		stError.setSize(cchErrorString);
+		record >> stError;
+	}
+	if (cchNullString > 0 && cchNullString != 0xffff)
+	{
+		stDisplayNull.setSize(cchNullString);
+		record >> stDisplayNull;
+	}
+	if (cchTag > 0 && cchTag != 0xffff)
+	{
+		stTag.setSize(cchTag);
+		record >> stTag;
+	}
+	if (cchPageFieldStyle > 0 && cchPageFieldStyle != 0xffff)
+	{
+		stPageFieldStyle.setSize(cchPageFieldStyle);
+		record >> stPageFieldStyle;
+	}
+	if (cchTableStyle > 0 && cchTableStyle != 0xffff)
+	{
+		stTableStyle.setSize(cchTableStyle);
+		record >> cchTableStyle;
+	}
+	if (cchVacateStyle > 0 && cchVacateStyle != 0xffff)
+	{
+		stVacateStyle.setSize(cchVacateStyle);	
+		record >> cchVacateStyle;
+	}
+	
+	int skip = record.getDataSize() - record.getRdPtr();
+	record.skipNunBytes(skip);
 }
 
 } // namespace XLS

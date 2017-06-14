@@ -63,9 +63,26 @@ const bool PIVOTFRT9::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.optional<DBQUERYEXT>();
-	proc.optional<PIVOTVIEWEX>();
-	proc.mandatory<SXViewEx9>();
+	m_QsiSXTag = elements_.back();
+	elements_.pop_back();
+
+	if (proc.optional<DBQUERYEXT>())
+	{
+		m_DBQUERYEXT = elements_.back();
+		elements_.pop_back();
+	}
+	if (proc.optional<PIVOTVIEWEX>())
+	{
+		m_PIVOTVIEWEX = elements_.back();
+		elements_.pop_back();
+	}
+	if (proc.mandatory<SXViewEx9>())
+	{
+		m_SXViewEx9 = elements_.back();
+		elements_.pop_back();
+	}
+	else 
+		return false;
 
 	return true;
 }

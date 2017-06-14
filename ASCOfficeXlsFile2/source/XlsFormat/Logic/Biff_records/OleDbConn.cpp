@@ -52,9 +52,9 @@ BaseObjectPtr OleDbConn::clone()
 
 void OleDbConn::readFields(CFRecord& record)
 {
-#pragma message("####################### OleDbConn record is not implemented")
 	Log::error("OleDbConn record is not implemented.");
-	//record >> some_value;
+
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

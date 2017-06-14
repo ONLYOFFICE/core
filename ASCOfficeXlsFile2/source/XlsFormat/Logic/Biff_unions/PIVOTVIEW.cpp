@@ -61,7 +61,14 @@ const bool PIVOTVIEW::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.optional<PIVOTFRT>();
+	m_PIVOTCORE = elements_.back();
+	elements_.pop_back();
+	
+	if (proc.optional<PIVOTFRT>())
+	{
+		m_PIVOTFRT = elements_.back();
+		elements_.pop_back();
+	}
 
 	return true;
 }

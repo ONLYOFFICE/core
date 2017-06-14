@@ -33,11 +33,12 @@
 
 #include "BiffRecord.h"
 
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/CellRangeRef.h"
+
 namespace XLS
 {
 
-
-// Logical representation of DConRef record in BIFF8
 class DConRef: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(DConRef)
@@ -47,12 +48,17 @@ public:
 	~DConRef();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeDConRef;
+	static const ElementType type = typeDConRef;
 
+	RefU					ref;
+	unsigned short			cchFile;
+	std::wstring			stFile;
+
+	bool					bFilePath;
+	bool					bSheetName;
 
 };
 

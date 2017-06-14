@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of AXES union of records 
 class AXES: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(AXES)

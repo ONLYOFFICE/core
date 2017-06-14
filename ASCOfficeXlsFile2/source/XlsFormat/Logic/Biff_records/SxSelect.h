@@ -47,7 +47,6 @@ public:
 	~SxSelect();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 

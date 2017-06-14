@@ -52,9 +52,8 @@ BaseObjectPtr SxItm::clone()
 
 void SxItm::readFields(CFRecord& record)
 {
-#pragma message("####################### SxItm record is not implemented")
 	Log::error("SxItm record is not implemented.");
-	//record >> some_value;
+
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 

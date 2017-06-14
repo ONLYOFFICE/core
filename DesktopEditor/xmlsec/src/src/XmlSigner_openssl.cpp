@@ -114,6 +114,10 @@ public:
         std::string sName(buffer);
         std::wstring sNameW = UTF8_TO_U(sName);
 
+        std::wstring::size_type pos = sNameW.find(L"CN=");
+        if (std::wstring::npos != pos)
+            sNameW = sNameW.substr(pos + 3);
+
         return sNameW;
     }
 
@@ -130,6 +134,15 @@ public:
         len = BIO_get_mem_data(bio, &data);
 
         std::string sReturn((char*)data, (size_t)len);
+
+        std::string sFindFirst = "-----BEGIN TRUSTED CERTIFICATE-----";
+        std::string::size_type nPos1 = sReturn.find(sFindFirst);
+        std::string::size_type nPos2 = sReturn.find("-----END TRUSTED CERTIFICATE-----");
+        if (std::string::npos != nPos1 && std::string::npos != nPos2)
+        {
+            std::string::size_type nStart = nPos1 + sFindFirst.length();
+            sReturn = sReturn.substr(nStart, nPos2 - nStart);
+        }
 
         BIO_free(bio);
         return sReturn;
@@ -204,7 +217,14 @@ public:
 
         EVP_MD_CTX_destroy(pCtx);
 
-        return std::string((char*)pSignature, (size_t)nSignatureLen);
+        char* pBase64 = NULL;
+        int nBase64Len = 0;
+        NSFile::CBase64Converter::Encode(pSignature, (int)nSignatureLen, pBase64, nBase64Len, NSBase64::B64_BASE64_FLAG_NONE);
+
+        std::string sReturn(pBase64, nBase64Len);
+        delete[] pBase64;
+
+        return sReturn;
     }
 
     std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlg)

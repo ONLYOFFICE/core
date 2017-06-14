@@ -746,6 +746,7 @@
 
 #define ASC_MENU_EVENT_TYPE_INSERT_CHART            400
 #define ASC_MENU_EVENT_TYPE_GET_CHART_DATA          450
+#define ASC_MENU_EVENT_TYPE_SET_CHART_DATA          460
 
 #define ASC_MENU_EVENT_TYPE_ERROR                   500
 

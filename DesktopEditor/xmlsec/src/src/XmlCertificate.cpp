@@ -16,11 +16,13 @@ int ICertificateSelectDialogOpenSsl::LoadCert(std::wstring file, std::string pas
 
 #if defined(_LINUX) && !defined(_MAC)
 #include "./XmlSigner_openssl.h"
+#define XML_CERTIFICATE_USE_OPENSSL
 #define CCertificate CCertificate_openssl
 #endif
 
 #ifdef _MAC
 #include "./XmlSigner_openssl.h"
+#define XML_CERTIFICATE_USE_OPENSSL
 #define CCertificate CCertificate_openssl
 #endif
 
@@ -116,6 +118,15 @@ ICertificate* ICertificate::GetById(const std::string& id)
     }
 
     CertCloseStore(hStoreHandle, 0);
+#endif
+
+#ifdef XML_CERTIFICATE_USE_OPENSSL
+
+    CCertificate_openssl* pCertificate = (CCertificate_openssl*)CreateInstance();
+    if (pCertificate->FromId(id))
+        return pCertificate;
+    delete pCertificate;
+
 #endif
 
     return NULL;

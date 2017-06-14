@@ -43,6 +43,9 @@ public:
     virtual bool ShowSelectDialog();
     virtual int ShowCertificate();
 
+    bool FromFiles(const std::wstring& keyPath, const std::string& keyPassword, const std::wstring& certPath, const std::string& certPassword);
+    bool FromId(const std::string& id);
+
     virtual void SetOpenSslDialog(ICertificateSelectDialogOpenSsl* pDialog);
 };
 

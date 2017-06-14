@@ -50,6 +50,9 @@ protected:
     X509*           m_cert;
     EVP_PKEY*       m_key;
 
+    std::string     m_separator;
+    std::string     m_id;
+
 public:
     ICertificate* m_pBase;
 
@@ -62,6 +65,7 @@ public:
         m_key = NULL;
 
         m_pBase = NULL;
+        m_separator = ";;;;;;;ONLYOFFICE;;;;;;;";
     }
     virtual ~CCertificate_openssl_private()
     {
@@ -175,6 +179,8 @@ public:
     std::string GetId()
     {
         // TODO: + public key?
+        if (!m_id.empty())
+            return m_id;
         return GetNumber();
     }
 
@@ -309,6 +315,14 @@ public:
         std::wstring sCertPasswordW = m_pDialog->GetCertificatePassword();
         std::string sCertPassword = U_TO_UTF8(sCertPasswordW);
 
+        return FromFiles(sKeyPath, sKeyPassword, sCertPath, sCertPassword);
+    }
+
+    bool FromFiles(const std::wstring& sKeyPath, const std::string& sKeyPassword, const std::wstring& certPath, const std::string& certPassword)
+    {
+        std::wstring sCertPath = certPath;
+        std::string sCertPassword = certPassword;
+
         if (sCertPath.empty())
         {
             sCertPath = sKeyPath;
@@ -325,8 +339,45 @@ public:
         if (nErr != OPEN_SSL_WARNING_OK && nErr != OPEN_SSL_WARNING_ALL_OK)
             return false;
 
+        m_id = U_TO_UTF8(sKeyPath);
+        m_id += m_separator;
+        m_id += sKeyPassword;
+        m_id += m_separator;
+        m_id += U_TO_UTF8(sCertPath);
+        m_id += m_separator;
+        m_id += sCertPassword;
+
         return true;
     }
+
+    bool FromKey(const std::string& sId)
+    {
+        std::string id = sId;
+        std::vector<std::string> arr;
+        size_t pos = 0;
+        while ((pos = id.find(m_separator)) != std::string::npos)
+        {
+            arr.push_back(id.substr(0, pos));
+            id.erase(0, pos + m_separator.length());
+        }
+
+        if (!id.empty())
+            arr.push_back(id);
+
+        if (4 != arr.size())
+            return false;
+
+        std::string sKeyPathA = arr[0];
+        std::string sKeyPasswordA = arr[1];
+        std::string sCertPathA = arr[2];
+        std::string sCertPasswordA = arr[3];
+
+        std::wstring sKeyPath = UTF8_TO_U(sKeyPathA);
+        std::wstring sCertPath = UTF8_TO_U(sCertPathA);
+
+        return FromFiles(sKeyPath, sKeyPasswordA, sCertPath, sCertPasswordA);
+    }
+
     int ShowCertificate()
     {
         if (m_pDialog)
@@ -669,6 +720,16 @@ bool CCertificate_openssl::ShowSelectDialog()
 int CCertificate_openssl::ShowCertificate()
 {
     return m_internal->ShowCertificate();
+}
+
+bool CCertificate_openssl::FromFiles(const std::wstring& keyPath, const std::string& keyPassword, const std::wstring& certPath, const std::string& certPassword)
+{
+    return m_internal->FromFiles(keyPath, keyPassword, certPath, certPassword);
+}
+
+bool CCertificate_openssl::FromId(const std::string& id)
+{
+    return m_internal->FromKey(id);
 }
 
 void CCertificate_openssl::SetOpenSslDialog(ICertificateSelectDialogOpenSsl* pDialog)

@@ -50,6 +50,15 @@ ICertificate* ICertificate::CreateInstance()
     return pCert;
 }
 
+CCertificateInfo ICertificate::GetInfo()
+{
+    CCertificateInfo info;
+    info.SetName(GetSignerName());
+    info.SetDate(GetDate());
+    info.SetId(GetId());
+    return info;
+}
+
 CCertificateInfo ICertificate::GetDefault()
 {
     CCertificateInfo info;

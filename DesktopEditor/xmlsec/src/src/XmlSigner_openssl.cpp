@@ -25,6 +25,22 @@ void BIO_FREE(BIO*& bio)
         bio = NULL;
     }
 }
+void EVP_PKEY_FREE(EVP_PKEY*& key)
+{
+    if (key)
+    {
+        EVP_PKEY_free(key);
+        key = NULL;
+    }
+}
+void X509_FREE(X509*& cert)
+{
+    if (cert)
+    {
+        X509_free(cert);
+        cert = NULL;
+    }
+}
 
 class CCertificate_openssl_private
 {
@@ -50,9 +66,9 @@ public:
     virtual ~CCertificate_openssl_private()
     {
         if (NULL != m_cert)
-            X509_free(m_cert);
+            X509_FREE(m_cert);
         if (NULL != m_key)
-            EVP_PKEY_free(m_key);
+            EVP_PKEY_FREE(m_key);
     }
 
 public:
@@ -76,7 +92,6 @@ public:
         std::string sReturn(tmp);
 
         BN_free(bn);
-        ASN1_INTEGER_free(asn1_serial);
 
         return sReturn;
     }
@@ -87,12 +102,13 @@ public:
             return L"";
 
         X509_NAME* name = X509_get_issuer_name(m_cert);
-        char* utf_8_name = X509_NAME_oneline(name, NULL, 0);
+        char buffer[1024];
+        memset(buffer, 0, 1025);
 
-        std::string sName(utf_8_name);
+        X509_NAME_oneline(name, buffer, 1024);
+
+        std::string sName(buffer);
         std::wstring sNameW = UTF8_TO_U(sName);
-
-        OPENSSL_free(utf_8_name);
 
         return sNameW;
     }
@@ -137,11 +153,9 @@ public:
 
         ASN1_TIME* _time1 = X509_get_notBefore(m_cert);
         struct tm t1 = this->ASN1_GetTimeT(_time1);
-        ASN1_TIME_free(_time1);
 
         ASN1_TIME* _time2 = X509_get_notAfter(m_cert);
         struct tm t2 = this->ASN1_GetTimeT(_time2);
-        ASN1_TIME_free(_time2);
 
         std::string sRet = std::to_string(t1.tm_mday) +
                 "/" +
@@ -154,6 +168,7 @@ public:
                 std::to_string(t2.tm_mon + 1) +
                 "/" +
                 std::to_string(t2.tm_year + 1900);
+
         return sRet;
     }
 
@@ -246,7 +261,7 @@ public:
         n3 = n3;
 
         EVP_MD_CTX_destroy(pCtx);
-        EVP_PKEY_free(pubkey);
+        EVP_PKEY_FREE(pubkey);
 
         RELEASEARRAYOBJECTS(pDigestValue);
 
@@ -268,7 +283,7 @@ public:
             }
             else
             {
-                X509_free(pCert);
+                X509_FREE(pCert);
                 m_cert = NULL;
             }
 
@@ -450,7 +465,7 @@ public:
             if (PKCS12_parse(p12, pPassword, &pKey, &pCert, &pCa))
             {
                 sk_X509_pop_free(pCa, X509_free);
-                X509_free(pCert);
+                X509_FREE(pCert);
                 PKCS12_free(p12);
                 nErr = OPEN_SSL_WARNING_ALL_OK;
                 goto end;
@@ -467,7 +482,7 @@ public:
 
 end:
         if (NULL == ppKey)
-            EVP_PKEY_free(pKey);
+            EVP_PKEY_FREE(pKey);
         else
             *ppKey = pKey;
 
@@ -535,7 +550,7 @@ end:
             if (PKCS12_parse(p12, pPassword, &pKey, &pCert, &pCa))
             {
                 sk_X509_pop_free(pCa, X509_free);
-                EVP_PKEY_free(pKey);
+                EVP_PKEY_FREE(pKey);
                 PKCS12_free(p12);
                 BIO_FREE(bio);
                 nErr = OPEN_SSL_WARNING_ALL_OK;
@@ -553,7 +568,7 @@ end:
 
 end:
         if (NULL == ppCert)
-            X509_free(pCert);
+            X509_FREE(pCert);
         else
             *ppCert = pCert;
 

@@ -121,14 +121,7 @@ public:
     static CCertificateInfo GetDefault();
     static ICertificate* GetById(const std::string& id);
 
-    virtual CCertificateInfo GetInfo()
-    {
-        CCertificateInfo info;
-        info.SetName(GetSignerName());
-        info.SetDate(GetDate());
-        info.SetId(GetId());
-        return info;
-    }
+    virtual CCertificateInfo GetInfo();
 
 public:
     static int GetOOXMLHashAlg(const std::string& sAlg);

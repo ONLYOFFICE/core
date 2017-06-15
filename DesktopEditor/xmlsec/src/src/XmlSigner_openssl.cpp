@@ -75,6 +75,17 @@ public:
             EVP_PKEY_FREE(m_key);
     }
 
+protected:
+    static void string_replace(std::string& text, const std::string& replaceFrom, const std::string& replaceTo)
+    {
+        size_t posn = 0;
+        while (std::string::npos != (posn = text.find(replaceFrom, posn)))
+        {
+            text.replace(posn, replaceFrom.length(), replaceTo);
+            posn += replaceTo.length();
+        }
+    }
+
 public:
     std::string GetNumber()
     {
@@ -143,6 +154,7 @@ public:
             std::string::size_type nStart = nPos1 + sFindFirst.length();
             sReturn = sReturn.substr(nStart, nPos2 - nStart);
         }
+        string_replace(sReturn, "\n", "");
 
         BIO_free(bio);
         return sReturn;
@@ -278,12 +290,12 @@ public:
         int nDigestLen = 0;
         NSFile::CBase64Converter::Decode(sXmlSignature.c_str(), (int)sXmlSignature.length(), pDigestValue, nDigestLen);
 
-        int n2 = EVP_VerifyUpdate(pCtx, pDigestValue, (size_t)nDigestLen);
+        int n2 = EVP_VerifyUpdate(pCtx, (BYTE*)sXml.c_str(), (size_t)sXml.length());
         n2 = n2;
 
         EVP_PKEY* pubkey = X509_get_pubkey(m_cert);
 
-        int n3 = EVP_VerifyFinal(pCtx, (BYTE*)sXml.c_str(), (unsigned int)sXml.length(), pubkey);
+        int n3 = EVP_VerifyFinal(pCtx, pDigestValue, (unsigned int)nDigestLen, pubkey);
         n3 = n3;
 
         EVP_MD_CTX_destroy(pCtx);

@@ -32,27 +32,78 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/CellRangeRef.h"
 
 namespace XLS
 {
+class SXAxis : public BiffStructure
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAxis)
+public:
 
+	SXAxis(){}
+	~SXAxis(){}
 
-// Logical representation of SxView record in BIFF8
+	BiffStructurePtr clone();
+	
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeSXAxis;
+
+	bool bRw;
+	bool bCol;
+	bool bPage;
+	bool bData;
+
+};
+
 class SxView: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SxView)
 	BASE_OBJECT_DEFINE_CLASS_NAME(SxView)
 public:
-	SxView();
-	~SxView();
+	SxView()	{cchTableName = cchDataName = 0;}
+	~SxView()	{}
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSxView;
+	static const ElementType type = typeSxView;
 
+	Ref8U			ref;
+	RwU				rwFirstHead;
+	RwU				rwFirstData;
+	ColU			colFirstData;
+	short			iCache;
+	short			reserved;
+	SXAxis			sxaxis4Data;
+	short			ipos4Data;
+	short			cDim;
+	unsigned short	cDimRw;
+	unsigned short	cDimCol;
+	unsigned short	cDimPg;
+	short			cDimData;
+	unsigned short	cRw;
+	unsigned short	cCol;
+
+	bool fRwGrand;
+	bool fColGrand;
+	bool fAutoFormat;
+	bool fAtrNum;
+	bool fAtrFnt;
+	bool fAtrAlc;
+	bool fAtrBdr;
+	bool fAtrPat;
+	bool fAtrProc;
+
+	unsigned short	itblAutoFmt; //enum AutoFmt8
+	unsigned short	cchTableName;
+	unsigned short	cchDataName;
+
+	XLUnicodeStringNoCch	stTable;
+	XLUnicodeStringNoCch	stData;
 };
 
 } // namespace XLS

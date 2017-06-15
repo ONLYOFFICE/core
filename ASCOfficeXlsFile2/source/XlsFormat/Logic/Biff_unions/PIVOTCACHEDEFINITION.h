@@ -50,6 +50,11 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typePIVOTCACHEDEFINITION;
+
+	BaseObjectPtr	m_SXStreamID;
+	BaseObjectPtr	m_SXVS;
+	BaseObjectPtr	m_SXSRC;
+	BaseObjectPtr	m_SXADDLCACHE;
 };
 
 } // namespace XLS

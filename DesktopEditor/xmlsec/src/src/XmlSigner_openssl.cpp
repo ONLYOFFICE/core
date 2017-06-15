@@ -50,6 +50,9 @@ protected:
     X509*           m_cert;
     EVP_PKEY*       m_key;
 
+    std::string     m_separator;
+    std::string     m_id;
+
 public:
     ICertificate* m_pBase;
 
@@ -62,6 +65,7 @@ public:
         m_key = NULL;
 
         m_pBase = NULL;
+        m_separator = ";;;;;;;ONLYOFFICE;;;;;;;";
     }
     virtual ~CCertificate_openssl_private()
     {
@@ -69,6 +73,17 @@ public:
             X509_FREE(m_cert);
         if (NULL != m_key)
             EVP_PKEY_FREE(m_key);
+    }
+
+protected:
+    static void string_replace(std::string& text, const std::string& replaceFrom, const std::string& replaceTo)
+    {
+        size_t posn = 0;
+        while (std::string::npos != (posn = text.find(replaceFrom, posn)))
+        {
+            text.replace(posn, replaceFrom.length(), replaceTo);
+            posn += replaceTo.length();
+        }
     }
 
 public:
@@ -110,6 +125,10 @@ public:
         std::string sName(buffer);
         std::wstring sNameW = UTF8_TO_U(sName);
 
+        std::wstring::size_type pos = sNameW.find(L"CN=");
+        if (std::wstring::npos != pos)
+            sNameW = sNameW.substr(pos + 3);
+
         return sNameW;
     }
 
@@ -126,6 +145,16 @@ public:
         len = BIO_get_mem_data(bio, &data);
 
         std::string sReturn((char*)data, (size_t)len);
+
+        std::string sFindFirst = "-----BEGIN TRUSTED CERTIFICATE-----";
+        std::string::size_type nPos1 = sReturn.find(sFindFirst);
+        std::string::size_type nPos2 = sReturn.find("-----END TRUSTED CERTIFICATE-----");
+        if (std::string::npos != nPos1 && std::string::npos != nPos2)
+        {
+            std::string::size_type nStart = nPos1 + sFindFirst.length();
+            sReturn = sReturn.substr(nStart, nPos2 - nStart);
+        }
+        string_replace(sReturn, "\n", "");
 
         BIO_free(bio);
         return sReturn;
@@ -175,6 +204,8 @@ public:
     std::string GetId()
     {
         // TODO: + public key?
+        if (!m_id.empty())
+            return m_id;
         return GetNumber();
     }
 
@@ -198,7 +229,14 @@ public:
 
         EVP_MD_CTX_destroy(pCtx);
 
-        return std::string((char*)pSignature, (size_t)nSignatureLen);
+        char* pBase64 = NULL;
+        int nBase64Len = 0;
+        NSFile::CBase64Converter::Encode(pSignature, (int)nSignatureLen, pBase64, nBase64Len, NSBase64::B64_BASE64_FLAG_NONE);
+
+        std::string sReturn(pBase64, nBase64Len);
+        delete[] pBase64;
+
+        return sReturn;
     }
 
     std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlg)
@@ -252,12 +290,12 @@ public:
         int nDigestLen = 0;
         NSFile::CBase64Converter::Decode(sXmlSignature.c_str(), (int)sXmlSignature.length(), pDigestValue, nDigestLen);
 
-        int n2 = EVP_VerifyUpdate(pCtx, pDigestValue, (size_t)nDigestLen);
+        int n2 = EVP_VerifyUpdate(pCtx, (BYTE*)sXml.c_str(), (size_t)sXml.length());
         n2 = n2;
 
         EVP_PKEY* pubkey = X509_get_pubkey(m_cert);
 
-        int n3 = EVP_VerifyFinal(pCtx, (BYTE*)sXml.c_str(), (unsigned int)sXml.length(), pubkey);
+        int n3 = EVP_VerifyFinal(pCtx, pDigestValue, (unsigned int)nDigestLen, pubkey);
         n3 = n3;
 
         EVP_MD_CTX_destroy(pCtx);
@@ -309,6 +347,14 @@ public:
         std::wstring sCertPasswordW = m_pDialog->GetCertificatePassword();
         std::string sCertPassword = U_TO_UTF8(sCertPasswordW);
 
+        return FromFiles(sKeyPath, sKeyPassword, sCertPath, sCertPassword);
+    }
+
+    bool FromFiles(const std::wstring& sKeyPath, const std::string& sKeyPassword, const std::wstring& certPath, const std::string& certPassword)
+    {
+        std::wstring sCertPath = certPath;
+        std::string sCertPassword = certPassword;
+
         if (sCertPath.empty())
         {
             sCertPath = sKeyPath;
@@ -325,8 +371,45 @@ public:
         if (nErr != OPEN_SSL_WARNING_OK && nErr != OPEN_SSL_WARNING_ALL_OK)
             return false;
 
+        m_id = U_TO_UTF8(sKeyPath);
+        m_id += m_separator;
+        m_id += sKeyPassword;
+        m_id += m_separator;
+        m_id += U_TO_UTF8(sCertPath);
+        m_id += m_separator;
+        m_id += sCertPassword;
+
         return true;
     }
+
+    bool FromKey(const std::string& sId)
+    {
+        std::string id = sId;
+        std::vector<std::string> arr;
+        size_t pos = 0;
+        while ((pos = id.find(m_separator)) != std::string::npos)
+        {
+            arr.push_back(id.substr(0, pos));
+            id.erase(0, pos + m_separator.length());
+        }
+
+        if (!id.empty())
+            arr.push_back(id);
+
+        if (4 != arr.size())
+            return false;
+
+        std::string sKeyPathA = arr[0];
+        std::string sKeyPasswordA = arr[1];
+        std::string sCertPathA = arr[2];
+        std::string sCertPasswordA = arr[3];
+
+        std::wstring sKeyPath = UTF8_TO_U(sKeyPathA);
+        std::wstring sCertPath = UTF8_TO_U(sCertPathA);
+
+        return FromFiles(sKeyPath, sKeyPasswordA, sCertPath, sCertPasswordA);
+    }
+
     int ShowCertificate()
     {
         if (m_pDialog)
@@ -669,6 +752,16 @@ bool CCertificate_openssl::ShowSelectDialog()
 int CCertificate_openssl::ShowCertificate()
 {
     return m_internal->ShowCertificate();
+}
+
+bool CCertificate_openssl::FromFiles(const std::wstring& keyPath, const std::string& keyPassword, const std::wstring& certPath, const std::string& certPassword)
+{
+    return m_internal->FromFiles(keyPath, keyPassword, certPath, certPassword);
+}
+
+bool CCertificate_openssl::FromId(const std::string& id)
+{
+    return m_internal->FromKey(id);
 }
 
 void CCertificate_openssl::SetOpenSslDialog(ICertificateSelectDialogOpenSsl* pDialog)

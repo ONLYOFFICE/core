@@ -1,5 +1,8 @@
 #include "./../include/OOXMLSigner.h"
 #include "./../src/XmlTransform.h"
+#include <cstdio>
+#include <ctime>
+#include <time.h>
 
 class COOXMLSigner_private
 {
@@ -27,6 +30,20 @@ public:
         m_certificate = pContext;
 
         m_date = L"2017-04-21T08:30:21Z";
+
+        std::time_t rawtime;
+        std::tm* timeinfo;
+        char buffer1[100];
+        char buffer2[100];
+
+        std::time(&rawtime);
+        timeinfo = std::gmtime(&rawtime);
+
+        std::strftime(buffer1, 100, "%Y-%m-%d", timeinfo);
+        std::strftime(buffer2, 100, "%H:%M:%S", timeinfo);
+
+        std::string date = (std::string(buffer1) + "T" + std::string(buffer2) + "Z");
+        m_date = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(date);
 
         m_signed_info.WriteString("<CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/>");
         m_signed_info.WriteString("<SignatureMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#rsa-sha1\"/>");

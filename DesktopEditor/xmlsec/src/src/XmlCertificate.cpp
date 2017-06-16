@@ -58,6 +58,7 @@ CCertificateInfo ICertificate::GetInfo()
     info.SetName(GetSignerName());
     info.SetDate(GetDate());
     info.SetId(GetId());
+    info.SetRawBase64(GetCertificateBase64());
     return info;
 }
 

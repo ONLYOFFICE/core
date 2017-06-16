@@ -46,6 +46,7 @@ private:
     std::wstring m_name;
     std::string m_date;
     std::string m_id;
+    std::string m_rawData;
 
 public:
     CCertificateInfo()
@@ -80,6 +81,15 @@ public:
     void SetId(const std::string& id)
     {
         m_id = id;
+    }
+
+    std::string GetRawBase64()
+    {
+        return m_rawData;
+    }
+    void SetRawBase64(const std::string& data)
+    {
+        m_rawData = data;
     }
 };
 

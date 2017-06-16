@@ -395,6 +395,8 @@ public:
 
         if (!id.empty())
             arr.push_back(id);
+        else if (3 == arr.size())
+            arr.push_back("");
 
         if (4 != arr.size())
             return false;

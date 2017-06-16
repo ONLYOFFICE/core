@@ -103,6 +103,7 @@ namespace DocFileFormat
 	private:
 		bool DecryptOfficeFile	(CRYPT::Decryptor* Decryptor);
 		bool DecryptStream		(CRYPT::Decryptor* Decryptor, std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut);
+		bool CopyStream			(std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut);
 
 		inline StructuredStorageReader* GetStorage() const
 		{

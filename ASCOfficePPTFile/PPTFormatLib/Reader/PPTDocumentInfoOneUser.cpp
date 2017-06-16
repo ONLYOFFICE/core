@@ -132,6 +132,7 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 {
 	m_oUser.FromAtom(pUser);
 
+//--------------------------------------------------------------------------------------------------
 	SRecordHeader oHeader;
 	CRecordUserEditAtom oUserAtom;
 
@@ -147,8 +148,24 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 	CRecordPersistDirectoryAtom oPersist;
 	oPersist.ReadFromStream(oHeader, pStream);
 	oPersist.ToMap(&m_mapOffsetInPIDs);
+//--------------------------------------------------------------------------------------------------
+	std::map<DWORD, DWORD>::iterator pPair = m_mapOffsetInPIDs.find(m_oUser.m_nEncryptRef);
 
-	std::map<DWORD, DWORD>::iterator pPair = m_mapOffsetInPIDs.find(m_oUser.m_nDocumentRef);
+	if (pPair != m_mapOffsetInPIDs.end())
+	{
+		StreamUtils::StreamSeek(pPair->second, pStream);
+		oHeader.ReadFromStream(pStream);
+
+		if (RECORD_TYPE_DOCUMENT_ENCRYPTION_ATOM  == oHeader.RecType)
+		{
+			m_bEncrypt = true;
+			m_oEncryptionHeader.ReadFromStream(oHeader, pStream);
+			
+			return true;
+		}
+	}
+//--------------------------------------------------------------------------------------------------
+	pPair = m_mapOffsetInPIDs.find(m_oUser.m_nDocumentRef);
 
 	if (pPair == m_mapOffsetInPIDs.end())
         return false;
@@ -158,7 +175,7 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 
 	if (RECORD_TYPE_DOCUMENT != oHeader.RecType)
 	{
-        return false;
+		return false;
 	}
 
 	m_oDocument.ReadFromStream(oHeader, pStream);

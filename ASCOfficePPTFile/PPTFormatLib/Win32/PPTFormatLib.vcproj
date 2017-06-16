@@ -543,6 +543,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Records\CryptSession10Container.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Records\CString.h"
 				>
 			</File>

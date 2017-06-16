@@ -40,8 +40,6 @@ public:
 	double				m_dStartTime;
 	double				m_dEndTime;
 
-public:
-	
 	CRecordExCDAudioContainer()
 	{
 		m_dStartTime	= 0;

@@ -35,30 +35,25 @@
 
 #include <vector>
 
+namespace CRYPT
+{
+	class Decryptor;
+}
+
+namespace POLE
+{
+	class Storage;
+}
+
 class COfficePPTFile 
 {
 public:
     COfficePPTFile()
 	{
-		m_strTempDirectory = L"";
 		m_pReader = NULL;
 		m_Status = 0;
-
 	}
-
     ~COfficePPTFile();
-
-private:
-
-	int m_Status;
-
-	void* m_pReader;
-
-    std::vector<std::wstring> m_arUserSources;
-
-    std::wstring m_strTempDirectory;
-	
-public:
 
     HRESULT put_TempDirectory(std::wstring sDir)
 	{
@@ -71,13 +66,22 @@ public:
 		return m_strTempDirectory;
 	}
 
-    HRESULT LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath);
+    HRESULT LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring password);
 
 private:
-    bool OpenFile(std::wstring sFileName);
 
+	int							m_Status;
+	void*						m_pReader;
+    std::vector<std::wstring>	m_arUserSources;
+    std::wstring				m_strTempDirectory;
+	std::wstring				m_sTempDecryptFileName;
+	
+    long OpenFile(const std::wstring & fileName, const std::wstring & password);
     bool CloseFile();
 
-    std::wstring GetDirectory(std::wstring strFileName);
+	bool DecryptOfficeFile	(CRYPT::Decryptor* Decryptor);
+	bool DecryptStream		(CRYPT::Decryptor* Decryptor, std::string streamName, POLE::Storage* storageIn, POLE::Storage* storageOut);
+	
+	std::wstring GetDirectory(std::wstring strFileName);
 };
 

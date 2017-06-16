@@ -133,11 +133,21 @@ namespace DocFileFormat
 			pos = tStream.GetPosition();
 			
 		//------------------------------------------------------------------------------------------
-			crypt_data_aes.hashAlgorithm = CRYPT_METHOD::SHA1; //by AlgIDHash -> 0x0000 || 0x8004
-			crypt_data_aes.spinCount		= 50000;
+			switch(AlgIDHash)
+			{
+				case 0x8003: crypt_data_aes.hashAlgorithm = CRYPT_METHOD::MD5;	break;
+				case 0x0000: 
+				case 0x8004: crypt_data_aes.hashAlgorithm = CRYPT_METHOD::SHA1;	break;
+			}
+			crypt_data_aes.spinCount = 0;
 
 			switch(AlgID)
 			{
+			case 0x0000:
+				if (fAES)		crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::AES_ECB;
+				if (fCryptoAPI)	crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::RC4;	
+				crypt_data_aes.keySize = KeySize / 8;
+				break;
 			case 0x6801:	
 				crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::RC4;		
 				crypt_data_aes.keySize = KeySize / 8;
@@ -156,16 +166,11 @@ namespace DocFileFormat
 				break;
 			}
 
-			switch(ProviderType)
-			{
-			case 0x0001:	crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::RC4;		break;
-			case 0x0018:	crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::AES_ECB; break;
-			}
-
-
+			//switch(ProviderType)
+			//{
+			//	case 0x0001:	crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::RC4;		break;
+			//	case 0x0018:	crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::AES_ECB; break;
+			//}
 		}
-
-		//RELEASEARRAYOBJECTS( bytes );
 	}
-
 }

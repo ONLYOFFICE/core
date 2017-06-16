@@ -196,7 +196,8 @@ typedef BYTE BOOL1;
 #define		RECORD_TYPE_COMMENT2000SUMMARYATOM				12005
 
 // Records ~12050 seem to be related to Document Encryption
-#define		RECORD_TYPE_DOCUMENT_ENCRYPTION_ATOM			12052
+#define		RECORD_TYPE_DOCUMENT_ENCRYPTION_ATOM			0x2F14
+
 
 //records greater then 0xF000 belong to with Microsoft Office Drawing format also known as Escher
 #define		RECORD_TYPE_ESCHER_DGG_CONTAINER							0xF000
@@ -250,6 +251,7 @@ typedef BYTE BOOL1;
 #define		RECORD_PROG_STRING_TAG										0x1389	//	RT_ProgStringTag					ProgStringTagContainer
 #define		RECORD_PROG_BINARY_TAG										0x138A	//	RT_ProgBinaryTag					SlideProgTagsContainer-DocProgTagsContainer-ShapeProgTagsContainer
 #define		RECORD_TEXT_MASTER_STYLE10_ATOM								0x0FB2	//	RT_TextMasterStyle10Atom			TextMasterStyle10Atom 
+
 
 static std::string GetRecordName(DWORD dwType)
 {

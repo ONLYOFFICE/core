@@ -470,6 +470,12 @@ namespace DocFileFormat
 			delete storageOut;
 			return false;
 		}
+		//DecryptStream(Decryptor, "WordDocument", storageIn, storageOut);
+		//if (FIB->m_FibBase.fWhichTblStm)		
+		//	DecryptStream(Decryptor, "1Table", storageIn, storageOut);
+		//else
+		//	DecryptStream(Decryptor, "0Table", storageIn, storageOut);
+
 		std::list<std::string> listStream = storageIn->entries();
 
 		for (std::list<std::string>::iterator it = listStream.begin(); it != listStream.end(); it++)
@@ -480,13 +486,20 @@ namespace DocFileFormat
 				
 				for (std::list<std::string>::iterator it2 = list_entry.begin(); it2 != list_entry.end(); it2++)
 				{
+					//if (*it2 != "WordDocument" && std::wstring::npos == it2->find("Table"))
+					//	CopyStream( *it2, storageIn, storageOut);
 					DecryptStream(Decryptor, *it2, storageIn, storageOut);
 				}
 			}
 			else 
+			{
+				//if (*it != "WordDocument" && std::wstring::npos == it->find("Table"))
+				//	CopyStream( *it, storageIn, storageOut);
 				DecryptStream(Decryptor, *it, storageIn, storageOut);
+			}
 
 		}
+
 		storageOut->close();
 		delete storageOut;
 
@@ -506,6 +519,31 @@ namespace DocFileFormat
 		{
 			if (!m_pStorage->GetStream ("0Table", &TableStream))	m_pStorage->GetStream ("1Table", &TableStream);
 		}
+		return true;
+	}
+	bool WordDocument::CopyStream (std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut)
+	{
+		POLE::Stream *stream = new POLE::Stream(storageIn, streamName);
+		if (!stream) return false;
+
+		stream->seek(0);
+		int sz_stream = stream->size();
+		
+		POLE::Stream *streamNew = new POLE::Stream(storageOut, streamName, true, sz_stream);
+		if (!streamNew) return false;
+
+		unsigned char* data_stream = new unsigned char[sz_stream];
+		stream->read(data_stream, sz_stream);
+
+		streamNew->write(data_stream, sz_stream);
+
+		RELEASEARRAYOBJECTS(data_stream);
+
+		streamNew->flush();
+				
+		delete streamNew;
+		delete stream;
+		
 		return true;
 	}
 

@@ -248,7 +248,13 @@ public:
         std::string sSignatureValue = U_TO_UTF8((m_node.ReadValueString(L"SignatureValue")));
 
         if (!m_cert->Verify(sSignatureCalcValue, sSignatureValue, nSignatureMethod))
-            m_valid = OOXML_SIGNATURE_INVALID;                
+            m_valid = OOXML_SIGNATURE_INVALID;
+        else
+        {
+            int nCertVerify = m_cert->VerifySelf();
+            if (OPEN_SSL_WARNING_NOVERIFY == nCertVerify)
+                m_valid = OOXML_SIGNATURE_INVALID;
+        }
     }
 
     XmlUtils::CXmlNode GetObjectById(std::string sId)

@@ -328,6 +328,7 @@ public:
             RELEASEARRAYOBJECTS(pData);
             return (NULL == m_cert) ? false : true;
         }
+
         return false;
     }
 
@@ -422,6 +423,27 @@ public:
     void SetOpenSslDialog(ICertificateSelectDialogOpenSsl* pDialog)
     {
         m_pDialog = pDialog;
+    }
+
+    int VerifySelf()
+    {
+        if (NULL == m_cert)
+            return OPEN_SSL_WARNING_NOVERIFY;
+
+        X509_STORE_CTX* ctx = X509_STORE_CTX_new();
+        X509_STORE* store = X509_STORE_new();
+
+        X509_STORE_add_cert(store, m_cert);
+        X509_STORE_CTX_init(ctx, store, m_cert, NULL);
+
+        int status = X509_verify_cert(ctx);
+        int nErr = X509_STORE_CTX_get_error(ctx);
+        std::string sErr(X509_verify_cert_error_string(nErr));
+
+        X509_STORE_free(store);
+        X509_STORE_CTX_free(ctx);
+
+        return (1 == status) ? OPEN_SSL_WARNING_OK : OPEN_SSL_WARNING_NOVERIFY;
     }
 
 protected:
@@ -714,6 +736,11 @@ std::string CCertificate_openssl::GetDate()
 std::string CCertificate_openssl::GetId()
 {
     return m_internal->GetId();
+}
+
+int CCertificate_openssl::VerifySelf()
+{
+    return m_internal->VerifySelf();
 }
 
 std::string CCertificate_openssl::Sign(const std::string& sXml)

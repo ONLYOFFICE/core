@@ -12,6 +12,7 @@
 #define OPEN_SSL_WARNING_ERR        1
 #define OPEN_SSL_WARNING_ALL_OK     2
 #define OPEN_SSL_WARNING_PASS       4
+#define OPEN_SSL_WARNING_NOVERIFY   8
 
 class ICertificate;
 class Q_DECL_EXPORT ICertificateSelectDialogOpenSsl
@@ -102,6 +103,7 @@ public:
 
     virtual std::string GetDate()               = 0;
     virtual std::string GetId()                 = 0;
+    virtual int VerifySelf()                    = 0;
 
 public:
     virtual std::string Sign(const std::string& sXml)                                   = 0;

@@ -26,6 +26,8 @@ public:
 
     virtual std::string GetId();
 
+    virtual int VerifySelf();
+
 public:
     virtual std::string Sign(const std::string& sXml);
 

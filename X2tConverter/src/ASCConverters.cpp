@@ -874,7 +874,7 @@ namespace NExtractTools
        COfficePPTFile pptFile;
 
        pptFile.put_TempDirectory(sTemp);
-       return S_OK == pptFile.LoadFromFile(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+	   return S_OK == pptFile.LoadFromFile(sFrom, sTo, params.getPassword()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
    }
 	// ppt -> pptt
 	int ppt2pptt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
@@ -905,7 +905,7 @@ namespace NExtractTools
 
        pptFile.put_TempDirectory(sTemp);
 
-       if ( pptFile.LoadFromFile(sFrom, sTempUnpackedPPTX) != S_OK) return AVS_FILEUTILS_ERROR_CONVERT;
+       if ( pptFile.LoadFromFile(sFrom, sTempUnpackedPPTX, params.getPassword()) != S_OK) return AVS_FILEUTILS_ERROR_CONVERT;
 
        // convert unzipped pptx to unzipped pptt
        CPPTXFile *pptx_file = new CPPTXFile(NULL, NULL, NULL, NULL);

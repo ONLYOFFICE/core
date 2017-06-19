@@ -31,6 +31,7 @@
  */
 #pragma once
 
+#include "../../../ASCOfficeXlsFile2/source/XlsFormat/Crypt/Decryptor.h"
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../Records/Drawing/ArtBlip.h"
 
@@ -44,6 +45,8 @@
 #define HEADER_STREAM			"Header" 
 
 #define PP97_DUALSTORAGE		"PP97_DUALSTORAGE"
+
+#define ENCRYPTION_STREAM		"EncryptedSummary" 
 
 class CPPTFileReader
 {
@@ -63,12 +66,12 @@ public:
 				
 		if ( ReadCurrentUser(pStm) ) 
 		{
-			m_bIsPPTFile = TRUE; 
+			m_bIsPPTFile = true; 
 		}
 		else
 		{
 			RELEASEOBJECT(pStm);
-			
+		
 			std::string stream_name = std::string(PP97_DUALSTORAGE) + std::string("/") + std::string(CURRENT_USER_STREAM);
 			pStm = new POLE::Stream( m_pPowerPointStg, stream_name);
 			
@@ -78,7 +81,7 @@ public:
 			m_bDualStorage = true;
 			if ( ReadCurrentUser(pStm))
 			{
-				m_bIsPPTFile = TRUE; 
+				m_bIsPPTFile = true; 
 			}
 		}
 		
@@ -106,19 +109,31 @@ public:
 	{ 
 		return m_bIsPPTFile;
 	} 
-
-	void ReadPersistDirectory()
+    bool IsEncrypted()
 	{
-        bool bRes = SavePictures();	
-		// нужно вызывать РОВНО один раз...
-		m_oDocumentInfo.ReadFromStream(&m_oCurrentUser, GetDocStream(), m_strMemoryForder);
+		if (m_oDocumentInfo.m_arUsers.empty()) 
+			return m_oDocumentInfo.m_oCurrentUser.m_bIsEncrypt; //wps не выставляет флаг!
+
+		return &m_oDocumentInfo.m_arUsers[0]->m_bEncrypt;
+	}
+	CEncryptionHeader* GetEncryptionHeader()
+	{
+		if (m_oDocumentInfo.m_arUsers.empty()) return NULL;
+
+		return &m_oDocumentInfo.m_arUsers[0]->m_oEncryptionHeader;
+	}
+	bool ReadPersistDirectory()
+	{
+	// нужно вызывать РОВНО один раз...
+        bool bRes = SavePictures();
+
+		return m_oDocumentInfo.ReadFromStream(&m_oCurrentUser, GetDocStream(), m_strMemoryForder);
 	}
 
 	void ReadSlideList()
 	{
 		if (m_oDocumentInfo.m_arUsers.size() > 0)
 		{
-
 			DWORD nPID = m_oDocumentInfo.m_arUsers[0]->m_oUser.m_nDocumentRef;
 			std::map<DWORD, DWORD>::iterator pPair = m_oDocumentInfo.m_arUsers[0]->m_mapOffsetInPIDs.find(nPID);
 
@@ -142,8 +157,7 @@ protected:
 		{ 
 			m_oCurrentUser.ReadFromStream(oHeader, pStm);
 			
-			isPP = (m_oCurrentUser.m_nSize == 0x00000014 && (m_oCurrentUser.m_nToken == NO_ENCRYPT) && 
-								(m_oCurrentUser.m_nLenUserName <= 255)); 
+			isPP = (m_oCurrentUser.m_nSize == 0x00000014 && (m_oCurrentUser.m_nLenUserName <= 255)); 
 		} 
  
 		return isPP; 
@@ -195,7 +209,7 @@ protected:
 
 //  удаление картинок при завершении программы
 
-		while (TRUE)
+		while (true)
 		{
             if (oHeader.ReadFromStream(pStream) == false )
 			{
@@ -209,7 +223,7 @@ protected:
 			art_blip.ReadFromStream(oHeader, pStream);
 
 		}
-		return TRUE;
+		return true;
 	}
  
 private: 
@@ -217,11 +231,11 @@ private:
 	CRecordCurrentUserAtom		m_oCurrentUser; 
 	POLE::Stream *				m_pDocStream; 
 	POLE::Stream *				m_pPictureStream; 
-	POLE::Storage*				m_pPowerPointStg; 
-    bool						m_bIsPPTFile;
+
+	bool						m_bIsPPTFile;
 
 public:	
-	// для картинок
+	POLE::Storage*				m_pPowerPointStg; 
     std::wstring				m_strMemoryForder;
 
     std::vector<bool>			m_arLoadImageFlags;

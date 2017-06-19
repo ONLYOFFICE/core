@@ -34,6 +34,7 @@
 
 #include "../Records/Animations/AnimationTypes.h"
 #include "../Records/ExObjListContainer.h"
+#include "../Records/CryptSession10Container.h"
 
 #include "SlideInfo.h"
 
@@ -46,6 +47,9 @@ public:
 	CUserEdit										m_oUser;
 	std::map<DWORD, DWORD>							m_mapOffsetInPIDs;
 	CRecordDocument									m_oDocument;
+	
+	CEncryptionHeader								m_oEncryptionHeader;
+	bool											m_bEncrypt;
 
 	std::map<DWORD, CRecordSlide*>					m_mapSlides;
 	std::map<DWORD, CRecordSlide*>					m_mapMasters;

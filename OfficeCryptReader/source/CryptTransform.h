@@ -40,6 +40,7 @@ namespace CRYPT_METHOD
 {
 	enum _hashAlgorithm
 	{
+		MD5,
 		SHA1,
 		SHA224,
 		SHA256,
@@ -125,7 +126,7 @@ class ECMADecryptor : public Decryptor
 {
 public:
 	ECMADecryptor();
-	virtual ~ECMADecryptor(){}
+	virtual ~ECMADecryptor();
 
 	void Decrypt (unsigned char* data, int  size, unsigned char*& data_out);
 	

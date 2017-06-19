@@ -131,6 +131,11 @@ public:
         return GetNumber();
     }
 
+    virtual int VerifySelf()
+    {
+        return OPEN_SSL_WARNING_OK;
+    }
+
 public:
     virtual std::string Sign(const std::string& sXml)
     {

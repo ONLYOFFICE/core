@@ -49,6 +49,7 @@
 
 #include "../../Common/DocxFormat/Source/Base/unicode_util.h"
 #include "../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../ASCOfficeXlsFile2/source/XlsFormat/Crypt/rtl/cipher.h"
 
 static const unsigned char encrVerifierHashInputBlockKey[8]			= { 0xfe, 0xa7, 0xd2, 0x76, 0x3b, 0x4b, 0x9e, 0x79 };
 static const unsigned char encrVerifierHashValueBlockKey[8]			= { 0xd7, 0xaa, 0x0f, 0x6d, 0x30, 0x61, 0x34, 0x4e };
@@ -216,17 +217,20 @@ _buf Hmac(_buf &  buf, CRYPT_METHOD::_hashAlgorithm algorithm, std::string & pla
 
 _buf HashAppend(_buf &  hashBuf, _buf & block, CRYPT_METHOD::_hashAlgorithm algorithm)
 {//todooo переделать
-	if (algorithm == CRYPT_METHOD::SHA1)
+	if (algorithm == CRYPT_METHOD::MD5)
+	{		
+		MD5 hash;
+
+		if (hashBuf.ptr && hashBuf.size > 0)	hash.Update( hashBuf.ptr, hashBuf.size);
+		if (block.ptr	&& block.size > 0)		hash.Update( block.ptr	, block.size);
+
+		SecByteBlock buffer(hash.DigestSize());
+		hash.Final(buffer);
+
+		return _buf(buffer.BytePtr(), buffer.SizeInBytes());	
+	}
+	else if (algorithm == CRYPT_METHOD::SHA1)
 	{
-		//MD5 hash;
-
-		//if (hashBuf.ptr && hashBuf.size > 0)	hash.Update( hashBuf.ptr, hashBuf.size);
-		//if (block.ptr	&& block.size > 0)		hash.Update( block.ptr	, block.size);
-
-		//SecByteBlock buffer(hash.DigestSize());
-		//hash.Final(buffer);
-
-		//return _buf(buffer.BytePtr(), buffer.SizeInBytes());
 		SHA1 hash;
 
 		if (hashBuf.ptr && hashBuf.size > 0)	hash.Update( hashBuf.ptr, hashBuf.size);
@@ -282,30 +286,49 @@ _buf GenerateAgileKey(_buf & salt, _buf & password, _buf & blockKey, int hashSiz
 	return _buf(pHashBuf.ptr, pHashBuf.size);
 }
 
-_buf GenerateHashKey(_buf & salt, _buf & password, int hashSize, int spin, CRYPT_METHOD::_hashAlgorithm algorithm)
+_buf GenerateHashKey(_buf & salt, _buf & password, int hashSize, int spin, CRYPT_METHOD::_hashAlgorithm algorithm, int block_index = 0)
 {
-	_buf empty (NULL, 0, false);
+	_buf block	((unsigned char*)&block_index, 4, false);
+
+	_buf empty	(NULL, 0, false);
 	_buf pHashBuf = HashAppend(salt, password, algorithm);
 		
-	int i = 0;
-	for (i = 0; i < spin; i++)
+	for (int i = 0; i < spin; i++)
 	{
         _buf iterator((unsigned char*)&i, 4, false);
         pHashBuf = HashAppend(iterator, pHashBuf, algorithm);
 	}
-	i = 0;
-    _buf iterator((unsigned char*)&i, 4, false);
-    pHashBuf = HashAppend(pHashBuf, iterator, algorithm);
 
-	_buf derivedKey(64);
-	for (int i = 0; i < derivedKey.size; i++)
+    pHashBuf = HashAppend( pHashBuf, block, algorithm);
+	
+	if (spin == 0)
 	{
-		derivedKey.ptr[i] = (i < pHashBuf.size ? 0x36 ^ pHashBuf.ptr[i] : 0x36);
+		return _buf(pHashBuf.ptr, pHashBuf.size);
 	}
 
-	pHashBuf = HashAppend(derivedKey, empty, algorithm);
+	_buf derivedKey1(64);
+	memset (derivedKey1.ptr, 0x36, 64);
+	for (int i = 0; i < pHashBuf.size; i++)
+	{
+		derivedKey1.ptr[i] ^= pHashBuf.ptr[i];
+	}
 
-	return _buf(pHashBuf.ptr, hashSize);
+	_buf derivedKey2(64);
+	memset (derivedKey2.ptr, 0x5c, 64);
+	for (int i = 0; i < pHashBuf.size; i++)
+	{
+		derivedKey2.ptr[i] ^= pHashBuf.ptr[i];
+	}
+
+	_buf pHashBuf1 = HashAppend(derivedKey1, empty, algorithm);
+	_buf pHashBuf2 = HashAppend(derivedKey2, empty, algorithm);
+
+	_buf pHashBuf3(2 * hashSize);
+	
+	memcpy(pHashBuf3.ptr + 0,			pHashBuf1.ptr, hashSize);
+	memcpy(pHashBuf3.ptr + hashSize,	pHashBuf2.ptr, hashSize);
+
+	return _buf(pHashBuf3.ptr, pHashBuf3.size);
 }
 
 bool EncryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out, CRYPT_METHOD::_cipherAlgorithm algorithm,
@@ -317,7 +340,12 @@ bool EncryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out, CRYP
 	}
 	else if (algorithm == CRYPT_METHOD::RC4)
 	{
-		return false;
+		data_out.ptr = new unsigned char[data_inp.size];
+		data_out.size = data_inp.size;
+		
+		ARC4::Encryption rc4Encryption(key.ptr, key.size);
+		rc4Encryption.ProcessData(data_out.ptr, data_inp.ptr, data_inp.size);
+
 	}
 	else //AES
 	{
@@ -353,19 +381,25 @@ bool EncryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out, CRYP
 
 	return true;
 }
+ARC4::Decryption	rc4Decryption;
+//CipherARCFOUR		rc4Decryption;
+
 bool DecryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out,  CRYPT_METHOD::_cipherAlgorithm algorithm, 
 				  StreamTransformationFilter::BlockPaddingScheme padding = StreamTransformationFilter::NO_PADDING)
 {	
+	if (!data_out.ptr)
+	{
+		data_out = _buf(data_inp.size);
+	}
+
 	if (algorithm == CRYPT_METHOD::XOR)
 	{
 		return false;
 	}
 	else if (algorithm == CRYPT_METHOD::RC4)
 	{
-		CryptoPP::ARC4 rc4(key.ptr, key.size);
-		data_out.ptr = new unsigned char[data_inp.size];
-		data_out.size = data_inp.size;
-		rc4.ProcessData(data_out.ptr, data_inp.ptr, data_inp.size);
+		//rc4Decryption.Decode(data_inp.ptr, data_inp.size, data_out.ptr, data_out.size);
+		rc4Decryption.ProcessData(data_out.ptr, data_inp.ptr, data_inp.size);
 	}
 	else //AES
 	{
@@ -386,10 +420,6 @@ bool DecryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out,  CRY
 	
 		if (!modeDecryption) return false;
 		    
-		if (!data_out.ptr)
-		{
-			data_out = _buf(data_inp.size);
-		}
 		StreamTransformationFilter stfDecryptor(*modeDecryption, new ArraySink( data_out.ptr, data_out.size), padding);
 	 
 		stfDecryptor.Put( data_inp.ptr, data_inp.size );
@@ -409,6 +439,10 @@ ECMADecryptor::ECMADecryptor()
 	bVerify = false;
 }
 
+ECMADecryptor::~ECMADecryptor()
+{
+}
+
 bool ECMADecryptor::SetPassword(std::wstring _password)
 {
 	bVerify		= false;
@@ -416,55 +450,53 @@ bool ECMADecryptor::SetPassword(std::wstring _password)
 
 	if (password.empty()) return false;
 	
+	_buf pPassword		(password);
+	_buf pSalt			(cryptData.saltValue);
+	_buf empty			(NULL, 0, false);
+
+	_buf pEncVerInput	(cryptData.encryptedVerifierInput);
+	_buf pEncVerValue	(cryptData.encryptedVerifierValue);
+	
 	if (cryptData.bAgile)
 	{	
-		_buf pPassword		(password);
-		_buf pSalt			(cryptData.saltValue);
 		_buf pInputBlockKey ((unsigned char*)encrVerifierHashInputBlockKey, 8);
-		_buf pValueBlockKey ((unsigned char*)encrVerifierHashValueBlockKey, 8);
-		_buf empty			(NULL, 0, false);
+		_buf pValueBlockKey ((unsigned char*)encrVerifierHashValueBlockKey, 8);		
 		
-		_buf pEncVerInput	(cryptData.encryptedVerifierInput);
- 		_buf pEncVerValue	(cryptData.encryptedVerifierValue);
+		_buf verifierInputKey	= GenerateAgileKey( pSalt, pPassword, pInputBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm );
+		_buf verifierHashKey	= GenerateAgileKey(pSalt, pPassword, pValueBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm);
 		
-		_buf verifierInputKey = GenerateAgileKey( pSalt, pPassword, pInputBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm );
-		_buf decryptedVerifierHashInputBytes;
-		
+//--------------------------------------------
+		_buf decryptedVerifierHashInputBytes;		
 		DecryptCipher(verifierInputKey, pSalt, pEncVerInput, decryptedVerifierHashInputBytes, cryptData.cipherAlgorithm);
 //--------------------------------------------
-
 		_buf hashBuf = HashAppend(decryptedVerifierHashInputBytes, empty, cryptData.hashAlgorithm);
-
 //--------------------------------------------
-		_buf decryptedVerifierHashBytes;
 		
-		_buf verifierHashKey = GenerateAgileKey(pSalt, pPassword, pValueBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm);
+		_buf decryptedVerifierHashBytes;		
 		DecryptCipher(verifierHashKey, pSalt, pEncVerValue, decryptedVerifierHashBytes, cryptData.cipherAlgorithm);
 //--------------------------------------------
 		bVerify	= (decryptedVerifierHashBytes==hashBuf);
 	}
 	else
 	{
-		_buf pPassword		(password);
-		_buf pSalt			(cryptData.saltValue);
-		_buf empty			(NULL, 0, false);
+		_buf verifierKey = GenerateHashKey(pSalt, pPassword, cryptData.hashSize, cryptData.spinCount, cryptData.hashAlgorithm);		
+		CorrectHashSize(verifierKey, cryptData.keySize, 0);
+		if (cryptData.keySize == 5)
+			CorrectHashSize(verifierKey, 16, 0); //40-bit crypt key !!!
 
-		_buf pEncVerInput	(cryptData.encryptedVerifierInput);
- 		_buf pEncVerValue	(cryptData.encryptedVerifierValue);
+		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
+			rc4Decryption.SetKey(verifierKey.ptr, verifierKey.size);
 
-		_buf hashKey = GenerateHashKey(pSalt, pPassword, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm);
-		
+//--------------------------------------------
 		_buf decryptedVerifierHashInputBytes;		
-		DecryptCipher(hashKey, empty, pEncVerInput, decryptedVerifierHashInputBytes, cryptData.cipherAlgorithm);
+		DecryptCipher(verifierKey, pSalt, pEncVerInput, decryptedVerifierHashInputBytes, cryptData.cipherAlgorithm);
 
 	//--------------------------------------------
-
 		_buf hashBuf = HashAppend(decryptedVerifierHashInputBytes, empty, cryptData.hashAlgorithm);
-
 	//--------------------------------------------
-		_buf decryptedVerifierHashBytes;
 		
-		DecryptCipher(hashKey, empty, pEncVerValue, decryptedVerifierHashBytes, cryptData.cipherAlgorithm);
+		_buf decryptedVerifierHashBytes;		
+		DecryptCipher(verifierKey, pSalt, pEncVerValue, decryptedVerifierHashBytes, cryptData.cipherAlgorithm);
 
 		bVerify	= (decryptedVerifierHashBytes==hashBuf);
 	}
@@ -600,13 +632,41 @@ void ECMADecryptor::Decrypt(unsigned char* data_ptr, int  data_size, unsigned ch
 
 	}
 	else
-	{
-		_buf hashKey = GenerateHashKey(pSalt, pPassword, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm);
-		
-		_buf pInp(data_inp, size, false);
-		_buf pOut(data_out, size, false);
-		
-		DecryptCipher(hashKey, empty, pInp, pOut, cryptData.cipherAlgorithm);
+	{				
+		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
+		{
+			int i = 0, sz = 512, pos = 0;
+
+			while (pos < size)
+			{
+				if (pos + sz > size) 
+					sz = size - pos;				
+
+				_buf hashKey = GenerateHashKey(pSalt, pPassword, cryptData.hashSize, cryptData.spinCount, cryptData.hashAlgorithm, i);
+				CorrectHashSize(hashKey, cryptData.keySize, 0);
+				if (cryptData.keySize == 5)
+					CorrectHashSize(hashKey, 16, 0); //40-bit crypt key !!!
+				
+				rc4Decryption.SetKey(hashKey.ptr, hashKey.size);
+				
+				_buf pInp(data_inp + pos, sz, false);
+				_buf pOut(data_out + pos, sz, false);
+
+				DecryptCipher(empty, empty, pInp, pOut, cryptData.cipherAlgorithm);
+				
+				pos += sz; i++;
+			}
+		}
+		else
+		{
+			_buf hashKey = GenerateHashKey(pSalt, pPassword, cryptData.hashSize, cryptData.spinCount, cryptData.hashAlgorithm);
+			CorrectHashSize(hashKey, cryptData.keySize, 0);
+			
+			_buf pInp(data_inp, size, false);
+			_buf pOut(data_out, size, false);
+
+			DecryptCipher(hashKey, empty, pInp, pOut, cryptData.cipherAlgorithm);
+		}
 	}
 }
 

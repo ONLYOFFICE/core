@@ -12,6 +12,7 @@
 #define OPEN_SSL_WARNING_ERR        1
 #define OPEN_SSL_WARNING_ALL_OK     2
 #define OPEN_SSL_WARNING_PASS       4
+#define OPEN_SSL_WARNING_NOVERIFY   8
 
 class ICertificate;
 class Q_DECL_EXPORT ICertificateSelectDialogOpenSsl
@@ -45,6 +46,7 @@ private:
     std::wstring m_name;
     std::string m_date;
     std::string m_id;
+    std::string m_rawData;
 
 public:
     CCertificateInfo()
@@ -80,6 +82,15 @@ public:
     {
         m_id = id;
     }
+
+    std::string GetRawBase64()
+    {
+        return m_rawData;
+    }
+    void SetRawBase64(const std::string& data)
+    {
+        m_rawData = data;
+    }
 };
 
 class Q_DECL_EXPORT ICertificate
@@ -102,6 +113,7 @@ public:
 
     virtual std::string GetDate()               = 0;
     virtual std::string GetId()                 = 0;
+    virtual int VerifySelf()                    = 0;
 
 public:
     virtual std::string Sign(const std::string& sXml)                                   = 0;

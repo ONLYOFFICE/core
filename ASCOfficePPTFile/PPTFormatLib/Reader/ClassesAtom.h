@@ -42,15 +42,16 @@ public:
 	DWORD m_nOffsetPersistDirectory;  
 	                          
 	DWORD m_nDocumentRef; 
+	DWORD m_nEncryptRef;
 	DWORD m_nMaxPersistWritten;
 
-public:
 	CUserEdit()
 	{
-		m_nOffsetLastEdit = 0;
-		m_nOffsetPersistDirectory = 0;
-		m_nDocumentRef = 0;
-		m_nMaxPersistWritten = 0;
+		m_nOffsetLastEdit			= 0;
+		m_nOffsetPersistDirectory	= 0;
+		m_nDocumentRef				= 0;
+		m_nMaxPersistWritten		= 0;
+		m_nEncryptRef				= 0;
 	}
 	~CUserEdit()
 	{
@@ -62,15 +63,17 @@ public:
 		m_nOffsetPersistDirectory	= oSrc.m_nOffsetPersistDirectory;
 		m_nDocumentRef				= oSrc.m_nDocumentRef;
 		m_nMaxPersistWritten		= oSrc.m_nMaxPersistWritten;
+		m_nEncryptRef				= oSrc.m_nEncryptRef;
 		return (*this);
 	}
 
 	void FromAtom(CRecordUserEditAtom* pAtom)
 	{
-		m_nOffsetLastEdit = pAtom->m_nOffsetLastEdit;
-		m_nOffsetPersistDirectory = pAtom->m_nOffsetPersistDirectory;
-		m_nDocumentRef = pAtom->m_nOffsetDocPersistIdRef;
-		m_nMaxPersistWritten = pAtom->m_nPersistIdSeed;
+		m_nOffsetLastEdit			= pAtom->m_nOffsetLastEdit;
+		m_nOffsetPersistDirectory	= pAtom->m_nOffsetPersistDirectory;
+		m_nDocumentRef				= pAtom->m_nOffsetDocPersistIdRef;
+		m_nMaxPersistWritten		= pAtom->m_nPersistIdSeed;
+		m_nEncryptRef				= pAtom->m_nEncryptSessionPersistIdRef;
 	}
 }; 
 
@@ -79,10 +82,8 @@ class CCurrentUser
 public:
 	bool			m_bIsEncrypt;  
 	DWORD			m_nOffsetToCurrentEdit;
+	std::wstring	m_sName;
 
-	std::wstring	m_strName;
-
-public:
 	CCurrentUser()
 	{
 		m_bIsEncrypt			= false;
@@ -96,20 +97,16 @@ public:
 	{
 		m_bIsEncrypt			= oSrc.m_bIsEncrypt;
 		m_nOffsetToCurrentEdit	= oSrc.m_nOffsetToCurrentEdit;
-		m_strName				= oSrc.m_strName;
+		m_sName					= oSrc.m_sName;
 		return (*this);
 	}
 
 	void FromAtom(CRecordCurrentUserAtom* pAtom)
 	{
-		m_bIsEncrypt			= (NO_ENCRYPT == pAtom->m_nToken);
+		m_bIsEncrypt			= (ENCRYPT == pAtom->m_nToken);
+		
 		m_nOffsetToCurrentEdit	= pAtom->m_nOffsetToCurEdit;
-		m_strName				= pAtom->m_strUNICODEUserName;
-	}
-
-    std::wstring ToString()
-	{
-        return L"";
+		m_sName					= pAtom->m_strUNICODEUserName;
 	}
 };
 

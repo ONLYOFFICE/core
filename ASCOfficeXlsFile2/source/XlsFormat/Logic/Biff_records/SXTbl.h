@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of SXTbl record in BIFF8
 class SXTbl: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXTbl)
@@ -47,11 +45,16 @@ public:
 	~SXTbl();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSXTbl;
+	static const ElementType type = typeSXTbl;
+
+	unsigned short	cdref;
+	unsigned short	csxtbpg;
+	unsigned short	cPages;
+
+	bool			fAutoPage;
 
 };
 

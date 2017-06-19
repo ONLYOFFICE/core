@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecordContinued.h"
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {
 
-
-// Logical representation of SXVDEx record in BIFF8
 class SXVDEx: public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXVDEx)
@@ -47,11 +46,35 @@ public:
 	~SXVDEx();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSXVDEx;
+	static const ElementType type = typeSXVDEx;
+	
+	bool					fShowAllItems;
+	bool					fDragToRow;
+	bool					fDragToColumn;
+	bool					fDragToPage;
+	bool					fDragToHide;
+	bool					fNotDragToData;
+	bool					fServerBased;
+	bool					fAutoSort;
+	bool					fAscendSort;
+	bool					fAutoShow;
+	bool					fTopAutoShow;
+	bool					fCalculatedField;
+	bool					fPageBreaksBetweenItems;
+	bool					fHideNewItems;
+	bool					fOutline;
+	bool					fInsertBlankRow;
+	bool					fSubtotalAtTop;
+
+	unsigned char			citmAutoShow;
+	short					isxdiAutoSort;
+	short					isxdiAutoShow;
+	unsigned short			ifmt;
+	unsigned short			cchSubName;
+	XLUnicodeStringNoCch	stSubName;
 
 };
 

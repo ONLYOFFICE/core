@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {
 
-
-// Logical representation of SXString record in BIFF8
 class SXString: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXString)
@@ -47,11 +46,13 @@ public:
 	~SXString();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSXString;
+	static const ElementType type = typeSXString;
+
+	unsigned short			cch;
+	XLUnicodeStringNoCch	segment;
 };
 
 } // namespace XLS

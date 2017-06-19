@@ -52,9 +52,20 @@ BaseObjectPtr SXVI::clone()
 
 void SXVI::readFields(CFRecord& record)
 {
-	Log::error("SXVI record is not implemented.");
+	unsigned short flags;
+	record >> itmType>> flags >> iCache >> cchName;
 
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	fHidden		= GETBIT(flags, 0);
+	fHideDetail	= GETBIT(flags, 1);
+	fFormula	= GETBIT(flags, 4);
+	fMissing	= GETBIT(flags, 5);
+	
+	if (cchName > 0 && cchName < 0xFFFF)
+	{
+		stName.setSize(cchName);
+		stName.load(record);
+
+	}
 }
 
 } // namespace XLS

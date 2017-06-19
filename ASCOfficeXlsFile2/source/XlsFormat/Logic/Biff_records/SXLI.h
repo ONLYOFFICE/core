@@ -35,9 +35,21 @@
 
 namespace XLS
 {
+	struct SXLIItem
+	{
+		short			cSic;
+		unsigned short	itmType;
+		short			isxviMac;
+		bool			fMultiDataName;
+		unsigned char	iData;
+		bool			fSbt;
+		bool			fBlock;
+		bool			fGrand;
+		bool			fMultiDataOnAxis;
 
+		std::vector<short> rgisxvi;
+	};
 
-// Logical representation of SXLI record in BIFF8
 class SXLI: public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXLI)
@@ -47,12 +59,12 @@ public:
 	~SXLI();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 	
-	static const ElementType	type = typeSXLI;
-
+	static const ElementType type = typeSXLI;
+	
+	std::vector<SXLIItem> m_arItems;
 };
 
 } // namespace XLS

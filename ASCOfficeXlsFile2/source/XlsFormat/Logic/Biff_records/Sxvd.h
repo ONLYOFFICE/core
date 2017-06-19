@@ -31,7 +31,9 @@
  */
 #pragma once
 
-#include "SxView.h"
+#include "BiffRecord.h"
+#include "../Biff_structures/SxAxis.h"
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {

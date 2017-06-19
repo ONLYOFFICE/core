@@ -52,9 +52,13 @@ BaseObjectPtr SXDI::clone()
 
 void SXDI::readFields(CFRecord& record)
 {
-	Log::error("SXDI record is not implemented.");
+	record >> isxvdData >> iiftab >> df >> isxvd >> isxvi >> ifmt >> cchName;
 
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	if (cchName > 0 && cchName < 0xFFFF)
+	{
+		stName.setSize(cchName);
+		record >> stName;
+	}
 }
 
 } // namespace XLS

@@ -39,11 +39,9 @@ SXVDEx::SXVDEx()
 {
 }
 
-
 SXVDEx::~SXVDEx()
 {
 }
-
 
 BaseObjectPtr SXVDEx::clone()
 {
@@ -53,9 +51,40 @@ BaseObjectPtr SXVDEx::clone()
 
 void SXVDEx::readFields(CFRecord& record)
 {
-	Log::error("SXVDEx record is not implemented.");
+	unsigned short	flags1;
+	unsigned char	flags2;
 
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	record >> flags1 >> flags2 >> citmAutoShow >> isxdiAutoSort >> isxdiAutoShow >> ifmt;
+
+	fShowAllItems	= GETBIT(flags1, 0);
+	fDragToRow		= GETBIT(flags1, 1);
+	fDragToColumn	= GETBIT(flags1, 2);
+	fDragToPage		= GETBIT(flags1, 3);
+	fDragToHide		= GETBIT(flags1, 4);
+	fNotDragToData	= GETBIT(flags1, 5);
+	
+	fServerBased	= GETBIT(flags1, 7);
+
+	fAutoSort				= GETBIT(flags1, 9);
+	fAscendSort				= GETBIT(flags1, 10);
+	fAutoShow				= GETBIT(flags1, 11);
+	fTopAutoShow			= GETBIT(flags1, 12);
+	fCalculatedField		= GETBIT(flags1, 13);
+	fPageBreaksBetweenItems	= GETBIT(flags1, 14);
+	fHideNewItems			= GETBIT(flags1, 15);
+	
+	fOutline		= GETBIT(flags2, 5);
+	fInsertBlankRow	= GETBIT(flags2, 6);
+	fSubtotalAtTop	= GETBIT(flags2, 7);
+
+	_UINT32	reserved1, reserved2;
+	record >> cchSubName >> reserved1 >> reserved2;
+
+	if (cchSubName > 0 && cchSubName < 0xffff)
+	{
+		stSubName.setSize(cchSubName);
+		record >> stSubName;
+	}
 }
 
 } // namespace XLS

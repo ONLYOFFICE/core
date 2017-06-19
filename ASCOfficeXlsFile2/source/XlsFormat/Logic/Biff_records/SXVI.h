@@ -32,12 +32,10 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {
-
-
-// Logical representation of SXVI record in BIFF8
 class SXVI: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXVI)
@@ -47,12 +45,34 @@ public:
 	~SXVI();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSXVI;
+	static const ElementType type = typeSXVI;
 
+	unsigned short			itmType; //enum
+//0x0000	itmtypeData
+//0x0001	itmtypeDEFAULT
+//0x0002	itmtypeSUM
+//0x0003	itmtypeCOUNTA
+//0x0004	itmtypeAVERAGE
+//0x0005	itmtypeMAX
+//0x0006	itmtypeMIN
+//0x0007	itmtypePRODUCT
+//0x0008	itmtypeCOUNT
+//0x0009	itmtypeSTDEV
+//0x000A	itmtypeSTDEVP
+//0x000B	itmtypeVAR
+//0x000C	itmtypeVARP
+
+	bool					fHidden;
+	bool					fHideDetail;
+	bool					fFormula;
+	bool					fMissing;
+
+	short					iCache;
+	unsigned short			cchName;
+	XLUnicodeStringNoCch	stName;
 
 };
 

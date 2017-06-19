@@ -50,6 +50,12 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeSXADDLDBQUERY;
+
+	BaseObjectPtr m_SrcConnFile;
+	BaseObjectPtr m_SrcDataFile;
+	BaseObjectPtr m_XMLSource;
+	BaseObjectPtr m_ReconnCond;
+
 	
 };
 

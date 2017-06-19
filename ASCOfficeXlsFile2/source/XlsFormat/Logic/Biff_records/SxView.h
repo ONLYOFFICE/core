@@ -34,29 +34,10 @@
 #include "BiffRecord.h"
 #include "../Biff_structures/BiffString.h"
 #include "../Biff_structures/CellRangeRef.h"
+#include "../Biff_structures/SxAxis.h"
 
 namespace XLS
 {
-class SXAxis : public BiffStructure
-{
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAxis)
-public:
-
-	SXAxis(){}
-	~SXAxis(){}
-
-	BiffStructurePtr clone();
-	
-	virtual void load(CFRecord& record);
-
-	static const ElementType type = typeSXAxis;
-
-	bool bRw;
-	bool bCol;
-	bool bPage;
-	bool bData;
-
-};
 
 class SxView: public BiffRecord
 {

@@ -44,17 +44,45 @@ SXLI::~SXLI()
 {
 }
 
-
 BaseObjectPtr SXLI::clone()
 {
 	return BaseObjectPtr(new SXLI(*this));
 }
 
 void SXLI::readFields(CFRecord& record)
-{
-	Log::error("SXLI record is not implemented.");
+{// 0 or 2 records SXLIItem
+	int size_item = (record.getDataSize() - record.getRdPtr()) / 2; 
 
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	if (size_item < 8)
+	{
+		//??
+		return;
+	}
+
+	for (int k = 0; k < 2; k++)
+	{
+		SXLIItem item;
+		
+		unsigned short flags;
+
+		record >> item.cSic >> item.itmType >> item.isxviMac >> flags;
+		
+		item.fMultiDataName		= GETBIT(flags, 0);
+		item.iData				= GETBITS(flags, 1, 8);
+		item.fSbt				= GETBIT(flags, 9);
+		item.fBlock				= GETBIT(flags, 10);
+		item.fGrand				= GETBIT(flags, 11);
+		item.fMultiDataOnAxis	= GETBIT(flags, 12);
+
+		int count = (size_item - 8) / 2;
+
+		for (int i = 0; i < count; i++)
+		{
+			short val; record >> val;
+			item.rgisxvi.push_back(val);
+		}
+		m_arItems.push_back(item);
+	}
 }
 
 } // namespace XLS

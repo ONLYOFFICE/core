@@ -161,7 +161,7 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 				Log::warning("WARNING: Substream of unsupported type " + STR::int2str(substream_type, 10) +
 					"  The substream is skipped! Sorry.");
 				proc.SeekToEOF();
-				proc.mandatory<EOF_T>();
+				proc.optional<EOF_T>();
 		
 		}
 	}

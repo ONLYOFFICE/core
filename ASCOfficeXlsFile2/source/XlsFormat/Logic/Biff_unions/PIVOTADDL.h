@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of PIVOTADDL union of records 
 class PIVOTADDL: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTADDL)
@@ -49,7 +47,24 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typePIVOTADDL;
+	static const ElementType type = typePIVOTADDL;
+
+	BaseObjectPtr	m_SXAddl_SXCView_SXDId;
+	BaseObjectPtr	m_SXAddl_SXCView_SXDVer10Info;
+	BaseObjectPtr	m_SXAddl_SXCView_SXDVer12Info;
+
+	BaseObjectPtr	m_SXAddl_SXCView_SXDCompactRwHdr;
+	BaseObjectPtr	m_SXAddl_SXCView_SXDCompactColHdr;
+	BaseObjectPtr	m_SXAddl_SXADDLSXFILTERS12;
+	BaseObjectPtr	m_SXADDLCONDFMTS;
+	BaseObjectPtr	m_SXAddl_SXCView_SXDTableStyleClient;
+
+	std::vector<BaseObjectPtr>	m_arSXAddl_SXCView_SXDVerUpdInv;
+	std::vector<BaseObjectPtr>	m_arSXAddl_SXCView_SXDSXPIIvmb;
+	std::vector<BaseObjectPtr>	m_arSXADDLFIELD;
+	std::vector<BaseObjectPtr>	m_arSXADDLHIERARCHY;
+	std::vector<BaseObjectPtr>	m_arSXADDLCALCMEMBER;
+
 };
 
 } // namespace XLS

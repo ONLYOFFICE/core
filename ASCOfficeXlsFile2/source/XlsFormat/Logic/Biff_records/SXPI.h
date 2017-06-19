@@ -36,8 +36,13 @@
 namespace XLS
 {
 
+struct SXPI_Item
+{
+	short isxvd;
+	short isxvi;
+	short idObj;
+};
 
-// Logical representation of SXPI record in BIFF8
 class SXPI: public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXPI)
@@ -48,11 +53,11 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSXPI;
+	static const ElementType type = typeSXPI;
 
+	std::vector<SXPI_Item> m_arItems;
 
 };
 

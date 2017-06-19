@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {
 
-
-// Logical representation of SXDI record in BIFF8
 class SXDI: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXDI)
@@ -47,11 +46,19 @@ public:
 	~SXDI();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSXDI;
+	static const ElementType type = typeSXDI;
+
+	short					isxvdData;
+	short					iiftab;
+	short					df;
+	short					isxvd;
+	short					isxvi;
+	unsigned short			ifmt;
+	unsigned short			cchName;
+	XLUnicodeStringNoCch	stName;
 };
 
 } // namespace XLS

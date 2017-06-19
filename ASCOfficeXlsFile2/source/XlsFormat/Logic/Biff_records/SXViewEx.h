@@ -37,8 +37,6 @@
 namespace XLS
 {
 
-
-// Logical representation of SXViewEx record in BIFF8
 class SXViewEx: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXViewEx)

@@ -1209,10 +1209,14 @@ namespace NSBinPptxRW
 
 		m_pWriter->WriteString(strRels);
 	}
-	void CRelsGenerator::EndPresentationRels(const bool& bIsCommentsAuthors = false)
+	void CRelsGenerator::EndPresentationRels(const bool& bIsCommentsAuthors = false, const bool& bIsNotesMaster = false)
 	{
-        std::wstring strRels0 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
-                L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"notesMasters/notesMaster1.xml\"/>";
+ 		if (bIsNotesMaster)
+		{
+			std::wstring strRels0 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+					L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"notesMasters/notesMaster1.xml\"/>";
+			m_pWriter->WriteString(strRels0);			
+		}
         std::wstring strRels1 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
                 L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/presProps\" Target=\"presProps.xml\" />";
         std::wstring strRels2 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
@@ -1220,7 +1224,6 @@ namespace NSBinPptxRW
         std::wstring strRels3 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
                 L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/viewProps\" Target=\"viewProps.xml\" />";
 
-		m_pWriter->WriteString(strRels0);			
 		m_pWriter->WriteString(strRels1);
 		m_pWriter->WriteString(strRels2);
 		m_pWriter->WriteString(strRels3);

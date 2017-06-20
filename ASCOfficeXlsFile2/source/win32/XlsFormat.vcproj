@@ -3754,6 +3754,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\HiddenMemberSet.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\HiddenMemberSet.h"
+					>
+				</File>
+				<File
 					RelativePath="..\XlsFormat\Logic\Biff_structures\HideObjEnum.cpp"
 					>
 				</File>
@@ -4687,6 +4695,14 @@
 				</File>
 				<File
 					RelativePath="..\XlsFormat\Logic\Biff_structures\SxAxis.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\SXVIFlags.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\SXVIFlags.h"
 					>
 				</File>
 				<File

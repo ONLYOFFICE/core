@@ -49,6 +49,9 @@ public:
 	void readFields(CFRecord& record);
 
 	static const ElementType type = typeSxFormat;
+
+	unsigned char	rlType;
+	unsigned short	cbData;
 };
 
 } // namespace XLS

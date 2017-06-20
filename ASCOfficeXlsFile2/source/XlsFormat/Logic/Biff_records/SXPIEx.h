@@ -32,6 +32,8 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/FrtHeaderOld.h"
 
 namespace XLS
 {
@@ -49,6 +51,11 @@ public:
 	void readFields(CFRecord& record);
 
 	static const ElementType type = typeSXPIEx;
+
+	FrtHeaderOld	frtHeaderOld;
+	_UINT32			isxth;
+	XLUnicodeString	stUnique;
+	XLUnicodeString	stDisplay;
 };
 
 } // namespace XLS

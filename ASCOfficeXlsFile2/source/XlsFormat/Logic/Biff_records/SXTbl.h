@@ -55,7 +55,6 @@ public:
 	unsigned short	cPages;
 
 	bool			fAutoPage;
-
 };
 
 } // namespace XLS

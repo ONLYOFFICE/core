@@ -53,9 +53,7 @@ BaseObjectPtr SXTBRGIITM::clone()
 
 void SXTBRGIITM::readFields(CFRecord& record)
 {
-	Log::error("SXTBRGIITM record is not implemented.");
-
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	record >> cItems;
 }
 
 } // namespace XLS

@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of SXStreamID record in BIFF8
 class SXStreamID: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXStreamID)
@@ -47,11 +45,10 @@ public:
 	~SXStreamID();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSXStreamID;
+	static const ElementType type = typeSXStreamID;
 
 	short idStm;
 };

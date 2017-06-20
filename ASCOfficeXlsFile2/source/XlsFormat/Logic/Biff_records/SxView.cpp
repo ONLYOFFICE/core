@@ -34,21 +34,7 @@
 
 namespace XLS
 {
-
-BiffStructurePtr SXAxis::clone()
-{
-	return BiffStructurePtr(new SXAxis(*this));
-}
-void SXAxis::load(CFRecord& record)
-{
-	unsigned short flags;
-	record >> flags;
-
-	bRw		= GETBIT(flags, 0);
-	bCol	= GETBIT(flags, 1);
-	bPage	= GETBIT(flags, 2);
-	bData	= GETBIT(flags, 3);
-}	
+	
 BaseObjectPtr SxView::clone()
 {
 	return BaseObjectPtr(new SxView(*this));

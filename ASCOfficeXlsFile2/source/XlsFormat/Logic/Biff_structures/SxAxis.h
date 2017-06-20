@@ -31,28 +31,30 @@
  */
 #pragma once
 
-#include "BiffRecordContinued.h"
+#include "BiffStructure.h"
 
 namespace XLS
 {
-class IMDATA: public BiffRecordContinued
+class SXAxis : public BiffStructure
 {
-	BIFF_RECORD_DEFINE_TYPE_INFO(IMDATA)
-	BASE_OBJECT_DEFINE_CLASS_NAME(IMDATA)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAxis)
 public:
-	IMDATA();
-	~IMDATA();
 
-	BaseObjectPtr clone();
+	SXAxis(){}
+	~SXAxis(){}
+
+	BiffStructurePtr clone();
 	
-	void readFields(CFRecord& record);
+	virtual void load(CFRecord& record);
 
-	static const ElementType type = typeIMDATA;
+	static const ElementType type = typeSXAxis;
 
-	_UINT16 cf;
-	_UINT16 env;
-	_UINT32 lcb;
+	bool bRw;
+	bool bCol;
+	bool bPage;
+	bool bData;
 
-	boost::shared_array<char> pData;
 };
-}
+
+} // namespace XLS
+

@@ -38,8 +38,6 @@
 namespace XLS
 {
 
-
-// Logical representation of SortData record in BIFF8
 class SortData: public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SortData)
@@ -49,11 +47,10 @@ public:
 	~SortData();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSortData;
+	static const ElementType type = typeSortData;
 
 	bool			fCol;
 	bool			fCaseSensitive;

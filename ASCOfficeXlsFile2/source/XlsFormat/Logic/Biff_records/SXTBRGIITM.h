@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of SXTBRGIITM record in BIFF8
 class SXTBRGIITM: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXTBRGIITM)
@@ -47,11 +45,10 @@ public:
 	~SXTBRGIITM();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSXTBRGIITM;
+	static const ElementType type = typeSXTBRGIITM;
 
 };
 

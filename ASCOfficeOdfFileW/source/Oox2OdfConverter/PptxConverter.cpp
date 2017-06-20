@@ -548,7 +548,7 @@ void PptxConverter::convert( PPTX::Logic::Transition *oox_transition )
 
 	if (oox_transition->advTm.is_init())
 	{
-		odp_context->current_slide().set_page_duration(*oox_transition->dur);
+		odp_context->current_slide().set_page_duration(*oox_transition->advTm);
 	}	
 
 	if (oox_transition->base.is_init() == false) return;

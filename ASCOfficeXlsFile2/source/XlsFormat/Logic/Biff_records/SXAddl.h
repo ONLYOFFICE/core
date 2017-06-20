@@ -32,12 +32,29 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {
 
+class XLUnicodeStringSegmentedSXADDL : public BiffStructure
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(XLUnicodeStringSegmentedSXADDL)
+public:
 
-// Logical representation of SXAddl record in BIFF8
+	XLUnicodeStringSegmentedSXADDL(){}
+	~XLUnicodeStringSegmentedSXADDL(){}
+
+	BiffStructurePtr clone();
+	
+	virtual void load(CFRecord& record);
+
+	static const ElementType type = typeStringSegmentedSXADDL;
+
+	_UINT32				cchTotal;
+	XLUnicodeString		string;
+};
+
 class SXAddl: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXAddl)
@@ -57,9 +74,8 @@ public:
 
 	SXAddl();
 	~SXAddl();
-
-	BaseObjectPtr clone();
 	
+	virtual BaseObjectPtr clone();
 	virtual void readFields(CFRecord& record);
 
 	static const ElementType	type = typeSXAddl;
@@ -68,8 +84,10 @@ public:
 class Continue_SxaddlSxString : public SXAddl 
 {
 public:
-	//virtual void readFields(CFRecord& record);
-	
+	virtual void readFields(CFRecord& record);
+	virtual BaseObjectPtr clone();
+
+	XLUnicodeStringSegmentedSXADDL stContinue;	
 };
 class SXAddl_SXCAutoSort_SXDEnd : public SXAddl {};
 class SXAddl_SXCAutoSort_SXDId : public SXAddl {};
@@ -77,12 +95,14 @@ class SXAddl_SXCCache_SXDEnd : public SXAddl
 {
 public:
 	virtual void readFields(CFRecord& record);
+	virtual BaseObjectPtr clone();
 };
 
 class SXAddl_SXCCache_SXDId : public SXAddl
 {
 public:
 	virtual void readFields(CFRecord& record);
+	virtual BaseObjectPtr clone();
 	
 	_UINT32 idCache;
 };
@@ -92,6 +112,7 @@ class SXAddl_SXCCache_SXDInfo12 : public SXAddl
 public:
 
 	virtual void readFields(CFRecord& record);
+	virtual BaseObjectPtr clone();
 
 	bool fSheetData;
 	bool fSrvSupportAttribDrill;
@@ -108,6 +129,7 @@ class SXAddl_SXCCache_SXDVer10Info : public SXAddl
 public:
 	
 	virtual void readFields(CFRecord& record);
+	virtual BaseObjectPtr clone();
 
 	_INT32 citmGhostMax;
 	unsigned char bVerCacheLastRefresh;
@@ -119,8 +141,8 @@ public:
 class SXAddl_SXCCache_SXDVerSXMacro : public SXAddl 
 {
 public:
-
 	virtual void readFields(CFRecord& record);
+	virtual BaseObjectPtr clone();
 
 	unsigned char dwVer;
 };
@@ -134,11 +156,13 @@ class SXAddl_SXCCacheField_SXDIfdbMpMapCount: public SXAddl {};
 class SXAddl_SXCCacheField_SXDProperty		: public SXAddl {};
 class SXAddl_SXCCacheField_SXDPropName		: public SXAddl {};
 class SXAddl_SXCCacheField_SXDSxrmitmCount	: public SXAddl {};
+
 class SXAddl_SXCCacheItem_SXDEnd			: public SXAddl {};
 class SXAddl_SXCCacheItem_SXDId				: public SXAddl {};
 class SXAddl_SXCCacheItem_SXDItmMpMapCount	: public SXAddl {};
 class SXAddl_SXCCacheItem_SXDItmMpropMap	: public SXAddl {};
 class SXAddl_SXCCacheItem_SXDSxrmitmDisp	: public SXAddl {};
+
 class SXAddl_SXCField12_SXDAutoshow			: public SXAddl {};
 class SXAddl_SXCField12_SXDEnd				: public SXAddl {};
 class SXAddl_SXCField12_SXDId				: public SXAddl {};
@@ -146,16 +170,20 @@ class SXAddl_SXCField12_SXDISXTH			: public SXAddl {};
 class SXAddl_SXCField12_SXDMemberCaption	: public SXAddl {};
 class SXAddl_SXCField12_SXDVer12Info		: public SXAddl {};
 class SXAddl_SXCField12_SXDVerUpdInv		: public SXAddl {};
+
 class SXAddl_SXCField_SXDEnd				: public SXAddl {};
 class SXAddl_SXCField_SXDId					: public SXAddl {};
 class SXAddl_SXCField_SXDVer10Info			: public SXAddl {};
+
 class SXAddl_SXCGroup_SXDEnd				: public SXAddl {};
 class SXAddl_SXCGroup_SXDGrpInfo			: public SXAddl {};
 class SXAddl_SXCGroup_SXDId					: public SXAddl {};
 class SXAddl_SXCGroup_SXDMember				: public SXAddl {};
+
 class SXAddl_SXCGrpLevel_SXDEnd				: public SXAddl {};
 class SXAddl_SXCGrpLevel_SXDGrpLevelInfo	: public SXAddl {};
 class SXAddl_SXCGrpLevel_SXDId				: public SXAddl {};
+
 class SXAddl_SXCHierarchy_SXDDisplayFolder	: public SXAddl {};
 class SXAddl_SXCHierarchy_SXDEnd			: public SXAddl {};
 class SXAddl_SXCHierarchy_SXDFilterMember	: public SXAddl {};
@@ -175,13 +203,16 @@ class SXAddl_SXCHierarchy_SXDProperty		: public SXAddl {};
 class SXAddl_SXCHierarchy_SXDSXSetParentUnique	: public SXAddl {};
 class SXAddl_SXCHierarchy_SXDUserCaption	: public SXAddl {};
 class SXAddl_SXCHierarchy_SXDVerUpdInv		: public SXAddl {};
+
 class SXAddl_SXCQsi_SXDEnd					: public SXAddl {};
 class SXAddl_SXCQsi_SXDId					: public SXAddl {};
+
 class SXAddl_SXCQuery_SXDEnd				: public SXAddl {};
 class SXAddl_SXCQuery_SXDReconnCond			: public SXAddl {};
 class SXAddl_SXCQuery_SXDSrcConnFile		: public SXAddl {};
 class SXAddl_SXCQuery_SXDSrcDataFile		: public SXAddl {};
 class SXAddl_SXCQuery_SXDXMLSource			: public SXAddl {};
+
 class SXAddl_SXCSXCondFmt_SXDEnd			: public SXAddl {};
 class SXAddl_SXCSXCondFmt_SXDSXCondFmt		: public SXAddl {};
 class SXAddl_SXCSXCondFmts_SXDEnd			: public SXAddl {};
@@ -189,10 +220,12 @@ class SXAddl_SXCSXCondFmts_SXDId			: public SXAddl {};
 class SXAddl_SXCSXDH_SXDEnd					: public SXAddl {};
 class SXAddl_SXCSXDH_SXDId					: public SXAddl {};
 class SXAddl_SXCSXDH_SXDSxdh				: public SXAddl {};
+
 class SXAddl_SXCSXfilt_SXDEnd				: public SXAddl {};
 class SXAddl_SXCSXfilt_SXDId				: public SXAddl {};
 class SXAddl_SXCSXfilt_SXDSXfilt			: public SXAddl {};
 class SXAddl_SXCSXfilt_SXDSXItm				: public SXAddl {};
+
 class SXAddl_SXCSXFilter12_SXDCaption		: public SXAddl {};
 class SXAddl_SXCSXFilter12_SXDEnd			: public SXAddl {};
 class SXAddl_SXCSXFilter12_SXDId			: public SXAddl {};
@@ -205,21 +238,35 @@ class SXAddl_SXCSXFilter12_SXDXlsFilterValue1: public SXAddl {};
 class SXAddl_SXCSXFilter12_SXDXlsFilterValue2: public SXAddl {};
 class SXAddl_SXCSXFilters12_SXDEnd			: public SXAddl {};
 class SXAddl_SXCSXFilters12_SXDId			: public SXAddl {};
+
 class SXAddl_SXCSXMg_SXDEnd					: public SXAddl {};
 class SXAddl_SXCSXMg_SXDId					: public SXAddl {};
 class SXAddl_SXCSXMg_SXDUserCaption			: public SXAddl {};
+
 class SXAddl_SXCSXMgs_SXDEnd				: public SXAddl {};
 class SXAddl_SXCSXMgs_SXDId					: public SXAddl {};
 class SXAddl_SXCSXMgs_SXDMGrpSXDHMap		: public SXAddl {};
+
 class SXAddl_SXCSXrule_SXDEnd				: public SXAddl {};
 class SXAddl_SXCSXrule_SXDId				: public SXAddl {};
 class SXAddl_SXCSXrule_SXDSXrule			: public SXAddl {};
+
 class SXAddl_SXCView_SXDCalcMember			: public SXAddl {};
 class SXAddl_SXCView_SXDCalcMemString		: public SXAddl {};
 class SXAddl_SXCView_SXDCompactColHdr		: public SXAddl {};
 class SXAddl_SXCView_SXDCompactRwHdr		: public SXAddl {};
 class SXAddl_SXCView_SXDEnd					: public SXAddl {};
-class SXAddl_SXCView_SXDId					: public SXAddl {};
+
+class SXAddl_SXCView_SXDId : public SXAddl 
+{
+public:
+	
+	virtual void readFields(CFRecord& record);
+	virtual BaseObjectPtr clone();
+
+	XLUnicodeStringSegmentedSXADDL stName;
+};
+
 class SXAddl_SXCView_SXDSXPIIvmb			: public SXAddl {};
 class SXAddl_SXCView_SXDTableStyleClient	: public SXAddl {};
 class SXAddl_SXCView_SXDVer10Info			: public SXAddl {};

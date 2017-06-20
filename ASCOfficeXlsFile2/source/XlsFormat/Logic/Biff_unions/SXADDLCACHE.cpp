@@ -67,7 +67,7 @@ const bool SXADDLCACHE::loadContent(BinProcessor& proc)
 	m_SXCCache_SXDId = elements_.back();
 	elements_.pop_back(); 
 
-	if (proc.mandatory<SXAddl_SXCCache_SXDVer10Info>())
+	if (proc.optional<SXAddl_SXCCache_SXDVer10Info>())
 	{
 		m_SXDVer10Info = elements_.back();
 		elements_.pop_back(); 
@@ -79,13 +79,17 @@ const bool SXADDLCACHE::loadContent(BinProcessor& proc)
 	}
 	if (proc.optional<SXADDLCACHE12>())
 	{
+		m_SXADDLCACHE12 = elements_.back();
+		elements_.pop_back(); 
 	}
 	if (proc.optional<SXADDLDBQUERY>())
 	{
+		m_SXADDLDBQUERY = elements_.back();
+		elements_.pop_back(); 
 	}
 	int count  = proc.repeated<UNKNOWNFRT>(0, 0);
 
-	if (proc.mandatory<SXAddl_SXCCache_SXDEnd>())
+	if (proc.optional<SXAddl_SXCCache_SXDEnd>())
 	{
 		elements_.pop_back(); 
 	}

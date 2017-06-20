@@ -4682,6 +4682,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\SxAxis.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\SxAxis.h"
+					>
+				</File>
+				<File
 					RelativePath="..\XlsFormat\Logic\Biff_structures\SyntaxPtg.cpp"
 					>
 				</File>

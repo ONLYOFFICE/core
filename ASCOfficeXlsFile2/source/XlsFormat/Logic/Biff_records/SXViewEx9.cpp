@@ -39,7 +39,6 @@ SXViewEx9::SXViewEx9()
 {
 }
 
-
 SXViewEx9::~SXViewEx9()
 {
 }
@@ -53,9 +52,16 @@ BaseObjectPtr SXViewEx9::clone()
 
 void SXViewEx9::readFields(CFRecord& record)
 {
-	Log::error("SXViewEx9 record is not implemented.");
+	unsigned short		flags;
+	_UINT32				reserved3, flags2;
 
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	record >> rt >> flags >> reserved3 >> flags2 >> itblAutoFmt >> chGrand;
+
+	fFrtAlert = GETBIT(flags, 1);
+
+	fPrintTitles					= GETBIT(flags2, 1);
+	fLineMode						= GETBIT(flags2, 2);
+	fRepeatItemsOnEachPrintedPage	= GETBIT(flags2, 5);
 }
 
 } // namespace XLS

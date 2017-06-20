@@ -294,6 +294,7 @@ enum ElementType
 	typeStyleExt,
 	typeSupBook,
 	typeSurf,
+	typeStringSegmentedSXADDL,
 	typeSXAddl,
 	typeSXDI,
 	typeSxDXF,

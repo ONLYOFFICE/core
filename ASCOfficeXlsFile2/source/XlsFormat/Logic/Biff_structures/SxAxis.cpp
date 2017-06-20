@@ -29,30 +29,25 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "BiffRecordContinued.h"
+#include "SxAxis.h"
 
 namespace XLS
 {
-class IMDATA: public BiffRecordContinued
+
+BiffStructurePtr SXAxis::clone()
 {
-	BIFF_RECORD_DEFINE_TYPE_INFO(IMDATA)
-	BASE_OBJECT_DEFINE_CLASS_NAME(IMDATA)
-public:
-	IMDATA();
-	~IMDATA();
-
-	BaseObjectPtr clone();
-	
-	void readFields(CFRecord& record);
-
-	static const ElementType type = typeIMDATA;
-
-	_UINT16 cf;
-	_UINT16 env;
-	_UINT32 lcb;
-
-	boost::shared_array<char> pData;
-};
+	return BiffStructurePtr(new SXAxis(*this));
 }
+void SXAxis::load(CFRecord& record)
+{
+	unsigned short flags;
+	record >> flags;
+
+	bRw		= GETBIT(flags, 0);
+	bCol	= GETBIT(flags, 1);
+	bPage	= GETBIT(flags, 2);
+	bData	= GETBIT(flags, 3);
+}	
+} // namespace XLS
+

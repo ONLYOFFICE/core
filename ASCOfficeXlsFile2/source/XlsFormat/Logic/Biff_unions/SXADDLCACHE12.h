@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of SXADDLCACHE12 union of records 
 class SXADDLCACHE12: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(SXADDLCACHE12)
@@ -50,7 +48,15 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeSXADDLCACHE12;
-	
+
+	BaseObjectPtr	m_SXAddl_SXCCache_SXDVerUpdInv;
+	BaseObjectPtr	m_SXAddl_SXCCache_SXDVerUpdInvS;
+	BaseObjectPtr	m_SXADDLSXMGS;
+	BaseObjectPtr	m_SXADDLSXDH;
+	BaseObjectPtr	m_SXAddl_SXCCache_SXDInfo12;
+	BaseObjectPtr	m_SXAddl_SXCCache_SXDInvRefreshReal;
+
+	std::vector<BaseObjectPtr>	m_arSXADDLCACHEFIELD;
 };
 
 } // namespace XLS

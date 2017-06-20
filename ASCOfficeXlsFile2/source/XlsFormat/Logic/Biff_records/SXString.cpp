@@ -53,9 +53,13 @@ BaseObjectPtr SXString::clone()
 
 void SXString::readFields(CFRecord& record)
 {
-	Log::error("SXString record is not implemented.");
+	record >> cch;
 
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	if (cch > 0 && cch < 0xffff)
+	{
+		segment.setSize(cch);
+		record >> segment;
+	}
 }
 
 } // namespace XLS

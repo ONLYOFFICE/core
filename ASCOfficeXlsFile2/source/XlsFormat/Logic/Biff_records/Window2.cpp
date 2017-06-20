@@ -103,8 +103,10 @@ void Window2::readFields(CFRecord& record)
 	if (10 > record.getDataSize())
 	{
 		record >> wScaleSLV >> wScaleNormal;
-		record.skipNunBytes(4); // unused / reserved
 	}
+	int sz = record.getDataSize() - record.getRdPtr();
+		
+	record.skipNunBytes(sz); // unused / reserved
 }
 
 

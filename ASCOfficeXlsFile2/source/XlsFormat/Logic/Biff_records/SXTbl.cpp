@@ -39,11 +39,9 @@ SXTbl::SXTbl()
 {
 }
 
-
 SXTbl::~SXTbl()
 {
 }
-
 
 BaseObjectPtr SXTbl::clone()
 {
@@ -52,9 +50,10 @@ BaseObjectPtr SXTbl::clone()
 
 void SXTbl::readFields(CFRecord& record)
 {
-	Log::error("SXTbl record is not implemented.");
+	record >> cdref >> csxtbpg >> cPages;
 
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	fAutoPage	= GETBIT(cPages, 15);
+	cPages		= GETBITS(cPages, 0, 14);
 }
 
 } // namespace XLS

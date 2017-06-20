@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of SxRule record in BIFF8
 class SxRule: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SxRule)
@@ -50,7 +48,29 @@ public:
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSxRule;
+	static const ElementType type = typeSxRule;
+	
+	unsigned char	iDim;
+	unsigned char	isxvd;
+
+	bool			sxaxisRw;
+	bool			sxaxisCol;
+	bool			sxaxisPage;
+	bool			sxaxisData;
+	unsigned char	sxrType;
+	bool			fPart;
+	bool			fDataOnly;
+	bool			fLabelOnly;
+	bool			fGrandRw;
+	bool			fGrandCol;
+	bool			fGrandRwSav;
+	bool			fCacheBased;
+	bool			fGrandColSav;
+	unsigned short	csxFilt;
+	unsigned char	irwFirst;
+	unsigned char	irwLast;
+	unsigned char	icolFirst;
+	unsigned char	icolLast;
 };
 
 } // namespace XLS

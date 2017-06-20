@@ -52,6 +52,8 @@ public:
 	BaseObjectPtr	m_SXCCache_SXDId;
 	BaseObjectPtr	m_SXDVer10Info;
 	BaseObjectPtr	m_SXDVerSXMacro;
+	BaseObjectPtr	m_SXADDLDBQUERY;
+	BaseObjectPtr	m_SXADDLCACHE12;
 	
 };
 

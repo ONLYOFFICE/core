@@ -1209,7 +1209,7 @@ namespace NSBinPptxRW
 
 		m_pWriter->WriteString(strRels);
 	}
-	void CRelsGenerator::EndPresentationRels(const bool& bIsCommentsAuthors = false, const bool& bIsNotesMaster = false)
+	void CRelsGenerator::EndPresentationRels(const bool& bIsCommentsAuthors = false, const bool& bIsNotesMaster)
 	{
  		if (bIsNotesMaster)
 		{

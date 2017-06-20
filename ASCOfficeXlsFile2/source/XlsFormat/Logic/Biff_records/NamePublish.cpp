@@ -53,7 +53,7 @@ BaseObjectPtr NamePublish::clone()
 void NamePublish::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);
-#pragma message("############################ frtHeader skipped here")
+#pragma message(">>>>>>>>>>> frtHeader skipped here")
 	unsigned short flags;
 	record >> flags >> strName;
 	fPublished = GETBIT(flags, 0);

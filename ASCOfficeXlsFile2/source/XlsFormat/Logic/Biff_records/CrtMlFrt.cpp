@@ -56,11 +56,6 @@ void CrtMlFrt::readFields(CFRecord& record)
 	Log::error("CrtMlFrt record is not implemented.");
 	
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
-//
-//	if (cb > 0)
-//	{
-//		//XmlTkChain
-//	}
 }
 
 } // namespace XLS

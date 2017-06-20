@@ -1155,8 +1155,8 @@ namespace NSBinPptxRW
 			str = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
 			        L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide\" Target=\"../notesSlides/notesSlide" +
 			        std::to_wstring(nIndexNotes + 1) + L".xml\"/>";
+			m_pWriter->WriteString(str);
 		}
-		m_pWriter->WriteString(str);
 	}
 	void CRelsGenerator::StartNotes(int nIndexSlide)
 	{

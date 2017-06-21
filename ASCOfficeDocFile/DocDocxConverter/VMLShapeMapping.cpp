@@ -544,6 +544,14 @@ namespace DocFileFormat
 						appendValueAttribute(&m_fill, L"r:id", std::wstring(( L"rId" ) + FormatUtils::IntToWideString(m_nImageId) ));
 					}
 				}break;
+			case fillBlipName:
+				{
+					std::wstring name;
+					FormatUtils::GetSTLCollectionFromBytes<std::wstring>(&name, iter->opComplex.get(), iter->op, ENCODING_UTF16);
+					if (!name.empty())
+						appendValueAttribute(&m_fill, L"o:title", FormatUtils::XmlEncode(name));
+
+				}break;
 			case fillOpacity:
 				{
 					appendValueAttribute(&m_fill, L"opacity", ( FormatUtils::IntToWideString( iter->op ) + L"f" ));

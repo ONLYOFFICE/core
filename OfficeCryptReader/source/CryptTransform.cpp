@@ -381,8 +381,8 @@ bool EncryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out, CRYP
 
 	return true;
 }
-ARC4::Decryption	rc4Decryption;
-//CipherARCFOUR		rc4Decryption;
+//ARC4::Decryption	rc4Decryption;
+CipherARCFOUR		rc4Decryption;
 
 bool DecryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out,  CRYPT_METHOD::_cipherAlgorithm algorithm, 
 				  StreamTransformationFilter::BlockPaddingScheme padding = StreamTransformationFilter::NO_PADDING)
@@ -398,8 +398,8 @@ bool DecryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out,  CRY
 	}
 	else if (algorithm == CRYPT_METHOD::RC4)
 	{
-		//rc4Decryption.Decode(data_inp.ptr, data_inp.size, data_out.ptr, data_out.size);
-		rc4Decryption.ProcessData(data_out.ptr, data_inp.ptr, data_inp.size);
+		rc4Decryption.Decode(data_inp.ptr, data_inp.size, data_out.ptr, data_out.size);
+		//rc4Decryption.ProcessData(data_out.ptr, data_inp.ptr, data_inp.size);
 	}
 	else //AES
 	{
@@ -485,7 +485,10 @@ bool ECMADecryptor::SetPassword(std::wstring _password)
 			CorrectHashSize(verifierKey, 16, 0); //40-bit crypt key !!!
 
 		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
-			rc4Decryption.SetKey(verifierKey.ptr, verifierKey.size);
+		{
+			//rc4Decryption.SetKey(verifierKey.ptr, verifierKey.size);
+			rc4Decryption.Init(CipherARCFOUR::rtl_Cipher_DirectionDecode, verifierKey.ptr, verifierKey.size, 0, 0);
+		}
 
 //--------------------------------------------
 		_buf decryptedVerifierHashInputBytes;		
@@ -512,12 +515,12 @@ void ECMADecryptor::SetCryptData(_ecmaCryptData	& data)
 {
 	cryptData = data;
 }
-void ECMADecryptor::Decrypt(char* data	, const size_t size, const unsigned long stream_pos)
+void ECMADecryptor::Decrypt(char* data	, const size_t size, const unsigned long start_iv_block)
 {
 	if (bVerify)
 	{
 		unsigned char* data_out = NULL;
-		Decrypt((unsigned char*)data, size, data_out);
+		Decrypt((unsigned char*)data, size, data_out, start_iv_block);
 		
 		if (data_out)
 		{
@@ -565,7 +568,7 @@ bool ECMADecryptor::CheckDataIntegrity(unsigned char* data, int  size)
 		
 	return (hmac == expected);
 }
-void ECMADecryptor::Decrypt(unsigned char* data_ptr, int  data_size, unsigned char*& data_out)
+void ECMADecryptor::Decrypt(unsigned char* data_ptr, int  data_size, unsigned char*& data_out, int start_iv_block)
 {
 	data_out = NULL;
 	
@@ -592,7 +595,7 @@ void ECMADecryptor::Decrypt(unsigned char* data_ptr, int  data_size, unsigned ch
 		_buf iv(cryptData.blockSize);
 		memset( iv.ptr, 0x00, cryptData.blockSize );
 
-		int i = 0, sz = 4096, pos = 0;
+		int i = start_iv_block, sz = 4096, pos = 0;
 
 		while (pos < size)
 		{
@@ -611,50 +614,34 @@ void ECMADecryptor::Decrypt(unsigned char* data_ptr, int  data_size, unsigned ch
 			
 			pos += sz; i++;
 		}
-	//--------------------------------------------
-		_buf pEncVerKeyMac		(cryptData.encryptedHmacKey);
- 		_buf pEncVerValueMac	(cryptData.encryptedHmacValue);
-		
-		_buf iv1(cryptData.blockSize);
-		memset( iv1.ptr, 0x00, cryptData.blockSize );
-
-		i = 0;
-		_buf pIndex1((unsigned char*)&i, 4);
-		iv1 = HashAppend(pDataSalt, pIndex1, cryptData.hashAlgorithm);
-
-		CorrectHashSize(iv1, cryptData.blockSize, 0x36);
-		
-		_buf pOut1(pEncVerKeyMac.size);
-		_buf pOut2(pEncVerValueMac.size);
-
-		DecryptCipher(pDecryptedKey,  iv, pEncVerKeyMac, pOut1, cryptData.cipherAlgorithm);
-		DecryptCipher(pDecryptedKey,  iv, pEncVerValueMac, pOut2, cryptData.cipherAlgorithm);
-
 	}
 	else
 	{				
 		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
 		{
-			int i = 0, sz = 512, pos = 0;
-
+			int i = start_iv_block, sz = 512, pos = 0;
+			
+			_buf pHashBuf = HashAppend(pSalt, pPassword, cryptData.hashAlgorithm);
+			
 			while (pos < size)
 			{
 				if (pos + sz > size) 
 					sz = size - pos;				
 
-				_buf hashKey = GenerateHashKey(pSalt, pPassword, cryptData.hashSize, cryptData.spinCount, cryptData.hashAlgorithm, i);
-				CorrectHashSize(hashKey, cryptData.keySize, 0);
-				if (cryptData.keySize == 5)
-					CorrectHashSize(hashKey, 16, 0); //40-bit crypt key !!!
-				
-				rc4Decryption.SetKey(hashKey.ptr, hashKey.size);
-				
-				_buf pInp(data_inp + pos, sz, false);
-				_buf pOut(data_out + pos, sz, false);
+				_buf block	((unsigned char*)&i, 4, false);
 
-				DecryptCipher(empty, empty, pInp, pOut, cryptData.cipherAlgorithm);
+				_buf pDecryptedKey = HashAppend( pHashBuf, block, cryptData.hashAlgorithm);
+			
+				CorrectHashSize(pDecryptedKey, cryptData.keySize, 0);
+				if (cryptData.keySize == 5)
+					CorrectHashSize(pDecryptedKey, 16, 0); //40-bit crypt key !!!
 				
-				pos += sz; i++;
+				CipherARCFOUR rc4;
+				
+				rc4.Init(CipherARCFOUR::rtl_Cipher_DirectionDecode, pDecryptedKey.ptr, pDecryptedKey.size, 0, 0);
+				rc4.Decode(data_inp + pos, sz, data_out + pos, sz);
+				
+				pos += sz, i++;
 			}
 		}
 		else

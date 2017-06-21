@@ -51,9 +51,6 @@ void SxIvd::readFields(CFRecord& record)
 		record >> val;
 		rgSxivd.push_back(val);
 	}
-
-	int skip = record.getDataSize() - record.getRdPtr();
-	record.skipNunBytes(skip);
 }
 
 } // namespace XLS

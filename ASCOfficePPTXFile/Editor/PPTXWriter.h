@@ -180,10 +180,11 @@ namespace NSBinPptxRW
 			CXmlWriter oXmlWriter;
 
 	// первым делом определим количество необходимого. если хоть одно из этих чисел - ноль, то ппту не корректный
-			LONG nCountThemes = 0;
-			LONG nCountMasters = 0;
-			LONG nCountLayouts = 0;
-			LONG nCountSlides = 0;
+			LONG nCountThemes	= 0;
+			LONG nCountMasters	= 0;
+			LONG nCountLayouts	= 0;
+			LONG nCountSlides	= 0;
+			bool bNotesMasterPresent = false;
 
 			pPair = m_mainTables.find(NSMainTables::Themes);
 			if (m_mainTables.end()  != pPair)
@@ -544,6 +545,7 @@ namespace NSBinPptxRW
 					m_oReader.m_pRels->Clear();
 					m_oReader.m_pRels->StartNotesMaster(m_arSlideMasters_Theme.size());
 					
+					bNotesMasterPresent = true;
 					if (lCount > 0)
 					{
 						m_arNotesMasters.back().fromPPTY(&m_oReader);
@@ -782,13 +784,16 @@ namespace NSBinPptxRW
 				}
 
 				m_oReader.m_pRels->WriteSlides(nCountSlides);
-				m_oReader.m_pRels->EndPresentationRels(m_oPresentation.commentAuthors.is_init());
 
 				m_oPresentation.notesMasterIdLst.clear();
-				m_oPresentation.notesMasterIdLst.push_back(PPTX::Logic::XmlId());
-				m_oPresentation.notesMasterIdLst[0].m_name = _T("notesMasterId");
-				m_oPresentation.notesMasterIdLst[0].rid = (size_t)nCurrentRels;
-
+				if (bNotesMasterPresent)
+				{
+					m_oPresentation.notesMasterIdLst.push_back(PPTX::Logic::XmlId());
+					m_oPresentation.notesMasterIdLst[0].m_name = _T("notesMasterId");
+					m_oPresentation.notesMasterIdLst[0].rid = (size_t)nCurrentRels;
+					++nCurrentRels;
+				}
+				m_oReader.m_pRels->EndPresentationRels(m_oPresentation.commentAuthors.is_init(), bNotesMasterPresent);
 				m_oReader.m_pRels->CloseRels();
 
 				oXmlWriter.ClearNoAttack();

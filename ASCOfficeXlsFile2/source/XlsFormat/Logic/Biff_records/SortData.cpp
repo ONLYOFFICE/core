@@ -52,7 +52,7 @@ BaseObjectPtr SortData::clone()
 void SortData::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);
-#pragma message("############################ frtHeader skipped here")
+#pragma message(">>>>>>>>>>> frtHeader skipped here")
 	
 	unsigned short flags;
 	record >> flags;

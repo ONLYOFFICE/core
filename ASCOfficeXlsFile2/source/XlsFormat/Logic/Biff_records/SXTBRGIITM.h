@@ -50,6 +50,8 @@ public:
 
 	static const ElementType type = typeSXTBRGIITM;
 
+	unsigned short cItems;
+
 };
 
 } // namespace XLS

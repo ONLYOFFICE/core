@@ -53,7 +53,7 @@ BaseObjectPtr StyleExt::clone()
 void StyleExt::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);
-#pragma message("############################ frtHeader skipped here")
+#pragma message(">>>>>>>>>>> frtHeader skipped here")
 	unsigned char flags;
 	record >> flags;
 	

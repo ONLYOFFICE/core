@@ -55,7 +55,7 @@ BaseObjectPtr Theme::clone()
 void Theme::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);
-#pragma message("############################ frtHeader skipped here")
+#pragma message(">>>>>>>>>>> frtHeader skipped here")
 	record >> dwThemeVersion;
 
 	if(!dwThemeVersion)

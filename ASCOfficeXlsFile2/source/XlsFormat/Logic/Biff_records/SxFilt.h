@@ -50,6 +50,16 @@ public:
 
 	static const ElementType type = typeSxFilt;
 
+	bool			sxaxisRw;
+	bool			sxaxisCol;
+	bool			sxaxisPage;
+	bool			sxaxisData;
+	unsigned short	iDim;
+	unsigned short	isxvd;
+	bool			fSelected;
+
+	unsigned short	grbitSbt;
+	unsigned short	cisxvi;
 };
 
 } // namespace XLS

@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of SxTbpg record in BIFF8
 class SxTbpg: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SxTbpg)
@@ -47,11 +45,12 @@ public:
 	~SxTbpg();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSxTbpg;
+	static const ElementType type = typeSxTbpg;
+
+	std::vector<short>	rgiitem;
 
 };
 

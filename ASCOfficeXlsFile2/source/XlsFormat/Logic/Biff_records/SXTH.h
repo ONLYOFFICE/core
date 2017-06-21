@@ -33,11 +33,14 @@
 
 #include "BiffRecordContinued.h"
 
+#include "../Biff_structures/FrtHeaderOld.h"
+#include "../Biff_structures/SxAxis.h"
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/HiddenMemberSet.h"
+
 namespace XLS
 {
 
-
-// Logical representation of SXTH record in BIFF8
 class SXTH: public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXTH)
@@ -47,13 +50,43 @@ public:
 	~SXTH();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSXTH;
+	static const ElementType type = typeSXTH;
 
+	FrtHeaderOld	frtHeaderOld;
+	bool			fMeasure;
+	bool			fOutlineMode;
+	bool			fEnableMultiplePageItems;
+	bool			fSubtotalAtTop;
+	bool			fSet;
+	bool			fDontShowFList;
+	bool			fAttributeHierarchy;
+	bool			fTimeHierarchy;
+	bool			fFilterInclusive;
+	bool			fKeyAttributeHierarchy;
+	bool			fKPI;	
+	SXAxis			sxaxis;		
+	_INT32			isxvd;
+	_INT32			csxvdXl;
+	bool			fDragToRow;
+	bool			fDragToColumn;
+	bool			fDragToPage;
+	bool			fDragToData;
+	bool			fDragToHide;
 
+	XLUnicodeString	stUnique;
+	XLUnicodeString	stDisplay;
+	XLUnicodeString	stDefault;
+	XLUnicodeString	stAll;
+	XLUnicodeString	stDimension;
+	
+	_UINT32				cisxvd;
+	std::vector<_INT32>	rgisxvd;
+
+	_UINT32							cHiddenMemberSets;
+	std::vector<HiddenMemberSet>	rgHiddenMemberSets;
 };
 
 } // namespace XLS

@@ -752,3 +752,5 @@
 #include "../XlsFormat/Logic/Biff_structures/CFDatabar.cpp"
 #include "../XlsFormat/Logic/Biff_structures/CFGradient.cpp"
 #include "../XlsFormat/Logic/Biff_structures/SxAxis.cpp"
+#include "../XlsFormat/Logic/Biff_structures/SXVIFlags.cpp"
+#include "../XlsFormat/Logic/Biff_structures/HiddenMemberSet.cpp"

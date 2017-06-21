@@ -53,7 +53,7 @@ BaseObjectPtr NameFnGrp12::clone()
 void NameFnGrp12::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);
-#pragma message("############################ frtHeader skipped here")
+#pragma message(">>>>>>>>>>> frtHeader skipped here")
 	record >> cachName >> fgrp >> rgach;
 }
 

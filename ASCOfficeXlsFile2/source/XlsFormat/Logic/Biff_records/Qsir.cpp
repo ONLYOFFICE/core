@@ -52,9 +52,20 @@ BaseObjectPtr Qsir::clone()
 
 void Qsir::readFields(CFRecord& record)
 {
-#pragma message("####################### Qsir record is not implemented")
-	Log::error("Qsir record is not implemented.");
-	//record >> some_value;
+	_UINT32 flags;
+
+	record >> frtRefHeaderU >> cbQsirSaved >> cbQsifSaved >> flags >> iSortCustom >> cQsif >> cpstDeleted >> idFieldNext >> ccolExtraLeft >> ccolExtraRight;
+	record >> idList >> rgbTitle;
+	
+	fPersist			= GETBIT(flags, 0);
+	fPersistSort		= GETBIT(flags, 1);
+	fPersistAutoFilter	= GETBIT(flags, 2);
+	fSorted				= GETBIT(flags, 20);
+	fCaseSensSort		= GETBIT(flags, 21);
+	fHdrRowSort			= GETBIT(flags, 22);
+	fidWrapped			= GETBIT(flags, 23);
+	fTitlesOld			= GETBIT(flags, 25);
+	wVerBeforeRefreshAlert = GETBITS(flags, 26, 30);
 }
 
 } // namespace XLS

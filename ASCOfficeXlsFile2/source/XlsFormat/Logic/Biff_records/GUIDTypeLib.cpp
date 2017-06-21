@@ -53,7 +53,7 @@ BaseObjectPtr GUIDTypeLib::clone()
 void GUIDTypeLib::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);
-#pragma message("############################ frtHeader skipped here")
+#pragma message(">>>>>>>>>>> frtHeader skipped here")
 	_GUID_ guid_num;
 	record >> guid_num;
 	guid = STR::guid2bstr(guid_num);

@@ -53,7 +53,7 @@ BaseObjectPtr TableStyle::clone()
 void TableStyle::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);
-#pragma message("############################ frtHeader skipped here")
+#pragma message(">>>>>>>>>>> frtHeader skipped here")
 	unsigned short flags;
 	record >> flags;
 	fIsPivot = GETBIT(flags, 1);

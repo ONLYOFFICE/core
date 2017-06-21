@@ -32,12 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/DXFN.h"
+#include "../Biff_structures/XFExtNoFRT.h"
 
 namespace XLS
 {
 
-
-// Logical representation of SxDXF record in BIFF8
 class SxDXF: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SxDXF)
@@ -47,11 +47,14 @@ public:
 	~SxDXF();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSxDXF;
+	static const ElementType type = typeSxDXF;
+
+	DXFN		dxfn;
+	XFExtNoFRT	xfext;
+
 };
 
 } // namespace XLS

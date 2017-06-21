@@ -32,12 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/FrtRefHeaderU.h"
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {
 
-
-// Logical representation of Qsir record in BIFF8
 class Qsir: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Qsir)
@@ -47,11 +47,32 @@ public:
 	~Qsir();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeQsir;
+	static const ElementType type = typeQsir;
+
+	FrtRefHeaderU	frtRefHeaderU;
+	unsigned short	cbQsirSaved;
+	unsigned short	cbQsifSaved;
+	bool			fPersist;
+	bool			fPersistSort;
+	bool			fPersistAutoFilter;
+	bool			fSorted;
+	bool			fCaseSensSort;
+	bool			fHdrRowSort;
+	bool			fidWrapped;
+	bool			fTitlesOld;
+	unsigned char	wVerBeforeRefreshAlert;
+	_UINT32			iSortCustom;
+	_UINT32			cQsif;
+	_UINT32			cpstDeleted;
+	_UINT32			idFieldNext;
+	unsigned short	ccolExtraLeft;
+	unsigned short	ccolExtraRight;
+	_UINT32			idList;			//options
+
+	XLUnicodeString	rgbTitle;
 };
 
 } // namespace XLS

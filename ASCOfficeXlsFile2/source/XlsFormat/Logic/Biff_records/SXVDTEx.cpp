@@ -52,9 +52,21 @@ BaseObjectPtr SXVDTEx::clone()
 
 void SXVDTEx::readFields(CFRecord& record)
 {
-	Log::error("SXVDTEx record is not implemented.");
+	unsigned short flags;
+	record >> frtHeaderOld >> flags >> isxth >> isxtl >> csxvi;
 
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	for (_INT32 i = 0; i < csxvi; i++)
+	{
+		SXVIFlags val;
+		record >> val;
+		rgsxvi.push_back(val);
+	}
+	fTensorSort					= GETBIT(flags, 0);
+	fDrilledLevel				= GETBIT(flags, 1);
+	fItemsDrilledByDefault		= GETBIT(flags, 2);
+	fMemPropDisplayInReport		= GETBIT(flags, 3);
+	fMemPropDisplayInTip		= GETBIT(flags, 4);
+	fMemPropDisplayInCaption	= GETBIT(flags, 5);
 }
 
 } // namespace XLS

@@ -56,7 +56,6 @@ public:
            m_bIsPPTFile(false),
 		   m_pDocStream(NULL), 
 		   m_pPictureStream(NULL),
-		   m_lImagesCount(0),
 		   m_strMemoryForder(strTemp),
 		   m_oDocumentInfo()
 	{ 
@@ -114,7 +113,7 @@ public:
 		if (m_oDocumentInfo.m_arUsers.empty()) 
 			return m_oDocumentInfo.m_oCurrentUser.m_bIsEncrypt; //wps не выставляет флаг!
 
-		return &m_oDocumentInfo.m_arUsers[0]->m_bEncrypt;
+		return m_oDocumentInfo.m_arUsers[0]->m_bEncrypt;
 	}
 	CEncryptionHeader* GetEncryptionHeader()
 	{
@@ -122,26 +121,14 @@ public:
 
 		return &m_oDocumentInfo.m_arUsers[0]->m_oEncryptionHeader;
 	}
-	bool ReadPersistDirectory()
+	bool ReadPersists()
 	{
-	// нужно вызывать РОВНО один раз...
-        bool bRes = SavePictures();
-
-		return m_oDocumentInfo.ReadFromStream(&m_oCurrentUser, GetDocStream(), m_strMemoryForder);
+		return m_oDocumentInfo.ReadFromStream(&m_oCurrentUser, GetDocStream());
 	}
-
-	void ReadSlideList()
+	void ReadDocument(CRYPT::ECMADecryptor *pDecryptor)
 	{
-		if (m_oDocumentInfo.m_arUsers.size() > 0)
-		{
-			DWORD nPID = m_oDocumentInfo.m_arUsers[0]->m_oUser.m_nDocumentRef;
-			std::map<DWORD, DWORD>::iterator pPair = m_oDocumentInfo.m_arUsers[0]->m_mapOffsetInPIDs.find(nPID);
-
-			if (pPair == m_oDocumentInfo.m_arUsers[0]->m_mapOffsetInPIDs.end()) return;
-
-			DWORD offset = pPair->second;
-			StreamUtils::StreamSeek((long)offset, GetDocStream());
-		}
+		ReadPictures(pDecryptor);
+		m_oDocumentInfo.LoadDocument(m_strMemoryForder);
 	}
 
 protected: 
@@ -194,20 +181,13 @@ protected:
 		return m_pPictureStream; 
  	}
 
-    bool SavePictures()
+    void ReadPictures(CRYPT::ECMADecryptor *pDecryptor)
 	{
 		POLE::Stream* pStream = GetPictureStream();
+		if (NULL == pStream) return;
 
-        if (NULL == pStream)
-		{
-            return false;
-		}
-		
 		SRecordHeader oHeader;
 		ULONG nRd = 0;
-		m_lImagesCount = 0;
-
-//  удаление картинок при завершении программы
 
 		while (true)
 		{
@@ -220,11 +200,39 @@ protected:
 			art_blip.m_strMemoryForder	= m_strMemoryForder;
 			art_blip.m_oDocumentInfo	= &m_oDocumentInfo;
 
-			art_blip.ReadFromStream(oHeader, pStream);
+			if (pDecryptor)
+			{
+				POLE::Storage	*pStorageOut	= NULL;
+				POLE::Stream	*pStreamTmp		= NULL;
 
+				std::wstring sTemp = m_strMemoryForder + FILE_SEPARATOR_STR + L"~tempFile.ppt";
+				
+				pStorageOut	= new POLE::Storage(sTemp.c_str());		
+				pStorageOut->open(true, true);
+
+				pStreamTmp = new POLE::Stream(pStorageOut, "Tmp", true, oHeader.RecLen);
+
+				unsigned char* data_stream = new unsigned char[oHeader.RecLen];
+				pStream->read(data_stream, oHeader.RecLen);
+				pDecryptor->Decrypt((char*)data_stream, oHeader.RecLen, 0);
+				pStreamTmp->write(data_stream, oHeader.RecLen);
+				pStreamTmp->flush();
+				pStreamTmp->seek(0);
+				
+				art_blip.ReadFromStream(oHeader, pStreamTmp);
+
+				delete pStream;
+				delete pStorageOut;
+
+				//NSFile::DeleteFile(sTemp);
+			}
+			else
+			{
+				art_blip.ReadFromStream(oHeader, pStream);
+			}
 		}
-		return true;
 	}
+
  
 private: 
 	bool						m_bDualStorage;
@@ -239,7 +247,6 @@ public:
     std::wstring				m_strMemoryForder;
 
     std::vector<bool>			m_arLoadImageFlags;
-	DWORD						m_lImagesCount;
 
 	CPPTDocumentInfo			m_oDocumentInfo;
 };

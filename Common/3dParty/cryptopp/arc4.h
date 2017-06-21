@@ -41,7 +41,7 @@ protected:
 	void UncheckedSetKey(const byte *key, unsigned int length, const NameValuePairs &params);
 	virtual unsigned int GetDefaultDiscardBytes() const {return 0;}
 
-    FixedSizeSecBlock<byte, 512> m_state;
+    FixedSizeSecBlock<byte, 256> m_state;
     byte m_x, m_y;
 };
 

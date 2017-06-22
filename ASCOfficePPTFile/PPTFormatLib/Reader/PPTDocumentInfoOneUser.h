@@ -50,6 +50,7 @@ public:
 	
 	CEncryptionHeader								m_oEncryptionHeader;
 	bool											m_bEncrypt;
+	std::wstring									m_strPassword;
 
 	std::map<DWORD, CRecordSlide*>					m_mapSlides;
 	std::map<DWORD, CRecordSlide*>					m_mapMasters;
@@ -122,7 +123,8 @@ public:
 
 	void Clear();
 
-    bool ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStream, std::wstring strFolderMem);
+    bool ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStream);
+	void ReadExtenalObjects(std::wstring strFolderMem);
 	void FromDocument();
 
 	void NormalizeCoords(long lWidth, long lHeight);

@@ -47,6 +47,7 @@ CPPTUserInfo::CPPTUserInfo() :	CDocument(),
 								m_mapMasters(),
 								m_mapNotes(),
 								m_mapSlides(),
+								m_bEncrypt(false),
 								m_arOffsetPictures()
 {
 	m_pDocumentInfo			= NULL;
@@ -128,7 +129,7 @@ void CPPTUserInfo::Clear()
 	m_arOffsetPictures.clear();
 }
 
-bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStream, std::wstring strFolderMem)
+bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStream)
 {
 	m_oUser.FromAtom(pUser);
 
@@ -149,8 +150,9 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 	oPersist.ReadFromStream(oHeader, pStream);
 	oPersist.ToMap(&m_mapOffsetInPIDs);
 //--------------------------------------------------------------------------------------------------
+	CRYPT::ECMADecryptor *pDecryptor = NULL;
 	std::map<DWORD, DWORD>::iterator pPair = m_mapOffsetInPIDs.find(m_oUser.m_nEncryptRef);
-
+	
 	if (pPair != m_mapOffsetInPIDs.end())
 	{
 		StreamUtils::StreamSeek(pPair->second, pStream);
@@ -161,7 +163,17 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 			m_bEncrypt = true;
 			m_oEncryptionHeader.ReadFromStream(oHeader, pStream);
 			
-			return true;
+			pDecryptor = new CRYPT::ECMADecryptor();
+			pDecryptor->SetCryptData(m_oEncryptionHeader.crypt_data_aes);
+			
+			if (pDecryptor->SetPassword(m_strPassword) == false)
+			{
+				delete pDecryptor;
+				pDecryptor = NULL;
+				
+				//return true;
+			}
+			return true;//read persis decrypt
 		}
 	}
 //--------------------------------------------------------------------------------------------------
@@ -170,15 +182,45 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 	if (pPair == m_mapOffsetInPIDs.end())
         return false;
 
-	StreamUtils::StreamSeek(pPair->second, pStream);
+	DWORD offset_stream = pPair->second;
+
+	StreamUtils::StreamSeek(offset_stream, pStream);
 	oHeader.ReadFromStream(pStream);
 
-	if (RECORD_TYPE_DOCUMENT != oHeader.RecType)
+	if (pDecryptor)
 	{
-		return false;
-	}
+		POLE::Storage	*pStorageOut	= NULL;
+		POLE::Stream	*pStreamTmp		= NULL;
 
-	m_oDocument.ReadFromStream(oHeader, pStream);
+		std::wstring sTemp = m_strFileDirectory + FILE_SEPARATOR_STR + L"~tempFile.ppt";
+		
+		pStorageOut	= new POLE::Storage(sTemp.c_str());		
+		pStorageOut->open(true, true);
+
+		pStreamTmp = new POLE::Stream(pStorageOut, "Tmp", true, oHeader.RecLen);
+
+		unsigned char* data_stream = new unsigned char[oHeader.RecLen];
+		pStream->read(data_stream, oHeader.RecLen);
+		pDecryptor->Decrypt((char*)data_stream, oHeader.RecLen, m_oUser.m_nDocumentRef);
+		pStreamTmp->write(data_stream, oHeader.RecLen);
+		pStreamTmp->flush();
+		pStreamTmp->seek(0);
+		
+		m_oDocument.ReadFromStream(oHeader, pStreamTmp);
+
+		delete pStream;
+		delete pStorageOut;
+
+		//NSFile::DeleteFile(sTemp);
+	}
+	else
+	{
+		if (RECORD_TYPE_DOCUMENT != oHeader.RecType)
+		{
+			return false;
+		}
+		m_oDocument.ReadFromStream(oHeader, pStream);
+	}
 
 	Clear();
 
@@ -190,11 +232,12 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 		
 		if (nIndexPsrRef != m_mapOffsetInPIDs.end())
 		{
-			long offset = (long)nIndexPsrRef->second;
+			offset_stream = nIndexPsrRef->second;
 
-			StreamUtils::StreamSeek(offset, pStream);
+			StreamUtils::StreamSeek(offset_stream, pStream);
 
 			oHeader.ReadFromStream(pStream);
+			
 			CRecordSlide* pSlide = new CRecordSlide();
 			pSlide->ReadFromStream(oHeader, pStream);
 			pSlide->m_oPersist = m_oDocument.m_arMasterPersists[index];
@@ -215,8 +258,8 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 		
 		if (m_mapOffsetInPIDs.end() != nIndexPsrRef)
 		{
-			long offset = (long)nIndexPsrRef->second;
-			StreamUtils::StreamSeek(offset, pStream);
+			offset_stream = nIndexPsrRef->second;
+			StreamUtils::StreamSeek(offset_stream, pStream);
 
 			oHeader.ReadFromStream(pStream);
 			CRecordSlide* pSlide = new CRecordSlide();
@@ -240,9 +283,9 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 		
 		if (m_mapOffsetInPIDs.end() != nIndexPsrRef)
 		{
-			long offset = (long)nIndexPsrRef->second;
+			offset_stream = (long)nIndexPsrRef->second;
 			
-			StreamUtils::StreamSeek(offset, pStream);
+			StreamUtils::StreamSeek(offset_stream, pStream);
 
 			oHeader.ReadFromStream(pStream);
 
@@ -283,9 +326,9 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 		
 		if (m_mapOffsetInPIDs.end() != nIndexPsrRef)
 		{
-			long offset = (long)nIndexPsrRef->second;
+			offset_stream = nIndexPsrRef->second;
 			
-			StreamUtils::StreamSeek(offset, pStream);
+			StreamUtils::StreamSeek(offset_stream, pStream);
 
 			oHeader.ReadFromStream(pStream);
 
@@ -300,9 +343,9 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 		
 		if (m_mapOffsetInPIDs.end() != nIndexPsrRef)
 		{
-			long offset = (long)nIndexPsrRef->second;
+			offset_stream = nIndexPsrRef->second;
 			
-			StreamUtils::StreamSeek(offset, pStream);
+			StreamUtils::StreamSeek(offset_stream, pStream);
 
 			oHeader.ReadFromStream(pStream);
 
@@ -314,7 +357,11 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 			m_mapHandoutMasters.insert( std::pair<DWORD, CRecordSlide*>(0, pSlide ));		
 		}
 	}
+	return true;
+}
 //--------------------------------------------------------------------------------------------
+void CPPTUserInfo::ReadExtenalObjects(std::wstring strFolderMem)
+{
 	// так... теперь берем всю инфу о ExObject -----------------------------
 	m_oExMedia.m_strPresentationDirectory	= strFolderMem;
 	m_oExMedia.m_strSourceDirectory			= m_strFileDirectory;
@@ -364,20 +411,12 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 
 		m_arrFonts.push_back(oFont);
 	}
-
-	//FromDocument();
-	// FromDocument - должен вызываться после того, как загрузятся все (!!!) юзеры
-
-	// теперь заполним пустые картинки
-	//std::vector<CRecordBlipStoreContainer*> oArray;
 	m_oDocument.GetRecordsByType(&m_arrBlipStore, true, true);
 	if (0 < m_arrBlipStore.size())
 	{
 		m_bIsSetupEmpty = TRUE;
 		m_arrBlipStore[0]->SetUpPicturesInfos(&m_arOffsetPictures);
 	}
-
-	return TRUE;
 }
 
 void CPPTUserInfo::FromDocument()

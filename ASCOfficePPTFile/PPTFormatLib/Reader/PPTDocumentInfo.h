@@ -40,6 +40,7 @@ public:
 	std::vector<CPPTUserInfo*>		m_arUsers;
     std::wstring					m_strFileDirectory;
 	std::map<int, std::wstring>		m_mapStoreImageFile;
+    std::wstring					m_strPassword;
 
 	CPPTDocumentInfo() : m_oCurrentUser(), m_arUsers() 
 	{
@@ -63,7 +64,7 @@ public:
 		} 
 	}
 
-    bool ReadFromStream(CRecordCurrentUserAtom* pCurrentUser, POLE::Stream* pStream, std::wstring strFolderMem)
+    bool ReadFromStream(CRecordCurrentUserAtom* pCurrentUser, POLE::Stream* pStream)
 	{
 		m_oCurrentUser.FromAtom(pCurrentUser);
 
@@ -86,8 +87,9 @@ public:
 			
 			pInfo->m_strFileDirectory	= m_strFileDirectory;
 			pInfo->m_bEncrypt			= m_oCurrentUser.m_bIsEncrypt;
+			pInfo->m_strPassword		= m_strPassword;
            
-			bool bResult = pInfo->ReadFromStream(&oUserAtom, pStream, strFolderMem);
+			bool bResult = pInfo->ReadFromStream(&oUserAtom, pStream);
 
 			offsetToEdit = pInfo->m_oUser.m_nOffsetLastEdit;
 			
@@ -104,13 +106,16 @@ public:
 
 			pInfo = NULL;
 		}
-		if (m_arUsers.empty() == false)
-		{
-			if (m_arUsers[0]->m_bEncrypt == false)
-			{
-				m_arUsers[0]->FromDocument();
-			}
-		}
+
+		return true;
+	}
+    bool LoadDocument(std::wstring strFolderMem)
+	{
+		if (m_arUsers.empty()) return false;
+		
+		m_arUsers[0]->ReadExtenalObjects(strFolderMem);
+		m_arUsers[0]->FromDocument();
+
 		return true;
 	}
 };

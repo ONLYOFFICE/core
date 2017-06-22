@@ -38,7 +38,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using Microsoft.Office.Interop.Word;
+//using Microsoft.Office.Interop.Word;
 
 namespace WindowsFormsApplication1
 {
@@ -149,7 +149,17 @@ namespace WindowsFormsApplication1
                 }
                 numBytesToRead = bytes.Length;
 
-                textBox2.Text = Convert.ToBase64String(bytes, Base64FormattingOptions.None);
+                //textBox2.Text = Convert.ToBase64String(bytes, Base64FormattingOptions.None);
+                string s = "static const unsigned char c_res[" + Convert.ToString(bytes.Length) + "] = {";
+                int nLen = bytes.Length;
+                for (int i = 0; i < nLen; i++)
+                {
+                    s += Convert.ToString(bytes[i]);
+                    if (i != (nLen - 1))
+                        s += ",";
+                }
+                s += "};";
+                textBox2.Text = s;
             }            
         }
 

@@ -35,11 +35,13 @@
 #include "../Reader/ReadStructures.h"
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/Enums.h"
 #include "../../../Common/3dParty/pole/pole.h"
+#include "../../../OfficeCryptReader/source/CryptTransform.h"
 
 using namespace NSPresentationEditor;
 
-struct SRecordHeader 
+class SRecordHeader 
 { 
+public:
 	BYTE			RecVersion;                
 	USHORT			RecInstance;  
 	USHORT			RecType; 
@@ -48,7 +50,8 @@ struct SRecordHeader
 	SRecordHeader()
 	{
 		RecVersion = 0;
-		RecInstance = RecType = 0;
+		RecInstance = 0;
+		RecType = 0;
 		RecLen = 0;
 	}
 

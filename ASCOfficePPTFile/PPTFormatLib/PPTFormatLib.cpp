@@ -64,7 +64,8 @@ long COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstring
 	m_pReader = new CPPTFileReader(pStgFrom, m_strTempDirectory);
 	CPPTFileReader* pptReader = (CPPTFileReader*)m_pReader;	
     
-	pptReader->m_oDocumentInfo.m_strFileDirectory= GetDirectory(sFileName.c_str());
+	pptReader->m_oDocumentInfo.m_strFileDirectory	= GetDirectory(sFileName.c_str());
+	pptReader->m_oDocumentInfo.m_strPassword		= password;
 		
 	if	(pptReader->IsPowerPoint() == false) 
 	{ 
@@ -73,14 +74,14 @@ long COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstring
 		return AVS_ERROR_FILEFORMAT; 
 	} 
 
-	if (pptReader->ReadPersistDirectory() == false) 
-		return AVS_ERROR_FILEFORMAT; 
-
+	if (pptReader->ReadPersists() == false) 
+		return AVS_ERROR_FILEFORMAT;
 
 	if (pptReader->IsEncrypted())
 	{
 		CEncryptionHeader *pEncryptionHeader =  pptReader->GetEncryptionHeader();
-		if (password.empty()) return AVS_ERROR_DRM;
+		if (!pEncryptionHeader)	return AVS_ERROR_FILEFORMAT;
+		if (password.empty())	return AVS_ERROR_DRM;
 
 		if (pEncryptionHeader->bStandard)
 		{
@@ -92,7 +93,8 @@ long COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstring
 			}			
 			if (DecryptOfficeFile(&Decryptor) == false)	return AVS_ERROR_DRM;
 			
-			return OpenFile(m_sTempDecryptFileName, L"");
+			return AVS_ERROR_PASSWORD;
+			//return OpenFile(m_sTempDecryptFileName, L"");
 		}
 		else
 		{
@@ -106,12 +108,15 @@ long COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstring
 			}
 			if (DecryptOfficeFile(&Decryptor) == false)	return AVS_ERROR_DRM;
 
-			return OpenFile(m_sTempDecryptFileName, L"");
+			return AVS_ERROR_PASSWORD;
+			pptReader->ReadDocument(&Decryptor);
+			//return OpenFile(m_sTempDecryptFileName, L"");
 		}
 	}
 	else
 	{	
-		pptReader->ReadSlideList();
+		pptReader->ReadDocument(NULL);
+
 		m_Status = READMODE;
 	}
 

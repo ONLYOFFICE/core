@@ -128,9 +128,9 @@ public:
 	ECMADecryptor();
 	virtual ~ECMADecryptor();
 
-	void Decrypt (unsigned char* data, int  size, unsigned char*& data_out);
+	void Decrypt (unsigned char* data, int  size, unsigned char*& data_out, int start_iv_block = 0);
 	
-	virtual void Decrypt (char* data, const size_t size, const unsigned long stream_pos);
+	virtual void Decrypt (char* data, const size_t size, const unsigned long start_iv_block);
 	virtual bool SetPassword (std::wstring password);
 	virtual bool IsVerify();
 

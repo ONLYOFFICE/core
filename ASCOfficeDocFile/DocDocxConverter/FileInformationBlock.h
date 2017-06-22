@@ -507,9 +507,9 @@ namespace DocFileFormat
 	class FileInformationBlock
 	{
 	public:
-		bool					m_bOlderVersion;
-		int						m_CodePage;
-		FibBase					m_FibBase;
+		bool			m_bOlderVersion;
+		int				m_CodePage;
+		FibBase			m_FibBase;
 		
 		RgW97			m_RgW97;
 		RgLw97			m_RgLw97;

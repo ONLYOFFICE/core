@@ -247,9 +247,8 @@ namespace DocFileFormat
 			{
 				freeform =	false;
 				m_pXmlWriter->WriteAttribute( L"type", (std::wstring(L"#") + VMLShapeTypeMapping::GenerateTypeId(pShape->GetShapeType())));
-
-			m_pXmlWriter->WriteAttribute( L"style", FormatUtils::XmlEncode(buildStyle(pShape, pAnchor, options, pContainer->Index)));
 			}
+			m_pXmlWriter->WriteAttribute( L"style", FormatUtils::XmlEncode(buildStyle(pShape, pAnchor, options, pContainer->Index)));
 
 			if (pShape->is<LineType>())
 			{
@@ -446,7 +445,7 @@ namespace DocFileFormat
 				{
 					yCoord = iter->op;
 				}break;
-// OUTLINE
+// LINE
 			case lineColor:
 				{
 					RGBColor lineColor((int)iter->op, RedFirst);
@@ -492,6 +491,21 @@ namespace DocFileFormat
 			case lineStartArrowWidth:
 				{
 					appendValueAttribute(&m_stroke, L"startarrowwidth", getArrowWidth( iter->op ));
+				}break;
+			case cxstyle:
+				{
+					if (pShape->GetShapeType() == NULL)
+					{
+						freeform = false;
+						m_pXmlWriter->WriteAttribute(L"type", L"#_x0000_t32");
+					}
+					switch(iter->op)
+					{
+						case 0:	m_pXmlWriter->WriteAttribute(L"o:connectortype", L"straight");	break;
+						case 1:	m_pXmlWriter->WriteAttribute(L"o:connectortype", L"elbow");		break;
+						case 2:	m_pXmlWriter->WriteAttribute(L"o:connectortype", L"curved");	break;
+						case 3:	m_pXmlWriter->WriteAttribute(L"o:connectortype", L"none");		break;
+					}
 				}break;
 // FILL
 			case fillColor:

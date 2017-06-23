@@ -51,7 +51,10 @@ public:
 	CEncryptionHeader								m_oEncryptionHeader;
 	bool											m_bEncrypt;
 	std::wstring									m_strPassword;
-
+	CRYPT::ECMADecryptor*							m_pDecryptor;
+	POLE::Storage*									m_pStorageDecrypt;
+	std::vector<CFStreamPtr>						m_arStreamDecrypt; // на каждый Persist свой ... оО
+	
 	std::map<DWORD, CRecordSlide*>					m_mapSlides;
 	std::map<DWORD, CRecordSlide*>					m_mapMasters;
 	std::map<DWORD, CRecordSlide*>					m_mapNotes;
@@ -106,7 +109,7 @@ public:
     std::vector<int>								m_arOffsetPictures;
     bool											m_bIsSetupEmpty;
 
-    std::wstring									m_strFileDirectory;
+    std::wstring									m_strTmpDirectory;
 
 	// вся инфа о ex - файлах
 	CExMedia										m_oExMedia;
@@ -124,7 +127,11 @@ public:
 	void Clear();
 
     bool ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStream);
+	bool ReadDocumentPersists(POLE::Stream* pStream);
 	void ReadExtenalObjects(std::wstring strFolderMem);
+
+	void DecryptStream(POLE::Stream *pStream, int block);
+
 	void FromDocument();
 
 	void NormalizeCoords(long lWidth, long lHeight);
@@ -301,7 +308,6 @@ public:
 		}
 		return _T("blank");
 	}
-
 	
 	void AddAnimation		(DWORD dwSlideID, double Width, double Height, IElement* pElement);
 	void AddAudioTransition (DWORD dwSlideID, CTransition* pTransition, const std::wstring& strFilePath);

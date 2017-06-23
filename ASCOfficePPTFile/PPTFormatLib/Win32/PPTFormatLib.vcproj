@@ -487,6 +487,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Reader\PPTFileReader.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\Reader\PPTFileReader.h"
 				>
 			</File>

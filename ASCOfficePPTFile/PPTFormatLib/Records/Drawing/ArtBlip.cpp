@@ -130,7 +130,8 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 				if		(0x046A == oHeader.RecInstance || 0x06E2 == oHeader.RecInstance)	lOffset = 17;
 				else if (0x046B == oHeader.RecInstance || 0x06E3 == oHeader.RecInstance)	lOffset = 33;
 				
-				StreamUtils::StreamSkip(lOffset, pStream);
+				//StreamUtils::StreamSkip(lOffset, pStream);
+				std::string str = StreamUtils::ReadStringA(pStream, lOffset);
 				
 				sExt = _T(".jpg");
 				break;
@@ -140,7 +141,8 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 				if		(0x06E0 == oHeader.RecInstance)	lOffset = 17;
 				else if (0x06E1 == oHeader.RecInstance)	lOffset = 33;
 
-				StreamUtils::StreamSkip(lOffset, pStream);
+				//StreamUtils::StreamSkip(lOffset, pStream);
+				std::string str = StreamUtils::ReadStringA(pStream, lOffset);
 
 				sExt = _T(".png");
 				break;
@@ -182,7 +184,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 			std::wstring strFile = L"Image " +std::to_wstring(nImagesCount + 1) + oMetaFile.m_sExtension;
 
 			CFile fileMeta;
-			HRESULT hr = fileMeta.CreateFile(m_strMemoryForder + FILE_SEPARATOR_STR + strFile);
+			HRESULT hr = fileMeta.CreateFile(m_strTmpDirectory + FILE_SEPARATOR_STR + strFile);
 		
 			if (hr == S_OK)
 			{
@@ -200,7 +202,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 			std::wstring strFile = L"Image " + std::to_wstring(nImagesCount + 1) + sExt;
 			
 			CFile fileImage;
-			HRESULT hr = fileImage.CreateFile(m_strMemoryForder + FILE_SEPARATOR_STR +  strFile);
+			HRESULT hr = fileImage.CreateFile(m_strTmpDirectory + FILE_SEPARATOR_STR +  strFile);
 			if (hr == S_OK)
 			{
 				if (RECORD_TYPE_ESCHER_BLIP_DIB == oHeader.RecType)
@@ -222,11 +224,6 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 
 			m_sFileName = strFile;
 		}
-		int dwOffset = pos - 8;
-		
-		if (m_oDocumentInfo)
-		{
-			m_oDocumentInfo->m_mapStoreImageFile[dwOffset ] = m_sFileName;
-		}
+
 	}
 }

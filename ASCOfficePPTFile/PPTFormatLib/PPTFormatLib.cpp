@@ -64,7 +64,7 @@ long COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstring
 	m_pReader = new CPPTFileReader(pStgFrom, m_strTempDirectory);
 	CPPTFileReader* pptReader = (CPPTFileReader*)m_pReader;	
     
-	pptReader->m_oDocumentInfo.m_strFileDirectory	= GetDirectory(sFileName.c_str());
+	pptReader->m_oDocumentInfo.m_strTmpDirectory	= m_strTempDirectory;
 	pptReader->m_oDocumentInfo.m_strPassword		= password;
 		
 	if	(pptReader->IsPowerPoint() == false) 
@@ -75,50 +75,20 @@ long COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstring
 	} 
 
 	if (pptReader->ReadPersists() == false) 
-		return AVS_ERROR_FILEFORMAT;
-
-	if (pptReader->IsEncrypted())
 	{
-		CEncryptionHeader *pEncryptionHeader =  pptReader->GetEncryptionHeader();
-		if (!pEncryptionHeader)	return AVS_ERROR_FILEFORMAT;
-		if (password.empty())	return AVS_ERROR_DRM;
-
-		if (pEncryptionHeader->bStandard)
+		if (pptReader->IsEncrypted())
 		{
-			CRYPT::RC4Decryptor Decryptor(pEncryptionHeader->crypt_data_rc4, password, 1);
-
-			if (Decryptor.IsVerify() == false) 
-			{
-				return AVS_ERROR_PASSWORD;
-			}			
-			if (DecryptOfficeFile(&Decryptor) == false)	return AVS_ERROR_DRM;
-			
-			return AVS_ERROR_PASSWORD;
-			//return OpenFile(m_sTempDecryptFileName, L"");
+			if (password.empty())	return AVS_ERROR_DRM;
+			else					return AVS_ERROR_PASSWORD;
 		}
-		else
-		{
-			CRYPT::ECMADecryptor Decryptor;
-
-			Decryptor.SetCryptData(pEncryptionHeader->crypt_data_aes);
-
-			if (Decryptor.SetPassword(password) == false)
-			{
-				return AVS_ERROR_PASSWORD;
-			}
-			if (DecryptOfficeFile(&Decryptor) == false)	return AVS_ERROR_DRM;
-
-			return AVS_ERROR_PASSWORD;
-			pptReader->ReadDocument(&Decryptor);
-			//return OpenFile(m_sTempDecryptFileName, L"");
-		}
+		return AVS_ERROR_FILEFORMAT;
 	}
-	else
-	{	
-		pptReader->ReadDocument(NULL);
 
-		m_Status = READMODE;
-	}
+	//pptReader->ReadEncryptedSummary();
+	//pptReader->ReadDocumentSummary();
+	pptReader->ReadDocument();
+
+	m_Status = READMODE;
 
 	return S_OK;
 }
@@ -166,94 +136,3 @@ std::wstring COfficePPTFile::GetDirectory(std::wstring strFileName)
 	}
 	return strFileName;
 }
-
-bool COfficePPTFile::DecryptOfficeFile(CRYPT::Decryptor* Decryptor)
-{
-	if (!m_pReader) return false;
-	CPPTFileReader* pptReader = (CPPTFileReader*)(m_pReader);
-
-	if (m_strTempDirectory.empty())
-	{
-        m_strTempDirectory = NSFile::CFileBinary::GetTempPath();
-	}
-	m_sTempDecryptFileName	= m_strTempDirectory + FILE_SEPARATOR_STR + L"~tempFile.ppt";
-	
-	POLE::Storage *storageIn	= pptReader->m_pPowerPointStg;
-	POLE::Storage *storageOut	= new POLE::Storage(m_sTempDecryptFileName.c_str());
-
-	if (!storageOut || !storageIn) return false;
-	
-	if (!storageOut->open(true, true))
-	{
-		delete storageOut;
-		return false;
-	}
-	std::list<std::string> listStream = storageIn->entries();
-
-	for (std::list<std::string>::iterator it = listStream.begin(); it != listStream.end(); it++)
-	{
-		if (storageIn->isDirectory(*it)) 
-		{
-			std::list<std::string> list_entry = storageIn->GetAllStreams(*it);
-			
-			for (std::list<std::string>::iterator it2 = list_entry.begin(); it2 != list_entry.end(); it2++)
-			{
-				DecryptStream(Decryptor, *it2, storageIn, storageOut);
-			}
-		}
-		else 
-			DecryptStream(Decryptor, *it, storageIn, storageOut);
-
-	}
-	storageOut->close();
-	delete storageOut;
-
-	return true;
-}
-
-
-bool COfficePPTFile::DecryptStream(CRYPT::Decryptor* Decryptor, std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut)
-{
-	POLE::Stream *stream = new POLE::Stream(storageIn, streamName);
-	if (!stream) return false;
-
-	stream->seek(0);
-	int sz_stream = stream->size();
-	
-	POLE::Stream *streamNew = new POLE::Stream(storageOut, streamName, true, sz_stream);
-	if (!streamNew) return false;
-
-	unsigned char* data_stream = new unsigned char[sz_stream];
-	stream->read(data_stream, sz_stream);
-
-	unsigned char* data_store = NULL;
-	int sz_data_store = 0;
-	
-	//if ("WordDocument" == streamName)
-	//{
-	//	sz_data_store = 68;
-	//	data_store = new unsigned char[sz_data_store];
-	//}
-	
-	if (data_store)
-		memcpy(data_store, data_stream, sz_data_store);
-
-	Decryptor->Decrypt((char*)data_stream, sz_stream, 0);
-	
-	if (data_store)
-		memcpy(data_stream, data_store, sz_data_store);
-
-	streamNew->write(data_stream, sz_stream);
-
-	RELEASEARRAYOBJECTS(data_store);
-	RELEASEARRAYOBJECTS(data_stream);
-
-	streamNew->flush();
-			
-	delete streamNew;
-	delete stream;
-	
-	return true;
-}
-
-

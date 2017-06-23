@@ -35,6 +35,97 @@
 
 #include <iostream>
 
+std::wstring CUnknownRecord::ReadStringW(const CFStreamPtr &pStream, int lLen)
+{
+    if (!pStream) return (L"");
+
+    unsigned char* pData = new unsigned char[2 * (lLen + 1)];
+    memset (pData, 0, 2 * (lLen + 1));
+
+    pStream->read(pData, 2 * lLen);
+
+    if (sizeof(wchar_t) == 4)
+    {
+        ConversionResult eUnicodeConversionResult;
+        UTF32 *pStrUtf32 = new UTF32 [lLen + 1];
+        pStrUtf32[lLen] = 0 ;
+
+        const UTF16 *pStrUtf16_Conv = (const UTF16 *) pData;
+        UTF32		*pStrUtf32_Conv =                 pStrUtf32;
+
+        eUnicodeConversionResult = ConvertUTF16toUTF32 ( &pStrUtf16_Conv
+                                                         , &pStrUtf16_Conv[lLen]
+                                                         , &pStrUtf32_Conv
+                                                         , &pStrUtf32 [lLen]
+                                                         , strictConversion);
+
+        if (conversionOK != eUnicodeConversionResult)
+        {
+            delete [] pStrUtf32;
+            return (L"");
+        }
+        std::wstring res((wchar_t*)pStrUtf32, lLen);
+        if (pStrUtf32) delete [] pStrUtf32;
+        return res;
+    }
+    else
+    {
+        std::wstring str((wchar_t*)pData);
+        delete[] pData;
+        return str;
+    }
+
+}
+std::string CUnknownRecord::ReadStringA(const CFStreamPtr &pStream, int lLen)
+{
+    if (!pStream) return ("");
+
+    char* pData = new char[lLen + 1];
+
+	pStream->read((unsigned char*)pData, lLen);
+
+    pData[lLen] = 0;
+
+    std::string str(pData, lLen);
+
+    delete[] pData;
+    return str;
+}
+
+void CRecordsContainer::ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream)
+{
+	m_oHeader = oHeader;
+	m_arRecords.clear();
+
+	LONG lPosition = pStream->getStreamPointer();
+	
+	m_oHeader = oHeader;
+
+	UINT lCurLen = 0;
+	ULONG lReadLen = 0;
+	SRecordHeader oRec;
+	
+	while (lCurLen < m_oHeader.RecLen)
+	{
+		if (oRec.ReadFromStream(pStream) == FALSE )
+		{
+			break;
+		}
+		
+		IRecord* pRecord = CreateByType(oRec);
+		pRecord->ReadFromStream(oRec, pStream);
+
+		m_arRecords.push_back(pRecord);
+		lCurLen += (8 + oRec.RecLen);
+	}
+	if (lCurLen != m_oHeader.RecLen)
+	{
+		// нужно разобраться, что тут такое!!!
+		LONG lPosition = 0;
+		pStream->seekFromBegin(lPosition + m_oHeader.RecLen);
+	}
+}
+
 void CRecordsContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 {
 	m_oHeader = oHeader;

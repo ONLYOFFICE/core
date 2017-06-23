@@ -153,6 +153,24 @@ namespace DocFileFormat
 			}
 			else
 			{
+				//POLE::Stream * pStream = NULL;
+				//if (m_pStorage->GetStream ("EncryptedSummaryInformation", &pStream))
+				//{
+				//	VirtualStreamReader tStream( pStream, 0, FIB->m_bOlderVersion);
+
+				//	_UINT32 StreamDescriptorArrayOffset = tStream.ReadUInt32();
+				//	_UINT32 StreamDescriptorArraySize = tStream.ReadUInt32();
+
+				//	for (int i = 0; i < StreamDescriptorArraySize; i++)
+				//	{
+				//	}
+				//	_UINT32 EncryptedStreamDescriptorCount = tStream.ReadUInt32();
+
+				//	for (int i = 0; i < EncryptedStreamDescriptorCount; i++)
+				//	{
+				//	}
+				//	RELEASEOBJECT(pStream);
+				//}
 				CRYPT::ECMADecryptor Decryptor;
 
 				Decryptor.SetCryptData(encryptionHeader->crypt_data_aes);
@@ -470,11 +488,6 @@ namespace DocFileFormat
 			delete storageOut;
 			return false;
 		}
-		//DecryptStream(Decryptor, "WordDocument", storageIn, storageOut);
-		//if (FIB->m_FibBase.fWhichTblStm)		
-		//	DecryptStream(Decryptor, "1Table", storageIn, storageOut);
-		//else
-		//	DecryptStream(Decryptor, "0Table", storageIn, storageOut);
 
 		std::list<std::string> listStream = storageIn->entries();
 
@@ -486,15 +499,11 @@ namespace DocFileFormat
 				
 				for (std::list<std::string>::iterator it2 = list_entry.begin(); it2 != list_entry.end(); it2++)
 				{
-					//if (*it2 != "WordDocument" && std::wstring::npos == it2->find("Table"))
-					//	CopyStream( *it2, storageIn, storageOut);
 					DecryptStream(Decryptor, *it2, storageIn, storageOut);
 				}
 			}
 			else 
 			{
-				//if (*it != "WordDocument" && std::wstring::npos == it->find("Table"))
-				//	CopyStream( *it, storageIn, storageOut);
 				DecryptStream(Decryptor, *it, storageIn, storageOut);
 			}
 
@@ -554,32 +563,40 @@ namespace DocFileFormat
 		if (!stream) return false;
 
 		stream->seek(0);
-		int sz_stream = stream->size();
+		int size_stream = stream->size();
 		
-		POLE::Stream *streamNew = new POLE::Stream(storageOut, streamName, true, sz_stream);
+		POLE::Stream *streamNew = new POLE::Stream(storageOut, streamName, true, size_stream);
 		if (!streamNew) return false;
 
-		unsigned char* data_stream = new unsigned char[sz_stream];
-		stream->read(data_stream, sz_stream);
+		unsigned char* data_stream = new unsigned char[size_stream];
+		stream->read(data_stream, size_stream);
 
 		unsigned char* data_store = NULL;
-		int sz_data_store = 0;
+		int size_data_store = 0;
 		
 		if ("WordDocument" == streamName)
 		{
-			sz_data_store = 68;
-			data_store = new unsigned char[sz_data_store];
+			size_data_store = 68;
+			data_store = new unsigned char[size_data_store];
 		}
 		
 		if (data_store)
-			memcpy(data_store, data_stream, sz_data_store);
+			memcpy(data_store, data_stream, size_data_store);
 
-		Decryptor->Decrypt((char*)data_stream, sz_stream, 0);
+		int size_block = 0x200;
+		for (int pos = 0, block = 0 ; pos < size_stream; pos += size_block, block++)
+		{
+			if (pos + size_block > size_stream)
+				size_block = size_stream - pos;
+
+			Decryptor->Decrypt((char*)data_stream + pos, size_block, block);
+		}
+
 		
 		if (data_store)
-			memcpy(data_stream, data_store, sz_data_store);
+			memcpy(data_stream, data_store, size_data_store);
 
-		streamNew->write(data_stream, sz_stream);
+		streamNew->write(data_stream, size_stream);
 
 		RELEASEARRAYOBJECTS(data_store);
 		RELEASEARRAYOBJECTS(data_stream);

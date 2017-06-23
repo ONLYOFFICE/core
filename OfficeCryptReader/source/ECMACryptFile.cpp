@@ -713,10 +713,11 @@ bool ECMACryptFile::DecryptOfficeFile(std::wstring file_name_inp, std::wstring f
 		unsigned char* data_out	= NULL;
 		
 		int readTrue = pStream->read(data, lengthRead); 
+		int readData = readTrue - 8; 
 
 		lengthData = *((_UINT64*)data);
 
-		decryptor.Decrypt(data, readTrue, data_out);//todoo сделать покусочное чтение декриптование
+		decryptor.Decrypt(data + 8, readData, data_out);//todoo сделать покусочное чтение декриптование
 
 		if (data_out)
 		{

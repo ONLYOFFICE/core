@@ -7,7 +7,7 @@
 QT       -= core
 QT       -= gui
 
-VERSION = 2.4.464.0
+VERSION = 2.4.465.0
 DEFINES += INTVER=$$VERSION
 
 TARGET = x2t

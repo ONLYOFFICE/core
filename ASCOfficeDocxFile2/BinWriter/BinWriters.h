@@ -3273,38 +3273,39 @@ namespace BinDocxRW
 						WriteComment(OOX::et_w_commentRangeEnd, pCommentRangeEnd->m_oId);
 						break;
 					}
-				case OOX::et_w_moveFromRangeStart:
-					{
-						OOX::Logic::CMoveFromRangeStart* pMoveFromRangeStart = static_cast<OOX::Logic::CMoveFromRangeStart*>(item);
-						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::MoveFromRangeStart);
-						WriteMoveRangeStart(*pMoveFromRangeStart);
-						m_oBcw.WriteItemEnd(nCurPos);
-						break;
-					}
-				case OOX::et_w_moveFromRangeEnd:
-					{
-						OOX::Logic::CMoveFromRangeEnd* pMoveFromRangeEnd = static_cast<OOX::Logic::CMoveFromRangeEnd*>(item);
-						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::MoveFromRangeEnd);
-						WriteMoveRangeEnd(*pMoveFromRangeEnd);
-						m_oBcw.WriteItemEnd(nCurPos);
-						break;
-					}
-				case OOX::et_w_moveToRangeStart:
-					{
-						OOX::Logic::CMoveToRangeStart* pMoveToRangeStart = static_cast<OOX::Logic::CMoveToRangeStart*>(item);
-						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::MoveToRangeStart);
-						WriteMoveRangeStart(*pMoveToRangeStart);
-						m_oBcw.WriteItemEnd(nCurPos);
-						break;
-					}
-				case OOX::et_w_moveToRangeEnd:
-					{
-						OOX::Logic::CMoveToRangeEnd* pMoveToRangeEnd = static_cast<OOX::Logic::CMoveToRangeEnd*>(item);
-						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::MoveToRangeEnd);
-						WriteMoveRangeEnd(*pMoveToRangeEnd);
-						m_oBcw.WriteItemEnd(nCurPos);
-						break;
-					}
+				//todo moveRange on all levels(body, p ...)
+//				case OOX::et_w_moveFromRangeStart:
+//					{
+//						OOX::Logic::CMoveFromRangeStart* pMoveFromRangeStart = static_cast<OOX::Logic::CMoveFromRangeStart*>(item);
+//						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::MoveFromRangeStart);
+//						WriteMoveRangeStart(*pMoveFromRangeStart);
+//						m_oBcw.WriteItemEnd(nCurPos);
+//						break;
+//					}
+//				case OOX::et_w_moveFromRangeEnd:
+//					{
+//						OOX::Logic::CMoveFromRangeEnd* pMoveFromRangeEnd = static_cast<OOX::Logic::CMoveFromRangeEnd*>(item);
+//						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::MoveFromRangeEnd);
+//						WriteMoveRangeEnd(*pMoveFromRangeEnd);
+//						m_oBcw.WriteItemEnd(nCurPos);
+//						break;
+//					}
+//				case OOX::et_w_moveToRangeStart:
+//					{
+//						OOX::Logic::CMoveToRangeStart* pMoveToRangeStart = static_cast<OOX::Logic::CMoveToRangeStart*>(item);
+//						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::MoveToRangeStart);
+//						WriteMoveRangeStart(*pMoveToRangeStart);
+//						m_oBcw.WriteItemEnd(nCurPos);
+//						break;
+//					}
+//				case OOX::et_w_moveToRangeEnd:
+//					{
+//						OOX::Logic::CMoveToRangeEnd* pMoveToRangeEnd = static_cast<OOX::Logic::CMoveToRangeEnd*>(item);
+//						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::MoveToRangeEnd);
+//						WriteMoveRangeEnd(*pMoveToRangeEnd);
+//						m_oBcw.WriteItemEnd(nCurPos);
+//						break;
+//					}
 				case OOX::et_m_oMathPara:
 					{
 						OOX::Logic::COMathPara* pOMathPara = static_cast<OOX::Logic::COMathPara*>(item);

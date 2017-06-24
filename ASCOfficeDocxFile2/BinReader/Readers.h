@@ -570,6 +570,20 @@ public:
 				orPr->Ins = oIns.ToString(_T("w:ins"));
 			}
 			break;
+		case c_oSerProp_rPrType::MoveFrom:
+			{
+				TrackRevision oMoveFrom;
+				oBinary_CommonReader2.ReadTrackRevision(length, &oMoveFrom);
+				orPr->MoveFrom = oMoveFrom.ToString(_T("w:moveFrom"));
+			}
+			break;
+		case c_oSerProp_rPrType::MoveTo:
+			{
+				TrackRevision oMoveTo;
+				oBinary_CommonReader2.ReadTrackRevision(length, &oMoveTo);
+				orPr->MoveTo = oMoveTo.ToString(_T("w:moveTo"));
+			}
+			break;
 		case c_oSerProp_rPrType::rPrChange:
 			{
 				TrackRevision oRPrChange;
@@ -3771,6 +3785,42 @@ public:
 			res = Read1(length, &Binary_DocumentTableReader::ReadDelIns, this, &oTrackRevision);
 			oTrackRevision.Write(&GetRunStringWriter(), _T("w:del"));
 		}
+		else if ( c_oSerParType::MoveFrom == type )
+		{
+			TrackRevision oTrackRevision;
+			res = Read1(length, &Binary_DocumentTableReader::ReadDelIns, this, &oTrackRevision);
+			oTrackRevision.Write(&GetRunStringWriter(), _T("w:moveFrom"));
+		}
+		else if ( c_oSerParType::MoveTo == type )
+		{
+			TrackRevision oTrackRevision;
+			res = Read1(length, &Binary_DocumentTableReader::ReadDelIns, this, &oTrackRevision);
+			oTrackRevision.Write(&GetRunStringWriter(), _T("w:moveTo"));
+		}
+		else if ( c_oSerParType::MoveFromRangeStart == type )
+		{
+			OOX::Logic::CMoveFromRangeStart oMoveFromRangeStart;
+			res = Read1(length, &Binary_DocumentTableReader::ReadMoveFromRangeStart, this, &oMoveFromRangeStart);
+			GetRunStringWriter().WriteString(oMoveFromRangeStart.toXML());
+		}
+		else if ( c_oSerParType::MoveFromRangeEnd == type )
+		{
+			OOX::Logic::CMoveFromRangeEnd oMoveToRangeEnd;
+			res = Read1(length, &Binary_DocumentTableReader::ReadMoveFromRangeEnd, this, &oMoveToRangeEnd);
+			GetRunStringWriter().WriteString(oMoveToRangeEnd.toXML());
+		}
+		else if ( c_oSerParType::MoveToRangeStart == type )
+		{
+			OOX::Logic::CMoveToRangeStart oMoveToRangeStart;
+			res = Read1(length, &Binary_DocumentTableReader::ReadMoveToRangeStart, this, &oMoveToRangeStart);
+			GetRunStringWriter().WriteString(oMoveToRangeStart.toXML());
+		}
+		else if ( c_oSerParType::MoveToRangeEnd == type )
+		{
+			OOX::Logic::CMoveToRangeEnd oMoveToRangeEnd;
+			res = Read1(length, &Binary_DocumentTableReader::ReadMoveToRangeEnd, this, &oMoveToRangeEnd);
+			GetRunStringWriter().WriteString(oMoveToRangeEnd.toXML());
+		}
 		else if(c_oSerParType::Sdt == type)
 		{
 			SdtWraper oSdt(1);
@@ -3792,6 +3842,138 @@ public:
 			m_pCurWriter = pTrackRevision->content;
 			res = Read1(length, &Binary_DocumentTableReader::ReadParagraphContent, this, NULL);
 			m_pCurWriter = pPrevWriter;
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadMoveFromRangeStart(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CMoveFromRangeStart* pMoveFromRangeStart = static_cast<OOX::Logic::CMoveFromRangeStart*>(poResult);
+		if (c_oSerMoveRange::Author == type)
+		{
+			pMoveFromRangeStart->m_sAuthor.Init();
+			pMoveFromRangeStart->m_sAuthor->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerMoveRange::ColFirst == type)
+		{
+			pMoveFromRangeStart->m_oColFirst.Init();
+			pMoveFromRangeStart->m_oColFirst->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if (c_oSerMoveRange::ColLast == type)
+		{
+			pMoveFromRangeStart->m_oColLast.Init();
+			pMoveFromRangeStart->m_oColLast->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if (c_oSerMoveRange::Date == type)
+		{
+			pMoveFromRangeStart->m_oDate.Init();
+			pMoveFromRangeStart->m_oDate->SetValue(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerMoveRange::DisplacedByCustomXml == type)
+		{
+			pMoveFromRangeStart->m_oDisplacedByCustomXml.Init();
+			pMoveFromRangeStart->m_oDisplacedByCustomXml->SetValue((SimpleTypes::EDisplacedByCustomXml)m_oBufferedStream.GetUChar());
+		}
+		else if (c_oSerMoveRange::Id == type)
+		{
+			pMoveFromRangeStart->m_oId.Init();
+			pMoveFromRangeStart->m_oId->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if (c_oSerMoveRange::Name == type)
+		{
+			pMoveFromRangeStart->m_sName.Init();
+			pMoveFromRangeStart->m_sName->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerMoveRange::UserId == type)
+		{
+			pMoveFromRangeStart->m_sUserId.Init();
+			pMoveFromRangeStart->m_sUserId->append(m_oBufferedStream.GetString3(length));
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadMoveToRangeStart(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CMoveToRangeStart* pMoveToRangeStart = static_cast<OOX::Logic::CMoveToRangeStart*>(poResult);
+		if (c_oSerMoveRange::Author == type)
+		{
+			pMoveToRangeStart->m_sAuthor.Init();
+			pMoveToRangeStart->m_sAuthor->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerMoveRange::ColFirst == type)
+		{
+			pMoveToRangeStart->m_oColFirst.Init();
+			pMoveToRangeStart->m_oColFirst->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if (c_oSerMoveRange::ColLast == type)
+		{
+			pMoveToRangeStart->m_oColLast.Init();
+			pMoveToRangeStart->m_oColLast->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if (c_oSerMoveRange::Date == type)
+		{
+			pMoveToRangeStart->m_oDate.Init();
+			pMoveToRangeStart->m_oDate->SetValue(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerMoveRange::DisplacedByCustomXml == type)
+		{
+			pMoveToRangeStart->m_oDisplacedByCustomXml.Init();
+			pMoveToRangeStart->m_oDisplacedByCustomXml->SetValue((SimpleTypes::EDisplacedByCustomXml)m_oBufferedStream.GetUChar());
+		}
+		else if (c_oSerMoveRange::Id == type)
+		{
+			pMoveToRangeStart->m_oId.Init();
+			pMoveToRangeStart->m_oId->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if (c_oSerMoveRange::Name == type)
+		{
+			pMoveToRangeStart->m_sName.Init();
+			pMoveToRangeStart->m_sName->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerMoveRange::UserId == type)
+		{
+			pMoveToRangeStart->m_sUserId.Init();
+			pMoveToRangeStart->m_sUserId->append(m_oBufferedStream.GetString3(length));
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadMoveFromRangeEnd(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CMoveFromRangeEnd* pMoveFromRangeEnd = static_cast<OOX::Logic::CMoveFromRangeEnd*>(poResult);
+		if (c_oSerMoveRange::DisplacedByCustomXml == type)
+		{
+			pMoveFromRangeEnd->m_oDisplacedByCustomXml.Init();
+			pMoveFromRangeEnd->m_oDisplacedByCustomXml->SetValue((SimpleTypes::EDisplacedByCustomXml)m_oBufferedStream.GetUChar());
+		}
+		else if (c_oSerMoveRange::Id == type)
+		{
+			pMoveFromRangeEnd->m_oId.Init();
+			pMoveFromRangeEnd->m_oId->SetValue(m_oBufferedStream.GetLong());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadMoveToRangeEnd(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CMoveToRangeEnd* pMoveToRangeEnd = static_cast<OOX::Logic::CMoveToRangeEnd*>(poResult);
+		if (c_oSerMoveRange::DisplacedByCustomXml == type)
+		{
+			pMoveToRangeEnd->m_oDisplacedByCustomXml.Init();
+			pMoveToRangeEnd->m_oDisplacedByCustomXml->SetValue((SimpleTypes::EDisplacedByCustomXml)m_oBufferedStream.GetUChar());
+		}
+		else if (c_oSerMoveRange::Id == type)
+		{
+			pMoveToRangeEnd->m_oId.Init();
+			pMoveToRangeEnd->m_oId->SetValue(m_oBufferedStream.GetLong());
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

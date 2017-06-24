@@ -902,6 +902,12 @@ namespace OOX
 				if ( oNode.GetNode( _T("w:webHidden"), oChild ) )
 					m_oWebHidden = oChild;
 
+				if ( oNode.GetNode( _T("w:moveFrom"), oChild ) )
+					m_oMoveFrom = oChild;
+
+				if ( oNode.GetNode( _T("w:moveTo"), oChild ) )
+					m_oMoveTo = oChild;
+
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
             virtual std::wstring      toXML() const
@@ -1059,6 +1065,20 @@ namespace OOX
 				{
 					sResult += _T("<m:oMath ");
 					sResult += m_oMath->ToString();
+					sResult += _T("/>");
+				}
+
+				if ( m_oMoveFrom.IsInit() )
+				{
+					sResult += _T("<w:moveFrom ");
+					sResult += m_oMoveFrom->ToString();
+					sResult += _T("/>");
+				}
+
+				if ( m_oMoveTo.IsInit() )
+				{
+					sResult += _T("<w:moveTo ");
+					sResult += m_oMoveTo->ToString();
 					sResult += _T("/>");
 				}
 
@@ -1236,6 +1256,8 @@ namespace OOX
 				oProperties.m_oLang            = Merge( oPrev.m_oLang,            oCurrent.m_oLang );
 				oProperties.m_oNoProof         = Merge( oPrev.m_oNoProof,         oCurrent.m_oNoProof );
 				oProperties.m_oMath            = Merge( oPrev.m_oMath,            oCurrent.m_oMath );
+				oProperties.m_oMoveFrom        = Merge( oPrev.m_oMoveFrom,        oCurrent.m_oMoveFrom );
+				oProperties.m_oMoveTo          = Merge( oPrev.m_oMoveTo,          oCurrent.m_oMoveTo );
 				oProperties.m_oOutline         = Merge( oPrev.m_oOutline,         oCurrent.m_oOutline );
 				oProperties.m_oPosition        = Merge( oPrev.m_oPosition,        oCurrent.m_oPosition );
 				oProperties.m_oRFonts          = Merge( oPrev.m_oRFonts,          oCurrent.m_oRFonts );
@@ -1340,6 +1362,12 @@ namespace OOX
 				if ( m_oMath.IsInit() )
 					return false;
 
+				if ( m_oMoveFrom.IsInit() )
+					return false;
+
+				if ( m_oMoveTo.IsInit() )
+					return false;
+
 				if ( m_oOutline.IsInit() )
 					return false;
 
@@ -1427,6 +1455,8 @@ namespace OOX
 			nullable<ComplexTypes::Word::CLanguage                       > m_oLang;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oNoProof;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oMath;
+			nullable<ComplexTypes::Word::CTrackChange                    > m_oMoveFrom;
+			nullable<ComplexTypes::Word::CTrackChange                    > m_oMoveTo;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oOutline;
 			nullable<ComplexTypes::Word::CSignedHpsMeasure               > m_oPosition;
 			nullable<ComplexTypes::Word::CFonts                          > m_oRFonts;

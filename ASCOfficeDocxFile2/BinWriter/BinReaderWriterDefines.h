@@ -381,7 +381,9 @@ extern int g_nCurFormatVersion;
 		TextFill = 32,
 		Del = 33,
 		Ins = 34,
-		rPrChange = 35
+		rPrChange = 35,
+		MoveFrom = 36,
+		MoveTo = 37
 	};}
 	namespace c_oSerProp_rowPrType{enum c_oSerProp_rowPrType
 	{
@@ -464,7 +466,13 @@ extern int g_nCurFormatVersion;
 		Del				= 12,
 		Ins				= 13,
 		Background		= 14,
-		Sdt				= 15
+		Sdt				= 15,
+		MoveFrom		= 16,
+		MoveTo			= 17,
+		MoveFromRangeStart = 18,
+		MoveFromRangeEnd = 19,
+		MoveToRangeStart = 20,
+		MoveToRangeEnd = 21
 	};}
 	namespace c_oSerDocTableType{enum c_oSerDocTableType
 	{
@@ -1072,6 +1080,17 @@ extern int g_nCurFormatVersion;
 		TIFormat = 22,
 		TIMaxLength = 23,
 		TIType = 24,
+	};}
+	namespace c_oSerMoveRange{enum c_oSerMoveRange
+	{
+		Author = 0,
+		ColFirst = 1,
+		ColLast = 2,
+		Date = 3,
+		DisplacedByCustomXml = 4,
+		Id = 5,
+		Name = 6,
+		UserId = 7
 	};}
 }
 

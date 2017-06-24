@@ -695,6 +695,8 @@ namespace OOX
 		et_w_lvlOverride, // <w:lvlOverride>
 		et_w_monthLong, // <w:monthLong>
 		et_w_monthShort, // <w:monthShort>
+		et_w_moveFrom, // <w:moveFrom>
+		et_w_moveTo, // <w:moveTo>
 		et_w_moveFromRangeEnd, // <w:moveFromRangeEnd>
 		et_w_moveFromRangeStart, // <w:moveFromRangeStart>
 		et_w_moveToRangeEnd, // <w:moveToRangeEnd>

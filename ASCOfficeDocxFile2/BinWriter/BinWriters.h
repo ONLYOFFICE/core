@@ -831,6 +831,22 @@ namespace BinDocxRW
 				Write_rPrChange(rPr.m_oRPrChange.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
+			if(rPr.m_oMoveFrom.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::MoveFrom);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+				nCurPos = m_oBcw.WriteItemWithLengthStart();
+				m_oBcw.WriteTrackRevision(rPr.m_oMoveFrom.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(rPr.m_oMoveTo.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::MoveTo);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+				nCurPos = m_oBcw.WriteItemWithLengthStart();
+				m_oBcw.WriteTrackRevision(rPr.m_oMoveTo.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
 		}
 		void Write_rPrChange(const OOX::Logic::CRPrChange& rPrChange)
 		{
@@ -3229,6 +3245,22 @@ namespace BinDocxRW
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
 					}
+				case OOX::et_w_moveFrom:
+					{
+						OOX::Logic::CMoveFrom* pMoveFrom = static_cast<OOX::Logic::CMoveFrom*>(item);
+						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::MoveFrom);
+						WriteMoveFrom(*pMoveFrom);
+						m_oBcw.WriteItemEnd(nCurPos);
+						break;
+					}
+				case OOX::et_w_moveTo:
+					{
+						OOX::Logic::CMoveTo* pMoveTo = static_cast<OOX::Logic::CMoveTo*>(item);
+						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::MoveTo);
+						WriteMoveTo(*pMoveTo);
+						m_oBcw.WriteItemEnd(nCurPos);
+						break;
+					}
 				case OOX::et_w_commentRangeStart:
 					{
 						OOX::Logic::CCommentRangeStart* pCommentRangeStart = static_cast<OOX::Logic::CCommentRangeStart*>(item);
@@ -3239,6 +3271,38 @@ namespace BinDocxRW
 					{
 						OOX::Logic::CCommentRangeEnd* pCommentRangeEnd = static_cast<OOX::Logic::CCommentRangeEnd*>(item);
 						WriteComment(OOX::et_w_commentRangeEnd, pCommentRangeEnd->m_oId);
+						break;
+					}
+				case OOX::et_w_moveFromRangeStart:
+					{
+						OOX::Logic::CMoveFromRangeStart* pMoveFromRangeStart = static_cast<OOX::Logic::CMoveFromRangeStart*>(item);
+						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::MoveFromRangeStart);
+						WriteMoveRangeStart(*pMoveFromRangeStart);
+						m_oBcw.WriteItemEnd(nCurPos);
+						break;
+					}
+				case OOX::et_w_moveFromRangeEnd:
+					{
+						OOX::Logic::CMoveFromRangeEnd* pMoveFromRangeEnd = static_cast<OOX::Logic::CMoveFromRangeEnd*>(item);
+						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::MoveFromRangeEnd);
+						WriteMoveRangeEnd(*pMoveFromRangeEnd);
+						m_oBcw.WriteItemEnd(nCurPos);
+						break;
+					}
+				case OOX::et_w_moveToRangeStart:
+					{
+						OOX::Logic::CMoveToRangeStart* pMoveToRangeStart = static_cast<OOX::Logic::CMoveToRangeStart*>(item);
+						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::MoveToRangeStart);
+						WriteMoveRangeStart(*pMoveToRangeStart);
+						m_oBcw.WriteItemEnd(nCurPos);
+						break;
+					}
+				case OOX::et_w_moveToRangeEnd:
+					{
+						OOX::Logic::CMoveToRangeEnd* pMoveToRangeEnd = static_cast<OOX::Logic::CMoveToRangeEnd*>(item);
+						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::MoveToRangeEnd);
+						WriteMoveRangeEnd(*pMoveToRangeEnd);
+						m_oBcw.WriteItemEnd(nCurPos);
 						break;
 					}
 				case OOX::et_m_oMathPara:
@@ -3279,6 +3343,92 @@ namespace BinDocxRW
 			nCurPos = m_oBcw.WriteItemStart(c_oSerProp_RevisionType::Content);
 				WriteParagraphContent(oIns.m_arrItems);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+		}
+		void WriteMoveFrom(const OOX::Logic::CMoveFrom& oMoveFrom)
+		{
+			int nCurPos = 0;
+			m_oBcw.WriteTrackRevision(oMoveFrom);
+
+			nCurPos = m_oBcw.WriteItemStart(c_oSerProp_RevisionType::Content);
+				WriteParagraphContent(oMoveFrom.m_arrItems);
+			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+		}
+		void WriteMoveTo(const OOX::Logic::CMoveTo& oMoveTo)
+		{
+			int nCurPos = 0;
+			m_oBcw.WriteTrackRevision(oMoveTo);
+
+			nCurPos = m_oBcw.WriteItemStart(c_oSerProp_RevisionType::Content);
+				WriteParagraphContent(oMoveTo.m_arrItems);
+			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+		}
+		template<typename T> void WriteMoveRangeStart(const T& elem)
+		{
+			int nCurPos = 0;
+			if (elem.m_sAuthor.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerMoveRange::Author);
+				m_oBcw.m_oStream.WriteStringW3(elem.m_sAuthor.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (elem.m_oColFirst.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerMoveRange::ColFirst);
+				m_oBcw.m_oStream.WriteLONG(elem.m_oColFirst->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (elem.m_oColLast.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerMoveRange::ColLast);
+				m_oBcw.m_oStream.WriteLONG(elem.m_oColLast->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (elem.m_oDate.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerMoveRange::Date);
+				m_oBcw.m_oStream.WriteStringW3(elem.m_oDate->ToString());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (elem.m_oDisplacedByCustomXml.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerMoveRange::DisplacedByCustomXml);
+				m_oBcw.m_oStream.WriteBYTE(elem.m_oDisplacedByCustomXml->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (elem.m_oId.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerMoveRange::Id);
+				m_oBcw.m_oStream.WriteLONG(elem.m_oId->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (elem.m_sName.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerMoveRange::Name);
+				m_oBcw.m_oStream.WriteStringW3(elem.m_sName.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (elem.m_sUserId.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerMoveRange::UserId);
+				m_oBcw.m_oStream.WriteStringW3(elem.m_sUserId.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+		template<typename T> void WriteMoveRangeEnd(const T& elem)
+		{
+			int nCurPos = 0;
+			if (elem.m_oDisplacedByCustomXml.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerMoveRange::DisplacedByCustomXml);
+				m_oBcw.m_oStream.WriteBYTE(elem.m_oDisplacedByCustomXml->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (elem.m_oId.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerMoveRange::Id);
+				m_oBcw.m_oStream.WriteLONG(elem.m_oId->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
 		}
 		void WriteComment(OOX::EElementType eType, nullable<SimpleTypes::CDecimalNumber<>>& oId)
 		{

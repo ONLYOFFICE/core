@@ -139,9 +139,9 @@ namespace OOX
 						//else if ( _T("w:moveFrom") == sName )
 						//	pItem = new Logic::CMoveFrom( oItem );
 						else if ( _T("w:moveFromRangeEnd") == sName )
-							pItem = new Logic::CMoveToRangeEnd( oItem );
+							pItem = new Logic::CMoveFromRangeEnd( oItem );
 						else if ( _T("w:moveFromRangeStart") == sName )
-							pItem = new Logic::CMoveToRangeStart( oItem );
+							pItem = new Logic::CMoveFromRangeStart( oItem );
 						//else if ( _T("w:moveTo") == sName )
 						//	pItem = new Logic::CMoveTo( oItem );
 						else if ( _T("w:moveToRangeEnd") == sName )
@@ -224,14 +224,14 @@ namespace OOX
 					pItem = new Logic::CDel( oReader );
 				else if ( _T("w:ins") == sName )
 					pItem = new Logic::CIns( oReader );
-				//else if ( _T("w:moveFrom") == sName )
-				//	pItem = new Logic::CMoveFrom( oReader );
+				else if ( _T("w:moveFrom") == sName )
+					pItem = new Logic::CMoveFrom( oReader );
 				else if ( _T("w:moveFromRangeEnd") == sName )
-					pItem = new Logic::CMoveToRangeEnd( oReader );
+					pItem = new Logic::CMoveFromRangeEnd( oReader );
 				else if ( _T("w:moveFromRangeStart") == sName )
-					pItem = new Logic::CMoveToRangeStart( oReader );
-				//else if ( _T("w:moveTo") == sName )
-				//	pItem = new Logic::CMoveTo( oReader );
+					pItem = new Logic::CMoveFromRangeStart( oReader );
+				else if ( _T("w:moveTo") == sName )
+					pItem = new Logic::CMoveTo( oReader );
 				else if ( _T("w:moveToRangeEnd") == sName )
 					pItem = new Logic::CMoveToRangeEnd( oReader );
 				else if ( _T("w:moveToRangeStart") == sName )

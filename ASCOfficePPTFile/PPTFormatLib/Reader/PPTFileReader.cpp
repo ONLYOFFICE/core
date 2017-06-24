@@ -198,7 +198,6 @@ void CPPTFileReader::ReadEncryptedSummary()
 	if (!pStream) return;
 
 	SRecordHeader oHeader;
-	ULONG nRd = 0;
 
     if (oHeader.ReadFromStream(pStream) == false )
 	{
@@ -225,11 +224,9 @@ void CPPTFileReader::ReadDocumentSummary()
 void CPPTFileReader::ReadPictures()
 {
 	if (m_oDocumentInfo.m_arUsers.empty()) return;
+	
 	CFStreamPtr pStream = GetPictureStream();
 	if (!pStream) return;
-
-	SRecordHeader oHeader;
-	ULONG nRd = 0;
 
 	CRYPT::ECMADecryptor *pDecryptor = m_oDocumentInfo.m_arUsers[0]->m_pDecryptor;
 
@@ -238,25 +235,32 @@ void CPPTFileReader::ReadPictures()
 		if (pStream->isEOF())
 			break;
 
-		int pos = pStream->getStreamPointer();
+		int pos = pStream->getStreamPointer();	
 
-		POLE::Stream *	pStreamTmp = pStream->stream_;
+		SRecordHeader oHeader;
 		if (pDecryptor)
 		{
-			m_oDocumentInfo.m_arUsers[0]->DecryptStream(pStreamTmp, 0); 
-			pStreamTmp = m_oDocumentInfo.m_arUsers[0]->m_arStreamDecrypt.back()->stream_;
+			BYTE pHeader[8];
+			pStream->read(pHeader, 8); 
+
+			pDecryptor->Decrypt((char*)pHeader, 8, 0);
+		
+			unsigned short rec =0;
+			memcpy(&rec,			pHeader	+ 0, 2);
+			memcpy(&oHeader.RecType,pHeader + 2, 2);
+			memcpy(&oHeader.RecLen,	pHeader + 4, 4);
 			
-		}		
-		oHeader.ReadFromStream(pStreamTmp);
+			oHeader.RecInstance = rec >> 4;
+			oHeader.RecVersion	= rec - (oHeader.RecInstance << 4);
+		}
+		else
+			oHeader.ReadFromStream(pStream->stream_);
 
 		CRecordOfficeArtBlip art_blip;
 		art_blip.m_strTmpDirectory	= m_strTmpDirectory;
 		art_blip.m_oDocumentInfo	= &m_oDocumentInfo;
-		//
-		pStream->seekFromBegin(pos + 8);
-		pStreamTmp = pStream->stream_;	//каждое поле отдельно нужно 
 			
-		art_blip.ReadFromStream(oHeader, pStreamTmp);	
+		art_blip.ReadFromStream(oHeader, pStream->stream_);	
 		m_oDocumentInfo.m_mapStoreImageFile[ pos ] = art_blip.m_sFileName;
 
 		pStream->seekFromBegin(pos + oHeader.RecLen + 8);

@@ -643,14 +643,14 @@ namespace NSPresentationEditor
 //------------------------------------------------------------------------------------
 void CMetaHeader::FromStream(POLE::Stream* pStream, CRYPT::ECMADecryptor *pDecryptor)
 {
-	int		size	= 34;
-	BYTE*	pData	= new BYTE[size];
-	pStream->read(pData, size); 
+	BYTE	pData[34];
+	pStream->read(pData, 34); 
+	
 	if (pDecryptor)
 	{
-		pDecryptor->Decrypt((char*)pData, size, 0);
+		pDecryptor->Decrypt((char*)pData, 34, 0);
 	}
-	MemoryStream memStream(pData, size, false);
+	MemoryStream memStream(pData, 34, false);
 
 	cbSize			= memStream.ReadUInt32();
 	

@@ -43,6 +43,10 @@ namespace NSZLib
     bool Decompress(const BYTE* pSrcBuffer, const ULONG& lSrcBufferLen,
 								BYTE* pDstBuffer, ULONG& lDstBufferLen);
 }
+namespace CRYPT
+{
+	class ECMADecryptor;
+}
 /**************************************************************
 теперь все структуры...
 которые участвуют в записях
@@ -170,7 +174,7 @@ public:
 	CMetaHeader()
 	{
 	}
-	void FromStream(POLE::Stream* pStream);
+	void FromStream(POLE::Stream* pStream, CRYPT::ECMADecryptor *pDecryptor = NULL);
 
 	void ToEMFHeader	(Gdiplus::ENHMETAHEADER3* pHeader);
 	void ToWMFHeader	(Gdiplus::WmfPlaceableFileHeader* pHeader);	

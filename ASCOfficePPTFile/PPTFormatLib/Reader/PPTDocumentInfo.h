@@ -96,7 +96,9 @@ public:
 			if (bResult == false)
 			{
 				delete pInfo;
-				continue;
+
+				if (pInfo->m_bEncrypt)	return false;
+				else					continue;
 			}
 			
 			m_arUsers.push_back(pInfo);

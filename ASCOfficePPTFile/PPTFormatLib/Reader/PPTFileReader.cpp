@@ -224,6 +224,7 @@ void CPPTFileReader::ReadDocumentSummary()
 
 void CPPTFileReader::ReadPictures()
 {
+	if (m_oDocumentInfo.m_arUsers.empty()) return;
 	CFStreamPtr pStream = GetPictureStream();
 	if (!pStream) return;
 
@@ -242,28 +243,22 @@ void CPPTFileReader::ReadPictures()
 		POLE::Stream *	pStreamTmp = pStream->stream_;
 		if (pDecryptor)
 		{
-			m_oDocumentInfo.m_arUsers[0]->DecryptStream(pStreamTmp, 0);
+			m_oDocumentInfo.m_arUsers[0]->DecryptStream(pStreamTmp, 0); 
 			pStreamTmp = m_oDocumentInfo.m_arUsers[0]->m_arStreamDecrypt.back()->stream_;
 			
 		}		
 		oHeader.ReadFromStream(pStreamTmp);
-		pStream->seekFromBegin(pos + 8);
 
 		CRecordOfficeArtBlip art_blip;
 		art_blip.m_strTmpDirectory	= m_strTmpDirectory;
 		art_blip.m_oDocumentInfo	= &m_oDocumentInfo;
-		
-		pStreamTmp = pStream->stream_;
-		if (pDecryptor)
-		{
-			m_oDocumentInfo.m_arUsers[0]->DecryptStream(pStreamTmp, 1);
-			pStreamTmp = m_oDocumentInfo.m_arUsers[0]->m_arStreamDecrypt.back()->stream_;
+		//
+		pStream->seekFromBegin(pos + 8);
+		pStreamTmp = pStream->stream_;	//каждое поле отдельно нужно 
 			
-		}				
-		art_blip.ReadFromStream(oHeader, pStreamTmp);
-		
-		pStream->seekFromBegin(pos + oHeader.RecLen + 8);
-		
+		art_blip.ReadFromStream(oHeader, pStreamTmp);	
 		m_oDocumentInfo.m_mapStoreImageFile[ pos ] = art_blip.m_sFileName;
+
+		pStream->seekFromBegin(pos + oHeader.RecLen + 8);
 	}
 }

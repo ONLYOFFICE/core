@@ -33,8 +33,10 @@
 
 #include "ReadStructures.h"
 
-#include <zlib.h>
+#include "../../../ASCOfficeDocFile/DocDocxConverter/MemoryStream.h"
+#include "../../../OfficeCryptReader/source/CryptTransform.h"
 
+#include <zlib.h>
 
 using namespace NSPresentationEditor;
 
@@ -639,22 +641,31 @@ namespace NSPresentationEditor
 	}
 }
 //------------------------------------------------------------------------------------
-void CMetaHeader::FromStream(POLE::Stream* pStream)
+void CMetaHeader::FromStream(POLE::Stream* pStream, CRYPT::ECMADecryptor *pDecryptor)
 {
-	cbSize			= StreamUtils::ReadDWORD(pStream);
+	int		size	= 34;
+	BYTE*	pData	= new BYTE[size];
+	pStream->read(pData, size); 
+	if (pDecryptor)
+	{
+		pDecryptor->Decrypt((char*)pData, size, 0);
+	}
+	MemoryStream memStream(pData, size, false);
+
+	cbSize			= memStream.ReadUInt32();
 	
-	rcBounds.left	= StreamUtils::ReadLONG(pStream);
-	rcBounds.top	= StreamUtils::ReadLONG(pStream);
-	rcBounds.right	= StreamUtils::ReadLONG(pStream);
-	rcBounds.bottom = StreamUtils::ReadLONG(pStream);
+	rcBounds.left	= memStream.ReadInt32();
+	rcBounds.top	= memStream.ReadInt32();
+	rcBounds.right	= memStream.ReadInt32();
+	rcBounds.bottom = memStream.ReadInt32();
 
-	ptSize.x		= StreamUtils::ReadLONG(pStream);
-	ptSize.y		= StreamUtils::ReadLONG(pStream);
+	ptSize.x		= memStream.ReadInt32();
+	ptSize.y		= memStream.ReadInt32();
 
-	cbSave			= StreamUtils::ReadDWORD(pStream);
+	cbSave			= memStream.ReadUInt32();
 
-	compression		= StreamUtils::ReadBYTE(pStream);
-	filter			= StreamUtils::ReadBYTE(pStream);
+	compression		= memStream.ReadByte();
+	filter			= memStream.ReadByte();
 }
 
 void CMetaHeader::ToEMFHeader(Gdiplus::ENHMETAHEADER3* pHeader)

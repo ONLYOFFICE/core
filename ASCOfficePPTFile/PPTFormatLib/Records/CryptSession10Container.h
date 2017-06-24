@@ -165,6 +165,8 @@ public:
 				case 0x6801:	
 					crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::RC4;		
 					crypt_data_aes.keySize = KeySize / 8;
+					if (crypt_data_aes.keySize == 0)
+						crypt_data_aes.keySize = 5; // 40 bit
 					break;
 				case 0x660E:	
 					crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::AES_ECB;

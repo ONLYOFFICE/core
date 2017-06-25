@@ -32,9 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/BuiltInStyle.h>
-#include <Logic/Biff_structures/BiffString.h>
-#include <Logic/Biff_structures/XFProps.h>
+
+#include "../Biff_structures/BuiltInStyle.h"
+#include "../Biff_structures/XFProps.h"
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
@@ -67,6 +69,8 @@ public:
 	BuiltInStyle	builtInData;
 	LPWideString	stName;
 	XFProps			xfProps;
+
+	FrtHeader		frtHeader;
 };
 
 } // namespace XLS

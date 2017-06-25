@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
 
-
-// Logical representation of XFCRC record in BIFF8
 class XFCRC: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(XFCRC)
@@ -50,12 +49,12 @@ public:
 
 	void readFields(CFRecord& record);
 	
-	static const ElementType	type = typeXFCRC;
+	static const ElementType type = typeXFCRC;
 
 //-----------------------------
-	_UINT16 cxfs;
-	_UINT32	crc;
-
+	_UINT16		cxfs;
+	_UINT32		crc;
+	FrtHeader	frtHeader;
 };
 
 } // namespace XLS

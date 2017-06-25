@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
 
-
-// Logical representation of ForceFullCalculation record in BIFF8
 class ForceFullCalculation: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(ForceFullCalculation)
@@ -51,10 +50,11 @@ public:
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeForceFullCalculation;
+	static const ElementType type = typeForceFullCalculation;
 
 //-----------------------------
-	bool fNoDeps;
+	bool		fNoDeps;
+	FrtHeader	frtHeader;
 
 };
 

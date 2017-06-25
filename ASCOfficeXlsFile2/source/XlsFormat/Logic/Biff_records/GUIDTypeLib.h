@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
 
-
-// Logical representation of GUIDTypeLib record in BIFF8
 class GUIDTypeLib: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(GUIDTypeLib)
@@ -47,16 +46,14 @@ public:
 	~GUIDTypeLib();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeGUIDTypeLib;
+	static const ElementType type = typeGUIDTypeLib;
 
 //-----------------------------
-	std::wstring guid;
-
-
+	std::wstring	guid;
+	FrtHeader		frtHeader;
 };
 
 } // namespace XLS

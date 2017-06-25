@@ -32,13 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/MDXStrIndex.h>
+#include "../Biff_structures/MDXStrIndex.h"
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
 
-
-// Logical representation of MDXSet record in BIFF8
 class MDXSet: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(MDXSet)
@@ -48,16 +47,16 @@ public:
 	~MDXSet();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 //-----------------------------
-	_INT32	istrConnName;
-	unsigned char	tfnSrc;
-	unsigned char	sso;
-	_UINT32	istrSetDef;
-	_INT32	cistr;
-	BiffStructurePtrVector rgistr;
+	_INT32					istrConnName;
+	unsigned char			tfnSrc;
+	unsigned char			sso;
+	_UINT32					istrSetDef;
+	_INT32					cistr;
+	BiffStructurePtrVector	rgistr;
+	FrtHeader				frtHeader;
 };
 
 } // namespace XLS

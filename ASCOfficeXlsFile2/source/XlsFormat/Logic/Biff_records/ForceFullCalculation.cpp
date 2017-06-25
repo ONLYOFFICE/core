@@ -52,11 +52,8 @@ BaseObjectPtr ForceFullCalculation::clone()
 
 void ForceFullCalculation::readFields(CFRecord& record)
 {
-	record.skipNunBytes(12);
-#pragma message(">>>>>>>>>>> frtHeader skipped here")
-
 	_UINT32 temp;
-	record >> temp;
+	record >> frtHeader >> temp;
 	
 	fNoDeps = temp;
 }

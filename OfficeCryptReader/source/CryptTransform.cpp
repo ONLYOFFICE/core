@@ -513,16 +513,75 @@ void ECMADecryptor::SetCryptData(_ecmaCryptData	& data)
 }
 void ECMADecryptor::Decrypt(char* data	, const size_t size, const unsigned long start_iv_block)
 {
-	if (bVerify)
+	if (!bVerify) return;
+	
+	unsigned char* data_out = NULL;
+	Decrypt((unsigned char*)data, size, data_out, start_iv_block);
+	
+	if (data_out)
 	{
-		unsigned char* data_out = NULL;
-		Decrypt((unsigned char*)data, size, data_out, start_iv_block);
-		
-		if (data_out)
+		memcpy(data, data_out, size);
+		delete []data_out;
+	}
+}
+void ECMADecryptor::Decrypt(char* data	, const size_t size, const unsigned long stream_pos, const size_t block_size)
+{
+	if (!bVerify) return;
+//rc4 only
+	if (cryptData.cipherAlgorithm != CRYPT_METHOD::RC4) return;
+	
+	unsigned char* data_out = new unsigned char[size];
+
+	unsigned char*			pnCurrDest	= data_out;
+	const unsigned char*	pnCurrSrc	= (unsigned char* )data;
+	long					nCurrPos	= stream_pos;
+	unsigned short			nBytesLeft	= size;
+	
+	while(nBytesLeft > 0)
+	{
+		// initialize codec for current stream position
+
+		int block_index = (nCurrPos / block_size);
 		{
-			memcpy(data, data_out, size);
-			delete []data_out;
+			_buf pPassword	(password);
+			_buf pSalt		(cryptData.saltValue);			
+			
+			_buf hashKey = GenerateHashKey(pSalt, pPassword, cryptData.hashSize, cryptData.spinCount, cryptData.hashAlgorithm, block_index);
+			CorrectHashSize(hashKey, cryptData.keySize, 0);
+			
+			if (cryptData.keySize == 5)	CorrectHashSize(hashKey, 16, 0); //40-bit crypt key !!!				
+				
+			rc4Decryption.SetKey(hashKey.ptr, hashKey.size);
 		}
+
+		const long offset = nCurrPos % block_size;
+		{//skip
+			unsigned char pnDummy[ 1024 ];
+
+			size_t nBytesLeft = offset;
+			bool bResult = true;
+			while(bResult && (nBytesLeft > 0))
+			{
+				size_t nBlockLen = nBytesLeft < sizeof(pnDummy) ? nBytesLeft : sizeof(pnDummy);
+				rc4Decryption.ProcessData(pnDummy, pnDummy, nBlockLen);
+				nBytesLeft -= nBlockLen;
+			}
+		}
+		unsigned short nBlockLeft = static_cast<unsigned short>(block_size - offset);
+		unsigned short nDecBytes = nBytesLeft < nBlockLeft ? nBytesLeft : nBlockLeft;
+		
+		rc4Decryption.ProcessData(pnCurrDest, pnCurrSrc, static_cast<int>(nDecBytes));
+
+		pnCurrDest	+= nDecBytes;
+		pnCurrSrc	+= nDecBytes;
+		nCurrPos	+= nDecBytes;
+
+		nBytesLeft = nBytesLeft - nDecBytes;
+	}	
+	if (data_out)
+	{
+		memcpy(data, data_out, size);
+		delete []data_out;
 	}
 }
 bool ECMADecryptor::CheckDataIntegrity(unsigned char* data, int  size)
@@ -564,7 +623,8 @@ bool ECMADecryptor::CheckDataIntegrity(unsigned char* data, int  size)
 		
 	return (hmac == expected);
 }
-void ECMADecryptor::Decrypt(unsigned char* data_inp, int  size, unsigned char*& data_out, int start_iv_block)
+	
+void ECMADecryptor::Decrypt(unsigned char* data_inp, int  size, unsigned char*& data_out, unsigned long start_iv_block)
 {
 	data_out = new unsigned char[size];
 	

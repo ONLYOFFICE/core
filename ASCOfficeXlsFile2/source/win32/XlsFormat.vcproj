@@ -6203,10 +6203,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\XlsFormat\Crypt\Crypt.h"
-				>
-			</File>
-			<File
 				RelativePath="..\XlsFormat\Crypt\Decryptor.cpp"
 				>
 			</File>

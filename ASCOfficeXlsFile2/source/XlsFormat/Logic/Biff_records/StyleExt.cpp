@@ -61,6 +61,7 @@ void StyleExt::readFields(CFRecord& record)
 	fHidden		= GETBIT(flags, 1);
 	fCustom		= GETBIT(flags, 2);
 
+	stName.setSize(0xff); //max size
 	record >> iCategory>> builtInData >> stName >> xfProps;
 }
 

@@ -565,26 +565,26 @@ bool ECMACryptFile::EncryptOfficeFile(std::wstring file_name_inp, std::wstring f
 	pStorage->close();
 	delete pStorage;
 
-
-//test back---------------------------------------------------------------------------------test back
-	ECMADecryptor decryptor;
-	
-	decryptor.SetCryptData(cryptData);
-	
-	if (decryptor.SetPassword(password))
-	{
-		unsigned char* data_out2	= NULL;
-		decryptor.Decrypt(data_out, lengthData, data_out2);
-		
-		bool bDataIntegrity = decryptor.CheckDataIntegrity(data_out, lengthData);
-		
-		NSFile::CFileBinary test;
-
-		test.CreateFileW(file_name_out + L"-back.oox");
-		test.WriteFile(data_out2, lengthFileSize);
-		test.CloseFile();
-	}
-//test back---------------------------------------------------------------------------------test back
+//
+////test back---------------------------------------------------------------------------------test back
+//	ECMADecryptor decryptor;
+//	
+//	decryptor.SetCryptData(cryptData);
+//	
+//	if (decryptor.SetPassword(password))
+//	{
+//		unsigned char* data_out2	= NULL;
+//		decryptor.Decrypt(data_out, lengthData, data_out2, 0);
+//		
+//		bool bDataIntegrity = decryptor.CheckDataIntegrity(data_out, lengthData);
+//		
+//		NSFile::CFileBinary test;
+//
+//		test.CreateFileW(file_name_out + L"-back.oox");
+//		test.WriteFile(data_out2, lengthFileSize);
+//		test.CloseFile();
+//	}
+////test back---------------------------------------------------------------------------------test back
 
 	return true;
 }
@@ -717,7 +717,7 @@ bool ECMACryptFile::DecryptOfficeFile(std::wstring file_name_inp, std::wstring f
 
 		lengthData = *((_UINT64*)data);
 
-		decryptor.Decrypt(data + 8, readData, data_out);//todoo сделать покусочное чтение декриптование
+		decryptor.Decrypt(data + 8, readData, data_out, 0);//todoo сделать покусочное чтение декриптование
 
 		if (data_out)
 		{

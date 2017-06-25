@@ -62,7 +62,8 @@ namespace CRYPT
 class Decryptor
 {
 	public:
-		virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos) = 0;
+		virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size) = 0;
+		virtual void Decrypt(char* data, const size_t size, const unsigned long block_index) = 0;
 		virtual bool SetPassword(std::wstring password) = 0;
 		virtual bool IsVerify() = 0;
 
@@ -128,9 +129,10 @@ public:
 	ECMADecryptor();
 	virtual ~ECMADecryptor();
 
-	void Decrypt (unsigned char* data, int  size, unsigned char*& data_out, int start_iv_block = 0);
 	
+	virtual void Decrypt (char* data, const size_t size, const unsigned long stream_pos, const size_t block_size);
 	virtual void Decrypt (char* data, const size_t size, const unsigned long start_iv_block);
+	
 	virtual bool SetPassword (std::wstring password);
 	virtual bool IsVerify();
 
@@ -138,6 +140,8 @@ public:
 
 	void SetCryptData(_ecmaCryptData &data);
 	
+	void Decrypt (unsigned char* data, int  size, unsigned char*& data_out, unsigned long start_iv_block);
+
 private:
 
 	std::wstring	password;

@@ -41,10 +41,10 @@ namespace CRYPT
 class RC4Crypt : public Crypt
 {
 public:
-	RC4Crypt(CRYPT::_rc4CryptData & data, std::wstring password, int type);
+	RC4Crypt(CRYPT::_rc4CryptData & data, std::wstring password);
 
-	virtual void Encrypt(char* data, const size_t size);
-	virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos);
+	virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size);
+	virtual void Decrypt(char* data, const size_t size, const unsigned long block_index);
 
 	virtual bool IsVerify();
 

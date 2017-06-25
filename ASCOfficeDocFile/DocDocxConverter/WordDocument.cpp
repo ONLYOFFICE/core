@@ -139,7 +139,7 @@ namespace DocFileFormat
 
 			if (encryptionHeader->bStandard)
 			{
-				CRYPT::RC4Decryptor Decryptor(encryptionHeader->crypt_data_rc4, m_sPassword, 1);
+				CRYPT::RC4Decryptor Decryptor(encryptionHeader->crypt_data_rc4, m_sPassword);
 
 				if (Decryptor.IsVerify() == false) 
 				{
@@ -153,24 +153,6 @@ namespace DocFileFormat
 			}
 			else
 			{
-				//POLE::Stream * pStream = NULL;
-				//if (m_pStorage->GetStream ("EncryptedSummaryInformation", &pStream))
-				//{
-				//	VirtualStreamReader tStream( pStream, 0, FIB->m_bOlderVersion);
-
-				//	_UINT32 StreamDescriptorArrayOffset = tStream.ReadUInt32();
-				//	_UINT32 StreamDescriptorArraySize = tStream.ReadUInt32();
-
-				//	for (int i = 0; i < StreamDescriptorArraySize; i++)
-				//	{
-				//	}
-				//	_UINT32 EncryptedStreamDescriptorCount = tStream.ReadUInt32();
-
-				//	for (int i = 0; i < EncryptedStreamDescriptorCount; i++)
-				//	{
-				//	}
-				//	RELEASEOBJECT(pStream);
-				//}
 				CRYPT::ECMADecryptor Decryptor;
 
 				Decryptor.SetCryptData(encryptionHeader->crypt_data_aes);

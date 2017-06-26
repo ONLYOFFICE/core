@@ -3867,9 +3867,11 @@ public:
 			pMoveFromRangeStart->m_oColLast->SetValue(m_oBufferedStream.GetLong());
 		}
 		else if (c_oSerMoveRange::Date == type)
-		{
+        {
+            std::wstring strValue = m_oBufferedStream.GetString3(length);
+
 			pMoveFromRangeStart->m_oDate.Init();
-			pMoveFromRangeStart->m_oDate->SetValue(m_oBufferedStream.GetString3(length));
+            pMoveFromRangeStart->m_oDate->SetValue(strValue);
 		}
 		else if (c_oSerMoveRange::DisplacedByCustomXml == type)
 		{
@@ -3915,9 +3917,11 @@ public:
 			pMoveToRangeStart->m_oColLast->SetValue(m_oBufferedStream.GetLong());
 		}
 		else if (c_oSerMoveRange::Date == type)
-		{
+        {
+            std::wstring strValue = m_oBufferedStream.GetString3(length);
+
 			pMoveToRangeStart->m_oDate.Init();
-			pMoveToRangeStart->m_oDate->SetValue(m_oBufferedStream.GetString3(length));
+            pMoveToRangeStart->m_oDate->SetValue(strValue);
 		}
 		else if (c_oSerMoveRange::DisplacedByCustomXml == type)
 		{

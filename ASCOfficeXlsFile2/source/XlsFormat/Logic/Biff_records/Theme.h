@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
 
-
-// Logical representation of Theme record in BIFF8
 class Theme: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Theme)
@@ -53,9 +52,8 @@ public:
 	static const ElementType	type = typeTheme;
 
 //-----------------------------
-	_UINT32	dwThemeVersion;
-	//std::wstring rgb;
-
+	_UINT32		dwThemeVersion;
+	FrtHeader	frtHeader;
 };
 
 } // namespace XLS

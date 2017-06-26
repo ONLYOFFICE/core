@@ -32,11 +32,16 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/BitMarkedStructs.h>
-#include "../../Crypt/Crypt.h"
+#include "BitMarkedStructs.h"
+#include "../../Crypt/RC4Crypt.h"
 
 namespace CRYPTO
 {
+struct Version : public XLS::BiffStructure_NoVtbl
+{
+	unsigned short vMajor;
+	unsigned short vMinor;
+};
 class RC4EncryptionHeader : public XLS::BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(RC4EncryptionHeader)

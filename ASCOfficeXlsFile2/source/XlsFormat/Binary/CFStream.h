@@ -96,9 +96,8 @@ public:
 	void appendDelayedItems(const ReceiverItems& receiver_items_from_record, const SourceItems& source_items_from_record);
 	void applyDelayedItems();
 
-
+	POLE::Stream				*stream_;
 private:
-	POLE::Stream				* stream_;
 	CFStream::ReceiverItems		receiver_items;
 	CFStream::SourceItems		source_items;
 };

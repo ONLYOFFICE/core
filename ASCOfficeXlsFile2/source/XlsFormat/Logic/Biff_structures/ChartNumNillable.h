@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-class CFRecord;
-
 class ChartNumNillable : public BiffAttribute
 {
 public:

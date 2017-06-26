@@ -79,7 +79,7 @@ void FilePass::readFields(CFRecord& record)
 		if (cryptHeaderPtr->bStandard)
 		{
 			record.getGlobalWorkbookInfo()->decryptor = 
-						CRYPT::DecryptorPtr(new CRYPT::RC4Decryptor(cryptHeaderPtr->crypt_data_rc4, record.getGlobalWorkbookInfo()->password, 2));
+						CRYPT::DecryptorPtr(new CRYPT::RC4Decryptor(cryptHeaderPtr->crypt_data_rc4, record.getGlobalWorkbookInfo()->password));
 		}
 		else
 		{

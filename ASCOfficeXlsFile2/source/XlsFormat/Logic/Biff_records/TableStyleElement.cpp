@@ -39,23 +39,18 @@ TableStyleElement::TableStyleElement()
 {
 }
 
-
 TableStyleElement::~TableStyleElement()
 {
 }
-
 
 BaseObjectPtr TableStyleElement::clone()
 {
 	return BaseObjectPtr(new TableStyleElement(*this));
 }
 
-
 void TableStyleElement::readFields(CFRecord& record)
 {
-	record.skipNunBytes(12);
-#pragma message(">>>>>>>>>>> frtHeader skipped here")
-	record >> tseType >> size >> index;
+	record >> frtHeader >> tseType >> size >> index;
 }
 
 } // namespace XLS

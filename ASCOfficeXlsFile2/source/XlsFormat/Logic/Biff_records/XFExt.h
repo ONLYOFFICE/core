@@ -32,13 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/ExtProp.h>
+#include "../Biff_structures/ExtProp.h"
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
 
-
-// Logical representation of XFExt record in BIFF8
 class XFExt: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(XFExt)
@@ -51,13 +50,13 @@ public:
 
 	void readFields(CFRecord& record);
 	
-	static const ElementType	type = typeXFExt;
+	static const ElementType type = typeXFExt;
 
 //-----------------------------
 	_UINT16					ixfe;
 	_UINT16					cexts;
 	BiffStructurePtrVector	rgExt;
-
+	FrtHeader				frtHeader;
 };
 
 } // namespace XLS

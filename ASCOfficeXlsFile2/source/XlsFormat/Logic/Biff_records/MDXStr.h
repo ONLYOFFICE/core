@@ -32,13 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/BiffString.h>
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
 
-
-// Logical representation of MDXStr record in BIFF8
 class MDXStr: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(MDXStr)
@@ -52,7 +51,8 @@ public:
 	
 	void readFields(CFRecord& record);
 //-----------------------------
-	LPWideString st;
+	LPWideString	st;
+	FrtHeader		frtHeader;
 
 };
 

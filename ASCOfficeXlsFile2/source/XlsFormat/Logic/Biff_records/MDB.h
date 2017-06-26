@@ -32,13 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/MDir.h>
+#include "../Biff_structures/MDir.h"
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
 
-
-// Logical representation of MDB record in BIFF8
 class MDB: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(MDB)
@@ -48,11 +47,11 @@ public:
 	~MDB();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 //-----------------------------
-	BiffStructurePtrVector rgmdir;
+	BiffStructurePtrVector	rgmdir;
+	FrtHeader				frtHeader;
 };
 
 } // namespace XLS

@@ -52,8 +52,8 @@ BaseObjectPtr MDB::clone()
 
 void MDB::readFields(CFRecord& record)
 {
-	record.skipNunBytes(12);
-#pragma message(">>>>>>>>>>> frtHeader skipped here")
+	record >> frtHeader;
+
 	while(!record.isEOF())
 	{
 		MDirPtr element(new MDir);

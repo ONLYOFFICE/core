@@ -405,6 +405,8 @@ public:
     std::wstring Fill;
     std::wstring Del;
     std::wstring Ins;
+	std::wstring MoveFrom;
+	std::wstring MoveTo;
     std::wstring rPrChange;
 
 	bool bBold;
@@ -492,13 +494,15 @@ public:
         Fill.clear();
         Del.clear();
         Ins.clear();
+		MoveFrom.clear();
+		MoveTo.clear();
         rPrChange.clear();
 	}
 	bool IsNoEmpty()
 	{
 		return bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || bHighLight || bShd ||
 			bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA || bThemeColor || bVanish ||
-            !Outline.empty() || !Fill.empty() || !Del.empty() || !Ins.empty() || !rPrChange.empty();
+			!Outline.empty() || !Fill.empty() || !Del.empty() || !Ins.empty() || !MoveFrom.empty() || !MoveTo.empty() || !rPrChange.empty();
 	}
 	void Write(XmlUtils::CStringWriter*  pCStringWriter)
 	{
@@ -749,6 +753,10 @@ public:
 			pCStringWriter->WriteString(Del);
         if (!Ins.empty())
 			pCStringWriter->WriteString(Ins);
+		if (!MoveFrom.empty())
+			pCStringWriter->WriteString(MoveFrom);
+		if (!MoveTo.empty())
+			pCStringWriter->WriteString(MoveTo);
         if (!rPrChange.empty())
 			pCStringWriter->WriteString(rPrChange);
         pCStringWriter->WriteString(L"</w:rPr>");

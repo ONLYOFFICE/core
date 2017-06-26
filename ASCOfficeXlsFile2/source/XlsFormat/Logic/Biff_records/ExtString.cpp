@@ -52,9 +52,9 @@ BaseObjectPtr ExtString::clone()
 
 void ExtString::readFields(CFRecord& record)
 {
-#pragma message("####################### ExtString record is not implemented")
-	Log::error("ExtString record is not implemented.");
-	//record >> some_value;
+	record >> frtHeaderOld >> string;
+	
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

@@ -72,7 +72,7 @@ public:
 
 		if (m_Data)
 		{
-			rdUShort	=	FormatUtils::BytesToUInt16 (m_Data, m_Position, m_Size);
+            rdUShort	=	DocFormatUtils::FormatUtils::BytesToUInt16 (m_Data, m_Position, m_Size);
 			m_Position	+=	sizeof(rdUShort);
 		}
 
@@ -85,7 +85,7 @@ public:
 
 		if (m_Data)
 		{
-			rdShort		=	FormatUtils::BytesToInt16 (m_Data, m_Position, m_Size);
+            rdShort		=	DocFormatUtils::FormatUtils::BytesToInt16 (m_Data, m_Position, m_Size);
 			m_Position	+=	sizeof(rdShort);
 		}
 
@@ -98,7 +98,7 @@ public:
 
 		if (m_Data)
 		{
-			rdInt		=	FormatUtils::BytesToInt32 (m_Data, m_Position, m_Size);
+            rdInt		=	DocFormatUtils::FormatUtils::BytesToInt32 (m_Data, m_Position, m_Size);
 			m_Position	+=	sizeof(rdInt);
 		}
 
@@ -111,7 +111,7 @@ public:
 
 		if (m_Data )
 		{
-			rdUInt		=	FormatUtils::BytesToUInt32 (m_Data, m_Position, m_Size);
+            rdUInt		=	DocFormatUtils::FormatUtils::BytesToUInt32 (m_Data, m_Position, m_Size);
 			m_Position	+=	sizeof(rdUInt);
 		}
 

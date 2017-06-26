@@ -871,7 +871,7 @@ namespace OOX
 				if ( m_sAuthor.IsInit() )
 				{
 					sResult += _T("w:author=\"");
-                    sResult += m_sAuthor.get2();
+					sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
 					sResult += _T("\" ");
 				}
 
@@ -884,14 +884,14 @@ namespace OOX
 				if ( m_sName.IsInit() )
 				{
 					sResult += _T("w:name=\"");
-                    sResult += m_sName.get2();
+					sResult += XmlUtils::EncodeXmlString(m_sName.get2());
 					sResult += _T("\" ");
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
 					sResult += _T("oouserid=\"");
-                    sResult += m_sUserId.get2();
+					sResult += XmlUtils::EncodeXmlString(m_sUserId.get2());
 					sResult += _T("\" ");
 				}
 
@@ -917,7 +917,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),                   m_oId )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:name"),                 m_sName )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserisd"),              m_sUserId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"),              m_sUserId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1032,7 +1032,7 @@ namespace OOX
 				if ( m_sAuthor.IsInit() )
 				{
 					sResult += _T("w:author=\"");
-                    sResult += m_sAuthor.get2();
+					sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
 					sResult += _T("\" ");
 				}
 
@@ -1045,14 +1045,14 @@ namespace OOX
 				if ( m_sName.IsInit() )
 				{
 					sResult += _T("w:name=\"");
-                    sResult += m_sName.get2();
+					sResult += XmlUtils::EncodeXmlString(m_sName.get2());
 					sResult += _T("\" ");
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
 					sResult += _T("oouserid=\"");
-                    sResult += m_sUserId.get2();
+					sResult += XmlUtils::EncodeXmlString(m_sUserId.get2());
 					sResult += _T("\" ");
 				}
 
@@ -1094,6 +1094,137 @@ namespace OOX
             nullable<std::wstring                              > m_sUserId;
 		};
 
+		class CMoveFrom : public WritingElementWithChilds<>
+		{
+		public:
+			CMoveFrom()
+			{
+			}
+			CMoveFrom(XmlUtils::CXmlNode &oNode)
+			{
+				fromXML( oNode );
+			}
+			CMoveFrom(XmlUtils::CXmlLiteReader& oReader)
+			{
+				fromXML( oReader );
+			}
+			virtual ~CMoveFrom()
+			{
+			}
+
+		public:
+			void Clear()
+			{
+				for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				{
+					if ( m_arrItems[nIndex] )
+						delete m_arrItems[nIndex];
+
+					m_arrItems[nIndex] = NULL;
+				}
+
+				m_arrItems.clear();
+			}
+
+		public:
+
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring      toXML() const;
+			virtual EElementType getType() const
+			{
+				return et_w_moveFrom;
+			}
+
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if( oReader, _T("w:author"), m_sAuthor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"), m_oDate )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"), m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+
+			// Attributes
+			nullable<std::wstring > m_sAuthor;
+			nullable<SimpleTypes::CDateTime > m_oDate;
+			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+			nullable<std::wstring > m_sUserId;
+
+			// Childs
+		};
+
+		class CMoveTo : public WritingElementWithChilds<>
+		{
+		public:
+			CMoveTo()
+			{
+			}
+			CMoveTo(XmlUtils::CXmlNode &oNode)
+			{
+				fromXML( oNode );
+			}
+			CMoveTo(XmlUtils::CXmlLiteReader& oReader)
+			{
+				fromXML( oReader );
+			}
+			virtual ~CMoveTo()
+			{
+			}
+
+		public:
+			void Clear()
+			{
+				for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				{
+					if ( m_arrItems[nIndex] )
+						delete m_arrItems[nIndex];
+
+					m_arrItems[nIndex] = NULL;
+				}
+
+				m_arrItems.clear();
+			}
+
+		public:
+
+			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring      toXML() const;
+			virtual EElementType getType() const
+			{
+				return et_w_moveTo;
+			}
+
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if( oReader, _T("w:author"), m_sAuthor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"), m_oDate )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"), m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+
+			// Attributes
+			nullable<std::wstring > m_sAuthor;
+			nullable<SimpleTypes::CDateTime > m_oDate;
+			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+			nullable<std::wstring > m_sUserId;
+
+			// Childs
+		};
 	} // Logic
 	// Bookmarks 17.13.6
 	namespace Logic

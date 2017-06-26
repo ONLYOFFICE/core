@@ -32,6 +32,35 @@
 #pragma once
 #include "../../../ASCOfficeXlsFile2/source/XlsFormat/Crypt/Decryptor.h"
 
+class CRecordEncryptedSummary : public CUnknownRecord
+{
+public:
+	CRecordEncryptedSummary(){}
+	~CRecordEncryptedSummary(){}
+
+	DWORD			StreamOffset;
+	DWORD			StreamSize;
+	unsigned short	Block;
+	unsigned char	NameSize;
+	bool			fStream;
+	std::wstring	StreamName;
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream)
+	{
+		m_oHeader = oHeader;
+
+		unsigned char	flags;
+
+		*pStream >> StreamOffset >> StreamSize >> Block >> NameSize >> flags;
+
+		fStream	= GETBIT(flags, 0);
+
+		if (NameSize > 0 && NameSize < 0xff)
+		{
+			StreamName = ReadStringW(pStream, NameSize);
+		}
+	}
+};
 class CEncryptionHeader : public CUnknownRecord
 {
 public:
@@ -40,13 +69,8 @@ public:
 	CRYPT::_ecmaCryptData	crypt_data_aes;
 	bool					bStandard;
 
-	CEncryptionHeader()
-	{
-	}
-
-	~CEncryptionHeader()
-	{
-	}
+	CEncryptionHeader(){}
+	~CEncryptionHeader(){}
 
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{
@@ -141,6 +165,8 @@ public:
 				case 0x6801:	
 					crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::RC4;		
 					crypt_data_aes.keySize = KeySize / 8;
+					if (crypt_data_aes.keySize == 0)
+						crypt_data_aes.keySize = 5; // 40 bit
 					break;
 				case 0x660E:	
 					crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::AES_ECB;

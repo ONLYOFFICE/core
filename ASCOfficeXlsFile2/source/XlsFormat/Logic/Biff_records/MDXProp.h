@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
 
-
-// Logical representation of MDXProp record in BIFF8
 class MDXProp: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(MDXProp)
@@ -47,14 +46,14 @@ public:
 	~MDXProp();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 //-----------------------------
-	_INT32	istrConnName;
+	_INT32			istrConnName;
 	unsigned char	tfnSrc;
-	_UINT32	istrMbr;
-	_UINT32	istrProp;
+	_UINT32			istrMbr;
+	_UINT32			istrProp;
+	FrtHeader		frtHeader;
 
 };
 

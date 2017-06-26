@@ -36,7 +36,6 @@
 namespace CRYPTO
 {
 
-
 XLS::BiffStructurePtr RC4CryptoAPIEncryptionHeader::clone()
 {
 	return XLS::BiffStructurePtr(new RC4CryptoAPIEncryptionHeader(*this));

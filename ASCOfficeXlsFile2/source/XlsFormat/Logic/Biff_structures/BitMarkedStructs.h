@@ -89,7 +89,6 @@ struct PtgAttrSpaceType : public BiffStructure_NoVtbl
 	unsigned char cch;
 };
 
-
 struct RkNumber : public BiffStructure_NoVtbl
 {
 	unsigned int	fX100	: 1;
@@ -354,21 +353,7 @@ struct CFrtId : public BiffStructure_NoVtbl
 	unsigned short rtLast;
 };
 
-
 } // namespace XLS
-
-
-namespace CRYPTO
-{
-
-struct Version : public XLS::BiffStructure_NoVtbl
-{
-	unsigned short vMajor;
-	unsigned short vMinor;
-};
-
-
-} // namespace CRYPTO
 
 #pragma pack()
 

@@ -114,9 +114,9 @@ namespace OOX
 						//else if ( _T("w:moveFrom") == sName )
 						//	pItem = new CMoveFrom( oItem );
 						else if ( _T("w:moveFromRangeEnd") == sName )
-							pItem = new CMoveToRangeEnd( oItem );
+							pItem = new CMoveFromRangeEnd( oItem );
 						else if ( _T("w:moveFromRangeStart") == sName )
-							pItem = new CMoveToRangeStart( oItem );
+							pItem = new CMoveFromRangeStart( oItem );
 						//else if ( _T("w:moveTo") == sName )
 						//	pItem = new CMoveTo( oItem );
 						else if ( _T("w:moveToRangeEnd") == sName )
@@ -208,14 +208,14 @@ namespace OOX
 					pItem = new CHyperlink( oReader );
 				else if ( _T("w:ins") == sName )
 					pItem = new CIns( oReader );
-				//else if ( _T("w:moveFrom") == sName )
-				//	pItem = new CMoveFrom( oReader );
+				else if ( _T("w:moveFrom") == sName )
+					pItem = new CMoveFrom( oReader );
 				else if ( _T("w:moveFromRangeEnd") == sName )
-					pItem = new CMoveToRangeEnd( oReader );
+					pItem = new CMoveFromRangeEnd( oReader );
 				else if ( _T("w:moveFromRangeStart") == sName )
-					pItem = new CMoveToRangeStart( oReader );
-				//else if ( _T("w:moveTo") == sName )
-				//	pItem = new CMoveTo( oReader );
+					pItem = new CMoveFromRangeStart( oReader );
+				else if ( _T("w:moveTo") == sName )
+					pItem = new CMoveTo( oReader );
 				else if ( _T("w:moveToRangeEnd") == sName )
 					pItem = new CMoveToRangeEnd( oReader );
 				else if ( _T("w:moveToRangeStart") == sName )

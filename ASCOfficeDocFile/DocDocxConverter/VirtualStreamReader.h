@@ -197,20 +197,20 @@ public:
 			int cchSize = 1;
 			cch = ReadBytes( cchSize, true );
 
-			int xstzSize = FormatUtils::BytesToUChar( cch, 0, cchSize ) * 1;      
+            int xstzSize = DocFormatUtils::FormatUtils::BytesToUChar( cch, 0, cchSize ) * 1;
 			xstz = ReadBytes(xstzSize, true);
 
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &wstrResult, xstz, xstzSize, ENCODING_WINDOWS_1250 );
+            DocFormatUtils::FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &wstrResult, xstz, xstzSize, ENCODING_WINDOWS_1250 );
 		}
 		else
 		{
 			int cchSize = 2;
 			cch = ReadBytes( cchSize, true );
 
-			int xstzSize = FormatUtils::BytesToInt16( cch, 0, cchSize ) * 2;      
+            int xstzSize = DocFormatUtils::FormatUtils::BytesToInt16( cch, 0, cchSize ) * 2;
 			xstz = ReadBytes(xstzSize, true);
 
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &wstrResult, xstz, xstzSize, ENCODING_UTF16 );
+            DocFormatUtils::FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &wstrResult, xstz, xstzSize, ENCODING_UTF16 );
 		}
 
 		RELEASEARRAYOBJECTS(xstz);
@@ -234,7 +234,7 @@ public:
 			//dont read the terminating zero
 			unsigned char* stringBytes = ReadBytes( ( cch * 2 ), true );
 
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &result, stringBytes, ( ( cch * 2 ) - 2 ), ENCODING_UTF16 );
+            DocFormatUtils::FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &result, stringBytes, ( ( cch * 2 ) - 2 ), ENCODING_UTF16 );
 
 			RELEASEARRAYOBJECTS( stringBytes );
 		}
@@ -278,7 +278,7 @@ public:
 				//dont read the terminating zero
 				stringBytes = ReadBytes( cch, true );
 
-				FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &result, stringBytes, ( cch - 1 ), ENCODING_WINDOWS_1250);
+                DocFormatUtils::FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &result, stringBytes, ( cch - 1 ), ENCODING_WINDOWS_1250);
 
 			}
 		RELEASEARRAYOBJECTS( stringBytes );

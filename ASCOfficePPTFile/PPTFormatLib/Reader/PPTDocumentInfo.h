@@ -38,7 +38,7 @@ class CPPTDocumentInfo
 public:
 	CCurrentUser					m_oCurrentUser;
 	std::vector<CPPTUserInfo*>		m_arUsers;
-    std::wstring					m_strFileDirectory;
+    std::wstring					m_strTmpDirectory;
 	std::map<int, std::wstring>		m_mapStoreImageFile;
     std::wstring					m_strPassword;
 
@@ -85,7 +85,7 @@ public:
 
 			CPPTUserInfo* pInfo			= new CPPTUserInfo();
 			
-			pInfo->m_strFileDirectory	= m_strFileDirectory;
+			pInfo->m_strTmpDirectory	= m_strTmpDirectory;
 			pInfo->m_bEncrypt			= m_oCurrentUser.m_bIsEncrypt;
 			pInfo->m_strPassword		= m_strPassword;
            
@@ -96,7 +96,9 @@ public:
 			if (bResult == false)
 			{
 				delete pInfo;
-				continue;
+
+				if (pInfo->m_bEncrypt)	return false;
+				else					continue;
 			}
 			
 			m_arUsers.push_back(pInfo);

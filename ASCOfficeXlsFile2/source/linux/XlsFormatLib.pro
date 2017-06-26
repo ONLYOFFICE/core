@@ -585,6 +585,17 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_structures/SxAxis.cpp \
     ../XlsFormat/Logic/Biff_structures/SXVIFlags.cpp \
     ../XlsFormat/Logic/Biff_structures/HiddenMemberSet.cpp \
+    ../XlsFormat/Logic/Biff_structures/ConnGrbitDbtAdo.cpp \
+    ../XlsFormat/Logic/Biff_structures/ConnGrbitDbtOledb.cpp \
+    ../XlsFormat/Logic/Biff_structures/ConnGrbitDbtWeb.cpp \
+    ../XlsFormat/Logic/Biff_structures/DConnConnectionOleDb.cpp \
+    ../XlsFormat/Logic/Biff_structures/DConnConnectionWeb.cpp \
+    ../XlsFormat/Logic/Biff_structures/DConnId.cpp \
+    ../XlsFormat/Logic/Biff_structures/DConnParamBindingValType.cpp \
+    ../XlsFormat/Logic/Biff_structures/DConnParameter.cpp \
+    ../XlsFormat/Logic/Biff_structures/DConnStringSequence.cpp \
+    ../XlsFormat/Logic/Biff_structures/TxtWf.cpp \
+    ../XlsFormat/Logic/Biff_structures/Xnum.cpp \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSOCR.cpp \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSOSHADECOLOR.cpp \
     ../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtBlip.cpp \
@@ -1370,6 +1381,17 @@ HEADERS +=  \
     ../XlsFormat/Logic/Biff_structures/SxAxis.h \
     ../XlsFormat/Logic/Biff_structures/SXVIFlags.h \
     ../XlsFormat/Logic/Biff_structures/HiddenMemberSet.h \
+    ../XlsFormat/Logic/Biff_structures/ConnGrbitDbtAdo.h \
+    ../XlsFormat/Logic/Biff_structures/ConnGrbitDbtOledb.h \
+    ../XlsFormat/Logic/Biff_structures/ConnGrbitDbtWeb.h \
+    ../XlsFormat/Logic/Biff_structures/DConnConnectionOleDb.h \
+    ../XlsFormat/Logic/Biff_structures/DConnConnectionWeb.h \
+    ../XlsFormat/Logic/Biff_structures/DConnId.h \
+    ../XlsFormat/Logic/Biff_structures/DConnParamBindingValType.h \
+    ../XlsFormat/Logic/Biff_structures/DConnParameter.h \
+    ../XlsFormat/Logic/Biff_structures/DConnStringSequence.h \
+    ../XlsFormat/Logic/Biff_structures/TxtWf.h \
+    ../XlsFormat/Logic/Biff_structures/Xnum.h \
     ../XlsFormat/Logic/Biff_structures/ODRAW/IMsoArray.h \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSOCR.h \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSO_enums.h \

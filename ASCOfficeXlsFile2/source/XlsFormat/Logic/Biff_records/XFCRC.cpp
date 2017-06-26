@@ -39,11 +39,9 @@ XFCRC::XFCRC()
 {
 }
 
-
 XFCRC::~XFCRC()
 {
 }
-
 
 BaseObjectPtr XFCRC::clone()
 {
@@ -52,8 +50,7 @@ BaseObjectPtr XFCRC::clone()
 
 void XFCRC::readFields(CFRecord& record)
 {
-	record.skipNunBytes(12);
-#pragma message(">>>>>>>>>>> frtHeader skipped here")
+	record >> frtHeader;
 	record.skipNunBytes(2); // reserved
 	record >> cxfs >> crc;
 }

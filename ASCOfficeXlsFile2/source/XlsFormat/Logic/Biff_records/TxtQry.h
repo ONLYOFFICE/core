@@ -32,12 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/TxtWf.h"
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {
 
-
-// Logical representation of TxtQry record in BIFF8
 class TxtQry: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(TxtQry)
@@ -50,9 +50,29 @@ public:
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeTxtQry;
+	static const ElementType type = typeTxtQry;
 
-
+	unsigned short		rt;
+	bool				fFile;
+	bool				fDelimited;
+	unsigned char		iCpid;
+	bool				fPromptForFile;
+	unsigned char		iCpidNew;
+	bool				fUseNewiCpid;
+	_INT32				rowStartAt;
+	bool				fTab;
+	bool				fSpace;
+	bool				fComma;
+	bool				fSemiColon;
+	bool				fCustom;
+	bool				fConsecutive;
+	unsigned char		iTextDelm;
+	unsigned short		chCustom;
+	_INT32				itwf;
+	unsigned char		chDecimal;
+	unsigned char		chThousSep;
+	std::vector<TxtWf>	rgtxtwf;	
+	XLUnicodeString		rgchFile;
 };
 
 } // namespace XLS

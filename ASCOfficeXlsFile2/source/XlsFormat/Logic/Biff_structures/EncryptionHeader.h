@@ -37,8 +37,6 @@
 namespace CRYPTO
 {
 
-class CFRecord;
-
 class EncryptionHeader : public XLS::BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(EncryptionHeader)

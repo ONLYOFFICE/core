@@ -37,8 +37,6 @@
 namespace XLS
 {
 
-class CFRecord;
-
 class CondFmtStructure : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(CondFmtStructure)

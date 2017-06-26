@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-class CFRecord;
-
 class DVParsedFormula : public ParsedFormula
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(DVParsedFormula)

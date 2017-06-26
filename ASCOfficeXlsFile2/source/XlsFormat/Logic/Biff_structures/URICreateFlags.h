@@ -32,13 +32,9 @@
 #pragma once
 
 #include "BiffStructure.h"
-//#include <Logic/Biff_structures/Phs.h>
-//#include <Logic/Biff_structures/BiffString.h>
 
 namespace OSHARED
 {
-
-class CFRecord;
 
 class URICreateFlags : public XLS::BiffStructure
 {
@@ -51,7 +47,6 @@ public:
 	static const XLS::ElementType	type = XLS::typeURICreateFlags;
 
 	virtual void load(XLS::CFRecord& record);
-
 
 	bool createAllowRelative;
 	bool createAllowImplicitWildcardScheme;

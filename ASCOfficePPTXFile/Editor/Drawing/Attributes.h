@@ -109,15 +109,14 @@ namespace NSPresentationEditor
     class CExMedia
     {
     public:
-        std::wstring			m_strPresentationDirectory;
-        std::wstring			m_strSourceDirectory;
+        std::wstring				m_strPresentationDirectory;
 
-        std::vector<CExFilesInfo> m_arVideos;
-        std::vector<CExFilesInfo> m_arImages;
-        std::vector<CExFilesInfo> m_arAudios;
-        std::vector<CExFilesInfo> m_arHyperlinks;
+        std::vector<CExFilesInfo>	m_arVideos;
+        std::vector<CExFilesInfo>	m_arImages;
+        std::vector<CExFilesInfo>	m_arAudios;
+        std::vector<CExFilesInfo>	m_arHyperlinks;
 
-        std::vector<CExFilesInfo> m_arAudioCollection;
+        std::vector<CExFilesInfo>	m_arAudioCollection;
 
     public:
         void Clear()
@@ -131,8 +130,6 @@ namespace NSPresentationEditor
     public:
         CExMedia() : m_arVideos(), m_arImages(), m_arAudios()
         {
-            m_strPresentationDirectory	= _T("");
-            m_strSourceDirectory		= _T("");
         }
 
         CExMedia(const CExMedia& oSrc)
@@ -143,7 +140,6 @@ namespace NSPresentationEditor
         CExMedia& operator=(const CExMedia& oSrc)
         {
             m_strPresentationDirectory	= oSrc.m_strPresentationDirectory;
-            m_strSourceDirectory		= oSrc.m_strSourceDirectory;
 
             for (size_t i=0; i < oSrc.m_arVideos.size(); i++)
                 m_arVideos.push_back(oSrc.m_arVideos[i]);

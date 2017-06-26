@@ -37,18 +37,20 @@
 
 namespace CRYPT
 {
-	RC4Decryptor::RC4Decryptor(_rc4CryptData & header, std::wstring _password, int _type) :
-													crypt(new RC4Crypt(header, _password, _type))
+	RC4Decryptor::RC4Decryptor(_rc4CryptData & header, std::wstring _password) :
+													crypt(new RC4Crypt(header, _password))
 	{
 		crypt_data	= header;
-		type		= _type;
 	}
 
-	void RC4Decryptor::Decrypt(char* data, const size_t size, const unsigned long stream_pos)
+	void RC4Decryptor::Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size)
 	{
-		crypt->Decrypt(data, size, stream_pos);
+		crypt->Decrypt(data, size, stream_pos, block_size);
 	}
-
+	void RC4Decryptor::Decrypt(char* data, const size_t size, const unsigned long block_index)
+	{
+		crypt->Decrypt(data, size, block_index);
+	}
 	bool RC4Decryptor::IsVerify()
 	{
 		return crypt->IsVerify();
@@ -57,7 +59,7 @@ namespace CRYPT
 	bool RC4Decryptor::SetPassword(std::wstring password)
 	{
 		crypt.reset();
-		crypt = CryptPtr(new RC4Crypt(crypt_data, password, type));
+		crypt = CryptPtr(new RC4Crypt(crypt_data, password));
 		
 		if (crypt)	return crypt->IsVerify();
 		else		return false;

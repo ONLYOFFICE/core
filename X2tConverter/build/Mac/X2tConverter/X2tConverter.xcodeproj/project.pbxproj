@@ -39,7 +39,6 @@
 		6967AFB11E2793A500A129E2 /* cextracttools.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967AFAF1E2793A500A129E2 /* cextracttools.h */; };
 		6967AFB51E27940600A129E2 /* ASCConverters.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967AFB31E27940600A129E2 /* ASCConverters.h */; };
 		6967AFDF1E279B3600A129E2 /* libTxtXmlFormatLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6967AFDC1E279B2300A129E2 /* libTxtXmlFormatLib.a */; };
-		6967B0B31E27A07100A129E2 /* libPPTFormatLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6967B0961E27A03800A129E2 /* libPPTFormatLib.a */; };
 		6967B0D41E27A36E00A129E2 /* libHtmlFile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6967B0D11E27A35F00A129E2 /* libHtmlFile.a */; };
 		6967B10A1E27A41B00A129E2 /* libPdfWriter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6967B1091E27A41400A129E2 /* libPdfWriter.a */; };
 		6967B10F1E27A65600A129E2 /* OfficeFileFormatChecker.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967B10D1E27A65600A129E2 /* OfficeFileFormatChecker.h */; };
@@ -241,20 +240,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 6967AFBE1E2798B900A129E2;
 			remoteInfo = TxtXmlFormatLib;
-		};
-		6967B0951E27A03800A129E2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6967B0911E27A03800A129E2 /* PPTFormatLib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 6967AFFB1E279D3900A129E2;
-			remoteInfo = PPTFormatLib;
-		};
-		6967B0B01E27A06900A129E2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6967B0911E27A03800A129E2 /* PPTFormatLib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 6967AFFA1E279D3900A129E2;
-			remoteInfo = PPTFormatLib;
 		};
 		6967B0D01E27A35F00A129E2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -474,7 +459,6 @@
 		6967AFAF1E2793A500A129E2 /* cextracttools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cextracttools.h; path = ../../../../src/cextracttools.h; sourceTree = "<group>"; };
 		6967AFB31E27940600A129E2 /* ASCConverters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ASCConverters.h; path = ../../../../src/ASCConverters.h; sourceTree = "<group>"; };
 		6967AFD71E279B2300A129E2 /* TxtXmlFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TxtXmlFormatLib.xcodeproj; path = ../../../../ASCOfficeTxtFile/TxtXmlFormatLib/Mac/TxtXmlFormatLib/TxtXmlFormatLib.xcodeproj; sourceTree = "<group>"; };
-		6967B0911E27A03800A129E2 /* PPTFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PPTFormatLib.xcodeproj; path = ../../../../ASCOfficePPTFile/PPTFormatLib/Mac/PPTFormatLib.xcodeproj; sourceTree = "<group>"; };
 		6967B0CC1E27A35E00A129E2 /* HtmlFile.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = HtmlFile.xcodeproj; path = ../../../../HtmlFile/Mac/HtmlFile/HtmlFile.xcodeproj; sourceTree = "<group>"; };
 		6967B1031E27A41300A129E2 /* PdfWriter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PdfWriter.xcodeproj; path = ../../../../DesktopEditor/ios_projects/PdfWriter/PdfWriter.xcodeproj; sourceTree = "<group>"; };
 		6967B10D1E27A65600A129E2 /* OfficeFileFormatChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfficeFileFormatChecker.h; path = ../../../../../Common/OfficeFileFormatChecker.h; sourceTree = "<group>"; };
@@ -503,7 +487,6 @@
 				6967B1D11E27B9D700A129E2 /* libRtfFormatLib.a in Frameworks */,
 				6967B10A1E27A41B00A129E2 /* libPdfWriter.a in Frameworks */,
 				6967B0D41E27A36E00A129E2 /* libHtmlFile.a in Frameworks */,
-				6967B0B31E27A07100A129E2 /* libPPTFormatLib.a in Frameworks */,
 				6967AFDF1E279B3600A129E2 /* libTxtXmlFormatLib.a in Frameworks */,
 				69EC66D91E01775B003527E2 /* libUnicodeConverter.a in Frameworks */,
 				69DA32F11CEE100E00E10AF0 /* libagg_ios.a in Frameworks */,
@@ -548,7 +531,6 @@
 				6967B1C91E27B9C400A129E2 /* RtfFormatLib.xcodeproj */,
 				6967B1031E27A41300A129E2 /* PdfWriter.xcodeproj */,
 				6967B0CC1E27A35E00A129E2 /* HtmlFile.xcodeproj */,
-				6967B0911E27A03800A129E2 /* PPTFormatLib.xcodeproj */,
 				6967AFD71E279B2300A129E2 /* TxtXmlFormatLib.xcodeproj */,
 				69EC66CD1E01770C003527E2 /* UnicodeConverter.xcodeproj */,
 				69415FAE1CB5243F003E771B /* mng.xcodeproj */,
@@ -700,14 +682,6 @@
 			isa = PBXGroup;
 			children = (
 				6967AFDC1E279B2300A129E2 /* libTxtXmlFormatLib.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		6967B0921E27A03800A129E2 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				6967B0961E27A03800A129E2 /* libPPTFormatLib.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -865,7 +839,6 @@
 				6967B1D01E27B9D000A129E2 /* PBXTargetDependency */,
 				6967B10C1E27A42500A129E2 /* PBXTargetDependency */,
 				6967B0D31E27A36800A129E2 /* PBXTargetDependency */,
-				6967B0B11E27A06900A129E2 /* PBXTargetDependency */,
 				6967AFDE1E279B2D00A129E2 /* PBXTargetDependency */,
 				69EC66D81E01774D003527E2 /* PBXTargetDependency */,
 				69DA32F01CEE100700E10AF0 /* PBXTargetDependency */,
@@ -996,10 +969,6 @@
 					ProjectRef = 69415FB11CB5243F003E771B /* png.xcodeproj */;
 				},
 				{
-					ProductGroup = 6967B0921E27A03800A129E2 /* Products */;
-					ProjectRef = 6967B0911E27A03800A129E2 /* PPTFormatLib.xcodeproj */;
-				},
-				{
 					ProductGroup = 69DA325D1CEE09BB00E10AF0 /* Products */;
 					ProjectRef = 69DA325C1CEE09BB00E10AF0 /* PPTXFormatLib.xcodeproj */;
 				},
@@ -1126,13 +1095,6 @@
 			fileType = archive.ar;
 			path = libTxtXmlFormatLib.a;
 			remoteRef = 6967AFDB1E279B2300A129E2 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		6967B0961E27A03800A129E2 /* libPPTFormatLib.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libPPTFormatLib.a;
-			remoteRef = 6967B0951E27A03800A129E2 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		6967B0D11E27A35F00A129E2 /* libHtmlFile.a */ = {
@@ -1330,11 +1292,6 @@
 			isa = PBXTargetDependency;
 			name = TxtXmlFormatLib;
 			targetProxy = 6967AFDD1E279B2D00A129E2 /* PBXContainerItemProxy */;
-		};
-		6967B0B11E27A06900A129E2 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = PPTFormatLib;
-			targetProxy = 6967B0B01E27A06900A129E2 /* PBXContainerItemProxy */;
 		};
 		6967B0D31E27A36800A129E2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

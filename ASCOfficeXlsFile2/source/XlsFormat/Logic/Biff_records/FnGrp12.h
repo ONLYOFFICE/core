@@ -32,13 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/BiffString.h>
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
 
-
-// Logical representation of FnGrp12 record in BIFF8
 class FnGrp12: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(FnGrp12)
@@ -48,14 +47,14 @@ public:
 	~FnGrp12();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeFnGrp12;
+	static const ElementType type = typeFnGrp12;
 
 //-----------------------------
 	XLUnicodeString astFnGrp;
+	FrtHeader		frtHeader;
 
 };
 

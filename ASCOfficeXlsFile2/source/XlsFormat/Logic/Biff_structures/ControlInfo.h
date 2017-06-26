@@ -49,8 +49,6 @@ public:
 	
 	virtual void load(CFRecord& record);
 
-
-
 	unsigned char	fDefault;
 	unsigned char	fHelp;
 	unsigned char	fCancel;

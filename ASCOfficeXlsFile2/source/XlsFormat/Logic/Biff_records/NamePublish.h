@@ -32,13 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/BiffString.h>
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
 
-
-// Logical representation of NamePublish record in BIFF8
 class NamePublish: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(NamePublish)
@@ -48,17 +47,17 @@ public:
 	~NamePublish();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeNamePublish;
 
 //-----------------------------
-	bool fPublished;
-	bool fWorkbookParam;
+	bool			fPublished;
+	bool			fWorkbookParam;
 
 	XLUnicodeString strName;
+	FrtHeader		frtHeader;
 };
 
 } // namespace XLS

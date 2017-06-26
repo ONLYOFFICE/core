@@ -48,6 +48,8 @@ CPPTUserInfo::CPPTUserInfo() :	CDocument(),
 								m_mapNotes(),
 								m_mapSlides(),
 								m_bEncrypt(false),
+								m_pStorageDecrypt(NULL),
+								m_pDecryptor(NULL),
 								m_arOffsetPictures()
 {
 	m_pDocumentInfo			= NULL;
@@ -59,7 +61,6 @@ CPPTUserInfo::CPPTUserInfo() :	CDocument(),
 	m_nWriteSlideTimeOffset	=	0.0;
 	m_nWriteSlideTime		=	0.0;
 
-	m_strFileDirectory		= _T("");
     m_bIsSetupEmpty			= false;
 
 	m_bRtl					= false;
@@ -79,6 +80,9 @@ CPPTUserInfo::~CPPTUserInfo()
 void CPPTUserInfo::Clear()
 {
 	CDocument::Clear();
+
+	RELEASEOBJECT(m_pDecryptor);
+	RELEASEOBJECT(m_pStorageDecrypt);
 	
 	for (std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapSlides.begin(); pPair != m_mapSlides.end(); ++pPair)
 	{
@@ -150,7 +154,6 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 	oPersist.ReadFromStream(oHeader, pStream);
 	oPersist.ToMap(&m_mapOffsetInPIDs);
 //--------------------------------------------------------------------------------------------------
-	CRYPT::ECMADecryptor *pDecryptor = NULL;
 	std::map<DWORD, DWORD>::iterator pPair = m_mapOffsetInPIDs.find(m_oUser.m_nEncryptRef);
 	
 	if (pPair != m_mapOffsetInPIDs.end())
@@ -163,21 +166,49 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 			m_bEncrypt = true;
 			m_oEncryptionHeader.ReadFromStream(oHeader, pStream);
 			
-			pDecryptor = new CRYPT::ECMADecryptor();
-			pDecryptor->SetCryptData(m_oEncryptionHeader.crypt_data_aes);
-			
-			if (pDecryptor->SetPassword(m_strPassword) == false)
+			m_pDecryptor = new CRYPT::ECMADecryptor();
+			m_pDecryptor->SetCryptData(m_oEncryptionHeader.crypt_data_aes);
+
+			if (m_strPassword.empty())
 			{
-				delete pDecryptor;
-				pDecryptor = NULL;
-				
-				//return true;
+				if (m_pDecryptor->SetPassword(L"VelvetSweatshop") == false)
+					return false;
 			}
-			return true;//read persis decrypt
+			else if (m_pDecryptor->SetPassword(m_strPassword) == false)
+			{
+				return false;
+			}
+			std::wstring sTemp = m_strTmpDirectory + FILE_SEPARATOR_STR + L"~tempFile.ppt";
+	
+			m_pStorageDecrypt = new POLE::Storage(sTemp.c_str());		
+			m_pStorageDecrypt->open(true, true);
 		}
 	}
-//--------------------------------------------------------------------------------------------------
-	pPair = m_mapOffsetInPIDs.find(m_oUser.m_nDocumentRef);
+
+	ReadDocumentPersists(pStream);
+	return true;
+}
+
+void CPPTUserInfo::DecryptStream(POLE::Stream *pStream, int block)
+{
+	int size = pStream->size() - pStream->tell();
+	
+	POLE::Stream *pStreamTmp = new POLE::Stream(m_pStorageDecrypt, "Tmp" + std::to_string(m_arStreamDecrypt.size() + 1), true, size);
+	unsigned char* data_stream = new unsigned char[size]; 
+
+	pStream->read(data_stream, size);
+	m_pDecryptor->Decrypt((char*)data_stream, size, block);
+	pStreamTmp->write(data_stream, size);
+	pStreamTmp->flush();
+	pStreamTmp->seek(0);
+	
+	m_arStreamDecrypt.push_back(CFStreamPtr(new CFStream(pStreamTmp)));
+}
+
+bool CPPTUserInfo::ReadDocumentPersists(POLE::Stream* pStream)
+{
+	SRecordHeader	oHeader;
+	std::map<DWORD, DWORD>::iterator pPair = m_mapOffsetInPIDs.find(m_oUser.m_nDocumentRef);
 
 	if (pPair == m_mapOffsetInPIDs.end())
         return false;
@@ -185,44 +216,19 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 	DWORD offset_stream = pPair->second;
 
 	StreamUtils::StreamSeek(offset_stream, pStream);
-	oHeader.ReadFromStream(pStream);
 
-	if (pDecryptor)
+	POLE::Stream *	pStreamTmp = pStream;
+	if (m_pDecryptor)
 	{
-		POLE::Storage	*pStorageOut	= NULL;
-		POLE::Stream	*pStreamTmp		= NULL;
-
-		std::wstring sTemp = m_strFileDirectory + FILE_SEPARATOR_STR + L"~tempFile.ppt";
-		
-		pStorageOut	= new POLE::Storage(sTemp.c_str());		
-		pStorageOut->open(true, true);
-
-		pStreamTmp = new POLE::Stream(pStorageOut, "Tmp", true, oHeader.RecLen);
-
-		unsigned char* data_stream = new unsigned char[oHeader.RecLen];
-		pStream->read(data_stream, oHeader.RecLen);
-		pDecryptor->Decrypt((char*)data_stream, oHeader.RecLen, m_oUser.m_nDocumentRef);
-		pStreamTmp->write(data_stream, oHeader.RecLen);
-		pStreamTmp->flush();
-		pStreamTmp->seek(0);
-		
-		m_oDocument.ReadFromStream(oHeader, pStreamTmp);
-
-		delete pStream;
-		delete pStorageOut;
-
-		//NSFile::DeleteFile(sTemp);
+		DecryptStream(pStream, m_oUser.m_nDocumentRef);
+		pStreamTmp = m_arStreamDecrypt.back()->stream_;
 	}
-	else
+	oHeader.ReadFromStream(pStreamTmp);
+	if (RECORD_TYPE_DOCUMENT != oHeader.RecType)
 	{
-		if (RECORD_TYPE_DOCUMENT != oHeader.RecType)
-		{
-			return false;
-		}
-		m_oDocument.ReadFromStream(oHeader, pStream);
+		return false;
 	}
-
-	Clear();
+	m_oDocument.ReadFromStream(oHeader, pStreamTmp);
 
 	std::map<DWORD, DWORD>::iterator nIndexPsrRef;
 
@@ -235,11 +241,16 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 			offset_stream = nIndexPsrRef->second;
 
 			StreamUtils::StreamSeek(offset_stream, pStream);
-
-			oHeader.ReadFromStream(pStream);
+			POLE::Stream *pStreamTmp = pStream;
+			if (m_pDecryptor)
+			{
+				DecryptStream(pStream, m_oDocument.m_arMasterPersists[index].m_nPsrRef);
+				pStreamTmp = m_arStreamDecrypt.back()->stream_;
+			}
+			oHeader.ReadFromStream(pStreamTmp);
 			
 			CRecordSlide* pSlide = new CRecordSlide();
-			pSlide->ReadFromStream(oHeader, pStream);
+			pSlide->ReadFromStream(oHeader, pStreamTmp);
 			pSlide->m_oPersist = m_oDocument.m_arMasterPersists[index];
 
 			pSlide->m_Index		= m_mapMasters.size();			
@@ -260,10 +271,17 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 		{
 			offset_stream = nIndexPsrRef->second;
 			StreamUtils::StreamSeek(offset_stream, pStream);
-
-			oHeader.ReadFromStream(pStream);
+			
+			POLE::Stream *pStreamTmp = pStream;
+			if (m_pDecryptor)
+			{
+				DecryptStream(pStream, m_oDocument.m_arNotePersists[index].m_nPsrRef);
+				pStreamTmp = m_arStreamDecrypt.back()->stream_;
+			}
+			oHeader.ReadFromStream(pStreamTmp);
+			
 			CRecordSlide* pSlide = new CRecordSlide();
-			pSlide->ReadFromStream(oHeader, pStream);
+			pSlide->ReadFromStream(oHeader, pStreamTmp);
 			pSlide->m_oPersist = m_oDocument.m_arNotePersists[index];
 
 			pSlide->m_Index		= m_mapNotes.size();			
@@ -284,13 +302,18 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 		if (m_mapOffsetInPIDs.end() != nIndexPsrRef)
 		{
 			offset_stream = (long)nIndexPsrRef->second;
-			
 			StreamUtils::StreamSeek(offset_stream, pStream);
-
-			oHeader.ReadFromStream(pStream);
+			
+			POLE::Stream *pStreamTmp = pStream;
+			if (m_pDecryptor)
+			{
+				DecryptStream(pStream, m_oDocument.m_arSlidePersists[index].m_nPsrRef);
+				pStreamTmp = m_arStreamDecrypt.back()->stream_;
+			}
+			oHeader.ReadFromStream(pStreamTmp);
 
 			CRecordSlide* pSlide = new CRecordSlide();
-			pSlide->ReadFromStream(oHeader, pStream);
+			pSlide->ReadFromStream(oHeader, pStreamTmp);
 			pSlide->m_oPersist	= m_oDocument.m_arSlidePersists[index];
 			
 			pSlide->m_Index		= m_mapSlides.size(); // in m_arrSlidesOrder			
@@ -327,13 +350,18 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 		if (m_mapOffsetInPIDs.end() != nIndexPsrRef)
 		{
 			offset_stream = nIndexPsrRef->second;
-			
 			StreamUtils::StreamSeek(offset_stream, pStream);
-
-			oHeader.ReadFromStream(pStream);
+			
+			POLE::Stream *pStreamTmp = pStream;
+			if (m_pDecryptor)
+			{
+				DecryptStream(pStream, oArrayDoc[0]->m_nNotesMasterPersistIDRef);
+				pStreamTmp = m_arStreamDecrypt.back()->stream_;
+			}
+			oHeader.ReadFromStream(pStreamTmp);
 
 			CRecordSlide* pSlide = new CRecordSlide();
-			pSlide->ReadFromStream(oHeader, pStream);
+			pSlide->ReadFromStream(oHeader, pStreamTmp);
 			pSlide->m_oPersist.m_nPsrRef = oArrayDoc[0]->m_nNotesMasterPersistIDRef;
 			pSlide->m_Index		= 0;			
 			
@@ -344,13 +372,18 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 		if (m_mapOffsetInPIDs.end() != nIndexPsrRef)
 		{
 			offset_stream = nIndexPsrRef->second;
-			
 			StreamUtils::StreamSeek(offset_stream, pStream);
-
-			oHeader.ReadFromStream(pStream);
+			
+			POLE::Stream *pStreamTmp = pStream;
+			if (m_pDecryptor)
+			{
+				DecryptStream(pStream, oArrayDoc[0]->m_nHandoutMasterPersistIDRef);
+				pStreamTmp = m_arStreamDecrypt.back()->stream_;
+			}
+			oHeader.ReadFromStream(pStreamTmp);
 
 			CRecordSlide* pSlide = new CRecordSlide();
-			pSlide->ReadFromStream(oHeader, pStream);
+			pSlide->ReadFromStream(oHeader, pStreamTmp);
 			pSlide->m_oPersist.m_nPsrRef = oArrayDoc[0]->m_nHandoutMasterPersistIDRef;
 			pSlide->m_Index		= 0;			
 			
@@ -364,7 +397,6 @@ void CPPTUserInfo::ReadExtenalObjects(std::wstring strFolderMem)
 {
 	// так... теперь берем всю инфу о ExObject -----------------------------
 	m_oExMedia.m_strPresentationDirectory	= strFolderMem;
-	m_oExMedia.m_strSourceDirectory			= m_strFileDirectory;
 
 	NSPresentationEditor::CExFilesInfo oInfo;
 

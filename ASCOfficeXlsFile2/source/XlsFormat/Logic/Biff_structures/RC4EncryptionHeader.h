@@ -33,7 +33,7 @@
 
 #include "BiffStructure.h"
 #include <Logic/Biff_structures/BitMarkedStructs.h>
-#include "../../Crypt/Crypt.h"
+#include "../../Crypt/RC4Crypt.h"
 
 namespace CRYPTO
 {

@@ -33,6 +33,7 @@
 #include "DrawingPrimitives.h"
 #include "VirtualStreamReader.h"
 
+using namespace DocFormatUtils;
 
 namespace DocFileFormat
 {

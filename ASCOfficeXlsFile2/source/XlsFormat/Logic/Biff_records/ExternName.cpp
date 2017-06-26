@@ -55,13 +55,14 @@ void ExternName::readFields(CFRecord& record)
 {
 	unsigned short flags;
 	record >> flags;
-	fBuiltIn = GETBIT(flags, 0);
+
+	fBuiltIn	= GETBIT(flags, 0);
 	fWantAdvise = GETBIT(flags, 1);
-	fWantPict = GETBIT(flags, 2);
-	fOle = GETBIT(flags, 3);
-	fOleLink = GETBIT(flags, 4);
-	cf = GETBITS(flags, 5, 14);
-	fIcon = GETBIT(flags, 15);
+	fWantPict	= GETBIT(flags, 2);
+	fOle		= GETBIT(flags, 3);
+	fOleLink	= GETBIT(flags, 4);
+	cf			= GETBITS(flags, 5, 14);
+	fIcon		= GETBIT(flags, 15);
 
 	if(0x3A01 == supbook_cch) // UDF reference on a XLL or COM add-in.
 	{
@@ -69,9 +70,6 @@ void ExternName::readFields(CFRecord& record)
 	}
 	else
 	{
-#pragma message("####################### ExternName record is not implemented")
-		Log::error("ExternName record is not implemented.");
-
 		if(fOle && !fOleLink) // DDE data item
 		{
 			body = BiffStructurePtr(new ExternDdeLinkNoOper);

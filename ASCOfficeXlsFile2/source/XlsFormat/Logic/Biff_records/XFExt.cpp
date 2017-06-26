@@ -39,11 +39,9 @@ XFExt::XFExt()
 {
 }
 
-
 XFExt::~XFExt()
 {
 }
-
 
 BaseObjectPtr XFExt::clone()
 {
@@ -52,8 +50,7 @@ BaseObjectPtr XFExt::clone()
 
 void XFExt::readFields(CFRecord& record)
 {
-	record.skipNunBytes(12);
-#pragma message(">>>>>>>>>>> frtHeader skipped here")
+	record >> frtHeader;
 	record.skipNunBytes(2); // reserved
 	record >> ixfe;
 	record.skipNunBytes(2); // reserved

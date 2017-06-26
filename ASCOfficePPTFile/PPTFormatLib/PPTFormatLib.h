@@ -79,9 +79,6 @@ private:
     long OpenFile(const std::wstring & fileName, const std::wstring & password);
     bool CloseFile();
 
-	bool DecryptOfficeFile	(CRYPT::Decryptor* Decryptor);
-	bool DecryptStream		(CRYPT::Decryptor* Decryptor, std::string streamName, POLE::Storage* storageIn, POLE::Storage* storageOut);
-	
 	std::wstring GetDirectory(std::wstring strFileName);
 };
 

@@ -32,12 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/BiffString.h>
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
 
-// Logical representation of TableStyles record in BIFF8
 class TableStyles: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(TableStyles)
@@ -50,13 +50,13 @@ public:
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeTableStyles;
+	static const ElementType type = typeTableStyles;
 
 //-----------------------------
-	_UINT32	cts;
-	LPWideStringNoCch rgchDefTableStyle;
-	LPWideStringNoCch rgchDefPivotStyle;
-
+	_UINT32				cts;
+	LPWideStringNoCch	rgchDefTableStyle;
+	LPWideStringNoCch	rgchDefPivotStyle;
+	FrtHeader			frtHeader;
 };
 
 } // namespace XLS

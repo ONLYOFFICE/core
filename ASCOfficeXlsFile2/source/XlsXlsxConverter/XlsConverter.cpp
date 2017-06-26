@@ -530,7 +530,11 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
         CP_XML_NODE(L"styleSheet")
         {   
 			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
-
+			CP_XML_ATTR(L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006");
+			CP_XML_ATTR(L"mc:Ignorable", L"x14ac x16r2");
+			CP_XML_ATTR(L"xmlns:x14ac", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac");
+			CP_XML_ATTR(L"xmlns:x16r2", L"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main");
+			
 			formating->serialize1(CP_XML_STREAM()); //важен порядок в styles
 
 			CP_XML_NODE(L"fills")

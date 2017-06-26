@@ -163,8 +163,9 @@ namespace OOX
 												if (!m_pStyles->m_oDxfs.IsInit())
 													m_pStyles->m_oDxfs.Init();
 
-												m_pStyles->m_oDxfs->m_arrItems.push_back(rule->m_oDxf.GetPointerEmptyNullable());
+												//DxfId starts from 0
 												rule->m_oDxfId = std::to_wstring(m_pStyles->m_oDxfs->m_arrItems.size());
+												m_pStyles->m_oDxfs->m_arrItems.push_back(rule->m_oDxf.GetPointerEmptyNullable());
 											}
 										}
 									}

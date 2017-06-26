@@ -128,14 +128,14 @@ namespace OOX
 					pItem = new OOX::Logic::CLimUpp( oReader );
 				else if ( _T("m:m") == sName )
 					pItem = new OOX::Logic::CMatrix( oReader );
-				//else if ( _T("w:moveFrom") == sName )
-				//	pItem = new OOX::Logic::CMoveFrom( oReader );
+				else if ( _T("w:moveFrom") == sName )
+					pItem = new OOX::Logic::CMoveFrom( oReader );
 				else if ( _T("w:moveFromRangeEnd") == sName )
 					pItem = new OOX::Logic::CMoveFromRangeEnd( oReader );
 				else if ( _T("w:moveFromRangeStart") == sName )
 					pItem = new OOX::Logic::CMoveFromRangeStart( oReader );
-				//else if ( _T("w:moveTo") == sName )
-				//	pItem = new CMoveTo( oReader );
+				else if ( _T("w:moveTo") == sName )
+					pItem = new CMoveTo( oReader );
 				else if ( _T("w:moveToRangeEnd") == sName )
 					pItem = new OOX::Logic::CMoveToRangeEnd( oReader );
 				else if ( _T("w:moveToRangeStart") == sName )

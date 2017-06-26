@@ -44,12 +44,10 @@ namespace CRYPT
 class BiffDecoderBase 
 {
 public:
-    explicit BiffDecoderBase(int BLOCKSIZE);
+    explicit BiffDecoderBase();
     virtual ~BiffDecoderBase();
 
-	int get_BLOCKSIZE(){return RCF_BLOCKSIZE;}
-
-    /** Implementation of the ::comphelper::IDocPasswordVerifier interface,
+	/** Implementation of the ::comphelper::IDocPasswordVerifier interface,
         calls the new virtual function implVerify(). */
     virtual bool verifyPassword( const std::wstring& rPassword );
 
@@ -57,21 +55,18 @@ public:
     inline bool isValid() const { return mbValid; }
 
     /** Decodes nBytes unsigned chars and writes encrypted data into the buffer pnDestData. */
-    void decode(unsigned char* pnDestData, const unsigned char* pnSrcData, const long nStreamPos, const unsigned short nBytes);
-
-	int lclGetRcfBlock(long nStreamPos);
-	int lclGetRcfOffset(long nStreamPos);
+    virtual void decode(unsigned char* pnDestData, const unsigned char* pnSrcData, const unsigned short nBytes, const long nStreamPos, const unsigned short block_size);
+    virtual void decode(unsigned char* pnDestData, const unsigned char* pnSrcData, const unsigned short nBytes, const long block_index);
 
 private:
-
-	int RCF_BLOCKSIZE;
 
     /** Derived classes implement password verification and initialization of
         the decoder. */
 	virtual bool implVerify(const std::wstring& rPassword) = 0;
 
     /** Implementation of decryption of a memory block. */
-    virtual void implDecode(unsigned char* pnDestData, const unsigned char* pnSrcData, const long nStreamPos, const unsigned short nBytes) = 0;
+    virtual void implDecode(unsigned char* pnDestData, const unsigned char* pnSrcData, const unsigned short nBytes, const long nStreamPos, const unsigned short block_size) = 0;
+	virtual void implDecode(unsigned char* pnDestData, const unsigned char* pnSrcData, const unsigned short nBytes, const long block_index) = 0;
 
 private:
     bool mbValid;        /// True = decoder is correctly initialized.
@@ -83,7 +78,7 @@ typedef ::boost::shared_ptr<BiffDecoderBase> BiffDecoderRef;
 class BiffDecoder_RCF : public BiffDecoderBase
 {
 public:
-	explicit BiffDecoder_RCF(unsigned char pnSalt[ 16 ], unsigned char pnVerifier[ 16 ], unsigned char pnVerifierHash[ 16 ], int BlockSize);
+	explicit BiffDecoder_RCF(unsigned char pnSalt[ 16 ], unsigned char pnVerifier[ 16 ], unsigned char pnVerifierHash[ 16 ]);
 
 private:
 
@@ -91,14 +86,14 @@ private:
 	virtual bool implVerify(const std::wstring& rPassword);
 
 	/** Implementation of decryption of a memory block. */
-	virtual void implDecode(unsigned char* pnDestData, const unsigned char* pnSrcData, const long nStreamPos, const unsigned short nBytes);
+	virtual void implDecode(unsigned char* pnDestData, const unsigned char* pnSrcData, const unsigned short nBytes, const long nStreamPos, const unsigned short block_size);
+	virtual void implDecode(unsigned char* pnDestData, const unsigned char* pnSrcData, const unsigned short nBytes, const long block_index);
 
-private:
-	BinaryCodec_RCF maCodec;   /// Cipher algorithm implementation.
+	BinaryCodec_RCF				maCodec;   /// Cipher algorithm implementation.
 	std::vector<unsigned short> maPassword;
-	std::vector<unsigned char> maSalt;
-	std::vector<unsigned char> maVerifier;
-	std::vector<unsigned char> maVerifierHash;
+	std::vector<unsigned char>	maSalt;
+	std::vector<unsigned char>	maVerifier;
+	std::vector<unsigned char>	maVerifierHash;
 };
 
 

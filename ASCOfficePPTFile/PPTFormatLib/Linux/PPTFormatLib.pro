@@ -176,6 +176,7 @@ SOURCES += \
     ../Reader/ReadStructures.cpp \
     ../Reader/PPTDocumentInfoOneUser.cpp \
     ../Reader/Records.cpp \
+    ../Reader/PPTFileReader.cpp \
     ../Reader/SlidePersist.cpp \
     ../Records/Animations/AnimationTypes.cpp \
     ../Records/Drawing/ArtBlip.cpp \

@@ -39,7 +39,6 @@ SortData::SortData()
 {
 }
 
-
 SortData::~SortData()
 {
 }
@@ -51,11 +50,9 @@ BaseObjectPtr SortData::clone()
 
 void SortData::readFields(CFRecord& record)
 {
-	record.skipNunBytes(12);
-#pragma message(">>>>>>>>>>> frtHeader skipped here")
-	
 	unsigned short flags;
-	record >> flags;
+
+	record >> frtHeader >> flags;
 
 	fCol			= GETBIT(flags, 0);
 	fCaseSensitive	= GETBIT(flags, 1);

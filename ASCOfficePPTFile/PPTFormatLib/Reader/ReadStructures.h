@@ -94,11 +94,11 @@ struct SFileIdCluster
 	}
 };
 #if !defined(_WIN32) && !defined (_WIN64)
-	typedef struct tagPOINT
-	{
-		long x;
-		long y;
-	} POINT;
+    typedef struct tagPOINT
+    {
+        long x;
+        long y;
+    } POINT;
 
     typedef struct tagSIZE
     {

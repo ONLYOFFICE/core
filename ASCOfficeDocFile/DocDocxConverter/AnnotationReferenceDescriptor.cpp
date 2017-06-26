@@ -32,6 +32,8 @@
 
 #include "AnnotationReferenceDescriptor.h"
 
+using namespace DocFormatUtils;
+
 namespace DocFileFormat
 {
 	ByteStructure* AnnotationReferenceDescriptor::ConstructObject(VirtualStreamReader* reader, int length)

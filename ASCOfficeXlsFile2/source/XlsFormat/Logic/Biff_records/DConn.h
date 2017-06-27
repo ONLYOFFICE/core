@@ -31,13 +31,15 @@
  */
 #pragma once
 
-#include "BiffRecord.h"
+#include "TxtQry.h"
+#include "../Biff_structures/FrtHeaderOld.h"
+#include "../Biff_structures/DConnParameter.h"
+#include "../Biff_structures/DConnId.h"
+#include "../Biff_structures/DConnStringSequence.h"
 
 namespace XLS
 {
 
-
-// Logical representation of DConn record in BIFF8
 class DConn: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(DConn)
@@ -47,13 +49,54 @@ public:
 	~DConn();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeDConn;
+	static const ElementType type = typeDConn;
 
+	FrtHeaderOld	frtHeaderOld;
+	unsigned short	dbt;
+	bool			fSavePwd;
+	bool			fTablesOnlyHtml;
+	bool			fTableNames;
+	bool			fDeleted;
+	bool			fStandAlone;
+	bool			fAlwaysUseConnectionFile;
+	bool			fBackgroundQuery;
+	bool			fRefreshOnLoad;
+	bool			fSaveData;
+	unsigned short	cParams;
+	bool			fMaintain;
+	bool			fNewQuery;
+	bool			fImportXmlSource;
+	bool			fSPListSrc;
+	bool			fSPListReinitCache;
+	bool			fSrcIsXml;
 
+	BiffStructurePtr	grbitDbt;
+	unsigned char		bVerDbqueryEdit;
+	unsigned char		bVerDbqueryRefreshed;
+	unsigned char		bVerDbqueryRefreshableMin;
+	unsigned short		wRefreshInterval;
+	unsigned short		wHtmlFmt;
+	_UINT32				rcc;
+	unsigned char		credMethod;
+
+	XLUnicodeStringSegmented	rgchSourceDataFile;
+	XLUnicodeStringSegmented	rgchSourceConnectionFile;
+	XLUnicodeStringSegmented	rgchConnectionName;
+	XLUnicodeStringSegmented	rgchConnectionDesc;
+	XLUnicodeStringSegmented	rgchSSOApplicationID;
+	XLUnicodeStringSegmented	tableNames;
+	std::vector<DConnParameter>	params;
+
+	BiffStructurePtr			connection;
+	TxtQry						connection_txtQry;
+
+	DConnStringSequence			rgbSQL;
+	DConnStringSequence			rgbSQLSav;
+	DConnStringSequence			rgbEditWebPage;
+	DConnId						id;
 };
 
 } // namespace XLS

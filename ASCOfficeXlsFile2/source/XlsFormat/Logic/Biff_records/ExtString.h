@@ -32,8 +32,8 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include "../Biff_structures/FrtHeaderOld.h"
 #include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/FrtHeaderOld.h"
 
 namespace XLS
 {

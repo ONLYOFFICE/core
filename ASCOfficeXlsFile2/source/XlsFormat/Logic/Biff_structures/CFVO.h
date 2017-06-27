@@ -37,8 +37,6 @@
 namespace XLS
 {
 
-class CFRecord;
-
 class CFVO : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFVO)

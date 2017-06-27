@@ -3250,11 +3250,83 @@
 					>
 				</File>
 				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\ConnGrbitDbtAdo.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\ConnGrbitDbtAdo.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\ConnGrbitDbtOledb.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\ConnGrbitDbtOledb.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\ConnGrbitDbtWeb.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\ConnGrbitDbtWeb.h"
+					>
+				</File>
+				<File
 					RelativePath="..\XlsFormat\Logic\Biff_structures\ControlInfo.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\XlsFormat\Logic\Biff_structures\ControlInfo.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\DConnConnectionOleDb.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\DConnConnectionOleDb.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\DConnConnectionWeb.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\DConnConnectionWeb.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\DConnId.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\DConnId.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\DConnParamBindingValType.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\DConnParamBindingValType.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\DConnParameter.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\DConnParameter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\DConnStringSequence.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\DConnStringSequence.h"
 					>
 				</File>
 				<File
@@ -4738,6 +4810,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\TxtWf.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\TxtWF.h"
+					>
+				</File>
+				<File
 					RelativePath="..\XlsFormat\Logic\Biff_structures\URICreateFlags.cpp"
 					>
 				</File>
@@ -4831,6 +4911,14 @@
 				</File>
 				<File
 					RelativePath="..\XlsFormat\Logic\Biff_structures\XLUnicodeRichExtendedString.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\Xnum.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\Xnum.h"
 					>
 				</File>
 				<File

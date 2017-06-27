@@ -37,8 +37,6 @@
 namespace OSHARED
 {
 
-class CFRecord;
-
 class CompositeMoniker : public XLS::BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(CompositeMoniker)

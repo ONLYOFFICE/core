@@ -205,5 +205,31 @@ const bool BiffString::getWideRecommendation() const
 	}
 	return false;
 }
+//-----------------------------------------------------------------
+BiffStructurePtr XLUnicodeStringSegmented::clone()
+{
+	return BiffStructurePtr(new XLUnicodeStringSegmented(*this));
+}
+void XLUnicodeStringSegmented::load(CFRecord& record)
+{
+	record >> cchTotal;
+
+	if (cchTotal < 1) return;
+
+	_UINT32 cchTotal_test = 0;
+	while(true)
+	{
+		if (record.isEOF())
+			break;
+		XLUnicodeString string;
+		record >> string;
+		
+		cchTotal_test += string.value().length();
+
+		arStrings.push_back(string.value());
+
+		strTotal += string.value();
+	}
+}
 
 } // namespace XLS

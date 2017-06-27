@@ -1824,7 +1824,7 @@
 				<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="1"/>
 			</cellXfs>
 			<cellStyles count="2">
-				<cellStyle name="60% - Accent1 2" xfId="1"/>
+				<cellStyle name="60% - Accent1" xfId="1"/>
 				<cellStyle name="Normal" xfId="0" builtinId="0"/>
 			</cellStyles>
 			<dxfs count="0"/>

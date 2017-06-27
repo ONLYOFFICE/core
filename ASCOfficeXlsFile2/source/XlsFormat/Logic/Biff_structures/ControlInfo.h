@@ -31,13 +31,10 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
-#include <Logic/Biff_structures/BiffString.h>
+#include "BiffString.h"
 
 namespace XLS
 {
-
-class CFRecord;
 
 class ControlInfo : public BiffStructure
 {

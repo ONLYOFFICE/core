@@ -147,7 +147,15 @@ public:
 	unsigned char dwVer;
 };
 
-class SXAddl_SXCCache_SXDVerUpdInv			: public SXAddl {};
+class SXAddl_SXCCache_SXDVerUpdInv : public SXAddl 
+{
+public:
+	virtual void readFields(CFRecord& record);
+	virtual BaseObjectPtr clone();
+
+	unsigned char dwVersionInvalidates;
+};
+
 class SXAddl_SXCCacheField_SXDCaption		: public SXAddl {};
 class SXAddl_SXCCacheField_SXDEnd			: public SXAddl {};
 class SXAddl_SXCCacheField_SXDId			: public SXAddl {};

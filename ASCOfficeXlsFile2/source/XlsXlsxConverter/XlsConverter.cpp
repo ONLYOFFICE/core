@@ -57,6 +57,7 @@
 #include "../XlsFormat/Logic/Biff_unions/TEXTOBJECT.h"
 #include "../XlsFormat/Logic/Biff_unions/CHART.h"
 #include "../XlsFormat/Logic/Biff_unions/BACKGROUND.h"
+#include "../XlsFormat/Logic/Biff_unions/PIVOTVIEW.h"
 
 #include <Logic/Biff_records/BkHim.h>
 #include <Logic/Biff_records/HLink.h>
@@ -433,6 +434,11 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 		sheet->m_DVAL->serialize(xlsx_context->current_sheet().dataValidations());
 	}
 
+	for (size_t i = 0; i < sheet->m_arPIVOTVIEW.size(); i++)
+	{
+		convert((XLS::PIVOTVIEW*)sheet->m_arPIVOTVIEW[i].get());
+	}
+
 	convert((XLS::OBJECTS*)sheet->m_OBJECTS.get(), sheet);
 
 	if (!sheet->m_arNote.empty() && xls_global_info->Version < 0x0600)
@@ -514,6 +520,11 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
     for (size_t i = 0 ; i < global->m_arUserBView.size(); i++)
 	{
 		global->m_arUserBView[i]->serialize(xlsx_context->custom_views());
+	}
+
+	for (size_t i = 0 ; i < global->m_arPIVOTCACHEDEFINITION.size(); i++)
+	{
+		convert((XLS::PIVOTCACHEDEFINITION*)global->m_arPIVOTCACHEDEFINITION[i].get());
 	}
 }
 
@@ -1892,4 +1903,16 @@ void XlsConverter::convert(XLS::ChartSheetSubstream * chart)
 
 	chart->serialize(xlsx_context->current_chart().chartData());	
 	//convert(chart->m_OBJECTSCHART.get());непонятные какие то текстбоксы - пустые и бз привязок
+}
+
+void XlsConverter::convert(XLS::PIVOTVIEW * pivot_view)
+{
+	if (pivot_view == NULL) return;
+
+}
+
+void XlsConverter::convert(XLS::PIVOTCACHEDEFINITION * pivot_cached)
+{
+	if (pivot_cached == NULL) return;
+
 }

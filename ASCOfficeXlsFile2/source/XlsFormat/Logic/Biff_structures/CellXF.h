@@ -51,8 +51,7 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
-	static const ElementType	type = typeCellXF;
+	static const ElementType type = typeCellXF;
 
 	GlobalWorkbookInfoPtr m_GlobalWorkbookInfo;
 	

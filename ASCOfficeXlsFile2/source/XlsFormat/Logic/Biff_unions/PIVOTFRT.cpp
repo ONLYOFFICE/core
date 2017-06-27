@@ -61,9 +61,13 @@ const bool PIVOTFRT::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+	m_PIVOTFRT9 =  elements_.back();
+	elements_.pop_back(); 
 	
 	if (proc.optional<PIVOTADDL>())
 	{
+		m_PIVOTADDL =  elements_.back();
+		elements_.pop_back(); 
 	}
 	return true;
 }

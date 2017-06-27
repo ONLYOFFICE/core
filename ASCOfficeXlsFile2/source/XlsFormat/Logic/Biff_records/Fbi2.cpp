@@ -35,16 +35,6 @@
 namespace XLS
 {
 
-Fbi2::Fbi2()
-{
-}
-
-
-Fbi2::~Fbi2()
-{
-}
-
-
 BaseObjectPtr Fbi2::clone()
 {
 	return BaseObjectPtr(new Fbi2(*this));
@@ -52,9 +42,9 @@ BaseObjectPtr Fbi2::clone()
 
 void Fbi2::readFields(CFRecord& record)
 {
-#pragma message("####################### Fbi2 record is not implemented")
-	Log::error("Fbi2 record is not implemented.");
-	//record >> some_value;
+	unsigned short	val;
+	record >> dmixBasis >> dmiyBasis >> twpHeightBasis >> val >> ifnt;
+	scab = (val != 0);
 }
 
 } // namespace XLS

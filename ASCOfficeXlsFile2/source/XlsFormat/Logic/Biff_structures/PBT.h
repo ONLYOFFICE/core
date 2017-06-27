@@ -29,22 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "TxtWf.h"
-#include <Binary/CFRecord.h>
+#include "BiffStructure.h"
 
 namespace XLS
 {
-BiffStructurePtr TxtWf::clone()
-{
-	return BiffStructurePtr(new TxtWf(*this));
-}
 
-void TxtWf::load(CFRecord& record)
-{
-	record 	>> fieldType >> fieldStart;
-}
+class PBT: public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PBT)
+public:
+	BiffStructurePtr clone();
 
+	PBT(){}
+	~PBT(){}
+
+	static const ElementType type = typePBT;
+	
+	virtual void load(CFRecord& record);
+
+	unsigned char	pbt;
+	bool			fAutoRefresh;
+	bool			fNeedRefresh;
+};
 
 } // namespace XLS
-

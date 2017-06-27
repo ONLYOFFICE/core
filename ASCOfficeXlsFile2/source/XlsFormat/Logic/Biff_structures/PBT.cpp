@@ -29,20 +29,24 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
-#include "TxtWf.h"
-#include <Binary/CFRecord.h>
+#include "PBT.h"
 
 namespace XLS
 {
-BiffStructurePtr TxtWf::clone()
+
+BiffStructurePtr PBT::clone()
 {
-	return BiffStructurePtr(new TxtWf(*this));
+	return BiffStructurePtr(new PBT(*this));
 }
 
-void TxtWf::load(CFRecord& record)
+void PBT::load(CFRecord& record)
 {
-	record 	>> fieldType >> fieldStart;
+	unsigned short flags;
+	record 	>> flags;
+	
+	pbt				= GETBITS(flags, 0, 2);
+	fAutoRefresh	= GETBIT(flags, 3);
+	fNeedRefresh	= GETBIT(flags, 4);
 }
 
 

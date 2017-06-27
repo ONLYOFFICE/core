@@ -242,6 +242,7 @@ enum ElementType
 	typePalette,
 	typePane,
 	typePassword,
+	typePBT,
 	typePhoneticInfo,
 	typePicF,
 	typePie,

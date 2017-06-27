@@ -36,8 +36,8 @@
 #include "BinSmartPointers.h"
 #include "../Logic/GlobalWorkbookInfo.h"
 
-#include <common.h>
-#include <Auxiliary/HelpFunc.h>
+#include "../../Common/common.h"
+#include "../Auxiliary/HelpFunc.h"
 
 #include "../../../Common/DocxFormat/Source/Base/unicode_util.h"
 namespace XLS

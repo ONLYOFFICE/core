@@ -1441,7 +1441,7 @@ namespace DocFileFormat
 	{
 		if ((style != NULL) && (anchor != NULL))
 		{
-			DocFormatUtils::Rectangle bounds = anchor->rcgBounds;
+			DocFileFormat::Rectangle bounds = anchor->rcgBounds;
 
 			if (twistDimensions)
 			{

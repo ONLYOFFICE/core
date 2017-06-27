@@ -33,8 +33,6 @@
 
 #include "../Common/FormatUtils.h"
 
-using namespace DocFormatUtils;
-
 namespace DocFileFormat
 {
   class DateAndTime

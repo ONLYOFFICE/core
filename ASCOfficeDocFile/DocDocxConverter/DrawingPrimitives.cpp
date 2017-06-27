@@ -33,8 +33,6 @@
 #include "DrawingPrimitives.h"
 #include "VirtualStreamReader.h"
 
-using namespace DocFormatUtils;
-
 namespace DocFileFormat
 {
 	DrawingPrimitive * DrawingPrimitive::Create(VirtualStreamReader* reader, int length, short dpk)

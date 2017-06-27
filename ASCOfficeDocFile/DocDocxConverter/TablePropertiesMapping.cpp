@@ -488,7 +488,7 @@ namespace DocFileFormat
 		{
 			for ( unsigned int i = 0, nSize = _grid->size(); i < nSize; i++ )
 			{
-				if(_grid->at(i) % DocFormatUtils::gc_nZeroWidth != 0)
+				if(_grid->at(i) % DocFileFormat::gc_nZeroWidth != 0)
 				{
 					bWriteGridCol = true;
 					break;

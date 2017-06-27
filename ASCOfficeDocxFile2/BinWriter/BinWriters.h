@@ -5738,6 +5738,8 @@ namespace BinDocxRW
 			OOX::Logic::CDrawing*		pGraphicDrawing	= NULL;
 			PPTX::Logic::GraphicFrame*	pGraphic		= NULL;
 			
+            m_oBcw.m_oStream.ClearCurShapePositionAndSizes();
+
 			if(OOX::et_mc_alternateContent == pElementType)
 			{
 				OOX::WritingElement* we = NULL;

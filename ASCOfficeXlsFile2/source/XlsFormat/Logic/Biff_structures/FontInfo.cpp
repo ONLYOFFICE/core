@@ -30,7 +30,7 @@
  *
  */
 
-#include "TxtWf.h"
+#include "FontInfo.h"
 #include <Binary/CFRecord.h>
 
 namespace XLS

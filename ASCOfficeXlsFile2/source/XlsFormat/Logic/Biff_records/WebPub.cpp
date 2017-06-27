@@ -55,7 +55,7 @@ void WebPub::readFields(CFRecord& record)
 #pragma message("####################### WebPub record is not implemented")
 	Log::error("WebPub record is not implemented.");
 
-	//record >> some_value;
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

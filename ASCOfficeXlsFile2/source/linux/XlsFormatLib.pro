@@ -772,6 +772,8 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_structures/AFDOperXNum.cpp \
     ../XlsFormat/Logic/Biff_unions/IMDATAOBJECT.cpp \
     ../XlsFormat/Logic/Biff_records/IMDATA.cpp \
+    ../XlsFormat/Logic/Biff_structures/PBT.cpp \
+    ../XlsFormat/Logic/Biff_structures/FontInfo.cpp \
     ../XlsFormat/Logic/Biff_structures/CFDatabar.cpp \
     ../XlsFormat/Logic/Biff_structures/CFGradient.cpp
 }
@@ -1392,6 +1394,8 @@ HEADERS +=  \
     ../XlsFormat/Logic/Biff_structures/DConnStringSequence.h \
     ../XlsFormat/Logic/Biff_structures/TxtWf.h \
     ../XlsFormat/Logic/Biff_structures/Xnum.h \
+    ../XlsFormat/Logic/Biff_structures/PBT.h \
+    ../XlsFormat/Logic/Biff_structures/FontInfo.h \
     ../XlsFormat/Logic/Biff_structures/ODRAW/IMsoArray.h \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSOCR.h \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSO_enums.h \

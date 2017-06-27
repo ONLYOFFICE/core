@@ -35,16 +35,6 @@
 namespace XLS
 {
 
-YMult::YMult()
-{
-}
-
-
-YMult::~YMult()
-{
-}
-
-
 BaseObjectPtr YMult::clone()
 {
 	return BaseObjectPtr(new YMult(*this));
@@ -52,10 +42,12 @@ BaseObjectPtr YMult::clone()
 
 void YMult::readFields(CFRecord& record)
 {
-#pragma message("####################### YMult record is not implemented")
-	Log::error("YMult record is not implemented.");
+	unsigned short flags;
+
+	record >> frtHeaderOld >> axmid >> numLabelMultiplier >> flags;
 	
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	fAutoShowMultiplier = GETBIT(flags, 0);
+	fBeingEditted		= GETBIT(flags, 1);
 }
 
 } // namespace XLS

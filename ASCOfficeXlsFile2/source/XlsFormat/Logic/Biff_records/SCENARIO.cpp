@@ -54,7 +54,8 @@ void SCENARIO::readFields(CFRecord& record)
 {
 #pragma message("####################### SCENARIO record is not implemented")
 	Log::error("SCENARIO record is not implemented.");
-	//record >> some_value;
+
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

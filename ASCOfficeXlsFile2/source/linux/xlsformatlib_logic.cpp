@@ -765,3 +765,5 @@
 #include "../XlsFormat/Logic/Biff_structures/DConnStringSequence.cpp"
 #include "../XlsFormat/Logic/Biff_structures/TxtWf.cpp"
 #include "../XlsFormat/Logic/Biff_structures/Xnum.cpp"
+#include "../XlsFormat/Logic/Biff_structures/PBT.cpp"
+#include "../XlsFormat/Logic/Biff_structures/FontInfo.cpp"

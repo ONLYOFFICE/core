@@ -172,6 +172,7 @@ enum ElementType
 	typeFnGroupName,
 	typeFnGrp12,
 	typeFont,
+	typeFontInfo,
 	typeFontX,
 	typeFooter,
 	typeForceFullCalculation,

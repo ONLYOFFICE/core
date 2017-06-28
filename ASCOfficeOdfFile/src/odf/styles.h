@@ -626,6 +626,7 @@ public:
    // header_footer_content_impl content_;
 
 };
+CP_REGISTER_OFFICE_ELEMENT2(style_footer_first);
 
 ///         style:header-left
 class style_header_left : public office_element_impl<style_header_left>, public header_footer_impl

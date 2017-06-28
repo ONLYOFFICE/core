@@ -83,7 +83,7 @@ namespace PPTX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring strName = oReader.GetName();
 
 					if (strName == L"a:cxnSpLocks")
 					{
@@ -154,7 +154,6 @@ namespace PPTX
 					l_endCxn.ReadAttributeBase(L"idx", endCxn_idx);
 				}
 			}
-
 
 			virtual std::wstring toXML() const
 			{

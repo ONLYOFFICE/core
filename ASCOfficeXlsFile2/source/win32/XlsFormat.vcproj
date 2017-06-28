@@ -3650,6 +3650,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\FontInfo.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\FontInfo.h"
+					>
+				</File>
+				<File
 					RelativePath="..\XlsFormat\Logic\Biff_structures\FormatRun.cpp"
 					>
 				</File>
@@ -4015,6 +4023,14 @@
 				</File>
 				<File
 					RelativePath="..\XlsFormat\Logic\Biff_structures\ParsedFormula.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\PBT.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\PBT.h"
 					>
 				</File>
 				<File
@@ -4814,7 +4830,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\XlsFormat\Logic\Biff_structures\TxtWF.h"
+					RelativePath="..\XlsFormat\Logic\Biff_structures\TxtWf.h"
 					>
 				</File>
 				<File

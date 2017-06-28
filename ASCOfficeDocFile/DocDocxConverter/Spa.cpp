@@ -32,8 +32,6 @@
 #include "Spa.h"
 #include "VirtualStreamReader.h"
 
-using namespace DocFormatUtils;
-
 namespace DocFileFormat
 {
 

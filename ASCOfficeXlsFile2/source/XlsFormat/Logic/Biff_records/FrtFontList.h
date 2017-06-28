@@ -32,28 +32,30 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/FrtHeaderOld.h"
+#include "../Biff_structures/FontInfo.h"
 
 namespace XLS
 {
 
-
-// Logical representation of FrtFontList record in BIFF8
 class FrtFontList: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(FrtFontList)
 	BASE_OBJECT_DEFINE_CLASS_NAME(FrtFontList)
 public:
-	FrtFontList();
-	~FrtFontList();
+	FrtFontList(){}
+	~FrtFontList(){}
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeFrtFontList;
+	static const ElementType type = typeFrtFontList;
 
-
+	FrtHeaderOld			frtHeaderOld;
+	unsigned char			verExcel;
+	unsigned short			cFont;
+	std::vector<FontInfo>	rgFontInfo;
 };
 
 } // namespace XLS

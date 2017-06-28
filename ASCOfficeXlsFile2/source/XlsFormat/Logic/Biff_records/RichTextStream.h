@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
 
-
-// Logical representation of RichTextStream record in BIFF8
 class RichTextStream: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(RichTextStream)
@@ -47,12 +46,15 @@ public:
 	~RichTextStream();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeRichTextStream;
+	static const ElementType type = typeRichTextStream;
 
+	FrtHeader	frtHeader;
+	_UINT32		dwCheckSum;
+	_UINT32		cb;
+	std::string	rgb;
 };
 
 } // namespace XLS

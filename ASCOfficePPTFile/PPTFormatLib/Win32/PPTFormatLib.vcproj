@@ -343,6 +343,14 @@
 			Name="Common"
 			>
 			<File
+				RelativePath="..\..\..\ASCOfficeXlsFile2\source\XlsFormat\Binary\CFRecord.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCOfficeXlsFile2\source\XlsFormat\Binary\CFStream.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\XlsxSerializerCom\Reader\ChartFromToBinary.cpp"
 				>
 			</File>

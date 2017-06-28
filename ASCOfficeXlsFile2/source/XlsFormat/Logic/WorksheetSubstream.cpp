@@ -294,7 +294,14 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					count--;
 				}
 			}break;
-			case rt_DCon:			proc.optional<DCON>		();			break;
+			case rt_DCon:
+			{
+				if (proc.optional<DCON>())
+				{
+					m_DCON = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_UserSViewBegin:
 			{
 				count = proc.repeated<CUSTOMVIEW>(0, 0);
@@ -341,8 +348,24 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 				}
 			}break;
 				
-			case rt_LRng:			proc.optional<LRng>			();			break;
-			case rt_Qsi:			proc.repeated<QUERYTABLE>	(0, 0);		break;
+			case rt_LRng:
+			{
+				if (proc.optional<LRng>())
+				{
+					m_LRng = elements_.back();
+					elements_.pop_back(); 
+				}
+			}break;
+			case rt_Qsi:			
+			{
+				count = proc.repeated<QUERYTABLE>(0, 0);
+				while(count > 0)
+				{
+					m_arQUERYTABLE.insert(m_arQUERYTABLE.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
 			case rt_PhoneticInfo:	proc.optional<PHONETICINFO>	();			break;			
 			case rt_CondFmt:
 			case rt_CondFmt12:
@@ -413,8 +436,15 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 				}
 			}break;
 			case rt_HeaderFooter:		
-				proc.repeated<RECORD12>	(0, 0);		
-				break;
+			{
+				count = proc.repeated<RECORD12>	(0, 0);		
+				while(count > 0)
+				{
+					m_arRECORD12.insert(m_arRECORD12.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
 			default://unknown .... skip					
 			{
 				proc.SkipRecord();	

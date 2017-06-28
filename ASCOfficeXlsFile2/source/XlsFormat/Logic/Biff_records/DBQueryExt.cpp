@@ -31,6 +31,9 @@
  */
 
 #include "DBQueryExt.h"
+#include "../Biff_structures/ConnGrbitDbtWeb.h"
+#include "../Biff_structures/ConnGrbitDbtOledb.h"
+#include "../Biff_structures/ConnGrbitDbtAdo.h"
 
 namespace XLS
 {
@@ -52,10 +55,44 @@ BaseObjectPtr DBQueryExt::clone()
 
 void DBQueryExt::readFields(CFRecord& record)
 {
-#pragma message("####################### DBQueryExt record is not implemented")
-	Log::error("DBQueryExt record is not implemented.");
+	unsigned short	flags1, flags2;
+	record >> frtHeaderOld >> dbt >> flags1;		
+	
+	fMaintain			= GETBIT(flags1, 0);
+	fNewQuery			= GETBIT(flags1, 1);
+	fImportXmlSource	= GETBIT(flags1, 2);
+	fSPListSrc			= GETBIT(flags1, 3);
+	fSPListReinitCache	= GETBIT(flags1, 4);
+	fSrcIsXml			= GETBIT(flags1, 7);
 
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	switch(dbt)
+	{
+		case 4:	grbitDbt.reset(new ConnGrbitDbtWeb);	break;
+		case 5:	grbitDbt.reset(new ConnGrbitDbtOledb);	break;
+		case 7:	grbitDbt.reset(new ConnGrbitDbtAdo);	break;
+	}
+	record >> flags1 >> bVerDbqueryEdit >> bVerDbqueryRefreshed >> bVerDbqueryRefreshableMin;
+	
+	fTxtWiz			= GETBIT(flags1, 0);
+	fTableNames		= GETBIT(flags1, 1);
+
+	record.skipNunBytes(3); //unused
+
+	record >> coledb >> cstFuture >> wRefreshInterval >> wHtmlFmt >> cwParamFlags;
+
+	PBT val1;
+	for (unsigned short i = 0; i < cwParamFlags; i++)
+	{
+		record >> val1;
+		rgPbt.push_back(val1);
+	}
+
+	char val2;
+	for (unsigned short i = 0; i < cstFuture; i++)
+	{
+		record >> val2;
+		rgbFutureBytes += val2;
+	}
 }
 
 } // namespace XLS

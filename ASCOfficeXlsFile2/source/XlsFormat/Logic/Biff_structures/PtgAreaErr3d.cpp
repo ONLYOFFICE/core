@@ -57,8 +57,7 @@ void PtgAreaErr3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, boo
 	RevExternPtr tab_ids;
 	if(!extra_data.empty() && (tab_ids = boost::dynamic_pointer_cast<RevExtern>(extra_data.front())))
 	{
-#pragma message("####################### PtgAreaErr3d struct for revisions is not implemented")
-		Log::info("PtgAreaErr3d struct for revisions is not implemented.");
+		Log::info("PtgAreaErr3d struct for revisions is not assemble.");
 		ptg_stack.push(L"");
 		extra_data.pop();
 		return;

@@ -44,6 +44,8 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
 
+using namespace DocFileFormat;
+
 typedef struct
 {
     DWORD   iType;              // Record type EMR_HEADER

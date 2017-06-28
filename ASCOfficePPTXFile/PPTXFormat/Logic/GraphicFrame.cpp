@@ -124,6 +124,8 @@ namespace PPTX
 				xfrm = oReader;
 			else if (L"cNvGraphicFramePr" == strName)
 				nvGraphicFramePr.cNvGraphicFramePr.fromXML( oReader );
+			else if (L"nvGraphicFramePr" == strName)
+				nvGraphicFramePr.fromXML( oReader );
 				
 			else if (L"graphic" == strName)
 			{

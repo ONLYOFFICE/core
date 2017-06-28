@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/XFProp.h>
+#include "../Biff_structures/XFProp.h"
 
 namespace XLS
 {

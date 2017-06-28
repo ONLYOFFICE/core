@@ -55,7 +55,8 @@ void ScenMan::readFields(CFRecord& record)
 {
 #pragma message("####################### ScenMan record is not implemented")
 	Log::error("ScenMan record is not implemented.");
-	//record >> some_value;
+
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

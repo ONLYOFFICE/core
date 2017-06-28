@@ -68,7 +68,6 @@ void SortData::readFields(CFRecord& record)
 	std::list<CFRecordPtr>& recs = continue_records[rt_ContinueFrt12];
 	while(!recs.empty())
 	{
-		#pragma message("############################ frtRefHeader skipped here")
 		record.appendRawData(recs.front()->getData() + 12, recs.front()->getDataSize() - 12);
 		recs.pop_front();
 	}

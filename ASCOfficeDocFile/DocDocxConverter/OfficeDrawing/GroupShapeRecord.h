@@ -64,7 +64,7 @@ namespace DocFileFormat
 			oSize.cx	=	( right - left );
 			oSize.cy	=	( bottom - top );
 
-			rcgBounds	=	DocFormatUtils::Rectangle(oPoint,oSize);
+			rcgBounds	=	DocFileFormat::Rectangle(oPoint,oSize);
 		}
 
 		virtual ~GroupShapeRecord()
@@ -77,6 +77,6 @@ namespace DocFileFormat
 			return new GroupShapeRecord( _reader, bodySize, typeCode, version, instance );
 		}
 
-		DocFormatUtils::Rectangle rcgBounds;
+		DocFileFormat::Rectangle rcgBounds;
 	};
 }

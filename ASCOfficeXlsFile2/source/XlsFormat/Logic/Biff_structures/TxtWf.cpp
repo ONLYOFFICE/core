@@ -35,19 +35,9 @@
 
 namespace XLS
 {
-
-
 BiffStructurePtr TxtWf::clone()
 {
 	return BiffStructurePtr(new TxtWf(*this));
-}
-
-TxtWf::TxtWf()
-{		
-}
-
-TxtWf::~TxtWf()
-{
 }
 
 void TxtWf::load(CFRecord& record)

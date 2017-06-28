@@ -42,8 +42,8 @@ class TxtWf: public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	TxtWf();
-	~TxtWf();
+	TxtWf(){}
+	~TxtWf(){}
 
 	static const ElementType type = typeTxtWf;
 	

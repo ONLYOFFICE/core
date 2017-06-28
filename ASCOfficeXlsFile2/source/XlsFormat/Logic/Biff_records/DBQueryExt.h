@@ -32,12 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/FrtHeaderOld.h"
+#include "../Biff_structures/PBT.h"
 
 namespace XLS
 {
 
-
-// Logical representation of DBQueryExt record in BIFF8
 class DBQueryExt: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(DBQueryExt)
@@ -47,13 +47,32 @@ public:
 	~DBQueryExt();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeDBQueryExt;
+	static const ElementType type = typeDBQueryExt;
 
-
+	FrtHeaderOld		frtHeaderOld;
+	unsigned short		dbt;			//enum DataSourceType
+	bool				fMaintain;
+	bool				fNewQuery;
+	bool				fImportXmlSource;
+	bool				fSPListSrc;
+	bool				fSPListReinitCache;
+	bool				fSrcIsXml;
+	BiffStructurePtr	grbitDbt;
+	bool				fTxtWiz;
+	bool				fTableNames;
+	unsigned char		bVerDbqueryEdit;	//DataFunctionalityLevel	
+	unsigned char		bVerDbqueryRefreshed;
+	unsigned char		bVerDbqueryRefreshableMin;
+	unsigned short		coledb;
+	unsigned short		cstFuture;
+	unsigned short		wRefreshInterval;
+	unsigned short		wHtmlFmt;
+	unsigned short		cwParamFlags;
+	std::vector<PBT>	rgPbt;
+	std::string			rgbFutureBytes;
 };
 
 } // namespace XLS

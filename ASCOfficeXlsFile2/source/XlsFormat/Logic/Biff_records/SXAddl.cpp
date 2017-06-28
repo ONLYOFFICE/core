@@ -131,6 +131,20 @@ void SXAddl_SXCCache_SXDVer10Info::readFields(CFRecord& record)
 	record >> reserved2;
 }
 //----------------------------------------------------------------------------
+BaseObjectPtr SXAddl_SXCCache_SXDVerUpdInv::clone()
+{
+	return BaseObjectPtr(new SXAddl_SXCCache_SXDVerUpdInv(*this));
+}
+void SXAddl_SXCCache_SXDVerUpdInv::readFields(CFRecord& record)
+{
+	m_SXAddlHdr.load(record);
+
+	record >> dwVersionInvalidates;
+
+	record.skipNunBytes(5);
+	
+}
+//----------------------------------------------------------------------------
 BaseObjectPtr SXAddl_SXCCache_SXDInfo12::clone()
 {
 	return BaseObjectPtr(new SXAddl_SXCCache_SXDInfo12(*this));

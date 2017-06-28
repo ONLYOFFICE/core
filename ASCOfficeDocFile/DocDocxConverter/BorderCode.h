@@ -34,8 +34,6 @@
 #include "IVisitable.h"
 #include "Global.h"
 
-using namespace DocFormatUtils;
-
 namespace DocFileFormat
 {
 	typedef enum _BorderType

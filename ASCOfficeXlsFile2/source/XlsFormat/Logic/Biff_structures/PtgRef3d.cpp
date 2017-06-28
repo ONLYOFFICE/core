@@ -96,8 +96,8 @@ void PtgRef3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 	RevExternPtr tab_ids;
 	if(!extra_data.empty() && (tab_ids = boost::dynamic_pointer_cast<RevExtern>(extra_data.front())))
 	{
-#pragma message("####################### PtgRef3d struct for revisions is not implemented")
-		Log::info("PtgRef3d struct for revisions is not implemented.");
+		Log::info("PtgRef3d struct for revisions is not assemble.");
+		
 		ptg_stack.push(L"");
 		extra_data.pop();
 		return;

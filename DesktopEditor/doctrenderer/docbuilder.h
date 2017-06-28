@@ -59,6 +59,8 @@ namespace NSDoctRenderer
         void SetProperty(const char* param, const wchar_t* value);
         void SetPropertyW(const wchar_t* param, const wchar_t* value);
 
+        char* GetVersion();
+
     public:
         static void Initialize();
         static void Dispose();

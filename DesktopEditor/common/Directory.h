@@ -365,7 +365,13 @@ namespace NSDirectory
 
 		SECURITY_ATTRIBUTES sa={};
 
-		codeResult = SHCreateDirectoryExW(NULL, strDirectory.c_str(), &sa);
+		if (strDirectory.find(L"./") == 0)
+		{
+			std::wstring sDir = NSFile::GetProcessDirectory() + L"/" + strDirectory;
+			codeResult = SHCreateDirectoryExW(NULL, sDir.c_str(), &sa);
+		}
+		else
+			codeResult = SHCreateDirectoryExW(NULL, strDirectory.c_str(), &sa);
 
 		bool created = false;
 		if (codeResult == ERROR_SUCCESS)

@@ -1395,6 +1395,50 @@ namespace NSDoctRenderer
         m_pInternal->CloseFile();
     }
 
+    char* CDocBuilder::GetVersion()
+    {
+        m_pInternal->Init();
+
+        if (0 == m_pInternal->m_arDoctSDK.size())
+            return NULL;
+
+        std::wstring sFile;
+        for (std::vector<std::wstring>::iterator i = m_pInternal->m_arDoctSDK.begin(); i != m_pInternal->m_arDoctSDK.end(); i++)
+        {
+            if (std::wstring::npos != i->find(L"sdk-all-min.js"))
+            {
+                sFile = *i;
+                break;
+            }
+        }
+
+        if (sFile.empty())
+            return NULL;
+
+        std::string sData;
+        if (!NSFile::CFileBinary::ReadAllTextUtf8A(sFile, sData))
+            return NULL;
+
+        std::string::size_type startPos = sData.find("Version:");
+        if (std::string::npos == startPos)
+            return NULL;
+
+        startPos += 8;
+
+        std::string::size_type endPos = sData.find(')', startPos);
+        if (std::string::npos == endPos)
+            return NULL;
+
+        size_t sSrcLen = endPos - startPos + 1;
+        if (sSrcLen == 0)
+            return NULL;
+
+        char* sRet = new char[sSrcLen + 1];
+        memcpy(sRet, sData.c_str() + startPos, sSrcLen);
+        sRet[sSrcLen] = '\0';
+        return sRet;
+    }
+
     bool CDocBuilder::Run(const wchar_t* path)
     {
         std::wstring sPath(path);

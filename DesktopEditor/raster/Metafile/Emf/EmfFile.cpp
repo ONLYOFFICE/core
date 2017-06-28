@@ -195,6 +195,9 @@ static const struct ActionNamesEmf
 			m_oStream >> ulType;
 			m_oStream >> ulSize;
 
+			if (ulSize < 1) 
+				continue;
+
 			m_ulRecordPos	= m_oStream.Tell();
 			m_ulRecordSize	= ulSize - 8;
 
@@ -1074,7 +1077,7 @@ static const struct ActionNamesEmf
 		m_oStream.Skip(4); // offBits
 		m_oStream.Skip(4); // cbBits
 
-		m_ulRecordSize -= 20;
+		unsigned int current_size = m_ulRecordSize - 20;
 
 		CEmfLogPen* pPen = new CEmfLogPen();
 		if (!pPen)
@@ -1088,10 +1091,10 @@ static const struct ActionNamesEmf
 		m_oStream.Skip(4); // BrushHatch
 		m_oStream >> pPen->NumStyleEntries;
 
-		m_ulRecordSize -= 24;
+		current_size -= 24;
 		if (pPen->NumStyleEntries > 0)
 		{
-			m_ulRecordSize -= pPen->NumStyleEntries * 4;
+			current_size -= pPen->NumStyleEntries * 4;
 			pPen->StyleEntry = new unsigned int[pPen->NumStyleEntries];
 			if (!pPen->StyleEntry)
 			{
@@ -1110,7 +1113,7 @@ static const struct ActionNamesEmf
 		}
 
 		// Пропускаем часть с картинкой, если она была
-		m_oStream.Skip(m_ulRecordSize);
+		m_oStream.Skip(current_size);
 
 		m_oPlayer.RegisterObject(ulPenIndex, (CEmfObjectBase*)pPen);
 	}

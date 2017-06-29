@@ -751,7 +751,7 @@ void DocxConverter::convert(OOX::Logic::CSym	*oox_sym)
 	odt_context->text_context()->set_symbol_text(oox_sym->m_oChar->GetValue());
 	//odt_context->text_context()->add_text_content(std::wstring(L"/") + oox_sym->m_oChar->ToString());
 }
-void DocxConverter::convert(OOX::Logic::CFldChar	*oox_fld)
+void DocxConverter::convert(OOX::Logic::CFldChar *oox_fld)
 {
 	if (oox_fld == NULL) return;
 
@@ -762,7 +762,7 @@ void DocxConverter::convert(OOX::Logic::CFldChar	*oox_fld)
 	{
 		if (oox_fld->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeBegin)	odt_context->start_field(false);
 		if (oox_fld->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeEnd)		odt_context->end_field();
-		if (oox_fld->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeSeparate){}
+		if (oox_fld->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeSeparate)odt_context->separate_field();
 	}
 
 }

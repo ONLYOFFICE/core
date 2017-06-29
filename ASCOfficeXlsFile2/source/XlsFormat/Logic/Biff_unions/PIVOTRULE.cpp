@@ -36,17 +36,13 @@
 
 namespace XLS
 {
-
-
 PIVOTRULE::PIVOTRULE()
 {
 }
 
-
 PIVOTRULE::~PIVOTRULE()
 {
 }
-
 
 BaseObjectPtr PIVOTRULE::clone()
 {
@@ -61,7 +57,14 @@ const bool PIVOTRULE::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+	m_SxRule = elements_.back();
+	elements_.pop_back();
+
 	int count = proc.repeated<PRFILTER>(0, 0);
+	while(count--)
+	{
+		m_arPRFILTER.push_back(elements_.front());	elements_.pop_front();
+	}
 
 	return true;
 }

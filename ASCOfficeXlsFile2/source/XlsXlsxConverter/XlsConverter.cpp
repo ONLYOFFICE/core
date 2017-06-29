@@ -58,6 +58,7 @@
 #include "../XlsFormat/Logic/Biff_unions/CHART.h"
 #include "../XlsFormat/Logic/Biff_unions/BACKGROUND.h"
 #include "../XlsFormat/Logic/Biff_unions/PIVOTVIEW.h"
+#include "../XlsFormat/Logic/Biff_unions/PIVOTCACHE.h"
 
 #include <Logic/Biff_records/BkHim.h>
 #include <Logic/Biff_records/HLink.h>
@@ -135,28 +136,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 
 		if (cfile.isError())
 		{
-			//if (0 <= xls_file.rfind(L".xls"))//todooo lower
-			//{
-			//	unsigned char* fileData = NULL;
-			//	DWORD fileSize = 0;
-
-			//	if (!NSFile::CFileBinary::ReadAllBytes(xls_file, &fileData, fileSize)) return;
-			//	if (!fileData) return;
-
-			//	//test/open as list
-			//	std::wstring xls_file_new = _xlsx_path + FILE_SEPARATOR_STR + L"temp.xls";
-			//	if (cfile.Open(xls_file_new, XLS::CompoundFile::cf_WriteMode))
-			//	{
-			//		XLS::CFStreamPtr stream = cfile.createWorkbookStream();
-			//		if (stream)
-			//			stream->write(fileData, fileSize);
-			//		cfile.closeWorkbookStream();
-			//	}
-			//	delete []fileData;
-			//	if (!cfile.Open(xls_file_new, XLS::CompoundFile::cf_ReadMode)) 
-			//		return;					
-			//}else 
-				return;
+			return;
 		}
 
 		XLS::CFStreamPtr summary;
@@ -164,7 +144,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 
 		try
 		{
-			summary = cfile.getSummaryInformationStream();
+			summary = cfile.getNamedStream("SummaryInformation");
 		}
 		catch (...)
 		{
@@ -172,7 +152,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 
 		try
 		{
-			doc_summary = cfile.getDocumentSummaryInformationStream();
+			doc_summary = cfile.getNamedStream("DocumentSummaryInformation");
 		}
 		catch (...)
 		{
@@ -211,7 +191,33 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 		{
 			is_encrypted = true;
 			if (xls_global_info->decryptor->IsVerify() == false) return;
-		}	
+		}
+
+		if (cfile.storage_->isDirectory("_SX_DB_CUR"))
+		{
+			std::list<std::string> listStream = cfile.storage_->entries("_SX_DB_CUR");
+
+			for (std::list<std::string>::iterator it = listStream.begin(); it != listStream.end(); it++)
+			{
+				XLS::CFStreamCacheReader pivot_cache_reader(cfile.getNamedStream("_SX_DB_CUR/" + *it), xls_global_info);
+				XLS::BaseObjectPtr pivot_cache = boost::shared_ptr<XLS::PIVOTCACHE>(new XLS::PIVOTCACHE());
+				
+				XLS::BinReaderProcessor proc(pivot_cache_reader , pivot_cache.get() , true);
+				proc.mandatory(*pivot_cache.get());
+
+				int index = 0;
+				try
+				{
+					index = atoi(it->c_str());
+				}
+				catch(...)
+				{
+				}
+
+				xls_global_info->mapPivotCache.insert(std::make_pair(index, pivot_cache));
+			}
+		}
+
 	}
 	catch(...)
 	{

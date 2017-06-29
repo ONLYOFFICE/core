@@ -83,8 +83,6 @@ namespace PPTX
 					m_eType = OOX::et_a_latin;
 				else if ( _T("a:sym") == m_name )
 					m_eType = OOX::et_a_sym;
-				else
-					return;
 
 				ReadAttributes( oReader );
 

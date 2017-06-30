@@ -294,7 +294,7 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 
 	int iCrt = -1;
 
-	for (int i = 0 ; i < charts->m_arSERIESFORMAT.size(); i++)
+	for (size_t i = 0 ; i < charts->m_arSERIESFORMAT.size(); i++)
 	{
 		SERIESFORMAT * series = dynamic_cast<SERIESFORMAT *>(charts->m_arSERIESFORMAT[i].get());
 		if (series == NULL) continue;
@@ -641,8 +641,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 	{
 		CP_XML_NODE(L"c:plotArea")
 		{
-
-			for (int i = 0; i < chart_formats->m_arAXISPARENT.size(); i++)
+			for (size_t i = 0; i < chart_formats->m_arAXISPARENT.size(); i++)
 			{
 				AXISPARENT* parent		= dynamic_cast<AXISPARENT*>	(chart_formats->m_arAXISPARENT[i].get());
 							ax_parent	= dynamic_cast<AxisParent*>	(parent->m_AxisParent.get());
@@ -751,7 +750,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 							
 						series->serialize_legend(stream_legend_entries, it->second[i]); 
 					}
-					for (int i = 0 ; i < crt->m_arCrtLine.size(); i++)
+					for (size_t i = 0 ; i < crt->m_arCrtLine.size(); i++)
 					{
 						CrtLine* crtLine = dynamic_cast<CrtLine*>(crt->m_arCrtLine[i].get());
 						if (crtLine == NULL) continue;
@@ -1068,7 +1067,7 @@ int ChartSheetSubstream::serialize_ser (std::wstring sNodeSer, std::wostream & _
 	SIIndex		* series_cash = NULL;
 
 	int type_val = 0;
-	for (int i = 0; (series_data) && (i < series_data->m_arSIIndex.size()); i++)
+	for (size_t i = 0; (series_data) && (i < series_data->m_arSIIndex.size()); i++)
 	{
 		SIIndex * si_in = dynamic_cast<SIIndex *>(series_data->m_arSIIndex[i].get());
 

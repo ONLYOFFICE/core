@@ -59,6 +59,7 @@
 #include "../XlsFormat/Logic/Biff_unions/BACKGROUND.h"
 #include "../XlsFormat/Logic/Biff_unions/PIVOTVIEW.h"
 #include "../XlsFormat/Logic/Biff_unions/PIVOTCACHE.h"
+#include "../XlsFormat/Logic/Biff_unions/PIVOTCACHEDEFINITION.h"
 
 #include <Logic/Biff_records/BkHim.h>
 #include <Logic/Biff_records/HLink.h>
@@ -1921,4 +1922,16 @@ void XlsConverter::convert(XLS::PIVOTCACHEDEFINITION * pivot_cached)
 {
 	if (pivot_cached == NULL) return;
 
+	xlsx_context->start_pivot_cache();
+		
+		pivot_cached->serialize(xlsx_context->current_pivot_cache().definitions());
+		
+		//if (pivot_cached->is_records())//?? 
+		{
+			xlsx_context->current_pivot_cache().isRecordsPresent = true;
+			
+			//pivot_cached->serialize_records(xlsx_context->current_pivot_cache().records());
+		}
+
+	xlsx_context->end_pivot_cache();
 }

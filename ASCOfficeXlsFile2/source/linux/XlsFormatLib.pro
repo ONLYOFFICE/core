@@ -772,7 +772,7 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_unions/PIVOTCACHE.cpp \
     ../XlsFormat/Logic/Biff_unions/SXFMLA_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/SXFORMULA_bu.cpp \
-    ../XlsFormat/Logic/Biff_unions/SXOPER.cpp
+    ../XlsFormat/Logic/Biff_unions/SXOPER.cpp \
     ../XlsFormat/Logic/Biff_unions/SXRANGE.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/Property_Structures.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertyFactory.cpp \

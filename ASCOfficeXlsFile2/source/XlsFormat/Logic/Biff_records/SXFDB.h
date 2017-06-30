@@ -32,6 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {
@@ -50,7 +51,27 @@ public:
 
 	static const ElementType type = typeSXFDB;
 
-
+	bool			fAllAtoms;
+	bool			fSomeUnhashed;
+	bool			fUsed;
+	bool			fHasParent;
+	bool			fRangeGroup;
+	bool			fNumField;
+	bool			fTextEtcField;
+	bool			fnumMinMaxValid;
+	bool			fShortIitms;
+	bool			fNonDates;
+	bool			fDateInField;
+	bool			fServerBased;
+	bool			fCantGetUniqueItems;
+	bool			fCalculatedField;
+	unsigned short	ifdbParent;
+	unsigned short	ifdbBase;
+	unsigned short	citmUnq;
+	unsigned short	csxoper;
+	unsigned short	cisxoper;
+	unsigned short	catm;
+	XLUnicodeString	stFieldName;
 };
 
 } // namespace XLS

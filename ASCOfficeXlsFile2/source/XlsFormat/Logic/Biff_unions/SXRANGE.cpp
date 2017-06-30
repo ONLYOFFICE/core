@@ -40,6 +40,32 @@
 namespace XLS
 {
 
+//  (3SXNum / (2SXDtr SXInt)
+class Parenthesis_SXRANGE: public ABNFParenthesis
+{
+	BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_SXRANGE)
+public:
+	BaseObjectPtr clone()
+	{
+		return BaseObjectPtr(new Parenthesis_SXRANGE(*this));
+	}
+
+	const bool loadContent(BinProcessor& proc)
+	{
+		int count = proc.repeated<SXNum>(0, 3);
+
+		if (count < 1)
+		{
+			count = proc.repeated<SXDtr>(0, 2);
+			if (count < 1)
+				return false;
+			if (proc.optional<SXInt>())
+				count++;
+		}
+		return (count == 3);
+	};
+};
+
 
 SXRANGE::SXRANGE()
 {
@@ -63,6 +89,10 @@ const bool SXRANGE::loadContent(BinProcessor& proc)
 	}
 	m_SXRng = elements_.back();
 	elements_.pop_back();
+
+	if(proc.optional<Parenthesis_SXRANGE>())
+	{
+	}
 
 	return true;
 }

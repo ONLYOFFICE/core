@@ -49,8 +49,8 @@ public:
 
 	static const ElementType	type = typeDBB;
 
-	BaseObjectPtr	m_SXDBB;	
-	BaseObjectPtr	m_SXOPER;	
+	BaseObjectPtr				m_SXDBB;	
+	std::vector<BaseObjectPtr>	m_arSXOPER;	
 };
 
 } // namespace XLS

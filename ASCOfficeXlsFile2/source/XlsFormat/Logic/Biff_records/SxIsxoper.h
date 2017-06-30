@@ -29,30 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "SXDBEx.h"
+#include "BiffRecordContinued.h"
 
 namespace XLS
 {
 
-SXDBEx::SXDBEx()
+	class SxIsxoper: public BiffRecordContinued
 {
-}
+	BIFF_RECORD_DEFINE_TYPE_INFO(SxIsxoper)
+	BASE_OBJECT_DEFINE_CLASS_NAME(SxIsxoper)
+public:
+	SxIsxoper();
+	~SxIsxoper();
 
+	BaseObjectPtr clone();
+	
+	void readFields(CFRecord& record);
 
-SXDBEx::~SXDBEx()
-{
-}
+	static const ElementType type = typeSxIsxoper;
 
-BaseObjectPtr SXDBEx::clone()
-{
-	return BaseObjectPtr(new SXDBEx(*this));
-}
-
-void SXDBEx::readFields(CFRecord& record)
-{
-	record >> numDate >> cSxFormula;
-}
+	std::vector<unsigned short> rgSxIsxoper;
+};
 
 } // namespace XLS
 

@@ -2598,6 +2598,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\XlsFormat\Logic\Biff_records\SxIsxoper.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_records\SxIsxoper.h"
+					>
+				</File>
+				<File
 					RelativePath="..\XlsFormat\Logic\Biff_records\SxItm.cpp"
 					>
 				</File>

@@ -61,21 +61,23 @@ const bool SXOPER::loadContent(BinProcessor& proc)
 	if(proc.optional<SxNil>())
 	{
 	}
-	if(proc.optional<SXNum>())
+	else if(proc.optional<SXNum>())
 	{
 	}
-	if(proc.optional<SxBool>())
+	else if(proc.optional<SxBool>())
 	{
 	}
-	if(proc.optional<SxErr>())
+	else if(proc.optional<SxErr>())
 	{
 	}
-	if(proc.optional<SXString>())
+	else if(proc.optional<SXString>())
 	{
 	}
-	if(proc.optional<SXDtr>())
+	else if(proc.optional<SXDtr>())
 	{
 	}
+	else 
+		return false;
 
 	return true;
 }

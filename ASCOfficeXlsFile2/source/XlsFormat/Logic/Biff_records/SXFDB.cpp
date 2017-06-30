@@ -30,27 +30,45 @@
  *
  */
 
-#include "SXDB.h"
+#include "SXFDB.h"
 
 namespace XLS
 {
 
-SXDB::SXDB()
+SXFDB::SXFDB()
 {
 }
 
 
-SXDB::~SXDB()
+SXFDB::~SXFDB()
 {
 }
 
-BaseObjectPtr SXDB::clone()
+BaseObjectPtr SXFDB::clone()
 {
-	return BaseObjectPtr(new SXDB(*this));
+	return BaseObjectPtr(new SXFDB(*this));
 }
 
-void SXDB::readFields(CFRecord& record)
+void SXFDB::readFields(CFRecord& record)
 {
+	unsigned short	flags;
+	record >> flags >> ifdbParent >> ifdbBase >> citmUnq >> csxoper >> cisxoper >> catm;
+	record >> stFieldName;
+
+	fAllAtoms			= GETBIT(flags, 0);
+	fSomeUnhashed		= GETBIT(flags, 1);
+	fUsed				= GETBIT(flags, 2);
+	fHasParent			= GETBIT(flags, 3);
+	fRangeGroup			= GETBIT(flags, 4);
+	fNumField			= GETBIT(flags, 5);
+	fTextEtcField		= GETBIT(flags, 7);
+	fnumMinMaxValid		= GETBIT(flags, 8);
+	fShortIitms			= GETBIT(flags, 9);
+	fNonDates			= GETBIT(flags, 10);
+	fDateInField		= GETBIT(flags, 11);
+	fServerBased		= GETBIT(flags, 13);
+	fCantGetUniqueItems	= GETBIT(flags, 14);
+	fCalculatedField	= GETBIT(flags, 15);
 }
 
 } // namespace XLS

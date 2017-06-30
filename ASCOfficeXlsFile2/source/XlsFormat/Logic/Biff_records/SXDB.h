@@ -32,6 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {
@@ -50,6 +51,21 @@ public:
 
 	static const ElementType type = typeSXDB;
 
+	_INT32			crdbdb;
+	unsigned short	idstm;
+	bool			fSaveData;
+	bool			fInvalid;
+	bool			fRefreshOnLoad;
+	bool			fOptimizeCache;
+	bool			fBackgroundQuery;
+	bool			fEnableRefresh;
+
+	short					cfdbdb;
+	short					cfdbTot;
+	unsigned short			crdbUsed;
+	short					vsType;
+	unsigned short			cchWho;
+	XLUnicodeStringNoCch	rgb;
 
 };
 

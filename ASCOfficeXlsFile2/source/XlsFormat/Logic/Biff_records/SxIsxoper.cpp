@@ -30,28 +30,36 @@
  *
  */
 
-#include "SXDBEx.h"
+#include "SxIsxoper.h"
 
 namespace XLS
 {
 
-SXDBEx::SXDBEx()
+SxIsxoper::SxIsxoper()
 {
 }
 
 
-SXDBEx::~SXDBEx()
+SxIsxoper::~SxIsxoper()
 {
 }
 
-BaseObjectPtr SXDBEx::clone()
+
+BaseObjectPtr SxIsxoper::clone()
 {
-	return BaseObjectPtr(new SXDBEx(*this));
+	return BaseObjectPtr(new SxIsxoper(*this));
 }
 
-void SXDBEx::readFields(CFRecord& record)
+void SxIsxoper::readFields(CFRecord& record)
 {
-	record >> numDate >> cSxFormula;
+	int size = (record.getDataSize() - record.getRdPtr()) / 2;
+
+	for (int i = 0; i < size; i++)
+	{
+		unsigned short val;
+		record >> val; 
+		rgSxIsxoper.push_back(val);
+	}
 }
 
 } // namespace XLS

@@ -38,10 +38,31 @@
 
 #include "../Biff_records/SXFDB.h"
 #include "../Biff_records/SXFDBType.h"
+#include "../Biff_records/SxIsxoper.h"
 
 namespace XLS
 {
+//  (*GRPSXOPER [SXRANGE / *(SxIsxoper *Continue)])
+class Parenthesis_FDB: public ABNFParenthesis
+{
+	BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_FDB)
+public:
+	BaseObjectPtr clone()
+	{
+		return BaseObjectPtr(new Parenthesis_FDB(*this));
+	}
 
+	const bool loadContent(BinProcessor& proc)
+	{
+		int count = proc.repeated<SXOPER>(0, 0);
+		
+		if (!proc.optional<SXRANGE>())
+		{
+			count = proc.repeated<SxIsxoper>(0, 0);
+		}
+		return true;
+	};
+};
 
 FDB::FDB()
 {
@@ -82,12 +103,39 @@ const bool FDB::loadContent(BinProcessor& proc)
 		m_SXFMLA = elements_.back();
 		elements_.pop_back();
 	}
+	else if(proc.optional<Parenthesis_FDB>())
+	{
+		int count = elements_.size();
+
+		while(count > 0)
+		{
+			SXOPER	* oper	= dynamic_cast<SXOPER*>	(elements_.front().get());
+			if (oper)
+			{
+				m_arGRPSXOPER.push_back(elements_.front());
+			}
+			else
+			{
+				SXRANGE *range = dynamic_cast<SXRANGE*>	(elements_.front().get());
+				if (range)
+					m_SXRANGE = elements_.front();
+				else
+				{
+					SxIsxoper * isOper = dynamic_cast<SxIsxoper*> (elements_.front().get());
+					if (isOper)
+						m_arSxIsxoper.push_back(elements_.front());
+				}
+			}
+			elements_.pop_front();
+			count--;
+		}
+	}
 	
 	int count = proc.repeated<SXOPER>(0, 0);
 	while(count--)
 	{
 		m_arSRCSXOPER.push_back(elements_.front());	elements_.pop_front();
-	}
+	}	
 
 	return true;
 }

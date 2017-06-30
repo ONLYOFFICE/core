@@ -1205,6 +1205,9 @@ namespace NSDoctRenderer
 
         bool ExecuteCommand(const std::wstring& command)
         {
+            if (command.length() < 7) // minimum command (!!!)
+                return true;
+
             Init();
 
             if (-1 == m_nFileType)

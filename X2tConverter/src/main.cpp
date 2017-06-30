@@ -138,12 +138,14 @@ static std::wstring utf8_to_unicode(const char *src)
 		InputParams oInputParams;
 		oInputParams.m_sFileFrom	= new std::wstring(sArg1);
 		oInputParams.m_sFileTo		= new std::wstring(sArg2);
-		oInputParams.m_sPassword	= new std::wstring(L"password");
 
-		// get conversion direction from 3rd argument
 		if (argc > 3)
 		{
 			oInputParams.m_sFontDir = new std::wstring(sArg3);
+		}
+		if (argc > 4)
+		{
+			oInputParams.m_sPassword = new std::wstring(sArg4);
 		}
 		result = NExtractTools::fromInputParams(oInputParams);
 	}

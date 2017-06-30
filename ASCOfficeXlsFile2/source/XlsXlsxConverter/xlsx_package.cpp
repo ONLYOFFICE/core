@@ -128,33 +128,32 @@ void sheets_files::write(const std::wstring & RootPath)
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"worksheets";
     NSDirectory::CreateDirectory(path.c_str());
 
-	for (int i = 0; i < sheets_.size(); i++)
+	for (size_t i = 0; i < sheets_.size(); i++)
     {
-        if (sheets_[i])
+        if (!sheets_[i]) continue;
+           
+		const std::wstring fileName = std::wstring(L"sheet") + std::to_wstring(i + 1) + L".xml";
+        content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+        static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml";
+        contentTypes.add_override(std::wstring(L"/xl/worksheets/") + fileName, kWSConType);
+
+        if (rels_)
         {
-            const std::wstring fileName = std::wstring(L"sheet") + std::to_wstring(i + 1) + L".xml";
-            content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
-            static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml";
-            contentTypes.add_override(std::wstring(L"/xl/worksheets/") + fileName, kWSConType);
-
-            if (rels_)
-            {
-                const std::wstring id = std::wstring(L"sId") + std::to_wstring(i + 1);
-                static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet";
-                const std::wstring fileRef = std::wstring(L"worksheets/") + fileName;
-                rels_->add(id, kWSRel, fileRef);
-            }
-
-            sheets_[i]->get_rel_file()->set_file_name(fileName + L".rels"); 
-            
-			rels_files relFiles;
-            relFiles.add_rel_file(sheets_[i]->get_rel_file());
-            relFiles.write(path);
-            
-            //item->get_rel_file()->write(path.string<std::wstring>());
-
-            package::simple_element(fileName, sheets_[i]->str()).write(path);
+            const std::wstring id = std::wstring(L"sId") + std::to_wstring(i + 1);
+            static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet";
+            const std::wstring fileRef = std::wstring(L"worksheets/") + fileName;
+            rels_->add(id, kWSRel, fileRef);
         }
+
+        sheets_[i]->get_rel_file()->set_file_name(fileName + L".rels"); 
+        
+		rels_files relFiles;
+        relFiles.add_rel_file(sheets_[i]->get_rel_file());
+        relFiles.write(path);
+        
+        //item->get_rel_file()->write(path.string<std::wstring>());
+
+        package::simple_element(fileName, sheets_[i]->str()).write(path);
     }
 }
 
@@ -213,6 +212,7 @@ void xl_files::write(const std::wstring & RootPath)
         charts_files_.write(path);
     }
     {
+		pivot_cache_files_.set_rels(&rels_files_);
         pivot_cache_files_.set_main_document(get_main_document());
         pivot_cache_files_.write(path);
     }
@@ -314,6 +314,13 @@ void xl_pivot_cache_files::write(const std::wstring & RootPath)
 				relFiles.add_rel_file(pivot_caches_[i]->definitions_rels_file_);
 				relFiles.write(path);
 			}
+			if (rels_) //for workbook
+			{
+				const std::wstring id = std::wstring(L"pcId") + std::to_wstring(i + 1);
+				static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition";
+				const std::wstring fileRef = std::wstring(L"pivotCache/") + fileNameD;
+				rels_->add(id, kWSRel, fileRef);
+			}
 			std::wstring content_records = pivot_caches_[i]->str_r();
 			if (!content_records.empty())
 			{
@@ -371,7 +378,7 @@ void xl_drawings::write(const std::wstring & RootPath)
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"drawings";
     NSDirectory::CreateDirectory(path.c_str());
 
-	for (int i = 0; i < drawings_.size(); i++)
+	for (size_t i = 0; i < drawings_.size(); i++)
     {
         package::simple_element(drawings_[i].filename, drawings_[i].content).write(path);        
 
@@ -406,7 +413,7 @@ void xl_comments::write(const std::wstring & RootPath)
 	std::wstring vml_path = RootPath + FILE_SEPARATOR_STR + L"drawings";
     NSDirectory::CreateDirectory(vml_path.c_str());
    
-	for (int i = 0; i < comments_.size(); i++)
+	for (size_t i = 0; i < comments_.size(); i++)
     {
 		content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
 

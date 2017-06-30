@@ -95,12 +95,11 @@ std::wostream & xlsx_pivot_cache_context::records()
 //}
 void xlsx_pivot_cache_context::dump_rels(rels & Rels)
 {
-//	impl_->dump_rels(Rels);
 	if (isRecordsPresent)
 	{
 		Rels.add(relationship(L"rId1",							
 						L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheRecords",
-						L"pivotCache/pivotCacheDefinition" + std::to_wstring(index) + L".xml", L""));
+						L"pivotCacheRecords" + std::to_wstring(index) + L".xml", L""));
 	}
 }
 void xlsx_pivot_cache_context::write_to(std::wostream & strm)
@@ -109,13 +108,14 @@ void xlsx_pivot_cache_context::write_to(std::wostream & strm)
 	{
 		CP_XML_NODE(L"pivotCacheDefinition")
 		{          
-            CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+            CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 		
 			if (isRecordsPresent)
 			{
 				CP_XML_ATTR(L"r:id", L"rId1" );
 			}
+			CP_XML_ATTR(L"recordCount", 0);
 			//refreshedBy="Debra S Dalgleish" 
 			//refreshedDate="39449.496381365738" 
 			//createdVersion="1" 
@@ -135,8 +135,10 @@ void xlsx_pivot_cache_context::write_records_to(std::wostream & strm)
 	{
 		CP_XML_NODE(L"pivotCacheRecords")
 		{          
-            CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+            CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+
+			CP_XML_ATTR(L"count", 0);
 
 			CP_XML_STREAM() << impl_->recordsData_.str();
 		}

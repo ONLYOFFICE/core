@@ -165,7 +165,7 @@ void xlsx_conversion_context::end_document()
 	{
 		xlsx_xml_worksheet_ptr & sheet = sheets_[i];
         count++;
-		const std::wstring id = std::wstring(L"sId") + boost::lexical_cast<std::wstring>(count);
+		const std::wstring slideRId = std::wstring(L"sId") + std::to_wstring(count);
 
         package::sheet_content_ptr content = package::sheet_content::create();
  ////////////////////////////////////////////////////////////////////////////////////////////       
@@ -219,7 +219,7 @@ void xlsx_conversion_context::end_document()
                 CP_XML_ATTR(L"name",	sheet->name());
                 CP_XML_ATTR(L"sheetId", count);
                 CP_XML_ATTR(L"state",	sheet->state()	);
-                CP_XML_ATTR(L"r:id",	id);            
+                CP_XML_ATTR(L"r:id",	slideRId);            
             }
         }
 
@@ -287,8 +287,6 @@ void xlsx_conversion_context::end_document()
 						{
 							CP_XML_ATTR(L"cacheId", std::to_wstring(i));
 							CP_XML_ATTR(L"r:id", rId);
-		
-							//workbook_content.add_rels(relationship(rId, sType, sName));
 						}
 
 						pivot_caches_[i]->dump_rels(content->get_rels());

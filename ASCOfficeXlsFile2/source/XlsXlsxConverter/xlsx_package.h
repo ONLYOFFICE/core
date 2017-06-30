@@ -103,7 +103,6 @@ public:
 
     virtual void write(const std::wstring & RootPath);
 
-public:    
     std::vector<sheet_content_ptr> sheets_;
     rels_files * rels_;
 
@@ -126,11 +125,17 @@ class xl_pivot_cache_files  : public element
 public:
 	xl_pivot_cache_files(){}
 
-    void			add_pivot_cache(pivot_cache_content_ptr pivot_cache);
+	void set_rels(rels_files * rels)
+    {
+        rels_ = rels;
+    }
+	 
+	void			add_pivot_cache(pivot_cache_content_ptr pivot_cache);
 	virtual void	write(const std::wstring & RootPath);
     
     std::vector<pivot_cache_content_ptr> pivot_caches_;
 
+    rels_files * rels_;
 };
 ///////////////////////////////////////////////////////////
 
@@ -202,6 +207,7 @@ private:
     sheets_files			sheets_files_;
     xl_charts_files			charts_files_;
 	xl_pivot_cache_files	pivot_cache_files_;
+
 	element_ptr				theme_;
     element_ptr				workbook_;
 

@@ -347,7 +347,7 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 			count_sheets++;
 			xls_global_info->current_sheet = count_sheets;
 		
-			xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"Sheet_" + boost::lexical_cast<std::wstring>(count_sheets));
+			xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"Sheet_" + std::to_wstring(count_sheets));
 			xlsx_context->set_state(xls_global_info->sheets_state.size() > i ? xls_global_info->sheets_state[i] : L"visible");
 
 			convert(dynamic_cast<XLS::WorksheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get()));
@@ -356,7 +356,7 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 		{
 			count_chart_sheets++;
 			xls_global_info->current_sheet = -1; 
-			xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"ChartSheet_" + boost::lexical_cast<std::wstring>(count_chart_sheets));
+			xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"ChartSheet_" + std::to_wstring(count_chart_sheets));
 
 			convert_chart_sheet(dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get()));
 		}
@@ -639,7 +639,7 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 	xlsx_context->get_mediaitems().create_media_path(xlsx_path);
 
 	bool res = false;
-	std::wstring file_name = L"image" + boost::lexical_cast<std::wstring>(id);
+	std::wstring file_name = L"image" + std::to_wstring(id);
 	
 
 	if (type_ext == L"dib_data")

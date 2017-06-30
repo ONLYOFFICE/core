@@ -369,6 +369,7 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_records/SXNum.cpp \
     ../XlsFormat/Logic/Biff_records/SXPair.cpp \
     ../XlsFormat/Logic/Biff_records/SXRng.cpp \
+    ../XlsFormat/Logic/Biff_records/SxIsxoper.cpp \
     ../XlsFormat/Logic/Biff_structures/AddinUdf.cpp \
     ../XlsFormat/Logic/Biff_structures/AF12Criteria.cpp \
     ../XlsFormat/Logic/Biff_structures/AFDOper.cpp \

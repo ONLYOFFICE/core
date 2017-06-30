@@ -353,6 +353,22 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_records/XFCRC.cpp \
     ../XlsFormat/Logic/Biff_records/XFExt.cpp \
     ../XlsFormat/Logic/Biff_records/YMult.cpp \
+    ../XlsFormat/Logic/Biff_records/SxBool.cpp\
+    ../XlsFormat/Logic/Biff_records/SXDB.cpp\
+    ../XlsFormat/Logic/Biff_records/SXDBB.cpp \
+    ../XlsFormat/Logic/Biff_records/SXDBEx.cpp \
+    ../XlsFormat/Logic/Biff_records/SXDtr.cpp \
+    ../XlsFormat/Logic/Biff_records/SxErr.cpp \
+    ../XlsFormat/Logic/Biff_records/SXFDB.cpp \
+    ../XlsFormat/Logic/Biff_records/SXFDBType.cpp \
+    ../XlsFormat/Logic/Biff_records/SxFmla.cpp \
+    ../XlsFormat/Logic/Biff_records/SXFormula.cpp \
+    ../XlsFormat/Logic/Biff_records/SXInt.cpp \
+    ../XlsFormat/Logic/Biff_records/SxName.cpp \
+    ../XlsFormat/Logic/Biff_records/SxNil.cpp \
+    ../XlsFormat/Logic/Biff_records/SXNum.cpp \
+    ../XlsFormat/Logic/Biff_records/SXPair.cpp \
+    ../XlsFormat/Logic/Biff_records/SXRng.cpp \
     ../XlsFormat/Logic/Biff_structures/AddinUdf.cpp \
     ../XlsFormat/Logic/Biff_structures/AF12Criteria.cpp \
     ../XlsFormat/Logic/Biff_structures/AFDOper.cpp \
@@ -750,6 +766,13 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_unions/UNKNOWNFRT.cpp \
     ../XlsFormat/Logic/Biff_unions/WINDOW.cpp \
     ../XlsFormat/Logic/Biff_unions/XFS.cpp \
+    ../XlsFormat/Logic/Biff_unions/DBB.cpp \
+    ../XlsFormat/Logic/Biff_unions/FDB.cpp \
+    ../XlsFormat/Logic/Biff_unions/PIVOTCACHE.cpp \
+    ../XlsFormat/Logic/Biff_unions/SXFMLA_bu.cpp \
+    ../XlsFormat/Logic/Biff_unions/SXFORMULA_bu.cpp \
+    ../XlsFormat/Logic/Biff_unions/SXOPER.cpp
+    ../XlsFormat/Logic/Biff_unions/SXRANGE.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/Property_Structures.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertyFactory.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySet.cpp \

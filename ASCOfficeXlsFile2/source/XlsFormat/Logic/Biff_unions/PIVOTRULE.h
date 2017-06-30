@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of PIVOTRULE union of records 
 class PIVOTRULE: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTRULE)
@@ -49,7 +47,10 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typePIVOTRULE;
+	static const ElementType type = typePIVOTRULE;
+
+	BaseObjectPtr				m_SxRule;
+	std::vector<BaseObjectPtr>	m_arPRFILTER;
 };
 
 } // namespace XLS

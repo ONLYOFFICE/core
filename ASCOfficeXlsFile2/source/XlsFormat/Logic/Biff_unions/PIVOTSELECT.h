@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of PIVOTSELECT union of records 
 class PIVOTSELECT: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTSELECT)

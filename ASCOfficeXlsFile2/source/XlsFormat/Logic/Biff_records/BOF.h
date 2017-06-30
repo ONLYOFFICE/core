@@ -59,12 +59,12 @@ public:
 
 	typedef enum
 	{
-		st_Workbook = 0x0005,
-		st_Globals = st_Workbook,
-		st_Dialog = 0x0010,
-		st_Worksheet = st_Dialog,
-		st_Chart = 0x0020,
-		st_Macro = 0x040
+		st_Workbook		= 0x0005,
+		st_Globals		= st_Workbook,
+		st_Dialog		= 0x0010,
+		st_Worksheet	= st_Dialog,
+		st_Chart		= 0x0020,
+		st_Macro		= 0x040
 	} SubstreamType;
 
 

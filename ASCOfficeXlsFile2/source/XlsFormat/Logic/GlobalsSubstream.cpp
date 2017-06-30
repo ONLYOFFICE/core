@@ -325,7 +325,10 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					count--;
 				}
 			}break;
-			case rt_DocRoute:			proc.repeated<DOCROUTE>(0, 0);				break;
+			case rt_DocRoute:
+			{
+				count = proc.repeated<DOCROUTE>(0, 0);
+			}break;
 			case rt_UserBView:
 			{
 				count = proc.repeated<UserBView>(0, 0);

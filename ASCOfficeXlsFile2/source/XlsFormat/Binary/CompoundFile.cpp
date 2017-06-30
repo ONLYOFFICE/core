@@ -96,8 +96,6 @@ CompoundFile::CompoundFile(const std::wstring & file_path, const ReadWriteMode m
 	storage_ = NULL;
 	Open(file_path, mode);
 }
-
-
 // Opens "Workbook" stream and returns the only reference
 CFStreamPtr CompoundFile::getWorkbookStream()
 {
@@ -113,61 +111,6 @@ CFStreamPtr CompoundFile::getWorkbookStream()
 		stream = getNamedStream("book");
 	return stream;
 }
-
-
-// Creates "Workbook" stream and returns the only reference
-CFStreamPtr CompoundFile::createWorkbookStream()
-{
-	return createNamedStream("Workbook");
-}
-
-void CompoundFile::closeWorkbookStream()
-{
-	return closeNamedStream("Workbook");
-}
-
-
-// Opens "SummaryInformation" stream and returns the only reference
-CFStreamPtr CompoundFile::getSummaryInformationStream()
-{
-	return getNamedStream("SummaryInformation");
-}
-
-
-// Creates "SummaryInformation" stream and returns the only reference
-CFStreamPtr CompoundFile::createSummaryInformationStream()
-{
-	return createNamedStream("SummaryInformation");
-}
-
-
-// Closes "SummaryInformation" stream
-void CompoundFile::closeSummaryInformationStream()
-{
-	return closeNamedStream("SummaryInformation");
-}
-
-
-// Opens "SummaryInformation" stream and returns the only reference
-CFStreamPtr CompoundFile::getDocumentSummaryInformationStream()
-{
-	return getNamedStream("DocumentSummaryInformation");
-}
-
-
-// Creates "SummaryInformation" stream and returns the only reference
-CFStreamPtr CompoundFile::createDocumentSummaryInformationStream()
-{
-	return createNamedStream("DocumentSummaryInformation");
-}
-
-
-// Closes "SummaryInformation" stream
-void CompoundFile::closeDocumentSummaryInformationStream()
-{
-	return closeNamedStream("DocumentSummaryInformation");
-}
-
 
 CFStreamPtr CompoundFile::getNamedStream(const std::string& name)
 {

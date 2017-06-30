@@ -112,6 +112,24 @@
 /*  EXTERNAL INTERFACE SETTINGS FOR CONFIGURE CAPABLE SYSTEMS ONLY  */
 /* ================================================================ */
 
+/*
+ * Define WIN32 when build target is Win32 API
+ */
+
+#if (defined(_WIN32) || defined(__WIN32__)) && \
+     !defined(WIN32) && !defined(__SYMBIAN32__)
+#define WIN32
+#endif
+
+#if defined(WIN32) && !defined(_WIN32_WCE) && !defined(__CYGWIN__)
+#if !(defined(_WINSOCKAPI_) || defined(_WINSOCK_H) || \
+      defined(__LWIP_OPT_H__) || defined(LWIP_HDR_OPT_H))
+/* The check above prevents the winsock2 inclusion if winsock.h already was
+   included, since they can't co-exist without problems */
+#  define CURL_PULL_WS2TCPIP_H
+#endif
+#endif
+
 /* Configure process defines this to 1 when it finds out that system  */
 /* header file ws2tcpip.h must be included by the external interface. */
 /* #undef CURL_PULL_WS2TCPIP_H */
@@ -145,9 +163,12 @@
 #  include <inttypes.h>
 #endif
 
+#if !defined(WIN32) && !defined(_WIN32_WCE)
+#  define CURL_PULL_SYS_SOCKET_H
+#endif
+
 /* Configure process defines this to 1 when it finds out that system    */
 /* header file sys/socket.h must be included by the external interface. */
-#define CURL_PULL_SYS_SOCKET_H 1
 #ifdef CURL_PULL_SYS_SOCKET_H
 #  include <sys/socket.h>
 #endif

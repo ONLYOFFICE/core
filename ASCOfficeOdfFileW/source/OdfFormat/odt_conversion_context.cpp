@@ -283,6 +283,8 @@ void odt_conversion_context::end_drawings()
 }
 void odt_conversion_context::start_paragraph(bool styled)
 {
+	if (current_field_.enabled && !current_field_.result) return;	//Стандартное_составное_письмо.docx
+	
 	if (is_paragraph_in_current_section_ && !styled) 
 	{
 		styles_context()->create_style(L"", odf_types::style_family::Paragraph, true, false, -1);					
@@ -374,8 +376,9 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
 {
 	if (current_field_.enabled == false) 	return;
 
+	current_field_.type = 0; //users field
 	int res1 = instr.find(L"HYPERLINK");
-	if (res1 >=0)							//это не поле - это hyperlink
+	if (res1 >= 0)							//это не поле - это hyperlink
 	{
 		current_field_.type = 1;
 		
@@ -390,24 +393,24 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
         }
 	}
 	res1 = instr.find(L"NUMPAGES");
-	if (res1 >=0 && current_field_.type == 0)
+	if (res1 >= 0 && current_field_.type == 0)
 	{
 		current_field_.type = 3;
 	}	
 	res1 = instr.find(L"PAGEREF");
-	if (res1 >=0 && current_field_.type == 0 )	//это не поле - это bookmark
+	if (res1 >= 0 && current_field_.type == 0 )	//это не поле - это bookmark
 	{
 		current_field_.type = 5;
 		if (instr.length() > 9)
 			current_field_.value = instr.substr(9, instr.length()-5);
 	}
 	res1 = instr.find(L"PAGE");
-	if (res1 >=0 && current_field_.type == 0)
+	if (res1 >= 0 && current_field_.type == 0)
 	{
 		current_field_.type = 2;
 	}
 	res1 = instr.find(L"TIME");
-	if (res1 >=0 && current_field_.type == 0)
+	if (res1 >= 0 && current_field_.type == 0)
 	{
 		current_field_.type = 4;
 	}
@@ -418,20 +421,34 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
 	}
 ////////////////////////////////////////// 
 	res1 = instr.find(L"@");
-	if (res1 >=0)
+	if (res1 >= 0)
 	{
-		current_field_.format = instr.substr(res1+1, instr.length());
+		current_field_.format = instr.substr(res1 + 1, instr.length());
+	}
+
+	if (current_field_.type == 0)
+	{
+		res1 = instr.find(L" ");
+		if (res1 >= 0)
+		{
+			current_field_.name = instr.substr(0, res1);
+		}		
 	}
 }
 void odt_conversion_context::start_field(bool in_span)
 {
 	current_field_.enabled = true;
-
+	
+	current_field_.result = false;
 	current_field_.in_span = in_span;
-	current_field_.value = L"";
-	current_field_.type = 0;
+	current_field_.value.clear();
+	current_field_.name.clear();
+	current_field_.type = 0; // users field
 }
-
+void odt_conversion_context::separate_field()
+{
+	current_field_.result = true;
+}
 void odt_conversion_context::set_master_page_name(std::wstring master_name)
 {
 	if (current_root_elements_.size() < 1)// return; - эффект_штурмовика.docx - 1 страница !! (и ваще - 
@@ -566,13 +583,17 @@ void odt_conversion_context::end_field()
 	}
 	current_field_.value	= L"";
 	current_field_.format	= L"";
+	current_field_.name		= L"";
 
-	current_field_.enabled = false;
-	current_field_.started = false;
-	current_field_.in_span = false;
+	current_field_.result	= false;
+	current_field_.enabled	= false;
+	current_field_.started	= false;
+	current_field_.in_span	= false;
 }
 void odt_conversion_context::end_paragraph()
 {
+	if (current_field_.enabled && !current_field_.result) return;	//Стандартное_составное_письмо.docx
+	
 	text_context()->end_paragraph();
 	
 	flush_section();

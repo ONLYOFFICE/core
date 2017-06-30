@@ -99,6 +99,7 @@ public:
 	unsigned int								last_AXES_id;
 	const static unsigned int					initial_AXES_id = 0x2000000;
 
+	std::map<int, BaseObjectPtr>						mapPivotCache;
 	std::map<std::wstring, std::vector<std::wstring>>	mapDefineNames;
 	std::vector<std::wstring>							arDefineNames;
 	std::vector<std::wstring>							arExternalNames;

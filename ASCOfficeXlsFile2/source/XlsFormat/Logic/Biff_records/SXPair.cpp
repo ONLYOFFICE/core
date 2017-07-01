@@ -51,6 +51,13 @@ BaseObjectPtr SXPair::clone()
 
 void SXPair::readFields(CFRecord& record)
 {
+	unsigned short reserved1, flags;
+
+	record >> isxvd >> iCache >> reserved1 >> flags;
+	
+	fFormula	= GETBIT(flags, 0);
+	fPhysical	= GETBIT(flags, 3);
+	fRelative	= GETBIT(flags, 4);
 }
 
 } // namespace XLS

@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
-//#include "../Biff_structures/CellRangeRef.h"
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
@@ -51,7 +51,7 @@ public:
 
 	static const ElementType type = typeSXNum;
 
-
+	Xnum num;
 };
 
 } // namespace XLS

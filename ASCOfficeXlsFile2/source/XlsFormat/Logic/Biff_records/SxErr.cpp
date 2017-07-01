@@ -51,6 +51,7 @@ BaseObjectPtr SxErr::clone()
 
 void SxErr::readFields(CFRecord& record)
 {
+	record >> wbe;
 }
 
 } // namespace XLS

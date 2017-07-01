@@ -51,6 +51,7 @@ BaseObjectPtr SXNum::clone()
 
 void SXNum::readFields(CFRecord& record)
 {
+	record >> num;
 }
 
 } // namespace XLS

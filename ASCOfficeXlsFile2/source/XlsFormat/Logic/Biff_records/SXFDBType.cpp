@@ -51,6 +51,7 @@ BaseObjectPtr SXFDBType::clone()
 
 void SXFDBType::readFields(CFRecord& record)
 {
+	record >> wTypeSql; 
 }
 
 } // namespace XLS

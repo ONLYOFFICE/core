@@ -32,7 +32,6 @@
 #pragma once
 
 #include "BiffRecord.h"
-//#include "../Biff_structures/CellRangeRef.h"
 
 namespace XLS
 {
@@ -51,7 +50,7 @@ public:
 
 	static const ElementType type = typeSXInt;
 
-
+	short num;
 };
 
 } // namespace XLS

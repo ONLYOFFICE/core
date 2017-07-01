@@ -51,7 +51,12 @@ public:
 
 	static const ElementType type = typeSXPair;
 
+	unsigned short	isxvd;
+	short			iCache;
 
+	bool			fFormula;
+	bool			fPhysical;
+	bool			fRelative;
 };
 
 } // namespace XLS

@@ -51,6 +51,12 @@ public:
 
 	static const ElementType type = typeSXDtr;
 
+	unsigned short	yr;
+	unsigned short	mon;
+	unsigned char	dom;
+	unsigned char	hr;
+	unsigned char	min;
+	unsigned char	sec;
 
 };
 

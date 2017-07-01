@@ -32,7 +32,6 @@
 #pragma once
 
 #include "BiffRecord.h"
-//#include "../Biff_structures/CellRangeRef.h"
 
 namespace XLS
 {
@@ -50,8 +49,6 @@ public:
 	void readFields(CFRecord& record);
 
 	static const ElementType type = typeSxNil;
-
-
 };
 
 } // namespace XLS

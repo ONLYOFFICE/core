@@ -51,6 +51,7 @@ BaseObjectPtr SXDtr::clone()
 
 void SXDtr::readFields(CFRecord& record)
 {
+	record >> yr >> mon >> dom >> hr >> min >> sec;
 }
 
 } // namespace XLS

@@ -51,6 +51,13 @@ BaseObjectPtr SXRng::clone()
 
 void SXRng::readFields(CFRecord& record)
 {
+	unsigned short flags;
+
+	record >> flags;
+
+	fAutoStart	= GETBIT(flags, 0);
+	fAutoEnd	= GETBIT(flags, 1);
+	iByType		= GETBITS(flags, 2, 4);
 }
 
 } // namespace XLS

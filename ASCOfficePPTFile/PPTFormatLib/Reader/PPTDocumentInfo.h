@@ -97,8 +97,13 @@ public:
 			{
 				delete pInfo;
 
-				if (pInfo->m_bEncrypt)	return false;
-				else					continue;
+				if (pInfo->m_bEncrypt)
+				{
+					m_oCurrentUser.m_bIsEncrypt = pInfo->m_bEncrypt;
+					return false;
+				}
+				else
+					continue;
 			}
 			
 			m_arUsers.push_back(pInfo);

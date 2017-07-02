@@ -32,8 +32,9 @@
 #pragma once
 
 #include "BiffRecord.h"
-//#include "../Biff_structures/BiffString.h"
-//#include "../Biff_structures/CellRangeRef.h"
+
+#include "../Biff_structures/PivotParsedFormula.h"
+
 
 namespace XLS
 {
@@ -52,36 +53,7 @@ public:
 
 	static const ElementType type = typeSxFmla;
 
-	//unsigned short	csxformat;
-	//unsigned short	cchErrorString;
-	//unsigned short	cchNullString;
-	//unsigned short	cchTag;
-	//unsigned short	csxselect;
-
-	//DRw				crwPage;
-	//ColU			ccolPage;
-
-	//bool			fAcrossPageLay;
-	//unsigned char	cWrapPage;
-	//bool			fEnableWizard;
-	//bool			fEnableDrilldown;
-	//bool			fEnableFieldDialog;
-	//bool			fPreserveFormatting;
-	//bool			fMergeLabels;
-	//bool			fDisplayErrorString;
-	//bool			fDisplayNullString;
-	//bool			fSubtotalHiddenPageItems;
-
-	//unsigned short	cchPageFieldStyle;
-	//unsigned short	cchTableStyle;
-	//unsigned short	cchVacateStyle;
-
-	//XLUnicodeStringNoCch	stError;
-	//XLUnicodeStringNoCch	stDisplayNull;
-	//XLUnicodeStringNoCch	stTag;
-	//XLUnicodeStringNoCch	stPageFieldStyle;
-	//XLUnicodeStringNoCch	stTableStyle;
-	//XLUnicodeStringNoCch	stVacateStyle;
+	PivotParsedFormula	fmla;
 };
 
 } // namespace XLS

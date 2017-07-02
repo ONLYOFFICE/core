@@ -613,6 +613,7 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_structures/DConnStringSequence.cpp \
     ../XlsFormat/Logic/Biff_structures/TxtWf.cpp \
     ../XlsFormat/Logic/Biff_structures/Xnum.cpp \
+    ../XlsFormat/Logic/Biff_structures/PivotParsedFormula.cpp \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSOCR.cpp \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSOSHADECOLOR.cpp \
     ../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtBlip.cpp \

@@ -29,31 +29,24 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "SxFmla.h"
+#include "ParsedFormula.h"
 
 namespace XLS
 {
 
-SxFmla::SxFmla()
+class PivotParsedFormula: public ParsedFormula
 {
-}
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PivotParsedFormula)
+public:
+	PivotParsedFormula();
 
+	BiffStructurePtr clone();
+	void load(CFRecord& record);
 
-SxFmla::~SxFmla()
-{
-}
-
-
-BaseObjectPtr SxFmla::clone()
-{
-	return BaseObjectPtr(new SxFmla(*this));
-}
-
-void SxFmla::readFields(CFRecord& record)
-{
-	fmla.load(record);
-}
+	unsigned short	cSxName;
+};
 
 } // namespace XLS
 

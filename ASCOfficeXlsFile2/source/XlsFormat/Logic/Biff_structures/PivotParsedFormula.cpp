@@ -30,29 +30,28 @@
  *
  */
 
-#include "SxFmla.h"
+#include "PivotParsedFormula.h"
+#include <Binary/CFRecord.h>
 
 namespace XLS
 {
 
-SxFmla::SxFmla()
+PivotParsedFormula::PivotParsedFormula()
+:	ParsedFormula(CellRef())
 {
 }
 
-
-SxFmla::~SxFmla()
+BiffStructurePtr PivotParsedFormula::clone()
 {
+	return BiffStructurePtr(new PivotParsedFormula(*this));
 }
 
-
-BaseObjectPtr SxFmla::clone()
+void PivotParsedFormula::load(CFRecord& record)
 {
-	return BaseObjectPtr(new SxFmla(*this));
-}
+	unsigned short cce;
 
-void SxFmla::readFields(CFRecord& record)
-{
-	fmla.load(record);
+	record >> cce >> cSxName;	
+	rgce.load(record, cce);
 }
 
 } // namespace XLS

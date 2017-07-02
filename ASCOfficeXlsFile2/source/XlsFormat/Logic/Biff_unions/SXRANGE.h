@@ -47,9 +47,13 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typeSXRANGE;
+	int serialize(std::wostream & strm);
 
-	BaseObjectPtr	m_SXRng;	
+	static const ElementType type = typeSXRANGE;
+
+	BaseObjectPtr				m_SXRng;
+	std::vector<BaseObjectPtr>	m_arSXNum;
+	std::vector<BaseObjectPtr>	m_arSXDtr;
 };
 
 } // namespace XLS

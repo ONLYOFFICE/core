@@ -29,40 +29,67 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#include "oox_package.h"
+#include "xlsx_pivots_context.h"
+
+
+#include <boost/make_shared.hpp>
+#include <simple_xml_writer.h>
 
 namespace oox {
 
-class xlsx_pivot_cache_context;
-typedef _CP_PTR(xlsx_pivot_cache_context) xlsx_pivot_cache_context_ptr;
 
-class xlsx_pivot_cache_context
+
+class xlsx_pivots_context::Impl
 {
 public:
-    xlsx_pivot_cache_context();
-    ~xlsx_pivot_cache_context();
+	struct _pivot_cache
+	{	
+		std::wstring  definitionsData_;
+		std::wstring  recordsData_;
+	};
 
-	std::wostream & definitions();
-	std::wostream & records();
-
-	void write_to(std::wostream & strm);
-	void write_records_to(std::wostream & strm);
-
-	void dump_rels(rels & Rels);
-
-	static xlsx_pivot_cache_context_ptr create();
-	//void add_rels(	bool isInternal,
-	//				std::wstring const & rid,
-	//				std::wstring const & target,
-	//				external_items::Type type);
-
-	bool	isRecordsPresent;
-	int		index;
-private:
-    class Impl;
-    _CP_PTR(Impl) impl_;
-              
+	Impl() {}
+    
+	std::vector<_pivot_cache> caches_;
 };
 
+xlsx_pivots_context::xlsx_pivots_context() : impl_(new xlsx_pivots_context::Impl())
+{
 }
+
+void xlsx_pivots_context::add_cache(std::wstring definitions, std::wstring records)
+{
+	Impl::_pivot_cache c = {definitions, records};
+	impl_->caches_.push_back(c);
+}
+
+int xlsx_pivots_context::get_cache_count()
+{
+	return (int)impl_->caches_.size();
+}
+void xlsx_pivots_context::dump_rels(int index, rels & Rels)
+{
+	if (!impl_->caches_[index].recordsData_.empty())
+	{
+		Rels.add(relationship(L"rId1",							
+						L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheRecords",
+						L"pivotCacheRecords" + std::to_wstring(index) + L".xml", L""));
+	}
+}
+void xlsx_pivots_context::write_definitions_to(int index, std::wostream & strm)
+{
+	strm << impl_->caches_[index].definitionsData_;
+}
+
+void xlsx_pivots_context::write_records_to(int index, std::wostream & strm)
+{
+	strm << impl_->caches_[index].recordsData_;
+}
+
+xlsx_pivots_context::~xlsx_pivots_context()
+{
+}
+
+
+}
+

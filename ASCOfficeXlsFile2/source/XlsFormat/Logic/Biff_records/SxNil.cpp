@@ -39,7 +39,6 @@ SxNil::SxNil()
 {
 }
 
-
 SxNil::~SxNil()
 {
 }
@@ -53,5 +52,14 @@ void SxNil::readFields(CFRecord& record)
 {
 }
 
+int SxNil::serialize(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"m");
+	}
+	
+	return 0;
+}
 } // namespace XLS
 

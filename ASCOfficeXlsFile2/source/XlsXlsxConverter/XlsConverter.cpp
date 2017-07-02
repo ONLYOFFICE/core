@@ -1922,16 +1922,10 @@ void XlsConverter::convert(XLS::PIVOTCACHEDEFINITION * pivot_cached)
 {
 	if (pivot_cached == NULL) return;
 
-	xlsx_context->start_pivot_cache();
-		
-		pivot_cached->serialize(xlsx_context->current_pivot_cache().definitions());
-		
-		//if (pivot_cached->is_records())//?? 
-		{
-			xlsx_context->current_pivot_cache().isRecordsPresent = true;
-			
-			//pivot_cached->serialize_records(xlsx_context->current_pivot_cache().records());
-		}
+	std::wstringstream strmD, strmR;
 
-	xlsx_context->end_pivot_cache();
+	pivot_cached->serialize_definitions(strmD);
+	pivot_cached->serialize_records(strmR);
+
+	xlsx_context->get_pivots_context().add_cache(strmD.str(), strmR.str());
 }

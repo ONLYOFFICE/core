@@ -417,11 +417,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_pivot_cache_context.cpp"
+				RelativePath="..\XlsXlsxConverter\xlsx_pivots_context.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_pivot_cache_context.h"
+				RelativePath="..\XlsXlsxConverter\xlsx_pivots_context.h"
 				>
 			</File>
 			<File

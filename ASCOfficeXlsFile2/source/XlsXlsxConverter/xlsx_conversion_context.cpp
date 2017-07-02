@@ -84,17 +84,7 @@ xlsx_xml_worksheet & xlsx_conversion_context::current_sheet()
         throw std::runtime_error("internal error");
     }
 }
-xlsx_pivot_cache_context & xlsx_conversion_context::current_pivot_cache()
-{
-    if (!pivot_caches_.empty())
-    {
-        return *pivot_caches_.back().get();
-    }
-    else
-    {
-        throw std::runtime_error("internal error");
-    }
-}
+
 oox_chart_context & xlsx_conversion_context::current_chart()
 {
     if (!charts_.empty())
@@ -130,15 +120,6 @@ void xlsx_conversion_context::start_chart()
 
 }
 void xlsx_conversion_context::end_chart()
-{
-}
-
-void xlsx_conversion_context::start_pivot_cache()
-{
-	pivot_caches_.push_back(xlsx_pivot_cache_context::create());
-
-}
-void xlsx_conversion_context::end_pivot_cache()
 {
 }
 
@@ -246,6 +227,7 @@ void xlsx_conversion_context::end_document()
         {
             CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
             CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+			CP_XML_ATTR(L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006");
 
             CP_XML_NODE(L"bookViews")
             {
@@ -271,11 +253,12 @@ void xlsx_conversion_context::end_document()
 					CP_XML_STREAM() << str_;
 				}
 			}
-			if (!pivot_caches_.empty())
+			int pivot_cache_count = xlsx_pivots_context_.get_cache_count();
+			if (pivot_cache_count > 0)
 			{
 				CP_XML_NODE(L"pivotCaches")
 				{
-					for (size_t i = 0; i < pivot_caches_.size(); i++)
+					for (int i = 0; i < pivot_cache_count; i++)
 					{
 						std::wstring				rId		= L"pcId" + std::to_wstring(i+1);
 						static const std::wstring	sType	= L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition"; 
@@ -289,14 +272,10 @@ void xlsx_conversion_context::end_document()
 							CP_XML_ATTR(L"r:id", rId);
 						}
 
-						pivot_caches_[i]->dump_rels(content->get_rels());
-						pivot_caches_[i]->write_to(content->definitions());
+						xlsx_pivots_context_.dump_rels(i, content->get_rels());
+						xlsx_pivots_context_.write_definitions_to(i, content->definitions());
+						xlsx_pivots_context_.write_records_to(i, content->records());
 
-						if (pivot_caches_[i]->isRecordsPresent)
-						{
-							pivot_caches_[i]->write_records_to(content->records());
-
-						}
 						output_document_->get_xl_files().add_pivot_cache(content);	
 					}
 				}

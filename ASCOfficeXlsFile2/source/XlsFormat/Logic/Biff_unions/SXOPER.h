@@ -47,9 +47,11 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typeSXOPER;
+	int serialize(std::wostream & strm);
 
-	BaseObjectPtr	m_SXOPER;	
+	static const ElementType type = typeSXOPER;
+
+	BaseObjectPtr	m_element;	
 };
 
 } // namespace XLS

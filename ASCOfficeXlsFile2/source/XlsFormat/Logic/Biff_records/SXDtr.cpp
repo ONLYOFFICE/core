@@ -54,5 +54,21 @@ void SXDtr::readFields(CFRecord& record)
 	record >> yr >> mon >> dom >> hr >> min >> sec;
 }
 
+int SXDtr::serialize(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"d")
+		{ 
+			std::wstringstream s;
+			s << yr << L"-" << mon << L"-" << dom << L"T" << hr << L":" << min << L":" << sec;
+
+			CP_XML_ATTR(L"v", s.str());
+		}
+	}
+	
+	return 0;
+}
+
 } // namespace XLS
 

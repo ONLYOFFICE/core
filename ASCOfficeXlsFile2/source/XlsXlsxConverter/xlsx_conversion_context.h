@@ -41,7 +41,7 @@
 #include "xlsx_drawing_context.h"
 #include "xlsx_chart_context.h"
 #include "xlsx_comments_context.h"
-#include "xlsx_pivot_cache_context.h"
+#include "xlsx_pivots_context.h"
 
 #include "xlsx_output_xml.h"
 
@@ -71,9 +71,6 @@ public:
     void start_chart();
     void end_chart();
 
-    void start_pivot_cache();
-    void end_pivot_cache();
-
 	std::wostream					& shared_strings()		{ return xlsx_shared_strings_; }    
  	std::wostream					& defined_names()		{ return xlsx_defined_names_; }    
 	std::wostream					& workbook_views()		{ return xlsx_workbook_views_; }
@@ -84,8 +81,8 @@ public:
     xlsx_xml_worksheet				& current_sheet();
  
 	oox_chart_context				& current_chart();
-	xlsx_pivot_cache_context		& current_pivot_cache();
 
+	xlsx_pivots_context				& get_pivots_context()	{return xlsx_pivots_context_;}
 	xlsx_drawing_context			& get_drawing_context();
 	xlsx_drawing_context_handle		& get_drawing_context_handle();	
  	xlsx_comments_context			& get_comments_context();
@@ -102,7 +99,6 @@ private:
 
     std::vector<xlsx_xml_worksheet_ptr>			sheets_;
     std::vector<oox_chart_context_ptr>			charts_;
-	std::vector<xlsx_pivot_cache_context_ptr>	pivot_caches_;
  
     //std::wstringstream                  defaultOutput_;
     //std::pair<float,float>              maxDigitSize_;
@@ -111,6 +107,7 @@ private:
 
 	size_t								next_vml_file_id_; //используется для footer/header & comments
   
+	xlsx_pivots_context					xlsx_pivots_context_;
     xlsx_table_context					xlsx_table_context_;
     xlsx_text_context					xlsx_text_context_;
 

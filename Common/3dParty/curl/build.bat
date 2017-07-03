@@ -9,6 +9,14 @@ if defined TARGET (
 	SET PLATFORM=%TARGET%
 )
 
+if "%TARGET%" == "win-32" (
+  SET PLATFORM=x86
+)
+
+if "%TARGET%" == "win-64" (
+  SET PLATFORM=x64
+)
+
 if "%PLATFORM%" == "win_32" (
   SET MACHINE=x86
 )

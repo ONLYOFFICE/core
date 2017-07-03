@@ -33,7 +33,13 @@
 #include "PIVOTVIEW.h"
 #include "PIVOTCORE.h"
 #include "PIVOTFRT.h"
+#include "PIVOTVD.h"
+#include "PIVOTIVD.h"
+#include "PIVOTPI.h"
+#include "PIVOTLI.h"
+#include "PIVOTEX.h"
 
+#include "../Biff_records/SXDI.h"
 #include "../Biff_records/SxView.h"
 
 namespace XLS
@@ -90,13 +96,10 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 		{ 
 			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
 			
-			CP_XML_ATTR(L"cacheId",				view->iCache); 
 			CP_XML_ATTR(L"name",				view->stTable.value()); 
-			CP_XML_ATTR(L"dataCaption",			view->stData.value()); 
+			CP_XML_ATTR(L"cacheId",				view->iCache); 
 			CP_XML_ATTR(L"useAutoFormatting",	view->fAutoFormat); 
-
 			CP_XML_ATTR(L"dataOnRows",			view->sxaxis4Data.bRw); 
-
 			CP_XML_ATTR(L"autoFormatId",		view->itblAutoFmt);
 			CP_XML_ATTR(L"applyNumberFormats",	view->fAtrNum);
 			CP_XML_ATTR(L"applyBorderFormats",	view->fAtrBdr); 
@@ -104,6 +107,7 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 			CP_XML_ATTR(L"applyPatternFormats",	view->fAtrPat);
 			CP_XML_ATTR(L"applyAlignmentFormats",	view->fAtrAlc);
 			CP_XML_ATTR(L"applyWidthHeightFormats",	view->fAtrProc);
+			CP_XML_ATTR(L"dataCaption",			view->stData.value()); 
 			//updatedVersion="2" 
 			//asteriskTotals="1" 
 			//showMemberPropertyTips="0" 
@@ -124,31 +128,65 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 			}
 			CP_XML_NODE(L"pivotFields")
 			{
-				CP_XML_ATTR(L"count", view->cDim);
+				CP_XML_ATTR(L"count", view->cDim);//Sxvd 
+				for (size_t i = 0; i <  core->m_arPIVOTVD.size(); i++)
+				{
+					core->m_arPIVOTVD[i]->serialize(CP_XML_STREAM());
+				}
 			}
-			CP_XML_NODE(L"rowFields")
+			if (core->m_arPIVOTIVD.size() == 2)//0 or 2
 			{
-				CP_XML_ATTR(L"count", view->cDimRw);
+				CP_XML_NODE(L"rowFields")
+				{
+					CP_XML_ATTR(L"count", view->cDimRw);
+
+					PIVOTIVD* ivd = dynamic_cast<PIVOTIVD*>(core->m_arPIVOTIVD[0].get());
+					ivd->serialize(CP_XML_STREAM());
+				}
 			}
 			CP_XML_NODE(L"rowItems")
 			{
 				CP_XML_ATTR(L"count", view->cRw);
+				//for (size_t i = 0; i <  m_arPIVOTLI.size(); i++)
+				//{
+				//	PIVOTLI* line = dynamic_cast<PIVOTLI*>(m_arPIVOTLI[i].get());
+				//	m_arPIVOTIVD[i]->serialize(CP_XML_STREAM());
+				//}
 			}
-			CP_XML_NODE(L"colFields")
+			if (core->m_arPIVOTIVD.size() == 2)//0 or 2
 			{
-				CP_XML_ATTR(L"count", view->cDimCol);
+				CP_XML_NODE(L"colFields")
+				{
+					CP_XML_ATTR(L"count", view->cDimCol);
+					
+					PIVOTIVD* ivd = dynamic_cast<PIVOTIVD*>(core->m_arPIVOTIVD[1].get());
+					ivd->serialize(CP_XML_STREAM());
+				}
 			}
 			CP_XML_NODE(L"colItems")
 			{
 				CP_XML_ATTR(L"count", view->cCol);
+				//for (size_t i = 0; i <  m_arPIVOTLI.size(); i++)
+				//{
+				//	m_arPIVOTIVD[i]->serialize(CP_XML_STREAM());
+				//}
 			}
-			CP_XML_NODE(L"pageFields")
+			if (core->m_PIVOTPI)
 			{
-				CP_XML_ATTR(L"count", view->cDimPg);
+				CP_XML_NODE(L"pageFields")
+				{
+					CP_XML_ATTR(L"count", view->cDimPg);
+					
+					core->m_PIVOTPI->serialize(CP_XML_STREAM());
+				}
 			}
 			CP_XML_NODE(L"dataFields")
 			{
 				CP_XML_ATTR(L"count", view->cDimData);
+				for (size_t i = 0; i <  core->m_arSXDI.size(); i++)
+				{
+					core->m_arSXDI[i]->serialize(CP_XML_STREAM());
+				}
 			}
 			//CP_XML_NODE(L"pivotTableStyleInfo")
 			//{

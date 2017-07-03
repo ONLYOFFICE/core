@@ -51,7 +51,6 @@ public:
 	static const ElementType type = typeSxIvd;
 
 	std::vector<short>	rgSxivd;
-
 };
 
 } // namespace XLS

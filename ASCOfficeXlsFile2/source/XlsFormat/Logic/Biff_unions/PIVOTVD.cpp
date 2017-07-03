@@ -31,29 +31,25 @@
  */
 
 #include "PIVOTVD.h"
-#include <Logic/Biff_records/Sxvd.h>
-#include <Logic/Biff_records/SXVI.h>
-#include <Logic/Biff_records/SXVDEx.h>
+#include "../Biff_records/Sxvd.h"
+#include "../Biff_records/SXVI.h"
+#include "../Biff_records/SXVDEx.h"
 
 namespace XLS
 {
-
 
 PIVOTVD::PIVOTVD()
 {
 }
 
-
 PIVOTVD::~PIVOTVD()
 {
 }
-
 
 BaseObjectPtr PIVOTVD::clone()
 {
 	return BaseObjectPtr(new PIVOTVD(*this));
 }
-
 
 // PIVOTVD = Sxvd *SXVI SXVDEx
 const bool PIVOTVD::loadContent(BinProcessor& proc)
@@ -79,6 +75,39 @@ const bool PIVOTVD::loadContent(BinProcessor& proc)
 
 	return true;
 }
+int PIVOTVD::serialize(std::wostream & strm)
+{
+	Sxvd*	vd		= dynamic_cast<Sxvd*>(m_Sxvd.get());
+	SXVDEx* vd_ex	= dynamic_cast<SXVDEx*>(m_SXVDEx.get());
 
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"pivotField")
+		{ 
+			//CP_XML_ATTR(L"axis", ); 
+			//CP_XML_ATTR(L"compact", ); 
+			//CP_XML_ATTR(L"outline", ); 
+			//CP_XML_ATTR(L"subtotalTop", ); 
+			//CP_XML_ATTR(L"showAll", ); 
+			//CP_XML_ATTR(L"includeNewItemsInFilter", ); 
+			//CP_XML_ATTR(L"sortType", ); 
+			//CP_XML_ATTR(L"rankBy", ); 
+			//CP_XML_ATTR(L"axis", ); 
+
+			if (!m_arSXVI.empty())
+			{
+				CP_XML_NODE(L"items")
+				{
+					CP_XML_ATTR(L"count", m_arSXVI.size()); 
+					for (size_t i = 0; i < m_arSXVI.size(); i++)
+					{
+						m_arSXVI[i]->serialize(CP_XML_STREAM());
+					}
+				}
+			}
+		}
+	}
+	return 0;
+}
 } // namespace XLS
 

@@ -1137,12 +1137,24 @@ void OoxConverter::convert(PPTX::Logic::BodyPr *oox_bodyPr)
 		//+ style section
 		//+element text:section в котором параграфы
 	}
-	if (oox_bodyPr->Fit.type == PPTX::Logic::TextFit::FitSpAuto)
-	{
-		//изменяемы размеры
-		odf_context()->drawing_context()->set_text_box_min_size(true);//уже выставленые в min
 
+	switch(oox_bodyPr->Fit.type)
+	{
+		case  PPTX::Logic::TextFit::FitSpAuto:
+		{//изменяемы размеры			
+			odf_context()->drawing_context()->set_text_box_min_size(true);//уже выставленые в min
+		}break;
+		case  PPTX::Logic::TextFit::FitNo:
+		{
+		}break;
+		case  PPTX::Logic::TextFit::FitNormAuto:
+		{
+		}break;
+		default:
+		{
+		}
 	}
+
 	if (oox_bodyPr->fromWordArt.IsInit() && oox_bodyPr->prstTxWarp.IsInit())
 	{
 		for (size_t i = 0; i < oox_bodyPr->prstTxWarp->avLst.size(); i++)

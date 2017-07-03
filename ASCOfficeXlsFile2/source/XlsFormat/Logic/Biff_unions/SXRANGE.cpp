@@ -40,6 +40,32 @@
 namespace XLS
 {
 
+//  (3SXNum / (2SXDtr SXInt)
+class Parenthesis_SXRANGE: public ABNFParenthesis
+{
+	BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_SXRANGE)
+public:
+	BaseObjectPtr clone()
+	{
+		return BaseObjectPtr(new Parenthesis_SXRANGE(*this));
+	}
+
+	const bool loadContent(BinProcessor& proc)
+	{
+		int count = proc.repeated<SXNum>(0, 3);
+
+		if (count < 1)
+		{
+			count = proc.repeated<SXDtr>(0, 2);
+			if (count < 1)
+				return false;
+			if (proc.optional<SXInt>())
+				count++;
+		}
+		return (count == 3);
+	};
+};
+
 
 SXRANGE::SXRANGE()
 {
@@ -64,8 +90,71 @@ const bool SXRANGE::loadContent(BinProcessor& proc)
 	m_SXRng = elements_.back();
 	elements_.pop_back();
 
+	if(proc.optional<Parenthesis_SXRANGE>())
+	{
+		while(elements_.empty() == false)
+		{
+			SXNum* num = dynamic_cast<SXNum*>(elements_.front().get());
+			if (num)
+			{
+				m_arSXNum.push_back(elements_.front());
+			}
+			else
+			{
+				SXDtr* dtr = dynamic_cast<SXDtr*>(elements_.front().get());
+				if (dtr)
+				{
+					m_arSXDtr.push_back(elements_.front());
+				}
+			}
+			elements_.pop_front();
+		}
+	}
+
 	return true;
 }
 
+int SXRANGE::serialize(std::wostream & strm)
+{
+	SXRng* rng = dynamic_cast<SXRng*>(m_SXRng.get());
+
+	if (!rng) return 0;
+
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"rangePr")
+		{ 
+			switch(rng->iByType)
+			{
+			case 0:	CP_XML_ATTR(L"groupBy", L"range");		break;
+			case 1:	CP_XML_ATTR(L"groupBy", L"seconds");	break;
+			case 2:	CP_XML_ATTR(L"groupBy", L"minutes");	break;
+			case 3:	CP_XML_ATTR(L"groupBy", L"hours");		break;
+			case 4:	CP_XML_ATTR(L"groupBy", L"days");		break;
+			case 5:	CP_XML_ATTR(L"groupBy", L"months");		break;
+			case 6:	CP_XML_ATTR(L"groupBy", L"quarters");	break;
+			case 7:	CP_XML_ATTR(L"groupBy", L"years");		break;
+			}
+			if (m_arSXDtr.size() == 2)
+			{
+				SXDtr* startDate = dynamic_cast<SXDtr*>(m_arSXDtr[0].get());
+				SXDtr* endDate = dynamic_cast<SXDtr*>(m_arSXDtr[1].get());
+
+				std::wstringstream s_start, s_end;
+				s_start << startDate->yr << L"-" << startDate->mon << L"-" << startDate->dom << L"T" << startDate->hr << L":" << startDate->min << L":" << startDate->sec;
+				s_end << endDate->yr << L"-" << endDate->mon << L"-" << endDate->dom << L"T" << endDate->hr << L":" << endDate->min << L":" << endDate->sec;
+				
+				CP_XML_ATTR(L"startDate", s_start.str());	
+				CP_XML_ATTR(L"endDate", s_end.str());	
+			}
+			if (m_arSXNum.size() == 3)
+			{
+			}
+		}
+	}
+
+	
+	return 0;
+}
 } // namespace XLS
 

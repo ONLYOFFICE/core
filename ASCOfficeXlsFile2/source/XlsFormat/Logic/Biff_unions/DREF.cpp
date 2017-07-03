@@ -43,17 +43,14 @@ DREF::DREF()
 {
 }
 
-
 DREF::~DREF()
 {
 }
-
 
 BaseObjectPtr DREF::clone()
 {
 	return BaseObjectPtr(new DREF(*this));
 }
-
 
 // DREF = DConName / DConBin / DConRef
 const bool DREF::loadContent(BinProcessor& proc)
@@ -68,8 +65,42 @@ const bool DREF::loadContent(BinProcessor& proc)
 			}
 		}
 	}
+	m_DCon = elements_.back();
+	elements_.pop_back();
 	return true;
 }
+
+int DREF::serialize(std::wostream & strm)
+{
+	if (!m_DCon)return 0;
+
+	DConName*	name	= dynamic_cast<DConName*>(m_DCon.get());
+	DConBin*	bin		= dynamic_cast<DConBin*>(m_DCon.get());
+	DConRef*	ref		= dynamic_cast<DConRef*>(m_DCon.get());
+	
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"cacheSource")
+		{
+			if (name)
+			{
+				CP_XML_ATTR(L"type", L"worksheet");
+				CP_XML_NODE(L"worksheetSource")
+				{
+					CP_XML_ATTR(L"name", name->stName.value());
+				}
+			}
+			else if(bin)
+			{
+			}
+			else if(ref)
+			{
+			}
+		}
+	}
+	return 0;
+}
+
 
 } // namespace XLS
 

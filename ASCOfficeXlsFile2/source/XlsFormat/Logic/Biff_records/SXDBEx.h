@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
-
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
@@ -50,6 +50,9 @@ public:
 	void readFields(CFRecord& record);
 
 	static const ElementType type = typeSXDBEx;
+
+	DateAsNum	numDate;
+	_UINT32		cSxFormula; //count formulas
 
 
 };

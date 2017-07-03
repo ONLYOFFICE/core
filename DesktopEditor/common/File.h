@@ -1148,6 +1148,7 @@ namespace NSFile
 
 #if defined(__linux__) || defined(_MAC) && !defined(_IOS)
         char buf[NS_FILE_MAX_PATH];
+        memset(buf, 0, NS_FILE_MAX_PATH);
         if (readlink ("/proc/self/exe", buf, NS_FILE_MAX_PATH) <= 0)
         {
 #ifdef _MAC

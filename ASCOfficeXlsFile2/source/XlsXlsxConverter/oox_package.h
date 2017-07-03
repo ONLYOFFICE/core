@@ -111,7 +111,7 @@ private:
 class rels_file;
 typedef boost::shared_ptr<rels_file> rels_file_ptr;
 
-/// \class rels_file
+//------------------------------------------------------------------------
 class rels_file : public element
 {
 public:
@@ -132,7 +132,7 @@ private:
     rels rels_;
 };
 
-/// \class rels_files
+//------------------------------------------------------------------------
 class rels_files : public element
 {
 public:
@@ -150,9 +150,7 @@ private:
     rels_file_ptr rels_file_;
 };
 
-
-////////////////////////////////////////
-///\class chart_files
+//------------------------------------------------------------------------
 class chart_content;
 typedef _CP_PTR(chart_content) chart_content_ptr;
 
@@ -173,8 +171,7 @@ private:
 	rels_file_ptr		rels_file_;
 };
 
-//---------------------------------------------------------------------------------------------
-
+//------------------------------------------------------------------------
 class document : public element
 {
 public:

@@ -369,6 +369,7 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_records/SXNum.cpp \
     ../XlsFormat/Logic/Biff_records/SXPair.cpp \
     ../XlsFormat/Logic/Biff_records/SXRng.cpp \
+    ../XlsFormat/Logic/Biff_records/SxIsxoper.cpp \
     ../XlsFormat/Logic/Biff_structures/AddinUdf.cpp \
     ../XlsFormat/Logic/Biff_structures/AF12Criteria.cpp \
     ../XlsFormat/Logic/Biff_structures/AFDOper.cpp \
@@ -612,6 +613,7 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_structures/DConnStringSequence.cpp \
     ../XlsFormat/Logic/Biff_structures/TxtWf.cpp \
     ../XlsFormat/Logic/Biff_structures/Xnum.cpp \
+    ../XlsFormat/Logic/Biff_structures/PivotParsedFormula.cpp \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSOCR.cpp \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSOSHADECOLOR.cpp \
     ../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtBlip.cpp \
@@ -771,7 +773,7 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_unions/PIVOTCACHE.cpp \
     ../XlsFormat/Logic/Biff_unions/SXFMLA_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/SXFORMULA_bu.cpp \
-    ../XlsFormat/Logic/Biff_unions/SXOPER.cpp
+    ../XlsFormat/Logic/Biff_unions/SXOPER.cpp \
     ../XlsFormat/Logic/Biff_unions/SXRANGE.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/Property_Structures.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertyFactory.cpp \
@@ -838,6 +840,7 @@ SOURCES +=  \
     ../XlsXlsxConverter/xlsx_tablecontext.cpp \
     ../XlsXlsxConverter/xlsx_textcontext.cpp \
     ../XlsXlsxConverter/xlsx_chart_context.cpp \
+    ../XlsXlsxConverter/xlsx_pivots_context.cpp \
     ../XlsXlsxConverter/xlsx_comments.cpp \
     ../XlsXlsxConverter/xlsx_comments_context.cpp \
 
@@ -1595,6 +1598,7 @@ HEADERS +=  \
     ../XlsXlsxConverter/xlsx_conversion_context.h \
     ../XlsXlsxConverter/xlsx_drawing_context.h \
     ../XlsXlsxConverter/xlsx_drawings.h \
+    ../XlsXlsxConverter/xlsx_pivots_context.cpp \
     ../XlsXlsxConverter/xlsx_hyperlinks.h \
     ../XlsXlsxConverter/xlsx_output_xml.h \
     ../XlsXlsxConverter/xlsx_package.h \

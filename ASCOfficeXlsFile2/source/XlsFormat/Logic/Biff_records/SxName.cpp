@@ -51,6 +51,10 @@ BaseObjectPtr SxName::clone()
 
 void SxName::readFields(CFRecord& record)
 {
+	unsigned short	flags;
+	record >> flags >> ifdb >> ifn >> csxpair;
+
+	fErrName = GETBIT(flags, 0);
 }
 
 } // namespace XLS

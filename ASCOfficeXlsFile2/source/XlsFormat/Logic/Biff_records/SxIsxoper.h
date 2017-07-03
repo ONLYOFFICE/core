@@ -31,26 +31,26 @@
  */
 #pragma once
 
-#include "BiffRecord.h"
+#include "BiffRecordContinued.h"
 
 namespace XLS
 {
 
-class SxNil: public BiffRecord
+	class SxIsxoper: public BiffRecordContinued
 {
-	BIFF_RECORD_DEFINE_TYPE_INFO(SxNil)
-	BASE_OBJECT_DEFINE_CLASS_NAME(SxNil)
+	BIFF_RECORD_DEFINE_TYPE_INFO(SxIsxoper)
+	BASE_OBJECT_DEFINE_CLASS_NAME(SxIsxoper)
 public:
-	SxNil();
-	~SxNil();
+	SxIsxoper();
+	~SxIsxoper();
 
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
 
-	int serialize(std::wostream & strm);
+	static const ElementType type = typeSxIsxoper;
 
-	static const ElementType type = typeSxNil;
+	std::vector<unsigned short> rgSxIsxoper;
 };
 
 } // namespace XLS

@@ -51,6 +51,7 @@ BaseObjectPtr SXDBEx::clone()
 
 void SXDBEx::readFields(CFRecord& record)
 {
+	record >> numDate >> cSxFormula;
 }
 
 } // namespace XLS

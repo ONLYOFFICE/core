@@ -170,7 +170,7 @@ int TxO::serialize (std::wostream & _stream)
 	
 	CP_XML_WRITER(_stream)    
 	{
-		for (int i = 0 ; i < TxOruns.rgTxoRuns.size(); i++)
+		for (size_t i = 0 ; i < TxOruns.rgTxoRuns.size(); i++)
 		{
 			Run *run = dynamic_cast<Run*>(TxOruns.rgTxoRuns[i].get());
 			if (run == NULL) continue;

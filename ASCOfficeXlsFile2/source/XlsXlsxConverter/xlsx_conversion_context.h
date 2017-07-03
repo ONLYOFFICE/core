@@ -41,6 +41,7 @@
 #include "xlsx_drawing_context.h"
 #include "xlsx_chart_context.h"
 #include "xlsx_comments_context.h"
+#include "xlsx_pivots_context.h"
 
 #include "xlsx_output_xml.h"
 
@@ -81,6 +82,7 @@ public:
  
 	oox_chart_context				& current_chart();
 
+	xlsx_pivots_context				& get_pivots_context()	{return xlsx_pivots_context_;}
 	xlsx_drawing_context			& get_drawing_context();
 	xlsx_drawing_context_handle		& get_drawing_context_handle();	
  	xlsx_comments_context			& get_comments_context();
@@ -95,9 +97,9 @@ private:
 
 	external_items						mediaitems_;
 
-    std::vector<xlsx_xml_worksheet_ptr> sheets_;
-    std::vector<oox_chart_context_ptr>  charts_;
-  
+    std::vector<xlsx_xml_worksheet_ptr>			sheets_;
+    std::vector<oox_chart_context_ptr>			charts_;
+ 
     //std::wstringstream                  defaultOutput_;
     //std::pair<float,float>              maxDigitSize_;
     //num_format_context                  num_format_context_;
@@ -105,6 +107,7 @@ private:
 
 	size_t								next_vml_file_id_; //используется для footer/header & comments
   
+	xlsx_pivots_context					xlsx_pivots_context_;
     xlsx_table_context					xlsx_table_context_;
     xlsx_text_context					xlsx_text_context_;
 

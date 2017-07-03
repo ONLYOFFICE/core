@@ -30,27 +30,41 @@
  *
  */
 
-#include "SXFDB.h"
+#include "SXDB.h"
 
 namespace XLS
 {
 
-SXFDB::SXFDB()
+SXDB::SXDB()
 {
 }
 
 
-SXFDB::~SXFDB()
+SXDB::~SXDB()
 {
 }
 
-BaseObjectPtr SXFDB::clone()
+BaseObjectPtr SXDB::clone()
 {
-	return BaseObjectPtr(new SXFDB(*this));
+	return BaseObjectPtr(new SXDB(*this));
 }
 
-void SXFDB::readFields(CFRecord& record)
+void SXDB::readFields(CFRecord& record)
 {
+	unsigned short	flags, unused2;
+	record >> crdbdb >> idstm >> flags >> unused2 >> cfdbdb >> cfdbTot >> crdbUsed >> vsType >> cchWho;	
+	
+	if (cchWho > 0 && cchWho < 0xffff)
+	{
+		rgb.setSize(cchWho);
+		record >> rgb;
+	}
+	fSaveData			= GETBIT(flags, 0);
+	fInvalid			= GETBIT(flags, 1);
+	fRefreshOnLoad		= GETBIT(flags, 2);
+	fOptimizeCache		= GETBIT(flags, 3);
+	fBackgroundQuery	= GETBIT(flags, 4);
+	fEnableRefresh		= GETBIT(flags, 5);
 }
 
 } // namespace XLS

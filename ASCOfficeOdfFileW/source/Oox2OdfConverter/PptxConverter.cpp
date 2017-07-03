@@ -1436,6 +1436,8 @@ void PptxConverter::convert_layout(PPTX::Logic::CSld *oox_slide)
 		
 		if (pShape.IsInit() && pShape->nvSpPr.nvPr.ph.is_init())
 		{
+			pShape->FillLevelUp();
+			
 			int type = 0;
 			if (pShape->nvSpPr.nvPr.ph->type.IsInit())
 				type = pShape->nvSpPr.nvPr.ph->type->GetBYTECode();

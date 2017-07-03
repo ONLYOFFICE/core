@@ -29,29 +29,30 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "BiffRecord.h"
+#include "PivotParsedFormula.h"
+#include <Binary/CFRecord.h>
 
 namespace XLS
 {
 
-class SxNil: public BiffRecord
+PivotParsedFormula::PivotParsedFormula()
+:	ParsedFormula(CellRef())
 {
-	BIFF_RECORD_DEFINE_TYPE_INFO(SxNil)
-	BASE_OBJECT_DEFINE_CLASS_NAME(SxNil)
-public:
-	SxNil();
-	~SxNil();
+}
 
-	BaseObjectPtr clone();
-	
-	void readFields(CFRecord& record);
+BiffStructurePtr PivotParsedFormula::clone()
+{
+	return BiffStructurePtr(new PivotParsedFormula(*this));
+}
 
-	int serialize(std::wostream & strm);
+void PivotParsedFormula::load(CFRecord& record)
+{
+	unsigned short cce;
 
-	static const ElementType type = typeSxNil;
-};
+	record >> cce >> cSxName;	
+	rgce.load(record, cce);
+}
 
 } // namespace XLS
 

@@ -86,7 +86,7 @@ public:
 
     std::pair<std::wstring, std::wstring> add_drawing_xml(std::wstring const & content, xlsx_drawings_rels_ptr rels)
     {//todooo отсчеты номеров файлов отдельно
-        const std::wstring id = boost::lexical_cast<std::wstring>(next_drawing_id_++);
+        const std::wstring id = std::to_wstring(next_drawing_id_++);
         const std::wstring fileName = std::wstring(L"drawing") + id + L".xml";
        
 		drawings_.push_back(drawing_elm(fileName, content, rels));
@@ -97,8 +97,8 @@ public:
 
     std::pair<std::wstring, std::wstring> add_drawing_vml(std::wstring const & content, xlsx_drawings_rels_ptr rels)
     {
-        const std::wstring drawing_id	= boost::lexical_cast<std::wstring>(next_drawing_id_++);
-		const std::wstring file_vml_id	= boost::lexical_cast<std::wstring>(next_vml_file_id_++);
+        const std::wstring drawing_id	= std::to_wstring(next_drawing_id_++);
+		const std::wstring file_vml_id	= std::to_wstring(next_vml_file_id_++);
 		const std::wstring fileName		= std::wstring(L"vmlDrawing") + file_vml_id + L".vml";
        
 		drawings_vml_.push_back(drawing_elm(fileName, content, rels));
@@ -587,7 +587,7 @@ void xlsx_drawing_context::serialize_group()
 					
 					if (drawing_state->name.empty())
 					{
-						drawing_state->name = L"Group_" + boost::lexical_cast<std::wstring>(count_object);
+						drawing_state->name = L"Group_" + std::to_wstring(count_object);
 					}
 					CP_XML_ATTR(L"name", drawing_state->name);
 					
@@ -641,24 +641,24 @@ void xlsx_drawing_context::serialize_shape_comment(_drawing_state_ptr & drawing_
 		std::wstringstream strmStyle;
 
 		strmStyle << L"position:absolute;";	
-		strmStyle << L"margin-left:" << boost::lexical_cast<std::wstring>(drawing_state->child_anchor.x / 12700.)	<< L"pt;";	//in pt (1 pt = 12700 emu)
-		strmStyle << L"margin-top:"	<< boost::lexical_cast<std::wstring>(drawing_state->child_anchor.y / 12700.)	<< L"pt;";
-		strmStyle << L"width:"		<< boost::lexical_cast<std::wstring>(drawing_state->child_anchor.cx / 12700.)	<< L"pt;";
-		strmStyle << L"height:"		<< boost::lexical_cast<std::wstring>(drawing_state->child_anchor.cy / 12700.)	<< L"pt;";
-		strmStyle << L"z-index:"		<< boost::lexical_cast<std::wstring>(drawing_state->id)	 << L";";
+		strmStyle << L"margin-left:" << std::to_wstring(drawing_state->child_anchor.x / 12700.)	<< L"pt;";	//in pt (1 pt = 12700 emu)
+		strmStyle << L"margin-top:"	<< std::to_wstring(drawing_state->child_anchor.y / 12700.)	<< L"pt;";
+		strmStyle << L"width:"		<< std::to_wstring(drawing_state->child_anchor.cx / 12700.)	<< L"pt;";
+		strmStyle << L"height:"		<< std::to_wstring(drawing_state->child_anchor.cy / 12700.)	<< L"pt;";
+		strmStyle << L"z-index:"		<< std::to_wstring(drawing_state->id)	 << L";";
 		
 		if (drawing_state->object.visible == false) 
 			strmStyle << L"visibility:hidden;";	
 
 		CP_XML_NODE(L"v:shape")
 		{
-			//CP_XML_ATTR(L"id"			, boost::lexical_cast<std::wstring>(drawing_state->object.id));
+			//CP_XML_ATTR(L"id"			, std::to_wstring(drawing_state->object.id));
 			CP_XML_ATTR(L"type"			, L"_x0000_t202");
 			CP_XML_ATTR(L"fillcolor"	, L"#" + drawing_state->fill.color.sRGB);
 
 			if (drawing_state->line.width > 0)
 			{
-				CP_XML_ATTR(L"strokeweight",  boost::lexical_cast<std::wstring>(drawing_state->line.width) +L"pt");
+				CP_XML_ATTR(L"strokeweight",  std::to_wstring(drawing_state->line.width) +L"pt");
 			}
 			CP_XML_ATTR(L"style", strmStyle.str());
 
@@ -770,9 +770,9 @@ void xlsx_drawing_context::serialize_vml_pic(_drawing_state_ptr & drawing_state,
 			std::wstring style = std::wstring(L"position:absolute;margin-left:0;margin-top:0;");
 			
 			//todooo сделать "покороче" значения .. достаточно 2 знаков после запятой
-			style += std::wstring(L"width:")	+ boost::lexical_cast<std::wstring>(drawing_state->child_anchor.cx)	+ std::wstring(L"pt;");
-			style += std::wstring(L"height:")	+ boost::lexical_cast<std::wstring>(drawing_state->child_anchor.cy)	+ std::wstring(L"pt;");
-			style += std::wstring(L"z-index:")	+ boost::lexical_cast<std::wstring>(drawing_state->id) + std::wstring(L";");
+			style += std::wstring(L"width:")	+ std::to_wstring(drawing_state->child_anchor.cx)	+ std::wstring(L"pt;");
+			style += std::wstring(L"height:")	+ std::to_wstring(drawing_state->child_anchor.cy)	+ std::wstring(L"pt;");
+			style += std::wstring(L"z-index:")	+ std::to_wstring(drawing_state->id) + std::wstring(L";");
 
 			CP_XML_ATTR(L"style",style);
 
@@ -865,7 +865,7 @@ void xlsx_drawing_context::serialize_chart(_drawing_state_ptr & drawing_state, s
 					CP_XML_ATTR(L"id", drawing_state->id);
 					
 					if (drawing_state->name.empty())	
-						drawing_state->name = L"Chart_" + boost::lexical_cast<std::wstring>(count_object);
+						drawing_state->name = L"Chart_" + std::to_wstring(count_object);
 
 					CP_XML_ATTR(L"name", drawing_state->name);
 					if (!drawing_state->description.empty())
@@ -941,9 +941,9 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 					if (drawing_state->name.empty())
 					{
 						if (drawing_state->wordart.is)
-							drawing_state->name = L"WordArt_" + boost::lexical_cast<std::wstring>(count_object);
+							drawing_state->name = L"WordArt_" + std::to_wstring(count_object);
 						else
-							drawing_state->name = L"Shape_" + boost::lexical_cast<std::wstring>(count_object);
+							drawing_state->name = L"Shape_" + std::to_wstring(count_object);
 					}
 					CP_XML_ATTR(L"name", drawing_state->name);
 					
@@ -2232,7 +2232,7 @@ void xlsx_drawing_context::set_hyperlink(const std::wstring & link, const std::w
 	if (current_drawing_states == NULL) return;	
 	if (current_drawing_states->empty()) return;
 
-	std::wstring sId			= std::wstring(L"hId") + boost::lexical_cast<std::wstring>(hlinks_.size()+1);
+	std::wstring sId			= std::wstring(L"hId") + std::to_wstring(hlinks_.size()+1);
 	std::wstring link_correct	= link;
 
 	if (!is_external) link_correct = std::wstring(L"#") + link_correct;

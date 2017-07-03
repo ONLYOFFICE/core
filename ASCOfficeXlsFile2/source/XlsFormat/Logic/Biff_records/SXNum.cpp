@@ -39,7 +39,6 @@ SXNum::SXNum()
 {
 }
 
-
 SXNum::~SXNum()
 {
 }
@@ -51,7 +50,20 @@ BaseObjectPtr SXNum::clone()
 
 void SXNum::readFields(CFRecord& record)
 {
+	record >> num;
 }
 
+int SXNum::serialize(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"n")
+		{ 
+			CP_XML_ATTR(L"v", num.data.value);
+		}
+	}
+	
+	return 0;
+}
 } // namespace XLS
 

@@ -32,7 +32,6 @@
 #pragma once
 
 #include "BiffRecord.h"
-//#include "../Biff_structures/CellRangeRef.h"
 
 namespace XLS
 {
@@ -49,8 +48,16 @@ public:
 	
 	void readFields(CFRecord& record);
 
+	int serialize(std::wostream & strm);
+
 	static const ElementType type = typeSXDtr;
 
+	unsigned short	yr;
+	unsigned short	mon;
+	unsigned char	dom;
+	unsigned char	hr;
+	unsigned char	min;
+	unsigned char	sec;
 
 };
 

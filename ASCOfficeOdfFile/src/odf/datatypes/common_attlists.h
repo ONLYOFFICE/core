@@ -501,6 +501,7 @@ public:
     _CP_OPT(std::wstring)	draw_layer_;
     _CP_OPT(std::wstring)	draw_transform_;
     _CP_OPT(int)			draw_z_index_;
+	_CP_OPT(std::wstring)	drawooo_display_;
 };
 
 class common_draw_position_attlist

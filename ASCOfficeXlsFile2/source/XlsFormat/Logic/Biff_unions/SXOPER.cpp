@@ -45,7 +45,6 @@ SXOPER::SXOPER()
 {
 }
 
-
 SXOPER::~SXOPER()
 {
 }
@@ -61,24 +60,35 @@ const bool SXOPER::loadContent(BinProcessor& proc)
 	if(proc.optional<SxNil>())
 	{
 	}
-	if(proc.optional<SXNum>())
+	else if(proc.optional<SXNum>())
 	{
 	}
-	if(proc.optional<SxBool>())
+	else if(proc.optional<SxBool>())
 	{
 	}
-	if(proc.optional<SxErr>())
+	else if(proc.optional<SxErr>())
 	{
 	}
-	if(proc.optional<SXString>())
+	else if(proc.optional<SXString>())
 	{
 	}
-	if(proc.optional<SXDtr>())
+	else if(proc.optional<SXDtr>())
 	{
 	}
+	else 
+		return false;
+
+	m_element = elements_.back();
+	elements_.pop_back();
 
 	return true;
 }
+int SXOPER::serialize(std::wostream & strm)
+{
+	if (!m_element) return 0;
 
+	m_element->serialize(strm);
+	return 0;
+}
 } // namespace XLS
 

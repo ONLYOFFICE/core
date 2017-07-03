@@ -29,29 +29,38 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "BiffRecord.h"
+#include "SxIsxoper.h"
 
 namespace XLS
 {
 
-class SxNil: public BiffRecord
+SxIsxoper::SxIsxoper()
 {
-	BIFF_RECORD_DEFINE_TYPE_INFO(SxNil)
-	BASE_OBJECT_DEFINE_CLASS_NAME(SxNil)
-public:
-	SxNil();
-	~SxNil();
+}
 
-	BaseObjectPtr clone();
-	
-	void readFields(CFRecord& record);
 
-	int serialize(std::wostream & strm);
+SxIsxoper::~SxIsxoper()
+{
+}
 
-	static const ElementType type = typeSxNil;
-};
+
+BaseObjectPtr SxIsxoper::clone()
+{
+	return BaseObjectPtr(new SxIsxoper(*this));
+}
+
+void SxIsxoper::readFields(CFRecord& record)
+{
+	int size = (record.getDataSize() - record.getRdPtr()) / 2;
+
+	for (int i = 0; i < size; i++)
+	{
+		unsigned short val;
+		record >> val; 
+		rgSxIsxoper.push_back(val);
+	}
+}
 
 } // namespace XLS
 

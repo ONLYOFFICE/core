@@ -62,11 +62,15 @@ const bool DBB::loadContent(BinProcessor& proc)
 		m_SXDBB = elements_.back();
 		elements_.pop_back();
 	}
-	if(proc.optional<SXOPER>())
+	int count = proc.repeated<SXOPER>(0, 0);
+	while(count--)
 	{
-		m_SXOPER = elements_.back();
-		elements_.pop_back();
+		m_arSXOPER.push_back(elements_.front());	elements_.pop_front();
 	}
+
+	if (!m_SXDBB && m_arSXOPER.empty())
+		return false;
+
 	return true;
 }
 

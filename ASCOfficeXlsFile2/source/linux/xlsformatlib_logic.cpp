@@ -356,6 +356,7 @@
 #include "../XlsFormat/Logic/Biff_records/SXNum.cpp"
 #include "../XlsFormat/Logic/Biff_records/SXPair.cpp"
 #include "../XlsFormat/Logic/Biff_records/SXRng.cpp"
+#include "../XlsFormat/Logic/Biff_records/SxIsxoper.cpp"
 
 #include "../XlsFormat/Logic/Biff_structures/AddinUdf.cpp"
 #include "../XlsFormat/Logic/Biff_structures/AF12Criteria.cpp"
@@ -617,6 +618,7 @@
 #include "../XlsFormat/Logic/Biff_structures/SharedProperty.cpp"
 #include "../XlsFormat/Logic/Biff_structures/AFDOperBoolErr.cpp"
 #include "../XlsFormat/Logic/Biff_structures/AFDOperXNum.cpp"
+#include "../XlsFormat/Logic/Biff_structures/PivotParsedFormula.cpp"
 
 #include "../XlsFormat/Logic/Biff_unions/AI.cpp"
 #include "../XlsFormat/Logic/Biff_unions/ATTACHEDLABEL_bu.cpp"

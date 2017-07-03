@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of BkHim record in BIFF8
 class BkHim: public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(BkHim)
@@ -48,10 +46,9 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeBkHim;
+	static const ElementType type = typeBkHim;
 
 	_UINT16 cf;
 	_UINT32 lcb;

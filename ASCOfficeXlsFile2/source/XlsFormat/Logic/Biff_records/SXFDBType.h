@@ -50,7 +50,7 @@ public:
 
 	static const ElementType type = typeSXFDBType;
 
-
+	short	wTypeSql; //ODBCType enum
 };
 
 } // namespace XLS

@@ -860,12 +860,25 @@ namespace NExtractTools
 
        NSDirectory::CreateDirectory(sResultPptxDir);
 
-       int nRes = ppt2pptx_dir(sFrom, sResultPptxDir, sTemp, params);
-       if(SUCCEEDED_X2T(nRes))
+       int hRes = ppt2pptx_dir(sFrom, sResultPptxDir, sTemp, params);
+
+       if(SUCCEEDED_X2T(hRes))
        {
            COfficeUtils oCOfficeUtils(NULL);
            if(S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultPptxDir, sTo, true))
                return 0;
+       }
+       else if (AVS_ERROR_DRM == hRes)
+       {
+           if(!params.getDontSaveAdditional())
+           {
+               copyOrigin(sFrom, *params.m_sFileTo);
+           }
+           return AVS_FILEUTILS_ERROR_CONVERT_DRM;
+       }
+       else if (AVS_ERROR_PASSWORD == hRes)
+       {
+           return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
        }
        return AVS_FILEUTILS_ERROR_CONVERT;
    }
@@ -874,7 +887,22 @@ namespace NExtractTools
        COfficePPTFile pptFile;
 
        pptFile.put_TempDirectory(sTemp);
-	   return S_OK == pptFile.LoadFromFile(sFrom, sTo, params.getPassword()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+	   
+	   long hRes = pptFile.LoadFromFile(sFrom, sTo, params.getPassword());
+
+		if (AVS_ERROR_DRM == hRes)
+		{
+			if(!params.getDontSaveAdditional())
+			{
+				copyOrigin(sFrom, *params.m_sFileTo);
+			}
+			return AVS_FILEUTILS_ERROR_CONVERT_DRM;
+		}
+		else if (AVS_ERROR_PASSWORD == hRes)
+		{
+			return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
+		}
+		return 0 == hRes ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
    }
 	// ppt -> pptt
 	int ppt2pptt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
@@ -905,22 +933,36 @@ namespace NExtractTools
 
        pptFile.put_TempDirectory(sTemp);
 
-       if ( pptFile.LoadFromFile(sFrom, sTempUnpackedPPTX, params.getPassword()) != S_OK) return AVS_FILEUTILS_ERROR_CONVERT;
+       long nRes = pptFile.LoadFromFile(sFrom, sTempUnpackedPPTX, params.getPassword());
 
-       // convert unzipped pptx to unzipped pptt
-       CPPTXFile *pptx_file = new CPPTXFile(NULL, NULL, NULL, NULL);
+		if (SUCCEEDED_X2T(nRes))
+        {
+		  // convert unzipped pptx to unzipped pptt
+		   CPPTXFile *pptx_file = new CPPTXFile(NULL, NULL, NULL, NULL);
 
-       int nRes = 0;
+		   if (pptx_file)
+		   {
+			   pptx_file->SetFontDir (params.getFontPath());
+			   nRes = (S_OK == pptx_file->OpenFileToPPTY (sTempUnpackedPPTX, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 
-       if (pptx_file)
-       {
-           pptx_file->SetFontDir (params.getFontPath());
-           nRes = (S_OK == pptx_file->OpenFileToPPTY (sTempUnpackedPPTX, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+			   delete pptx_file;
+		   }
+		   return nRes;
 
-           delete pptx_file;
-       }
-
-       return nRes;
+        }
+        else if (AVS_ERROR_DRM == nRes)
+        {
+            if(!params.getDontSaveAdditional())
+            {
+                copyOrigin(sFrom, *params.m_sFileTo);
+            }
+            return AVS_FILEUTILS_ERROR_CONVERT_DRM;
+        }
+        else if (AVS_ERROR_PASSWORD == nRes)
+        {
+            return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
+        }
+        return AVS_FILEUTILS_ERROR_CONVERT;
    }
 
 	// pptx -> odp

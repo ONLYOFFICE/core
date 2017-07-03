@@ -62,5 +62,7 @@ public:
 	} data;
 };
 
+typedef Xnum DateAsNum;
+
 } // namespace XLS
 

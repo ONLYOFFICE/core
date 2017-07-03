@@ -384,9 +384,11 @@ void odf_drawing_context::start_group()
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = impl_->current_drawing_state_.name_;
 	if (impl_->current_drawing_state_.z_order_ >= 0)
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_z_index_ = impl_->current_drawing_state_.z_order_;
-	if (!impl_->current_drawing_state_.name_.empty())
-		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = impl_->current_drawing_state_.name_;
-
+	//if (!impl_->current_drawing_state_.description_.empty())
+	//	group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = impl_->current_drawing_state_.description_;
+	if (impl_->current_drawing_state_.hidden_)
+		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer";
+	
 	impl_->current_drawing_state_.name_		= L"";
 	impl_->current_drawing_state_.z_order_	= -1;
 
@@ -519,10 +521,12 @@ void odf_drawing_context::end_drawing()
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_class_ = impl_->current_drawing_state_.presentation_class_;
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_layer_ = draw_layer;
 		}
-		if (impl_->current_drawing_state_.name_.length() > 0)
+		if (!impl_->current_drawing_state_.name_.empty())
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = impl_->current_drawing_state_.name_;
 		if (impl_->current_drawing_state_.z_order_ >= 0)
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_z_index_ = impl_->current_drawing_state_.z_order_;
+		if (impl_->current_drawing_state_.hidden_)
+			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer";
 
 		std::wstring strTransform;
 
@@ -2125,6 +2129,13 @@ void odf_drawing_context::set_textarea_wrap(bool Val)
 		impl_->current_graphic_properties->fo_wrap_option_ = wrap_option(wrap_option::NoWrap);
 
 }
+void odf_drawing_context::set_textarea_fit_to_size(bool val)
+{
+	if (!impl_->current_graphic_properties)return;
+
+	impl_->current_graphic_properties->draw_fit_to_size_ = val;
+}
+
 
 void odf_drawing_context::set_textarea_font(std::wstring & latin, std::wstring & cs, std::wstring & ea)
 {

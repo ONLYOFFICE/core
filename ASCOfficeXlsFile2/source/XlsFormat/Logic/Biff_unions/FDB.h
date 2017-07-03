@@ -47,6 +47,8 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize(std::wostream & strm);
+
 	static const ElementType	type = typeFDB;
 
 	BaseObjectPtr				m_SXFDB;	
@@ -54,6 +56,9 @@ public:
 	BaseObjectPtr				m_SXFMLA;	
 
 	std::vector<BaseObjectPtr>	m_arSRCSXOPER;
+	std::vector<BaseObjectPtr>	m_arGRPSXOPER;
+	BaseObjectPtr				m_SXRANGE;
+	std::vector<BaseObjectPtr>	m_arSxIsxoper;
 };
 
 } // namespace XLS

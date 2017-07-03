@@ -47,10 +47,15 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize(std::wostream & strm);
+
 	static const ElementType	type = typeDBB;
 
 	BaseObjectPtr				m_SXDBB;	
 	std::vector<BaseObjectPtr>	m_arSXOPER;	
+
+//---------------------------------------------------
+	bool fShortIitms;
 };
 
 } // namespace XLS

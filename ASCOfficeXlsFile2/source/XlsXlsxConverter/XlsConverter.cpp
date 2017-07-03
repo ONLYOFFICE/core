@@ -1916,6 +1916,11 @@ void XlsConverter::convert(XLS::PIVOTVIEW * pivot_view)
 {
 	if (pivot_view == NULL) return;
 
+	std::wstringstream strm;
+
+	pivot_view->serialize(strm);
+
+	xlsx_context->get_pivots_context().add_view(strm.str(), pivot_view->indexCache);
 }
 
 void XlsConverter::convert(XLS::PIVOTCACHEDEFINITION * pivot_cached)

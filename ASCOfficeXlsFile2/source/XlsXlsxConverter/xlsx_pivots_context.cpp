@@ -47,10 +47,16 @@ public:
 		std::wstring  definitionsData_;
 		std::wstring  recordsData_;
 	};
+	struct _pivot_view
+	{	
+		std::wstring	data_;
+		int				indexCache_;
+	};
 
 	Impl() {}
     
-	std::vector<_pivot_cache> caches_;
+	std::vector<_pivot_cache>	caches_;
+	std::vector<_pivot_view>	views_;
 };
 
 xlsx_pivots_context::xlsx_pivots_context() : impl_(new xlsx_pivots_context::Impl())
@@ -67,23 +73,46 @@ int xlsx_pivots_context::get_cache_count()
 {
 	return (int)impl_->caches_.size();
 }
-void xlsx_pivots_context::dump_rels(int index, rels & Rels)
+void xlsx_pivots_context::dump_rels_cache(int index, rels & Rels)
 {
-	if (!impl_->caches_[index].recordsData_.empty())
+	if (impl_->caches_[index].recordsData_.empty())
 	{
 		Rels.add(relationship(L"rId1",							
 						L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheRecords",
 						L"pivotCacheRecords" + std::to_wstring(index) + L".xml", L""));
 	}
 }
-void xlsx_pivots_context::write_definitions_to(int index, std::wostream & strm)
+void xlsx_pivots_context::dump_rels_view(int index, rels & Rels)
+{
+	if (impl_->views_[index].indexCache_ >= 0)
+	{
+		Rels.add(relationship(L"rId1",							
+						L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition",
+						L"../pivotCache/pivotCacheDefinition" + std::to_wstring(impl_->views_[index].indexCache_ + 1) + L".xml", L""));
+	}
+}
+void xlsx_pivots_context::write_cache_definitions_to(int index, std::wostream & strm)
 {
 	strm << impl_->caches_[index].definitionsData_;
 }
 
-void xlsx_pivots_context::write_records_to(int index, std::wostream & strm)
+void xlsx_pivots_context::write_cache_records_to(int index, std::wostream & strm)
 {
 	strm << impl_->caches_[index].recordsData_;
+}
+void xlsx_pivots_context::write_table_view_to(int index, std::wostream & strm)
+{
+	strm << impl_->views_[index].data_;
+}
+void xlsx_pivots_context::add_view(std::wstring table_view, int indexCache)
+{
+	Impl::_pivot_view v = {table_view, indexCache};
+	impl_->views_.push_back(v);
+}
+
+int xlsx_pivots_context::get_view_count()
+{
+	return (int)impl_->views_.size();
 }
 
 xlsx_pivots_context::~xlsx_pivots_context()

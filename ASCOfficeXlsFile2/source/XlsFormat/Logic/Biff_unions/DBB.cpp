@@ -38,11 +38,10 @@
 namespace XLS
 {
 
-
 DBB::DBB()
 {
+	fShortIitms = false;
 }
-
 
 DBB::~DBB()
 {
@@ -52,7 +51,6 @@ BaseObjectPtr DBB::clone()
 {
 	return BaseObjectPtr(new DBB(*this));
 }
-
 
 // DBB = [SXDBB] *SXOPER
 const bool DBB::loadContent(BinProcessor& proc)
@@ -73,6 +71,50 @@ const bool DBB::loadContent(BinProcessor& proc)
 
 	return true;
 }
+int DBB::serialize(std::wostream & strm)
+{
+	SXDBB* dbb = dynamic_cast<SXDBB*>(m_SXDBB.get());
 
+	if (!dbb && m_arSXOPER.empty()) return 0;
+
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"r")
+		{ 		
+			if (m_arSXOPER.empty() == false)
+			{
+				for (size_t i = 0; i < m_arSXOPER.size(); i++)
+				{
+					m_arSXOPER[i]->serialize(CP_XML_STREAM());
+				}
+			}
+			else
+			{
+				if (fShortIitms == false)
+				{
+					for (size_t i = 0; i < dbb->size; i++)
+					{
+						CP_XML_NODE(L"x")
+						{		
+							CP_XML_ATTR(L"v", dbb->blob[i]);
+						}
+					}
+				}
+				else
+				{
+					unsigned short * values = (unsigned short *)dbb->blob.get();
+					for (size_t i = 0; i < dbb->size / 2; i++)
+					{
+						CP_XML_NODE(L"x")
+						{		
+							CP_XML_ATTR(L"v", values[i]);
+						}
+					}
+				}
+			}
+		}
+	}
+	return 0;
+}
 } // namespace XLS
 

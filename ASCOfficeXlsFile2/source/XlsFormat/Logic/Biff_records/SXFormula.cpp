@@ -51,6 +51,9 @@ BaseObjectPtr SXFormula::clone()
 
 void SXFormula::readFields(CFRecord& record)
 {
+	unsigned short reserved;
+
+	record >> reserved >> ifdb;
 }
 
 } // namespace XLS

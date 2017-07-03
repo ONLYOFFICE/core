@@ -92,13 +92,16 @@ public:
 			bool bResult = pInfo->ReadFromStream(&oUserAtom, pStream);
 
 			offsetToEdit = pInfo->m_oUser.m_nOffsetLastEdit;
+			m_oCurrentUser.m_bIsEncrypt = pInfo->m_bEncrypt;
 			
 			if (bResult == false)
 			{
 				delete pInfo;
 
-				if (pInfo->m_bEncrypt)	return false;
-				else					continue;
+				if (pInfo->m_bEncrypt)
+					return false;
+				else
+					continue;
 			}
 			
 			m_arUsers.push_back(pInfo);

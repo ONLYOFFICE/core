@@ -32,7 +32,7 @@
 #ifndef DOCBUILDER_H
 #define DOCBUILDER_H
 
-#include "../common/base_export.h"
+#include "./common.h"
 
 namespace NSDoctRenderer
 {

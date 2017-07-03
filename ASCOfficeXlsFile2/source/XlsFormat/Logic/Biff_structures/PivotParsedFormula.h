@@ -31,26 +31,21 @@
  */
 #pragma once
 
-#include "BiffRecord.h"
+#include "ParsedFormula.h"
 
 namespace XLS
 {
 
-class SxNil: public BiffRecord
+class PivotParsedFormula: public ParsedFormula
 {
-	BIFF_RECORD_DEFINE_TYPE_INFO(SxNil)
-	BASE_OBJECT_DEFINE_CLASS_NAME(SxNil)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PivotParsedFormula)
 public:
-	SxNil();
-	~SxNil();
+	PivotParsedFormula();
 
-	BaseObjectPtr clone();
-	
-	void readFields(CFRecord& record);
+	BiffStructurePtr clone();
+	void load(CFRecord& record);
 
-	int serialize(std::wostream & strm);
-
-	static const ElementType type = typeSxNil;
+	unsigned short	cSxName;
 };
 
 } // namespace XLS

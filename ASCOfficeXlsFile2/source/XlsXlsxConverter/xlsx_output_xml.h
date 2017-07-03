@@ -32,8 +32,6 @@
 #pragma once
 
 #include <iosfwd>
-
-#include "common.h"
 #include <boost/scoped_ptr.hpp>
 #include <boost/noncopyable.hpp>
 
@@ -44,7 +42,6 @@ namespace oox {
 class xlsx_xml_worksheet;
 typedef boost::shared_ptr<xlsx_xml_worksheet> xlsx_xml_worksheet_ptr;
 
-/// \class  xlsx_xml_worksheet
 class xlsx_xml_worksheet: boost::noncopyable
 {
 public:

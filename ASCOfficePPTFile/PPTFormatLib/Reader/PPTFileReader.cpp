@@ -116,7 +116,7 @@ bool CPPTFileReader::ReadPersists()
 	CFStreamPtr pStream = GetDocumentStream();
 	if (!pStream) return false;
 
-	if (m_oDocumentInfo.ReadFromStream(&m_oCurrentUser, pStream->stream_) == false) return false;
+	return m_oDocumentInfo.ReadFromStream(&m_oCurrentUser, pStream->stream_);
 }
 void CPPTFileReader::ReadDocument()
 {

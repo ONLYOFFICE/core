@@ -52,8 +52,13 @@ BaseObjectPtr SXDBB::clone()
 
 void SXDBB::readFields(CFRecord& record)
 {
-	int skip = record.getDataSize() - record.getRdPtr();
-	record.skipNunBytes(skip);
+	size = record.getDataSize() - record.getRdPtr();
+
+	blob = boost::shared_array<unsigned char>(new unsigned char[size]);
+
+	memcpy(blob.get(), record.getCurData<unsigned char>(), size);
+
+	record.skipNunBytes(size);
 }
 
 } // namespace XLS

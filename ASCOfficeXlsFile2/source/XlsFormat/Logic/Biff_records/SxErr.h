@@ -51,7 +51,7 @@ public:
 
 	static const ElementType type = typeSxErr;
 
-
+	unsigned short wbe;
 };
 
 } // namespace XLS

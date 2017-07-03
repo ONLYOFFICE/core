@@ -80,13 +80,29 @@ void xlsx_document::write(const std::wstring & RootPath)
     rels_files_.write(RootPath);
 }
 
-////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------
+pivot_cache_content::pivot_cache_content() : definitions_rels_file_(rels_file::create(L""))
+{      
+}
 
+_CP_PTR(pivot_cache_content) pivot_cache_content::create()
+{
+    return boost::make_shared<pivot_cache_content>();
+}
+//--------------------------------------------------------------------------------------------
+pivot_table_content::pivot_table_content() : rels_file_(rels_file::create(L""))
+{      
+}
+
+_CP_PTR(pivot_table_content) pivot_table_content::create()
+{
+    return boost::make_shared<pivot_table_content>();
+}
+//--------------------------------------------------------------------------------------------
 sheet_content::sheet_content() : rels_(rels_file::create(L""))
 {
         
 }
-
 _CP_PTR(sheet_content) sheet_content::create()
 {
     return boost::make_shared<sheet_content>();
@@ -119,33 +135,32 @@ void sheets_files::write(const std::wstring & RootPath)
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"worksheets";
     NSDirectory::CreateDirectory(path.c_str());
 
-	for (int i = 0; i < sheets_.size(); i++)
+	for (size_t i = 0; i < sheets_.size(); i++)
     {
-        if (sheets_[i])
+        if (!sheets_[i]) continue;
+           
+		const std::wstring fileName = std::wstring(L"sheet") + std::to_wstring(i + 1) + L".xml";
+        content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+        static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml";
+        contentTypes.add_override(std::wstring(L"/xl/worksheets/") + fileName, kWSConType);
+
+        if (rels_)
         {
-            const std::wstring fileName = std::wstring(L"sheet") + std::to_wstring(i + 1) + L".xml";
-            content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
-            static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml";
-            contentTypes.add_override(std::wstring(L"/xl/worksheets/") + fileName, kWSConType);
-
-            if (rels_)
-            {
-                const std::wstring id = std::wstring(L"sId") + std::to_wstring(i + 1);
-                static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet";
-                const std::wstring fileRef = std::wstring(L"worksheets/") + fileName;
-                rels_->add(id, kWSRel, fileRef);
-            }
-
-            sheets_[i]->get_rel_file()->set_file_name(fileName + L".rels"); 
-            
-			rels_files relFiles;
-            relFiles.add_rel_file(sheets_[i]->get_rel_file());
-            relFiles.write(path);
-            
-            //item->get_rel_file()->write(path.string<std::wstring>());
-
-            package::simple_element(fileName, sheets_[i]->str()).write(path);
+            const std::wstring id = std::wstring(L"sId") + std::to_wstring(i + 1);
+            static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet";
+            const std::wstring fileRef = std::wstring(L"worksheets/") + fileName;
+            rels_->add(id, kWSRel, fileRef);
         }
+
+        sheets_[i]->get_rel_file()->set_file_name(fileName + L".rels"); 
+        
+		rels_files relFiles;
+        relFiles.add_rel_file(sheets_[i]->get_rel_file());
+        relFiles.write(path);
+        
+        //item->get_rel_file()->write(path.string<std::wstring>());
+
+        package::simple_element(fileName, sheets_[i]->str()).write(path);
     }
 }
 
@@ -198,11 +213,19 @@ void xl_files::write(const std::wstring & RootPath)
         media_->set_main_document(get_main_document());
         media_->write(path);
     }
-
     {
         charts_files_.set_main_document(get_main_document());
         charts_files_.write(path);
     }
+    {
+		pivot_cache_files_.set_rels(&rels_files_);
+        pivot_cache_files_.set_main_document(get_main_document());
+		pivot_cache_files_.write(path);
+    }
+	{
+		pivot_table_files_.set_main_document(get_main_document());
+		pivot_table_files_.write(path);
+	}
 	if (drawings_)
     {
         drawings_->set_main_document(get_main_document());
@@ -264,7 +287,102 @@ void xl_files::add_charts(chart_content_ptr chart)
 {
     charts_files_.add_chart(chart);
 }
-////////////////////////////
+void xl_files::add_pivot_cache(pivot_cache_content_ptr pivot_cache)
+{
+    pivot_cache_files_.add_pivot_cache(pivot_cache);
+}
+void xl_files::add_pivot_table(pivot_table_content_ptr pivot_table)
+{
+    pivot_table_files_.add_pivot_table(pivot_table);
+}
+//----------------------------------------------------------------------------------------
+void xl_pivot_cache_files::add_pivot_cache(pivot_cache_content_ptr pivot_cache)
+{
+    pivot_caches_.push_back(pivot_cache);
+}
+void xl_pivot_cache_files::write(const std::wstring & RootPath)
+{
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"pivotCache";
+    NSDirectory::CreateDirectory(path.c_str());
+
+	content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+	
+	static const std::wstring kWSConTypeD = L"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheDefinition+xml";
+	static const std::wstring kWSConTypeR = L"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheRecords+xml";
+	
+	for (size_t i = 0; i < pivot_caches_.size(); i++)
+    {
+        if (pivot_caches_[i])
+        {
+            const std::wstring fileNameD = std::wstring(L"pivotCacheDefinition") + std::to_wstring(i + 1) + L".xml";
+           
+            contentTypes.add_override(std::wstring(L"/xl/pivotCache/") + fileNameD, kWSConTypeD);
+
+            package::simple_element(fileNameD, pivot_caches_[i]->str_d()).write(path);
+
+            if (pivot_caches_[i]->get_rels().empty() == false)
+			{
+				rels_files relFiles;
+				pivot_caches_[i]->definitions_rels_file_->set_file_name(fileNameD + L".rels");
+				
+				relFiles.add_rel_file(pivot_caches_[i]->definitions_rels_file_);
+				relFiles.write(path);
+			}
+			if (rels_) //for workbook
+			{
+				const std::wstring id = std::wstring(L"pcId") + std::to_wstring(i + 1);
+				static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition";
+				const std::wstring fileRef = std::wstring(L"pivotCache/") + fileNameD;
+				rels_->add(id, kWSRel, fileRef);
+			}
+			std::wstring content_records = pivot_caches_[i]->str_r();
+			if (!content_records.empty())
+			{
+				const std::wstring fileNameR = std::wstring(L"pivotCacheRecords") + std::to_wstring(i + 1) + L".xml";
+	           
+				contentTypes.add_override(std::wstring(L"/xl/pivotCache/") + fileNameR, kWSConTypeD);
+
+				package::simple_element(fileNameR, content_records).write(path);
+			}
+        }
+    }
+}
+//----------------------------------------------------------------------------------------
+void xl_pivot_table_files::add_pivot_table(pivot_table_content_ptr pivot_table)
+{
+    pivot_tables_.push_back(pivot_table);
+}
+void xl_pivot_table_files::write(const std::wstring & RootPath)
+{
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"pivotTables";
+    NSDirectory::CreateDirectory(path.c_str());
+
+	content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+	
+	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotTable+xml";
+	
+	for (size_t i = 0; i < pivot_tables_.size(); i++)
+    {
+        if (pivot_tables_[i])
+        {
+            const std::wstring fileName = std::wstring(L"pivotTable") + std::to_wstring(i + 1) + L".xml";
+           
+            contentTypes.add_override(std::wstring(L"/xl/pivotTables/") + fileName, kWSConType);
+
+            package::simple_element(fileName, pivot_tables_[i]->str()).write(path);
+
+            if (pivot_tables_[i]->get_rels().empty() == false)
+			{
+				rels_files relFiles;
+				pivot_tables_[i]->rels_file_->set_file_name(fileName + L".rels");
+				
+				relFiles.add_rel_file(pivot_tables_[i]->rels_file_);
+				relFiles.write(path);
+			}
+        }
+    }
+}
+//----------------------------------------------------------------------------------------
 void xl_charts_files::add_chart(chart_content_ptr chart)
 {
     charts_.push_back(chart);
@@ -274,14 +392,15 @@ void xl_charts_files::write(const std::wstring & RootPath)
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"charts";
     NSDirectory::CreateDirectory(path.c_str());
 
+	content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
+	
 	for (size_t i = 0; i < charts_.size(); i++)
     {
         if (charts_[i])
         {
             const std::wstring fileName = std::wstring(L"chart") + std::to_wstring(i + 1) + L".xml";
-            content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
            
-			static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
             contentTypes.add_override(std::wstring(L"/xl/charts/") + fileName, kWSConType);
 
             package::simple_element(fileName, charts_[i]->str()).write(path);
@@ -297,7 +416,7 @@ void xl_charts_files::write(const std::wstring & RootPath)
         }
     }
 }
-//////////////////////////
+//----------------------------------------------------------------------------------------
 xl_drawings_ptr xl_drawings::create(const std::vector<drawing_elm> & elms)
 {
     return boost::make_shared<xl_drawings>(boost::ref(elms));
@@ -308,7 +427,7 @@ void xl_drawings::write(const std::wstring & RootPath)
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"drawings";
     NSDirectory::CreateDirectory(path.c_str());
 
-	for (int i = 0; i < drawings_.size(); i++)
+	for (size_t i = 0; i < drawings_.size(); i++)
     {
         package::simple_element(drawings_[i].filename, drawings_[i].content).write(path);        
 
@@ -343,7 +462,7 @@ void xl_comments::write(const std::wstring & RootPath)
 	std::wstring vml_path = RootPath + FILE_SEPARATOR_STR + L"drawings";
     NSDirectory::CreateDirectory(vml_path.c_str());
    
-	for (int i = 0; i < comments_.size(); i++)
+	for (size_t i = 0; i < comments_.size(); i++)
     {
 		content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
 

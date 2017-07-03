@@ -73,5 +73,13 @@ const bool SXSRC::loadContent(BinProcessor& proc)
 	return true;
 }
 
+int SXSRC::serialize(std::wostream & stream)
+{
+	if (m_source)
+		m_source->serialize(stream);
+
+	return 0;
+}
+
 } // namespace XLS
 

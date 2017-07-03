@@ -51,6 +51,10 @@ BaseObjectPtr SxBool::clone()
 
 void SxBool::readFields(CFRecord& record)
 {
+	unsigned short flags;
+	record >> flags;
+
+	val = (flags != 0);
 }
 
 } // namespace XLS

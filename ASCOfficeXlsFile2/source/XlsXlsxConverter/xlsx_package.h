@@ -38,7 +38,6 @@
 #include "xlsx_drawings.h"
 #include "xlsx_comments.h"
 
-
 namespace oox {
 namespace package {
 
@@ -47,7 +46,7 @@ class xlsx_content_types_file : public content_types_file
 public:
     xlsx_content_types_file();
 };
-
+//------------------------------------------------------------------------
 class sheet_content;
 typedef _CP_PTR(sheet_content) sheet_content_ptr;
 
@@ -66,7 +65,50 @@ private:
     std::wstringstream content_;
     rels_file_ptr rels_;
 };
+//------------------------------------------------------------------------
+class pivot_cache_content;
+typedef _CP_PTR(pivot_cache_content) pivot_cache_content_ptr;
 
+class pivot_cache_content : boost::noncopyable
+{
+public:
+    pivot_cache_content();
+    static _CP_PTR(pivot_cache_content) create();
+
+    std::wostream	& definitions() { return definitions_; }
+	std::wostream	& records()		{ return records_; }
+	rels			& get_rels()	{ return definitions_rels_file_->get_rels(); }
+
+    std::wstring	str_d() { return definitions_.str(); }
+    std::wstring	str_r() { return records_.str(); }
+	
+	friend class	xl_pivot_cache_files;
+private:
+    std::wstringstream	records_;
+    std::wstringstream	definitions_;
+	rels_file_ptr		definitions_rels_file_;
+};
+//------------------------------------------------------------------------
+class pivot_table_content;
+typedef _CP_PTR(pivot_table_content) pivot_table_content_ptr;
+
+class pivot_table_content : boost::noncopyable
+{
+public:
+    pivot_table_content();
+    static _CP_PTR(pivot_table_content) create();
+
+    std::wostream	& content()		{ return content_; }
+	rels			& get_rels()	{ return rels_file_->get_rels(); }
+
+    std::wstring	str() { return content_.str(); }
+	
+	friend class	xl_pivot_table_files;
+private:
+    std::wstringstream	content_;
+	rels_file_ptr		rels_file_;
+};
+//------------------------------------------------------------------------
 class sheets_files  : public element
 {
 public:
@@ -81,7 +123,6 @@ public:
 
     virtual void write(const std::wstring & RootPath);
 
-public:    
     std::vector<sheet_content_ptr> sheets_;
     rels_files * rels_;
 
@@ -97,6 +138,33 @@ public:
     
     std::vector<chart_content_ptr> charts_;
 
+};
+class xl_pivot_table_files  : public element
+{
+public:
+	xl_pivot_table_files(){}
+	 
+	void			add_pivot_table(pivot_table_content_ptr pivot_table);
+	virtual void	write(const std::wstring & RootPath);
+    
+    std::vector<pivot_table_content_ptr> pivot_tables_;
+};
+class xl_pivot_cache_files  : public element
+{
+public:
+	xl_pivot_cache_files(){}
+
+	void set_rels(rels_files * rels)
+    {
+        rels_ = rels;
+    }
+	 
+	void			add_pivot_cache(pivot_cache_content_ptr pivot_cache);
+	virtual void	write(const std::wstring & RootPath);
+    
+    std::vector<pivot_cache_content_ptr> pivot_caches_;
+
+    rels_files * rels_;
 };
 ///////////////////////////////////////////////////////////
 
@@ -161,13 +229,17 @@ public:
 	void set_vml_drawings	(element_ptr Element);
 	void set_comments		(element_ptr Element);
     void add_charts			(chart_content_ptr chart);
-
+    void add_pivot_cache	(pivot_cache_content_ptr cache);
+	void add_pivot_table	(pivot_table_content_ptr table);
 private:
-    rels_files		rels_files_;
-    sheets_files	sheets_files_;
-    xl_charts_files charts_files_;
-    element_ptr		theme_;
-    element_ptr		workbook_;
+    rels_files				rels_files_;
+    sheets_files			sheets_files_;
+    xl_charts_files			charts_files_;
+	xl_pivot_cache_files	pivot_cache_files_;
+	xl_pivot_table_files	pivot_table_files_;
+
+	element_ptr				theme_;
+    element_ptr				workbook_;
 
     element_ptr		styles_;
     element_ptr		sharedStrings_;

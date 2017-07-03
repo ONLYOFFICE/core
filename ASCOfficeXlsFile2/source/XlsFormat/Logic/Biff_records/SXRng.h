@@ -51,7 +51,9 @@ public:
 
 	static const ElementType type = typeSXRng;
 
-
+	bool			fAutoStart;
+	bool			fAutoEnd;
+	unsigned char	iByType;
 };
 
 } // namespace XLS

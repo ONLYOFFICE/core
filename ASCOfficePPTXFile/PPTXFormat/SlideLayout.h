@@ -128,27 +128,32 @@ namespace PPTX
 		{
 			if (!pShape) return;
 
-			if(pShape->nvSpPr.nvPr.ph.is_init())
+			if (pShape->nvSpPr.nvPr.ph.is_init())
 			{
-				std::wstring idx = pShape->nvSpPr.nvPr.ph->idx.get_value_or(_T("0"));
-				std::wstring type = pShape->nvSpPr.nvPr.ph->type.get_value_or(_T("body"));
+				std::wstring idx = pShape->nvSpPr.nvPr.ph->idx.get_value_or(L"");
+				std::wstring type = pShape->nvSpPr.nvPr.ph->type.get_value_or(L"body");
 				
-				if(type == L"ctrTitle") type = L"title";
+				if (type == L"ctrTitle") type = L"title";
 
-				for(size_t i = 0; i < cSld.spTree.SpTreeElems.size(); ++i)
+				for (size_t i = 0; i < cSld.spTree.SpTreeElems.size(); ++i)
 				{
 					smart_ptr<Logic::Shape> pLayoutShape = cSld.spTree.SpTreeElems[i].GetElem().smart_dynamic_cast<Logic::Shape>();
 
-					if(pLayoutShape.IsInit())
+					if (pLayoutShape.IsInit())
 					{
-						if(pLayoutShape->nvSpPr.nvPr.ph.is_init())
+						if (pLayoutShape->nvSpPr.nvPr.ph.is_init())
 						{
-							std::wstring lIdx	= pLayoutShape->nvSpPr.nvPr.ph->idx.get_value_or(_T("0"));
+							std::wstring lIdx	= pLayoutShape->nvSpPr.nvPr.ph->idx.get_value_or(_T(""));
 							std::wstring lType	= pLayoutShape->nvSpPr.nvPr.ph->type.get_value_or(_T("body"));
 							
-							if(lType == _T("ctrTitle")) lType = _T("title");
+							if (lType == L"ctrTitle") lType = L"title";
 
-							if((type == lType) && (idx == lIdx))
+							if ((type == lType) && (idx == lIdx) && !idx.empty())
+							{
+								pShape->SetLevelUpElement(pLayoutShape.operator->());
+								return;
+							}
+							else if ((type == lType) && idx.empty() && lIdx.empty())
 							{
 								pShape->SetLevelUpElement(pLayoutShape.operator->());
 								return;

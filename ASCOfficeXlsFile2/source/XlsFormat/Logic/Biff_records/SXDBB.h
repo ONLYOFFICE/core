@@ -31,12 +31,12 @@
  */
 #pragma once
 
-#include "BiffRecord.h"
+#include "BiffRecordContinued.h"
 
 namespace XLS
 {
 
-class SXDBB: public BiffRecord
+class SXDBB: public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXDBB)
 	BASE_OBJECT_DEFINE_CLASS_NAME(SXDBB)
@@ -50,6 +50,8 @@ public:
 
 	static const ElementType type = typeSXDBB;
 
+	boost::shared_array<unsigned char>	blob;
+	unsigned int						size;
 };
 
 } // namespace XLS

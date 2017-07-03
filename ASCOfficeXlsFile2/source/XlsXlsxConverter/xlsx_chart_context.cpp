@@ -33,8 +33,6 @@
 #include "oox_rels.h"
 #include "mediaitems_utils.h"
 
-//#include <boost/lexical_cast.hpp>
-#include <boost/foreach.hpp>
 #include <boost/make_shared.hpp>
 
 #include <simple_xml_writer.h>
@@ -66,8 +64,9 @@ public:
    
 	void dump_rels(rels & Rels)
     {
-        BOOST_FOREACH(rel_ const & r, chartRels_)
+		for (size_t i = 0; i < chartRels_.size(); i++)
         {
+			rel_ & r = chartRels_[i];
 			if (r.type_ == external_items::typeImage)
 			{
 				Rels.add(relationship(
@@ -99,8 +98,9 @@ public:
     {
 		bool present = false;
         
-		BOOST_FOREACH(rel_ const & r, chartRels_)
-        {		
+		for (size_t i = 0; i < chartRels_.size(); i++)
+        {
+			rel_ & r = chartRels_[i];
 			if (r.rid_ == rid && r.target_ == target)
 				present = true;
 		}

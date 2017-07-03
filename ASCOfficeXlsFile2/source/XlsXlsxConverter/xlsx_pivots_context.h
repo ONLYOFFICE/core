@@ -30,28 +30,36 @@
  *
  */
 #pragma once
+#include "oox_package.h"
 
-#include "BiffRecord.h"
+namespace oox {
 
-namespace XLS
+class xlsx_pivot_cache_context;
+typedef _CP_PTR(xlsx_pivot_cache_context) xlsx_pivot_cache_context_ptr;
+
+class xlsx_pivots_context
 {
-
-class SxNil: public BiffRecord
-{
-	BIFF_RECORD_DEFINE_TYPE_INFO(SxNil)
-	BASE_OBJECT_DEFINE_CLASS_NAME(SxNil)
 public:
-	SxNil();
-	~SxNil();
+    xlsx_pivots_context();
+    ~xlsx_pivots_context();
 
-	BaseObjectPtr clone();
-	
-	void readFields(CFRecord& record);
+	void add_view(std::wstring table_view, int indexCache);
+	int get_view_count();
 
-	int serialize(std::wostream & strm);
+	void add_cache(std::wstring definitions, std::wstring records);
+	int get_cache_count();
 
-	static const ElementType type = typeSxNil;
+	void write_cache_definitions_to	(int index, std::wostream & strm);
+	void write_cache_records_to		(int index, std::wostream & strm);
+
+	void write_table_view_to		(int index, std::wostream & strm);
+
+	void dump_rels_cache(int index, rels & Rels);
+	void dump_rels_view	(int index, rels & Rels);
+private:
+    class Impl;
+    _CP_PTR(Impl) impl_;
+              
 };
 
-} // namespace XLS
-
+}

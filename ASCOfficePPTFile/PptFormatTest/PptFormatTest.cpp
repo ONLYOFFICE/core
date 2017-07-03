@@ -60,7 +60,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	
 	pptFile.put_TempDirectory(tempPath);
 
-	HRESULT hRes = pptFile.LoadFromFile(sSrcPpt, dstTempPath, L"password");
+	HRESULT hRes = pptFile.LoadFromFile(sSrcPpt, dstTempPath, L"");
 	
 	if (hRes == S_OK)
 	{

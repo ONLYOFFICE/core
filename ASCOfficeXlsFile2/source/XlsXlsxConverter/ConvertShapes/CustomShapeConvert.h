@@ -621,12 +621,12 @@ namespace NSCustomShapesConvert
 							ConvertSum(oHandle.PolarCentre.y, oHandle.PolarCentreType.y, m_lIndexDst-2, ptFormula, 0, ptValue, false, true, false, m_oGuidsRes);
 							m_arIndexDst.push_back(m_lIndexDst-1);
 
-							std::wstring strMem = boost::lexical_cast<std::wstring>(m_lIndexDst-2);
+							std::wstring strMem = std::to_wstring(m_lIndexDst - 2);
 
 							oHandle.Pos.x = GetHandlePos(strMem, _T("w"), m_lWidth);
 							oHandle.PosType.x = ptFormula;
 
-							strMem = boost::lexical_cast<std::wstring>(m_lIndexDst-2);
+							strMem = std::to_wstring(m_lIndexDst - 2);
 							oHandle.Pos.y = GetHandlePos(strMem, _T("h"), m_lHeight);
 							oHandle.PosType.y = ptFormula;
 						}
@@ -800,20 +800,20 @@ namespace NSCustomShapesConvert
 			case ptFormula: 
 				{ 								
 					if (bExtShape)
-						strValue = boost::lexical_cast<std::wstring>(lParam);
+						strValue = std::to_wstring(lParam);
 					else									
-						strValue = boost::lexical_cast<std::wstring>(m_arIndexDst[lParam]);
+						strValue = std::to_wstring(m_arIndexDst[lParam]);
 					strValue = _T("gd") + strValue; 
 					break; 
 				}
 			case ptAdjust:  
 				{ 	
-					strValue = _T("adj") +  boost::lexical_cast<std::wstring>(lParam); 
+					strValue = _T("adj") +  std::to_wstring(lParam); 
 					break; 
 				}
 			case ptValue:
 				{
-					strValue = boost::lexical_cast<std::wstring>(lParam);
+					strValue = std::to_wstring(lParam);
 					break;
 				}
 			default: 
@@ -1080,7 +1080,7 @@ namespace NSCustomShapesConvert
 			std::wstring strSize;
 			std::wstring strIndex;
 
-			strSize = boost::lexical_cast<std::wstring>( lSize);
+			strSize = std::to_wstring( lSize);
 
 			if ('#' == strParam[0])
 			{					
@@ -1114,7 +1114,7 @@ namespace NSCustomShapesConvert
 
 			m_lIndexSrc++;				
 			m_arIndexDst.push_back(m_lIndexDst);
-			strIndex = boost::lexical_cast<std::wstring>(m_lIndexDst);
+			strIndex = std::to_wstring(m_lIndexDst);
 
 			m_oGuidsRes.WriteString(_T("<a:gd name=\"gd"));
 			m_oGuidsRes.WriteString(strIndex);

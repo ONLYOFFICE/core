@@ -54,7 +54,6 @@ public:
 
 	DXFN		dxfn;
 	XFExtNoFRT	xfext;
-
 };
 
 } // namespace XLS

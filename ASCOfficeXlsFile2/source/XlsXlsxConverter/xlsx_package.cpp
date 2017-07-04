@@ -176,16 +176,20 @@ void xl_files::write(const std::wstring & RootPath)
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"xl";
     NSDirectory::CreateDirectory(path.c_str());
 
-    sheets_files_.set_rels(&rels_files_);
+    {
+		pivot_cache_files_.set_rels(&rels_files_);
+        pivot_cache_files_.set_main_document(get_main_document());
+		pivot_cache_files_.write(path);
+    }
+	{
+		pivot_table_files_.set_main_document(get_main_document());
+		pivot_table_files_.write(path);
+	}
+    
+	sheets_files_.set_rels(&rels_files_);
     sheets_files_.set_main_document( this->get_main_document() );
     sheets_files_.write(path);
 
-	int index = 1;
-    if (true)
-    {
-        //workbook_->hyperlinks->write(path);
-        rels_files_.add( relationship( L"hId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument", L"xl/workbook.xml" ) );
-	}
 	if (sharedStrings_)
     {
         sharedStrings_->write(path);
@@ -217,15 +221,7 @@ void xl_files::write(const std::wstring & RootPath)
         charts_files_.set_main_document(get_main_document());
         charts_files_.write(path);
     }
-    {
-		pivot_cache_files_.set_rels(&rels_files_);
-        pivot_cache_files_.set_main_document(get_main_document());
-		pivot_cache_files_.write(path);
-    }
-	{
-		pivot_table_files_.set_main_document(get_main_document());
-		pivot_table_files_.write(path);
-	}
+
 	if (drawings_)
     {
         drawings_->set_main_document(get_main_document());
@@ -340,7 +336,7 @@ void xl_pivot_cache_files::write(const std::wstring & RootPath)
 			{
 				const std::wstring fileNameR = std::wstring(L"pivotCacheRecords") + std::to_wstring(i + 1) + L".xml";
 	           
-				contentTypes.add_override(std::wstring(L"/xl/pivotCache/") + fileNameR, kWSConTypeD);
+				contentTypes.add_override(std::wstring(L"/xl/pivotCache/") + fileNameR, kWSConTypeR);
 
 				package::simple_element(fileNameR, content_records).write(path);
 			}

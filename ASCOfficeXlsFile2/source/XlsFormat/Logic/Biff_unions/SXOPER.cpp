@@ -43,6 +43,10 @@ namespace XLS
 
 SXOPER::SXOPER()
 {
+	bString	= false;
+	bDate	= false;
+	bNumber	= false;
+	bEmpty	= false;
 }
 
 SXOPER::~SXOPER()
@@ -59,21 +63,27 @@ const bool SXOPER::loadContent(BinProcessor& proc)
 {
 	if(proc.optional<SxNil>())
 	{
+		bEmpty = true;
 	}
 	else if(proc.optional<SXNum>())
 	{
+		bNumber = true;
 	}
 	else if(proc.optional<SxBool>())
 	{
+		bNumber = true;
 	}
 	else if(proc.optional<SxErr>())
 	{
+		bNumber = true;
 	}
 	else if(proc.optional<SXString>())
 	{
+		bString = true;
 	}
 	else if(proc.optional<SXDtr>())
 	{
+		bDate =true;
 	}
 	else 
 		return false;

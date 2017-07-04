@@ -107,7 +107,10 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 			CP_XML_ATTR(L"applyPatternFormats",	view->fAtrPat);
 			CP_XML_ATTR(L"applyAlignmentFormats",	view->fAtrAlc);
 			CP_XML_ATTR(L"applyWidthHeightFormats",	view->fAtrProc);
-			CP_XML_ATTR(L"dataCaption",			view->stData.value()); 
+			if (!view->stData.value().empty())
+			{
+				CP_XML_ATTR(L"dataCaption",			view->stData.value()); 
+			}
 			//updatedVersion="2" 
 			//asteriskTotals="1" 
 			//showMemberPropertyTips="0" 
@@ -144,14 +147,15 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 					ivd->serialize(CP_XML_STREAM());
 				}
 			}
-			CP_XML_NODE(L"rowItems")
+			if (core->m_arPIVOTLI.size() == 2)//0 or 2
 			{
-				CP_XML_ATTR(L"count", view->cRw);
-				//for (size_t i = 0; i <  m_arPIVOTLI.size(); i++)
-				//{
-				//	PIVOTLI* line = dynamic_cast<PIVOTLI*>(m_arPIVOTLI[i].get());
-				//	m_arPIVOTIVD[i]->serialize(CP_XML_STREAM());
-				//}
+				CP_XML_NODE(L"rowItems")
+				{
+					CP_XML_ATTR(L"count", view->cRw);
+					
+					PIVOTLI* line = dynamic_cast<PIVOTLI*>(core->m_arPIVOTLI[0].get());
+					line->serialize(CP_XML_STREAM());
+				}
 			}
 			if (core->m_arPIVOTIVD.size() == 2)//0 or 2
 			{
@@ -163,13 +167,15 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 					ivd->serialize(CP_XML_STREAM());
 				}
 			}
-			CP_XML_NODE(L"colItems")
+			if (core->m_arPIVOTLI.size() == 2)//0 or 2
 			{
-				CP_XML_ATTR(L"count", view->cCol);
-				//for (size_t i = 0; i <  m_arPIVOTLI.size(); i++)
-				//{
-				//	m_arPIVOTIVD[i]->serialize(CP_XML_STREAM());
-				//}
+				CP_XML_NODE(L"colItems")
+				{
+					CP_XML_ATTR(L"count", view->cCol);
+					
+					PIVOTLI* line = dynamic_cast<PIVOTLI*>(core->m_arPIVOTLI[1].get());
+					line->serialize(CP_XML_STREAM());
+				}
 			}
 			if (core->m_PIVOTPI)
 			{

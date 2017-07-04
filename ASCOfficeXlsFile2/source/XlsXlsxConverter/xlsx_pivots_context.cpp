@@ -31,13 +31,10 @@
  */
 #include "xlsx_pivots_context.h"
 
-
 #include <boost/make_shared.hpp>
 #include <simple_xml_writer.h>
 
 namespace oox {
-
-
 
 class xlsx_pivots_context::Impl
 {
@@ -73,13 +70,14 @@ int xlsx_pivots_context::get_cache_count()
 {
 	return (int)impl_->caches_.size();
 }
+
 void xlsx_pivots_context::dump_rels_cache(int index, rels & Rels)
 {
-	if (impl_->caches_[index].recordsData_.empty())
+	if (impl_->caches_[index].recordsData_.empty() == false)
 	{
 		Rels.add(relationship(L"rId1",							
 						L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheRecords",
-						L"pivotCacheRecords" + std::to_wstring(index) + L".xml", L""));
+						L"pivotCacheRecords" + std::to_wstring(index + 1) + L".xml", L""));
 	}
 }
 void xlsx_pivots_context::dump_rels_view(int index, rels & Rels)
@@ -104,10 +102,14 @@ void xlsx_pivots_context::write_table_view_to(int index, std::wostream & strm)
 {
 	strm << impl_->views_[index].data_;
 }
-void xlsx_pivots_context::add_view(std::wstring table_view, int indexCache)
+int xlsx_pivots_context::add_view(std::wstring table_view, int indexCache)
 {
+	if (table_view.empty()) return 0;
+
 	Impl::_pivot_view v = {table_view, indexCache};
 	impl_->views_.push_back(v);
+
+	return (int)impl_->views_.size();
 }
 
 int xlsx_pivots_context::get_view_count()

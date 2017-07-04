@@ -52,6 +52,11 @@ public:
 	static const ElementType type = typeSXOPER;
 
 	BaseObjectPtr	m_element;	
+
+	bool	bString;
+	bool	bDate;
+	bool	bNumber;
+	bool	bEmpty;
 };
 
 } // namespace XLS

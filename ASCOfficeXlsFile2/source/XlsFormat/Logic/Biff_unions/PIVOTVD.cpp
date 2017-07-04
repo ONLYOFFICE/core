@@ -80,20 +80,73 @@ int PIVOTVD::serialize(std::wostream & strm)
 	Sxvd*	vd		= dynamic_cast<Sxvd*>(m_Sxvd.get());
 	SXVDEx* vd_ex	= dynamic_cast<SXVDEx*>(m_SXVDEx.get());
 
+	if (!vd || !vd_ex) return 0;
+
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"pivotField")
 		{ 
-			//CP_XML_ATTR(L"axis", ); 
-			//CP_XML_ATTR(L"compact", ); 
-			//CP_XML_ATTR(L"outline", ); 
-			//CP_XML_ATTR(L"subtotalTop", ); 
-			//CP_XML_ATTR(L"showAll", ); 
-			//CP_XML_ATTR(L"includeNewItemsInFilter", ); 
-			//CP_XML_ATTR(L"sortType", ); 
-			//CP_XML_ATTR(L"rankBy", ); 
-			//CP_XML_ATTR(L"axis", ); 
+			if		(vd->sxaxis.bRw)	CP_XML_ATTR(L"axis", L"axisRow"); 
+			else if (vd->sxaxis.bCol)	CP_XML_ATTR(L"axis", L"axisCol"); 
+			else if (vd->sxaxis.bPage)	CP_XML_ATTR(L"axis", L"axisPage"); 
+			else if (vd->sxaxis.bData)
+			{
+				CP_XML_ATTR(L"dataField", 1); 
+			}
+			
+			CP_XML_ATTR(L"compact",	0); 
+			
+			if (vd_ex->ifmt > 0)	
+			{
+				CP_XML_ATTR(L"numFmtId", vd_ex->ifmt);
+			}
 
+			if (vd->stName.value().empty() == false)
+				CP_XML_ATTR(L"name", vd->stName.value()); 
+
+			if (vd->fCounta)	CP_XML_ATTR(L"countASubtotal",	1);
+			if (vd->fCount)		CP_XML_ATTR(L"countSubtotal",	1);
+			if (vd->fDefault)	CP_XML_ATTR(L"defaultSubtotal",	1);
+			if (vd->fSum)		CP_XML_ATTR(L"sumSubtotal",		1);
+			if (vd->fAverage)	CP_XML_ATTR(L"avgSubtotal",		1);
+			if (vd->fMax)		CP_XML_ATTR(L"maxSubtotal",		1);
+			if (vd->fMin)		CP_XML_ATTR(L"minSubtotal",		1);
+			if (vd->fProduct)	CP_XML_ATTR(L"productSubtotal", 1);
+			if (vd->fStdev)		CP_XML_ATTR(L"stdSubtotal",		1);
+			if (vd->fStdevp)	CP_XML_ATTR(L"stdDevSubtotal",	1);
+			if (vd->fVariance)	CP_XML_ATTR(L"varSubtotal",		1);
+			if (vd->fVariancep)	CP_XML_ATTR(L"varPSubtotal",	1);
+
+			CP_XML_ATTR(L"outline",			vd_ex->fOutline);
+			CP_XML_ATTR(L"subtotalTop",		vd_ex->fSubtotalAtTop);
+			CP_XML_ATTR(L"showAll",			vd_ex->fShowAllItems);
+			
+			if (vd_ex->fNotDragToData)		CP_XML_ATTR(L"dragToData",	0);
+			if (!vd_ex->fDragToRow)			CP_XML_ATTR(L"dragToRow",	0);
+			if (!vd_ex->fDragToColumn)		CP_XML_ATTR(L"dragToCol",	0);
+			if (!vd_ex->fDragToPage)		CP_XML_ATTR(L"dragToPage",	0);
+			
+			if (vd_ex->fHideNewItems)		CP_XML_ATTR(L"hideNewItems",	1);
+			if (vd_ex->fInsertBlankRow)		CP_XML_ATTR(L"insertBlankRow",	1);
+			if (vd_ex->fPageBreaksBetweenItems)	CP_XML_ATTR(L"insertPageBreak", 1);
+			if (!vd_ex->fTopAutoShow)		CP_XML_ATTR(L"topAutoShow",		0);
+			//if (!vd_ex->fDragToHide)		CP_XML_ATTR(L"dragOff",	0);	//??
+			if (vd_ex->fServerBased)		CP_XML_ATTR(L"serverField",		1);
+			
+			//CP_XML_ATTR(L"",				vd_ex->fCalculatedField);
+			CP_XML_ATTR(L"includeNewItemsInFilter", 1); 
+
+			//CP_XML_ATTR(L"nonAutoSortDefault", !vd_ex->fAutoSort);
+			if (vd_ex->fAutoSort)
+			{
+			//	vd_ex->isxdiAutoSort
+			
+				if (vd_ex->fAscendSort)	CP_XML_ATTR(L"sortType", L"ascending"); 
+			}
+			if (vd_ex->isxdiAutoShow >= 0)
+			{
+				CP_XML_ATTR(L"rankBy", vd_ex->isxdiAutoShow);
+			}		
 			if (!m_arSXVI.empty())
 			{
 				CP_XML_NODE(L"items")

@@ -285,10 +285,6 @@ void xlsx_conversion_context::end_document()
 			{
 				for (int i = 0; i < pivot_view_count; i++)
 				{
-					//std::wstring				rId		= L"pvId" + std::to_wstring(i+1);
-					//static const std::wstring	sType	= L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotTable"; 
-					//const std::wstring			sName	= std::wstring(L"../pivotTables/pivotTable" + std::to_wstring(i + 1) + L".xml");
-
 					package::pivot_table_content_ptr content = package::pivot_table_content::create();
 
 					xlsx_pivots_context_.dump_rels_view(i, content->get_rels());

@@ -95,6 +95,12 @@ int DREF::serialize(std::wostream & strm)
 			}
 			else if(ref)
 			{
+				CP_XML_ATTR(L"type", L"worksheet");
+				CP_XML_NODE(L"worksheetSource")
+				{
+					CP_XML_ATTR(L"ref", ref->ref.toString());
+					CP_XML_ATTR(L"sheet", ref->stFile);
+				}
 			}
 		}
 	}

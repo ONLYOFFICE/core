@@ -116,6 +116,7 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 			{
 				CP_XML_ATTR(L"r:id", L"rId1" );
 			}
+			CP_XML_ATTR(L"enableRefresh",	1);
 			CP_XML_ATTR(L"refreshedBy",		db->rgb.value());
 			CP_XML_ATTR(L"refreshedDate",	db_ex->numDate.data.value);
 			CP_XML_ATTR(L"recordCount",		db->crdbUsed);

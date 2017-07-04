@@ -50,17 +50,15 @@ BaseObjectPtr SXLI::clone()
 }
 
 void SXLI::readFields(CFRecord& record)
-{// 0 or 2 records SXLIItem
-	int size_item = (record.getDataSize() - record.getRdPtr()) / 2; 
-
-	if (size_item < 8)
+{
+	while(true)
 	{
-		//??
-		return;
-	}
+		int size_item = record.getDataSize() - record.getRdPtr(); 
 
-	for (int k = 0; k < 2; k++)
-	{
+		if (size_item < 8)
+		{
+			break;
+		}
 		SXLIItem item;
 		
 		unsigned short flags;
@@ -74,12 +72,13 @@ void SXLI::readFields(CFRecord& record)
 		item.fGrand				= GETBIT(flags, 11);
 		item.fMultiDataOnAxis	= GETBIT(flags, 12);
 
-		int count = (size_item - 8) / 2;
-
-		for (int i = 0; i < count; i++)
+		//if (!item.fGrand && item.itmType != 0x000E)
 		{
-			short val; record >> val;
-			item.rgisxvi.push_back(val);
+			for (short i = 0; i < item.isxviMac; i++)
+			{
+				short val; record >> val;
+				item.rgisxvi.push_back(val);
+			}
 		}
 		m_arItems.push_back(item);
 	}

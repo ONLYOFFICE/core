@@ -27,7 +27,7 @@ if exist %VC64% (
 	SET VC=%VC64%
 )
 
-call "%VC%\vcvarsall.bat %MACHINE%"
+call "%VC%\vcvarsall.bat" %MACHINE%
 
 cd curl
 call buildconf.bat

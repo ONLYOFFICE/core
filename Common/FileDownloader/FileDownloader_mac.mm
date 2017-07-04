@@ -1,5 +1,10 @@
 ﻿#include "FileDownloader.h"
-#include <Cocoa/Cocoa.h>
+
+#if _IOS
+    #import <Foundation/Foundation.h>
+#else
+    #include <Cocoa/Cocoa.h>
+#endif
 
 static NSString* StringWToNSString ( const std::wstring& Str )
 {
@@ -34,21 +39,30 @@ public :
         {
             NSArray       *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
             NSString  *documentsDirectory = [paths objectAtIndex:0];
-
+            
             NSString  *filePath = StringWToNSString ( m_sFilePath );
             [urlData writeToFile:filePath atomically:YES];
-
-    #ifndef _ASC_USE_ARC_
+            
+#if defined(_IOS)
+            return 0;
+#else
+#ifndef _ASC_USE_ARC_
             [stringURL release];
             [url release];
             [urlData release];
-    #endif
+#endif
+#endif
             return 0;
         }
-    #ifndef _ASC_USE_ARC_
+        
+#if defined(_IOS)
+        return 1;
+#else
+#ifndef _ASC_USE_ARC_
         [stringURL release];
         [url release];
-    #endif
+#endif
+#endif
         return 1;
     }
 };

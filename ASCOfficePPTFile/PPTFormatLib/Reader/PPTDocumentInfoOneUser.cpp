@@ -601,12 +601,14 @@ void CPPTUserInfo::LoadNotes(DWORD dwNoteID, CSlide* pNotes)
 	
 	CSlideInfo* pNotesWrapper = &m_arNotesWrapper.back();
 
-	int indexUser						= pRecordSlide->m_IndexUser;
+	int indexUser = pRecordSlide->m_IndexUser;
 
-	pNotesWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures;
+	if (m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures.empty())
+		pNotesWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[0]->m_arOffsetPictures;
+	else
+		pNotesWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures;
+
 	pNotesWrapper->m_mapFilePictures	= &m_pDocumentInfo->m_mapStoreImageFile;
-
-	//грузим placeholder
 	pNotesWrapper->m_arTextPlaceHolders = pRecordSlide->m_oPersist.m_arTextAttrs;
 
 	std::vector<CRecordNotesAtom*> oArrayNotesAtoms;
@@ -627,6 +629,9 @@ void CPPTUserInfo::LoadNotes(DWORD dwNoteID, CSlide* pNotes)
 		//????? у заметок нет слайда !!!
 	}
 //-----------------------------------------------------
+	size_t index = pPairSlide->second->m_Index;
+	if (index >= m_arSlides.size())
+		return;
 	CSlide* pSlide		= m_arSlides[pPairSlide->second->m_Index];
 
 	pNotes->m_lSlideID	= pPairSlide->second->m_Index;
@@ -796,12 +801,14 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 	
 	CSlideInfo* pSlideWrapper = &m_arSlideWrapper.back();
 
-	int indexUser						= pRecordSlide->m_IndexUser;
+	int indexUser = pRecordSlide->m_IndexUser;
 
-	pSlideWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures;
+	if (m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures.empty())
+		pSlideWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[0]->m_arOffsetPictures;
+	else
+		pSlideWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures;
+	
 	pSlideWrapper->m_mapFilePictures	= &m_pDocumentInfo->m_mapStoreImageFile;
-
-	// вот, грузим placeholder
 	pSlideWrapper->m_arTextPlaceHolders = pRecordSlide->m_oPersist.m_arTextAttrs;
 
 	// записываем шрифты
@@ -1402,7 +1409,11 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 		indexUser = pPairMaster1->second->m_IndexUser;
 		pMasterWrapper->m_arTextPlaceHolders = pPairMaster1->second->m_oPersist.m_arTextAttrs;
 	}
-	pMasterWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures;
+	if (m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures.empty() == false)
+		pMasterWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures;
+	else
+		pMasterWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[0]->m_arOffsetPictures;
+
 	pMasterWrapper->m_mapFilePictures	= &m_pDocumentInfo->m_mapStoreImageFile;
 
 	// читаем настройки текстовых стилей -----------------------------------------------
@@ -1784,11 +1795,13 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 
 	CSlideInfo* pMasterWrapper	= &m_arMasterWrapper[m_arMasterWrapper.size() - 1];
 
-	// вот, грузим placeholder
-	pMasterWrapper->m_arTextPlaceHolders	= pCurMaster->m_oPersist.m_arTextAttrs;	
-	
-	pMasterWrapper->m_parEmptyPictures		= &m_pDocumentInfo->m_arUsers[pCurMaster->m_IndexUser]->m_arOffsetPictures;
+	pMasterWrapper->m_arTextPlaceHolders	= pCurMaster->m_oPersist.m_arTextAttrs;		
 	pMasterWrapper->m_mapFilePictures		= &m_pDocumentInfo->m_mapStoreImageFile;
+	
+	if (m_pDocumentInfo->m_arUsers[pCurMaster->m_IndexUser]->m_arOffsetPictures.empty() == false)
+		pMasterWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[pCurMaster->m_IndexUser]->m_arOffsetPictures;
+	else
+		pMasterWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[0]->m_arOffsetPictures;
 
 	std::map<DWORD, LONG>::iterator pPairTheme = m_mapMasterToTheme.find(dwID);
 	

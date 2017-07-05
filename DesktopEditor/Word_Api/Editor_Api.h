@@ -1087,9 +1087,9 @@ namespace NSEditorApi
 	class CAscCatAxisSettings
     {
 	private:
-        js_wrapper<double>		m_dInternalBetweenTick;
+        js_wrapper<double>		m_dIntervalBetweenTick;
 		js_wrapper<int>			m_nIntervalBetweenLabelsRule;	// c_oAscBetweenLabelsRule_
-		js_wrapper<double>		m_dInternalBetweenLabels;
+		js_wrapper<double>		m_dIntervalBetweenLabels;
 
 		js_wrapper<bool>		m_bInvertCatOrder;
 		js_wrapper<double>		m_dLabelsAxisDistance;
@@ -1114,9 +1114,9 @@ namespace NSEditorApi
 		{
 		}
 
-		LINK_PROPERTY_DOUBLE_JS(InternalBetweenTick)
+		LINK_PROPERTY_DOUBLE_JS(IntervalBetweenTick)
 		LINK_PROPERTY_INT_JS(IntervalBetweenLabelsRule)
-		LINK_PROPERTY_DOUBLE_JS(InternalBetweenLabels)
+		LINK_PROPERTY_DOUBLE_JS(IntervalBetweenLabels)
 
 		LINK_PROPERTY_BOOL_JS(InvertCatOrder)
 		LINK_PROPERTY_DOUBLE_JS(LabelsAxisDistance)

@@ -52,10 +52,15 @@ BaseObjectPtr SXPI::clone()
 
 void SXPI::readFields(CFRecord& record)
 {
-#pragma message("####################### SXPI record is not implemented")
-	Log::error("SXPI record is not implemented.");
-	//record >> some_value;
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	int size = (record.getDataSize() - record.getRdPtr()) / sizeof(SXPI_Item);
+
+	for (int i = 0; i < size; i++)
+	{
+		SXPI_Item item;
+		record >> item.isxvd >> item.isxvi >> item.idObj;
+
+		m_arItems.push_back(item);
+	}
 }
 
 } // namespace XLS

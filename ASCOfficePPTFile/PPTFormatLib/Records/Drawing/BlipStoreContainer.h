@@ -53,7 +53,7 @@ public:
 		pArray->clear();
 
 		std::map<DWORD, int> image_map;
-		for (int nIndex = 0; nIndex < m_arRecords.size(); ++nIndex)
+		for (size_t nIndex = 0; nIndex < m_arRecords.size(); ++nIndex)
 		{
 			CRecordBlipStoreEntry* pEntry = dynamic_cast<CRecordBlipStoreEntry*>(m_arRecords[nIndex]);
 			if (NULL != pEntry)

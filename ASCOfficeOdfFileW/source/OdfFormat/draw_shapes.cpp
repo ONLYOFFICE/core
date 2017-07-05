@@ -403,9 +403,11 @@ int draw_enhanced_geometry::parsing(_CP_OPT(std::wstring) val)
 void draw_enhanced_geometry_attlist::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR_OPT(L"draw:type",				draw_type_);
-    CP_XML_ATTR_OPT(L"draw:text-areas",			draw_text_areas_);
+	CP_XML_ATTR_OPT(L"drawooo:sub-view-size",	draw_sub_view_size_);
+	CP_XML_ATTR_OPT(L"draw:text-areas",			draw_text_areas_);
     CP_XML_ATTR_OPT(L"draw:modifiers",			draw_modifiers_);
-    CP_XML_ATTR_OPT(L"draw:enhanced-path",		draw_enhanced_path_);	
+	CP_XML_ATTR_OPT(L"drawooo:enhanced-path",	draw_enhanced_path_);	
+    //CP_XML_ATTR_OPT(L"draw:enhanced-path",		draw_enhanced_path_);	
 	CP_XML_ATTR_OPT(L"draw:glue-points",		draw_glue_points_);
 	CP_XML_ATTR_OPT(L"draw:mirror-vertical",	draw_mirror_vertical_);
 	CP_XML_ATTR_OPT(L"draw:mirror-horizontal",	draw_mirror_horizontal_);
@@ -462,7 +464,9 @@ void draw_enhanced_geometry::create_child_element( const std::wstring & Ns, cons
 }
 void draw_enhanced_geometry::add_child_element( const office_element_ptr & child_element)
 {
- 	ElementType type = child_element->get_type();
+ 	if (!child_element) return;
+
+	ElementType type = child_element->get_type();
 
     if (type == typeDrawHandle)
 	{

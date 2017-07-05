@@ -142,85 +142,104 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 	if (fo_wrap_option_)	
 		properties.push_back(_property(L"text-wrap", (int)fo_wrap_option_->get_type()));
 }
-void graphic_format_properties::apply_from(const graphic_format_properties & Other)
+void graphic_format_properties::apply_from(const graphic_format_properties * Other)
 {
-	_CP_APPLY_PROP2(draw_stroke_); 
-	_CP_APPLY_PROP2(draw_stroke_dash_); 
-	_CP_APPLY_PROP2(draw_marker_start_); 
-	_CP_APPLY_PROP2(draw_marker_end_); 
-	_CP_APPLY_PROP2(draw_textarea_horizontal_align_); 
-	_CP_APPLY_PROP2(draw_textarea_vertical_align_); 
-	_CP_APPLY_PROP2(draw_auto_grow_height_);
-	_CP_APPLY_PROP2(draw_auto_grow_width_);
-	_CP_APPLY_PROP2(draw_fit_to_size_);
-	_CP_APPLY_PROP2(draw_fit_to_contour_);
-	
-	_CP_APPLY_PROP2(svg_stroke_color_); 
-	_CP_APPLY_PROP2(svg_stroke_width_);	
-	_CP_APPLY_PROP2(svg_stroke_opacity_); 
-	
-	_CP_APPLY_PROP2(fo_min_width_);
-    _CP_APPLY_PROP2(fo_min_height_);
-    _CP_APPLY_PROP2(fo_max_width_);
-    _CP_APPLY_PROP2(fo_max_height_);
-	_CP_APPLY_PROP2(fo_wrap_option_);
+	if (Other == NULL) return;
 
-    _CP_APPLY_PROP2(style_print_content_);
-    _CP_APPLY_PROP2(style_protect_);
-	_CP_APPLY_PROP2(style_editable_);
-    _CP_APPLY_PROP2(style_wrap_);
-    _CP_APPLY_PROP2(style_wrap_dynamic_treshold_);
-    _CP_APPLY_PROP2(style_number_wrapped_paragraphs_);
-    _CP_APPLY_PROP2(style_wrap_contour_);
-    _CP_APPLY_PROP2(style_wrap_contour_mode_);
-    _CP_APPLY_PROP2(style_run_through_); 
-    _CP_APPLY_PROP2(style_flow_with_text_);
-    _CP_APPLY_PROP2(style_overflow_behavior_);
-    _CP_APPLY_PROP2(style_mirror_);
-    _CP_APPLY_PROP2(fo_clip_);
-    _CP_APPLY_PROP2(draw_wrap_influence_on_position_);
+	_CP_APPLY_PROP3(draw_stroke_); 
+	_CP_APPLY_PROP3(draw_stroke_dash_); 
+	_CP_APPLY_PROP3(draw_marker_start_); 
+	_CP_APPLY_PROP3(draw_marker_end_); 
+	_CP_APPLY_PROP3(draw_textarea_horizontal_align_); 
+	_CP_APPLY_PROP3(draw_textarea_vertical_align_); 
+	_CP_APPLY_PROP3(draw_auto_grow_height_);
+	_CP_APPLY_PROP3(draw_auto_grow_width_);
+	_CP_APPLY_PROP3(draw_fit_to_size_);
+	_CP_APPLY_PROP3(draw_fit_to_contour_);
+	
+	_CP_APPLY_PROP3(svg_stroke_color_); 
+	_CP_APPLY_PROP3(svg_stroke_width_);	
+	_CP_APPLY_PROP3(svg_stroke_opacity_); 
+	
+	_CP_APPLY_PROP3(fo_min_width_);
+    _CP_APPLY_PROP3(fo_min_height_);
+    _CP_APPLY_PROP3(fo_max_width_);
+    _CP_APPLY_PROP3(fo_max_height_);
+	_CP_APPLY_PROP3(fo_wrap_option_);
 
-    common_draw_fill_attlist_.apply_from(Other.common_draw_fill_attlist_);
-    common_draw_rel_size_attlist_.apply_from(Other.common_draw_rel_size_attlist_);
-    common_horizontal_margin_attlist_.apply_from(Other.common_horizontal_margin_attlist_);
-    common_vertical_margin_attlist_.apply_from(Other.common_vertical_margin_attlist_);
-    common_margin_attlist_.apply_from(Other.common_margin_attlist_);    
-    common_horizontal_pos_attlist_.apply_from(Other.common_horizontal_pos_attlist_);
-    common_horizontal_rel_attlist_.apply_from(Other.common_horizontal_rel_attlist_);
-    common_vertical_pos_attlist_.apply_from(Other.common_vertical_pos_attlist_);
-    common_vertical_rel_attlist_.apply_from(Other.common_vertical_rel_attlist_);
-    common_text_anchor_attlist_.apply_from(Other.common_text_anchor_attlist_);
-    common_border_attlist_.apply_from(Other.common_border_attlist_);
-    common_border_line_width_attlist_.apply_from(Other.common_border_line_width_attlist_);
-    common_padding_attlist_.apply_from(Other.common_padding_attlist_);
-    common_shadow_attlist_.apply_from(Other.common_shadow_attlist_);
-    common_background_color_attlist_.apply_from(Other.common_background_color_attlist_);
+    _CP_APPLY_PROP3(style_print_content_);
+    _CP_APPLY_PROP3(style_protect_);
+	_CP_APPLY_PROP3(style_editable_);
+    _CP_APPLY_PROP3(style_wrap_);
+    _CP_APPLY_PROP3(style_wrap_dynamic_treshold_);
+    _CP_APPLY_PROP3(style_number_wrapped_paragraphs_);
+    _CP_APPLY_PROP3(style_wrap_contour_);
+    _CP_APPLY_PROP3(style_wrap_contour_mode_);
+    _CP_APPLY_PROP3(style_run_through_); 
+    _CP_APPLY_PROP3(style_flow_with_text_);
+    _CP_APPLY_PROP3(style_overflow_behavior_);
+    _CP_APPLY_PROP3(style_mirror_);
+    _CP_APPLY_PROP3(fo_clip_);
+    _CP_APPLY_PROP3(draw_wrap_influence_on_position_);
+
+    common_draw_fill_attlist_.apply_from		(Other->common_draw_fill_attlist_);
+    common_draw_rel_size_attlist_.apply_from	(Other->common_draw_rel_size_attlist_);
+    common_horizontal_margin_attlist_.apply_from(Other->common_horizontal_margin_attlist_);
+    common_vertical_margin_attlist_.apply_from	(Other->common_vertical_margin_attlist_);
+    common_margin_attlist_.apply_from			(Other->common_margin_attlist_);    
+    common_horizontal_pos_attlist_.apply_from	(Other->common_horizontal_pos_attlist_);
+    common_horizontal_rel_attlist_.apply_from	(Other->common_horizontal_rel_attlist_);
+    common_vertical_pos_attlist_.apply_from		(Other->common_vertical_pos_attlist_);
+    common_vertical_rel_attlist_.apply_from		(Other->common_vertical_rel_attlist_);
+    common_text_anchor_attlist_.apply_from		(Other->common_text_anchor_attlist_);
+    common_border_attlist_.apply_from			(Other->common_border_attlist_);
+    common_border_line_width_attlist_.apply_from(Other->common_border_line_width_attlist_);
+    common_padding_attlist_.apply_from			(Other->common_padding_attlist_);
+    common_shadow_attlist_.apply_from			(Other->common_shadow_attlist_);
+    common_background_color_attlist_.apply_from	(Other->common_background_color_attlist_);
      
 
-    _CP_APPLY_PROP(style_background_image_, Other.style_background_image_);
+    _CP_APPLY_PROP(style_background_image_,	Other->style_background_image_);
 }
 
 
-// style:graphic-properties
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_graphic_properties::ns = L"style";
 const wchar_t * style_graphic_properties::name = L"graphic-properties";
 
 void style_graphic_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	graphic_format_properties_.add_attributes(Attributes);
+	content_.add_attributes(Attributes);
 }
 
 void style_graphic_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
      if (L"style" == Ns && L"background-image" == Name)
     {
-        CP_CREATE_ELEMENT(graphic_format_properties_.style_background_image_);
+        CP_CREATE_ELEMENT(content_.style_background_image_);
     }
 
 	//if (CP_CHECK_NAME(L"text", L"list-style") 	
 	//	styles_.add_child_element(Reader, Ns, Name, getContext()); он тут и не нужен по сути... описание есть и в другом сместе
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * loext_graphic_properties::ns	= L"loext";
+const wchar_t * loext_graphic_properties::name	= L"graphic-properties";
 
+void loext_graphic_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	content_.add_attributes(Attributes);
+}
+
+void loext_graphic_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+     if (L"style" == Ns && L"background-image" == Name)
+    {
+        CP_CREATE_ELEMENT(content_.style_background_image_);
+    }
+
+	//if (CP_CHECK_NAME(L"text", L"list-style") 	
+	//	styles_.add_child_element(Reader, Ns, Name, getContext()); он тут и не нужен по сути... описание есть и в другом сместе
+}
 }
 }

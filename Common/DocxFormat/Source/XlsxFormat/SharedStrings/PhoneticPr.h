@@ -45,23 +45,24 @@ namespace OOX
 		class CPhonetic : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CPhonetic)
+			WritingElement_AdditionConstructors(CPhonetic)
 			CPhonetic()
 			{
 			}
 			virtual ~CPhonetic()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -70,7 +71,7 @@ namespace OOX
 			}
 			virtual EElementType getType () const
 			{
-				return et_PhoneticPr;
+				return et_x_PhoneticPr;
 			}
 
 		private:
@@ -94,23 +95,24 @@ namespace OOX
 		class CRPh : public WritingElementWithChilds<CText>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CRPh)
+			WritingElement_AdditionConstructors(CRPh)
 			CRPh()
 			{
 			}
 			virtual ~CRPh()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -129,7 +131,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_rPh;
+				return et_x_rPh;
 			}
 
 		private:
@@ -138,14 +140,14 @@ namespace OOX
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("eb"),      m_oEb )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("sb"),      m_oSb )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("eb"),      m_oEb )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("sb"),      m_oSb )
 
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oEb;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oSb;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oEb;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oSb;
 		};
 	} //Spreadsheet
 } // namespace OOX

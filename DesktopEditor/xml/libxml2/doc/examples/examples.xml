@@ -146,7 +146,7 @@
   </example>
   <example filename='parse4.c'>
     <synopsis>Parse an XML document chunk by chunk to a tree and free it</synopsis>
-    <purpose>Demonstrate the use of xmlCreatePushParserCtxt() and DoctRenderer() to read an XML file progressively into a tree and and xmlFreeDoc() to free the resulting tree</purpose>
+    <purpose>Demonstrate the use of xmlCreatePushParserCtxt() and xmlParseChunk() to read an XML file progressively into a tree and and xmlFreeDoc() to free the resulting tree</purpose>
     <usage>parse4 test3.xml</usage>
     <test>parse4 test3.xml</test>
     <author>Daniel Veillard</author>
@@ -158,7 +158,7 @@
     </includes>
     <uses>
       <function line='94' file='parser' name='xmlFreeParserCtxt'/>
-      <function line='86' file='parser' name='DoctRenderer'/>
+      <function line='86' file='parser' name='xmlParseChunk'/>
       <function line='103' file='tree' name='xmlFreeDoc'/>
       <function line='135' file='xmlmemory' name='xmlMemoryDump'/>
       <function line='67' file='parser' name='xmlCreatePushParserCtxt'/>
@@ -562,7 +562,7 @@
     <symbol name='xmlNsPtr'>
       <ref filename='xpath1.c'/>
     </symbol>
-    <symbol name='DoctRenderer'>
+    <symbol name='xmlParseChunk'>
       <ref filename='parse4.c'/>
     </symbol>
     <symbol name='xmlParseFile'>

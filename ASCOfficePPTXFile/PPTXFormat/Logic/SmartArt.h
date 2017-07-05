@@ -93,17 +93,7 @@ namespace PPTX
 			{				
 			}
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				if (m_diag.is_init())
-				{
-					smart_ptr<PPTX::CCommonRels> old = *pWriter->m_pCommonRels;
-					*pWriter->m_pCommonRels = m_oCommonRels;
-					m_diag->toPPTY(pWriter);
-					*pWriter->m_pCommonRels = old;
-				}
-			}
-
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
 				pReader->SkipRecord();
@@ -115,7 +105,7 @@ namespace PPTX
 			nullable<OOX::RId>				id_style;
 
 			nullable<PPTX::Logic::SpTree>	m_diag;
-			smart_ptr<PPTX::CCommonRels>	m_oCommonRels;
+			smart_ptr<OOX::IFileContainer>	m_pFileContainer;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
@@ -125,6 +115,7 @@ namespace PPTX
 
 		public:
 			void LoadDrawing(NSBinPptxRW::CBinaryFileWriter* pWriter = NULL);
+			bool LoadDrawing(OOX::IFileContainer* pRels);
 		};
 
 		class ChartRec : public WrapperWritingElement

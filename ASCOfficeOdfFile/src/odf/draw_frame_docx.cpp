@@ -153,7 +153,7 @@ length ComputeContextWidth(const style_page_layout_properties			* pageProperties
             if (pagePropertiesNode)
             {
                 if (const style_columns * styleColumns 
-                    = dynamic_cast<const style_columns*>( pagePropertiesNode->style_page_layout_properties_elements_.style_columns_.get()))
+                    = dynamic_cast<const style_columns*>( pagePropertiesNode->elements_.style_columns_.get()))
                 {
                     columnsCount = styleColumns->fo_column_count_.get_value_or(1);
                     if (!columnsCount)
@@ -180,11 +180,7 @@ int ComputeMarginX(const style_page_layout_properties				* pagePropertiesNode,
 					  const std::vector<odf_reader::_property>		& additional)
 {
 
-    const _CP_OPT(anchor_type) anchor = attlists_.shape_with_text_and_styles_.
-										common_draw_shape_with_styles_attlist_.
-										common_text_spreadsheet_shape_attlist_.
-										common_text_anchor_attlist_.
-										type_;
+    const _CP_OPT(anchor_type) anchor = attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_;
 
     _CP_OPT(horizontal_rel) styleHorizontalRel = graphicProperties.common_horizontal_rel_attlist_.style_horizontal_rel_;
     _CP_OPT(horizontal_pos) styleHorizontalPos = graphicProperties.common_horizontal_pos_attlist_.style_horizontal_pos_;
@@ -575,16 +571,12 @@ int ComputeMarginY(const style_page_layout_properties_attlist		& pageProperties,
     // TODO : recursive result!!!
     const _CP_OPT(anchor_type) anchor = 
         attlists_.shape_with_text_and_styles_.
-        common_draw_shape_with_styles_attlist_.
-        common_text_spreadsheet_shape_attlist_.
         common_text_anchor_attlist_.
         type_;
 
 	//todooo пока не ясно как привязать к определеной странице в документе ...
 	//const _CP_OPT(unsigned int) anchor_page_number = 
 	//	attlists_.shape_with_text_and_styles_.
-	//	common_draw_shape_with_styles_attlist_.
-	//	common_text_spreadsheet_shape_attlist_.
 	//	common_text_anchor_attlist_.
 	//	page_number_;
 
@@ -765,10 +757,8 @@ int ComputeMarginY(const style_page_layout_properties_attlist		& pageProperties,
 
 void common_draw_docx_convert(oox::docx_conversion_context & Context, const union_common_draw_attlists & attlists_, oox::_docx_drawing *drawing) 
 {
-	const _CP_OPT(style_ref) & styleRef = attlists_.shape_with_text_and_styles_.
-        common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_;
-
-    const std::wstring styleName = styleRef ? styleRef->style_name() : L"";
+	const std::wstring styleName = attlists_.shape_with_text_and_styles_.
+					common_shape_draw_attlist_.draw_style_name_.get_value_or(L"");
 
 	std::vector<const odf_reader::style_instance *> instances;
 	odf_reader::style_instance* styleInst = Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic,Context.process_headers_footers_);
@@ -794,7 +784,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
     style_page_layout_properties_attlist	emptyPageProperties;
     
 	const style_page_layout_properties_attlist &	pageProperties =
-		pagePropertiesNode ? pagePropertiesNode->style_page_layout_properties_attlist_ : emptyPageProperties;
+		pagePropertiesNode ? pagePropertiesNode->attlist_ : emptyPageProperties;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -813,12 +803,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
     drawing->styleVerticalPos	= graphicProperties.common_vertical_pos_attlist_.style_vertical_pos_;
     drawing->styleVerticalRel	= graphicProperties.common_vertical_rel_attlist_.style_vertical_rel_;
 
-    _CP_OPT(anchor_type) anchor = 
-        attlists_.shape_with_text_and_styles_.
-        common_draw_shape_with_styles_attlist_.
-        common_text_spreadsheet_shape_attlist_.
-        common_text_anchor_attlist_.
-        type_;
+    _CP_OPT(anchor_type) anchor = attlists_.shape_with_text_and_styles_.common_text_anchor_attlist_.type_;
 
 	int level_drawing = Context.get_drawing_context().get_current_level();
 
@@ -826,9 +811,9 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
     {
         drawing->isInline = true;
     }
-	if (attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_transform_attlist_.draw_transform_)
+	if (attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_transform_)
 	{
-		std::wstring transformStr = attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_transform_attlist_.draw_transform_.get();
+		std::wstring transformStr = attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_transform_.get();
 		oox_convert_transforms(transformStr, drawing->additional);
 	} 
 	if (!drawing->isInline)
@@ -839,14 +824,14 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
         drawing->relativeHeight	= L"2";
         drawing->behindDoc		= L"0";
 
-        _CP_OPT(int) zIndex = attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_z_index_attlist_.draw_z_index_;
+        _CP_OPT(int) zIndex = attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_z_index_;
        
 		if (zIndex)//порядок отрисовки объектов
         {
             if (*zIndex < 0) 
                 drawing->relativeHeight = L"0";
             else
-                drawing->relativeHeight = boost::lexical_cast<std::wstring>( 2 + *zIndex );
+				drawing->relativeHeight = std::to_wstring( 2 + *zIndex );
         }
 
         if (drawing->styleWrap && drawing->styleWrap->get_type() == style_wrap::RunThrough 
@@ -1126,10 +1111,13 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	oox::hyperlinks::_ref hyperlink = Context.last_hyperlink();
 	//нужно еще систему конроля - могут придте уже "использованные" линки с картинок - из колонтитулов (но на них уже использовали релсы)
 	//дыра осталась если картинка в картинке - линк продублируется с внутренней на внешнюю 
+	
 	if (hyperlink.drawing == true && hyperlink.used_rels == false)
-	{
-		oox::_hlink_desc desc = {hyperlink.id, hyperlink.href, true};
-		drawing->hlinks.push_back(desc);
+	{//link from object
+		drawing->action.enabled = true;
+		drawing->action.hId		= hyperlink.id;
+		drawing->action.hRef	= hyperlink.href;
+		drawing->action.typeRels= oox::typeHyperlink;
 	}
 /////////
 	drawing->fill.bitmap = oox::oox_bitmap_fill::create();
@@ -1138,26 +1126,22 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
     drawing->fill.bitmap->rId = Context.add_mediaitem(href, oox::typeImage, drawing->fill.bitmap->isInternal,href);
 	drawing->fill.bitmap->bStretch = true;
 
-    const _CP_OPT(style_ref) & styleRef = frame->common_draw_attlists_.shape_with_text_and_styles_.
-        common_draw_shape_with_styles_attlist_.
-        common_draw_style_name_attlist_.
-        draw_style_name_;
-
-    const std::wstring styleName = styleRef ? styleRef->style_name() : L"";
+    const std::wstring styleName = frame->common_draw_attlists_.shape_with_text_and_styles_.
+									common_shape_draw_attlist_.draw_style_name_.get_value_or(L"");
 
 	odf_reader::style_instance* styleInst = Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic,Context.process_headers_footers_);
 	
-	odf_reader::style_graphic_properties *properties = NULL;
-	if (styleInst) properties = styleInst->content()->get_style_graphic_properties();
+	odf_reader::graphic_format_properties *properties = NULL;
+	if (styleInst) properties = styleInst->content()->get_graphic_properties();
 ////////////////
 	if (properties)
 	{
-		if (properties->content().fo_clip_ && drawing->fill.bitmap)
+		if (properties->fo_clip_ && drawing->fill.bitmap)
 		{
-			std::wstring strRectClip = properties->content().fo_clip_.get();
-			strRectClip = strRectClip.substr(5,strRectClip.length()-6);
+			std::wstring strRectClip = properties->fo_clip_.get();
+			strRectClip = strRectClip.substr(5, strRectClip.length() - 6);
 			
-			std::wstring fileName = Context.root()->get_folder() + FILE_SEPARATOR_STR+ href;
+			std::wstring fileName = Context.root()->get_folder() + FILE_SEPARATOR_STR + href;
 			
 			drawing->fill.bitmap->bCrop = parse_clipping(strRectClip, fileName, drawing->fill.bitmap->cropRect, NULL/*Context.applicationFonts_*/);
 		}        
@@ -1279,8 +1263,7 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 	
     const _CP_OPT(std::wstring) name = 
         common_draw_attlists_.shape_with_text_and_styles_.
-        common_draw_shape_with_styles_attlist_.
-        common_draw_name_attlist_.draw_name_;
+        common_shape_draw_attlist_.draw_name_;
 	
 	Context.get_drawing_context().add_name_object(name.get_value_or(L"Group"));
 
@@ -1380,8 +1363,7 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
     
     const _CP_OPT(std::wstring) name = 
         common_draw_attlists_.shape_with_text_and_styles_.
-        common_draw_shape_with_styles_attlist_.
-        common_draw_name_attlist_.draw_name_;
+        common_shape_draw_attlist_.draw_name_;
 	
 	Context.get_drawing_context().add_name_object(name.get_value_or(L"Object"));
 	

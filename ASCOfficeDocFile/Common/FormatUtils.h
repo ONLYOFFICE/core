@@ -963,4 +963,3 @@ namespace DocFormatUtils
 	};
 }
 
-using namespace DocFormatUtils;

@@ -86,67 +86,13 @@ namespace PPTX
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
-			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("xmlns:dc"), PPTX::g_Namespaces.dc.m_strLink);
-			//oAttr.Write(_T("xmlns:cp"), PPTX::g_Namespaces.cp.m_strLink);
-			oAttr.Write(_T("xmlns:dcterms"), PPTX::g_Namespaces.dcterms.m_strLink);
-			oAttr.Write(_T("xmlns:xsi"), PPTX::g_Namespaces.xsi.m_strLink);
-
-			XmlUtils::CNodeValue oValue;
-			oValue.Write2(_T("dc:title"), title);
-			oValue.Write2(_T("dc:creator"), creator);
-			oValue.Write2(_T("cp:lastModifiedBy"), lastModifiedBy);
-			oValue.Write2(_T("cp:revision"), revision);
-
-			if (created.IsInit())
-			{
-				oValue.m_strValue += _T("<dcterms:created xsi:type=\"dcterms:W3CDTF\">");
-				oValue.m_strValue += *created;
-				oValue.m_strValue += _T("</dcterms:created>");
-			}		
-			
-			oValue.m_strValue += _T("<dcterms:modified xsi:type=\"dcterms:W3CDTF\">");
-			if (modified.IsInit())
-				oValue.m_strValue += *modified;
-			oValue.m_strValue += _T("</dcterms:modified>");
-
-			XmlUtils::SaveToFile(filename.m_strFilename, XmlUtils::CreateNode(_T("cp:coreProperties"), oAttr, oValue));
-
-	/*
-			if(category.is_init())
-				root.push_back(XML::XElement("category", XML::XText(category)));
-			if(contentStatus.is_init())
-				root.push_back(XML::XElement("contentStatus", XML::XText(contentStatus)));
-			if(description.is_init())
-				root.push_back(XML::XElement(ns.dc + "description", XML::XText(description)));
-			//identifier - ??? dc
-				//XML::XElement(ns.cp + "keywords", XML::XText(keywords)) +
-			if(language.is_init())
-				root.push_back(XML::XElement(ns.dc + "language", XML::XText(language)));
-	//			if(lastModifiedBy.is_init())
-	//				root.push_back(XML::XElement(ns.cp + "lastModifiedBy", XML::XText(lastModifiedBy)));
-				//XML::XElement("lastPrinted",
-				//	XML::XAttribute(,)+
-				//	XML::XText(lastPrinted)
-				//) + //??? namespace ???
-	//			if(revision.is_init())
-	//				root.push_back(XML::XElement(ns.cp + "revision", XML::XText(revision)));
-			if(subject.is_init())
-				root.push_back(XML::XElement(ns.dc + "subject", XML::XText(subject)));
-	//			if(title.is_init())
-	//				root.push_back(XML::XElement(ns.dc + "title", XML::XText(title)));
-			if(version.is_init())
-				root.push_back(XML::XElement("version", XML::XText(version)));
-	*/
-			content.Registration(type().OverrideType(), directory, filename);
-			m_written = true;
-			m_WrittenFileName = filename.GetFilename();
+			WrapperFile::write(filename, directory, content);
 		}
 
 	public:
 		virtual const OOX::FileType type() const
 		{
-			return OOX::Presentation::FileTypes::Core;
+			return OOX::FileTypes::Core;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{

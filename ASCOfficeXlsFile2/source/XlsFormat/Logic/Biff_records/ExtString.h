@@ -32,12 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/FrtHeaderOld.h"
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {
 
-
-// Logical representation of ExtString record in BIFF8
 class ExtString: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(ExtString)
@@ -47,12 +47,13 @@ public:
 	~ExtString();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeExtString;
+	static const ElementType type = typeExtString;
 
+	FrtHeaderOld	frtHeaderOld;
+	XLUnicodeString	string;
 
 };
 

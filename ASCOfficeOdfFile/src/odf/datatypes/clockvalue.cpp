@@ -39,22 +39,67 @@
 
 namespace cpdoccore { namespace odf_types { 
 
-static bool parseTime(const std::wstring & Time, double & Hours, double & Minutes, double & Seconds, int & Ms)
+std::wostream & operator << (std::wostream & _Wostream, const clockvalue & _Val)
+{
+ //  5ms = 5 milliseconds
+	if (_Val.get_value() < 0)	
+		_Wostream << L"indefinite";
+	else
+	{
+		int ms	= _Val.get_value();
+		int sec = 0;
+		int min = 0;
+		int h	= 0;
+
+		if (ms > 1000)
+		{
+			sec = ms / 1000;
+			ms	-= sec * 1000;
+
+			if (sec > 60)
+			{
+				min = sec / 60;
+				sec -= min * 60;
+
+				if (min > 60)
+				{
+					h = min / 60;
+					min -= h * 60;
+				}			
+			}
+
+		}
+		if ( h > 0)
+			_Wostream <<  h  << "h"; 
+		if ( min > 0)
+			_Wostream <<  min  << "min"; 
+		if ( sec > 0)
+			_Wostream <<  sec  << "s"; 
+		if ( ms > 0)
+			_Wostream <<  ms  << "ms"; 
+
+		if (h == 0 && min == 0 && ms == 0 && sec == 0)
+			_Wostream << "0s"; 
+	}
+    return _Wostream;    
+}
+
+bool parseTime(std::wstring Time, double & Hours, double & Minutes, double & Seconds, int & Ms)
 {
     try 
     {
-		boost::match_results<std::wstring::const_iterator> res;
 
 //Full clock values: 
 //  02:30:03    = 2 hours, 30 minutes and 3 seconds
 //  50:00:10.25 = 50 hours, 10 seconds and 250 milliseconds
 
+		boost::match_results<std::wstring::const_iterator> res1;
 		boost::wregex r1 (L"([\\d]+):([\\d]+):([\\d+(\\.\\d{0,})?]+)");
-        if (boost::regex_match(Time, res, r1))
+        if (boost::regex_match(Time, res1, r1))
         {
-            Hours = boost::lexical_cast<int>(res[1].str());
-            Minutes = boost::lexical_cast<int>(res[2].str());
-            Seconds = boost::lexical_cast<double>(res[3].str());
+            Hours = boost::lexical_cast<int>(res1[1].str());
+            Minutes = boost::lexical_cast<int>(res1[2].str());
+            Seconds = boost::lexical_cast<double>(res1[3].str());
 
             return true;
         }
@@ -62,11 +107,12 @@ static bool parseTime(const std::wstring & Time, double & Hours, double & Minute
 //  02:33   = 2 minutes and 33 seconds
 //  00:10.5 = 10.5 seconds = 10 seconds and 500 milliseconds
 		std::wstring  Time2 = L"00:10.5";
+		boost::match_results<std::wstring::const_iterator> res2;
 		boost::wregex r2 (L"([\\d]+):([\\d+(\\.\\d{0,})?]+)");	
-        if (boost::regex_match(Time, res, r2))
+        if (boost::regex_match(Time, res2, r2))
         {
-            Minutes = boost::lexical_cast<int>(res[1].str());
-            Seconds = boost::lexical_cast<double>(res[2].str());
+            Minutes = boost::lexical_cast<int>(res2[1].str());
+            Seconds = boost::lexical_cast<double>(res2[2].str());
 
             return true;
         }
@@ -76,32 +122,51 @@ static bool parseTime(const std::wstring & Time, double & Hours, double & Minute
 //  30s     = 30 seconds
 //  5ms     = 5 milliseconds
 //  12.467  = 12 seconds and 467 milliseconds
-		boost::wregex r3 (L"([\\d+(\\.\\d{0,})?]+)([A-Za-z]{0,})");
-        if (boost::regex_match(Time, res, r3))
-        {
-			if (!res[2].str().empty())
+		std::vector<std::wstring> values;
+		boost::wregex r3 (L"([\\d+(\\.\\d{0,})?]+)([A-Za-z]+)");
+        if (boost::regex_split(std::back_inserter(values), Time, r3, boost::match_default | boost::format_all))
+        {	
+			int val = -1;
+			for (size_t i = 0; i < values.size() ; i++ )
 			{
-				std::wstring n = res[2].str();
-				std::transform(n.begin(), n.end(), n.begin(), ::tolower);
-				if (n == L"h")
+				if (values[i].empty()) continue;
+
+				if (values[i] == L"h")
 				{
-					Hours  = boost::lexical_cast<double>(res[1].str());
+					if (val >= 0)
+						Hours  = val;
+					val = -1;
 				}
-				else if (n == L"min")
+				else if (values[i] == L"min")
 				{
-					Minutes  = boost::lexical_cast<double>(res[1].str());
+					if (val >= 0)
+						Minutes  = val;
+					val = -1;
 				}
-				else if (n == L"s")
+				else if (values[i] == L"s")
 				{
-					Seconds  = boost::lexical_cast<double>(res[1].str());
+					if (val >= 0)
+						Seconds  = val;
+					val = -1;
 				}
-				else if (n == L"ms")
+				else if (values[i] == L"ms")
 				{
-					Ms = boost::lexical_cast<int>(res[1].str());
+					if (val >= 0)
+						Ms  = val;
+					val = -1;
+				}
+				else
+				{
+					try
+					{
+						val = boost::lexical_cast<double>(values[i]);
+					}
+					catch(...)
+					{
+						continue;
+					}
 				}
 			}
-			else            
-				Seconds = boost::lexical_cast<double>(res[1].str());
 
             return true;
         }
@@ -113,16 +178,20 @@ static bool parseTime(const std::wstring & Time, double & Hours, double & Minute
 }
 clockvalue clockvalue::parse(const std::wstring & Str)
 {
-    int v=0;
+ 	if (Str == L"indefinite")
+		return clockvalue(-1);
+	else
+	{
+		int v=0;
 
+		int ms = 0;
+		double h = 0, m = 0, s = 0;
+		bool res = parseTime(Str, h, m, s, ms);
 
-	int ms=0;
-	double h=0,m=0,s =0;
-	bool res = parseTime(Str,h,m,s,ms);
+		v = (((h * 60) + m) * 60 + s) * 1000 + ms;
 
-	v = (((h*60)+m)*60+s)*1000+ms;
-
-    return clockvalue(v);
+		return clockvalue(v);
+	}
 }
 
 

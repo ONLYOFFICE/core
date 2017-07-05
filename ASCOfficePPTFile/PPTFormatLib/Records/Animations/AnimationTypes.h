@@ -37,7 +37,7 @@
 #include "../../Reader/Records.h"
 #include "../../../../ASCOfficePPTXFile/Editor/Drawing/Document.h"
 
-#define __USE_ANIMATION__
+#define MIN_SLIDE_TIME	5000.0
 
 inline int sort (const long* a, const long* b) { return *a > *b ? 1 : -1; }
 
@@ -206,7 +206,7 @@ namespace Animations
             std::vector<std::wstring> arMovePath;
             boost::algorithm::split(arMovePath, MovePath, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 
-            for (int i = 0 ; i < arMovePath.size(); i++)
+            for (size_t i = 0 ; i < arMovePath.size(); i++)
 			{
 				ActionPoint	aPoint;
                 aPoint.TYPE		=	arMovePath[i++][0];
@@ -245,7 +245,7 @@ namespace Animations
 		{
             std::wstring	MovePath;
 
-			for ( int i = 0; i < m_Points.size(); ++i )
+			for ( size_t i = 0; i < m_Points.size(); ++i )
 			{
                 std::wstring NextPoint;
 
@@ -315,7 +315,7 @@ namespace Animations
 
 namespace Animations
 {
-	struct BuildAtom : public IRecord
+	struct BuildAtom : public CUnknownRecord
 	{
 	public:
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
@@ -346,7 +346,7 @@ namespace Animations
         bool	fExpanded;
         bool	fUIExpanded;
 	};
-	struct ParaBuildAtom : public IRecord
+	struct ParaBuildAtom : public CUnknownRecord
 	{
 	public:
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
@@ -369,7 +369,13 @@ namespace Animations
 			delayTime					=	StreamUtils::ReadDWORD ( pStream );
 		}
 
-		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x1 && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == RT_ParaBuildAtom && m_oHeader.RecLen == 0x00000010; }
+		virtual bool IsCorrect () 
+		{ 
+			return	m_oHeader.RecVersion == 0x1 && 
+					m_oHeader.RecInstance == 0x0 && 
+					m_oHeader.RecType == RT_ParaBuildAtom && 
+					m_oHeader.RecLen == 0x00000010; 
+		}
 
 	public:
 
@@ -389,7 +395,7 @@ namespace Animations
 
 		DWORD	delayTime;
 	};	
-	struct LevelInfoAtom : public IRecord
+	struct LevelInfoAtom : public CUnknownRecord
 	{
 	public:
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
@@ -423,7 +429,7 @@ namespace Animations
 		IRecord*		timeNode;	// ExtTimeNodeContainer 
 	};
 
-	struct ParaBuildContainer : public IRecord
+	struct ParaBuildContainer : public CUnknownRecord
 	{
 	public:
 
@@ -493,7 +499,7 @@ namespace Animations
 		std::vector <ParaBuildLevel*>	rgParaBuildLevel;
 	};
 
-	struct BuildListContainer : public IRecord
+	struct BuildListContainer : public CUnknownRecord
 	{
 	public:
 
@@ -569,7 +575,7 @@ namespace Animations
 
 namespace Animations
 {
-	struct TimeVariant : public IRecord
+	struct TimeVariant : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -703,7 +709,7 @@ namespace Animations
         std::wstring				stringValue;
 	};
 
-	struct TimeStringListContainer : public IRecord
+	struct TimeStringListContainer : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -738,7 +744,7 @@ namespace Animations
 		std::vector <TimeVariantString>	m_Values;
 	};
 	// structures for ExtTimeNodeContainer
-	struct TimeNodeAtom : public IRecord
+	struct TimeNodeAtom : public CUnknownRecord
 	{
 		static const DWORD RT_TimeSequenceData = 0xF141;
 
@@ -802,7 +808,7 @@ namespace Animations
 		bool				m_bDurationProperty;
 	};
 
-	struct TimeSequenceDataAtom : public IRecord
+	struct TimeSequenceDataAtom : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -932,7 +938,7 @@ namespace Animations
 	};
 
 
-	struct TimePropertyList4TimeNodeContainer : public IRecord
+	struct TimePropertyList4TimeNodeContainer : public CUnknownRecord
 	{
 	public:
 		//static const DWORD RT_TimePropertyList = 0xF13D;	//	Specifies a TimePropertyList4TimeNodeContainer or TimePropertyList4TimeBehavior.  
@@ -1107,7 +1113,7 @@ namespace Animations
 		TimeEffectDir				m_EffectDir;
 	};
 
-	struct TimePropertyList4TimeBehavior : public IRecord
+	struct TimePropertyList4TimeBehavior : public CUnknownRecord
 	{
 	public:
 		//static const DWORD RT_TimePropertyList = 0xF13D;	//	Specifies a TimePropertyList4TimeNodeContainer or TimePropertyList4TimeBehavior.  
@@ -1150,7 +1156,7 @@ namespace Animations
 
 namespace Animations
 {
-	struct VisualShapeAtom : public IRecord
+	struct VisualShapeAtom : public CUnknownRecord
 	{
 		// Привязка анимации через этот объект к ID объекту
 
@@ -1185,7 +1191,7 @@ namespace Animations
 		DWORD					m_nData2;		
 	};
 
-	struct VisualPageAtom : public IRecord
+	struct VisualPageAtom : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -1210,7 +1216,7 @@ namespace Animations
 		TimeVisualElementEnum	m_Type;
 	};
 
-	struct ClientVisualElementContainer : public IRecord
+	struct ClientVisualElementContainer : public CUnknownRecord
 	{
 
 		ClientVisualElementContainer ()
@@ -1263,7 +1269,7 @@ namespace Animations
 		bool			m_bVisualShapeAtom;
 	};
 
-	struct TimeBehaviorAtom : public IRecord
+	struct TimeBehaviorAtom : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -1304,7 +1310,7 @@ namespace Animations
 		DWORD	m_nBehaviorTransform;
 	};
 
-	struct TimeBehaviorContainer : public IRecord
+	struct TimeBehaviorContainer : public CUnknownRecord
 	{
 		TimeBehaviorContainer ()
 		{
@@ -1446,7 +1452,7 @@ namespace Animations
 		ClientVisualElementContainer	clientVisualElement;
 	};
 
-	struct TimeEffectBehaviorAtom : public IRecord
+	struct TimeEffectBehaviorAtom : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -1486,7 +1492,7 @@ namespace Animations
 		DWORD	m_nEffectTransition;
 	};
 
-	struct TimeEffectBehaviorContainer : public IRecord
+	struct TimeEffectBehaviorContainer : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -1556,7 +1562,7 @@ namespace Animations
 		TimeBehaviorContainer	m_oBehavior;
 
 	};
-	struct TimeConditionAtom : public IRecord
+	struct TimeConditionAtom : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -1587,7 +1593,7 @@ namespace Animations
 		LONG				m_nTimeDelay;
 	};
 
-	struct TimeConditionContainer : public IRecord
+	struct TimeConditionContainer : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -1628,7 +1634,7 @@ namespace Animations
 		ClientVisualElementContainer	m_oVisualElement;
 	};
 
-	struct TimeIterateDataAtom: public IRecord
+	struct TimeIterateDataAtom: public CUnknownRecord
 	{
 	public:
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
@@ -1669,7 +1675,7 @@ namespace Animations
 
 namespace Animations
 {
-	struct TimeMotionBehaviorAtom : public IRecord
+	struct TimeMotionBehaviorAtom : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -1724,7 +1730,7 @@ namespace Animations
 		DWORD	m_nBehaviorOrigin;
 	};
 
-	struct TimeMotionBehaviorContainer : public IRecord
+	struct TimeMotionBehaviorContainer : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -1778,7 +1784,7 @@ namespace Animations
 
 namespace Animations
 {
-	struct TimeSetBehaviorAtom : public IRecord
+	struct TimeSetBehaviorAtom : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -1811,7 +1817,7 @@ namespace Animations
 		TimeAnimateBehaviorValueTypeEnum	m_ValueType;
 	};
 
-	struct TimeSetBehaviorContainer : public IRecord
+	struct TimeSetBehaviorContainer : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -1852,7 +1858,7 @@ namespace Animations
 
 namespace Animations
 {
-	struct TimeAnimateBehaviorAtom : public IRecord
+	struct TimeAnimateBehaviorAtom : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -1897,7 +1903,7 @@ namespace Animations
 		TimeAnimateBehaviorValueTypeEnum	m_ValueType;
 	};
 
-	struct TimeAnimationValueAtom : public IRecord
+	struct TimeAnimationValueAtom : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -1952,7 +1958,7 @@ namespace Animations
 		TimeVariantString		m_VarFormula;
 	};
 
-	struct TimeAnimationValueListContainer : public IRecord
+	struct TimeAnimationValueListContainer : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -1998,7 +2004,7 @@ namespace Animations
 		std::vector<TimeAnimationEntry>	m_arrEntry;
 	};
 
-	struct TimeAnimateBehaviorContainer : public IRecord
+	struct TimeAnimateBehaviorContainer : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -2063,7 +2069,7 @@ namespace Animations
 
 namespace Animations
 {
-	struct TimeRotationBehaviorAtom : public IRecord
+	struct TimeRotationBehaviorAtom : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -2100,7 +2106,7 @@ namespace Animations
 		float	fTo;
 		DWORD	rotationDirection;		//	0	-	rotate clockwise,	1	-	rotate counter clockwise
 	};
-	struct TimeRotationBehaviorContainer  : public IRecord
+	struct TimeRotationBehaviorContainer  : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -2130,7 +2136,7 @@ namespace Animations
 
 namespace Animations
 {	
-	struct TimeScaleBehaviorAtom : public IRecord
+	struct TimeScaleBehaviorAtom : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -2175,7 +2181,7 @@ namespace Animations
         bool	fZoomContents;
 	};
 
-	struct TimeScaleBehaviorContainer  : public IRecord
+	struct TimeScaleBehaviorContainer  : public CUnknownRecord
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -2231,7 +2237,7 @@ namespace Animations
 		}
 	};
 
-	struct TimeColorBehaviorAtom: public IRecord
+	struct TimeColorBehaviorAtom: public CUnknownRecord
 	{
 	public:
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
@@ -2272,7 +2278,7 @@ namespace Animations
 		TimeAnimateColor	colorTo;
 	};
 
-	struct TimeColorBehaviorContainer : public IRecord
+	struct TimeColorBehaviorContainer : public CUnknownRecord
 	{
 	public:
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
@@ -2302,7 +2308,7 @@ namespace Animations
 
 namespace Animations
 {	
-	struct TimeModifierAtom : public IRecord
+	struct TimeModifierAtom : public CUnknownRecord
 	{
 	public:
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
@@ -2329,7 +2335,7 @@ namespace Animations
 		float value;
 	};
 
-	struct SlaveContainer : public IRecord
+	struct SlaveContainer : public CUnknownRecord
 	{
 	public:
 
@@ -2458,7 +2464,7 @@ namespace Animations
         bool									haveExtTimeContainer;
 	};
 
-	struct ExtTimeNodeContainer	: public IRecord
+	struct ExtTimeNodeContainer	: public CUnknownRecord
 	{
 	public:
 
@@ -2812,7 +2818,7 @@ namespace Animations
         bool									haveBuildList;
 	};
 
-	struct SlideTime10Atom : public IRecord
+	struct SlideTime10Atom : public CUnknownRecord
 	{
 		static const DWORD RT_SlideTime10Atom	=	0x2EEB;
 
@@ -2847,7 +2853,7 @@ namespace Animations
 		SYSTEMTIME		m_SystemTime;
 	};
 
-	struct SlideFlags10Atom : public IRecord
+	struct SlideFlags10Atom : public CUnknownRecord
 	{
 		static const DWORD RT_SlideFlags10Atom = 0x2EEA;
 
@@ -2879,7 +2885,7 @@ namespace Animations
 		bool			m_bOverrideMasterAnimation;			//	A bit that specifies whether the slide does not follow the animations on the main master slide or title master slide.  
 	};
 
-	struct HashCode10Atom : public IRecord
+	struct HashCode10Atom : public CUnknownRecord
 	{
 		//static const DWORD RT_HashCodeAtom	=	0x2B00;
 
@@ -3097,9 +3103,6 @@ namespace Animations
 			{	
 				Clear ();
 
-#if defined(_DEBUG_LOG) && (defined(_WIN32) || defined(_WIN64))
-				ATLTRACE(_T("======================================== Slide ========================================\n"));
-#endif
                 m_bSaveEffect		=	false;
                 m_HaveAfterEffect	=	false;
 
@@ -3115,15 +3118,13 @@ namespace Animations
             return false;
 		}
 
-		inline EffectsMap&		GetAnimation ()
+		inline EffectsMap& GetAnimation ()
 		{
 			return m_oAnimation;
 		}
 
-		inline double			GetTime ()
+		inline double GetTime ()
 		{
-#define MIN_SLIDE_TIME	5000.0
-
 			double dTime	=	m_oNodeTiming.GetTimeLine ();
 			if (dTime < MIN_SLIDE_TIME)
 				return MIN_SLIDE_TIME;
@@ -3137,12 +3138,12 @@ namespace Animations
 	private:
 		inline void	ExploreTree (ExtTimeNodeContainer* pContainer)
 		{	
-			unsigned long nNodeType				=	pContainer->GetEffectNodeType ();
+			unsigned long nNodeType =	pContainer->GetEffectNodeType ();
 			if (nNodeType)
 			{
 				if (CNodeTiming::MainSequenceNode != nNodeType && CNodeTiming::TimingRootNode != nNodeType)
 				{
-					m_oTopEffect				=	CreateEffectFromNode ( pContainer->timePropertyList );
+					m_oTopEffect =	CreateEffectFromNode ( pContainer->timePropertyList );
 
 					m_ComposeEffectMothionPath	=	_T("");
 
@@ -3200,7 +3201,7 @@ namespace Animations
 				}
 			}
 
-			int nID					=	GetShapeID ( pContainer );
+			int nID =	GetShapeID ( pContainer );
 			if ( -1 != nID )
 			{
 				//	TODO : 
@@ -3448,7 +3449,7 @@ namespace Animations
 					{
 						if (pChild->timeNodeAtom.m_bDurationProperty)		
 						{
-							m_dEffectDuration			=	pChild->timeNodeAtom.m_nDuration;
+							m_dEffectDuration =	pChild->timeNodeAtom.m_nDuration;
 						}
 					}
 				}
@@ -3649,9 +3650,9 @@ namespace Animations
 		//
 		inline void ProcessMediaCall (ExtTimeNodeContainer* pContainer)
 		{			
-			if (MediaCallEffect == m_oTopEffect.m_nEffectType)															//	если анимация применена к VIDEO или AUDIO элементу
+			if (MediaCallEffect == m_oTopEffect.m_nEffectType)		//	если анимация применена к VIDEO или AUDIO элементу
 			{
-				m_nMediaPush		=	GetAttachedShapeToVideo (pContainer);											//	если к видео добавлена картинка, надо учитывать смещение при поиск ID
+				m_nMediaPush		=	GetAttachedShapeToVideo (pContainer);	//	если к видео добавлена картинка, надо учитывать смещение при поиск ID
 
 				if (GetMediaID (pContainer))
 				{
@@ -3755,7 +3756,7 @@ namespace Animations
 	};
 }
 
-struct PP10SlideBinaryTagExtension : public IRecord
+struct PP10SlideBinaryTagExtension : public CUnknownRecord
 {
 public:
 
@@ -3823,7 +3824,7 @@ public:
 	Animations::BuildListContainer*		buildListContainer;		//	OPTIONAL
 };
 
-struct SlideProgTagsContainer : public IRecord
+struct SlideProgTagsContainer : public CUnknownRecord
 {
 public:
 
@@ -3844,8 +3845,6 @@ public:
 
 		if ( RECORD_PROG_BINARY_TAG == m_oHeaderChild.RecType )
 		{
-#ifdef __USE_ANIMATION__
-
 			SRecordHeader rgSubRec;
 			
 			rgSubRec.ReadFromStream(pStream) ;	
@@ -3874,7 +3873,6 @@ public:
 
 				}
 			}
-#endif
 		}
 
 		StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );

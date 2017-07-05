@@ -758,41 +758,41 @@ namespace NExtractTools
    // ppsx -> pptx
    int ppsx2pptx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
-	   std::wstring sTempUnpackedPPSX = sTemp + FILE_SEPARATOR_STR + L"ppsx_unpacked";
-	   NSDirectory::CreateDirectory(sTempUnpackedPPSX);
-
-       int nRes = ppsx2pptx_dir(sFrom, sTempUnpackedPPSX, params);
-       if(SUCCEEDED_X2T(nRes))
-       {
-           COfficeUtils oCOfficeUtils(NULL);
-           if(S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedPPSX, sTo, -1))
-               return 0;
-       }
+//	   std::wstring sTempUnpackedPPSX = sTemp + FILE_SEPARATOR_STR + L"ppsx_unpacked";
+//	   NSDirectory::CreateDirectory(sTempUnpackedPPSX);
+//
+//       int nRes = ppsx2pptx_dir(sFrom, sTempUnpackedPPSX, params);
+//       if(SUCCEEDED_X2T(nRes))
+//       {
+//           COfficeUtils oCOfficeUtils(NULL);
+//           if(S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedPPSX, sTo, -1))
+//               return 0;
+//       }
 	   return AVS_FILEUTILS_ERROR_CONVERT;
    }
    int ppsx2pptx_dir (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params)
    {
-       COfficeUtils oCOfficeUtils(NULL);
-       if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTo, NULL, 0))
-       {
-           std::wstring sContentTypesPath = sTo + FILE_SEPARATOR_STR + L"[Content_Types].xml";
-           if(NSFile::CFileBinary::Exists(sContentTypesPath))
-           {
-               std::wstring sData;
-               if(NSFile::CFileBinary::ReadAllTextUtf8(sContentTypesPath, sData))
-               {
-                   std::wstring sCTFrom = L"application/vnd.openxmlformats-officedocument.presentationml.slideshow.main+xml";
-                   std::wstring sCTTo	= L"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml";
-
-                   sData = string_replaceAll(sData, sCTFrom, sCTTo);
-
-                   if(NSFile::CFileBinary::SaveToFile(sContentTypesPath, sData, true))
-                   {
-                       return 0;
-                   }
-               }
-           }
-       }
+//       COfficeUtils oCOfficeUtils(NULL);
+//       if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTo, NULL, 0))
+//       {
+//           std::wstring sContentTypesPath = sTo + FILE_SEPARATOR_STR + L"[Content_Types].xml";
+//           if(NSFile::CFileBinary::Exists(sContentTypesPath))
+//           {
+//               std::wstring sData;
+//               if(NSFile::CFileBinary::ReadAllTextUtf8(sContentTypesPath, sData))
+//               {
+//                   std::wstring sCTFrom = L"application/vnd.openxmlformats-officedocument.presentationml.slideshow.main+xml";
+//                   std::wstring sCTTo	= L"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml";
+//
+//                   sData = string_replaceAll(sData, sCTFrom, sCTTo);
+//
+//                   if(NSFile::CFileBinary::SaveToFile(sContentTypesPath, sData, true))
+//                   {
+//                       return 0;
+//                   }
+//               }
+//           }
+//       }
        return AVS_FILEUTILS_ERROR_CONVERT;
    }
 
@@ -812,70 +812,76 @@ namespace NExtractTools
        }
        return AVS_FILEUTILS_ERROR_CONVERT;
    }
-   int ppt2pptx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
-   {
-       COfficePPTFile pptFile;
-
-       pptFile.put_TempDirectory(sTemp);
-       return S_OK == pptFile.LoadFromFile(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-   }
+    int ppt2pptx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+    {
+        //COfficePPTFile pptFile;
+        
+        //pptFile.put_TempDirectory(sTemp);
+        //return S_OK == pptFile.LoadFromFile(sFrom, sTo, params.getPassword()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+        
+        return AVS_FILEUTILS_ERROR_CONVERT;
+    }
    // ppt -> pptt
    int ppt2pptt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
-       std::wstring sResultPpttDir		= sTemp				+ FILE_SEPARATOR_STR + L"pptt_unpacked";
-       std::wstring sTempPpttFileEditor = sResultPpttDir	+ FILE_SEPARATOR_STR + L"Editor.bin";
+       //std::wstring sResultPpttDir		= sTemp				+ FILE_SEPARATOR_STR + L"pptt_unpacked";
+       //std::wstring sTempPpttFileEditor = sResultPpttDir	+ FILE_SEPARATOR_STR + L"Editor.bin";
 
-       NSDirectory::CreateDirectory(sResultPpttDir);
+       //NSDirectory::CreateDirectory(sResultPpttDir);
 
-       int nRes = ppt2pptt_bin(sFrom, sTempPpttFileEditor, sTemp, params);
-       if (SUCCEEDED_X2T(nRes))
-       {
-           // zip pptt folder to output file
-           COfficeUtils oCOfficeUtils(NULL);
-           nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory (sResultPpttDir, sTo, -1)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-       }
-       return nRes;
+       //int nRes = ppt2pptt_bin(sFrom, sTempPpttFileEditor, sTemp, params);
+       //if (SUCCEEDED_X2T(nRes))
+       //{
+       //    // zip pptt folder to output file
+       //    COfficeUtils oCOfficeUtils(NULL);
+       //    nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory (sResultPpttDir, sTo, -1)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+       //}
+       //return nRes;
+       
+       return AVS_FILEUTILS_ERROR_CONVERT;
    }
    // ppt -> pptt_bin
    int ppt2pptt_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
    {
        // unzip pptx to temp folder
-       std::wstring sTempUnpackedPPTX = sTemp + FILE_SEPARATOR_STR + L"pptx_unpacked"+ FILE_SEPARATOR_STR;  // leading slash is very important!
-
-       NSDirectory::CreateDirectory(sTempUnpackedPPTX);
-
-       COfficePPTFile pptFile;
-
-       pptFile.put_TempDirectory(sTemp);
-
-       if ( pptFile.LoadFromFile(sFrom, sTempUnpackedPPTX) != S_OK) return AVS_FILEUTILS_ERROR_CONVERT;
-
-       // convert unzipped pptx to unzipped pptt
-       CPPTXFile *pptx_file = new CPPTXFile(NULL, NULL, NULL, NULL);
-
-       int nRes = 0;
-
-       if (pptx_file)
-       {
-#if defined(_WIN32) || defined (_WIN64)
-           BSTR bstrFontPath			= SysAllocString(params.getFontPath().c_str());
-           BSTR bstrTempUnpackedPPTX	= SysAllocString(sTempUnpackedPPTX.c_str());
-           BSTR bstrTo					= SysAllocString(sTo.c_str());
-
-           pptx_file->SetFontDir (bstrFontPath);
-           nRes = (S_OK == pptx_file->OpenFileToPPTY (bstrTempUnpackedPPTX, bstrTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-
-           SysFreeString(bstrFontPath);
-           SysFreeString(bstrTempUnpackedPPTX);
-           SysFreeString(bstrTo);
-#else
-           pptx_file->SetFontDir (params.getFontPath());
-           nRes = (S_OK == pptx_file->OpenFileToPPTY (sTempUnpackedPPTX, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-#endif
-           delete pptx_file;
-       }
-
-       return nRes;
+//       std::wstring sTempUnpackedPPTX = sTemp + FILE_SEPARATOR_STR + L"pptx_unpacked"+ FILE_SEPARATOR_STR;  // leading slash is very important!
+//
+//       NSDirectory::CreateDirectory(sTempUnpackedPPTX);
+//
+//       COfficePPTFile pptFile;
+//       
+//       pptFile.put_TempDirectory(sTemp);
+//       
+//       if ( pptFile.LoadFromFile(sFrom, sTempUnpackedPPTX, params.getPassword()) != S_OK) return AVS_FILEUTILS_ERROR_CONVERT;
+//
+//       // convert unzipped pptx to unzipped pptt
+//       CPPTXFile *pptx_file = new CPPTXFile(NULL, NULL, NULL, NULL);
+//
+//       int nRes = 0;
+//
+//       if (pptx_file)
+//       {
+//#if defined(_WIN32) || defined (_WIN64)
+//           BSTR bstrFontPath			= SysAllocString(params.getFontPath().c_str());
+//           BSTR bstrTempUnpackedPPTX	= SysAllocString(sTempUnpackedPPTX.c_str());
+//           BSTR bstrTo					= SysAllocString(sTo.c_str());
+//
+//           pptx_file->SetFontDir (bstrFontPath);
+//           nRes = (S_OK == pptx_file->OpenFileToPPTY (bstrTempUnpackedPPTX, bstrTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+//
+//           SysFreeString(bstrFontPath);
+//           SysFreeString(bstrTempUnpackedPPTX);
+//           SysFreeString(bstrTo);
+//#else
+//           pptx_file->SetFontDir (params.getFontPath());
+//           nRes = (S_OK == pptx_file->OpenFileToPPTY (sTempUnpackedPPTX, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+//#endif
+//           delete pptx_file;
+//       }
+//
+//       return nRes;
+       
+       return AVS_FILEUTILS_ERROR_CONVERT;
    }
 
    // rtf -> docx

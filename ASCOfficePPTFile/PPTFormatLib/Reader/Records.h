@@ -34,46 +34,77 @@
 #include "PPTFileDefines.h"
 #include "../Reader/ReadStructures.h"
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/Enums.h"
+#include "../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStream.h"
 #include "../../../Common/3dParty/pole/pole.h"
+#include "../../../OfficeCryptReader/source/CryptTransform.h"
 
 using namespace NSPresentationEditor;
+using namespace XLS;
 
-struct SRecordHeader 
+class SRecordHeader 
 { 
-	BYTE			RecVersion;                
-	USHORT			RecInstance;  
-	USHORT			RecType; 
-	UINT	        RecLen; 
+public:
+	unsigned char	RecVersion;                
+	unsigned short	RecInstance;  
+	unsigned short	RecType; 
+	_UINT32	        RecLen; 
 	
-	SRecordHeader()
+	void Clear()
 	{
 		RecVersion = 0;
-		RecInstance = RecType = 0;
+		RecInstance = 0;
+		RecType = 0;
 		RecLen = 0;
+	}
+	SRecordHeader()
+	{
+		Clear();
+	}
+	bool ReadFromStream(const CFStreamPtr &pStream)
+	{
+		Clear();
+
+		if (pStream->isEOF()) return FALSE;
+		POLE::uint64 nRd = 0; 
+		
+		unsigned short rec =0;
+		pStream->read((unsigned char*)&(rec), 2);
+
+		RecInstance = rec >> 4;
+		RecVersion	= rec - (RecInstance << 4);
+
+		*pStream >> RecType >> RecLen;
+
+		unsigned long sz = pStream->getStreamSize() - pStream->getStreamPointer();
+
+		if (RecLen > sz )
+		{
+			RecLen = sz;
+		}
+
+        return true;
 	}
 
     bool ReadFromStream(POLE::Stream * pStream)
 	{
-		RecVersion = 0;
-		RecInstance = RecType = 0;
-		RecLen = 0;
+		Clear();
+		if (!pStream) return false;
 
 		POLE::uint64 nRd = 0; 
 		
 		unsigned short rec =0;
 		nRd = pStream->read((unsigned char*)&(rec), 2);
 
-		if (nRd != 2) return FALSE;
+		if (nRd != 2) return false;
 
-		//RecVersion = rec & 0xFF0F;
 		RecInstance = rec >> 4;
-		RecVersion = rec - (RecInstance<<4);
+		RecVersion	= rec - (RecInstance<<4);
 
 		nRd = pStream->read((unsigned char*)&(RecType), 2);
 	
 		nRd = pStream->read((unsigned char*)&(RecLen), 4);
 
-		POLE::uint64 sz = pStream->size()-pStream->tell();
+		POLE::uint64 sz = pStream->size() - pStream->tell();
 
 		if (RecLen > sz )
 		{
@@ -116,8 +147,8 @@ public:
 	SRecordHeader m_oHeader;
 
 public:
-	// читаем из файла
 	virtual ~IRecord(){}
+	virtual void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream) = 0;
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) = 0;
 };
 
@@ -134,17 +165,26 @@ public:
 	~CUnknownRecord()
 	{
 	}
-
+	virtual void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream)
+	{
+		m_oHeader = oHeader;
+		
+		pStream->seekFromCurForward(m_oHeader.RecLen);
+	}
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{
 		m_oHeader = oHeader;
+		
 		StreamUtils::StreamSkip((long)m_oHeader.RecLen, pStream);
 	}
+
+	std::wstring ReadStringW(const CFStreamPtr &pStream, int size);
+	std::string	 ReadStringA(const CFStreamPtr &pStream, int size);
 };
 
 IRecord* CreateByType(SRecordHeader oHeader);
 
-class CRecordsContainer : public IRecord
+class CRecordsContainer : public CUnknownRecord
 {
 protected:
 	std::vector<IRecord*> m_arRecords;
@@ -173,6 +213,7 @@ public:
 		} 
 	}
 	
+	virtual void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream);
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 
 	template <typename T>
@@ -182,7 +223,7 @@ public:
 			return;
 
 		// возвращаем указатели, их не удалять наверху!!!!
-		for (int nIndex = 0; nIndex < m_arRecords.size(); ++nIndex)
+		for (size_t nIndex = 0; nIndex < m_arRecords.size(); ++nIndex)
 		{
 			T pRec = dynamic_cast<T>(m_arRecords[nIndex]);
 			if (NULL != pRec)

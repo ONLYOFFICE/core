@@ -53,7 +53,6 @@ typedef _CP_PTR(pptx_drawings) pptx_drawings_ptr;
 class pptx_slide_context::Impl
 {
 public:  
-	
 	struct _transition
 	{
 		bool					Enabled;
@@ -61,12 +60,13 @@ public:
 
 		_CP_OPT(std::wstring)	Speed;
 		_CP_OPT(int)			Time;
+		_CP_OPT(int)			PageTime;
 		_CP_OPT(std::wstring)	Dir;
 		_CP_OPT(std::wstring)	Param;
 		bool					onClick;
 	};
 
-	Impl(const std::wstring & odfPacket) : mediaitems_(odfPacket),odfPacket_(odfPacket)
+	Impl(const std::wstring & odfPacket) : mediaitems_(odfPacket), odfPacket_(odfPacket)
     {
 		clear();
 	}
@@ -75,24 +75,17 @@ public:
 	std::vector<drawing_object_description> objects_;
 
 	_CP_OPT(_oox_fill)						background_fill_;
+
 	_transition								transition_;
 	bool									use_image_replacement_;
 
 	bool header, footer, date_time, slideNum;
 
-    void add_drawing(_pptx_drawing const & d,
-        bool isInternal,
-        std::wstring const & rid,
-        std::wstring const & ref,
-        RelsType type)
+    void add_drawing(_pptx_drawing const & d, bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type)
     {
         pptx_drawings_->add(d, isInternal, rid, ref, type);
     }
-      void add_additional_rels(
-        bool isInternal,
-        std::wstring const & rid,
-        std::wstring const & ref,
-        RelsType type)
+	void add_additional_rels (bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type)
     {
         pptx_drawings_->add(isInternal, rid, ref, type);
     }
@@ -107,16 +100,16 @@ public:
 	{
 		objects_.clear();
 		
-		background_fill_ = boost::none;
+		background_fill_		= boost::none;
 
-		header=false;
-		footer=false;
-		date_time=false;
-		slideNum=false;
+		header		= false;
+		footer		= false;
+		date_time	= false;
+		slideNum	= false;
 		
 		rId_ = 1;
 
-		pptx_drawings_ = pptx_drawings::create();
+		pptx_drawings_			= pptx_drawings::create();
 
 		transition_.Enabled = false;
 		transition_.Speed	= boost::none;
@@ -127,7 +120,6 @@ public:
     {
 		return rId_++;;
     }
-
     pptx_drawings_ptr get_drawings()
     {
         return pptx_drawings_;
@@ -137,22 +129,24 @@ public:
 	void process_drawings();
 
 private:
-	void process_common_properties(drawing_object_description& obj,_pptx_drawing & drawing);
+	void process_common_properties(drawing_object_description& obj, _pptx_drawing & drawing);
 
 	void process_shape	(drawing_object_description& obj, _pptx_drawing & drawing);
     void process_image	(drawing_object_description& obj, _pptx_drawing & drawing);
 	void process_chart	(drawing_object_description& obj, _pptx_drawing & drawing);
 	void process_table	(drawing_object_description& obj, _pptx_drawing & drawing);
 	void process_object	(drawing_object_description& obj, _pptx_drawing & drawing);
+	void process_media	(drawing_object_description& obj, _pptx_drawing & drawing);
 	
-	size_t rId_;
-	mediaitems mediaitems_;
-    pptx_drawings_ptr pptx_drawings_;
+	size_t				rId_;
+	mediaitems			mediaitems_;
+    pptx_drawings_ptr	pptx_drawings_;
+    pptx_drawings_ptr	pptx_notes_drawings_;
 };
 
 void pptx_slide_context::Impl::process_drawings()
 {
-	for (int i = 0; i < objects_.size(); i++)
+	for (size_t i = 0; i < objects_.size(); i++)
 	{
 		_pptx_drawing drawing	=_pptx_drawing();
 
@@ -168,6 +162,7 @@ void pptx_slide_context::Impl::process_drawings()
 			case typeChart:		process_chart(objects_[i], drawing);	break;
 			case typeShape:		process_shape(objects_[i], drawing);	break;
 			case typeTable:		process_table(objects_[i], drawing);	break;
+			case typeMedia:		process_media(objects_[i], drawing);	break;
 			case typeMsObject:	
 			case typeOleObject:	process_object(objects_[i], drawing);	break;
 		}
@@ -175,17 +170,19 @@ void pptx_slide_context::Impl::process_drawings()
 }
 
 pptx_slide_context::pptx_slide_context(pptx_conversion_context & Context)
- : impl_(new pptx_slide_context::Impl(Context.root()->get_folder()))
+										: impl_(new pptx_slide_context::Impl(Context.root()->get_folder()))
 {    
-	hlinks_size_ = 0;
+	hlinks_size_	= 0;
 }
 void pptx_slide_context::start_slide()
 {    
 	impl_->clear(); // objects
-	hlinks_size_ = 0;
+	
+	hlinks_size_	= 0;
 	
 	default_set(); //for current object
 }
+
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void pptx_slide_context::start_slide_animation()
 {    
@@ -202,10 +199,10 @@ void pptx_slide_context::start_slide_animation()
 
 void pptx_slide_context::set_transitionFilter(std::wstring & type,_CP_OPT(std::wstring) & dir,_CP_OPT(std::wstring) & dop,_CP_OPT(int) & time)
 {
-	impl_->transition_.Type	= type;
-	impl_->transition_.Time = time; // не путать длительность перехода с длительностью эффекта перехода (в oo его нет)
-	impl_->transition_.Dir = dir;
-	impl_->transition_.Param =	dop;
+	impl_->transition_.Type		= type;
+	impl_->transition_.Time		= time; // не путать длительность перехода с длительностью эффекта перехода (в oo его нет)
+	impl_->transition_.Dir		= dir;
+	impl_->transition_.Param	= dop;
 }
 
 void pptx_slide_context::set_transitionAction(bool val)
@@ -215,8 +212,8 @@ void pptx_slide_context::set_transitionAction(bool val)
 
 void pptx_slide_context::set_transitionSpeed(std::wstring val)
 {
-	if (val == L"medium")impl_->transition_.Speed=L"med";
-	else impl_->transition_.Speed= val;//fast / slow
+	if (val == L"medium")	impl_->transition_.Speed = L"med";
+	else					impl_->transition_.Speed = val;//fast / slow
 }
 
 
@@ -227,12 +224,15 @@ void pptx_slide_context::default_set()
     impl_->object_description_.name_		= L"";
 	impl_->object_description_.descriptor_  = L"";
 	impl_->object_description_.anchor_		= L"";
+
 	impl_->object_description_.additional_.clear();
 	
 	impl_->object_description_.clipping_string_= L"";
 	impl_->object_description_.svg_rect_	= boost::none;
 
 	impl_->object_description_.hlinks_.clear();
+	impl_->object_description_.action_.clear();
+
 	impl_->object_description_.additional_.clear();
 
 	impl_->object_description_.fill_.clear();
@@ -247,10 +247,10 @@ void pptx_slide_context::set_use_image_replacement()
 
 void pptx_slide_context::set_placeHolder_type(std::wstring typeHolder)
 {
-	if (typeHolder == L"ftr")	impl_->footer= true;
-	if (typeHolder == L"hdr")	impl_->header= true;
-	if (typeHolder == L"dt")	impl_->date_time= true;
-	if (typeHolder == L"sldNum")impl_->slideNum= true;
+	if (typeHolder == L"ftr")	impl_->footer		= true;
+	if (typeHolder == L"hdr")	impl_->header		= true;
+	if (typeHolder == L"dt")	impl_->date_time	= true;
+	if (typeHolder == L"sldNum")impl_->slideNum		= true;
 
 	impl_->object_description_.additional_.push_back(odf_reader::_property(L"PlaceHolderType",typeHolder));
 }
@@ -328,15 +328,15 @@ void pptx_slide_context::set_fill(_oox_fill & fill)
 	impl_->object_description_.fill_= fill;
 }
 
-std::wstring pptx_slide_context::add_hyperlink(std::wstring const & href,bool object)
+std::wstring pptx_slide_context::add_hyperlink(std::wstring const & href)
 {
 	++hlinks_size_;
-	std::wstring hId=std::wstring(L"hId") + boost::lexical_cast<std::wstring>(hlinks_size_);
+	std::wstring hId = L"hId" + std::to_wstring(hlinks_size_);
 	
 	std::wstring href_correct = xml::utils::replace_text_to_xml(href);
 	XmlUtils::replace_all( href_correct, L" .", L".");//1 (130).odt
 
-	_hlink_desc desc={hId, href_correct, object};
+	_hlink_desc desc = {hId, href_correct};
 	impl_->object_description_.hlinks_.push_back(desc);
 
 	return hId;
@@ -352,20 +352,86 @@ void pptx_slide_context::add_background(_oox_fill & fill)
 		fill.bitmap->rId = get_mediaitems().add_or_find(fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
 		add_rels(isMediaInternal, fill.bitmap->rId, ref, typeImage);
 	}	
-	
 	impl_->background_fill_ = fill;
 }
 
 void pptx_slide_context::set_name(std::wstring const & name)
 {
 	impl_->object_description_.name_ = name;
-
 }
 
 void pptx_slide_context::start_shape(int type)
 {
 	impl_->object_description_.type_		= typeShape;
 	impl_->object_description_.shape_type_	= type; //2,3... 
+}
+void pptx_slide_context::start_action(std::wstring action)
+{
+	impl_->object_description_.action_.enabled	= true;
+
+	if (action == L"sound")
+	{
+		impl_->object_description_.action_.action = L"ppaction://noaction";
+		impl_->object_description_.action_.typeRels = typeAudio;
+		impl_->object_description_.action_.highlightClick = true;
+	}
+	else if (action == L"next-page")
+	{
+		impl_->object_description_.action_.action = L"ppaction://hlinkshowjump?jump=nextslide";
+		impl_->object_description_.action_.highlightClick = true;
+	}
+	else if (action == L"previous-page")
+	{
+		impl_->object_description_.action_.action = L"ppaction://hlinkshowjump?jump=previousslide";
+		impl_->object_description_.action_.highlightClick = true;
+	}
+	else if (action == L"first-page")
+	{
+		impl_->object_description_.action_.action = L"ppaction://hlinkshowjump?jump=firstslide";
+		impl_->object_description_.action_.highlightClick = true;
+	}
+	else if (action == L"last-page")
+	{
+		impl_->object_description_.action_.action = L"ppaction://hlinkshowjump?jump=lastslide";
+		impl_->object_description_.action_.highlightClick = true;
+	}
+	//ppaction://hlinkshowjump?jump=endshow
+	else if (action == L"execute")
+	{
+		impl_->object_description_.action_.action	= L"ppaction://program";
+		impl_->object_description_.action_.typeRels = typeHyperlink;
+		impl_->object_description_.action_.highlightClick = true;
+	}
+}
+void pptx_slide_context::set_link(std::wstring link, RelsType typeRels)
+{
+	++hlinks_size_;
+	
+	impl_->object_description_.action_.highlightClick = true;
+
+	if (typeRels == typeAudio)
+	{
+		bool isMediaInternal = true;
+		
+		impl_->object_description_.action_.hSoundId = get_mediaitems().add_or_find(link, typeAudio, isMediaInternal, impl_->object_description_.action_.hSoundRef);		
+		impl_->add_additional_rels(isMediaInternal, impl_->object_description_.action_.hSoundId, impl_->object_description_.action_.hSoundRef, typeAudio);
+	}
+	else
+	{
+		impl_->object_description_.action_.typeRels	= typeRels;
+		
+		std::wstring hId = L"hId" + std::to_wstring(hlinks_size_);
+		link = xml::utils::replace_text_to_xml(link);
+		
+		if (typeRels == typeHyperlink)
+			XmlUtils::replace_all( link, L" .", L".");		//1 (130).odt
+
+		impl_->object_description_.action_.hId	= hId;
+		impl_->object_description_.action_.hRef	= link;
+	}
+}
+void pptx_slide_context::end_action()
+{
 }
 
 void pptx_slide_context::start_table()
@@ -389,6 +455,20 @@ void pptx_slide_context::set_ole_object(const std::wstring & path, const std::ws
 	impl_->object_description_.type_		= typeOleObject;
 	impl_->object_description_.xlink_href_	= path; 
 	impl_->object_description_.descriptor_	= progId;
+}
+void pptx_slide_context::set_media(const std::wstring & path)
+{
+	if (path.empty()) return;
+
+	impl_->object_description_.type_		= typeMedia;
+	impl_->object_description_.xlink_href_	= path; 
+
+	impl_->object_description_.action_.enabled	= true;
+	impl_->object_description_.action_.action	= L"ppaction://media";
+}
+
+void pptx_slide_context::set_media_param(std::wstring name, std::wstring value)
+{
 }
 
 void pptx_slide_context::set_image(const std::wstring & path)
@@ -445,7 +525,7 @@ void pptx_slide_context::process_drawings()
 	return impl_->process_drawings();
 }
 
-void pptx_slide_context::Impl::process_image(drawing_object_description& pic, _pptx_drawing & drawing)
+void pptx_slide_context::Impl::process_image(drawing_object_description& obj, _pptx_drawing & drawing)
 {
 	int pos_replaicement = 0, pos_preview = 0;
 	
@@ -453,22 +533,22 @@ void pptx_slide_context::Impl::process_image(drawing_object_description& pic, _p
 	drawing.fill.type		= 2;
 	
 	_CP_OPT(std::wstring) sTextContent;
-	GetProperty(pic.additional_, L"text-content", sTextContent);
+	GetProperty(obj.additional_, L"text-content", sTextContent);
 	if (sTextContent)//в ms office на картинке нельзя сделать надпись - меняем тип на рект с заливкой картинкой
 	{
 		drawing.type		= typeShape;
 		drawing.sub_type	= 2;//rect
 	}
 
-	std::wstring fileName = odfPacket_ + FILE_SEPARATOR_STR + pic.xlink_href_;			
-	drawing.fill.bitmap->bCrop  = odf_reader::parse_clipping(pic.clipping_string_,fileName,drawing.fill.bitmap->cropRect, NULL);
+	std::wstring fileName = odfPacket_ + FILE_SEPARATOR_STR + obj.xlink_href_;			
+	drawing.fill.bitmap->bCrop  = odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, NULL);
 	drawing.fill.bitmap->bStretch = true;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////			
 	std::wstring ref;/// это ссылка на выходной внешний объект
 	bool isMediaInternal = false;
 	
-	drawing.fill.bitmap->rId = get_mediaitems().add_or_find(pic.xlink_href_, typeImage, isMediaInternal, ref);
+	drawing.fill.bitmap->rId = get_mediaitems().add_or_find(obj.xlink_href_, typeImage, isMediaInternal, ref);
 	
 	if (drawing.type == typeShape)
 	{
@@ -476,11 +556,13 @@ void pptx_slide_context::Impl::process_image(drawing_object_description& pic, _p
 	
 		isMediaInternal	= true;
 		std::wstring rId = get_mediaitems().add_or_find(L"", typeShape, isMediaInternal, ref);
+		
 		add_drawing(drawing, isMediaInternal, rId, ref, typeShape);//объект
 
-	}else if (!drawing.fill.bitmap->rId.empty())
+	}
+	else if (!drawing.fill.bitmap->rId.empty())
 	{
-		add_drawing(drawing, isMediaInternal, drawing.fill.bitmap->rId , ref, drawing.type);//объект
+		add_drawing(drawing, isMediaInternal, drawing.fill.bitmap->rId, ref, drawing.type);//объект
 	}
 }
 void pptx_slide_context::Impl::process_chart(drawing_object_description & obj, _pptx_drawing & drawing)
@@ -488,8 +570,9 @@ void pptx_slide_context::Impl::process_chart(drawing_object_description & obj, _
     std::wstring ref;
     bool isMediaInternal = true;
    
-	drawing.objectId = get_mediaitems().add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);        
-    add_drawing(drawing, isMediaInternal, drawing.objectId, ref, drawing.type);
+	drawing.objectId = get_mediaitems().add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);  
+	
+	add_drawing(drawing, isMediaInternal, drawing.objectId, ref, drawing.type);
 }
 
 void pptx_slide_context::Impl::process_table(drawing_object_description & obj, _pptx_drawing & drawing)
@@ -499,6 +582,7 @@ void pptx_slide_context::Impl::process_table(drawing_object_description & obj, _
 	std::wstring rId = get_mediaitems().add_or_find(L"", obj.type_, isMediaInternal, ref);        
    
 	add_drawing(drawing, isMediaInternal, rId, ref, drawing.type);
+
 }
 
 void pptx_slide_context::Impl::process_shape(drawing_object_description & obj, _pptx_drawing & drawing)
@@ -511,6 +595,7 @@ void pptx_slide_context::Impl::process_shape(drawing_object_description & obj, _
 	if (drawing.fill.bitmap)
 	{
 		drawing.fill.bitmap->rId = get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
+		
 		add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);
 	}
 		
@@ -532,7 +617,6 @@ void pptx_slide_context::Impl::process_shape(drawing_object_description & obj, _
 
 	add_drawing(drawing, isMediaInternal, rId, ref, typeShape);
 }
-
 void pptx_slide_context::Impl::process_object(drawing_object_description& obj, _pptx_drawing & drawing)
 {
     std::wstring ref;
@@ -541,40 +625,58 @@ void pptx_slide_context::Impl::process_object(drawing_object_description& obj, _
 	drawing.objectId		= get_mediaitems().add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);      
 	drawing.objectProgId	= obj.descriptor_;
 
-    add_drawing(drawing, isMediaInternal, drawing.objectId, ref, drawing.type);
+	add_drawing(drawing, isMediaInternal, drawing.objectId, ref, drawing.type);
 
 	if (drawing.fill.bitmap)
 	{
 		drawing.fill.bitmap->rId = get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
+		
 		add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);
 	}
 }
+void pptx_slide_context::Impl::process_media(drawing_object_description& obj, _pptx_drawing & drawing)
+{
+    std::wstring ref;
+    bool isMediaInternal = true;
 
+	drawing.type = mediaitems::detectMediaType(obj.xlink_href_); //reset from Media to Audio, Video, ... QuickTime? AudioCD? ...   
+	
+	drawing.objectId = get_mediaitems().add_or_find(obj.xlink_href_, drawing.type, isMediaInternal, ref);    
+	drawing.extId	 = L"ext" + drawing.objectId;
+	
+	add_drawing(drawing, false, drawing.objectId, L"NULL", drawing.type);
+	add_additional_rels( true, drawing.extId, ref, typeMedia);
+
+	if (drawing.fill.bitmap)
+	{
+		drawing.fill.bitmap->rId = get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
+		
+		add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);
+	}
+}
 void pptx_slide_context::Impl::process_common_properties(drawing_object_description & pic, _pptx_drawing & drawing)
 {
 	if (pic.svg_rect_)
 	{
 		//todooo непонятки с отрицательными значениями
 		int val = (int)(0.5 + odf_types::length(pic.svg_rect_->x, odf_types::length::pt).get_value_unit(odf_types::length::emu));
-		if (val >= 0) drawing.x = val;
+		if ( val >= 0) drawing.x = val;
 		
 		val = (int)(0.5 + odf_types::length(pic.svg_rect_->y, odf_types::length::pt).get_value_unit(odf_types::length::emu));
-		if (val >= 0) drawing.y = val;
+		if ( val >= 0 ) drawing.y = val;
 
 		val = (int)(0.5 + odf_types::length(pic.svg_rect_->cx, odf_types::length::pt).get_value_unit(odf_types::length::emu));
-		if (val >=0) drawing.cx = val;
+		if ( val >=0 ) drawing.cx = val;
 		
 		val = (int)(0.5 + odf_types::length(pic.svg_rect_->cy, odf_types::length::pt).get_value_unit(odf_types::length::emu));
-		if (val >=0) drawing.cy = val;
+		if ( val >=0 ) drawing.cy = val;
 	}
 	
-	drawing.additional = pic.additional_;
-
-	drawing.hlinks = pic.hlinks_;
-
-	drawing.fill = pic.fill_;
+	drawing.additional	= pic.additional_;
+	drawing.hlinks		= pic.hlinks_;
+	drawing.action		= pic.action_;
+	drawing.fill		= pic.fill_;
 }
-
 
 void pptx_slide_context::dump_rels(rels & Rels)
 {
@@ -590,6 +692,7 @@ void pptx_slide_context::add_rels( bool isInternal, std::wstring const & rid, st
 {
 	impl_->add_additional_rels(isInternal, rid, ref, type);
 }
+
 void pptx_slide_context::set_footer()
 {
 	impl_->footer = true;
@@ -608,7 +711,7 @@ void pptx_slide_context::set_date_time()
 }
 void pptx_slide_context::serialize_background(std::wostream & strm, bool always)
 {
-	if (!always && ( (!impl_->background_fill_) || (impl_->background_fill_->type==0))) return;
+	if (!always && ( (!impl_->background_fill_) || (impl_->background_fill_->type == 0))) return;
   
 	CP_XML_WRITER(strm)
     {
@@ -618,7 +721,7 @@ void pptx_slide_context::serialize_background(std::wostream & strm, bool always)
 			{
 				if (impl_->background_fill_)
 				{
-					oox_serialize_fill(CP_XML_STREAM(),impl_->background_fill_.get());
+					oox_serialize_fill(CP_XML_STREAM(), impl_->background_fill_.get());
 				}
 				else
 				{
@@ -644,8 +747,12 @@ void pptx_slide_context::serialize_animations(std::wostream & strm)
 				}
 				if (impl_->transition_.Time)
 				{
-					CP_XML_ATTR(L"advTm",impl_->transition_.Time.get());
-				}				
+					CP_XML_ATTR(L"p14:dur", impl_->transition_.Time.get());
+				}	
+				if (impl_->transition_.PageTime)
+				{
+					CP_XML_ATTR(L"advTm", impl_->transition_.PageTime.get());
+				}
 				CP_XML_ATTR(L"advClick", impl_->transition_.onClick);
 				
 				CP_XML_NODE(std::wstring(L"p:" + impl_->transition_.Type))
@@ -668,9 +775,22 @@ void pptx_slide_context::serialize_animations(std::wostream & strm)
 				//p:sndAc
 			}
 		}
-		//CP_XML_NODE(L"p:timing")- последовательности p:par
-		//{
-		//}
+		CP_XML_NODE(L"p:timing")
+		{
+			CP_XML_NODE(L"p:tnLst")
+			{
+				CP_XML_NODE(L"p:par")
+				{
+					CP_XML_NODE(L"p:cTn")
+					{
+						CP_XML_ATTR(L"nodeType", L"tmRoot");
+						CP_XML_ATTR(L"id", 1);
+						CP_XML_ATTR(L"dur", L"indefinite");
+						CP_XML_ATTR(L"restart", L"never");
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -689,7 +809,6 @@ void pptx_slide_context::serialize_HeaderFooter(std::wostream & strm)
 		}
 	}
 }
-
 void pptx_slide_context::serialize_objects(std::wostream & strm)
 {
 	int next_id = impl_->next_rId();
@@ -701,8 +820,8 @@ void pptx_slide_context::serialize_objects(std::wostream & strm)
 		{
 			CP_XML_NODE(L"p:cNvPr")
 			{
-				CP_XML_ATTR(L"name",L"noGroup");
-				CP_XML_ATTR(L"id",next_id);
+				CP_XML_ATTR(L"name", L"noGroup");
+				CP_XML_ATTR(L"id", next_id);
 			}
 			CP_XML_NODE(L"p:cNvGrpSpPr");
 			CP_XML_NODE(L"p:nvPr");	

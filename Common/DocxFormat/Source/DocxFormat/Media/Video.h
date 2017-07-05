@@ -41,7 +41,7 @@ namespace OOX
 	class Video : public Media
 	{
 	public:
-		Video()
+		Video(bool bDocument = true) : Media (bDocument)
 		{
 		}
 		Video(const CPath& filename)
@@ -59,7 +59,8 @@ namespace OOX
 		}
 		virtual const CPath DefaultDirectory() const
 		{
-			return type().DefaultDirectory();
+			if (m_bDocument) return type().DefaultDirectory();
+			else	return L"../" + type().DefaultDirectory();
 		}
 		virtual const CPath DefaultFileName() const
 		{

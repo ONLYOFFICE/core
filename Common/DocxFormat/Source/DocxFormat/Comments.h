@@ -107,14 +107,14 @@ namespace OOX
 					pItem = new Logic::CDel( oReader );
 				else if ( _T("w:ins") == sName )
 					pItem = new Logic::CIns( oReader );
-				//else if ( _T("w:moveFrom") == sName )
-				//	pItem = new Logic::CMoveFrom( oReader );
+				else if ( _T("w:moveFrom") == sName )
+					pItem = new Logic::CMoveFrom( oReader );
 				else if ( _T("w:moveFromRangeEnd") == sName )
-					pItem = new Logic::CMoveToRangeEnd( oReader );
+					pItem = new Logic::CMoveFromRangeEnd( oReader );
 				else if ( _T("w:moveFromRangeStart") == sName )
-					pItem = new Logic::CMoveToRangeStart( oReader );
-				//else if ( _T("w:moveTo") == sName )
-				//	pItem = new Logic::CMoveTo( oReader );
+					pItem = new Logic::CMoveFromRangeStart( oReader );
+				else if ( _T("w:moveTo") == sName )
+					pItem = new Logic::CMoveTo( oReader );
 				else if ( _T("w:moveToRangeEnd") == sName )
 					pItem = new Logic::CMoveToRangeEnd( oReader );
 				else if ( _T("w:moveToRangeStart") == sName )

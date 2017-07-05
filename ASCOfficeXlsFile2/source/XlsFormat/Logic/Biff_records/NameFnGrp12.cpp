@@ -44,7 +44,6 @@ NameFnGrp12::~NameFnGrp12()
 {
 }
 
-
 BaseObjectPtr NameFnGrp12::clone()
 {
 	return BaseObjectPtr(new NameFnGrp12(*this));
@@ -52,9 +51,7 @@ BaseObjectPtr NameFnGrp12::clone()
 
 void NameFnGrp12::readFields(CFRecord& record)
 {
-	record.skipNunBytes(12);
-#pragma message("############################ frtHeader skipped here")
-	record >> cachName >> fgrp >> rgach;
+	record >> frtHeader >> cachName >> fgrp >> rgach;
 }
 
 } // namespace XLS

@@ -32,27 +32,32 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/FrtHeaderOld.h"
 
 namespace XLS
 {
 
-
-// Logical representation of SXViewEx record in BIFF8
 class SXViewEx: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXViewEx)
 	BASE_OBJECT_DEFINE_CLASS_NAME(SXViewEx)
 public:
-	SXViewEx();
-	~SXViewEx();
+	SXViewEx() {}
+	~SXViewEx(){}
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSXViewEx;
+	static const ElementType type = typeSXViewEx;
 
+	FrtHeaderOld	frtHeaderOld;
+	_INT32			csxth;
+	_INT32			csxpi;
+	_INT32			csxvdtex;
+	_UINT32			cbFuture;
+
+	std::string		rgbFuture;
 };
 
 } // namespace XLS

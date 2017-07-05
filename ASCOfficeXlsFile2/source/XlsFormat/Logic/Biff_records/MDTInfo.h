@@ -32,13 +32,13 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/BiffString.h>
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/FrtHeader.h"
+
 
 namespace XLS
 {
 
-
-// Logical representation of MDTInfo record in BIFF8
 class MDTInfo: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(MDTInfo)
@@ -48,7 +48,6 @@ public:
 	~MDTInfo();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 //-----------------------------
@@ -79,7 +78,8 @@ public:
 	bool fAdjust;
 	bool fCellMeta;
 
-	LPWideString stName;
+	LPWideString	stName;
+	FrtHeader		frtHeader;
 
 };
 

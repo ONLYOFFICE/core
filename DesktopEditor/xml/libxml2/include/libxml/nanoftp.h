@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Summary: minimal FTP implementation
  * Description: minimal FTP implementation allowing to fetch resources
  *              like external subset.

@@ -153,9 +153,6 @@
     <ClCompile Include="..\..\HTMLtree.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\buf.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h">

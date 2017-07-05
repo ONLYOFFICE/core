@@ -32,12 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
 
 
-// Logical representation of MDXKPI record in BIFF8
 class MDXKPI: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(MDXKPI)
@@ -47,7 +47,6 @@ public:
 	~MDXKPI();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 //-----------------------------
@@ -56,6 +55,7 @@ public:
 	unsigned char	kpiprop;
 	_INT32			istrKPIName;
 	_INT32			istrMbrKPI;
+	FrtHeader		frtHeader;
 };
 
 } // namespace XLS

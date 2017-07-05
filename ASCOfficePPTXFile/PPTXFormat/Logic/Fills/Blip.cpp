@@ -99,7 +99,7 @@ namespace PPTX
 				Effects[i].SetParentPointer(this);
 		}
 
-		std::wstring Blip::GetFullPicName(FileContainer* pRels)const
+		std::wstring Blip::GetFullPicName(OOX::IFileContainer* pRels)const
 		{
 			if(embed.IsInit())
 			{
@@ -141,24 +141,245 @@ namespace PPTX
 			}
 			return _T("");
 		}
-		std::wstring Blip::GetFullOleName(const OOX::RId& oRId, FileContainer* pRels)const
+		std::wstring Blip::GetFullOleName(const OOX::RId& oRId, OOX::IFileContainer* pRels)const
 		{
-			if (pRels != NULL)
+			smart_ptr<OOX::OleObject> pOleObject;
+			
+			if (pRels != NULL)						pOleObject = pRels->GetOleObject(oRId);
+			else if(parentFileIs<Slide>())			pOleObject = parentFileAs<Slide>().GetOleObject(oRId);
+			else if(parentFileIs<SlideLayout>())	pOleObject = parentFileAs<SlideLayout>().GetOleObject(oRId);
+			else if(parentFileIs<SlideMaster>())	pOleObject = parentFileAs<SlideMaster>().GetOleObject(oRId);
+			else if(parentFileIs<Theme>())			pOleObject = parentFileAs<Theme>().GetOleObject(oRId);
+			
+			if (pOleObject.IsInit())
+				return pOleObject->filename().m_strFilename;
+			
+			return L"";
+		}
+		void Blip::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			std::wstring strName = (_T("") == m_namespace) ? _T("blip") : (m_namespace + _T(":blip"));
+			pWriter->StartNode(strName);
+
+			pWriter->StartAttributes();
+			if (embed.IsInit())
+				pWriter->WriteAttribute(_T("r:embed"), embed->ToString());
+			if (link.IsInit())
+				pWriter->WriteAttribute(_T("r:link"), link->ToString());
+			pWriter->WriteAttribute(_T("cstate"), cstate);
+			pWriter->EndAttributes();
+
+			// TODO:
+			size_t nCount = Effects.size();
+			for (size_t i = 0; i < nCount; ++i)
 			{
-				smart_ptr<OOX::OleObject> p = pRels->GetOleObject(oRId);
-				if (p.is_init())
-					return p->filename().m_strFilename;
+				Effects[i].toXmlWriter(pWriter);
 			}
 
-			if(parentFileIs<Slide>())
-				return parentFileAs<Slide>().GetOleFromRId(oRId);
-			else if(parentFileIs<SlideLayout>())
-				return parentFileAs<SlideLayout>().GetOleFromRId(oRId);
-			else if(parentFileIs<SlideMaster>())
-				return parentFileAs<SlideMaster>().GetOleFromRId(oRId);
-			else if(parentFileIs<Theme>())
-				return parentFileAs<Theme>().GetOleFromRId(oRId);
-			return _T("");
+			pWriter->EndNode(strName);
+		}
+		
+		void Blip::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteLimit2(0, cstate);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+			if (embed.is_init())
+				pWriter->WriteString1(10, embed->get());
+			if (link.is_init())
+				pWriter->WriteString1(11, link->get());
+
+			pWriter->StartRecord(2);
+			ULONG len = (ULONG)Effects.size();
+			pWriter->WriteULONG(len);
+
+			for (ULONG i = 0; i < len; ++i)
+			{
+				pWriter->WriteRecord1(3, Effects[i]);
+			}
+
+			pWriter->EndRecord();
+
+			double dX = pWriter->GetShapeX(); //mm
+			double dY = pWriter->GetShapeY();
+
+			double dW = pWriter->GetShapeWidth(); //mm
+			double dH = pWriter->GetShapeHeight();
+
+			OOX::IFileContainer* pRels = NULL;
+			
+			if (pWriter->m_pCurrentContainer->is_init())
+				pRels = pWriter->m_pCurrentContainer->operator ->();
+
+			std::wstring	additionalPath;
+			int				additionalType = 0;
+			if(!oleFilepathBin.empty())
+			{
+				additionalPath = oleFilepathBin;
+				additionalType = 1;
+			}
+			else if(!oleRid.empty())
+			{
+				additionalPath	= this->GetFullOleName(OOX::RId(oleRid), pRels);
+				additionalType	= 1;
+			}
+			else if(!mediaRid.empty())
+			{
+				additionalPath	= this->GetFullOleName(OOX::RId(mediaRid), pRels);
+				additionalType	= 2;
+			}
+			else if(!mediaFilepath.empty())
+			{
+				additionalPath	= mediaFilepath;
+				additionalType	= 2;
+			}
+
+			std::wstring imagePath;
+			if(!oleFilepathImage.empty())
+			{
+				imagePath = oleFilepathImage;
+			}
+			else
+			{
+				imagePath = this->GetFullPicName(pRels);
+			}
+
+			NSShapeImageGen::CImageInfo oId = pWriter->m_pCommon->m_pImageManager->WriteImage(imagePath, dX, dY, dW, dH, additionalPath, additionalType);
+			std::wstring s = oId.GetPath2();
+
+			pWriter->StartRecord(3);
+
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteString1(0, s);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);				
+
+			pWriter->EndRecord();
+		}
+
+		void Blip::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _s2 = pReader->GetPos();
+			LONG _e2 = _s2 + pReader->GetLong() + 4;
+
+			pReader->Skip(1);
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (NSBinPptxRW::g_nodeAttributeEnd == _at)
+					break;
+
+				if (_at == 0)
+					pReader->Skip(1);
+			}
+
+			while (pReader->GetPos() < _e2)
+			{
+				BYTE _t = pReader->GetUChar();
+
+				switch (_t)
+				{
+					case 0:
+					case 1:
+					{
+						// id. embed / link
+						pReader->Skip(4);
+						break;
+					}
+					case 10:
+					case 11:
+					{
+						// id. embed / link
+						pReader->GetString2();
+						break;
+					}
+					case 2:
+					{
+						pReader->Skip(4);
+						ULONG count_effects = pReader->GetULong();
+						for (ULONG _eff = 0; _eff < count_effects; ++_eff)
+						{
+							pReader->Skip(1); // type 
+							ULONG rec_len = pReader->GetULong();
+							if (0 == rec_len)
+								continue;
+							
+							BYTE rec = pReader->GetUChar();
+							
+							if (rec == EFFECT_TYPE_ALPHAMODFIX)
+							{
+								// alpha!!!
+								LONG _e22 = pReader->GetPos() + pReader->GetLong() + 4;
+
+								pReader->Skip(1); // startattr
+
+								PPTX::Logic::AlphaModFix* pEffect = new PPTX::Logic::AlphaModFix();
+								while (true)
+								{
+									BYTE _at = pReader->GetUChar_TypeNode();
+									if (NSBinPptxRW::g_nodeAttributeEnd == _at)
+										break;
+
+									if (_at == 0)
+										pEffect->amt = pReader->GetLong();
+								}
+
+								Effects.push_back(UniEffect());
+								Effects[0].InitPointer(pEffect);
+
+								pReader->Seek(_e22);
+							}
+							else
+							{
+								pReader->SkipRecord();
+							}
+						}
+						break;
+					}
+					case 3:
+					{
+						pReader->Skip(6); // len + start attributes + type
+
+						std::wstring strImagePath = pReader->GetString2();
+
+						if (0 != strImagePath.find(_T("http:")) &&
+							0 != strImagePath.find(_T("https:")) &&
+							0 != strImagePath.find(_T("ftp:")) &&
+							0 != strImagePath.find(_T("file:")))
+						{
+							if (0 == strImagePath.find(_T("theme")))
+							{
+                                strImagePath = pReader->m_strFolderExternalThemes + FILE_SEPARATOR_STR  + strImagePath;
+							}
+							else
+							{
+                                strImagePath = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + strImagePath;
+							}
+
+							OOX::CPath pathUrl = strImagePath;
+							strImagePath = pathUrl.GetPath();
+						}
+	
+						smart_ptr<OOX::File> additionalFile;
+						NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFile, L"", L"");
+
+						if (oRelsGeneratorInfo.nImageRId > 0)
+						{
+							embed = new OOX::RId((size_t)oRelsGeneratorInfo.nImageRId);
+						}
+						pReader->Skip(1); // end attribute
+						break;
+					}
+					default:
+					{
+						pReader->SkipRecord();
+						break;
+					}
+				}
+			}
+
+			pReader->Seek(_e2);
 		}
 	} // namespace Logic
 } // namespace PPTX

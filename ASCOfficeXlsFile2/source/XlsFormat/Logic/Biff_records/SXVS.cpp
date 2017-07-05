@@ -52,12 +52,7 @@ BaseObjectPtr SXVS::clone()
 
 void SXVS::readFields(CFRecord& record)
 {
-#pragma message("####################### SXVS record is not implemented")
-	Log::error("SXVS record is not implemented.");
-	//record >> some_value;
-
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
-
+	record >> sxvs;
 }
 
 } // namespace XLS

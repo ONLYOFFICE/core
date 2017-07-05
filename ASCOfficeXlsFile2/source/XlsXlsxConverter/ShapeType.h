@@ -251,6 +251,19 @@ namespace oox
         case msosptRectangle : 					return L"rect";
         case msosptEllipse : 					return L"ellipse";
         case msosptLine : 						return L"line";
+        case msosptActionButtonBlank : 			return L"actionButtonBlank";
+        case msosptActionButtonHome : 			return L"actionButtonHome";
+        case msosptActionButtonHelp : 			return L"actionButtonHelp";
+        case msosptActionButtonInformation :	return L"actionButtonInformation";
+        case msosptActionButtonForwardNext :	return L"actionButtonForwardNext";
+        case msosptActionButtonBackPrevious :	return L"actionButtonBackPrevious";
+        case msosptActionButtonEnd : 			return L"actionButtonEnd";
+        case msosptActionButtonBeginning : 		return L"actionButtonBeginning";
+        case msosptActionButtonReturn : 		return L"actionButtonReturn";
+        case msosptActionButtonDocument : 		return L"actionButtonDocument";
+        case msosptActionButtonSound : 			return L"actionButtonSound";
+		case msosptActionButtonMovie : 			return L"actionButtonMovie";
+        case msosptLeftArrow : 					return L"leftArrow";
 		}
         return L"";
 	}

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Summary: Internal Interfaces for memory buffers in libxml2
  * Description: this module describes most of the new xmlBuf buffer
  *              entry points, those are private routines, with a
@@ -50,8 +50,8 @@ int xmlBufIsEmpty(const xmlBufPtr buf);
 int xmlBufAddLen(xmlBufPtr buf, size_t len);
 int xmlBufErase(xmlBufPtr buf, size_t len);
 
-/* const xmlChar * xmlBufContent(const xmlBufPtr buf); */
-/* const xmlChar * xmlBufEnd(const xmlBufPtr buf); */
+/* const xmlChar * xmlBufContent(const xmlBuf *buf); */
+/* const xmlChar * xmlBufEnd(xmlBufPtr buf); */
 
 xmlChar * xmlBufDetach(xmlBufPtr buf);
 

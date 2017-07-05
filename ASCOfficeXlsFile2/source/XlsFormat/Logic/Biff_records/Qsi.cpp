@@ -52,9 +52,9 @@ BaseObjectPtr Qsi::clone()
 
 void Qsi::readFields(CFRecord& record)
 {
-#pragma message("####################### Qsi record is not implemented")
 	Log::error("Qsi record is not implemented.");
-	//record >> some_value;
+	
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

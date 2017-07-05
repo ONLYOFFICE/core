@@ -40,7 +40,6 @@
 #include "paragraph_content.h"
 #include "office_elements_create.h"
 
-#include "datatypes/style_ref.h"
 #include "datatypes/targetframename.h"
 #include "datatypes/noteclass.h"
 
@@ -380,8 +379,8 @@ public:
    
 	office_element_ptr_array content_;
     
-	odf_types::style_ref			text_style_name_;
-    odf_types::style_ref_array		text_class_names_;
+	std::wstring				text_style_name_;
+	std::vector<std::wstring>	text_class_names_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -421,10 +420,10 @@ private:
     std::wstring							office_name_;
     _CP_OPT(odf_types::target_frame_name)	office_target_frame_name_;
 
-    odf_types::style_ref					text_style_name_;
-    odf_types::style_ref					text_visited_style_name_;
+    std::wstring						text_style_name_;
+    std::wstring						text_visited_style_name_;
 
-    office_element_ptr_array				content_;
+    office_element_ptr_array			content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(a);
@@ -481,9 +480,9 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-    odf_types::style_ref text_style_name_;
-    office_element_ptr text_ruby_base_;
-    office_element_ptr text_ruby_text_;
+    std::wstring		text_style_name_;
+    office_element_ptr	text_ruby_base_;
+    office_element_ptr	text_ruby_text_;
   
 };
 

@@ -79,18 +79,14 @@ namespace PPTX
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				blip = node.ReadNodeNoNS(_T("blip"));
-			}
-			virtual std::wstring toXML() const
-			{
-				return XmlUtils::CreateNode(_T("a:buBlip"), blip.toXML());
+				blip = node.ReadNodeNoNS(L"blip");
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("a:buBlip"));
+				pWriter->StartNode(L"a:buBlip");
 				pWriter->EndAttributes();
 				blip.toXmlWriter(pWriter);
-				pWriter->EndNode(_T("a:buBlip"));
+				pWriter->EndNode(L"a:buBlip");
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

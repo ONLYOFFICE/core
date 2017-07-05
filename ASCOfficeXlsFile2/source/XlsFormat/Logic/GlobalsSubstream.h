@@ -71,6 +71,7 @@ public:
 	std::vector<BaseObjectPtr>		m_arWindow1;
 	std::vector<BaseObjectPtr>		m_arUserBView;
 	std::vector<BaseObjectPtr>		m_arSUPBOOK;
+	std::vector<BaseObjectPtr>		m_arPIVOTCACHEDEFINITION;
 
 	std::vector<BiffStructurePtr>	m_arHFPictureDrawing;
 	

@@ -52,10 +52,7 @@ BaseObjectPtr SXPIEx::clone()
 
 void SXPIEx::readFields(CFRecord& record)
 {
-#pragma message("####################### SXPIEx record is not implemented")
-	Log::error("SXPIEx record is not implemented.");
-	//record >> some_value;
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	record >> frtHeaderOld >> isxth >> stUnique >> stDisplay;
 }
 
 } // namespace XLS

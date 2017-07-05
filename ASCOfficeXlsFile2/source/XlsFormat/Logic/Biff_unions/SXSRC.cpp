@@ -68,6 +68,8 @@ const bool SXSRC::loadContent(BinProcessor& proc)
 			}
 		}
 	}
+	m_source = elements_.back();
+	elements_.pop_back();
 	return true;
 }
 

@@ -52,12 +52,13 @@ BaseObjectPtr TableStyle::clone()
 
 void TableStyle::readFields(CFRecord& record)
 {
-	record.skipNunBytes(12);
-#pragma message("############################ frtHeader skipped here")
 	unsigned short flags;
-	record >> flags;
+
+	record >> frtHeader >> flags;
+
 	fIsPivot = GETBIT(flags, 1);
 	fIsTable = GETBIT(flags, 2);
+
 	unsigned short cchName;
 	record >> ctse >> cchName;
 	rgchName.setSize(cchName);

@@ -95,9 +95,9 @@ void paragraph_attrs::serialize(CP_ATTR_NODE)
    
 	std::wstring text_class_names_all;
 
-	BOOST_FOREACH(const style_ref & elm, text_class_names_)
+	BOOST_FOREACH(const std::wstring & elm, text_class_names_)
 	{    
-		text_class_names_all = elm.style_name() + std::wstring(L" ");
+		text_class_names_all = elm + std::wstring(L" ");
 	}
 	
 	if (!text_class_names_all.empty())
@@ -207,6 +207,8 @@ void text_list::create_child_element(const std::wstring & Ns, const std::wstring
 }
 void text_list::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeTextListHeader)
@@ -253,6 +255,8 @@ void text_section::create_child_element( const std::wstring & Ns, const std::wst
 
 void text_section::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeTextSectionSource)
@@ -508,6 +512,8 @@ void text_unknown_change::create_child_element(const std::wstring & Ns, const st
 
 void text_unknown_change::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeOfficeChangeInfo)

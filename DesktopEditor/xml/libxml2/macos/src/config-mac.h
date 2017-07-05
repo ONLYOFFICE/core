@@ -1,4 +1,4 @@
-﻿/* config.h generated manually for macos.  */
+/* config.h generated manually for macos.  */
 
 /* Define if you have the strftime function.  */
 #define HAVE_STRFTIME

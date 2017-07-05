@@ -30,19 +30,20 @@
  *
  */
 
-#include "../../TxtXmlFormatLib/source/TxtXmlFile.h"
+#include "../TxtXmlFormatLib/source/TxtXmlFile.h"
 
-#include "../../../OfficeUtils/src/OfficeUtils.h"
-
-#include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
+#include "../../DesktopEditor/common/Directory.h"
 
 #include <algorithm>
 #include <string>
+#include <tchar.h>
 
-namespace BinDocxRW
-{
-    int g_nCurFormatVersion = 0; //extern from ...DocxSerializer
-}
+#if defined(_WIN64)
+	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
+#elif defined (_WIN32)
+	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
+#endif
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -52,22 +53,22 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	std::wstring srcFileName	= argv[1];
 	std::wstring dstFileName	= argv[2];
-	std::wstring outputDir		= FileSystem::Directory::GetFolderPath(dstFileName);
+	std::wstring outputDir		= NSDirectory::GetFolderPath(dstFileName);
 
-	std::wstring dstTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
+	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
-	int n1 = srcFileName.rfind(_T('.'));
-	int n2 = dstFileName.rfind(_T('.'));
+	int n1 = srcFileName.rfind(L".");
+	int n2 = dstFileName.rfind(L".");
 
-	std::wstring ext_1 = n1>=0 ? srcFileName.substr(n1+1, srcFileName.length() - n1): _T(""); //ext_1.MakeLower();
-	std::wstring ext_2 = n2>=0 ? dstFileName.substr(n2+1, dstFileName.length() - n2): _T(""); //ext_2.MakeLower();
+	std::wstring ext_1 = n1>=0 ? srcFileName.substr(n1+1, srcFileName.length() - n1): L""; //ext_1.MakeLower();
+	std::wstring ext_2 = n2>=0 ? dstFileName.substr(n2+1, dstFileName.length() - n2): L""; //ext_2.MakeLower();
 
 	std::transform(ext_1.begin(), ext_1.end(), ext_1.begin(), ::tolower);
 
 	CTxtXmlFile txtFile;
 
 	COfficeUtils oCOfficeUtils(NULL);
-	if (ext_1 == _T("txt"))
+	if (ext_1 == L"txt")
 	{	
 		// txt->docx
 		if (S_OK != txtFile.txt_LoadFromFile(srcFileName, dstTempPath, sXMLOptions))	
@@ -76,7 +77,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstFileName.c_str(), -1))
 			return S_FALSE;
 	}
-	if (ext_2 == _T("txt"))
+	if (ext_2 == L"txt")
 	{	
 		// docx->txt
 		if (S_OK != oCOfficeUtils.ExtractToDirectory(srcFileName.c_str(), dstTempPath.c_str(), NULL, 0))
@@ -86,7 +87,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			return 3;
 	}
 
-	FileSystem::Directory::DeleteDirectory(dstTempPath);	
+	NSDirectory::DeleteDirectory(dstTempPath);	
 	return 0;
 }
 

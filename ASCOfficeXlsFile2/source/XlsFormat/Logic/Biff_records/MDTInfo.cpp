@@ -52,11 +52,9 @@ BaseObjectPtr MDTInfo::clone()
 
 void MDTInfo::readFields(CFRecord& record)
 {
-	record.skipNunBytes(12);
-#pragma message("############################ frtHeader skipped here")
-	
 	_UINT32 flags;
-	record >> flags;
+
+	record >> frtHeader >> flags;
 	
 	fGhostRow = GETBIT(flags, 0);
 	fGhostCol = GETBIT(flags, 1);

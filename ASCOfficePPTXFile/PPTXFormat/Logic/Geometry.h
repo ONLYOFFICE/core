@@ -378,8 +378,7 @@ namespace PPTX
 			template<class T> AVSINLINE const bool	is() const	{ return m_geometry.is<T>(); }
 			template<class T> AVSINLINE T&			as()		{ return m_geometry.as<T>(); }
 			template<class T> AVSINLINE const T&	as() const 	{ return m_geometry.as<T>(); }
-		//public:
-		private:
+
 			smart_ptr<WrapperWritingElement> m_geometry;
 		protected:
 			virtual void FillParentPointersForChilds(){};

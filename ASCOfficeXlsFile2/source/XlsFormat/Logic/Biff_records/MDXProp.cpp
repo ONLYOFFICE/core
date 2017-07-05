@@ -50,12 +50,9 @@ BaseObjectPtr MDXProp::clone()
 	return BaseObjectPtr(new MDXProp(*this));
 }
 
-
 void MDXProp::readFields(CFRecord& record)
 {
-	record.skipNunBytes(12);
-#pragma message("############################ frtHeader skipped here")
-	record >> istrConnName >> tfnSrc >> istrMbr >> istrProp;
+	record >> frtHeader >> istrConnName >> tfnSrc >> istrMbr >> istrProp;
 }
 
 } // namespace XLS

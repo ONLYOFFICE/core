@@ -52,9 +52,7 @@ BaseObjectPtr FnGrp12::clone()
 
 void FnGrp12::readFields(CFRecord& record)
 {
-	record.skipNunBytes(12);
-#pragma message("############################ frtHeader skipped here")
-	record >> astFnGrp;
+	record >> frtHeader >> astFnGrp;
 }
 
 } // namespace XLS

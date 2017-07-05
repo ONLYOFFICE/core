@@ -382,7 +382,7 @@ namespace StreamUtils
 
         pData[lLen] = 0;
 
-        std::string str(pData);
+        std::string str(pData, lLen);
 
         delete[] pData;
         return str;

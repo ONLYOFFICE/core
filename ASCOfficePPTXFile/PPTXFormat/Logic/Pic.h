@@ -182,32 +182,38 @@ namespace PPTX
 		class COLEObject : public WrapperWritingElement
 		{
 		public:
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_pic;
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			void toXmlWriterXlsx(NSBinPptxRW::CXmlWriter* pWriter) const;
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			
+			virtual void toXmlWriter (NSBinPptxRW::CXmlWriter* pWriter) const;
+			
+			virtual void toPPTY (NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY (NSBinPptxRW::CBinaryFileReader* pReader);
+			
 			virtual void FillParentPointersForChilds();
+			
 			bool isValid();
-			std::wstring GetFullOleName(const OOX::RId& oRId, FileContainer* pRels)const;
-			std::wstring GetOleData(const std::wstring& sFilePath)const;
+			
+			smart_ptr<OOX::OleObject>	GetOleObject(const OOX::RId& oRId, OOX::IFileContainer* pRels)const;
+			std::wstring				GetOleData	(const std::wstring& sFilePath)const;
 
-		public:
-			// Attributes
-			nullable_limit<Limit::OLEDrawAspectType>	m_oDrawAspect;
-			nullable<OOX::RId>					m_oId;
-			nullable_string                     m_sObjectId;
-			nullable_string                     m_sProgId;
-			nullable_string                     m_sShapeId;
+			nullable_limit<Limit::OLEDrawAspectType>m_oDrawAspect;
+			nullable<OOX::RId>						m_oId;
+			nullable_string							m_sObjectId;
+			nullable_string							m_sProgId;
+			nullable_string							m_sShapeId;
 			nullable_limit<Limit::OLEType>			m_oType;
-			nullable_limit<Limit::OLEUpdateMode>		m_oUpdateMode;
+			nullable_limit<Limit::OLEUpdateMode>	m_oUpdateMode;
 
-			//internal
+	//internal
 			nullable_string						m_sData;
-			nullable_string						m_sFilepathBin;
-			nullable_string						m_sFilepathImg;
-			nullable<OOX::RId>					m_oIdImg;
+			
+			smart_ptr<OOX::OleObject>			m_OleObjectFile;
+		
 			nullable_int						m_oDxaOrig;
 			nullable_int						m_oDyaOrig;
 		};
@@ -231,185 +237,36 @@ namespace PPTX
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			
-			virtual std::wstring toXML() const;
+			void fromXMLOle(XmlUtils::CXmlNode& node);
+
 			virtual void GetRect(Aggplus::RECT& pRect)const;
+			
 			virtual std::wstring GetFullPicName()const;
-			virtual std::wstring GetVideoLink()const;
-			virtual std::wstring GetAudioLink()const;
+			smart_ptr<OOX::File> GetMediaLink()const;
+			
 			DWORD GetFill(UniFill& fill)const;
 			DWORD GetLine(Ln& line)const;
+			
 			double GetStTrim () const;
 			double GetEndTrim () const;
 			long GetRefId() const;
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				if(oleObject.IsInit())
-				{
-					pWriter->StartRecord(SPTREE_TYPE_OLE);
-				}
-				else
-				{
-					pWriter->StartRecord(SPTREE_TYPE_PIC);
-				}
-
-				pWriter->WriteRecord2(4, oleObject);
-				pWriter->WriteRecord1(0, nvPicPr);
-				pWriter->WriteRecord1(1, blipFill);
-				pWriter->WriteRecord1(2, spPr);
-				pWriter->WriteRecord2(3, style);
-
-				pWriter->EndRecord();
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				std::wstring namespace_ = m_namespace;
-				bool bOle = false;
-				
-				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_ = L"pic";
-
-				if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_XLSX && 
-					pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
-				{
-					if(oleObject.IsInit() && oleObject->isValid())
-					{
-						bOle = true;
-						pWriter->WriteString(L"<p:graphicFrame><p:nvGraphicFramePr><p:cNvPr id=\"0\" name=\"\"/><p:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect=\"1\"/></p:cNvGraphicFramePr><p:nvPr><p:extLst><p:ext uri=\"{D42A27DB-BD31-4B8C-83A1-F6EECF244321}\"><p14:modId xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" val=\"2157879785\"/></p:ext></p:extLst></p:nvPr></p:nvGraphicFramePr>");
-						if(spPr.xfrm.IsInit())
-						{
-							std::wstring oldNamespace = spPr.xfrm->m_ns;
-							spPr.xfrm->m_ns = _T("p");
-							spPr.xfrm->toXmlWriter(pWriter);
-							spPr.xfrm->m_ns = oldNamespace;
-						}
-						pWriter->WriteString(L"<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/presentationml/2006/ole\">");
-
-						pWriter->StartNode(_T("p:oleObj"));
-						pWriter->WriteAttribute(L"name", (std::wstring)L"oleObj");
-						pWriter->WriteAttribute(L"showAsIcon", (std::wstring)L"1");
-						if(oleObject->m_oId.IsInit())
-						{
-							pWriter->WriteAttribute2(L"r:id", oleObject->m_oId->get());
-						}
-						if(oleObject->m_oDxaOrig.IsInit())
-						{
-							int nDxaOrig = oleObject->m_oDxaOrig.get();
-							pWriter->WriteAttribute(L"imgW", 635 * nDxaOrig); //twips to emu
-						}
-						if(oleObject->m_oDyaOrig.IsInit())
-						{
-							int nDyaOrig = oleObject->m_oDyaOrig.get();
-							pWriter->WriteAttribute(L"imgH", 635 * nDyaOrig); //twips to emu
-						}
-						pWriter->WriteAttribute2(L"progId", oleObject->m_sProgId);
-						pWriter->EndAttributes();
-
-						pWriter->WriteString(L"<p:embed/>");
-					}
-				}
-				pWriter->StartNode(namespace_ + L":pic");
-
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-				{
-					pWriter->StartAttributes();
-					pWriter->WriteAttribute(_T("xmlns:pic"), (std::wstring)_T("http://schemas.openxmlformats.org/drawingml/2006/picture"));
-				}
-				pWriter->EndAttributes();
-
-				nvPicPr.toXmlWriter(pWriter);
-
-				blipFill.m_namespace = namespace_;
-				blipFill.toXmlWriter(pWriter);
-
-				pWriter->m_lFlag = 1;
-				spPr.toXmlWriter(pWriter);
-				pWriter->m_lFlag = 0;
-				
-				pWriter->Write(style);
-
-				pWriter->EndNode(namespace_ + L":pic");
-				
-				if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_XLSX &&
-					pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
-				{
-					if(bOle)
-					{
-						pWriter->WriteString(L"</p:oleObj></a:graphicData></a:graphic></p:graphicFrame>");
-					}
-				}
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
-
-				nvPicPr.cNvPr.id = -1;
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							nvPicPr.fromPPTY(pReader);
-							break;
-						}
-						case 1:
-						{
-							blipFill.fromPPTY(pReader);
-							break;
-						}
-						case 2:
-						{
-							spPr.fromPPTY(pReader);
-							break;
-						}
-						case 3:
-						{
-							style = new ShapeStyle(L"p");
-							style->fromPPTY(pReader);
-							break;
-						}
-						case 4:
-						{
-							oleObject = new COLEObject();
-							oleObject->fromPPTY(pReader);
-							if(oleObject->m_sData.IsInit())
-							{
-								blipFill.oleData = oleObject->m_sData.get();
-							}
-							break;
-						}
-						default:
-						{
-							break;
-						}
-					}
-				}
-				if(blipFill.blip.IsInit() && !blipFill.blip->oleRid.empty() && oleObject.IsInit())
-				{
-					oleObject->m_oId = OOX::RId(blipFill.blip->oleRid);
-					oleObject->m_sFilepathBin = blipFill.blip->oleFilepathBin;
-					oleObject->m_sFilepathImg = blipFill.blip->oleFilepathImg;
-					oleObject->m_oIdImg = OOX::RId(blipFill.blip->oleRidImg);
-				}
-
-				pReader->Seek(_end_rec);
-			}
-
-			void toXmlWriterVML(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::WrapperFile>& oTheme, smart_ptr<PPTX::WrapperWritingElement>& oClrMap, bool in_group = false);
-			void fromXMLOle(XmlUtils::CXmlNode& node);
-
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			void toXmlWriterVML(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group = false);
+//----------------------------------------------------------------------
 			NvPicPr					nvPicPr;
 			BlipFill				blipFill;
 			SpPr					spPr;
 			nullable<ShapeStyle>	style;
 		//internal
+			nullable<COLEObject>	oleObject; 
+
 			std::wstring			m_namespace;
-			nullable<COLEObject>	oleObject;
+			nullable_string			m_sClientDataXml;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

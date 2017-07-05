@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of PIVOTVD union of records 
 class PIVOTVD: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTVD)
@@ -49,7 +47,11 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typePIVOTVD;
+	static const ElementType type = typePIVOTVD;
+
+	BaseObjectPtr				m_Sxvd;
+	std::vector<BaseObjectPtr>	m_arSXVI;
+	BaseObjectPtr				m_SXVDEx;
 };
 
 } // namespace XLS

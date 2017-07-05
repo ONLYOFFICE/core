@@ -46,9 +46,9 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(TextListStyle)
 
-			TextListStyle()
+			TextListStyle(std::wstring name = L"a:lstStyle")
 			{
-				m_name = L"a:lstStyle";
+				m_name = name;
 			}
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
@@ -170,6 +170,20 @@ namespace PPTX
 				}
 
 				pReader->Seek(_end_rec);				
+			}
+			bool IsListStyleEmpty()
+			{
+				for (int i = 0; i < 10; i++)
+				{
+					if (levels[i].IsInit())
+					{
+						if (levels[i]->ParagraphBullet.is_init() == false) continue;
+						if (levels[i]->ParagraphBullet.is<PPTX::Logic::BuNone>())continue;
+
+						return false;
+					}
+				}
+				return true;
 			}
 
 			void Merge(nullable<TextListStyle>& lstStyle)const

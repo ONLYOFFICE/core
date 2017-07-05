@@ -33,6 +33,7 @@
 #include "../../XlsxFormat/Worksheets/Sparkline.h"
 #include "../../XlsxFormat/Table/Table.h"
 #include "../Diagram/DiagramData.h"
+#include "../../XlsxFormat/Worksheets/ConditionalFormatting.h"
 
 namespace OOX
 {
@@ -42,14 +43,24 @@ namespace OOX
 		{
 			m_oSparklineGroups.reset();
 			m_oAltTextTable.reset();
+			m_oDataModelExt.reset();
+			m_oCompatExt.reset();
+
+			// delete Conditional Formatting
+			for (size_t nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
+			{
+				delete m_arrConditionalFormatting[nIndex];
+			}
+			m_arrConditionalFormatting.clear();
 		}
 		void COfficeArtExtension::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
 
-            if ((m_sUri.IsInit()) && (*m_sUri == L"{63B3BB69-23CF-44E3-9099-C40C66FF867C}" ||
-                                      *m_sUri == L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}" || 
-									  *m_sUri == L"{504A1905-F514-4f6f-8877-14C23A59335A}" || 
+            if ((m_sUri.IsInit()) && (*m_sUri == L"{63B3BB69-23CF-44E3-9099-C40C66FF867C}"	||
+                                      *m_sUri == L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}"	|| 
+									  *m_sUri == L"{504A1905-F514-4f6f-8877-14C23A59335A}"	|| 
+									  *m_sUri == L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}"	||
 									  *m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))   
 			{
 				int nCurDepth = oReader.GetDepth();
@@ -71,6 +82,17 @@ namespace OOX
 					else if (sName == _T("table"))
 					{
 						m_oAltTextTable = oReader;
+					}
+					else if (sName == L"conditionalFormattings")
+					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
+						int nCurDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nCurDepth1 ) )
+						{						
+							m_arrConditionalFormatting.push_back(new OOX::Spreadsheet::CConditionalFormatting(oReader));
+						}
 					}
 				}
 			}

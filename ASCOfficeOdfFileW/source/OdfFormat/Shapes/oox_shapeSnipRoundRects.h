@@ -67,30 +67,41 @@ public:
 		odf_type_name	=L"ooxml-snip2DiagRect";
 
 		modifiers		= L"0 16667";
-		enhanced_path	= L"M ?f9 ?f2 L ?f13 ?f2 ?f1 ?f12 ?f1 ?f11 ?f10 ?f3 ?f12 ?f3 ?f0 ?f14 ?f0 ?f9 Z N";
-		text_areas		= L"?f17 ?f17 ?f18 ?f19";
-		view_box		= L"0 0 21600 21600";
+		enhanced_path	= L"M ?f3 0 L ?f7 0 ?f14 ?f6 ?f14 ?f5 ?f4 ?f17 ?f6 ?f17 0 ?f8 0 ?f3 Z N";
+		text_areas		= L"?f11 ?f11 ?f12 ?f13";
+		view_box		= L"0 0 0 0";
 		
-        add(L"f0", L"left");
-        add(L"f1", L"right");
-        add(L"f2", L"top");
-        add(L"f3", L"bottom");
-        add(L"f4", L"?f3 - ?f2");
-        add(L"f5", L"?f1 - ?f0");
-        add(L"f6", L"min(?f5, ?f4)");
-        add(L"f7", L"$0");
-        add(L"f8", L"$1");
-        add(L"f9", L"?f6 * ?f7 / 100000");
-        add(L"f10", L"?f1 - ?f9");
-        add(L"f11", L"?f3 - ?f9");
-        add(L"f12", L"?f6 * ?f8 / 100000");
-        add(L"f13", L"?f1 - ?f12");
-        add(L"f14", L"?f3 - ?f12");
-        add(L"f15", L"?f9 - ?f12");
-        add(L"f16", L"if(?f15, ?f9, ?f12)");
-        add(L"f17", L"?f16 / 2");
-        add(L"f18", L"?f1 - ?f17");
-        add(L"f19", L"?f3 - ?f17");
+		add(L"f0", L"if(0-$0 ,0,if(50000-$0 ,$0 ,50000))");
+		add(L"f1", L"if(0-$1 ,0,if(50000-$1 ,$1 ,50000))");
+		add(L"f2", L"min(logwidth,logheight)");
+		add(L"f3", L"?f2 *?f0 /100000");
+		add(L"f4", L"logwidth+0-?f3 ");
+		add(L"f5", L"logheight+0-?f3 ");
+		add(L"f6", L"?f2 *?f1 /100000");
+		add(L"f7", L"logwidth+0-?f6 ");
+		add(L"f8", L"logheight+0-?f6 ");
+		add(L"f9", L"?f3 +0-?f6 ");
+		add(L"f10", L"if(?f9 ,?f3 ,?f6 )");
+		add(L"f11", L"?f10 *1/2");
+		add(L"f12", L"logwidth+0-?f11 ");
+		add(L"f13", L"logheight+0-?f11 ");
+		add(L"f14", L"logwidth");
+		add(L"f15", L"logheight/2");
+		add(L"f16", L"logwidth/2");
+		add(L"f17", L"logheight");
+
+		_handle h;
+
+		h.position = L"?f3 0";
+		h.x_maximum= L"50000";
+		h.x_minimum= L"0";
+		handles.push_back(h);
+
+		h.position = L"?f7 0";
+		h.x_maximum= L"50000";
+		h.x_minimum= L"0";
+		handles.push_back(h);
+
 	}
 };
 class oox_shape_snip2SameRect : public oox_shape
@@ -706,6 +717,47 @@ public:
         add(L"f196", L"if(?f26, ?f173, ?f190)");
         add(L"f197", L"if(?f26, ?f174, ?f188)");
         add(L"f198", L"if(?f26, ?f175, ?f190)");
+	}
+};
+class oox_shape_roundRect : public oox_shape
+{
+public:
+	oox_shape_roundRect()
+	{
+		odf_type_name	=L"ooxml-roundRect";
+		
+		enhanced_path	= L"M 0 ?f2 G ?f2 ?f2 ?f12 ?f13 L ?f3 0 G ?f2 ?f2 ?f14 ?f15 L ?f11 ?f4 G ?f2 ?f2 ?f16 ?f17 L ?f2 ?f10 G ?f2 ?f2 ?f18 ?f19 Z N";
+		text_areas		= L"?f5 ?f5 ?f6 ?f7";
+		view_box		= L"0 0 0 0";
+		modifiers		= L"16667";
+		
+		add(L"f0", L"if(0-$0 ,0,if(50000-$0 ,$0 ,50000))");
+		add(L"f1", L"min(logwidth,logheight)");
+		add(L"f2", L"?f1 *?f0 /100000");
+		add(L"f3", L"logwidth+0-?f2 ");
+		add(L"f4", L"logheight+0-?f2 ");
+		add(L"f5", L"?f2 *29289/100000");
+		add(L"f6", L"logwidth+0-?f5 ");
+		add(L"f7", L"logheight+0-?f5 ");
+		add(L"f8", L"logwidth/2");
+		add(L"f9", L"logheight/2");
+		add(L"f10", L"logheight");
+		add(L"f11", L"logwidth");
+		add(L"f12", L"(10800000)/60000.0");
+		add(L"f13", L"(5400000)/60000.0");
+		add(L"f14", L"(16200000)/60000.0");
+		add(L"f15", L"(5400000)/60000.0");
+		add(L"f16", L"(0)/60000.0");
+		add(L"f17", L"(5400000)/60000.0");
+		add(L"f18", L"(5400000)/60000.0");
+		add(L"f19", L"(5400000)/60000.0");
+//-----------------------------------------------------------------		
+		_handle h1;
+		
+		h1.position = L"?f2 0";
+		h1.x_maximum= L"50000";
+		h1.x_minimum= L"0";
+		handles.push_back(h1);
 	}
 };
 }

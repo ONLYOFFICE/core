@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of SxFilt record in BIFF8
 class SxFilt: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SxFilt)
@@ -47,12 +45,21 @@ public:
 	~SxFilt();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSxFilt;
+	static const ElementType type = typeSxFilt;
 
+	bool			sxaxisRw;
+	bool			sxaxisCol;
+	bool			sxaxisPage;
+	bool			sxaxisData;
+	unsigned short	iDim;
+	unsigned short	isxvd;
+	bool			fSelected;
+
+	unsigned short	grbitSbt;
+	unsigned short	cisxvi;
 };
 
 } // namespace XLS

@@ -1,0 +1,38 @@
+Compilation
+
+1. How to compile XMLSec?
+As most UNIX libraries XMLSec follows the "standard":
+
+     gunzip -c xmlsec-xxx.tar.gz | tar xvf -
+     cd xmlsec-xxxx
+     ./configure --help
+
+to see the options, then the compilation/installation proper
+
+     ./configure [possible options]
+     make
+     make install
+
+Probably you may have to rerun ldconfig or similar utility to
+update your list of installed shared libs. At this point you can check 
+that the library is compiled successfully by running
+
+     make check
+
+2.What other libraries are needed to compile/install XMLSec? 
+XMLSec requires following libraries:
+
+    LibXML2 (http://xmlsoft.org): a very powerfull XML parsing and
+	manipulating library
+    LibXSLT (http://xmlsoft.org/XSLT/): a nice XSLT processor based
+	on LibXML2
+    OpenSSL (http://www.openssl.org): well known cryptographic library
+
+If you are running a Linux system then there is a good chance that
+you already have all libraries installed. Also XMLSec requires the 
+normal C ANSI API (please report any violation to this rule you may find).
+
+
+Aleksey Sanin <aleksey@aleksey.com>
+
+$Id$

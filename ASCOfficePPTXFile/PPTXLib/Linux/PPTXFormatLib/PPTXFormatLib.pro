@@ -80,8 +80,6 @@ SOURCES += \
     ../../../PPTXFormat/Logic/NvGrpSpPr.cpp \
     ../../../PPTXFormat/Logic/Pic.cpp \
     ../../../PPTXFormat/Logic/Shape.cpp \
-    ../../../PPTXFormat/Logic/ShapeProperties.cpp \
-    ../../../PPTXFormat/Logic/ShapeTextProperties.cpp \
     ../../../PPTXFormat/Logic/SmartArt.cpp \
     ../../../PPTXFormat/Logic/SpPr.cpp \
     ../../../PPTXFormat/Logic/SpTree.cpp \
@@ -400,9 +398,7 @@ HEADERS += pptxformatlib.h \
     ../../../PPTXFormat/Logic/RunProperties.h \
     ../../../PPTXFormat/Logic/Scene3d.h \
     ../../../PPTXFormat/Logic/Shape.h \
-    ../../../PPTXFormat/Logic/ShapeProperties.h \
     ../../../PPTXFormat/Logic/ShapeStyle.h \
-    ../../../PPTXFormat/Logic/ShapeTextProperties.h \
     ../../../PPTXFormat/Logic/SmartArt.h \
     ../../../PPTXFormat/Logic/Sp3d.h \
     ../../../PPTXFormat/Logic/SpPr.h \
@@ -492,12 +488,10 @@ HEADERS += pptxformatlib.h \
     ../../../Editor/imagemanager.h \
     ../../../Editor/PPTXWriter.h \
     ../../../Editor/WMFToImageConverter.h \
-    ../../../Editor/XmlStringWriter.h \
     ../../../Editor/PresentationDrawingsDef.h \
     ../../../Editor/DefaultNotesMaster.h \
     ../../../Editor/DefaultNotesTheme.h \
     ../../../../Common/DocxFormat/Source/Base/Nullable.h \
-    ../../../../Common/DocxFormat/Source/XML/xmlutils.h \
     ../../../../HtmlRenderer/include/ASCSVGWriter.h \
     ../../../../Common/FileDownloader/FileDownloader.h \
     ../../../PPTXFormat/ShowPr/Browse.h \

@@ -50,7 +50,8 @@ namespace PPTX
 
 		public:
 			void AddObjectTo (const std::vector<SpTreeElem> *spTreeElements, NSShapeImageGen::CImageManager* pImageManager) const ;
-			std::wstring GetVmlXmlBySpid(std::wstring spid, std::wstring & rels) const ;
+			
+			std::wstring GetVmlXmlBySpid(std::wstring spid, smart_ptr<OOX::IFileContainer> & rels) const ;
 			
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const ;
 

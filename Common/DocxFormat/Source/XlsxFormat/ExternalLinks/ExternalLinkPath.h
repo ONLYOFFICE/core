@@ -57,7 +57,35 @@ namespace OOX
 		public:
 			virtual const FileType type() const
 			{
-				return FileTypes::ExternalLinkPath;
+				return OOX::FileTypes::ExternalLinkPath;
+			}
+			virtual const CPath DefaultDirectory() const
+			{
+				return type().DefaultDirectory();
+			}
+			virtual const CPath DefaultFileName() const
+			{
+				return type().DefaultFileName();
+			}
+		};
+		class ExternalOleObject : public External
+		{
+		public:
+			ExternalOleObject()
+			{
+			}
+			ExternalOleObject(const CPath& uri)
+			{
+				read(uri);
+			}
+			~ExternalOleObject()
+			{
+			}
+
+		public:
+			virtual const FileType type() const
+			{
+				return OOX::FileTypes::OleObject;
 			}
 			virtual const CPath DefaultDirectory() const
 			{

@@ -56,8 +56,8 @@ namespace Writers
 
             OOX::CPath fileName = m_sDir + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + _T(".rels");
 
-            CFile oFile;
-            oFile.CreateFile(fileName.GetPath());
+            NSFile::CFileBinary oFile;
+            oFile.CreateFileW(fileName.GetPath());
             oFile.WriteStringUTF8(s_Common);
 			oFile.CloseFile();
 		}

@@ -45,7 +45,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(ClrScheme)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				name = node.GetAttribute(_T("name"));
@@ -207,8 +206,7 @@ namespace PPTX
 				pReader->Seek(_e);
 			}
 
-		public:
-			std::wstring name;
+			std::wstring							name;
 			std::map<std::wstring, Logic::UniColor> Scheme;
 
 			ClrScheme& operator=(const ClrScheme& oSrc)

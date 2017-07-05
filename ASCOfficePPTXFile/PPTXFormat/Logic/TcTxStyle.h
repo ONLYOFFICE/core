@@ -58,18 +58,6 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.WriteLimitNullable(_T("i"), i);
-				oAttr.WriteLimitNullable(_T("b"), b);
-
-				XmlUtils::CNodeValue oValue;
-                oValue.WriteNullable(fontRef);
-				oValue.Write(Color);
-
-				return XmlUtils::CreateNode(_T("a:tcTxStyle"), oAttr, oValue);
-			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{

@@ -138,7 +138,7 @@ void xlsx_conversion_context::end_document()
     {
 		xlsx_xml_worksheet_ptr& sheet = sheets_[i];
 		
-		const std::wstring id = std::wstring(L"sId") + boost::lexical_cast<std::wstring>(i + 1);
+		const std::wstring id = std::wstring(L"sId") + std::to_wstring(i + 1);
 
         package::sheet_content_ptr content = package::sheet_content::create();
  ////////////////////////////////////////////////////////////////////////////////////////////       
@@ -369,6 +369,7 @@ void xlsx_conversion_context::end_table()
     current_sheet().cols() << L"</cols>";
     
 	get_table_context().serialize_table_format			(current_sheet().sheetFormat());
+	get_table_context().serialize_page_properties		(current_sheet().page_properties());
 	get_table_context().serialize_conditionalFormatting	(current_sheet().conditionalFormatting());
     get_table_context().serialize_autofilter			(current_sheet().autofilter());
     get_table_context().serialize_sort					(current_sheet().sort());
@@ -420,7 +421,7 @@ void xlsx_conversion_context::end_table()
         current_sheet().set_comments_link(commentsName.first, commentsName.second);
         current_sheet().set_vml_drawing_link(vml_drawingName.first, vml_drawingName.second);
     }    
-
+//background picture
     get_table_context().end_table();
 }
 
@@ -633,7 +634,7 @@ void xlsx_conversion_context::end_hyperlink(std::wstring const & href)
 	}
 	else
 	{
-		std::wstring hId = get_drawing_context().add_hyperlink(href,false);
+		std::wstring hId = get_drawing_context().add_hyperlink(href);
 		xlsx_text_context_.end_hyperlink(hId); 
 		
 		xlsx_text_context_.end_span2();

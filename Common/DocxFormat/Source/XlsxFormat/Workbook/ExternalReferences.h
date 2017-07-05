@@ -43,16 +43,17 @@ namespace OOX
 		class CExternalReference : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CExternalReference)
+			WritingElement_AdditionConstructors(CExternalReference)
 			CExternalReference()
 			{
 			}
 			virtual ~CExternalReference()
 			{
 			}
-
-		public:
-                        virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -62,7 +63,7 @@ namespace OOX
 				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
 				writer.WriteString(_T("/>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -72,7 +73,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_ExternalReference;
+				return et_x_ExternalReference;
 			}
 
 		private:
@@ -93,15 +94,16 @@ namespace OOX
 		class CExternalReferences  : public WritingElementWithChilds<CExternalReference>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CExternalReferences)
+			WritingElement_AdditionConstructors(CExternalReferences)
 			CExternalReferences()
 			{
 			}
 			virtual ~CExternalReferences()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
 			virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -135,7 +137,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_ExternalReferences;
+				return et_x_ExternalReferences;
 			}
 		
 		private:

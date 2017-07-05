@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {
 
-
-// Logical representation of SXViewEx9 record in BIFF8
 class SXViewEx9: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXViewEx9)
@@ -47,11 +46,18 @@ public:
 	~SXViewEx9();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSXViewEx9;
+	static const ElementType type = typeSXViewEx9;
+
+	unsigned short		rt;
+	bool				fFrtAlert;
+	bool				fPrintTitles;
+	bool				fLineMode;
+	bool				fRepeatItemsOnEachPrintedPage;
+	unsigned short		itblAutoFmt;
+	XLUnicodeString		chGrand;
 
 };
 

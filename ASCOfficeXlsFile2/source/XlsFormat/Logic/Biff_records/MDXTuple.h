@@ -32,13 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/MDXStrIndex.h>
+#include "../Biff_structures/MDXStrIndex.h"
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
 
-
-// Logical representation of MDXTuple record in BIFF8
 class MDXTuple: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(MDXTuple)
@@ -48,18 +47,17 @@ public:
 	~MDXTuple();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeMDXTuple;
 
 //-----------------------------
-	_INT32	istrConnName;
-	unsigned char	tfnSrc;
-	_INT32	cistr;
-	BiffStructurePtrVector rgistr;
-
+	_INT32					istrConnName;
+	unsigned char			tfnSrc;
+	_INT32					cistr;
+	BiffStructurePtrVector	rgistr;
+	FrtHeader				frtHeader;
 };
 
 } // namespace XLS

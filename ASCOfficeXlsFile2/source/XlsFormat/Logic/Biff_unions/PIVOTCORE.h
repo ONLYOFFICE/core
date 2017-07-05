@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of PIVOTCORE union of records 
 class PIVOTCORE: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTCORE)
@@ -50,6 +48,15 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typePIVOTCORE;
+
+	BaseObjectPtr				m_SxView;
+	std::vector<BaseObjectPtr>	m_arPIVOTVD;
+	std::vector<BaseObjectPtr>	m_arPIVOTIVD;
+	BaseObjectPtr				m_PIVOTPI;
+	std::vector<BaseObjectPtr>	m_arSXDI;
+	std::vector<BaseObjectPtr>	m_arPIVOTLI;
+	BaseObjectPtr				m_PIVOTEX;
+
 };
 
 } // namespace XLS

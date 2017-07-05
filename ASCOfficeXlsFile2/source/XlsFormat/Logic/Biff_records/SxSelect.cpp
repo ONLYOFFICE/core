@@ -53,10 +53,18 @@ BaseObjectPtr SxSelect::clone()
 
 void SxSelect::readFields(CFRecord& record)
 {
-#pragma message("####################### SxSelect record is not implemented")
-	Log::error("SxSelect record is not implemented.");
-	//record >> some_value;
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	short reserved1, flags;
+	unsigned char reserved2;
+	
+	record >> reserved1 >> pnn >> reserved2 >> sxaxisAct >> iDimAct >> iLiStart >> iLiAct >> iLiMin >> iLiMax;
+	record >> rwClick >> colClick >> rwClickPrev >> colClickPrev >> flags;
+	
+	cClick				= GETBITS(flags, 0, 4);
+	fLabelOnly			= GETBIT(flags, 5);
+	fDataOnly			= GETBIT(flags, 6);
+	fToggleDataHeader	= GETBIT(flags, 7);
+	fSelectionClick		= GETBIT(flags, 8);
+	fExtendable			= GETBIT(flags, 9);
 }
 
 } // namespace XLS

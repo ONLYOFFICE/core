@@ -45,7 +45,7 @@ namespace OOX
 		class CSheet : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CSheet)
+			WritingElement_AdditionConstructors(CSheet)
 			CSheet()
 			{
 			}
@@ -53,8 +53,10 @@ namespace OOX
 			{
 			}
 
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -67,7 +69,7 @@ namespace OOX
 				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
 				writer.WriteString(_T("/>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -77,7 +79,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Sheet;
+				return et_x_Sheet;
 			}
 
 		private:
@@ -87,17 +89,17 @@ namespace OOX
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),      m_oRid )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("name"),      m_oName )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("sheetId"),      m_oSheetId )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("state"),      m_oState )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),	m_oRid )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("name"),	m_oName )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("sheetId"),	m_oSheetId )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("state"),	m_oState )
 
 					WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 				nullable<SimpleTypes::CRelationshipId>				m_oRid;
-				nullable<std::wstring>									m_oName;
+				nullable<std::wstring>								m_oName;
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oSheetId;
 				nullable<SimpleTypes::Spreadsheet::CVisibleType<>>	m_oState;
 
@@ -106,15 +108,16 @@ namespace OOX
 		class CSheets  : public WritingElementWithChilds<CSheet>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CSheets)
+			WritingElement_AdditionConstructors(CSheets)
 			CSheets()
 			{
 			}
 			virtual ~CSheets()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -148,7 +151,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Sheets;
+				return et_x_Sheets;
 			}
 		
 		private:

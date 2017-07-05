@@ -83,7 +83,7 @@ int SST::serialize(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    
 	{
-		for (int i=0; i < rgb.size(); i++)
+		for (size_t i=0; i < rgb.size(); i++)
 		{
 			XLUnicodeRichExtendedString *richText = dynamic_cast<XLUnicodeRichExtendedString *>(rgb[i].get());
 

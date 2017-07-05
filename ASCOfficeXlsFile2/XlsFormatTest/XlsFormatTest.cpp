@@ -35,7 +35,7 @@
 #include <iostream>
 
 #include "../../Common/DocxFormat/Source/Base/Base.h"
-#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../DesktopEditor/common/Directory.h"
 
 #include "../source/XlsXlsxConverter/ConvertXls2Xlsx.h"
 #include "../source/XlsXlsxConverter/progressCallback.h"
@@ -45,6 +45,12 @@
 #pragma comment(lib,"Shell32.lib")	
 #pragma comment(lib,"Advapi32.lib")
 
+#if defined(_WIN64)
+	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
+#elif defined (_WIN32)
+	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
+#endif
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	HRESULT hr = S_OK;
@@ -52,8 +58,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::wstring srcFileName	= argv[1];
 	std::wstring dstPath		= argc > 2 ? argv[2] : srcFileName + L"-my.xlsx";
 
-	std::wstring outputDir		= FileSystem::Directory::GetFolderPath(dstPath);	
-	std::wstring dstTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
+	std::wstring outputDir		= NSDirectory::GetFolderPath(dstPath);	
+	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
 	hr = ConvertXls2Xlsx(srcFileName, dstTempPath, L"password", L"C:\\Windows\\Fonts", NULL);
 
@@ -63,7 +69,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		hr = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath.c_str(), -1);
 	}
 	
-	FileSystem::Directory::DeleteDirectory(dstTempPath);
+	NSDirectory::DeleteDirectory(dstTempPath);
 
 	return hr;
 }

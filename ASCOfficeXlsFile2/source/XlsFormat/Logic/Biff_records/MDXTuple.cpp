@@ -50,12 +50,10 @@ BaseObjectPtr MDXTuple::clone()
 	return BaseObjectPtr(new MDXTuple(*this));
 }
 
-
 void MDXTuple::readFields(CFRecord& record)
 {
-	record.skipNunBytes(12);
-#pragma message("############################ frtHeader skipped here")
-	record >> istrConnName >> tfnSrc >> cistr;
+	record >> frtHeader >> istrConnName >> tfnSrc >> cistr;
+
 	while(!record.isEOF())
 	{
 		MDXStrIndexPtr element(new MDXStrIndex);

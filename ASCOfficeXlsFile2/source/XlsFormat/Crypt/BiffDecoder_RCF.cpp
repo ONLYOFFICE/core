@@ -34,10 +34,8 @@
 namespace CRYPT
 {
 
-
-BiffDecoderBase::BiffDecoderBase(int BLOCKSIZE) : mbValid(false)
+BiffDecoderBase::BiffDecoderBase() : mbValid(false)
 {
-	RCF_BLOCKSIZE = BLOCKSIZE;
 }
 
 
@@ -51,34 +49,29 @@ bool BiffDecoderBase::verifyPassword(const std::wstring& rPassword)
 	mbValid = implVerify(rPassword);
 	return mbValid;
 }
-
-
-void BiffDecoderBase::decode(unsigned char* pnDestData, const unsigned char* pnSrcData, const long nStreamPos, const unsigned short nBytes)
+void BiffDecoderBase::decode(unsigned char* pnDestData, const unsigned char* pnSrcData, const unsigned short nBytes, const long block_index)
 {
 	if(pnDestData && pnSrcData && (nBytes> 0))
 	{
 		if(mbValid)
-			implDecode(pnDestData, pnSrcData, nStreamPos, nBytes);
+			implDecode(pnDestData, pnSrcData, nBytes, block_index);
+		else
+			memcpy(pnDestData, pnSrcData, nBytes);
+	}}
+
+void BiffDecoderBase::decode(unsigned char* pnDestData, const unsigned char* pnSrcData, const unsigned short nBytes, const long nStreamPos, const unsigned short block_size)
+{
+	if(pnDestData && pnSrcData && (nBytes> 0))
+	{
+		if(mbValid)
+			implDecode(pnDestData, pnSrcData, nBytes, nStreamPos, block_size);
 		else
 			memcpy(pnDestData, pnSrcData, nBytes);
 	}
 }
 
-/** Returns the block index of the passed stream position for RCF decryption. */
-int BiffDecoderBase::lclGetRcfBlock(long nStreamPos)
-{
-	return static_cast<int>(nStreamPos / RCF_BLOCKSIZE);
-}
-
-/** Returns the offset of the passed stream position in a block for RCF decryption. */
-int BiffDecoderBase::lclGetRcfOffset(long nStreamPos)
-{
-	return static_cast<int>(nStreamPos % RCF_BLOCKSIZE);
-}
-
-
-BiffDecoder_RCF::BiffDecoder_RCF(unsigned char pnSalt[16], unsigned char pnVerifier[16], unsigned char pnVerifierHash[16], int BlockSize)
-:	BiffDecoderBase(BlockSize),
+BiffDecoder_RCF::BiffDecoder_RCF(unsigned char pnSalt[16], unsigned char pnVerifier[16], unsigned char pnVerifierHash[16])
+:	
 	maPassword(16, 0),
 	maSalt(pnSalt, pnSalt + 16),
 	maVerifier(pnVerifier, pnVerifier + 16),
@@ -107,28 +100,37 @@ bool BiffDecoder_RCF::implVerify(const std::wstring& rPassword)
 	}
 	return false;
 }
-
-void BiffDecoder_RCF::implDecode(unsigned char* pnDestData, const unsigned char* pnSrcData, const long nStreamPos, const unsigned short nBytes)
+void BiffDecoder_RCF::implDecode(unsigned char* pnDestData, const unsigned char* pnSrcData, const unsigned short nBytes, const long block_index)
 {
-	unsigned char* pnCurrDest = pnDestData;
-	const unsigned char* pnCurrSrc = pnSrcData;
-	long nCurrPos = nStreamPos;
-	unsigned short nBytesLeft = nBytes;
-	while(nBytesLeft> 0)
+	maCodec.startBlock(block_index);
+	maCodec.decode(pnDestData, pnSrcData, static_cast<int>(nBytes));
+}
+void BiffDecoder_RCF::implDecode(unsigned char* pnDestData, const unsigned char* pnSrcData, const unsigned short nBytes, const long nStreamPos, const unsigned short block_size)
+{
+	unsigned char*			pnCurrDest	= pnDestData;
+	const unsigned char*	pnCurrSrc	= pnSrcData;
+	long					nCurrPos	= nStreamPos;
+	unsigned short			nBytesLeft	= nBytes;
+	
+	while(nBytesLeft > 0)
 	{
 		// initialize codec for current stream position
-		maCodec.startBlock(lclGetRcfBlock(nCurrPos));
-		maCodec.skip(lclGetRcfOffset(nCurrPos));
+		maCodec.startBlock (nCurrPos / block_size);
+
+		const long offset = nCurrPos % block_size;
+		maCodec.skip (offset);
 
 		// decode the block
-		unsigned short nBlockLeft = static_cast<unsigned short>(get_BLOCKSIZE() - lclGetRcfOffset(nCurrPos));
+		unsigned short nBlockLeft = static_cast<unsigned short>(block_size - offset);
 		unsigned short nDecBytes = nBytesLeft < nBlockLeft ? nBytesLeft : nBlockLeft;
+		
 		maCodec.decode(pnCurrDest, pnCurrSrc, static_cast<int>(nDecBytes));
 
 		// prepare for next block
-		pnCurrDest += nDecBytes;
-		pnCurrSrc += nDecBytes;
-		nCurrPos += nDecBytes;
+		pnCurrDest	+= nDecBytes;
+		pnCurrSrc	+= nDecBytes;
+		nCurrPos	+= nDecBytes;
+
 		nBytesLeft = nBytesLeft - nDecBytes;
 	}
 }

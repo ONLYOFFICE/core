@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of SXSRC union of records 
 class SXSRC: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(SXSRC)
@@ -50,7 +48,8 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeSXSRC;
-	
+
+	BaseObjectPtr	m_source;	
 };
 
 } // namespace XLS

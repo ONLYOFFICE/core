@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+XML Security Library example: Original XML doc file for sign2 example. 
+-->
+<Envelope xmlns="urn:envelope">
+  <Data>
+	Hello, World!
+  </Data>
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+<SignedInfo>
+<CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+<SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+<Reference>
+<Transforms>
+<Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+</Transforms>
+<DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+<DigestValue>HjY8ilZAIEM2tBbPn5mYO1ieIX4=</DigestValue>
+</Reference>
+</SignedInfo>
+<SignatureValue>GnYgZdzPeXd/gPTJmQ506qmxWkd3VK1Y23kh5Qpq8y4LMNY+LJJeCWK5wpo/vufR
+nIH/KUqvIvtk9nb2IjF5Uw==</SignatureValue>
+<KeyInfo>
+<KeyName>rsakey.pem</KeyName>
+</KeyInfo>
+</Signature></Envelope>

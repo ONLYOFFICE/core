@@ -61,7 +61,14 @@ const bool PIVOTSELECT::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.mandatory<PIVOTRULE>();
+	m_SxSelect = elements_.back();
+	elements_.pop_back();
+
+	if (proc.mandatory<PIVOTRULE>())
+	{
+		m_PIVOTRULE = elements_.back();
+		elements_.pop_back();
+	}
 
 	return true;
 }

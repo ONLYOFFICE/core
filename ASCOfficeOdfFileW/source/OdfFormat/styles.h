@@ -72,9 +72,10 @@
 namespace cpdoccore { 
 namespace odf_writer { 
 
+class graphic_format_properties;
+
 class style_text_properties;
 class style_paragraph_properties;
-class style_graphic_properties;
 class style_section_properties;
 class style_table_cell_properties;
 class style_table_row_properties;
@@ -88,24 +89,25 @@ class style_content : noncopyable
 public:
 	style_content(odf_conversion_context * _context){Context = _context;}
 
-	void create_child_element( const std::wstring & Ns, const std::wstring & Name);
-    void add_child_element( const office_element_ptr & child);
-	void serialize(std::wostream & strm);
+	void create_child_element	( const std::wstring & Ns, const std::wstring & Name);
+    void add_child_element		( const office_element_ptr & child);
+	void serialize				(std::wostream & strm);
   
-    style_text_properties *			get_style_text_properties();
+    graphic_format_properties *		get_graphic_properties() ;
+    
+	style_text_properties *			get_style_text_properties();
     style_paragraph_properties *	get_style_paragraph_properties() ;
-    style_graphic_properties *		get_style_graphic_properties() ;
     style_table_properties *		get_style_table_properties();
     style_section_properties *		get_style_section_properties();
     style_table_cell_properties *	get_style_table_cell_properties();
     style_table_row_properties *	get_style_table_row_properties() ;
     style_table_column_properties * get_style_table_column_properties() ;
     style_chart_properties *		get_style_chart_properties() ;
-	//style_drawing_page_properties*	get_style_drawing_page_properties();
+	style_drawing_page_properties*	get_style_drawing_page_properties();
 
+    odf_types::style_family style_family_;
 private:
 	odf_conversion_context * Context;
-    odf_types::style_family style_family_;
 
     office_element_ptr		style_text_properties_;
     office_element_ptr		style_paragraph_properties_;
@@ -131,7 +133,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE()
 
 public:
-	default_style() : style_content_(getContext()) {}
+	default_style() : content_(getContext()) {}
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
@@ -139,7 +141,7 @@ public:
 	virtual void serialize(std::wostream & strm);
 
     odf_types::style_family style_family_;
-    style_content			style_content_;
+    style_content			content_;
 
 };
 
@@ -242,6 +244,44 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(draw_opacity)
 
 //----------------------------------------------------------------------------------------------------
+class draw_layer : public office_element_impl<draw_layer>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeStyleDrawLayer;
+
+    CPDOCCORE_DEFINE_VISITABLE()
+
+ 	_CP_OPT(std::wstring)			draw_name_;
+	
+    virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void serialize(std::wostream & strm);
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(draw_layer)
+//----------------------------------------------------------------------------------------------------
+class draw_layer_set : public office_element_impl<draw_layer_set>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeStyleDrawLayerSet;
+
+    CPDOCCORE_DEFINE_VISITABLE()
+
+    office_element_ptr_array	content_;
+	
+    virtual void add_child_element( const office_element_ptr & child);
+    virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void serialize(std::wostream & strm);
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(draw_layer_set)
+
+//----------------------------------------------------------------------------------------------------
 class draw_fill_image : public office_element_impl<draw_fill_image>
 {
 public:
@@ -304,14 +344,13 @@ public:
     static const ElementType type		= typeStyleStyle;
     CPDOCCORE_DEFINE_VISITABLE()
  
-    style() : style_content_(getContext()) {} 
+    style() : content_(getContext()) {} 
     
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm);
 
-    // attr
     std::wstring			style_name_;
     _CP_OPT( std::wstring ) style_display_name_; 
     odf_types::style_family	style_family_;
@@ -325,8 +364,7 @@ public:
     _CP_OPT( std::wstring ) style_class_;
     _CP_OPT(std::wstring)	style_default_outline_level_; 
 
-
-    style_content				style_content_;
+    style_content				content_;
     office_element_ptr_array	style_map_;
 
 };
@@ -422,9 +460,9 @@ public:
 
 	virtual void serialize(std::wostream & strm);
 
-    office_element_ptr_array style_master_page_;	// разметки тем
-    office_element_ptr style_handout_master_;		// разметки для принтера - .. второстепенно
-    office_element_ptr draw_layer_set_;				// необязательно .. так как слои все равно не поддерживаются в мс.
+    office_element_ptr_array	style_master_page_;		// разметки тем
+    office_element_ptr			style_handout_master_;	// разметки для принтера - .. второстепенно
+    office_element_ptr			draw_layer_set_;		// необязательно .. так как слои все равно не поддерживаются в мс.
 													// то есть не будут объекты объеденены по признаку слоя
 													// зы. не путать с обычной группировкой
 
@@ -438,12 +476,12 @@ class style_master_page_attlist
 public:
 	void serialize(CP_ATTR_NODE);
 
-    _CP_OPT(odf_types::style_ref)		style_name_;
+    _CP_OPT(std::wstring)	style_name_;
     _CP_OPT(std::wstring)	style_display_name_;
-    _CP_OPT(odf_types::style_ref)		style_page_layout_name_;
+    _CP_OPT(std::wstring)	style_page_layout_name_;
     
 	_CP_OPT(std::wstring)	draw_style_name_;
-    _CP_OPT(odf_types::style_ref)		style_next_style_name_;
+    _CP_OPT(std::wstring)	style_next_style_name_;
 };
 
 
@@ -467,7 +505,7 @@ public:
 
 	int find_placeHolderIndex(odf_types::presentation_class::type placeHolder,int & last_idx);
    
-	style_master_page_attlist style_master_page_attlist_;
+	style_master_page_attlist attlist_;
 
     office_element_ptr style_header_;  
     office_element_ptr style_header_left_; 
@@ -813,13 +851,15 @@ public:
     static const ElementType type = typeStylePresentationPageLayout;
     CPDOCCORE_DEFINE_VISITABLE()
 
-	virtual void serialize(std::wostream & strm){}
-    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
+	virtual void serialize(std::wostream & strm);
+    virtual void create_child_element	( const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child);
+
 
 	_CP_OPT(std::wstring) style_name_;
 
 	office_element_ptr_array content_;
-    };
+};
 
 CP_REGISTER_OFFICE_ELEMENT2(style_presentation_page_layout)
 

@@ -315,7 +315,16 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					//}
 				}		
 			}break;
-			case rt_SXStreamID:			proc.repeated<PIVOTCACHEDEFINITION>(0, 0);	break;
+			case rt_SXStreamID:			
+			{
+				count = proc.repeated<PIVOTCACHEDEFINITION>(0, 0);	
+				while(count > 0)
+				{
+					m_arPIVOTCACHEDEFINITION.insert(m_arPIVOTCACHEDEFINITION.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
 			case rt_DocRoute:			proc.repeated<DOCROUTE>(0, 0);				break;
 			case rt_UserBView:
 			{

@@ -54,8 +54,7 @@ public:
 
 	DWORD m_nRelVersion;  // 0x00000008 or 0x00000009
 
-public:
-	
+
 	CRecordCurrentUserAtom() : m_nToken(0)
 	{
 		m_nRelVersion = m_nDocFileVersion = m_nMinorVersion = m_nMajorVersion = m_nLenUserName = m_nOffsetToCurEdit = 0;

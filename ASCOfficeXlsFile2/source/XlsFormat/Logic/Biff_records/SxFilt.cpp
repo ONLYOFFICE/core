@@ -44,7 +44,6 @@ SxFilt::~SxFilt()
 {
 }
 
-
 BaseObjectPtr SxFilt::clone()
 {
 	return BaseObjectPtr(new SxFilt(*this));
@@ -53,10 +52,18 @@ BaseObjectPtr SxFilt::clone()
 
 void SxFilt::readFields(CFRecord& record)
 {
-#pragma message("####################### SxFilt record is not implemented")
-	Log::error("SxFilt record is not implemented.");
-	//record >> some_value;
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	unsigned short flags1;
+	unsigned char flags2;
+
+	record >> flags1 >> isxvd >> flags2 >> grbitSbt >> cisxvi;
+	
+	sxaxisRw	= GETBIT(flags1, 0);
+	sxaxisCol	= GETBIT(flags1, 1);
+	sxaxisPage	= GETBIT(flags1, 2);
+	sxaxisData	= GETBIT(flags1, 3);
+	iDim		= GETBITS(flags1, 4, 15);
+
+	fSelected	= GETBIT(flags2, 0);
 }
 
 } // namespace XLS

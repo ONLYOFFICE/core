@@ -51,14 +51,16 @@ namespace OOX
 	{
 		//необработанные child:
 		//<extLst>
-		class CStyles : public OOX::File, public OOX::Spreadsheet::IFileContainer
+		class CStyles : public OOX::File, public OOX::IFileContainer
 		{
 		public:
 			CStyles()
 			{
+				m_bSpreadsheets = true;
 			}
 			CStyles(const CPath& oRootPath, const CPath& oPath)
 			{
+				m_bSpreadsheets = true;
 				read( oRootPath, oPath );
 			}
 			virtual ~CStyles()

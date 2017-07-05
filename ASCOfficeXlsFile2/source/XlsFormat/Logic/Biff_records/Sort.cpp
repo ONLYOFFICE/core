@@ -55,13 +55,14 @@ void Sort::readFields(CFRecord& record)
 {
 	unsigned short flags;
 	record >> flags;
-	fCol = GETBIT(flags, 0);
-	fKey1Dsc = GETBIT(flags, 1);
-	fKey2Dsc = GETBIT(flags, 2);
-	fKey3Dsc = GETBIT(flags, 3);
+	
+	fCol		= GETBIT(flags, 0);
+	fKey1Dsc	= GETBIT(flags, 1);
+	fKey2Dsc	= GETBIT(flags, 2);
+	fKey3Dsc	= GETBIT(flags, 3);
 	fCaseSensitive = GETBIT(flags, 4);
-	iOrder = GETBITS(flags, 5, 9);
-	fAltMethod = GETBIT(flags, 10);
+	iOrder		= GETBITS(flags, 5, 9);
+	fAltMethod	= GETBIT(flags, 10);
 
 	unsigned char cchKey1;
 	unsigned char cchKey2;

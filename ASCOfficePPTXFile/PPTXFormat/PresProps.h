@@ -73,20 +73,7 @@ namespace PPTX
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
-			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
-			oAttr.Write(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
-			oAttr.Write(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
-
-			XmlUtils::CNodeValue oValue;
-			oValue.WriteArray(_T("p:clrMru"), ClrMru);
-			oValue.WriteNullable(showPr);
-
-			XmlUtils::SaveToFile(filename.m_strFilename, XmlUtils::CreateNode(_T("p:presentationPr"), oAttr, oValue));
-		
-			content.Registration(type().OverrideType(), directory, filename);
-			m_written = true;
-			m_WrittenFileName = filename.GetFilename();
+			WrapperFile::write(filename, directory, content);
 			FileContainer::write(filename, directory, content);
 		}
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

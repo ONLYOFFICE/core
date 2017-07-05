@@ -452,6 +452,14 @@ namespace NSStringExt
 
 		return arrElements;
 	}
+        static inline void ToLower(std::string& wsString)
+        {
+                std::transform(wsString.begin(), wsString.end(), wsString.begin(), ::towlower);
+        }
+        static inline void ToUpper(std::string& wsString)
+        {
+                std::transform(wsString.begin(), wsString.end(), wsString.begin(), ::towupper);
+        }
 	static inline void ToLower(std::wstring& wsString)
 	{
 		std::transform(wsString.begin(), wsString.end(), wsString.begin(), ::towlower);

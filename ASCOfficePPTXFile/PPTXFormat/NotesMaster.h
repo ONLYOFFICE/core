@@ -82,23 +82,7 @@ namespace PPTX
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
-			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
-			oAttr.Write(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
-			oAttr.Write(_T("xmlns:m"), PPTX::g_Namespaces.m.m_strLink);
-			oAttr.Write(_T("xmlns:w"), PPTX::g_Namespaces.w.m_strLink);
-
-			XmlUtils::CNodeValue oValue;
-			oValue.Write(cSld);
-			oValue.Write(clrMap);
-			oValue.WriteNullable(hf);
-			oValue.WriteNullable(notesStyle);
-
-			XmlUtils::SaveToFile(filename.m_strFilename, XmlUtils::CreateNode(_T("p:notesMaster"), oAttr, oValue));
-			
-			content.Registration(type().OverrideType(), directory, filename);
-			m_written = true;
-			m_WrittenFileName = filename.GetFilename();
+			WrapperFile::write(filename, directory, content);
 			FileContainer::write(filename, directory, content);
 		}
 
@@ -118,7 +102,7 @@ namespace PPTX
 
 		void ApplyRels()
 		{
-            theme_= (FileContainer::Get(OOX::Presentation::FileTypes::ThemePPTX)).smart_dynamic_cast<PPTX::Theme>();
+            theme_= (FileContainer::Get(OOX::FileTypes::Theme)).smart_dynamic_cast<PPTX::Theme>();
 
             if (theme_.IsInit())
 			{
@@ -147,11 +131,11 @@ namespace PPTX
 			pWriter->StartAttributes();
 			pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
 			pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:m"), PPTX::g_Namespaces.m.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:w"), PPTX::g_Namespaces.w.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
 			pWriter->EndAttributes();
 
 			cSld.toXmlWriter(pWriter);
+
 			clrMap.toXmlWriter(pWriter);
 			pWriter->Write(hf);
 			pWriter->Write(notesStyle);
@@ -188,7 +172,7 @@ namespace PPTX
 					}
 					case 3:
 					{
-						notesStyle = new Logic::TextListStyle();
+						notesStyle = new Logic::TextListStyle(L"p:notesStyle");
 						notesStyle->fromPPTY(pReader);
 						break;
 					}

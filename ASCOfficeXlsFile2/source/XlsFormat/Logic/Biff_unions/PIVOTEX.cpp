@@ -62,8 +62,9 @@ const bool PIVOTEX::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.repeated<PIVOTSELECT>(0, 0);
-	proc.repeated<PIVOTFORMAT>(0, 0);
+	int count = 0;
+	count = proc.repeated<PIVOTSELECT>(0, 0);
+	count = proc.repeated<PIVOTFORMAT>(0, 0);
 
 	return true;
 }

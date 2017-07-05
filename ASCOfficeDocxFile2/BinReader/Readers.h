@@ -41,6 +41,7 @@
 #include "../DocWrapper/XlsxSerializer.h"
 
 #include "../../DesktopEditor/common/ASCVariant.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
 namespace BinDocxRW {
 
@@ -59,6 +60,26 @@ enum ETblStyleOverrideType
 	tblstyleoverridetypeSeCell     = 10,
 	tblstyleoverridetypeSwCell     = 11,
 	tblstyleoverridetypeWholeTable = 12
+};
+class SdtWraper
+{
+public:
+
+	OOX::Logic::CSdt m_oSdt;
+	rPr* m_oEndPr;
+	rPr* m_oRPr;
+	int m_nType;
+	SdtWraper(int nType)
+	{
+		m_nType = nType;
+		m_oEndPr = NULL;
+		m_oRPr = NULL;
+	}
+	~SdtWraper()
+	{
+		RELEASEOBJECT(m_oEndPr)
+		RELEASEOBJECT(m_oRPr)
+	}
 };
 
 #define READ1_DEF(stLen, fReadFunction, arg, res) {\
@@ -254,10 +275,11 @@ private:
 };
 class Binary_HdrFtrTableReader : public Binary_CommonReader<Binary_HdrFtrTableReader>
 {
-	Writers::FileWriter& m_oFileWriter;
-	int nCurType;
-	int nCurHeaderType;
-	CComments* m_pComments;
+	Writers::FileWriter&	m_oFileWriter;
+	CComments*				m_pComments;
+
+	int						nCurType;
+	int						nCurHeaderType;
 public:
 	Writers::HeaderFooterWriter& m_oHeaderFooterWriter;
 public:
@@ -548,6 +570,20 @@ public:
 				orPr->Ins = oIns.ToString(_T("w:ins"));
 			}
 			break;
+		case c_oSerProp_rPrType::MoveFrom:
+			{
+				TrackRevision oMoveFrom;
+				oBinary_CommonReader2.ReadTrackRevision(length, &oMoveFrom);
+				orPr->MoveFrom = oMoveFrom.ToString(_T("w:moveFrom"));
+			}
+			break;
+		case c_oSerProp_rPrType::MoveTo:
+			{
+				TrackRevision oMoveTo;
+				oBinary_CommonReader2.ReadTrackRevision(length, &oMoveTo);
+				orPr->MoveTo = oMoveTo.ToString(_T("w:moveTo"));
+			}
+			break;
 		case c_oSerProp_rPrType::rPrChange:
 			{
 				TrackRevision oRPrChange;
@@ -581,13 +617,14 @@ class Binary_pPrReader : public Binary_CommonReader<Binary_pPrReader>
 private:
 	Writers::FontTableWriter& m_oFontTableWriter;
 public:
-	Binary_CommonReader2 oBinary_CommonReader2;
-	Binary_rPrReader oBinary_rPrReader;
-	Binary_HdrFtrTableReader oBinary_HdrFtrTableReader;
-	Writers::FileWriter& m_oFileWriter;
-	bool bDoNotWriteNullProp;
-	long m_nCurNumId;
-	long m_nCurLvl;
+	Binary_CommonReader2		oBinary_CommonReader2;
+	Binary_rPrReader			oBinary_rPrReader;
+	Binary_HdrFtrTableReader	oBinary_HdrFtrTableReader;
+
+	Writers::FileWriter&		m_oFileWriter;
+	bool						bDoNotWriteNullProp;
+	long						m_nCurNumId;
+	long						m_nCurLvl;
 
 	Binary_pPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):
 		m_oFontTableWriter(oFileWriter.m_oFontTableWriter), Binary_CommonReader(poBufferedStream), oBinary_CommonReader2(poBufferedStream), oBinary_rPrReader(poBufferedStream, oFileWriter), oBinary_HdrFtrTableReader(poBufferedStream, oFileWriter, oFileWriter.m_pComments), m_oFileWriter(oFileWriter)
@@ -2605,11 +2642,12 @@ public:
 };
 class BinaryStyleTableReader : public Binary_CommonReader<BinaryStyleTableReader>
 {
-	Binary_pPrReader oBinary_pPrReader;
-	Binary_rPrReader oBinary_rPrReader;
-	Binary_tblPrReader oBinary_tblPrReader;
-	Writers::StylesWriter& m_oStylesWriter;
-	Writers::FontTableWriter& m_oFontTableWriter;
+	Binary_pPrReader			oBinary_pPrReader;
+	Binary_rPrReader			oBinary_rPrReader;
+	Binary_tblPrReader			oBinary_tblPrReader;
+
+	Writers::StylesWriter&		m_oStylesWriter;
+	Writers::FontTableWriter&	m_oFontTableWriter;
 public:
 	BinaryStyleTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter) :Binary_CommonReader(poBufferedStream), m_oStylesWriter(oFileWriter.m_oStylesWriter), m_oFontTableWriter(oFileWriter.m_oFontTableWriter), oBinary_pPrReader(poBufferedStream, oFileWriter), oBinary_rPrReader(poBufferedStream, oFileWriter), oBinary_tblPrReader(poBufferedStream, oFileWriter)
 	{
@@ -2895,10 +2933,11 @@ public:
 		}
 		else if(c_oSerOtherTableTypes::DocxTheme == type)
 		{
-			//переписываем взятую из ресурсов тему.
-			long nCurPos = m_oBufferedStream.GetPos();
-			m_oFileWriter.m_pDrawingConverter->SaveThemeXml(nCurPos, length, m_oFileWriter.m_sThemePath);
-			m_oBufferedStream.Seek(nCurPos + length);
+			smart_ptr<PPTX::Theme> pTheme = new PPTX::Theme();
+			pTheme->fromPPTY(&m_oBufferedStream);
+			NSBinPptxRW::CXmlWriter xmlWriter;
+			pTheme->toXmlWriter(&xmlWriter);
+			m_oFileWriter.m_oTheme.m_sContent = xmlWriter.GetXmlString();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3630,6 +3669,11 @@ public:
 		//сбрасываем Shd
             oBinary_tblPrReader.m_sCurTableShd.clear();
 		}
+		else if(c_oSerParType::Sdt == type)
+		{
+			SdtWraper oSdt(0);
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdt, this, &oSdt);
+		}
 		else if ( c_oSerParType::sectPr == type )
 		{
 			SectPr oSectPr;
@@ -3741,6 +3785,47 @@ public:
 			res = Read1(length, &Binary_DocumentTableReader::ReadDelIns, this, &oTrackRevision);
 			oTrackRevision.Write(&GetRunStringWriter(), _T("w:del"));
 		}
+		else if ( c_oSerParType::MoveFrom == type )
+		{
+			TrackRevision oTrackRevision;
+			res = Read1(length, &Binary_DocumentTableReader::ReadDelIns, this, &oTrackRevision);
+			oTrackRevision.Write(&GetRunStringWriter(), _T("w:moveFrom"));
+		}
+		else if ( c_oSerParType::MoveTo == type )
+		{
+			TrackRevision oTrackRevision;
+			res = Read1(length, &Binary_DocumentTableReader::ReadDelIns, this, &oTrackRevision);
+			oTrackRevision.Write(&GetRunStringWriter(), _T("w:moveTo"));
+		}
+		else if ( c_oSerParType::MoveFromRangeStart == type )
+		{
+			OOX::Logic::CMoveFromRangeStart oMoveFromRangeStart;
+			res = Read1(length, &Binary_DocumentTableReader::ReadMoveFromRangeStart, this, &oMoveFromRangeStart);
+			GetRunStringWriter().WriteString(oMoveFromRangeStart.toXML());
+		}
+		else if ( c_oSerParType::MoveFromRangeEnd == type )
+		{
+			OOX::Logic::CMoveFromRangeEnd oMoveToRangeEnd;
+			res = Read1(length, &Binary_DocumentTableReader::ReadMoveFromRangeEnd, this, &oMoveToRangeEnd);
+			GetRunStringWriter().WriteString(oMoveToRangeEnd.toXML());
+		}
+		else if ( c_oSerParType::MoveToRangeStart == type )
+		{
+			OOX::Logic::CMoveToRangeStart oMoveToRangeStart;
+			res = Read1(length, &Binary_DocumentTableReader::ReadMoveToRangeStart, this, &oMoveToRangeStart);
+			GetRunStringWriter().WriteString(oMoveToRangeStart.toXML());
+		}
+		else if ( c_oSerParType::MoveToRangeEnd == type )
+		{
+			OOX::Logic::CMoveToRangeEnd oMoveToRangeEnd;
+			res = Read1(length, &Binary_DocumentTableReader::ReadMoveToRangeEnd, this, &oMoveToRangeEnd);
+			GetRunStringWriter().WriteString(oMoveToRangeEnd.toXML());
+		}
+		else if(c_oSerParType::Sdt == type)
+		{
+			SdtWraper oSdt(1);
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdt, this, &oSdt);
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -3762,23 +3847,368 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
+	int ReadMoveFromRangeStart(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CMoveFromRangeStart* pMoveFromRangeStart = static_cast<OOX::Logic::CMoveFromRangeStart*>(poResult);
+		if (c_oSerMoveRange::Author == type)
+		{
+			pMoveFromRangeStart->m_sAuthor.Init();
+			pMoveFromRangeStart->m_sAuthor->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerMoveRange::ColFirst == type)
+		{
+			pMoveFromRangeStart->m_oColFirst.Init();
+			pMoveFromRangeStart->m_oColFirst->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if (c_oSerMoveRange::ColLast == type)
+		{
+			pMoveFromRangeStart->m_oColLast.Init();
+			pMoveFromRangeStart->m_oColLast->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if (c_oSerMoveRange::Date == type)
+        {
+            std::wstring strValue = m_oBufferedStream.GetString3(length);
+
+			pMoveFromRangeStart->m_oDate.Init();
+            pMoveFromRangeStart->m_oDate->SetValue(strValue);
+		}
+		else if (c_oSerMoveRange::DisplacedByCustomXml == type)
+		{
+			pMoveFromRangeStart->m_oDisplacedByCustomXml.Init();
+			pMoveFromRangeStart->m_oDisplacedByCustomXml->SetValue((SimpleTypes::EDisplacedByCustomXml)m_oBufferedStream.GetUChar());
+		}
+		else if (c_oSerMoveRange::Id == type)
+		{
+			pMoveFromRangeStart->m_oId.Init();
+			pMoveFromRangeStart->m_oId->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if (c_oSerMoveRange::Name == type)
+		{
+			pMoveFromRangeStart->m_sName.Init();
+			pMoveFromRangeStart->m_sName->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerMoveRange::UserId == type)
+		{
+			pMoveFromRangeStart->m_sUserId.Init();
+			pMoveFromRangeStart->m_sUserId->append(m_oBufferedStream.GetString3(length));
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadMoveToRangeStart(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CMoveToRangeStart* pMoveToRangeStart = static_cast<OOX::Logic::CMoveToRangeStart*>(poResult);
+		if (c_oSerMoveRange::Author == type)
+		{
+			pMoveToRangeStart->m_sAuthor.Init();
+			pMoveToRangeStart->m_sAuthor->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerMoveRange::ColFirst == type)
+		{
+			pMoveToRangeStart->m_oColFirst.Init();
+			pMoveToRangeStart->m_oColFirst->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if (c_oSerMoveRange::ColLast == type)
+		{
+			pMoveToRangeStart->m_oColLast.Init();
+			pMoveToRangeStart->m_oColLast->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if (c_oSerMoveRange::Date == type)
+        {
+            std::wstring strValue = m_oBufferedStream.GetString3(length);
+
+			pMoveToRangeStart->m_oDate.Init();
+            pMoveToRangeStart->m_oDate->SetValue(strValue);
+		}
+		else if (c_oSerMoveRange::DisplacedByCustomXml == type)
+		{
+			pMoveToRangeStart->m_oDisplacedByCustomXml.Init();
+			pMoveToRangeStart->m_oDisplacedByCustomXml->SetValue((SimpleTypes::EDisplacedByCustomXml)m_oBufferedStream.GetUChar());
+		}
+		else if (c_oSerMoveRange::Id == type)
+		{
+			pMoveToRangeStart->m_oId.Init();
+			pMoveToRangeStart->m_oId->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if (c_oSerMoveRange::Name == type)
+		{
+			pMoveToRangeStart->m_sName.Init();
+			pMoveToRangeStart->m_sName->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerMoveRange::UserId == type)
+		{
+			pMoveToRangeStart->m_sUserId.Init();
+			pMoveToRangeStart->m_sUserId->append(m_oBufferedStream.GetString3(length));
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadMoveFromRangeEnd(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CMoveFromRangeEnd* pMoveFromRangeEnd = static_cast<OOX::Logic::CMoveFromRangeEnd*>(poResult);
+		if (c_oSerMoveRange::DisplacedByCustomXml == type)
+		{
+			pMoveFromRangeEnd->m_oDisplacedByCustomXml.Init();
+			pMoveFromRangeEnd->m_oDisplacedByCustomXml->SetValue((SimpleTypes::EDisplacedByCustomXml)m_oBufferedStream.GetUChar());
+		}
+		else if (c_oSerMoveRange::Id == type)
+		{
+			pMoveFromRangeEnd->m_oId.Init();
+			pMoveFromRangeEnd->m_oId->SetValue(m_oBufferedStream.GetLong());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadMoveToRangeEnd(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CMoveToRangeEnd* pMoveToRangeEnd = static_cast<OOX::Logic::CMoveToRangeEnd*>(poResult);
+		if (c_oSerMoveRange::DisplacedByCustomXml == type)
+		{
+			pMoveToRangeEnd->m_oDisplacedByCustomXml.Init();
+			pMoveToRangeEnd->m_oDisplacedByCustomXml->SetValue((SimpleTypes::EDisplacedByCustomXml)m_oBufferedStream.GetUChar());
+		}
+		else if (c_oSerMoveRange::Id == type)
+		{
+			pMoveToRangeEnd->m_oId.Init();
+			pMoveToRangeEnd->m_oId->SetValue(m_oBufferedStream.GetLong());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
 	int ReadFldSimple(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
 		CFldSimple* pFldSimple = static_cast<CFldSimple*>(poResult);
-		if ( c_oSer_HyperlinkType::Link == type )
+		if ( c_oSer_FldSimpleType::Instr == type )
 			pFldSimple->sInstr = m_oBufferedStream.GetString3(length);
-		else if ( c_oSer_HyperlinkType::Content == type )
+		else if ( c_oSer_FldSimpleType::Content == type )
 		{
 			XmlUtils::CStringWriter* pPrevWriter = m_pCurWriter;
 			m_pCurWriter = &pFldSimple->writer;
 			res = Read1(length, &Binary_DocumentTableReader::ReadParagraphContent, this, NULL);
 			m_pCurWriter = pPrevWriter;
 		}
+		else if ( c_oSer_FldSimpleType::FFData == type )
+		{
+			OOX::Logic::CFFData oFFData;
+			res = Read1(length, &Binary_DocumentTableReader::ReadFFData, this, &oFFData);
+			pFldSimple->writer.WriteString(oFFData.toXML());
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
+	int ReadFFData(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CFFData* pFFData = static_cast<OOX::Logic::CFFData*>(poResult);
+		if ( c_oSerFFData::CalcOnExit == type )
+		{
+			pFFData->m_oCalcOnExit.Init();
+			pFFData->m_oCalcOnExit->m_oVal.FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerFFData::CheckBox == type )
+		{
+			pFFData->m_oCheckBox.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadFFCheckBox, this, pFFData->m_oCheckBox.GetPointer());
+		}
+		else if ( c_oSerFFData::DDList == type )
+		{
+			pFFData->m_oDDList.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadDDList, this, pFFData->m_oDDList.GetPointer());
+		}
+		else if ( c_oSerFFData::Enabled == type )
+		{
+			pFFData->m_oEnabled.Init();
+			pFFData->m_oEnabled->m_oVal.FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerFFData::EntryMacro == type )
+		{
+			std::wstring sVal = m_oBufferedStream.GetString3(length);
+			pFFData->m_oEntryMacro.Init();
+			pFFData->m_oEntryMacro->m_oVal.Init();
+			pFFData->m_oEntryMacro->m_oVal->SetValue(sVal);
+		}
+		else if ( c_oSerFFData::ExitMacro == type )
+		{
+			std::wstring sVal = m_oBufferedStream.GetString3(length);
+			pFFData->m_oExitMacro.Init();
+			pFFData->m_oExitMacro->m_oVal.Init();
+			pFFData->m_oExitMacro->m_oVal->SetValue(sVal);
+		}
+		else if ( c_oSerFFData::HelpText == type )
+		{
+			pFFData->m_oHelpText.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadFFHelpText, this, pFFData->m_oHelpText.GetPointer());
+		}
+		else if ( c_oSerFFData::Label == type )
+		{
+			pFFData->m_oLabel.Init();
+			pFFData->m_oLabel->m_oVal.Init();
+			pFFData->m_oLabel->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if ( c_oSerFFData::Name == type )
+		{
+			std::wstring sVal = m_oBufferedStream.GetString3(length);
+			pFFData->m_oName.Init();
+			pFFData->m_oName->m_oVal.Init();
+			pFFData->m_oName->m_oVal->SetValue(sVal);
+		}
+		else if ( c_oSerFFData::StatusText == type )
+		{
+			pFFData->m_oStatusText.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadFFStatusText, this, pFFData->m_oStatusText.GetPointer());
+		}
+		else if ( c_oSerFFData::TabIndex == type )
+		{
+			pFFData->m_oTabIndex.Init();
+			pFFData->m_oTabIndex->m_oVal.Init();
+			pFFData->m_oTabIndex->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if ( c_oSerFFData::TextInput == type )
+		{
+			pFFData->m_oTextInput.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadTextInput, this, pFFData->m_oTextInput.GetPointer());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadFFCheckBox(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CFFCheckBox* pFFCheckBox = static_cast<OOX::Logic::CFFCheckBox*>(poResult);
+		if ( c_oSerFFData::CBChecked == type )
+		{
+			pFFCheckBox->m_oChecked.Init();
+			pFFCheckBox->m_oChecked->m_oVal.FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerFFData::CBDefault == type )
+		{
+			pFFCheckBox->m_oDefault.Init();
+			pFFCheckBox->m_oDefault->m_oVal.FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerFFData::CBSize == type )
+		{
+			pFFCheckBox->m_oSize.Init();
+			pFFCheckBox->m_oSize->m_oVal.Init();
+			pFFCheckBox->m_oSize->m_oVal->FromHps(m_oBufferedStream.GetULong());
+		}
+		else if ( c_oSerFFData::CBSizeAuto == type )
+		{
+			pFFCheckBox->m_oSizeAuto.Init();
+			pFFCheckBox->m_oSizeAuto->m_oVal.FromBool(m_oBufferedStream.GetBool());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadDDList(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CFFDDList* pDDList = static_cast<OOX::Logic::CFFDDList*>(poResult);
+		if ( c_oSerFFData::DLDefault == type )
+		{
+			pDDList->m_oDefault.Init();
+			pDDList->m_oDefault->m_oVal.Init();
+			pDDList->m_oDefault->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if ( c_oSerFFData::DLResult == type )
+		{
+			pDDList->m_oResult.Init();
+			pDDList->m_oResult->m_oVal.Init();
+			pDDList->m_oResult->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if ( c_oSerFFData::DLListEntry == type )
+		{
+			ComplexTypes::Word::String* pVal = new ComplexTypes::Word::String();
+			pVal->m_sVal.Init();
+			pVal->m_sVal->append(m_oBufferedStream.GetString3(length));
+			pDDList->m_arrListEntry.push_back(pVal);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadFFHelpText(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		ComplexTypes::Word::CFFHelpText* pHelpText = static_cast<ComplexTypes::Word::CFFHelpText*>(poResult);
+		if ( c_oSerFFData::HTType == type )
+		{
+			pHelpText->m_oType.Init();
+			pHelpText->m_oType->SetValue((SimpleTypes::EInfoTextType)m_oBufferedStream.GetUChar());
+		}
+		else if ( c_oSerFFData::HTVal == type )
+		{
+			std::wstring sVal = m_oBufferedStream.GetString3(length);
+			pHelpText->m_oVal.Init();
+			pHelpText->m_oVal->SetValue(sVal);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadFFStatusText(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		ComplexTypes::Word::CFFStatusText* pStatusText = static_cast<ComplexTypes::Word::CFFStatusText*>(poResult);
+		if ( c_oSerFFData::HTType == type )
+		{
+			pStatusText->m_oType.Init();
+			pStatusText->m_oType->SetValue((SimpleTypes::EInfoTextType)m_oBufferedStream.GetUChar());
+		}
+		else if ( c_oSerFFData::HTVal == type )
+		{
+			std::wstring sVal = m_oBufferedStream.GetString3(length);
+			pStatusText->m_oVal.Init();
+			pStatusText->m_oVal->SetValue(sVal);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadTextInput(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CFFTextInput* pTextInput = static_cast<OOX::Logic::CFFTextInput*>(poResult);
+		if ( c_oSerFFData::TIDefault == type )
+		{
+			pTextInput->m_oDefault.Init();
+			pTextInput->m_oDefault->m_sVal.Init();
+			pTextInput->m_oDefault->m_sVal->append(m_oBufferedStream.GetString3(length));
+		}
+		else if ( c_oSerFFData::TIFormat == type )
+		{
+			pTextInput->m_oFormat.Init();
+			pTextInput->m_oFormat->m_sVal.Init();
+			pTextInput->m_oFormat->m_sVal->append(m_oBufferedStream.GetString3(length));
+		}
+		else if ( c_oSerFFData::TIMaxLength == type )
+		{
+			pTextInput->m_oMaxLength.Init();
+			pTextInput->m_oMaxLength->m_oVal.Init();
+			pTextInput->m_oMaxLength->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if ( c_oSerFFData::TIType == type )
+		{
+			pTextInput->m_oType.Init();
+			pTextInput->m_oType->m_oVal.Init();
+			pTextInput->m_oType->m_oVal->SetValue((SimpleTypes::EFFTextType)m_oBufferedStream.GetUChar());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+
 	int ReadHyperlink(BYTE type, long length, void* poResult)
 	{		
 		int res = c_oSerConstants::ReadOk;
@@ -6300,6 +6730,8 @@ public:
 	}
 	int ReadObject(BYTE type, long length, void* poResult)
 	{
+		CDrawingProperty oCDrawingProperty(m_oFileWriter.getNextDocPr());
+		
 		int res = c_oSerConstants::ReadOk;
 		if( c_oSerParType::OMath == type )
 		{
@@ -6309,7 +6741,6 @@ public:
 		}
 		else if(c_oSerRunType::pptxDrawing == type) 
 		{
-			CDrawingProperty oCDrawingProperty(m_oFileWriter.getNextDocPr());
 			res = Read2(length, &Binary_DocumentTableReader::ReadPptxDrawing, this, &oCDrawingProperty);
 
             if(oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
@@ -6406,6 +6837,11 @@ public:
 			res = Read1(length, &Binary_DocumentTableReader::Read_Row, this, poResult);
             pCStringWriter->WriteString(std::wstring(_T("</w:tr>")));
 		}
+		else if(c_oSerDocTableType::Sdt == type)
+		{
+			SdtWraper oSdt(2);
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdt, this, &oSdt);
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -6437,6 +6873,11 @@ public:
             pCStringWriter->WriteString(std::wstring(_T("<w:tc>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadCell, this, poResult);
             pCStringWriter->WriteString(std::wstring(_T("</w:tc>")));
+		}
+		else if(c_oSerDocTableType::Sdt == type)
+		{
+			SdtWraper oSdt(3);
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdt, this, &oSdt);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -6569,7 +7010,7 @@ public:
 			pDrawingProperty->bDataLength = true;
 			pDrawingProperty->DataPos = m_oBufferedStream.GetPos();
 			pDrawingProperty->DataLength = length;
-			//сейчас пропуская, потому что перед чтение этого поля надо собрать остальные данные
+		//сейчас пропуская, потому что перед чтение этого поля надо собрать остальные данные
 			res = c_oSerConstants::ReadUnknown;
 		}
 		else if ( c_oSerImageType2::Chart2 == type )
@@ -6585,17 +7026,12 @@ public:
 				OOX::CPath pathChartsWorksheetDir = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR +_T("embeddings");
 				OOX::CSystemUtility::CreateDirectories(pathChartsWorksheetDir.GetPath());
 
-                bool oldValueType = m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_bIsWord;
+                int nativeDocumentType = m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_nDocumentType;
 
-                m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_bIsWord = false;
+                m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_nDocumentType = XMLWRITER_DOC_TYPE_XLSX;
 				m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
-
-                std::wstring sThemeDir;
-                int nIndex = (int)m_oFileWriter.m_sThemePath.rfind(FILE_SEPARATOR_CHAR);
-				if(-1 != nIndex)
-                    sThemeDir = m_oFileWriter.m_sThemePath.substr(0, nIndex);
 				
-				BinXlsxRW::SaveParams			oSaveParams(sThemeDir);
+				BinXlsxRW::SaveParams			oSaveParams(m_oFileWriter.m_sThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());
 				BinXlsxRW::BinaryChartReader	oBinaryChartReader(m_oBufferedStream, oSaveParams, m_oFileWriter.m_pDrawingConverter);
 				
 				OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace();
@@ -6612,9 +7048,11 @@ public:
 
 				std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
 				long rIdXlsx;
-                std::wstring bstrChartsWorksheetRelType = OOX::Spreadsheet::FileTypes::ChartsWorksheet.RelationType();
-                m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rIdXlsx);
-
+                std::wstring bstrChartsWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
+                
+				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rIdXlsx);
+				m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(L"xlsx");
+				
 				pChartSpace->m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
 				pChartSpace->m_oChartSpace.m_externalData->m_id = new std::wstring();
 				pChartSpace->m_oChartSpace.m_externalData->m_id->append(L"rId");
@@ -6622,7 +7060,7 @@ public:
 				pChartSpace->m_oChartSpace.m_externalData->m_autoUpdate = new OOX::Spreadsheet::CT_Boolean();
 				pChartSpace->m_oChartSpace.m_externalData->m_autoUpdate->m_val = new bool(false);
 
-				//save chart.xml
+			//save chart.xml
 				NSStringUtils::CStringBuilder sw;
 				pChartSpace->toXML(sw);
 			
@@ -6631,18 +7069,19 @@ public:
                 std::wstring sContent = sw.GetData();
                 
 				m_oFileWriter.m_oChartWriter.AddChart(sContent, sRelsName, sFilename, nChartIndex);
-				m_oFileWriter.m_oContentTypesWriter.AddOverrideRaw(oSaveParams.sAdditionalContentTypes);
 
                 OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + sFilename + L".rels";
 				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(pathChartsRels.GetPath());
 
 				long rIdChart;
-                std::wstring bstrChartRelType = OOX::Spreadsheet::FileTypes::Charts.RelationType();
-                m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartRelType, sRelsName, std::wstring(), &rIdChart);
+                std::wstring bstrChartRelType = OOX::FileTypes::Chart.RelationType();
+				
+				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartRelType, sRelsName, std::wstring(), &rIdChart);
+				m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml", L"/word/charts", sFilename);
 
                 pDrawingProperty->sChartRels = L"rId" + std::to_wstring( rIdChart);
 
-                m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_bIsWord = oldValueType;
+                m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_nDocumentType = nativeDocumentType;
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -6655,7 +7094,7 @@ public:
 				pDrawingProperty->bDataLength = true;
 				pDrawingProperty->DataPos = m_oBufferedStream.GetPos();
 				pDrawingProperty->DataLength = length;
-				//сейчас пропуская, потому что перед чтение этого поля надо собрать остальные данные
+		//сейчас пропуская, потому что перед чтение этого поля надо собрать остальные данные
 			}
 			res = c_oSerConstants::ReadUnknown;
 		}
@@ -6767,56 +7206,117 @@ public:
 		}
 		else if ( c_oSerImageType2::GraphicFramePr == type )
 		{
-			OOX::Drawing::CGraphicalObjectFrameLocking* pLocking = new OOX::Drawing::CGraphicalObjectFrameLocking();
-			res = Read2(length, &Binary_DocumentTableReader::ReadNvGraphicFramePr, this, pLocking);
-			OOX::Drawing::CNonVisualGraphicFrameProperties oGraphicFramePr;
-			oGraphicFramePr.m_oGraphicFrameLocks.reset(pLocking);
+			PPTX::Logic::CNvGraphicFramePr oGraphicFramePr(L"wp");
+			res = Read2(length, &Binary_DocumentTableReader::ReadCNvGraphicFramePr, this, &oGraphicFramePr);
 			pDrawingProperty->sGraphicFramePr = oGraphicFramePr.toXML();
 		}
 		else if ( c_oSerImageType2::DocPr == type )
 		{
-			OOX::Drawing::CNonVisualDrawingProps pNonVisualDrawingProps;
-			pNonVisualDrawingProps.m_eType = OOX::et_wp_docPr;
+			PPTX::Logic::CNvPr pNonVisualDrawingProps(L"wp");
 			res = Read1(length, &Binary_DocumentTableReader::ReadDocPr, this, &pNonVisualDrawingProps);
-			pDrawingProperty->sDocPr = pNonVisualDrawingProps.toXML();
+			pDrawingProperty->sDocPr = pNonVisualDrawingProps.toXML2(L"wp:docPr");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	int ReadNvGraphicFramePr(BYTE type, long length, void* poResult)
+	int ReadEmbedded(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		OOX::Drawing::CGraphicalObjectFrameLocking* pLocking = static_cast<OOX::Drawing::CGraphicalObjectFrameLocking*>(poResult);
+		
+		CDrawingProperty* pDrawingProperty = static_cast<CDrawingProperty*>(poResult);
+		
+		if ( c_oSerEmbedded::Type == type )
+		{
+			pDrawingProperty->nObjectType = m_oBufferedStream.GetUChar();
+		}
+		else if ( c_oSerEmbedded::Program == type )
+		{
+			pDrawingProperty->sObjectProgram = m_oBufferedStream.GetString2();
+		}
+		else if ( c_oSerEmbedded::Data == type )
+		{
+			pDrawingProperty->bObject = true;
+			long pos  = m_oBufferedStream.GetPos();
+			
+			if (pDrawingProperty->nObjectType == 1)
+			{
+			}
+			else if (pDrawingProperty->nObjectType == 2)
+			{
+
+				BinXlsxRW::CXlsxSerializer oXlsxSerializer;
+				oXlsxSerializer.setDrawingConverter(m_oFileWriter.m_pDrawingConverter);
+
+				std::wstring strDstEmbedded = m_oBufferedStream.m_pRels->m_pManager->GetDstMedia();
+				int nPos = (int)strDstEmbedded.rfind(wchar_t('m'));
+				if (-1 != nPos)
+					strDstEmbedded = strDstEmbedded.substr(0, nPos);
+
+				strDstEmbedded += L"embeddings";
+				NSDirectory::CreateDirectory(strDstEmbedded);
+
+				std::wstring strDstEmbeddedTemp = strDstEmbedded + FILE_SEPARATOR_STR + L"Temp";
+				NSDirectory::CreateDirectory(strDstEmbeddedTemp);
+
+				int id = m_oFileWriter.m_oChartWriter.nEmbeddedCount++;
+
+				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring( id + 1) + L".xlsx";
+				BinXlsxRW::SaveParams oSaveParams(m_oFileWriter.m_sThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());//???
+				
+				OOX::Spreadsheet::CXlsx oXlsx;
+
+				BinXlsxRW::BinaryFileReader embeddedReader;				
+				embeddedReader.ReadMainTable(oXlsx, m_oBufferedStream, L"", strDstEmbeddedTemp, oSaveParams, m_oFileWriter.m_pDrawingConverter);
+
+				oXlsx.PrepareToWrite();
+
+				oXlsx.Write(strDstEmbeddedTemp, *oSaveParams.pContentTypes);
+
+				COfficeUtils oOfficeUtils(NULL);
+				oOfficeUtils.CompressFileOrDirectory(strDstEmbeddedTemp, strDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, -1);
+
+				std::wstring sEmbWorksheetRelsName = L"embeddings/" + sXlsxFilename;
+                std::wstring bstrEmbWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
+                m_oFileWriter.m_pDrawingConverter->WriteRels(bstrEmbWorksheetRelType, sEmbWorksheetRelsName, std::wstring(), &pDrawingProperty->nObjectId);
+
+				NSDirectory::DeleteDirectory(strDstEmbeddedTemp);
+			}
+			m_oBufferedStream.Seek( pos + length); 
+		}		
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadCNvGraphicFramePr(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		
+		PPTX::Logic::CNvGraphicFramePr * pLocking = static_cast<PPTX::Logic::CNvGraphicFramePr*>(poResult);
+		
 		if ( c_oSerGraphicFramePr::NoChangeAspect == type )
 		{
-			pLocking->m_oNoChangeAspect.Init();
-			pLocking->m_oNoChangeAspect->FromBool(m_oBufferedStream.GetBool());
+			pLocking->noChangeAspect = m_oBufferedStream.GetBool();
 		}
 		else if ( c_oSerGraphicFramePr::NoDrilldown == type )
 		{
-			pLocking->m_oNoDrilldown.Init();
-			pLocking->m_oNoDrilldown->FromBool(m_oBufferedStream.GetBool());
+			pLocking->noDrilldown = m_oBufferedStream.GetBool();
 		}
 		else if ( c_oSerGraphicFramePr::NoGrp == type )
 		{
-			pLocking->m_oNoGrp.Init();
-			pLocking->m_oNoGrp->FromBool(m_oBufferedStream.GetBool());
+			pLocking->noGrp = m_oBufferedStream.GetBool();
 		}
 		else if ( c_oSerGraphicFramePr::NoMove == type )
 		{
-			pLocking->m_oNoMove.Init();
-			pLocking->m_oNoMove->FromBool(m_oBufferedStream.GetBool());
+			pLocking->noMove = m_oBufferedStream.GetBool();
 		}
 		else if ( c_oSerGraphicFramePr::NoResize == type )
 		{
-			pLocking->m_oNoResize.Init();
-			pLocking->m_oNoResize->FromBool(m_oBufferedStream.GetBool());
+			pLocking->noResize = m_oBufferedStream.GetBool();
 		}
 		else if ( c_oSerGraphicFramePr::NoSelect == type )
 		{
-			pLocking->m_oNoSelect.Init();
-			pLocking->m_oNoSelect->FromBool(m_oBufferedStream.GetBool());
+			pLocking->noSelect = m_oBufferedStream.GetBool();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -6825,31 +7325,28 @@ public:
 	int ReadDocPr(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		OOX::Drawing::CNonVisualDrawingProps* pNonVisualDrawingProps = static_cast<OOX::Drawing::CNonVisualDrawingProps*>(poResult);
+		
+		PPTX::Logic::CNvPr* pNonVisualDrawingProps = static_cast<PPTX::Logic::CNvPr*>(poResult);
+		
 		if ( c_oSerDocPr::Id == type )
 		{
-			pNonVisualDrawingProps->m_oId.Init();
-			pNonVisualDrawingProps->m_oId->SetValue(m_oBufferedStream.GetLong());
+			pNonVisualDrawingProps->id = m_oBufferedStream.GetLong();
 		}
 		else if ( c_oSerDocPr::Name == type )
 		{
-			pNonVisualDrawingProps->m_sName.Init();
-            pNonVisualDrawingProps->m_sName->append(m_oBufferedStream.GetString3(length));
+            pNonVisualDrawingProps->name = m_oBufferedStream.GetString3(length);
 		}
 		else if ( c_oSerDocPr::Hidden == type )
 		{
-			pNonVisualDrawingProps->m_oHidden.Init();
-			pNonVisualDrawingProps->m_oHidden->FromBool(m_oBufferedStream.GetBool());
+			pNonVisualDrawingProps->hidden = m_oBufferedStream.GetBool();
 		}
 		else if ( c_oSerDocPr::Title == type )
 		{
-			pNonVisualDrawingProps->m_sTitle.Init();
-            pNonVisualDrawingProps->m_sTitle->append(m_oBufferedStream.GetString3(length));
+            pNonVisualDrawingProps->title = m_oBufferedStream.GetString3(length);
 		}
 		else if ( c_oSerDocPr::Descr == type )
 		{
-			pNonVisualDrawingProps->m_sDescr.Init();
-            pNonVisualDrawingProps->m_sDescr->append(m_oBufferedStream.GetString3(length));
+            pNonVisualDrawingProps->descr = m_oBufferedStream.GetString3(length);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -7085,89 +7582,317 @@ public:
 	{
 		return oBinary_pPrReader.Read_SecPr(type, length, poResult);
 	}
-};
-Binary_HdrFtrTableReader::Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments):Binary_CommonReader(poBufferedStream),m_oFileWriter(oFileWriter),m_oHeaderFooterWriter(oFileWriter.m_oHeaderFooterWriter),m_pComments(pComments)
-{
-}
-int Binary_HdrFtrTableReader::Read()
-{
-	return ReadTable(&Binary_HdrFtrTableReader::ReadHdrFtrContent, this);
-}
-int Binary_HdrFtrTableReader::ReadHdrFtrContent(BYTE type, long length, void* poResult)
-{
-	int res = c_oSerConstants::ReadOk;
-	if ( c_oSerHdrFtrTypes::Header == type || c_oSerHdrFtrTypes::Footer == type )
+	int ReadSdt(BYTE type, long length, void* poResult)
 	{
-		nCurType = type;
-		res = Read1(length, &Binary_HdrFtrTableReader::ReadHdrFtrFEO, this, poResult);
-	}
-	else
-		res = c_oSerConstants::ReadUnknown;
-	return res;
-};
-int Binary_HdrFtrTableReader::ReadHdrFtrFEO(BYTE type, long length, void* poResult)
-{
-	int res = c_oSerConstants::ReadOk;
-	if ( c_oSerHdrFtrTypes::HdrFtr_First == type || c_oSerHdrFtrTypes::HdrFtr_Even == type || c_oSerHdrFtrTypes::HdrFtr_Odd == type )
-	{
-		nCurHeaderType = type;
-		res = Read1(length, &Binary_HdrFtrTableReader::ReadHdrFtrItem, this, poResult);
-	}
-	else
-		res = c_oSerConstants::ReadUnknown;
-	return res;
-};
-int Binary_HdrFtrTableReader::ReadHdrFtrItem(BYTE type, long length, void* poResult)
-{
-	int res = c_oSerConstants::ReadOk;
-	if ( c_oSerHdrFtrTypes::HdrFtr_Content == type )
-	{
-		Writers::HdrFtrItem* poHdrFtrItem = NULL;
-		switch(nCurHeaderType)
+		int res = 0;
+		SdtWraper* pSdt = static_cast<SdtWraper*>(poResult);
+		if (c_oSerSdt::Pr == type)
 		{
-		case c_oSerHdrFtrTypes::HdrFtr_First:poHdrFtrItem = new Writers::HdrFtrItem(SimpleTypes::hdrftrFirst);break;
-		case c_oSerHdrFtrTypes::HdrFtr_Even:poHdrFtrItem = new Writers::HdrFtrItem(SimpleTypes::hdrftrEven);break;
-		case c_oSerHdrFtrTypes::HdrFtr_Odd:poHdrFtrItem = new Writers::HdrFtrItem(SimpleTypes::hdrftrDefault);break;
+			pSdt->m_oSdt.m_oSdtPr.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdtPr, this, pSdt);
 		}
-		if(NULL != poHdrFtrItem)
+		else if (c_oSerSdt::EndPr == type)
 		{
-			if(nCurType == c_oSerHdrFtrTypes::Header)
-			{
-				m_oHeaderFooterWriter.m_aHeaders.push_back(poHdrFtrItem);
-                poHdrFtrItem->m_sFilename = L"header" + std::to_wstring((int)m_oHeaderFooterWriter.m_aHeaders.size()) + L".xml";
-			}
-			else
-			{
-				m_oHeaderFooterWriter.m_aFooters.push_back(poHdrFtrItem);
-                poHdrFtrItem->m_sFilename = L"footer" + std::to_wstring((int)m_oHeaderFooterWriter.m_aFooters.size()) + L".xml";
-			}
-			m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
-			Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, poHdrFtrItem->Header, m_pComments);
-			res = Read1(length, &Binary_HdrFtrTableReader::ReadHdrFtrItemContent, this, &oBinary_DocumentTableReader);
-
-            OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir +	FILE_SEPARATOR_STR + _T("word") + 
-																				FILE_SEPARATOR_STR + _T("_rels")+ 
-																				FILE_SEPARATOR_STR + poHdrFtrItem->m_sFilename + _T(".rels");
-
-            m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(fileRelsPath.GetPath());
+			pSdt->m_oEndPr = new rPr(m_oFontTableWriter.m_mapFonts);
+			res = oBinary_rPrReader.Read(length, pSdt->m_oEndPr);
 		}
+		else if (c_oSerSdt::Content == type)
+		{
+			m_oDocumentWriter.m_oContent.WriteString(L"<w:sdt>");
+			if ( pSdt->m_oSdt.m_oSdtPr.IsInit() )
+			{
+				m_oDocumentWriter.m_oContent.WriteString(pSdt->m_oSdt.m_oSdtPr->toXMLStart());
+				if (NULL != pSdt->m_oRPr)
+				{
+					pSdt->m_oRPr->Write(&m_oDocumentWriter.m_oContent);
+				}
+				m_oDocumentWriter.m_oContent.WriteString(pSdt->m_oSdt.m_oSdtPr->toXMLEnd());
+			}
+			if (NULL != pSdt->m_oEndPr)
+			{
+				m_oDocumentWriter.m_oContent.WriteString(L"<w:sdtEndPr>");
+				pSdt->m_oEndPr->Write(&m_oDocumentWriter.m_oContent);
+				m_oDocumentWriter.m_oContent.WriteString(L"</w:sdtEndPr>");
+			}
+
+			m_oDocumentWriter.m_oContent.WriteString(L"<w:sdtContent>");
+			switch(pSdt->m_nType)
+			{
+			case 0:
+				res = Read1(length, &Binary_DocumentTableReader::ReadDocumentContent, this, this);
+				break;
+			case 1:
+				res = Read1(length, &Binary_DocumentTableReader::ReadParagraphContent, this, this);
+				break;
+			case 2:
+				res = Read1(length, &Binary_DocumentTableReader::Read_TableContent, this, &m_oDocumentWriter.m_oContent);
+				break;
+			case 3:
+				res = Read1(length, &Binary_DocumentTableReader::ReadRowContent, this, &m_oDocumentWriter.m_oContent);
+				break;
+			}
+			m_oDocumentWriter.m_oContent.WriteString(L"</w:sdtContent>");
+			m_oDocumentWriter.m_oContent.WriteString(L"</w:sdt>");
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
 	}
-	else
-		res = c_oSerConstants::ReadUnknown;
-	return res;
-};
-int Binary_HdrFtrTableReader::ReadHdrFtrItemContent(BYTE type, long length, void* poResult)
-{
-	Binary_DocumentTableReader* pBinary_DocumentTableReader = static_cast<Binary_DocumentTableReader*>(poResult);
-	return pBinary_DocumentTableReader->ReadDocumentContent(type, length, NULL);
+	int ReadSdtPr(BYTE type, long length, void* poResult)
+	{
+		int res = 0;
+		SdtWraper* pSdtWraper = static_cast<SdtWraper*>(poResult);
+		OOX::Logic::CSdtPr* pSdtPr = pSdtWraper->m_oSdt.m_oSdtPr.GetPointer();
+		if (c_oSerSdt::Type == type)
+		{
+			pSdtPr->m_eType = (OOX::Logic::ESdtType)m_oBufferedStream.GetUChar();
+		}
+		else if (c_oSerSdt::Alias == type)
+		{
+			pSdtPr->m_oAlias.Init();
+			pSdtPr->m_oAlias->m_sVal.Init();
+			pSdtPr->m_oAlias->m_sVal->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::ComboBox == type)
+		{
+			pSdtPr->m_oComboBox.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdtComboBox, this, pSdtPr->m_oComboBox.GetPointer());
+		}
+		else if (c_oSerSdt::DataBinding == type)
+		{
+			pSdtPr->m_oDataBinding.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdtPrDataBinding, this, pSdtPr->m_oDataBinding.GetPointer());
+		}
+		else if (c_oSerSdt::PrDate == type)
+		{
+			pSdtPr->m_oDate.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdtPrDate, this, pSdtPr->m_oDate.GetPointer());
+		}
+		else if (c_oSerSdt::DocPartList == type)
+		{
+			pSdtPr->m_oDocPartList.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadDocPartList, this, pSdtPr->m_oDocPartList.GetPointer());
+		}
+		else if (c_oSerSdt::DocPartObj == type)
+		{
+			pSdtPr->m_oDocPartObj.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadDocPartList, this, pSdtPr->m_oDocPartObj.GetPointer());
+		}
+		else if (c_oSerSdt::DropDownList == type)
+		{
+			pSdtPr->m_oDropDownList.Init();
+			res = Read1(length, &Binary_DocumentTableReader::ReadDropDownList, this, pSdtPr->m_oDropDownList.GetPointer());
+		}
+		else if (c_oSerSdt::Id == type)
+		{
+			pSdtPr->m_oId.Init();
+			pSdtPr->m_oId->m_oVal.Init();
+			pSdtPr->m_oId->m_oVal->SetValue(m_oBufferedStream.GetULong());
+		}
+		else if (c_oSerSdt::Label == type)
+		{
+			pSdtPr->m_oLabel.Init();
+			pSdtPr->m_oLabel->m_oVal.Init();
+			pSdtPr->m_oLabel->m_oVal->SetValue(m_oBufferedStream.GetULong());
+		}
+		else if (c_oSerSdt::Lock == type)
+		{
+			pSdtPr->m_oLock.Init();
+			pSdtPr->m_oLock->m_oVal.SetValue((SimpleTypes::ELock)m_oBufferedStream.GetUChar());
+		}
+		else if (c_oSerSdt::PlaceHolder == type)
+		{
+			pSdtPr->m_oPlaceHolder.Init();
+			pSdtPr->m_oPlaceHolder->m_oDocPart.Init();
+			pSdtPr->m_oPlaceHolder->m_oDocPart->m_sVal.Init();
+			pSdtPr->m_oPlaceHolder->m_oDocPart->m_sVal->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::RPr == type)
+		{
+			pSdtWraper->m_oRPr = new rPr(m_oFontTableWriter.m_mapFonts);
+			res = oBinary_rPrReader.Read(length, pSdtWraper->m_oRPr);
+		}
+		else if (c_oSerSdt::ShowingPlcHdr == type)
+		{
+			pSdtPr->m_oShowingPlcHdr.Init();
+			pSdtPr->m_oShowingPlcHdr->m_oVal.FromBool(m_oBufferedStream.GetBool());
+		}
+		else if (c_oSerSdt::TabIndex == type)
+		{
+			pSdtPr->m_oTabIndex.Init();
+			pSdtPr->m_oTabIndex->m_oVal.Init();
+			pSdtPr->m_oTabIndex->m_oVal->SetValue(m_oBufferedStream.GetULong());
+		}
+		else if (c_oSerSdt::Tag == type)
+		{
+			pSdtPr->m_oTag.Init();
+			pSdtPr->m_oTag->m_sVal.Init();
+			pSdtPr->m_oTag->m_sVal->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::Temporary == type)
+		{
+			pSdtPr->m_oTemporary.Init();
+			pSdtPr->m_oTemporary->m_oVal.FromBool(m_oBufferedStream.GetBool());
+		}
+		else if (c_oSerSdt::MultiLine == type)
+		{
+			pSdtPr->m_oText.Init();
+			pSdtPr->m_oText->m_oMultiLine.Init();
+			pSdtPr->m_oText->m_oMultiLine->FromBool(m_oBufferedStream.GetBool());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadSdtComboBox(BYTE type, long length, void* poResult)
+	{
+		int res = 0;
+		OOX::Logic::CSdtComboBox* pSdtComboBox = static_cast<OOX::Logic::CSdtComboBox*>(poResult);
+		if (c_oSerSdt::LastValue == type)
+		{
+			pSdtComboBox->m_sLastValue.Init();
+			pSdtComboBox->m_sLastValue->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::SdtListItem == type)
+		{
+			ComplexTypes::Word::CSdtListItem* pSdtListItem = new ComplexTypes::Word::CSdtListItem();
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdtListItem, this, pSdtListItem);
+			pSdtComboBox->m_arrListItem.push_back(pSdtListItem);		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadSdtListItem(BYTE type, long length, void* poResult)
+	{
+		int res = 0;
+		ComplexTypes::Word::CSdtListItem* pSdtListItem = static_cast<ComplexTypes::Word::CSdtListItem*>(poResult);
+		if (c_oSerSdt::DisplayText == type)
+		{
+			pSdtListItem->m_sDisplayText.Init();
+			pSdtListItem->m_sDisplayText->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::Value == type)
+		{
+			pSdtListItem->m_sValue.Init();
+			pSdtListItem->m_sValue->append(m_oBufferedStream.GetString3(length));
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadSdtPrDataBinding(BYTE type, long length, void* poResult)
+	{
+		int res = 0;
+		ComplexTypes::Word::CDataBinding* pDataBinding = static_cast<ComplexTypes::Word::CDataBinding*>(poResult);
+		if (c_oSerSdt::PrefixMappings == type)
+		{
+			pDataBinding->m_sPrefixMappings.Init();
+			pDataBinding->m_sPrefixMappings->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::StoreItemID == type)
+		{
+			pDataBinding->m_sStoreItemID.Init();
+			pDataBinding->m_sStoreItemID->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::XPath == type)
+		{
+			pDataBinding->m_sXPath.Init();
+			pDataBinding->m_sXPath->append(m_oBufferedStream.GetString3(length));
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadSdtPrDate(BYTE type, long length, void* poResult)
+	{
+		int res = 0;
+		OOX::Logic::CDate* pDate = static_cast<OOX::Logic::CDate*>(poResult);
+		if (c_oSerSdt::FullDate == type)
+		{
+            std::wstring sVal = m_oBufferedStream.GetString3(length);
+
+            pDate->m_oFullDate.Init();
+            pDate->m_oFullDate->SetValue(sVal);
+		}
+		else if (c_oSerSdt::Calendar == type)
+		{
+			pDate->m_oCalendar.Init();
+			pDate->m_oCalendar->m_oVal.SetValue((SimpleTypes::ECalendarType)m_oBufferedStream.GetUChar());
+		}
+		else if (c_oSerSdt::DateFormat == type)
+		{
+			pDate->m_oDateFormat.Init();
+			pDate->m_oDateFormat->m_sVal.Init();
+			pDate->m_oDateFormat->m_sVal->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::Lid == type)
+		{
+			pDate->m_oLid.Init();
+			pDate->m_oLid->m_oVal.Init();
+            std::wstring sVal = m_oBufferedStream.GetString3(length);
+            pDate->m_oLid->m_oVal->SetValue(sVal);
+		}
+		else if (c_oSerSdt::StoreMappedDataAs == type)
+		{
+			pDate->m_oStoreMappedDateAs.Init();
+			pDate->m_oStoreMappedDateAs->m_oVal.SetValue((SimpleTypes::ESdtDateMappingType)m_oBufferedStream.GetUChar());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadDocPartList(BYTE type, long length, void* poResult)
+	{
+		int res = 0;
+		OOX::Logic::CSdtDocPart* pDocPart = static_cast<OOX::Logic::CSdtDocPart*>(poResult);
+		if (c_oSerSdt::DocPartCategory == type)
+		{
+			pDocPart->m_oDocPartCategory.Init();
+			pDocPart->m_oDocPartCategory->m_sVal.Init();
+			pDocPart->m_oDocPartCategory->m_sVal->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::DocPartGallery == type)
+		{
+			pDocPart->m_oDocPartGallery.Init();
+			pDocPart->m_oDocPartGallery->m_sVal.Init();
+			pDocPart->m_oDocPartGallery->m_sVal->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::DocPartUnique == type)
+		{
+			pDocPart->m_oDocPartUnique.Init();
+			pDocPart->m_oDocPartUnique->m_oVal.FromBool(m_oBufferedStream.GetBool());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadDropDownList(BYTE type, long length, void* poResult)
+	{
+		int res = 0;
+		OOX::Logic::CSdtDropDownList* pDropDownList = static_cast<OOX::Logic::CSdtDropDownList*>(poResult);
+		if (c_oSerSdt::LastValue == type)
+		{
+			pDropDownList->m_sLastValue.Init();
+			pDropDownList->m_sLastValue->append(m_oBufferedStream.GetString3(length));
+		}
+		else if (c_oSerSdt::SdtListItem == type)
+		{
+			ComplexTypes::Word::CSdtListItem* pSdtListItem = new ComplexTypes::Word::CSdtListItem();
+			res = Read1(length, &Binary_DocumentTableReader::ReadSdtListItem, this, pSdtListItem);
+			pDropDownList->m_arrListItem.push_back(pSdtListItem);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
 };
 class Binary_NotesTableReader : public Binary_CommonReader<Binary_NotesTableReader>
 {
-	Writers::FileWriter& m_oFileWriter;
-	CComments* m_pComments;
-	bool m_bIsFootnote;
-	nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-	nullable<SimpleTypes::CFtnEdn<>		> m_oType;
+	Writers::FileWriter&					m_oFileWriter;
+	CComments*								m_pComments;
+	bool									m_bIsFootnote;
+	nullable<SimpleTypes::CDecimalNumber<>>	m_oId;
+	nullable<SimpleTypes::CFtnEdn<>>		m_oType;
 public:
 	Binary_NotesTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments, bool bIsFootnote):
 		Binary_CommonReader(poBufferedStream),m_oFileWriter(oFileWriter),m_pComments(pComments),m_bIsFootnote(bIsFootnote)
@@ -7274,9 +7999,11 @@ class BinaryFileReader
 {
 private:
 	NSBinPptxRW::CBinaryFileReader& m_oBufferedStream;
-	Writers::FileWriter& m_oFileWriter;
-    std::wstring m_sFileInDir;
-public: BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter):m_sFileInDir(sFileInDir),m_oBufferedStream(oBufferedStream), m_oFileWriter(oFileWriter)
+	Writers::FileWriter&			m_oFileWriter;
+    std::wstring					m_sFileInDir;
+public: 
+		BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter) : 
+			m_sFileInDir(sFileInDir), m_oBufferedStream(oBufferedStream), m_oFileWriter(oFileWriter)
 		{
 		}
 		int ReadFile()
@@ -7285,19 +8012,23 @@ public: BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReade
 		}
 		int ReadMainTable()
 		{
+			m_oBufferedStream.m_nDocumentType = XMLWRITER_DOC_TYPE_DOCX;
+
 			long res = c_oSerConstants::ReadOk;
-			//mtLen
+
 			res = m_oBufferedStream.Peek(1) == false ? c_oSerConstants::ErrorStream : c_oSerConstants::ReadOk;
 			if(c_oSerConstants::ReadOk != res)
 				return res;
-			long nOtherOffset = -1;
-			long nStyleOffset = -1;
-			long nSettingsOffset = -1;
-			long nDocumentOffset = -1;
-			long nCommentsOffset = -1;
+			long nOtherOffset		= -1;
+			long nStyleOffset		= -1;
+			long nSettingsOffset	= -1;
+			long nDocumentOffset	= -1;
+			long nCommentsOffset	= -1;
+
 			std::vector<BYTE> aTypes;
 			std::vector<long> aOffBits;
 			BYTE mtLen = m_oBufferedStream.GetUChar();
+			
 			for(int i = 0; i < mtLen; ++i)
 			{
 				//mtItem
@@ -7386,29 +8117,29 @@ public: BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReade
 				{
 					//case c_oSerTableTypes::Signature:break;
 					//case c_oSerTableTypes::Info:break;
-				//case c_oSerTableTypes::Style:
-				//	res = BinaryStyleTableReader(m_oBufferedStream, m_oFileWriter).Read();
-				//	break;
-				//case c_oSerTableTypes::Document:
-				//	res = Binary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_oDocumentWriter).Read();
-				//	break;
-				case c_oSerTableTypes::HdrFtr:
-					res = Binary_HdrFtrTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments).Read();
-					break;
-				case c_oSerTableTypes::Numbering:
-					res = Binary_NumberingTableReader(m_oBufferedStream, m_oFileWriter).Read();
-					break;
-				case c_oSerTableTypes::Footnotes:
-					res = Binary_NotesTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments, true).Read();
-					break;
-				case c_oSerTableTypes::Endnotes:
-					res = Binary_NotesTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments, false).Read();
-					break;
+					//case c_oSerTableTypes::Style:
+					//	res = BinaryStyleTableReader(m_oBufferedStream, m_oFileWriter).Read();
+					//	break;
+					//case c_oSerTableTypes::Document:
+					//	res = Binary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_oDocumentWriter).Read();
+					//	break;
+					case c_oSerTableTypes::HdrFtr:
+						res = Binary_HdrFtrTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments).Read();
+						break;
+					case c_oSerTableTypes::Numbering:
+						res = Binary_NumberingTableReader(m_oBufferedStream, m_oFileWriter).Read();
+						break;
+					case c_oSerTableTypes::Footnotes:
+						res = Binary_NotesTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments, true).Read();
+						break;
+					case c_oSerTableTypes::Endnotes:
+						res = Binary_NotesTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments, false).Read();
+						break;
 
-				//Comments должны читаться раньше чем c_oSerTableTypes::Document
-				//case c_oSerTableTypes::Comments:
-				//	res = oBinary_CommentsTableReader.Read();
-				//	break;
+					//Comments должны читаться раньше чем c_oSerTableTypes::Document
+					//case c_oSerTableTypes::Comments:
+					//	res = oBinary_CommentsTableReader.Read();
+					//	break;
 					//case c_oSerTableTypes::Other:
 					//	res = Binary_OtherTableReader(m_sFileInDir, m_oBufferedStream, m_oFileWriter).Read();
 					//	break;
@@ -7422,25 +8153,37 @@ public: BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReade
 
 				m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
 				long stamdartRId;
-                m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles")), std::wstring(_T("styles.xml")), std::wstring(), &stamdartRId);
-                m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings")), std::wstring(_T("settings.xml")), std::wstring(), &stamdartRId);
-                m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings")), std::wstring(_T("webSettings.xml")), std::wstring(), &stamdartRId);
-                m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable")), std::wstring(_T("fontTable.xml")), std::wstring(), &stamdartRId);
-                m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme")), std::wstring(_T("theme/theme1.xml")), std::wstring(), &stamdartRId);
-                if(false == m_oFileWriter.m_oNumberingWriter.IsEmpty())
+               
+				m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles",		L"styles.xml",		L"", &stamdartRId);
+                m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings",	L"settings.xml",	L"", &stamdartRId);
+                m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings",L"webSettings.xml", L"", &stamdartRId);
+                m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable",	L"fontTable.xml",	L"", &stamdartRId);
+                m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme",		L"theme/theme1.xml",L"", &stamdartRId);
+               
+				m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml",	L"/word",		L"document.xml");
+				m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml",			L"/word",		L"styles.xml");
+				m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml",			L"/word",		L"settings.xml");
+				m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml",		L"/word",		L"webSettings.xml");
+				m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml",		L"/word",		L"fontTable.xml");
+				m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.theme+xml",								L"/word/theme", L"theme1.xml");
+
+				if(false == m_oFileWriter.m_oNumberingWriter.IsEmpty())
 				{
 					long rId;
                     m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering")), std::wstring(_T("numbering.xml")), std::wstring(), &rId);
+					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml", L"/word", L"numbering.xml");
 				}
                 if(false == m_oFileWriter.m_oFootnotesWriter.IsEmpty())
 				{
 					long rId;
                     m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes")), std::wstring(_T("footnotes.xml")), std::wstring(), &rId);
+					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml", L"/word", L"footnotes.xml");
 				}
                 if(false == m_oFileWriter.m_oEndnotesWriter.IsEmpty())
 				{
 					long rId;
                     m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes")), std::wstring(_T("endnotes.xml")), std::wstring(), &rId);
+					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml", L"/word", L"endnotes.xml");
 				}
 				for(size_t i = 0; i < m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.size(); ++i)
 				{
@@ -7450,6 +8193,8 @@ public: BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReade
 						long rId;
                         m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/header")), pHeader->m_sFilename, std::wstring(), &rId);
                         pHeader->rId = L"rId" + std::to_wstring( rId );
+						
+						m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml", L"/word", pHeader->m_sFilename);
 					}
 				}
 				for(size_t i = 0; i < m_oFileWriter.m_oHeaderFooterWriter.m_aFooters.size(); ++i)
@@ -7460,6 +8205,8 @@ public: BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReade
 						long rId;
                         m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer")), pFooter->m_sFilename, std::wstring(), &rId);
                         pFooter->rId = L"rId" + std::to_wstring( rId );
+						
+						m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml", L"/word", pFooter->m_sFilename);
 					}
 				}
 				res = Binary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_oDocumentWriter, &oBinary_CommentsTableReader.m_oComments).Read();
@@ -7468,26 +8215,32 @@ public: BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReade
 																					+ FILE_SEPARATOR_STR + _T("_rels")
 																					+ FILE_SEPARATOR_STR + _T("document.xml.rels");
 
-                CComments& oComments = oBinary_CommentsTableReader.m_oComments;
+                CComments& oComments= oBinary_CommentsTableReader.m_oComments;
 				Writers::CommentsWriter& oCommentsWriter = m_oFileWriter.m_oCommentsWriter;
-                std::wstring sContent = oComments.writeContent();
-                std::wstring sContentEx = oComments.writeContentExt();//важно чтобы writeContentExt вызывался после writeContent
-                std::wstring sPeople = oComments.writePeople();
+                
+				std::wstring sContent	= oComments.writeContent();
+                std::wstring sContentEx = oComments.writeContentExt();	//важно чтобы writeContentExt вызывался после writeContent
+                std::wstring sPeople	= oComments.writePeople();
+
 				oCommentsWriter.setElements(sContent, sContentEx, sPeople);
-                if(false == oCommentsWriter.m_sComment.empty())
+                
+				if(false == oCommentsWriter.m_sComment.empty())
 				{
 					long rId;
                     m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments")), std::wstring(_T("comments.xml")), std::wstring(), &rId);
+					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml", L"/word", L"comments.xml");
 				}
                 if(false == oCommentsWriter.m_sCommentExt.empty())
 				{
 					long rId;
                     m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.microsoft.com/office/2011/relationships/commentsExtended")), std::wstring(_T("commentsExtended.xml")), std::wstring(), &rId);
+					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtended+xml", L"/word", L"commentsExtended.xml");
 				}
                 if(false == oCommentsWriter.m_sPeople.empty())
 				{
 					long rId;
                     m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.microsoft.com/office/2011/relationships/people")), std::wstring(_T("people.xml")), std::wstring(), &rId);
+					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.people+xml", L"/word", L"people.xml");
 				}
 
                 m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(fileRelsPath.GetPath());

@@ -70,10 +70,10 @@ CFRecord::CFRecord(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info)
 			case rt_RRDHead:
 				break;
 			case rt_BoundSheet8:
-				global_info->decryptor->Decrypt(data_ + sizeof(unsigned int), size_ - sizeof(unsigned int), rec_data_pos + sizeof(unsigned int));
+				global_info->decryptor->Decrypt(data_ + sizeof(unsigned int), size_ - sizeof(unsigned int), rec_data_pos + sizeof(unsigned int), 1024);
 				break;
 			default:
-				global_info->decryptor->Decrypt(data_, size_, rec_data_pos);
+				global_info->decryptor->Decrypt(data_, size_, rec_data_pos, 1024);
 				break;
 		}
 	}

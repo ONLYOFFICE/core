@@ -119,6 +119,7 @@ enum ElementType
     typeStyleMasterPage,
     typeStyleHandoutMasterPage,
 	typeStyleDrawLayerSet,
+	typeStyleDrawLayer,
     typeOfficeStyles,
     typeStyleDefaultStyle,
     typeStyleStyle,
@@ -152,12 +153,11 @@ enum ElementType
     typeStyleFooterStyle,
 	typeStyleHeaderFooterProperties,
 
+	typeStylePresentationSound,
 	typeStylePresentationPageLayout,
 	typeStylePresentationPlaceholder,
 	typeStyleDrawingPageProperties,
 	
-	typePresentationNotes,
-
     typeStyleColumns,
     typeStyleColumn,
     typeStyleColumnSep,
@@ -236,6 +236,7 @@ enum ElementType
     typeDrawObject,
     typeDrawObjectOle,
  	typeDrawChart,
+	typeDrawPlugin,
 
 	typeDrawBase,
 	typeDrawShape,
@@ -263,10 +264,14 @@ enum ElementType
 	typeDrawPage,    
 	typePresentationFooterDecl,
 	typePresentationDateTimeDecl,
+	typePresentationNotes,
 
 	typeAnimPar,
 	typeAnimSeq,
 	typeAnimTransitionFilter,
+	typeAnimAudio,
+	typeAnimCommand,
+	typeAnimIterator,
 
 	typeStyleGraphicPropertis,
 	typeStyleDrawGradient,

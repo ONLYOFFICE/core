@@ -84,7 +84,6 @@ namespace NSCommon
 			*m_pCountRef += 1;
 		}
 
-	public:
 		smart_ptr<Type>& operator=(const Type& oSrc)
 		{
 			Release();
@@ -114,8 +113,6 @@ namespace NSCommon
 			Attach(oSrc.m_pData, oSrc.m_pCountRef);
 			return *this;
 		}
-
-	public:
 
 		inline bool IsInit() const
 		{ 

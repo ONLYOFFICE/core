@@ -35,16 +35,6 @@
 namespace XLS
 {
 
-SxIvd::SxIvd()
-{
-}
-
-
-SxIvd::~SxIvd()
-{
-}
-
-
 BaseObjectPtr SxIvd::clone()
 {
 	return BaseObjectPtr(new SxIvd(*this));
@@ -53,10 +43,14 @@ BaseObjectPtr SxIvd::clone()
 
 void SxIvd::readFields(CFRecord& record)
 {
-#pragma message("####################### SxIvd record is not implemented")
-	Log::error("SxIvd record is not implemented.");
-	//record >> some_value;
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	int rgSize = record.getDataSize() / 2;
+
+	for (int i = 0; i < rgSize; i++)
+	{
+		short val;
+		record >> val;
+		rgSxivd.push_back(val);
+	}
 }
 
 } // namespace XLS

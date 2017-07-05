@@ -52,10 +52,14 @@ BaseObjectPtr SxItm::clone()
 
 void SxItm::readFields(CFRecord& record)
 {
-#pragma message("####################### SxItm record is not implemented")
-	Log::error("SxItm record is not implemented.");
-	//record >> some_value;
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	int size = (record.getDataSize() - record.getRdPtr()) / 2;
+
+	for (int i = 0; i < size; i++)
+	{
+		unsigned short val;
+		record >> val; 
+		rgisxvi.push_back(val);
+	}
 }
 
 } // namespace XLS

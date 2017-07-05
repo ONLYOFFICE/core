@@ -37,7 +37,7 @@
 
 namespace CRYPT
 {
-	struct CryptRC4Data
+	struct _rc4CryptData
 	{
 		struct SALT_TAG 
 		{
@@ -68,8 +68,8 @@ namespace CRYPT
 	{
 	public:
 
-		virtual void Encrypt(char* data, const size_t size) = 0;
-		virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos) = 0;
+		virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size) = 0;
+		virtual void Decrypt(char* data, const size_t size, const unsigned long block_index) = 0;
 
 		typedef enum
 		{

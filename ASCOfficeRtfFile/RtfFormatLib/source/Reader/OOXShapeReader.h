@@ -30,14 +30,12 @@
  *
  */
 #pragma once
-#include "OOXPictureGraphicReader.h"
 #include "OOXReaderBasic.h"
 
 #include "../RtfDocument.h"
 #include "../RtfShape.h"
 
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Logic/Vml.h"
-#include "../../../../Common/DocxFormat/Source/DocxFormat/Logic/Shape.h"
 
 bool ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop);
 
@@ -52,7 +50,7 @@ public:
 		m_arrElement = vmlElem;
 	}
 	OOXShapeReader(OOX::WritingElementWithChilds<OOX::WritingElement> * elem);
-	OOXShapeReader(OOX::Logic::CShape * ooxShape)
+	OOXShapeReader(OOX::WritingElement* ooxShape)
 	{
 		m_ooxShape	 = ooxShape;
 		m_vmlElement = NULL;
@@ -67,26 +65,24 @@ public:
 	
 	void ParseAdjustment(RtfShape& oShape, std::wstring sAdjustment);
 
-	static bool Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CBlipFillProperties *oox_bitmap_fill);
+	static bool Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::BlipFill *oox_bitmap_fill);
 private:
-
-	bool Parse(ReaderParameter oParam, int indexSchemeColor, BYTE& ucA, BYTE& ucG, BYTE& ucB, BYTE& ucR);
-	void Parse(ReaderParameter oParam, OOX::Drawing::CColor						*oox_color,			unsigned int & nColor, _CP_OPT(double) &opacity);
-	void Parse(ReaderParameter oParam, OOX::Drawing::CSchemeColor				*oox_ShemeClr,		unsigned int & nColor, _CP_OPT(double) &opacity);
-	void Parse(ReaderParameter oParam, OOX::Drawing::Colors::CColorTransform	*oox_ScrgbClr,		unsigned int & nColor, _CP_OPT(double) &opacity);
-	void Parse(ReaderParameter oParam, OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill,	unsigned int & nColor, _CP_OPT(double) &opacity);
+	void Parse(ReaderParameter oParam, PPTX::Logic::ColorBase	*oox_color,			unsigned int & nColor, _CP_OPT(double) &opacity);
+	void Parse(ReaderParameter oParam, PPTX::Logic::SolidFill	*oox_solid_fill,	unsigned int & nColor, _CP_OPT(double) &opacity);
 	
-	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CStyleMatrixReference		*style_matrix_ref);
-	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CLineProperties				*oox_line_prop,		std::wstring *change_sheme_color = NULL);
-    
-    void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CGradientFillProperties		*oox_grad_fill,		std::wstring *change_sheme_color = NULL);
-    void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CPatternFillProperties		*oox_pattern_fill,	std::wstring *change_sheme_color = NULL);
-    void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill,	std::wstring *change_sheme_color = NULL);
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::StyleRef	*style_ref, int type);
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::Ln		*oox_line_prop,		std::wstring *change_sheme_color = NULL);
+
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::UniFill	*oox_fill,			std::wstring *change_sheme_color = NULL);
+	
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::GradFill	*oox_grad_fill,		std::wstring *change_sheme_color = NULL);
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::PattFill	*oox_pattern_fill,	std::wstring *change_sheme_color = NULL);
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::SolidFill	*oox_solid_fill,	std::wstring *change_sheme_color = NULL);
 //---------------------------------------------------------------------------
 	OOX::Vml::CVmlCommonElements						*m_vmlElement;
 	OOX::WritingElementWithChilds<OOX::WritingElement>  *m_arrElement;
 
-	OOX::Logic::CShape									*m_ooxShape;
+	OOX::WritingElement									*m_ooxShape;
 
 	void ParseVmlPath	(RtfShapePtr& pShape, const std::wstring &custom_path);
 	bool ParseVmlStyles	(RtfShapePtr& pShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
@@ -104,14 +100,14 @@ class OOXShapeGroupReader
 {
 private:
 	OOX::Vml::CGroup		*m_vmlGroup;
-	OOX::Logic::CGroupShape	*m_ooxGroup;
+	PPTX::Logic::SpTree		*m_ooxGroup;
 public: 
 	OOXShapeGroupReader(OOX::Vml::CGroup *vmlGroup)
 	{
 		m_ooxGroup = NULL;
 		m_vmlGroup = vmlGroup;
 	}
-	OOXShapeGroupReader(OOX::Logic::CGroupShape *ooxGroup)
+	OOXShapeGroupReader(PPTX::Logic::SpTree *ooxGroup)
 	{
 		m_vmlGroup = NULL;
 		m_ooxGroup = ooxGroup;

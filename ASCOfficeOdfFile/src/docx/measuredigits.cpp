@@ -71,7 +71,7 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
 
    // for (int i = 0; i <= 9; ++i)
     {
-		//if (FALSE == (hr = pFontManager->LoadString2( boost::lexical_cast<std::wstring>(i), 0, 0)))
+		//if (FALSE == (hr = pFontManager->LoadString2( std::to_wstring(i), 0, 0)))
 		//	return std::pair<float, float>(7,8);
 
 		if (FALSE == (hr = pFontManager->LoadString2( L"xxxxx" , 0, 0)))

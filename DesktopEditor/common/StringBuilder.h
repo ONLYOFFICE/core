@@ -694,6 +694,25 @@ namespace NSStringUtils
 			return 1;			
 		}
 	};
+
+    static void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo)
+    {
+        size_t posn = 0;
+        while (std::wstring::npos != (posn = text.find(replaceFrom, posn)))
+        {
+            text.replace(posn, replaceFrom.length(), replaceTo);
+            posn += replaceTo.length();
+        }
+    }
+    static void string_replaceA(std::string& text, const std::string& replaceFrom, const std::string& replaceTo)
+    {
+        size_t posn = 0;
+        while (std::string::npos != (posn = text.find(replaceFrom, posn)))
+        {
+            text.replace(posn, replaceFrom.length(), replaceTo);
+            posn += replaceTo.length();
+        }
+    }
 }
 
 #endif // _BUILD_STRING_BUILDER_CROSSPLATFORM_H_

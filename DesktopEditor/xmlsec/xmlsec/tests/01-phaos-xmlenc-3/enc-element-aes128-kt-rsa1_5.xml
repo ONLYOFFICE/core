@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PaymentInfo xmlns="http://example.org/paymentv2">
+  <Name>John Smith</Name>
+  <EncryptedData Id="ED" Type="http://www.w3.org/2001/04/xmlenc#Element" xmlns="http://www.w3.org/2001/04/xmlenc#">
+    <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"/>
+    <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+      <EncryptedKey Id="EK" xmlns="http://www.w3.org/2001/04/xmlenc#">
+        <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-1_5"/>
+        <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+          <ds:KeyName>my-rsa-key</ds:KeyName>
+          <ds:X509Data>
+            <ds:X509Certificate>
+              MIIDzTCCArWgAwIBAgIBATANBgkqhkiG9w0BAQQFADCBljELMAkGA1UEBhMCVVMx
+              CzAJBgNVBAgTAk5ZMRIwEAYDVQQHEwlNYW5oYXR0YW4xFTATBgNVBAoTDExhdmEg
+              U3VwcmVtZTEUMBIGA1UECxMLSGVhZCBPZmZpY2UxFDASBgNVBAMTC1JTQSBUZXN0
+              IENBMSMwIQYJKoZIhvcNAQkBFhR0ZWNoQGxhdmFzdXByZW1lLm9yZzAeFw0wMjAx
+              MzExNjI5NDNaFw00MzAyMjUxNjI5NDNaMIGWMQswCQYDVQQGEwJVUzELMAkGA1UE
+              CBMCTlkxEjAQBgNVBAcTCU1hbmhhdHRhbjEVMBMGA1UEChMMTGF2YSBTdXByZW1l
+              MRQwEgYDVQQLEwtIZWFkIE9mZmljZTEUMBIGA1UEAxMLUlNBIFRlc3QgQ0ExIzAh
+              BgkqhkiG9w0BCQEWFHRlY2hAbGF2YXN1cHJlbWUub3JnMIIBIjANBgkqhkiG9w0B
+              AQEFAAOCAQ8AMIIBCgKCAQEAgj3TOyUtgg99oEfsm8h9JTZBxUkzYkXVUOHxIwnk
+              Fwp4y9ZnrGja/j+kpRyKvYP5CkNdq0e58/r7GLXj45iqd03XjsFNTdjy4OIOgf7J
+              xMG7z+hEB1LT2swTs10GILFWPByRl3/BEsnekLZdoqNoJrvnttVkxgu3x80Ji3/A
+              ZD8Ub/kBGOSPyu6pn3OdnMTc5q4r1qUe985lQzCZvCMw6AoGeCyJodNu2MbveNeH
+              +YPjRgLCQfzvOFRq+9qMtE8XfUJZdNhPZhgdsOGf8uJauTcIHbAyw7BhxPy6RikW
+              W5yiWUmBya+7t4y1TQJzham/0y0zU3TAA7b/rDrU7xmNPwIDAQABoyQwIjAPBgNV
+              HRMBAf8EBTADAQH/MA8GA1UdDwEB/wQFAwMHBgAwDQYJKoZIhvcNAQEEBQADggEB
+              ADELWZjFLPjSjGeOaeUwH/mEOP+l/nTtxe07IWAQL4kvb4wsiUsM1EkPptcBQsym
+              OYgFhf3Elqma84bbOyp85y/iQnjpqWWJ73TFXSWZamSIhYb4Gk+dQuwFI+zD3B2y
+              WwqghaAHDzxtzROLUBjo+97Y6ng6V5zjmtdGOFwNXwWhf3Y+MjnErtBIKYao8NJO
+              p6di80w82+s6Ot+CLVvVobLhxS/y8yWplATRiQnI5ij/WTLML+tiU5aes0c9abaf
+              O7i9j1iTuZsDT3f96ia0RSLsXSGij737QKc3ZM8lSxBWfepWYO+G+IRgr1q9IUDa
+              kKO/vB9Ay64Rt88XbLnnGns=
+            </ds:X509Certificate>
+          </ds:X509Data>
+        </ds:KeyInfo>
+        <CipherData>
+          <CipherValue>
+            cCxxYh3xGBTqlXbhmKxWzNMlHeE28E7vPrMyM5V4T+t1Iy2csj1BoQ7cqBjEhqEy
+	    Eot4WNRYsY7P44mWBKurj2mdWQWgoxHvtITP9AR3JTMxUo3TF5ltW76DLDsEvWlE
+            uZKam0PYj6lYPKd4npUULeZyR/rDRrth/wFIBD8vbQlUsBHapNT9MbQfSKZemOuT
+            UJL9PNgsosySpKrX564oQw398XsxfTFxi4hqbdqzA/CLL418X01hUjIHdyv6XnA2
+            98Bmfv9WMPpX05udR4raDv5X8NWxjH00hAhasM3qumxoyCT6mAGfqvE23I+OXtrN
+            lUvE9mMjANw4zweCHsOcfw==
+          </CipherValue>
+        </CipherData>
+        <ReferenceList>
+          <DataReference URI="#ED"/>
+        </ReferenceList>
+      </EncryptedKey>
+    </ds:KeyInfo>
+    <CipherData>
+      <CipherValue>
+        u2vogkwlvFqeknJ0lYTBZkWS/eX8LR1fDPFMfyK1/UY0EyZfHvbONfDHcC/HLv/f
+        aAOOO2Y0GqsknP0LYT1OznkiJrzx134cmJCgbyrYXd3Mp21Pq3rs66JJ34Qt3/+I
+        EyJBUSMT8TdT3fBD44BtOqH2op/hy2g3hQPFZul4GiHBEnNJL/4nU1yad3bMvtAB
+        mzhx80lJvPGLcruj5V77WMvkvZfoeEqMq4qPWK02ZURsJsq0iZcJDi39NB7OCiON
+      </CipherValue>
+    </CipherData>
+  </EncryptedData>
+</PaymentInfo>

@@ -52,9 +52,7 @@ BaseObjectPtr MDXKPI::clone()
 
 void MDXKPI::readFields(CFRecord& record)
 {
-	record.skipNunBytes(12);
-#pragma message("############################ frtHeader skipped here")
-	record >> istrConnName >> tfnSrc >> kpiprop >> istrKPIName >> istrMbrKPI;
+	record >> frtHeader >> istrConnName >> tfnSrc >> kpiprop >> istrKPIName >> istrMbrKPI;
 }
 
 } // namespace XLS

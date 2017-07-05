@@ -119,7 +119,7 @@ namespace PPTX
 			return ColorBase::GetABGR(ABGR);
 		}
 
-		DWORD SchemeClr::GetRGBColor(NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, DWORD ARGB)
+		DWORD SchemeClr::GetRGBColor(NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, DWORD ARGB)
 		{
 			DWORD RGB = 0;
 			
@@ -128,9 +128,6 @@ namespace PPTX
 				RGB = ARGB;
 			else 
 			{
-				smart_ptr<PPTX::Theme> oTheme = _oTheme.smart_dynamic_cast<PPTX::Theme>();
-				smart_ptr<PPTX::Logic::ClrMap> oClrMap = _oClrMap.smart_dynamic_cast<PPTX::Logic::ClrMap>();
-
 				if (oTheme.is_init())
 				{
 					if (oClrMap.is_init())

@@ -134,7 +134,10 @@ void XFProp::load(CFRecord& record)
 			// EXCEPT::RT::WrongBiffRecord("Unsupported type of XFProp.", record.getTypeString());
 			break;
 	}
-	record >> *xfPropDataBlob;
+	if (xfPropDataBlob)
+	{
+		record >> *xfPropDataBlob;
+	}
 }
 static void serialize_color_prop(std::wostream & stream, const std::wstring & name, BiffStructurePtr & val)
 {

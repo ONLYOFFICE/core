@@ -31,10 +31,9 @@
  */
 #pragma once
 
-#include <vector>
-#include <string>
-
 #include "oox_rels.h"
+
+#include "../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore { 
 namespace oox {
@@ -50,6 +49,9 @@ public:
  		count_tables	= 0;
  		count_media		= 0;
 		count_object	= 0;
+ 		count_audio		= 0;
+ 		count_video		= 0;
+ 		count_slide		= 0;
 	}
 
     struct item 
@@ -74,6 +76,9 @@ public:
 	size_t count_charts;
 	size_t count_image;
 	size_t count_media;
+	size_t count_audio;
+	size_t count_video;
+	size_t count_slide;
 	size_t count_shape;
 	size_t count_tables;
 	size_t count_object;
@@ -88,20 +93,47 @@ public:
 	{
 		switch (type)
 		{
-		case typeImage:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image";
-		case typeChart:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
-		case typeMsObject:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package";
-		case typeOleObject:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject";
-		case typeHyperlink:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink";
-		default:
-			return L"";
+			case typeImage:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image";
+			case typeChart:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
+			case typeMsObject:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package";
+			case typeOleObject:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject";
+			case typeHyperlink:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink";
+			case typeMedia:		return L"http://schemas.microsoft.com/office/2007/relationships/media";
+			case typeAudio:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio";
+			case typeVideo:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video";
+			case typeSlide:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide";
+			default:
+				return L"";
 		}
 	}
+	static RelsType detectMediaType(const std::wstring & fileName)
+	{
+		int pos = fileName.rfind(L".");
 
+		std::wstring sExt = (pos >=0 ? fileName.substr(pos + 1) : L"");
+
+		if (sExt.empty()) return typeMedia;
+
+		sExt = XmlUtils::GetLower(sExt);
+
+		if (sExt == L"wmv") return typeVideo;
+		if (sExt == L"avi") return typeVideo;
+		if (sExt == L"wmv") return typeVideo;
+		if (sExt == L"wma") return typeAudio;
+		if (sExt == L"wav") return typeAudio;
+		
+		if (sExt == L"mp3") return typeAudio;
+		if (sExt == L"m4a") return typeAudio;
+		if (sExt == L"m4v") return typeVideo;
+		if (sExt == L"mp4") return typeVideo;
+		if (sExt == L"mov") return typeVideo;
+
+		return typeMedia;
+	}
 private:
 	std::wstring create_file_name			(const std::wstring & uri, RelsType type, bool & isInternal, size_t Num);
-	std::wstring detectImageFileExtension	(std::wstring &fileName);
-    
+	std::wstring detectImageFileExtension	(const std::wstring &fileName);
+   
 	items_array		items_;
     std::wstring	odf_packet_;
 

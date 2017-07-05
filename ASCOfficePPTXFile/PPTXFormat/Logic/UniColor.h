@@ -67,13 +67,12 @@ namespace PPTX
 			virtual DWORD GetBGRA(DWORD BGRA = 0)const;
 			virtual DWORD GetABGR(DWORD ABGR = 0)const;
 
-			virtual DWORD GetRGBColor(NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, DWORD ARGB = 0)
+			virtual DWORD GetRGBColor(NSCommon::smart_ptr<PPTX::Theme>& _oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& _oClrMap, DWORD ARGB = 0)
 			{
 				if (Color.is_init())
-					return Color->GetRGBColor(_oTheme, _oClrMap, ARGB);
+					return Color->GetRGBColor(_oTheme,_oClrMap, ARGB);
 				return 0;
 			}
-
 			virtual std::wstring toXML() const;
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -90,8 +89,6 @@ namespace PPTX
 					Color->toXmlWriter(pWriter);
 			}
 
-		//public:
-		public:
 			smart_ptr<ColorBase> Color;
 //hslClr (Hue, Saturation, Luminance Color Model)  ยง20.1.2.3.13 
 //scrgbClr (RGB Color Model - Percentage Variant)  ยง20.1.2.3.30 

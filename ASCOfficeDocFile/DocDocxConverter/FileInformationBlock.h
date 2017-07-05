@@ -34,6 +34,8 @@
 #include "VirtualStreamReader.h"
 #include "../../ASCOfficeXlsFile2/source/XlsFormat/Crypt/Decryptor.h"
 
+using namespace DocFormatUtils;
+
 namespace DocFileFormat
 {
 	typedef enum FibVersion
@@ -507,9 +509,9 @@ namespace DocFileFormat
 	class FileInformationBlock
 	{
 	public:
-		bool					m_bOlderVersion;
-		int						m_CodePage;
-		FibBase					m_FibBase;
+		bool			m_bOlderVersion;
+		int				m_CodePage;
+		FibBase			m_FibBase;
 		
 		RgW97			m_RgW97;
 		RgLw97			m_RgLw97;
@@ -1189,9 +1191,9 @@ namespace DocFileFormat
 			m_FibBase.fDot				= FormatUtils::BitmaskToBool((int)flag16, 0x0001);
 			m_FibBase.fGlsy				= FormatUtils::BitmaskToBool((int)flag16, 0x0002);
 			m_FibBase.fComplex			= FormatUtils::BitmaskToBool((int)flag16, 0x0002);
-			m_FibBase.fHasPic				= FormatUtils::BitmaskToBool((int)flag16, 0x0008);
-			m_FibBase.cQuickSaves			= (WORD)(((int)flag16 & 0x00F0) >> 4);
-			m_FibBase.fEncrypted			= FormatUtils::BitmaskToBool((int)flag16, 0x0100);
+            m_FibBase.fHasPic			= FormatUtils::BitmaskToBool((int)flag16, 0x0008);
+            m_FibBase.cQuickSaves		= (WORD)(((int)flag16 & 0x00F0) >> 4);
+            m_FibBase.fEncrypted		= FormatUtils::BitmaskToBool((int)flag16, 0x0100);
 			m_FibBase.fWhichTblStm		= FormatUtils::BitmaskToBool((int)flag16, 0x0200);
 			m_FibBase.fReadOnlyRecommended	= FormatUtils::BitmaskToBool((int)flag16, 0x0400);
 			m_FibBase.fWriteReservation	= FormatUtils::BitmaskToBool((int)flag16, 0x0800);

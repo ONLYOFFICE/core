@@ -205,6 +205,10 @@ namespace OOX
 					m_oNoProof = oReader;
 				else if ( _T("m:oMath") == sName )
 					m_oMath = oReader;
+				else if ( _T("w:moveFrom") == sName )
+					m_oMoveFrom = oReader;
+				else if ( _T("w:moveTo") == sName )
+					m_oMoveTo = oReader;
 				else if ( _T("w:outline") == sName )
 					m_oOutline = oReader;
 				else if ( _T("w:position") == sName )
@@ -253,6 +257,9 @@ namespace OOX
 					m_oTextOutline = oReader;
 				else if (_T("w14:textFill") == sName)
 				{
+					if ( oReader.IsEmptyNode() )
+						continue;
+
 					int nParentDepth1 = oReader.GetDepth();
 					while( oReader.ReadNextSiblingNode( nParentDepth1 )  )
 					{

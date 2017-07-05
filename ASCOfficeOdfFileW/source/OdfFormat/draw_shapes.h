@@ -316,19 +316,21 @@ CP_REGISTER_OFFICE_ELEMENT2(draw_handle);
 class draw_enhanced_geometry_attlist
 {
 public:
-	_CP_OPT(std::wstring)	draw_type_;
-	_CP_OPT(std::wstring)	draw_modifiers_;
-	_CP_OPT(std::wstring)	draw_enhanced_path_;
-	_CP_OPT(std::wstring)	draw_text_areas_;
-	_CP_OPT(std::wstring)	draw_glue_points_;
+	_CP_OPT(std::wstring)		draw_type_;
+	_CP_OPT(std::wstring)		draw_modifiers_;
+	_CP_OPT(std::wstring)		draw_enhanced_path_;
+	_CP_OPT(std::wstring)		draw_text_areas_;
+	_CP_OPT(std::wstring)		draw_glue_points_;
 	
-	_CP_OPT(odf_types::Bool)			draw_mirror_vertical_;
-	_CP_OPT(odf_types::Bool)			draw_mirror_horizontal_;
+	_CP_OPT(std::wstring)		draw_sub_view_size_;
+
+	_CP_OPT(odf_types::Bool)	draw_mirror_vertical_;
+	_CP_OPT(odf_types::Bool)	draw_mirror_horizontal_;
 	
-	_CP_OPT(odf_types::Bool)			draw_text_path_;
-	_CP_OPT(odf_types::Bool)			draw_text_path_same_letter_heights_;
-	_CP_OPT(std::wstring)	draw_text_path_mode_;
-	_CP_OPT(std::wstring)	draw_text_path_scale_;
+	_CP_OPT(odf_types::Bool)	draw_text_path_;
+	_CP_OPT(odf_types::Bool)	draw_text_path_same_letter_heights_;
+	_CP_OPT(std::wstring)		draw_text_path_mode_;
+	_CP_OPT(std::wstring)		draw_text_path_scale_;
 	
 	void serialize(CP_ATTR_NODE);   
 };

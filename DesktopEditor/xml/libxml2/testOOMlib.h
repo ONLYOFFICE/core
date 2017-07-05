@@ -1,4 +1,4 @@
-﻿#ifndef TEST_OOM_LIB_H
+#ifndef TEST_OOM_LIB_H
 #define TEST_OOM_LIB_H
 
 #include <config.h>

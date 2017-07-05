@@ -332,7 +332,7 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 	convert((XLS::GlobalsSubstream*)woorkbook->m_GlobalsSubstream.get());
 
 	int count_sheets = 0, count_chart_sheets = 0;
-    for (int i=0 ; i < woorkbook->m_arWorksheetSubstream.size(); i++)
+    for (size_t i = 0 ; i < woorkbook->m_arWorksheetSubstream.size(); i++)
 	{
 		if (woorkbook->m_arWorksheetSubstream[i]->get_type() == XLS::typeWorksheetSubstream)
 		{
@@ -406,14 +406,14 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 		{
 			CP_XML_NODE(L"mergeCells")
 			{  		
-                for (int i = 0 ; i < sheet->m_arMergeCells.size(); i++)
+                for (size_t i = 0 ; i < sheet->m_arMergeCells.size(); i++)
 				{
 					sheet->m_arMergeCells[i]->serialize(CP_XML_STREAM());
 				}
 			}
 		}
 	}
-    for (int i = 0 ; i < sheet->m_arHLINK.size(); i++)
+    for (size_t i = 0 ; i < sheet->m_arHLINK.size(); i++)
 	{
 		convert((XLS::HLINK*)sheet->m_arHLINK[i].get());
 	}
@@ -438,7 +438,7 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 	if (!sheet->m_arNote.empty() && xls_global_info->Version < 0x0600)
 	{
 		xlsx_context->get_drawing_context().start_drawing(0);
-		for (int i = 0 ; i < sheet->m_arNote.size(); i++)
+		for (size_t i = 0 ; i < sheet->m_arNote.size(); i++)
 		{
 			xlsx_context->get_drawing_context().start_drawing(0x0019);
 				convert(dynamic_cast<XLS::Note*>(sheet->m_arNote[i].get()));
@@ -452,7 +452,7 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 		sheet->m_PAGESETUP->serialize(xlsx_context->current_sheet().pageProperties());
 	}
 
-	for (int i = 0 ; i < sheet->m_arHFPictureDrawing.size(); i++)
+	for (size_t i = 0 ; i < sheet->m_arHFPictureDrawing.size(); i++)
 	{
 		//convert(dynamic_cast<XLS::Note*>(sheet->sheet->m_arHFPictureDrawing[i].get(), 
 	}
@@ -463,7 +463,7 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 		{
 			CP_XML_NODE(L"customSheetViews")
             {
-				for (int i = 0 ; i < sheet->m_arCUSTOMVIEW.size(); i++)
+				for (size_t i = 0 ; i < sheet->m_arCUSTOMVIEW.size(); i++)
 				{
 					sheet->m_arCUSTOMVIEW[i]->serialize(CP_XML_STREAM());
 				}
@@ -476,7 +476,7 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 		convert(dynamic_cast<XLS::BACKGROUND*>(sheet->m_BACKGROUND.get()));
 	}
 
-	for (int i = 0 ; i < sheet->m_arHFPictureDrawing.size(); i++)
+	for (size_t i = 0 ; i < sheet->m_arHFPictureDrawing.size(); i++)
 	{
 		convert((ODRAW::OfficeArtDgContainer*)sheet->m_arHFPictureDrawing[i].get());
 	}
@@ -492,26 +492,26 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
 
 	convert((XLS::SHAREDSTRINGS*)global->m_SHAREDSTRINGS.get());
 
-    for (int i = 0 ; i < global->m_arLBL.size(); i++)
+    for (size_t i = 0 ; i < global->m_arLBL.size(); i++)
 	{
 		convert((XLS::LBL*)global->m_arLBL[i].get());
 	}
 
-    for (int i = 0 ; i < global->m_arMSODRAWINGGROUP.size(); i++)
+    for (size_t i = 0 ; i < global->m_arMSODRAWINGGROUP.size(); i++)
 	{
 		convert((XLS::MSODRAWINGGROUP*)global->m_arMSODRAWINGGROUP[i].get());
 	}
 
-	for (int i = 0 ; i < global->m_arHFPictureDrawing.size(); i++)
+	for (size_t i = 0 ; i < global->m_arHFPictureDrawing.size(); i++)
 	{
 		convert((ODRAW::OfficeArtDgContainer*)global->m_arHFPictureDrawing[i].get());
 	}
 
-    for (int i = 0 ; i < global->m_arWindow1.size(); i++)
+    for (size_t i = 0 ; i < global->m_arWindow1.size(); i++)
 	{
 		global->m_arWindow1[i]->serialize(xlsx_context->workbook_views());
 	}
-    for (int i = 0 ; i < global->m_arUserBView.size(); i++)
+    for (size_t i = 0 ; i < global->m_arUserBView.size(); i++)
 	{
 		global->m_arUserBView[i]->serialize(xlsx_context->custom_views());
 	}
@@ -530,7 +530,11 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
         CP_XML_NODE(L"styleSheet")
         {   
 			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
-
+			CP_XML_ATTR(L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006");
+			CP_XML_ATTR(L"mc:Ignorable", L"x14ac x16r2");
+			CP_XML_ATTR(L"xmlns:x14ac", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac");
+			CP_XML_ATTR(L"xmlns:x16r2", L"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main");
+			
 			formating->serialize1(CP_XML_STREAM()); //важен порядок в styles
 
 			CP_XML_NODE(L"fills")
@@ -544,7 +548,7 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 				}
 
 				CP_XML_ATTR(L"count", fills_out.size());
-				for (int i = 0 ;i < fills_out.size(); i++)
+				for (size_t i = 0 ;i < fills_out.size(); i++)
 				{
 					fills_out[i].serialize(CP_XML_STREAM());
 				}
@@ -560,7 +564,7 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 				}
 				
 				CP_XML_ATTR(L"count", borders_out.size());
-				for (int i = 0 ;i < borders_out.size(); i++)
+				for (size_t i = 0 ;i < borders_out.size(); i++)
 				{
 					borders_out[i].serialize(CP_XML_STREAM());
 				}
@@ -740,7 +744,7 @@ void XlsConverter::convert(ODRAW::OfficeArtBStoreContainer* art_bstore, int star
 	if (art_bstore == NULL) return;
 	if (art_bstore->rgfb.size() < 1) return;
 
-    for (int i = 0 ; i < art_bstore->rgfb.size(); i++)
+    for (size_t i = 0 ; i < art_bstore->rgfb.size(); i++)
 	{
 		int bin_id = i + start_id + 1;
 
@@ -896,7 +900,7 @@ void XlsConverter::convert_old(XLS::OBJECTS* objects, XLS::WorksheetSubstream * 
 			xlsx_context->get_drawing_context().set_line_old_version(obj->old_version.line);
 			xlsx_context->get_drawing_context().set_flag_old_version(obj->old_version.flag, obj->old_version.flag2);
 
-			for (int i = 0 ; i < obj->old_version.additional.size(); i++)
+			for (size_t i = 0 ; i < obj->old_version.additional.size(); i++)
 			{
 				convert(obj->old_version.additional[i].get());
 			}
@@ -1020,7 +1024,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 			{	
 				text_obj->preserve_enabled = true;
 
-				for (int i = 0 ; i < sheet->m_arNote.size(); i++)
+				for (size_t i = 0 ; i < sheet->m_arNote.size(); i++)
 				{
 					XLS::Note* note = dynamic_cast<XLS::Note*>(sheet->m_arNote[i].get());
 					if ((note) && (note->note_sh.idObj == obj->cmo.id))
@@ -1055,7 +1059,7 @@ void XlsConverter::convert(ODRAW::OfficeArtSpgrContainer * spgr)
 	if (spgr == NULL) return;
 	if (spgr->anchor_type_ != ODRAW::OfficeArtRecord::CA_HF) return; //todooo проверить что тока для header/footer это нужно
 
-	for (int i = 0; i < spgr->child_records.size(); i++)
+	for (size_t i = 0; i < spgr->child_records.size(); i++)
 	{
 		int type_object = 2;//rect
 
@@ -1076,7 +1080,7 @@ void XlsConverter::convert(ODRAW::OfficeArtSpContainer *sp, bool anchor_only)
 	{
 		convert(sp->m_OfficeArtFSP.get());
 
-		for (int i = 0; i < sp->child_records.size(); i++)
+		for (size_t i = 0; i < sp->child_records.size(); i++)
 		{
 			convert(sp->child_records[i].get());
 		}
@@ -1140,12 +1144,12 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 		{
 			ODRAW::OfficeArtDgContainer * dg = dynamic_cast<ODRAW::OfficeArtDgContainer *>(art);
         
-			for (int i = 0 ; i < dg->child_records.size(); i++)	//a-la msodrawing for headers/footers
+			for (size_t i = 0 ; i < dg->child_records.size(); i++)	//a-la msodrawing for headers/footers
 			{
 				convert(dg->child_records[i].get());
 			}
 
-			for (int i = 0; i < dg->m_OfficeArtSpContainer.size(); i++)
+			for (size_t i = 0; i < dg->m_OfficeArtSpContainer.size(); i++)
 			{
 				convert(dg->m_OfficeArtSpContainer[i].get());
 			}
@@ -1167,7 +1171,7 @@ void XlsConverter::convert(ODRAW::OfficeArtFSP * fsp)
 }
 void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
-	for (int i = 0 ; i < props.size() ; i++)
+	for (size_t i = 0 ; i < props.size() ; i++)
 	{
 		switch(props[i]->opid)
 		{
@@ -1286,7 +1290,7 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			{
 				ODRAW::fillShadeColors *shadeColors = (ODRAW::fillShadeColors *)(props[i].get());
 
-				for (int i = 0 ; (shadeColors) && (i < shadeColors->fillShadeColors_complex.data.size()); i++)
+				for (size_t i = 0 ; (shadeColors) && (i < shadeColors->fillShadeColors_complex.data.size()); i++)
 				{
 					ODRAW::OfficeArtCOLORREF & color = shadeColors->fillShadeColors_complex.data[i].color;
 
@@ -1325,7 +1329,7 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 {
 	if (props.size() < 1) return;
 
-	for (int i = 0 ; i < props.size() ; i++)
+	for (size_t i = 0 ; i < props.size() ; i++)
 	{
 		switch(props[i]->opid)
 		{
@@ -1403,6 +1407,18 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 					}
 				}
 			}break;
+			case NSOfficeDrawing::lineMiterLimit:
+			{
+				xlsx_context->get_drawing_context().set_line_miter(props[i]->op);
+			}break;
+			case NSOfficeDrawing::lineJoinStyle:
+			{
+				xlsx_context->get_drawing_context().set_line_join(props[i]->op);
+			}break;
+			case NSOfficeDrawing::lineEndCapStyle:
+			{
+				xlsx_context->get_drawing_context().set_line_endcap(props[i]->op);
+			}break;
 		}
 	}
 }
@@ -1410,7 +1426,7 @@ void XlsConverter::convert_blip(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
 	if (props.size() < 1) return;
 
-	for (int i = 0 ; i < props.size() ; i++)
+	for (size_t i = 0 ; i < props.size() ; i++)
 	{
 		ODRAW::FixedPoint * fixed_point = static_cast<ODRAW::FixedPoint *>(props[i].get());
 		switch(props[i]->opid)
@@ -1457,7 +1473,7 @@ void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & prop
 	oox::_rect					rect;
 	std::vector<_CP_OPT(int)>	adjustValues(8);
 	
-	for (int i = 0 ; i < props.size() ; i++)
+	for (size_t i = 0 ; i < props.size() ; i++)
 	{
 		switch(props[i]->opid)
 		{
@@ -1490,6 +1506,24 @@ void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & prop
 			}break;
 		case 0x0151:
 			{
+				ODRAW::pConnectionSites * a = (ODRAW::pConnectionSites *)(props[i].get());
+				xlsx_context->get_drawing_context().set_custom_connection(a->complex.data);
+			}break;
+		case 0x0152:
+			{
+				ODRAW::pConnectionSitesDir * a = (ODRAW::pConnectionSitesDir *)(props[i].get());
+				xlsx_context->get_drawing_context().set_custom_connectionDir(a->complex.data);
+			}break;
+		case 0x0153:
+			{
+				xlsx_context->get_drawing_context().set_custom_x_limo(props[i]->op);
+			}break;
+		case 0x0154:
+			{
+				xlsx_context->get_drawing_context().set_custom_y_limo(props[i]->op);
+			}break;
+		case 0x0155:
+			{
 				ODRAW::pAdjustHandles * a = (ODRAW::pAdjustHandles *)(props[i].get());
 				xlsx_context->get_drawing_context().set_custom_adjustHandles(a->complex.data);
 			}break;
@@ -1498,6 +1532,16 @@ void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & prop
 				ODRAW::pGuides* s = (ODRAW::pGuides *)(props[i].get());
 				xlsx_context->get_drawing_context().set_custom_guides(s->complex.data);
 			}break;
+		case 0x0157:
+			{
+				ODRAW::pInscribe * a = (ODRAW::pInscribe *)(props[i].get());
+				xlsx_context->get_drawing_context().set_custom_inscribe(a->complex.data);
+			}break;
+		//case 0x0158:
+		//	{
+		//		ODRAW::cxk * a = (ODRAW::cxk *)(props[i].get());
+		//		xlsx_context->get_drawing_context().set_custom_cxk(a->complex.data);
+		//	}break;
 		}
 	}
 	rect.cy -= rect.y;
@@ -1510,7 +1554,7 @@ void XlsConverter::convert_geometry_text(std::vector<ODRAW::OfficeArtFOPTEPtr> &
 {
 	if (props.size() < 1) return;
 
-	for (int i = 0 ; i < props.size() ; i++)
+	for (size_t i = 0 ; i < props.size() ; i++)
 	{
 		switch(props[i]->opid)
 		{
@@ -1571,7 +1615,7 @@ void XlsConverter::convert_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 	if (props.size() < 1) return;
 
 	RECT text_margin = {0x00016530, 0x0000b298, 0x00016530, 0x0000b298};
-	for (int i = 0 ; i < props.size() ; i++)
+	for (size_t i = 0 ; i < props.size() ; i++)
 	{
 		switch(props[i]->opid)
 		{
@@ -1647,20 +1691,20 @@ void XlsConverter::convert_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 }
 void XlsConverter::convert_shadow(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
-	for (int i = 0 ; i < props.size() ; i++)
+	for (size_t i = 0 ; i < props.size() ; i++)
 	{
 	}
 }
 void XlsConverter::convert_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
-	for (int i = 0 ; i < props.size() ; i++)
+	for (size_t i = 0 ; i < props.size() ; i++)
 	{
 
 	}
 }
 void XlsConverter::convert_group_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
-	for (int i = 0 ; i < props.size() ; i++)
+	for (size_t i = 0 ; i < props.size() ; i++)
 	{
 		switch(props[i]->opid)
 		{
@@ -1726,7 +1770,7 @@ void XlsConverter::convert(XLS::Note* note)
 
 void XlsConverter::convert_transform(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
-	for (int i = 0 ; i < props.size() ; i++)
+	for (size_t i = 0 ; i < props.size() ; i++)
 	{
 		switch(props[i]->opid)
 		{
@@ -1774,7 +1818,7 @@ void XlsConverter::convert(XLS::SHAREDSTRINGS* sharedstrings)
 				}
 			}
 
-			for (int i = 0 ; i < xls_global_info->arAddedSharedStrings.size(); i++)
+			for (size_t i = 0 ; i < xls_global_info->arAddedSharedStrings.size(); i++)
 			{
 				CP_XML_NODE(L"si")
 				{	

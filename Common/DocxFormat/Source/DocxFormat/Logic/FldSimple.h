@@ -38,6 +38,7 @@
 #include "../WritingElement.h"
 #include "../../Common/SimpleTypes_Word.h"
 #include "../../Common/SimpleTypes_Shared.h"
+#include "../../DocxFormat/Logic/FldChar.h"
 
 namespace OOX
 {
@@ -120,6 +121,7 @@ namespace OOX
 			nullable<std::wstring >                           m_sInstr;
 
 			// Childs
+			nullable<OOX::Logic::CFFData         > m_oFFData;
 		};
 
 	} // namespace Logic

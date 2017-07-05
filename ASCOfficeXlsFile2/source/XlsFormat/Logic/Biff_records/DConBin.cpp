@@ -53,9 +53,17 @@ BaseObjectPtr DConBin::clone()
 
 void DConBin::readFields(CFRecord& record)
 {
-#pragma message("####################### DConBin record is not implemented")
-	Log::error("DConBin record is not implemented.");
-	//record >> some_value;
+	unsigned short reserved1;
+	unsigned char reserved2;
+	record >> nBuiltin >> reserved1 >> reserved2 >> cchFile;
+
+	if (cchFile > 0 && cchFile < 0xffff)
+	{
+		stFile.setSize(cchFile);
+		record >> stFile;
+	}
+	
+	// skip unused
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 

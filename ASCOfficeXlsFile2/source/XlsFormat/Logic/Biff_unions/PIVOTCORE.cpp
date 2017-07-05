@@ -66,12 +66,45 @@ const bool PIVOTCORE::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.repeated<PIVOTVD>(0, 0);
-	proc.repeated<PIVOTIVD>(0, 2);
-	proc.optional<PIVOTPI>();
-	proc.repeated<SXDI>(0, 0);
-	proc.repeated<PIVOTLI>(0, 0);
-	proc.mandatory<PIVOTEX>();
+	m_SxView = elements_.back();
+	elements_.pop_back();
+
+	int count = 0;
+	
+	count = proc.repeated<PIVOTVD>(0, 0);
+	while(count--)
+	{
+		m_arPIVOTVD.push_back(elements_.front());	elements_.pop_front();
+	}
+	
+	count = proc.repeated<PIVOTIVD>(0, 2);
+	while(count--)
+	{
+		m_arPIVOTIVD.push_back(elements_.front());	elements_.pop_front();
+	}
+	if (proc.optional<PIVOTPI>())
+	{
+		m_PIVOTPI= elements_.back();
+		elements_.pop_back();
+	}
+	
+	count = proc.repeated<SXDI>(0, 0);
+	while(count--)
+	{
+		m_arSXDI.push_back(elements_.front());	elements_.pop_front();
+	}
+	
+	count = proc.repeated<PIVOTLI>(0, 0);
+	while(count--)
+	{
+		m_arPIVOTLI.push_back(elements_.front());	elements_.pop_front();
+	}
+
+	if (proc.mandatory<PIVOTEX>())
+	{
+		m_PIVOTEX = elements_.back();
+		elements_.pop_back();
+	}
 	
 	return true;
 }

@@ -582,6 +582,9 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_structures/XLUnicodeRichExtendedString.cpp \
     ../XlsFormat/Logic/Biff_structures/XORObfuscation.cpp \
     ../XlsFormat/Logic/Biff_structures/XTI.cpp \
+    ../XlsFormat/Logic/Biff_structures/SxAxis.cpp \
+    ../XlsFormat/Logic/Biff_structures/SXVIFlags.cpp \
+    ../XlsFormat/Logic/Biff_structures/HiddenMemberSet.cpp \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSOCR.cpp \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSOSHADECOLOR.cpp \
     ../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtBlip.cpp \
@@ -1364,6 +1367,9 @@ HEADERS +=  \
     ../XlsFormat/Logic/Biff_structures/XLUnicodeRichExtendedString.h \
     ../XlsFormat/Logic/Biff_structures/XORObfuscation.h \
     ../XlsFormat/Logic/Biff_structures/XTI.h \
+    ../XlsFormat/Logic/Biff_structures/SxAxis.h \
+    ../XlsFormat/Logic/Biff_structures/SXVIFlags.h \
+    ../XlsFormat/Logic/Biff_structures/HiddenMemberSet.h \
     ../XlsFormat/Logic/Biff_structures/ODRAW/IMsoArray.h \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSOCR.h \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSO_enums.h \

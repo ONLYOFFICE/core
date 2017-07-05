@@ -60,8 +60,51 @@ namespace NSPresentationEditor
 			*this = oSrc;
 		}
 	};
-
 	class CInteractiveInfo
+	{
+	public:
+		CInteractiveInfo() 
+		{
+			m_bPresent = false;
+		}
+
+		CInteractiveInfo& operator=(const CInteractiveInfo& oSrc)
+		{
+			m_bPresent			= oSrc.m_bPresent;
+			m_lType				= oSrc.m_lType;
+
+			m_lOleVerb			= oSrc.m_lOleVerb;
+			m_lJump				= oSrc.m_lJump;
+			m_lHyperlinkType	= oSrc.m_lHyperlinkType;
+			m_bAnimated			= oSrc.m_bAnimated;
+			m_bStopSound		= oSrc.m_bStopSound;
+			m_bCustomShowReturn	= oSrc.m_bCustomShowReturn;
+			m_bVisited			= oSrc.m_bVisited;
+
+			m_strAudioFileName	= oSrc.m_strAudioFileName;
+			m_strHyperlink		= oSrc.m_strHyperlink;
+			return *this;
+		}
+		CInteractiveInfo(const CInteractiveInfo& oSrc)
+		{
+			*this = oSrc;
+		}
+
+		bool			m_bPresent;
+
+		int				m_lType;
+		int				m_lOleVerb;
+		int				m_lJump;
+		int				m_lHyperlinkType;
+		bool			m_bAnimated;
+		bool			m_bStopSound;
+		bool			m_bCustomShowReturn;
+		bool			m_bVisited;
+
+		std::wstring	m_strAudioFileName;
+		std::wstring	m_strHyperlink;
+	};
+	class CTextInteractiveInfo
 	{
 	private:
         long        m_lType;
@@ -72,16 +115,15 @@ namespace NSPresentationEditor
 
 		std::vector<CTextRange> m_arRanges;
 
-	public:
-		CInteractiveInfo()
+		CTextInteractiveInfo()
 		{
 			m_bPresent = false;
 		}
-		~CInteractiveInfo()
+		~CTextInteractiveInfo()
 		{
 		}
 
-		CInteractiveInfo& operator=(const CInteractiveInfo& oSrc)
+		CTextInteractiveInfo& operator=(const CTextInteractiveInfo& oSrc)
 		{
 			m_lType			= oSrc.m_lType;
 			m_varParameter	= oSrc.m_varParameter;
@@ -92,7 +134,7 @@ namespace NSPresentationEditor
 
 			return *this;
 		}
-		CInteractiveInfo(const CInteractiveInfo& oSrc)
+		CTextInteractiveInfo(const CTextInteractiveInfo& oSrc)
 		{
 			*this = oSrc;
 		}

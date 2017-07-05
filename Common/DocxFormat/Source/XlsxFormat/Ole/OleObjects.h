@@ -43,7 +43,7 @@ namespace OOX
 		class COleObjectAnchor : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(COleObjectAnchor)
+			WritingElement_AdditionConstructors(COleObjectAnchor)
 			COleObjectAnchor()
 			{
 			}
@@ -51,8 +51,10 @@ namespace OOX
 			{
 			}
 
-		public:
-            virtual std::wstring	  toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -98,7 +100,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_OleObjectAnchor;
+				return et_x_OleObjectAnchor;
 			}
 
 		private:
@@ -125,16 +127,17 @@ namespace OOX
 		class COleObjectPr : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(COleObjectPr)
+			WritingElement_AdditionConstructors(COleObjectPr)
 			COleObjectPr()
 			{
 			}
 			virtual ~COleObjectPr()
 			{
 			}
-
-		public:
-            virtual std::wstring	  toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -160,7 +163,7 @@ namespace OOX
 				}
 				writer.WriteString(L"</objectPr>");
 			}
-			virtual void		 fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -181,60 +184,58 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_OleObjectPr;
+				return et_x_OleObjectPr;
 			}
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if	 ( oReader, _T("altText"),	  m_oAltText )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("autoFill"),	  m_oAutoFill )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("autoLine"),	  m_oAutoLine )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("autoPict"),	  m_oAutoPict )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("dde"),	  m_oDde )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("defaultSize"),	  m_oDefaultSize )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("disabled"),	  m_oDisabled )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("r:id"),	  m_oRid )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("locked"),	  m_oLocked )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("macro"),	  m_oMacro )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("print"),	  m_oPrint )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("uiObject"),	  m_oUiObject )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("altText"),		m_oAltText )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("autoFill"),		m_oAutoFill )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("autoLine"),		m_oAutoLine )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("autoPict"),		m_oAutoPict )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("dde"),			m_oDde )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("defaultSize"),	m_oDefaultSize )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("disabled"),		m_oDisabled )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("r:id"),			m_oRid )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("locked"),		m_oLocked )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("macro"),			m_oMacro )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("print"),			m_oPrint )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("uiObject"),		m_oUiObject )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<std::wstring > m_oAltText;
-			nullable<SimpleTypes::COnOff<> > m_oAutoFill;
-			nullable<SimpleTypes::COnOff<> > m_oAutoLine;
-			nullable<SimpleTypes::COnOff<> > m_oAutoPict;
-			nullable<SimpleTypes::COnOff<> > m_oDde;
-			nullable<SimpleTypes::COnOff<> > m_oDefaultSize;
-			nullable<SimpleTypes::COnOff<> > m_oDisabled;
-			nullable<SimpleTypes::CRelationshipId > m_oRid;
-			nullable<SimpleTypes::COnOff<> > m_oLocked;
-			nullable<std::wstring > m_oMacro;
-			nullable<SimpleTypes::COnOff<> > m_oPrint;
-			nullable<SimpleTypes::COnOff<> > m_oUiObject;
+			nullable<std::wstring>				m_oAltText;
+			nullable<SimpleTypes::COnOff<>>		m_oAutoFill;
+			nullable<SimpleTypes::COnOff<>>		m_oAutoLine;
+			nullable<SimpleTypes::COnOff<>>		m_oAutoPict;
+			nullable<SimpleTypes::COnOff<>>		m_oDde;
+			nullable<SimpleTypes::COnOff<>>		m_oDefaultSize;
+			nullable<SimpleTypes::COnOff<>>		m_oDisabled;
+			nullable<SimpleTypes::CRelationshipId> m_oRid;
+			nullable<SimpleTypes::COnOff<>>		m_oLocked;
+			nullable<std::wstring>				m_oMacro;
+			nullable<SimpleTypes::COnOff<>>		m_oPrint;
+			nullable<SimpleTypes::COnOff<>>		m_oUiObject;
 
-			nullable<COleObjectAnchor > m_oAnchor;
+			nullable<COleObjectAnchor>			m_oAnchor;
 		};
 
 		class COleObject : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(COleObject)
+			WritingElement_AdditionConstructors(COleObject)
 			COleObject()
 			{
 			}
 			virtual ~COleObject()
 			{
 			}
-
-		public:
-            virtual std::wstring	  toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -275,7 +276,7 @@ namespace OOX
 					writer.WriteString(L"/>");
 				}
 			}
-            void toXMLPptx(NSStringUtils::CStringBuilder& writer, std::wstring qqq) const
+            void toXMLPptx(NSStringUtils::CStringBuilder& writer, std::wstring qqq)
 			{
                 std::wstring sRoot;
 				writer.WriteString(L"<o:OLEObject");
@@ -301,13 +302,17 @@ namespace OOX
 						writer.WriteString(L"OnCall");
 					writer.WriteString(L"\"");
 				}
-				WritingStringNullableAttrEncodeXmlString(L"pathbin", m_oFilepathBin, m_oFilepathBin.get());
-				WritingStringNullableAttrEncodeXmlString(L"pathimg", m_oFilepathImg, m_oFilepathImg.get());
-				WritingStringNullableAttrString(L"idimg", m_oRidImg, m_oRidImg->ToString());
+				if (m_OleObjectFile.IsInit())
+				{
+					if (m_OleObjectFile->isMsPackage())
+						WritingStringAttrString(L"mspackage", L"true");
 
+					WritingStringAttrEncodeXmlString(L"pathbin", m_OleObjectFile->filename().GetPath());
+					WritingStringAttrEncodeXmlString(L"pathimg", m_OleObjectFile->filename_cache().GetPath());
+				}
 				writer.WriteString(L"/>");
 			}
-			virtual void		 fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -328,47 +333,40 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_OleObject;
+				return et_x_OleObject;
 			}
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if	 ( oReader, _T("progId"),	  m_oProgId )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("dvAspect"),	  m_oDvAspect )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("link"),	  m_oLink )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("oleUpdate"),	  m_oOleUpdate )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("autoLoad"),	  m_oAutoLoad )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("shapeId"),	  m_oShapeId )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("r:id"),	  m_oRid )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("pathbin"),	  m_oFilepathBin )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("pathimg"),	  m_oFilepathImg )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("idimg"),	  m_oRidImg )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if	 ( oReader, _T("progId"),		m_oProgId )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("dvAspect"),	m_oDvAspect )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("link"),		m_oLink )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("oleUpdate"),m_oOleUpdate )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("autoLoad"),	m_oAutoLoad )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("shapeId"),	m_oShapeId )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("r:id"),		m_oRid )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<std::wstring > m_oProgId;
-			nullable<SimpleTypes::Spreadsheet::ST_DvAspect<> > m_oDvAspect;
-			nullable<std::wstring > m_oLink;
-			nullable<SimpleTypes::Spreadsheet::ST_OleUpdate<> > m_oOleUpdate;
-			nullable<SimpleTypes::COnOff<> > m_oAutoLoad;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oShapeId;
-			nullable<SimpleTypes::CRelationshipId > m_oRid;
-			nullable<COleObjectPr > m_oObjectPr;
-			//internal
-			nullable<std::wstring > m_oFilepathBin;
-			nullable<std::wstring > m_oFilepathImg;
-			nullable<SimpleTypes::CRelationshipId > m_oRidImg;
+			nullable<std::wstring >								m_oProgId;
+			nullable<SimpleTypes::Spreadsheet::ST_DvAspect<>>	m_oDvAspect;
+			nullable<std::wstring >								m_oLink;
+			nullable<SimpleTypes::Spreadsheet::ST_OleUpdate<>>	m_oOleUpdate;
+			nullable<SimpleTypes::COnOff<>>						m_oAutoLoad;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oShapeId;
+			nullable<SimpleTypes::CRelationshipId>				m_oRid;
+			nullable<COleObjectPr>								m_oObjectPr;
+	//internal
+			smart_ptr<OOX::OleObject>							m_OleObjectFile;
+			nullable<SimpleTypes::CRelationshipId>				m_oRidImg;
 		};
 
 		class COleObjects : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(COleObjects)
+			WritingElement_AdditionConstructors(COleObjects)
 			COleObjects()
 			{
 			}
@@ -380,9 +378,10 @@ namespace OOX
 				}
 				m_mapOleObjects.clear();
 			}
-
-		public:
-            virtual std::wstring	  toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -398,7 +397,7 @@ namespace OOX
 					writer.WriteString(L"</oleObjects>");
 				}
 			}
-			virtual void		 fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -462,7 +461,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_OleObjects;
+				return et_x_OleObjects;
 			}
 
 		private:

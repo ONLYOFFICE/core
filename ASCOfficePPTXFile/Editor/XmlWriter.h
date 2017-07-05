@@ -268,18 +268,15 @@ namespace NSBinPptxRW
         std::wstring m_strStyleMain;
         std::wstring m_strAttributesMain;
         std::wstring m_strNodes;
-        std::wstring m_strOleXlsx;
-		std::wstring m_strOleDrawing;
 
         IRenderer* m_pOOXToVMLRenderer;
 
         bool m_bIsTop;
         bool m_bIsUseOffice2007;
 
-        CXmlWriter() : m_oWriter()
-        {
-            m_lDocType = XMLWRITER_DOC_TYPE_PPTX;
-
+		CXmlWriter (BYTE ooxType =  XMLWRITER_DOC_TYPE_PPTX) : m_oWriter()
+		{
+			m_lDocType					= ooxType;
             m_lFlag                     = 0;
             m_lGroupIndex               = 0;
             m_lObjectId                 = 0;
@@ -290,7 +287,7 @@ namespace NSBinPptxRW
 
 			m_pOOXToVMLRenderer         = NULL;
             m_bIsTop                    = false;
-         }
+		}
         ~CXmlWriter()
         {
         }

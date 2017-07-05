@@ -32,12 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/FrtHeaderOld.h"
 
 namespace XLS
 {
 
-
-// Logical representation of QsiSXTag record in BIFF8
 class QsiSXTag: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(QsiSXTag)
@@ -47,12 +47,24 @@ public:
 	~QsiSXTag();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeQsiSXTag;
+	static const ElementType type = typeQsiSXTag;
 
+	FrtHeaderOld	frtHeaderOld;
+	unsigned short	fSx;
+
+	bool			fEnableRefresh;
+	bool			fInvalid;
+	bool			fTensorEx;
+	
+	_UINT32			dwQsiFuture;
+	unsigned char	verSxLastUpdated;
+	unsigned char	verSxUpdatableMin;
+
+	unsigned char	obCchName;
+	XLUnicodeString	stName;
 };
 
 } // namespace XLS

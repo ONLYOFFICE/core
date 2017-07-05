@@ -71,7 +71,18 @@ static std::wstring get_mime_type(const std::wstring & extension)
    	else if (L"tif" == extension)	return  L"image/x-tiff";
  	else if (L"tiff" == extension)	return  L"image/x-tiff";
 	else if (L"pdf" == extension)	return  L"application/pdf";
+
 	else if (L"wav" == extension)	return  L"audio/wav";
+	else if (L"mp3" == extension)	return  L"audio/mpeg";
+	else if (L"wma" == extension)	return  L"audio/x-ms-wma";
+	else if (L"m4a" == extension)	return  L"audio/unknown";
+
+	else if (L"avi" == extension)	return  L"video/avi";
+	else if (L"wmv" == extension)	return  L"video/x-ms-wmv";
+	else if (L"mov" == extension)	return  L"video/unknown";
+	else if (L"mp4" == extension)	return  L"video/unknown";
+	else if (L"m4v" == extension)	return  L"video/unknown";
+
 	else if (L"bin" == extension)	return  L"application/vnd.openxmlformats-officedocument.oleObject";
 	else if (L"xlsx" == extension)	return  L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 	else if (L"docx" == extension)	return  L"application/vnd.openxmlformats-officedocument.wordprocessingml.document";
@@ -130,7 +141,7 @@ bool content_types_file::add_or_find_override(const std::wstring & fileName)
 {
 	std::vector<override_content_type> & override_ = content_type_content_.get_override();
 	
-	for (int i = 0 ; i < override_.size(); i++)
+	for (size_t i = 0 ; i < override_.size(); i++)
 	{
 		if (override_[i].part_name() == fileName)
 			return true;
@@ -158,14 +169,18 @@ bool content_types_file::add_or_find_override(const std::wstring & fileName)
 
 void content_types_file::set_media(mediaitems & _Mediaitems)
 {
-    BOOST_FOREACH( mediaitems::item & item, _Mediaitems.items() )
+	std::vector<mediaitems::item> & items_ = _Mediaitems.items();
+    for (size_t i = 0; i < items_.size(); i++)
     {
-		if ((item.type == typeImage || item.type == typeMedia) && item.mediaInternal)
+		if ((items_[i].type == typeImage || 
+			items_[i].type == typeMedia	||
+			items_[i].type == typeVideo	||
+			items_[i].type == typeAudio) && items_[i].mediaInternal)
 		{
-			int n = item.outputName.rfind(L".");
+			int n = items_[i].outputName.rfind(L".");
 			if (n > 0)
 			{
-				add_or_find_default(item.outputName.substr(n+1, item.outputName.length() - n));
+				add_or_find_default(items_[i].outputName.substr(n + 1, items_[i].outputName.length() - n));
 			}
 		}
 	}
@@ -320,9 +335,12 @@ void media::write(const std::wstring & RootPath)
     NSDirectory::CreateDirectory(path.c_str());
 
 	mediaitems::items_array & items = mediaitems_.items();
-    for (int i = 0; i < items.size(); i++ )
+    for (size_t i = 0; i < items.size(); i++ )
     {
-        if (items[i].mediaInternal && items[i].valid && (items[i].type == typeImage || items[i].type == typeMedia))
+        if (items[i].mediaInternal && items[i].valid && (	items[i].type == typeImage || 
+															items[i].type == typeMedia ||
+															items[i].type == typeAudio ||
+															items[i].type == typeVideo ))
         {
 			std::wstring & file_name	= items[i].href;
 			std::wstring file_name_out	= RootPath + FILE_SEPARATOR_STR + items[i].outputName;
@@ -359,7 +377,7 @@ void embeddings::write(const std::wstring & RootPath)
 	content_types_file & content_types = get_main_document()->get_content_types_file();           
     
 	mediaitems::items_array & items = embeddingsitems_.items();
-    for (int i = 0; i < items.size(); i++ )
+    for (size_t i = 0; i < items.size(); i++ )
     {
         if ( items[i].mediaInternal && items[i].valid &&
 			(items[i].type == typeMsObject || items[i].type == typeOleObject))

@@ -143,7 +143,7 @@ public:
 private:
 	CipherARCFOUR		mhCipher;
 	DigestMD5           mhDigest;
-	unsigned char           mpnDigestValue[DigestMD5::RTL_DIGEST_LENGTH_MD5];
+	unsigned char		mpnDigestValue[DigestMD5::RTL_DIGEST_LENGTH_MD5];
 };
 
 

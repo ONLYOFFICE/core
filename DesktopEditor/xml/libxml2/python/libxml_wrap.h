@@ -1,4 +1,4 @@
-﻿#include <Python.h>
+#include <Python.h>
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <libxml/parserInternals.h>

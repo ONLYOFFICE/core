@@ -61,7 +61,7 @@ const bool PIVOTRULE::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.repeated<PRFILTER>(0, 0);
+	int count = proc.repeated<PRFILTER>(0, 0);
 
 	return true;
 }

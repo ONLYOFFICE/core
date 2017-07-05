@@ -113,7 +113,7 @@ void xlsx_serialize_image(std::wostream & strm, _xlsx_drawing & val)
                     CP_XML_ATTR(L"id", val.id);
                     CP_XML_ATTR(L"name", val.name);
 
-					oox_serialize_hlink(CP_XML_STREAM(),val.hlinks);
+					oox_serialize_action(CP_XML_STREAM(), val.action);
 
 				}
                 CP_XML_NODE(L"xdr:cNvPicPr")
@@ -158,7 +158,7 @@ void xlsx_serialize_shape(std::wostream & strm, _xlsx_drawing & val)
 
                     CP_XML_ATTR(L"name", val.name);
 
-					oox_serialize_hlink(CP_XML_STREAM(),val.hlinks);
+					oox_serialize_action(CP_XML_STREAM(), val.action);
                 }
 				CP_XML_NODE(L"xdr:cNvSpPr")//non visual properies (собственно тока 1 там)
 				{

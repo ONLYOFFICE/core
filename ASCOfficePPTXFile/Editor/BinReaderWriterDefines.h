@@ -80,7 +80,10 @@ namespace NSBinPptxRW
 			ImageMap		= 42,
 			FontMap			= 43,
 
-			FontsEmbedded	= 44
+			FontsEmbedded	= 44,
+			SlideNotesRels	= 45,
+			NotesRels		= 46,
+			NotesMastersRels= 47
 		};
 	}
 }
@@ -183,6 +186,8 @@ namespace NSBinPptxRW
 #define SPTREE_TYPE_SPTREE				4
 #define SPTREE_TYPE_GRFRAME				5
 #define SPTREE_TYPE_OLE					6
+#define SPTREE_TYPE_VIDEO				7
+#define SPTREE_TYPE_AUDIO				8
 
 static BYTE SchemeClr_GetBYTECode(const std::wstring& sValue)
 {

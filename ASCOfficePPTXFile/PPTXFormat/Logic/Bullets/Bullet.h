@@ -187,8 +187,25 @@ namespace PPTX
 						break;
 					}
 				case BULLET_TYPE_BULLET_BLIP:
-					// TODO:
-					break;
+				{
+					pReader->Skip(5); // len + type + start attr
+					
+					Logic::BuBlip *pBuBlip = new Logic::BuBlip();
+					pBuBlip->blip.fromPPTY(pReader);
+
+					if (pBuBlip->blip.embed.IsInit())
+					{
+						m_Bullet.reset(pBuBlip);
+					}
+					else
+					{//??? сбой ???
+						delete pBuBlip;
+
+						Logic::BuChar *pBuChar = new Logic::BuChar();
+						pBuChar->Char = wchar_t(L'\x2022');
+						m_Bullet.reset(pBuChar);				
+					}
+				}break;
 				default:
 					m_Bullet.reset(new Logic::BuNone());
 					break;

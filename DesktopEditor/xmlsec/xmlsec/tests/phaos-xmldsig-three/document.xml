@@ -1,0 +1,6 @@
+<player id="10012" bats="left" throws="right">
+	<!-- Here's a comment -->
+	<name>Alfonso Soriano</name>
+	<position>2B</position>
+	<team>New York Yankees</team>
+</player>

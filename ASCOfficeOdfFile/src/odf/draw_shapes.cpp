@@ -79,7 +79,6 @@ void draw_shape::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	common_draw_attlists_.shape_with_text_and_styles_.add_attributes(Attributes);
     common_draw_attlists_.position_.add_attributes(Attributes);
     common_draw_attlists_.rel_size_.add_attributes(Attributes);
- 	common_presentation_attlist_.add_attributes(Attributes);
    
 	draw_shape_attlist_.add_attributes(Attributes);
 
@@ -164,10 +163,10 @@ void draw_line::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 void draw_line::reset_svg_attributes()
 {
-	double x1=draw_line_attlist_.svg_x1_.get_value_or(length(0)).get_value_unit(length::pt);
-	double y1=draw_line_attlist_.svg_y1_.get_value_or(length(0)).get_value_unit(length::pt);
-	double x2=draw_line_attlist_.svg_x2_.get_value_or(length(0)).get_value_unit(length::pt);
-	double y2=draw_line_attlist_.svg_y2_.get_value_or(length(0)).get_value_unit(length::pt);
+	double x1 = draw_line_attlist_.svg_x1_.get_value_or(length(0)).get_value_unit(length::pt);
+	double y1 = draw_line_attlist_.svg_y1_.get_value_or(length(0)).get_value_unit(length::pt);
+	double x2 = draw_line_attlist_.svg_x2_.get_value_or(length(0)).get_value_unit(length::pt);
+	double y2 = draw_line_attlist_.svg_y2_.get_value_or(length(0)).get_value_unit(length::pt);
 	
 	if (x1 > x2)
 	{
@@ -432,8 +431,8 @@ void draw_equation::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 int draw_enhanced_geometry::parsing(_CP_OPT(std::wstring) val) 
 {
-	int pos=0, res=-1;
-	if (!val)return res;
+	int pos = 0, res = -1;
+	if (!val) return res;
 
 	BOOST_FOREACH(wchar_t c, val.get())
     {
@@ -454,6 +453,7 @@ void draw_enhanced_geometry_attlist::add_attributes( const xml::attributes_wc_pt
     CP_APPLY_ATTR(L"draw:modifiers"			, draw_modifiers_);
 	CP_APPLY_ATTR(L"draw:text-path"			, draw_text_path_);
 	CP_APPLY_ATTR(L"draw:enhanced-path"		, draw_enhanced_path_);
+	CP_APPLY_ATTR(L"drawooo:enhanced-path"	, drawooo_enhanced_path_);
 	CP_APPLY_ATTR(L"drawooo:sub-view-size"	, drawooo_sub_view_size_);
 }
 // draw:enhanced_geometry
@@ -486,6 +486,9 @@ void draw_enhanced_geometry::add_child_element( xml::sax * Reader, const std::ws
 }
 void draw_enhanced_geometry::find_draw_type_oox()
 {
+	word_art_ = false;
+	bOoxType_ = false;
+	
 	if (draw_enhanced_geometry_attlist_.draw_text_path_ &&
 			*draw_enhanced_geometry_attlist_.draw_text_path_ == true)
 	{
@@ -502,7 +505,7 @@ void draw_enhanced_geometry::find_draw_type_oox()
 		{
 			int count = sizeof(_OO_OOX_wordart) / sizeof(_shape_converter);
 
-			for (long i=0; i< count; i++)
+			for (int i = 0; i < count; i++)
 			{
 				if (_OO_OOX_wordart[i].odf_reader == odf_type)
 				{
@@ -519,7 +522,7 @@ void draw_enhanced_geometry::find_draw_type_oox()
 
 			if (pos < 0)
 			{
-				for (long i=0; i< count; i++)
+				for (long i = 0; i< count; i++)
 				{
 					if (_OO_OOX_custom_shapes[i].odf_reader == odf_type)
 					{
@@ -531,10 +534,11 @@ void draw_enhanced_geometry::find_draw_type_oox()
 			else
 			{
 				std::wstring oox_type = odf_type.substr(pos + 6);
-				for (long i=0; i< count; i++)
+				for (long i = 0; i< count; i++)
 				{
 					if (_OO_OOX_custom_shapes[i].oox == oox_type)
 					{
+						bOoxType_ = true;
 						draw_type_oox_index_ = i;
 						break;
 					}	
@@ -546,38 +550,36 @@ void draw_enhanced_geometry::find_draw_type_oox()
 			}
 		}
 	}
-	std::wstringstream str;
+  //  for (size_t i = 0; i < draw_handle_.size(); i++)
+  //  {
+		//draw_handle * handle = dynamic_cast<draw_handle *>(draw_handle_[i].get());        
+		//if (!handle) continue;
 
-    BOOST_FOREACH(const office_element_ptr & parElement, draw_handle_)
-    {
-		draw_handle * handle = dynamic_cast<draw_handle *>(parElement.get());
-        
-		int min = -1;
-		int max = -1;
-		
-		try
-		{
-			min = parsing(handle->draw_handle_attlist_.draw_handle_range_y_minimum_);//пока статик .. и выдается только цыфровое значение
-			if (min<0)min = parsing(handle->draw_handle_attlist_.draw_handle_range_x_minimum_);
-			if (min<0)min = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_minimum_);
-		}
-		catch(...)
-		{
-		}
-		if (min < 0 ) min=0;
+		//int min = -1, max = -1;
+		//
+		//try
+		//{
+		//	min = parsing(handle->draw_handle_attlist_.draw_handle_range_y_minimum_);//пока статик .. и выдается только цыфровое значение
+		//	if (min < 0) min = parsing(handle->draw_handle_attlist_.draw_handle_range_x_minimum_);
+		//	if (min < 0) min = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_minimum_);
+		//}
+		//catch(...)
+		//{
+		//}
+		//if (min < 0 ) min=0;
 
-		try
-		{	
-			max = parsing(handle->draw_handle_attlist_.draw_handle_range_y_maximum_);
-			if (max < 0) max = parsing(handle->draw_handle_attlist_.draw_handle_range_x_maximum_);
-			if (max < 0) max = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_maximum_);
-		}
-		catch(...)
-		{
-		}		
-		draw_handle_geometry elm={min, max};
-		draw_handle_geometry_.push_back(elm);
-    }
+		//try
+		//{	
+		//	max = parsing(handle->draw_handle_attlist_.draw_handle_range_y_maximum_);
+		//	if (max < 0) max = parsing(handle->draw_handle_attlist_.draw_handle_range_x_maximum_);
+		//	if (max < 0) max = parsing(handle->draw_handle_attlist_.draw_handle_radius_range_maximum_);
+		//}
+		//catch(...)
+		//{
+		//}		
+		//draw_handle_geometry elm = {min, max};
+		//draw_handle_geometry_.push_back(elm);
+  //  }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// draw-caption-attlist

@@ -34,56 +34,52 @@
 #include "OOXReader.h"
 #include "OOXReaderBasic.h"
 
-#include "../../../../Common/DocxFormat/Source/DocxFormat/Drawing/DrawingStyles.h"
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SchemeClr.h"
 
 class OOXColorReader
 {
+private:
+	PPTX::nsTheme::ClrScheme * m_ooxColorScheme;
 public: 
 	OOXColorReader()
 	{
+		m_ooxColorScheme = NULL;
 	}
-	bool Parse( ReaderParameter oParam, OOX::Drawing::CStyleColor & ooxColor, RtfColor & oOutputColor )
-	{	
-		if (ooxColor.getType() == OOX::Drawing::colorHsl)
+	OOXColorReader(PPTX::nsTheme::ClrScheme * ooxColorScheme)
+	{
+		m_ooxColorScheme = ooxColorScheme;
+	}
+	bool Parse( ReaderParameter oParam, const std::wstring &name, RtfColor & oOutputColor )
+	{
+		if (!m_ooxColorScheme) return false;
+
+		std::map<std::wstring, PPTX::Logic::UniColor>::iterator pFind = m_ooxColorScheme->Scheme.find(name);
+
+		if (pFind == m_ooxColorScheme->Scheme.end()) return false;
+		PPTX::Logic::UniColor & color = pFind->second;
+
+		switch(color.getType ())
 		{
-			double dHue, dSat, dLum;
-			ooxColor.m_oHslClr.GetHSL(dHue,dSat,dLum);
-			oOutputColor.SetHSL( dHue, dSat, dLum );
-			return true;
-		}
-		else if(ooxColor.getType() == OOX::Drawing::colorPrst)
-		{
-			oOutputColor = RtfColor(ooxColor.m_oPrstClr.m_oVal.Get_R(), ooxColor.m_oPrstClr.m_oVal.Get_G(), ooxColor.m_oPrstClr.m_oVal.Get_B());
-			return true;
-		}
-		else if(ooxColor.getType() == OOX::Drawing::colorSheme)
-		{
-			RtfColor::_ThemeColor oTheme;
-			if( true == RtfColor::GetThemeByOOX( ooxColor.m_oShemeClr.m_oVal.GetValue(), oTheme ))
-				return oParam.oRtf->m_oColorTable.GetColor( oTheme, oOutputColor );
-			return false;
-		}
-		else if( ooxColor.getType() == OOX::Drawing::colorSRgb)
-		{
-			oOutputColor = RtfColor(ooxColor.m_oSrgbClr.m_oVal.Get_R(), ooxColor.m_oSrgbClr.m_oVal.Get_G(), ooxColor.m_oSrgbClr.m_oVal.Get_B());
-			return true;
-		}
-		else if( ooxColor.getType() == OOX::Drawing::colorScRgb)
-		{
-			unsigned char r, g, b, a;
-			ooxColor.m_oScrgbClr.GetRGBA( r, g, b, a);
-			oOutputColor = RtfColor(r, g, b);
-			return true;
-		}
-		else if( ooxColor.getType() == OOX::Drawing::colorSys)
-		{
-			//if (ooxColor.m_oSysClr.m_oLastClr)
-			//{
-			//}
-			unsigned char r, g, b, a;
-			ooxColor.m_oSysClr.GetRGBA( r, g, b, a);
-			oOutputColor = RtfColor(r, g, b);
-			return true;
+			case OOX::et_a_schemeClr:
+			{
+				NSCommon::smart_ptr<PPTX::Logic::SchemeClr> schemeColor = color.Color.smart_dynamic_cast<PPTX::Logic::SchemeClr>();
+				if (schemeColor.IsInit())
+				{
+					RtfColor::_ThemeColor oTheme;
+					if( true == RtfColor::GetThemeByOOX( (SimpleTypes::EShemeColorVal)schemeColor->val.GetBYTECode(), oTheme ))
+					return oParam.oRtf->m_oColorTable.GetColor( oTheme, oOutputColor );	
+				}
+			}break;
+			case OOX::et_a_prstClr:
+			case OOX::et_a_scrgbClr:
+			case OOX::et_a_srgbClr:
+			case OOX::et_a_sysClr:
+			default:
+			{
+				DWORD rgba = color.GetRGBA();
+				oOutputColor.SetRGB(rgba >> 8);
+				return true;
+			}break;
 		}
 		return false;
 	}

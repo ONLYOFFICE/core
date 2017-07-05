@@ -86,6 +86,7 @@ namespace DocFileFormat
 		friend class Table;
 		friend class TableRow;
 		friend class VMLShapeMapping;
+		friend class VMLPictureMapping;
 		friend class OpenXmlPackage;
 		friend class TextboxMapping;
 
@@ -102,6 +103,7 @@ namespace DocFileFormat
 	private:
 		bool DecryptOfficeFile	(CRYPT::Decryptor* Decryptor);
 		bool DecryptStream		(CRYPT::Decryptor* Decryptor, std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut);
+		bool CopyStream			(std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut);
 
 		inline StructuredStorageReader* GetStorage() const
 		{

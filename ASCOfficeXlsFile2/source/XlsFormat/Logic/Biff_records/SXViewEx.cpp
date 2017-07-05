@@ -35,16 +35,6 @@
 namespace XLS
 {
 
-SXViewEx::SXViewEx()
-{
-}
-
-
-SXViewEx::~SXViewEx()
-{
-}
-
-
 BaseObjectPtr SXViewEx::clone()
 {
 	return BaseObjectPtr(new SXViewEx(*this));
@@ -52,9 +42,11 @@ BaseObjectPtr SXViewEx::clone()
 
 void SXViewEx::readFields(CFRecord& record)
 {
-#pragma message("####################### SXViewEx record is not implemented")
-	Log::error("SXViewEx record is not implemented.");
-	//record >> some_value;
+	record >> frtHeaderOld >> csxth >> csxpi >> csxvdtex >> cbFuture;
+
+	if (cbFuture)
+		rgbFuture = std::string(record.getCurData<char>(), cbFuture);
+
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 

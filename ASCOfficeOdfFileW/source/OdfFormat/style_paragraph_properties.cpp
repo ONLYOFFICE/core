@@ -126,12 +126,12 @@ void style_background_image::serialize(std::wostream & strm)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR_OPT(L"style:repeat", style_repeat_);
-			CP_XML_ATTR_OPT(L"style:position", style_position_);
-			CP_XML_ATTR_OPT(L"filter:name", filter_name_);
-			CP_XML_ATTR_OPT(L"draw:opacity", draw_opacity_);
+			CP_XML_ATTR_OPT(L"style:repeat",	style_repeat_);
+			CP_XML_ATTR_OPT(L"style:position",	style_position_);
+			CP_XML_ATTR_OPT(L"filter:name",		filter_name_);
+			CP_XML_ATTR_OPT(L"draw:opacity",	draw_opacity_);
 
-			if (common_xlink_attlist_)	common_xlink_attlist_->serialize(CP_GET_XML_NODE());
+			if (xlink_attlist_)	xlink_attlist_->serialize(CP_GET_XML_NODE());
 			if (office_binary_data_)	office_binary_data_->serialize(CP_XML_STREAM());
 		}
 	}
@@ -162,6 +162,8 @@ void paragraph_format_properties::create_child_element(const std::wstring & Ns, 
 }
 void paragraph_format_properties::add_child_element( const office_element_ptr & child_element)
 {
+	if (!child_element) return;
+
 	ElementType type = child_element->get_type();
 
     if (type == typeStyleTabStops)
@@ -253,21 +255,21 @@ const wchar_t * style_paragraph_properties::name = L"paragraph-properties";
 
 void style_paragraph_properties::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
-    style_paragraph_properties_content_.create_child_element(Ns, Name, getContext());    
+    content_.create_child_element(Ns, Name, getContext());    
 }
 void style_paragraph_properties::add_child_element(const office_element_ptr & child_element)
 {
-	style_paragraph_properties_content_.add_child_element(child_element);
+	content_.add_child_element(child_element);
 }
 void style_paragraph_properties::serialize(std::wostream & strm)
 {
-	 style_paragraph_properties_content_.serialize(strm,ns,name);
+	 content_.serialize(strm,ns,name);
 }
 void style_paragraph_properties::apply_from(style_paragraph_properties * Other)
 {
 	if (Other == NULL)return;
 
-	style_paragraph_properties_content_.apply_from(Other->content());
+	content_.apply_from(Other->content_);
 }
 
 void paragraph_format_properties::clear()

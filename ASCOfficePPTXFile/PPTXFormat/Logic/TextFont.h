@@ -83,8 +83,6 @@ namespace PPTX
 					m_eType = OOX::et_a_latin;
 				else if ( _T("a:sym") == m_name )
 					m_eType = OOX::et_a_sym;
-				else
-					return;
 
 				ReadAttributes( oReader );
 
@@ -239,10 +237,10 @@ namespace PPTX
 			}
 
 		public:
-			nullable_string charset;
-			nullable_string panose;
-			nullable_string pitchFamily;
-			std::wstring	typeface;
+			nullable_string		charset;
+			nullable_string		panose;
+			nullable_string		pitchFamily;
+			std::wstring		typeface;
 
 			std::wstring		m_name;
 			OOX::EElementType	m_eType;

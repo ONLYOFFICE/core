@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of PIVOTVIEW union of records 
 class PIVOTVIEW: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTVIEW)
@@ -49,7 +47,10 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typePIVOTVIEW;
+	static const ElementType type = typePIVOTVIEW;
+
+	BaseObjectPtr	m_PIVOTCORE;
+	BaseObjectPtr	m_PIVOTFRT;
 };
 
 } // namespace XLS

@@ -44,7 +44,11 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(EmptyTransition)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_EmptyTransition;
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				name = XmlUtils::GetNameNoNS(node.GetName());
@@ -55,7 +59,6 @@ namespace PPTX
 				return _T("<p:") + name + _T("/>");
 			}
 
-		public:
 			std::wstring name;
 		protected:
 			virtual void FillParentPointersForChilds(){};

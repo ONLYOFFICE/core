@@ -92,17 +92,6 @@ namespace PPTX
 				node.LoadArray(_T("a:tc"), Cells);
 			}
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("h"), Height);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteArray(Cells);
-
-				return XmlUtils::CreateNode(_T("a:tr"), oAttr, oValue);
-			}
-
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(_T("a:tr"));

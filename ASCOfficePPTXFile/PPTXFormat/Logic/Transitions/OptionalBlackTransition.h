@@ -44,10 +44,14 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(OptionalBlackTransition)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_OptionalBlackTransition;
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				name	= XmlUtils::GetNameNoNS(node.GetName());
+				name = XmlUtils::GetNameNoNS(node.GetName());
 				node.ReadAttributeBase(L"thruBlk", thruBlk);
 			}
 
@@ -59,9 +63,9 @@ namespace PPTX
 				return XmlUtils::CreateNode(_T("p:") + name, oAttr);
 			}
 
-		public:
-			std::wstring					name;
-			nullable_bool			thruBlk;
+			std::wstring		name;
+			nullable_bool		thruBlk;
+
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

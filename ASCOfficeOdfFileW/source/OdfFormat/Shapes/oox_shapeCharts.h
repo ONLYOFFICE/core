@@ -29,6 +29,32 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "../oox_shape_defines.h"
+
 //	shapetypeChartPlus,
 //	shapetypeChartStar,
-//	shapetypeChartX,
+//	shapetypeChartX
+//+	shapetypeFlowChartExtract
+namespace cpdoccore 
+{
+class oox_shape_FlowChartExtract : public oox_shape
+{
+public:
+	oox_shape_FlowChartExtract()
+	{
+		odf_type_name	=L"ooxml-flowChartExtract";
+
+		enhanced_path	= L"M 0 2 L 1 0 2 2 Z N";
+		text_areas		= L"?f2 ?f3 ?f0 ?f4";
+		view_box		= L"0 0 0 0";
+		
+		add(L"f0", L"logwidth*3/4");
+		add(L"f1", L"logwidth/2");
+		add(L"f2", L"logwidth/4");
+		add(L"f3", L"logheight/2");
+		add(L"f4", L"logheight");
+  
+	}
+};
+
+}

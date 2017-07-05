@@ -185,8 +185,12 @@ namespace BinXlsxRW
 		DefinedNames = 3,
 		DefinedName = 4,
 		ExternalReferences = 5,
-		ExternalReference = 6
-
+		ExternalReference = 6,
+		PivotCaches = 7,
+		PivotCache = 8,
+		ExternalBook = 9,
+		OleLink = 10,
+		DdeLink = 11
 	};}
 	namespace c_oSerWorkbookPrTypes{enum c_oSerWorkbookPrTypes
 	{
@@ -232,7 +236,8 @@ namespace BinXlsxRW
 		SheetViews = 22,
 		SheetView = 23,
 		SheetPr = 24,
- 		SparklineGroups = 25
+		SparklineGroups = 25,
+		PivotTable = 26
 	};}
 	namespace c_oSerWorksheetPropTypes{enum c_oSerWorksheetPropTypes
 	{
@@ -808,6 +813,61 @@ namespace BinXlsxRW
 	{
 		AltText = 0,
 		AltTextSummary = 1
+	};}
+	namespace c_oSer_PivotTypes{enum c_oSerPivotTypes
+	{
+		id = 0,
+		cache = 1,
+		record = 2,
+		cacheId = 3,
+		table = 4
+	};}
+	namespace c_oSer_ExternalLinkTypes{enum c_oSer_ExternalLinkTypes
+	{
+		Id = 0,
+		SheetNames = 1,
+		SheetName = 2,
+		DefinedNames = 3,
+		DefinedName = 4,
+		DefinedNameName = 5,
+		DefinedNameRefersTo = 6,
+		DefinedNameSheetId = 7,
+		SheetDataSet = 8,
+		SheetData = 9,
+		SheetDataSheetId = 10,
+		SheetDataRefreshError = 11,
+		SheetDataRow = 12,
+		SheetDataRowR = 13,
+		SheetDataRowCell = 14,
+		SheetDataRowCellRef = 15,
+		SheetDataRowCellType = 16,
+		SheetDataRowCellValue = 17
+	};}
+	namespace c_oSer_OleLinkTypes{enum c_oSer_OleLinkTypes
+	{
+		Id = 0,
+		ProgId = 1,
+		OleItem = 2,
+		Name = 3,
+		Icon = 4,
+		Advise = 5,
+		PreferPic = 6
+	};}
+	namespace c_oSer_DdeLinkTypes{enum c_oSer_DdeLinkTypes
+	{
+		DdeService = 0,
+		DdeTopic = 1,
+		DdeItem = 2,
+		Name = 3,
+		Ole = 4,
+		Advise = 5,
+		PreferPic = 6,
+		DdeValues = 7,
+		DdeValuesRows = 8,
+		DdeValuesCols = 9,
+		DdeValue = 10,
+		DdeValueType = 11,
+		DdeValueVal = 12
 	};}
 }
 

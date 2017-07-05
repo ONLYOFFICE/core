@@ -158,7 +158,6 @@ HEADERS += \
     ../PPTXWriter/ShapeWriter.h \
     ../PPTXWriter/StylesWriter.h \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Element.h \
-    ../../../ASCOfficePPTXFile/Editor/Drawing/ElementProperties.h \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.h \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Layout.h \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Slide.h \
@@ -177,6 +176,7 @@ SOURCES += \
     ../Reader/ReadStructures.cpp \
     ../Reader/PPTDocumentInfoOneUser.cpp \
     ../Reader/Records.cpp \
+    ../Reader/PPTFileReader.cpp \
     ../Reader/SlidePersist.cpp \
     ../Records/Animations/AnimationTypes.cpp \
     ../Records/Drawing/ArtBlip.cpp \

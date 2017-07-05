@@ -33,7 +33,7 @@
 
 #include "BiffStructure.h"
 #include <Logic/Biff_structures/BitMarkedStructs.h>
-#include "../../Crypt/Crypt.h"
+#include "../../Crypt/RC4Crypt.h"
 
 namespace CRYPTO
 {
@@ -49,8 +49,8 @@ public:
 
 	Version								EncryptionVersionInfo;
 	
-	CRYPT::CryptRC4Data					crypt_data_rc4;
-	CRYPT::ECMADecryptor::_cryptData	crypt_data_aes;
+	CRYPT::_rc4CryptData				crypt_data_rc4;
+	CRYPT::_ecmaCryptData				crypt_data_aes;
 	
 	bool								bStandard;
 };

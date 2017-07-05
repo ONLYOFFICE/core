@@ -32,20 +32,13 @@
 #ifndef CSV_WRITER
 #define CSV_WRITER
 
-#define CP_UTF16		1200
-#define CP_unicodeFFFE	1201
-
-#ifndef CP_UTF8
-#define CP_UTF8 65001
-#endif
-
 #include "../../DesktopEditor/common/File.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 
 namespace CSVWriter
 {
-    void WriteFile(NSFile::CFileBinary *pFile, WCHAR **pWriteBuffer, INT &nCurrentIndex, std::wstring &sWriteString, UINT &nCodePage, bool bIsEnd = false);
-    void WriteFromXlsxToCsv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter, bool bJSON);
+	void WriteFile(NSFile::CFileBinary *pFile, WCHAR **pWriteBuffer, INT &nCurrentIndex, const std::wstring &sWriteString, UINT &nCodePage, bool bIsEnd = false);
+	void WriteFromXlsxToCsv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& wcDelimiter, bool bJSON);
 }
 
 #endif //CSV_WRITER

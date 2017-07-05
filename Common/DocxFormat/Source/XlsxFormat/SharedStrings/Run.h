@@ -46,16 +46,17 @@ namespace OOX
 		class CRun : public WritingElementWithChilds<CText>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CRun)
+			WritingElement_AdditionConstructors(CRun)
 			CRun()
 			{
 			}
 			virtual ~CRun()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -71,7 +72,7 @@ namespace OOX
 				}
 				writer.WriteString(_T("</r>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -92,7 +93,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_r;
+				return et_x_r;
 			}
 
 		private:

@@ -36,7 +36,7 @@
 #include "../Base/SmartPtr.h"
 #include "../DocxFormat/IFileContainer.h"
 
-#include "../DocxFormat/Theme/Theme.h"
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 #include "../DocxFormat/App.h"
 #include "../DocxFormat/Core.h"
 
@@ -47,6 +47,9 @@
 #include "CalcChain/CalcChain.h"
 #include "ExternalLinks/ExternalLinks.h"
 #include "ExternalLinks/ExternalLinkPath.h"
+#include "Pivot/PivotTable.h"
+#include "Pivot/PivotCacheDefinition.h"
+#include "Pivot/PivotCacheRecords.h"
 
 #include "../../../DesktopEditor/common/Directory.h"
 
@@ -56,7 +59,7 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		class CXlsx : public OOX::Spreadsheet::IFileContainer
+		class CXlsx : public OOX::IFileContainer 
 		{
 		public:
 
@@ -72,184 +75,182 @@ namespace OOX
 			}
 			~CXlsx()
 			{
-                            if(bDeleteWorkbook)
-                                RELEASEOBJECT(m_pWorkbook);
-                            if(bDeleteSharedStrings)
-                                RELEASEOBJECT(m_pSharedStrings);
-                            if(bDeleteStyles)
-                                RELEASEOBJECT(m_pStyles);
-                            if(bDeleteTheme)
-                                RELEASEOBJECT(m_pTheme);
-                            if(bDeleteCalcChain)
-                                RELEASEOBJECT(m_pCalcChain);
-                            if(bDeleteWorksheets)
-                            {
-								for (std::map<std::wstring, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
-                                {
-                                    if (NULL != it->second)
-                                        delete it->second;
-                                }
-                            }
+                if(bDeleteWorkbook)			RELEASEOBJECT(m_pWorkbook);
+                if(bDeleteSharedStrings)	RELEASEOBJECT(m_pSharedStrings);
+                if(bDeleteStyles)			RELEASEOBJECT(m_pStyles);
+                if(bDeleteCalcChain)		RELEASEOBJECT(m_pCalcChain);
+                
+				if(bDeleteWorksheets)
+                {
+					for (std::map<std::wstring, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
+                    {
+                        if (NULL != it->second)
+                            delete it->second;
+                    }
+                }
 			}
-		public:
 
-                        bool Read(const CPath& oFilePath)
+			bool Read(const CPath& oFilePath)
 			{
-                            // Ищем "/_rels/.rels" и читаем все файлы по рельсам
-                            OOX::CRels oRels( oFilePath / FILE_SEPARATOR_STR );
-                            IFileContainer::Read( oRels, oFilePath, oFilePath );
+				OOX::CRels oRels( oFilePath / FILE_SEPARATOR_STR );
+				IFileContainer::Read( oRels, oFilePath, oFilePath );
 
-                            // Выполняем дополнительные действия для более удобной работы с файлом
+		// Ищем основной документ
+				smart_ptr<OOX::File> pFile = Find(OOX::Spreadsheet::FileTypes::Workbook);
+				if (pFile.IsInit() && OOX::Spreadsheet::FileTypes::Workbook == pFile->type())
+					m_pWorkbook = (OOX::Spreadsheet::CWorkbook*)pFile.operator->();
+				else
+					m_pWorkbook = NULL;
 
-                            // Ищем основной документ
-                            smart_ptr<OOX::File> pFile = Find(OOX::Spreadsheet::FileTypes::Workbook);
-                            if (pFile.IsInit() && OOX::Spreadsheet::FileTypes::Workbook == pFile->type())
-                                m_pWorkbook = (OOX::Spreadsheet::CWorkbook*)pFile.operator->();
-                            else
-                                m_pWorkbook = NULL;
+				if ( m_pWorkbook )
+				{
+					OOX::IFileContainer* pDocumentContainer = (OOX::IFileContainer*)m_pWorkbook;
 
-                            if ( m_pWorkbook )
-                            {
-                                OOX::Spreadsheet::IFileContainer* pDocumentContainer = (OOX::Spreadsheet::IFileContainer*)m_pWorkbook;
+			//SharedStrings
+					pFile = pDocumentContainer->Find( OOX::Spreadsheet::FileTypes::SharedStrings );
+					if ( pFile.IsInit() && OOX::Spreadsheet::FileTypes::SharedStrings == pFile->type() )
+						m_pSharedStrings = (OOX::Spreadsheet::CSharedStrings*)pFile.operator->();
+					else
+						m_pSharedStrings = NULL;
 
-                                //SharedStrings
-                                pFile = pDocumentContainer->Find( OOX::Spreadsheet::FileTypes::SharedStrings );
-                                if ( pFile.IsInit() && OOX::Spreadsheet::FileTypes::SharedStrings == pFile->type() )
-                                    m_pSharedStrings = (OOX::Spreadsheet::CSharedStrings*)pFile.operator->();
-                                else
-                                    m_pSharedStrings = NULL;
+			//Styles
+					pFile = pDocumentContainer->Find( OOX::Spreadsheet::FileTypes::Styles );
+					if ( pFile.IsInit() && OOX::Spreadsheet::FileTypes::Styles == pFile->type() )
+						m_pStyles = (OOX::Spreadsheet::CStyles*)pFile.operator->();
+					else
+						m_pStyles = NULL;
 
-                                //Styles
-                                pFile = pDocumentContainer->Find( OOX::Spreadsheet::FileTypes::Styles );
-                                if ( pFile.IsInit() && OOX::Spreadsheet::FileTypes::Styles == pFile->type() )
-                                    m_pStyles = (OOX::Spreadsheet::CStyles*)pFile.operator->();
-                                else
-                                    m_pStyles = NULL;
+			//Theme
+					pFile		= pDocumentContainer->Find(OOX::FileTypes::Theme);
+					m_pTheme	= pFile.smart_dynamic_cast<PPTX::Theme>();
 
-                                //OOX::CRels rels(oFilePath / m_pDocument->DefaultDirectory() / m_pDocument->DefaultFileName());
-                                //IFileContainer::Read(rels, oFilePath);
-
-                                //Theme
-                                pFile = pDocumentContainer->Find(OOX::FileTypes::Theme);
-                                if (pFile.IsInit() && OOX::FileTypes::Theme == pFile->type())
-                                    m_pTheme = (OOX::CTheme*)pFile.operator->();
-                                else
-                                    m_pTheme = NULL;
-
-                                //CalcChain
-                                pFile = pDocumentContainer->Find(OOX::Spreadsheet::FileTypes::CalcChain);
-                                if (pFile.IsInit() && OOX::Spreadsheet::FileTypes::CalcChain == pFile->type())
-                                    m_pCalcChain = (OOX::Spreadsheet::CCalcChain*)pFile.operator->();
-                                else
-                                    m_pCalcChain = NULL;
+			//CalcChain
+					pFile = pDocumentContainer->Find(OOX::Spreadsheet::FileTypes::CalcChain);
+					if (pFile.IsInit() && OOX::Spreadsheet::FileTypes::CalcChain == pFile->type())
+						m_pCalcChain = (OOX::Spreadsheet::CCalcChain*)pFile.operator->();
+					else
+						m_pCalcChain = NULL;
 
 
-                                std::map<std::wstring, smart_ptr<OOX::File>> aWorksheetsFiles;
-                                pDocumentContainer->FindAllByType(OOX::Spreadsheet::FileTypes::Worksheet, aWorksheetsFiles);
-                                pDocumentContainer->FindAllByType(OOX::Spreadsheet::FileTypes::Chartsheets, aWorksheetsFiles);
+					std::map<std::wstring, smart_ptr<OOX::File>> aWorksheetsFiles;
+					pDocumentContainer->FindAllByType(OOX::Spreadsheet::FileTypes::Worksheet, aWorksheetsFiles);
+					pDocumentContainer->FindAllByType(OOX::Spreadsheet::FileTypes::Chartsheets, aWorksheetsFiles);
 
-                                for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator it = aWorksheetsFiles.begin(); it != aWorksheetsFiles.end(); ++it)
-                                {
-                                    m_aWorksheets [it->first] = (OOX::Spreadsheet::CWorksheet*) it->second.operator->();
-                                }
-                            }
+					for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator it = aWorksheetsFiles.begin(); it != aWorksheetsFiles.end(); ++it)
+					{
+						OOX::Spreadsheet::CWorksheet* sheet = (OOX::Spreadsheet::CWorksheet*) it->second.operator->();
+						m_aWorksheets [it->first] = sheet;
 
-                            return true;
+			//dxf from x14:... to styles
+						if (sheet->m_oExtLst.IsInit() && m_pStyles)
+						{
+							for(size_t i = 0; i < sheet->m_oExtLst->m_arrExt.size(); ++i)
+							{
+								OOX::Drawing::COfficeArtExtension* pExt = sheet->m_oExtLst->m_arrExt[i];
+								if ( !pExt->m_arrConditionalFormatting.empty() )
+								{
+									for (size_t j = 0; j < pExt->m_arrConditionalFormatting.size(); j++)
+									{
+										if (!pExt->m_arrConditionalFormatting[j]) continue;
+
+										for (size_t k = 0 ; k < pExt->m_arrConditionalFormatting[j]->m_arrItems.size(); k++)
+										{
+											OOX::Spreadsheet::CConditionalFormattingRule *rule = pExt->m_arrConditionalFormatting[j]->m_arrItems[k];
+											if (!rule) continue;
+
+											if (rule->m_oDxf.IsInit())
+											{
+												if (!m_pStyles->m_oDxfs.IsInit())
+													m_pStyles->m_oDxfs.Init();
+
+												//DxfId starts from 0
+												rule->m_oDxfId = std::to_wstring(m_pStyles->m_oDxfs->m_arrItems.size());
+												m_pStyles->m_oDxfs->m_arrItems.push_back(rule->m_oDxf.GetPointerEmptyNullable());
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				return true;
 			}
-                        bool Write(const CPath& oDirPath, std::wstring& sAdditionalContentTypes)
+			bool Write(const CPath& oDirPath, OOX::CContentTypes &oContentTypes)
 			{
-                            if(NULL == m_pWorkbook || 0 == m_aWorksheets.size ())
-                                return false;
-                            PrepareToWrite();
+                if(NULL == m_pWorkbook || 0 == m_aWorksheets.size ())
+                    return false;
+                PrepareToWrite();
 
-                            OOX::CContentTypes oContentTypes;
+			//CApp
+                OOX::CApp* pApp = new OOX::CApp();
+                pApp->SetApplication(_T("OnlyOffice"));
+                pApp->SetAppVersion(_T("4.3000"));
+                pApp->SetDocSecurity(0);
+                pApp->SetScaleCrop(false);
+                pApp->SetLinksUpToDate(false);
+                pApp->SetSharedDoc(false);
+                pApp->SetHyperlinksChanged(false);
 
-                            //docProps
-                            //CApp
-                            OOX::CApp* pApp = new OOX::CApp();
-                            pApp->SetApplication(_T("OnlyOffice"));
-                            pApp->SetAppVersion(_T("3.0000"));
-                            pApp->SetDocSecurity(0);
-                            pApp->SetScaleCrop(false);
-                            pApp->SetLinksUpToDate(false);
-                            pApp->SetSharedDoc(false);
-                            pApp->SetHyperlinksChanged(false);
+                smart_ptr<OOX::File> pAppFile(pApp);
+                const OOX::RId oAppRId =  Add(pAppFile);
+			//CCore
+                OOX::CCore* pCore = new OOX::CCore();
+                pCore->SetCreator(_T(""));
+                pCore->SetLastModifiedBy(_T(""));
+                smart_ptr<OOX::File> pCoreFile(pCore);
+                const OOX::RId oCoreRId = Add(pCoreFile);
 
-                            smart_ptr<OOX::File> pAppFile(pApp);
-                            const OOX::RId oAppRId =  Add(pAppFile);
-                            //CCore
-                            OOX::CCore* pCore = new OOX::CCore();
-                            pCore->SetCreator(_T(""));
-                            pCore->SetLastModifiedBy(_T(""));
-                            smart_ptr<OOX::File> pCoreFile(pCore);
-                            const OOX::RId oCoreRId = Add(pCoreFile);
+			//xl
+                CPath oXlPath = oDirPath / m_pWorkbook->DefaultDirectory();
+                WriteWorkbook(oXlPath);
 
-                            //xl
-                            CPath oXlPath = oDirPath / m_pWorkbook->DefaultDirectory();
-                            WriteWorkbook(oXlPath);
+				IFileContainer::Write(oDirPath / L"" , OOX::CPath(_T("")), oContentTypes);
 
-							IFileContainer::Write(oDirPath / L"" , OOX::CPath(_T("")), oContentTypes);
-                            if(!sAdditionalContentTypes.empty())
-                            {
-                                std::wstring sAdditionalContentTypesWrapped;
-
-                                sAdditionalContentTypesWrapped += L"<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">";
-                                sAdditionalContentTypesWrapped += sAdditionalContentTypes;
-                                sAdditionalContentTypesWrapped += L"</Types>";
-                                OOX::CContentTypes oTempContentTypes;
-
-                                oTempContentTypes.ReadFromString(sAdditionalContentTypesWrapped);
-
-                                for (std::map<std::wstring, ContentTypes::COverride>::const_iterator it = oTempContentTypes.m_arrOverride.begin(); it != oTempContentTypes.m_arrOverride.end(); ++it)
-                                {
-                                    const ContentTypes::COverride& oOverride = it->second;
-                                    const OOX::CPath& oPath = oOverride.filename();
-                                    oContentTypes.Registration(oOverride.type(), oPath.GetDirectory(), oPath.GetFilename());
-                                }
-                            }
-                            oContentTypes.Write(oDirPath);
-                            return true;
-                        }
-                        bool WriteWorkbook(const CPath& oDirPath)
+                oContentTypes.Write(oDirPath);
+                return true;
+            }
+			bool WriteWorkbook(const CPath& oDirPath)
 			{
-                            //Theme
-                            OOX::CTheme* pTheme = new OOX::CTheme();
-                            pTheme->DoNotWriteContent(true);
-                            smart_ptr<OOX::File> pThemeFile(pTheme);
-                            m_pWorkbook->Add(pThemeFile);
-                            //SharedStrings
-                            if(NULL != m_pSharedStrings && m_pSharedStrings->m_arrItems.size() > 0)
-                            {
-                                smart_ptr<OOX::File> pSharedStringsFile(m_pSharedStrings);
-                                bDeleteSharedStrings = false;
-                                m_pWorkbook->Add(pSharedStringsFile);
-                            }
-                            //Styles
-                            if(NULL != m_pStyles)
-                            {
-                                smart_ptr<OOX::File> pStylesFile(m_pStyles);
-                                bDeleteStyles = false;
-                                m_pWorkbook->Add(pStylesFile);
-                            }
+		//Theme
+				if (m_pTheme.IsInit())
+				{
+                    smart_ptr<OOX::File> pThemeFile = m_pTheme.smart_dynamic_cast<OOX::File>();
+					m_pWorkbook->Add(pThemeFile);
+				}
+		//SharedStrings
+                if(NULL != m_pSharedStrings && m_pSharedStrings->m_arrItems.size() > 0)
+                {
+                    smart_ptr<OOX::File> pSharedStringsFile(m_pSharedStrings);
+                    bDeleteSharedStrings = false;
+                    m_pWorkbook->Add(pSharedStringsFile);
+                }
+		//Styles
+                if(NULL != m_pStyles)
+                {
+                    smart_ptr<OOX::File> pStylesFile(m_pStyles);
+                    bDeleteStyles = false;
+                    m_pWorkbook->Add(pStylesFile);
+                }
 
-                            //Workbook
-                            smart_ptr<OOX::File> pWorkbookFile(m_pWorkbook);
-                            bDeleteWorkbook = false;
-                            Add(pWorkbookFile);
-                            return true;
-                        }
+		//Workbook
+                smart_ptr<OOX::File> pWorkbookFile(m_pWorkbook);
+                bDeleteWorkbook = false;
+                Add(pWorkbookFile);
+                return true;
+            }
 			void PrepareToWrite()
 			{
-                            if(NULL != m_pWorkbook)
-                                m_pWorkbook->PrepareToWrite();
-                            if(NULL != m_pStyles)
-                                m_pStyles->PrepareToWrite();
+                if(NULL != m_pWorkbook)
+                    m_pWorkbook->PrepareToWrite();
+                if(NULL != m_pStyles)
+                    m_pStyles->PrepareToWrite();
 
-							for (std::map<std::wstring, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
-                            {
-                                if (NULL != it->second)
-                                    it->second->PrepareToWrite();
-                            }
+				for (std::map<std::wstring, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
+                {
+                    if (NULL != it->second)
+                        it->second->PrepareToWrite();
+                }
 			}
 		public:
 			CWorkbook  *GetWorkbook () const
@@ -288,9 +289,13 @@ namespace OOX
 				bDeleteStyles = true;
 				return m_pStyles;
 			}
-			CTheme  *GetTheme () const
+			PPTX::Theme  *GetTheme () const
 			{
-				return m_pTheme;
+				return (PPTX::Theme  *)(m_pTheme.operator->());
+			}
+			void SetTheme (smart_ptr<PPTX::Theme> & pTheme)
+			{
+				m_pTheme = pTheme;
 			}
 			CCalcChain  *GetCalcChain () const
 			{
@@ -310,7 +315,9 @@ namespace OOX
 					m_pWorkbook->m_oWorkbookPr->m_oDefaultThemeVersion.Init();
 					m_pWorkbook->m_oWorkbookPr->m_oDefaultThemeVersion->SetValue(124226);
 					m_pWorkbook->m_oBookViews.Init();
+					
 					OOX::Spreadsheet::CWorkbookView* pWorkbookView = new OOX::Spreadsheet::CWorkbookView();
+					
 					pWorkbookView->m_oXWindow.Init();
 					pWorkbookView->m_oXWindow->SetValue(480);
 					pWorkbookView->m_oYWindow.Init();
@@ -319,25 +326,31 @@ namespace OOX
 					pWorkbookView->m_oWindowWidth->SetValue(27795);
 					pWorkbookView->m_oWindowHeight.Init();
 					pWorkbookView->m_oWindowHeight->SetValue(12585);
+					
 					m_pWorkbook->m_oBookViews->m_arrItems.push_back(pWorkbookView);
 				}
 				//добавляем sheet, если нет ни одного
 				if (m_aWorksheets.empty())
 				{
 					OOX::Spreadsheet::CWorksheet* pWorksheet = new OOX::Spreadsheet::CWorksheet();
+					
 					pWorksheet->m_oDimension.Init();
 					pWorksheet->m_oDimension->m_oRef.Init();
 					pWorksheet->m_oDimension->m_oRef->append(_T("A1"));
 					pWorksheet->m_oSheetViews.Init();
+					
 					OOX::Spreadsheet::CSheetView* pSheetView = new OOX::Spreadsheet::CSheetView();
+					
 					pSheetView->m_oTabSelected.Init();
 					pSheetView->m_oTabSelected->FromBool(true);
 					pSheetView->m_oWorkbookViewId.Init();
 					pSheetView->m_oWorkbookViewId->SetValue(0);
+					
 					pWorksheet->m_oSheetViews->m_arrItems.push_back(pSheetView);
 					pWorksheet->m_oSheetFormatPr.Init();
 					pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight.Init();
 					pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight->SetValue(15);
+					
 					pWorksheet->m_oPageMargins.Init();
 					pWorksheet->m_oPageMargins->m_oLeft.Init();
 					pWorksheet->m_oPageMargins->m_oLeft->FromInches(0.7);
@@ -351,10 +364,13 @@ namespace OOX
 					pWorksheet->m_oPageMargins->m_oHeader->FromInches(0.3);
 					pWorksheet->m_oPageMargins->m_oFooter.Init();
 					pWorksheet->m_oPageMargins->m_oFooter->FromInches(0.3);
+					
 					smart_ptr<OOX::File> pWorksheetFile(pWorksheet);
 					OOX::RId oRId = this->Add(pWorksheetFile);
+					
 					m_aWorksheets [oRId.ToString()] = pWorksheet;
 					m_pWorkbook->m_oSheets.Init();
+					
 					OOX::Spreadsheet::CSheet* pSheet = new OOX::Spreadsheet::CSheet();
 					pSheet->m_oName.Init();
 					pSheet->m_oName->append(_T("Sheet1"));
@@ -362,6 +378,7 @@ namespace OOX
 					pSheet->m_oSheetId->SetValue(1);
 					pSheet->m_oRid.Init();
 					pSheet->m_oRid->SetValue(oRId.ToString());
+					
 					m_pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
 				}
 				//делаем так чтобы всегда были нулевые стили и первый font всегда имел шрифт и размер
@@ -523,31 +540,33 @@ namespace OOX
 			}
 			void init()
 			{
-				m_pWorkbook = NULL;
-				m_pSharedStrings = NULL;
-				m_pStyles = NULL;
-				m_pTheme = NULL;
-				m_pCalcChain = NULL;
+				m_bSpreadsheets		= true;
 
-				bDeleteWorkbook = false;
-				bDeleteSharedStrings = false;
-				bDeleteStyles = false;
-				bDeleteTheme = false;
-				bDeleteCalcChain = false;
-				bDeleteWorksheets = false;
+				m_pWorkbook			= NULL;
+				m_pSharedStrings	= NULL;
+				m_pStyles			= NULL;
+				m_pCalcChain		= NULL;
+
+				bDeleteWorkbook			= false;
+				bDeleteSharedStrings	= false;
+				bDeleteStyles			= false;
+				bDeleteCalcChain		= false;
+				bDeleteWorksheets		= false;
 			}
 		private:
-			CWorkbook  *m_pWorkbook;
-			bool bDeleteWorkbook;
-			CSharedStrings  *m_pSharedStrings;
-			bool bDeleteSharedStrings;
-			CStyles  *m_pStyles;
-			bool bDeleteStyles;
-			CTheme  *m_pTheme;
-			bool bDeleteTheme;
-			CCalcChain  *m_pCalcChain;
-			bool bDeleteCalcChain;
+			CWorkbook*							m_pWorkbook;
+			CSharedStrings*						m_pSharedStrings;
+			CStyles*							m_pStyles;
+			CCalcChain*							m_pCalcChain;
+			smart_ptr<PPTX::Theme>				m_pTheme;
 			std::map<std::wstring, CWorksheet*> m_aWorksheets;
+
+			std::map<std::wstring, size_t>		m_mapXlsxEnumeratedGlobal;
+			
+			bool bDeleteWorkbook;
+			bool bDeleteSharedStrings;
+			bool bDeleteStyles;
+			bool bDeleteCalcChain;
 			bool bDeleteWorksheets;
 		};
 

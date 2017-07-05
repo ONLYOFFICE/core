@@ -1027,9 +1027,9 @@ parseAndPrintFile(char *filename) {
 		    ctxt = xmlCreatePushParserCtxt(emptySAXHandler, NULL,
 				chars, ret, filename);
 		    while ((ret = fread(chars, 1, 3, f)) > 0) {
-			DoctRenderer(ctxt, chars, ret, 0);
+			xmlParseChunk(ctxt, chars, ret, 0);
 		    }
-		    DoctRenderer(ctxt, chars, 0, 1);
+		    xmlParseChunk(ctxt, chars, 0, 1);
 		    xmlFreeParserCtxt(ctxt);
 		}
 		fclose(f);
@@ -1060,9 +1060,9 @@ parseAndPrintFile(char *filename) {
 		    ctxt = xmlCreatePushParserCtxt(debugSAXHandler, NULL,
 				chars, ret, filename);
 		while ((ret = fread(chars, 1, 3, f)) > 0) {
-		    DoctRenderer(ctxt, chars, ret, 0);
+		    xmlParseChunk(ctxt, chars, ret, 0);
 		}
-		ret = DoctRenderer(ctxt, chars, 0, 1);
+		ret = xmlParseChunk(ctxt, chars, 0, 1);
 		xmlFreeParserCtxt(ctxt);
 		if (ret != 0) {
 		    fprintf(stdout,

@@ -35,11 +35,23 @@
 
 namespace DocFileFormat
 {
+	struct _guides
+	{
+		unsigned char type;
+
+		unsigned char param_type1;
+		unsigned char param_type2;
+		unsigned char param_type3;
+
+		WORD param1;
+		WORD param2;
+		WORD param3;
+	};
 	class PathParser
 	{
 	public:
 
-		PathParser (const unsigned char* pSegmentInfo, unsigned int pSegmentInfoSize, const unsigned char* pVertices, unsigned int pVerticesSize)
+		PathParser (const unsigned char* pSegmentInfo, unsigned int pSegmentInfoSize, const unsigned char* pVertices, unsigned int pVerticesSize, std::vector<_guides> & guides)
 		{
 			if ((pSegmentInfo != NULL) && (pSegmentInfoSize > 0))
 			{
@@ -105,31 +117,40 @@ namespace DocFileFormat
 				unsigned short nElemsAlloc	=	FormatUtils::BytesToUInt16(pVertices, 2, pVerticesSize);
 				unsigned short cb			=	FormatUtils::BytesToUInt16(pVertices, 4, pVerticesSize);
 
-				if (0xfff0 == cb)
-				{
-					cb	=	4;
-
-					for (unsigned short i = 0; i < nElems; ++i)
+				for (unsigned short i = 0; i < nElems; ++i)
+				{				
+					POINT point;	
+					if (0xfff0 == cb)
 					{
-						POINT point;
-
+						cb	=	4;						
 						point.x	= FormatUtils::BytesToInt16(pVertices + 6, (i * cb), pVerticesSize);
 						point.y	= FormatUtils::BytesToInt16(pVertices + 6, (i * cb) + (cb / 2), pVerticesSize);
-
-						m_arPoints.push_back(point);
 					}
-				}
-				else
-				{
-					for (unsigned short i = 0; i < nElems; ++i)
+					else
 					{
-						POINT point;
-
 						point.x	= FormatUtils::BytesToInt32(pVertices + 6, (i * cb), pVerticesSize);
 						point.y	= FormatUtils::BytesToInt32(pVertices + 6, (i * cb) + (cb / 2), pVerticesSize);
-
-						m_arPoints.push_back(point);
 					}
+
+					LONG lMinF = (LONG)0x80000000;
+					if (lMinF <= point.x)
+					{
+						int index = (DWORD)point.x - 0x80000000;
+						if (index >= 0 && index < guides.size())
+						{
+							point.x = guides[index].param3;
+						}
+					}
+					if (lMinF <= point.y)
+					{
+						int index = (DWORD)point.y - 0x80000000;
+						if (index >= 0 && index < guides.size())
+						{
+							point.y = guides[index].param3;
+						}
+					}
+
+					m_arPoints.push_back(point);
 				}
 			}
 		}
@@ -163,104 +184,100 @@ namespace DocFileFormat
 			std::vector<PathSegment>::const_iterator end = m_arSegments.end();
 			for (std::vector<PathSegment>::const_iterator iter = m_arSegments.begin(); iter != end; ++iter, cc++)
 			{
-				try
+				switch (iter->Type)
 				{
-					switch (iter->Type)
+				case PathSegment::msopathLineTo:
 					{
-					case PathSegment::msopathLineTo:
+						for (int i = 0; i < iter->Count; ++i)
 						{
-							for (int i = 0; i < iter->Count; ++i)
+							if (valuePointer + 1 > (int)m_arPoints.size())
 							{
-								if (valuePointer >= (int)m_arPoints.size())
-								{
-									break;
+								break;
 
-                                    strVmlPath += L"l";
-									strVmlPath += FormatUtils::IntToWideString(m_arPoints[0].x);
-                                    strVmlPath += L",";
-									strVmlPath += FormatUtils::IntToWideString(m_arPoints[0].y);
-									
-									++valuePointer;
-									
-									//break;
-								}
-								else
-								{
-                                    strVmlPath += L"l";
-									strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer].x );
-                                    strVmlPath += L",";
-									strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer].y );
-									
-									++valuePointer;
-								}
+                                strVmlPath += L"l";
+								strVmlPath += FormatUtils::IntToWideString(m_arPoints[0].x);
+                                strVmlPath += L",";
+								strVmlPath += FormatUtils::IntToWideString(m_arPoints[0].y);
+								
+								++valuePointer;
+								
+								//break;
 							}
-						}
-						break;
-
-					case PathSegment::msopathCurveTo:
-						{
-							for (int i = 0; i < iter->Count; ++i)
+							else
 							{
-                                strVmlPath += L"c";
+                                strVmlPath += L"l";
 								strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer].x );
                                 strVmlPath += L",";
 								strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer].y );
-                                strVmlPath += L",";
-								strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer + 1].x );
-                                strVmlPath += L",";
-								strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer + 1].y );
-                                strVmlPath += L",";
-								strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer + 2].x );
-                                strVmlPath += L",";
-								strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer + 2].y );
-								valuePointer += 3;
+								
+								++valuePointer;
 							}
 						}
-						break;
+					}
+					break;
 
-					case PathSegment::msopathMoveTo:
+				case PathSegment::msopathCurveTo:
+					{
+						for (int i = 0; i < iter->Count; ++i)
 						{
-                            strVmlPath += L"m";
+							if (valuePointer + 3 > (int)m_arPoints.size()) 
+								break;
+                            strVmlPath += L"c";
 							strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer].x );
                             strVmlPath += L",";
+							strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer].y );
+                            strVmlPath += L",";
+							strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer + 1].x );
+                            strVmlPath += L",";
+							strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer + 1].y );
+                            strVmlPath += L",";
+							strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer + 2].x );
+                            strVmlPath += L",";
+							strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer + 2].y );
+							valuePointer += 3;
+						}
+					}
+					break;
+
+				case PathSegment::msopathMoveTo:
+					{
+						if (valuePointer < (int)m_arPoints.size()) 
+						{
+							strVmlPath += L"m";
+							strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer].x );
+							strVmlPath += L",";
 							strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer].y );
 							
 							++valuePointer;
 						}
-						break;
-
-					case PathSegment::msopathClose:
-						{
-                            strVmlPath += L"x";
-						}
-						break;
-
-					case PathSegment::msopathEnd:
-						{
-                            strVmlPath += L"e";
-						}
-						break;
-
-					case PathSegment::msopathEscape:
-						{
-							if (PathSegment::msopathEscapeNoFill == iter->EscapeCode)
-                                strVmlPath += L"nf";
-							
-							if (PathSegment::msopathEscapeNoLine == iter->EscapeCode)
-                                strVmlPath += L"ns";
-						}
-					case PathSegment::msopathClientEscape:
-					case PathSegment::msopathInvalid:
-						{
-							//ignore escape segments and invalid segments
-						}
-						break;
 					}
-				}
-				catch (...)
-				{
-					// Sometimes there are more Segments than available m_arPoints.
-					// Accordingly to the spec this should never happen :)
+					break;
+
+				case PathSegment::msopathClose:
+					{
+                        strVmlPath += L"x";
+					}
+					break;
+
+				case PathSegment::msopathEnd:
+					{
+                        strVmlPath += L"e";
+					}
+					break;
+
+				case PathSegment::msopathEscape:
+					{
+						if (PathSegment::msopathEscapeNoFill == iter->EscapeCode)
+                            strVmlPath += L"nf";
+						
+						if (PathSegment::msopathEscapeNoLine == iter->EscapeCode)
+                            strVmlPath += L"ns";
+					}
+				case PathSegment::msopathClientEscape:
+				case PathSegment::msopathInvalid:
+					{
+						//ignore escape segments and invalid segments
+					}
 					break;
 				}
 			}

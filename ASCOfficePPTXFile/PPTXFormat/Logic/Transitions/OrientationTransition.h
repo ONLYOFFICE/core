@@ -45,7 +45,11 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(OrientationTransition)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_OrientationTransition;
+			}
+
 			void fromXML(XmlUtils::CXmlNode& node)
 			{
 				name	= XmlUtils::GetNameNoNS(node.GetName());
@@ -60,9 +64,8 @@ namespace PPTX
 				return XmlUtils::CreateNode(_T("p:") + name, oAttr);
 			}
 
-		public:
-			std::wstring									name;
-			nullable_limit<Limit::Orient>			dir;
+			std::wstring					name;
+			nullable_limit<Limit::Orient>	dir;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

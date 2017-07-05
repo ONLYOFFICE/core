@@ -35,7 +35,6 @@
 
 namespace XLS
 {
-// Logical representation of IMDATA record in BIFF5
 class IMDATA: public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(IMDATA)
@@ -45,11 +44,10 @@ public:
 	~IMDATA();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeIMDATA;
+	static const ElementType type = typeIMDATA;
 
 	_UINT16 cf;
 	_UINT16 env;

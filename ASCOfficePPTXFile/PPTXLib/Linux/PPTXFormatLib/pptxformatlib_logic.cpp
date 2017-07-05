@@ -51,8 +51,6 @@
 #include "../../../PPTXFormat/Logic/NvGrpSpPr.cpp"
 #include "../../../PPTXFormat/Logic/Pic.cpp"
 #include "../../../PPTXFormat/Logic/Shape.cpp"
-#include "../../../PPTXFormat/Logic/ShapeProperties.cpp"
-#include "../../../PPTXFormat/Logic/ShapeTextProperties.cpp"
 #include "../../../PPTXFormat/Logic/SmartArt.cpp"
 #include "../../../PPTXFormat/Logic/SpPr.cpp"
 #include "../../../PPTXFormat/Logic/SpTree.cpp"

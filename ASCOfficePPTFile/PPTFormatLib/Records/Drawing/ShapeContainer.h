@@ -236,7 +236,6 @@ public:
 		{
 		case NSPresentationEditor::etVideo:
 			{
-				//default -> line = false
 				pElement->m_bLine = false;
 				for (long i = 0; i < lCount; ++i)
 				{
@@ -246,7 +245,6 @@ public:
 			}
 		case NSPresentationEditor::etPicture:
 			{
-				//default -> line = false
 				pElement->m_oBrush.Type = c_BrushTypeTexture;
 				pElement->m_bLine = false;
 				for (long i = 0; i < lCount; ++i)
@@ -257,7 +255,6 @@ public:
 			}
 		case NSPresentationEditor::etAudio:
 			{
-				//default -> line = false
 				pElement->m_bLine = false;
 				for (long i = 0; i < lCount; ++i)
 				{
@@ -575,212 +572,134 @@ public:
 			}
 // line --------------------------------------------------------
 		case lineBoolean: //Line Style Boolean Properties
-			{
-				bool bNoLineDrawDash		= GETBIT(pProperty->m_lValue, 0);
-				bool bLineFillShape			= GETBIT(pProperty->m_lValue, 1);
-				bool bHitTestLine			= GETBIT(pProperty->m_lValue, 2);
-				bool bLine					= GETBIT(pProperty->m_lValue, 3);
-				bool bArrowheadsOK			= GETBIT(pProperty->m_lValue, 4);
-				bool bInsetPenOK			= GETBIT(pProperty->m_lValue, 5);
-				bool bInsetPen				= GETBIT(pProperty->m_lValue, 6);
-				bool bLineOpaqueBackColor	= GETBIT(pProperty->m_lValue, 9);
+		{
+			bool bNoLineDrawDash		= GETBIT(pProperty->m_lValue, 0);
+			bool bLineFillShape			= GETBIT(pProperty->m_lValue, 1);
+			bool bHitTestLine			= GETBIT(pProperty->m_lValue, 2);
+			bool bLine					= GETBIT(pProperty->m_lValue, 3);
+			bool bArrowheadsOK			= GETBIT(pProperty->m_lValue, 4);
+			bool bInsetPenOK			= GETBIT(pProperty->m_lValue, 5);
+			bool bInsetPen				= GETBIT(pProperty->m_lValue, 6);
+			bool bLineOpaqueBackColor	= GETBIT(pProperty->m_lValue, 9);
 
-				bool bUsefNoLineDrawDash	= GETBIT(pProperty->m_lValue, 16);
-				bool bUsefLineFillShape		= GETBIT(pProperty->m_lValue, 17);
-				bool bUsefHitTestLine		= GETBIT(pProperty->m_lValue, 18);
-				bool bUsefLine				= GETBIT(pProperty->m_lValue, 19);
-				bool bUsefArrowheadsOK		= GETBIT(pProperty->m_lValue, 20);
-				bool bUsefInsetPenOK		= GETBIT(pProperty->m_lValue, 21);
-				bool bUsefInsetPen			= GETBIT(pProperty->m_lValue, 22);
-				bool bUsefLineOpaqueBackColor = GETBIT(pProperty->m_lValue, 25);
+			bool bUsefNoLineDrawDash	= GETBIT(pProperty->m_lValue, 16);
+			bool bUsefLineFillShape		= GETBIT(pProperty->m_lValue, 17);
+			bool bUsefHitTestLine		= GETBIT(pProperty->m_lValue, 18);
+			bool bUsefLine				= GETBIT(pProperty->m_lValue, 19);
+			bool bUsefArrowheadsOK		= GETBIT(pProperty->m_lValue, 20);
+			bool bUsefInsetPenOK		= GETBIT(pProperty->m_lValue, 21);
+			bool bUsefInsetPen			= GETBIT(pProperty->m_lValue, 22);
+			bool bUsefLineOpaqueBackColor = GETBIT(pProperty->m_lValue, 25);
 
-				if (bUsefLine)
-					pElement->m_bLine = bLine;				
-			}break;
-		case lineStyle:
+			if (bUsefLine)
+				pElement->m_bLine = bLine;				
+		}break;
 		case lineDashStyle://from Complex
-			{
-				pElement->m_bLine = true;	
-			}break;
+		{
+			pElement->m_bLine = true;	
+		}break;
 		case lineColor:
-			{
-				SColorAtom oAtom;
-				oAtom.FromValue(pProperty->m_lValue);
-				
-				if (oAtom.bSysIndex)
-					pElement->m_oPen.Color = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
-				else
-					oAtom.ToColor(&pElement->m_oPen.Color);
-				break;
-			}
+		{
+			SColorAtom oAtom;
+			oAtom.FromValue(pProperty->m_lValue);
+			
+			if (oAtom.bSysIndex)
+				pElement->m_oPen.Color = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+			else
+				oAtom.ToColor(&pElement->m_oPen.Color);			
+		}break;
 		case lineOpacity:
-			{
-                pElement->m_oPen.Alpha = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
-				break;
-			}
+		{
+            pElement->m_oPen.Alpha = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));				
+		}break;
 		case lineBackColor:
-			{
-				SColorAtom oAtom;
-				oAtom.FromValue(pProperty->m_lValue);
-				
-				if (oAtom.bSysIndex)
-					pElement->m_oPen.Color2 = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
-				else 
-					oAtom.ToColor(&pElement->m_oPen.Color2);
+		{
+			SColorAtom oAtom;
+			oAtom.FromValue(pProperty->m_lValue);
+			
+			if (oAtom.bSysIndex)
+				pElement->m_oPen.Color2 = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+			else 
+				oAtom.ToColor(&pElement->m_oPen.Color2);
 
-			}break;
+		}break;
 		case lineWidth:
-			{
-				pElement->m_oPen.Size	= (double)pProperty->m_lValue / EMU_MM;
-				pElement->m_bLine		= true;
-				break;
-			}
+		{
+			pElement->m_oPen.Size	= (double)pProperty->m_lValue / EMU_MM;
+			pElement->m_bLine		= true;				
+		}break;
+		case lineStyle:
+		{
+			pElement->m_bLine			= true;
+			pElement->m_oPen.LineStyle	= pProperty->m_lValue;				
+		}break;
 		case lineDashing:
-			{
-				BYTE nDashStyle = 0;
-				switch (pProperty->m_lValue)
-				{
-				case 0: 
-					{ 
-						nDashStyle = 0; // solid 						 
-					}break;
-				case 1: 
-				case 6:
-				case 7:
-					{ 
-						nDashStyle = 1; // dash 						
-					}break; 
-				case 2:
-				case 5:
-					{ 
-						nDashStyle = 2; // dot 						 
-					}break;
-				case 3:
-				case 8:
-				case 9:
-					{ 
-						nDashStyle = 3; // dashdot 						
-					}break; 
-				case 4:
-				case 10:
-					{ 
-						nDashStyle = 4;// dashdotdot 						
-					}break; 
-				default:
-						break; 
-				};
-				pElement->m_bLine				= true;
-				pElement->m_oPen.DashStyle	= nDashStyle;
-				break;
-			}
+		{
+			pElement->m_bLine			= true;
+			pElement->m_oPen.DashStyle	= pProperty->m_lValue;				
+		}break;
 		case lineJoinStyle:
-			{
-				BYTE nLineJoin = 2;
-				switch (pProperty->m_lValue)
-				{
-				case 0: 
-					{ 
-						nLineJoin = 1; // bevel 						 
-					}break;
-				case 1: 
-					{ 
-						nLineJoin = 1; // Miter 						 
-					}break;
-				case 2:
-					{ 
-						nLineJoin = 2; // round 						 
-					}break;	
-				default:
-						break; 
-				};
-
-				pElement->m_oPen.LineJoin = nLineJoin;
-				break;
-			}
+		{
+			pElement->m_oPen.LineJoin = pProperty->m_lValue;				
+		}break;
+		case lineStartArrowLength:
+		{
+			pElement->m_oPen.LineStartLength = pProperty->m_lValue;				
+		}break;
+		case lineEndArrowLength:
+		{
+			pElement->m_oPen.LineEndLength = pProperty->m_lValue;				
+		}break;
+		case lineStartArrowWidth:
+		{
+			pElement->m_oPen.LineStartWidth = pProperty->m_lValue;				
+		}break;
+		case lineEndArrowWidth:
+		{
+			pElement->m_oPen.LineEndWidth = pProperty->m_lValue;				
+		}break;
 		case lineStartArrowhead:
-			{
-				BYTE nStartCap = 0;
-				switch (pProperty->m_lValue)
-				{
-				case 1: 
-				case 2:
-				case 5:
-					{ 
-						nStartCap = 0x14; 
-					}break;
-				case 3:
-				case 4:
-
-					{ 
-						nStartCap = 2; 
-					}break; 
-				default:
-						break; 
-				};
-
-				pElement->m_oPen.LineStartCap = nStartCap;
-
-				break;
-			}
+		{
+			pElement->m_oPen.LineStartCap = pProperty->m_lValue;				
+		}break;
 		case lineEndArrowhead:
-			{
-				BYTE nEndCap = 0;
-				switch (pProperty->m_lValue)
-				{
-				case 1: 
-				case 2:
-				case 5:
-					{ 
-						nEndCap = 0x14; 						
-					}break; 
-				case 3:
-				case 4:
-
-					{ 
-						nEndCap = 2; 
-					}break; 
-				default:
-					break; 
-				};
-
-				pElement->m_oPen.LineEndCap = nEndCap;
-				break;
-			}
+		{
+			pElement->m_oPen.LineEndCap = pProperty->m_lValue;			
+		}break;
 		case shadowType:
-			{
-				pElement->m_oShadow.Type = pProperty->m_lValue;
-
-			}break;
+		{
+			pElement->m_oShadow.Type = pProperty->m_lValue;
+		}break;
 		case shadowOriginX://in emu, relative from center shape
-			{
-				pElement->m_oShadow.OriginX = FixedPointToDouble(pProperty->m_lValue);
-			}break;
+		{
+			pElement->m_oShadow.OriginX = FixedPointToDouble(pProperty->m_lValue);
+		}break;
 		case shadowOriginY:
-			{
-				pElement->m_oShadow.OriginY = FixedPointToDouble(pProperty->m_lValue);
-			}break;
+		{
+			pElement->m_oShadow.OriginY = FixedPointToDouble(pProperty->m_lValue);
+		}break;
 		case shadowColor:
-			{
-				SColorAtom oAtom;
-				oAtom.FromValue(pProperty->m_lValue);
+		{
+			SColorAtom oAtom;
+			oAtom.FromValue(pProperty->m_lValue);
 
-				if (oAtom.bSysIndex)
-					pElement->m_oShadow.Color = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
-				else
-					oAtom.ToColor(&pElement->m_oShadow.Color);
+			if (oAtom.bSysIndex)
+				pElement->m_oShadow.Color = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+			else
+				oAtom.ToColor(&pElement->m_oShadow.Color);
 
-			}break;
+		}break;
 		case shadowWeight:
 			{
 			}break;
 		case shadowOpacity:
-			{
-                pElement->m_oShadow.Alpha = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
-			}break;
+		{
+            pElement->m_oShadow.Alpha = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
+		}break;
 		case shadowHighlight:
-			{
-				//оттенок двойной тени
-			}break;
+		{
+			//оттенок двойной тени
+		}break;
 		case shadowOffsetX:
 			{
 				pElement->m_oShadow.DistanceX = ((int)pProperty->m_lValue) / EMU_MM;
@@ -884,7 +803,7 @@ public:
 	}
 	inline void SetUpPropertyAudio(CAudioElement* pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
 	{
-		SetUpProperty((IElement*)pElement, pTheme, pInfo, pSlide, pProperty);
+		SetUpPropertyImage((CImageElement*)pElement, pTheme, pInfo, pSlide, pProperty);
 	}
 	inline void SetUpPropertyImage(CImageElement* pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
 	{
@@ -942,72 +861,85 @@ public:
 		CShape* pParentShape	= &pElement->m_oShape;
 		CPPTShape* pShape		= dynamic_cast<CPPTShape*>(pParentShape->m_pShape);
 
-		CElementProperties* pElemProps = &pElement->m_oProperties;
-
 		if (NULL == pShape)
 			return;
 
 		switch (pProperty->m_ePID)
 		{
-			// здесь просто применяем проперти...
-			// geometry ----------------------------------------------------
-			// top, left, right, bottom logic
 		case NSOfficeDrawing::metroBlob:
-			{
-				//альтернатива в формате oox
-				//NSFile::CFileBinary f;
-				//f.CreateFileW(L"d:\\test.zip");
-				//f.WriteFile(pProperty->m_pOptions, pProperty->m_lValue);
-				//f.CloseFile();
-			}break;
+		{
+			//альтернатива в формате oox
+			//NSFile::CFileBinary f;
+			//f.CreateFileW(L"d:\\test.zip");
+			//f.WriteFile(pProperty->m_pOptions, pProperty->m_lValue);
+			//f.CloseFile();
+		}break;
 		case NSOfficeDrawing::geoRight:
-			{
-				if (0 < pProperty->m_lValue)
-					pParentShape->m_dWidthLogic = (double)(pProperty->m_lValue);				
-			}break;
+		{
+			if (0 < pProperty->m_lValue)
+				pParentShape->m_dWidthLogic = (double)(pProperty->m_lValue);				
+		}break;
 		case NSOfficeDrawing::geoBottom:
-			{
-				if (0 < pProperty->m_lValue)
-					pParentShape->m_dHeightLogic = (double)(pProperty->m_lValue);				
-			}break;
-			// shapePath
+		{
+			if (0 < pProperty->m_lValue)
+				pParentShape->m_dHeightLogic = (double)(pProperty->m_lValue);				
+		}break;
 		case NSOfficeDrawing::shapePath:
-			{
-				pShape->m_oCustomVML.SetPath((RulesType)pProperty->m_lValue);				
-				pShape->m_bCustomShape = true;
-			}break;
-			// segmentsInfo
+		{
+			pShape->m_oCustomVML.SetPath((RulesType)pProperty->m_lValue);				
+			pShape->m_bCustomShape = true;
+		}break;
 		case NSOfficeDrawing::pSegmentInfo:
+		{
+			if (pProperty->m_bComplex)
 			{
-				if (pProperty->m_bComplex)
-				{
-					pShape->m_oCustomVML.LoadSegments(pProperty);
-					pShape->m_bCustomShape = true;
-				}				
-			}break;
-			// verticesInfo
+				pShape->m_oCustomVML.LoadSegments(pProperty);
+				pShape->m_bCustomShape = true;
+			}				
+		}break;
 		case NSOfficeDrawing::pVertices:
+		{
+			if (pProperty->m_bComplex)
 			{
-				if (pProperty->m_bComplex)
-				{
-					pShape->m_oCustomVML.LoadVertices(pProperty);
-					pShape->m_bCustomShape = true;
-				}				
-			}break;
+				pShape->m_oCustomVML.LoadVertices(pProperty);
+				pShape->m_bCustomShape = true;
+			}				
+		}break;
+		case NSOfficeDrawing::pConnectionSites:
+		{
+			if (pProperty->m_bComplex)
+			{
+				pShape->m_oCustomVML.LoadConnectionSites(pProperty);
+			}				
+		}break;
+		case NSOfficeDrawing::pConnectionSitesDir:
+		{
+			if (pProperty->m_bComplex)
+			{
+				pShape->m_oCustomVML.LoadConnectionSitesDir(pProperty);
+			}				
+		}break;
 		case NSOfficeDrawing::pGuides:
+		{
+			if (pProperty->m_bComplex/* && pShape->m_eType != sptNotchedCircularArrow*/)
+			{//Тікбұрышты үшбұрыштарды.ppt - slide 25
+				pShape->m_oCustomVML.LoadGuides(pProperty);
+			}				
+		}break;
+		case NSOfficeDrawing::pInscribe:
+		{
+			if (pProperty->m_bComplex)
 			{
-				if (pProperty->m_bComplex && pShape->m_eType != sptNotchedCircularArrow)
-				{//Тікбұрышты үшбұрыштарды.ppt - slide 25
-					pShape->m_oCustomVML.LoadGuides(pProperty);
-				}				
-			}break;
+				pShape->m_oCustomVML.LoadInscribe(pProperty);
+			}
+		}break;
 		case NSOfficeDrawing::pAdjustHandles:
+		{
+			if (pProperty->m_bComplex)
 			{
-				if (pProperty->m_bComplex)
-				{
-					pShape->m_oCustomVML.LoadAHs(pProperty);
-				}				
-			}break;
+				pShape->m_oCustomVML.LoadAHs(pProperty);
+			}				
+		}break;
 		case NSOfficeDrawing::adjustValue:
 		case NSOfficeDrawing::adjust2Value:
 		case NSOfficeDrawing::adjust3Value:
@@ -1262,7 +1194,9 @@ public:
 
 			}break;
 		default:
-			break;
+			{
+				int unknown_value = pProperty->m_lValue;
+			}break;			
 		}
 	}
 };
@@ -1425,8 +1359,8 @@ public:
 					{
 						CVideoElement* pVideoElem		= new CVideoElement();
 						
-						pVideoElem->m_strVideoFileName	= oInfo.m_strFilePath			+ FILE_SEPARATOR_STR;
-						pVideoElem->m_strImageFileName	= oInfoDefault.m_strFilePath	+ FILE_SEPARATOR_STR;
+						pVideoElem->m_strVideoFileName	= oInfo.m_strFilePath ;
+						pVideoElem->m_strImageFileName	= oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
 
 						pElem							= (IElement*)pVideoElem;
 					}
@@ -1434,7 +1368,8 @@ public:
 					{
 						CAudioElement* pAudioElem		= new CAudioElement();
 						
-						pAudioElem->m_strAudioFileName	= oInfo.m_strFilePath + FILE_SEPARATOR_STR;
+						pAudioElem->m_strAudioFileName	= oInfo.m_strFilePath;
+						pAudioElem->m_strImageFileName	= oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
 
 						pAudioElem->m_dClipStartTime	= oInfo.m_dStartTime;
 						pAudioElem->m_dClipEndTime		= oInfo.m_dEndTime;
@@ -1730,11 +1665,43 @@ public:
 				pShapeElem->m_oShape.m_oText.m_oRuler = oArrayTextRuler[0]->m_oTextRuler;
 			}
 
-			std::vector<CRecordTextInteractiveInfoAtom*> oArrayTextInteractive;
-			this->GetRecordsByType(&oArrayTextInteractive, true);
-			if (0 != oArrayTextInteractive.size())
+			std::vector<CRecordInteractiveInfoAtom*> oArrayInteractive;
+			GetRecordsByType(&oArrayInteractive, true, true);
+
+			if (!oArrayInteractive.empty())
 			{
 				pShapeElem->m_oActions.m_bPresent = true;
+				
+				if (pMapIDs)
+				{
+					CExFilesInfo* pInfo1 = pMapIDs->LockAudioFromCollection(oArrayInteractive[0]->m_nSoundIdRef);
+					if (NULL != pInfo1)
+					{
+						pShapeElem->m_oActions.m_strAudioFileName = pInfo1->m_strFilePath;
+					}
+					CExFilesInfo* pInfo2 = pMapIDs->LockHyperlink(oArrayInteractive[0]->m_nExHyperlinkIdRef);
+					if (NULL != pInfo2)
+					{
+						pShapeElem->m_oActions.m_strHyperlink = pInfo2->m_strFilePath;
+					}
+				}
+				
+				pShapeElem->m_oActions.m_lType				= oArrayInteractive[0]->m_nAction;
+				pShapeElem->m_oActions.m_lOleVerb			= oArrayInteractive[0]->m_nOleVerb;
+				pShapeElem->m_oActions.m_lJump				= oArrayInteractive[0]->m_nJump;
+				pShapeElem->m_oActions.m_lHyperlinkType		= oArrayInteractive[0]->m_nHyperlinkType;
+				
+				pShapeElem->m_oActions.m_bAnimated			= oArrayInteractive[0]->m_bAnimated;
+				pShapeElem->m_oActions.m_bStopSound			= oArrayInteractive[0]->m_bStopSound;
+				pShapeElem->m_oActions.m_bCustomShowReturn	= oArrayInteractive[0]->m_bCustomShowReturn;
+				pShapeElem->m_oActions.m_bVisited			= oArrayInteractive[0]->m_bVisited;
+			}
+			
+			std::vector<CRecordTextInteractiveInfoAtom*> oArrayTextInteractive;
+			this->GetRecordsByType(&oArrayTextInteractive, true);
+			if (!oArrayTextInteractive.empty())
+			{
+				pShapeElem->m_oTextActions.m_bPresent = true;
 
 				int nSize = oArrayTextInteractive.size();
 				for (int i = 0; i < nSize; ++i)
@@ -1744,7 +1711,7 @@ public:
 					oRange.m_lStart = oArrayTextInteractive[i]->m_lStart;
 					oRange.m_lEnd	= oArrayTextInteractive[i]->m_lEnd;
 
-					pShapeElem->m_oActions.m_arRanges.push_back(oRange);
+					pShapeElem->m_oTextActions.m_arRanges.push_back(oRange);
 				}
 			}
 			double dAngle = pShapeElem->m_dRotate;
@@ -1890,7 +1857,7 @@ protected:
 		
 		if (master_levels)
 		{
-			for (int i = 0; i < pText->m_arParagraphs.size(); i++)
+			for (size_t i = 0; i < pText->m_arParagraphs.size(); i++)
 			{
 				if (i >= master_levels->m_arrProps.size()) break;
 				
@@ -1989,11 +1956,11 @@ protected:
 			eTypePersist = (NSOfficePPT::TextType)pSettings->m_nTextType;
 			strText = pSettings->ApplyProperties(pTextSettings);
 
-			if ((0 != pSettings->m_arRanges.size()) && (0 == pShape->m_oActions.m_arRanges.size()))
+			if ((0 != pSettings->m_arRanges.size()) && (0 == pShape->m_oTextActions.m_arRanges.size()))
 			{
-				pShape->m_oActions.m_bPresent = true;
+				pShape->m_oTextActions.m_bPresent = true;
 				
-				pShape->m_oActions.m_arRanges = pSettings->m_arRanges;
+				pShape->m_oTextActions.m_arRanges = pSettings->m_arRanges;
 			}
 
 			bIsPersistPresentSettings = ((NULL != pSettings->m_pTextStyleProp) && (0 < pSettings->m_pTextStyleProp->m_lCount));
@@ -2198,7 +2165,7 @@ protected:
 						pTextSettings->m_oStyles.ApplyAfter(pThemeWrapper->m_pStyles[nIndexType].get());
 				}
 			}
-			if (eTypeOwn != NSOfficePPT::NoPresent && eTypeOwn != NSOfficePPT::Other && eTypeOwn != eTypePersist && eTypeOwn != eTypeMaster)
+			if (eTypeOwn != NSOfficePPT::NoPresent/* && eTypeOwn != NSOfficePPT::Other*/ && eTypeOwn != eTypePersist && eTypeOwn != eTypeMaster)
 			{
 				int nIndexType = (int)eTypeOwn;
 				
@@ -2267,7 +2234,7 @@ protected:
 		
 		ApplyThemeStyle(pElem, pTheme, master_levels);
 
-		if (pShape->m_oActions.m_bPresent)
+		if (pShape->m_oTextActions.m_bPresent)
 		{
 			//todooo разобраться нужно ли менять цвет на гиперлинк - 1-(34).ppt
 			NSPresentationEditor::CColor oColor;
@@ -2342,8 +2309,8 @@ protected:
 
 	void ApplyHyperlink(CShapeElement* pShape, CColor& oColor)
 	{
-		std::vector<CTextRange>* pRanges					= &pShape->m_oActions.m_arRanges;
-		CTextAttributesEx* pTextAttributes					= &pShape->m_oShape.m_oText;
+		std::vector<CTextRange>* pRanges	= &pShape->m_oTextActions.m_arRanges;
+		CTextAttributesEx* pTextAttributes	= &pShape->m_oShape.m_oText;
 
 		int lCountHyper	= pRanges->size();
 

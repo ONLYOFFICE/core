@@ -32,6 +32,7 @@
 
 #include "../Reader/ReadStructures.cpp"
 #include "../Reader/PPTDocumentInfoOneUser.cpp"
+#include "../Reader/PPTFileReader.cpp"
 #include "../Reader/Records.cpp"
 #include "../Reader/SlidePersist.cpp"
 #include "../Records/Animations/AnimationTypes.cpp"

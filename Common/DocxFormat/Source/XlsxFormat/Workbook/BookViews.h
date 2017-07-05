@@ -45,16 +45,17 @@ namespace OOX
 		class CWorkbookView : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CWorkbookView)
+			WritingElement_AdditionConstructors(CWorkbookView)
 			CWorkbookView()
 			{
 			}
 			virtual ~CWorkbookView()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -68,7 +69,7 @@ namespace OOX
 				WritingStringNullableAttrInt(L"activeTab", m_oActiveTab, m_oActiveTab->GetValue());
 				writer.WriteString(_T("/>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -78,7 +79,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_WorkbookView;
+				return et_x_WorkbookView;
 			}
 
 		private:
@@ -124,15 +125,16 @@ namespace OOX
 		class CBookViews : public WritingElementWithChilds<CWorkbookView>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CBookViews)
+			WritingElement_AdditionConstructors(CBookViews)
 			CBookViews()
 			{
 			}
 			virtual ~CBookViews()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -165,7 +167,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_BookViews;
+				return et_x_BookViews;
 			}
 		
 		private:

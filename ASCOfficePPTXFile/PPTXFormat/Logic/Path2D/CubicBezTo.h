@@ -100,7 +100,7 @@ namespace PPTX
 				{
 					std::wstring sName = oReader.GetName();
 
-					if (sName == L"a:pos")
+					if (sName == L"a:pt")
 					{
 						ReadAttributes2(oReader, x[count], y[count]);
 						count++;
@@ -114,14 +114,6 @@ namespace PPTX
 					WritingElement_ReadAttributes_Read_if		( oReader, _T("x"), x )
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("y"), y )
 				WritingElement_ReadAttributes_End( oReader )
-			}
-			virtual std::wstring toXML() const
-			{
-				std::wstring str1 = L"<a:pt x=\"" + x[0] + L"\" y=\"" + y[0] + L"\" />";
-				std::wstring str2 = L"<a:pt x=\"" + x[1] + L"\" y=\"" + y[1] + L"\" />";
-				std::wstring str3 = L"<a:pt x=\"" + x[2] + L"\" y=\"" + y[2] + L"\" />";
-
-				return _T("<a:cubicBezTo>") + str1 + str2 + str3 + _T("</a:cubicBezTo>");
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const

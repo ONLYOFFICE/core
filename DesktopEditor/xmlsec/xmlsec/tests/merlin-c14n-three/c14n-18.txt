@@ -1,0 +1,15 @@
+<bar:Something xmlns="http://example.org/" xmlns:bar="http://example.org/bar">
+    <foo:Nothing xmlns:foo="http://example.org/foo">
+      <foo:Something>
+        <bar:Something>
+          <foo:Something>
+            <foo:Nothing>
+              <foo:Something>
+                <baz:Something xmlns:baz="http://example.org/baz"></baz:Something>
+              </foo:Something>
+            </foo:Nothing>
+          </foo:Something>
+        </bar:Something>
+      </foo:Something>
+    </foo:Nothing>
+  </bar:Something>

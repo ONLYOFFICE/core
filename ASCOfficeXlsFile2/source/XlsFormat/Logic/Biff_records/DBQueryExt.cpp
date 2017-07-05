@@ -54,7 +54,6 @@ void DBQueryExt::readFields(CFRecord& record)
 {
 #pragma message("####################### DBQueryExt record is not implemented")
 	Log::error("DBQueryExt record is not implemented.");
-	//record >> some_value;
 
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }

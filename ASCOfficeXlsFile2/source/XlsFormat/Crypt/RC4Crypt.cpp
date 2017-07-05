@@ -38,7 +38,7 @@
 namespace CRYPT
 {
 
-RC4Crypt::RC4Crypt(CRYPT::CryptRC4Data & data, std::wstring password, int type)
+RC4Crypt::RC4Crypt(CRYPT::_rc4CryptData & data, std::wstring password)
 {
 	m_VerifyPassword = false;
 
@@ -46,18 +46,11 @@ RC4Crypt::RC4Crypt(CRYPT::CryptRC4Data & data, std::wstring password, int type)
 	CopyDWORDs2Bytes(data.EncryptedVerifier.b1	, data.EncryptedVerifier.b2, data.EncryptedVerifier.b3, data.EncryptedVerifier.b4, pnVerifier);
 	CopyDWORDs2Bytes(data.EncryptedVerifierHash.b1, data.EncryptedVerifierHash.b2, data.EncryptedVerifierHash.b3, data.EncryptedVerifierHash.b4, pnVerifierHash);
 
-	int BlockSize = 1024;
-	if (type == 1) BlockSize = 512;
-
-	mxDecoder.reset(new BiffDecoder_RCF(pnSalt, pnVerifier, pnVerifierHash, BlockSize));
+	mxDecoder.reset(new BiffDecoder_RCF(pnSalt, pnVerifier, pnVerifierHash));
 
 	m_VerifyPassword = mxDecoder->verifyPassword(password);
 }
 
-void RC4Crypt::Encrypt(char* data, const size_t size)
-{
-	
-}
 
 bool RC4Crypt::IsVerify()
 {
@@ -87,18 +80,33 @@ void RC4Crypt::CopyDWORDs2Bytes(const unsigned int b1, const unsigned int b2, co
 	byte_array[15] = static_cast<unsigned char>((b4 & 0xff000000) >> 24);
 }
 
-void RC4Crypt::Decrypt(char* data, const size_t size, const unsigned long stream_pos)
+void RC4Crypt::Decrypt(char* data, const size_t size, const unsigned long block_index)
 {
-	static unsigned char quick_buf[256];
 	if(size <= 256)
 	{
-		mxDecoder->decode( quick_buf, reinterpret_cast<unsigned char*>(data), stream_pos, size );
+		static unsigned char quick_buf[256];
+		mxDecoder->decode( quick_buf, reinterpret_cast<unsigned char*>(data), size, block_index );
         memcpy(data, quick_buf, size);
 	}
 	else
 	{
 		boost::scoped_array<unsigned char> out_data(new unsigned char[size]);
-		mxDecoder->decode( out_data.get(), reinterpret_cast<unsigned char*>(data), stream_pos, size );
+		mxDecoder->decode( out_data.get(), reinterpret_cast<unsigned char*>(data), size, block_index );
+        memcpy(data, out_data.get(), size);
+	}
+}
+void RC4Crypt::Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size)
+{
+	if(size <= 256)
+	{
+		static unsigned char quick_buf[256];
+		mxDecoder->decode( quick_buf, reinterpret_cast<unsigned char*>(data), size, stream_pos, block_size );
+        memcpy(data, quick_buf, size);
+	}
+	else
+	{
+		boost::scoped_array<unsigned char> out_data(new unsigned char[size]);
+		mxDecoder->decode( out_data.get(), reinterpret_cast<unsigned char*>(data), size, stream_pos, block_size );
         memcpy(data, out_data.get(), size);
 	}
 }

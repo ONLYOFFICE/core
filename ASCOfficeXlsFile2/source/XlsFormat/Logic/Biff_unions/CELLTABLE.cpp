@@ -221,7 +221,7 @@ int CELL_GROUP::serialize(std::wostream & stream)
 							CP_XML_ATTR(L"customFormat", true);
 						}
 					}
-					if (row->miyRw > 0/* && std::abs(row->miyRw/20. - sheet_info.defaultRowHeight) > 0.01*/)
+					if (row->miyRw > 0 && row->miyRw < 0x8000) //v8_14A_1b13.xls
 					{
 						CP_XML_ATTR(L"ht", row->miyRw / 20.);
 						CP_XML_ATTR(L"customHeight", true);

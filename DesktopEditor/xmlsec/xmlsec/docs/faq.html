@@ -1,0 +1,489 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>XML Security Library: Documentation</title>
+<style type="text/css">
+table.CALSTABLE > tbody > tr:nth-child(1) > td:nth-child(1) {
+    width: 20em;
+}
+</style>
+<style type="text/css">
+table.CALSTABLE > tbody > tr:nth-child(1) > td:nth-child(1) {
+    width: 20em;
+}
+.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+}
+.programlisting {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation a {
+    color: initial;
+}
+.navigation a:visited {
+    color: initial;
+}
+</style>
+<style type="text/css">
+table.CALSTABLE > tbody > tr:nth-child(1) > td:nth-child(1) {
+    width: 20em;
+}
+.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+}
+.programlisting {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation a {
+    color: initial;
+}
+.navigation a:visited {
+    color: initial;
+}
+</style>
+</head>
+<body><table width="100%" valign="top"><tr valign="top">
+<td valign="top" align="left" width="210">
+<img src="images/logo.gif" alt="XML Security Library" border="0"><p></p>
+<ul>
+<li><a href="index.html">Home</a></li>
+<li><a href="download.html">Download</a></li>
+<li><a href="news.html">News</a></li>
+<li><a href="documentation.html">Documentation</a></li>
+<ul>
+<li><a href="faq.html">FAQ</a></li>
+<li><a href="api/xmlsec-notes.html">Tutorial</a></li>
+<li><a href="api/xmlsec-reference.html">API reference</a></li>
+<li><a href="api/xmlsec-examples.html">Examples</a></li>
+</ul>
+<li><a href="xmldsig.html">XML Digital Signature</a></li>
+<ul><li><a href="http://www.aleksey.com/xmlsec/xmldsig-verifier.html">Online Verifier</a></li></ul>
+<li><a href="xmlenc.html">XML Encryption</a></li>
+<li><a href="c14n.html">XML Canonicalization</a></li>
+<li><a href="bugs.html">Reporting Bugs</a></li>
+<li><a href="http://www.aleksey.com/pipermail/xmlsec">Mailing list</a></li>
+<li><a href="related.html">Related</a></li>
+<li><a href="authors.html">Authors</a></li>
+</ul>
+<table width="100%">
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/"><img src="images/libxml2-logo.png" alt="LibXML2" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/XSLT"><img src="images/libxslt-logo.png" alt="LibXSLT" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://www.openssl.org/"><img src="images/openssl-logo.png" alt="OpenSSL" border="0"></a></td>
+</tr>
+<!--Links - start--><!--Links - end-->
+</table>
+</td>
+<td valign="top"><table width="100%" valign="top"><tr><td valign="top" align="left" id="xmlsecContent">
+<div align="center">
+            <h1>Frequently Asked Questions</h1>
+            </div>
+<h3>0. Where can I read more about XML Signature and XML Encryption?</h3>
+<p>First of all, read the original specifications: <a href="http://www.w3.org/Signature/">XML Digital Signature</a> and <a href="http://www.w3.org/Encryption/">XML Encrytpion</a>. Also there <a href="related.html#books">several books</a> available that can
+help you get started.<br></p>
+<h3>1. License(s).</h3>
+<h4> <a name="section_1_1"></a>1.1. Licensing Terms for
+xmlsec.</h4>
+<p> XML Security Library is released under the <a href="http://www.opensource.org/licenses/mit-license.html">MIT License</a>,
+see the file Copyright in the distribution for the precise wording. </p>
+<h4> <a name="section_1_2"></a>1.2. Can I use xmlsec with
+proprietary application or
+library? Can I use xmlsec with a GNU GPL application or library?</h4>
+<p>Probably, you will need to ask a lawyer. But not-a-lawyer answer
+can be found in the following table:
+</p>
+<table style="text-align: left; width: 85%; margin-left: auto; margin-right: auto;" border="1" cellpadding="2" cellspacing="2"><tbody>
+<tr>
+<td style="vertical-align: top; font-weight: bold;">XML
+Security Library module<br>
+</td>
+                  <td style="vertical-align: top; font-weight: bold;">Dependencies<br>
+</td>
+                  <td style="vertical-align: top; font-weight: bold;">Dependencies
+License<br>
+</td>
+                  <td style="vertical-align: top; font-weight: bold;">Using
+with proprietary
+applications/libraries<br>
+</td>
+                  <td style="vertical-align: top; font-weight: bold;">Using
+with MIT/BSD applications/libraries <br>
+</td>
+                  <td style="vertical-align: top; font-weight: bold;">Using
+with GPL
+applications/libraries<br>
+</td>
+                </tr>
+<tr>
+<td style="vertical-align: top;">xmlsec-core<br>
+</td>
+                  <td style="vertical-align: top;">
+<a href="http://xmlsoft.org">LibXML2</a>/<a href="http://xmlsoft.org/XSLT">LibXSLT</a>
+                  </td>
+                  <td style="vertical-align: top;"><a href="http://www.opensource.org/licenses/mit-license.html">MIT License</a></td>
+                  <td style="vertical-align: top;">Yes.<br>
+</td>
+                  <td style="vertical-align: top;">Yes.<br>
+</td>
+                  <td style="vertical-align: top;">Yes.<br>
+</td>
+                </tr>
+<tr>
+<td style="vertical-align: top;">xmlsec-openssl (also
+requires
+xmlsec-core library)<br>
+</td>
+                  <td style="vertical-align: top;"><a href="http://www.openssl.org">OpenSSL<br></a></td>
+                  <td style="vertical-align: top;">OpenSSL License<br>
+</td>
+                  <td style="vertical-align: top;">Yes.<br>
+</td>
+                  <td style="vertical-align: top;">Yes.</td>
+                  <td style="vertical-align: top;">May be. <a href="http://www.openssl.org/support/faq.cgi#LEGAL2">OpenSSL FAQ</a>
+states that OpenSSL library is covered by a <a href="http://www.gnu.org/licenses/gpl-faq.html#WritingFSWithNFLibs">special
+GPL exception</a> thus it could be used in GPLed
+applications/libraries. However, some people think that this is not
+true (<a href="http://lists.debian.org/debian-legal/2002/debian-legal-200210/msg00173.html">one</a>
+and <a href="http://lists.debian.org/debian-legal/2002/debian-legal-200205/msg00127.html">two</a>).
+                  </td>
+                </tr>
+<tr>
+<td style="vertical-align: top;">xmlsec-gnutls (also
+requires
+xmlsec-core library) </td>
+                  <td style="vertical-align: top;">
+<a href="http://www.gnu.org/software/gnutls/">GnuTLS</a><br>
+</td>
+                  <td style="vertical-align: top;">
+<a href="http://www.opensource.org/licenses/gpl-license.php">GPL</a><br>
+</td>
+                  <td style="vertical-align: top;">Yes, but only if
+the application is not distributed.<br>
+</td>
+                  <td style="vertical-align: top;">Yes.</td>
+                  <td style="vertical-align: top;">Yes.<br>
+</td>
+                </tr>
+<tr>
+<td style="vertical-align: top;">xmlsec-gcrypt (also
+requires
+xmlsec-core library) </td>
+                  <td style="vertical-align: top;">
+<a href="http://www.gnupg.org/">LibGCrypt</a><br>
+</td>
+                  <td style="vertical-align: top;">
+<a href="http://www.opensource.org/licenses/gpl-license.php">GPL</a><br>
+</td>
+                  <td style="vertical-align: top;">Yes, but only if
+the application is not distributed.<br>
+</td>
+                  <td style="vertical-align: top;">Yes.</td>
+                  <td style="vertical-align: top;">Yes.<br>
+</td>
+                </tr>
+<tr>
+<td style="vertical-align: top;">xmlsec-nss (also requires xmlsec-core library) </td>
+                  <td style="vertical-align: top;">
+<a href="http://www.mozilla.org/projects/security/pki/nss/">NSS</a><br>
+</td>
+                  <td style="vertical-align: top;">Dual licensing: <a href="http://www.opensource.org/licenses/mozilla1.0.php">Mozilla
+Public License</a> and <a href="http://www.opensource.org/licenses/gpl-license.php">GPL</a> </td>
+                  <td style="vertical-align: top;">Yes.<br>
+</td>
+                  <td style="vertical-align: top;">Yes.</td>
+                  <td style="vertical-align: top;">Yes<br>
+</td>
+                </tr>
+<tr>
+<td style="vertical-align: top;">xmlsec-mscrypto
+(also requires
+xmlsec-core library) </td>
+                  <td style="vertical-align: top;">
+<a href="http://msdn.microsoft.com/security/">MSCrypto API</a><br>
+</td>
+                  <td style="vertical-align: top;">Microsoft licensing:
+The libraries are part of MS Windows, and are also distributed with
+Internet Explorer. </td>
+                  <td style="vertical-align: top;">Unknown.<br>
+</td>
+                  <td style="vertical-align: top;">Unknown.</td>
+                  <td style="vertical-align: top;">Unknown.</td>
+                </tr>
+</tbody></table>
+<p>If you have questions about XML Security Library
+licensing then feel free to send these questions to the <a href="bugs.html">mailing list</a>.<br></p>
+<h3>2. Installation.</h3>
+<h4> <a name="section_2_1"></a>2.1. Where can I get xmlsec?</h4>
+<p> The original distribution comes from <a href="http://www.aleksey.com/xmlsec/">XML Security Library page</a>.
+
+</p>
+<h4> <a name="section_2_2"></a>2.2. How to compile xmlsec?</h4>
+<p> On Unix just follow the "standard": </p>
+<blockquote> <code>gunzip -c xmlsec-xxx.tar.gz | tar xvf -</code><br><code>cd xmlsec-xxxx</code><br><code>./configure --help</code><br><code>./configure [possible options] </code><br><code>make</code><br><code>make check</code><br><code>make install</code> </blockquote>
+<p> At that point you may have to rerun ldconfig or similar
+utility to update your list of installed shared libs.<br>
+On Windows the process is more complicated. Please check readme file in
+            <code>xmlsec-xxxx/win32</code> folder. </p>
+<h4> <a name="section_2_3"></a>2.3. What other libraries
+are
+needed to compile/install
+xmlsec?</h4>
+<p> The XML Security Library requires: </p>
+<ul>
+<li><a href="http://xmlsoft.org/downloads.html">LibXML</a></li>
+              <li>
+<a href="http://xmlsoft.org/XSLT/downloads.html">LibXSLT</a>
+(optional)</li>
+            </ul>
+<ul>
+<li> <a href="http://www.openssl.org/">OpenSSL</a> version 0.9.8 (or later).</li>
+<li>
+<a href="http://www.gnu.org/software/gnutls/">GnuTLS</a>
+</li>
+
+<li>
+<a href="http://www.gnu.org/directory/security/libgcrypt.html">Libgcrypt</a>
+</li>
+
+<li>
+<a href="http://www.mozilla.org/projects/security/pki/nss/">NSS</a> -
+Mozilla cryptographic library. </li>
+            </ul>
+<h4> <a name="section_2_4"></a>2.4. Why does make check
+fail
+for some tests?</h4>
+<p> First of all, some tests <b>must</b> fail! Please read
+the messages printed before the tests.<br>
+If you have other failed tests then the next possible reason is that
+some features are not compiled into the library. Re-configure/re-compile xmlsec.<br>
+If this does not help then probably there is a bug in the xmlsec or in
+the xmlsec tests. Please submit the <a href="http://www.aleksey.com/xmlsec/bugs.html">bug report</a> and I'll
+try to fix it. </p>
+<h4> <a name="section_2_5"></a>2.5. I get the xmlsec
+sources from GitHub and there is no
+configure script. Where can I get it?</h4>
+<p> The configure (and other Makefiles) are generated. Use
+the <code>autogen.sh</code> script to regenerate the configure and
+Makefiles, like: </p>
+<blockquote> <code>./autogen.sh --prefix=/usr</code> </blockquote>
+<h4> <a name="section_2_6"></a>2.6. I do not need all
+these
+features supported by
+xmlsec. Can I disable some of them?</h4>
+<p> Yes, you can. Please run <code>./configure --help</code>
+for the list of possible configuration options. </p>
+<h4> <a name="section_2_7"></a>2.7. I am compiling XMLSec
+library on Windows and it
+does not compile (crashes right after the launch). Can you help me?</h4>
+<p> There are several possible reasons why you might have
+problems on Windows. All of them originated in the MS C compiler/linker
+and are specific to Windows. Thanks to Igor Zlatkovic for writing these
+long explanations. </p>
+<p> <b>1) Incorrect MS C runtime libraries.</b> </p>
+<p>Windows basically has two C runtimes. The one is called
+libc.lib and can only be linked to statically. The other is called
+msvcrt.dll and can only be linked to dynamically. The first one occurs
+in its single-threaded and multithreaded variant, which gives three
+different runtimes. These three then live in their debug and release
+incarnations, which results in six C runtimes. Worse, different versions
+of Microsoft Visual C/C++ have different runtimes (e.g. MSVC 6.0 
+runtime is not compatible with .NET 2003 runtime). The rule is simple:
+exactly the same runtime must be used throughout the application.
+Client code must use the same runtime as XMLSec, LibXML, LibXSLT,
+OpenSSL or any other library used.<br>
+If you downloaded XMLSec, LibXML, LibXSLT and OpenSSL binaries from
+Igor's <a href="http://www.zlatkovic.com/projects/libxml/index.html">page</a>
+then all libraries are all linked to msvcrt.dll (Multithreaded DLL; /MD
+compiler switch). The click-next click-finish wizardry from Visual
+Studio chooses the single-threaded libc.lib as the default when you
+create a new project. And this causes great problems because you
+program crashes on first IO operation, first malloc/free from different
+runtimes or something even more trivial.<br>
+Do not forget that tf you need a different runtime for some reason,
+then you MUST recompile not only XMLSec, but LibXML, LibXSLT and
+OpenSSL as well. </p>
+<p> <b>2) Static linking without correct defines.</b> </p>
+<p>When people link statically to XMLSec, then they must <code>#define
+XMLSEC_STATIC</code> in their source files before including any XMLSec
+header. Almost none is doing that :) This macro has no effect on Unix,
+but it is vital on Windows.<br>
+This applies to LibXML and LibXSLT as well, no matter if these are used
+directly or not. If just XMLSec is used, but everything is linked
+statically, then there must be a </p>
+<blockquote><code> #define LIBXML_STATIC<br>
+#define LIBXSLT_STATIC<br>
+#define XMLSEC_STATIC<br></code></blockquote>
+<p> before any xmlsec header is included. Even if the
+client code doesn't call into libxml at all, still this must be
+defined. XMLSec headers will include LibXML headers and they must have
+these definitions. Without them, every variable XMLSec includes from
+LibXML headers will have <code>__declspec(dllimport)</code> prepended
+and that will give headaches if static LibXML is used for linking.<br>
+This scheme makes it possible to have any combination of static and
+dynamic libraries in the resulting executable. Its cost is the need to <code>#define</code>
+apropriate macros. People would ideally define them by using the
+compiler's <code>/D</code> switch in projects that link statically. </p>
+<h3>3. Developing with XMLSec.</h3>
+<h4> <a name="section_3_1"></a>3.1.
+xmlSecDSigCtxValidate()
+function returned 0. Does
+this mean that the signature is valid?</h4>
+<b>No!</b><p> Function xmlSecDSigCtxValidate() returns 0 when there
+were no <i>processing</i> errors during signature validation (i.e. the
+document has correct syntax, all keys were found, etc.). The signature
+is valid if and only if the xmlSecDSigCtxValidate() function returns 0 <b>and</b>
+the <code>status</code> member of the <code>xmlSecDSigCtx</code>
+structure is equal to <code>xmlSecDSigStatusSucceeded</code>. </p>
+<h4> <a name="section_3_2"></a>3.2. I am trying to sign
+use a
+part of XML document using an "Id" attribute but it does not work. Do
+you support "Id" attributes at all?</h4>
+<p><span style="font-weight: bold;">Yes. </span>LibXML2
+and XMLSec libraries do support ID attributes. However, you have to
+tell LibXML2/XMLSec what is the name of <span style="font-weight: bold;">your </span>ID attribute. XML
+specification does not require ID attribute to have name "Id" or "id".
+It can be anything you want! <br></p>
+<br><code>Id</code><code>Data</code><blockquote><code> &lt;?xml version="1.0"
+encoding="UTF-8"&gt;<br>
+&lt;Root&gt;<br>
+&lt;Data Id="1234"&gt;<br>
+The data I want to sign<br>
+&lt;/Data&gt;<br>
+&lt;/Root&gt;<br></code></blockquote>
+<p>One can use a simple DTD: </p>
+<blockquote><code> &lt;!DOCTYPE test [<br>
+&lt;!ATTLIST Data Id ID #IMPLIED&gt;<br>
+]&gt;<br></code></blockquote>
+<p> The DTD might be directly included in the XML file or
+located in a standalone file. In the second case, you might load the
+DTD in xmlsec command line utility with "--dtd-file" option. <br></p>
+<p>2) Use <a href="http://www.w3.org/TR/xml-id/">xml:id</a>.
+This is a new W3C Working Draft and not all XML parsers support it now
+(LibXML2 does!). <br></p>
+<p>3) Application can directly declare ID attribute to
+LibXML2/XMLSec. If you are using xmlsec command line utility see
+"--id-attr" option. If you are writing a C/C++ application
+yourself, call<code>xmlAddID</code> function.
+However, this approach might make you signature non-interoperable with
+other
+XMLDSig implementations.<br></p>
+<h4>
+<a name="section_3_3"></a>3.3.<span style="font-weight: bold;"> </span>I am trying to sign an
+XML document and I have a
+warning about "empty nodes set". Should I worry about this?</h4>
+<p> Most likely <b>yes</b>. When it's not an error from
+specification point of view, I can hardly imagine a real world case
+that requires signing an empty nodes set (i.e. signing an empty
+string). Most likely, you have this error because you are trying to use
+ID attribute and you do not provide a DTD for the document (see <a href="faq.html#section_3_2">section 3.2</a>
+about ID
+attributes).<br></p>
+<h4> </h4>
+<h4>
+<a name="section_3_4"></a>3.4. I am trying to
+sign/validate a document but
+xmlXPtrEval function can't evaluate "xpointer(id('XXXXXXX'))"
+expression. What's wrong?</h4>
+<p>First of all, read <a href="#section_3_2">section 3.2</a>
+about ID
+attributes.
+If you have tried to declare required ID attribute in DTD and
+you still have problems then I would guess that you are playing with
+Visa 3D protocol. This protocol tries to reference to an "id" attribute
+defined as CDATA instead of ID in the DTD (it is impossible in XML as
+described in <a href="#section_3_2">section 3.2</a>). Even worse, the
+value
+of this Visa 3D "id" attribute may start from number or contain "+" or
+"/" and this breakes <a href="http://www.w3.org/TR/REC-xml#sec-attribute-types">XML
+specification</a> again. Based on this, I have to say that Visa
+3D protocol does not use XML or XMLDSig specifications. And if you can
+then you should
+probably let Visa guys know about this problem (thought it was already
+done
+several times).</p>
+<p>The only good solution for this problem is changing Visa
+3D protocol.
+However,
+it might take time. As a short term solution you can use a special
+"Visa 3D
+hack" in xmlsec. Please note, that nobody (including me) knows what
+else
+might be broken in your application if you decide to use this hack. You
+are on
+your own here because this hack makes your application to work with
+non-XML
+and non-XMLDSig but some "Visa 3D" files. </p>
+<p>In order to process "Visa 3D" documents, you need to do
+two things: </p>
+<ul>
+<li>Register ID attributes manually (<code>xmlAddID</code>
+function or <code>--id-attr</code> option for xmlsec command line
+utility).</li>
+              <li>Enable Visa 3D hack in XML DSig context (<code>dsigCtx-&gt;flags
+|= XMLSEC_DSIG_FLAGS_USE_VISA3D_HACK</code> or <code>--enable-visa3d-hack</code>
+option for xmlsec command line utility).</li>
+            </ul>
+<b>This is a hack</b><b>. You are warned!</b><br><p><b>UPDATE:</b> It appears that recent version (Novemeber, 2005)
+of Visa3D DTD does have this problem corrected and now "id" attribute
+is declared as ID. Just get the new DTD and everything should work
+without this hack.</p>
+<h4>
+<a name="section_3_5"></a>3.5. I have a document signed
+with a certificate that
+is now expired. Can I verify this signature?</h4>
+<p> Yes, you can. However, you need to be carefull. Most
+likely you do want to make sure that the certificate was not expired
+when the document was signed. The <a href="http://www.w3.org/Signature">XML
+Digital Signature</a> specification does not have a standard way to
+include the signature timestamp. Which means that you need to define
+where to put timestamp by yourself. Please note, that the timestamp <b>must</b>
+be signed along with the other data.<br>
+Finaly set the desired verification time in <code>certsVerificationTime</code>
+member of the <code>xmlSecKeyInfoCtx</code> structure. </p>
+<p> If you are using xmlsec command line utility then you
+can use <code>--verification-time &lt;time&gt;</code> option (where <code>&lt;time&gt;</code>
+is the local system time in the "<code>YYYY-MM-DD HH:MM:SS</code>"
+format). </p>
+<h4> <a name="section_3_6"></a>3.6. I really like the
+XMLSec
+library but it is based
+on OpenSSL and I have to use another crypto library in my application.
+Can you write code to support my crypto library?</h4>
+<p> The XMLSec library has a very modular structure and
+there should be no problem with using another crypto library. For
+example, XMLSec already supports <a href="http://www.mozilla.org/projects/security/pki/nss/">NSS</a>,
+MSCrypto API and <a href="http://www.gnu.org/software/gnutls/gnutls.html">GnuTLS</a>.
+Check the latest release and/or the mailing list and you might find
+that your library is already supported or someone working on it.<br>
+If you are not so lucky, then you can either write some code by
+yourself or contact me in private email to discuss possible options. </p>
+<h4> <a name="section_3_7"></a>3.7. I really like the
+XMLSec
+library but it does not
+have cipher or transform that I need. Can you write code for me?</h4>
+<p> The XMLSec library has a very modular structure and
+there should be easy to add any cipher or other transform. Again, you
+can either write some code by yourself or try to talk to me in private
+email. </p>
+</td></tr></table></td>
+</tr></table></body>
+</html>

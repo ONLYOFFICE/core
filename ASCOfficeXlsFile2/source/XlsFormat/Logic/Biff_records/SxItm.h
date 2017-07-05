@@ -36,9 +36,7 @@
 namespace XLS
 {
 
-
-// Logical representation of SxItm record in BIFF8
-class SxItm: public BiffRecordContinued
+	class SxItm: public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SxItm)
 	BASE_OBJECT_DEFINE_CLASS_NAME(SxItm)
@@ -47,11 +45,12 @@ public:
 	~SxItm();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSxItm;
+	static const ElementType type = typeSxItm;
+
+	std::vector<unsigned short> rgisxvi;
 };
 
 } // namespace XLS

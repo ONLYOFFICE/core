@@ -72,13 +72,7 @@ namespace OOX
 		class CCellAnchor;
 		class CDrawing;
 		class CFromTo;
-		class CPic;
-		class CShape;
-		class CConnShape;
-		class CGroupShape;
 		class CCommentItem;
-		class CGraphicFrame;
-		class CGraphicChart;
 		class CDefinedName;
 		class CConditionalFormatting;
 		class CConditionalFormattingRule;
@@ -94,6 +88,8 @@ namespace OOX
 		class CPageMargins;
 		class CSi;
 		class CWorkbookView;
+		class CPictureWorksheet;
+		class CHeaderFooter;
 	}
 }
 
@@ -136,15 +132,16 @@ namespace Oox2Odf
 		virtual void convertDocument();
 		virtual void write(const std::wstring & path);
 		
+ 		virtual OOX::IFileContainer						*current_document();
 		virtual odf_writer::odf_conversion_context		*odf_context();		
-		virtual OOX::CTheme								*oox_theme();
+		virtual PPTX::Theme								*oox_theme();
         virtual std::wstring							find_link_by_id (std::wstring sId, int t);
 		virtual NSCommon::smart_ptr<OOX::File>			find_file_by_id(std::wstring sId);
 
 		void convert(OOX::Spreadsheet::WritingElement	*oox_unknown);
     private:		
 		OOX::Spreadsheet::CXlsx					*xlsx_document;
-		OOX::Spreadsheet::IFileContainer		*xlsx_current_container; 
+		OOX::IFileContainer						*xlsx_current_container; 
 		
 		odf_writer::ods_conversion_context		*ods_context;
 
@@ -156,6 +153,8 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CWorksheet			*oox_sheet);
 		void convert(OOX::Spreadsheet::CDefinedName			*oox_defined);
 		void convert(OOX::Spreadsheet::CTable				*oox_table_part);
+		void convert(OOX::Spreadsheet::CPictureWorksheet	*oox_background);
+		void convert(OOX::Spreadsheet::CHeaderFooter		*oox_header_footer);
 
 		void convert(OOX::Spreadsheet::CCol					*oox_column);
 		void convert(OOX::Spreadsheet::CRow					*oox_row);
@@ -196,11 +195,6 @@ namespace Oox2Odf
 
 		void convert(OOX::Spreadsheet::CFromTo						*oox_from_to, oox_table_position * pos);
 
-		void convert(OOX::Spreadsheet::CPic							*oox_picture);
-		void convert(OOX::Spreadsheet::CShape						*oox_shape);
-		void convert(OOX::Spreadsheet::CConnShape					*oox_conn_shape);
-		void convert(OOX::Spreadsheet::CGroupShape					*oox_group_shape);
-	
 		void convert(OOX::Spreadsheet::CConditionalFormatting		*oox_cond_fmt);
 		void convert(OOX::Spreadsheet::CConditionalFormattingRule	*oox_cond_rule);
 		void convert(OOX::Spreadsheet::CAutofilter					*oox_filter);

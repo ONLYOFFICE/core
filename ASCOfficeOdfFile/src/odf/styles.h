@@ -46,7 +46,6 @@
 #include "office_elements_create.h"
 
 #include "datatypes/stylefamily.h"
-#include "datatypes/style_ref.h"
 #include "datatypes/textalign.h"
 #include "datatypes/lengthorpercent.h"
 #include "datatypes/styleverticalrel.h"
@@ -71,9 +70,10 @@
 
 namespace cpdoccore { namespace odf_reader { 
 
+class graphic_format_properties;
+
 class style_text_properties;
 class style_paragraph_properties;
-class style_graphic_properties;
 class style_section_properties;
 class style_table_cell_properties;
 class style_table_row_properties;
@@ -90,15 +90,16 @@ public:
 	void docx_convert(oox::docx_conversion_context & Context, bool in_styles = false);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
    
-    style_text_properties *			get_style_text_properties() const;
-    style_paragraph_properties *	get_style_paragraph_properties() const;
-    style_graphic_properties *		get_style_graphic_properties() const;
-    style_table_properties *		get_style_table_properties() const;
-    style_section_properties *		get_style_section_properties() const;
-    style_table_cell_properties *	get_style_table_cell_properties() const;
-    style_table_row_properties *	get_style_table_row_properties() const;
+	graphic_format_properties *		get_graphic_properties()			const;
+  
+	style_text_properties *			get_style_text_properties()			const;
+    style_paragraph_properties *	get_style_paragraph_properties()	const;
+    style_table_properties *		get_style_table_properties()		const;
+    style_section_properties *		get_style_section_properties()		const;
+    style_table_cell_properties *	get_style_table_cell_properties()	const;
+    style_table_row_properties *	get_style_table_row_properties()	const;
     style_table_column_properties * get_style_table_column_properties() const;
-    style_chart_properties *		get_style_chart_properties() const;
+    style_chart_properties *		get_style_chart_properties()		const;
 	style_drawing_page_properties*	get_style_drawing_page_properties() const;
 
 private:
@@ -411,9 +412,9 @@ public:
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
-    office_element_ptr_array	style_master_page_;	// разметки тем
+    office_element_ptr_array	style_master_page_;			// разметки тем
     office_element_ptr			style_handout_master_;		// разметки для принтера - .. второстепенно
-    office_element_ptr			draw_layer_set_;				// необязательно .. так как слои все равно не поддерживаются в мс.
+    office_element_ptr			draw_layer_set_;			// необязательно .. так как слои все равно не поддерживаются в мс.
 													// то есть не будут объекты объеденены по признаку слоя
 													// зы. не путать с обычной группировкой
 
@@ -433,15 +434,14 @@ class style_master_page_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     
-    _CP_OPT(odf_types::style_ref)		style_name_;
-    _CP_OPT(std::wstring)				style_display_name_;
-    _CP_OPT(odf_types::style_ref)		style_page_layout_name_;
+    _CP_OPT(std::wstring)	style_name_;
+    _CP_OPT(std::wstring)	style_display_name_;
+    _CP_OPT(std::wstring)	style_page_layout_name_;
     
-	_CP_OPT(std::wstring)				draw_style_name_;
-    _CP_OPT(odf_types::style_ref)		style_next_style_name_;
+	_CP_OPT(std::wstring)	draw_style_name_;
+    _CP_OPT(std::wstring)	style_next_style_name_;
 };
 
-//  style:master-page
 class style_master_page;
 typedef boost::shared_ptr<style_master_page> style_master_page_ptr;
 
@@ -464,7 +464,7 @@ private:
 public:
 	int find_placeHolderIndex(odf_types::presentation_class::type placeHolder,int & last_idx);
    
-	style_master_page_attlist	style_master_page_attlist_;
+	style_master_page_attlist	attlist_;
 
     office_element_ptr			style_header_;  
     office_element_ptr			style_header_left_; 
@@ -626,6 +626,7 @@ public:
    // header_footer_content_impl content_;
 
 };
+CP_REGISTER_OFFICE_ELEMENT2(style_footer_first);
 
 ///         style:header-left
 class style_header_left : public office_element_impl<style_header_left>, public header_footer_impl
@@ -895,7 +896,7 @@ public:
     odf_types::common_background_color_attlist	common_background_color_attlist_;
  	odf_types::common_draw_fill_attlist			common_draw_fill_attlist_;
   
-	_CP_OPT(odf_types::style_ref)			style_register_truth_ref_style_name_;
+	_CP_OPT(std::wstring)					style_register_truth_ref_style_name_;
     _CP_OPT(std::wstring)					style_print_;
     _CP_OPT(odf_types::direction)			style_print_page_order_;
     _CP_OPT(std::wstring)					style_first_page_number_;
@@ -974,15 +975,18 @@ public:
     static const ElementType type = typeStylePageLayout;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    void docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context);
-    void pptx_convert(oox::pptx_conversion_context & Context);
+    void docx_convert_serialize	(std::wostream & strm, oox::docx_conversion_context & Context);
+    void pptx_convert			(oox::pptx_conversion_context & Context);
+    void xlsx_convert			(oox::xlsx_conversion_context & Context);
     
 	bool docx_background_serialize(std::wostream & strm, oox::docx_conversion_context & Context, oox::_oox_fill & fill, int id);
+	void xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context);
+	void pptx_serialize(std::wostream & strm, oox::pptx_conversion_context & Context);
 
     style_page_layout_properties() { }
 
-    style_page_layout_properties_attlist	style_page_layout_properties_attlist_;
-    style_page_layout_properties_elements	style_page_layout_properties_elements_;
+    style_page_layout_properties_attlist	attlist_;
+    style_page_layout_properties_elements	elements_;
 
 private:
 

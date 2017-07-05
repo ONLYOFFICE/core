@@ -73,10 +73,26 @@ typedef BYTE BOOL1;
 #define		RECORD_TYPE_EXOBJLIST_ATOM						1034
 #define		RECORD_TYPE_PPDRAWING_GROUP						1035
 #define		RECORD_TYPE_PPDRAWING							1036
+#define		RT_RoundTripTheme12Atom							1038
+#define		RT_RoundTripColorMapping12Atom					1039
 #define		RECORD_TYPE_NAMEDSHOWS							1040
 #define		RECORD_TYPE_NAMEDSHOW							1041
 #define		RECORD_TYPE_NAMEDSHOW_SLIDES					1042
 #define		RECORD_TYPE_SHEET_PROPERTIES					1044
+
+#define		RECORD_TYPE_ORIGINALMAINMASTERID							1052
+#define		RECORD_TYPE_COMPOSITEMASTERID								1053
+#define		RECORD_TYPE_ROUNDTRIPCONTENTMASTERINFO12					1054
+#define		RECORD_TYPE_ROUNDTRIPSHAPEID12								1055
+#define		RECORD_TYPE_ROUNDTRIPHFPLACEHOLDER12						1056
+#define		RECORD_TYPE_ROUNDTRIPCONTENTMASTERID						1058
+#define		RECORD_TYPE_ROUNDTRIPOARTTEXTSTYLES12						1059
+#define     RECORD_TYPE_ROUNDTRIPHEADERFOOTERDEFAULTS12ATOM				1060
+#define     RECORD_TYPE_ROUNDTRIPDOCFLAGS12								1061
+#define		RECORD_TYPE_ROUNDTRIPSHAPECHECKSUMFORCUSTOMLAYOUTS12		1062
+#define		RECORD_TYPE_ROUNDTRIPNOTESMASTERTEXTSTYLES12				1063
+#define		RECORD_TYPE_ROUNDTRIPCUSTOMTABLESTYLES12					1064
+
 #define		RECORD_TYPE_LIST								2000
 #define		RECORD_TYPE_FONTCOLLECTION						2005
 #define		RECORD_TYPE_BOOKMARKCOLLECTION					2019
@@ -180,20 +196,8 @@ typedef BYTE BOOL1;
 #define		RECORD_TYPE_COMMENT2000SUMMARYATOM				12005
 
 // Records ~12050 seem to be related to Document Encryption
-#define		RECORD_TYPE_DOCUMENT_ENCRYPTION_ATOM			12052
+#define		RECORD_TYPE_DOCUMENT_ENCRYPTION_ATOM			0x2F14
 
-#define		RECORD_TYPE_ORIGINALMAINMASTERID							1052
-#define		RECORD_TYPE_COMPOSITEMASTERID								1053
-#define		RECORD_TYPE_ROUNDTRIPCONTENTMASTERINFO12					1054
-#define		RECORD_TYPE_ROUNDTRIPSHAPEID12								1055
-#define		RECORD_TYPE_ROUNDTRIPHFPLACEHOLDER12						1056
-#define		RECORD_TYPE_ROUNDTRIPCONTENTMASTERID						1058
-#define		RECORD_TYPE_ROUNDTRIPOARTTEXTSTYLES12						1059
-#define     RECORD_TYPE_ROUNDTRIPHEADERFOOTERDEFAULTS12ATOM				1060
-#define     RECORD_TYPE_ROUNDTRIPDOCFLAGS12								1061
-#define		RECORD_TYPE_ROUNDTRIPSHAPECHECKSUMFORCUSTOMLAYOUTS12		1062
-#define		RECORD_TYPE_ROUNDTRIPNOTESMASTERTEXTSTYLES12				1063
-#define		RECORD_TYPE_ROUNDTRIPCUSTOMTABLESTYLES12					1064
 
 //records greater then 0xF000 belong to with Microsoft Office Drawing format also known as Escher
 #define		RECORD_TYPE_ESCHER_DGG_CONTAINER							0xF000
@@ -247,6 +251,7 @@ typedef BYTE BOOL1;
 #define		RECORD_PROG_STRING_TAG										0x1389	//	RT_ProgStringTag					ProgStringTagContainer
 #define		RECORD_PROG_BINARY_TAG										0x138A	//	RT_ProgBinaryTag					SlideProgTagsContainer-DocProgTagsContainer-ShapeProgTagsContainer
 #define		RECORD_TEXT_MASTER_STYLE10_ATOM								0x0FB2	//	RT_TextMasterStyle10Atom			TextMasterStyle10Atom 
+
 
 static std::string GetRecordName(DWORD dwType)
 {
@@ -398,48 +403,47 @@ static std::string GetRecordName(DWORD dwType)
 	case RECORD_TYPE_ROUNDTRIPNOTESMASTERTEXTSTYLES12				: { strName = ("RoundTripNotesMasterTextStyles12"); break; }
 	case RECORD_TYPE_ROUNDTRIPCUSTOMTABLESTYLES12					: { strName = ("RoundTripCustomTableStyles12"); break; }
 
-	//records greater then 0xF000 belong to with Microsoft Office Drawing format also known as Escher
-	case RECORD_TYPE_ESCHER_DGG_CONTAINER							: { strName = ("Escher_DrawingGroupContainer"); break; }
-	case RECORD_TYPE_ESCHER_DGG										: { strName = ("Escher_DrawingGroupRecord"); break; }
-	case RECORD_TYPE_ESCHER_CLSID									: { strName = ("Escher_CLSID_Record"); break; }
-	case RECORD_TYPE_ESCHER_OPT										: { strName = ("Escher_OPT"); break; }
-	case RECORD_TYPE_ESCHER_BSTORE_CONTAINER						: { strName = ("Escher_BlipStoreContainer"); break; }
-	case RECORD_TYPE_ESCHER_BSE										: { strName = ("Escher_BlipStoreEntry"); break; }
-	case RECORD_TYPE_ESCHER_BLIP_START								: { strName = ("Escher_BlipStart"); break; }
-	case RECORD_TYPE_ESCHER_BLIP_END								: { strName = ("Escher_BlipEnd"); break; }
-	case RECORD_TYPE_ESCHER_DG_CONTAINER							: { strName = ("Escher_DrawingContainer"); break; }
-	case RECORD_TYPE_ESCHER_DG										: { strName = ("Escher_DrawingRecord"); break; }
-	case RECORD_TYPE_ESCHER_REGROUPITEMS							: { strName = ("Escher_RegGroupItems"); break; }
-	case RECORD_TYPE_ESCHER_COLORSCHEME								: { strName = ("Escher_ColorSheme"); break; }
-	case RECORD_TYPE_ESCHER_SPGR_CONTAINER							: { strName = ("Escher_GroupShapeContainer"); break; }
-	case RECORD_TYPE_ESCHER_SP_CONTAINER							: { strName = ("Escher_ShapeContainer"); break; }
-	case RECORD_TYPE_ESCHER_SPGR									: { strName = ("Escher_GroupShapeRecord"); break; }
-	case RECORD_TYPE_ESCHER_SP										: { strName = ("Escher_ShapeRecord"); break; }
-	case RECORD_TYPE_ESCHER_TEXTBOX									: { strName = ("Escher_TextBox"); break; }
-	case RECORD_TYPE_ESCHER_CLIENTTEXTBOX							: { strName = ("Escher_ClientTextBox"); break; }
-	case RECORD_TYPE_ESCHER_ANCHOR									: { strName = ("Escher_Anchor"); break; }
-	case RECORD_TYPE_ESCHER_CHILDANCHOR								: { strName = ("Escher_ChildAnchor"); break; }
-	case RECORD_TYPE_ESCHER_CLIENTANCHOR							: { strName = ("Escher_ClientAnchor"); break; }
-	case RECORD_TYPE_ESCHER_CLIENTDATA								: { strName = ("Escher_ClientData"); break; }
-	case RECORD_TYPE_ESCHER_SOLVERCONTAINER							: { strName = ("Escher_SolverContainer"); break; }
-	case RECORD_TYPE_ESCHER_CONNECTORRULE							: { strName = ("Escher_ConnectorRule"); break; }
-	case RECORD_TYPE_ESCHER_ALIGNRULE								: { strName = ("Escher_AlignRule"); break; }
-	case RECORD_TYPE_ESCHER_ARCRULE									: { strName = ("Escher_ArcRule"); break; }
-	case RECORD_TYPE_ESCHER_CLIENTRULE								: { strName = ("Escher_ClientRule"); break; }
-	case RECORD_TYPE_ESCHER_CALLOUTRULE								: { strName = ("Escher_CallOutRule"); break; }
-	case RECORD_TYPE_ESCHER_SELECTION								: { strName = ("Escher_Selection"); break; }
-	case RECORD_TYPE_ESCHER_COLORMRU								: { strName = ("Escher_ColorMRU"); break; }
-	case RECORD_TYPE_ESCHER_DELETEDPSPL								: { strName = ("Escher_DeletedPSPL"); break; }
-	case RECORD_TYPE_ESCHER_SPLITMENUCOLORS							: { strName = ("Escher_SplitMenuColors"); break; }
-	case RECORD_TYPE_ESCHER_OLEOBJECT								: { strName = ("Escher_OleObject"); break; }
-	case RECORD_TYPE_ESCHER_SECONDARY_OPT							: { strName = ("Escher_SecondaryOPT"); break; }
-	case RECORD_TYPE_ESCHER_TETRIARY_OPT							: { strName = ("Escher_TetriaryOPT"); break; }
+	case RECORD_TYPE_ESCHER_DGG_CONTAINER							: { strName = ("DrawingGroupContainer"); break; }
+	case RECORD_TYPE_ESCHER_DGG										: { strName = ("DrawingGroupRecord"); break; }
+	case RECORD_TYPE_ESCHER_CLSID									: { strName = ("CLSID_Record"); break; }
+	case RECORD_TYPE_ESCHER_OPT										: { strName = ("OPT"); break; }
+	case RECORD_TYPE_ESCHER_BSTORE_CONTAINER						: { strName = ("BlipStoreContainer"); break; }
+	case RECORD_TYPE_ESCHER_BSE										: { strName = ("BlipStoreEntry"); break; }
+	case RECORD_TYPE_ESCHER_BLIP_START								: { strName = ("BlipStart"); break; }
+	case RECORD_TYPE_ESCHER_BLIP_END								: { strName = ("BlipEnd"); break; }
+	case RECORD_TYPE_ESCHER_DG_CONTAINER							: { strName = ("DrawingContainer"); break; }
+	case RECORD_TYPE_ESCHER_DG										: { strName = ("DrawingRecord"); break; }
+	case RECORD_TYPE_ESCHER_REGROUPITEMS							: { strName = ("RegGroupItems"); break; }
+	case RECORD_TYPE_ESCHER_COLORSCHEME								: { strName = ("ColorSheme"); break; }
+	case RECORD_TYPE_ESCHER_SPGR_CONTAINER							: { strName = ("GroupShapeContainer"); break; }
+	case RECORD_TYPE_ESCHER_SP_CONTAINER							: { strName = ("ShapeContainer"); break; }
+	case RECORD_TYPE_ESCHER_SPGR									: { strName = ("GroupShapeRecord"); break; }
+	case RECORD_TYPE_ESCHER_SP										: { strName = ("ShapeRecord"); break; }
+	case RECORD_TYPE_ESCHER_TEXTBOX									: { strName = ("TextBox"); break; }
+	case RECORD_TYPE_ESCHER_CLIENTTEXTBOX							: { strName = ("ClientTextBox"); break; }
+	case RECORD_TYPE_ESCHER_ANCHOR									: { strName = ("Anchor"); break; }
+	case RECORD_TYPE_ESCHER_CHILDANCHOR								: { strName = ("ChildAnchor"); break; }
+	case RECORD_TYPE_ESCHER_CLIENTANCHOR							: { strName = ("ClientAnchor"); break; }
+	case RECORD_TYPE_ESCHER_CLIENTDATA								: { strName = ("ClientData"); break; }
+	case RECORD_TYPE_ESCHER_SOLVERCONTAINER							: { strName = ("SolverContainer"); break; }
+	case RECORD_TYPE_ESCHER_CONNECTORRULE							: { strName = ("ConnectorRule"); break; }
+	case RECORD_TYPE_ESCHER_ALIGNRULE								: { strName = ("AlignRule"); break; }
+	case RECORD_TYPE_ESCHER_ARCRULE									: { strName = ("ArcRule"); break; }
+	case RECORD_TYPE_ESCHER_CLIENTRULE								: { strName = ("ClientRule"); break; }
+	case RECORD_TYPE_ESCHER_CALLOUTRULE								: { strName = ("CallOutRule"); break; }
+	case RECORD_TYPE_ESCHER_SELECTION								: { strName = ("Selection"); break; }
+	case RECORD_TYPE_ESCHER_COLORMRU								: { strName = ("ColorMRU"); break; }
+	case RECORD_TYPE_ESCHER_DELETEDPSPL								: { strName = ("DeletedPSPL"); break; }
+	case RECORD_TYPE_ESCHER_SPLITMENUCOLORS							: { strName = ("SplitMenuColors"); break; }
+	case RECORD_TYPE_ESCHER_OLEOBJECT								: { strName = ("OleObject"); break; }
+	case RECORD_TYPE_ESCHER_SECONDARY_OPT							: { strName = ("SecondaryOPT"); break; }
+	case RECORD_TYPE_ESCHER_TETRIARY_OPT							: { strName = ("TetriaryOPT"); break; }
 	default: break;
 	};
 
 	if ((dwType > RECORD_TYPE_ESCHER_BLIP_START) && (dwType < RECORD_TYPE_ESCHER_BLIP_END))
 	{
-		strName = ("Escher_Blip");
+		strName = ("Blip");
 	}
 
 	return strName;

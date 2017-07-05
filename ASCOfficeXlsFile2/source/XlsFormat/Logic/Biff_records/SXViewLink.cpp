@@ -52,10 +52,15 @@ BaseObjectPtr SXViewLink::clone()
 
 void SXViewLink::readFields(CFRecord& record)
 {
-#pragma message("####################### SXViewLink record is not implemented")
-	Log::error("SXViewLink record is not implemented.");
-	//record >> some_value;
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	unsigned short			unused, reserved;
+
+	record >> rt >> unused >> reserved >> cch;
+
+	if (cch > 0 && cch < 0xff)
+	{
+		stPivotTable.setSize(cch);
+		record >> stPivotTable;
+	}
 }
 
 } // namespace XLS

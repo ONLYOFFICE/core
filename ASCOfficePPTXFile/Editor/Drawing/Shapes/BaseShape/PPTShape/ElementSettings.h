@@ -165,23 +165,6 @@ public:
             }
         }
     }
-
-//    std::wstring ToString()
-//    {
-//        std::wstring str = _T("");
-//        str.Format(_T("%d,%d,%d,%d"), (long)m_ePID, (long)m_bIsBlip, (long)m_bComplex, (long)m_lValue);
-//        // не будем ничего писать - а то xml - не распознаются
-//        /*if (m_bComplex)
-//                {
-//                        std::wstring strProp = CDirectory::BYTEArrayToString(m_pOptions, m_lValue);
-//                        if (NSOfficeDrawing::pibName == m_ePID)
-//                        {
-//                                strProp = (std::wstring)CDirectory::BYTEArrayToStringW(m_pOptions, m_lValue);
-//                        }
-//                        str += _T(" options=") + strProp;
-//                }*/
-//        return _T("<Property command='") + str + _T("'/>");
-//    }
 };
 
 // А вот контейнер пропертей

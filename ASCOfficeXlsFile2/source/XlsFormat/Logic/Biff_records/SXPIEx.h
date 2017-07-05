@@ -32,12 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/FrtHeaderOld.h"
 
 namespace XLS
 {
 
-
-// Logical representation of SXPIEx record in BIFF8
 class SXPIEx: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXPIEx)
@@ -47,11 +47,15 @@ public:
 	~SXPIEx();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSXPIEx;
+	static const ElementType type = typeSXPIEx;
+
+	FrtHeaderOld	frtHeaderOld;
+	_UINT32			isxth;
+	XLUnicodeString	stUnique;
+	XLUnicodeString	stDisplay;
 };
 
 } // namespace XLS

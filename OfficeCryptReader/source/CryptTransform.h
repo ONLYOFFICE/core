@@ -40,6 +40,7 @@ namespace CRYPT_METHOD
 {
 	enum _hashAlgorithm
 	{
+		MD5,
 		SHA1,
 		SHA224,
 		SHA256,
@@ -61,64 +62,90 @@ namespace CRYPT
 class Decryptor
 {
 	public:
-		virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos) = 0;
+		virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size) = 0;
+		virtual void Decrypt(char* data, const size_t size, const unsigned long block_index) = 0;
 		virtual bool SetPassword(std::wstring password) = 0;
 		virtual bool IsVerify() = 0;
 
 };
 typedef boost::shared_ptr<Decryptor> DecryptorPtr;
 
-class ECMADecryptor : public Decryptor
+struct _ecmaCryptData
 {
-public:
-
-	struct _cryptData
-	{
 //default ms2010		
-		_cryptData() :	cipherAlgorithm(CRYPT_METHOD::AES_CBC), hashAlgorithm(CRYPT_METHOD::SHA1), spinCount(100000), 
-						keySize(0x10), hashSize(0x14), blockSize(0x10), saltSize(0x10), bAgile(true)
+	_ecmaCryptData() :	cipherAlgorithm(CRYPT_METHOD::AES_CBC), hashAlgorithm(CRYPT_METHOD::SHA1), spinCount(100000), 
+					keySize(0x10), hashSize(0x14), blockSize(0x10), saltSize(0x10), bAgile(true)
 //default ms2013/ms2016
-		//_cryptData(): cipherAlgorithm(CRYPT_METHOD::AES_CBC), hashAlgorithm(CRYPT_METHOD::SHA256), spinCount(100000), 
-		//				keySize(0x20), hashSize(0x40), blockSize(0x10), saltSize(0x10), bAgile(true)
-		{
-		}
-		CRYPT_METHOD::_cipherAlgorithm	cipherAlgorithm;
-		CRYPT_METHOD::_hashAlgorithm	hashAlgorithm;
+	//_cryptData(): cipherAlgorithm(CRYPT_METHOD::AES_CBC), hashAlgorithm(CRYPT_METHOD::SHA256), spinCount(100000), 
+	//				keySize(0x20), hashSize(0x40), blockSize(0x10), saltSize(0x10), bAgile(true)
+	{
+	}
+	CRYPT_METHOD::_cipherAlgorithm	cipherAlgorithm;
+	CRYPT_METHOD::_hashAlgorithm	hashAlgorithm;
 
-		int			spinCount;
-		int			keySize;
-		int			hashSize;
-		int			blockSize;
-		int			saltSize;
+	int			spinCount;
+	int			keySize;
+	int			hashSize;
+	int			blockSize;
+	int			saltSize;
 
-		std::string dataSaltValue;
-		std::string saltValue;
-		std::string encryptedKeyValue;
-		std::string encryptedVerifierInput;
-		std::string encryptedVerifierValue;
-		  
-		std::string encryptedHmacKey;
-		std::string encryptedHmacValue;
+	std::string dataSaltValue;
+	std::string saltValue;
+	std::string encryptedKeyValue;
+	std::string encryptedVerifierInput;
+	std::string encryptedVerifierValue;
+	  
+	std::string encryptedHmacKey;
+	std::string encryptedHmacValue;
 
-		bool bAgile;
+	bool bAgile;
 
 //..........
 
-	};
-	ECMADecryptor();
-	virtual ~ECMADecryptor(){}
+};
+class ECMAEncryptor 
+{
+public:
+	ECMAEncryptor();
+	virtual ~ECMAEncryptor(){}
 
-	void Decrypt (unsigned char* data, int  size, unsigned char*& data_out);
+	void SetPassword (std::wstring password);
 	
-	virtual void Decrypt (char* data	, const size_t size, const unsigned long stream_pos);
+	void SetCryptData(_ecmaCryptData &data);
+	void GetCryptData(_ecmaCryptData &data);
+
+	int Encrypt (unsigned char* data, int  size, unsigned char*& data_out);
+
+	void UpdateDataIntegrity(unsigned char* data, int  size);
+
+private:
+	std::wstring	password;
+	_ecmaCryptData	cryptData;
+};
+
+class ECMADecryptor : public Decryptor
+{
+public:
+	ECMADecryptor();
+	virtual ~ECMADecryptor();
+
+	
+	virtual void Decrypt (char* data, const size_t size, const unsigned long stream_pos, const size_t block_size);
+	virtual void Decrypt (char* data, const size_t size, const unsigned long start_iv_block);
+	
 	virtual bool SetPassword (std::wstring password);
 	virtual bool IsVerify();
 
-	void SetCryptData(_cryptData	&data);
+	bool CheckDataIntegrity(unsigned char* data, int  size);
+
+	void SetCryptData(_ecmaCryptData &data);
 	
+	void Decrypt (unsigned char* data, int  size, unsigned char*& data_out, unsigned long start_iv_block);
+
 private:
+
 	std::wstring	password;
-	_cryptData		cryptData;
+	_ecmaCryptData	cryptData;
 	bool			bVerify;
 };
 

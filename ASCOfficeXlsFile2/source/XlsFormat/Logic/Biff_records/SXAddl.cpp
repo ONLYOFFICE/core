@@ -35,6 +35,19 @@
 namespace XLS
 {
 
+BiffStructurePtr XLUnicodeStringSegmentedSXADDL::clone()
+{
+	return BiffStructurePtr(new XLUnicodeStringSegmentedSXADDL(*this));
+}
+void XLUnicodeStringSegmentedSXADDL::load(CFRecord& record)
+{
+	unsigned short reserved;
+	record >> cchTotal >> reserved;
+
+	record >> string;
+}
+//-----------------------------------------
+
 SXAddl::SXAddl()
 {
 }
@@ -52,10 +65,113 @@ BaseObjectPtr SXAddl::clone()
 
 void SXAddl::readFields(CFRecord& record)
 {
-#pragma message("####################### SXAddl record is not implemented")
-	//Log::error("SXAddl record is not implemented.");
-	//record >> some_value;
+	m_SXAddlHdr.load(record);
+
+	Log::error("SXAddl record is not implemented.");
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+}
+//-------------------------------------------------------------------------------------------------------
+BaseObjectPtr SXAddl_SXCCache_SXDId::clone()
+{
+	return BaseObjectPtr(new SXAddl_SXCCache_SXDId(*this));
+}
+void SXAddl_SXCCache_SXDId::readFields(CFRecord& record)
+{
+	m_SXAddlHdr.load(record);
+	
+	short reserved;
+	record >> idCache >> reserved;
+}
+//----------------------------------------------------------------------------
+BaseObjectPtr SXAddl_SXCCache_SXDEnd::clone()
+{
+	return BaseObjectPtr(new SXAddl_SXCCache_SXDEnd(*this));
+}
+void SXAddl_SXCCache_SXDEnd::readFields(CFRecord& record)
+{
+	m_SXAddlHdr.load(record);
+
+	_UINT32	reserved1;
+	short	reserved2;	
+	record >> reserved1 >> reserved2;
+}
+//----------------------------------------------------------------------------
+BaseObjectPtr Continue_SxaddlSxString::clone()
+{
+	return BaseObjectPtr(new Continue_SxaddlSxString(*this));
+}
+
+void Continue_SxaddlSxString::readFields(CFRecord& record)
+{
+	m_SXAddlHdr.load(record);
+	
+	int sz = record.getDataSize() - record.getRdPtr();
+
+	if (sz > 0)
+		record >> stContinue;
+}
+//----------------------------------------------------------------------------
+BaseObjectPtr SXAddl_SXCCache_SXDVer10Info::clone()
+{
+	return BaseObjectPtr(new SXAddl_SXCCache_SXDVer10Info(*this));
+}
+void SXAddl_SXCCache_SXDVer10Info::readFields(CFRecord& record)
+{
+	m_SXAddlHdr.load(record);
+
+	_UINT32	reserved1;
+	short	reserved2;	
+	record >> reserved1 >> reserved2;
+
+	record >> citmGhostMax >> bVerCacheLastRefresh >> bVerCacheRefreshableMin;
+
+	for (int i = 0; i < 8; i++)
+		record >> numDateCopy[i];
+
+	record >> reserved2;
+}
+//----------------------------------------------------------------------------
+BaseObjectPtr SXAddl_SXCCache_SXDInfo12::clone()
+{
+	return BaseObjectPtr(new SXAddl_SXCCache_SXDInfo12(*this));
+}
+void SXAddl_SXCCache_SXDInfo12::readFields(CFRecord& record)
+{
+	m_SXAddlHdr.load(record);
+
+	_UINT32	flags;
+	short	reserved;	
+	
+	record >> flags >> reserved;
+	
+	fSheetData				= GETBIT(flags, 0);
+	fSrvSupportAttribDrill	= GETBIT(flags, 1);
+	fSrvSupportSubQuery		= GETBIT(flags, 2);
+}
+//----------------------------------------------------------------------------
+BaseObjectPtr SXAddl_SXCCache_SXDVerSXMacro::clone()
+{
+	return BaseObjectPtr(new SXAddl_SXCCache_SXDVerSXMacro(*this));
+}
+void SXAddl_SXCCache_SXDVerSXMacro::readFields(CFRecord& record)
+{
+	m_SXAddlHdr.load(record);
+
+	unsigned char	reserved1;
+	short			reserved2, reserved3;	
+	
+	record >> dwVer >> reserved1 >> reserved2 >> reserved3;
+}
+//----------------------------------------------------------------------------
+BaseObjectPtr SXAddl_SXCView_SXDId::clone()
+{
+	return BaseObjectPtr(new SXAddl_SXCView_SXDId(*this));
+}
+void SXAddl_SXCView_SXDId::readFields(CFRecord& record)
+{
+	m_SXAddlHdr.load(record);
+	
+	record >> stName;
 }
 
 } // namespace XLS

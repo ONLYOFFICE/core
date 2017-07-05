@@ -53,9 +53,9 @@ BaseObjectPtr RRSort::clone()
 
 void RRSort::readFields(CFRecord& record)
 {
-#pragma message("####################### RRSort record is not implemented")
 	Log::error("RRSort record is not implemented.");
-	//record >> some_value;
+
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

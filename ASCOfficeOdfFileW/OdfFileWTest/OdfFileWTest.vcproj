@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="OdfFileWriterTest"
 	ProjectGUID="{FBA8446A-150F-4A10-B4DA-1022048D6473}"
 	RootNamespace="ASCOfficeOdfFileWTest"
@@ -65,6 +65,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="&#x0D;&#x0A;Rpcrt4.lib"
 				LinkIncremental="2"
+				IgnoreDefaultLibraryNames="LIBCMTD.lib"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -195,7 +196,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;DONT_WRITE_EMBEDDED_FONTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -343,18 +344,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\OdfFileWTest.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\Common\3dParty\pole\pole.cpp"
 				>
 				<FileConfiguration
@@ -450,11 +439,31 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\Common\OfficeFileFormatChecker2.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\ASCOfficeDocxFile2\BinReader\Readers.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp"
 					>
 				</File>
 			</Filter>
 		</Filter>
+		<File
+			RelativePath=".\OdfFileWTest.cpp"
+			>
+			<FileConfiguration
+				Name="Debug|x64"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="0"
+				/>
+			</FileConfiguration>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

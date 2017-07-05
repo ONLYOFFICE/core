@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/Boolean.h>
+#include "Boolean.h"
 
 namespace XLS
 {
@@ -43,18 +43,15 @@ class Bes : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeBes;
-	
+	static const ElementType	type = typeBes;	
 	
 	virtual void load(CFRecord& record);
-
 
 	const std::wstring toString();
 	void fromString(const std::wstring str);
 
-private:
-	unsigned char bBoolErr;
-	Boolean<unsigned char> fError;
+	unsigned char			bBoolErr;
+	Boolean<unsigned char>	fError;
 };
 
 } // namespace XLS

@@ -101,8 +101,6 @@ public:
 	void start_drawings();
 	void end_drawings();
 
-    virtual void start_image(const std::wstring & image_file_name);
-
 	double convert_symbol_width(double val);
 	
     void add_defined_range		(const std::wstring & name, const std::wstring & cell_range, int sheet_id, bool printable = false);

@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of RealTimeData record in BIFF8
 class RealTimeData: public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(RealTimeData)
@@ -47,12 +45,10 @@ public:
 	~RealTimeData();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeRealTimeData;
-
+	static const ElementType type = typeRealTimeData;
 };
 
 } // namespace XLS

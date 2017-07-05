@@ -48,6 +48,7 @@ public:
 
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
+		m_oHeader = oHeader;
+		m_nSlideID = StreamUtils::ReadDWORD(pStream);
 	}
 };

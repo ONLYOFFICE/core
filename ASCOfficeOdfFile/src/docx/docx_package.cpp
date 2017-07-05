@@ -223,7 +223,7 @@ void docx_charts_files::write(const std::wstring & RootPath)
         if (item)
         {
             count++;
-            const std::wstring fileName = std::wstring(L"chart") + boost::lexical_cast<std::wstring>(count) + L".xml";
+            const std::wstring fileName = std::wstring(L"chart") + std::to_wstring(count) + L".xml";
 			const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
            
 			content_type_content * contentTypes = get_main_document()->get_content_types_file().content();           
@@ -307,6 +307,7 @@ namespace
 			content << L"<w:" << Node <<    L"s \
 								xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
 								xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+								xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
 								xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
 								xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
 								xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \

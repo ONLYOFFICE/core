@@ -76,6 +76,14 @@ namespace ComplexTypes
 		sResult += _T("\" ");\
 	}
 
+#define ComplexTypes_WriteAttribute2Encode( sStartString, oValue ) \
+	if ( oValue.IsInit() )\
+	{\
+		sResult += sStartString;\
+		sResult += XmlUtils::EncodeXmlString(oValue.get2());\
+		sResult += _T("\" ");\
+	}
+
 	class ComplexType
 	{
 	public:
@@ -799,7 +807,7 @@ namespace ComplexTypes
 				if ( m_oVal.IsInit() )
 				{
 					sResult += _T("w:val=\"");
-					sResult += m_oVal->ToString();
+					sResult += std::to_wstring(m_oVal->ToHps());
 					sResult += _T("\" ");
 				}
 

@@ -76,7 +76,7 @@ void pptx_serialize_image(std::wostream & strm, _pptx_drawing & val)
                     CP_XML_ATTR(L"id",		val.id);
                     CP_XML_ATTR(L"name",	val.name);
 
-					oox_serialize_hlink(CP_XML_STREAM(), val.hlinks);
+					oox_serialize_action(CP_XML_STREAM(), val.action);
 
 				}
                 CP_XML_NODE(L"p:cNvPicPr")
@@ -89,6 +89,75 @@ void pptx_serialize_image(std::wostream & strm, _pptx_drawing & val)
 				CP_XML_NODE(L"p:nvPr");
             } 
 			val.fill.bitmap->name_space = L"p";
+			oox_serialize_fill(CP_XML_STREAM(), val.fill);
+
+            CP_XML_NODE(L"p:spPr")
+            {
+				val.serialize_xfrm(CP_XML_STREAM(), L"a", true);
+
+                CP_XML_NODE(L"a:prstGeom")
+                {                   
+                    CP_XML_ATTR(L"prst", L"rect");
+                    CP_XML_NODE(L"a:avLst");
+                }
+				oox_serialize_ln(CP_XML_STREAM(), val.additional);
+            } 			
+			//_CP_OPT(std::wstring) strTextContent;
+			//odf::GetProperty(properties,L"text-content",strTextContent);
+			//pptx_serialize_text(CP_XML_STREAM(),val.additional);
+			//на картинке тект нельзя... - выше сменили тип на рект с заливкой
+        } 
+    }  
+}
+void pptx_serialize_media(std::wostream & strm, _pptx_drawing & val)
+{
+    CP_XML_WRITER(strm)    
+    {
+        CP_XML_NODE(L"p:pic")
+        {                  
+            CP_XML_NODE(L"p:nvPicPr")
+            {
+                CP_XML_NODE(L"p:cNvPr")
+                {
+                    CP_XML_ATTR(L"id",		val.id);
+                    CP_XML_ATTR(L"name",	val.name);
+
+					oox_serialize_action(CP_XML_STREAM(), val.action);
+
+				}
+                CP_XML_NODE(L"p:cNvPicPr")
+				{
+				}
+				CP_XML_NODE(L"p:nvPr")
+				{
+					std::wstring strNode; 
+					
+					if		(val.type == typeVideo)	strNode = L"a:videoFile"; 
+					else if (val.type == typeAudio) strNode = L"a:audioFile"; 
+
+					if (strNode.empty() == false)
+					{
+						CP_XML_NODE(strNode)
+						{
+							CP_XML_ATTR(L"r:link",	val.objectId);
+						}
+					}
+					CP_XML_NODE(L"p:extLst")
+					{
+						CP_XML_NODE(L"p:ext")
+						{
+							CP_XML_ATTR(L"uri",	L"{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}");
+							CP_XML_NODE(L"p14:media")
+							{	
+								CP_XML_ATTR(L"xmlns:p14", L"http://schemas.microsoft.com/office/powerpoint/2010/main");
+								CP_XML_ATTR(L"r:embed",	val.extId);
+							}
+						}
+					}
+				}
+            } 
+			if (val.fill.bitmap)
+				val.fill.bitmap->name_space = L"p";
 			oox_serialize_fill(CP_XML_STREAM(), val.fill);
 
             CP_XML_NODE(L"p:spPr")
@@ -123,7 +192,7 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing & val)
                     CP_XML_ATTR(L"id", val.id);//числовое значение val.rId
                     CP_XML_ATTR(L"name", val.name); 
 
-					oox_serialize_hlink(CP_XML_STREAM(),val.hlinks);
+					oox_serialize_action(CP_XML_STREAM(),val.action);
                 }
 				CP_XML_NODE(L"p:cNvSpPr")//non visual properies (собственно тока 1 там)
 				{
@@ -155,8 +224,11 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing & val)
 				odf_reader::GetProperty(val.additional,L"no_rect",bNoRect);
 
 				if (!bNoRect)
-				{					
-					val.serialize_xfrm(CP_XML_STREAM(), L"a", true);
+				{	
+					if (val.cx != 0 || val.cy != 0) //layout
+					{
+						val.serialize_xfrm(CP_XML_STREAM(), L"a", true);
+					}
 					val.serialize_shape(CP_XML_STREAM());
 
 					oox_serialize_ln(CP_XML_STREAM(), val.additional);
@@ -307,10 +379,13 @@ void _pptx_drawing::serialize(std::wostream & strm)
 	{
 		pptx_serialize_table(strm, *this);
 	}
-	else if (type == typeMsObject || 
-				type == typeOleObject)
+	else if (type == typeMsObject || type == typeOleObject)
 	{
 		pptx_serialize_object(strm, *this);
+	}
+	else if (type == typeMedia || type == typeAudio || type == typeVideo )
+	{
+		pptx_serialize_media(strm, *this);
 	}
 }
 

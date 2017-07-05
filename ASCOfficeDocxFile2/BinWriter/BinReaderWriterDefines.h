@@ -381,7 +381,9 @@ extern int g_nCurFormatVersion;
 		TextFill = 32,
 		Del = 33,
 		Ins = 34,
-		rPrChange = 35
+		rPrChange = 35,
+		MoveFrom = 36,
+		MoveTo = 37
 	};}
 	namespace c_oSerProp_rowPrType{enum c_oSerProp_rowPrType
 	{
@@ -463,7 +465,14 @@ extern int g_nCurFormatVersion;
 		FldSimple		= 11,
 		Del				= 12,
 		Ins				= 13,
-		Background		= 14
+		Background		= 14,
+		Sdt				= 15,
+		MoveFrom		= 16,
+		MoveTo			= 17,
+		MoveFromRangeStart = 18,
+		MoveFromRangeEnd = 19,
+		MoveToRangeStart = 20,
+		MoveToRangeEnd = 21
 	};}
 	namespace c_oSerDocTableType{enum c_oSerDocTableType
 	{
@@ -477,7 +486,8 @@ extern int g_nCurFormatVersion;
 		Cell =  6,
 		Cell_Pr =  7,
 		Cell_Content =  8,
-		tblGridChange = 9
+		tblGridChange = 9,
+		Sdt = 10
 	};}
 	namespace c_oSerRunType{enum c_oSerRunType
 	{
@@ -910,7 +920,8 @@ extern int g_nCurFormatVersion;
 	namespace c_oSer_FldSimpleType{ enum c_oSer_FldSimpleType
 	{
 		Content = 0,
-		Instr = 1
+		Instr = 1,
+		FFData = 2
 	};}
 	namespace c_oSer_ColorThemeType{ enum c_oSer_ColorThemeType
 	{
@@ -996,6 +1007,90 @@ extern int g_nCurFormatVersion;
 		Hidden = 2,
 		Title	= 3,
 		Descr = 4
+	};}
+	namespace c_oSerEmbedded{enum c_oSerEmbedded
+	{
+		Type = 0,
+		Data = 1,
+		Program = 2
+	};}
+	namespace c_oSerSdt{enum c_oSerSdt
+	{
+		Pr = 0,
+		EndPr = 1,
+		Content = 2,
+		Type = 3,
+		Alias = 4,
+		ComboBox = 5,
+		LastValue = 6,
+		SdtListItem = 7,
+		DisplayText = 8,
+		Value = 9,
+		DataBinding = 10,
+		PrefixMappings = 11,
+		StoreItemID = 12,
+		XPath = 13,
+		PrDate = 14,
+		FullDate = 15,
+		Calendar = 16,
+		DateFormat = 17,
+		Lid = 18,
+		StoreMappedDataAs = 19,
+		DocPartList = 20,
+		DocPartObj = 21,
+		DocPartCategory = 22,
+		DocPartGallery = 23,
+		DocPartUnique = 24,
+		DropDownList = 25,
+		Id = 26,
+		Label = 27,
+		Lock = 28,
+		PlaceHolder = 29,
+		RPr = 30,
+		ShowingPlcHdr = 31,
+		TabIndex = 32,
+		Tag = 33,
+		Temporary = 34,
+		MultiLine = 35
+	};}
+	namespace c_oSerFFData{enum c_oSerFFData
+	{
+		CalcOnExit = 0,
+		CheckBox = 1,
+		DDList = 2,
+		Enabled = 3,
+		EntryMacro = 4,
+		ExitMacro = 5,
+		HelpText = 6,
+		Label = 7,
+		Name = 8,
+		StatusText = 9,
+		TabIndex = 10,
+		TextInput = 11,
+		CBChecked = 12,
+		CBDefault = 13,
+		CBSize = 14,
+		CBSizeAuto = 15,
+		DLDefault = 16,
+		DLResult = 17,
+		DLListEntry = 18,
+		HTType = 19,
+		HTVal = 20,
+		TIDefault = 21,
+		TIFormat = 22,
+		TIMaxLength = 23,
+		TIType = 24,
+	};}
+	namespace c_oSerMoveRange{enum c_oSerMoveRange
+	{
+		Author = 0,
+		ColFirst = 1,
+		ColLast = 2,
+		Date = 3,
+		DisplacedByCustomXml = 4,
+		Id = 5,
+		Name = 6,
+		UserId = 7
 	};}
 }
 

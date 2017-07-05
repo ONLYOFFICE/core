@@ -1581,57 +1581,59 @@ namespace OOX
 			static const CParagraphProperty Merge(const CParagraphProperty& oPrev, const CParagraphProperty& oCurrent)
 			{
 				CParagraphProperty oProperties;
-				oProperties.m_oAdjustRightInd            = Merge( oPrev.m_oAdjustRightInd,            oCurrent.m_oAdjustRightInd );
-				oProperties.m_oAutoSpaceDE            = Merge( oPrev.m_oAutoSpaceDE,            oCurrent.m_oAutoSpaceDE );
-				oProperties.m_oAutoSpaceDN            = Merge( oPrev.m_oAutoSpaceDN,            oCurrent.m_oAutoSpaceDN );
-				oProperties.m_oBidi            = Merge( oPrev.m_oBidi,            oCurrent.m_oBidi );
-				oProperties.m_oCnfStyle            = Merge( oPrev.m_oCnfStyle,            oCurrent.m_oCnfStyle );
-				oProperties.m_oContextualSpacing            = Merge( oPrev.m_oContextualSpacing,            oCurrent.m_oContextualSpacing );
-				oProperties.m_oDivID            = Merge( oPrev.m_oDivID,            oCurrent.m_oDivID );
-				oProperties.m_oFramePr            = Merge( oPrev.m_oFramePr,            oCurrent.m_oFramePr );
+				
+				oProperties.m_oAdjustRightInd		= Merge( oPrev.m_oAdjustRightInd,		oCurrent.m_oAdjustRightInd );
+				oProperties.m_oAutoSpaceDE			= Merge( oPrev.m_oAutoSpaceDE,			oCurrent.m_oAutoSpaceDE );
+				oProperties.m_oAutoSpaceDN			= Merge( oPrev.m_oAutoSpaceDN,			oCurrent.m_oAutoSpaceDN );
+				oProperties.m_oBidi					= Merge( oPrev.m_oBidi,					oCurrent.m_oBidi );
+				oProperties.m_oCnfStyle				= Merge( oPrev.m_oCnfStyle,				oCurrent.m_oCnfStyle );
+				oProperties.m_oContextualSpacing	= Merge( oPrev.m_oContextualSpacing,	oCurrent.m_oContextualSpacing );
+				oProperties.m_oDivID				= Merge( oPrev.m_oDivID,				oCurrent.m_oDivID );
+				oProperties.m_oFramePr				= Merge( oPrev.m_oFramePr,				oCurrent.m_oFramePr );
 
 				if ( oCurrent.m_oInd.IsInit() && oPrev.m_oInd.IsInit() )
 					oProperties.m_oInd = ComplexTypes::Word::CInd::Merge(oPrev.m_oInd.get(), oCurrent.m_oInd.get());
 				else
-					oProperties.m_oInd            = Merge( oPrev.m_oInd,            oCurrent.m_oInd );
+					oProperties.m_oInd				= Merge( oPrev.m_oInd,					oCurrent.m_oInd );
 
-				oProperties.m_oJc            = Merge( oPrev.m_oJc,            oCurrent.m_oJc );
-				oProperties.m_oKeepLines            = Merge( oPrev.m_oKeepLines,            oCurrent.m_oKeepLines );
-				oProperties.m_oKeepNext            = Merge( oPrev.m_oKeepNext,            oCurrent.m_oKeepNext );
-				oProperties.m_oKinsoku            = Merge( oPrev.m_oKinsoku,            oCurrent.m_oKinsoku );
-				oProperties.m_oMirrorIndents            = Merge( oPrev.m_oMirrorIndents,            oCurrent.m_oMirrorIndents );
-				oProperties.m_oNumPr            = Merge( oPrev.m_oNumPr,            oCurrent.m_oNumPr );
-				oProperties.m_oOutlineLvl            = Merge( oPrev.m_oOutlineLvl,            oCurrent.m_oOutlineLvl );
-				oProperties.m_oOverflowPunct            = Merge( oPrev.m_oOverflowPunct,            oCurrent.m_oOverflowPunct );
-				oProperties.m_oPageBreakBefore            = Merge( oPrev.m_oPageBreakBefore,            oCurrent.m_oPageBreakBefore );
+				oProperties.m_oJc					= Merge( oPrev.m_oJc,					oCurrent.m_oJc );
+				oProperties.m_oKeepLines			= Merge( oPrev.m_oKeepLines,            oCurrent.m_oKeepLines );
+				oProperties.m_oKeepNext				= Merge( oPrev.m_oKeepNext,				oCurrent.m_oKeepNext );
+				oProperties.m_oKinsoku				= Merge( oPrev.m_oKinsoku,				oCurrent.m_oKinsoku );
+				oProperties.m_oMirrorIndents		= Merge( oPrev.m_oMirrorIndents,		oCurrent.m_oMirrorIndents );
+				oProperties.m_oNumPr				= Merge( oPrev.m_oNumPr,				oCurrent.m_oNumPr );
+				oProperties.m_oOutlineLvl			= Merge( oPrev.m_oOutlineLvl,			oCurrent.m_oOutlineLvl );
+				oProperties.m_oOverflowPunct		= Merge( oPrev.m_oOverflowPunct,		oCurrent.m_oOverflowPunct );
+				oProperties.m_oPageBreakBefore		= Merge( oPrev.m_oPageBreakBefore,		oCurrent.m_oPageBreakBefore );
 
 				if ( oCurrent.m_oPBdr.IsInit() && oPrev.m_oPBdr.IsInit() )
-					oProperties.m_oPBdr = OOX::Logic::CPBdr::Merge(oPrev.m_oPBdr.get(), oCurrent.m_oPBdr.get());
+					oProperties.m_oPBdr	= OOX::Logic::CPBdr::Merge(oPrev.m_oPBdr.get(), oCurrent.m_oPBdr.get());
 				else
-					oProperties.m_oPBdr            = Merge( oPrev.m_oPBdr,            oCurrent.m_oPBdr );
+					oProperties.m_oPBdr				= Merge( oPrev.m_oPBdr,            oCurrent.m_oPBdr );
 
-				oProperties.m_oPPrChange            = Merge( oPrev.m_oPPrChange,            oCurrent.m_oPPrChange );
-				oProperties.m_oPStyle            = Merge( oPrev.m_oPStyle,            oCurrent.m_oPStyle );
-				oProperties.m_oRPr            = Merge( oPrev.m_oRPr,            oCurrent.m_oRPr );
-				oProperties.m_oSectPr            = Merge( oPrev.m_oSectPr,            oCurrent.m_oSectPr );
-				oProperties.m_oShd            = Merge( oPrev.m_oShd,            oCurrent.m_oShd );
-				oProperties.m_oSnapToGrid            = Merge( oPrev.m_oSnapToGrid,            oCurrent.m_oSnapToGrid );
+				oProperties.m_oPPrChange			= Merge( oPrev.m_oPPrChange,		oCurrent.m_oPPrChange );
+				oProperties.m_oPStyle				= Merge( oPrev.m_oPStyle,			oCurrent.m_oPStyle );
+				oProperties.m_oRPr					= Merge( oPrev.m_oRPr,				oCurrent.m_oRPr );
+				oProperties.m_oSectPr				= Merge( oPrev.m_oSectPr,			oCurrent.m_oSectPr );
+				oProperties.m_oShd					= Merge( oPrev.m_oShd,				oCurrent.m_oShd );
+				oProperties.m_oSnapToGrid			= Merge( oPrev.m_oSnapToGrid,		oCurrent.m_oSnapToGrid );
 
 				if ( oCurrent.m_oSpacing.IsInit() && oPrev.m_oSpacing.IsInit() )
-					oProperties.m_oSpacing = ComplexTypes::Word::CSpacing::Merge(oPrev.m_oSpacing.get(), oCurrent.m_oSpacing.get());
+					oProperties.m_oSpacing	= ComplexTypes::Word::CSpacing::Merge(oPrev.m_oSpacing.get(), oCurrent.m_oSpacing.get());
 				else 
-					oProperties.m_oSpacing            = Merge( oPrev.m_oSpacing,            oCurrent.m_oSpacing );
+					oProperties.m_oSpacing			= Merge( oPrev.m_oSpacing,	oCurrent.m_oSpacing );
 
-				oProperties.m_oSuppressAutoHyphens            = Merge( oPrev.m_oSuppressAutoHyphens,            oCurrent.m_oSuppressAutoHyphens );
-				oProperties.m_oSuppressLineNumbers            = Merge( oPrev.m_oSuppressLineNumbers,            oCurrent.m_oSuppressLineNumbers );
-				oProperties.m_oSuppressOverlap            = Merge( oPrev.m_oSuppressOverlap,            oCurrent.m_oSuppressOverlap );
-				oProperties.m_oTabs            = Merge( oPrev.m_oTabs,            oCurrent.m_oTabs );
-				oProperties.m_oTextAlignment            = Merge( oPrev.m_oTextAlignment,            oCurrent.m_oTextAlignment );
-				oProperties.m_oTextboxTightWrap            = Merge( oPrev.m_oTextboxTightWrap,            oCurrent.m_oTextboxTightWrap );
-				oProperties.m_oTextDirection            = Merge( oPrev.m_oTextDirection,            oCurrent.m_oTextDirection );
-				oProperties.m_oTopLinePunct            = Merge( oPrev.m_oTopLinePunct,            oCurrent.m_oTopLinePunct );
-				oProperties.m_oWidowControl            = Merge( oPrev.m_oWidowControl,            oCurrent.m_oWidowControl );
-				oProperties.m_oWordWrap            = Merge( oPrev.m_oWordWrap,            oCurrent.m_oWordWrap );
+				oProperties.m_oSuppressAutoHyphens	= Merge( oPrev.m_oSuppressAutoHyphens,	oCurrent.m_oSuppressAutoHyphens );
+				oProperties.m_oSuppressLineNumbers	= Merge( oPrev.m_oSuppressLineNumbers,	oCurrent.m_oSuppressLineNumbers );
+				oProperties.m_oSuppressOverlap		= Merge( oPrev.m_oSuppressOverlap,		oCurrent.m_oSuppressOverlap );
+				oProperties.m_oTabs					= Merge( oPrev.m_oTabs,					oCurrent.m_oTabs );
+				oProperties.m_oTextAlignment		= Merge( oPrev.m_oTextAlignment,		oCurrent.m_oTextAlignment );
+				oProperties.m_oTextboxTightWrap		= Merge( oPrev.m_oTextboxTightWrap,		oCurrent.m_oTextboxTightWrap );
+				oProperties.m_oTextDirection		= Merge( oPrev.m_oTextDirection,		oCurrent.m_oTextDirection );
+				oProperties.m_oTopLinePunct			= Merge( oPrev.m_oTopLinePunct,			oCurrent.m_oTopLinePunct );
+				oProperties.m_oWidowControl			= Merge( oPrev.m_oWidowControl,			oCurrent.m_oWidowControl );
+				oProperties.m_oWordWrap				= Merge( oPrev.m_oWordWrap,				oCurrent.m_oWordWrap );
+				
 				return oProperties;
 			}
 			template<typename Type>

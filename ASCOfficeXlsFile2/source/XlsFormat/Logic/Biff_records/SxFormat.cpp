@@ -53,10 +53,10 @@ BaseObjectPtr SxFormat::clone()
 
 void SxFormat::readFields(CFRecord& record)
 {
-#pragma message("####################### SxFormat record is not implemented")
-	Log::error("SxFormat record is not implemented.");
-	//record >> some_value;
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	unsigned short	flags;
+	record >> flags >> cbData;
+
+	rlType = GETBITS(flags, 0, 3);
 }
 
 } // namespace XLS

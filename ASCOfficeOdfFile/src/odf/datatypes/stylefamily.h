@@ -68,7 +68,8 @@ public:
 		PageLayout,
 		MasterPage,
 		HandoutMaster,
-		LayerSet
+		LayerSet,
+		PresentationPageLayout
     };
 
     style_family() : type_(Default) {}

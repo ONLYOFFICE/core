@@ -39,11 +39,9 @@ SxRule::SxRule()
 {
 }
 
-
 SxRule::~SxRule()
 {
 }
-
 
 BaseObjectPtr SxRule::clone()
 {
@@ -53,10 +51,22 @@ BaseObjectPtr SxRule::clone()
 
 void SxRule::readFields(CFRecord& record)
 {
-#pragma message("####################### SxRule record is not implemented")
-	Log::error("SxRule record is not implemented.");
-	//record >> some_value;
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	unsigned short flags, reserved;
+	record >> iDim >> isxvd >> flags >> reserved >> csxFilt >> irwFirst >> irwLast >> icolFirst >> icolLast;
+
+	sxaxisRw		= GETBIT(flags, 0);
+	sxaxisCol		= GETBIT(flags, 1);
+	sxaxisPage		= GETBIT(flags, 2);
+	sxaxisData		= GETBIT(flags, 3);
+	sxrType			= GETBITS(flags, 4, 7);
+	fPart			= GETBIT(flags, 8);
+	fDataOnly		= GETBIT(flags, 9);
+	fLabelOnly		= GETBIT(flags, 10);
+	fGrandRw		= GETBIT(flags, 11);
+	fGrandCol		= GETBIT(flags, 12);
+	fGrandRwSav		= GETBIT(flags, 13);
+	fCacheBased		= GETBIT(flags, 14);
+	fGrandColSav	= GETBIT(flags, 15);
 }
 
 } // namespace XLS

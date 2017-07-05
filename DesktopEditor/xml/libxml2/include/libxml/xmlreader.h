@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Summary: the XMLReader implementation
  * Description: API of the XML streaming API based on C# interfaces.
  *

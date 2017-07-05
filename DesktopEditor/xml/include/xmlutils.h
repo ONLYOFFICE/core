@@ -208,6 +208,8 @@ namespace XmlUtils
 
 		std::wstring ReadAttributeBase(const wchar_t* bstrName);		
 		std::wstring ReadAttribute(const std::wstring& strAttibuteName);
+
+		int GetAttributesCount();
 		
 		std::string GetAttributeA(const std::string& sName, const std::string& _default = "");
 		std::string GetAttributeA(const std::wstring& sName, const std::string& _default = "");
@@ -303,6 +305,19 @@ namespace XmlUtils
                         strValues.push_back (NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->second.c_str(), (long)p->second.length()));
                     }
                 }
+                template<typename T>
+                void ReadAllAttributesA(T& strNames, T& strValues)
+                {
+                    if (!IsValid())
+                        return;
+
+                    std::map<std::string, std::string>::iterator p;
+                    for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+                    {
+                        strNames.push_back(p->first);
+                        strValues.push_back(p->second);
+                    }
+                }
                 template <typename T>
                 void ReadNodeValueBase(const wchar_t* bsName, T& value)
                 {
@@ -338,85 +353,7 @@ namespace XmlUtils
 		bool SaveToFile(const std::wstring& strFilePath/*, bool bEncodingToUTF8 = false*/)
 		{
 			return NSFile::CFileBinary::SaveToFile(strFilePath, m_str);
-//#if defined(_WIN32) || defined (_WIN64)
-//            // win32 unicode and multibyte strings
-//			FILE* pFile = _tfopen(strFilePath, (L"wt"));
-//#else
-//            // *nix build
-//            #ifdef _UNICODE
-//                std::string sFilePathUtf8 = stringWstingToUtf8String (strFilePath);
-//                FILE* pFile = fopen(sFilePathUtf8.c_str(), "wt");
-//            #else
-//                // path is already utf8
-//                std::string sFilePathUtf8 = strFilePath;
-//                FILE* pFile = fopen(sFilePathUtf8.c_str(), "wt");
-//            #endif
-//#endif
-//
-//			if (!pFile)
-//                                return false;
-//
-//			std::string str; str = m_str;
-//			if (bEncodingToUTF8)
-//#ifdef _UNICODE
-//				str = EncodingUnicodeToUTF8();
-//#else
-//				str = EncodingASCIIToUTF8();
-//#endif
-//
-//			fprintf(pFile, str);
-//
-//			fclose(pFile);
-//
-//			return true;
 		}
-//#ifdef _UNICODE
-//        std::string EncodingUnicodeToUTF8()
-//        {
-//            //#if defined(_WIN32) || defined (_WIN64)
-//            //    int nLength = m_str.GetLength();
-//
-//            //    // Encoding Unicode to UTF-8
-//            //    std::string saStr;
-//            //    WideCharToMultiByte(CP_UTF8, 0, m_str.GetBuffer(), nLength + 1, saStr.GetBuffer(nLength*3 + 1), nLength*3, NULL, NULL);
-//            //    saStr.ReleaseBuffer();
-//            //    return saStr;
-//            //#else
-//
-//                std::string sStrTempUtf8 = stringWstingToUtf8String (m_str);
-//                std::string saStr = sStrTempUtf8;
-//                return saStr;
-//            //#endif
-//        }
-//#else
-//		std::wstring EncodingASCIIToUTF8()
-//        {
-//            int nLength = m_str.GetLength();
-//
-//			wchar_t* pWStr = new wchar_t[nLength + 1];
-//			if (!pWStr)
-//				return (L"");
-//
-//			// set end string
-//			pWStr[nLength] = 0;
-//
-//			// Encoding ASCII to Unicode
-//            MultiByteToWideChar(CP_ACP, 0, m_str, nLength, pWStr, nLength);
-//
-//            int nLengthW = (int) wcslen(pWStr);
-//
-//			// Encoding Unicode to UTF-8
-//			std::wstring cStr; 
-//            WideCharToMultiByte(CP_UTF8, 0, pWStr, nLengthW + 1, cStr.GetBuffer(nLengthW*3 + 1), nLengthW*3, NULL, NULL);
-//			cStr.ReleaseBuffer();
-//    
-//		    delete[] pWStr;
-//
-//            return cStr;
-//        }
-//#endif
-
-
 		void WriteString(const std::wstring& strValue)
 		{
 			m_str += strValue;

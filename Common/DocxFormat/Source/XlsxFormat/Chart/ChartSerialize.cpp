@@ -1242,7 +1242,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_Boolean::getType(){return et_ct_boolean;}
-		void CT_Boolean::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_Boolean::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -1256,7 +1257,7 @@ namespace OOX{
 						*pNewElem = true;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_RelId::CT_RelId()
 		{
@@ -1284,7 +1285,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_RelId::getType(){return et_ct_relid;}
-		void CT_RelId::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_RelId::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("id") == wsName)
 				{
@@ -1294,7 +1296,7 @@ namespace OOX{
 					*pNewElem = sVal;
 					m_id = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_PageSetup::CT_PageSetup()
 		{
@@ -1464,7 +1466,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_PageSetup::getType(){return et_ct_pagesetup;}
-		void CT_PageSetup::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_PageSetup::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("paperSize") == wsName)
 				{
@@ -1561,7 +1564,7 @@ namespace OOX{
                     *pNewElem = _ttoi(sVal.c_str());
 					m_copies = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_PageMargins::CT_PageMargins()
 		{
@@ -1623,7 +1626,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_PageMargins::getType(){return et_ct_pagemargins;}
-		void CT_PageMargins::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_PageMargins::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("l") == wsName)
 				{
@@ -1667,7 +1671,7 @@ namespace OOX{
                     *pNewElem = _tstof(sVal.c_str());
 					m_footer = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_HeaderFooter::CT_HeaderFooter()
 		{
@@ -1872,7 +1876,8 @@ namespace OOX{
 			writer.WriteString(L">");
 		}
 		EElementType CT_HeaderFooter::getType(){return et_ct_headerfooter;}
-		void CT_HeaderFooter::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_HeaderFooter::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("alignWithMargins") == wsName)
 				{
@@ -1910,7 +1915,7 @@ namespace OOX{
 						*pNewElem = true;
 					m_differentFirst = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_PrintSettings::CT_PrintSettings()
 		{
@@ -2025,7 +2030,8 @@ namespace OOX{
 			writer.WriteString(L">");
 		}
 		EElementType CT_ExternalData::getType(){return et_ct_externaldata;}
-		void CT_ExternalData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_ExternalData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("id") == wsName)
 				{
@@ -2035,7 +2041,7 @@ namespace OOX{
 					*pNewElem = sVal;
 					m_id = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_DispBlanksAs::CT_DispBlanksAs()
 		{
@@ -2068,7 +2074,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_DispBlanksAs::getType(){return et_ct_dispblanksas;}
-		void CT_DispBlanksAs::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_DispBlanksAs::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -2079,7 +2086,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_LegendEntry::CT_LegendEntry()
 		{
@@ -2183,7 +2190,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_UnsignedInt::getType(){return et_ct_unsignedint;}
-		void CT_UnsignedInt::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_UnsignedInt::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -2192,7 +2200,7 @@ namespace OOX{
                     *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_Extension::CT_Extension()
 		{
@@ -2247,7 +2255,8 @@ namespace OOX{
 			writer.WriteString(L">");
 		}
 		EElementType CT_Extension::getType(){return et_ct_extension;}
-		void CT_Extension::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_Extension::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("uri") == wsName)
 				{
@@ -2256,7 +2265,7 @@ namespace OOX{
 					*pNewElem = sVal;
 					m_uri = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_LegendPos::CT_LegendPos()
 		{
@@ -2289,7 +2298,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_LegendPos::getType(){return et_ct_legendpos;}
-		void CT_LegendPos::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_LegendPos::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -2301,7 +2311,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_Legend::CT_Legend()
 		{
@@ -2668,7 +2678,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_LayoutTarget::getType(){return et_ct_layouttarget;}
-		void CT_LayoutTarget::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_LayoutTarget::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -2680,7 +2691,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_LayoutMode::CT_LayoutMode()
 		{
@@ -2713,7 +2724,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_LayoutMode::getType(){return et_ct_layoutmode;}
-		void CT_LayoutMode::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_LayoutMode::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -2726,7 +2738,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_Double::CT_Double()
 		{
@@ -2753,7 +2765,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_Double::getType(){return et_ct_double;}
-		void CT_Double::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_Double::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -2762,7 +2775,7 @@ namespace OOX{
                     *pNewElem = _tstof(sVal.c_str());
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_DTable::CT_DTable()
 		{
@@ -3273,7 +3286,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_LogBase::getType(){return et_ct_logbase;}
-		void CT_LogBase::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_LogBase::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -3282,7 +3296,7 @@ namespace OOX{
                     *pNewElem = _tstof(sVal.c_str());
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_Orientation::CT_Orientation()
 		{
@@ -3315,7 +3329,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_Orientation::getType(){return et_ct_orientation;}
-		void CT_Orientation::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_Orientation::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -3327,7 +3342,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_AxPos::CT_AxPos()
 		{
@@ -3358,7 +3373,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_AxPos::getType(){return et_ct_axpos;}
-		void CT_AxPos::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_AxPos::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -3370,7 +3386,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_ChartLines::CT_ChartLines()
 		{
@@ -3741,7 +3757,8 @@ namespace OOX{
 			writer.WriteString(L">");
 		}
 		EElementType CT_StrVal::getType(){return et_ct_strval;}
-		void CT_StrVal::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_StrVal::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("idx") == wsName)
 				{
@@ -3750,7 +3767,7 @@ namespace OOX{
                     *pNewElem = _ttoi(sVal.c_str());
 					m_idx = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_NumFmt::CT_NumFmt()
 		{
@@ -3789,7 +3806,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_NumFmt::getType(){return et_ct_numfmt;}
-		void CT_NumFmt::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_NumFmt::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("formatCode") == wsName)
 				{
@@ -3810,7 +3828,7 @@ namespace OOX{
 						*pNewElem = true;
 					m_sourceLinked = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_TickMark::CT_TickMark()
 		{
@@ -3843,7 +3861,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_TickMark::getType(){return et_ct_tickmark;}
-		void CT_TickMark::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_TickMark::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -3855,7 +3874,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_TickLblPos::CT_TickLblPos()
 		{
@@ -3888,7 +3907,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_TickLblPos::getType(){return et_ct_ticklblpos;}
-		void CT_TickLblPos::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_TickLblPos::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -3900,7 +3920,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_Crosses::CT_Crosses()
 		{
@@ -3931,7 +3951,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_Crosses::getType(){return et_ct_crosses;}
-		void CT_Crosses::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_Crosses::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -3942,7 +3963,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_Skip::CT_Skip()
 		{
@@ -3969,7 +3990,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_Skip::getType(){return et_ct_skip;}
-		void CT_Skip::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_Skip::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -3978,7 +4000,7 @@ namespace OOX{
                     *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_TimeUnit::CT_TimeUnit()
 		{
@@ -4011,7 +4033,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_TimeUnit::getType(){return et_ct_timeunit;}
-		void CT_TimeUnit::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_TimeUnit::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -4022,7 +4045,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_DateAx::CT_DateAx()
 		{
@@ -4403,7 +4426,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_LblOffset::getType(){return et_ct_lbloffset;}
-		void CT_LblOffset::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_LblOffset::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -4412,7 +4436,7 @@ namespace OOX{
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_AxisUnit::CT_AxisUnit()
 		{
@@ -4439,7 +4463,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_AxisUnit::getType(){return et_ct_axisunit;}
-		void CT_AxisUnit::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_AxisUnit::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -4448,7 +4473,7 @@ namespace OOX{
                     *pNewElem = _tstof(sVal.c_str());
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_LblAlgn::CT_LblAlgn()
 		{
@@ -4479,7 +4504,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_LblAlgn::getType(){return et_ct_lblalgn;}
-		void CT_LblAlgn::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_LblAlgn::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -4491,7 +4517,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_CatAx::CT_CatAx()
 		{
@@ -4928,7 +4954,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_BuiltInUnit::getType(){return et_ct_builtinunit;}
-		void CT_BuiltInUnit::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_BuiltInUnit::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -4939,7 +4966,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_DispUnits::CT_DispUnits()
 		{
@@ -5050,7 +5077,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_CrossBetween::getType(){return et_ct_crossbetween;}
-		void CT_CrossBetween::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_CrossBetween::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -5061,7 +5089,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_ValAx::CT_ValAx()
 		{
@@ -5401,7 +5429,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_SizeRepresents::getType(){return et_ct_sizerepresents;}
-		void CT_SizeRepresents::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_SizeRepresents::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -5413,7 +5442,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_BubbleScale::CT_BubbleScale()
 		{
@@ -5445,7 +5474,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_BubbleScale::getType(){return et_ct_bubblescale;}
-		void CT_BubbleScale::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_BubbleScale::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -5454,7 +5484,7 @@ namespace OOX{
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_BubbleSer::CT_BubbleSer()
 		{
@@ -5972,7 +6002,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_MarkerStyle::getType(){return et_ct_markerstyle;}
-		void CT_MarkerStyle::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_MarkerStyle::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -5984,7 +6015,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_MarkerSize::CT_MarkerSize()
 		{
@@ -6016,7 +6047,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_MarkerSize::getType(){return et_ct_markersize;}
-		void CT_MarkerSize::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_MarkerSize::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -6025,7 +6057,7 @@ namespace OOX{
                     *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_PictureOptions::CT_PictureOptions()
 		{
@@ -6150,7 +6182,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_PictureFormat::getType(){return et_ct_pictureformat;}
-		void CT_PictureFormat::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_PictureFormat::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -6161,7 +6194,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_PictureStackUnit::CT_PictureStackUnit()
 		{
@@ -6188,7 +6221,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_PictureStackUnit::getType(){return et_ct_picturestackunit;}
-		void CT_PictureStackUnit::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_PictureStackUnit::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -6197,7 +6231,7 @@ namespace OOX{
                     *pNewElem = _tstof(sVal.c_str());
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_DLbls::CT_DLbls()
 		{
@@ -7171,7 +7205,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_DLblPos::getType(){return et_ct_dlblpos;}
-		void CT_DLblPos::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_DLblPos::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -7182,7 +7217,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_Trendline::CT_Trendline()
 		{
@@ -7406,7 +7441,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_TrendlineType::getType(){return et_ct_trendlinetype;}
-		void CT_TrendlineType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_TrendlineType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -7418,7 +7454,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_Order::CT_Order()
 		{
@@ -7450,7 +7486,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_Order::getType(){return et_ct_order;}
-		void CT_Order::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_Order::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -7459,7 +7496,7 @@ namespace OOX{
                     *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_Period::CT_Period()
 		{
@@ -7491,7 +7528,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_Period::getType(){return et_ct_period;}
-		void CT_Period::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_Period::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -7500,7 +7538,7 @@ namespace OOX{
                     *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_TrendlineLbl::CT_TrendlineLbl()
 		{
@@ -7772,7 +7810,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_ErrDir::getType(){return et_ct_errdir;}
-		void CT_ErrDir::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_ErrDir::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -7783,7 +7822,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_ErrBarType::CT_ErrBarType()
 		{
@@ -7816,7 +7855,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_ErrBarType::getType(){return et_ct_errbartype;}
-		void CT_ErrBarType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_ErrBarType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -7827,7 +7867,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_ErrValType::CT_ErrValType()
 		{
@@ -7860,7 +7900,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_ErrValType::getType(){return et_ct_errvaltype;}
-		void CT_ErrValType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_ErrValType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -7871,7 +7912,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_NumDataSource::CT_NumDataSource()
 		{
@@ -8073,7 +8114,8 @@ namespace OOX{
 			writer.WriteString(L">");
 		}
 		EElementType CT_NumVal::getType(){return et_ct_numval;}
-		void CT_NumVal::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_NumVal::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("idx") == wsName)
 				{
@@ -8089,7 +8131,7 @@ namespace OOX{
 					*pNewElem = sVal;
 					m_formatCode = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_NumRef::CT_NumRef()
 		{
@@ -9035,7 +9077,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_SecondPieSize::getType(){return et_ct_secondpiesize;}
-		void CT_SecondPieSize::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_SecondPieSize::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -9044,7 +9087,7 @@ namespace OOX{
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_SplitType::CT_SplitType()
 		{
@@ -9077,7 +9120,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_SplitType::getType(){return et_ct_splittype;}
-		void CT_SplitType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_SplitType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -9088,7 +9132,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_OfPieType::CT_OfPieType()
 		{
@@ -9121,7 +9165,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_OfPieType::getType(){return et_ct_ofpietype;}
-		void CT_OfPieType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_OfPieType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -9132,7 +9177,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_custSplit::CT_custSplit()
 		{
@@ -9554,7 +9599,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_GapAmount::getType(){return et_ct_gapamount;}
-		void CT_GapAmount::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_GapAmount::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -9563,7 +9609,7 @@ namespace OOX{
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_Bar3DChart::CT_Bar3DChart()
 		{
@@ -9768,7 +9814,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_BarDir::getType(){return et_ct_bardir;}
-		void CT_BarDir::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_BarDir::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -9779,7 +9826,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_BarGrouping::CT_BarGrouping()
 		{
@@ -9812,7 +9859,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_BarGrouping::getType(){return et_ct_bargrouping;}
-		void CT_BarGrouping::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_BarGrouping::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -9823,7 +9871,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_BarSer::CT_BarSer()
 		{
@@ -10078,7 +10126,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_Shape::getType(){return et_ct_shape;}
-		void CT_Shape::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_Shape::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -10089,7 +10138,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_Overlap::CT_Overlap()
 		{
@@ -10121,7 +10170,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_Overlap::getType(){return et_ct_overlap;}
-		void CT_Overlap::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_Overlap::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -10130,7 +10180,7 @@ namespace OOX{
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_BarChart::CT_BarChart()
 		{
@@ -10338,7 +10388,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_HoleSize::getType(){return et_ct_holesize;}
-		void CT_HoleSize::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_HoleSize::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -10347,7 +10398,7 @@ namespace OOX{
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_DoughnutChart::CT_DoughnutChart()
 		{
@@ -10491,7 +10542,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_FirstSliceAng::getType(){return et_ct_firstsliceang;}
-		void CT_FirstSliceAng::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_FirstSliceAng::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -10500,7 +10552,7 @@ namespace OOX{
                     *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_Pie3DChart::CT_Pie3DChart()
 		{
@@ -10927,7 +10979,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_ScatterStyle::getType(){return et_ct_scatterstyle;}
-		void CT_ScatterStyle::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_ScatterStyle::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -10938,7 +10991,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_ScatterChart::CT_ScatterChart()
 		{
@@ -11249,7 +11302,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_RadarStyle::getType(){return et_ct_radarstyle;}
-		void CT_RadarStyle::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_RadarStyle::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -11260,7 +11314,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_RadarChart::CT_RadarChart()
 		{
@@ -12003,7 +12057,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_Grouping::getType(){return et_ct_grouping;}
-		void CT_Grouping::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_Grouping::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -12015,7 +12070,7 @@ namespace OOX{
 						*pNewElem = eVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_LineChart::CT_LineChart()
 		{
@@ -13376,7 +13431,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_Thickness::getType(){return et_ct_thickness;}
-		void CT_Thickness::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_Thickness::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -13385,7 +13441,7 @@ namespace OOX{
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_Surface::CT_Surface()
 		{
@@ -13491,7 +13547,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_Perspective::getType(){return et_ct_perspective;}
-		void CT_Perspective::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_Perspective::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -13500,7 +13557,7 @@ namespace OOX{
                     *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_DepthPercent::CT_DepthPercent()
 		{
@@ -13532,7 +13589,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_DepthPercent::getType(){return et_ct_depthpercent;}
-		void CT_DepthPercent::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_DepthPercent::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -13541,7 +13599,7 @@ namespace OOX{
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_RotY::CT_RotY()
 		{
@@ -13573,7 +13631,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_RotY::getType(){return et_ct_roty;}
-		void CT_RotY::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_RotY::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -13582,7 +13641,7 @@ namespace OOX{
                     *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_HPercent::CT_HPercent()
 		{
@@ -13614,7 +13673,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_HPercent::getType(){return et_ct_hpercent;}
-		void CT_HPercent::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_HPercent::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -13623,7 +13683,7 @@ namespace OOX{
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_RotX::CT_RotX()
 		{
@@ -13655,7 +13715,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_RotX::getType(){return et_ct_rotx;}
-		void CT_RotX::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_RotX::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -13664,7 +13725,7 @@ namespace OOX{
                     *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_View3D::CT_View3D()
 		{
@@ -14327,7 +14388,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_Style1::getType(){return et_ct_style1;}
-		void CT_Style1::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_Style1::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -14336,7 +14398,7 @@ namespace OOX{
                     *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_Style::CT_Style()
 		{
@@ -14363,7 +14425,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_Style::getType(){return et_ct_style;}
-		void CT_Style::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_Style::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -14372,7 +14435,7 @@ namespace OOX{
                     *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_TextLanguageID::CT_TextLanguageID()
 		{
@@ -14389,7 +14452,8 @@ namespace OOX{
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-		void CT_TextLanguageID::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_TextLanguageID::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -14399,7 +14463,8 @@ namespace OOX{
 			writer.WriteString(L"/>");
 		}
 		EElementType CT_TextLanguageID::getType(){return et_ct_textlanguageid;}
-		void CT_TextLanguageID::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		void CT_TextLanguageID::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
@@ -14408,7 +14473,7 @@ namespace OOX{
 					*pNewElem = sVal;
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		AlternateContent::AlternateContent()
 		{
@@ -14422,7 +14487,8 @@ namespace OOX{
 			if(NULL != m_Fallback)
 				delete m_Fallback;
 		}
-		void AlternateContent::fromXML(XmlUtils::CXmlLiteReader& oReader){
+		void AlternateContent::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
 			if ( oReader.IsEmptyNode() )
 				return;
 			int nParentDepth = oReader.GetDepth();
@@ -14443,7 +14509,8 @@ namespace OOX{
 				}
 			}
 		}
-		void AlternateContent::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void AlternateContent::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -14465,7 +14532,10 @@ namespace OOX{
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
-		EElementType AlternateContent::getType(){return et_alternatecontent;}
+		EElementType AlternateContent::getType()
+		{
+			return et_ct_alternatecontent;
+		}
 		AlternateContentChoice::AlternateContentChoice()
 		{
 			m_style = NULL;
@@ -14478,7 +14548,8 @@ namespace OOX{
 			if(NULL != m_Requires)
 				delete m_Requires;
 		}
-		void AlternateContentChoice::fromXML(XmlUtils::CXmlLiteReader& oReader){
+		void AlternateContentChoice::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
 				ReadAttributes(oReader);
 
 					if ( oReader.IsEmptyNode() )
@@ -14495,7 +14566,8 @@ namespace OOX{
 					}
 				}
 		}
-		void AlternateContentChoice::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void AlternateContentChoice::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_Requires)
@@ -14512,8 +14584,12 @@ namespace OOX{
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
-		EElementType AlternateContentChoice::getType(){return et_alternatecontentchoice;}
-		void AlternateContentChoice::ReadAttributes(XmlUtils::CXmlLiteReader& oReader){
+		EElementType AlternateContentChoice::getType()
+		{
+			return et_ct_alternatecontentchoice;
+		}
+		void AlternateContentChoice::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("Requires") == wsName)
 				{
@@ -14522,7 +14598,7 @@ namespace OOX{
 					*pNewElem = sVal;
 					m_Requires = pNewElem;
 				}
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		AlternateContentFallback::AlternateContentFallback()
 		{
@@ -14533,7 +14609,8 @@ namespace OOX{
 			if(NULL != m_style)
 				delete m_style;
 		}
-		void AlternateContentFallback::fromXML(XmlUtils::CXmlLiteReader& oReader){
+		void AlternateContentFallback::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
 			if ( oReader.IsEmptyNode() )
 				return;
 			int nParentDepth = oReader.GetDepth();
@@ -14548,7 +14625,8 @@ namespace OOX{
 				}
 			}
 		}
-		void AlternateContentFallback::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void AlternateContentFallback::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -14561,6 +14639,9 @@ namespace OOX{
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 		}
-		EElementType AlternateContentFallback::getType(){return et_alternatecontentfallback;}
+		EElementType AlternateContentFallback::getType()
+		{
+			return et_ct_alternatecontentfallback;
+		}
 	}
 }

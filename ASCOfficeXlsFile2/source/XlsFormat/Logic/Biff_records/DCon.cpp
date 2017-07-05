@@ -52,8 +52,7 @@ BaseObjectPtr DCon::clone()
 
 void DCon::readFields(CFRecord& record)
 {
-	#pragma message("####################### DCon record is not implemented")
-	//record >> iiftab >> fLeftCat >> fTopCat >> fLinkConsole;
+	record >> iiftab >> fLeftCat >> fTopCat >> fLinkConsole;
 }
 
 } // namespace XLS

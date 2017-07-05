@@ -63,15 +63,6 @@ namespace PPTX
 			FillParentPointersForChilds();
 		}
 
-		std::wstring EffectStyle::toXML() const
-		{
-			XmlUtils::CNodeValue oValue;
-			oValue.Write(EffectList);
-			oValue.WriteNullable(scene3d);
-			oValue.WriteNullable(sp3d);
-
-			return XmlUtils::CreateNode(_T("a:effectStyle"), oValue);
-		}
 
 		void EffectStyle::FillParentPointersForChilds()
 		{

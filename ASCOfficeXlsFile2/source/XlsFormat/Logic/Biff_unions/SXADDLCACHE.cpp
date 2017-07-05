@@ -57,19 +57,42 @@ BaseObjectPtr SXADDLCACHE::clone()
 }
 
 
-//               [SXADDLCACHE12] [SXADDLDBQUERY] *UNKNOWNFRT SXAddl_SXCCache_SXDEnd
+//[SXADDLCACHE12] [SXADDLDBQUERY] *UNKNOWNFRT SXAddl_SXCCache_SXDEnd
 const bool SXADDLCACHE::loadContent(BinProcessor& proc)
 {
 	if(!proc.mandatory<SXAddl_SXCCache_SXDId>())
 	{
 		return false;
 	}
-	proc.mandatory<SXAddl_SXCCache_SXDVer10Info>();
-	proc.optional<SXAddl_SXCCache_SXDVerSXMacro>();
-	proc.optional<SXADDLCACHE12>();
-	proc.optional<SXADDLDBQUERY>();
-	proc.repeated<UNKNOWNFRT>(0, 0);
-	proc.mandatory<SXAddl_SXCCache_SXDEnd>();
+	m_SXCCache_SXDId = elements_.back();
+	elements_.pop_back(); 
+
+	if (proc.optional<SXAddl_SXCCache_SXDVer10Info>())
+	{
+		m_SXDVer10Info = elements_.back();
+		elements_.pop_back(); 
+	}
+	if (proc.optional<SXAddl_SXCCache_SXDVerSXMacro>())
+	{
+		m_SXDVerSXMacro = elements_.back();
+		elements_.pop_back(); 
+	}
+	if (proc.optional<SXADDLCACHE12>())
+	{
+		m_SXADDLCACHE12 = elements_.back();
+		elements_.pop_back(); 
+	}
+	if (proc.optional<SXADDLDBQUERY>())
+	{
+		m_SXADDLDBQUERY = elements_.back();
+		elements_.pop_back(); 
+	}
+	int count  = proc.repeated<UNKNOWNFRT>(0, 0);
+
+	if (proc.optional<SXAddl_SXCCache_SXDEnd>())
+	{
+		elements_.pop_back(); 
+	}
 	return true;
 }
 

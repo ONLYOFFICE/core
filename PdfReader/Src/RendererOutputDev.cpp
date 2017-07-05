@@ -345,7 +345,7 @@ namespace PdfReader
 		m_bTransparentGroupSoftMask = false;
 		m_pTransparentGroupSoftMask = NULL;
 
-        m_bDrawOnlyText = false;
+		m_bDrawOnlyText = false;
 
 		//m_oFontList.LoadFromFile( m_pGlobalParams->GetTempFolder() );
 		//// Тестовый пример
@@ -461,7 +461,7 @@ namespace PdfReader
         if (c_nHtmlRendrerer2 == m_lRendererType)
             m_bDrawOnlyText = ((NSHtmlRenderer::CASCHTMLRenderer3*)m_pRenderer)->GetOnlyTextMode();
         else
-            m_bDrawOnlyText = false;
+			m_bDrawOnlyText = false;
 	}
 	void RendererOutputDev::EndPage()
 	{
@@ -2982,39 +2982,36 @@ namespace PdfReader
 		double *pCTM      = pGState->GetCTM();
 		double *pTm       = pGState->GetTextMatrix();
 		GrFont *pFont     = pGState->GetFont();
-		//double  dTfs      = pGState->GetFontSize();
-		//double  dTh       = pGState->GetHorizScaling();
-		//double  dTrise    = pGState->GetRise();
-		//double *pFontBBox = pGState->GetFont()->GetFontBBox(); 
 
-		//double  dAcsentFactor = ( ( fabs(pFontBBox[1]) + fabs(pFontBBox[3]) ) - ( pFont->GetAscent() + fabs( pFont->GetDescent() ) ) ) / 2 + pFont->GetAscent();  
 		double pNewTm[6], arrMatrix[6];
-		//double dKoef = 0;//( pFont->GetAscent() - fabs( pFont->GetDescent() ) ) * dTfs;
 
 		double dTextScale = min(sqrt(pTm[2] * pTm[2] + pTm[3] * pTm[3]), sqrt(pTm[0] * pTm[0] + pTm[1] * pTm[1]));
 		double dITextScale = 1 / dTextScale;
-
-		//pTm[0] *= dITextScale;
-		//pTm[1] *= dITextScale;
-		//pTm[2] *= dITextScale;
-		//pTm[3] *= dITextScale;
-
-		//double dOldSize = m_oFont.Size;
-		//m_oFont.Size *= dTextScale;
 		double dOldSize = 10.0;
 		m_pRenderer->get_FontSize(&dOldSize);
-		m_pRenderer->put_FontSize(dOldSize * dTextScale);
+		if (dOldSize * dTextScale > 0)
+		{
+			m_pRenderer->put_FontSize(dOldSize * dTextScale);
 
-		pNewTm[0] =  pTm[0] * dITextScale;
-		pNewTm[1] =  pTm[1] * dITextScale;
-		pNewTm[2] = -pTm[2] * dITextScale;
-		pNewTm[3] = -pTm[3] * dITextScale;
-		//pNewTm[0] =  pTm[0];
-		//pNewTm[1] =  pTm[1];
-		//pNewTm[2] = -pTm[2];
-		//pNewTm[3] = -pTm[3];
-		pNewTm[4] =  dX;//+ pTm[2] * dKoef;
-		pNewTm[5] =  dY;//+ pTm[3] * dKoef;
+			pNewTm[0] =  pTm[0] * dITextScale;
+			pNewTm[1] =  pTm[1] * dITextScale;
+			pNewTm[2] = -pTm[2] * dITextScale;
+			pNewTm[3] = -pTm[3] * dITextScale;
+			pNewTm[4] =  dX;
+			pNewTm[5] =  dY;
+		}
+		else
+		{
+			m_pRenderer->put_FontSize(-dOldSize * dTextScale);
+
+			pNewTm[0] = pTm[0] * dITextScale;
+			pNewTm[1] = pTm[1] * dITextScale;
+			pNewTm[2] = pTm[2] * dITextScale;
+			pNewTm[3] = pTm[3] * dITextScale;
+			pNewTm[4] = dX;
+			pNewTm[5] = dY;
+		}
+
 
 		arrMatrix[0] =   pNewTm[0] * pCTM[0] + pNewTm[1] * pCTM[2];
 		arrMatrix[1] = -(pNewTm[0] * pCTM[1] + pNewTm[1] * pCTM[3]);
@@ -3023,31 +3020,26 @@ namespace PdfReader
 		arrMatrix[4] =   pNewTm[4] * pCTM[0] + pNewTm[5] * pCTM[2] + pCTM[4];
 		arrMatrix[5] = -(pNewTm[4] * pCTM[1] + pNewTm[5] * pCTM[3] + pCTM[5]) + pGState->GetPageHeight();
 
-		//double dAscentShiftX = arrMatrix[2] * pFont->GetDescent();
-		//double dAscentShiftY = arrMatrix[3] * pFont->GetDescent();
-
-		//arrMatrix[4] += dAscentShiftX;
-		//arrMatrix[5] += dAscentShiftY;
-
-
 		if (true)
 		{
-			double dDet = sqrt(arrMatrix[0] * arrMatrix[3] - arrMatrix[1] * arrMatrix[2]);
-			arrMatrix[0] /= dDet;
-			arrMatrix[1] /= dDet;
-			arrMatrix[2] /= dDet;
-			arrMatrix[3] /= dDet;
+			double dNorma = min(sqrt(arrMatrix[0] * arrMatrix[0] + arrMatrix[1] * arrMatrix[1]), sqrt(arrMatrix[2] * arrMatrix[2] + arrMatrix[3] * arrMatrix[3]));
+			if (dNorma > 0.001)
+			{
+				arrMatrix[0] /= dNorma;
+				arrMatrix[1] /= dNorma;
+				arrMatrix[2] /= dNorma;
+				arrMatrix[3] /= dNorma;
 
-			double dSize = 1;
-			m_pRenderer->get_FontSize(&dSize);
-			m_pRenderer->put_FontSize(dSize * dDet);
+				double dSize = 1;
+				m_pRenderer->get_FontSize(&dSize);
+				m_pRenderer->put_FontSize(dSize * dNorma);
+			}
 		}
 
 		double dShiftX = 0, dShiftY = 0;
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 
 		// Здесь мы посылаем координаты текста в пунктах
-
 		double dPageHeight = pGState->GetPageHeight();
 
 		std::wstring wsUnicodeText;

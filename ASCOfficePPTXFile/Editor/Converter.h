@@ -74,8 +74,8 @@ namespace PPTX2EditorAdvanced
 				continue;
 			}
 
-			oBinaryWriter.m_pCommon->m_oRels.push_back (CMasterSlideInfo());
-			CMasterSlideInfo& oMasterInfo = oBinaryWriter.m_pCommon->m_oRels[oBinaryWriter.m_pCommon->m_oRels.size() - 1];
+			oBinaryWriter.m_pCommon->m_oRels.push_back (_masterSlideInfo());
+			_masterSlideInfo& oMasterInfo = oBinaryWriter.m_pCommon->m_oRels[oBinaryWriter.m_pCommon->m_oRels.size() - 1];
 
 			// записываем mainMaster
 			LONG lCountSM = (LONG)_slideMasters.size();
@@ -147,18 +147,22 @@ namespace PPTX2EditorAdvanced
 
 			// проверяем theme
             size_t pPointerTh = (size_t)(noteMaster->theme_.operator ->());
+			LONG nNotesMastersRelsIndex = -1;
 			std::map<size_t, LONG>::const_iterator pSearchTh = pCommon->themes.find(pPointerTh);
 			if (pSearchTh == pCommon->themes.end())
 			{
 				LONG lCountTh = (LONG)_themes.size();
 				pCommon->themes [pPointerTh] = lCountTh;
                 _themes.push_back(noteMaster->theme_);
+				nNotesMastersRelsIndex = lCountTh;
+			} else {
+				nNotesMastersRelsIndex = pSearchTh->second;
 			}
+			oBinaryWriter.m_pCommon->m_oNotesMasters_Rels.push_back(nNotesMastersRelsIndex);
 		}
 
 		// записываем все слайды
-		size_t nCount = presentation->sldIdLst.size();
-		for (size_t i = 0; i < nCount; ++i)
+		for (size_t i = 0; i < presentation->sldIdLst.size(); ++i)
 		{
             std::wstring rId = presentation->sldIdLst[i].rid.get();
             smart_ptr<PPTX::Slide> slide = ((*presentation)[rId]).smart_dynamic_cast<PPTX::Slide>();
@@ -194,7 +198,7 @@ namespace PPTX2EditorAdvanced
 
 			// проверяем note
 			size_t pPointerN = (size_t)(slide->Note.operator ->()); 
-
+			LONG nNoteIndex = -1;
 			if (NULL != pPointerN)
 			{
 				std::map<size_t, LONG>::const_iterator pSearchN = pCommon->notes.find(pPointerN);
@@ -203,8 +207,27 @@ namespace PPTX2EditorAdvanced
 					LONG lCountN = (LONG)_notes.size();
 					pCommon->notes [pPointerN] = lCountN;
 					_notes.push_back(slide->Note);
+					nNoteIndex = lCountN;
 				}
 			}
+			oBinaryWriter.m_pCommon->m_oSlide_Notes_Rels.push_back(nNoteIndex);
+		}
+
+		for (size_t i = 0; i < _notes.size(); ++i)
+		{
+			smart_ptr<PPTX::NotesSlide> note = _notes[i];
+			LONG nMasterIndex = -1;
+			smart_ptr<PPTX::NotesMaster> noteMaster = note->Get(OOX::Presentation::FileTypes::NotesMaster).smart_dynamic_cast<PPTX::NotesMaster>();
+			if(noteMaster.is_init())
+			{
+				size_t pPointerL = (size_t)(noteMaster.operator ->());
+				std::map<size_t, LONG>::const_iterator pSearchL = pCommon->notesMasters.find(pPointerL);
+				if (pSearchL != pCommon->notesMasters.end())
+				{
+					nMasterIndex = pSearchL->second;
+				}
+			}
+			oBinaryWriter.m_pCommon->m_oNote_Rels.push_back(nMasterIndex);
 		}
 
 		// нужно записать все в maintables. А кроме главных таблиц ничего и нету. Все остальное лежит в них
@@ -218,7 +241,7 @@ namespace PPTX2EditorAdvanced
 		oBinaryWriter.WriteULONG(0);
 		
 		// App
-		smart_ptr<PPTX::App> app = oFolder.Get(OOX::Presentation::FileTypes::App).smart_dynamic_cast<PPTX::App>();
+		smart_ptr<PPTX::App> app = oFolder.Get(OOX::FileTypes::App).smart_dynamic_cast<PPTX::App>();
 		if (app.is_init())
 		{
 			oBinaryWriter.StartMainRecord(NSMainTables::App);
@@ -226,7 +249,7 @@ namespace PPTX2EditorAdvanced
 		}
 
 		// Core
-		smart_ptr<PPTX::Core> core = oFolder.Get(OOX::Presentation::FileTypes::Core).smart_dynamic_cast<PPTX::Core>();
+		smart_ptr<PPTX::Core> core = oFolder.Get(OOX::FileTypes::Core).smart_dynamic_cast<PPTX::Core>();
 		if (core.is_init())
 		{
 			oBinaryWriter.StartMainRecord(NSMainTables::Core);
@@ -328,27 +351,22 @@ namespace PPTX2EditorAdvanced
 			_slides[i]->toPPTY(&oBinaryWriter);
 		}
 
-        if (false)
-		{
-			// ПОКА нету NOTES
-
 		// notes
-			oBinaryWriter.StartMainRecord(NSMainTables::NotesSlides);
-			ULONG nCountN = (ULONG)_notes.size();
-			oBinaryWriter.WriteULONG(nCountN);
-			for (ULONG i = 0; i < nCountN; ++i)
-			{
-				_notes[i]->toPPTY(&oBinaryWriter);
-			}
+		oBinaryWriter.StartMainRecord(NSMainTables::NotesSlides);
+		ULONG nCountN = (ULONG)_notes.size();
+		oBinaryWriter.WriteULONG(nCountN);
+		for (ULONG i = 0; i < nCountN; ++i)
+		{
+			_notes[i]->toPPTY(&oBinaryWriter);
+		}
 
 		// notesmasters
-			oBinaryWriter.StartMainRecord(NSMainTables::NotesMasters);
-			ULONG nCountNM = (ULONG)_notesMasters.size();
-			oBinaryWriter.WriteULONG(nCountNM);
-			for (ULONG i = 0; i < nCountNM; ++i)
-			{
-				_notesMasters[i]->toPPTY(&oBinaryWriter);
-			}
+		oBinaryWriter.StartMainRecord(NSMainTables::NotesMasters);
+		ULONG nCountNM = (ULONG)_notesMasters.size();
+		oBinaryWriter.WriteULONG(nCountNM);
+		for (ULONG i = 0; i < nCountNM; ++i)
+		{
+			_notesMasters[i]->toPPTY(&oBinaryWriter);
 		}
 
 		// ImageMap ---------------------------------------
@@ -405,19 +423,33 @@ namespace PPTX2EditorAdvanced
 			
 			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			oBinaryWriter.EndRecord();
+			// ------------------------------------------------
 
+			// SlideNotesRels --------------------------------------
+			oBinaryWriter.StartMainRecord(NSMainTables::SlideNotesRels);
+			oBinaryWriter.StartRecord(NSMainTables::SlideNotesRels);
+			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+
+			_s_rels = oBinaryWriter.m_pCommon->m_oSlide_Notes_Rels.size();
+			for (size_t i = 0; i < _s_rels; ++i)
+			{
+				oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oSlide_Notes_Rels[i]);
+			}
+
+			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			oBinaryWriter.EndRecord();
 			// ------------------------------------------------
 
 			// ThemeRels --------------------------------------
 			oBinaryWriter.StartMainRecord(NSMainTables::ThemeRels);
 			oBinaryWriter.StartRecord(NSMainTables::ThemeRels);
 			
-			std::vector <NSBinPptxRW::CMasterSlideInfo>& th_rels = oBinaryWriter.m_pCommon->m_oRels;
+			std::vector <NSBinPptxRW::_masterSlideInfo>& th_rels = oBinaryWriter.m_pCommon->m_oRels;
 			oBinaryWriter.WriteULONG((ULONG)th_rels.size());
 
 			for (size_t i = 0; i < th_rels.size(); i++)
 			{
-				NSBinPptxRW::CMasterSlideInfo& oTh = th_rels [i];
+				NSBinPptxRW::_masterSlideInfo& oTh = th_rels [i];
 
 				oBinaryWriter.StartRecord(0);
 
@@ -445,7 +477,39 @@ namespace PPTX2EditorAdvanced
 
 				oBinaryWriter.EndRecord();
 			}		
-			
+			// ------------------------------------------------
+
+			// NoteRels --------------------------------------
+			oBinaryWriter.StartMainRecord(NSMainTables::NotesRels);
+			oBinaryWriter.StartRecord(NSMainTables::NotesRels);
+			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+
+			_s_rels = oBinaryWriter.m_pCommon->m_oNote_Rels.size();
+			for (size_t i = 0; i < _s_rels; ++i)
+			{
+				oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oNote_Rels[i]);
+			}
+
+			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			oBinaryWriter.EndRecord();
+			// ------------------------------------------------
+
+			// NoteRels --------------------------------------
+			oBinaryWriter.StartMainRecord(NSMainTables::NotesMastersRels);
+			oBinaryWriter.StartRecord(NSMainTables::NotesMastersRels);
+			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+
+			_s_rels = oBinaryWriter.m_pCommon->m_oNotesMasters_Rels.size();
+			for (size_t i = 0; i < _s_rels; ++i)
+			{
+				oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oNotesMasters_Rels[i]);
+			}
+
+			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			oBinaryWriter.EndRecord();
+			// ------------------------------------------------
+
+
 			oBinaryWriter.EndRecord();
 		}
 

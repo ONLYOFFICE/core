@@ -47,6 +47,7 @@
 #include "GFont.h"
 #include "File.h"
 #include "Stream.h"
+#include "XRef.h"
 
 namespace PdfReader
 {
@@ -1945,12 +1946,10 @@ namespace PdfReader
 				}
 				else
 				{
-					// Нет ссылки на данный шрифт, но ссылка нам нужна как идентефикатор, поэтому выбираем некотый уникальный номер
-					// (поскольку корректное версионное число состоит из 5 цифр, поэтому любое 6-циферное число будет безопасным решением)
 					oRef.nNum = nIndex;
-					if (pFontDictRef)
+					if (pXref)
 					{
-						oRef.nGen = 100000 + pFontDictRef->nNum;
+						oRef.nGen = pXref->GenerateUniqueRefGen();
 					}
 					else
 					{

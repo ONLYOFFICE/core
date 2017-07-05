@@ -68,7 +68,7 @@ public:
 
     std::pair<std::wstring, std::wstring> add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings)
     {
-        const std::wstring id = boost::lexical_cast<std::wstring>(next_drawing_id_++);
+        const std::wstring id = std::to_wstring(next_drawing_id_++);
         const std::wstring fileName = std::wstring(L"drawing") + id + L".xml";
         drawings_.push_back(drawing_elm(fileName, content, drawings));
         const std::wstring rId = std::wstring(L"rId") + id;//rDrId
@@ -173,6 +173,7 @@ void xlsx_drawing_context::clear()
  
 	impl_->object_description_.additional_.clear();
 	impl_->object_description_.hlinks_.clear();
+	impl_->object_description_.action_.clear();
 	impl_->object_description_.additional_.clear();
 
 	impl_->use_image_replacement_					= false;
@@ -399,16 +400,17 @@ void xlsx_drawing_context::set_fill(_oox_fill & fill)
 	impl_->object_description_.fill_= fill;
 }
 
-std::wstring xlsx_drawing_context::add_hyperlink(std::wstring const & href,bool object)
+std::wstring xlsx_drawing_context::add_hyperlink(std::wstring const & href)
 {
 	++hlinks_size_;
-	std::wstring hId=std::wstring(L"hId") + boost::lexical_cast<std::wstring>(hlinks_size_);
+	std::wstring hId = L"hId" + std::to_wstring(hlinks_size_);
 	
 	std::wstring href_correct = xml::utils::replace_text_to_xml(href);
     XmlUtils::replace_all( href_correct, L" .", L".");//1 (130).odt
 
-	_hlink_desc desc = {hId, href_correct, object}; //корректность написания ссылки важна для ms office и не важна для open office ->
-	//todooo 
+	//корректность написания ссылки важна для ms office и не важна для open office ->
+//todooo 
+	_hlink_desc desc = {hId, href_correct};
 	impl_->object_description_.hlinks_.push_back(desc);
 
 	return hId;
@@ -464,6 +466,7 @@ void xlsx_drawing_context::process_common_properties(drawing_object_description 
 	
 	drawing.additional	= obj.additional_;
 	drawing.hlinks		= obj.hlinks_;
+	drawing.action		= obj.action_;
 }
 void xlsx_drawing_context::process_position_properties(drawing_object_description & obj, xlsx_table_metrics & table_metrics,xlsx_table_position & from,xlsx_table_position & to)
 {
@@ -662,11 +665,33 @@ void xlsx_drawing_context::serialize(std::wostream & strm)
     impl_->serialize(strm);    
 }
 
-
 xlsx_drawings_ptr xlsx_drawing_context::get_drawings()
 {
     return impl_->get_drawings();
 }
+void xlsx_drawing_context::start_action(std::wstring action)
+{
+	impl_->object_description_.action_.enabled	= true;
+}
+
+void xlsx_drawing_context::set_link(std::wstring link, RelsType typeRels)
+{//hyprelinks only
+	++hlinks_size_;
+	std::wstring hId = L"hId" + std::to_wstring(hlinks_size_);
+	
+	link = xml::utils::replace_text_to_xml(link);
+	
+	if (typeRels == typeHyperlink)
+		XmlUtils::replace_all( link, L" .", L".");		//1 (130).odt
+
+	impl_->object_description_.action_.hId		= hId;
+	impl_->object_description_.action_.hRef		= link;
+	impl_->object_description_.action_.typeRels	= typeRels;
+}
+void xlsx_drawing_context::end_action()
+{
+}
+
 
 }
 }

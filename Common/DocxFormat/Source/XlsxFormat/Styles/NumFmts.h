@@ -44,16 +44,17 @@ namespace OOX
 		class CNumFmt : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CNumFmt)
+			WritingElement_AdditionConstructors(CNumFmt)
 			CNumFmt()
 			{
 			}
 			virtual ~CNumFmt()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -70,7 +71,7 @@ namespace OOX
 				WritingStringNullableAttrBool(L"sourceLinked", m_oSourceLinked);
 				writer.WriteString(_T("/>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -80,7 +81,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_NumFmt;
+				return et_x_NumFmt;
 			}
 
 		private:
@@ -96,23 +97,24 @@ namespace OOX
 					WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<std::wstring >								m_oFormatCode;
+			nullable<std::wstring >							m_oFormatCode;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oNumFmtId;
-			nullable<SimpleTypes::COnOff<>>				m_oSourceLinked;
+			nullable<SimpleTypes::COnOff<>>					m_oSourceLinked;
 		};
 		class CNumFmts : public WritingElementWithChilds<CNumFmt>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CNumFmts)
+			WritingElement_AdditionConstructors(CNumFmts)
 			CNumFmts()
 			{
 			}
 			virtual ~CNumFmts()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -128,7 +130,7 @@ namespace OOX
 					writer.WriteString(_T("</numFmts>"));
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -147,7 +149,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_NumFmts;
+				return et_x_NumFmts;
 			}
 
 		private:
@@ -156,9 +158,9 @@ namespace OOX
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
 
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;

@@ -34,17 +34,7 @@
 
 namespace XLS
 {
-
-SxView::SxView()
-{
-}
-
-
-SxView::~SxView()
-{
-}
-
-
+	
 BaseObjectPtr SxView::clone()
 {
 	return BaseObjectPtr(new SxView(*this));
@@ -52,10 +42,36 @@ BaseObjectPtr SxView::clone()
 
 void SxView::readFields(CFRecord& record)
 {
-#pragma message("####################### SxView record is not implemented")
-	Log::error("SxView record is not implemented.");
-	//record >> some_value;
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	short reserved, flags;
+	record >> ref >> rwFirstHead >> rwFirstData >> colFirstData >> iCache >> reserved;
+	record >> sxaxis4Data >> ipos4Data;
+	record >> cDim >> cDimRw >> cDimCol >> cDimPg >> cDimData >> cRw >> cCol;
+
+	record >> flags;
+	fRwGrand	= GETBIT(flags, 0);
+	fColGrand	= GETBIT(flags, 1);
+	fAutoFormat	= GETBIT(flags, 3);
+	fAtrNum		= GETBIT(flags, 4);
+	fAtrFnt		= GETBIT(flags, 5);
+	fAtrAlc		= GETBIT(flags, 6);
+	fAtrBdr		= GETBIT(flags, 7);
+	fAtrPat		= GETBIT(flags, 8);
+	fAtrProc	= GETBIT(flags, 9);
+
+	record >> itblAutoFmt >> cchTableName >> cchDataName;
+
+	if(cchTableName && cchTableName <= 0x00FF)
+	{
+		stTable.setSize(cchTableName);
+		record >> stTable;
+	}
+	if(cchDataName > 0 && cchDataName <= 0x00FE)
+	{
+		stData.setSize(cchDataName);
+		record >> stData;
+	}
+	int skip = record.getDataSize() - record.getRdPtr();
+	record.skipNunBytes(skip);
 }
 
 } // namespace XLS

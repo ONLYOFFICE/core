@@ -150,7 +150,7 @@ public:
     static const ElementType	type		= typeDrawFrame;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	draw_frame() : oox_drawing_(NULL) {}
+	draw_frame() : oox_drawing_(NULL), idx_in_owner(-1)  {}
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
@@ -161,10 +161,8 @@ public:
 
 	int idx_in_owner ;
 	
-	odf_types::common_presentation_attlist	common_presentation_attlist_;
 	odf_types::union_common_draw_attlists	common_draw_attlists_;
   
-	odf_types::presentation_shape_attlist	presentation_shape_attlist_;
     draw_frame_attlist						draw_frame_attlist_;
 
     // draw-text-box, draw-image, draw-object, draw-object-ole, draw-applet, draw-floating-frame, draw-plugin
@@ -333,6 +331,57 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_object_ole);
+
+// draw:param
+class draw_param : public office_element_impl<draw_param>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeDrawParam;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void docx_convert(oox::docx_conversion_context & Context){}
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context){}
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
+
+	_CP_OPT(std::wstring)	draw_name_;
+	_CP_OPT(std::wstring)	draw_value_;
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(draw_param);
+
+// draw:plugin
+class draw_plugin : public office_element_impl<draw_plugin>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeDrawPlugin;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void docx_convert(oox::docx_conversion_context & Context){}
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context){}
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
+
+    odf_types::common_xlink_attlist	common_xlink_attlist_;
+	_CP_OPT(std::wstring)			draw_mime_type_;
+    
+	office_element_ptr_array		content_;
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(draw_plugin);
+
 
 }
 }

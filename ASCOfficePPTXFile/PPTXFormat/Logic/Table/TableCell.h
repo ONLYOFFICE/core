@@ -36,7 +36,6 @@
 #include "./../../WrapperWritingElement.h"
 #include "./../TxBody.h"
 #include "TableCellProperties.h"
-#include "../ShapeProperties.h"
 
 namespace PPTX
 {
@@ -58,10 +57,6 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
-			virtual std::wstring toXML() const;
-
-			virtual void GetShapeProperties(ShapeProperties& props)const;
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{

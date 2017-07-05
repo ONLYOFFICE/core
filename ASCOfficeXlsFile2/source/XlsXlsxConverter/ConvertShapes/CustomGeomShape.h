@@ -312,7 +312,7 @@ namespace NSCustomShapesConvert
 					if (lMaxF > m_arVertices[nIndex].x )	nGuideIndex_x = (DWORD)m_arVertices[nIndex].x - (DWORD)lMinF;	
 					if (lMaxF > m_arVertices[nIndex].y )	nGuideIndex_y = (DWORD)m_arVertices[nIndex].y - (DWORD)lMinF;	
 
-					if (nGuideIndex_x >= 0 ) 
+					if (nGuideIndex_x >= 0 && nGuideIndex_x < m_arGuides.size()) 
 					{
                         strPath += std::to_wstring(m_arGuides[nGuideIndex_x].m_param_value1) + L",";
 					}
@@ -320,7 +320,7 @@ namespace NSCustomShapesConvert
 					{
                        strPath += std::to_wstring(m_arVertices[nIndex].x) + L",";
 					}
-					if (nGuideIndex_y >= 0)
+					if (nGuideIndex_y >= 0 && nGuideIndex_y < m_arGuides.size())
 					{
                         strPath += std::to_wstring(m_arGuides[nGuideIndex_y].m_param_value1) + L",";
 					}
@@ -388,7 +388,7 @@ namespace NSCustomShapesConvert
 						if (lMaxF > m_arVertices[nV].x )	nGuideIndex_x = (DWORD)m_arVertices[nV].x - (DWORD)lMinF;	
 						if (lMaxF > m_arVertices[nV].y )	nGuideIndex_y = (DWORD)m_arVertices[nV].y - (DWORD)lMinF;	
 
-						if (nGuideIndex_x >= 0 )
+						if (nGuideIndex_x >= 0 && nGuideIndex_x < m_arGuides.size() )
 						{
                             strPath += std::to_wstring(m_arGuides[nGuideIndex_x].m_param_value1) + L",";
 						}
@@ -396,7 +396,7 @@ namespace NSCustomShapesConvert
 						{
                             strPath += std::to_wstring(m_arVertices[nV].x) + L",";
 						}
-						if (nGuideIndex_y >= 0)
+						if (nGuideIndex_y >= 0 && nGuideIndex_y < m_arGuides.size())
 						{
                             strPath += std::to_wstring(m_arGuides[nGuideIndex_y].m_param_value1) + L",";
 						}

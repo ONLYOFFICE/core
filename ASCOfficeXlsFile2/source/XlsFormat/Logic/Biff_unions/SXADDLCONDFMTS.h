@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of SXADDLCONDFMTS union of records 
 class SXADDLCONDFMTS: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(SXADDLCONDFMTS)
@@ -50,7 +48,6 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeSXADDLCONDFMTS;
-	
 
 };
 

@@ -69,25 +69,35 @@ namespace PdfReader
 		}
 		bool operator <(const Ref& oRight)const
 		{
-			return nNum < oRight.nNum;
+			if (nNum < oRight.nNum)
+				return true;
+			else if (nNum == oRight.nNum)
+				return nGen < oRight.nGen;
+			else
+				return false;
 		}
 		bool operator >(const Ref& oRight)const
 		{
-			return nNum > oRight.nNum;
+			if (nNum > oRight.nNum)
+				return true;
+			else if (nNum == oRight.nNum)
+				return nGen > oRight.nGen;
+			else
+				return false;
 		}
 		bool operator <=(const Ref& oRight)const
 		{
 			if (*this == oRight)
 				return true;
 
-			return nNum < oRight.nNum;
+			return (*this < oRight);
 		}
 		bool operator >=(const Ref& oRight)const
 		{
 			if (*this == oRight)
 				return true;
 
-			return nNum > oRight.nNum;
+			return (*this > oRight);
 		}
 	};
 

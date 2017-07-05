@@ -54,35 +54,36 @@ class table_table_attlist
 public:
 	table_table_attlist()
 	{
-		table_print_ = true;
-		table_use_first_row_styles_ = false;
-		table_use_banding_rows_styles_ = false;
-		table_use_first_column_styles_ = false;
-		table_use_banding_columns_styles_ = false;
+		table_print_						= true;
+		table_use_first_row_styles_			= false;
+		table_use_banding_rows_styles_		= false;
+		table_use_first_column_styles_		= false;
+		table_use_banding_columns_styles_	= false;
 	}
     unsigned int table_number_columns_repeated_; // default 1
 
-    _CP_OPT(std::wstring)				table_name_;
-    _CP_OPT(odf_types::style_ref)		table_style_name_;
-	_CP_OPT(std::wstring)				table_template_name_;
+    _CP_OPT(std::wstring)		table_name_;
+    _CP_OPT(std::wstring)		table_style_name_;
+	_CP_OPT(std::wstring)		table_template_name_;
 
-    _CP_OPT(std::wstring)				table_protection_key_; 
-    _CP_OPT(std::wstring)				table_print_ranges_;
+    _CP_OPT(std::wstring)		table_protection_key_; 
+    _CP_OPT(std::wstring)		table_print_ranges_;
 
-   _CP_OPT(odf_types::Bool)				table_protected_; // default false
-    bool table_print_; // default true
+   _CP_OPT(odf_types::Bool)		table_protected_; // default false
+    
+   bool table_print_;						// default true
 	
-	bool table_use_first_row_styles_; // default false;
-	bool table_use_banding_rows_styles_; //defualt false;
-	bool table_use_first_column_styles_;//defualt false;
-	bool table_use_banding_columns_styles_; //defualt false;
+	bool table_use_first_row_styles_;		// default false;
+	bool table_use_banding_rows_styles_;	// defualt false;
+	bool table_use_first_column_styles_;	// defualt false;
+	bool table_use_banding_columns_styles_; // defualt false;
 
  	void serialize(CP_ATTR_NODE);    
 
 	friend class table_table;    
 };
 
-// table-table-row-attlist
+//-----------------------------------------------------------------------------------------------------
 class table_table_row_attlist
 {
 public:
@@ -90,23 +91,23 @@ public:
 
 	unsigned int table_number_rows_repeated_; // default 1
     
-	_CP_OPT(odf_types::style_ref)			table_style_name_;
-    _CP_OPT(odf_types::style_ref)			table_default_cell_style_name_;
+	_CP_OPT(std::wstring)			table_style_name_;
+    _CP_OPT(std::wstring)			table_default_cell_style_name_;
     _CP_OPT(odf_types::table_visibility)	table_visibility_; // default Visible
 
 	void serialize(CP_ATTR_NODE);    
 };
 
-// table-table-cell-attlist
+//-----------------------------------------------------------------------------------------------------
 class table_table_cell_attlist
 {
 public:
 	table_table_cell_attlist() : table_number_columns_repeated_(1) {}
 
-	unsigned int						table_number_columns_repeated_; // default 1
-    _CP_OPT(odf_types::style_ref)		table_style_name_;
-    _CP_OPT(std::wstring)				table_content_validation_name_;
-    _CP_OPT(std::wstring)				table_formula_;
+	unsigned int				table_number_columns_repeated_; // default 1
+    _CP_OPT(std::wstring)		table_style_name_;
+    _CP_OPT(std::wstring)		table_content_validation_name_;
+    _CP_OPT(std::wstring)		table_formula_;
 
     _CP_OPT(odf_types::common_value_and_type_attlist) common_value_and_type_attlist_;
 
@@ -115,12 +116,12 @@ public:
 	void serialize(CP_ATTR_NODE);    
 };
 
-// table-table-cell-attlist-extra
+//-----------------------------------------------------------------------------------------------------
 class table_table_cell_attlist_extra
 {
 public:
-    _CP_OPT(unsigned int) table_number_columns_spanned_; // default 1 
-    _CP_OPT(unsigned int) table_number_rows_spanned_; // default 1
+    _CP_OPT(unsigned int) table_number_columns_spanned_;	// default 1 
+    _CP_OPT(unsigned int) table_number_rows_spanned_;		// default 1
     _CP_OPT(unsigned int) table_number_matrix_columns_spanned_;
     _CP_OPT(unsigned int) table_number_matrix_rows_spanned_;
 	
@@ -152,9 +153,7 @@ public:
 	void serialize(CP_ATTR_NODE);    
 };
 
-/// \class  table_table_source
-/// \brief  table:table-source
-///         table-table-source
+//-----------------------------------------------------------------------------------------------------
 class table_table_source : public office_element_impl<table_table_source>
 {
 public:
@@ -177,7 +176,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(table_table_source);
 
-// table-columns
+//-----------------------------------------------------------------------------------------------------
 class table_columns
 {
 public:
@@ -192,7 +191,7 @@ public:
     
 };
 
-// table-columns-no-group
+//-----------------------------------------------------------------------------------------------------
 class table_columns_no_group: public office_element
 {
 public:
@@ -226,7 +225,7 @@ private:
     
 };
 
-// table-columns-and-groups
+//-----------------------------------------------------------------------------------------------------
 class table_columns_and_groups
 {
 public:
@@ -244,23 +243,21 @@ public:
 
 };
 
-// table-table-column-attlist
+//-----------------------------------------------------------------------------------------------------
 class table_table_column_attlist
 {
 public:
-	table_table_column_attlist() : table_number_columns_repeated_(1){}
-    unsigned int table_number_columns_repeated_; // default 1
-    
-	_CP_OPT(odf_types::style_ref)		table_style_name_;
-    _CP_OPT(odf_types::table_visibility) table_visibility_;  // default Visible
-    _CP_OPT(odf_types::style_ref)		table_default_cell_style_name_;
+	table_table_column_attlist() :	table_number_columns_repeated_(1){}
+
+    unsigned int							table_number_columns_repeated_; // default 1    
+	_CP_OPT(std::wstring)					table_style_name_;
+    _CP_OPT(odf_types::table_visibility)	table_visibility_;  // default Visible
+    _CP_OPT(std::wstring)					table_default_cell_style_name_;
 
 	void serialize(CP_ATTR_NODE);    
 };
 
-// \class   table_table_column
-//          table:table-column
-//          table-table-column
+//-----------------------------------------------------------------------------------------------------
 class table_table_column : public office_element_impl<table_table_column>
 {
 public:
@@ -283,9 +280,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(table_table_column);
 
-// \class   table_table_columns
-//          table:table-columns
-//          table-table-columns
+//-----------------------------------------------------------------------------------------------------
 class table_table_columns : public office_element_impl<table_table_columns>
 {
 public:
@@ -307,9 +302,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(table_table_columns);
 
-// \class   table_table_header_columns
-//          table:table-header-columns
-//          table-table-header-columns
+//-----------------------------------------------------------------------------------------------------
 class table_table_header_columns : public office_element_impl<table_table_header_columns>
 {
 public:
@@ -369,9 +362,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(table_table_column_group);
 
-/// \class  table_table_row
-/// \brief  table:table-row
-///         table-table-row
+//-----------------------------------------------------------------------------------------------------
 class table_table_row : public office_element_impl<table_table_row>
 {
 public:
@@ -394,8 +385,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(table_table_row);
 
-//  \class  table_table_cell_content
-//          table-table-cell-content
+//-----------------------------------------------------------------------------------------------------
 class table_table_cell_content
 {
 public:
@@ -410,9 +400,7 @@ private:
     office_element_ptr_array text_content_; // text-content
 };
 
-//  \class  table_table_cell
-//          table-table-cell
-//          table:table-cell
+//-----------------------------------------------------------------------------------------------------
 class table_table_cell : public office_element_impl<table_table_cell>
 {
 public:
@@ -430,17 +418,15 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-    table_table_cell_attlist table_table_cell_attlist_;
-    table_table_cell_attlist_extra table_table_cell_attlist_extra_;
-    table_table_cell_content table_table_cell_content_;
+    table_table_cell_attlist		table_table_cell_attlist_;
+    table_table_cell_attlist_extra	table_table_cell_attlist_extra_;
+    table_table_cell_content		table_table_cell_content_;
 
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_table_cell);
 
-//  \class  table_covered_table_cell
-//          table-covered-table-cell
-//          table:covered-table-cell
+//-----------------------------------------------------------------------------------------------------
 class table_covered_table_cell : public office_element_impl<table_covered_table_cell>
 {
 public:
@@ -466,9 +452,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(table_covered_table_cell);
 
-//  \class  table_table_rows
-//          table-table-rows
-//          table:table-rows
+//-----------------------------------------------------------------------------------------------------
 class table_table_rows : public office_element_impl<table_table_rows>
 {
 public:
@@ -494,9 +478,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(table_table_rows);
 
-//  \class  table_table_header_rows
-//          table-table-header-rows
-//          table:table-header-rows
+//-----------------------------------------------------------------------------------------------------
 class table_table_header_rows : public office_element_impl<table_table_header_rows>
 {
 public:
@@ -517,9 +499,7 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_table_header_rows);
-
-// \class   table_rows
-//          table-rows
+//-----------------------------------------------------------------------------------------------------
 class table_rows
 {
 public:
@@ -533,7 +513,7 @@ public:
 
 };
 
-// table-rows-no-group
+//-----------------------------------------------------------------------------------------------------
 class table_rows_no_group : public office_element
 {
 public:
@@ -567,7 +547,7 @@ private:
     
 };
 
-// table-rows-and-groups
+//-----------------------------------------------------------------------------------------------------
 class table_rows_and_groups
 {
 public:
@@ -587,15 +567,14 @@ public:
 
 };
 
-// table-table-row-group-attlist
+//-----------------------------------------------------------------------------------------------------
 class table_table_row_group_attlist
 {
 public:
 	table_table_row_group_attlist() : table_display_(true) {}
     bool table_display_; // default true
 };
-
-//          table:table-row-group
+//-----------------------------------------------------------------------------------------------------
 class table_table_row_group : public office_element_impl<table_table_row_group>
 {
 public:
@@ -621,9 +600,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(table_table_row_group);
 
-/// \class  table_table
-/// \brief  table:table
-///         table-table
+//-----------------------------------------------------------------------------------------------------
 class table_table : public office_element_impl<table_table>
 {
 public:
@@ -654,9 +631,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(table_table);
 
-/// \class  table_shapes
-/// \brief  table:shapes
-///         table-shapes
+//-----------------------------------------------------------------------------------------------------
 class table_shapes : public office_element_impl<table_shapes>
 {
 public:

@@ -17,6 +17,7 @@
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <libxml/uri.h>
+#include <libxml/xpath.h>
 #include <libxml/xpointer.h>
 #include <libxml/parserInternals.h>
 #include <libxml/xmlerror.h>
@@ -124,7 +125,7 @@ xmlXIncludeErrMemory(xmlXIncludeCtxtPtr ctxt, xmlNodePtr node,
  *
  * Handle an XInclude error
  */
-static void
+static void LIBXML_ATTR_FORMAT(4,0)
 xmlXIncludeErr(xmlXIncludeCtxtPtr ctxt, xmlNodePtr node, int error,
                const char *msg, const xmlChar *extra)
 {
@@ -146,7 +147,7 @@ xmlXIncludeErr(xmlXIncludeCtxtPtr ctxt, xmlNodePtr node, int error,
  *
  * Emit an XInclude warning.
  */
-static void
+static void LIBXML_ATTR_FORMAT(4,0)
 xmlXIncludeWarn(xmlXIncludeCtxtPtr ctxt, xmlNodePtr node, int error,
                const char *msg, const xmlChar *extra)
 {
@@ -1207,6 +1208,7 @@ xmlXIncludeCopyXPointer(xmlXIncludeCtxtPtr ctxt, xmlDocPtr target,
 	    }
 	    break;
 	}
+#ifdef LIBXML_XPTR_ENABLED
 	case XPATH_LOCATIONSET: {
 	    xmlLocationSetPtr set = (xmlLocationSetPtr) obj->user;
 	    if (set == NULL)
@@ -1226,7 +1228,6 @@ xmlXIncludeCopyXPointer(xmlXIncludeCtxtPtr ctxt, xmlDocPtr target,
 	    }
 	    break;
 	}
-#ifdef LIBXML_XPTR_ENABLED
 	case XPATH_RANGE:
 	    return(xmlXIncludeCopyRange(ctxt, target, source, obj));
 #endif

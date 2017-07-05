@@ -137,26 +137,6 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("id"), id);
-				oAttr.Write(_T("type"), type);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(rPr);
-				oValue.WriteNullable(pPr);
-				
-				if (text.IsInit())
-                {
-                    std::wstring s = XmlUtils::EncodeXmlString(*text);
-
-                    oValue.m_strValue += (_T("<a:t>") + s + _T("</a:t>"));
-                }
-
-				return XmlUtils::CreateNode(_T("a:fld"), oAttr, oValue);
-			}
-
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(_T("a:fld"));

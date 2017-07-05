@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of PIVOTFRT9 union of records 
 class PIVOTFRT9: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTFRT9)
@@ -49,7 +47,12 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typePIVOTFRT9;
+	static const ElementType type = typePIVOTFRT9;
+
+	BaseObjectPtr	m_QsiSXTag;
+	BaseObjectPtr	m_SXViewEx9;
+	BaseObjectPtr	m_DBQUERYEXT;
+	BaseObjectPtr	m_PIVOTVIEWEX;
 };
 
 } // namespace XLS

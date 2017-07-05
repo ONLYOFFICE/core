@@ -42,7 +42,7 @@ public:
 	CPPTDocumentInfo *	m_oDocumentInfo;
 	
 	std::wstring		m_sFileName;
-	std::wstring		m_strMemoryForder;
+	std::wstring		m_strTmpDirectory;
 
 	CRecordOfficeArtBlip()
 	{

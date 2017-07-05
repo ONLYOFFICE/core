@@ -129,12 +129,12 @@ public:
 
 	int idx_in_owner ;
 
-  	odf_types::presentation_shape_attlist presentation_shape_attlist_;
-    draw_frame_attlist draw_frame_attlist_;
+    draw_frame_attlist						draw_frame_attlist_;
 
-    office_element_ptr office_event_listeners_; // в content перенести нельзя - иначе событи будет добавляться не к этому объекту а следующему
-    office_element_ptr draw_glue_point_;
-    office_element_ptr draw_image_map_;
+    office_element_ptr						office_event_listeners_;
+		// в content перенести нельзя - иначе событи будет добавляться не к этому объекту а следующему
+    office_element_ptr						draw_glue_point_;
+    office_element_ptr						draw_image_map_;
     //office_element_ptr draw_chart_map_;
 
     office_element_ptr draw_contour_; // draw-contour-polygon or draw-contour-path
@@ -235,10 +235,33 @@ public:
     virtual void serialize(std::wostream & _Wostream);
 
 	odf_types::common_xlink_attlist	common_xlink_attlist_;
-	_CP_OPT(std::wstring)	draw_class_id_;
+	_CP_OPT(std::wstring)			draw_class_id_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_object_ole)
+
+// draw:plugin
+class draw_plugin : public office_element_impl<draw_plugin>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeDrawPlugin;
+    CPDOCCORE_DEFINE_VISITABLE()
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+
+	odf_types::common_xlink_attlist	common_xlink_attlist_;
+	_CP_OPT(std::wstring)			draw_mime_type_;
+
+    office_element_ptr_array		content_;
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(draw_plugin)
 
 }
 }

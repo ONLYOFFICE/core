@@ -139,7 +139,7 @@ namespace DocFileFormat
 
 			if (encryptionHeader->bStandard)
 			{
-				CRYPT::RC4Decryptor Decryptor(encryptionHeader->crypt_data_rc4, m_sPassword, 1);
+				CRYPT::RC4Decryptor Decryptor(encryptionHeader->crypt_data_rc4, m_sPassword);
 
 				if (Decryptor.IsVerify() == false) 
 				{
@@ -470,6 +470,7 @@ namespace DocFileFormat
 			delete storageOut;
 			return false;
 		}
+
 		std::list<std::string> listStream = storageIn->entries();
 
 		for (std::list<std::string>::iterator it = listStream.begin(); it != listStream.end(); it++)
@@ -484,9 +485,12 @@ namespace DocFileFormat
 				}
 			}
 			else 
+			{
 				DecryptStream(Decryptor, *it, storageIn, storageOut);
+			}
 
 		}
+
 		storageOut->close();
 		delete storageOut;
 
@@ -508,9 +512,7 @@ namespace DocFileFormat
 		}
 		return true;
 	}
-
-
-	bool WordDocument::DecryptStream(CRYPT::Decryptor* Decryptor, std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut)
+	bool WordDocument::CopyStream (std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut)
 	{
 		POLE::Stream *stream = new POLE::Stream(storageIn, streamName);
 		if (!stream) return false;
@@ -524,24 +526,59 @@ namespace DocFileFormat
 		unsigned char* data_stream = new unsigned char[sz_stream];
 		stream->read(data_stream, sz_stream);
 
+		streamNew->write(data_stream, sz_stream);
+
+		RELEASEARRAYOBJECTS(data_stream);
+
+		streamNew->flush();
+				
+		delete streamNew;
+		delete stream;
+		
+		return true;
+	}
+
+
+	bool WordDocument::DecryptStream(CRYPT::Decryptor* Decryptor, std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut)
+	{
+		POLE::Stream *stream = new POLE::Stream(storageIn, streamName);
+		if (!stream) return false;
+
+		stream->seek(0);
+		int size_stream = stream->size();
+		
+		POLE::Stream *streamNew = new POLE::Stream(storageOut, streamName, true, size_stream);
+		if (!streamNew) return false;
+
+		unsigned char* data_stream = new unsigned char[size_stream];
+		stream->read(data_stream, size_stream);
+
 		unsigned char* data_store = NULL;
-		int sz_data_store = 0;
+		int size_data_store = 0;
 		
 		if ("WordDocument" == streamName)
 		{
-			sz_data_store = 68;
-			data_store = new unsigned char[sz_data_store];
+			size_data_store = 68;
+			data_store = new unsigned char[size_data_store];
 		}
 		
 		if (data_store)
-			memcpy(data_store, data_stream, sz_data_store);
+			memcpy(data_store, data_stream, size_data_store);
 
-		Decryptor->Decrypt((char*)data_stream, sz_stream, 0);
+		int size_block = 0x200;
+		for (int pos = 0, block = 0 ; pos < size_stream; pos += size_block, block++)
+		{
+			if (pos + size_block > size_stream)
+				size_block = size_stream - pos;
+
+			Decryptor->Decrypt((char*)data_stream + pos, size_block, block);
+		}
+
 		
 		if (data_store)
-			memcpy(data_stream, data_store, sz_data_store);
+			memcpy(data_stream, data_store, size_data_store);
 
-		streamNew->write(data_stream, sz_stream);
+		streamNew->write(data_stream, size_stream);
 
 		RELEASEARRAYOBJECTS(data_store);
 		RELEASEARRAYOBJECTS(data_stream);

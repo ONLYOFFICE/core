@@ -37,10 +37,7 @@
 #include "../../Base/Nullable.h"
 
 #include "../WritingElement.h"
-
-#include "../Drawing/DrawingCoreInfo.h"
-#include "../Drawing/DrawingText.h"
-
+#include "../Drawing/DrawingExt.h"
 
 namespace OOX
 {
@@ -101,9 +98,9 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<OOX::Drawing::CShapeProperties>	m_oSpPr;
-			nullable<OOX::Drawing::CTxBody>				m_oTxBody;
-			nullable<std::wstring>						m_sModelId;	//guid
+			nullable<PPTX::Logic::SpPr>			m_oSpPr;
+			nullable<PPTX::Logic::TxBody>		m_oTxBody;
+			nullable<std::wstring>				m_sModelId;	//guid
 		};
 
 

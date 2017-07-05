@@ -277,16 +277,17 @@ namespace XmlUtils
 	{
 		if (strName.empty()) return L"";
 
-		if (!strXml.empty())
-			return L"<" + strName + (oAttr.m_strValue.empty() ? L"" : L" " + oAttr.m_strValue) + L">" + strXml + L"</" + strName + L">";
+		if (strXml.empty())	return L"<" + strName + (oAttr.m_strValue.empty() ? L"" : L" " + oAttr.m_strValue) + L"/>";
+		else				return L"<" + strName + (oAttr.m_strValue.empty() ? L"" : L" " + oAttr.m_strValue) + L">" + strXml + L"</" + strName + L">";
 		
-		return L"<" + strName + (oAttr.m_strValue.empty() ? L"" : L" " + oAttr.m_strValue) + L"/>";
+		
 	}
 	AVSINLINE std::wstring CreateNode(const std::wstring& strName, const std::wstring& strXml)
 	{
 		if (strName.empty()) return L"";
 
-		return L"<" + strName + L">" + strXml + L"</" + strName + L">";
+		if (strXml.empty()) return L"<" + strName + L"/>";
+		else				return L"<" + strName + L">" + strXml + L"</" + strName + L">";
 	}
 
 	AVSINLINE void SaveToFile(const std::wstring& strFile, const std::wstring& strXml)

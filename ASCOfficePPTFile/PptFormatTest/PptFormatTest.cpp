@@ -31,28 +31,36 @@
  */
 // PptFormatTest.cpp : Defines the entry point for the console application.
 //
-#include "../../PPTFormatLib/PPTFormatLib.h"
-#include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "../PPTFormatLib/PPTFormatLib.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
-#include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../DesktopEditor/common/Directory.h"
+
+#include <tchar.h>
+
+#if defined(_WIN64)
+	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
+#elif defined (_WIN32)
+	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
+#endif
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	if (argc < 2) return 1;
 
 	std::wstring sSrcPpt	= argv[1];
-    std::wstring sDstPptx	= argc > 2 ? argv[2] : sSrcDoc + L"-my.pptx";
+    std::wstring sDstPptx	= argc > 2 ? argv[2] : sSrcPpt + L"-my.pptx";
 
-	std::wstring outputDir		= FileSystem::Directory::GetFolderPath(sDstPptx);
-	std::wstring dstTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
+	std::wstring outputDir		= NSDirectory::GetFolderPath(sDstPptx);
+	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
-	std::wstring tempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
+	std::wstring tempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
 	COfficePPTFile pptFile;
 	
 	pptFile.put_TempDirectory(tempPath);
 
-	HRESULT hRes = pptFile.LoadFromFile(sSrcPpt, dstTempPath);
+	HRESULT hRes = pptFile.LoadFromFile(sSrcPpt, dstTempPath, L"password");
 	
 	if (hRes == S_OK)
 	{
@@ -60,8 +68,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		hRes = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), sDstPptx, -1);
 	}
 		
-	FileSystem::Directory::DeleteDirectory(dstTempPath);
-	FileSystem::Directory::DeleteDirectory(tempPath);
+	NSDirectory::DeleteDirectory(dstTempPath);
+	NSDirectory::DeleteDirectory(tempPath);
 
 	return hRes;
 }

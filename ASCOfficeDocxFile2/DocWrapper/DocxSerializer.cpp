@@ -43,10 +43,16 @@ int BinDocxRW::g_nCurFormatVersion = 0;
 
 BinDocxRW::CDocxSerializer::CDocxSerializer()
 {
-	m_pParamsWriter = NULL;
-	m_pCurFileWriter = NULL;
-	m_bIsNoBase64Save = false;
-	m_bSaveChartAsImg = false;
+	m_pParamsWriter		= NULL;
+	m_pCurFileWriter	= NULL;
+
+	m_bIsNoBase64Save	= false;
+	m_bSaveChartAsImg	= false;
+}
+BinDocxRW::CDocxSerializer::~CDocxSerializer()
+{
+	RELEASEOBJECT(m_pParamsWriter);
+	RELEASEOBJECT(m_pCurFileWriter);
 }
 bool BinDocxRW::CDocxSerializer::ConvertDocxToDoct(const std::wstring& sSrcFileName, const std::wstring& sDstFileName, const std::wstring& sTmpDir, const std::wstring& sXMLOptions)
 {
@@ -106,6 +112,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sSrcFileName, co
 	CFontManager* pFontManager = pFontPicker->get_FontManager();
 	DocWrapper::FontProcessor fp;
 	fp.setFontManager(pFontManager);
+	
 	NSBinPptxRW::CDrawingConverter oDrawingConverter;
 	oDrawingConverter.SetFontManager(pFontManager);
 	NSBinPptxRW::CBinaryFileWriter& oBufferedStream = *oDrawingConverter.m_pBinaryWriter;
@@ -136,9 +143,12 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sSrcFileName, co
 	m_pParamsWriter = new ParamsWriter(&oBufferedStream, &fp, &oDrawingConverter, pEmbeddedFontsManager);
 
 	BinaryFileWriter oBinaryFileWriter(*m_pParamsWriter);
+	
 	oBinaryFileWriter.intoBindoc(sDstPath);
+	
 	BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
 	int nBinBufferLen = oBufferedStream.GetPosition();
+
 
     if (m_bIsNoBase64Save)
 	{
@@ -207,6 +217,7 @@ bool BinDocxRW::CDocxSerializer::CreateDocxFolders(std::wstring strDirectory, st
 bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sThemePath, const std::wstring& sMediaPath, const std::wstring& sEmbedPath)
 {
 	bool bResultOk = false;
+	RELEASEOBJECT(m_pCurFileWriter);
 	
 	NSFile::CFileBinary oFile;
 	if(oFile.OpenFile(sSrcFileName))
@@ -264,6 +275,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
             if(false != Base64::Base64Decode((const char*)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
 			{
                 NSBinPptxRW::CDrawingConverter oDrawingConverter;
+				
 				NSBinPptxRW::CBinaryFileReader& oBufferedStream = *oDrawingConverter.m_pReader;
 				oBufferedStream.Init(pData, 0, nDataSize);
 
@@ -276,24 +288,26 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 					{
 						g_nCurFormatVersion = nVersion = nTempVersion;
 					}
-				}
+				}		
 				oDrawingConverter.SetMainDocument(this);
 				oDrawingConverter.SetMediaDstPath(sMediaPath);
 				oDrawingConverter.SetEmbedDstPath(sEmbedPath);
+				
 				m_pCurFileWriter = new Writers::FileWriter(sDstPath, m_sFontDir, false, nVersion, m_bSaveChartAsImg, &oDrawingConverter, sThemePath);
 
-				//папка с картинками
+	//папка с картинками
 				std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
                 std::wstring sFileInDir = strFileInDir.c_str();
 
                 oDrawingConverter.SetSourceFileDir(sFileInDir);
-	//default theme
-				m_pCurFileWriter->m_oDefaultTheme.Write(sThemePath);
 				
 				BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter);
 				oBinaryFileReader.ReadFile();
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				OOX::CContentTypes oContentTypes;
+	//themes
+				m_pCurFileWriter->m_oTheme.Write(sThemePath);
+
+				OOX::CContentTypes *pContentTypes = oDrawingConverter.GetContentTypes();
 	//docProps
                 OOX::CPath pathDocProps = sDstPath + FILE_SEPARATOR_STR + _T("docProps");
                 NSDirectory::CreateDirectory(pathDocProps.GetPath());
@@ -304,14 +318,14 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 				if (pApp)
 				{
 					pApp->SetApplication(_T("OnlyOffice"));
-					pApp->SetAppVersion(_T("3.0000"));
+					pApp->SetAppVersion(_T("4.3000"));
 					pApp->SetDocSecurity(0);
 					pApp->SetScaleCrop(false);
 					pApp->SetLinksUpToDate(false);
 					pApp->SetSharedDoc(false);
 					pApp->SetHyperlinksChanged(false);
 					
-					pApp->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, oContentTypes);
+					pApp->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, *pContentTypes);
 					delete pApp;
 				}				
 				OOX::CCore* pCore = new OOX::CCore();
@@ -319,34 +333,15 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 				{
 					pCore->SetCreator(_T(""));
 					pCore->SetLastModifiedBy(_T(""));
-					pCore->write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), DocProps, oContentTypes);
+					pCore->write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), DocProps, *pContentTypes);
 					delete pCore;
 				} 
 /////////////////////////////////////////////////////////////////////////////////////
-                m_pCurFileWriter->m_oContentTypesWriter.AddOverrideRaw(oDrawingConverter.GetContentTypes());
+				m_pCurFileWriter->Write();
+				pContentTypes->Write(sDstPath);
 
-				m_pCurFileWriter->m_oCommentsWriter.Write();
-				m_pCurFileWriter->m_oChartWriter.Write();
-				m_pCurFileWriter->m_oStylesWriter.Write();
-				m_pCurFileWriter->m_oNumberingWriter.Write();
-				m_pCurFileWriter->m_oFontTableWriter.Write();
-				m_pCurFileWriter->m_oHeaderFooterWriter.Write();
-				m_pCurFileWriter->m_oFootnotesWriter.Write();
-				m_pCurFileWriter->m_oEndnotesWriter.Write();
-				//Setting пишем после HeaderFooter, чтобы заполнить evenAndOddHeaders
-				m_pCurFileWriter->m_oSettingWriter.Write();
-				m_pCurFileWriter->m_oWebSettingsWriter.Write();
-				//Document пишем после HeaderFooter, чтобы заполнить sectPr
-				m_pCurFileWriter->m_oDocumentWriter.Write();
-				//Rels и ContentTypes пишем в конце
-				m_pCurFileWriter->m_oDocumentRelsWriter.Write();
-				m_pCurFileWriter->m_oContentTypesWriter.Write();
-
-				//CSerializer oSerializer = CSerializer();
-				//if(false != oSerializer.Write(oBufferedStream, sDirectoryOut))
-				//{
 				bResultOk = true;
-				//}
+
 			}
 		}
 		RELEASEARRAYOBJECTS(pBase64Data);
@@ -371,11 +366,6 @@ bool BinDocxRW::CDocxSerializer::getBinaryContent(const std::wstring& bsTxConten
 
 	XmlUtils::CXmlLiteReader oReader;
 	
-//    std::wstring bsTxContentTemp = _T("<root xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
-//
-//    bsTxContentTemp += bsTxContent;
-//    bsTxContentTemp + _T("</root>");
-    
     std::wstring sBegin(_T("<root xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">"));
     
     std::wstring sEnd(_T("</root>"));
@@ -397,7 +387,8 @@ bool BinDocxRW::CDocxSerializer::getBinaryContent(const std::wstring& bsTxConten
 
 	BinDocxRW::BinaryCommonWriter oBinaryCommonWriter(oParamsWriter);
 	int nCurPos = oBinaryCommonWriter.WriteItemWithLengthStart();
-	BinDocxRW::ParamsDocumentWriter oParams(oParamsWriter.m_pCurRels, oParamsWriter.m_sCurDocumentPath);
+	BinDocxRW::ParamsDocumentWriter oParams(oParamsWriter.m_pCurRels);
+	
 	BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(oParamsWriter, oParams, &oParamsWriter.m_mapIgnoreComments, NULL);
 	oBinaryDocumentTableWriter.WriteDocumentContent(oSdtContent.m_arrItems);
 	oBinaryCommonWriter.WriteItemWithLengthEnd(nCurPos);
@@ -419,7 +410,8 @@ bool BinDocxRW::CDocxSerializer::getBinaryContentElem(OOX::EElementType eElemTyp
 
 	BinDocxRW::BinaryCommonWriter oBinaryCommonWriter(oParamsWriter);
 	int nCurPos = oBinaryCommonWriter.WriteItemWithLengthStart();
-	BinDocxRW::ParamsDocumentWriter oParams(oParamsWriter.m_pCurRels, oParamsWriter.m_sCurDocumentPath);
+	
+	BinDocxRW::ParamsDocumentWriter oParams(oParamsWriter.m_pCurRels);
 	BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(oParamsWriter, oParams, &oParamsWriter.m_mapIgnoreComments, NULL);
 	if(OOX::et_m_oMathPara == eElemType)
 	{
@@ -430,6 +422,11 @@ bool BinDocxRW::CDocxSerializer::getBinaryContentElem(OOX::EElementType eElemTyp
 	{
 		OOX::Logic::COMath* pMath = static_cast<OOX::Logic::COMath*>(pElem);
 		oBinaryDocumentTableWriter.WriteMathArgNodes(pMath->m_arrItems);
+	}
+	else if(OOX::et_w_sdtContent == eElemType)
+	{
+		OOX::Logic::CSdtContent* pContent = static_cast<OOX::Logic::CSdtContent*>(pElem);
+		oBinaryDocumentTableWriter.WriteDocumentContent(pContent->m_arrItems);
 	}
 	oBinaryCommonWriter.WriteItemWithLengthEnd(nCurPos);
 

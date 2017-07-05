@@ -1,0 +1,151 @@
+<!-- ##### SECTION Title ##### -->
+xmlsec
+
+<!-- ##### SECTION Short_Description ##### -->
+Utility functions.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+Utility functions.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### TYPEDEF xmlSecPtr ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO xmlSecSize ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO XMLSEC_SIZE_BAD_CAST ##### -->
+<para>
+
+</para>
+
+@val: 
+
+
+<!-- ##### MACRO xmlSecByte ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION xmlSecInit ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecShutdown ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecGetDefaultCrypto ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### MACRO XMLSEC_CRYPTO ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO xmlSecCheckVersionExact ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO xmlSecCheckVersion ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### ENUM xmlSecCheckVersionMode ##### -->
+<para>
+
+</para>
+
+@xmlSecCheckVersionExactMatch: 
+@xmlSecCheckVersionABICompatible: 
+
+<!-- ##### FUNCTION xmlSecCheckVersionExt ##### -->
+<para>
+
+</para>
+
+@major: 
+@minor: 
+@subminor: 
+@mode: 
+@Returns: 
+
+
+<!-- ##### MACRO ATTRIBUTE_UNUSED ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO XMLSEC_PTR_TO_FUNC_IMPL ##### -->
+<para>
+
+</para>
+
+@func_type: 
+
+
+<!-- ##### MACRO XMLSEC_PTR_TO_FUNC ##### -->
+<para>
+
+</para>
+
+@func_type: 
+@ptr: 
+
+
+<!-- ##### MACRO XMLSEC_FUNC_TO_PTR ##### -->
+<para>
+
+</para>
+
+@func_type: 
+@func: 
+
+

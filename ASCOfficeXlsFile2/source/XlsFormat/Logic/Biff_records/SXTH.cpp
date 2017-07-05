@@ -44,7 +44,6 @@ SXTH::~SXTH()
 {
 }
 
-
 BaseObjectPtr SXTH::clone()
 {
 	return BaseObjectPtr(new SXTH(*this));
@@ -53,10 +52,44 @@ BaseObjectPtr SXTH::clone()
 
 void SXTH::readFields(CFRecord& record)
 {
-#pragma message("####################### SXTH record is not implemented")
-	Log::error("SXTH record is not implemented.");
-	//record >> some_value;
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	_UINT32 flags1;
+	unsigned short flags2;
+
+	record >> frtHeaderOld >> flags1 >> sxaxis >> isxvd >> csxvdXl >> flags2;
+
+	record >> stUnique >> stDisplay >> stDefault >> stAll >> stDimension;
+
+	record >> cisxvd;
+	for (int i = 0; i < cisxvd; i++)
+	{
+		_INT32 val;
+		record >> val;
+		rgisxvd.push_back(val);
+	}
+	record >> cHiddenMemberSets;
+	for (int i = 0; i < cHiddenMemberSets; i++)
+	{
+		HiddenMemberSet val;
+		record >> val;
+		rgHiddenMemberSets.push_back(val);
+	}
+	fMeasure					= GETBIT(flags1, 0);
+	fOutlineMode				= GETBIT(flags1, 2);
+	fEnableMultiplePageItems	= GETBIT(flags1, 3);
+	fSubtotalAtTop				= GETBIT(flags1, 4);
+	fSet						= GETBIT(flags1, 5);
+	fDontShowFList				= GETBIT(flags1, 6);
+	fAttributeHierarchy			= GETBIT(flags1, 7);
+	fTimeHierarchy				= GETBIT(flags1, 8);
+	fFilterInclusive			= GETBIT(flags1, 9);
+	fKeyAttributeHierarchy		= GETBIT(flags1, 11);
+	fKPI						= GETBIT(flags1, 12);	
+
+	fDragToRow					= GETBIT(flags2, 0);
+	fDragToColumn				= GETBIT(flags2, 1);
+	fDragToPage					= GETBIT(flags2, 2);
+	fDragToData					= GETBIT(flags2, 3);
+	fDragToHide					= GETBIT(flags2, 4);
 }
 
 } // namespace XLS

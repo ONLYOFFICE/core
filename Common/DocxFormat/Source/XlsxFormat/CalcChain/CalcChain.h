@@ -42,7 +42,7 @@ namespace OOX
 		class CCalcCell : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CCalcCell)
+			WritingElement_AdditionConstructors(CCalcCell)
 			CCalcCell()
 			{
 			}
@@ -50,15 +50,17 @@ namespace OOX
 			{
 			}
 
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -68,7 +70,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_CalcCell;
+				return et_x_CalcCell;
 			}
 
 		private:
@@ -90,20 +92,22 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>					m_oArray;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oSheetId;
 			nullable<SimpleTypes::COnOff<>>					m_oDependencyLevel;
-			nullable<std::wstring>								m_oRef;
+			nullable<std::wstring>							m_oRef;
 			nullable<SimpleTypes::COnOff<>>					m_oChildChain;
 			nullable<SimpleTypes::COnOff<>>					m_oNewThread;
 		};
 		//необработанные child:
 		//<extLst>
-		class CCalcChain : public OOX::File, public OOX::Spreadsheet::IFileContainer
+		class CCalcChain : public OOX::File, public OOX::IFileContainer
 		{
 		public:
 			CCalcChain()
 			{
+				m_bSpreadsheets = true;
 			}
 			CCalcChain(const CPath& oRootPath, const CPath& oPath)
 			{
+				m_bSpreadsheets = true;
 				read( oRootPath, oPath );
 			}
 			virtual ~CCalcChain()

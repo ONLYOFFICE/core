@@ -303,7 +303,6 @@ namespace NSPresentationEditor
 
         std::vector <std::wstring> m_oQuery;
 
-    public:
         CAnimationInfo() : m_arAnimations()
         {
         }
@@ -323,7 +322,6 @@ namespace NSPresentationEditor
         {
         }
 
-    public:
 
 //        std::wstring ToXml(const double& dStartTime, const double& dEndTime, bool bIgnore = false)
 //        {
@@ -453,13 +451,5 @@ namespace NSPresentationEditor
 //            return baseXML;
 //        }
 
-        inline std::wstring FormatXml ()
-        {
-            std::wstring Xml;
-            for ( long i = 0; i < (long)m_oQuery.size(); ++i )
-                Xml	+=	m_oQuery[i];
-
-            return Xml;
-        }
     };
 }

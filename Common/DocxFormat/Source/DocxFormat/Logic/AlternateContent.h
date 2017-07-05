@@ -70,20 +70,6 @@ namespace OOX
 					m_arrFallbackItems[nIndex] = NULL;
 				}
 				m_arrFallbackItems.clear();
-				for (unsigned int nIndex = 0; nIndex < m_arrSpreadsheetChoiceItems.size(); nIndex++ )
-				{
-					if ( m_arrSpreadsheetChoiceItems[nIndex] )
-						delete m_arrSpreadsheetChoiceItems[nIndex];
-					m_arrSpreadsheetChoiceItems[nIndex] = NULL;
-				}
-				m_arrSpreadsheetChoiceItems.clear();
-				for (unsigned int nIndex = 0; nIndex < m_arrSpreadsheetFallbackItems.size(); nIndex++ )
-				{
-					if ( m_arrSpreadsheetFallbackItems[nIndex] )
-						delete m_arrSpreadsheetFallbackItems[nIndex];
-					m_arrSpreadsheetFallbackItems[nIndex] = NULL;
-				}
-				m_arrSpreadsheetFallbackItems.clear();
 			}
 		public:
 
@@ -100,13 +86,9 @@ namespace OOX
 				return OOX::et_mc_alternateContent;
 			}
 		public:
-			nullable<std::wstring > m_sXml;
-			
+		
 			std::vector<WritingElement *> m_arrChoiceItems;
 			std::vector<WritingElement *> m_arrFallbackItems;
-			
-			std::vector<OOX::Spreadsheet::WritingElement *> m_arrSpreadsheetChoiceItems;
-			std::vector<OOX::Spreadsheet::WritingElement *> m_arrSpreadsheetFallbackItems;
 		};
 	} // namespace Words
 } // namespace OOX

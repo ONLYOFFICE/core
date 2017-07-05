@@ -49,10 +49,9 @@ public:
 
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeFrtHeaderOld;
+	static const ElementType type = typeFrtHeaderOld;
 	
 	virtual void load(CFRecord& record);
-
 
 	CFRecordType::TypeId rt;
 	FrtFlags grbitFrt;

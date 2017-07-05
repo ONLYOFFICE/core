@@ -44,7 +44,6 @@ SxDXF::~SxDXF()
 {
 }
 
-
 BaseObjectPtr SxDXF::clone()
 {
 	return BaseObjectPtr(new SxDXF(*this));
@@ -52,10 +51,7 @@ BaseObjectPtr SxDXF::clone()
 
 void SxDXF::readFields(CFRecord& record)
 {
-#pragma message("####################### SxDXF record is not implemented")
-	Log::error("SxDXF record is not implemented.");
-	//record >> some_value;
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	record >> dxfn >> xfext;
 }
 
 } // namespace XLS

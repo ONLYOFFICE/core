@@ -1681,27 +1681,73 @@ namespace SimpleTypes
                 return this->m_eValue;
 			}
 
-			virtual std::wstring     ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
                 return std::to_wstring(this->m_eValue );
 			}
 
 			SimpleType_FromString     (EPageSize)
-				SimpleType_Operator_Equal (CPageSize)
+			SimpleType_Operator_Equal (CPageSize)
+		};
+		
+		enum EPageUnits
+		{
+			mm		= 0,
+			cm		= 1,
+			inch	= 2,
+			pt		= 3,
+			px		= 4,
+			emu		= 5
+
+		};
+		template<EPageUnits eDefValue = mm>
+		class CPageUnits : public CSimpleType<EPageUnits, eDefValue>
+		{
+		public:
+			CPageUnits() {}
+
+            virtual EPageUnits FromString(std::wstring &sValue)
+			{
+					 if	(sValue == L"in")	this->m_eValue = inch;
+				else if (sValue == L"mm")	this->m_eValue = mm;
+				else if (sValue == L"cm")	this->m_eValue = cm;
+				else if (sValue == L"pt")	this->m_eValue = pt;
+				else if (sValue == L"px")	this->m_eValue = px;
+
+                return this->m_eValue;
+			}
+
+			virtual std::wstring ToString  () const 
+			{
+                std::wstring sResult;
+                switch(this->m_eValue)
+				{
+                case mm:	sResult = L"mm";break;
+                case cm:	sResult = L"cm";break;
+                case pt:	sResult = L"pt";break;
+                case px:	sResult = L"px";break;
+                case inch:	sResult = L"in";break;
+				}
+				return sResult;
+			}
+
+			SimpleType_FromString     (EPageUnits)
+			SimpleType_Operator_Equal (CPageUnits)
 		};
 		enum ETotalsRowFunction
 		{
-			totalrowfunctionAverage	=  1,
-			totalrowfunctionCount =  2,
-			totalrowfunctionCountNums =  3,
-			totalrowfunctionCustom =  4,
-			totalrowfunctionMax =  5,
-			totalrowfunctionMin =  6,
-			totalrowfunctionNone =  7,
-			totalrowfunctionStdDev =  8,
-			totalrowfunctionSum =  9,
-			totalrowfunctionVar =  10
+			totalrowfunctionAverage		=  1,
+			totalrowfunctionCount		=  2,
+			totalrowfunctionCountNums	=  3,
+			totalrowfunctionCustom		=  4,
+			totalrowfunctionMax			=  5,
+			totalrowfunctionMin			=  6,
+			totalrowfunctionNone		=  7,
+			totalrowfunctionStdDev		=  8,
+			totalrowfunctionSum			=  9,
+			totalrowfunctionVar			=  10
 		};
+
 		template<ETotalsRowFunction eDefValue = totalrowfunctionNone>
 		class CTotalsRowFunction : public CSimpleType<ETotalsRowFunction, eDefValue>
 		{
@@ -2561,6 +2607,49 @@ namespace SimpleTypes
 
             SimpleType_FromString     (EPaneState)
             SimpleType_Operator_Equal (CPaneState)
+		};
+
+		enum EDdeValueType
+		{
+			ddevaluetypeNil = 0,
+			ddevaluetypeB = 1,
+			ddevaluetypeN = 2,
+			ddevaluetypeE = 3,
+			ddevaluetypeStr = 4
+		};
+
+		template<EDdeValueType eDefValue = ddevaluetypeNil>
+		class CDdeValueType : public CSimpleType<EDdeValueType, eDefValue>
+		{
+		public:
+			CDdeValueType() {}
+
+			virtual EDdeValueType FromString(std::wstring &sValue)
+			{
+				if      ( _T("nil") == sValue ) this->m_eValue = ddevaluetypeNil;
+				else if ( _T("b")  == sValue ) this->m_eValue = ddevaluetypeB;
+				else if ( _T("n")  == sValue ) this->m_eValue = ddevaluetypeN;
+				else if ( _T("e")  == sValue ) this->m_eValue = ddevaluetypeE;
+				else if ( _T("str")  == sValue ) this->m_eValue = ddevaluetypeStr;
+				else                                  this->m_eValue = eDefValue;
+				return this->m_eValue;
+			}
+
+			virtual std::wstring          ToString  () const
+			{
+				switch(this->m_eValue)
+				{
+				case ddevaluetypeNil : return _T("nil");
+				case ddevaluetypeB  : return _T("b");
+				case ddevaluetypeN  : return _T("n");
+				case ddevaluetypeE  : return _T("e");
+				case ddevaluetypeStr  : return _T("str");
+				default                  : return _T("nil");
+				}
+			}
+
+			SimpleType_FromString     (EDdeValueType)
+			SimpleType_Operator_Equal (CDdeValueType)
 		};
 	};// Spreadsheet
 } // SimpleTypes

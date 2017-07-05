@@ -52,9 +52,8 @@ BaseObjectPtr Qsif::clone()
 
 void Qsif::readFields(CFRecord& record)
 {
-#pragma message("####################### Qsif record is not implemented")
 	Log::error("Qsif record is not implemented.");
-	//record >> some_value;
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS

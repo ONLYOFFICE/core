@@ -46,7 +46,6 @@
 #include "../odf/style_text_properties.h"
 #include "../odf/style_table_properties.h"
 #include "../odf/style_graphic_properties.h"
-#include "../odf/datatypes/style_ref.h"
 
 #include "docx_package.h"
 #include "oox_rels.h"
@@ -189,7 +188,7 @@ std::wstring styles_map::get(const std::wstring & Name, odf_types::style_family:
     }
     else
     {
-        const std::wstring id = std::wstring(L"style") + boost::lexical_cast<std::wstring>(count_++);
+        const std::wstring id = std::wstring(L"style") + std::to_wstring(count_++);
         map_.insert(std::make_pair(n, id));
         return id;        
     }
@@ -1061,7 +1060,7 @@ void docx_conversion_context::start_list_item(bool restart)
     if (restart && !list_style_stack_.empty())
     {
         const std::wstring curStyleName = current_list_style();
-        const std::wstring newStyleName = curStyleName + boost::lexical_cast<std::wstring>(new_list_style_number_++);
+        const std::wstring newStyleName = curStyleName + std::to_wstring(new_list_style_number_++);
         list_style_renames_[curStyleName] = newStyleName;
 
         odf_reader::list_style_container & lists = root()->odf_context().listStyleContainer();
@@ -1196,7 +1195,7 @@ void docx_conversion_context::process_headers_footers()
     // проходим по всем page layout
     BOOST_FOREACH(const odf_reader::style_master_page* page, pageLayouts.master_pages())
     {
-        const std::wstring & styleName = page->style_master_page_attlist_.style_name_.get_value_or( odf_types::style_ref(L"") ).style_name();
+        const std::wstring & styleName = page->attlist_.style_name_.get_value_or( L"" );
         const std::wstring masterPageNameLayout =context.pageLayoutContainer().page_layout_name_by_style(styleName);
         add_page_properties(masterPageNameLayout);
 		
@@ -1241,7 +1240,7 @@ std::wstring notes_context::add(const std::wstring & Content, const std::wstring
 std::wstring notes_context::next_id()
 {
     instances_map & map = (type_ == odf_types::noteclass::Endnote) ? instances_endnotes_ : instances_footnotes_;
-    const std::wstring s = boost::lexical_cast<std::wstring>(map.size() + 1);
+    const std::wstring s = std::to_wstring(map.size() + 1);
     return s;        
 }
 
@@ -1292,14 +1291,14 @@ void docx_conversion_context::start_text_changes (std::wstring id)
 		if (state.type	== 1)
 		{
 
-			output_stream() << L"<w:ins" << format_change << L" w:id=\"" << boost::lexical_cast<std::wstring>(current_id_changes++) <<  L"\">";
+			output_stream() << L"<w:ins" << format_change << L" w:id=\"" << std::to_wstring(current_id_changes++) <<  L"\">";
 		}
 		
 		if (state.type	== 2)
 		{
 			for (size_t i = 0 ; i < state.content.size(); i++)
 			{
-				output_stream() << L"<w:del" << format_change << L" w:id=\"" << boost::lexical_cast<std::wstring>(current_id_changes++) <<  L"\">";
+				output_stream() << L"<w:del" << format_change << L" w:id=\"" << std::to_wstring(current_id_changes++) <<  L"\">";
 
 				output_stream() << state.content[i];
 
@@ -1331,7 +1330,7 @@ void docx_conversion_context::start_changes()
 		std::wstring change_attr;
 		change_attr += L" w:date=\""	+ state.date	+ L"\"";
 		change_attr += L" w:author=\""	+ state.author	+ L"\"";
-		change_attr += L" w:id=\""		+ boost::lexical_cast<std::wstring>(current_id_changes++) + L"\"";
+		change_attr += L" w:id=\""		+ std::to_wstring(current_id_changes++) + L"\"";
 
 		if (state.type	== 1)
 		{

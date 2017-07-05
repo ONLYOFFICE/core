@@ -189,42 +189,13 @@ namespace PPTX
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("lvl"),		lvl)
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("algn"),	algn)
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("fontAlgn"),fontAlgn)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("marL"),	marR)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("marR"),	marL)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("marL"),	marL)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("marR"),	marR)
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("indent"),	indent)
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("defTabSz"),defTabSz)					
 				WritingElement_ReadAttributes_End	( oReader )
 			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("marL"), marL);
-				oAttr.Write(_T("marR"), marR);
-				oAttr.Write(_T("lvl"), lvl);
-				oAttr.Write(_T("indent"), indent);
-				oAttr.WriteLimitNullable(_T("algn"), algn);
-				oAttr.Write(_T("defTabSz"), defTabSz);
-				oAttr.Write(_T("rtl"), rtl);
-				oAttr.Write(_T("eaLnBrk"), eaLnBrk);
-				oAttr.WriteLimitNullable(_T("fontAlgn"), fontAlgn);
-				oAttr.Write(_T("latinLnBrk"), latinLnBrk);
-				oAttr.Write(_T("hangingPunct"), hangingPunct);
 
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(lnSpc);
-				oValue.WriteNullable(spcBef);
-				oValue.WriteNullable(spcAft);
-				oValue.Write(buColor);
-				oValue.Write(buSize);
-				oValue.Write(buTypeface);
-				oValue.Write(ParagraphBullet);
-				oValue.WriteNullable(defRPr);
-				
-				if (0 != tabLst.size())
-					oValue.WriteArray(_T("a:tabLst"), tabLst);
-
-				return XmlUtils::CreateNode(m_name, oAttr, oValue);
-			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(m_name);

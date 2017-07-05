@@ -67,8 +67,10 @@ public:
 	
     void add_text_content	(const std::wstring & text);
 	void add_text_space		(int count);
-
-    void set_symbol_font	(const std::wstring & font);
+	void add_text_date		(const std::wstring & text);
+	void add_text_page_number(const std::wstring & text);
+    
+	void set_symbol_font	(const std::wstring & font);
  	void set_symbol_text	(int sym);
    
 	void start_paragraph	(bool styled = false);
@@ -95,6 +97,7 @@ public:
 	void save_property_break();
 
 	void add_tab			(_CP_OPT(int) ref = boost::none);
+	void add_hyperlink		(std::wstring ref, std::wstring display_text);
 	void set_outline_level	(int level);
 
 	bool get_list_item_state()		{return list_state_.levels.size() > 0 ? list_state_.levels.back() : false;}

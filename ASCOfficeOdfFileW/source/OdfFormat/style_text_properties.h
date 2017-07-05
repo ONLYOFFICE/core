@@ -80,8 +80,6 @@ public:
 
 	void clear();
 
-public:
-
     _CP_OPT(std::wstring)				r_style_;
     _CP_OPT(odf_types::font_variant)    fo_font_variant_;               
     _CP_OPT(odf_types::text_transform)  fo_text_transform_;             
@@ -95,7 +93,7 @@ public:
     _CP_OPT(odf_types::line_width)      style_text_line_through_width_;
     _CP_OPT(odf_types::color)           style_text_line_through_color_;
     _CP_OPT(std::wstring)				style_text_line_through_text_;
-    _CP_OPT(odf_types::style_ref)       style_text_line_through_text_style_;
+    _CP_OPT(std::wstring)				style_text_line_through_text_style_;
     
 	_CP_OPT(odf_types::text_position)   style_text_position_;           
 
@@ -216,13 +214,10 @@ public:
 
 	virtual void serialize(std::wostream & strm);
 
-    const	text_format_properties_content & content() const	{ return text_format_properties_content_; } ;
-			text_format_properties_content & content()			{ return text_format_properties_content_; } ;
-
     style_text_properties(){};
-    style_text_properties(const std::wstring & rStyle){ text_format_properties_content_.set_r_style(rStyle); };
+    style_text_properties(const std::wstring & rStyle){ content_.set_r_style(rStyle); };
  
-    text_format_properties_content text_format_properties_content_;
+    text_format_properties_content content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_text_properties);

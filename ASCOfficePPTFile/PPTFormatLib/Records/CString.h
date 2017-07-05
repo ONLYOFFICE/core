@@ -36,8 +36,6 @@ class CRecordCString : public CUnknownRecord
 {
 public:
 	std::wstring m_strText;
-
-public:
 	
 	CRecordCString()
 	{

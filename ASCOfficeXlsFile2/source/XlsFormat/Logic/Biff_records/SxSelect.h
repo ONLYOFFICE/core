@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/SxAxis.h"
 
 namespace XLS
 {
 
-
-// Logical representation of SxSelect record in BIFF8
 class SxSelect: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SxSelect)
@@ -47,11 +46,30 @@ public:
 	~SxSelect();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeSxSelect;
+
+	unsigned char	pnn;		//enum PaneType
+	SXAxis			sxaxisAct;
+	unsigned short	iDimAct;
+	unsigned short	iLiStart;
+	unsigned short	iLiAct;
+	unsigned short	iLiMin;
+	unsigned short	iLiMax;
+	RwU				rwClick;
+	ColU			colClick;
+	RwU				rwClickPrev;
+	ColU			colClickPrev;
+
+	unsigned char	cClick;
+	bool			fLabelOnly;
+	bool			fDataOnly;
+	bool			fToggleDataHeader;
+	bool			fSelectionClick;
+	bool			fExtendable;
+
 };
 
 } // namespace XLS

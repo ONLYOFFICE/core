@@ -50,6 +50,7 @@
 #include "GroupShapeRecord.h"
 #include "OfficeArtClientTextbox.h"
 #include "UnknownRecord.h"
+#include "OfficeArtFRITContainer.h"
 
 namespace DocFileFormat
 {
@@ -135,6 +136,7 @@ namespace DocFileFormat
 		case GroupContainer::TYPE_CODE_0xF003			:	return new GroupContainer();
 		case GroupShapeRecord::TYPE_CODE_0xF009			:	return new GroupShapeRecord ();
 		case OfficeArtClientTextbox::TYPE_CODE_0xF00D	:	return new OfficeArtClientTextbox ();
+		case OfficeArtFRITContainer::TYPE_CODE_0xF118	:	return new OfficeArtFRITContainer ();
 
 		default:	
 			return new UnknownRecord();		

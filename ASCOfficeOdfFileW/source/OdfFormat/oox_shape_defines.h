@@ -48,6 +48,8 @@ namespace cpdoccore
 	public:
 		static oox_shape_ptr create(int ooxPrstGeomType);
 
+		oox_shape();
+
 		struct _equation
 		{
 			std::wstring name;
@@ -62,24 +64,27 @@ namespace cpdoccore
 			_CP_OPT(std::wstring) y_maximum;
 			_CP_OPT(std::wstring) x_minimum;
 			_CP_OPT(std::wstring) x_maximum;
+			_CP_OPT(std::wstring) r_minimum;
+			_CP_OPT(std::wstring) r_maximum;
 		};
 
 		void add(std::wstring name,std::wstring frmla)
 		{
-			_equation q = {name,frmla};
+			_equation q = {name, frmla};
 			equations.push_back(q);
 		}
 
-		std::vector<_equation> equations;
-		std::vector<_handle> handles;		
+		std::vector<_equation>	equations;
+		std::vector<_handle>	handles;		
 		
-		std::wstring enhanced_path;
-		std::wstring modifiers;
-		std::wstring text_areas;
-		std::wstring view_box;
+		std::wstring			enhanced_path;
+		std::wstring			modifiers;
+		std::wstring			text_areas;
 
-		std::wstring odf_type_name;
+		_CP_OPT(std::wstring)	view_box;
+		_CP_OPT(std::wstring)	sub_view_size;
+		_CP_OPT(std::wstring)	glue_points;
 
-		_CP_OPT(std::wstring) glue_points;
+		std::wstring			odf_type_name;
 	};
 };

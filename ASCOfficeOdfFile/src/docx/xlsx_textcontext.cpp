@@ -84,10 +84,10 @@ public:
 
     void serialize_shared_strings(std::wostream & strm);
 	
-	void ApplyTextProperties		(std::wstring style, odf_reader::text_format_properties_content & propertiesOut, odf_types::style_family::type Type);
-	void ApplyParagraphProperties	(std::wstring style, odf_reader::paragraph_format_properties & propertiesOut, odf_types::style_family::type Type);
+	void ApplyTextProperties		(std::wstring style, std::wstring para_style, odf_reader::text_format_properties_content & propertiesOut);
+	void ApplyParagraphProperties	(std::wstring style, odf_reader::paragraph_format_properties & propertiesOut);
 
-	void set_local_styles_container(odf_reader::styles_container*  local_styles_);//это если стили объектов содержатся в другом документе
+	void set_local_styles_container	(odf_reader::styles_container*  local_styles_);//это если стили объектов содержатся в другом документе
 
 	bool is_drawing_context(){return in_draw;}
 
@@ -136,7 +136,8 @@ void xlsx_text_context::Impl::serialize_shared_strings(std::wostream & strm)
 xlsx_text_context::Impl::Impl(odf_reader::styles_container & styles): paragraphs_cout_(0),styles_(styles),
 				in_comment(false),in_draw(false),in_paragraph(false),in_span(false),in_cell_content(false)
 {
-	text_properties_cell_ = NULL;
+	local_styles_ptr_		= NULL;
+	text_properties_cell_	= NULL;
 }
 
 void xlsx_text_context::Impl::add_text(const std::wstring & text)
@@ -236,48 +237,54 @@ void xlsx_text_context::Impl::end_hyperlink(std::wstring hId)
 	hyperlink_hId = hId;
 }
 
-void xlsx_text_context::Impl::ApplyParagraphProperties	(std::wstring style, odf_reader::paragraph_format_properties & propertiesOut, odf_types::style_family::type Type)
+void xlsx_text_context::Impl::ApplyParagraphProperties	(std::wstring style, odf_reader::paragraph_format_properties & propertiesOut)
 {
 	std::vector<const odf_reader::style_instance *> instances;
 
+	odf_reader::style_instance*	defaultStyle	= NULL;
+	odf_reader::style_instance*	paraStyle		= NULL;
+
 	if (local_styles_ptr_)
 	{
-		odf_reader::style_instance * defaultStyle = local_styles_ptr_->style_default_by_type(Type);
-		if (defaultStyle)instances.push_back(defaultStyle);
-
-		odf_reader::style_instance* styleInst = local_styles_ptr_->style_by_name(style, Type,false/*process_headers_footers_*/);
-		if(styleInst)instances.push_back(styleInst);
+		defaultStyle	= local_styles_ptr_->style_default_by_type(odf_types::style_family::Paragraph);
+		paraStyle		= local_styles_ptr_->style_by_name(style, odf_types::style_family::Paragraph, false/*process_headers_footers_*/);
 	}
 	else
 	{
-		odf_reader::style_instance * defaultStyle = styles_.style_default_by_type(Type);
-		if (defaultStyle)instances.push_back(defaultStyle);
-
-		odf_reader::style_instance* styleInst = styles_.style_by_name(style, Type,false/*process_headers_footers_*/);
-		if(styleInst)instances.push_back(styleInst);
+		defaultStyle	= styles_.style_default_by_type(odf_types::style_family::Paragraph);
+		paraStyle		= styles_.style_by_name(style, odf_types::style_family::Paragraph, false/*process_headers_footers_*/);
 	}
+	
+	if (defaultStyle)	instances.push_back(defaultStyle);
+	if (paraStyle)		instances.push_back(paraStyle);
+	
 	propertiesOut.apply_from(calc_paragraph_properties_content(instances));
 }
-void xlsx_text_context::Impl::ApplyTextProperties(std::wstring style, odf_reader::text_format_properties_content & propertiesOut, odf_types::style_family::type Type)
+void xlsx_text_context::Impl::ApplyTextProperties(std::wstring style, std::wstring para_style, odf_reader::text_format_properties_content & propertiesOut)
 {
 	std::vector<const odf_reader::style_instance *> instances;
 
+	odf_reader::style_instance* defaultStyle = NULL;
+	odf_reader::style_instance* textStyle	 = NULL;
+	odf_reader::style_instance* paraStyle	 = NULL;
+	
 	if (local_styles_ptr_)
 	{
-		odf_reader::style_instance * defaultStyle = local_styles_ptr_->style_default_by_type(Type);
-		if (defaultStyle)instances.push_back(defaultStyle);
-
-		odf_reader::style_instance* styleInst = local_styles_ptr_->style_by_name(style, Type,false/*process_headers_footers_*/);
-		if(styleInst)instances.push_back(styleInst);
+		defaultStyle	= local_styles_ptr_->style_default_by_type(odf_types::style_family::Text);
+		paraStyle		= local_styles_ptr_->style_by_name(para_style, odf_types::style_family::Paragraph, false/*process_headers_footers_*/);
+		textStyle		= local_styles_ptr_->style_by_name(style, odf_types::style_family::Text, false/*process_headers_footers_*/);
 	}
 	else
 	{
-		odf_reader::style_instance * defaultStyle = styles_.style_default_by_type(Type);
-		if (defaultStyle)instances.push_back(defaultStyle);
-
-		odf_reader::style_instance* styleInst = styles_.style_by_name(style, Type,false/*process_headers_footers_*/);
-		if(styleInst)instances.push_back(styleInst);
+		defaultStyle	= styles_.style_default_by_type(odf_types::style_family::Text);
+		paraStyle		= styles_.style_by_name(para_style, odf_types::style_family::Paragraph, false/*process_headers_footers_*/);
+		textStyle		= styles_.style_by_name(style, odf_types::style_family::Text, false/*process_headers_footers_*/);
 	}
+	
+	if (defaultStyle)	instances.push_back(defaultStyle);
+	if (paraStyle)		instances.push_back(paraStyle);
+	if (textStyle)		instances.push_back(textStyle);
+
 	propertiesOut.apply_from(calc_text_properties_content(instances));
 }
 
@@ -290,10 +297,10 @@ void xlsx_text_context::Impl::write_pPr	(std::wostream & strm)
 {
 	if (paragraph_style_name_.empty())return;
 
-	odf_reader::paragraph_format_properties		paragraph_format_properties_;	
+	odf_reader::paragraph_format_properties paragraph_format_properties_;	
 	
-	ApplyParagraphProperties	(paragraph_style_name_,	paragraph_format_properties_	, odf_types::style_family::Paragraph);
-	paragraph_format_properties_.xlsx_convert(strm, in_draw);
+	ApplyParagraphProperties (paragraph_style_name_,	paragraph_format_properties_);
+	paragraph_format_properties_.xlsx_convert (strm, in_draw);
 }
 
 void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
@@ -302,92 +309,66 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 			&& !(!hyperlink_hId.empty()	&& in_draw) 
 			&& !(text_properties_cell_	&& in_cell_content))return;
 
-	odf_reader::text_format_properties_content		text_properties_paragraph_;	
-	odf_reader::text_format_properties_content		text_properties_span_;
-	
-	ApplyTextProperties	(paragraph_style_name_,	text_properties_paragraph_	, odf_types::style_family::Paragraph);
-	ApplyTextProperties (span_style_name_,		text_properties_span_		, odf_types::style_family::Text);
-
 	odf_reader::text_format_properties_content text_properties_;
-
 	if (in_cell_content && text_properties_cell_)
 	{
 		text_properties_.apply_from(*text_properties_cell_);
-	}
-	text_properties_.apply_from(text_properties_paragraph_);
-	text_properties_.apply_from(text_properties_span_);
+	}	
 
-	_CP_OPT(double)	dValFontSize;
-	if (text_properties_.fo_font_size_)
-		dValFontSize=text_properties_.fo_font_size_->get_length().get_value();
-	
-	_CP_OPT(std::wstring) sValFontFamily;	
-	if (text_properties_.fo_font_family_)	
+	ApplyTextProperties (span_style_name_, paragraph_style_name_, text_properties_);
+
+	if (in_draw)
 	{
-		std::wstring val =text_properties_.fo_font_family_.get();
-		//'Arial' глючит
-		removeCharsFromString(val, _T("'"));
-
-		sValFontFamily=text_properties_.fo_font_family_.get();
+		odf_reader::fonts_container fonts;
+		text_properties_.drawing_serialize(strm, L"a:rPr", fonts);
 	}
-	//else if (text_properties_.style_font_name_) - тут может быть отсылка к font_face)decl !!!!
-	//	sValFontFamily=text_properties_.style_font_name_.get();
-
-	_CP_OPT(std::wstring) sValFontColor;
-	if (text_properties_.fo_color_)		
-		sValFontColor=text_properties_.fo_color_->get_hex_value();
-
-	_CP_OPT(int)	iValFontWeight;
-	if (text_properties_.fo_font_weight_)
-		iValFontWeight=text_properties_.fo_font_weight_->get_type();
-
-	_CP_OPT(int)	iValFontStyle;
-	if(text_properties_.fo_font_style_)
-		iValFontStyle=text_properties_.fo_font_style_->get_type();
-
-	CP_XML_WRITER(strm)
-    {
-		if (in_draw)
-		{
-			//oox_serialize_style_text(strm,text_properties_);
-			//oox_serialize_style_text(strm,odf_reader::text_format_properties_content & properties);
-			CP_XML_NODE(L"a:rPr")
-			{
-				//стр 3197
-				if (dValFontSize)									{CP_XML_ATTR(L"sz", (int)(dValFontSize.get()*100));}
-				if ((iValFontStyle) && (iValFontStyle.get() >0))	{CP_XML_ATTR(L"i", "1");} //"true");} Exercícios de Aprendizagem.ods
-				if ((iValFontWeight) && (iValFontWeight.get() >0))	{CP_XML_ATTR(L"b", "1");} //"true");} Exercícios de Aprendizagem.ods				
-				if (sValFontColor)
-				{
-					CP_XML_NODE(L"a:solidFill")	{CP_XML_NODE(L"a:srgbClr"){CP_XML_ATTR(L"val", sValFontColor.get());}}
-				}
-				if (sValFontFamily)									
-				{
-					CP_XML_NODE(L"a:latin"){CP_XML_ATTR(L"typeface", sValFontFamily.get());}
-				} 
-				
-
-				if (hyperlink_hId.length()>0)
-				{
-					CP_XML_NODE(L"a:hlinkClick ")
-					{
-						CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-						CP_XML_ATTR(L"r:id", hyperlink_hId);
-					}
-				}
-			}
-		}
-		else
+	else
+	{
+		CP_XML_WRITER(strm)
 		{
 			CP_XML_NODE(L"rPr")
 			{
-				if (sValFontFamily)				{CP_XML_NODE(L"rFont")	{CP_XML_ATTR(L"val", sValFontFamily.get());}}
-				if (dValFontSize)				{CP_XML_NODE(L"sz")		{CP_XML_ATTR(L"val", (int)(dValFontSize.get()));}}
-				if (sValFontColor)				{CP_XML_NODE(L"color")	{CP_XML_ATTR(L"rgb", sValFontColor.get());}}
-				if ((iValFontStyle) &&
-					(iValFontStyle.get() >0))	{CP_XML_NODE(L"i")		{CP_XML_ATTR(L"val", "true");}}
-				if ((iValFontWeight) && 
-					(iValFontWeight.get() >0))	{CP_XML_NODE(L"b")		{CP_XML_ATTR(L"val", "true");}}
+				if (text_properties_.fo_font_family_)
+				{
+					CP_XML_NODE(L"rFont")	
+					{
+						CP_XML_ATTR(L"val", text_properties_.fo_font_family_.get());
+					}
+				}
+				if (text_properties_.fo_font_size_)
+				{
+					CP_XML_NODE(L"sz")		
+					{
+						CP_XML_ATTR(L"val", (int)text_properties_.fo_font_size_->get_length().get_value());
+					}
+				}
+				if (text_properties_.fo_color_)
+				{
+					CP_XML_NODE(L"color")	
+					{
+						CP_XML_ATTR(L"rgb", text_properties_.fo_color_->get_hex_value());
+					}
+				}
+				if (text_properties_.fo_font_style_)
+				{
+					CP_XML_NODE(L"i")		
+					{
+						if (text_properties_.fo_font_style_->get_type() > 0)
+							CP_XML_ATTR(L"val", "true");
+						else 
+							CP_XML_ATTR(L"val", "false");
+					}
+				}
+				if (text_properties_.fo_font_weight_)
+				{
+					CP_XML_NODE(L"b")		
+					{
+						if (text_properties_.fo_font_weight_->get_type() > 0)
+							CP_XML_ATTR(L"val", "true");
+						else
+							CP_XML_ATTR(L"val", "false");
+					}
+				}
 			}
 		}
     }

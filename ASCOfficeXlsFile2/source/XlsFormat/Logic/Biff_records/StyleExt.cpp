@@ -52,15 +52,14 @@ BaseObjectPtr StyleExt::clone()
 
 void StyleExt::readFields(CFRecord& record)
 {
-	record.skipNunBytes(12);
-#pragma message("############################ frtHeader skipped here")
 	unsigned char flags;
-	record >> flags;
+	record >> frtHeader >> flags;
 	
 	fBuiltIn	= GETBIT(flags, 0);
 	fHidden		= GETBIT(flags, 1);
 	fCustom		= GETBIT(flags, 2);
 
+	stName.setSize(0xff); //max size
 	record >> iCategory>> builtInData >> stName >> xfProps;
 }
 

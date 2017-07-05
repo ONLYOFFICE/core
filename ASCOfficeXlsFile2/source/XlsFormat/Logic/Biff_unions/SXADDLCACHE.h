@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of SXADDLCACHE union of records 
 class SXADDLCACHE: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(SXADDLCACHE)
@@ -50,6 +48,12 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeSXADDLCACHE;
+
+	BaseObjectPtr	m_SXCCache_SXDId;
+	BaseObjectPtr	m_SXDVer10Info;
+	BaseObjectPtr	m_SXDVerSXMacro;
+	BaseObjectPtr	m_SXADDLDBQUERY;
+	BaseObjectPtr	m_SXADDLCACHE12;
 	
 };
 

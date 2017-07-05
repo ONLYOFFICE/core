@@ -38,14 +38,12 @@ class CPPTDocumentInfo
 public:
 	CCurrentUser					m_oCurrentUser;
 	std::vector<CPPTUserInfo*>		m_arUsers;
-    std::wstring					m_strFileDirectory;
+    std::wstring					m_strTmpDirectory;
 	std::map<int, std::wstring>		m_mapStoreImageFile;
-
-public:
+    std::wstring					m_strPassword;
 
 	CPPTDocumentInfo() : m_oCurrentUser(), m_arUsers() 
 	{
-		m_strFileDirectory = _T("");
 	}
 
 	~CPPTDocumentInfo()
@@ -66,7 +64,7 @@ public:
 		} 
 	}
 
-    void ReadFromStream(CRecordCurrentUserAtom* pCurrentUser, POLE::Stream* pStream, std::wstring strFolderMem)
+    bool ReadFromStream(CRecordCurrentUserAtom* pCurrentUser, POLE::Stream* pStream)
 	{
 		m_oCurrentUser.FromAtom(pCurrentUser);
 
@@ -86,16 +84,24 @@ public:
 			oUserAtom.ReadFromStream(oHeader, pStream);
 
 			CPPTUserInfo* pInfo			= new CPPTUserInfo();
-			pInfo->m_strFileDirectory	= m_strFileDirectory;
+			
+			pInfo->m_strTmpDirectory	= m_strTmpDirectory;
+			pInfo->m_bEncrypt			= m_oCurrentUser.m_bIsEncrypt;
+			pInfo->m_strPassword		= m_strPassword;
            
-			bool bRes = pInfo->ReadFromStream(&oUserAtom, pStream, strFolderMem);
+			bool bResult = pInfo->ReadFromStream(&oUserAtom, pStream);
 
 			offsetToEdit = pInfo->m_oUser.m_nOffsetLastEdit;
+			m_oCurrentUser.m_bIsEncrypt = pInfo->m_bEncrypt;
 			
-			if (!bRes)
+			if (bResult == false)
 			{
 				delete pInfo;
-				continue;
+
+				if (pInfo->m_bEncrypt)
+					return false;
+				else
+					continue;
 			}
 			
 			m_arUsers.push_back(pInfo);
@@ -105,11 +111,16 @@ public:
 
 			pInfo = NULL;
 		}
-		// теперь нужно у всех сделать FromDocument...или только для ПОСЛЕДНЕГО пользователя ??? (остальные то  не нужны)
-		//for (int i = 0; i < m_arUsers.size(); ++i)
-		if (m_arUsers.size() > 0)
-		{
-			m_arUsers[0]->FromDocument();
-		}
+
+		return true;
+	}
+    bool LoadDocument(std::wstring strFolderMem)
+	{
+		if (m_arUsers.empty()) return false;
+		
+		m_arUsers[0]->ReadExtenalObjects(strFolderMem);
+		m_arUsers[0]->FromDocument();
+
+		return true;
 	}
 };

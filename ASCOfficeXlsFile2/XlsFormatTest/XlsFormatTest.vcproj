@@ -64,7 +64,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="kernel32.lib $(NoInherit)"
+				AdditionalDependencies="Rpcrt4.lib $(NOINHERIT)"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -367,14 +367,6 @@
 				</FileConfiguration>
 			</File>
 		</Filter>
-		<File
-			RelativePath="..\..\build\bin\icu\win_32\icudt.lib"
-			>
-		</File>
-		<File
-			RelativePath="..\..\build\bin\icu\win_32\icuuc.lib"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

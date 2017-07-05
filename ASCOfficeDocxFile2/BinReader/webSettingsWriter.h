@@ -54,8 +54,8 @@ namespace Writers
 
             OOX::CPath fileName = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + _T("webSettings.xml");
 
-            CFile oFile;
-            oFile.CreateFile(fileName.GetPath());
+            NSFile::CFileBinary oFile;
+            oFile.CreateFileW(fileName.GetPath());
             oFile.WriteStringUTF8(s_Common);
 			oFile.CloseFile();
 		}

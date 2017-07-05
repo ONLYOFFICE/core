@@ -180,7 +180,7 @@ const bool SXADDLCACHEFIELD::loadContent(BinProcessor& proc)
 	proc.optional<Parenthesis_SXADDLCACHEFIELD_2>();
 	proc.optional<Parenthesis_SXADDLCACHEFIELD_4>();
 	proc.optional<Parenthesis_SXADDLCACHEFIELD_5>();
-	proc.mandatory<SXAddl_SXCCacheField_SXDEnd>();
+	proc.optional<SXAddl_SXCCacheField_SXDEnd>();
 	return true;
 }
 

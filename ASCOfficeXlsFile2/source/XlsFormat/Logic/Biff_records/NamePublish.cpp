@@ -44,7 +44,6 @@ NamePublish::~NamePublish()
 {
 }
 
-
 BaseObjectPtr NamePublish::clone()
 {
 	return BaseObjectPtr(new NamePublish(*this));
@@ -52,10 +51,10 @@ BaseObjectPtr NamePublish::clone()
 
 void NamePublish::readFields(CFRecord& record)
 {
-	record.skipNunBytes(12);
-#pragma message("############################ frtHeader skipped here")
 	unsigned short flags;
-	record >> flags >> strName;
+
+	record >> frtHeader >> flags >> strName;
+
 	fPublished = GETBIT(flags, 0);
 	fWorkbookParam = GETBIT(flags, 0);
 }

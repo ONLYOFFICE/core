@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
 
-
-// Logical representation of TableStyleElement record in BIFF8
 class TableStyleElement: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(TableStyleElement)
@@ -47,17 +46,16 @@ public:
 	~TableStyleElement();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeTableStyleElement;
 
 //-----------------------------
-	_UINT32	tseType;
-	_UINT32	size;
-	_UINT32	index;
-
+	_UINT32		tseType;
+	_UINT32		size;
+	_UINT32		index;
+	FrtHeader	frtHeader;
 };
 
 } // namespace XLS

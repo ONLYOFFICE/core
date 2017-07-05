@@ -63,11 +63,24 @@ const bool PIVOTCACHEDEFINITION::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-#pragma message("####################### PIVOTCACHEDEFINITION union is not implemented")
-	Log::info("PIVOTCACHEDEFINITION union is not implemented!!!!!!!!!!!!!!!");
-	proc.mandatory<SXVS>();
-	proc.optional<SXSRC>();
-	proc.optional<SXADDLCACHE>();
+	m_SXStreamID = elements_.back();
+	elements_.pop_back();
+
+	if (proc.mandatory<SXVS>())
+	{
+		m_SXVS = elements_.back();
+		elements_.pop_back();
+	}
+	if (proc.optional<SXSRC>())
+	{
+		m_SXSRC = elements_.back();
+		elements_.pop_back();
+	}
+	if (proc.optional<SXADDLCACHE>())
+	{
+		m_SXADDLCACHE = elements_.back();
+		elements_.pop_back();
+	}
 	return true;
 }
 

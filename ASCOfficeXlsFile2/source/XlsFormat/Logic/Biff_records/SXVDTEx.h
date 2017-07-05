@@ -32,12 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/FrtHeaderOld.h"
+#include "../Biff_structures/SXVIFlags.h"
 
 namespace XLS
 {
 
-
-// Logical representation of SXVDTEx record in BIFF8
 class SXVDTEx: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXVDTEx)
@@ -47,13 +47,23 @@ public:
 	~SXVDTEx();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeSXVDTEx;
+	static const ElementType type = typeSXVDTEx;
 
+	FrtHeaderOld			frtHeaderOld;
+	bool					fTensorSort;
+	bool					fDrilledLevel;
+	bool					fItemsDrilledByDefault;
+	bool					fMemPropDisplayInReport;
+	bool					fMemPropDisplayInTip;
+	bool					fMemPropDisplayInCaption;
+	short					isxth;
+	_INT32					isxtl;
 
+	_INT32					csxvi;
+	std::vector<SXVIFlags>	rgsxvi;
 };
 
 } // namespace XLS

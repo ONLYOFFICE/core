@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Summary: API to build regexp automata
  * Description: the API to build regexp automata
  *

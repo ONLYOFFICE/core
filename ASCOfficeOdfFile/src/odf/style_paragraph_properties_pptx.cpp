@@ -70,11 +70,11 @@ std::wstring process_border(border_style	& borderStyle,
         
 		if (szInt <= 0) szInt = 1;
 
-        w_sz	= boost::lexical_cast<std::wstring>( szInt );
+        w_sz	= std::to_wstring( szInt );
         w_color = borderStyle.get_color().get_hex_value();
 
         if (borderPadding)
-            w_space = boost::lexical_cast<std::wstring>((int)(borderPadding->get_value_unit(length::pt)) );
+            w_space = std::to_wstring((int)(borderPadding->get_value_unit(length::pt)) );
 
         switch(borderStyle.get_style())
         {
@@ -113,7 +113,7 @@ std::wstring pptx_process_margin(const _CP_OPT(length_or_percent) & margin, leng
         if (margin->get_type() == length_or_percent::Length)
         {
             int val = (int)(0.5 + Mul * margin->get_length().get_value_unit(unit));
-            return boost::lexical_cast<std::wstring>( val );
+            return std::to_wstring( val );
         }
         else
         {
@@ -190,7 +190,7 @@ void paragraph_format_properties::xlsx_convert(std::wostream & strm, bool in_dra
 					if (fo_line_height_->get_type() == line_width::Percent)
 					{
 						double percent = fo_line_height_->get_percent().get_value();
-						w_line = boost::lexical_cast<std::wstring>( (int)( 0.5 + percent *1000. ) );
+						w_line = std::to_wstring( (int)( 0.5 + percent *1000. ) );
 						w_lineRule = L"a:spcPct";
 					}
 					//else if(fo_line_height_->get_type() == line_width::Normal) 
@@ -198,19 +198,19 @@ void paragraph_format_properties::xlsx_convert(std::wostream & strm, bool in_dra
 					//}
 					else if (fo_line_height_->get_type() == line_width::PositiveLength)
 					{
-						w_line = boost::lexical_cast<std::wstring>((int)(0.5 + 100.0 * fo_line_height_->get_positive_length().get_value_unit(length::pt)));
+						w_line = std::to_wstring((int)(0.5 + 100.0 * fo_line_height_->get_positive_length().get_value_unit(length::pt)));
 						w_lineRule = L"a:spcPts";
 					}
 				}
 				else if (style_line_height_at_least_)
 				{
 					w_lineRule = L"a:spcPts";
-					w_line = boost::lexical_cast<std::wstring>((int)(0.5 + 100.0 * style_line_height_at_least_->get_value_unit(length::pt)));
+					w_line = std::to_wstring((int)(0.5 + 100.0 * style_line_height_at_least_->get_value_unit(length::pt)));
 				} 
 				else if (style_line_spacing_)
 				{
 					w_lineRule = L"a:spcPts";
-					w_line = boost::lexical_cast<std::wstring>( (int)(0.5 + 240.0 + 100.0 * style_line_spacing_->get_value_unit(length::pt)) );
+					w_line = std::to_wstring( (int)(0.5 + 240.0 + 100.0 * style_line_spacing_->get_value_unit(length::pt)) );
 			
 				}
 				CP_XML_NODE(L"a:lnSpc")
@@ -225,7 +225,7 @@ void paragraph_format_properties::xlsx_convert(std::wostream & strm, bool in_dra
 			{
 				CP_XML_NODE(L"a:spcBef")
 				{
-					if (fo_margin_bottom_->get_type() == length_or_percent::Length)
+					if (fo_margin_top_->get_type() == length_or_percent::Length)
 					{
                         std::wstring w_before = pptx_process_margin(fo_margin_top_, length::pt, 100.0);
 						CP_XML_NODE(L"a:spcPts")
@@ -235,11 +235,10 @@ void paragraph_format_properties::xlsx_convert(std::wostream & strm, bool in_dra
 					}
 					else
 					{
-						std::wstringstream s;
-						s << fo_margin_top_;
+						double pct = fo_margin_top_->get_percent().get_value();
 						CP_XML_NODE(L"a:spcPct")
 						{
-							CP_XML_ATTR(L"val", s.str());
+							CP_XML_ATTR(L"val", (int)(pct * 1000));
 						}
 					}
 				}
@@ -258,11 +257,11 @@ void paragraph_format_properties::xlsx_convert(std::wostream & strm, bool in_dra
 					}
 					else
 					{
-						std::wstringstream s;
-						s << fo_margin_bottom_;
+						double pct = fo_margin_bottom_->get_percent().get_value();
+
 						CP_XML_NODE(L"a:spcPct")
 						{
-							CP_XML_ATTR(L"val", s.str());
+							CP_XML_ATTR(L"val", (int)(pct * 1000));
 						}
 					}
 				}
@@ -423,7 +422,7 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 				if (fo_line_height_->get_type() == line_width::Percent)
 				{
 					double percent = fo_line_height_->get_percent().get_value();
-					w_line = boost::lexical_cast<std::wstring>( (int)( 0.5 + percent *1000. ) );
+					w_line = std::to_wstring( (int)( 0.5 + percent *1000. ) );
 					w_lineRule = L"a:spcPct";
 				}
 				//else if(fo_line_height_->get_type() == line_width::Normal) 
@@ -431,19 +430,19 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 				//}
 				else if (fo_line_height_->get_type() == line_width::PositiveLength)
 				{
-					w_line = boost::lexical_cast<std::wstring>((int)(0.5 + 100.0 * fo_line_height_->get_positive_length().get_value_unit(length::pt)));
+					w_line = std::to_wstring((int)(0.5 + 100.0 * fo_line_height_->get_positive_length().get_value_unit(length::pt)));
 					w_lineRule = L"a:spcPts";
 				}
 			}
 			else if (style_line_height_at_least_)
 			{
 				w_lineRule = L"a:spcPts";
-				w_line = boost::lexical_cast<std::wstring>((int)(0.5 + 100.0 * style_line_height_at_least_->get_value_unit(length::pt)));
+				w_line = std::to_wstring((int)(0.5 + 100.0 * style_line_height_at_least_->get_value_unit(length::pt)));
 			} 
 			else if (style_line_spacing_)
 			{
 				w_lineRule = L"a:spcPts";
-				w_line = boost::lexical_cast<std::wstring>( (int)(0.5 + 240.0 + 100.0 * style_line_spacing_->get_value_unit(length::pt)) );
+				w_line = std::to_wstring( (int)(0.5 + 240.0 + 100.0 * style_line_spacing_->get_value_unit(length::pt)) );
 		
 			}
 			CP_XML_NODE(L"a:lnSpc")
@@ -458,7 +457,7 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 		{
 			CP_XML_NODE(L"a:spcBef")
 			{
-				if (fo_margin_bottom_->get_type() == length_or_percent::Length)
+				if (fo_margin_top_->get_type() == length_or_percent::Length)
 				{
                     std::wstring w_before = pptx_process_margin(fo_margin_top_, length::pt, 100.0);
 					CP_XML_NODE(L"a:spcPts")
@@ -468,11 +467,11 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 				}
 				else
 				{
-					std::wstringstream s;
-					s << fo_margin_top_;
+					double pct = fo_margin_top_->get_percent().get_value();
+
 					CP_XML_NODE(L"a:spcPct")
 					{
-						CP_XML_ATTR(L"val", s.str());
+						CP_XML_ATTR(L"val", (int)(pct * 1000));
 					}
 				}
 			}
@@ -491,11 +490,11 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 				}
 				else
 				{
-					std::wstringstream s;
-					s << fo_margin_bottom_;
+					double pct = fo_margin_bottom_->get_percent().get_value();
+
 					CP_XML_NODE(L"a:spcPct")
 					{
-						CP_XML_ATTR(L"val", s.str());
+						CP_XML_ATTR(L"val", (int)(pct * 1000));
 					}
 				}
 			}

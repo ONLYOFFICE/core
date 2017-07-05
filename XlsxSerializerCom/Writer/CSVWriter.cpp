@@ -64,7 +64,7 @@ namespace CSVWriter
 			}
 		}
 	}
-	void WriteFile(NSFile::CFileBinary *pFile, WCHAR **pWriteBuffer, INT &nCurrentIndex, std::wstring &sWriteString, UINT &nCodePage, bool bIsEnd)
+	void WriteFile(NSFile::CFileBinary *pFile, WCHAR **pWriteBuffer, INT &nCurrentIndex, const std::wstring &sWriteString, UINT &nCodePage, bool bIsEnd)
 	{
 		if (NULL == pFile || NULL == pWriteBuffer)
 			return;
@@ -84,7 +84,7 @@ namespace CSVWriter
 		if (nCountChars + nCurrentIndex > c_nSize || bIsEnd)
 		{
 			// Буффер заполнился, пишем
-			if (nCodePage == CP_UTF16)
+			if (nCodePage == 48 && 2 == sizeof(wchar_t))//todo 48 временно CP_UTF16
 			{
 				pFile->WriteFile((BYTE*)*pWriteBuffer, sizeof (WCHAR) * nCurrentIndex);
 			}
@@ -106,23 +106,23 @@ namespace CSVWriter
 			nCurrentIndex += nCountChars;
 		}
 	}
-    void WriteFromXlsxToCsv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter, bool bJSON)
+	void WriteFromXlsxToCsv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& sDelimiter, bool bJSON)
 	{
 		NSFile::CFileBinary oFile;
 		oFile.CreateFileW(sFileDst);
 
 		// Нужно записать шапку
-		if (CP_UTF8 == nCodePage)
+		if (46 == nCodePage)//todo 46 временно CP_UTF8
 		{
 			BYTE arUTF8[3] = {0xEF, 0xBB, 0xBF};
 			oFile.WriteFile(arUTF8, 3);
 		}
-		else if (CP_UTF16 == nCodePage)
+		else if (48 == nCodePage)//todo 48 временно CP_UTF16
 		{
 			BYTE arUTF16[2] = {0xFF, 0xFE};
 			oFile.WriteFile(arUTF16, 2);
 		}
-		else if (CP_unicodeFFFE == nCodePage)
+		else if (49 == nCodePage)//todo 49 временно CP_unicodeFFFE
 		{
 			BYTE arBigEndian[2] = {0xFE, 0xFF};
 			oFile.WriteFile(arBigEndian, 2);
@@ -169,9 +169,8 @@ namespace CSVWriter
 				if (NULL != pWorksheet && pWorksheet->m_oSheetData.IsInit())
 				{
 					OOX::Spreadsheet::CSharedStrings *pSharedStrings = oXlsx.GetSharedStrings();
-					std::wstring sDelimiter = _T(""); sDelimiter += wcDelimiter;
 					std::wstring sEscape = _T("\"\n");
-					sEscape += wcDelimiter;
+					sEscape += sDelimiter;
                     std::wstring sEndJson = std::wstring(_T("]"));
 					std::wstring sQuote = _T("\"");
 					std::wstring sDoubleQuote = _T("\"\"");

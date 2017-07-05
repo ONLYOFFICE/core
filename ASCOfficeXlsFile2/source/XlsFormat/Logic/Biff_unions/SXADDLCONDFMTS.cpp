@@ -62,7 +62,7 @@ const bool SXADDLCONDFMTS::loadContent(BinProcessor& proc)
 		return false;
 	}
 	proc.repeated<SXADDLCONDFMT>(0, 0);
-	proc.mandatory<SXAddl_SXCSXCondFmts_SXDEnd>();
+	proc.optional<SXAddl_SXCSXCondFmts_SXDEnd>();
 
 	return true;
 }

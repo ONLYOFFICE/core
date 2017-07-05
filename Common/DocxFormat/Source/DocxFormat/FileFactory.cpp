@@ -36,8 +36,6 @@
 #include "App.h"
 #include "Core.h"
 #include "Document.h"
-#include "Theme/Theme.h"
-#include "Theme/ThemeOverride.h"
 #include "Settings/Settings.h"
 #include "Settings/WebSettings.h"
 #include "FontTable.h" 
@@ -59,7 +57,10 @@
 #include "UnknowTypeFile.h"
 #include "Diagram/DiagramDrawing.h"
 #include "Diagram/DiagramData.h"
+#include "VmlDrawing.h"
 
+#include "../XlsxFormat/Chart/Chart.h"
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 
 namespace OOX
 {
@@ -72,18 +73,8 @@ namespace OOX
 		else
 			oFileName = oPath / oRelationFilename;
 
-		if ( oRelation.Type() == FileTypes::App )
-			return smart_ptr<OOX::File>(new CApp( oFileName ));
-		else if ( oRelation.Type() == FileTypes::Core)
-			return smart_ptr<OOX::File>(new CCore( oFileName ));
-		else if ( oRelation.Type() == FileTypes::Document)
+		if ( oRelation.Type() == FileTypes::Document)
 			return smart_ptr<OOX::File>(new CDocument( oRootPath, oFileName ));
-		else if ( oRelation.Type() == FileTypes::Theme)
-			return smart_ptr<OOX::File>(new CTheme( oFileName ));
-		else if ( oRelation.Type() == FileTypes::ThemeOverride)
-			return smart_ptr<OOX::File>(new CThemeOverride( oFileName ));
-		else if ( oRelation.Type() == FileTypes::Setting)
-			return smart_ptr<OOX::File>(new CSettings( oFileName ));
 		else if ( oRelation.Type() == FileTypes::FontTable)
 			return smart_ptr<OOX::File>(new CFontTable( oFileName ));
 		else if ( oRelation.Type() == FileTypes::Style)
@@ -96,6 +87,29 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CEndnotes( oRootPath, oFileName ));
 		else if ( oRelation.Type() == FileTypes::WebSetting)
 			return smart_ptr<OOX::File>(new CWebSettings( oFileName ));
+		else if ( oRelation.Type() == FileTypes::Numbering)
+			return smart_ptr<OOX::File>(new CNumbering( oRootPath, oFileName ));
+		else if ( oRelation.Type() == FileTypes::Header)
+			return smart_ptr<OOX::File>(new CHdrFtr( oRootPath, oFileName ));
+		else if ( oRelation.Type() == FileTypes::Footer)
+			return smart_ptr<OOX::File>(new CHdrFtr( oRootPath, oFileName ));
+		else if ( oRelation.Type() == FileTypes::Comments)
+			return smart_ptr<OOX::File>(new CComments( oFileName ));
+		else if ( oRelation.Type() == FileTypes::CommentsExt )
+			return smart_ptr<OOX::File>(new CCommentsExt( oFileName ));
+		else if ( oRelation.Type() == FileTypes::People )
+			return smart_ptr<OOX::File>(new CPeople( oFileName ));
+//common		
+		else if ( oRelation.Type() == FileTypes::Setting)
+			return smart_ptr<OOX::File>(new CSettings( oFileName ));
+		else if ( oRelation.Type() == FileTypes::App )
+			return smart_ptr<OOX::File>(new CApp( oFileName ));
+		else if ( oRelation.Type() == FileTypes::Core)
+			return smart_ptr<OOX::File>(new CCore( oFileName ));
+		else if ( oRelation.Type() == FileTypes::Theme)
+			return smart_ptr<OOX::File>(new PPTX::Theme( oFileName ));
+		else if ( oRelation.Type() == FileTypes::ThemeOverride)
+			return smart_ptr<OOX::File>(new PPTX::Theme( oFileName ));
 		else if ( oRelation.Type() == FileTypes::HyperLink)
 			return smart_ptr<OOX::File>(new HyperLink( oRelation.Target()));
 		else if (( oRelation.Type() == FileTypes::ExternalVideo ) && ( oRelation.IsExternal() ))
@@ -112,22 +126,16 @@ namespace OOX
 			return smart_ptr<OOX::File>(new Audio( oFileName ));
 		else if ( oRelation.Type() == FileTypes::Video)
 			return smart_ptr<OOX::File>(new Video( oFileName ));
-		else if ( oRelation.Type() == FileTypes::Numbering)
-			return smart_ptr<OOX::File>(new CNumbering( oRootPath, oFileName ));
-		else if ( oRelation.Type() == FileTypes::Header)
-			return smart_ptr<OOX::File>(new CHdrFtr( oRootPath, oFileName ));
-		else if ( oRelation.Type() == FileTypes::Footer)
-			return smart_ptr<OOX::File>(new CHdrFtr( oRootPath, oFileName ));
-		else if ( oRelation.Type() == FileTypes::Comments)
-			return smart_ptr<OOX::File>(new CComments( oFileName ));
-		else if ( oRelation.Type() == FileTypes::CommentsExt )
-			return smart_ptr<OOX::File>(new CCommentsExt( oFileName ));
-		else if ( oRelation.Type() == FileTypes::People )
-			return smart_ptr<OOX::File>(new CPeople( oFileName ));
 		else if (oRelation.Type() == FileTypes::Data)			
 			return smart_ptr<OOX::File>(new CDiagramData( oRootPath, oFileName ));
 		else if (oRelation.Type() == FileTypes::DiagDrawing)
 			return smart_ptr<OOX::File>(new CDiagramDrawing( oRootPath, oFileName )); 
+		else if (oRelation.Type() == FileTypes::MicrosoftOfficeUnknown) //ms package
+			return smart_ptr<OOX::File>(new OleObject( oFileName, true ));
+		else if ( oRelation.Type() == OOX::FileTypes::VmlDrawing )
+			return smart_ptr<OOX::File>(new CVmlDrawing( oRootPath, oFileName ));
+		else if ( oRelation.Type() == OOX::FileTypes::Chart )
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( oRootPath, oFileName ));
 
 		return smart_ptr<OOX::File>( new UnknowTypeFile() );
 	}
@@ -153,7 +161,7 @@ namespace OOX
 		{
 			if(NSFile::CFileBinary::Exists(oFileName.GetPath()))
 			{
-				return smart_ptr<OOX::File>(new CTheme( oFileName ));
+				return smart_ptr<OOX::File>(new PPTX::Theme( oFileName ));
 			}
 			else
 			{
@@ -161,7 +169,7 @@ namespace OOX
 			}
 		}
 		else if ( pRelation->Type() == FileTypes::ThemeOverride)
-			return smart_ptr<OOX::File>(new CThemeOverride( oFileName ));
+			return smart_ptr<OOX::File>(new PPTX::Theme( oFileName ));
 		else if ( pRelation->Type() == FileTypes::Setting)
 			return smart_ptr<OOX::File>(new CSettings( oFileName ));
 		else if ( pRelation->Type() == FileTypes::FontTable)
@@ -208,6 +216,10 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CDiagramData( oRootPath, oFileName ));
 		else if (pRelation->Type() == FileTypes::DiagDrawing)
 			return smart_ptr<OOX::File>(new CDiagramDrawing( oRootPath, oFileName )); 
+		else if (pRelation->Type() == FileTypes::MicrosoftOfficeUnknown) //ms package
+			return smart_ptr<OOX::File>(new OleObject( oFileName, true ));
+		else if ( pRelation->Type() == OOX::FileTypes::Chart )
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( oRootPath, oFileName ));
 
 		return smart_ptr<OOX::File>( new UnknowTypeFile() );
 	}

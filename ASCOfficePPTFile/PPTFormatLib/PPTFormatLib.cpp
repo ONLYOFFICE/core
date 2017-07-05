@@ -36,6 +36,7 @@
 #include "./Reader/PPTFileReader.h"
 #include "./PPTXWriter/Converter.h"
 
+#include "../../../Common/OfficeFileErrorDescription.h"
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 
 #ifndef READMODE
@@ -51,31 +52,45 @@ COfficePPTFile::~COfficePPTFile()
     CloseFile();
 }
 
-bool COfficePPTFile::OpenFile(std::wstring sFileName)
+long COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstring & password)
 {
 	CloseFile();
 	
     POLE::Storage *pStgFrom = new POLE::Storage(sFileName.c_str());
-	if (pStgFrom == NULL) return FALSE;
+	if (pStgFrom == NULL) return AVS_ERROR_FILEFORMAT;
 	
-	pStgFrom->open(false,false);
+	pStgFrom->open(false, false);
 
 	m_pReader = new CPPTFileReader(pStgFrom, m_strTempDirectory);
-    ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_strFileDirectory = GetDirectory(sFileName.c_str());
-	
-	if	(!((CPPTFileReader*)m_pReader)->IsPowerPoint()) 
+	CPPTFileReader* pptReader = (CPPTFileReader*)m_pReader;	
+    
+	pptReader->m_oDocumentInfo.m_strTmpDirectory	= m_strTempDirectory;
+	pptReader->m_oDocumentInfo.m_strPassword		= password;
+		
+	if	(pptReader->IsPowerPoint() == false) 
 	{ 
-		CPPTFileReader* r = (CPPTFileReader*)m_pReader;	RELEASEOBJECT(r);
+		RELEASEOBJECT(pptReader);
 		m_pReader = NULL;
-		return FALSE; 
+		return AVS_ERROR_FILEFORMAT; 
 	} 
 
-	((CPPTFileReader*)m_pReader)->ReadPersistDirectory(); 
-	((CPPTFileReader*)m_pReader)->ReadSlideList();
+	if (pptReader->ReadPersists() == false) 
+	{
+		if (pptReader->IsEncrypted())
+		{
+			if (password.empty())	return AVS_ERROR_DRM;
+			else					return AVS_ERROR_PASSWORD;
+		}
+		return AVS_ERROR_FILEFORMAT;
+	}
+
+	//pptReader->ReadEncryptedSummary();
+	//pptReader->ReadDocumentSummary();
+	pptReader->ReadDocument();
 
 	m_Status = READMODE;
 
-	return TRUE;
+	return S_OK;
 }
 bool COfficePPTFile::CloseFile()
 {
@@ -86,29 +101,28 @@ bool COfficePPTFile::CloseFile()
 	return S_OK;
 }
 
-HRESULT COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath)
+HRESULT COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring password)
 {
-    if (m_strTempDirectory.length() < 1)
+    if (m_strTempDirectory.empty())
     {
         m_strTempDirectory = NSDirectory::GetTempPath();
     }
 
-    bool bRes = OpenFile(sSrcFileName);
-	if (!bRes)
+    long nResult = OpenFile(sSrcFileName, password);
+	if (nResult != S_OK)
     {
 		CloseFile();
 		m_Status = NULLMODE;
-		return S_FALSE;
+		return nResult;
 	}
 	if (!((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers.empty())
 	{
-		NSPresentationEditor::CPPTXWriter	oPPTXWriter;
+		NSPresentationEditor::CPPTXWriter oPPTXWriter;
         oPPTXWriter.m_strTempDirectory = sDstPath;
 		
 		
 		oPPTXWriter.CreateFile(((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers[0]);	
 		oPPTXWriter.CloseFile();
-
 	}
 	return S_OK;
 }

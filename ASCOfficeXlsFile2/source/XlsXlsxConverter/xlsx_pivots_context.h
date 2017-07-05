@@ -43,7 +43,7 @@ public:
     xlsx_pivots_context();
     ~xlsx_pivots_context();
 
-	void add_view(std::wstring table_view, int indexCache);
+	int add_view(std::wstring table_view, int indexCache);
 	int get_view_count();
 
 	void add_cache(std::wstring definitions, std::wstring records);

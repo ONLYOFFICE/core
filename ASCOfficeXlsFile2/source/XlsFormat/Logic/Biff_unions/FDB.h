@@ -59,6 +59,12 @@ public:
 	std::vector<BaseObjectPtr>	m_arGRPSXOPER;
 	BaseObjectPtr				m_SXRANGE;
 	std::vector<BaseObjectPtr>	m_arSxIsxoper;
+
+	bool	bString;
+	bool	bDate;
+	bool	bNumber;
+	bool	bEmpty;
+
 };
 
 } // namespace XLS

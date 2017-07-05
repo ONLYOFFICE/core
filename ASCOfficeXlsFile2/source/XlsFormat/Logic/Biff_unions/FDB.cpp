@@ -74,13 +74,15 @@ private:
 
 FDB::FDB()
 {
+	bString		= false;
+	bDate		= false;
+	bNumber		= false;
+	bEmpty		= false;
 }
-
 
 FDB::~FDB()
 {
 }
-
 
 BaseObjectPtr FDB::clone()
 {
@@ -123,10 +125,15 @@ const bool FDB::loadContent(BinProcessor& proc)
 
 			while(count > 0)
 			{
-				SXOPER	* oper	= dynamic_cast<SXOPER*>	(elements_.front().get());
-				if (oper)
+				SXOPER	* operatr	= dynamic_cast<SXOPER*>	(elements_.front().get());
+				if (operatr)
 				{
 					m_arGRPSXOPER.push_back(elements_.front());
+
+					//bString	|= operatr->bString;
+					//bDate	|= operatr->bDate;
+					//bNumber	|= operatr->bNumber;
+					//bEmpty	|= operatr->bEmpty;
 				}
 				else
 				{
@@ -150,6 +157,13 @@ const bool FDB::loadContent(BinProcessor& proc)
 	while(count--)
 	{
 		m_arSRCSXOPER.push_back(elements_.front());	elements_.pop_front();
+		
+		SXOPER* operatr	= dynamic_cast<SXOPER*>	(m_arSRCSXOPER.back().get());
+		
+		bString	|= operatr->bString;
+		bDate	|= operatr->bDate;
+		bNumber	|= operatr->bNumber;
+		bEmpty	|= operatr->bEmpty;
 	}	
 
 	return true;
@@ -167,7 +181,15 @@ int FDB::serialize(std::wostream & strm)
 		CP_XML_NODE(L"cacheField")
 		{ 
 			CP_XML_ATTR(L"name", fdb->stFieldName.value());
-			CP_XML_ATTR(L"numFmtId", fdb_type->wTypeSql);	
+			
+			if (fdb_type->wTypeSql > 0)
+			{
+				CP_XML_ATTR(L"numFmtId", fdb_type->wTypeSql);	
+			}
+			if (m_arSRCSXOPER.empty())
+			{
+				CP_XML_ATTR(L"databaseField", 0);	
+			}
 
 			switch(fdb_type->wTypeSql)//format code
 			{
@@ -189,32 +211,60 @@ int FDB::serialize(std::wostream & strm)
 			{
 			//{formula
 			}
-			//caption, databaseFields,  ..
 
 			if (m_arSRCSXOPER.empty() == false)
 			{
 				CP_XML_NODE(L"sharedItems")
 				{
-					//CP_XML_ATTR(L"containsSemiMixedTypes", 0);
-					CP_XML_ATTR(L"containsNonDate", fdb->fNonDates);	
-					CP_XML_ATTR(L"containsDate",	fdb->fDateInField);
-					CP_XML_ATTR(L"containsNumber",	fdb->fNumField);
-					CP_XML_ATTR(L"containsBlank",	fdb->fTextEtcField);
-					//CP_XML_ATTR(L"containsString", 0);
+					//использовать поля присутствия из xls низя - они частенько записаны неверно!!
+					//if (!fdb->fNonDates)	CP_XML_ATTR(L"containsNonDate", fdb->fNonDates);	
+					//if (fdb->fDateInField)	CP_XML_ATTR(L"containsDate",	fdb->fDateInField);
+					//if (fdb->fNumField)		CP_XML_ATTR(L"containsNumber",	fdb->fNumField);
+					////CP_XML_ATTR(L"containsBlank",	fdb->fTextEtcField);
+
+					//if (m_arSRCSXOPER.empty())
+					//{
+					//	if (!fdb->fTextEtcField)
+					//	{
+					//		CP_XML_ATTR(L"containsString", 0);
+					//	}
+					//	else if (fdb->fNumField || fdb->fDateInField)
+					//	{
+					//		CP_XML_ATTR(L"containsBlank",	1);
+					//		CP_XML_ATTR(L"containsString",	0);
+					//	}
+					//}
+					if ((bDate & bNumber) || (bNumber & bString))
+					{
+						CP_XML_ATTR(L"containsSemiMixedTypes", 1);
+					}
+					else if ( bDate & bString) 
+					{
+						CP_XML_ATTR(L"containsMixedTypes", 1);
+					}
+					else if (!bEmpty && !bString)
+					{
+						CP_XML_ATTR(L"containsSemiMixedTypes", 0);
+					}
+					if (bNumber)	CP_XML_ATTR(L"containsNumber",	1);
+					if (bDate)		CP_XML_ATTR(L"containsDate",	1);
+					if (!bString)	CP_XML_ATTR(L"containsString",	0);
+					if (bEmpty)		CP_XML_ATTR(L"containsBlank",	1);
+
 					if (fdb->fnumMinMaxValid)
 					{
-						if (fdb->fDateInField)
-						{
-							CP_XML_ATTR(L"minDate", 0);				 // "2007-11-18T00:00:00" 
-							CP_XML_ATTR(L"maxDate", 0);				 // "2007-12-25T00:00:00" 
-						}
-						else if (fdb->fNumField)
-						{
-							CP_XML_ATTR(L"minValue", 0);
-							CP_XML_ATTR(L"maxValue", 0);
-						}
+						//if (fdb->fDateInField)
+						//{
+						//	CP_XML_ATTR(L"minDate", 0);				 // "2007-11-18T00:00:00" 
+						//	CP_XML_ATTR(L"maxDate", 0);				 // "2007-12-25T00:00:00" 
+						//}
+						//else if (fdb->fNumField)
+						//{
+						//	CP_XML_ATTR(L"minValue", 0);
+						//	CP_XML_ATTR(L"maxValue", 0);
+						//}
 					}
-					CP_XML_ATTR(L"count", fdb->catm);	
+					CP_XML_ATTR(L"count", m_arSRCSXOPER.size());	
 
 					for (size_t i = 0; i < m_arSRCSXOPER.size(); i++)
 					{

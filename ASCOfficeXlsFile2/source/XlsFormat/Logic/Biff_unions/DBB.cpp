@@ -40,6 +40,11 @@ namespace XLS
 
 DBB::DBB()
 {
+	bString		= false;
+	bDate		= false;
+	bNumber		= false;
+	bEmpty		= false;
+
 	fShortIitms = false;
 }
 
@@ -64,6 +69,12 @@ const bool DBB::loadContent(BinProcessor& proc)
 	while(count--)
 	{
 		m_arSXOPER.push_back(elements_.front());	elements_.pop_front();
+		SXOPER* operatr = dynamic_cast<SXOPER*>(m_arSXOPER.back().get());
+
+		bString	|= operatr->bString;
+		bDate	|= operatr->bDate;
+		bNumber	|= operatr->bNumber;
+		bEmpty	|= operatr->bEmpty;
 	}
 
 	if (!m_SXDBB && m_arSXOPER.empty())

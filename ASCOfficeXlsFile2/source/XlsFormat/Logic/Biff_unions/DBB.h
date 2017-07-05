@@ -55,7 +55,12 @@ public:
 	std::vector<BaseObjectPtr>	m_arSXOPER;	
 
 //---------------------------------------------------
-	bool fShortIitms;
+	bool	fShortIitms;
+
+	bool	bString;
+	bool	bDate;
+	bool	bNumber;
+	bool	bEmpty;
 };
 
 } // namespace XLS

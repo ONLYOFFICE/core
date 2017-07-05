@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of PIVOTLI union of records 
 class PIVOTLI: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTLI)
@@ -49,7 +47,11 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typePIVOTLI;
+	int serialize(std::wostream & strm);
+
+	static const ElementType type = typePIVOTLI;
+	
+	BaseObjectPtr m_SXLI;
 };
 
 } // namespace XLS

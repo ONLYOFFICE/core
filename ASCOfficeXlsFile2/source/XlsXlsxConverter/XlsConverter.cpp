@@ -1920,7 +1920,14 @@ void XlsConverter::convert(XLS::PIVOTVIEW * pivot_view)
 
 	pivot_view->serialize(strm);
 
-	xlsx_context->get_pivots_context().add_view(strm.str(), pivot_view->indexCache);
+	int index_view = xlsx_context->get_pivots_context().add_view(strm.str(), pivot_view->indexCache);
+	
+	if (index_view > 0)
+	{
+		xlsx_context->current_sheet().sheet_rels().add(oox::relationship(L"pvId" + std::to_wstring(index_view),
+			L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotTable",
+			L"../pivotTables/pivotTable" + std::to_wstring(index_view) + L".xml"));
+	}
 }
 
 void XlsConverter::convert(XLS::PIVOTCACHEDEFINITION * pivot_cached)

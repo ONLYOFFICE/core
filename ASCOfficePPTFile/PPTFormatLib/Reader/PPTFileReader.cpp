@@ -232,10 +232,12 @@ void CPPTFileReader::ReadPictures()
 
 	while (true)
 	{
-		if (pStream->isEOF())
-			break;
+		//if (pStream->isEOF()) случаются неверно записанные стримы 
+		//	break;
 
 		int pos = pStream->getStreamPointer();	
+		if (pos >= pStream->getStreamSize())
+			break;
 
 		SRecordHeader oHeader;
 		if (pDecryptor)
@@ -255,6 +257,9 @@ void CPPTFileReader::ReadPictures()
 		}
 		else
 			oHeader.ReadFromStream(pStream->stream_);
+
+		if (oHeader.RecType == 0 && oHeader.RecLen == 0 )
+			break;// окончание стрима забито нулями (выравнивание)
 
 		CRecordOfficeArtBlip art_blip;
 		art_blip.m_strTmpDirectory	= m_strTmpDirectory;

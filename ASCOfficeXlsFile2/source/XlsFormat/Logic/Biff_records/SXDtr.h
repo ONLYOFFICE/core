@@ -59,6 +59,8 @@ public:
 	unsigned char	min;
 	unsigned char	sec;
 
+	std::wstring get_string_date();
+
 };
 
 } // namespace XLS

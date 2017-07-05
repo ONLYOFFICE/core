@@ -31,28 +31,25 @@
  */
 
 #include "PIVOTLI.h"
-#include <Logic/Biff_records/SXLI.h>
-#include <Logic/Biff_records/Continue.h>
+
+#include "../Biff_records/SXLI.h"
+#include "../Biff_records/Continue.h"
 
 namespace XLS
 {
-
 
 PIVOTLI::PIVOTLI()
 {
 }
 
-
 PIVOTLI::~PIVOTLI()
 {
 }
-
 
 BaseObjectPtr PIVOTLI::clone()
 {
 	return BaseObjectPtr(new PIVOTLI(*this));
 }
-
 
 // PIVOTLI = SXLI *Continue
 const bool PIVOTLI::loadContent(BinProcessor& proc)
@@ -61,10 +58,53 @@ const bool PIVOTLI::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+	m_SXLI = elements_.back();
+	elements_.pop_back();
+
 	proc.repeated<Continue>(0, 0);
 
 	return true;
 }
 
+int PIVOTLI::serialize(std::wostream & strm)
+{
+	SXLI* line_items = dynamic_cast<SXLI*>(m_SXLI.get());
+	if (!line_items) return 0;
+
+	CP_XML_WRITER(strm)
+	{
+ 		for (size_t i = 0; i < line_items->m_arItems.size(); i++)
+		{
+			CP_XML_NODE(L"i")
+			{
+				switch(line_items->m_arItems[i].itmType)
+				{
+					case 0x0001:	CP_XML_ATTR(L"t", L"default");	break;
+					case 0x0002:	CP_XML_ATTR(L"t", L"sum");		break;
+					case 0x0003:	CP_XML_ATTR(L"t", L"countA");	break;
+					case 0x0004:	CP_XML_ATTR(L"t", L"count");	break;
+					case 0x0005:	CP_XML_ATTR(L"t", L"avg");		break;
+					case 0x0006:	CP_XML_ATTR(L"t", L"max");		break;
+					case 0x0007:	CP_XML_ATTR(L"t", L"min");		break;
+					case 0x0008:	CP_XML_ATTR(L"t", L"product");	break;
+					case 0x0009:	CP_XML_ATTR(L"t", L"stdDev");	break;
+					case 0x000A:	CP_XML_ATTR(L"t", L"stdDevP");	break;
+					case 0x000B:	CP_XML_ATTR(L"t", L"var");		break;
+					case 0x000C:	CP_XML_ATTR(L"t", L"varP");		break;
+					case 0x000D:	CP_XML_ATTR(L"t", L"grand");	break;
+					case 0x000E:	CP_XML_ATTR(L"t", L"blank");	break;
+				}
+
+ 				for (size_t j = 0; j < line_items->m_arItems[i].rgisxvi.size(); j++)
+				{
+					CP_XML_NODE(L"x")
+					{
+						CP_XML_ATTR(L"v", line_items->m_arItems[i].rgisxvi[j]); 
+					}
+				}
+			}
+		}
+	}
+}
 } // namespace XLS
 

@@ -92,6 +92,42 @@ int DREF::serialize(std::wostream & strm)
 			}
 			else if(bin)
 			{
+				switch(bin->nBuiltin)
+				{
+
+					case 0x0004:/*Database*/
+					case 0x000d:/*_FilterDatabase*/
+					{
+						CP_XML_ATTR(L"type", L"external");
+						//connectionId in connections(root)
+					}break;
+					case 0x0000:/*Consolidate_Area*/
+					//{
+					//	CP_XML_ATTR(L"type", L"consolidation");
+					//	CP_XML_NODE(L"consolidation")
+					//	{
+					//		CP_XML_ATTR(L"name", bin->stFile.value());
+					//	}
+					//}break;			
+					case 0x0001:/*Auto_Open*/
+					case 0x0002:/*Auto_Close*/
+					case 0x0003:/*Extract*/
+					case 0x0005:/*Criteria*/
+					case 0x0006:/*Print_Area*/
+					case 0x0007:/*Print_Titles*/
+					case 0x0008:/*Recorder*/
+					case 0x0009:/*Data_Form*/
+					case 0x000a:/*Auto_Activate*/
+					case 0x000b:/*Auto_Deactivate*/
+					case 0x000c:/*Sheet_Title*/
+					{
+						CP_XML_ATTR(L"type", L"scenario");
+						CP_XML_NODE(L"worksheetSource")
+						{
+							CP_XML_ATTR(L"name", bin->stFile.value());
+						}
+					}break;
+				}
 			}
 			else if(ref)
 			{

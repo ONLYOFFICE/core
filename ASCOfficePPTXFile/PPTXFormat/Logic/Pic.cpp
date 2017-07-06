@@ -619,6 +619,45 @@ namespace PPTX
 			if(oleObject.IsInit())
 			{
 				pWriter->StartRecord(SPTREE_TYPE_OLE);
+				
+				if (oleObject->m_sShapeId.IsInit() && (!blipFill.blip->embed.IsInit() && blipFill.blip->oleFilepathImage.empty())  &&
+						parentFileIs<PPTX::Slide>() && parentFileAs<PPTX::Slide>().Vml.IsInit())
+				{
+					OOX::CVmlDrawing *pVml = parentFileAs<PPTX::Slide>().Vml.operator->();
+					
+					std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pPair = pVml->m_mapShapes.find(*oleObject->m_sShapeId);
+					if (pVml->m_mapShapes.end() != pPair)
+					{
+						pPair->second.bUsed = true;
+						OOX::Vml::CShape* pShape = dynamic_cast<OOX::Vml::CShape*>(pPair->second.pElement);
+						for(size_t j = 0; (pShape) && (j < pShape->m_arrItems.size()); ++j)
+						{
+							OOX::WritingElement* pChildElemShape = pShape->m_arrItems[j];
+							if(OOX::et_v_imagedata == pChildElemShape->getType())
+							{
+								OOX::Vml::CImageData* pImageData = static_cast<OOX::Vml::CImageData*>(pChildElemShape);									
+													
+								std::wstring sIdImageFileCache;
+
+								if (pImageData->m_oRelId.IsInit())		sIdImageFileCache = pImageData->m_oRelId->GetValue();
+								else if (pImageData->m_rId.IsInit())	sIdImageFileCache = pImageData->m_rId->GetValue();
+																	
+								if (!sIdImageFileCache.empty())
+								{
+									//ищем физический файл ( rId относительно vml_drawing)									
+									smart_ptr<OOX::File> pFile = pVml->Find(sIdImageFileCache);
+									
+									if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
+									{
+										OOX::Image*	pImageFileCache = static_cast<OOX::Image*>(pFile.operator->());
+										
+										blipFill.blip->oleFilepathImage = pImageFileCache->filename().GetPath();
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 			else if (nvPicPr.nvPr.media.is_init())
 			{
@@ -630,10 +669,17 @@ namespace PPTX
 					blipFill.blip->mediaFilepath = mediaFile->filename().GetPath();
 				}
 
-				if (nvPicPr.nvPr.media.as<MediaFile>().name == L"audioFile")
+				if (nvPicPr.nvPr.media.is<MediaFile>())
+				{
+					if (nvPicPr.nvPr.media.as<MediaFile>().name == L"audioFile")
+						pWriter->StartRecord(SPTREE_TYPE_AUDIO);
+					else if (nvPicPr.nvPr.media.as<MediaFile>().name == L"videoFile")
+						pWriter->StartRecord(SPTREE_TYPE_VIDEO);
+				}
+				else if (nvPicPr.nvPr.media.is<WavAudioFile>() || nvPicPr.nvPr.media.is<AudioCD>())
+				{
 					pWriter->StartRecord(SPTREE_TYPE_AUDIO);
-				else if (nvPicPr.nvPr.media.as<MediaFile>().name == L"videoFile")
-					pWriter->StartRecord(SPTREE_TYPE_VIDEO);
+				}
 				else
 					pWriter->StartRecord(SPTREE_TYPE_PIC);
 			}
@@ -1338,6 +1384,7 @@ namespace PPTX
 					blipFill.blip.Init();
 				blipFill.blip->oleRid = oleObject->m_oId->get();
 			}
+			node.ReadAttributeBase(L"spid",	oleObject->m_sShapeId);
 		}
 	} // namespace Logic
 } // namespace PPTX

@@ -250,12 +250,26 @@ namespace PPTX
 					}
 					else if (L"oleObj" == strName)
 					{
-						olePic = oNode.ReadNode(L"p:pic");
+						olePic = oNode.ReadNode(L"p:pic"); //нормальный вариант объекта
 						if (olePic.IsInit())
 						{
 							olePic->fromXMLOle(oNode);
 							result = true;
 						}
+						else
+						{
+							olePic.Init();  //старый вариант описания объекта через spid в VmlDrawing
+							olePic->spPr.xfrm;
+
+							Logic::PrstGeom* geom = new Logic::PrstGeom();
+							geom->prst = L"rect";
+							olePic->spPr.Geometry.m_geometry.reset(geom);							
+			
+							olePic->fromXMLOle(oNode);
+							result = true;
+						}
+						if (olePic->spPr.xfrm.IsInit() == false)
+							olePic->spPr.xfrm = xfrm;
 					}
 					else if (L"AlternateContent" == strName)
 					{

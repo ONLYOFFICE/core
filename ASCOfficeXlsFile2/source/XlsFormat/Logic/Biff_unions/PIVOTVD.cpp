@@ -106,7 +106,6 @@ int PIVOTVD::serialize(std::wostream & strm)
 
 			if (vd->fCounta)	CP_XML_ATTR(L"countASubtotal",	1);
 			if (vd->fCount)		CP_XML_ATTR(L"countSubtotal",	1);
-			if (vd->fDefault)	CP_XML_ATTR(L"defaultSubtotal",	1);
 			if (vd->fSum)		CP_XML_ATTR(L"sumSubtotal",		1);
 			if (vd->fAverage)	CP_XML_ATTR(L"avgSubtotal",		1);
 			if (vd->fMax)		CP_XML_ATTR(L"maxSubtotal",		1);
@@ -147,6 +146,7 @@ int PIVOTVD::serialize(std::wostream & strm)
 			{
 				CP_XML_ATTR(L"rankBy", vd_ex->isxdiAutoShow);
 			}		
+			if (!vd->fDefault)	CP_XML_ATTR(L"defaultSubtotal",	0);
 			if (!m_arSXVI.empty())
 			{
 				CP_XML_NODE(L"items")

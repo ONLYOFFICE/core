@@ -72,14 +72,21 @@ void SXLI::readFields(CFRecord& record)
 		item.fGrand				= GETBIT(flags, 11);
 		item.fMultiDataOnAxis	= GETBIT(flags, 12);
 
-		//if (!item.fGrand && item.itmType != 0x000E)
+		if (item.fGrand)
+			item.isxviMac = 1;
+
+		if (item.cSic > item.isxviMac)
+			item.cSic = item.isxviMac;
+
+		if (item.fSbt && item.itmType < 0x000D)
+			item.isxviMac++;
+
+		for (short i = 0; i < item.isxviMac; i++)
 		{
-			for (short i = 0; i < item.isxviMac; i++)
-			{
-				short val; record >> val;
-				item.rgisxvi.push_back(val);
-			}
+			short val; record >> val;
+			item.rgisxvi.push_back(val);
 		}
+
 		m_arItems.push_back(item);
 	}
 }

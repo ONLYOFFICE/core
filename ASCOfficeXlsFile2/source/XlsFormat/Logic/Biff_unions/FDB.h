@@ -64,6 +64,7 @@ public:
 	bool	bDate;
 	bool	bNumber;
 	bool	bEmpty;
+	bool	bInteger;
 
 };
 

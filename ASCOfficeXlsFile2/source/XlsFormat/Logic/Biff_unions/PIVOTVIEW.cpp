@@ -137,7 +137,7 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 					core->m_arPIVOTVD[i]->serialize(CP_XML_STREAM());
 				}
 			}
-			if (core->m_arPIVOTIVD.size() == 2)//0 or 2
+			if (core->m_arPIVOTIVD.size() >= 1)
 			{
 				CP_XML_NODE(L"rowFields")
 				{
@@ -147,7 +147,7 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 					ivd->serialize(CP_XML_STREAM());
 				}
 			}
-			if (core->m_arPIVOTLI.size() == 2)//0 or 2
+			if (core->m_arPIVOTLI.size() >= 1)//0 or 2
 			{
 				CP_XML_NODE(L"rowItems")
 				{

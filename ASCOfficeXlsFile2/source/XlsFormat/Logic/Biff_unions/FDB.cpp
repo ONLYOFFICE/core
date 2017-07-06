@@ -78,6 +78,7 @@ FDB::FDB()
 	bDate		= false;
 	bNumber		= false;
 	bEmpty		= false;
+	bInteger	= false;
 }
 
 FDB::~FDB()
@@ -164,6 +165,7 @@ const bool FDB::loadContent(BinProcessor& proc)
 		bDate	|= operatr->bDate;
 		bNumber	|= operatr->bNumber;
 		bEmpty	|= operatr->bEmpty;
+		bInteger|= operatr->bInteger;
 	}	
 
 	return true;
@@ -186,7 +188,7 @@ int FDB::serialize(std::wostream & strm)
 			{
 				CP_XML_ATTR(L"numFmtId", fdb_type->wTypeSql);	
 			}
-			if (m_arSRCSXOPER.empty())
+			if (m_arSRCSXOPER.empty() && m_arGRPSXOPER.empty() == false)
 			{
 				CP_XML_ATTR(L"databaseField", 0);	
 			}
@@ -234,6 +236,11 @@ int FDB::serialize(std::wostream & strm)
 					//		CP_XML_ATTR(L"containsString",	0);
 					//	}
 					//}
+					if	(bInteger)
+					{
+						if (bNumber)	bInteger = false;
+						else			bNumber = true;
+					}
 					if ((bDate & bNumber) || (bNumber & bString))
 					{
 						CP_XML_ATTR(L"containsSemiMixedTypes", 1);
@@ -250,6 +257,7 @@ int FDB::serialize(std::wostream & strm)
 					if (bDate)		CP_XML_ATTR(L"containsDate",	1);
 					if (!bString)	CP_XML_ATTR(L"containsString",	0);
 					if (bEmpty)		CP_XML_ATTR(L"containsBlank",	1);
+					if (bInteger)	CP_XML_ATTR(L"containsInteger",	1);
 
 					if (fdb->fnumMinMaxValid)
 					{

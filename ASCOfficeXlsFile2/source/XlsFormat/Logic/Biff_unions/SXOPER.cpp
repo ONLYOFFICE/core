@@ -47,6 +47,7 @@ SXOPER::SXOPER()
 	bDate	= false;
 	bNumber	= false;
 	bEmpty	= false;
+	bInteger= false;
 }
 
 SXOPER::~SXOPER()
@@ -67,7 +68,16 @@ const bool SXOPER::loadContent(BinProcessor& proc)
 	}
 	else if(proc.optional<SXNum>())
 	{
-		bNumber = true;
+
+		SXNum *num = dynamic_cast<SXNum*>(elements_.back().get());
+		if (num)
+		{
+			bInteger = (num->num.data.bytes.Byte1==num->num.data.bytes.Byte2 && 
+						num->num.data.bytes.Byte2==num->num.data.bytes.Byte3 && 
+						num->num.data.bytes.Byte3==num->num.data.bytes.Byte4 && 
+						num->num.data.bytes.Byte4==0);
+		}
+		bNumber = !bInteger;
 	}
 	else if(proc.optional<SxBool>())
 	{

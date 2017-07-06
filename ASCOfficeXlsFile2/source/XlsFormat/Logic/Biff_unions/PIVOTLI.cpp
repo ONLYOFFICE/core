@@ -95,7 +95,12 @@ int PIVOTLI::serialize(std::wostream & strm)
 					case 0x000E:	CP_XML_ATTR(L"t", L"blank");	break;
 				}
 
- 				for (size_t j = 0; j < line_items->m_arItems[i].rgisxvi.size(); j++)
+				if (line_items->m_arItems[i].cSic > 0 && line_items->m_arItems[i].itmType == 0)//??
+				{
+					CP_XML_ATTR(L"r", line_items->m_arItems[i].cSic);
+				}
+
+ 				for (size_t j = line_items->m_arItems[i].cSic; j < line_items->m_arItems[i].rgisxvi.size(); j++)
 				{
 					CP_XML_NODE(L"x")
 					{

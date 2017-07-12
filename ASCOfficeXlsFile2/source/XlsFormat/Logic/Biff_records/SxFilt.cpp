@@ -53,7 +53,7 @@ BaseObjectPtr SxFilt::clone()
 void SxFilt::readFields(CFRecord& record)
 {
 	unsigned short flags1;
-	unsigned char flags2;
+	unsigned short flags2;
 
 	record >> flags1 >> isxvd >> flags2 >> grbitSbt >> cisxvi;
 	
@@ -63,7 +63,8 @@ void SxFilt::readFields(CFRecord& record)
 	sxaxisData	= GETBIT(flags1, 3);
 	iDim		= GETBITS(flags1, 4, 15);
 
-	fSelected	= GETBIT(flags2, 0);
+	isxvd		= GETBITS(flags2, 0, 9);
+	fSelected	= GETBIT(flags2, 10);
 }
 
 } // namespace XLS

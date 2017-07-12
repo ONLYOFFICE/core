@@ -34,7 +34,11 @@
 
 #include "SXFMLA_bu.h"
 #include "PIVOTRULE.h"
+
 #include "../Biff_records/SXFormula.h"
+#include "../Biff_records/SxFmla.h"
+#include "../Biff_records/SxName.h"
+#include "../Biff_records/SXPair.h"
 
 namespace XLS
 {
@@ -56,6 +60,8 @@ BaseObjectPtr SXFORMULA::clone()
 // SXFORMULA = SXFMLA PIVOTRULE SXFormula
 const bool SXFORMULA::loadContent(BinProcessor& proc)
 {
+	global_info = proc.getGlobalWorkbookInfo();
+
 	if(!proc.mandatory<SXFMLA>())
 	{
 		return false;
@@ -74,6 +80,29 @@ const bool SXFORMULA::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}	return true;
 }
+int SXFORMULA::serialize(std::wostream & strm)
+{
+	SXFMLA* fmla = dynamic_cast<SXFMLA*>(m_SXFMLA.get());
+	if (!fmla) return 0;
 
+	SxFmla* sx_fmla	= dynamic_cast<SxFmla*>(fmla->m_SxFmla.get()); 
+
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"calculatedItem")
+		{
+			CP_XML_ATTR(L"formula", sx_fmla->fmla.getAssembledFormula());
+			
+			//for (size_t j = 0; j < global_info->arPivotSxNames.size(); j++)//???
+			//{
+			//	SxName *name = dynamic_cast<SxName*>(global_info->arPivotSxNames[j].m_SxName.get());
+			//	CP_XML_NODE(L"pivotArea")
+			//	{
+			//	}
+			//}
+		}
+	}
+	return 0;
+}
 } // namespace XLS
 

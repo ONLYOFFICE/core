@@ -40,7 +40,7 @@ class PIVOTLI: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTLI)
 public:
-	PIVOTLI();
+	PIVOTLI(int count_lines_);
 	~PIVOTLI();
 
 	BaseObjectPtr clone();
@@ -52,6 +52,8 @@ public:
 	static const ElementType type = typePIVOTLI;
 	
 	BaseObjectPtr m_SXLI;
+
+	int count_lines;
 };
 
 } // namespace XLS

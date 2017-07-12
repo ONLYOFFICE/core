@@ -48,6 +48,7 @@ SXOPER::SXOPER()
 	bNumber	= false;
 	bEmpty	= false;
 	bInteger= false;
+	bBool	= false;
 }
 
 SXOPER::~SXOPER()
@@ -81,7 +82,7 @@ const bool SXOPER::loadContent(BinProcessor& proc)
 	}
 	else if(proc.optional<SxBool>())
 	{
-		bNumber = true;
+		bBool = true;
 	}
 	else if(proc.optional<SxErr>())
 	{

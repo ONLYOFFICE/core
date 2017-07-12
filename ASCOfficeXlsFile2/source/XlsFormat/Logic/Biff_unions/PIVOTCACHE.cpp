@@ -62,6 +62,9 @@ const bool PIVOTCACHE::loadContent(BinProcessor& proc)
 {
 	GlobalWorkbookInfoPtr global_info = proc.getGlobalWorkbookInfo();
 	
+	global_info->arPivotCacheFieldShortSize.clear();
+	global_info->arPivotCacheFields.clear();
+
 	if(!proc.mandatory<SXDB>())
 	{
 		return false;
@@ -95,14 +98,8 @@ const bool PIVOTCACHE::loadContent(BinProcessor& proc)
 		
 		DBB* dbb = dynamic_cast<DBB*>(m_arDBB.back().get());
 		
-		if (global_info->arCacheFieldShortSize.size() >= m_arDBB.size())
-		{
-			dbb->fShortIitms = global_info->arCacheFieldShortSize[m_arDBB.size() - 1];		
-		}
-		else
-		{
-			//???? группы??
-		}
+		dbb->arPivotCacheFieldShortSize	= global_info->arPivotCacheFieldShortSize;
+		dbb->arPivotCacheFields			= global_info->arPivotCacheFields;
 	}
 	if (proc.optional<EOF_T>())
 	{

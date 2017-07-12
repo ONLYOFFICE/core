@@ -35,8 +35,9 @@
 namespace XLS
 {
 
-SXLI::SXLI()
+SXLI::SXLI(int count_)
 {
+	count = count_;
 }
 
 
@@ -81,10 +82,13 @@ void SXLI::readFields(CFRecord& record)
 		if (item.fSbt && item.itmType < 0x000D)
 			item.isxviMac++;
 
-		for (short i = 0; i < item.isxviMac; i++)
+		for (short i = 0; i < count/*item.isxviMac*/; i++)
 		{
 			short val; record >> val;
-			item.rgisxvi.push_back(val);
+			if (val >= 0x0000 && val <= 0x7EF4)
+			{
+				item.rgisxvi.push_back(val);
+			}
 		}
 
 		m_arItems.push_back(item);

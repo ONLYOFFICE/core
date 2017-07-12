@@ -58,6 +58,7 @@ public:
 	bool	bNumber;
 	bool	bEmpty;
 	bool	bInteger;
+	bool	bBool;
 };
 
 } // namespace XLS

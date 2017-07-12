@@ -44,8 +44,7 @@ DBB::DBB()
 	bDate		= false;
 	bNumber		= false;
 	bEmpty		= false;
-
-	fShortIitms = false;
+	bBool		= false;
 }
 
 DBB::~DBB()
@@ -75,6 +74,7 @@ const bool DBB::loadContent(BinProcessor& proc)
 		bDate	|= operatr->bDate;
 		bNumber	|= operatr->bNumber;
 		bEmpty	|= operatr->bEmpty;
+		bBool	|= operatr->bBool;
 	}
 
 	if (!m_SXDBB && m_arSXOPER.empty())
@@ -92,34 +92,34 @@ int DBB::serialize(std::wostream & strm)
 	{
 		CP_XML_NODE(L"r")
 		{ 		
-			if (m_arSXOPER.empty() == false)
+			int indexOPER = 0;
+			size_t posBlob = 0;
+
+			for (size_t i = 0; i < arPivotCacheFields.size(); i++)
 			{
-				for (size_t i = 0; i < m_arSXOPER.size(); i++)
+				if(arPivotCacheFields[i] == false)
 				{
-					m_arSXOPER[i]->serialize(CP_XML_STREAM());
-				}
-			}
-			else
-			{
-				if (fShortIitms == false)
-				{
-					for (size_t i = 0; i < dbb->size; i++)
-					{
-						CP_XML_NODE(L"x")
-						{		
-							CP_XML_ATTR(L"v", dbb->blob[i]);
-						}
-					}
+					m_arSXOPER[indexOPER++]->serialize(CP_XML_STREAM());
 				}
 				else
 				{
-					unsigned short * values = (unsigned short *)dbb->blob.get();
-					for (size_t i = 0; i < dbb->size / 2; i++)
+					if (arPivotCacheFieldShortSize[i])//fShortIitms
 					{
+						unsigned short * values = (unsigned short *)(dbb->blob.get() + posBlob);
 						CP_XML_NODE(L"x")
 						{		
-							CP_XML_ATTR(L"v", values[i]);
+							CP_XML_ATTR(L"v", *values);
 						}
+						posBlob+=2;
+					}
+					else
+					{
+						unsigned char * values = (unsigned char *)(dbb->blob.get() + posBlob);
+						CP_XML_NODE(L"x")
+						{		
+							CP_XML_ATTR(L"v", *values);
+						}
+						posBlob++;
 					}
 				}
 			}

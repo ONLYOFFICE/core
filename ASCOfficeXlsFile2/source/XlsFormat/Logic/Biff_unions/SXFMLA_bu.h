@@ -35,11 +35,11 @@
 
 namespace XLS
 {
-
 class SXFMLA: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(SXFMLA)
 public:
+
 	SXFMLA();
 	~SXFMLA();
 
@@ -49,7 +49,7 @@ public:
 
 	static const ElementType	type = typeSXFMLA;
 
-	BaseObjectPtr	m_SxFmla;	
+	BaseObjectPtr			m_SxFmla;	
 };
 
 } // namespace XLS

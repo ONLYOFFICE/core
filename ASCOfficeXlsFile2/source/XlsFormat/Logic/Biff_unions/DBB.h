@@ -55,12 +55,14 @@ public:
 	std::vector<BaseObjectPtr>	m_arSXOPER;	
 
 //---------------------------------------------------
-	bool	fShortIitms;
+	std::vector<bool>	arPivotCacheFields;
+	std::vector<bool>	arPivotCacheFieldShortSize;
 
 	bool	bString;
 	bool	bDate;
 	bool	bNumber;
 	bool	bEmpty;
+	bool	bBool;
 };
 
 } // namespace XLS

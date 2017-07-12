@@ -38,8 +38,9 @@
 namespace XLS
 {
 
-PIVOTLI::PIVOTLI()
+PIVOTLI::PIVOTLI(int count_lines_)
 {
+	count_lines = count_lines_;
 }
 
 PIVOTLI::~PIVOTLI()
@@ -54,7 +55,9 @@ BaseObjectPtr PIVOTLI::clone()
 // PIVOTLI = SXLI *Continue
 const bool PIVOTLI::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory<SXLI>())
+	SXLI sx_line(count_lines);
+
+	if(!proc.mandatory(sx_line))
 	{
 		return false;
 	}
@@ -110,6 +113,7 @@ int PIVOTLI::serialize(std::wostream & strm)
 			}
 		}
 	}
+	return 0;
 }
 } // namespace XLS
 

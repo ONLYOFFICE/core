@@ -45,13 +45,51 @@ BiffStructurePtr PtgSxName::clone()
 void PtgSxName::loadFields(CFRecord& record)
 {
 	record >> sxIndex;
+	
+	global_info = record.getGlobalWorkbookInfo();
 }
 
 void PtgSxName::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
-	Log::info("PtgSxName structure is not assemble.");
+	//RevNamePtr tab_id;
+	//if(!extra_data.empty() && (tab_id = boost::dynamic_pointer_cast<RevName>(extra_data.front())))
+	//{
+	//	Log::error("PtgNameX struct for revisions is not assemble.");
+	//	ptg_stack.push(L"#REF!");
+	//	extra_data.pop();
+	//	return;
+	//}
+
+	std::wstring _Name;
+	if(sxIndex > 0 && sxIndex <= global_info->AddinUdfs.size() && !(_Name = global_info->AddinUdfs[sxIndex - 1]).empty())
+	{
+		ptg_stack.push(_Name);
+	}
+	else if(sxIndex > 0 && sxIndex <= global_info->xti_parsed.size())
+	{
+		std::wstring sheet = global_info->xti_parsed[sxIndex-1];
+
+		if (!sheet.empty()) sheet += L"!";
+		
+		if (sxIndex > 0 && sxIndex <= global_info->arDefineNames.size())
+		{
+			_Name = global_info->arDefineNames[sxIndex - 1];
+		}
+
+		if (sheet.empty() && _Name.empty() && sxIndex <= global_info->arExternalNames.size() && sxIndex > 0)
+		{
+			_Name = global_info->arExternalNames[sxIndex - 1];
+		}
+
+		ptg_stack.push(sheet + _Name);
+	}
+	else
+	{
+ 		Log::warning("PtgSxName structure is not assemble.");
+
+		ptg_stack.push(L""); // This would let us to continue without an error
+	}
 	
-	ptg_stack.push(L"#REF!");
 }
 
 

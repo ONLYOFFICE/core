@@ -66,6 +66,8 @@ const bool PIVOTCORE::loadContent(BinProcessor& proc)
 	m_SxView = elements_.back();
 	elements_.pop_back();
 
+	SxView* sxView = dynamic_cast<SxView*>(m_SxView.get());
+
 	int count = 0;
 	
 	count = proc.repeated<PIVOTVD>(0, 0);
@@ -90,12 +92,21 @@ const bool PIVOTCORE::loadContent(BinProcessor& proc)
 	{
 		m_arSXDI.push_back(elements_.front());	elements_.pop_front();
 	}
-	
-	count = proc.repeated<PIVOTLI>(0, 0);
-	while(count--)
+	PIVOTLI rwLines(sxView->cDimRw);
+	if (proc.optional(rwLines))
 	{
 		m_arPIVOTLI.push_back(elements_.front());	elements_.pop_front();
 	}
+	PIVOTLI colLines(sxView->cDimCol);
+	if (proc.optional(colLines))
+	{
+		m_arPIVOTLI.push_back(elements_.front());	elements_.pop_front();
+	}	
+	//count = proc.repeated<PIVOTLI>(0, 0);
+	//while(count--)
+	//{
+	//	m_arPIVOTLI.push_back(elements_.front());	elements_.pop_front();
+	//}
 
 	if (proc.mandatory<PIVOTEX>())
 	{

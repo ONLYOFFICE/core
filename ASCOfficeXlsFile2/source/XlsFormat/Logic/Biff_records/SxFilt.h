@@ -58,7 +58,7 @@ public:
 	unsigned short	isxvd;
 	bool			fSelected;
 
-	unsigned short	grbitSbt;
+	short			grbitSbt;
 	unsigned short	cisxvi;
 };
 

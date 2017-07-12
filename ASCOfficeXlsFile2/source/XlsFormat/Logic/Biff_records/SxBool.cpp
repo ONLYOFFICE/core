@@ -56,6 +56,18 @@ void SxBool::readFields(CFRecord& record)
 
 	val = (flags != 0);
 }
+int SxBool::serialize(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"b")
+		{ 
 
+			CP_XML_ATTR(L"v", val);
+		}
+	}
+	
+	return 0;
+}
 } // namespace XLS
 

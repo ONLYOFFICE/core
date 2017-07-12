@@ -139,7 +139,18 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 					}
 				}
 			}
+			if (pivot_cache->m_arSXFORMULA.empty() == false)
+			{
+				CP_XML_NODE(L"calculatedItems")
+				{
+					CP_XML_ATTR(L"count", pivot_cache->m_arSXFORMULA.size());
 
+					for (size_t i = 0; i < pivot_cache->m_arSXFORMULA.size(); i++)
+					{
+						pivot_cache->m_arSXFORMULA[i]->serialize(CP_XML_STREAM());
+					}
+				}
+			}
 		}
 	}
 	return 0;

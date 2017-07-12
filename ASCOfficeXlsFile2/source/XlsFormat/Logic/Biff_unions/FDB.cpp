@@ -79,6 +79,7 @@ FDB::FDB()
 	bNumber		= false;
 	bEmpty		= false;
 	bInteger	= false;
+	bBool		= false;
 }
 
 FDB::~FDB()
@@ -166,6 +167,7 @@ const bool FDB::loadContent(BinProcessor& proc)
 		bNumber	|= operatr->bNumber;
 		bEmpty	|= operatr->bEmpty;
 		bInteger|= operatr->bInteger;
+		bBool	|= operatr->bBool;
 	}	
 
 	return true;
@@ -249,15 +251,17 @@ int FDB::serialize(std::wostream & strm)
 					{
 						CP_XML_ATTR(L"containsMixedTypes", 1);
 					}
-					else if (!bEmpty && !bString)
+					else if (!bEmpty && !bString && !bBool)
 					{
 						CP_XML_ATTR(L"containsSemiMixedTypes", 0);
 					}
 					if (bNumber)	CP_XML_ATTR(L"containsNumber",	1);
 					if (bDate)		CP_XML_ATTR(L"containsDate",	1);
-					if (!bString)	CP_XML_ATTR(L"containsString",	0);
 					if (bEmpty)		CP_XML_ATTR(L"containsBlank",	1);
 					if (bInteger)	CP_XML_ATTR(L"containsInteger",	1);
+					
+					if (!bString && (bInteger || bDate || bNumber || bEmpty))
+						CP_XML_ATTR(L"containsString",	0);
 
 					if (fdb->fnumMinMaxValid)
 					{

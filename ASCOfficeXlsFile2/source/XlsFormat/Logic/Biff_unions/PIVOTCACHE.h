@@ -55,6 +55,8 @@ public:
 	std::vector<BaseObjectPtr>	m_arFDB;
 	std::vector<BaseObjectPtr>	m_arDBB;
 
+	std::vector<bool>			m_arAllAtoms;
+
 };
 
 } // namespace XLS

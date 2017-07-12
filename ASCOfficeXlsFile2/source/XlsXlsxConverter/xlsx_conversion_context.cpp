@@ -293,8 +293,14 @@ void xlsx_conversion_context::end_document()
 					output_document_->get_xl_files().add_pivot_table(content);	
 				}
 			}
-		}
+			if (xlsx_pivots_context_.is_connections())
+			{
+				std::wstringstream strm;
+				xlsx_pivots_context_.write_connections_to(strm);
 
+				output_document_->get_xl_files().set_connections( package::simple_element::create(L"connections.xml", strm.str()) );
+			}
+		}
         output_document_->get_xl_files().set_workbook( package::simple_element::create(L"workbook.xml", strm_workbook.str()) );
 
 		output_document_->content_type().set_media(get_mediaitems());
@@ -307,10 +313,8 @@ void xlsx_conversion_context::end_document()
         output_document_->get_xl_files().set_vml_drawings(drawings_vml);
 
 		package::xl_comments_ptr comments = package::xl_comments::create(xlsx_comments_context_handle_.content());
-        output_document_->get_xl_files().set_comments(comments);
-        
+        output_document_->get_xl_files().set_comments(comments);        
 	}
-
 }
 
 }

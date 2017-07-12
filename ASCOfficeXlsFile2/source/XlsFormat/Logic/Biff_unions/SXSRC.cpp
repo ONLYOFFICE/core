@@ -54,7 +54,6 @@ BaseObjectPtr SXSRC::clone()
 	return BaseObjectPtr(new SXSRC(*this));
 }
 
-
 // SXSRC = DREF / SXTBL / DBQUERY
 const bool SXSRC::loadContent(BinProcessor& proc)
 {

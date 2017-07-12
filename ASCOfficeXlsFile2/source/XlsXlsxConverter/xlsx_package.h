@@ -223,6 +223,7 @@ public:
     void set_workbook		(element_ptr Element);
     void set_styles			(element_ptr Element);
     void set_sharedStrings	(element_ptr Element);
+	void set_connections	(element_ptr Element);
     void add_sheet			(sheet_content_ptr sheet);
     void set_media			(external_items & _Mediaitems);    
     void set_drawings		(element_ptr Element);
@@ -241,6 +242,7 @@ private:
 	element_ptr				theme_;
     element_ptr				workbook_;
 
+	element_ptr		connections_;
     element_ptr		styles_;
     element_ptr		sharedStrings_;
     element_ptr		media_;

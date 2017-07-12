@@ -51,11 +51,16 @@ public:
 
 	void write_cache_definitions_to	(int index, std::wostream & strm);
 	void write_cache_records_to		(int index, std::wostream & strm);
+	void write_connections_to		(std::wostream & strm);
 
 	void write_table_view_to		(int index, std::wostream & strm);
 
 	void dump_rels_cache(int index, rels & Rels);
 	void dump_rels_view	(int index, rels & Rels);
+
+	void add_connections(std::wstring connections);
+	bool is_connections();
+
 private:
     class Impl;
     _CP_PTR(Impl) impl_;

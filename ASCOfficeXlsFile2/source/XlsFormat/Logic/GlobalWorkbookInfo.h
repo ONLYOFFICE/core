@@ -142,6 +142,9 @@ public:
 	int											cellStyleDxfs_count;
 
 	std::wstringstream							users_Dxfs_stream;
+	std::wstringstream							connections_stream;
+	
+	int											connectionId;
 
 	XlsConverter								*xls_converter;
 

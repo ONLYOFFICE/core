@@ -31,10 +31,11 @@
  */
 
 #include "DBQUERYEXT.h"
-#include <Logic/Biff_records/DBQueryExt.h>
-#include <Logic/Biff_records/ExtString.h>
-#include <Logic/Biff_records/OleDbConn.h>
-#include <Logic/Biff_records/TxtQry.h>
+
+#include "../Biff_records/DBQueryExt.h"
+#include "../Biff_records/ExtString.h"
+#include "../Biff_records/OleDbConn.h"
+#include "../Biff_records/TxtQry.h"
 
 namespace XLS
 {
@@ -84,11 +85,30 @@ const bool DBQUERYEXT::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.optional<ExtString>();
-	proc.repeated<Parenthesis_DBQUERYEXT_1>(0, 4);
+	m_DBQueryExt = elements_.back();
+	elements_.pop_back();
+
+	if (proc.optional<ExtString>())
+	{
+		m_ExtString = elements_.back();
+		elements_.pop_back();
+	}
+	int count = proc.repeated<Parenthesis_DBQUERYEXT_1>(0, 4);
+
+	//.... 
+	
 	if(proc.optional<TxtQry>())
 	{
-		proc.repeated<ExtString>(0, 0);
+		m_TxtQry = elements_.back();
+		elements_.pop_back();
+
+		int count = proc.repeated<ExtString>(0, 0);
+
+		while(count--)
+		{
+			m_arExtString.insert(m_arExtString.begin(), elements_.back());
+			elements_.pop_back();
+		}
 	}
 
 	return true;

@@ -218,7 +218,6 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 				xls_global_info->mapPivotCache.insert(std::make_pair(index, pivot_cache));
 			}
 		}
-
 	}
 	catch(...)
 	{
@@ -533,6 +532,7 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
 	{
 		convert((XLS::PIVOTCACHEDEFINITION*)global->m_arPIVOTCACHEDEFINITION[i].get());
 	}
+	xlsx_context->get_pivots_context().add_connections(xls_global_info->connections_stream.str());
 }
 
 typedef boost::unordered_map<XLS::FillInfo, int>	mapFillInfo;

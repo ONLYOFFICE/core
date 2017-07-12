@@ -189,6 +189,7 @@ int FDB::serialize(std::wostream & strm)
 			if (fdb_type->wTypeSql > 0)
 			{
 				CP_XML_ATTR(L"numFmtId", fdb_type->wTypeSql);	
+				//CP_XML_ATTR(L"sqlType", fdb_type->wTypeSql);	//in db
 			}
 			if (m_arSRCSXOPER.empty() && m_arGRPSXOPER.empty() == false)
 			{

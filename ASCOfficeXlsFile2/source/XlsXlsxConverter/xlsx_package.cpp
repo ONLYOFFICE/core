@@ -53,7 +53,6 @@ xlsx_content_types_file::xlsx_content_types_file()
  
 	content_type_.add_override(L"/_rels/.rels",                  L"application/vnd.openxmlformats-package.relationships+xml");
     content_type_.add_override(L"/xl/_rels/workbook.xml.rels",   L"application/vnd.openxmlformats-package.relationships+xml");
-    content_type_.add_override(L"/xl/sharedStrings.xml",         L"application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml");
     content_type_.add_override(L"/xl/workbook.xml",              L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml");
     content_type_.add_override(L"/xl/styles.xml",                L"application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml");
     content_type_.add_override(L"/docProps/app.xml",             L"application/vnd.openxmlformats-officedocument.extended-properties+xml");
@@ -194,7 +193,19 @@ void xl_files::write(const std::wstring & RootPath)
     {
         sharedStrings_->write(path);
         rels_files_.add( relationship( L"shId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings", L"sharedStrings.xml" ) );
-    }
+    
+		content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+		contentTypes.add_override(L"/xl/sharedStrings.xml", L"application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml");
+   }
+
+	if (connections_)
+	{
+        connections_->write(path);
+        rels_files_.add( relationship( L"cnId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/connections", L"connections.xml" ) );
+
+		content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+		contentTypes.add_override(L"/xl/connections.xml", L"application/vnd.openxmlformats-officedocument.spreadsheetml.connections+xml");
+	}
 
     if (styles_)
     {
@@ -254,6 +265,10 @@ void xl_files::set_styles(element_ptr Element)
 void xl_files::set_sharedStrings(element_ptr Element)
 {
     sharedStrings_ = Element;
+}
+void xl_files::set_connections(element_ptr Element)
+{
+    connections_ = Element;
 }
 
 void xl_files::add_sheet(sheet_content_ptr sheet)

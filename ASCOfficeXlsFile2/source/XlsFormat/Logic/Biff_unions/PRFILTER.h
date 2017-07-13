@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of PRFILTER union of records 
 class PRFILTER: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(PRFILTER)
@@ -49,7 +47,10 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typePRFILTER;
+	static const ElementType type = typePRFILTER;
+
+	BaseObjectPtr m_SxFilt;
+	BaseObjectPtr m_SxItm;
 };
 
 } // namespace XLS

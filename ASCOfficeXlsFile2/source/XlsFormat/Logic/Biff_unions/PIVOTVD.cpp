@@ -89,7 +89,8 @@ int PIVOTVD::serialize(std::wostream & strm)
 			if		(vd->sxaxis.bRw)	CP_XML_ATTR(L"axis", L"axisRow"); 
 			else if (vd->sxaxis.bCol)	CP_XML_ATTR(L"axis", L"axisCol"); 
 			else if (vd->sxaxis.bPage)	CP_XML_ATTR(L"axis", L"axisPage"); 
-			else if (vd->sxaxis.bData)
+			
+			if (vd->sxaxis.bData)
 			{
 				CP_XML_ATTR(L"dataField", 1); 
 			}

@@ -118,6 +118,8 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 
 	defaultDigitFontSize = std::pair<float, float>(0, 0);
 	applicationFonts		= NULL;
+
+	idPivotCache			= 0;
 }
 
 GlobalWorkbookInfo::~GlobalWorkbookInfo()

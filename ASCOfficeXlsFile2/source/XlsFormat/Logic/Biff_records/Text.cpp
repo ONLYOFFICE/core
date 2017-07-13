@@ -62,7 +62,7 @@ void Text::readFields(CFRecord& record)
 	
 	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
 	{
-		int orient = GETBITS(flags1, 8, 10);
+		unsigned char orient = GETBITS(flags1, 8, 10);
 		switch(orient)
 		{
 			case 0:	trot = 0;		break;		// Text orientation: not rotated.
@@ -75,8 +75,8 @@ void Text::readFields(CFRecord& record)
 	{
 		record >> icvText >> flags2 >> trot;
 		//icv -> from Palette
-		dlp				= static_cast<unsigned char>(GETBITS(flags2, 0, 3));
-		iReadingOrder	= static_cast<unsigned char>(GETBITS(flags2, 14, 15));
+		dlp				= GETBITS(flags2, 0, 3);
+		iReadingOrder	= GETBITS(flags2, 14, 15);
 	}
 	
 	fAutoColor			= GETBIT(flags1, 0);

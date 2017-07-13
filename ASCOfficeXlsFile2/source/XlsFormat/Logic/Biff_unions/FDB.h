@@ -67,6 +67,7 @@ public:
 	bool	bInteger;
 	bool	bBool;
 
+	GlobalWorkbookInfoPtr global_info;
 };
 
 } // namespace XLS

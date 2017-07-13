@@ -38,6 +38,8 @@ namespace XLS
 DbOrParamQry::DbOrParamQry(int typeRecord_)
 {
 	typeRecord = typeRecord_;
+
+	param.pbt = query.dbt = 0;
 }
 
 DbOrParamQry::~DbOrParamQry()

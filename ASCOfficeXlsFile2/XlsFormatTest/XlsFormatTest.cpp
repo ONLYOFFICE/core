@@ -51,12 +51,12 @@
 	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
 #endif
 
-int _tmain(int argc, _TCHAR* argv[])
+HRESULT convert_single(std::wstring fileName)
 {
 	HRESULT hr = S_OK;
-//////////////////////////////////////////////////////////////////////////
-	std::wstring srcFileName	= argv[1];
-	std::wstring dstPath		= argc > 2 ? argv[2] : srcFileName + L"-my.xlsx";
+
+	std::wstring srcFileName	= fileName;
+	std::wstring dstPath		= srcFileName + L"-my.xlsx";
 
 	std::wstring outputDir		= NSDirectory::GetFolderPath(dstPath);	
 	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
@@ -71,5 +71,28 @@ int _tmain(int argc, _TCHAR* argv[])
 	
 	NSDirectory::DeleteDirectory(dstTempPath);
 
+	return hr;
+}
+
+HRESULT convert_directory(std::wstring pathName)
+{
+	HRESULT hr = S_OK;
+
+	std::vector<std::wstring> arFiles = NSDirectory::GetFiles(pathName, false);
+
+	for (size_t i = 0; i < arFiles.size(); i++)
+	{
+		convert_single(arFiles[i]);
+	}
+	return S_OK;
+}
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+	if (argc < 2) return 1;
+	
+	HRESULT hr = convert_single(argv[1]);
+
+	//HRESULT hr = convert_directory(argv[1]);
 	return hr;
 }

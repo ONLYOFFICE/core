@@ -111,5 +111,36 @@ int SXOPER::serialize(std::wostream & strm)
 	m_element->serialize(strm);
 	return 0;
 }
+
+std::wstring SXOPER::get_value()
+{
+	std::wstring value;
+	SXNum *num = dynamic_cast<SXNum*>(m_element.get());
+	if (num)
+	{
+		value = std::to_wstring(num->num.data.value);
+	}
+	else
+	{
+		SXString *str = dynamic_cast<SXString*>(m_element.get());
+		if (str)
+		{
+			value = str->segment.value();
+		}
+		else
+		{
+			SXDtr *dtr = dynamic_cast<SXDtr*>(m_element.get());
+			if (dtr)
+			{
+				value = dtr->get_string_date();
+			}
+			else
+			{
+			}
+		}
+	}
+	return value;
+}
+
 } // namespace XLS
 

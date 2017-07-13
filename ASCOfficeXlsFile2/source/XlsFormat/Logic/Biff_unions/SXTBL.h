@@ -35,6 +35,11 @@
 
 namespace XLS
 {
+	struct _sxtbl_item
+	{
+		BaseObjectPtr				item;
+		std::vector<BaseObjectPtr>	strings;	
+	};
 
 class SXTBL: public CompositeObject
 {
@@ -47,8 +52,14 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize(std::wostream & stream);
+
 	static const ElementType type = typeSXTBL;
 	
+	BaseObjectPtr				m_SXTbl;
+	std::vector<BaseObjectPtr>	m_arDREF;
+	std::vector<BaseObjectPtr>	m_arSxTbpg;
+	std::vector<_sxtbl_item>	m_arSXTBRGIITM;
 };
 
 } // namespace XLS

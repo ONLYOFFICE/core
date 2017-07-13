@@ -49,6 +49,8 @@ public:
 
 	int serialize(std::wostream & strm);
 
+	std::wstring get_value();
+
 	static const ElementType type = typeSXOPER;
 
 	BaseObjectPtr	m_element;	

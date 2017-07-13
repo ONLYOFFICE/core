@@ -105,10 +105,14 @@ public:
 	unsigned int								last_AXES_id;
 	const static unsigned int					initial_AXES_id = 0x2000000;
 
+	short												idPivotCache;
 	std::map<int, BaseObjectPtr>						mapPivotCache;
 	std::vector<bool>									arPivotCacheFields;
 	std::vector<bool>									arPivotCacheFieldShortSize;
+
 	std::vector<_sx_name>								arPivotSxNames;
+	std::vector<std::wstring>							arPivotCacheSxNames;
+	std::vector<std::wstring>							arPivotCacheReferences;
 
 	std::map<std::wstring, std::vector<std::wstring>>	mapDefineNames;
 	std::vector<std::wstring>							arDefineNames;

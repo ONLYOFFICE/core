@@ -97,6 +97,8 @@ BaseObjectPtr FDB::clone()
 
 const bool FDB::loadContent(BinProcessor& proc)
 {
+	global_info = proc.getGlobalWorkbookInfo();
+
 	if(!proc.mandatory<SXFDB>())
 	{
 		return false;
@@ -179,6 +181,8 @@ int FDB::serialize(std::wostream & strm)
 	SXFDBType*	fdb_type	= dynamic_cast<SXFDBType*>(m_SXFDBType.get());
 
 	if (!fdb || !fdb_type) return 0;
+	
+	global_info->arPivotCacheSxNames.push_back(fdb->stFieldName.value());
 
 	CP_XML_WRITER(strm)
 	{
@@ -214,7 +218,9 @@ int FDB::serialize(std::wostream & strm)
 			}
 			if(m_SXFMLA)
 			{
-			//{formula
+				SXFMLA* Formula = dynamic_cast<SXFMLA*>(m_SXFMLA.get());
+				if (Formula)
+					Formula->serialize_attr(CP_GET_XML_NODE());
 			}
 
 			if (m_arSRCSXOPER.empty() == false)

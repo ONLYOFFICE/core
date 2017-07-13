@@ -79,7 +79,7 @@ BaseObjectPtr SXFMLA::clone()
 // SXFMLA = SxFmla *(SxName *SXPair)
 const bool SXFMLA::loadContent(BinProcessor& proc)
 {
-	GlobalWorkbookInfoPtr global_info = proc.getGlobalWorkbookInfo();
+	global_info = proc.getGlobalWorkbookInfo();
 
 	if(!proc.mandatory<SxFmla>())
 	{
@@ -97,7 +97,7 @@ const bool SXFMLA::loadContent(BinProcessor& proc)
 			_sx_name sx_name;
 			sx_name.name = elements_.front(); elements_.pop_front();
 
-			global_info->arPivotSxNames.push_back(sx_name);
+			m_arPivotSxNames.push_back(sx_name);
 		}
 		else
 		{
@@ -109,7 +109,7 @@ const bool SXFMLA::loadContent(BinProcessor& proc)
 				}
 				else
 				{
-					global_info->arPivotSxNames.back().pair.push_back(elements_.front());
+					m_arPivotSxNames.back().pair.push_back(elements_.front());
 					elements_.pop_front();
 				}
 			}
@@ -118,6 +118,18 @@ const bool SXFMLA::loadContent(BinProcessor& proc)
 
 	return true;
 }
+
+void SXFMLA::serialize_attr(CP_ATTR_NODE)
+{
+	if (!m_SxFmla) return;
+
+	SxFmla* sx_fmla	= dynamic_cast<SxFmla*>(m_SxFmla.get()); 
+	
+	global_info->arPivotSxNames = m_arPivotSxNames;
+
+	CP_XML_ATTR(L"formula", sx_fmla->fmla.getAssembledFormula());
+}
+
 
 } // namespace XLS
 

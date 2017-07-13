@@ -35,6 +35,7 @@
 
 namespace XLS
 {
+
 class SXFMLA: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(SXFMLA)
@@ -46,10 +47,15 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+	
+	void serialize_attr(CP_ATTR_NODE);
 
-	static const ElementType	type = typeSXFMLA;
+	static const ElementType type = typeSXFMLA;
 
 	BaseObjectPtr			m_SxFmla;	
+	std::vector<_sx_name>	m_arPivotSxNames;
+//-------------------------------------------------------------------------
+	GlobalWorkbookInfoPtr	global_info;
 };
 
 } // namespace XLS

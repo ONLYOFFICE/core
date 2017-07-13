@@ -66,6 +66,7 @@ static inline void/*std::wstring &*/trim(std::wstring &s)
 
 AutoFilter::AutoFilter()
 {
+	wTopN = wJoin = 0;
 }
 
 
@@ -86,7 +87,7 @@ void AutoFilter::readFields(CFRecord& record)
 	unsigned short flags;
 	record >> iEntry >> flags;
 	
-	wJoin		= static_cast<unsigned char>(GETBITS(flags, 0, 1));
+	wJoin		= GETBITS(flags, 0, 1);
 	
 	fSimple1	= GETBIT(flags, 2);
 	fSimple2	= GETBIT(flags, 3);
@@ -94,7 +95,7 @@ void AutoFilter::readFields(CFRecord& record)
 	fTop		= GETBIT(flags, 5); //top(1) or bottom(0)
 	fPercent	= GETBIT(flags, 6);
 	
-	wTopN		= static_cast<unsigned short>(GETBITS(flags, 7, 15));
+	wTopN		= GETBITS(flags, 7, 15);
 
 	unsigned short	_iEntry		= iEntry;
 	unsigned char	_wJoin		= wJoin;			

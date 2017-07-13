@@ -37,6 +37,7 @@ namespace XLS
 
 SxSelect::SxSelect()
 {
+	cClick = 0;
 }
 
 

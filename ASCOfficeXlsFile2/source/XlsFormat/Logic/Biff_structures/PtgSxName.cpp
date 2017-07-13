@@ -31,7 +31,14 @@
  */
 
 #include "PtgSxName.h"
-#include <Binary/CFRecord.h>
+
+#include "../Biff_unions/PIVOTCACHE.h"
+#include "../Biff_unions/FDB.h"
+#include "../Biff_unions/SXOPER.h"
+
+#include "../Biff_records/SXFDB.h"
+#include "../Biff_records/SxName.h"
+#include "../Biff_records/SXPair.h"
 
 namespace XLS
 {
@@ -51,37 +58,58 @@ void PtgSxName::loadFields(CFRecord& record)
 
 void PtgSxName::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
-	//RevNamePtr tab_id;
-	//if(!extra_data.empty() && (tab_id = boost::dynamic_pointer_cast<RevName>(extra_data.front())))
-	//{
-	//	Log::error("PtgNameX struct for revisions is not assemble.");
-	//	ptg_stack.push(L"#REF!");
-	//	extra_data.pop();
-	//	return;
-	//}
-
 	std::wstring _Name;
-	if(sxIndex > 0 && sxIndex <= global_info->AddinUdfs.size() && !(_Name = global_info->AddinUdfs[sxIndex - 1]).empty())
+
+	if (sxIndex < global_info->arPivotSxNames.size())
 	{
+		SxName *name = dynamic_cast<SxName*>(global_info->arPivotSxNames[sxIndex].name.get());
+			
+		if ((name) && (name->ifdb >= 0  && name->ifdb < global_info->arPivotCacheSxNames.size()))
+		{
+			_Name = global_info->arPivotCacheSxNames[name->ifdb];
+		}
+		else if (!global_info->arPivotSxNames[sxIndex].pair.empty())
+		{
+			SXPair *pair = dynamic_cast<SXPair*>(global_info->arPivotSxNames[sxIndex].pair[0].get());
+			if (pair)
+			{
+				std::map<int, BaseObjectPtr>::iterator pFind = global_info->mapPivotCache.find(global_info->idPivotCache);
+				if (pFind != global_info->mapPivotCache.end())
+				{
+					PIVOTCACHE* pivot_cache = dynamic_cast<PIVOTCACHE*>(pFind->second.get());
+					if (pivot_cache)
+					{
+						if (pair->isxvd >= 0 && pair->isxvd < pivot_cache->m_arFDB.size())
+						{
+							FDB* field = dynamic_cast<FDB*>(pivot_cache->m_arFDB[pair->isxvd].get());
+							if (field)
+							{
+
+								SXFDB* field_db= dynamic_cast<SXFDB*>(field->m_SXFDB.get());
+								if (field_db)
+								{
+									_Name = field_db->stFieldName.value();
+
+									if (std::wstring::npos != _Name.find(L" "))
+									{
+										_Name = L"'" + _Name + L"'";
+									}
+								}
+								if (pair->iCache >= 0 && pair->iCache < field->m_arSRCSXOPER.size())
+								{
+									SXOPER* cache = dynamic_cast<SXOPER*>(field->m_arSRCSXOPER[pair->iCache].get());
+									if (cache)
+									{
+										_Name += L"[" + cache->get_value() + L"]";
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 		ptg_stack.push(_Name);
-	}
-	else if(sxIndex > 0 && sxIndex <= global_info->xti_parsed.size())
-	{
-		std::wstring sheet = global_info->xti_parsed[sxIndex-1];
-
-		if (!sheet.empty()) sheet += L"!";
-		
-		if (sxIndex > 0 && sxIndex <= global_info->arDefineNames.size())
-		{
-			_Name = global_info->arDefineNames[sxIndex - 1];
-		}
-
-		if (sheet.empty() && _Name.empty() && sxIndex <= global_info->arExternalNames.size() && sxIndex > 0)
-		{
-			_Name = global_info->arExternalNames[sxIndex - 1];
-		}
-
-		ptg_stack.push(sheet + _Name);
 	}
 	else
 	{

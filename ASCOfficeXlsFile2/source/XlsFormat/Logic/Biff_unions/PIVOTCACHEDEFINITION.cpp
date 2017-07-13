@@ -91,11 +91,16 @@ const bool PIVOTCACHEDEFINITION::loadContent(BinProcessor& proc)
 }
 int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 {
+	global_info_->arPivotCacheSxNames.clear();
+	global_info_->arPivotSxNames.clear();
+
 	SXStreamID* streamId = dynamic_cast<SXStreamID*>(m_SXStreamID.get());
 	if (!streamId) return 0;
 
 	std::map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCache.find(streamId->idStm);
 	if (pFind == global_info_->mapPivotCache.end()) return 0;
+
+	global_info_->idPivotCache = streamId->idStm;
 
 	PIVOTCACHE* pivot_cache = dynamic_cast<PIVOTCACHE*>(pFind->second.get());
 	if (!pivot_cache) return 0;

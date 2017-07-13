@@ -37,6 +37,7 @@ namespace XLS
 
 ColInfo::ColInfo()
 {
+	iOutLevel = 0;
 }
 
 

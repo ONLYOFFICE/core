@@ -45,7 +45,7 @@ const wchar_t* const AutoFilterDefineNames[] =
 
 
 Lbl::Lbl()
-:	rgce(false)
+:	rgce(false), fGrp(0)
 {
 }
 

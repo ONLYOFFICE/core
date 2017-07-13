@@ -65,6 +65,7 @@ public:
 		{
 			return false;
 		}
+
 		proc.repeated<SXString>(0, 0);
 		return true;
 	};
@@ -80,17 +81,55 @@ BaseObjectPtr SXTBL::clone()
 // SXTBL = SXTbl *DREF *SxTbpg *(SXTBRGIITM *SXString)
 const bool SXTBL::loadContent(BinProcessor& proc)
 {
-
 	if(!proc.mandatory<SXTbl>())
 	{
 		return false;
 	}
-	proc.repeated<DREF>(0, 0);
-	proc.repeated<SxTbpg>(0, 0);
-	proc.repeated<Parenthesis_SXTBL_1>(0, 0);
 
+	m_SXTbl = elements_.back();
+	elements_.pop_back();
+
+	int count =0;
+	
+	count  = proc.repeated<DREF>(0, 0);
+	while(!elements_.empty())
+	{
+		m_arDREF.push_back(elements_.front()); 
+		elements_.pop_front();
+	}
+
+	count  = proc.repeated<SxTbpg>(0, 0);
+	while(!elements_.empty())
+	{
+		m_arSxTbpg.push_back(elements_.front()); 
+		elements_.pop_front();
+	}	
+
+	count = proc.repeated<Parenthesis_SXTBL_1>(0, 0);
+	while(!elements_.empty())
+	{
+		SXTBRGIITM* item = dynamic_cast<SXTBRGIITM*>(elements_.front().get());
+
+		if (item)
+		{
+			_sxtbl_item it;
+			it.item = elements_.front();
+			m_arSXTBRGIITM.push_back(it); 
+		}
+		else
+		{
+			m_arSXTBRGIITM.back().strings.push_back(elements_.front());
+		}
+		elements_.pop_front();
+	}	
 	return true;
 }
+int SXTBL::serialize(std::wostream & stream)
+{
+	if (!m_SXTbl) return 0;
 
+
+	return 0;
+}
 } // namespace XLS
 

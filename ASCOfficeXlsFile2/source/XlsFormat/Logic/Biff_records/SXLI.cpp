@@ -60,7 +60,7 @@ void SXLI::readFields(CFRecord& record)
 		{
 			break;
 		}
-		SXLIItem item;
+		SXLIItem item = {};
 		
 		unsigned short flags;
 

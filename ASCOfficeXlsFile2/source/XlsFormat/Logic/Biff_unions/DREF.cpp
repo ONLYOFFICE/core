@@ -92,41 +92,26 @@ int DREF::serialize(std::wostream & strm)
 			}
 			else if(bin)
 			{
-				switch(bin->nBuiltin)
+				CP_XML_ATTR(L"type", L"worksheet");
+				CP_XML_NODE(L"worksheetSource")
 				{
-
-					case 0x0004:/*Database*/
-					case 0x000d:/*_FilterDatabase*/
+					switch(bin->nBuiltin)
 					{
-						CP_XML_ATTR(L"type", L"external");
-						//connectionId in connections(root)
-					}break;
-					case 0x0000:/*Consolidate_Area*/
-					//{
-					//	CP_XML_ATTR(L"type", L"consolidation");
-					//	CP_XML_NODE(L"consolidation")
-					//	{
-					//		CP_XML_ATTR(L"name", bin->stFile.value());
-					//	}
-					//}break;			
-					case 0x0001:/*Auto_Open*/
-					case 0x0002:/*Auto_Close*/
-					case 0x0003:/*Extract*/
-					case 0x0005:/*Criteria*/
-					case 0x0006:/*Print_Area*/
-					case 0x0007:/*Print_Titles*/
-					case 0x0008:/*Recorder*/
-					case 0x0009:/*Data_Form*/
-					case 0x000a:/*Auto_Activate*/
-					case 0x000b:/*Auto_Deactivate*/
-					case 0x000c:/*Sheet_Title*/
-					{
-						CP_XML_ATTR(L"type", L"scenario");
-						CP_XML_NODE(L"worksheetSource")
-						{
-							CP_XML_ATTR(L"name", bin->stFile.value());
-						}
-					}break;
+						case 0x0000:	CP_XML_ATTR(L"name", L"_xlnm.Consolidate_Area"); break;
+						case 0x0001:	CP_XML_ATTR(L"name", L"_xlnm.Auto_Open");		break;
+						case 0x0002:	CP_XML_ATTR(L"name", L"_xlnm.Auto_Close");		break;
+						case 0x0003:	CP_XML_ATTR(L"name", L"_xlnm.Extract");			break;
+						case 0x0004:	CP_XML_ATTR(L"name", L"_xlnm.Database");		break;
+						case 0x0005:	CP_XML_ATTR(L"name", L"_xlnm.Criteria");		break;
+						case 0x0006:	CP_XML_ATTR(L"name", L"_xlnm.Print_Area");		break;
+						case 0x0007:	CP_XML_ATTR(L"name", L"_xlnm.Print_Titles");	break;
+						case 0x0008:	CP_XML_ATTR(L"name", L"_xlnm.Recorder");		break;
+						case 0x0009:	CP_XML_ATTR(L"name", L"_xlnm.Data_Form");		break;
+						case 0x000a:	CP_XML_ATTR(L"name", L"_xlnm.Auto_Activate");	break;
+						case 0x000b:	CP_XML_ATTR(L"name", L"_xlnm.Auto_Deactivate");	break;
+						case 0x000c:	CP_XML_ATTR(L"name", L"_xlnm.Sheet_Title");		break;
+						case 0x000d:	CP_XML_ATTR(L"name", L"_xlnm._FilterDatabase");	break;	//??
+					}
 				}
 			}
 			else if(ref)

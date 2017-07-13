@@ -71,12 +71,12 @@ void Dv::readFields(CFRecord& record)
 	record >> flags;
 
 	valType		= static_cast<_valTypeDv>(GETBITS(flags, 0, 3));
-	errStyle	= static_cast<unsigned char>(GETBITS(flags, 4, 6));
+	errStyle	= GETBITS(flags, 4, 6);
 	
 	fStrLookup		= GETBIT(flags, 7);
 	fAllowBlank		= GETBIT(flags, 8);
 	fSuppressCombo	= GETBIT(flags, 9);
-	mdImeMode		= static_cast<unsigned char>(GETBITS(flags, 10, 17));
+	mdImeMode		= GETBITS(flags, 10, 17);
 	fShowInputMsg	= GETBIT(flags, 18);
 	fShowErrorMsg	= GETBIT(flags, 19);
 	typOperator		= static_cast<_typOperatorDv>(GETBITS(flags, 20, 23));

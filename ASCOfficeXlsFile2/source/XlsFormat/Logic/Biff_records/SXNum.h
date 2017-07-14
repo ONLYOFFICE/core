@@ -49,8 +49,6 @@ public:
 	
 	void readFields(CFRecord& record);
 
-	int serialize(std::wostream & strm);
-
 	static const ElementType type = typeSXNum;
 
 	Xnum num;

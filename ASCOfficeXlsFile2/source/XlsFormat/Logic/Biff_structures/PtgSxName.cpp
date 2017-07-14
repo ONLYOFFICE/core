@@ -100,7 +100,7 @@ void PtgSxName::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
 									SXOPER* cache = dynamic_cast<SXOPER*>(field->m_arSRCSXOPER[pair->iCache].get());
 									if (cache)
 									{
-										_Name += L"[" + cache->get_value() + L"]";
+										_Name += L"[" + cache->value + L"]";
 									}
 								}
 							}

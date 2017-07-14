@@ -48,8 +48,6 @@ public:
 	
 	void readFields(CFRecord& record);
 
-	int serialize(std::wostream & strm);
-
 	static const ElementType type = typeSXDtr;
 
 	unsigned short	yr;
@@ -59,7 +57,7 @@ public:
 	unsigned char	min;
 	unsigned char	sec;
 
-	std::wstring get_string_date();
+	std::wstring value();
 
 };
 

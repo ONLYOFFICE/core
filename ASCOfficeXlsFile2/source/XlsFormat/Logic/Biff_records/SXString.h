@@ -51,8 +51,6 @@ public:
 
 	std::wstring value();
 
-	int serialize(std::wostream & strm);
-
 	static const ElementType type = typeSXString;
 
 	unsigned short			cch;

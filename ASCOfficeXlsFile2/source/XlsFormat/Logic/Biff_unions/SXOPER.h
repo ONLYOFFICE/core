@@ -49,11 +49,11 @@ public:
 
 	int serialize(std::wostream & strm);
 
-	std::wstring get_value();
-
 	static const ElementType type = typeSXOPER;
 
 	BaseObjectPtr	m_element;	
+
+	bool	bFormula;
 
 	bool	bString;
 	bool	bDate;
@@ -61,6 +61,9 @@ public:
 	bool	bEmpty;
 	bool	bInteger;
 	bool	bBool;
+
+	std::wstring value;
+	std::wstring node;
 };
 
 } // namespace XLS

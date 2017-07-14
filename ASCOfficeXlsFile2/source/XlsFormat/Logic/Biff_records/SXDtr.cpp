@@ -39,7 +39,6 @@ SXDtr::SXDtr()
 {
 }
 
-
 SXDtr::~SXDtr()
 {
 }
@@ -54,27 +53,13 @@ void SXDtr::readFields(CFRecord& record)
 	record >> yr >> mon >> dom >> hr >> min >> sec;
 }
 	
-std::wstring SXDtr::get_string_date()
+std::wstring SXDtr::value()
 {
 	std::wstringstream s;
 	s << yr << L"-" << (mon < 10 ? L"0" : L"") << mon << L"-" <<  (dom < 10 ? L"0" : L"") << dom << L"T"
 		 << (hr < 10 ? L"0" : L"") << hr << L":" << (min < 10 ? L"0" : L"") << min << L":" << (sec < 10 ? L"0" : L"") << sec;
 
 	return s.str();
-}
-
-int SXDtr::serialize(std::wostream & strm)
-{
-	CP_XML_WRITER(strm)
-	{
-		CP_XML_NODE(L"d")
-		{ 
-
-			CP_XML_ATTR(L"v", get_string_date());
-		}
-	}
-	
-	return 0;
 }
 
 } // namespace XLS

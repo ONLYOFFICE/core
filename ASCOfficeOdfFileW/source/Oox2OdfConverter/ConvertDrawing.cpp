@@ -951,7 +951,7 @@ void OoxConverter::convert(PPTX::Logic::GradFill *oox_grad_fill, DWORD nARGB)
 						{
 							odf_context()->drawing_context()->set_opacity_angle(oox_grad_fill->lin->ang.get()/60000.);
 						}
-						else if (oox_grad_fill->path.is_init())
+						else if (oox_grad_fill->path.is_init() && oox_grad_fill->path->rect.is_init())
 						{
 							odf_context()->drawing_context()->set_opacity_rect ( XmlUtils::GetInteger(oox_grad_fill->path->rect->l.get_value_or(L"")),
 																				 XmlUtils::GetInteger(oox_grad_fill->path->rect->t.get_value_or(L"")),

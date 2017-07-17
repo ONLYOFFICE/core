@@ -210,7 +210,7 @@ namespace formulasconvert {
 	{
 		convert_with_TableName = withTableName;
 		//boost::wregex simpleRef(L"\\[\\.([a-zA-Z]+\\d+)(?::\\.([a-zA-Z]+\\d+)){0,1}\\]");
-		boost::wregex complexRef(L"\\[(?:\\$)?([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}\\]");
+		boost::wregex complexRef(L"\\[(?:\\$)?([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]*\\${0,1}\\d*)(?::\\.(\\${0,1}[a-zA-Z]*\\${0,1}\\d*)){0,1}\\]");
 		/*
 									 [     $   Sheet2          . A1                  :  . B5                    ]
 		*/
@@ -227,7 +227,7 @@ namespace formulasconvert {
 		convert_with_TableName = withTableName;
 		
 		//boost::wregex complexRef(L"\\${0,1}([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}");
-		boost::wregex complexRef(L"\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}");
+		boost::wregex complexRef(L"\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[a-zA-Z]*\\${0,1}\\d*)(?::\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[a-zA-Z]*\\${0,1}\\d*)){0,1}");
 
 		const std::wstring res = boost::regex_replace(
 			expr,

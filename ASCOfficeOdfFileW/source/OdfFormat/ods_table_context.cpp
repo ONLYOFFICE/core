@@ -138,7 +138,8 @@ void ods_table_context::add_defined_range(const std::wstring & name, const std::
 	std::wstring odf_range = formulas_converter.convert_named_ref(cell_range);//todo - разделить конвертацию диапазонов/рэнжей на c [] и без
 	XmlUtils::replace_all( odf_range, L"[", L"");
 	XmlUtils::replace_all( odf_range, L"]", L"");
-	std::wstring odf_base_cell = formulas_converter.find_base_cell(cell_range);
+	
+	std::wstring odf_base_cell = formulas_converter.get_base_cell_formula(cell_range);
 
 	named_range->table_name_ = name;
 	named_range->table_cell_range_address_ = odf_range;
@@ -181,8 +182,8 @@ void ods_table_context::add_defined_expression(const std::wstring & name, const 
 
 	formulasconvert::oox2odf_converter formulas_converter;
 
-	std::wstring odf_value		= formulas_converter.convert_named_ref(value);
-	std::wstring odf_base_cell	= formulas_converter.find_base_cell(value);
+	std::wstring odf_value		= formulas_converter.convert_named_formula(value);
+	std::wstring odf_base_cell	= formulas_converter.get_base_cell_formula(value);
 
 	named_expression->table_name_		= name;
 	named_expression->table_expression_ = odf_value;
@@ -215,9 +216,8 @@ void ods_table_context::add_defined_expression(const std::wstring & name, const 
 		table_defined_expressions_.root->add_child_element(elm);
 	}
 
-	if (odf_base_cell.length() > 0)
+	if (!odf_base_cell.empty())
 		named_expression->table_base_cell_address_ =  odf_base_cell;
-
 
 	table_defined_expressions_.elements.push_back(elm);
 }

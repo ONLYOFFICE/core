@@ -86,10 +86,10 @@ static const class_type_pair class_type_str[] =
 
 chart::class_type static get_series_class_type(std::wstring const & str)
 {
-    BOOST_FOREACH(class_type_pair const & p, class_type_str)
+    for (size_t i = 0; i < 12/*class_type_str.size()*/; i++)
     {
-        if (p.class_type_str_ == str)
-            return p.class_type_;
+        if (class_type_str[i].class_type_str_ == str)
+            return class_type_str[i].class_type_;
     }
     return chart::chart_bar; //лучше хоть какой назначить чем никакой !!
 }

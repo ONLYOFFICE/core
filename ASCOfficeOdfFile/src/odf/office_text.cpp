@@ -33,8 +33,6 @@
 #include "office_text.h"
 #include "office_annotation.h"
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/utils.h>
@@ -117,9 +115,9 @@ void office_text::docx_convert(oox::docx_conversion_context & Context)
 		tracked_changes_->docx_convert(Context);
 
     Context.start_office_text();
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
     Context.end_office_text();
 }
@@ -127,18 +125,18 @@ void office_text::docx_convert(oox::docx_conversion_context & Context)
 void office_text::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     //Context.start_office_text();
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+    for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->xlsx_convert(Context);
+        content_[i]->xlsx_convert(Context);
     }
     //Context.end_office_text();
 }
 
 void office_text::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+    for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        content_[i]->pptx_convert(Context);
     }
 }
 

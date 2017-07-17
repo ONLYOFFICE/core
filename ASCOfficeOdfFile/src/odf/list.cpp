@@ -32,8 +32,6 @@
 
 #include "list.h"
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/xmlchar.h>
 
 #include <cpdoccore/xml/attributes.h>
@@ -68,10 +66,9 @@ const wchar_t * list_item::name = L"list-item";
 
 std::wostream & list_item::text_to_stream(std::wostream & _Wostream) const
 {
-    // TODO!!!!
-    BOOST_FOREACH(const office_element_ptr & parElement, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        parElement->text_to_stream(_Wostream);
+        content_[i]->text_to_stream(_Wostream);
     }
     return _Wostream;
 }
@@ -104,9 +101,9 @@ void list_item::docx_convert(oox::docx_conversion_context & Context)
 
     Context.start_list_item(restart);
 
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
 
     Context.end_list_item();
@@ -123,9 +120,9 @@ void list_item::pptx_convert(oox::pptx_conversion_context & Context)
 
     Context.get_text_context().start_list_item(restart);
 
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        content_[i]->pptx_convert(Context);
     }
 
     Context.get_text_context().end_list_item();
@@ -143,9 +140,9 @@ void list_header::docx_convert(oox::docx_conversion_context & Context)
 	std::wstring s = Context.current_list_style();
 	Context.end_list();
 
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
 
 	Context.start_list(s, true);
@@ -156,9 +153,9 @@ void list_header::pptx_convert(oox::pptx_conversion_context & Context)
 
 	//заголовок это не элемент списка
 
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        content_[i]->pptx_convert(Context);
     }
 
 }
@@ -166,10 +163,9 @@ void list_header::pptx_convert(oox::pptx_conversion_context & Context)
 
 std::wostream & list_header::text_to_stream(std::wostream & _Wostream) const
 {
-    // TODO!!!!
-    BOOST_FOREACH(const office_element_ptr & parElement, content_)
+ 	for (size_t i = 0; i < content_.size(); i++)
     {
-        parElement->text_to_stream(_Wostream);
+        content_[i]->text_to_stream(_Wostream);
     }
     return _Wostream;
 }

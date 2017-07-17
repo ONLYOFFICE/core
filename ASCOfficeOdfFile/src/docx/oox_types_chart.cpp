@@ -30,12 +30,8 @@
  *
  */
 
-#include "oox_types_chart.h"
-
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/simple_xml_writer.h>
-
+#include "oox_types_chart.h"
 #include "oox_chart_shape.h"
 
 namespace cpdoccore {
@@ -104,15 +100,15 @@ void oox_chart::oox_serialize_common(std::wostream & _Wostream)
 				CP_XML_ATTR(L"val", grouping_);
 			}
 		}
-		BOOST_FOREACH(oox_series_ptr const & s, series_)
+		for (size_t i = 0; i < series_.size(); i++)
 		{
-			s->oox_serialize(_Wostream);
+			series_[i]->oox_serialize(_Wostream);
 		}
-		BOOST_FOREACH(int const & i, axisId_)
+		for (size_t i = 0; i < axisId_.size(); i++)
 		{
 			CP_XML_NODE(L"c:axId")
 			{	
-				CP_XML_ATTR(L"val", i);
+				CP_XML_ATTR(L"val", axisId_[i]);
 			}
 		}	
 		data_labels_.oox_serialize(_Wostream);

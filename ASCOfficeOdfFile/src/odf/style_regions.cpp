@@ -32,8 +32,6 @@
 
 #include "style_regions.h"
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/attributes.h>
@@ -51,17 +49,17 @@ const wchar_t * style_region_left::name = L"region-left";
 
 void style_region_left::docx_convert(oox::docx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
-    {
-        elm->docx_convert(Context);
+  	for (size_t i = 0; i < content_.size(); i++)
+	{
+        content_[i]->docx_convert(Context);
     }
 }
 
 void style_region_left::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->xlsx_convert(Context);
+        content_[i]->xlsx_convert(Context);
     }
 }
 
@@ -85,17 +83,17 @@ const wchar_t * style_region_right::name = L"region-right";
 
 void style_region_right::docx_convert(oox::docx_conversion_context & Context) 
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
 }
 
 void style_region_right::xlsx_convert(oox::xlsx_conversion_context & Context) 
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->xlsx_convert(Context);
+        content_[i]->xlsx_convert(Context);
     }
 }
 
@@ -119,17 +117,17 @@ const wchar_t * style_region_center::name = L"region-center";
 
 void style_region_center::docx_convert(oox::docx_conversion_context & Context) 
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
 }
 
 void style_region_center::xlsx_convert(oox::xlsx_conversion_context & Context) 
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+ 	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->xlsx_convert(Context);
+        content_[i]->xlsx_convert(Context);
     }
 }
 

@@ -31,7 +31,6 @@
  */
 
 #include "pptx_comments_context.h"
-#include <boost/foreach.hpp>
 #include <iostream>
 #include "../odf/datatypes/length.h"
 #include "xlsx_utils.h"

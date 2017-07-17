@@ -157,6 +157,13 @@ namespace formulasconvert {
 
 			if (convert_with_TableName)
 			{
+				if (std::wstring::npos != sheet1.find(L" "))
+				{
+					if (sheet1[0] != L'\'')
+					{
+						sheet1 = L"'" + sheet1 + L"'";
+					}
+				}
 				return (sheet1 + L"!") + c1 + (c2.empty() ? L"" : (L":" + c2) );
 			}
 			else
@@ -579,10 +586,14 @@ namespace formulasconvert {
 	}
 	std::wstring odf2oox_converter::convert_named_expr(const std::wstring& expr, bool withTableName)
 	{
+		std::wstring workstr = expr;
+
+		bool isFormula = impl_->check_formula(workstr);
+
 		boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// поиск того что в апострофах и замена там
 
-		std::wstring workstr = boost::regex_replace(
-			expr,
+		workstr = boost::regex_replace(
+			workstr,
 			complexRef,
 			&replace_point_space,
 			boost::match_default | boost::format_all);	
@@ -603,6 +614,11 @@ namespace formulasconvert {
  		XmlUtils::replace_all( workstr, L"PROBEL"	, L" ");
 		XmlUtils::replace_all( workstr, L"APOSTROF"	, L"'");
 		XmlUtils::replace_all( workstr, L"TOCHKA"	, L".");
+
+		if (!isFormula)
+		{
+			workstr = L"\"" + workstr + L"\"";
+		}
 		return workstr;
 	}
 

@@ -32,8 +32,6 @@
 
 #include "office_spreadsheet.h"
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/attributes.h>
@@ -70,9 +68,9 @@ void office_spreadsheet::add_attributes( const xml::attributes_wc_ptr & Attribut
 void office_spreadsheet::docx_convert(oox::docx_conversion_context & Context)
 {
     Context.start_office_text();
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
     Context.end_office_text();
 }
@@ -82,13 +80,13 @@ void office_spreadsheet::xlsx_convert(oox::xlsx_conversion_context & Context)
     Context.start_office_spreadsheet(this);
     _CP_LOG << L"[info][xlsx] process spreadsheet (" << content_.size() << L" elmements)" << std::endl;
    
-	BOOST_FOREACH(const office_element_ptr & elm, table_database_ranges_)
-    {
-        elm->xlsx_convert(Context);
+ 	for (size_t i = 0; i < table_database_ranges_.size(); i++)
+	{
+        table_database_ranges_[i]->xlsx_convert(Context);
     }
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->xlsx_convert(Context);
+        content_[i]->xlsx_convert(Context);
     }
     Context.end_office_spreadsheet();
 }

@@ -32,8 +32,6 @@
 
 #include "office_annotation.h"
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/xmlchar.h>
 
 #include <cpdoccore/xml/attributes.h>
@@ -141,9 +139,9 @@ void office_annotation::docx_convert(oox::docx_conversion_context & Context)
 	bool pState = Context.get_paragraph_state();
 	Context.set_paragraph_state(false);		
 
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
+ 	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
 
 	Context.set_run_state(runState);
@@ -191,9 +189,9 @@ void office_annotation::xlsx_convert(oox::xlsx_conversion_context & Context)
 	}  
 
 	Context.get_text_context().start_comment_content();
-	BOOST_FOREACH(office_element_ptr const & elm, content_)//текст + текстовый стиль
+	for (size_t i = 0; i < content_.size(); i++)//текст + текстовый стиль
     {
-        elm->xlsx_convert(Context);
+        content_[i]->xlsx_convert(Context);
     }
 	Context.get_comments_context().add_author(author);
 	Context.get_comments_context().add_content(Context.get_text_context().end_comment_content());
@@ -268,9 +266,9 @@ void officeooo_annotation::pptx_convert(oox::pptx_conversion_context & Context)
 	Context.get_comments_context().start_comment(x, y,id_idx.first,id_idx.second);//author & idx (uniq number for author
 	
 	Context.get_text_context().start_comment_content();
-	BOOST_FOREACH(office_element_ptr const & elm, content_)//текст + текстовый стиль
+	for (size_t i = 0; i < content_.size(); i++)//текст + текстовый стиль
     {
-        elm->pptx_convert(Context);
+        content_[i]->pptx_convert(Context);
     }
 
 	Context.get_comments_context().add_date(date);

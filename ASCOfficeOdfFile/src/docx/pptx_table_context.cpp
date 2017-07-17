@@ -30,7 +30,6 @@
  *
  */
 
-#include <boost/foreach.hpp>
 #include <iostream>
 
 #include <cpdoccore/xml/simple_xml_writer.h>

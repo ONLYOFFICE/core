@@ -31,8 +31,6 @@
  */
 #include <vector>
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/utils.h>
 
 #include "xlsx_sharedstrings.h"
@@ -55,10 +53,10 @@ void xlsx_shared_strings::Impl::serialize(std::wostream & _Wostream) const
     _Wostream << L"<sst xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" count=\"" << 
         strings_.size() << "\" uniqueCount=\"" << strings_.size() << "\">";
     
-    BOOST_FOREACH(const std::wstring & str, strings_)
+    for (size_t i = 0; i < strings_.size(); i++)
     {
         _Wostream << L"<si>";
-			_Wostream << str;
+			_Wostream << strings_[i];
         _Wostream << L"</si>";
     }
 

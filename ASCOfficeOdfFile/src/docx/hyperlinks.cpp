@@ -33,9 +33,6 @@
 #include "hyperlinks.h"
 #include "oox_rels.h"
 
-#include <boost/foreach.hpp>
-#include <boost/lexical_cast.hpp>
-
 #include <cpdoccore/xml/utils.h>
 
 namespace cpdoccore { 

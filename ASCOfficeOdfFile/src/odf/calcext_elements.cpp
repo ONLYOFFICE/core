@@ -35,7 +35,6 @@
 #include <sstream>
 #include <string>
 
-#include <boost/foreach.hpp>
 #include <boost/regex.hpp>
 
 #include <cpdoccore/xml/xmlchar.h>

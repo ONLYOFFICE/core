@@ -122,9 +122,9 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 ////////////////////////////////////////////////////////////////////////////////////
 	properties.apply_to(Context.get_drawing_context().get_properties());
 	
-	BOOST_FOREACH(odf_reader::_property const & p, additional_)
+ 	for (size_t i = 0; i < additional_.size(); i++)
 	{
-		Context.get_drawing_context().set_property(p);
+		Context.get_drawing_context().set_property(additional_[i]);
 	}
 	
 	oox::_oox_fill fill;
@@ -134,9 +134,9 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 //////////////////////////////////////////////////////////////////////////////////////	
 	Context.get_text_context().start_drawing_content();
 
-	BOOST_FOREACH(office_element_ptr const & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->xlsx_convert(Context);
+        content_[i]->xlsx_convert(Context);
     }
 	std::wstring text_content_ = Context.get_text_context().end_drawing_content();
 

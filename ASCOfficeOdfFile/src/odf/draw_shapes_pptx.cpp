@@ -136,9 +136,9 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 ////////////////////////////////////////////////////////////////////////////////////
 	properties.apply_to(Context.get_slide_context().get_properties());
 	
-	BOOST_FOREACH(odf_reader::_property const & p, additional_)
+ 	for (size_t i = 0; i < additional_.size(); i++)
 	{
-		Context.get_slide_context().set_property(p);
+		Context.get_slide_context().set_property(additional_[i]);
 	}
 	if (!textStyleName.empty())
 	{
@@ -162,9 +162,9 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 	}
 ////////////////////////////////////////////////////////////////////////////////////
 	Context.get_text_context().start_object();
-	BOOST_FOREACH(office_element_ptr const & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        content_[i]->pptx_convert(Context);
     }
 	std::wstring text_content_ = Context.get_text_context().end_object();
 

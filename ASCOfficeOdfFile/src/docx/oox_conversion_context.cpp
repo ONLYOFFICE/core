@@ -32,7 +32,6 @@
 
 #include "oox_conversion_context.h"
 
-#include <boost/foreach.hpp>
 #include <iostream>
 #include <cpdoccore/xml/utils.h>
 #include <cpdoccore/odf/odf_document.h>

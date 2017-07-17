@@ -37,8 +37,6 @@
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/xmlchar.h>
 
-#include <boost/foreach.hpp>
-
 #include "paragraph_elements.h"
 #include "serialize_elements.h"
 

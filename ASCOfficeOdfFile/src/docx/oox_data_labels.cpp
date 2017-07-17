@@ -37,8 +37,6 @@
 #include "oox_data_labels.h"
 #include "oox_chart_shape.h"
 
-#include <boost/foreach.hpp>
-
 namespace cpdoccore {
 namespace oox {
 

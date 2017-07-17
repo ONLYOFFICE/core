@@ -32,12 +32,9 @@
 
 #include "math_limit_elements.h"
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
-
 
 namespace cpdoccore { 
 

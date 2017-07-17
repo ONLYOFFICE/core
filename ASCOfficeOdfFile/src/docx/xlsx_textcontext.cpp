@@ -36,7 +36,6 @@
 #include "xlsx_sharedstrings.h"
 #include <list>
 #include <cpdoccore/xml/simple_xml_writer.h>
-#include <boost/foreach.hpp>
 
 #include <cpdoccore/odf/odf_document.h>
 #include <cpdoccore/xml/utils.h>

@@ -244,9 +244,9 @@ xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
 xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
 mc:Ignorable=\"w14\">";
 
-    BOOST_FOREACH(office_element_ptr elm, style_font_face_)
+ 	for (size_t i = 0; i < style_font_face_.size(); i++)
     {
-        elm->docx_convert(Context);        
+        style_font_face_[i]->docx_convert(Context);        
     }
 
     strm << L"</w:fonts>";

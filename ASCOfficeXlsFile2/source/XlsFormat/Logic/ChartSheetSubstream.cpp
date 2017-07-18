@@ -202,10 +202,30 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 										proc.optional<PROTECTION_COMMON>();	break;
 			
 			case rt_Palette:			proc.optional<Palette>();			break;
-			case rt_SXViewLink:			proc.optional<SXViewLink>();		break;
-			case rt_PivotChartBits:		proc.optional<PivotChartBits>();	break;
-			case rt_SBaseRef:			proc.optional<SBaseRef>();			break;
-
+			case rt_SXViewLink:
+			{
+				if (proc.optional<SXViewLink>())
+				{
+					m_SXViewLink = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_PivotChartBits:		
+			{
+				if (proc.optional<PivotChartBits>())
+				{
+					m_PivotChartBits = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_SBaseRef:
+			{				
+				if (proc.optional<SBaseRef>())
+				{
+					m_SBaseRef = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_Obj:
 			case rt_MsoDrawing:
 			{
@@ -224,9 +244,18 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 			{
 				if (proc.optional<ExternSheet>())
 				{
+					m_ExternSheet = elements_.back(); 
+					elements_.pop_back();
 				}
 			}break;
-			case rt_Units:			proc.mandatory<Units>();	break;		
+			case rt_Units:
+			{
+				if (proc.mandatory<Units>())
+				{
+					m_Units = elements_.back(); 
+					elements_.pop_back();
+				}	
+			}break;
 			case rt_Chart:
 			{
 				if ( proc.mandatory<CHARTFORMATS>() )
@@ -368,7 +397,26 @@ int ChartSheetSubstream::serialize (std::wostream & _stream)
 			if ((chart_area_format) && (chart_area_format->fInvertNeg))	CP_XML_ATTR(L"val", 1); //????
 			else														CP_XML_ATTR(L"val", 0); 
 		}
+		if (m_SXViewLink)
+		{
+			SXViewLink *link = dynamic_cast<SXViewLink*>(m_SXViewLink.get());
 
+			CP_XML_NODE(L"c:pivotSource")
+			{
+				CP_XML_NODE(L"c:name")
+				{
+					std::wstring name = link->stPivotTable.value();
+					std::wstring::size_type pos = name.find(L"]");
+					if (std::wstring::npos != pos)
+						name = L"[]" + name.substr(pos + 1);
+					CP_XML_STREAM() << name;
+				}
+				CP_XML_NODE(L"c:fmtId")
+				{
+					CP_XML_ATTR(L"val", 0); 
+				}
+			}
+		}
 		CP_XML_NODE(L"c:chart")
 		{
 			serialize_title		(CP_XML_STREAM());		

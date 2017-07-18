@@ -209,6 +209,7 @@ SOURCES += \
     ../src/odf/datatypes/wrapoption.cpp \
     ../src/odf/datatypes/writingmode.cpp \
     ../src/odf/datatypes/xlink.cpp \
+    ../src/odf/datatypes/chartlabelposition.cpp \
     ../src/docx/xlsx_conditionalFormatting.cpp \
     ../src/docx/xlsx_dxfs.cpp \
     ../src/docx/docx_content_type.cpp \

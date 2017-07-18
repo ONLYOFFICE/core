@@ -159,7 +159,14 @@ public:
 class SXAddl_SXCCacheField_SXDCaption		: public SXAddl {};
 class SXAddl_SXCCacheField_SXDEnd			: public SXAddl {};
 class SXAddl_SXCCacheField_SXDId			: public SXAddl {};
-class SXAddl_SXCCacheField_SXDIfdbMempropMap: public SXAddl {};
+class SXAddl_SXCCacheField_SXDIfdbMempropMap: public SXAddl
+{
+public:
+	virtual void readFields(CFRecord& record);
+	virtual BaseObjectPtr clone();
+
+	std::vector<unsigned short>	rgMap;
+};
 class SXAddl_SXCCacheField_SXDIfdbMpMapCount: public SXAddl {};
 class SXAddl_SXCCacheField_SXDProperty		: public SXAddl {};
 class SXAddl_SXCCacheField_SXDPropName		: public SXAddl {};

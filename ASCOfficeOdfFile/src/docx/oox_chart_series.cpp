@@ -124,12 +124,20 @@ void oox_chart_series::parse_properties()
 		data_labels_->set_showCatName(*boolVal); 
 	}
 	odf_reader::GetProperty(content_.properties_, L"data-label-number", intVal);
+
 	if (intVal)
 	{
 		if (!data_labels_)	data_labels_ = oox_data_labels();
 		
 		if (*intVal == 1)	data_labels_->set_showVal(true); 
 		if (*intVal == 2)	data_labels_->set_showPercent(true); 		
+	}
+	odf_reader::GetProperty(content_.properties_, L"label-position", intVal);
+	if (intVal)
+	{
+		if (!data_labels_)	data_labels_ = oox_data_labels();
+		
+		data_labels_->set_position(*intVal); 
 	}
 }
 void oox_chart_series::setValues(int ind, std::vector<std::wstring> & values)

@@ -190,11 +190,8 @@ int FDB::serialize(std::wostream & strm)
 		{ 
 			CP_XML_ATTR(L"name", fdb->stFieldName.value());
 			
-			if (fdb_type->wTypeSql > 0)
-			{
-				CP_XML_ATTR(L"numFmtId", fdb_type->wTypeSql);	
+			CP_XML_ATTR(L"numFmtId", fdb_type->wTypeSql);	
 				//CP_XML_ATTR(L"sqlType", fdb_type->wTypeSql);	//in db
-			}
 			if (m_arSRCSXOPER.empty() && m_arGRPSXOPER.empty() == false)
 			{
 				CP_XML_ATTR(L"databaseField", 0);	
@@ -250,6 +247,7 @@ int FDB::serialize(std::wostream & strm)
 						if (bNumber)	bInteger = false;
 						else			bNumber = true;
 					}
+
 					if ((bDate & bNumber) || (bNumber & bString))
 					{
 						CP_XML_ATTR(L"containsSemiMixedTypes", 1);
@@ -262,13 +260,19 @@ int FDB::serialize(std::wostream & strm)
 					{
 						CP_XML_ATTR(L"containsSemiMixedTypes", 0);
 					}
-					if (bNumber)	CP_XML_ATTR(L"containsNumber",	1);
+					if (bDate && ! (bNumber || bInteger || bString || bEmpty ))
+					{
+						CP_XML_ATTR(L"containsNonDate",	0);
+					}
 					if (bDate)		CP_XML_ATTR(L"containsDate",	1);
+					if (!bString && (bInteger || bDate || bNumber || bEmpty))
+					{
+						CP_XML_ATTR(L"containsString",	0);
+					}
 					if (bEmpty)		CP_XML_ATTR(L"containsBlank",	1);
+					if (bNumber)	CP_XML_ATTR(L"containsNumber",	1);
 					if (bInteger)	CP_XML_ATTR(L"containsInteger",	1);
 					
-					if (!bString && (bInteger || bDate || bNumber || bEmpty))
-						CP_XML_ATTR(L"containsString",	0);
 
 					if (fdb->fnumMinMaxValid)
 					{
@@ -296,8 +300,13 @@ int FDB::serialize(std::wostream & strm)
 			{
 				CP_XML_NODE(L"fieldGroup")
 				{
-					if (fdb->ifdbParent > 0)
+					if (fdb->fHasParent)
+					{
 						CP_XML_ATTR(L"par", fdb->ifdbParent);	
+						CP_XML_ATTR(L"base", index);						
+					}
+					else
+						CP_XML_ATTR(L"base", fdb->ifdbBase);						
 
 					if (m_SXRANGE)
 						m_SXRANGE->serialize(CP_XML_STREAM());

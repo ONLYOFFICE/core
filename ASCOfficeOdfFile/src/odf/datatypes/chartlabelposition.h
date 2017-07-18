@@ -31,45 +31,54 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include <iosfwd>
+#include <string>
+#include "odfattributes.h"
+//
 
-namespace XLS
-{
+namespace cpdoccore { namespace odf_types { 
 
-class FDB: public CompositeObject
+class chart_label_position
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FDB)
 public:
-	FDB();
-	~FDB();
+    enum type
+    {
+        avoid_overlap,
+        bottom,
+        bottom_left,
+        bottom_right,
+		center,
+		inside,
+		left,
+		near_origin,
+		outside,
+		right,
+		top,
+		top_left,
+		top_right
 
-	BaseObjectPtr clone();
+    };
 
-	virtual const bool loadContent(BinProcessor& proc);
+    chart_label_position() {}
 
-	int serialize(std::wostream & strm);
+    chart_label_position(type _Type) : type_(_Type)
+    {}
 
-	static const ElementType	type = typeFDB;
+    type get_type() const
+    {
+        return type_;
+    };
+    
+    static chart_label_position parse(const std::wstring & Str);
 
-	BaseObjectPtr				m_SXFDB;	
-	BaseObjectPtr				m_SXFDBType;	
-	BaseObjectPtr				m_SXFMLA;	
+private:
+    type type_;
 
-	std::vector<BaseObjectPtr>	m_arSRCSXOPER;
-	std::vector<BaseObjectPtr>	m_arGRPSXOPER;
-	BaseObjectPtr				m_SXRANGE;
-	std::vector<BaseObjectPtr>	m_arSxIsxoper;
-
-	bool	bString;
-	bool	bDate;
-	bool	bNumber;
-	bool	bEmpty;
-	bool	bInteger;
-	bool	bBool;
-
-	int						index;
-	GlobalWorkbookInfoPtr	global_info;
 };
+	std::wostream & operator << (std::wostream & _Wostream, const chart_label_position & _Val);
 
-} // namespace XLS
+} 
 
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::chart_label_position);
+
+}

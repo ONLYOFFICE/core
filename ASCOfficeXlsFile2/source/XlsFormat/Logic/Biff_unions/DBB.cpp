@@ -101,7 +101,7 @@ int DBB::serialize(std::wostream & strm)
 				{
 					m_arSXOPER[indexOPER++]->serialize(CP_XML_STREAM());
 				}
-				else
+				else if (posBlob < dbb->size)
 				{
 					if (arPivotCacheFieldShortSize[i])//fShortIitms
 					{

@@ -80,7 +80,7 @@ int Legend::serialize(std::wostream & _stream, int size)
 		{
 			CP_XML_NODE(L"c:legendPos")
 			{
-				if (y1Kf > 0.5)
+				if (y1Kf > 0.5 && y1Kf > x1Kf)
 				{
 					CP_XML_ATTR(L"val", "b");
 					x = x - (size - 1 ) * dx / 2;
@@ -92,7 +92,7 @@ int Legend::serialize(std::wostream & _stream, int size)
 					y = y - (size - 1 ) * dy / 2;
 					dy = dy * size;
 				}
-				else if (x2Kf > 0.5)
+				else if (x2Kf > 0.5 && x2Kf > y2Kf)
 				{
 					CP_XML_ATTR(L"val", "l");
 					y = y - (size - 1 ) * dy / 2;

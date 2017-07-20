@@ -66,6 +66,7 @@ public:
 
 	bool start_table(const std::wstring & name);
 		void set_state(const std::wstring & state);
+		void set_chart_view();
     void end_table();
 
     void start_chart();

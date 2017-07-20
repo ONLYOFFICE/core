@@ -357,6 +357,8 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 			xls_global_info->current_sheet = -1; 
 			xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"ChartSheet_" + std::to_wstring(count_chart_sheets));
 
+			xlsx_context->set_chart_view();
+
 			XLS::ChartSheetSubstream* chart = dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get());
 
 			convert_chart_sheet(chart);

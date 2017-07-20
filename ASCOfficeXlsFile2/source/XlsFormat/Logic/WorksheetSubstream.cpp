@@ -31,48 +31,49 @@
  */
 
 #include "WorksheetSubstream.h"
-#include <Logic/Biff_records/Uncalced.h>
-#include <Logic/Biff_records/Index.h>
-#include <Logic/Biff_unions/GLOBALS.h>
-#include <Logic/Biff_unions/PAGESETUP.h>
-#include <Logic/Biff_records/Dimensions.h>
-#include <Logic/Biff_records/HFPicture.h>
-#include <Logic/Biff_records/Note.h>
-#include <Logic/Biff_records/DxGCol.h>
-#include <Logic/Biff_records/MergeCells.h>
-#include <Logic/Biff_records/LRng.h>
-#include <Logic/Biff_records/CodeName.h>
-#include <Logic/Biff_records/WebPub.h>
-#include <Logic/Biff_records/Window1.h>
-#include <Logic/Biff_records/CellWatch.h>
-#include <Logic/Biff_records/SheetExt.h>
-#include <Logic/Biff_records/EOF.h>
-#include <Logic/Biff_records/BOF.h>
-#include <Logic/Biff_records/DefaultRowHeight.h>
-#include <Logic/Biff_records/Label.h>
 
-#include <Logic/Biff_unions/BACKGROUND.h>
-#include <Logic/Biff_unions/BIGNAME.h>
-#include <Logic/Biff_unions/PROTECTION_COMMON.h> 
-#include <Logic/Biff_unions/COLUMNS.h>
-#include <Logic/Biff_unions/SCENARIOS.h>
-#include <Logic/Biff_unions/SORTANDFILTER.h>
-#include <Logic/Biff_unions/CELLTABLE.h>
-#include <Logic/Biff_unions/OBJECTS.h>
-#include <Logic/Biff_unions/PIVOTVIEW.h>
-#include <Logic/Biff_unions/DCON.h>
-#include <Logic/Biff_unions/WINDOW.h>
-#include <Logic/Biff_unions/CUSTOMVIEW.h>
-#include <Logic/Biff_unions/SORT.h>
-#include <Logic/Biff_unions/QUERYTABLE.h>
-#include <Logic/Biff_unions/PHONETICINFO.h>
-#include <Logic/Biff_unions/CONDFMTS.h>
-#include <Logic/Biff_unions/HLINK.h>
-#include <Logic/Biff_unions/DVAL.h>
-#include <Logic/Biff_unions/FEAT.h>
-#include <Logic/Biff_unions/FEAT11.h>
-#include <Logic/Biff_unions/RECORD12.h>
-#include <Logic/Biff_unions/SHFMLA_SET.h>
+#include "Biff_records/Uncalced.h"
+#include "Biff_records/Index.h"
+#include "Biff_unions/GLOBALS.h"
+#include "Biff_unions/PAGESETUP.h"
+#include "Biff_records/Dimensions.h"
+#include "Biff_records/HFPicture.h"
+#include "Biff_records/Note.h"
+#include "Biff_records/DxGCol.h"
+#include "Biff_records/MergeCells.h"
+#include "Biff_records/LRng.h"
+#include "Biff_records/CodeName.h"
+#include "Biff_records/WebPub.h"
+#include "Biff_records/Window1.h"
+#include "Biff_records/CellWatch.h"
+#include "Biff_records/SheetExt.h"
+#include "Biff_records/EOF.h"
+#include "Biff_records/BOF.h"
+#include "Biff_records/DefaultRowHeight.h"
+#include "Biff_records/Label.h"
+
+#include "Biff_unions/BACKGROUND.h"
+#include "Biff_unions/BIGNAME.h"
+#include "Biff_unions/PROTECTION_COMMON.h" 
+#include "Biff_unions/COLUMNS.h"
+#include "Biff_unions/SCENARIOS.h"
+#include "Biff_unions/SORTANDFILTER.h"
+#include "Biff_unions/CELLTABLE.h"
+#include "Biff_unions/OBJECTS.h"
+#include "Biff_unions/PIVOTVIEW.h"
+#include "Biff_unions/DCON.h"
+#include "Biff_unions/WINDOW.h"
+#include "Biff_unions/CUSTOMVIEW.h"
+#include "Biff_unions/SORT.h"
+#include "Biff_unions/QUERYTABLE.h"
+#include "Biff_unions/PHONETICINFO.h"
+#include "Biff_unions/CONDFMTS.h"
+#include "Biff_unions/HLINK.h"
+#include "Biff_unions/DVAL.h"
+#include "Biff_unions/FEAT.h"
+#include "Biff_unions/FEAT11.h"
+#include "Biff_unions/RECORD12.h"
+#include "Biff_unions/SHFMLA_SET.h"
 
 #include "Biff_structures/ODRAW/OfficeArtDgContainer.h"
 
@@ -292,6 +293,9 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					m_arPIVOTVIEW.insert(m_arPIVOTVIEW.begin(), elements_.back());
 					elements_.pop_back();
 					count--;
+
+					PIVOTVIEW *view = dynamic_cast<PIVOTVIEW*>(m_arPIVOTVIEW.back().get());
+					mapPivotViews.insert(std::make_pair(view->name, m_arPIVOTVIEW.back()));
 				}
 			}break;
 			case rt_DCon:

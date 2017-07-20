@@ -68,6 +68,14 @@ const bool PIVOTVIEW::loadContent(BinProcessor& proc)
 	}
 	m_PIVOTCORE = elements_.back();
 	elements_.pop_back();
+
+	PIVOTCORE *core = dynamic_cast<PIVOTCORE*>(m_PIVOTCORE.get());
+	
+	SxView* view = dynamic_cast<SxView*>(core->m_SxView.get());
+	if (view)
+	{
+		name = view->stTable.value();
+	}
 	
 	if (proc.optional<PIVOTFRT>())
 	{

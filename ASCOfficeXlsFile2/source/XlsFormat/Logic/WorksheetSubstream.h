@@ -90,6 +90,9 @@ public:
 
 	std::vector<BiffStructurePtr>	m_arHFPictureDrawing;
 
+//-------------------------------------------------------------------
+	std::map<std::wstring, BaseObjectPtr>	mapPivotViews;
+
 private:
 	
 	void LoadHFPicture();		//todoooo - обобщить 

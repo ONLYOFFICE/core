@@ -32,64 +32,65 @@
 
 #include "ChartSheetSubstream.h"
 
-#include <Logic/Biff_records/WriteProtect.h>
-#include <Logic/Biff_records/SheetExt.h>
-#include <Logic/Biff_records/WebPub.h>
-#include <Logic/Biff_records/HFPicture.h>
-#include <Logic/Biff_records/PrintSize.h>
-#include <Logic/Biff_records/HeaderFooter.h>
-#include <Logic/Biff_records/Fbi.h>
-#include <Logic/Biff_records/Fbi2.h>
-#include <Logic/Biff_records/ClrtClient.h>
-#include <Logic/Biff_records/Palette.h>
-#include <Logic/Biff_records/SXViewLink.h>
-#include <Logic/Biff_records/PivotChartBits.h>
-#include <Logic/Biff_records/SBaseRef.h>
-#include <Logic/Biff_records/MsoDrawingGroup.h>
-#include <Logic/Biff_records/Units.h>
-#include <Logic/Biff_records/CodeName.h>
-#include <Logic/Biff_records/EOF.h>
-#include <Logic/Biff_records/BOF.h>
-#include <Logic/Biff_records/AreaFormat.h>
-#include <Logic/Biff_records/SerToCrt.h>
-#include <Logic/Biff_records/AxisParent.h>
-#include <Logic/Biff_records/Series.h>
-#include <Logic/Biff_records/BRAI.h>
-#include <Logic/Biff_records/SIIndex.h>
-#include <Logic/Biff_records/DataFormat.h>
-#include <Logic/Biff_records/Text.h>
-#include <Logic/Biff_records/Pos.h>
-#include <Logic/Biff_records/Pie.h>
-#include <Logic/Biff_records/ShtProps.h>
-#include <Logic/Biff_records/Chart3d.h>
-#include <Logic/Biff_records/ChartFormat.h>
-#include <Logic/Biff_records/Legend.h>
-#include <Logic/Biff_records/AttachedLabel.h>
-#include <Logic/Biff_records/DataLabExtContents.h>
-#include <Logic/Biff_records/CrtLine.h>
-#include <Logic/Biff_records/Dat.h>
-#include <Logic/Biff_records/Chart.h>
-#include <Logic/Biff_records/ExternSheet.h>
+#include "Biff_records/WriteProtect.h"
+#include "Biff_records/SheetExt.h"
+#include "Biff_records/WebPub.h"
+#include "Biff_records/HFPicture.h"
+#include "Biff_records/PrintSize.h"
+#include "Biff_records/HeaderFooter.h"
+#include "Biff_records/Fbi.h"
+#include "Biff_records/Fbi2.h"
+#include "Biff_records/ClrtClient.h"
+#include "Biff_records/Palette.h"
+#include "Biff_records/SXViewLink.h"
+#include "Biff_records/PivotChartBits.h"
+#include "Biff_records/SBaseRef.h"
+#include "Biff_records/MsoDrawingGroup.h"
+#include "Biff_records/Units.h"
+#include "Biff_records/CodeName.h"
+#include "Biff_records/EOF.h"
+#include "Biff_records/BOF.h"
+#include "Biff_records/AreaFormat.h"
+#include "Biff_records/SerToCrt.h"
+#include "Biff_records/AxisParent.h"
+#include "Biff_records/Series.h"
+#include "Biff_records/BRAI.h"
+#include "Biff_records/SIIndex.h"
+#include "Biff_records/DataFormat.h"
+#include "Biff_records/Text.h"
+#include "Biff_records/Pos.h"
+#include "Biff_records/Pie.h"
+#include "Biff_records/ShtProps.h"
+#include "Biff_records/Chart3d.h"
+#include "Biff_records/ChartFormat.h"
+#include "Biff_records/Legend.h"
+#include "Biff_records/AttachedLabel.h"
+#include "Biff_records/DataLabExtContents.h"
+#include "Biff_records/CrtLine.h"
+#include "Biff_records/Dat.h"
+#include "Biff_records/Chart.h"
+#include "Biff_records/ExternSheet.h"
 
-#include <Logic/Biff_unions/PAGESETUP.h>
-#include <Logic/Biff_unions/BACKGROUND.h>
-#include <Logic/Biff_unions/PROTECTION_COMMON.h>
-#include <Logic/Biff_unions/OBJECTS.h>
-#include <Logic/Biff_unions/CHARTFOMATS.h>
-#include <Logic/Biff_unions/SERIESDATA.h>
-#include <Logic/Biff_unions/WINDOW.h>
-#include <Logic/Biff_unions/CUSTOMVIEW.h>
-#include <Logic/Biff_unions/CRTMLFRT.h>
-#include <Logic/Biff_unions/FRAME.h>
-#include <Logic/Biff_unions/ATTACHEDLABEL.h>
-#include <Logic/Biff_unions/SERIESFORMAT.h>
-#include <Logic/Biff_unions/CRT.h>
-#include <Logic/Biff_unions/AXISPARENT.h>
-#include <Logic/Biff_unions/AXES.h>
-#include <Logic/Biff_unions/SS.h>
-#include <Logic/Biff_unions/AI.h>
-#include <Logic/Biff_unions/LD.h>
-#include <Logic/Biff_unions/DAT.h>
+#include "Biff_unions/PAGESETUP.h"
+#include "Biff_unions/BACKGROUND.h"
+#include "Biff_unions/PROTECTION_COMMON.h"
+#include "Biff_unions/OBJECTS.h"
+#include "Biff_unions/CHARTFOMATS.h"
+#include "Biff_unions/SERIESDATA.h"
+#include "Biff_unions/WINDOW.h"
+#include "Biff_unions/CUSTOMVIEW.h"
+#include "Biff_unions/CRTMLFRT.h"
+#include "Biff_unions/FRAME.h"
+#include "Biff_unions/ATTACHEDLABEL.h"
+#include "Biff_unions/SERIESFORMAT.h"
+#include "Biff_unions/CRT.h"
+#include "Biff_unions/AXISPARENT.h"
+#include "Biff_unions/AXES.h"
+#include "Biff_unions/SS.h"
+#include "Biff_unions/AI.h"
+#include "Biff_unions/LD.h"
+#include "Biff_unions/DAT.h"
+#include "Biff_unions/PIVOTVIEW.h"
 
 #include "../../XlsXlsxConverter/XlsConverter.h"
 #include "../../XlsXlsxConverter/xlsx_conversion_context.h"
@@ -377,15 +378,14 @@ void ChartSheetSubstream::recalc(SERIESDATA* data)
 {
 }
 
-int ChartSheetSubstream::serialize (std::wostream & _stream)
+int ChartSheetSubstream::serialize(std::wostream & _stream)
 {
-	AreaFormat		*chart_area_format	= NULL;
 	CHARTFORMATS	*chart_formats		= dynamic_cast<CHARTFORMATS*>(m_CHARTFORMATS.get());
 	if (!chart_formats) return 0;
 
+	AreaFormat		*chart_area_format	= NULL;
 	FRAME			*chart_frame		= dynamic_cast<FRAME*>(chart_formats->m_FRAME.get());
-	if (chart_frame)
-		chart_area_format				= dynamic_cast<AreaFormat*>(chart_frame->m_AreaFormat.get());
+	if (chart_frame) chart_area_format	= dynamic_cast<AreaFormat*>(chart_frame->m_AreaFormat.get());
 
 	ShtProps		*sht_props			= dynamic_cast<ShtProps*>(chart_formats->m_ShtProps.get());
 	Chart			*chart_rect			= dynamic_cast<Chart*>(chart_formats->m_ChartRect.get());
@@ -450,6 +450,40 @@ int ChartSheetSubstream::serialize (std::wostream & _stream)
 				CP_XML_NODE(L"a:ln")
 				{
 					CP_XML_NODE(L"a:noFill");
+				}
+			}
+		}
+		if (m_SXViewLink)
+		{
+			CP_XML_NODE(L"c:extLst")
+			{
+				CP_XML_NODE(L"c:ext")
+				{
+					CP_XML_ATTR(L"uri", L"{781A3756-C4B2-4CAC-9D66-4F8BD8637D16}");
+					CP_XML_ATTR(L"xmlns:c14", L"http://schemas.microsoft.com/office/drawing/2007/8/2/chart");
+					CP_XML_NODE(L"c14:pivotOptions")
+					{
+						CP_XML_NODE(L"c14:dropZoneFilter")
+						{
+							CP_XML_ATTR(L"val", 1);
+						}		
+						CP_XML_NODE(L"c14:dropZoneCategories")
+						{
+							CP_XML_ATTR(L"val", 1);
+						}
+						CP_XML_NODE(L"c14:dropZoneData")
+						{
+							CP_XML_ATTR(L"val", 1);
+						}
+						CP_XML_NODE(L"c14:dropZoneSeries")
+						{
+							CP_XML_ATTR(L"val", 1);
+						}
+						CP_XML_NODE(L"c14:dropZonesVisible")
+						{
+							CP_XML_ATTR(L"val", 1);
+						}
+					}
 				}
 			}
 		}
@@ -733,7 +767,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 					}
 					
 					format->serialize(CP_XML_STREAM());
-					for (int i = 0 ; i < it->second.size(); i++)
+					for (size_t i = 0 ; i < it->second.size(); i++)
 					{
 						SERIESFORMAT * series = dynamic_cast<SERIESFORMAT *>(chart_formats->m_arSERIESFORMAT[it->second[i]].get());
 						if (series == NULL)	continue;
@@ -766,6 +800,11 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 
 							serialize_dPt(CP_XML_STREAM(), it->second[i], crt, (std::max)(ser->cValx, ser->cValy));//+bubbles
 							
+/*							if (arPivotData.empty() == false)
+							{
+								series->set_ref(arPivotData,  i * 2);
+							}*/				
+							
 							if (crt->m_iChartType == CHART_TYPE_Scatter || 
 								crt->m_iChartType == CHART_TYPE_Bubble)
 							{
@@ -777,6 +816,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 							}
 							else
 							{
+
 								serialize_ser(L"c:cat", CP_XML_STREAM(), series_id, series->m_arAI[2], ser->sdtX, ser->cValx);
 								serialize_ser(L"c:val", CP_XML_STREAM(), series_id, series->m_arAI[1], ser->sdtY, ser->cValy);
 							}							

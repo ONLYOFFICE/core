@@ -77,10 +77,10 @@ public:
 	std::vector<BaseObjectPtr>	m_arCUSTOMVIEW;
 	BaseObjectPtr				m_Units;
 	BaseObjectPtr				m_ExternSheet;
-
 	BaseObjectPtr				m_SXViewLink;
 	BaseObjectPtr				m_PivotChartBits;
 	BaseObjectPtr				m_SBaseRef;
+
 private:
 
 	void recalc(CHARTFORMATS*	charts);
@@ -88,10 +88,7 @@ private:
 
 	std::map<int, std::vector<int>> m_mapTypeChart;//тут нужен несортированый .. пока оставим этот
 
-
 	GlobalWorkbookInfoPtr pGlobalWorkbookInfo;
-
-
 };
 
 } // namespace XLS

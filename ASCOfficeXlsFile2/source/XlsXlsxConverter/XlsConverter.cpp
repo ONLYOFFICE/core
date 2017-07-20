@@ -357,7 +357,9 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 			xls_global_info->current_sheet = -1; 
 			xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"ChartSheet_" + std::to_wstring(count_chart_sheets));
 
-			convert_chart_sheet(dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get()));
+			XLS::ChartSheetSubstream* chart = dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get());
+
+			convert_chart_sheet(chart);
 		}
 
 		xlsx_context->end_table();
@@ -369,7 +371,7 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 	}
 }
 
-void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
+void XlsConverter::convert (XLS::WorksheetSubstream* sheet)
 {
 	if (sheet == NULL) return;
 

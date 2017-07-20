@@ -66,6 +66,7 @@ public:
     //  TODO: table-decls
 
 	office_element_ptr_array	table_database_ranges_;
+	office_element_ptr_array	table_data_pilot_tables_;
 
 	office_element_ptr			tracked_changes_;//??
 	office_element_ptr_array	content_;

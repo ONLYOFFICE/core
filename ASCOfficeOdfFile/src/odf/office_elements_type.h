@@ -219,6 +219,15 @@ enum ElementType
     typeTableTableRowGroup,
 	typeTableTableRowNoGroup,
     typeTableTableSource,
+
+	typeTableDataPilotTables,
+	typeTableDataPilotTable,
+	typeTableDataPilotField,
+	typeTableDatabaseSourceTable,
+	typeTableDatabaseSourceQuery,
+	typeTableDatabaseSourceSql,
+	typeTableSourceCellRange,
+	typeTableSourceService,
         
     typeOfficeBody,
     typeOfficeText,

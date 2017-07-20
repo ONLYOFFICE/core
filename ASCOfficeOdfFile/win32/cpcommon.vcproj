@@ -566,6 +566,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\datatypes\grandtotal.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\grandtotal.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\datatypes\hatchstyle.cpp"
 				>
 			</File>

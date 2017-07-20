@@ -34,7 +34,6 @@
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/attributes.h>
 
 #include "serialize_elements.h"
 
@@ -52,6 +51,10 @@ void office_spreadsheet::add_child_element( xml::sax * Reader, const std::wstrin
     {
         CP_CREATE_ELEMENT(table_database_ranges_);    
     }
+	else if CP_CHECK_NAME(L"table", L"data-pilot-tables")
+	{
+		CP_CREATE_ELEMENT(table_data_pilot_tables_);
+	}
 	else
 		CP_CREATE_ELEMENT(content_);
 }
@@ -87,6 +90,10 @@ void office_spreadsheet::xlsx_convert(oox::xlsx_conversion_context & Context)
 	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->xlsx_convert(Context);
+    }
+ 	for (size_t i = 0; i < table_data_pilot_tables_.size(); i++)
+	{
+        table_data_pilot_tables_[i]->xlsx_convert(Context);
     }
     Context.end_office_spreadsheet();
 }

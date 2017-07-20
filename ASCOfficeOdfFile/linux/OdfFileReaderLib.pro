@@ -105,6 +105,7 @@ SOURCES += \
     ../src/odf/table_calculation_settings.cpp \
     ../src/odf/table_docx.cpp \
     ../src/odf/table_named_expressions.cpp \
+    ../src/odf/table_data_pilot_tables.cpp \
     ../src/odf/table_pptx.cpp \
     ../src/odf/table_xlsx.cpp \
     ../src/odf/templates.cpp \
@@ -210,6 +211,7 @@ SOURCES += \
     ../src/odf/datatypes/writingmode.cpp \
     ../src/odf/datatypes/xlink.cpp \
     ../src/odf/datatypes/chartlabelposition.cpp \
+    ../src/odf/datatypes/grandtotal.cpp \
     ../src/docx/xlsx_conditionalFormatting.cpp \
     ../src/docx/xlsx_dxfs.cpp \
     ../src/docx/docx_content_type.cpp \
@@ -463,6 +465,8 @@ HEADERS += \
     ../src/odf/datatypes/wrapoption.h \
     ../src/odf/datatypes/writingmode.h \
     ../src/odf/datatypes/xlink.h \
+    ../src/odf/datatypes/chartlabelposition.h \
+    ../src/odf/datatypes/grandtotal.h \
     ../src/docx/docx_content_type.h \
     ../src/docx/docx_conversion_context.h \
     ../src/docx/docx_conversion_state.h \

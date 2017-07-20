@@ -120,3 +120,4 @@
 #include "../src/odf/datatypes/writingmode.cpp"
 #include "../src/odf/datatypes/xlink.cpp"
 #include "../src/odf/datatypes/chartlabelposition.cpp"
+#include "../src/odf/datatypes/grandtotal.cpp"

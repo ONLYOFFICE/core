@@ -1,4 +1,4 @@
-#-------------------------------------------------
+﻿#-------------------------------------------------
 #
 # Project created by QtCreator 2014-10-03T18:30:31
 #
@@ -7,7 +7,7 @@
 QT       -= core
 QT       -= gui
 
-VERSION = 2.4.468.0
+VERSION = 2.4.470.0
 DEFINES += INTVER=$$VERSION
 
 TARGET = x2t

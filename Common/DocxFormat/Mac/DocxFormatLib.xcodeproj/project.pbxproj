@@ -213,6 +213,7 @@
 		690FE07F1E9BBA15004B26D0 /* DrawingExt.h in Headers */ = {isa = PBXBuildFile; fileRef = 690FE07B1E9BBA15004B26D0 /* DrawingExt.h */; };
 		690FE0821E9BBA23004B26D0 /* DiagramData.h in Headers */ = {isa = PBXBuildFile; fileRef = 690FE0801E9BBA23004B26D0 /* DiagramData.h */; };
 		690FE0831E9BBA23004B26D0 /* DiagramDrawing.h in Headers */ = {isa = PBXBuildFile; fileRef = 690FE0811E9BBA23004B26D0 /* DiagramDrawing.h */; };
+		691C3E131F20C3D500F1775E /* File.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 691C3E121F20C3D500F1775E /* File.cpp */; };
 		69F181EC1C7734A700B2952B /* strings_hack_printf.h in Headers */ = {isa = PBXBuildFile; fileRef = 69F181EA1C7734A700B2952B /* strings_hack_printf.h */; };
 /* End PBXBuildFile section */
 
@@ -431,6 +432,7 @@
 		690FE07B1E9BBA15004B26D0 /* DrawingExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawingExt.h; sourceTree = "<group>"; };
 		690FE0801E9BBA23004B26D0 /* DiagramData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiagramData.h; sourceTree = "<group>"; };
 		690FE0811E9BBA23004B26D0 /* DiagramDrawing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiagramDrawing.h; sourceTree = "<group>"; };
+		691C3E121F20C3D500F1775E /* File.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp.preprocessed; fileEncoding = 4; path = File.cpp; sourceTree = "<group>"; };
 		69F181EA1C7734A700B2952B /* strings_hack_printf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = strings_hack_printf.h; path = ../../Common/DocxFormat/Source/Base/strings_hack_printf.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -901,6 +903,7 @@
 				17E6B3BD1AC4298500F28F8B /* Base64.h */,
 				17E6B3BE1AC4298500F28F8B /* Directory.h */,
 				17E6B3BF1AC4298500F28F8B /* File.h */,
+				691C3E121F20C3D500F1775E /* File.cpp */,
 				17E6B3C01AC4298500F28F8B /* Path.h */,
 				17E6B3C11AC4298500F28F8B /* Types.h */,
 				69F181EA1C7734A700B2952B /* strings_hack_printf.h */,
@@ -1163,6 +1166,7 @@
 				17C1FBAE1ACC4250006B99B3 /* oMath.cpp in Sources */,
 				17C1FBAF1ACC4250006B99B3 /* ChartSerialize.cpp in Sources */,
 				17C1FBB11ACC4250006B99B3 /* Position.cpp in Sources */,
+				691C3E131F20C3D500F1775E /* File.cpp in Sources */,
 				17C1FBB21ACC4250006B99B3 /* Vml.cpp in Sources */,
 				17C1FBB31ACC4250006B99B3 /* unicode_util.cpp in Sources */,
 				17C1FBB41ACC4250006B99B3 /* FldSimple.cpp in Sources */,
@@ -1202,6 +1206,7 @@
 					unix,
 					_IOS,
 					DONT_WRITE_EMBEDDED_FONTS,
+					_XCODE,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
@@ -1242,6 +1247,7 @@
 					unix,
 					_IOS,
 					DONT_WRITE_EMBEDDED_FONTS,
+					_XCODE,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (

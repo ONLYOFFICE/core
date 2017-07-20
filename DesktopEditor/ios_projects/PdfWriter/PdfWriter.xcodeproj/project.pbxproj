@@ -437,6 +437,7 @@
 					_IOS,
 					FILTER_FLATE_DECODE_ENABLED,
 					_ARM_ALIGN_,
+					_XCODE,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -476,6 +477,7 @@
 					_IOS,
 					FILTER_FLATE_DECODE_ENABLED,
 					_ARM_ALIGN_,
+					_XCODE,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

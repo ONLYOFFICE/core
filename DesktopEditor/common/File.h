@@ -618,6 +618,14 @@ namespace NSFile
 		{
 			return m_lFilePosition;
 		}
+        
+        #ifdef _IOS
+        
+        bool OpenFile(const std::wstring& sFileName, bool bRewrite = false);
+        bool CreateFileW(const std::wstring& sFileName);
+       
+        #else
+        
 		bool OpenFile(const std::wstring& sFileName, bool bRewrite = false)
 		{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
@@ -675,6 +683,9 @@ namespace NSFile
 			m_lFilePosition = 0;
 			return true;
 		}
+        
+        #endif
+        
 		bool CreateTempFile()
 		{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)

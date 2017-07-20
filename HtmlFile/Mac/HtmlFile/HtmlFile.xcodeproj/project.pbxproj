@@ -241,6 +241,7 @@
 					_IOS,
 					NOMINMAX,
 					LINUX,
+					_XCODE,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -271,6 +272,7 @@
 					_IOS,
 					NOMINMAX,
 					LINUX,
+					_XCODE,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

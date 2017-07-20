@@ -49,11 +49,10 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
 
-	ExtSheetPair iTabs;
-	RgceAreaRel area;
+	ExtSheetPair	iTabs;
+	RgceAreaRel		area;
 	const CellRef& cell_base_ref;
 };
 

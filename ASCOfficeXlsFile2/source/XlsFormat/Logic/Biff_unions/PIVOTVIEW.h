@@ -54,7 +54,8 @@ public:
 	BaseObjectPtr	m_PIVOTCORE;
 	BaseObjectPtr	m_PIVOTFRT;
 //----------------------------------
-	int indexCache;
+	int				indexCache;
+	std::wstring	name;
 };
 
 } // namespace XLS

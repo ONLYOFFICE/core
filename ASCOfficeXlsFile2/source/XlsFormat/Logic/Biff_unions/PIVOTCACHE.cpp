@@ -91,9 +91,13 @@ const bool PIVOTCACHE::loadContent(BinProcessor& proc)
 	}
 	
 	count = proc.repeated<FDB>(0, 0);
+	int i = 0;
 	while(count--)
 	{
 		m_arFDB.push_back(elements_.front());	elements_.pop_front();
+
+		FDB* fdb = dynamic_cast<FDB*>(m_arFDB.back().get());
+		fdb->index = i++;
 	}
 
 	count = proc.repeated<DBB>(0, 0);

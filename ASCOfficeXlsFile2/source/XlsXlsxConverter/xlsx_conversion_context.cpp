@@ -104,6 +104,13 @@ bool xlsx_conversion_context::start_table(const std::wstring & name)
 	return true;
 }
 
+void xlsx_conversion_context::set_chart_view()
+{
+	if (sheets_.empty()) return;
+
+	get_table_context().set_chart_view();
+}
+
 void xlsx_conversion_context::set_state(const std::wstring & state)
 {
 	if (state.empty()) return;

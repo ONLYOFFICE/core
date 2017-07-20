@@ -2087,6 +2087,7 @@ namespace DocFileFormat
             nElemSize = 4;
             bTruncated = true;
         }
+        else nElemSize = 2;
 
         long dwSize = nElems * nElemSize;
 

@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/FrtHeaderOld.h"
 
 namespace XLS
 {
 
-
-// Logical representation of OleDbConn record in BIFF8
 class OleDbConn: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(OleDbConn)
@@ -47,12 +46,15 @@ public:
 	~OleDbConn();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeOleDbConn;
+	static const ElementType type = typeOleDbConn;
 
+	FrtHeaderOld	frtHeaderOld;
+	bool			fPasswd;
+	bool			fLocal;
+	unsigned short	cst;
 };
 
 } // namespace XLS

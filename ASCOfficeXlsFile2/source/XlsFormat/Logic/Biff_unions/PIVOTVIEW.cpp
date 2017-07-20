@@ -68,6 +68,14 @@ const bool PIVOTVIEW::loadContent(BinProcessor& proc)
 	}
 	m_PIVOTCORE = elements_.back();
 	elements_.pop_back();
+
+	PIVOTCORE *core = dynamic_cast<PIVOTCORE*>(m_PIVOTCORE.get());
+	
+	SxView* view = dynamic_cast<SxView*>(core->m_SxView.get());
+	if (view)
+	{
+		name = view->stTable.value();
+	}
 	
 	if (proc.optional<PIVOTFRT>())
 	{
@@ -98,9 +106,7 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 			
 			CP_XML_ATTR(L"name",				view->stTable.value()); 
 			CP_XML_ATTR(L"cacheId",				view->iCache); 
-			CP_XML_ATTR(L"useAutoFormatting",	view->fAutoFormat); 
 			CP_XML_ATTR(L"dataOnRows",			view->sxaxis4Data.bRw); 
-			CP_XML_ATTR(L"autoFormatId",		view->itblAutoFmt);
 			CP_XML_ATTR(L"applyNumberFormats",	view->fAtrNum);
 			CP_XML_ATTR(L"applyBorderFormats",	view->fAtrBdr); 
 			CP_XML_ATTR(L"applyFontFormats",	view->fAtrFnt);
@@ -111,15 +117,16 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 			{
 				CP_XML_ATTR(L"dataCaption",			view->stData.value()); 
 			}
-			//updatedVersion="2" 
-			//asteriskTotals="1" 
-			//showMemberPropertyTips="0" 
-			//itemPrintTitles="1" 
-			//createdVersion="1" 
-			//indent="0" 
-			//compact="0" 
-			//compactData="0" 
-			//gridDropZones="1"		
+			CP_XML_ATTR(L"asteriskTotals",			1); 
+			CP_XML_ATTR(L"showMemberPropertyTips",	0);
+			CP_XML_ATTR(L"useAutoFormatting",		view->fAutoFormat); 
+			CP_XML_ATTR(L"autoFormatId",			view->itblAutoFmt);
+			CP_XML_ATTR(L"itemPrintTitles",			1);  
+			CP_XML_ATTR(L"indent",					0); 
+			CP_XML_ATTR(L"compact",					0);  
+			CP_XML_ATTR(L"compactData",				0); 
+			CP_XML_ATTR(L"gridDropZones",			1); 	
+
 			CP_XML_NODE(L"location")
 			{
 				CP_XML_ATTR(L"ref", view->ref.toString());

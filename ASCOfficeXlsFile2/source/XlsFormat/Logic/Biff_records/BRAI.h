@@ -51,7 +51,6 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeBRAI;

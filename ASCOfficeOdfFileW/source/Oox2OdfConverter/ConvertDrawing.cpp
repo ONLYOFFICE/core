@@ -594,8 +594,17 @@ void OoxConverter::convert(PPTX::Logic::SpPr *oox_spPr, PPTX::Logic::ShapeStyle*
 
 	convert(oox_spPr->xfrm.GetPointer());
 
-	PPTX::Logic::PrstGeom* prstGeom = &oox_spPr->Geometry.as<PPTX::Logic::PrstGeom>();
-	PPTX::Logic::CustGeom* custGeom = &oox_spPr->Geometry.as<PPTX::Logic::CustGeom>();
+	PPTX::Logic::PrstGeom* prstGeom = NULL;
+	PPTX::Logic::CustGeom* custGeom = NULL;
+
+	if (oox_spPr->Geometry.is<PPTX::Logic::PrstGeom>())
+	{
+		prstGeom = &oox_spPr->Geometry.as<PPTX::Logic::PrstGeom>();
+	}
+	if (oox_spPr->Geometry.is<PPTX::Logic::CustGeom>())
+	{
+		custGeom = &oox_spPr->Geometry.as<PPTX::Logic::CustGeom>();
+	}
 
 	convert(prstGeom);
 	convert(custGeom);
@@ -627,8 +636,13 @@ void OoxConverter::convert(PPTX::Logic::SpPr *oox_spPr, PPTX::Logic::ShapeStyle*
 	}
 	odf_context()->drawing_context()->end_line_properties();
 //-----------------------------------------------------------------------------------------------------------------------------
-	PPTX::Logic::EffectLst*	effectLst = &oox_spPr->EffectList.as<PPTX::Logic::EffectLst>();
+	PPTX::Logic::EffectLst*	effectLst = NULL;
 	
+	if (oox_spPr->EffectList.is<PPTX::Logic::EffectLst>())
+	{
+		effectLst = &oox_spPr->EffectList.as<PPTX::Logic::EffectLst>();
+	}
+
 	if		(effectLst)		convert(effectLst);
 	else if (oox_sp_style)	convert(&oox_sp_style->effectRef, 3);
 
@@ -644,18 +658,18 @@ void OoxConverter::convert(PPTX::Logic::UniFill *oox_fill, DWORD nARGB)
 {
 	if (oox_fill == NULL) return;
 
-	PPTX::Logic::NoFill*	noFill		= &oox_fill->as<PPTX::Logic::NoFill>();
-	PPTX::Logic::BlipFill*	blipFill	= &oox_fill->as<PPTX::Logic::BlipFill>();
-	PPTX::Logic::GradFill*	gradFill	= &oox_fill->as<PPTX::Logic::GradFill>();
-	PPTX::Logic::SolidFill*	solidFill	= &oox_fill->as<PPTX::Logic::SolidFill>();
-	PPTX::Logic::PattFill*	pattFill	= &oox_fill->as<PPTX::Logic::PattFill>();
+	PPTX::Logic::NoFill*	noFill		= NULL;
+	PPTX::Logic::BlipFill*	blipFill	= NULL;
+	PPTX::Logic::GradFill*	gradFill	= NULL;
+	PPTX::Logic::SolidFill*	solidFill	= NULL;
+	PPTX::Logic::PattFill*	pattFill	= NULL;
 	
-    if		(solidFill)	convert(solidFill, nARGB);
-    else if (blipFill)	convert(blipFill);
-    else if (gradFill)	convert(gradFill, nARGB);
-    else if (pattFill)	convert(pattFill, nARGB);
-	else if (noFill)	odf_context()->drawing_context()->set_no_fill();
+	if (oox_fill->is<PPTX::Logic::NoFill>())		odf_context()->drawing_context()->set_no_fill();
 
+	if (oox_fill->is<PPTX::Logic::BlipFill>())		convert(&oox_fill->as<PPTX::Logic::BlipFill>(), nARGB);
+	if (oox_fill->is<PPTX::Logic::GradFill>())		convert(&oox_fill->as<PPTX::Logic::GradFill>(), nARGB);
+	if (oox_fill->is<PPTX::Logic::SolidFill>())		convert(&oox_fill->as<PPTX::Logic::SolidFill>(),nARGB);
+	if (oox_fill->is<PPTX::Logic::PattFill>())		convert(&oox_fill->as<PPTX::Logic::PattFill>(), nARGB);
 }
 
 int OoxConverter::convert(PPTX::Logic::PrstTxWarp *oox_text_preset)
@@ -783,8 +797,10 @@ void OoxConverter::convert(PPTX::Logic::Path2D *oox_geom_path)
 
 	for (size_t i = 0 ; i < oox_geom_path->Paths.size(); i++)
 	{
-		PPTX::Logic::PathBase* pathBase = &oox_geom_path->Paths[i].Path2D.as<PPTX::Logic::PathBase>();
-		convert(pathBase);
+		if (oox_geom_path->Paths[i].Path2D.is<PPTX::Logic::PathBase>())
+		{
+			convert(&oox_geom_path->Paths[i].Path2D.as<PPTX::Logic::PathBase>());
+		}
 	}
 
 	if (oox_geom_path->stroke.IsInit() && *oox_geom_path->stroke == false)
@@ -1137,12 +1153,24 @@ void OoxConverter::convert(PPTX::Logic::BodyPr *oox_bodyPr)
 		//+ style section
 		//+element text:section в котором параграфы
 	}
-	if (oox_bodyPr->Fit.type == PPTX::Logic::TextFit::FitSpAuto)
-	{
-		//изменяемы размеры
-		odf_context()->drawing_context()->set_text_box_min_size(true);//уже выставленые в min
 
+	switch(oox_bodyPr->Fit.type)
+	{
+		case  PPTX::Logic::TextFit::FitSpAuto:
+		{//изменяемы размеры			
+			odf_context()->drawing_context()->set_text_box_min_size(true);//уже выставленые в min
+		}break;
+		case  PPTX::Logic::TextFit::FitNo:
+		{
+		}break;
+		case  PPTX::Logic::TextFit::FitNormAuto:
+		{
+		}break;
+		default:
+		{
+		}
 	}
+
 	if (oox_bodyPr->fromWordArt.IsInit() && oox_bodyPr->prstTxWarp.IsInit())
 	{
 		for (size_t i = 0; i < oox_bodyPr->prstTxWarp->avLst.size(); i++)
@@ -1680,12 +1708,21 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 	_CP_OPT(double) opacityText;
 	std::wstring	hexColorText;
 			
-	PPTX::Logic::GradFill*	gradFill = &oox_run_pr->Fill.as<PPTX::Logic::GradFill>();
+	PPTX::Logic::GradFill*	gradFill	= NULL;
+	PPTX::Logic::SolidFill*	solidFill	= NULL;
+
+	if (oox_run_pr->Fill.is<PPTX::Logic::GradFill>())
+	{
+		gradFill = &oox_run_pr->Fill.as<PPTX::Logic::GradFill>();
+	}
 	if (gradFill && !gradFill->GsLst.empty())
 	{
 		convert(&gradFill->GsLst[0].color, hexColorText, opacityText);
 	}
-	PPTX::Logic::SolidFill*	solidFill	= &oox_run_pr->Fill.as<PPTX::Logic::SolidFill>();
+	if (oox_run_pr->Fill.is<PPTX::Logic::SolidFill>())
+	{
+		solidFill = &oox_run_pr->Fill.as<PPTX::Logic::SolidFill>();
+	}
 	if (solidFill)
 	{
 		convert(&solidFill->Color, hexColorText, opacityText);

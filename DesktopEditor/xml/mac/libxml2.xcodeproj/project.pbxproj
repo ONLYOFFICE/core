@@ -566,6 +566,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = 2WH24U26GJ;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					UNICODE,
+					_UNICODE,
+					USE_LITE_READER,
+					_USE_LIBXML2_READER_,
+					_USE_XMLLITE_READER_,
+					LINUX,
+					MAC,
+					_IOS,
+					LIBXML_READER_ENABLED,
+					_XCODE,
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -582,6 +594,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = 2WH24U26GJ;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					UNICODE,
+					_UNICODE,
+					USE_LITE_READER,
+					_USE_LIBXML2_READER_,
+					_USE_XMLLITE_READER_,
+					LINUX,
+					MAC,
+					_IOS,
+					LIBXML_READER_ENABLED,
+					_XCODE,
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,

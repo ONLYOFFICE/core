@@ -232,6 +232,7 @@
 					MAC,
 					unix,
 					_IOS,
+					_XCODE,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -260,6 +261,7 @@
 					MAC,
 					unix,
 					_IOS,
+					_XCODE,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

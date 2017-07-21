@@ -215,20 +215,30 @@ void XLUnicodeStringSegmented::load(CFRecord& record)
 	record >> cchTotal;
 
 	if (cchTotal < 1) return;
+	
+	if (cchTotal > record.getDataSize() - record.getRdPtr())
+	{
+		cchTotal = cchTotal >> 8;
+	}
 
 	_UINT32 cchTotal_test = 0;
 	while(true)
 	{
 		if (record.isEOF())
 			break;
+
+		if (cchTotal_test >= cchTotal) 
+			break;
+		
+		_UINT32 max_string_size = cchTotal - cchTotal_test;
+
 		XLUnicodeString string;
 		record >> string;
 		
-		cchTotal_test += string.value().length();
-
 		arStrings.push_back(string.value());
 
-		strTotal += string.value();
+		cchTotal_test	+= arStrings.back().length();
+		strTotal		+= arStrings.back();
 	}
 }
 

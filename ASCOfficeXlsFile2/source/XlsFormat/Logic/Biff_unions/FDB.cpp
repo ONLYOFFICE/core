@@ -175,7 +175,7 @@ const bool FDB::loadContent(BinProcessor& proc)
 	return true;
 }
 
-int FDB::serialize(std::wostream & strm)
+int FDB::serialize(std::wostream & strm, bool bSql)
 {
 	SXFDB*		fdb			= dynamic_cast<SXFDB*>(m_SXFDB.get());
 	SXFDBType*	fdb_type	= dynamic_cast<SXFDBType*>(m_SXFDBType.get());
@@ -189,14 +189,21 @@ int FDB::serialize(std::wostream & strm)
 		CP_XML_NODE(L"cacheField")
 		{ 
 			CP_XML_ATTR(L"name", fdb->stFieldName.value());
-			
-			CP_XML_ATTR(L"numFmtId", fdb_type->wTypeSql);	
-				//CP_XML_ATTR(L"sqlType", fdb_type->wTypeSql);	//in db
+
+			if (bSql)
+			{
+				CP_XML_ATTR(L"numFmtId", 0);	
+				if (fdb_type->wTypeSql > 0)
+					CP_XML_ATTR(L"sqlType", fdb_type->wTypeSql);
+			}
+			else
+			{
+				CP_XML_ATTR(L"numFmtId", fdb_type->wTypeSql);	
+			}
 			if (m_arSRCSXOPER.empty() && m_arGRPSXOPER.empty() == false)
 			{
 				CP_XML_ATTR(L"databaseField", 0);	
 			}
-
 			switch(fdb_type->wTypeSql)//format code
 			{
 			case 0x0000:

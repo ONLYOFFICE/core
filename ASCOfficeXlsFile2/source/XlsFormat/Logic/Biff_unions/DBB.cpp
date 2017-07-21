@@ -97,7 +97,7 @@ int DBB::serialize(std::wostream & strm)
 
 			for (size_t i = 0; i < arPivotCacheFields.size(); i++)
 			{
-				if(arPivotCacheFields[i] == false)
+				if(arPivotCacheFields[i] == false && indexOPER < m_arSXOPER.size())
 				{
 					m_arSXOPER[indexOPER++]->serialize(CP_XML_STREAM());
 				}

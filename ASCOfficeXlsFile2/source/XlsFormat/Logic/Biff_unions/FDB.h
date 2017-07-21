@@ -47,7 +47,7 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	int serialize(std::wostream & strm);
+	int serialize(std::wostream & strm, bool bSql);
 
 	static const ElementType	type = typeFDB;
 

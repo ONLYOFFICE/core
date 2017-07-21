@@ -67,6 +67,10 @@ void PtgSxName::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
 		if ((name) && (name->ifdb >= 0  && name->ifdb < global_info->arPivotCacheSxNames.size()))
 		{
 			_Name = global_info->arPivotCacheSxNames[name->ifdb];
+			if (std::wstring::npos != _Name.find(L" "))
+			{
+				_Name = L"'" + _Name + L"'";
+			}
 		}
 		else if (!global_info->arPivotSxNames[sxIndex].pair.empty())
 		{

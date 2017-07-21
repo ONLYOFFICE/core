@@ -52,6 +52,7 @@ public:
 	static const ElementType type = typeSXSRC;
 
 	BaseObjectPtr	m_source;	
+	bool			bSql;
 };
 
 } // namespace XLS

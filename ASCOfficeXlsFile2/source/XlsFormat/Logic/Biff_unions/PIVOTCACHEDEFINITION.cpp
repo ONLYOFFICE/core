@@ -34,6 +34,7 @@
 #include "PIVOTCACHE.h"
 #include "SXSRC.h"
 #include "SXADDLCACHE.h"
+#include "FDB.h"
 
 #include "../Biff_records/SXStreamID.h"
 #include "../Biff_records/SXVS.h"
@@ -110,6 +111,8 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 
 	if (!db || !db_ex)return 0;
 
+	bool bSql = false;
+
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"pivotCacheDefinition")
@@ -124,13 +127,16 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 			CP_XML_ATTR(L"enableRefresh",	1);
 			CP_XML_ATTR(L"refreshedBy",		db->rgb.value());
 			CP_XML_ATTR(L"refreshedDate",	db_ex->numDate.data.value);
-			CP_XML_ATTR(L"recordCount",		db->crdbUsed);
+			CP_XML_ATTR(L"recordCount",		db->crdbdb);
 			//createdVersion="1" 
 			//refreshedVersion="2" 
 			//upgradeOnRefresh="1">
 			SXSRC* src = dynamic_cast<SXSRC*>(m_SXSRC.get());
 			if (src)
+			{
+				bSql = src->bSql;
 				src->serialize(CP_XML_STREAM());
+			}
 			
 			if (pivot_cache->m_arFDB.empty() == false)
 			{
@@ -140,7 +146,10 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 
 					for (size_t i = 0; i < pivot_cache->m_arFDB.size(); i++)
 					{
-						pivot_cache->m_arFDB[i]->serialize(CP_XML_STREAM());
+						FDB *field = dynamic_cast<FDB *>(pivot_cache->m_arFDB[i].get());
+						if (!field) continue;
+
+						field->serialize(CP_XML_STREAM(), bSql);
 					}
 				}
 			}

@@ -206,8 +206,8 @@ int DBQUERY::serialize_connection(std::wostream & strm)
 	{
 		CP_XML_NODE(L"connection")
 		{
-			CP_XML_ATTR(L"id", 1);	//connectionId in connections(root)
-			CP_XML_ATTR(L"name", L"Connection");
+			CP_XML_ATTR(L"id", connectionId);	
+			CP_XML_ATTR(L"name", L"Connection" + std::to_wstring(connectionId));
 
 			CP_XML_ATTR(L"type", queryOrParam->query.dbt);
 			//switch(queryOrParam->query.dbt)
@@ -222,22 +222,24 @@ int DBQUERY::serialize_connection(std::wostream & strm)
 			//}			
 
 			if (queryOrParam->query.fSavePwd) CP_XML_ATTR(L"savePassword", 1);
-			if (queryOrParam->query.fSavePwd) CP_XML_ATTR(L"refreshedVersion", 1);
+			CP_XML_ATTR(L"refreshedVersion", 1);
 
 			int index = 0;
 			CP_XML_NODE(L"dbPr")
 			{
-				if (index < m_arSXString.size())
+				std::wstring command, connection;
+				for (index = 0; index < queryOrParam->query.cstQuery; index++)
 				{
-					CP_XML_ATTR(L"command", m_arSXString[index]);
+					command += m_arSXString[index];
 				}
-				index++;
-
-				if (index < m_arSXString.size())
+				
+				for (; index < queryOrParam->query.cstQuery + queryOrParam->query.cstOdbcConn; index++)
 				{
-					CP_XML_ATTR(L"connection", m_arSXString[index]);
+					connection += m_arSXString[index];
 				}
-				index++;
+				
+				CP_XML_ATTR(L"connection", connection);
+				CP_XML_ATTR(L"command", command);
 			}
 		}
 	}

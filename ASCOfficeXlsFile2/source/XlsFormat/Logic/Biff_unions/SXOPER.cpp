@@ -82,7 +82,10 @@ const bool SXOPER::loadContent(BinProcessor& proc)
 		}
 		bNumber = !bInteger;
 		node	= L"n";
-		value	= std::to_wstring(num->num.data.value);
+		if (bInteger)
+			value	= std::to_wstring((int)num->num.data.value);
+		else
+			value	= std::to_wstring(num->num.data.value);
 	}
 	else if(proc.optional<SxBool>())
 	{

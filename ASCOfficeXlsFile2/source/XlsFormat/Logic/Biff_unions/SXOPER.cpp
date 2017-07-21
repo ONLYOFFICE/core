@@ -38,6 +38,8 @@
 #include "../Biff_records/SXString.h"
 #include "../Biff_records/SXDtr.h"
 
+#include <boost/lexical_cast.hpp>
+
 namespace XLS
 {
 
@@ -85,7 +87,7 @@ const bool SXOPER::loadContent(BinProcessor& proc)
 		if (bInteger)
 			value	= std::to_wstring((int)num->num.data.value);
 		else
-			value	= std::to_wstring(num->num.data.value);
+			value	= boost::lexical_cast<std::wstring>(num->num.data.value);
 	}
 	else if(proc.optional<SxBool>())
 	{

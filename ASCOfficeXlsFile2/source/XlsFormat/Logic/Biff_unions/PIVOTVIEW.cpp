@@ -193,12 +193,15 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 					core->m_PIVOTPI->serialize(CP_XML_STREAM());
 				}
 			}
-			CP_XML_NODE(L"dataFields")
+			if (core->m_arSXDI.empty() == false)
 			{
-				CP_XML_ATTR(L"count", view->cDimData);
-				for (size_t i = 0; i <  core->m_arSXDI.size(); i++)
+				CP_XML_NODE(L"dataFields")
 				{
-					core->m_arSXDI[i]->serialize(CP_XML_STREAM());
+					CP_XML_ATTR(L"count", view->cDimData);
+					for (size_t i = 0; i <  core->m_arSXDI.size(); i++)
+					{
+						core->m_arSXDI[i]->serialize(CP_XML_STREAM());
+					}
 				}
 			}
 			//CP_XML_NODE(L"pivotTableStyleInfo")

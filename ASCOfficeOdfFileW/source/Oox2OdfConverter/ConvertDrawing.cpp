@@ -656,20 +656,14 @@ void OoxConverter::convert(PPTX::Logic::SpPr *oox_spPr, PPTX::Logic::ShapeStyle*
 
 void OoxConverter::convert(PPTX::Logic::UniFill *oox_fill, DWORD nARGB)
 {
-	if (oox_fill == NULL) return;
-
-	PPTX::Logic::NoFill*	noFill		= NULL;
-	PPTX::Logic::BlipFill*	blipFill	= NULL;
-	PPTX::Logic::GradFill*	gradFill	= NULL;
-	PPTX::Logic::SolidFill*	solidFill	= NULL;
-	PPTX::Logic::PattFill*	pattFill	= NULL;
+    if (oox_fill == NULL) return;
 	
 	if (oox_fill->is<PPTX::Logic::NoFill>())		odf_context()->drawing_context()->set_no_fill();
 
-	if (oox_fill->is<PPTX::Logic::BlipFill>())		convert(&oox_fill->as<PPTX::Logic::BlipFill>(), nARGB);
-	if (oox_fill->is<PPTX::Logic::GradFill>())		convert(&oox_fill->as<PPTX::Logic::GradFill>(), nARGB);
-	if (oox_fill->is<PPTX::Logic::SolidFill>())		convert(&oox_fill->as<PPTX::Logic::SolidFill>(),nARGB);
-	if (oox_fill->is<PPTX::Logic::PattFill>())		convert(&oox_fill->as<PPTX::Logic::PattFill>(), nARGB);
+    if (oox_fill->is<PPTX::Logic::BlipFill>())		convert(&oox_fill->as<PPTX::Logic::BlipFill>());
+    if (oox_fill->is<PPTX::Logic::GradFill>())		convert(&oox_fill->as<PPTX::Logic::GradFill>(), nARGB);
+    if (oox_fill->is<PPTX::Logic::SolidFill>())		convert(&oox_fill->as<PPTX::Logic::SolidFill>(),nARGB);
+    if (oox_fill->is<PPTX::Logic::PattFill>())		convert(&oox_fill->as<PPTX::Logic::PattFill>(), nARGB);
 }
 
 int OoxConverter::convert(PPTX::Logic::PrstTxWarp *oox_text_preset)

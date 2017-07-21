@@ -4581,10 +4581,13 @@ std::wstring CDrawingConverter::SaveObjectBackground(LONG lStart, LONG lLength)
 	NSBinPptxRW::CXmlWriter oXmlWriter;
 	SaveObjectExWriterInit(oXmlWriter, XMLWRITER_DOC_TYPE_DOCX);
 
-	oXmlWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе
-	PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
-	oShape.toXmlWriterVMLBackground(&oXmlWriter, *m_pTheme, *m_pClrMap);
+	if (oElem.is<PPTX::Logic::Shape>())
+	{
+		oXmlWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе
 
+		PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
+		oShape.toXmlWriterVMLBackground(&oXmlWriter, *m_pTheme, *m_pClrMap);
+	}
 	--m_nCurrentIndexObject;
 
 	SaveObjectExWriterRelease(oXmlWriter);
@@ -4606,18 +4609,26 @@ void CDrawingConverter::ConvertShapeVML(PPTX::Logic::SpTreeElem& oElem, const st
 {
     ConvertMainPropsToVML(bsMainProps, oWriter, oElem);
 
-	oWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе
-	PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
-	oShape.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap, false, bSignature);
+	if (oElem.is<PPTX::Logic::Shape>())
+	{
+		oWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе
+		
+		PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
+		oShape.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap, false, bSignature);
+	}
 }
 
 void CDrawingConverter::ConvertGroupVML(PPTX::Logic::SpTreeElem& oElem, const std::wstring& bsMainProps, NSBinPptxRW::CXmlWriter& oWriter)
 {
     ConvertMainPropsToVML(bsMainProps, oWriter, oElem);
 
-    oWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе (вместе с остальными параметрами)
-	PPTX::Logic::SpTree& oGroup = oElem.as<PPTX::Logic::SpTree>();
-	oGroup.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap);
+	if (oElem.is<PPTX::Logic::SpTree>())
+	{
+		oWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе (вместе с остальными параметрами)
+		
+		PPTX::Logic::SpTree& oGroup = oElem.as<PPTX::Logic::SpTree>();
+		oGroup.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap);
+	}
 }
 void CDrawingConverter::ConvertTextVML(XmlUtils::CXmlNode &nodeTextBox, PPTX::Logic::Shape* pShape)
 {

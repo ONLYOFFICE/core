@@ -969,6 +969,8 @@ void OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::
 	PPTX::Theme *theme = oParam.oDocx->GetTheme();
 	if (!theme || fmt_index <0) return;
 
+	if (style_ref->Color.is<PPTX::Logic::SchemeClr>() == false) return;
+
 	PPTX::Logic::SchemeClr & schemeClr = style_ref->Color.as<PPTX::Logic::SchemeClr>();
 
 	std::wstring color = schemeClr.val.get();

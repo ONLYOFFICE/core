@@ -415,11 +415,10 @@ namespace NSBinPptxRW
 					LONG lLayouts = (LONG)m_arSlideMasters_Theme[i].m_arLayouts.size();
 					for (LONG j = 0; j < lLayouts; ++j)
 					{
-						arrLays.push_back(PPTX::Logic::XmlId());
+						arrLays.push_back(PPTX::Logic::XmlId(L"p:sldLayoutId"));
 						
                         std::wstring sId = std::to_wstring((_UINT64)(0x80000000 + __nCountLayouts + j + 1));
 
-						arrLays[j].m_name = _T("sldLayoutId");
 						arrLays[j].id = sId;
 						arrLays[j].rid = (size_t)(j + 1);
 					}
@@ -755,11 +754,10 @@ namespace NSBinPptxRW
 				LONG nCountLayouts = 0;
 				for (LONG i = 0; i < nCountMasters; ++i)
 				{
-					m_oPresentation.sldMasterIdLst.push_back(PPTX::Logic::XmlId());
+					m_oPresentation.sldMasterIdLst.push_back(PPTX::Logic::XmlId(L"p:sldMasterId"));
 
                     std::wstring sId = std::to_wstring((_UINT64)(0x80000000 + nCountLayouts));
 
-					m_oPresentation.sldMasterIdLst[i].m_name = _T("sldMasterId");
 					m_oPresentation.sldMasterIdLst[i].id = sId;
 					m_oPresentation.sldMasterIdLst[i].rid = (size_t)(i + 1);
 					nCountLayouts += (LONG)(m_arSlideMasters_Theme[i].m_arLayouts.size() + 1);
@@ -773,11 +771,10 @@ namespace NSBinPptxRW
 				m_oPresentation.sldIdLst.clear();
 				for (LONG i = 0; i < nCountSlides; ++i)
 				{
-					m_oPresentation.sldIdLst.push_back(PPTX::Logic::XmlId());
+					m_oPresentation.sldIdLst.push_back(PPTX::Logic::XmlId(L"p:sldId"));
 
                     std::wstring sId = std::to_wstring(256 + i);
 
-                    m_oPresentation.sldIdLst[i].m_name = _T("sldId");
 					m_oPresentation.sldIdLst[i].id = sId;
 					m_oPresentation.sldIdLst[i].rid = (size_t)nCurrentRels;
 					++nCurrentRels;
@@ -788,8 +785,8 @@ namespace NSBinPptxRW
 				m_oPresentation.notesMasterIdLst.clear();
 				if (bNotesMasterPresent)
 				{
-					m_oPresentation.notesMasterIdLst.push_back(PPTX::Logic::XmlId());
-					m_oPresentation.notesMasterIdLst[0].m_name = _T("notesMasterId");
+					m_oPresentation.notesMasterIdLst.push_back(PPTX::Logic::XmlId(L"p:notesMasterId"));
+
 					m_oPresentation.notesMasterIdLst[0].rid = (size_t)nCurrentRels;
 					++nCurrentRels;
 				}

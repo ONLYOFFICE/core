@@ -896,7 +896,6 @@ namespace PPTX
 				{
 					PPTX::Logic::Ext ext;
 					ext.link	= OOX::RId(blipFill.blip->mediaRid);
-					ext.uri		= L"{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}"; 
 					nvPicPr.nvPr.extLst.push_back(ext);
 
 					int nRId = -1;

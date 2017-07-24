@@ -259,7 +259,7 @@ namespace PPTX
 			void toXmlWriterVML(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group = false);
 //----------------------------------------------------------------------
 			NvPicPr					nvPicPr;
-			BlipFill				blipFill;
+			mutable BlipFill		blipFill;
 			SpPr					spPr;
 			nullable<ShapeStyle>	style;
 		//internal

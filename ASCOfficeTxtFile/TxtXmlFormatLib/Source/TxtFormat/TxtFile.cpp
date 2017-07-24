@@ -51,7 +51,7 @@ const std::list<std::string> TxtFile::readAnsiOrCodePage() // == readUtf8without
 	std::list<std::string> result;
 	NSFile::CFileBinary file_binary;
 
-	if (file_binary.OpenFile(m_path) != S_OK) return result;
+	if (file_binary.OpenFile(m_path) == false) return result;
 
 	DWORD file_size	= file_binary.GetFileSize();
 	char *file_data	= new char[file_size];
@@ -118,7 +118,7 @@ const std::list<std::wstring> TxtFile::readUnicode()
     std::list<std::wstring> result;
 	NSFile::CFileBinary file_binary;
 
-	if (file_binary.OpenFile(m_path) != S_OK) return result;
+	if (file_binary.OpenFile(m_path) == false ) return result;
 
 	DWORD file_size	= file_binary.GetFileSize();
 	char *file_data	= new char[file_size];
@@ -135,7 +135,7 @@ const std::list<std::wstring> TxtFile::readBigEndian()
     std::list<std::wstring> result;
 	NSFile::CFileBinary file_binary;
 
-	if (file_binary.OpenFile(m_path) != S_OK) return result;
+	if (file_binary.OpenFile(m_path) == false) return result;
 
 	DWORD file_size	= file_binary.GetFileSize();
 	char *file_data	= new char[file_size];
@@ -160,7 +160,7 @@ const std::list<std::string> TxtFile::readUtf8()
 	std::list<std::string> result;
 	NSFile::CFileBinary file_binary;
 
-	if (file_binary.OpenFile(m_path) != S_OK) return result;
+	if (file_binary.OpenFile(m_path) == false) return result;
 
 	DWORD file_size	= file_binary.GetFileSize();
 	char *file_data	= new char[file_size];

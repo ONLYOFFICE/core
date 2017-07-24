@@ -562,6 +562,7 @@
 					_IOS,
 					DONT_WRITE_EMBEDDED_FONTS,
 					AVS_USE_CONVERT_PPTX_TOCUSTOM_VML,
+					_XCODE,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -595,6 +596,7 @@
 					_IOS,
 					DONT_WRITE_EMBEDDED_FONTS,
 					AVS_USE_CONVERT_PPTX_TOCUSTOM_VML,
+					_XCODE,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

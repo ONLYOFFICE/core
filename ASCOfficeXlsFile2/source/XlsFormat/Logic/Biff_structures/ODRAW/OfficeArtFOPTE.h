@@ -750,7 +750,7 @@ class pConnectionSitesDir : public OfficeArtFOPTE
 	
 	virtual void ReadComplexData(XLS::CFRecord& record);
 
-	IMsoArray<ODRAW::FixedPoint> complex;
+	IMsoArray<OSHARED::FixedPoint> complex;
 };
 
 class pInscribe : public OfficeArtFOPTE 

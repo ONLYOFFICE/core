@@ -182,7 +182,7 @@ public:
 	std::vector<ODRAW::MSOPOINT>	custom_verticles;
 	std::vector<ODRAW::ADJH>		custom_adjustHandles;
 	std::vector<ODRAW::MSOPOINT>	custom_connection;
-	std::vector<ODRAW::FixedPoint>	custom_connectionDir;
+	std::vector<OSHARED::FixedPoint>custom_connectionDir;
 	std::vector<ODRAW::MSORECT>		custom_inscribe;
 
 	_rect							custom_rect;
@@ -413,7 +413,7 @@ public:
 		void set_custom_adjustValues(std::vector<_CP_OPT(int)>		& values);
 		void set_custom_path		(int type_path);
 		void set_custom_connection	(std::vector<ODRAW::MSOPOINT>	& points);
-		void set_custom_connectionDir(std::vector<ODRAW::FixedPoint>& points);
+		void set_custom_connectionDir(std::vector<OSHARED::FixedPoint>& points);
 		void set_custom_inscribe	(std::vector<ODRAW::MSORECT>	& rects);
 		void set_custom_x_limo		(int val);
 		void set_custom_y_limo		(int val);

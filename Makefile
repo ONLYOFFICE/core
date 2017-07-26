@@ -61,6 +61,7 @@ ASCDOCUMENTSCORE := $(LIBDIR)/$(LIB_PREFIX)ascdocumentscore$(SHARED_EXT)
 LIBXML := $(LIBDIR)/$(LIB_PREFIX)libxml$(LIB_EXT)
 LICENSEMANAGER := $(LIBDIR)/$(LIB_PREFIX)LicenceManager$(LIB_EXT)
 OOXMLSIGNATURE := $(LIBDIR)/$(LIB_PREFIX)ooxmlsignature$(LIB_EXT)
+HUNSPELL := $(LIBDIR)/$(LIB_PREFIX)hunspell$(SHARED_EXT)
 
 TARGETS += $(ALLFONTSGEN)
 TARGETS += $(X2T)
@@ -89,6 +90,7 @@ TARGETS += $(ASCDOCUMENTSCORE)
 TARGETS += $(LIBXML)
 TARGETS += $(LICENSEMANAGER)
 TARGETS += $(OOXMLSIGNATURE)
+TARGETS += $(HUNSPELL)
 
 X2T_PRO := $(abspath X2tConverter/build/Qt/X2tSLN.pro)
 HTMLFILEINTERNAL_PRO := $(abspath ../desktop-sdk/HtmlFile/Internal/Internal.pro)
@@ -117,6 +119,7 @@ ASCDOCUMENTSCORE_PRO := $(abspath ../desktop-sdk/ChromiumBasedEditors/lib/AscDoc
 LIBXML_PRO := $(abspath DesktopEditor/xml/build/qt/libxml2.pro)
 LICENSEMANAGER_PRO := $(abspath LicenceManager/linux/LicenseManager.pro)
 OOXMLSIGNATURE_PRO := $(abspath DesktopEditor/xmlsec/src/ooxmlsignature.pro)
+HUNSPELL_PRO := $(abspath DesktopEditor/hunspell-1.3.3/src/qt/hunspell.pro)
 
 # PROS += $(basename $(X2T_PRO)).build
 # PROS += ALLFONTSGEN_PRO
@@ -168,6 +171,7 @@ QT_PROJ += ASCDOCUMENTSCORE
 QT_PROJ += LIBXML
 QT_PROJ += LICENSEMANAGER
 QT_PROJ += OOXMLSIGNATURE
+QT_PROJ += HUNSPELL
 
 # X2T_DEP += $(XLSFORMATLIB)
 # X2T_DEP += $(ODFFILEWRITERLIB)
@@ -217,6 +221,7 @@ ASCDOCUMENTSCORE_DEP += $(XPSFILE)
 #ASCDOCUMENTSCORE_DEP += $(LICENSEMANAGER)
 ASCDOCUMENTSCORE_DEP += $(LIBXML)
 ASCDOCUMENTSCORE_DEP += $(OOXMLSIGNATURE)
+ASCDOCUMENTSCORE_DEP += $(HUNSPELL)
 
 OOXMLSIGNATURE_DEP += $(LIBXML)
 

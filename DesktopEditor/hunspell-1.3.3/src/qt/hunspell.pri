@@ -1,4 +1,6 @@
+hunspell_build_static {
 DEFINES += HUNSPELL_STATIC
+}
 
 building_hunspell {
     DEFINES += BUILDING_LIBHUNSPELL

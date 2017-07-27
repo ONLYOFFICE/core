@@ -125,6 +125,7 @@ const double g_dKoef_mm_to_hps = 2 * g_dKoef_mm_to_pt;
 
 const static wchar_t* g_sFormatSignature = L"DOCY";
 const int g_nFormatVersion = 5;
+const int g_nFormatVersionNoBase64 = 10;
 extern int g_nCurFormatVersion;
 	namespace c_oAscWrapStyle{enum c_oSerFormat
 	{

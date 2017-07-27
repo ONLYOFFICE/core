@@ -67,6 +67,7 @@ CPPTXFile::CPPTXFile(extract_to_directory fCallbackExtract, compress_from_direct
 	m_strEmbeddedFontsDirectory = _T("");
 
     m_strFolderThemes = _T("");
+	m_bIsNoBase64 = false;
 
 	//m_fCallbackResource = fCallbackResource;
     m_fCallbackExtract  = fCallbackExtract;
@@ -232,6 +233,10 @@ HRESULT CPPTXFile::SetUseSystemFonts(bool val)
     m_bIsUseSystemFonts = val;
 	return S_OK;
 }
+void CPPTXFile::SetIsNoBase64(bool bIsNoBase64)
+{
+	m_bIsNoBase64 = bIsNoBase64;
+}
 HRESULT CPPTXFile::OpenFileToPPTY(std::wstring bsInput, std::wstring bsOutput)
 {
     if (m_strTempDir.empty())
@@ -325,7 +330,7 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(std::wstring bsInput, std::wstring bsOutp
 		}
 	}
 
-	PPTX2EditorAdvanced::Convert(oBinaryWriter, *m_pFolder, m_strDirectory, pathDstFileOutput.GetPath());
+	PPTX2EditorAdvanced::Convert(oBinaryWriter, *m_pFolder, m_strDirectory, pathDstFileOutput.GetPath(), m_bIsNoBase64);
 
 	return S_OK;
 }
@@ -360,7 +365,7 @@ HRESULT CPPTXFile::ConvertPPTYToPPTX(std::wstring bsInput, std::wstring bsOutput
 	std::wstring strBsInput = bsInput;
     std::wstring srcFolder = NSDirectory::GetFolderPath(strBsInput);
 
-    oWriter.OpenPPTY(pSrcBuffer, lFileSize, srcFolder, bsThemesFolder);
+	oWriter.OpenPPTY(pSrcBuffer, lFileSize, srcFolder, bsThemesFolder);
 	
 	RELEASEARRAYOBJECTS(pSrcBuffer);
 	HRESULT hRes = S_OK;

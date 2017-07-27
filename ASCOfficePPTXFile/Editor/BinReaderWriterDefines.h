@@ -42,6 +42,8 @@ namespace NSBinPptxRW
 	const BYTE g_nodeAttributeStart = 0xFA;
 	const BYTE g_nodeAttributeEnd	= 0xFB;
 
+	const int g_nFormatVersionNoBase64 = 10;
+
 	namespace NSSerFormat
 	{
 		enum SerFormat

@@ -61,6 +61,7 @@ private:
 	std::wstring		m_strEmbeddedFontsDirectory;
 
 	std::wstring		m_strFolderThemes;
+	bool				m_bIsNoBase64;
 
     extract_to_directory    m_fCallbackExtract;
 	compress_from_directory m_fCallbackCompress;
@@ -93,6 +94,7 @@ public:
     HRESULT SetFontDir			(std::wstring bsFontDir);
     HRESULT SetThemesDir		(std::wstring bsDir);
     HRESULT SetUseSystemFonts	(bool useSystemFonts);
+    void SetIsNoBase64			(bool bIsNoBase64);
     HRESULT OpenFileToPPTY		(std::wstring bsInput, std::wstring bsOutput);
     HRESULT OpenDirectoryToPPTY	(std::wstring bsInput, std::wstring bsOutput);
     HRESULT ConvertPPTYToPPTX	(std::wstring bsInput, std::wstring bsOutput, std::wstring bsThemesFolder);

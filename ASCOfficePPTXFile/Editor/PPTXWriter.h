@@ -118,7 +118,7 @@ namespace NSBinPptxRW
             m_oReader.m_strFolderThemes = pathTheme.GetPath();
         }
 
-        void OpenPPTY(BYTE* pBuffer, int len, std::wstring srcFolder, std::wstring strThemesFolder)
+		void OpenPPTY(BYTE* pBuffer, int len, std::wstring srcFolder, std::wstring strThemesFolder)
 		{
 			int start_pos = 0;
 
@@ -158,11 +158,30 @@ namespace NSBinPptxRW
 			int dstLenTemp = XmlUtils::GetInteger(__str_decode_len);
 			//int dstLenTemp = Base64DecodeGetRequiredLength(len);
 
-			BYTE* pDstBuffer = new BYTE[dstLenTemp];
-			int dstLen = dstLenTemp;
-            Base64::Base64Decode((const char*)pBuffer, len, pDstBuffer, &dstLen);
+			int nVersion = 1;
+			if(__str_version.length() > 1)
+			{
+				nVersion = std::stoi(__str_version.substr(1).c_str());
+			}
+			bool bIsNoBase64 = nVersion == g_nFormatVersionNoBase64;
 
-			m_oReader.Init(pDstBuffer, 0, dstLen);
+			BYTE* pDstBuffer = NULL;
+			int dstLen = 0;
+			if(!bIsNoBase64)
+			{
+				BYTE* pDstBuffer = new BYTE[dstLenTemp];
+				int dstLen = dstLenTemp;
+				Base64::Base64Decode((const char*)pBuffer, len, pDstBuffer, &dstLen);
+				m_oReader.Init(pDstBuffer, 0, dstLen);
+			}
+			else
+			{
+				pDstBuffer = pBuffer - start_pos;
+				dstLen = len + start_pos;
+				m_oReader.Init(pDstBuffer, 0, dstLen);
+				m_oReader.Seek(start_pos);
+			}
+
 			m_oReader.m_strFolder = srcFolder;
             m_oReader.m_strFolderExternalThemes = strThemesFolder;
 			
@@ -813,8 +832,10 @@ namespace NSBinPptxRW
 					bIsAuthors = true;
 				}
 			}
-
-			RELEASEARRAYOBJECTS(pDstBuffer);
+			if(!bIsNoBase64)
+			{
+				RELEASEARRAYOBJECTS(pDstBuffer);
+			}
 
 	// content types
 			OOX::CContentTypes *pContentTypes = m_oImageManager.m_pContentTypes;

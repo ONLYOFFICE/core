@@ -128,6 +128,7 @@ namespace NExtractTools
         // Save to file (from temp dir)
         BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
+		m_oCDocxSerializer.setIsNoBase64(params.getIsNoBase64());
         m_oCDocxSerializer.setFontDir(params.getFontPath());
 
         //bool bRes = m_oCDocxSerializer.saveToFile (sResDoct, sSrcDocx, sTemp);
@@ -188,7 +189,8 @@ namespace NExtractTools
 
         BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
-         m_oCDocxSerializer.setFontDir(params.getFontPath());
+		m_oCDocxSerializer.setIsNoBase64(params.getIsNoBase64());
+		m_oCDocxSerializer.setFontDir(params.getFontPath());
 
         std::wstring sXmlOptions = _T("");
         std::wstring sThemePath;             // will be filled by 'CreateDocxFolders' method
@@ -255,6 +257,7 @@ namespace NExtractTools
         // Save to file (from temp dir)
         BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
+		m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
         m_oCXlsxSerializer.setFontDir(params.getFontPath());
 
         return m_oCXlsxSerializer.saveToFile (sTo, sXlsxDir, bXmlOptions ? params.getXmlOptions() : L"") ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
@@ -309,7 +312,8 @@ namespace NExtractTools
 
         BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
-         m_oCXlsxSerializer.setFontDir(params.getFontPath());
+		m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
+		m_oCXlsxSerializer.setFontDir(params.getFontPath());
 
         std::wstring sXmlOptions = _T("");
         std::wstring sMediaPath;             // will be filled by 'CreateXlsxFolders' method
@@ -377,6 +381,7 @@ namespace NExtractTools
 
         if (pptx_file)
         {
+			pptx_file->SetIsNoBase64(params.getIsNoBase64());
             pptx_file->put_TempDirectory(sTemp);
             pptx_file->SetFontDir (params.getFontPath());
             nRes = (S_OK == pptx_file->OpenFileToPPTY (sFrom, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
@@ -438,6 +443,7 @@ namespace NExtractTools
 
         if (pptx_file)
         {
+			pptx_file->SetIsNoBase64(params.getIsNoBase64());
             pptx_file->SetFontDir(params.getFontPath());
             nRes = (S_OK == pptx_file->ConvertPPTYToPPTX(sTargetBin, sTo, sThemeDir)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 
@@ -492,7 +498,8 @@ namespace NExtractTools
         // Save to file (from temp dir)
         BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
-         m_oCXlsxSerializer.setFontDir(params.getFontPath());
+		m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
+        m_oCXlsxSerializer.setFontDir(params.getFontPath());
 
         int nRes = m_oCXlsxSerializer.saveToFile (sResultXlstFileEditor, sCSV, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
         if (SUCCEEDED_X2T(nRes))
@@ -517,6 +524,7 @@ namespace NExtractTools
         // Save to file (from temp dir)
         BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
+		m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
         m_oCXlsxSerializer.setFontDir(params.getFontPath());
 
         COfficeUtils oCOfficeUtils(NULL);
@@ -541,6 +549,7 @@ namespace NExtractTools
         // Save to file (from temp dir)
         BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
+		m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
         m_oCXlsxSerializer.setFontDir(params.getFontPath());
 
         return m_oCXlsxSerializer.saveToFile(sTo, sFrom, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
@@ -562,6 +571,7 @@ namespace NExtractTools
 
         BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
+		m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
         m_oCXlsxSerializer.setFontDir(params.getFontPath());
 
         std::wstring sMediaPath;
@@ -587,6 +597,7 @@ namespace NExtractTools
        // Save to file (from temp dir)
        BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
+	   m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
        m_oCXlsxSerializer.setFontDir(params.getFontPath());
 
        std::wstring sXMLOptions = _T("");
@@ -617,6 +628,7 @@ namespace NExtractTools
            // Save to file (from temp dir)
            BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
+		   m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
            m_oCXlsxSerializer.setFontDir(params.getFontPath());
 
            std::wstring sToTemp = sTemp + FILE_SEPARATOR_STR + _T("output.csv");
@@ -645,7 +657,14 @@ namespace NExtractTools
 		pdfWriter.SetTempFolder(sTemp);
 		pdfWriter.SetThemesPlace(sThemeDir);
 		int nReg = (bPaid == false) ? 0 : 1;
-		return S_OK == pdfWriter.OnlineWordToPdf(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		if (params.getIsNoBase64())
+		{
+			return S_OK == pdfWriter.OnlineWordToPdfFromBinary(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		else
+		{
+			return S_OK == pdfWriter.OnlineWordToPdf(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		}
 	}
 	int bin2image (const std::wstring &sTFileDir, BYTE* pBuffer, LONG lBufferLen, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams& params)
 	{
@@ -1713,8 +1732,8 @@ namespace NExtractTools
                                std::wstring sTempDocx = sTemp + FILE_SEPARATOR_STR + wsFilePathInFilename + L"_DOCX";
                                NSDirectory::CreateDirectory(sTempDocx);
 
-                               BinDocxRW::CDocxSerializer m_oCDocxSerializer;
-
+							   BinDocxRW::CDocxSerializer m_oCDocxSerializer;
+							   m_oCDocxSerializer.setIsNoBase64(params.getIsNoBase64());
                                m_oCDocxSerializer.setFontDir(params.getFontPath());
 
                                std::wstring sXmlOptions;

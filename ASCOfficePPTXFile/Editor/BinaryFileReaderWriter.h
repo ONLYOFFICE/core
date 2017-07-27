@@ -292,6 +292,7 @@ namespace NSBinPptxRW
 		void WriteStringW3	(const std::wstring& sBuffer);
 		
 		void WriteStringW4	(const std::wstring& sBuffer);
+		void WriteStringUtf8(const std::wstring& sBuffer);
 		// --------------------------------------------------------
 		void WriteLONG64	(const _INT64& lValue);
 		void WriteDouble64	(const double& dValue);
@@ -306,7 +307,7 @@ namespace NSBinPptxRW
 		void StartMainRecord(_INT32 lType);
 		void WriteReserved(size_t lCount);
 
-		void WriteMainPart();
+		void WriteMainPart(_UINT32 nStartPos);
 		
 		void WriteString1	(int type, const std::wstring& val);
 		void WriteString2	(int type, const NSCommon::nullable_string& val);

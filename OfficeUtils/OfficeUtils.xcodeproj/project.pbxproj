@@ -36,7 +36,7 @@
 		69676CB81CA58BBD00D7A1D1 /* OfficeUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OfficeUtils.cpp; sourceTree = "<group>"; };
 		69676CB91CA58BBD00D7A1D1 /* OfficeUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OfficeUtils.h; sourceTree = "<group>"; };
 		69676CBA1CA58BBD00D7A1D1 /* OfficeUtilsCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OfficeUtilsCommon.h; sourceTree = "<group>"; };
-		69676CBB1CA58BBD00D7A1D1 /* ZipUtilsCP.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZipUtilsCP.cpp; sourceTree = "<group>"; };
+		69676CBB1CA58BBD00D7A1D1 /* ZipUtilsCP.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp.preprocessed; fileEncoding = 4; path = ZipUtilsCP.cpp; sourceTree = "<group>"; };
 		69676CBC1CA58BBD00D7A1D1 /* ZipUtilsCP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipUtilsCP.h; sourceTree = "<group>"; };
 		69676D291CA58BBD00D7A1D1 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
 		69676D2A1CA58BBD00D7A1D1 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
@@ -292,6 +292,7 @@
 					MAC,
 					unix,
 					_IOS,
+					_XCODE,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				OTHER_LDFLAGS = "-ObjC";
@@ -309,6 +310,7 @@
 					MAC,
 					unix,
 					_IOS,
+					_XCODE,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				OTHER_LDFLAGS = "-ObjC";

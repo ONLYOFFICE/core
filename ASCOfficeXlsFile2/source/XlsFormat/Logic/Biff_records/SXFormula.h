@@ -50,7 +50,7 @@ public:
 
 	static const ElementType type = typeSXFormula;
 
-
+	short ifdb;
 };
 
 } // namespace XLS

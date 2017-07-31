@@ -140,12 +140,8 @@ int SXRANGE::serialize(std::wostream & strm)
 				SXDtr* startDate = dynamic_cast<SXDtr*>(m_arSXDtr[0].get());
 				SXDtr* endDate = dynamic_cast<SXDtr*>(m_arSXDtr[1].get());
 
-				std::wstringstream s_start, s_end;
-				s_start << startDate->yr << L"-" << startDate->mon << L"-" << startDate->dom << L"T" << startDate->hr << L":" << startDate->min << L":" << startDate->sec;
-				s_end << endDate->yr << L"-" << endDate->mon << L"-" << endDate->dom << L"T" << endDate->hr << L":" << endDate->min << L":" << endDate->sec;
-				
-				CP_XML_ATTR(L"startDate", s_start.str());	
-				CP_XML_ATTR(L"endDate", s_end.str());	
+				CP_XML_ATTR(L"startDate", startDate->value());	
+				CP_XML_ATTR(L"endDate", endDate->value());	
 			}
 			if (m_arSXNum.size() == 3)
 			{

@@ -49,7 +49,7 @@ public:
 	
 	void readFields(CFRecord& record);
 
-	int serialize(std::wostream & strm);
+	std::wstring value();
 
 	static const ElementType type = typeSXString;
 

@@ -47,10 +47,22 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize(std::wostream & strm);
+
 	static const ElementType	type = typeDBB;
 
 	BaseObjectPtr				m_SXDBB;	
 	std::vector<BaseObjectPtr>	m_arSXOPER;	
+
+//---------------------------------------------------
+	std::vector<bool>	arPivotCacheFields;
+	std::vector<bool>	arPivotCacheFieldShortSize;
+
+	bool	bString;
+	bool	bDate;
+	bool	bNumber;
+	bool	bEmpty;
+	bool	bBool;
 };
 
 } // namespace XLS

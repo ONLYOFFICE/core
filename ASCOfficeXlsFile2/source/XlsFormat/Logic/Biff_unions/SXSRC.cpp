@@ -38,9 +38,9 @@
 namespace XLS
 {
 
-
 SXSRC::SXSRC()
 {
+	bSql = false;
 }
 
 
@@ -54,10 +54,10 @@ BaseObjectPtr SXSRC::clone()
 	return BaseObjectPtr(new SXSRC(*this));
 }
 
-
 // SXSRC = DREF / SXTBL / DBQUERY
 const bool SXSRC::loadContent(BinProcessor& proc)
 {
+	bSql = false;
 	if(!proc.optional<DREF>())
 	{
 		if(!proc.optional<SXTBL>())
@@ -66,6 +66,7 @@ const bool SXSRC::loadContent(BinProcessor& proc)
 			{
 				return false;
 			}
+			bSql = true;
 		}
 	}
 	m_source = elements_.back();

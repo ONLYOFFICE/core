@@ -60,6 +60,13 @@ static const std::wstring DefaultPalette[] = {
 	L"00003366",	L"00339966",	L"00003300",	L"00333300",	L"00993300",	L"00993366",	L"00333399",	L"00333333"
 };
 
+
+struct _sx_name
+{
+	BaseObjectPtr				name;
+	std::vector<BaseObjectPtr>	pair;
+};
+
 class GlobalWorkbookInfo
 {
 public:
@@ -74,7 +81,6 @@ public:
 	void			GetDigitFontSizePixels();
 
 	unsigned int	GenerateAXESId();
-
 
 	unsigned short								CodePage;
 	CRYPT::DecryptorPtr							decryptor;
@@ -99,7 +105,15 @@ public:
 	unsigned int								last_AXES_id;
 	const static unsigned int					initial_AXES_id = 0x2000000;
 
+	short												idPivotCache;
 	std::map<int, BaseObjectPtr>						mapPivotCache;
+	std::vector<bool>									arPivotCacheFields;
+	std::vector<bool>									arPivotCacheFieldShortSize;
+
+	std::vector<_sx_name>								arPivotSxNames;
+	std::vector<std::wstring>							arPivotCacheSxNames;
+	std::vector<std::wstring>							arPivotCacheReferences;
+
 	std::map<std::wstring, std::vector<std::wstring>>	mapDefineNames;
 	std::vector<std::wstring>							arDefineNames;
 	std::vector<std::wstring>							arExternalNames;
@@ -132,6 +146,9 @@ public:
 	int											cellStyleDxfs_count;
 
 	std::wstringstream							users_Dxfs_stream;
+	std::wstringstream							connections_stream;
+	
+	int											connectionId;
 
 	XlsConverter								*xls_converter;
 

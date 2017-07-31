@@ -35,10 +35,15 @@
 #include "SXFORMULA_bu.h"
 #include "FDB.h"
 #include "DBB.h"
+#include "SXOPER.h"
+#include "PRFILTER.h"
+#include "PIVOTRULE.h"
 
 #include "../Biff_records/SXDB.h"
 #include "../Biff_records/SXDBEx.h"
 #include "../Biff_records/EOF.h"
+#include "../Biff_records/SxItm.h"
+#include "../Biff_records/SxFilt.h"
 
 namespace XLS
 {
@@ -60,6 +65,11 @@ BaseObjectPtr PIVOTCACHE::clone()
 // PIVOTCACHE = SXDB SXDBEx *SXFORMULA *FDB *DBB EOF
 const bool PIVOTCACHE::loadContent(BinProcessor& proc)
 {
+	GlobalWorkbookInfoPtr global_info = proc.getGlobalWorkbookInfo();
+	
+	global_info->arPivotCacheFieldShortSize.clear();
+	global_info->arPivotCacheFields.clear();
+
 	if(!proc.mandatory<SXDB>())
 	{
 		return false;
@@ -81,19 +91,67 @@ const bool PIVOTCACHE::loadContent(BinProcessor& proc)
 	}
 	
 	count = proc.repeated<FDB>(0, 0);
+	int i = 0;
 	while(count--)
 	{
 		m_arFDB.push_back(elements_.front());	elements_.pop_front();
+
+		FDB* fdb = dynamic_cast<FDB*>(m_arFDB.back().get());
+		fdb->index = i++;
 	}
 
 	count = proc.repeated<DBB>(0, 0);
 	while(count--)
 	{
 		m_arDBB.push_back(elements_.front());	elements_.pop_front();
+		
+		DBB* dbb = dynamic_cast<DBB*>(m_arDBB.back().get());
+		
+		dbb->arPivotCacheFieldShortSize	= global_info->arPivotCacheFieldShortSize;
+		dbb->arPivotCacheFields			= global_info->arPivotCacheFields;
 	}
 	if (proc.optional<EOF_T>())
 	{
 		elements_.pop_back();
+	}
+//--------------------------------------------------------------------------------------------------------------------
+	for (size_t i = 0; i < m_arSXFORMULA.size(); i++)
+	{
+		SXFORMULA* formula = dynamic_cast<SXFORMULA*>(m_arSXFORMULA[i].get());
+		if (!formula)continue;
+	
+		PIVOTRULE* pivot_rule = dynamic_cast<PIVOTRULE*>(formula->m_PIVOTRULE.get());
+		if (!pivot_rule) continue;
+
+		for (size_t j = 0; j < pivot_rule->m_arPRFILTER.size(); j++)
+		{
+			PRFILTER*	filter	= dynamic_cast<PRFILTER*>(pivot_rule->m_arPRFILTER[j].get());
+			if (!filter) continue;
+			
+			SxItm*		item	= dynamic_cast<SxItm*>(filter->m_SxItm.get());
+			SxFilt*		filt	= dynamic_cast<SxFilt*>(filter->m_SxFilt.get());
+					
+			for (size_t i = 0; (item && filt) && i < item->rgisxvi.size(); i++)
+			{
+				short index_cache = filt->isxvd;
+				short index_item = item->rgisxvi[i];
+				if (index_cache >= 0 && index_cache < m_arFDB.size())
+				{
+					FDB* field = dynamic_cast<FDB*>(m_arFDB[index_cache].get());
+					if (field)
+					{
+						if (index_item >= 0 && index_item < field->m_arSRCSXOPER.size())
+						{
+							SXOPER* cache = dynamic_cast<SXOPER*>(field->m_arSRCSXOPER[index_item].get());
+							if (cache)
+							{
+								cache->bFormula = true;
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	return true;

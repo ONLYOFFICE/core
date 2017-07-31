@@ -36,7 +36,6 @@
 #include <sstream>
 #include <string>
 
-#include <boost/foreach.hpp>
 #include <boost/regex.hpp>
 
 #include <cpdoccore/odf/odf_document.h>
@@ -67,9 +66,9 @@ namespace odf_reader {
 namespace {
 bool IsExistProperty(std::vector<_property> Heap,const std::wstring Name)
 {
-	BOOST_FOREACH(_property const & p, Heap)
+    for (size_t i = 0; i < Heap.size(); i++)
 	{
-		int res = p.name_.find(Name);
+		int res = Heap[i].name_.find(Name);
 		if (res>=0)
 		{
 			return true;
@@ -1166,10 +1165,10 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	bool drState = Context.get_drawing_state_content();
 	
 	Context.set_drawing_state_content(true);
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-		ElementType type = elm->get_type();
-        elm->docx_convert(Context);
+		ElementType type = content_[i]->get_type();
+        content_[i]->docx_convert(Context);
     }
 	
 	Context.get_drawing_context().get_text_stream_frame() = temp_stream.str();
@@ -1284,10 +1283,10 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 	Context.set_paragraph_state	(false);		
 	Context.set_run_state		(false);
 		
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-		ElementType type = elm->get_type();
-        elm->docx_convert(Context);
+		ElementType type = content_[i]->get_type();
+        content_[i]->docx_convert(Context);
     }
 	drawing.content_group_ = temp_stream.str();
 	

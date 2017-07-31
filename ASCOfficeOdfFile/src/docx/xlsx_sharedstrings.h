@@ -35,6 +35,7 @@
 #include <iostream>
 #include <iosfwd>
 #include <cpdoccore/CPScopedPtr.h>
+#include <boost/noncopyable.hpp>
 
 namespace cpdoccore {
 namespace oox {

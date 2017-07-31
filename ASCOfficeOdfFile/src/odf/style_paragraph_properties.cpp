@@ -37,8 +37,6 @@
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/utils.h>
 
-#include <boost/foreach.hpp>
-
 #include "office_elements_create.h"
 #include "datatypes/borderstyle.h"
 

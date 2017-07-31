@@ -32,7 +32,6 @@
 
 #include <iostream>
 #include "style_paragraph_properties.h"
-#include <boost/foreach.hpp>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 #include "../docx/pptx_conversion_context.h"

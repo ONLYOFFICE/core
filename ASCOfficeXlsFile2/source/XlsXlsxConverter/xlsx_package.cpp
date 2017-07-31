@@ -53,7 +53,6 @@ xlsx_content_types_file::xlsx_content_types_file()
  
 	content_type_.add_override(L"/_rels/.rels",                  L"application/vnd.openxmlformats-package.relationships+xml");
     content_type_.add_override(L"/xl/_rels/workbook.xml.rels",   L"application/vnd.openxmlformats-package.relationships+xml");
-    content_type_.add_override(L"/xl/sharedStrings.xml",         L"application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml");
     content_type_.add_override(L"/xl/workbook.xml",              L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml");
     content_type_.add_override(L"/xl/styles.xml",                L"application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml");
     content_type_.add_override(L"/docProps/app.xml",             L"application/vnd.openxmlformats-officedocument.extended-properties+xml");
@@ -89,13 +88,20 @@ _CP_PTR(pivot_cache_content) pivot_cache_content::create()
 {
     return boost::make_shared<pivot_cache_content>();
 }
+//--------------------------------------------------------------------------------------------
+pivot_table_content::pivot_table_content() : rels_file_(rels_file::create(L""))
+{      
+}
 
+_CP_PTR(pivot_table_content) pivot_table_content::create()
+{
+    return boost::make_shared<pivot_table_content>();
+}
+//--------------------------------------------------------------------------------------------
 sheet_content::sheet_content() : rels_(rels_file::create(L""))
 {
         
 }
-//--------------------------------------------------------------------------------------------
-
 _CP_PTR(sheet_content) sheet_content::create()
 {
     return boost::make_shared<sheet_content>();
@@ -169,21 +175,37 @@ void xl_files::write(const std::wstring & RootPath)
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"xl";
     NSDirectory::CreateDirectory(path.c_str());
 
-    sheets_files_.set_rels(&rels_files_);
+    {
+		pivot_cache_files_.set_rels(&rels_files_);
+        pivot_cache_files_.set_main_document(get_main_document());
+		pivot_cache_files_.write(path);
+    }
+	{
+		pivot_table_files_.set_main_document(get_main_document());
+		pivot_table_files_.write(path);
+	}
+    
+	sheets_files_.set_rels(&rels_files_);
     sheets_files_.set_main_document( this->get_main_document() );
     sheets_files_.write(path);
 
-	int index = 1;
-    if (true)
-    {
-        //workbook_->hyperlinks->write(path);
-        rels_files_.add( relationship( L"hId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument", L"xl/workbook.xml" ) );
-	}
 	if (sharedStrings_)
     {
         sharedStrings_->write(path);
         rels_files_.add( relationship( L"shId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings", L"sharedStrings.xml" ) );
-    }
+    
+		content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+		contentTypes.add_override(L"/xl/sharedStrings.xml", L"application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml");
+   }
+
+	if (connections_)
+	{
+        connections_->write(path);
+        rels_files_.add( relationship( L"cnId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/connections", L"connections.xml" ) );
+
+		content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+		contentTypes.add_override(L"/xl/connections.xml", L"application/vnd.openxmlformats-officedocument.spreadsheetml.connections+xml");
+	}
 
     if (styles_)
     {
@@ -206,16 +228,11 @@ void xl_files::write(const std::wstring & RootPath)
         media_->set_main_document(get_main_document());
         media_->write(path);
     }
-
     {
         charts_files_.set_main_document(get_main_document());
         charts_files_.write(path);
     }
-    {
-		pivot_cache_files_.set_rels(&rels_files_);
-        pivot_cache_files_.set_main_document(get_main_document());
-        pivot_cache_files_.write(path);
-    }
+
 	if (drawings_)
     {
         drawings_->set_main_document(get_main_document());
@@ -249,6 +266,10 @@ void xl_files::set_sharedStrings(element_ptr Element)
 {
     sharedStrings_ = Element;
 }
+void xl_files::set_connections(element_ptr Element)
+{
+    connections_ = Element;
+}
 
 void xl_files::add_sheet(sheet_content_ptr sheet)
 {
@@ -280,6 +301,10 @@ void xl_files::add_charts(chart_content_ptr chart)
 void xl_files::add_pivot_cache(pivot_cache_content_ptr pivot_cache)
 {
     pivot_cache_files_.add_pivot_cache(pivot_cache);
+}
+void xl_files::add_pivot_table(pivot_table_content_ptr pivot_table)
+{
+    pivot_table_files_.add_pivot_table(pivot_table);
 }
 //----------------------------------------------------------------------------------------
 void xl_pivot_cache_files::add_pivot_cache(pivot_cache_content_ptr pivot_cache)
@@ -326,9 +351,44 @@ void xl_pivot_cache_files::write(const std::wstring & RootPath)
 			{
 				const std::wstring fileNameR = std::wstring(L"pivotCacheRecords") + std::to_wstring(i + 1) + L".xml";
 	           
-				contentTypes.add_override(std::wstring(L"/xl/pivotCache/") + fileNameR, kWSConTypeD);
+				contentTypes.add_override(std::wstring(L"/xl/pivotCache/") + fileNameR, kWSConTypeR);
 
 				package::simple_element(fileNameR, content_records).write(path);
+			}
+        }
+    }
+}
+//----------------------------------------------------------------------------------------
+void xl_pivot_table_files::add_pivot_table(pivot_table_content_ptr pivot_table)
+{
+    pivot_tables_.push_back(pivot_table);
+}
+void xl_pivot_table_files::write(const std::wstring & RootPath)
+{
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"pivotTables";
+    NSDirectory::CreateDirectory(path.c_str());
+
+	content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+	
+	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotTable+xml";
+	
+	for (size_t i = 0; i < pivot_tables_.size(); i++)
+    {
+        if (pivot_tables_[i])
+        {
+            const std::wstring fileName = std::wstring(L"pivotTable") + std::to_wstring(i + 1) + L".xml";
+           
+            contentTypes.add_override(std::wstring(L"/xl/pivotTables/") + fileName, kWSConType);
+
+            package::simple_element(fileName, pivot_tables_[i]->str()).write(path);
+
+            if (pivot_tables_[i]->get_rels().empty() == false)
+			{
+				rels_files relFiles;
+				pivot_tables_[i]->rels_file_->set_file_name(fileName + L".rels");
+				
+				relFiles.add_rel_file(pivot_tables_[i]->rels_file_);
+				relFiles.write(path);
 			}
         }
     }

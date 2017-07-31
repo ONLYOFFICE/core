@@ -32,7 +32,6 @@
 
 #include "note.h"
 
-#include <boost/foreach.hpp>
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/attributes.h>
@@ -55,9 +54,9 @@ std::wostream & note_citation::text_to_stream(std::wostream & _Wostream) const
     if (!text_label_.empty())
         _Wostream << text_label_;
 
-    BOOST_FOREACH(const office_element_ptr & element, content_)
+ 	for (size_t i = 0; i < content_.size(); i++)
     {
-        element->text_to_stream(_Wostream);
+        content_[i]->text_to_stream(_Wostream);
     }
     return _Wostream;
 }
@@ -80,9 +79,9 @@ void note_citation::add_text(const std::wstring & Text)
 
 void note_citation::docx_convert(oox::docx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+ 	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->docx_convert(Context);            
+        content_[i]->docx_convert(Context);            
     }
 }
 
@@ -93,9 +92,9 @@ const wchar_t * note_body::name = L"note-body";
 
 std::wostream & note_body::text_to_stream(std::wostream & _Wostream) const
 {
-    BOOST_FOREACH(const office_element_ptr & element, content_)
+ 	for (size_t i = 0; i < content_.size(); i++)
     {
-        element->text_to_stream(_Wostream);
+        content_[i]->text_to_stream(_Wostream);
     }
     return _Wostream;
 }
@@ -129,9 +128,9 @@ void note_body::docx_convert(oox::docx_conversion_context & Context)
 	Context.set_paragraph_state	(false);
     Context.set_run_state		(false);
 
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+ 	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->docx_convert(Context);            
+        content_[i]->docx_convert(Context);            
     }    
     Context.set_process_headers_footers	(false);
     Context.set_run_state				(runState);

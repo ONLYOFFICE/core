@@ -34,7 +34,15 @@
 
 #include "SXFMLA_bu.h"
 #include "PIVOTRULE.h"
+#include "PRFILTER.h"
+
 #include "../Biff_records/SXFormula.h"
+#include "../Biff_records/SxFmla.h"
+#include "../Biff_records/SxName.h"
+#include "../Biff_records/SXPair.h"
+#include "../Biff_records/SxItm.h"
+#include "../Biff_records/SxFilt.h"
+#include "../Biff_records/SxRule.h"
 
 namespace XLS
 {
@@ -56,6 +64,8 @@ BaseObjectPtr SXFORMULA::clone()
 // SXFORMULA = SXFMLA PIVOTRULE SXFormula
 const bool SXFORMULA::loadContent(BinProcessor& proc)
 {
+	global_info = proc.getGlobalWorkbookInfo();
+
 	if(!proc.mandatory<SXFMLA>())
 	{
 		return false;
@@ -74,6 +84,60 @@ const bool SXFORMULA::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}	return true;
 }
+int SXFORMULA::serialize(std::wostream & strm)
+{
+	SXFMLA* fmla = dynamic_cast<SXFMLA*>(m_SXFMLA.get());
+	if (!fmla) return 0;
 
+	PIVOTRULE* pivot_rule = dynamic_cast<PIVOTRULE*>(m_PIVOTRULE.get());
+
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"calculatedItem")
+		{
+			fmla->serialize_attr(CP_GET_XML_NODE());
+
+			if (pivot_rule)
+			{
+				SxRule* rule	= dynamic_cast<SxRule*>(pivot_rule->m_SxRule.get());
+
+				for (size_t j = 0; j < pivot_rule->m_arPRFILTER.size(); j++)//multi in pivotAreas !!! todooo ???
+				{
+					PRFILTER*	filter	= dynamic_cast<PRFILTER*>(pivot_rule->m_arPRFILTER[j].get());
+					
+					SxItm*		item	= dynamic_cast<SxItm*>(filter->m_SxItm.get());
+					SxFilt*		filt	= dynamic_cast<SxFilt*>(filter->m_SxFilt.get());
+					
+					CP_XML_NODE(L"pivotArea")
+					{		
+						CP_XML_ATTR(L"cacheIndex",		1);//true
+						CP_XML_ATTR(L"outline",			0);
+						CP_XML_ATTR(L"fieldPosition",	(int)rule->iDim);
+
+						CP_XML_NODE(L"references")
+						{		
+							CP_XML_ATTR(L"count", item->rgisxvi.size());
+							
+							for (size_t i = 0; i < item->rgisxvi.size(); i++)
+							{
+								CP_XML_NODE(L"reference")
+								{  								
+									CP_XML_ATTR(L"field",	(int)filt->isxvd);
+									CP_XML_ATTR(L"count",	(int)filt->iDim);
+
+									CP_XML_NODE(L"x")
+									{  
+										CP_XML_ATTR(L"v", item->rgisxvi[i]);
+									}
+								}						
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return 0;
+}
 } // namespace XLS
 

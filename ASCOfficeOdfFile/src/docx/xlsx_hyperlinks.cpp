@@ -30,9 +30,6 @@
  *
  */
 
-#include <boost/lexical_cast.hpp>
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 #include "xlsx_hyperlinks.h"
@@ -60,11 +57,12 @@ public:
 	
 	void dump_rels(rels & Rels) const
 	{
-		BOOST_FOREACH(const record & rec, records_)
+		for (size_t i = 0; i < records_.size(); i++)
 		{
-			if (rec.type == L"External")
+			if (records_[i].type == L"External")
 			{
-				Rels.add( relationship(rec.id, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink", rec.location, rec.type) );
+				Rels.add( relationship(records_[i].id, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink", 
+					records_[i].location, records_[i].type) );
 			}
 		}
 	}
@@ -109,23 +107,23 @@ public:
 
     void xlsx_serialize(std::wostream & _Wostream) const
     {
-        BOOST_FOREACH(record const & r, records_)
+		for (size_t i = 0; i < records_.size(); i++)
         {
             CP_XML_WRITER(_Wostream)
             {
                 CP_XML_NODE(L"hyperlink")
                 {
-                    CP_XML_ATTR(L"ref", r.ref);
-                    CP_XML_ATTR(L"display", r.display);
+                    CP_XML_ATTR(L"ref", records_[i].ref);
+                    CP_XML_ATTR(L"display", records_[i].display);
                   
-					if (!r.location.empty() && r.type == L"Internal")
+					if (!records_[i].location.empty() && records_[i].type == L"Internal")
                     {
-                        CP_XML_ATTR(L"location", r.location);
+                        CP_XML_ATTR(L"location", records_[i].location);
                     }
 
-                    if (!r.id.empty() && r.type == L"External")
+                    if (!records_[i].id.empty() && records_[i].type == L"External")
                     {
-                        CP_XML_ATTR(L"r:id", r.id);                    
+                        CP_XML_ATTR(L"r:id", records_[i].id);                    
                     }
                 }
             }

@@ -49,8 +49,8 @@
 		6967917D1D9E8AEE002CA4BA /* BinReaderWriterDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 696791791D9E8AEE002CA4BA /* BinReaderWriterDefines.h */; };
 		6967917E1D9E8AEE002CA4BA /* BinWriters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967917A1D9E8AEE002CA4BA /* BinWriters.cpp */; };
 		6967917F1D9E8AEE002CA4BA /* BinWriters.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967917B1D9E8AEE002CA4BA /* BinWriters.h */; };
+		69BBDF251F0B8AAC00EB1BF7 /* FileDownloader_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = 69BBDF241F0B8AAC00EB1BF7 /* FileDownloader_mac.mm */; };
 		69F181AF1C77274E00B2952B /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 69F181AD1C77274E00B2952B /* FileDownloader.h */; };
-		69F181B51C77276D00B2952B /* FileDownloader_curl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69F181B31C77276D00B2952B /* FileDownloader_curl.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -97,8 +97,8 @@
 		696791791D9E8AEE002CA4BA /* BinReaderWriterDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BinReaderWriterDefines.h; path = ../../BinWriter/BinReaderWriterDefines.h; sourceTree = "<group>"; };
 		6967917A1D9E8AEE002CA4BA /* BinWriters.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BinWriters.cpp; path = ../../BinWriter/BinWriters.cpp; sourceTree = "<group>"; };
 		6967917B1D9E8AEE002CA4BA /* BinWriters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BinWriters.h; path = ../../BinWriter/BinWriters.h; sourceTree = "<group>"; };
+		69BBDF241F0B8AAC00EB1BF7 /* FileDownloader_mac.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp.preprocessed; fileEncoding = 4; name = FileDownloader_mac.mm; path = ../../../Common/FileDownloader/FileDownloader_mac.mm; sourceTree = "<group>"; };
 		69F181AD1C77274E00B2952B /* FileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileDownloader.h; path = ../../../Common/FileDownloader/FileDownloader.h; sourceTree = "<group>"; };
-		69F181B31C77276D00B2952B /* FileDownloader_curl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileDownloader_curl.cpp; path = ../../../Common/FileDownloader/FileDownloader_curl.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -230,7 +230,7 @@
 			isa = PBXGroup;
 			children = (
 				69F181AD1C77274E00B2952B /* FileDownloader.h */,
-				69F181B31C77276D00B2952B /* FileDownloader_curl.cpp */,
+				69BBDF241F0B8AAC00EB1BF7 /* FileDownloader_mac.mm */,
 			);
 			name = Common;
 			sourceTree = "<group>";
@@ -339,7 +339,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				69F181B51C77276D00B2952B /* FileDownloader_curl.cpp in Sources */,
 				17C1FE961ACC42C4006B99B3 /* Common.cpp in Sources */,
 				17C1FE971ACC42C4006B99B3 /* ChartFromToBinary.cpp in Sources */,
 				17C1FE981ACC42C4006B99B3 /* CSVReader.cpp in Sources */,
@@ -348,6 +347,7 @@
 				17C1FE9B1ACC42C4006B99B3 /* CSVWriter.cpp in Sources */,
 				69414A301CB51666003E771B /* ChartWriter.cpp in Sources */,
 				6967917E1D9E8AEE002CA4BA /* BinWriters.cpp in Sources */,
+				69BBDF251F0B8AAC00EB1BF7 /* FileDownloader_mac.mm in Sources */,
 				17C1FE9C1ACC42C4006B99B3 /* XlsxSerializer.cpp in Sources */,
 				690FE0851E9BBD68004B26D0 /* Readers.cpp in Sources */,
 				17C1FE9D1ACC42C4006B99B3 /* FontProcessor.cpp in Sources */,
@@ -379,6 +379,7 @@
 					unix,
 					_IOS,
 					DONT_WRITE_EMBEDDED_FONTS,
+					_XCODE,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
@@ -416,6 +417,7 @@
 					unix,
 					_IOS,
 					DONT_WRITE_EMBEDDED_FONTS,
+					_XCODE,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (

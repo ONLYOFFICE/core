@@ -35,11 +35,13 @@
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/xml/nodetype.h>
+
 #include "office_elements.h"
 #include "office_elements_create.h"
 
 #include "table_named_expressions.h"
 #include "table_database_ranges.h"
+#include "table_data_pilot_tables.h"
 #include "calcext_elements.h"
 
 #include "datatypes/tablemode.h"

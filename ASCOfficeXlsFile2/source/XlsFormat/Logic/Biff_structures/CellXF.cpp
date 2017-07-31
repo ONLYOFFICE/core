@@ -41,6 +41,7 @@ namespace XLS
 CellXF::CellXF(size_t& cell_xf_current_id, size_t& style_xf_current_id)
 :	cell_xf_current_id_(cell_xf_current_id), style_xf_current_id_(style_xf_current_id), font_id(0xFFFF)
 {
+	alc = alcV = 0;
 }
 
 
@@ -70,7 +71,7 @@ void CellXF::load(CFRecord& record)
 		fShrinkToFit		= 0;//GETBIT(flags1, 20);
 		iReadOrder			= 0;//static_cast<unsigned char>(GETBITS(flags1, 22, 23));
 			
-		char orient			= GETBITS(flags1, 8, 10);
+		char orient			= static_cast<unsigned char>(GETBITS(flags1, 8, 10));
 
 		switch(orient)
 		{

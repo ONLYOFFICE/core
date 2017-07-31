@@ -31,8 +31,8 @@
  */
 
 #include "PIVOTRULE.h"
-#include <Logic/Biff_records/SxRule.h>
-#include <Logic/Biff_unions/PRFILTER.h>
+#include "PRFILTER.h"
+#include "../Biff_records/SxRule.h"
 
 namespace XLS
 {
@@ -48,7 +48,6 @@ BaseObjectPtr PIVOTRULE::clone()
 {
 	return BaseObjectPtr(new PIVOTRULE(*this));
 }
-
 
 // PIVOTRULE = SxRule *PRFILTER
 const bool PIVOTRULE::loadContent(BinProcessor& proc)

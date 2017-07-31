@@ -34,6 +34,7 @@
 #include "PIVOTCACHE.h"
 #include "SXSRC.h"
 #include "SXADDLCACHE.h"
+#include "FDB.h"
 
 #include "../Biff_records/SXStreamID.h"
 #include "../Biff_records/SXVS.h"
@@ -91,11 +92,16 @@ const bool PIVOTCACHEDEFINITION::loadContent(BinProcessor& proc)
 }
 int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 {
+	global_info_->arPivotCacheSxNames.clear();
+	global_info_->arPivotSxNames.clear();
+
 	SXStreamID* streamId = dynamic_cast<SXStreamID*>(m_SXStreamID.get());
 	if (!streamId) return 0;
 
 	std::map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCache.find(streamId->idStm);
 	if (pFind == global_info_->mapPivotCache.end()) return 0;
+
+	global_info_->idPivotCache = streamId->idStm;
 
 	PIVOTCACHE* pivot_cache = dynamic_cast<PIVOTCACHE*>(pFind->second.get());
 	if (!pivot_cache) return 0;
@@ -104,6 +110,8 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 	SXDBEx*	db_ex	= dynamic_cast<SXDBEx*>(pivot_cache->m_SXDBEx.get());
 
 	if (!db || !db_ex)return 0;
+
+	bool bSql = false;
 
 	CP_XML_WRITER(strm)
 	{
@@ -116,15 +124,19 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 			{
 				CP_XML_ATTR(L"r:id", L"rId1" );
 			}
-			CP_XML_ATTR(L"recordCount", db->crdbUsed);
-			CP_XML_ATTR(L"refreshedBy", db->rgb.value());
-			CP_XML_ATTR(L"refreshedDate", db_ex->numDate.data.value);
+			CP_XML_ATTR(L"enableRefresh",	1);
+			CP_XML_ATTR(L"refreshedBy",		db->rgb.value());
+			CP_XML_ATTR(L"refreshedDate",	db_ex->numDate.data.value);
+			CP_XML_ATTR(L"recordCount",		db->crdbdb);
 			//createdVersion="1" 
 			//refreshedVersion="2" 
 			//upgradeOnRefresh="1">
 			SXSRC* src = dynamic_cast<SXSRC*>(m_SXSRC.get());
 			if (src)
+			{
+				bSql = src->bSql;
 				src->serialize(CP_XML_STREAM());
+			}
 			
 			if (pivot_cache->m_arFDB.empty() == false)
 			{
@@ -134,11 +146,25 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 
 					for (size_t i = 0; i < pivot_cache->m_arFDB.size(); i++)
 					{
-						pivot_cache->m_arFDB[i]->serialize(CP_XML_STREAM());
+						FDB *field = dynamic_cast<FDB *>(pivot_cache->m_arFDB[i].get());
+						if (!field) continue;
+
+						field->serialize(CP_XML_STREAM(), bSql);
 					}
 				}
 			}
+			if (pivot_cache->m_arSXFORMULA.empty() == false)
+			{
+				CP_XML_NODE(L"calculatedItems")
+				{
+					CP_XML_ATTR(L"count", pivot_cache->m_arSXFORMULA.size());
 
+					for (size_t i = 0; i < pivot_cache->m_arSXFORMULA.size(); i++)
+					{
+						pivot_cache->m_arSXFORMULA[i]->serialize(CP_XML_STREAM());
+					}
+				}
+			}
 		}
 	}
 	return 0;

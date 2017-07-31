@@ -36,24 +36,48 @@
 namespace XLS
 {
 
-
-// Logical representation of DbOrParamQry record in BIFF8
 class DbOrParamQry: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(DbOrParamQry)
 	BASE_OBJECT_DEFINE_CLASS_NAME(DbOrParamQry)
 public:
-	DbOrParamQry();
+	DbOrParamQry(int typeRecord = 2);
 	~DbOrParamQry();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeDbOrParamQry;
+	static const ElementType type = typeDbOrParamQry;
 
+	int					typeRecord;
 
+//PARAMQRY_Fixed - 8 bytes + variable
+	struct
+	{
+		unsigned short		wTypeSql;
+		unsigned char		pbt;
+		bool				fNonDefaultName;
+		unsigned short		grbit;
+		unsigned short		fVal;
+	}param;
+
+//---------------------------------------
+	struct
+	{
+		unsigned char		dbt;
+		bool				fOdbcConn;
+		bool				fSql;
+		bool				fSqlSav;
+		bool				fWeb;
+		bool				fSavePwd;
+		bool				fTablesOnlyHTML;
+		short				cparams;
+		short				cstQuery;
+		short				cstWebPost;
+		short				cstSQLSav;
+		short				cstOdbcConn;
+	}query;
 };
 
 } // namespace XLS

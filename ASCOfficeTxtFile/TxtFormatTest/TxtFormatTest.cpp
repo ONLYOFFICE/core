@@ -47,23 +47,20 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	if (argc < 3) return 0;
+	if (argc < 2) return 0;
 
-	std::wstring sXMLOptions = _T("<Options><TXTOptions><Encoding>1000</Encoding></TXTOptions></Options>");
+	std::wstring sXMLOptions = _T("<Options><TXTOptions><Encoding>50</Encoding></TXTOptions></Options>");
 
 	std::wstring srcFileName	= argv[1];
-	std::wstring dstFileName	= argv[2];
-	std::wstring outputDir		= NSDirectory::GetFolderPath(dstFileName);
-
-	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
-
-	int n1 = srcFileName.rfind(L".");
-	int n2 = dstFileName.rfind(L".");
-
-	std::wstring ext_1 = n1>=0 ? srcFileName.substr(n1+1, srcFileName.length() - n1): L""; //ext_1.MakeLower();
-	std::wstring ext_2 = n2>=0 ? dstFileName.substr(n2+1, dstFileName.length() - n2): L""; //ext_2.MakeLower();
-
+	int n1 = srcFileName.rfind(_T('.'));
+	std::wstring ext_1 = n1 >= 0 ? srcFileName.substr(n1+1, srcFileName.length() - n1) : _T("");
+	
 	std::transform(ext_1.begin(), ext_1.end(), ext_1.begin(), ::tolower);
+
+	std::wstring dstFileName	= argc > 2 ? argv[2] : srcFileName + L"_my." + (ext_1 == L"txt" ? L"docx" : L"txt");
+	
+	std::wstring outputDir		= NSDirectory::GetFolderPath(dstFileName);
+	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
 	CTxtXmlFile txtFile;
 
@@ -77,7 +74,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstFileName.c_str(), -1))
 			return S_FALSE;
 	}
-	if (ext_2 == L"txt")
+	else
 	{	
 		// docx->txt
 		if (S_OK != oCOfficeUtils.ExtractToDirectory(srcFileName.c_str(), dstTempPath.c_str(), NULL, 0))

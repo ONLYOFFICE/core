@@ -36,6 +36,10 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/Path.h"
 
+#if _IOS
+    #import <Foundation/Foundation.h>
+#endif
+
 #define WRITEBUFFERSIZE 8192
 #define READBUFFERSIZE 8192
 
@@ -43,6 +47,13 @@ namespace ZLibZipUtils
 {
   static zipFile zipOpenHelp(const wchar_t* filename)
   {
+#ifdef _IOS
+      NSString *path =[[NSString alloc] initWithBytes:filename
+                                               length:wcslen(filename)*sizeof(*filename)
+                                             encoding:NSUTF32LittleEndianStringEncoding];
+      return zipOpen( (const char*)[path fileSystemRepresentation], APPEND_STATUS_CREATE );
+#endif
+      
 #if defined(_WIN32) || defined (_WIN64)
 	  zipFile zf = zipOpen( filename, APPEND_STATUS_CREATE );
 #else
@@ -56,6 +67,13 @@ namespace ZLibZipUtils
   }
   static unzFile unzOpenHelp(const wchar_t* filename)
   {
+#ifdef _IOS
+      NSString *path =[[NSString alloc] initWithBytes:filename
+                                               length:wcslen(filename)*sizeof(*filename)
+                                             encoding:NSUTF32LittleEndianStringEncoding];
+      return unzOpen ((const char*)[path fileSystemRepresentation]);
+#endif
+      
 #if defined(_WIN32) || defined (_WIN64)
 	  unzFile uf = unzOpen (filename);
 #else

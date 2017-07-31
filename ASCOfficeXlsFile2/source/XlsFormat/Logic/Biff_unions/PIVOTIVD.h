@@ -47,6 +47,8 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize(std::wostream & strm);
+
 	static const ElementType type = typePIVOTIVD;
 
 	BaseObjectPtr	m_SxIvd;

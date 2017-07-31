@@ -187,6 +187,27 @@ void SXAddl_SXCView_SXDId::readFields(CFRecord& record)
 	
 	record >> stName;
 }
+//----------------------------------------------------------------------------
+BaseObjectPtr SXAddl_SXCCacheField_SXDIfdbMempropMap::clone()
+{
+	return BaseObjectPtr(new SXAddl_SXCCacheField_SXDIfdbMempropMap(*this));
+}
+void SXAddl_SXCCacheField_SXDIfdbMempropMap::readFields(CFRecord& record)
+{
+	m_SXAddlHdr.load(record);
+	
+	record.skipNunBytes(6);
+	
+	int sz = record.getDataSize() - record.getRdPtr();
+
+	for (int i = 0; i < sz/2; i++)
+	{
+		unsigned short val;
+		record >> val;
+
+		rgMap.push_back(val);
+	}
+}
 
 } // namespace XLS
 

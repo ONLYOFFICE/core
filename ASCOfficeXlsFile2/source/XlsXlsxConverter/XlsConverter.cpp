@@ -218,7 +218,6 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 				xls_global_info->mapPivotCache.insert(std::make_pair(index, pivot_cache));
 			}
 		}
-
 	}
 	catch(...)
 	{
@@ -358,7 +357,11 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 			xls_global_info->current_sheet = -1; 
 			xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"ChartSheet_" + std::to_wstring(count_chart_sheets));
 
-			convert_chart_sheet(dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get()));
+			xlsx_context->set_chart_view();
+
+			XLS::ChartSheetSubstream* chart = dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get());
+
+			convert_chart_sheet(chart);
 		}
 
 		xlsx_context->end_table();
@@ -370,7 +373,7 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 	}
 }
 
-void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
+void XlsConverter::convert (XLS::WorksheetSubstream* sheet)
 {
 	if (sheet == NULL) return;
 
@@ -533,6 +536,7 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
 	{
 		convert((XLS::PIVOTCACHEDEFINITION*)global->m_arPIVOTCACHEDEFINITION[i].get());
 	}
+	xlsx_context->get_pivots_context().add_connections(xls_global_info->connections_stream.str());
 }
 
 typedef boost::unordered_map<XLS::FillInfo, int>	mapFillInfo;
@@ -1916,6 +1920,18 @@ void XlsConverter::convert(XLS::PIVOTVIEW * pivot_view)
 {
 	if (pivot_view == NULL) return;
 
+	std::wstringstream strm;
+
+	pivot_view->serialize(strm);
+
+	int index_view = xlsx_context->get_pivots_context().add_view(strm.str(), pivot_view->indexCache);
+	
+	if (index_view > 0)
+	{
+		xlsx_context->current_sheet().sheet_rels().add(oox::relationship(L"pvId" + std::to_wstring(index_view),
+			L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotTable",
+			L"../pivotTables/pivotTable" + std::to_wstring(index_view) + L".xml"));
+	}
 }
 
 void XlsConverter::convert(XLS::PIVOTCACHEDEFINITION * pivot_cached)

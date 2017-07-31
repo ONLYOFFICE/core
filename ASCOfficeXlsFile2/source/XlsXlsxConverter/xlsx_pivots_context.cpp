@@ -31,13 +31,10 @@
  */
 #include "xlsx_pivots_context.h"
 
-
 #include <boost/make_shared.hpp>
 #include <simple_xml_writer.h>
 
 namespace oox {
-
-
 
 class xlsx_pivots_context::Impl
 {
@@ -47,10 +44,17 @@ public:
 		std::wstring  definitionsData_;
 		std::wstring  recordsData_;
 	};
+	struct _pivot_view
+	{	
+		std::wstring	data_;
+		int				indexCache_;
+	};
 
 	Impl() {}
     
-	std::vector<_pivot_cache> caches_;
+	std::vector<_pivot_cache>	caches_;
+	std::vector<_pivot_view>	views_;
+	std::wstring				connections_;
 };
 
 xlsx_pivots_context::xlsx_pivots_context() : impl_(new xlsx_pivots_context::Impl())
@@ -67,23 +71,73 @@ int xlsx_pivots_context::get_cache_count()
 {
 	return (int)impl_->caches_.size();
 }
-void xlsx_pivots_context::dump_rels(int index, rels & Rels)
+bool xlsx_pivots_context::is_connections()
 {
-	if (!impl_->caches_[index].recordsData_.empty())
+	return !impl_->connections_.empty();
+}
+void xlsx_pivots_context::dump_rels_cache(int index, rels & Rels)
+{
+	if (impl_->caches_[index].recordsData_.empty() == false)
 	{
 		Rels.add(relationship(L"rId1",							
 						L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheRecords",
-						L"pivotCacheRecords" + std::to_wstring(index) + L".xml", L""));
+						L"pivotCacheRecords" + std::to_wstring(index + 1) + L".xml", L""));
 	}
 }
-void xlsx_pivots_context::write_definitions_to(int index, std::wostream & strm)
+void xlsx_pivots_context::dump_rels_view(int index, rels & Rels)
+{
+	if (impl_->views_[index].indexCache_ >= 0)
+	{
+		Rels.add(relationship(L"rId1",							
+						L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition",
+						L"../pivotCache/pivotCacheDefinition" + std::to_wstring(impl_->views_[index].indexCache_ + 1) + L".xml", L""));
+	}
+}
+void xlsx_pivots_context::write_cache_definitions_to(int index, std::wostream & strm)
 {
 	strm << impl_->caches_[index].definitionsData_;
 }
+void xlsx_pivots_context::write_connections_to(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)    
+    {
+		CP_XML_NODE(L"connections")
+		{
+            CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
 
-void xlsx_pivots_context::write_records_to(int index, std::wostream & strm)
+			CP_XML_STREAM() << impl_->connections_;
+		}
+	}
+}
+
+void xlsx_pivots_context::write_cache_records_to(int index, std::wostream & strm)
 {
 	strm << impl_->caches_[index].recordsData_;
+}
+void xlsx_pivots_context::write_table_view_to(int index, std::wostream & strm)
+{
+	strm << impl_->views_[index].data_;
+}
+int xlsx_pivots_context::add_view(std::wstring table_view, int indexCache)
+{
+	if (table_view.empty()) return 0;
+
+	Impl::_pivot_view v = {table_view, indexCache};
+	impl_->views_.push_back(v);
+
+	return (int)impl_->views_.size();
+}
+
+void xlsx_pivots_context::add_connections(std::wstring connections)
+{
+	if (connections.empty()) return;
+
+	impl_->connections_ = connections;
+}
+
+int xlsx_pivots_context::get_view_count()
+{
+	return (int)impl_->views_.size();
 }
 
 xlsx_pivots_context::~xlsx_pivots_context()

@@ -37,6 +37,7 @@ namespace XLS
 
 Row::Row()
 {
+	iOutLevel = ixfe_val = 0;
 }
 
 

@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of DBQUERYEXT union of records 
 class DBQUERYEXT: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(DBQUERYEXT)
@@ -48,6 +46,11 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+
+	BaseObjectPtr				m_TxtQry;
+	BaseObjectPtr				m_DBQueryExt;
+	BaseObjectPtr				m_ExtString;
+	std::vector<BaseObjectPtr>	m_arExtString;
 
 };
 

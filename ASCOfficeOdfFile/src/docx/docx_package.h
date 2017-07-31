@@ -33,7 +33,6 @@
 
 #include <string>
 #include <vector>
-#include <boost/foreach.hpp>
 
 #include <cpdoccore/CPSharedPtr.h>
 

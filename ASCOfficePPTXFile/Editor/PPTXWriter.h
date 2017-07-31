@@ -118,7 +118,7 @@ namespace NSBinPptxRW
             m_oReader.m_strFolderThemes = pathTheme.GetPath();
         }
 
-        void OpenPPTY(BYTE* pBuffer, int len, std::wstring srcFolder, std::wstring strThemesFolder)
+		void OpenPPTY(BYTE* pBuffer, int len, std::wstring srcFolder, std::wstring strThemesFolder)
 		{
 			int start_pos = 0;
 
@@ -158,11 +158,30 @@ namespace NSBinPptxRW
 			int dstLenTemp = XmlUtils::GetInteger(__str_decode_len);
 			//int dstLenTemp = Base64DecodeGetRequiredLength(len);
 
-			BYTE* pDstBuffer = new BYTE[dstLenTemp];
-			int dstLen = dstLenTemp;
-            Base64::Base64Decode((const char*)pBuffer, len, pDstBuffer, &dstLen);
+			int nVersion = 1;
+			if(__str_version.length() > 1)
+			{
+				nVersion = std::stoi(__str_version.substr(1).c_str());
+			}
+			bool bIsNoBase64 = nVersion == g_nFormatVersionNoBase64;
 
-			m_oReader.Init(pDstBuffer, 0, dstLen);
+			BYTE* pDstBuffer = NULL;
+			int dstLen = 0;
+			if(!bIsNoBase64)
+			{
+				BYTE* pDstBuffer = new BYTE[dstLenTemp];
+				int dstLen = dstLenTemp;
+				Base64::Base64Decode((const char*)pBuffer, len, pDstBuffer, &dstLen);
+				m_oReader.Init(pDstBuffer, 0, dstLen);
+			}
+			else
+			{
+				pDstBuffer = pBuffer - start_pos;
+				dstLen = len + start_pos;
+				m_oReader.Init(pDstBuffer, 0, dstLen);
+				m_oReader.Seek(start_pos);
+			}
+
 			m_oReader.m_strFolder = srcFolder;
             m_oReader.m_strFolderExternalThemes = strThemesFolder;
 			
@@ -415,11 +434,10 @@ namespace NSBinPptxRW
 					LONG lLayouts = (LONG)m_arSlideMasters_Theme[i].m_arLayouts.size();
 					for (LONG j = 0; j < lLayouts; ++j)
 					{
-						arrLays.push_back(PPTX::Logic::XmlId());
+						arrLays.push_back(PPTX::Logic::XmlId(L"p:sldLayoutId"));
 						
                         std::wstring sId = std::to_wstring((_UINT64)(0x80000000 + __nCountLayouts + j + 1));
 
-						arrLays[j].m_name = _T("sldLayoutId");
 						arrLays[j].id = sId;
 						arrLays[j].rid = (size_t)(j + 1);
 					}
@@ -755,11 +773,10 @@ namespace NSBinPptxRW
 				LONG nCountLayouts = 0;
 				for (LONG i = 0; i < nCountMasters; ++i)
 				{
-					m_oPresentation.sldMasterIdLst.push_back(PPTX::Logic::XmlId());
+					m_oPresentation.sldMasterIdLst.push_back(PPTX::Logic::XmlId(L"p:sldMasterId"));
 
                     std::wstring sId = std::to_wstring((_UINT64)(0x80000000 + nCountLayouts));
 
-					m_oPresentation.sldMasterIdLst[i].m_name = _T("sldMasterId");
 					m_oPresentation.sldMasterIdLst[i].id = sId;
 					m_oPresentation.sldMasterIdLst[i].rid = (size_t)(i + 1);
 					nCountLayouts += (LONG)(m_arSlideMasters_Theme[i].m_arLayouts.size() + 1);
@@ -773,11 +790,10 @@ namespace NSBinPptxRW
 				m_oPresentation.sldIdLst.clear();
 				for (LONG i = 0; i < nCountSlides; ++i)
 				{
-					m_oPresentation.sldIdLst.push_back(PPTX::Logic::XmlId());
+					m_oPresentation.sldIdLst.push_back(PPTX::Logic::XmlId(L"p:sldId"));
 
                     std::wstring sId = std::to_wstring(256 + i);
 
-                    m_oPresentation.sldIdLst[i].m_name = _T("sldId");
 					m_oPresentation.sldIdLst[i].id = sId;
 					m_oPresentation.sldIdLst[i].rid = (size_t)nCurrentRels;
 					++nCurrentRels;
@@ -788,8 +804,8 @@ namespace NSBinPptxRW
 				m_oPresentation.notesMasterIdLst.clear();
 				if (bNotesMasterPresent)
 				{
-					m_oPresentation.notesMasterIdLst.push_back(PPTX::Logic::XmlId());
-					m_oPresentation.notesMasterIdLst[0].m_name = _T("notesMasterId");
+					m_oPresentation.notesMasterIdLst.push_back(PPTX::Logic::XmlId(L"p:notesMasterId"));
+
 					m_oPresentation.notesMasterIdLst[0].rid = (size_t)nCurrentRels;
 					++nCurrentRels;
 				}
@@ -816,8 +832,10 @@ namespace NSBinPptxRW
 					bIsAuthors = true;
 				}
 			}
-
-			RELEASEARRAYOBJECTS(pDstBuffer);
+			if(!bIsNoBase64)
+			{
+				RELEASEARRAYOBJECTS(pDstBuffer);
+			}
 
 	// content types
 			OOX::CContentTypes *pContentTypes = m_oImageManager.m_pContentTypes;

@@ -31,7 +31,7 @@
  */
 
 #include "SXString.h"
-
+#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
 namespace XLS
 {
 
@@ -39,11 +39,9 @@ SXString::SXString()
 {
 }
 
-
 SXString::~SXString()
 {
 }
-
 
 BaseObjectPtr SXString::clone()
 {
@@ -61,17 +59,15 @@ void SXString::readFields(CFRecord& record)
 		record >> segment;
 	}
 }
-int SXString::serialize(std::wostream & strm)
+
+std::wstring SXString::value()
 {
-	CP_XML_WRITER(strm)
-	{
-		CP_XML_NODE(L"s")
-		{ 
-			CP_XML_ATTR(L"v", segment.value());
-		}
-	}
-	
-	return 0;
+	std::wstring s = segment.value();
+	XmlUtils::replace_all(s, L"\x0d", L"_x000d_");
+	XmlUtils::replace_all(s, L"\x0a", L"_x000a_");
+
+	return s;
 }
+
 } // namespace XLS
 

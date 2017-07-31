@@ -49,6 +49,8 @@ public:
 
 	static const ElementType type = typePIVOTVD;
 
+	int serialize(std::wostream & strm);
+
 	BaseObjectPtr				m_Sxvd;
 	std::vector<BaseObjectPtr>	m_arSXVI;
 	BaseObjectPtr				m_SXVDEx;

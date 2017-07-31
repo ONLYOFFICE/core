@@ -45,7 +45,6 @@ Sxvd::~Sxvd()
 {
 }
 
-
 BaseObjectPtr Sxvd::clone()
 {
 	return BaseObjectPtr(new Sxvd(*this));

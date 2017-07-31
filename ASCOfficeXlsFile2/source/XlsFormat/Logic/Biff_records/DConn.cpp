@@ -58,10 +58,17 @@ BaseObjectPtr DConn::clone()
 void DConn::readFields(CFRecord& record)
 {
 	unsigned short flags1, reserved1;
-	unsigned char flags2, reserved2;
+	unsigned char flags2, reserved2, reserved3;
 	
 	record >> frtHeaderOld >> dbt >> flags1 >> cParams >> reserved1 >> flags2 >> reserved2;
 	
+	//DBT_ODBC		0x0001		ODBC-based source
+	//DBT_DAO		0x0002		DAO-based source
+	//DBT_WEB		0x0004		Web query
+	//DBT_OLEDB		0x0005		OLE DB-based source
+	//DBT_TXT		0x0006		Text-based source created via text query
+	//DBT_ADO		0x0007		ADO record set	
+
 	fSavePwd		=  GETBIT(flags1, 0);
 	fTablesOnlyHtml	=  GETBIT(flags1, 1);
 	fTableNames		=  GETBIT(flags1, 2);
@@ -84,17 +91,39 @@ void DConn::readFields(CFRecord& record)
 		case 4:	grbitDbt.reset(new ConnGrbitDbtWeb);	break;
 		case 5:	grbitDbt.reset(new ConnGrbitDbtOledb);	break;
 		case 7:	grbitDbt.reset(new ConnGrbitDbtAdo);	break;
+		default:
+				break;
 	}
 	if (grbitDbt)
 	{
 		record >> *grbitDbt;
 	}
+	else
+	{
+		unsigned short unused;
+		record >> unused;
+	}
 
-	record >> bVerDbqueryEdit >> bVerDbqueryRefreshed >> bVerDbqueryRefreshableMin >> wRefreshInterval >> wHtmlFmt >> wHtmlFmt >> rcc >> credMethod;
+	record >> bVerDbqueryEdit >> bVerDbqueryRefreshed >> bVerDbqueryRefreshableMin >> wRefreshInterval >> wHtmlFmt >> rcc >> credMethod >> reserved3;
 
-	record >> rgchSourceDataFile >>	rgchSourceConnectionFile >> rgchConnectionName >> rgchConnectionDesc >> rgchSSOApplicationID >> tableNames;
+	if (dbt == 5)
+	{
+		record >> rgchSourceDataFile;
+	}
 	
-	for ( unsigned short i = 0; i < cParams; i++)
+	record >> rgchSourceConnectionFile >> rgchConnectionName >> rgchConnectionDesc;
+	
+	if (dbt == 1 || dbt == 5)
+	{
+		record >> rgchSSOApplicationID;
+	}
+
+	if (fTableNames)
+	{
+		record >> tableNames;
+	}
+	
+	for ( unsigned short i = 0; fStandAlone && i < cParams; i++)
 	{
 		DConnParameter val;
 		params.push_back(val);
@@ -111,7 +140,22 @@ void DConn::readFields(CFRecord& record)
 	if (connection)
 		record >> *connection;
 
-	record >> rgbSQL >> rgbSQLSav >> rgbEditWebPage >> id;
+	if (dbt == 1 || dbt == 5)
+	{
+		record >> rgbSQL;
+	}
+	
+	if (dbt == 1)
+	{
+		record >> rgbSQLSav;	
+	}
+	
+	if (dbt == 4)
+	{
+		record >> rgbEditWebPage;
+	}
+	
+	record >> id;
 
 	int skip = record.getDataSize() - record.getRdPtr();
 

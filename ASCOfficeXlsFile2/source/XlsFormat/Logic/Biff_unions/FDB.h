@@ -47,7 +47,7 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	int serialize(std::wostream & strm);
+	int serialize(std::wostream & strm, bool bSql);
 
 	static const ElementType	type = typeFDB;
 
@@ -59,6 +59,16 @@ public:
 	std::vector<BaseObjectPtr>	m_arGRPSXOPER;
 	BaseObjectPtr				m_SXRANGE;
 	std::vector<BaseObjectPtr>	m_arSxIsxoper;
+
+	bool	bString;
+	bool	bDate;
+	bool	bNumber;
+	bool	bEmpty;
+	bool	bInteger;
+	bool	bBool;
+
+	int						index;
+	GlobalWorkbookInfoPtr	global_info;
 };
 
 } // namespace XLS

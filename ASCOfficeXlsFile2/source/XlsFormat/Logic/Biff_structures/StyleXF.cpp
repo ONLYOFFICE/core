@@ -41,9 +41,11 @@ namespace XLS
 StyleXF::StyleXF(size_t& cell_xf_current_id, size_t& style_xf_current_id)
 :	cell_xf_current_id_(cell_xf_current_id), style_xf_current_id_(style_xf_current_id), font_id(0xFFFF)
 {
-	font_id	= -1;
+	font_id		= -1;
 	border_x_id = -1;
 	fill_x_id	= -1;
+	
+	fill.fls = 0;
 }
 
 
@@ -83,7 +85,7 @@ void StyleXF::load(CFRecord& record)
 			case 3: trot = 270;		break;		// Text orientation: 90 deg clockwise.
 		}	
 
-		fill.fls = static_cast<unsigned char>(GETBITS(flags2, 16, 21));
+		fill.fls = GETBITS(flags2, 16, 21);
 		
 		fill.icvFore = GETBITS(flags2, 0, 6);
 		fill.icvBack = GETBITS(flags2, 7, 13);
@@ -132,7 +134,7 @@ void StyleXF::load(CFRecord& record)
 		border.icvBottom	= (0 != border.dgBottom)? static_cast<unsigned char>(GETBITS(flags3, 7, 13))	: 0;
 		border.icvDiag		= (0 != border.dgDiag)	? static_cast<unsigned char>(GETBITS(flags3, 14, 20))	: 0;
 		
-		fill.fls = static_cast<unsigned char>(GETBITS(flags3, 26, 31));
+		fill.fls = GETBITS(flags3, 26, 31);
 		
 		fill.icvFore = GETBITS(flags4, 0, 6);
 		fill.icvBack = GETBITS(flags4, 7, 13);

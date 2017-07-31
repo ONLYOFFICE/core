@@ -55,7 +55,7 @@ class SXLI: public BiffRecordContinued
 	BIFF_RECORD_DEFINE_TYPE_INFO(SXLI)
 	BASE_OBJECT_DEFINE_CLASS_NAME(SXLI)
 public:
-	SXLI();
+	SXLI(int count_);
 	~SXLI();
 
 	BaseObjectPtr clone();
@@ -65,6 +65,7 @@ public:
 	static const ElementType type = typeSXLI;
 	
 	std::vector<SXLIItem> m_arItems;
+	int count;
 };
 
 } // namespace XLS

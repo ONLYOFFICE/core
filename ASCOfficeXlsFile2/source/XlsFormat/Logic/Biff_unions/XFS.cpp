@@ -31,11 +31,12 @@
  */
 
 #include "XFS.h"
-#include <Logic/Biff_records/XF.h>
-#include <Logic/Biff_records/XFCRC.h>
-#include <Logic/Biff_records/XFExt.h>
 
-#include <Logic/Biff_structures/ExtProp.h>
+#include "../Biff_records/XF.h"
+#include "../Biff_records/XFCRC.h"
+#include "../Biff_records/XFExt.h"
+
+#include "../Biff_structures/ExtProp.h"
 
 namespace XLS
 {

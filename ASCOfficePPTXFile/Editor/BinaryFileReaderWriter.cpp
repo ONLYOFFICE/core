@@ -790,6 +790,17 @@ namespace NSBinPptxRW
 	{
         _WriteString(sBuffer.c_str(), (_UINT32)sBuffer.length());
 	}
+	void CBinaryFileWriter::WriteStringUtf8(const std::wstring& sBuffer)
+	{
+		BYTE* pData = NULL;
+		LONG lLen = 0;
+
+		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sBuffer.c_str(), (LONG)sBuffer.length(), pData, lLen, false);
+
+		WriteBYTEArray(pData, lLen);
+
+		RELEASEARRAYOBJECTS(pData);
+	}
 	CBinaryFileWriter::CBinaryFileWriter()
 	{
 		m_pMainDocument		= NULL;
@@ -844,9 +855,9 @@ namespace NSBinPptxRW
 		m_lPosition += (_UINT32)lCount;
 	}
 
-	void CBinaryFileWriter::WriteMainPart()
+	void CBinaryFileWriter::WriteMainPart(_UINT32 nStartPos)
 	{
-		BYTE* pData = m_pStreamData;
+		BYTE* pData = m_pStreamData + nStartPos;
 		size_t nCount = m_arMainTables.size();
 
 		for (size_t i = 0; i < nCount; i++)

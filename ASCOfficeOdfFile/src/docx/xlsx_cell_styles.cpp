@@ -31,8 +31,6 @@
  */
 #include <vector>
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 #include "xlsx_cell_styles.h"
@@ -69,9 +67,9 @@ void xlsx_cell_styles::serialize(std::wostream & _Wostream) const
         {
             CP_XML_ATTR(L"count", impl_->cell_styles_.size());
 
-            BOOST_FOREACH(const xlsx_cell_style & s, impl_->cell_styles_)
-            {
-                oox::xlsx_serialize(CP_XML_STREAM(), s);                    
+   			for (size_t i = 0; i < impl_->cell_styles_.size(); i++)
+			{
+                oox::xlsx_serialize(CP_XML_STREAM(), impl_->cell_styles_[i]);                    
             }
         }
     }

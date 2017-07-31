@@ -38,11 +38,14 @@
 namespace XLS
 {
 
-
 DBB::DBB()
 {
+	bString		= false;
+	bDate		= false;
+	bNumber		= false;
+	bEmpty		= false;
+	bBool		= false;
 }
-
 
 DBB::~DBB()
 {
@@ -52,7 +55,6 @@ BaseObjectPtr DBB::clone()
 {
 	return BaseObjectPtr(new DBB(*this));
 }
-
 
 // DBB = [SXDBB] *SXOPER
 const bool DBB::loadContent(BinProcessor& proc)
@@ -66,6 +68,13 @@ const bool DBB::loadContent(BinProcessor& proc)
 	while(count--)
 	{
 		m_arSXOPER.push_back(elements_.front());	elements_.pop_front();
+		SXOPER* operatr = dynamic_cast<SXOPER*>(m_arSXOPER.back().get());
+
+		bString	|= operatr->bString;
+		bDate	|= operatr->bDate;
+		bNumber	|= operatr->bNumber;
+		bEmpty	|= operatr->bEmpty;
+		bBool	|= operatr->bBool;
 	}
 
 	if (!m_SXDBB && m_arSXOPER.empty())
@@ -73,6 +82,50 @@ const bool DBB::loadContent(BinProcessor& proc)
 
 	return true;
 }
+int DBB::serialize(std::wostream & strm)
+{
+	SXDBB* dbb = dynamic_cast<SXDBB*>(m_SXDBB.get());
 
+	if (!dbb && m_arSXOPER.empty()) return 0;
+
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"r")
+		{ 		
+			int indexOPER = 0;
+			size_t posBlob = 0;
+
+			for (size_t i = 0; i < arPivotCacheFields.size(); i++)
+			{
+				if(arPivotCacheFields[i] == false && indexOPER < m_arSXOPER.size())
+				{
+					m_arSXOPER[indexOPER++]->serialize(CP_XML_STREAM());
+				}
+				else if (posBlob < dbb->size)
+				{
+					if (arPivotCacheFieldShortSize[i])//fShortIitms
+					{
+						unsigned short * values = (unsigned short *)(dbb->blob.get() + posBlob);
+						CP_XML_NODE(L"x")
+						{		
+							CP_XML_ATTR(L"v", *values);
+						}
+						posBlob+=2;
+					}
+					else
+					{
+						unsigned char * values = (unsigned char *)(dbb->blob.get() + posBlob);
+						CP_XML_NODE(L"x")
+						{		
+							CP_XML_ATTR(L"v", *values);
+						}
+						posBlob++;
+					}
+				}
+			}
+		}
+	}
+	return 0;
+}
 } // namespace XLS
 

@@ -38,6 +38,7 @@ namespace XLS
 
 SheetExt::SheetExt()
 {
+	icvPlain = 0;
 }
 
 
@@ -61,7 +62,7 @@ void SheetExt::readFields(CFRecord& record)
 	_UINT32 flags;
 	record >> flags;
 	
-	icvPlain = static_cast<unsigned char>(GETBITS(flags, 0, 6));
+	icvPlain = GETBITS(flags, 0, 6);
 
 	if(0x00000028 == cb)
 	{

@@ -38,11 +38,21 @@
 #include "../Biff_records/SXString.h"
 #include "../Biff_records/SXDtr.h"
 
+#include <boost/lexical_cast.hpp>
+
 namespace XLS
 {
 
 SXOPER::SXOPER()
 {
+	bFormula= false;
+
+	bString	= false;
+	bDate	= false;
+	bNumber	= false;
+	bEmpty	= false;
+	bInteger= false;
+	bBool	= false;
 }
 
 SXOPER::~SXOPER()
@@ -59,21 +69,53 @@ const bool SXOPER::loadContent(BinProcessor& proc)
 {
 	if(proc.optional<SxNil>())
 	{
+		bEmpty = true;
+		node = L"m";
 	}
 	else if(proc.optional<SXNum>())
 	{
+		SXNum *num = dynamic_cast<SXNum*>(elements_.back().get());
+		if (num)
+		{
+			bInteger = (num->num.data.bytes.Byte1==num->num.data.bytes.Byte2 && 
+						num->num.data.bytes.Byte2==num->num.data.bytes.Byte3 && 
+						num->num.data.bytes.Byte3==num->num.data.bytes.Byte4 && 
+						num->num.data.bytes.Byte4==0);
+		}
+		bNumber = !bInteger;
+		node	= L"n";
+		if (bInteger)
+			value	= std::to_wstring((int)num->num.data.value);
+		else
+			value	= boost::lexical_cast<std::wstring>(num->num.data.value);
 	}
 	else if(proc.optional<SxBool>())
 	{
+		SxBool* b = dynamic_cast<SxBool*>(elements_.back().get());	
+		bBool	= true;
+		node	= L"b";
+		value	= std::to_wstring(b->val);
 	}
 	else if(proc.optional<SxErr>())
 	{
+		SxErr* err	= dynamic_cast<SxErr*>(elements_.back().get());
+		bNumber = true;
+		node	= L"e";
+		value	= std::to_wstring(err->wbe);
 	}
 	else if(proc.optional<SXString>())
 	{
+		SXString* str = dynamic_cast<SXString*>(elements_.back().get());
+		bString = true;
+		node	= L"s";
+		value	= str->value();
 	}
 	else if(proc.optional<SXDtr>())
 	{
+		SXDtr* dtr = dynamic_cast<SXDtr*>(elements_.back().get());
+		bDate	= true;
+		node	= L"d";
+		value	= dtr->value();
 	}
 	else 
 		return false;
@@ -81,14 +123,30 @@ const bool SXOPER::loadContent(BinProcessor& proc)
 	m_element = elements_.back();
 	elements_.pop_back();
 
+
 	return true;
 }
 int SXOPER::serialize(std::wostream & strm)
 {
 	if (!m_element) return 0;
+	if (node.empty()) return 0;
 
-	m_element->serialize(strm);
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(node)
+		{ 
+			if (!value.empty() || bString)
+			{
+				CP_XML_ATTR(L"v", value);
+			}
+			if (bFormula)
+			{
+				CP_XML_ATTR(L"f", 1);
+			}
+		}	
+	}
 	return 0;
 }
+
 } // namespace XLS
 

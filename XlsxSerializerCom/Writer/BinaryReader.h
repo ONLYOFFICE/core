@@ -4262,25 +4262,41 @@ namespace BinXlsxRW {
 						else
                             dst_len += _c;
 					}
-                    int nDataSize = atoi(dst_len.c_str());
-					BYTE* pData = new BYTE[nDataSize];
-
-                    if(false != Base64::Base64Decode((const char*)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
+					int nVersion = g_nFormatVersion;
+					if(!version.empty())
 					{
-						NSBinPptxRW::CBinaryFileReader& oBufferedStream = *pOfficeDrawingConverter->m_pReader;
-						oBufferedStream.Init(pData, 0, nDataSize);
+						version = version.substr(1);
+						g_nCurFormatVersion = nVersion = std::stoi(version.c_str());
+					}
+					bool bIsNoBase64 = nVersion == g_nFormatVersionNoBase64;
 
-						int nVersion = g_nFormatVersion;
-                        if(version.length() > 0)
+					NSBinPptxRW::CBinaryFileReader& oBufferedStream = *pOfficeDrawingConverter->m_pReader;
+
+					int nDataSize = 0;
+					BYTE* pData = NULL;
+					if (!bIsNoBase64)
+					{
+						nDataSize = atoi(dst_len.c_str());
+						pData = new BYTE[nDataSize];
+						if(Base64::Base64Decode((const char*)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
 						{
-                            version = version.substr(1);
-
-                            int nTempVersion = atoi(version.c_str());
-							if(0 != nTempVersion)
-							{
-								g_nCurFormatVersion = nVersion = nTempVersion;
-							}
+							oBufferedStream.Init(pData, 0, nDataSize);
 						}
+						else
+						{
+							RELEASEARRAYOBJECTS(pData);
+						}
+					}
+					else
+					{
+						nDataSize = nBase64DataSize;
+						pData = pBase64Data;
+						oBufferedStream.Init(pData, 0, nDataSize);
+						oBufferedStream.Seek(nIndex);
+					}
+
+					if(NULL != pData)
+					{
                 // File Type
                         std::wstring sDstPathCSV = sDstPath;
 						BYTE fileType;
@@ -4321,7 +4337,13 @@ namespace BinXlsxRW {
 						}
 						bResultOk = true;
 					}
+					if (!bIsNoBase64)
+					{
+						RELEASEARRAYOBJECTS(pData);
+					}
+
 				}
+				RELEASEARRAYOBJECTS(pBase64Data);
 			}
 			return S_OK;
 		}

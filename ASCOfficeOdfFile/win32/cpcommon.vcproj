@@ -386,6 +386,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\datatypes\chartlabelposition.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\chartlabelposition.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\datatypes\chartregressiontype.cpp"
 				>
 			</File>
@@ -555,6 +563,14 @@
 			</File>
 			<File
 				RelativePath="..\src\odf\datatypes\gradientstyle.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\grandtotal.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\grandtotal.h"
 				>
 			</File>
 			<File

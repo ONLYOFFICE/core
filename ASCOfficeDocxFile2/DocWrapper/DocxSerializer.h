@@ -54,6 +54,7 @@ namespace BinDocxRW
         std::wstring			m_sFontDir;
         std::wstring			m_sEmbeddedFontsDir;
 		bool					m_bIsNoBase64Save;
+		bool					m_bIsNoBase64;
 		bool					m_bSaveChartAsImg;
 		ParamsWriter*			m_pParamsWriter;
 		Writers::FileWriter*	m_pCurFileWriter;
@@ -61,9 +62,6 @@ namespace BinDocxRW
 		CDocxSerializer();
 		virtual ~CDocxSerializer();
 
-        bool ConvertDocxToDoct(const std::wstring& sSrcFileName, const std::wstring& sDstFileName, const std::wstring& sTmpDir, const std::wstring& sXMLOptions);
-        bool ConvertDoctToDocx(const std::wstring& sSrcFileName, const std::wstring& sDstFileName, const std::wstring& sTmpDir, const std::wstring& sXMLOptions);
-		
         bool loadFromFile   (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sThemePath, const std::wstring& sMediaPath, const std::wstring& sEmbedPath);
         bool saveToFile     (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions);
 
@@ -78,6 +76,7 @@ namespace BinDocxRW
         void setFontDir         (const std::wstring& sFontDir);
         void setEmbeddedFontsDir(const std::wstring& sEmbeddedFontsDir);
         void setIsNoBase64Save  (bool bIsNoBase64Save);
+        void setIsNoBase64      (bool bIsNoBase64);
         void setSaveChartAsImg  (bool bSaveChartAsImg);
 	};
 }

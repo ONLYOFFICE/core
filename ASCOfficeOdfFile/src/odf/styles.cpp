@@ -40,7 +40,6 @@
 #include <cpdoccore/odf/odf_document.h>
 
 #include <iostream>
-#include <boost/foreach.hpp>
 
 #include "office_elements.h"
 #include "office_elements_create.h"

@@ -52,6 +52,18 @@ public:
 	static const ElementType type = typeSXOPER;
 
 	BaseObjectPtr	m_element;	
+
+	bool	bFormula;
+
+	bool	bString;
+	bool	bDate;
+	bool	bNumber;
+	bool	bEmpty;
+	bool	bInteger;
+	bool	bBool;
+
+	std::wstring value;
+	std::wstring node;
 };
 
 } // namespace XLS

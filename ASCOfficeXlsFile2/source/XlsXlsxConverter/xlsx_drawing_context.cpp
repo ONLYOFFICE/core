@@ -2423,7 +2423,7 @@ void xlsx_drawing_context::set_custom_connection(std::vector<ODRAW::MSOPOINT>& p
 
 	current_drawing_states->back()->custom_connection = points;
 }
-void xlsx_drawing_context::set_custom_connectionDir(std::vector<ODRAW::FixedPoint>& points)
+void xlsx_drawing_context::set_custom_connectionDir(std::vector<OSHARED::FixedPoint>& points)
 {
 	if (current_drawing_states == NULL) return;	
 	if (current_drawing_states->empty()) return;

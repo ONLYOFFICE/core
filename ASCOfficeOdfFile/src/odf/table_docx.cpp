@@ -51,14 +51,14 @@ namespace odf_reader {
 bool table_table_cell_content::docx_convert(oox::docx_conversion_context & Context)
 {
     bool wasPar = false;
-    BOOST_FOREACH(const office_element_ptr & elm, elements_)
+ 	for (size_t i = 0; i < elements_.size(); i++)
     {
-		ElementType type = elm->get_type();
+		ElementType type = elements_[i]->get_type();
         
 		if (type == typeTextP || type== typeTextH)
             wasPar = true;
 
-        elm->docx_convert(Context);
+        elements_[i]->docx_convert(Context);
     }
     return wasPar;
 }
@@ -83,9 +83,9 @@ void table_table_row::docx_convert(oox::docx_conversion_context & Context)
 
         Context.get_table_context().start_row(styleName, defaultCellStyle);
         
-        BOOST_FOREACH(const office_element_ptr & elm, content_)
+ 		for (size_t i = 0; i < content_.size(); i++)
         {
-            elm->docx_convert(Context);
+            content_[i]->docx_convert(Context);
         }
 
         Context.get_table_context().end_row();
@@ -96,17 +96,17 @@ void table_table_row::docx_convert(oox::docx_conversion_context & Context)
 
 void table_table_rows::docx_convert(oox::docx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, table_table_row_)
+ 	for (size_t i = 0; i < table_table_row_.size(); i++)
     {
-        elm->docx_convert(Context);
+        table_table_row_[i]->docx_convert(Context);
     }
 }
 
 void table_table_header_rows::docx_convert(oox::docx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, table_table_row_)
+ 	for (size_t i = 0; i < table_table_row_.size(); i++)
     {
-        elm->docx_convert(Context);
+        table_table_row_[i]->docx_convert(Context);
     }
 }
 
@@ -116,9 +116,9 @@ void table_rows::docx_convert(oox::docx_conversion_context & Context)
         table_table_rows_->docx_convert(Context);
     else
     {
-        BOOST_FOREACH(const office_element_ptr & elm, table_table_row_)
+ 		for (size_t i = 0; i < table_table_row_.size(); i++)
         {
-            elm->docx_convert(Context);
+            table_table_row_[i]->docx_convert(Context);
         }
     }    
 }
@@ -135,9 +135,9 @@ void table_rows_no_group::docx_convert(oox::docx_conversion_context & Context)
 
 void table_rows_and_groups::docx_convert(oox::docx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
-    {
-        elm->docx_convert(Context);
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+        content_[i]->docx_convert(Context);
     }
 }
 
@@ -182,17 +182,17 @@ void table_columns::docx_convert(oox::docx_conversion_context & Context)
     if (table_table_columns_)
         table_table_columns_->docx_convert(Context);
 
-    BOOST_FOREACH(const office_element_ptr & elm, table_table_column_)
+	for (size_t i = 0; i < table_table_column_.size(); i++)
     {
-        elm->docx_convert(Context);
+        table_table_column_[i]->docx_convert(Context);
     }
 }
 
 void table_table_columns::docx_convert(oox::docx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, table_table_column_)
+	for (size_t i = 0; i < table_table_column_.size(); i++)
     {
-        elm->docx_convert(Context);
+        table_table_column_[i]->docx_convert(Context);
     }
 }
 
@@ -208,9 +208,9 @@ void table_columns_no_group::docx_convert(oox::docx_conversion_context & Context
 
 void table_columns_and_groups::docx_convert(oox::docx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
     //if (table_table_column_group_)
     //    table_table_column_group_->docx_convert(Context);
@@ -220,9 +220,9 @@ void table_columns_and_groups::docx_convert(oox::docx_conversion_context & Conte
 
 void table_table_header_columns::docx_convert(oox::docx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, table_table_column_)
+	for (size_t i = 0; i < table_table_column_.size(); i++)
     {
-        elm->docx_convert(Context);
+        table_table_column_[i]->docx_convert(Context);
     }    
 }
 

@@ -56,12 +56,12 @@ namespace odf_reader {
 bool table_table_cell_content::pptx_convert(oox::pptx_conversion_context & Context)
 {
     bool wasPar = false;
-    BOOST_FOREACH(const office_element_ptr & elm, elements_)
+  	for (size_t i = 0; i < elements_.size(); i++)
     {
-        if (elm->get_type() == typeTextP || 
-            elm->get_type() == typeTextH)
+        if (elements_[i]->get_type() == typeTextP || 
+            elements_[i]->get_type() == typeTextH)
             wasPar = true;
-        elm->pptx_convert(Context);
+        elements_[i]->pptx_convert(Context);
     }
     return wasPar;
 }
@@ -97,9 +97,9 @@ void table_table_row::pptx_convert(oox::pptx_conversion_context & Context)
   
         Context.get_table_context().start_row(styleName, defaultCellStyle);
         
-        BOOST_FOREACH(const office_element_ptr & elm, content_)
+		for (size_t i = 0; i < content_.size(); i++)
         {
-            elm->pptx_convert(Context);
+            content_[i]->pptx_convert(Context);
         }
 
         Context.get_table_context().end_row();
@@ -110,17 +110,17 @@ void table_table_row::pptx_convert(oox::pptx_conversion_context & Context)
 
 void table_table_rows::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, table_table_row_)
+	for (size_t i = 0; i < table_table_row_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        table_table_row_[i]->pptx_convert(Context);
     }
 }
 
 void table_table_header_rows::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, table_table_row_)
+	for (size_t i = 0; i < table_table_row_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        table_table_row_[i]->pptx_convert(Context);
     }
 }
 
@@ -130,9 +130,9 @@ void table_rows::pptx_convert(oox::pptx_conversion_context & Context)
         table_table_rows_->pptx_convert(Context);
     else
     {
-        BOOST_FOREACH(const office_element_ptr & elm, table_table_row_)
+		for (size_t i = 0; i < table_table_row_.size(); i++)
         {
-            elm->pptx_convert(Context);
+            table_table_row_[i]->pptx_convert(Context);
         }
     }    
 }
@@ -149,9 +149,9 @@ void table_rows_no_group::pptx_convert(oox::pptx_conversion_context & Context)
 
 void table_rows_and_groups::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        content_[i]->pptx_convert(Context);
     }
 }
 
@@ -244,17 +244,17 @@ void table_columns::pptx_convert(oox::pptx_conversion_context & Context)
     if (table_table_columns_)
         table_table_columns_->pptx_convert(Context);
 
-    BOOST_FOREACH(const office_element_ptr & elm, table_table_column_)
+	for (size_t i = 0; i < table_table_column_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        table_table_column_[i]->pptx_convert(Context);
     }
 }
 
 void table_table_columns::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, table_table_column_)
+	for (size_t i = 0; i < table_table_column_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        table_table_column_[i]->pptx_convert(Context);
     }
 }
 
@@ -270,17 +270,17 @@ void table_columns_no_group::pptx_convert(oox::pptx_conversion_context & Context
 
 void table_columns_and_groups::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        content_[i]->pptx_convert(Context);
     }
 }
 
 void table_table_header_columns::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, table_table_column_)
+	for (size_t i = 0; i < table_table_column_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        table_table_column_[i]->pptx_convert(Context);
     }    
 }
 

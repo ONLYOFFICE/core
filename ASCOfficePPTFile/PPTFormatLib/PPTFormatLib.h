@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "../../../DesktopEditor/common/ASCVariant.h"
+#include "../../DesktopEditor/common/ASCVariant.h"
 
 #include <vector>
 

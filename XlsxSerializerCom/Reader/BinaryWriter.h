@@ -4244,7 +4244,7 @@ namespace BinXlsxRW
 			RELEASEOBJECT(m_oBcw);
 		}
         void Open(const std::wstring& sInputDir, const std::wstring& sFileDst, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager,
-            NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions)
+            NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bIsNoBase64)
 		{
 			OOX::CPath path(sFileDst);
 	//создаем папку для media
@@ -4286,21 +4286,35 @@ namespace BinXlsxRW
 			}
 			else
 			{
+				if (bIsNoBase64)
+				{
+					oBufferedStream.WriteStringUtf8(WriteFileHeader(0, g_nFormatVersionNoBase64));
+				}
 				intoBindoc(*pXlsx, oBufferedStream, pEmbeddedFontsManager, pOfficeDrawingConverter);
 
 				BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
 				int nBinBufferLen = oBufferedStream.GetPosition();
-				int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
-				BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen+64];
-                if(true == Base64_1::Base64Encode(pbBinBuffer, nBinBufferLen, pbBase64Buffer, &nBase64BufferLen))
+				if (bIsNoBase64)
 				{
-					CFile oFile;
-					oFile.CreateFile(sFileDst);
-					oFile.WriteStringUTF8(WriteFileHeader(nBinBufferLen));
-					oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
+					NSFile::CFileBinary oFile;
+					oFile.CreateFileW(sFileDst);
+					oFile.WriteFile(pbBinBuffer, nBinBufferLen);
 					oFile.CloseFile();
 				}
-				RELEASEARRAYOBJECTS(pbBase64Buffer);
+				else
+				{
+					int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
+					BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen+64];
+					if(true == Base64_1::Base64Encode(pbBinBuffer, nBinBufferLen, pbBase64Buffer, &nBase64BufferLen))
+					{
+						NSFile::CFileBinary oFile;
+						oFile.CreateFileW(sFileDst);
+						oFile.WriteStringUTF8(WriteFileHeader(nBinBufferLen, g_nFormatVersion));
+						oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
+						oFile.CloseFile();
+					}
+					RELEASEARRAYOBJECTS(pbBase64Buffer);
+				}
 			}
 
 			RELEASEOBJECT(pXlsx);
@@ -4368,9 +4382,9 @@ namespace BinXlsxRW
 			WriteMainTableEnd();
 		}
  	private:
-       std::wstring WriteFileHeader(int nDataSize)
+       std::wstring WriteFileHeader(int nDataSize, int version)
 		{
-            std::wstring sHeader = std::wstring(g_sFormatSignature) + L";v" + std::to_wstring(g_nFormatVersion)+ L";" + std::to_wstring(nDataSize) + L";";
+            std::wstring sHeader = std::wstring(g_sFormatSignature) + L";v" + std::to_wstring(version)+ L";" + std::to_wstring(nDataSize) + L";";
 			return sHeader;
 		}
 		void WriteMainTableStart()

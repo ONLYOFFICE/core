@@ -32,8 +32,6 @@
 
 #include "text_elements.h"
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/attributes.h>
@@ -455,8 +453,8 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 
     Context.add_note_reference();
 
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
-    {
+  	for (size_t i = 0; i < content_.size(); i++)
+	{
 		if (Context.get_page_break())
 		{
 			if (Context.process_headers_footers_ == false) 
@@ -464,9 +462,9 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 				_Wostream << L"<w:br w:type=\"page\"/>";  
 			Context.set_page_break(false);
 		}
-        elm->docx_convert(Context); 
+        content_[i]->docx_convert(Context); 
  		
-		if (Context.get_drop_cap_context().state() >0)		
+		if (Context.get_drop_cap_context().state() > 0)		
 			Context.get_drop_cap_context().state(0);//disable
 	}
 
@@ -510,9 +508,9 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 void paragraph::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     Context.start_paragraph(attrs_.text_style_name_);
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+  	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->xlsx_convert(Context); 
+        content_[i]->xlsx_convert(Context); 
     }
     Context.end_paragraph();    
 }
@@ -520,9 +518,9 @@ void paragraph::pptx_convert(oox::pptx_conversion_context & Context)
 {
     Context.get_text_context().start_paragraph(attrs_.text_style_name_);
     
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
+  	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->pptx_convert(Context); 
+        content_[i]->pptx_convert(Context); 
     }
     
 	Context.get_text_context().end_paragraph();    
@@ -638,9 +636,9 @@ const wchar_t * list::name = L"list";
 
 std::wostream & list::text_to_stream(std::wostream & _Wostream) const
 {
-    BOOST_FOREACH(const office_element_ptr & listItem, text_list_items_)
+  	for (size_t i = 0; i < text_list_items_.size(); i++)
     {
-        listItem->text_to_stream(_Wostream);
+        text_list_items_[i]->text_to_stream(_Wostream);
     }
     return _Wostream;
 }
@@ -677,9 +675,9 @@ void list::docx_convert(oox::docx_conversion_context & Context)
     if (text_list_header_)
         text_list_header_->docx_convert(Context);
 
-    BOOST_FOREACH(const office_element_ptr & elm, text_list_items_)
+	for (size_t i = 0; i < text_list_items_.size(); i++)
     {
-        elm->docx_convert(Context);
+        text_list_items_[i]->docx_convert(Context);
     }
 
     Context.end_list();
@@ -692,9 +690,9 @@ void list::pptx_convert(oox::pptx_conversion_context & Context)
     if (text_list_header_)
         text_list_header_->pptx_convert(Context);
 
-    BOOST_FOREACH(const office_element_ptr & elm, text_list_items_)
-    {
-        elm->pptx_convert(Context);
+	for (size_t i = 0; i < text_list_items_.size(); i++)
+	{
+        text_list_items_[i]->pptx_convert(Context);
     }
 
     Context.get_text_context().end_list();
@@ -788,9 +786,9 @@ void text_section::docx_convert(oox::docx_conversion_context & Context)
 	
 	Context.add_page_properties(current_page_properties);
 
-    BOOST_FOREACH(const office_element_ptr & elm, text_content_)
-    {
-        elm->docx_convert(Context);
+   	for (size_t i = 0; i < text_content_.size(); i++)
+	{
+        text_content_[i]->docx_convert(Context);
     }
 }
 
@@ -844,16 +842,16 @@ void text_index_body::add_child_element( xml::sax * Reader, const std::wstring &
 
 void text_index_body::docx_convert(oox::docx_conversion_context & Context) 
 {
-    BOOST_FOREACH(const office_element_ptr & elm, index_content_main_)
-    {
-        elm->docx_convert(Context);
+   	for (size_t i = 0; i < index_content_main_.size(); i++)
+	{
+        index_content_main_[i]->docx_convert(Context);
     }
 }
 void text_index_body::pptx_convert(oox::pptx_conversion_context & Context) 
 {
-    BOOST_FOREACH(const office_element_ptr & elm, index_content_main_)
-    {
-        elm->pptx_convert(Context);
+	for (size_t i = 0; i < index_content_main_.size(); i++)
+	{
+        index_content_main_[i]->pptx_convert(Context);
     }
 }
 // text:index-title
@@ -864,16 +862,16 @@ const wchar_t * text_index_title::name = L"index-title";
 
 void text_index_title::docx_convert(oox::docx_conversion_context & Context) 
 {
-    BOOST_FOREACH(office_element_ptr & elm, index_content_main_)
+	for (size_t i = 0; i < index_content_main_.size(); i++)
     {
-        elm->docx_convert(Context);
+        index_content_main_[i]->docx_convert(Context);
     }
 }
 void text_index_title::pptx_convert(oox::pptx_conversion_context & Context) 
 {
-    BOOST_FOREACH(office_element_ptr & elm, index_content_main_)
+	for (size_t i = 0; i < index_content_main_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        index_content_main_[i]->pptx_convert(Context);
     }
 }
 std::wostream & text_index_title::text_to_stream(std::wostream & _Wostream) const

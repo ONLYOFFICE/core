@@ -50,7 +50,8 @@ public:
 
 	static const ElementType type = typeSXDBB;
 
-	boost::shared_array<char> blob;
+	boost::shared_array<unsigned char>	blob;
+	unsigned int						size;
 };
 
 } // namespace XLS

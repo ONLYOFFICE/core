@@ -1660,6 +1660,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\table_data_pilot_tables.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\table_data_pilot_tables.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\table_database_ranges.cpp"
 				>
 			</File>

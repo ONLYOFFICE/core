@@ -47,10 +47,15 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize(std::wostream & strm);
+
 	static const ElementType type = typePIVOTVIEW;
 
 	BaseObjectPtr	m_PIVOTCORE;
 	BaseObjectPtr	m_PIVOTFRT;
+//----------------------------------
+	int				indexCache;
+	std::wstring	name;
 };
 
 } // namespace XLS

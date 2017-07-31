@@ -232,9 +232,9 @@ void xlsx_style_manager::Impl::serialize_xf(std::wostream & _Wostream, const xls
     std::sort(xfs_.begin(), xfs_.end(), compare_xlsx_xf());
 
     _Wostream << L"<" << nodeName << L" count=\"" << xfs_.size() << L"\">";
-    BOOST_FOREACH(const xlsx_xf & xfRecord, xfs_)
+	for (size_t i = 0; i < xfs_.size(); i++)
     {
-        cpdoccore::oox::xlsx_serialize(_Wostream, xfRecord);
+        cpdoccore::oox::xlsx_serialize(_Wostream, xfs_[i]);
     }
     _Wostream << L"</" << nodeName << L">";    
 }

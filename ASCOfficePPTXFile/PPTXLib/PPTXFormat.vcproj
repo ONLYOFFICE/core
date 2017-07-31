@@ -2988,6 +2988,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\PPTXFormat\Presentation\SectionLst.h"
+					>
+				</File>
+				<File
 					RelativePath="..\.\PPTXFormat\Presentation\SldSz.h"
 					>
 				</File>

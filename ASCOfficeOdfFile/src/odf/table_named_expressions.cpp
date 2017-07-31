@@ -69,9 +69,9 @@ void table_named_expressions::docx_convert(oox::docx_conversion_context & Contex
 
 void table_named_expressions::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    BOOST_FOREACH(office_element_ptr const & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->xlsx_convert(Context);
+        content_[i]->xlsx_convert(Context);
     }
 }
 

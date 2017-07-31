@@ -40,8 +40,8 @@
 
 #include <stdio.h>
 
-#include "../3dParty/curl/include/curl/curl.h"
-#include "../3dParty/curl/include/curl/easy.h"
+#include <curl/curl.h>
+#include <curl/easy.h>
 
 
 class CFileDownloaderBaseCURL : public CFileDownloaderBase

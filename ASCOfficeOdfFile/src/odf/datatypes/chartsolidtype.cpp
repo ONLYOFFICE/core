@@ -62,7 +62,6 @@ chart_solid_type chart_solid_type::parse(const std::wstring & Str)
         return chart_solid_type( pyramid );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return chart_solid_type( cuboid );
     }
 }

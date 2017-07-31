@@ -36,7 +36,7 @@
 namespace XLS
 {
 
-	class SxItm: public BiffRecordContinued
+class SxItm: public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SxItm)
 	BASE_OBJECT_DEFINE_CLASS_NAME(SxItm)

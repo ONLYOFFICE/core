@@ -104,6 +104,13 @@ bool xlsx_conversion_context::start_table(const std::wstring & name)
 	return true;
 }
 
+void xlsx_conversion_context::set_chart_view()
+{
+	if (sheets_.empty()) return;
+
+	get_table_context().set_chart_view();
+}
+
 void xlsx_conversion_context::set_state(const std::wstring & state)
 {
 	if (state.empty()) return;
@@ -272,16 +279,35 @@ void xlsx_conversion_context::end_document()
 							CP_XML_ATTR(L"r:id", rId);
 						}
 
-						xlsx_pivots_context_.dump_rels(i, content->get_rels());
-						xlsx_pivots_context_.write_definitions_to(i, content->definitions());
-						xlsx_pivots_context_.write_records_to(i, content->records());
+						xlsx_pivots_context_.dump_rels_cache(i, content->get_rels());
+						xlsx_pivots_context_.write_cache_definitions_to(i, content->definitions());
+						xlsx_pivots_context_.write_cache_records_to(i, content->records());
 
 						output_document_->get_xl_files().add_pivot_cache(content);	
 					}
 				}
 			}
-		}
+			int pivot_view_count = xlsx_pivots_context_.get_view_count();
+			if (pivot_view_count > 0)
+			{
+				for (int i = 0; i < pivot_view_count; i++)
+				{
+					package::pivot_table_content_ptr content = package::pivot_table_content::create();
 
+					xlsx_pivots_context_.dump_rels_view(i, content->get_rels());
+					xlsx_pivots_context_.write_table_view_to(i, content->content());
+
+					output_document_->get_xl_files().add_pivot_table(content);	
+				}
+			}
+			if (xlsx_pivots_context_.is_connections())
+			{
+				std::wstringstream strm;
+				xlsx_pivots_context_.write_connections_to(strm);
+
+				output_document_->get_xl_files().set_connections( package::simple_element::create(L"connections.xml", strm.str()) );
+			}
+		}
         output_document_->get_xl_files().set_workbook( package::simple_element::create(L"workbook.xml", strm_workbook.str()) );
 
 		output_document_->content_type().set_media(get_mediaitems());
@@ -294,10 +320,8 @@ void xlsx_conversion_context::end_document()
         output_document_->get_xl_files().set_vml_drawings(drawings_vml);
 
 		package::xl_comments_ptr comments = package::xl_comments::create(xlsx_comments_context_handle_.content());
-        output_document_->get_xl_files().set_comments(comments);
-        
+        output_document_->get_xl_files().set_comments(comments);        
 	}
-
 }
 
 }

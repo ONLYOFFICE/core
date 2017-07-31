@@ -39,11 +39,9 @@ SXDI::SXDI()
 {
 }
 
-
 SXDI::~SXDI()
 {
 }
-
 
 BaseObjectPtr SXDI::clone()
 {
@@ -61,5 +59,22 @@ void SXDI::readFields(CFRecord& record)
 	}
 }
 
+int SXDI::serialize(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"dataField")
+		{
+			if (stName.value().empty() == false)
+				CP_XML_ATTR(L"name", stName.value()); 
+			
+			CP_XML_ATTR(L"fld",			isxvdData); 
+			CP_XML_ATTR(L"baseField",	df); 
+			CP_XML_ATTR(L"baseItem",	isxvi); 
+			CP_XML_ATTR(L"numFmtId",	ifmt); 
+		}
+	}
+	return 0;
+}
 } // namespace XLS
 

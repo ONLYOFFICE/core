@@ -39,11 +39,9 @@ OleDbConn::OleDbConn()
 {
 }
 
-
 OleDbConn::~OleDbConn()
 {
 }
-
 
 BaseObjectPtr OleDbConn::clone()
 {
@@ -52,9 +50,12 @@ BaseObjectPtr OleDbConn::clone()
 
 void OleDbConn::readFields(CFRecord& record)
 {
-	Log::error("OleDbConn record is not implemented.");
+	unsigned short flags;
 
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	record >> frtHeaderOld >> flags >> cst;
+	
+	fPasswd	= GETBIT(flags, 0);
+	fLocal	= GETBIT(flags, 1);
 }
 
 } // namespace XLS

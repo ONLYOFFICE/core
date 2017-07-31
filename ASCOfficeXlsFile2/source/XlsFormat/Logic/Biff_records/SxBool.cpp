@@ -39,7 +39,6 @@ SxBool::SxBool()
 {
 }
 
-
 SxBool::~SxBool()
 {
 }
@@ -56,6 +55,5 @@ void SxBool::readFields(CFRecord& record)
 
 	val = (flags != 0);
 }
-
 } // namespace XLS
 

@@ -34,8 +34,6 @@
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
-#include <boost/foreach.hpp>
-
 #include "docx_content_type.h"
 #include "namespaces.h"
 
@@ -86,14 +84,14 @@ std::wostream & content_type_content::xml_to_stream(std::wostream & _Wostream) c
             CP_XML_ATTR(L"xmlns", xmlns::types.value);
 
             
-            BOOST_FOREACH(const xml::element_wc & elm, default_)
+			for (size_t i = 0; i < default_.size(); i++)
             {
-                elm.xml_to_stream(CP_XML_STREAM());
+                default_[i].xml_to_stream(CP_XML_STREAM());
             }
 
-            BOOST_FOREACH(const xml::element_wc & elm, override_)
+		for (size_t i = 0; i < override_.size(); i++)
             {
-                elm.xml_to_stream(CP_XML_STREAM());
+                override_[i].xml_to_stream(CP_XML_STREAM());
             }            
         }
     }

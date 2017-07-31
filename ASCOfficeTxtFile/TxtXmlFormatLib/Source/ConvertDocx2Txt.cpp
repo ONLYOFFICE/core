@@ -85,7 +85,7 @@ namespace Docx2Txt
 									OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
 
         size_t NoteCount;
-        std::list<std::wstring> Notes;
+		std::map<std::wstring, std::list<std::wstring>> Notes;
 
         static std::wstring IntToLowerLetter	(int number);
         static std::wstring IntToUpperLetter	(int number);
@@ -198,10 +198,20 @@ namespace Docx2Txt
 
 			if(NoteCount != 0)
 			{
-				m_outputFile.m_listContent.push_back(_T("---------------------------"));
-				for(std::list<std::wstring>::const_iterator iter = Notes.begin(); iter != Notes.end(); iter++)
+				m_outputFile.m_listContent.push_back(L"");
+				m_outputFile.m_listContent.push_back(L"---------------------------");
+				
+				for(std::map<std::wstring, std::list<std::wstring>>::const_iterator iter_map = Notes.begin(); iter_map != Notes.end(); iter_map++)
 				{
-					m_outputFile.m_listContent.push_back(*iter);
+					bool bFirst = true;
+					
+					for(std::list<std::wstring>::const_iterator iter = iter_map->second.begin(); iter != iter_map->second.end(); iter++)
+					{
+						if (bFirst) m_outputFile.m_listContent.push_back(iter_map->first + L" " + *iter);
+						else		m_outputFile.m_listContent.push_back(*iter);
+						
+						bFirst = false;
+					}
 				}
 			}
 		}
@@ -491,31 +501,52 @@ namespace Docx2Txt
 						
 						if (run->m_arrItems[j]->getType() == OOX::et_w_footnoteReference || run->m_arrItems[j]->getType() == OOX::et_w_endnoteReference)
 						{// todooo Ref ????
+
+							std::list<std::wstring> notes_content;
+
+							OOX::Logic::CFootnoteReference* footnote_ref = dynamic_cast<OOX::Logic::CFootnoteReference*>(run->m_arrItems[j]);
+							OOX::Logic::CEndnoteReference* endnote_ref = dynamic_cast<OOX::Logic::CEndnoteReference*>(run->m_arrItems[j]);
 							NoteCount++;
-							std::wstring s = _T("[") + ToWString(NoteCount) + _T("]"); 
-							Notes.push_back(s); 
-							if(run->m_arrItems[j]->getType() == OOX::et_w_footnoteReference)
+
+							if (footnote_ref)
 							{
 								smart_ptr<OOX::File> pFile = pDocument->Find(OOX::FileTypes::FootNote);
 								if (pFile.IsInit())
 								{
 									OOX::CFootnotes *pFootnotes = (OOX::CFootnotes*)pFile.operator->();
-									for (long r =0 ;r < pFootnotes->m_arrFootnote.size(); r++)
-										convert(pFootnotes->m_arrFootnote[r]->m_arrItems, Notes, Event, false, pDocument, pNumbering, pStyles);
+									for (size_t r = 0; r < pFootnotes->m_arrFootnote.size(); r++)
+									{
+										OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(pFootnotes->m_arrFootnote[r]);
+
+										if (note && note->m_oId == footnote_ref->m_oId)
+										{
+											convert(pFootnotes->m_arrFootnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
+										}
+									}
 								}
+								Notes.insert(std::make_pair(ToWString(NoteCount), notes_content));
 							}
-							else if(run->m_arrItems[j]->getType() == OOX::et_w_endnoteReference)
+							if (endnote_ref)
 							{
 								smart_ptr<OOX::File> pFile = pDocument->Find(OOX::FileTypes::EndNote);
 								if (pFile.IsInit())
 								{
 									OOX::CEndnotes *pEndnotes = (OOX::CEndnotes*)pFile.operator->();
-									for (long r =0 ;r < pEndnotes->m_arrEndnote.size(); r++)
-										convert(pEndnotes->m_arrEndnote[r]->m_arrItems, Notes, Event, false, pDocument, pNumbering, pStyles);
+									
+									for (size_t r =0; r < pEndnotes->m_arrEndnote.size(); r++)
+									{
+										OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(pEndnotes->m_arrEndnote[r]);
+										
+										if (note && note->m_oId == endnote_ref->m_oId)
+										{
+											convert(pEndnotes->m_arrEndnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
+										}
+									}
 								}
+								Notes.insert(std::make_pair(ToWString(NoteCount), notes_content));
 							}
 
-							wstr.replace(wstr.find(_T("_")), 1 , ToWString(NoteCount));
+							wstr += L"[" + ToWString(NoteCount) + L"]"; ;
 						}
 						line += wstr;
 					}

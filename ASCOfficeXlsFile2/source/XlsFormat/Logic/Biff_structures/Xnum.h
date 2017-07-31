@@ -57,7 +57,7 @@ public:
 			unsigned char Byte4;
 			unsigned short type;
 			unsigned short fExprO;
-		};
+		}bytes;
 		double value;
 	} data;
 };

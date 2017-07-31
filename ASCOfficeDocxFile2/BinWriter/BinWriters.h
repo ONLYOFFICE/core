@@ -7714,9 +7714,9 @@ namespace BinDocxRW
 			m_nLastFilePos = 0;
 			m_nRealTableCount = 0;
 		}
-        static std::wstring WriteFileHeader(long nDataSize)
+        static std::wstring WriteFileHeader(long nDataSize, int version)
 		{
-            std::wstring sHeader = std::wstring(g_sFormatSignature) + L";v" + std::to_wstring(g_nFormatVersion) + L";" + std::to_wstring(nDataSize) + L";";
+            std::wstring sHeader = std::wstring(g_sFormatSignature) + L";v" + std::to_wstring(version) + L";" + std::to_wstring(nDataSize) + L";";
 			return sHeader;
 		}
 		void WriteMainTableStart()

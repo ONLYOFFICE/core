@@ -31,12 +31,11 @@
  */
 
 #include "PIVOTPI.h"
-#include <Logic/Biff_records/SXPI.h>
-#include <Logic/Biff_records/Continue.h>
+#include "../Biff_records/SXPI.h"
+#include "../Biff_records/Continue.h"
 
 namespace XLS
 {
-
 
 PIVOTPI::PIVOTPI()
 {
@@ -53,7 +52,6 @@ BaseObjectPtr PIVOTPI::clone()
 	return BaseObjectPtr(new PIVOTPI(*this));
 }
 
-
 // PIVOTPI = SXPI *Continue
 const bool PIVOTPI::loadContent(BinProcessor& proc)
 {
@@ -69,5 +67,22 @@ const bool PIVOTPI::loadContent(BinProcessor& proc)
 	return true;
 }
 
+int PIVOTPI::serialize(std::wostream & strm)
+{
+	SXPI* page_items = dynamic_cast<SXPI*>(m_SXPI.get());
+	if (!page_items) return 0;
+
+	CP_XML_WRITER(strm)
+	{
+ 		for (size_t i = 0; i < page_items->m_arItems.size(); i++)
+		{
+			CP_XML_NODE(L"pageField")
+			{
+				CP_XML_ATTR(L"fld",	page_items->m_arItems[i].isxvd); 
+				CP_XML_ATTR(L"hier",0); 
+			}
+		}
+	}
+}
 } // namespace XLS
 

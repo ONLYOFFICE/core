@@ -80,13 +80,13 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
 	Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));
 
 //сначала элементы графики  потом все остальное	
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-		ElementType type = elm->get_type();
+		ElementType type = content_[i]->get_type();
 		
 		if (type == typeDrawCustomShape) // || .... 
 		{
-			elm->docx_convert(Context);
+			content_[i]->docx_convert(Context);
 		}
     }
 	

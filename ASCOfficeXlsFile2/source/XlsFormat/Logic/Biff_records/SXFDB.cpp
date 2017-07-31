@@ -69,6 +69,11 @@ void SXFDB::readFields(CFRecord& record)
 	fServerBased		= GETBIT(flags, 13);
 	fCantGetUniqueItems	= GETBIT(flags, 14);
 	fCalculatedField	= GETBIT(flags, 15);
+
+	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
+	
+	global_info->arPivotCacheFieldShortSize.push_back(fShortIitms);
+	global_info->arPivotCacheFields.push_back(fAllAtoms);
 }
 
 } // namespace XLS

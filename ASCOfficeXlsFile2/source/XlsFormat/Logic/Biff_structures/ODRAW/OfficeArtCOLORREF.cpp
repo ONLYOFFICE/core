@@ -44,9 +44,9 @@ OfficeArtCOLORREF::OfficeArtCOLORREF()
 
 OfficeArtCOLORREF::OfficeArtCOLORREF(const int raw_data)
 {
-	red		= static_cast<unsigned char>(GETBITS(raw_data, 0, 7));
-	green	= static_cast<unsigned char>(GETBITS(raw_data, 8, 15));
-	blue	= static_cast<unsigned char>(GETBITS(raw_data, 16, 23));
+	red		= GETBITS(raw_data, 0, 7);
+	green	= GETBITS(raw_data, 8, 15);
+	blue	= GETBITS(raw_data, 16, 23);
 
 	fPaletteIndex	= GETBIT(raw_data, 24);
 	fPaletteRGB		= GETBIT(raw_data, 25);

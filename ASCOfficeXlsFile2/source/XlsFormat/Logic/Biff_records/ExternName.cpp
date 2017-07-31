@@ -36,7 +36,7 @@ namespace XLS
 {
 
 ExternName::ExternName(const unsigned short supporting_link_type)
-:	supbook_cch(supporting_link_type)
+:	supbook_cch(supporting_link_type), cf(0)
 {
 }
 

@@ -290,17 +290,15 @@ namespace DocFileFormat
 				std::vector<wchar_t>* chpxChars = m_document->GetChars(fcChpxStart, fcChpxEnd, cp);
 
 				//search for bookmarks in the chars
-				std::vector<int> bookmarks = searchBookmarks(chpxChars, cp);
-
-				//if there are bookmarks in this run, split the run into several runs
-				if (!bookmarks.empty())
+				std::vector<int> annot = searchAnnot(chpxChars, cp);
+				if (!annot.empty())
 				{
-					std::list<std::vector<wchar_t>>* runs = splitCharList(chpxChars, &bookmarks);
+					std::list<std::vector<wchar_t>>* runs = splitCharList(chpxChars, &annot);
 					if (runs) 
 					{
 						for (std::list<std::vector<wchar_t> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
 						{
-							if (writeBookmarks(cp))
+							if (writeAnnotations(cp))
 							{
 								cp = writeRun(&(*iter), *cpeIter, cp);
 							}
@@ -311,7 +309,30 @@ namespace DocFileFormat
 				}
 				else
 				{
-					cp = writeRun(chpxChars, *cpeIter, cp);
+					//search for bookmarks in the chars
+					std::vector<int> bookmarks = searchBookmarks(chpxChars, cp);
+
+					//if there are bookmarks in this run, split the run into several runs
+					if (!bookmarks.empty())
+					{
+						std::list<std::vector<wchar_t>>* runs = splitCharList(chpxChars, &bookmarks);
+						if (runs) 
+						{
+							for (std::list<std::vector<wchar_t> >::iterator iter = runs->begin(); iter != runs->end(); ++iter)
+							{
+								if (writeBookmarks(cp))
+								{
+									cp = writeRun(&(*iter), *cpeIter, cp);
+								}
+							}
+
+							RELEASEOBJECT(runs);
+						}
+					}
+					else
+					{
+						cp = writeRun(chpxChars, *cpeIter, cp);
+					}
 				}
 
 				RELEASEOBJECT(chpxChars);
@@ -948,19 +969,17 @@ namespace DocFileFormat
 			}
 			else if (TextMark::AnnotationReference == code)
 			{
-				if (typeid(*this) != typeid(CommentsMapping))
-				{
-                    m_pXmlWriter->WriteNodeBegin( L"w:commentReference", true );
-                    m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( _commentNr ));
-                    m_pXmlWriter->WriteNodeEnd( L"", true );
-				}
-				else
+				if (typeid(*this) == typeid(CommentsMapping))
 				{
                     m_pXmlWriter->WriteNodeBegin( L"w:annotationRef", true );
                     m_pXmlWriter->WriteNodeEnd( L"", true );
+				}	
+				else
+				{
+					m_pXmlWriter->WriteNodeBegin( L"w:commentReference", true );
+					m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( _commentNr ));
+					m_pXmlWriter->WriteNodeEnd( L"", true );
 				}
-
-				_commentNr++;
 			}
 			else if (!FormatUtils::IsControlSymbol(c) && ((int)c != 0xFFFF))
 			{
@@ -1032,6 +1051,30 @@ namespace DocFileFormat
 			for (size_t i = 0; i < count; ++i)
 			{
 				if ((m_document->BookmarkStartPlex->IsCpExists(cp)) ||	(m_document->BookmarkEndPlex->IsCpExists(cp)))
+				{
+					ret.push_back(i);
+				}
+
+				++cp;
+			}
+		}
+
+		return ret;
+	}
+	// Searches for bookmarks in the list of characters.
+	std::vector<int> DocumentMapping::searchAnnot(std::vector<wchar_t>* chars, int initialCp)
+	{
+		std::vector<int> ret;
+
+		if (m_document->AnnotStartPlex->IsValid())
+		{
+			int cp = initialCp;
+
+			size_t count = chars->size();
+
+			for (size_t i = 0; i < count; ++i)
+			{
+				if ((m_document->AnnotStartPlex->IsCpExists(cp)) ||	(m_document->AnnotEndPlex->IsCpExists(cp)))
 				{
 					ret.push_back(i);
 				}
@@ -1540,7 +1583,6 @@ namespace DocFileFormat
 		return cpCellEnd;
 	}
 
-	//
 	bool DocumentMapping::writeBookmarks(int cp)
 	{
 		bool result =	true;
@@ -1561,7 +1603,27 @@ namespace DocFileFormat
 
 		return result;
 	}
+	bool DocumentMapping::writeAnnotations(int cp)
+	{
+		bool result =	true;
 
+		for (size_t i = 0; i < m_document->AnnotStartEndCPs.size(); i++)
+		{
+			if (m_document->AnnotStartEndCPs[i].first == cp)
+			{
+				result = writeAnnotationStart(i + 1);
+				_commentNr = i + 1;
+			}
+
+			if (m_document->AnnotStartEndCPs[i].second == cp)
+			{
+				result = writeAnnotationEnd(i + 1);  
+				_commentNr = i + 1;
+			}
+		}
+
+		return result;
+	}
 	bool DocumentMapping::writeBookmarkStart(short id)
 	{
 		// write bookmark start
@@ -1585,8 +1647,6 @@ namespace DocFileFormat
 
 	bool DocumentMapping::writeBookmarkEnd(short id)
 	{
-		// write bookmark end
-		
 		WideString* bookmarkName = static_cast<WideString*>( m_document->BookmarkNames->operator [] ( id ) );
 
         if ( ( bookmarkName != NULL ) && ( *bookmarkName != L"_PictureBullets" ) )
@@ -1602,7 +1662,27 @@ namespace DocFileFormat
 
 		return false;
 	}
+	bool DocumentMapping::writeAnnotationStart(short id)
+	{
+        XMLTools::XMLElement bookmarkElem(L"w:commentRangeStart");
 
+        bookmarkElem.AppendAttribute(L"w:id", FormatUtils::IntToWideString(id));
+
+		m_pXmlWriter->WriteString(bookmarkElem.GetXMLString());
+
+		return true;
+	}
+
+	bool DocumentMapping::writeAnnotationEnd(short id)
+	{
+        XMLTools::XMLElement bookmarkElem( L"w:commentRangeEnd" );
+
+        bookmarkElem.AppendAttribute( L"w:id", FormatUtils::IntToWideString( id ));
+
+		m_pXmlWriter->WriteString( bookmarkElem.GetXMLString()); 
+
+		return true;
+	}
 	// Checks if the CHPX is special
 	bool DocumentMapping::isSpecial(CharacterPropertyExceptions* chpx)
 	{

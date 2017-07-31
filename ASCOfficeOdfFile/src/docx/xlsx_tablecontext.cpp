@@ -40,7 +40,6 @@
 
 #include "logging.h"
 
-#include <boost/foreach.hpp>
 #include <iostream>
 
 #include <cpdoccore/odf/odf_document.h>

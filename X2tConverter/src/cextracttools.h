@@ -358,6 +358,7 @@ namespace NExtractTools
 		std::wstring* m_sHtmlFileInternalPath;
 		std::wstring* m_sPassword;
 		std::wstring* m_sTempDir;
+		bool* m_bIsNoBase64;
 		//output params
 		mutable bool m_bOutputConvertCorrupted;
 	public:
@@ -383,6 +384,7 @@ namespace NExtractTools
 			m_sHtmlFileInternalPath = NULL;
 			m_sPassword = NULL;
 			m_sTempDir = NULL;
+			m_bIsNoBase64 = NULL;
 
 			m_bOutputConvertCorrupted = false;
 		}
@@ -408,6 +410,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sHtmlFileInternalPath);
 			RELEASEOBJECT(m_sPassword);
 			RELEASEOBJECT(m_sTempDir);
+			RELEASEOBJECT(m_bIsNoBase64);
 		}
 		
 		bool FromXmlFile(const std::wstring& sFilename)
@@ -496,6 +499,8 @@ namespace NExtractTools
 									m_sPassword = new std::wstring(sValue);
 								else if(_T("m_sTempDir") == sName)
 									m_sTempDir = new std::wstring(sValue);
+								else if(_T("m_bIsNoBase64") == sName)
+									m_bIsNoBase64 = new bool(XmlUtils::GetBoolean2(sValue));
 							}
 							else if(_T("m_nCsvDelimiterChar") == sName)
 							{
@@ -523,6 +528,10 @@ namespace NExtractTools
         {
             return (NULL != m_sFontDir) ? (*m_sFontDir) : L"";
         }
+		bool getIsNoBase64() const
+		{
+			return (NULL != m_bIsNoBase64) ? (*m_bIsNoBase64) : false;
+		}
         std::wstring getXmlOptions()
 		{
             std::wstring sRes;

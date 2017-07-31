@@ -235,7 +235,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 				outputPath = outputPath.substr(0, n_svm) + L".png"; 
 			}
 //------------------------------------------------
-			if (inputFileName.empty()) return L"";
+			//if (inputFileName.empty()) return L"";  - Book 27.ods - пустые линки на картинки
 
 			id = std::wstring(L"picId") + std::to_wstring(count_image + 1);
 			count_image++;

@@ -57,6 +57,7 @@ namespace formulasconvert {
 		static std::wstring replace_named_ref_formater1(boost::wsmatch const & what);
 		static std::wstring replace_cell_range_formater(boost::wsmatch const & what);
 		
+		void replace_named_formula(std::wstring & expr, bool w = true);
 		void replace_named_ref(std::wstring & expr, bool w = true);
 		bool find_first_ref(std::wstring const & expr, std::wstring & table,  std::wstring & ref);
 		bool find_first_last_ref(std::wstring const & expr, std::wstring & table, std::wstring & ref_first,std::wstring & ref_last);
@@ -156,6 +157,13 @@ namespace formulasconvert {
 
 			if (convert_with_TableName)
 			{
+				if (std::wstring::npos != sheet1.find(L" "))
+				{
+					if (sheet1[0] != L'\'')
+					{
+						sheet1 = L"'" + sheet1 + L"'";
+					}
+				}
 				return (sheet1 + L"!") + c1 + (c2.empty() ? L"" : (L":" + c2) );
 			}
 			else
@@ -209,7 +217,7 @@ namespace formulasconvert {
 	{
 		convert_with_TableName = withTableName;
 		//boost::wregex simpleRef(L"\\[\\.([a-zA-Z]+\\d+)(?::\\.([a-zA-Z]+\\d+)){0,1}\\]");
-		boost::wregex complexRef(L"\\[(?:\\$)?([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}\\]");
+		boost::wregex complexRef(L"\\[(?:\\$)?([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]*\\${0,1}\\d*)(?::\\.(\\${0,1}[a-zA-Z]*\\${0,1}\\d*)){0,1}\\]");
 		/*
 									 [     $   Sheet2          . A1                  :  . B5                    ]
 		*/
@@ -226,7 +234,7 @@ namespace formulasconvert {
 		convert_with_TableName = withTableName;
 		
 		//boost::wregex complexRef(L"\\${0,1}([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}");
-		boost::wregex complexRef(L"\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}");
+		boost::wregex complexRef(L"\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[a-zA-Z]*\\${0,1}\\d*)(?::\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[a-zA-Z]*\\${0,1}\\d*)){0,1}");
 
 		const std::wstring res = boost::regex_replace(
 			expr,
@@ -263,15 +271,12 @@ namespace formulasconvert {
 			return what[2].str();    
 		else if (what[3].matched)
 			return what[3].str();
-		//else if (what[4].matched)
-		//    return what[4].str();
 		else
 			return L"";
 	}
 
 	// TODO
 	// заменить точки с запятой во всех вхождениях кроме находящихся в кавычках --*и в фигурных скобках*--
-	// TODO: проверить как сохраняются кавычки в строке
 	void odf2oox_converter::Impl::replace_semicolons(std::wstring& expr)
 	{
 		 const std::wstring res = boost::regex_replace(
@@ -581,10 +586,14 @@ namespace formulasconvert {
 	}
 	std::wstring odf2oox_converter::convert_named_expr(const std::wstring& expr, bool withTableName)
 	{
+		std::wstring workstr = expr;
+
+		bool isFormula = impl_->check_formula(workstr);
+
 		boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// поиск того что в апострофах и замена там
 
-		std::wstring workstr = boost::regex_replace(
-			expr,
+		workstr = boost::regex_replace(
+			workstr,
 			complexRef,
 			&replace_point_space,
 			boost::match_default | boost::format_all);	
@@ -605,6 +614,11 @@ namespace formulasconvert {
  		XmlUtils::replace_all( workstr, L"PROBEL"	, L" ");
 		XmlUtils::replace_all( workstr, L"APOSTROF"	, L"'");
 		XmlUtils::replace_all( workstr, L"TOCHKA"	, L".");
+
+		if (!isFormula)
+		{
+			workstr = L"\"" + workstr + L"\"";
+		}
 		return workstr;
 	}
 

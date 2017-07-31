@@ -74,13 +74,17 @@ private:
 
 FDB::FDB()
 {
+	bString		= false;
+	bDate		= false;
+	bNumber		= false;
+	bEmpty		= false;
+	bInteger	= false;
+	bBool		= false;
 }
-
 
 FDB::~FDB()
 {
 }
-
 
 BaseObjectPtr FDB::clone()
 {
@@ -93,6 +97,8 @@ BaseObjectPtr FDB::clone()
 
 const bool FDB::loadContent(BinProcessor& proc)
 {
+	global_info = proc.getGlobalWorkbookInfo();
+
 	if(!proc.mandatory<SXFDB>())
 	{
 		return false;
@@ -123,10 +129,15 @@ const bool FDB::loadContent(BinProcessor& proc)
 
 			while(count > 0)
 			{
-				SXOPER	* oper	= dynamic_cast<SXOPER*>	(elements_.front().get());
-				if (oper)
+				SXOPER	* operatr	= dynamic_cast<SXOPER*>	(elements_.front().get());
+				if (operatr)
 				{
 					m_arGRPSXOPER.push_back(elements_.front());
+
+					//bString	|= operatr->bString;
+					//bDate	|= operatr->bDate;
+					//bNumber	|= operatr->bNumber;
+					//bEmpty	|= operatr->bEmpty;
 				}
 				else
 				{
@@ -150,25 +161,49 @@ const bool FDB::loadContent(BinProcessor& proc)
 	while(count--)
 	{
 		m_arSRCSXOPER.push_back(elements_.front());	elements_.pop_front();
+		
+		SXOPER* operatr	= dynamic_cast<SXOPER*>	(m_arSRCSXOPER.back().get());
+		
+		bString	|= operatr->bString;
+		bDate	|= operatr->bDate;
+		bNumber	|= operatr->bNumber;
+		bEmpty	|= operatr->bEmpty;
+		bInteger|= operatr->bInteger;
+		bBool	|= operatr->bBool;
 	}	
 
 	return true;
 }
 
-int FDB::serialize(std::wostream & strm)
+int FDB::serialize(std::wostream & strm, bool bSql)
 {
 	SXFDB*		fdb			= dynamic_cast<SXFDB*>(m_SXFDB.get());
 	SXFDBType*	fdb_type	= dynamic_cast<SXFDBType*>(m_SXFDBType.get());
 
 	if (!fdb || !fdb_type) return 0;
+	
+	global_info->arPivotCacheSxNames.push_back(fdb->stFieldName.value());
 
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"cacheField")
 		{ 
 			CP_XML_ATTR(L"name", fdb->stFieldName.value());
-			CP_XML_ATTR(L"numFmtId", fdb_type->wTypeSql);	
 
+			if (bSql)
+			{
+				CP_XML_ATTR(L"numFmtId", 0);	
+				if (fdb_type->wTypeSql > 0)
+					CP_XML_ATTR(L"sqlType", fdb_type->wTypeSql);
+			}
+			else
+			{
+				CP_XML_ATTR(L"numFmtId", fdb_type->wTypeSql);	
+			}
+			if (m_arSRCSXOPER.empty() && m_arGRPSXOPER.empty() == false)
+			{
+				CP_XML_ATTR(L"databaseField", 0);	
+			}
 			switch(fdb_type->wTypeSql)//format code
 			{
 			case 0x0000:
@@ -187,34 +222,79 @@ int FDB::serialize(std::wostream & strm)
 			}
 			if(m_SXFMLA)
 			{
-			//{formula
+				SXFMLA* Formula = dynamic_cast<SXFMLA*>(m_SXFMLA.get());
+				if (Formula)
+					Formula->serialize_attr(CP_GET_XML_NODE());
 			}
-			//caption, databaseFields,  ..
 
 			if (m_arSRCSXOPER.empty() == false)
 			{
 				CP_XML_NODE(L"sharedItems")
 				{
-					//CP_XML_ATTR(L"containsSemiMixedTypes", 0);
-					CP_XML_ATTR(L"containsNonDate", fdb->fNonDates);	
-					CP_XML_ATTR(L"containsDate",	fdb->fDateInField);
-					CP_XML_ATTR(L"containsNumber",	fdb->fNumField);
-					CP_XML_ATTR(L"containsBlank",	fdb->fTextEtcField);
-					//CP_XML_ATTR(L"containsString", 0);
+					//использовать поля присутствия из xls низя - они частенько записаны неверно!!
+					//if (!fdb->fNonDates)	CP_XML_ATTR(L"containsNonDate", fdb->fNonDates);	
+					//if (fdb->fDateInField)	CP_XML_ATTR(L"containsDate",	fdb->fDateInField);
+					//if (fdb->fNumField)		CP_XML_ATTR(L"containsNumber",	fdb->fNumField);
+					////CP_XML_ATTR(L"containsBlank",	fdb->fTextEtcField);
+
+					//if (m_arSRCSXOPER.empty())
+					//{
+					//	if (!fdb->fTextEtcField)
+					//	{
+					//		CP_XML_ATTR(L"containsString", 0);
+					//	}
+					//	else if (fdb->fNumField || fdb->fDateInField)
+					//	{
+					//		CP_XML_ATTR(L"containsBlank",	1);
+					//		CP_XML_ATTR(L"containsString",	0);
+					//	}
+					//}
+					if	(bInteger)
+					{
+						if (bNumber)	bInteger = false;
+						else			bNumber = true;
+					}
+
+					if ((bDate & bNumber) || (bNumber & bString))
+					{
+						CP_XML_ATTR(L"containsSemiMixedTypes", 1);
+					}
+					else if ( bDate & bString) 
+					{
+						CP_XML_ATTR(L"containsMixedTypes", 1);
+					}
+					else if (!bEmpty && !bString && !bBool)
+					{
+						CP_XML_ATTR(L"containsSemiMixedTypes", 0);
+					}
+					if (bDate && ! (bNumber || bInteger || bString || bEmpty ))
+					{
+						CP_XML_ATTR(L"containsNonDate",	0);
+					}
+					if (bDate)		CP_XML_ATTR(L"containsDate",	1);
+					if (!bString && (bInteger || bDate || bNumber || bEmpty))
+					{
+						CP_XML_ATTR(L"containsString",	0);
+					}
+					if (bEmpty)		CP_XML_ATTR(L"containsBlank",	1);
+					if (bNumber)	CP_XML_ATTR(L"containsNumber",	1);
+					if (bInteger)	CP_XML_ATTR(L"containsInteger",	1);
+					
+
 					if (fdb->fnumMinMaxValid)
 					{
-						if (fdb->fDateInField)
-						{
-							CP_XML_ATTR(L"minDate", 0);				 // "2007-11-18T00:00:00" 
-							CP_XML_ATTR(L"maxDate", 0);				 // "2007-12-25T00:00:00" 
-						}
-						else if (fdb->fNumField)
-						{
-							CP_XML_ATTR(L"minValue", 0);
-							CP_XML_ATTR(L"maxValue", 0);
-						}
+						//if (fdb->fDateInField)
+						//{
+						//	CP_XML_ATTR(L"minDate", 0);				 // "2007-11-18T00:00:00" 
+						//	CP_XML_ATTR(L"maxDate", 0);				 // "2007-12-25T00:00:00" 
+						//}
+						//else if (fdb->fNumField)
+						//{
+						//	CP_XML_ATTR(L"minValue", 0);
+						//	CP_XML_ATTR(L"maxValue", 0);
+						//}
 					}
-					CP_XML_ATTR(L"count", fdb->catm);	
+					CP_XML_ATTR(L"count", m_arSRCSXOPER.size());	
 
 					for (size_t i = 0; i < m_arSRCSXOPER.size(); i++)
 					{
@@ -227,8 +307,13 @@ int FDB::serialize(std::wostream & strm)
 			{
 				CP_XML_NODE(L"fieldGroup")
 				{
-					if (fdb->ifdbParent > 0)
+					if (fdb->fHasParent)
+					{
 						CP_XML_ATTR(L"par", fdb->ifdbParent);	
+						CP_XML_ATTR(L"base", index);						
+					}
+					else
+						CP_XML_ATTR(L"base", fdb->ifdbBase);						
 
 					if (m_SXRANGE)
 						m_SXRANGE->serialize(CP_XML_STREAM());

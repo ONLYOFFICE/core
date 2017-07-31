@@ -47,11 +47,15 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize(std::wostream & stream);
+
 	static const ElementType	type = typeSXFORMULA;
 
 	BaseObjectPtr	m_SXFMLA;	
 	BaseObjectPtr	m_PIVOTRULE;	
 	BaseObjectPtr	m_SXFormula;	
+
+	GlobalWorkbookInfoPtr global_info;
 };
 
 } // namespace XLS

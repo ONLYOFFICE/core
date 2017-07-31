@@ -189,13 +189,13 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
                     CP_XML_STREAM() << impl_->hyperlinks_.str();
                 }
             }
-
-			CP_XML_STREAM() << impl_->drawing_.str();
 			
 			if (!impl_->page_props_.str().empty())
             {
 				CP_XML_STREAM() << impl_->page_props_.str();
 			}//props выше legacyDrawing !!
+			
+			CP_XML_STREAM() << impl_->drawing_.str();
 			
 			if (impl_->commentsId_.length()>0)
 			{

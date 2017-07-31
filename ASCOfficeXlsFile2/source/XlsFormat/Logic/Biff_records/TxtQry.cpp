@@ -37,6 +37,8 @@ namespace XLS
 
 TxtQry::TxtQry()
 {
+	iCpidNew	= 0;
+	iTextDelm	= 0;
 }
 
 

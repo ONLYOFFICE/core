@@ -60,6 +60,7 @@ public:
 
 public:
 	void start_table(const std::wstring & name);
+		void set_chart_view();
     void end_table();
 
 	xlsx_drawing_context	& get_drawing_context();

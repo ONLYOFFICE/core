@@ -41,6 +41,7 @@ namespace BinXlsxRW
 
     const static wchar_t* g_sFormatSignature = L"XLSY";
 	const int g_nFormatVersion = 2;
+	const int g_nFormatVersionNoBase64 = 10;
 	extern int g_nCurFormatVersion;
 
 	namespace c_oFileTypes{enum c_oFileTypes

@@ -55,6 +55,8 @@ public:
 		cbRuns				= 0;
 		sp_enabled			= false;
 		preserve_enabled	= false;
+		hAlignment			= 0;
+		vAlignment			= 0;
 	}
 	~TxO();
 

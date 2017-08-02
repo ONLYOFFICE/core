@@ -2377,6 +2377,38 @@ namespace NSEditorApi
                 pEvent->Release();
 		}
 	};
+
+	class CAscCefMenuEvent : public CAscMenuEvent
+	{
+	public:
+		int	m_nSenderId;
+
+	public:
+		CAscCefMenuEvent(int nType = -1) : CAscMenuEvent(nType)
+		{
+			m_nSenderId = -1;
+		}
+		virtual ~CAscCefMenuEvent()
+		{
+		}
+
+		LINK_PROPERTY_INT(SenderId)
+	};
+
+	class CAscCefMenuEventListener
+	{
+	public:
+		// memory release!!!
+		virtual void OnEvent(CAscCefMenuEvent* pEvent)
+		{
+			if (NULL != pEvent)
+				pEvent->Release();
+		}
+		virtual bool IsSupportEvent(int nEventType)
+		{
+			return true;
+		}
+	};
 }
 
 namespace NSEditorApi

@@ -3481,6 +3481,11 @@ namespace BinXlsxRW
 					m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::Time);
 					m_oBcw.m_oStream.WriteStringW(pCommentData->sTime);
 				}
+				if(!pCommentData->sOOTime.empty())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::OOTime);
+					m_oBcw.m_oStream.WriteStringW(pCommentData->sOOTime);
+				}
 				if (!pCommentData->sUserId.empty())
 				{
 					m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::UserId);

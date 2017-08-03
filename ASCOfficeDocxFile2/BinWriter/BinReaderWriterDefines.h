@@ -716,7 +716,8 @@ extern int g_nCurFormatVersion;
 		Text = 6,
 		QuoteText = 7,
 		Solved = 8,
-		Replies = 9
+		Replies = 9,
+		OOData = 10
 	};}
 	namespace c_oSer_SettingsType{enum c_oSer_SettingsType
 	{

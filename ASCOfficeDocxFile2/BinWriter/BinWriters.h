@@ -7222,6 +7222,11 @@ namespace BinDocxRW
 					m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentsType::Date);
 					m_oBcw.m_oStream.WriteStringW(pComment->m_oDate->ToString());
 				}
+				if(pComment->m_oOOData.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentsType::OOData);
+					m_oBcw.m_oStream.WriteStringW(pComment->m_oOOData.get2());
+				}
 				if(pComment->m_oId.IsInit())
 				{
 					nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentsType::Id);

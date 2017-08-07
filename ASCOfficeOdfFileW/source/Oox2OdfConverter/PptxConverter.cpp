@@ -449,25 +449,21 @@ void PptxConverter::convert(PPTX::NotesSlide *oox_notes)
 
 	PPTX::Theme*			old_theme	= current_theme;
 	PPTX::Logic::ClrMap*	old_clrMap	= current_clrMap;
-
-	smart_ptr<PPTX::NotesMaster> notes_master;
-	if (!presentation->notesMasterIdLst.empty())
-	{
-		std::wstring rId = presentation->notesMasterIdLst[0].rid.get();
-		notes_master = ((*presentation)[rId]).smart_dynamic_cast<PPTX::NotesMaster>();
-	}	
+	
 	odp_context->start_note();
 	
-	if (notes_master.IsInit())
+	if (oox_notes->master_.IsInit())
 	{
-		current_theme	= notes_master->theme_.operator->();
-		current_clrMap	= &notes_master->clrMap;
+		current_theme	= oox_notes->master_->theme_.operator->();
+		current_clrMap	= &oox_notes->master_->clrMap;
 	}
 
 	current_slide	= dynamic_cast<OOX::IFileContainer*>(oox_notes);
 
 	if (oox_notes->clrMapOvr.IsInit() && oox_notes->clrMapOvr->overrideClrMapping.IsInit())
+	{
 		current_clrMap	= oox_notes->clrMapOvr->overrideClrMapping.GetPointer();
+	}
 	
 	convert_slide(&oox_notes->cSld, NULL, true, true, Notes);
 	

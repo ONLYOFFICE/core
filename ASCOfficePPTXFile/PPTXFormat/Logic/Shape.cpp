@@ -469,9 +469,17 @@ namespace PPTX
 				if ((nvSpPr.nvPr.ph->type.IsInit()) || (nvSpPr.nvPr.ph->idx.IsInit()))
 				{
 					if (parentFileIs<Slide>())
+					{
 						parentFileAs<Slide>().Layout->GetLevelUp(this);
+					}
 					else if(parentFileIs<SlideLayout>())
+					{
 						parentFileAs<SlideLayout>().Master->GetLevelUp(this);
+					}
+					else if(parentFileIs<NotesSlide>())
+					{
+						parentFileAs<NotesSlide>().master_->GetLevelUp(this);
+					}
 				}
 			}
 		}

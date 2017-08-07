@@ -837,7 +837,7 @@ void process_build_object::visit(table_table_rows& val)
 }
 void process_build_object::visit(const table_table_row & val)
 {       
-    unsigned int repeated = val.table_table_row_attlist_.table_number_rows_repeated_;
+    unsigned int repeated = val.attlist_.table_number_rows_repeated_;
     ACCEPT_ALL_CONTENT_CONST(val.content_);
 	visit_rows(repeated);
 }
@@ -891,13 +891,13 @@ void process_build_object::visit(const table_rows_no_group& val)
 }
 void process_build_object::visit(const table_table_cell& val)
 {
-	const table_table_cell_attlist & attlist = val.table_table_cell_attlist_;
+	const table_table_cell_attlist & attlist = val.attlist_;
 
-    unsigned int repeated = val.table_table_cell_attlist_.table_number_columns_repeated_;
+    unsigned int repeated = val.attlist_.table_number_columns_repeated_;
   
 	std::wstringstream  wstream_temp;	
    
-	val.table_table_cell_content_.text_to_stream(wstream_temp);
+	val.content_.text_to_stream(wstream_temp);
 	std::wstring cell_cash = wstream_temp.str();
 
 	std::wstring cell_val;
@@ -920,7 +920,7 @@ void process_build_object::visit(const table_table_cell& val)
 }
 void process_build_object::visit(const table_covered_table_cell& val)
 {
-    unsigned int repeated = val.table_table_cell_attlist_.table_number_columns_repeated_;
+    unsigned int repeated = val.attlist_.table_number_columns_repeated_;
 
 	if ( repeated <2) 
 		return;

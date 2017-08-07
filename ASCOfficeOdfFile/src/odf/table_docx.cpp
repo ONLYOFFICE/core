@@ -67,10 +67,10 @@ void table_table_row::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & _Wostream = Context.output_stream();
 
-    const std::wstring styleName = table_table_row_attlist_.table_style_name_.get_value_or(L"");
-    const std::wstring defaultCellStyle = table_table_row_attlist_.table_default_cell_style_name_.get_value_or(L"");
+    const std::wstring styleName = attlist_.table_style_name_.get_value_or(L"");
+    const std::wstring defaultCellStyle = attlist_.table_default_cell_style_name_.get_value_or(L"");
 
-    for (unsigned int i = 0; i < table_table_row_attlist_.table_number_rows_repeated_; ++i)
+    for (unsigned int i = 0; i < attlist_.table_number_rows_repeated_; ++i)
     {
         _Wostream << L"<w:tr>";
         const style_instance * inst = 
@@ -259,7 +259,7 @@ void table_table_cell::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & _Wostream = Context.output_stream();
 
-    for (unsigned int r = 0; r < table_table_cell_attlist_.table_number_columns_repeated_; ++r)
+    for (unsigned int r = 0; r < attlist_.table_number_columns_repeated_; ++r)
     {
         int pushTextPropCount = 0;
 
@@ -267,24 +267,24 @@ void table_table_cell::docx_convert(oox::docx_conversion_context & Context)
         _Wostream << L"<w:tc>";
         _Wostream << L"<w:tcPr>";
 
-		const std::wstring styleName = table_table_cell_attlist_.table_style_name_.get_value_or(L""); 
+		const std::wstring styleName = attlist_.table_style_name_.get_value_or(L""); 
 
 		//_Wostream << L"<w:tcW w:w=\"0\" w:type=\"auto\" />";
 		
-        if (table_table_cell_attlist_extra_.table_number_rows_spanned_ > 1)
+        if (attlist_extra_.table_number_rows_spanned_ > 1)
         {
             _Wostream << L"<w:vMerge w:val=\"restart\" />"; 
             Context.get_table_context().set_rows_spanned(Context.get_table_context().current_column(), 
-                table_table_cell_attlist_extra_.table_number_rows_spanned_ - 1,
-                table_table_cell_attlist_extra_.table_number_columns_spanned_ - 1,
+                attlist_extra_.table_number_rows_spanned_ - 1,
+                attlist_extra_.table_number_columns_spanned_ - 1,
                 styleName
                 );
         }        		
 		
-		if (table_table_cell_attlist_extra_.table_number_columns_spanned_ > 1)
+		if (attlist_extra_.table_number_columns_spanned_ > 1)
         {
-            _Wostream << L"<w:gridSpan w:val=\"" << table_table_cell_attlist_extra_.table_number_columns_spanned_ << "\" />";
-            Context.get_table_context().set_columns_spanned(table_table_cell_attlist_extra_.table_number_columns_spanned_ - 1);
+            _Wostream << L"<w:gridSpan w:val=\"" << attlist_extra_.table_number_columns_spanned_ << "\" />";
+            Context.get_table_context().set_columns_spanned(attlist_extra_.table_number_columns_spanned_ - 1);
         }
 
 		const style_instance * inst = 
@@ -344,7 +344,7 @@ void table_table_cell::docx_convert(oox::docx_conversion_context & Context)
         }
 		
         // если одержимое не содержит ниодного параграфа, то добавляем параграф, иначе word считает файл битым
-        if (!table_table_cell_content_.docx_convert(Context))
+        if (!content_.docx_convert(Context))
         {
             _Wostream << emptyPar;
         }
@@ -361,11 +361,11 @@ void table_covered_table_cell::docx_convert(oox::docx_conversion_context & Conte
 {
     std::wostream & _Wostream = Context.output_stream();
 
-    for (unsigned int i = 0; i < table_table_cell_attlist_.table_number_columns_repeated_; ++i)
+    for (unsigned int i = 0; i < attlist_.table_number_columns_repeated_; ++i)
     {
         if (Context.get_table_context().start_covered_cell(Context))
         {
-            if (!table_table_cell_content_.docx_convert(Context))
+            if (!content_.docx_convert(Context))
             {
                 _Wostream << emptyPar;
             }

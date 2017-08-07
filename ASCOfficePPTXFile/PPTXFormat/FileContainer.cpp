@@ -98,7 +98,10 @@ namespace PPTX
 		bool bIsSlide = false;
 		OOX::File* pSrcFile = dynamic_cast<OOX::File*>(this);
 		if (NULL != pSrcFile)
-			bIsSlide = (pSrcFile->type() == OOX::Presentation::FileTypes::Slide) ? true : false;
+		{
+			bIsSlide = (pSrcFile->type() == OOX::Presentation::FileTypes::Slide || 
+						pSrcFile->type() == OOX::Presentation::FileTypes::NotesSlide) ? true : false;
+		}
 
 		size_t nCount = rels.m_arrRelations.size();
 

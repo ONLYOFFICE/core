@@ -77,17 +77,15 @@ const bool SXOPER::loadContent(BinProcessor& proc)
 		SXNum *num = dynamic_cast<SXNum*>(elements_.back().get());
 		if (num)
 		{
-			bInteger = (num->num.data.bytes.Byte1==num->num.data.bytes.Byte2 && 
-						num->num.data.bytes.Byte2==num->num.data.bytes.Byte3 && 
-						num->num.data.bytes.Byte3==num->num.data.bytes.Byte4 && 
-						num->num.data.bytes.Byte4==0);
+			bInteger = !(num->num.data.value - floor(num->num.data.value) > 0);
+
+			bNumber = !bInteger;
+			node	= L"n";
+			if (bInteger)
+				value	= std::to_wstring((int)num->num.data.value);
+			else
+				value	= boost::lexical_cast<std::wstring>(num->num.data.value);
 		}
-		bNumber = !bInteger;
-		node	= L"n";
-		if (bInteger)
-			value	= std::to_wstring((int)num->num.data.value);
-		else
-			value	= boost::lexical_cast<std::wstring>(num->num.data.value);
 	}
 	else if(proc.optional<SxBool>())
 	{

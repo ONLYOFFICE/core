@@ -3039,6 +3039,11 @@ public:
             std::wstring Date(m_oBufferedStream.GetString3(length));
 			pComment->Date = Date;
 		}
+		else if ( c_oSer_CommentsType::OOData == type )
+		{
+			std::wstring Data(m_oBufferedStream.GetString3(length));
+			pComment->OOData = Data;
+		}
 		else if ( c_oSer_CommentsType::Text == type )
 		{
             std::wstring Text(m_oBufferedStream.GetString3(length));

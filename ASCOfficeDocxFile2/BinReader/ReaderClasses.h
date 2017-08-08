@@ -1583,6 +1583,7 @@ public:
     std::wstring UserName;
     std::wstring UserId;
     std::wstring Date;
+	std::wstring OOData;
 	bool Solved;
     std::wstring Text;
     std::wstring m_sParaId;
@@ -1706,8 +1707,15 @@ public:
 		{
             std::wstring sDate = XmlUtils::EncodeXmlString(pComment->Date);
             sRes += L" w:date=\"";
-            sRes += sDate;
+			sRes += sDate;
             sRes += L"\"";
+		}
+		if(false == pComment->OOData.empty())
+		{
+			std::wstring sData = XmlUtils::EncodeXmlString(pComment->OOData);
+			sRes += L" oodata=\"";
+			sRes += sData;
+			sRes += L"\"";
 		}
         if(false == sInitials.empty())
 		{

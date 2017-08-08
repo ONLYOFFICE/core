@@ -2254,6 +2254,8 @@ namespace BinXlsxRW {
 				pComments->sText = m_oBufferedStream.GetString4(length);
 			else if ( c_oSer_CommentData::Time == type )
 				pComments->sTime = m_oBufferedStream.GetString4(length);
+			else if ( c_oSer_CommentData::OOTime == type )
+				pComments->sOOTime = m_oBufferedStream.GetString4(length);
 			else if ( c_oSer_CommentData::UserId == type )
 				pComments->sUserId = m_oBufferedStream.GetString4(length);
 			else if ( c_oSer_CommentData::UserName == type )

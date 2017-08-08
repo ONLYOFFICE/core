@@ -37,8 +37,7 @@
 #include "FileContainer.h"
 #include "FileTypes.h"
 
-#include "Logic/ClrMapOvr.h"
-#include "Logic/CSld.h"
+#include "NotesMaster.h"
 
 namespace PPTX
 {
@@ -55,8 +54,6 @@ namespace PPTX
 		virtual ~NotesSlide()
 		{
 		}
-
-	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			//FileContainer::read(filename, map);
@@ -79,8 +76,6 @@ namespace PPTX
 			WrapperFile::write(filename, directory, content);
 			FileContainer::write(filename, directory, content);
 		}
-
-	public:
 		virtual const OOX::FileType type() const
 		{
 			return OOX::Presentation::FileTypes::NotesSlide;
@@ -127,7 +122,6 @@ namespace PPTX
 
 			pWriter->EndNode(_T("p:notes"));
 		}
-
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			pReader->Skip(1); // type
@@ -145,7 +139,6 @@ namespace PPTX
 				else if (1 == _at)
 					showMasterSp = pReader->GetBool();
 			}
-
 			while (pReader->GetPos() < end)
 			{
 				BYTE _rec = pReader->GetUChar();
@@ -173,13 +166,25 @@ namespace PPTX
 
 			pReader->Seek(end);
 		}
+		void ApplyRels()
+		{
+			smart_ptr<OOX::File> pFile = FileContainer::Get(OOX::Presentation::FileTypes::NotesMaster);
 
-	public:
+			master_ = pFile.smart_dynamic_cast<PPTX::NotesMaster>();
+
+			if (master_.IsInit())
+			{
+				theme_ = master_->theme_;
+			}
+		}
 		Logic::CSld					cSld;
 		nullable<Logic::ClrMapOvr>	clrMapOvr;
 
 		nullable_bool				showMasterPhAnim;
 		nullable_bool				showMasterSp;
+
+		smart_ptr<NotesMaster>		master_;
+		smart_ptr<Theme>			theme_;
 	};
 } // namespace PPTX
 

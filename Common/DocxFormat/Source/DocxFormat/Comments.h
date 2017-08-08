@@ -275,6 +275,7 @@ namespace OOX
 			WritingElement_ReadAttributes_Start( oReader )
                 WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"),        m_oAuthor )
                 WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),          m_oDate )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oodata"),          m_oOOData )
                 WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),            m_oId )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:initials"),      m_oInitials )
 				WritingElement_ReadAttributes_End( oReader )
@@ -288,6 +289,9 @@ namespace OOX
 		nullable<SimpleTypes::CDateTime > m_oDate;
 		nullable<SimpleTypes::CDecimalNumber<> > m_oId;
 		nullable<std::wstring > m_oInitials;
+
+		//teamlab editor information!!!
+		nullable<std::wstring > m_oOOData;
 
 		// Childs
 	};

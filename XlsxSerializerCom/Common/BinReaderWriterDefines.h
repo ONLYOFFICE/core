@@ -656,7 +656,8 @@ namespace BinXlsxRW
 		Solved = 5,
 		Document = 6,
 		Replies = 7,
-		Reply = 8
+		Reply = 8,
+		OOTime = 9
 	};}
 	namespace c_oSer_ConditionalFormatting{enum c_oSer_ConditionalFormatting
 	{

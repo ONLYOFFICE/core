@@ -719,6 +719,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\docx\xlsx_pivots_context.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\docx\xlsx_pivots_context.h"
+					>
+				</File>
+				<File
 					RelativePath="..\src\docx\xlsx_row_spanned.h"
 					>
 				</File>

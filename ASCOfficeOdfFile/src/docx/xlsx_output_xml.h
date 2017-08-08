@@ -49,8 +49,8 @@ class xlsx_xml_worksheet: noncopyable
 public:
     xlsx_xml_worksheet(std::wstring const & name);
     ~xlsx_xml_worksheet();
-public:
-    std::wstring name() const;
+
+	std::wstring name() const;
    
 	std::wostream & cols();
     std::wostream & sheetFormat();
@@ -65,9 +65,8 @@ public:
 	std::wostream & ole_objects();
 	std::wostream & page_properties();
 	
-	rels & hyperlinks_rels();
-	rels & ole_objects_rels();
-
+	rels & sheet_rels();			//hyperlink, background image, external, media ...
+	
     void write_to(std::wostream & strm);
 
     void set_drawing_link		(std::wstring const & fileName, std::wstring const & id);

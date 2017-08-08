@@ -80,8 +80,10 @@ class content_types_file : public element
 {
 public:
     content_types_file();
-    virtual void write(const std::wstring & RootPath);
+    
+	virtual void write(const std::wstring & RootPath);
     content_type & get_content_type() { return content_type_; }
+	
 	bool add_or_find_default(const std::wstring & extension);
 	void set_media(external_items & _Mediaitems);
 

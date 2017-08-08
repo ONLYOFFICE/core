@@ -94,10 +94,11 @@ private:
      _CP_OPT(odf_types::grand_total)table_grand_total_;
      _CP_OPT(odf_types::Bool)		table_identify_categories_;
      _CP_OPT(odf_types::Bool)		table_ignore_empty_rows_;
-     _CP_OPT(odf_types::Bool)		table_show_filterbutton_;
+     _CP_OPT(odf_types::Bool)		table_show_filter_button_;
      _CP_OPT(odf_types::Bool)		table_show_target_range_address_;
 	
-	  office_element_ptr_array	content_;
+	office_element_ptr			source_;
+	office_element_ptr_array	fields_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_table);

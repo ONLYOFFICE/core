@@ -71,21 +71,40 @@ void table_data_pilot_table::add_attributes( const xml::attributes_wc_ptr & Attr
     CP_APPLY_ATTR(L"table:grand-total"				, table_grand_total_);
     CP_APPLY_ATTR(L"table:identify-categories"		, table_identify_categories_);
     CP_APPLY_ATTR(L"table:ignore-empty-rows"		, table_ignore_empty_rows_);
-    CP_APPLY_ATTR(L"table:show-filterbutton"		, table_show_filterbutton_);
+    CP_APPLY_ATTR(L"table:show-filter-button"		, table_show_filter_button_);
     CP_APPLY_ATTR(L"table:show-target-range-address", table_show_target_range_address_);
 
 }
 
 void table_data_pilot_table::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-	CP_CREATE_ELEMENT (content_);
+	if (L"table" == Ns && L"data-pilot-field" == Name)
+		CP_CREATE_ELEMENT (fields_);
+	else
+		CP_CREATE_ELEMENT (source_);
+
 }
 void table_data_pilot_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    for (size_t i = 0; i < content_.size(); i++)
-    {
-		content_[i]->xlsx_convert(Context);
-	}
+	if (!source_) return;
+
+	Context.get_pivots_context().start_table();
+
+	source_->xlsx_convert(Context);
+
+	for (size_t i = 0; i < fields_.size(); i++)
+	{
+		fields_[i]->xlsx_convert(Context);
+	}	  
+
+	int index_view = Context.get_pivots_context().end_table();
+	
+	if (index_view > 0)
+	{
+		Context.current_sheet().sheet_rels().add(oox::relationship(L"pvId" + std::to_wstring(index_view),
+			L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotTable",
+			L"../pivotTables/pivotTable" + std::to_wstring(index_view) + L".xml"));
+	} 
 }
 //-------------------------------------------------------------------------------------------------
 const wchar_t * table_data_pilot_field::ns		= L"table";
@@ -108,10 +127,14 @@ void table_data_pilot_field::add_child_element( xml::sax * Reader, const std::ws
 }
 void table_data_pilot_field::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    for (size_t i = 0; i < content_.size(); i++)
-    {
+	Context.get_pivots_context().start_field();
+
+	for (size_t i = 0; i < content_.size(); i++)
+	{
 		content_[i]->xlsx_convert(Context);
-	}
+	}			
+
+	Context.get_pivots_context().end_field();
 }
 //-------------------------------------------------------------------------------------------------
 const wchar_t * table_data_pilot_field_reference::ns	= L"table";
@@ -120,8 +143,8 @@ const wchar_t * table_data_pilot_field_reference::name	= L"data-pilot-field-refe
 void table_data_pilot_field_reference::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	CP_APPLY_ATTR(L"table:field-name"		, table_field_name_);
-	CP_APPLY_ATTR(L"table:member_name"		, table_member_name_);
-	CP_APPLY_ATTR(L"table:member_type"		, table_member_type_);
+	CP_APPLY_ATTR(L"table:member-name"		, table_member_name_);
+	CP_APPLY_ATTR(L"table:member-type"		, table_member_type_);
 	CP_APPLY_ATTR(L"table:type"				, table_type_);
 }
 
@@ -166,7 +189,7 @@ void table_database_source_sql::add_attributes( const xml::attributes_wc_ptr & A
 {
 	CP_APPLY_ATTR(L"table:database-name"		, table_database_name_);
 	CP_APPLY_ATTR(L"table:parse-sql-statement"	, table_parse_sql_statement_);
-	CP_APPLY_ATTR(L"table:sqlstatement"			, table_sql_statement_);
+	CP_APPLY_ATTR(L"table:sql-statement"		, table_sql_statement_);
 }
 
 void table_database_source_sql::xlsx_convert(oox::xlsx_conversion_context & Context)

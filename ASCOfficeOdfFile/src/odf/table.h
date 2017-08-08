@@ -51,7 +51,6 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-// table:table-attlist
 class table_table_attlist
 {
 public:
@@ -75,7 +74,6 @@ public:
     friend class table_table;    
 };
 
-// table:table-row-attlist
 class table_table_row_attlist
 {
 public:
@@ -88,7 +86,6 @@ public:
 
 };
 
-// table:table-cell-attlist
 class table_table_cell_attlist
 {
 public:
@@ -105,7 +102,6 @@ public:
         
 };
 
-// table:table-cell-attlist-extra
 class table_table_cell_attlist_extra
 {
 public:
@@ -119,7 +115,6 @@ public:
 
 };
 
-// table-table-source-attlist
 class table_table_source_attlist
 {
 public:
@@ -130,7 +125,6 @@ public:
     
 };
 
-// table:linked-source-attlist
 class table_linked_source_attlist
 {
 public:
@@ -144,7 +138,6 @@ public:
 
 };
 
-//   table:table-source
 class table_table_source : public office_element_impl<table_table_source>
 {
 public:
@@ -165,7 +158,6 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(table_table_source);
 
-// table:columns
 class table_columns
 {
 public:
@@ -180,7 +172,6 @@ public:
     
 };
 
-// table:columns-no-group
 class table_columns_no_group: public office_element
 {
 public:
@@ -212,7 +203,6 @@ public:
     table_columns		table_columns_2_;    
 };
 
-// table:columns-and-groups
 class table_columns_and_groups
 {
 public:
@@ -226,11 +216,10 @@ public:
 
 //    office_element_ptr			table_table_column_group_;
 //    table_columns_no_group		table_columns_no_group_;
-    office_element_ptr_array		content_;
+	office_element_ptr_array		content_;
 
 };
 
-// table:table-column-attlist
 class table_table_column_attlist
 {
 public:
@@ -243,7 +232,6 @@ public:
     
 };
 
-// table:table-column
 class table_table_column : public office_element_impl<table_table_column>
 {
 public:
@@ -266,10 +254,8 @@ public:
     table_table_column_attlist	table_table_column_attlist_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(table_table_column);
 
-// table:table-columns
 class table_table_columns : public office_element_impl<table_table_columns>
 {
 public:
@@ -291,11 +277,8 @@ public:
     office_element_ptr_array	table_table_column_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(table_table_columns);
 
-
-// table:table-header-columns
 class table_table_header_columns : public office_element_impl<table_table_header_columns>
 {
 public:
@@ -318,10 +301,8 @@ public:
     office_element_ptr_array	table_table_column_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(table_table_header_columns);
 
-// table:table-column-group-attlist
 class table_table_column_group_attlist
 {
 public:
@@ -331,7 +312,6 @@ public:
 
 };
 
-// table:table-column-group
 class table_table_column_group : public office_element_impl<table_table_column_group>
 {
 public:
@@ -358,10 +338,8 @@ public:
     table_table_column_group_attlist	table_table_column_group_attlist_;
     table_columns_and_groups			table_columns_and_groups_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(table_table_column_group);
 
-// table:table-row
 class table_table_row : public office_element_impl<table_table_row>
 {
 public:
@@ -387,10 +365,8 @@ public:
     office_element_ptr_array	content_;					// table-table-cell or table-covered-table-cell
     
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(table_table_row);
 
-// table:table-cell-content
 class table_table_cell_content
 {
 public:
@@ -407,8 +383,6 @@ public:
     // TODO table-detective
 };
 
-
-// table:table-cell
 class table_table_cell : public office_element_impl<table_table_cell>
 {
 public:
@@ -443,7 +417,6 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(table_table_cell);
 
-// table:covered-table-cell
 class table_covered_table_cell : public office_element_impl<table_covered_table_cell>
 {
 public:
@@ -479,7 +452,6 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(table_covered_table_cell);
 
-// table:table-rows
 class table_table_rows : public office_element_impl<table_table_rows>
 {
 public:
@@ -507,10 +479,8 @@ public:
     office_element_ptr_array	table_table_row_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(table_table_rows);
 
-// table:table-header-rows
 class table_table_header_rows : public office_element_impl<table_table_header_rows>
 {
 public:
@@ -536,10 +506,8 @@ public:
     office_element_ptr_array table_table_row_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(table_table_header_rows);
 
-// table:rows
 class table_rows
 {
 public:
@@ -556,7 +524,6 @@ public:
 	void remove_equals_empty();
 };
 
-// table:rows-no-group
 class table_rows_no_group : public office_element
 {
 public:
@@ -591,7 +558,6 @@ public:
     
 };
 
-// table:rows-and-groups
 class table_rows_and_groups
 {
 public:
@@ -611,7 +577,6 @@ public:
 
 };
 
-// table:table-row-group-attlist
 class table_table_row_group_attlist
 {
 public:
@@ -621,7 +586,6 @@ public:
     
 };
 
-// table:table-row-group
 class table_table_row_group : public office_element_impl<table_table_row_group>
 {
 public:
@@ -647,10 +611,8 @@ public:
     table_rows_and_groups			table_rows_and_groups_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(table_table_row_group);
 
-// table:table
 class table_table : public office_element_impl<table_table>
 {
 public:
@@ -685,10 +647,8 @@ public:
     //table-scenario
     //office-forms
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(table_table);
 
-// table:shapes
 class table_shapes : public office_element_impl<table_shapes>
 {
 public:
@@ -710,7 +670,6 @@ private:
     office_element_ptr_array content_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(table_shapes);
 
 }

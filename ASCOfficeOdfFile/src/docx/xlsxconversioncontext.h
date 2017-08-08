@@ -48,6 +48,7 @@
 #include "xlsx_comments_context.h"
 #include "xlsx_defined_names.h"
 #include "xlsx_table_metrics.h"
+#include "xlsx_pivots_context.h"
 #include "oox_chart_context.h"
 
 #include "mediaitems.h"
@@ -168,6 +169,7 @@ public:
     num_format_context          & get_num_format_context()		 { return num_format_context_; }
     size_t                        get_default_cell_style() const { return default_style_; }
     xlsx_defined_names          & get_xlsx_defined_names()		 { return xlsx_defined_names_; }
+	xlsx_pivots_context			& get_pivots_context()			 { return xlsx_pivots_context_;}
     xlsx_table_metrics          & get_table_metrics();
     xlsx_drawing_context        & get_drawing_context();
     xlsx_drawing_context_handle & get_drawing_context_handle();	
@@ -202,6 +204,7 @@ private:
     xlsx_table_context              xlsx_table_context_;
     xlsx_text_context               xlsx_text_context_;
 	math_context					math_context_;
+	xlsx_pivots_context				xlsx_pivots_context_;
     xlsx_drawing_context_handle     xlsx_drawing_context_handle_;
     xlsx_comments_context_handle    xlsx_comments_context_handle_;
 };

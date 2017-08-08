@@ -48,24 +48,23 @@ const wchar_t * office_spreadsheet::name = L"spreadsheet";
 void office_spreadsheet::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	if CP_CHECK_NAME(L"table", L"database-ranges")
+	{
+		CP_CREATE_ELEMENT(database_ranges_);
+	}
+	else if CP_CHECK_NAME(L"table", L"named-expressions")
     {
-        CP_CREATE_ELEMENT(table_database_ranges_);    
+        CP_CREATE_ELEMENT(named_expressions_);    
     }
 	else if CP_CHECK_NAME(L"table", L"data-pilot-tables")
 	{
-		CP_CREATE_ELEMENT(table_data_pilot_tables_);
+		CP_CREATE_ELEMENT(data_pilot_tables_);
+	}
+	else if CP_CHECK_NAME(L"table", L"tracked-changes")
+	{
+		CP_CREATE_ELEMENT(tracked_changes_);
 	}
 	else
 		CP_CREATE_ELEMENT(content_);
-}
-
-void office_spreadsheet::add_text(const std::wstring & Text)
-{
-    // TODO : error
-}
-
-void office_spreadsheet::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
 }
 
 void office_spreadsheet::docx_convert(oox::docx_conversion_context & Context)
@@ -81,21 +80,23 @@ void office_spreadsheet::docx_convert(oox::docx_conversion_context & Context)
 void office_spreadsheet::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     Context.start_office_spreadsheet(this);
-    _CP_LOG << L"[info][xlsx] process spreadsheet (" << content_.size() << L" elmements)" << std::endl;
+    _CP_LOG << L"[info][xlsx] process spreadsheet (" << content_.size() << L" tables)" << std::endl;
    
- 	for (size_t i = 0; i < table_database_ranges_.size(); i++)
-	{
-        table_database_ranges_[i]->xlsx_convert(Context);
-    }
+	if (named_expressions_)
+		named_expressions_->xlsx_convert(Context);
+       
+	if (database_ranges_)
+		database_ranges_->xlsx_convert(Context);
+
 	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->xlsx_convert(Context);
     }
- 	for (size_t i = 0; i < table_data_pilot_tables_.size(); i++)
-	{
-        table_data_pilot_tables_[i]->xlsx_convert(Context);
-    }
-    Context.end_office_spreadsheet();
+        
+	if (data_pilot_tables_)
+		data_pilot_tables_->xlsx_convert(Context);
+
+	Context.end_office_spreadsheet();
 }
 
 }

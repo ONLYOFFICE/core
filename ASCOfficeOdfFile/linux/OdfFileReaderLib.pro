@@ -286,6 +286,7 @@ SOURCES += \
     ../src/docx/xlsx_table_metrics.cpp \
     ../src/docx/xlsx_table_state.cpp \
     ../src/docx/xlsx_textcontext.cpp \
+    ../src/docx/xlsx_pivots_context.cpp \
     ../src/docx/xlsx_utils.cpp \
     ../src/docx/xlsx_xf.cpp
 }

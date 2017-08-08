@@ -152,8 +152,7 @@ void xlsx_conversion_context::end_document()
             content->add_rel(relationship(dId, kType, dName));
         }
 //////////////////////////////////////////////////////////////////////////////////////////////////
-        content->add_rels(sheet->hyperlinks_rels());
-        content->add_rels(sheet->ole_objects_rels());
+        content->add_rels(sheet->sheet_rels());
 /////////////////////////////////////////////////////////////////////////////////////////////////
 		const std::pair<std::wstring, std::wstring> p2 = sheet->get_comments_link();        
 		if (!p2.first.empty())
@@ -232,6 +231,54 @@ void xlsx_conversion_context::end_document()
                 }
 
                 get_xlsx_defined_names().xlsx_serialize(CP_XML_STREAM());
+
+				int pivot_cache_count = xlsx_pivots_context_.get_cache_count();
+				if (pivot_cache_count > 0)
+				{
+					CP_XML_NODE(L"pivotCaches")
+					{
+						for (int i = 0; i < pivot_cache_count; i++)
+						{
+							std::wstring				rId		= L"pcId" + std::to_wstring(i+1);
+							static const std::wstring	sType	= L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition"; 
+							const std::wstring			sName	= std::wstring(L"../pivotCache/pivotCacheDefinition" + std::to_wstring(i + 1) + L".xml");
+							
+							package::pivot_cache_content_ptr content = package::pivot_cache_content::create();
+							
+							CP_XML_NODE(L"pivotCache")
+							{
+								CP_XML_ATTR(L"cacheId", std::to_wstring(i));
+								CP_XML_ATTR(L"r:id", rId);
+							}
+
+							xlsx_pivots_context_.dump_rels_cache(i, content->get_rels());
+							xlsx_pivots_context_.write_cache_definitions_to(i, content->definitions());
+							xlsx_pivots_context_.write_cache_records_to(i, content->records());
+
+							output_document_->get_xl_files().add_pivot_cache(content);	
+						}
+					}
+				}
+				int pivot_view_count = xlsx_pivots_context_.get_view_count();
+				if (pivot_view_count > 0)
+				{
+					for (int i = 0; i < pivot_view_count; i++)
+					{
+						package::pivot_table_content_ptr content = package::pivot_table_content::create();
+
+						xlsx_pivots_context_.dump_rels_view(i, content->get_rels());
+						xlsx_pivots_context_.write_table_view_to(i, content->content());
+
+						output_document_->get_xl_files().add_pivot_table(content);	
+					}
+				}
+				if (xlsx_pivots_context_.is_connections())
+				{
+					std::wstringstream strm;
+					xlsx_pivots_context_.write_connections_to(strm);
+
+					output_document_->get_xl_files().set_connections( package::simple_element::create(L"connections.xml", strm.str()) );
+				}
             }
         }
 
@@ -381,9 +428,8 @@ void xlsx_conversion_context::end_table()
 	get_table_context().serialize_hyperlinks			(current_sheet().hyperlinks());
     get_table_context().serialize_ole_objects			(current_sheet().ole_objects());
 	
-	get_table_context().dump_rels_hyperlinks			(current_sheet().hyperlinks_rels());
-	get_table_context().dump_rels_ole_objects			(current_sheet().ole_objects_rels());
-
+	get_table_context().dump_rels_hyperlinks			(current_sheet().sheet_rels());
+	get_table_context().dump_rels_ole_objects			(current_sheet().sheet_rels());
 
 	if (!get_drawing_context().empty())
     {

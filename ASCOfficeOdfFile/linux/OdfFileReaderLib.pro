@@ -212,6 +212,11 @@ SOURCES += \
     ../src/odf/datatypes/xlink.cpp \
     ../src/odf/datatypes/chartlabelposition.cpp \
     ../src/odf/datatypes/grandtotal.cpp \
+    ../src/odf/datatypes/membertype.cpp \
+    ../src/odf/datatypes/tabletype.cpp \
+    ../src/odf/datatypes/tableorientation.cpp \
+    ../src/odf/datatypes/tablefunction.cpp \
+    ../src/odf/datatypes/tableorder.cpp \
     ../src/docx/xlsx_conditionalFormatting.cpp \
     ../src/docx/xlsx_dxfs.cpp \
     ../src/docx/docx_content_type.cpp \

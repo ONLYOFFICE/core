@@ -1696,6 +1696,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\datatypes\tablefunction.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\tablefunction.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\text_content.cpp"
 				>
 			</File>

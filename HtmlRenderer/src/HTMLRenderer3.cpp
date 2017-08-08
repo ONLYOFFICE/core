@@ -1287,14 +1287,14 @@ namespace NSHtmlRenderer
         m_pInternal->m_oSimpleGraphicsConverter.SetRenderer(this);
         return S_OK;
     }
-    HRESULT CASCHTMLRenderer3::CloseFile()
+    HRESULT CASCHTMLRenderer3::CloseFile(bool bIsNoBase64)
     {
         if (m_pInternal->m_bPageOpened)
         {
             m_pInternal->EndPage();
         }
 
-        m_pInternal->m_oWriter.WriteEndDocument(m_pInternal->m_oDocument);
+        m_pInternal->m_oWriter.WriteEndDocument(m_pInternal->m_oDocument, bIsNoBase64);
         return S_OK;
     }
 

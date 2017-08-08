@@ -181,7 +181,7 @@ namespace NSHtmlRenderer
         virtual HRESULT put_Mode(LONG lMode);
 
         virtual HRESULT CreateOfficeFile(std::wstring bsFileName, const std::wstring& fontsDir = L"");
-        virtual HRESULT CloseFile();
+        virtual HRESULT CloseFile(bool bIsNoBase64 = false);
 
         virtual HRESULT SetAdditionalParam(std::string sParamName, int nValue);
         virtual HRESULT SetAdditionalParam(std::string sParamName, const std::wstring& sParam);

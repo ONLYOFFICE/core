@@ -2511,7 +2511,7 @@ namespace NExtractTools
            oHtmlRenderer.CreateOfficeFile(sToDir);
            IOfficeDrawingFile* pReader = NULL;
            nRes = PdfDjvuXpsToRenderer(&pReader, &oHtmlRenderer, sFrom, nFormatFrom, sTo, sTemp, params, &oApplicationFonts);
-           oHtmlRenderer.CloseFile();
+           oHtmlRenderer.CloseFile(params.getIsNoBase64());
            RELEASEOBJECT(pReader);
        }
 	   else if(0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))

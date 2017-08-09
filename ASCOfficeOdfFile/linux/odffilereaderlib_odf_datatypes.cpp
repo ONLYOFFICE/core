@@ -121,3 +121,8 @@
 #include "../src/odf/datatypes/xlink.cpp"
 #include "../src/odf/datatypes/chartlabelposition.cpp"
 #include "../src/odf/datatypes/grandtotal.cpp"
+#include "../src/odf/datatypes/membertype.cpp"
+#include "../src/odf/datatypes/tabletype.cpp"
+#include "../src/odf/datatypes/tableorientation.cpp"
+#include "../src/odf/datatypes/tablefunction.cpp"
+#include "../src/odf/datatypes/tableorder.cpp"

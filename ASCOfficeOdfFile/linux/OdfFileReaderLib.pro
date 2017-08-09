@@ -212,6 +212,11 @@ SOURCES += \
     ../src/odf/datatypes/xlink.cpp \
     ../src/odf/datatypes/chartlabelposition.cpp \
     ../src/odf/datatypes/grandtotal.cpp \
+    ../src/odf/datatypes/membertype.cpp \
+    ../src/odf/datatypes/tabletype.cpp \
+    ../src/odf/datatypes/tableorientation.cpp \
+    ../src/odf/datatypes/tablefunction.cpp \
+    ../src/odf/datatypes/tableorder.cpp \
     ../src/docx/xlsx_conditionalFormatting.cpp \
     ../src/docx/xlsx_dxfs.cpp \
     ../src/docx/docx_content_type.cpp \
@@ -281,6 +286,7 @@ SOURCES += \
     ../src/docx/xlsx_table_metrics.cpp \
     ../src/docx/xlsx_table_state.cpp \
     ../src/docx/xlsx_textcontext.cpp \
+    ../src/docx/xlsx_pivots_context.cpp \
     ../src/docx/xlsx_utils.cpp \
     ../src/docx/xlsx_xf.cpp
 }

@@ -74,7 +74,6 @@ table_align table_align::parse(const std::wstring & Str)
         return table_align( Margins );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return table_align( Left );
     }
 }

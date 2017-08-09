@@ -2075,7 +2075,7 @@ namespace NSHtmlRenderer
             m_bIsGids = false;
         }
 
-        void WriteEndDocument(CDocument& oDocument)
+        void WriteEndDocument(CDocument& oDocument, bool bIsNoBase64)
         {
             CMetafile oDocInfo;
             oDocInfo.WriteLONG(m_lPagesCount);
@@ -2114,22 +2114,36 @@ namespace NSHtmlRenderer
 
             NSFile::CFileBinary::Remove(m_strDstDirectoryFiles + L"/document_temp.bin");
 
-            char* pOutput = NULL;
-            int nOutputLen = 0;
-            NSFile::CBase64Converter::Encode(pData, lSizeAll, pOutput, nOutputLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
+            if (bIsNoBase64)
+            {
+                NSFile::CFileBinary oDestinationFile;
+                oDestinationFile.CreateFileW(m_strDstDirectoryFiles + L"/Editor.bin");
+                oDestinationFile.WriteFile(pData, (DWORD)lSizeAll);
+                oDestinationFile.CloseFile();
 
-            RELEASEARRAYOBJECTS(pData);
+                RELEASEARRAYOBJECTS(pData);
+            }
+            else
+            {
+                char* pOutput = NULL;
+                int nOutputLen = 0;
+                NSFile::CBase64Converter::Encode(pData, lSizeAll, pOutput, nOutputLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
 
-            std::string sDstLen = std::to_string(nOutputLen);
-            sDstLen += ";";
+                RELEASEARRAYOBJECTS(pData);
 
-            NSFile::CFileBinary _file;
-            _file.CreateFileW(m_strDstDirectoryFiles + L"/Editor.bin");
+                std::string sDstLen = std::to_string(nOutputLen);
+                sDstLen += ";";
 
-            _file.WriteFile((BYTE*)sDstLen.c_str(), (DWORD)sDstLen.length());
-            _file.WriteFile((BYTE*)pOutput, (DWORD)nOutputLen);
+                NSFile::CFileBinary _file;
+                _file.CreateFileW(m_strDstDirectoryFiles + L"/Editor.bin");
 
-            _file.CloseFile();
+                _file.WriteFile((BYTE*)sDstLen.c_str(), (DWORD)sDstLen.length());
+                _file.WriteFile((BYTE*)pOutput, (DWORD)nOutputLen);
+
+                _file.CloseFile();
+
+                RELEASEARRAYOBJECTS(pOutput);
+            }
 
             ::CFontManager* pFontManager = m_pApplicationFonts->GenerateFontManager();
             m_oDstFontGenerator.WriteFonts(pFontManager, m_strDstDirectoryFiles + L"/fonts", m_bIsGids);

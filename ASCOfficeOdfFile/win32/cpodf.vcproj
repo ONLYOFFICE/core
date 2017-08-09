@@ -719,6 +719,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\docx\xlsx_pivots_context.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\docx\xlsx_pivots_context.h"
+					>
+				</File>
+				<File
 					RelativePath="..\src\docx\xlsx_row_spanned.h"
 					>
 				</File>
@@ -1693,6 +1701,14 @@
 			</File>
 			<File
 				RelativePath="..\src\odf\table_xlsx.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\tablefunction.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\tablefunction.h"
 				>
 			</File>
 			<File

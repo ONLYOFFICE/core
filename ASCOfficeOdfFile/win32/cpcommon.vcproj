@@ -698,6 +698,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\datatypes\membertype.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\membertype.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\datatypes\noteclass.cpp"
 				>
 			</File>
@@ -910,11 +918,43 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\datatypes\tablefunction.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\tablefunction.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\datatypes\tablemode.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\src\odf\datatypes\tablemode.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\tableorder.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\tableorder.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\tableorientation.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\tableorientation.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\tabletype.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\tabletype.h"
 				>
 			</File>
 			<File

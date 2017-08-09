@@ -47,9 +47,6 @@ public:
     xlsx_content_types_file();
 };
 //------------------------------------------------------------------------
-class sheet_content;
-typedef _CP_PTR(sheet_content) sheet_content_ptr;
-
 class sheet_content : boost::noncopyable
 {
 public:
@@ -65,10 +62,8 @@ private:
     std::wstringstream content_;
     rels_file_ptr rels_;
 };
+typedef _CP_PTR(sheet_content) sheet_content_ptr;
 //------------------------------------------------------------------------
-class pivot_cache_content;
-typedef _CP_PTR(pivot_cache_content) pivot_cache_content_ptr;
-
 class pivot_cache_content : boost::noncopyable
 {
 public:
@@ -88,10 +83,8 @@ private:
     std::wstringstream	definitions_;
 	rels_file_ptr		definitions_rels_file_;
 };
+typedef _CP_PTR(pivot_cache_content) pivot_cache_content_ptr;
 //------------------------------------------------------------------------
-class pivot_table_content;
-typedef _CP_PTR(pivot_table_content) pivot_table_content_ptr;
-
 class pivot_table_content : boost::noncopyable
 {
 public:
@@ -108,6 +101,7 @@ private:
     std::wstringstream	content_;
 	rels_file_ptr		rels_file_;
 };
+typedef _CP_PTR(pivot_table_content) pivot_table_content_ptr;
 //------------------------------------------------------------------------
 class sheets_files  : public element
 {

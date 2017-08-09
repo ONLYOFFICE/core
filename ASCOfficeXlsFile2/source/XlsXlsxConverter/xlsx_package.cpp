@@ -184,10 +184,11 @@ void xl_files::write(const std::wstring & RootPath)
 		pivot_table_files_.set_main_document(get_main_document());
 		pivot_table_files_.write(path);
 	}
-    
-	sheets_files_.set_rels(&rels_files_);
-    sheets_files_.set_main_document( this->get_main_document() );
-    sheets_files_.write(path);
+	{
+		sheets_files_.set_rels(&rels_files_);
+		sheets_files_.set_main_document( this->get_main_document() );
+		sheets_files_.write(path);
+	}
 
 	if (sharedStrings_)
     {

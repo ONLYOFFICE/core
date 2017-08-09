@@ -172,7 +172,7 @@ void table_table::add_child_element( xml::sax * Reader, const std::wstring & Ns,
         CP_CREATE_ELEMENT(table_shapes_);    
     }
 	else if (	CP_CHECK_NAME(L"table", L"named-expressions") || 
-				CP_CHECK_NAME(L"table", L"named-range") )
+				CP_CHECK_NAME(L"table", L"named-range") )		//???
 	{
         CP_CREATE_ELEMENT(table_named_);    
 	}

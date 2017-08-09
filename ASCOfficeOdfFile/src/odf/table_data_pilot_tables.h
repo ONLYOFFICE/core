@@ -41,6 +41,11 @@
 #include "datatypes/common_attlists.h"
 #include "datatypes/bool.h"
 #include "datatypes/grandtotal.h"
+#include "datatypes/membertype.h"
+#include "datatypes/tableorientation.h"
+#include "datatypes/tabletype.h"
+#include "datatypes/tablefunction.h"
+#include "datatypes/tableorder.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -57,7 +62,7 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
     office_element_ptr_array content_;
@@ -89,10 +94,11 @@ private:
      _CP_OPT(odf_types::grand_total)table_grand_total_;
      _CP_OPT(odf_types::Bool)		table_identify_categories_;
      _CP_OPT(odf_types::Bool)		table_ignore_empty_rows_;
-     _CP_OPT(odf_types::Bool)		table_show_filterbutton_;
+     _CP_OPT(odf_types::Bool)		table_show_filter_button_;
      _CP_OPT(odf_types::Bool)		table_show_target_range_address_;
 	
-	  office_element_ptr_array	content_;
+	office_element_ptr			source_;
+	office_element_ptr_array	fields_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_table);
@@ -113,10 +119,41 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    office_element_ptr_array content_;  
+	_CP_OPT(std::wstring)					table_source_field_name_;
+	_CP_OPT(odf_types::table_orientation)	table_orientation_;
+	_CP_OPT(int)							table_used_hierarchy_;
+	_CP_OPT(odf_types::table_function)		table_function_;
+	_CP_OPT(odf_types::Bool)				loext_ignore_selected_page_;
+	_CP_OPT(std::wstring)					table_selected_page_;
+	_CP_OPT(odf_types::Bool)				table_is_data_layout_field_;
+	
+	office_element_ptr_array	content_;  
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_field);
+//-------------------------------------------------------------------------------------
+class table_data_pilot_field_reference : public office_element_impl<table_data_pilot_field_reference>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableDataPilotFieldReference;
+    CPDOCCORE_DEFINE_VISITABLE();
+   
+    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+	
+	_CP_OPT(std::wstring)			table_field_name_;
+	_CP_OPT(std::wstring)			table_member_name_;
+	_CP_OPT(odf_types::member_type)	table_member_type_;	
+	_CP_OPT(odf_types::table_type)	table_type_;		
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_field_reference);
 //-------------------------------------------------------------------------------------
 
 class table_database_source_table : public office_element_impl<table_database_source_table>
@@ -132,9 +169,10 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
-    office_element_ptr_array content_;  
+	_CP_OPT(std::wstring)	table_database_name_;
+	_CP_OPT(std::wstring)	table_database_table_name_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_database_source_table);
@@ -153,9 +191,10 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
-    office_element_ptr_array content_;  
+	_CP_OPT(std::wstring)	table_database_name_;
+	_CP_OPT(std::wstring)	table_query_name_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_database_source_query);
@@ -174,9 +213,11 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
-    office_element_ptr_array content_;  
+	_CP_OPT(std::wstring)	table_database_name_;
+	_CP_OPT(odf_types::Bool)table_parse_sql_statement_;
+	_CP_OPT(std::wstring)	table_sql_statement_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_database_source_sql);
@@ -197,7 +238,8 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    office_element_ptr_array content_;  
+	_CP_OPT(std::wstring)		table_cellrange_address_;
+    office_element_ptr_array	content_;  
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_source_cell_range);
@@ -216,12 +258,260 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
-    office_element_ptr_array content_;  
+	_CP_OPT(std::wstring)		table_name_;
+	_CP_OPT(std::wstring)		table_object_name_;
+	_CP_OPT(std::wstring)		table_password_;
+	_CP_OPT(std::wstring)		table_source_name_;
+	_CP_OPT(std::wstring)		table_user_name_;
+	
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(table_source_service);
 //-------------------------------------------------------------------------------------
+
+class table_data_pilot_level : public office_element_impl<table_data_pilot_level>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableDataPilotLevel;
+    CPDOCCORE_DEFINE_VISITABLE();
+   
+    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+
+	_CP_OPT(odf_types::Bool)	table_show_empty_;
+    office_element_ptr_array	content_;  
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_level);
+//-------------------------------------------------------------------------------------
+
+class table_data_pilot_groups : public office_element_impl<table_data_pilot_groups>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableDataPilotGroups;
+    CPDOCCORE_DEFINE_VISITABLE();
+   
+    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+
+	_CP_OPT(std::wstring)		table_date_end_;
+	_CP_OPT(std::wstring)		table_date_start_;
+	_CP_OPT(std::wstring)		table_start;			//double 18.2 or auto.
+	_CP_OPT(std::wstring)		table_end_;				//double 18.2 or auto.
+	_CP_OPT(std::wstring)		table_grouped_by_;		//seconds, minutes, hours, days, months, quarters or years.
+	_CP_OPT(std::wstring)		table_source_field_name_;
+	_CP_OPT(double)				table_step;
+	
+	office_element_ptr_array	content_;  
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_groups);
+//-------------------------------------------------------------------------------------
+
+class table_data_pilot_group : public office_element_impl<table_data_pilot_group>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableDataPilotGroup;
+    CPDOCCORE_DEFINE_VISITABLE();
+   
+    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+
+	_CP_OPT(std::wstring)		table_name_;
+    office_element_ptr_array	content_;  
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_group);
+
+//-------------------------------------------------------------------------------------
+
+class table_data_pilot_members : public office_element_impl<table_data_pilot_members>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableDataPilotMembers;
+    CPDOCCORE_DEFINE_VISITABLE();
+   
+    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+
+    office_element_ptr_array	content_;  
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_members);
+
+//-------------------------------------------------------------------------------------
+
+class table_data_pilot_member : public office_element_impl<table_data_pilot_member>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableDataPilotMember;
+    CPDOCCORE_DEFINE_VISITABLE();
+   
+    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+
+	_CP_OPT(odf_types::Bool)	table_display_;
+	_CP_OPT(std::wstring)		table_name_;
+	_CP_OPT(odf_types::Bool)	table_show_details_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_member);
+
+//-------------------------------------------------------------------------------------
+class table_data_pilot_group_member : public office_element_impl<table_data_pilot_group_member>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableDataPilotGroupMember;
+    CPDOCCORE_DEFINE_VISITABLE();
+   
+    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+
+	_CP_OPT(std::wstring) table_name_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_group_member);
+//-------------------------------------------------------------------------------------
+
+class table_data_pilot_subtotals : public office_element_impl<table_data_pilot_subtotals>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableDataPilotSubtotals;
+    CPDOCCORE_DEFINE_VISITABLE();
+   
+    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+
+    office_element_ptr_array	content_;  
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_subtotals);
+//-------------------------------------------------------------------------------------
+
+class table_data_pilot_subtotal : public office_element_impl<table_data_pilot_subtotal>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableDataPilotSubtotal;
+    CPDOCCORE_DEFINE_VISITABLE();
+   
+    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+
+	_CP_OPT(odf_types::table_function)	table_function_;
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_subtotal);
+//-------------------------------------------------------------------------------------
+
+class table_data_pilot_layout_info : public office_element_impl<table_data_pilot_layout_info>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableDataLayoutInfo;
+    CPDOCCORE_DEFINE_VISITABLE();
+   
+    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+
+	_CP_OPT(odf_types::Bool)	table_add_empty_lines_; 
+	_CP_OPT(std::wstring)		table_layout_mode_; //tabular-layout, outlinesubtotals-top or outline-subtotals-bottom.
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_layout_info);
+//-------------------------------------------------------------------------------------
+
+class table_data_pilot_sort_info : public office_element_impl<table_data_pilot_sort_info>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableDataSortInfo;
+    CPDOCCORE_DEFINE_VISITABLE();
+   
+    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+
+	_CP_OPT(std::wstring)			table_data_field_;
+	_CP_OPT(odf_types::table_order)	table_order_;
+	_CP_OPT(std::wstring)			table_sort_mode_;			//data, none, manual or name.
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_sort_info);
+//-------------------------------------------------------------------------------------
+
+class table_data_pilot_display_info : public office_element_impl<table_data_pilot_display_info>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableDataDisplayInfo;
+    CPDOCCORE_DEFINE_VISITABLE();
+   
+    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+
+	_CP_OPT(std::wstring)		table_data_field_;
+	_CP_OPT(std::wstring)		table_display_member_mode_;	//from-top or from-bottom.
+	_CP_OPT(odf_types::Bool)	table_enabled_;
+	_CP_OPT(unsigned int)		table_member_count_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_display_info);
+//-------------------------------------------------------------------------------------
+
+
 }
 }

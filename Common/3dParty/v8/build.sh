@@ -33,7 +33,7 @@ cd "$SCRIPTPATH/v8"
 
 if [[ "$platform" == *"linux"* ]]
 then
-CFLAGS="-fPIC" CXXFLAGS="-fPIC" make native GYPFLAGS=-Dclang=0
+CFLAGS="-fPIC" CXXFLAGS="-fPIC" make native -j $(grep -c ^processor /proc/cpuinfo) GYPFLAGS=-Dclang=0
 
 cp "./out/native/obj.target/tools/gyp/libv8_base.a" "./../$platform$arch/"
 cp "./out/native/obj.target/tools/gyp/libv8_libbase.a" "./../$platform$arch/"

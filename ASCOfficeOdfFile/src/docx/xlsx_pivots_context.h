@@ -52,11 +52,12 @@ public:
 	void start_field();
 	void end_field();
 
-	//int add_view(int indexCache);
-	int get_view_count();
+	int get_view_count();//equal in libre
+	int get_cache_count();
+
+	void set_view_name(std::wstring name);
 
 	void add_cache(std::wstring definitions, std::wstring records);
-	int get_cache_count();
 
 	void write_cache_definitions_to	(int index, std::wostream & strm);
 	void write_cache_records_to		(int index, std::wostream & strm);

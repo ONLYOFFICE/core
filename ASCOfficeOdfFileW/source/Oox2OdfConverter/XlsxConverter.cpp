@@ -219,6 +219,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDefinedName *oox_defined)
 		bool printable = false;
 		if (name  == L"_xlnm.Print_Area")printable = true;
 
+		//todoooo !!!! сделать анализ на функцию, диапазон, константы .... !!!
+
 		if (false)//если простой - range, составной - выражение
 			ods_context->add_defined_range (name, oox_defined->m_oRef.get2(), sheet_id, printable);
 		else

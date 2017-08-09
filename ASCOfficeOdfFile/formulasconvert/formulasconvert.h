@@ -51,6 +51,7 @@ public:
     
     // $Лист1.$A$1 -> Лист1!$A$1
 	std::wstring convert_named_ref(std::wstring const & expr, bool withTableName = true, std::wstring separator = L" ");
+	std::wstring get_table_name();
 
 	//a-la convert without check formula
     std::wstring convert_named_expr(std::wstring const & expr, bool withTableName = true);
@@ -90,7 +91,7 @@ public:
     std::wstring convert_named_ref	(std::wstring const & expr);
 	std::wstring convert_named_formula(std::wstring const & expr);
 
-	std::wstring get_base_cell_formula(std::wstring const & expr);
+	std::wstring get_base_cell_formula();
 
 	//Sheet2!C3:C19 -> Sheet2.C3:Sheet2.C19 
     std::wstring convert_chart_distance(std::wstring const & expr);

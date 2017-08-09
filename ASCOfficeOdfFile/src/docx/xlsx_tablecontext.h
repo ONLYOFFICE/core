@@ -48,7 +48,6 @@ class xlsx_table_context
 public:
     xlsx_table_context(xlsx_conversion_context * Context, xlsx_text_context & textCotnext);
 
-public:
     void start_table(std::wstring tableName, std::wstring tableStyleName, int id);
     void end_table();
 

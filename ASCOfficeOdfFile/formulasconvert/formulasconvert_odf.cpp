@@ -43,7 +43,6 @@ namespace formulasconvert {
 	class odf2oox_converter::Impl
 	{
 	public:
-		static bool convert_with_TableName;
 
 		std::wstring convert(const std::wstring& expr);
 		std::wstring convert_chart_distance(const std::wstring& expr);
@@ -61,8 +60,12 @@ namespace formulasconvert {
 		void replace_named_ref(std::wstring & expr, bool w = true);
 		bool find_first_ref(std::wstring const & expr, std::wstring & table,  std::wstring & ref);
 		bool find_first_last_ref(std::wstring const & expr, std::wstring & table, std::wstring & ref_first,std::wstring & ref_last);
+	
+		static bool			convert_with_TableName;
+		static std::wstring table_name_;
 	};
-	bool odf2oox_converter::Impl::convert_with_TableName = true;
+	bool			odf2oox_converter::Impl::convert_with_TableName = true;
+	std::wstring	odf2oox_converter::Impl::table_name_			= L"";
 
 	bool odf2oox_converter::Impl::find_first_last_ref(std::wstring const & expr, std::wstring & table,std::wstring & ref_first,std::wstring & ref_last)
 	{	
@@ -152,6 +155,8 @@ namespace formulasconvert {
 			std::wstring sheet1 = what[1].str();
 			XmlUtils::replace_all( sheet1, L"$", L"");
 
+			table_name_ = sheet1;
+
 			const std::wstring c1 = what[2].str(); 
 			const std::wstring c2 = what[3].str(); 
 
@@ -179,6 +184,8 @@ namespace formulasconvert {
 			const std::wstring c1 = what[2].str(); 
 			const std::wstring c2 = what[3].str(); //sheet name 2
 			const std::wstring c3 = what[4].str(); 
+
+			table_name_ = sheet1;
 
 			if (convert_with_TableName)
 			{
@@ -557,6 +564,11 @@ namespace formulasconvert {
 
 	odf2oox_converter::~odf2oox_converter()
 	{
+	}
+
+	std::wstring odf2oox_converter::get_table_name()
+	{
+		return impl_->table_name_;
 	}
 
 	std::wstring odf2oox_converter::convert(const std::wstring& expr)

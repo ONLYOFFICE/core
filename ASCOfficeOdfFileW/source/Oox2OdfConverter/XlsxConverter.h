@@ -32,7 +32,7 @@
 #pragma once
 
 #include "Converter.h"
-#include <boost/foreach.hpp>
+
 #include <cpdoccore/CPSharedPtr.h>
 #include <cpdoccore/CPOptional.h>
 

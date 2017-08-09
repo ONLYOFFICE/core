@@ -32,8 +32,6 @@
 
 #include "abstract_xml.h"
 
-#include <boost/foreach.hpp>
-
 namespace cpdoccore { 
 namespace odf_writer {
 

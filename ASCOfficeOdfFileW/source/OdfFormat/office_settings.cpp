@@ -32,8 +32,6 @@
 
 #include "office_settings.h"
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
 
@@ -56,9 +54,9 @@ void office_settings::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -88,9 +86,9 @@ void settings_config_item_set::serialize(std::wostream & _Wostream)
         {
 			CP_XML_ATTR( L"config:name", config_name_);
 
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -145,9 +143,9 @@ void settings_config_item_map_indexed::serialize(std::wostream & _Wostream)
         {
 			CP_XML_ATTR_OPT( L"config:name", config_name_);
 
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -174,9 +172,9 @@ void settings_config_item_map_named::serialize(std::wostream & _Wostream)
         {
 			CP_XML_ATTR_OPT( L"config:name", config_name_);
 
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -203,9 +201,9 @@ void settings_config_item_map_entry::serialize(std::wostream & _Wostream)
         {
 			CP_XML_ATTR_OPT( L"config:name", config_name_);
 
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}

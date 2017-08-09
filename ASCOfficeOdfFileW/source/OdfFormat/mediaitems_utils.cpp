@@ -33,7 +33,6 @@
 
 #include "mediaitems_utils.h"
 
-#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 
 namespace cpdoccore { 

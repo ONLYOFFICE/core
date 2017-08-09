@@ -32,8 +32,6 @@
 
 #include "office_annotation.h"
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/xmlchar.h>
 
 #include <cpdoccore/xml/attributes.h>
@@ -159,9 +157,9 @@ void office_annotation::serialize(std::wostream & _Wostream)
 			if (dc_creator_)dc_creator_->serialize(CP_XML_STREAM());
 			if (dc_date_)	dc_date_->serialize(CP_XML_STREAM());
 			
-			BOOST_FOREACH(const office_element_ptr & item, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				item->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -210,9 +208,9 @@ void officeooo_annotation::serialize(std::wostream & _Wostream)
 			if (dc_creator_)dc_creator_->serialize(CP_XML_STREAM());
 			if (dc_date_)	dc_date_->serialize(CP_XML_STREAM());
 			
-			BOOST_FOREACH(const office_element_ptr & item, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				item->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}

@@ -37,7 +37,6 @@
 #include "ods_conversion_context.h"
 #include "logging.h"
 
-#include <boost/foreach.hpp>
 #include <iostream>
 
 #include "../../../ASCOfficeOdfFile/formulasconvert/formulasconvert.h"

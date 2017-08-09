@@ -30,8 +30,6 @@
  *
  */
 
-
-#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
  
 #include "office_spreadsheet.h"
@@ -134,16 +132,15 @@ void odf_conversion_context::end_document()
 			objects_.back().scripts->serialize(content_root_->styles());	
 
 		object.content->serialize(content_root_->content());	
-		BOOST_FOREACH(const office_element_ptr & elm, object.content_styles)
+
+		for (size_t i = 0; i < object.content_styles.size(); i++)
 		{
-			elm->serialize(content_root_->styles());
+			object.content_styles[i]->serialize(content_root_->styles());
 		}
-
 		package::content_simple_ptr content_style_ = package::content_simple::create();
-		BOOST_FOREACH(const office_element_ptr & elm, object.styles)
+		for (size_t i = 0; i < object.styles.size(); i++)
 		{// мастер-пейджы, заданные заливки (градиенты, битмапы), дефолтные стили, колонтитулы, разметки, заметки,...
-
-			elm->serialize(content_style_->content());
+			object.styles[i]->serialize(content_style_->content());
 		}
 		package::content_simple_ptr content_settings_ = package::content_simple::create();
 		object.settings->serialize(content_settings_->content());

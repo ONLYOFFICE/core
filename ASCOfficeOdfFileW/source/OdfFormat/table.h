@@ -186,8 +186,8 @@ public:
     virtual void serialize(std::wostream & _Wostream);
 
 public:
-    office_element_ptr table_table_columns_;
-    office_element_ptr_array table_table_column_;
+    office_element_ptr				table_table_columns_;
+    office_element_ptr_array		content_;
     
 };
 
@@ -296,7 +296,7 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-	office_element_ptr_array table_table_column_;
+	office_element_ptr_array content_;
 
 };
 
@@ -318,7 +318,7 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-    office_element_ptr_array table_table_column_;
+    office_element_ptr_array content_;
 
 };
 
@@ -472,7 +472,7 @@ public:
 	{
     }
 
-    office_element_ptr_array table_table_row_;
+    office_element_ptr_array content_;
 
 };
 
@@ -494,7 +494,7 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-    office_element_ptr_array table_table_row_;
+    office_element_ptr_array content_;
 
 };
 
@@ -509,7 +509,7 @@ public:
     virtual void serialize(std::wostream & _Wostream);
 
     office_element_ptr			table_table_rows_;
-    office_element_ptr_array	table_table_row_;
+    office_element_ptr_array	content_;
 
 };
 

@@ -189,6 +189,14 @@ namespace formulasconvert {
 				return c1 + (c3.empty() ? L"" : (L":" + c3) );
 			}
 		}
+		else if (sz == 5 && !what[1].matched)
+		{
+			const std::wstring c1 = what[2].str(); 
+			const std::wstring c2 = what[3].str(); //sheet name 2
+			const std::wstring c3 = what[4].str(); 
+
+			return c1 + (c3.empty() ? L"" : (L":" + c3) );
+		}
 		return L"";
 	}
 	std::wstring odf2oox_converter::Impl::replace_named_ref_formater1(boost::wsmatch const & what)
@@ -216,10 +224,10 @@ namespace formulasconvert {
 	void odf2oox_converter::Impl::replace_cells_range(std::wstring& expr, bool withTableName)
 	{
 		convert_with_TableName = withTableName;
-		//boost::wregex simpleRef(L"\\[\\.([a-zA-Z]+\\d+)(?::\\.([a-zA-Z]+\\d+)){0,1}\\]");
-		boost::wregex complexRef(L"\\[(?:\\$)?([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]*\\${0,1}\\d*)(?::\\.(\\${0,1}[a-zA-Z]*\\${0,1}\\d*)){0,1}\\]");
+
+		boost::wregex complexRef(L"\\[(?:\$)?([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]*\\${0,1}\\d*)(?::(\\${0,1}[^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]*\\${0,1}\\d*)){0,1}\\]");
 		/*
-									 [     $   Sheet2          . A1                  :  . B5                    ]
+									 [     $   Sheet2          . A1								 : ( $   Sheet2)? . B5                    ]
 		*/
 
 		const std::wstring res = boost::regex_replace(
@@ -235,7 +243,7 @@ namespace formulasconvert {
 		
 		//boost::wregex complexRef(L"\\${0,1}([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}");
 		boost::wregex complexRef(L"\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[a-zA-Z]*\\${0,1}\\d*)(?::\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[a-zA-Z]*\\${0,1}\\d*)){0,1}");
-
+	
 		const std::wstring res = boost::regex_replace(
 			expr,
 			complexRef,
@@ -590,34 +598,37 @@ namespace formulasconvert {
 
 		bool isFormula = impl_->check_formula(workstr);
 
-		boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// поиск того что в апострофах и замена там
-
-		workstr = boost::regex_replace(
-			workstr,
-			complexRef,
-			&replace_point_space,
-			boost::match_default | boost::format_all);	
-
-		XmlUtils::replace_all( workstr, L"'", L"APOSTROF");
-	   
-		impl_->replace_cells_range(workstr, withTableName);
-		impl_->replace_semicolons(workstr);
-		impl_->replace_vertical(workstr);
-
-		int res_find=0;
-		if ((res_find = workstr.find(L"CONCATINATE")) > 0)
+		if (isFormula)
 		{
-			//могут быть частично заданы диапазоны
-			//todooo
-
+			workstr = impl_->convert(expr);
 		}
- 		XmlUtils::replace_all( workstr, L"PROBEL"	, L" ");
-		XmlUtils::replace_all( workstr, L"APOSTROF"	, L"'");
-		XmlUtils::replace_all( workstr, L"TOCHKA"	, L".");
-
-		if (!isFormula)
+		else
 		{
-			workstr = L"\"" + workstr + L"\"";
+
+			boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// поиск того что в апострофах и замена там
+
+			workstr = boost::regex_replace(
+				workstr,
+				complexRef,
+				&replace_point_space,
+				boost::match_default | boost::format_all);	
+
+			XmlUtils::replace_all( workstr, L"'", L"APOSTROF");
+		   
+			impl_->replace_cells_range(workstr, withTableName);
+			impl_->replace_semicolons(workstr);
+			impl_->replace_vertical(workstr);
+
+			int res_find=0;
+			if ((res_find = workstr.find(L"CONCATINATE")) > 0)
+			{
+				//могут быть частично заданы диапазоны
+				//todooo
+
+			}
+ 			XmlUtils::replace_all( workstr, L"PROBEL"	, L" ");
+			XmlUtils::replace_all( workstr, L"APOSTROF"	, L"'");
+			XmlUtils::replace_all( workstr, L"TOCHKA"	, L".");
 		}
 		return workstr;
 	}

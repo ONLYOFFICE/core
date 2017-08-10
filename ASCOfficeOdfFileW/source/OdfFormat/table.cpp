@@ -33,7 +33,6 @@
 #include "table.h"
 
 #include <boost/make_shared.hpp>
-#include <boost/foreach.hpp>
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
@@ -272,7 +271,7 @@ void table_table_columns::create_child_element(const std::wstring & Ns, const st
 {
     if CP_CHECK_NAME(L"table", L"table-column")
     {
-   	    CP_CREATE_ELEMENT(table_table_column_);
+   	    CP_CREATE_ELEMENT(content_);
     }
     else
         CP_NOT_APPLICABLE_ELM();
@@ -284,7 +283,7 @@ void table_table_columns::add_child_element( const office_element_ptr & child_el
 	ElementType type = child_element->get_type();
 
     if (type == typeTableTableColumn) 
-		table_table_column_.push_back(child_element);
+		content_.push_back(child_element);
 }
 void table_table_columns::serialize(std::wostream & _Wostream)
 {
@@ -292,9 +291,9 @@ void table_table_columns::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			BOOST_FOREACH(const office_element_ptr & elm, table_table_column_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -309,7 +308,7 @@ void table_table_header_columns::create_child_element( const std::wstring & Ns, 
 {
     if CP_CHECK_NAME(L"table", L"table-column")
     {
-		 CP_CREATE_ELEMENT(table_table_column_);
+		 CP_CREATE_ELEMENT(content_);
     }
     else
         CP_NOT_APPLICABLE_ELM();
@@ -321,7 +320,7 @@ void table_table_header_columns::add_child_element( const office_element_ptr & c
 	ElementType type = child_element->get_type();
 
     if (type == typeTableTableColumn) 
-		table_table_column_.push_back(child_element);
+		content_.push_back(child_element);
 }
 void table_table_header_columns::serialize(std::wostream & _Wostream)
 {
@@ -329,9 +328,9 @@ void table_table_header_columns::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			BOOST_FOREACH(const office_element_ptr & elm, table_table_column_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -347,7 +346,7 @@ void table_columns::create_child_element( const std::wstring & Ns, const std::ws
     }
     else if CP_CHECK_NAME(L"table", L"table-column")
     {
-        CP_CREATE_ELEMENT_SIMPLE(table_table_column_);                
+        CP_CREATE_ELEMENT_SIMPLE(content_);                
     } 
     else
         not_applicable_element(L"table-columns",  Ns, Name);
@@ -367,15 +366,15 @@ void table_columns::add_child_element( const office_element_ptr & child_element)
 		table_table_columns_ = child_element;
 	}
 	else if (type == typeTableTableColumn) 
-		table_table_column_.push_back(child_element);
+		content_.push_back(child_element);
 }
-void table_columns::serialize(std::wostream & _Wostream)
+void table_columns::serialize(std::wostream & strm)
 {
-	if (table_table_columns_)	table_table_columns_->serialize(_Wostream);
+	if (table_table_columns_)	table_table_columns_->serialize(strm);
 	
-	BOOST_FOREACH(const office_element_ptr & elm, table_table_column_)
+	for (size_t i = 0; i < content_.size(); i++)
 	{
-		elm->serialize(_Wostream);
+		content_[i]->serialize(strm);
 	}
 }
 // table-columns-no-group
@@ -521,11 +520,11 @@ void table_columns_and_groups::add_child_element( const office_element_ptr & chi
 		not_applicable_element(L"table-columns-and-groups", L"", L"");
 	}
 }
-void table_columns_and_groups::serialize(std::wostream & _Wostream)
+void table_columns_and_groups::serialize(std::wostream & strm)
 {
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
 	{
-		elm->serialize(_Wostream);
+		content_[i]->serialize(strm);
 	}
 }
 // table-table-cell-content
@@ -539,11 +538,11 @@ void table_table_cell_content::add_child_element( const office_element_ptr & chi
 {
 	text_content_.push_back(child_element);
 }
-void table_table_cell_content::serialize(std::wostream & _Wostream)
+void table_table_cell_content::serialize(std::wostream & strm)
 {
-	BOOST_FOREACH(const office_element_ptr & elm, text_content_)
+	for (size_t i = 0; i < text_content_.size(); i++)
 	{
-		if (elm) elm->serialize(_Wostream);
+		text_content_[i]->serialize(strm);
 	}
 }
 // table:table-cell
@@ -635,9 +634,9 @@ void table_table_row::serialize(std::wostream & _Wostream)
         {
 			table_table_row_attlist_.serialize(CP_GET_XML_NODE());
 				
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}	
@@ -650,21 +649,21 @@ const wchar_t * table_table_rows::name = L"table-rows";
 
 void table_table_rows::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
-	CP_CREATE_ELEMENT(table_table_row_);
+	CP_CREATE_ELEMENT(content_);
 }
 void table_table_rows::add_child_element( const office_element_ptr & child_element)
 {
-	table_table_row_.push_back(child_element);    
+	content_.push_back(child_element);    
 }
-void table_table_rows::serialize(std::wostream & _Wostream)
+void table_table_rows::serialize(std::wostream & strm)
 {
-    CP_XML_WRITER(_Wostream)
+    CP_XML_WRITER(strm)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			BOOST_FOREACH(const office_element_ptr & elm, table_table_row_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(strm);
 			}
 		}
 	}	
@@ -679,7 +678,7 @@ void table_table_header_rows::create_child_element( const std::wstring & Ns, con
 {
     if CP_CHECK_NAME(L"table", L"table-row")
     {
-		CP_CREATE_ELEMENT(table_table_row_);
+		CP_CREATE_ELEMENT(content_);
     }
     else
         CP_NOT_APPLICABLE_ELM();    
@@ -691,7 +690,7 @@ void table_table_header_rows::add_child_element( const office_element_ptr & chil
 	ElementType type = child_element->get_type();
 
     if (type == typeTableTableRow)
-		table_table_row_.push_back(child_element);    
+		content_.push_back(child_element);    
 }
 void table_table_header_rows::serialize(std::wostream & _Wostream)
 {
@@ -699,9 +698,9 @@ void table_table_header_rows::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			BOOST_FOREACH(const office_element_ptr & elm, table_table_row_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}	
@@ -716,7 +715,7 @@ void table_rows::create_child_element(const std::wstring & Ns, const std::wstrin
     } 
     else if CP_CHECK_NAME(L"table", L"table-row")
     {
-		CP_CREATE_ELEMENT_SIMPLE(table_table_row_);
+		CP_CREATE_ELEMENT_SIMPLE(content_);
     }
     else
     {
@@ -733,16 +732,16 @@ void table_rows::add_child_element( const office_element_ptr & child_element)
 		table_table_rows_ = child_element;    
    
 	else if (type == typeTableTableRow)
-		table_table_row_.push_back(child_element);    
+		content_.push_back(child_element);    
 }
-void table_rows::serialize(std::wostream & _Wostream)
+void table_rows::serialize(std::wostream & strm)
 {
 	if (table_table_rows_)
-		table_table_rows_->serialize(_Wostream);
+		table_table_rows_->serialize(strm);
 	
-	BOOST_FOREACH(const office_element_ptr & elm, table_table_row_)
+	for (size_t i = 0; i < content_.size(); i++)
 	{
-		elm->serialize(_Wostream);
+		content_[i]->serialize(strm);
 	}
 }
 // table-rows-no-group
@@ -851,11 +850,11 @@ void table_rows_and_groups::add_child_element( const office_element_ptr & child_
         content_.push_back(elm);
 	}
 }
-void table_rows_and_groups::serialize(std::wostream & _Wostream)
+void table_rows_and_groups::serialize(std::wostream & strm)
 {
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
 	{
-		elm->serialize(_Wostream);
+		content_[i]->serialize(strm);
 	}
 }
 // table:table-row-group
@@ -911,9 +910,9 @@ void table_shapes::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE()
         {
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}

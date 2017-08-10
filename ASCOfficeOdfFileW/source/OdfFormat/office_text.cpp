@@ -32,10 +32,7 @@
 
 #include "office_text.h"
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/xmlchar.h>
-
 #include <cpdoccore/xml/attributes.h>
 
 namespace cpdoccore { 

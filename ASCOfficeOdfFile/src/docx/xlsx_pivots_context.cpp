@@ -65,6 +65,14 @@ public:
 	
 	std::wstringstream			view_;
 	std::wstringstream			cache_;
+
+	struct _desc
+	{
+		void clear()
+		{
+		}
+		std::wstring	name;
+	}current_;
 };
 
 xlsx_pivots_context::xlsx_pivots_context() : impl_(new xlsx_pivots_context::Impl())
@@ -131,6 +139,7 @@ void xlsx_pivots_context::write_table_view_to(int index, std::wostream & strm)
 
 void xlsx_pivots_context::start_table()
 {
+	impl_->current_.clear();
 	impl_->fields_.clear();
 }
 
@@ -143,7 +152,7 @@ int xlsx_pivots_context::end_table()
 		{ 
 			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
 			
-			//CP_XML_ATTR(L"name",				view->stTable.value()); 
+			CP_XML_ATTR(L"name",				impl_->current_.name); 
 			//CP_XML_ATTR(L"cacheId",				view->iCache); 
 			//CP_XML_ATTR(L"dataOnRows",			view->sxaxis4Data.bRw); 
 			//CP_XML_ATTR(L"applyNumberFormats",	view->fAtrNum);
@@ -180,7 +189,7 @@ int xlsx_pivots_context::end_table()
 				CP_XML_ATTR(L"count", impl_->fields_.size());
 				for (size_t i = 0; i < impl_->fields_.size(); i++)
 				{
-					impl_->fields_[i].view_;
+					CP_XML_STREAM() << impl_->fields_[i].view_;
 				}		
 			}
 		}
@@ -189,6 +198,11 @@ int xlsx_pivots_context::end_table()
 	impl_->views_.push_back(v);
 
 	return impl_->views_.size();
+}
+
+void xlsx_pivots_context::set_view_name(std::wstring name)
+{
+	impl_->current_.name = name;
 }
 
 void xlsx_pivots_context::start_field()

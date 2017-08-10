@@ -37,7 +37,6 @@
 #include "ods_conversion_context.h"
 #include "logging.h"
 
-#include <boost/foreach.hpp>
 #include <iostream>
 
 #include "../../../ASCOfficeOdfFile/formulasconvert/formulasconvert.h"
@@ -139,7 +138,7 @@ void ods_table_context::add_defined_range(const std::wstring & name, const std::
 	XmlUtils::replace_all( odf_range, L"[", L"");
 	XmlUtils::replace_all( odf_range, L"]", L"");
 	
-	std::wstring odf_base_cell = formulas_converter.get_base_cell_formula(cell_range);
+	std::wstring odf_base_cell = formulas_converter.get_base_cell_formula();
 
 	named_range->table_name_ = name;
 	named_range->table_cell_range_address_ = odf_range;
@@ -183,7 +182,7 @@ void ods_table_context::add_defined_expression(const std::wstring & name, const 
 	formulasconvert::oox2odf_converter formulas_converter;
 
 	std::wstring odf_value		= formulas_converter.convert_named_formula(value);
-	std::wstring odf_base_cell	= formulas_converter.get_base_cell_formula(value);
+	std::wstring odf_base_cell	= formulas_converter.get_base_cell_formula();
 
 	named_expression->table_name_		= name;
 	named_expression->table_expression_ = odf_value;

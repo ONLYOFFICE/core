@@ -88,6 +88,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
      _CP_OPT(std::wstring)			table_name_;
+	 _CP_OPT(std::wstring)			table_target_range_address_;
      _CP_OPT(std::wstring)			table_application_data_;
      _CP_OPT(std::wstring)			table_buttons_;
 	 _CP_OPT(odf_types::Bool)		table_drill_down_ondouble_click_;
@@ -95,7 +96,6 @@ private:
      _CP_OPT(odf_types::Bool)		table_identify_categories_;
      _CP_OPT(odf_types::Bool)		table_ignore_empty_rows_;
      _CP_OPT(odf_types::Bool)		table_show_filter_button_;
-     _CP_OPT(odf_types::Bool)		table_show_target_range_address_;
 	
 	office_element_ptr			source_;
 	office_element_ptr_array	fields_;

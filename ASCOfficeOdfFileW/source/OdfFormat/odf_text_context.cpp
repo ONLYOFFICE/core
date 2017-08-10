@@ -32,7 +32,6 @@
 
 #include "logging.h"
 
-#include <boost/foreach.hpp>
 #include <boost/regex.hpp>
 
 #include <iostream>

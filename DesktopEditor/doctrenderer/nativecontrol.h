@@ -674,12 +674,20 @@ public:
 
         m_nLen = read_int2(pData, nCur, nLen);
 
-        m_pData = new BYTE[m_nLen];
-        m_pDataCur = m_pData;
+        if (nVersion < 10)
+        {
+            m_pData = new BYTE[m_nLen];
+            m_pDataCur = m_pData;
+            read_base64_2(pData, nCur, nLen);
 
-        read_base64_2(pData, nCur, nLen);
-
-        delete[]pData;
+            delete[]pData;
+        }
+        else
+        {
+            m_nLen = nLen;
+            m_pData = (BYTE*)pData;
+            m_pDataCur = m_pData + m_nLen;
+        }
 
         return nVersion;
     }

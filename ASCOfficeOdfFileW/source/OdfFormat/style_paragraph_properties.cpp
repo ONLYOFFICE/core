@@ -38,9 +38,6 @@
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/utils.h>
 
-#include <boost/foreach.hpp>
-
-
 #include "borderstyle.h"
 
 namespace cpdoccore { 
@@ -85,9 +82,9 @@ void style_tab_stops::serialize(std::wostream & strm)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			BOOST_FOREACH(office_element_ptr & elm, style_tab_stops_)
-			{
-				elm->serialize(CP_XML_STREAM());
+			for (size_t i = 0; i < style_tab_stops_.size(); i++)
+			{		
+				style_tab_stops_[i]->serialize(CP_XML_STREAM());
 			}	
 		}
 	}

@@ -64,6 +64,8 @@ namespace PPTX
 						sLink = parentFileAs<SlideMaster>().GetFullHyperlinkNameFromRId(rid);
 					else if(parentFileIs<Theme>())
 						sLink = parentFileAs<Theme>().GetFullHyperlinkNameFromRId(rid);
+					else if(parentFileIs<NotesSlide>())
+						sLink = parentFileAs<NotesSlide>().GetFullHyperlinkNameFromRId(rid);
 				}
 
                 XmlUtils::replace_all(sLink, L"\\",     L"/");

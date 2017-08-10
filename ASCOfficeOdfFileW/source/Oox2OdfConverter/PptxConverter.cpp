@@ -52,8 +52,6 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/SplitTransition.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/ZoomTransition.h"
 
-#include <boost/lexical_cast.hpp>
-
 #include "../OdfFormat/odp_conversion_context.h"
 
 #include "../OdfFormat/odf_text_context.h"

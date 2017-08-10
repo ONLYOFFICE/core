@@ -614,7 +614,7 @@ std::wstring oox2odf_converter::convert_named_formula(const std::wstring& expr)
     impl_->replace_named_formula(workstr);
     return workstr;
 }
-std::wstring oox2odf_converter::get_base_cell_formula(const std::wstring& expr)
+std::wstring oox2odf_converter::get_base_cell_formula()
 {
     return impl_->base_cell_formula_;
 }

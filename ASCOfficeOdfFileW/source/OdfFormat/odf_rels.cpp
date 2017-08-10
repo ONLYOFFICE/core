@@ -30,9 +30,6 @@
  *
  */
 
-
-#include <boost/foreach.hpp>
-
 #include "odf_rels.h"
 
 #include <cpdoccore/xml/attributes.h>
@@ -54,11 +51,11 @@ void relationship::serialize(std::wostream & _Wostream)
     }
 }
 
-void rels::serialize(std::wostream & _Wostream)
+void rels::serialize(std::wostream & strm)
 {
-    BOOST_FOREACH(relationship & r, relationship_)
+	for (size_t i = 0; i < relationship_.size(); i++)
     {
-        r.serialize(_Wostream);
+        relationship_[i].serialize(strm);
 	}
 }
 

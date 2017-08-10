@@ -32,7 +32,6 @@
 
 #include "logging.h"
 
-#include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 
 #include "../../../ASCOfficeOdfFile/formulasconvert/formulasconvert.h"

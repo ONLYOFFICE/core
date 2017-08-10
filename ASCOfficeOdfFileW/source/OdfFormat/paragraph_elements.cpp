@@ -35,7 +35,6 @@
 #include <ostream>
 #include <string>
 
-#include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 
 #include <cpdoccore/xml/xmlchar.h>
@@ -250,9 +249,9 @@ void text_span::serialize(std::wostream & _Wostream)
         { 	
 			CP_XML_ATTR_OPT(L"text:style-name", text_style_name_);
 			
-			BOOST_FOREACH(const office_element_ptr & parElement, paragraph_content_)
+			for (size_t i = 0; i < paragraph_content_.size(); i++)
 			{
-                if (parElement)  parElement->serialize(CP_XML_STREAM());
+				paragraph_content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -547,9 +546,9 @@ void text_placeholder::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}    
@@ -585,12 +584,12 @@ void text_page_number::serialize(std::wostream & _Wostream)
 			common_num_format_attlist_.serialize(CP_GET_XML_NODE());
 			common_field_fixed_attlist_.serialize(CP_GET_XML_NODE());
 
-			CP_XML_ATTR_OPT(L"text:page-adjust",text_page_adjust_);
-			CP_XML_ATTR_OPT(L"text:select-page",text_select_page_);
+			CP_XML_ATTR_OPT(L"text:page-adjust", text_page_adjust_);
+			CP_XML_ATTR_OPT(L"text:select-page", text_select_page_);
 			
-			BOOST_FOREACH(const office_element_ptr & elm, text_)
+			for (size_t i = 0; i < text_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				text_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -625,9 +624,9 @@ void text_page_count::serialize(std::wostream & _Wostream)
         { 	
 			common_field_fixed_attlist_.serialize(CP_GET_XML_NODE());
 
-			BOOST_FOREACH(const office_element_ptr & elm, text_)
+			for (size_t i = 0; i < text_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				text_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -662,9 +661,9 @@ void text_date::serialize(std::wostream & _Wostream)
         { 	
 			common_field_fixed_attlist_.serialize(CP_GET_XML_NODE());
 
-			BOOST_FOREACH(const office_element_ptr & elm, text_)
+			for (size_t i = 0; i < text_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				text_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -701,9 +700,9 @@ void text_time::serialize(std::wostream & _Wostream)
 			CP_XML_ATTR_OPT(L"style:data-style-name", style_data_style_name_);
 			CP_XML_ATTR_OPT(L"text:time-value", text_time_value_);
 			
-			BOOST_FOREACH(const office_element_ptr & elm, text_)
+			for (size_t i = 0; i < text_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				text_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -740,9 +739,9 @@ void text_file_name::serialize(std::wostream & _Wostream)
         { 	
 			common_field_fixed_attlist_.serialize(CP_GET_XML_NODE());
 			
-			BOOST_FOREACH(const office_element_ptr & elm, text_)
+			for (size_t i = 0; i < text_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				text_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -776,9 +775,9 @@ void text_sequence::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
-			BOOST_FOREACH(const office_element_ptr & elm, text_)
+			for (size_t i = 0; i < text_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				text_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -823,9 +822,9 @@ void text_sheet_name::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
-			BOOST_FOREACH(const office_element_ptr & elm, text_)
+			for (size_t i = 0; i < text_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				text_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}

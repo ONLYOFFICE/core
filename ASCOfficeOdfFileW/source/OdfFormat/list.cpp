@@ -32,8 +32,6 @@
 
 #include "list.h"
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/xmlchar.h>
 
 #include <cpdoccore/xml/attributes.h>
@@ -80,9 +78,9 @@ void text_list_item::serialize(std::wostream & _Wostream)
         {
 			if (text_number_)text_number_->serialize(CP_XML_STREAM());
 
-			BOOST_FOREACH(const office_element_ptr & parElement, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				parElement->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -129,9 +127,9 @@ void text_list_header::serialize(std::wostream & _Wostream)
         {
 			if (text_number_)text_number_->serialize(CP_XML_STREAM());
 			
-			BOOST_FOREACH(const office_element_ptr & parElement, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				parElement->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}

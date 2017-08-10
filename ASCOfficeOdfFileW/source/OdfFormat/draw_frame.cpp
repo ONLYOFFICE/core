@@ -36,7 +36,6 @@
 #include <sstream>
 #include <string>
 
-#include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.h>
 
@@ -88,9 +87,9 @@ void draw_image::serialize(std::wostream & _Wostream)
 
 			if (office_binary_data_)office_binary_data_->serialize(CP_XML_STREAM());
 
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -136,9 +135,9 @@ void draw_chart::serialize(std::wostream & _Wostream)
 			draw_chart_attlist_.serialize(CP_GET_XML_NODE());
 			common_xlink_attlist_.serialize(CP_GET_XML_NODE());
 
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -167,9 +166,9 @@ void draw_g::serialize(std::wostream & _Wostream)
         {
 			common_draw_attlists_.serialize(CP_GET_XML_NODE());
 
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}

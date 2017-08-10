@@ -31,6 +31,7 @@
  */
 
 #include "table_data_pilot_tables.h"
+#include "../formulasconvert/formulasconvert.h"
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
@@ -72,7 +73,7 @@ void table_data_pilot_table::add_attributes( const xml::attributes_wc_ptr & Attr
     CP_APPLY_ATTR(L"table:identify-categories"		, table_identify_categories_);
     CP_APPLY_ATTR(L"table:ignore-empty-rows"		, table_ignore_empty_rows_);
     CP_APPLY_ATTR(L"table:show-filter-button"		, table_show_filter_button_);
-    CP_APPLY_ATTR(L"table:show-target-range-address", table_show_target_range_address_);
+	CP_APPLY_ATTR(L"table:target-range-address"		, table_target_range_address_);
 
 }
 
@@ -89,6 +90,20 @@ void table_data_pilot_table::xlsx_convert(oox::xlsx_conversion_context & Context
 	if (!source_) return;
 
 	Context.get_pivots_context().start_table();
+
+	if (table_name_)	Context.get_pivots_context().set_view_name(*table_name_);
+	if (table_target_range_address_)
+	{
+		formulasconvert::odf2oox_converter formulas_converter;
+		
+		std::wstring ref = formulas_converter.convert_named_ref(*table_target_range_address_, false);
+		std::wstring table_name = formulas_converter.get_table_name();
+
+		//Context.get_table_context()
+
+		//Context.get_pivots_context()->set_view_target_range(ref);
+		//Context.get_pivots_context()->set_view_target_table(table_index);
+	}
 
 	source_->xlsx_convert(Context);
 

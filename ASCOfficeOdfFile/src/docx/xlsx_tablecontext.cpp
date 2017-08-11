@@ -148,9 +148,9 @@ void xlsx_table_context::start_table(std::wstring tableName, std::wstring tableS
 
 void xlsx_table_context::end_table()
 {
-    xlsx_table_states_.pop_back();
+    //xlsx_table_states_.pop_back();
 }
-
+	
 void xlsx_table_context::start_cell(const std::wstring & formula, size_t columnsSpanned, size_t rowsSpanned)
 {
     state()->start_cell(columnsSpanned, rowsSpanned);    

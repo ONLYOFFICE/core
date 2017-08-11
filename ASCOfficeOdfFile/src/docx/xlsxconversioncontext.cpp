@@ -232,7 +232,7 @@ void xlsx_conversion_context::end_document()
 
                 get_xlsx_defined_names().xlsx_serialize(CP_XML_STREAM());
 
-				int pivot_cache_count = xlsx_pivots_context_.get_cache_count();
+				int pivot_cache_count = xlsx_pivots_context_.get_count();
 				if (pivot_cache_count > 0)
 				{
 					CP_XML_NODE(L"pivotCaches")
@@ -259,7 +259,7 @@ void xlsx_conversion_context::end_document()
 						}
 					}
 				}
-				int pivot_view_count = xlsx_pivots_context_.get_view_count();
+				int pivot_view_count = xlsx_pivots_context_.get_count();
 				if (pivot_view_count > 0)
 				{
 					for (int i = 0; i < pivot_view_count; i++)
@@ -363,16 +363,32 @@ oox_chart_context & xlsx_conversion_context::current_chart()
         throw std::runtime_error("internal error");
     }
 }
-xlsx_xml_worksheet & xlsx_conversion_context::current_sheet()
+xlsx_xml_worksheet & xlsx_conversion_context::current_sheet(int index)
 {
     if (!sheets_.empty())
     {
-        return *sheets_.back().get();
+		if (index < 0)	return *sheets_.back().get();
+		else			return *sheets_[index].get();
     }
     else
     {
         throw std::runtime_error("internal error");
     }
+}
+int xlsx_conversion_context::find_sheet_by_name(std::wstring tableName)
+{
+	if (tableName.empty()) return -1;
+
+	if (0 == tableName.find(L"'"))
+	{
+		tableName = tableName.substr(1, tableName.length() - 2);
+	}
+	for (size_t i = 0; i < sheets_.size(); i++)
+	{
+		if (sheets_[i]->name() == tableName)
+			return i;
+	}
+	return -1;
 }
 void xlsx_conversion_context::create_new_sheet(std::wstring const & name)
 {

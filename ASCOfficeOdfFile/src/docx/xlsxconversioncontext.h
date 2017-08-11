@@ -102,7 +102,10 @@ public:
     bool start_table	(std::wstring tableName, std::wstring tableStyleName);
     void end_table		();
 
-    void	start_table_column		(unsigned int repeated, const std::wstring & defaultCellStyleName, int & cMin, int & cMax);
+	int find_sheet_by_name(std::wstring tableName);
+    xlsx_xml_worksheet & current_sheet(int index = -1);
+
+	void	start_table_column		(unsigned int repeated, const std::wstring & defaultCellStyleName, int & cMin, int & cMax);
     void	table_column_last_width	(double w);
     double	table_column_last_width	();
     void	end_table_column		();
@@ -162,7 +165,6 @@ public:
     xlsx_table_context          & get_table_context()		{ return xlsx_table_context_; }
     const xlsx_table_context    & get_table_context() const { return xlsx_table_context_; }
     xlsx_style_manager          & get_style_manager()		{ return xlsx_style_; }
-    xlsx_xml_worksheet          & current_sheet();
    
     oox_chart_context           & current_chart();
 	math_context				& get_math_context()			 { return math_context_; }

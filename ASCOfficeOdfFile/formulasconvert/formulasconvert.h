@@ -91,7 +91,7 @@ public:
     std::wstring convert_named_ref	(std::wstring const & expr);
 	std::wstring convert_named_formula(std::wstring const & expr);
 
-	std::wstring get_base_cell_formula();
+	std::wstring get_table_name();
 
 	//Sheet2!C3:C19 -> Sheet2.C3:Sheet2.C19 
     std::wstring convert_chart_distance(std::wstring const & expr);

@@ -50,14 +50,20 @@ public:
 	int end_table();
 
 	void start_field();
+		void set_field_name(std::wstring name);
+		void set_field_type(int type);
+		void set_field_function(int type);
+		void set_field_user_function(std::wstring f);
+		void add_field_subtotal(int function_type);
+		void add_field_cache(int index, std::wstring value);
 	void end_field();
 
-	int get_view_count();//equal in libre
-	int get_cache_count();
+	int get_count();
 
 	void set_view_name(std::wstring name);
+	void set_view_target_range(std::wstring ref);
 
-	void add_cache(std::wstring definitions, std::wstring records);
+	void set_source_range(std::wstring ref);
 
 	void write_cache_definitions_to	(int index, std::wostream & strm);
 	void write_cache_records_to		(int index, std::wostream & strm);
@@ -70,9 +76,6 @@ public:
 
 	void add_connections(std::wstring connections);
 	bool is_connections();
-
-	std::wostream & stream_view();
-	std::wostream & stream_cache();
 
 private:
     class Impl;

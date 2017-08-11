@@ -89,6 +89,8 @@ void table_data_pilot_table::xlsx_convert(oox::xlsx_conversion_context & Context
 {
 	if (!source_) return;
 
+	int table_index = -1;
+
 	Context.get_pivots_context().start_table();
 
 	if (table_name_)	Context.get_pivots_context().set_view_name(*table_name_);
@@ -99,12 +101,11 @@ void table_data_pilot_table::xlsx_convert(oox::xlsx_conversion_context & Context
 		std::wstring ref = formulas_converter.convert_named_ref(*table_target_range_address_, false);
 		std::wstring table_name = formulas_converter.get_table_name();
 
-		//Context.get_table_context()
+		table_index = Context.find_sheet_by_name(table_name);
 
-		//Context.get_pivots_context()->set_view_target_range(ref);
-		//Context.get_pivots_context()->set_view_target_table(table_index);
+		Context.get_pivots_context().set_view_target_range(ref);
+		//Context.get_pivots_context().set_view_target_table(table_index);
 	}
-
 	source_->xlsx_convert(Context);
 
 	for (size_t i = 0; i < fields_.size(); i++)
@@ -116,7 +117,7 @@ void table_data_pilot_table::xlsx_convert(oox::xlsx_conversion_context & Context
 	
 	if (index_view > 0)
 	{
-		Context.current_sheet().sheet_rels().add(oox::relationship(L"pvId" + std::to_wstring(index_view),
+		Context.current_sheet(table_index).sheet_rels().add(oox::relationship(L"pvId" + std::to_wstring(index_view),
 			L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotTable",
 			L"../pivotTables/pivotTable" + std::to_wstring(index_view) + L".xml"));
 	} 
@@ -138,16 +139,37 @@ void table_data_pilot_field::add_attributes( const xml::attributes_wc_ptr & Attr
 
 void table_data_pilot_field::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-	CP_CREATE_ELEMENT (content_);
+	if (L"table" == Ns && L"data-pilot-field-reference" == Name)
+		CP_CREATE_ELEMENT (reference_);  
+	else if (L"table" == Ns && L"data-pilot-level" == Name)
+		CP_CREATE_ELEMENT (level_);  
+	else if (L"table" == Ns && L"data-pilot-groups" == Name)
+		CP_CREATE_ELEMENT (groups_); 
 }
 void table_data_pilot_field::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	Context.get_pivots_context().start_field();
+	
+	Context.get_pivots_context().set_field_name(table_source_field_name_.get_value_or(L""));
+	Context.get_pivots_context().set_field_type(table_orientation_.get_value_or(table_orientation::hidden).get_type());
 
-	for (size_t i = 0; i < content_.size(); i++)
+	if (table_function_)
 	{
-		content_[i]->xlsx_convert(Context);
-	}			
+		table_function::type type = table_function_->get_type();
+
+		if (type == table_function::String)
+		{
+			Context.get_pivots_context().set_field_user_function(table_function_->get_string());
+		}
+		else
+		{
+			Context.get_pivots_context().set_field_function(type);
+		}
+	}
+
+	if (reference_) reference_->xlsx_convert(Context);
+	if (groups_)	groups_->xlsx_convert(Context);
+	if (level_)		level_->xlsx_convert(Context);
 
 	Context.get_pivots_context().end_field();
 }
@@ -226,9 +248,14 @@ void table_source_cell_range::add_child_element( xml::sax * Reader, const std::w
 }
 void table_source_cell_range::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    for (size_t i = 0; i < content_.size(); i++)
-    {
-		content_[i]->xlsx_convert(Context);
+	if (table_cellrange_address_)
+	{
+		formulasconvert::odf2oox_converter formulas_converter;
+		
+		std::wstring ref = formulas_converter.convert_named_ref(*table_cellrange_address_, false);
+		std::wstring table_name = formulas_converter.get_table_name();
+
+		Context.get_pivots_context().set_source_range(ref);
 	}
 }
 //-------------------------------------------------------------------------------------------------
@@ -257,15 +284,36 @@ void table_data_pilot_level::add_attributes( const xml::attributes_wc_ptr & Attr
 }
 void table_data_pilot_level::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-	CP_CREATE_ELEMENT (content_);
+	if (L"table" == Ns && L"data-pilot-members" == Name)
+		CP_CREATE_ELEMENT (members_);  
+	else if (L"table" == Ns && L"data-pilot-subtotals" == Name)
+		CP_CREATE_ELEMENT (subtotals_);  
+	else if (L"table" == Ns && L"data-pilot-display-info" == Name)
+		CP_CREATE_ELEMENT (	display_info_);  
+	else if (L"table" == Ns && L"data-pilot-layout-info" == Name)
+		CP_CREATE_ELEMENT (	layout_info_);  
+	else if (L"table" == Ns && L"data-pilot-sort-info" == Name)
+		CP_CREATE_ELEMENT (sort_info_);
 }
 void table_data_pilot_level::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    for (size_t i = 0; i < content_.size(); i++)
-    {
-		content_[i]->xlsx_convert(Context);
+	table_data_pilot_members*	members		= dynamic_cast<table_data_pilot_members*>(members_.get());
+	table_data_pilot_subtotals*	subtotals	= dynamic_cast<table_data_pilot_subtotals*>(subtotals_.get());
+	
+	for (size_t i = 0; members && i < members->content_.size(); i++)
+	{
+		table_data_pilot_member* member	= dynamic_cast<table_data_pilot_member*>(members->content_[i].get());
+		if (member)
+			Context.get_pivots_context().add_field_cache(i, member->table_name_.get_value_or(L""));
 	}
-
+	for (size_t i = 0; subtotals && i < subtotals->content_.size(); i++)
+	{
+		table_data_pilot_subtotal* subtotal	= dynamic_cast<table_data_pilot_subtotal*>(subtotals->content_[i].get());
+		if (subtotal)
+		{
+			Context.get_pivots_context().add_field_subtotal(subtotal->table_function_.get_value_or(table_function::Auto).get_type());
+		}
+	}
 }
 //-------------------------------------------------------------------------------------------------
 const wchar_t * table_data_pilot_groups::ns		= L"table";

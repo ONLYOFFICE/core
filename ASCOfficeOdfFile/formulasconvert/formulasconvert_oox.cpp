@@ -65,11 +65,11 @@ public:
 	
 	static bool isFindBaseCell_;
 
-	static std::wstring base_cell_formula_;
+	static std::wstring table_name_;
 };
 
 bool			oox2odf_converter::Impl::isFindBaseCell_ = false;
-std::wstring	oox2odf_converter::Impl::base_cell_formula_ = L"";
+std::wstring	oox2odf_converter::Impl::table_name_ = L"";
 
 void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr)
 {
@@ -117,9 +117,9 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater1(boost::wsmat
 		{      
 			XmlUtils::replace_all( sheet, L"!", L"");
 
-			if (isFindBaseCell_ && base_cell_formula_.empty() && !sheet.empty())
+			if (isFindBaseCell_ && table_name_.empty() && !sheet.empty())
 			{
-				base_cell_formula_ = sheet + L".$A$1";
+				table_name_ = sheet + L".$A$1";
 			}	
 			if (!sheet.empty()  && (std::wstring::npos != c1.find(L"$"))) sheet = L"$"  + sheet;
 
@@ -161,7 +161,7 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater2(boost::wsmat
 		
 void oox2odf_converter::Impl::replace_named_formula(std::wstring & expr)
 {
-	base_cell_formula_.clear();
+	table_name_.clear();
 	
 	isFindBaseCell_ = true;
 	expr = convert_formula(expr);
@@ -171,7 +171,7 @@ void oox2odf_converter::Impl::replace_named_formula(std::wstring & expr)
   // Лист1!$A$1 -> $Лист1.$A$1 
 void oox2odf_converter::Impl::replace_named_ref(std::wstring & expr)
 {
-	base_cell_formula_.clear();
+	table_name_.clear();
 	
 	isFindBaseCell_ = true;
 	std::wstring workstr = expr, out;
@@ -207,6 +207,15 @@ void oox2odf_converter::Impl::replace_named_ref(std::wstring & expr)
 	if (!out.empty()) expr = out.substr(0, out.length() - 1);
 
 	isFindBaseCell_ = false;
+
+	if (table_name_.empty() == false)
+	{
+		XmlUtils::replace_all( table_name_, L"SCOBCAIN", L"(");
+		XmlUtils::replace_all( table_name_, L"SCOBCAOUT", L")");
+		XmlUtils::replace_all( table_name_, L"PROBEL", L" ");
+		XmlUtils::replace_all( table_name_, L"APOSTROF", L"'");
+		XmlUtils::replace_all( table_name_, L"KAVYCHKA", L"\"");
+	}
 }
 
 
@@ -471,6 +480,21 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 
 	XmlUtils::replace_all( res, L"PROBEL", L" ");
 
+	if (table_name_.empty() == false)
+	{
+		XmlUtils::replace_all( table_name_, L"SCOBCAIN", L"(");
+		XmlUtils::replace_all( table_name_, L"SCOBCAOUT", L")");
+
+		XmlUtils::replace_all( table_name_, L"KVADRATIN", L"[");
+		XmlUtils::replace_all( table_name_, L"KVADRATOUT", L"]");
+	    
+
+		XmlUtils::replace_all( table_name_, L"APOSTROF", L"'");
+
+		XmlUtils::replace_all( table_name_, L"KAVYCHKA", L"\"");
+		XmlUtils::replace_all( table_name_, L"PROBEL", L" ");
+	}
+
     return std::wstring(L"of:=") + res;
 
 }
@@ -614,9 +638,9 @@ std::wstring oox2odf_converter::convert_named_formula(const std::wstring& expr)
     impl_->replace_named_formula(workstr);
     return workstr;
 }
-std::wstring oox2odf_converter::get_base_cell_formula()
+std::wstring oox2odf_converter::get_table_name()
 {
-    return impl_->base_cell_formula_;
+    return impl_->table_name_;
 }
 
 

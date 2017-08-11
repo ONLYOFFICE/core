@@ -602,6 +602,13 @@ namespace formulasconvert {
 		XmlUtils::replace_all( workstr, L"PROBEL"	, L" ");
 		XmlUtils::replace_all( workstr, L"APOSTROF"	, L"'");
 		XmlUtils::replace_all( workstr, L"TOCHKA"	, L".");
+
+		if (impl_->table_name_.empty() == false)
+		{
+			XmlUtils::replace_all( impl_->table_name_, L"PROBEL"	, L" ");
+			XmlUtils::replace_all( impl_->table_name_, L"APOSTROF"	, L"'");
+			XmlUtils::replace_all( impl_->table_name_, L"TOCHKA"	, L".");
+		}
 		return workstr;
 	}
 	std::wstring odf2oox_converter::convert_named_expr(const std::wstring& expr, bool withTableName)
@@ -641,6 +648,13 @@ namespace formulasconvert {
  			XmlUtils::replace_all( workstr, L"PROBEL"	, L" ");
 			XmlUtils::replace_all( workstr, L"APOSTROF"	, L"'");
 			XmlUtils::replace_all( workstr, L"TOCHKA"	, L".");
+
+			if (impl_->table_name_.empty() == false)
+			{
+ 				XmlUtils::replace_all( impl_->table_name_, L"PROBEL"	, L" ");
+				XmlUtils::replace_all( impl_->table_name_, L"APOSTROF"	, L"'");
+				XmlUtils::replace_all( impl_->table_name_, L"TOCHKA"	, L".");
+			}
 		}
 		return workstr;
 	}

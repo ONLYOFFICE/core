@@ -65,8 +65,8 @@ private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    office_element_ptr_array content_;
-  
+ public:
+   office_element_ptr_array content_;  
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_tables);
@@ -87,6 +87,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
+public:
      _CP_OPT(std::wstring)			table_name_;
 	 _CP_OPT(std::wstring)			table_target_range_address_;
      _CP_OPT(std::wstring)			table_application_data_;
@@ -119,6 +120,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
+public:
 	_CP_OPT(std::wstring)					table_source_field_name_;
 	_CP_OPT(odf_types::table_orientation)	table_orientation_;
 	_CP_OPT(int)							table_used_hierarchy_;
@@ -127,7 +129,9 @@ private:
 	_CP_OPT(std::wstring)					table_selected_page_;
 	_CP_OPT(odf_types::Bool)				table_is_data_layout_field_;
 	
-	office_element_ptr_array	content_;  
+	office_element_ptr	reference_;  
+	office_element_ptr	level_;  
+	office_element_ptr	groups_;  
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_field);
@@ -147,6 +151,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 	
+public:
 	_CP_OPT(std::wstring)			table_field_name_;
 	_CP_OPT(std::wstring)			table_member_name_;
 	_CP_OPT(odf_types::member_type)	table_member_type_;	
@@ -171,6 +176,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
+public:
 	_CP_OPT(std::wstring)	table_database_name_;
 	_CP_OPT(std::wstring)	table_database_table_name_;
 };
@@ -193,6 +199,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
+public:
 	_CP_OPT(std::wstring)	table_database_name_;
 	_CP_OPT(std::wstring)	table_query_name_;
 };
@@ -215,6 +222,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
+public:
 	_CP_OPT(std::wstring)	table_database_name_;
 	_CP_OPT(odf_types::Bool)table_parse_sql_statement_;
 	_CP_OPT(std::wstring)	table_sql_statement_;
@@ -238,8 +246,9 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
+public:
 	_CP_OPT(std::wstring)		table_cellrange_address_;
-    office_element_ptr_array	content_;  
+    office_element_ptr_array	content_;  //filters
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_source_cell_range);
@@ -260,6 +269,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
+public:
 	_CP_OPT(std::wstring)		table_name_;
 	_CP_OPT(std::wstring)		table_object_name_;
 	_CP_OPT(std::wstring)		table_password_;
@@ -285,8 +295,14 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
+public:
 	_CP_OPT(odf_types::Bool)	table_show_empty_;
-    office_element_ptr_array	content_;  
+
+	office_element_ptr	members_;  
+	office_element_ptr	subtotals_;  
+	office_element_ptr	display_info_;  
+	office_element_ptr	layout_info_;  
+	office_element_ptr	sort_info_;  
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_level);
 //-------------------------------------------------------------------------------------
@@ -306,6 +322,7 @@ private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
+public:
 	_CP_OPT(std::wstring)		table_date_end_;
 	_CP_OPT(std::wstring)		table_date_start_;
 	_CP_OPT(std::wstring)		table_start;			//double 18.2 or auto.
@@ -334,6 +351,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
+public:
 	_CP_OPT(std::wstring)		table_name_;
     office_element_ptr_array	content_;  
 };
@@ -356,7 +374,8 @@ private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    office_element_ptr_array	content_;  
+ public:
+   office_element_ptr_array	content_;  
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_members);
 
@@ -377,8 +396,9 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
-	_CP_OPT(odf_types::Bool)	table_display_;
+public:
 	_CP_OPT(std::wstring)		table_name_;
+	_CP_OPT(odf_types::Bool)	table_display_;
 	_CP_OPT(odf_types::Bool)	table_show_details_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_member);
@@ -399,6 +419,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
+public:
 	_CP_OPT(std::wstring) table_name_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_group_member);
@@ -419,6 +440,7 @@ private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
+public:
     office_element_ptr_array	content_;  
 };
 
@@ -440,6 +462,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
+public:
 	_CP_OPT(odf_types::table_function)	table_function_;
 };
 
@@ -461,6 +484,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
+public:
 	_CP_OPT(odf_types::Bool)	table_add_empty_lines_; 
 	_CP_OPT(std::wstring)		table_layout_mode_; //tabular-layout, outlinesubtotals-top or outline-subtotals-bottom.
 };
@@ -482,6 +506,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
+public:
 	_CP_OPT(std::wstring)			table_data_field_;
 	_CP_OPT(odf_types::table_order)	table_order_;
 	_CP_OPT(std::wstring)			table_sort_mode_;			//data, none, manual or name.
@@ -504,6 +529,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
+public:
 	_CP_OPT(std::wstring)		table_data_field_;
 	_CP_OPT(std::wstring)		table_display_member_mode_;	//from-top or from-bottom.
 	_CP_OPT(odf_types::Bool)	table_enabled_;
@@ -511,7 +537,6 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_display_info);
 //-------------------------------------------------------------------------------------
-
 
 }
 }

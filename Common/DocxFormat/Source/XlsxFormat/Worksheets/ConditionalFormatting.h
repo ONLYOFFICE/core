@@ -225,7 +225,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start(oReader)
 
 				WritingElement_ReadAttributes_Read_if		(oReader, _T("maxLength")	, m_oMaxLength)
@@ -279,7 +278,6 @@ namespace OOX
 				return et_x_FormulaCF;
 			}
 
-		public:
 			std::wstring m_sText;
 		};
 

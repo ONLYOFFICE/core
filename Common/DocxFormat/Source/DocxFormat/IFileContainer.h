@@ -48,6 +48,8 @@ namespace OOX
 	class Image;
 	class HyperLink;
 	class OleObject;
+	class ActiveX_xml;
+	class ActiveX_bin;
 }
 
 namespace PPTX
@@ -85,6 +87,8 @@ namespace OOX
 		virtual smart_ptr<Image>					GetImage    (const RId& rId) const;
 		virtual smart_ptr<HyperLink>				GetHyperlink(const RId& rId) const;
 		virtual smart_ptr<OleObject>				GetOleObject(const RId& rId) const;
+		virtual smart_ptr<ActiveX_xml>				GetActiveX_xml(const RId& rId) const;
+		virtual smart_ptr<ActiveX_bin>				GetActiveX_bin(const RId& rId) const;
 		virtual smart_ptr<PPTX::LegacyDiagramText>	GetLegacyDiagramText (const OOX::RId& rId) const;
 		
 		OOX::CRels* GetCurRls()

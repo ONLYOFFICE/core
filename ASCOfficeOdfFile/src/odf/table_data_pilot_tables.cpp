@@ -93,6 +93,8 @@ void table_data_pilot_table::xlsx_convert(oox::xlsx_conversion_context & Context
 
 	Context.get_pivots_context().start_table();
 
+	source_->xlsx_convert(Context);
+
 	if (table_name_)	Context.get_pivots_context().set_view_name(*table_name_);
 	if (table_target_range_address_)
 	{
@@ -106,7 +108,6 @@ void table_data_pilot_table::xlsx_convert(oox::xlsx_conversion_context & Context
 		Context.get_pivots_context().set_view_target_range(ref);
 		//Context.get_pivots_context().set_view_target_table(table_index);
 	}
-	source_->xlsx_convert(Context);
 
 	for (size_t i = 0; i < fields_.size(); i++)
 	{
@@ -239,7 +240,7 @@ const wchar_t * table_source_cell_range::name	= L"source-cell-range";
 
 void table_source_cell_range::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	CP_APPLY_ATTR(L"table:cellrange-address", table_cellrange_address_);
+	CP_APPLY_ATTR(L"table:cell-range-address", table_cell_range_address_);
 }
 
 void table_source_cell_range::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -248,14 +249,14 @@ void table_source_cell_range::add_child_element( xml::sax * Reader, const std::w
 }
 void table_source_cell_range::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	if (table_cellrange_address_)
+	if (table_cell_range_address_)
 	{
 		formulasconvert::odf2oox_converter formulas_converter;
 		
-		std::wstring ref = formulas_converter.convert_named_ref(*table_cellrange_address_, false);
+		std::wstring ref = formulas_converter.convert_named_ref(*table_cell_range_address_, false);
 		std::wstring table_name = formulas_converter.get_table_name();
 
-		Context.get_pivots_context().set_source_range(ref);
+		Context.get_pivots_context().set_source_range(table_name, ref);
 	}
 }
 //-------------------------------------------------------------------------------------------------

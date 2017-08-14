@@ -30,58 +30,47 @@
  *
  */
 #pragma once
-#include "oox_package.h"
-#include <cpdoccore/CPScopedPtr.h>
-#include <cpdoccore/CPOptional.h>
+#ifndef OOX_VBA_PROJECT_INCLUDE_H_
+#define OOX_VBA_PROJECT_INCLUDE_H_
 
-namespace cpdoccore {
-namespace oox {
+#include "Media.h"
+#include "../../XlsxFormat/FileTypes_Spreadsheet.h"
 
-class xlsx_pivot_cache_context;
-typedef _CP_PTR(xlsx_pivot_cache_context) xlsx_pivot_cache_context_ptr;
-
-class xlsx_pivots_context
+namespace OOX
 {
-public:
-    xlsx_pivots_context();
-    ~xlsx_pivots_context();
+	class VbaProject : public Media, public OOX::IFileContainer
+	{
+	public:
+		VbaProject( ) 
+		{
+		}
+		VbaProject(const CPath& oRootPath, const CPath& filename)
+		{
+			read( oRootPath, filename );
+		}
+		virtual void read(const CPath& oRootPath, const CPath& oPath)
+		{
+			IFileContainer::Read( oRootPath, oPath );
+			
+			Media::read(oPath);
+		}
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const
+		{
+		}
+		virtual const FileType type() const
+		{
+			return OOX::FileTypes::VbaProject;
+		}
+		virtual const CPath DefaultDirectory() const
+		{
+			return type().DefaultDirectory();
+		}
+		virtual const CPath DefaultFileName() const
+		{
+			return m_filename.GetFilename();
+		}
+	protected:
+	};
+} // namespace OOX
 
-	void start_table();
-	int end_table();
-
-	void start_field();
-		void set_field_name(std::wstring name);
-		void set_field_type(int type);
-		void set_field_function(int type);
-		void set_field_user_function(std::wstring f);
-		void add_field_subtotal(int function_type);
-		void add_field_cache(int index, std::wstring value);
-	void end_field();
-
-	int get_count();
-
-	void set_view_name(std::wstring name);
-	void set_view_target_range(std::wstring ref);
-
-	void set_source_range(std::wstring table_name, std::wstring ref);
-
-	void write_cache_definitions_to	(int index, std::wostream & strm);
-	void write_cache_records_to		(int index, std::wostream & strm);
-	void write_connections_to		(std::wostream & strm);
-
-	void write_table_view_to		(int index, std::wostream & strm);
-
-	void dump_rels_cache(int index, rels & Rels);
-	void dump_rels_view	(int index, rels & Rels);
-
-	void add_connections(std::wstring connections);
-	bool is_connections();
-
-private:
-    class Impl;
-    _CP_PTR(Impl) impl_;
-              
-};
-
-}
-}
+#endif // OOX_VBA_PROJECT_INCLUDE_H_

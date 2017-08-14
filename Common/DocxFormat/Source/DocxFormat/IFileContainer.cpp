@@ -41,6 +41,8 @@
 #include "External/HyperLink.h"
 #include "Media/Image.h"
 #include "Media/OleObject.h"
+#include "Media/ActiveX.h"
+
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/LegacyDiagramText.h"
 #include "../XlsxFormat/FileFactory_Spreadsheet.h"
 
@@ -259,7 +261,21 @@ namespace OOX
 			return smart_ptr<HyperLink>();
 		return pPair->second.smart_dynamic_cast<HyperLink>();
 	}
-
+	
+	smart_ptr<ActiveX_xml> IFileContainer::GetActiveX_xml(const RId& rId) const
+	{
+		std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.find(rId.get());
+		if (pPair == m_mContainer.end ())
+			return smart_ptr<ActiveX_xml>();
+		return pPair->second.smart_dynamic_cast<ActiveX_xml>();
+	}
+	smart_ptr<ActiveX_bin> IFileContainer::GetActiveX_bin(const RId& rId) const
+	{
+		std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.find(rId.get());
+		if (pPair == m_mContainer.end ())
+			return smart_ptr<ActiveX_bin>();
+		return pPair->second.smart_dynamic_cast<ActiveX_bin>();
+	}
 	smart_ptr<OleObject> IFileContainer::GetOleObject (const RId& rId) const
 	{
 		std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.find(rId.get());

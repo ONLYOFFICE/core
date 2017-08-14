@@ -42,6 +42,8 @@
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Media/Audio.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Media/Video.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
+
 namespace PPTX
 {
 	namespace Logic

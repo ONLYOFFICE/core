@@ -191,7 +191,8 @@ namespace BinXlsxRW
 		PivotCache = 8,
 		ExternalBook = 9,
 		OleLink = 10,
-		DdeLink = 11
+		DdeLink = 11,
+		VbaProject = 12
 	};}
 	namespace c_oSerWorkbookPrTypes{enum c_oSerWorkbookPrTypes
 	{

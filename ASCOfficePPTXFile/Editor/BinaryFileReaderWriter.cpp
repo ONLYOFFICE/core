@@ -39,6 +39,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/Video.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/Audio.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
 
 #include "../../Common/Base64.h"
 

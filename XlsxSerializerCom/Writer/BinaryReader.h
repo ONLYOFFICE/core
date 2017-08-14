@@ -36,6 +36,8 @@
 #include "../../Common/ATLDefine.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
+
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Directory.h"
 
@@ -1504,8 +1506,10 @@ namespace BinXlsxRW {
 	{
 		OOX::Spreadsheet::CWorkbook& m_oWorkbook;
 		std::map<long, NSCommon::smart_ptr<OOX::File>>& m_mapPivotCacheDefinitions;
+        const std::wstring& m_sDestinationDir;
 	public:
-		BinaryWorkbookTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook, std::map<long, NSCommon::smart_ptr<OOX::File>>& mapPivotCacheDefinitions):Binary_CommonReader(oBufferedStream), m_oWorkbook(oWorkbook), m_mapPivotCacheDefinitions(mapPivotCacheDefinitions)
+		BinaryWorkbookTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook, std::map<long, NSCommon::smart_ptr<OOX::File>>& mapPivotCacheDefinitions, const std::wstring& sDestinationDir) 
+			: Binary_CommonReader(oBufferedStream), m_oWorkbook(oWorkbook), m_mapPivotCacheDefinitions(mapPivotCacheDefinitions), m_sDestinationDir(sDestinationDir)
 		{
 		}
 		int Read()
@@ -1541,6 +1545,10 @@ namespace BinXlsxRW {
 				m_oWorkbook.m_oPivotCachesXml->append(L"<pivotCaches>");
 				res = Read1(length, &BinaryWorkbookTableReader::ReadPivotCaches, this, poResult);
 				m_oWorkbook.m_oPivotCachesXml->append(L"</pivotCaches>");
+			}
+			else if(c_oSerWorkbookTypes::VbaProject == type)
+			{
+				res = Read1(length, &BinaryWorkbookTableReader::ReadVbaProject, this, poResult);
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -2068,7 +2076,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+		}
 		int ReadPivotCache(BYTE type, long length, void* poResult)
 		{
 			PivotCachesTemp* pPivotCachesTemp = static_cast<PivotCachesTemp*>(poResult);
@@ -2090,13 +2098,36 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+		}
+		int ReadVbaProject(BYTE type, long length, void* poResult)
+		{
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSerWorkbookTypes::VbaProject == type)
+			{
+				std::wstring file_name = m_oBufferedStream.GetString3(length);
+
+				OOX::CPath inputPath = m_oBufferedStream.m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + file_name;
+                OOX::CPath outputPath = m_sDestinationDir + FILE_SEPARATOR_STR + _T("xl")  + FILE_SEPARATOR_STR + _T("vbaProject.bin");
+
+				NSFile::CFileBinary::Copy(inputPath.GetPath(), outputPath.GetPath());
+
+				smart_ptr<OOX::VbaProject> oFile;
+				oFile->set_filename(outputPath);
+				const OOX::RId oRId = m_oWorkbook.Add(oFile.smart_dynamic_cast<OOX::File>());
+
+				return res;
+
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+		}
 	};
 	class BinaryCommentReader : public Binary_CommonReader<BinaryCommentReader>
 	{
 		OOX::Spreadsheet::CWorksheet* m_pCurWorksheet;
 	public:
-		BinaryCommentReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorksheet* pCurWorksheet):Binary_CommonReader(oBufferedStream),m_pCurWorksheet(pCurWorksheet)
+		BinaryCommentReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorksheet* pCurWorksheet) 
+			: Binary_CommonReader(oBufferedStream), m_pCurWorksheet(pCurWorksheet)
 		{
 		}
 		int Read(long length, void* poResult)
@@ -4414,7 +4445,7 @@ namespace BinXlsxRW {
 			if(-1 != nWorkbookOffBits)
 			{
 				oBufferedStream.Seek(nWorkbookOffBits);
-				res = BinaryWorkbookTableReader(oBufferedStream, *pWorkbook, m_mapPivotCacheDefinitions).Read();
+				res = BinaryWorkbookTableReader(oBufferedStream, *pWorkbook, m_mapPivotCacheDefinitions, sOutDir).Read();
 				if(c_oSerConstants::ReadOk != res)
 					return res;
 			}

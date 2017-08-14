@@ -64,8 +64,6 @@ namespace OOX
 
 			m_arrFootnote.clear();
 		}
-	public:
-
 		virtual void read(const CPath& oPath)
 		{
 			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -118,8 +116,6 @@ namespace OOX
 			oContent.Registration( type().OverrideType(), oDirectory, oPath );
 			IFileContainer::Write( oPath, oDirectory, oContent );
 		}
-
-	public:
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::FootNote;
@@ -132,8 +128,6 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
-
-	public:
 
 		OOX::CFtnEdn* Find(const OOX::Logic::CFootnoteReference& oReference) const
 		{
@@ -157,10 +151,9 @@ namespace OOX
 			return (unsigned int)m_arrFootnote.size();
 		}
 
-	public:
 		CPath						m_oReadPath;
 		std::vector<OOX::CFtnEdn*>	m_arrFootnote;
-		std::vector<std::wstring>		m_arrShapeTypes;
+		std::vector<std::wstring>	m_arrShapeTypes;
 	};
 } // namespace OOX
 

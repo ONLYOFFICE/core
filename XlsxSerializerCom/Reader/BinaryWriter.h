@@ -37,6 +37,7 @@
 
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
 #include "../../Common/OfficeFileFormats.h"
 #include "../../Common/Base64.h"
 
@@ -2959,7 +2960,7 @@ namespace BinXlsxRW
 					bool bSetAnchor = false;
 					if (pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oAnchor.IsInit() && pOleObject->m_oObjectPr->m_oRid.IsInit())
 					{						
-						const OOX::Spreadsheet::COleObjectAnchor& oAnchor = pOleObject->m_oObjectPr->m_oAnchor.get();
+						const OOX::Spreadsheet::CExtAnchor& oAnchor = pOleObject->m_oObjectPr->m_oAnchor.get();
 
 						SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
 						eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);

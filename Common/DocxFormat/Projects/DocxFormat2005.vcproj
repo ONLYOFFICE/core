@@ -1184,6 +1184,10 @@
 			Name="Media"
 			>
 			<File
+				RelativePath="..\Source\DocxFormat\Media\ActiveX.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\DocxFormat\Media\Audio.h"
 				>
 			</File>
@@ -1515,6 +1519,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Source\XlsxFormat\Controls\Controls.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Source\XlsxFormat\Drawing\Drawing.h"
 					>
 				</File>
@@ -1523,11 +1531,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Source\XlsxFormat\Ole\oleobjects.h"
+					RelativePath="..\Source\XlsxFormat\Drawing\Pos.h"
 					>
 				</File>
 				<File
-					RelativePath="..\Source\XlsxFormat\Drawing\Pos.h"
+					RelativePath="..\Source\DocxFormat\Media\VbaProject.h"
 					>
 				</File>
 			</Filter>

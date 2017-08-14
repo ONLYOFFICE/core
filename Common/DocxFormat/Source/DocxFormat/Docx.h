@@ -52,6 +52,7 @@
 #include "External/HyperLink.h"
 #include "Media/Image.h"
 #include "Media/OleObject.h"
+#include "Media/ActiveX.h"
 #include "HeaderFooter.h"
 
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"

@@ -30,108 +30,26 @@
  *
  */
 #pragma once
-#ifndef OOX_OLEOBJECTS_FILE_INCLUDE_H_
-#define OOX_OLEOBJECTS_FILE_INCLUDE_H_
+#ifndef OOX_CONTROLS_FILE_INCLUDE_H_
+#define OOX_CONTROLS_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 #include "../Drawing/FromTo.h"
+#include "../Ole/OleObjects.h"
+#include "../../DocxFormat/Media/ActiveX.h"
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
-		class CExtAnchor : public WritingElement
+		class CControlPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CExtAnchor)
-			CExtAnchor()
+			WritingElement_AdditionConstructors(CControlPr)
+			CControlPr()
 			{
 			}
-			virtual ~CExtAnchor()
-			{
-			}
-
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(L"<anchor");
-				WritingStringNullableAttrBool(L"moveWithCells", m_oMoveWithCells);
-				WritingStringNullableAttrBool(L"sizeWithCells", m_oSizeWithCells);
-				WritingStringNullableAttrInt(L"z-order", m_oZOrder, m_oZOrder->GetValue());
-				writer.WriteString(L">");
-				if (m_oFrom.IsInit())
-				{
-					m_oFrom->toXML2(writer, L"from");
-				}
-				if (m_oTo.IsInit())
-				{
-					m_oTo->toXML2(writer, L"to");
-				}
-				writer.WriteString(L"</anchor>");
-			}
-			virtual void		 fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if ( _T("from") == sName )
-					{
-						m_oFrom = oReader;
-					}
-					else if ( _T("to") == sName )
-					{
-						m_oTo = oReader;
-					}
-				}
-			}
-
-			virtual EElementType getType () const
-			{
-				return et_x_ExtAnchor;
-			}
-
-		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if	 ( oReader, _T("moveWithCells"),	  m_oMoveWithCells )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("sizeWithCells"),	  m_oSizeWithCells )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("z-order"),	  m_oZOrder )
-
-					WritingElement_ReadAttributes_End( oReader )
-			}
-		public:
-			nullable<SimpleTypes::COnOff<> > m_oMoveWithCells;
-			nullable<SimpleTypes::COnOff<> > m_oSizeWithCells;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oZOrder;
-
-			nullable<CFromTo > m_oFrom;
-			nullable<CFromTo > m_oTo;
-		};
-
-		class COleObjectPr : public WritingElement
-		{
-		public:
-			WritingElement_AdditionConstructors(COleObjectPr)
-			COleObjectPr()
-			{
-			}
-			virtual ~COleObjectPr()
+			virtual ~CControlPr()
 			{
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
@@ -143,7 +61,7 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(L"<objectPr");
+				writer.WriteString(L"<controlPr");
 				WritingStringNullableAttrEncodeXmlString(L"altText", m_oAltText, m_oAltText.get());
 				WritingStringNullableAttrBool(L"autoFill", m_oAutoFill);
 				WritingStringNullableAttrBool(L"autoLine", m_oAutoLine);
@@ -161,7 +79,7 @@ namespace OOX
 				{
 					m_oAnchor->toXML(writer);
 				}
-				writer.WriteString(L"</objectPr>");
+				writer.WriteString(L"</controlPr>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -184,7 +102,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_x_OleObjectPr;
+				return et_x_ControlPr;
 			}
 
 		private:
@@ -219,17 +137,17 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>		m_oPrint;
 			nullable<SimpleTypes::COnOff<>>		m_oUiObject;
 
-			nullable<CExtAnchor>			m_oAnchor;
+			nullable<CExtAnchor>				m_oAnchor;
 		};
 
-		class COleObject : public WritingElement
+		class CControl : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COleObject)
-			COleObject()
+			WritingElement_AdditionConstructors(CControl)
+			CControl()
 			{
 			}
-			virtual ~COleObject()
+			virtual ~CControl()
 			{
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
@@ -241,7 +159,7 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				bool bAlternateContent = m_oObjectPr.IsInit();
+				bool bAlternateContent = m_oControlPr.IsInit();
 				if (bAlternateContent)
 				{
 					writer.WriteString(L"<mc:AlternateContent xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\"><mc:Choice Requires=\"x14\">");
@@ -255,9 +173,9 @@ namespace OOX
 					toXML2(writer, true);
 				}
 			}
-			virtual void toXML2(NSStringUtils::CStringBuilder& writer, bool bObjectPr) const
+			virtual void toXML2(NSStringUtils::CStringBuilder& writer, bool bControlPr) const
 			{
-				writer.WriteString(L"<oleObject");
+				writer.WriteString(L"<control");
 				WritingStringNullableAttrEncodeXmlString(L"progId", m_oProgId, m_oProgId.get());
 				WritingStringNullableAttrString(L"dvAspect", m_oDvAspect, m_oDvAspect->ToString());
 				WritingStringNullableAttrEncodeXmlString(L"link", m_oLink, m_oLink.get());
@@ -265,53 +183,53 @@ namespace OOX
 				WritingStringNullableAttrBool(L"autoLoad", m_oAutoLoad);
 				WritingStringNullableAttrInt(L"shapeId", m_oShapeId, m_oShapeId->GetValue());
 				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
-				if (bObjectPr && m_oObjectPr.IsInit())
+				if (bControlPr && m_oControlPr.IsInit())
 				{
 					writer.WriteString(L">");
-					m_oObjectPr->toXML(writer);
-					writer.WriteString(L"</oleObject>");
+					m_oControlPr->toXML(writer);
+					writer.WriteString(L"</control>");
 				}
 				else
 				{
 					writer.WriteString(L"/>");
 				}
 			}
-            void toXMLPptx(NSStringUtils::CStringBuilder& writer, std::wstring qqq)
-			{
-                std::wstring sRoot;
-				writer.WriteString(L"<o:OLEObject");
-				if(m_oDvAspect.IsInit())
-				{
-					writer.WriteString(L" DrawAspect=\"");
-					if(SimpleTypes::Spreadsheet::Content == m_oDvAspect->GetValue())
-						writer.WriteString(L"Content");
-					else
-						writer.WriteString(L"Icon");
-					writer.WriteString(L"\"");
-				}
-				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
-				WritingStringNullableAttrEncodeXmlString(L"ProgID", m_oProgId, m_oProgId.get());
-				WritingStringNullableAttrInt(L"ShapeID", m_oShapeId, m_oShapeId->GetValue());
-				writer.WriteString(L" Type=\"Embed\"");
-				if(m_oOleUpdate.IsInit())
-				{
-					writer.WriteString(L" UpdateMode=\"");
-					if(SimpleTypes::Spreadsheet::Always == m_oOleUpdate->GetValue())
-						writer.WriteString(L"Always");
-					else
-						writer.WriteString(L"OnCall");
-					writer.WriteString(L"\"");
-				}
-				if (m_OleObjectFile.IsInit())
-				{
-					if (m_OleObjectFile->isMsPackage())
-						WritingStringAttrString(L"mspackage", L"true");
+   //         void toXMLPptx(NSStringUtils::CStringBuilder& writer, std::wstring qqq)
+			//{
+   //             std::wstring sRoot;
+			//	writer.WriteString(L"<o:OLEObject");
+			//	if(m_oDvAspect.IsInit())
+			//	{
+			//		writer.WriteString(L" DrawAspect=\"");
+			//		if(SimpleTypes::Spreadsheet::Content == m_oDvAspect->GetValue())
+			//			writer.WriteString(L"Content");
+			//		else
+			//			writer.WriteString(L"Icon");
+			//		writer.WriteString(L"\"");
+			//	}
+			//	WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
+			//	WritingStringNullableAttrEncodeXmlString(L"ProgID", m_oProgId, m_oProgId.get());
+			//	WritingStringNullableAttrInt(L"ShapeID", m_oShapeId, m_oShapeId->GetValue());
+			//	writer.WriteString(L" Type=\"Embed\"");
+			//	if(m_oOleUpdate.IsInit())
+			//	{
+			//		writer.WriteString(L" UpdateMode=\"");
+			//		if(SimpleTypes::Spreadsheet::Always == m_oOleUpdate->GetValue())
+			//			writer.WriteString(L"Always");
+			//		else
+			//			writer.WriteString(L"OnCall");
+			//		writer.WriteString(L"\"");
+			//	}
+			//	if (m_OleObjectFile.IsInit())
+			//	{
+			//		if (m_OleObjectFile->isMsPackage())
+			//			WritingStringAttrString(L"mspackage", L"true");
 
-					WritingStringAttrEncodeXmlString(L"pathbin", m_OleObjectFile->filename().GetPath());
-					WritingStringAttrEncodeXmlString(L"pathimg", m_OleObjectFile->filename_cache().GetPath());
-				}
-				writer.WriteString(L"/>");
-			}
+			//		WritingStringAttrEncodeXmlString(L"pathbin", m_OleObjectFile->filename().GetPath());
+			//		WritingStringAttrEncodeXmlString(L"pathimg", m_OleObjectFile->filename_cache().GetPath());
+			//	}
+			//	writer.WriteString(L"/>");
+			//}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
@@ -324,16 +242,16 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("objectPr") == sName )
+					if ( _T("controlPr") == sName )
 					{
-						m_oObjectPr = oReader;
+						m_oControlPr = oReader;
 					}
 				}
 			}
 
 			virtual EElementType getType () const
 			{
-				return et_x_OleObject;
+				return et_x_Control;
 			}
 
 		private:
@@ -357,26 +275,26 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>						m_oAutoLoad;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oShapeId;
 			nullable<SimpleTypes::CRelationshipId>				m_oRid;
-			nullable<COleObjectPr>								m_oObjectPr;
+			nullable<CControlPr>								m_oControlPr;
 	//internal
-			smart_ptr<OOX::OleObject>							m_OleObjectFile;
+			smart_ptr<OOX::ActiveX_xml>							m_ControlFile;
 			nullable<SimpleTypes::CRelationshipId>				m_oRidImg;
 		};
 
-		class COleObjects : public WritingElement
+		class CControls : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COleObjects)
-			COleObjects()
+			WritingElement_AdditionConstructors(CControls)
+			CControls()
 			{
 			}
-			virtual ~COleObjects()
+			virtual ~CControls()
 			{
-				for(std::map<int, COleObject*>::const_iterator it = m_mapOleObjects.begin(); it != m_mapOleObjects.end(); it++)
+				for(std::map<int, CControl*>::const_iterator it = m_mapControls.begin(); it != m_mapControls.end(); it++)
 				{
 					delete it->second;
 				}
-				m_mapOleObjects.clear();
+				m_mapControls.clear();
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
@@ -387,14 +305,14 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_mapOleObjects.size() > 0)
+				if(m_mapControls.size() > 0)
 				{
-					writer.WriteString(L"<oleObjects>");
-					for(std::map<int, COleObject*>::const_iterator it = m_mapOleObjects.begin(); it != m_mapOleObjects.end(); it++)
+					writer.WriteString(L"<controls>");
+					for(std::map<int, CControl*>::const_iterator it = m_mapControls.begin(); it != m_mapControls.end(); it++)
 					{
 						it->second->toXML(writer);
 					}
-					writer.WriteString(L"</oleObjects>");
+					writer.WriteString(L"</controls>");
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -409,16 +327,16 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("oleObject") == sName )
+					if ( _T("controls") == sName )
 					{
-						COleObject* pOleObject = new COleObject(oReader);
-						if(pOleObject->m_oShapeId.IsInit())
+						CControl* pControl = new CControl(oReader);
+						if(pControl->m_oShapeId.IsInit())
 						{
-							m_mapOleObjects[pOleObject->m_oShapeId->GetValue()] = pOleObject;
+							m_mapControls[pControl->m_oShapeId->GetValue()] = pControl;
 						}
 						else
 						{
-							delete pOleObject;
+							delete pControl;
 						}
 					}
 					else if ( _T("AlternateContent") == sName )
@@ -434,18 +352,18 @@ namespace OOX
 								while( oReader.ReadNextSiblingNode( nSubSubDepth ) )
 								{
 									std::wstring sSubSubName = XmlUtils::GetNameNoNS(oReader.GetName());
-									if ( _T("oleObject") == sSubSubName )
+									if ( _T("control") == sSubSubName )
 									{
-										COleObject* pOleObject = new COleObject(oReader);
-										if(pOleObject->m_oShapeId.IsInit())
+										CControl* pControl = new CControl(oReader);
+										if(pControl->m_oShapeId.IsInit())
 										{
-											m_mapOleObjects[pOleObject->m_oShapeId->GetValue()] = pOleObject;
+											m_mapControls[pControl->m_oShapeId->GetValue()] = pControl;
 											bFound = true;
 											break;
 										}
 										else
 										{
-											delete pOleObject;
+											delete pControl;
 										}
 									}
 								}
@@ -461,7 +379,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_x_OleObjects;
+				return et_x_Controls;
 			}
 
 		private:
@@ -469,9 +387,9 @@ namespace OOX
 			{
 			}
 		public:
-			std::map<int, COleObject*> m_mapOleObjects;
+			std::map<int, CControl*> m_mapControls;
 		};
 	} //Spreadsheet
 } // namespace OOX
 
-#endif // OOX_OLEOBJECTS_FILE_INCLUDE_H_
+#endif // OOX_CONTROLS_FILE_INCLUDE_H_

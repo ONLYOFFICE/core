@@ -183,7 +183,7 @@ namespace OOX
 			else if (	pRelation->Type() == OOX::FileTypes::ActiveX_bin)
 				return smart_ptr<OOX::File>(new OOX::ActiveX_bin( oFileName ));
 			else if (	pRelation->Type() == OOX::FileTypes::VbaProject)
-				return smart_ptr<OOX::File>(new OOX::VbaProject( oFileName ));
+				return smart_ptr<OOX::File>(new OOX::VbaProject( oRootPath, oFileName ));
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile() );
 		}

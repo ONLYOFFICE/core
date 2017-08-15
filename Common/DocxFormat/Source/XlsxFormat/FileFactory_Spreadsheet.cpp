@@ -65,7 +65,8 @@ namespace OOX
 			else
 				oFileName = oPath / oRelationFilename;
 
-			if ( oRelation.Type() == FileTypes::Workbook )
+			if ( oRelation.Type() == FileTypes::Workbook || 
+				 oRelation.Type() == FileTypes::WorkbookMacro)
 				return smart_ptr<OOX::File>(new CWorkbook( oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::SharedStrings )
 				return smart_ptr<OOX::File>(new CSharedStrings( oRootPath, oFileName ));
@@ -120,7 +121,8 @@ namespace OOX
 			else
 				oFileName = oPath / oRelationFilename;
 
-			if ( pRelation->Type() == FileTypes::Workbook )
+			if ( pRelation->Type() == FileTypes::Workbook || 
+				 pRelation->Type() == FileTypes::WorkbookMacro)
 				return smart_ptr<OOX::File>(new CWorkbook( oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::SharedStrings )
 				return smart_ptr<OOX::File>(new CSharedStrings( oRootPath, oFileName ));

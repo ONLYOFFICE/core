@@ -2117,6 +2117,7 @@ namespace BinXlsxRW {
 				smart_ptr<OOX::File> oFile = oFileVbaProject.smart_dynamic_cast<OOX::File>();
 				const OOX::RId oRId = m_oWorkbook.Add(oFile);
 
+				m_oWorkbook.m_bMacroEnabled = true;
 				return res;
 
 			}

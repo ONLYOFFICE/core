@@ -368,7 +368,7 @@ namespace PPTX
 							if (pApp)
 							{
 								pApp->SetApplication(_T("OnlyOffice"));
-								pApp->SetAppVersion(_T("4.3000"));
+								pApp->SetAppVersion(_T("5.0"));
 								pApp->SetDocSecurity(0);
 								pApp->SetScaleCrop(false);
 								pApp->SetLinksUpToDate(false);

@@ -66,11 +66,14 @@ namespace OOX
 		public:
 			CWorkbook()
 			{
+				m_bMacroEnabled	= false;
 				m_bSpreadsheets = true;
 			}
 			CWorkbook(const CPath& oRootPath, const CPath& oPath)
 			{
+				m_bMacroEnabled	= false;
 				m_bSpreadsheets = true;				
+				
 				read(oRootPath, oPath);
 			}
 			virtual ~CWorkbook()
@@ -87,6 +90,11 @@ namespace OOX
 			{
 				m_oReadPath = oPath;
 				IFileContainer::Read( oRootPath, oPath );
+
+				if (IFileContainer::IsExist(OOX::FileTypes::VbaProject))
+				{
+					m_bMacroEnabled = true;
+				}
 
 				XmlUtils::CXmlLiteReader oReader;
 
@@ -149,7 +157,8 @@ namespace OOX
 			}
 			virtual const OOX::FileType type() const
 			{
-				return OOX::Spreadsheet::FileTypes::Workbook;
+				if (m_bMacroEnabled)	return OOX::Spreadsheet::FileTypes::WorkbookMacro;
+				else					return OOX::Spreadsheet::FileTypes::Workbook;
 			}
 			virtual const CPath DefaultDirectory() const
 			{
@@ -211,6 +220,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CWorkbookPr>			m_oWorkbookPr;
 			nullable<OOX::Spreadsheet::CExternalReferences>	m_oExternalReferences;
 			nullable<std::wstring>							m_oPivotCachesXml;
+			bool											m_bMacroEnabled;
 		};
 	} //Spreadsheet
 } // namespace OOX

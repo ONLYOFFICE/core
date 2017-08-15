@@ -1523,11 +1523,13 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 			
-			smart_ptr<OOX::File> vbaProject = workbook.Get(OOX::FileTypes::VbaProject);
-			if (vbaProject.IsInit())
+			smart_ptr<OOX::File> fileVbaProject = workbook.Get(OOX::FileTypes::VbaProject);
+			if (fileVbaProject.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::VbaProject);
-				WriteVbaProject (vbaProject.smart_dynamic_cast<OOX::VbaProject>());
+
+				smart_ptr<OOX::VbaProject> vbaProject = fileVbaProject.smart_dynamic_cast<OOX::VbaProject>();
+				WriteVbaProject (vbaProject);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 		};
@@ -1974,9 +1976,9 @@ namespace BinXlsxRW
 		{
 			std::wstring file_name = fileVbaProject->filename().GetFilename();
 			
-			m_oBcw.m_oStream.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			m_oBcw.m_oStream.WriteString1(0, file_name);
-			m_oBcw.m_oStream.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);	
+			m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookVbaProjectTypes::Name);
+			m_oBcw.m_oStream.WriteStringW(file_name);
+	
 			//... todooo write parsing vba project
 			
 			//copy file bin

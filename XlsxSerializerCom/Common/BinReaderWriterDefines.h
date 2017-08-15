@@ -194,6 +194,10 @@ namespace BinXlsxRW
 		DdeLink = 11,
 		VbaProject = 12
 	};}
+	namespace c_oSerWorkbookVbaProjectTypes{enum c_oSerWorkbookVbaProjectTypes
+	{
+		Name = 0
+	};}
 	namespace c_oSerWorkbookPrTypes{enum c_oSerWorkbookPrTypes
 	{
 		Date1904 = 0,

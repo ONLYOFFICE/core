@@ -32,12 +32,12 @@
 #include "OOXShapeReader.h"
 #include "OOXTextItemReader.h"
 
-#include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/Shape.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTree.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SchemeClr.h"
+#include "../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/Shape.h"
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTree.h"
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SchemeClr.h"
 
-#include "../../../ASCOfficeOdfFile/src/odf/svg_parser.h"
+#include "../../../../ASCOfficeOdfFile/src/odf/svg_parser.h"
 #include <boost/algorithm/string.hpp>
 
 #ifndef RGB

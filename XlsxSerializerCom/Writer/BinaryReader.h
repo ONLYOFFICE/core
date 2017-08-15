@@ -2102,18 +2102,20 @@ namespace BinXlsxRW {
 		int ReadVbaProject(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
-			if(c_oSerWorkbookTypes::VbaProject == type)
+			if(c_oSerWorkbookVbaProjectTypes::Name == type)
 			{
-				std::wstring file_name = m_oBufferedStream.GetString3(length);
+				std::wstring file_name = m_oBufferedStream.GetString4(length);
 
 				OOX::CPath inputPath = m_oBufferedStream.m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + file_name;
                 OOX::CPath outputPath = m_sDestinationDir + FILE_SEPARATOR_STR + _T("xl")  + FILE_SEPARATOR_STR + _T("vbaProject.bin");
 
 				NSFile::CFileBinary::Copy(inputPath.GetPath(), outputPath.GetPath());
 
-				smart_ptr<OOX::VbaProject> oFile;
-				oFile->set_filename(outputPath);
-				const OOX::RId oRId = m_oWorkbook.Add(oFile.smart_dynamic_cast<OOX::File>());
+				smart_ptr<OOX::VbaProject> oFileVbaProject(new OOX::VbaProject());
+				oFileVbaProject->set_filename(outputPath.GetPath());
+				
+				smart_ptr<OOX::File> oFile = oFileVbaProject.smart_dynamic_cast<OOX::File>();
+				const OOX::RId oRId = m_oWorkbook.Add(oFile);
 
 				return res;
 

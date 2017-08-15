@@ -35,7 +35,7 @@
 
 #include "../RtfMath.h"
 
-#include "../../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
 
 class OOXMathReader
 {

@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="D:\WORK\AVS\Sources\TeamlabOffice\branches\Docx2DoctConverter\ServerComponents\Common\DocxFormat\Source\DocxFormat;&quot;D:\WORK\AVS\Sources\TeamlabOffice\branches\Docx2DoctConverter\ServerComponents\DesktopEditor\freetype-2.5.2\include&quot;"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -107,7 +107,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="D:\WORK\AVS\Sources\TeamlabOffice\branches\Docx2DoctConverter\ServerComponents\Common\DocxFormat\Source\DocxFormat;&quot;D:\WORK\AVS\Sources\TeamlabOffice\branches\Docx2DoctConverter\ServerComponents\DesktopEditor\freetype-2.5.2\include&quot;"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

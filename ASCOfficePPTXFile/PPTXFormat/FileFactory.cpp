@@ -31,10 +31,7 @@
  */
 
 #include "FileFactory.h"
-
-#include "../../Common/DocxFormat/Source/DocxFormat/File.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Rels.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
+#include "FileMap.h"
 #include "FileTypes.h"
 
 #include "App.h"
@@ -54,6 +51,8 @@
 #include "NotesMaster.h"
 #include "LegacyDiagramText.h"
 
+#include "../../Common/DocxFormat/Source/DocxFormat/Rels.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
@@ -69,8 +68,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/External/ExternalAudio.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/ExternalVideo.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/UnknowTypeFile.h"
-
-#include "FileMap.h"
+//
 
 
 namespace PPTX

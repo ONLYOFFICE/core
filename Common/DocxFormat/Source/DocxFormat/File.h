@@ -34,7 +34,6 @@
 #define OOX_FILE_INCLUDE_H_
 
 #include "../XML/XmlSimple.h"
-#include "../SystemUtility/SystemUtility.h"
 
 #include "FileType.h"
 #include "ContentTypes.h"

@@ -32,7 +32,6 @@
 #pragma once
 
 #include "../../../../Common/DocxFormat/Source/DocxFormat/File.h"
-#include "../../../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 #include "Logic/TextParagraphPr.h"

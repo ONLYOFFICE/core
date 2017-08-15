@@ -1204,6 +1204,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Source\DocxFormat\Media\VbaProject.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\DocxFormat\Media\Video.h"
 				>
 			</File>
@@ -1532,10 +1536,6 @@
 				</File>
 				<File
 					RelativePath="..\Source\XlsxFormat\Drawing\Pos.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Source\DocxFormat\Media\VbaProject.h"
 					>
 				</File>
 			</Filter>

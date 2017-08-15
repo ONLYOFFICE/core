@@ -247,7 +247,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-	_CP_OPT(std::wstring)		table_cellrange_address_;
+	_CP_OPT(std::wstring)		table_cell_range_address_;
     office_element_ptr_array	content_;  //filters
 };
 

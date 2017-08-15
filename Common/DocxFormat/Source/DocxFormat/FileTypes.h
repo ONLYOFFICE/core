@@ -172,6 +172,22 @@ namespace OOX
 												_T("application/vnd.openxmlformats-officedocument.drawingml.chart+xml"),
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart"), true, true);
 		
+		const FileType ActiveX_xml(L"activeX", L"",
+												_T("application/vnd.ms-office.activeX+xml"),
+												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/control"));
+		
+		const FileType ActiveX_bin(L"activeX", L"",
+												_T("application/vnd.ms-office.activeX"),
+												_T("http://schemas.microsoft.com/office/2006/relationships/activeXControlBinary"));
+
+		const FileType VbaProject(L"", L"vbaProject.bin",
+												_T("application/vnd.ms-office.vbaProject"),
+												_T("http://schemas.microsoft.com/office/2006/relationships/vbaProject"));
+
+		const FileType VbaData(L"", L"vbaData.xml",
+												_T("application/vnd.ms-word.vbaData+xml"),
+												_T("http://schemas.microsoft.com/office/2006/relationships/wordVbaData"));
+
 		const FileType MicrosoftOfficeUnknown(L"embeddings", L"",
 												_T(""),
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/package"));

@@ -37,6 +37,8 @@
 
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
 #include "../../Common/OfficeFileFormats.h"
 #include "../../Common/Base64.h"
 
@@ -1520,6 +1522,14 @@ namespace BinXlsxRW
 				WriteExternalReferences(workbook.m_oExternalReferences.get(), workbook);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
+			
+			smart_ptr<OOX::File> vbaProject = workbook.Get(OOX::FileTypes::VbaProject);
+			if (vbaProject.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::VbaProject);
+				WriteVbaProject (vbaProject.smart_dynamic_cast<OOX::VbaProject>());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
 		};
 		void WriteWorkbookPr(const OOX::Spreadsheet::CWorkbookPr& workbookPr)
 		{
@@ -1924,7 +1934,6 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 		}
-
 		void WriteDefinedName(const OOX::Spreadsheet::CDefinedName& definedName)
 		{
 			int nCurPos = 0;
@@ -1960,7 +1969,19 @@ namespace BinXlsxRW
 				m_oBcw.m_oStream.WriteBYTE(c_oSerDefinedNameTypes::Comment);
 				m_oBcw.m_oStream.WriteStringW(definedName.m_oComment.get2());
 			}
-		};
+		}
+		void WriteVbaProject(smart_ptr<OOX::VbaProject> & fileVbaProject)
+		{
+			std::wstring file_name = fileVbaProject->filename().GetFilename();
+			
+			m_oBcw.m_oStream.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			m_oBcw.m_oStream.WriteString1(0, file_name);
+			m_oBcw.m_oStream.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);	
+			//... todooo write parsing vba project
+			
+			//copy file bin
+			fileVbaProject->copy_to(m_oBcw.m_oStream.m_pCommon->m_pImageManager->m_strDstMedia);
+		}
 	};
 	class BinaryWorksheetTableWriter
 	{
@@ -2959,7 +2980,7 @@ namespace BinXlsxRW
 					bool bSetAnchor = false;
 					if (pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oAnchor.IsInit() && pOleObject->m_oObjectPr->m_oRid.IsInit())
 					{						
-						const OOX::Spreadsheet::COleObjectAnchor& oAnchor = pOleObject->m_oObjectPr->m_oAnchor.get();
+						const OOX::Spreadsheet::CExtAnchor& oAnchor = pOleObject->m_oObjectPr->m_oAnchor.get();
 
 						SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
 						eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);

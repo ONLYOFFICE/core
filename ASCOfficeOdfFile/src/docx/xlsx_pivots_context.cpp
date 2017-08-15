@@ -78,6 +78,7 @@ public:
 		std::wstring		name;
 		std::wstring		location_ref;
 		std::wstring		source_ref;
+		std::wstring		source_table_name;
 		std::vector<_field>	fields;
 		std::vector<int>	row_fields;
 		std::vector<int>	page_fields;
@@ -86,6 +87,7 @@ public:
 	}current_;
 
 	void serialize_view(std::wostream & strm);
+	void serialize_cache(std::wostream & strm);
 };
 
 xlsx_pivots_context::xlsx_pivots_context() : impl_(new xlsx_pivots_context::Impl())
@@ -217,6 +219,96 @@ void xlsx_pivots_context::Impl::serialize_view(std::wostream & strm)
 	}
 }
 
+void xlsx_pivots_context::Impl::serialize_cache(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"pivotCacheDefinition")
+		{          
+			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+            CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+		
+			//{ records file
+			//	CP_XML_ATTR(L"r:id", L"rId1" );
+			//}
+			CP_XML_ATTR(L"enableRefresh",	1);
+			//CP_XML_ATTR(L"refreshedBy",	db->rgb.value());
+			//CP_XML_ATTR(L"refreshedDate",	db_ex->numDate.data.value);
+			CP_XML_ATTR(L"recordCount",		0);
+			//createdVersion="1" 
+			//refreshedVersion="2" 
+			//upgradeOnRefresh="1">
+
+			if (true)
+			{
+				CP_XML_NODE(L"cacheSource")
+				{
+					CP_XML_ATTR(L"type", L"worksheet");
+					CP_XML_NODE(L"worksheetSource")
+					{
+						CP_XML_ATTR(L"ref", current_.source_ref);
+						CP_XML_ATTR(L"sheet", current_.source_table_name);
+					}
+				}	
+			}
+
+			if (current_.fields.empty() == false)
+			{
+				CP_XML_NODE(L"cacheFields")
+				{
+					CP_XML_ATTR(L"count", current_.fields.size());
+
+					for (size_t i = 0; i < current_.fields.size(); i++)
+					{
+						CP_XML_NODE(L"cacheField")
+						{
+							CP_XML_ATTR(L"name", current_.fields[i].name);
+							CP_XML_ATTR(L"numFmtId", 0);
+
+							if (current_.fields[i].caches.empty() == false)
+							{
+								CP_XML_NODE(L"sharedItems")
+								{
+									CP_XML_ATTR(L"count", current_.fields[i].caches.size());
+									//CP_XML_ATTR(L"containsSemiMixedTypes", );
+									CP_XML_ATTR(L"containsNonDate", 1);
+									CP_XML_ATTR(L"containsDate",	0);
+									CP_XML_ATTR(L"containsBlank",	0);
+									//CP_XML_ATTR(L"containsString", );
+									for (size_t j = 0; j < current_.fields[i].caches.size(); j++)
+									{
+										std::wstring node_name = L"s";
+										//switch(current_.fields[i].caches[j].type)
+										//{
+										//}
+										CP_XML_NODE(node_name)
+										{
+											CP_XML_ATTR(L"v", current_.fields[i].caches[j]);
+										}
+									}
+								}
+							}
+							
+						}
+					}
+				}
+			}
+			//if (pivot_cache->m_arSXFORMULA.empty() == false)
+			//{
+			//	CP_XML_NODE(L"calculatedItems")
+			//	{
+			//		CP_XML_ATTR(L"count", pivot_cache->m_arSXFORMULA.size());
+
+			//		for (size_t i = 0; i < pivot_cache->m_arSXFORMULA.size(); i++)
+			//		{
+			//			pivot_cache->m_arSXFORMULA[i]->serialize(CP_XML_STREAM());
+			//		}
+			//	}
+			//}
+		}
+	}
+}
+
 int xlsx_pivots_context::get_count()
 {
 	return (int)impl_->pivot_xmls_.size();
@@ -278,6 +370,7 @@ int xlsx_pivots_context::end_table()
 	std::wstringstream	rec_strm;
 
 	impl_->serialize_view(view_strm);
+	impl_->serialize_cache(cache_strm);
 
 	Impl::_pivot_xml v = {cache_strm.str(), rec_strm.str(), view_strm.str()};
 	
@@ -340,9 +433,10 @@ void xlsx_pivots_context::end_field()
 {
 
 }
-void xlsx_pivots_context::set_source_range(std::wstring ref)
+void xlsx_pivots_context::set_source_range(std::wstring table_name, std::wstring ref)
 {
-	impl_->current_.source_ref = ref;
+	impl_->current_.source_table_name	= table_name;
+	impl_->current_.source_ref			= ref;
 }
 
 void xlsx_pivots_context::add_connections(std::wstring connections)

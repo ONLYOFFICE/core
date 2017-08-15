@@ -62,6 +62,8 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/Audio.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/Video.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/ExternalImage.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/ExternalAudio.h"

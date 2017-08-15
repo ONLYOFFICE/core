@@ -1524,7 +1524,7 @@ namespace BinXlsxRW
 			}
 			
 			smart_ptr<OOX::File> fileVbaProject = workbook.Get(OOX::FileTypes::VbaProject);
-			if (fileVbaProject.IsInit())
+			if (fileVbaProject.IsInit() && OOX::FileTypes::VbaProject == fileVbaProject->type())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::VbaProject);
 

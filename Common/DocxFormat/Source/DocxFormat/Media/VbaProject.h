@@ -56,7 +56,7 @@ namespace OOX
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const
 		{
-			content.Registration( type().OverrideType(), directory, filename.GetFilename() );
+			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 			IFileContainer::Write( oPath, oDirectory, oContent );
 		}
 		virtual const FileType type() const

@@ -52,6 +52,10 @@ namespace OOX
 												_T("application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"),
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"));
 
+		const FileType DocumentMacro	(L"word", L"document.xml",
+												_T("application/vnd.ms-word.document.macroEnabled.main+xml"),
+												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"));
+
 		const FileType Theme			(L"theme", L"theme.xml",
 												_T("application/vnd.openxmlformats-officedocument.theme+xml"),
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme"), true);

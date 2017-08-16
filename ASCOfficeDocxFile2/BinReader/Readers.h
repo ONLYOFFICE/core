@@ -273,6 +273,21 @@ private:
 		return res;
 	}
 };
+class Binary_VbaProjectTableReader : public Binary_CommonReader<Binary_VbaProjectTableReader>
+{
+	Writers::FileWriter&	m_oFileWriter;
+
+public:
+
+	Binary_VbaProjectTableReader (NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter)
+			: Binary_CommonReader(poBufferedStream), m_oFileWriter(oFileWriter)
+	{
+	}
+
+    int Read ();
+    int ReadContent	(BYTE type, long length, void* poResult);
+};
+
 class Binary_HdrFtrTableReader : public Binary_CommonReader<Binary_HdrFtrTableReader>
 {
 	Writers::FileWriter&	m_oFileWriter;
@@ -282,12 +297,12 @@ class Binary_HdrFtrTableReader : public Binary_CommonReader<Binary_HdrFtrTableRe
 	int						nCurHeaderType;
 public:
 	Writers::HeaderFooterWriter& m_oHeaderFooterWriter;
-public:
+	
 	Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments);
     int Read();
-    int ReadHdrFtrContent(BYTE type, long length, void* poResult);
-    int ReadHdrFtrFEO(BYTE type, long length, void* poResult);
-    int ReadHdrFtrItem(BYTE type, long length, void* poResult);
+    int ReadHdrFtrContent	(BYTE type, long length, void* poResult);
+    int ReadHdrFtrFEO		(BYTE type, long length, void* poResult);
+    int ReadHdrFtrItem		(BYTE type, long length, void* poResult);
 	int ReadHdrFtrItemContent(BYTE type, long length, void* poResult);
 };
 class Binary_rPrReader : public Binary_CommonReader<Binary_rPrReader>
@@ -551,7 +566,7 @@ public:
                     std::wstring strXml;
                     HRESULT hRes = m_oFileWriter.m_pDrawingConverter->GetRecordXml(nCurPos, length, XMLWRITER_RECORD_TYPE_TEXT_FILL, XMLWRITER_DOC_TYPE_WORDART, strXml);
                     if (S_OK == hRes)
-                        orPr->Fill = _T("<w14:textFill>") + strXml + _T("</w14:textFill>");
+                        orPr->Fill = L"<w14:textFill>" + strXml + L"</w14:textFill>";
 					m_oBufferedStream.Seek(nCurPos + length);
 				}
 			}
@@ -560,35 +575,35 @@ public:
 			{
 				TrackRevision oDel;
 				oBinary_CommonReader2.ReadTrackRevision(length, &oDel);
-				orPr->Del = oDel.ToString(_T("w:del"));
+				orPr->Del = oDel.ToString(L"w:del");
 			}
 			break;
 		case c_oSerProp_rPrType::Ins:
 			{
 				TrackRevision oIns;
 				oBinary_CommonReader2.ReadTrackRevision(length, &oIns);
-				orPr->Ins = oIns.ToString(_T("w:ins"));
+				orPr->Ins = oIns.ToString(L"w:ins");
 			}
 			break;
 		case c_oSerProp_rPrType::MoveFrom:
 			{
 				TrackRevision oMoveFrom;
 				oBinary_CommonReader2.ReadTrackRevision(length, &oMoveFrom);
-				orPr->MoveFrom = oMoveFrom.ToString(_T("w:moveFrom"));
+				orPr->MoveFrom = oMoveFrom.ToString(L"w:moveFrom");
 			}
 			break;
 		case c_oSerProp_rPrType::MoveTo:
 			{
 				TrackRevision oMoveTo;
 				oBinary_CommonReader2.ReadTrackRevision(length, &oMoveTo);
-				orPr->MoveTo = oMoveTo.ToString(_T("w:moveTo"));
+				orPr->MoveTo = oMoveTo.ToString(L"w:moveTo");
 			}
 			break;
 		case c_oSerProp_rPrType::rPrChange:
 			{
 				TrackRevision oRPrChange;
 				res = Read1(length, &Binary_rPrReader::ReadrPrChange, this, &oRPrChange);
-				orPr->rPrChange = oRPrChange.ToString(_T("w:rPrChange"));
+				orPr->rPrChange = oRPrChange.ToString(L"w:rPrChange");
 			}
 			break;
 		default:
@@ -647,9 +662,9 @@ public:
 			{
 				BYTE contextualSpacing = m_oBufferedStream.GetUChar();
 				if(0 != contextualSpacing)
-                    pCStringWriter->WriteString(std::wstring(_T("<w:contextualSpacing w:val=\"true\"/>")));
+                    pCStringWriter->WriteString(std::wstring(L"<w:contextualSpacing w:val=\"true\"/>"));
 				else if(false == bDoNotWriteNullProp)
-                    pCStringWriter->WriteString(std::wstring(_T("<w:contextualSpacing w:val=\"false\"/>")));
+                    pCStringWriter->WriteString(std::wstring(L"<w:contextualSpacing w:val=\"false\"/>"));
             }break;
 		case c_oSerProp_pPrType::Ind:
 			{
@@ -657,9 +672,9 @@ public:
 				res = Read2(length, &Binary_pPrReader::ReadInd, this, &oTempWriter);
 				if(oTempWriter.GetCurSize() > 0)
 				{
-                    pCStringWriter->WriteString(std::wstring(_T("<w:ind")));
+                    pCStringWriter->WriteString(std::wstring(L"<w:ind"));
 					pCStringWriter->Write(oTempWriter);
-                    pCStringWriter->WriteString(std::wstring(_T("/>")));
+                    pCStringWriter->WriteString(std::wstring(L"/>"));
 				}
 				break;
 			}
@@ -668,35 +683,35 @@ public:
 				BYTE jc = m_oBufferedStream.GetUChar();
 				switch(jc)
 				{
-                case align_Right: pCStringWriter->WriteString(std::wstring(_T("<w:jc w:val=\"right\" />")));break;
-                case align_Left: pCStringWriter->WriteString(std::wstring(_T("<w:jc w:val=\"left\" />")));break;
-                case align_Center: pCStringWriter->WriteString(std::wstring(_T("<w:jc w:val=\"center\" />")));break;
-                case align_Justify: pCStringWriter->WriteString(std::wstring(_T("<w:jc w:val=\"both\" />")));break;
+                case align_Right: pCStringWriter->WriteString(std::wstring(L"<w:jc w:val=\"right\" />"));break;
+                case align_Left: pCStringWriter->WriteString(std::wstring(L"<w:jc w:val=\"left\" />"));break;
+                case align_Center: pCStringWriter->WriteString(std::wstring(L"<w:jc w:val=\"center\" />"));break;
+                case align_Justify: pCStringWriter->WriteString(std::wstring(L"<w:jc w:val=\"both\" />"));break;
 				}				
             }break;
 		case c_oSerProp_pPrType::KeepLines:
 			{
 				BYTE KeepLines = m_oBufferedStream.GetUChar();
 				if(0 != KeepLines)
-                    pCStringWriter->WriteString(std::wstring(_T("<w:keepLines/>")));
+                    pCStringWriter->WriteString(std::wstring(L"<w:keepLines/>"));
 				else if(false == bDoNotWriteNullProp)
-                    pCStringWriter->WriteString(std::wstring(_T("<w:keepLines w:val=\"false\"/>")));
+                    pCStringWriter->WriteString(std::wstring(L"<w:keepLines w:val=\"false\"/>"));
             }break;
 		case c_oSerProp_pPrType::KeepNext:
 			{
 				BYTE KeepNext = m_oBufferedStream.GetUChar();
 				if(0 != KeepNext)
-                    pCStringWriter->WriteString(std::wstring(_T("<w:keepNext/>")));
+                    pCStringWriter->WriteString(std::wstring(L"<w:keepNext/>"));
 				else if(false == bDoNotWriteNullProp)
-                    pCStringWriter->WriteString(std::wstring(_T("<w:keepNext w:val=\"false\"/>")));
+                    pCStringWriter->WriteString(std::wstring(L"<w:keepNext w:val=\"false\"/>"));
             }break;
 		case c_oSerProp_pPrType::PageBreakBefore:
 			{
 				BYTE pageBreakBefore = m_oBufferedStream.GetUChar();
 				if(0 != pageBreakBefore)
-                    pCStringWriter->WriteString(std::wstring(_T("<w:pageBreakBefore/>")));
+                    pCStringWriter->WriteString(std::wstring(L"<w:pageBreakBefore/>"));
 				else if(false == bDoNotWriteNullProp)
-                    pCStringWriter->WriteString(std::wstring(_T("<w:pageBreakBefore w:val=\"false\"/>")));
+                    pCStringWriter->WriteString(std::wstring(L"<w:pageBreakBefore w:val=\"false\"/>"));
 				break;
 			}
 		case c_oSerProp_pPrType::Spacing:
@@ -705,7 +720,7 @@ public:
 				res = Read2(length, &Binary_pPrReader::ReadSpacing, this, &oSpacing);
 				if(oSpacing.bLine || oSpacing.bAfter || oSpacing.bAfterAuto || oSpacing.bBefore || oSpacing.bBeforeAuto)
 				{
-                    pCStringWriter->WriteString(std::wstring(_T("<w:spacing")));
+                    pCStringWriter->WriteString(std::wstring(L"<w:spacing"));
 					BYTE bLineRule = linerule_Auto;
 					//проверяется bLine, а не bLineRule чтобы всегда писать LineRule, если есть w:line
 					if(oSpacing.bLine)
@@ -745,9 +760,9 @@ public:
 					if(oSpacing.bAfterAuto)
 					{
 						if(true == oSpacing.AfterAuto)
-                            pCStringWriter->WriteString(std::wstring(_T(" w:afterAutospacing=\"1\"")));
+                            pCStringWriter->WriteString(std::wstring(L" w:afterAutospacing=\"1\""));
 						else
-                            pCStringWriter->WriteString(std::wstring(_T(" w:afterAutospacing=\"0\"")));
+                            pCStringWriter->WriteString(std::wstring(L" w:afterAutospacing=\"0\""));
 					}
 					if(oSpacing.bBefore)
 					{
@@ -758,11 +773,11 @@ public:
 					if(oSpacing.bBeforeAuto)
 					{
 						if(true == oSpacing.BeforeAuto)
-                            pCStringWriter->WriteString(std::wstring(_T(" w:beforeAutospacing=\"1\"")));
+                            pCStringWriter->WriteString(std::wstring(L" w:beforeAutospacing=\"1\""));
 						else
-                            pCStringWriter->WriteString(std::wstring(_T(" w:beforeAutospacing=\"0\"")));
+                            pCStringWriter->WriteString(std::wstring(L" w:beforeAutospacing=\"0\""));
 					}
-                    pCStringWriter->WriteString(std::wstring(_T("/>")));
+                    pCStringWriter->WriteString(std::wstring(L"/>"));
 				}
 				break;
 			}
@@ -776,7 +791,7 @@ public:
 				}
 				else
 				{
-                    std::wstring sShd(_T("<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"auto\"/>"));
+                    std::wstring sShd(L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"auto\"/>");
 					pCStringWriter->WriteString(sShd);
 				}
 				break;
@@ -787,10 +802,10 @@ public:
 				if(0 != WidowControl)
 				{
 					if(false == bDoNotWriteNullProp)
-                        pCStringWriter->WriteString(std::wstring(_T("<w:widowControl/>")));
+                        pCStringWriter->WriteString(std::wstring(L"<w:widowControl/>"));
 				}
 				else
-                    pCStringWriter->WriteString(std::wstring(_T("<w:widowControl w:val=\"off\" />")));
+                    pCStringWriter->WriteString(std::wstring(L"<w:widowControl w:val=\"off\" />"));
 				break;
 			}
 		case c_oSerProp_pPrType::Tab:
@@ -800,7 +815,7 @@ public:
 				size_t nLen = oTabs.m_aTabs.size();
 				if(nLen > 0)
 				{
-                    pCStringWriter->WriteString(std::wstring(_T("<w:tabs>")));
+                    pCStringWriter->WriteString(std::wstring(L"<w:tabs>"));
 					for(size_t i = 0; i < nLen; ++i)
 					{
 						Tab& oTab = oTabs.m_aTabs[i];
@@ -808,14 +823,14 @@ public:
                         std::wstring sVal;
 						switch(oTab.Val)
 						{
-                            case g_tabtype_right:   sVal=_T("right");   break;
-                            case g_tabtype_center:  sVal=_T("center");  break;
-                            case g_tabtype_clear:   sVal=_T("clear");   break;
-                            default:                sVal=_T("left");    break;
+                            case g_tabtype_right:   sVal = L"right";   break;
+                            case g_tabtype_center:  sVal = L"center";  break;
+                            case g_tabtype_clear:   sVal = L"clear";   break;
+                            default:                sVal = L"left";    break;
 						}
                         pCStringWriter->WriteString(L"<w:tab w:val=\"" + sVal + L"\" w:pos=\"" + std::to_wstring(nTab) + L"\"/>");
 					}
-                    pCStringWriter->WriteString(std::wstring(_T("</w:tabs>")));
+                    pCStringWriter->WriteString(std::wstring(L"</w:tabs>"));
 				}				
             }break;
 		case c_oSerProp_pPrType::ParaStyle:
@@ -826,9 +841,9 @@ public:
             }break;
 		case c_oSerProp_pPrType::numPr:
             {
-                pCStringWriter->WriteString(std::wstring(_T("<w:numPr>")));
+                pCStringWriter->WriteString(std::wstring(L"<w:numPr>"));
                 res = Read2(length, &Binary_pPrReader::ReadNumPr, this, poResult);
-                pCStringWriter->WriteString(std::wstring(_T("</w:numPr>")));
+                pCStringWriter->WriteString(std::wstring(L"</w:numPr>"));
             }break;
 		case c_oSerProp_pPrType::pPr_rPr:
 			{
@@ -2917,7 +2932,8 @@ class Binary_OtherTableReader : public Binary_CommonReader<Binary_OtherTableRead
 	Writers::FileWriter& m_oFileWriter;
     std::wstring m_sFileInDir;
 public:
-    Binary_OtherTableReader(std::wstring sFileInDir, NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):m_sFileInDir(sFileInDir),Binary_CommonReader(poBufferedStream),m_oFileWriter(oFileWriter)
+    Binary_OtherTableReader(std::wstring sFileInDir, NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter) 
+		: m_sFileInDir(sFileInDir), Binary_CommonReader(poBufferedStream), m_oFileWriter(oFileWriter)
 	{
 	}
 	int Read()
@@ -7022,13 +7038,13 @@ public:
 		{
 			if(false == m_oFileWriter.m_bSaveChartAsImg)
 			{
-				OOX::CPath pathChartsDir = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR +_T("charts");
+				OOX::CPath pathChartsDir = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"charts";
 				OOX::CSystemUtility::CreateDirectories(pathChartsDir.GetPath());
 				
-				OOX::CPath pathChartsRelsDir = pathChartsDir.GetPath() + FILE_SEPARATOR_STR +  _T("_rels");                
+				OOX::CPath pathChartsRelsDir = pathChartsDir.GetPath() + FILE_SEPARATOR_STR +  L"_rels";                
 				OOX::CSystemUtility::CreateDirectories(pathChartsRelsDir.GetPath());
 
-				OOX::CPath pathChartsWorksheetDir = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR +_T("embeddings");
+				OOX::CPath pathChartsWorksheetDir = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"embeddings";
 				OOX::CSystemUtility::CreateDirectories(pathChartsWorksheetDir.GetPath());
 
                 int nativeDocumentType = m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_nDocumentType;
@@ -7922,9 +7938,9 @@ public:
 
 		int res = ReadTable(&Binary_NotesTableReader::ReadNotes, this, &oBinary_DocumentTableReader);
 
-		OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir +	FILE_SEPARATOR_STR + _T("word") +
-																			FILE_SEPARATOR_STR + _T("_rels")+
-																			FILE_SEPARATOR_STR + sFilename + _T(".rels");
+		OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir +	FILE_SEPARATOR_STR + L"word" +
+																			FILE_SEPARATOR_STR + L"_rels"+
+																			FILE_SEPARATOR_STR + sFilename + L".rels";
 
 		m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(fileRelsPath.GetPath());
 		return res;
@@ -7961,33 +7977,33 @@ public:
 			XmlUtils::CStringWriter& writer = pBinary_DocumentTableReader->m_oDocumentWriter.m_oContent;
 			if(m_bIsFootnote)
 			{
-				writer.WriteString(_T("<w:footnote"));
+				writer.WriteString(L"<w:footnote");
 			}
 			else
 			{
-				writer.WriteString(_T("<w:endnote"));
+				writer.WriteString(L"<w:endnote");
 			}
 			if(m_oType.IsInit())
 			{
-				writer.WriteString(_T(" w:type=\""));
+				writer.WriteString(L" w:type=\"");
 				writer.WriteString(m_oType->ToString());
-				writer.WriteString(_T("\""));
+				writer.WriteString(L"\"");
 			}
 			if(m_oId.IsInit())
 			{
-				writer.WriteString(_T(" w:id=\""));
+				writer.WriteString(L" w:id=\"");
 				writer.WriteString(m_oId->ToString());
-				writer.WriteString(_T("\""));
+				writer.WriteString(L"\"");
 			}
-			writer.WriteString(_T(">"));
+			writer.WriteString(L">");
 			res = Read1(length, &Binary_NotesTableReader::ReadNoteContent, this, poResult);
 			if(m_bIsFootnote)
 			{
-				writer.WriteString(_T("</w:footnote>"));
+				writer.WriteString(L"</w:footnote>");
 			}
 			else
 			{
-				writer.WriteString(_T("</w:endnote>"));
+				writer.WriteString(L"</w:endnote>");
 			}
 		}
 		else
@@ -8087,8 +8103,8 @@ public:
 			}
 			else
 			{
-				m_oFileWriter.m_oSettingWriter.AddSetting(_T("<w:defaultTabStop w:val=\"708\"/>"));
-                std::wstring sClrMap(_T("<w:clrSchemeMapping w:bg1=\"light1\" w:t1=\"dark1\" w:bg2=\"light2\" w:t2=\"dark2\" w:accent1=\"accent1\" w:accent2=\"accent2\" w:accent3=\"accent3\" w:accent4=\"accent4\" w:accent5=\"accent5\" w:accent6=\"accent6\" w:hyperlink=\"hyperlink\" w:followedHyperlink=\"followedHyperlink\"/>"));
+				m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:defaultTabStop w:val=\"708\"/>");
+                std::wstring sClrMap(L"<w:clrSchemeMapping w:bg1=\"light1\" w:t1=\"dark1\" w:bg2=\"light2\" w:t2=\"dark2\" w:accent1=\"accent1\" w:accent2=\"accent2\" w:accent3=\"accent3\" w:accent4=\"accent4\" w:accent5=\"accent5\" w:accent6=\"accent6\" w:hyperlink=\"hyperlink\" w:followedHyperlink=\"followedHyperlink\"/>");
 				m_oFileWriter.m_oSettingWriter.AddSetting(sClrMap);
 				m_oFileWriter.m_pDrawingConverter->LoadClrMap(sClrMap);
 			}
@@ -8140,9 +8156,12 @@ public:
 					case c_oSerTableTypes::Endnotes:
 						res = Binary_NotesTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments, false).Read();
 						break;
+					case c_oSerTableTypes::VbaProject:
+						res = Binary_VbaProjectTableReader(m_oBufferedStream, m_oFileWriter).Read();
+						break;
 
 					//Comments должны читаться раньше чем c_oSerTableTypes::Document
-					//case c_oSerTableTypes::Comments:
+					//case c_oSerTableTypes::Comments
 					//	res = oBinary_CommentsTableReader.Read();
 					//	break;
 					//case c_oSerTableTypes::Other:
@@ -8165,7 +8184,18 @@ public:
                 m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable",	L"fontTable.xml",	L"", &stamdartRId);
                 m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme",		L"theme/theme1.xml",L"", &stamdartRId);
                
-				m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml",	L"/word",		L"document.xml");
+				if (m_oFileWriter.m_pVbaProject.IsInit())
+				{
+					//m_oFileWriter.m_pVbaProject->write();
+					m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.microsoft.com/office/2006/relationships/vbaProject",		L"vbaProject.bin", L"", &stamdartRId);
+					
+					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.ms-word.document.macroEnabled.main+xml",	L"/word",		L"document.xml");
+					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.ms-office.vbaProject",					L"/word",		L"vbaProject.bin");
+				}
+				else
+				{
+					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml",	L"/word",		L"document.xml");
+				}
 				m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml",			L"/word",		L"styles.xml");
 				m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml",			L"/word",		L"settings.xml");
 				m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml",		L"/word",		L"webSettings.xml");
@@ -8175,19 +8205,19 @@ public:
 				if(false == m_oFileWriter.m_oNumberingWriter.IsEmpty())
 				{
 					long rId;
-                    m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering")), std::wstring(_T("numbering.xml")), std::wstring(), &rId);
+                    m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering", L"numbering.xml", std::wstring(), &rId);
 					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml", L"/word", L"numbering.xml");
 				}
                 if(false == m_oFileWriter.m_oFootnotesWriter.IsEmpty())
 				{
 					long rId;
-                    m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes")), std::wstring(_T("footnotes.xml")), std::wstring(), &rId);
+                    m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes", L"footnotes.xml", std::wstring(), &rId);
 					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml", L"/word", L"footnotes.xml");
 				}
                 if(false == m_oFileWriter.m_oEndnotesWriter.IsEmpty())
 				{
 					long rId;
-                    m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes")), std::wstring(_T("endnotes.xml")), std::wstring(), &rId);
+                    m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes", L"endnotes.xml", std::wstring(), &rId);
 					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml", L"/word", L"endnotes.xml");
 				}
 				for(size_t i = 0; i < m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.size(); ++i)
@@ -8196,7 +8226,7 @@ public:
 					if(false == pHeader->IsEmpty())
 					{
 						long rId;
-                        m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/header")), pHeader->m_sFilename, std::wstring(), &rId);
+                        m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/header", pHeader->m_sFilename, std::wstring(), &rId);
                         pHeader->rId = L"rId" + std::to_wstring( rId );
 						
 						m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml", L"/word", pHeader->m_sFilename);
@@ -8208,7 +8238,7 @@ public:
 					if(false == pFooter->IsEmpty())
 					{
 						long rId;
-                        m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer")), pFooter->m_sFilename, std::wstring(), &rId);
+                        m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer", pFooter->m_sFilename, std::wstring(), &rId);
                         pFooter->rId = L"rId" + std::to_wstring( rId );
 						
 						m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml", L"/word", pFooter->m_sFilename);
@@ -8216,9 +8246,9 @@ public:
 				}
 				res = Binary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_oDocumentWriter, &oBinary_CommentsTableReader.m_oComments).Read();
 
-                OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir	+ FILE_SEPARATOR_STR + _T("word")
-																					+ FILE_SEPARATOR_STR + _T("_rels")
-																					+ FILE_SEPARATOR_STR + _T("document.xml.rels");
+                OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir	+ FILE_SEPARATOR_STR + L"word"
+																					+ FILE_SEPARATOR_STR + L"_rels"
+																					+ FILE_SEPARATOR_STR + L"document.xml.rels";
 
                 CComments& oComments= oBinary_CommentsTableReader.m_oComments;
 				Writers::CommentsWriter& oCommentsWriter = m_oFileWriter.m_oCommentsWriter;
@@ -8232,19 +8262,19 @@ public:
 				if(false == oCommentsWriter.m_sComment.empty())
 				{
 					long rId;
-                    m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments")), std::wstring(_T("comments.xml")), std::wstring(), &rId);
+                    m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments", L"comments.xml", std::wstring(), &rId);
 					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml", L"/word", L"comments.xml");
 				}
                 if(false == oCommentsWriter.m_sCommentExt.empty())
 				{
 					long rId;
-                    m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.microsoft.com/office/2011/relationships/commentsExtended")), std::wstring(_T("commentsExtended.xml")), std::wstring(), &rId);
+                    m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.microsoft.com/office/2011/relationships/commentsExtended", L"commentsExtended.xml", std::wstring(), &rId);
 					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtended+xml", L"/word", L"commentsExtended.xml");
 				}
                 if(false == oCommentsWriter.m_sPeople.empty())
 				{
 					long rId;
-                    m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.microsoft.com/office/2011/relationships/people")), std::wstring(_T("people.xml")), std::wstring(), &rId);
+                    m_oFileWriter.m_pDrawingConverter->WriteRels(L"http://schemas.microsoft.com/office/2011/relationships/people", L"people.xml", std::wstring(), &rId);
 					m_oFileWriter.m_pDrawingConverter->Registration(L"application/vnd.openxmlformats-officedocument.wordprocessingml.people+xml", L"/word", L"people.xml");
 				}
 

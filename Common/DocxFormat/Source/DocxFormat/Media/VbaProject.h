@@ -34,6 +34,7 @@
 #define OOX_VBA_PROJECT_INCLUDE_H_
 
 #include "Media.h"
+#include "../IFileContainer.h"
 #include "../../XlsxFormat/FileTypes_Spreadsheet.h"
 
 namespace OOX

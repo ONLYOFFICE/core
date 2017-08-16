@@ -82,11 +82,11 @@ namespace BinDocxRW
 		int m_nType;
 	public:
         std::wstring m_sFld;
-    public: FldStruct(std::wstring sFld, int nType):m_sFld(sFld),m_nType(nType){}
-	public: int GetType()
-			{
-				return m_nType;
-			}
+		FldStruct(std::wstring sFld, int nType):m_sFld(sFld),m_nType(nType){}
+		int GetType()
+		{
+			return m_nType;
+		}
 	};
 	class BinaryCommonWriter
 	{
@@ -3026,6 +3026,26 @@ namespace BinDocxRW
 				pOfficeDrawingConverter->AddShapeType(sShapeType);
 			}
 			pOfficeDrawingConverter->SetRels(oldRels);
+		}
+		void WriteVbaProjectContent(OOX::VbaProject& oVbaProject)
+		{
+			std::wstring file_name = oVbaProject.filename().GetFilename();
+			
+			m_oBcw.m_oStream.WriteBYTE(c_oSerVbaProjectTypes::Name);
+			m_oBcw.m_oStream.WriteStringW(file_name);
+	
+			//... todooo write parsing vba project
+
+			//write vbaData.... todooo
+			
+			//copy file bin
+			oVbaProject.copy_to(m_oBcw.m_oStream.m_pCommon->m_pImageManager->m_strDstMedia);
+		}
+		void WriteVbaProject(OOX::VbaProject& oVbaProject)
+		{
+			int nStart = m_oBcw.WriteItemWithLengthStart();
+			WriteVbaProjectContent(oVbaProject);
+			m_oBcw.WriteItemWithLengthEnd(nStart);
 		}
 		void Write(std::vector<OOX::WritingElement*>& aElems)
 		{
@@ -7866,9 +7886,8 @@ namespace BinDocxRW
 		//Write DocumentTable
 				ParamsDocumentWriter oParamsDocumentWriter(poDocument);
 				m_oParamsWriter.m_pCurRels = oParamsDocumentWriter.m_pRels;
-				
+		
 		//DocumentTable всегда пишем последней, чтобы сначала заполнить все вспомогательные структуры, а при заполении документа, вызывать методы типа Style_Add...
-				nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Document);
 				BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, &m_oParamsWriter.m_mapIgnoreComments, &oBinaryHeaderFooterTableWriter);
 				oBinaryDocumentTableWriter.prepareOfficeDrawingConverter(m_oParamsWriter.m_pOfficeDrawingConverter, oParamsDocumentWriter.m_pRels, poDocument->m_arrShapeTypes);
 				
@@ -7876,7 +7895,15 @@ namespace BinDocxRW
 				oBinaryDocumentTableWriter.pBackground		= poDocument->m_oBackground.GetPointer();
 
 				oBinaryDocumentTableWriter.m_bWriteSectPr	= true;
+		//Write Vba
+				if(NULL != oDocx.m_pVbaProject)
+				{
+					nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::VbaProject);
+					oBinaryDocumentTableWriter.WriteVbaProject(*oDocx.m_pVbaProject);
+					this->WriteTableEnd(nCurPos);
+				}
 		// Write content
+				nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Document);
 				oBinaryDocumentTableWriter.Write(poDocument->m_arrItems);
 				this->WriteTableEnd(nCurPos);
 

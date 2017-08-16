@@ -53,6 +53,7 @@
 #include "Media/Image.h"
 #include "Media/OleObject.h"
 #include "Media/ActiveX.h"
+#include "Media/VbaProject.h"
 #include "HeaderFooter.h"
 
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
@@ -82,6 +83,7 @@ namespace OOX
 			m_pComments  = NULL;
 			m_pCommentsExt = NULL;
 			m_pPeople	= NULL;
+			m_pVbaProject = NULL;
 		}
 		CDocx(const CPath& oFilePath)
 		{
@@ -98,6 +100,7 @@ namespace OOX
 			m_pComments  = NULL;
 			m_pCommentsExt = NULL;
 			m_pPeople	= NULL;
+			m_pVbaProject = NULL;
 
 			Read( oFilePath );
 		}
@@ -198,21 +201,22 @@ namespace OOX
 			return NULL;
 		}
 
-		OOX::CApp       *m_pApp;
-		OOX::CCore      *m_pCore;
+		OOX::CApp			*m_pApp;
+		OOX::CCore			*m_pCore;
 
-		OOX::CDocument  *m_pDocument;   // Основной документ word/document.xml
-		OOX::CFontTable *m_pFontTable;  // Таблица шрифтов   word/fonttable.xml
-		OOX::CNumbering *m_pNumbering;  // Нумерации         word/numbering.xml
-		OOX::CStyles    *m_pStyles;     // Стили             word/styles.xml
-		OOX::CFootnotes *m_pFootnotes;  // Сноски            word/footnotes.xml
-		OOX::CEndnotes  *m_pEndnotes;   // Сноски            word/endnotes.xml
-		OOX::CSettings  *m_pSettings;   // Настройки         word/settings.xml
-		OOX::CComments  *m_pComments;   //			         word/comments.xml
-		OOX::CCommentsExt *m_pCommentsExt;//		         word/commentsExtended.xml
-		OOX::CPeople	*m_pPeople;		//				     word/people.xml
+		OOX::CDocument		*m_pDocument;   // Основной документ word/document.xml
+		OOX::CFontTable		*m_pFontTable;  // Таблица шрифтов   word/fonttable.xml
+		OOX::CNumbering		*m_pNumbering;  // Нумерации         word/numbering.xml
+		OOX::CStyles		*m_pStyles;     // Стили             word/styles.xml
+		OOX::CFootnotes		*m_pFootnotes;  // Сноски            word/footnotes.xml
+		OOX::CEndnotes		*m_pEndnotes;   // Сноски            word/endnotes.xml
+		OOX::CSettings		*m_pSettings;   // Настройки         word/settings.xml
+		OOX::CComments		*m_pComments;   //			         word/comments.xml
+		OOX::CCommentsExt	*m_pCommentsExt;//					word/commentsExtended.xml
+		OOX::CPeople		*m_pPeople;		//					word/people.xml
+		OOX::VbaProject		*m_pVbaProject;
 		
-		PPTX::Theme		*m_pTheme;
+		PPTX::Theme			*m_pTheme;
 
 	};
 } // OOX

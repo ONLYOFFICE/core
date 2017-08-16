@@ -105,6 +105,8 @@ namespace OOX
 				{
 					m_pWorkbook = dynamic_cast<OOX::Spreadsheet::CWorkbook*>(pFile.operator->());
 				}
+				else
+					m_pWorkbook = NULL;
 
 				if ( m_pWorkbook )
 				{

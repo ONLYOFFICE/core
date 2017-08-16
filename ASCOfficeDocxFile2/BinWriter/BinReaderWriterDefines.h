@@ -142,19 +142,20 @@ extern int g_nCurFormatVersion;
 	};}
 	namespace c_oSerTableTypes{enum c_oSerTableTypes
 	{
-		Signature = 0,
-		Info = 1,
-		Media = 2,
-		Numbering = 3,
-		HdrFtr = 4,
-		Style = 5,
-		Document = 6,
-		Other = 7,
-		Comments = 8,
-		Settings = 9,
-		Footnotes = 10,
-		Endnotes = 11,
-		Background
+		Signature	= 0,
+		Info		= 1,
+		Media		= 2,
+		Numbering	= 3,
+		HdrFtr		= 4,
+		Style		= 5,
+		Document	= 6,
+		Other		= 7,
+		Comments	= 8,
+		Settings	= 9,
+		Footnotes	= 10,
+		Endnotes	= 11,
+		Background	= 12,
+		VbaProject	= 13
 	};}
 	namespace c_oSerSigTypes{enum c_oSerSigTypes
 	{
@@ -203,10 +204,10 @@ extern int g_nCurFormatVersion;
 	};}
 	namespace c_oSerOtherTableTypes{enum c_oSerOtherTableTypes
 	{
-		ImageMap = 0,
-		ImageMap_Src = 1,
-		EmbeddedFonts = 2,
-		DocxTheme = 3
+		ImageMap		= 0,
+		ImageMap_Src	= 1,
+		EmbeddedFonts	= 2,
+		DocxTheme		= 3
 	};}
 	namespace c_oSerFontsTypes{enum c_oSerFontsTypes
 	{
@@ -520,6 +521,10 @@ extern int g_nCurFormatVersion;
 		footnoteReference = 26,
 		endnoteReference = 27,
 		arPr = 28
+	};}
+	namespace c_oSerVbaProjectTypes{enum c_oSerVbaProjectType
+	{
+		Name = 0
 	};}
     namespace c_oSerBackgroundType{enum c_oSerBackgroundType
 	{

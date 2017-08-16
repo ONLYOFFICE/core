@@ -40,11 +40,11 @@ namespace Writers
 	class DocumentWriter : public ContentWriter
 	{
 		XmlUtils::CStringWriter	m_oWriter;
-		HeaderFooterWriter& m_oHeaderFooterWriter;
+		HeaderFooterWriter&		m_oHeaderFooterWriter;
 	public:
-         std::wstring	m_sDir;
-	public:
-        DocumentWriter( std::wstring sDir, HeaderFooterWriter& oHeaderFooterWriter):m_sDir(sDir), m_oHeaderFooterWriter(oHeaderFooterWriter)
+         std::wstring			m_sDir;
+
+		DocumentWriter( std::wstring sDir, HeaderFooterWriter& oHeaderFooterWriter):m_sDir(sDir), m_oHeaderFooterWriter(oHeaderFooterWriter)
 		{
 		}
 		void Write()

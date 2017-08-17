@@ -50,6 +50,8 @@
 #include "Logic/ExtP.h"
 #include "Theme/ClrScheme.h"
 
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
+
 namespace PPTX
 {
 	class Presentation : public WrapperFile, public PPTX::FileContainer
@@ -57,16 +59,16 @@ namespace PPTX
 	public:
 		Presentation()
 		{
+			m_bMacroEnabled = false;
 		}
 		Presentation(const OOX::CPath& filename, FileMap& map)
 		{
+			m_bMacroEnabled = false;
 			read(filename, map);
 		}
 		virtual ~Presentation()
 		{
 		}
-
-	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			//FileContainer::read(filename, map);
@@ -182,6 +184,7 @@ namespace PPTX
 					}
 				}
 			}
+
 			//smartTags (Smart Tags)
 			Normalize();
 		}
@@ -221,6 +224,15 @@ namespace PPTX
 
 			pWriter->WriteRecord2(6, commentAuthors);
 			pWriter->WriteRecord2(7, sectionLst);
+
+			if (m_pVbaProject.IsInit())
+			{
+				pWriter->StartRecord(8);
+				{
+					m_pVbaProject->toPPTY(pWriter);
+				}
+				pWriter->EndRecord();
+			}
 
 			pWriter->EndRecord();
 		}
@@ -318,22 +330,28 @@ namespace PPTX
 								default:
 									return;
 							}
-						}
-
-						break;
-					}
+						}						
+					}break;
 					case 6:
 					{
 						commentAuthors = new PPTX::Authors();
-						commentAuthors->fromPPTY(pReader);
-						break;
-					}
+						commentAuthors->fromPPTY(pReader);						
+					}break;
 					case 7:
 					{
 						sectionLst = new nsPresentation::SectionLst();
-						sectionLst->fromPPTY(pReader);
-						break;
-					}
+						sectionLst->fromPPTY(pReader);						
+					}break;
+					case 8:
+					{
+						m_pVbaProject = new OOX::VbaProject();
+						m_pVbaProject->fromPPTY(pReader);
+						
+						smart_ptr<OOX::File> file = m_pVbaProject.smart_dynamic_cast<OOX::File>();
+						FileContainer::Add(file);
+
+						m_bMacroEnabled = true;
+					}break;
 					default:
 					{
 						pReader->Seek(_end_pos);
@@ -397,10 +415,10 @@ namespace PPTX
 			pWriter->EndNode(L"p:presentation");
 		}
 
-	public:
 		virtual const OOX::FileType type() const
 		{
-			return OOX::Presentation::FileTypes::Presentation;
+			if (m_bMacroEnabled)	return OOX::Presentation::FileTypes::PresentationMacro;
+			else					return OOX::Presentation::FileTypes::Presentation;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -411,7 +429,6 @@ namespace PPTX
 			return type().DefaultFileName();
 		}
 
-	public:
 	//Childs
 		//custDataLst (Customer Data List)
 		//property<std::list<Presentation::CustShow> > custShowLst (List of Custom Shows)
@@ -446,9 +463,12 @@ namespace PPTX
 		smart_ptr<PPTX::Authors>				commentAuthors;
 
 	private:
-		Logic::ClrMap		m_clrMap;
-		nsTheme::ClrScheme	m_clrScheme;
+		Logic::ClrMap				m_clrMap;
+		nsTheme::ClrScheme			m_clrScheme;
 	public:
+		bool						m_bMacroEnabled;
+		smart_ptr<OOX::VbaProject>	m_pVbaProject;
+		
 		void SetClrMap(Logic::ClrMap map)				{m_clrMap = map;};
 		void SetClrScheme(nsTheme::ClrScheme scheme)	{m_clrScheme = scheme;};
 

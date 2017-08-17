@@ -363,7 +363,7 @@ namespace PPTX
 				}
 				if (IsExist(OOX::FileTypes::VmlDrawing))
 				{
-					Vml = FileContainer::Get(OOX::FileTypes::VmlDrawing).smart_dynamic_cast<OOX::CVmlDrawing>();//boost::shared_dynamic_cast<PPTX::VmlDrawing, PPTX::File>(FileContainer::get(OOX::Presentation::FileTypes::VmlDrawing));
+					Vml = FileContainer::Get(OOX::FileTypes::VmlDrawing).smart_dynamic_cast<OOX::CVmlDrawing>();
 				}
 			}
 		}

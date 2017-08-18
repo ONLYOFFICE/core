@@ -361,6 +361,9 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
+	bool empty();
+	bool empty_content_cells();
+
     table_table_row_attlist		attlist_;
     office_element_ptr_array	content_;					// table-table-cell or table-covered-table-cell
     
@@ -408,6 +411,7 @@ private:
 
 public:
 	bool last_cell_;
+	bool empty();
 
     table_table_cell_attlist		attlist_;
     table_table_cell_attlist_extra	attlist_extra_;
@@ -427,7 +431,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-	table_covered_table_cell() : last_cell_(false), empty_(true) {}
+	table_covered_table_cell() : last_cell_(false){}
 
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
@@ -443,7 +447,7 @@ private:
 
 public:
 	bool last_cell_;
-	bool empty_;
+	bool empty();
 
     table_table_cell_attlist	attlist_;
     table_table_cell_content	content_;

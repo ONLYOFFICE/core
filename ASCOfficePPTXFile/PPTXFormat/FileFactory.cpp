@@ -84,7 +84,8 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new PPTX::App(filename, map));
 		else if (relation.Type() == OOX::FileTypes::Core)
 			return smart_ptr<OOX::File>(new PPTX::Core(filename, map));
-		else if (relation.Type() == OOX::Presentation::FileTypes::Presentation)
+		else if (relation.Type() == OOX::Presentation::FileTypes::Presentation || 
+				 relation.Type() == OOX::Presentation::FileTypes::PresentationMacro)
 			return smart_ptr<OOX::File>(new PPTX::Presentation(filename, map));
 		else if (relation.Type() == OOX::FileTypes::Theme)
 			return smart_ptr<OOX::File>(new PPTX::Theme(filename, map));
@@ -141,6 +142,8 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new OOX::OleObject(filename));
 		else if (relation.Type() == OOX::FileTypes::MicrosoftOfficeUnknown) //ms package
 			return smart_ptr<OOX::File>(new OOX::OleObject( filename, true ));
+		else if (relation.Type() == OOX::FileTypes::VbaProject)
+			return smart_ptr<OOX::File>(new OOX::VbaProject( filename, filename ));
 
 		return smart_ptr<OOX::File>(new OOX::UnknowTypeFile());
 	}

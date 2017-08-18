@@ -249,17 +249,16 @@ int FDB::serialize(std::wostream & strm, bool bSql)
 					//		CP_XML_ATTR(L"containsString",	0);
 					//	}
 					//}
-					if	(bInteger)
+					if	(bInteger && bNumber)
 					{
-						if (bNumber)	bInteger = false;
-						else			bNumber = true;
+						bInteger = false;
 					}
 
 					if ((bDate & bNumber) || (bNumber & bString))
 					{
 						CP_XML_ATTR(L"containsSemiMixedTypes", 1);
 					}
-					else if ( bDate & bString) 
+					else if (bDate & bString)
 					{
 						CP_XML_ATTR(L"containsMixedTypes", 1);
 					}
@@ -277,9 +276,9 @@ int FDB::serialize(std::wostream & strm, bool bSql)
 						CP_XML_ATTR(L"containsString",	0);
 					}
 					if (bEmpty)		CP_XML_ATTR(L"containsBlank",	1);
-					if (bNumber)	CP_XML_ATTR(L"containsNumber",	1);
-					if (bInteger)	CP_XML_ATTR(L"containsInteger",	1);
-					
+
+					if (bNumber)						CP_XML_ATTR(L"containsNumber",	1);
+					if (bInteger && !bDate & bString)	CP_XML_ATTR(L"containsInteger",	1);
 
 					if (fdb->fnumMinMaxValid)
 					{

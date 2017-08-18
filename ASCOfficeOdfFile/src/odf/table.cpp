@@ -356,7 +356,6 @@ void table_columns_and_groups::add_child_element( xml::sax * Reader, const std::
     */
 }
 
-// table-table-cell-content
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::wostream & table_table_cell_content::text_to_stream(std::wostream & _Wostream) const
@@ -393,9 +392,14 @@ void table_table_cell::add_child_element( xml::sax * Reader, const std::wstring 
 void table_table_cell::add_text(const std::wstring & Text)
 {
 }
+bool table_table_cell::empty()
+{
+	if (!content_.elements_.empty()) return false;
+	if (attlist_.table_formula_) return false;
 
+	return true;
+}
 // table:covered-table-cell
-// table-covered-table-cell
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * table_covered_table_cell::ns = L"table";
 const wchar_t * table_covered_table_cell::name = L"covered-table-cell";
@@ -412,12 +416,18 @@ void table_covered_table_cell::add_attributes( const xml::attributes_wc_ptr & At
 
 void table_covered_table_cell::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-	empty_ = false;
     content_.add_child_element(Reader, Ns, Name, getContext());
 }
 
 void table_covered_table_cell::add_text(const std::wstring & Text)
 {
+}
+bool table_covered_table_cell::empty()
+{
+	if (!content_.elements_.empty()) return false;
+	if (attlist_.table_formula_) return false;
+
+	return true;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -445,7 +455,38 @@ void table_table_row::add_child_element( xml::sax * Reader, const std::wstring &
     else
         CP_NOT_APPLICABLE_ELM();    
 }
+bool table_table_row::empty()
+{
+	if (content_.empty() && !attlist_.table_style_name_ && !attlist_.table_default_cell_style_name_) return true;
 
+	return false;
+}
+bool table_table_row::empty_content_cells()
+{
+	bool res = true;
+	
+	for (size_t i = 0 ; i < content_.size(); i++)
+    {
+		table_table_cell			*cell		= dynamic_cast<table_table_cell*>(content_[i].get());
+		table_covered_table_cell	*cover_cell = dynamic_cast<table_covered_table_cell*>(content_[i].get());
+		if (!cell && !cover_cell)
+		{
+			res = false;
+			break;
+		}
+		if (cell && cell->empty() == false)
+		{
+			res = false;
+			break;
+		}
+		if (cover_cell && cover_cell->empty() == false)
+		{
+			res = false;
+			break;
+		}
+	}
+	return res;
+}
 // table:table-rows
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * table_table_rows::ns = L"table";

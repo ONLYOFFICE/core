@@ -100,7 +100,9 @@ namespace NSBinPptxRW
 
 			m_oImageManager.Clear();
 
-            OOX::CPath pathMedia = pathPPT / _T("media");
+			m_oImageManager.SetDstFolder(pathPPT.GetPath());
+			
+			OOX::CPath pathMedia = pathPPT / _T("media");
             NSDirectory::CreateDirectory(pathMedia.GetPath());
 
             m_oImageManager.SetDstMedia(pathMedia.GetPath());
@@ -809,7 +811,8 @@ namespace NSBinPptxRW
 					m_oPresentation.notesMasterIdLst[0].rid = (size_t)nCurrentRels;
 					++nCurrentRels;
 				}
-				m_oReader.m_pRels->EndPresentationRels(m_oPresentation.commentAuthors.is_init(), bNotesMasterPresent);
+
+				m_oReader.m_pRels->EndPresentationRels(m_oPresentation.commentAuthors.is_init(), bNotesMasterPresent, m_oPresentation.m_pVbaProject.is_init());
 				m_oReader.m_pRels->CloseRels();
 
 				oXmlWriter.ClearNoAttack();
@@ -840,7 +843,16 @@ namespace NSBinPptxRW
 	// content types
 			OOX::CContentTypes *pContentTypes = m_oImageManager.m_pContentTypes;
 				
-			pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml",	L"/ppt", L"presentation.xml");
+			pContentTypes->Registration(m_oPresentation.type().OverrideType(),
+										m_oPresentation.type().DefaultDirectory(),
+										m_oPresentation.type().DefaultFileName());
+			
+			if (m_oPresentation.m_pVbaProject.IsInit())
+			{
+				pContentTypes->Registration(m_oPresentation.m_pVbaProject->type().OverrideType(),
+											m_oPresentation.type().DefaultDirectory() / m_oPresentation.m_pVbaProject->type().DefaultDirectory(), 
+											m_oPresentation.m_pVbaProject->type().DefaultFileName());
+			}
 			pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.presProps+xml",			L"/ppt", L"presProps.xml");
 			pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml",			L"/ppt", L"viewProps.xml");
 			pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml",		L"/ppt", L"tableStyles.xml");

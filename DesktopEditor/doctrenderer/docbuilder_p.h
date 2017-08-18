@@ -195,7 +195,7 @@ public:
             _LOGGING_ERROR_(L"execute_compile_code", strCode);
             _LOGGING_ERROR_(L"execute_compile", strException);
 
-            return false;
+            return "";
         }
         else
         {
@@ -209,7 +209,7 @@ public:
                 _LOGGING_ERROR_(L"execute_run_code", strCode);
                 _LOGGING_ERROR_(L"execute_run", strException);
 
-                return false;
+                return "";
             }
 
             if (_value->IsString())

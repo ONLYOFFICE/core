@@ -2170,7 +2170,7 @@ namespace NExtractTools
        return nRes;
    }
 
-	int fromXlsxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
+	int fromXlsxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params, bool isSavedXFile)
    {
        int nRes = 0;
        if(0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo) && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV != nFormatTo)
@@ -2221,6 +2221,11 @@ namespace NExtractTools
                nRes = fromXlstBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
            }
        }
+	   if (SUCCEEDED_X2T(nRes) && !isSavedXFile && params.getSaveXFile())
+	   {
+		   std::wstring sToDir = NSDirectory::GetFolderPath(sTo);
+		   nRes = dir2zip(sFrom, sToDir + FILE_SEPARATOR_STR + _T("Editor.xlsx"));
+	   }
        return nRes;
    }
 	int fromXlstBin(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
@@ -2252,7 +2257,7 @@ namespace NExtractTools
            nRes = xlst_bin2xlsx_dir(sFrom, sTo, sXlsxDir, bFromChanges, sThemeDir, params);
            if(SUCCEEDED_X2T(nRes))
            {
-                nRes = fromXlsxDir(sXlsxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
+				nRes = fromXlsxDir(sXlsxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params, false);
            }
        }
        else
@@ -2302,9 +2307,15 @@ namespace NExtractTools
        {
            std::wstring sXlsxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
            NSDirectory::CreateDirectory(sXlsxDir);
+		   bool isSavedXFile = false;
            if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatFrom)
            {
                nRes = zip2dir(sFrom, sXlsxDir);
+			   if (SUCCEEDED_X2T(nRes) && params.getSaveXFile())
+			   {
+				   NSFile::CFileBinary::Copy(sFrom, NSSystemPath::GetDirectoryName(sTo) + FILE_SEPARATOR_STR + _T("Editor.xlsx"));
+				   isSavedXFile = true;
+			   }
            }
            else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS == nFormatFrom)
            {
@@ -2318,7 +2329,7 @@ namespace NExtractTools
                nRes = AVS_FILEUTILS_ERROR_CONVERT;
            if(SUCCEEDED_X2T(nRes))
            {
-               nRes = fromXlsxDir(sXlsxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
+			   nRes = fromXlsxDir(sXlsxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params, isSavedXFile);
            }
        }
        return nRes;

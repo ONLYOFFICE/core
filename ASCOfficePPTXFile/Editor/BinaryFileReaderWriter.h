@@ -178,8 +178,10 @@ namespace NSBinPptxRW
         std::map<std::wstring, _imageManager2Info>	m_mapImages;
 		_INT32										m_lIndexNextImage;
 		_INT32										m_lIndexCounter;
+		
 		std::wstring								m_strDstMedia;
 		std::wstring								m_strDstEmbed;
+		std::wstring								m_strDstFolder;
 	public:
         int 										m_nDocumentType;
 		OOX::CContentTypes*							m_pContentTypes;
@@ -194,6 +196,9 @@ namespace NSBinPptxRW
 		void			SetDstEmbed(const std::wstring& strDst);
 		std::wstring	GetDstEmbed();
 		
+		void			SetDstFolder(const std::wstring& strDst);
+		std::wstring	GetDstFolder();
+
 		int IsDisplayedImage(const std::wstring& strInput);
 
 		_imageManager2Info GenerateImage(const std::wstring& strInput, NSCommon::smart_ptr<OOX::File> & additionalFile, const std::wstring& oleData, std::wstring strBase64Image);
@@ -419,8 +424,8 @@ namespace NSBinPptxRW
 		int WriteChart (int nChartNumber, _INT32 lDocType);
 		int WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode);
 		int WriteHyperlink	(const std::wstring& strLink, const bool& bIsActionInit);		
-		
-		void EndPresentationRels (const bool& bIsCommentsAuthors, const bool& bIsNotesMaster = false);
+	
+		void EndPresentationRels (bool bIsCommentsAuthors = false, bool bIsNotesMaster = false, bool bIsVbaProject = false  );
 		int GetNextId ();
 		void CloseRels ();
 

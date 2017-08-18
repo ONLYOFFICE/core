@@ -66,6 +66,7 @@ core_mac {
 core_windows {
     CONFIG -= debug_and_release debug_and_release_target
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
+    QMAKE_CXXFLAGS += /MP
 }
 
 core_win_32 {

@@ -124,11 +124,14 @@ namespace DocFileFormat
 				TableInfo tai(papx);
 				if (tai.fInTable)
 				{
+					int cpStart = cp;
 					//this PAPX is for a table
 					//cp = writeTable( cp, tai.iTap );
 					Table table( this, cp, ( ( tai.iTap > 0 ) ? ( 1 ) : ( 0 ) ) );
 					table.Convert(this);
 					cp = table.GetCPEnd();
+					while (cp <= cpStart)	//conv_eznHsm8em2unSv6_2QE__docx.doc
+						cp++;
 				}
 				else
 				{

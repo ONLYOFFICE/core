@@ -3025,7 +3025,7 @@ namespace BinDocxRW
                 std::wstring& sShapeType = aShapeTypes[i];
 				pOfficeDrawingConverter->AddShapeType(sShapeType);
 			}
-			pOfficeDrawingConverter->SetRels(oldRels);
+            pOfficeDrawingConverter->SetRels(oldRels);
 		}
 		void WriteVbaProjectContent(OOX::VbaProject& oVbaProject)
 		{

@@ -54,6 +54,7 @@ void table_data_pilot_tables::add_child_element( xml::sax * Reader, const std::w
 }
 void table_data_pilot_tables::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
+	return;
     for (size_t i = 0; i < content_.size(); i++)
     {
 		content_[i]->xlsx_convert(Context);

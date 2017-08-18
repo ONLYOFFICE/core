@@ -74,6 +74,8 @@ xlsx_document::xlsx_document()
 
 void xlsx_document::write(const std::wstring & RootPath)
 {
+	_CP_LOG << L"[info][xlsx] process writing" << std::endl;
+
     xl_files_.write			(RootPath);
     docProps_files_.write	(RootPath);
     rels_files_.write		(RootPath);

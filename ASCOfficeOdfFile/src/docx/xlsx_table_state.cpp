@@ -160,7 +160,10 @@ void xlsx_table_state::set_table_row_group(int count, bool collapsed, int level)
 	group_row_.collapsed = collapsed;
 	group_row_.level = level;
 }
-
+void xlsx_table_state::add_empty_row(int count)
+{
+	current_table_row_ += count;
+}
 void xlsx_table_state::start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName)
 {
     empty_row_ = true;

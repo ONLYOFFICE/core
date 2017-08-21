@@ -61,8 +61,10 @@ void XFExtNoFRT::load(CFRecord& record)
 	unsigned short cexts;
 	record >> cexts;
 	
-	for(unsigned short i = 0; !record.isEOF() && i < cexts; ++i)
+	for(unsigned short i = 0; i < cexts; ++i)
 	{
+		if (record.checkFitReadSafe(4) == false)
+			break;
 		ExtProp prop;
 		record >> prop;
 		rgExt.push_back(prop);

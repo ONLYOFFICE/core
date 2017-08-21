@@ -264,28 +264,20 @@ void table_rows::xlsx_convert(oox::xlsx_conversion_context & Context)
         table_table_rows_->xlsx_convert(Context);
     else
     {
-		if (table_table_row_.size() > 1)
+		while (table_table_row_.size() > 1)
 		{
-			//check 2 last rows for repeate > 65000 & 1024 
 			table_table_row* row_last	= dynamic_cast<table_table_row*>(table_table_row_[table_table_row_.size() - 1].get());
 			table_table_row* row_last_1	= dynamic_cast<table_table_row*>(table_table_row_[table_table_row_.size() - 2].get());
 
-			if (row_last->empty_content_cells() && row_last_1->empty_content_cells())
-			{
-				if (row_last->attlist_.table_number_rows_repeated_		> 1000 && 
-					row_last_1->attlist_.table_number_rows_repeated_	> 1000 || 
-					row_last_1->attlist_.table_number_rows_repeated_	> 0xf000)
-				{
-					std::wstring style		= row_last->attlist_.table_style_name_.get_value_or(L"");
-					std::wstring style_1	= row_last->attlist_.table_style_name_.get_value_or(L"");
-					
-					if (style == style_1)//check for empty also ????
-					{
-						row_last_1->attlist_.table_number_rows_repeated_ = 1024;
-						table_table_row_.pop_back();
-					}
-				}
-			}
+			std::wstring style		= row_last->attlist_.table_style_name_.get_value_or(L"");
+			std::wstring style_1	= row_last->attlist_.table_style_name_.get_value_or(L"");
+				
+			if (style != style_1)break;			
+			if (row_last_1->empty_content_cells() == false) break;				
+			if (row_last->empty_content_cells() == false) break;
+
+			row_last_1->attlist_.table_number_rows_repeated_ += row_last->attlist_.table_number_rows_repeated_;
+			table_table_row_.pop_back();
 		}
    		for (size_t i = 0; i < table_table_row_.size(); i++)
         {

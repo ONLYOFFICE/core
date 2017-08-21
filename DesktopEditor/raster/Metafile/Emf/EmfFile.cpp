@@ -189,13 +189,15 @@ static const struct ActionNamesEmf
 
 		do
 		{
-			if (m_oStream.CanRead() < 8)
+            if (m_oStream.IsEof())
+                break;
+            if (m_oStream.CanRead() < 8)
 				return SetError();
 
 			m_oStream >> ulType;
 			m_oStream >> ulSize;
 
-			if (ulSize < 1) 
+            if (ulSize < 1)
 				continue;
 
 			m_ulRecordPos	= m_oStream.Tell();

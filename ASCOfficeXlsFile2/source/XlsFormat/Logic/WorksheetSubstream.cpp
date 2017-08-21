@@ -141,8 +141,9 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 		{
 			case rt_Uncalced:		proc.optional<Uncalced>();		break;
 			case rt_Index:			proc.optional<Index>();			break;
-			case rt_CalcRefMode:
+			case rt_CalcRefMode://todooo сделать вариативно по всем проверку
 			case rt_CalcMode:
+			case rt_PrintRowCol:
 			{
 				GLOBALS globals(false);
 				if (proc.mandatory(globals))
@@ -221,6 +222,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back();
 				}	
 			}break;
+			case rt_LabelSst://order_history.xls
 			case rt_Label://file(6).xls
 			case rt_Row:
 			{

@@ -166,23 +166,28 @@ namespace PPTX
 						pWriter->WriteBYTE(1);
 					pWriter->EndRecord();
 
-					DocWrapper::FontProcessor fp;
-					NSBinPptxRW::CDrawingConverter oDrawingConverter; 
-					
+					DocWrapper::FontProcessor		oFontProcessor;
+					NSBinPptxRW::CDrawingConverter	oDrawingConverter; 
+					BinDocxRW::CDocxSerializer		oDocxSerializer;
+
 					NSBinPptxRW::CBinaryFileWriter*				old_writer	= oDrawingConverter.m_pBinaryWriter;
 					NSCommon::smart_ptr<OOX::IFileContainer>	old_rels	= *pWriter->m_pCurrentContainer;
+					BinDocxRW::CDocxSerializer*					old_serial 	= pWriter->m_pMainDocument;
 					
 					oDrawingConverter.m_pBinaryWriter = pWriter;
+					oDocxSerializer.m_pParamsWriter = new BinDocxRW::ParamsWriter(pWriter, &oFontProcessor, &oDrawingConverter, NULL);
 					
-					BinDocxRW::ParamsWriter		oParamsWriter(pWriter, &fp, &oDrawingConverter, NULL);
-					BinDocxRW::BinaryFileWriter oBinaryFileWriter(oParamsWriter);
+					pWriter->m_pMainDocument = &oDocxSerializer;
+					
+					BinDocxRW::BinaryFileWriter oBinaryFileWriter(*oDocxSerializer.m_pParamsWriter);
 
 					pWriter->StartRecord(2);
 						oBinaryFileWriter.intoBindoc(oox_unpacked.GetPath());
 					pWriter->EndRecord();
 
 					oDrawingConverter.m_pBinaryWriter	= old_writer;
-					*pWriter->m_pCurrentContainer		= old_rels;
+					*pWriter->m_pCurrentContainer		= old_rels;				
+					pWriter->m_pMainDocument			= old_serial;
 				}
 				else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX)
 				//if ( std::wstring::npos != sProgID.find(L"Excel.Sheet")) //"ET.Xlsx.6" !!!

@@ -2228,8 +2228,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
                                 std::wstring strPos = arSplit[i].substr(0, p);
                                 std::wstring strColor = arSplit[i].substr(p + 1);
 
-                                double pos;
-                                pos = _wtof(strPos.c_str());
+                                double pos = strPos.empty() ? 0 : _wtof(strPos.c_str());
 
                                 NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(strColor);
                                 PPTX::Logic::UniColor *oColor = new PPTX::Logic::UniColor();

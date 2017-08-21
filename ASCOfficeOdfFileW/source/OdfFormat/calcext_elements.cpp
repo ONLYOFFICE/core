@@ -113,7 +113,7 @@ void calcext_conditional_format::serialize(std::wostream & _Wostream)
         {   
 			CP_XML_ATTR_OPT(L"calcext:target-range-address",calcext_target_range_address_);
 
-			for (size_t i = content_.size() - 1; i >= 0; i--)
+            for (int i = (int)content_.size() - 1; i >= 0; i--)
 			{
 				content_[i]->serialize(CP_XML_STREAM());
 			}

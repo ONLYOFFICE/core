@@ -56,8 +56,8 @@ namespace BinXlsxRW {
         std::wstring sPath;
 		int nIndex;
         std::map<OOX::Spreadsheet::CDrawing*, std::wstring> mapDrawings;
-	public:
-		ImageObject()
+
+        ImageObject()
 		{
 		}
         ImageObject(std::wstring& _sPath, int _nIndex)
@@ -75,8 +75,8 @@ namespace BinXlsxRW {
 		OOX::Spreadsheet::CPivotCacheRecords* pRecords;
 		long nCacheId;
 		OOX::Spreadsheet::CPivotTable* pTable;
-	public:
-		PivotCachesTemp()
+
+        PivotCachesTemp()
 		{
 			nId = -1;
 			pDefinitionData = NULL;
@@ -1515,7 +1515,7 @@ namespace BinXlsxRW {
 		int Read()
 		{
 			return ReadTable(&BinaryWorkbookTableReader::ReadWorkbookTableContent, this);
-		};
+        }
 		int ReadWorkbookTableContent(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
@@ -1548,12 +1548,19 @@ namespace BinXlsxRW {
 			}
 			else if(c_oSerWorkbookTypes::VbaProject == type)
 			{
-				res = Read1(length, &BinaryWorkbookTableReader::ReadVbaProject, this, poResult);
-			}
+                smart_ptr<OOX::VbaProject> oFileVbaProject(new OOX::VbaProject());
+
+                oFileVbaProject->fromPPTY(&m_oBufferedStream);
+
+                smart_ptr<OOX::File> oFile = oFileVbaProject.smart_dynamic_cast<OOX::File>();
+                const OOX::RId oRId = m_oWorkbook.Add(oFile);
+
+                m_oWorkbook.m_bMacroEnabled = true;
+            }
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadWorkbookPr(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
@@ -1570,7 +1577,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadBookViews(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
@@ -1660,7 +1667,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadDefinedNames(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
@@ -1673,7 +1680,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadDefinedName(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CDefinedName* pDefinedName = static_cast<OOX::Spreadsheet::CDefinedName*>(poResult);
@@ -1706,7 +1713,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadExternalBook(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CExternalLink* extLink = static_cast<OOX::Spreadsheet::CExternalLink*>(poResult);
@@ -1741,7 +1748,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadExternalSheetNames(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CExternalSheetNames* pSheetNames = static_cast<OOX::Spreadsheet::CExternalSheetNames*>(poResult);
@@ -1756,7 +1763,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadExternalDefinedNames(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CExternalDefinedNames* pDefinedNames = static_cast<OOX::Spreadsheet::CExternalDefinedNames*>(poResult);
@@ -1770,7 +1777,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadExternalDefinedName(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CExternalDefinedName* pDefinedName = static_cast<OOX::Spreadsheet::CExternalDefinedName*>(poResult);
@@ -1793,7 +1800,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadExternalSheetDataSet(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CExternalSheetDataSet* pSheetDataSet = static_cast<OOX::Spreadsheet::CExternalSheetDataSet*>(poResult);
@@ -1807,7 +1814,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadExternalSheetData(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CExternalSheetData* pSheetData = static_cast<OOX::Spreadsheet::CExternalSheetData*>(poResult);
@@ -1831,7 +1838,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadExternalRow(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CExternalRow* pRow = static_cast<OOX::Spreadsheet::CExternalRow*>(poResult);
@@ -1850,7 +1857,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadExternalCell(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CExternalCell* pCell = static_cast<OOX::Spreadsheet::CExternalCell*>(poResult);
@@ -1873,7 +1880,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadOleLink(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CExternalLink* extLink = static_cast<OOX::Spreadsheet::CExternalLink*>(poResult);
@@ -1908,7 +1915,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadOleItem(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::COleItem* pOleItem = static_cast<OOX::Spreadsheet::COleItem*>(poResult);
@@ -1936,7 +1943,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadDdeLink(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CDdeLink* ddeLink = static_cast<OOX::Spreadsheet::CDdeLink*>(poResult);
@@ -1964,7 +1971,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadDdeItem(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CDdeItem* pDdeItem = static_cast<OOX::Spreadsheet::CDdeItem*>(poResult);
@@ -1997,7 +2004,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadDdeValues(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CDdeValues* pDdeValues = static_cast<OOX::Spreadsheet::CDdeValues*>(poResult);
@@ -2021,7 +2028,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadDdeValue(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CDdeValue* pDdeValue = static_cast<OOX::Spreadsheet::CDdeValue*>(poResult);
@@ -2040,7 +2047,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadPivotCaches(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
@@ -2102,28 +2109,18 @@ namespace BinXlsxRW {
 		int ReadVbaProject(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
-			if(c_oSerWorkbookVbaProjectTypes::Name == type)
-			{
-				std::wstring file_name = m_oBufferedStream.GetString4(length);
 
-				OOX::CPath inputPath = m_oBufferedStream.m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + file_name;
-                OOX::CPath outputPath = m_sDestinationDir + FILE_SEPARATOR_STR + _T("xl")  + FILE_SEPARATOR_STR + _T("vbaProject.bin");
+            smart_ptr<OOX::VbaProject> oFileVbaProject(new OOX::VbaProject());
 
-				NSFile::CFileBinary::Copy(inputPath.GetPath(), outputPath.GetPath());
+            oFileVbaProject->fromPPTY(&m_oBufferedStream);
 
-				smart_ptr<OOX::VbaProject> oFileVbaProject(new OOX::VbaProject());
-				oFileVbaProject->set_filename(outputPath.GetPath());
-				
-				smart_ptr<OOX::File> oFile = oFileVbaProject.smart_dynamic_cast<OOX::File>();
-				const OOX::RId oRId = m_oWorkbook.Add(oFile);
+            smart_ptr<OOX::File> oFile = oFileVbaProject.smart_dynamic_cast<OOX::File>();
+            const OOX::RId oRId = m_oWorkbook.Add(oFile);
 
-				m_oWorkbook.m_bMacroEnabled = true;
-				return res;
+            m_oWorkbook.m_bMacroEnabled = true;
 
-			}
-			else
-				res = c_oSerConstants::ReadUnknown;
-		}
+            return res;
+        }
 	};
 	class BinaryCommentReader : public Binary_CommonReader<BinaryCommentReader>
 	{
@@ -2174,7 +2171,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadComment(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
@@ -2258,7 +2255,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadCommentDatas(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
@@ -2388,7 +2385,7 @@ namespace BinXlsxRW {
 		{
 			m_oWorkbook.m_oSheets.Init();
 			return ReadTable(&BinaryWorksheetsTableReader::ReadWorksheetsTableContent, this);
-		};
+        }
 		int ReadWorksheetsTableContent(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
@@ -2426,7 +2423,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadWorksheet(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
@@ -3012,7 +3009,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadPageMargins(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CPageMargins* pPageMargins = static_cast<OOX::Spreadsheet::CPageMargins*>(poResult);
@@ -3050,7 +3047,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadPageSetup(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CPageSetup* pPageSetup = static_cast<OOX::Spreadsheet::CPageSetup*>(poResult);
@@ -3068,7 +3065,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadPrintOptions(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CPrintOptions* pPrintOptions = static_cast<OOX::Spreadsheet::CPrintOptions*>(poResult);
@@ -3089,7 +3086,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadHyperlinks(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
@@ -3102,7 +3099,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadHyperlink(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CHyperlink* pHyperlink = static_cast<OOX::Spreadsheet::CHyperlink*>(poResult);
@@ -3137,7 +3134,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadMergeCells(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
@@ -3299,7 +3296,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadDrawing(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CCellAnchor* pCellAnchor = static_cast<OOX::Spreadsheet::CCellAnchor*>(poResult);
@@ -3347,7 +3344,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadFromTo(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CFromTo* pFromTo = static_cast<OOX::Spreadsheet::CFromTo*>(poResult);
@@ -3377,7 +3374,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadExt(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CExt* pExt = static_cast<OOX::Spreadsheet::CExt*>(poResult);
@@ -3397,7 +3394,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadPos(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CPos* pPos = static_cast<OOX::Spreadsheet::CPos*>(poResult);
@@ -3417,7 +3414,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadSheetData(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
@@ -3430,7 +3427,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadRow(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CRow* pRow = static_cast<OOX::Spreadsheet::CRow*>(poResult);
@@ -3638,7 +3635,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadConditionalFormatting(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CConditionalFormatting* pConditionalFormatting = static_cast<OOX::Spreadsheet::CConditionalFormatting*>(poResult);
@@ -3662,7 +3659,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadConditionalFormattingRule(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CConditionalFormattingRule* pConditionalFormattingRule = static_cast<OOX::Spreadsheet::CConditionalFormattingRule*>(poResult);
@@ -3779,7 +3776,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadDataBar(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CDataBar* pDataBar = static_cast<OOX::Spreadsheet::CDataBar*>(poResult);
@@ -4027,7 +4024,7 @@ namespace BinXlsxRW {
             else
                 res = c_oSerConstants::ReadUnknown;
             return res;
-        };
+        }
         int ReadSparklines(BYTE type, long length, void* poResult)
         {
             OOX::Spreadsheet::CSparklines* pSparklines = static_cast<OOX::Spreadsheet::CSparklines*>(poResult);
@@ -4041,7 +4038,7 @@ namespace BinXlsxRW {
             else
                 res = c_oSerConstants::ReadUnknown;
             return res;
-        };
+        }
         int ReadSparkline(BYTE type, long length, void* poResult)
         {
             OOX::Spreadsheet::CSparkline* pSparkline = static_cast<OOX::Spreadsheet::CSparkline*>(poResult);
@@ -4105,7 +4102,7 @@ namespace BinXlsxRW {
 		int Read()
 		{
 			return ReadTable(&BinaryOtherTableReader::ReadOtherTableContent, this);
-		};
+        }
 		int ReadOtherTableContent(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
@@ -4139,7 +4136,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadMediaItem(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;

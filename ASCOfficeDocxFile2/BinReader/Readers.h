@@ -285,8 +285,7 @@ public:
 	}
 
     int Read ();
-    int ReadContent	(BYTE type, long length, void* poResult);
-};
+ };
 
 class Binary_HdrFtrTableReader : public Binary_CommonReader<Binary_HdrFtrTableReader>
 {

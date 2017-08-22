@@ -36,26 +36,10 @@ namespace BinDocxRW {
 
 int Binary_VbaProjectTableReader::Read()
 {
-	return ReadTable(&Binary_VbaProjectTableReader::ReadContent, this);
-}
-int Binary_VbaProjectTableReader::ReadContent(BYTE type, long length, void* poResult)
-{
-	int res = c_oSerConstants::ReadOk;
-	if ( c_oSerVbaProjectTypes::Name == type )
-	{
-		std::wstring file_name = m_oBufferedStream.GetString4(length);
+    m_oFileWriter.m_pVbaProject = new OOX::VbaProject();
+    m_oFileWriter.m_pVbaProject->fromPPTY(&m_oBufferedStream);
 
-		OOX::CPath inputPath = m_oBufferedStream.m_strFolder + FILE_SEPARATOR_STR + L"media"  + FILE_SEPARATOR_STR + file_name;
-        OOX::CPath outputPath = m_oFileWriter.m_oDocumentWriter.m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"vbaProject.bin";
-
-		NSFile::CFileBinary::Copy(inputPath.GetPath(), outputPath.GetPath());
-
-		m_oFileWriter.m_pVbaProject = new OOX::VbaProject();
-		m_oFileWriter.m_pVbaProject->set_filename(outputPath.GetPath());
-	}
-	else
-		res = c_oSerConstants::ReadUnknown;
-	return res;
+    return c_oSerConstants::ReadOk;
 }
 //-------------------------------------------------------------------------------------	
 Binary_HdrFtrTableReader::Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments):Binary_CommonReader(poBufferedStream),m_oFileWriter(oFileWriter),m_oHeaderFooterWriter(oFileWriter.m_oHeaderFooterWriter),m_pComments(pComments)

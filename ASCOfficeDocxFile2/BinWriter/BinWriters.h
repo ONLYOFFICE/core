@@ -3027,25 +3027,12 @@ namespace BinDocxRW
 			}
             pOfficeDrawingConverter->SetRels(oldRels);
 		}
-		void WriteVbaProjectContent(OOX::VbaProject& oVbaProject)
-		{
-			std::wstring file_name = oVbaProject.filename().GetFilename();
-			
-			m_oBcw.m_oStream.WriteBYTE(c_oSerVbaProjectTypes::Name);
-			m_oBcw.m_oStream.WriteStringW(file_name);
-	
-			//... todooo write parsing vba project
-
-			//write vbaData.... todooo
-			
-			//copy file bin
-			oVbaProject.copy_to(m_oBcw.m_oStream.m_pCommon->m_pImageManager->m_strDstMedia);
-		}
 		void WriteVbaProject(OOX::VbaProject& oVbaProject)
 		{
-			int nStart = m_oBcw.WriteItemWithLengthStart();
-			WriteVbaProjectContent(oVbaProject);
-			m_oBcw.WriteItemWithLengthEnd(nStart);
+            m_oBcw.m_oStream.StartRecord(0);
+            oVbaProject.toPPTY(&m_oBcw.m_oStream);
+            m_oBcw.m_oStream.EndRecord();
+
 		}
 		void Write(std::vector<OOX::WritingElement*>& aElems)
 		{

@@ -215,8 +215,12 @@ namespace NSBinPptxRW
 		smart_ptr<OOX::IFileContainer>	GetRels();
 		
 		HRESULT SetMainDocument     (BinDocxRW::CDocxSerializer* pDocument);
-        HRESULT SetMediaDstPath     (const std::wstring& sMediaPath);
-        HRESULT SetEmbedDstPath     (const std::wstring& sEmbedPath);
+
+        void SetSrcPath         (const std::wstring& sPath, int nDocType = 1/*XMLWRITER_DOC_TYPE_DOCX*/);
+        void SetDstPath         (const std::wstring& sPath);
+
+        void SetMediaDstPath    (const std::wstring& sMediaPath);
+        void SetEmbedDstPath    (const std::wstring& sEmbedPath);
 
         HRESULT AddShapeType        (const std::wstring& sXml);
         HRESULT AddObject           (const std::wstring& sXml, std::wstring** pMainProps);
@@ -254,8 +258,6 @@ namespace NSBinPptxRW
 
         void SetDocumentChartsCount (int val);
         int  GetDocumentChartsCount ();
-
-        void SetSourceFileDir       (std::wstring path, int nDocType = 1/*XMLWRITER_DOC_TYPE_DOCX*/);
 
         OOX::CContentTypes* GetContentTypes();
 	protected:

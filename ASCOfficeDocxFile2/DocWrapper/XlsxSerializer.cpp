@@ -86,14 +86,15 @@ namespace BinXlsxRW{
 	}
     bool CXlsxSerializer::loadFromFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedDir)
 	{
-		NSBinPptxRW::CDrawingConverter oDrawingConverter;
+        std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
+
+        NSBinPptxRW::CDrawingConverter oDrawingConverter;
 		
-		oDrawingConverter.SetMediaDstPath(sMediaDir);
+        oDrawingConverter.SetDstPath(sDstPath + FILE_SEPARATOR_STR + L"xl");
+        oDrawingConverter.SetSrcPath(strFileInDir, 2);
+
+        oDrawingConverter.SetMediaDstPath(sMediaDir);
 		oDrawingConverter.SetEmbedDstPath(sEmbedDir);
-
-		std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
-
-        oDrawingConverter.SetSourceFileDir(strFileInDir, 2);
 
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;
 		oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oDrawingConverter, sXMLOptions);

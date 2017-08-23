@@ -872,6 +872,7 @@ namespace NSDoctRenderer
             oBuilder.WriteString(L"<m_sFontDir>");
             oBuilder.WriteEncodeXmlString(m_sX2tPath + L"/sdkjs/common");
             oBuilder.WriteString(L"</m_sFontDir>");
+            oBuilder.WriteString(L"<m_bIsNoBase64>true</m_bIsNoBase64>");
             oBuilder.WriteString(L"<m_sThemeDir>./sdkjs/slide/themes</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
             oBuilder.WriteString(params);
             oBuilder.WriteString(L"</TaskQueueDataConvert>");

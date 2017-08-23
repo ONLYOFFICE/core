@@ -75,67 +75,67 @@ SXADDLHIERARCHY = SXAddl_SXCHierarchy_SXDId *Continue_SxaddlSxString *SXAddl_SXC
 */
 const bool SXADDLHIERARCHY::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory<SXAddl_SXCHierarchy_SXDId>())
-	{
-		return false;
-	}
-	proc.repeated<Continue_SxaddlSxString>(0, 0);
-	proc.repeated<SXAddl_SXCHierarchy_SXDProperty>(0, 0);
-	proc.repeated<SXADDLGRPLEVEL>(0, 0);
-	proc.optional<SXAddl_SXCHierarchy_SXDVerUpdInv>();
+	//if(!proc.mandatory<SXAddl_SXCHierarchy_SXDId>())
+	//{
+	//	return false;
+	//}
+	//proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//proc.repeated<SXAddl_SXCHierarchy_SXDProperty>(0, 0);
+	//proc.repeated<SXADDLGRPLEVEL>(0, 0);
+	//proc.optional<SXAddl_SXCHierarchy_SXDVerUpdInv>();
 
-	if(proc.optional<SXAddl_SXCHierarchy_SXDSXSetParentUnique>())
-	{
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	proc.optional<SXAddl_SXCHierarchy_SXDIconSet>();
-	if(proc.optional<SXAddl_SXCHierarchy_SXDUserCaption>())
-	{
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	proc.repeated<UNKNOWNFRT>(0, 0);
-	proc.optional<SXAddl_SXCHierarchy_SXDVerUpdInv>();
-	proc.repeated<SXAddl_SXCHierarchy_SXDUserCaption>(0, 0);
-	proc.optional<SXAddl_SXCHierarchy_SXDVerUpdInv>();
-	proc.optional<SXAddl_SXCHierarchy_SXDInfo12>();
-	if(proc.optional<SXAddl_SXCHierarchy_SXDDisplayFolder>())
-	{
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	if(proc.optional<SXAddl_SXCHierarchy_SXDMeasureGrp>())
-	{
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	if(proc.optional<SXAddl_SXCHierarchy_SXDParentKPI>())
-	{
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	if(proc.optional<SXAddl_SXCHierarchy_SXDKPIValue>())
-	{
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	if(proc.optional<SXAddl_SXCHierarchy_SXDKPIGoal>())
-	{
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	if(proc.optional<SXAddl_SXCHierarchy_SXDKPIStatus>())
-	{
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	if(proc.optional<SXAddl_SXCHierarchy_SXDKPITrend>())
-	{
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	if(proc.optional<SXAddl_SXCHierarchy_SXDKPIWeight>())
-	{
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	if(proc.optional<SXAddl_SXCHierarchy_SXDKPITime>())
-	{
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
+	//if(proc.optional<SXAddl_SXCHierarchy_SXDSXSetParentUnique>())
+	//{
+	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//proc.optional<SXAddl_SXCHierarchy_SXDIconSet>();
+	//if(proc.optional<SXAddl_SXCHierarchy_SXDUserCaption>())
+	//{
+	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//proc.repeated<UNKNOWNFRT>(0, 0);
+	//proc.optional<SXAddl_SXCHierarchy_SXDVerUpdInv>();
+	//proc.repeated<SXAddl_SXCHierarchy_SXDUserCaption>(0, 0);
+	//proc.optional<SXAddl_SXCHierarchy_SXDVerUpdInv>();
+	//proc.optional<SXAddl_SXCHierarchy_SXDInfo12>();
+	//if(proc.optional<SXAddl_SXCHierarchy_SXDDisplayFolder>())
+	//{
+	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//if(proc.optional<SXAddl_SXCHierarchy_SXDMeasureGrp>())
+	//{
+	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//if(proc.optional<SXAddl_SXCHierarchy_SXDParentKPI>())
+	//{
+	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//if(proc.optional<SXAddl_SXCHierarchy_SXDKPIValue>())
+	//{
+	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//if(proc.optional<SXAddl_SXCHierarchy_SXDKPIGoal>())
+	//{
+	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//if(proc.optional<SXAddl_SXCHierarchy_SXDKPIStatus>())
+	//{
+	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//if(proc.optional<SXAddl_SXCHierarchy_SXDKPITrend>())
+	//{
+	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//if(proc.optional<SXAddl_SXCHierarchy_SXDKPIWeight>())
+	//{
+	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//if(proc.optional<SXAddl_SXCHierarchy_SXDKPITime>())
+	//{
+	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
 
-	proc.mandatory<SXAddl_SXCHierarchy_SXDEnd>();
+	//proc.mandatory<SXAddl_SXCHierarchy_SXDEnd>();
 
 	return true;
 }

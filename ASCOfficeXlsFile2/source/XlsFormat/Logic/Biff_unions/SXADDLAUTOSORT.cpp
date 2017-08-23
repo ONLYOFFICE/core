@@ -57,12 +57,12 @@ BaseObjectPtr SXADDLAUTOSORT::clone()
 // SXADDLAUTOSORT = SXAddl_SXCAutoSort_SXDId SXADDLSXRULE SXAddl_SXCAutoSort_SXDEnd
 const bool SXADDLAUTOSORT::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory<SXAddl_SXCAutoSort_SXDId>())
-	{
-		return false;
-	}
-	proc.mandatory<SXADDLSXRULE>();
-	proc.mandatory<SXAddl_SXCAutoSort_SXDEnd>();
+	//if(!proc.mandatory<SXAddl_SXCAutoSort_SXDId>())
+	//{
+	//	return false;
+	//}
+	//proc.mandatory<SXADDLSXRULE>();
+	//proc.mandatory<SXAddl_SXCAutoSort_SXDEnd>();
 	return true;
 }
 

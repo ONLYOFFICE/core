@@ -31,8 +31,8 @@
  */
 
 #include "PIVOTFRT.h"
-#include <Logic/Biff_unions/PIVOTFRT9.h>
-#include <Logic/Biff_unions/PIVOTADDL.h>
+#include "PIVOTFRT9.h"
+#include "PIVOTADDL.h"
 
 namespace XLS
 {

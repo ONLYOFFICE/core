@@ -60,45 +60,45 @@ BaseObjectPtr SXADDLCACHE12::clone()
 //   *SXADDLCACHEFIELD [SXADDLSXDH] [SXADDLSXMGS] SXAddl_SXCCache_SXDVerUpdInv
 const bool SXADDLCACHE12::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory<SXAddl_SXCCache_SXDVerUpdInv>())
-	{
-		return false;
-	}
-	m_SXAddl_SXCCache_SXDVerUpdInv = elements_.back();
-	elements_.pop_back();
+	//if(!proc.mandatory<SXAddl_SXCCache_SXDVerUpdInv>())
+	//{
+	//	return false;
+	//}
+	//m_SXAddl_SXCCache_SXDVerUpdInv = elements_.back();
+	//elements_.pop_back();
 
-	if (proc.optional<SXAddl_SXCCache_SXDInfo12>())
-	{
-		m_SXAddl_SXCCache_SXDInfo12 = elements_.back();
-		elements_.pop_back();
-	}
-	if (proc.optional<SXAddl_SXCCache_SXDInvRefreshReal>())
-	{
-		m_SXAddl_SXCCache_SXDInvRefreshReal = elements_.back();
-		elements_.pop_back();
-	}
-	
-	int count  =  proc.repeated<SXADDLCACHEFIELD>(0, 0);	
-	while(count > 0)
-	{
-		m_arSXADDLCACHEFIELD.push_back(elements_.front());
-		elements_.pop_front(); count--;
-	}
-	if (proc.optional<SXADDLSXDH>())
-	{
-		m_SXADDLSXDH = elements_.back();
-		elements_.pop_back();
-	}
-	if (proc.optional<SXADDLSXMGS>())
-	{
-		m_SXADDLSXMGS = elements_.back();
-		elements_.pop_back();
-	}
-	if (proc.optional<SXAddl_SXCCache_SXDVerUpdInv>())
-	{
-		m_SXAddl_SXCCache_SXDVerUpdInvS = elements_.back();
-		elements_.pop_back();
-	}
+	//if (proc.optional<SXAddl_SXCCache_SXDInfo12>())
+	//{
+	//	m_SXAddl_SXCCache_SXDInfo12 = elements_.back();
+	//	elements_.pop_back();
+	//}
+	//if (proc.optional<SXAddl_SXCCache_SXDInvRefreshReal>())
+	//{
+	//	m_SXAddl_SXCCache_SXDInvRefreshReal = elements_.back();
+	//	elements_.pop_back();
+	//}
+	//
+	//int count  =  proc.repeated<SXADDLCACHEFIELD>(0, 0);	
+	//while(count > 0)
+	//{
+	//	m_arSXADDLCACHEFIELD.push_back(elements_.front());
+	//	elements_.pop_front(); count--;
+	//}
+	//if (proc.optional<SXADDLSXDH>())
+	//{
+	//	m_SXADDLSXDH = elements_.back();
+	//	elements_.pop_back();
+	//}
+	//if (proc.optional<SXADDLSXMGS>())
+	//{
+	//	m_SXADDLSXMGS = elements_.back();
+	//	elements_.pop_back();
+	//}
+	//if (proc.optional<SXAddl_SXCCache_SXDVerUpdInv>())
+	//{
+	//	m_SXAddl_SXCCache_SXDVerUpdInvS = elements_.back();
+	//	elements_.pop_back();
+	//}
 
 	return true;
 }

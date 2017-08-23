@@ -63,23 +63,23 @@ SXADDLFIELD12 = SXAddl_SXCField12_SXDId *Continue_SxaddlSxString SXAddl_SXCField
 */
 const bool SXADDLFIELD12::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory<SXAddl_SXCField12_SXDId>())
-	{
-		return false;
-	}
-	proc.repeated<Continue_SxaddlSxString>(0, 0);
-	proc.mandatory<SXAddl_SXCField12_SXDVer12Info>();
-	proc.mandatory<SXAddl_SXCField12_SXDVerUpdInv>();
-	if(proc.optional<SXAddl_SXCField12_SXDMemberCaption>())
-	{
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	proc.optional<SXAddl_SXCField12_SXDAutoshow>();
-	proc.optional<SXAddl_SXCField12_SXDISXTH>();
-	proc.optional<SXADDLAUTOSORT>();
-	proc.mandatory<SXAddl_SXCField12_SXDVerUpdInv>();
-	proc.repeated<UNKNOWNFRT>(0, 0);
-	proc.mandatory<SXAddl_SXCField12_SXDEnd>();
+	//if(!proc.mandatory<SXAddl_SXCField12_SXDId>())
+	//{
+	//	return false;
+	//}
+	//proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//proc.mandatory<SXAddl_SXCField12_SXDVer12Info>();
+	//proc.mandatory<SXAddl_SXCField12_SXDVerUpdInv>();
+	//if(proc.optional<SXAddl_SXCField12_SXDMemberCaption>())
+	//{
+	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//proc.optional<SXAddl_SXCField12_SXDAutoshow>();
+	//proc.optional<SXAddl_SXCField12_SXDISXTH>();
+	//proc.optional<SXADDLAUTOSORT>();
+	//proc.mandatory<SXAddl_SXCField12_SXDVerUpdInv>();
+	//proc.repeated<UNKNOWNFRT>(0, 0);
+	//proc.mandatory<SXAddl_SXCField12_SXDEnd>();
 
 	return true;
 }

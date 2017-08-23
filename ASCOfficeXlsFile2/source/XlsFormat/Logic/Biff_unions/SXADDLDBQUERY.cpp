@@ -61,39 +61,39 @@ SXADDLDBQUERY = [SXAddl_SXCQuery_SXDXMLSource *Continue_SxaddlSxString]
 */
 const bool SXADDLDBQUERY::loadContent(BinProcessor& proc)
 {
-	int count = 0;
-	
-	if(proc.optional<SXAddl_SXCQuery_SXDXMLSource>())
-	{
-		m_XMLSource = elements_.back();
-		elements_.pop_back();
+	//int count = 0;
+	//
+	//if(proc.optional<SXAddl_SXCQuery_SXDXMLSource>())
+	//{
+	//	m_XMLSource = elements_.back();
+	//	elements_.pop_back();
 
-		count = proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	if(proc.optional<SXAddl_SXCQuery_SXDSrcDataFile>())
-	{
-		m_SrcDataFile = elements_.back();
-		elements_.pop_back();
+	//	count = proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//if(proc.optional<SXAddl_SXCQuery_SXDSrcDataFile>())
+	//{
+	//	m_SrcDataFile = elements_.back();
+	//	elements_.pop_back();
 
-		count = proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	if(proc.optional<SXAddl_SXCQuery_SXDSrcConnFile>())
-	{
-		m_SrcConnFile = elements_.back();
-		elements_.pop_back();
+	//	count = proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//if(proc.optional<SXAddl_SXCQuery_SXDSrcConnFile>())
+	//{
+	//	m_SrcConnFile = elements_.back();
+	//	elements_.pop_back();
 
-		count = proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	if(proc.optional<SXAddl_SXCQuery_SXDReconnCond>())
-	{
-		m_ReconnCond = elements_.back();
-		elements_.pop_back();
-	}
+	//	count = proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//if(proc.optional<SXAddl_SXCQuery_SXDReconnCond>())
+	//{
+	//	m_ReconnCond = elements_.back();
+	//	elements_.pop_back();
+	//}
 
-	if(proc.mandatory<SXAddl_SXCQuery_SXDEnd>())
-	{
-		elements_.pop_back();
-	}
+	//if(proc.mandatory<SXAddl_SXCQuery_SXDEnd>())
+	//{
+	//	elements_.pop_back();
+	//}
 
 	return m_XMLSource || m_SrcConnFile || m_SrcDataFile || m_ReconnCond;
 }

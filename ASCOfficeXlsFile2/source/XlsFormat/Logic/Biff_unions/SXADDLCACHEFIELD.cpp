@@ -59,11 +59,11 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{
-		if(!proc.mandatory<SXAddl_SXCCacheField_SXDCaption>())
-		{
-			return false;
-		}
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
+		//if(!proc.mandatory<SXAddl_SXCCacheField_SXDCaption>())
+		//{
+		//	return false;
+		//}
+		//proc.repeated<Continue_SxaddlSxString>(0, 0);
 		return true;
 	};
 };
@@ -81,11 +81,11 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{
-		if(!proc.mandatory<SXAddl_SXCCacheField_SXDPropName>())
-		{
-			return false;
-		}
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
+		//if(!proc.mandatory<SXAddl_SXCCacheField_SXDPropName>())
+		//{
+		//	return false;
+		//}
+		//proc.repeated<Continue_SxaddlSxString>(0, 0);
 		return true;
 	};
 };
@@ -102,11 +102,11 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{
-		if(!proc.mandatory<SXAddl_SXCCacheField_SXDProperty>())
-		{
-			return false;
-		}
-		proc.optional<Parenthesis_SXADDLCACHEFIELD_3>();
+		//if(!proc.mandatory<SXAddl_SXCCacheField_SXDProperty>())
+		//{
+		//	return false;
+		//}
+		//proc.optional<Parenthesis_SXADDLCACHEFIELD_3>();
 		return true;
 	};
 };
@@ -123,11 +123,11 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{
-		if(!proc.mandatory<SXAddl_SXCCacheField_SXDIfdbMpMapCount>())
-		{
-			return false;
-		}
-		proc.mandatory<SXAddl_SXCCacheField_SXDIfdbMempropMap>();
+		//if(!proc.mandatory<SXAddl_SXCCacheField_SXDIfdbMpMapCount>())
+		//{
+		//	return false;
+		//}
+		//proc.mandatory<SXAddl_SXCCacheField_SXDIfdbMempropMap>();
 		return true;
 	};
 };
@@ -144,12 +144,12 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{
-		if(!proc.mandatory<SXAddl_SXCCacheField_SXDSxrmitmCount>())
-		{
-			return false;
-		}
-		proc.repeated<SXADDLCACHEITEM>(0, 0);
-		proc.mandatory<SXAddl_SXCCacheItem_SXDEnd>();
+		//if(!proc.mandatory<SXAddl_SXCCacheField_SXDSxrmitmCount>())
+		//{
+		//	return false;
+		//}
+		//proc.repeated<SXADDLCACHEITEM>(0, 0);
+		//proc.mandatory<SXAddl_SXCCacheItem_SXDEnd>();
 		return true;
 	};
 };
@@ -171,16 +171,16 @@ BaseObjectPtr SXADDLCACHEFIELD::clone()
 //                    SXAddl_SXCCacheField_SXDEnd
 const bool SXADDLCACHEFIELD::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory<SXAddl_SXCCacheField_SXDId>())
-	{
-		return false;
-	}
-	proc.repeated<Continue_SxaddlSxString>(0, 0);
-	proc.optional<Parenthesis_SXADDLCACHEFIELD_1>();
-	proc.optional<Parenthesis_SXADDLCACHEFIELD_2>();
-	proc.optional<Parenthesis_SXADDLCACHEFIELD_4>();
-	proc.optional<Parenthesis_SXADDLCACHEFIELD_5>();
-	proc.optional<SXAddl_SXCCacheField_SXDEnd>();
+	//if(!proc.mandatory<SXAddl_SXCCacheField_SXDId>())
+	//{
+	//	return false;
+	//}
+	//proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//proc.optional<Parenthesis_SXADDLCACHEFIELD_1>();
+	//proc.optional<Parenthesis_SXADDLCACHEFIELD_2>();
+	//proc.optional<Parenthesis_SXADDLCACHEFIELD_4>();
+	//proc.optional<Parenthesis_SXADDLCACHEFIELD_5>();
+	//proc.optional<SXAddl_SXCCacheField_SXDEnd>();
 	return true;
 }
 

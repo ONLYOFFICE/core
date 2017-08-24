@@ -1199,10 +1199,10 @@ std::wstring RtfStyle::RenderToOOXBegin(RenderParameter oRenderParameter)
 	if( 1 == m_bHidden )			sResult += L"<w:hidden/>";
 	if( 1 == m_bLocked )			sResult += L"<w:locked/>";
 	if( 1 == m_bPersonal )			sResult += L"<w:personal w:val=\"true\" />";
-	//if( 1 == m_bCompose )			sResult += L"<w:personalCompose w:val=\"true\" />";
+	if( 1 == m_bCompose )			sResult += L"<w:personalCompose w:val=\"true\" />";
 	if( 1 == m_bReply )				sResult += L"<w:personalReply w:val=\"true\" />";
 	if( 1 == m_nSemiHidden )		sResult += L"<w:semiHidden/>";
-	if( 1 == m_bQFormat )			sResult += L"<w:qformat/>";
+	if( 1 == m_bQFormat )			sResult += L"<w:qFormat/>";
 	if( 1 == m_bUnhiddenWhenUse )	sResult += L"<w:unhideWhenUsed/>";
     if( PROP_DEF != m_nPriority )	sResult += L"<w:uiPriority w:val=\"" + std::to_wstring(m_nPriority) + L"\"/>";
 

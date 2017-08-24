@@ -1003,7 +1003,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		oNewProperty = oParam.oRtf->m_oDefaultCharProp; 
 		
 		//применяем внешний стиль
-		//oNewProperty.Merge( oOutputParagraph.m_oProperty.m_oCharProperty );
+		oNewProperty.Merge( oOutputParagraph.m_oProperty.m_oCharProperty );
 		oNewProperty.Merge( m_oCharProperty );
 
 		if( NULL != poStyle && TYPE_RTF_PROPERTY_STYLE_CHAR == poStyle->GetType() )

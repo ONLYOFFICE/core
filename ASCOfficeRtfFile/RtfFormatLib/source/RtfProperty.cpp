@@ -779,7 +779,7 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 		if( true == poRtfDocument->m_oStyleTable.GetStyle( m_nCharStyle, oStyle ) )
 		{
 			sResult += L"<w:pStyle w:val=\"";
-			sResult += oStyle->m_sName;
+			sResult += L"Style_" + std::to_wstring(m_nCharStyle); //oStyle->m_sName;
 			sResult += L"\"/>";
 		}
 	}
@@ -1179,28 +1179,32 @@ std::wstring RtfStyle::RenderToOOXBegin(RenderParameter oRenderParameter)
 		case stSection :	sType = L"numbering";	break;
 		case stTable :		sType = L"table";		break;
 	}
-    sResult += L"<w:style w:type=\"" + sType + L"\" w:styleId=\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\">";
-    sResult += L"<w:name w:val=\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\"/>";
+    //sResult += L"<w:style w:type=\"" + sType + L"\" w:styleId=\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\">";
+	sResult += L"<w:style w:type=\"" + sType + L"\" w:styleId=\"" + L"Style_" + std::to_wstring(m_nID) + L"\">";
+	sResult += L"<w:name w:val=\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\"/>";
 
 	if( PROP_DEF != m_nBasedOn )
 	{
 		RtfStylePtr oBaseStyle;
 		if( true == poDocument->m_oStyleTable.GetStyle( m_nBasedOn, oBaseStyle ) )
-            sResult += L"<w:basedOn w:val=\"" + XmlUtils::EncodeXmlString( oBaseStyle->m_sName ) + L"\"/>";
+		{
+			sResult += L"<w:basedOn w:val=\"Style_" + std::to_wstring(m_nBasedOn) + L"\"/>";
+            //sResult += L"<w:basedOn w:val=\"" + XmlUtils::EncodeXmlString( oBaseStyle->m_sName ) + L"\"/>";
+		}
 	}
 	//if( PROP_DEF != m_nNext )
     //	sResult += L"<w:next w:val=\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\"/>", );//Todo
 	//if( PROP_DEF != m_nLink )
     //	sResult += L"<w:link w:val=\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\"/>", );//Todo
-	if( PROP_DEF != m_bHidden )				sResult += L"<w:hidden/>";
-	if( PROP_DEF != m_bLocked )				sResult += L"<w:locked/>";
-	if( PROP_DEF != m_bPersonal )			sResult += L"<w:personal w:val=\"true\" />";
-	if( PROP_DEF != m_bCompose )			sResult += L"<w:personalCompose w:val=\"true\" />";
-	if( PROP_DEF != m_bReply )				sResult += L"<w:personalReply w:val=\"true\" />";
-	if( 1		==	m_nSemiHidden )			sResult += L"<w:semiHidden/>";
-	if( PROP_DEF != m_bQFormat )			sResult += L"<w:qformat/>";
-    if( PROP_DEF != m_nPriority )			sResult += L"<w:uiPriority w:val=\"" + std::to_wstring(m_nPriority) + L"\"/>";
-	if( PROP_DEF != m_bUnhiddenWhenUse )	sResult += L"<w:unhideWhenUsed/>";
+	if( 1 == m_bHidden )			sResult += L"<w:hidden/>";
+	if( 1 == m_bLocked )			sResult += L"<w:locked/>";
+	if( 1 == m_bPersonal )			sResult += L"<w:personal w:val=\"true\" />";
+	//if( 1 == m_bCompose )			sResult += L"<w:personalCompose w:val=\"true\" />";
+	if( 1 == m_bReply )				sResult += L"<w:personalReply w:val=\"true\" />";
+	if( 1 == m_nSemiHidden )		sResult += L"<w:semiHidden/>";
+	if( 1 == m_bQFormat )			sResult += L"<w:qformat/>";
+	if( 1 == m_bUnhiddenWhenUse )	sResult += L"<w:unhideWhenUsed/>";
+    if( PROP_DEF != m_nPriority )	sResult += L"<w:uiPriority w:val=\"" + std::to_wstring(m_nPriority) + L"\"/>";
 
 	return sResult;
 }
@@ -1965,7 +1969,7 @@ std::wstring RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		if( true == poRtfDocument->m_oStyleTable.GetStyle( m_nStyle, oCurStile ) )
 		{
 			sResult += L"<w:pStyle w:val=\"";
-			sResult += oCurStile->m_sName;
+			sResult += L"Style_" + std::to_wstring(m_nStyle);//oCurStile->m_sName;
 			sResult += L"\"/>" ;
 		}
 	}
@@ -2558,7 +2562,7 @@ std::wstring RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 		if( true == poDocument->m_oStyleTable.GetStyle( m_nStyle, oCurStyle) )
 		{
 			sResult += L"<w:tblStyle w:val=\"";
-			sResult += oCurStyle->m_sName;
+			sResult += L"Style_" + std::to_wstring(m_nStyle); //oCurStyle->m_sName;
 			sResult += L"\"/>";
 		}
 	}

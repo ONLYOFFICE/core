@@ -263,8 +263,8 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 				m_nWrapType			= 3;
 				m_nWrapSideType		= 0;
 				m_bLockAnchor		= 0;
-				m_nZOrder			= 0;//PROP_DEF;
-				m_nZOrderRelative	= 0;//PROP_DEF;
+				//m_nZOrder			= PROP_DEF;
+				m_nZOrderRelative	= 0;
 				m_nLeft				= m_nTop		= 0;
 				m_nRelBottom		= m_nRelRight	= PROP_DEF;
 				m_nPositionV		= m_nPositionH	= PROP_DEF;
@@ -284,16 +284,15 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 				RENDER_RTF_INT	( m_nWrapType		, sResult, L"shpwr" );
 				RENDER_RTF_INT	( m_nWrapSideType	, sResult, L"shpwrk" );
 				
-				
-				//if (st_none == m_eAnchorTypeShape)
-				{
-					RENDER_RTF_INT	( m_nZOrder, sResult, L"shpz" );
-				}
+				RENDER_RTF_INT( m_nZOrderRelative, sResult, L"shpfblwtxt");
+				RENDER_RTF_INT	( m_nZOrder, sResult, L"shpz" );
 				sResult += L"\\shplockanchor";
 
-				//sResult += L"{\\sp{\\sn fUseShapeAnchor}{\\sv 0}}";
-				//sResult += L"{\\sp{\\sn fPseudoInline}{\\sv 1}}";
 				RENDER_RTF_INT( m_nID, sResult, L"shplid" );
+				
+				sResult += L"{\\sp{\\sn fUseShapeAnchor}{\\sv 0}}";
+				sResult += L"{\\sp{\\sn fPseudoInline}{\\sv 1}}";
+				
 			}
 			sResult +=  RenderToRtfShapeProperty( oRenderParameter );
 
@@ -422,13 +421,10 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
     std::wstring sResult;
 
 //Position absolute
-	//if( st_inline != m_eAnchorTypeShape)
-	{
-		RENDER_RTF_SHAPE_PROP(L"posh",		sResult,   	m_nPositionH);
-		RENDER_RTF_SHAPE_PROP(L"posrelh",	sResult,   	m_nPositionHRelative);
-		RENDER_RTF_SHAPE_PROP(L"posv",		sResult,   	m_nPositionV);
-		RENDER_RTF_SHAPE_PROP(L"posrelv",	sResult,	m_nPositionVRelative);
-	}
+	RENDER_RTF_SHAPE_PROP(L"posh",		sResult,   	m_nPositionH);
+	RENDER_RTF_SHAPE_PROP(L"posrelh",	sResult,   	m_nPositionHRelative);
+	RENDER_RTF_SHAPE_PROP(L"posv",		sResult,   	m_nPositionV);
+	RENDER_RTF_SHAPE_PROP(L"posrelv",	sResult,	m_nPositionVRelative);
 
     RENDER_RTF_SHAPE_PROP(L"fLayoutInCell",	sResult,	m_bLayoutInCell);
     RENDER_RTF_SHAPE_PROP(L"fAllowOverlap",	sResult,	m_bAllowOverlap);

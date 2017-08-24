@@ -928,7 +928,7 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 	}
 	if (oox_line_prop->w.IsInit())
 	{
-		pOutput->m_nLineWidth = oox_line_prop->w.get() / 12700;
+		pOutput->m_nLineWidth = oox_line_prop->w.get();
 	}
 	if (oox_line_prop->headEnd.IsInit())
 	{

@@ -324,9 +324,11 @@ namespace OOX
 		{
 			if (sExtension.empty()) return;
 
-			if (m_mapDefaults.find (sExtension) == m_mapDefaults.end())
+			std::wstring sExt = XmlUtils::GetLower(sExtension);
+
+			if (m_mapDefaults.find (sExt) == m_mapDefaults.end())
 			{
-				m_mapDefaults [sExtension] = ContentTypes::CDefault( sExtension );
+				m_mapDefaults [sExt] = ContentTypes::CDefault( sExt );
 			}
 		}
 	private:

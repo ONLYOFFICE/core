@@ -2123,7 +2123,6 @@ namespace BinXlsxRW {
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
-            return res;
 		}
 	};
 	class BinaryCommentReader : public Binary_CommonReader<BinaryCommentReader>

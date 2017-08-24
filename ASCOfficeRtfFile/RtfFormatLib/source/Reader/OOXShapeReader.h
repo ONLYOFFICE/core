@@ -67,6 +67,12 @@ public:
 
 	static bool Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::BlipFill *oox_bitmap_fill);
 private:
+
+	bool ParseShape( ReaderParameter oParam , RtfShapePtr& oOutput);
+	bool ParsePic( ReaderParameter oParam , RtfShapePtr& oOutput);
+
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::Xfrm *xfrm);
+	
 	void Parse(ReaderParameter oParam, PPTX::Logic::ColorBase	*oox_color,			unsigned int & nColor, _CP_OPT(double) &opacity);
 	void Parse(ReaderParameter oParam, PPTX::Logic::SolidFill	*oox_solid_fill,	unsigned int & nColor, _CP_OPT(double) &opacity);
 	

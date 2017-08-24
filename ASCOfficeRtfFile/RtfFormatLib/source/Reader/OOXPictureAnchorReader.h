@@ -49,6 +49,15 @@ public:
 
 		pOutput->m_eAnchorTypeShape	= RtfShape::st_anchor;
 
+		if ( m_ooxAnchor->m_oDocPr.IsInit() )
+		{
+			pOutput->m_nID			= m_ooxAnchor->m_oDocPr->id + 1025;
+			pOutput->m_sName		= m_ooxAnchor->m_oDocPr->name;
+
+			if (m_ooxAnchor->m_oDocPr->descr.IsInit())
+				pOutput->m_sDescription = m_ooxAnchor->m_oDocPr->descr.get();
+		}
+
 		pOutput->m_bAllowOverlap	= m_ooxAnchor->m_oAllowOverlap.IsInit() ? m_ooxAnchor->m_oAllowOverlap->ToBool()	: false;
 		pOutput->m_nZOrderRelative	= m_ooxAnchor->m_oBehindDoc.IsInit()	? m_ooxAnchor->m_oBehindDoc->ToBool()		: false;
 		pOutput->m_bHidden			= m_ooxAnchor->m_oHidden.IsInit()		? m_ooxAnchor->m_oHidden->ToBool()			: false;

@@ -44,13 +44,13 @@ int OOXGraphicReader::Parse( ReaderParameter oParam , RtfShapePtr & pOutput)
 	{
 		if (m_ooxGraphic->element.getType() == OOX::et_p_ShapeTree)
 		{
-			OOXShapeReader shapeReader(m_ooxGraphic->element.GetElem().operator->());
-			return (shapeReader.Parse(oParam, pOutput) ? 1 : 0);
+			OOXShapeGroupReader groupReader(dynamic_cast<PPTX::Logic::SpTree*>(m_ooxGraphic->element.GetElem().operator->()));
+			return (groupReader.Parse(oParam, pOutput) ? 1 : 0);
 		}
 		else
 		{
-			OOXShapeGroupReader groupReader(dynamic_cast<PPTX::Logic::SpTree*>(m_ooxGraphic->element.GetElem().operator->()));
-			return (groupReader.Parse(oParam, pOutput) ? 1 : 0);
+			OOXShapeReader shapeReader(m_ooxGraphic->element.GetElem().operator->());
+			return (shapeReader.Parse(oParam, pOutput) ? 1 : 0);
 		}
 	}
 	if (m_ooxGraphic->olePic.IsInit())

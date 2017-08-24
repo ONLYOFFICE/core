@@ -2106,21 +2106,6 @@ namespace BinXlsxRW {
 				res = c_oSerConstants::ReadUnknown;
 			return res;
 		}
-		int ReadVbaProject(BYTE type, long length, void* poResult)
-		{
-			int res = c_oSerConstants::ReadOk;
-
-            smart_ptr<OOX::VbaProject> oFileVbaProject(new OOX::VbaProject());
-
-            oFileVbaProject->fromPPTY(&m_oBufferedStream);
-
-            smart_ptr<OOX::File> oFile = oFileVbaProject.smart_dynamic_cast<OOX::File>();
-            const OOX::RId oRId = m_oWorkbook.Add(oFile);
-
-            m_oWorkbook.m_bMacroEnabled = true;
-
-            return res;
-        }
 	};
 	class BinaryCommentReader : public Binary_CommonReader<BinaryCommentReader>
 	{

@@ -905,23 +905,28 @@ namespace PPTX
 				}
 				if (!blipFill.blip->mediaRid.empty())
 				{
-					PPTX::Logic::Ext ext;
+                    PPTX::Logic::Ext ext;
 					ext.link	= OOX::RId(blipFill.blip->mediaRid);
 					nvPicPr.nvPr.extLst.push_back(ext);
 
-					int nRId = -1;
+                    std::wstring strMediaRelsPath;
+                    if (pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX)	strMediaRelsPath = L"media/";
+                    else														strMediaRelsPath = L"../media/";
+
+                    smart_ptr<OOX::Media> mediaFile = blipFill.additionalFile.smart_dynamic_cast<OOX::Media>();
+                    strMediaRelsPath += mediaFile->filename().GetFilename();
+
+                    int nRId = -1;
 					if (blipFill.additionalFile.is<OOX::Audio>())
 					{
 						nvPicPr.nvPr.media.Media = new PPTX::Logic::MediaFile(L"audioFile");
-						nRId = pReader->m_pRels->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio",
-							L"NULL", L"External");
+                        nRId = pReader->m_pRels->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio", strMediaRelsPath, L"");
 
 					}
 					if (blipFill.additionalFile.is<OOX::Video>())
 					{
 						nvPicPr.nvPr.media.Media = new PPTX::Logic::MediaFile(L"videoFile");
-						nRId = pReader->m_pRels->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video",
-							L"NULL", L"External");
+                        nRId = pReader->m_pRels->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video", strMediaRelsPath, L"");
 					}
 
 					if (nvPicPr.nvPr.media.Media.IsInit() && nRId > 0)

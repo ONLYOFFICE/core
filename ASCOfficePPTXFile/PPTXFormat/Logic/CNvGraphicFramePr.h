@@ -121,7 +121,7 @@ namespace PPTX
 				oAttr.Write(_T("noSelect"),			noSelect);
 
 				std::wstring namespaceLocks = L"a";
-				if (m_namespace == L"wp") namespaceLocks = L"wp";
+				//if (m_namespace == L"wp") namespaceLocks = L"wp";
 
 				return XmlUtils::CreateNode(m_namespace + L":cNvGraphicFramePr", oAttr.m_strValue.empty() ? L"" : XmlUtils::CreateNode(namespaceLocks + L":graphicFrameLocks", oAttr));
 			}

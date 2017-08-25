@@ -134,7 +134,7 @@ namespace PPTX
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
 				{
-					namespaceLock_	= L"wp";
+					namespaceLock_	= L"a";
 					namespace_		= L"wp";
 				}
 

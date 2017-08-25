@@ -346,8 +346,11 @@ namespace PPTX
 							pReader->m_pRels = new NSBinPptxRW::CRelsGenerator();
 
 							oDrawingConverter.SetMainDocument(&oDocxSerializer);
-							oDrawingConverter.SetSourceFileDir(pReader->m_strFolder, 1);
-							oDrawingConverter.SetMediaDstPath(sMediaPath);
+
+                            oDrawingConverter.SetDstPath(sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"word");
+                            oDrawingConverter.SetSrcPath(pReader->m_strFolder, 1);
+
+                            oDrawingConverter.SetMediaDstPath(sMediaPath);
 							oDrawingConverter.SetEmbedDstPath(sEmbedPath);
 
 							std::wstring sDocxFilename = L"Microsoft_Word_Document" + std::to_wstring( id ) + L".docx";
@@ -434,8 +437,10 @@ namespace PPTX
 							oDrawingConverter.m_pReader = pReader;
 							pReader->m_pRels = new NSBinPptxRW::CRelsGenerator();
 
-							oDrawingConverter.SetSourceFileDir(pReader->m_strFolder, 2);
-							oDrawingConverter.SetMediaDstPath(sMediaPath);
+                            oDrawingConverter.SetDstPath(sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl");
+                            oDrawingConverter.SetSrcPath(pReader->m_strFolder, 2);
+
+                            oDrawingConverter.SetMediaDstPath(sMediaPath);
 							oDrawingConverter.SetEmbedDstPath(sEmbedPath);
 
 							std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring( id ) + L".xlsx";

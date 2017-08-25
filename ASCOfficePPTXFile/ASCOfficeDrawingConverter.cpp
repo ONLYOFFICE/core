@@ -913,20 +913,29 @@ HRESULT CDrawingConverter::SetMainDocument(BinDocxRW::CDocxSerializer* pDocument
 	return S_OK;
 }
 
-HRESULT CDrawingConverter::SetMediaDstPath(const std::wstring& bsMediaPath)
+void CDrawingConverter::SetSrcPath(const std::wstring& sPath, int nDocType)
 {
-	m_pBinaryWriter->m_pCommon->m_pImageManager->m_strDstMedia = (std::wstring)bsMediaPath;
-	m_pImageManager->SetDstMedia(m_pBinaryWriter->m_pCommon->m_pImageManager->m_strDstMedia);
+    m_pReader->m_pRels->m_pManager  = m_pImageManager;
+    m_pReader->m_strFolder          = sPath;
 
-    NSDirectory::CreateDirectory(bsMediaPath);
-	return S_OK;
+    m_pImageManager->m_nDocumentType = nDocType;
 }
-HRESULT CDrawingConverter::SetEmbedDstPath(const std::wstring& bsEmbedPath)
+void CDrawingConverter::SetDstPath(const std::wstring& sPath)
 {
-	m_pImageManager->SetDstEmbed(bsEmbedPath);
+    m_pImageManager->SetDstFolder(sPath);
+}
+void CDrawingConverter::SetMediaDstPath(const std::wstring& sPath)
+{
+    m_pBinaryWriter->m_pCommon->m_pImageManager->m_strDstMedia = sPath;
+    m_pImageManager->SetDstMedia(sPath);
 
-    NSDirectory::CreateDirectory(bsEmbedPath);
-	return S_OK;
+    NSDirectory::CreateDirectory(sPath);
+}
+void CDrawingConverter::SetEmbedDstPath(const std::wstring& sPath)
+{
+    m_pImageManager->SetDstEmbed(sPath);
+
+    NSDirectory::CreateDirectory(sPath);
 }
 HRESULT CDrawingConverter::AddShapeType(const std::wstring& bsXml)
 {
@@ -5272,14 +5281,6 @@ OOX::CContentTypes* CDrawingConverter::GetContentTypes()
 {
 	return m_pImageManager->m_pContentTypes;
     //return m_pReader->mm_strContentTypes;
-}
-
-void CDrawingConverter::SetSourceFileDir(std::wstring path, int nDocType)
-{
-    m_pReader->m_pRels->m_pManager  = m_pImageManager;
-    m_pReader->m_strFolder          = path;
-
-	m_pImageManager->m_nDocumentType = nDocType;
 }
 
 void CDrawingConverter::Clear()

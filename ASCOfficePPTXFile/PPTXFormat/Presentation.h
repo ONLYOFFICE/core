@@ -469,8 +469,8 @@ namespace PPTX
 		bool						m_bMacroEnabled;
 		smart_ptr<OOX::VbaProject>	m_pVbaProject;
 		
-		void SetClrMap(Logic::ClrMap map)				{m_clrMap = map;};
-		void SetClrScheme(nsTheme::ClrScheme scheme)	{m_clrScheme = scheme;};
+        void SetClrMap(Logic::ClrMap map)				{m_clrMap = map;}
+        void SetClrScheme(nsTheme::ClrScheme scheme)	{m_clrScheme = scheme;}
 
 		DWORD GetRGBAFromMap(const std::wstring& str)const
 		{

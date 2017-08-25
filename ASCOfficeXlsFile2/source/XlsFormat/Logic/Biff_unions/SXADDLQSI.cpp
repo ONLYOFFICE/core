@@ -58,13 +58,13 @@ BaseObjectPtr SXADDLQSI::clone()
 // SXADDLQSI = SXAddl_SXCQsi_SXDId SXADDLDBQUERY *UNKNOWNFRT SXAddl_SXCQsi_SXDEnd
 const bool SXADDLQSI::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory<SXAddl_SXCQsi_SXDId>())
-	{
-		return false;
-	}
-	proc.mandatory<SXADDLDBQUERY>();
-	proc.repeated<UNKNOWNFRT>(0, 0);
-	proc.mandatory<SXAddl_SXCQsi_SXDEnd>();
+	//if(!proc.mandatory<SXAddl_SXCQsi_SXDId>())
+	//{
+	//	return false;
+	//}
+	//proc.mandatory<SXADDLDBQUERY>();
+	//proc.repeated<UNKNOWNFRT>(0, 0);
+	//proc.mandatory<SXAddl_SXCQsi_SXDEnd>();
 
 	return true;
 }

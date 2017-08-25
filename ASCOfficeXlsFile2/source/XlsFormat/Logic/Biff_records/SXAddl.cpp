@@ -65,60 +65,370 @@ BaseObjectPtr SXAddl::clone()
 
 void SXAddl::readFields(CFRecord& record)
 {
-	m_SXAddlHdr.load(record);
+	record >> frtHeaderOld >> sxc >> sxd;
+	switch(sxc)
+	{
+		case 0x00:	content	= createSxcView		(record);	break;
+		case 0x01:	content	= createSxcField	(record);	break;
+		case 0x02:	content = createSxcHierarchy(record);	break;
+		case 0x03:	content = createSxcCache	(record);	break;
+		case 0x04:	content = createSxcCacheField(record);	break;
+		case 0x05:	content = createSxcQsi		(record);	break;
+		case 0x06:	content = createSxcQuery	(record);	break;
+		case 0x07:	content = createSxcGrpLevel	(record);	break;
+		case 0x08:	content = createSxcGroup	(record);	break;
+		case 0x09:	content = createSxcCacheItem(record);	break;
+		case 0x0C:	content = createSxcSXRule	(record);	break;
+		case 0x0D:	content = createSxcSXFilt	(record);	break;
+		case 0x10:	content = createSxcSXDH		(record);	break;
+		case 0x12:	content = createSxcAutoSort	(record);	break;
+		case 0x13:	content = createSxcSXMgs	(record);	break;
+		case 0x14:	content = createSxcSXMg		(record);	break;
+		case 0x17:	content = createSxcField12	(record);	break;
+		case 0x1A:	content = createSxcSXCondFmts(record);	break;
+		case 0x1B:	content = createSxcSXCondFmt(record);	break;
+		case 0x1C:	content = createSxcSXFilters12(record);	break;
+		case 0x1D:	content = createSxcSXFilter12(record);	break;
+	}
+	if (content)
+		content->load(record);
 
-	Log::error("SXAddl record is not implemented.");
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
-//-------------------------------------------------------------------------------------------------------
-BaseObjectPtr SXAddl_SXCCache_SXDId::clone()
+BiffStructurePtr SXAddl::createSxcView(CFRecord& record)
 {
-	return BaseObjectPtr(new SXAddl_SXCCache_SXDId(*this));
-}
-void SXAddl_SXCCache_SXDId::readFields(CFRecord& record)
-{
-	m_SXAddlHdr.load(record);
+	BiffStructurePtr result;
 	
-	short reserved;
-	record >> idCache >> reserved;
+	switch(sxd)
+	{
+		case 0x00: result = BiffStructurePtr(new SXAddl_SXCView_SXDId());				break;
+		case 0x1E: result = BiffStructurePtr(new SXAddl_SXCView_SXDTableStyleClient()); break;
+		case 0xff: result = BiffStructurePtr(new SXAddl_SXCView_SXDEnd());				break;
+	}
+	return result;
+}
+
+BiffStructurePtr SXAddl::createSxcField(CFRecord& record)
+{
+	BiffStructurePtr result;	
+	switch(sxd)
+	{
+		case 0x00: result = BiffStructurePtr(new SXAddl_SXCField_SXDId());			break;
+		case 0x02: result = BiffStructurePtr(new SXAddl_SXCField_SXDVer10Info());	break;
+		case 0xff: result = BiffStructurePtr(new SXAddl_SXCField_SXDEnd());			break;
+	}
+	return result;
+}
+BiffStructurePtr SXAddl::createSxcHierarchy(CFRecord& record)
+{
+	BiffStructurePtr result;	
+	switch(sxd)
+	{
+		case 0xff: break;
+	}
+
+	if (result)
+		result->load(record);
+
+	return result;
+}
+BiffStructurePtr SXAddl::createSxcCache	(CFRecord& record)
+{
+	BiffStructurePtr result;
+	switch(sxd)
+	{
+		case 0x00: result = BiffStructurePtr(new SXAddl_SXCCache_SXDId());				break;
+		case 0x01: result = BiffStructurePtr(new SXAddl_SXCCache_SXDVerUpdInv());		break;
+		case 0x02: result = BiffStructurePtr(new SXAddl_SXCCache_SXDVer10Info());		break;
+		case 0x18: result = BiffStructurePtr(new SXAddl_SXCCache_SXDVerSXMacro());		break;
+		case 0x34: result = BiffStructurePtr(new SXAddl_SXCCache_SXDInvRefreshReal());	break;
+		case 0x41: result = BiffStructurePtr(new SXAddl_SXCCache_SXDInfo12());			break;
+		case 0xff: result = BiffStructurePtr(new SXAddl_SXCCache_SXDEnd());				break;
+	}
+	return result;
+}
+BiffStructurePtr SXAddl::createSxcCacheField(CFRecord& record)
+{
+	BiffStructurePtr result;	
+	switch(sxd)
+	{
+		case 0x00: result = BiffStructurePtr(new SXAddl_SXCCacheField_SXDId());				break;
+		case 0x05: result = BiffStructurePtr(new SXAddl_SXCCacheField_SXDProperty());		break;
+		case 0x2d: result = BiffStructurePtr(new SXAddl_SXCCacheField_SXDSxrmitmCount());	break;
+		case 0x2f: result = BiffStructurePtr(new SXAddl_SXCCacheField_SXDCaption());		break;
+		case 0x30: result = BiffStructurePtr(new SXAddl_SXCCacheField_SXDIfdbMempropMap());	break;
+		case 0x31: result = BiffStructurePtr(new SXAddl_SXCCacheField_SXDIfdbMpMapCount());	break;
+		case 0x40: result = BiffStructurePtr(new SXAddl_SXCCacheField_SXDPropName());		break;
+		case 0xff: result = BiffStructurePtr(new SXAddl_SXCCacheField_SXDEnd());			break;
+	}
+	return result;
+}
+BiffStructurePtr SXAddl::createSxcQsi(CFRecord& record)
+{
+	BiffStructurePtr result;	
+	switch(sxd)
+	{
+		case 0xff: break;
+	}
+	return result;
+}	
+BiffStructurePtr SXAddl::createSxcQuery(CFRecord& record)
+{
+	BiffStructurePtr result;	
+	switch(sxd)
+	{
+		case 0xff: break;
+	}
+	return result;
+}
+BiffStructurePtr SXAddl::createSxcGrpLevel(CFRecord& record)
+{
+	BiffStructurePtr result;	
+	switch(sxd)
+	{
+		case 0xff: break;
+	}
+	return result;
+}
+BiffStructurePtr SXAddl::createSxcGroup(CFRecord& record)
+{
+	BiffStructurePtr result;	
+	switch(sxd)
+	{
+		case 0xff: break;
+	}
+	return result;
+}
+BiffStructurePtr SXAddl::createSxcCacheItem(CFRecord& record)
+{
+	BiffStructurePtr result;	
+	switch(sxd)
+	{
+		case 0xff: break;
+	}
+	return result;
+}
+BiffStructurePtr SXAddl::createSxcSXRule(CFRecord& record)
+{
+	BiffStructurePtr result;	
+	switch(sxd)
+	{
+		case 0xff: break;
+	}
+	return result;
+}
+BiffStructurePtr SXAddl::createSxcSXFilt(CFRecord& record)
+{
+	BiffStructurePtr result;	
+	switch(sxd)
+	{
+		case 0xff: break;
+	}
+	return result;
+}
+BiffStructurePtr SXAddl::createSxcSXDH(CFRecord& record)
+{
+	BiffStructurePtr result;
+	switch(sxd)
+	{
+		case 0xff: break;
+	}
+	return result;
+}
+BiffStructurePtr SXAddl::createSxcAutoSort(CFRecord& record)
+{
+	BiffStructurePtr result;	
+	switch(sxd)
+	{
+		case 0xff: break;
+	}
+	return result;
+}
+BiffStructurePtr SXAddl::createSxcSXMgs(CFRecord& record)
+{
+	BiffStructurePtr result;	
+	switch(sxd)
+	{
+		case 0xff: break;
+	}
+	return result;
+}
+BiffStructurePtr SXAddl::createSxcSXMg(CFRecord& record)
+{
+	BiffStructurePtr result;	
+	switch(sxd)
+	{
+		case 0xff: break;
+	}
+	return result;
+}
+BiffStructurePtr SXAddl::createSxcField12(CFRecord& record)
+{
+	BiffStructurePtr result;	
+	switch(sxd)
+	{
+		case 0xff: break;
+	}
+	return result;
+}
+BiffStructurePtr SXAddl::createSxcSXCondFmts(CFRecord& record)
+{
+	BiffStructurePtr result;	
+	switch(sxd)
+	{
+		case 0xff: break;
+	}
+	return result;
+}
+BiffStructurePtr SXAddl::createSxcSXCondFmt(CFRecord& record)
+{
+	BiffStructurePtr result;	
+	switch(sxd)
+	{
+		case 0xff: break;
+	}
+	return result;
+}
+BiffStructurePtr SXAddl::createSxcSXFilters12(CFRecord& record)
+{
+	BiffStructurePtr result;	
+	switch(sxd)
+	{
+		case 0xff: break;
+	}
+	return result;
+}
+BiffStructurePtr SXAddl::createSxcSXFilter12(CFRecord& record)
+{
+	BiffStructurePtr result;	
+	switch(sxd)
+	{
+		case 0xff: break;
+	}
+	return result;
 }
 //----------------------------------------------------------------------------
-BaseObjectPtr SXAddl_SXCCache_SXDEnd::clone()
+BiffStructurePtr SXAddl_SXCField_SXDId::clone()
 {
-	return BaseObjectPtr(new SXAddl_SXCCache_SXDEnd(*this));
+	return BiffStructurePtr(new SXAddl_SXCField_SXDId(*this));
 }
-void SXAddl_SXCCache_SXDEnd::readFields(CFRecord& record)
-{
-	m_SXAddlHdr.load(record);
 
+void SXAddl_SXCField_SXDId::load(CFRecord& record)
+{
+	record >> stName;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCView_SXDId::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCView_SXDId(*this));
+}
+
+void SXAddl_SXCView_SXDId::load(CFRecord& record)
+{
+	record >> stName;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCField_SXDEnd::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCField_SXDEnd(*this));
+}
+
+void SXAddl_SXCField_SXDEnd::load(CFRecord& record)
+{
 	_UINT32	reserved1;
 	short	reserved2;	
 	record >> reserved1 >> reserved2;
 }
 //----------------------------------------------------------------------------
-BaseObjectPtr Continue_SxaddlSxString::clone()
+BiffStructurePtr SXAddl_SXCView_SXDEnd::clone()
 {
-	return BaseObjectPtr(new Continue_SxaddlSxString(*this));
+	return BiffStructurePtr(new SXAddl_SXCView_SXDEnd(*this));
 }
 
-void Continue_SxaddlSxString::readFields(CFRecord& record)
+void SXAddl_SXCView_SXDEnd::load(CFRecord& record)
 {
-	m_SXAddlHdr.load(record);
-	
+	_UINT32	reserved1;
+	short	reserved2;	
+	record >> reserved1 >> reserved2;
+}
+//-------------------------------------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCCacheItem_SXDId::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCCacheItem_SXDId(*this));
+}
+
+void SXAddl_SXCCacheItem_SXDId::load(CFRecord& record)
+{
+	short reserved;
+	record >> dwItem >> reserved;
+}
+//-------------------------------------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCCacheField_SXDId::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCCacheField_SXDId(*this));
+}
+
+void SXAddl_SXCCacheField_SXDId::load(CFRecord& record)
+{
+	record >> stSourceName;
+}
+//-------------------------------------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCCache_SXDId::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCCache_SXDId(*this));
+}
+
+void SXAddl_SXCCache_SXDId::load(CFRecord& record)
+{
+	short reserved;
+	record >> idCache >> reserved;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCCache_SXDEnd::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCCache_SXDEnd(*this));
+}
+
+void SXAddl_SXCCache_SXDEnd::load(CFRecord& record)
+{
+	_UINT32	reserved1;
+	short	reserved2;	
+	record >> reserved1 >> reserved2;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCField_SXDVer10Info::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCField_SXDVer10Info(*this));
+}
+
+void SXAddl_SXCField_SXDVer10Info::load(CFRecord& record)
+{
+	_UINT32	flags;
+	short	reserved2;	
+	record >> flags >> reserved2;
+
+	fHideDD = GETBIT(flags, 0);
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr Continue_SxaddlSxString::clone()
+{
+	return BiffStructurePtr(new Continue_SxaddlSxString(*this));
+}
+
+void Continue_SxaddlSxString::load(CFRecord& record)
+{
 	int sz = record.getDataSize() - record.getRdPtr();
 
 	if (sz > 0)
 		record >> stContinue;
 }
 //----------------------------------------------------------------------------
-BaseObjectPtr SXAddl_SXCCache_SXDVer10Info::clone()
+BiffStructurePtr SXAddl_SXCCache_SXDVer10Info::clone()
 {
-	return BaseObjectPtr(new SXAddl_SXCCache_SXDVer10Info(*this));
+	return BiffStructurePtr(new SXAddl_SXCCache_SXDVer10Info(*this));
 }
-void SXAddl_SXCCache_SXDVer10Info::readFields(CFRecord& record)
-{
-	m_SXAddlHdr.load(record);
 
+void SXAddl_SXCCache_SXDVer10Info::load(CFRecord& record)
+{
 	_UINT32	reserved1;
 	short	reserved2;	
 	record >> reserved1 >> reserved2;
@@ -131,28 +441,28 @@ void SXAddl_SXCCache_SXDVer10Info::readFields(CFRecord& record)
 	record >> reserved2;
 }
 //----------------------------------------------------------------------------
-BaseObjectPtr SXAddl_SXCCache_SXDVerUpdInv::clone()
-{
-	return BaseObjectPtr(new SXAddl_SXCCache_SXDVerUpdInv(*this));
-}
-void SXAddl_SXCCache_SXDVerUpdInv::readFields(CFRecord& record)
-{
-	m_SXAddlHdr.load(record);
 
+BiffStructurePtr SXAddl_SXCCache_SXDVerUpdInv::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCCache_SXDVerUpdInv(*this));
+}
+
+void SXAddl_SXCCache_SXDVerUpdInv::load(CFRecord& record)
+{
 	record >> dwVersionInvalidates;
 
 	record.skipNunBytes(5);
 	
 }
 //----------------------------------------------------------------------------
-BaseObjectPtr SXAddl_SXCCache_SXDInfo12::clone()
-{
-	return BaseObjectPtr(new SXAddl_SXCCache_SXDInfo12(*this));
-}
-void SXAddl_SXCCache_SXDInfo12::readFields(CFRecord& record)
-{
-	m_SXAddlHdr.load(record);
 
+BiffStructurePtr SXAddl_SXCCache_SXDInfo12::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCCache_SXDInfo12(*this));
+}
+
+void SXAddl_SXCCache_SXDInfo12::load(CFRecord& record)
+{
 	_UINT32	flags;
 	short	reserved;	
 	
@@ -163,39 +473,27 @@ void SXAddl_SXCCache_SXDInfo12::readFields(CFRecord& record)
 	fSrvSupportSubQuery		= GETBIT(flags, 2);
 }
 //----------------------------------------------------------------------------
-BaseObjectPtr SXAddl_SXCCache_SXDVerSXMacro::clone()
-{
-	return BaseObjectPtr(new SXAddl_SXCCache_SXDVerSXMacro(*this));
-}
-void SXAddl_SXCCache_SXDVerSXMacro::readFields(CFRecord& record)
-{
-	m_SXAddlHdr.load(record);
 
+BiffStructurePtr SXAddl_SXCCache_SXDVerSXMacro::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCCache_SXDVerSXMacro(*this));
+}
+
+void SXAddl_SXCCache_SXDVerSXMacro::load(CFRecord& record)
+{
 	unsigned char	reserved1;
 	short			reserved2, reserved3;	
 	
 	record >> dwVer >> reserved1 >> reserved2 >> reserved3;
 }
 //----------------------------------------------------------------------------
-BaseObjectPtr SXAddl_SXCView_SXDId::clone()
+BiffStructurePtr SXAddl_SXCCacheField_SXDIfdbMempropMap::clone()
 {
-	return BaseObjectPtr(new SXAddl_SXCView_SXDId(*this));
+	return BiffStructurePtr(new SXAddl_SXCCacheField_SXDIfdbMempropMap(*this));
 }
-void SXAddl_SXCView_SXDId::readFields(CFRecord& record)
+
+void SXAddl_SXCCacheField_SXDIfdbMempropMap::load(CFRecord& record)
 {
-	m_SXAddlHdr.load(record);
-	
-	record >> stName;
-}
-//----------------------------------------------------------------------------
-BaseObjectPtr SXAddl_SXCCacheField_SXDIfdbMempropMap::clone()
-{
-	return BaseObjectPtr(new SXAddl_SXCCacheField_SXDIfdbMempropMap(*this));
-}
-void SXAddl_SXCCacheField_SXDIfdbMempropMap::readFields(CFRecord& record)
-{
-	m_SXAddlHdr.load(record);
-	
 	record.skipNunBytes(6);
 	
 	int sz = record.getDataSize() - record.getRdPtr();
@@ -208,6 +506,106 @@ void SXAddl_SXCCacheField_SXDIfdbMempropMap::readFields(CFRecord& record)
 		rgMap.push_back(val);
 	}
 }
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCView_SXDTableStyleClient::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCView_SXDTableStyleClient(*this));
+}
 
+void SXAddl_SXCView_SXDTableStyleClient::load(CFRecord& record)
+{
+	record.skipNunBytes(6);
+	
+	unsigned short	flags;
+	
+	record >> flags >> stName;
+
+	fLastColumn		= GETBIT(flags, 1);
+	fRowStrips		= GETBIT(flags, 2);
+	fColumnStrips	= GETBIT(flags, 3);
+	fRowHeaders		= GETBIT(flags, 4);
+	fColumnHeaders	= GETBIT(flags, 5);
+	fDefaultStyle	= GETBIT(flags, 6);
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCCacheField_SXDSxrmitmCount::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCCacheField_SXDSxrmitmCount(*this));
+}
+
+void SXAddl_SXCCacheField_SXDSxrmitmCount::load(CFRecord& record)
+{
+	short	reserved2;	
+	record >> citm >> reserved2;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCCacheField_SXDPropName::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCCacheField_SXDPropName(*this));
+}
+
+void SXAddl_SXCCacheField_SXDPropName::load(CFRecord& record)
+{
+	record >> stPropName;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCCacheField_SXDProperty::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCCacheField_SXDProperty(*this));
+}
+
+void SXAddl_SXCCacheField_SXDProperty::load(CFRecord& record)
+{
+	short	reserved2;	
+	record >> ihdb >> reserved2;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCCacheField_SXDIfdbMpMapCount::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCCacheField_SXDIfdbMpMapCount(*this));
+}
+
+void SXAddl_SXCCacheField_SXDIfdbMpMapCount::load(CFRecord& record)
+{
+	short	reserved2;	
+	record >> ifdbMemProp >> reserved2;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCCacheField_SXDEnd::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCCacheField_SXDEnd(*this));
+}
+
+void SXAddl_SXCCacheField_SXDEnd::load(CFRecord& record)
+{
+	_UINT32	reserved1;
+	short	reserved2;	
+	record >> reserved1 >> reserved2;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCCacheField_SXDCaption::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCCacheField_SXDCaption(*this));
+}
+
+void SXAddl_SXCCacheField_SXDCaption::load(CFRecord& record)
+{
+	record >> stCaption;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCCache_SXDInvRefreshReal::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCCache_SXDInvRefreshReal(*this));
+}
+
+void SXAddl_SXCCache_SXDInvRefreshReal::load(CFRecord& record)
+{
+	_UINT32	flags;
+	short	reserved2;	
+	record >> flags >> reserved2;
+	
+	fEnableRefresh	= GETBIT(flags, 0);
+	fInvalid		= GETBIT(flags, 1);
+}
 } // namespace XLS
 

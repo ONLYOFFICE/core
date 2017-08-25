@@ -57,12 +57,12 @@ BaseObjectPtr SXADDLSXDH::clone()
 const bool SXADDLSXDH::loadContent(BinProcessor& proc)
 {
 
-	if(!proc.mandatory<SXAddl_SXCSXDH_SXDId>())
-	{
-		return false;
-	}
-	proc.repeated<SXAddl_SXCSXDH_SXDSxdh>(0, 0);
-	proc.mandatory<SXAddl_SXCSXDH_SXDEnd>();
+	//if(!proc.mandatory<SXAddl_SXCSXDH_SXDId>())
+	//{
+	//	return false;
+	//}
+	//proc.repeated<SXAddl_SXCSXDH_SXDSxdh>(0, 0);
+	//proc.mandatory<SXAddl_SXCSXDH_SXDEnd>();
 	return true;
 }
 

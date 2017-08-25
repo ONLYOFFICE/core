@@ -93,6 +93,8 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sSrcFileName, co
 	oDrawingConverter.SetFontDir(m_sFontDir);
 	oDrawingConverter.SetFontPicker(pFontPicker);
 	oDrawingConverter.SetMainDocument(this);
+
+    oDrawingConverter.SetDstPath(pathMain.GetDirectory() + FILE_SEPARATOR_STR + L"word");
 	oDrawingConverter.SetMediaDstPath(pathMedia.GetPath());
 	
 	m_pParamsWriter = new ParamsWriter(&oBufferedStream, &fp, &oDrawingConverter, pEmbeddedFontsManager);
@@ -264,6 +266,8 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 			if (NULL != pData)
 			{
 				oDrawingConverter.SetMainDocument(this);
+                oDrawingConverter.SetDstPath(sDstPath + FILE_SEPARATOR_STR + L"word");
+
 				oDrawingConverter.SetMediaDstPath(sMediaPath);
 				oDrawingConverter.SetEmbedDstPath(sEmbedPath);
 				
@@ -273,7 +277,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 				std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
                 std::wstring sFileInDir = strFileInDir.c_str();
 
-                oDrawingConverter.SetSourceFileDir(sFileInDir);
+                oDrawingConverter.SetSrcPath(sFileInDir);
 				
 				BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter);
 				oBinaryFileReader.ReadFile();

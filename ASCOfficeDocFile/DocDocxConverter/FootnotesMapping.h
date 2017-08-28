@@ -75,6 +75,8 @@ namespace DocFileFormat
 
 					while ( ( cp - m_document->FIB->m_RgLw97.ccpText ) < (*m_document->IndividualFootnotesPlex)[id + 1] )
 					{
+						int cpStart = cp;
+						
 						int fc =  m_document->FindFileCharPos(cp);
 						if (fc < 0) break;
 
@@ -93,6 +95,8 @@ namespace DocFileFormat
 							//this PAPX is for a normal paragraph
 							cp = writeParagraph( cp );
 						}
+						while (cp <= cpStart)	//conv_fQioC665ib4ngHkDGY4__docx.doc
+							cp++;
 					}
 
                     m_pXmlWriter->WriteNodeEnd( L"w:footnote");

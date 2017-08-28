@@ -33,9 +33,9 @@
 #include "OOXMathReader.h"
 #include "OOXParagraphReader.h"
 
-#include "../../../Common/DocxFormat/Source/DocxFormat/Math/OMath.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Math/oMathContent.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Math/oMathBottomNodes.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Math/OMath.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Math/oMathContent.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Math/oMathBottomNodes.h"
 
 bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * ooxMath, RtfMathPtr & rtfMath)
 {

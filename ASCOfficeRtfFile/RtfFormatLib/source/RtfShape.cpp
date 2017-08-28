@@ -256,8 +256,6 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 			sResult += L"{\\shp";
 			sResult += L"{\\*\\shpinst";
 			
-			RENDER_RTF_INT( m_nID , sResult, L"shplid" );
-			
 			if (!m_bInGroup)
 			{
 				m_bAllowOverlap		= 1;
@@ -265,8 +263,8 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 				m_nWrapType			= 3;
 				m_nWrapSideType		= 0;
 				m_bLockAnchor		= 0;
-				m_nZOrder			= PROP_DEF;
-				m_nZOrderRelative	= PROP_DEF;
+				//m_nZOrder			= PROP_DEF;
+				m_nZOrderRelative	= 0;
 				m_nLeft				= m_nTop		= 0;
 				m_nRelBottom		= m_nRelRight	= PROP_DEF;
 				m_nPositionV		= m_nPositionH	= PROP_DEF;
@@ -278,26 +276,28 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 				
 				RENDER_RTF_INT	( m_nHeader			, sResult, L"shpfhdr" );
 				
-				//sResult += L"\\shpbxcolumn";
+				sResult += L"\\shpbxcolumn";
 				sResult += L"\\shpbxignore";
-				//sResult += L"\\shpbypara";
+				sResult += L"\\shpbypara";
 				sResult += L"\\shpbyignore";
 				
 				RENDER_RTF_INT	( m_nWrapType		, sResult, L"shpwr" );
 				RENDER_RTF_INT	( m_nWrapSideType	, sResult, L"shpwrk" );
 				
-				//sResult += L"\\shpfblwtxt0";
+				RENDER_RTF_INT( m_nZOrderRelative, sResult, L"shpfblwtxt");
+				RENDER_RTF_INT	( m_nZOrder, sResult, L"shpz" );
 				sResult += L"\\shplockanchor";
-				
-				RENDER_RTF_INT	( m_nZOrder			, sResult, L"shpz" );
+
+				RENDER_RTF_INT( m_nID, sResult, L"shplid" );
 				
 				sResult += L"{\\sp{\\sn fUseShapeAnchor}{\\sv 0}}";
 				sResult += L"{\\sp{\\sn fPseudoInline}{\\sv 1}}";
+				
 			}
 			sResult +=  RenderToRtfShapeProperty( oRenderParameter );
 
-			sResult += L"{\\sp{\\sn fLockPosition}{\\sv 1}}";
-			sResult += L"{\\sp{\\sn fLockRotation}{\\sv 1}}";		
+			//sResult += L"{\\sp{\\sn fLockPosition}{\\sv 1}}";
+			//sResult += L"{\\sp{\\sn fLockRotation}{\\sv 1}}";		
 		
 			//picture
 			if( 0 != m_oPicture && m_nFillType == 1 || m_nFillType == 2 || m_nFillType == 3 || m_nFillType == 9)
@@ -421,11 +421,11 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
     std::wstring sResult;
 
 //Position absolute
-    RENDER_RTF_SHAPE_PROP(L"posh",		sResult,   	m_nPositionH);
-    RENDER_RTF_SHAPE_PROP(L"posrelh",	sResult,   	m_nPositionHRelative);
-    RENDER_RTF_SHAPE_PROP(L"posv",		sResult,   	m_nPositionV);
+	RENDER_RTF_SHAPE_PROP(L"posh",		sResult,   	m_nPositionH);
+	RENDER_RTF_SHAPE_PROP(L"posrelh",	sResult,   	m_nPositionHRelative);
+	RENDER_RTF_SHAPE_PROP(L"posv",		sResult,   	m_nPositionV);
+	RENDER_RTF_SHAPE_PROP(L"posrelv",	sResult,	m_nPositionVRelative);
 
-    RENDER_RTF_SHAPE_PROP(L"posrelv",		sResult,	m_nPositionVRelative);
     RENDER_RTF_SHAPE_PROP(L"fLayoutInCell",	sResult,	m_bLayoutInCell);
     RENDER_RTF_SHAPE_PROP(L"fAllowOverlap",	sResult,	m_bAllowOverlap);
 
@@ -438,6 +438,17 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
     RENDER_RTF_SHAPE_PROP(L"sizerelv",		sResult,	m_nPctHeightRelative);
     RENDER_RTF_SHAPE_PROP(L"colStart",		sResult,	m_nColStart);
     RENDER_RTF_SHAPE_PROP(L"colSpan",		sResult,	m_nColSpan);
+
+	if (m_sName.empty() == false)
+	{
+		sResult += L"{\\sp{\\sn wzName}{\\sv ";
+		sResult += m_sName + L"}}";	
+	}
+	if (m_sDescription.empty() == false)
+	{
+		sResult += L"{\\sp{\\sn wzDescription}{\\sv ";
+		sResult += m_sDescription + L"}}";
+	}
 //Rehydration
     //RENDER_RTF_SHAPE_PROP(L"metroBlob",    sResult,   m_sMetroBlob);
 
@@ -449,7 +460,7 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
     RENDER_RTF_SHAPE_PROP(L"shapeType",		sResult,	m_nShapeType);
     RENDER_RTF_SHAPE_PROP(L"fBehindDocument",sResult,	m_nZOrderRelative);
     RENDER_RTF_SHAPE_PROP(L"fHidden",		sResult,   	m_bHidden);
-	RENDER_RTF_SHAPE_PROP(L"fBackground",	sResult,   	m_bBackground);
+	//RENDER_RTF_SHAPE_PROP(L"fBackground",	sResult,   	m_bBackground);
     //Text
 	//sResult += L"{\\sp{\\sn fLockText}{\\sv 0}}";
 
@@ -586,7 +597,7 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 		
 		int nCodePage = -1;
 		
-        if( !m_sGtextFont.empty() )
+        if( m_sGtextFont.empty() == false)
 		{
 			sResult += L"{\\sp{\\sn gtextFont}{\\sv ";
 			sResult += m_sGtextFont + L"}}";
@@ -1487,8 +1498,8 @@ std::wstring RtfShape::GroupRenderToRtf(RenderParameter oRenderParameter)
 			RENDER_RTF_INT( m_nWrapSideType	, sResult, L"shpwrk" );
 			RENDER_RTF_BOOL( m_bLockAnchor	, sResult, L"shplockanchor" );
 						
-			//sResult += L"{\\sp{\\sn fUseShapeAnchor}{\\sv 0}}";
-			//sResult += L"{\\sp{\\sn fPseudoInline}{\\sv 1}}";
+			sResult += L"{\\sp{\\sn fUseShapeAnchor}{\\sv 0}}";
+			sResult += L"{\\sp{\\sn fPseudoInline}{\\sv 1}}";
 		}
 
 		

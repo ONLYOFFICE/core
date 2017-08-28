@@ -49,21 +49,21 @@ public:
 
 	static const ElementType type = typePIVOTADDL;
 
-	BaseObjectPtr	m_SXAddl_SXCView_SXDId;
-	BaseObjectPtr	m_SXAddl_SXCView_SXDVer10Info;
-	BaseObjectPtr	m_SXAddl_SXCView_SXDVer12Info;
+	BiffStructurePtr	m_SXAddl_SXCView_SXDId;
+	BiffStructurePtr	m_SXAddl_SXCView_SXDVer10Info;
+	BiffStructurePtr	m_SXAddl_SXCView_SXDVer12Info;
 
-	BaseObjectPtr	m_SXAddl_SXCView_SXDCompactRwHdr;
-	BaseObjectPtr	m_SXAddl_SXCView_SXDCompactColHdr;
-	BaseObjectPtr	m_SXAddl_SXADDLSXFILTERS12;
-	BaseObjectPtr	m_SXADDLCONDFMTS;
-	BaseObjectPtr	m_SXAddl_SXCView_SXDTableStyleClient;
+	BiffStructurePtr	m_SXAddl_SXCView_SXDCompactRwHdr;
+	BiffStructurePtr	m_SXAddl_SXCView_SXDCompactColHdr;
+	BiffStructurePtr	m_SXAddl_SXADDLSXFILTERS12;
+	BiffStructurePtr	m_SXADDLCONDFMTS;
+	BiffStructurePtr	m_SXAddl_SXCView_SXDTableStyleClient;
 
-	std::vector<BaseObjectPtr>	m_arSXAddl_SXCView_SXDVerUpdInv;
-	std::vector<BaseObjectPtr>	m_arSXAddl_SXCView_SXDSXPIIvmb;
-	std::vector<BaseObjectPtr>	m_arSXADDLFIELD;
-	std::vector<BaseObjectPtr>	m_arSXADDLHIERARCHY;
-	std::vector<BaseObjectPtr>	m_arSXADDLCALCMEMBER;
+	std::vector<BiffStructurePtr>	m_arSXAddl_SXCView_SXDVerUpdInv;
+	std::vector<BiffStructurePtr>	m_arSXAddl_SXCView_SXDSXPIIvmb;
+	std::vector<BiffStructurePtr>	m_arSXADDLFIELD;
+	std::vector<BiffStructurePtr>	m_arSXADDLHIERARCHY;
+	std::vector<BiffStructurePtr>	m_arSXADDLCALCMEMBER;
 
 };
 

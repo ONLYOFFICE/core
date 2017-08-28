@@ -1345,6 +1345,10 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 		{
 			if (pShape->nvSpPr.nvPr.ph.is_init())
 			{
+				if (type == Notes || type == NotesMaster)
+				{
+					pShape->nvSpPr.nvPr.ph->idx.reset();
+				}				
 				if (bFillUp)
 					pShape->FillLevelUp();
 				

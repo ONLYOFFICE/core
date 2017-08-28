@@ -38,9 +38,11 @@
 #include "PIVOTPI.h"
 #include "PIVOTLI.h"
 #include "PIVOTEX.h"
+#include "PIVOTADDL.h"
 
 #include "../Biff_records/SXDI.h"
 #include "../Biff_records/SxView.h"
+#include "../Biff_records/SXAddl.h"
 
 namespace XLS
 {
@@ -95,6 +97,8 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 	if (!view) return 0;
 
 	PIVOTFRT* frt = dynamic_cast<PIVOTFRT*>(m_PIVOTFRT.get());
+
+	PIVOTADDL* addls = frt ? dynamic_cast<PIVOTADDL*>(frt->m_PIVOTADDL.get()) : NULL;
 
 	indexCache = view->iCache;
 
@@ -204,14 +208,21 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 					}
 				}
 			}
-			//CP_XML_NODE(L"pivotTableStyleInfo")
-			//{
-			//	CP_XML_ATTR(L"showRowHeaders", 1); 
-			//	CP_XML_ATTR(L"showColHeaders", 1);
-			//	CP_XML_ATTR(L"showRowStripes", 0);
-			//	CP_XML_ATTR(L"showColStripes", 0);
-			//	CP_XML_ATTR(L"showLastColumn", 1);
-			//}
+
+			
+			if ((addls) && (addls->m_SXAddl_SXCView_SXDTableStyleClient))
+			{
+				SXAddl_SXCView_SXDTableStyleClient* table_style = dynamic_cast<SXAddl_SXCView_SXDTableStyleClient*>(addls->m_SXAddl_SXCView_SXDTableStyleClient.get());
+				CP_XML_NODE(L"pivotTableStyleInfo")
+				{
+					CP_XML_ATTR(L"name", table_style->stName.value()); 
+					CP_XML_ATTR(L"showRowHeaders", table_style->fRowHeaders); 
+					CP_XML_ATTR(L"showColHeaders", table_style->fColumnHeaders);
+					CP_XML_ATTR(L"showRowStripes", table_style->fRowStrips);
+					CP_XML_ATTR(L"showColStripes", table_style->fColumnStrips);
+					CP_XML_ATTR(L"showLastColumn", table_style->fLastColumn);
+				}
+			}
 		}
 	}
 

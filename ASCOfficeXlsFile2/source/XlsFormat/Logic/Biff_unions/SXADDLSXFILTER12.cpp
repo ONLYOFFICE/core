@@ -65,38 +65,38 @@ SXADDLSXFILTER12 = SXAddl_SXCSXFilter12_SXDId SXAddl_SXCSXFilter12_SXDSXFilter
 */
 const bool SXADDLSXFILTER12::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory<SXAddl_SXCSXFilter12_SXDId>())
-	{
-		return false;
-	}
-	proc.mandatory<SXAddl_SXCSXFilter12_SXDSXFilter>();
+	//if(!proc.mandatory<SXAddl_SXCSXFilter12_SXDId>())
+	//{
+	//	return false;
+	//}
+	//proc.mandatory<SXAddl_SXCSXFilter12_SXDSXFilter>();
 
-	if(proc.optional<SXAddl_SXCSXFilter12_SXDCaption>())
-	{
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	if(proc.optional<SXAddl_SXCSXFilter12_SXDSXFilterDesc>())
-	{
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	if(proc.optional<SXAddl_SXCSXFilter12_SXDSXFilterValue1>())
-	{
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	if(proc.optional<SXAddl_SXCSXFilter12_SXDSXFilterValue2>())
-	{
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	proc.mandatory<SXAddl_SXCSXFilter12_SXDXlsFilter>();
-	if(proc.optional<SXAddl_SXCSXFilter12_SXDXlsFilterValue1>())
-	{
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	if(proc.optional<SXAddl_SXCSXFilter12_SXDXlsFilterValue2>())
-	{
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
-	}
-	proc.mandatory<SXAddl_SXCSXFilter12_SXDEnd>();
+	//if(proc.optional<SXAddl_SXCSXFilter12_SXDCaption>())
+	//{
+	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//if(proc.optional<SXAddl_SXCSXFilter12_SXDSXFilterDesc>())
+	//{
+	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//if(proc.optional<SXAddl_SXCSXFilter12_SXDSXFilterValue1>())
+	//{
+	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//if(proc.optional<SXAddl_SXCSXFilter12_SXDSXFilterValue2>())
+	//{
+	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//proc.mandatory<SXAddl_SXCSXFilter12_SXDXlsFilter>();
+	//if(proc.optional<SXAddl_SXCSXFilter12_SXDXlsFilterValue1>())
+	//{
+	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//if(proc.optional<SXAddl_SXCSXFilter12_SXDXlsFilterValue2>())
+	//{
+	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//}
+	//proc.mandatory<SXAddl_SXCSXFilter12_SXDEnd>();
 
 	return true;
 }

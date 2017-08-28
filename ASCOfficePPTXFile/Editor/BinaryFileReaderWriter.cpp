@@ -125,6 +125,19 @@ namespace NSBinPptxRW
 		m_lIndexNextImage	= 0;
 		m_lIndexCounter		= 0;
 	}
+	void CImageManager2::SetDstFolder(const std::wstring& strDst)
+	{
+		m_strDstFolder = strDst;
+		m_strDstMedia = m_strDstFolder + FILE_SEPARATOR_STR + _T("media");
+		m_strDstEmbed = m_strDstFolder + FILE_SEPARATOR_STR + _T("embeddings");
+
+		NSDirectory::CreateDirectory(m_strDstMedia);
+		NSDirectory::CreateDirectory(m_strDstEmbed);
+	}
+	std::wstring CImageManager2::GetDstFolder()
+	{
+		return m_strDstFolder;
+	}
 	void CImageManager2::SetDstMedia(const std::wstring& strDst)
 	{
 		m_strDstMedia = strDst;
@@ -1222,7 +1235,7 @@ namespace NSBinPptxRW
 
 		m_pWriter->WriteString(strRels);
 	}
-	void CRelsGenerator::EndPresentationRels(const bool& bIsCommentsAuthors = false, const bool& bIsNotesMaster)
+	void CRelsGenerator::EndPresentationRels(bool bIsCommentsAuthors, bool bIsNotesMaster, bool bIsVbaProject)
 	{
  		if (bIsNotesMaster)
 		{
@@ -1245,6 +1258,12 @@ namespace NSBinPptxRW
 		{
             std::wstring strRels4 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
                     L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/commentAuthors\" Target=\"commentAuthors.xml\"/>";
+			m_pWriter->WriteString(strRels4);
+		}
+		if (bIsVbaProject)
+		{
+            std::wstring strRels4 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+                    L"\" Type=\"http://schemas.microsoft.com/office/2006/relationships/vbaProject\" Target=\"vbaProject.bin\"/>";
 			m_pWriter->WriteString(strRels4);
 		}
 	}

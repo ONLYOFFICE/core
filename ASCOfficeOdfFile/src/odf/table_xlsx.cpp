@@ -78,6 +78,17 @@ int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Contex
 
 void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
+	if (attlist_.table_number_rows_repeated_ > 1 && empty())
+	{
+		Context.get_table_context().state()->add_empty_row(attlist_.table_number_rows_repeated_);
+		return;
+	}
+	if (attlist_.table_number_rows_repeated_ > 0xf000 && empty_content_cells())
+	{
+		Context.get_table_context().state()->add_empty_row(attlist_.table_number_rows_repeated_);
+		return;		//conv_hSX8n3lVbhALjt0aafg__xlsx.ods, conv_MA2CauoNfX_7ejKS5eg__xlsx.ods
+	}
+
     std::wostream & strm = Context.current_sheet().sheetData();
 ///обработка чтилей для роу -
 	size_t Default_Cell_style_in_row_ = 0; 
@@ -253,26 +264,20 @@ void table_rows::xlsx_convert(oox::xlsx_conversion_context & Context)
         table_table_rows_->xlsx_convert(Context);
     else
     {
-		if (table_table_row_.size() > 1)
+		while (table_table_row_.size() > 1)
 		{
-			//check 2 last rows for repeate > 65000 & 1024 
 			table_table_row* row_last	= dynamic_cast<table_table_row*>(table_table_row_[table_table_row_.size() - 1].get());
 			table_table_row* row_last_1	= dynamic_cast<table_table_row*>(table_table_row_[table_table_row_.size() - 2].get());
 
-			if (row_last->attlist_.table_number_rows_repeated_		> 1000 && 
-				row_last_1->attlist_.table_number_rows_repeated_	> 1000 || 
-				row_last_1->attlist_.table_number_rows_repeated_	> 0xf000)
-			{
-				std::wstring style		= row_last->attlist_.table_style_name_.get_value_or(L"");
-				std::wstring style_1	= row_last->attlist_.table_style_name_.get_value_or(L"");
+			std::wstring style		= row_last->attlist_.table_style_name_.get_value_or(L"");
+			std::wstring style_1	= row_last->attlist_.table_style_name_.get_value_or(L"");
 				
-				if (style == style_1)//check for empty also ????
-				{
-					row_last_1->attlist_.table_number_rows_repeated_ = 1024;
-					table_table_row_.pop_back();
-				}
-			}
+			if (style != style_1)break;			
+			if (row_last_1->empty_content_cells() == false) break;				
+			if (row_last->empty_content_cells() == false) break;
 
+			row_last_1->attlist_.table_number_rows_repeated_ += row_last->attlist_.table_number_rows_repeated_;
+			table_table_row_.pop_back();
 		}
    		for (size_t i = 0; i < table_table_row_.size(); i++)
         {

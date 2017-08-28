@@ -89,6 +89,8 @@ public:
 	void non_empty_row	();
     bool is_empty_row	() const;
     void end_row		();
+
+	void add_empty_row(int count);
     
 	std::wstring current_row_style			() const;
     std::wstring default_row_cell_style		() const;

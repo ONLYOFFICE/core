@@ -75,7 +75,7 @@ namespace OOX
 		else
 			oFileName = oPath / oRelationFilename;
 
-		if ( oRelation.Type() == FileTypes::Document)
+		if ( oRelation.Type() == FileTypes::Document || oRelation.Type() == FileTypes::DocumentMacro)
 			return smart_ptr<OOX::File>(new CDocument( oRootPath, oFileName ));
 		else if ( oRelation.Type() == FileTypes::FontTable)
 			return smart_ptr<OOX::File>(new CFontTable( oFileName ));
@@ -165,7 +165,7 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CApp( oFileName ));
 		else if ( pRelation->Type() == FileTypes::Core)
 			return smart_ptr<OOX::File>(new CCore( oFileName ));
-		else if ( pRelation->Type() == FileTypes::Document)
+		else if ( pRelation->Type() == FileTypes::Document || pRelation->Type() == FileTypes::DocumentMacro)
 			return smart_ptr<OOX::File>(new CDocument( oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Theme)
 		{

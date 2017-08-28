@@ -310,6 +310,7 @@ enum ElementType
 	typeStringSegmented,
 	typeStringSegmentedSXADDL,
 	typeSXAddl,
+	typeSxaddlSxString,
 	typeSXDI,
 	typeSxDXF,
 	typeSXEx,

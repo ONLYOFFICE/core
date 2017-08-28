@@ -166,23 +166,28 @@ namespace PPTX
 						pWriter->WriteBYTE(1);
 					pWriter->EndRecord();
 
-					DocWrapper::FontProcessor fp;
-					NSBinPptxRW::CDrawingConverter oDrawingConverter; 
-					
+					DocWrapper::FontProcessor		oFontProcessor;
+					NSBinPptxRW::CDrawingConverter	oDrawingConverter; 
+					BinDocxRW::CDocxSerializer		oDocxSerializer;
+
 					NSBinPptxRW::CBinaryFileWriter*				old_writer	= oDrawingConverter.m_pBinaryWriter;
 					NSCommon::smart_ptr<OOX::IFileContainer>	old_rels	= *pWriter->m_pCurrentContainer;
+					BinDocxRW::CDocxSerializer*					old_serial 	= pWriter->m_pMainDocument;
 					
 					oDrawingConverter.m_pBinaryWriter = pWriter;
+					oDocxSerializer.m_pParamsWriter = new BinDocxRW::ParamsWriter(pWriter, &oFontProcessor, &oDrawingConverter, NULL);
 					
-					BinDocxRW::ParamsWriter		oParamsWriter(pWriter, &fp, &oDrawingConverter, NULL);
-					BinDocxRW::BinaryFileWriter oBinaryFileWriter(oParamsWriter);
+					pWriter->m_pMainDocument = &oDocxSerializer;
+					
+					BinDocxRW::BinaryFileWriter oBinaryFileWriter(*oDocxSerializer.m_pParamsWriter);
 
 					pWriter->StartRecord(2);
 						oBinaryFileWriter.intoBindoc(oox_unpacked.GetPath());
 					pWriter->EndRecord();
 
 					oDrawingConverter.m_pBinaryWriter	= old_writer;
-					*pWriter->m_pCurrentContainer		= old_rels;
+					*pWriter->m_pCurrentContainer		= old_rels;				
+					pWriter->m_pMainDocument			= old_serial;
 				}
 				else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX)
 				//if ( std::wstring::npos != sProgID.find(L"Excel.Sheet")) //"ET.Xlsx.6" !!!
@@ -341,8 +346,11 @@ namespace PPTX
 							pReader->m_pRels = new NSBinPptxRW::CRelsGenerator();
 
 							oDrawingConverter.SetMainDocument(&oDocxSerializer);
-							oDrawingConverter.SetSourceFileDir(pReader->m_strFolder, 1);
-							oDrawingConverter.SetMediaDstPath(sMediaPath);
+
+                            oDrawingConverter.SetDstPath(sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"word");
+                            oDrawingConverter.SetSrcPath(pReader->m_strFolder, 1);
+
+                            oDrawingConverter.SetMediaDstPath(sMediaPath);
 							oDrawingConverter.SetEmbedDstPath(sEmbedPath);
 
 							std::wstring sDocxFilename = L"Microsoft_Word_Document" + std::to_wstring( id ) + L".docx";
@@ -368,7 +376,7 @@ namespace PPTX
 							if (pApp)
 							{
 								pApp->SetApplication(_T("OnlyOffice"));
-								pApp->SetAppVersion(_T("4.3000"));
+								pApp->SetAppVersion(_T("5.0"));
 								pApp->SetDocSecurity(0);
 								pApp->SetScaleCrop(false);
 								pApp->SetLinksUpToDate(false);
@@ -429,8 +437,10 @@ namespace PPTX
 							oDrawingConverter.m_pReader = pReader;
 							pReader->m_pRels = new NSBinPptxRW::CRelsGenerator();
 
-							oDrawingConverter.SetSourceFileDir(pReader->m_strFolder, 2);
-							oDrawingConverter.SetMediaDstPath(sMediaPath);
+                            oDrawingConverter.SetDstPath(sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl");
+                            oDrawingConverter.SetSrcPath(pReader->m_strFolder, 2);
+
+                            oDrawingConverter.SetMediaDstPath(sMediaPath);
 							oDrawingConverter.SetEmbedDstPath(sEmbedPath);
 
 							std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring( id ) + L".xlsx";
@@ -895,23 +905,28 @@ namespace PPTX
 				}
 				if (!blipFill.blip->mediaRid.empty())
 				{
-					PPTX::Logic::Ext ext;
+                    PPTX::Logic::Ext ext;
 					ext.link	= OOX::RId(blipFill.blip->mediaRid);
 					nvPicPr.nvPr.extLst.push_back(ext);
 
-					int nRId = -1;
+                    std::wstring strMediaRelsPath;
+                    if (pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX)	strMediaRelsPath = L"media/";
+                    else														strMediaRelsPath = L"../media/";
+
+                    smart_ptr<OOX::Media> mediaFile = blipFill.additionalFile.smart_dynamic_cast<OOX::Media>();
+                    strMediaRelsPath += mediaFile->filename().GetFilename();
+
+                    int nRId = -1;
 					if (blipFill.additionalFile.is<OOX::Audio>())
 					{
 						nvPicPr.nvPr.media.Media = new PPTX::Logic::MediaFile(L"audioFile");
-						nRId = pReader->m_pRels->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio",
-							L"NULL", L"External");
+                        nRId = pReader->m_pRels->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio", strMediaRelsPath, L"");
 
 					}
 					if (blipFill.additionalFile.is<OOX::Video>())
 					{
 						nvPicPr.nvPr.media.Media = new PPTX::Logic::MediaFile(L"videoFile");
-						nRId = pReader->m_pRels->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video",
-							L"NULL", L"External");
+                        nRId = pReader->m_pRels->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video", strMediaRelsPath, L"");
 					}
 
 					if (nvPicPr.nvPr.media.Media.IsInit() && nRId > 0)

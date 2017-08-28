@@ -30,6 +30,10 @@
  *
  */
 #pragma once
+
+#ifndef PPTX_FILEFACTORY_PPTX_INCLUDE_H_
+#define PPTX_FILEFACTORY_PPTX_INCLUDE_H_
+
 #include "../../Common/DocxFormat/Source/DocxFormat/File.h"
 
 namespace OOX {namespace Rels {class CRelationShip;}}
@@ -44,3 +48,4 @@ namespace PPTX
 		static const smart_ptr<OOX::File> CreateFilePPTX(const OOX::CPath& path, OOX::Rels::CRelationShip& relation, FileMap& map);
 	};
 } // namespace PPTX
+#endif // PPTX_FILEFACTORY_PPTX_INCLUDE_H_

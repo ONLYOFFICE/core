@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;../../../DesktopEditor/agg-2.4/include&quot;;&quot;C:\__Work\core\DesktopEditor\agg-2.4\include&quot;"
+				AdditionalIncludeDirectories="&quot;../../../DesktopEditor/agg-2.4/include&quot;;../../../DesktopEditor/xml/build/vs2005;../../../DesktopEditor/xml/libxml2/include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

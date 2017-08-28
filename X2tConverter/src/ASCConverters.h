@@ -145,7 +145,7 @@ namespace NExtractTools
     int fromDoctBin     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params);
 	int fromDocument    (const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams& params);
 
-    int fromXlsxDir     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params);
+	int fromXlsxDir     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params, bool isSavedXFile);
     int fromXlstBin     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params);
 	int fromSpreadsheet (const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams& params);
 

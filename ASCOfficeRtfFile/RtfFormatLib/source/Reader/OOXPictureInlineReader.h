@@ -77,6 +77,15 @@ public:
 				}
 			}
 		}
+
+		if ( m_ooxInline->m_oDocPr.IsInit() )
+		{
+			pOutput->m_nID			= m_ooxInline->m_oDocPr->id + 1025;
+			pOutput->m_sName		= m_ooxInline->m_oDocPr->name;
+
+			if (m_ooxInline->m_oDocPr->descr.IsInit())
+				pOutput->m_sDescription = m_ooxInline->m_oDocPr->descr.get();
+		}
 		
 		OOXGraphicReader oGraphicReader(&m_ooxInline->m_oGraphic);
 			

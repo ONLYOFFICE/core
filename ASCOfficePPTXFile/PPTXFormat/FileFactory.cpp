@@ -31,10 +31,7 @@
  */
 
 #include "FileFactory.h"
-
-#include "../../Common/DocxFormat/Source/DocxFormat/File.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Rels.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
+#include "FileMap.h"
 #include "FileTypes.h"
 
 #include "App.h"
@@ -54,6 +51,8 @@
 #include "NotesMaster.h"
 #include "LegacyDiagramText.h"
 
+#include "../../Common/DocxFormat/Source/DocxFormat/Rels.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
@@ -69,8 +68,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/External/ExternalAudio.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/ExternalVideo.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/UnknowTypeFile.h"
-
-#include "FileMap.h"
+//
 
 
 namespace PPTX
@@ -86,7 +84,8 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new PPTX::App(filename, map));
 		else if (relation.Type() == OOX::FileTypes::Core)
 			return smart_ptr<OOX::File>(new PPTX::Core(filename, map));
-		else if (relation.Type() == OOX::Presentation::FileTypes::Presentation)
+		else if (relation.Type() == OOX::Presentation::FileTypes::Presentation || 
+				 relation.Type() == OOX::Presentation::FileTypes::PresentationMacro)
 			return smart_ptr<OOX::File>(new PPTX::Presentation(filename, map));
 		else if (relation.Type() == OOX::FileTypes::Theme)
 			return smart_ptr<OOX::File>(new PPTX::Theme(filename, map));
@@ -143,6 +142,8 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new OOX::OleObject(filename));
 		else if (relation.Type() == OOX::FileTypes::MicrosoftOfficeUnknown) //ms package
 			return smart_ptr<OOX::File>(new OOX::OleObject( filename, true ));
+		else if (relation.Type() == OOX::FileTypes::VbaProject)
+			return smart_ptr<OOX::File>(new OOX::VbaProject( filename, filename ));
 
 		return smart_ptr<OOX::File>(new OOX::UnknowTypeFile());
 	}

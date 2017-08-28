@@ -60,15 +60,15 @@ SXADDLGROUP = SXAddl_SXCGroup_SXDId *Continue_SxaddlSxString SXAddl_SXCGroup_SXD
 */
 const bool SXADDLGROUP::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory<SXAddl_SXCGroup_SXDId>())
-	{
-		return false;
-	}
-	proc.repeated<Continue_SxaddlSxString>(0, 0);
-	proc.mandatory<SXAddl_SXCGroup_SXDGrpInfo>();
-	proc.repeated<SXAddl_SXCGroup_SXDMember>(0, 0);
-	proc.repeated<UNKNOWNFRT>(0, 0);
-	proc.mandatory<SXAddl_SXCGroup_SXDEnd>();
+	//if(!proc.mandatory<SXAddl_SXCGroup_SXDId>())
+	//{
+	//	return false;
+	//}
+	//proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//proc.mandatory<SXAddl_SXCGroup_SXDGrpInfo>();
+	//proc.repeated<SXAddl_SXCGroup_SXDMember>(0, 0);
+	//proc.repeated<UNKNOWNFRT>(0, 0);
+	//proc.mandatory<SXAddl_SXCGroup_SXDEnd>();
 
 	return true;
 }

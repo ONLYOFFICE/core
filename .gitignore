@@ -45,3 +45,6 @@ OfficeUtils/win32/OfficeUtilsLib/OfficeUtilsLib/ReadMe.txt
 *.tlb
 *.idb
 **/.hg
+*.zip
+*.tar.gz
+**/*.build/

@@ -75,6 +75,12 @@ namespace PPTX
 		if (_presentation.is_init())
 		{
 			_presentation->commentAuthors = _presentation->Get(OOX::Presentation::FileTypes::CommentAuthors).smart_dynamic_cast<PPTX::Authors>();
+			
+			if (_presentation->IsExist(OOX::FileTypes::VbaProject))
+			{
+				_presentation->m_bMacroEnabled	= true;
+				_presentation->m_pVbaProject	= _presentation->Get(OOX::FileTypes::VbaProject).smart_dynamic_cast<OOX::VbaProject>();
+			}
 		}
 
         for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)

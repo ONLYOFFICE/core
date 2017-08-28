@@ -46,7 +46,10 @@ BiffStructurePtr XFExtGradient::clone()
 void XFExtGradient::load(CFRecord& record)
 {
 	record >> gradient >> cGradStops;
-	for(size_t i = 0; i < cGradStops; ++i)
+
+	if (cGradStops > 256) cGradStops = 256;
+
+	for(size_t i = 0; !record.isEOF() && i < cGradStops; ++i)
 	{
 		GradStop grad_stop;
 		record >> grad_stop;

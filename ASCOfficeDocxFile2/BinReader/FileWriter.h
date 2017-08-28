@@ -31,7 +31,9 @@
  */
 #ifndef FILE_WRITER
 #define FILE_WRITER
+
 #include "../../DesktopEditor/common/Path.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
 
 #include "NumberingWriter.h"
 #include "fontTableWriter.h"
@@ -75,6 +77,8 @@ namespace Writers
 		DocumentRelsWriter		m_oDocumentRelsWriter;
 		WebSettingsWriter		m_oWebSettingsWriter;
 		DefaultThemeWriter		m_oTheme;
+		
+		smart_ptr<OOX::VbaProject>		m_pVbaProject;
 	
  		NSBinPptxRW::CDrawingConverter* m_pDrawingConverter;
 		bool							m_bSaveChartAsImg;

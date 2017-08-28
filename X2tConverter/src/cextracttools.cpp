@@ -133,35 +133,41 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY:
 					{
 							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_DOCT2DOCX;
+						else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOCT2DOCX;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_T2BIN;
 						else if (0 == sExt2.compare(_T(".rtf")))		res = TCD_DOCT2RTF;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY:
 					{
 							 if (0 == sExt2.compare(_T(".xlsx")))		res = TCD_XLST2XLSX;
+						else if (0 == sExt2.compare(_T(".xlsm")))		res = TCD_XLST2XLSX;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_T2BIN;
 						else if (0 == sExt2.compare(_T(".csv")))		res = TCD_XLST2CSV;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY:
 					{
 							 if (0 == sExt2.compare(_T(".pptx")))		res = TCD_PPTT2PPTX;	
+						else if (0 == sExt2.compare(_T(".pptm")))		res = TCD_PPTT2PPTX;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_T2BIN;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_CANVAS_WORD:
 					{
 							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_DOCT_BIN2DOCX;
+						else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOCT_BIN2DOCX;
 						else if (0 == sExt2.compare(_T(".doct")))		res = TCD_BIN2T;
 						else if (0 == sExt2.compare(_T(".rtf")))		res = TCD_DOCT_BIN2RTF;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET:
 					{
 							 if (0 == sExt2.compare(_T(".xlsx")))		res = TCD_XLST_BIN2XLSX;
+						else if (0 == sExt2.compare(_T(".xlsm")))		res = TCD_XLST_BIN2XLSX;
 						else if (0 == sExt2.compare(_T(".xlst")))		res = TCD_BIN2T;
 						else if (0 == sExt2.compare(_T(".csv")))		res = TCD_XLST_BIN2CSV;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION:
 					{
 							 if (0 == sExt2.compare(_T(".pptx")))		res = TCD_PPTT_BIN2PPTX;
+						else if (0 == sExt2.compare(_T(".pptm")))		res = TCD_PPTT_BIN2PPTX;
 						else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_BIN2T;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_CANVAS_PDF:
@@ -171,18 +177,21 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV:
 					{
 							 if (0 == sExt2.compare(_T(".xlsx")))		res = TCD_CSV2XLSX;
+						else if (0 == sExt2.compare(_T(".xlsm")))		res = TCD_CSV2XLSX;
 						else if (0 == sExt2.compare(_T(".xlst")))		res = TCD_CSV2XLST;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_CSV2XLST_BIN;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF:
 					{
 							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_RTF2DOCX;
+						else if (0 == sExt2.compare(_T(".docm")))		res = TCD_RTF2DOCX;
 						else if (0 == sExt2.compare(_T(".doct")))		res = TCD_RTF2DOCT;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_RTF2DOCT_BIN;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
 					{
 							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_DOC2DOCX;
+						else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOC2DOCX;
 						else if (0 == sExt2.compare(_T(".doct")))		res = TCD_DOC2DOCT;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_DOC2DOCT_BIN;
 					}break;
@@ -195,12 +204,14 @@ namespace NExtractTools
                 case AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT:
 					{
 							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_TXT2DOCX;
+						else if (0 == sExt2.compare(_T(".docm")))		res = TCD_TXT2DOCX;
 						else if (0 == sExt2.compare(_T(".doct")))		res = TCD_TXT2DOCT;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_TXT2DOCT_BIN;
 					}break;
                 case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT:
                     {
                              if (0 == sExt2.compare(_T(".pptx")))		res = TCD_PPT2PPTX;
+                        else if (0 == sExt2.compare(_T(".pptm")))		res = TCD_PPT2PPTX;
                         else if (0 == sExt2.compare(_T(".bin")))		res = TCD_PPT2PPTT_BIN;
                         else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_PPT2PPTT;
                     }break;
@@ -215,6 +226,9 @@ namespace NExtractTools
                         else if (0 == sExt2.compare(_T(".docx")) ||
                                  0 == sExt2.compare(_T(".xlsx")) ||
                                  0 == sExt2.compare(_T(".pptx")))		res = TCD_ODF2OOX;
+                        else if (0 == sExt2.compare(_T(".docm")) ||
+                                 0 == sExt2.compare(_T(".xlsm")) ||
+                                 0 == sExt2.compare(_T(".pptm")))		res = TCD_ODF2OOX;
                     }break;
 				case AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO:
 					{

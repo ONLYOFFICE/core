@@ -34,6 +34,14 @@
 
 namespace BinDocxRW {
 
+int Binary_VbaProjectTableReader::Read()
+{
+		m_oFileWriter.m_pVbaProject = new OOX::VbaProject();
+    m_oFileWriter.m_pVbaProject->fromPPTY(&m_oBufferedStream);
+
+    return c_oSerConstants::ReadOk;
+}
+//-------------------------------------------------------------------------------------	
 Binary_HdrFtrTableReader::Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments):Binary_CommonReader(poBufferedStream),m_oFileWriter(oFileWriter),m_oHeaderFooterWriter(oFileWriter.m_oHeaderFooterWriter),m_pComments(pComments)
 {
 }
@@ -93,9 +101,9 @@ int Binary_HdrFtrTableReader::ReadHdrFtrItem(BYTE type, long length, void* poRes
 			Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, poHdrFtrItem->Header, m_pComments);
 			res = Read1(length, &Binary_HdrFtrTableReader::ReadHdrFtrItemContent, this, &oBinary_DocumentTableReader);
 
-            OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir +	FILE_SEPARATOR_STR + _T("word") + 
-																				FILE_SEPARATOR_STR + _T("_rels")+ 
-																				FILE_SEPARATOR_STR + poHdrFtrItem->m_sFilename + _T(".rels");
+            OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir +	FILE_SEPARATOR_STR + L"word" + 
+																				FILE_SEPARATOR_STR + L"_rels"+ 
+																				FILE_SEPARATOR_STR + poHdrFtrItem->m_sFilename + L".rels";
 
             m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(fileRelsPath.GetPath());
 		}

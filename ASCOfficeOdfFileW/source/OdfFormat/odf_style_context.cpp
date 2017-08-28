@@ -54,8 +54,9 @@ static int style_family_counts_[26]={};//согласно количеству �
 void calc_paragraph_properties_content(std::vector<style_paragraph_properties*> & parProps, paragraph_format_properties * result)
 {
 	if (result == NULL)return;
+    if (parProps.empty()) return;
 
-	for (size_t i = parProps.size() - 1; i >= 0; i--)
+    for (int i = (int)parProps.size() - 1; i >= 0; i--)
     {
         if (parProps[i])
             result->apply_from(parProps[i]->content_);

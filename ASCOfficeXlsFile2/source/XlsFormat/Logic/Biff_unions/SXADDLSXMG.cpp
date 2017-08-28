@@ -59,11 +59,11 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{
-		if(!proc.mandatory<SXAddl_SXCSXMg_SXDUserCaption>())
-		{
-			return false;
-		}
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
+		//if(!proc.mandatory<SXAddl_SXCSXMg_SXDUserCaption>())
+		//{
+		//	return false;
+		//}
+		//proc.repeated<Continue_SxaddlSxString>(0, 0);
 		return true;
 	};
 };
@@ -80,14 +80,14 @@ BaseObjectPtr SXADDLSXMG::clone()
 //              [SXAddl_SXCSXMg_SXDUserCaption *Continue_SxaddlSxString] *UNKNOWNFRT SXAddl_SXCSXMg_SXDEnd
 const bool SXADDLSXMG::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory<SXAddl_SXCSXMg_SXDId>())
-	{
-		return false;
-	}
-	proc.repeated<Continue_SxaddlSxString>(0, 0);
-	proc.optional<Parenthesis_SXADDLSXMG_1>();
-	proc.repeated<UNKNOWNFRT>(0, 0);
-	proc.mandatory<SXAddl_SXCSXMg_SXDEnd>();
+	//if(!proc.mandatory<SXAddl_SXCSXMg_SXDId>())
+	//{
+	//	return false;
+	//}
+	//proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//proc.optional<Parenthesis_SXADDLSXMG_1>();
+	//proc.repeated<UNKNOWNFRT>(0, 0);
+	//proc.mandatory<SXAddl_SXCSXMg_SXDEnd>();
 	return true;
 }
 

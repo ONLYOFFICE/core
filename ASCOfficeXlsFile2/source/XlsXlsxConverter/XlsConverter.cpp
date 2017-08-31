@@ -1924,7 +1924,8 @@ void XlsConverter::convert(XLS::PIVOTVIEW * pivot_view)
 
 	pivot_view->serialize(strm);
 
-	int index_view = xlsx_context->get_pivots_context().add_view(strm.str(), pivot_view->indexCache);
+
+	int index_view = xlsx_context->get_pivots_context().add_view(strm.str(), pivot_view->index);
 	
 	if (index_view > 0)
 	{
@@ -1940,8 +1941,8 @@ void XlsConverter::convert(XLS::PIVOTCACHEDEFINITION * pivot_cached)
 
 	std::wstringstream strmD, strmR;
 
-	pivot_cached->serialize_definitions(strmD);
+	int index = pivot_cached->serialize_definitions(strmD);
 	pivot_cached->serialize_records(strmR);
 
-	xlsx_context->get_pivots_context().add_cache(strmD.str(), strmR.str());
+	xlsx_context->get_pivots_context().add_cache(strmD.str(), strmR.str(), index);
 }

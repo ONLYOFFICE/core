@@ -46,7 +46,7 @@ public:
 	int add_view(std::wstring table_view, int indexCache);
 	int get_view_count();
 
-	void add_cache(std::wstring definitions, std::wstring records);
+	void add_cache(std::wstring definitions, std::wstring records, int indexCache);
 	int get_cache_count();
 
 	void write_cache_definitions_to	(int index, std::wostream & strm);

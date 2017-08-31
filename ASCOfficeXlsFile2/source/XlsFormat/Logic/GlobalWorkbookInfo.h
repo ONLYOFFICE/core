@@ -35,6 +35,7 @@
 #include <boost/smart_ptr/shared_array.hpp>
 #include <vector>
 #include <map>
+#include <unordered_map>
 
 #include "Biff_structures/BorderFillInfo.h"
 
@@ -106,7 +107,8 @@ public:
 	const static unsigned int					initial_AXES_id = 0x2000000;
 
 	short												idPivotCache;
-	std::map<int, BaseObjectPtr>						mapPivotCache;
+	std::unordered_map<int, BaseObjectPtr>				mapPivotCache;
+
 	std::vector<bool>									arPivotCacheFields;
 	std::vector<bool>									arPivotCacheFieldShortSize;
 

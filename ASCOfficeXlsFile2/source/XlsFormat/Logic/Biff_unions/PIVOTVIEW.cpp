@@ -49,7 +49,7 @@ namespace XLS
 
 PIVOTVIEW::PIVOTVIEW()
 {
-	indexCache = -1;
+	index= -1;
 }
 
 PIVOTVIEW::~PIVOTVIEW()
@@ -64,6 +64,8 @@ BaseObjectPtr PIVOTVIEW::clone()
 // PIVOTVIEW = PIVOTCORE [PIVOTFRT]
 const bool PIVOTVIEW::loadContent(BinProcessor& proc)
 {
+	global_info_ = proc.getGlobalWorkbookInfo();
+
 	if(!proc.mandatory<PIVOTCORE>())
 	{
 		return false;
@@ -100,7 +102,12 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 
 	PIVOTADDL* addls = frt ? dynamic_cast<PIVOTADDL*>(frt->m_PIVOTADDL.get()) : NULL;
 
-	indexCache = view->iCache;
+	std::unordered_map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCache.begin();
+	
+	for (int i = 0; i < view->iCache; i++)
+		pFind++;
+
+	index = pFind->first;
 
 	CP_XML_WRITER(strm)
 	{
@@ -137,7 +144,7 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 				CP_XML_ATTR(L"firstHeaderRow", view->rwFirstHead - view->ref.rowFirst );
 				CP_XML_ATTR(L"firstDataRow", view->rwFirstData - view->ref.rowFirst);
 				CP_XML_ATTR(L"firstDataCol", view->colFirstData - view->ref.columnFirst); 
-				CP_XML_ATTR(L"rowPageCount", 1); 
+				CP_XML_ATTR(L"rowPageCount", view->cDimPg > 0 ? view->cDimPg : 1); 
 				CP_XML_ATTR(L"colPageCount", 1);
 			}
 			CP_XML_NODE(L"pivotFields")
@@ -215,7 +222,9 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 				SXAddl_SXCView_SXDTableStyleClient* table_style = dynamic_cast<SXAddl_SXCView_SXDTableStyleClient*>(addls->m_SXAddl_SXCView_SXDTableStyleClient.get());
 				CP_XML_NODE(L"pivotTableStyleInfo")
 				{
-					CP_XML_ATTR(L"name", table_style->stName.value()); 
+					if (!table_style->stName.value().empty())
+						CP_XML_ATTR(L"name", table_style->stName.value()); 
+					
 					CP_XML_ATTR(L"showRowHeaders", table_style->fRowHeaders); 
 					CP_XML_ATTR(L"showColHeaders", table_style->fColumnHeaders);
 					CP_XML_ATTR(L"showRowStripes", table_style->fRowStrips);

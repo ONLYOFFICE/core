@@ -34,6 +34,8 @@
 #include <boost/make_shared.hpp>
 #include <simple_xml_writer.h>
 
+#include <map>
+
 namespace oox {
 
 class xlsx_pivots_context::Impl
@@ -55,16 +57,20 @@ public:
 	std::vector<_pivot_cache>	caches_;
 	std::vector<_pivot_view>	views_;
 	std::wstring				connections_;
+
+	std::map<int, int>			mapIndex_;
 };
 
 xlsx_pivots_context::xlsx_pivots_context() : impl_(new xlsx_pivots_context::Impl())
 {
 }
 
-void xlsx_pivots_context::add_cache(std::wstring definitions, std::wstring records)
+void xlsx_pivots_context::add_cache(std::wstring definitions, std::wstring records, int indexCache)
 {
 	Impl::_pivot_cache c = {definitions, records};
 	impl_->caches_.push_back(c);
+
+	impl_->mapIndex_.insert(std::make_pair(indexCache, impl_->caches_.size()));
 }
 
 int xlsx_pivots_context::get_cache_count()
@@ -86,11 +92,11 @@ void xlsx_pivots_context::dump_rels_cache(int index, rels & Rels)
 }
 void xlsx_pivots_context::dump_rels_view(int index, rels & Rels)
 {
-	if (impl_->views_[index].indexCache_ >= 0)
+	if (impl_->views_[index].indexCache_ > 0)
 	{
 		Rels.add(relationship(L"rId1",							
 						L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition",
-						L"../pivotCache/pivotCacheDefinition" + std::to_wstring(impl_->views_[index].indexCache_ + 1) + L".xml", L""));
+						L"../pivotCache/pivotCacheDefinition" + std::to_wstring( impl_->views_[index].indexCache_ ) + L".xml", L""));
 	}
 }
 void xlsx_pivots_context::write_cache_definitions_to(int index, std::wostream & strm)
@@ -122,7 +128,9 @@ int xlsx_pivots_context::add_view(std::wstring table_view, int indexCache)
 {
 	if (table_view.empty()) return 0;
 
-	Impl::_pivot_view v = {table_view, indexCache};
+	std::map<int, int>::iterator pFind = impl_->mapIndex_.find(indexCache);
+
+	Impl::_pivot_view v = {table_view, pFind->second};
 	impl_->views_.push_back(v);
 
 	return (int)impl_->views_.size();

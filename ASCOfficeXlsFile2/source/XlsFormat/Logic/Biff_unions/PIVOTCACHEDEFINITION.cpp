@@ -98,7 +98,7 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 	SXStreamID* streamId = dynamic_cast<SXStreamID*>(m_SXStreamID.get());
 	if (!streamId) return 0;
 
-	std::map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCache.find(streamId->idStm);
+	std::unordered_map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCache.find(streamId->idStm);
 	if (pFind == global_info_->mapPivotCache.end()) return 0;
 
 	global_info_->idPivotCache = streamId->idStm;
@@ -124,13 +124,15 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 			{
 				CP_XML_ATTR(L"r:id", L"rId1" );
 			}
+			else 
+			{
+				CP_XML_ATTR(L"saveData", 0);
+			}
 			CP_XML_ATTR(L"enableRefresh",	1);
 			CP_XML_ATTR(L"refreshedBy",		db->rgb.value());
 			CP_XML_ATTR(L"refreshedDate",	db_ex->numDate.data.value);
 			CP_XML_ATTR(L"recordCount",		db->crdbdb);
-			//createdVersion="1" 
-			//refreshedVersion="2" 
-			//upgradeOnRefresh="1">
+			//upgradeOnRefresh="1"
 			SXSRC* src = dynamic_cast<SXSRC*>(m_SXSRC.get());
 			if (src)
 			{
@@ -167,7 +169,7 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 			}
 		}
 	}
-	return 0;
+	return global_info_->idPivotCache;
 }
 
 
@@ -176,7 +178,7 @@ int PIVOTCACHEDEFINITION::serialize_records(std::wostream & strm)
 	SXStreamID* streamId = dynamic_cast<SXStreamID*>(m_SXStreamID.get());
 	if (!streamId) return 0;
 
-	std::map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCache.find(streamId->idStm);
+	std::unordered_map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCache.find(streamId->idStm);
 	if (pFind == global_info_->mapPivotCache.end()) return 0;
 
 	PIVOTCACHE* pivot_cache = dynamic_cast<PIVOTCACHE*>(pFind->second.get());

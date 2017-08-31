@@ -54,8 +54,10 @@ public:
 	BaseObjectPtr	m_PIVOTCORE;
 	BaseObjectPtr	m_PIVOTFRT;
 //----------------------------------
-	int				indexCache;
+	int				index;
 	std::wstring	name;
+
+	GlobalWorkbookInfoPtr global_info_;
 };
 
 } // namespace XLS

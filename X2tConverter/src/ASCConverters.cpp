@@ -252,7 +252,7 @@ namespace NExtractTools
                if(NSFile::CFileBinary::ReadAllTextUtf8(sContentTypesPath, sData))
                {
                    std::wstring sCTFrom = _T("application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml");
-                   std::wstring sCTTo = _T("application/vnd.ms-word.document.macroEnabled.main+xml");
+                   std::wstring sCTTo = _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
 
                    sData = string_replaceAll(sData, sCTFrom, sCTTo);
 

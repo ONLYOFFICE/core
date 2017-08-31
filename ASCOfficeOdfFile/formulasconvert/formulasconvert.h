@@ -32,6 +32,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include "../include/cpdoccore/CPScopedPtr.h"
 
 namespace cpdoccore {
@@ -58,6 +59,8 @@ public:
 	
 	//Sheet2.C3:Sheet2.C19 -> Sheet2!C3:C19
     std::wstring convert_chart_distance(std::wstring const & expr);
+
+	void split_distance_by(const std::wstring& expr, const std::wstring& by, std::vector<std::wstring>& out);
     
     std::wstring convert_ref(std::wstring const & expr);
 

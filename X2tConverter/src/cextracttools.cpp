@@ -109,25 +109,45 @@ namespace NExtractTools
                 switch (OfficeFileFormatChecker.nFileType)
 				{
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:
 					{
 							 if (0 == sExt2.compare(_T(".doct")))		res = TCD_DOCX2DOCT;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_DOCX2DOCT_BIN;
 						else if (0 == sExt2.compare(_T(".rtf")))		res = TCD_DOCX2RTF;
                         else if (0 == sExt2.compare(_T(".odt")))		res = TCD_DOCX2ODT;
+                        else if (0 == sExt2.compare(_T(".docx")))		res = TCD_DOTX2DOCX;
+                        else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOTM2DOCM;
                     }break;
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:
 					{
 							 if (0 == sExt2.compare(_T(".xlst")))		res = TCD_XLSX2XLST;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_XLSX2XLST_BIN;
 						else if (0 == sExt2.compare(_T(".csv")))		res = TCD_XLSX2CSV;
                         else if (0 == sExt2.compare(_T(".ods")))		res = TCD_XLSX2ODS;
+                        else if (0 == sExt2.compare(_T(".xlsx")))		res = TCD_XLTX2XLSX;
+                        else if (0 == sExt2.compare(_T(".xlsm")))		res = TCD_XLTM2XLSM;
                     }break;
                 case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX:
+                case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM:
 				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX:
+                case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX:
+                case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM:
 					{
 							 if (0 == sExt2.compare(_T(".bin")))		res = TCD_PPTX2PPTT_BIN;
 						else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_PPTX2PPTT;
-						else if (0 == sExt2.compare(_T(".pptx")))		res = TCD_PPSX2PPTX;
+						else if (0 == sExt2.compare(_T(".pptx")))
+						{
+							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX)
+								res = TCD_PPSX2PPTX;
+							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX)
+								res = TCD_POTX2PPTX;
+						}
+						else if (0 == sExt2.compare(_T(".pptm")))		res = TCD_POTM2PPTM;
                         else if (0 == sExt2.compare(_T(".odp")))		res = TCD_PPTX2ODP;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY:

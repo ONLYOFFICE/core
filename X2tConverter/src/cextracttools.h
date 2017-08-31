@@ -62,16 +62,23 @@ namespace NExtractTools
         TCD_DOCT2DOCX,
         TCD_DOCX2DOCT_BIN,
         TCD_DOCT_BIN2DOCX,
+        TCD_DOTX2DOCX,
+        TCD_DOTM2DOCM,
 
         TCD_XLSX2XLST,
         TCD_XLST2XLSX,
         TCD_XLSX2XLST_BIN,
         TCD_XLST_BIN2XLSX,
+        TCD_XLTX2XLSX,
+        TCD_XLTM2XLSM,
 
         TCD_PPTX2PPTT,
         TCD_PPTT2PPTX,
         TCD_PPTX2PPTT_BIN,
         TCD_PPTT_BIN2PPTX,
+        TCD_PPSX2PPTX,
+		TCD_POTX2PPTX,
+		TCD_POTM2PPTM,
 
         TCD_ZIPDIR,
         TCD_UNZIPDIR,
@@ -89,7 +96,6 @@ namespace NExtractTools
         TCD_T2BIN,
         TCD_BIN2T,
 
-        TCD_PPSX2PPTX,
 //ppt 2
         TCD_PPT2PPTX,
         TCD_PPT2PPTT,
@@ -136,7 +142,7 @@ namespace NExtractTools
         TCD_PPTT2ODP,
         TCD_PPTX_BIN2ODP,
 		
-	TCD_XML2DOCX,
+		TCD_XML2DOCX,
         TCD_DOCX2XML,
 //
 		TCD_MSCRYPT2,
@@ -718,7 +724,7 @@ namespace NExtractTools
 
                 int nDelimitersCount = 6;
                 int aDelimiters[6] = { 0, 0, 0, 0, 0, 0 };
-                for(int i = 0; i < dwBytesRead; ++i)
+                for (DWORD i = 0; i < dwBytesRead; ++i)
                 {
                     char cCurChar = pBuffer[i];
                     if ('\n' == cCurChar)
@@ -900,7 +906,25 @@ namespace NExtractTools
         else if (0 == sArg3.compare(_T("ppsx2pptx"))) {
             res = TCD_PPSX2PPTX;
         }
-        else if (0 == sArg3.compare(_T("ppt2pptx"))) {
+        else if (0 == sArg3.compare(_T("potx2pptx"))) {
+            res = TCD_POTX2PPTX;
+        }
+        else if (0 == sArg3.compare(_T("potm2pptm"))) {
+            res = TCD_POTM2PPTM;
+        }
+        else if (0 == sArg3.compare(_T("xltx2xlsx"))) {
+            res = TCD_XLTX2XLSX;
+        }
+        else if (0 == sArg3.compare(_T("xltm2xlsm"))) {
+            res = TCD_XLTM2XLSM;
+        }
+        else if (0 == sArg3.compare(_T("dotx2docx"))) {
+            res = TCD_DOTX2DOCX;
+        }
+        else if (0 == sArg3.compare(_T("dotm2docm"))) {
+            res = TCD_DOTM2DOCM;
+        }
+		else if (0 == sArg3.compare(_T("ppt2pptx"))) {
             res = TCD_PPT2PPTX;
         }
         else if (0 == sArg3.compare(_T("doc2docx"))) {

@@ -2622,10 +2622,20 @@ namespace NExtractTools
            std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
            NSDirectory::CreateDirectory(sDocxDir);
            
-		   if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatFrom ||
-			   AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatFrom)
+		   if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatFrom)
            {
                nRes = zip2dir(sFrom, sDocxDir);
+           }
+		   else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatFrom)
+           {
+			   if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX == nFormatTo)
+			   {
+				   nRes = docm2docx_dir(sFrom, sDocxDir, params);
+			   }
+			   else 
+			   {
+				   nRes = zip2dir(sFrom, sDocxDir);
+			   }
            }
            else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX == nFormatFrom)
            {
@@ -2633,7 +2643,14 @@ namespace NExtractTools
            }
            else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == nFormatFrom)
            {
-               nRes = dotm2docm_dir(sFrom, sDocxDir, params);
+			   if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX == nFormatTo)
+			   {
+				   nRes = dotm2docm_dir(sFrom, sDocxDir, params);
+			   }
+			   else
+			   {
+				   nRes = dotm2docm_dir(sFrom, sDocxDir, params);
+			   }
            }
 		   else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC == nFormatFrom)
            {
@@ -2799,23 +2816,41 @@ namespace NExtractTools
            std::wstring sXlsxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
            NSDirectory::CreateDirectory(sXlsxDir);
 		   bool isSavedXFile = false;
-           if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatFrom || 
-			   AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM == nFormatFrom)
+		   if ((AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatFrom || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM == nFormatFrom ||
+				AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX == nFormatFrom || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM == nFormatFrom) && params.getSaveXFile())
+		   {
+			   NSFile::CFileBinary::Copy(sFrom, NSSystemPath::GetDirectoryName(sTo) + FILE_SEPARATOR_STR + _T("Editor.xlsx"));
+			   isSavedXFile = true;
+		   }
+		   if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatFrom)
            {
                nRes = zip2dir(sFrom, sXlsxDir);
-			   if (SUCCEEDED_X2T(nRes) && params.getSaveXFile())
-			   {
-				   NSFile::CFileBinary::Copy(sFrom, NSSystemPath::GetDirectoryName(sTo) + FILE_SEPARATOR_STR + _T("Editor.xlsx"));
-				   isSavedXFile = true;
-			   }
            }
+		   else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM == nFormatFrom)
+		   {
+			   if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX == nFormatTo)
+			   {
+				   nRes = xlsm2xlsx_dir(sFrom, sXlsxDir, params);
+			   }
+			   else
+			   {
+				   nRes = zip2dir(sFrom, sXlsxDir);
+			   }
+		   }
 		   else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX == nFormatFrom)
 		   {
                nRes = xltx2xlsx_dir(sFrom, sXlsxDir, params);
 		   }
 		   else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM == nFormatFrom)
 		   {
-               nRes = xltm2xlsm_dir(sFrom, sXlsxDir, params);
+			   if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX == nFormatTo)
+			   {
+				   nRes = xltm2xlsm_dir(sFrom, sXlsxDir, params);
+			   }
+			   else
+			   {
+				   nRes = xltm2xlsm_dir(sFrom, sXlsxDir, params);
+			   }
 		   }
 		   else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS == nFormatFrom)
            {
@@ -2936,11 +2971,21 @@ namespace NExtractTools
        int nRes = 0;
        std::wstring sPptxDir = sTemp + FILE_SEPARATOR_STR + _T("pptx_unpacked");
        NSDirectory::CreateDirectory(sPptxDir);
-       if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX == nFormatFrom ||
-		   AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM == nFormatFrom)
+	   if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX == nFormatFrom)
        {
            nRes = zip2dir(sFrom, sPptxDir);
        }
+	   else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM == nFormatFrom)
+	   {
+		   if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX == nFormatTo)
+		   {
+			   nRes = pptm2pptx_dir(sFrom, sPptxDir, params);
+		   }
+		   else
+		   {
+			   nRes = zip2dir(sFrom, sPptxDir);
+		   }
+	   }
 	   else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT == nFormatFrom)
        {
            nRes = ppt2pptx_dir(sFrom, sPptxDir, sTemp, params);
@@ -2959,7 +3004,14 @@ namespace NExtractTools
        }
        else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM == nFormatFrom)
        {
-           nRes = potm2pptm_dir(sFrom, sPptxDir, params);
+		   if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX == nFormatTo)
+		   {
+			   nRes = potm2pptm_dir(sFrom, sPptxDir, params);
+		   }
+		   else
+		   {
+			   nRes = potm2pptm_dir(sFrom, sPptxDir, params);
+		   }
        }
 	   else
            nRes = AVS_FILEUTILS_ERROR_CONVERT;

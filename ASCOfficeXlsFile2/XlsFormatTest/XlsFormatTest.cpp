@@ -61,7 +61,7 @@ HRESULT convert_single(std::wstring fileName)
 	std::wstring outputDir		= NSDirectory::GetFolderPath(dstPath);	
 	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
-	hr = ConvertXls2Xlsx(srcFileName, dstTempPath, L"password", L"C:\\Windows\\Fonts", NULL);
+	hr = ConvertXls2Xlsx(srcFileName, dstTempPath, L"password", L"C:\\Windows\\Fonts", NULL, true);
 
 	if (hr == S_OK) 
 	{

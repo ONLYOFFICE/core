@@ -357,47 +357,57 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName)
 
         std::string::size_type res1 = std::string::npos;
         std::string::size_type res = 0;
-        if ((std::string::npos != strContentTypes.find(docxFormatLine)) ||
-            (std::string::npos != strContentTypes.find(docmFormatLine)))
+        
+		if (std::string::npos != strContentTypes.find(docxFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
 		}
-        else if ((std::string::npos != strContentTypes.find(dotxFormatLine)))
+		else if (std::string::npos != strContentTypes.find(docmFormatLine))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM;
+		}
+        else if (std::string::npos != strContentTypes.find(dotxFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX;
 		}
-		else if ((std::string::npos != strContentTypes.find(dotmFormatLine)))
+		else if (std::string::npos != strContentTypes.find(dotmFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM;
 		}
-		else if ((std::string::npos != strContentTypes.find(xlsxFormatLine)) ||
-                 (std::string::npos != strContentTypes.find(xlsmFormatLine)))
+		else if (std::string::npos != strContentTypes.find(xlsxFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
 		}
-        else if ((std::string::npos != strContentTypes.find(xltxFormatLine)))
+		else if (std::string::npos != strContentTypes.find(xlsmFormatLine))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM;
+		}
+        else if (std::string::npos != strContentTypes.find(xltxFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX;
 		}
-		else if ((std::string::npos != strContentTypes.find(xltmFormatLine)))
+		else if (std::string::npos != strContentTypes.find(xltmFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM;
 		}
-		else if ((std::string::npos != strContentTypes.find(pptxFormatLine)) ||
-                 (std::string::npos != strContentTypes.find(pptmFormatLine)) ||
-                 (std::string::npos != strContentTypes.find(ppsmFormatLine)))
+		else if (std::string::npos != strContentTypes.find(pptxFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
 		}
-        else if ((std::string::npos != strContentTypes.find(ppsxFormatLine)))
+		else if ((std::string::npos != strContentTypes.find(pptmFormatLine)) ||
+                 (std::string::npos != strContentTypes.find(ppsmFormatLine)))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM;
+		}
+        else if (std::string::npos != strContentTypes.find(ppsxFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX;
 		}
-        else if ((std::string::npos != strContentTypes.find(potxFormatLine)))
+        else if (std::string::npos != strContentTypes.find(potxFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX;
 		}
-        else if ((std::string::npos != strContentTypes.find(potmFormatLine)))
+        else if (std::string::npos != strContentTypes.find(potmFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM;
 		}

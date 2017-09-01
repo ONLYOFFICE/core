@@ -63,6 +63,7 @@ namespace NExtractTools
         TCD_DOCX2DOCT_BIN,
         TCD_DOCT_BIN2DOCX,
         TCD_DOTX2DOCX,
+		TCD_DOCM2DOCX,
         TCD_DOTM2DOCM,
 
         TCD_XLSX2XLST,
@@ -70,6 +71,7 @@ namespace NExtractTools
         TCD_XLSX2XLST_BIN,
         TCD_XLST_BIN2XLSX,
         TCD_XLTX2XLSX,
+		TCD_XLSM2XLSX,
         TCD_XLTM2XLSM,
 
         TCD_PPTX2PPTT,
@@ -78,6 +80,7 @@ namespace NExtractTools
         TCD_PPTT_BIN2PPTX,
         TCD_PPSX2PPTX,
 		TCD_POTX2PPTX,
+		TCD_PPTM2PPTX,
 		TCD_POTM2PPTM,
 
         TCD_ZIPDIR,
@@ -108,6 +111,7 @@ namespace NExtractTools
         TCD_XLS2XLST,
         TCD_XLS2XLST_BIN,
         TCD_XLS2XLSX,
+		TCD_XLS2XLSM,
 //rtf 2
         TCD_RTF2DOCX,
 		TCD_RTF2DOCT,
@@ -763,20 +767,42 @@ namespace NExtractTools
           *m_nFormatFrom = formatFrom;
           int toFormat = *m_nFormatTo;
 
-          if (AVS_OFFICESTUDIO_FILE_CANVAS == toFormat) {
-            if (AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom)) {
+          if (AVS_OFFICESTUDIO_FILE_CANVAS == toFormat) 
+		  {
+            if ( AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom ||
+				0 != ( AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom)) 
+			{
               toFormat = AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET;
-            } else if (AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom)) {
+            } 
+			else if ( AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom 
+				|| 0 != ( AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom))
+			{
               toFormat = AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION;
-            } else if (AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) {
+            }
+			else if ( AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 
+				0 != ( AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) 
+			{
               toFormat = AVS_OFFICESTUDIO_FILE_CANVAS_WORD;
             }
-          } else if (AVS_OFFICESTUDIO_FILE_OTHER_TEAMLAB_INNER == toFormat) {
-            if (AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom)) {
+          } 
+		  else if ( AVS_OFFICESTUDIO_FILE_OTHER_TEAMLAB_INNER == toFormat) 
+		  {
+            if ( AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == formatFrom || 
+				AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 
+				0 != ( AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom)) 
+			{
               toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
-            } else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom)) {
+            } 
+			else if ( AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == formatFrom || 
+				AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 
+				0 != ( AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom)) 
+			{
               toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
-            } else if (AVS_OFFICESTUDIO_FILE_CANVAS_WORD == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) {
+            } 
+			else if ( AVS_OFFICESTUDIO_FILE_CANVAS_WORD == formatFrom || 
+				AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 
+				0 != ( AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) 
+			{
               toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
             }
             size_t nIndex = m_sFileTo->rfind('.');

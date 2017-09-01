@@ -121,7 +121,7 @@ typedef struct tagBITMAPCOREHEADER {
 } BITMAPCOREHEADER;
 #endif
 
-XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _xlsx_path, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* CallBack) 
+XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _xlsx_path, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* CallBack, bool bMacros) 
 {
 	xlsx_path			= _xlsx_path;
 	output_document		= NULL;
@@ -131,8 +131,10 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 	bUserStopConvert	= false;
 	is_older_version	= false;
 	is_encrypted		= false;
+	output_document		= new oox::package::xlsx_document();
 
-	try{
+	try
+	{
 		XLS::CompoundFile cfile(xls_file, XLS::CompoundFile::cf_ReadMode);
 
 		if (cfile.isError())
@@ -218,6 +220,25 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 				xls_global_info->mapPivotCache.insert(std::make_pair(index, pivot_cache));
 			}
 		}
+		if (bMacros && cfile.storage_->isDirectory("_VBA_PROJECT_CUR"))
+		{
+			std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";	
+			NSDirectory::CreateDirectory(xl_path.c_str());
+
+			std::wstring sVbaProjectFile = xl_path + FILE_SEPARATOR_STR + L"vbaProject.bin";
+
+			POLE::Storage *storageVbaProject	= new POLE::Storage(sVbaProjectFile.c_str());
+
+			if ((storageVbaProject) && (storageVbaProject->open(true, true)))
+			{			
+				cfile.copy(0, "_VBA_PROJECT_CUR/", storageVbaProject, false);
+
+				storageVbaProject->close();
+				delete storageVbaProject;
+
+				output_document->get_xl_files().add_vba_project();
+			}
+		}
 	}
 	catch(...)
 	{
@@ -231,8 +252,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 		Log::error("Version xls is old !!! - " + std::string(sVer.begin(), sVer.end()));
 		is_older_version = true;
 	}	
-	output_document		= new oox::package::xlsx_document();
-    xlsx_context		= new oox::xlsx_conversion_context(output_document);
+    xlsx_context = new oox::xlsx_conversion_context(output_document);
 }
 
 XlsConverter::~XlsConverter() 
@@ -268,6 +288,7 @@ bool XlsConverter::UpdateProgress(long nComplete)
 void XlsConverter::write()
 {
 	if (!output_document)return;
+	
 	output_document->write(xlsx_path);
 
 	delete output_document; output_document = NULL;

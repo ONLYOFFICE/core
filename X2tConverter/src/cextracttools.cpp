@@ -117,7 +117,13 @@ namespace NExtractTools
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_DOCX2DOCT_BIN;
 						else if (0 == sExt2.compare(_T(".rtf")))		res = TCD_DOCX2RTF;
                         else if (0 == sExt2.compare(_T(".odt")))		res = TCD_DOCX2ODT;
-                        else if (0 == sExt2.compare(_T(".docx")))		res = TCD_DOTX2DOCX;
+                        else if (0 == sExt2.compare(_T(".docx")))
+						{
+							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX)
+								res = TCD_DOTX2DOCX;
+							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM)
+								res = TCD_DOCM2DOCX;
+						}
                         else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOTM2DOCM;
                     }break;
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
@@ -129,7 +135,13 @@ namespace NExtractTools
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_XLSX2XLST_BIN;
 						else if (0 == sExt2.compare(_T(".csv")))		res = TCD_XLSX2CSV;
                         else if (0 == sExt2.compare(_T(".ods")))		res = TCD_XLSX2ODS;
-                        else if (0 == sExt2.compare(_T(".xlsx")))		res = TCD_XLTX2XLSX;
+                        else if (0 == sExt2.compare(_T(".xlsx")))
+						{
+							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX)
+								res = TCD_XLTX2XLSX;
+							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM)
+								res = TCD_XLSM2XLSX;
+						}
                         else if (0 == sExt2.compare(_T(".xlsm")))		res = TCD_XLTM2XLSM;
                     }break;
                 case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX:
@@ -146,6 +158,8 @@ namespace NExtractTools
 								res = TCD_PPSX2PPTX;
 							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX)
 								res = TCD_POTX2PPTX;
+							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM)
+								res = TCD_PPTM2PPTX;
 						}
 						else if (0 == sExt2.compare(_T(".pptm")))		res = TCD_POTM2PPTM;
                         else if (0 == sExt2.compare(_T(".odp")))		res = TCD_PPTX2ODP;
@@ -218,6 +232,7 @@ namespace NExtractTools
                 case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS:
                     {
                              if (0 == sExt2.compare(_T(".xlsx")))		res = TCD_XLS2XLSX;
+                        else if (0 == sExt2.compare(_T(".xlsm")))		res = TCD_XLS2XLSM;
                         else if (0 == sExt2.compare(_T(".xlst")))		res = TCD_XLS2XLST;
                         else if (0 == sExt2.compare(_T(".bin")))		res = TCD_XLS2XLST_BIN;
                     }break;

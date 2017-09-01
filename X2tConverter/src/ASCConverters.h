@@ -59,6 +59,8 @@ namespace NExtractTools
     int dotx2docx_dir		(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
     int dotm2docm			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     int dotm2docm_dir		(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
+    int docm2docx			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+    int docm2docx_dir		(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
 
 	int xlsx2xlst_bin		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
 	int xlsx_dir2xlst_bin	(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params, bool bXmlOptions);
@@ -71,6 +73,8 @@ namespace NExtractTools
     int xltx2xlsx_dir		(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
     int xltm2xlsm			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     int xltm2xlsm_dir		(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
+	int xlsm2xlsx			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+    int xlsm2xlsx_dir		(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
 
     int pptx2pptt_bin		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     int pptx_dir2pptt_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
@@ -94,6 +98,8 @@ namespace NExtractTools
     int potx2pptx_dir   (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
     int potm2pptm		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     int potm2pptm_dir   (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
+    int pptm2pptx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+    int pptm2pptx_dir   (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
 
     int ppt2pptx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     int ppt2pptx_dir    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
@@ -119,6 +125,8 @@ namespace NExtractTools
     int xls2xlsx_dir    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     int xls2xlst        (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     int xls2xlst_bin    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+    int xls2xlsm		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+    int xls2xlsm_dir    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
 
     int txt2docx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     int txt2docx_dir    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);

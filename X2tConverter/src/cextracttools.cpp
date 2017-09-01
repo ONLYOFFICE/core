@@ -123,6 +123,8 @@ namespace NExtractTools
 								res = TCD_DOTX2DOCX;
 							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM)
 								res = TCD_DOCM2DOCX;
+							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM)
+								res = TCD_DOTM2DOCX;
 						}
                         else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOTM2DOCM;
                     }break;
@@ -141,6 +143,8 @@ namespace NExtractTools
 								res = TCD_XLTX2XLSX;
 							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM)
 								res = TCD_XLSM2XLSX;
+							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM)
+								res = TCD_XLTM2XLSX;
 						}
                         else if (0 == sExt2.compare(_T(".xlsm")))		res = TCD_XLTM2XLSM;
                     }break;
@@ -160,6 +164,8 @@ namespace NExtractTools
 								res = TCD_POTX2PPTX;
 							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM)
 								res = TCD_PPTM2PPTX;
+							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM)
+								res = TCD_POTM2PPTX;
 						}
 						else if (0 == sExt2.compare(_T(".pptm")))		res = TCD_POTM2PPTM;
                         else if (0 == sExt2.compare(_T(".odp")))		res = TCD_PPTX2ODP;

@@ -121,7 +121,7 @@ typedef struct tagBITMAPCOREHEADER {
 } BITMAPCOREHEADER;
 #endif
 
-XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _xlsx_path, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* CallBack, bool bMacros) 
+XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _xlsx_path, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* CallBack, bool & bMacros) 
 {
 	xlsx_path			= _xlsx_path;
 	output_document		= NULL;
@@ -239,6 +239,8 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 				output_document->get_xl_files().add_vba_project();
 			}
 		}
+		else 
+			bMacros = false;
 	}
 	catch(...)
 	{

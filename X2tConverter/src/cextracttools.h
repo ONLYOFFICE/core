@@ -545,7 +545,7 @@ namespace NExtractTools
         }
 		bool getIsNoBase64() const
 		{
-			return (NULL != m_bIsNoBase64) ? (*m_bIsNoBase64) : false;
+			return (NULL != m_bIsNoBase64) ? (*m_bIsNoBase64) : true;
 		}
 		bool getSaveXFile() const
 		{

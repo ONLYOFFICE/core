@@ -483,26 +483,27 @@ namespace DocFileFormat
 			delete storageOut;
 			return false;
 		}
+		DecryptStream( 0, "/", storageIn, storageOut, Decryptor);
 
-		std::list<std::string> listStream = storageIn->entries();
+		//std::list<std::string> listStream = storageIn->entries();
 
-		for (std::list<std::string>::iterator it = listStream.begin(); it != listStream.end(); it++)
-		{
-			if (storageIn->isDirectory(*it)) 
-			{
-				std::list<std::string> list_entry = storageIn->GetAllStreams(*it);
-				
-				for (std::list<std::string>::iterator it2 = list_entry.begin(); it2 != list_entry.end(); it2++)
-				{
-					DecryptStream(Decryptor, *it2, storageIn, storageOut);
-				}
-			}
-			else 
-			{
-				DecryptStream(Decryptor, *it, storageIn, storageOut);
-			}
+		//for (std::list<std::string>::iterator it = listStream.begin(); it != listStream.end(); it++)
+		//{
+		//	if (storageIn->isDirectory(*it)) 
+		//	{
+		//		std::list<std::string> list_entry = storageIn->GetAllStreams(*it);
+		//		
+		//		for (std::list<std::string>::iterator it2 = list_entry.begin(); it2 != list_entry.end(); it2++)
+		//		{
+		//			DecryptStream(Decryptor, *it2, storageIn, storageOut);
+		//		}
+		//	}
+		//	else 
+		//	{
+		//		DecryptStream(Decryptor, *it, storageIn, storageOut);
+		//	}
 
-		}
+		//}
 
 		storageOut->close();
 		delete storageOut;
@@ -525,34 +526,28 @@ namespace DocFileFormat
 		}
 		return true;
 	}
-	bool WordDocument::CopyStream (std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut)
+	void WordDocument::DecryptStream( int level, std::string path, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor)
 	{
-		POLE::Stream *stream = new POLE::Stream(storageIn, streamName);
-		if (!stream) return false;
-
-		stream->seek(0);
-		int sz_stream = stream->size();
-		
-		POLE::Stream *streamNew = new POLE::Stream(storageOut, streamName, true, sz_stream);
-		if (!streamNew) return false;
-
-		unsigned char* data_stream = new unsigned char[sz_stream];
-		stream->read(data_stream, sz_stream);
-
-		streamNew->write(data_stream, sz_stream);
-
-		RELEASEARRAYOBJECTS(data_stream);
-
-		streamNew->flush();
-				
-		delete streamNew;
-		delete stream;
-		
-		return true;
+		std::list<std::string> entries;
+		entries = storageIn->entries( path );
+	    
+		std::list<std::string>::iterator it;
+		for( it = entries.begin(); it != entries.end(); ++it )
+		{
+			std::string name = *it;
+			std::string fullname = path + name;
+	       
+			if( storageIn->isDirectory( fullname ) )
+			{
+				DecryptStream( level + 1, fullname + "/", storageIn, storageOut, Decryptor );
+			}
+			else
+			{
+				DecryptStream(fullname, storageIn, storageOut, Decryptor );
+			}
+		}    
 	}
-
-
-	bool WordDocument::DecryptStream(CRYPT::Decryptor* Decryptor, std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut)
+	bool WordDocument::DecryptStream(std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor)
 	{
 		POLE::Stream *stream = new POLE::Stream(storageIn, streamName);
 		if (!stream) return false;
@@ -567,9 +562,9 @@ namespace DocFileFormat
 		stream->read(data_stream, size_stream);
 
 		unsigned char* data_store = NULL;
-		int size_data_store = 0;
+		int size_data_store = 0;		
 		
-		if ("WordDocument" == streamName)
+		if ( std::wstring::npos != streamName.find("WordDocument") )
 		{
 			size_data_store = 68;
 			data_store = new unsigned char[size_data_store];

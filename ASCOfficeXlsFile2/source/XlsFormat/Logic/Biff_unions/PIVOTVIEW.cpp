@@ -40,6 +40,7 @@
 #include "PIVOTEX.h"
 #include "PIVOTADDL.h"
 #include "PIVOTFORMAT.h"
+#include "PIVOTFRT9.h"
 
 #include "../Biff_records/SXDI.h"
 #include "../Biff_records/SxView.h"
@@ -47,6 +48,7 @@
 #include "../Biff_records/SXEx.h"
 #include "../Biff_records/SxFormat.h"
 #include "../Biff_records/SxDXF.h"
+#include "../Biff_records/SXViewEx9.h"
 
 namespace XLS
 {
@@ -107,11 +109,11 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 	PIVOTEX* pivot_ex = dynamic_cast<PIVOTEX*>(core->m_PIVOTEX.get());
 
 	PIVOTADDL* addls = frt ? dynamic_cast<PIVOTADDL*>(frt->m_PIVOTADDL.get()) : NULL;
-	PIVOTFRT9* frt9	= frt ? dynamic_cast<PIVOTADDL*>(frt->m_PIVOTFRT9.get()) : NULL;
+    PIVOTFRT9* frt9	= frt ? dynamic_cast<PIVOTFRT9*>(frt->m_PIVOTFRT9.get()) : NULL;
 
 	SXEx *view_ex = pivot_ex ? dynamic_cast<SXEx*>(pivot_ex->m_SXEx.get()) : NULL;
 
-	SXViewEx9 *view_ex9 = pivot_ex ? dynamic_cast<SXEx*>(frt9->m_SXViewEx9.get()) : NULL;
+    SXViewEx9 *view_ex9 = pivot_ex ? dynamic_cast<SXViewEx9*>(frt9->m_SXViewEx9.get()) : NULL;
 
 	indexStream = global_info_->arPivotCacheStream[view->iCache];
 

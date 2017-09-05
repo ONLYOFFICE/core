@@ -1470,6 +1470,77 @@ namespace NExtractTools
        }
        return 0;
    }
+	// ppsm -> pptx
+	int ppsm2pptx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+	   std::wstring sTempUnpackedPPTX = sTemp + FILE_SEPARATOR_STR + _T("pptx_unpacked");
+       NSDirectory::CreateDirectory(sTempUnpackedPPTX);
+
+       int nRes = ppsm2pptx_dir(sFrom, sTempUnpackedPPTX, params);
+       if(SUCCEEDED_X2T(nRes))
+       {
+           COfficeUtils oCOfficeUtils(NULL);
+           if(S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedPPTX, sTo, true))
+               return 0;
+       }
+	   return AVS_FILEUTILS_ERROR_CONVERT;
+	}
+	int ppsm2pptx_dir (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params)
+	{
+       COfficeUtils oCOfficeUtils(NULL);
+       if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTo, NULL, 0))
+       {
+           std::wstring sContentTypesPath = sTo + FILE_SEPARATOR_STR + _T("[Content_Types].xml");
+           if(NSFile::CFileBinary::Exists(sContentTypesPath))
+           {
+               std::wstring sData;
+               if(NSFile::CFileBinary::ReadAllTextUtf8(sContentTypesPath, sData))
+               {
+                   std::wstring sCTFrom = _T("application/vnd.ms-powerpoint.slideshow.macroEnabled.main+xml");
+                   std::wstring sCTTo = _T("application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml");
+                   sData = string_replaceAll(sData, sCTFrom, sCTTo);
+
+ 					sCTFrom = L"<Override PartName=\"/ppt/vbaProject.bin\" ContentType=\"application/vnd.ms-office.vbaProject\"/>";
+					sData = string_replaceAll(sData, sCTFrom, L"");
+
+					sCTFrom = L"<Default Extension=\"bin\" ContentType=\"application/vnd.ms-office.vbaProject\"/>";
+					sData = string_replaceAll(sData, sCTFrom, L"");
+
+					if(NSFile::CFileBinary::SaveToFile(sContentTypesPath, sData, true) == false)
+					{
+						return AVS_FILEUTILS_ERROR_CONVERT;
+					}
+				}
+			}
+			std::wstring sPresentationRelsPath = sTo + FILE_SEPARATOR_STR + L"ppt" + FILE_SEPARATOR_STR + L"_rels" + FILE_SEPARATOR_STR + L"presentation.xml.rels";
+			if(NSFile::CFileBinary::Exists(sPresentationRelsPath))
+			{
+               std::wstring sData;
+               if(NSFile::CFileBinary::ReadAllTextUtf8(sPresentationRelsPath, sData))
+               {
+					int pos = sData.find(L"vbaProject.bin");
+					if (pos > 0)
+					{
+						int pos1 = sData.rfind(L"<", pos);
+						int pos2 = sData.find(L">", pos);
+
+						if (pos1 > 0 && pos2 > 0)
+						{
+							sData.erase(sData.begin() + pos1, sData.begin() + pos2 + 1);
+						}
+					}					
+					if(NSFile::CFileBinary::SaveToFile(sPresentationRelsPath, sData, true) == false)
+					{
+						return AVS_FILEUTILS_ERROR_CONVERT;
+					}
+			   }
+			}
+			std::wstring sVbaProjectPath = sTo + FILE_SEPARATOR_STR + L"ppt" + FILE_SEPARATOR_STR + L"vbaProject.bin";
+			NSFile::CFileBinary::Remove(sVbaProjectPath);
+
+       }
+       return 0;
+   }
 	// potx -> pptx
 	int potx2pptx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
@@ -1537,6 +1608,46 @@ namespace NExtractTools
                if(NSFile::CFileBinary::ReadAllTextUtf8(sContentTypesPath, sData))
                {
                    std::wstring sCTFrom = _T("application/vnd.ms-powerpoint.template.macroEnabled.main+xml");
+                   std::wstring sCTTo = _T("application/vnd.ms-powerpoint.presentation.macroEnabled.main+xml");
+
+                   sData = string_replaceAll(sData, sCTFrom, sCTTo);
+
+                   if(NSFile::CFileBinary::SaveToFile(sContentTypesPath, sData, true))
+                   {
+                       return 0;
+                   }
+               }
+           }
+       }
+       return AVS_FILEUTILS_ERROR_CONVERT;
+	}
+	// ppsm -> pptm
+	int ppsm2pptm (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+	   std::wstring sTempUnpackedPPTM = sTemp + FILE_SEPARATOR_STR + _T("pptm_unpacked");
+       NSDirectory::CreateDirectory(sTempUnpackedPPTM);
+
+       int nRes = ppsm2pptm_dir(sFrom, sTempUnpackedPPTM, params);
+       if(SUCCEEDED_X2T(nRes))
+       {
+           COfficeUtils oCOfficeUtils(NULL);
+           if(S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedPPTM, sTo, true))
+               return 0;
+       }
+	   return AVS_FILEUTILS_ERROR_CONVERT;
+	}
+	int ppsm2pptm_dir (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params)
+	{
+       COfficeUtils oCOfficeUtils(NULL);
+       if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTo, NULL, 0))
+       {
+           std::wstring sContentTypesPath = sTo + FILE_SEPARATOR_STR + _T("[Content_Types].xml");
+           if(NSFile::CFileBinary::Exists(sContentTypesPath))
+           {
+               std::wstring sData;
+               if(NSFile::CFileBinary::ReadAllTextUtf8(sContentTypesPath, sData))
+               {
+                   std::wstring sCTFrom = _T("application/vnd.ms-powerpoint.slideshow.macroEnabled.main+xml");
                    std::wstring sCTTo = _T("application/vnd.ms-powerpoint.presentation.macroEnabled.main+xml");
 
                    sData = string_replaceAll(sData, sCTFrom, sCTTo);
@@ -2255,6 +2366,7 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX:
 				case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX:
                 case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM:
+				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM:
 				{
 					return pptx2pptt_bin(sResultDecryptFile, sTo, sTemp,params);
 				}break;
@@ -2320,6 +2432,7 @@ namespace NExtractTools
                 case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX:
 				case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX:
                 case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM:
+				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM:
 				{
                     return fromPresentation(sResultDecryptFile, AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX, sTemp, params);
                 }break;
@@ -3191,6 +3304,7 @@ namespace NExtractTools
        int nRes = 0;
        std::wstring sPptxDir = sTemp + FILE_SEPARATOR_STR + _T("pptx_unpacked");
        NSDirectory::CreateDirectory(sPptxDir);
+	  
 	   if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX == nFormatFrom)
        {
            nRes = zip2dir(sFrom, sPptxDir);
@@ -3200,6 +3314,17 @@ namespace NExtractTools
 		   if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX == nFormatTo)
 		   {
 			   nRes = pptm2pptx_dir(sFrom, sPptxDir, params);
+		   }
+		   else
+		   {
+			   nRes = zip2dir(sFrom, sPptxDir);
+		   }
+	   }
+	   else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM == nFormatFrom)
+	   {
+		   if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX == nFormatTo)
+		   {
+			   nRes = ppsm2pptx_dir(sFrom, sPptxDir, params);
 		   }
 		   else
 		   {
@@ -3640,9 +3765,17 @@ namespace NExtractTools
 			{
 				result =  potm2pptx (sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
+			case TCD_PPSM2PPTX:
+			{
+				result =  ppsm2pptx (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
 			case TCD_POTM2PPTM:
 			{
 				result =  potm2pptm (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_PPSM2PPTM:
+			{
+				result =  ppsm2pptm (sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
 			case TCD_PPTM2PPTX:
 			{

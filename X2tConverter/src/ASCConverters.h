@@ -100,8 +100,12 @@ namespace NExtractTools
     int ppsx2pptx_dir   (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
     int potx2pptx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     int potx2pptx_dir   (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
+	int ppsm2pptx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+    int ppsm2pptx_dir   (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
     int potm2pptm		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     int potm2pptm_dir   (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
+	int ppsm2pptm		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+    int ppsm2pptm_dir   (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
     int pptm2pptx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     int pptm2pptx_dir   (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
     int potm2pptx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);

@@ -394,12 +394,19 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName)
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
 		}
-		else if ((std::string::npos != strContentTypes.find(pptmFormatLine)) ||
-                 (std::string::npos != strContentTypes.find(ppsmFormatLine)))
+		else if (std::string::npos != strContentTypes.find(pptmFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM;
 		}
-        else if (std::string::npos != strContentTypes.find(ppsxFormatLine))
+		else if (std::string::npos != strContentTypes.find(ppsmFormatLine))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM;
+		}
+		else if (std::string::npos != strContentTypes.find(ppsmFormatLine))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM;
+		}
+		else if (std::string::npos != strContentTypes.find(ppsxFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX;
 		}
@@ -562,6 +569,7 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
     case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT:	return L".ppt";
     case AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP:	return L".odp";
     case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX:	return L".ppsx";
+	case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM:	return L".ppsm";
     case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX:	return L".potx";
     case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM:	return L".potm";
 
@@ -645,6 +653,8 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& ext)
         return AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
     if (L".pptm" == ext)
         return AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM;
+	if (L".ppsm" == ext)
+		return AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM;
     if (L".ppt" == ext)
         return AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT;
     if (L".odp" == ext)

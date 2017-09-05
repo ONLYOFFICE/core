@@ -153,6 +153,7 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX:
                 case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX:
                 case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM:
+				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM:
 					{
 							 if (0 == sExt2.compare(_T(".bin")))		res = TCD_PPTX2PPTT_BIN;
 						else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_PPTX2PPTT;
@@ -166,8 +167,16 @@ namespace NExtractTools
 								res = TCD_PPTM2PPTX;
 							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM)
 								res = TCD_POTM2PPTX;
+							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM)
+								res = TCD_PPSM2PPTX;
 						}
-						else if (0 == sExt2.compare(_T(".pptm")))		res = TCD_POTM2PPTM;
+						else if (0 == sExt2.compare(_T(".pptm")))
+						{
+							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM)
+								res = TCD_PPSM2PPTM;
+							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM)
+								res = TCD_POTM2PPTM;
+						}
                         else if (0 == sExt2.compare(_T(".odp")))		res = TCD_PPTX2ODP;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY:

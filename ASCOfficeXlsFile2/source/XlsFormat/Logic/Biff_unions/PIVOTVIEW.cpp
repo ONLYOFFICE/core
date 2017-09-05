@@ -112,8 +112,9 @@ int PIVOTVIEW::serialize(std::wostream & strm)
     PIVOTFRT9* frt9	= frt ? dynamic_cast<PIVOTFRT9*>(frt->m_PIVOTFRT9.get()) : NULL;
 
 	SXEx *view_ex = pivot_ex ? dynamic_cast<SXEx*>(pivot_ex->m_SXEx.get()) : NULL;
-
     SXViewEx9 *view_ex9 = pivot_ex ? dynamic_cast<SXViewEx9*>(frt9->m_SXViewEx9.get()) : NULL;
+    SXAddl_SXCView_SXDVer10Info *view_ex10 = addls ? dynamic_cast<SXAddl_SXCView_SXDVer10Info*>(addls->m_SXAddl_SXCView_SXDTableStyleClient.get()) : NULL;
+    SXAddl_SXCView_SXDVer12Info *view_ex12 = addls ? dynamic_cast<SXAddl_SXCView_SXDVer12Info*>(addls->m_SXAddl_SXCView_SXDTableStyleClient.get()) : NULL;
 
 	indexStream = global_info_->arPivotCacheStream[view->iCache];
 
@@ -142,24 +143,33 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 			{
 				CP_XML_ATTR(L"dataCaption",			view->stData.value()); 
 			}
-			//CP_XML_ATTR(L"asteriskTotals",		1); 
 			CP_XML_ATTR(L"showMemberPropertyTips",	0);
 			CP_XML_ATTR(L"useAutoFormatting",		view->fAutoFormat); 
-			CP_XML_ATTR(L"autoFormatId",			view->itblAutoFmt);
+            CP_XML_ATTR(L"autoFormatId",			view->itblAutoFmt);
 			if (view_ex9)
 			{
 				CP_XML_ATTR(L"itemPrintTitles",		view_ex9->fPrintTitles);
 				CP_XML_ATTR(L"outline",				view_ex9->fLineMode);
-				CP_XML_ATTR(L"outlineData",			view_ex9->fLineMode);
+
+                CP_XML_ATTR(L"outlineData",			view_ex12 ? view_ex12->fOutlineData : view_ex9->fLineMode);
 			}
-			CP_XML_ATTR(L"indent",					0); 
-			CP_XML_ATTR(L"compact",					0);  
-			CP_XML_ATTR(L"compactData",				0); 
-			//CP_XML_ATTR(L"gridDropZones",			1); //makc1985_1 (2).xls 
+            CP_XML_ATTR(L"asteriskTotals",          view_ex10 ? view_ex10->fNotVisualTotals : 0);
+
+            if (view_ex12)
+            {
+                CP_XML_ATTR(L"indent",				view_ex12->cIndentInc );
+                CP_XML_ATTR(L"published",			view_ex12->fPublished);
+                CP_XML_ATTR(L"compact",				view_ex12->fCompactData);
+                CP_XML_ATTR(L"compactData",			view_ex12->fCompactData);
+
+                CP_XML_ATTR(L"gridDropZones",		view_ex12->fNewDropZones);
+                CP_XML_ATTR(L"showDrill",           !view_ex12->fHideDrillIndicators);
+                CP_XML_ATTR(L"printDrill",          view_ex12->fPrintDrillIndicators);
+            }
 
 			if (view_ex)
 			{
-				if (!view_ex->fEnableWizard)	CP_XML_ATTR(L"enableWizard", 0);
+                if (!view_ex->fEnableWizard)	CP_XML_ATTR(L"enableWizard", 0);
 				if (!view_ex->fEnableDrilldown)	CP_XML_ATTR(L"enableDrill",	0);
 				//CP_XML_ATTR(L"disableFieldList",	!view_ex->fEnableFieldDialog);//enableFieldPropert
 				

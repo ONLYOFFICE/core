@@ -101,7 +101,9 @@ BiffStructurePtr SXAddl::createSxcView(CFRecord& record)
 	switch(sxd)
 	{
 		case 0x00: result = BiffStructurePtr(new SXAddl_SXCView_SXDId());				break;
-		case 0x1E: result = BiffStructurePtr(new SXAddl_SXCView_SXDTableStyleClient()); break;
+        case 0x02: result = BiffStructurePtr(new SXAddl_SXCView_SXDVer10Info());    	break;
+        case 0x19: result = BiffStructurePtr(new SXAddl_SXCView_SXDVer12Info());    	break;
+        case 0x1E: result = BiffStructurePtr(new SXAddl_SXCView_SXDTableStyleClient()); break;
 		case 0xff: result = BiffStructurePtr(new SXAddl_SXCView_SXDEnd());				break;
 	}
 	return result;
@@ -325,6 +327,61 @@ BiffStructurePtr SXAddl_SXCView_SXDId::clone()
 void SXAddl_SXCView_SXDId::load(CFRecord& record)
 {
 	record >> stName;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCView_SXDVer10Info::clone()
+{
+    return BiffStructurePtr(new SXAddl_SXCView_SXDVer10Info(*this));
+}
+
+void SXAddl_SXCView_SXDVer10Info::load(CFRecord& record)
+{
+    unsigned short flags, reserved2;
+    unsigned char unused;
+
+    record >> bVerSxMacro >> flags >> unused >> reserved2;
+
+    fDisplayImmediateItems  = GETBIT(flags, 0);
+    fEnableDataEd           = GETBIT(flags, 1);
+    fDisableFList           = GETBIT(flags, 2);
+    fReenterOnLoadOnce      = GETBIT(flags, 3);
+    fNotViewCalculatedMembers  = GETBIT(flags, 4);
+    fNotVisualTotals        = GETBIT(flags, 5);
+    fPageMultipleItemLabel  = GETBIT(flags, 6);
+    fTensorFillCv           = GETBIT(flags, 7);
+    fHideDDData             = GETBIT(flags, 8);
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCView_SXDVer12Info::clone()
+{
+    return BiffStructurePtr(new SXAddl_SXCView_SXDVer12Info(*this));
+}
+
+void SXAddl_SXCView_SXDVer12Info::load(CFRecord& record)
+{
+    _UINT32 flags;
+    unsigned short reserved3;
+
+    record >> flags >> reserved3;
+
+    fDefaultCompact     = GETBIT(flags, 0);
+    fDefaultOutline     = GETBIT(flags, 1);
+    fOutlineData        = GETBIT(flags, 2);
+    fCompactData        = GETBIT(flags, 3);
+    fNewDropZones       = GETBIT(flags, 4);
+    fPublished          = GETBIT(flags, 5);
+    fTurnOffImmersive   = GETBIT(flags, 6);
+    fSingleFilterPerField   = GETBIT(flags, 7);
+    fNonDefaultSortInFlist  = GETBIT(flags, 8);
+
+    fDontUseCustomLists = GETBIT(flags, 10);
+
+    fHideDrillIndicators    = GETBIT(flags, 12);
+    fPrintDrillIndicators   = GETBIT(flags, 13);
+    fMemPropsInTips         = GETBIT(flags, 14);
+    fNoPivotTips            = GETBIT(flags, 15);
+    cIndentInc              = GETBITS(flags, 16, 22);
+    fNoHeaders              = GETBIT(flags, 23);
 }
 //----------------------------------------------------------------------------
 BiffStructurePtr SXAddl_SXCField_SXDEnd::clone()

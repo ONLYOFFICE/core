@@ -501,8 +501,60 @@ public:
 	
 	_UINT32 dwItem;
 };
-//class SXAddl_SXCView_SXDVer10Info			: public SXAddl {};
-//class SXAddl_SXCView_SXDVer12Info			: public SXAddl {};
+class SXAddl_SXCView_SXDVer10Info: public BiffStructure
+{
+    BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCView_SXDVer10Info)
+public:
+    BiffStructurePtr clone();
+
+    SXAddl_SXCView_SXDVer10Info(){}
+    ~SXAddl_SXCView_SXDVer10Info(){}
+
+    virtual void load(CFRecord& record);
+
+    static const ElementType	type = typeSXAddl;
+
+    unsigned char   bVerSxMacro;
+    bool            fDisplayImmediateItems;
+    bool            fEnableDataEd;
+    bool            fDisableFList;
+    bool            fReenterOnLoadOnce;
+    bool            fNotViewCalculatedMembers;
+    bool            fNotVisualTotals;
+    bool            fPageMultipleItemLabel;
+    bool            fTensorFillCv;
+    bool            fHideDDData;
+};
+class SXAddl_SXCView_SXDVer12Info: public BiffStructure
+{
+    BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCView_SXDVer12Info)
+public:
+    BiffStructurePtr clone();
+
+    SXAddl_SXCView_SXDVer12Info(){}
+    ~SXAddl_SXCView_SXDVer12Info(){}
+
+    virtual void load(CFRecord& record);
+
+    static const ElementType	type = typeSXAddl;
+
+    bool    fDefaultCompact;
+    bool    fDefaultOutline;
+    bool    fOutlineData;
+    bool    fCompactData;
+    bool    fNewDropZones;
+    bool    fPublished;
+    bool    fTurnOffImmersive;
+    bool    fSingleFilterPerField;
+    bool    fNonDefaultSortInFlist;
+    bool    fDontUseCustomLists;
+    bool    fHideDrillIndicators;
+    bool    fPrintDrillIndicators;
+    bool    fMemPropsInTips;
+    bool    fNoPivotTips;
+    unsigned char    cIndentInc;
+    bool    fNoHeaders;
+};
 
 //class SXAddl_SXCCacheItem_SXDItmMpMapCount	: public SXAddl {};
 //class SXAddl_SXCCacheItem_SXDItmMpropMap	: public SXAddl {};

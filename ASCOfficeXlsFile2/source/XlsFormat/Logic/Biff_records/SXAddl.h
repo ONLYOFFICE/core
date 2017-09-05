@@ -501,6 +501,8 @@ public:
 	
 	_UINT32 dwItem;
 };
+//class SXAddl_SXCView_SXDVer10Info			: public SXAddl {};
+//class SXAddl_SXCView_SXDVer12Info			: public SXAddl {};
 
 //class SXAddl_SXCCacheItem_SXDItmMpMapCount	: public SXAddl {};
 //class SXAddl_SXCCacheItem_SXDItmMpropMap	: public SXAddl {};
@@ -601,8 +603,6 @@ public:
 //	SXAddl_SXCView_SXDSXPIIvmb(CFRecord& record);
 //};
 
-//class SXAddl_SXCView_SXDVer10Info			: public SXAddl {};
-//class SXAddl_SXCView_SXDVer12Info			: public SXAddl {};
 //class SXAddl_SXCView_SXDVerUpdInv			: public SXAddl {};
 
 } // namespace XLS

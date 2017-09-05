@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of PIVOTFORMAT union of records 
 class PIVOTFORMAT: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTFORMAT)
@@ -49,7 +47,11 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typePIVOTFORMAT;
+	static const ElementType type = typePIVOTFORMAT;
+
+	BaseObjectPtr	m_SxFormat;
+	BaseObjectPtr	m_PIVOTRULE;
+	BaseObjectPtr	m_SxDXF;
 };
 
 } // namespace XLS

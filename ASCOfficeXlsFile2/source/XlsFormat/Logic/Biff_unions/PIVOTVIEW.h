@@ -54,7 +54,8 @@ public:
 	BaseObjectPtr	m_PIVOTCORE;
 	BaseObjectPtr	m_PIVOTFRT;
 //----------------------------------
-	int				index;
+	int				indexStream;
+	int				indexCache;
 	std::wstring	name;
 
 	GlobalWorkbookInfoPtr global_info_;

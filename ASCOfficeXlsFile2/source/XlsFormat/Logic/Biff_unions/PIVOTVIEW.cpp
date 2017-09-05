@@ -39,17 +39,22 @@
 #include "PIVOTLI.h"
 #include "PIVOTEX.h"
 #include "PIVOTADDL.h"
+#include "PIVOTFORMAT.h"
 
 #include "../Biff_records/SXDI.h"
 #include "../Biff_records/SxView.h"
 #include "../Biff_records/SXAddl.h"
+#include "../Biff_records/SXEx.h"
+#include "../Biff_records/SxFormat.h"
+#include "../Biff_records/SxDXF.h"
 
 namespace XLS
 {
 
 PIVOTVIEW::PIVOTVIEW()
 {
-	index= -1;
+	indexStream = -1;
+	indexCache	= -1;
 }
 
 PIVOTVIEW::~PIVOTVIEW()
@@ -99,15 +104,19 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 	if (!view) return 0;
 
 	PIVOTFRT* frt = dynamic_cast<PIVOTFRT*>(m_PIVOTFRT.get());
+	PIVOTEX* pivot_ex = dynamic_cast<PIVOTEX*>(core->m_PIVOTEX.get());
 
 	PIVOTADDL* addls = frt ? dynamic_cast<PIVOTADDL*>(frt->m_PIVOTADDL.get()) : NULL;
+	PIVOTFRT9* frt9	= frt ? dynamic_cast<PIVOTADDL*>(frt->m_PIVOTFRT9.get()) : NULL;
 
-	std::unordered_map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCache.begin();
-	
-	for (int i = 0; i < view->iCache; i++)
-		pFind++;
+	SXEx *view_ex = pivot_ex ? dynamic_cast<SXEx*>(pivot_ex->m_SXEx.get()) : NULL;
 
-	index = pFind->first;
+	SXViewEx9 *view_ex9 = pivot_ex ? dynamic_cast<SXEx*>(frt9->m_SXViewEx9.get()) : NULL;
+
+	indexStream = global_info_->arPivotCacheStream[view->iCache];
+
+	std::map<int, int>::iterator pFindIndex = global_info_->mapPivotCacheIndex.find(indexStream);
+	indexCache = pFindIndex->second;
 
 	CP_XML_WRITER(strm)
 	{
@@ -116,8 +125,11 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
 			
 			CP_XML_ATTR(L"name",				view->stTable.value()); 
-			CP_XML_ATTR(L"cacheId",				view->iCache); 
-			CP_XML_ATTR(L"dataOnRows",			view->sxaxis4Data.bRw); 
+			CP_XML_ATTR(L"cacheId",				indexCache); 
+			if (view->sxaxis4Data.bRw)
+			{
+				CP_XML_ATTR(L"dataOnRows",		view->sxaxis4Data.bRw); 
+			}
 			CP_XML_ATTR(L"applyNumberFormats",	view->fAtrNum);
 			CP_XML_ATTR(L"applyBorderFormats",	view->fAtrBdr); 
 			CP_XML_ATTR(L"applyFontFormats",	view->fAtrFnt);
@@ -128,15 +140,30 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 			{
 				CP_XML_ATTR(L"dataCaption",			view->stData.value()); 
 			}
-			CP_XML_ATTR(L"asteriskTotals",			1); 
+			//CP_XML_ATTR(L"asteriskTotals",		1); 
 			CP_XML_ATTR(L"showMemberPropertyTips",	0);
 			CP_XML_ATTR(L"useAutoFormatting",		view->fAutoFormat); 
 			CP_XML_ATTR(L"autoFormatId",			view->itblAutoFmt);
-			CP_XML_ATTR(L"itemPrintTitles",			1);  
+			if (view_ex9)
+			{
+				CP_XML_ATTR(L"itemPrintTitles",		view_ex9->fPrintTitles);
+				CP_XML_ATTR(L"outline",				view_ex9->fLineMode);
+				CP_XML_ATTR(L"outlineData",			view_ex9->fLineMode);
+			}
 			CP_XML_ATTR(L"indent",					0); 
 			CP_XML_ATTR(L"compact",					0);  
 			CP_XML_ATTR(L"compactData",				0); 
-			CP_XML_ATTR(L"gridDropZones",			1); 	
+			//CP_XML_ATTR(L"gridDropZones",			1); //makc1985_1 (2).xls 
+
+			if (view_ex)
+			{
+				if (!view_ex->fEnableWizard)	CP_XML_ATTR(L"enableWizard", 0);
+				if (!view_ex->fEnableDrilldown)	CP_XML_ATTR(L"enableDrill",	0);
+				//CP_XML_ATTR(L"disableFieldList",	!view_ex->fEnableFieldDialog);//enableFieldPropert
+				
+				if (!view_ex->stError.value().empty())
+					CP_XML_ATTR(L"errorCaption",	view_ex->stError.value());
+			}
 
 			CP_XML_NODE(L"location")
 			{
@@ -144,8 +171,12 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 				CP_XML_ATTR(L"firstHeaderRow", view->rwFirstHead - view->ref.rowFirst );
 				CP_XML_ATTR(L"firstDataRow", view->rwFirstData - view->ref.rowFirst);
 				CP_XML_ATTR(L"firstDataCol", view->colFirstData - view->ref.columnFirst); 
-				CP_XML_ATTR(L"rowPageCount", view->cDimPg > 0 ? view->cDimPg : 1); 
-				CP_XML_ATTR(L"colPageCount", 1);
+
+				if (view->cDimPg > 0)
+				{
+					CP_XML_ATTR(L"rowPageCount", view->cDimPg); 
+					CP_XML_ATTR(L"colPageCount", 1);
+				}
 			}
 			CP_XML_NODE(L"pivotFields")
 			{

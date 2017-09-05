@@ -57,20 +57,16 @@ public:
 	std::vector<_pivot_cache>	caches_;
 	std::vector<_pivot_view>	views_;
 	std::wstring				connections_;
-
-	std::map<int, int>			mapIndex_;
 };
 
 xlsx_pivots_context::xlsx_pivots_context() : impl_(new xlsx_pivots_context::Impl())
 {
 }
 
-void xlsx_pivots_context::add_cache(std::wstring definitions, std::wstring records, int indexCache)
+void xlsx_pivots_context::add_cache(std::wstring definitions, std::wstring records)
 {
 	Impl::_pivot_cache c = {definitions, records};
 	impl_->caches_.push_back(c);
-
-	impl_->mapIndex_.insert(std::make_pair(indexCache, impl_->caches_.size()));
 }
 
 int xlsx_pivots_context::get_cache_count()
@@ -128,9 +124,7 @@ int xlsx_pivots_context::add_view(std::wstring table_view, int indexCache)
 {
 	if (table_view.empty()) return 0;
 
-	std::map<int, int>::iterator pFind = impl_->mapIndex_.find(indexCache);
-
-	Impl::_pivot_view v = {table_view, pFind->second};
+	Impl::_pivot_view v = {table_view, indexCache + 1};
 	impl_->views_.push_back(v);
 
 	return (int)impl_->views_.size();

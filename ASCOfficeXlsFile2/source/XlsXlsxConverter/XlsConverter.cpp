@@ -217,7 +217,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 				{
 				}
 
-				xls_global_info->mapPivotCache.insert(std::make_pair(index, pivot_cache));
+				xls_global_info->mapPivotCacheStream.insert(std::make_pair(index, pivot_cache));
 			}
 		}
 		if (bMacros && cfile.storage_->isDirectory("_VBA_PROJECT_CUR"))
@@ -1948,7 +1948,7 @@ void XlsConverter::convert(XLS::PIVOTVIEW * pivot_view)
 	pivot_view->serialize(strm);
 
 
-	int index_view = xlsx_context->get_pivots_context().add_view(strm.str(), pivot_view->index);
+	int index_view = xlsx_context->get_pivots_context().add_view(strm.str(), pivot_view->indexCache);
 	
 	if (index_view > 0)
 	{
@@ -1964,8 +1964,8 @@ void XlsConverter::convert(XLS::PIVOTCACHEDEFINITION * pivot_cached)
 
 	std::wstringstream strmD, strmR;
 
-	int index = pivot_cached->serialize_definitions(strmD);
+	pivot_cached->serialize_definitions(strmD);
 	pivot_cached->serialize_records(strmR);
 
-	xlsx_context->get_pivots_context().add_cache(strmD.str(), strmR.str(), index);
+	xlsx_context->get_pivots_context().add_cache(strmD.str(), strmR.str());
 }

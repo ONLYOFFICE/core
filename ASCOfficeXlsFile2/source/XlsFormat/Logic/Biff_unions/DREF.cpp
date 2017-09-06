@@ -31,9 +31,9 @@
  */
 
 #include "DREF.h"
-#include <Logic/Biff_records/DConName.h>
-#include <Logic/Biff_records/DConBin.h>
-#include <Logic/Biff_records/DConRef.h>
+#include "../Biff_records/DConName.h"
+#include "../Biff_records/DConBin.h"
+#include "../Biff_records/DConRef.h"
 
 namespace XLS
 {

@@ -151,7 +151,7 @@ int LBL::serialize(std::wostream & stream)
 
 	if ((lbl->itab == 0) && (res = value.find(L"#REF!")) >= 0)
 	{
-		for (int i = 0 ; i < lbl->rgce.rgce.sequence.size(); i++)
+		for (size_t i = 0 ; i < lbl->rgce.rgce.sequence.size(); i++)
 		{
 			PtgRef3d* ptg = dynamic_cast<PtgRef3d*>(lbl->rgce.rgce.sequence[i].get());
 			if (ptg) 

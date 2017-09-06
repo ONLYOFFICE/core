@@ -65,6 +65,8 @@ xlsx_pivots_context::xlsx_pivots_context() : impl_(new xlsx_pivots_context::Impl
 
 void xlsx_pivots_context::add_cache(std::wstring definitions, std::wstring records)
 {
+	if (definitions.empty()) return;
+
 	Impl::_pivot_cache c = {definitions, records};
 	impl_->caches_.push_back(c);
 }

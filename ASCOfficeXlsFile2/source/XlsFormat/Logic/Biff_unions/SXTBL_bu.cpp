@@ -31,12 +31,16 @@
  */
 
 #include "SXTBL.h"
-#include <Logic/Biff_records/SXTbl.h>
-#include <Logic/Biff_unions/DREF.h>
-#include <Logic/Biff_records/SxTbpg.h>
-#include <Logic/Biff_records/SXTBRGIITM.h>
-#include <Logic/Biff_records/SXString.h>
+#include "DREF.h"
 
+#include "../Biff_records/SXTbl.h"
+#include "../Biff_records/SxTbpg.h"
+#include "../Biff_records/SXTBRGIITM.h"
+#include "../Biff_records/SXString.h"
+
+#include "../Biff_records/DConName.h"
+#include "../Biff_records/DConBin.h"
+#include "../Biff_records/DConRef.h"
 namespace XLS
 {
 
@@ -124,11 +128,67 @@ const bool SXTBL::loadContent(BinProcessor& proc)
 	}	
 	return true;
 }
-int SXTBL::serialize(std::wostream & stream)
+int SXTBL::serialize(std::wostream & strm)
 {
 	if (!m_SXTbl) return 0;
 
+	SXTbl *tbl = dynamic_cast<SXTbl*>(m_SXTbl.get());
+	
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"cacheSource")
+		{
+			CP_XML_ATTR(L"type", L"consolidation");
 
+			CP_XML_NODE(L"consolidation")
+			{
+				CP_XML_NODE(L"pages")
+				{
+					CP_XML_ATTR(L"count", m_arSXTBRGIITM.size());
+
+					for (size_t i = 0; i < m_arSXTBRGIITM.size(); i++)
+					{
+						SXTBRGIITM * item = dynamic_cast<SXTBRGIITM*>(m_arSXTBRGIITM[i].item.get());
+						
+						CP_XML_NODE(L"page")
+						{
+							CP_XML_ATTR(L"count", item->cItems);
+
+							for (size_t j = 0; j < m_arSXTBRGIITM[i].strings.size(); j++)
+							{
+								SXString* str = dynamic_cast<SXString*>(m_arSXTBRGIITM[i].strings[i].get());
+								CP_XML_NODE(L"pageItem")
+								{
+									CP_XML_ATTR(L"name", str->segment.value());
+								}
+							}
+						}
+					}
+				}
+				CP_XML_NODE(L"rangeSets")
+				{
+					CP_XML_ATTR(L"count", m_arDREF.size());
+					for (size_t i = 0; i < m_arDREF.size(); i++)
+					{
+						DREF*		dref = dynamic_cast<DREF*>(m_arDREF[i].get());
+
+						DConName*	name	= dynamic_cast<DConName*>(dref->m_DCon.get());
+						DConBin*	bin		= dynamic_cast<DConBin*>(dref->m_DCon.get());
+						DConRef*	ref		= dynamic_cast<DConRef*>(dref->m_DCon.get());
+
+						CP_XML_NODE(L"rangeSet")
+						{
+							CP_XML_ATTR(L"i1", i);
+							if (name)
+							{
+								CP_XML_ATTR(L"name", name->stName.value());
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 	return 0;
 }
 } // namespace XLS

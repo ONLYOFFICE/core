@@ -86,7 +86,7 @@ int SORTDATA12::serialize(std::wostream & stream)
 			if (info->fCaseSensitive)	CP_XML_ATTR(L"caseSensitive",	1);
 			if (info->fAltMethod)		CP_XML_ATTR(L"sortMethod",		L"stroke");
 
-			for (int i = 0 ; i < info->sortCond12Array.size(); i++)
+			for (size_t i = 0 ; i < info->sortCond12Array.size(); i++)
 			{
 				SortCond12 * sortCond = dynamic_cast<SortCond12 *>(info->sortCond12Array[i].get());
 				if (sortCond == NULL) continue;

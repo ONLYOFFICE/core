@@ -38,8 +38,6 @@
 namespace XLS
 {
 
-
-// Logical representation of Style record in BIFF8
 class Style: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Style)
@@ -49,7 +47,6 @@ public:
 	~Style();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 

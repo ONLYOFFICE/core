@@ -254,10 +254,9 @@ int FDB::serialize(std::wostream & strm, bool bSql)
 					{
 						CP_XML_ATTR(L"containsSemiMixedTypes", 1);
 					}
-					else if ((bDate & bString) || (bEmpty & bInteger & bString))
+					else if ((bDate & bString) || ((bEmpty || !bNumber) & bInteger & bString))
 					{
-						if (bEmpty && bInteger)
-							bNumber = true;
+						if (bInteger)	bNumber = true;
 						CP_XML_ATTR(L"containsMixedTypes", 1);
 					}
 					else if (!bEmpty && !bString && !bBool)

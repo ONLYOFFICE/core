@@ -160,7 +160,7 @@ int CF12::serialize(std::wostream & stream)
 				CFGradient *gradient = dynamic_cast<CFGradient*>(rgbCT.get());
 				CP_XML_NODE(L"colorScale")
 				{
-					for (int i = 0; i < gradient->rgInterp.size(); i ++)
+					for (size_t i = 0; i < gradient->rgInterp.size(); i ++)
 					{
 						CP_XML_NODE(L"cfvo")
 						{
@@ -181,7 +181,7 @@ int CF12::serialize(std::wostream & stream)
 								CP_XML_ATTR(L"val", cfvo.numValue);
 						}
 					}
-					for (int i = 0; i < gradient->rgCurve.size(); i ++)
+					for (size_t i = 0; i < gradient->rgCurve.size(); i ++)
 					{
 						CP_XML_NODE(L"color")
 						{

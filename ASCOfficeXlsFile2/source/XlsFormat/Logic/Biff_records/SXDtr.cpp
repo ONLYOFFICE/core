@@ -55,6 +55,11 @@ void SXDtr::readFields(CFRecord& record)
 	
 std::wstring SXDtr::value()
 {
+	if (mon < 1 || mon > 12) mon = 1;
+	if (dom < 1 || dom > 31) dom = 1;
+	
+	if (yr < 1) yr = 1; //???
+
 	std::wstringstream s;
 	s << yr << L"-" << (mon < 10 ? L"0" : L"") << mon << L"-" <<  (dom < 10 ? L"0" : L"") << dom << L"T"
 		 << (hr < 10 ? L"0" : L"") << hr << L":" << (min < 10 ? L"0" : L"") << min << L":" << (sec < 10 ? L"0" : L"") << sec;

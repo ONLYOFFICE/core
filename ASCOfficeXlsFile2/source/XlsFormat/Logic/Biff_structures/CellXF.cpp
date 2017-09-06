@@ -154,7 +154,7 @@ void CellXF::load(CFRecord& record)
 
 void CellXF::RegisterFillBorder()
 {
-    for (int i = 0; i < ext_props.size(); i++ )
+    for (size_t i = 0; i < ext_props.size(); i++ )
 	{
 		ExtProp* ext_prop = dynamic_cast<ExtProp*>(ext_props[i].get());
 

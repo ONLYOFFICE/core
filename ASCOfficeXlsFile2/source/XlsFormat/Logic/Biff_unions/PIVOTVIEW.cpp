@@ -113,12 +113,16 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 
 	SXEx *view_ex = pivot_ex ? dynamic_cast<SXEx*>(pivot_ex->m_SXEx.get()) : NULL;
     SXViewEx9 *view_ex9 = pivot_ex ? dynamic_cast<SXViewEx9*>(frt9->m_SXViewEx9.get()) : NULL;
-    SXAddl_SXCView_SXDVer10Info *view_ex10 = addls ? dynamic_cast<SXAddl_SXCView_SXDVer10Info*>(addls->m_SXAddl_SXCView_SXDTableStyleClient.get()) : NULL;
-    SXAddl_SXCView_SXDVer12Info *view_ex12 = addls ? dynamic_cast<SXAddl_SXCView_SXDVer12Info*>(addls->m_SXAddl_SXCView_SXDTableStyleClient.get()) : NULL;
+    SXAddl_SXCView_SXDVer10Info *view_ex10 = addls ? dynamic_cast<SXAddl_SXCView_SXDVer10Info*>(addls->m_SXAddl_SXCView_SXDVer10Info.get()) : NULL;
+    SXAddl_SXCView_SXDVer12Info *view_ex12 = addls ? dynamic_cast<SXAddl_SXCView_SXDVer12Info*>(addls->m_SXAddl_SXCView_SXDVer12Info.get()) : NULL;
 
 	indexStream = global_info_->arPivotCacheStream[view->iCache];
 
 	std::map<int, int>::iterator pFindIndex = global_info_->mapPivotCacheIndex.find(indexStream);
+
+	if (pFindIndex == global_info_->mapPivotCacheIndex.end())
+		return 0;
+
 	indexCache = pFindIndex->second;
 
 	CP_XML_WRITER(strm)
@@ -190,15 +194,18 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 					CP_XML_ATTR(L"colPageCount", 1);
 				}
 			}
-			CP_XML_NODE(L"pivotFields")
+			if (!core->m_arPIVOTVD.empty())
 			{
-				CP_XML_ATTR(L"count", view->cDim);//Sxvd 
-				for (size_t i = 0; i <  core->m_arPIVOTVD.size(); i++)
+				CP_XML_NODE(L"pivotFields")
 				{
-					core->m_arPIVOTVD[i]->serialize(CP_XML_STREAM());
+					CP_XML_ATTR(L"count", view->cDim);//Sxvd 
+					for (size_t i = 0; i <  core->m_arPIVOTVD.size(); i++)
+					{
+						core->m_arPIVOTVD[i]->serialize(CP_XML_STREAM());
+					}
 				}
 			}
-			if (core->m_arPIVOTIVD.size() >= 1)
+			if (!core->m_arPIVOTIVD.empty())
 			{
 				CP_XML_NODE(L"rowFields")
 				{
@@ -208,7 +215,7 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 					ivd->serialize(CP_XML_STREAM());
 				}
 			}
-			if (core->m_arPIVOTLI.size() >= 1)//0 or 2
+			if (!core->m_arPIVOTLI.empty())//0 or 2
 			{
 				CP_XML_NODE(L"rowItems")
 				{
@@ -247,7 +254,7 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 					core->m_PIVOTPI->serialize(CP_XML_STREAM());
 				}
 			}
-			if (core->m_arSXDI.empty() == false)
+			if (!core->m_arSXDI.empty())
 			{
 				CP_XML_NODE(L"dataFields")
 				{

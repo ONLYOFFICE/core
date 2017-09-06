@@ -112,7 +112,7 @@ int XLUnicodeRichExtendedString::serialize (std::wostream & _stream)
 	
 	CP_XML_WRITER(_stream)    
 	{
-		for (int i = 0 ; i < rgRun.size(); i++)
+		for (size_t i = 0 ; i < rgRun.size(); i++)
 		{
 			CP_XML_NODE(L"r")
 			{

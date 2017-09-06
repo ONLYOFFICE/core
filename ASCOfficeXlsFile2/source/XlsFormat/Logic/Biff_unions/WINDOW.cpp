@@ -177,7 +177,7 @@ int WINDOW::serialize(std::wostream & stream)
 							CP_XML_ATTR(L"state", L"split");
 					}
 				}
-				for (int i = 0; i < m_arSelection.size(); i++)
+				for (size_t i = 0; i < m_arSelection.size(); i++)
 				{
 					if (m_arSelection[i] == NULL) continue;
 					m_arSelection[i]->serialize(CP_XML_STREAM());

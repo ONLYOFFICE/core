@@ -225,7 +225,7 @@ int AXES::serialize(std::wostream & _stream, bool secondary)
 {
 	CatSerRange * iv_CatSerRange = NULL;
 
-	for (int i = 0 ; i < m_arAxes.size(); i++)
+	for (size_t i = 0 ; i < m_arAxes.size(); i++)
 	{
 		IVAXIS * iv = dynamic_cast<IVAXIS*>	(m_arAxes[i].get());
 		if (iv)
@@ -237,7 +237,7 @@ int AXES::serialize(std::wostream & _stream, bool secondary)
 	}
 	CP_XML_WRITER(_stream)    
 	{
-		for (int i = 0 ; i < m_arAxes.size(); i++)
+		for (size_t i = 0 ; i < m_arAxes.size(); i++)
 		{
 			IVAXIS		* iv	= dynamic_cast<IVAXIS*>		(m_arAxes[i].get());
 			DVAXIS		* dv	= dynamic_cast<DVAXIS*>		(m_arAxes[i].get());
@@ -263,7 +263,7 @@ int AXES::serialize(std::wostream & _stream, bool secondary)
 			CP_XML_NODE(node_ax_type)
 			{
 				ATTACHEDLABEL	*label = NULL;
-				for ( int h = 0 ; h < m_arATTACHEDLABEL.size(); h++)
+				for ( size_t h = 0 ; h < m_arATTACHEDLABEL.size(); h++)
 				{
 					ATTACHEDLABEL	*l_= dynamic_cast<ATTACHEDLABEL *>	(m_arATTACHEDLABEL[h].get() );
 					
@@ -309,7 +309,7 @@ int AXES::serialize(std::wostream & _stream, bool secondary)
 				//	}
 				//}
 
-				for (int j = 0 ; j < m_arAxesId.size(); j++)
+				for (size_t j = 0 ; j < m_arAxesId.size(); j++)
 				{
 					if (m_arAxesId[j].first != m_arAxesId[i].first && m_arAxesId[j].second != 3)
 					{

@@ -507,7 +507,7 @@ int ChartSheetSubstream::serialize_3D (std::wostream & _stream)
 	BaseObjectPtr	wallSpPr; 
 	BaseObjectPtr	floorSpPr;
 
-	for (int i = 0; i < chart_formats->m_arAXISPARENT.size(); i++)
+	for (size_t i = 0; i < chart_formats->m_arAXISPARENT.size(); i++)
 	{
 		AXISPARENT* parent		= dynamic_cast<AXISPARENT*>	(chart_formats->m_arAXISPARENT[i].get());
 		AxisParent* ax_parent	= dynamic_cast<AxisParent*>	(parent->m_AxisParent.get());
@@ -871,7 +871,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 					AXES * axes = dynamic_cast<AXES*>(parent->m_AXES.get());
 					if (axes)
 					{
-						for (int a = 0 ; a < axes->m_arAxesId.size(); a++)
+						for (size_t a = 0 ; a < axes->m_arAxesId.size(); a++)
 						{
 							CP_XML_NODE(L"c:axId")
 							{
@@ -883,7 +883,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 				}
 			}
 
-			for (int i = 0; i < chart_formats->m_arAXISPARENT.size(); i++)
+			for (size_t i = 0; i < chart_formats->m_arAXISPARENT.size(); i++)
 			{
 				AXISPARENT* parent		= dynamic_cast<AXISPARENT*>	(chart_formats->m_arAXISPARENT[i].get());
 				AxisParent* ax_parent	= dynamic_cast<AxisParent*>	(parent->m_AxisParent.get());
@@ -942,7 +942,7 @@ int ChartSheetSubstream::serialize_dPt(std::wostream & _stream, int id, CRT *crt
 
 	CP_XML_WRITER(_stream)
 	{
-		for (int i = 0 ; i < series->m_arPtSS.size(); i++)
+		for (size_t i = 0 ; i < series->m_arPtSS.size(); i++)
 		{
 			CP_XML_NODE(L"c:dPt")
 			{
@@ -1088,7 +1088,7 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 			CP_XML_NODE(L"c:showSerName")	{ CP_XML_ATTR (L"val" , 0); }	
 		}
 	//подписи к точкам (отдельные)
-		for (int i = 0; i < labels.size(); i++)
+		for (size_t i = 0; i < labels.size(); i++)
 		{
 			CP_XML_NODE(L"c:dLbl")
 			{

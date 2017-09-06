@@ -82,7 +82,7 @@ const bool SXOPER::loadContent(BinProcessor& proc)
 			bNumber = !bInteger;
 			node	= L"n";
 			if (bInteger)
-				value	= std::to_wstring((int)num->num.data.value);
+				value	= std::to_wstring((_INT64)num->num.data.value);
 			else
 				value	= boost::lexical_cast<std::wstring>(num->num.data.value);
 		}
@@ -97,9 +97,9 @@ const bool SXOPER::loadContent(BinProcessor& proc)
 	else if(proc.optional<SxErr>())
 	{
 		SxErr* err	= dynamic_cast<SxErr*>(elements_.back().get());
-		bNumber = true;
+		//bNumber = true;
 		node	= L"e";
-		value	= std::to_wstring(err->wbe);
+		value	= L"#VALUE!";//std::to_wstring(err->wbe);
 	}
 	else if(proc.optional<SXString>())
 	{

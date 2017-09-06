@@ -79,7 +79,7 @@ struct FillInfo
 	FillInfoExt foreFillInfo_;
 	FillInfoExt backFillInfo_;
 
-
+	std::wstring ext;
 };
 
 struct BorderInfo

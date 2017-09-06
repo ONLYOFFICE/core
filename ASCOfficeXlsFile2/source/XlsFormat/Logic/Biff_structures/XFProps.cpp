@@ -110,15 +110,68 @@ void XFProps::load(CFRecord& record)
 		}
 	}
 }
-int XFProps::serialize(std::wostream & stream, bool dxf)
+
+int XFProps::serialize_fill(std::wostream & stream)
 {
+	if (arXFPropFill.empty()) return 0;
+
 	CP_XML_WRITER(stream)    
+    {
+		XFProp			*pPatternType = NULL;
+		XFPropGradient	*pGradient = NULL;
+
+		for (size_t i = 0; i < arXFPropFill.size(); i++)
+		{
+			switch(arXFPropFill[i].xfPropType)
+			{
+			case 1:
+			case 0: pPatternType	= &arXFPropFill[i];	break;
+			case 3: pGradient		= dynamic_cast<XFPropGradient*>(arXFPropFill[i].xfPropDataBlob.get());		break;
+			}
+		}
+		CP_XML_NODE(L"fill")
+		{	
+			if (pGradient || arXFPropGradient.size() > 0)
+			{
+				CP_XML_NODE(L"gradientFill")
+				{
+					if (pGradient) 
+						pGradient->serialize_attr(CP_GET_XML_NODE());
+
+					for (size_t i = 0 ; i < arXFPropGradient.size(); i++)
+					{
+						if (arXFPropGradient[i].xfPropDataBlob == NULL) continue;
+						arXFPropGradient[i].xfPropDataBlob->serialize(CP_XML_STREAM());
+					}
+				}
+			}
+			else if (pPatternType)
+			{
+				CP_XML_NODE(L"patternFill")
+				{
+					pPatternType->serialize_attr(CP_GET_XML_NODE());
+					
+					for (size_t i = 0; i < arXFPropFill.size(); i++)
+					{
+						arXFPropFill[i].serialize(CP_XML_STREAM());
+					}
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+int XFProps::serialize(std::wostream & strm, bool dxf)
+{
+	CP_XML_WRITER(strm)    
     {
 		if (arXFPropFont.size() > 0)
 		{
 			CP_XML_NODE(L"font")
 			{	
-				for (int i = 0; i < arXFPropFont.size(); i++)
+				for (size_t i = 0; i < arXFPropFont.size(); i++)
 				{
 					arXFPropFont[i].serialize(CP_XML_STREAM());
 				}
@@ -128,7 +181,7 @@ int XFProps::serialize(std::wostream & stream, bool dxf)
 		{
 			CP_XML_NODE(L"numFmt")
 			{	
-				for (int i = 0; i < arXFPropNumFmt.size(); i++)
+				for (size_t i = 0; i < arXFPropNumFmt.size(); i++)
 				{
 					if (dxf)
 					{
@@ -141,54 +194,13 @@ int XFProps::serialize(std::wostream & stream, bool dxf)
 				}
 			}
 		}
-		if (arXFPropFill.size() > 0)
-		{
-			XFProp pPatternType;
-			XFPropGradient *pGradient = NULL;
+		serialize_fill(strm);
 
-			for (int i = 0; i < arXFPropFill.size(); i++)
-			{
-				switch(arXFPropFill[i].xfPropType)
-				{
-				case 0: pPatternType	= arXFPropFill[i];	break;
-				case 3: pGradient		= dynamic_cast<XFPropGradient*>(arXFPropFill[i].xfPropDataBlob.get());		break;
-				}
-			}
-			CP_XML_NODE(L"fill")
-			{	
-				if (pGradient || arXFPropGradient.size()>0)
-				{
-					CP_XML_NODE(L"gradientFill")
-					{
-						if (pGradient) 
-							pGradient->serialize_attr(CP_GET_XML_NODE());
-
-						for (int i = 0 ; i < arXFPropGradient.size(); i++)
-						{
-							if (arXFPropGradient[i].xfPropDataBlob == NULL) continue;
-							arXFPropGradient[i].xfPropDataBlob->serialize(CP_XML_STREAM());
-						}
-					}
-				}
-				else
-				{
-					CP_XML_NODE(L"patternFill")
-					{
-						pPatternType.serialize_attr(CP_GET_XML_NODE());
-						
-						for (int i = 0; i < arXFPropFill.size(); i++)
-						{
-							arXFPropFill[i].serialize(CP_XML_STREAM());
-						}
-					}
-				}
-			}
-		}
 		if (arXFPropAlignment.size() > 0)
 		{
 			CP_XML_NODE(L"alignment")
 			{	
-				for (int i = 0; i < arXFPropAlignment.size(); i++)
+				for (size_t i = 0; i < arXFPropAlignment.size(); i++)
 				{
 					arXFPropAlignment[i].serialize(CP_XML_STREAM());
 				}
@@ -205,7 +217,7 @@ int XFProps::serialize(std::wostream & stream, bool dxf)
 				if (arXFPropBorder.bottom)	arXFPropBorder.bottom->serialize(CP_XML_STREAM());
 
 				//----------------------------------------
-				for (int i = 0; i < arXFPropBorder.other.size(); i++)
+				for (size_t i = 0; i < arXFPropBorder.other.size(); i++)
 				{
 					arXFPropBorder.other[i].serialize(CP_XML_STREAM());
 				}

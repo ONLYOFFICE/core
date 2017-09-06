@@ -86,7 +86,7 @@ int MulRk::serialize(std::wostream & stream)
     {
 		int row = GetRow();
 			
-        for (int i = 0; i < cells.size(); i++)
+        for (size_t i = 0; i < cells.size(); i++)
 		{
 			Cell * cell = dynamic_cast<Cell *>(cells[i].get());
 			RkRec * rkrec = dynamic_cast<RkRec *>(rgrkrec[i].get());

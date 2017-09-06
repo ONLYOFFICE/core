@@ -94,7 +94,7 @@ namespace ODRAW
 		//shift for all trailing zeros
 		std::bitset<sizeof(int)*8> bits( mask );
 
-		for ( unsigned int i = 0; i < bits.size(); i++ )
+		for ( size_t i = 0; i < bits.size(); i++ )
 		{
 			if ( !bits[i] )
 			{

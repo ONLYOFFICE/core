@@ -67,16 +67,36 @@ void DConRef::readFields(CFRecord& record)
 //self-reference		= %x0002 sheet-name
 
 		stFile = stFile_.value();
-		if (stFile.substr(0, 1) == L"\x0001")
+
+		while(true)
 		{
-			bFilePath	= true;
-			stFile		= stFile.substr(1);
+			bool bDel = false;
+			int pos = stFile.find(L"\x0001");
+			if (pos >= 0)
+			{
+				bDel = true;
+				stFile = stFile.substr(pos + 1);
+			}
+			pos = stFile.find(L"\x0002");
+			if (pos >= 0)
+			{
+				bDel = true;
+				stFile = stFile.substr(pos + 1);
+			}
+			pos = stFile.find(L"\x0003");
+			if (pos >= 0)
+			{
+				bDel = true;
+				stFile = stFile.substr(pos + 1);
+			}
+			if (!bDel)
+				break;
 		}
-		else if (stFile.substr(0, 1) == L"\x0002")
+		int pos = stFile.find(L"]");
+		if (pos >= 0)
 		{
-			bSheetName	= true;
-			stFile		= stFile.substr(1);
-		}	
+			stFile = stFile.substr(pos + 1);
+		}
 	}
 
 	int unused = record.getDataSize() - record.getRdPtr();

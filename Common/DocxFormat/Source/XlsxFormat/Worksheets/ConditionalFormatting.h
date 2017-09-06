@@ -67,7 +67,7 @@ namespace OOX
 					WritingStringAttrString(L"type", m_oType->ToString());
 					if (m_oGte.IsInit() && false == m_oGte->ToBool())
 						writer.WriteString(L" gte=\"0\"");
-					WritingStringNullableAttrString(L"val", m_oVal, m_oVal.get());
+					WritingStringNullableAttrEncodeXmlString(L"val", m_oVal, m_oVal.get());
 					writer.WriteString(_T("/>"));
 				}
 			}

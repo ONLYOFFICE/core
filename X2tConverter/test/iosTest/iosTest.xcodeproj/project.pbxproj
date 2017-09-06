@@ -16,10 +16,11 @@
 		17DAB6871ACC371F005AF479 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 17DAB6851ACC371F005AF479 /* Main.storyboard */; };
 		17DAB6891ACC371F005AF479 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 17DAB6881ACC371F005AF479 /* Images.xcassets */; };
 		17DAB68C1ACC371F005AF479 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17DAB68A1ACC371F005AF479 /* LaunchScreen.xib */; };
-		17DAB70E1ACC3B96005AF479 /* Demo-Hayden-Management-v2.docx in Resources */ = {isa = PBXBuildFile; fileRef = 17DAB70D1ACC3B90005AF479 /* Demo-Hayden-Management-v2.docx */; };
+		17DAB70E1ACC3B96005AF479 /* demo.docx in Resources */ = {isa = PBXBuildFile; fileRef = 17DAB70D1ACC3B90005AF479 /* demo.docx */; };
 		6967BEB31E27D5BE00A129E2 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 6967BEB21E27D5BE00A129E2 /* libiconv.tbd */; };
 		69920A431E016FAB00E7E6EE /* libX2tConverter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69920A401E016F9700E7E6EE /* libX2tConverter.a */; };
 		699690731E2F925200B620CD /* libc++abi.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 699690721E2F925200B620CD /* libc++abi.tbd */; };
+		69BE370C1F60129600CBA47B /* crypted.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = 69BE370B1F60129600CBA47B /* crypted.xlsx */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,11 +54,13 @@
 		17DAB6861ACC371F005AF479 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		17DAB6881ACC371F005AF479 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		17DAB68B1ACC371F005AF479 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		17DAB70D1ACC3B90005AF479 /* Demo-Hayden-Management-v2.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Demo-Hayden-Management-v2.docx"; sourceTree = "<group>"; };
+		17DAB70D1ACC3B90005AF479 /* demo.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = demo.docx; sourceTree = "<group>"; };
 		6905975F1CA137D000000D4D /* X2tConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = X2tConverter.h; path = ../../../build/Mac/X2tConverter/X2tConverter/X2tConverter.h; sourceTree = "<group>"; };
 		6967BEB21E27D5BE00A129E2 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
+		698810C41F4DA87A00E4C541 /* libcryptopp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcryptopp.a; path = ../../../Common/3dParty/cryptopp/libcryptopp.a; sourceTree = "<group>"; };
 		69920A3A1E016F9700E7E6EE /* X2tConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = X2tConverter.xcodeproj; path = ../../build/Mac/X2tConverter/X2tConverter.xcodeproj; sourceTree = "<group>"; };
 		699690721E2F925200B620CD /* libc++abi.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++abi.tbd"; path = "usr/lib/libc++abi.tbd"; sourceTree = SDKROOT; };
+		69BE370B1F60129600CBA47B /* crypted.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = crypted.xlsx; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,10 +133,11 @@
 		17DAB70A1ACC3B58005AF479 /* Files */ = {
 			isa = PBXGroup;
 			children = (
+				69BE370B1F60129600CBA47B /* crypted.xlsx */,
 				177B1B461B5FCD34001FC26F /* shapes.xlsx */,
 				1773201E1B4FB9B700BB22FC /* price.xlsx */,
 				1734C9A51B4C251D00C2A6C8 /* smeta.xlsx */,
-				17DAB70D1ACC3B90005AF479 /* Demo-Hayden-Management-v2.docx */,
+				17DAB70D1ACC3B90005AF479 /* demo.docx */,
 			);
 			name = Files;
 			sourceTree = "<group>";
@@ -141,6 +145,7 @@
 		6967BEB11E27D5BE00A129E2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				698810C41F4DA87A00E4C541 /* libcryptopp.a */,
 				699690721E2F925200B620CD /* libc++abi.tbd */,
 				6967BEB21E27D5BE00A129E2 /* libiconv.tbd */,
 			);
@@ -231,13 +236,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69BE370C1F60129600CBA47B /* crypted.xlsx in Resources */,
 				17DAB6871ACC371F005AF479 /* Main.storyboard in Resources */,
 				17DAB68C1ACC371F005AF479 /* LaunchScreen.xib in Resources */,
 				17DAB6891ACC371F005AF479 /* Images.xcassets in Resources */,
 				1734C9A61B4C251D00C2A6C8 /* smeta.xlsx in Resources */,
 				177B1B471B5FCD34001FC26F /* shapes.xlsx in Resources */,
 				1773201F1B4FB9B700BB22FC /* price.xlsx in Resources */,
-				17DAB70E1ACC3B96005AF479 /* Demo-Hayden-Management-v2.docx in Resources */,
+				17DAB70E1ACC3B96005AF479 /* demo.docx in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -377,16 +383,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 2WH24U26GJ;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = TestIOSX2tConverter/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_CFLAGS = "";
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
 					"-lstdc++",
 					"-lxml2",
 					"-lz",
+					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.onlyoffice.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = iosTest;
@@ -397,16 +408,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 2WH24U26GJ;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = TestIOSX2tConverter/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_CFLAGS = "";
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
 					"-lstdc++",
 					"-lxml2",
 					"-lz",
+					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.onlyoffice.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = iosTest;

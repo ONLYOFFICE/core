@@ -11,6 +11,7 @@
 #include "cryptlib.h"
 #include "gf2n.h"
 #include "integer.h"
+#include "algebra.h"
 #include "eprecomp.h"
 #include "smartptr.h"
 #include "pubkey.h"
@@ -28,7 +29,7 @@ struct CRYPTOPP_DLL EC2NPoint
 		{return (identity && t.identity) || (!identity && !t.identity && x==t.x && y==t.y);}
 	bool operator< (const EC2NPoint &t) const
 		{return identity ? !t.identity : (!t.identity && (x<t.x || (x==t.x && y<t.y)));}
-	
+
 #ifndef CRYPTOPP_MAINTAIN_BACKWARDS_COMPATIBILITY_562
 	virtual ~EC2NPoint() {}
 #endif
@@ -37,7 +38,7 @@ struct CRYPTOPP_DLL EC2NPoint
 	PolynomialMod2 x, y;
 };
 
-CRYPTOPP_DLL_TEMPLATE_CLASS AbstractGroup<EC2NPoint>;
+template class AbstractGroup<EC2NPoint>;
 
 //! Elliptic Curve over GF(2^n)
 class CRYPTOPP_DLL EC2N : public AbstractGroup<EC2NPoint>
@@ -90,7 +91,7 @@ public:
 
 	bool operator==(const EC2N &rhs) const
 		{return GetField() == rhs.GetField() && m_a == rhs.m_a && m_b == rhs.m_b;}
-	
+
 #ifndef CRYPTOPP_MAINTAIN_BACKWARDS_COMPATIBILITY_562
 	virtual ~EC2N() {}
 #endif
@@ -101,8 +102,8 @@ private:
 	mutable Point m_R;
 };
 
-CRYPTOPP_DLL_TEMPLATE_CLASS DL_FixedBasePrecomputationImpl<EC2N::Point>;
-CRYPTOPP_DLL_TEMPLATE_CLASS DL_GroupPrecomputation<EC2N::Point>;
+template class DL_FixedBasePrecomputationImpl<EC2N::Point>;
+template class DL_GroupPrecomputation<EC2N::Point>;
 
 template <class T> class EcPrecomputation;
 
@@ -120,7 +121,7 @@ public:
 	// non-inherited
 	void SetCurve(const EC2N &ec) {m_ec = ec;}
 	const EC2N & GetCurve() const {return m_ec;}
-	
+
 #ifndef CRYPTOPP_MAINTAIN_BACKWARDS_COMPATIBILITY_562
 	virtual ~EcPrecomputation() {}
 #endif

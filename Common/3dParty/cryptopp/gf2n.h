@@ -87,7 +87,7 @@ public:
 
 		//!
 		void Decode(const byte *input, size_t inputLen);
-		//! 
+		//!
 		//* Precondition: bt.MaxRetrievable() >= inputLen
 		void Decode(BufferedTransformation &bt, size_t inputLen);
 
@@ -272,11 +272,11 @@ inline CryptoPP::PolynomialMod2 operator%(const CryptoPP::PolynomialMod2 &a, con
 
 // CodeWarrior 8 workaround: put these template instantiations after overloaded operator declarations,
 // but before the use of QuotientRing<EuclideanDomainOf<PolynomialMod2> > for VC .NET 2003
-CRYPTOPP_DLL_TEMPLATE_CLASS AbstractGroup<PolynomialMod2>;
-CRYPTOPP_DLL_TEMPLATE_CLASS AbstractRing<PolynomialMod2>;
-CRYPTOPP_DLL_TEMPLATE_CLASS AbstractEuclideanDomain<PolynomialMod2>;
-CRYPTOPP_DLL_TEMPLATE_CLASS EuclideanDomainOf<PolynomialMod2>;
-CRYPTOPP_DLL_TEMPLATE_CLASS QuotientRing<EuclideanDomainOf<PolynomialMod2> >;
+template class AbstractGroup<PolynomialMod2>;
+template class AbstractRing<PolynomialMod2>;
+template class AbstractEuclideanDomain<PolynomialMod2>;
+template class EuclideanDomainOf<PolynomialMod2>;
+template class QuotientRing<EuclideanDomainOf<PolynomialMod2> >;
 
 //! GF(2^n) with Polynomial Basis
 class CRYPTOPP_DLL GF2NP : public QuotientRing<EuclideanDomainOf<PolynomialMod2> >
@@ -286,16 +286,16 @@ public:
 
 	virtual GF2NP * Clone() const {return new GF2NP(*this);}
 	virtual void DEREncode(BufferedTransformation &bt) const
-		{CRYPTOPP_UNUSED(bt); assert(false);}	// no ASN.1 syntax yet for general polynomial basis
+		{CRYPTOPP_UNUSED(bt); CRYPTOPP_ASSERT(false);}	// no ASN.1 syntax yet for general polynomial basis
 
 	void DEREncodeElement(BufferedTransformation &out, const Element &a) const;
 	void BERDecodeElement(BufferedTransformation &in, Element &a) const;
 
 	bool Equal(const Element &a, const Element &b) const
-		{assert(a.Degree() < m_modulus.Degree() && b.Degree() < m_modulus.Degree()); return a.Equals(b);}
+		{CRYPTOPP_ASSERT(a.Degree() < m_modulus.Degree() && b.Degree() < m_modulus.Degree()); return a.Equals(b);}
 
 	bool IsUnit(const Element &a) const
-		{assert(a.Degree() < m_modulus.Degree()); return !!a;}
+		{CRYPTOPP_ASSERT(a.Degree() < m_modulus.Degree()); return !!a;}
 
 	unsigned int MaxElementBitLength() const
 		{return m;}

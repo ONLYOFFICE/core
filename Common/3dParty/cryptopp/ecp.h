@@ -8,6 +8,7 @@
 
 #include "cryptlib.h"
 #include "integer.h"
+#include "algebra.h"
 #include "modarith.h"
 #include "eprecomp.h"
 #include "smartptr.h"
@@ -35,7 +36,7 @@ struct CRYPTOPP_DLL ECPPoint
 	Integer x, y;
 };
 
-CRYPTOPP_DLL_TEMPLATE_CLASS AbstractGroup<ECPPoint>;
+template class AbstractGroup<ECPPoint>;
 
 //! Elliptic Curve over GF(p), where p is prime
 class CRYPTOPP_DLL ECP : public AbstractGroup<ECPPoint>
@@ -92,7 +93,7 @@ public:
 
 	bool operator==(const ECP &rhs) const
 		{return GetField() == rhs.GetField() && m_a == rhs.m_a && m_b == rhs.m_b;}
-	
+
 #ifndef CRYPTOPP_MAINTAIN_BACKWARDS_COMPATIBILITY_562
 	virtual ~ECP() {}
 #endif
@@ -103,8 +104,8 @@ private:
 	mutable Point m_R;
 };
 
-CRYPTOPP_DLL_TEMPLATE_CLASS DL_FixedBasePrecomputationImpl<ECP::Point>;
-CRYPTOPP_DLL_TEMPLATE_CLASS DL_GroupPrecomputation<ECP::Point>;
+template class DL_FixedBasePrecomputationImpl<ECP::Point>;
+template class DL_GroupPrecomputation<ECP::Point>;
 
 template <class T> class EcPrecomputation;
 
@@ -113,7 +114,7 @@ template<> class EcPrecomputation<ECP> : public DL_GroupPrecomputation<ECP::Poin
 {
 public:
 	typedef ECP EllipticCurve;
-	
+
 	// DL_GroupPrecomputation
 	bool NeedConversions() const {return true;}
 	Element ConvertIn(const Element &P) const
@@ -131,7 +132,7 @@ public:
 		m_ecOriginal = ec;
 	}
 	const ECP & GetCurve() const {return *m_ecOriginal;}
-	
+
 #ifndef CRYPTOPP_MAINTAIN_BACKWARDS_COMPATIBILITY_562
 	virtual ~EcPrecomputation() {}
 #endif

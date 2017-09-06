@@ -226,6 +226,8 @@ public:
     void add_charts			(chart_content_ptr chart);
     void add_pivot_cache	(pivot_cache_content_ptr cache);
 	void add_pivot_table	(pivot_table_content_ptr table);
+
+	void add_vba_project	();
 private:
     rels_files				rels_files_;
     sheets_files			sheets_files_;
@@ -244,14 +246,15 @@ private:
 	element_ptr		vml_drawings_;
 	element_ptr		comments_;
 
+	bool			bVbaProject;
+
 };
 
 class xlsx_document : public document
 {
 public:
-    xlsx_document();
+	xlsx_document();
 
-public:
     virtual void write(const std::wstring & RootPath);
     virtual content_types_file & content_type() { return content_type_; }
     xl_files & get_xl_files() { return xl_files_; }

@@ -58,11 +58,15 @@ public:
 	
 	bool isError();
 
+	void copy( int indent, std::string path, POLE::Storage * storageOut, bool withRoot = true);
+
 	CFStreamPtr getWorkbookStream	();
 	CFStreamPtr getNamedStream		(const std::string& name);
 
 	POLE::Storage *storage_;
 private:
+	void copy_stream(std::string streamName, POLE::Storage * storageOut, bool withRoot = true);
+	
 	POLE::Stream* openStream		(const std::string & stream_name); // Opens a stream in the storage (shall be called not more than once per stream)
 	POLE::Stream* createStream		(const std::string & stream_name); // Creates a new stream in the storage
 

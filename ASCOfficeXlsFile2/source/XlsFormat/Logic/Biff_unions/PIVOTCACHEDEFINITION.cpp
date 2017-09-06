@@ -98,10 +98,12 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 	SXStreamID* streamId = dynamic_cast<SXStreamID*>(m_SXStreamID.get());
 	if (!streamId) return 0;
 
-	std::map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCache.find(streamId->idStm);
-	if (pFind == global_info_->mapPivotCache.end()) return 0;
+	std::unordered_map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCacheStream.find(streamId->idStm);
+	if (pFind == global_info_->mapPivotCacheStream.end()) return 0;
 
 	global_info_->idPivotCache = streamId->idStm;
+
+	global_info_->mapPivotCacheIndex.insert(std::make_pair(global_info_->idPivotCache, global_info_->mapPivotCacheIndex.size()));
 
 	PIVOTCACHE* pivot_cache = dynamic_cast<PIVOTCACHE*>(pFind->second.get());
 	if (!pivot_cache) return 0;
@@ -178,8 +180,8 @@ int PIVOTCACHEDEFINITION::serialize_records(std::wostream & strm)
 	SXStreamID* streamId = dynamic_cast<SXStreamID*>(m_SXStreamID.get());
 	if (!streamId) return 0;
 
-	std::map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCache.find(streamId->idStm);
-	if (pFind == global_info_->mapPivotCache.end()) return 0;
+	std::unordered_map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCacheStream.find(streamId->idStm);
+	if (pFind == global_info_->mapPivotCacheStream.end()) return 0;
 
 	PIVOTCACHE* pivot_cache = dynamic_cast<PIVOTCACHE*>(pFind->second.get());
 	if (!pivot_cache) return 0;

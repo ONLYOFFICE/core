@@ -53,7 +53,6 @@ xlsx_content_types_file::xlsx_content_types_file()
  
 	content_type_.add_override(L"/_rels/.rels",                  L"application/vnd.openxmlformats-package.relationships+xml");
     content_type_.add_override(L"/xl/_rels/workbook.xml.rels",   L"application/vnd.openxmlformats-package.relationships+xml");
-    content_type_.add_override(L"/xl/workbook.xml",              L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml");
     content_type_.add_override(L"/xl/styles.xml",                L"application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml");
     content_type_.add_override(L"/docProps/app.xml",             L"application/vnd.openxmlformats-officedocument.extended-properties+xml");
     content_type_.add_override(L"/docProps/core.xml",            L"application/vnd.openxmlformats-package.core-properties+xml");
@@ -61,7 +60,7 @@ xlsx_content_types_file::xlsx_content_types_file()
 
 xlsx_document::xlsx_document()
 {
-    xl_files_.set_main_document(this);
+	xl_files_.set_main_document(this);
     rels_file_ptr relFile = rels_file::create(L".rels");
    
 	relFile->get_rels().add(relationship(L"rId1", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument", L"xl/workbook.xml"));
@@ -73,7 +72,7 @@ xlsx_document::xlsx_document()
 
 void xlsx_document::write(const std::wstring & RootPath)
 {
-    xl_files_.write(RootPath);
+	xl_files_.write(RootPath);
     docProps_files_.write(RootPath);
     content_type_.write(RootPath);
     rels_files_.write(RootPath);
@@ -140,6 +139,7 @@ void sheets_files::write(const std::wstring & RootPath)
            
 		const std::wstring fileName = std::wstring(L"sheet") + std::to_wstring(i + 1) + L".xml";
         content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+
         static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml";
         contentTypes.add_override(std::wstring(L"/xl/worksheets/") + fileName, kWSConType);
 
@@ -167,15 +167,18 @@ void sheets_files::write(const std::wstring & RootPath)
 
 xl_files::xl_files()
 {
-    rels_files_.add_rel_file(rels_file::create(L"workbook.xml.rels"));
+	rels_files_.add_rel_file(rels_file::create(L"workbook.xml.rels"));
+	bVbaProject = false;
 }
 
 void xl_files::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"xl";
-    NSDirectory::CreateDirectory(path.c_str());
+	NSDirectory::CreateDirectory(path.c_str());
 
-    {
+	content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+	
+	{
 		pivot_cache_files_.set_rels(&rels_files_);
         pivot_cache_files_.set_main_document(get_main_document());
 		pivot_cache_files_.write(path);
@@ -204,7 +207,6 @@ void xl_files::write(const std::wstring & RootPath)
         connections_->write(path);
         rels_files_.add( relationship( L"cnId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/connections", L"connections.xml" ) );
 
-		content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
 		contentTypes.add_override(L"/xl/connections.xml", L"application/vnd.openxmlformats-officedocument.spreadsheetml.connections+xml");
 	}
 
@@ -217,6 +219,18 @@ void xl_files::write(const std::wstring & RootPath)
     if (workbook_)
     {
         workbook_->write(path);
+	
+		if (bVbaProject)
+		{
+			rels_files_.add( relationship( L"vbId1",  L"http://schemas.microsoft.com/office/2006/relationships/vbaProject", L"vbaProject.bin" ) );
+
+			contentTypes.add_override(L"/xl/vbaProject.bin", L"application/vnd.ms-office.vbaProject");
+			contentTypes.add_override(L"/xl/workbook.xml", L"application/vnd.ms-excel.sheet.macroEnabled.main+xml");
+		}
+		else
+		{
+			contentTypes.add_override(L"/xl/workbook.xml", L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml");
+		}
     }
 
     if (theme_)
@@ -251,6 +265,11 @@ void xl_files::write(const std::wstring & RootPath)
     }
 
     rels_files_.write(path);
+}
+
+void xl_files::add_vba_project()
+{
+	bVbaProject = true;
 }
 
 void xl_files::set_workbook(element_ptr Element)

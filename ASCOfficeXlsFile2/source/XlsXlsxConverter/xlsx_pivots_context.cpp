@@ -34,6 +34,8 @@
 #include <boost/make_shared.hpp>
 #include <simple_xml_writer.h>
 
+#include <map>
+
 namespace oox {
 
 class xlsx_pivots_context::Impl
@@ -86,11 +88,11 @@ void xlsx_pivots_context::dump_rels_cache(int index, rels & Rels)
 }
 void xlsx_pivots_context::dump_rels_view(int index, rels & Rels)
 {
-	if (impl_->views_[index].indexCache_ >= 0)
+	if (impl_->views_[index].indexCache_ > 0)
 	{
 		Rels.add(relationship(L"rId1",							
 						L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition",
-						L"../pivotCache/pivotCacheDefinition" + std::to_wstring(impl_->views_[index].indexCache_ + 1) + L".xml", L""));
+						L"../pivotCache/pivotCacheDefinition" + std::to_wstring( impl_->views_[index].indexCache_ ) + L".xml", L""));
 	}
 }
 void xlsx_pivots_context::write_cache_definitions_to(int index, std::wostream & strm)
@@ -122,7 +124,7 @@ int xlsx_pivots_context::add_view(std::wstring table_view, int indexCache)
 {
 	if (table_view.empty()) return 0;
 
-	Impl::_pivot_view v = {table_view, indexCache};
+	Impl::_pivot_view v = {table_view, indexCache + 1};
 	impl_->views_.push_back(v);
 
 	return (int)impl_->views_.size();

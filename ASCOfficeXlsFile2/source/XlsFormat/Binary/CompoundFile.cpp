@@ -96,7 +96,63 @@ CompoundFile::CompoundFile(const std::wstring & file_path, const ReadWriteMode m
 	storage_ = NULL;
 	Open(file_path, mode);
 }
-// Opens "Workbook" stream and returns the only reference
+
+void CompoundFile::copy_stream(std::string streamName, POLE::Storage * storageOut, bool withRoot)
+{
+	POLE::Stream *stream = new POLE::Stream(storage_, streamName);
+	if (!stream) return;
+
+	stream->seek(0);
+	int size_stream = stream->size();
+
+	if (withRoot == false)
+	{
+		int pos = streamName.find("/");
+		if (pos >= 0)
+			streamName = streamName.substr(pos + 1);
+	}
+	
+	POLE::Stream *streamNew = new POLE::Stream(storageOut, streamName, true, size_stream);
+	if (!streamNew) return;
+
+	unsigned char* data_stream = new unsigned char[size_stream];
+	if (data_stream)
+	{
+		stream->read(data_stream, size_stream);
+
+		streamNew->write(data_stream, size_stream);
+
+		delete []data_stream;
+		data_stream = NULL;
+	}
+
+	streamNew->flush();
+			
+	delete streamNew;
+	delete stream;
+}
+
+void CompoundFile::copy( int indent, std::string path, POLE::Storage * storageOut, bool withRoot)
+{
+    std::list<std::string> entries;
+    entries = storage_->entries( path );
+    
+    std::list<std::string>::iterator it;
+    for( it = entries.begin(); it != entries.end(); ++it )
+    {
+        std::string name = *it;
+        std::string fullname = path + name;
+       
+        if( storage_->isDirectory( fullname ) )
+		{
+            copy( indent + 1, fullname + "/", storageOut, withRoot );
+		}
+		else
+		{
+			copy_stream(fullname, storageOut, withRoot);
+		}
+    }    
+}
 CFStreamPtr CompoundFile::getWorkbookStream()
 {
 	CFStreamPtr stream = getNamedStream("Workbook");
@@ -122,7 +178,6 @@ CFStreamPtr CompoundFile::getNamedStream(const std::string& name)
 	}
 	return streams[name];
 }
-
 
 CFStreamPtr CompoundFile::createNamedStream(const std::string& name)
 {

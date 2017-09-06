@@ -73,13 +73,14 @@ int SXVI::serialize(std::wostream & strm)
 	{
 		CP_XML_NODE(L"item")
 		{
+			if (fHidden)	CP_XML_ATTR(L"h", 1); 
+			
 			if (fMissing)	CP_XML_ATTR(L"m", 1); 
 			if (fHideDetail)CP_XML_ATTR(L"sd", 0); 
 			if (fFormula)	CP_XML_ATTR(L"f", 1);
 
 			if (itmType == 0)
 			{
-				if (fHidden) CP_XML_ATTR(L"h", 1); 
 				CP_XML_ATTR(L"x", iCache); 
 			}
 			switch(itmType)

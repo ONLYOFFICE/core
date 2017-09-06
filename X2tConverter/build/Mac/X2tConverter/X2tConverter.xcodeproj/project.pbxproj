@@ -23,6 +23,7 @@
 /* Begin PBXBuildFile section */
 		17C8DEC71ACD696100902C85 /* X2tConverter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17C27A191AC2DB3D00E1D003 /* X2tConverter.mm */; };
 		17C8DECC1ACD696100902C85 /* X2tConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17C27A171AC2DB3D00E1D003 /* X2tConverter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6911A9691F6036DA0061AB4D /* OfficeFileErrorDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 6911A9681F6036DA0061AB4D /* OfficeFileErrorDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		691A8BD31E2FA68F00DCB54A /* liblibxml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 691A8BD01E2FA67E00DCB54A /* liblibxml2.a */; };
 		69415F271CB51C37003E771B /* libOfficeUtils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F241CB51C2A003E771B /* libOfficeUtils.a */; };
 		69415F311CB51D41003E771B /* libASCOfficeDocxFile2Lib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17E17F5B1AC457CD00BEA2EA /* libASCOfficeDocxFile2Lib_ios.a */; };
@@ -444,6 +445,7 @@
 		17C27A191AC2DB3D00E1D003 /* X2tConverter.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = X2tConverter.mm; sourceTree = "<group>"; };
 		17C8DED01ACD696100902C85 /* libX2tConverter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libX2tConverter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17E17F561AC457CD00BEA2EA /* ASCOfficeDocxFile2Lib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ASCOfficeDocxFile2Lib.xcodeproj; path = ../../../../ASCOfficeDocxFile2/Mac/ASCOfficeDocxFile2Lib.xcodeproj; sourceTree = "<group>"; };
+		6911A9681F6036DA0061AB4D /* OfficeFileErrorDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfficeFileErrorDescription.h; path = ../../../../../Common/OfficeFileErrorDescription.h; sourceTree = "<group>"; };
 		691A8BCB1E2FA67E00DCB54A /* libxml2.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libxml2.xcodeproj; path = ../../../../DesktopEditor/xml/mac/libxml2.xcodeproj; sourceTree = "<group>"; };
 		69415F1F1CB51C29003E771B /* OfficeUtils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OfficeUtils.xcodeproj; path = ../../../../OfficeUtils/OfficeUtils.xcodeproj; sourceTree = "<group>"; };
 		69415FAE1CB5243F003E771B /* mng.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = mng.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/mng/mng.xcodeproj; sourceTree = "<group>"; };
@@ -664,6 +666,7 @@
 			isa = PBXGroup;
 			children = (
 				6967B1181E27A9D500A129E2 /* OfficeFileFormatChecker */,
+				6911A9681F6036DA0061AB4D /* OfficeFileErrorDescription.h */,
 				6967BEAF1E27D16A00A129E2 /* ASCConverters_ios.cpp */,
 				6967AFB31E27940600A129E2 /* ASCConverters.h */,
 				6967AFAE1E2793A500A129E2 /* cextracttools.cpp */,
@@ -825,6 +828,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6967AFB11E2793A500A129E2 /* cextracttools.h in Headers */,
+				6911A9691F6036DA0061AB4D /* OfficeFileErrorDescription.h in Headers */,
 				6967B10F1E27A65600A129E2 /* OfficeFileFormatChecker.h in Headers */,
 				6967AFB51E27940600A129E2 /* ASCConverters.h in Headers */,
 				17C8DECC1ACD696100902C85 /* X2tConverter.h in Headers */,

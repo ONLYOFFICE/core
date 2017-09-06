@@ -40,6 +40,7 @@
 #import "ViewController.h"
 
 #import "X2tConverter.h"
+#import "OfficeFileErrorDescription.h"
 
 @interface ViewController ()
 
@@ -113,7 +114,9 @@
         
         X2tConverter* conv = [[X2tConverter alloc]init];
         conv.password = @"555";
-        [conv sdk_xlsx2xlst_bin:fullFileName nsTo:fullFileNameTo nsTemp:tempDir nsFontPath:fontsPath];
+        if ((int)AVS_FILEUTILS_ERROR_CONVERT_PASSWORD == [conv sdk_xlsx2xlst_bin:fullFileName nsTo:fullFileNameTo nsTemp:tempDir nsFontPath:fontsPath]) {
+            NSLog(@"Error password : %@",conv.password);
+        }
         
         NSLog(@"xlst output : %@", fullFileNameTo);
     }

@@ -56,6 +56,7 @@
 		17DAB68B1ACC371F005AF479 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		17DAB70D1ACC3B90005AF479 /* demo.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = demo.docx; sourceTree = "<group>"; };
 		6905975F1CA137D000000D4D /* X2tConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = X2tConverter.h; path = ../../../build/Mac/X2tConverter/X2tConverter/X2tConverter.h; sourceTree = "<group>"; };
+		6911A96B1F6044770061AB4D /* OfficeFileErrorDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfficeFileErrorDescription.h; path = /Volumes/Storage/sources/core/X2tConverter/build/Mac/X2tConverter/X2tConverter/../../../../../Common/OfficeFileErrorDescription.h; sourceTree = "<absolute>"; };
 		6967BEB21E27D5BE00A129E2 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		698810C41F4DA87A00E4C541 /* libcryptopp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcryptopp.a; path = ../../../Common/3dParty/cryptopp/libcryptopp.a; sourceTree = "<group>"; };
 		69920A3A1E016F9700E7E6EE /* X2tConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = X2tConverter.xcodeproj; path = ../../build/Mac/X2tConverter/X2tConverter.xcodeproj; sourceTree = "<group>"; };
@@ -80,6 +81,7 @@
 		17C1FB191ACC3E3B006B99B3 /* SDK */ = {
 			isa = PBXGroup;
 			children = (
+				6911A96B1F6044770061AB4D /* OfficeFileErrorDescription.h */,
 				6905975F1CA137D000000D4D /* X2tConverter.h */,
 			);
 			name = SDK;

@@ -31,7 +31,7 @@
  */
 
 #include "StyleXF.h"
-#include "xfProps.h"
+#include "XFProps.h"
 #include "ExtProp.h"
 
 #include <Binary/CFRecord.h>

@@ -156,7 +156,7 @@ int SXTBL::serialize(std::wostream & strm)
 
 							for (size_t j = 0; j < m_arSXTBRGIITM[i].strings.size(); j++)
 							{
-								SXString* str = dynamic_cast<SXString*>(m_arSXTBRGIITM[i].strings[i].get());
+								SXString* str = dynamic_cast<SXString*>(m_arSXTBRGIITM[i].strings[j].get());
 								CP_XML_NODE(L"pageItem")
 								{
 									CP_XML_ATTR(L"name", str->segment.value());
@@ -183,6 +183,36 @@ int SXTBL::serialize(std::wostream & strm)
 							{
 								CP_XML_ATTR(L"name", name->stName.value());
 							}
+							if (bin)
+							{
+								switch(bin->nBuiltin)
+								{
+									case 0x0000:	CP_XML_ATTR(L"name", L"_xlnm.Consolidate_Area"); break;
+									case 0x0001:	CP_XML_ATTR(L"name", L"_xlnm.Auto_Open");		break;
+									case 0x0002:	CP_XML_ATTR(L"name", L"_xlnm.Auto_Close");		break;
+									case 0x0003:	CP_XML_ATTR(L"name", L"_xlnm.Extract");			break;
+									case 0x0004:	CP_XML_ATTR(L"name", L"_xlnm.Database");		break;
+									case 0x0005:	CP_XML_ATTR(L"name", L"_xlnm.Criteria");		break;
+									case 0x0006:	CP_XML_ATTR(L"name", L"_xlnm.Print_Area");		break;
+									case 0x0007:	CP_XML_ATTR(L"name", L"_xlnm.Print_Titles");	break;
+									case 0x0008:	CP_XML_ATTR(L"name", L"_xlnm.Recorder");		break;
+									case 0x0009:	CP_XML_ATTR(L"name", L"_xlnm.Data_Form");		break;
+									case 0x000a:	CP_XML_ATTR(L"name", L"_xlnm.Auto_Activate");	break;
+									case 0x000b:	CP_XML_ATTR(L"name", L"_xlnm.Auto_Deactivate");	break;
+									case 0x000c:	CP_XML_ATTR(L"name", L"_xlnm.Sheet_Title");		break;
+									case 0x000d:	CP_XML_ATTR(L"name", L"_xlnm._FilterDatabase");	break;	//??
+								}
+							}
+							if (ref)
+							{
+								CP_XML_ATTR(L"ref", ref->ref.toString());
+								CP_XML_ATTR(L"sheet", ref->sheet_name);
+
+								if (ref->index_external >= 0)
+								{
+									CP_XML_ATTR(L"r:id", L"extId" + std::to_wstring(ref->index_external + 1));
+								}
+							}	
 						}
 					}
 				}

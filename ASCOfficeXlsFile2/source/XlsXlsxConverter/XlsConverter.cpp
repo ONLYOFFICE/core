@@ -1977,4 +1977,9 @@ void XlsConverter::convert(XLS::PIVOTCACHEDEFINITION * pivot_cached)
 	pivot_cached->serialize_records(strmR);
 
 	xlsx_context->get_pivots_context().add_cache(strmD.str(), strmR.str());
+	
+	if (!xls_global_info->mapPivotCacheExternal.empty())
+	{
+		xlsx_context->get_pivots_context().add_cache_external(xls_global_info->mapPivotCacheExternal);
+	}
 }

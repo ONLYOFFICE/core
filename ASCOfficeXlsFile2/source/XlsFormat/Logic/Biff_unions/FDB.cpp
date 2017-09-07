@@ -250,14 +250,16 @@ int FDB::serialize(std::wostream & strm, bool bSql)
 					//	}
 					//}
 
-					if ((bDate & bNumber) || (bNumber & bString))
+					if ((bDate & bNumber) || (bNumber & bString & !bEmpty))
 					{
 						CP_XML_ATTR(L"containsSemiMixedTypes", 1);
 					}
 					else if ((bDate & bString) || ((bEmpty || !bNumber) & bInteger & bString))
 					{
-						if (bInteger)	bNumber = true;
 						CP_XML_ATTR(L"containsMixedTypes", 1);
+
+						if (bInteger)	bNumber = true;
+						if (bEmpty && bNumber) bInteger = false;
 					}
 					else if (!bEmpty && !bString && !bBool)
 					{

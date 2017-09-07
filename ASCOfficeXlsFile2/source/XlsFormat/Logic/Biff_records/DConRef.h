@@ -57,9 +57,13 @@ public:
 	unsigned short			cchFile;
 	std::wstring			stFile;
 
-	bool					bFilePath;
-	bool					bSheetName;
+	std::vector<std::wstring>	path;
+	std::wstring				file_name;
+	std::wstring				sheet_name;
 
+	int							index_external;
+private:
+	std::wstring	get_external_path();
 };
 
 } // namespace XLS

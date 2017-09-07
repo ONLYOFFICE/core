@@ -98,6 +98,7 @@ const bool SXOPER::loadContent(BinProcessor& proc)
 	{
 		SxErr* err	= dynamic_cast<SxErr*>(elements_.back().get());
 		//bNumber = true;
+		bString = true;
 		node	= L"e";
 		value	= L"#VALUE!";//std::to_wstring(err->wbe);
 	}

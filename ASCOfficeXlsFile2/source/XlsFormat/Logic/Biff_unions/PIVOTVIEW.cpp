@@ -205,43 +205,48 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 					}
 				}
 			}
-			if (!core->m_arPIVOTIVD.empty())
+			int index_ivd = 0;
+			int index_tli = 0;
+
+			if (view->cDimRw > 0 && index_ivd < core->m_arPIVOTIVD.size())
 			{
 				CP_XML_NODE(L"rowFields")
 				{
 					CP_XML_ATTR(L"count", view->cDimRw);
 
-					PIVOTIVD* ivd = dynamic_cast<PIVOTIVD*>(core->m_arPIVOTIVD[0].get());
+					PIVOTIVD* ivd = dynamic_cast<PIVOTIVD*>(core->m_arPIVOTIVD[index_ivd].get());
 					ivd->serialize(CP_XML_STREAM());
+					index_ivd++;
 				}
 			}
-			if (!core->m_arPIVOTLI.empty())//0 or 2
+			if (view->cRw > 0 && index_tli < core->m_arPIVOTLI.size())
 			{
 				CP_XML_NODE(L"rowItems")
 				{
 					CP_XML_ATTR(L"count", view->cRw);
 					
-					PIVOTLI* line = dynamic_cast<PIVOTLI*>(core->m_arPIVOTLI[0].get());
+					PIVOTLI* line = dynamic_cast<PIVOTLI*>(core->m_arPIVOTLI[index_tli].get());
 					line->serialize(CP_XML_STREAM());
+					index_tli++;
 				}
 			}
-			if (core->m_arPIVOTIVD.size() == 2)//0 or 2
+			if (view->cDimCol > 0 && index_ivd < core->m_arPIVOTIVD.size())
 			{
 				CP_XML_NODE(L"colFields")
 				{
 					CP_XML_ATTR(L"count", view->cDimCol);
 					
-					PIVOTIVD* ivd = dynamic_cast<PIVOTIVD*>(core->m_arPIVOTIVD[1].get());
+					PIVOTIVD* ivd = dynamic_cast<PIVOTIVD*>(core->m_arPIVOTIVD[index_ivd].get());
 					ivd->serialize(CP_XML_STREAM());
 				}
 			}
-			if (core->m_arPIVOTLI.size() == 2)//0 or 2
+			if (view->cCol > 0 && index_tli < core->m_arPIVOTLI.size())
 			{
 				CP_XML_NODE(L"colItems")
 				{
 					CP_XML_ATTR(L"count", view->cCol);
 					
-					PIVOTLI* line = dynamic_cast<PIVOTLI*>(core->m_arPIVOTLI[1].get());
+					PIVOTLI* line = dynamic_cast<PIVOTLI*>(core->m_arPIVOTLI[index_tli].get());
 					line->serialize(CP_XML_STREAM());
 				}
 			}

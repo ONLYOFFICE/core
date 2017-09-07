@@ -120,7 +120,12 @@ int DREF::serialize(std::wostream & strm)
 				CP_XML_NODE(L"worksheetSource")
 				{
 					CP_XML_ATTR(L"ref", ref->ref.toString());
-					CP_XML_ATTR(L"sheet", ref->stFile);
+					CP_XML_ATTR(L"sheet", ref->sheet_name);
+
+					if (ref->index_external >= 0)
+					{
+						CP_XML_ATTR(L"r:id", L"extId" + std::to_wstring(ref->index_external + 1));
+					}
 				}
 			}
 		}

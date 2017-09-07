@@ -294,6 +294,5 @@ SOURCES += \
     ../zdeflate.cpp \
     ../zinflate.cpp \
     ../zlib.cpp \
-    ../cpu.cpp \
-    ../*.cpp
+    ../cpu.cpp
 

@@ -38,11 +38,11 @@ fi
 
 if [[ "$platform" == *"linux"* ]]
 then
-if [[ -f "./icu.zip" ]]
+if [ -f "./icu.zip" ]
 then 
 echo "icu already downloaded"
 else
-if [[ "$arch" == *"_64"* ]]
+if [ "$arch" == *"_64"* ]
 then
 wget -O icu.zip http://download.icu-project.org/files/icu4c/55.1/icu4c-55_1-RHEL6-x64.tgz
 else
@@ -59,7 +59,7 @@ cp "./usr/local/lib/libicudata.so.55.1" "build/libicudata.so.55"
 cp "./usr/local/lib/libicuuc.so.55.1" "build/libicuuc.so.55"
 fi
 
-if [[ "$platform" == *"mac"* ]]
+if [ "$platform" == *"mac"* ]
 then
 if [ -d "./icu" ]
 then

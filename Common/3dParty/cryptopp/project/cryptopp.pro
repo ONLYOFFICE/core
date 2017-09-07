@@ -159,7 +159,8 @@ HEADERS += \
     ../xtrcrypt.h \
     ../zdeflate.h \
     ../zinflate.h \
-    ../zlib.h
+    ../zlib.h \
+    ../blake2.h
 
 SOURCES += \
     ../3way.cpp \
@@ -172,7 +173,6 @@ SOURCES += \
     ../base32.cpp \
     ../base64.cpp \
     ../basecode.cpp \
-    ../bench.cpp \
     ../bench2.cpp \
     ../bfinit.cpp \
     ../blowfish.cpp \
@@ -186,7 +186,6 @@ SOURCES += \
     ../cmac.cpp \
     ../crc.cpp \
     ../cryptlib.cpp \
-    ../cryptlib_bds.cpp \
     ../datatest.cpp \
     ../default.cpp \
     ../des.cpp \
@@ -295,5 +294,6 @@ SOURCES += \
     ../zdeflate.cpp \
     ../zinflate.cpp \
     ../zlib.cpp \
-    ../cpu.cpp
+    ../cpu.cpp \
+    ../*.cpp
 

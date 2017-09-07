@@ -205,6 +205,8 @@ int SXTBL::serialize(std::wostream & strm)
 							}
 							if (ref)
 							{
+								ref->check_external();
+
 								CP_XML_ATTR(L"ref", ref->ref.toString());
 								CP_XML_ATTR(L"sheet", ref->sheet_name);
 

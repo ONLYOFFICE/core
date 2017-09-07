@@ -39,6 +39,7 @@ namespace XLS
 DConRef::DConRef()
 {
 	index_external = -1;
+	bFilePath = false;
 }
 
 
@@ -54,7 +55,7 @@ BaseObjectPtr DConRef::clone()
 
 void DConRef::readFields(CFRecord& record)
 {
-	GlobalWorkbookInfoPtr global_info_ = record.getGlobalWorkbookInfo();
+	global_info_ = record.getGlobalWorkbookInfo();
 
 	record >> ref >> cchFile;
 	
@@ -77,6 +78,8 @@ void DConRef::readFields(CFRecord& record)
 			int pos = sTmp.find(L"\x0001");
 			if (pos >= 0)
 			{
+				bFilePath = true;
+
 				path.push_back(sTmp.substr(0, pos));
 				sTmp = sTmp.substr(pos + 1);
 				continue;
@@ -91,6 +94,8 @@ void DConRef::readFields(CFRecord& record)
 			pos = sTmp.find(L"\x0003");
 			if (pos >= 0)
 			{
+				bFilePath = true;
+
 				path.push_back(sTmp.substr(0, pos));
 				sTmp = sTmp.substr(pos + 1);
 				continue;
@@ -111,8 +116,12 @@ void DConRef::readFields(CFRecord& record)
 
 	int unused = record.getDataSize() - record.getRdPtr();
 	record.skipNunBytes(unused);
+}
 
+void DConRef::check_external()
+{
 	bool bFound = false;
+
 	for (size_t i = 0; i < global_info_->sheets_names.size(); i++)	// todooo отдельно???
 	{
 		if (global_info_->sheets_names[i] == sheet_name)
@@ -121,7 +130,8 @@ void DConRef::readFields(CFRecord& record)
 			break;
 		}
 	}
-	if (!bFound && (!path.empty() || !file_name.empty()))
+
+	if (!bFound && (!path.empty() || !file_name.empty()) && bFilePath)
 	{//external sheet
 		std::wstring full_path;
 		if (!path.empty())
@@ -149,6 +159,8 @@ void DConRef::readFields(CFRecord& record)
 
 std::wstring DConRef::get_external_path()
 {
+	if (path.empty() && file_name.empty()) return L"";
+
 	std::wstring result = L"file:///";
 
 	for (size_t i = 0; i < path.size(); i++)

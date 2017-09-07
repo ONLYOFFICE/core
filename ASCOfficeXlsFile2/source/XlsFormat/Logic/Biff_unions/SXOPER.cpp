@@ -97,10 +97,18 @@ const bool SXOPER::loadContent(BinProcessor& proc)
 	else if(proc.optional<SxErr>())
 	{
 		SxErr* err	= dynamic_cast<SxErr*>(elements_.back().get());
-		//bNumber = true;
 		bString = true;
 		node	= L"e";
-		value	= L"#VALUE!";//std::to_wstring(err->wbe);
+		switch(err->wbe)
+		{
+			case 0x00:	value = L"NULL!";	break;
+			case 0x07:	value = L"#DIV/0!";	break;
+			case 0x0F:	value = L"#VALUE!";	break;
+			case 0x17:	value = L"#REF!";	break;
+			case 0x1D:	value = L"#NAME?";	break;
+			case 0x24:	value = L"#NUM!";	break;
+			case 0x2A:	value = L"#N/A";	break;
+		}
 	}
 	else if(proc.optional<SXString>())
 	{

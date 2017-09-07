@@ -62,8 +62,13 @@ public:
 	std::wstring				sheet_name;
 
 	int							index_external;
+
+	void			check_external();
 private:
+	GlobalWorkbookInfoPtr global_info_;
+
 	std::wstring	get_external_path();
+	bool			bFilePath;
 };
 
 } // namespace XLS

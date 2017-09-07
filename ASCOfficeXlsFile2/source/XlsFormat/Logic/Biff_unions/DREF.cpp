@@ -116,6 +116,8 @@ int DREF::serialize(std::wostream & strm)
 			}
 			else if(ref)
 			{
+				ref->check_external();
+
 				CP_XML_ATTR(L"type", L"worksheet");
 				CP_XML_NODE(L"worksheetSource")
 				{

@@ -99,7 +99,7 @@ int PIVOTVD::serialize(std::wostream & strm)
 			
 			if (vd_ex->ifmt > 0)	
 			{
-				CP_XML_ATTR(L"numFmtId", vd_ex->ifmt);
+				CP_XML_ATTR(L"numFmtId", vd_ex->ifmt != 44 ? vd_ex->ifmt : 0);
 			}
 
 			if (vd->stName.value().empty() == false)

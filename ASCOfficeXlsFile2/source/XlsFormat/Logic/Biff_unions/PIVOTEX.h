@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of PIVOTEX union of records 
 class PIVOTEX: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTEX)
@@ -49,7 +47,12 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typePIVOTEX;
+	static const ElementType type = typePIVOTEX;
+
+	BaseObjectPtr				m_SXEx;
+	std::vector<BaseObjectPtr>	m_arPIVOTSELECT;
+	std::vector<BaseObjectPtr>	m_arPIVOTFORMAT;
+
 };
 
 } // namespace XLS

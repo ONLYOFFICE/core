@@ -354,13 +354,17 @@ bool EncryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out, CRYP
 		switch(algorithm)
 		{
 		case CRYPT_METHOD::AES_ECB:
-			 modeEncryption = new ECB_Mode_ExternalCipher::Encryption(aesEncryption, iv.ptr ); 
+			 modeEncryption = new CipherModeFinalTemplate_ExternalCipher<ECB_OneWay>(aesEncryption, iv.ptr ); 
 			 break;
 		case CRYPT_METHOD::AES_CBC:
-			 modeEncryption = new CBC_Mode_ExternalCipher::Encryption(aesEncryption, iv.ptr ); 
+			 modeEncryption = new CipherModeFinalTemplate_ExternalCipher<CBC_Encryption>(aesEncryption, iv.ptr ); 
 			 break;
-		case CRYPT_METHOD::AES_CFB:
-			 modeEncryption = new CFB_Mode_ExternalCipher::Encryption(aesEncryption, iv.ptr ); 
+//		case CRYPT_METHOD::AES_CFB:
+//#if defined(_IOS)
+//            return false;
+//#else
+//			modeEncryption = new CFB_Mode_ExternalCipher::Encryption(aesEncryption, iv.ptr );
+//#endif
 			break;
 		}
 	
@@ -407,13 +411,17 @@ bool DecryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out,  CRY
 		switch(algorithm)
 		{
 		case CRYPT_METHOD::AES_ECB:
-			 modeDecryption = new ECB_Mode_ExternalCipher::Decryption(aesDecryption, iv.ptr ); 
+			 modeDecryption = new CipherModeFinalTemplate_ExternalCipher<ECB_OneWay>(aesDecryption, iv.ptr ); 
 			 break;
 		case CRYPT_METHOD::AES_CBC:
-			 modeDecryption = new CBC_Mode_ExternalCipher::Decryption(aesDecryption, iv.ptr ); 
+			 modeDecryption = new CipherModeFinalTemplate_ExternalCipher<CBC_Decryption>(aesDecryption, iv.ptr );
 			 break;
-		case CRYPT_METHOD::AES_CFB:
-			 modeDecryption = new CFB_Mode_ExternalCipher::Decryption(aesDecryption, iv.ptr ); 
+//		case CRYPT_METHOD::AES_CFB:
+//#if defined(_IOS)
+//             return false;
+//#else
+//			 modeDecryption = new CFB_Mode_ExternalCipher::Decryption(aesDecryption, iv.ptr );
+//#endif
 		}
 	
 		if (!modeDecryption) return false;

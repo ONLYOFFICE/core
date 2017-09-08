@@ -161,9 +161,9 @@ std::wstring external_items::media_path()
 void external_items::create_media_path(const std::wstring & out_path)
 {
 	if (!media_path_.empty()) return;
-
+	
 	std::wstring xl_path = out_path + FILE_SEPARATOR_STR + L"xl";
-    NSDirectory::CreateDirectory(xl_path.c_str());
+	NSDirectory::CreateDirectory(xl_path.c_str());
 	
     NSDirectory::CreateDirectory((xl_path + FILE_SEPARATOR_STR + L"media").c_str());
 

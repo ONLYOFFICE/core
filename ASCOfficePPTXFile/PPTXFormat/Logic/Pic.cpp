@@ -160,7 +160,8 @@ namespace PPTX
 				COfficeFileFormatChecker office_checker;
 				office_checker.isOOXFormatFile(oox_file.GetPath());
 				//if ( std::wstring::npos != sProgID.find(L"Word.Document"))
-				if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX)
+				if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX ||
+					office_checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM )
 				{
 					pWriter->StartRecord(1);
 						pWriter->WriteBYTE(1);
@@ -189,7 +190,8 @@ namespace PPTX
 					*pWriter->m_pCurrentContainer		= old_rels;				
 					pWriter->m_pMainDocument			= old_serial;
 				}
-				else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX)
+				else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX || 
+						office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM)
 				//if ( std::wstring::npos != sProgID.find(L"Excel.Sheet")) //"ET.Xlsx.6" !!!
 				{
 					pWriter->StartRecord(1);

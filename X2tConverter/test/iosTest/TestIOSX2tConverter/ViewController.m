@@ -40,6 +40,7 @@
 #import "ViewController.h"
 
 #import "X2tConverter.h"
+#import "OfficeFileErrorDescription.h"
 
 @interface ViewController ()
 
@@ -50,16 +51,19 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-   
-    [self testDOCX];
+    
+    //[self testDOCX];
     [self testXLSX];
 }
 
-- (void)testDOCX {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"Demo-Hayden-Management-v2" ofType:@"docx"];
+- (void)testDOCX
+{
+    NSLog(@"==================== OPEN DOCX ====================");
+    
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"docx"];
     
     NSString* fullFileName = path;
-    NSString* fullFileNameTo = [NSString stringWithFormat:@"%@sample.bin", NSTemporaryDirectory()];
+    NSString* fullFileNameTo = [NSString stringWithFormat:@"%@demo.bin", NSTemporaryDirectory()];
     NSString* tempDir = NSTemporaryDirectory();
     NSString* fontsPath = @"/System/Library/Fonts";
     
@@ -77,20 +81,45 @@
     X2tConverter* conv2 = [[X2tConverter alloc]init];
     [conv2 sdk_doct_bin2docx:fullFileNameTo nsTo:docxOut nsTemp:outTemp nsFontPath:fontsPath fromChanges:@(NO) nsThemeDir:@""];
     
-    NSLog(@"DOCX - BIN: %@",fullFileNameTo);
+    NSLog(@"doct output: %@",fullFileNameTo);
 }
-- (void)testXLSX {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"price" ofType:@"xlsx"];
+
+- (void)testXLSX
+{
+    {
+        NSLog(@"==================== OPEN XLSX ====================");
+        
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"price" ofType:@"xlsx"];
+        
+        NSString* fullFileName = path;
+        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@price.bin", NSTemporaryDirectory()];
+        NSString* tempDir = NSTemporaryDirectory();
+        NSString* fontsPath = @"/System/Library/Fonts";
+        
+        X2tConverter* conv = [[X2tConverter alloc]init];
+        [conv sdk_xlsx2xlst_bin:fullFileName nsTo:fullFileNameTo nsTemp:tempDir nsFontPath:fontsPath];
+        
+        NSLog(@"xlst output : %@", fullFileNameTo);
+    }
     
-    NSString* fullFileName = path;
-    NSString* fullFileNameTo = [NSString stringWithFormat:@"%@sample.bin", NSTemporaryDirectory()];
-    NSString* tempDir = NSTemporaryDirectory();
-    NSString* fontsPath = @"/System/Library/Fonts";
-    
-    X2tConverter* conv = [[X2tConverter alloc]init];
-    [conv sdk_xlsx2xlst_bin:fullFileName nsTo:fullFileNameTo nsTemp:tempDir nsFontPath:fontsPath];    
-  
-    NSLog(@"XLSX - BIN : %@",fullFileNameTo);
+    {
+        NSLog(@"==================== OPEN CRYPTED XLSX ====================");
+        
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"crypted" ofType:@"xlsx"];
+        
+        NSString* fullFileName = path;
+        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@crypted.bin", NSTemporaryDirectory()];
+        NSString* tempDir = NSTemporaryDirectory();
+        NSString* fontsPath = @"/System/Library/Fonts";
+        
+        X2tConverter* conv = [[X2tConverter alloc]init];
+        conv.password = @"555";
+        if ((int)AVS_FILEUTILS_ERROR_CONVERT_PASSWORD == [conv sdk_xlsx2xlst_bin:fullFileName nsTo:fullFileNameTo nsTemp:tempDir nsFontPath:fontsPath]) {
+            NSLog(@"Error password : %@",conv.password);
+        }
+        
+        NSLog(@"xlst output : %@", fullFileNameTo);
+    }
 }
 
 - (void)didReceiveMemoryWarning

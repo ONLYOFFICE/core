@@ -54,6 +54,11 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
     
     return NExtractTools::docx2doct_bin(from, to, temp, oInputParams);
 }
@@ -64,6 +69,11 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
     
     return NExtractTools::docx2doct(from, to, temp, oInputParams);
 }
@@ -76,6 +86,11 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
     
     return NExtractTools::doct_bin2docx(from, to, temp, bFromChanges, themeDir, oInputParams);
 }
@@ -88,6 +103,11 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
     
     return NExtractTools::doct2docx(from, to, temp, bFromChanges, themeDir, oInputParams);
 }
@@ -98,6 +118,11 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
     
     return NExtractTools::xlsx2xlst_bin(from, to, temp, oInputParams);
     
@@ -109,6 +134,11 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
     
     return NExtractTools::xlsx2xlst(from, to, temp, oInputParams);
 }
@@ -143,6 +173,11 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
     
     return NExtractTools::pptx2pptt_bin(from, to, temp, oInputParams);
 }
@@ -153,6 +188,11 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
     
     return NExtractTools::pptx2pptt(from, to, temp, oInputParams);
 }
@@ -189,6 +229,11 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
     
     return NExtractTools::csv2xlst(from, to, temp, oInputParams);
 }
@@ -201,6 +246,10 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    
+    if (self.password) {
+        oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
+    }
     
     return NExtractTools::csv2xlsx(from, to, temp, oInputParams);
 }

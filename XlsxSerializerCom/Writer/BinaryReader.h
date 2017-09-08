@@ -212,7 +212,7 @@ namespace BinXlsxRW {
 
 				pOfficeArtExtension->m_sUri.Init();
 				pOfficeArtExtension->m_sUri->append(_T("{504A1905-F514-4f6f-8877-14C23A59335A}"));
-				pOfficeArtExtension->m_sAdditionalNamespace = _T(" xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"");
+				pOfficeArtExtension->m_sAdditionalNamespace = _T("xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"");
 				pTable->m_oExtLst.Init();
 				pTable->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
 			}
@@ -2580,7 +2580,7 @@ namespace BinXlsxRW {
 
                 pOfficeArtExtension->m_sUri.Init();
                 pOfficeArtExtension->m_sUri->append(_T("{05C60535-1F16-4fd2-B633-F4F36F0B64E0}"));
-                pOfficeArtExtension->m_sAdditionalNamespace = _T(" xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"");
+                pOfficeArtExtension->m_sAdditionalNamespace = _T("xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"");
                 m_pCurWorksheet->m_oExtLst.Init();
                 m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
             }

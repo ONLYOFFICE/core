@@ -433,8 +433,8 @@ namespace OOX
 				writer.WriteString(_T("<selection"));
 				WritingStringNullableAttrString(L"activeCell", m_oActiveCell, m_oActiveCell.get());
 				WritingStringNullableAttrInt(L"activeCellId", m_oActiveCellId, m_oActiveCellId->GetValue());
-				WritingStringNullableAttrString(L"sqref", m_oSqref, m_oSqref.get());
 				WritingStringNullableAttrString(L"pane", m_oPane, m_oPane->ToString());
+				WritingStringNullableAttrString(L"sqref", m_oSqref, m_oSqref.get());
 				writer.WriteString(_T("/>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)

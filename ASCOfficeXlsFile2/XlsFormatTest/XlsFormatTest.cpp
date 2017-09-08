@@ -51,18 +51,26 @@
 	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
 #endif
 
-HRESULT convert_single(std::wstring fileName)
+HRESULT convert_single(std::wstring srcFileName)
 {
 	HRESULT hr = S_OK;
 
-	std::wstring srcFileName	= fileName;
-	std::wstring dstPath		= srcFileName + L"-my.xlsx";
-
-	std::wstring outputDir		= NSDirectory::GetFolderPath(dstPath);	
+	std::wstring outputDir		= NSDirectory::GetFolderPath(srcFileName);	
 	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
+	std::wstring dstPath;
 
-	hr = ConvertXls2Xlsx(srcFileName, dstTempPath, L"password", L"C:\\Windows\\Fonts", NULL);
+	bool bMacros = true;
+	hr = ConvertXls2Xlsx(srcFileName, dstTempPath, L"password", L"C:\\Windows\\Fonts", NULL, bMacros);
 
+	if (bMacros)
+	{
+		dstPath = srcFileName + L"-my.xlsm";
+	}
+	else
+	{
+		dstPath = srcFileName + L"-my.xlsx";
+
+	}
 	if (hr == S_OK) 
 	{
 		COfficeUtils oCOfficeUtils(NULL);
@@ -70,6 +78,7 @@ HRESULT convert_single(std::wstring fileName)
 	}
 	
 	NSDirectory::DeleteDirectory(dstTempPath);
+
 
 	return hr;
 }

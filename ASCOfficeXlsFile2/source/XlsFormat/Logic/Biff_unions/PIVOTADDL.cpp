@@ -78,12 +78,25 @@ const bool PIVOTADDL::loadContent(BinProcessor& proc)
 	{
 		SXAddl* addl = dynamic_cast<SXAddl*>(it->get());
 		if (!addl) continue;
-		SXAddl_SXCView_SXDTableStyleClient* p = dynamic_cast<SXAddl_SXCView_SXDTableStyleClient*>(addl->content.get());
-		if (p)
+        SXAddl_SXCView_SXDTableStyleClient* p1 = dynamic_cast<SXAddl_SXCView_SXDTableStyleClient*>(addl->content.get());
+        if (p1)
 		{
 			m_SXAddl_SXCView_SXDTableStyleClient = addl->content;
+            continue;
 		}
-	}
+        SXAddl_SXCView_SXDVer10Info* p2 = dynamic_cast<SXAddl_SXCView_SXDVer10Info*>(addl->content.get());
+        if (p2)
+        {
+            m_SXAddl_SXCView_SXDVer10Info = addl->content;
+            continue;
+        }
+        SXAddl_SXCView_SXDVer12Info* p3 = dynamic_cast<SXAddl_SXCView_SXDVer12Info*>(addl->content.get());
+        if (p3)
+        {
+            m_SXAddl_SXCView_SXDVer12Info = addl->content;
+            continue;
+        }
+    }
 	//if(!proc.mandatory<SXAddl_SXCView_SXDId>())
 	//{
 	//	return false;

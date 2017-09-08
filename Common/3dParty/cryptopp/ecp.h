@@ -36,7 +36,7 @@ struct CRYPTOPP_DLL ECPPoint
 	Integer x, y;
 };
 
-template class AbstractGroup<ECPPoint>;
+CRYPTOPP_DLL_TEMPLATE_CLASS AbstractGroup<ECPPoint>;
 
 //! Elliptic Curve over GF(p), where p is prime
 class CRYPTOPP_DLL ECP : public AbstractGroup<ECPPoint>
@@ -104,8 +104,8 @@ private:
 	mutable Point m_R;
 };
 
-template class DL_FixedBasePrecomputationImpl<ECP::Point>;
-template class DL_GroupPrecomputation<ECP::Point>;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_FixedBasePrecomputationImpl<ECP::Point>;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_GroupPrecomputation<ECP::Point>;
 
 template <class T> class EcPrecomputation;
 

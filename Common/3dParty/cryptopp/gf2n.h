@@ -272,11 +272,11 @@ inline CryptoPP::PolynomialMod2 operator%(const CryptoPP::PolynomialMod2 &a, con
 
 // CodeWarrior 8 workaround: put these template instantiations after overloaded operator declarations,
 // but before the use of QuotientRing<EuclideanDomainOf<PolynomialMod2> > for VC .NET 2003
-template class AbstractGroup<PolynomialMod2>;
-template class AbstractRing<PolynomialMod2>;
-template class AbstractEuclideanDomain<PolynomialMod2>;
-template class EuclideanDomainOf<PolynomialMod2>;
-template class QuotientRing<EuclideanDomainOf<PolynomialMod2> >;
+CRYPTOPP_DLL_TEMPLATE_CLASS AbstractGroup<PolynomialMod2>;
+CRYPTOPP_DLL_TEMPLATE_CLASS AbstractRing<PolynomialMod2>;
+CRYPTOPP_DLL_TEMPLATE_CLASS AbstractEuclideanDomain<PolynomialMod2>;
+CRYPTOPP_DLL_TEMPLATE_CLASS EuclideanDomainOf<PolynomialMod2>;
+CRYPTOPP_DLL_TEMPLATE_CLASS QuotientRing<EuclideanDomainOf<PolynomialMod2> >;
 
 //! GF(2^n) with Polynomial Basis
 class CRYPTOPP_DLL GF2NP : public QuotientRing<EuclideanDomainOf<PolynomialMod2> >

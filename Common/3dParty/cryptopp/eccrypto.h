@@ -356,20 +356,20 @@ NAMESPACE_END
 
 NAMESPACE_BEGIN(CryptoPP)
 
-template class DL_GroupParameters_EC<ECP>;
-template class DL_GroupParameters_EC<EC2N>;
-template class DL_PublicKeyImpl<DL_GroupParameters_EC<ECP> >;
-template class DL_PublicKeyImpl<DL_GroupParameters_EC<EC2N> >;
-template class DL_PublicKey_EC<ECP>;
-template class DL_PublicKey_EC<EC2N>;
-template class DL_PrivateKeyImpl<DL_GroupParameters_EC<ECP> >;
-template class DL_PrivateKeyImpl<DL_GroupParameters_EC<EC2N> >;
-template class DL_PrivateKey_EC<ECP>;
-template class DL_PrivateKey_EC<EC2N>;
-template class DL_Algorithm_GDSA<ECP::Point>;
-template class DL_Algorithm_GDSA<EC2N::Point>;
-template class DL_PrivateKey_WithSignaturePairwiseConsistencyTest<DL_PrivateKey_EC<ECP>, ECDSA<ECP, SHA256> >;
-template class DL_PrivateKey_WithSignaturePairwiseConsistencyTest<DL_PrivateKey_EC<EC2N>, ECDSA<EC2N, SHA256> >;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_GroupParameters_EC<ECP>;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_GroupParameters_EC<EC2N>;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_PublicKeyImpl<DL_GroupParameters_EC<ECP> >;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_PublicKeyImpl<DL_GroupParameters_EC<EC2N> >;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_PublicKey_EC<ECP>;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_PublicKey_EC<EC2N>;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_PrivateKeyImpl<DL_GroupParameters_EC<ECP> >;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_PrivateKeyImpl<DL_GroupParameters_EC<EC2N> >;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_PrivateKey_EC<ECP>;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_PrivateKey_EC<EC2N>;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_Algorithm_GDSA<ECP::Point>;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_Algorithm_GDSA<EC2N::Point>;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_PrivateKey_WithSignaturePairwiseConsistencyTest<DL_PrivateKey_EC<ECP>, ECDSA<ECP, SHA256> >;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_PrivateKey_WithSignaturePairwiseConsistencyTest<DL_PrivateKey_EC<EC2N>, ECDSA<EC2N, SHA256> >;
 
 NAMESPACE_END
 

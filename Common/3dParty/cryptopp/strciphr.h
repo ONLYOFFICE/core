@@ -552,7 +552,7 @@ template <class BASE = AbstractPolicyHolder<CFB_CipherAbstractPolicy, SymmetricC
 class CRYPTOPP_NO_VTABLE CFB_EncryptionTemplate : public CFB_CipherTemplate<BASE>
 {
 	bool IsForwardTransformation() const {return true;}
-	virtual void CombineMessageAndShiftRegister(byte *output, byte *reg, const byte *message, size_t length);
+	void CombineMessageAndShiftRegister(byte *output, byte *reg, const byte *message, size_t length);
 };
 
 //! \class CFB_DecryptionTemplate
@@ -562,7 +562,7 @@ template <class BASE = AbstractPolicyHolder<CFB_CipherAbstractPolicy, SymmetricC
 class CRYPTOPP_NO_VTABLE CFB_DecryptionTemplate : public CFB_CipherTemplate<BASE>
 {
 	bool IsForwardTransformation() const {return false;}
-	virtual void CombineMessageAndShiftRegister(byte *output, byte *reg, const byte *message, size_t length);
+	void CombineMessageAndShiftRegister(byte *output, byte *reg, const byte *message, size_t length);
 };
 
 //! \class CFB_RequireFullDataBlocks

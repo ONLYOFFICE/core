@@ -38,7 +38,7 @@ struct CRYPTOPP_DLL EC2NPoint
 	PolynomialMod2 x, y;
 };
 
-template class AbstractGroup<EC2NPoint>;
+CRYPTOPP_DLL_TEMPLATE_CLASS AbstractGroup<EC2NPoint>;
 
 //! Elliptic Curve over GF(2^n)
 class CRYPTOPP_DLL EC2N : public AbstractGroup<EC2NPoint>
@@ -102,8 +102,8 @@ private:
 	mutable Point m_R;
 };
 
-template class DL_FixedBasePrecomputationImpl<EC2N::Point>;
-template class DL_GroupPrecomputation<EC2N::Point>;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_FixedBasePrecomputationImpl<EC2N::Point>;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_GroupPrecomputation<EC2N::Point>;
 
 template <class T> class EcPrecomputation;
 

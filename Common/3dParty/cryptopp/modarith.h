@@ -16,9 +16,15 @@
 
 NAMESPACE_BEGIN(CryptoPP)
 
-template class AbstractGroup<Integer>;
-template class AbstractRing<Integer>;
-template class AbstractEuclideanDomain<Integer>;
+#ifdef _IOS
+    template class AbstractGroup<Integer>;
+    template class AbstractRing<Integer>;
+    template class AbstractEuclideanDomain<Integer>;
+#else
+    CRYPTOPP_DLL_TEMPLATE_CLASS AbstractGroup<Integer>;
+    CRYPTOPP_DLL_TEMPLATE_CLASS AbstractRing<Integer>;
+    CRYPTOPP_DLL_TEMPLATE_CLASS AbstractEuclideanDomain<Integer>;
+#endif
 
 //! \class ModularArithmetic
 //! \brief Ring of congruence classes modulo n

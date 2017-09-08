@@ -25,7 +25,7 @@
 
 NAMESPACE_BEGIN(CryptoPP)
 
-//template class DL_GroupParameters<Integer>;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_GroupParameters<Integer>;
 
 //! _
 class CRYPTOPP_DLL CRYPTOPP_NO_VTABLE DL_GroupParameters_IntegerBased : public ASN1CryptoMaterial<DL_GroupParameters<Integer> >
@@ -138,7 +138,7 @@ public:
 #endif
 };
 
-//template class DL_GroupParameters_IntegerBasedImpl<ModExpPrecomputation>;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_GroupParameters_IntegerBasedImpl<ModExpPrecomputation>;
 
 //! GF(p) group parameters
 class CRYPTOPP_DLL DL_GroupParameters_GFP : public DL_GroupParameters_IntegerBasedImpl<ModExpPrecomputation>
@@ -214,7 +214,7 @@ public:
 #endif
 };
 
-//template class DL_Algorithm_GDSA<Integer>;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_Algorithm_GDSA<Integer>;
 
 //! NR algorithm
 template <class T>
@@ -490,9 +490,9 @@ public:
 //! DSA with SHA-1, typedef'd for backwards compatibility
 typedef DSA2<SHA> DSA;
 
-//template class DL_PublicKey_GFP<DL_GroupParameters_DSA>;
-//template class DL_PrivateKey_GFP<DL_GroupParameters_DSA>;
-//template class DL_PrivateKey_WithSignaturePairwiseConsistencyTest<DL_PrivateKey_GFP<DL_GroupParameters_DSA>, DSA2<SHA> >;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_PublicKey_GFP<DL_GroupParameters_DSA>;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_PrivateKey_GFP<DL_GroupParameters_DSA>;
+CRYPTOPP_DLL_TEMPLATE_CLASS DL_PrivateKey_WithSignaturePairwiseConsistencyTest<DL_PrivateKey_GFP<DL_GroupParameters_DSA>, DSA2<SHA> >;
 
 //! the XOR encryption method, for use with DL-based cryptosystems
 template <class MAC, bool DHAES_MODE>

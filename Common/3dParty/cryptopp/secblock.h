@@ -240,15 +240,23 @@ public:
 #endif
 };
 
-template class AllocatorWithCleanup<byte>;
-template class AllocatorWithCleanup<word16>;
-template class AllocatorWithCleanup<word32>;
-template class AllocatorWithCleanup<word64>;
+#ifdef _IOS
+    template class AllocatorWithCleanup<byte>;
+    template class AllocatorWithCleanup<word16>;
+    template class AllocatorWithCleanup<word32>;
+    template class AllocatorWithCleanup<word64>;
+#else
+    CRYPTOPP_DLL_TEMPLATE_CLASS AllocatorWithCleanup<byte>;
+    CRYPTOPP_DLL_TEMPLATE_CLASS AllocatorWithCleanup<word16>;
+    CRYPTOPP_DLL_TEMPLATE_CLASS AllocatorWithCleanup<word32>;
+    CRYPTOPP_DLL_TEMPLATE_CLASS AllocatorWithCleanup<word64>;
+#endif
+
 #if defined(CRYPTOPP_WORD128_AVAILABLE)
-template class AllocatorWithCleanup<word128, true>; // for Integer
+CRYPTOPP_DLL_TEMPLATE_CLASS AllocatorWithCleanup<word128, true>; // for Integer
 #endif
 #if CRYPTOPP_BOOL_X86
-template class AllocatorWithCleanup<word, true>;	 // for Integer
+CRYPTOPP_DLL_TEMPLATE_CLASS AllocatorWithCleanup<word, true>;	 // for Integer
 #endif
 
 //! \class NullAllocator

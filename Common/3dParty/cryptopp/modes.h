@@ -336,13 +336,11 @@ public:
 
 	std::string AlgorithmName() const
 		{return (this->m_cipher ? this->m_cipher->AlgorithmName() + "/" : std::string("")) + BASE::StaticAlgorithmName();}
-    
-    virtual void CombineMessageAndShiftRegister(byte *output, byte *reg, const byte *message, size_t length) {}
 };
 
-//template class CFB_CipherTemplate<AbstractPolicyHolder<CFB_CipherAbstractPolicy, CFB_ModePolicy> >;
-//template class CFB_EncryptionTemplate<AbstractPolicyHolder<CFB_CipherAbstractPolicy, CFB_ModePolicy> >;
-//template class CFB_DecryptionTemplate<AbstractPolicyHolder<CFB_CipherAbstractPolicy, CFB_ModePolicy> >;
+CRYPTOPP_DLL_TEMPLATE_CLASS CFB_CipherTemplate<AbstractPolicyHolder<CFB_CipherAbstractPolicy, CFB_ModePolicy> >;
+CRYPTOPP_DLL_TEMPLATE_CLASS CFB_EncryptionTemplate<AbstractPolicyHolder<CFB_CipherAbstractPolicy, CFB_ModePolicy> >;
+CRYPTOPP_DLL_TEMPLATE_CLASS CFB_DecryptionTemplate<AbstractPolicyHolder<CFB_CipherAbstractPolicy, CFB_ModePolicy> >;
 
 //! \class CFB_Mode
 //! \brief CFB block cipher mode of operation.
@@ -380,7 +378,7 @@ struct CFB_FIPS_Mode_ExternalCipher : public CipherModeDocumentation
 	typedef CipherModeFinalTemplate_ExternalCipher<ConcretePolicyHolder<Empty, CFB_RequireFullDataBlocks<CFB_DecryptionTemplate<AbstractPolicyHolder<CFB_CipherAbstractPolicy, CFB_ModePolicy> > > > > Decryption;
 };
 
-//CRYPTOPP_DLL_TEMPLATE_CLASS AdditiveCipherTemplate<AbstractPolicyHolder<AdditiveCipherAbstractPolicy, OFB_ModePolicy> >;
+CRYPTOPP_DLL_TEMPLATE_CLASS AdditiveCipherTemplate<AbstractPolicyHolder<AdditiveCipherAbstractPolicy, OFB_ModePolicy> >;
 
 //! \class OFB_Mode
 //! \brief OFB block cipher mode of operation.
@@ -399,8 +397,8 @@ struct OFB_Mode_ExternalCipher : public CipherModeDocumentation
 	typedef Encryption Decryption;
 };
 
-//CRYPTOPP_DLL_TEMPLATE_CLASS AdditiveCipherTemplate<AbstractPolicyHolder<AdditiveCipherAbstractPolicy, CTR_ModePolicy> >;
-//CRYPTOPP_DLL_TEMPLATE_CLASS CipherModeFinalTemplate_ExternalCipher<ConcretePolicyHolder<Empty, AdditiveCipherTemplate<AbstractPolicyHolder<AdditiveCipherAbstractPolicy, CTR_ModePolicy> > > >;
+CRYPTOPP_DLL_TEMPLATE_CLASS AdditiveCipherTemplate<AbstractPolicyHolder<AdditiveCipherAbstractPolicy, CTR_ModePolicy> >;
+CRYPTOPP_DLL_TEMPLATE_CLASS CipherModeFinalTemplate_ExternalCipher<ConcretePolicyHolder<Empty, AdditiveCipherTemplate<AbstractPolicyHolder<AdditiveCipherAbstractPolicy, CTR_ModePolicy> > > >;
 
 //! \class CTR_Mode
 //! \brief CTR block cipher mode of operation.
@@ -428,7 +426,11 @@ struct ECB_Mode : public CipherModeDocumentation
 	typedef CipherModeFinalTemplate_CipherHolder<CPP_TYPENAME CIPHER::Decryption, ECB_OneWay> Decryption;
 };
 
-//template class CipherModeFinalTemplate_ExternalCipher<ECB_OneWay>;
+#ifdef _IOS 
+    template class CipherModeFinalTemplate_ExternalCipher<ECB_OneWay>;
+#else
+    CRYPTOPP_DLL_TEMPLATE_CLASS CipherModeFinalTemplate_ExternalCipher<ECB_OneWay>;
+#endif
 
 //! \class ECB_Mode_ExternalCipher
 //! \brief ECB mode, external cipher.
@@ -446,8 +448,13 @@ struct CBC_Mode : public CipherModeDocumentation
 	typedef CipherModeFinalTemplate_CipherHolder<CPP_TYPENAME CIPHER::Decryption, CBC_Decryption> Decryption;
 };
 
-//template class CipherModeFinalTemplate_ExternalCipher<CBC_Encryption>;
-//template class CipherModeFinalTemplate_ExternalCipher<CBC_Decryption>;
+#ifdef _IOS
+    template class CipherModeFinalTemplate_ExternalCipher<CBC_Encryption>;
+    template class CipherModeFinalTemplate_ExternalCipher<CBC_Decryption>;
+#else
+    CRYPTOPP_DLL_TEMPLATE_CLASS CipherModeFinalTemplate_ExternalCipher<CBC_Encryption>;
+    CRYPTOPP_DLL_TEMPLATE_CLASS CipherModeFinalTemplate_ExternalCipher<CBC_Decryption>;
+#endif
 
 //! CBC mode, external cipher
 struct CBC_Mode_ExternalCipher : public CipherModeDocumentation
@@ -464,8 +471,8 @@ struct CBC_CTS_Mode : public CipherModeDocumentation
 	typedef CipherModeFinalTemplate_CipherHolder<CPP_TYPENAME CIPHER::Decryption, CBC_CTS_Decryption> Decryption;
 };
 
-template class CipherModeFinalTemplate_ExternalCipher<CBC_CTS_Encryption>;
-template class CipherModeFinalTemplate_ExternalCipher<CBC_CTS_Decryption>;
+CRYPTOPP_DLL_TEMPLATE_CLASS CipherModeFinalTemplate_ExternalCipher<CBC_CTS_Encryption>;
+CRYPTOPP_DLL_TEMPLATE_CLASS CipherModeFinalTemplate_ExternalCipher<CBC_CTS_Decryption>;
 
 //! \class CBC_CTS_Mode_ExternalCipher
 //! \brief CBC mode with ciphertext stealing, external cipher

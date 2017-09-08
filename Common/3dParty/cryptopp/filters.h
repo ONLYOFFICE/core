@@ -996,7 +996,12 @@ private:
 	T *m_output;
 };
 
-//template class StringSinkTemplate<std::string>;
+#ifdef _IOS
+    template class StringSinkTemplate<std::string>;
+#else
+    CRYPTOPP_DLL_TEMPLATE_CLASS StringSinkTemplate<std::string>;
+#endif
+
 DOCUMENTED_TYPEDEF(StringSinkTemplate<std::string>, StringSink);
 
 //! \class RandomNumberSink

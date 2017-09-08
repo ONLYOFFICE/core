@@ -242,7 +242,7 @@ void AutoSeededX917RNG<BLOCK_CIPHER>::Reseed(bool blocking, const byte *input, s
 	Reseed(key, BLOCK_CIPHER::DEFAULT_KEYLENGTH, seed, NULL);
 }
 
-//CRYPTOPP_DLL_TEMPLATE_CLASS AutoSeededX917RNG<AES>;
+CRYPTOPP_DLL_TEMPLATE_CLASS AutoSeededX917RNG<AES>;
 
 #if defined(CRYPTOPP_DOXYGEN_PROCESSING)
 //! \class DefaultAutoSeededRNG

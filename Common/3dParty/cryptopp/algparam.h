@@ -478,9 +478,15 @@ protected:
 	T m_value;
 };
 
-//template class AlgorithmParametersTemplate<bool>;
-//template class AlgorithmParametersTemplate<int>;
-//template class AlgorithmParametersTemplate<ConstByteArrayParameter>;
+#ifdef _IOS
+    template class AlgorithmParametersTemplate<bool>;
+    template class AlgorithmParametersTemplate<int>;
+    template class AlgorithmParametersTemplate<ConstByteArrayParameter>;
+#else
+    CRYPTOPP_DLL_TEMPLATE_CLASS AlgorithmParametersTemplate<bool>;
+    CRYPTOPP_DLL_TEMPLATE_CLASS AlgorithmParametersTemplate<int>;
+    CRYPTOPP_DLL_TEMPLATE_CLASS AlgorithmParametersTemplate<ConstByteArrayParameter>;
+#endif
 
 //! \class AlgorithmParameters
 //! \brief An object that implements NameValuePairs

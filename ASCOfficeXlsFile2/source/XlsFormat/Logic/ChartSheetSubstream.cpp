@@ -324,6 +324,13 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 
 	int iCrt = -1;
 
+	if (charts->m_arSERIESFORMAT.empty() && !parent0->m_arCRT.empty())
+	{
+		std::vector<int> ser;
+		m_mapTypeChart.insert(std::make_pair(0, ser));
+		return;
+	}
+
 	for (size_t i = 0 ; i < charts->m_arSERIESFORMAT.size(); i++)
 	{
 		SERIESFORMAT * series = dynamic_cast<SERIESFORMAT *>(charts->m_arSERIESFORMAT[i].get());
@@ -334,7 +341,7 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 		if ( serCrt == NULL)
 		{
 			//для доп линий может и не существовать - брать предыдущий  - и объеденить!!!
-			std::map<int,std::vector<int>>::iterator it = m_mapTypeChart.find(iCrt);
+			std::unordered_map<int,std::vector<int>>::iterator it = m_mapTypeChart.find(iCrt);
 			if (it != m_mapTypeChart.end())
 			{
 				SERIESFORMAT * series_prev = dynamic_cast<SERIESFORMAT *>(charts->m_arSERIESFORMAT[it->second.back()].get());
@@ -359,12 +366,12 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 
 		CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[iCrt].get());
 		
-		std::map<int,std::vector<int>>::iterator it = m_mapTypeChart.find(iCrt);
+		std::unordered_map<int,std::vector<int>>::iterator it = m_mapTypeChart.find(iCrt);
 		if (it == m_mapTypeChart.end())
 		{
 			std::vector<int> ser;
 			ser.push_back(i);
-			m_mapTypeChart.insert(std::pair<int, std::vector<int>>(iCrt, ser));
+			m_mapTypeChart.insert(std::make_pair(iCrt, ser));
 		}
 		else
 		{
@@ -545,11 +552,11 @@ int ChartSheetSubstream::serialize_3D (std::wostream & _stream)
 					CP_XML_ATTR (L"val" , chart3D->anElev);
 				}
 			}
-			if (chart3D->pcHeight != 100)
+			if (chart3D->pcHeight3D != 100 && chart3D->pcHeight3D >= 5 && chart3D->pcHeight3D <= 500)
 			{
 				CP_XML_NODE(L"c:hPercent")
 				{
-					CP_XML_ATTR (L"val" , chart3D->pcHeight);
+					CP_XML_ATTR (L"val" , chart3D->pcHeight3D);
 				}
 			}
 			if (chart3D->anRot != 0)
@@ -662,7 +669,7 @@ int ChartSheetSubstream::serialize_legend (std::wostream & _stream, const std::w
 	//}
 	
 	//todooo разобраться с разными типами в одном чарте .. считать количество серий?? 
-	std::map< int, std::vector<int>>::iterator it = m_mapTypeChart.begin();
+	std::unordered_map< int, std::vector<int>>::iterator it = m_mapTypeChart.begin();
 	if (it != m_mapTypeChart.end())
 	{
 		CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[it->first].get());
@@ -746,7 +753,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 				PlotAreaPos->serialize(CP_XML_STREAM());
 			}
 
-			for (std::map<int, std::vector<int>>::iterator it = m_mapTypeChart.begin(); it != m_mapTypeChart.end(); it++)
+			for (std::unordered_map<int, std::vector<int>>::iterator it = m_mapTypeChart.begin(); it != m_mapTypeChart.end(); it++)
 			{
 				CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[it->first].get());
 
@@ -962,7 +969,7 @@ int ChartSheetSubstream::serialize_dPt(std::wostream & _stream, int id, CRT *crt
 					CP_XML_ATTR(L"val", series_data_format->xi);
 					
 					if (format->fVaried)
-						present_idx.insert(std::pair<int, bool>(series_data_format->xi, true));
+						present_idx.insert(std::make_pair(series_data_format->xi, true));
 				}
 				series_ss->serialize	(CP_XML_STREAM(), crt->m_iChartType, series_data_format->xi);
 				series_ss->serialize2	(CP_XML_STREAM(), crt->m_iChartType);

@@ -175,7 +175,7 @@ const bool FDB::loadContent(BinProcessor& proc)
 	return true;
 }
 
-int FDB::serialize(std::wostream & strm, bool bSql)
+int FDB::serialize(std::wostream & strm, bool bSql, bool bDBB)
 {
 	SXFDB*		fdb			= dynamic_cast<SXFDB*>(m_SXFDB.get());
 	SXFDBType*	fdb_type	= dynamic_cast<SXFDBType*>(m_SXFDBType.get());
@@ -227,7 +227,7 @@ int FDB::serialize(std::wostream & strm, bool bSql)
 					Formula->serialize_attr(CP_GET_XML_NODE());
 			}
 
-			if (m_arSRCSXOPER.empty() == false)
+			if (!m_arSRCSXOPER.empty() && (bDBB || (!bDBB && bSql)) )
 			{
 				CP_XML_NODE(L"sharedItems")
 				{
@@ -250,20 +250,26 @@ int FDB::serialize(std::wostream & strm, bool bSql)
 					//	}
 					//}
 
-					if ((bDate & bNumber) || (bNumber & bString & !bEmpty))
+					if ((bDate & bNumber)/* || (bNumber & bString & !bEmpty & !bInteger)*/)
 					{
 						CP_XML_ATTR(L"containsSemiMixedTypes", 1);
 					}
-					else if ((bDate & bString) || ((bEmpty || !bNumber) & bInteger & bString))
+					else if ((bString && bDate) ||
+							 (bString && (bNumber || bInteger)) || 
+							 (!bString && bDate && bEmpty && (bNumber || bInteger)))
 					{
 						CP_XML_ATTR(L"containsMixedTypes", 1);
 
-						if (bInteger)				bNumber = true;
-						else if (bEmpty && bNumber) bInteger = false;
+						if (bString && !bNumber && bInteger)		bNumber = true;
+						else if (bString && bNumber && bInteger)	bInteger = false;
 					}
 					else if (!bEmpty && !bString && !bBool)
 					{
 						CP_XML_ATTR(L"containsSemiMixedTypes", 0);
+						if (bDate)
+						{
+							CP_XML_ATTR(L"containsMixedTypes", 1);
+						}
 					}
 					if (bDate && ! (bNumber || bInteger || bString || bEmpty ))
 					{
@@ -342,6 +348,26 @@ int FDB::serialize(std::wostream & strm, bool bSql)
 	}
 	
 	return 0;
+}
+
+int FDB::serialize_record(std::wostream & strm)
+{
+	SXFDB*		fdb			= dynamic_cast<SXFDB*>(m_SXFDB.get());
+	SXFDBType*	fdb_type	= dynamic_cast<SXFDBType*>(m_SXFDBType.get());
+
+	if (!fdb || !fdb_type) return 0;
+
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"r")
+		{ 
+			for (size_t i = 0; i < m_arSRCSXOPER.size(); i++)
+			{
+				SXOPER* oper = dynamic_cast<SXOPER*>(m_arSRCSXOPER[i].get());
+				oper->serialize_record(CP_XML_STREAM());
+			}
+		}
+	}
 }
 
 } // namespace XLS

@@ -78,7 +78,7 @@ public:
 				{
 					if (row->miyRw > 0 && std::abs(row->miyRw/20. - sheet_info.defaultRowHeight) > 0.001)
 					{
-						sheet_info.customRowsHeight.insert(std::pair<int, double>(row->rw, row->miyRw / 20.));
+						sheet_info.customRowsHeight.insert(std::make_pair(row->rw, row->miyRw / 20.));
 					}
 				}
 				m_rows.push_back(elements_.front());
@@ -102,7 +102,7 @@ public:
 				{
 					std::list<BaseObjectPtr> c;
 					c.push_back(elements_.front());
-					m_cells.insert(std::pair<int, std::list<BaseObjectPtr>>(cell->RowNumber, c));
+					m_cells.insert(std::make_pair(cell->RowNumber, c));
 				}
 				else
 				{

@@ -122,7 +122,7 @@ const bool LBL::loadContent(BinProcessor& proc)
 			ar[ind_sheet] = value;
 			//ar.push_back(value);
 
-			global_info_->mapDefineNames.insert(std::pair<std::wstring, std::vector<std::wstring>>(name, ar));
+			global_info_->mapDefineNames.insert(std::make_pair(name, ar));
 		}
 		isSerialize = true;
 	}

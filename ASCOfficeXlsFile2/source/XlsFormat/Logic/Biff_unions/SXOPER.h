@@ -48,6 +48,7 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	int serialize(std::wostream & strm);
+	int serialize_record(std::wostream & strm);
 
 	static const ElementType type = typeSXOPER;
 

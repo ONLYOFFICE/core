@@ -54,14 +54,17 @@ BaseObjectPtr Chart3d::clone()
 void Chart3d::readFields(CFRecord& record)
 {
 	unsigned short flags;
-	unsigned short pcHeight_raw;
-	record >> anRot >> anElev >> pcDist >> pcHeight_raw >> pcDepth >> pcGap >> flags;
+	record >> anRot >> anElev >> pcDist >> pcHeightPie >> pcDepth >> pcGap >> flags;
 	fPerspective = GETBIT(flags, 0);
 	fCluster = GETBIT(flags, 1);
 	f3DScaling = GETBIT(flags, 2);
 	fNotPieChart = GETBIT(flags, 4);
 	fWalls2D = GETBIT(flags, 5);
-	pcHeight = fNotPieChart ? static_cast<short>(pcHeight_raw) : pcHeight_raw;
+
+	if (fNotPieChart)
+	{
+		pcHeight3D = static_cast<short>(pcHeightPie);
+	}
 }
 
 } // namespace XLS

@@ -116,7 +116,7 @@ const bool AUTOFILTER::loadContent(BinProcessor& proc)
 					std::vector<BaseObjectPtr> ar;
 					ar.push_back(elements_.back());
 
-					m_mapFilters12.insert(std::pair<int, std::vector<BaseObjectPtr>>(ind, ar));
+					m_mapFilters12.insert(std::make_pair(ind, ar));
 				}
 			}
 		}

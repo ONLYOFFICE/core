@@ -155,5 +155,20 @@ int SXOPER::serialize(std::wostream & strm)
 	return 0;
 }
 
+int SXOPER::serialize_record(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(node)
+		{ 
+			if (!value.empty() || bString)
+			{
+				CP_XML_ATTR(L"v", value);
+			}
+		}	
+	}
+	return 0;
+}
+
 } // namespace XLS
 

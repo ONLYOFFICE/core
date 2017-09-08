@@ -48,7 +48,6 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeChart3d;
@@ -57,7 +56,8 @@ public:
 	_INT16	anRot;
 	_INT16	anElev;
 	_INT16	pcDist;
-	_UINT32 pcHeight;
+	_UINT16 pcHeightPie;
+	short	pcHeight3D;
 	_INT16	pcDepth;
 	_UINT16 pcGap;
 

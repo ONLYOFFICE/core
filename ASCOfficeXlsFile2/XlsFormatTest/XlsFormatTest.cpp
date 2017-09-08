@@ -99,10 +99,16 @@ HRESULT convert_directory(std::wstring pathName)
 int _tmain(int argc, _TCHAR* argv[])
 {
 	if (argc < 2) return 1;
-	
-	HRESULT hr = convert_single(argv[1]);
 
-	//HRESULT hr = convert_directory(argv[1]);
+	HRESULT hr = -1;
+	if (NSFile::CFileBinary::Exists(argv[1]))
+	{	
+		hr = convert_single(argv[1]);
+	}
+	else if (NSDirectory::Exists(argv[1]))
+	{
+		hr = convert_directory(argv[1]);
+	}
 
 	return hr;
 }

@@ -166,7 +166,7 @@ int PIVOTVIEW::serialize(std::wostream & strm)
                 CP_XML_ATTR(L"compact",				view_ex12->fCompactData);
                 CP_XML_ATTR(L"compactData",			view_ex12->fCompactData);
 
-                CP_XML_ATTR(L"gridDropZones",		view_ex12->fNewDropZones);
+                CP_XML_ATTR(L"gridDropZones",		!view_ex12->fNewDropZones);
                 CP_XML_ATTR(L"showDrill",           !view_ex12->fHideDrillIndicators);
                 CP_XML_ATTR(L"printDrill",          view_ex12->fPrintDrillIndicators);
             }

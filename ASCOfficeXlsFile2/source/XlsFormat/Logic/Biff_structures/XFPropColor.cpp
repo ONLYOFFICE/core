@@ -70,12 +70,13 @@ int XFPropColor::serialize(std::wostream & stream)
 			{
 				case 0: CP_XML_ATTR(L"auto",	1);				break;
 				case 1: CP_XML_ATTR(L"indexed", icv);			break;
-				case 2:	CP_XML_ATTR(L"rgb",		dwRgba.strRGB);	break;
-				case 3: CP_XML_ATTR(L"theme",	icv);			break;
+				case 2:	
+				case 3: CP_XML_ATTR(L"rgb",		dwRgba.strRGB);	break;
+					//CP_XML_ATTR(L"theme",	icv);			break;
 			}
 			if (nTintShade != 0)
 			{
-				CP_XML_ATTR(L"tint", nTintShade);
+				CP_XML_ATTR(L"tint", nTintShade/ 32767.0);
 			}
 		}
 	}

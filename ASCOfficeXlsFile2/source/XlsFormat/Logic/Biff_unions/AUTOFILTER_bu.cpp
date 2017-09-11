@@ -116,7 +116,7 @@ const bool AUTOFILTER::loadContent(BinProcessor& proc)
 					std::vector<BaseObjectPtr> ar;
 					ar.push_back(elements_.back());
 
-					m_mapFilters12.insert(std::pair<int, std::vector<BaseObjectPtr>>(ind, ar));
+					m_mapFilters12.insert(std::make_pair(ind, ar));
 				}
 			}
 		}
@@ -187,7 +187,7 @@ int AUTOFILTER::serialize(std::wostream & stream)
 		{	
 			CP_XML_ATTR(L"ref", ref);
 				
-			for (int i = 0 ; i < m_arFilters.size(); i++)//todooo сделать на оставшиеся - count_columns (hidden)
+			for (size_t i = 0 ; i < m_arFilters.size(); i++)//todooo сделать на оставшиеся - count_columns (hidden)
 			{
 				AutoFilter * filter = dynamic_cast<AutoFilter*>(m_arFilters[i].get());
 				CP_XML_NODE(L"filterColumn")
@@ -214,12 +214,12 @@ int AUTOFILTER::serialize(std::wostream & stream)
 						std::map<int, std::vector<BaseObjectPtr>>::iterator itF = m_mapFilters12.find(filter->iEntry);
 						if (itF != m_mapFilters12.end())
 						{
-							for (int j = 0 ; j < itF->second.size(); j++)
+							for (size_t j = 0 ; j < itF->second.size(); j++)
 							{
 								AutoFilter12* af12 = dynamic_cast<AutoFilter12*>(itF->second[j].get());
 								if (af12 == NULL) continue;
 
-								for (int k = 0 ; k < af12->rgbAF12Criteries.size(); k++)
+								for (size_t k = 0 ; k < af12->rgbAF12Criteries.size(); k++)
 								{
 									AF12Criteria * af12Criteria = dynamic_cast<AF12Criteria *>(af12->rgbAF12Criteries[k].get());
 									if (af12Criteria == NULL) continue;

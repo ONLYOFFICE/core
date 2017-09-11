@@ -1427,7 +1427,7 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertImage()
 		m_oWriter.WriteString(std::wstring(L"<a:xfrm"));	
 			if (0 != m_pImageElement->m_dRotate)
 			{
-                m_oWriter.WriteString(L" rot=\"" + std::to_wstring(m_pImageElement->m_dRotate * 60000) + L"\"");
+                m_oWriter.WriteString(L" rot=\"" + std::to_wstring((int)(m_pImageElement->m_dRotate * 60000)) + L"\"");
 			}
 			if (m_pImageElement->m_bFlipH)
 			{

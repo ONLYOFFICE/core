@@ -39,6 +39,7 @@ namespace XLS
 
 Theme::Theme()
 {
+	nThemeDataSize = 0;
 }
 
 Theme::~Theme()
@@ -54,16 +55,18 @@ void Theme::readFields(CFRecord& record)
 {
 	record >> frtHeader >> dwThemeVersion;
 
-	if(!dwThemeVersion)
+	if (dwThemeVersion == 124226)
 	{
-		Log::info("\"Theme\" binary parsing is not implemented.");
-
-/*
-		std::ofstream file1("D:\\temp.xlsx", std::ios_base::binary);
-		file1.write(record.getCurData<char>(), (record.getDataSize() - record.getRdPtr()));
-*/
+		//default theme
 	}
+	else if (dwThemeVersion == 0)
+	{
+		nThemeDataSize = record.getDataSize() - record.getRdPtr();
+		pThemeData = boost::shared_array<char>(new char[nThemeDataSize]);
 
+		memcpy(pThemeData.get(), record.getCurData<char>(), nThemeDataSize);
+		record.skipNunBytes(nThemeDataSize);
+	}
 }
 
 } // namespace XLS

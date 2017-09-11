@@ -43,8 +43,12 @@ class xlsx_pivots_context::Impl
 public:
 	struct _pivot_cache
 	{	
-		std::wstring  definitionsData_;
-		std::wstring  recordsData_;
+		_pivot_cache(const std::wstring & def, const std::wstring & rec) : definitions_(def), records_(rec) {}
+
+		std::wstring  definitions_;
+		std::wstring  records_;
+
+		std::unordered_map<std::wstring, std::wstring> externals_;
 	};
 	struct _pivot_view
 	{	
@@ -65,8 +69,14 @@ xlsx_pivots_context::xlsx_pivots_context() : impl_(new xlsx_pivots_context::Impl
 
 void xlsx_pivots_context::add_cache(std::wstring definitions, std::wstring records)
 {
-	Impl::_pivot_cache c = {definitions, records};
+	if (definitions.empty()) return;
+
+	Impl::_pivot_cache c(definitions, records);
 	impl_->caches_.push_back(c);
+}
+void xlsx_pivots_context::add_cache_external(std::unordered_map<std::wstring, std::wstring> &externals)
+{
+	impl_->caches_.back().externals_ = externals;
 }
 
 int xlsx_pivots_context::get_cache_count()
@@ -79,11 +89,19 @@ bool xlsx_pivots_context::is_connections()
 }
 void xlsx_pivots_context::dump_rels_cache(int index, rels & Rels)
 {
-	if (impl_->caches_[index].recordsData_.empty() == false)
+	if (impl_->caches_[index].records_.empty() == false)
 	{
 		Rels.add(relationship(L"rId1",							
 						L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheRecords",
 						L"pivotCacheRecords" + std::to_wstring(index + 1) + L".xml", L""));
+	}
+	int i = 0;
+	for (std::unordered_map<std::wstring, std::wstring>::iterator	it =  impl_->caches_[index].externals_.begin(); 
+																	it !=  impl_->caches_[index].externals_.end(); it++, i++)
+	{
+		Rels.add(relationship(L"extId" + std::to_wstring(i + 1),							
+						L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLinkPath",
+						it->second, L"External"));
 	}
 }
 void xlsx_pivots_context::dump_rels_view(int index, rels & Rels)
@@ -97,7 +115,7 @@ void xlsx_pivots_context::dump_rels_view(int index, rels & Rels)
 }
 void xlsx_pivots_context::write_cache_definitions_to(int index, std::wostream & strm)
 {
-	strm << impl_->caches_[index].definitionsData_;
+	strm << impl_->caches_[index].definitions_;
 }
 void xlsx_pivots_context::write_connections_to(std::wostream & strm)
 {
@@ -114,7 +132,7 @@ void xlsx_pivots_context::write_connections_to(std::wostream & strm)
 
 void xlsx_pivots_context::write_cache_records_to(int index, std::wostream & strm)
 {
-	strm << impl_->caches_[index].recordsData_;
+	strm << impl_->caches_[index].records_;
 }
 void xlsx_pivots_context::write_table_view_to(int index, std::wostream & strm)
 {

@@ -78,7 +78,7 @@ void OfficeArtDgContainer::loadFields(XLS::CFRecord& record)
 	{
 	}
 	
-    for (int i = 0 ; i < child_records.size(); i++)
+    for (size_t i = 0 ; i < child_records.size(); i++)
 	{
 		switch(child_records[i]->rh_own.recType)
 		{
@@ -87,7 +87,7 @@ void OfficeArtDgContainer::loadFields(XLS::CFRecord& record)
 				OfficeArtDgContainer * dg = dynamic_cast<OfficeArtDgContainer *>(child_records[i].get());
 				if (dg)
 				{
-					for (int i = 0 ; i < dg->child_records.size(); i++)
+					for (size_t i = 0 ; i < dg->child_records.size(); i++)
 					{
 						child_records.push_back(dg->child_records[i]);
 					}

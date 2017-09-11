@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include "../Biff_structures/XFProp.h"
+#include "XFProp.h"
 
 namespace XLS
 {
@@ -47,13 +47,14 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
 	static const ElementType	type = typeXFProps;
 
 	unsigned short		cprops;
 
 	int serialize(std::wostream & stream){ return serialize(stream, false) ; }
 	int serialize(std::wostream & stream, bool dxf);
+
+	int serialize_fill(std::wostream & stream);
 	
 	std::vector<XFProp> arXFPropFont;
 	std::vector<XFProp> arXFPropNumFmt;

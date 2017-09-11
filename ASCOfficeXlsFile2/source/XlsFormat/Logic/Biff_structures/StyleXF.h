@@ -36,8 +36,10 @@
 
 namespace XLS
 {
-
+class XFProps;
+class ExtProp;
 class CFRecord;
+
 class GlobalWorkbookInfo;
 typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;
 
@@ -50,12 +52,14 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
 	GlobalWorkbookInfoPtr m_GlobalWorkbookInfo;
 
 	static const ElementType	type = typeStyleXF;
 
 	int serialize(std::wostream & stream);
+
+	void Update(ExtProp* extProp); // xls style
+	void Update(XFProps* xfProps); //xlsx style
 
 	void RegisterFillBorder();
 

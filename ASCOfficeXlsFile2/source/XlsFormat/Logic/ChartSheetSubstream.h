@@ -32,6 +32,7 @@
 #pragma once
 
 #include <Logic/CompositeObject.h>
+#include <unordered_map>
 
 namespace XLS
 {;
@@ -86,7 +87,7 @@ private:
 	void recalc(CHARTFORMATS*	charts);
 	void recalc(SERIESDATA*		data);
 
-	std::map<int, std::vector<int>> m_mapTypeChart;//тут нужен несортированый .. пока оставим этот
+	std::unordered_map<int, std::vector<int>> m_mapTypeChart;
 
 	GlobalWorkbookInfoPtr pGlobalWorkbookInfo;
 };

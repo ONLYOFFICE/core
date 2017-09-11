@@ -46,6 +46,11 @@ BiffStructurePtr ExtProp::clone()
 void ExtProp::load(CFRecord& record)
 {
 	record >> extType >> cb;
+
+	if ((int)(cb - 4) > (int)(record.getDataSize() - record.getRdPtr()))
+	{
+		return;
+	}
 	switch(extType)
 	{
 		case 0x0004:

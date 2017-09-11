@@ -467,7 +467,7 @@ void WorksheetSubstream::LoadHFPicture()
 	if (m_arHFPicture.empty()) return;
 
 	int current_size_hf = 0, j = 0;
-	for ( int i = 0; i < m_arHFPicture.size(); i++)
+	for ( size_t i = 0; i < m_arHFPicture.size(); i++)
 	{
 		HFPicture* hf = dynamic_cast<HFPicture*>(m_arHFPicture[i].get());
 		if ((hf) && (hf->recordDrawingGroup))

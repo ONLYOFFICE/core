@@ -73,7 +73,7 @@ void OfficeArtDggContainer::loadFields(XLS::CFRecord& record)
 {
 	OfficeArtContainer::loadFields(record);
 	
-    for (int i = 0 ; i < child_records.size(); i++)
+    for (size_t i = 0 ; i < child_records.size(); i++)
 	{
 		switch(child_records[i]->rh_own.recType)
 		{
@@ -111,7 +111,7 @@ void OfficeArtSpgrContainer::loadFields(XLS::CFRecord& record)
 {
 	OfficeArtContainer::loadFields(record);
 
-    //for (int i = 0 ; i < child_records.size(); i++)
+    //for (size_t i = 0 ; i < child_records.size(); i++)
 	//{
 	//	switch(child_records[i]->rh_own.recType)
 	//	{
@@ -128,7 +128,7 @@ void OfficeArtSpContainer::loadFields(XLS::CFRecord& record)
 {
 	OfficeArtContainer::loadFields(record);
 
-    for (int i = 0 ; i < child_records.size(); i++)
+    for (size_t i = 0 ; i < child_records.size(); i++)
 	{
 		switch(child_records[i]->rh_own.recType)
 		{

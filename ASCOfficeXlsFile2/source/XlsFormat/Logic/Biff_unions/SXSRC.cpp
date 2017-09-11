@@ -31,9 +31,9 @@
  */
 
 #include "SXSRC.h"
-#include <Logic/Biff_unions/DREF.h>
-#include <Logic/Biff_unions/SXTBL.h>
-#include <Logic/Biff_unions/DBQUERY.h>
+#include "DREF.h"
+#include "SXTBL.h"
+#include "DBQUERY.h"
 
 namespace XLS
 {

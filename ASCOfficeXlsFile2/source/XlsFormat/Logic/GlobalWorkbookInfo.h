@@ -116,7 +116,8 @@ public:
 
 	std::vector<_sx_name>								arPivotSxNames;
 	std::vector<std::wstring>							arPivotCacheSxNames;
-	std::vector<std::wstring>							arPivotCacheReferences;
+
+	std::unordered_map<std::wstring, std::wstring>		mapPivotCacheExternal;
 
 	std::map<std::wstring, std::vector<std::wstring>>	mapDefineNames;
 	std::vector<std::wstring>							arDefineNames;

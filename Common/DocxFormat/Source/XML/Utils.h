@@ -60,13 +60,35 @@ namespace XmlUtils
 
 		return 0;
 	}
-    AVSINLINE static bool     IsDigit   (wchar_t c)
+	AVSINLINE static int     GetDigit   (char c)
+	{
+		if (c >= '0' && c <= '9')
+			return (int)(c - '0');
+		if (c >= 'a' && c <= 'f')
+			return 10 + (int)(c - 'a');
+		if (c >= 'A' && c <= 'F')
+			return 10 + (int)(c - 'A');
+
+		return 0;
+	}
+	AVSINLINE static bool     IsDigit   (wchar_t c)
 	{
 		if (c >= '0' && c <= '9')
 			return true;
 		return false;
 	}
     AVSINLINE static __int64 GetHex (const std::wstring& string)
+	{
+		__int64 nResult = 0;
+        size_t nLen = string.length();
+		for (size_t nIndex = 0; nIndex < nLen; ++nIndex )
+		{
+			nResult += GetDigit( string[nIndex] ) << ( 4 * ( nLen - 1 - nIndex ) );
+		}
+
+		return nResult;
+	}
+    AVSINLINE static __int64 GetHex (const std::string& string)
 	{
 		__int64 nResult = 0;
         size_t nLen = string.length();

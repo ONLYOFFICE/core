@@ -305,6 +305,112 @@ void _SaveChanges(const v8::FunctionCallbackInfo<v8::Value>& args)
     pNative->DumpChanges(to_cstringA(args[0]), args[1]->Int32Value(), args[2]->Int32Value());
 }
 
+/// ZIP -----
+void _zipOpenFile(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    if (args.Length() < 1)
+    {
+        args.GetReturnValue().Set(v8::Null(v8::Isolate::GetCurrent()));
+        return;
+    }
+
+    CNativeControl* pNative = unwrap_nativeobject(args.This());
+    bool bIsOpen = pNative->m_oZipWorker.Open(to_cstring(args[0]));
+    if (!bIsOpen)
+    {
+        args.GetReturnValue().Set(v8::Null(v8::Isolate::GetCurrent()));
+        return;
+    }
+
+    v8::Local<v8::Object> obj = v8::Object::New(v8::Isolate::GetCurrent());
+    for (std::vector<std::wstring>::iterator i = pNative->m_oZipWorker.m_arFiles.begin(); i != pNative->m_oZipWorker.m_arFiles.end(); i++)
+    {
+        std::string sFile = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(*i);
+
+        v8::Local<v8::String> _k = v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sFile.c_str(), v8::String::kNormalString, -1);
+        v8::Local<v8::String> _v = v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sFile.c_str(), v8::String::kNormalString, -1);
+
+        obj->Set(_k, _v);
+    }
+
+    args.GetReturnValue().Set(obj);
+}
+
+void _zipOpenFileBase64(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    if (args.Length() < 1)
+    {
+        args.GetReturnValue().Set(v8::Null(v8::Isolate::GetCurrent()));
+        return;
+    }
+
+    CNativeControl* pNative = unwrap_nativeobject(args.This());
+    bool bIsOpen = pNative->m_oZipWorker.OpenBase64(to_cstringA(args[0]));
+    if (!bIsOpen)
+    {
+        args.GetReturnValue().Set(v8::Null(v8::Isolate::GetCurrent()));
+        return;
+    }
+
+    v8::Local<v8::Object> obj = v8::Object::New(v8::Isolate::GetCurrent());
+    for (std::vector<std::wstring>::iterator i = pNative->m_oZipWorker.m_arFiles.begin(); i != pNative->m_oZipWorker.m_arFiles.end(); i++)
+    {
+        std::string sFile = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(*i);
+
+        v8::Local<v8::String> _k = v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sFile.c_str(), v8::String::kNormalString, -1);
+        v8::Local<v8::String> _v = v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), sFile.c_str(), v8::String::kNormalString, -1);
+
+        obj->Set(_k, _v);
+    }
+
+    args.GetReturnValue().Set(obj);
+}
+
+void _zipGetFileAsString(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    if (args.Length() < 1)
+    {
+        args.GetReturnValue().Set(v8::Null(v8::Isolate::GetCurrent()));
+        return;
+    }
+
+    CNativeControl* pNative = unwrap_nativeobject(args.This());
+
+    BYTE* pData = NULL;
+    DWORD len = 0;
+    pNative->m_oZipWorker.GetFileData(to_cstring(args[0]), pData, len);
+
+    args.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), (char*)pData, v8::String::kNormalString, len));
+}
+
+void _zipGetFileAsBinary(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    if (args.Length() < 1)
+    {
+        args.GetReturnValue().Set(v8::Null(v8::Isolate::GetCurrent()));
+        return;
+    }
+
+    CNativeControl* pNative = unwrap_nativeobject(args.This());
+
+    BYTE* pData = NULL;
+    DWORD len = 0;
+    pNative->m_oZipWorker.GetFileData(to_cstring(args[0]), pData, len);
+
+    v8::Local<v8::ArrayBuffer> _buffer = v8::ArrayBuffer::New(v8::Isolate::GetCurrent(), (void*)pData, (size_t)len);
+    v8::Local<v8::Uint8Array> _array = v8::Uint8Array::New(_buffer, 0, (size_t)len);
+
+    args.GetReturnValue().Set(_array);
+}
+
+void _zipCloseFile(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    CNativeControl* pNative = unwrap_nativeobject(args.This());
+    args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
+    pNative->m_oZipWorker.Close();
+}
+/// ---------
+
 void _AddImageInChanges(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
@@ -396,6 +502,12 @@ v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplateBuilder(v8::Isolate* i
     result->Set(v8::String::NewFromUtf8(current, "ConsoleLog"), v8::FunctionTemplate::New(current, _ConsoleLog));
 
     result->Set(v8::String::NewFromUtf8(current, "SaveChanges"), v8::FunctionTemplate::New(current, _SaveChanges));
+
+    result->Set(v8::String::NewFromUtf8(current, "ZipOpen"),            v8::FunctionTemplate::New(current, _zipOpenFile));
+    result->Set(v8::String::NewFromUtf8(current, "ZipOpenBase64"),      v8::FunctionTemplate::New(current, _zipOpenFileBase64));
+    result->Set(v8::String::NewFromUtf8(current, "ZipFileAsString"),    v8::FunctionTemplate::New(current, _zipGetFileAsString));
+    result->Set(v8::String::NewFromUtf8(current, "ZipFileAsBinary"),    v8::FunctionTemplate::New(current, _zipGetFileAsBinary));
+    result->Set(v8::String::NewFromUtf8(current, "ZipClose"),           v8::FunctionTemplate::New(current, _zipCloseFile));
 
     // возвращаем временный хэндл хитрым образом, который переносит наш хэндл в предыдущий HandleScope и не дает ему
     // уничтожиться при уничтожении "нашего" HandleScope - handle_scope

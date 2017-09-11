@@ -37,6 +37,130 @@
 #include "../fontengine/ApplicationFonts.h"
 #include <iostream>
 #include "../../graphics/Timer.h"
+#include "../../common/Directory.h"
+#include "../../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../fontengine/application_generate_fonts_common.h"
+
+class CZipWorker
+{
+public:
+    std::wstring m_sTmpFolder;
+
+    std::vector<std::wstring> m_arFiles;
+
+    std::wstring m_sWorkerFolder;
+
+public:
+
+    CZipWorker()
+    {
+        m_sWorkerFolder = L"";
+    }
+
+    ~CZipWorker()
+    {
+        Close();
+    }
+
+    void Close()
+    {
+        if (!m_sTmpFolder.empty())
+            NSDirectory::DeleteDirectory(m_sTmpFolder);
+
+        m_sTmpFolder = L"";
+
+        m_arFiles.clear();
+    }
+
+    bool Open(const std::wstring& sFile)
+    {
+        m_sTmpFolder = m_sWorkerFolder + L"/nativeZip";
+        COfficeUtils oUtils;
+        if (S_OK != oUtils.ExtractToDirectory(sFile, m_sTmpFolder, NULL, 0))
+            return false;
+
+        CheckDirectory();
+        return true;
+    }
+
+    bool OpenBase64(const std::string& sData)
+    {
+        BYTE* pRawData = NULL;
+        int nRawSize = 0;
+        if (true != NSFile::CBase64Converter::Decode(sData.c_str(), (int)sData.length(), pRawData, nRawSize))
+            return false;
+
+        std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSDirectory::GetTempPathW(), L"ZIP");
+        if (NSFile::CFileBinary::Exists(sTmpFile))
+            NSFile::CFileBinary::Remove(sTmpFile);
+
+        NSFile::CFileBinary oFile;
+        oFile.CreateFileW(sTmpFile);
+        oFile.WriteFile(pRawData, (DWORD)nRawSize);
+        oFile.CloseFile();
+
+        m_sTmpFolder = m_sWorkerFolder + L"/nativeZip";
+
+        COfficeUtils oUtils;
+        if (S_OK != oUtils.ExtractToDirectory(sTmpFile, m_sTmpFolder, NULL, 0))
+        {
+            NSFile::CFileBinary::Remove(sTmpFile);
+            return false;
+        }
+
+        NSFile::CFileBinary::Remove(sTmpFile);
+        CheckDirectory();
+        return true;
+    }
+
+    void CheckDirectory()
+    {
+        std::vector<std::wstring> arFiles = NSDirectory::GetFiles(m_sTmpFolder, true);
+
+        url_correct2(m_sTmpFolder);
+        int nStart = m_sTmpFolder.length();
+        for (std::vector<std::wstring>::iterator i = arFiles.begin(); i != arFiles.end(); i++)
+        {
+            std::wstring sTmp = *i;
+            url_correct2(sTmp);
+
+            m_arFiles.push_back(sTmp.substr(nStart + 1));
+        }
+    }
+
+    void GetFileData(const std::wstring& strFile, BYTE*& pData, DWORD& dwLen)
+    {
+        NSFile::CFileBinary oFile;
+        oFile.OpenFile(m_sTmpFolder + L"/" + strFile);
+        dwLen = (DWORD)oFile.GetFileSize();
+        pData = (BYTE*)malloc((size_t)dwLen);
+        DWORD dwSizeRead = 0;
+        oFile.ReadFile(pData, dwLen, dwSizeRead);
+        oFile.CloseFile();
+    }
+
+private:
+
+    void url_correct2(std::wstring& url)
+    {
+        NSCommon::string_replace(url, L"/./", L"/");
+
+        size_t posn = 0;
+        while (std::wstring::npos != (posn = url.find(L"/../")))
+        {
+            std::wstring::size_type pos2 = url.rfind(L"/", posn - 1);
+
+            if (std::wstring::npos != pos2)
+            {
+                url.erase(pos2, posn - pos2 + 3);
+            }
+        }
+
+        NSCommon::string_replace(url, L"\\\\", L"\\");
+        NSCommon::string_replace(url, L"//", L"/");
+        NSCommon::string_replace(url, L"\\", L"/");
+    }
+};
 
 // string convert
 std::wstring to_cstring(v8::Local<v8::Value> v);
@@ -75,6 +199,8 @@ public:
 
     std::wstring m_sChangesBuilderPath;
     int m_nCurrentChangesBuilderIndex;
+
+    CZipWorker m_oZipWorker;
 
 public:
     CMemoryStream* m_pStream;
@@ -152,6 +278,8 @@ public:
     void SetFilePath(const std::wstring& strPath)
     {
         m_strFilePath = strPath;
+
+        m_oZipWorker.m_sWorkerFolder = NSCommon::GetDirectoryName(strPath);
     }
     std::wstring GetFilePath()
     {
@@ -323,6 +451,14 @@ void _Save_End(const v8::FunctionCallbackInfo<v8::Value>& args);
 void _ConsoleLog(const v8::FunctionCallbackInfo<v8::Value>& args);
 
 void _SaveChanges(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+/// ZIP -----
+void _zipOpenFile(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _zipOpenFileBase64(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _zipGetFileAsString(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _zipGetFileAsBinary(const v8::FunctionCallbackInfo<v8::Value>& args);
+void _zipCloseFile(const v8::FunctionCallbackInfo<v8::Value>& args);
+/// ---------
 
 void _AddImageInChanges(const v8::FunctionCallbackInfo<v8::Value>& args);
 

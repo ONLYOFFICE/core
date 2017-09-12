@@ -90,7 +90,7 @@ public:
         if (true != NSFile::CBase64Converter::Decode(sData.c_str(), (int)sData.length(), pRawData, nRawSize))
             return false;
 
-        std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSDirectory::GetTempPathW(), L"ZIP");
+        std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSDirectory::GetTempPath(), L"ZIP");
         if (NSFile::CFileBinary::Exists(sTmpFile))
             NSFile::CFileBinary::Remove(sTmpFile);
 

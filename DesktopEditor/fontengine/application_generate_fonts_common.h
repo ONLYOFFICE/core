@@ -90,6 +90,17 @@ namespace NSCommon
                 pStr[i] = pStr[i] + 'A' - 'a';
         }
     }
+    static void makeUpperW(std::wstring& url)
+    {
+        int nLen = (int)url.length();
+        wchar_t* pStr = (wchar_t*)url.c_str();
+
+        for (int i = 0; i < nLen; ++i)
+        {
+            if (pStr[i] >= 'a' && pStr[i] <= 'z')
+                pStr[i] = pStr[i] + 'A' - 'a';
+        }
+    }
     
     static void WriteLog(const std::string& sLogFile, const std::wstring& sData)
     {

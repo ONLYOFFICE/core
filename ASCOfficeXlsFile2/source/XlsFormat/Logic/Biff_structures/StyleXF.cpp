@@ -31,7 +31,9 @@
  */
 
 #include "StyleXF.h"
+#include "XFProps.h"
 #include "ExtProp.h"
+
 #include <Binary/CFRecord.h>
 
 namespace XLS
@@ -139,85 +141,100 @@ void StyleXF::load(CFRecord& record)
 		fill.icvFore = GETBITS(flags4, 0, 6);
 		fill.icvBack = GETBITS(flags4, 7, 13);
 	}
-
 }
+void StyleXF::Update(ExtProp* ext_prop)
+{
+	if (!ext_prop) return;
 
+	switch(ext_prop->extType)
+	{
+		case 0x0004:
+		{
+			fill.foreFillInfo_.enabled		= true;
+			fill.foreFillInfo_.icv			= ext_prop->extPropData.color.icv;
+			fill.foreFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
+			fill.foreFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
+			fill.foreFillInfo_.xclrValue	= ext_prop->extPropData.color.xclrValue;
+		}break;
+		case 0x0005:
+		{
+			fill.backFillInfo_.enabled		= true;
+			fill.backFillInfo_.icv			= ext_prop->extPropData.color.icv;
+			fill.backFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
+			fill.backFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
+			fill.backFillInfo_.xclrValue	= ext_prop->extPropData.color.xclrValue;
+		}break;
+		case 0x0007:
+		{
+			border.topFillInfo_.enabled		= true;
+			border.topFillInfo_.icv			= ext_prop->extPropData.color.icv;
+			border.topFillInfo_.xclrType	= ext_prop->extPropData.color.xclrType;
+			border.topFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
+			border.topFillInfo_.xclrValue	= ext_prop->extPropData.color.xclrValue;			
+		}break;
+		case 0x0008:
+		{
+			border.bottomFillInfo_.enabled		= true;
+			border.bottomFillInfo_.icv			= ext_prop->extPropData.color.icv;
+			border.bottomFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
+			border.bottomFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
+			border.bottomFillInfo_.xclrValue	= ext_prop->extPropData.color.xclrValue;			
+		}break;
+		case 0x0009:
+		{
+			border.leftFillInfo_.enabled		= true;
+			border.leftFillInfo_.icv			= ext_prop->extPropData.color.icv;
+			border.leftFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
+			border.leftFillInfo_.nTintShade		= ext_prop->extPropData.color.nTintShade;
+			border.leftFillInfo_.xclrValue		= ext_prop->extPropData.color.xclrValue;			
+		}break;
+		case 0x000A:
+		{
+			border.rightFillInfo_.enabled		= true;
+			border.rightFillInfo_.icv			= ext_prop->extPropData.color.icv;
+			border.rightFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
+			border.rightFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
+			border.rightFillInfo_.xclrValue		= ext_prop->extPropData.color.xclrValue;			
+		}break;
+		//case 0x000B:	//diag color
+		//case 0x000C:	//diag color
+		case 0x000D:
+		{
+			font_color.enabled		= true;
+			font_color.icv			= ext_prop->extPropData.color.icv;
+			font_color.xclrType		= ext_prop->extPropData.color.xclrType;
+			font_color.nTintShade	= ext_prop->extPropData.color.nTintShade;
+			font_color.xclrValue	= ext_prop->extPropData.color.xclrValue;			
+		}break;
+		//case 0x0006:
+		//	extPropData.gradient_fill.toXML(own_tag);
+		//	break;
+		case 0x000E:
+		{
+			font_id		= ext_prop->extPropData.font_scheme;
+		}break;
+		case 0x000F:
+		{
+			cIndent		= ext_prop->extPropData.indent_level;
+		}break;
+	}
+}
+void StyleXF::Update(XFProps* xfProps)
+{
+	if (!xfProps) return;
+
+	std::wstringstream strm;
+	xfProps->serialize_fill(strm);
+	fill.ext = strm.str();
+}
 void StyleXF::RegisterFillBorder()
 {
-    for (int i = 0; i < ext_props.size(); i++ )
+    for (size_t i = 0; i < ext_props.size(); i++ )
 	{
 		ExtProp* ext_prop = dynamic_cast<ExtProp*>(ext_props[i].get());
+		Update (ext_prop);
+	}
 
-		switch(ext_prop->extType)
-		{
-			case 0x0004:
-			{
-				fill.foreFillInfo_.enabled		= true;
-				fill.foreFillInfo_.icv			= ext_prop->extPropData.color.icv;
-				fill.foreFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
-				fill.foreFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
-				fill.foreFillInfo_.xclrValue	= ext_prop->extPropData.color.xclrValue;
-			}break;
-			case 0x0005:
-			{
-				fill.backFillInfo_.enabled		= true;
-				fill.backFillInfo_.icv			= ext_prop->extPropData.color.icv;
-				fill.backFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
-				fill.backFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
-				fill.backFillInfo_.xclrValue	= ext_prop->extPropData.color.xclrValue;
-			}break;
-			case 0x0007:
-			{
-				border.topFillInfo_.enabled		= true;
-				border.topFillInfo_.icv			= ext_prop->extPropData.color.icv;
-				border.topFillInfo_.xclrType	= ext_prop->extPropData.color.xclrType;
-				border.topFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
-				border.topFillInfo_.xclrValue	= ext_prop->extPropData.color.xclrValue;			
-			}break;
-			case 0x0008:
-			{
-				border.bottomFillInfo_.enabled		= true;
-				border.bottomFillInfo_.icv			= ext_prop->extPropData.color.icv;
-				border.bottomFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
-				border.bottomFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
-				border.bottomFillInfo_.xclrValue	= ext_prop->extPropData.color.xclrValue;			
-			}break;
-			case 0x0009:
-			{
-				border.leftFillInfo_.enabled		= true;
-				border.leftFillInfo_.icv			= ext_prop->extPropData.color.icv;
-				border.leftFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
-				border.leftFillInfo_.nTintShade		= ext_prop->extPropData.color.nTintShade;
-				border.leftFillInfo_.xclrValue		= ext_prop->extPropData.color.xclrValue;			
-			}break;
-			case 0x000A:
-			{
-				border.rightFillInfo_.enabled		= true;
-				border.rightFillInfo_.icv			= ext_prop->extPropData.color.icv;
-				border.rightFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
-				border.rightFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
-				border.rightFillInfo_.xclrValue		= ext_prop->extPropData.color.xclrValue;			
-			}break;
-			//case 0x000B:	//diag color
-			//case 0x000C:	//diag color
-			case 0x000D:
-				font_color.enabled		= true;
-				font_color.icv			= ext_prop->extPropData.color.icv;
-				font_color.xclrType		= ext_prop->extPropData.color.xclrType;
-				font_color.nTintShade	= ext_prop->extPropData.color.nTintShade;
-				font_color.xclrValue	= ext_prop->extPropData.color.xclrValue;			
-				break;
-			//case 0x0006:
-			//	extPropData.gradient_fill.toXML(own_tag);
-			//	break;
-			case 0x000E:
-				font_id		= ext_prop->extPropData.font_scheme;
-				break;
-			case 0x000F:
-				cIndent		= ext_prop->extPropData.indent_level;
-				break;
-		}
-	}	
 	border_x_id	= m_GlobalWorkbookInfo->RegisterBorderId(border);
 	fill_x_id	= m_GlobalWorkbookInfo->RegisterFillId(fill);
 	

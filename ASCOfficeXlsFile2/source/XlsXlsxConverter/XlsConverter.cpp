@@ -200,6 +200,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 		{
 			std::list<std::string> listStream = cfile.storage_->entries("_SX_DB_CUR");
 
+			int last_index = 0;
 			for (std::list<std::string>::iterator it = listStream.begin(); it != listStream.end(); it++)
 			{
 				XLS::CFStreamCacheReader pivot_cache_reader(cfile.getNamedStream("_SX_DB_CUR/" + *it), xls_global_info);
@@ -208,16 +209,25 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 				XLS::BinReaderProcessor proc(pivot_cache_reader , pivot_cache.get() , true);
 				proc.mandatory(*pivot_cache.get());
 
-				int index = 0;
+				int index = -1;
 				try
 				{
-					index = atoi(it->c_str());
+					index = boost::lexical_cast<int>(it->c_str());
 				}
 				catch(...)
 				{
 				}
+				if (index < 0)
+				{
+					//может быть шестнадцатеричное 
+					index = XmlUtils::GetHex(*it);
+				}
+				if (index < 0)
+					index = last_index + 1;
 
 				xls_global_info->mapPivotCacheStream.insert(std::make_pair(index, pivot_cache));
+
+				last_index = index;
 			}
 		}
 		if (bMacros && cfile.storage_->isDirectory("_VBA_PROJECT_CUR"))
@@ -1947,7 +1957,6 @@ void XlsConverter::convert(XLS::PIVOTVIEW * pivot_view)
 
 	pivot_view->serialize(strm);
 
-
 	int index_view = xlsx_context->get_pivots_context().add_view(strm.str(), pivot_view->indexCache);
 	
 	if (index_view > 0)
@@ -1968,4 +1977,9 @@ void XlsConverter::convert(XLS::PIVOTCACHEDEFINITION * pivot_cached)
 	pivot_cached->serialize_records(strmR);
 
 	xlsx_context->get_pivots_context().add_cache(strmD.str(), strmR.str());
+	
+	if (!xls_global_info->mapPivotCacheExternal.empty())
+	{
+		xlsx_context->get_pivots_context().add_cache_external(xls_global_info->mapPivotCacheExternal);
+	}
 }

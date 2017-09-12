@@ -82,7 +82,7 @@ const bool SXOPER::loadContent(BinProcessor& proc)
 			bNumber = !bInteger;
 			node	= L"n";
 			if (bInteger)
-				value	= std::to_wstring((int)num->num.data.value);
+				value	= std::to_wstring((_INT64)num->num.data.value);
 			else
 				value	= boost::lexical_cast<std::wstring>(num->num.data.value);
 		}
@@ -97,9 +97,18 @@ const bool SXOPER::loadContent(BinProcessor& proc)
 	else if(proc.optional<SxErr>())
 	{
 		SxErr* err	= dynamic_cast<SxErr*>(elements_.back().get());
-		bNumber = true;
+		bString = true;
 		node	= L"e";
-		value	= std::to_wstring(err->wbe);
+		switch(err->wbe)
+		{
+			case 0x00:	value = L"NULL!";	break;
+			case 0x07:	value = L"#DIV/0!";	break;
+			case 0x0F:	value = L"#VALUE!";	break;
+			case 0x17:	value = L"#REF!";	break;
+			case 0x1D:	value = L"#NAME?";	break;
+			case 0x24:	value = L"#NUM!";	break;
+			case 0x2A:	value = L"#N/A";	break;
+		}
 	}
 	else if(proc.optional<SXString>())
 	{
@@ -140,6 +149,21 @@ int SXOPER::serialize(std::wostream & strm)
 			if (bFormula)
 			{
 				CP_XML_ATTR(L"f", 1);
+			}
+		}	
+	}
+	return 0;
+}
+
+int SXOPER::serialize_record(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(node)
+		{ 
+			if (!value.empty() || bString)
+			{
+				CP_XML_ATTR(L"v", value);
 			}
 		}	
 	}

@@ -103,8 +103,6 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 
 	global_info_->idPivotCache = streamId->idStm;
 
-	global_info_->mapPivotCacheIndex.insert(std::make_pair(global_info_->idPivotCache, global_info_->mapPivotCacheIndex.size()));
-
 	PIVOTCACHE* pivot_cache = dynamic_cast<PIVOTCACHE*>(pFind->second.get());
 	if (!pivot_cache) return 0;
 
@@ -113,7 +111,15 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 
 	if (!db || !db_ex)return 0;
 
-	bool bSql = false;
+	if (pivot_cache->m_arFDB.empty() && pivot_cache->m_arSXFORMULA.empty())
+	{
+		global_info_->mapPivotCacheStream.erase(pFind);
+		return 0;
+	}
+	global_info_->mapPivotCacheIndex.insert(std::make_pair(global_info_->idPivotCache, global_info_->mapPivotCacheIndex.size()));
+
+	SXSRC* src = dynamic_cast<SXSRC*>(m_SXSRC.get());
+	bool bSql = src ? src->bSql : false;
 
 	CP_XML_WRITER(strm)
 	{
@@ -122,27 +128,25 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
             CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 		
-			if (pivot_cache->m_arDBB.empty() == false)
+			if (pivot_cache->m_arDBB.empty() && bSql)
 			{
-				CP_XML_ATTR(L"r:id", L"rId1" );
+				CP_XML_ATTR(L"saveData", 0);
 			}
 			else 
 			{
-				CP_XML_ATTR(L"saveData", 0);
+				CP_XML_ATTR(L"r:id", L"rId1" );
 			}
 			CP_XML_ATTR(L"enableRefresh",	1);
 			CP_XML_ATTR(L"refreshedBy",		db->rgb.value());
 			CP_XML_ATTR(L"refreshedDate",	db_ex->numDate.data.value);
 			CP_XML_ATTR(L"recordCount",		db->crdbdb);
-			//upgradeOnRefresh="1"
-			SXSRC* src = dynamic_cast<SXSRC*>(m_SXSRC.get());
+
 			if (src)
 			{
-				bSql = src->bSql;
 				src->serialize(CP_XML_STREAM());
 			}
 			
-			if (pivot_cache->m_arFDB.empty() == false)
+			if (!pivot_cache->m_arFDB.empty())
 			{
 				CP_XML_NODE(L"cacheFields")
 				{
@@ -153,11 +157,11 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 						FDB *field = dynamic_cast<FDB *>(pivot_cache->m_arFDB[i].get());
 						if (!field) continue;
 
-						field->serialize(CP_XML_STREAM(), bSql);
+						field->serialize(CP_XML_STREAM(), bSql, !pivot_cache->m_arDBB.empty());
 					}
 				}
 			}
-			if (pivot_cache->m_arSXFORMULA.empty() == false)
+			if (!pivot_cache->m_arSXFORMULA.empty())
 			{
 				CP_XML_NODE(L"calculatedItems")
 				{
@@ -186,7 +190,10 @@ int PIVOTCACHEDEFINITION::serialize_records(std::wostream & strm)
 	PIVOTCACHE* pivot_cache = dynamic_cast<PIVOTCACHE*>(pFind->second.get());
 	if (!pivot_cache) return 0;
 
-	if (pivot_cache->m_arDBB.empty()) return 0;
+	SXSRC* src = dynamic_cast<SXSRC*>(m_SXSRC.get());
+	bool bSql = src ? src->bSql : false;
+
+	if (pivot_cache->m_arDBB.empty() && bSql) return 0;
 
 	CP_XML_WRITER(strm)
 	{
@@ -195,11 +202,22 @@ int PIVOTCACHEDEFINITION::serialize_records(std::wostream & strm)
 			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
             CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 		
-			CP_XML_ATTR(L"count", pivot_cache->m_arDBB.size());
-
-			for (size_t i = 0; i < pivot_cache->m_arDBB.size(); i++)
+			if (!pivot_cache->m_arDBB.empty())
 			{
-				pivot_cache->m_arDBB[i]->serialize(CP_XML_STREAM());
+				CP_XML_ATTR(L"count", pivot_cache->m_arDBB.size());
+				for (size_t i = 0; i < pivot_cache->m_arDBB.size(); i++)
+				{
+					pivot_cache->m_arDBB[i]->serialize(CP_XML_STREAM());
+				}
+			}
+			else
+			{
+				CP_XML_ATTR(L"count", pivot_cache->m_arFDB.size());
+				for (size_t i = 0; i < pivot_cache->m_arFDB.size(); i++)
+				{
+					FDB* fdb = dynamic_cast<FDB*>(pivot_cache->m_arFDB[i].get());
+					fdb->serialize_record(CP_XML_STREAM());
+				}
 			}
 		}
 	}

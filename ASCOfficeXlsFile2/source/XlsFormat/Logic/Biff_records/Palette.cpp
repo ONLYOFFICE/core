@@ -103,7 +103,7 @@ int Palette::serialize(std::wostream & stream)
 				}
 			}
 
-			for(int i = 0; i < rgColor.size(); ++i)
+			for(size_t i = 0; i < rgColor.size(); ++i)
 			{		
 				LongRGB * rgb = dynamic_cast<LongRGB *>(rgColor[i].get());
 				CP_XML_NODE(L"rgbColor")

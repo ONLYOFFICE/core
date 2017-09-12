@@ -53,15 +53,17 @@ BaseObjectPtr SXTH::clone()
 void SXTH::readFields(CFRecord& record)
 {
 	_UINT32 flags1;
-	unsigned short flags2;
+	unsigned short flags2, reserved;
 
-	record >> frtHeaderOld >> flags1 >> sxaxis >> isxvd >> csxvdXl >> flags2;
+	record >> frtHeaderOld >> flags1 >> sxaxis >> reserved >> isxvd >> csxvdXl >> flags2;
 
 	record >> stUnique >> stDisplay >> stDefault >> stAll >> stDimension;
 
 	record >> cisxvd;
 	for (int i = 0; i < cisxvd; i++)
 	{
+		if (record.getRdPtr() + 4 > record.getDataSize())
+			break;
 		_INT32 val;
 		record >> val;
 		rgisxvd.push_back(val);

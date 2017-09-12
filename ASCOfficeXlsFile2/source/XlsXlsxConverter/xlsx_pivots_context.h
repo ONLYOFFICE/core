@@ -31,6 +31,7 @@
  */
 #pragma once
 #include "oox_package.h"
+#include <unordered_map>
 
 namespace oox {
 
@@ -47,6 +48,8 @@ public:
 	int get_view_count();
 
 	void add_cache(std::wstring definitions, std::wstring records);
+	void add_cache_external(std::unordered_map<std::wstring, std::wstring> &externals);
+
 	int get_cache_count();
 
 	void write_cache_definitions_to	(int index, std::wostream & strm);

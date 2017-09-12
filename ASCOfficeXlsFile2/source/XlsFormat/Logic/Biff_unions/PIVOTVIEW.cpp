@@ -113,12 +113,16 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 
 	SXEx *view_ex = pivot_ex ? dynamic_cast<SXEx*>(pivot_ex->m_SXEx.get()) : NULL;
     SXViewEx9 *view_ex9 = pivot_ex ? dynamic_cast<SXViewEx9*>(frt9->m_SXViewEx9.get()) : NULL;
-    SXAddl_SXCView_SXDVer10Info *view_ex10 = addls ? dynamic_cast<SXAddl_SXCView_SXDVer10Info*>(addls->m_SXAddl_SXCView_SXDTableStyleClient.get()) : NULL;
-    SXAddl_SXCView_SXDVer12Info *view_ex12 = addls ? dynamic_cast<SXAddl_SXCView_SXDVer12Info*>(addls->m_SXAddl_SXCView_SXDTableStyleClient.get()) : NULL;
+    SXAddl_SXCView_SXDVer10Info *view_ex10 = addls ? dynamic_cast<SXAddl_SXCView_SXDVer10Info*>(addls->m_SXAddl_SXCView_SXDVer10Info.get()) : NULL;
+    SXAddl_SXCView_SXDVer12Info *view_ex12 = addls ? dynamic_cast<SXAddl_SXCView_SXDVer12Info*>(addls->m_SXAddl_SXCView_SXDVer12Info.get()) : NULL;
 
 	indexStream = global_info_->arPivotCacheStream[view->iCache];
 
 	std::map<int, int>::iterator pFindIndex = global_info_->mapPivotCacheIndex.find(indexStream);
+
+	if (pFindIndex == global_info_->mapPivotCacheIndex.end())
+		return 0;
+
 	indexCache = pFindIndex->second;
 
 	CP_XML_WRITER(strm)
@@ -162,7 +166,7 @@ int PIVOTVIEW::serialize(std::wostream & strm)
                 CP_XML_ATTR(L"compact",				view_ex12->fCompactData);
                 CP_XML_ATTR(L"compactData",			view_ex12->fCompactData);
 
-                CP_XML_ATTR(L"gridDropZones",		view_ex12->fNewDropZones);
+                CP_XML_ATTR(L"gridDropZones",		!view_ex12->fNewDropZones);
                 CP_XML_ATTR(L"showDrill",           !view_ex12->fHideDrillIndicators);
                 CP_XML_ATTR(L"printDrill",          view_ex12->fPrintDrillIndicators);
             }
@@ -190,51 +194,59 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 					CP_XML_ATTR(L"colPageCount", 1);
 				}
 			}
-			CP_XML_NODE(L"pivotFields")
+			if (!core->m_arPIVOTVD.empty())
 			{
-				CP_XML_ATTR(L"count", view->cDim);//Sxvd 
-				for (size_t i = 0; i <  core->m_arPIVOTVD.size(); i++)
+				CP_XML_NODE(L"pivotFields")
 				{
-					core->m_arPIVOTVD[i]->serialize(CP_XML_STREAM());
+					CP_XML_ATTR(L"count", view->cDim);//Sxvd 
+					for (size_t i = 0; i <  core->m_arPIVOTVD.size(); i++)
+					{
+						core->m_arPIVOTVD[i]->serialize(CP_XML_STREAM());
+					}
 				}
 			}
-			if (core->m_arPIVOTIVD.size() >= 1)
+			int index_ivd = 0;
+			int index_tli = 0;
+
+			if (view->cDimRw > 0 && index_ivd < core->m_arPIVOTIVD.size())
 			{
 				CP_XML_NODE(L"rowFields")
 				{
 					CP_XML_ATTR(L"count", view->cDimRw);
 
-					PIVOTIVD* ivd = dynamic_cast<PIVOTIVD*>(core->m_arPIVOTIVD[0].get());
+					PIVOTIVD* ivd = dynamic_cast<PIVOTIVD*>(core->m_arPIVOTIVD[index_ivd].get());
 					ivd->serialize(CP_XML_STREAM());
+					index_ivd++;
 				}
 			}
-			if (core->m_arPIVOTLI.size() >= 1)//0 or 2
+			if (view->cRw > 0 && index_tli < core->m_arPIVOTLI.size())
 			{
 				CP_XML_NODE(L"rowItems")
 				{
 					CP_XML_ATTR(L"count", view->cRw);
 					
-					PIVOTLI* line = dynamic_cast<PIVOTLI*>(core->m_arPIVOTLI[0].get());
+					PIVOTLI* line = dynamic_cast<PIVOTLI*>(core->m_arPIVOTLI[index_tli].get());
 					line->serialize(CP_XML_STREAM());
+					index_tli++;
 				}
 			}
-			if (core->m_arPIVOTIVD.size() == 2)//0 or 2
+			if (view->cDimCol > 0 && index_ivd < core->m_arPIVOTIVD.size())
 			{
 				CP_XML_NODE(L"colFields")
 				{
 					CP_XML_ATTR(L"count", view->cDimCol);
 					
-					PIVOTIVD* ivd = dynamic_cast<PIVOTIVD*>(core->m_arPIVOTIVD[1].get());
+					PIVOTIVD* ivd = dynamic_cast<PIVOTIVD*>(core->m_arPIVOTIVD[index_ivd].get());
 					ivd->serialize(CP_XML_STREAM());
 				}
 			}
-			if (core->m_arPIVOTLI.size() == 2)//0 or 2
+			if (view->cCol > 0 && index_tli < core->m_arPIVOTLI.size())
 			{
 				CP_XML_NODE(L"colItems")
 				{
 					CP_XML_ATTR(L"count", view->cCol);
 					
-					PIVOTLI* line = dynamic_cast<PIVOTLI*>(core->m_arPIVOTLI[1].get());
+					PIVOTLI* line = dynamic_cast<PIVOTLI*>(core->m_arPIVOTLI[index_tli].get());
 					line->serialize(CP_XML_STREAM());
 				}
 			}
@@ -247,7 +259,7 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 					core->m_PIVOTPI->serialize(CP_XML_STREAM());
 				}
 			}
-			if (core->m_arSXDI.empty() == false)
+			if (!core->m_arSXDI.empty())
 			{
 				CP_XML_NODE(L"dataFields")
 				{

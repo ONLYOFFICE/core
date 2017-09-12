@@ -115,28 +115,45 @@ const bool XFS::loadContent(BinProcessor& proc)
 			count--;
 		}
 	}
-//------------------------------------------------------------------------------------
+	return true;
+}
+void XFS::RegisterFillBorder()
+{
 	int first_xf_ext = 0;
 
-	for (_UINT16 i = 0 ; i < m_arCellStyles.size(); i++)
+	for (size_t i = 0 ; i < m_arCellStyles.size(); i++)
 	{
-		XF		*xfs = dynamic_cast<XF*>(m_arCellStyles[i].get());
+		XF *xfs = dynamic_cast<XF*>(m_arCellStyles[i].get());
 
+		for (size_t j = first_xf_ext ; j < m_arXFext.size(); j++)
+		{
+			XFExt *ext = dynamic_cast<XFExt*>(m_arXFext[j].get());
+			if (ext->ixfe > i)
+				break;
+
+			if (ext->ixfe == xfs->ind_xf)
+			{
+				xfs->style.ext_props = ext->rgExt;
+				first_xf_ext	= j + 1;
+				break;
+			}
+		}
 		xfs->style.RegisterFillBorder();
 
 	}
 	first_xf_ext = 0;
 	
-    for (int i = 0 ; i < m_arCellXFs.size(); i++)
+    for (size_t i = 0 ; i < m_arCellXFs.size(); i++)
 	{
-		XF		*xfs = dynamic_cast<XF*>(m_arCellXFs[i].get());
+		XF *xfs = dynamic_cast<XF*>(m_arCellXFs[i].get());
 
-		if (m_arXFext.size() > 0 && xfs->cell.fHasXFExt)
+		if (!m_arXFext.empty() && xfs->cell.fHasXFExt)
 		{
-			for (_UINT16 j = first_xf_ext ; j < m_arXFext.size(); j++)
+			for (size_t j = first_xf_ext ; j < m_arXFext.size(); j++)
 			{
 				XFExt *ext = dynamic_cast<XFExt*>(m_arXFext[j].get());
-				if (ext->ixfe > i)break;
+				if (ext->ixfe > i)
+					break;
 
 				if (ext->ixfe == xfs->ind_xf)
 				{
@@ -148,8 +165,6 @@ const bool XFS::loadContent(BinProcessor& proc)
 		}		
 		xfs->cell.RegisterFillBorder();
 	}
-
-	return true;
 }
 int XFS::serialize(std::wostream & stream)
 {
@@ -158,7 +173,7 @@ int XFS::serialize(std::wostream & stream)
 		CP_XML_NODE(L"cellStyleXfs")
 		{
 			CP_XML_ATTR(L"count", m_arCellStyles.size());
-            for (int i = 0; i < m_arCellStyles.size(); i++)
+            for (size_t i = 0; i < m_arCellStyles.size(); i++)
 			{
 				m_arCellStyles[i]->serialize(CP_XML_STREAM());
 			}
@@ -166,7 +181,7 @@ int XFS::serialize(std::wostream & stream)
 		CP_XML_NODE(L"cellXfs")
 		{
 			CP_XML_ATTR(L"count", m_arCellXFs.size());
-            for (int i = 0; i < m_arCellXFs.size(); i++)
+            for (size_t i = 0; i < m_arCellXFs.size(); i++)
 			{
 				m_arCellXFs[i]->serialize(CP_XML_STREAM());
 			}

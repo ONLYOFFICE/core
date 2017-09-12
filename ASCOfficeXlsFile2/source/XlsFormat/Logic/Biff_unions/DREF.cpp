@@ -31,9 +31,9 @@
  */
 
 #include "DREF.h"
-#include <Logic/Biff_records/DConName.h>
-#include <Logic/Biff_records/DConBin.h>
-#include <Logic/Biff_records/DConRef.h>
+#include "../Biff_records/DConName.h"
+#include "../Biff_records/DConBin.h"
+#include "../Biff_records/DConRef.h"
 
 namespace XLS
 {
@@ -116,11 +116,18 @@ int DREF::serialize(std::wostream & strm)
 			}
 			else if(ref)
 			{
+				ref->check_external();
+
 				CP_XML_ATTR(L"type", L"worksheet");
 				CP_XML_NODE(L"worksheetSource")
 				{
 					CP_XML_ATTR(L"ref", ref->ref.toString());
-					CP_XML_ATTR(L"sheet", ref->stFile);
+					CP_XML_ATTR(L"sheet", ref->sheet_name);
+
+					if (ref->index_external >= 0)
+					{
+						CP_XML_ATTR(L"r:id", L"extId" + std::to_wstring(ref->index_external + 1));
+					}
 				}
 			}
 		}

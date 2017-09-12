@@ -42,15 +42,15 @@ int main(int argc, char *argv[])
 
 #if 1
     std::wstring strXml = L"<Settings>\
-<SrcFileType>0</SrcFileType>\
-<DstFileType>3</DstFileType>\
-<SrcFilePath>D:\\DE_CAD4</SrcFilePath>\
-<DstFilePath>D:\\DE_CAD4\\EditorWithChanges.bin</DstFilePath>\
+<SrcFileType>1</SrcFileType>\
+<DstFileType>1</DstFileType>\
+<SrcFilePath>D:\\source</SrcFilePath>\
+<DstFilePath>D:\\source\\EditorWithChanges.bin</DstFilePath>\
 <FontsDirectory>D:\\activex\\AVS\\Sources\\TeamlabOffice\\trunk\\ServerComponents\\DesktopEditor\\ChromiumBasedEditors2\\app\\test\\src\\build\\win64\\Debug\\Local\\converter\\fonts\\</FontsDirectory>\
-<ImagesDirectory>D:\\DE_CAD4\\media</ImagesDirectory>\
+<ImagesDirectory>D:\\source\\media</ImagesDirectory>\
 <ThemesDirectory>D:\\activex\\AVS\\Sources\\TeamlabOffice\\trunk\\ServerComponents\\Test\\Applications\\TestAVSOfficeDocxFile2\\TestAVSOfficeDocxFile2\\bin\\x86\\presentationthemes</ThemesDirectory>\
 <Changes TopItem=\"-1\">\
-<Change>D:\\DE_CAD4\\changes\\changes0.json</Change>\
+<Change>D:\\source\\changes\\changes0.json</Change>\
 </Changes>\
 </Settings>";
 

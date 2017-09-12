@@ -76,6 +76,7 @@ public:
     {
         m_sTmpFolder = m_sWorkerFolder + L"/nativeZip";
         COfficeUtils oUtils;
+        NSDirectory::CreateDirectory(m_sTmpFolder);
         if (S_OK != oUtils.ExtractToDirectory(sFile, m_sTmpFolder, NULL, 0))
             return false;
 
@@ -102,6 +103,7 @@ public:
         m_sTmpFolder = m_sWorkerFolder + L"/nativeZip";
 
         COfficeUtils oUtils;
+        NSDirectory::CreateDirectory(m_sTmpFolder);
         if (S_OK != oUtils.ExtractToDirectory(sTmpFile, m_sTmpFolder, NULL, 0))
         {
             NSFile::CFileBinary::Remove(sTmpFile);

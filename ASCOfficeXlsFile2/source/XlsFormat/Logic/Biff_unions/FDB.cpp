@@ -227,7 +227,7 @@ int FDB::serialize(std::wostream & strm, bool bSql, bool bDBB)
 					Formula->serialize_attr(CP_GET_XML_NODE());
 			}
 
-			if (!m_arSRCSXOPER.empty() && (bDBB || (!bDBB && bSql)) )
+			if (!m_arSRCSXOPER.empty() && (bDBB || (!bDBB && bSql) || !m_arGRPSXOPER.empty()) )
 			{
 				CP_XML_NODE(L"sharedItems")
 				{
@@ -320,7 +320,7 @@ int FDB::serialize(std::wostream & strm, bool bSql, bool bDBB)
 				}
 			}
 
-			if (m_arGRPSXOPER.empty() == false)
+			if (!m_arGRPSXOPER.empty())
 			{
 				CP_XML_NODE(L"fieldGroup")
 				{

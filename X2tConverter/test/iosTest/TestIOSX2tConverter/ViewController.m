@@ -114,6 +114,7 @@
         
         X2tConverter* conv = [[X2tConverter alloc]init];
         conv.password = @"555";
+        conv.isNoBase64 = YES;
         if ((int)AVS_FILEUTILS_ERROR_CONVERT_PASSWORD == [conv sdk_xlsx2xlst_bin:fullFileName nsTo:fullFileNameTo nsTemp:tempDir nsFontPath:fontsPath]) {
             NSLog(@"Error password : %@",conv.password);
         }

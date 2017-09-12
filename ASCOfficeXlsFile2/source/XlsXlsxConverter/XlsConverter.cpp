@@ -209,21 +209,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 				XLS::BinReaderProcessor proc(pivot_cache_reader , pivot_cache.get() , true);
 				proc.mandatory(*pivot_cache.get());
 
-				int index = -1;
-				try
-				{
-					index = boost::lexical_cast<int>(it->c_str());
-				}
-				catch(...)
-				{
-				}
-				if (index < 0)
-				{
-					//может быть шестнадцатеричное 
-					index = XmlUtils::GetHex(*it);
-				}
-				if (index < 0)
-					index = last_index + 1;
+				int index = XmlUtils::GetHex(*it);
 
 				xls_global_info->mapPivotCacheStream.insert(std::make_pair(index, pivot_cache));
 

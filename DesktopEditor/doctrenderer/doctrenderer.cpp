@@ -730,11 +730,22 @@ namespace NSDoctRenderer
                         CChangesWorker oWorkerLoader;
                         int nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
 
-                        v8::Handle<v8::Value> args_open[2];
+                        v8::Handle<v8::Value> args_open[3];
                         args_open[0] = oWorkerLoader.GetDataFull();
                         args_open[1] = v8::Integer::New(isolate, nVersion);
 
-                        func_open->Call(global_js, 2, args_open);
+                        std::wstring sXlsx = NSCommon::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
+                        if (NSFile::CFileBinary::Exists(sXlsx))
+                        {
+                            std::string sXlsxA = U_TO_UTF8(sXlsx);
+                            args_open[2] = v8::String::NewFromUtf8(isolate, (char*)(sXlsxA.c_str()));
+                        }
+                        else
+                        {
+                            args_open[2] = v8::Undefined(isolate);
+                        }
+
+                        func_open->Call(global_js, 3, args_open);
 
                         if (try_catch.HasCaught())
                         {

@@ -62,6 +62,7 @@ void DXFNum::load(CFRecord& record)
 int DXFNum::serialize(std::wostream & stream)
 {
 	if (!parent) return 0;
+	if (fmt_id.ifmt == 0) return 0;
 
 	CP_XML_WRITER(stream)    
     {

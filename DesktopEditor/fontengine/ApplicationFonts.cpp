@@ -709,6 +709,44 @@ void CFontInfo::ToBuffer(BYTE*& pBuffer, std::wstring strDirectory, bool bIsOnly
     pBuffer += sizeof(SHORT);
 }
 
+#ifdef BUILD_FONT_NAMES_DICTIONARY
+#include "ftsnames.h"
+#include "tttables.h"
+#include "ftxf86.h"
+#include "internal/internal.h"
+#include "internal/tttypes.h"
+
+void CFontInfo::ReadNames(FT_Face pFace)
+{
+    TT_Face pTT_Face = (TT_Face)(pFace);
+
+    names.clear();
+    if (NULL != pTT_Face)
+    {
+        for (int i = 0; i < pTT_Face->utf16_len; ++i)
+        {
+            std::wstring s(pTT_Face->utf16_names[i]);
+
+            if (s == m_wsFontName)
+                continue;
+
+            bool bIsPresent = false;
+            for (std::vector<std::wstring>::iterator i = names.begin(); i != names.end(); i++)
+            {
+                if (*i == s)
+                {
+                    bIsPresent = true;
+                    break;
+                }
+            }
+
+            if (!bIsPresent)
+                names.push_back(s);
+        }
+    }
+}
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////////
 namespace NSCharsets
 {
@@ -1583,6 +1621,10 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
 				shXHeight, 
 				shCapHeight );
 
+#ifdef BUILD_FONT_NAMES_DICTIONARY
+            pFontInfo->ReadNames(pFace);
+#endif
+
 			Add(pFontInfo);
 
 			FT_Done_Face( pFace );
@@ -1642,6 +1684,7 @@ void CFontList::Add(CFontInfo* pInfo)
 			return;
 		}
 	}
+
 	m_pList.Add(pInfo);
 }
 

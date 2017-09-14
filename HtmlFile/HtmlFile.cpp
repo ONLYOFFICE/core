@@ -35,6 +35,7 @@
 #include "../DesktopEditor/common/StringBuilder.h"
 #include "../DesktopEditor/common/String.h"
 #include "../DesktopEditor/xml/include/xmlutils.h"
+#include "../DesktopEditor/fontengine/application_generate_fonts_common.h"
 
 #include <vector>
 #include <map>
@@ -242,10 +243,30 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
 
     oBuilder.WriteString(L"</destination>");
 
+    std::vector<std::wstring> arTmpFiles;
     for (std::vector<std::wstring>::const_iterator iter = arFiles.begin(); iter != arFiles.end(); iter++)
     {
         oBuilder.WriteString(L"<file>");
-        oBuilder.WriteEncodeXmlString(CorrectHtmlPath(*iter));
+
+        std::wstring sFilePath = *iter;
+        std::wstring sExt = NSCommon::GetFileExtention(sFilePath);
+        NSCommon::makeUpperW(sExt);
+
+        if (sExt == L"HTML" || sExt == L"HTM")
+            oBuilder.WriteEncodeXmlString(CorrectHtmlPath(sFilePath));
+        else
+        {
+            std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSDirectory::GetTempPath(), L"HTM");
+            if (NSFile::CFileBinary::Exists(sTmpFile))
+                NSFile::CFileBinary::Remove(sTmpFile);
+
+            sTmpFile = sTmpFile + L".html";
+
+            NSFile::CFileBinary::Copy(sFilePath, sTmpFile);
+            oBuilder.WriteEncodeXmlString(CorrectHtmlPath(sTmpFile));
+            arTmpFiles.push_back(sTmpFile);
+        }
+
         oBuilder.WriteString(L"</file>");
     }
 
@@ -410,6 +431,12 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
         break;
     }
 #endif
+
+    for (std::vector<std::wstring>::iterator i = arTmpFiles.begin(); i != arTmpFiles.end(); i++)
+    {
+        NSFile::CFileBinary::Remove(*i);
+    }
+    arTmpFiles.clear();
 
     NSFile::CFileBinary::Remove(sTempFileForParams);
     return nReturnCode;

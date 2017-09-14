@@ -52,36 +52,57 @@
 {
     [super viewDidLoad];
     
-    //[self testDOCX];
+    [self testDOCX];
     [self testXLSX];
 }
 
 - (void)testDOCX
 {
-    NSLog(@"==================== OPEN DOCX ====================");
+    {
+        NSLog(@"==================== OPEN DOCX ====================");
+        
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"docx"];
+        
+        NSString* fullFileName = path;
+        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@demo.bin", NSTemporaryDirectory()];
+        NSString* tempDir = NSTemporaryDirectory();
+        NSString* fontsPath = @"/System/Library/Fonts";
+        
+        X2tConverter* conv = [[X2tConverter alloc]init];
+        conv.isNoBase64 = YES;
+        [conv sdk_docx2doct_bin:fullFileName nsTo:fullFileNameTo nsTemp:tempDir nsFontPath:fontsPath];
+        
+        NSLog(@"doct output : %@", fullFileNameTo);
+    }
     
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"docx"];
-    
-    NSString* fullFileName = path;
-    NSString* fullFileNameTo = [NSString stringWithFormat:@"%@demo.bin", NSTemporaryDirectory()];
-    NSString* tempDir = NSTemporaryDirectory();
-    NSString* fontsPath = @"/System/Library/Fonts";
-    
-    X2tConverter* conv = [[X2tConverter alloc]init];
-    [conv sdk_docx2doct_bin:fullFileName nsTo:fullFileNameTo nsTemp:tempDir nsFontPath:fontsPath];
-    
-    NSLog(@"%@",fullFileNameTo);
-    
-    NSString* docxOut = [NSString stringWithFormat:@"%@document.docx", NSTemporaryDirectory()];
-    NSString* outTemp = [NSString stringWithFormat:@"%@OUT_TEMP", NSTemporaryDirectory()];
-    
-    [self createDirectory:outTemp];
-    [self clearDirectory:outTemp];
-    
-    X2tConverter* conv2 = [[X2tConverter alloc]init];
-    [conv2 sdk_doct_bin2docx:fullFileNameTo nsTo:docxOut nsTemp:outTemp nsFontPath:fontsPath fromChanges:@(NO) nsThemeDir:@""];
-    
-    NSLog(@"doct output: %@",fullFileNameTo);
+    {
+        NSLog(@"==================== OPEN DOCT ====================");
+        
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"demo" ofType:@"docx"];
+        
+        NSString* fullFileName = path;
+        NSString* fullFileNameTo = [NSString stringWithFormat:@"%@demo.bin", NSTemporaryDirectory()];
+        NSString* tempDir = NSTemporaryDirectory();
+        NSString* fontsPath = @"/System/Library/Fonts";
+        
+        X2tConverter* conv = [[X2tConverter alloc]init];
+        conv.isNoBase64 = YES;
+        [conv sdk_docx2doct_bin:fullFileName nsTo:fullFileNameTo nsTemp:tempDir nsFontPath:fontsPath];
+        
+        NSLog(@"%@",fullFileNameTo);
+        
+        NSString* docxOut = [NSString stringWithFormat:@"%@document.docx", NSTemporaryDirectory()];
+        NSString* outTemp = [NSString stringWithFormat:@"%@OUT_TEMP", NSTemporaryDirectory()];
+        
+        [self createDirectory:outTemp];
+        [self clearDirectory:outTemp];
+        
+        X2tConverter* conv2 = [[X2tConverter alloc]init];
+        conv.isNoBase64 = YES;
+        [conv2 sdk_doct_bin2docx:fullFileNameTo nsTo:docxOut nsTemp:outTemp nsFontPath:fontsPath fromChanges:@(NO) nsThemeDir:@""];
+        
+        NSLog(@"doct output: %@",fullFileNameTo);
+    }
 }
 
 - (void)testXLSX
@@ -97,6 +118,7 @@
         NSString* fontsPath = @"/System/Library/Fonts";
         
         X2tConverter* conv = [[X2tConverter alloc]init];
+        conv.isNoBase64 = YES;
         [conv sdk_xlsx2xlst_bin:fullFileName nsTo:fullFileNameTo nsTemp:tempDir nsFontPath:fontsPath];
         
         NSLog(@"xlst output : %@", fullFileNameTo);

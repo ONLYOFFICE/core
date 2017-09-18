@@ -252,7 +252,7 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
         std::wstring sExt = NSCommon::GetFileExtention(sFilePath);
         NSCommon::makeUpperW(sExt);
 
-        if (sExt == L"HTML" || sExt == L"HTM")
+        if (sExt == L"HTML" || sExt == L"HTM" || sExt == L"XHTML")
             oBuilder.WriteEncodeXmlString(CorrectHtmlPath(sFilePath));
         else
         {

@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of Scatter record in BIFF8
 class Scatter: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Scatter)
@@ -48,7 +46,6 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeScatter;

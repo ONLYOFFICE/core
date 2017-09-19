@@ -149,7 +149,14 @@ namespace DocFileFormat
 							point.y = guides[index].param3;
 						}
 					}
-
+					if ((size_t)point.y > 0xffff)
+					{
+						point.y &= 0xffff;
+					}
+					if ((size_t)point.x > 0xffff)
+					{
+						point.x &= 0xffff;
+					}
 					m_arPoints.push_back(point);
 				}
 			}

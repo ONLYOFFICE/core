@@ -35,10 +35,14 @@
 #include "../CPSharedPtr.h"
 #include "../CPScopedPtr.h"
 
-
 struct ProgressCallback;
 
 namespace cpdoccore { 
+
+namespace xml
+{
+    class sax;
+}
 
 namespace oox {
 	class docx_conversion_context;
@@ -54,9 +58,10 @@ class odf_document
 {
 public:
     odf_document(const std::wstring & Folder, const ProgressCallback* CallBack);
-    ~odf_document();
+	odf_document(xml::sax * Reader);
+	
+	~odf_document();
 
-public:
     odf_read_context & odf_context();
     
 	bool docx_convert(oox::docx_conversion_context & Context);
@@ -77,6 +82,7 @@ private:
     _CP_SCOPED_PTR(Impl) impl_;
             
 };
+typedef shared_ptr<odf_document>::Type odf_document_ptr;
 
 }
 }

@@ -86,7 +86,8 @@ const std::wstring color::get_hex_value() const
     {
         boost::algorithm::trim(tmp);
         boost::algorithm::trim_left_if(tmp, boost::algorithm::is_any_of("#"));     
-        return tmp;
+
+        return XmlUtils::GetUpper(tmp);
     }
     else if (tmp.size() == 6)
     {
@@ -96,7 +97,7 @@ const std::wstring color::get_hex_value() const
             unsigned int t = 0;
             if ((s << tmp) && (s >> std::hex >> t) && (s >> std::ws).eof())
             {
-                return tmp;
+                return XmlUtils::GetUpper(tmp);
             }
         }
         catch(...)

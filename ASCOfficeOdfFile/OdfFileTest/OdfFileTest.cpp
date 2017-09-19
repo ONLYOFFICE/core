@@ -34,9 +34,11 @@
 #include <stdio.h>
 #include <tchar.h>
 
+#include "../../Common/OfficeFileFormatChecker.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../../DesktopEditor/common/Directory.h"
 #include "../src/ConvertOO2OOX.h"
+#include "../include/logging.h"
 
 
 #if defined(_WIN64)
@@ -45,30 +47,55 @@
 	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
 #endif
 
-
-
-int _tmain(int argc, _TCHAR* argv[])
+HRESULT convert_single(std::wstring srcFileName)
 {
-	if (argc < 2) return 1;
-	
 	HRESULT hr = S_OK;
-//////////////////////////////////////////////////////////////////////////
-	std::wstring srcFileName	= argv[1];
-	std::wstring dstPath		= argc > 2 ? argv[2] : srcFileName + L"-my.docx"; //xlsx pptx docx
+
+	COfficeFileFormatChecker fileChecker(srcFileName);
+
+	std::wstring dstPath = srcFileName;// + ; //xlsx pptx docx
+	switch(fileChecker.nFileType)
+	{
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT:
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT_FLAT:		dstPath += L"-my.docx"; break;
+	
+	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS:
+	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS_FLAT:	dstPath += L"-my.xlsx"; break;
+	
+	case AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP:
+	case AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP_FLAT:	dstPath += L"-my.pptx"; break;
+
+	default:
+		return S_FALSE;
+	}
+//---------------------------------------------------------------------------------------------------
+	COfficeUtils oCOfficeUtils(NULL);
 	
 	std::wstring outputDir		= NSDirectory::GetFolderPath(dstPath);
-	
-	std::wstring srcTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
+	std::wstring srcTempPath;
 
-    // распаковываем исходник во временную директорию
-	COfficeUtils oCOfficeUtils(NULL);
-    if (S_OK != oCOfficeUtils.ExtractToDirectory(srcFileName.c_str(), srcTempPath.c_str(), NULL, 0))
-		return S_FALSE;
+	if (fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT		||
+		fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS	||
+		fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP)
+	{		
+		srcTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
+		if (S_OK != oCOfficeUtils.ExtractToDirectory(srcFileName.c_str(), srcTempPath.c_str(), NULL, 0))
+			return S_FALSE;
+	}
+	else // flat
+	{
+		srcTempPath = srcFileName;
+	}
+    _CP_LOG << L"[info] " << srcFileName << std::endl;
+	
 	hr = ConvertOO2OOX(srcTempPath, dstTempPath, L"C:\\Windows\\Fonts", false, NULL);
 
-	NSDirectory::DeleteDirectory(srcTempPath);
+	if (srcTempPath != srcFileName)
+	{
+		NSDirectory::DeleteDirectory(srcTempPath);
+	}
 
 	if (hr != S_OK)  return hr;
    
@@ -77,6 +104,35 @@ int _tmain(int argc, _TCHAR* argv[])
 	
 	NSDirectory::DeleteDirectory(dstTempPath);
 
-////////////////////////////////////////////////////////////////////////
-	return 0;
+	return hr;
+}
+
+HRESULT convert_directory(std::wstring pathName)
+{
+	HRESULT hr = S_OK;
+
+	std::vector<std::wstring> arFiles = NSDirectory::GetFiles(pathName, false);
+
+	for (size_t i = 0; i < arFiles.size(); i++)
+	{
+		convert_single(arFiles[i]);
+	}
+	return S_OK;
+}
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+	if (argc < 2) return 1;
+
+	HRESULT hr = -1;
+	if (NSFile::CFileBinary::Exists(argv[1]))
+	{	
+		hr = convert_single(argv[1]);
+	}
+	else if (NSDirectory::Exists(argv[1]))
+	{
+		hr = convert_directory(argv[1]);
+	}
+
+	return hr;
 }

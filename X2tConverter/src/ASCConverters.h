@@ -149,7 +149,12 @@ namespace NExtractTools
     int odf2oot         (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
     int odf2oot_bin     (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 
-    int docx2odt        (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+    int odf_flat2oox	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+    int odf_flat2oox_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+    int odf_flat2oot	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+    int odf_flat2oot_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+
+	int docx2odt        (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
     int docx_dir2odt    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
     int xlsx2ods        (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
     int xlsx_dir2ods    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);

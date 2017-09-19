@@ -394,6 +394,7 @@ void xlsx_table_state::serialize_table_format (std::wostream & strm)
 		{
 			CP_XML_NODE(L"dimension")
 			{
+				if (current_table_column_ < 0) current_table_column_ = columns_count_;
 				std::wstring ref2 = getCellAddress( current_table_column_, current_table_row_);
 				CP_XML_ATTR(L"ref", L"A1:" + ref2);
 			}
@@ -433,10 +434,10 @@ void xlsx_table_state::serialize_table_format (std::wostream & strm)
 					{
 						CP_XML_NODE(L"selection")
 						{	
-							CP_XML_ATTR(L"sqref",			getCellAddress(col, row));			
-							CP_XML_ATTR(L"activeCellId",	0);			
 							CP_XML_ATTR(L"activeCell",		getCellAddress(col, row));			
+							CP_XML_ATTR(L"activeCellId",	0);			
 							CP_XML_ATTR(L"pane",			L"topLeft");			
+							CP_XML_ATTR(L"sqref",			getCellAddress(col, row));			
 						}
 						
 					}

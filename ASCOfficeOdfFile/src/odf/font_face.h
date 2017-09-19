@@ -58,7 +58,6 @@ public:
     
 	odf_types::common_xlink_attlist common_xlink_attlist_;
 };
-
 //  svg:font-face-uri
 class svg_font_face_uri : public office_element_impl<svg_font_face_uri>
 {
@@ -80,7 +79,31 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 };
+CP_REGISTER_OFFICE_ELEMENT2(svg_font_face_uri);
 
+//  svg:desc
+class svg_desc : public office_element_impl<svg_desc>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeSvgDesc;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+
+	std::wstring text_;
+
+private:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+};
+CP_REGISTER_OFFICE_ELEMENT2(svg_desc);
+
+//	svg:font-face-format
 class svg_font_face_format : public office_element_impl<svg_font_face_format>
 {
 public:
@@ -100,7 +123,6 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(svg_font_face_format);
 
 //  svg:font-face-name

@@ -73,6 +73,8 @@ int AxcExt::serialize(std::wostream & _stream)
 	
 	CP_XML_WRITER(_stream)    
 	{
+		CP_XML_NODE(L"c:auto")	{  CP_XML_ATTR(L"val", !fAutoCross); }
+		
 		if (fAutoMax == false)
 		{
 			CP_XML_NODE(L"c:max") 

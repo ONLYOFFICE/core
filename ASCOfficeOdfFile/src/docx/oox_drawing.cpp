@@ -171,7 +171,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 					if ( color.empty() )
 					{
 						if (always_draw)	color = L"000000";
-						else				color = L"ffffff";
+						else				color = L"FFFFFFFF";
 					}
 					
 					CP_XML_NODE(L"a:srgbClr")
@@ -232,11 +232,11 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 					if (values[i].empty()) continue;
 					CP_XML_NODE(L"a:gd")
 					{
-						if (values.size() > 1 || bModifiers)
+						//if (values.size() > 1 || bModifiers)
 							//весьма странное .. для некоторых модификаторов (напр math...) нужно указывать множественность их
 							CP_XML_ATTR(L"name", L"adj" + std::to_wstring(i+1));
-						else
-							CP_XML_ATTR(L"name", L"adj");
+						//else
+						//	CP_XML_ATTR(L"name", L"adj");
 						
 						CP_XML_ATTR(L"fmla", L"val " + values[i]);
 					}
@@ -263,8 +263,8 @@ void _oox_drawing::serialize_bodyPr(std::wostream & strm, const std::wstring & n
 			odf_reader::GetProperty(prop,L"text-padding-bottom"	, dPaddingBottom);
 			
 			if (dPaddingLeft)	CP_XML_ATTR(L"lIns", (int)(*dPaddingLeft));
-			if (dPaddingRight)	CP_XML_ATTR(L"rIns", (int)(*dPaddingRight));
 			if (dPaddingTop)	CP_XML_ATTR(L"tIns", (int)(*dPaddingTop));
+			if (dPaddingRight)	CP_XML_ATTR(L"rIns", (int)(*dPaddingRight));
 			if (dPaddingBottom)	CP_XML_ATTR(L"bIns", (int)(*dPaddingBottom));
 
 			if (inGroup == false)

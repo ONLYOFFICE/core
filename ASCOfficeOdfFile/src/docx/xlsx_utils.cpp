@@ -30,7 +30,6 @@
  *
  */
 
-
 #include "xlsx_utils.h"
 
 #include <boost/lexical_cast.hpp>
@@ -45,6 +44,14 @@
 namespace cpdoccore {
 
 namespace oox {
+
+bool IsNumber(const std::wstring &value)
+{
+	boost::wregex rule(L"\\-?^[0-9]*[.,]?[0-9]*$");
+	boost::match_results<std::wstring::const_iterator> results;
+
+	return boost::regex_search(value/*.begin(), value.end(), results*/, rule);
+}
 
 std::wstring getColAddress(size_t col)
 {
@@ -61,8 +68,6 @@ std::wstring getColAddress(size_t col)
     else
         return std::wstring(1, (wchar_t)(L'A' + col));
 }
-
-
 
 std::wstring getRowAddress(size_t row)
 {

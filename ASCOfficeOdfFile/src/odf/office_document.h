@@ -41,7 +41,6 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-//  office_document_base
 class office_document_base  : public office_element
 {
 public:
@@ -67,6 +66,8 @@ public:
     
 	// office-document-attrs
     // office-document-common-attrs
+    office_element_ptr			office_body_;				// office-body
+
     office_element_ptr			office_meta_;				// office-meta
     office_element_ptr			office_settings_;			// office-settings
     office_element_ptr			office_scripts_;
@@ -75,14 +76,9 @@ public:
     office_element_ptr			office_styles_;				// office-styles
     office_element_ptr			office_automatic_styles_;	// office-automatic-styles
     office_element_ptr			office_master_styles_;		// office-master-styles
- 	office_element_ptr_array	manifests_;					// manifests
-   
-
-public:
-    office_element_ptr office_body_; // office-body
+ 	office_element_ptr_array	manifests_;					// manifests   
 
     friend class odf_document;
-
 };
 
 

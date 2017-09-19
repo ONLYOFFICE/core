@@ -29,48 +29,66 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-// PptFormatTest.cpp : Defines the entry point for the console application.
-//
-#include "../PPTFormatLib/PPTFormatLib.h"
-#include "../../OfficeUtils/src/OfficeUtils.h"
 
-#include "../../DesktopEditor/common/Directory.h"
+#include "dategroup.h"
+#include <boost/algorithm/string.hpp>
+#include <ostream>
 
-#include <tchar.h>
+namespace cpdoccore { namespace odf_types { 
 
-#if defined(_WIN64)
-	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
-#elif defined (_WIN32)
-	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
-#endif
-
-int _tmain(int argc, _TCHAR* argv[])
+std::wostream & operator << (std::wostream & _Wostream, const date_group & _Val)
 {
-	if (argc < 2) return 1;
+    switch(_Val.get_type())
+    {
+    case date_group::seconds:
+        _Wostream << L"seconds";
+        break;
+    case date_group::minutes:
+        _Wostream << L"minutes";
+        break;
+    case date_group::hours:
+        _Wostream << L"hours";
+        break;
+    case date_group::days:
+        _Wostream << L"days";
+        break;
+    case date_group::months:
+        _Wostream << L"months";
+        break;
+    case date_group::quarters:
+        _Wostream << L"quarters";
+        break;
+    case date_group::years:
+        _Wostream << L"years";
+        break;
+    default:
+        break;
+    }
+    return _Wostream;    
+}
+date_group date_group::parse(const std::wstring & Str)
+{
+    std::wstring tmp = Str;
+    boost::algorithm::to_lower(tmp);
 
-	std::wstring sSrcPpt	= argv[1];
-    std::wstring sDstPptx	= argc > 2 ? argv[2] : sSrcPpt + L"-my.pptx";
-
-	std::wstring outputDir		= NSDirectory::GetFolderPath(sDstPptx);
-	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
-
-	std::wstring tempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
-
-	COfficePPTFile pptFile;
-	
-	pptFile.put_TempDirectory(tempPath);
-
-	HRESULT hRes = pptFile.LoadFromFile(sSrcPpt, dstTempPath, L"password");
-	
-	if (hRes == S_OK)
-	{
-		COfficeUtils oCOfficeUtils(NULL);		
-		hRes = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), sDstPptx, -1);
-	}
-		
-	NSDirectory::DeleteDirectory(dstTempPath);
-	NSDirectory::DeleteDirectory(tempPath);
-
-	return hRes;
+    if (tmp == L"seconds")
+        return date_group( seconds );
+    else if (tmp == L"minutes")
+        return date_group( minutes );
+	else if (tmp == L"hours")
+        return date_group( hours );
+	else if (tmp == L"days")
+        return date_group( days );
+	else if (tmp == L"months")
+        return date_group( months );
+	else if (tmp == L"quarters")
+        return date_group( quarters );
+	else if (tmp == L"years")
+        return date_group( years );
+	else
+    {
+        return date_group( months );
+    }
 }
 
+} }

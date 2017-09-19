@@ -75,6 +75,24 @@ const bool AI::loadContent(BinProcessor& proc)
 
 	return true;
 }
+bool AI::empty()
+{
+	if (!m_SeriesText && !m_BRAI) return true;
+
+	BRAI* brai	= dynamic_cast<BRAI*>(m_BRAI.get());
+
+	if (brai)		
+	{
+		std::wstring forumla = brai->formula.getAssembledFormula();		
+		return forumla.empty();
+	}
+	SeriesText * text = dynamic_cast<SeriesText *>(m_SeriesText.get());
+	if (text)
+	{
+		return text->stText.value().empty();
+	}
+	return false;
+}
 
 int AI::serialize(std::wostream & _stream)
 {

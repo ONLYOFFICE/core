@@ -136,31 +136,33 @@ int DVAXIS::serialize(std::wostream & _stream)
 		}
 		CP_XML_NODE(L"c:scaling")
 		{
-			if ((value_range) && (value_range->fLog == true))
-			{
-				CP_XML_NODE(L"c:logBase") {  CP_XML_ATTR(L"val", 10); }
-				bLogarithScale = true;
-			}
-
 			CP_XML_NODE(L"c:orientation")
 			{
 				if ((value_range) && (value_range->fReversed)) CP_XML_ATTR(L"val", L"maxMin");
 				else CP_XML_ATTR(L"val", L"minMax"); 
 			}
-			if ((value_range) && (value_range->fAutoMax == false))
+			if (value_range)
 			{
-				CP_XML_NODE(L"c:max") 
-				{ 
-					if (bLogarithScale)	CP_XML_ATTR(L"val", pow(10, value_range->numMax));
-					else				CP_XML_ATTR(L"val", value_range->numMax);
-				}
-			}			
-			if ((value_range) && (value_range->fAutoMin == false))
-			{
-				CP_XML_NODE(L"c:min") 
+				if (value_range->fLog == true)
 				{
-					if (bLogarithScale)	CP_XML_ATTR(L"val", pow(10, value_range->numMin));
-					else				CP_XML_ATTR(L"val", value_range->numMin); 
+					CP_XML_NODE(L"c:logBase") {  CP_XML_ATTR(L"val", 10); }
+					bLogarithScale = true;
+				}				
+				if (value_range->fAutoMax == false)
+				{
+					CP_XML_NODE(L"c:max") 
+					{ 
+						if (bLogarithScale)	CP_XML_ATTR(L"val", pow(10, value_range->numMax));
+						else				CP_XML_ATTR(L"val", value_range->numMax);
+					}
+				}			
+				if (value_range->fAutoMin == false)
+				{
+					CP_XML_NODE(L"c:min") 
+					{
+						if (bLogarithScale)	CP_XML_ATTR(L"val", pow(10, value_range->numMin));
+						else				CP_XML_ATTR(L"val", value_range->numMin); 
+					}
 				}
 			}
 		}
@@ -187,26 +189,30 @@ int DVAXIS::serialize(std::wostream & _stream)
 //----------------------------------------------------------------------------------------------
 		m_AXS->serialize(_stream);
 
-		CP_XML_NODE(L"c:crosses")
+		if (value_range)
 		{
-			if ((value_range) && (value_range->fMaxCross == true))	CP_XML_ATTR(L"val", L"max");
-			else CP_XML_ATTR(L"val", L"autoZero");
-		}
-
-		if ((value_range) && (value_range->fAutoMajor == false))
-		{
-			CP_XML_NODE(L"c:majorUnit")
+			CP_XML_NODE(L"c:crosses")
 			{
-				if (bLogarithScale)	CP_XML_ATTR(L"val", pow(10, value_range->numMajor));
-				else				CP_XML_ATTR(L"val", value_range->numMajor);
+				if (value_range->fMaxCross == true)	CP_XML_ATTR(L"val", L"max");
+				else								CP_XML_ATTR(L"val", L"autoZero");
 			}
-		}
-		if ((value_range) && (value_range->fAutoMinor == false))
-		{
-			CP_XML_NODE(L"c:minorUnit")
+			CP_XML_NODE(L"c:auto")	{  CP_XML_ATTR(L"val", !value_range->fAutoCross); }
+			
+			if (value_range->fAutoMajor == false)
 			{
-				if (bLogarithScale)	CP_XML_ATTR(L"val", pow(10, value_range->numMinor));
-				else				CP_XML_ATTR(L"val", value_range->numMinor);
+				CP_XML_NODE(L"c:majorUnit")
+				{
+					if (bLogarithScale)	CP_XML_ATTR(L"val", pow(10, value_range->numMajor));
+					else				CP_XML_ATTR(L"val", value_range->numMajor);
+				}
+			}
+			if (value_range->fAutoMinor == false)
+			{
+				CP_XML_NODE(L"c:minorUnit")
+				{
+					if (bLogarithScale)	CP_XML_ATTR(L"val", pow(10, value_range->numMinor));
+					else				CP_XML_ATTR(L"val", value_range->numMinor);
+				}		
 			}
 		}
 	}

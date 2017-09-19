@@ -137,6 +137,10 @@ namespace NExtractTools
         TCD_ODF2OOX,
         TCD_ODF2OOT,
         TCD_ODF2OOT_BIN,
+//odf flat 2
+        TCD_ODF_FLAT2OOX,
+        TCD_ODF_FLAT2OOT,
+        TCD_ODF_FLAT2OOT_BIN,
 //2 odt
         TCD_DOCX2ODT,
         TCD_DOCT2ODT,

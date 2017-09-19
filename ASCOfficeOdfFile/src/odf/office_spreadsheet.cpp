@@ -88,13 +88,13 @@ void office_spreadsheet::xlsx_convert(oox::xlsx_conversion_context & Context)
 	if (database_ranges_)
 		database_ranges_->xlsx_convert(Context);
 
+	if (data_pilot_tables_)
+		data_pilot_tables_->xlsx_convert(Context);
+	
 	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->xlsx_convert(Context);
-    }
-        
-	if (data_pilot_tables_)
-		data_pilot_tables_->xlsx_convert(Context);
+    }        
 
 	Context.end_office_spreadsheet();
 }

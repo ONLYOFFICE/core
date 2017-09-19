@@ -48,6 +48,7 @@ namespace XLS
 
 AXES::AXES()
 {
+	bAxisCategories = false;
 }
 
 
@@ -152,6 +153,8 @@ const bool AXES::loadContent(BinProcessor& proc)
 
 			if (iv) 
 			{	
+				bAxisCategories = true;
+
 				id		= iv->id;
 				type	= 1;
 
@@ -234,7 +237,7 @@ int AXES::serialize(std::wostream & _stream, bool secondary)
 			break;
 		}
 
-	}
+	}	
 	CP_XML_WRITER(_stream)    
 	{
 		for (size_t i = 0 ; i < m_arAxes.size(); i++)
@@ -246,8 +249,8 @@ int AXES::serialize(std::wostream & _stream, bool secondary)
 			std::wstring node_ax_type = L"c:valAx";
 			if (iv)
 			{
-				if (iv->bDataAxis) node_ax_type = L"c:dateAx";
-				else node_ax_type = L"c:catAx";
+				if (iv->bDataAxis)	node_ax_type = L"c:dateAx";
+				else				node_ax_type = L"c:catAx";
 
 				iv->m_bSecondary = secondary;
 			}
@@ -273,7 +276,7 @@ int AXES::serialize(std::wostream & _stream, bool secondary)
 						l_->m_bUsed = true;
 						break;
 					}
-					if (l_->m_iLinkObject == 3 && l_->m_bUsed == false && iv)
+					if (l_->m_iLinkObject == 3 && l_->m_bUsed == false && ((bAxisCategories && iv)  || (!bAxisCategories && (dv || ser))))
 					{
 						label = l_;
 						l_->m_bUsed = true;
@@ -315,18 +318,21 @@ int AXES::serialize(std::wostream & _stream, bool secondary)
 					{
 						if (m_arAxesId[i].second == 3 && m_arAxesId[j].second == 1)continue;
 
-						CP_XML_NODE(L"c:crossAx"){CP_XML_ATTR(L"val", m_arAxesId[j].first);}
+						CP_XML_NODE(L"c:crossAx") {CP_XML_ATTR(L"val", m_arAxesId[j].first);}
 					}
 				}
-				CP_XML_NODE(L"c:crossBetween")
+				if (dv)
 				{
-					if ((iv == NULL && iv_CatSerRange) && (iv_CatSerRange->fBetween == false))
+					CP_XML_NODE(L"c:crossBetween")
 					{
-						CP_XML_ATTR(L"val", L"midCat"); 
-					}
-					else
-					{
-						CP_XML_ATTR(L"val", L"between"); 
+						if ((iv_CatSerRange) && (iv_CatSerRange->fBetween == false))
+						{
+							CP_XML_ATTR(L"val", L"midCat"); 
+						}
+						else
+						{
+							CP_XML_ATTR(L"val", L"between"); 
+						}
 					}
 				}
 			}

@@ -450,6 +450,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\datatypes\dategroup.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\dategroup.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\datatypes\direction.cpp"
 				>
 			</File>

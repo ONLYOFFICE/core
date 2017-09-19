@@ -29,48 +29,50 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-// PptFormatTest.cpp : Defines the entry point for the console application.
-//
-#include "../PPTFormatLib/PPTFormatLib.h"
-#include "../../OfficeUtils/src/OfficeUtils.h"
+#pragma once
 
-#include "../../DesktopEditor/common/Directory.h"
+#include <iosfwd>
+#include <string>
+#include "odfattributes.h"
 
-#include <tchar.h>
 
-#if defined(_WIN64)
-	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
-#elif defined (_WIN32)
-	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
-#endif
+namespace cpdoccore { namespace odf_types { 
 
-int _tmain(int argc, _TCHAR* argv[])
+class date_group
 {
-	if (argc < 2) return 1;
+public:
+    enum type
+    {
+        seconds, 
+		minutes, 
+		hours, 
+		days, 
+		months, 
+		quarters,
+		years
+    };
 
-	std::wstring sSrcPpt	= argv[1];
-    std::wstring sDstPptx	= argc > 2 ? argv[2] : sSrcPpt + L"-my.pptx";
+    date_group() {}
 
-	std::wstring outputDir		= NSDirectory::GetFolderPath(sDstPptx);
-	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
+    date_group(type _Type) : type_(_Type)
+    {}
 
-	std::wstring tempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
+    type get_type() const
+    {
+        return type_;
+    };
+    
+    static date_group parse(const std::wstring & Str);
 
-	COfficePPTFile pptFile;
-	
-	pptFile.put_TempDirectory(tempPath);
+private:
+    type type_;
 
-	HRESULT hRes = pptFile.LoadFromFile(sSrcPpt, dstTempPath, L"password");
-	
-	if (hRes == S_OK)
-	{
-		COfficeUtils oCOfficeUtils(NULL);		
-		hRes = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), sDstPptx, -1);
-	}
-		
-	NSDirectory::DeleteDirectory(dstTempPath);
-	NSDirectory::DeleteDirectory(tempPath);
+};
 
-	return hRes;
+std::wostream & operator << (std::wostream & _Wostream, const date_group & _Val);
+
+} 
+
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::date_group);
+
 }
-

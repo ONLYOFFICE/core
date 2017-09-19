@@ -216,15 +216,29 @@ int ATTACHEDLABEL::serialize(std::wostream & _stream, bool isPosition)
 	int count_runs = allRuns ? allRuns->rgRuns.size() : 0;
 
 	Text * textProps = dynamic_cast<Text*> (m_TextProperties.get());
+	
 	bool rtl = false;
 	if((textProps) && (textProps->iReadingOrder == (unsigned char)2)) rtl = true;
 
 	FRAME	*FRAME_ = dynamic_cast<FRAME*>	(m_FRAME.get());
 	Pos		*Pos_	= dynamic_cast<Pos*>	(m_Pos.get());
 
-	if (FRAME_ && Pos_)
+	if (Pos_)
 	{
-		Pos_->m_Frame = FRAME_->m_Frame;
+		Pos_->m_Frame = FRAME_ ? FRAME_->m_Frame : NULL;
+	}
+	else if (isPosition && textProps)
+	{
+		m_Pos	= BaseObjectPtr(new Pos());
+		Pos_	= dynamic_cast<Pos*>(m_Pos.get());
+		
+		Pos_->mdTopLt = 2;
+		Pos_->mdBotRt = 2;
+		
+		Pos_->x1 = textProps->x;
+		Pos_->y1 = textProps->y;
+		Pos_->x2 = textProps->dx;
+		Pos_->y2 = textProps->dx;
 	}
 
 	CP_XML_WRITER(_stream)    

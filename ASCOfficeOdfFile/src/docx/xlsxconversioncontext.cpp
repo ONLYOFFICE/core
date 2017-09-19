@@ -447,6 +447,18 @@ void xlsx_conversion_context::end_table()
 	get_table_context().dump_rels_hyperlinks			(current_sheet().sheet_rels());
 	get_table_context().dump_rels_ole_objects			(current_sheet().sheet_rels());
 
+	typedef std::multimap<std::wstring, int> _mapPivotsTableView;
+	std::pair<_mapPivotsTableView::iterator, _mapPivotsTableView::iterator> range;
+
+	range = mapPivotsTableView_.equal_range(current_sheet().name());
+
+	for (_mapPivotsTableView::iterator it = range.first; it != range.second; ++it)
+	{
+		current_sheet().sheet_rels().add(oox::relationship(L"pvId" + std::to_wstring(it->second),
+			L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotTable",
+			L"../pivotTables/pivotTable" + std::to_wstring(it->second) + L".xml"));
+	}
+
 	if (!get_drawing_context().empty())
     {
         std::wstringstream strm;
@@ -701,6 +713,10 @@ void xlsx_conversion_context::end_hyperlink(std::wstring const & href)
 		
 		xlsx_text_context_.end_span2();
 	}
+}
+void xlsx_conversion_context::add_pivot_sheet_source (const std::wstring & sheet_name, int index_table_view)
+{//ващето в либре жесткая привязка что на одном листе тока одна сводная может быть ..
+	mapPivotsTableView_.insert(std::make_pair(sheet_name, index_table_view));
 }
 
 void xlsx_conversion_context::start_conditional_format(std::wstring ref)

@@ -168,7 +168,7 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val)
 			{
 				if (val.bitmap->isInternal) 
 				{
-					CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+					//CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 					CP_XML_ATTR(L"r:embed", val.bitmap->rId );
 				}
 				else

@@ -233,8 +233,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
         else if ( isOnlyOfficeFormatFile(fileName) )    return true;
         else if ( isXpsFile(fileName) )                 return true;
 	}
-
-
+//-----------------------------------------------------------------------------------------------
     // others
     {
         NSFile::CFileBinary file;
@@ -272,7 +271,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
         {
             nFileType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU;
         }
-        else if (isHtmlFormatFile(buffer,sizeRead, false))
+		else if (isHtmlFormatFile(buffer,sizeRead, false))
         {
 			long fileSize = file.GetFileSize();
 			if (fileSize > MIN_SIZE_BUFFER)		
@@ -290,14 +289,18 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
         {
             nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2;
         }
-	/////////////////////////////////////////////////////////////////////////
+		else if (isOpenOfficeFlatFormatFile(buffer,sizeRead) )
+		{
+			//nFileType
+		}
+//------------------------------------------------------------------------------------------------
 		file.CloseFile();
 
 		if (buffer)delete []buffer;
 		buffer = NULL;
 	}
 	if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)return true;
-
+//------------------------------------------------------------------------------------------------
 //// by Extension
 
     std::wstring::size_type nExtPos = fileName.rfind(L'.');
@@ -543,6 +546,39 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
         }
 
     }
+	return false;
+}
+
+bool COfficeFileFormatChecker::isOpenOfficeFlatFormatFile(unsigned char* pBuffer,int dwBytes)
+{
+	const char *odfFormatLine = "office:document xmlns:office=\"urn:oasis:names:tc:opendocument:xmlns:office:1.0\"";
+	
+	std::string xml_string((char*)pBuffer, dwBytes);
+
+	if (std::string::npos == xml_string.find(odfFormatLine))
+	{
+		return false;
+	}
+
+    const char *odtFormatLine = "application/vnd.oasis.opendocument.text";
+    const char *odsFormatLine = "application/vnd.oasis.opendocument.spreadsheet";
+    const char *odpFormatLine = "application/vnd.oasis.opendocument.presentation";
+
+	if (std::string::npos != xml_string.find(odtFormatLine))
+	{
+		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT_FLAT;
+	}
+	else if (std::string::npos != xml_string.find(odsFormatLine))
+	{
+		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS_FLAT;
+	}
+	else if (std::string::npos != xml_string.find(odpFormatLine))
+	{
+		nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP_FLAT;
+	}
+
+	if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN) return true;
+
 	return false;
 }
 

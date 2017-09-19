@@ -127,6 +127,7 @@ public:
 		if (sExt == L"m4v") return typeVideo;
 		if (sExt == L"mp4") return typeVideo;
 		if (sExt == L"mov") return typeVideo;
+		if (sExt == L"mkv") return typeVideo;
 
 		return typeMedia;
 	}

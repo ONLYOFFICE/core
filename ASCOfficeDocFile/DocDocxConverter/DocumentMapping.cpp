@@ -902,7 +902,7 @@ namespace DocFileFormat
 					{
 						int shape_type = oPicture.shapeContainer->getShapeType();
 
-						if (shape_type != msosptPictureFrame) picture = false;
+						if (shape_type != msosptPictureFrame) picture = false;//шаблон 1.doc картинка в колонтитуле
 					}
 					
 					if (picture)

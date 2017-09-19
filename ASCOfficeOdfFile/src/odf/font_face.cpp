@@ -41,9 +41,22 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
+const wchar_t * svg_desc::ns	= L"svg";
+const wchar_t * svg_desc::name	= L"desc";
+
+std::wostream & svg_desc::text_to_stream(std::wostream & _Wostream) const
+{
+    _Wostream <<  text_ ;
+    return _Wostream;
+}
+
+void svg_desc::add_text(const std::wstring & Text) 
+{
+    text_ = Text;
+}
 
 // svg:font-face-uri
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------
 const wchar_t * svg_font_face_uri::ns = L"svg";
 const wchar_t * svg_font_face_uri::name = L"font-face-uri";
 

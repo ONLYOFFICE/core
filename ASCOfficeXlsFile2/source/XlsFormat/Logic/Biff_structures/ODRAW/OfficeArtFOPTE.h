@@ -539,7 +539,7 @@ class cropFromLeft : public FixedPoint
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(cropFromLeft)
 };
-class cropFromRight : public OfficeArtFOPTE 
+class cropFromRight : public FixedPoint 
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(cropFromRight)
 };

@@ -106,47 +106,122 @@ content_xml_t_ptr read_file_content(const std::wstring & Path)
 
     return result;
 }
-}
+content_xml_t_ptr read_file_content(xml::sax * reader_owner)
+{
+	if (!reader_owner) return content_xml_t_ptr();
 
-odf_document::Impl::Impl(const std::wstring & folderPath, const ProgressCallback* CallBack) : 
-			context_(new odf_read_context()), base_folder_(folderPath), pCallBack(CallBack), bUserStopConvert (0)
+    content_xml_t_ptr result( new content_xml_t() );
+    
+	const std::wstring namespacePrefix	= reader_owner->namespacePrefix();
+	const std::wstring localName		= reader_owner->nodeLocalName();
+	
+	result->add_child_element(reader_owner, namespacePrefix, localName);		
+
+    return result;
+}
+}
+odf_document::Impl::Impl(xml::sax * Reader): 
+			context_(new odf_read_context()), base_folder_(L""), pCallBack(NULL), bUserStopConvert (0)
 {
 	office_mime_type_ = 0;
 	encrypted = false;
 
-    std::wstring content_xml	= folderPath + FILE_SEPARATOR_STR + L"content.xml";
-    std::wstring styles_xml		= folderPath + FILE_SEPARATOR_STR + L"styles.xml";
-    std::wstring meta_xml		= folderPath + FILE_SEPARATOR_STR + L"meta.xml";
-    std::wstring settings_xml	= folderPath + FILE_SEPARATOR_STR + L"settings.xml";
-	std::wstring manifest_xml	= folderPath + FILE_SEPARATOR_STR + L"META-INF" + FILE_SEPARATOR_STR + L"manifest.xml";
+	content_xml_ = read_file_content(Reader);
+	
+	if (content_xml_)
+	{
+		_CP_LOG << L"[info] parse fonts" << std::endl;
+		parse_fonts(content_xml_->get_content());
+		
+		_CP_LOG << L"[info] parse styles" << std::endl;
+		parse_styles(content_xml_->get_content());
 
-    _CP_LOG << L"[info] read manifest.xml" << std::endl;
-    manifest_xml_ = read_file_content(manifest_xml);
+		_CP_LOG << L"[info] parse manifest" << std::endl;
+		parse_manifests(content_xml_->get_content());
 
-      _CP_LOG << L"[info] read settings.xml" << std::endl;
-    settings_xml_ = read_file_content(settings_xml);
+		_CP_LOG << L"[info] parse settings" << std::endl;
+		parse_settings(content_xml_->get_content());
+			
+		tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetTempPath());
+	}
+}
 
-    _CP_LOG << L"[info] read content.xml" << std::endl;
-    content_xml_ = read_file_content(content_xml);
+odf_document::Impl::Impl(const std::wstring & srcPath, const ProgressCallback* CallBack) : 
+			context_(new odf_read_context()), pCallBack(CallBack), bUserStopConvert (0)
+{
+	office_mime_type_ = 0;
+	encrypted = false;
 
-      _CP_LOG << L"[info] read styles.xml" << std::endl;
-    styles_xml_ = read_file_content(styles_xml);
+	if (NSDirectory::Exists(srcPath))
+	{
+		base_folder_ = srcPath; 
 
-    _CP_LOG << L"[info] parse fonts" << std::endl;
-    parse_fonts();
+		std::wstring content_xml	= srcPath + FILE_SEPARATOR_STR + L"content.xml";
+		std::wstring styles_xml		= srcPath + FILE_SEPARATOR_STR + L"styles.xml";
+		std::wstring meta_xml		= srcPath + FILE_SEPARATOR_STR + L"meta.xml";
+		std::wstring settings_xml	= srcPath + FILE_SEPARATOR_STR + L"settings.xml";
+		std::wstring manifest_xml	= srcPath + FILE_SEPARATOR_STR + L"META-INF" + FILE_SEPARATOR_STR + L"manifest.xml";
 
-    _CP_LOG << L"[info] parse styles" << std::endl;
-    parse_styles();
+		_CP_LOG << L"[info] read manifest.xml" << std::endl;
+		manifest_xml_ = read_file_content(manifest_xml);
 
-    _CP_LOG << L"[info] parse manifest" << std::endl;
-    parse_manifests();
+		  _CP_LOG << L"[info] read settings.xml" << std::endl;
+		settings_xml_ = read_file_content(settings_xml);
 
-    _CP_LOG << L"[info] parse settings" << std::endl;
-    parse_settings();
+		_CP_LOG << L"[info] read content.xml" << std::endl;
+		content_xml_ = read_file_content(content_xml);
+
+		  _CP_LOG << L"[info] read styles.xml" << std::endl;
+		styles_xml_ = read_file_content(styles_xml);
+//----------------------------------------------------------------------------------------
+		_CP_LOG << L"[info] parse fonts" << std::endl;
+		parse_fonts(content_xml_ ? content_xml_->get_content() : NULL);
+
+		_CP_LOG << L"[info] parse styles" << std::endl;
+		parse_styles(styles_xml_ ? styles_xml_->get_content() : NULL);
+
+		_CP_LOG << L"[info] parse manifest" << std::endl;
+		parse_manifests(manifest_xml_ ? manifest_xml_->get_content() : NULL);
+
+		_CP_LOG << L"[info] parse settings" << std::endl;
+		parse_settings(settings_xml_ ? settings_xml_->get_content() : NULL);
+
+	}
+	else 
+	{
+		_CP_LOG << L"[info] read flat document" << std::endl;
+		content_xml_ = read_file_content(srcPath);
+		
+		if (content_xml_)
+		{
+			_CP_LOG << L"[info] parse fonts" << std::endl;
+			parse_fonts(content_xml_->get_content());
+			
+			_CP_LOG << L"[info] parse styles" << std::endl;
+			parse_styles(content_xml_->get_content());
+
+			_CP_LOG << L"[info] parse manifest" << std::endl;
+			parse_manifests(content_xml_->get_content());
+
+			_CP_LOG << L"[info] parse settings" << std::endl;
+			parse_settings(content_xml_->get_content());
+
+			tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetTempPath());
+		}
+	}
 
 	UpdateProgress(400000);
 }
-
+odf_document::Impl::~Impl()
+{
+	if (!tmp_folder_.empty())
+		NSDirectory::DeleteDirectory(tmp_folder_);
+}
+const std::wstring & odf_document::Impl::get_folder() const 
+{
+	if (!base_folder_.empty())	return base_folder_; 
+	else return tmp_folder_;
+}
 bool odf_document::Impl::UpdateProgress(long nComplete)
 {
 	if (pCallBack)
@@ -162,17 +237,11 @@ bool odf_document::Impl::UpdateProgress(long nComplete)
 	return false;
 }
 
-void odf_document::Impl::parse_fonts()
+void odf_document::Impl::parse_fonts(office_element *element)
 {
     do 
     {
-        if (!content_xml_)
-        {
-            _CP_LOG << L"[warning] empty content xml\n";
-            break;
-        }
-
-        office_document_base * document = dynamic_cast<office_document_base *>( content_xml_->get_content() );
+        office_document_base * document = dynamic_cast<office_document_base *>( element );
         if (!document)
         {
             _CP_LOG << L"[warning] empty document\n";
@@ -236,15 +305,12 @@ void odf_document::Impl::parse_fonts()
     }
     while (0);
 }
-void odf_document::Impl::parse_manifests()
+void odf_document::Impl::parse_manifests(office_element *element)
 {
-	if (!manifest_xml_)return;
-
-    office_document_base * document = dynamic_cast<office_document_base *>( manifest_xml_->get_content() );
+    office_document_base * document = dynamic_cast<office_document_base *>( element );
     
 	if (!document)return;
 
-	int res =-1;
 	for (size_t i = 0; i < document->manifests_.size(); i++)
 	{	
 		office_element_ptr & elm = document->manifests_[i];
@@ -252,34 +318,44 @@ void odf_document::Impl::parse_manifests()
 		manifest_entry * entry = dynamic_cast<manifest_entry *>(elm.get());
 		if (!entry)continue;
 
-		if (entry->full_path_==L"content.xml" && entry->encryption_) encrypted = true;
+		if (entry->full_path_ == L"content.xml" && entry->encryption_) encrypted = true;
 
-		if (entry->full_path_==L"/")
+		if (entry->full_path_ == L"/")
 		{
-			res = entry->media_type_.find(L"application/vnd.oasis.opendocument.text");
-			if (res>=0)
+			if (std::wstring::npos != entry->media_type_.find(L"application/vnd.oasis.opendocument.text"))
 			{
 				office_mime_type_ = 1;
 			}
-			res = entry->media_type_.find(L"application/vnd.oasis.opendocument.spreadsheet");
-			if (res>=0)
+			else if (std::wstring::npos != entry->media_type_.find(L"application/vnd.oasis.opendocument.spreadsheet"))
 			{
 				office_mime_type_ = 2;
 			}
-			res = entry->media_type_.find(L"application/vnd.oasis.opendocument.presentation");
-			if (res>=0)
+			else if (std::wstring::npos != entry->media_type_.find(L"application/vnd.oasis.opendocument.presentation"))
 			{
 				office_mime_type_ = 3;
 			}
 		}
 	}
+	if (!office_mime_type_ && !document->office_mimetype_.empty())
+	{
+		if (std::wstring::npos != document->office_mimetype_.find(L"application/vnd.oasis.opendocument.text"))
+		{
+			office_mime_type_ = 1;
+		}
+		else if (std::wstring::npos != document->office_mimetype_.find(L"application/vnd.oasis.opendocument.spreadsheet"))
+		{
+			office_mime_type_ = 2;
+		}
+		else if (std::wstring::npos != document->office_mimetype_.find(L"application/vnd.oasis.opendocument.presentation"))
+		{
+			office_mime_type_ = 3;
+		}
+	}
 }
 
-void odf_document::Impl::parse_settings()
+void odf_document::Impl::parse_settings(office_element *element)
 {
-	if (!settings_xml_)return;
-   
-	office_document_base * document = dynamic_cast<office_document_base *>( settings_xml_->get_content() );
+	office_document_base * document = dynamic_cast<office_document_base *>( element );
 	if (!document)	return;
 
 	office_settings * settings = dynamic_cast<office_settings*>(document->office_settings_.get());
@@ -358,20 +434,14 @@ void odf_document::Impl::parse_settings()
 }
 }
 
-void odf_document::Impl::parse_styles()
+void odf_document::Impl::parse_styles(office_element *element)
 {
     do
     {
-        if (!styles_xml_)
-        {
-            _CP_LOG << L"[warning] empty styles xml\n";
-            break;
-        }
-
-        office_document_base * document = dynamic_cast<office_document_base *>( styles_xml_->get_content() );
+        office_document_base * document = dynamic_cast<office_document_base *>( element );
         if (!document)
         {
-            _CP_LOG << L"[warning] empty document\n";
+            _CP_LOG << L"[warning] empty styles\n";
             break;
         }
        

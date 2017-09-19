@@ -190,6 +190,7 @@ enum ElementType
 
     typeStyleFontFace,
 
+    typeSvgDesc,
     typeSvgFontFaceUri,
     typeSvgFontFaceFormat,
     typeSvgFontFaceName,
@@ -234,7 +235,9 @@ enum ElementType
 	typeTableDatabaseSourceQuery,
 	typeTableDatabaseSourceSql,
 	typeTableSourceCellRange,
+	typeTableSourceCellRanges,
 	typeTableSourceService,
+	typeTableDataPilotGrandTotal,
 	typeTableDataPilotSubtotals,
 	typeTableDataPilotSubtotal,
 	typeTableDataPilotGroupMember,

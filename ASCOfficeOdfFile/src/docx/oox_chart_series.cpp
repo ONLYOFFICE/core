@@ -37,6 +37,8 @@
 #include <cpdoccore/xml/simple_xml_writer.h>
 #include "../odf/style_text_properties.h"
 
+#include "xlsx_utils.h"
+
 #include "oox_chart_series.h"
 #include "../formulasconvert/formulasconvert.h"
 
@@ -258,8 +260,11 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 											CP_XML_ATTR(L"idx", j);
 											double val = 0;
 
-											try { val = boost::lexical_cast<double>(v);}
-											catch(...){}			
+											if (oox::IsNumber(v))
+											{		
+												try { val = boost::lexical_cast<double>(v);}
+												catch(...){}	
+											}
 											CP_XML_NODE(L"c:v")
 											{
 												CP_XML_CONTENT(val);
@@ -293,8 +298,11 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 									CP_XML_ATTR(L"idx", j);
 									double val = 0;
 
-									try { val = boost::lexical_cast<double>(v);}
-									catch(...){}			
+									if (oox::IsNumber(v))
+									{			
+										try { val = boost::lexical_cast<double>(v);}
+										catch(...){}
+									}
 									CP_XML_NODE(L"c:v")
 									{
 										CP_XML_CONTENT(val);

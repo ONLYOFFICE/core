@@ -137,6 +137,8 @@ public:
     void end_hyperlink		(std::wstring const & href);
 
 //------------------------------------------------------------------------------------
+	void add_pivot_sheet_source				(const std::wstring & sheet_name, int index_table_view);
+
 	void start_conditional_format			(std::wstring ref);
 	void end_conditional_format				(){}
 
@@ -200,6 +202,7 @@ private:
     num_format_context                  num_format_context_;
     size_t                              default_style_;
     mediaitems                          mediaitems_;
+	std::multimap<std::wstring, int>	mapPivotsTableView_;
   
     xlsx_style_manager              xlsx_style_;
     xlsx_defined_names              xlsx_defined_names_;

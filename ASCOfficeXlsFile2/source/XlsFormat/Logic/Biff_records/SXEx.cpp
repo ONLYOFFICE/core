@@ -37,6 +37,7 @@ namespace XLS
 
 SXEx::SXEx()
 {
+	cWrapPage = 0;
 }
 
 

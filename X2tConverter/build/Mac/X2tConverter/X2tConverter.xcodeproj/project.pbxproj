@@ -21,7 +21,6 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		177C43321AD7C0EF00055DD7 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 177C432F1AD7C0D100055DD7 /* libcurl.a */; };
 		17C8DEC71ACD696100902C85 /* X2tConverter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17C27A191AC2DB3D00E1D003 /* X2tConverter.mm */; };
 		17C8DECC1ACD696100902C85 /* X2tConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17C27A171AC2DB3D00E1D003 /* X2tConverter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		691A8BD31E2FA68F00DCB54A /* liblibxml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 691A8BD01E2FA67E00DCB54A /* liblibxml2.a */; };
@@ -59,20 +58,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		177C432E1AD7C0D100055DD7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 177C432A1AD7C0D000055DD7 /* libcurl.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = CD8AE2B416187F770095DC1B;
-			remoteInfo = curl;
-		};
-		177C43301AD7C0E400055DD7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 177C432A1AD7C0D000055DD7 /* libcurl.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = CD8AE2B316187F770095DC1B;
-			remoteInfo = curl;
-		};
 		17C8DEDB1ACD6A3900902C85 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 17E17F561AC457CD00BEA2EA /* ASCOfficeDocxFile2Lib.xcodeproj */;
@@ -440,7 +425,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		177C432A1AD7C0D000055DD7 /* libcurl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libcurl.xcodeproj; path = ../../../../Common/3dParty/curl/projects/Mac/libcurl.xcodeproj; sourceTree = "<group>"; };
 		17C27A171AC2DB3D00E1D003 /* X2tConverter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = X2tConverter.h; sourceTree = "<group>"; };
 		17C27A191AC2DB3D00E1D003 /* X2tConverter.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = X2tConverter.mm; sourceTree = "<group>"; };
 		17C8DED01ACD696100902C85 /* libX2tConverter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libX2tConverter.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -509,21 +493,12 @@
 				69415F311CB51D41003E771B /* libASCOfficeDocxFile2Lib_ios.a in Frameworks */,
 				69415F271CB51C37003E771B /* libOfficeUtils.a in Frameworks */,
 				698AF4C31C0745980080D889 /* libicu.a in Frameworks */,
-				177C43321AD7C0EF00055DD7 /* libcurl.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		177C432B1AD7C0D000055DD7 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				177C432F1AD7C0D100055DD7 /* libcurl.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		17C27A0B1AC2DB3C00E1D003 = {
 			isa = PBXGroup;
 			children = (
@@ -548,7 +523,6 @@
 				69DA322C1CEE08DC00E10AF0 /* metafile.xcodeproj */,
 				69DA32261CEE087D00E10AF0 /* cximage.xcodeproj */,
 				698AF4BB1C0740960080D889 /* icu.xcodeproj */,
-				177C432A1AD7C0D000055DD7 /* libcurl.xcodeproj */,
 				17E17F561AC457CD00BEA2EA /* ASCOfficeDocxFile2Lib.xcodeproj */,
 				69DA32501CEE095900E10AF0 /* freetype.xcodeproj */,
 				69DA325C1CEE09BB00E10AF0 /* PPTXFormatLib.xcodeproj */,
@@ -859,7 +833,6 @@
 				69415FE21CB5245A003E771B /* PBXTargetDependency */,
 				69415FDF1CB5244D003E771B /* PBXTargetDependency */,
 				698AF4C21C0745930080D889 /* PBXTargetDependency */,
-				177C43311AD7C0E400055DD7 /* PBXTargetDependency */,
 				69DA32EE1CEE100400E10AF0 /* PBXTargetDependency */,
 				17C8DEDC1ACD6A3900902C85 /* PBXTargetDependency */,
 			);
@@ -937,10 +910,6 @@
 					ProjectRef = 69415FBD1CB5243F003E771B /* jpeg.xcodeproj */;
 				},
 				{
-					ProductGroup = 177C432B1AD7C0D000055DD7 /* Products */;
-					ProjectRef = 177C432A1AD7C0D000055DD7 /* libcurl.xcodeproj */;
-				},
-				{
 					ProductGroup = 69415FBB1CB5243F003E771B /* Products */;
 					ProjectRef = 69415FBA1CB5243F003E771B /* libpsd.xcodeproj */;
 				},
@@ -1006,13 +975,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		177C432F1AD7C0D100055DD7 /* libcurl.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libcurl.a;
-			remoteRef = 177C432E1AD7C0D100055DD7 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		17E17F5B1AC457CD00BEA2EA /* libASCOfficeDocxFile2Lib_ios.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1228,11 +1190,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		177C43311AD7C0E400055DD7 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = curl;
-			targetProxy = 177C43301AD7C0E400055DD7 /* PBXContainerItemProxy */;
-		};
 		17C8DEDC1ACD6A3900902C85 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ASCOfficeDocxFile2Lib_ios;

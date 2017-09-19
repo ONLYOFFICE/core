@@ -36,7 +36,8 @@
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 #include "../DocxFormat/VmlDrawing.h"
 #include "../DocxFormat/Media/OleObject.h"
-
+#include "../DocxFormat/Media/ActiveX.h"
+#include "../DocxFormat/Media/VbaProject.h"
 
 #include "SharedStrings/SharedStrings.h"
 #include "Styles/Styles.h"
@@ -64,7 +65,8 @@ namespace OOX
 			else
 				oFileName = oPath / oRelationFilename;
 
-			if ( oRelation.Type() == FileTypes::Workbook )
+			if ( oRelation.Type() == FileTypes::Workbook || 
+				 oRelation.Type() == FileTypes::WorkbookMacro)
 				return smart_ptr<OOX::File>(new CWorkbook( oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::SharedStrings )
 				return smart_ptr<OOX::File>(new CSharedStrings( oRootPath, oFileName ));
@@ -119,7 +121,8 @@ namespace OOX
 			else
 				oFileName = oPath / oRelationFilename;
 
-			if ( pRelation->Type() == FileTypes::Workbook )
+			if ( pRelation->Type() == FileTypes::Workbook || 
+				 pRelation->Type() == FileTypes::WorkbookMacro)
 				return smart_ptr<OOX::File>(new CWorkbook( oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::SharedStrings )
 				return smart_ptr<OOX::File>(new CSharedStrings( oRootPath, oFileName ));
@@ -177,6 +180,10 @@ namespace OOX
 				return smart_ptr<OOX::File>(new OOX::CDiagramDrawing( oRootPath, oFileName )); 
 			else if (	pRelation->Type() == OOX::FileTypes::MicrosoftOfficeUnknown) //ms package
 				return smart_ptr<OOX::File>(new OOX::OleObject( oFileName, true ));
+			else if (	pRelation->Type() == OOX::FileTypes::ActiveX_xml)
+				return smart_ptr<OOX::File>(new OOX::ActiveX_xml( oRootPath, oFileName ));
+			else if (	pRelation->Type() == OOX::FileTypes::ActiveX_bin)
+				return smart_ptr<OOX::File>(new OOX::ActiveX_bin( oFileName ));
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile() );
 		}

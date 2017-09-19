@@ -110,6 +110,8 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
+				if (m_arrItems.empty()) return;
+
 				writer.WriteString(_T("<externalReferences>"));
 				
 				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)

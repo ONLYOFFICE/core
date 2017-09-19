@@ -49,6 +49,8 @@ public:
 	
 	void readFields(CFRecord& record);
 
+	std::wstring value();
+
 	static const ElementType type = typeSXString;
 
 	unsigned short			cch;

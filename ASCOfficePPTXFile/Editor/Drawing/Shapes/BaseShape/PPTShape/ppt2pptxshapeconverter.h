@@ -2122,6 +2122,8 @@ namespace NSGuidesVML
 
             for (size_t nIndex = 0; nIndex < oArray.size(); ++nIndex)
             {
+				if (oPath.m_arParts.size() <= nIndex) 
+					break;
                 const CPartPath& oPart = oPath.m_arParts[nIndex];
                 m_lWidth = oPart.width;
                 m_lHeight = oPart.height;

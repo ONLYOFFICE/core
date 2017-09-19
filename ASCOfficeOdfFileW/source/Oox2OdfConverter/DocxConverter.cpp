@@ -39,9 +39,6 @@
 
 #include "VmlShapeTypes2Oox.h"
 
-#include <boost/foreach.hpp>
-#include <boost/lexical_cast.hpp>
-
 #include "../OdfFormat/odt_conversion_context.h"
 
 #include "../OdfFormat/odf_text_context.h"
@@ -187,7 +184,7 @@ void DocxConverter::convert_document()
 	int last_section_start = 0;
 
 	//считаем количесво секций и запоминаем их свойства .. 
-	for (long i = 0; i < document->m_arrItems.size(); i++)
+	for (size_t i = 0; i < document->m_arrItems.size(); i++)
 	{
 		if (document->m_arrItems[i] == NULL) continue;
 
@@ -199,18 +196,18 @@ void DocxConverter::convert_document()
 			{
 				if (para->m_oParagraphProperty->m_oSectPr.IsInit() )
 				{
-					sections.push_back(_section(para->m_oParagraphProperty->m_oSectPr.GetPointer(), last_section_start, i + 1));
-					last_section_start = i + 1;
+					sections.push_back(_section(para->m_oParagraphProperty->m_oSectPr.GetPointer(), last_section_start, (int)i + 1));
+					last_section_start = (int)i + 1;
 				}
 			}
 		}
 	}
-	sections.push_back(_section(document->m_oSectPr.GetPointer(), last_section_start, document->m_arrItems.size(), true));
+	sections.push_back(_section(document->m_oSectPr.GetPointer(), last_section_start, (int)document->m_arrItems.size(), true));
 //----------------------------------------------------------------------------------------------------------
 
 	odt_context->text_context()->clear_params();
 
-	for (int sect = 0; sect < sections.size(); sect++)
+	for (size_t sect = 0; sect < sections.size(); sect++)
 	{
 		current_section_properties = &sections[sect];
 
@@ -522,7 +519,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 	{//rapcomnat12.docx - стр 185
 		bool empty_para = true;
 
-		for (unsigned int nIndex = 0; empty_para && nIndex < oox_paragraph->m_arrItems.size(); nIndex++ )
+		for (size_t nIndex = 0; empty_para && nIndex < oox_paragraph->m_arrItems.size(); nIndex++ )
 		{		
 			switch(oox_paragraph->m_arrItems[nIndex]->getType())
 			{
@@ -546,7 +543,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 	}
 
 //---------------------------------------------------------------------------------------------------------------------
-	for (unsigned int nIndex = 0; nIndex < oox_paragraph->m_arrItems.size(); nIndex++ )
+	for (size_t nIndex = 0; nIndex < oox_paragraph->m_arrItems.size(); nIndex++ )
 	{
 		//те элементы которые тока для Paragraph - здесь - остальные в общей куче		
 		switch(oox_paragraph->m_arrItems[nIndex]->getType())
@@ -573,7 +570,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 //---------------------------------------------------------------------------------------------------------------------
 	//std::sort(id_change_properties.begin(), id_change_properties.end());
 
-	for (int i = 0; i < id_change_properties.size(); i++)
+	for (size_t i = 0; i < id_change_properties.size(); i++)
 	{
 		odt_context->end_change(id_change_properties[i].second, id_change_properties[i].first); 
 	}
@@ -584,7 +581,7 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 	//хм разобраться а нужен ли он ... частенько бывает в неправильном месте!!! - A   GRUBU.docx
 	//https://forums.asp.net/t/1951556.aspx?Facing+problem+finding+out+page+end+in+Ms+Word+Open+XML+SDK+Asp+net+c+We+can+t+get+a+lastRenderedPageBreak
 	////test for break - 2 first element ЭТОТ элемент НУЖНО вытащить отдельно !!!
-	//for(unsigned int i = 0; i < (std::min) ( (size_t)2, oox_run->m_arrItems.size()); ++i)
+	//for(size_t i = 0; i < (std::min) ( (size_t)2, oox_run->m_arrItems.size()); ++i)
 	//{
 	//	if (oox_run->m_arrItems[i]->getType() == OOX::et_w_lastRenderedPageBreak)
 	//	{
@@ -608,7 +605,7 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 
 	odt_context->start_run(styled);
 	
-	for(unsigned int i = 0; i < oox_run->m_arrItems.size(); ++i)
+	for(size_t i = 0; i < oox_run->m_arrItems.size(); ++i)
 	{
 		//те элементы которые тока для Run - здесь - остальные в общей куче		
 		switch(oox_run->m_arrItems[i]->getType())
@@ -751,7 +748,7 @@ void DocxConverter::convert(OOX::Logic::CSym	*oox_sym)
 	odt_context->text_context()->set_symbol_text(oox_sym->m_oChar->GetValue());
 	//odt_context->text_context()->add_text_content(std::wstring(L"/") + oox_sym->m_oChar->ToString());
 }
-void DocxConverter::convert(OOX::Logic::CFldChar	*oox_fld)
+void DocxConverter::convert(OOX::Logic::CFldChar *oox_fld)
 {
 	if (oox_fld == NULL) return;
 
@@ -762,7 +759,7 @@ void DocxConverter::convert(OOX::Logic::CFldChar	*oox_fld)
 	{
 		if (oox_fld->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeBegin)	odt_context->start_field(false);
 		if (oox_fld->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeEnd)		odt_context->end_field();
-		if (oox_fld->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeSeparate){}
+		if (oox_fld->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeSeparate)odt_context->separate_field();
 	}
 
 }
@@ -778,7 +775,7 @@ void DocxConverter::convert(OOX::Logic::CFldSimple	*oox_fld)
 		if (oox_fld->m_sInstr.IsInit())	
 			odt_context->set_field_instr(oox_fld->m_sInstr.get2());
 
-		for (unsigned int i=0; i< oox_fld->m_arrItems.size(); i++)
+		for (size_t i=0; i< oox_fld->m_arrItems.size(); i++)
 		{
 			convert(oox_fld->m_arrItems[i]);
 		}
@@ -815,7 +812,7 @@ void DocxConverter::convert(OOX::Logic::CIns *oox_ins)
 			
 	bool start_change = odt_context->start_change(id, 1, author, userId, date);
 
-	for (unsigned int i=0; i< oox_ins->m_arrItems.size(); i++)
+	for (size_t i=0; i< oox_ins->m_arrItems.size(); i++)
 	{
 		convert(oox_ins->m_arrItems[i]);
 	}
@@ -1019,7 +1016,7 @@ void DocxConverter::convert(OOX::Logic::CDel *oox_del)
 	std::wstring	date	= oox_del->m_oDate.IsInit()		? oox_del->m_oDate->GetValue()	: L"";
 
 	bool res_change  = odt_context->start_change(id, 2, author, userId, date);
-	for (unsigned int i=0; i< oox_del->m_arrItems.size(); i++)
+	for (size_t i=0; i< oox_del->m_arrItems.size(); i++)
 	{
 		convert(oox_del->m_arrItems[i]);
 	}
@@ -1030,7 +1027,7 @@ void DocxConverter::convert(OOX::Logic::CSmartTag *oox_tag)
 {
 	if (oox_tag == NULL) return;
 
-	for (unsigned int i=0; i< oox_tag->m_arrItems.size(); i++)
+	for (size_t i=0; i< oox_tag->m_arrItems.size(); i++)
 	{
 		convert(oox_tag->m_arrItems[i]);
 	}
@@ -1250,7 +1247,7 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 	if (oox_paragraph_pr->m_oTabs.IsInit())
 	{
 		paragraph_properties->add_child_element(odf_context()->start_tabs());
-		for (unsigned int i = 0; i < oox_paragraph_pr->m_oTabs->m_arrTabs.size(); i++)
+		for (size_t i = 0; i < oox_paragraph_pr->m_oTabs->m_arrTabs.size(); i++)
 		{
 			if (oox_paragraph_pr->m_oTabs->m_arrTabs[i] == NULL) continue;
 			
@@ -1279,14 +1276,14 @@ void DocxConverter::apply_HF_from(OOX::Logic::CSectionProperty *props, OOX::Logi
 
 	if (other->m_arrFooterReference.size() > 0)
 	{
-		for (unsigned int i =0 ; i < props->m_arrFooterReference.size() ; i++)
+		for (size_t i =0 ; i < props->m_arrFooterReference.size() ; i++)
 		{
 			if (props->m_arrFooterReference[i]) delete props->m_arrFooterReference[i];
 			props->m_arrFooterReference[i] = NULL;
 		}
 		props->m_arrFooterReference.clear();
 
-		for (unsigned int i =0 ; i < other->m_arrFooterReference.size() ; i++)
+		for (size_t i =0 ; i < other->m_arrFooterReference.size() ; i++)
 		{
 			ComplexTypes::Word::CHdrFtrRef* ref = new ComplexTypes::Word::CHdrFtrRef();
 
@@ -1299,14 +1296,14 @@ void DocxConverter::apply_HF_from(OOX::Logic::CSectionProperty *props, OOX::Logi
 	}
 	if (other->m_arrHeaderReference.size() > 0)
 	{
-		for (unsigned int i =0 ; i < props->m_arrHeaderReference.size() ; i++)
+		for (size_t i =0 ; i < props->m_arrHeaderReference.size() ; i++)
 		{
 			if (props->m_arrHeaderReference[i]) delete props->m_arrHeaderReference[i];
 			props->m_arrHeaderReference[i] = NULL;
 		}
 		props->m_arrHeaderReference.clear();
 		
-		for (unsigned int i =0 ; i < other->m_arrHeaderReference.size() ; i++)
+		for (size_t i =0 ; i < other->m_arrHeaderReference.size() ; i++)
 		{
 			ComplexTypes::Word::CHdrFtrRef* ref = new ComplexTypes::Word::CHdrFtrRef();
 			
@@ -1501,7 +1498,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 
 		std::vector<int> types;
 
-		for (unsigned int i = 0; i < s->m_arrHeaderReference.size(); i++)
+		for (size_t i = 0; i < s->m_arrHeaderReference.size(); i++)
 		{
 			if (s->m_arrHeaderReference[i] == NULL) continue;
 
@@ -1529,7 +1526,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		if (!add_odd_even_pages_header	&& present_odd_even_pages)							odt_context->add_empty_header(1);
 		if (!add_default_header			&& (present_odd_even_pages || present_title_page))	odt_context->add_empty_header(0);
 
-		for (unsigned int i=0; i< s->m_arrFooterReference.size(); i++)
+		for (size_t i=0; i< s->m_arrFooterReference.size(); i++)
 		{
 			if (s->m_arrFooterReference[i] == NULL) continue;
 
@@ -1607,7 +1604,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 
 			std::vector<std::pair<double,double>> width_space;
 			
-			for (unsigned int i =0; i< oox_section_pr->m_oCols->m_arrColumns.size(); i++)
+			for (size_t i =0; i< oox_section_pr->m_oCols->m_arrColumns.size(); i++)
 			{
 				if (oox_section_pr->m_oCols->m_arrColumns[i] == NULL) continue;
 				double space = default_space_pt;
@@ -1620,7 +1617,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 				
 				width_space.push_back(std::pair<double,double>(w, space));
 			}
-			//for (unsigned int i= oox_section_pr->m_oCols->m_arrColumns.size(); i< num_columns; i ++)
+			//for (size_t i= oox_section_pr->m_oCols->m_arrColumns.size(); i< num_columns; i ++)
 			//{
 			//	width_space.push_back(std::pair<double,double>(-1, default_space_pt));
 			//}
@@ -2262,13 +2259,13 @@ void DocxConverter::convert(OOX::Logic::CAlternateContent *oox_alt_content)
 {
 	if (oox_alt_content == NULL)return;
 
-	for(unsigned int i = 0; i < oox_alt_content->m_arrChoiceItems.size(); ++i) // правильный выбор
+	for(size_t i = 0; i < oox_alt_content->m_arrChoiceItems.size(); ++i) // правильный выбор
 	{
 		convert(oox_alt_content->m_arrChoiceItems[i]);
 	}
 	
 	if (oox_alt_content->m_arrChoiceItems.size() > 0) return;  //чтоб не было дубляжа
-	for(unsigned int i = 0; i < oox_alt_content->m_arrFallbackItems.size(); ++i) // альтернативный 
+	for(size_t i = 0; i < oox_alt_content->m_arrFallbackItems.size(); ++i) // альтернативный 
 	// todooo нужно сверять по инддексно что нормально сконвертилось ... или делать ВСЕ по choice ( это правильнее)
 	{
 		convert(oox_alt_content->m_arrFallbackItems[i]);
@@ -2458,7 +2455,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 					}
 					if (!bSet)
 					{
-                        int pos = oox_pic->m_oShape->m_sType->find(_T("#_x0000_t"));
+                        int pos = (int)oox_pic->m_oShape->m_sType->find(_T("#_x0000_t"));
 						if (pos >= 0)
 						{				
                             sptType = (SimpleTypes::Vml::SptType)_wtoi(oox_pic->m_oShape->m_sType->substr(pos + 9, oox_pic->m_oShape->m_sType->length() - pos - 9).c_str());
@@ -2823,13 +2820,13 @@ void DocxConverter::convert_lists_styles()
 
 	oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(lists_styles);
 //базовые
-	for (unsigned int i=0; i < lists_styles->m_arrAbstractNum.size(); i++)
+	for (size_t i=0; i < lists_styles->m_arrAbstractNum.size(); i++)
 	{
 		convert(lists_styles->m_arrAbstractNum[i]);
 	}
 
 //используемые в документе, используют базовые + могут поменяться - Override	
-	for (unsigned int i=0; i < lists_styles->m_arrNum.size(); i++)
+	for (size_t i=0; i < lists_styles->m_arrNum.size(); i++)
 	{
 		if (lists_styles->m_arrNum[i] == NULL) continue;
 
@@ -2864,7 +2861,7 @@ void DocxConverter::convert_styles()
 
 	convert(docx_styles->m_oDocDefaults.GetPointer());
 
-	for (unsigned int i=0; i< docx_styles->m_arrStyle.size(); i++)
+	for (size_t i=0; i< docx_styles->m_arrStyle.size(); i++)
 	{
 		if (docx_styles->m_arrStyle[i] == NULL) continue;
 
@@ -2902,7 +2899,7 @@ void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
 
 		odt_context->start_hyperlink(ref);
 		
-		for (unsigned int i=0; i< oox_hyperlink->m_arrItems.size(); i++)
+		for (size_t i=0; i< oox_hyperlink->m_arrItems.size(); i++)
 		{
 			convert(oox_hyperlink->m_arrItems[i]);
 		}
@@ -2911,7 +2908,7 @@ void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
 	else
 	{//ссылка внутри дока
 		//anchor todooo
-		for (unsigned int i=0; i< oox_hyperlink->m_arrItems.size(); i++)
+		for (size_t i=0; i< oox_hyperlink->m_arrItems.size(); i++)
 		{
 			convert(oox_hyperlink->m_arrItems[i]);
 		}
@@ -3017,7 +3014,7 @@ void DocxConverter::convert(OOX::Numbering::CAbstractNum* oox_num_style)
     //nullable<ComplexTypes::Word::std::wstring_                        > m_oStyleLink;
 	//nullable<ComplexTypes::Word::CLongHexNumber                  > m_oTmpl;
 
-	for (unsigned int i=0; i < oox_num_style->m_arrLvl.size(); i++)
+	for (size_t i=0; i < oox_num_style->m_arrLvl.size(); i++)
 	{
 		convert(oox_num_style->m_arrLvl[i]);
 	}
@@ -3153,7 +3150,7 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 		int id = oox_num_lvl->m_oLvlPicBulletId->m_oVal->GetValue();
 		OOX::CNumbering * lists_styles = docx_document->GetNumbering();
 
-		for (unsigned int i = 0; (lists_styles) && (i< lists_styles->m_arrNumPicBullet.size()); i++)
+		for (size_t i = 0; (lists_styles) && (i< lists_styles->m_arrNumPicBullet.size()); i++)
 		{
 			if ((lists_styles->m_arrNumPicBullet[i]) && (lists_styles->m_arrNumPicBullet[i]->m_oNumPicBulletId.GetValue() == id))
 			{
@@ -3245,7 +3242,7 @@ void DocxConverter::convert_table_style(OOX::CStyle *oox_style)
 	//	convert(oox_style->m_oTrPr.GetPointer(), table_row_properties);
 	//}
 //отдельные
-	for (unsigned int i = 0 ; i <oox_style->m_arrTblStylePr.size() ; i++)
+	for (size_t i = 0 ; i <oox_style->m_arrTblStylePr.size() ; i++)
 	{
 		if (oox_style->m_arrTblStylePr[i] == NULL) continue;
 
@@ -3437,7 +3434,7 @@ void DocxConverter::convert_comment(int oox_comm_id)
 	OOX::CComments * docx_comments = docx_document->GetComments();
 	if (!docx_comments)return;
 
-	for (unsigned int comm = 0 ; comm < docx_comments->m_arrComments.size(); comm++)
+	for (size_t comm = 0 ; comm < docx_comments->m_arrComments.size(); comm++)
 	{
 		OOX::CComment* oox_comment = docx_comments->m_arrComments[comm];
 		
@@ -3452,7 +3449,7 @@ void DocxConverter::convert_comment(int oox_comm_id)
 				if (oox_comment->m_oDate.IsInit())		odt_context->comment_context()->set_date	(oox_comment->m_oDate->GetValue());
 				if (oox_comment->m_oInitials.IsInit())	{}
 
-				for (unsigned int i = 0; i <oox_comment->m_arrItems.size(); i++)
+				for (size_t i = 0; i <oox_comment->m_arrItems.size(); i++)
 				{
 					convert(oox_comment->m_arrItems[i]);
 				}
@@ -3468,7 +3465,7 @@ void DocxConverter::convert_footnote(int oox_ref_id)
 
 	odt_context->start_note(oox_ref_id, 1);
 
-	for (unsigned int n = 0 ; n < footnotes->m_arrFootnote.size(); n++)
+	for (size_t n = 0 ; n < footnotes->m_arrFootnote.size(); n++)
 	{
 		OOX::CFtnEdn* oox_note = footnotes->m_arrFootnote[n];
 		
@@ -3479,7 +3476,7 @@ void DocxConverter::convert_footnote(int oox_ref_id)
 		{
 			odt_context->start_note_content();
 			{
-				for (unsigned int i = 0; i < oox_note->m_arrItems.size(); i++)
+				for (size_t i = 0; i < oox_note->m_arrItems.size(); i++)
 				{
 					convert(oox_note->m_arrItems[i]);
 				}
@@ -3496,7 +3493,7 @@ void DocxConverter::convert_endnote(int oox_ref_id)
 
 	odt_context->start_note(oox_ref_id, 2);
 
-	for (unsigned int n = 0 ; n < endnotes->m_arrEndnote.size(); n++)
+	for (size_t n = 0 ; n < endnotes->m_arrEndnote.size(); n++)
 	{
 		OOX::CFtnEdn* oox_note = endnotes->m_arrEndnote[n];
 		
@@ -3507,7 +3504,7 @@ void DocxConverter::convert_endnote(int oox_ref_id)
 		{
 			odt_context->start_note_content();
 			{
-				for (unsigned int i = 0; i < oox_note->m_arrItems.size(); i++)
+				for (size_t i = 0; i < oox_note->m_arrItems.size(); i++)
 				{
 					convert(oox_note->m_arrItems[i]);
 				}
@@ -3524,7 +3521,7 @@ void DocxConverter::convert_hdr_ftr	(std::wstring sId)
 
 	oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(oox_hdr_ftr);
 
-	for ( unsigned int nIndex = 0; nIndex < oox_hdr_ftr->m_arrItems.size(); nIndex++ )
+	for ( size_t nIndex = 0; nIndex < oox_hdr_ftr->m_arrItems.size(); nIndex++ )
 	{
 		convert(oox_hdr_ftr->m_arrItems[nIndex]);
 	}
@@ -3695,7 +3692,7 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 	odt_context->table_context()->set_table_inside_h(border_inside_h);
 
 	int count_rows		= oox_table->m_nCountRow;
-	int count_columns	= oox_table->m_oTblGrid.IsInit() ? oox_table->m_oTblGrid->m_arrGridCol.size() : 0;
+	int count_columns	= oox_table->m_oTblGrid.IsInit() ? (int)oox_table->m_oTblGrid->m_arrGridCol.size() : 0;
 	
 	odt_context->styles_context()->table_styles().set_current_dimension(count_columns, count_rows);
 	odt_context->table_context()->count_rows(count_rows);
@@ -3703,7 +3700,7 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 	convert(oox_table->m_oTblGrid.GetPointer());
 
 //------ строки
-	for (unsigned int i =0 ; i < oox_table->m_arrItems.size(); i++)
+	for (size_t i =0 ; i < oox_table->m_arrItems.size(); i++)
 	{
 		switch(oox_table->m_arrItems[i]->getType())
 		{
@@ -3753,7 +3750,7 @@ void DocxConverter::convert(OOX::Logic::CTblGrid	*oox_table_grid)
 
 	odt_context->start_table_columns();
 
-	for (int i =0 ; i < oox_table_grid->m_arrGridCol.size(); i++)
+	for (size_t i =0 ; i < oox_table_grid->m_arrGridCol.size(); i++)
 	{
 		if (oox_table_grid->m_arrGridCol[i] == NULL) continue;
 		double width = -1;
@@ -3819,7 +3816,7 @@ void DocxConverter::convert(OOX::Logic::CTr	*oox_table_row)
 	
 	convert(oox_table_row->m_oTableRowProperties);
 
-	for (unsigned int i =0 ; i < oox_table_row->m_arrItems.size(); i++)
+	for (size_t i =0 ; i < oox_table_row->m_arrItems.size(); i++)
 	{
 		switch(oox_table_row->m_arrItems[i]->getType())
 		{
@@ -3879,7 +3876,7 @@ void DocxConverter::convert(OOX::Logic::CTc	*oox_table_cell)
 			odt_context->table_context()->set_cell_column_span(oox_table_cell->m_oTableCellProperties->m_oGridSpan->m_oVal->GetValue());
 	}
 
-	for (unsigned int i =0 ; i < oox_table_cell->m_arrItems.size(); i++)
+	for (size_t i =0 ; i < oox_table_cell->m_arrItems.size(); i++)
 	{
 		switch(oox_table_cell->m_arrItems[i]->getType())
 		{
@@ -4238,7 +4235,7 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 		//если нет убрать, если да - добавить
 		if (border_inside_h)
 		{
-			int del_border = border_inside_h->find(L"none");
+			int del_border = (int)border_inside_h->find(L"none");
 			if (row != 1)
 			{
 				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ && del_border>=0)
@@ -4258,7 +4255,7 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 		}
 		if (border_inside_v)
 		{
-			int del_border = border_inside_v->find(L"none");
+			int del_border = (int)border_inside_v->find(L"none");
 			if (col != 1)
 			{
 				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ && del_border>=0)

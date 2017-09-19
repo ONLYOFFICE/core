@@ -41,11 +41,11 @@
 #include <cpdoccore/odf/odf_document.h>
 
 namespace cpdoccore { 
+
+	using namespace odf_types;
 namespace odf_reader {
 
-
-// table:table-source
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------------
 const wchar_t * table_database_ranges::ns = L"table";
 const wchar_t * table_database_ranges::name = L"database-ranges";
 
@@ -66,8 +66,7 @@ void table_database_ranges::xlsx_convert(oox::xlsx_conversion_context & Context)
 	}
 
 }
-// table:named-range
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------------
 const wchar_t * table_database_range::ns = L"table";
 const wchar_t * table_database_range::name = L"database-range";
 
@@ -96,7 +95,7 @@ void table_database_range::xlsx_convert(oox::xlsx_conversion_context & Context)
 		Context.get_table_context().set_database_filter(table_display_filter_buttons_->get());
 
 	if (table_orientation_)
-		Context.get_table_context().set_database_orientation(*table_orientation_ == L"row" ? true : false);
+		Context.get_table_context().set_database_orientation(table_orientation_->get_type() == table_orientation::row ? true : false);
 
 	if (table_contains_header_)
 		Context.get_table_context().set_database_header(table_contains_header_->get());
@@ -109,8 +108,7 @@ void table_database_range::xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_table_context().end_database_range();
 }
 
-// table:sort
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------------
 const wchar_t * table_sort::ns		= L"table";
 const wchar_t * table_sort::name	= L"sort";
 
@@ -118,25 +116,24 @@ void table_sort::add_child_element( xml::sax * Reader, const std::wstring & Ns, 
 {
     if (L"table" == Ns && L"sort-by" == Name)
     {
-        CP_CREATE_ELEMENT(table_sort_by_);
+        CP_CREATE_ELEMENT(content_);
     } 
 }
 
 void table_sort::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	for (size_t i = 0; i < table_sort_by_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
 	{
-		table_sort_by * sort_by = dynamic_cast<table_sort_by*>(table_sort_by_[i].get());
+		table_sort_by * sort_by = dynamic_cast<table_sort_by*>(content_[i].get());
 
 		int descending = 1;
-		if ((sort_by->table_order_) && (sort_by->table_order_.get() == L"descending"))
+		if ((sort_by->table_order_) && (sort_by->table_order_->get_type() == table_order::descending))
 			descending = 2;
 
 		Context.get_table_context().add_database_sort(sort_by->table_field_number_, descending); 
 	}
 }
-// table:sort-by
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//--------------------------------------------------------------------------------------------------
 const wchar_t * table_sort_by::ns	= L"table";
 const wchar_t * table_sort_by::name	= L"sort-by";
 
@@ -147,6 +144,98 @@ void table_sort_by::add_attributes(xml::attributes_wc_ptr const & Attributes)
 	CP_APPLY_ATTR(L"table:order"		, table_order_);
 
 }
+//--------------------------------------------------------------------------------------------------
+const wchar_t * table_filter::ns	= L"table";
+const wchar_t * table_filter::name	= L"filter";
 
+void table_filter::add_attributes(xml::attributes_wc_ptr const & Attributes)
+{
+	CP_APPLY_ATTR(L"table:condition-source",				table_condition_source_);
+	CP_APPLY_ATTR(L"table:condition-source-range-address",	table_condition_source_range_address_);
+	CP_APPLY_ATTR(L"table:display-duplicates",				table_display_duplicates_);
+	CP_APPLY_ATTR(L"table:target-range-address",			table_target_range_address_);
+}
+
+void table_filter::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
+
+void table_filter::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+		content_[i]->xlsx_convert(Context);
+	}
+}
+//--------------------------------------------------------------------------------------------------
+const wchar_t * table_filter_or::ns		= L"table";
+const wchar_t * table_filter_or::name	= L"filter-or";
+
+void table_filter_or::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
+
+void table_filter_or::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+		content_[i]->xlsx_convert(Context);
+	}
+}
+//--------------------------------------------------------------------------------------------------
+const wchar_t * table_filter_and::ns	= L"table";
+const wchar_t * table_filter_and::name	= L"filter-and";
+
+void table_filter_and::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
+
+void table_filter_and::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+		content_[i]->xlsx_convert(Context);
+	}
+}
+//--------------------------------------------------------------------------------------------------
+const wchar_t * table_filter_condition::ns		= L"table";
+const wchar_t * table_filter_condition::name	= L"filter-condition";
+
+void table_filter_condition::add_attributes(xml::attributes_wc_ptr const & Attributes)
+{
+	CP_APPLY_ATTR(L"table:case-sensitive",	table_case_sensitive_);
+	CP_APPLY_ATTR(L"table:data-type",		table_data_type_);
+	CP_APPLY_ATTR(L"table:field-number",	table_field_number_);
+	CP_APPLY_ATTR(L"table:operator",		table_operator_);
+	CP_APPLY_ATTR(L"table:value",			table_value_);
+}
+
+void table_filter_condition::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
+
+void table_filter_condition::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+		content_[i]->xlsx_convert(Context);
+	}
+}
+//--------------------------------------------------------------------------------------------------
+const wchar_t * table_filter_set_item::ns	= L"table";
+const wchar_t * table_filter_set_item::name = L"filter-set-item";
+
+void table_filter_set_item::add_attributes(xml::attributes_wc_ptr const & Attributes)
+{
+	CP_APPLY_ATTR(L"table:value",	table_value_);
+}
+
+void table_filter_set_item::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+}
 }
 }

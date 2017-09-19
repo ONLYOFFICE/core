@@ -39,11 +39,9 @@ PivotChartBits::PivotChartBits()
 {
 }
 
-
 PivotChartBits::~PivotChartBits()
 {
 }
-
 
 BaseObjectPtr PivotChartBits::clone()
 {
@@ -52,8 +50,10 @@ BaseObjectPtr PivotChartBits::clone()
 
 void PivotChartBits::readFields(CFRecord& record)
 {
-	Log::error("PivotChartBits record is not implemented.");
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	unsigned short unused1, flags, reserved1, reserved2, reserved3;
+	record >> rt >> unused1 >> flags >> reserved1 >> reserved2 >> reserved3;
+
+	fGXHide = GETBIT(flags, 0);
 }
 
 } // namespace XLS

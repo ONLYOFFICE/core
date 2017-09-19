@@ -34,7 +34,6 @@
 #include "odf_rels.h"
 
 #include <boost/regex.h>
-#include <boost/foreach.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 
 #include <cpdoccore/xml/utils.h>
@@ -85,11 +84,11 @@ void _mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wst
 
 	std::wstring output_path ;
 
-    BOOST_FOREACH(item const & elm, items_)
+	for (size_t i = 0; i < items_.size(); i++)
     {
-		if (elm.oox_ref == input_path)
+		if (items_[i].oox_ref == input_path)
 		{
-			output_path  = elm.odf_ref;
+			output_path  = items_[i].odf_ref;
 			break;
 		}
 	}
@@ -110,12 +109,11 @@ void _mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wst
 }
 void _mediaitems::dump_rels(rels & Rels, std::wstring local_path)
 {
-    size_t i = 0;
-    BOOST_FOREACH(item & elm, items_)
+	for (size_t i = 0; i < items_.size(); i++)
     {
-        Rels.add( relationship(
-                utils::media::get_rel_type(elm.type), 
-                local_path + elm.odf_ref)
+		Rels.add( relationship(
+                utils::media::get_rel_type(items_[i].type), 
+                local_path + items_[i].odf_ref)
                 );
 
     }        

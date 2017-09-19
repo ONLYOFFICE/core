@@ -1,16 +1,29 @@
+PRODUCT_NAME ?= core
+PRODUCT_VERSION ?= 0.0.0
+BUILD_NUMBER ?= 0
+PACKAGE_NAME := $(PRODUCT_NAME)
+
+UNAME_M := $(shell uname -m)
+ifeq ($(UNAME_M),x86_64)
+	ARCHITECTURE := 64
+	ARCH_SUFFIX := x64
+endif
+ifneq ($(filter %86,$(UNAME_M)),)
+	ARCHITECTURE := 32
+	ARCH_SUFFIX := x86
+endif
+
 ifeq ($(OS),Windows_NT)
 	PLATFORM := win
 	EXEC_EXT := .exe
 	SHELL_EXT := .bat
 	SHARED_EXT := .dll
 	LIB_EXT := .lib
+	ARCH_EXT := .zip
 	MAKE := nmake
-	ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
-		ARCHITECTURE := 64
-	endif
-	ifeq ($(PROCESSOR_ARCHITECTURE),x86)
-		ARCHITECTURE := 32
-	endif
+	AR := 7z a -y
+	PACKAGE_VERSION := $(PRODUCT_VERSION).$(BUILD_NUMBER)
+	ARCH_REPO_DIR := windows
 else
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S),Linux)
@@ -19,14 +32,11 @@ else
 		SHELL_EXT := .sh
 		LIB_EXT := .a
 		LIB_PREFIX := lib
+		ARCH_EXT := .tar.gz
 		MAKE := make -j $(shell grep -c ^processor /proc/cpuinfo)
-	endif
-	UNAME_M := $(shell uname -m)
-	ifeq ($(UNAME_M),x86_64)
-		ARCHITECTURE := 64
-	endif
-	ifneq ($(filter %86,$(UNAME_M)),)
-		ARCHITECTURE := 32
+		AR := tar -zcvf
+		PACKAGE_VERSION := $(PRODUCT_VERSION)-$(BUILD_NUMBER)
+		ARCH_REPO_DIR := linux
 	endif
 endif
 
@@ -61,6 +71,7 @@ ASCDOCUMENTSCORE := $(LIBDIR)/$(LIB_PREFIX)ascdocumentscore$(SHARED_EXT)
 LIBXML := $(LIBDIR)/$(LIB_PREFIX)libxml$(LIB_EXT)
 LICENSEMANAGER := $(LIBDIR)/$(LIB_PREFIX)LicenceManager$(LIB_EXT)
 OOXMLSIGNATURE := $(LIBDIR)/$(LIB_PREFIX)ooxmlsignature$(LIB_EXT)
+HUNSPELL := $(LIBDIR)/$(LIB_PREFIX)hunspell$(SHARED_EXT)
 
 TARGETS += $(ALLFONTSGEN)
 TARGETS += $(X2T)
@@ -89,6 +100,7 @@ TARGETS += $(ASCDOCUMENTSCORE)
 TARGETS += $(LIBXML)
 TARGETS += $(LICENSEMANAGER)
 TARGETS += $(OOXMLSIGNATURE)
+TARGETS += $(HUNSPELL)
 
 X2T_PRO := $(abspath X2tConverter/build/Qt/X2tSLN.pro)
 HTMLFILEINTERNAL_PRO := $(abspath ../desktop-sdk/HtmlFile/Internal/Internal.pro)
@@ -117,6 +129,7 @@ ASCDOCUMENTSCORE_PRO := $(abspath ../desktop-sdk/ChromiumBasedEditors/lib/AscDoc
 LIBXML_PRO := $(abspath DesktopEditor/xml/build/qt/libxml2.pro)
 LICENSEMANAGER_PRO := $(abspath LicenceManager/linux/LicenseManager.pro)
 OOXMLSIGNATURE_PRO := $(abspath DesktopEditor/xmlsec/src/ooxmlsignature.pro)
+HUNSPELL_PRO := $(abspath DesktopEditor/hunspell-1.3.3/src/qt/hunspell.pro)
 
 # PROS += $(basename $(X2T_PRO)).build
 # PROS += ALLFONTSGEN_PRO
@@ -168,6 +181,7 @@ QT_PROJ += ASCDOCUMENTSCORE
 QT_PROJ += LIBXML
 QT_PROJ += LICENSEMANAGER
 QT_PROJ += OOXMLSIGNATURE
+QT_PROJ += HUNSPELL
 
 # X2T_DEP += $(XLSFORMATLIB)
 # X2T_DEP += $(ODFFILEWRITERLIB)
@@ -217,12 +231,25 @@ ASCDOCUMENTSCORE_DEP += $(XPSFILE)
 #ASCDOCUMENTSCORE_DEP += $(LICENSEMANAGER)
 ASCDOCUMENTSCORE_DEP += $(LIBXML)
 ASCDOCUMENTSCORE_DEP += $(OOXMLSIGNATURE)
+ASCDOCUMENTSCORE_DEP += $(HUNSPELL)
 
 OOXMLSIGNATURE_DEP += $(LIBXML)
 
 PDFREADER_DEP += $(HTMLRENDERER)
 
 PDFWRITER_DEP += $(UNICODECONVERTER)
+
+ARCHIVE := ./$(PACKAGE_NAME)$(ARCH_EXT)
+
+ARTIFACTS += build/*
+ARTIFACTS += Common/3dParty/*/$(TARGET)/build/*
+
+
+ifeq ($(OS),Windows_NT)
+ARTIFACTS += Common/3dParty/v8/$(TARGET)/*/*.dll
+else
+ARTIFACTS += Common/3dParty/v8/$(TARGET)/*.S
+endif
 
 #Template for next statment:
 #FOO_MAKE := $(basename $(FOO_PRO)).build/Makefile
@@ -236,7 +263,7 @@ $$(value $(1)): $$(value $(1)_MAKE)
 	cd $$(dir $$(value $(1)_MAKE)) && $(MAKE);
 endef
 
-.PHONY : all bin lib clean
+.PHONY : all bin lib clean deploy
 
 all: lib bin 
 
@@ -275,11 +302,24 @@ $(OOXMLSIGNATURE): $(OOXMLSIGNATURE_DEP)
 %.build/Makefile: %.pro
 	mkdir -p $(dir $@) && cd $(dir $@) && qmake -r $<
 
+$(ARCHIVE) : 
+	$(AR) $@ $(ARTIFACTS)
+
 clean:
-	rm -rf $(TARGETS)
+	rm -rf $(TARGETS) $(ARCHIVE)
 	for i in $(PROS); do \
 		if [ -d $$i -a -f $$i/Makefile ]; then \
 			cd $$i && $(MAKE) distclean; \
 		fi \
 done
 
+deploy: $(ARCHIVE)
+	aws s3 cp \
+		$(ARCHIVE) \
+		s3://repo-doc-onlyoffice-com/$(ARCH_REPO_DIR)/$(PACKAGE_NAME)/$(GIT_BRANCH)/$(PACKAGE_VERSION)/$(ARCH_SUFFIX)/ \
+		--acl public-read
+
+	aws s3 sync \
+		s3://repo-doc-onlyoffice-com/$(ARCH_REPO_DIR)/$(PACKAGE_NAME)/$(GIT_BRANCH)/$(PACKAGE_VERSION)/$(ARCH_SUFFIX)/  \
+		s3://repo-doc-onlyoffice-com/$(ARCH_REPO_DIR)/$(PACKAGE_NAME)/$(GIT_BRANCH)/latest/$(ARCH_SUFFIX)/ \
+		--acl public-read --delete

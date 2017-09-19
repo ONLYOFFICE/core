@@ -31,10 +31,15 @@
  */
 
 #include "PIVOTCACHEDEFINITION.h"
-#include <Logic/Biff_records/SXStreamID.h>
-#include <Logic/Biff_records/SXVS.h>
-#include <Logic/Biff_unions/SXSRC.h>
-#include <Logic/Biff_unions/SXADDLCACHE.h>
+#include "PIVOTCACHE.h"
+#include "SXSRC.h"
+#include "SXADDLCACHE.h"
+#include "FDB.h"
+
+#include "../Biff_records/SXStreamID.h"
+#include "../Biff_records/SXVS.h"
+#include "../Biff_records/SXDB.h"
+#include "../Biff_records/SXDBEx.h"
 
 namespace XLS
 {
@@ -59,6 +64,8 @@ BaseObjectPtr PIVOTCACHEDEFINITION::clone()
 // PIVOTCACHEDEFINITION = SXStreamID SXVS [SXSRC] [SXADDLCACHE]
 const bool PIVOTCACHEDEFINITION::loadContent(BinProcessor& proc)
 {
+	global_info_ = proc.getGlobalWorkbookInfo();
+	
 	if(!proc.mandatory<SXStreamID>())
 	{
 		return false;
@@ -83,6 +90,140 @@ const bool PIVOTCACHEDEFINITION::loadContent(BinProcessor& proc)
 	}
 	return true;
 }
+int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
+{
+	global_info_->arPivotCacheSxNames.clear();
+	global_info_->arPivotSxNames.clear();
+
+	SXStreamID* streamId = dynamic_cast<SXStreamID*>(m_SXStreamID.get());
+	if (!streamId) return 0;
+
+	std::unordered_map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCacheStream.find(streamId->idStm);
+	if (pFind == global_info_->mapPivotCacheStream.end()) return 0;
+
+	global_info_->idPivotCache = streamId->idStm;
+
+	PIVOTCACHE* pivot_cache = dynamic_cast<PIVOTCACHE*>(pFind->second.get());
+	if (!pivot_cache) return 0;
+
+	SXDB*	db		= dynamic_cast<SXDB*>(pivot_cache->m_SXDB.get());
+	SXDBEx*	db_ex	= dynamic_cast<SXDBEx*>(pivot_cache->m_SXDBEx.get());
+
+	if (!db || !db_ex)return 0;
+
+	if (pivot_cache->m_arFDB.empty() && pivot_cache->m_arSXFORMULA.empty())
+	{
+		global_info_->mapPivotCacheStream.erase(pFind);
+		return 0;
+	}
+	global_info_->mapPivotCacheIndex.insert(std::make_pair(global_info_->idPivotCache, global_info_->mapPivotCacheIndex.size()));
+
+	SXSRC* src = dynamic_cast<SXSRC*>(m_SXSRC.get());
+	bool bSql = src ? src->bSql : false;
+
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"pivotCacheDefinition")
+		{          
+			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+            CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+		
+			if (pivot_cache->m_arDBB.empty() && bSql)
+			{
+				CP_XML_ATTR(L"saveData", 0);
+			}
+			else 
+			{
+				CP_XML_ATTR(L"r:id", L"rId1" );
+			}
+			CP_XML_ATTR(L"enableRefresh",	1);
+			CP_XML_ATTR(L"refreshedBy",		db->rgb.value());
+			CP_XML_ATTR(L"refreshedDate",	db_ex->numDate.data.value);
+			CP_XML_ATTR(L"recordCount",		db->crdbdb);
+
+			if (src)
+			{
+				src->serialize(CP_XML_STREAM());
+			}
+			
+			if (!pivot_cache->m_arFDB.empty())
+			{
+				CP_XML_NODE(L"cacheFields")
+				{
+					CP_XML_ATTR(L"count", pivot_cache->m_arFDB.size());
+
+					for (size_t i = 0; i < pivot_cache->m_arFDB.size(); i++)
+					{
+						FDB *field = dynamic_cast<FDB *>(pivot_cache->m_arFDB[i].get());
+						if (!field) continue;
+
+						field->serialize(CP_XML_STREAM(), bSql, !pivot_cache->m_arDBB.empty());
+					}
+				}
+			}
+			if (!pivot_cache->m_arSXFORMULA.empty())
+			{
+				CP_XML_NODE(L"calculatedItems")
+				{
+					CP_XML_ATTR(L"count", pivot_cache->m_arSXFORMULA.size());
+
+					for (size_t i = 0; i < pivot_cache->m_arSXFORMULA.size(); i++)
+					{
+						pivot_cache->m_arSXFORMULA[i]->serialize(CP_XML_STREAM());
+					}
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+
+int PIVOTCACHEDEFINITION::serialize_records(std::wostream & strm)
+{
+	SXStreamID* streamId = dynamic_cast<SXStreamID*>(m_SXStreamID.get());
+	if (!streamId) return 0;
+
+	std::unordered_map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCacheStream.find(streamId->idStm);
+	if (pFind == global_info_->mapPivotCacheStream.end()) return 0;
+
+	PIVOTCACHE* pivot_cache = dynamic_cast<PIVOTCACHE*>(pFind->second.get());
+	if (!pivot_cache) return 0;
+
+	SXSRC* src = dynamic_cast<SXSRC*>(m_SXSRC.get());
+	bool bSql = src ? src->bSql : false;
+
+	if (pivot_cache->m_arDBB.empty() && bSql) return 0;
+
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"pivotCacheRecords")
+		{          
+			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+            CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+		
+			if (!pivot_cache->m_arDBB.empty())
+			{
+				CP_XML_ATTR(L"count", pivot_cache->m_arDBB.size());
+				for (size_t i = 0; i < pivot_cache->m_arDBB.size(); i++)
+				{
+					pivot_cache->m_arDBB[i]->serialize(CP_XML_STREAM());
+				}
+			}
+			else
+			{
+				CP_XML_ATTR(L"count", pivot_cache->m_arFDB.size());
+				for (size_t i = 0; i < pivot_cache->m_arFDB.size(); i++)
+				{
+					FDB* fdb = dynamic_cast<FDB*>(pivot_cache->m_arFDB[i].get());
+					fdb->serialize_record(CP_XML_STREAM());
+				}
+			}
+		}
+	}
+	return 0;
+}
+
 
 } // namespace XLS
 

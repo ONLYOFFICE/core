@@ -32,7 +32,6 @@
 
 #include "logging.h"
 
-#include <boost/foreach.hpp>
 #include <iostream>
 
 #include "odf_page_layout_context.h" 

@@ -88,6 +88,7 @@
 #include "../src/odf/table_calculation_settings.cpp"
 #include "../src/odf/table_docx.cpp"
 #include "../src/odf/table_named_expressions.cpp"
+#include "../src/odf/table_data_pilot_tables.cpp"
 #include "../src/odf/table_pptx.cpp"
 #include "../src/odf/table_xlsx.cpp"
 #include "../src/odf/templates.cpp"

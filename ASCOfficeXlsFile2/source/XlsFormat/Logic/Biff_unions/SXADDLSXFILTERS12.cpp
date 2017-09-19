@@ -57,12 +57,12 @@ BaseObjectPtr SXADDLSXFILTERS12::clone()
 // SXADDLSXFILTERS12 = SXAddl_SXCSXFilters12_SXDId *SXADDLSXFILTER12 SXAddl_SXCSXFilters12_SXDEnd
 const bool SXADDLSXFILTERS12::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory<SXAddl_SXCSXFilters12_SXDId>())
-	{
-		return false;
-	}
-	proc.repeated<SXADDLSXFILTER12>(0, 0);
-	proc.mandatory<SXAddl_SXCSXFilters12_SXDEnd>();
+	//if(!proc.mandatory<SXAddl_SXCSXFilters12_SXDId>())
+	//{
+	//	return false;
+	//}
+	//proc.repeated<SXADDLSXFILTER12>(0, 0);
+	//proc.mandatory<SXAddl_SXCSXFilters12_SXDEnd>();
 
 	return true;
 }

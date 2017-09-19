@@ -46,11 +46,7 @@ public:
 	ExtNameParsedFormula();
 	BiffStructurePtr clone();
 	void load(CFRecord& record);
-private:
-	// stub to make the class non-abstract
 
-
-private:
 	PtgPtr val;
 };
 

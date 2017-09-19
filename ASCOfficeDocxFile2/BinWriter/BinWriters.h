@@ -82,11 +82,11 @@ namespace BinDocxRW
 		int m_nType;
 	public:
         std::wstring m_sFld;
-    public: FldStruct(std::wstring sFld, int nType):m_sFld(sFld),m_nType(nType){}
-	public: int GetType()
-			{
-				return m_nType;
-			}
+		FldStruct(std::wstring sFld, int nType):m_sFld(sFld),m_nType(nType){}
+		int GetType()
+		{
+			return m_nType;
+		}
 	};
 	class BinaryCommonWriter
 	{
@@ -3025,7 +3025,14 @@ namespace BinDocxRW
                 std::wstring& sShapeType = aShapeTypes[i];
 				pOfficeDrawingConverter->AddShapeType(sShapeType);
 			}
-			pOfficeDrawingConverter->SetRels(oldRels);
+            pOfficeDrawingConverter->SetRels(oldRels);
+		}
+		void WriteVbaProject(OOX::VbaProject& oVbaProject)
+		{
+            m_oBcw.m_oStream.StartRecord(0);
+            oVbaProject.toPPTY(&m_oBcw.m_oStream);
+            m_oBcw.m_oStream.EndRecord();
+
 		}
 		void Write(std::vector<OOX::WritingElement*>& aElems)
 		{
@@ -7222,6 +7229,11 @@ namespace BinDocxRW
 					m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentsType::Date);
 					m_oBcw.m_oStream.WriteStringW(pComment->m_oDate->ToString());
 				}
+				if(pComment->m_oOOData.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentsType::OOData);
+					m_oBcw.m_oStream.WriteStringW(pComment->m_oOOData.get2());
+				}
 				if(pComment->m_oId.IsInit())
 				{
 					nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentsType::Id);
@@ -7714,9 +7726,9 @@ namespace BinDocxRW
 			m_nLastFilePos = 0;
 			m_nRealTableCount = 0;
 		}
-        static std::wstring WriteFileHeader(long nDataSize)
+        static std::wstring WriteFileHeader(long nDataSize, int version)
 		{
-            std::wstring sHeader = std::wstring(g_sFormatSignature) + L";v" + std::to_wstring(g_nFormatVersion) + L";" + std::to_wstring(nDataSize) + L";";
+            std::wstring sHeader = std::wstring(g_sFormatSignature) + L";v" + std::to_wstring(version) + L";" + std::to_wstring(nDataSize) + L";";
 			return sHeader;
 		}
 		void WriteMainTableStart()
@@ -7861,9 +7873,8 @@ namespace BinDocxRW
 		//Write DocumentTable
 				ParamsDocumentWriter oParamsDocumentWriter(poDocument);
 				m_oParamsWriter.m_pCurRels = oParamsDocumentWriter.m_pRels;
-				
+		
 		//DocumentTable всегда пишем последней, чтобы сначала заполнить все вспомогательные структуры, а при заполении документа, вызывать методы типа Style_Add...
-				nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Document);
 				BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, &m_oParamsWriter.m_mapIgnoreComments, &oBinaryHeaderFooterTableWriter);
 				oBinaryDocumentTableWriter.prepareOfficeDrawingConverter(m_oParamsWriter.m_pOfficeDrawingConverter, oParamsDocumentWriter.m_pRels, poDocument->m_arrShapeTypes);
 				
@@ -7871,7 +7882,15 @@ namespace BinDocxRW
 				oBinaryDocumentTableWriter.pBackground		= poDocument->m_oBackground.GetPointer();
 
 				oBinaryDocumentTableWriter.m_bWriteSectPr	= true;
+		//Write Vba
+				if(NULL != oDocx.m_pVbaProject)
+				{
+					nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::VbaProject);
+					oBinaryDocumentTableWriter.WriteVbaProject(*oDocx.m_pVbaProject);
+					this->WriteTableEnd(nCurPos);
+				}
 		// Write content
+				nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Document);
 				oBinaryDocumentTableWriter.Write(poDocument->m_arrItems);
 				this->WriteTableEnd(nCurPos);
 

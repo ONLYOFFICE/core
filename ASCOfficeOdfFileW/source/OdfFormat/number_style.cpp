@@ -30,9 +30,6 @@
  *
  */
 
-
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 #include <cpdoccore/xml/xmlchar.h>
@@ -67,13 +64,13 @@ void number_style_base::serialize(std::wostream & strm)
  	if (style_text_properties_) 
 		style_text_properties_->serialize(strm);
  
-	BOOST_FOREACH(office_element_ptr & elm, style_map_)
-	{
-		elm->serialize(strm);
+	for (size_t i = 0; i < style_map_.size(); i++)
+	{		
+		style_map_[i]->serialize(strm);
     }
-	BOOST_FOREACH(office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
 	{
-		elm->serialize(strm);
+		content_[i]->serialize(strm);
 	}
 }
 void number_style_base::serialize(CP_ATTR_NODE)
@@ -166,9 +163,9 @@ void number_text::serialize(std::wostream & strm)
     {
 		CP_XML_NODE_SIMPLE()
         {  
-			BOOST_FOREACH(office_element_ptr & elm, text_)
-			{
-				elm->serialize(CP_XML_STREAM());
+			for (size_t i = 0; i < text_.size(); i++)
+			{		
+				text_[i]->serialize(CP_XML_STREAM());
 			}		
 		}
 	}
@@ -194,10 +191,10 @@ void number_embedded_text::serialize(std::wostream & strm)
         {  
 			CP_XML_ATTR_OPT(L"number:position", number_position_);
 			
-			BOOST_FOREACH(office_element_ptr & elm, text_)
-			{
-				elm->serialize(CP_XML_STREAM());
-			}		
+			for (size_t i = 0; i < text_.size(); i++)
+			{		
+				text_[i]->serialize(CP_XML_STREAM());
+			}	
 		}
 	}
 }
@@ -228,10 +225,10 @@ void number_number::serialize(std::wostream & strm)
 
 			CP_XML_ATTR_OPT(L"number:min-integer-digits", number_min_integer_digits_);
 			CP_XML_ATTR_OPT(L"number:grouping", number_grouping_);
-			
-			BOOST_FOREACH(office_element_ptr & elm, number_embedded_text_)
-			{
-				elm->serialize(CP_XML_STREAM());
+
+			for (size_t i = 0; i < number_embedded_text_.size(); i++)
+			{		
+				number_embedded_text_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -336,9 +333,9 @@ void number_text_content::serialize(std::wostream & strm)
     {
 		CP_XML_NODE_SIMPLE()
         {  
-			BOOST_FOREACH(office_element_ptr & elm, text_)
-			{
-				elm->serialize(CP_XML_STREAM());
+			for (size_t i = 0; i < text_.size(); i++)
+			{		
+				text_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}

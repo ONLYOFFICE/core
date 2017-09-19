@@ -52,8 +52,6 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/SplitTransition.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/ZoomTransition.h"
 
-#include <boost/lexical_cast.hpp>
-
 #include "../OdfFormat/odp_conversion_context.h"
 
 #include "../OdfFormat/odf_text_context.h"
@@ -449,25 +447,21 @@ void PptxConverter::convert(PPTX::NotesSlide *oox_notes)
 
 	PPTX::Theme*			old_theme	= current_theme;
 	PPTX::Logic::ClrMap*	old_clrMap	= current_clrMap;
-
-	smart_ptr<PPTX::NotesMaster> notes_master;
-	if (!presentation->notesMasterIdLst.empty())
-	{
-		std::wstring rId = presentation->notesMasterIdLst[0].rid.get();
-		notes_master = ((*presentation)[rId]).smart_dynamic_cast<PPTX::NotesMaster>();
-	}	
+	
 	odp_context->start_note();
 	
-	if (notes_master.IsInit())
+	if (oox_notes->master_.IsInit())
 	{
-		current_theme	= notes_master->theme_.operator->();
-		current_clrMap	= &notes_master->clrMap;
+		current_theme	= oox_notes->master_->theme_.operator->();
+		current_clrMap	= &oox_notes->master_->clrMap;
 	}
 
 	current_slide	= dynamic_cast<OOX::IFileContainer*>(oox_notes);
 
 	if (oox_notes->clrMapOvr.IsInit() && oox_notes->clrMapOvr->overrideClrMapping.IsInit())
+	{
 		current_clrMap	= oox_notes->clrMapOvr->overrideClrMapping.GetPointer();
+	}
 	
 	convert_slide(&oox_notes->cSld, NULL, true, true, Notes);
 	
@@ -1351,6 +1345,10 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 		{
 			if (pShape->nvSpPr.nvPr.ph.is_init())
 			{
+				if (type == Notes || type == NotesMaster)
+				{
+					pShape->nvSpPr.nvPr.ph->idx.reset();
+				}				
 				if (bFillUp)
 					pShape->FillLevelUp();
 				
@@ -1436,6 +1434,8 @@ void PptxConverter::convert_layout(PPTX::Logic::CSld *oox_slide)
 		
 		if (pShape.IsInit() && pShape->nvSpPr.nvPr.ph.is_init())
 		{
+			pShape->FillLevelUp();
+			
 			int type = 0;
 			if (pShape->nvSpPr.nvPr.ph->type.IsInit())
 				type = pShape->nvSpPr.nvPr.ph->type->GetBYTECode();

@@ -41,6 +41,7 @@ namespace BinXlsxRW
 
     const static wchar_t* g_sFormatSignature = L"XLSY";
 	const int g_nFormatVersion = 2;
+	const int g_nFormatVersionNoBase64 = 10;
 	extern int g_nCurFormatVersion;
 
 	namespace c_oFileTypes{enum c_oFileTypes
@@ -190,7 +191,12 @@ namespace BinXlsxRW
 		PivotCache = 8,
 		ExternalBook = 9,
 		OleLink = 10,
-		DdeLink = 11
+		DdeLink = 11,
+		VbaProject = 12
+	};}
+	namespace c_oSerWorkbookVbaProjectTypes{enum c_oSerWorkbookVbaProjectTypes
+	{
+		Name = 0
 	};}
 	namespace c_oSerWorkbookPrTypes{enum c_oSerWorkbookPrTypes
 	{
@@ -655,7 +661,8 @@ namespace BinXlsxRW
 		Solved = 5,
 		Document = 6,
 		Replies = 7,
-		Reply = 8
+		Reply = 8,
+		OOTime = 9
 	};}
 	namespace c_oSer_ConditionalFormatting{enum c_oSer_ConditionalFormatting
 	{

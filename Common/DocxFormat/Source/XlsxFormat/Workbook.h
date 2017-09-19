@@ -53,8 +53,6 @@ namespace OOX
 			virtual ~CWorkbook()
 			{
 			}
-		public:
-
 			virtual void read(const CPath& oPath)
 			{
 			}
@@ -77,26 +75,19 @@ namespace OOX
 			{
 				return m_oReadPath;
 			}
-		public:
-
 			void ClearItems()
 			{
 			}
 
+			std::vector<WritingElement *>		m_arrItems;
 		private:
-			CPath									m_oReadPath;
+			CPath								m_oReadPath;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 					WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:conformance"), m_oConformance )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
-		public:
-
-			std::vector<WritingElement *>         m_arrItems;
-
 		};
 	} //Spreadsheet
 } // namespace OOX

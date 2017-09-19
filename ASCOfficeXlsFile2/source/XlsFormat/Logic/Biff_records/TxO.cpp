@@ -146,8 +146,8 @@ void TxO::readFields(CFRecord& record)
 		}
 	}
 	
-	hAlignment	= static_cast<unsigned char>(GETBITS(flags, 1, 3));
-	vAlignment	= static_cast<unsigned char>(GETBITS(flags, 4, 6));	// reserved2 (2 bits)	
+	hAlignment	= GETBITS(flags, 1, 3);
+	vAlignment	= GETBITS(flags, 4, 6);	// reserved2 (2 bits)	
 	
 	fLockText	= GETBIT(flags, 9);	// reserved3 (4 bits)	
 	fJustLast	= GETBIT(flags, 14);
@@ -170,7 +170,7 @@ int TxO::serialize (std::wostream & _stream)
 	
 	CP_XML_WRITER(_stream)    
 	{
-		for (int i = 0 ; i < TxOruns.rgTxoRuns.size(); i++)
+		for (size_t i = 0 ; i < TxOruns.rgTxoRuns.size(); i++)
 		{
 			Run *run = dynamic_cast<Run*>(TxOruns.rgTxoRuns[i].get());
 			if (run == NULL) continue;

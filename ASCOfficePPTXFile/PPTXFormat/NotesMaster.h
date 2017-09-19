@@ -58,7 +58,6 @@ namespace PPTX
 		{
 		}
 
-	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			//FileContainer::read(filename, map);
@@ -85,8 +84,6 @@ namespace PPTX
 			WrapperFile::write(filename, directory, content);
 			FileContainer::write(filename, directory, content);
 		}
-
-	public:
 		virtual const OOX::FileType type() const
 		{
 			return OOX::Presentation::FileTypes::NotesMaster;
@@ -186,10 +183,48 @@ namespace PPTX
 
 			pReader->Seek(end);
 		}
+		virtual void GetLevelUp(Logic::Shape* pShape)
+		{
+			if (!pShape) return;
 
-	public:
-        smart_ptr<Theme>			theme_;
-		smart_ptr<TableStyles>		tableStyles_;
+			if (pShape->nvSpPr.nvPr.ph.is_init())
+			{
+				std::wstring idx = pShape->nvSpPr.nvPr.ph->idx.get_value_or(L"");
+				std::wstring type = pShape->nvSpPr.nvPr.ph->type.get_value_or(L"body");
+				
+				if (type == L"ctrTitle") type = L"title";
+
+				for (size_t i = 0; i < cSld.spTree.SpTreeElems.size(); ++i)
+				{
+					smart_ptr<Logic::Shape> pMasterShape = cSld.spTree.SpTreeElems[i].GetElem().smart_dynamic_cast<Logic::Shape>();
+
+					if (pMasterShape.IsInit())
+					{
+						if (pMasterShape->nvSpPr.nvPr.ph.is_init())
+						{
+							std::wstring lIdx	= pMasterShape->nvSpPr.nvPr.ph->idx.get_value_or(_T(""));
+							std::wstring lType	= pMasterShape->nvSpPr.nvPr.ph->type.get_value_or(_T("body"));
+							
+							if (lType == L"ctrTitle") lType = L"title";
+
+							if ((type == lType) && (idx == lIdx) && !idx.empty())
+							{
+								pShape->SetLevelUpElement(pMasterShape.operator->());
+								return;
+							}
+							else if ((type == lType) && idx.empty() && lIdx.empty())
+							{
+								pShape->SetLevelUpElement(pMasterShape.operator->());
+								return;
+							}
+						}
+					}
+				}
+			}
+		}
+
+        smart_ptr<Theme>				theme_;
+		smart_ptr<TableStyles>			tableStyles_;
 
 		Logic::CSld						cSld;
 		Logic::ClrMap					clrMap;

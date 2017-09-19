@@ -45,9 +45,14 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(XmlId)
 
+			XmlId(std::wstring name)
+			{
+				m_name = name;
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				m_name = XmlUtils::GetNameNoNS(node.GetName());
+				m_name = node.GetName();
+
 				node.ReadAttributeBase(L"r:id", rid);
 				node.ReadAttributeBase(L"id", id);
 			}
@@ -57,7 +62,7 @@ namespace PPTX
 				oAttr.Write(_T("r:id"), rid.ToString());
 				oAttr.Write(_T("id"), id);
 
-				return XmlUtils::CreateNode(_T("p:") + m_name, oAttr);
+				return XmlUtils::CreateNode(m_name, oAttr);
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -69,17 +74,48 @@ namespace PPTX
 				
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+					case 0:
+						id = pReader->GetString2();
+						break;
+					case 1:
+						rid = pReader->GetString2();
+						break;
+					default:
+						break;
+					}
+				}
+				pReader->Seek(_end_rec);
+			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("p:") + m_name);
+				pWriter->StartNode( m_name );
 				
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("id"), id);
-				pWriter->WriteAttribute(_T("r:id"), rid.ToString());
+					pWriter->WriteAttribute(_T("id"), id);
+					
+					std::wstring sRid = rid.ToString();
+					if (sRid.empty() == false)
+					{
+						pWriter->WriteAttribute(_T("r:id"), sRid);
+					}
 				pWriter->EndAttributes();				
 
-				pWriter->EndNode(_T("p:") + m_name);
+				pWriter->EndNode( m_name );
 			}
 
 			nullable_string			id;

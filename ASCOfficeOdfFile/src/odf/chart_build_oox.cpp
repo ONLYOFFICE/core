@@ -29,6 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include <boost/foreach.hpp>
+
 #include "../docx/xlsx_textcontext.h"
 #include "../docx/xlsx_num_format_context.h"
 
@@ -275,12 +277,12 @@ void object_odf_context::calc_cache_series(std::wstring adress, std::vector<std:
 	oox::getCellAddressInv(ref_1, col_1,row_1);
 	oox::getCellAddressInv(ref_2, col_2,row_2);
 
-	BOOST_FOREACH(_cell & val,cash_values)
+ 	for (size_t i = 0; i < cash_values.size(); i++)
 	{
-		if (val.col>=col_1 && val.col<=col_2 &&
-			val.row>=row_1 && val.row<=row_2)
+		if (cash_values[i].col >= col_1 && cash_values[i].col <= col_2 &&
+			cash_values[i].row >= row_1 && cash_values[i].row <= row_2)
 		{
-			cash.push_back(val.val);
+			cash.push_back(cash_values[i].val);
 		}
 	}
 }
@@ -315,12 +317,12 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		chart_context.add_chart(class_);
 	}
 
-	BOOST_FOREACH(series & s, series_)
+ 	for (size_t i = 0; i < series_.size(); i++)
 	{
-		if (s.class_ != last_set_type)			//разные типы серий в диаграмме - например бар и линия.
+		if (series_[i].class_ != last_set_type)			//разные типы серий в диаграмме - например бар и линия.
 		{
-			chart_context.add_chart(s.class_);
-			last_set_type = s.class_;
+			chart_context.add_chart(series_[i].class_);
+			last_set_type = series_[i].class_;
 		}
 		oox::oox_chart_ptr current = chart_context.get_current_chart();
 
@@ -331,11 +333,11 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 	
 		current->add_series(series_id++);
 		
-		if (s.cell_range_address_.empty() ) 
-			s.cell_range_address_ = plot_area_.cell_range_address_; //SplitByColumn	(ind_ser,range);
+		if (series_[i].cell_range_address_.empty() ) 
+			series_[i].cell_range_address_ = plot_area_.cell_range_address_; //SplitByColumn	(ind_ser,range);
 																	//SplitByRow	(ind_ser,range);
-		if (s.cell_range_address_.empty())
-			s.cell_range_address_ = domain_cell_range_adress2_;
+		if (series_[i].cell_range_address_.empty())
+			series_[i].cell_range_address_ = domain_cell_range_adress2_;
 		
 		//тут данные нужно поделить по столбцам или строкам - так как в плот-ареа общий диапазон
 		//первый столбец-строка МОЖЕт использоваться для подписей
@@ -347,7 +349,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		std::vector<std::wstring>		cat_cash;
 
 		calc_cache_series (domain_cell_range_adress_,	domain_cash);
-		calc_cache_series (s.cell_range_address_,		cell_cash);
+		calc_cache_series (series_[i].cell_range_address_,		cell_cash);
 		
 		if (categories_.size() >0)
 			calc_cache_series (categories_[0],	cat_cash);
@@ -356,8 +358,8 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		_CP_OPT(std::wstring)	strVal;
 		_CP_OPT(bool)			boolVal;
 		
-		odf_reader::GetProperty(s.properties_, L"num_format", strVal);
-		odf_reader::GetProperty(s.properties_, L"link-data-style-to-source", boolVal);
+		odf_reader::GetProperty(series_[i].properties_, L"num_format", strVal);
+		odf_reader::GetProperty(series_[i].properties_, L"link-data-style-to-source", boolVal);
 
 		if ((strVal) && (strVal->length() > 1))
 		{
@@ -371,7 +373,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 				current->set_formula_series(4, domain_cell_range_adress_, formatCode, boolVal.get_value_or(true));	
 				current->set_values_series (4, domain_cash);
 				//y	
-				current->set_formula_series(3, s.cell_range_address_, formatCode, boolVal.get_value_or(true));			
+				current->set_formula_series(3, series_[i].cell_range_address_, formatCode, boolVal.get_value_or(true));			
 				current->set_values_series (3, cell_cash);
 			}
 			else
@@ -379,13 +381,13 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 				current->set_formula_series(2, domain_cell_range_adress_, formatCode, boolVal.get_value_or(true));	
 				current->set_values_series (2, domain_cash);						
 				//y
-				current->set_formula_series(3, s.cell_range_address_, formatCode, boolVal.get_value_or(true));				
+				current->set_formula_series(3, series_[i].cell_range_address_, formatCode, boolVal.get_value_or(true));				
 				current->set_values_series (3, cell_cash);								
 			}
 		}
 		else
 		{	//common
-			current->set_formula_series(1, s.cell_range_address_, formatCode, boolVal.get_value_or(true));	
+			current->set_formula_series(1, series_[i].cell_range_address_, formatCode, boolVal.get_value_or(true));	
 			current->set_values_series(1, cell_cash);
 		}
 
@@ -394,9 +396,9 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 			current->set_formula_series(0, categories_[0], L"General", true);
 			current->set_values_series(0, cat_cash);
 		}
-		current->set_name(s.name_);
+		current->set_name(series_[i].name_);
 		
-		current->set_content_series(s);
+		current->set_content_series(series_[i]);
 	}
 
 	std::sort(axises_.begin(), axises_.end(), axises_sort());//file_1_ (1).odp
@@ -501,9 +503,9 @@ void process_build_object::ApplyChartProperties(std::wstring style, std::vector<
 
 		if (!properties)return;
 
-		BOOST_FOREACH(_property const & p, properties->content_)
+ 		for (size_t i = 0; i < properties->content_.size(); i++)
 		{
-			propertiesOut.push_back(p);
+			propertiesOut.push_back(properties->content_[i]);
 		}
     }
 }
@@ -835,7 +837,7 @@ void process_build_object::visit(table_table_rows& val)
 }
 void process_build_object::visit(const table_table_row & val)
 {       
-    unsigned int repeated = val.table_table_row_attlist_.table_number_rows_repeated_;
+    unsigned int repeated = val.attlist_.table_number_rows_repeated_;
     ACCEPT_ALL_CONTENT_CONST(val.content_);
 	visit_rows(repeated);
 }
@@ -889,13 +891,13 @@ void process_build_object::visit(const table_rows_no_group& val)
 }
 void process_build_object::visit(const table_table_cell& val)
 {
-	const table_table_cell_attlist & attlist = val.table_table_cell_attlist_;
+	const table_table_cell_attlist & attlist = val.attlist_;
 
-    unsigned int repeated = val.table_table_cell_attlist_.table_number_columns_repeated_;
+    unsigned int repeated = val.attlist_.table_number_columns_repeated_;
   
 	std::wstringstream  wstream_temp;	
    
-	val.table_table_cell_content_.text_to_stream(wstream_temp);
+	val.content_.text_to_stream(wstream_temp);
 	std::wstring cell_cash = wstream_temp.str();
 
 	std::wstring cell_val;
@@ -918,7 +920,7 @@ void process_build_object::visit(const table_table_cell& val)
 }
 void process_build_object::visit(const table_covered_table_cell& val)
 {
-    unsigned int repeated = val.table_table_cell_attlist_.table_number_columns_repeated_;
+    unsigned int repeated = val.attlist_.table_number_columns_repeated_;
 
 	if ( repeated <2) 
 		return;

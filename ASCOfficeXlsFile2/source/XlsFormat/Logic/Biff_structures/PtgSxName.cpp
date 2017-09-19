@@ -31,7 +31,14 @@
  */
 
 #include "PtgSxName.h"
-#include <Binary/CFRecord.h>
+
+#include "../Biff_unions/PIVOTCACHE.h"
+#include "../Biff_unions/FDB.h"
+#include "../Biff_unions/SXOPER.h"
+
+#include "../Biff_records/SXFDB.h"
+#include "../Biff_records/SxName.h"
+#include "../Biff_records/SXPair.h"
 
 namespace XLS
 {
@@ -45,14 +52,76 @@ BiffStructurePtr PtgSxName::clone()
 void PtgSxName::loadFields(CFRecord& record)
 {
 	record >> sxIndex;
+	
+	global_info = record.getGlobalWorkbookInfo();
 }
-
 
 void PtgSxName::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
-#pragma message("####################### PtgSxName struct is not implemented")
-	Log::info("PtgSxName structure is not implemented.");
-	ptg_stack.push(L"#REF!");
+	std::wstring _Name;
+
+	if (sxIndex < global_info->arPivotSxNames.size())
+	{
+		SxName *name = dynamic_cast<SxName*>(global_info->arPivotSxNames[sxIndex].name.get());
+			
+		if ((name) && (name->ifdb >= 0  && name->ifdb < global_info->arPivotCacheSxNames.size()))
+		{
+			_Name = global_info->arPivotCacheSxNames[name->ifdb];
+			if (std::wstring::npos != _Name.find(L" "))
+			{
+				_Name = L"'" + _Name + L"'";
+			}
+		}
+		else if (!global_info->arPivotSxNames[sxIndex].pair.empty())
+		{
+			SXPair *pair = dynamic_cast<SXPair*>(global_info->arPivotSxNames[sxIndex].pair[0].get());
+			if (pair)
+			{
+				std::unordered_map<int, BaseObjectPtr>::iterator pFind = global_info->mapPivotCacheStream.find(global_info->idPivotCache);
+				if (pFind != global_info->mapPivotCacheStream.end())
+				{
+					PIVOTCACHE* pivot_cache = dynamic_cast<PIVOTCACHE*>(pFind->second.get());
+					if (pivot_cache)
+					{
+						if (pair->isxvd >= 0 && pair->isxvd < pivot_cache->m_arFDB.size())
+						{
+							FDB* field = dynamic_cast<FDB*>(pivot_cache->m_arFDB[pair->isxvd].get());
+							if (field)
+							{
+
+								SXFDB* field_db= dynamic_cast<SXFDB*>(field->m_SXFDB.get());
+								if (field_db)
+								{
+									_Name = field_db->stFieldName.value();
+
+									if (std::wstring::npos != _Name.find(L" "))
+									{
+										_Name = L"'" + _Name + L"'";
+									}
+								}
+								if (pair->iCache >= 0 && pair->iCache < field->m_arSRCSXOPER.size())
+								{
+									SXOPER* cache = dynamic_cast<SXOPER*>(field->m_arSRCSXOPER[pair->iCache].get());
+									if (cache)
+									{
+										_Name += L"[" + cache->value + L"]";
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		ptg_stack.push(_Name);
+	}
+	else
+	{
+ 		Log::warning("PtgSxName structure is not assemble.");
+
+		ptg_stack.push(L""); // This would let us to continue without an error
+	}
+	
 }
 
 

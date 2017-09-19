@@ -34,8 +34,6 @@
 #include "VirtualStreamReader.h"
 #include "../../ASCOfficeXlsFile2/source/XlsFormat/Crypt/Decryptor.h"
 
-using namespace DocFormatUtils;
-
 namespace DocFileFormat
 {
 	typedef enum FibVersion

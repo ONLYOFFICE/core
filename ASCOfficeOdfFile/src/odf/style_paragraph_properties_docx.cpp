@@ -34,7 +34,6 @@
 
 #include "style_paragraph_properties.h"
 
-#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
@@ -423,9 +422,9 @@ void style_tab_stops::docx_convert(oox::docx_conversion_context & Context)
 
 	if (style_tab_stops_.size() > 0)
 	{
-		BOOST_FOREACH(const office_element_ptr & elm, style_tab_stops_)
+		for (size_t i = 0; i < style_tab_stops_.size(); i++)
 		{
-			elm->docx_convert(Context);
+			style_tab_stops_[i]->docx_convert(Context);
 		}
 	}
     _pPr << L"</w:tabs>";

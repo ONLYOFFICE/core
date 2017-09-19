@@ -1087,9 +1087,9 @@ namespace NSEditorApi
 	class CAscCatAxisSettings
     {
 	private:
-        js_wrapper<double>		m_dInternalBetweenTick;
+        js_wrapper<double>		m_dIntervalBetweenTick;
 		js_wrapper<int>			m_nIntervalBetweenLabelsRule;	// c_oAscBetweenLabelsRule_
-		js_wrapper<double>		m_dInternalBetweenLabels;
+		js_wrapper<double>		m_dIntervalBetweenLabels;
 
 		js_wrapper<bool>		m_bInvertCatOrder;
 		js_wrapper<double>		m_dLabelsAxisDistance;
@@ -1105,15 +1105,18 @@ namespace NSEditorApi
 		js_wrapper<int>			m_nLabelsPosition;	// c_oAscLabelsPosition_
 
 		js_wrapper<int>			m_nAxisType;		// c_oAscAxisType_
+        
+        js_wrapper<int>			m_nCrossMinVal;
+        js_wrapper<int>			m_nCrossMaxVal;
 
 	public:
 		CAscCatAxisSettings()
 		{
 		}
 
-		LINK_PROPERTY_DOUBLE_JS(InternalBetweenTick)
+		LINK_PROPERTY_DOUBLE_JS(IntervalBetweenTick)
 		LINK_PROPERTY_INT_JS(IntervalBetweenLabelsRule)
-		LINK_PROPERTY_DOUBLE_JS(InternalBetweenLabels)
+		LINK_PROPERTY_DOUBLE_JS(IntervalBetweenLabels)
 
 		LINK_PROPERTY_BOOL_JS(InvertCatOrder)
 		LINK_PROPERTY_DOUBLE_JS(LabelsAxisDistance)
@@ -1125,6 +1128,9 @@ namespace NSEditorApi
 		LINK_PROPERTY_INT_JS(Crosses)
 		LINK_PROPERTY_INT_JS(LabelsPosition)
 		LINK_PROPERTY_INT_JS(AxisType)
+        
+        LINK_PROPERTY_INT_JS(CrossMinVal)
+        LINK_PROPERTY_INT_JS(CrossMaxVal)
     };
 
 	class CAscChartProperties : public IMenuEventDataBase
@@ -1155,8 +1161,11 @@ namespace NSEditorApi
         
 		js_wrapper<std::wstring>	m_sSeparator;
 
-		js_wrapper<CAscValAxisSettings>	m_oHorAxisProps;
-		js_wrapper<CAscValAxisSettings>	m_oVertAxisProps;
+		js_wrapper<CAscValAxisSettings>	m_oHorValAxisProps;
+		js_wrapper<CAscValAxisSettings>	m_oVertValAxisProps;
+       
+        js_wrapper<CAscCatAxisSettings>	m_oHorCatAxisProps;
+        js_wrapper<CAscCatAxisSettings>	m_oVertCatAxisProps;
         
 		js_wrapper<std::wstring>	m_sRange;
 		js_wrapper<bool>			m_bInColumns;
@@ -1196,8 +1205,11 @@ namespace NSEditorApi
 
 		LINK_PROPERTY_STRING_JS(Separator)
 
-		LINK_PROPERTY_OBJECT_JS(CAscValAxisSettings, HorAxisProps)
-		LINK_PROPERTY_OBJECT_JS(CAscValAxisSettings, VertAxisProps)
+		LINK_PROPERTY_OBJECT_JS(CAscValAxisSettings, HorValAxisProps)
+		LINK_PROPERTY_OBJECT_JS(CAscValAxisSettings, VertValAxisProps)
+      
+        LINK_PROPERTY_OBJECT_JS(CAscCatAxisSettings, HorCatAxisProps)
+        LINK_PROPERTY_OBJECT_JS(CAscCatAxisSettings, VertCatAxisProps)
 
 		LINK_PROPERTY_STRING_JS(Range)
 		LINK_PROPERTY_BOOL_JS(InColumns)
@@ -2363,6 +2375,38 @@ namespace NSEditorApi
 		{
 			if (NULL != pEvent)
                 pEvent->Release();
+		}
+	};
+
+	class CAscCefMenuEvent : public CAscMenuEvent
+	{
+	public:
+		int	m_nSenderId;
+
+	public:
+		CAscCefMenuEvent(int nType = -1) : CAscMenuEvent(nType)
+		{
+			m_nSenderId = -1;
+		}
+		virtual ~CAscCefMenuEvent()
+		{
+		}
+
+		LINK_PROPERTY_INT(SenderId)
+	};
+
+	class CAscCefMenuEventListener
+	{
+	public:
+		// memory release!!!
+		virtual void OnEvent(CAscCefMenuEvent* pEvent)
+		{
+			if (NULL != pEvent)
+				pEvent->Release();
+		}
+		virtual bool IsSupportEvent(int nEventType)
+		{
+			return true;
 		}
 	};
 }

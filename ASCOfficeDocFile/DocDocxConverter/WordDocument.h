@@ -102,9 +102,10 @@ namespace DocFileFormat
 
 	private:
 		bool DecryptOfficeFile	(CRYPT::Decryptor* Decryptor);
-		bool DecryptStream		(CRYPT::Decryptor* Decryptor, std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut);
-		bool CopyStream			(std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut);
-
+		
+		bool DecryptStream		(std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor);
+		void DecryptStream		(int level, std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor);
+		
 		inline StructuredStorageReader* GetStorage() const
 		{
 			return m_pStorage;
@@ -162,7 +163,9 @@ namespace DocFileFormat
 		std::vector<int>							* AllPapxVector;// A vector to quick find in AllPapx
 
 		std::map<int, int>						PictureBulletsCPsMap;
+
 		std::vector<std::pair<int, int>>		BookmarkStartEndCPs;
+		std::vector<std::pair<int, int>>		AnnotStartEndCPs;
 
 		FileInformationBlock				* FIB;
 		StyleSheet							* Styles;					// The style sheet of the document
@@ -204,7 +207,10 @@ namespace DocFileFormat
 		Plex<SectionDescriptor>				*SectionPlex;						// A Plex containing all section descriptors
 	
 		Plex<BookmarkFirst>					*BookmarkStartPlex;
-		Plex<EmptyStructure>				*BookmarkEndPlex;		
+		Plex<EmptyStructure>				*BookmarkEndPlex;
+
+		Plex<BookmarkFirst>					*AnnotStartPlex;
+		Plex<EmptyStructure>				*AnnotEndPlex;
 
 		Plex<ListNumCache>					*ListPlex;
 		Plex<FieldCharacter>				*FieldsPlex;

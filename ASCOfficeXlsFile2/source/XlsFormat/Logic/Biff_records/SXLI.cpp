@@ -35,8 +35,9 @@
 namespace XLS
 {
 
-SXLI::SXLI()
+SXLI::SXLI(int count_)
 {
+	count = count_;
 }
 
 
@@ -50,18 +51,16 @@ BaseObjectPtr SXLI::clone()
 }
 
 void SXLI::readFields(CFRecord& record)
-{// 0 or 2 records SXLIItem
-	int size_item = (record.getDataSize() - record.getRdPtr()) / 2; 
-
-	if (size_item < 8)
+{
+	while(true)
 	{
-		//??
-		return;
-	}
+		int size_item = record.getDataSize() - record.getRdPtr(); 
 
-	for (int k = 0; k < 2; k++)
-	{
-		SXLIItem item;
+		if (size_item < 8)
+		{
+			break;
+		}
+		SXLIItem item = {};
 		
 		unsigned short flags;
 
@@ -74,13 +73,24 @@ void SXLI::readFields(CFRecord& record)
 		item.fGrand				= GETBIT(flags, 11);
 		item.fMultiDataOnAxis	= GETBIT(flags, 12);
 
-		int count = (size_item - 8) / 2;
+		if (item.fGrand)
+			item.isxviMac = 1;
 
-		for (int i = 0; i < count; i++)
+		if (item.cSic > item.isxviMac)
+			item.cSic = item.isxviMac;
+
+		if (item.fSbt && item.itmType < 0x000D)
+			item.isxviMac++;
+
+		for (short i = 0; i < count/*item.isxviMac*/; i++)
 		{
 			short val; record >> val;
-			item.rgisxvi.push_back(val);
+			if (val >= 0x0000 && val <= 0x7EF4)
+			{
+				item.rgisxvi.push_back(val);
+			}
 		}
+
 		m_arItems.push_back(item);
 	}
 }

@@ -40,7 +40,6 @@
 
 #include "style_paragraph_properties.h"
 
-#include <boost/foreach.hpp>
 #include <iostream>
 
 namespace cpdoccore {
@@ -55,11 +54,12 @@ static int style_family_counts_[26]={};//согласно количеству �
 void calc_paragraph_properties_content(std::vector<style_paragraph_properties*> & parProps, paragraph_format_properties * result)
 {
 	if (result == NULL)return;
+    if (parProps.empty()) return;
 
-    BOOST_REVERSE_FOREACH(style_paragraph_properties* v, parProps)
+    for (int i = (int)parProps.size() - 1; i >= 0; i--)
     {
-        if (v)
-            result->apply_from(v->content_);
+        if (parProps[i])
+            result->apply_from(parProps[i]->content_);
     }
 }
 
@@ -93,7 +93,7 @@ void odf_style_context::create_style(std::wstring oox_name, style_family::type f
 {
 	std::wstring odf_name = oox_name;
 	
-	if (odf_name.length() <1)odf_name = find_free_name(family);
+	if (odf_name.empty()) odf_name = find_free_name(family);
 
 	office_element_ptr elm;
 	create_element(L"style", L"style", elm, odf_context_);

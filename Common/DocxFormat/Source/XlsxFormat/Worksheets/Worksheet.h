@@ -51,6 +51,8 @@
 #include "../Table/Table.h"
 #include "../Comments/Comments.h"
 #include "../Ole/OleObjects.h"
+#include "../Controls/Controls.h"
+
 #include "../../../../../DesktopEditor/common/String.h"
 
 namespace OOX
@@ -60,12 +62,10 @@ namespace OOX
 //необработанные child:
 		//<cellWatches>
 		//<colBreaks>
-		//<controls>
 		//<customProperties>
 		//<dataConsolidate>
 		//<dataValidations>
 		//<extLst>
-		//<oleObjects>
 		//<phoneticPr>
 		//<protectedRanges>
 		//<rowBreaks>
@@ -92,8 +92,6 @@ namespace OOX
 			{
 				ClearItems();
 			}
-		public:
-
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. instead use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -157,6 +155,8 @@ namespace OOX
 								m_oLegacyDrawingHF = oReader;
 							else if ( _T("oleObjects") == sName )
 								m_oOleObjects = oReader;
+							else if ( _T("controls") == sName )
+								m_oControls = oReader;
 							else if ( _T("headerFooter") == sName )
 								m_oHeaderFooter = oReader;
 							else if (_T("sheetPr") == sName)
@@ -379,6 +379,8 @@ namespace OOX
 					m_oLegacyDrawingHF->toXML(sXml);
 				if(m_oOleObjects.IsInit())
 					m_oOleObjects->toXML(sXml);
+				if (m_oControls.IsInit())
+					m_oControls->toXML(sXml);
 				if(m_oTableParts.IsInit())
 					m_oTableParts->toXML(sXml);
                 if(m_oExtLst.IsInit())
@@ -441,7 +443,6 @@ namespace OOX
 				}
 				m_arrConditionalFormatting.clear();
 			}
-		private:
 			CPath													m_oReadPath;
 
 		public:
@@ -460,6 +461,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CTableParts>					m_oTableParts;
 			nullable<OOX::Spreadsheet::CLegacyDrawingWorksheet>		m_oLegacyDrawing;
 			nullable<OOX::Spreadsheet::COleObjects>					m_oOleObjects;
+			nullable<OOX::Spreadsheet::CControls>					m_oControls;
 			std::map<std::wstring, CCommentItem*>					m_mapComments;
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
 			nullable<OOX::Spreadsheet::CSheetPr>					m_oSheetPr;

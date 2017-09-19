@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "../../../DesktopEditor/xml/include/xmlutils.h"
+#include "../../../../DesktopEditor/xml/include/xmlutils.h"
 
 
 namespace OOX
@@ -1063,7 +1063,11 @@ namespace OOX
 		et_x_OleObjects,
 		et_x_OleObject,
 		et_x_OleObjectPr,
-		et_x_OleObjectAnchor,
+		et_x_ExtAnchor,
+		et_x_Controls,
+		et_x_Control,
+		et_x_ControlPr,
+		et_x_OcxPr,
 		et_x_TableParts,
 		et_x_TablePart,
 		et_x_Table,

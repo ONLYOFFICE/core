@@ -71,11 +71,14 @@ public:
 	BaseObjectPtr					m_SheetExt;
 	BaseObjectPtr					m_DxGCol;
 	BaseObjectPtr					m_DVAL;
+	BaseObjectPtr					m_DCON;
+	BaseObjectPtr					m_LRng;
 	
 	std::vector<BaseObjectPtr>		m_arMergeCells;
 	std::vector<BaseObjectPtr>		m_arWINDOW;
 	std::vector<BaseObjectPtr>		m_arCUSTOMVIEW;
 	std::vector<BaseObjectPtr>		m_arPIVOTVIEW;
+	std::vector<BaseObjectPtr>		m_arQUERYTABLE;
 	std::vector<BaseObjectPtr>		m_arFEAT;
 	std::vector<BaseObjectPtr>		m_arFEAT11;
 	std::vector<BaseObjectPtr>		m_arNote;
@@ -83,8 +86,12 @@ public:
 	std::vector<BaseObjectPtr>		m_arSORT;
 	std::vector<BaseObjectPtr>		m_arLabel;
 	std::vector<BaseObjectPtr>		m_arHFPicture;
+	std::vector<BaseObjectPtr>		m_arRECORD12;
 
 	std::vector<BiffStructurePtr>	m_arHFPictureDrawing;
+
+//-------------------------------------------------------------------
+	std::map<std::wstring, BaseObjectPtr>	mapPivotViews;
 
 private:
 	

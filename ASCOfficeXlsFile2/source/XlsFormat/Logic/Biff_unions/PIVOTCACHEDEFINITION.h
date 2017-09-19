@@ -48,6 +48,9 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+	
+	int serialize_definitions(std::wostream & stream);
+	int serialize_records(std::wostream & stream);
 
 	static const ElementType	type = typePIVOTCACHEDEFINITION;
 
@@ -55,6 +58,8 @@ public:
 	BaseObjectPtr	m_SXVS;
 	BaseObjectPtr	m_SXSRC;
 	BaseObjectPtr	m_SXADDLCACHE;
+
+	GlobalWorkbookInfoPtr global_info_;
 };
 
 } // namespace XLS

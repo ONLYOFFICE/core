@@ -32,7 +32,7 @@
 #ifndef DOCBUILDER_H
 #define DOCBUILDER_H
 
-#include "../common/base_export.h"
+#include "./common.h"
 
 namespace NSDoctRenderer
 {
@@ -58,6 +58,8 @@ namespace NSDoctRenderer
 
         void SetProperty(const char* param, const wchar_t* value);
         void SetPropertyW(const wchar_t* param, const wchar_t* value);
+
+        char* GetVersion();
 
     public:
         static void Initialize();

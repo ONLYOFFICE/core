@@ -88,7 +88,7 @@ int DVAL::serialize(std::wostream & stream)
 			
 			DVal * dval	= dynamic_cast<DVal*>(m_DVal.get());
 
-			for (int i = 0 ; i < m_arDv.size(); i++)
+			for (size_t i = 0 ; i < m_arDv.size(); i++)
 			{
 				if (!m_arDv[i]) continue;
 				

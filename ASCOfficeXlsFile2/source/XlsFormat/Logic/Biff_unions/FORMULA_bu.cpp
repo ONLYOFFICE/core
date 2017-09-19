@@ -110,7 +110,7 @@ const bool FORMULA::loadContent(BinProcessor& proc)
 
 	if ((formula) && (formula->fShrFmla))
 	{
-		for (int i = 0; i < shared_formulas_locations_ref_.size(); i++)
+		for (size_t i = 0; i < shared_formulas_locations_ref_.size(); i++)
 		{
 			if (shared_formulas_locations_ref_[i].inRange(location)) m_sharedIndex = i;
 		}		

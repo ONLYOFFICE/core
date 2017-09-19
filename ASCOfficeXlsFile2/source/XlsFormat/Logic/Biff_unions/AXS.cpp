@@ -161,7 +161,7 @@ int AXS::serialize(std::wostream & _stream)
 
 	CP_XML_WRITER(_stream)    
 	{
-		for (int i = 0 ; i < m_AxisLine_Format.size(); i++)
+		for (size_t i = 0 ; i < m_AxisLine_Format.size(); i++)
 		{
 			std::wstring grid;
 			

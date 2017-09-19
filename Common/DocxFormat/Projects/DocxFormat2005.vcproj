@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\..\Source\XML\libxml2\XML\include;.\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;..\..\..\..\..\..\ASCOfficeOdtFile\Source\OfficeSvmFile;.\..\Source\Base;.\..\Source\SystemUtility"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -111,7 +111,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\..\Source\XML\libxml2\XML\include"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -1184,6 +1184,10 @@
 			Name="Media"
 			>
 			<File
+				RelativePath="..\Source\DocxFormat\Media\ActiveX.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\DocxFormat\Media\Audio.h"
 				>
 			</File>
@@ -1197,6 +1201,10 @@
 			</File>
 			<File
 				RelativePath="..\Source\DocxFormat\Media\OleObject.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\DocxFormat\Media\VbaProject.h"
 				>
 			</File>
 			<File
@@ -1515,15 +1523,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Source\XlsxFormat\Controls\Controls.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Source\XlsxFormat\Drawing\Drawing.h"
 					>
 				</File>
 				<File
 					RelativePath="..\Source\XlsxFormat\Drawing\FromTo.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Source\XlsxFormat\Ole\oleobjects.h"
 					>
 				</File>
 				<File

@@ -146,7 +146,7 @@ bool OOXWriter::SaveByItemEnd()
 	if (m_poDocPropsApp)
 	{
 		((OOX::CApp*)m_poDocPropsApp)->SetApplication	( L"OnlyOffice" );
-		((OOX::CApp*)m_poDocPropsApp)->SetAppVersion	( L"4.3" );
+		((OOX::CApp*)m_poDocPropsApp)->SetAppVersion	( L"5.0" );
 		
 		((OOX::CApp*)m_poDocPropsApp)->write(pathDocProps + FILE_SEPARATOR_STR + L"app.xml", pathDocProps.GetDirectory(), oContentTypes);
 		

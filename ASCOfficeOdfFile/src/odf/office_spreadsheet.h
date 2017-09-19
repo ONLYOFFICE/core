@@ -41,7 +41,6 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-//  office:spreadsheet
 class office_spreadsheet : public office_element_impl<office_spreadsheet>
 {
 public:
@@ -55,26 +54,29 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
 
 public:
-    //  TODO: office-text-content-prelude:
-    //  TODO: office-forms
-    //  TODO: text-decls
-    //  TODO: table-decls
+	office_element_ptr			named_expressions_;
+	office_element_ptr			database_ranges_; 
+	office_element_ptr			data_pilot_tables_;
+	office_element_ptr			tracked_changes_;
 
-	office_element_ptr_array	table_database_ranges_;
-
-	office_element_ptr			tracked_changes_;//??
 	office_element_ptr_array	content_;
-    // TODO: text-page-sequence
-    // TODO: office-text-content-epilogue:
-    //  TODO: table-functions
-
+ 	
+	// table:calculation-settings
+	// table:consolidation
+	// table:content-validations
+	// table:dde-links
+	// table:label-ranges
+	
+	// text:alphabetical-index-auto-mark-file
+	// text:ddeconnection-decls
+	// text:sequence-decls
+	// text:user-fielddecls
+	// text:variable-decls
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(office_spreadsheet);
 
 }

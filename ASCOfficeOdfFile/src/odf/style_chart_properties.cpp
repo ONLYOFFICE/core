@@ -151,6 +151,9 @@ void style_chart_properties::add_attributes( const xml::attributes_wc_ptr & Attr
 	CP_APPLY_ATTR(L"chart:error-category",		strVal); 
 	if (strVal)content_.push_back(_property(L"error-category",	chart_error_category(chart_error_category::parse(strVal.get())).get_type() ));
 
+	CP_APPLY_ATTR(L"chart:label-position",		strVal); 
+	if (strVal)content_.push_back(_property(L"label-position",	chart_label_position(chart_label_position::parse(strVal.get())).get_type() ));
+
 	common_rotation_angle_attlist_.add_attributes(Attributes);
 
 	//CP_APPLY_ATTR(L"chart:scale-text",			chart_scale_text_ );	

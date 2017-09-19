@@ -36,7 +36,6 @@
 #include <sstream>
 #include <string>
 
-#include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 
 #include <cpdoccore/xml/xmlchar.h>
@@ -68,11 +67,11 @@ void draw_base::add_child_element( const office_element_ptr & child_element)
 {
 	content_.push_back(child_element);
 }
-void draw_base::serialize(std::wostream & _Wostream)
+void draw_base::serialize(std::wostream & strm)
 {
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
 	{
-		elm->serialize(_Wostream);
+		content_[i]->serialize(strm);
 	}
 }
 void draw_base::serialize_attlist(CP_ATTR_NODE)

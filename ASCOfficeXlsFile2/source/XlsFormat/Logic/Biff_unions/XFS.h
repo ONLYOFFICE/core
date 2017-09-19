@@ -51,6 +51,8 @@ public:
 
 	int serialize(std::wostream & stream);
 
+	void RegisterFillBorder();
+
 	static const ElementType	type = typeXFS;
 	
 	size_t cell_xf_current_id;

@@ -53,6 +53,7 @@ public:
 	int serialize2(std::wostream & stream);
 
 	void concatinate(FORMATTING* ext);
+	void update_xfs();
 
 	static const ElementType	type = typeFORMATTING;
 

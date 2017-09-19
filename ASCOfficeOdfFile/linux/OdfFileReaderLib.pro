@@ -105,6 +105,7 @@ SOURCES += \
     ../src/odf/table_calculation_settings.cpp \
     ../src/odf/table_docx.cpp \
     ../src/odf/table_named_expressions.cpp \
+    ../src/odf/table_data_pilot_tables.cpp \
     ../src/odf/table_pptx.cpp \
     ../src/odf/table_xlsx.cpp \
     ../src/odf/templates.cpp \
@@ -209,6 +210,13 @@ SOURCES += \
     ../src/odf/datatypes/wrapoption.cpp \
     ../src/odf/datatypes/writingmode.cpp \
     ../src/odf/datatypes/xlink.cpp \
+    ../src/odf/datatypes/chartlabelposition.cpp \
+    ../src/odf/datatypes/grandtotal.cpp \
+    ../src/odf/datatypes/membertype.cpp \
+    ../src/odf/datatypes/tabletype.cpp \
+    ../src/odf/datatypes/tableorientation.cpp \
+    ../src/odf/datatypes/tablefunction.cpp \
+    ../src/odf/datatypes/tableorder.cpp \
     ../src/docx/xlsx_conditionalFormatting.cpp \
     ../src/docx/xlsx_dxfs.cpp \
     ../src/docx/docx_content_type.cpp \
@@ -278,6 +286,7 @@ SOURCES += \
     ../src/docx/xlsx_table_metrics.cpp \
     ../src/docx/xlsx_table_state.cpp \
     ../src/docx/xlsx_textcontext.cpp \
+    ../src/docx/xlsx_pivots_context.cpp \
     ../src/docx/xlsx_utils.cpp \
     ../src/docx/xlsx_xf.cpp
 }
@@ -462,6 +471,8 @@ HEADERS += \
     ../src/odf/datatypes/wrapoption.h \
     ../src/odf/datatypes/writingmode.h \
     ../src/odf/datatypes/xlink.h \
+    ../src/odf/datatypes/chartlabelposition.h \
+    ../src/odf/datatypes/grandtotal.h \
     ../src/docx/docx_content_type.h \
     ../src/docx/docx_conversion_context.h \
     ../src/docx/docx_conversion_state.h \

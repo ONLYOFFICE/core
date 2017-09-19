@@ -114,14 +114,14 @@ public:
 			if (c.author_ == author_list_[i])
 			{
 				find = true;
-				c.author_ = boost::lexical_cast<std::wstring>(i);
+				c.author_ = std::to_wstring(i);
 				break;
 			}
 		}
 		if (!find)
 		{
 			author_list_.push_back(c.author_);
-			c.author_ = boost::lexical_cast<std::wstring>(author_list_.size()-1);
+			c.author_ = std::to_wstring(author_list_.size()-1);
 		}
 		xlsx_comment_.push_back(c);
 	}

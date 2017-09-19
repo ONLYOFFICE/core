@@ -75,7 +75,6 @@ public:
 //-----------------------------------------------------------------------
 
 	BaseObjectPtr	m_SERIESFORMAT_ext;
-	
 };
 } // namespace XLS
 

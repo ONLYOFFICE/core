@@ -118,6 +118,8 @@ namespace PPTX
 					return parentFileAs<SlideMaster>().GetMediaFullPathNameFromRId(*embed);
 				else if(parentFileIs<Theme>())
 					return parentFileAs<Theme>().GetMediaFullPathNameFromRId(*embed);
+				else if(parentFileIs<NotesSlide>())
+					return parentFileAs<NotesSlide>().GetMediaFullPathNameFromRId(*embed);
 				return _T("");
 			}
 			else if(link.IsInit())
@@ -137,6 +139,8 @@ namespace PPTX
 					return parentFileAs<SlideMaster>().GetMediaFullPathNameFromRId(*link);
 				else if(parentFileIs<Theme>())
 					return parentFileAs<Theme>().GetMediaFullPathNameFromRId(*link);
+				else if(parentFileIs<NotesSlide>())
+					return parentFileAs<NotesSlide>().GetMediaFullPathNameFromRId(*link);
 				return _T("");
 			}
 			return _T("");
@@ -150,6 +154,7 @@ namespace PPTX
 			else if(parentFileIs<SlideLayout>())	pOleObject = parentFileAs<SlideLayout>().GetOleObject(oRId);
 			else if(parentFileIs<SlideMaster>())	pOleObject = parentFileAs<SlideMaster>().GetOleObject(oRId);
 			else if(parentFileIs<Theme>())			pOleObject = parentFileAs<Theme>().GetOleObject(oRId);
+			else if(parentFileIs<NotesSlide>())		pOleObject = parentFileAs<NotesSlide>().GetOleObject(oRId);
 			
 			if (pOleObject.IsInit())
 				return pOleObject->filename().m_strFilename;

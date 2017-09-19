@@ -34,8 +34,6 @@
 #include "math_token_elements.h"
 #include "style_text_properties.h"
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
 
@@ -342,7 +340,7 @@ void math_menclose::add_child_element( xml::sax * Reader, const std::wstring & N
 
 void math_menclose::oox_convert(oox::math_context & Context)
 {//0* elements
-	//BOOST_FOREACH(const office_element_ptr & elm, content_)
+ 	//for (size_t i = 0; i < content_.size(); i++)
 	//{
 		//office_math_element* math_element = dynamic_cast<office_math_element*>(elm.get());
 		//math_element->oox_convert(Context);
@@ -368,7 +366,7 @@ void math_mfenced::add_child_element( xml::sax * Reader, const std::wstring & Ns
 
 void math_mfenced::oox_convert(oox::math_context & Context)
 {//0* elements
-	//BOOST_FOREACH(const office_element_ptr & elm, content_)
+ 	//for (size_t i = 0; i < content_.size(); i++)
 	//{
 		//office_math_element* math_element = dynamic_cast<office_math_element*>(elm.get());
 		//math_element->oox_convert(Context);

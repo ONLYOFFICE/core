@@ -996,8 +996,8 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 	//даты и номера могут быть и не только в колонтитулах
 	//todooo ... возможно нужно все перенести плейсхолдеры без ID a-la как в AddLayout
 	
-	AddLayoutSlidePlaceholder(pSlide, MasterSlideNumber	, pLayout); 
-	AddLayoutSlidePlaceholder(pSlide, MasterDate		, pLayout);
+	//AddLayoutSlidePlaceholder(pSlide, MasterSlideNumber	, pLayout); 
+	//AddLayoutSlidePlaceholder(pSlide, MasterDate		, pLayout);
 	
 	//-------------элементы колонтитулов
 	std::multimap<int, int>::iterator it;

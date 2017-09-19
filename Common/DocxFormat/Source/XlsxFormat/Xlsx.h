@@ -97,8 +97,14 @@ namespace OOX
 
 		// Ищем основной документ
 				smart_ptr<OOX::File> pFile = Find(OOX::Spreadsheet::FileTypes::Workbook);
-				if (pFile.IsInit() && OOX::Spreadsheet::FileTypes::Workbook == pFile->type())
-					m_pWorkbook = (OOX::Spreadsheet::CWorkbook*)pFile.operator->();
+				if (pFile.IsInit() == false)
+				{
+					pFile = Find(OOX::Spreadsheet::FileTypes::WorkbookMacro);
+				}
+				if (pFile.IsInit())
+				{
+					m_pWorkbook = dynamic_cast<OOX::Spreadsheet::CWorkbook*>(pFile.operator->());
+				}
 				else
 					m_pWorkbook = NULL;
 
@@ -185,7 +191,7 @@ namespace OOX
 			//CApp
                 OOX::CApp* pApp = new OOX::CApp();
                 pApp->SetApplication(_T("OnlyOffice"));
-                pApp->SetAppVersion(_T("4.3000"));
+                pApp->SetAppVersion(_T("5.0"));
                 pApp->SetDocSecurity(0);
                 pApp->SetScaleCrop(false);
                 pApp->SetLinksUpToDate(false);

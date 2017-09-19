@@ -46,6 +46,10 @@ namespace OOX
 												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"),
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"));
 
+			const FileType WorkbookMacro	(L"xl", L"workbook.xml",
+												_T("application/vnd.ms-excel.sheet.macroEnabled.main+xml"),
+												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"));
+
 			const FileType SharedStrings	(L"", L"sharedStrings.xml",
 												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"),
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings"));

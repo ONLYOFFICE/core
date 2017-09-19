@@ -120,7 +120,7 @@ const bool CONDFMTS::loadContent(BinProcessor& proc)
 		count--;
 	}	
 
-	for (int i = 0 ; i < m_arCFEx.size(); i++)
+	for (size_t i = 0 ; i < m_arCFEx.size(); i++)
 	{
 		if (!m_arCFEx[i]) continue;
 
@@ -129,7 +129,7 @@ const bool CONDFMTS::loadContent(BinProcessor& proc)
 		{
 			int ind_cf = cfEx->content.icf;
 
-			for (int j = 0 ; j < m_arCONDFMT.size(); j++)
+			for (size_t j = 0 ; j < m_arCONDFMT.size(); j++)
 			{
 				CONDFMT * CONDFMT_ = dynamic_cast<CONDFMT *>(m_arCONDFMT[j].get());
 				if (CONDFMT_/* && cfEx->fIsCF12 == 0*/)
@@ -166,7 +166,7 @@ int CONDFMTS::serialize(std::wostream & stream)
 {
 	if (m_arCONDFMT.empty()) return 0;
 
-	for (int i = 0 ; i < m_arCONDFMT.size(); i++)
+	for (size_t i = 0 ; i < m_arCONDFMT.size(); i++)
 	{
 		if (!m_arCONDFMT[i]) continue;
 		m_arCONDFMT[i]->serialize(stream);

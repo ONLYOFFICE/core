@@ -100,7 +100,7 @@ void ChartParsedFormula::load(CFRecord& record)
 
 bool ChartParsedFormula::inRange(const CellRef & ref)
 {
-	for (int i = 0 ; i < cell_ranges.size(); i++)
+	for (size_t i = 0 ; i < cell_ranges.size(); i++)
 	{
 		if (cell_ranges[i].inRange(ref))
 		{

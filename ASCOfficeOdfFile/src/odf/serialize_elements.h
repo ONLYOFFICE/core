@@ -32,7 +32,6 @@
 #pragma once
 
 #include "office_elements.h"
-#include <boost/foreach.hpp>
 
 namespace cpdoccore {
 namespace odf_reader {
@@ -46,9 +45,9 @@ inline std::wostream & serialize_elements(std::wostream & _Wostream, const offic
 
 inline std::wostream & serialize_elements(std::wostream & _Wostream, const office_element_ptr_array & elms)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, elms)
+    for (size_t i = 0; i < elms.size(); i++)
     {
-        serialize_elements(_Wostream, elm);
+        serialize_elements(_Wostream, elms[i]);
     }
     return _Wostream;
 }
@@ -62,9 +61,9 @@ inline std::wostream & serialize_elements_text(std::wostream & _Wostream, const 
 
 inline std::wostream & serialize_elements_text(std::wostream & _Wostream, const office_element_ptr_array & elms)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, elms)
+    for (size_t i = 0; i < elms.size(); i++)
     {
-        serialize_elements_text(_Wostream, elm);
+        serialize_elements_text(_Wostream, elms[i]);
     }
     return _Wostream;
 }

@@ -122,7 +122,7 @@ const bool LBL::loadContent(BinProcessor& proc)
 			ar[ind_sheet] = value;
 			//ar.push_back(value);
 
-			global_info_->mapDefineNames.insert(std::pair<std::wstring, std::vector<std::wstring>>(name, ar));
+			global_info_->mapDefineNames.insert(std::make_pair(name, ar));
 		}
 		isSerialize = true;
 	}
@@ -151,7 +151,7 @@ int LBL::serialize(std::wostream & stream)
 
 	if ((lbl->itab == 0) && (res = value.find(L"#REF!")) >= 0)
 	{
-		for (int i = 0 ; i < lbl->rgce.rgce.sequence.size(); i++)
+		for (size_t i = 0 ; i < lbl->rgce.rgce.sequence.size(); i++)
 		{
 			PtgRef3d* ptg = dynamic_cast<PtgRef3d*>(lbl->rgce.rgce.sequence[i].get());
 			if (ptg) 

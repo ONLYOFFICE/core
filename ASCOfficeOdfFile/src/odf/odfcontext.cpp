@@ -31,7 +31,6 @@
  */
 
 #include "odfcontext.h"
-#include <boost/foreach.hpp>
 
 namespace cpdoccore { 
 

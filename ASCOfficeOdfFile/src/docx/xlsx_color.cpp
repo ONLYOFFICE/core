@@ -32,7 +32,6 @@
 
 #include <sstream>
 
-#include <boost/foreach.hpp>
 #include <boost/functional/hash/hash.hpp>
 
 #include "xlsx_font.h"

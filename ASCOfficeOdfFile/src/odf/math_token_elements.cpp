@@ -33,8 +33,6 @@
 #include "math_token_elements.h"
 #include "style_text_properties.h"
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/odf/odf_document.h>
 
 #include <cpdoccore/xml/xmlchar.h>

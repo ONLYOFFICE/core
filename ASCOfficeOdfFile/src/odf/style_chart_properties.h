@@ -49,6 +49,7 @@
 #include "datatypes/charterrorcategory.h"
 #include "datatypes/chartseriessource.h"
 #include "datatypes/chartregressiontype.h"
+#include "datatypes/chartlabelposition.h"
 #include "datatypes/direction.h"
 
 namespace cpdoccore { 

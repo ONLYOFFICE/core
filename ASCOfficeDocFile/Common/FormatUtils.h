@@ -58,7 +58,7 @@
 
 #include <boost/format.hpp>
 
-namespace DocFormatUtils
+namespace DocFileFormat
 {
     typedef unsigned char   Bool8;
     typedef unsigned short  Bool16;

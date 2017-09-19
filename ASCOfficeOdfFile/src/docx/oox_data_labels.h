@@ -59,8 +59,10 @@ public:
 	void set_showSerName	(bool Val){showSerName_		= Val;}
 	void set_showVal		(bool Val){showVal_			= Val;}
 
-	void add_dLbl(int ind, std::vector<odf_reader::_property> & text_properties);
-	void set_common_dLbl ( std::vector<odf_reader::_property> & text_properties);
+	void set_position		(int Val){position_	= Val;}
+
+	void add_dLbl			(int ind, std::vector<odf_reader::_property> & text_properties);
+	void set_common_dLbl	( std::vector<odf_reader::_property> & text_properties);
    
 private:
 
@@ -71,6 +73,8 @@ private:
 	bool showPercent_;			// (Show Percent) §21.2.2.187
 	bool showSerName_;			// (Show Series Name) §21.2.2.188
 	bool showVal_;				// (Show Value) §21.2.2.189
+
+	int position_;
 
 	std::vector<odf_reader::_property>					textPr_;
 	std::map<int, std::vector<odf_reader::_property>>	dLbls_;

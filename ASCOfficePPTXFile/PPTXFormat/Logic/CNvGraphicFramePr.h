@@ -121,7 +121,7 @@ namespace PPTX
 				oAttr.Write(_T("noSelect"),			noSelect);
 
 				std::wstring namespaceLocks = L"a";
-				if (m_namespace == L"wp") namespaceLocks = L"wp";
+				//if (m_namespace == L"wp") namespaceLocks = L"wp";
 
 				return XmlUtils::CreateNode(m_namespace + L":cNvGraphicFramePr", oAttr.m_strValue.empty() ? L"" : XmlUtils::CreateNode(namespaceLocks + L":graphicFrameLocks", oAttr));
 			}
@@ -134,7 +134,7 @@ namespace PPTX
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
 				{
-					namespaceLock_	= L"wp";
+					namespaceLock_	= L"a";
 					namespace_		= L"wp";
 				}
 

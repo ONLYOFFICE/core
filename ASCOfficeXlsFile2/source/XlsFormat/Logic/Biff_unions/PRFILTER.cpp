@@ -31,29 +31,25 @@
  */
 
 #include "PRFILTER.h"
-#include <Logic/Biff_records/SxFilt.h>
-#include <Logic/Biff_records/SxItm.h>
-#include <Logic/Biff_records/Continue.h>
+#include "../Biff_records/SxFilt.h"
+#include "../Biff_records/SxItm.h"
+#include "../Biff_records/Continue.h"
 
 namespace XLS
 {
-
 
 PRFILTER::PRFILTER()
 {
 }
 
-
 PRFILTER::~PRFILTER()
 {
 }
-
 
 BaseObjectPtr PRFILTER::clone()
 {
 	return BaseObjectPtr(new PRFILTER(*this));
 }
-
 
 // PRFILTER = SxFilt [SxItm *Continue]
 const bool PRFILTER::loadContent(BinProcessor& proc)
@@ -62,11 +58,16 @@ const bool PRFILTER::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+	m_SxFilt = elements_.back();
+	elements_.pop_back();
+
 	if(proc.optional<SxItm>())
 	{
+		m_SxItm = elements_.back();
+		elements_.pop_back();
+		
 		int count = proc.repeated<Continue>(0, 0);
 	}
-
 	return true;
 }
 

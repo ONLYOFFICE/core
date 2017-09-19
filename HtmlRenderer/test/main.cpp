@@ -41,15 +41,23 @@
 
 #include "../include/ASCSVGWriter.h"
 #include "../../DesktopEditor/raster/Metafile/MetaFile.h"
+#include "../../DesktopEditor/raster/BgraFrame.h"
 
+#define RASTER_TEST
 //#define METAFILE_TEST
 //#define ONLINE_WORD_TO_PDF
-//#define TO_PDF
-#define TO_HTML_RENDERER
+//#define TO_PDF//#define TO_HTML_RENDERER
 //#define ONLY_TEXT
 
 int main(int argc, char *argv[])
 {
+#ifdef RASTER_TEST
+    CBgraFrame oFrame;
+    oFrame.OpenFile(L"D:\\22.png");
+    oFrame.SaveFile(L"D:\\oleg.png", 4);
+    return 0;
+#endif
+
     CApplicationFonts oFonts;
     oFonts.Initialize();
 

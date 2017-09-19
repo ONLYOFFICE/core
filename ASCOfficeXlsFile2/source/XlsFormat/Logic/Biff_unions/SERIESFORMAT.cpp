@@ -31,37 +31,35 @@
  */
 
 #include "SERIESFORMAT.h"
-#include <Logic/Biff_records/Series.h>
-#include <Logic/Biff_records/Begin.h>
-#include <Logic/Biff_records/SerToCrt.h>
-#include <Logic/Biff_records/SerParent.h>
-#include <Logic/Biff_records/SerAuxTrend.h>
-#include <Logic/Biff_records/SerAuxErrBar.h>
-#include <Logic/Biff_records/LegendException.h>
-#include <Logic/Biff_records/End.h>
-#include <Logic/Biff_records/SerAuxTrend.h>
-#include <Logic/Biff_records/SerAuxErrBar.h>
-#include <Logic/Biff_records/AttachedLabel.h>
+#include "AI.h"
+#include "SS.h"
+#include "ATTACHEDLABEL.h"
+#include "TEXTPROPS.h"
+#include "CHARTFOMATS.h"
 
-#include <Logic/Biff_unions/AI.h>
-#include <Logic/Biff_unions/SS.h>
-#include <Logic/Biff_unions/ATTACHEDLABEL.h>
-#include <Logic/Biff_unions/TEXTPROPS.h>
-#include <Logic/Biff_unions/CHARTFOMATS.h>
+#include "../Biff_records/Series.h"
+#include "../Biff_records/Begin.h"
+#include "../Biff_records/SerToCrt.h"
+#include "../Biff_records/SerParent.h"
+#include "../Biff_records/SerAuxTrend.h"
+#include "../Biff_records/SerAuxErrBar.h"
+#include "../Biff_records/LegendException.h"
+#include "../Biff_records/End.h"
+#include "../Biff_records/SerAuxTrend.h"
+#include "../Biff_records/SerAuxErrBar.h"
+#include "../Biff_records/AttachedLabel.h"
+#include "../Biff_records/BRAI.h"
 
 namespace XLS
 {
-
 
 SERIESFORMAT::SERIESFORMAT()
 {
 }
 
-
 SERIESFORMAT::~SERIESFORMAT()
 {
 }
-
 
 //  (SerToCrt / (SerParent (SerAuxTrend / SerAuxErrBar))) 
 class Parenthesis_SERIESFORMAT_1: public ABNFParenthesis
@@ -353,5 +351,6 @@ int SERIESFORMAT::serialize_parent(std::wostream & _stream, CHARTFORMATS* chart_
 
 	return 0;
 }
+
 } // namespace XLS
 

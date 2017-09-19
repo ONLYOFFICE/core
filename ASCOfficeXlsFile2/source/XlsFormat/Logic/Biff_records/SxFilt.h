@@ -54,11 +54,13 @@ public:
 	bool			sxaxisCol;
 	bool			sxaxisPage;
 	bool			sxaxisData;
-	unsigned short	iDim;
-	unsigned short	isxvd;
+
+	char			iDim;
+	char			isxvd;
+	
 	bool			fSelected;
 
-	unsigned short	grbitSbt;
+	short			grbitSbt;
 	unsigned short	cisxvi;
 };
 

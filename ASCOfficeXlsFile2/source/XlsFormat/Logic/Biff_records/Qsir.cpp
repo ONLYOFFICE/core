@@ -37,6 +37,7 @@ namespace XLS
 
 Qsir::Qsir()
 {
+	wVerBeforeRefreshAlert = 0;
 }
 
 

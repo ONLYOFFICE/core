@@ -37,8 +37,7 @@
 #include "FileContainer.h"
 #include "FileTypes.h"
 
-#include "Logic/ClrMapOvr.h"
-#include "Logic/CSld.h"
+#include "NotesMaster.h"
 
 namespace PPTX
 {
@@ -55,8 +54,6 @@ namespace PPTX
 		virtual ~NotesSlide()
 		{
 		}
-
-	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			//FileContainer::read(filename, map);
@@ -79,8 +76,6 @@ namespace PPTX
 			WrapperFile::write(filename, directory, content);
 			FileContainer::write(filename, directory, content);
 		}
-
-	public:
 		virtual const OOX::FileType type() const
 		{
 			return OOX::Presentation::FileTypes::NotesSlide;
@@ -93,7 +88,33 @@ namespace PPTX
 		{
 			return type().DefaultFileName();
 		}
+		virtual std::wstring GetMediaFullPathNameFromRId(const OOX::RId& rid)const
+		{
+			smart_ptr<OOX::Image> p = GetImage(rid);
+			if (!p.is_init())
+				return _T("");
+			return p->filename().m_strFilename;
+		}
+		virtual std::wstring GetFullHyperlinkNameFromRId(const OOX::RId& rid)const
+		{
+			smart_ptr<OOX::HyperLink> p = GetHyperlink(rid);
+			if (!p.is_init())
+				return _T("");
+			return p->Uri().m_strFilename;
+		}
+		virtual std::wstring GetLinkFromRId(const OOX::RId& rid)const
+		{
+			//return relsTable.Links.GetTargetById(rid);
+			smart_ptr<OOX::External> pExt = Find(rid).smart_dynamic_cast<OOX::External>();
+			if (pExt.IsInit())
+				return pExt->Uri().m_strFilename;
 
+			smart_ptr<OOX::Media> pMedia = Find(rid).smart_dynamic_cast<OOX::Media>();
+			if (pMedia.IsInit())
+				return pMedia->filename().m_strFilename;
+
+			return _T("");
+		}
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			pWriter->StartRecord(NSBinPptxRW::NSMainTables::NotesSlides);
@@ -127,7 +148,6 @@ namespace PPTX
 
 			pWriter->EndNode(_T("p:notes"));
 		}
-
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			pReader->Skip(1); // type
@@ -145,7 +165,6 @@ namespace PPTX
 				else if (1 == _at)
 					showMasterSp = pReader->GetBool();
 			}
-
 			while (pReader->GetPos() < end)
 			{
 				BYTE _rec = pReader->GetUChar();
@@ -173,13 +192,25 @@ namespace PPTX
 
 			pReader->Seek(end);
 		}
+		void ApplyRels()
+		{
+			smart_ptr<OOX::File> pFile = FileContainer::Get(OOX::Presentation::FileTypes::NotesMaster);
 
-	public:
+			master_ = pFile.smart_dynamic_cast<PPTX::NotesMaster>();
+
+			if (master_.IsInit())
+			{
+				theme_ = master_->theme_;
+			}
+		}
 		Logic::CSld					cSld;
 		nullable<Logic::ClrMapOvr>	clrMapOvr;
 
 		nullable_bool				showMasterPhAnim;
 		nullable_bool				showMasterSp;
+
+		smart_ptr<NotesMaster>		master_;
+		smart_ptr<Theme>			theme_;
 	};
 } // namespace PPTX
 

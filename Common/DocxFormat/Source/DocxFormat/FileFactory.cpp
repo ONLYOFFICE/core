@@ -44,9 +44,11 @@
 #include "Footnote.h"
 #include "Endnote.h"
 #include "Media/Image.h"
+#include "Media/ActiveX.h"
 #include "Media/OleObject.h"
 #include "Media/Audio.h"
 #include "Media/Video.h"
+#include "Media/VbaProject.h"
 #include "External/HyperLink.h"
 #include "External/ExternalVideo.h"
 #include "External/ExternalAudio.h"
@@ -73,7 +75,7 @@ namespace OOX
 		else
 			oFileName = oPath / oRelationFilename;
 
-		if ( oRelation.Type() == FileTypes::Document)
+		if ( oRelation.Type() == FileTypes::Document || oRelation.Type() == FileTypes::DocumentMacro)
 			return smart_ptr<OOX::File>(new CDocument( oRootPath, oFileName ));
 		else if ( oRelation.Type() == FileTypes::FontTable)
 			return smart_ptr<OOX::File>(new CFontTable( oFileName ));
@@ -136,6 +138,14 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CVmlDrawing( oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::Chart )
 			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( oRootPath, oFileName ));
+		else if ( oRelation.Type() == OOX::FileTypes::ActiveX_xml)
+			return smart_ptr<OOX::File>(new OOX::ActiveX_xml( oRootPath, oFileName));
+		else if ( oRelation.Type() == OOX::FileTypes::ActiveX_bin)
+			return smart_ptr<OOX::File>(new OOX::ActiveX_bin( oFileName ));
+		else if ( oRelation.Type() == OOX::FileTypes::VbaProject)
+			return smart_ptr<OOX::File>(new OOX::VbaProject( oRootPath, oFileName ));
+		//else if ( oRelation.Type() == OOX::FileTypes::VbaData)
+		//	return smart_ptr<OOX::File>(new OOX::VbaData( oFileName ));
 
 		return smart_ptr<OOX::File>( new UnknowTypeFile() );
 	}
@@ -155,7 +165,7 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CApp( oFileName ));
 		else if ( pRelation->Type() == FileTypes::Core)
 			return smart_ptr<OOX::File>(new CCore( oFileName ));
-		else if ( pRelation->Type() == FileTypes::Document)
+		else if ( pRelation->Type() == FileTypes::Document || pRelation->Type() == FileTypes::DocumentMacro)
 			return smart_ptr<OOX::File>(new CDocument( oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Theme)
 		{
@@ -220,6 +230,14 @@ namespace OOX
 			return smart_ptr<OOX::File>(new OleObject( oFileName, true ));
 		else if ( pRelation->Type() == OOX::FileTypes::Chart )
 			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( oRootPath, oFileName ));
+		else if ( pRelation->Type() == FileTypes::ActiveX_xml)
+			return smart_ptr<OOX::File>(new ActiveX_xml( oRootPath, oFileName ));
+		else if ( pRelation->Type() == FileTypes::ActiveX_bin)
+			return smart_ptr<OOX::File>(new ActiveX_bin( oFileName ));
+		else if ( pRelation->Type() == FileTypes::VbaProject)
+			return smart_ptr<OOX::File>(new OOX::VbaProject( oRootPath, oFileName ));
+		//else if ( pRelation->Type() == FileTypes::VbaData)
+		//	return smart_ptr<OOX::File>(new OOX::VbaData( oFileName ));
 
 		return smart_ptr<OOX::File>( new UnknowTypeFile() );
 	}

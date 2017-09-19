@@ -44,6 +44,9 @@ namespace Presentation
 		const FileType Presentation		(L"ppt", L"presentation.xml",
 												_T("application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"),
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"));
+		const FileType PresentationMacro(L"ppt", L"presentation.xml",
+												_T("application/vnd.ms-powerpoint.presentation.macroEnabled.main+xml"),
+												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"));
 		const FileType Slide			(L"slides", L"slide.xml",
 												_T("application/vnd.openxmlformats-officedocument.presentationml.slide+xml"),
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide"));

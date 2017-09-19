@@ -31,10 +31,8 @@
  */
 
 
-
 #include "oox_chart_axis.h"
 #include <cpdoccore/xml/simple_xml_writer.h>
-#include <boost/foreach.hpp>
 
 #include "oox_title.h"
 #include "oox_chart_shape.h"
@@ -181,18 +179,18 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 			}
 		}
 
-		BOOST_FOREACH(odf_reader::chart::axis::grid  & g, content_.grids_)
+		for (size_t i = 0; i < content_.grids_.size(); i++)
 		{
 			_oox_fill fill_null;
-			shape.set(g.graphic_properties_, fill_null);
+			shape.set(content_.grids_[i].graphic_properties_, fill_null);
 			
-			if (g.type_ == odf_reader::chart::axis::grid::major)
+			if (content_.grids_[i].type_ == odf_reader::chart::axis::grid::major)
 			{
 				CP_XML_NODE(L"c:majorGridlines")
 				{
 					shape.oox_serialize(CP_XML_STREAM());
 				}
-				odf_reader::GetProperty(content_.properties_,L"display_label",boolVal);
+				odf_reader::GetProperty(content_.properties_, L"display_label", boolVal);
 				if ((boolVal == true) && (boolVal.get()==true))
 				{
 					CP_XML_NODE(L"c:majorTickMark")
@@ -201,7 +199,7 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 					}
 				}
 			}
-			if (g.type_ == odf_reader::chart::axis::grid::minor)
+			if (content_.grids_[i].type_ == odf_reader::chart::axis::grid::minor)
 			{
 				CP_XML_NODE(L"c:minorGridlines")
 				{
@@ -234,11 +232,11 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 
 		oox_serialize_default_text(_Wostream, content_.text_properties_);
 		
-		BOOST_FOREACH(int const & ii, cross_id_)
+		for (size_t i = 0; i < cross_id_.size(); i++)
 		{
 			CP_XML_NODE(L"c:crossAx")
 			{
-				CP_XML_ATTR(L"val", ii);
+				CP_XML_ATTR(L"val", cross_id_[i]);
 			}
 		}
 

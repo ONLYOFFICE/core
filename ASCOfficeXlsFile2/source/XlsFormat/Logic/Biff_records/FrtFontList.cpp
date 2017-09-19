@@ -35,16 +35,6 @@
 namespace XLS
 {
 
-FrtFontList::FrtFontList()
-{
-}
-
-
-FrtFontList::~FrtFontList()
-{
-}
-
-
 BaseObjectPtr FrtFontList::clone()
 {
 	return BaseObjectPtr(new FrtFontList(*this));
@@ -52,9 +42,15 @@ BaseObjectPtr FrtFontList::clone()
 
 void FrtFontList::readFields(CFRecord& record)
 {
-#pragma message("####################### FrtFontList record is not implemented")
-	Log::error("FrtFontList record is not implemented.");
-	//record >> some_value;
+	unsigned char reserved;
+	record >> frtHeaderOld >> verExcel >> reserved >> cFont;
+
+	FontInfo val;
+	for (unsigned short i = 0; i < cFont; i++)
+	{
+		record >> val;
+		rgFontInfo.push_back(val);
+	}
 }
 
 } // namespace XLS

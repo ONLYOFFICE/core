@@ -37,7 +37,6 @@
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
 #include <iostream>
-#include <boost/foreach.hpp>
 
 #include "office_elements_create.h"
 
@@ -543,18 +542,18 @@ void styles::add_child_element( const office_element_ptr & child, odf_conversion
 }
 void styles::serialize(std::wostream & strm)//content from different element
 {
-	BOOST_FOREACH(office_element_ptr & elm, number_styles_)
-    {
-		elm->serialize(strm);
+	for (size_t i = 0; i < number_styles_.size(); i++)
+	{		
+		number_styles_[i]->serialize(strm);
 	}
-	BOOST_FOREACH(office_element_ptr & elm, style_style_)
-    {
-		elm->serialize(strm);
+	for (size_t i = 0; i < style_style_.size(); i++)
+	{		
+		style_style_[i]->serialize(strm);
 	}	
-	BOOST_FOREACH(office_element_ptr & elm, text_list_style_)
-    {
-		elm->serialize(strm);
-	}	
+	for (size_t i = 0; i < text_list_style_.size(); i++)
+	{		
+		text_list_style_[i]->serialize(strm);
+	}
 }
 void templates::create_child_element( const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context)
 {
@@ -576,10 +575,10 @@ void templates::add_child_element( const office_element_ptr & child)
 }
 void templates::serialize(std::wostream & strm)
 {
-	BOOST_FOREACH(office_element_ptr & elm, table_templates_)
-	{
-		elm->serialize(strm);
-	}	
+	for (size_t i = 0; i < table_templates_.size(); i++)
+	{		
+		table_templates_[i]->serialize(strm);
+	}
 }
 void draw_styles::create_child_element(const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context)
 {
@@ -632,29 +631,29 @@ void draw_styles::add_child_element( const office_element_ptr & child, odf_conve
 
 void draw_styles::serialize(std::wostream & strm)
 {
-	BOOST_FOREACH(office_element_ptr & elm, draw_fill_image_)
-    {
-		elm->serialize(strm);
+	for (size_t i = 0; i < draw_fill_image_.size(); i++)
+	{		
+		draw_fill_image_[i]->serialize(strm);
 	}
-	BOOST_FOREACH(office_element_ptr & elm, draw_hatch_)
-    {
-		elm->serialize(strm);
+	for (size_t i = 0; i < draw_hatch_.size(); i++)
+	{		
+		draw_hatch_[i]->serialize(strm);
 	}	
-	BOOST_FOREACH(office_element_ptr & elm, draw_gradient_)
-    {
-		elm->serialize(strm);
-	}	
-	BOOST_FOREACH(office_element_ptr & elm, draw_opacity_)
-    {
-		elm->serialize(strm);
-	}	
-	BOOST_FOREACH(office_element_ptr & elm, draw_marker_)
-    {
-		elm->serialize(strm);
+	for (size_t i = 0; i < draw_gradient_.size(); i++)
+	{		
+		draw_gradient_[i]->serialize(strm);
 	}
-	BOOST_FOREACH(office_element_ptr & elm, draw_stroke_dash_)
-    {
-		elm->serialize(strm);
+	for (size_t i = 0; i < draw_opacity_.size(); i++)
+	{		
+		draw_opacity_[i]->serialize(strm);
+	}
+	for (size_t i = 0; i < draw_marker_.size(); i++)
+	{		
+		draw_marker_[i]->serialize(strm);
+	}
+	for (size_t i = 0; i < draw_stroke_dash_.size(); i++)
+	{		
+		draw_stroke_dash_[i]->serialize(strm);
 	}
 }
 // office:automatic-styles
@@ -696,11 +695,10 @@ void office_automatic_styles::serialize(std::wostream & strm)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			BOOST_FOREACH(office_element_ptr elm, style_page_layout_)
-			{
-				elm->serialize(CP_XML_STREAM());
-			}
-	
+			for (size_t i = 0; i < style_page_layout_.size(); i++)
+			{		
+				style_page_layout_[i]->serialize(CP_XML_STREAM());
+			}	
 			styles_.serialize(CP_XML_STREAM());
 		}
 	}
@@ -762,11 +760,10 @@ void office_master_styles::serialize(std::wostream & strm)
 			if (draw_layer_set_)
 				draw_layer_set_->serialize(CP_XML_STREAM());
 			
-			BOOST_FOREACH(office_element_ptr elm, style_master_page_)
-			{
-				elm->serialize(CP_XML_STREAM());
-			}
-			
+			for (size_t i = 0; i < style_master_page_.size(); i++)
+			{		
+				style_master_page_[i]->serialize(CP_XML_STREAM());
+			}			
 			if (style_handout_master_)
 				style_handout_master_->serialize(CP_XML_STREAM());
 

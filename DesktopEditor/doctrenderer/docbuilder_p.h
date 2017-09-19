@@ -195,7 +195,7 @@ public:
             _LOGGING_ERROR_(L"execute_compile_code", strCode);
             _LOGGING_ERROR_(L"execute_compile", strException);
 
-            return false;
+            return "";
         }
         else
         {
@@ -209,7 +209,7 @@ public:
                 _LOGGING_ERROR_(L"execute_run_code", strCode);
                 _LOGGING_ERROR_(L"execute_run", strException);
 
-                return false;
+                return "";
             }
 
             if (_value->IsString())
@@ -387,11 +387,22 @@ public:
                 CChangesWorker oWorkerLoader;
                 int nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
 
-                v8::Handle<v8::Value> args_open[2];
+                v8::Handle<v8::Value> args_open[3];
                 args_open[0] = oWorkerLoader.GetDataFull();
                 args_open[1] = v8::Integer::New(m_isolate, nVersion);
 
-                func_open->Call(global_js, 2, args_open);
+                std::wstring sXlsx = NSCommon::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
+                if (NSFile::CFileBinary::Exists(sXlsx))
+                {
+                    std::string sXlsxA = U_TO_UTF8(sXlsx);
+                    args_open[2] = v8::String::NewFromUtf8(m_isolate, (char*)(sXlsxA.c_str()));
+                }
+                else
+                {
+                    args_open[2] = v8::Undefined(m_isolate);
+                }
+
+                func_open->Call(global_js, 3, args_open);
 
                 if (try_catch.HasCaught())
                 {
@@ -872,6 +883,7 @@ namespace NSDoctRenderer
             oBuilder.WriteString(L"<m_sFontDir>");
             oBuilder.WriteEncodeXmlString(m_sX2tPath + L"/sdkjs/common");
             oBuilder.WriteString(L"</m_sFontDir>");
+            oBuilder.WriteString(L"<m_bIsNoBase64>true</m_bIsNoBase64>");
             oBuilder.WriteString(L"<m_sThemeDir>./sdkjs/slide/themes</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
             oBuilder.WriteString(params);
             oBuilder.WriteString(L"</TaskQueueDataConvert>");
@@ -1205,6 +1217,9 @@ namespace NSDoctRenderer
 
         bool ExecuteCommand(const std::wstring& command)
         {
+            if (command.length() < 7) // minimum command (!!!)
+                return true;
+
             Init();
 
             if (-1 == m_nFileType)
@@ -1393,6 +1408,50 @@ namespace NSDoctRenderer
     void CDocBuilder::CloseFile()
     {
         m_pInternal->CloseFile();
+    }
+
+    char* CDocBuilder::GetVersion()
+    {
+        m_pInternal->Init();
+
+        if (0 == m_pInternal->m_arDoctSDK.size())
+            return NULL;
+
+        std::wstring sFile;
+        for (std::vector<std::wstring>::iterator i = m_pInternal->m_arDoctSDK.begin(); i != m_pInternal->m_arDoctSDK.end(); i++)
+        {
+            if (std::wstring::npos != i->find(L"sdk-all-min.js"))
+            {
+                sFile = *i;
+                break;
+            }
+        }
+
+        if (sFile.empty())
+            return NULL;
+
+        std::string sData;
+        if (!NSFile::CFileBinary::ReadAllTextUtf8A(sFile, sData))
+            return NULL;
+
+        std::string::size_type startPos = sData.find("Version:");
+        if (std::string::npos == startPos)
+            return NULL;
+
+        startPos += 8;
+
+        std::string::size_type endPos = sData.find(')', startPos);
+        if (std::string::npos == endPos)
+            return NULL;
+
+        size_t sSrcLen = endPos - startPos + 1;
+        if (sSrcLen == 0)
+            return NULL;
+
+        char* sRet = new char[sSrcLen + 1];
+        memcpy(sRet, sData.c_str() + startPos, sSrcLen);
+        sRet[sSrcLen] = '\0';
+        return sRet;
     }
 
     bool CDocBuilder::Run(const wchar_t* path)

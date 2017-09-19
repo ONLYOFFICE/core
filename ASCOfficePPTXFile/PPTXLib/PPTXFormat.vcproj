@@ -44,7 +44,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\XML;..\..\Common\ASCDocxFormat\Source\;.\;..\..\Common\DocxFormat\Source\XML\libxml2\XML\include;&quot;../../DesktopEditor/freetype-2.5.2/include&quot;"
+				AdditionalIncludeDirectories="&quot;../../DesktopEditor/freetype-2.5.2/include&quot;;../../DesktopEditor/xml/build/vs2005"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_USE_MATH_DEFINES;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -112,7 +112,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\Common\DocxFormat\Source\XML\libxml2\XML\include;&quot;..\..\DesktopEditor\freetype-2.5.2\include&quot;"
+				AdditionalIncludeDirectories="&quot;..\..\DesktopEditor\freetype-2.5.2\include&quot;"
 				PreprocessorDefinitions="_DEBUG;_LIB;_USE_MATH_DEFINES;NODOCX;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;_AVS_PPT_SHAPE_INCLUDE_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;BUILD_CONFIG_FULL_VERSION;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -2985,6 +2985,10 @@
 				</File>
 				<File
 					RelativePath="..\.\PPTXFormat\Presentation.h"
+					>
+				</File>
+				<File
+					RelativePath="..\PPTXFormat\Presentation\SectionLst.h"
 					>
 				</File>
 				<File

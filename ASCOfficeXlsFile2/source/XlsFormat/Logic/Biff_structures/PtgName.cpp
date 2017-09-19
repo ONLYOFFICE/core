@@ -77,9 +77,7 @@ void PtgName::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool ful
 	RevNameTabidPtr tab_id;
 	if(!extra_data.empty() && (tab_id = boost::dynamic_pointer_cast<RevNameTabid>(extra_data.front())))
 	{
-
-#pragma message("####################### PtgName struct for revisions is not checked")
-		Log::info("PtgName struct for revisions is not checked.");
+		Log::info("PtgName struct for revisions is not assemble.");
 		ptg_stack.push(tab_id->toString());
 		extra_data.pop();
 		return;

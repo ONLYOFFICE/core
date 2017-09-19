@@ -51,6 +51,7 @@ namespace SerializeCommon
 	public :
 		std::wstring sText;
 		std::wstring sTime;
+		std::wstring sOOTime;
 		std::wstring sUserId;
 		std::wstring sUserName;
 		std::wstring sQuoteText;

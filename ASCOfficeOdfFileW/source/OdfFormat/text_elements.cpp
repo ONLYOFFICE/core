@@ -32,10 +32,7 @@
 
 #include "text_elements.h"
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/xmlchar.h>
-
 #include <cpdoccore/xml/attributes.h>
 
 #include "paragraph_elements.h"
@@ -76,11 +73,11 @@ void paragraph::add_text(const std::wstring & Text)
     office_element_ptr elm = text_text::create(Text) ;
     paragraph_content_.push_back( elm );
 }
-void paragraph::serialize(std::wostream & _Wostream)
+void paragraph::serialize(std::wostream & strm)
 {
-	BOOST_FOREACH(const office_element_ptr & elm, paragraph_content_)
-	{    
-		elm->serialize(_Wostream);
+	for (size_t i = 0; i < paragraph_content_.size(); i++)
+	{
+		paragraph_content_[i]->serialize(strm);
 	}
 }
 void paragraph::serialize_attr(CP_ATTR_NODE)
@@ -95,11 +92,10 @@ void paragraph_attrs::serialize(CP_ATTR_NODE)
    
 	std::wstring text_class_names_all;
 
-	BOOST_FOREACH(const std::wstring & elm, text_class_names_)
-	{    
-		text_class_names_all = elm + std::wstring(L" ");
-	}
-	
+	for (size_t i = 0; i < text_class_names_.size(); i++)
+	{
+		text_class_names_all = text_class_names_[i] + std::wstring(L" ");
+	}	
 	if (!text_class_names_all.empty())
 		CP_XML_ATTR(L"text:class-names",	text_class_names_all);
 }
@@ -186,9 +182,9 @@ void text_list::serialize(std::wostream & _Wostream)
 			
 			if (text_list_header_) text_list_header_->serialize(CP_XML_STREAM());
    
-			BOOST_FOREACH(const office_element_ptr & listItem, text_list_items_)
+			for (size_t i = 0; i < text_list_items_.size(); i++)
 			{
-				listItem->serialize(CP_XML_STREAM());
+				text_list_items_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}

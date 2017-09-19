@@ -40,7 +40,6 @@
 #include <cpdoccore/odf/odf_document.h>
 
 #include <iostream>
-#include <boost/foreach.hpp>
 
 #include "office_elements.h"
 #include "office_elements_create.h"
@@ -1275,16 +1274,27 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 			{
 				if (horizontal_margins.fo_margin_left_ && horizontal_margins.fo_margin_left_->get_type() == odf_types::length_or_percent::Length)
 					CP_XML_ATTR(L"left"		, horizontal_margins.fo_margin_left_->get_length().get_value_unit(odf_types::length::inch));
+				else CP_XML_ATTR(L"left", 0);
+				
 				if (horizontal_margins.fo_margin_right_ && horizontal_margins.fo_margin_right_->get_type() == odf_types::length_or_percent::Length)
 					CP_XML_ATTR(L"right"	, horizontal_margins.fo_margin_right_->get_length().get_value_unit(odf_types::length::inch));
+				else CP_XML_ATTR(L"right", 0);
 				
 				if (vertical_margins.fo_margin_top_ && vertical_margins.fo_margin_top_->get_type() == odf_types::length_or_percent::Length)
 					CP_XML_ATTR(L"top"		, vertical_margins.fo_margin_top_->get_length().get_value_unit(odf_types::length::inch));
+				else CP_XML_ATTR(L"top", 1.025);
+
 				if (vertical_margins.fo_margin_bottom_ && vertical_margins.fo_margin_bottom_->get_type() == odf_types::length_or_percent::Length)
 					CP_XML_ATTR(L"bottom"	, vertical_margins.fo_margin_bottom_->get_length().get_value_unit(odf_types::length::inch));
+				else CP_XML_ATTR(L"bottom", 1.025);
 				
-				CP_XML_ATTR(L"header"	, vertical_margins.fo_margin_top_->get_length().get_value_unit(odf_types::length::inch));
-				CP_XML_ATTR(L"footer"	, vertical_margins.fo_margin_bottom_->get_length().get_value_unit(odf_types::length::inch));
+				if (vertical_margins.fo_margin_top_)
+					CP_XML_ATTR(L"header"	, vertical_margins.fo_margin_top_->get_length().get_value_unit(odf_types::length::inch));
+				else CP_XML_ATTR(L"header", 0.7875);
+
+				if (vertical_margins.fo_margin_bottom_)
+					CP_XML_ATTR(L"footer"	, vertical_margins.fo_margin_bottom_->get_length().get_value_unit(odf_types::length::inch));
+				else CP_XML_ATTR(L"footer", 0.7875);
 			}
 		}
 		if (attlist_.fo_page_width_ || attlist_.fo_page_height_ || attlist_.style_print_orientation_)

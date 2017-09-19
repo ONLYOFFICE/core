@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of PivotChartBits record in BIFF8
 class PivotChartBits: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(PivotChartBits)
@@ -47,12 +45,13 @@ public:
 	~PivotChartBits();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typePivotChartBits;
+	static const ElementType type = typePivotChartBits;
 
+	unsigned short	rt;
+	bool			fGXHide;
 };
 
 } // namespace XLS

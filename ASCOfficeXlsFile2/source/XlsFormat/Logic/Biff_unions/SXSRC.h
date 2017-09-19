@@ -47,9 +47,12 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typeSXSRC;
+	int serialize(std::wostream & stream);
+
+	static const ElementType type = typeSXSRC;
 
 	BaseObjectPtr	m_source;	
+	bool			bSql;
 };
 
 } // namespace XLS

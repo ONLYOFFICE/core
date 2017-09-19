@@ -31,7 +31,6 @@
  */
 
 #include "pptx_comments.h"
-#include <boost/foreach.hpp>
 #include <vector>
 #include <cpdoccore/xml/simple_xml_writer.h>
 #include "oox_rels.h"
@@ -53,23 +52,23 @@ public:
                 CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
                 CP_XML_ATTR(L"xmlns:p", L"http://schemas.openxmlformats.org/presentationml/2006/main");
 
-				BOOST_FOREACH(_pptx_comment const & c, pptx_comment_)
+				for (size_t i = 0; i < pptx_comment_.size(); i++)
 				{
 					CP_XML_NODE(L"p:cm")
 					{
-						CP_XML_ATTR(L"idx",c.idx_);
+						CP_XML_ATTR(L"idx", pptx_comment_[i].idx_);
 						
-						CP_XML_ATTR(L"authorId", c.author_id_);
-						CP_XML_ATTR(L"dt",	c.date_);
+						CP_XML_ATTR(L"authorId", pptx_comment_[i].author_id_);
+						CP_XML_ATTR(L"dt",	pptx_comment_[i].date_);
 						
 						CP_XML_NODE(L"p:pos")
 						{
-							CP_XML_ATTR(L"x", c.x_);
-							CP_XML_ATTR(L"y", c.y_);
+							CP_XML_ATTR(L"x", pptx_comment_[i].x_);
+							CP_XML_ATTR(L"y", pptx_comment_[i].y_);
 						}
 						CP_XML_NODE(L"p:text")
 						{
-							CP_XML_STREAM() << c.content_;
+							CP_XML_STREAM() << pptx_comment_[i].content_;
 						}
 					} 					
 				}

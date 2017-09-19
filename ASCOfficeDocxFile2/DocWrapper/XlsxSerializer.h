@@ -55,6 +55,7 @@ namespace BinXlsxRW {
         std::wstring m_sFontDir;
         std::wstring m_sEmbeddedFontsDir;
 		NSBinPptxRW::CDrawingConverter* m_pExternalDrawingConverter;
+		bool m_bIsNoBase64;
 	public:
 		CXlsxSerializer();
 		~CXlsxSerializer();
@@ -69,6 +70,7 @@ namespace BinXlsxRW {
         void setFontDir			(const std::wstring& sFontDir);
         void setEmbeddedFontsDir(const std::wstring& sEmbeddedFontsDir);
 		void setDrawingConverter(NSBinPptxRW::CDrawingConverter* pDrawingConverter);
+		void setIsNoBase64		(bool bIsNoBase64);
 
         void writeChartXlsx     (const std::wstring& sDstFile ,const OOX::Spreadsheet::CChartSpace& oChart);
 	};

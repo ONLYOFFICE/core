@@ -54,6 +54,9 @@ public:
 //-----------------------------
 	_UINT32		dwThemeVersion;
 	FrtHeader	frtHeader;
+
+	_UINT32		nThemeDataSize;
+	boost::shared_array<char> pThemeData;
 };
 
 } // namespace XLS

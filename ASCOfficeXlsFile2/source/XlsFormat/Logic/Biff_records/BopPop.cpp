@@ -102,7 +102,7 @@ int BopPop::serialize(std::wostream & _stream)
 		{
 			CP_XML_NODE(L"c:custSplit")
 			{
-				for (int i = 0 ; i < custom->rggrbit.pie_indices.size(); i++)
+				for (size_t i = 0 ; i < custom->rggrbit.pie_indices.size(); i++)
 				{
 					CP_XML_NODE(L"c:secondPiePt")
 					{

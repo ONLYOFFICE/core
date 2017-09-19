@@ -44,9 +44,11 @@ namespace OOX
 	public:
 		RId() : m_id(0)
 		{
+			bNumber = false;
 		}
 		RId(const size_t id) : m_id(id)
 		{
+			bNumber = true;
 		}
 		RId(const std::wstring& rid)
 		{
@@ -68,11 +70,13 @@ namespace OOX
 			{
 				std::wstring strParam = rid.substr(nFindStringLength);
 				m_id = XmlUtils::GetUInteger(strParam);
+				bNumber = true;
 			}
 			else
 			{
 				m_id = 0;
 				m_sId = rid;
+				bNumber = false;
 			}
 			
 			return *this;
@@ -80,8 +84,9 @@ namespace OOX
 
 		const RId& operator= (const RId& oSrc)
 		{
-			m_id = oSrc.m_id;
-			m_sId = oSrc.m_sId;
+			m_id	= oSrc.m_id;
+			m_sId	= oSrc.m_sId;
+			bNumber = oSrc.bNumber;
 			return *this;
 		}
 
@@ -118,6 +123,7 @@ namespace OOX
 
 		const RId	next() const
 		{
+			bNumber	= true;
 			return RId(m_id + 1);
 		}
 		
@@ -125,8 +131,10 @@ namespace OOX
 		{
 			if(!m_sId.empty())
 				return m_sId;
-			else
+			else if (bNumber)
                 return _T("rId") + std::to_wstring((unsigned int)m_id);
+			else
+				return L"";
 		}
 		template<typename T>
 		void toPPTY(BYTE type, T pWriter) const
@@ -137,6 +145,7 @@ namespace OOX
 	private:
 		size_t			m_id;
 		std::wstring	m_sId;
+		mutable bool	bNumber;
 	};
 } // namespace OOX
 

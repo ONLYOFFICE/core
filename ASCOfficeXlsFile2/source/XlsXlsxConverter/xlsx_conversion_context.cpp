@@ -84,6 +84,7 @@ xlsx_xml_worksheet & xlsx_conversion_context::current_sheet()
         throw std::runtime_error("internal error");
     }
 }
+
 oox_chart_context & xlsx_conversion_context::current_chart()
 {
     if (!charts_.empty())
@@ -103,6 +104,13 @@ bool xlsx_conversion_context::start_table(const std::wstring & name)
 	return true;
 }
 
+void xlsx_conversion_context::set_chart_view()
+{
+	if (sheets_.empty()) return;
+
+	get_table_context().set_chart_view();
+}
+
 void xlsx_conversion_context::set_state(const std::wstring & state)
 {
 	if (state.empty()) return;
@@ -118,11 +126,8 @@ void xlsx_conversion_context::start_chart()
 	//этот контекст нужно передавать в файл
 
 }
-
 void xlsx_conversion_context::end_chart()
 {
-	//current_chart().set_drawing_link(current_sheet().get_drawing_link());
-	//излишняя инфа
 }
 
 void xlsx_conversion_context::end_table()
@@ -144,10 +149,11 @@ void xlsx_conversion_context::end_document()
 
     unsigned int count = 0;
     // добавляем таблицы
-    BOOST_FOREACH(const xlsx_xml_worksheet_ptr& sheet, sheets_)
-    {
+	for (size_t i = 0; i < sheets_.size(); i++)
+	{
+		xlsx_xml_worksheet_ptr & sheet = sheets_[i];
         count++;
-		const std::wstring id = std::wstring(L"sId") + boost::lexical_cast<std::wstring>(count);
+		const std::wstring slideRId = std::wstring(L"sId") + std::to_wstring(count);
 
         package::sheet_content_ptr content = package::sheet_content::create();
  ////////////////////////////////////////////////////////////////////////////////////////////       
@@ -201,69 +207,107 @@ void xlsx_conversion_context::end_document()
                 CP_XML_ATTR(L"name",	sheet->name());
                 CP_XML_ATTR(L"sheetId", count);
                 CP_XML_ATTR(L"state",	sheet->state()	);
-                CP_XML_ATTR(L"r:id",	id);            
+                CP_XML_ATTR(L"r:id",	slideRId);            
             }
         }
 
     }
-	//добавляем диаграммы
-
-	count = 0;
-    BOOST_FOREACH(const oox_chart_context_ptr& chart, charts_)
+	for (size_t i = 0; i < charts_.size(); i++)
     {
-		count++;
 		package::chart_content_ptr content = package::chart_content::create();
 
-        chart->dump_rels(content->get_rels());
-		chart->write_to(content->content());
+        charts_[i]->dump_rels(content->get_rels());
+		charts_[i]->write_to(content->content());
 
 		output_document_->get_xl_files().add_charts(content);
-	
 	}
     //workbook_content << L"<calcPr iterateCount=\"100\" refMode=\"A1\" iterate=\"false\" iterateDelta=\"0.0001\" />";
 
-	{
-        output_document_->get_xl_files().set_sharedStrings( package::simple_element::create(L"sharedStrings.xml", xlsx_shared_strings_.str()) );
-    }
+	output_document_->get_xl_files().set_sharedStrings( package::simple_element::create(L"sharedStrings.xml", xlsx_shared_strings_.str()) );
 
 
+    std::wstringstream strm_workbook;
+
+    CP_XML_WRITER(strm_workbook)
     {
-        std::wstringstream strm_workbook;
-
-        CP_XML_WRITER(strm_workbook)
+        CP_XML_NODE(L"workbook")
         {
-            CP_XML_NODE(L"workbook")
+            CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+            CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+			CP_XML_ATTR(L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006");
+
+            CP_XML_NODE(L"bookViews")
             {
-                CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
-                CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+				CP_XML_STREAM() << xlsx_workbook_views_.str();
+			}
 
-                CP_XML_NODE(L"bookViews")
-                {
-					CP_XML_STREAM() << xlsx_workbook_views_.str();
-				}
+            CP_XML_NODE(L"sheets")
+            {
+                CP_XML_STREAM() << workbook_content.str();
+            }
 
-                CP_XML_NODE(L"sheets")
-                {
-                    CP_XML_STREAM() << workbook_content.str();
-                }
+            CP_XML_NODE(L"definedNames")
+            {
+				CP_XML_STREAM() << xlsx_defined_names_.str();
+			}
+			
+			std::wstring str_ = xlsx_custom_views_.str();
 
-                CP_XML_NODE(L"definedNames")
-                {
-					CP_XML_STREAM() << xlsx_defined_names_.str();
-				}
-				
-				std::wstring str_ = xlsx_custom_views_.str();
-
-				if (!str_.empty())
+			if (!str_.empty())
+			{
+				CP_XML_NODE(L"customWorkbookViews")
 				{
-					CP_XML_NODE(L"customWorkbookViews")
+					CP_XML_STREAM() << str_;
+				}
+			}
+			int pivot_cache_count = xlsx_pivots_context_.get_cache_count();
+			if (pivot_cache_count > 0)
+			{
+				CP_XML_NODE(L"pivotCaches")
+				{
+					for (int i = 0; i < pivot_cache_count; i++)
 					{
-						CP_XML_STREAM() << str_;
+						std::wstring				rId		= L"pcId" + std::to_wstring(i+1);
+						static const std::wstring	sType	= L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition"; 
+						const std::wstring			sName	= std::wstring(L"../pivotCache/pivotCacheDefinition" + std::to_wstring(i + 1) + L".xml");
+						
+						package::pivot_cache_content_ptr content = package::pivot_cache_content::create();
+						
+						CP_XML_NODE(L"pivotCache")
+						{
+							CP_XML_ATTR(L"cacheId", std::to_wstring(i));
+							CP_XML_ATTR(L"r:id", rId);
+						}
+
+						xlsx_pivots_context_.dump_rels_cache(i, content->get_rels());
+						xlsx_pivots_context_.write_cache_definitions_to(i, content->definitions());
+						xlsx_pivots_context_.write_cache_records_to(i, content->records());
+
+						output_document_->get_xl_files().add_pivot_cache(content);	
 					}
 				}
 			}
-        }
+			int pivot_view_count = xlsx_pivots_context_.get_view_count();
+			if (pivot_view_count > 0)
+			{
+				for (int i = 0; i < pivot_view_count; i++)
+				{
+					package::pivot_table_content_ptr content = package::pivot_table_content::create();
 
+					xlsx_pivots_context_.dump_rels_view(i, content->get_rels());
+					xlsx_pivots_context_.write_table_view_to(i, content->content());
+
+					output_document_->get_xl_files().add_pivot_table(content);	
+				}
+			}
+			if (xlsx_pivots_context_.is_connections())
+			{
+				std::wstringstream strm;
+				xlsx_pivots_context_.write_connections_to(strm);
+
+				output_document_->get_xl_files().set_connections( package::simple_element::create(L"connections.xml", strm.str()) );
+			}
+		}
         output_document_->get_xl_files().set_workbook( package::simple_element::create(L"workbook.xml", strm_workbook.str()) );
 
 		output_document_->content_type().set_media(get_mediaitems());
@@ -276,10 +320,8 @@ void xlsx_conversion_context::end_document()
         output_document_->get_xl_files().set_vml_drawings(drawings_vml);
 
 		package::xl_comments_ptr comments = package::xl_comments::create(xlsx_comments_context_handle_.content());
-        output_document_->get_xl_files().set_comments(comments);
-        
+        output_document_->get_xl_files().set_comments(comments);        
 	}
-
 }
 
 }

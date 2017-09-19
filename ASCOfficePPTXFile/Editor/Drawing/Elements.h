@@ -588,7 +588,7 @@ namespace NSPresentationEditor
 #else
         std::wstring ConvertPPTtoPPTX(CPPTShape* pPPTShape, const NSGuidesVML::CFormParam& pCoef, bool bIsNamespace = false)
 		{
-			if (pPPTShape->m_eType == PPTShapes::sptCRect)
+			if (pPPTShape->m_eType == PPTShapes::sptCRect || pPPTShape->m_eType == PPTShapes::sptCFrame)
 			{
 				if (bIsNamespace)
 				{
@@ -604,7 +604,14 @@ namespace NSPresentationEditor
 				}
 				return _T("<a:prstGeom prst=\"line\"><a:avLst/></a:prstGeom>");
 			}
-						
+			else if (pPPTShape->m_eType == PPTShapes::sptCEllipse)
+			{
+				if (bIsNamespace)
+				{
+					return _T("<a:prstGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" prst=\"line\"><a:avLst/></a:prstGeom>");
+				}
+				return _T("<a:prstGeom prst=\"ellipse\"><a:avLst/></a:prstGeom>");
+			}
             std::wstring strXmlPPTX = bIsNamespace ? _T("<a:custGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">") : _T("<a:custGeom>");
 
 			CFormulaConverter pFormulaConverter;

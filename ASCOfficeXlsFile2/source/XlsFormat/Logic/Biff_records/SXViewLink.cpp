@@ -52,7 +52,7 @@ BaseObjectPtr SXViewLink::clone()
 
 void SXViewLink::readFields(CFRecord& record)
 {
-	unsigned short			unused, reserved;
+	unsigned short unused, reserved;
 
 	record >> rt >> unused >> reserved >> cch;
 

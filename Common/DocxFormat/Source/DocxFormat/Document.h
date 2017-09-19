@@ -201,9 +201,12 @@ namespace OOX
 	public:
 		CDocument()
 		{
+			m_bMacroEnabled = false;
 		}
 		CDocument(const CPath& oRootPath, const CPath& oPath)
 		{
+			m_bMacroEnabled = false;
+			
 			read( oRootPath, oPath );
 		}
 		virtual ~CDocument()
@@ -218,7 +221,6 @@ namespace OOX
 
 			m_arrItems.clear();
 		}
-	public:
 
 		virtual void read(const CPath& oPath)
 		{
@@ -317,7 +319,11 @@ namespace OOX
 		{
 			m_oReadPath = oPath;
 			IFileContainer::Read( oRootPath, oPath );
-
+			
+			if (IFileContainer::IsExist(OOX::FileTypes::VbaProject))
+			{
+				m_bMacroEnabled = true;
+			}
 #ifdef USE_LITE_READER
 			Common::readAllShapeTypes(oPath, m_arrShapeTypes);
 
@@ -491,7 +497,8 @@ namespace OOX
 		}
 		virtual const OOX::FileType type() const
 		{
-			return FileTypes::Document;
+			if (m_bMacroEnabled)	return FileTypes::DocumentMacro;
+			else					return FileTypes::Document;
 		}
 		virtual const CPath DefaultDirectory() const
 		{
@@ -634,6 +641,7 @@ namespace OOX
 			WritingElement_ReadAttributes_End( oReader )
 		}
 	public:
+		bool									m_bMacroEnabled;
 		CPath									m_oReadPath;
 		// Attributes
 		SimpleTypes::CConformanceClass<SimpleTypes::conformanceclassTransitional> m_oConformance;

@@ -78,8 +78,11 @@ namespace OOX
 		{
 			return m_filename;
 		}
-		void copy_to(const CPath& path) const
+		virtual void copy_to(const CPath& path) const
 		{
+			OOX::CPath pathSaveItem =  path + FILE_SEPARATOR_STR + m_filename.GetFilename();
+            
+			NSFile::CFileBinary::Copy(m_filename.GetPath(), pathSaveItem.GetPath());
 		}
 		virtual const CPath DefaultDirectory() const
 		{

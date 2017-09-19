@@ -57,6 +57,9 @@
 #include "../XlsFormat/Logic/Biff_unions/TEXTOBJECT.h"
 #include "../XlsFormat/Logic/Biff_unions/CHART.h"
 #include "../XlsFormat/Logic/Biff_unions/BACKGROUND.h"
+#include "../XlsFormat/Logic/Biff_unions/PIVOTVIEW.h"
+#include "../XlsFormat/Logic/Biff_unions/PIVOTCACHE.h"
+#include "../XlsFormat/Logic/Biff_unions/PIVOTCACHEDEFINITION.h"
 
 #include <Logic/Biff_records/BkHim.h>
 #include <Logic/Biff_records/HLink.h>
@@ -118,7 +121,7 @@ typedef struct tagBITMAPCOREHEADER {
 } BITMAPCOREHEADER;
 #endif
 
-XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _xlsx_path, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* CallBack) 
+XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _xlsx_path, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* CallBack, bool & bMacros) 
 {
 	xlsx_path			= _xlsx_path;
 	output_document		= NULL;
@@ -128,34 +131,15 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 	bUserStopConvert	= false;
 	is_older_version	= false;
 	is_encrypted		= false;
+	output_document		= new oox::package::xlsx_document();
 
-	try{
+	try
+	{
 		XLS::CompoundFile cfile(xls_file, XLS::CompoundFile::cf_ReadMode);
 
 		if (cfile.isError())
 		{
-			//if (0 <= xls_file.rfind(L".xls"))//todooo lower
-			//{
-			//	unsigned char* fileData = NULL;
-			//	DWORD fileSize = 0;
-
-			//	if (!NSFile::CFileBinary::ReadAllBytes(xls_file, &fileData, fileSize)) return;
-			//	if (!fileData) return;
-
-			//	//test/open as list
-			//	std::wstring xls_file_new = _xlsx_path + FILE_SEPARATOR_STR + L"temp.xls";
-			//	if (cfile.Open(xls_file_new, XLS::CompoundFile::cf_WriteMode))
-			//	{
-			//		XLS::CFStreamPtr stream = cfile.createWorkbookStream();
-			//		if (stream)
-			//			stream->write(fileData, fileSize);
-			//		cfile.closeWorkbookStream();
-			//	}
-			//	delete []fileData;
-			//	if (!cfile.Open(xls_file_new, XLS::CompoundFile::cf_ReadMode)) 
-			//		return;					
-			//}else 
-				return;
+			return;
 		}
 
 		XLS::CFStreamPtr summary;
@@ -163,7 +147,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 
 		try
 		{
-			summary = cfile.getSummaryInformationStream();
+			summary = cfile.getNamedStream("SummaryInformation");
 		}
 		catch (...)
 		{
@@ -171,7 +155,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 
 		try
 		{
-			doc_summary = cfile.getDocumentSummaryInformationStream();
+			doc_summary = cfile.getNamedStream("DocumentSummaryInformation");
 		}
 		catch (...)
 		{
@@ -210,7 +194,49 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 		{
 			is_encrypted = true;
 			if (xls_global_info->decryptor->IsVerify() == false) return;
-		}	
+		}
+
+		if (cfile.storage_->isDirectory("_SX_DB_CUR"))
+		{
+			std::list<std::string> listStream = cfile.storage_->entries("_SX_DB_CUR");
+
+			int last_index = 0;
+			for (std::list<std::string>::iterator it = listStream.begin(); it != listStream.end(); it++)
+			{
+				XLS::CFStreamCacheReader pivot_cache_reader(cfile.getNamedStream("_SX_DB_CUR/" + *it), xls_global_info);
+				XLS::BaseObjectPtr pivot_cache = boost::shared_ptr<XLS::PIVOTCACHE>(new XLS::PIVOTCACHE());
+				
+				XLS::BinReaderProcessor proc(pivot_cache_reader , pivot_cache.get() , true);
+				proc.mandatory(*pivot_cache.get());
+
+				int index = XmlUtils::GetHex(*it);
+
+				xls_global_info->mapPivotCacheStream.insert(std::make_pair(index, pivot_cache));
+
+				last_index = index;
+			}
+		}
+		if (bMacros && cfile.storage_->isDirectory("_VBA_PROJECT_CUR"))
+		{
+			std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";	
+			NSDirectory::CreateDirectory(xl_path.c_str());
+
+			std::wstring sVbaProjectFile = xl_path + FILE_SEPARATOR_STR + L"vbaProject.bin";
+
+			POLE::Storage *storageVbaProject	= new POLE::Storage(sVbaProjectFile.c_str());
+
+			if ((storageVbaProject) && (storageVbaProject->open(true, true)))
+			{			
+				cfile.copy(0, "_VBA_PROJECT_CUR/", storageVbaProject, false);
+
+				storageVbaProject->close();
+				delete storageVbaProject;
+
+				output_document->get_xl_files().add_vba_project();
+			}
+		}
+		else 
+			bMacros = false;
 	}
 	catch(...)
 	{
@@ -224,8 +250,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 		Log::error("Version xls is old !!! - " + std::string(sVer.begin(), sVer.end()));
 		is_older_version = true;
 	}	
-	output_document		= new oox::package::xlsx_document();
-    xlsx_context		= new oox::xlsx_conversion_context(output_document);
+    xlsx_context = new oox::xlsx_conversion_context(output_document);
 }
 
 XlsConverter::~XlsConverter() 
@@ -261,6 +286,7 @@ bool XlsConverter::UpdateProgress(long nComplete)
 void XlsConverter::write()
 {
 	if (!output_document)return;
+	
 	output_document->write(xlsx_path);
 
 	delete output_document; output_document = NULL;
@@ -339,7 +365,7 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 			count_sheets++;
 			xls_global_info->current_sheet = count_sheets;
 		
-			xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"Sheet_" + boost::lexical_cast<std::wstring>(count_sheets));
+			xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"Sheet_" + std::to_wstring(count_sheets));
 			xlsx_context->set_state(xls_global_info->sheets_state.size() > i ? xls_global_info->sheets_state[i] : L"visible");
 
 			convert(dynamic_cast<XLS::WorksheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get()));
@@ -348,9 +374,13 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 		{
 			count_chart_sheets++;
 			xls_global_info->current_sheet = -1; 
-			xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"ChartSheet_" + boost::lexical_cast<std::wstring>(count_chart_sheets));
+			xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"ChartSheet_" + std::to_wstring(count_chart_sheets));
 
-			convert_chart_sheet(dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get()));
+			xlsx_context->set_chart_view();
+
+			XLS::ChartSheetSubstream* chart = dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get());
+
+			convert_chart_sheet(chart);
 		}
 
 		xlsx_context->end_table();
@@ -362,7 +392,7 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 	}
 }
 
-void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
+void XlsConverter::convert (XLS::WorksheetSubstream* sheet)
 {
 	if (sheet == NULL) return;
 
@@ -431,6 +461,11 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 	if (sheet->m_DVAL)
 	{
 		sheet->m_DVAL->serialize(xlsx_context->current_sheet().dataValidations());
+	}
+
+	for (size_t i = 0; i < sheet->m_arPIVOTVIEW.size(); i++)
+	{
+		convert((XLS::PIVOTVIEW*)sheet->m_arPIVOTVIEW[i].get());
 	}
 
 	convert((XLS::OBJECTS*)sheet->m_OBJECTS.get(), sheet);
@@ -515,6 +550,12 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
 	{
 		global->m_arUserBView[i]->serialize(xlsx_context->custom_views());
 	}
+
+	for (size_t i = 0 ; i < global->m_arPIVOTCACHEDEFINITION.size(); i++)
+	{
+		convert((XLS::PIVOTCACHEDEFINITION*)global->m_arPIVOTCACHEDEFINITION[i].get());
+	}
+	xlsx_context->get_pivots_context().add_connections(xls_global_info->connections_stream.str());
 }
 
 typedef boost::unordered_map<XLS::FillInfo, int>	mapFillInfo;
@@ -621,7 +662,7 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 	xlsx_context->get_mediaitems().create_media_path(xlsx_path);
 
 	bool res = false;
-	std::wstring file_name = L"image" + boost::lexical_cast<std::wstring>(id);
+	std::wstring file_name = L"image" + std::to_wstring(id);
 	
 
 	if (type_ext == L"dib_data")
@@ -1892,4 +1933,39 @@ void XlsConverter::convert(XLS::ChartSheetSubstream * chart)
 
 	chart->serialize(xlsx_context->current_chart().chartData());	
 	//convert(chart->m_OBJECTSCHART.get());непонятные какие то текстбоксы - пустые и бз привязок
+}
+
+void XlsConverter::convert(XLS::PIVOTVIEW * pivot_view)
+{
+	if (pivot_view == NULL) return;
+
+	std::wstringstream strm;
+
+	pivot_view->serialize(strm);
+
+	int index_view = xlsx_context->get_pivots_context().add_view(strm.str(), pivot_view->indexCache);
+	
+	if (index_view > 0)
+	{
+		xlsx_context->current_sheet().sheet_rels().add(oox::relationship(L"pvId" + std::to_wstring(index_view),
+			L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotTable",
+			L"../pivotTables/pivotTable" + std::to_wstring(index_view) + L".xml"));
+	}
+}
+
+void XlsConverter::convert(XLS::PIVOTCACHEDEFINITION * pivot_cached)
+{
+	if (pivot_cached == NULL) return;
+
+	std::wstringstream strmD, strmR;
+
+	pivot_cached->serialize_definitions(strmD);
+	pivot_cached->serialize_records(strmR);
+
+	xlsx_context->get_pivots_context().add_cache(strmD.str(), strmR.str());
+	
+	if (!xls_global_info->mapPivotCacheExternal.empty())
+	{
+		xlsx_context->get_pivots_context().add_cache_external(xls_global_info->mapPivotCacheExternal);
+	}
 }

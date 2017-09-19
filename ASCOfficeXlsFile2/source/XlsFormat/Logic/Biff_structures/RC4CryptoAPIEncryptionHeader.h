@@ -31,16 +31,13 @@
  */
 #pragma once
 
-#include "BiffStructure.h"
 #include "EncryptionHeaderFlags.h"
 #include "EncryptionHeader.h"
 #include "EncryptionVerifier.h"
-#include <Logic/Biff_structures/BitMarkedStructs.h>
+#include "RC4EncryptionHeader.h"
 
 namespace CRYPTO
 {
-
-class CFRecord;
 
 class RC4CryptoAPIEncryptionHeader : public XLS::BiffStructure
 {

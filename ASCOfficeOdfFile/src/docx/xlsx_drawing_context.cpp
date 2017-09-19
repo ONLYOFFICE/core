@@ -29,7 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 
 #include <iostream>
@@ -515,7 +514,7 @@ void xlsx_drawing_context::process_position_properties(drawing_object_descriptio
 }
 
 
-void xlsx_drawing_context::process_image(drawing_object_description & obj,_xlsx_drawing & drawing, xlsx_drawings_ptr xlsx_drawings_)
+void xlsx_drawing_context::process_image(drawing_object_description & obj, _xlsx_drawing & drawing, xlsx_drawings_ptr xlsx_drawings_)
 {
 	if (!drawing.fill.bitmap)
 	{

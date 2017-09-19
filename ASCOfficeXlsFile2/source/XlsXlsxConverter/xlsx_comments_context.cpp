@@ -52,13 +52,13 @@ public:
 
     std::pair<std::wstring, std::wstring> add_comments_xml(std::wstring const & content, xlsx_comments_ptr comments)
     {
- 		const std::wstring file_comments_id	= boost::lexical_cast<std::wstring>(next_comments_file_id_++);
+ 		const std::wstring file_comments_id	= std::to_wstring(next_comments_file_id_++);
      
 		const std::wstring fileName		= std::wstring(L"comments")		+ file_comments_id	+ L".xml";
         
 		comments_.push_back(comment_elm(fileName, content, comments));
         
-		const std::wstring id	= boost::lexical_cast<std::wstring>(next_comments_id_++);
+		const std::wstring id	= std::to_wstring(next_comments_id_++);
 		const std::wstring rId	= std::wstring(L"comId") + id; 
         return std::pair<std::wstring, std::wstring>(fileName, rId);
     }

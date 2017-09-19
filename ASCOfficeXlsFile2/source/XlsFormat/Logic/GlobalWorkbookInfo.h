@@ -35,6 +35,7 @@
 #include <boost/smart_ptr/shared_array.hpp>
 #include <vector>
 #include <map>
+#include <unordered_map>
 
 #include "Biff_structures/BorderFillInfo.h"
 
@@ -60,6 +61,13 @@ static const std::wstring DefaultPalette[] = {
 	L"00003366",	L"00339966",	L"00003300",	L"00333300",	L"00993300",	L"00993366",	L"00333399",	L"00333333"
 };
 
+
+struct _sx_name
+{
+	BaseObjectPtr				name;
+	std::vector<BaseObjectPtr>	pair;
+};
+
 class GlobalWorkbookInfo
 {
 public:
@@ -74,7 +82,6 @@ public:
 	void			GetDigitFontSizePixels();
 
 	unsigned int	GenerateAXESId();
-
 
 	unsigned short								CodePage;
 	CRYPT::DecryptorPtr							decryptor;
@@ -98,6 +105,19 @@ public:
 
 	unsigned int								last_AXES_id;
 	const static unsigned int					initial_AXES_id = 0x2000000;
+
+	short												idPivotCache;
+	std::map<int, int>									mapPivotCacheIndex; //streamIdCache, write index order 
+	std::unordered_map<int, BaseObjectPtr>				mapPivotCacheStream;//streamIdCache, object
+	std::vector<int>									arPivotCacheStream; //order streamIdCache =  iCache
+
+	std::vector<bool>									arPivotCacheFields;
+	std::vector<bool>									arPivotCacheFieldShortSize;
+
+	std::vector<_sx_name>								arPivotSxNames;
+	std::vector<std::wstring>							arPivotCacheSxNames;
+
+	std::unordered_map<std::wstring, std::wstring>		mapPivotCacheExternal;
 
 	std::map<std::wstring, std::vector<std::wstring>>	mapDefineNames;
 	std::vector<std::wstring>							arDefineNames;
@@ -131,6 +151,9 @@ public:
 	int											cellStyleDxfs_count;
 
 	std::wstringstream							users_Dxfs_stream;
+	std::wstringstream							connections_stream;
+	
+	int											connectionId;
 
 	XlsConverter								*xls_converter;
 

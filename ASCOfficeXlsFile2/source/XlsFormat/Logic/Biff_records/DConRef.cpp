@@ -31,14 +31,15 @@
  */
 
 #include "DConRef.h"
+#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace XLS
 {
 
 DConRef::DConRef()
 {
+	index_external = -1;
 	bFilePath = false;
-	bSheetName = false;
 }
 
 
@@ -54,6 +55,8 @@ BaseObjectPtr DConRef::clone()
 
 void DConRef::readFields(CFRecord& record)
 {
+	global_info_ = record.getGlobalWorkbookInfo();
+
 	record >> ref >> cchFile;
 	
 	if (cchFile > 1)
@@ -67,20 +70,108 @@ void DConRef::readFields(CFRecord& record)
 //self-reference		= %x0002 sheet-name
 
 		stFile = stFile_.value();
-		if (stFile.substr(0, 1) == L"\x0001")
+
+		std::wstring sTmp = stFile;
+
+		while(true)
 		{
-			bFilePath	= true;
-			stFile		= stFile.substr(1);
+			int pos = sTmp.find(L"\x0001");
+			if (pos >= 0)
+			{
+				bFilePath = true;
+
+				path.push_back(sTmp.substr(0, pos));
+				sTmp = sTmp.substr(pos + 1);
+				continue;
+			}
+			pos = sTmp.find(L"\x0002");
+			if (pos >= 0)
+			{
+				path.push_back(sTmp.substr(0, pos));
+				sTmp = sTmp.substr(pos + 1);
+				continue;
+			}
+			pos = sTmp.find(L"\x0003");
+			if (pos >= 0)
+			{
+				bFilePath = true;
+
+				path.push_back(sTmp.substr(0, pos));
+				sTmp = sTmp.substr(pos + 1);
+				continue;
+			}
+			break;
 		}
-		else if (stFile.substr(0, 1) == L"\x0002")
+		int pos = sTmp.find(L"]");
+		if (pos >= 0)
 		{
-			bSheetName	= true;
-			stFile		= stFile.substr(1);
-		}	
+			file_name	= sTmp.substr(1, pos - 1);
+			sheet_name	= sTmp.substr(pos + 1);
+		}
+		else
+		{
+			sheet_name = sTmp;
+		}
 	}
 
 	int unused = record.getDataSize() - record.getRdPtr();
 	record.skipNunBytes(unused);
+}
+
+void DConRef::check_external()
+{
+	bool bFound = false;
+
+	for (size_t i = 0; !bFilePath && i < global_info_->sheets_names.size(); i++)
+	{
+		if (global_info_->sheets_names[i] == sheet_name)
+		{
+			bFound = true;
+			break;
+		}
+	}
+
+	if (!bFound && (!path.empty() || !file_name.empty()) && bFilePath)
+	{//external sheet
+		std::wstring full_path;
+		if (!path.empty())
+		{
+			full_path = get_external_path();
+		}		
+		std::unordered_map<std::wstring, std::wstring>::iterator pFind = global_info_->mapPivotCacheExternal.find(file_name);
+
+		if (pFind == global_info_->mapPivotCacheExternal.end())
+		{
+			index_external = global_info_->mapPivotCacheExternal.size() ;
+
+			global_info_->mapPivotCacheExternal.insert(std::make_pair(file_name, full_path));
+		}
+		else
+		{
+			if (pFind->second.empty() && !full_path.empty())
+			{
+				pFind->second = full_path;
+			}
+			index_external = std::distance( global_info_->mapPivotCacheExternal.begin(), pFind) ;			
+		}
+	}
+}
+
+std::wstring DConRef::get_external_path()
+{
+	if (path.empty() && file_name.empty()) return L"";
+
+	std::wstring result = L"file:///";
+
+	for (size_t i = 0; i < path.size(); i++)
+	{
+		result += L"\\" + path[i];
+	}
+
+	if (!file_name.empty())
+		result += L"\\" + file_name;
+
+	return result;
 }
 
 } // namespace XLS

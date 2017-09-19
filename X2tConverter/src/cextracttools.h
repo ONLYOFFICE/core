@@ -62,16 +62,31 @@ namespace NExtractTools
         TCD_DOCT2DOCX,
         TCD_DOCX2DOCT_BIN,
         TCD_DOCT_BIN2DOCX,
+        TCD_DOTX2DOCX,
+		TCD_DOCM2DOCX,
+        TCD_DOTM2DOCX,
+        TCD_DOTM2DOCM,
 
         TCD_XLSX2XLST,
         TCD_XLST2XLSX,
         TCD_XLSX2XLST_BIN,
         TCD_XLST_BIN2XLSX,
+        TCD_XLTX2XLSX,
+		TCD_XLSM2XLSX,
+		TCD_XLTM2XLSX,
+        TCD_XLTM2XLSM,
 
         TCD_PPTX2PPTT,
         TCD_PPTT2PPTX,
         TCD_PPTX2PPTT_BIN,
         TCD_PPTT_BIN2PPTX,
+        TCD_PPSX2PPTX,
+		TCD_POTX2PPTX,
+		TCD_PPTM2PPTX,
+		TCD_POTM2PPTX,
+		TCD_PPSM2PPTX,
+		TCD_POTM2PPTM,
+		TCD_PPSM2PPTM,
 
         TCD_ZIPDIR,
         TCD_UNZIPDIR,
@@ -89,7 +104,6 @@ namespace NExtractTools
         TCD_T2BIN,
         TCD_BIN2T,
 
-        TCD_PPSX2PPTX,
 //ppt 2
         TCD_PPT2PPTX,
         TCD_PPT2PPTT,
@@ -102,6 +116,7 @@ namespace NExtractTools
         TCD_XLS2XLST,
         TCD_XLS2XLST_BIN,
         TCD_XLS2XLSX,
+		TCD_XLS2XLSM,
 //rtf 2
         TCD_RTF2DOCX,
 		TCD_RTF2DOCT,
@@ -136,7 +151,7 @@ namespace NExtractTools
         TCD_PPTT2ODP,
         TCD_PPTX_BIN2ODP,
 		
-	TCD_XML2DOCX,
+		TCD_XML2DOCX,
         TCD_DOCX2XML,
 //
 		TCD_MSCRYPT2,
@@ -358,6 +373,7 @@ namespace NExtractTools
 		std::wstring* m_sHtmlFileInternalPath;
 		std::wstring* m_sPassword;
 		std::wstring* m_sTempDir;
+		bool* m_bIsNoBase64;
 		//output params
 		mutable bool m_bOutputConvertCorrupted;
 	public:
@@ -383,6 +399,7 @@ namespace NExtractTools
 			m_sHtmlFileInternalPath = NULL;
 			m_sPassword = NULL;
 			m_sTempDir = NULL;
+			m_bIsNoBase64 = NULL;
 
 			m_bOutputConvertCorrupted = false;
 		}
@@ -408,6 +425,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sHtmlFileInternalPath);
 			RELEASEOBJECT(m_sPassword);
 			RELEASEOBJECT(m_sTempDir);
+			RELEASEOBJECT(m_bIsNoBase64);
 		}
 		
 		bool FromXmlFile(const std::wstring& sFilename)
@@ -496,6 +514,8 @@ namespace NExtractTools
 									m_sPassword = new std::wstring(sValue);
 								else if(_T("m_sTempDir") == sName)
 									m_sTempDir = new std::wstring(sValue);
+								else if(_T("m_bIsNoBase64") == sName)
+									m_bIsNoBase64 = new bool(XmlUtils::GetBoolean2(sValue));
 							}
 							else if(_T("m_nCsvDelimiterChar") == sName)
 							{
@@ -523,6 +543,10 @@ namespace NExtractTools
         {
             return (NULL != m_sFontDir) ? (*m_sFontDir) : L"";
         }
+		bool getIsNoBase64() const
+		{
+			return (NULL != m_bIsNoBase64) ? (*m_bIsNoBase64) : true;
+		}
         std::wstring getXmlOptions()
 		{
             std::wstring sRes;
@@ -700,7 +724,7 @@ namespace NExtractTools
 
                 int nDelimitersCount = 6;
                 int aDelimiters[6] = { 0, 0, 0, 0, 0, 0 };
-                for(int i = 0; i < dwBytesRead; ++i)
+                for (DWORD i = 0; i < dwBytesRead; ++i)
                 {
                     char cCurChar = pBuffer[i];
                     if ('\n' == cCurChar)
@@ -739,20 +763,42 @@ namespace NExtractTools
           *m_nFormatFrom = formatFrom;
           int toFormat = *m_nFormatTo;
 
-          if (AVS_OFFICESTUDIO_FILE_CANVAS == toFormat) {
-            if (AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom)) {
+          if (AVS_OFFICESTUDIO_FILE_CANVAS == toFormat) 
+		  {
+            if ( AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom ||
+				0 != ( AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom)) 
+			{
               toFormat = AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET;
-            } else if (AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom)) {
+            } 
+			else if ( AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom 
+				|| 0 != ( AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom))
+			{
               toFormat = AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION;
-            } else if (AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) {
+            }
+			else if ( AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 
+				0 != ( AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) 
+			{
               toFormat = AVS_OFFICESTUDIO_FILE_CANVAS_WORD;
             }
-          } else if (AVS_OFFICESTUDIO_FILE_OTHER_TEAMLAB_INNER == toFormat) {
-            if (AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom)) {
+          } 
+		  else if ( AVS_OFFICESTUDIO_FILE_OTHER_TEAMLAB_INNER == toFormat) 
+		  {
+            if ( AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == formatFrom || 
+				AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 
+				0 != ( AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom)) 
+			{
               toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
-            } else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom)) {
+            } 
+			else if ( AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == formatFrom || 
+				AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 
+				0 != ( AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom)) 
+			{
               toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
-            } else if (AVS_OFFICESTUDIO_FILE_CANVAS_WORD == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) {
+            } 
+			else if ( AVS_OFFICESTUDIO_FILE_CANVAS_WORD == formatFrom || 
+				AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 
+				0 != ( AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) 
+			{
               toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
             }
             size_t nIndex = m_sFileTo->rfind('.');
@@ -882,7 +928,25 @@ namespace NExtractTools
         else if (0 == sArg3.compare(_T("ppsx2pptx"))) {
             res = TCD_PPSX2PPTX;
         }
-        else if (0 == sArg3.compare(_T("ppt2pptx"))) {
+        else if (0 == sArg3.compare(_T("potx2pptx"))) {
+            res = TCD_POTX2PPTX;
+        }
+        else if (0 == sArg3.compare(_T("potm2pptm"))) {
+            res = TCD_POTM2PPTM;
+        }
+        else if (0 == sArg3.compare(_T("xltx2xlsx"))) {
+            res = TCD_XLTX2XLSX;
+        }
+        else if (0 == sArg3.compare(_T("xltm2xlsm"))) {
+            res = TCD_XLTM2XLSM;
+        }
+        else if (0 == sArg3.compare(_T("dotx2docx"))) {
+            res = TCD_DOTX2DOCX;
+        }
+        else if (0 == sArg3.compare(_T("dotm2docm"))) {
+            res = TCD_DOTM2DOCM;
+        }
+		else if (0 == sArg3.compare(_T("ppt2pptx"))) {
             res = TCD_PPT2PPTX;
         }
         else if (0 == sArg3.compare(_T("doc2docx"))) {

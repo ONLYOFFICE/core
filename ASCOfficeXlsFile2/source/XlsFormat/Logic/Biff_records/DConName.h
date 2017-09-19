@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {
 
-
-// Logical representation of DConName record in BIFF8
 class DConName: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(DConName)
@@ -47,12 +46,14 @@ public:
 	~DConName();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeDConName;
 
+	XLUnicodeString			stName;
+	unsigned short			cchFile;
+	XLUnicodeStringNoCch	stFile;
 };
 
 } // namespace XLS

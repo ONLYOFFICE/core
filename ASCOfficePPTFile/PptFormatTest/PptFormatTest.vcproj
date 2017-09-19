@@ -44,7 +44,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\Common\OfficeDrawing;&quot;..\..\DesktopEditor\freetype-2.5.2\include&quot;;..\..\Common\OfficeDrawing\Shapes"
+				AdditionalIncludeDirectories="../../DesktopEditor/xml/build/vs2005;../../DesktopEditor/xml/libxml2/include"
 				PreprocessorDefinitions="_DEBUG;_CONSOLE;USE_ATL_CSTRINGS;_USE_MATH_DEFINES;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;PPT_FORMAT;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;_PRESENTATION_WRITER_;_SVG_CONVERT_TO_IMAGE_;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="3"

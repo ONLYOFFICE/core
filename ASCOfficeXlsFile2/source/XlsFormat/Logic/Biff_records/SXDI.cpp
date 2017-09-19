@@ -39,11 +39,9 @@ SXDI::SXDI()
 {
 }
 
-
 SXDI::~SXDI()
 {
 }
-
 
 BaseObjectPtr SXDI::clone()
 {
@@ -61,5 +59,36 @@ void SXDI::readFields(CFRecord& record)
 	}
 }
 
+int SXDI::serialize(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"dataField")
+		{
+			if (stName.value().empty() == false)
+				CP_XML_ATTR(L"name", stName.value()); 
+			
+			CP_XML_ATTR(L"fld",			isxvdData); 
+			CP_XML_ATTR(L"baseField",	df); 
+			CP_XML_ATTR(L"baseItem",	isxvi); 
+			CP_XML_ATTR(L"numFmtId",	ifmt); 
+			switch(iiftab)
+			{
+			case 0x0000: CP_XML_ATTR(L"subtotal", L"sum");		break;
+			case 0x0001: CP_XML_ATTR(L"subtotal", L"count");	break;
+			case 0x0002: CP_XML_ATTR(L"subtotal", L"average");	break;
+			case 0x0003: CP_XML_ATTR(L"subtotal", L"max");		break;
+			case 0x0004: CP_XML_ATTR(L"subtotal", L"min");		break;
+			case 0x0005: CP_XML_ATTR(L"subtotal", L"product");	break;
+			case 0x0006: CP_XML_ATTR(L"subtotal", L"countNums");break;
+			case 0x0007: CP_XML_ATTR(L"subtotal", L"stdDev");	break;
+			case 0x0008: CP_XML_ATTR(L"subtotal", L"stdDevp");	break;
+			case 0x0009: CP_XML_ATTR(L"subtotal", L"var");		break;
+			case 0x000a: CP_XML_ATTR(L"subtotal", L"varp");		break;
+			}
+		}
+	}
+	return 0;
+}
 } // namespace XLS
 

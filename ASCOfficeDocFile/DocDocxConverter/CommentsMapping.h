@@ -68,12 +68,12 @@ namespace DocFileFormat
 				int cp = m_document->FIB->m_RgLw97.ccpText + m_document->FIB->m_RgLw97.ccpFtn + m_document->FIB->m_RgLw97.ccpHdr;
 
 				size_t count = m_document->AnnotationsReferencePlex->Elements.size();
-				for (unsigned int i = 0; i < count; ++i)
+				for (size_t i = 0; i < count; ++i)
 				{   
 					AnnotationReferenceDescriptor* atrdPre10 = static_cast<AnnotationReferenceDescriptor*>(m_document->AnnotationsReferencePlex->Elements[index]);
 
                     m_pXmlWriter->WriteNodeBegin( L"w:comment", TRUE );
-                    m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( index ));
+                    m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( index + 1 ));
                     m_pXmlWriter->WriteAttribute( L"w:author",
 						FormatUtils::XmlEncode(m_document->AnnotationOwners->at( atrdPre10->GetAuthorIndex() ) ));
                     m_pXmlWriter->WriteAttribute( L"w:initials", atrdPre10->GetUserInitials());

@@ -201,8 +201,8 @@ public:
 
     virtual void visit(const table_table_row& val)
     {       
-        unsigned int repeated = val.table_table_row_attlist_.table_number_rows_repeated_;
-        std::wstring defaultCellStyle = val.table_table_row_attlist_.table_default_cell_style_name_.get_value_or(L"");
+        unsigned int repeated = val.attlist_.table_number_rows_repeated_;
+        std::wstring defaultCellStyle = val.attlist_.table_default_cell_style_name_.get_value_or(L"");
 
         if (visit_rows(repeated, defaultCellStyle))
         {
@@ -212,7 +212,7 @@ public:
 
     virtual void visit(const table_table_cell& val)
     {
-        unsigned int repeated = val.table_table_cell_attlist_.table_number_columns_repeated_;
+        unsigned int repeated = val.attlist_.table_number_columns_repeated_;
         std::wstring defaultColumnStyle, defaultRowStyle;
         if (visit_cells(repeated, defaultColumnStyle, defaultRowStyle))
         {
@@ -224,7 +224,7 @@ public:
 
     virtual void visit(const table_covered_table_cell& val)
     {
-        unsigned int repeated = val.table_table_cell_attlist_.table_number_columns_repeated_;
+        unsigned int repeated = val.attlist_.table_number_columns_repeated_;
         std::wstring defaultColumnStyle, defaultRowStyle;
     
 		if ( repeated <2) 

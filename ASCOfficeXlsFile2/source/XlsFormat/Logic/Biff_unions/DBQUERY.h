@@ -35,9 +35,12 @@
 
 namespace XLS
 {
+	struct _DbParam
+	{
+		std::wstring	string;
+		BaseObjectPtr	param;
+	};
 
-
-// Logical representation of DBQUERY union of records 
 class DBQUERY: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(DBQUERY)
@@ -49,6 +52,18 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize(std::wostream & stream);
+	int serialize_connection(std::wostream & strm);
+
+	BaseObjectPtr				m_DbQry;
+
+	BaseObjectPtr				m_DbParam;
+	std::vector<_DbParam>		m_arParams;
+	
+	std::vector<std::wstring>	m_arSXString;
+//------------------------------------------------------
+	GlobalWorkbookInfoPtr	global_info;
+	int						connectionId;
 };
 
 } // namespace XLS

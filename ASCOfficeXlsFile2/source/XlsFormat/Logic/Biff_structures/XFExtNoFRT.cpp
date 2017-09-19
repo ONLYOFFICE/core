@@ -55,11 +55,16 @@ BiffStructurePtr XFExtNoFRT::clone()
 
 void XFExtNoFRT::load(CFRecord& record)
 {
+	if (record.isEOF()) return;
+
 	record.skipNunBytes(6); // reserved
 	unsigned short cexts;
 	record >> cexts;
+	
 	for(unsigned short i = 0; i < cexts; ++i)
 	{
+		if (record.checkFitReadSafe(4) == false)
+			break;
 		ExtProp prop;
 		record >> prop;
 		rgExt.push_back(prop);

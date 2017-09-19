@@ -37,6 +37,7 @@ namespace XLS
 
 Style::Style()
 {
+	ixfe = 0;
 }
 
 

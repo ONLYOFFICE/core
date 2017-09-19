@@ -67,7 +67,7 @@ namespace OOX
 					WritingStringAttrString(L"type", m_oType->ToString());
 					if (m_oGte.IsInit() && false == m_oGte->ToBool())
 						writer.WriteString(L" gte=\"0\"");
-					WritingStringNullableAttrString(L"val", m_oVal, m_oVal.get());
+					WritingStringNullableAttrEncodeXmlString(L"val", m_oVal, m_oVal.get());
 					writer.WriteString(_T("/>"));
 				}
 			}
@@ -225,7 +225,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start(oReader)
 
 				WritingElement_ReadAttributes_Read_if		(oReader, _T("maxLength")	, m_oMaxLength)
@@ -279,7 +278,6 @@ namespace OOX
 				return et_x_FormulaCF;
 			}
 
-		public:
 			std::wstring m_sText;
 		};
 

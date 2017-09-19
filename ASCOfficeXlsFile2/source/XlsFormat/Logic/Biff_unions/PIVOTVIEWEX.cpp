@@ -39,22 +39,18 @@
 namespace XLS
 {
 
-
 PIVOTVIEWEX::PIVOTVIEWEX()
 {
 }
-
 
 PIVOTVIEWEX::~PIVOTVIEWEX()
 {
 }
 
-
 BaseObjectPtr PIVOTVIEWEX::clone()
 {
 	return BaseObjectPtr(new PIVOTVIEWEX(*this));
 }
-
 
 // PIVOTVIEWEX = SXViewEx *PIVOTTH *SXPIEx *PIVOTVDTEX
 const bool PIVOTVIEWEX::loadContent(BinProcessor& proc)

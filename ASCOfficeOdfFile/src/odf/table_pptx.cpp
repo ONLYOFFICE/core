@@ -56,12 +56,12 @@ namespace odf_reader {
 bool table_table_cell_content::pptx_convert(oox::pptx_conversion_context & Context)
 {
     bool wasPar = false;
-    BOOST_FOREACH(const office_element_ptr & elm, elements_)
+  	for (size_t i = 0; i < elements_.size(); i++)
     {
-        if (elm->get_type() == typeTextP || 
-            elm->get_type() == typeTextH)
+        if (elements_[i]->get_type() == typeTextP || 
+            elements_[i]->get_type() == typeTextH)
             wasPar = true;
-        elm->pptx_convert(Context);
+        elements_[i]->pptx_convert(Context);
     }
     return wasPar;
 }
@@ -70,10 +70,10 @@ void table_table_row::pptx_convert(oox::pptx_conversion_context & Context)
 {
     std::wostream & _Wostream = Context.get_table_context().tableData();
 
-    const std::wstring styleName = table_table_row_attlist_.table_style_name_.get_value_or(L"");
-    const std::wstring defaultCellStyle = table_table_row_attlist_.table_default_cell_style_name_.get_value_or(L"");
+    const std::wstring styleName = attlist_.table_style_name_.get_value_or(L"");
+    const std::wstring defaultCellStyle = attlist_.table_default_cell_style_name_.get_value_or(L"");
 
-    for (unsigned int i = 0; i < table_table_row_attlist_.table_number_rows_repeated_; ++i)
+    for (unsigned int i = 0; i < attlist_.table_number_rows_repeated_; ++i)
     {
 		int height = 0;
        
@@ -97,9 +97,9 @@ void table_table_row::pptx_convert(oox::pptx_conversion_context & Context)
   
         Context.get_table_context().start_row(styleName, defaultCellStyle);
         
-        BOOST_FOREACH(const office_element_ptr & elm, content_)
+		for (size_t i = 0; i < content_.size(); i++)
         {
-            elm->pptx_convert(Context);
+            content_[i]->pptx_convert(Context);
         }
 
         Context.get_table_context().end_row();
@@ -110,17 +110,17 @@ void table_table_row::pptx_convert(oox::pptx_conversion_context & Context)
 
 void table_table_rows::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, table_table_row_)
+	for (size_t i = 0; i < table_table_row_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        table_table_row_[i]->pptx_convert(Context);
     }
 }
 
 void table_table_header_rows::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, table_table_row_)
+	for (size_t i = 0; i < table_table_row_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        table_table_row_[i]->pptx_convert(Context);
     }
 }
 
@@ -130,9 +130,9 @@ void table_rows::pptx_convert(oox::pptx_conversion_context & Context)
         table_table_rows_->pptx_convert(Context);
     else
     {
-        BOOST_FOREACH(const office_element_ptr & elm, table_table_row_)
+		for (size_t i = 0; i < table_table_row_.size(); i++)
         {
-            elm->pptx_convert(Context);
+            table_table_row_[i]->pptx_convert(Context);
         }
     }    
 }
@@ -149,9 +149,9 @@ void table_rows_no_group::pptx_convert(oox::pptx_conversion_context & Context)
 
 void table_rows_and_groups::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        content_[i]->pptx_convert(Context);
     }
 }
 
@@ -244,17 +244,17 @@ void table_columns::pptx_convert(oox::pptx_conversion_context & Context)
     if (table_table_columns_)
         table_table_columns_->pptx_convert(Context);
 
-    BOOST_FOREACH(const office_element_ptr & elm, table_table_column_)
+	for (size_t i = 0; i < table_table_column_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        table_table_column_[i]->pptx_convert(Context);
     }
 }
 
 void table_table_columns::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, table_table_column_)
+	for (size_t i = 0; i < table_table_column_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        table_table_column_[i]->pptx_convert(Context);
     }
 }
 
@@ -270,17 +270,17 @@ void table_columns_no_group::pptx_convert(oox::pptx_conversion_context & Context
 
 void table_columns_and_groups::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        content_[i]->pptx_convert(Context);
     }
 }
 
 void table_table_header_columns::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, table_table_column_)
+	for (size_t i = 0; i < table_table_column_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        table_table_column_[i]->pptx_convert(Context);
     }    
 }
 
@@ -323,7 +323,7 @@ void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
 
 	CP_XML_WRITER(_Wostream)
     {
-		for (unsigned int r = 0; r < table_table_cell_attlist_.table_number_columns_repeated_; ++r)
+		for (unsigned int r = 0; r < attlist_.table_number_columns_repeated_; ++r)
 		{
 			Context.get_table_context().start_cell();
 			CP_XML_NODE(L"a:tc")
@@ -352,35 +352,35 @@ void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
 					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell,false);
 					if (style_inst) style_instances.push_back(style_inst);
 				}
-				style_name = table_table_cell_attlist_.table_style_name_.get_value_or(L"");
+				style_name = attlist_.table_style_name_.get_value_or(L"");
 				if (!style_name.empty())
 				{
 					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell,false);
 					if (style_inst) style_instances.push_back(style_inst);
 				}
 
-				if (table_table_cell_attlist_extra_.table_number_rows_spanned_ > 1)
+				if (attlist_extra_.table_number_rows_spanned_ > 1)
 				{
-					CP_XML_ATTR(L"rowSpan" , table_table_cell_attlist_extra_.table_number_rows_spanned_);
+					CP_XML_ATTR(L"rowSpan" , attlist_extra_.table_number_rows_spanned_);
 					CP_XML_ATTR(L"vMerge", 1);
 					
 					Context.get_table_context().set_rows_spanned(Context.get_table_context().current_column(), 
-						table_table_cell_attlist_extra_.table_number_rows_spanned_ - 1,
-						table_table_cell_attlist_extra_.table_number_columns_spanned_ - 1,
+						attlist_extra_.table_number_rows_spanned_ - 1,
+						attlist_extra_.table_number_columns_spanned_ - 1,
 						style_name);
 				}        		
 			
-				if (table_table_cell_attlist_extra_.table_number_columns_spanned_ > 1)
+				if (attlist_extra_.table_number_columns_spanned_ > 1)
 				{
 					//CP_XML_ATTR(L"hMerge", true);
-					CP_XML_ATTR(L"gridSpan" , table_table_cell_attlist_extra_.table_number_columns_spanned_);
+					CP_XML_ATTR(L"gridSpan" , attlist_extra_.table_number_columns_spanned_);
 
-					Context.get_table_context().set_columns_spanned(table_table_cell_attlist_extra_.table_number_columns_spanned_ - 1);
+					Context.get_table_context().set_columns_spanned(attlist_extra_.table_number_columns_spanned_ - 1);
 				}		
 
 				Context.get_text_context().start_object();
 
-				bool presentText = table_table_cell_content_.pptx_convert(Context);
+				bool presentText = content_.pptx_convert(Context);
 				
 				std::wstring cellContent = Context.get_text_context().end_object();
 
@@ -408,11 +408,11 @@ void table_covered_table_cell::pptx_convert(oox::pptx_conversion_context & Conte
 {   
 	std::wostream & _Wostream = Context.get_table_context().tableData();
 
-    for (unsigned int i = 0; i < table_table_cell_attlist_.table_number_columns_repeated_; ++i)
+    for (unsigned int i = 0; i < attlist_.table_number_columns_repeated_; ++i)
     {
         if (Context.get_table_context().start_covered_cell(Context))
         {
-            if (!table_table_cell_content_.pptx_convert(Context))
+            if (!content_.pptx_convert(Context))
             {
                 _Wostream << emptyParTable;
             }

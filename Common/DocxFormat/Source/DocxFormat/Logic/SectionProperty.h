@@ -227,10 +227,9 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, (L"r:id"),   m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:type"), m_oType )
+					WritingElement_ReadAttributes_Read_if     ( oReader, (L"r:id"),   m_oId )
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:type"), m_oType )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 

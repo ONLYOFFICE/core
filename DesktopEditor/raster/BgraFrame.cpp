@@ -179,7 +179,7 @@ void CBgraFrame::CxImageToMediaFrame( CxImage& img )
 	int nStride = img.GetEffWidth();
 	BYTE* pBuffer = img.GetBits();
 	RGBQUAD* pPalette = img.GetPalette();
-	bool bIsAlphaPalettePresent = false;//img.GetPaletteAlphaEnabled();
+	bool bIsAlphaPalettePresent = img.AlphaPaletteIsEnabled();
 	bool bIsAlphaApplied = false;
 
 	if( 1 == nBitsPerPixel )
@@ -263,6 +263,10 @@ void CBgraFrame::CxImageToMediaFrame( CxImage& img )
 		BYTE* src = pBuffer;
 		BYTE* dst = pPixels;
 
+		int nTransIndex = img.GetTransIndex();
+		if (bIsAlphaApplied)
+			nTransIndex = -1;
+
 		for( int nRow = 0; nRow < nHeight; ++nRow, src += nStride )
 		{
 			for( int nPos = 0; nPos < nWidth; ++nPos, dst += 4 )
@@ -271,8 +275,21 @@ void CBgraFrame::CxImageToMediaFrame( CxImage& img )
 				dst[0] = pPalette[index].rgbBlue;
 				dst[1] = pPalette[index].rgbGreen;
 				dst[2] = pPalette[index].rgbRed;
+
+				if (bIsAlphaPalettePresent)
+					dst[3] = pPalette[index].rgbReserved;
+				else if (-1 != nTransIndex)
+				{
+					if (index == nTransIndex)
+						dst[3] = pPalette[index].rgbReserved;
+					else
+						dst[3] = 255;
+				}
 			}
 		}
+
+		if (-1 != nTransIndex || bIsAlphaPalettePresent)
+			bIsAlphaApplied = true;
 	}
 	else
 	if( 8 == nBitsPerPixel )
@@ -282,36 +299,35 @@ void CBgraFrame::CxImageToMediaFrame( CxImage& img )
 
 		nStride -= nWidth;
 
+		int nTransIndex = img.GetTransIndex();
+		if (bIsAlphaApplied)
+			nTransIndex = -1;
+
 		if( pPalette )
 		{
-			if (bIsAlphaPalettePresent)
+			for( int nRow = 0; nRow < nHeight; ++nRow, src += nStride )
 			{
-				for( int nRow = 0; nRow < nHeight; ++nRow, src += nStride )
+				for( int nPos = 0; nPos < nWidth; ++nPos, src += 1, dst += 4 )
 				{
-					for( int nPos = 0; nPos < nWidth; ++nPos, src += 1, dst += 4 )
-					{
-						int index = src[0];
-						dst[0] = pPalette[index].rgbBlue;
-						dst[1] = pPalette[index].rgbGreen;
-						dst[2] = pPalette[index].rgbRed;
+					int index = src[0];
+					dst[0] = pPalette[index].rgbBlue;
+					dst[1] = pPalette[index].rgbGreen;
+					dst[2] = pPalette[index].rgbRed;
+
+					if (bIsAlphaPalettePresent)
 						dst[3] = pPalette[index].rgbReserved;
-					}
-				}
-				bIsAlphaApplied = true;
-			}
-			else
-			{
-				for( int nRow = 0; nRow < nHeight; ++nRow, src += nStride )
-				{
-					for( int nPos = 0; nPos < nWidth; ++nPos, src += 1, dst += 4 )
+					else if (-1 != nTransIndex)
 					{
-						int index = src[0];
-						dst[0] = pPalette[index].rgbBlue;
-						dst[1] = pPalette[index].rgbGreen;
-						dst[2] = pPalette[index].rgbRed;								
+						if (index == nTransIndex)
+							dst[3] = pPalette[index].rgbReserved;
+						else
+							dst[3] = 255;
 					}
 				}
 			}
+
+			if (-1 != nTransIndex || bIsAlphaPalettePresent)
+				bIsAlphaApplied = true;
 		}
 		else
 		{

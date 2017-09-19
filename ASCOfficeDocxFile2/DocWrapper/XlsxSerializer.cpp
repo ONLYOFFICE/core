@@ -49,6 +49,7 @@ namespace BinXlsxRW{
 	CXlsxSerializer::CXlsxSerializer()
 	{
 		m_pExternalDrawingConverter = NULL;
+		m_bIsNoBase64 = false;
 	}
 	CXlsxSerializer::~CXlsxSerializer()
 	{
@@ -85,14 +86,15 @@ namespace BinXlsxRW{
 	}
     bool CXlsxSerializer::loadFromFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedDir)
 	{
-		NSBinPptxRW::CDrawingConverter oDrawingConverter;
+        std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
+
+        NSBinPptxRW::CDrawingConverter oDrawingConverter;
 		
-		oDrawingConverter.SetMediaDstPath(sMediaDir);
+        oDrawingConverter.SetDstPath(sDstPath + FILE_SEPARATOR_STR + L"xl");
+        oDrawingConverter.SetSrcPath(strFileInDir, 2);
+
+        oDrawingConverter.SetMediaDstPath(sMediaDir);
 		oDrawingConverter.SetEmbedDstPath(sEmbedDir);
-
-		std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
-
-        oDrawingConverter.SetSourceFileDir(strFileInDir, 2);
 
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;
 		oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oDrawingConverter, sXMLOptions);
@@ -134,7 +136,7 @@ namespace BinXlsxRW{
 		oOfficeDrawingConverter.SetFontPicker(pFontPicker);
 
 		BinXlsxRW::BinaryFileWriter oBinaryFileWriter(fp);
-		oBinaryFileWriter.Open(sSrcPath, sDstFileName, pEmbeddedFontsManager, &oOfficeDrawingConverter, sXMLOptions);
+		oBinaryFileWriter.Open(sSrcPath, sDstFileName, pEmbeddedFontsManager, &oOfficeDrawingConverter, sXMLOptions, m_bIsNoBase64);
 
 		RELEASEOBJECT(pFontPicker);
 		return true;
@@ -226,6 +228,11 @@ namespace BinXlsxRW{
 	{
 		m_pExternalDrawingConverter = pDrawingConverter;
 	}
+	void CXlsxSerializer::setIsNoBase64(bool bIsNoBase64)
+	{
+		m_bIsNoBase64 = bIsNoBase64;
+	}
+
 	void CXlsxSerializer::writeChartXlsx(const std::wstring& sDstFile, const OOX::Spreadsheet::CChartSpace& oChart)
 	{
 	//анализируем chart

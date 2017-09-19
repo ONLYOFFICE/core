@@ -37,18 +37,20 @@
 #include "FileContainer.h"
 #include "FileTypes.h"
 
-#include "Limit/Conformance.h"
-#include "Logic/TextListStyle.h"
-#include "Logic/ClrMap.h"
-#include "Theme/ClrScheme.h"
-
 #include "Presentation/EmbeddedFont.h"
 #include "Presentation/Kinsoku.h"
 #include "Presentation/NotesSz.h"
 #include "Presentation/PhotoAlbum.h"
-#include "Logic/XmlId.h"
 #include "Presentation/SldSz.h"
 #include "CommentAuthors.h"
+
+#include "Limit/Conformance.h"
+#include "Logic/TextListStyle.h"
+#include "Logic/ClrMap.h"
+#include "Logic/ExtP.h"
+#include "Theme/ClrScheme.h"
+
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
 
 namespace PPTX
 {
@@ -57,16 +59,16 @@ namespace PPTX
 	public:
 		Presentation()
 		{
+			m_bMacroEnabled = false;
 		}
 		Presentation(const OOX::CPath& filename, FileMap& map)
 		{
+			m_bMacroEnabled = false;
 			read(filename, map);
 		}
 		virtual ~Presentation()
 		{
 		}
-
-	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			//FileContainer::read(filename, map);
@@ -87,7 +89,6 @@ namespace PPTX
 			oNode.ReadAttributeBase(L"showSpecialPlsOnTitleSld", attrShowSpecialPlsOnTitleSld);
 			oNode.ReadAttributeBase(L"strictFirstAndLastChars", attrStrictFirstAndLastChars);
 
-
 			//custDataLst (Customer Data List)
 			//custShowLst (List of Custom Shows)
 			defaultTextStyle = oNode.ReadNode(_T("p:defaultTextStyle"));
@@ -100,8 +101,7 @@ namespace PPTX
 			{
 				oNodeEmbeddedFonts.LoadArray(_T("p:embeddedFont"), embeddedFontLst);
 
-				size_t count = embeddedFontLst.size();
-				for (size_t i = 0; i < count; ++i)
+				for (size_t i = 0; i < embeddedFontLst.size(); ++i)
 					embeddedFontLst[i].SetParentFilePointer(this);
 			}
 			
@@ -111,8 +111,7 @@ namespace PPTX
 			{
 				oNodeHMList.LoadArray(_T("p:handoutMasterId"), handoutMasterIdLst);
 
-				size_t count = handoutMasterIdLst.size();
-				for (size_t i = 0; i < count; ++i)
+				for (size_t i = 0; i < handoutMasterIdLst.size(); ++i)
 					handoutMasterIdLst[i].SetParentFilePointer(this);
 			}
 
@@ -128,8 +127,7 @@ namespace PPTX
 			{
 				oNodeMIDList.LoadArray(_T("p:notesMasterId"), notesMasterIdLst);
 
-				size_t count = notesMasterIdLst.size();
-				for (size_t i = 0; i < count; ++i)
+				for (size_t i = 0; i < notesMasterIdLst.size(); ++i)
 					notesMasterIdLst[i].SetParentFilePointer(this);
 			}
 
@@ -147,8 +145,7 @@ namespace PPTX
 			{
 				oNode_sldId.LoadArray(_T("p:sldId"), sldIdLst);
 
-				size_t count = sldIdLst.size();
-				for (size_t i = 0; i < count; ++i)
+				for (size_t i = 0; i < sldIdLst.size(); ++i)
 					sldIdLst[i].SetParentFilePointer(this);
 			}
 
@@ -158,16 +155,37 @@ namespace PPTX
 			{
 				oNode_sldM_Id.LoadArray(_T("p:sldMasterId"), sldMasterIdLst);
 
-				size_t count = sldMasterIdLst.size();
-				for (size_t i = 0; i < count; ++i)
+				for (size_t i = 0; i < sldMasterIdLst.size(); ++i)
 					sldMasterIdLst[i].SetParentFilePointer(this);
 			}
 
 			sldSz = oNode.ReadNode(_T("p:sldSz"));
 			if (sldSz.is_init())
 				sldSz->SetParentFilePointer(this);
-			//smartTags (Smart Tags)
 
+			XmlUtils::CXmlNode list = oNode.ReadNodeNoNS(_T("extLst"));
+			if (list.IsValid())
+			{		
+				XmlUtils::CXmlNodes oNodes;
+				if (list.GetNodes(_T("*"), oNodes))
+				{
+					int nCount = oNodes.GetCount();
+					for (int i = 0; i < nCount; ++i)
+					{
+						XmlUtils::CXmlNode oNode;
+						oNodes.GetAt(i, oNode);	
+
+						PPTX::Logic::Ext ext;
+						ext.fromXML(oNode);
+						if (ext.sectionLst.IsInit())
+						{
+							sectionLst = ext.sectionLst;
+						}
+					}
+				}
+			}
+
+			//smartTags (Smart Tags)
 			Normalize();
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
@@ -205,6 +223,16 @@ namespace PPTX
 			pWriter->WriteRecord2(5, sldSz);
 
 			pWriter->WriteRecord2(6, commentAuthors);
+			pWriter->WriteRecord2(7, sectionLst);
+
+			if (m_pVbaProject.IsInit())
+			{
+				pWriter->StartRecord(8);
+				{
+					m_pVbaProject->toPPTY(pWriter);
+				}
+				pWriter->EndRecord();
+			}
 
 			pWriter->EndRecord();
 		}
@@ -302,16 +330,28 @@ namespace PPTX
 								default:
 									return;
 							}
-						}
-
-						break;
-					}
+						}						
+					}break;
 					case 6:
 					{
 						commentAuthors = new PPTX::Authors();
-						commentAuthors->fromPPTY(pReader);
-						break;
-					}
+						commentAuthors->fromPPTY(pReader);						
+					}break;
+					case 7:
+					{
+						sectionLst = new nsPresentation::SectionLst();
+						sectionLst->fromPPTY(pReader);						
+					}break;
+					case 8:
+					{
+						m_pVbaProject = new OOX::VbaProject();
+						m_pVbaProject->fromPPTY(pReader);
+						
+						smart_ptr<OOX::File> file = m_pVbaProject.smart_dynamic_cast<OOX::File>();
+						FileContainer::Add(file);
+
+						m_bMacroEnabled = true;
+					}break;
 					default:
 					{
 						pReader->Seek(_end_pos);
@@ -350,11 +390,11 @@ namespace PPTX
 
 			pWriter->EndAttributes();
 
-			pWriter->WriteArray(_T("p:sldMasterIdLst"), sldMasterIdLst);
-			pWriter->WriteArray(_T("p:notesMasterIdLst"), notesMasterIdLst);
-			pWriter->WriteArray(_T("p:handoutMasterIdLst"), handoutMasterIdLst);
-			pWriter->WriteArray(_T("p:embeddedFontLst"), embeddedFontLst);
-			pWriter->WriteArray(_T("p:sldIdLst"), sldIdLst);
+			pWriter->WriteArray(L"p:sldMasterIdLst", sldMasterIdLst);
+			pWriter->WriteArray(L"p:notesMasterIdLst", notesMasterIdLst);
+			pWriter->WriteArray(L"p:handoutMasterIdLst", handoutMasterIdLst);
+			pWriter->WriteArray(L"p:embeddedFontLst", embeddedFontLst);
+			pWriter->WriteArray(L"p:sldIdLst", sldIdLst);
 			
 			pWriter->Write(sldSz);
 			pWriter->Write(notesSz);
@@ -362,13 +402,23 @@ namespace PPTX
 			pWriter->Write(kinsoku);
 			pWriter->Write(defaultTextStyle);
 
-			pWriter->EndNode(_T("p:presentation"));
+			std::vector<Logic::Ext> extLst;
+
+			if (sectionLst.IsInit())
+			{
+				Logic::Ext exp;
+				exp.sectionLst = sectionLst;
+				extLst.push_back(exp);
+			}
+			pWriter->WriteArray(L"p:extLst", extLst);	
+
+			pWriter->EndNode(L"p:presentation");
 		}
 
-	public:
 		virtual const OOX::FileType type() const
 		{
-			return OOX::Presentation::FileTypes::Presentation;
+			if (m_bMacroEnabled)	return OOX::Presentation::FileTypes::PresentationMacro;
+			else					return OOX::Presentation::FileTypes::Presentation;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -379,8 +429,7 @@ namespace PPTX
 			return type().DefaultFileName();
 		}
 
-	public:
-		//Childs
+	//Childs
 		//custDataLst (Customer Data List)
 		//property<std::list<Presentation::CustShow> > custShowLst (List of Custom Shows)
 		nullable<Logic::TextListStyle>				defaultTextStyle;
@@ -394,6 +443,7 @@ namespace PPTX
 		std::vector<Logic::XmlId>					sldIdLst;
 		std::vector<Logic::XmlId>					sldMasterIdLst;
 		nullable<nsPresentation::SldSz>				sldSz;
+		nullable<nsPresentation::SectionLst>		sectionLst;
 		//smartTags (Smart Tags)
 
 	// Attrs
@@ -413,11 +463,14 @@ namespace PPTX
 		smart_ptr<PPTX::Authors>				commentAuthors;
 
 	private:
-		Logic::ClrMap		m_clrMap;
-		nsTheme::ClrScheme	m_clrScheme;
+		Logic::ClrMap				m_clrMap;
+		nsTheme::ClrScheme			m_clrScheme;
 	public:
-		void SetClrMap(Logic::ClrMap map)				{m_clrMap = map;};
-		void SetClrScheme(nsTheme::ClrScheme scheme)	{m_clrScheme = scheme;};
+		bool						m_bMacroEnabled;
+		smart_ptr<OOX::VbaProject>	m_pVbaProject;
+		
+        void SetClrMap(Logic::ClrMap map)				{m_clrMap = map;}
+        void SetClrScheme(nsTheme::ClrScheme scheme)	{m_clrScheme = scheme;}
 
 		DWORD GetRGBAFromMap(const std::wstring& str)const
 		{

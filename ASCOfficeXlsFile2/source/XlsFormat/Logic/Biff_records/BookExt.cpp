@@ -31,14 +31,14 @@
  */
 
 #include "BookExt.h"
-#include <Logic/Biff_structures/FrtHeader.h>
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
 
-BookExt::BookExt()
-: cb(22)
+BookExt::BookExt() : cb(22)
 {
+	mdFactoidDisplay = 0;
 }
 
 
@@ -62,15 +62,15 @@ void BookExt::readFields(CFRecord& record)
 	
 	if (record.loadAnyData(flags))
 	{	
-		fDontAutoRecover = GETBIT(flags, 0);
-		fHidePivotList = GETBIT(flags, 1);
-		fFilterPrivacy = GETBIT(flags, 2);
-		fEmbedFactoids = GETBIT(flags, 3);
-		mdFactoidDisplay = static_cast<unsigned char>(GETBITS(flags, 4, 5));
-		fSavedDuringRecovery = GETBIT(flags, 6);
-		fCreatedViaMinimalSave = GETBIT(flags, 7);
-		fOpenedViaDataRecovery = GETBIT(flags, 8);
-		fOpenedViaSafeLoad = GETBIT(flags, 9);
+		fDontAutoRecover		= GETBIT(flags, 0);
+		fHidePivotList			= GETBIT(flags, 1);
+		fFilterPrivacy			= GETBIT(flags, 2);
+		fEmbedFactoids			= GETBIT(flags, 3);
+		mdFactoidDisplay		= GETBITS(flags, 4, 5);
+		fSavedDuringRecovery	= GETBIT(flags, 6);
+		fCreatedViaMinimalSave	= GETBIT(flags, 7);
+		fOpenedViaDataRecovery	= GETBIT(flags, 8);
+		fOpenedViaSafeLoad		= GETBIT(flags, 9);
 	}
 	else return;
 

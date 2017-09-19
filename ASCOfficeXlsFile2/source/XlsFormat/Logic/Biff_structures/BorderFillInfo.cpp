@@ -108,63 +108,70 @@ int FillInfo::serialize(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    
 	{
-		CP_XML_NODE(L"fill")
+		if (!ext.empty())
 		{
-			CP_XML_NODE(L"patternFill")
+			stream << ext;
+		}
+		else
+		{
+			CP_XML_NODE(L"fill")
 			{
-				if (fls < 0 || fls > 18) 
-					fls = 1;
-
-				CP_XML_ATTR(L"patternType", PatternType[fls]);
-
-				if (fls > 0)
+				CP_XML_NODE(L"patternFill")
 				{
-					CP_XML_NODE(L"fgColor")
-					{
-						if (foreFillInfo_.enabled)
-						{
-							switch(foreFillInfo_.xclrType)
-							{
-							case 0://auto
-								/*CP_XML_ATTR(L"auto");*/ break;
-							case 1://indexed
-								if (foreFillInfo_.icv < 64) 
-									CP_XML_ATTR(L"indexed",  foreFillInfo_.icv); break;
-							case 2://rgb
-								CP_XML_ATTR(L"rgb", STR::toARGB(foreFillInfo_.xclrValue)); break;
-							case 3://theme color
-								CP_XML_ATTR(L"theme", foreFillInfo_.xclrValue/* + 1*/); 
-								CP_XML_ATTR(L"tint", foreFillInfo_.nTintShade / 32767.0); break;
-							case 4://not set
-								break;
-							}
-						}else
-							CP_XML_ATTR(L"indexed", icvFore);
+					if (fls < 0 || fls > 18) 
+						fls = 1;
 
-					}
-					CP_XML_NODE(L"bgColor")
+					CP_XML_ATTR(L"patternType", PatternType[fls]);
+
+					if (fls > 0)
 					{
-						if (backFillInfo_.enabled)
+						CP_XML_NODE(L"fgColor")
 						{
-							switch(backFillInfo_.xclrType)
+							if (foreFillInfo_.enabled)
 							{
-							case 0://auto
-								/*CP_XML_ATTR(L"auto");*/ break;
-							case 1://indexed
-								if (backFillInfo_.icv < 64)
-									CP_XML_ATTR(L"indexed",  backFillInfo_.icv); break;
-							case 2://rgb
-								CP_XML_ATTR(L"rgb", STR::toARGB(backFillInfo_.xclrValue)); break;
-							case 3://theme color
-								CP_XML_ATTR(L"theme", backFillInfo_.xclrValue /*+ 1*/); 
-								CP_XML_ATTR(L"tint", backFillInfo_.nTintShade / 32767.0); break;
-							case 4://not set
-								break;
-							}
+								switch(foreFillInfo_.xclrType)
+								{
+								case 0://auto
+									/*CP_XML_ATTR(L"auto");*/ break;
+								case 1://indexed
+									if (foreFillInfo_.icv < 64) 
+										CP_XML_ATTR(L"indexed",  foreFillInfo_.icv); break;
+								case 2://rgb
+									CP_XML_ATTR(L"rgb", STR::toARGB(foreFillInfo_.xclrValue)); break;
+								case 3://theme color
+									CP_XML_ATTR(L"theme", foreFillInfo_.xclrValue/* + 1*/); 
+									CP_XML_ATTR(L"tint", foreFillInfo_.nTintShade / 32767.0); break;
+								case 4://not set
+									break;
+								}
+							}else
+								CP_XML_ATTR(L"indexed", icvFore);
+
 						}
-						else
-							CP_XML_ATTR(L"indexed", icvBack);
+						CP_XML_NODE(L"bgColor")
+						{
+							if (backFillInfo_.enabled)
+							{
+								switch(backFillInfo_.xclrType)
+								{
+								case 0://auto
+									/*CP_XML_ATTR(L"auto");*/ break;
+								case 1://indexed
+									if (backFillInfo_.icv < 64)
+										CP_XML_ATTR(L"indexed",  backFillInfo_.icv); break;
+								case 2://rgb
+									CP_XML_ATTR(L"rgb", STR::toARGB(backFillInfo_.xclrValue)); break;
+								case 3://theme color
+									CP_XML_ATTR(L"theme", backFillInfo_.xclrValue /*+ 1*/); 
+									CP_XML_ATTR(L"tint", backFillInfo_.nTintShade / 32767.0); break;
+								case 4://not set
+									break;
+								}
+							}
+							else
+								CP_XML_ATTR(L"indexed", icvBack);
 
+						}
 					}
 				}
 			}

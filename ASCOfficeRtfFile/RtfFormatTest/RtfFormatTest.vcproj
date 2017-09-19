@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="RtfFormatTest"
 	ProjectGUID="{0F49D5D1-A8D3-4F97-8BC1-E2F65BB00C10}"
 	RootNamespace="RtfFormatTest"
@@ -44,7 +44,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\Common\OfficeDrawing;&quot;..\..\DesktopEditor\freetype-2.5.2\include&quot;;..\..\..\..\..\Common\OfficeDrawing\Shapes"
+				AdditionalIncludeDirectories="../../DesktopEditor/xml/libxml2/include;../../DesktopEditor/xml/build/vs2005"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="3"

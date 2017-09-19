@@ -31,7 +31,7 @@
  */
 #pragma once
 #include "Path.h"
-#include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Base.h"
+#include "../../../../../Common/DocxFormat/Source/Common/SimpleTypes_Base.h"
 
 namespace NSPresentationEditor
 {

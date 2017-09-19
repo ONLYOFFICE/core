@@ -55,7 +55,6 @@ BaseObjectPtr PIVOTFRT9::clone()
 	return BaseObjectPtr(new PIVOTFRT9(*this));
 }
 
-
 // PIVOTFRT9 = QsiSXTag [DBQUERYEXT] [PIVOTVIEWEX] SXViewEx9
 const bool PIVOTFRT9::loadContent(BinProcessor& proc)
 {

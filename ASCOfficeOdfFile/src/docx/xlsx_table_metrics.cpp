@@ -32,7 +32,6 @@
 #include "xlsx_table_metrics.h"
 
 #include <vector>
-#include <boost/foreach.hpp>
 
 namespace cpdoccore {
 namespace oox 

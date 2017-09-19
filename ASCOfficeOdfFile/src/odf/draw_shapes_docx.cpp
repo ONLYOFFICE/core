@@ -80,13 +80,13 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
 	Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));
 
 //сначала элементы графики  потом все остальное	
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-		ElementType type = elm->get_type();
+		ElementType type = content_[i]->get_type();
 		
 		if (type == typeDrawCustomShape) // || .... 
 		{
-			elm->docx_convert(Context);
+			content_[i]->docx_convert(Context);
 		}
     }
 	
@@ -95,13 +95,13 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
 	Context.set_paragraph_state	(false);		
 	Context.set_run_state		(false);		
 
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-		ElementType type = elm->get_type();
+		ElementType type = content_[i]->get_type();
 		
 		if (type != typeDrawCustomShape)
 		{
-			elm->docx_convert(Context);
+			content_[i]->docx_convert(Context);
 		}
     }
 
@@ -120,9 +120,16 @@ void draw_rect::docx_convert(oox::docx_conversion_context & Context)
 		return;
 	}
 	common_docx_convert(Context);
-	//...
-	draw_shape::docx_convert(Context);
 
+	if (draw_rect_attlist_.draw_corner_radius_)
+	{
+		draw_shape * shape = Context.get_drawing_context().get_current_shape();//owner
+
+		double val = draw_rect_attlist_.draw_corner_radius_->get_value() * 6500;
+		shape->additional_.push_back(_property(L"oox-draw-modifiers", std::to_wstring((int)val)));	
+	}
+
+	draw_shape::docx_convert(Context);
 }
 void draw_ellipse::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -157,6 +164,7 @@ void draw_line::docx_convert(oox::docx_conversion_context & Context)
 	reset_svg_attributes();	
 	
 	common_docx_convert(Context);
+	//...
 
 	draw_shape::docx_convert(Context);
 }

@@ -70,6 +70,8 @@ namespace XLS
 	class OBJECTS;
 	class MSODRAWINGGROUP;
 	class IMDATA;
+	class PIVOTVIEW;
+	class PIVOTCACHEDEFINITION;
 
 	class Note;
 	class TxO;
@@ -91,7 +93,7 @@ namespace ODRAW
 class XlsConverter
 {
 public:
-	XlsConverter(const std::wstring & xls_file, const std::wstring & xlsx_path, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* ffCallBack);
+	XlsConverter(const std::wstring & xls_file, const std::wstring & xlsx_path, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* ffCallBack, bool & bMacros);
 	~XlsConverter() ;
 
     oox::xlsx_conversion_context	* xlsx_context;
@@ -117,6 +119,8 @@ public:
 	void convert(XLS::TxO						* text_obj);
 	void convert(XLS::Note						* note);
 	void convert(XLS::IMDATA					* imadata);
+	void convert(XLS::PIVOTVIEW					* pivot_view);
+	void convert(XLS::PIVOTCACHEDEFINITION		* pivot_cached);
 
 	void convert(ODRAW::OfficeArtRecord			* art);
 	void convert(ODRAW::OfficeArtBStoreContainer* art_bstore, int start_id = 0);

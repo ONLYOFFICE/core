@@ -30,8 +30,6 @@
  *
  */
 
-
-#include <boost/foreach.hpp>
 #include <cpdoccore/utf8cpp/utf8.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
@@ -92,9 +90,10 @@ namespace odf_writer
 ///////////////
 		void manifect_file::add_rels(rels  & r)
 		{
-			BOOST_FOREACH(relationship & item, r.relationships())
+			std::vector<relationship> & rels = r.relationships();
+			for (size_t i = 0; i < rels.size(); i++)
 			{
-				rels_.add(item);
+				rels_.add(rels[i]);
 			}
 		}
 		manifect_file::manifect_file(std::wstring t)
@@ -188,13 +187,14 @@ namespace odf_writer
 			std::wstring path = RootPath + FILE_SEPARATOR_STR + L"Media";
             NSDirectory::CreateDirectory(path);
 
-			BOOST_FOREACH( _mediaitems::item & item, mediaitems_.items() )
+			std::vector< _mediaitems::item >  & items =  mediaitems_.items();
+			for (size_t i = 0; i < items.size(); i++)
 			{
-				if (item.type == _mediaitems::typeMedia)
+				if (items[i].type == _mediaitems::typeMedia)
 				{
-					std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + item.odf_ref;
+					std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + items[i].odf_ref;
 
-					NSFile::CFileBinary::Copy(item.oox_ref, file_name_out);
+					NSFile::CFileBinary::Copy(items[i].oox_ref, file_name_out);
 				}
 			}
 
@@ -212,15 +212,16 @@ namespace odf_writer
 			std::wstring path = RootPath + FILE_SEPARATOR_STR + L"Pictures";
             NSDirectory::CreateDirectory(path);
 
-			BOOST_FOREACH( _mediaitems::item & item, mediaitems_.items() )
+			std::vector< _mediaitems::item >  & items =  mediaitems_.items();
+			for (size_t i = 0; i < items.size(); i++)
 			{
-				if (item.type == _mediaitems::typeImage && item.oox_ref.length()>0)
+				if (items[i].type == _mediaitems::typeImage && items[i].oox_ref.length()>0)
 				{
-					std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + item.odf_ref;
+					std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + items[i].odf_ref;
 
 					try
 					{
-						NSFile::CFileBinary::Copy(item.oox_ref, file_name_out);
+						NSFile::CFileBinary::Copy(items[i].oox_ref, file_name_out);
 					}catch (...)
 					{
 					}
@@ -289,13 +290,12 @@ namespace odf_writer
 		{
 			if (base_)base_->write(RootPath);
 			
-			long count = 0;
-			BOOST_FOREACH(const element_ptr & item, objects_)
-			{				
-				std::wstring path = RootPath + FILE_SEPARATOR_STR + item->local_path;
+			for (size_t i = 0; i < objects_.size(); i++)
+			{		
+				std::wstring path = RootPath + FILE_SEPARATOR_STR + objects_[i]->local_path;
                 NSDirectory::CreateDirectory(path);
 				
-				item->write(path);
+				objects_[i]->write(path);
 			}
 			if (manifest_)	manifest_->write(RootPath);
 			if (mimetype_)  mimetype_->write(RootPath);

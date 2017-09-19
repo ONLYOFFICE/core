@@ -44,7 +44,6 @@ DConName::~DConName()
 {
 }
 
-
 BaseObjectPtr DConName::clone()
 {
 	return BaseObjectPtr(new DConName(*this));
@@ -52,9 +51,14 @@ BaseObjectPtr DConName::clone()
 
 void DConName::readFields(CFRecord& record)
 {
-#pragma message("####################### DConName record is not implemented")
-	Log::error("DConName record is not implemented.");
-	
+	record >> stName >> cchFile;
+
+	if (cchFile > 0 && cchFile < 0xffff)
+	{
+		stFile.setSize(cchFile);
+		record >> stFile;
+	}
+	// skip unused
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 

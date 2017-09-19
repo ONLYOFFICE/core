@@ -9,7 +9,17 @@ QT       -= core gui
 TARGET = hunspell
 TEMPLATE = lib
 
+hunspell_build_static {
+
 CONFIG += staticlib
+
+} else {
+
+CONFIG += shared
+CONFIG += plugin
+
+}
+
 CONFIG += building_hunspell
 
 CORE_ROOT_DIR = $$PWD/../../../..

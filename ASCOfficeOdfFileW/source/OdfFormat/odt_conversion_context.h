@@ -95,6 +95,7 @@ public:
 
 	void start_field		(bool in_span);
 	void end_field			();
+	void separate_field		();
 	void set_field_instr	(std::wstring instr);
 
 	void start_run			(bool styled = false);
@@ -182,12 +183,14 @@ private:
 
 	struct _field_state
 	{
+		std::wstring	name;
 		bool			enabled;	
 		int				type;
 		std::wstring	value;
 		std::wstring	format;
 		bool			started;
 		bool			in_span;
+		bool			result;
 	}current_field_;
 	
 	struct _text_changes_state

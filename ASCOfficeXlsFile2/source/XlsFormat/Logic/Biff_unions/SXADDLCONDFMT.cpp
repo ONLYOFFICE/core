@@ -57,12 +57,12 @@ BaseObjectPtr SXADDLCONDFMT::clone()
 // SXADDLCONDFMT = SXAddl_SXCSXCondFmt_SXDSXCondFmt *SXADDLSXRULE SXAddl_SXCSXCondFmt_SXDEnd
 const bool SXADDLCONDFMT::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory<SXAddl_SXCSXCondFmt_SXDSXCondFmt>())
-	{
-		return false;
-	}
-	proc.repeated<SXADDLSXRULE>(0, 0);
-	proc.mandatory<SXAddl_SXCSXCondFmt_SXDEnd>();
+	//if(!proc.mandatory<SXAddl_SXCSXCondFmt_SXDSXCondFmt>())
+	//{
+	//	return false;
+	//}
+	//proc.repeated<SXADDLSXRULE>(0, 0);
+	//proc.mandatory<SXAddl_SXCSXCondFmt_SXDEnd>();
 
 	return true;
 }

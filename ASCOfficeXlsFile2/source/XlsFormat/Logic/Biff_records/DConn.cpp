@@ -31,6 +31,11 @@
  */
 
 #include "DConn.h"
+#include "../Biff_structures/DConnConnectionWeb.h"
+#include "../Biff_structures/DConnConnectionOleDb.h"
+#include "../Biff_structures/ConnGrbitDbtWeb.h"
+#include "../Biff_structures/ConnGrbitDbtOledb.h"
+#include "../Biff_structures/ConnGrbitDbtAdo.h"
 
 namespace XLS
 {
@@ -52,10 +57,109 @@ BaseObjectPtr DConn::clone()
 
 void DConn::readFields(CFRecord& record)
 {
-#pragma message("####################### DConn record is not implemented")
-	Log::error("DConn record is not implemented.");
+	unsigned short flags1, reserved1;
+	unsigned char flags2, reserved2, reserved3;
+	
+	record >> frtHeaderOld >> dbt >> flags1 >> cParams >> reserved1 >> flags2 >> reserved2;
+	
+	//DBT_ODBC		0x0001		ODBC-based source
+	//DBT_DAO		0x0002		DAO-based source
+	//DBT_WEB		0x0004		Web query
+	//DBT_OLEDB		0x0005		OLE DB-based source
+	//DBT_TXT		0x0006		Text-based source created via text query
+	//DBT_ADO		0x0007		ADO record set	
 
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	fSavePwd		=  GETBIT(flags1, 0);
+	fTablesOnlyHtml	=  GETBIT(flags1, 1);
+	fTableNames		=  GETBIT(flags1, 2);
+	fDeleted		=  GETBIT(flags1, 3);
+	fStandAlone		=  GETBIT(flags1, 4);
+	fAlwaysUseConnectionFile =  GETBIT(flags1, 5);
+	fBackgroundQuery=  GETBIT(flags1, 6);
+	fRefreshOnLoad	=  GETBIT(flags1, 7);
+	fSaveData		=  GETBIT(flags1, 8);
+	
+	fMaintain		=  GETBIT(flags1, 0);
+	fNewQuery		=  GETBIT(flags1, 1);
+	fImportXmlSource=  GETBIT(flags1, 2);
+	fSPListSrc		=  GETBIT(flags1, 3);
+	fSPListReinitCache	=  GETBIT(flags1, 4);
+	fSrcIsXml		=  GETBIT(flags1, 7);
+
+	switch (dbt)
+	{
+		case 4:	grbitDbt.reset(new ConnGrbitDbtWeb);	break;
+		case 5:	grbitDbt.reset(new ConnGrbitDbtOledb);	break;
+		case 7:	grbitDbt.reset(new ConnGrbitDbtAdo);	break;
+		default:
+				break;
+	}
+	if (grbitDbt)
+	{
+		record >> *grbitDbt;
+	}
+	else
+	{
+		unsigned short unused;
+		record >> unused;
+	}
+
+	record >> bVerDbqueryEdit >> bVerDbqueryRefreshed >> bVerDbqueryRefreshableMin >> wRefreshInterval >> wHtmlFmt >> rcc >> credMethod >> reserved3;
+
+	if (dbt == 5)
+	{
+		record >> rgchSourceDataFile;
+	}
+	
+	record >> rgchSourceConnectionFile >> rgchConnectionName >> rgchConnectionDesc;
+	
+	if (dbt == 1 || dbt == 5)
+	{
+		record >> rgchSSOApplicationID;
+	}
+
+	if (fTableNames)
+	{
+		record >> tableNames;
+	}
+	
+	for ( unsigned short i = 0; fStandAlone && i < cParams; i++)
+	{
+		DConnParameter val;
+		params.push_back(val);
+	}
+
+	switch (dbt)
+	{
+		case 1:	connection.reset(new XLUnicodeStringSegmented);	break;
+		case 4:	connection.reset(new DConnConnectionWeb);		break;
+		case 5:	connection.reset(new DConnConnectionOleDb);		break;
+		case 6:	connection_txtQry.readFields(record);			break;
+	}
+
+	if (connection)
+		record >> *connection;
+
+	if (dbt == 1 || dbt == 5)
+	{
+		record >> rgbSQL;
+	}
+	
+	if (dbt == 1)
+	{
+		record >> rgbSQLSav;	
+	}
+	
+	if (dbt == 4)
+	{
+		record >> rgbEditWebPage;
+	}
+	
+	record >> id;
+
+	int skip = record.getDataSize() - record.getRdPtr();
+
+	record.skipNunBytes(skip);
 }
 
 } // namespace XLS

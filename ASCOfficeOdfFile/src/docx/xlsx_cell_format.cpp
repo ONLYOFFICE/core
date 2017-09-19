@@ -32,8 +32,6 @@
 
 #include "xlsx_cell_format.h"
 
-#include <boost/foreach.hpp>
-
 namespace cpdoccore {
 namespace oox {
 

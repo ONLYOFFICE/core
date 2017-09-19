@@ -101,7 +101,8 @@ public:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    _CP_OPT(std::wstring) draw_filter_name_;
+    _CP_OPT(std::wstring)		draw_filter_name_;
+	_CP_OPT(odf_types::length)	draw_corner_radius_;
 
 };
 

@@ -283,7 +283,7 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 }
 BaseObjectPtr CHARTFORMATS::find_label( _UINT16 link_id, unsigned short ex)
 {
-	for (int i = 0 ; i < m_arATTACHEDLABEL.size(); i++)
+	for (size_t i = 0 ; i < m_arATTACHEDLABEL.size(); i++)
 	{
 		ATTACHEDLABEL	* label		= dynamic_cast<ATTACHEDLABEL *>	(m_arATTACHEDLABEL[i].get());
 		ObjectLink		* obj_link	= dynamic_cast<ObjectLink *>	(label->m_ObjectLink.get());
@@ -306,7 +306,7 @@ std::vector<std::pair<int, BaseObjectPtr>> CHARTFORMATS::find_labels( _UINT16 li
 {
 	std::vector<std::pair<int, BaseObjectPtr>> result;
 
-	for (int i = 0 ; i < m_arATTACHEDLABEL.size(); i++)
+	for (size_t i = 0 ; i < m_arATTACHEDLABEL.size(); i++)
 	{
 		ATTACHEDLABEL	* label		= dynamic_cast<ATTACHEDLABEL *>	(m_arATTACHEDLABEL[i].get());
 		ObjectLink		* obj_link	= dynamic_cast<ObjectLink *>	(label->m_ObjectLink.get());

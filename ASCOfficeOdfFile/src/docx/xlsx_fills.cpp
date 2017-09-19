@@ -175,13 +175,6 @@ void xlsx_fills::serialize(std::wostream & _Wostream) const
             }
         }
     }
-
-    //_Wostream << L"<fills count=\"" << inst_array.size() << L"\" >";
-    //BOOST_FOREACH(const xlsx_fill & f, inst_array)
-    //{
-    //    ::cpdoccore::oox::xlsx_serialize(_Wostream, f);
-    //}
-    //_Wostream << L"</fills>";    
 }
 
 }

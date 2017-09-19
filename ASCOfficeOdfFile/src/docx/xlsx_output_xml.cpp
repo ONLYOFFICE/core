@@ -57,8 +57,7 @@ public:
 	std::wstringstream	ole_objects_;
 	std::wstringstream	page_props_;
 
-	rels hyperlinks_rels_;
-	rels ole_objects_rels_;
+	rels sheet_rels_;
 
     std::wstring drawingName_;
     std::wstring drawingId_;
@@ -141,14 +140,11 @@ std::wostream & xlsx_xml_worksheet::page_properties()
 }
 
 //---------------------------------------------------------------------------------------
-rels & xlsx_xml_worksheet::hyperlinks_rels()
+rels & xlsx_xml_worksheet::sheet_rels()
 {
-    return impl_->hyperlinks_rels_;
+    return impl_->sheet_rels_;
 }
-rels & xlsx_xml_worksheet::ole_objects_rels()
-{
-    return impl_->ole_objects_rels_;
-}
+
 void xlsx_xml_worksheet::write_to(std::wostream & strm)
 {
     CP_XML_WRITER(strm)

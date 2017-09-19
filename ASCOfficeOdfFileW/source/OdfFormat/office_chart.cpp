@@ -33,10 +33,7 @@
 
 #include "office_chart.h"
 
-#include <boost/foreach.hpp>
-
 #include <cpdoccore/xml/xmlchar.h>
-
 #include <cpdoccore/xml/attributes.h>
 
 namespace cpdoccore { 
@@ -61,9 +58,9 @@ void office_chart::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -101,9 +98,9 @@ void chart_chart::serialize(std::wostream & _Wostream)
         {
 			chart_chart_attlist_.serialize(CP_GET_XML_NODE());
 
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -271,9 +268,9 @@ void chart_plot_area::serialize(std::wostream & _Wostream)
         {
 			chart_plot_area_attlist_.serialize(CP_GET_XML_NODE());
 
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -349,9 +346,9 @@ void chart_axis::serialize(std::wostream & _Wostream)
         {
 			chart_axis_attlist_.serialize(CP_GET_XML_NODE());
 
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -427,9 +424,9 @@ void chart_series::serialize(std::wostream & _Wostream)
         {
 			chart_series_attlist_.serialize(CP_GET_XML_NODE());
 
-			BOOST_FOREACH(const office_element_ptr & elm, content_)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}

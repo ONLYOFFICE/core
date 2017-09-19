@@ -197,7 +197,7 @@ void tab::docx_convert(oox::docx_conversion_context & Context)
     Context.add_element_to_run();
   
 	std::wostream & _Wostream = Context.output_stream();
-    _Wostream << L"<w:tab />";
+    _Wostream << L"<w:tab/>";
 }
 
 void tab::xlsx_convert(oox::xlsx_conversion_context & Context) 
@@ -222,7 +222,7 @@ std::wostream & line_break::text_to_stream(std::wostream & _Wostream) const
 void line_break::docx_convert(oox::docx_conversion_context & Context)
 {
     Context.add_element_to_run();
-    Context.output_stream() << L"<w:br />";
+    Context.output_stream() << L"<w:br/>";
 }
 
 void line_break::xlsx_convert(oox::xlsx_conversion_context & Context)
@@ -331,9 +331,9 @@ const wchar_t * span::name = L"span";
 
 std::wostream & span::text_to_stream(std::wostream & _Wostream) const
 {
-    BOOST_FOREACH(const office_element_ptr & parElement, content_)
+    for (size_t i = 0; i < content_.size(); i++)
     {
-        parElement->text_to_stream(_Wostream);
+        content_[i]->text_to_stream(_Wostream);
     }
     return _Wostream;
 }
@@ -349,9 +349,9 @@ void span::add_attributes( const xml::attributes_wc_ptr & Attributes )
     {
         boost::algorithm::split(classNamesArray, classNames, boost::algorithm::is_any_of(L" "));
 
-        BOOST_FOREACH(const std::wstring & name, classNamesArray)
+        for (size_t i = 0; i < classNamesArray.size(); i++)
         {
-            text_class_names_.push_back( name );        
+            text_class_names_.push_back( classNamesArray[i] );        
         }
     }
 }
@@ -405,9 +405,9 @@ void span::docx_convert(oox::docx_conversion_context & Context)
 
     if (!addNewRun)Context.add_new_run();
 
-    BOOST_FOREACH(const office_element_ptr & parElement, content_)
+    for (size_t i = 0; i < content_.size(); i++)
     {
-        parElement->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
 
 	Context.finish_run();
@@ -419,9 +419,9 @@ void span::docx_convert(oox::docx_conversion_context & Context)
 void span::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     Context.start_span(text_style_name_);
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+    for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->xlsx_convert(Context);
+        content_[i]->xlsx_convert(Context);
     }
     Context.end_span();
 }
@@ -431,9 +431,9 @@ void span::pptx_convert(oox::pptx_conversion_context & Context)
 		Context.get_text_context().get_styles_context().start_process_style(styleInst);
    
 	Context.get_text_context().start_span(text_style_name_);
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        content_[i]->pptx_convert(Context);
     }
     Context.get_text_context().end_span();
 	Context.get_text_context().get_styles_context().end_process_style();
@@ -445,9 +445,9 @@ const wchar_t * a::name = L"a";
 
 std::wostream & a::text_to_stream(std::wostream & _Wostream) const
 {
-    BOOST_FOREACH(const office_element_ptr & element, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        element->text_to_stream(_Wostream);
+        content_[i]->text_to_stream(_Wostream);
     }
     return _Wostream;
 }
@@ -526,9 +526,9 @@ void a::docx_convert(oox::docx_conversion_context & Context)
     if (!addNewRun)
         Context.add_new_run();
 
-    BOOST_FOREACH(const office_element_ptr & parElement, content_)
+    for (size_t i = 0; i < content_.size(); i++)
     {
-        parElement->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
 
 	Context.finish_run();
@@ -541,18 +541,18 @@ void a::docx_convert(oox::docx_conversion_context & Context)
 void a::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     Context.start_hyperlink(text_style_name_);
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->xlsx_convert(Context);
+        content_[i]->xlsx_convert(Context);
     }
     Context.end_hyperlink(common_xlink_attlist_.href_.get_value_or(L""));
 }
 void a::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	Context.get_text_context().start_hyperlink();
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        content_[i]->pptx_convert(Context);
     }
 	
 	std::wstring hId = Context.get_slide_context().add_hyperlink(common_xlink_attlist_.href_.get_value_or(L""));
@@ -710,9 +710,9 @@ const wchar_t * title::name = L"title";
 
 std::wostream & title::text_to_stream(std::wostream & _Wostream) const
 {
-    BOOST_FOREACH(const office_element_ptr & parElement, content_)
+    for (size_t i = 0; i < content_.size(); i++)
     {
-        parElement->text_to_stream(_Wostream);
+        content_[i]->text_to_stream(_Wostream);
     }
     return _Wostream;
 }
@@ -774,9 +774,9 @@ const wchar_t * subject::name = L"subject";
 
 std::wostream & subject::text_to_stream(std::wostream & _Wostream) const
 {
-    BOOST_FOREACH(const office_element_ptr & parElement, content_)
+    for (size_t i = 0; i < content_.size(); i++)
     {
-        parElement->text_to_stream(_Wostream);
+        content_[i]->text_to_stream(_Wostream);
     }
     return _Wostream;
 }
@@ -837,9 +837,9 @@ const wchar_t * chapter::name = L"chapter";
 
 std::wostream & chapter::text_to_stream(std::wostream & _Wostream) const
 {
-    BOOST_FOREACH(const office_element_ptr & parElement, content_)
+    for (size_t i = 0; i < content_.size(); i++)
     {
-        parElement->text_to_stream(_Wostream);
+        content_[i]->text_to_stream(_Wostream);
     }
     return _Wostream;
 }
@@ -901,9 +901,9 @@ const wchar_t * text_placeholder::name = L"placeholder";
 
 std::wostream & text_placeholder::text_to_stream(std::wostream & _Wostream) const
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+    for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->text_to_stream(_Wostream);
+        content_[i]->text_to_stream(_Wostream);
     }
     return _Wostream;
 }
@@ -925,17 +925,17 @@ void text_placeholder::add_text(const std::wstring & Text)
 
 void text_placeholder::docx_convert(oox::docx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+    for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->docx_convert(Context);
+        content_[i]->docx_convert(Context);
     }
 }
 
 void text_placeholder::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_)
+    for (size_t i = 0; i < content_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        content_[i]->pptx_convert(Context);
     }
 }
 
@@ -981,9 +981,9 @@ void text_page_number::docx_convert(oox::docx_conversion_context & Context)
     strm << L"<w:r><w:fldChar w:fldCharType=\"begin\" /></w:r>";
     strm << L"<w:r><w:instrText>PAGE</w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"separate\" /></w:r>";
     Context.add_new_run();
-    BOOST_FOREACH(const office_element_ptr & elm, text_)
+	for (size_t i = 0; i < text_.size(); i++)
     {
-        elm->docx_convert(Context);
+        text_[i]->docx_convert(Context);
     }
     Context.finish_run();
     strm << L"<w:r><w:fldChar w:fldCharType=\"end\" /></w:r>";
@@ -991,9 +991,9 @@ void text_page_number::docx_convert(oox::docx_conversion_context & Context)
 void text_page_number::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	Context.get_text_context().start_field(oox::page_number, L"");
-    BOOST_FOREACH(const office_element_ptr & elm, text_)
+	for (size_t i = 0; i < text_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        text_[i]->pptx_convert(Context);
     }
     Context.get_text_context().end_field();
 }
@@ -1032,9 +1032,9 @@ void text_page_count::docx_convert(oox::docx_conversion_context & Context)
     strm << L"<w:r><w:fldChar w:fldCharType=\"begin\" /></w:r>";
     strm << L"<w:r><w:instrText>NUMPAGES</w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"separate\" /></w:r>";
     Context.add_new_run();
-    BOOST_FOREACH(const office_element_ptr & elm, text_)
+	for (size_t i = 0; i < text_.size(); i++)
     {
-        elm->docx_convert(Context);
+        text_[i]->docx_convert(Context);
     }
     Context.finish_run();
     strm << L"<w:r><w:fldChar w:fldCharType=\"end\" /></w:r>";
@@ -1042,9 +1042,9 @@ void text_page_count::docx_convert(oox::docx_conversion_context & Context)
 void text_page_count::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	//поскольку такого поля в ms нет - конвертим как обычный текст
-    BOOST_FOREACH(const office_element_ptr & elm, text_)
+	for (size_t i = 0; i < text_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        text_[i]->pptx_convert(Context);
     }
 }
 
@@ -1084,9 +1084,9 @@ void text_date::docx_convert(oox::docx_conversion_context & Context)
 	if (asText)
 	{
 		Context.add_new_run();
-		BOOST_FOREACH(const office_element_ptr & elm, text_)
+		for (size_t i = 0; i < text_.size(); i++)
 		{
-			elm->docx_convert(Context);
+			text_[i]->docx_convert(Context);
 		}
 		Context.finish_run();
 	}
@@ -1117,9 +1117,9 @@ void text_date::docx_convert(oox::docx_conversion_context & Context)
 void text_date::pptx_convert(oox::pptx_conversion_context & Context)
 {
     Context.get_text_context().start_field(oox::date,style_data_style_name_.get_value_or(L""));
-    BOOST_FOREACH(const office_element_ptr & elm, text_)
+    for (size_t i = 0; i < text_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        text_[i]->pptx_convert(Context);
     }
     Context.get_text_context().end_field();
 }
@@ -1134,9 +1134,9 @@ void text_modification_date::docx_convert(oox::docx_conversion_context & Context
 	if (asText)
 	{
 		Context.add_new_run();
-		BOOST_FOREACH(const office_element_ptr & elm, text_)
+		for (size_t i = 0; i < text_.size(); i++)
 		{
-			elm->docx_convert(Context);
+			text_[i]->docx_convert(Context);
 		}
 		Context.finish_run();
 	}
@@ -1147,9 +1147,9 @@ void text_modification_date::docx_convert(oox::docx_conversion_context & Context
 		strm << L"<w:r><w:fldChar w:fldCharType=\"begin\" /></w:r>";
 		strm << L"<w:r><w:instrText xml:space=\"preserve\">SAVEDATE \\@ \"dd.MM.yy\"</w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"separate\" /></w:r>";
 		Context.add_new_run();
-		BOOST_FOREACH(const office_element_ptr & elm, text_)
+		for (size_t i = 0; i < text_.size(); i++)
 		{
-			elm->docx_convert(Context);
+			text_[i]->docx_convert(Context);
 		}
 		Context.finish_run();
 		strm << L"<w:r><w:fldChar w:fldCharType=\"end\" /></w:r>";
@@ -1197,9 +1197,9 @@ void text_time::docx_convert(oox::docx_conversion_context & Context)
 	if (asText)
 	{
 		Context.add_new_run();
-		BOOST_FOREACH(const office_element_ptr & elm, text_)
+		for (size_t i = 0; i < text_.size(); i++)
 		{
-			elm->docx_convert(Context);
+			text_[i]->docx_convert(Context);
 		}
 		Context.finish_run();
 	}
@@ -1228,9 +1228,9 @@ void text_time::docx_convert(oox::docx_conversion_context & Context)
 void text_time::pptx_convert(oox::pptx_conversion_context & Context)
 {
     Context.get_text_context().start_field(oox::time, style_data_style_name_.get_value_or(L""));
-    BOOST_FOREACH(const office_element_ptr & elm, text_)
+	for (size_t i = 0; i < text_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        text_[i]->pptx_convert(Context);
     }
     Context.get_text_context().end_field();
 }
@@ -1245,9 +1245,9 @@ void text_modification_time::docx_convert(oox::docx_conversion_context & Context
 	if (asText)
 	{
 		Context.add_new_run();
-		BOOST_FOREACH(const office_element_ptr & elm, text_)
+		for (size_t i = 0; i < text_.size(); i++)
 		{
-			elm->docx_convert(Context);
+			text_[i]->docx_convert(Context);
 		}
 		Context.finish_run();
 	}
@@ -1258,9 +1258,9 @@ void text_modification_time::docx_convert(oox::docx_conversion_context & Context
 		strm << L"<w:r><w:fldChar w:fldCharType=\"begin\" /></w:r>";
 		strm << L"<w:r><w:instrText>SAVEDATE  \\@ \"h:mm:ss am/pm\"</w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"separate\" /></w:r>";
 		Context.add_new_run();
-		BOOST_FOREACH(const office_element_ptr & elm, text_)
+		for (size_t i = 0; i < text_.size(); i++)
 		{
-			elm->docx_convert(Context);
+			text_[i]->docx_convert(Context);
 		}
 		Context.finish_run();
 		strm << L"<w:r><w:fldChar w:fldCharType=\"end\" /></w:r>";
@@ -1301,18 +1301,18 @@ void text_file_name::add_text(const std::wstring & Text)
 void text_file_name::docx_convert(oox::docx_conversion_context & Context)
 {
     Context.add_new_run();
-    BOOST_FOREACH(const office_element_ptr & elm, text_)
+	for (size_t i = 0; i < text_.size(); i++)
     {
-        elm->docx_convert(Context);
+        text_[i]->docx_convert(Context);
     }
     Context.finish_run();
 }
 void text_file_name::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	//Context.get_text_context().start_field(oox::file_name, style_data_style_name_.get_value_or(L""));
-	BOOST_FOREACH(const office_element_ptr & elm, text_)
+	for (size_t i = 0; i < text_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        text_[i]->pptx_convert(Context);
     }
     Context.get_text_context().end_field();
 }
@@ -1344,16 +1344,16 @@ void sequence::add_text(const std::wstring & Text)
 
 void sequence::docx_convert(oox::docx_conversion_context & Context) 
 {
-    BOOST_FOREACH(const office_element_ptr & elm, text_)
+	for (size_t i = 0; i < text_.size(); i++)
     {
-        elm->docx_convert(Context);
+        text_[i]->docx_convert(Context);
     }
 }
 void sequence::pptx_convert(oox::pptx_conversion_context & Context) 
 {
-    BOOST_FOREACH(const office_element_ptr & elm, text_)
+	for (size_t i = 0; i < text_.size(); i++)
     {
-        elm->pptx_convert(Context);
+        text_[i]->pptx_convert(Context);
     }
 }
 

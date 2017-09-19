@@ -58,11 +58,11 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{
-		if(!proc.mandatory<SXAddl_SXCCacheItem_SXDSxrmitmDisp>())
-		{
-			return false;
-		}
-		proc.repeated<Continue_SxaddlSxString>(0, 0);
+		//if(!proc.mandatory<SXAddl_SXCCacheItem_SXDSxrmitmDisp>())
+		//{
+		//	return false;
+		//}
+		//proc.repeated<Continue_SxaddlSxString>(0, 0);
 		return true;
 	};
 };
@@ -79,11 +79,11 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{
-		if(!proc.mandatory<SXAddl_SXCCacheItem_SXDItmMpMapCount>())
-		{
-			return false;
-		}
-		proc.mandatory<SXAddl_SXCCacheItem_SXDItmMpropMap>();
+		//if(!proc.mandatory<SXAddl_SXCCacheItem_SXDItmMpMapCount>())
+		//{
+		//	return false;
+		//}
+		//proc.mandatory<SXAddl_SXCCacheItem_SXDItmMpropMap>();
 		return true;
 	};
 };
@@ -99,12 +99,12 @@ BaseObjectPtr SXADDLCACHEITEM::clone()
 //                   *(SXAddl_SXCCacheItem_SXDItmMpMapCount SXAddl_SXCCacheItem_SXDItmMpropMap)
 const bool SXADDLCACHEITEM::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory<SXAddl_SXCCacheItem_SXDId>())
-	{
-		return false;
-	}
-	proc.optional<Parenthesis_SXADDLCACHEITEM_1>();
-	proc.repeated<Parenthesis_SXADDLCACHEITEM_2>(0, 0);
+	//if(!proc.mandatory<SXAddl_SXCCacheItem_SXDId>())
+	//{
+	//	return false;
+	//}
+	//proc.optional<Parenthesis_SXADDLCACHEITEM_1>();
+	//proc.repeated<Parenthesis_SXADDLCACHEITEM_2>(0, 0);
 
 	return true;
 }

@@ -32,6 +32,7 @@
 #pragma once
 
 #include <Logic/CompositeObject.h>
+#include <unordered_map>
 
 namespace XLS
 {;
@@ -75,17 +76,20 @@ public:
 	BaseObjectPtr				m_OBJECTSCHART;
 	std::vector<BaseObjectPtr>	m_arWINDOW;
 	std::vector<BaseObjectPtr>	m_arCUSTOMVIEW;
+	BaseObjectPtr				m_Units;
+	BaseObjectPtr				m_ExternSheet;
+	BaseObjectPtr				m_SXViewLink;
+	BaseObjectPtr				m_PivotChartBits;
+	BaseObjectPtr				m_SBaseRef;
+
 private:
 
 	void recalc(CHARTFORMATS*	charts);
 	void recalc(SERIESDATA*		data);
 
-	std::map<int, std::vector<int>> m_mapTypeChart;//тут нужен несортированый .. пока оставим этот
-
+	std::unordered_map<int, std::vector<int>> m_mapTypeChart;
 
 	GlobalWorkbookInfoPtr pGlobalWorkbookInfo;
-
-
 };
 
 } // namespace XLS

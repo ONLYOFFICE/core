@@ -61,15 +61,15 @@ SXADDLGRPLEVEL = SXAddl_SXCGrpLevel_SXDId *Continue_SxaddlSxString SXAddl_SXCGrp
 */
 const bool SXADDLGRPLEVEL::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory<SXAddl_SXCGrpLevel_SXDId>())
-	{
-		return false;
-	}
-	proc.repeated<Continue_SxaddlSxString>(0, 0);
-	proc.mandatory<SXAddl_SXCGrpLevel_SXDGrpLevelInfo>();
-	proc.repeated<SXADDLGROUP>(0, 0);
-	proc.repeated<UNKNOWNFRT>(0, 0);
-	proc.mandatory<SXAddl_SXCGrpLevel_SXDEnd>();
+	//if(!proc.mandatory<SXAddl_SXCGrpLevel_SXDId>())
+	//{
+	//	return false;
+	//}
+	//proc.repeated<Continue_SxaddlSxString>(0, 0);
+	//proc.mandatory<SXAddl_SXCGrpLevel_SXDGrpLevelInfo>();
+	//proc.repeated<SXADDLGROUP>(0, 0);
+	//proc.repeated<UNKNOWNFRT>(0, 0);
+	//proc.mandatory<SXAddl_SXCGrpLevel_SXDEnd>();
 
 	return true;
 }

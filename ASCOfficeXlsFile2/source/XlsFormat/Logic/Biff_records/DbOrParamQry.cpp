@@ -35,10 +35,12 @@
 namespace XLS
 {
 
-DbOrParamQry::DbOrParamQry()
+DbOrParamQry::DbOrParamQry(int typeRecord_)
 {
-}
+	typeRecord = typeRecord_;
 
+	param.pbt = query.dbt = 0;
+}
 
 DbOrParamQry::~DbOrParamQry()
 {
@@ -52,10 +54,32 @@ BaseObjectPtr DbOrParamQry::clone()
 
 void DbOrParamQry::readFields(CFRecord& record)
 {
-#pragma message("####################### DbOrParamQry record is not implemented")
-	Log::error("DbOrParamQry record is not implemented.");
+	size_t size = record.getDataSize() - record.getRdPtr();
 
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	if (typeRecord == 1)
+	{
+		unsigned short	flags;
+
+		record >> param.wTypeSql >> flags >> param.grbit >> param.fVal;
+		
+		param.pbt				= GETBITS(flags, 0, 1);
+		param.fNonDefaultName	= GETBIT(flags, 2);
+
+	}
+	else
+	{
+		unsigned short	flags;
+
+		record >> flags >> query.cparams >> query.cstQuery >> query.cstWebPost >> query.cstSQLSav >> query.cstOdbcConn;	
+			
+		query.dbt				= GETBITS(flags, 0, 2);
+		query.fOdbcConn			= GETBIT(flags, 3);
+		query.fSql				= GETBIT(flags, 4);
+		query.fSqlSav			= GETBIT(flags, 5);
+		query.fWeb				= GETBIT(flags, 6);
+		query.fSavePwd			= GETBIT(flags, 7);
+		query.fTablesOnlyHTML	= GETBIT(flags, 8);	
+	}
 }
 
 } // namespace XLS

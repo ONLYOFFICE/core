@@ -114,8 +114,12 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 	cellStyleXfs_count		= 0;
 	cellStyleDxfs_count		= 0;
 
+	connectionId			= 0;
+
 	defaultDigitFontSize = std::pair<float, float>(0, 0);
 	applicationFonts		= NULL;
+
+	idPivotCache			= 0;
 }
 
 GlobalWorkbookInfo::~GlobalWorkbookInfo()
@@ -161,12 +165,12 @@ const size_t GlobalWorkbookInfo::RegisterFillId(const FillInfo& fill)
 
 void GlobalWorkbookInfo::RegisterFontColorId (int id, const FillInfoExt & font_color)
 {
-	fonts_color_ext.insert(std::pair<int, FillInfoExt>(id, font_color));
+	fonts_color_ext.insert(std::make_pair(id, font_color));
 }
 
 void GlobalWorkbookInfo::RegisterPaletteColor(int id, const std::wstring & rgb)
 {
-	colors_palette.insert(std::pair<int, std::wstring>(id, rgb));
+	colors_palette.insert(std::make_pair(id, rgb));
 }
 
 unsigned int GlobalWorkbookInfo::GenerateAXESId()

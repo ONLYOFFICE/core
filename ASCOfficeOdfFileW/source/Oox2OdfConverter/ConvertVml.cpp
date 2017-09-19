@@ -593,6 +593,14 @@ void OoxConverter::convert(OOX::Vml::CRoundRect	*vml_roundrect)
 	
 	OOX::Vml::CVmlCommonElements *vml_common = dynamic_cast<OOX::Vml::CVmlCommonElements *>(vml_roundrect);
 	convert(vml_common);
+
+	double arc_size = vml_roundrect->m_oArcSize.GetValue();
+
+	if (arc_size > 0)
+	{
+		odf_types::length corner = odf_types::length(arc_size * 20, odf_types::length::cm);
+		odf_context()->drawing_context()->set_corner_radius(corner);
+	}
 }
 
 void OoxConverter::convert(OOX::Vml::CCurve	*vml_curve)

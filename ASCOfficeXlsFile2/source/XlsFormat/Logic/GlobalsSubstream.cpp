@@ -325,7 +325,10 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					count--;
 				}
 			}break;
-			case rt_DocRoute:			proc.repeated<DOCROUTE>(0, 0);				break;
+			case rt_DocRoute:
+			{
+				count = proc.repeated<DOCROUTE>(0, 0);
+			}break;
 			case rt_UserBView:
 			{
 				count = proc.repeated<UserBView>(0, 0);
@@ -488,7 +491,7 @@ void GlobalsSubstream::LoadHFPicture()
 	if (m_arHFPicture.empty()) return;
 
 	int current_size_hf = 0, j = 0;
-	for ( int i = 0; i < m_arHFPicture.size(); i++)
+	for ( size_t i = 0; i < m_arHFPicture.size(); i++)
 	{
 		HFPicture* hf = dynamic_cast<HFPicture*>(m_arHFPicture[i].get());
 		if ((hf) && (hf->recordDrawingGroup))

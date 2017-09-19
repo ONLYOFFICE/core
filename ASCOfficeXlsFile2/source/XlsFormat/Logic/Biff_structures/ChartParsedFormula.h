@@ -37,8 +37,6 @@
 namespace XLS
 {
 
-class CFRecord;
-
 class ChartParsedFormula : public ParsedFormula
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(ChartParsedFormula)
@@ -47,8 +45,6 @@ public:
 
 	BiffStructurePtr clone();
 	void load(CFRecord& record);
-	
-
 
 	std::vector<CellRangeRef>	cell_ranges;
 

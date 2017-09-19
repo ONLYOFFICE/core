@@ -99,8 +99,9 @@ namespace DocFileFormat
         void writeTextStart		( const std::wstring& textType, bool preserve_space);
 		void writeTextEnd		( const std::wstring& textType );
 		
-	// Searches for bookmarks in the list of characters.
 		std::vector<int> searchBookmarks( std::vector<wchar_t>* chars, int initialCp );
+		std::vector<int> searchAnnot(std::vector<wchar_t>* chars, int initialCp);
+
 		ParagraphPropertyExceptions* findValidPapx( int fc );
 	// Splits a list of characters into several lists
 		std::list<std::vector<wchar_t> >* splitCharList( std::vector<wchar_t>* chars, std::vector<int>* splitIndices );
@@ -121,6 +122,10 @@ namespace DocFileFormat
 		bool writeBookmarks		( int cp );
 		bool writeBookmarkStart	( short id );
 		bool writeBookmarkEnd	( short id );
+
+		bool writeAnnotations	( int cp );
+		bool writeAnnotationStart( short id );
+		bool writeAnnotationEnd	( short id );
 	// Checks if the CHPX is special
 		bool isSpecial( CharacterPropertyExceptions* chpx );
 	// Finds the SEPX that is valid for the given CP.

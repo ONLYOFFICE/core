@@ -353,6 +353,23 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_records/XFCRC.cpp \
     ../XlsFormat/Logic/Biff_records/XFExt.cpp \
     ../XlsFormat/Logic/Biff_records/YMult.cpp \
+    ../XlsFormat/Logic/Biff_records/SxBool.cpp\
+    ../XlsFormat/Logic/Biff_records/SXDB.cpp\
+    ../XlsFormat/Logic/Biff_records/SXDBB.cpp \
+    ../XlsFormat/Logic/Biff_records/SXDBEx.cpp \
+    ../XlsFormat/Logic/Biff_records/SXDtr.cpp \
+    ../XlsFormat/Logic/Biff_records/SxErr.cpp \
+    ../XlsFormat/Logic/Biff_records/SXFDB.cpp \
+    ../XlsFormat/Logic/Biff_records/SXFDBType.cpp \
+    ../XlsFormat/Logic/Biff_records/SxFmla.cpp \
+    ../XlsFormat/Logic/Biff_records/SXFormula.cpp \
+    ../XlsFormat/Logic/Biff_records/SXInt.cpp \
+    ../XlsFormat/Logic/Biff_records/SxName.cpp \
+    ../XlsFormat/Logic/Biff_records/SxNil.cpp \
+    ../XlsFormat/Logic/Biff_records/SXNum.cpp \
+    ../XlsFormat/Logic/Biff_records/SXPair.cpp \
+    ../XlsFormat/Logic/Biff_records/SXRng.cpp \
+    ../XlsFormat/Logic/Biff_records/SxIsxoper.cpp \
     ../XlsFormat/Logic/Biff_structures/AddinUdf.cpp \
     ../XlsFormat/Logic/Biff_structures/AF12Criteria.cpp \
     ../XlsFormat/Logic/Biff_structures/AFDOper.cpp \
@@ -585,6 +602,18 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_structures/SxAxis.cpp \
     ../XlsFormat/Logic/Biff_structures/SXVIFlags.cpp \
     ../XlsFormat/Logic/Biff_structures/HiddenMemberSet.cpp \
+    ../XlsFormat/Logic/Biff_structures/ConnGrbitDbtAdo.cpp \
+    ../XlsFormat/Logic/Biff_structures/ConnGrbitDbtOledb.cpp \
+    ../XlsFormat/Logic/Biff_structures/ConnGrbitDbtWeb.cpp \
+    ../XlsFormat/Logic/Biff_structures/DConnConnectionOleDb.cpp \
+    ../XlsFormat/Logic/Biff_structures/DConnConnectionWeb.cpp \
+    ../XlsFormat/Logic/Biff_structures/DConnId.cpp \
+    ../XlsFormat/Logic/Biff_structures/DConnParamBindingValType.cpp \
+    ../XlsFormat/Logic/Biff_structures/DConnParameter.cpp \
+    ../XlsFormat/Logic/Biff_structures/DConnStringSequence.cpp \
+    ../XlsFormat/Logic/Biff_structures/TxtWf.cpp \
+    ../XlsFormat/Logic/Biff_structures/Xnum.cpp \
+    ../XlsFormat/Logic/Biff_structures/PivotParsedFormula.cpp \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSOCR.cpp \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSOSHADECOLOR.cpp \
     ../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtBlip.cpp \
@@ -739,6 +768,13 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_unions/UNKNOWNFRT.cpp \
     ../XlsFormat/Logic/Biff_unions/WINDOW.cpp \
     ../XlsFormat/Logic/Biff_unions/XFS.cpp \
+    ../XlsFormat/Logic/Biff_unions/DBB.cpp \
+    ../XlsFormat/Logic/Biff_unions/FDB.cpp \
+    ../XlsFormat/Logic/Biff_unions/PIVOTCACHE.cpp \
+    ../XlsFormat/Logic/Biff_unions/SXFMLA_bu.cpp \
+    ../XlsFormat/Logic/Biff_unions/SXFORMULA_bu.cpp \
+    ../XlsFormat/Logic/Biff_unions/SXOPER.cpp \
+    ../XlsFormat/Logic/Biff_unions/SXRANGE.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/Property_Structures.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertyFactory.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySet.cpp \
@@ -761,6 +797,8 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_structures/AFDOperXNum.cpp \
     ../XlsFormat/Logic/Biff_unions/IMDATAOBJECT.cpp \
     ../XlsFormat/Logic/Biff_records/IMDATA.cpp \
+    ../XlsFormat/Logic/Biff_structures/PBT.cpp \
+    ../XlsFormat/Logic/Biff_structures/FontInfo.cpp \
     ../XlsFormat/Logic/Biff_structures/CFDatabar.cpp \
     ../XlsFormat/Logic/Biff_structures/CFGradient.cpp
 }
@@ -802,6 +840,7 @@ SOURCES +=  \
     ../XlsXlsxConverter/xlsx_tablecontext.cpp \
     ../XlsXlsxConverter/xlsx_textcontext.cpp \
     ../XlsXlsxConverter/xlsx_chart_context.cpp \
+    ../XlsXlsxConverter/xlsx_pivots_context.cpp \
     ../XlsXlsxConverter/xlsx_comments.cpp \
     ../XlsXlsxConverter/xlsx_comments_context.cpp \
 
@@ -1370,6 +1409,19 @@ HEADERS +=  \
     ../XlsFormat/Logic/Biff_structures/SxAxis.h \
     ../XlsFormat/Logic/Biff_structures/SXVIFlags.h \
     ../XlsFormat/Logic/Biff_structures/HiddenMemberSet.h \
+    ../XlsFormat/Logic/Biff_structures/ConnGrbitDbtAdo.h \
+    ../XlsFormat/Logic/Biff_structures/ConnGrbitDbtOledb.h \
+    ../XlsFormat/Logic/Biff_structures/ConnGrbitDbtWeb.h \
+    ../XlsFormat/Logic/Biff_structures/DConnConnectionOleDb.h \
+    ../XlsFormat/Logic/Biff_structures/DConnConnectionWeb.h \
+    ../XlsFormat/Logic/Biff_structures/DConnId.h \
+    ../XlsFormat/Logic/Biff_structures/DConnParamBindingValType.h \
+    ../XlsFormat/Logic/Biff_structures/DConnParameter.h \
+    ../XlsFormat/Logic/Biff_structures/DConnStringSequence.h \
+    ../XlsFormat/Logic/Biff_structures/TxtWf.h \
+    ../XlsFormat/Logic/Biff_structures/Xnum.h \
+    ../XlsFormat/Logic/Biff_structures/PBT.h \
+    ../XlsFormat/Logic/Biff_structures/FontInfo.h \
     ../XlsFormat/Logic/Biff_structures/ODRAW/IMsoArray.h \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSOCR.h \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSO_enums.h \
@@ -1546,6 +1598,7 @@ HEADERS +=  \
     ../XlsXlsxConverter/xlsx_conversion_context.h \
     ../XlsXlsxConverter/xlsx_drawing_context.h \
     ../XlsXlsxConverter/xlsx_drawings.h \
+    ../XlsXlsxConverter/xlsx_pivots_context.cpp \
     ../XlsXlsxConverter/xlsx_hyperlinks.h \
     ../XlsXlsxConverter/xlsx_output_xml.h \
     ../XlsXlsxConverter/xlsx_package.h \

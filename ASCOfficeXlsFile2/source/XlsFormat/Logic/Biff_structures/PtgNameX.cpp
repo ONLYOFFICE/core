@@ -81,8 +81,7 @@ void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 	RevNamePtr tab_id;
 	if(!extra_data.empty() && (tab_id = boost::dynamic_pointer_cast<RevName>(extra_data.front())))
 	{
-#pragma message("####################### PtgNameX struct for revisions is not implemented")
-		Log::error("PtgNameX struct for revisions is not implemented.");
+		Log::error("PtgNameX struct for revisions is not assemble.");
 		ptg_stack.push(L"#REF!");
 		extra_data.pop();
 		return;
@@ -113,8 +112,7 @@ void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 	}
 	else
 	{
-#pragma message("####################### PtgNameX struct is not implemented")
- 		Log::warning("PtgNameX structure is not implemented.");
+ 		Log::warning("PtgNameX structure is not assemble.");
 		//ptg_stack.push(L"#UNDEFINED_EXTERN_NAME(" + STR::int2wstr(nameindex) + L")!");
 		ptg_stack.push(L""); // This would let us to continue without an error
 	}

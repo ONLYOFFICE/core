@@ -411,9 +411,9 @@ void number_text::oox_convert(oox::num_format_context & Context)
 {
 	std::wstringstream strm;
 
-    BOOST_FOREACH(const office_element_ptr & elm, text_)
+    for (size_t i = 0; i < text_.size(); i++)
     {
-        elm->text_to_stream(strm);
+        text_[i]->text_to_stream(strm);
     }
 
 	std::wstring text_ = strm.str();

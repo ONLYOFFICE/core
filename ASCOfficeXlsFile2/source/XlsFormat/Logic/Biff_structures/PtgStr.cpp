@@ -71,6 +71,10 @@ void PtgStr::loadFields(CFRecord& record)
 	{
 		string_ = string_.substr(1, string_.length() - 2);
 	}
+	else if (pos1 > 0)
+	{
+		boost::algorithm::replace_all(string_, L"\"", L"\"\""); 
+	}
 
 	string_ = L"\"" + string_ + L"\"";
 }

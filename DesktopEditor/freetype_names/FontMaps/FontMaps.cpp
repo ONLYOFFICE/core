@@ -32,34 +32,35 @@
 // FontMaps.cpp : Defines the entry point for the console application.
 //
 
-#include "stdafx.h"
-#include "WinFont.h"
-#include "File.h"
+#include "../../common/File.h"
+#include <algorithm>
+#include "../../fontengine/ApplicationFonts.h"
+#include "../../common/StringBuilder.h"
 
 class CFontInfoJS
 {
 public:		
-	CString	m_sName;
+    std::wstring	m_sName;
 
 	LONG	m_lIndexR;
 	LONG	m_lFaceIndexR;
-	CAtlArray<CString> namesR;
+    std::vector<std::wstring> namesR;
 
 	LONG	m_lIndexI;
 	LONG	m_lFaceIndexI;
-	CAtlArray<CString> namesI;
+    std::vector<std::wstring> namesI;
 
 	LONG	m_lIndexB;
 	LONG	m_lFaceIndexB;
-	CAtlArray<CString> namesB;
+    std::vector<std::wstring> namesB;
 
 	LONG	m_lIndexBI;
 	LONG	m_lFaceIndexBI;
-	CAtlArray<CString> namesBI;
+    std::vector<std::wstring> namesBI;
 
 	CFontInfoJS()
 	{
-		m_sName			= _T("");
+        m_sName			= L"";
 
 		m_lIndexR		= -1;
 		m_lFaceIndexR	= -1;
@@ -90,119 +91,105 @@ public:
 		m_lFaceIndexB	= oSrc.m_lFaceIndexB;
 		m_lFaceIndexBI	= oSrc.m_lFaceIndexBI;
 
-		namesR.RemoveAll();
-		namesR.Copy(oSrc.namesR);
+        namesR.clear();
+        namesR = oSrc.namesR;
 
-		namesI.RemoveAll();
-		namesI.Copy(oSrc.namesI);
+        namesI.clear();
+        namesI = oSrc.namesI;
 
-		namesB.RemoveAll();
-		namesB.Copy(oSrc.namesB);
+        namesB.clear();
+        namesB = oSrc.namesB;
 
-		namesBI.RemoveAll();
-		namesBI.Copy(oSrc.namesBI);
+        namesBI.clear();
+        namesBI = oSrc.namesBI;
 
 		return *this;
 	}
 };
 
-int _tmain(int argc, _TCHAR* argv[])
+int main(int argc, char* argv[])
 {
-	FT_Library pLibrary = NULL;
-					
-	//CString strFolder = _T("\\\\mediaserver\\Exchange\\Korshul\\Fonts");
-	CString strFolder = _T("X:\\AVS\\Sources\\TeamlabOffice\\trunk\\ServerComponents\\DesktopEditor\\freetype_names\\FontsDictionaryFiles");
-	CWinFontList* m_pList = NULL;
+    CApplicationFonts oFonts;
+    oFonts.InitializeFromFolder(L"D:\\onlyoffice_trunk\\fonts\\all");
+    //oFonts.Initialize();
 
-	if (!FT_Init_FreeType( &pLibrary ))
-	{
-		if (_T("") == strFolder)
-			m_pList = new CWinFontList(pLibrary);
-		else
-			m_pList = new CWinFontList(pLibrary, strFolder);
+    std::wstring strFontDictionaryPath = L"D:\\GIT\\core\\DesktopEditor\\freetype_names\\FontMaps\\FontDictionary.h";
 
-		FT_Done_FreeType( pLibrary );
-	}
-
-	CString strFontDictionaryPath = _T("X:\\AVS\\Sources\\TeamlabOffice\\trunk\\ServerComponents\\DesktopEditor\\freetype_names\\FontMaps\\FontDictionary.h");
-
-	int nCount = m_pList->GetFonts()->GetLength();
+    int nCount = oFonts.GetList()->GetFonts()->GetCount();
 
 	// теперь строим массив всех шрифтов по имени
-	CAtlMap<CString, CFontInfoJS> mapFonts;
-	CAtlMap<CString, CFontInfoJS> mapFontsUnicodes;
-	CAtlArray<CString> arrFonts;
-	CAtlArray<CString> arrFontsUnicodes;
+    std::map<std::wstring, CFontInfoJS> mapFonts;
+    std::map<std::wstring, CFontInfoJS> mapFontsUnicodes;
+    std::vector<std::wstring> arrFonts;
+    std::vector<std::wstring> arrFontsUnicodes;
 
 	int nError = 0;
 
-	CAtlMap<CString, BOOL> mapMainAscii;
+    std::map<std::wstring, bool> mapMainAscii;
 	for (int i = 0; i < nCount; ++i)
 	{
-		CWinFontInfo* pInfo = (CWinFontInfo*)m_pList->GetByIndex(i);
-		CString strPath = (CString)pInfo->m_wsFontPath;
-		CString strName = (CString)pInfo->m_wsFontName;
+        CFontInfo* pInfo = oFonts.GetList()->GetFonts()->operator [](i);
+        std::wstring strPath = pInfo->m_wsFontPath;
+        std::wstring strName = pInfo->m_wsFontName;
 
 		LONG lFontIndex = 0;
 		LONG lFaceIndex = 0;
 
-		//CAtlMap<CString, LONG>::CPair* pPairFontFiles = mapFontFiles.Lookup(strPath);
-		//lFontIndex = pPairFontFiles->m_value;
 		lFontIndex = (LONG)i;
 
 		if (pInfo->m_lIndex >= 0)
 			lFaceIndex = pInfo->m_lIndex;
 
-		mapMainAscii.SetAt(pInfo->m_wsFontName, TRUE);
+        mapMainAscii.insert(std::pair<std::wstring, bool>(pInfo->m_wsFontName, true));
 
-		CAtlMap<CString, CFontInfoJS>::CPair* pPair = mapFonts.Lookup(pInfo->m_wsFontName);
-		if (NULL != pPair)
+        std::map<std::wstring, CFontInfoJS>::iterator pPair = mapFonts.find(pInfo->m_wsFontName);
+        if (mapFonts.end() != pPair)
 		{
-			pPair->m_value.m_sName = pInfo->m_wsFontName;
+            pPair->second.m_sName = pInfo->m_wsFontName;
 
 			if (pInfo->m_bBold && pInfo->m_bItalic)
 			{
-				if (-1 != pPair->m_value.m_lIndexBI)
+                if (-1 != pPair->second.m_lIndexBI)
 					nError++;
 
-				pPair->m_value.m_lIndexBI = lFontIndex;
-				pPair->m_value.m_lFaceIndexBI = lFaceIndex;
+                pPair->second.m_lIndexBI = lFontIndex;
+                pPair->second.m_lFaceIndexBI = lFaceIndex;
 
-				pPair->m_value.namesBI.RemoveAll();
-				pPair->m_value.namesBI.Copy(pInfo->names);
+                pPair->second.namesBI.clear();
+                pPair->second.namesBI = pInfo->names;
 			}
 			else if (pInfo->m_bBold)
 			{
-				if (-1 != pPair->m_value.m_lIndexB)
+                if (-1 != pPair->second.m_lIndexB)
 					nError++;
 
-				pPair->m_value.m_lIndexB = lFontIndex;
-				pPair->m_value.m_lFaceIndexB = lFaceIndex;
+                pPair->second.m_lIndexB = lFontIndex;
+                pPair->second.m_lFaceIndexB = lFaceIndex;
 
-				pPair->m_value.namesB.RemoveAll();
-				pPair->m_value.namesB.Copy(pInfo->names);
+                pPair->second.namesB.clear();
+                pPair->second.namesB = pInfo->names;
 			}
 			else if (pInfo->m_bItalic)
 			{
-				if (-1 != pPair->m_value.m_lIndexI)
+                if (-1 != pPair->second.m_lIndexI)
 					nError++;
 
-				pPair->m_value.m_lIndexI = lFontIndex;
-				pPair->m_value.m_lFaceIndexI = lFaceIndex;
+                pPair->second.m_lIndexI = lFontIndex;
+                pPair->second.m_lFaceIndexI = lFaceIndex;
 
-				pPair->m_value.namesI.RemoveAll();
-				pPair->m_value.namesI.Copy(pInfo->names);
+                pPair->second.namesI.clear();
+                pPair->second.namesI = pInfo->names;
 			}
 			else
 			{
-				if (-1 != pPair->m_value.m_lIndexR)
+                if (-1 != pPair->second.m_lIndexR)
 					nError++;
 
-				pPair->m_value.m_lIndexR = lFontIndex;
-				pPair->m_value.m_lFaceIndexR = lFaceIndex;
+                pPair->second.m_lIndexR = lFontIndex;
+                pPair->second.m_lFaceIndexR = lFaceIndex;
 
-				pPair->m_value.namesR.RemoveAll();
-				pPair->m_value.namesR.Copy(pInfo->names);
+                pPair->second.namesR.clear();
+                pPair->second.namesR = pInfo->names;
 			}
 		}
 		else
@@ -216,70 +203,68 @@ int _tmain(int argc, _TCHAR* argv[])
 				fontInfo.m_lIndexBI = lFontIndex;
 				fontInfo.m_lFaceIndexBI = lFaceIndex;
 
-				fontInfo.namesBI.RemoveAll();
-				fontInfo.namesBI.Copy(pInfo->names);
+                fontInfo.namesBI.clear();
+                fontInfo.namesBI = pInfo->names;
 			}
 			else if (pInfo->m_bBold)
 			{
 				fontInfo.m_lIndexB = lFontIndex;
 				fontInfo.m_lFaceIndexB = lFaceIndex;
 
-				fontInfo.namesB.RemoveAll();
-				fontInfo.namesB.Copy(pInfo->names);
+                fontInfo.namesB.clear();
+                fontInfo.namesB = pInfo->names;
 			}
 			else if (pInfo->m_bItalic)
 			{
 				fontInfo.m_lIndexI = lFontIndex;
 				fontInfo.m_lFaceIndexI = lFaceIndex;
 
-				fontInfo.namesI.RemoveAll();
-				fontInfo.namesI.Copy(pInfo->names);
+                fontInfo.namesI.clear();
+                fontInfo.namesI = pInfo->names;
 			}
 			else
 			{
 				fontInfo.m_lIndexR = lFontIndex;
 				fontInfo.m_lFaceIndexR = lFaceIndex;
 
-				fontInfo.namesR.RemoveAll();
-				fontInfo.namesR.Copy(pInfo->names);
+                fontInfo.namesR.clear();
+                fontInfo.namesR = pInfo->names;
 			}
 
-			mapFonts.SetAt(fontInfo.m_sName, fontInfo);
-			arrFonts.Add(fontInfo.m_sName);
+            mapFonts.insert(std::pair<std::wstring, CFontInfoJS>(fontInfo.m_sName, fontInfo));
+            arrFonts.push_back(fontInfo.m_sName);
 		}
 	}
 
 	// additional names
 	for (int i = 0; i < nCount; ++i)
 	{
-		CWinFontInfo* pInfo = (CWinFontInfo*)m_pList->GetByIndex(i);
-		CString strPath = (CString)pInfo->m_wsFontPath;
-		CString strName = (CString)pInfo->m_wsFontName;
+        CFontInfo* pInfo = oFonts.GetList()->GetFonts()->operator [](i);
+        std::wstring strPath = pInfo->m_wsFontPath;
+        std::wstring strName = pInfo->m_wsFontName;
 
 		LONG lFontIndex = 0;
 		LONG lFaceIndex = 0;
 
-		//CAtlMap<CString, LONG>::CPair* pPairFontFiles = mapFontFiles.Lookup(strPath);
-		//lFontIndex = pPairFontFiles->m_value;
 		lFontIndex = (LONG)i;
 
 		if (pInfo->m_lIndex >= 0)
 			lFaceIndex = pInfo->m_lIndex;
 
-		int nNamesAdditional = pInfo->names.GetCount();
+        int nNamesAdditional = pInfo->names.size();
 		for (int j = 0; j < nNamesAdditional; ++j)
 		{
-			CString strNameA = pInfo->names[j];
+            std::wstring strNameA = pInfo->names[j];
 
-			CAtlMap<CString, BOOL>::CPair* pPairMain = mapMainAscii.Lookup(strNameA);
-			if (NULL != pPairMain)
+            std::map<std::wstring, bool>::iterator pPairMain = mapMainAscii.find(strNameA);
+            if (mapMainAscii.end() != pPairMain)
 				continue;
 
-			WCHAR* pBufferA = strNameA.GetBuffer();
-			int len = strNameA.GetLength();
+            const wchar_t* pBufferA = strNameA.c_str();
+            int len = strNameA.length();
 			
-			CAtlMap<CString, CFontInfoJS>* pMap = &mapFonts;
-			CAtlArray<CString>* pArrFonts = &arrFonts;
+            std::map<std::wstring, CFontInfoJS>* pMap = &mapFonts;
+            std::vector<std::wstring>* pArrFonts = &arrFonts;
 
 			for (int k = 0; k < len; ++k)
 			{
@@ -291,54 +276,54 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 			}
 			
-			CAtlMap<CString, CFontInfoJS>::CPair* pPair = pMap->Lookup(strNameA);
-			if (NULL != pPair)
+            std::map<std::wstring, CFontInfoJS>::iterator pPair = pMap->find(strNameA);
+            if (pMap->end() != pPair)
 			{
-				pPair->m_value.m_sName = strNameA;
+                pPair->second.m_sName = strNameA;
 
 				if (pInfo->m_bBold && pInfo->m_bItalic)
 				{
-					if (-1 != pPair->m_value.m_lIndexBI)
+                    if (-1 != pPair->second.m_lIndexBI)
 						nError++;
 
-					pPair->m_value.m_lIndexBI = lFontIndex;
-					pPair->m_value.m_lFaceIndexBI = lFaceIndex;
+                    pPair->second.m_lIndexBI = lFontIndex;
+                    pPair->second.m_lFaceIndexBI = lFaceIndex;
 
-					pPair->m_value.namesBI.RemoveAll();
-					pPair->m_value.namesBI.Copy(pInfo->names);
+                    pPair->second.namesBI.clear();
+                    pPair->second.namesBI = pInfo->names;
 				}
 				else if (pInfo->m_bBold)
 				{
-					if (-1 != pPair->m_value.m_lIndexB)
+                    if (-1 != pPair->second.m_lIndexB)
 						nError++;
 
-					pPair->m_value.m_lIndexB = lFontIndex;
-					pPair->m_value.m_lFaceIndexB = lFaceIndex;
+                    pPair->second.m_lIndexB = lFontIndex;
+                    pPair->second.m_lFaceIndexB = lFaceIndex;
 
-					pPair->m_value.namesB.RemoveAll();
-					pPair->m_value.namesB.Copy(pInfo->names);
+                    pPair->second.namesB.clear();
+                    pPair->second.namesB = pInfo->names;
 				}
 				else if (pInfo->m_bItalic)
 				{
-					if (-1 != pPair->m_value.m_lIndexI)
+                    if (-1 != pPair->second.m_lIndexI)
 						nError++;
 
-					pPair->m_value.m_lIndexI = lFontIndex;
-					pPair->m_value.m_lFaceIndexI = lFaceIndex;
+                    pPair->second.m_lIndexI = lFontIndex;
+                    pPair->second.m_lFaceIndexI = lFaceIndex;
 
-					pPair->m_value.namesI.RemoveAll();
-					pPair->m_value.namesI.Copy(pInfo->names);
+                    pPair->second.namesI.clear();
+                    pPair->second.namesI = pInfo->names;
 				}
 				else
 				{
-					if (-1 != pPair->m_value.m_lIndexR)
+                    if (-1 != pPair->second.m_lIndexR)
 						nError++;
 
-					pPair->m_value.m_lIndexR = lFontIndex;
-					pPair->m_value.m_lFaceIndexR = lFaceIndex;
+                    pPair->second.m_lIndexR = lFontIndex;
+                    pPair->second.m_lFaceIndexR = lFaceIndex;
 
-					pPair->m_value.namesR.RemoveAll();
-					pPair->m_value.namesR.Copy(pInfo->names);
+                    pPair->second.namesR.clear();
+                    pPair->second.namesR = pInfo->names;
 				}
 			}
 			else
@@ -352,137 +337,93 @@ int _tmain(int argc, _TCHAR* argv[])
 					fontInfo.m_lIndexBI = lFontIndex;
 					fontInfo.m_lFaceIndexBI = lFaceIndex;
 
-					fontInfo.namesBI.RemoveAll();
-					fontInfo.namesBI.Copy(pInfo->names);
+                    fontInfo.namesBI.clear();
+                    fontInfo.namesBI = pInfo->names;
 				}
 				else if (pInfo->m_bBold)
 				{
 					fontInfo.m_lIndexB = lFontIndex;
 					fontInfo.m_lFaceIndexB = lFaceIndex;
 
-					fontInfo.namesB.RemoveAll();
-					fontInfo.namesB.Copy(pInfo->names);
+                    fontInfo.namesB.clear();
+                    fontInfo.namesB = pInfo->names;
 				}
 				else if (pInfo->m_bItalic)
 				{
 					fontInfo.m_lIndexI = lFontIndex;
 					fontInfo.m_lFaceIndexI = lFaceIndex;
 
-					fontInfo.namesI.RemoveAll();
-					fontInfo.namesI.Copy(pInfo->names);
+                    fontInfo.namesI.clear();
+                    fontInfo.namesI = pInfo->names;
 				}
 				else
 				{
 					fontInfo.m_lIndexR = lFontIndex;
 					fontInfo.m_lFaceIndexR = lFaceIndex;
 
-					fontInfo.namesR.RemoveAll();
-					fontInfo.namesR.Copy(pInfo->names);
+                    fontInfo.namesR.clear();
+                    fontInfo.namesR = pInfo->names;
 				}
 
-				pMap->SetAt(fontInfo.m_sName, fontInfo);
-				pArrFonts->Add(fontInfo.m_sName);
+                pMap->insert(std::pair<std::wstring, CFontInfoJS>(fontInfo.m_sName, fontInfo));
+                pArrFonts->push_back(fontInfo.m_sName);
 			}
 		}
 	}
 	// -------------------------------------------
 
 	// теперь сортируем шрифты по имени ----------
-	size_t nCountFonts = arrFonts.GetCount();
-	for (size_t i = 0; i < nCountFonts; ++i)
-	{
-		for (size_t j = i + 1; j < nCountFonts; ++j)
-		{
-			if (arrFonts[i] > arrFonts[j])
-			{
-				CString temp = arrFonts[i];
-				arrFonts[i] = arrFonts[j];
-				arrFonts[j] = temp;
-			}
-		}
-	}
+    size_t nCountFonts = arrFonts.size();
+    std::sort(arrFonts.begin(), arrFonts.end());
 
-	size_t nCountFontsU = arrFontsUnicodes.GetCount();
-	for (size_t i = 0; i < nCountFontsU; ++i)
-	{
-		for (size_t j = i + 1; j < nCountFontsU; ++j)
-		{
-			if (arrFontsUnicodes[i] > arrFontsUnicodes[j])
-			{
-				CString temp = arrFontsUnicodes[i];
-				arrFontsUnicodes[i] = arrFontsUnicodes[j];
-				arrFontsUnicodes[j] = temp;
-			}
-		}
-	}
+    size_t nCountFontsU = arrFontsUnicodes.size();
+    std::sort(arrFontsUnicodes.begin(), arrFontsUnicodes.end());
 
-#if 0
-	CFile oFile;
-	oFile.CreateFile(_T("c:\\fonts.txt"));
-
-	BYTE bom[3];
-	bom[0] = 0xEF;
-	bom[1] = 0xBB;
-	bom[2] = 0xBF;
-	oFile.WriteFile((void*)&bom, 3);
-
-	CString strInfos = _T("");
-	
-	for (int index = 0; index < nCountFonts; ++index)
-	{
-		const CAtlMap<CString, CFontInfoJS>::CPair* pPair = mapFonts.Lookup(arrFonts[index]);
-
-		CString strFontInfo = pPair->m_value.m_sName + _T(": [");
-
-		for (size_t i = 0; i < pPair->m_value.namesR.GetCount(); ++i)
-		{
-			strFontInfo += pPair->m_value.namesR[i];
-			strFontInfo += _T(",");
-		}
-		strFontInfo += _T(";");
-
-		for (size_t i = 0; i < pPair->m_value.namesI.GetCount(); ++i)
-		{
-			strFontInfo += pPair->m_value.namesI[i];
-			strFontInfo += _T(",");
-		}
-		strFontInfo += _T(";");
-
-		for (size_t i = 0; i < pPair->m_value.namesB.GetCount(); ++i)
-		{
-			strFontInfo += pPair->m_value.namesB[i];
-			strFontInfo += _T(",");
-		}
-		strFontInfo += _T(";");
-
-		for (size_t i = 0; i < pPair->m_value.namesBI.GetCount(); ++i)
-		{
-			strFontInfo += pPair->m_value.namesBI[i];
-			strFontInfo += _T(",");
-		}
-		
-		strFontInfo += _T("]\n");
-
-		strInfos += strFontInfo;
-	}
-
-	oFile.WriteStringUTF8(strInfos);
-
-	oFile.CloseFile();
-#endif
-
-	CFile oFileW;
+    NSFile::CFileBinary oFileW;
 	oFileW.CreateFile(strFontDictionaryPath);
 
 	BYTE bom[3];
 	bom[0] = 0xEF;
 	bom[1] = 0xBB;
 	bom[2] = 0xBF;
-	oFileW.WriteFile((void*)&bom, 3);
+    oFileW.WriteFile(bom, 3);
 
-	CString strAll = _T("");
+    NSStringUtils::CStringBuilder oBuilder;
 
-	CString strConstant1 = _T("#ifndef _FONT_DICTIONARY_H\n\n\
+    oBuilder.WriteString(L"\
+/*\n\
+ * (c) Copyright Ascensio System SIA 2010-2017\n\
+ *\n\
+ * This program is a free software product. You can redistribute it and/or\n\
+ * modify it under the terms of the GNU Affero General Public License (AGPL)\n\
+ * version 3 as published by the Free Software Foundation. In accordance with\n\
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect\n\
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement\n\
+ * of any third-party rights.\n\
+ *\n\
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied\n\
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For\n\
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html\n\
+ *\n\
+ * You can contact Ascensio System SIA at Lubanas st. 125a-25, Riga, Latvia,\n\
+ * EU, LV-1021.\n\
+ *\n\
+ * The  interactive user interfaces in modified source and object code versions\n\
+ * of the Program must display Appropriate Legal Notices, as required under\n\
+ * Section 5 of the GNU AGPL version 3.\n\
+ *\n\
+ * Pursuant to Section 7(b) of the License you must retain the original Product\n\
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to\n\
+ * grant you any rights under trademark law for use of our trademarks.\n\
+ *\n\
+ * All the Product's GUI elements, including illustrations and icon sets, as\n\
+ * well as technical writing content are licensed under the terms of the\n\
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License\n\
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode\n\
+ *\n\
+ */\n");
+
+    oBuilder.WriteString(L"#ifndef _FONT_DICTIONARY_H\n\n\
 typedef struct FD_FontMapRec_\n\
 {\n\
 	const char*		m_name;\n\
@@ -502,40 +443,45 @@ typedef struct FD_FontMapRecW_\n\
 	int				m_index_bi;\n\
 } FD_FontMapRecW;\n\n");
 
-	strAll += strConstant1;
-
-	int nAsciiNamesCount = (int)arrFonts.GetCount();
-	CString sAsciiNames = _T("");
-	sAsciiNames.Format(_T("#define FONTS_DICT_ASCII_NAMES_COUNT %d\n"), nAsciiNamesCount);
-	sAsciiNames += _T("static const FD_FontMapRec FD_Ascii_Names[FONTS_DICT_ASCII_NAMES_COUNT] = \n{\n");
+    int nAsciiNamesCount = (int)arrFonts.size();
+    oBuilder.WriteString(L"#define FONTS_DICT_ASCII_NAMES_COUNT ");
+    oBuilder.AddInt(nAsciiNamesCount);
+    oBuilder.WriteString(L"\n");
+    oBuilder.WriteString(L"static const FD_FontMapRec FD_Ascii_Names[FONTS_DICT_ASCII_NAMES_COUNT] = \n{\n");
 
 	for (int k = 0; k < nAsciiNamesCount; ++k)
 	{
-		CAtlMap<CString, CFontInfoJS>::CPair* pPair = mapFonts.Lookup(arrFonts[k]);
+        std::map<std::wstring, CFontInfoJS>::iterator pPair = mapFonts.find(arrFonts[k]);
 
-		sAsciiNames += _T("\t{ \"");
-		sAsciiNames += pPair->m_value.m_sName;
-		sAsciiNames += _T("\", ");
-
-		CString strP = _T("");
+        oBuilder.WriteString(L"\t{ \"");
+        oBuilder.WriteString(pPair->second.m_sName);
+        oBuilder.WriteString(L"\", ");
 
 		if (k != (nAsciiNamesCount - 1))
 		{
-			strP.Format(_T("%d, %d, %d, %d },\n"), pPair->m_value.m_lIndexR,
-				pPair->m_value.m_lIndexI, pPair->m_value.m_lIndexB, pPair->m_value.m_lIndexBI);
+            oBuilder.AddInt(pPair->second.m_lIndexR);
+            oBuilder.WriteString(L", ");
+            oBuilder.AddInt(pPair->second.m_lIndexI);
+            oBuilder.WriteString(L", ");
+            oBuilder.AddInt(pPair->second.m_lIndexB);
+            oBuilder.WriteString(L", ");
+            oBuilder.AddInt(pPair->second.m_lIndexBI);
+            oBuilder.WriteString(L" },\n");
 		}
 		else
 		{
-			strP.Format(_T("%d, %d, %d, %d }\n"), pPair->m_value.m_lIndexR,
-				pPair->m_value.m_lIndexI, pPair->m_value.m_lIndexB, pPair->m_value.m_lIndexBI);
+            oBuilder.AddInt(pPair->second.m_lIndexR);
+            oBuilder.WriteString(L", ");
+            oBuilder.AddInt(pPair->second.m_lIndexI);
+            oBuilder.WriteString(L", ");
+            oBuilder.AddInt(pPair->second.m_lIndexB);
+            oBuilder.WriteString(L", ");
+            oBuilder.AddInt(pPair->second.m_lIndexBI);
+            oBuilder.WriteString(L" }\n");
 		}
-
-		sAsciiNames += strP;
 	}
 
-	sAsciiNames += _T("};\n\n");
-
-	strAll += sAsciiNames;
+    oBuilder.WriteString(L"};\n\n");
 
 	int _offsets[256];
 	for (int t = 0; t < 256; ++t)
@@ -544,7 +490,7 @@ typedef struct FD_FontMapRecW_\n\
 	int nCurChar = -1;
 	for (int k = 0; k < nAsciiNamesCount; ++k)
 	{
-		int nChar = (int)arrFonts[k].GetAt(0);
+        int nChar = (int)arrFonts[k].c_str()[0];
 		nChar = max(0, min(nChar, 255));
 
 		if (nChar != nCurChar)
@@ -554,66 +500,70 @@ typedef struct FD_FontMapRecW_\n\
 		nCurChar = nChar;
 	}
 
-	CString strAsciiOffsets = _T("static const int FD_Ascii_Names_Offsets[256] =\n{\n");
+    oBuilder.WriteString(L"static const int FD_Ascii_Names_Offsets[256] =\n{\n");
 
 	for (int k = 0; k < 256; ++k)
 	{
-		CString sMem = _T("");
-		sMem.Format(_T("%d"), _offsets[k]);
+        std::wstring sMem = std::to_wstring(_offsets[k]);
 
-		while (sMem.GetLength() < 4)
-			sMem = (_T(" ") + sMem);
+        while (sMem.length() < 4)
+            sMem = (L" " + sMem);
 		
 		if (0 == k % 32)
-			sMem = _T("\t") + sMem;
+            sMem = L"\t" + sMem;
 
 		if (k != 255)
-			sMem += _T(",");
+            sMem += L",";
 		
 		if (0 == (k + 1) % 32)
-			sMem += _T("\n");
+            sMem += L"\n";
 
-		strAsciiOffsets += sMem;
+        oBuilder.WriteString(sMem);
 	}
 
-	strAsciiOffsets += _T("};\n\n");
+    oBuilder.WriteString(L"};\n\n");
 
-	strAll += strAsciiOffsets;
-
-	int nUnicodeNamesCount = (int)arrFontsUnicodes.GetCount();
-	CString sUnicodeNames = _T("");
-	sUnicodeNames.Format(_T("#define FONTS_DICT_UNICODE_NAMES_COUNT %d\n"), nUnicodeNamesCount);
-	sUnicodeNames += _T("static const FD_FontMapRecW FD_Unicode_Names[FONTS_DICT_UNICODE_NAMES_COUNT] = \n{\n");
+    int nUnicodeNamesCount = (int)arrFontsUnicodes.size();
+    oBuilder.WriteString(L"#define FONTS_DICT_UNICODE_NAMES_COUNT ");
+    oBuilder.AddInt(nUnicodeNamesCount);
+    oBuilder.WriteString(L"\n");
+    oBuilder.WriteString(L"static const FD_FontMapRecW FD_Unicode_Names[FONTS_DICT_UNICODE_NAMES_COUNT] = \n{\n");
 
 	for (int k = 0; k < nUnicodeNamesCount; ++k)
 	{
-		CAtlMap<CString, CFontInfoJS>::CPair* pPair = mapFontsUnicodes.Lookup(arrFontsUnicodes[k]);
+        std::map<std::wstring, CFontInfoJS>::iterator pPair = mapFontsUnicodes.find(arrFontsUnicodes[k]);
 
-		sUnicodeNames += _T("\t{ L\"");
-		sUnicodeNames += pPair->m_value.m_sName;
-		sUnicodeNames += _T("\", ");
-
-		CString strP = _T("");
+        oBuilder.WriteString(L"\t{ L\"");
+        oBuilder.WriteString(pPair->second.m_sName);
+        oBuilder.WriteString(L"\", ");
 
 		if (k != (nAsciiNamesCount - 1))
 		{
-			strP.Format(_T("%d, %d, %d, %d },\n"), pPair->m_value.m_lIndexR,
-				pPair->m_value.m_lIndexI, pPair->m_value.m_lIndexB, pPair->m_value.m_lIndexBI);
+            oBuilder.AddInt(pPair->second.m_lIndexR);
+            oBuilder.WriteString(L", ");
+            oBuilder.AddInt(pPair->second.m_lIndexI);
+            oBuilder.WriteString(L", ");
+            oBuilder.AddInt(pPair->second.m_lIndexB);
+            oBuilder.WriteString(L", ");
+            oBuilder.AddInt(pPair->second.m_lIndexBI);
+            oBuilder.WriteString(L" },\n");
 		}
 		else
 		{
-			strP.Format(_T("%d, %d, %d, %d }\n"), pPair->m_value.m_lIndexR,
-				pPair->m_value.m_lIndexI, pPair->m_value.m_lIndexB, pPair->m_value.m_lIndexBI);
+            oBuilder.AddInt(pPair->second.m_lIndexR);
+            oBuilder.WriteString(L", ");
+            oBuilder.AddInt(pPair->second.m_lIndexI);
+            oBuilder.WriteString(L", ");
+            oBuilder.AddInt(pPair->second.m_lIndexB);
+            oBuilder.WriteString(L", ");
+            oBuilder.AddInt(pPair->second.m_lIndexBI);
+            oBuilder.WriteString(L" }\n");
 		}
-
-		sUnicodeNames += strP;
 	}
 
-	sUnicodeNames += _T("};\n\n");
+    oBuilder.WriteString(L"};\n\n");
 
-	strAll += sUnicodeNames;
-
-	CString strConstant2 = _T("typedef struct FD_Font_Rec\n\
+    oBuilder.WriteString(L"typedef struct FD_Font_Rec\n\
 {\n\
 	const char*		m_name;\n\
 \n\
@@ -646,81 +596,107 @@ typedef struct FD_FontMapRecW_\n\
 	short			m_shCapHeight;\n\
 } FD_Font;\n\n");
 
-	strAll += strConstant2;
-
 	int nAllFontsCount = (int)nCount;
-	CString sAllFontsNames = _T("");
-	sAllFontsNames.Format(_T("#define FONTS_DICT_ASCII_FONTS_COUNT %d\n"), nCount);
-	sAllFontsNames += _T("static const FD_Font FD_Ascii_Files[FONTS_DICT_ASCII_FONTS_COUNT] = \n{\n");
+    oBuilder.WriteString(L"#define FONTS_DICT_ASCII_FONTS_COUNT ");
+    oBuilder.AddInt(nCount);
+    oBuilder.WriteString(L"\n");
+
+    oBuilder.WriteString(L"static const FD_Font FD_Ascii_Files[FONTS_DICT_ASCII_FONTS_COUNT] = \n{\n");
 
 	for (int k = 0; k < nCount; ++k)
 	{
-		CWinFontInfo* pInfo = (CWinFontInfo*)m_pList->GetByIndex(k);
+        CFontInfo* pInfo = oFonts.GetList()->GetFonts()->operator [](k);
 
 #if 1
 		// CORRECT!!!
-		if (pInfo->m_wsFontName == _T("Monotype Sorts"))
+        if (pInfo->m_wsFontName == L"Monotype Sorts")
 			pInfo->m_aPanose[0] = 5;
 #endif
-		
-		CString sMem = _T("");
-		sMem.Format(_T("\", %d, %d, %d, %d, { %d, %d, %d, %d, %d, %d, %d, %d, %d, %d }, %u, %u, %u, %u, %u, %u, %u, %u, %d, %d, %d, %d, %d, %d, %d, %d }"),
-			pInfo->m_lIndex,
-			pInfo->m_bBold,
-			pInfo->m_bItalic,
-			pInfo->m_bIsFixed,
-			pInfo->m_aPanose[0],
-			pInfo->m_aPanose[1],
-			pInfo->m_aPanose[2],
-			pInfo->m_aPanose[3],
-			pInfo->m_aPanose[4],
-			pInfo->m_aPanose[5],
-			pInfo->m_aPanose[6],
-			pInfo->m_aPanose[7],
-			pInfo->m_aPanose[8],
-			pInfo->m_aPanose[9],
-			pInfo->m_ulUnicodeRange1,
-			pInfo->m_ulUnicodeRange2,
-			pInfo->m_ulUnicodeRange3,
-			pInfo->m_ulUnicodeRange4,
-			pInfo->m_ulCodePageRange1,
-			pInfo->m_ulCodePageRange2,
-			pInfo->m_usWeigth,
-			pInfo->m_usWidth,
-			pInfo->m_sFamilyClass,
-			pInfo->m_eFontFormat,
-			pInfo->m_shAvgCharWidth,
-			pInfo->m_shAscent,
-			pInfo->m_shDescent,
-			pInfo->m_shLineGap,
-			pInfo->m_shXHeight,
-			pInfo->m_shCapHeight);
 
-		sAllFontsNames += _T("\t{\"");
-		sAllFontsNames += pInfo->m_wsFontName;
-		sAllFontsNames += sMem;
+        oBuilder.WriteString(L"\t{\"");
+        oBuilder.WriteString(pInfo->m_wsFontName);
+		
+        oBuilder.WriteString(L"\", ");
+        oBuilder.AddInt(pInfo->m_lIndex);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_bBold);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_bItalic);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_bIsFixed);
+
+        oBuilder.WriteString(L", { ");
+        oBuilder.AddInt(pInfo->m_aPanose[0]);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_aPanose[1]);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_aPanose[2]);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_aPanose[3]);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_aPanose[4]);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_aPanose[5]);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_aPanose[6]);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_aPanose[7]);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_aPanose[8]);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_aPanose[9]);
+        oBuilder.WriteString(L" }, ");
+
+        oBuilder.AddInt64((__int64)pInfo->m_ulUnicodeRange1);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt64((__int64)pInfo->m_ulUnicodeRange2);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt64((__int64)pInfo->m_ulUnicodeRange3);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt64((__int64)pInfo->m_ulUnicodeRange4);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt64((__int64)pInfo->m_ulCodePageRange1);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt64((__int64)pInfo->m_ulCodePageRange2);
+        oBuilder.WriteString(L", ");
+
+        oBuilder.AddInt(pInfo->m_usWeigth);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_usWidth);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_sFamilyClass);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_eFontFormat);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_shAvgCharWidth);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_shAscent);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_shDescent);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_shLineGap);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_shXHeight);
+        oBuilder.WriteString(L", ");
+        oBuilder.AddInt(pInfo->m_shCapHeight);
+        oBuilder.WriteString(L" }");
+
 		if (k != (nCount - 1))
-			sAllFontsNames += _T(",\n");
+            oBuilder.WriteString(L",\n");
 		else
-			sAllFontsNames += _T("\n");
+            oBuilder.WriteString(L"\n");
 	}
 
-	sAllFontsNames += _T("};\n\n");
+    oBuilder.WriteString(L"};\n\n");
 
-	strAll += sAllFontsNames;
+    oBuilder.WriteString(L"// error : ");
+    oBuilder.AddInt(nError);
+    oBuilder.WriteString(L"\n\n");
+    oBuilder.WriteString(L"#endif /* _FONT_DICTIONARY_H */");
 
-	CString strError = _T("");
-	strError.Format(_T("// error : %d\n\n"), nError);
-	strAll += strError;
-
-	strAll += _T("#endif /* _FONT_DICTIONARY_H */");
-
-	oFileW.WriteStringUTF8(strAll);
+    oFileW.WriteStringUTF8(oBuilder.GetData());
 	oFileW.CloseFile();
 
-	if (NULL != m_pList)
-		delete m_pList;
-
-	return 0;
+    return 0;
 }
 

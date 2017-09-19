@@ -74,7 +74,7 @@ void draw_shape::add_child_element( xml::sax * Reader, const std::wstring & Ns, 
 }
 void draw_shape::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	CP_APPLY_ATTR(L"draw:id",			draw_id_);//или сюда draw_shape_attlist_???
+	CP_APPLY_ATTR(L"draw:id", draw_id_);//или сюда draw_shape_attlist_???
 	
 	common_draw_attlists_.shape_with_text_and_styles_.add_attributes(Attributes);
     common_draw_attlists_.position_.add_attributes(Attributes);
@@ -87,6 +87,7 @@ void draw_shape::add_attributes( const xml::attributes_wc_ptr & Attributes )
 void draw_rect_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"draw:filter-name", draw_filter_name_);
+	CP_APPLY_ATTR(L"draw:corner-radius",draw_corner_radius_);
 }
 
 const wchar_t * draw_rect::ns = L"draw";
@@ -98,6 +99,9 @@ void draw_rect::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	draw_shape::add_attributes(Attributes);
 
 	sub_type_ = 2;
+
+	if (draw_rect_attlist_.draw_corner_radius_)
+		sub_type_ = 9;
 }
 
 

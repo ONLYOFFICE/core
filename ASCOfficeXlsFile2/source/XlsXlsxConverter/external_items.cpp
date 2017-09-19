@@ -86,7 +86,7 @@ std::wstring static get_default_file_name(external_items::Type type)
 //	}
 //	//todooo проверить
 //   
-//	return get_default_file_name(type) + boost::lexical_cast<std::wstring>(Num) + sExt;
+//	return get_default_file_name(type) + std::to_wstring(Num) + sExt;
 //}
 
 
@@ -95,7 +95,7 @@ std::wstring external_items::add_image(const std::wstring & image, int bin_id)
 {
     const bool isMediaInternal = true;
   
-	std::wstring rId = std::wstring(L"picId") + boost::lexical_cast<std::wstring>(count_image+1);
+	std::wstring rId = std::wstring(L"picId") + std::to_wstring(count_image+1);
 	count_image++;  
 		
 	items_.push_back( item(image, typeImage, isMediaInternal, bin_id, rId) );
@@ -108,8 +108,8 @@ std::wstring external_items::add_chart(std::wstring & oox_target)
   
 	count_charts++;  
 	
-	std::wstring rId = std::wstring(L"chartId") + boost::lexical_cast<std::wstring>(count_charts);
-	oox_target = std::wstring(L"charts/chart") + boost::lexical_cast<std::wstring>(count_charts) + L".xml";
+	std::wstring rId = std::wstring(L"chartId") + std::to_wstring(count_charts);
+	oox_target = std::wstring(L"charts/chart") + std::to_wstring(count_charts) + L".xml";
 		
 	items_.push_back( item(oox_target, typeChart, isMediaInternal, -1, rId) );
 
@@ -161,9 +161,9 @@ std::wstring external_items::media_path()
 void external_items::create_media_path(const std::wstring & out_path)
 {
 	if (!media_path_.empty()) return;
-
+	
 	std::wstring xl_path = out_path + FILE_SEPARATOR_STR + L"xl";
-    NSDirectory::CreateDirectory(xl_path.c_str());
+	NSDirectory::CreateDirectory(xl_path.c_str());
 	
     NSDirectory::CreateDirectory((xl_path + FILE_SEPARATOR_STR + L"media").c_str());
 

@@ -32,64 +32,65 @@
 
 #include "ChartSheetSubstream.h"
 
-#include <Logic/Biff_records/WriteProtect.h>
-#include <Logic/Biff_records/SheetExt.h>
-#include <Logic/Biff_records/WebPub.h>
-#include <Logic/Biff_records/HFPicture.h>
-#include <Logic/Biff_records/PrintSize.h>
-#include <Logic/Biff_records/HeaderFooter.h>
-#include <Logic/Biff_records/Fbi.h>
-#include <Logic/Biff_records/Fbi2.h>
-#include <Logic/Biff_records/ClrtClient.h>
-#include <Logic/Biff_records/Palette.h>
-#include <Logic/Biff_records/SXViewLink.h>
-#include <Logic/Biff_records/PivotChartBits.h>
-#include <Logic/Biff_records/SBaseRef.h>
-#include <Logic/Biff_records/MsoDrawingGroup.h>
-#include <Logic/Biff_records/Units.h>
-#include <Logic/Biff_records/CodeName.h>
-#include <Logic/Biff_records/EOF.h>
-#include <Logic/Biff_records/BOF.h>
-#include <Logic/Biff_records/AreaFormat.h>
-#include <Logic/Biff_records/SerToCrt.h>
-#include <Logic/Biff_records/AxisParent.h>
-#include <Logic/Biff_records/Series.h>
-#include <Logic/Biff_records/BRAI.h>
-#include <Logic/Biff_records/SIIndex.h>
-#include <Logic/Biff_records/DataFormat.h>
-#include <Logic/Biff_records/Text.h>
-#include <Logic/Biff_records/Pos.h>
-#include <Logic/Biff_records/Pie.h>
-#include <Logic/Biff_records/ShtProps.h>
-#include <Logic/Biff_records/Chart3d.h>
-#include <Logic/Biff_records/ChartFormat.h>
-#include <Logic/Biff_records/Legend.h>
-#include <Logic/Biff_records/AttachedLabel.h>
-#include <Logic/Biff_records/DataLabExtContents.h>
-#include <Logic/Biff_records/CrtLine.h>
-#include <Logic/Biff_records/Dat.h>
-#include <Logic/Biff_records/Chart.h>
-#include <Logic/Biff_records/ExternSheet.h>
+#include "Biff_records/WriteProtect.h"
+#include "Biff_records/SheetExt.h"
+#include "Biff_records/WebPub.h"
+#include "Biff_records/HFPicture.h"
+#include "Biff_records/PrintSize.h"
+#include "Biff_records/HeaderFooter.h"
+#include "Biff_records/Fbi.h"
+#include "Biff_records/Fbi2.h"
+#include "Biff_records/ClrtClient.h"
+#include "Biff_records/Palette.h"
+#include "Biff_records/SXViewLink.h"
+#include "Biff_records/PivotChartBits.h"
+#include "Biff_records/SBaseRef.h"
+#include "Biff_records/MsoDrawingGroup.h"
+#include "Biff_records/Units.h"
+#include "Biff_records/CodeName.h"
+#include "Biff_records/EOF.h"
+#include "Biff_records/BOF.h"
+#include "Biff_records/AreaFormat.h"
+#include "Biff_records/SerToCrt.h"
+#include "Biff_records/AxisParent.h"
+#include "Biff_records/Series.h"
+#include "Biff_records/BRAI.h"
+#include "Biff_records/SIIndex.h"
+#include "Biff_records/DataFormat.h"
+#include "Biff_records/Text.h"
+#include "Biff_records/Pos.h"
+#include "Biff_records/Pie.h"
+#include "Biff_records/ShtProps.h"
+#include "Biff_records/Chart3d.h"
+#include "Biff_records/ChartFormat.h"
+#include "Biff_records/Legend.h"
+#include "Biff_records/AttachedLabel.h"
+#include "Biff_records/DataLabExtContents.h"
+#include "Biff_records/CrtLine.h"
+#include "Biff_records/Dat.h"
+#include "Biff_records/Chart.h"
+#include "Biff_records/ExternSheet.h"
 
-#include <Logic/Biff_unions/PAGESETUP.h>
-#include <Logic/Biff_unions/BACKGROUND.h>
-#include <Logic/Biff_unions/PROTECTION_COMMON.h>
-#include <Logic/Biff_unions/OBJECTS.h>
-#include <Logic/Biff_unions/CHARTFOMATS.h>
-#include <Logic/Biff_unions/SERIESDATA.h>
-#include <Logic/Biff_unions/WINDOW.h>
-#include <Logic/Biff_unions/CUSTOMVIEW.h>
-#include <Logic/Biff_unions/CRTMLFRT.h>
-#include <Logic/Biff_unions/FRAME.h>
-#include <Logic/Biff_unions/ATTACHEDLABEL.h>
-#include <Logic/Biff_unions/SERIESFORMAT.h>
-#include <Logic/Biff_unions/CRT.h>
-#include <Logic/Biff_unions/AXISPARENT.h>
-#include <Logic/Biff_unions/AXES.h>
-#include <Logic/Biff_unions/SS.h>
-#include <Logic/Biff_unions/AI.h>
-#include <Logic/Biff_unions/LD.h>
-#include <Logic/Biff_unions/DAT.h>
+#include "Biff_unions/PAGESETUP.h"
+#include "Biff_unions/BACKGROUND.h"
+#include "Biff_unions/PROTECTION_COMMON.h"
+#include "Biff_unions/OBJECTS.h"
+#include "Biff_unions/CHARTFOMATS.h"
+#include "Biff_unions/SERIESDATA.h"
+#include "Biff_unions/WINDOW.h"
+#include "Biff_unions/CUSTOMVIEW.h"
+#include "Biff_unions/CRTMLFRT.h"
+#include "Biff_unions/FRAME.h"
+#include "Biff_unions/ATTACHEDLABEL.h"
+#include "Biff_unions/SERIESFORMAT.h"
+#include "Biff_unions/CRT.h"
+#include "Biff_unions/AXISPARENT.h"
+#include "Biff_unions/AXES.h"
+#include "Biff_unions/SS.h"
+#include "Biff_unions/AI.h"
+#include "Biff_unions/LD.h"
+#include "Biff_unions/DAT.h"
+#include "Biff_unions/PIVOTVIEW.h"
 
 #include "../../XlsXlsxConverter/XlsConverter.h"
 #include "../../XlsXlsxConverter/xlsx_conversion_context.h"
@@ -202,10 +203,30 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 										proc.optional<PROTECTION_COMMON>();	break;
 			
 			case rt_Palette:			proc.optional<Palette>();			break;
-			case rt_SXViewLink:			proc.optional<SXViewLink>();		break;
-			case rt_PivotChartBits:		proc.optional<PivotChartBits>();	break;
-			case rt_SBaseRef:			proc.optional<SBaseRef>();			break;
-
+			case rt_SXViewLink:
+			{
+				if (proc.optional<SXViewLink>())
+				{
+					m_SXViewLink = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_PivotChartBits:		
+			{
+				if (proc.optional<PivotChartBits>())
+				{
+					m_PivotChartBits = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_SBaseRef:
+			{				
+				if (proc.optional<SBaseRef>())
+				{
+					m_SBaseRef = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_Obj:
 			case rt_MsoDrawing:
 			{
@@ -224,9 +245,18 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 			{
 				if (proc.optional<ExternSheet>())
 				{
+					m_ExternSheet = elements_.back(); 
+					elements_.pop_back();
 				}
 			}break;
-			case rt_Units:			proc.mandatory<Units>();	break;		
+			case rt_Units:
+			{
+				if (proc.mandatory<Units>())
+				{
+					m_Units = elements_.back(); 
+					elements_.pop_back();
+				}	
+			}break;
 			case rt_Chart:
 			{
 				if ( proc.mandatory<CHARTFORMATS>() )
@@ -294,7 +324,14 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 
 	int iCrt = -1;
 
-	for (int i = 0 ; i < charts->m_arSERIESFORMAT.size(); i++)
+	if (charts->m_arSERIESFORMAT.empty() && !parent0->m_arCRT.empty())
+	{
+		std::vector<int> ser;
+		m_mapTypeChart.insert(std::make_pair(0, ser));
+		return;
+	}
+
+	for (size_t i = 0 ; i < charts->m_arSERIESFORMAT.size(); i++)
 	{
 		SERIESFORMAT * series = dynamic_cast<SERIESFORMAT *>(charts->m_arSERIESFORMAT[i].get());
 		if (series == NULL) continue;
@@ -304,7 +341,7 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 		if ( serCrt == NULL)
 		{
 			//для доп линий может и не существовать - брать предыдущий  - и объеденить!!!
-			std::map<int,std::vector<int>>::iterator it = m_mapTypeChart.find(iCrt);
+			std::unordered_map<int,std::vector<int>>::iterator it = m_mapTypeChart.find(iCrt);
 			if (it != m_mapTypeChart.end())
 			{
 				SERIESFORMAT * series_prev = dynamic_cast<SERIESFORMAT *>(charts->m_arSERIESFORMAT[it->second.back()].get());
@@ -329,12 +366,12 @@ void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 
 		CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[iCrt].get());
 		
-		std::map<int,std::vector<int>>::iterator it = m_mapTypeChart.find(iCrt);
+		std::unordered_map<int,std::vector<int>>::iterator it = m_mapTypeChart.find(iCrt);
 		if (it == m_mapTypeChart.end())
 		{
 			std::vector<int> ser;
 			ser.push_back(i);
-			m_mapTypeChart.insert(std::pair<int, std::vector<int>>(iCrt, ser));
+			m_mapTypeChart.insert(std::make_pair(iCrt, ser));
 		}
 		else
 		{
@@ -348,15 +385,14 @@ void ChartSheetSubstream::recalc(SERIESDATA* data)
 {
 }
 
-int ChartSheetSubstream::serialize (std::wostream & _stream)
+int ChartSheetSubstream::serialize(std::wostream & _stream)
 {
-	AreaFormat		*chart_area_format	= NULL;
 	CHARTFORMATS	*chart_formats		= dynamic_cast<CHARTFORMATS*>(m_CHARTFORMATS.get());
 	if (!chart_formats) return 0;
 
+	AreaFormat		*chart_area_format	= NULL;
 	FRAME			*chart_frame		= dynamic_cast<FRAME*>(chart_formats->m_FRAME.get());
-	if (chart_frame)
-		chart_area_format				= dynamic_cast<AreaFormat*>(chart_frame->m_AreaFormat.get());
+	if (chart_frame) chart_area_format	= dynamic_cast<AreaFormat*>(chart_frame->m_AreaFormat.get());
 
 	ShtProps		*sht_props			= dynamic_cast<ShtProps*>(chart_formats->m_ShtProps.get());
 	Chart			*chart_rect			= dynamic_cast<Chart*>(chart_formats->m_ChartRect.get());
@@ -368,7 +404,26 @@ int ChartSheetSubstream::serialize (std::wostream & _stream)
 			if ((chart_area_format) && (chart_area_format->fInvertNeg))	CP_XML_ATTR(L"val", 1); //????
 			else														CP_XML_ATTR(L"val", 0); 
 		}
+		if (m_SXViewLink)
+		{
+			SXViewLink *link = dynamic_cast<SXViewLink*>(m_SXViewLink.get());
 
+			CP_XML_NODE(L"c:pivotSource")
+			{
+				CP_XML_NODE(L"c:name")
+				{
+					std::wstring name = link->stPivotTable.value();
+					std::wstring::size_type pos = name.find(L"]");
+					if (std::wstring::npos != pos)
+						name = L"[]" + name.substr(pos + 1);
+					CP_XML_STREAM() << name;
+				}
+				CP_XML_NODE(L"c:fmtId")
+				{
+					CP_XML_ATTR(L"val", 0); 
+				}
+			}
+		}
 		CP_XML_NODE(L"c:chart")
 		{
 			serialize_title		(CP_XML_STREAM());		
@@ -405,6 +460,40 @@ int ChartSheetSubstream::serialize (std::wostream & _stream)
 				}
 			}
 		}
+		if (m_SXViewLink)
+		{
+			CP_XML_NODE(L"c:extLst")
+			{
+				CP_XML_NODE(L"c:ext")
+				{
+					CP_XML_ATTR(L"uri", L"{781A3756-C4B2-4CAC-9D66-4F8BD8637D16}");
+					CP_XML_ATTR(L"xmlns:c14", L"http://schemas.microsoft.com/office/drawing/2007/8/2/chart");
+					CP_XML_NODE(L"c14:pivotOptions")
+					{
+						CP_XML_NODE(L"c14:dropZoneFilter")
+						{
+							CP_XML_ATTR(L"val", 1);
+						}		
+						CP_XML_NODE(L"c14:dropZoneCategories")
+						{
+							CP_XML_ATTR(L"val", 1);
+						}
+						CP_XML_NODE(L"c14:dropZoneData")
+						{
+							CP_XML_ATTR(L"val", 1);
+						}
+						CP_XML_NODE(L"c14:dropZoneSeries")
+						{
+							CP_XML_ATTR(L"val", 1);
+						}
+						CP_XML_NODE(L"c14:dropZonesVisible")
+						{
+							CP_XML_ATTR(L"val", 1);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	if (chart_rect)
@@ -425,7 +514,7 @@ int ChartSheetSubstream::serialize_3D (std::wostream & _stream)
 	BaseObjectPtr	wallSpPr; 
 	BaseObjectPtr	floorSpPr;
 
-	for (int i = 0; i < chart_formats->m_arAXISPARENT.size(); i++)
+	for (size_t i = 0; i < chart_formats->m_arAXISPARENT.size(); i++)
 	{
 		AXISPARENT* parent		= dynamic_cast<AXISPARENT*>	(chart_formats->m_arAXISPARENT[i].get());
 		AxisParent* ax_parent	= dynamic_cast<AxisParent*>	(parent->m_AxisParent.get());
@@ -463,11 +552,11 @@ int ChartSheetSubstream::serialize_3D (std::wostream & _stream)
 					CP_XML_ATTR (L"val" , chart3D->anElev);
 				}
 			}
-			if (chart3D->pcHeight != 100)
+			if (chart3D->pcHeight3D != 100 && chart3D->pcHeight3D >= 5 && chart3D->pcHeight3D <= 500)
 			{
 				CP_XML_NODE(L"c:hPercent")
 				{
-					CP_XML_ATTR (L"val" , chart3D->pcHeight);
+					CP_XML_ATTR (L"val" , chart3D->pcHeight3D);
 				}
 			}
 			if (chart3D->anRot != 0)
@@ -580,7 +669,7 @@ int ChartSheetSubstream::serialize_legend (std::wostream & _stream, const std::w
 	//}
 	
 	//todooo разобраться с разными типами в одном чарте .. считать количество серий?? 
-	std::map< int, std::vector<int>>::iterator it = m_mapTypeChart.begin();
+	std::unordered_map< int, std::vector<int>>::iterator it = m_mapTypeChart.begin();
 	if (it != m_mapTypeChart.end())
 	{
 		CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[it->first].get());
@@ -641,8 +730,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 	{
 		CP_XML_NODE(L"c:plotArea")
 		{
-
-			for (int i = 0; i < chart_formats->m_arAXISPARENT.size(); i++)
+			for (size_t i = 0; i < chart_formats->m_arAXISPARENT.size(); i++)
 			{
 				AXISPARENT* parent		= dynamic_cast<AXISPARENT*>	(chart_formats->m_arAXISPARENT[i].get());
 							ax_parent	= dynamic_cast<AxisParent*>	(parent->m_AxisParent.get());
@@ -665,7 +753,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 				PlotAreaPos->serialize(CP_XML_STREAM());
 			}
 
-			for (std::map<int, std::vector<int>>::iterator it = m_mapTypeChart.begin(); it != m_mapTypeChart.end(); it++)
+			for (std::unordered_map<int, std::vector<int>>::iterator it = m_mapTypeChart.begin(); it != m_mapTypeChart.end(); it++)
 			{
 				CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[it->first].get());
 
@@ -686,7 +774,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 					}
 					
 					format->serialize(CP_XML_STREAM());
-					for (int i = 0 ; i < it->second.size(); i++)
+					for (size_t i = 0 ; i < it->second.size(); i++)
 					{
 						SERIESFORMAT * series = dynamic_cast<SERIESFORMAT *>(chart_formats->m_arSERIESFORMAT[it->second[i]].get());
 						if (series == NULL)	continue;
@@ -719,6 +807,11 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 
 							serialize_dPt(CP_XML_STREAM(), it->second[i], crt, (std::max)(ser->cValx, ser->cValy));//+bubbles
 							
+/*							if (arPivotData.empty() == false)
+							{
+								series->set_ref(arPivotData,  i * 2);
+							}*/				
+							
 							if (crt->m_iChartType == CHART_TYPE_Scatter || 
 								crt->m_iChartType == CHART_TYPE_Bubble)
 							{
@@ -730,6 +823,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 							}
 							else
 							{
+
 								serialize_ser(L"c:cat", CP_XML_STREAM(), series_id, series->m_arAI[2], ser->sdtX, ser->cValx);
 								serialize_ser(L"c:val", CP_XML_STREAM(), series_id, series->m_arAI[1], ser->sdtY, ser->cValy);
 							}							
@@ -751,7 +845,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 							
 						series->serialize_legend(stream_legend_entries, it->second[i]); 
 					}
-					for (int i = 0 ; i < crt->m_arCrtLine.size(); i++)
+					for (size_t i = 0 ; i < crt->m_arCrtLine.size(); i++)
 					{
 						CrtLine* crtLine = dynamic_cast<CrtLine*>(crt->m_arCrtLine[i].get());
 						if (crtLine == NULL) continue;
@@ -784,7 +878,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 					AXES * axes = dynamic_cast<AXES*>(parent->m_AXES.get());
 					if (axes)
 					{
-						for (int a = 0 ; a < axes->m_arAxesId.size(); a++)
+						for (size_t a = 0 ; a < axes->m_arAxesId.size(); a++)
 						{
 							CP_XML_NODE(L"c:axId")
 							{
@@ -796,7 +890,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 				}
 			}
 
-			for (int i = 0; i < chart_formats->m_arAXISPARENT.size(); i++)
+			for (size_t i = 0; i < chart_formats->m_arAXISPARENT.size(); i++)
 			{
 				AXISPARENT* parent		= dynamic_cast<AXISPARENT*>	(chart_formats->m_arAXISPARENT[i].get());
 				AxisParent* ax_parent	= dynamic_cast<AxisParent*>	(parent->m_AxisParent.get());
@@ -855,7 +949,7 @@ int ChartSheetSubstream::serialize_dPt(std::wostream & _stream, int id, CRT *crt
 
 	CP_XML_WRITER(_stream)
 	{
-		for (int i = 0 ; i < series->m_arPtSS.size(); i++)
+		for (size_t i = 0 ; i < series->m_arPtSS.size(); i++)
 		{
 			CP_XML_NODE(L"c:dPt")
 			{
@@ -875,7 +969,7 @@ int ChartSheetSubstream::serialize_dPt(std::wostream & _stream, int id, CRT *crt
 					CP_XML_ATTR(L"val", series_data_format->xi);
 					
 					if (format->fVaried)
-						present_idx.insert(std::pair<int, bool>(series_data_format->xi, true));
+						present_idx.insert(std::make_pair(series_data_format->xi, true));
 				}
 				series_ss->serialize	(CP_XML_STREAM(), crt->m_iChartType, series_data_format->xi);
 				series_ss->serialize2	(CP_XML_STREAM(), crt->m_iChartType);
@@ -1001,7 +1095,7 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 			CP_XML_NODE(L"c:showSerName")	{ CP_XML_ATTR (L"val" , 0); }	
 		}
 	//подписи к точкам (отдельные)
-		for (int i = 0; i < labels.size(); i++)
+		for (size_t i = 0; i < labels.size(); i++)
 		{
 			CP_XML_NODE(L"c:dLbl")
 			{
@@ -1068,7 +1162,7 @@ int ChartSheetSubstream::serialize_ser (std::wstring sNodeSer, std::wostream & _
 	SIIndex		* series_cash = NULL;
 
 	int type_val = 0;
-	for (int i = 0; (series_data) && (i < series_data->m_arSIIndex.size()); i++)
+	for (size_t i = 0; (series_data) && (i < series_data->m_arSIIndex.size()); i++)
 	{
 		SIIndex * si_in = dynamic_cast<SIIndex *>(series_data->m_arSIIndex[i].get());
 

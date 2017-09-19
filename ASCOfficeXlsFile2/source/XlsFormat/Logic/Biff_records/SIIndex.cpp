@@ -67,7 +67,7 @@ int SIIndex::serialize(std::wostream & _stream, int idx, const CellRef & in_ref)
 	int res = 0;
 	CP_XML_WRITER(_stream)    
 	{	
-		for (int i = 0 ; i < m_arData.size(); i++)
+		for (size_t i = 0 ; i < m_arData.size(); i++)
 		{
 			Number	* number	= dynamic_cast<Number*>	(m_arData[i].get());
 			BoolErr * boolErr	= dynamic_cast<BoolErr*>(m_arData[i].get());
@@ -108,7 +108,7 @@ int SIIndex::serialize(std::wostream & _stream, ChartParsedFormula & in_ref)
 	int idx = 0;
 	CP_XML_WRITER(_stream)    
 	{	
-		for (int i = 0 ; i < m_arData.size(); i++)
+		for (size_t i = 0 ; i < m_arData.size(); i++)
 		{
 			Number	* number	= dynamic_cast<Number*>	(m_arData[i].get());
 			BoolErr * boolErr	= dynamic_cast<BoolErr*>(m_arData[i].get());

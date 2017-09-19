@@ -81,8 +81,6 @@ const bool CHART::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 		count--;
 	}
-
-//	reader.SeekNextSubstream();
 	return true;
 }
 

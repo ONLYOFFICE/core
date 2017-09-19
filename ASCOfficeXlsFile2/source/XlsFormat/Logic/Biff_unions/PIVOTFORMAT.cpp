@@ -31,9 +31,10 @@
  */
 
 #include "PIVOTFORMAT.h"
-#include <Logic/Biff_records/SxFormat.h>
-#include <Logic/Biff_unions/PIVOTRULE.h>
-#include <Logic/Biff_records/SxDXF.h>
+#include "PIVOTRULE.h"
+
+#include "../Biff_records/SxFormat.h"
+#include "../Biff_records/SxDXF.h"
 
 namespace XLS
 {
@@ -54,7 +55,6 @@ BaseObjectPtr PIVOTFORMAT::clone()
 	return BaseObjectPtr(new PIVOTFORMAT(*this));
 }
 
-
 // PIVOTFORMAT = SxFormat PIVOTRULE [SxDXF]
 const bool PIVOTFORMAT::loadContent(BinProcessor& proc)
 {
@@ -62,11 +62,18 @@ const bool PIVOTFORMAT::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+	m_SxFormat = elements_.back();
+	elements_.pop_back();
+
 	if (proc.mandatory<PIVOTRULE>())
 	{
+		m_PIVOTRULE = elements_.back();
+		elements_.pop_back();
 	}
 	if (proc.optional<SxDXF>())
 	{
+		m_SxDXF = elements_.back();
+		elements_.pop_back();
 	}
 
 	return true;

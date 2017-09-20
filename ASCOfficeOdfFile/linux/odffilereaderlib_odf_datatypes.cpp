@@ -126,3 +126,4 @@
 #include "../src/odf/datatypes/tableorientation.cpp"
 #include "../src/odf/datatypes/tablefunction.cpp"
 #include "../src/odf/datatypes/tableorder.cpp"
+#include "../src/odf/datatypes/dategroup.cpp"

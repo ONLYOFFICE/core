@@ -137,6 +137,10 @@ namespace NExtractTools
         TCD_ODF2OOX,
         TCD_ODF2OOT,
         TCD_ODF2OOT_BIN,
+//odf flat 2
+        TCD_ODF_FLAT2OOX,
+        TCD_ODF_FLAT2OOT,
+        TCD_ODF_FLAT2OOT_BIN,
 //2 odt
         TCD_DOCX2ODT,
         TCD_DOCT2ODT,
@@ -374,7 +378,6 @@ namespace NExtractTools
 		std::wstring* m_sPassword;
 		std::wstring* m_sTempDir;
 		bool* m_bIsNoBase64;
-		bool* m_bSaveXFile;
 		//output params
 		mutable bool m_bOutputConvertCorrupted;
 	public:
@@ -401,7 +404,6 @@ namespace NExtractTools
 			m_sPassword = NULL;
 			m_sTempDir = NULL;
 			m_bIsNoBase64 = NULL;
-			m_bSaveXFile = NULL;
 
 			m_bOutputConvertCorrupted = false;
 		}
@@ -428,7 +430,6 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sPassword);
 			RELEASEOBJECT(m_sTempDir);
 			RELEASEOBJECT(m_bIsNoBase64);
-			RELEASEOBJECT(m_bSaveXFile);
 		}
 		
 		bool FromXmlFile(const std::wstring& sFilename)
@@ -519,8 +520,6 @@ namespace NExtractTools
 									m_sTempDir = new std::wstring(sValue);
 								else if(_T("m_bIsNoBase64") == sName)
 									m_bIsNoBase64 = new bool(XmlUtils::GetBoolean2(sValue));
-								else if(_T("m_bSaveXFile") == sName)
-									m_bSaveXFile = new bool(XmlUtils::GetBoolean2(sValue));
 							}
 							else if(_T("m_nCsvDelimiterChar") == sName)
 							{
@@ -551,10 +550,6 @@ namespace NExtractTools
 		bool getIsNoBase64() const
 		{
 			return (NULL != m_bIsNoBase64) ? (*m_bIsNoBase64) : true;
-		}
-		bool getSaveXFile() const
-		{
-			return (NULL != m_bSaveXFile) ? (*m_bSaveXFile) : false;
 		}
         std::wstring getXmlOptions()
 		{

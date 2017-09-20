@@ -54,17 +54,27 @@ int _tmain(int argc, _TCHAR* argv[])
 	if (argc < 2) return 1;
 
 	std::wstring sSrcDoc	= argv[1];
-	std::wstring sDstDocx	= argc > 2 ? argv[2] : sSrcDoc + L"-my.docx";
+	std::wstring sDstDocx;
 
-	std::wstring outputDir		= NSDirectory::GetFolderPath(sDstDocx);
+	std::wstring outputDir		= NSDirectory::GetFolderPath(sSrcDoc);
 	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
 	COfficeDocFile docFile;
 
 	docFile.m_sTempFolder = outputDir;
 	
-	HRESULT hRes = docFile.LoadFromFile( sSrcDoc, dstTempPath, L"password", NULL);
+	bool bMacros = true;
+	HRESULT hRes = docFile.LoadFromFile( sSrcDoc, dstTempPath, L"password", bMacros, NULL);
 	
+	if (bMacros)
+	{
+		sDstDocx = sSrcDoc + L"-my.docm";
+	}
+	else
+	{
+		sDstDocx = sSrcDoc + L"-my.docx";
+
+	}
 	if (hRes == S_OK)
 	{
 		COfficeUtils oCOfficeUtils(NULL);

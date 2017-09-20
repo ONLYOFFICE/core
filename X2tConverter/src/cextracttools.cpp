@@ -240,7 +240,7 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
 					{
 							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_DOC2DOCX;
-						else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOC2DOCX;
+						else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOC2DOCM;
 						else if (0 == sExt2.compare(_T(".doct")))		res = TCD_DOC2DOCT;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_DOC2DOCT_BIN;
 					}break;

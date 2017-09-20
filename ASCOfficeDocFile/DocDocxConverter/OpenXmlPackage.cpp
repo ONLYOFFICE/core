@@ -73,7 +73,6 @@ namespace DocFileFormat
 
         NSDirectory::CreateDirectory( m_strOutputPath + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"_rels" );
 
-
 		WriteRelsFile( DocumentRelationshipsFile );
 
 		WriteRelsFile( FootnotesRelationshipsFile );
@@ -199,7 +198,14 @@ namespace DocFileFormat
 	{
         return AddPart( L"word", L"document.xml", WordprocessingMLContentTypes::MainDocument, L"");
 	}
-
+	int OpenXmlPackage::RegisterDocumentMacros()
+	{
+        return AddPart( L"word", L"document.xml", WordprocessingMLContentTypes::MainDocumentMacro, L"");
+	}
+	int OpenXmlPackage::RegisterVbaProject()
+	{
+		return AddPart( L"word", L"vbaProject.bin", MicrosoftWordContentTypes::VbaProject, OpenXmlRelationshipTypes::VbaProject );
+	}
 	int OpenXmlPackage::RegisterFontTable()
 	{
         return AddPart( L"word", L"fontTable.xml", WordprocessingMLContentTypes::FontTable, OpenXmlRelationshipTypes::FontTable );

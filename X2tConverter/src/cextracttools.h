@@ -112,7 +112,8 @@ namespace NExtractTools
         TCD_DOC2DOCT,
 		TCD_DOC2DOCT_BIN,
 		TCD_DOC2DOCX,
-//doc 2
+		TCD_DOC2DOCM,
+//xls 2
         TCD_XLS2XLST,
         TCD_XLS2XLST_BIN,
         TCD_XLS2XLSX,
@@ -956,7 +957,10 @@ namespace NExtractTools
         else if (0 == sArg3.compare(_T("doc2docx"))) {
             res = TCD_DOC2DOCX;
         }
-        else if (0 == sArg3.compare(_T("rtf2docx"))) {
+        else if (0 == sArg3.compare(_T("doc2docm"))) {
+            res = TCD_DOC2DOCM;
+        }
+		else if (0 == sArg3.compare(_T("rtf2docx"))) {
             res = TCD_RTF2DOCX;
         }
         else if (0 == sArg3.compare(_T("docx2rtf"))) {

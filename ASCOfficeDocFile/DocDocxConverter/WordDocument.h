@@ -99,18 +99,17 @@ namespace DocFileFormat
 
 		bool	bOlderVersion;
 		int		document_code_page;
-
+		
+		inline StructuredStorageReader* GetStorage() const
+		{
+			return m_pStorage;
+		}
 	private:
 		bool DecryptOfficeFile	(CRYPT::Decryptor* Decryptor);
 		
 		bool DecryptStream		(std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor);
 		void DecryptStream		(int level, std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor);
 		
-		inline StructuredStorageReader* GetStorage() const
-		{
-			return m_pStorage;
-		}
-
 		inline OfficeArtContent* GetOfficeArt ()
 		{
 			return officeArtContent;

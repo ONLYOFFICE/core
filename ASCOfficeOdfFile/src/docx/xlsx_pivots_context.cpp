@@ -827,7 +827,7 @@ int xlsx_pivots_context::end_table()
 	impl_->serialize_view(view_strm);
 	impl_->serialize_cache(cache_strm);
 
-	std::wstring & str_view = view_strm.str();
+    std::wstring str_view = view_strm.str();
 
 	if (str_view.empty()) return -1;
 

@@ -49,9 +49,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	if (argc < 2) return 1;
 
 	std::wstring sSrcPpt	= argv[1];
-    std::wstring sDstPptx	= argc > 2 ? argv[2] : sSrcPpt + L"-my.pptx";
+	std::wstring sDstPptx;
 
-	std::wstring outputDir		= NSDirectory::GetFolderPath(sDstPptx);
+	std::wstring outputDir		= NSDirectory::GetFolderPath(sSrcPpt);
 	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
 	std::wstring tempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
@@ -60,8 +60,19 @@ int _tmain(int argc, _TCHAR* argv[])
 	
 	pptFile.put_TempDirectory(tempPath);
 
-	HRESULT hRes = pptFile.LoadFromFile(sSrcPpt, dstTempPath, L"password");
+	bool bMacros = true;
 	
+	HRESULT hRes = pptFile.LoadFromFile(sSrcPpt, dstTempPath, L"password", bMacros);
+	
+	if (bMacros)
+	{
+		sDstPptx = sSrcPpt + L"-my.pptm";
+	}
+	else
+	{
+		sDstPptx = sSrcPpt + L"-my.pptx";
+
+	}
 	if (hRes == S_OK)
 	{
 		COfficeUtils oCOfficeUtils(NULL);		

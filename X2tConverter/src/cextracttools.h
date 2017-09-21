@@ -108,6 +108,7 @@ namespace NExtractTools
         TCD_PPT2PPTX,
         TCD_PPT2PPTT,
         TCD_PPT2PPTT_BIN,
+        TCD_PPT2PPTM,
 //doc 2
         TCD_DOC2DOCT,
 		TCD_DOC2DOCT_BIN,
@@ -954,7 +955,10 @@ namespace NExtractTools
 		else if (0 == sArg3.compare(_T("ppt2pptx"))) {
             res = TCD_PPT2PPTX;
         }
-        else if (0 == sArg3.compare(_T("doc2docx"))) {
+		else if (0 == sArg3.compare(_T("ppt2pptm"))) {
+            res = TCD_PPT2PPTM;
+        }
+		else if (0 == sArg3.compare(_T("doc2docx"))) {
             res = TCD_DOC2DOCX;
         }
         else if (0 == sArg3.compare(_T("doc2docm"))) {

@@ -1675,7 +1675,7 @@ namespace NExtractTools
 	}
 	// ppt -> pptx
 	int ppt2pptx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
-   {
+	{
        std::wstring sResultPptxDir = sTemp + FILE_SEPARATOR_STR + _T("pptx_unpacked");
 
        NSDirectory::CreateDirectory(sResultPptxDir);
@@ -1701,14 +1701,15 @@ namespace NExtractTools
            return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
        }
        return AVS_FILEUTILS_ERROR_CONVERT;
-   }
+	}
 	int ppt2pptx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
-   {
+	{
        COfficePPTFile pptFile;
 
        pptFile.put_TempDirectory(sTemp);
 	   
-	   long hRes = pptFile.LoadFromFile(sFrom, sTo, params.getPassword());
+	   bool bMacros = false;
+	   long hRes = pptFile.LoadFromFile(sFrom, sTo, params.getPassword(), bMacros);
 
 		if (AVS_ERROR_DRM == hRes)
 		{
@@ -1723,10 +1724,62 @@ namespace NExtractTools
 			return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
 		}
 		return 0 == hRes ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-   }
+	}
+	// ppt -> pptm
+	int ppt2pptm (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+       std::wstring sResultPptxDir = sTemp + FILE_SEPARATOR_STR + _T("pptx_unpacked");
+
+       NSDirectory::CreateDirectory(sResultPptxDir);
+
+       int hRes = ppt2pptm_dir(sFrom, sResultPptxDir, sTemp, params);
+
+       if(SUCCEEDED_X2T(hRes))
+       {
+           COfficeUtils oCOfficeUtils(NULL);
+           if(S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultPptxDir, sTo, true))
+               return 0;
+       }
+       else if (AVS_ERROR_DRM == hRes)
+       {
+           if(!params.getDontSaveAdditional())
+           {
+               copyOrigin(sFrom, *params.m_sFileTo);
+           }
+           return AVS_FILEUTILS_ERROR_CONVERT_DRM;
+       }
+       else if (AVS_ERROR_PASSWORD == hRes)
+       {
+           return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
+       }
+       return AVS_FILEUTILS_ERROR_CONVERT;
+	}
+	int ppt2pptm_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+       COfficePPTFile pptFile;
+
+       pptFile.put_TempDirectory(sTemp);
+	   
+	   bool bMacros = true;
+	   long hRes = pptFile.LoadFromFile(sFrom, sTo, params.getPassword(), bMacros);
+
+		if (AVS_ERROR_DRM == hRes)
+		{
+			if(!params.getDontSaveAdditional())
+			{
+				copyOrigin(sFrom, *params.m_sFileTo);
+			}
+			return AVS_FILEUTILS_ERROR_CONVERT_DRM;
+		}
+		else if (AVS_ERROR_PASSWORD == hRes)
+		{
+			return AVS_FILEUTILS_ERROR_CONVERT_PASSWORD;
+		}
+		return 0 == hRes ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+	}
 	// ppt -> pptt
 	int ppt2pptt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
-   {
+	{
        std::wstring sResultPpttDir = sTemp + FILE_SEPARATOR_STR + _T("pptt_unpacked");
        std::wstring sTempPpttFileEditor = sResultPpttDir + FILE_SEPARATOR_STR + _T("Editor.bin");
 
@@ -1743,7 +1796,7 @@ namespace NExtractTools
    }
 	// ppt -> pptt_bin
 	int ppt2pptt_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
-   {
+	{
        // unzip pptx to temp folder
        std::wstring sTempUnpackedPPTX = sTemp + FILE_SEPARATOR_STR + _T("pptx_unpacked")+ FILE_SEPARATOR_STR;  // leading slash is very important!
 
@@ -1753,7 +1806,8 @@ namespace NExtractTools
 
        pptFile.put_TempDirectory(sTemp);
 
-       long nRes = pptFile.LoadFromFile(sFrom, sTempUnpackedPPTX, params.getPassword());
+	   bool bMacros = true;
+       long nRes = pptFile.LoadFromFile(sFrom, sTempUnpackedPPTX, params.getPassword(), bMacros);
 
 		if (SUCCEEDED_X2T(nRes))
         {
@@ -3970,6 +4024,10 @@ namespace NExtractTools
 			case TCD_PPT2PPTX:
 			{
 				result =  ppt2pptx (sFileFrom, sFileTo, sTempDir, oInputParams);
+            }break;
+			case TCD_PPT2PPTM:
+			{
+				result =  ppt2pptm (sFileFrom, sFileTo, sTempDir, oInputParams);
             }break;
 			case TCD_PPT2PPTT:
 			{

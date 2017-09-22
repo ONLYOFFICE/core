@@ -102,6 +102,10 @@ void oox_chart::oox_serialize_common(std::wostream & _Wostream)
 		}
 		for (size_t i = 0; i < series_.size(); i++)
 		{
+			if (is3D_ || type_ == CHART_TYPE_AREA || type_ == CHART_TYPE_STOCK)
+			{
+				series_[i]->labelPosEnabled_ = false;
+			}
 			series_[i]->oox_serialize(_Wostream);
 		}
 		for (size_t i = 0; i < axisId_.size(); i++)

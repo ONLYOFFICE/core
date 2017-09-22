@@ -378,7 +378,8 @@ void docx_conversion_context::start_document()
 	output_stream() << L"xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" "; 
 	output_stream() << L"xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" "; 
 	output_stream() << L"xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" "; 
-	output_stream() << L"xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" "; 
+	output_stream() << L"xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" ";
+	output_stream() << L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
 	output_stream() << L"mc:Ignorable=\"w14 wp14\">";
 
 
@@ -406,14 +407,12 @@ void docx_conversion_context::end_document()
    
 	output_document_->get_word_files().set_notes(notes_context_);
 ////////////////////////	
-	int count = 0;
-    BOOST_FOREACH(const oox_chart_context_ptr& chart, charts_)
+	for (size_t i = 0; i < charts_.size(); i++)
     {
-		count++;
 		package::chart_content_ptr content = package::chart_content::create();
 
-		chart->serialize(content->content());
-		chart->dump_rels(content->get_rel_file()->get_rels());
+		charts_[i]->serialize(content->content());
+		charts_[i]->dump_rels(content->get_rel_file()->get_rels());
 
 		output_document_->get_word_files().add_charts(content);
 	
@@ -580,10 +579,10 @@ mc:Ignorable=\"w14 wp14\">";
         strm << L"</w:abstractNum>";
     }
 
-    BOOST_FOREACH(int numId, numIds)
+	for (size_t i = 0; i < numIds.size(); i++)
     {
-        strm << L"<w:num w:numId=\"" << numId << L"\" >";
-        strm << L"<w:abstractNumId w:val=\"" << numId << "\" />";
+        strm << L"<w:num w:numId=\"" << numIds[i] << L"\" >";
+        strm << L"<w:abstractNumId w:val=\"" << numIds[i] << "\" />";
         strm << L"</w:num>";    
     }
 

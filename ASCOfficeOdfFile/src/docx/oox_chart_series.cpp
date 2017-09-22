@@ -57,6 +57,7 @@ oox_chart_series::oox_chart_series()
 
 	iSymbolMarkerType_	= 0;
 	bLocalTable_		= false;
+	labelPosEnabled_	= true;
 }
 void oox_chart_series::setName(std::wstring &value)
 {
@@ -135,7 +136,7 @@ void oox_chart_series::parse_properties()
 		if (*intVal == 2)	data_labels_->set_showPercent(true); 		
 	}
 	odf_reader::GetProperty(content_.properties_, L"label-position", intVal);
-	if (intVal)
+	if (intVal && labelPosEnabled_)
 	{
 		if (!data_labels_)	data_labels_ = oox_data_labels();
 		

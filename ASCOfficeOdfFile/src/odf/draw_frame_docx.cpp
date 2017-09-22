@@ -1067,7 +1067,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 		return;
  
 	std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
-	int pos_replaicement= href.find(L"ObjectReplacements"); 
+	int pos_replaicement	= href.find(L"ObjectReplacements"); 
 
     const draw_frame * frame = Context.get_drawing_context().get_current_frame();//owner
 	if (!frame)
@@ -1076,9 +1076,12 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	oox::_docx_drawing * drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get()); 
 	if (!drawing) return;
 
- 	if (pos_replaicement >= 0 && !Context.get_drawing_context().get_use_image_replace())
+ 	if (pos_replaicement >= 0)
 	{
-		return; //skip replacement image (math, chart, ...)  - возможно записать как альтернативный контент - todooo ???
+		if (!Context.get_drawing_context().get_use_image_replace())
+			return; //skip replacement image (math, chart, ...)  - возможно записать как альтернативный контент - todooo ???
+		if (href.length() - (pos_replaicement + 18) < 2)
+			return; //href="./ObjectReplacements/"
 	}
 
 	if (drawing->type == oox::typeUnknown)
@@ -1122,7 +1125,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	drawing->fill.bitmap = oox::oox_bitmap_fill::create();
 	drawing->fill.type = 2;
 	drawing->fill.bitmap->isInternal = false;
-    drawing->fill.bitmap->rId = Context.add_mediaitem(href, oox::typeImage, drawing->fill.bitmap->isInternal,href);
+    drawing->fill.bitmap->rId = Context.add_mediaitem(href, oox::typeImage, drawing->fill.bitmap->isInternal, href);
 	drawing->fill.bitmap->bStretch = true;
 
     const std::wstring styleName = frame->common_draw_attlists_.shape_with_text_and_styles_.
@@ -1388,12 +1391,24 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 	Context.set_paragraph_state	(false);	
 
 	if (!Context.get_drawing_context().in_group() && !runState)
-		Context.add_new_run(_T(""));
+	{
+		if (!pState)//0115GS3-KeyboardShortcuts.odt
+		{
+			Context.start_paragraph();
+		}
+		Context.add_new_run(L"");
+	}
 
 	drawing->serialize(Context.output_stream()/*, Context.get_drawing_state_content()*/);
 
 	if (!Context.get_drawing_context().in_group() && !runState)
+	{
 		Context.finish_run();
+		if (!pState)//0115GS3-KeyboardShortcuts.odt
+		{
+			Context.finish_paragraph();
+		}
+	}
 
 	Context.set_run_state		(runState);
 	Context.set_paragraph_state	(pState);	
@@ -1406,9 +1421,9 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 {
     try 
 	{
-        std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
+        std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
 
-		if (!odf_document_)
+		if (!odf_document_ && !href.empty())
 		{			
 			std::wstring folderPath = Context.root()->get_folder();
 			std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;

@@ -86,10 +86,15 @@ void text::add_text(const std::wstring & Text)
 
 void text::docx_convert(oox::docx_conversion_context & Context)
 {
+	if (Context.get_process_note() != oox::docx_conversion_context::noNote && 
+		Context.get_delete_text_state()) 
+			return; //в ms нет рецензирования notes
+
     Context.add_element_to_run();
 	std::wostream & strm = Context.output_stream();
   
 	std::wstring textNode = L"w:t";
+
 	if (Context.get_delete_text_state()) textNode = L"w:delText";
 
 	strm << L"<" << textNode;

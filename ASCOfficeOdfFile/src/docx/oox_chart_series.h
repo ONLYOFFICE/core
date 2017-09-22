@@ -55,6 +55,7 @@ public:
 	
 	virtual void oox_serialize(std::wostream & _Wostream) = 0;
 	
+	bool						labelPosEnabled_;
 	_oox_chart_values			values_[5]; //cat(labels), common, x, y, bubble, 
 	int							id_;
 	std::wstring				name_;	//tx (Series Text) §21.2.2.215

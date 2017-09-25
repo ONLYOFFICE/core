@@ -96,7 +96,7 @@ void text_tracked_context::start_change (std::wstring id)
 {
 	current_state_.clear();
 
-	current_state_.id	= id;
+	current_state_.id = id;
 }
 void text_tracked_context::end_change ()
 {
@@ -1285,7 +1285,8 @@ void docx_conversion_context::start_text_changes (std::wstring id)
 										L" w:author=\""	+ state.author	+ L"\"" ;
 
 		finish_run();
-		state.active = true;
+		state.active		= true;
+		state.in_drawing	= get_drawing_state_content();
 		
 		if (state.type	== 1)
 		{
@@ -1419,6 +1420,9 @@ void docx_conversion_context::end_changes()
 		if (state.type	== 0)	continue; //unknown change ... libra format change skip
 		if (state.type	== 3)	continue;
 		if (!state.active)		continue;
+		
+		if (state.in_drawing != get_drawing_state_content())
+			continue;
 
 		if (state.type	== 1)	output_stream() << L"</w:ins>";
 		if (state.type	== 2)	output_stream() << L"</w:del>";

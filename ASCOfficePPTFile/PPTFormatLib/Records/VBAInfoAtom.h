@@ -106,7 +106,7 @@ public:
 		m_sFileName = m_strTmpDirectory + FILE_SEPARATOR_STR +  L"vbaProject.bin";
 			
 		NSFile::CFileBinary file;
-		if (file.CreateFile(m_sFileName))
+        if (file.CreateFileW(m_sFileName))
 		{
 			file.WriteFile(pData, decompressedSize);
 			file.CloseFile();

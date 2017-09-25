@@ -1905,13 +1905,13 @@ namespace DocFileFormat
 			switch (pSpa->wr)
 			{
 				case 0:
-				case 2:	wrapType = L"square";
-				case 1:	wrapType = L"topAndBottom";
-				case 3:	wrapType = L"through";
+				case 2:	wrapType = L"square";		break;
+				case 1:	wrapType = L"topAndBottom";	break;
+				case 3:	wrapType = L"through";		break;
 				case 4:
-				case 5:	wrapType = L"tight";
+				case 5:	wrapType = L"tight";		break;
 				default:
-						wrapType = L"none";
+						wrapType = L"none";			break;
 			}
 		}
 

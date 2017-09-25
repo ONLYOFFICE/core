@@ -338,5 +338,28 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 		shape->bad_shape_ = true;
 	}
 }
+
+void dr3d_scene::docx_convert(oox::docx_conversion_context & Context)
+{
+	//if (Context.get_drawing_context().get_current_level() >0 )return;
+ 	if (Context.get_drawing_context().get_current_level() > 0 && !Context.get_drawing_context().in_group() )
+	{ 
+		if(Context.delayed_converting_ == false)
+			Context.add_delayed_element(this);
+		return;
+	}
+	common_docx_convert(Context);
+	//...
+	draw_shape::docx_convert(Context);
+}
+void dr3d_extrude::docx_convert(oox::docx_conversion_context & Context)
+{
+	reset_svg_path();
+
+}
+void dr3d_light::docx_convert(oox::docx_conversion_context & Context)
+{
+
+}
 }
 }

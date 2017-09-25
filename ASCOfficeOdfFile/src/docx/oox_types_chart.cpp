@@ -102,7 +102,7 @@ void oox_chart::oox_serialize_common(std::wostream & _Wostream)
 		}
 		for (size_t i = 0; i < series_.size(); i++)
 		{
-			if (is3D_ || type_ == CHART_TYPE_AREA || type_ == CHART_TYPE_STOCK)
+			if (is3D_ || type_ == CHART_TYPE_AREA || type_ == CHART_TYPE_DOUGHNUT || type_ == CHART_TYPE_RADAR)
 			{
 				series_[i]->labelPosEnabled_ = false;
 			}
@@ -473,7 +473,7 @@ void oox_stock_chart::oox_serialize(std::wostream & _Wostream)
 			//{
 			//	//shape.oox_serialize(CP_XML_STREAM());
 			//}
-			CP_XML_NODE(L"upDownBars")
+			CP_XML_NODE(L"c:upDownBars")
 			{
 				CP_XML_NODE(L"c:gapWidth")
 				{

@@ -346,6 +346,13 @@ enum ElementType
 	typeDrawHandle,
 	typeDrawEquation,
 
+	typeDr3dScene,
+	typeDr3dLight,
+	typeDr3dExtrude,
+	typeDr3dCube,
+	typeDr3dRotate,
+	typeDr3dSphere,
+
 	typeDrawPage,    
 	typePresentationFooterDecl,
 	typePresentationDateTimeDecl,

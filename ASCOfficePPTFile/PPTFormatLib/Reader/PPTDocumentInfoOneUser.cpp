@@ -52,6 +52,7 @@ CPPTUserInfo::CPPTUserInfo() :	CDocument(),
 								m_pDecryptor(NULL),
 								m_arOffsetPictures()
 {
+	m_VbaProjectStg			= NULL;
 	m_pDocumentInfo			= NULL;
 	m_lIndexThisUser		= -1;
 
@@ -83,6 +84,7 @@ void CPPTUserInfo::Clear()
 
 	RELEASEOBJECT(m_pDecryptor);
 	RELEASEOBJECT(m_pStorageDecrypt);
+	RELEASEOBJECT(m_VbaProjectStg);
 	
 	for (std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapSlides.begin(); pPair != m_mapSlides.end(); ++pPair)
 	{
@@ -388,6 +390,47 @@ bool CPPTUserInfo::ReadDocumentPersists(POLE::Stream* pStream)
 			pSlide->m_Index		= 0;			
 			
 			m_mapHandoutMasters.insert( std::pair<DWORD, CRecordSlide*>(0, pSlide ));		
+		}
+	}
+	if (m_bMacros)
+	{
+		m_bMacros = false;
+		std::vector<CRecordVBAInfoAtom*> oArrayVba;
+		m_oDocument.GetRecordsByType(&oArrayVba, true, true);
+
+		if (!oArrayVba.empty())
+		{
+			if (oArrayVba[0]->m_nHasMacros)
+			{
+				nIndexPsrRef = m_mapOffsetInPIDs.find(oArrayVba[0]->m_nObjStgDataRef);
+				
+				if (m_mapOffsetInPIDs.end() != nIndexPsrRef)
+				{
+					offset_stream = nIndexPsrRef->second;
+					StreamUtils::StreamSeek(offset_stream, pStream);
+
+					POLE::Stream *pStreamTmp = pStream;
+					if (m_pDecryptor)
+					{
+						DecryptStream(pStream, oArrayVba[0]->m_nObjStgDataRef);
+						pStreamTmp = m_arStreamDecrypt.back()->stream_;
+					}
+					oHeader.ReadFromStream(pStreamTmp);
+
+					m_VbaProjectStg = new CRecordVbaProjectStg(m_strTmpDirectory);
+					m_VbaProjectStg->ReadFromStream(oHeader, pStreamTmp);
+
+					if (m_VbaProjectStg->m_sFileName.empty())
+					{
+						RELEASEOBJECT(m_VbaProjectStg);
+					}
+					else
+					{
+						m_sVbaProjectFile = m_VbaProjectStg->m_sFileName;
+						m_bMacros = true;
+					}
+				}
+			}
 		}
 	}
 	return true;

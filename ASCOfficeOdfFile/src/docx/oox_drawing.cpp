@@ -171,7 +171,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 					if ( color.empty() )
 					{
 						if (always_draw)	color = L"000000";
-						else				color = L"FFFFFFFF";
+						else				color = L"FFFFFF";
 					}
 					
 					CP_XML_NODE(L"a:srgbClr")
@@ -210,16 +210,15 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 		}
     }
 }
-void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_property> & prop)
+void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_property> & prop, const std::wstring & shapeGeomPreset)
 {
 	CP_XML_WRITER(strm)
     {
 		CP_XML_NODE(L"a:avLst")
 		{
-			_CP_OPT(bool) bModifiers;
 			_CP_OPT(std::wstring) strModifiers;
-			odf_reader::GetProperty(prop, L"bModifiers",		bModifiers);
 			odf_reader::GetProperty(prop, L"oox-draw-modifiers", strModifiers);
+			
 			if (strModifiers)
 			{
 				std::vector< std::wstring > values;
@@ -227,17 +226,61 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 
 				if (!values.empty() && values.back().empty()) values.pop_back();
 
+				std::vector<std::wstring> names;
+			
+				if (std::wstring::npos != shapeGeomPreset.find(L"math") ||
+					std::wstring::npos != shapeGeomPreset.find(L"bentConnector") || 
+					std::wstring::npos != shapeGeomPreset.find(L"curvedConnector")|| 
+					std::wstring::npos != shapeGeomPreset.find(L"frame"))
+				{
+					names.push_back(L"adj1");
+				}
+				else if (std::wstring::npos != shapeGeomPreset.find(L"decagon"))
+				{
+					names.push_back(L"vf");
+				}
+				else if (std::wstring::npos != shapeGeomPreset.find(L"heptagon") ||
+						 std::wstring::npos != shapeGeomPreset.find(L"pentagon"))
+				{
+					names.push_back(L"hf");
+					names.push_back(L"vf");
+				}
+				else if (std::wstring::npos != shapeGeomPreset.find(L"hexagon"))
+				{
+					names.push_back(L"adj");
+					names.push_back(L"vf");
+				}
+				else if (std::wstring::npos != shapeGeomPreset.find(L"star5")|| 
+						 std::wstring::npos != shapeGeomPreset.find(L"star7"))
+				{
+					names.push_back(L"adj");
+					names.push_back(L"hf");
+					names.push_back(L"vf");
+				}
+				else if (std::wstring::npos != shapeGeomPreset.find(L"star6") ||
+						 std::wstring::npos != shapeGeomPreset.find(L"star10"))
+				{
+					names.push_back(L"adj");
+					names.push_back(L"hf");
+				}
+
 				for (size_t i = 0; i < values.size(); i++)
 				{
 					if (values[i].empty()) continue;
+					
 					CP_XML_NODE(L"a:gd")
 					{
-						//if (values.size() > 1 || bModifiers)
-							//весьма странное .. для некоторых модификаторов (напр math...) нужно указывать множественность их
-							CP_XML_ATTR(L"name", L"adj" + std::to_wstring(i+1));
-						//else
-						//	CP_XML_ATTR(L"name", L"adj");
-						
+						if (names.size() > i)
+						{
+							CP_XML_ATTR(L"name", names[i]);
+						}
+						else
+						{
+							if (values.size() > 1)
+								CP_XML_ATTR(L"name", L"adj" + std::to_wstring(i + 1));
+							else
+								CP_XML_ATTR(L"name", L"adj");
+						}						
 						CP_XML_ATTR(L"fmla", L"val " + values[i]);
 					}
 				}
@@ -321,7 +364,8 @@ void _oox_drawing::serialize_bodyPr(std::wostream & strm, const std::wstring & n
 					CP_XML_NODE(L"a:prstTxWarp")
 					{
 						CP_XML_ATTR(L"prst", shapeType);
-						oox_serialize_aLst(CP_XML_STREAM(), prop);
+						
+						oox_serialize_aLst(CP_XML_STREAM(), prop, shapeType);
 					}
 				}
 			}
@@ -370,7 +414,8 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 		{
 			CP_XML_NODE(L"a:custGeom")
 			{        
-				oox_serialize_aLst(CP_XML_STREAM(), additional);
+				std::vector<std::wstring> names;
+				oox_serialize_aLst(CP_XML_STREAM(), additional, L"");
 				
 				CP_XML_NODE(L"a:ahLst");
 				CP_XML_NODE(L"a:gdLst");
@@ -414,11 +459,7 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 				CP_XML_ATTR(L"prst", shapeGeomPreset);
 				if (!bWordArt) 
 				{
-					if (std::wstring::npos != shapeGeomPreset.find(L"mathPlus"))
-					{
-						additional.push_back(odf_reader::_property(L"bModifiers", true));
-					}
-					oox_serialize_aLst(CP_XML_STREAM(), additional);
+					oox_serialize_aLst(CP_XML_STREAM(), additional, shapeGeomPreset);
 				}
 			}					
 		}
@@ -525,9 +566,6 @@ void oox_serialize_action(std::wostream & strm, _action_desc const & val)
     {
 		CP_XML_NODE(L"a:hlinkClick")
 		{
-			//CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-			//CP_XML_ATTR(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");
-
 			if (!val.action.empty())
 				CP_XML_ATTR(L"action", val.action);
 			
@@ -544,6 +582,8 @@ void oox_serialize_action(std::wostream & strm, _action_desc const & val)
 					CP_XML_ATTR(L"name", L"sound");
 				}
 			}
+			//CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+			//CP_XML_ATTR(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");
 		}
 	}
 }

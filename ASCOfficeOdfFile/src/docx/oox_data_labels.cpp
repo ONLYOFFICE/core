@@ -117,15 +117,15 @@ void oox_data_labels::oox_serialize(std::wostream & _Wostream)
 					case 1: CP_XML_ATTR(L"val", L"b");		break;
 					case 2: CP_XML_ATTR(L"val", L"b");		break;
 					case 3: CP_XML_ATTR(L"val", L"b");		break;
-					case 4: CP_XML_ATTR(L"val", L"ctr");	break;
-					case 5: CP_XML_ATTR(L"val", L"inEnd");	break;
 					case 6: CP_XML_ATTR(L"val", L"l");		break;
 					case 7: CP_XML_ATTR(L"val", L"inBase");	break;
-					case 8: CP_XML_ATTR(L"val", L"outEnd");	break;
 					case 9: CP_XML_ATTR(L"val", L"r");		break;
 					case 10: CP_XML_ATTR(L"val", L"t");		break;
 					case 11: CP_XML_ATTR(L"val", L"t");		break;
 					case 12: CP_XML_ATTR(L"val", L"t");		break;
+					case 5: //CP_XML_ATTR(L"val", L"inEnd");	break;
+					case 8: //CP_XML_ATTR(L"val", L"outEnd");	break;
+					case 4: CP_XML_ATTR(L"val", L"ctr");	break;
 
 					}
 				}

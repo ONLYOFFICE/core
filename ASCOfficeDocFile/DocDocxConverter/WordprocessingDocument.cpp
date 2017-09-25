@@ -180,10 +180,37 @@ namespace DocFileFormat
 	{
 	}
 
-	void WordprocessingDocument::SaveDocument()
+	void WordprocessingDocument::SaveDocument(bool &bMacros)
 	{
-        std::wstring pathWord = m_strOutputPath + FILE_SEPARATOR_STR + L"word" ;
-         NSDirectory::CreateDirectory( pathWord );
+		std::wstring pathWord = m_strOutputPath + FILE_SEPARATOR_STR + L"word" ;
+		NSDirectory::CreateDirectory( pathWord );
+
+		if (bMacros && docFile->GetStorage()->isDirectory("Macros"))
+		{
+			std::wstring sVbaProjectFile = pathWord + FILE_SEPARATOR_STR + L"vbaProject.bin";
+
+			POLE::Storage *storageVbaProject = new POLE::Storage(sVbaProjectFile.c_str());
+
+			if ((storageVbaProject) && (storageVbaProject->open(true, true)))
+			{			
+				docFile->GetStorage()->copy(0, "Macros/", storageVbaProject, false);
+
+				storageVbaProject->close();
+				delete storageVbaProject;
+
+				RegisterDocumentMacros();
+				RegisterVbaProject();	
+				//output_document->get_xl_files().add_vba_project();
+			}
+			else bMacros = false;
+		}
+		else 
+			bMacros = false;
+
+		if (!bMacros)
+		{
+			RegisterDocument();
+		}
 
 		WritePackage();
 

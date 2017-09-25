@@ -42,7 +42,6 @@ namespace DocFileFormat
 		{
 
 		}
-
 		~StructuredStorageReader()
 		{
 			if(m_pStorage)
@@ -62,6 +61,12 @@ namespace DocFileFormat
 			}
 			return false;
 		}
+		bool isDirectory( const std::string& name )
+		{
+			if (!m_pStorage) return false;
+			
+			return m_pStorage->isDirectory(name);
+		}
 
 		bool GetStream (const char *path, POLE::Stream** ppStream)
 		{
@@ -79,8 +84,78 @@ namespace DocFileFormat
 		{
 			return m_pStorage;
 		}
+	
+		void copy( int indent, std::string path, POLE::Storage * storageOut, bool withRoot = true)
+		{
+			std::list<std::string> entries, entries_sort;
+			entries = m_pStorage->entries( path );
+			
+			for( std::list<std::string>::iterator it = entries.begin(); it != entries.end(); it++ )
+			{
+				std::string name = *it;
+				std::string fullname = path + name;
+		       
+				if( m_pStorage->isDirectory( fullname ) )
+				{
+					entries_sort.push_back(name);
+				}
+				else
+				{
+					entries_sort.push_front(name);
+				}
+			}
+			//for( std::list<std::string>::iterator it = entries.begin(); it != entries.end(); it++ )
+			for( std::list<std::string>::iterator it = entries_sort.begin(); it != entries_sort.end(); it++ )
+			{
+				std::string name = *it;
+				std::string fullname = path + name;
+		       
+				if( m_pStorage->isDirectory( fullname ) )
+				{
+					copy( indent + 1, fullname + "/", storageOut, withRoot );
+				}
+				else
+				{
+					copy_stream(fullname, storageOut, withRoot);
+				}
+			}
+		}
 
 	private:
+		void copy_stream(std::string streamName, POLE::Storage * storageOut, bool withRoot = true)
+		{
+			POLE::Stream *stream = new POLE::Stream(m_pStorage, streamName);
+			if (!stream) return;
+
+			stream->seek(0);
+			int size_stream = stream->size();
+
+			if (withRoot == false)
+			{
+				int pos = streamName.find("/");
+				if (pos >= 0)
+					streamName = streamName.substr(pos + 1);
+			}
+			
+			POLE::Stream *streamNew = new POLE::Stream(storageOut, streamName, true, size_stream);
+			if (!streamNew) return;
+
+			unsigned char* data_stream = new unsigned char[size_stream];
+			if (data_stream)
+			{
+				stream->read(data_stream, size_stream);
+
+				streamNew->write(data_stream, size_stream);
+
+				delete []data_stream;
+				data_stream = NULL;
+			}
+
+			streamNew->flush();
+					
+			delete streamNew;
+			delete stream;
+		}
 
 		POLE::Storage* m_pStorage;
 	};

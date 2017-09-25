@@ -108,7 +108,6 @@ font_weight font_weight::parse(const std::wstring & Str)
         return font_weight( W900 );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );
         return WNormal;
     }
 }

@@ -95,6 +95,7 @@ public:
 
 	// чтобы загружать неизмененные элементы от других юзеров (предыдущих)
 	CPPTDocumentInfo*								m_pDocumentInfo;
+	CRecordVbaProjectStg*							m_VbaProjectStg;
 	int												m_lIndexThisUser;
 
 	// Animations structures

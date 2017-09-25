@@ -41,8 +41,9 @@ public:
     std::wstring					m_strTmpDirectory;
 	std::map<int, std::wstring>		m_mapStoreImageFile;
     std::wstring					m_strPassword;
+	bool							m_bMacros;
 
-	CPPTDocumentInfo() : m_oCurrentUser(), m_arUsers() 
+	CPPTDocumentInfo() : m_oCurrentUser(), m_bMacros(true)
 	{
 	}
 
@@ -88,6 +89,7 @@ public:
 			pInfo->m_strTmpDirectory	= m_strTmpDirectory;
 			pInfo->m_bEncrypt			= m_oCurrentUser.m_bIsEncrypt;
 			pInfo->m_strPassword		= m_strPassword;
+			pInfo->m_bMacros			= m_bMacros;
            
 			bool bResult = pInfo->ReadFromStream(&oUserAtom, pStream);
 

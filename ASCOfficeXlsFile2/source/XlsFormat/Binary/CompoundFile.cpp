@@ -134,12 +134,26 @@ void CompoundFile::copy_stream(std::string streamName, POLE::Storage * storageOu
 
 void CompoundFile::copy( int indent, std::string path, POLE::Storage * storageOut, bool withRoot)
 {
-    std::list<std::string> entries;
+    std::list<std::string> entries, entries_sort;
     entries = storage_->entries( path );
-    
-    std::list<std::string>::iterator it;
-    for( it = entries.begin(); it != entries.end(); ++it )
-    {
+	
+	for( std::list<std::string>::iterator it = entries.begin(); it != entries.end(); it++ )
+	{
+        std::string name = *it;
+        std::string fullname = path + name;
+       
+        if( storage_->isDirectory( fullname ) )
+		{
+			entries_sort.push_back(name);
+		}
+		else
+		{
+			entries_sort.push_front(name);
+		}
+	}
+	//for( std::list<std::string>::iterator it = entries.begin(); it != entries.end(); it++ )
+	for( std::list<std::string>::iterator it = entries_sort.begin(); it != entries_sort.end(); it++ )
+	{
         std::string name = *it;
         std::string fullname = path + name;
        
@@ -151,7 +165,7 @@ void CompoundFile::copy( int indent, std::string path, POLE::Storage * storageOu
 		{
 			copy_stream(fullname, storageOut, withRoot);
 		}
-    }    
+    }
 }
 CFStreamPtr CompoundFile::getWorkbookStream()
 {

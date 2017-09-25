@@ -472,6 +472,13 @@ void pptx_slide_context::set_media_param(std::wstring name, std::wstring value)
 
 void pptx_slide_context::set_image(const std::wstring & path)
 {
+	int pos_replaicement = path.find(L"ObjectReplacements"); 
+	if (pos_replaicement >= 0)
+	{
+		if (path.length() - (pos_replaicement + 18) < 2)
+			return; //object without image
+	}
+
 	if (impl_->object_description_.type_ == typeUnknown)
 	{
 		impl_->object_description_.type_		= typeImage;	

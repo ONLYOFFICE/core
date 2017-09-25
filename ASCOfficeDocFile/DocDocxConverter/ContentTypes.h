@@ -157,6 +157,7 @@ namespace OpenXmlRelationshipTypes
     static const wchar_t* OleObject				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject";
     static const wchar_t* GlossaryDocument		=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/glossaryDocument";
     static const wchar_t* Package				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package";
+    static const wchar_t* VbaProject			=	L"http://schemas.microsoft.com/office/2006/relationships/vbaProject";
 }
 
 namespace MicrosoftWordRelationshipTypes

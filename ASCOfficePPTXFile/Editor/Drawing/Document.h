@@ -48,7 +48,10 @@ namespace NSPresentationEditor
 
 		CMetricInfo				m_oInfo;
 
-		CDocument() : m_arThemes(), m_arSlides()
+		bool					m_bMacros;
+		std::wstring			m_sVbaProjectFile;
+
+		CDocument() : m_bMacros (false)
 		{
 			m_pHandoutMaster	= NULL;
 			m_pNotesMaster		= NULL;

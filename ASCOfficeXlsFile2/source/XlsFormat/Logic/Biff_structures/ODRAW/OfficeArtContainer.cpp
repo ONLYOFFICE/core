@@ -206,6 +206,8 @@ void OfficeArtContainer::loadFields(XLS::CFRecord& record)
 		}
 		else // If the found record is not implemented or unknown
 		{
+			if (rh_child.recType == 0xf150)
+				break;
 			if (rh_child.size() > record.getDataSize() - container_beginning_ptr)
 				break;
 			try

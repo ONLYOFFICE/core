@@ -66,7 +66,7 @@ public:
 		return m_strTempDirectory;
 	}
 
-    HRESULT LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring password);
+    HRESULT LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring password, bool &bMacros);
 
 private:
 
@@ -76,7 +76,7 @@ private:
     std::wstring				m_strTempDirectory;
 	std::wstring				m_sTempDecryptFileName;
 	
-    long OpenFile(const std::wstring & fileName, const std::wstring & password);
+    long OpenFile(const std::wstring & fileName, const std::wstring & password, bool &bMacros);
     bool CloseFile();
 
 	std::wstring GetDirectory(std::wstring strFileName);

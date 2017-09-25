@@ -1040,23 +1040,44 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 
     std::wostream & strm = Context.output_stream();
 
-	bool pState = Context.get_paragraph_state();
-	Context.set_paragraph_state(false);		
+	bool runState	= Context.get_run_state();
+	bool paraState	= Context.get_paragraph_state();
+	bool keepState	= Context.get_paragraph_keep();
+
+	//Context.set_run_state		(false);	
+	Context.set_paragraph_state	(false);	
+
+	bool new_run = false;
 	
-	bool new_run = true;
-	
-	if ((pState == false && Context.get_drawing_context().get_current_level() == 1) || (Context.get_drawing_context().in_group()))
+	if ((paraState == false && Context.get_drawing_context().get_current_level() == 1) || (Context.get_drawing_context().in_group()))
 	{
-		new_run = false;
 	}
 	else
-		Context.add_new_run(_T(""));
+	{
+		if (!Context.get_drawing_context().in_group() && !runState)
+		{
+			if (!paraState)
+			{
+				Context.start_paragraph();
+			}
+			Context.add_new_run(L"");
+
+			new_run = true;
+		}
+	}
 
 	drawing.serialize(strm/*, Context.get_drawing_state_content()*/);
 
-	if (new_run) Context.finish_run();
+	if (new_run)
+	{
+		Context.finish_run();
+		if (!paraState)
+		{
+			Context.finish_paragraph();
+		}
+	}
 
-	Context.set_paragraph_state(pState);		
+	Context.set_paragraph_state(paraState);		
 
 	Context.get_drawing_context().stop_shape();
 }
@@ -1384,7 +1405,7 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 
 //-----------------------------------------------------------------------------------------------------
 	bool runState	= Context.get_run_state();
-	bool pState		= Context.get_paragraph_state();
+	bool paraState	= Context.get_paragraph_state();
 	bool keepState	= Context.get_paragraph_keep();
 
 	Context.set_run_state		(false);	
@@ -1392,7 +1413,7 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 
 	if (!Context.get_drawing_context().in_group() && !runState)
 	{
-		if (!pState)//0115GS3-KeyboardShortcuts.odt
+		if (!paraState)//0115GS3-KeyboardShortcuts.odt
 		{
 			Context.start_paragraph();
 		}
@@ -1404,14 +1425,14 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 	if (!Context.get_drawing_context().in_group() && !runState)
 	{
 		Context.finish_run();
-		if (!pState)//0115GS3-KeyboardShortcuts.odt
+		if (!paraState)//0115GS3-KeyboardShortcuts.odt
 		{
 			Context.finish_paragraph();
 		}
 	}
 
 	Context.set_run_state		(runState);
-	Context.set_paragraph_state	(pState);	
+	Context.set_paragraph_state	(paraState);	
 	Context.set_paragraph_keep	(keepState);
 
 	Context.get_drawing_context().stop_frame();

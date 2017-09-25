@@ -335,5 +335,25 @@ void draw_enhanced_geometry::xlsx_convert(oox::xlsx_conversion_context & Context
 		}
 	}
 }
+void dr3d_scene::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	//const std::wstring style = common_shape_draw_attlist_.draw_text_style_name_.get_value_or(L"");
+
+	Context.get_drawing_context().start_shape(1);//rect с наваротами-атрибутами .. а-ля TextBox
+	
+	common_xlsx_convert(Context);
+
+	Context.get_drawing_context().end_shape();
+	Context.get_drawing_context().clear();
+}
+void dr3d_extrude::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+	reset_svg_path();
+
+}
+void dr3d_light::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+
+}
 }
 }

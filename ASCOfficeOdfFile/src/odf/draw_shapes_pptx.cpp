@@ -402,5 +402,23 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 		Context.get_slide_context().start_shape(1); //restart type shape
 	}
 }
+void dr3d_scene::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	Context.get_slide_context().start_shape(sub_type_);
+
+	common_pptx_convert(Context);
+
+	Context.get_slide_context().end_shape();
+
+}
+void dr3d_extrude::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	reset_svg_path();
+
+}
+void dr3d_light::pptx_convert(oox::pptx_conversion_context & Context)
+{
+
+}
 }
 }

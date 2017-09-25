@@ -492,10 +492,11 @@ public:
 		std::wstring				id;
 		std::wstring				author;
 		std::wstring				date;
-		int							type;
+		int							type = 0;
 		std::wstring				style_name;
 		std::vector<std::wstring>	content;	//delete elements		
-		bool						active;
+		bool						active = false;
+		bool						in_drawing = false;
 	
 		void clear()
 		{
@@ -505,6 +506,7 @@ public:
 			date.clear();
 			content.clear();
 			active = false;
+			in_drawing = false;
 		}
 	};
 	std::wstring dumpPPr_;

@@ -1,4 +1,4 @@
-﻿/*====================================================================*
+/*====================================================================*
  -  Copyright (C) 2001 Leptonica.  All rights reserved.
  -  This software is distributed in the hope that it will be
  -  useful, but with NO WARRANTY OF ANY KIND.
@@ -734,7 +734,9 @@ char            pathname[_MAX_PATH];
 
     if (index == 0) {
         snprintf(buffer, L_BUF_SIZE, "rm -f /tmp/junk_display.*");
+#if !defined(_IOS)
         ignore = system(buffer);
+#endif
     }
 
     index++;
@@ -778,7 +780,10 @@ char            pathname[_MAX_PATH];
                  "xzgv --geometry %dx%d+%d+%d %s &", wt + 10, ht + 10,
                  x, y, tempname);
     }
+
+#if !defined(_IOS)
     ignore = system(buffer);
+#endif
 
 #else  /* _WIN32 */
 
@@ -791,7 +796,9 @@ char            pathname[_MAX_PATH];
     else
         snprintf(buffer, L_BUF_SIZE, "i_view32.exe \"%s\" /pos=(%d,%d)",
                  pathname, x, y);
+#if !defined(_IOS)
     ignore = system(buffer);
+#endif
 
 #endif  /* _WIN32 */
 
@@ -841,7 +848,9 @@ char    *dir, *tail;
     FREE(tail);
 #endif  /* _WIN32 */
 
+#if !defined(_IOS)
     ignore = system(buffer);
+#endif
     return 0;
 }
 
@@ -927,7 +936,11 @@ static l_int32  index = 0;  /* caution: not .so or thread safe */
     if (index == 0) {
         snprintf(buffer, L_BUF_SIZE,
            "rm -f /tmp/junk_write_display.*.png /tmp/junk_write_display.*.jpg");
+
+#if !defined(_IOS)
         ignore = system(buffer);
+#endif
+        
     }
     index++;
 

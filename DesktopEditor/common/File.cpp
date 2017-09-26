@@ -51,8 +51,10 @@ namespace NSFile
     {
         m_pFile = fopen(fileSystemRepresentation(sFileName), bRewrite ? "rb+" : "rb");
         
-        if (NULL == m_pFile)
+        if (NULL == m_pFile) {
+            printf ("NSFile::OpenFile - error open file : %s\n",strerror(errno));
             return false;
+        }
         
         fseek(m_pFile, 0, SEEK_END);
         m_lFileSize = ftell(m_pFile);
@@ -81,8 +83,10 @@ namespace NSFile
     {
         m_pFile = fopen(fileSystemRepresentation(sFileName), "wb");
         
-        if (NULL == m_pFile)
+        if (NULL == m_pFile) {
+            printf ("NSFile::CreateFileW - error create file : %s\n",strerror(errno));
             return false;
+        }
         
         m_lFilePosition = 0;
         return true;

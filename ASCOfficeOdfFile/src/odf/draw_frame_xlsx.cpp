@@ -265,7 +265,8 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 	try 
 	{
 		std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
-		if (!odf_document_)
+		
+		if (!odf_document_ && !href.empty())
 		{			
 			std::wstring folderPath = Context.root()->get_folder();
 			std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;

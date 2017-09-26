@@ -120,7 +120,7 @@ void math_mrow::oox_convert(oox::math_context & Context)
 	for (int i = i_start; i < i_end ; i++)
 	{
 		office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
-		math_element->oox_convert(Context);
+		math_element->oox_convert(Context);		
 	}
 
 	if (bDPr)

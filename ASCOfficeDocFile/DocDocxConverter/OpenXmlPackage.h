@@ -118,6 +118,8 @@ namespace DocFileFormat
 
 	class OpenXmlPackage
 	{
+	public:
+		const WordDocument* docFile;
 	private: 
 		ContentTypesFile DocumentContentTypesFile;
 		RelationshipsFile MainRelationshipsFile;
@@ -136,8 +138,6 @@ namespace DocFileFormat
 		int _headerCounter;
 		int _footerCounter;
 		int _oleCounter;
-
-		const WordDocument* docFile;
 
         int AddHeaderPart( const std::wstring& fileName, const std::wstring& relationshipType = L"", const std::wstring& targetMode = L"" );
         int AddFooterPart( const std::wstring& fileName, const std::wstring& relationshipType = L"", const std::wstring& targetMode = L"" );
@@ -166,6 +166,7 @@ namespace DocFileFormat
 		HRESULT SaveEmbeddedObject	( const std::wstring& fileName, const std::string& data );
 
 		int RegisterDocument();
+		int RegisterDocumentMacros();
 		int RegisterFontTable();
 		int RegisterNumbering();
 		int RegisterSettings();
@@ -179,5 +180,6 @@ namespace DocFileFormat
 		int RegisterOLEObject		( const IMapping* mapping, const std::wstring& objectType );
 		int RegisterPackage			( const IMapping* mapping, const std::wstring& objectType);
 		int RegisterExternalOLEObject( const IMapping* mapping, const std::wstring& objectType, const std::wstring& uri );
+		int RegisterVbaProject();
 	};
 }

@@ -240,7 +240,7 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
 					{
 							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_DOC2DOCX;
-						else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOC2DOCX;
+						else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOC2DOCM;
 						else if (0 == sExt2.compare(_T(".doct")))		res = TCD_DOC2DOCT;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_DOC2DOCT_BIN;
 					}break;
@@ -261,7 +261,7 @@ namespace NExtractTools
                 case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT:
                     {
                              if (0 == sExt2.compare(_T(".pptx")))		res = TCD_PPT2PPTX;
-                        else if (0 == sExt2.compare(_T(".pptm")))		res = TCD_PPT2PPTX;
+                        else if (0 == sExt2.compare(_T(".pptm")))		res = TCD_PPT2PPTM;
                         else if (0 == sExt2.compare(_T(".bin")))		res = TCD_PPT2PPTT_BIN;
                         else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_PPT2PPTT;
                     }break;

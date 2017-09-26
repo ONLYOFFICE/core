@@ -186,7 +186,7 @@ void NSPresentationEditor::CPPTXWriter::CloseFile()
 
 void NSPresentationEditor::CPPTXWriter::WriteContentTypes()
 {
-    std::wstring strContentTypes = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
+    std::wstring strContentTypes = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
 <Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\
 <Default Extension=\"bmp\" ContentType=\"image/bmp\" />\
 <Default Extension=\"png\" ContentType=\"image/png\" />\
@@ -208,14 +208,22 @@ void NSPresentationEditor::CPPTXWriter::WriteContentTypes()
 <Default Extension=\"xls\" ContentType=\"application/vnd.ms-excel\"/>\
 <Default Extension=\"xlsx\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"/>\
 <Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\" />\
-<Default Extension=\"jpg\" ContentType=\"application/octet-stream\"/>");
+<Default Extension=\"jpg\" ContentType=\"application/octet-stream\"/>";
 
-	strContentTypes += _T("<Override PartName=\"/ppt/presentation.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml\" />\
-<Override PartName=\"/ppt/presProps.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presProps+xml\" />\
+	if (m_pDocument->m_bMacros)
+	{
+		strContentTypes += L"<Override PartName=\"/ppt/presentation.xml\" ContentType=\"application/vnd.ms-powerpoint.presentation.macroEnabled.main+xml\" />\
+<Override PartName=\"/ppt/vbaProject.bin\" ContentType=\"application/vnd.ms-office.vbaProject\" />";
+	}
+	else
+	{
+		strContentTypes += L"<Override PartName=\"/ppt/presentation.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml\" />";
+	}
+	strContentTypes += L"<Override PartName=\"/ppt/presProps.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presProps+xml\" />\
 <Override PartName=\"/ppt/viewProps.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml\" />\
 <Override PartName=\"/ppt/tableStyles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml\"/>\
 <Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\" />\
-<Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\" />");
+<Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\" />";
 
 	int nIndexLayout = 1, nIndexTheme = 1;
 	
@@ -411,6 +419,15 @@ void NSPresentationEditor::CPPTXWriter::WritePresInfo()
     strPresRels += L"<Relationship Id=\"rId" + std::to_wstring(nCurrentRels++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/tableStyles\" Target=\"tableStyles.xml\"/>";
     strPresRels += L"<Relationship Id=\"rId" + std::to_wstring(nCurrentRels++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/viewProps\" Target=\"viewProps.xml\"/>";
 
+	if (m_pDocument->m_bMacros)
+	{
+		std::wstring strVbaProject = m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("vbaProject.bin");
+		
+		if (CDirectory::CopyFile(m_pDocument->m_sVbaProjectFile, strVbaProject))
+		{
+			strPresRels += L"<Relationship Id=\"rId" + std::to_wstring(nCurrentRels++) + L"\" Type=\"http://schemas.microsoft.com/office/2006/relationships/vbaProject\" Target=\"vbaProject.bin\"/>";
+		}
+	}
 	strPresRels = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">" 
 		+ strPresRels + L"</Relationships>";
 

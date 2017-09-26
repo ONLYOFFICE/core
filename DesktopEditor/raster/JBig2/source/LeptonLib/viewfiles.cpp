@@ -1,4 +1,4 @@
-﻿/*====================================================================*
+/*====================================================================*
  -  Copyright (C) 2001 Leptonica.  All rights reserved.
  -  This software is distributed in the hope that it will be
  -  useful, but with NO WARRANTY OF ANY KIND.
@@ -103,8 +103,10 @@ SARRAY    *safiles, *sathumbs, *saviews, *sahtml, *salink;
 
         /* Make the output directory if it doesn't already exist */
     sprintf(charbuf, "mkdir -p %s", dirout);
+    
+#if !defined(_IOS)
     ignore = system(charbuf);
-
+#endif
         /* Capture the filenames in the input directory */
     if ((safiles = getFilenamesInDirectory(dirin)) == NULL)
         return ERROR_INT("safiles not made", procName, 1);

@@ -187,6 +187,12 @@ namespace MetaFile
 			*pdY = pRect->nTop;
 			*pdW = pRect->nRight - pRect->nLeft;
 			*pdH = pRect->nBottom - pRect->nTop;
+
+			if (*pdW > 10000 || *pdH > 10000)
+			{
+				*pdW /= 10;
+				*pdH /= 10;
+			}
 		}
 		else
 		{

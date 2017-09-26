@@ -57,6 +57,7 @@ oox_chart_series::oox_chart_series()
 
 	iSymbolMarkerType_	= 0;
 	bLocalTable_		= false;
+	labelPosEnabled_	= true;
 }
 void oox_chart_series::setName(std::wstring &value)
 {
@@ -69,8 +70,7 @@ void oox_chart_series::setFormula(int ind, std::wstring &value, std::wstring & f
 
 	if (ind == 0)
 	{
-		long res = value.find(L"local-table");
-		if (res >=0) return;
+		if (std::wstring::npos != value.find(L"local-table")) return;
 		
 		values_[ind].strRef_.formula	= converter.convert_chart_distance(value);
 		values_[ind].strRef_.present	= true;
@@ -78,8 +78,8 @@ void oox_chart_series::setFormula(int ind, std::wstring &value, std::wstring & f
 	}
 	else
 	{
-		long res = value.find(L"local-table");
-		if (res >=0 && !bLocalTable_ ) return; //в xlsx низя .... нужно сделать тогда отдельную  table.xml
+		if (std::wstring::npos != value.find(L"local-table") && !bLocalTable_ ) return; 
+			//в xlsx низя .... нужно сделать тогда отдельную  table.xml
 
 		values_[ind].numRef_.formula		= converter.convert_chart_distance(value);
 		values_[ind].numRef_.present		= true;
@@ -135,7 +135,7 @@ void oox_chart_series::parse_properties()
 		if (*intVal == 2)	data_labels_->set_showPercent(true); 		
 	}
 	odf_reader::GetProperty(content_.properties_, L"label-position", intVal);
-	if (intVal)
+	if (intVal && labelPosEnabled_)
 	{
 		if (!data_labels_)	data_labels_ = oox_data_labels();
 		
@@ -220,12 +220,24 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 		shape.set(content_.graphic_properties_, content_.fill_);
 		shape.oox_serialize(_Wostream);
 
-		for (int i=0; i < 5; i++)
+		for (int i = 0; i < 5; i++)
 		{
 			if (values_[i].present)
 			{
+				if (bLocalTable_)
+				{
+					if (values_[i].numRef_.present && values_[i].numRef_.num_cache_count == 0)
+					{
+						continue;
+					}
+					if (values_[i].strRef_.present && values_[i].strRef_.str_cache_count == 0 )
+					{
+						continue;
+					}
+				}			
 				CP_XML_NODE(values_[i].type)
 				{
+
 					if (values_[i].numRef_.present && !bLocalTable_)
 					{
 						CP_XML_NODE(L"c:numRef")

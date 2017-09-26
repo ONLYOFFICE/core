@@ -528,11 +528,24 @@ namespace DocFileFormat
 	}
 	void WordDocument::DecryptStream( int level, std::string path, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor)
 	{
-		std::list<std::string> entries;
+		std::list<std::string> entries, entries_sort;
 		entries = storageIn->entries( path );
-	    
-		std::list<std::string>::iterator it;
-		for( it = entries.begin(); it != entries.end(); ++it )
+		
+		for( std::list<std::string>::iterator it = entries.begin(); it != entries.end(); it++ )
+		{
+			std::string name = *it;
+			std::string fullname = path + name;
+	       
+			if( storageIn->isDirectory( fullname ) )
+			{
+				entries_sort.push_back(name);
+			}
+			else
+			{
+				entries_sort.push_front(name);
+			}
+		}	    
+		for( std::list<std::string>::iterator it = entries_sort.begin(); it != entries_sort.end(); ++it )
 		{
 			std::string name = *it;
 			std::string fullname = path + name;

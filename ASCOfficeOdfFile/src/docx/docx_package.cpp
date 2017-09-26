@@ -319,6 +319,7 @@ namespace
 								xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
 								xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
 								xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
+								xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
 								xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" >";
 
 							//mc:Ignorable=\"w14 wp14\" 

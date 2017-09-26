@@ -1248,7 +1248,7 @@ void text_changed_region::docx_convert(oox::docx_conversion_context & Context)
 	if (content_.empty() || !text_id_) return;
 
 	Context.get_text_tracked_context().start_change (*text_id_);
-	
+
 	for (size_t i = 0; i < content_.size(); i++)
 	{
 		content_[i]->docx_convert(Context);

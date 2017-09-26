@@ -549,10 +549,13 @@ void _oox_drawing::serialize_xfrm(std::wostream & strm, const std::wstring & nam
 					CP_XML_ATTR(L"x", 0);
 					CP_XML_ATTR(L"y", 0);
 				}
-				CP_XML_NODE(L"a:chExt")
+				if (cx > 0 || cy > 0)
 				{
-					CP_XML_ATTR(L"cx", cx);
-					CP_XML_ATTR(L"cy", cy);
+					CP_XML_NODE(L"a:chExt")
+					{
+						CP_XML_ATTR(L"cx", cx);
+						CP_XML_ATTR(L"cy", cy);
+					}
 				}
 			}
 		}

@@ -283,7 +283,12 @@ void math_mtext::add_text(const std::wstring & Text)
 
 void math_mtext::oox_convert(oox::math_context & Context)
 {
-
+	if (text_)
+	{
+		Context.output_stream() << L"<m:r><m:rPr><m:nor/></m:rPr><m:t>";
+			Context.output_stream() << *text_;
+		Context.output_stream() << L"</m:t></m:r>";
+	}
 }
 //----------------------------------------------------------------------------------------------------
 const wchar_t * math_mglyph::ns = L"math";

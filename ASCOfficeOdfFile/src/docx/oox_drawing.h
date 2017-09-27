@@ -83,7 +83,7 @@ namespace oox {
 	class _oox_drawing
     {
 	public:
-        _oox_drawing() : type(typeUnknown), id(0), x(0), y(0), cx(0), cy(0), sub_type(0), inGroup(false), name(L"object")
+        _oox_drawing() : type(typeUnknown), id(0), x(0), y(0), cx(0), cy(0), sub_type(0), inGroup(false), name(L"object"), extExternal(false)
         {
         }
         RelsType		type;
@@ -103,6 +103,7 @@ namespace oox {
 		std::wstring	objectProgId; 
 
 		std::wstring	extId;
+		bool			extExternal;
 
 		_action_desc				action;
 		std::vector<_hlink_desc>	hlinks;

@@ -304,8 +304,10 @@ bool CImageFileFormatChecker::isSvmFile(BYTE* pBuffer,DWORD dwBytes)
 	if (eFileType)return false;
 
 	if ( (6 <= dwBytes) &&(0x56 == pBuffer[0] && 0x43 == pBuffer[1]  && 0x4c == pBuffer[2] && 0x4d == pBuffer[3]
-						 && 0x54 == pBuffer[4] && 0x46 == pBuffer[5]  && 0x01 == pBuffer[6] && 0x00 == pBuffer[7]						 
-						 && 0x31 == pBuffer[8] && 0x00 == pBuffer[9]  && 0x00 == pBuffer[10] && 0x00 == pBuffer[11]) )
+						 && 0x54 == pBuffer[4] && 0x46 == pBuffer[5]  /*&& 0x01 == pBuffer[6] && 0x00 == pBuffer[7]						 
+						 && 0x31 == pBuffer[8]*/ && 0x00 == pBuffer[9]  && 0x00 == pBuffer[10] && 0x00 == pBuffer[11]) )
+						 //0x02, 0x00, 0x32, 
+						 //0x01,0x00, 0x031
 		return true;
 	 
 	return false;

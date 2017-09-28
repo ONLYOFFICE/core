@@ -60,6 +60,7 @@ public:
 		void set_field_data_layout (bool val);		
 		void set_field_sort (int type);
 		void set_field_groups (int type);
+		void set_field_groups_source(std::wstring name);
 		void set_repeat_item_labels(bool val);
 	void end_field();
 

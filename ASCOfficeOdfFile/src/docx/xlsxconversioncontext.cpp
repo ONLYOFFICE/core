@@ -475,9 +475,10 @@ void xlsx_conversion_context::end_table()
             {
                 CP_XML_ATTR(L"r:id", drawingName.second);
             }
-        }
+		}
+	}
+	get_table_context().serialize_background (current_sheet().drawing());
 
-    }
 	if (!get_comments_context().empty())
     {
         std::wstringstream strm;
@@ -495,7 +496,6 @@ void xlsx_conversion_context::end_table()
         current_sheet().set_comments_link(commentsName.first, commentsName.second);
         current_sheet().set_vml_drawing_link(vml_drawingName.first, vml_drawingName.second);
     }    
-//background picture
     get_table_context().end_table();
 }
 
@@ -547,7 +547,10 @@ int xlsx_conversion_context::current_table_row()
 
 std::wstring xlsx_conversion_context::current_cell_address()
 {
-    return oox::getCellAddress(current_table_column(), current_table_row());
+	int col = current_table_column(); 
+	int row = current_table_row();
+
+	return oox::getCellAddress(col < 0 ? 0 : col, row < 0 ? 0 : row); //under covered cell
 }
 
 void xlsx_conversion_context::start_office_spreadsheet(const odf_reader::office_element * elm)

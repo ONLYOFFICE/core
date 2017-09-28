@@ -1254,7 +1254,6 @@ bool style_page_layout_properties::docx_background_serialize(std::wostream & str
 void style_page_layout_properties::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 }
-
 void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context)
 {
 	CP_XML_WRITER(strm)
@@ -1319,31 +1318,28 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 				}
 			}
 		}
-		if (elements_.style_background_image_)
+	}
+	if (elements_.style_background_image_)
+	{
+		oox::_oox_fill fill;
+			
+		Compute_GraphicFill(attlist_.common_draw_fill_attlist_, elements_.style_background_image_, Context.root()->odf_context().drawStyles(), fill);
+		if (fill.bitmap)
 		{
-			oox::_oox_fill fill;
-				
-			Compute_GraphicFill(attlist_.common_draw_fill_attlist_, elements_.style_background_image_, Context.root()->odf_context().drawStyles(), fill);
-			if (fill.bitmap)
+			if ( fill.bitmap->rId.empty())
 			{
-				if ( fill.bitmap->rId.empty())
-				{
-					std::wstring href	= fill.bitmap->xlink_href_;
-					fill.bitmap->rId	= Context.get_mediaitems().add_or_find(href, oox::typeImage, fill.bitmap->isInternal, href);
+				std::wstring href	= fill.bitmap->xlink_href_;
+				fill.bitmap->rId	= Context.get_mediaitems().add_or_find(href, oox::typeImage, fill.bitmap->isInternal, href);
 
-					Context.get_drawing_context().get_drawings()->add(fill.bitmap->isInternal, fill.bitmap->rId, href, oox::typeImage, true);
-				}
+				Context.get_drawing_context().get_drawings()->add(fill.bitmap->isInternal, fill.bitmap->rId, href, oox::typeImage, true);
+			}
 
-				CP_XML_NODE(L"picture")
-				{
-					CP_XML_ATTR(L"r:id", fill.bitmap->rId );
-				}		
-			}		
-		}
+			Context.get_table_context().state()->set_background(fill.bitmap->rId);
+		}		
 	}
 }
 
-void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context)
+void style_page_layout_properties::docx_serialize(std::wostream & strm, oox::docx_conversion_context & Context)
 {
 	style_columns * columns = dynamic_cast<style_columns *>( elements_.style_columns_.get());
 

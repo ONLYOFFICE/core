@@ -436,8 +436,14 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 				{ 	
 					CP_XML_NODE(L"a:path")
 					{
-						CP_XML_ATTR(L"w", w ? *w : cx);
-						CP_XML_ATTR(L"h", h ? *h : cy);
+						int path_w = w ? *w : cx;
+						int path_h = h ? *h : cy;
+
+						if (path_w < 1) path_w = 1024;  
+						if (path_h < 1) path_h = 1024; 
+
+						CP_XML_ATTR(L"w", path_w);
+						CP_XML_ATTR(L"h", path_h);
 						
 						if (sCustomPath)
 						{	

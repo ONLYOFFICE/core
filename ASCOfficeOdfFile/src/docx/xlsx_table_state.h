@@ -120,10 +120,12 @@ public:
 	xlsx_conditionalFormatting_context	& get_conditionalFormatting_context()	{return xlsx_conditionalFormatting_context_;}
 
     void	table_column_last_width(double w) { table_column_last_width_ = w; }
-    double	table_column_last_width()	const { return table_column_last_width_; };
+    double	table_column_last_width() const { return table_column_last_width_; };
 
     void			start_hyperlink	();
-	std::wstring	end_hyperlink	(std::wstring const & ref, std::wstring const & href, std::wstring const & display);
+	std::wstring	end_hyperlink (std::wstring const & ref, std::wstring const & href, std::wstring const & display);
+
+	void set_background (std::wstring rId) { tableBackground_ = rId; }
 
 	void serialize_conditionalFormatting	(std::wostream & _Wostream);
 	void serialize_table_format				(std::wostream & _Wostream);
@@ -131,6 +133,7 @@ public:
     void serialize_hyperlinks				(std::wostream & _Wostream);
     void serialize_ole_objects				(std::wostream & _Wostream);
 	void serialize_page_properties			(std::wostream & _Wostream);
+	void serialize_background				(std::wostream & _Wostream);
 
 	void dump_rels_hyperlinks				(rels & Rels);
 	void dump_rels_ole_objects				(rels & Rels);
@@ -154,6 +157,7 @@ private:
 
     std::wstring						tableName_;
 	int									tableId_;
+    std::wstring						tableBackground_;
 
     std::wstring						table_style_;
     std::wstring						table_row_style_;

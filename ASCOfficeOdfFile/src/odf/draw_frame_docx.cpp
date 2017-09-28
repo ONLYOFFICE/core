@@ -754,7 +754,7 @@ int ComputeMarginY(const style_page_layout_properties_attlist		& pageProperties,
 
 }
 
-void common_draw_docx_convert(oox::docx_conversion_context & Context, const union_common_draw_attlists & attlists_, oox::_docx_drawing *drawing) 
+void common_draw_docx_convert(oox::docx_conversion_context & Context, union_common_draw_attlists & attlists_, oox::_docx_drawing *drawing) 
 {
 	const std::wstring styleName = attlists_.shape_with_text_and_styles_.
 					common_shape_draw_attlist_.draw_style_name_.get_value_or(L"");
@@ -899,7 +899,16 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 		}
 	}
 ///////////////////////////
-
+	if (attlists_.rel_size_.common_draw_size_attlist_.svg_width_)
+	{
+		double w_shape = attlists_.rel_size_.common_draw_size_attlist_.svg_width_->get_value_unit(length::pt);
+		if (w_shape < 1) attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(1, length::pt);
+	}
+	if (attlists_.rel_size_.common_draw_size_attlist_.svg_height_)
+	{
+		double h_shape = attlists_.rel_size_.common_draw_size_attlist_.svg_height_->get_value_unit(length::pt);
+		if (h_shape < 1) attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(1, length::pt);
+	}
 	drawing->x = get_value_emu(attlists_.position_.svg_x_);
     drawing->y = get_value_emu(attlists_.position_.svg_y_);
 

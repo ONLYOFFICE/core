@@ -406,6 +406,10 @@ void table_data_pilot_groups::xlsx_convert(oox::xlsx_conversion_context & Contex
 	if (table_grouped_by_)
 		Context.get_pivots_context().set_field_groups(table_grouped_by_->get_type());
 
+	if (table_source_field_name_)
+		Context.get_pivots_context().set_field_groups_source(*table_source_field_name_);
+
+
 	for (size_t i = 0; i < content_.size(); i++)
     {
 		content_[i]->xlsx_convert(Context);

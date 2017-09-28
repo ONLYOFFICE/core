@@ -358,7 +358,18 @@ void xlsx_table_state::serialize_page_properties (std::wostream & strm)
 
 	page_layout->xlsx_serialize(strm, *context_);
 }
+void xlsx_table_state::serialize_background (std::wostream & strm)
+{
+	if (tableBackground_.empty()) return;
 
+	CP_XML_WRITER(strm)
+	{			
+		CP_XML_NODE(L"picture")
+		{
+			CP_XML_ATTR(L"r:id",  tableBackground_);
+		}
+	}
+}
 void xlsx_table_state::serialize_table_format (std::wostream & strm)
 {
 	odf_reader::odf_read_context & odfContext = context_->root()->odf_context();

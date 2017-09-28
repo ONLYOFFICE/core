@@ -47,7 +47,7 @@ namespace oox {
 
 bool IsNumber(const std::wstring &value)
 {
-	boost::wregex rule(L"\\-?^[0-9]*[.,]?[0-9]*$");
+	boost::wregex rule(L"^\\-{0,1}[0-9]*[.,]{0,1}[0-9]*$");
 	boost::match_results<std::wstring::const_iterator> results;
 
 	return boost::regex_search(value/*.begin(), value.end(), results*/, rule);

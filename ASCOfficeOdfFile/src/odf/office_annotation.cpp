@@ -40,9 +40,10 @@
 #include "serialize_elements.h"
 
 #include <cpdoccore/odf/odf_document.h>
-#include "../odf/odfcontext.h"
+#include "odfcontext.h"
 
-#include "../odf/calcs_styles.h"
+#include "calcs_styles.h"
+#include "../docx/xlsx_utils.h"
 
 namespace cpdoccore { 
 
@@ -215,8 +216,12 @@ void office_annotation::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	const std::wstring textStyleName = office_annotation_attr_.draw_text_style_name_.get_value_or(L"");
 
-	std::wstring  ref = Context.current_cell_address();  
-	Context.get_comments_context().end_comment(ref,Context.current_table_column(), Context.current_table_row());
+	int col = Context.current_table_column();	if (col < 0) col = 0;
+	int row = Context.current_table_row();		if (row < 0) row = 0;
+
+	std::wstring  ref = oox::getCellAddress(col, row); 
+
+	Context.get_comments_context().end_comment(ref, col, row);
 }
 // officeooo:annotation
 //////////////////////////////////////////////////////////////////////////////////////////////////

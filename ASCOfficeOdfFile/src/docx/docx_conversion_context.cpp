@@ -800,7 +800,7 @@ bool docx_conversion_context::process_page_properties(std::wostream & strm)
 
 		if (page_layout_instance_) 
 		{
-				page_layout_instance_->docx_convert_serialize(strm, *this);
+				page_layout_instance_->docx_serialize(strm, *this);
 		}
 		else
 		{

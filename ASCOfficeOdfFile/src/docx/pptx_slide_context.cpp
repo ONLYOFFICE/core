@@ -554,8 +554,9 @@ void pptx_slide_context::Impl::process_image(drawing_object_description& obj, _p
 	std::wstring ref;/// это ссылка на выходной внешний объект
 	bool isMediaInternal = false;
 	
-	drawing.fill.bitmap->rId = get_mediaitems().add_or_find(obj.xlink_href_, typeImage, isMediaInternal, ref);
-	
+	drawing.fill.bitmap->rId		= get_mediaitems().add_or_find(obj.xlink_href_, typeImage, isMediaInternal, ref);
+	drawing.fill.bitmap->isInternal	= isMediaInternal;
+
 	if (drawing.type == typeShape)
 	{
 		add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);//собственно это не объект, а доп рел и ref объекта
@@ -647,11 +648,12 @@ void pptx_slide_context::Impl::process_media(drawing_object_description& obj, _p
 
 	drawing.type = mediaitems::detectMediaType(obj.xlink_href_); //reset from Media to Audio, Video, ... QuickTime? AudioCD? ...   
 	
-	drawing.objectId = get_mediaitems().add_or_find(obj.xlink_href_, drawing.type, isMediaInternal, ref);    
-	drawing.extId	 = L"ext" + drawing.objectId;
+	drawing.objectId	= get_mediaitems().add_or_find(obj.xlink_href_, drawing.type, isMediaInternal, ref);    
+	drawing.extId		= L"ext" + drawing.objectId;
+	drawing.extExternal	= !isMediaInternal;
 	
 	add_drawing(drawing, false, drawing.objectId, L"NULL", drawing.type);
-	add_additional_rels( true, drawing.extId, ref, typeMedia);
+	add_additional_rels( isMediaInternal, drawing.extId, ref, typeMedia);
 
 	if (drawing.fill.bitmap)
 	{

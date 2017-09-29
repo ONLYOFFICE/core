@@ -2773,7 +2773,7 @@ namespace OOX{
 					double* pNewElem = new double;
                     std::wstring sVal = oReader.GetText(); // Yp2bbamFbt1iHeX3WM0_.pptx - value = "-"
                     *pNewElem = 0;
-                    __try
+                    try
                     {
                         *pNewElem = _tstof(sVal.c_str());
                     }

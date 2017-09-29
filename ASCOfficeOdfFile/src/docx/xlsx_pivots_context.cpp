@@ -38,7 +38,7 @@
 
 #include <cpdoccore/xml/simple_xml_writer.h>
 #include"../../Common/DocxFormat/Source/XML/Utils.h"
-#include"../../Common/DocxFormat/Source/base/types_32.h"
+#include"../../Common/DocxFormat/Source/Base/Types_32.h"
 
 #include <map>
 

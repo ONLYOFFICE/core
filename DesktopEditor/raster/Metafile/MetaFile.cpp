@@ -217,6 +217,11 @@ namespace MetaFile
 			double dX, dY, dW, dH;
 			GetBounds(&dX, &dY, &dW, &dH);
 
+			if (dW < 0)
+				dW = -dW;
+			if (dH < 0)
+				dH = -dH;
+
 			if (nWidth  < 0) nWidth = dW;
 			nHeight = (int)((double)nWidth * dH / dW);
 		}

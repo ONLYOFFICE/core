@@ -300,6 +300,7 @@ public:
 
 	Ole1FormatReader(BYTE *pData, int Size)
 	{
+		NativeDataSize = 0;
 		if (!pData || Size < 8) return;
 
 		CDataStream stream(pData, Size);

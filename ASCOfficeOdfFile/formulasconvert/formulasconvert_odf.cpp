@@ -480,7 +480,7 @@ namespace formulasconvert {
 		else
 		{
 			size_t sz_workstr = workstr.length();
-            if (workstr.substr(0, std::min((size_t)3, sz_workstr)) == L"of:")//sample_02neu_crashes.ods
+            if (workstr.substr(0, (std::min)((size_t)3, sz_workstr)) == L"of:")//sample_02neu_crashes.ods
 				workstr =  workstr.substr(3);
 		}
 

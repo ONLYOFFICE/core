@@ -46,7 +46,14 @@ HRESULT ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
 
 	NSFile::CFileBinary file;
 	file.CreateFileW(sOle2Name);
-	file.WriteFile(ole1Reader.NativeData, ole1Reader.NativeDataSize);
+	if (ole1Reader.NativeDataSize > 0)//conv_NI38P7GBIpw1aD84H3k.rtf
+	{
+		file.WriteFile(ole1Reader.NativeData, ole1Reader.NativeDataSize);
+	}
+	else
+	{
+		file.WriteFile(pData, nSize);
+	}
 	file.CloseFile();
 	return S_FALSE;
 }
@@ -817,8 +824,7 @@ bool RtfShadingRowCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRe
 	else
 		return false;
 	return true;
-}
-
+}	
 bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter, RtfCharProperty * charProps, bool bLookOnBorder)
 {
 	if (!charProps) return false;
@@ -1645,7 +1651,49 @@ bool RtfFieldInstReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRead
 		return RtfParagraphPropDestination::ExecuteCommand( oDocument, oReader, (*this), sCommand, hasParameter, parameter );
 	}
 }
+bool RtfOleBinReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
+{
+    if ( "objdata" == sCommand )
+		return true;
 
+	if ( "bin" == sCommand ) // from RtfOleReader - conv_NI38P7GBIpw1aD84H3k.rtf
+	{
+		int nDataSize = 0;
+		if ( hasParameter )
+			nDataSize  = parameter; 
+
+		BYTE *pData = NULL;
+
+		oReader.m_oLex.ReadBytes( parameter, &pData );
+
+		m_arData.push_back(std::string((char*)pData, nDataSize));
+
+		RELEASEOBJECT(pData);
+	}
+	return true;
+}
+void RtfOleBinReader::ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)
+{
+	m_arData.push_back(std::string(sText.begin(), sText.end()));
+}
+void RtfOleBinReader::GetData( BYTE** ppData, long& nSize)
+{
+	nSize = 0;
+	for (size_t i = 0; i < m_arData.size(); i++)
+	{
+		nSize += m_arData[i].length();
+	}
+	
+	(*ppData) = new BYTE[ nSize];
+	
+	int pos = 0;
+	for (size_t i = 0; i < m_arData.size(); i++)
+	{
+		memcpy((*ppData) + pos, m_arData[i].c_str(), m_arData[i].length());
+
+		pos += m_arData[i].length();
+	}
+}
 bool RtfOleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 {
     if ( "object" == sCommand )
@@ -1663,19 +1711,21 @@ bool RtfOleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, st
 	}
     else if ( "objdata" == sCommand )
 	{
-        std::wstring sOleData;
-		TextReader oTextReader( sOleData, false );
-		StartSubReader( oTextReader, oDocument, oReader );
+ 		RtfOleBinReader oBinReader;
+
+		StartSubReader( oBinReader, oDocument, oReader );
 
 		BYTE *pData = NULL;
 		long nSize = 0;
-		RtfUtility::WriteDataToBinary( sOleData, &pData, nSize );
+		
+		oBinReader.GetData(&pData, nSize );
+
 		if ( 0 != nSize  && pData)
 		{
 			HRESULT hRes = S_FALSE;
 
 			//конвертация Ole1 в Ole2
-#if 0//defined(_WIN32) || defined(_WIN64)
+#if 0 //defined(_WIN32) || defined(_WIN64)
 			RtfOle1ToOle2Stream oStream;
 
 			oStream.lpstbl = new OLESTREAMVTBL();
@@ -1689,7 +1739,7 @@ bool RtfOleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, st
             std::wstring sOleStorageName = Utils::CreateTempFile( oReader.m_sTempFolder );
 
 			IStorage* piMSStorage = NULL;
-			if ( SUCCEEDED( StgCreateDocfile( sOleStorageName, STGM_READWRITE | STGM_CREATE | STGM_SHARE_EXCLUSIVE | STGM_TRANSACTED/* | STGM_DELETEONRELEASE*/, NULL, &piMSStorage) ) )
+			if ( SUCCEEDED( StgCreateDocfile( sOleStorageName.c_str(), STGM_READWRITE | STGM_CREATE | STGM_SHARE_EXCLUSIVE | STGM_TRANSACTED/* | STGM_DELETEONRELEASE*/, NULL, &piMSStorage) ) )
 			{
 				hRes = OleConvertOLESTREAMToIStorage( &oStream, piMSStorage, NULL );
 				piMSStorage->Commit( STGC_DEFAULT );

@@ -2600,6 +2600,7 @@ namespace NSEditorApi
 
         CAscLocalRecentsAll()
         {
+            m_nId = -1;
         }
         virtual ~CAscLocalRecentsAll()
         {

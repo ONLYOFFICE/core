@@ -885,6 +885,11 @@ public:
 				pCStringWriter->WriteString(oSectPr.Write());
                 pCStringWriter->WriteString(std::wstring(_T("</w:sectPr>")));
             }break;
+		case c_oSerProp_pPrType::outlineLvl:
+			{
+				long outlineLvl = m_oBufferedStream.GetLong();
+				pCStringWriter->WriteString(L"<w:outlineLvl w:val=\"" + std::to_wstring(outlineLvl) + L"\"/>");
+			}break;
 		default:
 			res = c_oSerConstants::ReadUnknown;
 			break;

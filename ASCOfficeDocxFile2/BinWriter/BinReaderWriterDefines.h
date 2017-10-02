@@ -344,7 +344,8 @@ extern int g_nCurFormatVersion;
 		FramePr = 30,
 		SectPr = 31,
 		numPr_Ins =  32,
-		pPrChange = 33
+		pPrChange = 33,
+		outlineLvl = 34
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{

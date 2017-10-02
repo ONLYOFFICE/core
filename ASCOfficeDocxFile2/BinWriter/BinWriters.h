@@ -1024,6 +1024,12 @@ namespace BinDocxRW
 					WritePPrChange(pPr.m_oPPrChange.get());
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
+				if(pPr.m_oOutlineLvl.IsInit() && pPr.m_oOutlineLvl->m_oVal.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::outlineLvl);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+					m_oBcw.m_oStream.WriteLONG(pPr.m_oOutlineLvl->m_oVal->GetValue());
+				}
 				//SectPr
 				if(NULL != m_oBinaryHeaderFooterTableWriter && pPr.m_oSectPr.IsInit())
 				{

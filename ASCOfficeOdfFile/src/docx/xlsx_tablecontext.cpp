@@ -320,6 +320,10 @@ void xlsx_table_context::serialize_page_properties(std::wostream & _Wostream)
 {
     return state()->serialize_page_properties(_Wostream);
 }
+void xlsx_table_context::serialize_background(std::wostream & _Wostream)
+{
+    return state()->serialize_background(_Wostream);
+}
 void xlsx_table_context::serialize_hyperlinks(std::wostream & _Wostream)
 {
     return state()->serialize_hyperlinks(_Wostream);

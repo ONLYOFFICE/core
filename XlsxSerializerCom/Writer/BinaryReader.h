@@ -1574,6 +1574,16 @@ namespace BinXlsxRW {
 				m_oWorkbook.m_oWorkbookPr->m_oDateCompatibility.Init();
 				m_oWorkbook.m_oWorkbookPr->m_oDateCompatibility->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 			}
+			else if(c_oSerWorkbookPrTypes::HidePivotFieldList == type)
+			{
+				m_oWorkbook.m_oWorkbookPr->m_oHidePivotFieldList.Init();
+				m_oWorkbook.m_oWorkbookPr->m_oHidePivotFieldList->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+			}
+			else if(c_oSerWorkbookPrTypes::ShowPivotChartFilter == type)
+			{
+				m_oWorkbook.m_oWorkbookPr->m_oShowPivotChartFilter.Init();
+				m_oWorkbook.m_oWorkbookPr->m_oShowPivotChartFilter->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+			}
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;

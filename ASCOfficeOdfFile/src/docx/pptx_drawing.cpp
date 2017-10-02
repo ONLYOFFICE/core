@@ -150,15 +150,30 @@ void pptx_serialize_media(std::wostream & strm, _pptx_drawing & val)
 							CP_XML_NODE(L"p14:media")
 							{	
 								CP_XML_ATTR(L"xmlns:p14", L"http://schemas.microsoft.com/office/powerpoint/2010/main");
-								CP_XML_ATTR(L"r:embed",	val.extId);
+								if (val.extExternal)
+								{
+									CP_XML_ATTR(L"r:link",	val.extId);
+								}
+								else
+								{
+									CP_XML_ATTR(L"r:embed",	val.extId);
+								}
 							}
 						}
 					}
 				}
             } 
 			if (val.fill.bitmap)
+			{
 				val.fill.bitmap->name_space = L"p";
-			oox_serialize_fill(CP_XML_STREAM(), val.fill);
+				oox_serialize_bitmap_fill(strm, val.fill);
+				
+				val.fill.bitmap.reset();
+			}
+			else
+			{
+				 CP_XML_NODE(L"p:blipFill");
+			}
 
             CP_XML_NODE(L"p:spPr")
             {
@@ -169,7 +184,8 @@ void pptx_serialize_media(std::wostream & strm, _pptx_drawing & val)
                     CP_XML_ATTR(L"prst", L"rect");
                     CP_XML_NODE(L"a:avLst");
                 }
-				oox_serialize_ln(CP_XML_STREAM(), val.additional);
+				oox_serialize_fill	(CP_XML_STREAM(), val.fill);
+				oox_serialize_ln	(CP_XML_STREAM(), val.additional);
             } 			
 			//_CP_OPT(std::wstring) strTextContent;
 			//odf::GetProperty(properties,L"text-content",strTextContent);

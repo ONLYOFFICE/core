@@ -33,6 +33,7 @@
 #include "math_layout_elements.h"
 #include "math_token_elements.h"
 #include "style_text_properties.h"
+#include "math_limit_elements.h"
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
@@ -297,8 +298,21 @@ void math_mstyle::oox_convert(oox::math_context & Context)
 
 	for (size_t i = 0; i < content_.size(); i++)
 	{
+		math_munder*	munder_test	= dynamic_cast<math_munder*>(content_[i].get());
+		math_mfrac*		frac_test	= dynamic_cast<math_mfrac*>(content_[i].get());
+		math_mrow*		row_test	= dynamic_cast<math_mrow*>(content_[i].get());
+		
+		if (row_test || munder_test || frac_test)
+			Context.output_stream() << L"<m:e>";
+		
 		office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
-		math_element->oox_convert(Context);
+		math_element->oox_convert(Context);		
+
+		if (row_test || munder_test || frac_test)
+			Context.output_stream() << L"</m:e>";
+		
+		//office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
+		//math_element->oox_convert(Context);
 	}
 //reset to default math text props
 	Context.text_properties_ = odf_reader::style_text_properties_ptr(new odf_reader::style_text_properties());

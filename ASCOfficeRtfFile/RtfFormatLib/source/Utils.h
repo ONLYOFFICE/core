@@ -617,21 +617,6 @@ public:
 		file.CloseFile();
 
 	}
-    static void WriteDataToBinary( std::wstring sData, BYTE** ppData, long& nSize)
-	{
-        wchar_t * buf  = (wchar_t *)sData.c_str();
-        int nLengthText = (int)sData.length();
-		nSize = nLengthText/2;
-		BYTE * buf2 = new BYTE[ nSize];
-		(*ppData) = buf2;
-		BYTE nByte=0;
-		for (long i=0; i < nSize ; i++ )
-		{
-			nByte = ToByte(buf[ 2*i])<<4;
-			nByte |= ToByte(buf[ 2*i+1]);
-			buf2[i] = nByte;
-		}
-	}
     static std::wstring DecodeHex( std::wstring sText )
 	{
         std::wstring sHexText;

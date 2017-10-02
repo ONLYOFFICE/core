@@ -93,10 +93,14 @@ std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 		
 		RenderParameter oNewRenderParameter = oRenderParameter;
 		oNewRenderParameter.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2;
-		m_oResultPic->m_bIsOle = true;
-		sResult += m_oResultPic->RenderToOOX(oNewRenderParameter);
 
-		oNewRenderParameter.nValue = m_oResultPic->m_nID;
+		if (m_oResultPic)
+		{
+			m_oResultPic->m_bIsOle = true;
+			sResult += m_oResultPic->RenderToOOX(oNewRenderParameter);
+
+			oNewRenderParameter.nValue = m_oResultPic->m_nID;
+		}
 		sResult += RenderToOOXOnlyOle(oNewRenderParameter);
 
 		sResult += L"</w:object>";

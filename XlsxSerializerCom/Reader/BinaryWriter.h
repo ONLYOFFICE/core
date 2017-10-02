@@ -1553,7 +1553,19 @@ namespace BinXlsxRW
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 				m_oBcw.m_oStream.WriteBOOL(workbookPr.m_oDateCompatibility->ToBool());
 			}
-        }
+			if(workbookPr.m_oHidePivotFieldList.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookPrTypes::HidePivotFieldList);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+				m_oBcw.m_oStream.WriteBOOL(workbookPr.m_oHidePivotFieldList->ToBool());
+			}
+			if(workbookPr.m_oShowPivotChartFilter.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookPrTypes::ShowPivotChartFilter);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+				m_oBcw.m_oStream.WriteBOOL(workbookPr.m_oShowPivotChartFilter->ToBool());
+			}
+		}
 		void WriteBookViews(const OOX::Spreadsheet::CBookViews& bookViews)
 		{
 			int nCurPos;

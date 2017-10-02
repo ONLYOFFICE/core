@@ -454,7 +454,7 @@ namespace formulasconvert {
 		//	boost::match_default | boost::format_all);	
 
 		bool isFormula = check_formula(workstr);
-		
+
 		boost::regex_replace(
 			workstr,
 			boost::wregex(L"('.*?')|(\".*?\")"),
@@ -476,6 +476,12 @@ namespace formulasconvert {
 				//todooo
 			}	
 			//todooo INDEX((A1:C6~A8:C11),2,2,2) - ???? - INDEX_emb.ods
+		}
+		else
+		{
+			size_t sz_workstr = workstr.length();
+            if (workstr.substr(0, (std::min)((size_t)3, sz_workstr)) == L"of:")//sample_02neu_crashes.ods
+				workstr =  workstr.substr(3);
 		}
 
 

@@ -38,6 +38,8 @@
 
 #include <cpdoccore/xml/simple_xml_writer.h>
 #include"../../Common/DocxFormat/Source/XML/Utils.h"
+#include"../../Common/DocxFormat/Source/Base/Types_32.h"
+
 #include <map>
 
 namespace cpdoccore {
@@ -80,6 +82,7 @@ public:
 		bool						repeat_item_labels = true;
 		int							type_groups = 0;
 		int							sort = 0;
+		std::wstring				source_groups;
 		
 		std::vector<int>			subtotals;
 		
@@ -143,8 +146,12 @@ public:
 		bool						data_on_row = false;
 	}current_;
 
+	void sort_fields();
+
 	void serialize_view(std::wostream & strm);
 	void serialize_cache(std::wostream & strm);
+
+	void serialize_type_field(CP_ATTR_NODE, _field & field);
 
 private:
 	bool clear_header_map(std::map<size_t, size_t> & map)
@@ -243,12 +250,27 @@ private:
 		}
 		connections_ += strm.str();
 	}
+
+
 };
 
 xlsx_pivots_context::xlsx_pivots_context() : impl_(new xlsx_pivots_context::Impl())
 {
 }
-
+void xlsx_pivots_context::Impl::sort_fields()
+{
+	for (size_t i = 0; i < current_.fields.size(); i++)
+	{
+		if (current_.fields[i].type == 7)
+			continue;
+		if (!current_.fields[i].source_groups.empty() && i != current_.fields.size() -1)
+		{
+			current_.fields.push_back(current_.fields[i]);
+			current_.fields.erase(current_.fields.begin() + i , current_.fields.begin() + i + 1);
+			i--;
+		}
+	}
+}
 void xlsx_pivots_context::Impl::serialize_view(std::wostream & strm)
 {
 	if (current_.headers.empty()) return;
@@ -403,6 +425,7 @@ void xlsx_pivots_context::Impl::serialize_view(std::wostream & strm)
 					CP_XML_ATTR(L"colPageCount", 1);
 				}
 			}
+			std::map<std::wstring, bool> used_field_name;
 			CP_XML_NODE(L"pivotFields")
 			{
 				CP_XML_ATTR(L"count", current_.fields_count);
@@ -410,6 +433,11 @@ void xlsx_pivots_context::Impl::serialize_view(std::wostream & strm)
 				{
 					if  (current_.fields[i].type == 7)
 						continue;
+					
+					if (used_field_name.end() != used_field_name.find(current_.fields[i].name))
+						continue;
+
+					used_field_name.insert(std::make_pair(current_.fields[i].name, true));
 					
 					CP_XML_NODE(L"pivotField")
 					{					 
@@ -554,9 +582,90 @@ void xlsx_pivots_context::Impl::serialize_view(std::wostream & strm)
 		}
 	}
 }
+void xlsx_pivots_context::Impl::serialize_type_field(CP_ATTR_NODE, _field & field)
+{
+	_CP_OPT(bool) containsSemiMixedTypes;
+	_CP_OPT(bool) containsMixedTypes;
+	_CP_OPT(bool) containsNonDate;
+	_CP_OPT(bool) containsDate;
+	_CP_OPT(bool) containsString;
+	_CP_OPT(bool) containsBlank;
+	_CP_OPT(bool) containsNumber;
+	_CP_OPT(bool) containsInteger;
+									
+	if (field.bDate		& field.bNumber/* || 
+		field.bNumber	& field.bString*/)
+	{
+		containsSemiMixedTypes = true;
+	}
+	else if (field.bDate	& field.bString || 
+			 field.bNumber	& field.bString || 
+			 field.bInteger & field.bString)
+	{
+		containsMixedTypes = true;
+		
+		if (field.bInteger)
+		{
+			if (field.bNumber) field.bInteger = false;
+			field.bNumber = true;
+		}
+	}
+	else if (!field.bEmpty && !field.bString && !field.bBool)
+	{
+		containsSemiMixedTypes = false;
+	}
+	if (field.bDate && 
+		!(field.bNumber || field.bInteger || field.bString || field.bEmpty ))
+	{
+		containsNonDate = false;
+	}
+	if (field.bDate)
+	{
+		containsDate = true;
+	}
+	if (!field.bString && 
+		(field.bInteger || field.bDate || field.bNumber || field.bEmpty))
+	{
+		containsString = false;
+		if (field.bInteger)
+		{
+			if (field.bNumber) field.bInteger = false;
+			field.bNumber = true;
+		}
+		if (/*!field.bDate && */field.bEmpty)
+			containsNonDate = false;
+	}
+	if (field.bEmpty)
+	{
+		containsBlank = true;
+	}
+	if (field.bNumber)
+	{
+		containsNumber = true;	
+	}
+	if (field.bInteger && !field.bDate)
+	{
+		if (containsMixedTypes)
+		{
+			containsNumber = true;	
+			containsInteger = true;	
+		}
+		else
+			containsInteger = true;	
+	}	
 
+	if (containsNonDate)		CP_XML_ATTR(L"containsNonDate",			*containsNonDate);
+	if (containsSemiMixedTypes) CP_XML_ATTR(L"containsSemiMixedTypes",	*containsSemiMixedTypes);
+	if (containsString)			CP_XML_ATTR(L"containsString",			*containsString);
+	if (containsBlank)			CP_XML_ATTR(L"containsBlank",			*containsBlank);
+	if (containsMixedTypes)		CP_XML_ATTR(L"containsMixedTypes",		*containsMixedTypes);
+	if (containsDate)			CP_XML_ATTR(L"containsDate",			*containsDate);
+	if (containsNumber)			CP_XML_ATTR(L"containsNumber",			*containsNumber);
+	if (containsInteger)		CP_XML_ATTR(L"containsInteger",			*containsInteger);
+}
 void xlsx_pivots_context::Impl::serialize_cache(std::wostream & strm)
 {
+	std::map<std::wstring, bool> used_field_name;
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"pivotCacheDefinition")
@@ -611,16 +720,26 @@ void xlsx_pivots_context::Impl::serialize_cache(std::wostream & strm)
 						if (current_.fields[i].type == 7)
 							continue;
 
+						if (used_field_name.end() != used_field_name.find(current_.fields[i].name))
+							continue;
+
+						used_field_name.insert(std::make_pair(current_.fields[i].name, true));
+
 						CP_XML_NODE(L"cacheField")
 						{
 							CP_XML_ATTR(L"name", current_.fields[i].name);
 							CP_XML_ATTR(L"numFmtId", 0);
 
+							if (!current_.fields[i].source_groups.empty())
+							{
+								CP_XML_ATTR(L"databaseField", 0);
+							}
+
 							CP_XML_NODE(L"sharedItems")
 							{
 								if (current_.fields[i].caches.empty() == false/* && 
 									current_.fields[i].type != 2*/)
-								{
+								{									
 									if (current_.fields[i].type_groups == 0)
 									{
 										CP_XML_ATTR(L"count", current_.fields[i].caches.size());
@@ -630,48 +749,8 @@ void xlsx_pivots_context::Impl::serialize_cache(std::wostream & strm)
 										current_.fields[i].bDate = true;
 										current_.fields[i].bString = false;
 									}
-									
-									if ((current_.fields[i].bDate	& current_.fields[i].bNumber) || 
-										(current_.fields[i].bNumber & current_.fields[i].bString))
-									{
-										CP_XML_ATTR(L"containsSemiMixedTypes", 1);
-									}
-									else if (current_.fields[i].bDate & current_.fields[i].bString)
-									{
-										CP_XML_ATTR(L"containsMixedTypes", 1);
-									}
-									else if (!current_.fields[i].bEmpty && !current_.fields[i].bString && !current_.fields[i].bBool)
-									{
-										CP_XML_ATTR(L"containsSemiMixedTypes", 0);
-									}
-									if (current_.fields[i].bDate && 
-										!(current_.fields[i].bNumber || current_.fields[i].bInteger || current_.fields[i].bString || current_.fields[i].bEmpty ))
-									{
-										CP_XML_ATTR(L"containsNonDate",	0);
-									}
-									if (current_.fields[i].bDate) CP_XML_ATTR(L"containsDate",	1);
-									if (!current_.fields[i].bString && 
-										(current_.fields[i].bInteger || current_.fields[i].bDate || current_.fields[i].bNumber || current_.fields[i].bEmpty))
-									{
-										CP_XML_ATTR(L"containsString",	0);
-									}
-									if (current_.fields[i].bEmpty)	CP_XML_ATTR(L"containsBlank",	1);
-
-									if (current_.fields[i].bNumber)	CP_XML_ATTR(L"containsNumber",	1);
-									
-									if (current_.fields[i].bInteger && !current_.fields[i].bDate)
-									{
-										if (current_.fields[i].bString)	
-										{
-											CP_XML_ATTR(L"containsInteger",	1);
-										}
-										else if (!current_.fields[i].bNumber)
-										{
-											CP_XML_ATTR(L"containsNumber",	1);
-											CP_XML_ATTR(L"containsInteger",	1);
-										}
-									}						
 								
+									serialize_type_field(CP_GET_XML_NODE(), current_.fields[i]);					
 									if ( current_.fields[i].type_groups == 0 )
 									{
 										for (size_t j = 0; j < current_.fields[i].caches.size(); j++)
@@ -691,7 +770,7 @@ void xlsx_pivots_context::Impl::serialize_cache(std::wostream & strm)
 							{
 								CP_XML_NODE(L"fieldGroup")
 								{
-									CP_XML_ATTR(L"base", i);
+									CP_XML_ATTR(L"base", 0);
 									CP_XML_NODE(L"rangePr")
 									{
 										switch(current_.fields[i].type_groups)
@@ -823,6 +902,8 @@ int xlsx_pivots_context::end_table()
 	std::wstringstream	view_strm;
 	std::wstringstream	cache_strm;
 	std::wstringstream	rec_strm;
+	
+	impl_->sort_fields();
 
 	impl_->serialize_view(view_strm);
 	impl_->serialize_cache(cache_strm);
@@ -973,6 +1054,10 @@ void xlsx_pivots_context::set_field_groups(int type)
 {
 	impl_->current_.fields.back().type_groups = type + 1;
 }
+void xlsx_pivots_context::set_field_groups_source(std::wstring name)
+{
+	impl_->current_.fields.back().source_groups = name;
+}
 void xlsx_pivots_context::set_field_sort(int type)
 {
 	impl_->current_.fields.back().sort = type + 1;
@@ -1002,15 +1087,16 @@ void xlsx_pivots_context::add_field_cache(int index, std::wstring value)
 		_CP_OPT(double) dVal;
 		if (pos >= 0)//финановый .. todooo общее правило бы...
 		{
-			value = value.substr(pos + 1);
-			XmlUtils::replace_all(value, L",", L"");
-			XmlUtils::replace_all(value, L" ", L"");
-			XmlUtils::replace_all(value, L"\x00A0", L"");		
+			//value = value.substr(pos + 1);
+			//XmlUtils::replace_all(value, L",", L"");
+			//XmlUtils::replace_all(value, L" ", L"");
+			//XmlUtils::replace_all(value, L"\x00A0", L"");		
 		}
 		if (oox::IsNumber(value))
 		{
 			try
 			{	
+				XmlUtils::replace_all(value, L",", L".");
 				dVal = boost::lexical_cast<double>(value);
 			}
 			catch(...)
@@ -1021,7 +1107,7 @@ void xlsx_pivots_context::add_field_cache(int index, std::wstring value)
 		{
 			node_name = L"n";
 
-			int iVal = *dVal;
+			_INT64 iVal = *dVal;
 			if (abs(iVal - *dVal) > 0.00001)
 			{
 				value = std::to_wstring(*dVal);

@@ -202,6 +202,8 @@ namespace BinXlsxRW
 	{
 		Date1904 = 0,
 		DateCompatibility = 1,
+		HidePivotFieldList = 2,
+		ShowPivotChartFilter = 3
 	};}
 	namespace c_oSerWorkbookViewTypes{enum c_oSerWorkbookViewTypes
 	{

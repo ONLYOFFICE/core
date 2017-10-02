@@ -70,13 +70,14 @@ static std::wstring get_mime_type(const std::wstring & extension)
    	else if (L"tif" == extension)	return  L"image/x-tiff";
  	else if (L"tiff" == extension)	return  L"image/x-tiff";
 	else if (L"pdf" == extension)	return  L"application/pdf";
+	else if (L"bmp" == extension)	return  L"image/bmp";
 
 	else if (L"wav" == extension)	return  L"audio/wav";
 	else if (L"mp3" == extension)	return  L"audio/mpeg";
 	else if (L"wma" == extension)	return  L"audio/x-ms-wma";
 	else if (L"m4a" == extension)	return  L"audio/unknown";
 
-	else if (L"avi" == extension)	return  L"video/avi";
+	else if (L"avi" == extension)	return  L"video/x-msvideo";
 	else if (L"wmv" == extension)	return  L"video/x-ms-wmv";
 	else if (L"mov" == extension)	return  L"video/unknown";
 	else if (L"mp4" == extension)	return  L"video/unknown";

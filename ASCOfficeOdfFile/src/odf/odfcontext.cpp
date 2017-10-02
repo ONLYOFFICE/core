@@ -331,7 +331,7 @@ void page_layout_instance::xlsx_serialize(std::wostream & strm, oox::xlsx_conver
 		props->xlsx_serialize(strm, Context);   
 }
 
-void page_layout_instance::docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context)
+void page_layout_instance::docx_serialize(std::wostream & strm, oox::docx_conversion_context & Context)
 {
     const style_header_style * headerStyle = dynamic_cast<style_header_style *>(style_page_layout_->style_header_style_.get());
     const style_footer_style * footerStyle = dynamic_cast<style_footer_style *>(style_page_layout_->style_footer_style_.get());
@@ -357,7 +357,7 @@ void page_layout_instance::docx_convert_serialize(std::wostream & strm, oox::doc
 	
 	style_page_layout_properties * props = properties();
     if (props)
-		props->docx_convert_serialize(strm, Context);   
+		props->docx_serialize(strm, Context);   
 }
 void page_layout_instance::pptx_serialize(std::wostream & strm, oox::pptx_conversion_context & Context)
 {

@@ -174,7 +174,8 @@ namespace PPTX
 					NSBinPptxRW::CBinaryFileWriter*				old_writer	= oDrawingConverter.m_pBinaryWriter;
 					NSCommon::smart_ptr<OOX::IFileContainer>	old_rels	= *pWriter->m_pCurrentContainer;
 					BinDocxRW::CDocxSerializer*					old_serial 	= pWriter->m_pMainDocument;
-					
+                    NSCommon::smart_ptr<PPTX::Theme>            old_theme	= *pWriter->m_pTheme;
+
 					oDrawingConverter.m_pBinaryWriter = pWriter;
 					oDocxSerializer.m_pParamsWriter = new BinDocxRW::ParamsWriter(pWriter, &oFontProcessor, &oDrawingConverter, NULL);
 					
@@ -189,6 +190,7 @@ namespace PPTX
 					oDrawingConverter.m_pBinaryWriter	= old_writer;
 					*pWriter->m_pCurrentContainer		= old_rels;				
 					pWriter->m_pMainDocument			= old_serial;
+                    *pWriter->m_pTheme                  = old_theme;
 				}
 				else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX || 
 						office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM)
@@ -201,9 +203,10 @@ namespace PPTX
 					DocWrapper::FontProcessor fp;
 					NSBinPptxRW::CDrawingConverter oDrawingConverter;
 					
-					NSBinPptxRW::CBinaryFileWriter*			old_writer	= oDrawingConverter.m_pBinaryWriter;
+                    NSBinPptxRW::CBinaryFileWriter*             old_writer	= oDrawingConverter.m_pBinaryWriter;
 					NSCommon::smart_ptr<OOX::IFileContainer>	old_rels	= *pWriter->m_pCurrentContainer;
-					
+                    NSCommon::smart_ptr<PPTX::Theme>            old_theme	= *pWriter->m_pTheme;
+
 					oDrawingConverter.m_pBinaryWriter = pWriter;
 
 					BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(fp); 
@@ -215,7 +218,8 @@ namespace PPTX
 					
 					oDrawingConverter.m_pBinaryWriter	= old_writer;
 					*pWriter->m_pCurrentContainer		= old_rels;
-				}
+                    *pWriter->m_pTheme                  = old_theme;
+                }
 				//else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX)
 				//{
 				//}

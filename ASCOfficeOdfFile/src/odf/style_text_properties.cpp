@@ -407,7 +407,7 @@ void text_format_properties_content::drawing_serialize(std::wostream & strm, std
 				switch (style_text_underline_style_->get_type())
 				{
 				case line_style::Solid:
-					if (underlineBold)	underline = L"thick"; 
+					if (underlineBold)	underline = L"heavy"; 
 					else				underline = L"sng";
 					break;
 				case line_style::Dotted:

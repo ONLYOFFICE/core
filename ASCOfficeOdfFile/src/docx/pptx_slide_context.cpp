@@ -753,10 +753,10 @@ void pptx_slide_context::serialize_animations(std::wostream & strm)
 				{
 					CP_XML_ATTR(L"spd",impl_->transition_.Speed.get());
 				}
-				if (impl_->transition_.Time)
+/*				if (impl_->transition_.Time)
 				{
 					CP_XML_ATTR(L"p14:dur", impl_->transition_.Time.get());
-				}	
+				}*/	
 				if (impl_->transition_.PageTime)
 				{
 					CP_XML_ATTR(L"advTm", impl_->transition_.PageTime.get());

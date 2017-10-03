@@ -44,3 +44,27 @@ unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+# downloader
+DEFINES += BUIDLER_OPEN_DOWNLOAD_ENABLED
+DEFINES += BUIDLER_OPEN_BASE64_ENABLED
+
+HEADERS += ../../Common/FileDownloader/FileDownloader.h
+core_windows {
+    SOURCES += \
+        ../../Common/FileDownloader/FileDownloader_win.cpp
+
+    LIBS += -lurlmon
+}
+core_linux {
+    SOURCES += \
+        ../../Common/FileDownloader/FileDownloader_curl.cpp
+
+    LIBS += -lcurl
+}
+core_mac {
+    OBJECTIVE_SOURCES += \
+        ../../Common/FileDownloader/FileDownloader_mac.mm
+
+    LIBS += -framework AppKit
+}

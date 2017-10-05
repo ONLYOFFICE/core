@@ -106,6 +106,8 @@ namespace oox {
 
 		std::wstring							nsRPr_;
 		bool									graphRPR_;
+
+		bool									is_need_e_;
 	private:
 		std::wstringstream						math_stream_;
 		std::wstringstream						math_style_stream_;

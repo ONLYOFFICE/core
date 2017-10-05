@@ -92,23 +92,30 @@ void math_mtr::oox_convert(oox::math_context & Context)
 	std::wostream & strm = Context.output_stream();
 
 	strm << L"<m:mr>";		
-		for (size_t i = 0; i < content_.size(); i++)
-		{
-			math_mrow*		row_test	= dynamic_cast<math_mrow*>(content_[i].get());
-			math_munder*	munder_test	= dynamic_cast<math_munder*>(content_[i].get());
-			math_mfrac*		frac_test	= dynamic_cast<math_mfrac*>(content_[i].get());
-			
-			if (row_test || munder_test || frac_test)
-				Context.output_stream() << L"<m:e>";// EqArray записался в числитель вместо знаменателя.docx - дублирование
 
+	bool need_e_old = Context.is_need_e_;
 
-			office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
-			math_element->oox_convert(Context);
-			
-			if (row_test || munder_test || frac_test)
-				strm << L"</m:e>";
-		}
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+		//Context.is_need_e_ = content_.size() > 1 ? true : false;
+		Context.is_need_e_ = true;
+
+		//math_mrow*		row_test	= dynamic_cast<math_mrow*>(content_[i].get());
+		//math_munder*	munder_test	= dynamic_cast<math_munder*>(content_[i].get());
+		//math_mfrac*		frac_test	= dynamic_cast<math_mfrac*>(content_[i].get());
+		//
+		//if (row_test || munder_test || frac_test)
+		//	Context.output_stream() << L"<m:e>";// EqArray записался в числитель вместо знаменателя.docx - дублирование
+
+		office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
+		math_element->oox_convert(Context);
+		
+		//if (row_test || munder_test || frac_test)
+		//	strm << L"</m:e>";
+	}
 	strm << L"</m:mr>";
+
+	Context.is_need_e_ = need_e_old;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -151,6 +158,7 @@ void math_mtd::oox_convert(oox::math_context & Context)
 	std::wostream & strm = Context.output_stream();
 
 	strm << L"<m:e>";		
+	Context.is_need_e_ = false;
 		for (size_t i = 0; i < content_.size(); i++)
 		{
 			office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());

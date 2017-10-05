@@ -109,13 +109,13 @@ public:
 	}
 };
 //class RtfOldList;
-class TextReader: public RtfAbstractReader
+class TextReader : public RtfAbstractReader
 {
 private: 
     std::wstring&	m_sName;
-	bool		m_bErease;
+	bool			m_bErease;
 public:
-    TextReader( std::wstring& sName, bool bErease = true ):m_sName(sName),m_bErease(bErease)
+	TextReader( std::wstring& sName, bool bErease = true ) : m_sName(sName), m_bErease(bErease)
 	{
 	}
     void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)
@@ -780,6 +780,20 @@ public:
 	{
 	}
     bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter);
+};
+
+class RtfOleBinReader : public RtfAbstractReader
+{
+private: 
+	std::vector<std::string>/*&*/ m_arData;
+public: 
+	RtfOleBinReader()
+	{
+	}
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter);
+   
+	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText);
+	void GetData( BYTE** ppData, long& nSize);
 };
 
 class RtfTrackerChangesReader:  public RtfAbstractReader

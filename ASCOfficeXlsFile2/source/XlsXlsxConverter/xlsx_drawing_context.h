@@ -239,7 +239,7 @@ public:
 		{
 			color.SetRGB(0xff, 0xff, 0xff);
 			angle = opacity = opacity2 = focus = 0; type = fillSolid; 
-			memset(texture_crop, 0, 4 * sizeof(int));
+			memset(texture_crop, 0, 4 * sizeof(double));
 			texture_crop_enabled = false;
 		}
 		_color			color;
@@ -252,7 +252,7 @@ public:
 		double			angle;
 		
 		std::wstring	texture_target;
-		int				texture_crop[4];
+		double			texture_crop[4];
 		bool			texture_crop_enabled;
 		_texture_mode	texture_mode;
 

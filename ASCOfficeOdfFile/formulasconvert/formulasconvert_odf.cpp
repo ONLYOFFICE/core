@@ -389,29 +389,37 @@ namespace formulasconvert {
 	}
 
 
-	std::wstring forbidden_formulas[] =
-	{
-		L"NULLFORMULA"		
-		//L"BETADIST",
-		//L"CEILING",
-		//L"FLOOR",
-		//L"RANK",
-		//L"ROUND",
-		//L"ROUNDDOWN",
-		//L"ROUNDUP",
-		//L"SUBTOTAL",
-		//L"FORMULA",
-		//L"ISREF"
-	};
+	//std::wstring forbidden_formulas[] =
+	//{
+	//	L"NULLFORMULA"	
+	//	//L"BETADIST",
+	//	//L"CEILING",
+	//	//L"FLOOR",
+	//	//L"RANK",
+	//	//L"ROUND",
+	//	//L"ROUNDDOWN",
+	//	//L"ROUNDUP",
+	//	//L"SUBTOTAL",
+	//	//L"FORMULA",
+	//	//L"ISREF"
+	//};
 
-	bool is_forbidden(const std::wstring & formula)
+	std::wstring is_forbidden(const std::wstring & formula)
 	{
-		for (size_t i = 0; i < 1/*forbidden_formulas.size()*/; i++)
+		std::wstring result = formula;
+		std::map<std::wstring, std::wstring> forbidden_formulas;
+
+		forbidden_formulas.insert(std::make_pair(L"FORMULA", L"_xlfn.FORMULATEXT"));
+		
+		for (std::map<std::wstring, std::wstring>::iterator it = forbidden_formulas.begin(); it != forbidden_formulas.end(); it++)
 		{
-			if (boost::algorithm::contains(formula, forbidden_formulas[i]))
-				return true;
+			if (boost::algorithm::contains(formula, it->first))
+			{
+
+				XmlUtils::replace_all(result, it->first, it->second);
+			}
 		}
-		return false;
+		return result;
 	}
 
 	// заменить вертикальную черту во всех вхождениях в фигурных скобках, но не внутри строк
@@ -437,10 +445,7 @@ namespace formulasconvert {
 
 	std::wstring odf2oox_converter::Impl::convert(const std::wstring& expr)
 	{
-		if (is_forbidden(expr))
-			return L"NULLFORMULA()";
-		
-		std::wstring workstr = expr;
+		std::wstring workstr = is_forbidden(expr);
 		//boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// Better_Donut.ods- cell(c27)
 		//std::wstring workstr = boost::regex_replace(
 		//	expr,
@@ -449,7 +454,7 @@ namespace formulasconvert {
 		//	boost::match_default | boost::format_all);	
 
 		bool isFormula = check_formula(workstr);
-		
+
 		boost::regex_replace(
 			workstr,
 			boost::wregex(L"('.*?')|(\".*?\")"),
@@ -471,6 +476,12 @@ namespace formulasconvert {
 				//todooo
 			}	
 			//todooo INDEX((A1:C6~A8:C11),2,2,2) - ???? - INDEX_emb.ods
+		}
+		else
+		{
+			size_t sz_workstr = workstr.length();
+            if (workstr.substr(0, (std::min)((size_t)3, sz_workstr)) == L"of:")//sample_02neu_crashes.ods
+				workstr =  workstr.substr(3);
 		}
 
 
@@ -517,10 +528,8 @@ namespace formulasconvert {
 
 	std::wstring odf2oox_converter::Impl::convert_chart_distance(const std::wstring& expr)
 	{
-		if (is_forbidden(expr))
-			return L"NULLFORMULA()";
+		std::wstring workstr = is_forbidden(expr);
 
-		std::wstring workstr = expr;
 		boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// поиск того что в апострофах и замена там
 
 		workstr = boost::regex_replace(

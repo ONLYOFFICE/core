@@ -38,7 +38,9 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-odf_document::odf_document(const std::wstring & Folder, const ProgressCallback* CallBack) : impl_(new Impl(Folder,CallBack))
+odf_document::odf_document(const std::wstring & Folder, const ProgressCallback* CallBack) : impl_(new Impl(Folder, CallBack))
+{}
+odf_document::odf_document( xml::sax * Reader) : impl_(new Impl(Reader))
 {}
 
 odf_document::~odf_document()

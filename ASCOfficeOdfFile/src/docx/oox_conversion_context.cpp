@@ -144,7 +144,7 @@ void styles_context::docx_serialize_table_style(std::wostream & strm, std::wstri
 namespace oox
 {
 math_context::math_context(odf_reader::fonts_container & fonts, bool graphic) :
-base_font_size_(12), fonts_container_(fonts)
+						base_font_size_(12), fonts_container_(fonts), is_need_e_(false)
 {
 	graphRPR_ = graphic;
 

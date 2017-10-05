@@ -118,6 +118,23 @@ void oox_chart_context::serialize(std::wostream & strm)
 			{
 				CP_XML_ATTR(L"val",L"en-US");
 			}
+
+			if (pivot_source_.empty() == false)
+			{
+				set_cache_only(true);
+
+				CP_XML_NODE(L"c:pivotSource")
+				{
+				  CP_XML_NODE(L"c:name")
+				  {
+					  CP_XML_STREAM() << pivot_source_;
+				  }
+				  CP_XML_NODE(L"c:fmtId")
+				  {
+					  CP_XML_ATTR(L"val", 0);
+				  }
+				}
+			}
 			CP_XML_NODE(L"c:chart")
 			{
 				if (plot_area_.current_chart_->is3D_)
@@ -148,10 +165,42 @@ void oox_chart_context::serialize(std::wostream & strm)
 			shape.set(graphic_properties_, fill_);
 			shape.oox_serialize(CP_XML_STREAM());
 	
-
+			if (pivot_source_.empty() == false)
+			{
+				CP_XML_NODE(L"c:extLst")
+				{
+					CP_XML_NODE(L"c:ext")
+					{
+						CP_XML_ATTR(L"uri", L"{781A3756-C4B2-4CAC-9D66-4F8BD8637D16}");
+						CP_XML_ATTR(L"xmlns:c14", L"http://schemas.microsoft.com/office/drawing/2007/8/2/chart");
+						CP_XML_NODE(L"c14:pivotOptions")
+						{
+							CP_XML_NODE(L"c14:dropZoneFilter")
+							{
+								CP_XML_ATTR(L"val", 1);
+							}		
+							CP_XML_NODE(L"c14:dropZoneCategories")
+							{
+								CP_XML_ATTR(L"val", 1);
+							}
+							CP_XML_NODE(L"c14:dropZoneData")
+							{
+								CP_XML_ATTR(L"val", 1);
+							}
+							CP_XML_NODE(L"c14:dropZoneSeries")
+							{
+								CP_XML_ATTR(L"val", 1);
+							}
+							CP_XML_NODE(L"c14:dropZonesVisible")
+							{
+								CP_XML_ATTR(L"val", 1);
+							}
+						}
+					}
+				}
+			}
 		}
 	}
-
 }
 
 oox_chart_context::~oox_chart_context()
@@ -160,7 +209,7 @@ oox_chart_context::~oox_chart_context()
 
 void oox_chart_context::set_cache_only	(bool val)
 {
-	for (int i = 0 ; i < plot_area_.charts_.size(); i++)
+	for (size_t i = 0 ; i < plot_area_.charts_.size(); i++)
 	{
 		plot_area_.charts_[i]->set_cache_only(val);
 	}

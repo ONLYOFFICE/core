@@ -514,8 +514,8 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 	if (drawing_state->id < 0)	
 		drawing_state->id = count_object + 0x20000;
 
-	if ( drawing_state->type	== external_items::typeImage ||
-		drawing_state->shape_id	== msosptPictureFrame )
+	if (  drawing_state->type == external_items::typeImage ||
+		( drawing_state->type == external_items::typeShape && drawing_state->shape_id == msosptPictureFrame ))
 	{
 		drawing_state->type = external_items::typeImage;
 
@@ -1687,10 +1687,10 @@ void xlsx_drawing_context::serialize_bitmap_fill(std::wostream & stream, _drawin
 			{
 				if (fill.texture_crop_enabled)
 				{		
-					CP_XML_ATTR(L"l", static_cast<size_t>(fill.texture_crop[0]));
-					CP_XML_ATTR(L"t", static_cast<size_t>(fill.texture_crop[1]));
-					CP_XML_ATTR(L"r", static_cast<size_t>(fill.texture_crop[2]));
-					CP_XML_ATTR(L"b", static_cast<size_t>(fill.texture_crop[3]));
+					CP_XML_ATTR(L"l", static_cast<long>(fill.texture_crop[0] * 10000));
+					CP_XML_ATTR(L"t", static_cast<long>(fill.texture_crop[1] * 10000));
+					CP_XML_ATTR(L"r", static_cast<long>(fill.texture_crop[2] * 10000));
+					CP_XML_ATTR(L"b", static_cast<long>(fill.texture_crop[3] * 10000));
 				}
 			}
 			if (fill.texture_mode == textureStretch)

@@ -105,7 +105,10 @@ void draw_image::add_child_element( xml::sax * Reader, const std::wstring & Ns, 
         //CP_NOT_APPLICABLE_ELM();
     }
 }
-
+std::wostream & draw_image::text_to_stream(std::wostream & _Wostream) const
+{
+    return _Wostream;
+}
 // draw:chart
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * draw_chart::ns = L"draw";
@@ -151,6 +154,13 @@ void draw_g::add_child_element( xml::sax * Reader, const std::wstring & Ns, cons
 {
 	CP_CREATE_ELEMENT(content_);
 }
+
+std::wostream & draw_g::text_to_stream(std::wostream & _Wostream) const
+{
+    CP_SERIALIZE_TEXT(content_);
+    return _Wostream;
+}
+
 // draw:frame
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * draw_frame::ns = L"draw";
@@ -261,7 +271,11 @@ void draw_object::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void draw_object::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    CP_NOT_APPLICABLE_ELM(); // TODO
+    if CP_CHECK_NAME(L"office", L"document")
+    {
+		//embedded
+		odf_document_ = odf_document_ptr( new odf_document(Reader));
+    }
 }
 
 // draw:object
@@ -328,8 +342,10 @@ std::wstring draw_object_ole::detectObject(const std::wstring &fileName)
 }
 
 
-std::wstring draw_object::office_convert(odf_document * odfDocument, int type)
+std::wstring draw_object::office_convert(odf_document_ptr odfDocument, int type)
 {
+	if (!odfDocument) return L"";
+
 	std::wstring href_result;
 	std::wstring folderPath		= odfDocument->get_folder();	
     std::wstring objectOutPath	= NSDirectory::CreateDirectoryWithUniqueName(folderPath);
@@ -337,7 +353,7 @@ std::wstring draw_object::office_convert(odf_document * odfDocument, int type)
 	if (type == 1)
 	{
 		oox::package::docx_document	outputDocx;
-		oox::docx_conversion_context conversionDocxContext ( odfDocument);
+		oox::docx_conversion_context conversionDocxContext ( odfDocument.get());
 	   
 		conversionDocxContext.set_output_document (&outputDocx);
 		//conversionContext.set_font_directory	(fontsPath);
@@ -356,7 +372,7 @@ std::wstring draw_object::office_convert(odf_document * odfDocument, int type)
 	if (type == 2)
 	{
 		oox::package::xlsx_document	outputXlsx;
-		oox::xlsx_conversion_context conversionXlsxContext ( odfDocument);
+		oox::xlsx_conversion_context conversionXlsxContext ( odfDocument.get());
 	   
 		conversionXlsxContext.set_output_document (&outputXlsx);
 		//conversionContext.set_font_directory	(fontsPath);

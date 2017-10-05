@@ -49,13 +49,14 @@ namespace cpdoccore {
 
 namespace odf_reader {
 
-/// draw-image-attlist
+class odf_document;
+typedef shared_ptr<odf_document>::Type odf_document_ptr;
+
 class draw_image_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-public:
     _CP_OPT(std::wstring) draw_filter_name_;
 
 };
@@ -69,7 +70,9 @@ public:
     static const ElementType type = typeDrawImage;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void docx_convert(oox::docx_conversion_context & Context);
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+
+	virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
@@ -79,14 +82,15 @@ private:
 
     draw_image_attlist				draw_image_attlist_;
 	odf_types::common_xlink_attlist common_xlink_attlist_;
-    office_element_ptr				office_binary_data_;
+    
+	office_element_ptr				office_binary_data_;
+
     office_element_ptr_array		content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_image);
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
- //draw-chart-attlist
+//------------------------------------------------------------------------------------------------------
 class draw_chart_attlist
 {
 public:
@@ -134,7 +138,6 @@ class draw_frame_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-public:
     _CP_OPT(std::wstring)					draw_copy_of_;
     _CP_OPT(odf_types::length_or_percent)	fo_min_width_;
     _CP_OPT(odf_types::length_or_percent)	fo_min_height_;
@@ -191,14 +194,11 @@ private:
 CP_REGISTER_OFFICE_ELEMENT2(draw_frame);
 
 //-------------------------------------------------------------------------------------------------------------
-//draw-frame-attlist
 class draw_g_attlist
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
 };
-
 
 class draw_g : public office_element_impl<draw_g>
 {
@@ -209,7 +209,9 @@ public:
     static const ElementType type		= typeDrawG;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void docx_convert(oox::docx_conversion_context & Context);
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+
+	virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
@@ -226,7 +228,6 @@ private:
 CP_REGISTER_OFFICE_ELEMENT2(draw_g);
 
 //-------------------------------------------------------------------------------------------------------------
-// draw-text-box-attlist
 class draw_text_box_attlist
 {
 public:
@@ -268,7 +269,6 @@ private:
 CP_REGISTER_OFFICE_ELEMENT2(draw_text_box);
 
 //-------------------------------------------------------------------------------------------------------------
-/// draw-object-attlist
 class draw_object_attlist
 {
 public:
@@ -280,7 +280,6 @@ public:
     
 };
 
-// draw:object
 class draw_object : public office_element_impl<draw_object>
 {
 public:
@@ -297,16 +296,17 @@ public:
     draw_object_attlist					draw_object_attlist_;
     odf_types::common_xlink_attlist		common_xlink_attlist_;
 
+	odf_document_ptr					odf_document_;
+
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-	std::wstring office_convert(odf_document * odfDocument, int type);
+	std::wstring office_convert(odf_document_ptr odfDocument, int type);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_object);
 
-// draw:object-ole
 class draw_object_ole : public office_element_impl<draw_object>
 {
 public:
@@ -332,7 +332,6 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_object_ole);
 
-// draw:param
 class draw_param : public office_element_impl<draw_param>
 {
 public:
@@ -356,7 +355,6 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_param);
 
-// draw:plugin
 class draw_plugin : public office_element_impl<draw_plugin>
 {
 public:

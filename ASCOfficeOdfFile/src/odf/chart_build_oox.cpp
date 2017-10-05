@@ -77,6 +77,15 @@ typedef shared_ptr<const office_element>::Type office_element_ptr_const;
 
 // Класс для конструирования чартов
 using namespace chart;
+	
+void object_odf_context::set_pivot_source(std::wstring const & val)
+{
+	pivot_source_ = val;
+	if (pivot_source_.empty() == false)
+	{
+		bPivotChart_ = true;
+	}
+}
 
 void object_odf_context::set_width(double valPt)
 {
@@ -167,6 +176,11 @@ void object_odf_context::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	if (object_type_ == 1) 
 	{
+		if (pivot_source_.empty() == false)
+		{
+			pivot_source_ = Context.get_pivots_context().get_chart_source(pivot_source_);
+
+		}
 		Context.start_chart(L"");
 		oox::oox_chart_context & chart = Context.current_chart();
 		
@@ -266,23 +280,60 @@ void object_odf_context::calc_cache_series(std::wstring adress, std::vector<std:
 {
 	if (adress.empty()) return;
 
-    formulasconvert::odf2oox_converter converter;
-
-	std::wstring ref_1, ref_2, table;
-	size_t col_1=0, row_1=0, col_2=0, row_2=0;
-   
-	if (!converter.find_first_last_ref(adress, table, ref_1, ref_2))return;
-	//if ((res = table.find(L"local-table"))<0)return;
-
-	oox::getCellAddressInv(ref_1, col_1,row_1);
-	oox::getCellAddressInv(ref_2, col_2,row_2);
-
- 	for (size_t i = 0; i < cash_values.size(); i++)
+	if (bPivotChart_)
 	{
-		if (cash_values[i].col >= col_1 && cash_values[i].col <= col_2 &&
-			cash_values[i].row >= row_1 && cash_values[i].row <= row_2)
+		std::map<std::wstring, _cell>::iterator pFind = cash_pivot.find(adress);
+		if (pFind != cash_pivot.end())
 		{
-			cash.push_back(cash_values[i].val);
+			int col = pFind->second.col;
+			int row = pFind->second.row;
+ 			
+			if (col == 0 || row == 0)
+			{
+				for (size_t i = 0; i < cash_values.size(); i++)
+				{
+					if (col == 0)
+					{
+						if (cash_values[i].col == col)
+						{
+							cash.push_back(cash_values[i].val);
+						}
+					}
+					if (row == 0)
+					{
+						if (cash_values[i].row == row)
+						{
+							cash.push_back(cash_values[i].val);
+						}
+					}
+				}		
+			}
+			else
+			{
+				cash.push_back(pFind->second.val);
+			}
+		}
+	}
+	else
+	{
+		formulasconvert::odf2oox_converter converter;
+
+		std::wstring ref_1, ref_2, table;
+		size_t col_1 = 0, row_1 = 0, col_2 = 0, row_2 = 0;
+	   
+		if (!converter.find_first_last_ref(adress, table, ref_1, ref_2))return;
+		//if ((res = table.find(L"local-table"))<0)return;
+
+		oox::getCellAddressInv(ref_1, col_1, row_1);
+		oox::getCellAddressInv(ref_2, col_2, row_2);
+
+ 		for (size_t i = 0; i < cash_values.size(); i++)
+		{
+			if (cash_values[i].col >= col_1 && cash_values[i].col <= col_2 &&
+				cash_values[i].row >= row_1 && cash_values[i].row <= row_2)
+			{
+				cash.push_back(cash_values[i].val);
+			}
 		}
 	}
 }
@@ -297,6 +348,8 @@ struct axises_sort
 
 void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 {
+	chart_context.set_pivot_chart	(pivot_source_);
+
 	chart_context.set_title		(title_);
 	chart_context.set_wall		(wall_);
 	chart_context.set_floor		(floor_);
@@ -370,30 +423,36 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		{
 			if (last_set_type == chart_bubble)
 			{	//bubble(x)
-				current->set_formula_series(4, domain_cell_range_adress_, formatCode, boolVal.get_value_or(true));	
+				if (!bPivotChart_)
+					current->set_formula_series(4, domain_cell_range_adress_, formatCode, boolVal.get_value_or(true));	
 				current->set_values_series (4, domain_cash);
 				//y	
-				current->set_formula_series(3, series_[i].cell_range_address_, formatCode, boolVal.get_value_or(true));			
+				if (!bPivotChart_)
+					current->set_formula_series(3, series_[i].cell_range_address_, formatCode, boolVal.get_value_or(true));			
 				current->set_values_series (3, cell_cash);
 			}
 			else
 			{	//x
-				current->set_formula_series(2, domain_cell_range_adress_, formatCode, boolVal.get_value_or(true));	
+				if (!bPivotChart_)
+					current->set_formula_series(2, domain_cell_range_adress_, formatCode, boolVal.get_value_or(true));	
 				current->set_values_series (2, domain_cash);						
 				//y
-				current->set_formula_series(3, series_[i].cell_range_address_, formatCode, boolVal.get_value_or(true));				
+				if (!bPivotChart_)
+					current->set_formula_series(3, series_[i].cell_range_address_, formatCode, boolVal.get_value_or(true));				
 				current->set_values_series (3, cell_cash);								
 			}
 		}
 		else
 		{	//common
-			current->set_formula_series(1, series_[i].cell_range_address_, formatCode, boolVal.get_value_or(true));	
+			if (!bPivotChart_)
+				current->set_formula_series(1, series_[i].cell_range_address_, formatCode, boolVal.get_value_or(true));	
 			current->set_values_series(1, cell_cash);
 		}
 
 		if (categories_.empty() == false)//названия
 		{			
-			current->set_formula_series(0, categories_[0], L"General", true);
+			if (!bPivotChart_)
+				current->set_formula_series(0, categories_[0], L"General", true);
 			current->set_values_series(0, cat_cash);
 		}
 		current->set_name(series_[i].name_);
@@ -560,7 +619,13 @@ void process_build_object::on_not_impl(std::string const & message)
     _CP_LOG << L"[process_object visitor] : not impliment for \"" << utf8_to_utf16(message) << L"\"" << std::endl;
 }
 
-//////////////////////////////////////////////////
+//-----------------------------------------------------------------------------------
+void process_build_object::visit(office_document & val)
+{
+   if (val.office_body_)
+        val.office_body_->accept(*this);
+}
+
 void process_build_object::visit(const office_document_content& val)
 {
     if (val.office_body_)
@@ -599,18 +664,21 @@ void process_build_object::visit(const chart_chart& val)
 {
 	object_odf_context_.object_type_ = 1;
 	
-	if (val.chart_chart_attlist_.common_draw_size_attlist_.svg_width_)
+	if (val.attlist_.common_draw_size_attlist_.svg_width_)
     {
-        object_odf_context_.set_width(val.chart_chart_attlist_.common_draw_size_attlist_.svg_width_->get_value_unit(length::pt));
+        object_odf_context_.set_width(val.attlist_.common_draw_size_attlist_.svg_width_->get_value_unit(length::pt));
     }
            
-    if (val.chart_chart_attlist_.common_draw_size_attlist_.svg_height_)
+    if (val.attlist_.common_draw_size_attlist_.svg_height_)
     {
-        object_odf_context_.set_height(val.chart_chart_attlist_.common_draw_size_attlist_.svg_height_->get_value_unit(length::pt));
+        object_odf_context_.set_height(val.attlist_.common_draw_size_attlist_.svg_height_->get_value_unit(length::pt));
     }
-	ApplyGraphicProperties	(val.chart_chart_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.chart_graphic_properties_, object_odf_context_.chart_fill_);
+	ApplyGraphicProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.chart_graphic_properties_, object_odf_context_.chart_fill_);
 
-	object_odf_context_.set_class(val.chart_chart_attlist_.chart_class_);
+	object_odf_context_.set_class(val.attlist_.chart_class_);
+
+	if (val.attlist_.loext_data_pilot_source_)
+		object_odf_context_.set_pivot_source(*val.attlist_.loext_data_pilot_source_);
 
 	ACCEPT_ALL_CONTENT_CONST(val.content_);
 
@@ -626,13 +694,13 @@ void process_build_object::visit(const chart_title& val)
 		val.text_p_->text_to_stream(v);
 		t.content_ = v.str();
 	}
-	ApplyTextProperties(val.chart_title_attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.text_properties_);
+	ApplyTextProperties(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""), t.text_properties_);
 
 ///////////////////////////////////////////////////////////////////////////////////////
-	if (val.chart_title_attlist_.common_draw_position_attlist_.svg_x_)
+	if (val.attlist_.common_draw_position_attlist_.svg_x_)
     {
-        t.pos_x = val.chart_title_attlist_.common_draw_position_attlist_.svg_x_->get_value_unit(length::pt);
-		t.pos_y = val.chart_title_attlist_.common_draw_position_attlist_.svg_y_->get_value_unit(length::pt);
+        t.pos_x = val.attlist_.common_draw_position_attlist_.svg_x_->get_value_unit(length::pt);
+		t.pos_y = val.attlist_.common_draw_position_attlist_.svg_y_->get_value_unit(length::pt);
 	}
 	t.bEnabled = true;
 	
@@ -650,10 +718,10 @@ void process_build_object::visit(const chart_subtitle & val)
 	val.text_p_->text_to_stream(v);
 	t.content_ = v.str();
 
-	if (val.chart_title_attlist_.common_draw_position_attlist_.svg_x_)
+	if (val.attlist_.common_draw_position_attlist_.svg_x_)
     {
-        t.pos_x = val.chart_title_attlist_.common_draw_position_attlist_.svg_x_->get_value_unit(length::pt);
-		t.pos_y = val.chart_title_attlist_.common_draw_position_attlist_.svg_y_->get_value_unit(length::pt);
+        t.pos_x = val.attlist_.common_draw_position_attlist_.svg_x_->get_value_unit(length::pt);
+		t.pos_y = val.attlist_.common_draw_position_attlist_.svg_y_->get_value_unit(length::pt);
 	}
 	t.bEnabled = true;
 	object_odf_context_.sub_title_ = t;
@@ -672,32 +740,32 @@ void process_build_object::visit(const chart_legend& val)
 {
 	object_odf_context_.legend_.bEnabled = true;
 	
-	ApplyChartProperties	(val.chart_legend_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.properties_);
-	ApplyGraphicProperties	(val.chart_legend_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.graphic_properties_,object_odf_context_.legend_.fill_);
-	ApplyTextProperties		(val.chart_legend_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.text_properties_);
+	ApplyChartProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.properties_);
+	ApplyGraphicProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.graphic_properties_,object_odf_context_.legend_.fill_);
+	ApplyTextProperties		(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.text_properties_);
 }
 
 void process_build_object::visit(const chart_plot_area& val)
 {
 	ACCEPT_ALL_CONTENT_CONST(val.content_);
 
-	object_odf_context_.plot_area_.cell_range_address_ = val.chart_plot_area_attlist_.table_cell_range_address_.get_value_or(L"");
+	object_odf_context_.plot_area_.cell_range_address_ = val.attlist_.table_cell_range_address_.get_value_or(L"");
 
-	ApplyChartProperties	(val.chart_plot_area_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),object_odf_context_.plot_area_.properties_);
-	ApplyGraphicProperties	(val.chart_plot_area_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),object_odf_context_.plot_area_.graphic_properties_, object_odf_context_.plot_area_.fill_);
-	ApplyTextProperties		(val.chart_plot_area_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),object_odf_context_.plot_area_.text_properties_);
+	ApplyChartProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),object_odf_context_.plot_area_.properties_);
+	ApplyGraphicProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),object_odf_context_.plot_area_.graphic_properties_, object_odf_context_.plot_area_.fill_);
+	ApplyTextProperties		(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),object_odf_context_.plot_area_.text_properties_);
 }
 
 
 void process_build_object::visit(const chart_axis& val)
 {
-    object_odf_context_.start_axis(val.chart_axis_attlist_.chart_dimension_.get_value_or(L""),
-							val.chart_axis_attlist_.chart_name_.get_value_or(L""),
-							val.chart_axis_attlist_.common_attlist_.chart_style_name_.get_value_or(L""));
+    object_odf_context_.start_axis(val.attlist_.chart_dimension_.get_value_or(L""),
+							val.attlist_.chart_name_.get_value_or(L""),
+							val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""));
 
     ACCEPT_ALL_CONTENT_CONST(val.content_);
 
-	std::wstring style_name	= val.chart_axis_attlist_.common_attlist_.chart_style_name_.get_value_or(L"");
+	std::wstring style_name	= val.attlist_.common_attlist_.chart_style_name_.get_value_or(L"");
 
 	ApplyChartProperties	(style_name, object_odf_context_.axises_.back().properties_);
 	ApplyGraphicProperties	(style_name, object_odf_context_.axises_.back().graphic_properties_, object_odf_context_.axises_.back().fill_);
@@ -708,7 +776,7 @@ void process_build_object::visit(const chart_axis& val)
 
 void process_build_object::visit(const chart_series& val)
 {
-    const chart_series_attlist & att = val.chart_series_attlist_;
+    const chart_series_attlist & att = val.attlist_;
    
 	chart::class_type chartClass = get_series_class_type(att.chart_class_.get_value_or(object_odf_context_.str_class_));
 
@@ -737,21 +805,21 @@ void process_build_object::visit(const chart_domain& val)
 }
 void process_build_object::visit(const chart_grid& val)
 {
-    object_odf_context_.add_grid(val.chart_grid_attlist_.chart_class_.get_value_or(L""),
-        val.chart_grid_attlist_.common_attlist_.chart_style_name_.get_value_or(L"") );
+    object_odf_context_.add_grid(val.attlist_.chart_class_.get_value_or(L""),
+        val.attlist_.common_attlist_.chart_style_name_.get_value_or(L"") );
 	
 	oox::_oox_fill fill;
 	
-	ApplyGraphicProperties	(val.chart_grid_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	(object_odf_context_.axises_.back()).grids_.back().graphic_properties_, fill);
+	ApplyGraphicProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	(object_odf_context_.axises_.back()).grids_.back().graphic_properties_, fill);
 
  }
 void process_build_object::visit(const chart_wall& val)
 {      
 	object_odf_context_.wall_.bEnabled = true;
 
-	ApplyChartProperties	(val.chart_wall_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.wall_.properties_);
-	ApplyGraphicProperties	(val.chart_wall_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.wall_.graphic_properties_,object_odf_context_.wall_.fill_);
-	ApplyTextProperties		(val.chart_wall_attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.wall_.text_properties_);
+	ApplyChartProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.wall_.properties_);
+	ApplyGraphicProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.wall_.graphic_properties_,object_odf_context_.wall_.fill_);
+	ApplyTextProperties		(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.wall_.text_properties_);
 } 
 
 void process_build_object::visit(const chart_floor& val)
@@ -765,12 +833,12 @@ void process_build_object::visit(const chart_floor& val)
 
 void process_build_object::visit(const chart_data_point & val)
 {
-	object_odf_context_.add_point(	val.chart_data_point_attlist_.chart_repeated_.get_value_or(1));
+	object_odf_context_.add_point(	val.attlist_.chart_repeated_.get_value_or(1));
 
-	if (val.chart_data_point_attlist_.common_attlist_.chart_style_name_)
+	if (val.attlist_.common_attlist_.chart_style_name_)
 	{
 		object_odf_context_.series_.back().points_.back().bEnabled = true;
-		std::wstring style_name = val.chart_data_point_attlist_.common_attlist_.chart_style_name_.get_value_or(L"");
+		std::wstring style_name = val.attlist_.common_attlist_.chart_style_name_.get_value_or(L"");
 		
 		ApplyGraphicProperties	(style_name,	object_odf_context_.series_.back().points_.back().graphic_properties_, 
 												object_odf_context_.series_.back().points_.back().fill_);
@@ -895,12 +963,21 @@ void process_build_object::visit(const table_table_cell& val)
 
     unsigned int repeated = val.attlist_.table_number_columns_repeated_;
   
-	std::wstringstream  wstream_temp;	
-   
-	val.content_.text_to_stream(wstream_temp);
-	std::wstring cell_cash = wstream_temp.str();
-
-	std::wstring cell_val;
+	std::wstring cell_val, cell_cash, cell_desc;
+	
+	for (size_t i = 0 ; i < val.content_.elements_.size(); i++)
+	{
+		std::wstringstream  wstream_temp;	
+		val.content_.elements_[i]->text_to_stream(wstream_temp);
+		if (val.content_.elements_[i]->get_type() == typeTextP)
+		{
+			cell_cash += wstream_temp.str();
+		}
+		else if (val.content_.elements_[i]->get_type() == typeDrawG)
+		{
+			cell_desc += wstream_temp.str();
+		}
+	}   
 
 	if (attlist.common_value_and_type_attlist_.office_value_) 				cell_val = *attlist.common_value_and_type_attlist_.office_value_;
 	else if (attlist.common_value_and_type_attlist_.office_currency_)		cell_val = *attlist.common_value_and_type_attlist_.office_currency_;
@@ -912,11 +989,16 @@ void process_build_object::visit(const table_table_cell& val)
 	if (cell_cash.empty())
 		cell_cash = cell_val;
 
-	object_odf_context::_cell cell_={object_odf_context_.current_table_column_, object_odf_context_.current_table_row_, cell_cash};
+	object_odf_context::_cell cell_= {object_odf_context_.current_table_column_, object_odf_context_.current_table_row_, cell_cash};
 
 	object_odf_context_.cash_values.push_back(cell_);
 	
 	object_odf_context_.current_table_column_+=repeated;
+
+	if (object_odf_context_.bPivotChart_)
+	{
+		object_odf_context_.cash_pivot.insert(std::make_pair(cell_desc, cell_));
+	}
 }
 void process_build_object::visit(const table_covered_table_cell& val)
 {

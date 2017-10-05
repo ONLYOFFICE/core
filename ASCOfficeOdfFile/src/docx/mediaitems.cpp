@@ -181,7 +181,11 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 		sub_path = L"embeddings/";
 	}
 	else 
+	{
 		isMediaInternal = is_internal(href, odf_packet_);
+		if (href.empty() && type == typeImage)
+			return L"";
+	}
 	
 	int number=0;
 	
@@ -205,9 +209,9 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 	if ( type == typeChart) outputPath = outputPath + L".xml";
 
 	std::wstring id;
-    for (int i = 0 ; i < items_.size(); i++)
+    for (size_t i = 0 ; i < items_.size(); i++)
     {
-		if (items_[i].href == inputPath)
+		if ((items_[i].href == inputPath && !inputPath.empty()) || (items_[i].type == type && inputPath.empty()))
 		{
 			id			= items_[i].Id;
 			outputPath  = items_[i].outputName;

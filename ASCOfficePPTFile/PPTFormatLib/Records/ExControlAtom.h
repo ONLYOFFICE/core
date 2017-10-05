@@ -34,7 +34,7 @@
 
 class CRecordExControlAtom : public CUnknownRecord
 {
-	UINT m_nSlideID;
+	UINT m_nSlideIdRef;
 
 public:
 	
@@ -49,6 +49,7 @@ public:
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{
 		m_oHeader = oHeader;
-		m_nSlideID = StreamUtils::ReadDWORD(pStream);
+		
+		m_nSlideIdRef = StreamUtils::ReadDWORD(pStream);
 	}
 };

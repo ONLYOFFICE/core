@@ -2771,8 +2771,16 @@ namespace OOX{
 				if(_T("val") == wsName)
 				{
 					double* pNewElem = new double;
-                    std::wstring sVal = oReader.GetText();
-                    *pNewElem = _tstof(sVal.c_str());
+                    std::wstring sVal = oReader.GetText(); // Yp2bbamFbt1iHeX3WM0_.pptx - value = "-"
+                    *pNewElem = 0;
+                    try
+                    {
+                        *pNewElem = _tstof(sVal.c_str());
+                    }
+                    catch(...)
+                    {
+                    }
+
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End_No_NS( oReader )

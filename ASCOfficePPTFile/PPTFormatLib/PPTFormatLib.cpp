@@ -52,7 +52,7 @@ COfficePPTFile::~COfficePPTFile()
     CloseFile();
 }
 
-long COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstring & password)
+long COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstring & password, bool &bMacros)
 {
 	CloseFile();
 	
@@ -66,6 +66,7 @@ long COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstring
     
 	pptReader->m_oDocumentInfo.m_strTmpDirectory	= m_strTempDirectory;
 	pptReader->m_oDocumentInfo.m_strPassword		= password;
+	pptReader->m_oDocumentInfo.m_bMacros			= bMacros;
 		
 	if	(pptReader->IsPowerPoint() == false) 
 	{ 
@@ -88,6 +89,7 @@ long COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstring
 	//pptReader->ReadDocumentSummary();
 	pptReader->ReadDocument();
 
+	bMacros	= pptReader->m_oDocumentInfo.m_bMacros;
 	m_Status = READMODE;
 
 	return S_OK;
@@ -101,14 +103,14 @@ bool COfficePPTFile::CloseFile()
 	return S_OK;
 }
 
-HRESULT COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring password)
+HRESULT COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring password, bool &bMacros)
 {
     if (m_strTempDirectory.empty())
     {
         m_strTempDirectory = NSDirectory::GetTempPath();
     }
 
-    long nResult = OpenFile(sSrcFileName, password);
+    long nResult = OpenFile(sSrcFileName, password, bMacros);
 	if (nResult != S_OK)
     {
 		CloseFile();

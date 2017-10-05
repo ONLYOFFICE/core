@@ -472,6 +472,13 @@ void pptx_slide_context::set_media_param(std::wstring name, std::wstring value)
 
 void pptx_slide_context::set_image(const std::wstring & path)
 {
+	int pos_replaicement = path.find(L"ObjectReplacements"); 
+	if (pos_replaicement >= 0)
+	{
+		if (path.length() - (pos_replaicement + 18) < 2)
+			return; //object without image
+	}
+
 	if (impl_->object_description_.type_ == typeUnknown)
 	{
 		impl_->object_description_.type_		= typeImage;	
@@ -547,8 +554,9 @@ void pptx_slide_context::Impl::process_image(drawing_object_description& obj, _p
 	std::wstring ref;/// это ссылка на выходной внешний объект
 	bool isMediaInternal = false;
 	
-	drawing.fill.bitmap->rId = get_mediaitems().add_or_find(obj.xlink_href_, typeImage, isMediaInternal, ref);
-	
+	drawing.fill.bitmap->rId		= get_mediaitems().add_or_find(obj.xlink_href_, typeImage, isMediaInternal, ref);
+	drawing.fill.bitmap->isInternal	= isMediaInternal;
+
 	if (drawing.type == typeShape)
 	{
 		add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);//собственно это не объект, а доп рел и ref объекта
@@ -640,11 +648,12 @@ void pptx_slide_context::Impl::process_media(drawing_object_description& obj, _p
 
 	drawing.type = mediaitems::detectMediaType(obj.xlink_href_); //reset from Media to Audio, Video, ... QuickTime? AudioCD? ...   
 	
-	drawing.objectId = get_mediaitems().add_or_find(obj.xlink_href_, drawing.type, isMediaInternal, ref);    
-	drawing.extId	 = L"ext" + drawing.objectId;
+	drawing.objectId	= get_mediaitems().add_or_find(obj.xlink_href_, drawing.type, isMediaInternal, ref);    
+	drawing.extId		= L"ext" + drawing.objectId;
+	drawing.extExternal	= !isMediaInternal;
 	
 	add_drawing(drawing, false, drawing.objectId, L"NULL", drawing.type);
-	add_additional_rels( true, drawing.extId, ref, typeMedia);
+	add_additional_rels( isMediaInternal, drawing.extId, ref, typeMedia);
 
 	if (drawing.fill.bitmap)
 	{
@@ -744,10 +753,10 @@ void pptx_slide_context::serialize_animations(std::wostream & strm)
 				{
 					CP_XML_ATTR(L"spd",impl_->transition_.Speed.get());
 				}
-				if (impl_->transition_.Time)
+/*				if (impl_->transition_.Time)
 				{
 					CP_XML_ATTR(L"p14:dur", impl_->transition_.Time.get());
-				}	
+				}*/	
 				if (impl_->transition_.PageTime)
 				{
 					CP_XML_ATTR(L"advTm", impl_->transition_.PageTime.get());

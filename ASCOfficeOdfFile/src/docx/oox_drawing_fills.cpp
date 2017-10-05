@@ -37,7 +37,7 @@
 namespace cpdoccore {
 namespace oox {
 
-	oox_bitmap_fill::oox_bitmap_fill() : name_space(L"a"), bStretch(false), bCrop(false),bTile(false),isInternal(true)
+	oox_bitmap_fill::oox_bitmap_fill() : name_space(L"a"), bStretch(false), bCrop(false), bTile(false), isInternal(true)
 	{
 		memset(cropRect,0,sizeof(double)*4);
 	}
@@ -186,10 +186,10 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val)
 			{
 				CP_XML_NODE(L"a:srcRect")
 				{
-					CP_XML_ATTR(L"l", static_cast<size_t>(val.bitmap->cropRect[0]*1000));
-					CP_XML_ATTR(L"t", static_cast<size_t>(val.bitmap->cropRect[1]*1000));
-					CP_XML_ATTR(L"r", static_cast<size_t>(val.bitmap->cropRect[2]*1000));
-					CP_XML_ATTR(L"b", static_cast<size_t>(val.bitmap->cropRect[3]*1000));
+					CP_XML_ATTR(L"l", static_cast<int>(val.bitmap->cropRect[0]*1000));
+					CP_XML_ATTR(L"t", static_cast<int>(val.bitmap->cropRect[1]*1000));
+					CP_XML_ATTR(L"r", static_cast<int>(val.bitmap->cropRect[2]*1000));
+					CP_XML_ATTR(L"b", static_cast<int>(val.bitmap->cropRect[3]*1000));
 				}
 			}
 			if (val.bitmap->bTile)

@@ -71,11 +71,15 @@ void math_msub::oox_convert(oox::math_context & Context)
 	strm << L"<m:sSub>";
 
 		strm << L"<m:e>";
+			Context.is_need_e_ = false;
+
 			math_element = dynamic_cast<office_math_element*>(content_[0].get());
 			math_element->oox_convert(Context);		
 		strm << L"</m:e>";
 		
 		strm << L"<m:sub>";
+			Context.is_need_e_ = false; //??
+
 			math_element = dynamic_cast<office_math_element*>(content_[1].get());
 			math_element->oox_convert(Context);		
 		strm << L"</m:sub>";
@@ -109,6 +113,8 @@ void math_msup::oox_convert(oox::math_context & Context)
 	strm << L"<m:sSup>";
 
 		strm << L"<m:e>";
+			Context.is_need_e_ = false;
+
 			math_element = dynamic_cast<office_math_element*>(content_[0].get());
 			math_element->oox_convert(Context);		
 		strm << L"</m:e>";
@@ -142,6 +148,8 @@ void math_msubsup::oox_convert(oox::math_context & Context)
 	office_math_element* math_element = NULL;
 
 	strm << L"<m:sSubSup>";
+	
+	Context.is_need_e_ = false;
 
 		strm << L"<m:e>";
 			math_element = dynamic_cast<office_math_element*>(content_[0].get());
@@ -328,6 +336,9 @@ void math_mover::oox_convert(oox::math_context & Context)
 	strm << L"<m:limUpp>";	
 		strm << L"<m:limUppPr/>";
 		strm << L"<m:e>";
+	
+		Context.is_need_e_ = false;
+
 			math_element = dynamic_cast<office_math_element*>(content_[0].get());
 			math_element->oox_convert(Context);		
 		strm << L"</m:e>";
@@ -355,6 +366,13 @@ void math_munder::oox_convert(oox::math_context & Context)
 {//2 elements
 	std::wostream & strm = Context.output_stream();
 
+	bool need_e = Context.is_need_e_;
+	if (need_e)
+	{
+		Context.output_stream() << L"<m:e>";
+	}
+	Context.is_need_e_ = false;
+
 	office_math_element* math_element = NULL;
 	strm << L"<m:limLow>";	
 		strm << L"<m:limLowPr/>";
@@ -367,6 +385,12 @@ void math_munder::oox_convert(oox::math_context & Context)
 			math_element->oox_convert(Context);		
 		strm << L"</m:lim>";
 	strm << L"</m:limLow>";
+
+	if (need_e)
+	{
+		Context.output_stream() << L"</m:e>";
+	}
+	Context.is_need_e_ = need_e;
 }
 }
 }

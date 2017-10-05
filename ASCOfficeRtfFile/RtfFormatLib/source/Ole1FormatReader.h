@@ -300,26 +300,30 @@ public:
 
 	Ole1FormatReader(BYTE *pData, int Size)
 	{
+		NativeDataSize = 0;
 		if (!pData || Size < 8) return;
 
 		CDataStream stream(pData, Size);
 
 		stream >> Header.OLEVersion >> Header.FormatID;
 
-		if (Header.OLEVersion & 0x00000500)
+		if (Header.FormatID == 2)
 		{
-			stream >> Header.ClassName;
-		}
-		stream >> Header.Width >> Header.Height;
-	
-		stream >> NativeDataSize;
+			if (Header.OLEVersion & 0x00000500)
+			{
+				stream >> Header.ClassName;
+			}
+			stream >> Header.Width >> Header.Height;
 		
-		NativeData = stream.GetCurPtr();
-		stream.Skip(NativeDataSize);
+			stream >> NativeDataSize;
+			
+			NativeData = stream.GetCurPtr();
+			stream.Skip(NativeDataSize);
 
-		int sz = stream.CanRead();
+			int sz = stream.CanRead();
 
-		/// далее графическое представление 
+			/// далее графическое представление 
+		}
 
 	}
 	ObjectHeader				Header;

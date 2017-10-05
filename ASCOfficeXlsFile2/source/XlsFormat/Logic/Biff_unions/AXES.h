@@ -59,6 +59,8 @@ public:
 	BaseObjectPtr						m_PlotArea_FRAME;
 	BaseObjectPtr						m_Wall_FRAME;
 	BaseObjectPtr						m_Floor_FRAME;
+
+	bool								bAxisCategories;
 };
 
 } // namespace XLS

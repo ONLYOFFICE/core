@@ -46,6 +46,7 @@
 #include "datatypes/tabletype.h"
 #include "datatypes/tablefunction.h"
 #include "datatypes/tableorder.h"
+#include "datatypes/dategroup.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -96,10 +97,11 @@ public:
      _CP_OPT(odf_types::grand_total)table_grand_total_;
      _CP_OPT(odf_types::Bool)		table_identify_categories_;
      _CP_OPT(odf_types::Bool)		table_ignore_empty_rows_;
-     _CP_OPT(odf_types::Bool)		table_show_filter_button_;
+     bool							table_show_filter_button_;
 	
 	office_element_ptr			source_;
 	office_element_ptr_array	fields_;
+	office_element_ptr			grand_total_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_table);
@@ -135,6 +137,30 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_field);
+//-------------------------------------------------------------------------------------
+
+class table_data_pilot_grand_total : public office_element_impl<table_data_pilot_grand_total>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableDataPilotGrandTotal;
+    CPDOCCORE_DEFINE_VISITABLE();
+   
+    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+
+public:
+	_CP_OPT(std::wstring)					table_display_name_;
+	_CP_OPT(odf_types::Bool)				table_display_;
+	_CP_OPT(odf_types::table_orientation)	table_orientation_;
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(table_data_pilot_grand_total );
 //-------------------------------------------------------------------------------------
 class table_data_pilot_field_reference : public office_element_impl<table_data_pilot_field_reference>
 {
@@ -178,7 +204,7 @@ private:
 
 public:
 	_CP_OPT(std::wstring)	table_database_name_;
-	_CP_OPT(std::wstring)	table_database_table_name_;
+	_CP_OPT(std::wstring)	table_table_name_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_database_source_table);
@@ -253,6 +279,27 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(table_source_cell_range);
 //-------------------------------------------------------------------------------------
+class table_source_cell_ranges : public office_element_impl<table_source_cell_ranges>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTableSourceCellRanges;
+    CPDOCCORE_DEFINE_VISITABLE();
+   
+    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+
+public:
+	_CP_OPT(std::wstring) table_cell_ranges_address_;
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(table_source_cell_ranges);
+//-------------------------------------------------------------------------------------
 
 class table_source_service : public office_element_impl<table_source_service>
 {
@@ -297,6 +344,7 @@ private:
 
 public:
 	_CP_OPT(odf_types::Bool)	table_show_empty_;
+	_CP_OPT(odf_types::Bool)	calcext_repeat_item_labels_;
 
 	office_element_ptr	members_;  
 	office_element_ptr	subtotals_;  
@@ -323,13 +371,13 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-	_CP_OPT(std::wstring)		table_date_end_;
-	_CP_OPT(std::wstring)		table_date_start_;
-	_CP_OPT(std::wstring)		table_start;			//double 18.2 or auto.
-	_CP_OPT(std::wstring)		table_end_;				//double 18.2 or auto.
-	_CP_OPT(std::wstring)		table_grouped_by_;		//seconds, minutes, hours, days, months, quarters or years.
-	_CP_OPT(std::wstring)		table_source_field_name_;
-	_CP_OPT(double)				table_step;
+	_CP_OPT(std::wstring)			table_date_end_;
+	_CP_OPT(std::wstring)			table_date_start_;
+	_CP_OPT(std::wstring)			table_start;			//double 18.2 or auto.
+	_CP_OPT(std::wstring)			table_end_;				//double 18.2 or auto.
+	_CP_OPT(odf_types::date_group)	table_grouped_by_;		
+	_CP_OPT(std::wstring)			table_source_field_name_;
+	_CP_OPT(double)					table_step;
 	
 	office_element_ptr_array	content_;  
 };
@@ -478,7 +526,7 @@ public:
     static const ElementType type = typeTableDataLayoutInfo;
     CPDOCCORE_DEFINE_VISITABLE();
    
-    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context){}
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -500,7 +548,7 @@ public:
     static const ElementType type = typeTableDataSortInfo;
     CPDOCCORE_DEFINE_VISITABLE();
    
-    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context){}
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -523,7 +571,7 @@ public:
     static const ElementType type = typeTableDataDisplayInfo;
     CPDOCCORE_DEFINE_VISITABLE();
    
-    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context){}
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );

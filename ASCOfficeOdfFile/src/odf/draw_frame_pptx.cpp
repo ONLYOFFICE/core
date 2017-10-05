@@ -255,18 +255,22 @@ void draw_text_box::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    try {
-        std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
+    try 
+	{
+        std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
 		
-		std::wstring folderPath	= Context.root()->get_folder();
-        std::wstring objectPath = folderPath + FILE_SEPARATOR_STR +  href;
+		if (!odf_document_ && !href.empty())
+		{			
+			std::wstring folderPath = Context.root()->get_folder();
+			std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 
-		//normalize path ??? todooo
-		XmlUtils::replace_all( objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
+			// normalize path ???? todooo
+			XmlUtils::replace_all( objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
 
-        cpdoccore::odf_reader::odf_document objectSubDoc(objectPath, NULL);    
+			odf_document_ = odf_document_ptr(new odf_document(objectPath, NULL));    
+		}
 //---------------------------------------------------------------------------------------------------------------------
-		office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();
+		office_element *contentSubDoc = odf_document_ ? odf_document_->get_impl()->get_content() : NULL;
 		if (!contentSubDoc)
 		{
 			//здесь другой формат xml (не Open Office)
@@ -275,13 +279,13 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 		}
 		object_odf_context objectBuild(href);
 
-		process_build_object process_build_object_(objectBuild, objectSubDoc.odf_context());
-        contentSubDoc->accept(process_build_object_); 
+		process_build_object process_build_object_(objectBuild, odf_document_->odf_context() );
+		contentSubDoc->accept(process_build_object_); 
 
 //---------------------------------------------------------------------------------------------------------------------
 		if (objectBuild.object_type_ == 1)//диаграмма
 		{		
-			const std::wstring href_draw = common_xlink_attlist_.href_.get_value_or(L"");
+			const std::wstring href_draw = common_xlink_attlist_.href_.get_value_or(L"Chart");
 			objectBuild.pptx_convert(Context);
 			
 			Context.get_slide_context().set_chart(href_draw); // в рисовательной части только место объекта, рамочки ... и релсы 
@@ -290,7 +294,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 		{
 			Context.get_slide_context().set_use_image_replacement();
 
-			std::wstring href_new = office_convert( &objectSubDoc, 1);
+			std::wstring href_new = office_convert( odf_document_, 1);
 			
 			if (!href_new.empty())
 			{
@@ -324,7 +328,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 		{	
 			Context.get_slide_context().set_use_image_replacement();
 
-			std::wstring href_new = office_convert( &objectSubDoc, 2);
+			std::wstring href_new = office_convert( odf_document_, 2);
 			
 			if (!href_new.empty())
 			{

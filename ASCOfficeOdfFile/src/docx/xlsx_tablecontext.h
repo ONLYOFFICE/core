@@ -90,6 +90,7 @@ public:
 	void serialize_hyperlinks			(std::wostream & _Wostream);
 	void serialize_ole_objects			(std::wostream & _Wostream);
 	void serialize_page_properties		(std::wostream & _Wostream);
+	void serialize_background			(std::wostream & _Wostream);
 
 	xlsx_table_metrics & get_table_metrics();
   

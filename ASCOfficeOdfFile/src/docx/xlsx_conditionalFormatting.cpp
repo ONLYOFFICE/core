@@ -281,6 +281,11 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
 		impl_->conditionalFormattings_.back().rules.back().formula = converter.convert_named_expr(val);
 	}
+	else if (0 <= (pos = f.find(L"is-error")))
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"containsErrors";
+		impl_->conditionalFormattings_.back().rules.back().formula = L"0";
+	}
 	else if (0 <= (pos = f.find(L"duplicate")))
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"duplicateValues";

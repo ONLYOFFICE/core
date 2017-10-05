@@ -86,19 +86,42 @@ void text::add_text(const std::wstring & Text)
 
 void text::docx_convert(oox::docx_conversion_context & Context)
 {
-    Context.add_element_to_run();
-	std::wostream & strm = Context.output_stream();
+	if (Context.get_process_note() != oox::docx_conversion_context::noNote && 
+		Context.get_delete_text_state()) 
+			return; //в ms нет рецензирования notes
+
+	bool add_del_run = false;
+	if (Context.get_drawing_state_content() && Context.get_delete_text_state())
+	{	//0503IG-AddingFormattingText.odt - удаленый текст в удаленом объекте
+
+		oox::text_tracked_context::_state  &state = Context.get_text_tracked_context().get_tracked_change(L"");
+		if (state.type == 2)
+		{
+			add_del_run = true;
+			Context.output_stream() << L"<w:del>";
+		}
+	}  
+	
+	Context.add_element_to_run();
   
 	std::wstring textNode = L"w:t";
+
 	if (Context.get_delete_text_state()) textNode = L"w:delText";
 
-	strm << L"<" << textNode;
+	Context.output_stream() << L"<" << textNode;
 	if (preserve_ && !Context.get_delete_text_state()) 
-		strm << L" xml:space=\"preserve\"";
-	strm << L">";
+		Context.output_stream() << L" xml:space=\"preserve\"";
+	Context.output_stream() << L">";
 
-	strm << xml::utils::replace_text_to_xml( text_ );
-    strm << L"</" << textNode << L">";
+	Context.output_stream() << xml::utils::replace_text_to_xml( text_ );
+    Context.output_stream() << L"</" << textNode << L">";
+
+	if (add_del_run)
+	{
+		Context.finish_run();
+		Context.output_stream() << L"</w:del>";
+	}
+
 }
 
 void text::xlsx_convert(oox::xlsx_conversion_context & Context)

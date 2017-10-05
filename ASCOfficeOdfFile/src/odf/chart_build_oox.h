@@ -111,6 +111,7 @@ public:
 		width_pt_				(0), 
 		height_pt_				(0), 
 		in_axis_				(false),
+		bPivotChart_			(false),
         current_table_column_	(0),
         current_table_row_		(0),
         columns_spanned_num_	(0),
@@ -124,6 +125,8 @@ public:
     {
 	}
 	
+	void set_pivot_source(std::wstring const & val);
+
 	void set_width(double valPt);
 
     void set_height(double valPt);
@@ -170,6 +173,9 @@ public:
 	std::wstring				style_name_;
  	std::wstring				name_;
   
+	std::wstring				pivot_source_;
+	bool						bPivotChart_;
+
 	bool in_axis_;
     std::vector<chart::axis>	axises_;
     std::vector<chart::series>	series_;
@@ -195,6 +201,7 @@ public:
 	oox::_oox_fill				chart_fill_;
 
 	std::vector<_cell>			cash_values;
+	std::map<std::wstring, _cell>cash_pivot;
 
 //---------------------------------------
 	std::wstring				target_table_;
@@ -216,6 +223,8 @@ public:
 
 class process_build_object 
 	:	public base_visitor,
+		public visitor<office_document>,
+
 		public const_visitor<office_document_content>,
  		public visitor<office_document_content>,
 	   
@@ -283,7 +292,8 @@ private:
 	virtual void on_not_impl(std::string const & message);
 
 public:
-
+	virtual void visit(office_document				& val);
+	
 	virtual void visit(const office_document_content& val);
 	virtual void visit(office_document_content		& val);
 	

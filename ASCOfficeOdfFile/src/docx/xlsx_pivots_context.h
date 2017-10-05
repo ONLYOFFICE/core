@@ -49,21 +49,37 @@ public:
 	void start_table();
 	int end_table();
 
-	void start_field();
-		void set_field_name(std::wstring name);
-		void set_field_type(int type);
-		void set_field_function(int type);
-		void set_field_user_function(std::wstring f);
-		void add_field_subtotal(int function_type);
-		void add_field_cache(int index, std::wstring value);
+	void start_field ();
+		void set_field_name (std::wstring name);
+		void set_field_type (int type, int hierarchy);
+		void set_field_function (int type);
+		void set_field_user_function (std::wstring f);
+		void add_field_subtotal (int function_type);
+		void add_field_cache (int index, std::wstring value);
+		void set_field_show_empty (bool val);
+		void set_field_data_layout (bool val);		
+		void set_field_sort (int type);
+		void set_field_groups (int type);
+		void set_field_groups_source(std::wstring name);
+		void set_repeat_item_labels(bool val);
 	void end_field();
 
 	int get_count();
 
 	void set_view_name(std::wstring name);
 	void set_view_target_range(std::wstring ref);
+	void set_view_target_table_name(std::wstring name);
+
+	void add_button_header(std::wstring ref);
+
+	void set_identify_categories(bool val);
+	void set_drill(bool val);
 
 	void set_source_range(std::wstring table_name, std::wstring ref);
+	
+	void set_source_database(std::wstring database, std::wstring table_name);
+	void set_source_database_query(std::wstring database, std::wstring query);
+	void set_source_database_sql(std::wstring database, std::wstring sql);
 
 	void write_cache_definitions_to	(int index, std::wostream & strm);
 	void write_cache_records_to		(int index, std::wostream & strm);
@@ -73,6 +89,8 @@ public:
 
 	void dump_rels_cache(int index, rels & Rels);
 	void dump_rels_view	(int index, rels & Rels);
+
+	std::wstring get_chart_source(std::wstring name);
 
 	void add_connections(std::wstring connections);
 	bool is_connections();

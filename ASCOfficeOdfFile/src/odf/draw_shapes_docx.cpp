@@ -298,6 +298,8 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 			shape->additional_.push_back(odf_reader::_property(L"custom_path", output_.str()));
 			
 			set_shape = true;
+			int w = 0;
+			int h = 0;
 
 			if (draw_enhanced_geometry_attlist_.drawooo_sub_view_size_)
 			{
@@ -306,8 +308,8 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 				
 				if (splitted.size() == 2)
 				{
-					int w = boost::lexical_cast<int>(splitted[0]);
-					int h = boost::lexical_cast<int>(splitted[1]);
+					w = boost::lexical_cast<int>(splitted[0]);
+					h = boost::lexical_cast<int>(splitted[1]);
 					
 					shape->additional_.push_back(odf_reader::_property(L"custom_path_w", w));
 					shape->additional_.push_back(odf_reader::_property(L"custom_path_h", h));
@@ -320,6 +322,17 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 					int b = boost::lexical_cast<int>(splitted[3]);
 
 				}
+
+				//if (shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_)
+				//{
+				//	int w_shape = shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_->get_value();
+				//	if (w_shape < 1) shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(1, length::pt);
+				//}
+				//if (shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_)
+				//{
+				//	int h_shape = shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_->get_value();
+				//	if (h_shape < 1) shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(1, length::pt);
+				//}
 			}
 		}
 	}
@@ -337,6 +350,29 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 	{
 		shape->bad_shape_ = true;
 	}
+}
+
+void dr3d_scene::docx_convert(oox::docx_conversion_context & Context)
+{
+	//if (Context.get_drawing_context().get_current_level() >0 )return;
+ 	if (Context.get_drawing_context().get_current_level() > 0 && !Context.get_drawing_context().in_group() )
+	{ 
+		if(Context.delayed_converting_ == false)
+			Context.add_delayed_element(this);
+		return;
+	}
+	common_docx_convert(Context);
+	//...
+	draw_shape::docx_convert(Context);
+}
+void dr3d_extrude::docx_convert(oox::docx_conversion_context & Context)
+{
+	reset_svg_path();
+
+}
+void dr3d_light::docx_convert(oox::docx_conversion_context & Context)
+{
+
 }
 }
 }

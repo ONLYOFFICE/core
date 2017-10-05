@@ -629,10 +629,10 @@ int ChartSheetSubstream::serialize_title (std::wostream & _stream)
 	if (title_label == NULL) return 0;	
 	
 	AI* title_text = dynamic_cast<AI *>(title_label->m_AI.get());
-	if (title_text == NULL) return 0;	
 	
-	if (!title_text->m_SeriesText && !title_text->m_BRAI) return 0; // если не выкидывать будет рисоваться placeholder
-	
+	if (title_text == NULL) return 0;			
+	if (title_text->empty()) return 0;
+
 	CP_XML_WRITER(_stream)    
 	{
 		CP_XML_NODE(L"c:title")
@@ -753,6 +753,8 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 				PlotAreaPos->serialize(CP_XML_STREAM());
 			}
 
+			int series_order = 0;
+
 			for (std::unordered_map<int, std::vector<int>>::iterator it = m_mapTypeChart.begin(); it != m_mapTypeChart.end(); it++)
 			{
 				CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[it->first].get());
@@ -799,7 +801,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 						CP_XML_NODE(L"c:ser")
 						{				
 							CP_XML_NODE(L"c:idx")	{ CP_XML_ATTR (L"val" , series_id); }
-							CP_XML_NODE(L"c:order")	{ CP_XML_ATTR (L"val" , series_id); }
+							CP_XML_NODE(L"c:order")	{ CP_XML_ATTR (L"val" , series_order++); }
 							
 							series->m_arAI[0]->serialize(CP_XML_STREAM());
 							

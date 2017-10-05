@@ -187,6 +187,12 @@ namespace MetaFile
 			*pdY = pRect->nTop;
 			*pdW = pRect->nRight - pRect->nLeft;
 			*pdH = pRect->nBottom - pRect->nTop;
+
+			if (*pdW > 10000 || *pdH > 10000)
+			{
+				*pdW /= 10;
+				*pdH /= 10;
+			}
 		}
 		else
 		{
@@ -210,6 +216,11 @@ namespace MetaFile
 		{
 			double dX, dY, dW, dH;
 			GetBounds(&dX, &dY, &dW, &dH);
+
+			if (dW < 0)
+				dW = -dW;
+			if (dH < 0)
+				dH = -dH;
 
 			if (nWidth  < 0) nWidth = dW;
 			nHeight = (int)((double)nWidth * dH / dW);

@@ -153,7 +153,6 @@ int SERIESAXIS::serialize(std::wostream & _stream)
 				CP_XML_NODE(L"c:orientation"){  CP_XML_ATTR(L"val", L"minMax"); }
 			}
 		}
-		CP_XML_NODE(L"c:auto")	{  CP_XML_ATTR(L"val", 0); }
 		CP_XML_NODE(L"c:delete"){  CP_XML_ATTR(L"val", 0); }
 		
 //-------------------------------------------------------------------------------
@@ -178,11 +177,14 @@ int SERIESAXIS::serialize(std::wostream & _stream)
 //-----------------------------------------------------------------------------------
 		m_AXS->serialize(_stream);
 
-		CP_XML_NODE(L"c:crosses")
+		if (cat_ser_range)
 		{
-			if ((cat_ser_range) && (cat_ser_range->fMaxCross == true))	CP_XML_ATTR(L"val", L"max");
-			else CP_XML_ATTR(L"val", L"autoZero");
-		}	
+			CP_XML_NODE(L"c:crosses")
+			{
+				if (cat_ser_range->fMaxCross == true)	CP_XML_ATTR(L"val", L"max");
+				else									CP_XML_ATTR(L"val", L"autoZero");
+			}	
+		}
 	}
 	
 	return 	axes_type;

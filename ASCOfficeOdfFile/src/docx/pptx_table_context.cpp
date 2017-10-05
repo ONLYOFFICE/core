@@ -332,21 +332,34 @@ void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::styl
 				}
 				if (style_cell_attlist.common_padding_attlist_.fo_padding_)
 				{
-					CP_XML_ATTR(L"marT", *style_cell_attlist.common_padding_attlist_.fo_padding_);
-					CP_XML_ATTR(L"marB", *style_cell_attlist.common_padding_attlist_.fo_padding_);
-					CP_XML_ATTR(L"marL", *style_cell_attlist.common_padding_attlist_.fo_padding_);
-					CP_XML_ATTR(L"marR", *style_cell_attlist.common_padding_attlist_.fo_padding_);
+					double padding = style_cell_attlist.common_padding_attlist_.fo_padding_->get_value_unit(odf_types::length::emu);
+					CP_XML_ATTR(L"marT", (long)padding);
+					CP_XML_ATTR(L"marB", (long)padding);
+					CP_XML_ATTR(L"marL", (long)padding);
+					CP_XML_ATTR(L"marR", (long)padding);
 				}
 				else
 				{
 					if (style_cell_attlist.common_padding_attlist_.fo_padding_top_)
-						CP_XML_ATTR(L"marT", *style_cell_attlist.common_padding_attlist_.fo_padding_top_);            
+					{
+						double padding = style_cell_attlist.common_padding_attlist_.fo_padding_top_->get_value_unit(odf_types::length::emu);
+						CP_XML_ATTR(L"marT", (long)padding);            
+					}
 					if (style_cell_attlist.common_padding_attlist_.fo_padding_bottom_)
-						CP_XML_ATTR(L"marB", *style_cell_attlist.common_padding_attlist_.fo_padding_bottom_);                        
+					{
+						double padding = style_cell_attlist.common_padding_attlist_.fo_padding_bottom_->get_value_unit(odf_types::length::emu);
+						CP_XML_ATTR(L"marB", (long)padding);                        
+					}
 					if (style_cell_attlist.common_padding_attlist_.fo_padding_left_)
-						CP_XML_ATTR(L"marL", *style_cell_attlist.common_padding_attlist_.fo_padding_left_);
+					{
+						double padding = style_cell_attlist.common_padding_attlist_.fo_padding_left_->get_value_unit(odf_types::length::emu);
+						CP_XML_ATTR(L"marL", (long)padding);
+					}
 					if (style_cell_attlist.common_padding_attlist_.fo_padding_right_)
-						CP_XML_ATTR(L"marR", *style_cell_attlist.common_padding_attlist_.fo_padding_right_);            
+					{
+						double padding = style_cell_attlist.common_padding_attlist_.fo_padding_right_->get_value_unit(odf_types::length::emu);
+						CP_XML_ATTR(L"marR", (long)padding);            
+					}
 				}			
 				//vert //
 				//style_cell_attlist.pptx_serialize(Context, CP_XML_STREAM());    //nodes        

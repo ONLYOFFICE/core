@@ -299,6 +299,13 @@ void xlsx_drawing_context::set_ms_object(const std::wstring & path, const std::w
 }
 void xlsx_drawing_context::set_image(const std::wstring & path)
 {
+	int pos_replaicement = path.find(L"ObjectReplacements"); 
+	if (pos_replaicement >= 0)
+	{
+		if (path.length() - (pos_replaicement + 18) < 2)
+			return; //object without image
+	}
+
 	if (impl_->object_description_.type_ == typeUnknown)
 	{
 		impl_->object_description_.type_		= typeImage;	

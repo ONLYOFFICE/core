@@ -63,6 +63,10 @@ public:
 	void serialize(std::wostream & strm);
 	void dump_rels(rels & Rels);
 	
+	void set_pivot_chart(const std::wstring &source)
+	{
+		pivot_source_ = source;
+	}
 	void set_title(odf_reader::chart::title & t)
 	{
 		title_.set_content(t);
@@ -129,6 +133,8 @@ private:
 	cpdoccore::oox::oox_title			title_;
 	cpdoccore::oox::oox_plot_area		plot_area_;
 	cpdoccore::oox::oox_chart_legend	legend_;
+
+	std::wstring						pivot_source_;
 
 	std::vector<odf_reader::_property>	graphic_properties_;
 	_oox_fill							fill_;

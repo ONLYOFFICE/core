@@ -33,6 +33,7 @@
 #include "math_layout_elements.h"
 #include "math_token_elements.h"
 #include "style_text_properties.h"
+#include "math_limit_elements.h"
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
@@ -95,6 +96,7 @@ void math_mrow::oox_convert(oox::math_context & Context)
 		bDPr = true;
 	}
 
+	bool need_e_old = Context.is_need_e_, need_e = false;
 	if (bDPr)
 	{
 		Context.output_stream() << L"<m:d>";
@@ -114,20 +116,31 @@ void math_mrow::oox_convert(oox::math_context & Context)
 			}
 			Context.output_stream() << Context.math_style_stream().str();
 		Context.output_stream() << L"</m:dPr>";
-			Context.output_stream() << L"<m:e>";
+		
+		need_e = true;		
 	}
-	
+	else need_e = Context.is_need_e_;
+
+	Context.is_need_e_ = false;
+
+	if (need_e)
+	{
+		Context.output_stream() << L"<m:e>";
+	}
 	for (int i = i_start; i < i_end ; i++)
 	{
 		office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
-		math_element->oox_convert(Context);
+		math_element->oox_convert(Context);		
 	}
-
+	if (need_e)
+	{
+		Context.output_stream() << L"</m:e>";
+	}
 	if (bDPr)
 	{
-			Context.output_stream() << L"</m:e>";
 		Context.output_stream() << L"</m:d>";
 	}
+	Context.is_need_e_ = need_e_old;
 }
 //---------------------------------------------------------------
 const wchar_t * math_mfrac::ns = L"math";
@@ -149,13 +162,23 @@ void math_mfrac::oox_convert(oox::math_context & Context)
 	{
 		return;
 	}
+	bool need_e = Context.is_need_e_;
+	if (need_e)
+	{
+		Context.output_stream() << L"<m:e>";
+	}
+	Context.is_need_e_ = false;
+
 	office_math_element* math_element = NULL;
 
 	Context.output_stream() << L"<m:f>";
 		Context.output_stream() << L"<m:num>";
+		
 			math_element = dynamic_cast<office_math_element*>(content_[0].get());
 			math_element->oox_convert(Context);
 		Context.output_stream() << L"</m:num>";
+	
+		Context.is_need_e_ = false;
 
 		Context.output_stream() << L"<m:den>";
 			math_element = dynamic_cast<office_math_element*>(content_[1].get());
@@ -163,6 +186,12 @@ void math_mfrac::oox_convert(oox::math_context & Context)
 		Context.output_stream() << L"</m:den>";
 
 	Context.output_stream() << L"</m:f>";
+
+	if (need_e)
+	{
+		Context.output_stream() << L"</m:e>";
+	}
+	Context.is_need_e_ = need_e;
 }
 //---------------------------------------------------------------
 const wchar_t * math_msqrt::ns = L"math";
@@ -191,6 +220,8 @@ void math_msqrt::oox_convert(oox::math_context & Context)
 		strm << L"<m:deg/>";
 		
 		strm << L"<m:e>";		
+		
+		Context.is_need_e_ = false;
 			for (size_t i = 0 ; i < content_.size(); i++)
 			{
 				office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
@@ -229,6 +260,9 @@ void math_mroot::oox_convert(oox::math_context & Context)
 			math_element = dynamic_cast<office_math_element*>(content_[1].get());
 			math_element->oox_convert(Context);		
 		strm << L"</m:deg>";
+			
+		Context.is_need_e_ = false;
+
 		strm << L"<m:e>";		
 			math_element = dynamic_cast<office_math_element*>(content_[0].get());
 			math_element->oox_convert(Context);		
@@ -294,11 +328,26 @@ void math_mstyle::oox_convert(oox::math_context & Context)
 			}
 		}
 	}
+	bool need_e_old = Context.is_need_e_;
+	Context.is_need_e_ = content_.size() > 1 ? true : need_e_old;
 
 	for (size_t i = 0; i < content_.size(); i++)
 	{
+		//math_munder*	munder_test	= dynamic_cast<math_munder*>(content_[i].get());
+		//math_mfrac*		frac_test	= dynamic_cast<math_mfrac*>(content_[i].get());
+		//math_mrow*		row_test	= dynamic_cast<math_mrow*>(content_[i].get());
+		
+		//if (row_test || munder_test || frac_test)
+		//	Context.output_stream() << L"<m:e>";
+		
 		office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
-		math_element->oox_convert(Context);
+		math_element->oox_convert(Context);		
+
+		//if (row_test || munder_test || frac_test)
+		//	Context.output_stream() << L"</m:e>";
+		
+		//office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
+		//math_element->oox_convert(Context);
 	}
 //reset to default math text props
 	Context.text_properties_ = odf_reader::style_text_properties_ptr(new odf_reader::style_text_properties());
@@ -306,6 +355,7 @@ void math_mstyle::oox_convert(oox::math_context & Context)
 	Context.text_properties_->content().style_font_name_	= L"Cambria Math";
 	Context.text_properties_->content().fo_font_size_		= odf_types::length(Context.base_font_size_, odf_types::length::pt);
 
+	Context.is_need_e_ = need_e_old;
 	{
 		std::wstringstream & strm = Context.math_style_stream();
 		strm.str( std::wstring() );

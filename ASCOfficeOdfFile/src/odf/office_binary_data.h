@@ -53,17 +53,15 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
+	std::wstring write_to(const std::wstring & path);
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
-
-private:
-    std::wstring base64Binary_;
+    virtual void add_text(const std::wstring & Text);    
     
+	std::string base64Binary_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(office_binary_data);

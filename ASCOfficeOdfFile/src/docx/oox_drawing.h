@@ -83,7 +83,7 @@ namespace oox {
 	class _oox_drawing
     {
 	public:
-        _oox_drawing() : type(typeUnknown), id(0), x(0), y(0), cx(0), cy(0), sub_type(0), inGroup(false), name(L"object")
+        _oox_drawing() : type(typeUnknown), id(0), x(0), y(0), cx(0), cy(0), sub_type(0), inGroup(false), name(L"object"), extExternal(false)
         {
         }
         RelsType		type;
@@ -103,6 +103,7 @@ namespace oox {
 		std::wstring	objectProgId; 
 
 		std::wstring	extId;
+		bool			extExternal;
 
 		_action_desc				action;
 		std::vector<_hlink_desc>	hlinks;
@@ -118,7 +119,7 @@ namespace oox {
 	typedef _CP_PTR(_oox_drawing) oox_drawing_ptr;
 
 	void oox_serialize_ln		(std::wostream & strm, const std::vector<odf_reader::_property> & val, bool always_draw = false);
-	void oox_serialize_aLst		(std::wostream & strm, const std::vector<odf_reader::_property> & val);
+	void oox_serialize_aLst		(std::wostream & strm, const std::vector<odf_reader::_property> & val, const std::wstring & shapeGeomPreset);
     void oox_serialize_action	(std::wostream & strm, const _action_desc & val);
     
 }

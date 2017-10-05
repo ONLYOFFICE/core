@@ -97,14 +97,6 @@ HRESULT ConvertOO2OOX(const std::wstring & srcPath, const std::wstring & dstPath
 
 		if (encrypted) return AVS_ERROR_DRM;
 
-		//if (type<1)
-		//{
-		//	if (ext == L".odt")type = 1;
-		//	if (ext == L".ods")type = 2;
-		//	if (ext == L".odp")type = 3;
-
-		//}
-
 		if (bOnlyPresentation && type != 3)return AVS_ERROR_UNEXPECTED;
 
 		switch (type)

@@ -48,7 +48,7 @@ namespace DocFileFormat
 
 		std::wstring m_sTempFolder;
 
-		long LoadAndConvert(const std::wstring & strSrcFile, const std::wstring &  strDstDirectory, const std::wstring & password, const ProgressCallback* progress);
+		long LoadAndConvert(const std::wstring & strSrcFile, const std::wstring &  strDstDirectory, const std::wstring & password, const ProgressCallback* progress, bool &bMacros);
 	
 	private:
 		long Convert(WordDocument* doc, WordprocessingDocument* docx, const ProgressCallback* progress);	

@@ -318,8 +318,30 @@ void text_format_properties_content::drawing_serialize(std::wostream & strm, std
 		CP_XML_NODE(node)//a:rPr & a:defRPr
 		{
 	//attr
-			const int W = process_font_weight(fo_font_weight_);
-			if (W > 0) CP_XML_ATTR(L"b", true);
+			if (fo_language_ || style_language_asian_ || style_language_complex_)
+			{
+				std::wstring w_val;
+				if (fo_language_)	
+				{
+					w_val = *fo_language_;
+					if (fo_country_) w_val += L"-" + *fo_country_;
+				}
+				else if (style_language_asian_)	
+				{
+					w_val = *style_language_asian_;
+					if (style_country_asian_) w_val += L"-" + *style_country_asian_;
+				}
+				else if (style_language_complex_)
+				{
+					w_val = *style_language_complex_;
+					if (style_country_complex_)w_val += L"-" + *style_country_complex_;
+				}
+
+				if (w_val.empty() == false)
+				{
+					CP_XML_ATTR(L"lang",  w_val);
+				}
+			}
 			
 			const int fontStyle = process_font_style(fo_font_style_);
 			if (fontStyle > 0) CP_XML_ATTR(L"i", true);
@@ -354,6 +376,9 @@ void text_format_properties_content::drawing_serialize(std::wostream & strm, std
 					CP_XML_ATTR(L"cap", "small");
 				}
 			}
+			const int W = process_font_weight(fo_font_weight_);
+			if (W > 0) CP_XML_ATTR(L"b", true);
+
 		// underline
 			line_width under	=	style_text_underline_width_.get_value_or(line_width::Auto);
 			bool underlineBold	=	under.get_type() == line_width::Bold	|| 
@@ -382,7 +407,7 @@ void text_format_properties_content::drawing_serialize(std::wostream & strm, std
 				switch (style_text_underline_style_->get_type())
 				{
 				case line_style::Solid:
-					if (underlineBold)	underline = L"thick"; 
+					if (underlineBold)	underline = L"heavy"; 
 					else				underline = L"sng";
 					break;
 				case line_style::Dotted:
@@ -433,18 +458,6 @@ void text_format_properties_content::drawing_serialize(std::wostream & strm, std
 				CP_XML_ATTR(L"spc",(int)(20.0 * fo_letter_spacing_->get_length().get_value_unit(length::pt)));
 			}
 		
-			if (fo_language_ || style_language_asian_ || style_language_complex_)
-			{
-				std::wstring w_val;
-				if		(fo_language_)				w_val = *fo_language_;
-				else if (fo_country_)				w_val = *fo_country_;
-				else if (style_country_asian_)		w_val = *style_country_asian_;
-				else if (style_language_asian_)		w_val = *style_language_asian_;
-				else if (style_language_complex_)	w_val = *style_language_complex_;
-				else if (style_country_complex_)	w_val = *style_country_complex_;
-
-				CP_XML_ATTR(L"lang",  w_val);
-			}
 			if (style_text_position_)
 			{
 				if (style_text_position_->get_type() == text_position::Percent)

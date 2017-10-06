@@ -70,9 +70,22 @@ public:
 		std::wstring	sVal;
 		std::wstring	sNode;
 	};
+	struct _reference
+	{
+		std::wstring	name;
+		int				type = -1;
+		std::wstring	member_name;
+		int				member_type = -1;
+	};
+	struct _group
+	{
+		std::wstring				name;
+		std::vector<_field_value>	caches;
+	};
 	struct _field
 	{
 		std::wstring				name;
+		std::wstring				display_name;
 		int							type = -1;
 		int							hierarchy = -1;
 		int							function = -1;
@@ -80,13 +93,20 @@ public:
 		bool						data_layout = false;
 		bool						show_empty = false;
 		bool						repeat_item_labels = true;
-		int							type_groups = 0;
 		int							sort = 0;
-		std::wstring				source_groups;
 		
 		std::vector<int>			subtotals;
 		
 		std::vector<_field_value>	caches;
+		std::vector<_reference>		references;
+		int							references_field = -1;
+		bool						used_in_referenes = false;
+		
+		int							type_groups = 0;
+		int							base_group = -1;
+		std::wstring				source_groups;
+		std::vector<_group>			groups;
+		std::vector<int>			groups_discrete;
 
 		bool						bDataFieldEnabled = false;
 		bool						bString = false;
@@ -142,8 +162,10 @@ public:
 		
 		bool						identify_categories = false;
 		bool						drill_enabled = true;
+		bool						ignore_empty_rows = false;
 
 		bool						data_on_row = false;
+		bool						in_group = false;
 	}current_;
 
 	void sort_fields();
@@ -259,17 +281,162 @@ xlsx_pivots_context::xlsx_pivots_context() : impl_(new xlsx_pivots_context::Impl
 }
 void xlsx_pivots_context::Impl::sort_fields()
 {
-	for (size_t i = 0; i < current_.fields.size(); i++)
+	size_t count_skip = 0;
+	for (size_t i = 0; i < current_.fields.size() - count_skip; i++)
 	{
-		if (current_.fields[i].type == 7)
-			continue;
-		if (!current_.fields[i].source_groups.empty() && i != current_.fields.size() -1)
+		if (!current_.fields[i].source_groups.empty() && i != current_.fields.size() - count_skip)
 		{
 			current_.fields.push_back(current_.fields[i]);
 			current_.fields.erase(current_.fields.begin() + i , current_.fields.begin() + i + 1);
 			i--;
+			count_skip++;
 		}
 	}
+	count_skip = 0;
+	for (size_t i = 0; i < current_.fields.size() - count_skip; i++)
+	{
+		if (current_.fields[i].name.empty() && i != current_.fields.size() - count_skip)
+		{
+			current_.fields.push_back(current_.fields[i]);
+			current_.fields.erase(current_.fields.begin() + i , current_.fields.begin() + i + 1);
+			i--;
+			count_skip++;
+		}
+	}
+	
+	bool bEmptyRowCache = false, bAddRepeateCol = false;
+	bool bEmptyColCache = false, bAddRepeateRow = false;
+	
+	int index_current = 0;
+	for (size_t i = 0; i < current_.fields.size(); i++, index_current++)
+	{
+		if ( current_.fields[i].type_groups > 0 )
+		{
+			current_.fields[i].base_group = 0;
+
+			int index_group = 0;
+			for (size_t k = 0; k < current_.fields.size(); k++)
+			{
+				if (current_.fields[k].type == 7) continue;
+				if (current_.fields[k].name == current_.fields[i].source_groups && !current_.fields[i].source_groups.empty())
+				{
+					if (current_.fields[k].type_groups == 0)
+						current_.fields[k].base_group = index_current; //опорный (если он и базовый - не писать)
+					current_.fields[i].base_group = index_group;
+
+					for (size_t c = 0; !current_.fields[i].groups.empty() && c < current_.fields[k].caches.size(); c++)
+					{
+						for (size_t g = 0; g < current_.fields[i].groups.size(); g++)
+						{
+							for (size_t h = 0; h < current_.fields[i].groups[g].caches.size(); h++)
+							{
+								if (current_.fields[i].groups[g].caches[h].sVal == current_.fields[k].caches[c].sVal)
+									current_.fields[i].groups_discrete.push_back(g);
+							}
+						}
+					}
+					break;
+				}
+				index_group++;
+			}
+		}
+		if ( current_.fields[i].name.empty() &&
+			!current_.fields[i].data_layout)
+			continue;
+
+		switch(current_.fields[i].type)
+		{
+			case 0:	// column
+			{
+				if (!current_.fields[i].name.empty())
+					current_.col_fields.push_back(i);	
+
+				if (current_.fields[i].data_layout)
+				{
+					if ((current_.fields[i].name.empty() && (!current_.identify_categories || current_.fields[i].hierarchy >= 0)) || 
+						current_.fields[i].used_in_referenes )
+					{
+						if ((current_.col_fields.empty()) || (current_.col_fields.back() != -2))
+						{
+							bAddRepeateCol = true;
+						}	
+					}
+				}
+				
+				if (current_.fields[i].caches.empty())
+					bEmptyColCache = true;
+			}break;
+			case 1:	// data
+			{
+				int index_field = -1;
+				
+				for (size_t j = 0; j < i/*current_.fields.size()*/; j++)
+				{
+					if ( current_.fields[j].name == current_.fields[i].name )
+					{
+						current_.fields[j].bDataFieldEnabled = true;
+						index_field = j;
+						break;
+					}
+				}
+				if (index_field >= 0)
+				{
+					if (current_.fields[i].caches.empty())
+					{
+						current_.fields[i].type = 7; //skip 
+						current_.fields_count--; 
+						index_current--;
+					}
+					
+					current_.fields[i].references_field = index_field;
+				}
+
+				index_field = i;
+				current_.fields[i].bDataFieldEnabled = true;
+				current_.data_fields.push_back(index_field);	
+			}break;
+			case 2:	// hidden
+			{
+			}break;
+			case 3:	// page
+			{
+				current_.page_fields.push_back(i);	
+			}break;
+			case 4:	// row
+			{
+				if (!current_.fields[i].name.empty())
+					current_.row_fields.push_back(i);	
+
+				if (current_.fields[i].data_layout)
+				{
+					current_.data_on_row = true;
+
+					if ((current_.fields[i].name.empty() && (!current_.identify_categories || current_.fields[i].hierarchy >= 0)) ||
+						current_.fields[i].used_in_referenes )
+					{
+						bAddRepeateRow = true;
+					}
+
+				}
+
+				if (current_.fields[i].caches.empty())
+					bEmptyRowCache = true;
+
+			}break;
+		}
+
+		if (current_.fields[i].name.empty())
+		{
+			current_.fields.erase(current_.fields.begin() + i, current_.fields.begin() + i + 1);
+			current_.fields_count--; 
+			i--;
+		}
+	}
+	if (bAddRepeateCol || bEmptyColCache)
+		current_.col_fields.push_back(-2);	
+	
+	if (bAddRepeateRow)
+		current_.row_fields.push_back(-2);	
 }
 void xlsx_pivots_context::Impl::serialize_view(std::wostream & strm)
 {
@@ -468,22 +635,38 @@ void xlsx_pivots_context::Impl::serialize_view(std::wostream & strm)
 						}
 						CP_XML_ATTR(L"defaultSubtotal", 0);
 
-						if (!current_.fields[i].caches.empty() && current_.fields[i].type != 2)
+						if (current_.fields[i].type != 2) 
 						{
-							CP_XML_NODE(L"items")
-							{					 
-								CP_XML_ATTR(L"count", current_.fields[i].caches.size());
-								for (size_t j = 0; j < current_.fields[i].caches.size(); j++)
-								{
-									CP_XML_NODE(L"item")
-									{					 
-										CP_XML_ATTR(L"x", j);
+							if (!current_.fields[i].groups.empty())
+							{
+								CP_XML_NODE(L"items")
+								{					 
+									CP_XML_ATTR(L"count", current_.fields[i].groups.size());
+									for (size_t j = 0; j < current_.fields[i].groups.size(); j++)
+									{
+										CP_XML_NODE(L"item")
+										{					 
+											CP_XML_ATTR(L"x", j);
+										}
+									}
+								}
+							}
+							else if (!current_.fields[i].caches.empty())
+							{
+								CP_XML_NODE(L"items")
+								{					 
+									CP_XML_ATTR(L"count", current_.fields[i].caches.size());
+									for (size_t j = 0; j < current_.fields[i].caches.size(); j++)
+									{
+										CP_XML_NODE(L"item")
+										{					 
+											CP_XML_ATTR(L"x", j);
+										}
 									}
 								}
 							}
 						}
 					}
-					//CP_XML_STREAM() << fields_[i].view_;
 				}		
 			}
 			if (!current_.row_fields.empty())
@@ -537,35 +720,85 @@ void xlsx_pivots_context::Impl::serialize_view(std::wostream & strm)
 					CP_XML_ATTR(L"count", current_.data_fields.size());
 					for (size_t i = 0; i < current_.data_fields.size(); i++)
 					{
-						CP_XML_NODE(L"dataField")
-						{					 
-							CP_XML_ATTR(L"fld", current_.data_fields[i]);
-							CP_XML_ATTR(L"baseField", current_.data_fields[i]);
-							//CP_XML_ATTR(L"baseItem", -1);
-							//CP_XML_ATTR(L"name", L"");
+						int ind_field_dirty = current_.data_fields[i];
 
-							int ind_field = current_.data_fields[i];
-							if (ind_field >= 0 && ind_field < current_.fields.size())
+						CP_XML_NODE(L"dataField")
+						{	
+							int fld = 0, ind_fld = current_.fields[ind_field_dirty].references_field < 0 ? ind_field_dirty : 
+														current_.fields[ind_field_dirty].references_field;
+							for (size_t k = 0; k < ind_fld; k++)
 							{
-								switch(current_.fields[ind_field].function)
+								if (current_.fields[k].type != 7 ) fld++;
+							}
+						
+							CP_XML_ATTR(L"fld", fld);
+							if (current_.fields[ind_field_dirty].references.empty())
+							{
+								CP_XML_ATTR(L"baseField", fld);
+							}
+							else 
+							{
+								size_t base_field = 0, base_item = 0;
+								for (size_t k = 0; k < current_.fields.size(); k++)
 								{
-									case 1:		CP_XML_ATTR(L"subtotal", L"average");	break;
-									case 2:		CP_XML_ATTR(L"subtotal", L"count");		break;
-									case 3:		CP_XML_ATTR(L"subtotal", L"countNums"); break;
-									case 4:		CP_XML_ATTR(L"subtotal", L"max");		break;
-									case 5:		CP_XML_ATTR(L"subtotal", L"min");		break;
-									case 6:		CP_XML_ATTR(L"subtotal", L"product");	break;
-									case 7:		CP_XML_ATTR(L"subtotal", L"stdDev");	break;
-									case 8:		CP_XML_ATTR(L"subtotal", L"stdDevp");	break;
-									case 9:		CP_XML_ATTR(L"subtotal", L"sum");		break;
-									case 10:	CP_XML_ATTR(L"subtotal", L"var");		break;
-									case 11:	CP_XML_ATTR(L"subtotal", L"varp");		break;
+									if (current_.fields[k].type == 7 ) continue;
+
+									if (current_.fields[k].name == current_.fields[ind_field_dirty].references[0].name)
+									{
+										for (size_t j = 0; j < current_.fields[k].caches.size(); j++)
+										{
+											if (current_.fields[k].caches[j].sVal == current_.fields[ind_field_dirty].references[0].member_name)
+											{
+												base_item = j;
+												break;
+											}
+										}
+										break;
+									}
+									base_field++;
+								}
+								CP_XML_ATTR(L"baseField", base_field);
+								CP_XML_ATTR(L"baseItem", base_item);
+								
+								switch(current_.fields[ind_field_dirty].references[0].type)
+								{
+									case 1: CP_XML_ATTR(L"showDataAs", L"difference");	break;
+									case 2: CP_XML_ATTR(L"showDataAs", L"percent");		break;
+									case 3: CP_XML_ATTR(L"showDataAs", L"percentDiff"); break;
+								}
+							}
+							std::wstring name;
+
+							if (ind_field_dirty >= 0 && ind_field_dirty < current_.fields.size())
+							{
+								switch(current_.fields[ind_field_dirty].function)
+								{
+									case 1:		CP_XML_ATTR(L"subtotal", L"average");	name = L"average ";		break;
+									case 2:		CP_XML_ATTR(L"subtotal", L"count");		name = L"count ";		break;
+									case 3:		CP_XML_ATTR(L"subtotal", L"countNums");	name = L"countNums ";	break;
+									case 4:		CP_XML_ATTR(L"subtotal", L"max");		name = L"max ";			break;
+									case 5:		CP_XML_ATTR(L"subtotal", L"min");		name = L"min ";			break;
+									case 6:		CP_XML_ATTR(L"subtotal", L"product");	name = L"product ";		break;
+									case 7:		CP_XML_ATTR(L"subtotal", L"stdDev");	name = L"stdDev Dev ";	break;
+									case 8:		CP_XML_ATTR(L"subtotal", L"stdDevp");	name = L"stdDevp ";		break;
+									case 9:		CP_XML_ATTR(L"subtotal", L"sum");		name = L"sum by ";		break;
+									case 10:	CP_XML_ATTR(L"subtotal", L"var");		name = L"var ";			break;
+									case 11:	CP_XML_ATTR(L"subtotal", L"varp");		name = L"varp ";		break;
 									case 12:
 										{
 											CP_XML_ATTR(L"subtotal", current_.fields[current_.data_fields[i]].user_function);
 										}break;		
 									default: break;
 								}
+								if (current_.fields[ind_field_dirty].display_name.empty())
+								{
+									name += current_.fields[ind_field_dirty].name;
+								}
+								else
+								{
+									name = current_.fields[ind_field_dirty].display_name;
+								}
+								CP_XML_ATTR(L"name", name);
 							}
 						}
 					}
@@ -708,6 +941,7 @@ void xlsx_pivots_context::Impl::serialize_cache(std::wostream & strm)
 					}
 				}	
 			}
+			int index_current = 0;
 
 			if (current_.fields.empty() == false)
 			{
@@ -744,11 +978,12 @@ void xlsx_pivots_context::Impl::serialize_cache(std::wostream & strm)
 									{
 										CP_XML_ATTR(L"count", current_.fields[i].caches.size());
 									}
-									else
-									{
+									else if (current_.fields[i].type_groups < 8)
+									{//group by  date
 										current_.fields[i].bDate = true;
 										current_.fields[i].bString = false;
 									}
+									//else group by fields
 								
 									serialize_type_field(CP_GET_XML_NODE(), current_.fields[i]);					
 									if ( current_.fields[i].type_groups == 0 )
@@ -766,37 +1001,78 @@ void xlsx_pivots_context::Impl::serialize_cache(std::wostream & strm)
 									}
 								}
 							}
-							if ( current_.fields[i].type_groups != 0 )
+							if (current_.fields[i].base_group >= 0)
 							{
 								CP_XML_NODE(L"fieldGroup")
-								{
-									CP_XML_ATTR(L"base", 0);
-									CP_XML_NODE(L"rangePr")
+								{	
+									if ( current_.fields[i].type_groups > 0)
 									{
-										switch(current_.fields[i].type_groups)
-										{
-										case 1: CP_XML_ATTR(L"groupBy",	L"seconds");	break;
-										case 2: CP_XML_ATTR(L"groupBy",	L"minutes");	break;
-										case 3: CP_XML_ATTR(L"groupBy",	L"hours");		break;
-										case 4: CP_XML_ATTR(L"groupBy",	L"days");		break;
-										case 5: CP_XML_ATTR(L"groupBy",	L"months");		break;
-										case 6: CP_XML_ATTR(L"groupBy",	L"quarters");	break;
-										case 7: CP_XML_ATTR(L"groupBy",	L"years");		break;
-										}
-										CP_XML_ATTR(L"startDate", L"1899-12-31T00:00:00");
-										CP_XML_ATTR(L"endDate", L"1899-12-31T00:00:00");
+										CP_XML_ATTR(L"base", current_.fields[i].base_group);
 									}
-									CP_XML_NODE(L"groupItems")
+									else
 									{
-										CP_XML_ATTR(L"count", current_.fields[i].caches.size());
-										
-										for (size_t j = 0; j < current_.fields[i].caches.size(); j++)
+										CP_XML_ATTR(L"par", current_.fields[i].base_group);	
+									}
+									if (current_.fields[i].type_groups > 0)
+									{
+										if (current_.fields[i].type_groups < 8)
 										{
-											CP_XML_NODE(current_.fields[i].caches[j].sNode)
+											CP_XML_NODE(L"rangePr")
 											{
-												if (current_.fields[i].caches[j].sVal.empty() == false)
+												switch(current_.fields[i].type_groups)
 												{
-													CP_XML_ATTR(L"v", current_.fields[i].caches[j].sVal);
+												case 1: CP_XML_ATTR(L"groupBy",	L"seconds");	break;
+												case 2: CP_XML_ATTR(L"groupBy",	L"minutes");	break;
+												case 3: CP_XML_ATTR(L"groupBy",	L"hours");		break;
+												case 4: CP_XML_ATTR(L"groupBy",	L"days");		break;
+												case 5: CP_XML_ATTR(L"groupBy",	L"months");		break;
+												case 6: CP_XML_ATTR(L"groupBy",	L"quarters");	break;
+												case 7: CP_XML_ATTR(L"groupBy",	L"years");		break;
+												}
+												CP_XML_ATTR(L"startDate", L"1899-12-31T00:00:00");
+												CP_XML_ATTR(L"endDate", L"1899-12-31T00:00:00");
+											}
+										}
+										if (!current_.fields[i].groups_discrete.empty())
+										{
+											CP_XML_NODE(L"discretePr")
+											{
+												CP_XML_ATTR(L"count", current_.fields[i].groups_discrete.size());
+												for (size_t j = 0; j < current_.fields[i].groups_discrete.size(); j++)
+												{
+													CP_XML_NODE(L"x")
+													{
+														CP_XML_ATTR(L"v", current_.fields[i].groups_discrete[j]);
+													}
+												}
+											}
+										}
+										CP_XML_NODE(L"groupItems")
+										{
+											if (!current_.fields[i].groups.empty())
+											{
+												CP_XML_ATTR(L"count", current_.fields[i].groups.size());
+												for (size_t j = 0; j < current_.fields[i].groups.size(); j++)
+												{
+													CP_XML_NODE(L"s")
+													{
+														CP_XML_ATTR(L"v", current_.fields[i].groups[j].name);
+													}
+												}
+											}
+											else
+											{
+												CP_XML_ATTR(L"count", current_.fields[i].caches.size());
+												
+												for (size_t j = 0; j < current_.fields[i].caches.size(); j++)
+												{
+													CP_XML_NODE(current_.fields[i].caches[j].sNode)
+													{
+														if (current_.fields[i].caches[j].sVal.empty() == false)
+														{
+															CP_XML_ATTR(L"v", current_.fields[i].caches[j].sVal);
+														}
+													}
 												}
 											}
 										}
@@ -804,6 +1080,8 @@ void xlsx_pivots_context::Impl::serialize_cache(std::wostream & strm)
 								}
 							}
 						}							
+
+						index_current++;
 					}
 				}
 			}
@@ -940,6 +1218,10 @@ void xlsx_pivots_context::set_identify_categories(bool val)
 {
 	impl_->current_.identify_categories = val;
 }
+void xlsx_pivots_context::set_ignore_empty_rows(bool val)
+{
+	impl_->current_.ignore_empty_rows = val;
+}
 void xlsx_pivots_context::set_drill(bool val)
 {
 	impl_->current_.drill_enabled = val;
@@ -955,75 +1237,86 @@ void xlsx_pivots_context::set_field_name(std::wstring name)
 {
 	impl_->current_.fields.back().name = name;
 }
+void xlsx_pivots_context::set_field_display(std::wstring name)
+{
+	impl_->current_.fields.back().display_name = name;
+}
 void xlsx_pivots_context::set_field_type(int type, int hierarchy)
 {
 	impl_->current_.fields.back().type		= type;
 	impl_->current_.fields.back().hierarchy = hierarchy;
 
-	if ( impl_->current_.fields.back().name.empty() &&
-		!impl_->current_.fields.back().data_layout)
-		return;
+	//if ( impl_->current_.fields.back().name.empty() &&
+	//	!impl_->current_.fields.back().data_layout)
+	//	return;
 
-	switch(type)
-	{
-		case 0:	// column
-		{
-			if (impl_->current_.fields.back().data_layout)
-			{
-				if (impl_->current_.fields.back().name.empty() && (!impl_->current_.identify_categories || hierarchy >= 0))
-					//impl_->current_.fields.back().repeat_item_labels )) //???? 
-						impl_->current_.col_fields.push_back(-2);	
-			}
-			else
-				impl_->current_.col_fields.push_back(impl_->current_.fields.size() - 1);	
-		}break;
-		case 1:	// data
-		{
-			int index_field = -1;
-			
-			for (size_t i = 0; i < impl_->current_.fields.size(); i++)
-			{
-				if (impl_->current_.fields[i].name == impl_->current_.fields.back().name && 
-					impl_->current_.fields[i].type != 1)
-				{
-					impl_->current_.fields[i].bDataFieldEnabled = true;
-					index_field = i;
-					break;
-				}
-			}
-			if (index_field >= 0)
-			{
-				impl_->current_.fields.back().type = 7;
-				impl_->current_.fields_count--; 
-				impl_->current_.data_fields.push_back(index_field);	
-			}
-			else
-			{
-				index_field = impl_->current_.fields.size() - 1;
-				impl_->current_.fields.back().bDataFieldEnabled = true;
-				impl_->current_.data_fields.push_back(index_field);	
-			}
-		}break;
-        case 2:	// hidden
-			break;
-        case 3:	// page
-			impl_->current_.page_fields.push_back(impl_->current_.fields.size() - 1);	
-			break;
-		case 4:	// row
-			if (impl_->current_.fields.back().data_layout)
-			{
-				impl_->current_.data_on_row = true;
+	//switch(type)
+	//{
+	//	case 0:	// column
+	//	{
+	//		if (impl_->current_.fields.back().data_layout)
+	//		{
+	//			if (impl_->current_.fields.back().name.empty() && (!impl_->current_.identify_categories || hierarchy >= 0))
+	//				//impl_->current_.fields.back().repeat_item_labels )) //???? 
+	//					impl_->current_.col_fields.push_back(-2);	
+	//		}
+	//		else
+	//			impl_->current_.col_fields.push_back(impl_->current_.fields.size() - 1);	
+	//	}break;
+	//	case 1:	// data
+	//	{
+	//		int index_field = -1;
+	//		
+	//		for (size_t i = 0; i < impl_->current_.fields.size() - 1; i++)
+	//		{
+	//			if (impl_->current_.fields[i].name == impl_->current_.fields.back().name && 
+	//				(impl_->current_.fields[i].type != 1 || !impl_->current_.fields.back().references.empty()))
+	//			{
+	//				impl_->current_.fields[i].bDataFieldEnabled = true;
+	//				index_field = i;
+	//				break;
+	//			}
+	//		}
+	//		if (index_field >= 0)
+	//		{
+	//			impl_->current_.fields.back().type = 7; //skip 
+	//			impl_->current_.fields_count--; 
+	//			
+	//			if (!impl_->current_.fields.back().references.empty())
+	//			{
+	//				impl_->current_.fields.back().references_field = index_field;
+	//				impl_->current_.fields.back().bDataFieldEnabled = true;
+	//			
+	//				index_field = impl_->current_.fields.size() - 1;
+	//			}
+	//		}
+	//		else
+	//		{
+	//			index_field = impl_->current_.fields.size() - 1;
+	//			impl_->current_.fields.back().bDataFieldEnabled = true;
+	//		}
+	//		impl_->current_.data_fields.push_back(index_field);	
+	//	}break;
+ //       case 2:	// hidden
+	//		break;
+ //       case 3:	// page
+	//		impl_->current_.page_fields.push_back(impl_->current_.fields.size() - 1);	
+	//		break;
+	//	case 4:	// row
+	//		if (impl_->current_.fields.back().data_layout)
+	//		{
+	//			impl_->current_.data_on_row = true;
 
-				if (impl_->current_.fields.back().name.empty() && (!impl_->current_.identify_categories || hierarchy >= 0))
-					//(impl_->current_.fields.back().repeat_item_labels ||
-				 //  !impl_->current_.identify_categories ))
-						impl_->current_.row_fields.push_back(-2);	
+	//			if (impl_->current_.fields.back().name.empty() && (!impl_->current_.identify_categories || hierarchy >= 0))
+	//				//(impl_->current_.fields.back().repeat_item_labels ||
+	//			 //  !impl_->current_.identify_categories ))
+	//					impl_->current_.row_fields.push_back(-2);	
 
-			}
-			else
-				impl_->current_.row_fields.push_back(impl_->current_.fields.size() - 1);	
-			break;
-	}
+	//		}
+	//		else
+	//			impl_->current_.row_fields.push_back(impl_->current_.fields.size() - 1);	
+	//		break;
+	//}
 }
 void xlsx_pivots_context::set_field_function(int type)
 {
@@ -1058,9 +1351,55 @@ void xlsx_pivots_context::set_field_groups_source(std::wstring name)
 {
 	impl_->current_.fields.back().source_groups = name;
 }
+void xlsx_pivots_context::start_field_group()
+{
+	impl_->current_.in_group = true;
+	Impl::_group group;
+	impl_->current_.fields.back().groups.push_back(group);
+}
+void xlsx_pivots_context::set_field_group_name (std::wstring name)
+{
+	impl_->current_.fields.back().groups.back().name = name;
+}
+void xlsx_pivots_context::end_field_group()
+{
+	impl_->current_.in_group = false;
+}
 void xlsx_pivots_context::set_field_sort(int type)
 {
 	impl_->current_.fields.back().sort = type + 1;
+}
+void xlsx_pivots_context::start_field_reference()
+{
+	Impl::_reference ref;
+	impl_->current_.fields.back().references.push_back(ref);
+}
+void xlsx_pivots_context::end_field_reference()
+{
+}
+void xlsx_pivots_context::set_field_ref_name(std::wstring name)
+{
+	impl_->current_.fields.back().references.back().name = name;
+
+	for (size_t i = 0; i < impl_->current_.fields.size(); i++)
+	{
+		if (impl_->current_.fields[i].name == name)
+		{
+			impl_->current_.fields[i].used_in_referenes = true;
+		}
+	}
+}
+void xlsx_pivots_context::set_field_ref_type (int type)
+{
+	impl_->current_.fields.back().references.back().type = type;
+}
+void xlsx_pivots_context::set_field_ref_member_name(std::wstring name)
+{
+	impl_->current_.fields.back().references.back().member_name = name;
+}
+void xlsx_pivots_context::set_field_ref_member_type(int type)
+{
+	impl_->current_.fields.back().references.back().member_type = type;
 }
 void xlsx_pivots_context::add_field_cache(int index, std::wstring value)
 {
@@ -1131,14 +1470,20 @@ void xlsx_pivots_context::add_field_cache(int index, std::wstring value)
 		}
 	}
 	impl_->current_.fields.back().caches.push_back(Impl::_field_value(value, node_name));
+
+	if (impl_->current_.in_group)
+	{
+		impl_->current_.fields.back().groups.back().caches.push_back(impl_->current_.fields.back().caches.back());
+	}
+
 }
 void xlsx_pivots_context::end_field()
 {
-	if (impl_->current_.fields.back().name.empty())
-	{
-		impl_->current_.fields_count--; 
-		impl_->current_.fields.pop_back();
-	}
+	//if (impl_->current_.fields.back().name.empty())
+	//{
+	//	impl_->current_.fields_count--; 
+	//	impl_->current_.fields.pop_back();
+	//}
 }
 void xlsx_pivots_context::set_source_range(std::wstring table_name, std::wstring ref)
 {

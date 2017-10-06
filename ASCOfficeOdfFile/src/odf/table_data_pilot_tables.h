@@ -130,6 +130,7 @@ public:
 	_CP_OPT(odf_types::Bool)				loext_ignore_selected_page_;
 	_CP_OPT(std::wstring)					table_selected_page_;
 	_CP_OPT(odf_types::Bool)				table_is_data_layout_field_;
+	_CP_OPT(std::wstring)					table_display_name_;
 	
 	office_element_ptr	reference_;  
 	office_element_ptr	level_;  

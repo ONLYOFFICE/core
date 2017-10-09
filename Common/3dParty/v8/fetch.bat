@@ -5,15 +5,13 @@ if exist "depot_tools" (
 	echo "depot_tools already fetched"
 ) else (
 	call git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-	call powershell -File .\fix-depot_tools.ps1
 )
 
-SET PATH=%SCRIPTPATH%depot_tools;%SCRIPTPATH%depot_tools\python276_bin;%PATH%
-SET DEPOT_TOOLS_WIN_TOOLCHAIN=0
-SET GYP_MSVS_VERSION=2013
+SET PATH=%SCRIPTPATH%depot_tools;%PATH%
+call gclient
 
-if not exist "%SCRIPTPATH%v8" (
-call .\depot_tools\fetch v8
-)
+call ./depot_tools/fetch v8
+cd v8
+call git checkout -b 6.0 -t branch-heads/6.0
 
-call depot_tools\gclient sync -r 4.10.253
+call gclient sync

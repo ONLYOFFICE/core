@@ -468,26 +468,6 @@ v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate)
 v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplateBuilder(v8::Isolate* isolate);
 // --------------------------
 
-// create work with arraytypes
-class MallocArrayBufferAllocator : public v8::ArrayBuffer::Allocator
-{
-public:
-    virtual void* Allocate(size_t length)
-    {
-        void* ret = malloc(length);
-        memset(ret, 0, length);
-        return ret;
-    }
-    virtual void* AllocateUninitialized(size_t length)
-    {
-        return malloc(length);
-    }
-    virtual void Free(void* data, size_t length)
-    {
-        free(data);
-    }
-};
-
 class CChangesWorker
 {
 private:
@@ -1061,42 +1041,39 @@ class CV8Initializer
 {
 private:
     v8::Platform* m_platform;
-    MallocArrayBufferAllocator m_oAllocator;
+    v8::ArrayBuffer::Allocator* m_pAllocator;
 
 public:
-    CV8Initializer() : m_oAllocator()
+    CV8Initializer()
     {
+        std::wstring sPrW = NSFile::GetProcessPath();
+        std::string sPrA = U_TO_UTF8(sPrW);
+
+        v8::V8::InitializeICUDefaultLocation(sPrA.c_str());
+        v8::V8::InitializeExternalStartupData(sPrA.c_str());
         m_platform = v8::platform::CreateDefaultPlatform();
         v8::V8::InitializePlatform(m_platform);
-
         v8::V8::Initialize();
-        v8::V8::InitializeICU();
-
-#ifndef NEW_V8_ENGINE
-        v8::V8::SetArrayBufferAllocator(&m_oAllocator);
-#endif
     }
     ~CV8Initializer()
     {
         v8::V8::Dispose();
         v8::V8::ShutdownPlatform();
         delete m_platform;
+        delete m_pAllocator;
     }
 
     v8::ArrayBuffer::Allocator* getAllocator()
     {
-        return &m_oAllocator;
+        return m_pAllocator;
     }
 
     v8::Isolate* CreateNew()
     {
-#ifdef NEW_V8_ENGINE
         v8::Isolate::CreateParams create_params;
-        create_params.array_buffer_allocator = &m_oAllocator;
+        m_pAllocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+        create_params.array_buffer_allocator = m_pAllocator;
         return v8::Isolate::New(create_params);
-#else
-        return v8::Isolate::New();
-#endif
     }
 };
 

@@ -22,49 +22,19 @@ case "$architecture" in
   *)        arch="_32" ;;
 esac
 
-if [[ -d "$SCRIPTPATH/$platform$arch" ]]
-then
-echo
-else
-mkdir "$SCRIPTPATH/$platform$arch"
-fi
-
 cd "$SCRIPTPATH/v8"
 
-if [[ "$platform" == *"linux"* ]]
+if [[ "$platform" == "linux" ]]
 then
-CFLAGS="-fPIC" CXXFLAGS="-fPIC" make native -j $(grep -c ^processor /proc/cpuinfo) GYPFLAGS=-Dclang=0
+gn gen out.gn/linux_64 --args='is_debug=false target_cpu="x64" v8_static_library=true is_component_build=false v8_use_snapshot=false'
+ninja -C out.gn/linux_64
 
-cp "./out/native/obj.target/tools/gyp/libv8_base.a" "./../$platform$arch/"
-cp "./out/native/obj.target/tools/gyp/libv8_libbase.a" "./../$platform$arch/"
-cp "./out/native/obj.target/tools/gyp/libv8_libplatform.a" "./../$platform$arch/"
-cp "./out/native/obj.target/tools/gyp/libv8_nosnapshot.a" "./../$platform$arch/"
-cp "./out/native/obj.target/tools/gyp/libv8_external_snapshot.a" "./../$platform$arch/"
-
-cp "./out/native/obj.target/third_party/icu/libicui18n.a" "./../$platform$arch/"
-cp "./out/native/obj.target/third_party/icu/libicuuc.a" "./../$platform$arch/"
-cp "./out/native/obj.target/third_party/icu/libicudata.a" "./../$platform$arch/"
-
-cp "./third_party/icu/linux/icudtl_dat.S" "./../$platform$arch/"
-
-cp "./third_party/icu/source/data/in/icudtl.dat" "./../$platform$arch/"
+gn gen out.gn/linux_32 --args='is_debug=false target_cpu="x86" v8_static_library=true is_component_build=false v8_use_snapshot=false'
+ninja -C out.gn/linux_32
 fi
 
-if [[ "$platform" == *"mac"* ]]
+if [[ "$platform" == "mac" ]]
 then
-CFLAGS="-fPIC" CXXFLAGS="-fPIC -stdlib=libc++" LDFLAGS="-stdlib=libc++"  make native
-
-cp "./out/native/libv8_base.a" "./../$platform$arch/"
-cp "./out/native/libv8_libbase.a" "./../$platform$arch/"
-cp "./out/native/libv8_libplatform.a" "./../$platform$arch/"
-cp "./out/native/libv8_nosnapshot.a" "./../$platform$arch/"
-cp "./out/native/libv8_external_snapshot.a" "./../$platform$arch/"
-
-cp "./out/native/libicui18n.a" "./../$platform$arch/"
-cp "./out/native/libicuuc.a" "./../$platform$arch/"
-cp "./out/native/icudtl.dat" "./../$platform$arch/"
-
-cp "./out/native/libv8_libsampler.a" "./../$platform$arch/"
-
-cp "./third_party/icu/mac/icudtl_dat.S" "./../$platform$arch/"
+gn gen out.gn/mac_64 --args='is_debug=false target_cpu="x64" v8_static_library=true is_component_build=false v8_use_snapshot=false'
+ninja -C out.gn/mac_64
 fi

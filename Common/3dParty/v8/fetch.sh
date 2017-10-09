@@ -23,3 +23,13 @@ cd v8
 fi
 
 gclient sync
+
+os=$(uname -s)
+platform=""
+case "$os" in
+  Linux*)   platform="linux" ;;  
+  *)        exit ;;
+esac
+if [[ "$platform" == "linux" ]]
+./fetch_linux_correct.sh
+fi

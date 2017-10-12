@@ -841,6 +841,7 @@ SOURCES +=  \
     ../XlsXlsxConverter/xlsx_textcontext.cpp \
     ../XlsXlsxConverter/xlsx_chart_context.cpp \
     ../XlsXlsxConverter/xlsx_pivots_context.cpp \
+    ../XlsXlsxConverter/xlsx_external_context.cpp \
     ../XlsXlsxConverter/xlsx_comments.cpp \
     ../XlsXlsxConverter/xlsx_comments_context.cpp \
 
@@ -1605,6 +1606,7 @@ HEADERS +=  \
     ../XlsXlsxConverter/xlsx_protection.h \
     ../XlsXlsxConverter/xlsx_tablecontext.h \
     ../XlsXlsxConverter/xlsx_textcontext.h \
+    ../XlsXlsxConverter/xlsx_external_context.h \
     ../XlsFormat/Logic/AnyObject.h \
     ../XlsFormat/Logic/AnySubstream.h \
     ../XlsFormat/Logic/BaseObject.h \

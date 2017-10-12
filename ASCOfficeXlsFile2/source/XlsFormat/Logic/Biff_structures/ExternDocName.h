@@ -31,9 +31,8 @@
  */
 #pragma once
 
-#include "BiffStructure.h"
-#include <Logic/Biff_structures/ExtNameParsedFormula.h>
-#include <Logic/Biff_structures/BiffString.h>
+#include "ExtNameParsedFormula.h"
+#include "BiffString.h"
 
 namespace XLS
 {
@@ -49,7 +48,6 @@ public:
 	static const ElementType	type = typeExternDocName;
 
 	virtual void load(CFRecord& record);
-
 
 	unsigned short			ixals;
 	ShortXLUnicodeString	extName;

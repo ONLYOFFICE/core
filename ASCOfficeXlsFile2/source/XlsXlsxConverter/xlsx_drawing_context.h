@@ -38,7 +38,7 @@
 #include <boost/shared_array.hpp>
 #include "../Common/common.h"
 
-#include <Logic/Biff_structures/ODRAW/OfficeArtFOPTE.h>
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtFOPTE.h"
 
 #include "xlsx_drawings.h"
 

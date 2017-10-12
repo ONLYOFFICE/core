@@ -53,7 +53,9 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typeGlobalsSubstream;
+	static const ElementType type = typeGlobalsSubstream;
+
+	int serialize_format(std::wostream & _stream);
 	
 	BaseObjectPtr					m_THEME;
 	BaseObjectPtr					m_Formating;
@@ -64,12 +66,17 @@ public:
 	BaseObjectPtr					m_Country;
 	BaseObjectPtr					m_WriteProtect;
 	BaseObjectPtr					m_PROTECTION;
+	BaseObjectPtr					m_RRTabId;
+	BaseObjectPtr					m_FNGROUPS;
+	BaseObjectPtr					m_BookExt;
+	BaseObjectPtr					m_CodeName;
 
 	std::vector<BaseObjectPtr>		m_arHFPicture;
 	std::vector<BaseObjectPtr>		m_arLBL;
 	std::vector<BaseObjectPtr>		m_arMSODRAWINGGROUP;
 	std::vector<BaseObjectPtr>		m_arWindow1;
 	std::vector<BaseObjectPtr>		m_arUserBView;
+	std::vector<BaseObjectPtr>		m_arBUNDLESHEET;
 	std::vector<BaseObjectPtr>		m_arSUPBOOK;
 	std::vector<BaseObjectPtr>		m_arPIVOTCACHEDEFINITION;
 
@@ -80,6 +87,8 @@ public:
 
 private:
 	void LoadHFPicture();
+	void UpdateXti();
+	void UpdateDefineNames();
 };
 
 } // namespace XLS

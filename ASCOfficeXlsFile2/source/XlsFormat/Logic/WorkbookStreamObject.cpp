@@ -82,7 +82,6 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 	bool WorksheetSubstream_found = false;
 	size_t ws_index = 0;
 
-	// Find all substreams in this stream
 	while(to_continue)
 	{
 		unsigned short substream_type = 0;
@@ -102,8 +101,8 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
                 if((proc.mandatory(global_substream)) && (elements_.size() > 0))
 				{
 					GlobalsSubstream_found = true;
-					m_GlobalsSubstream = elements_.back();
-					elements_.pop_back();
+					
+					m_GlobalsSubstream = elements_.back(); elements_.pop_back();
 				}
 				if (!GlobalsSubstream_found) return false;
 			}
@@ -120,8 +119,8 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
                 if ((proc.mandatory(worksheet_substream)) && (elements_.size() > 0))
 				{
 					WorksheetSubstream_found = true;
-					m_arWorksheetSubstream.push_back(elements_.back());
-					elements_.pop_back();				
+					
+					m_arWorksheetSubstream.push_back(elements_.back()); elements_.pop_back();				
 				}
 			}
 			break;
@@ -136,8 +135,8 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 				if ((proc.mandatory<ChartSheetSubstream>())  && (elements_.size() > 0))
 				{
 					WorksheetSubstream_found = true;
-					m_arWorksheetSubstream.push_back(elements_.back());
-					elements_.pop_back();
+
+					m_arWorksheetSubstream.push_back(elements_.back()); elements_.pop_back();
 				}
 			}
 			break;
@@ -152,14 +151,17 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 				if ((proc.mandatory<MacroSheetSubstream>()) && (elements_.size() > 0))
 				{
 					WorksheetSubstream_found = true;
-					m_arMacroSheetSubstream.push_back(elements_.back());
-					elements_.pop_back();
+
+					m_arMacroSheetSubstream.push_back(elements_.back()); elements_.pop_back();
 				}
 			}
 			break;
 			default:
-				Log::warning("WARNING: Substream of unsupported type " + STR::int2str(substream_type, 10) +
-					"  The substream is skipped! Sorry.");
+				if (substream_type != 0)
+				{
+					Log::warning("WARNING: Substream of unsupported type " + STR::int2str(substream_type, 10) +
+						"  The substream is skipped!");
+				}
 				proc.SeekToEOF();
 				proc.optional<EOF_T>();
 		

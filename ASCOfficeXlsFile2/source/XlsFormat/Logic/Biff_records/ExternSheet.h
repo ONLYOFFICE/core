@@ -32,13 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/XTI.h>
+#include "../Biff_structures/XTI.h"
 
 namespace XLS
 {
 
-
-// Logical representation of ExternSheet record in BIFF8
 class ExternSheet: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(ExternSheet)
@@ -48,15 +46,15 @@ public:
 	~ExternSheet();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeExternSheet;
+	static const ElementType type = typeExternSheet;
 
-//-----------------------------
-	ForwardOnlyParam<_UINT16> cXTI;
-	BiffStructurePtrVector rgXTI;
+	_UINT16						cXTI;	
+	BiffStructurePtrVector		rgXTI;
+//------------------------------------------------
+	std::wstring				name; //biff5
 };
 
 } // namespace XLS

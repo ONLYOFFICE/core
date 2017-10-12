@@ -48,6 +48,7 @@ void ExternDocName::load(CFRecord& record)
 	record >> ixals;
 	record.skipNunBytes(2); // reserved
 	record >> extName;
+	
 	nameDefinition.load(record);
 }
 

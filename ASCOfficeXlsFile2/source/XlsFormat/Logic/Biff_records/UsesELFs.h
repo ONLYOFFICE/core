@@ -35,9 +35,6 @@
 
 namespace XLS
 {
-
-
-// Logical representation of UsesELFs record in BIFF8
 class UsesELFs: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(UsesELFs)
@@ -47,15 +44,12 @@ public:
 	~UsesELFs();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeUsesELFs;
+	static const ElementType type = typeUsesELFs;
 
-//-----------------------------
 	Boolean<unsigned short> useselfs;
-
 };
 
 } // namespace XLS

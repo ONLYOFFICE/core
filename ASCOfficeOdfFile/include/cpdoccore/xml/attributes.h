@@ -154,7 +154,7 @@ namespace cpdoccore
 			if (val)
 			{
                 std::wstring tmp = *val;
-				XmlUtils::GetLower(tmp);
+				tmp = XmlUtils::GetLower(tmp);
                 return  optional<bool>::Type((tmp == xml_char_value_type::trueVal));
 			}
 			else

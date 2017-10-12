@@ -81,81 +81,87 @@ public:
     
 	void			GetDigitFontSizePixels();
 
-	unsigned int	GenerateAXESId();
+	bool									bVbaProjectExist;
+	bool									bMacrosExist;
 
-	unsigned short								CodePage;
-	CRYPT::DecryptorPtr							decryptor;
-	std::wstring								password;
+	unsigned short							CodePage;
+	CRYPT::DecryptorPtr						decryptor;
+	std::wstring							password;
 	
-	std::vector<std::wstring>					sheets_state;
-	std::vector<std::wstring>					sheets_names;
-	std::vector<std::wstring>					xti_parsed;
-	std::vector<std::wstring>					AddinUdfs;
-
-	boost::unordered_map<BorderInfo, int>		border_x_ids;
-	boost::unordered_map<FillInfo, int>			fill_x_ids;
+	std::vector<std::wstring>				sheets_state;
+	std::vector<std::wstring>				sheets_names;
 	
-	std::map<int,  FillInfoExt>					fonts_color_ext;
-	std::map<int, int>							fonts_charsets;
-	std::map<int,  std::wstring>				colors_palette;
-
-	std::vector<BaseObjectPtr>					*m_arFonts;
+	boost::unordered_map<BorderInfo, int>	border_x_ids;
+	boost::unordered_map<FillInfo, int>		fill_x_ids;
 	
-	unsigned int								current_sheet;
+	std::map<int,  FillInfoExt>				fonts_color_ext;
+	std::map<int, int>						fonts_charsets;
+	std::map<int,  std::wstring>			colors_palette;
 
-	unsigned int								last_AXES_id;
-	const static unsigned int					initial_AXES_id = 0x2000000;
+	std::vector<BaseObjectPtr>				*m_arFonts;
+	
+	unsigned int							current_sheet;
 
-	short												idPivotCache;
-	std::map<int, int>									mapPivotCacheIndex; //streamIdCache, write index order 
-	std::unordered_map<int, BaseObjectPtr>				mapPivotCacheStream;//streamIdCache, object
-	std::vector<int>									arPivotCacheStream; //order streamIdCache =  iCache
+	unsigned int							last_Axes_id;
+	unsigned int							last_Extern_id;
 
-	std::vector<bool>									arPivotCacheFields;
-	std::vector<bool>									arPivotCacheFieldShortSize;
+	short									idPivotCache;
+	std::map<int, int>						mapPivotCacheIndex; //streamIdCache, write index order 
+	std::unordered_map<int, BaseObjectPtr>	mapPivotCacheStream;//streamIdCache, object
+	std::vector<int>						arPivotCacheStream; //order streamIdCache =  iCache
 
-	std::vector<_sx_name>								arPivotSxNames;
-	std::vector<std::wstring>							arPivotCacheSxNames;
+	std::vector<bool>						arPivotCacheFields;
+	std::vector<bool>						arPivotCacheFieldShortSize;
+
+	std::vector<_sx_name>					arPivotSxNames;
+	std::vector<std::wstring>				arPivotCacheSxNames;
 
 	std::unordered_map<std::wstring, std::wstring>		mapPivotCacheExternal;
 
 	std::map<std::wstring, std::vector<std::wstring>>	mapDefineNames;
 	std::vector<std::wstring>							arDefineNames;
-	std::vector<std::wstring>							arExternalNames;
-
-	unsigned int								startAddedSharedStrings;
-	std::vector<std::wstring>					arAddedSharedStrings;
-
+	
 	std::vector<std::pair<boost::shared_array<char>, size_t> >	bin_data;
+	
+	struct _xti
+	{
+		int							iSup;
+		std::wstring				link;
+		std::vector<std::wstring>*	pNames = NULL;
+	};
+	std::vector<_xti>				arXti;
+	
+	unsigned int					startAddedSharedStrings;
+	std::vector<std::wstring>		arAddedSharedStrings;
+
 
 	struct _sheet_size_info
 	{
-		_sheet_size_info() : defaultColumnWidth(8.), defaultRowHeight (14.4) {}
-		std::map<int, double>					customColumnsWidth;
-		std::map<int, double>					customRowsHeight;
+		std::map<int, double>		customColumnsWidth;
+		std::map<int, double>		customRowsHeight;
 		
-		double									defaultColumnWidth;
-		double									defaultRowHeight;		
+		double						defaultColumnWidth = 8.0;
+		double						defaultRowHeight = 14.4;		
 	};
-	std::vector<_sheet_size_info>				sheet_size_info;
+	std::vector<_sheet_size_info>	sheet_size_info;
 
-	std::pair<float, float>						defaultDigitFontSize;
-    CApplicationFonts							*applicationFonts;
-	std::wstring								fontsDirectory;
+	std::pair<float, float>			defaultDigitFontSize;
+    CApplicationFonts				*applicationFonts;
+	std::wstring					fontsDirectory;
 
-	int											Version;
+	int								Version;
 
-	int											cmt_rules;
-	int											cellXfs_count;
-	int											cellStyleXfs_count;
-	int											cellStyleDxfs_count;
+	int								cmt_rules;
+	int								cellXfs_count;
+	int								cellStyleXfs_count;
+	int								cellStyleDxfs_count;
 
-	std::wstringstream							users_Dxfs_stream;
-	std::wstringstream							connections_stream;
+	std::wstringstream				users_Dxfs_stream;
+	std::wstringstream				connections_stream;
 	
-	int											connectionId;
+	int								connectionId;
 
-	XlsConverter								*xls_converter;
+	XlsConverter					*xls_converter;
 
 };
 

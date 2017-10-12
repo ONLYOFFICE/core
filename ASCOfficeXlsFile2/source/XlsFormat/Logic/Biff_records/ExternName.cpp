@@ -35,8 +35,8 @@
 namespace XLS
 {
 
-ExternName::ExternName(const unsigned short supporting_link_type)
-:	supbook_cch(supporting_link_type), cf(0)
+ExternName::ExternName(const unsigned short supporting_link_type, bool bOle)
+:	supbook_cch(supporting_link_type), cf(-1), bOleVirtualPath(bOle)
 {
 }
 
@@ -70,53 +70,40 @@ void ExternName::readFields(CFRecord& record)
 	}
 	else
 	{
-		if(fOle && !fOleLink) // DDE data item
+		if(fOle && !fOleLink)
 		{
 			body = BiffStructurePtr(new ExternDdeLinkNoOper);
 		}
-		if(!fOle && fOleLink) // DDE data item
+		if(!fOle && fOleLink) 
 		{
 			body = BiffStructurePtr(new ExternOleDdeLink);
 		}
-		// Nu i kak ya dolzhen opredelit', DDE eto ili OLE?!!!
-		// V Mikrosofte vse ebanutye - pust' sami parsyat, debily
 		if(!fOle && !fOleLink)
 		{
-			body = BiffStructurePtr(new ExternDocName);
-		}
-		// This fills in the gaps between AddinUdfs if the body is not AddinUdf. The simplest way to maintain indexing from my point of view.
-	}
-	body->load(record);
-
-	if(0x3A01 != supbook_cch)
-	{
-		std::wstring name; 
-		if(!fOle && !fOleLink)
-		{
-			ExternDocName* n = dynamic_cast<ExternDocName*>(body.get());
-
-			if (n->ixals > 0)
+			if (bOleVirtualPath)
 			{
-				//from SupBook
+				body = BiffStructurePtr(new ExternOleDdeLink);
 			}
 			else
 			{
-				name = n->nameDefinition.getAssembledFormula();
-				if (name.empty())
-					name = n->extName.value();
+				body = BiffStructurePtr(new ExternDocName);
 			}
 		}
-		if(fOle && !fOleLink) // DDE data item
-		{
-			ExternDdeLinkNoOper* n = dynamic_cast<ExternDdeLinkNoOper*>(body.get());
-			name = n->linkName.value();
-		}
-		if(!fOle && fOleLink)
-		{
-			ExternOleDdeLink* n = dynamic_cast<ExternOleDdeLink*>(body.get());
-			name = n->linkName.value();
-		}
-		record.getGlobalWorkbookInfo()->arExternalNames.push_back(name);
+	}
+	body->load(record);
+
+
+//cache
+	switch(cf)
+	{
+	case 0:		// is text
+		break;
+	case 5:		//csv (,)
+	case 6:		//Microsoft Symbolic Link (SYLK).
+	case 8:		//biff8
+	case 44:	//unicode text
+	case 63:	//biff12
+		break;
 	}
 }
 

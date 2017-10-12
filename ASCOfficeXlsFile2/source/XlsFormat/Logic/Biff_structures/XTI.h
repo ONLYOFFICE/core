@@ -48,7 +48,6 @@ public:
 	
 	virtual void load(CFRecord& record);
 
-
 	unsigned short iSupBook;
 	short itabFirst;
 	short itabLast;

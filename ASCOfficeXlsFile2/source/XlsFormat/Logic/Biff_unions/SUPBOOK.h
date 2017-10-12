@@ -31,17 +31,21 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../CompositeObject.h"
 
 namespace XLS
 {
 
-
-// Logical representation of SUPBOOK union of records 
 class SUPBOOK: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(SUPBOOK)
 public:
+	struct _xct
+	{
+		BaseObjectPtr				m_XCT;
+		std::vector<BaseObjectPtr>	m_arCRN;
+	};
+
 	SUPBOOK();
 	~SUPBOOK();
 
@@ -49,11 +53,27 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typeSUPBOOK;
+	int serialize(std::wostream & strm);
 
-	BaseObjectPtr	m_SupBook;
-	BaseObjectPtr	m_ExternSheet;
+	static const ElementType type = typeSUPBOOK;
+
+	BaseObjectPtr				m_SupBook;
+	BaseObjectPtr				m_ExternSheet;
+
+	std::vector<BaseObjectPtr>	m_arExternName;
+	std::vector<_xct>			m_arXCT;
+
+	GlobalWorkbookInfoPtr		global_info;
+
+	std::vector<std::wstring>	arNames;
+	bool						IsExternal();
 	
+	std::wstring				sExternPathLink;	
+	int							nExternIndex;
+
+private:
+	int serialize_book(std::wostream & strm);
+	int serialize_dde(std::wostream & strm);
 };
 
 } // namespace XLS

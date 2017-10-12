@@ -72,6 +72,7 @@ namespace XLS
 	class IMDATA;
 	class PIVOTVIEW;
 	class PIVOTCACHEDEFINITION;
+	class SUPBOOK;
 
 	class Note;
 	class TxO;
@@ -121,6 +122,7 @@ public:
 	void convert(XLS::IMDATA					* imadata);
 	void convert(XLS::PIVOTVIEW					* pivot_view);
 	void convert(XLS::PIVOTCACHEDEFINITION		* pivot_cached);
+	void convert(XLS::SUPBOOK					* external);
 
 	void convert(ODRAW::OfficeArtRecord			* art);
 	void convert(ODRAW::OfficeArtBStoreContainer* art_bstore, int start_id = 0);

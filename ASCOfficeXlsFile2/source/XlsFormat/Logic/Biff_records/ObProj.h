@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of ObProj record in BIFF8
 class ObProj: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(ObProj)
@@ -47,13 +45,10 @@ public:
 	~ObProj();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeObProj;
-
-
 };
 
 } // namespace XLS

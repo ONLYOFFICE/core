@@ -245,7 +245,7 @@ const bool CFRecord::isEOF() const
 {
 	if(rdPtr > size_)
 	{
-		throw;// EXCEPT::LE::WrongFormatInterpretation(__FUNCTION__);
+		true;//throw;
 	}
 	return rdPtr >= size_;
 }

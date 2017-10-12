@@ -103,6 +103,24 @@ private:
 };
 typedef _CP_PTR(pivot_table_content) pivot_table_content_ptr;
 //------------------------------------------------------------------------
+class external_content : boost::noncopyable
+{
+public:
+    external_content();
+    static _CP_PTR(external_content) create();
+
+    std::wostream	& content() { return content_; }
+    rels			& get_rels()	{ return rels_file_->get_rels(); }
+
+    std::wstring	str() { return content_.str(); }
+	
+	friend class	xl_externals_files;
+private:
+    std::wstringstream	content_;
+	rels_file_ptr		rels_file_;
+};
+typedef _CP_PTR(external_content) external_content_ptr;
+//------------------------------------------------------------------------
 class sheets_files  : public element
 {
 public:
@@ -121,7 +139,6 @@ public:
     rels_files * rels_;
 
 };
-
 class xl_charts_files  : public element
 {
 public:
@@ -132,6 +149,22 @@ public:
     
     std::vector<chart_content_ptr> charts_;
 
+};
+
+class xl_externals_files  : public element
+{
+public:
+	xl_externals_files(){}
+
+	void set_rels(rels_files * rels)
+    {
+        rels_ = rels;
+    }
+	void			add_external(external_content_ptr external);
+	virtual void	write(const std::wstring & RootPath);
+    
+    std::vector<external_content_ptr> externals_;
+    rels_files * rels_;
 };
 class xl_pivot_table_files  : public element
 {
@@ -205,6 +238,7 @@ private:
     rels_files * rels_;
 
 };
+//------------------------------------------------------------------------
 
 class xl_files : public element
 {
@@ -224,6 +258,7 @@ public:
 	void set_vml_drawings	(element_ptr Element);
 	void set_comments		(element_ptr Element);
     void add_charts			(chart_content_ptr chart);
+    void add_external		(external_content_ptr external);
     void add_pivot_cache	(pivot_cache_content_ptr cache);
 	void add_pivot_table	(pivot_table_content_ptr table);
 
@@ -232,6 +267,7 @@ private:
     rels_files				rels_files_;
     sheets_files			sheets_files_;
     xl_charts_files			charts_files_;
+    xl_externals_files		externals_files_;
 	xl_pivot_cache_files	pivot_cache_files_;
 	xl_pivot_table_files	pivot_table_files_;
 

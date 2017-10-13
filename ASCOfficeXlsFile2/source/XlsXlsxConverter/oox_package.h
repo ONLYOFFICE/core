@@ -57,8 +57,6 @@ typedef std::vector<element_ptr>	element_ptr_array;
 
 class document;
 
-
-/// \class  element
 class element
 {
 public:

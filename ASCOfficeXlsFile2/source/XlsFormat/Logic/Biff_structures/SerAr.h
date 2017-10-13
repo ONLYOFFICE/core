@@ -56,7 +56,7 @@ public:
 
 	virtual const std::wstring toString() const = 0;
 
-	static const ElementType	type = typeSerAr;
+	static const ElementType type = typeSerAr;
 
     SerType fixed_type;
 };

@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of RecalcId record in BIFF8
 class RecalcId: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(RecalcId)
@@ -47,16 +45,12 @@ public:
 	~RecalcId();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeRecalcId;
 
-
-//-----------------------------
 	_UINT32	dwBuild;
-
 };
 
 } // namespace XLS

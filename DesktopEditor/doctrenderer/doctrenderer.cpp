@@ -599,6 +599,8 @@ namespace NSDoctRenderer
 
         bool ExecuteScript(const std::string& strScript, const std::wstring& sCachePath, std::wstring& strError, std::wstring& strReturnParams)
         {
+            LOGGER_SPEED_START
+
             bool bIsBreak = false;
             v8::Isolate* isolate = CV8Worker::getInitializer()->CreateNew();
             if (true)
@@ -619,6 +621,8 @@ namespace NSDoctRenderer
                 v8::Local<v8::String> source = v8::String::NewFromUtf8(isolate, strScript.c_str());
                 v8::Local<v8::Script> script;
 
+                LOGGER_SPEED_LAP("pre_compile")
+
                 CCacheDataScript oCachedScript(sCachePath);
                 if (sCachePath.empty())
                     script = v8::Script::Compile(source);
@@ -626,6 +630,8 @@ namespace NSDoctRenderer
                 {
                     script = oCachedScript.Compile(context, source);
                 }
+
+                LOGGER_SPEED_LAP("compile")
 
                 // COMPILE
                 if (try_catch.HasCaught())
@@ -657,6 +663,8 @@ namespace NSDoctRenderer
                         bIsBreak = true;
                     }
                 }
+
+                LOGGER_SPEED_LAP("run")
 
                 if (!bIsBreak && m_oParams.m_bIsRetina)
                 {
@@ -761,6 +769,8 @@ namespace NSDoctRenderer
                     }
                 }
 
+                LOGGER_SPEED_LAP("open")
+
                 // CHANGES
                 if (!bIsBreak)
                 {
@@ -822,6 +832,8 @@ namespace NSDoctRenderer
                         }
                     }
                 }
+
+                LOGGER_SPEED_LAP("changes")
 
                 bool bIsMailMerge = false;
                 if (!m_oParams.m_strMailMergeDatabasePath.empty() &&
@@ -997,6 +1009,8 @@ namespace NSDoctRenderer
                 {
                     bIsBreak = Doct_renderer_SaveFile(&m_oParams, pNative, isolate, global_js, args, try_catch, strError);
                 }
+
+                LOGGER_SPEED_LAP("save")
             }
 
             isolate->Dispose();

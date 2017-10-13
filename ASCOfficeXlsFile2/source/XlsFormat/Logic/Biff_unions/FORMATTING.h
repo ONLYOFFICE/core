@@ -67,7 +67,6 @@ public:
 	BaseObjectPtr				m_TABLESTYLES;
 	BaseObjectPtr				m_THEME;
 
-
 	GlobalWorkbookInfoPtr		global_info;
 };
 

@@ -46,7 +46,6 @@ void AddinUdf::load(CFRecord& record)
 {
 	record.skipNunBytes(4); // reserved
 	record >> udfName;
-	record.getGlobalWorkbookInfo()->AddinUdfs.push_back(udfName);
 
 	unsigned short cb;
 	record >> cb;

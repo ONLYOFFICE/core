@@ -32,13 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/SerAr.h>
+#include "../Biff_structures/SerAr.h"
 
 namespace XLS
 {
 
-
-// Logical representation of CRN record in BIFF8
 class CRN: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(CRN)
@@ -48,18 +46,16 @@ public:
 	~CRN();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeCRN;
+	static const ElementType type = typeCRN;
 
-//-----------------------------
 	unsigned char	colLast;
 	unsigned char	colFirst;
 	_UINT16 row;
+	
 	BiffStructurePtrVector crnOper;
-
 };
 
 } // namespace XLS

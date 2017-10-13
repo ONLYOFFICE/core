@@ -33,7 +33,7 @@
 
 #include "BiffStructure.h"
 #include "CellRef.h"
-#include <Logic/Biff_structures/BitMarkedStructs.h>
+#include "BitMarkedStructs.h"
 
 namespace XLS
 {
@@ -50,7 +50,6 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
-
 
 	const CellRef getLocation() const;
 

@@ -53,7 +53,10 @@ BaseObjectPtr CodeName::clone()
 
 void CodeName::readFields(CFRecord& record)
 {
+	XLUnicodeString codeName;
 	record >> codeName;
+
+	value = codeName.value();
 }
 
 } // namespace XLS

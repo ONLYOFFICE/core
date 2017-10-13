@@ -96,6 +96,17 @@ oox_chart_context & xlsx_conversion_context::current_chart()
         throw std::runtime_error("internal error");
     }
 }
+oox_external_context & xlsx_conversion_context::current_external()
+{
+    if (!externals_.empty())
+    {
+        return *externals_.back().get();
+    }
+    else
+    {
+        throw std::runtime_error("internal error");
+    }
+}
 bool xlsx_conversion_context::start_table(const std::wstring & name)
 {
     sheets_.push_back(xlsx_xml_worksheet::create(name));
@@ -130,6 +141,15 @@ void xlsx_conversion_context::end_chart()
 {
 }
 
+void xlsx_conversion_context::start_external()
+{
+	externals_.push_back(oox_external_context::create());
+}
+void xlsx_conversion_context::end_external()
+{
+}
+
+
 void xlsx_conversion_context::end_table()
 {
     get_table_context().serialize_hyperlinks(current_sheet().hyperlinks());
@@ -148,7 +168,7 @@ void xlsx_conversion_context::end_document()
 	std::wstringstream workbook_content;
 
     unsigned int count = 0;
-    // добавляем таблицы
+
 	for (size_t i = 0; i < sheets_.size(); i++)
 	{
 		xlsx_xml_worksheet_ptr & sheet = sheets_[i];
@@ -221,6 +241,7 @@ void xlsx_conversion_context::end_document()
 
 		output_document_->get_xl_files().add_charts(content);
 	}
+
     //workbook_content << L"<calcPr iterateCount=\"100\" refMode=\"A1\" iterate=\"false\" iterateDelta=\"0.0001\" />";
 
 	output_document_->get_xl_files().set_sharedStrings( package::simple_element::create(L"sharedStrings.xml", xlsx_shared_strings_.str()) );
@@ -235,8 +256,12 @@ void xlsx_conversion_context::end_document()
             CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
             CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 			CP_XML_ATTR(L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006");
+			CP_XML_ATTR(L"mc:Ignorable", L"x15");
+			CP_XML_ATTR(L"xmlns:x15", L"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main");
 
-            CP_XML_NODE(L"bookViews")
+			CP_XML_STREAM() << xlsx_workbook_pr_.str();
+
+			CP_XML_NODE(L"bookViews")
             {
 				CP_XML_STREAM() << xlsx_workbook_views_.str();
 			}
@@ -245,7 +270,27 @@ void xlsx_conversion_context::end_document()
             {
                 CP_XML_STREAM() << workbook_content.str();
             }
+			if (externals_.empty() == false)
+			{
+				CP_XML_NODE(L"externalReferences")
+				{
+					for (size_t i = 0; i < externals_.size(); i++)
+					{
+						std::wstring rId = L"extId" + std::to_wstring(i+1);
 
+						CP_XML_NODE(L"externalReference")
+						{
+							CP_XML_ATTR(L"r:id", rId);
+						}	
+						package::external_content_ptr content = package::external_content::create();
+
+						externals_[i]->dump_rels(content->get_rels());
+						externals_[i]->write_to(content->content());
+
+						output_document_->get_xl_files().add_external(content);
+					}
+				}
+			}
             CP_XML_NODE(L"definedNames")
             {
 				CP_XML_STREAM() << xlsx_defined_names_.str();

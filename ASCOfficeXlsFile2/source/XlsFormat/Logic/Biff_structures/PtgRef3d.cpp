@@ -106,6 +106,7 @@ void PtgRef3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 
 	if (global_info->Version < 0x0600)
 	{
+		ixti = ixals;
 		if (ixals == 0xffff)
 		{
 			std::wstring prefix = XMLSTUFF::xti_indexes2sheet_name(itabFirst, itabLast, global_info->sheets_names);
@@ -113,15 +114,14 @@ void PtgRef3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 
 			ptg_stack.push(prefix + cell_ref);
 		}
-		else
-		{
-			ptg_stack.push(XMLSTUFF::make3dRef(ixals, cell_ref, global_info->xti_parsed, full_ref)); // from External !
-		}
 	}
-	else
+	if (ixti != 0xffff)
 	{
-		cell_ref = XMLSTUFF::make3dRef(ixti, cell_ref, global_info->xti_parsed, full_ref);
-		ptg_stack.push(cell_ref);
+		std::wstring link = global_info->arXti[ixti].link;
+		if (!link.empty() && !cell_ref.empty()) 
+			link += L"!";
+		
+		ptg_stack.push(link + cell_ref); // full_ref ???
 	}
 }
 

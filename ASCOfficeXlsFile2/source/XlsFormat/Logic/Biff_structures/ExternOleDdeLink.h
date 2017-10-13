@@ -32,8 +32,8 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/MOper.h>
-#include <Logic/Biff_structures/BiffString.h>
+#include "MOper.h"
+#include "BiffString.h"
 
 namespace XLS
 {
@@ -47,7 +47,6 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
-
 
 	static const ElementType	type = typeExternOleDdeLink;
 

@@ -60,28 +60,29 @@
 #include "../XlsFormat/Logic/Biff_unions/PIVOTVIEW.h"
 #include "../XlsFormat/Logic/Biff_unions/PIVOTCACHE.h"
 #include "../XlsFormat/Logic/Biff_unions/PIVOTCACHEDEFINITION.h"
+#include "../XlsFormat/Logic/Biff_unions/SUPBOOK.h"
 
-#include <Logic/Biff_records/BkHim.h>
-#include <Logic/Biff_records/HLink.h>
-#include <Logic/Biff_records/MsoDrawingGroup.h>
-#include <Logic/Biff_records/MsoDrawing.h>
-#include <Logic/Biff_records/Obj.h>
-#include <Logic/Biff_records/TxO.h>
-#include <Logic/Biff_records/IMDATA.h>
-#include <Logic/Biff_records/Note.h>
+#include "../XlsFormat/Logic/Biff_records/BkHim.h"
+#include "../XlsFormat/Logic/Biff_records/HLink.h"
+#include "../XlsFormat/Logic/Biff_records/MsoDrawingGroup.h"
+#include "../XlsFormat/Logic/Biff_records/MsoDrawing.h"
+#include "../XlsFormat/Logic/Biff_records/Obj.h"
+#include "../XlsFormat/Logic/Biff_records/TxO.h"
+#include "../XlsFormat/Logic/Biff_records/IMDATA.h"
+#include "../XlsFormat/Logic/Biff_records/Note.h"
 
-#include <Logic/Biff_structures/URLMoniker.h>
-#include <Logic/Biff_structures/FileMoniker.h>
+#include "../XlsFormat/Logic/Biff_structures/URLMoniker.h"
+#include "../XlsFormat/Logic/Biff_structures/FileMoniker.h"
 
-#include <Logic/Biff_structures/ODRAW/OfficeArtBStoreContainer.h>
-#include <Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.h>
-#include <Logic/Biff_structures/ODRAW/OfficeArtFOPT.h>
-#include <Logic/Biff_structures/ODRAW/OfficeArtFOPTE.h>
-#include <Logic/Biff_structures/ODRAW/OfficeArtFSP.h>
-#include <Logic/Biff_structures/ODRAW/OfficeArtBlip.h>
-#include <Logic/Biff_structures/ODRAW/OfficeArtFSPGR.h>
-#include <Logic/Biff_structures/ODRAW/OfficeArtClientAnchorSheet.h>
-#include <Logic/Biff_structures/ODRAW/OfficeArtClientAnchorHF.h>
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtBStoreContainer.h"
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.h"
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtFOPT.h"
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtFOPTE.h"
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtFSP.h"
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtBlip.h"
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtFSPGR.h"
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtClientAnchorSheet.h"
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtClientAnchorHF.h"
 
 #include "xlsx_conversion_context.h"
 #include "xlsx_package.h"
@@ -541,6 +542,8 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
 	{
 		convert((ODRAW::OfficeArtDgContainer*)global->m_arHFPictureDrawing[i].get());
 	}
+	
+	global->serialize_format(xlsx_context->workbook_format());
 
     for (size_t i = 0 ; i < global->m_arWindow1.size(); i++)
 	{
@@ -551,11 +554,17 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
 		global->m_arUserBView[i]->serialize(xlsx_context->custom_views());
 	}
 
+	for (size_t i = 0 ; i < global->m_arSUPBOOK.size(); i++)
+	{
+		convert((XLS::SUPBOOK*)global->m_arSUPBOOK[i].get());
+	}
+
 	for (size_t i = 0 ; i < global->m_arPIVOTCACHEDEFINITION.size(); i++)
 	{
 		convert((XLS::PIVOTCACHEDEFINITION*)global->m_arPIVOTCACHEDEFINITION[i].get());
 	}
 	xlsx_context->get_pivots_context().add_connections(xls_global_info->connections_stream.str());
+
 }
 
 typedef boost::unordered_map<XLS::FillInfo, int>	mapFillInfo;
@@ -1968,4 +1977,22 @@ void XlsConverter::convert(XLS::PIVOTCACHEDEFINITION * pivot_cached)
 	{
 		xlsx_context->get_pivots_context().add_cache_external(xls_global_info->mapPivotCacheExternal);
 	}
+}
+
+void XlsConverter::convert(XLS::SUPBOOK * external)
+{
+	if (external == NULL) return;
+	if (external->IsExternal() == false) return;
+
+	xlsx_context->start_external();
+
+	external->serialize(xlsx_context->current_external().externalData());
+
+	if (!external->sExternPathLink.empty()) //??? 
+	{
+		xlsx_context->current_external().add_rels(false, L"rId1", external->sExternPathLink, oox::external_items::typeExternalLink);
+	}
+
+	xlsx_context->end_external();
+
 }

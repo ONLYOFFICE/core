@@ -37,8 +37,6 @@
 namespace XLS
 {
 
-
-// Logical representation of CodeName record in BIFF8
 class CodeName: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(CodeName)
@@ -49,14 +47,11 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeCodeName;
+	static const ElementType type = typeCodeName;
 
-//-----------------------------
-	XLUnicodeString codeName;
-
+	std::wstring value;
 };
 
 } // namespace XLS

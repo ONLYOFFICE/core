@@ -64,7 +64,7 @@ const bool SERIESAXIS::loadContentRead(BinReaderProcessor& proc)
 	bool ok = loadContent(proc);
 	if(ok)
 	{
-		id = proc.getGlobalWorkbookInfo()->GenerateAXESId();
+		id = proc.getGlobalWorkbookInfo()->last_Axes_id++;
 	}
 	return ok;
 }

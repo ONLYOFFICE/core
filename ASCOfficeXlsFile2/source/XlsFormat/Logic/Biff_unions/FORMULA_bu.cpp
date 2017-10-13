@@ -105,7 +105,7 @@ const bool FORMULA::loadContent(BinProcessor& proc)
 			m_sharedIndex = shared_formulas_locations_ref_.size();
 			shared_formulas_locations_ref_.push_back(shr_formula.ref_);
 		}
-		//proc.optional<SUB>(); // I haven't found any mention about SUB in the docs
+		//proc.optional<SUB>(); 
 	}
 
 	if ((formula) && (formula->fShrFmla))

@@ -44,17 +44,67 @@ HRESULT ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
 
 	Ole1FormatReader ole1Reader(pData, nSize);
 
-	NSFile::CFileBinary file;
-	file.CreateFileW(sOle2Name);
-	if (ole1Reader.NativeDataSize > 0)//conv_NI38P7GBIpw1aD84H3k.rtf
-	{
-		file.WriteFile(ole1Reader.NativeData, ole1Reader.NativeDataSize);
+	if (ole1Reader.NativeDataSize > 0)
+	{	
+		POLE::Storage * storageOut = new POLE::Storage(sOle2Name.c_str());			
+		if ( (storageOut) && (storageOut->open(true, true)))
+		{
+			_UINT32 tmp = 0;
+			std::string name = ole1Reader.Header.ClassName.val;
+			_UINT32 name_size = name.length() + 1;
+		//Ole
+			BYTE dataOleInfo[] = {0x01,0x00,0x00,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+			POLE::Stream oStream3(storageOut, "\001Ole", true, 20);
+			oStream3.write(dataOleInfo, 20);
+			oStream3.flush();
+		//CompObj
+			BYTE dataCompObjHeader[28] = {0x01,0x00,0xfe,0xff,0x03,0x0a,0x00,0x00,0xff,0xff,0xff,0xff,0x0a,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0xc0,0x00,0x00,0x00,0x00,0x00,0x00,0x46};
+			POLE::Stream oStream1(storageOut, "\001CompObj", true, 28 + (name_size + 5) + 2 * (ole1Reader.Header.ClassName.size + 4) + 4 * 4);
+			oStream1.write(dataCompObjHeader, 28);
+
+			oStream1.write((BYTE*)&name_size, 4);
+			oStream1.write((BYTE*)name.c_str(), name_size);
+
+			//oStream1.write((BYTE*)&ole1Reader.Header.ClassName.size, 4);
+			//oStream1.write((BYTE*)ole1Reader.Header.ClassName.val.c_str(), ole1Reader.Header.ClassName.size);
+
+			oStream1.write((BYTE*)&ole1Reader.Header.ClassName.size, 4);
+			oStream1.write((BYTE*)ole1Reader.Header.ClassName.val.c_str(), ole1Reader.Header.ClassName.size);
+			oStream1.write((BYTE*)&ole1Reader.Header.ClassName.size, 4);
+			oStream1.write((BYTE*)ole1Reader.Header.ClassName.val.c_str(), ole1Reader.Header.ClassName.size);
+
+			tmp = 0x71B239F4;
+			oStream1.write((BYTE*)&tmp, 4); // UnicodeMarker
+
+			tmp = 0;
+			oStream1.write((BYTE*)&tmp, 4); // UnicodeUserType
+			oStream1.write((BYTE*)&tmp, 4); // UnicodeClipboardFormat
+			oStream1.write((BYTE*)&tmp, 4); // 
+			oStream1.flush();
+
+		//ObjInfo
+			BYTE dataObjInfo[] = {0x00,0x00,0x03,0x00,0x04,0x00};
+			POLE::Stream oStream2(storageOut, "\003ObjInfo", true, 6);
+			oStream2.write(dataObjInfo, 6);
+			oStream2.flush();
+		//Ole10Native
+			POLE::Stream streamData(storageOut, "\001Ole10Native", true, ole1Reader.NativeDataSize + 4);
+			streamData.write((BYTE*)&ole1Reader.NativeDataSize, 4);
+			streamData.write(ole1Reader.NativeData, ole1Reader.NativeDataSize);
+			streamData.flush();
+
+			storageOut->close();
+			delete storageOut;
+		}
 	}
-	else
+	else	//conv_NI38P7GBIpw1aD84H3k.rtf
 	{
+		NSFile::CFileBinary file;
+		
+		file.CreateFileW(sOle2Name);
 		file.WriteFile(pData, nSize);
+		file.CloseFile();
 	}
-	file.CloseFile();
 	return S_FALSE;
 }
 //-----------------------------------------------------------------------------------------
@@ -1679,20 +1729,35 @@ void RtfOleBinReader::ExecuteText(RtfDocument& oDocument, RtfReader& oReader, st
 void RtfOleBinReader::GetData( BYTE** ppData, long& nSize)
 {
 	nSize = 0;
-	for (size_t i = 0; i < m_arData.size(); i++)
+	size_t pos = 0, start = 0, nSizeRead = 0;
+
+	if (m_arData.size() > 1)
+	{
+		nSizeRead = *((short*)m_arData[0].c_str());
+		start = 1; // first content all size
+	}	
+	for (size_t i = start; i < m_arData.size(); i++)
 	{
 		nSize += m_arData[i].length();
 	}
 	
 	(*ppData) = new BYTE[ nSize];
 	
-	int pos = 0;
-	for (size_t i = 0; i < m_arData.size(); i++)
+	for (size_t i = start; i < m_arData.size(); i++)
 	{
-		memcpy((*ppData) + pos, m_arData[i].c_str(), m_arData[i].length());
+		BYTE *buf = (BYTE*)m_arData[i].c_str();
 
-		pos += m_arData[i].length();
+		for (size_t j = 0; j < m_arData[i].length(); j += 2)
+		{
+			BYTE nByte = 0;
+			
+			nByte =		RtfUtility::ToByte(buf[ j ]) << 4;
+			nByte |=	RtfUtility::ToByte(buf[ j + 1]);
+			
+			(*ppData)[pos++] = nByte;
+		}
 	}
+	nSize = pos;
 }
 bool RtfOleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 {
@@ -1725,7 +1790,7 @@ bool RtfOleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, st
 			HRESULT hRes = S_FALSE;
 
 			//конвертация Ole1 в Ole2
-#if 0 //defined(_WIN32) || defined(_WIN64)
+#if 0//defined(_WIN32) || defined(_WIN64)
 			RtfOle1ToOle2Stream oStream;
 
 			oStream.lpstbl = new OLESTREAMVTBL();

@@ -37,8 +37,6 @@
 namespace XLS
 {
 
-
-// Logical representation of SupBook record in BIFF8
 class SupBook: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SupBook)
@@ -47,22 +45,23 @@ public:
 	SupBook();
 	~SupBook();
 
-	const unsigned short getSupportingLinkType() const;
-
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeSupBook;
 
+	_UINT16						ctab;
+	_UINT16						cch;
+	
+	std::wstring				origin;
+	std::vector<std::wstring>	rgst;
 //-----------------------------
-	_UINT16					ctab;
-	_UINT16					cch;
+	std::vector<std::wstring>	virtPath;
 
-	XLUnicodeStringNoCch	virtPath;
-	XLUnicodeString			rgst;
-
+	bool						bOleLink;
+	bool						bSimple;
+	bool						bPath;
 };
 
 typedef boost::shared_ptr<SupBook> SupBookPtr;

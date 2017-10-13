@@ -43,7 +43,9 @@ char *strerror(int errnum);
 	Macro'ed inexistant funtion names
 
 */
+#if defined(_MSC_VER) && _MSC_VER < 1900
 #define snprintf _snprintf
+#endif
 #define vsnprintf(b,c,f,a) _vsnprintf(b,c,f,a)
 #define perror(_t) MessageBox(NULL, _T("_t"), _T("Error/Warning"), MB_OK)
 

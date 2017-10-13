@@ -58,9 +58,11 @@ std::wstring get_rel_type(external_items::Type type)
     {
     case external_items::typeImage:
         return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image";
-     case external_items::typeChart:
+	case external_items::typeChart:
         return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
-   default:
+	case external_items::typeExternalLink:
+		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLinkPath";
+	default:
         return L"";
     }
 }

@@ -56,6 +56,10 @@
 #include <stdio.h>
 #endif
 
+#ifdef BUIDLER_OPEN_DOWNLOAD_ENABLED
+#include "../../Common/FileDownloader/FileDownloader.h"
+#endif
+
 template <typename T>
 class CScopeWrapper
 {
@@ -542,6 +546,7 @@ namespace NSDoctRenderer
         std::wstring m_strFilePath;
 
         std::wstring m_strAllFonts;
+        bool m_bIsNotUseConfigAllFontsDir;
 
         std::wstring m_sTmpFolder;
         std::wstring m_sFileDir;
@@ -557,6 +562,8 @@ namespace NSDoctRenderer
         bool m_bIsInit;
 
         bool m_bIsCacheScript;
+
+        std::wstring m_sFolderForSaveOnlyUseNames;
 
         std::string m_sGlobalVariable;
         bool m_bIsGlobalVariableUse;
@@ -579,6 +586,8 @@ namespace NSDoctRenderer
 
             m_sGlobalVariable = "";
             m_bIsGlobalVariableUse = false;
+
+            m_bIsNotUseConfigAllFontsDir = false;
         }
 
         void Init()
@@ -628,7 +637,7 @@ namespace NSDoctRenderer
                         oNodes.GetAt(i, _node);
                         std::wstring strFilePath = _node.GetText();
 
-                        if (std::wstring::npos != strFilePath.find(L"AllFonts.js"))
+                        if (std::wstring::npos != strFilePath.find(L"AllFonts.js") && !m_bIsNotUseConfigAllFontsDir)
                         {
                             m_strAllFonts = strFilePath;
 
@@ -851,6 +860,64 @@ namespace NSDoctRenderer
 #endif
         }
 
+        void MoveFileOpen(const std::wstring& from, const std::wstring& to)
+        {
+#ifdef BUIDLER_OPEN_DOWNLOAD_ENABLED
+            int n1 = (int)from.find (L"www");
+            int n2 = (int)from.find (L"http");
+            int n3 = (int)from.find (L"ftp");
+            int n4 = (int)from.find (L"https");
+
+            //если nI сранивать не с 0, то будут проблемы
+            //потому что в инсталяции мы кладем файлы в /var/www...
+            if (0 == n1 || 0 == n2 || 0 == n3 || 0 == n4)
+            {
+                CFileDownloader oDownloader(from, false);
+                oDownloader.SetFilePath(to);
+                if (oDownloader.DownloadSync())
+                    return;
+            }
+#endif
+
+#ifdef BUIDLER_OPEN_BASE64_ENABLED
+            if (0 == from.find(L"data:"))
+            {
+                std::wstring::size_type findBase64 = from.find(L"base64,");
+                if (std::wstring::npos != findBase64)
+                {
+                    int nStartBase64 = (int)findBase64;
+                    if (50 > nStartBase64)
+                    {
+                        nStartBase64 += 7;
+                        const wchar_t* pStart = from.c_str() + nStartBase64;
+                        int nDataLen = (int)from.length() - nStartBase64;
+
+                        std::string sBase64 = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(pStart, (LONG)nDataLen, false);
+
+                        BYTE* pDataDst = NULL;
+                        int nDataDstLen = 0;
+                        if (NSFile::CBase64Converter::Decode(sBase64.c_str(), (int)sBase64.length(), pDataDst, nDataLen))
+                        {
+                            NSFile::CFileBinary oFileDst;
+                            if (oFileDst.CreateFileW(to))
+                            {
+                                oFileDst.WriteFile(pDataDst, (DWORD)nDataDstLen);
+                                oFileDst.CloseFile();
+
+                                RELEASEARRAYOBJECTS(pDataDst);
+                                return;
+                            }
+
+                            RELEASEARRAYOBJECTS(pDataDst);
+                        }
+                    }
+                }
+            }
+#endif
+
+            NSFile::CFileBinary::Copy(from, to);
+        }
+
         int OpenFile(const std::wstring& path, const std::wstring& params)
         {
             Init();
@@ -861,7 +928,7 @@ namespace NSDoctRenderer
             NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
 
             std::wstring sFileCopy = m_sFileDir + L"/origin." + NSCommon::GetFileExtention(path);
-            NSFile::CFileBinary::Copy(path, sFileCopy);
+            MoveFileOpen(path, sFileCopy);
 
             COfficeFileFormatChecker oChecker;
             if (!oChecker.isOfficeFile(path))
@@ -1054,7 +1121,16 @@ namespace NSDoctRenderer
             NSStringUtils::CStringBuilder oBuilder;
 
             std::wstring _path = path;
-            std::wstring sDstFileDir = NSCommon::GetDirectoryName(_path);            
+            if (!m_sFolderForSaveOnlyUseNames.empty())
+            {
+                _path = m_sFolderForSaveOnlyUseNames;
+                wchar_t last = m_sFolderForSaveOnlyUseNames.c_str()[m_sFolderForSaveOnlyUseNames.length() - 1];
+                if (last != '/' && last != '\\')
+                    _path += L"/";
+                _path += NSCommon::GetFileName(path);
+            }
+
+            std::wstring sDstFileDir = NSCommon::GetDirectoryName(_path);
             if ((sDstFileDir != _path) && !NSDirectory::Exists(sDstFileDir))
                 NSDirectory::CreateDirectories(sDstFileDir);
 
@@ -1642,6 +1718,13 @@ namespace NSDoctRenderer
             m_pInternal->m_oParams.m_sWorkDir = std::wstring(value);
         else if (sParam == "--cache-scripts")
             m_pInternal->m_bIsCacheScript = (std::wstring(value) == L"true");
+        else if (sParam == "--save-use-only-names")
+            m_pInternal->m_sFolderForSaveOnlyUseNames = std::wstring(value);
+        else if (sParam == "--all-fonts-path")
+        {
+            m_pInternal->m_strAllFonts = std::wstring(value);
+            m_pInternal->m_bIsNotUseConfigAllFontsDir = true;
+        }
         else if (sParam == "--argument")
         {
             std::wstring sArg(value);

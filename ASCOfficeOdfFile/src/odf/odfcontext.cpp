@@ -104,8 +104,7 @@ void styles_container::add_style(	const std::wstring & Name,
         map_[n] = pos;
 
         // TODO: как правильно??
-        std::wstring lName = Name;
-		XmlUtils::GetLower(lName);
+        std::wstring lName = XmlUtils::GetLower(Name);
         //if ( boost::algorithm::contains(lName, L"internet_20_link") )
         if (lName == L"internet_20_link")///???????????????
             hyperlink_style_pos_ = pos;

@@ -100,7 +100,8 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 	fill_x_ids[FillInfo(0, 0, 0)]		= 0;
 	fill_x_ids[FillInfo(17, 64, 65)]	= 1;
 	
-	last_AXES_id			= initial_AXES_id;
+	last_Axes_id			= 0x2000000;
+	last_Extern_id			= 1;
 
 	Version					= 0x0600; 
 
@@ -118,6 +119,9 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 
 	defaultDigitFontSize = std::pair<float, float>(0, 0);
 	applicationFonts		= NULL;
+
+	bVbaProjectExist		= false;
+	bMacrosExist			= false;
 
 	idPivotCache			= 0;
 }
@@ -171,11 +175,6 @@ void GlobalWorkbookInfo::RegisterFontColorId (int id, const FillInfoExt & font_c
 void GlobalWorkbookInfo::RegisterPaletteColor(int id, const std::wstring & rgb)
 {
 	colors_palette.insert(std::make_pair(id, rgb));
-}
-
-unsigned int GlobalWorkbookInfo::GenerateAXESId()
-{
-	return last_AXES_id += 1;
 }
 
 void GlobalWorkbookInfo::GetDigitFontSizePixels()

@@ -32,10 +32,10 @@
 
 #include "MOper.h"
 #include <Binary/CFRecord.h>
+#include <simple_xml_writer.h>
 
 namespace XLS
 {
-
 
 BiffStructurePtr MOper::clone()
 {
@@ -45,16 +45,52 @@ BiffStructurePtr MOper::clone()
 void MOper::load(CFRecord& record)
 {
 	record >> colLast >> rowLast;
+	
 	for(int i = 0; i < (colLast + 1) * (rowLast + 1); ++i)
 	{
 		unsigned char rec_type;
 		record >> rec_type;
+		
 		SerArPtr ser(SerAr::createSerAr(rec_type));
 		record >> *ser;
+		
 		extOper.push_back(ser);
 	}
 }
 
+int MOper::serialize(std::wostream & strm)
+{
+	if (extOper.empty()) return 0;
 
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"values")
+		{
+			for(size_t i = 0; i < extOper.size(); ++i)
+			{		
+				CP_XML_NODE(L"value")
+				{
+					switch(extOper[i]->fixed_type)
+					{
+					case SerAr::typeSerNil:		CP_XML_ATTR(L"t", L"nil");	break;
+					case SerAr::typeSerNum:		CP_XML_ATTR(L"t", L"n");	break;
+					case SerAr::typeSerStr:		CP_XML_ATTR(L"t", L"str");	break;
+					case SerAr::typeSerBool:	CP_XML_ATTR(L"t", L"b");	break;
+					case SerAr::typeSerErr:		CP_XML_ATTR(L"t", L"e");	break;
+					}
+					CP_XML_NODE(L"val")
+					{			
+						if (extOper[i]->fixed_type == SerAr::typeSerStr)
+						{
+							CP_XML_ATTR(L"xml:space", L"preserve"); 
+						}
+						CP_XML_STREAM() << extOper[i]->toString();
+					}
+				}
+			}
+		}
+	}
+	return 0;
+}
 } // namespace XLS
 

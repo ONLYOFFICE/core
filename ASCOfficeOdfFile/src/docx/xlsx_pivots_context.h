@@ -51,6 +51,7 @@ public:
 
 	void start_field ();
 		void set_field_name (std::wstring name);
+		void set_field_display (std::wstring name);
 		void set_field_type (int type, int hierarchy);
 		void set_field_function (int type);
 		void set_field_user_function (std::wstring f);
@@ -59,9 +60,22 @@ public:
 		void set_field_show_empty (bool val);
 		void set_field_data_layout (bool val);		
 		void set_field_sort (int type);
+		void set_repeat_item_labels(bool val);
+
 		void set_field_groups (int type);
 		void set_field_groups_source(std::wstring name);
-		void set_repeat_item_labels(bool val);
+
+		void start_field_group();
+			void set_field_group_name (std::wstring name);
+		void end_field_group();
+
+		void start_field_reference();
+			void set_field_ref_name(std::wstring name);
+			void set_field_ref_type (int type);
+			void set_field_ref_member_name(std::wstring name);
+			void set_field_ref_member_type(int type);
+		void end_field_reference();
+
 	void end_field();
 
 	int get_count();
@@ -73,6 +87,7 @@ public:
 	void add_button_header(std::wstring ref);
 
 	void set_identify_categories(bool val);
+	void set_ignore_empty_rows(bool val);
 	void set_drill(bool val);
 
 	void set_source_range(std::wstring table_name, std::wstring ref);
@@ -98,7 +113,6 @@ public:
 private:
     class Impl;
     _CP_PTR(Impl) impl_;
-              
 };
 
 }

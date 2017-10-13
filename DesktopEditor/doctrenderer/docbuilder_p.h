@@ -546,6 +546,7 @@ namespace NSDoctRenderer
         std::wstring m_strFilePath;
 
         std::wstring m_strAllFonts;
+        bool m_bIsNotUseConfigAllFontsDir;
 
         std::wstring m_sTmpFolder;
         std::wstring m_sFileDir;
@@ -585,6 +586,8 @@ namespace NSDoctRenderer
 
             m_sGlobalVariable = "";
             m_bIsGlobalVariableUse = false;
+
+            m_bIsNotUseConfigAllFontsDir = false;
         }
 
         void Init()
@@ -634,7 +637,7 @@ namespace NSDoctRenderer
                         oNodes.GetAt(i, _node);
                         std::wstring strFilePath = _node.GetText();
 
-                        if (std::wstring::npos != strFilePath.find(L"AllFonts.js"))
+                        if (std::wstring::npos != strFilePath.find(L"AllFonts.js") && !m_bIsNotUseConfigAllFontsDir)
                         {
                             m_strAllFonts = strFilePath;
 
@@ -1717,6 +1720,11 @@ namespace NSDoctRenderer
             m_pInternal->m_bIsCacheScript = (std::wstring(value) == L"true");
         else if (sParam == "--save-use-only-names")
             m_pInternal->m_sFolderForSaveOnlyUseNames = std::wstring(value);
+        else if (sParam == "--all-fonts-path")
+        {
+            m_pInternal->m_strAllFonts = std::wstring(value);
+            m_pInternal->m_bIsNotUseConfigAllFontsDir = true;
+        }
         else if (sParam == "--argument")
         {
             std::wstring sArg(value);

@@ -46,8 +46,7 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
-	static const ElementType	type = typeFtCmo;
+	static const ElementType type = typeFtCmo;
 
 	unsigned short ot;
 	unsigned short id;
@@ -60,7 +59,6 @@ public:
 	bool fUIObj;
 	bool fRecalcObj;
 	bool fRecalcObjAlways;
-
 };
 
 } // namespace XLS

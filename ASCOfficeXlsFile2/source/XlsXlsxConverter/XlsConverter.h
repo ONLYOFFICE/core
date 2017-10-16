@@ -48,9 +48,12 @@ namespace oox
 }
 namespace XLS
 {
-	class BaseObject;
 	class BiffStructure;
 
+	class CompoundFile;
+	typedef boost::shared_ptr<CompoundFile> CompoundFilePtr;
+
+	class BaseObject;
 	typedef boost::shared_ptr<BaseObject> BaseObjectPtr;
 	
 	class GlobalWorkbookInfo;
@@ -76,6 +79,7 @@ namespace XLS
 
 	class Note;
 	class TxO;
+	class Obj;
 }
 
 namespace ODRAW
@@ -94,7 +98,7 @@ namespace ODRAW
 class XlsConverter
 {
 public:
-	XlsConverter(const std::wstring & xls_file, const std::wstring & xlsx_path, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* ffCallBack, bool & bMacros);
+	XlsConverter(const std::wstring & xlsFileName, const std::wstring & xlsxFilePath, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* ffCallBack, bool & bMacros);
 	~XlsConverter() ;
 
     oox::xlsx_conversion_context	* xlsx_context;
@@ -118,6 +122,7 @@ public:
 	void convert(XLS::OBJECTS					* objects, XLS::WorksheetSubstream * sheet);
 	void convert(XLS::MSODRAWINGGROUP			* mso_drawing);
 	void convert(XLS::TxO						* text_obj);
+	void convert(XLS::Obj						* obj);
 	void convert(XLS::Note						* note);
 	void convert(XLS::IMDATA					* imadata);
 	void convert(XLS::PIVOTVIEW					* pivot_view);
@@ -163,4 +168,6 @@ private:
 
 	XLS::BaseObjectPtr				xls_document;	
 	XLS::GlobalWorkbookInfoPtr		xls_global_info;
+
+	XLS::CompoundFilePtr			xls_file;
 };

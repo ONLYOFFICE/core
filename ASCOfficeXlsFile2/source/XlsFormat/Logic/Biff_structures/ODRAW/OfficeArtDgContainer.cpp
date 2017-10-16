@@ -126,7 +126,8 @@ void OfficeArtDgContainer::loadFields(XLS::CFRecord& record)
 		//		m_OfficeArtSpgrContainerFileBlock = OfficeArtContainerPtr(art_container);
 		//		child_records.erase(child_records.begin() + i,child_records.begin() + i + 1);
 		//	}break;		
-
+		default:
+			break;
 		}
 	}
 

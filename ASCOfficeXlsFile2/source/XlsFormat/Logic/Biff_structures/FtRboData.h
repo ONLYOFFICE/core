@@ -43,15 +43,19 @@ class FtRboData : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(FtRboData)
 public:
+	FtRboData() : fExist(false)
+	{
+	}	
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeFtRboData;
+	static const ElementType type = typeFtRboData;
 
 	virtual void load(CFRecord& record);
 
-
 	unsigned short idRadNext;
 	Boolean<unsigned short> fFirstBtn;
+
+	bool fExist;
 };
 
 } // namespace XLS

@@ -122,9 +122,9 @@ typedef struct tagBITMAPCOREHEADER {
 } BITMAPCOREHEADER;
 #endif
 
-XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _xlsx_path, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* CallBack, bool & bMacros) 
+XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring & xlsxFilePath, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* CallBack, bool & bMacros) 
 {
-	xlsx_path			= _xlsx_path;
+	xlsx_path			= xlsxFilePath;
 	output_document		= NULL;
 	xlsx_context		= NULL;
 	
@@ -136,9 +136,9 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 
 	try
 	{
-		XLS::CompoundFile cfile(xls_file, XLS::CompoundFile::cf_ReadMode);
+		xls_file = boost::shared_ptr<XLS::CompoundFile>(new XLS::CompoundFile(xlsFileName, XLS::CompoundFile::cf_ReadMode));
 
-		if (cfile.isError())
+		if (xls_file->isError())
 		{
 			return;
 		}
@@ -148,7 +148,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 
 		try
 		{
-			summary = cfile.getNamedStream("SummaryInformation");
+			summary = xls_file->getNamedStream("SummaryInformation");
 		}
 		catch (...)
 		{
@@ -156,7 +156,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 
 		try
 		{
-			doc_summary = cfile.getNamedStream("DocumentSummaryInformation");
+			doc_summary = xls_file->getNamedStream("DocumentSummaryInformation");
 		}
 		catch (...)
 		{
@@ -184,7 +184,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 		xls_global_info->fontsDirectory = fontsPath;
 		xls_global_info->password		= password;
 
-		XLS::CFStreamCacheReader stream_reader(cfile.getWorkbookStream(), xls_global_info);
+		XLS::CFStreamCacheReader stream_reader(xls_file->getWorkbookStream(), xls_global_info);
 
 		xls_document = boost::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));
 	
@@ -197,38 +197,38 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 			if (xls_global_info->decryptor->IsVerify() == false) return;
 		}
 
-		if (cfile.storage_->isDirectory("_SX_DB_CUR"))
+		if (xls_file->storage_->isDirectory("_SX_DB_CUR"))
 		{
-			std::list<std::string> listStream = cfile.storage_->entries("_SX_DB_CUR");
+			std::list<std::string> listStream = xls_file->storage_->entries("_SX_DB_CUR");
 
 			int last_index = 0;
 			for (std::list<std::string>::iterator it = listStream.begin(); it != listStream.end(); it++)
 			{
-				XLS::CFStreamCacheReader pivot_cache_reader(cfile.getNamedStream("_SX_DB_CUR/" + *it), xls_global_info);
+				XLS::CFStreamCacheReader pivot_cache_reader(xls_file->getNamedStream("_SX_DB_CUR/" + *it), xls_global_info);
 				XLS::BaseObjectPtr pivot_cache = boost::shared_ptr<XLS::PIVOTCACHE>(new XLS::PIVOTCACHE());
 				
 				XLS::BinReaderProcessor proc(pivot_cache_reader , pivot_cache.get() , true);
 				proc.mandatory(*pivot_cache.get());
 
-				int index = XmlUtils::GetHex(*it);
+				int index = XmlUtils::GetHex(*it); //hexadecimal digits uniquely identifying
 
 				xls_global_info->mapPivotCacheStream.insert(std::make_pair(index, pivot_cache));
 
 				last_index = index;
 			}
 		}
-		if (bMacros && cfile.storage_->isDirectory("_VBA_PROJECT_CUR"))
+		if (bMacros && xls_file->storage_->isDirectory("_VBA_PROJECT_CUR"))
 		{
 			std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";	
 			NSDirectory::CreateDirectory(xl_path.c_str());
 
 			std::wstring sVbaProjectFile = xl_path + FILE_SEPARATOR_STR + L"vbaProject.bin";
 
-			POLE::Storage *storageVbaProject	= new POLE::Storage(sVbaProjectFile.c_str());
+			POLE::Storage *storageVbaProject = new POLE::Storage(sVbaProjectFile.c_str());
 
 			if ((storageVbaProject) && (storageVbaProject->open(true, true)))
 			{			
-				cfile.copy(0, "_VBA_PROJECT_CUR/", storageVbaProject, false);
+				xls_file->copy(0, "_VBA_PROJECT_CUR/", storageVbaProject, false);
 
 				storageVbaProject->close();
 				delete storageVbaProject;
@@ -238,6 +238,27 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 		}
 		else 
 			bMacros = false;
+
+		XLS::CFStreamPtr controls = xls_file->getNamedStream("Ctls");
+		if(controls)
+		{
+			unsigned long size = controls->getStreamSize();
+			boost::shared_array<BYTE> buffer(new BYTE[size]);
+			
+			controls->read(buffer.get(), size);
+
+			xls_global_info->controls_data = std::make_pair(buffer, size);			
+		}
+		XLS::CFStreamPtr listdata = xls_file->getNamedStream("List Data");
+		if(listdata)
+		{
+			unsigned long size = controls->getStreamSize();
+			boost::shared_array<BYTE> buffer(new BYTE[size]);
+			
+			listdata->read(buffer.get(), size);
+
+			xls_global_info->listdata_data = std::make_pair(buffer, size);			
+		}
 	}
 	catch(...)
 	{
@@ -339,6 +360,11 @@ void XlsConverter::convert(XLS::BaseObject	*xls_unknown)
 		{
 			XLS::TxO * txo = dynamic_cast<XLS::TxO *>(xls_unknown);
 			convert(txo);
+		}break;
+	case XLS::typeObj:
+		{
+			XLS::Obj * obj = dynamic_cast<XLS::Obj *>(xls_unknown);
+			convert(obj);
 		}break;
 	case XLS::typeAnyObject:	
 	default:
@@ -673,7 +699,6 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 	bool res = false;
 	std::wstring file_name = L"image" + std::to_wstring(id);
 	
-
 	if (type_ext == L"dib_data")
 	{
 		bool bPNG = false;
@@ -925,17 +950,6 @@ void XlsConverter::convert_old(XLS::OBJECTS* objects, XLS::WorksheetSubstream * 
 		
 		if (type_object == 0) 
 			continue;
-		//{
-		//	_group_object gr;		
-		//	if (group_objects.back().ind < group_objects.back().spgr->child_records.size())
-		//	{
-		//		gr.spgr		= dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
-		//		gr.count	= gr.spgr->child_records.size();
-		//		group_objects.push_back(gr);
-		//	}
-		//	else //сюда попадать не должно !!!!
-		//		continue;
-		//}
 
 		if (xlsx_context->get_drawing_context().start_drawing(type_object))
 		{
@@ -954,9 +968,9 @@ void XlsConverter::convert_old(XLS::OBJECTS* objects, XLS::WorksheetSubstream * 
 			{
 				convert(obj->old_version.additional[i].get());
 			}
-
 			convert(image_obj);
 			convert(chart);
+			convert(obj);
 
 			xlsx_context->get_drawing_context().end_drawing();
 		}
@@ -965,13 +979,6 @@ void XlsConverter::convert_old(XLS::OBJECTS* objects, XLS::WorksheetSubstream * 
 			elem++;
 			count++;
 		}	
-		//while ((group_objects.size() >0) && (group_objects.back().ind >= group_objects.back().count))
-		//{
-		//	group_objects.back().spgr = NULL;
-		//	group_objects.pop_back();
-		//	
-		//	xlsx_context->get_drawing_context().end_group();
-		//}
 	}
 }
 void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * sheet)
@@ -1086,6 +1093,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 			}
 			convert(text_obj);
 			convert(chart);
+			convert(obj);
 
 			xlsx_context->get_drawing_context().end_drawing();
 		}
@@ -1882,7 +1890,6 @@ void XlsConverter::convert(XLS::SHAREDSTRINGS* sharedstrings)
 		}
 	}
 }
-
 void XlsConverter::convert(XLS::TxO * text_obj)
 {
 	if (text_obj == NULL) return;
@@ -1922,6 +1929,76 @@ void XlsConverter::convert(XLS::TxO * text_obj)
 	xlsx_context->get_drawing_context().set_text_vert_align	(text_obj->vAlignment);
 	
 	xlsx_context->get_drawing_context().set_text(strm.str());
+}
+
+void XlsConverter::convert(XLS::Obj * obj)
+{
+	if (obj == NULL) return;
+//controls & objects
+	if (!obj->pictFlags.fExist || !obj->pictFmla.fExist || obj->cmo.ot != 8) return;
+	
+	std::wstring link_cell, fill_range, fmla, info;
+	if (obj->pictFmla.fmla.bFmlaExist)
+	{
+		fmla = obj->pictFmla.fmla.fmla.getAssembledFormula();
+		if (obj->pictFmla.fmla.bInfoExist)
+			info = obj->pictFmla.fmla.embedInfo.strClass.value();
+	}
+	if (obj->pictFmla.key.fmlaLinkedCell.bFmlaExist)
+	{
+		link_cell = obj->pictFmla.key.fmlaLinkedCell.fmla.getAssembledFormula();
+
+	}
+	if (obj->pictFmla.key.fmlaListFillRange.bFmlaExist)
+	{
+		fill_range = obj->pictFmla.key.fmlaListFillRange.fmla.getAssembledFormula();
+	}
+
+	if (obj->pictFlags.fCtl && obj->pictFlags.fPrstm)//Controls Storage
+	{
+		xlsx_context->get_mediaitems().create_activeX_path(xlsx_path);
+
+		int id = ++xlsx_context->get_mediaitems().count_activeX;
+		std::wstring file_name = xlsx_context->get_mediaitems().activeX_path() + L"activeX" + std::to_wstring(id) + L".bin";
+
+		NSFile::CFileBinary file;
+		if ( file.CreateFileW(file_name) )
+		{		
+			file.WriteFile(xls_global_info->controls_data.first.get() + obj->pictFmla.lPosInCtlStm, obj->pictFmla.cbBufInCtlStm);
+			file.CloseFile();
+		}
+	}
+	else if (!obj->pictFlags.fPrstm) 
+	{
+		std::string object_stream;
+		if (obj->pictFlags.fDde)	object_stream = "LNK";
+		else						object_stream = "MBD";
+	
+		object_stream += XmlUtils::IntToString(obj->pictFmla.lPosInCtlStm, "%08X") + "/";
+		if (xls_file->storage_->isDirectory(object_stream))
+		{
+			xlsx_context->get_mediaitems().create_embeddings_path(xlsx_path);
+			
+			int id = ++xlsx_context->get_mediaitems().count_embeddings;
+			std::wstring file_name = L"oleObject" + std::to_wstring(id) + L".bin";
+
+			POLE::Storage *storageOle = new POLE::Storage((xlsx_context->get_mediaitems().embeddings_path() + file_name).c_str());
+
+			if ((storageOle) && (storageOle->open(true, true)))
+			{			
+				xls_file->copy(0, object_stream, storageOle, false);
+
+				storageOle->close();
+				delete storageOle;
+			}
+			std::wstring objectId = L"obId" + std::to_wstring(id);			
+			
+			xlsx_context->current_sheet().sheet_rels().add(oox::relationship(
+				objectId, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject", L"../embeddings/" + file_name));
+
+			xlsx_context->get_drawing_context().set_ole_object(objectId, info);
+		}
+	}
 }
 
 void XlsConverter::convert_chart_sheet(XLS::ChartSheetSubstream * chart)

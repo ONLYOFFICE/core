@@ -36,9 +36,7 @@
 namespace XLS
 {
 
-
-FtMacro::FtMacro()
-:	fmla(false)
+FtMacro::FtMacro() : fmla(false), fExist(false)
 {
 }
 
@@ -48,14 +46,18 @@ BiffStructurePtr FtMacro::clone()
 }
 
 
-
 void FtMacro::load(CFRecord& record)
 {
-	record.skipNunBytes(2); // reserved
-
+	short ft;
+	record >> ft; 
+	if (ft != 0x0004)
+	{
+		record.RollRdPtrBack(2);
+		return;
+	}
+	fExist = true;
 	fmla.load(record);
 }
-
 
 } // namespace XLS
 

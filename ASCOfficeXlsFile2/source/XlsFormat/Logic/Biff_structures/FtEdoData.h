@@ -43,17 +43,21 @@ class FtEdoData : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(FtEdoData)
 public:
+	FtEdoData() : fExist(false)
+	{
+	}
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeFtEdoData;
+	static const ElementType type = typeFtEdoData;
 
 	virtual void load(CFRecord& record);
-
 
 	unsigned short ivtEdit;
 	Boolean<unsigned short> fMultiLine;
 	unsigned short fVScroll;
 	unsigned short id;
+
+	bool fExist;
 };
 
 } // namespace XLS

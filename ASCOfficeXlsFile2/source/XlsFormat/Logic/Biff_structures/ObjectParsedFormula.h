@@ -45,8 +45,6 @@ public:
 	ObjectParsedFormula();
 	BiffStructurePtr clone();
 	virtual void load(CFRecord& record);
-
-
 };
 
 } // namespace XLS

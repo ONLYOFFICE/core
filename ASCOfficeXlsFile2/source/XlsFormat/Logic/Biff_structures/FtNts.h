@@ -43,15 +43,19 @@ class FtNts : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(FtNts)
 public:
+	FtNts() : fExist(false)
+	{
+	}
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeFtNts;
+	static const ElementType type = typeFtNts;
 
 	virtual void load(CFRecord& record);
 
-
 	std::wstring  guid;
 	Boolean<unsigned short> fSharedNote;
+
+	bool fExist;
 };
 
 } // namespace XLS

@@ -39,11 +39,9 @@ Pls::Pls()
 {
 }
 
-
 Pls::~Pls()
 {
 }
-
 
 BaseObjectPtr Pls::clone()
 {
@@ -71,9 +69,9 @@ void Pls::readFields(CFRecord& record)
 	}
 
 	int size			= record.getDataSize() - 2;
-	const char* data	= record.getData() + 2;
+	const BYTE* data	= (BYTE*)record.getData() + 2;
 	
-	boost::shared_array<char> buffer(new char[size]);
+	boost::shared_array<BYTE> buffer(new BYTE[size]);
     memcpy(buffer.get(), data, size);
 	
 	bin_data_id = -1;
@@ -81,7 +79,7 @@ void Pls::readFields(CFRecord& record)
 	GlobalWorkbookInfo* globla_info = record.getGlobalWorkbookInfo().get();
 	if (globla_info)
 	{
-		globla_info->bin_data.push_back(std::pair<boost::shared_array<char>, size_t>(buffer, size));
+		globla_info->bin_data.push_back(std::pair<boost::shared_array<BYTE>, size_t>(buffer, size));
 
 		bin_data_id = globla_info->bin_data.size() - 1;
 	}

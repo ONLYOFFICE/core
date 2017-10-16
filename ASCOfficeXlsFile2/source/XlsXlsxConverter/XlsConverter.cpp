@@ -1991,7 +1991,7 @@ void XlsConverter::convert(XLS::Obj * obj)
 				storageOle->close();
 				delete storageOle;
 			}
-			std::wstring objectId = L"obId" + std::to_wstring(id);			
+			std::wstring objectId = L"objId" + std::to_wstring(id);			
 			
 			xlsx_context->current_sheet().sheet_rels().add(oox::relationship(
 				objectId, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject", L"../embeddings/" + file_name));

@@ -537,7 +537,6 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 	}
 	if ( drawing_state->type == external_items::typeOleObject )
 	{
-		drawing_state->hidden = true;
 		serialize_shape(drawing_state);
 	}
 	if ( drawing_state->type == external_items::typeChart )

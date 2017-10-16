@@ -60,6 +60,7 @@ public:
     std::wostream & hyperlinks();
     std::wostream & mergeCells();
     std::wostream & drawing(); 
+	std::wostream & ole_objects();
     //std::wostream & comments(); 
 	std::wostream & sheetSortAndFilters();
 	std::wostream & pageProperties();

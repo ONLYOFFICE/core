@@ -37,16 +37,22 @@
 namespace XLS
 {
 
-
 BiffStructurePtr FtNts::clone()
 {
 	return BiffStructurePtr(new FtNts(*this));
 }
 
-
 void FtNts::load(CFRecord& record)
 {
-	record.skipNunBytes(4); // reserved
+	unsigned short ft, cb;
+	record >> ft >> cb;
+
+	if ( ft != 0x000d && cb != 0x0016)
+	{
+		record.RollRdPtrBack(4);
+		return;
+	}
+	fExist = true;
 
 	_GUID_ guid_num;
 	record >> guid_num >> fSharedNote;

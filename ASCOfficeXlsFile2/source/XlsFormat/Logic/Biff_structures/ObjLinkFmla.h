@@ -43,7 +43,9 @@ class ObjLinkFmla : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(ObjLinkFmla)
 public:
-	ObjLinkFmla();
+	ObjLinkFmla(): fmla(false), fExist(false)
+	{
+	}
 	BiffStructurePtr clone();
 
 	static const ElementType	type = typeObjLinkFmla;
@@ -51,6 +53,7 @@ public:
 	virtual void load(CFRecord& record);
 
 	ObjFmla fmla;
+	bool	fExist;
 };
 
 } // namespace XLS

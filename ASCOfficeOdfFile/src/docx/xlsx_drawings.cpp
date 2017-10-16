@@ -65,7 +65,7 @@ public:
 
 		if (sheet_rel)
 		{
-			for (int i = 0 ; i < xlsx_sheet_rels_.size(); i++)
+			for (size_t i = 0 ; i < xlsx_sheet_rels_.size(); i++)
 			{		
 				if (xlsx_sheet_rels_[i].rid == rid && xlsx_sheet_rels_[i].ref == ref)
 					present = true;
@@ -75,7 +75,7 @@ public:
 		}
 		else
 		{
-			for (int i = 0 ; i < xlsx_drawing_rels_.size(); i++)
+			for (size_t i = 0 ; i < xlsx_drawing_rels_.size(); i++)
 			{		
 				if (xlsx_drawing_rels_[i].rid == rid && xlsx_drawing_rels_[i].ref == ref)
 					present = true;
@@ -89,7 +89,7 @@ public:
     {
 		if (inGroup)
 		{
-			for (int i = 0 ; i < xlsx_drawings_.size(); i++)
+			for (size_t i = 0 ; i < xlsx_drawings_.size(); i++)
 			{
 				xlsx_drawings_[i].serialize(strm);
 			}
@@ -114,7 +114,7 @@ public:
     }
 	void serialize_objects(std::wostream & strm) 
     {
-		for (int i = 0 ; i < xlsx_drawings_.size(); i++)
+		for (size_t i = 0 ; i < xlsx_drawings_.size(); i++)
 		{
 			if (xlsx_drawings_[i].type != typeOleObject && xlsx_drawings_[i].type != typeMsObject) continue;
 
@@ -129,7 +129,7 @@ public:
 
     void dump_rels_drawing(rels & Rels)
     {
-        for (int i = 0 ; i < xlsx_drawing_rels_.size(); i++)
+        for (size_t i = 0 ; i < xlsx_drawing_rels_.size(); i++)
         {
 			if (xlsx_drawing_rels_[i].type == typeImage		|| 
 				xlsx_drawing_rels_[i].type == typeMedia		||
@@ -146,7 +146,7 @@ public:
     }
     void dump_rels_sheet(rels & Rels)
     {
-        for (int i = 0 ; i < xlsx_sheet_rels_.size(); i++)
+        for (size_t i = 0 ; i < xlsx_sheet_rels_.size(); i++)
         {
 			Rels.add(relationship( xlsx_sheet_rels_[i].rid,
 						mediaitems::get_rel_type(xlsx_sheet_rels_[i].type),

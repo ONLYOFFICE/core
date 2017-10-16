@@ -154,6 +154,7 @@ namespace OOX
 							smart_ptr<PPTX::Logic::Shape> shape = m_oElement->GetElem().smart_dynamic_cast<PPTX::Logic::Shape>();
 							if (shape.IsInit())
 							{
+								m_nId = shape->nvSpPr.cNvPr.id;
 								if (shape->nvSpPr.cNvPr.oleSpid.IsInit())
 								{
 									//ссылка на объект 
@@ -162,7 +163,7 @@ namespace OOX
 								}
 							}
 							smart_ptr<PPTX::Logic::GraphicFrame> frame = m_oElement->GetElem().smart_dynamic_cast<PPTX::Logic::GraphicFrame>();
-							if ((frame.IsInit())  &&	(frame->oleSpid.IsInit()))
+							if ((frame.IsInit()) && (frame->oleSpid.IsInit()))
 							{
 								//ссылка на объект или шейп в vmlDrawing
 								m_sSpId = frame->oleSpid.get();
@@ -221,6 +222,7 @@ namespace OOX
 
 		//для удобства
 			nullable<std::wstring>							m_sSpId;
+			nullable<int>									m_nId; 
 		};
 	} //Spreadsheet
 } // namespace OOX

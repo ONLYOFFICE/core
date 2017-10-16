@@ -42,12 +42,14 @@ class FtPioGrbit : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(FtPioGrbit)
 public:
+	FtPioGrbit() : fExist(false)
+	{
+	}
 	BiffStructurePtr clone();
 
 	static const ElementType	type = typeFtPioGrbit;
 
 	virtual void load(CFRecord& record);
-
 
 	bool fAutoPict;
 	bool fDde;
@@ -58,6 +60,8 @@ public:
 	bool fCamera;
 	bool fDefaultSize;
 	bool fAutoLoad;
+	
+	bool fExist;
 };
 
 } // namespace XLS

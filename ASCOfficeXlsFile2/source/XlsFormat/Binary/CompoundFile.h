@@ -77,6 +77,8 @@ private:
 	std::map<std::string, CFStreamPtr>	streams;
 	ReadWriteMode						rwMode;
 };
+typedef boost::shared_ptr<CompoundFile> CompoundFilePtr;
+
 
 } // namespace XLS
 

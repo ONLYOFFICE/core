@@ -50,8 +50,8 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
 	ObjFmla fmla;
+	bool	fExist;
 };
 
 } // namespace XLS

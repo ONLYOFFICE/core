@@ -36,7 +36,6 @@
 namespace XLS
 {
 
-
 BiffStructurePtr FtGboData::clone()
 {
 	return BiffStructurePtr(new FtGboData(*this));
@@ -44,7 +43,15 @@ BiffStructurePtr FtGboData::clone()
 
 void FtGboData::load(CFRecord& record)
 {
-	record.skipNunBytes(4); // reserved
+	unsigned short ft, cb;
+	record >> ft >> cb;
+
+	if ( ft != 0x000F && cb != 0x0006)
+	{
+		record.RollRdPtrBack(4);
+		return;
+	}
+	fExist = true;
 
 	record >> accel;
 	record.skipNunBytes(2); // reserved

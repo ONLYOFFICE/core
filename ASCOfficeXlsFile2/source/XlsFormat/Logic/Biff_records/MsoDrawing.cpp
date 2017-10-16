@@ -67,8 +67,12 @@ void MsoDrawing::readFields()
 		rgChildRec.rh_own.recLen = stored_record->getDataSize();
 
 		rgChildRec.loadFields(*stored_record);
+		
+		if (stored_record->getRdPtr()  < stored_record->getDataSize())
+		{
+			int g = 0;
+		}
 	}
-
 	isReading = true;
 }
 
@@ -77,6 +81,11 @@ void MsoDrawing::readFields(CFRecord& record)
 	record >> rgChildRec;
 
 	isReading = true;
+
+	if (record.getRdPtr()  < record.getDataSize())
+	{
+		int g = 0;
+	}
 }
 
 

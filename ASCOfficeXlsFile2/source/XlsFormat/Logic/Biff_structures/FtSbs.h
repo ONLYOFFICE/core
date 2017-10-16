@@ -43,15 +43,14 @@ class FtSbs : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(FtSbs)
 public:
+	FtSbs() : fExist(false)
+	{
+	}
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeFtSbs;
+	static const ElementType type = typeFtSbs;
 
 	virtual void load(CFRecord& record);
-
-
-	unsigned short ft;
-	unsigned short cb;
 
 	short iVal;
 	short iMin;
@@ -65,6 +64,8 @@ public:
 	bool fDrawSliderOnly;
 	bool fTrackElevator;
 	bool fNo3d;
+
+	bool fExist;
 };
 
 } // namespace XLS

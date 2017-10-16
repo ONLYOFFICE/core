@@ -57,9 +57,9 @@
 #define OBJ_Label			0x000E 
 #define OBJ_DialogBox		0x000F 
 #define OBJ_SpinControl		0x0010 
+#define OBJ_Scrollbar		0x0011 
 #define OBJ_List			0x0012 
 #define OBJ_GroupBox		0x0013 
-#define OBJ_Scrollbar		0x0011 
 #define OBJ_DropdownList	0x0014 
 #define OBJ_Note			0x0019 
 
@@ -80,7 +80,6 @@ BaseObjectPtr Obj::clone()
 void Obj::readFields(CFRecord& record)
 {
 	record >> cmo;
-	size_t rdPtr = record.getRdPtr();
 	
 	if (record.getGlobalWorkbookInfo()->Version >= 0x0600)
 	{
@@ -88,62 +87,74 @@ void Obj::readFields(CFRecord& record)
 		{
 			record.skipNunBytes(6); // Skip FtGmo (obsolete)
 		}
-		if(OBJ_Picture == cmo.ot) 
+		if(	OBJ_Picture == cmo.ot) 
 		{
 			record >> pictFormat;
 			record >> pictFlags;
 		}
-		if(0x0B == cmo.ot || 0x0C == cmo.ot)
+		if(	OBJ_CheckBox == cmo.ot || 
+			OBJ_RadioButton == cmo.ot)
 		{
 			record.skipNunBytes(16); // Skip FtCbls (obsolete)
 		}
-		if(0x0C == cmo.ot)
+		if(	OBJ_RadioButton == cmo.ot)
 		{
 			record.skipNunBytes(10); // Skip FtRbo (obsolete)
 		}
-		if(0x10 == cmo.ot || 0x11 == cmo.ot || 0x12 == cmo.ot || 0x14 == cmo.ot)
+		if(	OBJ_SpinControl == cmo.ot || 
+			OBJ_Scrollbar	== cmo.ot || 
+			OBJ_List		== cmo.ot || 
+			OBJ_DropdownList == cmo.ot)
 		{
 			record >> sbs;
 		}
-		if(0x19 == cmo.ot)
+		if(	OBJ_Note == cmo.ot)
 		{
 			record >> nts;
 		}
-		//if(false) // TODO: Find out the condition
-		//{
-		//	macro.load(record);
-		//}
 
-		if(0x0B == cmo.ot || 0x0C == cmo.ot || 0x10 == cmo.ot || 0x11 == cmo.ot || 0x12 == cmo.ot /*|| 0x14 == cmo.ot*/)
+		macro.load(record);
+
+		if(	OBJ_Picture	== cmo.ot)
+		{
+			pictFmla.load(record, pictFlags);
+		}
+		if(	OBJ_CheckBox	== cmo.ot || 
+			OBJ_RadioButton == cmo.ot || 
+			OBJ_SpinControl == cmo.ot || 
+			OBJ_Scrollbar	== cmo.ot || 
+			OBJ_List		== cmo.ot /*|| OBJ_DropdownList == cmo.ot*/)
 		{
 			linkFmla.load(record);
 		}
-		if(0x0B == cmo.ot || 0x0C == cmo.ot)
+		if(	OBJ_CheckBox	== cmo.ot || 
+			OBJ_RadioButton == cmo.ot)
 		{
 			checkBox.load(record);
 		}
-		if(0x0C == cmo.ot)
+		if(	OBJ_RadioButton == cmo.ot)
 		{
 			radioButton.load(record);
 		}
-		if(0x0D == cmo.ot)
+		if(	OBJ_EditBox == cmo.ot)
 		{
 			edit.load(record);
 		}
-		if(0x12 == cmo.ot || 0x14 == cmo.ot)
+		if(	OBJ_List == cmo.ot || 
+			OBJ_DropdownList == cmo.ot)
 		{
 			list.load(record, cmo.ot);
 		}
-		if(0x13 == cmo.ot)
+		if(	OBJ_GroupBox == cmo.ot)
 		{
 			gbo.load(record);
-		}
-		
-		if(0x12 != cmo.ot && 0x14 != cmo.ot)
+		}		
+		if(	OBJ_List != cmo.ot && OBJ_DropdownList != cmo.ot)
 		{
 			record.skipNunBytes(4); // reserved
 		}
-		
+//------------------------------------------------------------------------------------------------------
+
 		if (continue_records.size() > 0)
 		{
 			std::list<CFRecordPtr>& recs = continue_records[rt_Continue];

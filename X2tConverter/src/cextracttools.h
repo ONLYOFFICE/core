@@ -471,11 +471,13 @@ namespace NExtractTools
 						std::wstring sName = oXmlNode.GetName();
 						if(_T("m_oMailMergeSend") == sName)
 						{
+							RELEASEOBJECT(m_oMailMergeSend);
 							m_oMailMergeSend = new InputParamsMailMerge();
 							m_oMailMergeSend->FromXmlNode(oXmlNode);
 						}
 						else if(_T("m_oThumbnail") == sName)
 						{
+							RELEASEOBJECT(m_oThumbnail);
 							m_oThumbnail = new InputParamsThumbnail();
 							m_oThumbnail->FromXmlNode(oXmlNode);
 						}
@@ -485,49 +487,107 @@ namespace NExtractTools
 							if(oXmlNode.GetTextIfExist(sValue))
 							{
 								if(_T("m_sKey") == sName)
+								{
+									RELEASEOBJECT(m_sKey);
 									m_sKey = new std::wstring(sValue);
+								}
 								else if(_T("m_sFileFrom") == sName)
+								{
+									RELEASEOBJECT(m_sFileFrom);
 									m_sFileFrom = new std::wstring(sValue);
+								}
 								else if(_T("m_sFileTo") == sName)
+								{
+									RELEASEOBJECT(m_sFileTo);
 									m_sFileTo = new std::wstring(sValue);
+								}
 								else if(_T("m_nFormatFrom") == sName)
+								{
+									RELEASEOBJECT(m_nFormatFrom);
 									m_nFormatFrom = new int(XmlUtils::GetInteger(sValue));
+								}
 								else if(_T("m_nFormatTo") == sName)
+								{
+									RELEASEOBJECT(m_nFormatTo);
 									m_nFormatTo = new int(XmlUtils::GetInteger(sValue));
+								}
 								else if(_T("m_nCsvTxtEncoding") == sName)
+								{
+									RELEASEOBJECT(m_nCsvTxtEncoding);
 									m_nCsvTxtEncoding = new int(XmlUtils::GetInteger(sValue));
+								}
 								else if(_T("m_nCsvDelimiter") == sName)
+								{
+									RELEASEOBJECT(m_nCsvDelimiter);
 									m_nCsvDelimiter = new int(XmlUtils::GetInteger(sValue));
+								}
 								else if(_T("m_nCsvDelimiterChar") == sName)
+								{
+									RELEASEOBJECT(m_sCsvDelimiterChar);
 									m_sCsvDelimiterChar = new std::wstring(sValue);
+								}
 								else if(_T("m_bPaid") == sName)
+								{
+									RELEASEOBJECT(m_bPaid);
 									m_bPaid = new bool(XmlUtils::GetBoolean2(sValue));
+								}
 								else if(_T("m_bFromChanges") == sName)
+								{
+									RELEASEOBJECT(m_bFromChanges);
 									m_bFromChanges = new bool(XmlUtils::GetBoolean2(sValue));
+								}
 								else if(_T("m_sAllFontsPath") == sName)
+								{
+									RELEASEOBJECT(m_sAllFontsPath);
 									m_sAllFontsPath = new std::wstring(sValue);
+								}
 								else if(_T("m_sFontDir") == sName)
+								{
+									RELEASEOBJECT(m_sFontDir);
 									m_sFontDir = new std::wstring(sValue);
+								}
 								else if(_T("m_sThemeDir") == sName)
+								{
+									RELEASEOBJECT(m_sThemeDir);
 									m_sThemeDir = new std::wstring(sValue);
+								}
 								else if(_T("m_bDontSaveAdditional") == sName)
+								{
+									RELEASEOBJECT(m_bDontSaveAdditional);
 									m_bDontSaveAdditional = new bool(XmlUtils::GetBoolean2(sValue));
+								}
 								else if(_T("m_nDoctParams") == sName)
+								{
+									RELEASEOBJECT(m_nDoctParams);
 									m_nDoctParams = new int(XmlUtils::GetInteger(sValue));
+								}
 								else if(_T("m_sHtmlFileInternalPath") == sName)
+								{
+									RELEASEOBJECT(m_sHtmlFileInternalPath);
 									m_sHtmlFileInternalPath = new std::wstring(sValue);
+								}
 								else if(_T("m_sPassword") == sName)
+								{
+									RELEASEOBJECT(m_sPassword);
 									m_sPassword = new std::wstring(sValue);
+								}
 								else if(_T("m_sTempDir") == sName)
+								{
+									RELEASEOBJECT(m_sTempDir);
 									m_sTempDir = new std::wstring(sValue);
+								}
 								else if(_T("m_bIsNoBase64") == sName)
+								{
+									RELEASEOBJECT(m_bIsNoBase64);
 									m_bIsNoBase64 = new bool(XmlUtils::GetBoolean2(sValue));
+								}
 							}
 							else if(_T("m_nCsvDelimiterChar") == sName)
 							{
 								std::wstring sNil;
 								if (!oXmlNode.GetAttributeIfExist(L"xsi:nil", sNil))
 								{
+									RELEASEOBJECT(m_sCsvDelimiterChar);
 									m_sCsvDelimiterChar = new std::wstring(L"");
 								}
 							}

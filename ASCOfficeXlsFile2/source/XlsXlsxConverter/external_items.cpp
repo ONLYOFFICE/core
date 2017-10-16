@@ -169,6 +169,35 @@ void external_items::create_media_path(const std::wstring & out_path)
 
 	media_path_ = xl_path + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR;
 }
+std::wstring external_items::activeX_path()
+{
+	return activeX_path_;
+}
+void external_items::create_activeX_path(const std::wstring & out_path)
+{
+	if (!activeX_path_.empty()) return;
+	
+	std::wstring xl_path = out_path + FILE_SEPARATOR_STR + L"xl";
+	NSDirectory::CreateDirectory(xl_path.c_str());
+	
+    NSDirectory::CreateDirectory((xl_path + FILE_SEPARATOR_STR + L"activeX").c_str());
 
+	activeX_path_ = xl_path + FILE_SEPARATOR_STR + L"activeX" + FILE_SEPARATOR_STR;
+}
+void external_items::create_embeddings_path(const std::wstring & out_path)
+{
+	if (!embeddings_path_.empty()) return;
+	
+	std::wstring xl_path = out_path + FILE_SEPARATOR_STR + L"xl";
+	NSDirectory::CreateDirectory(xl_path.c_str());
+	
+    NSDirectory::CreateDirectory((xl_path + FILE_SEPARATOR_STR + L"embeddings").c_str());
+
+	embeddings_path_ = xl_path + FILE_SEPARATOR_STR + L"embeddings" + FILE_SEPARATOR_STR;
+}
+std::wstring external_items::embeddings_path()
+{
+	return embeddings_path_;
+}
 
 }

@@ -123,7 +123,7 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 	bVbaProjectExist		= false;
 	bMacrosExist			= false;
 
-	idPivotCache			= 0;
+	idPivotCache			= 0;	
 }
 
 GlobalWorkbookInfo::~GlobalWorkbookInfo()

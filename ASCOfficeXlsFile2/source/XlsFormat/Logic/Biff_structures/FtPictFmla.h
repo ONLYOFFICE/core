@@ -45,20 +45,25 @@ class FtPictFmla : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(FtPictFmla)
 public:
-	FtPictFmla();
-	BiffStructurePtr clone();
+	FtPictFmla() : fmla(true), cbBufInCtlStm(0xffffffff), lPosInCtlStm(0xffffffff), fExist(false)
+	{
+	}
 
+	BiffStructurePtr clone();
+	virtual void load(CFRecord& record){}
+//biff5
 	virtual void load(CFRecord& record, int linkSize);
+//biff8
 	virtual void load(CFRecord& record, FtPioGrbit& pictFlags);
 
 	static const ElementType	type = typeFtPictFmla;
 
-	virtual void load(CFRecord& record){}
-
-	ObjFmla		fmla;
 	_UINT32		lPosInCtlStm;
 	_UINT32		cbBufInCtlStm;
-	PictFmlaKey key;
+	PictFmlaKey	key;
+	ObjFmla		fmla;
+
+	bool		fExist;
 };
 
 } // namespace XLS

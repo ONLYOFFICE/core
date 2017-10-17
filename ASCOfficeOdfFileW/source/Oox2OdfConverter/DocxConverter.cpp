@@ -3150,7 +3150,7 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 		int id = oox_num_lvl->m_oLvlPicBulletId->m_oVal->GetValue();
 		OOX::CNumbering * lists_styles = docx_document->GetNumbering();
 
-		for (size_t i = 0; (lists_styles) && (i< lists_styles->m_arrNumPicBullet.size()); i++)
+		for (size_t i = 0; (lists_styles) && (i < lists_styles->m_arrNumPicBullet.size()); i++)
 		{
 			if ((lists_styles->m_arrNumPicBullet[i]) && (lists_styles->m_arrNumPicBullet[i]->m_oNumPicBulletId.GetValue() == id))
 			{

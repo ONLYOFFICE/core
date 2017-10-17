@@ -69,7 +69,7 @@ public:
 		void add_column(int start_column, int repeated, int level = 0, bool _default = false);
 	void end_columns();
 
-	void	calculate_font_metrix(std::wstring name, double size, bool italic, bool bold);
+	void calculate_font_metrix(std::wstring name, double size, bool italic, bool bold);
 
 	void start_rows();
 		void start_row(int _start_row, int repeated, int level = 0, bool _default = false);

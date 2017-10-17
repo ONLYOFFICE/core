@@ -203,25 +203,25 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		}
 	}
 //--------------------------------------------------------------------------------------
-	std::wstring odf_ref_image;
+	bool bEmbedded = true;
 	std::wstring pathImage;
 	if (oox_picture->blipFill.blip.IsInit())
 	{
-		bool bEmbedded = true;
 		if (oox_picture->blipFill.blip->embed.IsInit())
 		{
 			std::wstring sID = oox_picture->blipFill.blip->embed->get();
 			pathImage = find_link_by_id(sID, 1);
 			
-			odf_ref_image = odf_context()->add_image(pathImage);
 		}
 		else if (oox_picture->blipFill.blip->link.IsInit())
 		{
-			odf_ref_image = oox_picture->blipFill.blip->link->get();	
+			pathImage = oox_picture->blipFill.blip->link->get();	
 			bEmbedded = false;
 		}
 	}
 //--------------------------------------------------------------------------------------
+	std::wstring odf_ref_image;
+
 	if (oox_picture->nvPicPr.nvPr.media.is_init())
 	{
 		if (oox_picture->nvPicPr.nvPr.media.is<PPTX::Logic::MediaFile>())
@@ -238,7 +238,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 				PPTX::Logic::Ext & ext = oox_picture->nvPicPr.nvPr.extLst[i];
 				if (pathMedia.empty() && ext.link.IsInit())
 				{
-					pathMedia= find_link_by_id(ext.link->get(), 3);
+					pathMedia = find_link_by_id(ext.link->get(), 3);
 					//например файлики mp3
 				}
 				if (ext.st.IsInit())	start	= *ext.st;
@@ -255,6 +255,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 				OoxConverter::convert(&oox_picture->nvPicPr.cNvPr);		
 				OoxConverter::convert(&oox_picture->spPr, oox_picture->style.GetPointer());
 
+				odf_ref_image = bEmbedded ? odf_context()->add_image(pathImage) : pathImage;
 				odf_context()->drawing_context()->set_image_replacement(odf_ref_image);
 				
 				odf_context()->drawing_context()->end_media();
@@ -265,15 +266,32 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 	}
 	if (oox_picture->oleObject.IsInit())
 	{
-			//nullable_limit<Limit::OLEDrawAspectType>m_oDrawAspect;
-			//nullable<OOX::RId>						m_oId;
-			//nullable_string							m_sObjectId;
-			//nullable_string							m_sProgId;
-			//nullable_string							m_sShapeId;
-			//nullable_limit<Limit::OLEType>			m_oType;
-			//nullable_limit<Limit::OLEUpdateMode>	m_oUpdateMode;
+		std::wstring pathOle;
+		
+		if (oox_picture->oleObject->m_oId.IsInit())
+		{
+			pathOle = find_link_by_id(oox_picture->oleObject->m_oId->get(), 4);
+		}
+		std::wstring odf_ref_ole = odf_context()->add_oleobject(pathOle);
+
+		if (!odf_ref_ole.empty())
+		{
+			odf_context()->drawing_context()->start_object_ole(odf_ref_ole);
+
+			if (oox_picture->oleObject->m_sProgId.IsInit())
+			{
+				odf_context()->drawing_context()->set_program(*oox_picture->oleObject->m_sProgId);
+			}
+			odf_ref_image = bEmbedded ? odf_context()->add_imageobject(pathImage) : pathImage; 			
+			odf_context()->drawing_context()->set_image_replacement(odf_ref_image);
+
+			odf_context()->drawing_context()->end_object_ole();
+			return;
+		}
 	}
 //--------------------------------------------------------------------------------------
+	odf_ref_image = bEmbedded ? odf_context()->add_image(pathImage) : pathImage;
+	
 	odf_context()->drawing_context()->start_image(odf_ref_image);
 	{
 		double Width = 0, Height = 0;

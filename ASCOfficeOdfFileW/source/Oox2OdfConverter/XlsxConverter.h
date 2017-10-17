@@ -47,7 +47,6 @@ namespace OOX
 		class WritingElement;
 
 		class CWorksheet;
-		class CDrawing;
 		class CTable;
 		class CCol;
 		class CRow;
@@ -69,8 +68,9 @@ namespace OOX
 		class CDxf;
 		class CCellStyle;
 		class CNumFmt;
-		class CCellAnchor;
+		class COleObjects;
 		class CDrawing;
+		class CCellAnchor;
 		class CFromTo;
 		class CCommentItem;
 		class CDefinedName;
@@ -182,18 +182,19 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CColor				*color,		_CP_OPT(odf_types::color) & odf_color);
 		void convert(OOX::Spreadsheet::CColor				*color,		_CP_OPT(odf_types::background_color) & odf_bckgrd_color);
 		void convert(OOX::Spreadsheet::CBorderProp			*borderProp, std::wstring & odf_border_prop);
-		void convert(OOX::Spreadsheet::CAligment			*aligment,	odf_writer::style_paragraph_properties	* paragraph_properties,
-																		odf_writer::style_table_cell_properties * cell_properties);
+		void convert(OOX::Spreadsheet::CAligment			*aligment,	odf_writer::style_paragraph_properties	*paragraph_properties,
+																		odf_writer::style_table_cell_properties *cell_properties);
 		
-		void convert(OOX::Spreadsheet::CXfs					*cell_style, int oox_id, bool automatic=true, bool root = false);
+		void convert(OOX::Spreadsheet::CXfs					*cell_style, int oox_id, bool automatic = true, bool root = false);
 		void convert(OOX::Spreadsheet::CCellStyle			*cell_style);
 		void convert(OOX::Spreadsheet::CNumFmt				*numFmt);
 		void convert(OOX::Spreadsheet::CDxf					*dxFmt, int oox_id);
 
 		void convert(OOX::Spreadsheet::CCellAnchor					*oox_anchor);
-		void convert(OOX::Spreadsheet::CDrawing						*oox_drawing);
+		void convert(OOX::Spreadsheet::CDrawing						*oox_drawing, OOX::Spreadsheet::CWorksheet *oox_sheet);
+		void convert(OOX::Spreadsheet::COleObjects					*oox_objects, OOX::Spreadsheet::CWorksheet *oox_sheet);
 
-		void convert(OOX::Spreadsheet::CFromTo						*oox_from_to, oox_table_position * pos);
+		void convert(OOX::Spreadsheet::CFromTo						*oox_from_to, oox_table_position *pos);
 
 		void convert(OOX::Spreadsheet::CConditionalFormatting		*oox_cond_fmt);
 		void convert(OOX::Spreadsheet::CConditionalFormattingRule	*oox_cond_rule);

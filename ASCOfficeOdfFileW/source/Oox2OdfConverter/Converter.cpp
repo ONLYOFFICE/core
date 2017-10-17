@@ -328,6 +328,13 @@ std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type)
 		if (pMedia)
 			ref = pMedia->filename().GetPath();
 	}
+	if (type == 4)
+	{
+		OOX::OleObject* pOleObject = dynamic_cast<OOX::OleObject*>(oFile.operator->());
+
+		if (pOleObject)
+			ref = pOleObject->filename().GetPath();
+	}
 	return ref;
 }
 

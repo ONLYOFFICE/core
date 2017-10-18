@@ -3136,8 +3136,8 @@ namespace BinXlsxRW
 
 									if (pCellAnchor)
 									{
-										pCellAnchor->m_sSpId.Init();
-										pCellAnchor->m_sSpId->append(it->first);
+										pCellAnchor->m_sVmlSpId.Init();
+										pCellAnchor->m_sVmlSpId->append(it->first);
 
 										int nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
 										WriteDrawing(oWorksheet, pDrawing, pCellAnchor, pVmlDrawing, NULL);
@@ -3157,7 +3157,7 @@ namespace BinXlsxRW
 			if (!pCellAnchor) return;
 
 			if (pCellAnchor->m_oElement.IsInit() == false && 
-				pCellAnchor->m_sSpId.IsInit() == false) return;
+				pCellAnchor->m_sVmlSpId.IsInit() == false) return;
 	//Type
 			int nCurPos;
 			nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::Type);
@@ -3191,9 +3191,9 @@ namespace BinXlsxRW
 				WriteExt(pCellAnchor->m_oExt.get());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
-			if (pCellAnchor->m_sSpId.IsInit() && pVmlDrawing)
+			if (pCellAnchor->m_sVmlSpId.IsInit() && pVmlDrawing)
 			{
-				std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(pCellAnchor->m_sSpId.get2());
+				std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(pCellAnchor->m_sVmlSpId.get2());
 				
 				if (pFind != pVmlDrawing->m_mapShapes.end() && !pFind->second.bUsed)
 				{

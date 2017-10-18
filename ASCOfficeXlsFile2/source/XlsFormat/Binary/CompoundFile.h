@@ -58,14 +58,14 @@ public:
 	
 	bool isError();
 
-	void copy( int indent, std::string path, POLE::Storage * storageOut, bool withRoot = true);
+	void copy( int indent, std::string path, POLE::Storage * storageOut, bool bWithRoot = true, bool bSortFiles = false);
 
 	CFStreamPtr getWorkbookStream	();
 	CFStreamPtr getNamedStream		(const std::string& name);
 
 	POLE::Storage *storage_;
 private:
-	void copy_stream(std::string streamName, POLE::Storage * storageOut, bool withRoot = true);
+	void copy_stream(std::string streamName, POLE::Storage * storageOut, bool bWithRoot = true);
 	
 	POLE::Stream* openStream		(const std::string & stream_name); // Opens a stream in the storage (shall be called not more than once per stream)
 	POLE::Stream* createStream		(const std::string & stream_name); // Creates a new stream in the storage
@@ -73,7 +73,6 @@ private:
 	CFStreamPtr createNamedStream	(const std::string& name);
 	void		closeNamedStream	(const std::string& name);
 
-private:
 	std::map<std::string, CFStreamPtr>	streams;
 	ReadWriteMode						rwMode;
 };

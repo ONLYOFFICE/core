@@ -97,7 +97,7 @@ CompoundFile::CompoundFile(const std::wstring & file_path, const ReadWriteMode m
 	Open(file_path, mode);
 }
 
-void CompoundFile::copy_stream(std::string streamName, POLE::Storage * storageOut, bool withRoot)
+void CompoundFile::copy_stream(std::string streamName, POLE::Storage * storageOut, bool bWithRoot)
 {
 	POLE::Stream *stream = new POLE::Stream(storage_, streamName);
 	if (!stream) return;
@@ -105,7 +105,7 @@ void CompoundFile::copy_stream(std::string streamName, POLE::Storage * storageOu
 	stream->seek(0);
 	int size_stream = stream->size();
 
-	if (withRoot == false)
+	if (bWithRoot == false)
 	{
 		int pos = streamName.find("/");
 		if (pos >= 0)
@@ -132,9 +132,9 @@ void CompoundFile::copy_stream(std::string streamName, POLE::Storage * storageOu
 	delete stream;
 }
 
-void CompoundFile::copy( int indent, std::string path, POLE::Storage * storageOut, bool withRoot)
+void CompoundFile::copy( int indent, std::string path, POLE::Storage * storageOut, bool bWithRoot, bool bSortFiles)
 {
-    std::list<std::string> entries, entries_sort;
+    std::list<std::string> entries, entries_files, entries_dir;
     entries = storage_->entries( path );
 	
 	for( std::list<std::string>::iterator it = entries.begin(); it != entries.end(); it++ )
@@ -144,27 +144,29 @@ void CompoundFile::copy( int indent, std::string path, POLE::Storage * storageOu
        
         if( storage_->isDirectory( fullname ) )
 		{
-			entries_sort.push_back(name);
+			entries_dir.push_back(name);
 		}
 		else
 		{
-			entries_sort.push_front(name);
+			entries_files.push_front(name);
 		}
 	}
-	//for( std::list<std::string>::iterator it = entries.begin(); it != entries.end(); it++ )
-	for( std::list<std::string>::iterator it = entries_sort.begin(); it != entries_sort.end(); it++ )
+	for( std::list<std::string>::iterator it = entries_dir.begin(); it != entries_dir.end(); it++ )
 	{
-        std::string name = *it;
-        std::string fullname = path + name;
+        std::string fullname = path + *it;
        
-        if( storage_->isDirectory( fullname ) )
-		{
-            copy( indent + 1, fullname + "/", storageOut, withRoot );
-		}
-		else
-		{
-			copy_stream(fullname, storageOut, withRoot);
-		}
+		copy( indent + 1, fullname + "/", storageOut, bWithRoot, bSortFiles );
+    }
+	if (bSortFiles)
+	{
+		entries_files.sort();
+		//todooo ??? со спецсимволами выше
+	}
+	for( std::list<std::string>::iterator it = entries_files.begin(); it != entries_files.end(); it++ )
+	{
+        std::string fullname = path + *it;
+       
+		copy_stream(fullname, storageOut, bWithRoot);
     }
 }
 CFStreamPtr CompoundFile::getWorkbookStream()

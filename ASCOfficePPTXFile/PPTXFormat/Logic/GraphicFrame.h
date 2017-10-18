@@ -89,7 +89,7 @@ namespace PPTX
 
 			nullable<Xfrm>			xfrm;
 
-			nullable_string			oleSpid;
+			nullable_string			vmlSpid;
 			nullable<Pic>			olePic;
 
             nullable<Table>			table;

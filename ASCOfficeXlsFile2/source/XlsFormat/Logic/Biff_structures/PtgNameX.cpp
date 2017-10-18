@@ -93,9 +93,13 @@ void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 		std::wstring link = global_info->arXti[ixti].link;
 		std::wstring name;
 
-		if (global_info->arXti[ixti].pNames && nameindex > 0)
+		if ((global_info->arXti[ixti].pNames) && (nameindex > 0 && nameindex <= global_info->arXti[ixti].pNames->size()))
 		{
 			name = global_info->arXti[ixti].pNames->at(nameindex - 1);
+		}
+		else
+		{
+			name = global_info->arDefineNames[nameindex - 1];
 		}
 		if (!link.empty() && !name.empty())
 		{

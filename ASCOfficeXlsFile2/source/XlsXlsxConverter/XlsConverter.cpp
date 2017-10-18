@@ -1933,71 +1933,68 @@ void XlsConverter::convert(XLS::TxO * text_obj)
 
 void XlsConverter::convert(XLS::Obj * obj)
 {
-	if (obj == NULL) return;
+	if ( obj == NULL ) return;
+
 //controls & objects
-	if (!obj->pictFlags.fExist || !obj->pictFmla.fExist || obj->cmo.ot != 8) return;
-	
-	std::wstring link_cell, fill_range, fmla, info;
-	if (obj->pictFmla.fmla.bFmlaExist)
+	if ( obj->cmo.ot == 8 && obj->pictFmla.fExist && obj->pictFlags.fExist)
 	{
-		fmla = obj->pictFmla.fmla.fmla.getAssembledFormula();
-		if (obj->pictFmla.fmla.bInfoExist)
-			info = obj->pictFmla.fmla.embedInfo.strClass.value();
-	}
-	if (obj->pictFmla.key.fmlaLinkedCell.bFmlaExist)
-	{
-		link_cell = obj->pictFmla.key.fmlaLinkedCell.fmla.getAssembledFormula();
-
-	}
-	if (obj->pictFmla.key.fmlaListFillRange.bFmlaExist)
-	{
-		fill_range = obj->pictFmla.key.fmlaListFillRange.fmla.getAssembledFormula();
-	}
-
-	if (obj->pictFlags.fCtl && obj->pictFlags.fPrstm)//Controls Storage
-	{
-		xlsx_context->get_mediaitems().create_activeX_path(xlsx_path);
-
-		int id = ++xlsx_context->get_mediaitems().count_activeX;
-		std::wstring file_name = xlsx_context->get_mediaitems().activeX_path() + L"activeX" + std::to_wstring(id) + L".bin";
-
-		NSFile::CFileBinary file;
-		if ( file.CreateFileW(file_name) )
-		{		
-			file.WriteFile(xls_global_info->controls_data.first.get() + obj->pictFmla.lPosInCtlStm, obj->pictFmla.cbBufInCtlStm);
-			file.CloseFile();
-		}
-	}
-	else if (!obj->pictFlags.fPrstm) 
-	{
-		std::string object_stream;
-		if (obj->pictFlags.fDde)	object_stream = "LNK";
-		else						object_stream = "MBD";
-	
-		object_stream += XmlUtils::IntToString(obj->pictFmla.lPosInCtlStm, "%08X") + "/";
-		if (xls_file->storage_->isDirectory(object_stream))
+		std::wstring info;
+		if (obj->pictFmla.fmla.bFmlaExist)
 		{
-			xlsx_context->get_mediaitems().create_embeddings_path(xlsx_path);
-			
-			int id = ++xlsx_context->get_mediaitems().count_embeddings;
-			std::wstring file_name = L"oleObject" + std::to_wstring(id) + L".bin";
-
-			POLE::Storage *storageOle = new POLE::Storage((xlsx_context->get_mediaitems().embeddings_path() + file_name).c_str());
-
-			if ((storageOle) && (storageOle->open(true, true)))
-			{			
-				xls_file->copy(0, object_stream, storageOle, false);
-
-				storageOle->close();
-				delete storageOle;
-			}
-			std::wstring objectId = L"objId" + std::to_wstring(id);			
-			
-			xlsx_context->current_sheet().sheet_rels().add(oox::relationship(
-				objectId, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject", L"../embeddings/" + file_name));
-
-			xlsx_context->get_drawing_context().set_ole_object(objectId, info);
+			if (obj->pictFmla.fmla.bInfoExist)
+				info = obj->pictFmla.fmla.embedInfo.strClass.value();
 		}
+		if (obj->pictFlags.fCtl && obj->pictFlags.fPrstm)//Controls Storage
+		{
+			xlsx_context->get_mediaitems().create_activeX_path(xlsx_path);
+
+			int id = ++xlsx_context->get_mediaitems().count_activeX;
+			std::wstring file_name = xlsx_context->get_mediaitems().activeX_path() + L"activeX" + std::to_wstring(id) + L".bin";
+
+			NSFile::CFileBinary file;
+			if ( file.CreateFileW(file_name) )
+			{		
+				file.WriteFile(xls_global_info->controls_data.first.get() + obj->pictFmla.lPosInCtlStm, obj->pictFmla.cbBufInCtlStm);
+				file.CloseFile();
+			}
+		}
+		else if (!obj->pictFlags.fPrstm) 
+		{
+			std::string object_stream;
+			if (obj->pictFlags.fDde)	object_stream = "LNK";
+			else						object_stream = "MBD";
+		
+			object_stream += XmlUtils::IntToString(obj->pictFmla.lPosInCtlStm, "%08X") + "/";
+			if (xls_file->storage_->isDirectory(object_stream))
+			{
+				xlsx_context->get_mediaitems().create_embeddings_path(xlsx_path);
+				
+				std::wstring target;
+				std::wstring objectId = xlsx_context->get_mediaitems().add_embedding(target, info);
+
+				POLE::Storage *storageOle = new POLE::Storage((xlsx_context->get_mediaitems().embeddings_path() + target).c_str());
+
+				if ((storageOle) && (storageOle->open(true, true)))
+				{			
+					xls_file->copy(0, object_stream, storageOle, false, true);
+
+					storageOle->close();
+					delete storageOle;
+				}
+				xlsx_context->current_sheet().sheet_rels().add(oox::relationship(
+					objectId, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject", L"../embeddings/" + target));
+
+				xlsx_context->get_drawing_context().set_ole_object(objectId, info);
+			}
+		}
+	}
+	if (obj->list.fExist)
+	{
+	}
+	if (obj->macro.fExist && obj->macro.fmla.bFmlaExist)
+	{
+		std::wstring macro = obj->macro.fmla.fmla.getAssembledFormula();
+		xlsx_context->get_drawing_context().set_macro(macro);
 	}
 }
 

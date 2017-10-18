@@ -61,6 +61,8 @@ static std::wstring get_mime_type(const std::wstring & extension)
 	if (L"wav" == extension)	return  L"audio/wav";
 	if (L"bin" == extension)	return  L"application/vnd.openxmlformats-officedocument.oleObject";
 	if (L"xlsx" == extension)	return  L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+	if (L"xls" == extension)	return  L"application/vnd.ms-excel";
+	if (L"doc" == extension)	return  L"application/vnd.ms-word";
 
 	return L"";
 }
@@ -92,13 +94,24 @@ void content_types_file::set_media(external_items & _Mediaitems)
 {
     BOOST_FOREACH( external_items::item & item, _Mediaitems.items() )
     {
-		if ((item.type == external_items::typeImage || item.type == external_items::typeMedia) && item.mediaInternal)
+		if (!item.mediaInternal) continue;
+
+		std::wstring extension;
+		int n = item.uri.rfind(L".");
+		if (n > 0) extension = item.uri.substr(n + 1);
+
+		if (item.type == external_items::typeImage || item.type == external_items::typeMedia)
 		{
-			int n = item.uri.rfind(L".");
-			if (n > 0)
-			{
-				add_or_find_default(item.uri.substr(n+1, item.uri.length() - n));
-			}
+			add_or_find_default(extension);
+		}
+		else if (item.type == external_items::typeOleObject)
+		{
+			std::wstring link = L"application/vnd.openxmlformats-officedocument.oleObject";
+			
+			if (extension == L"xls" || extension == L"doc") 
+				add_or_find_default(extension);
+			else
+				content_type_.add_override(L"/xl/embeddings/" + item.uri, link);
 		}
 	}
 }

@@ -99,7 +99,7 @@ namespace PPTX
 							ext.fromXML(oReader);
 							if (ext.spid.IsInit())
 							{
-								oleSpid = ext.spid;
+								vmlSpid = ext.spid;
 								break;
 							}
 						}
@@ -137,7 +137,7 @@ namespace PPTX
 							ext.fromXML(oNode);
 							if (ext.spid.IsInit())
 							{
-								oleSpid = ext.spid;
+								vmlSpid = ext.spid;
 								break;
 							}
 						}
@@ -320,7 +320,7 @@ namespace PPTX
 			nullable<Hyperlink> hlinkHover;
 			
 			//std::vector<Ext>	extLst;
-			nullable_string		oleSpid;
+			nullable_string		vmlSpid;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

@@ -43,6 +43,8 @@
 #include "mediaitems_utils.h"
 
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+
 #include "../../../DesktopEditor/common/Directory.h"
 
 namespace oox {
@@ -113,6 +115,26 @@ std::wstring external_items::add_chart(std::wstring & oox_target)
 		
 	items_.push_back( item(oox_target, typeChart, isMediaInternal, -1, rId) );
 
+    return rId;
+}
+std::wstring external_items::add_embedding(std::wstring & oox_target, const std::wstring & info)
+{
+    const bool isMediaInternal = true;
+  
+	count_embeddings++;  
+	
+	std::wstring rId = std::wstring(L"objId") + std::to_wstring(count_embeddings);
+
+	std::wstring lowerInfo = XmlUtils::GetLower(info);
+
+	std::wstring extension = L".bin";
+
+	if (std::wstring::npos != lowerInfo.find(L"excel"))	extension = L".xls";
+	if (std::wstring::npos != lowerInfo.find(L"word"))	extension = L".doc";
+
+	oox_target = std::wstring(L"oleObject") + std::to_wstring(count_embeddings) + extension;
+		
+	items_.push_back( item(oox_target, typeOleObject, isMediaInternal, -1, rId) );
     return rId;
 }
 std::wstring external_items::find_image(int _id, std::wstring & oox_target, bool & isInternal)

@@ -219,7 +219,7 @@ public:
 
         HCRYPTPROV hCryptProv = NULL;
 
-        bResult = CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL);
+        bResult = (NULL != m_context) ? CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL) : FALSE;
 
         if (!bResult)
             bResult = CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
@@ -256,7 +256,7 @@ public:
 
         bResult = CryptGetHashParam(hHash, HP_HASHVAL, pDataHashRaw, &cbHashSize, 0);
 
-        if (!bResult || true)
+        if (!bResult)
         {
             CryptDestroyHash(hHash);
             CryptReleaseContext(hCryptProv, 0);

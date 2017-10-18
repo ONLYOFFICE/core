@@ -41,16 +41,17 @@ class rels;
 class external_items
 {
 public:
-    enum Type { typeUnknown = 0, typeImage, typeChart, typeShape, typeTable, typeHyperlink, typeComment, typeMedia, typeGroup, typeExternalLink};
+    enum Type { typeUnknown = 0, typeImage, typeChart, typeShape, typeTable, typeHyperlink, typeComment, typeMedia, typeGroup, typeExternalLink, typeOleObject};
 
     external_items() 
     {
-		count_charts	=0;
- 		count_shape		=0;
- 		count_image		=0;
- 		count_tables	=0;
- 		count_media		=0;
-			
+		count_charts	= 0;
+ 		count_shape		= 0;
+ 		count_image		= 0;
+ 		count_tables	= 0;
+ 		count_media		= 0;
+		count_activeX	= 0;	
+		count_embeddings= 0;
 	}
 
     struct item 
@@ -76,6 +77,8 @@ public:
 	size_t count_media;
 	size_t count_shape;
 	size_t count_tables;
+	size_t count_activeX;
+	size_t count_embeddings;
 
     //std::wstring add_or_find(const std::wstring & href, Type type, bool & isInternal);//возможны ссылки на один и тот же объект
     std::wstring add_image	(const std::wstring & file_name, int bin_id);
@@ -88,13 +91,20 @@ public:
     items_array & items() { return items_; }
 
 	void create_media_path(const std::wstring & out_path);
+	void create_activeX_path(const std::wstring & out_path);
+	void create_embeddings_path(const std::wstring & out_path);
 
+	std::wstring activeX_path();
 	std::wstring media_path();
+	std::wstring embeddings_path();
 
 private:
 	std::wstring create_file_name(const std::wstring & uri, external_items::Type type, size_t Num);
 
 	std::wstring	media_path_;
+	std::wstring	activeX_path_;
+	std::wstring	embeddings_path_;
+
     items_array		items_;
 
 };

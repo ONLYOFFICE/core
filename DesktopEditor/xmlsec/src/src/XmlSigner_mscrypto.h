@@ -219,7 +219,7 @@ public:
 
         HCRYPTPROV hCryptProv = NULL;
 
-        bResult = CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL);
+        bResult = (NULL != m_context) ? CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL) : FALSE;
 
         if (!bResult)
             bResult = CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);

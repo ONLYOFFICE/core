@@ -295,17 +295,20 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		{
 			OOX::Spreadsheet::CDrawing* pDrawing = (OOX::Spreadsheet::CDrawing*)oFile.operator->();
 			
-			convert(pDrawing);
+			convert(pDrawing, oox_sheet);
 		}
 	}
-	////сортировки
+	
+	convert(oox_sheet->m_oOleObjects.GetPointer(), oox_sheet);
+
+	//сортировки
 	//convert(oox_sheet->m_oSortState.GetPointer());
 	
 	//автофильтры
 	convert(oox_sheet->m_oAutofilter.GetPointer());
 
 	//условное форматирование
-	if (oox_sheet->m_arrConditionalFormatting.size() >0)
+	if (!oox_sheet->m_arrConditionalFormatting.empty() )
 	{
 		ods_context->start_conditional_formats();
 		for (size_t fmt =0; fmt < oox_sheet->m_arrConditionalFormatting.size(); fmt++)
@@ -1232,7 +1235,7 @@ void XlsxConverter::convert_styles()
 
 
 
-void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf_writer::style_text_properties * text_properties)
+void XlsxConverter::convert(OOX::Spreadsheet::CFont *font, odf_writer::style_text_properties *text_properties)
 {
 	if (font == NULL)return;
  	if (text_properties == NULL)return;
@@ -1271,7 +1274,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf_writer::style_te
 			}
 		}
 	}
-	if (font->m_oItalic.IsInit() && (font->m_oItalic->m_oVal.ToBool() ==true))font_italic = true;
+	if (font->m_oItalic.IsInit() && (font->m_oItalic->m_oVal.ToBool() ==true)) font_italic = true;
 
 	if (font_italic) text_properties->content_.fo_font_style_ = odf_types::font_style(odf_types::font_style::Italic);
 	else			 text_properties->content_.fo_font_style_ = odf_types::font_style(odf_types::font_style::Normal);
@@ -1322,7 +1325,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf_writer::style_te
 	if ((font->m_oStrike.IsInit()) && (font->m_oStrike->m_oVal.ToBool()))
 		text_properties->content_.style_text_line_through_type_ = odf_types::line_type(odf_types::line_type::Single);
 
-	ods_context->calculate_font_metrix(font_name,font_size,font_italic,font_bold);
+	ods_context->calculate_font_metrix(font_name, font_size, font_italic, font_bold);
 }
 
 void XlsxConverter::convert(double oox_size,  _CP_OPT(odf_types::length) & odf_size)
@@ -1818,7 +1821,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
 {
 	if (!oox_anchor) return;
 
-	if (oox_anchor->m_bShapeOle) return; 
 ////////////////// 
 	if (oox_anchor->m_oFrom.IsInit() || oox_anchor->m_oTo.IsInit())
 	{
@@ -1859,21 +1861,106 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
 	odf_context()->drawing_context()->end_drawing();
 }
 
-void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing)
+void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing, OOX::Spreadsheet::CWorksheet *oox_sheet)
 {
 	if (!oox_drawing)return;
 	
 	OOX::IFileContainer* old_container = xlsx_current_container;
 	xlsx_current_container = dynamic_cast<OOX::IFileContainer*>(oox_drawing);
 
-	for (size_t dr = 0 ; dr < oox_drawing->m_arrItems.size(); dr++)
+	for (size_t i = 0; i < oox_drawing->m_arrItems.size(); i++)
 	{
+		OOX::Spreadsheet::CCellAnchor * oox_anchor = oox_drawing->m_arrItems[i];
+		
+		if (oox_anchor->m_bShapeOle) continue; 
+
+		if (oox_sheet->m_oOleObjects.IsInit() && oox_anchor->m_nId.IsInit())
+		{
+			std::map<int, OOX::Spreadsheet::COleObject*>::const_iterator pFind = oox_sheet->m_oOleObjects->m_mapOleObjects.find(oox_anchor->m_nId.get());
+			if (pFind != oox_sheet->m_oOleObjects->m_mapOleObjects.end())
+			{
+				//??? перенести даные привязки 
+				oox_anchor->m_bShapeOle = true;
+				continue;
+			}
+		}
+
 		ods_context->start_drawings();
-			convert(oox_drawing->m_arrItems[dr]);
+			convert(oox_anchor);
 		ods_context->end_drawings();
 	}
 
 	xlsx_current_container = old_container;
+}
+void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spreadsheet::CWorksheet *oox_sheet)
+{
+	if (!oox_objects) return;
+
+	for (std::map<int, OOX::Spreadsheet::COleObject*>::const_iterator it = oox_objects->m_mapOleObjects.begin(); it != oox_objects->m_mapOleObjects.end(); ++it)
+	{
+		OOX::Spreadsheet::COleObject* object = it->second;
+		ods_context->start_drawings();
+
+		bool bAnchor = false;
+		std::wstring odf_ref_object, odf_ref_image;
+		if (object->m_oObjectPr.IsInit())
+		{
+			if (object->m_oObjectPr->m_oAnchor.IsInit())
+			{
+				bAnchor = true;
+				oox_table_position from = {}, to = {};
+				
+				convert(object->m_oObjectPr->m_oAnchor->m_oFrom.GetPointer(),	&from);	
+				convert(object->m_oObjectPr->m_oAnchor->m_oTo.GetPointer(),		&to);
+
+				double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+				ods_context->current_table().convert_position(from, x1, y1);
+				ods_context->current_table().convert_position(to,	x2, y2);
+				
+				ods_context->drawing_context()->set_drawings_rect(x1, y1, x2 - x1, y2 - y1);
+			}
+		}
+		if (object->m_oRid.IsInit())
+		{
+			std::wstring pathOle;
+	
+			std::wstring sID = object->m_oRid->GetValue();
+			pathOle = find_link_by_id(sID, 4);
+
+			odf_ref_object = odf_context()->add_oleobject(pathOle);
+		}
+		if ((object->m_oObjectPr.IsInit()) && (object->m_oObjectPr->m_oRid.IsInit()))
+		{
+			std::wstring pathImage;
+	
+			std::wstring sID = object->m_oObjectPr->m_oRid->GetValue();
+			pathImage = find_link_by_id(sID, 1);
+					
+			odf_ref_image = odf_context()->add_imageobject(pathImage);
+		}
+//--------------------------------------------------------------------------------------------------
+		if (!bAnchor || odf_ref_image.empty())
+		{
+			//from vml drawing or oox drawing
+			//m_oShapeId;
+		}
+//--------------------------------------------------------------------------------------------------
+		ods_context->drawing_context()->start_drawing();
+
+		ods_context->drawing_context()->start_object_ole(odf_ref_object);
+		
+		ods_context->drawing_context()->set_image_replacement(odf_ref_image);
+
+		if (object->m_oProgId.IsInit())
+		{
+			ods_context->drawing_context()->set_program(*object->m_oProgId);
+		}
+
+		ods_context->drawing_context()->end_object_ole();
+		ods_context->drawing_context()->end_drawing();
+
+		ods_context->end_drawings();
+	}
 }
 
 

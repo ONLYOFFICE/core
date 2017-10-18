@@ -576,10 +576,30 @@ void xlsx_drawing_context::process_chart(drawing_object_description & obj,_xlsx_
 		impl_->get_drawings()->add(isMediaInternal, drawing.objectId, ref, obj.type_); // не объект
 }
 
-void xlsx_drawing_context::process_object(drawing_object_description & obj,_xlsx_drawing & drawing, xlsx_drawings_ptr xlsx_drawings_)
+void xlsx_drawing_context::process_object(drawing_object_description & obj, xlsx_table_metrics & table_metrics,_xlsx_drawing & drawing, xlsx_drawings_ptr xlsx_drawings_)
 {
 	std::wstring ref;
     bool isMediaInternal = true;
+	
+	if (drawing.type_anchor == 2) // absolute
+	{
+		//пересчет нужен для оле
+		xlsx_table_position from, to;
+		
+		process_position_properties	(obj, table_metrics, from, to);
+
+		drawing.from_.type				= xlsx_drawing_position::from;
+		drawing.from_.position.col		= from.col;
+		drawing.from_.position.colOff	= static_cast<size_t>(odf_types::length(from.colOff, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		drawing.from_.position.row		= from.row;
+		drawing.from_.position.rowOff	= static_cast<size_t>(odf_types::length(from.rowOff, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+
+		drawing.to_.type				= xlsx_drawing_position::to;
+		drawing.to_.position.col		= to.col;
+		drawing.to_.position.colOff		= static_cast<size_t>(odf_types::length(to.colOff, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		drawing.to_.position.row		= to.row;
+		drawing.to_.position.rowOff		= static_cast<size_t>(odf_types::length(to.rowOff, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+	}	
 	
 	drawing.objectId		= impl_->get_mediaitems().add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);
 	drawing.objectProgId	= obj.descriptor_;
@@ -602,7 +622,7 @@ void xlsx_drawing_context::process_group(drawing_object_description & obj, xlsx_
 {
 	xlsx_drawings_ptr xlsx_drawings_child(xlsx_drawings::create(true));
 	
-	process_objects	( obj.child_objects_, table_metrics, xlsx_drawings_child);	
+	process_group_objects	( obj.child_objects_, table_metrics, xlsx_drawings_child);	
 	
 	std::wstringstream strm;
 
@@ -620,9 +640,9 @@ void xlsx_drawing_context::process_group(drawing_object_description & obj, xlsx_
 }
 void xlsx_drawing_context::process_objects(xlsx_table_metrics & table_metrics)
 {
-	process_objects(impl_->objects_, table_metrics, impl_->get_drawings());
+	process_group_objects(impl_->objects_, table_metrics, impl_->get_drawings());
 }
-void xlsx_drawing_context::process_objects(std::vector<drawing_object_description> objects, xlsx_table_metrics & table_metrics, xlsx_drawings_ptr xlsx_drawings_)
+void xlsx_drawing_context::process_group_objects(std::vector<drawing_object_description> objects, xlsx_table_metrics & table_metrics, xlsx_drawings_ptr xlsx_drawings_)
 {
 	for (size_t i = 0 ; i < objects.size(); i++)
 	{
@@ -661,7 +681,7 @@ void xlsx_drawing_context::process_objects(std::vector<drawing_object_descriptio
 			case typeGroupShape:	process_group	( obj, table_metrics, drawing, xlsx_drawings_);	break;
 			case typeMsObject:	
 			case typeOleObject:	
-									process_object	( obj, drawing, xlsx_drawings_);				break;
+									process_object	( obj, table_metrics, drawing, xlsx_drawings_);	break;
 		}
 	}
 }

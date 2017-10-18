@@ -255,7 +255,13 @@ namespace XmlUtils
         sstream << boost::wformat(format) % value;
         return sstream.str();
     }
-
+    AVSINLINE static std::string IntToString( int value, const char* format )
+    {
+        if ( format == NULL ) return "";
+        std::stringstream sstream;
+        sstream << boost::format(format) % value;
+        return sstream.str();
+    }
     AVSINLINE static std::wstring DoubleToString( double value, wchar_t* format )
     {
         if ( format == NULL ) return L"";

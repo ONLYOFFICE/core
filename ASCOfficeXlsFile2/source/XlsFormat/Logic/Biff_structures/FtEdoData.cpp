@@ -36,16 +36,22 @@
 namespace XLS
 {
 
-
 BiffStructurePtr FtEdoData::clone()
 {
 	return BiffStructurePtr(new FtEdoData(*this));
 }
 
-
 void FtEdoData::load(CFRecord& record)
 {
-	record.skipNunBytes(4); // reserved
+	unsigned short ft, cb;
+	record >> ft >> cb;
+
+	if ( ft != 0x0010 && cb != 0x0008)
+	{
+		record.RollRdPtrBack(4);
+		return;
+	}
+	fExist = true;
 
 	record >> ivtEdit >> fMultiLine >> fVScroll >> id;
 }

@@ -35,13 +35,6 @@
 
 namespace XLS
 {
-
-
-ObjLinkFmla::ObjLinkFmla()
-:	fmla(false)
-{
-}
-
 BiffStructurePtr ObjLinkFmla::clone()
 {
 	return BiffStructurePtr(new ObjLinkFmla(*this));
@@ -49,8 +42,15 @@ BiffStructurePtr ObjLinkFmla::clone()
 
 void ObjLinkFmla::load(CFRecord& record)
 {
-	record.skipNunBytes(2); // reserved
+	unsigned short ft;
+	record >> ft;
 
+	if ( ft != 0x0014)
+	{
+		record.RollRdPtrBack(2);
+		return;
+	}
+	fExist = true;
 	fmla.load(record);
 }
 

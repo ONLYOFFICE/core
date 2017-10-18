@@ -143,12 +143,21 @@ std::wstring xlsx_table_context::add_hyperlink(std::wstring const & ref, std::ws
 }
  void xlsx_table_context::dump_rels_hyperlinks(rels & Rels)
 {
-	return state()->hyperlinks_.dump_rels(Rels);
+	state()->hyperlinks_.dump_rels(Rels);
 }
 void xlsx_table_context::serialize_hyperlinks(std::wostream & _Wostream)
 {
-    return state()->hyperlinks_.serialize(_Wostream);
+    state()->hyperlinks_.serialize(_Wostream);
 }
-
+void xlsx_table_context::dump_rels_ole_objects(rels & Rels)
+{
+	xlsx_drawings_rels_ptr ole_rels = state()->drawing_context_.get_sheet_rels();
+    
+	ole_rels->dump_rels(Rels);
+}
+void xlsx_table_context::serialize_ole_objects(std::wostream & strm)
+{
+    state()->drawing_context_.serialize_objects(strm);
+}
 
 }

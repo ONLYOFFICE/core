@@ -32,27 +32,25 @@
 #pragma once
 
 #include "BiffRecordContinued.h"
+#include "MsoDrawing.h"
 
-#include <Logic/Biff_structures/FtCmo.h>
-#include <Logic/Biff_structures/FtCf.h>
-#include <Logic/Biff_structures/FtPioGrbit.h>
-#include <Logic/Biff_structures/FtSbs.h>
-#include <Logic/Biff_structures/FtNts.h>
-#include <Logic/Biff_structures/FtMacro.h>
-#include <Logic/Biff_structures/FtPictFmla.h>
-#include <Logic/Biff_structures/ObjLinkFmla.h>
-#include <Logic/Biff_structures/FtCblsData.h>
-#include <Logic/Biff_structures/FtRboData.h>
-#include <Logic/Biff_structures/FtEdoData.h>
-#include <Logic/Biff_structures/FtLbsData.h>
-#include <Logic/Biff_structures/FtGboData.h>
-
-#include <Logic/Biff_records/MsoDrawing.h>
+#include "../Biff_structures/FtCmo.h"
+#include "../Biff_structures/FtCf.h"
+#include "../Biff_structures/FtPioGrbit.h"
+#include "../Biff_structures/FtSbs.h"
+#include "../Biff_structures/FtNts.h"
+#include "../Biff_structures/FtMacro.h"
+#include "../Biff_structures/FtPictFmla.h"
+#include "../Biff_structures/ObjLinkFmla.h"
+#include "../Biff_structures/FtCblsData.h"
+#include "../Biff_structures/FtRboData.h"
+#include "../Biff_structures/FtEdoData.h"
+#include "../Biff_structures/FtLbsData.h"
+#include "../Biff_structures/FtGboData.h"
 
 namespace XLS
 {
 
-// Logical representation of Obj record in BIFF8
 class Obj : public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Obj)
@@ -65,11 +63,10 @@ public:
 	~Obj();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeObj;
+	static const ElementType type = typeObj;
 
 //-----------------------------
 	FtCmo			cmo;
@@ -104,8 +101,6 @@ public:
 		_UINT16						flag;
 		_UINT16						flag2;
 	}old_version;
-
-
 };
 
 } // namespace XLS

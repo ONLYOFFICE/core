@@ -121,8 +121,13 @@ public:
 	std::map<std::wstring, std::vector<std::wstring>>	mapDefineNames;
 	std::vector<std::wstring>							arDefineNames;
 	
-	std::vector<std::pair<boost::shared_array<char>, size_t> >	bin_data;
-	
+	std::vector<std::pair<boost::shared_array<unsigned char>, size_t> >	bin_data;
+	std::pair<boost::shared_array<unsigned char>, size_t>				listdata_data;
+	std::pair<boost::shared_array<unsigned char>, size_t>				controls_data;
+
+	std::map<int, std::pair<boost::shared_array<unsigned char>, size_t> >	embeddings_data; //parsing ???
+	std::map<int, std::pair<boost::shared_array<unsigned char>, size_t> >	link_data;
+
 	struct _xti
 	{
 		int							iSup;

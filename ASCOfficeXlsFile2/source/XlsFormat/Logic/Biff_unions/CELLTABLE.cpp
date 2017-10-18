@@ -302,8 +302,13 @@ const bool CELLTABLE::loadContent(BinProcessor& proc)
 	CELL_GROUP cell_group2(shared_formulas_locations_ref_);
 	m_count_CELL_GROUP = proc.repeated(cell_group2, 0, 0);
 
-	proc.repeated<EntExU2>(0, 0);
-
+	int count = proc.repeated<EntExU2>(0, 0);
+	while(count > 0)
+	{
+		m_arEntExU2.insert(m_arEntExU2.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}	
 	return true;
 }
 

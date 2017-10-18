@@ -153,6 +153,8 @@ public:
 	void add_image_replacement();
 	void set_image_replacement(std::wstring ref);
 
+	void set_program(std::wstring program);
+
 	bool isLineShape();
 	void corrected_line_fill();
 

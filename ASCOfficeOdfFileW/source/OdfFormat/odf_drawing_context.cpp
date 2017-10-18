@@ -222,6 +222,7 @@ struct odf_drawing_state
 	_CP_OPT(presentation_class)	presentation_class_;
 	_CP_OPT(std::wstring)		presentation_placeholder_;
 
+	std::wstring				program_;
 	std::wstring				replacement_;
 	std::wstring				path_;
 	std::wstring				view_box_;
@@ -2655,6 +2656,10 @@ void odf_drawing_context::start_object_ole(std::wstring ref)
 {
 	start_frame();
 	
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill::none;
+	impl_->current_graphic_properties->draw_stroke_ = line_style(line_style::None);
+	impl_->current_graphic_properties->draw_ole_draw_aspect_ = 1;
+//------------------------------------------------------------------------------------------------------	
 	office_element_ptr object_elm;
 	create_element(L"draw", L"object-ole", object_elm, impl_->odf_context_);
 
@@ -2680,6 +2685,11 @@ void odf_drawing_context::end_object_ole()
 void odf_drawing_context::set_image_replacement(std::wstring ref)
 {
 	impl_->current_drawing_state_.replacement_ = ref;
+}
+
+void odf_drawing_context::set_program(std::wstring program)
+{
+	impl_->current_drawing_state_.program_ = program;
 }
 
 bool odf_drawing_context::is_exist_content()

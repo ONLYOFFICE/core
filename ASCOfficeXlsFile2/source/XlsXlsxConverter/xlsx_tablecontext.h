@@ -71,6 +71,9 @@ public:
 	std::wstring	add_hyperlink(std::wstring const & ref, std::wstring const & target, std::wstring const & display, bool bExternal);
 	void			dump_rels_hyperlinks(rels & Rels);
 	void			serialize_hyperlinks(std::wostream & _Wostream);
+    
+	void			dump_rels_ole_objects(rels & Rels);
+	void			serialize_ole_objects(std::wostream & _Wostream);
 
 private:
     xlsx_conversion_context		& context_;

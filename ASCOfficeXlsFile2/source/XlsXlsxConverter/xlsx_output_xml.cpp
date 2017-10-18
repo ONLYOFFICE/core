@@ -54,6 +54,7 @@ public:
 	std::wstringstream  sheetFormatPr_;
     std::wstringstream  sheetData_;
     std::wstringstream  mergeCells_;
+	std::wstringstream  ole_objects_;
     std::wstringstream  drawing_;
     std::wstringstream  hyperlinks_;
     std::wstringstream  comments_;
@@ -132,6 +133,10 @@ std::wostream & xlsx_xml_worksheet::mergeCells()
 {
     return impl_->mergeCells_;
 }
+std::wostream & xlsx_xml_worksheet::ole_objects()
+{
+    return impl_->ole_objects_;
+}
 
 std::wostream & xlsx_xml_worksheet::drawing()
 {
@@ -183,6 +188,8 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
             CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");        
             CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
             CP_XML_ATTR(L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006");
+			CP_XML_ATTR(L"xmlns:xdr", L"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing");
+			CP_XML_ATTR(L"xmlns:x14", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
             CP_XML_ATTR(L"mc:Ignorable", L"x14ac");
             CP_XML_ATTR(L"xmlns:x14ac", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac");
 
@@ -230,7 +237,13 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 					CP_XML_ATTR(L"r:id", impl_->vml_drawingId_HF_);
 				}
 			}
-			
+			if (!impl_->ole_objects_.str().empty())
+            {
+                CP_XML_NODE(L"oleObjects")
+                {
+					CP_XML_STREAM() << impl_->ole_objects_.str();
+                }
+            }			
 			CP_XML_STREAM() << impl_->picture_background_.str();
 
 			//CP_XML_NODE(L"rowBreaks){}

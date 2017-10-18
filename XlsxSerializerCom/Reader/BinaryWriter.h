@@ -2956,6 +2956,15 @@ namespace BinXlsxRW
 			
 				if (!pCellAnchor->m_bShapeOle && pCellAnchor->isValid())
 				{
+					if(oWorksheet.m_oOleObjects.IsInit() && pCellAnchor->m_nId.IsInit())
+					{
+						std::map<int, COleObject*>::const_iterator pFind = oWorksheet.m_oOleObjects->m_mapOleObjects.find(pCellAnchor->m_nId.get());
+						if (pFind != oWorksheet.m_oOleObjects->m_mapOleObjects.end())
+						{
+							pCellAnchor->m_bShapeOle = true;
+							continue;
+						}
+					}
 					int nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
 					WriteDrawing(oWorksheet, pDrawing, pCellAnchor, pVmlDrawing);
 					m_oBcw.WriteItemEnd(nCurPos);

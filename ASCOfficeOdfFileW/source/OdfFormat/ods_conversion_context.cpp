@@ -56,7 +56,7 @@ namespace utils
 
 void calculate_size_font_symbols(_font_metrix & metrix, CApplicationFonts *appFonts)
 {
-    double appr_px = _graphics_utils_::calculate_size_symbol_asc(metrix.font_name,metrix.font_size,metrix.italic,metrix.bold, appFonts);
+    double appr_px = _graphics_utils_::calculate_size_symbol_asc(metrix.font_name, metrix.font_size, metrix.italic, metrix.bold, appFonts);
 	
 	if (appr_px <0.01)
 	{
@@ -357,12 +357,15 @@ void ods_conversion_context::end_cell()
 }
 void ods_conversion_context::calculate_font_metrix(std::wstring name, double size, bool italic, bool bold)
 {
-	if (font_metrix_.IsCalc)return;
+	if (font_metrix_.IsCalc) return;
 
-	font_metrix_.font_size = size;
-	font_metrix_.italic = italic;
-	font_metrix_.bold = bold;
-	font_metrix_.font_name = name;
+	if (size < 1)
+		size = 12;
+
+	font_metrix_.font_size	= size;
+	font_metrix_.italic		= italic;
+	font_metrix_.bold		= bold;
+	font_metrix_.font_name	= name;
 
 ////////////////////////////////////////////
     utils::calculate_size_font_symbols(font_metrix_, applicationFonts_);

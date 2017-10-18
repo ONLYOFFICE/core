@@ -46,10 +46,12 @@ class FtLbsData : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(FtLbsData)
 public:
-	FtLbsData();
+	FtLbsData() : fmla(false), fExist(false)
+	{
+	}
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeFtLbsData;
+	static const ElementType type = typeFtLbsData;
 
 	virtual void load(CFRecord& record, const unsigned short ot);
 
@@ -72,6 +74,7 @@ public:
 	std::vector<XLUnicodeString> rgLines;
 	std::vector<Boolean<unsigned char>> bsels;
 
+	bool fExist;
 };
 
 } // namespace XLS

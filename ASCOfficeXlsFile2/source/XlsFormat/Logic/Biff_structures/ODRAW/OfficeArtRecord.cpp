@@ -49,6 +49,8 @@ void OfficeArtRecord::load(XLS::CFRecord& record)
 
 	record >> rh_own;
 	loadFields(record);
+
+	//Log::warning(STR::int2str(rh_own.recType, 16));
 }
 
 

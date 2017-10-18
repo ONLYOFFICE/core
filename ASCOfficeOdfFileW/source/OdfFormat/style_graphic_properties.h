@@ -103,7 +103,8 @@ public:
 	_CP_OPT(odf_types::color)						draw_shadow_color_;
 	_CP_OPT(odf_types::length)						draw_shadow_offset_y_;
 	_CP_OPT(odf_types::length)						draw_shadow_offset_x_;
-	
+	_CP_OPT(unsigned int)							draw_ole_draw_aspect_;
+
 	odf_types::common_draw_fill_attlist				common_draw_fill_attlist_;
 	odf_types::common_draw_rel_size_attlist			common_draw_rel_size_attlist_;
 
@@ -143,8 +144,8 @@ public:
 	_CP_OPT(std::wstring)					style_mirror_;
 
     _CP_OPT(std::wstring)					fo_clip_;
-////////////////////////////////////////////////////////////////////////    
-    office_element_ptr						style_background_image_;        
+//-------------------------------------------------------------------------------------
+	office_element_ptr						style_background_image_;        
 };
 
 

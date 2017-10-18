@@ -252,11 +252,11 @@ public:
             return "";
         }
 
-        BYTE* pDataHashRaw = new BYTE[dwCount];
+        BYTE* pDataHashRaw = (BYTE*)malloc(cbHashSize);
 
         bResult = CryptGetHashParam(hHash, HP_HASHVAL, pDataHashRaw, &cbHashSize, 0);
 
-        if (!bResult)
+        if (!bResult || true)
         {
             CryptDestroyHash(hHash);
             CryptReleaseContext(hCryptProv, 0);
@@ -270,7 +270,7 @@ public:
         std::string sReturn(pBase64_hash, nBase64Len_hash);
         delete [] pBase64_hash;
 
-        //delete [] pDataHashRaw;
+        free(pDataHashRaw);
         CryptDestroyHash(hHash);
         CryptReleaseContext(hCryptProv, 0);
 

@@ -3019,6 +3019,8 @@ namespace BinXlsxRW
 						else
 							pCellAnchor = new OOX::Spreadsheet::CCellAnchor(eAnchorType);
 
+						pCellAnchor->m_bShapeOle= true;
+						
 						PPTX::Logic::Pic *olePic = new PPTX::Logic::Pic;
 						
 						olePic->oleObject.Init();

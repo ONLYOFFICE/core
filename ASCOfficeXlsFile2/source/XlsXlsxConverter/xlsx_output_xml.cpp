@@ -78,8 +78,8 @@ public:
 	std::wstring vml_drawingName_;
 	std::wstring vml_drawingId_;
 
-	std::wstring vml_drawingName_HF_;
-	std::wstring vml_drawingId_HF_;
+	std::wstring vml_HF_drawingName_;
+	std::wstring vml_HF_drawingId_;
 };
 
 std::wstring xlsx_xml_worksheet::name() const
@@ -223,18 +223,18 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 
             CP_XML_STREAM() << impl_->drawing_.str();
 		
-			if (!impl_->commentsId_.empty() && !impl_->vml_drawingId_.empty())
+			if (!impl_->vml_drawingId_.empty())
 			{
 				CP_XML_NODE(L"legacyDrawing")
 				{
 					CP_XML_ATTR(L"r:id", impl_->vml_drawingId_);
 				}
 			}
-			if (!impl_->vml_drawingId_HF_.empty())
+			if (!impl_->vml_HF_drawingId_.empty())
 			{
 				CP_XML_NODE(L"legacyDrawingHF")
 				{
-					CP_XML_ATTR(L"r:id", impl_->vml_drawingId_HF_);
+					CP_XML_ATTR(L"r:id", impl_->vml_HF_drawingId_);
 				}
 			}
 			if (!impl_->ole_objects_.str().empty())
@@ -271,10 +271,10 @@ void xlsx_xml_worksheet::set_vml_drawing_link(std::wstring const & fileName, std
     impl_->vml_drawingName_		= fileName;
     impl_->vml_drawingId_		= id;      
 }
-void xlsx_xml_worksheet::set_vml_drawing_link_HF(std::wstring const & fileName, std::wstring const & id)
+void xlsx_xml_worksheet::set_vml_HF_drawing_link(std::wstring const & fileName, std::wstring const & id)
 {
-    impl_->vml_drawingName_HF_	= fileName;
-    impl_->vml_drawingId_HF_	= id;      
+    impl_->vml_HF_drawingName_	= fileName;
+    impl_->vml_HF_drawingId_	= id;      
 }
 std::pair<std::wstring, std::wstring> xlsx_xml_worksheet::get_drawing_link() const
 {
@@ -290,7 +290,7 @@ std::pair<std::wstring, std::wstring> xlsx_xml_worksheet::get_vml_drawing_link()
 }
 std::pair<std::wstring, std::wstring> xlsx_xml_worksheet::get_vml_drawing_HF_link() const
 {
-    return std::pair<std::wstring, std::wstring>(impl_->vml_drawingName_HF_, impl_->vml_drawingId_HF_);
+    return std::pair<std::wstring, std::wstring>(impl_->vml_HF_drawingName_, impl_->vml_HF_drawingId_);
 }
 
 }

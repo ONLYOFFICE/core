@@ -41,7 +41,22 @@ class rels;
 class external_items
 {
 public:
-    enum Type { typeUnknown = 0, typeImage, typeChart, typeShape, typeTable, typeHyperlink, typeComment, typeMedia, typeGroup, typeExternalLink, typeOleObject, typeActiveX};
+    enum Type 
+	{
+		typeUnknown = 0, 
+		typeImage, 
+		typeChart, 
+		typeShape, 
+		typeTable, 
+		typeHyperlink, 
+		typeComment, 
+		typeMedia, 
+		typeGroup, 
+		typeExternalLink, 
+		typeOleObject, 
+		typeActiveX, 
+		typeControl
+	};
 
     external_items() 
     {
@@ -52,6 +67,7 @@ public:
  		count_media		= 0;
 		count_activeX	= 0;	
 		count_embeddings= 0;
+		count_controls	= 0;	
 	}
 
     struct item 
@@ -79,6 +95,7 @@ public:
 	size_t count_tables;
 	size_t count_activeX;
 	size_t count_embeddings;
+	size_t count_controls;
 
     //std::wstring add_or_find(const std::wstring & href, Type type, bool & isInternal);//возможны ссылки на один и тот же объект
     std::wstring add_image		(const std::wstring & file_name, int bin_id);

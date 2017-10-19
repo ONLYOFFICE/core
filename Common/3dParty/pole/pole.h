@@ -124,6 +124,7 @@ public:
    * Finds all stream and directories in given path.
    **/
   std::list<std::string> entries( const std::string& path = "/" );
+  std::list<std::string> entries_with_prefix( const std::string& path = "/" );
   
   /**
    * Returns true if specified entry name is a directory.

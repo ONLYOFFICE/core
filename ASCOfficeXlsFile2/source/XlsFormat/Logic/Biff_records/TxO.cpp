@@ -56,11 +56,11 @@ BaseObjectPtr TxO::clone()
 
 void TxO::readFields(CFRecord& record)
 {
-	pGlobalWorkbookInfoPtr = record.getGlobalWorkbookInfo();
+	global_info = record.getGlobalWorkbookInfo();
 
 	unsigned short flags;
 	
-	if (pGlobalWorkbookInfoPtr->Version < 0x0600)
+	if (global_info->Version < 0x0600)
 	{
 		short mnLinkSize;
 		short mnButtonFlags;
@@ -154,6 +154,71 @@ void TxO::readFields(CFRecord& record)
 	fSecretEdit = GETBIT(flags, 15);
 }
 
+int TxO::serialize_vml (std::wostream & _stream)
+{
+	std::wstring str_ = rawText.value();
+	int str_size = str_.size();
+
+	int iFmt = 0; 
+	
+	CP_XML_WRITER(_stream)    
+	{
+		for (size_t i = 0; i < TxOruns.rgTxoRuns.size(); i++)
+		{
+			Run *run = dynamic_cast<Run*>(TxOruns.rgTxoRuns[i].get());
+			if (run == NULL) continue;
+
+			int end_string = str_size;
+
+			if ( i < TxOruns.rgTxoRuns.size() - 1)
+			{
+				Run *run_next = dynamic_cast<Run*>(TxOruns.rgTxoRuns[i+1].get());
+				if (run_next)
+					end_string = run_next->formatRun.ich;
+			}
+
+			CP_XML_NODE(L"div")
+			{
+				//style='text-align:left'
+				CP_XML_NODE(L"font")
+				{
+					iFmt = run->formatRun.ifnt;
+					Font *font = NULL;
+					if ((global_info->m_arFonts) && (iFmt >=0 && iFmt < global_info->m_arFonts->size()))
+					{
+						font = dynamic_cast<Font *>(global_info->m_arFonts->at(iFmt).get());
+					}
+					if (font)
+					{
+						if (font->dyHeight > 0)	CP_XML_ATTR(L"size", font->dyHeight);
+						if (font->bls == 700)	CP_XML_ATTR(L"bold", true);
+						if (font->fItalic)		CP_XML_ATTR(L"italic", true);
+						if (!font->fontName.value().empty())
+						{
+							CP_XML_ATTR(L"face", font->fontName.value());
+						}
+						if ( font->icv < 0x7fff )
+						{
+						}
+						else CP_XML_ATTR(L"color", L"auto");
+
+					}
+
+					if (run->formatRun.ich > str_.length())
+					{
+						//ошибка
+						run->formatRun.ich = 0;
+					}
+
+					std::wstring str_part = str_.substr( run->formatRun.ich, end_string - run->formatRun.ich);
+
+					CP_XML_STREAM() << xml::utils::replace_text_to_xml(str_part);
+				}
+			}
+		}
+	}
+	return 0;
+}
 
 int TxO::serialize (std::wostream & _stream)
 {
@@ -163,7 +228,7 @@ int TxO::serialize (std::wostream & _stream)
 	int Fmt = 0; 
 	
 	std::wstring namespace_ = L"a:";
-	oox::external_items::Type type = pGlobalWorkbookInfoPtr->xls_converter->xlsx_context->get_drawing_context().getType();
+	oox::external_items::Type type = global_info->xls_converter->xlsx_context->get_drawing_context().getType();
 
 	if (type == oox::external_items::typeComment) 
 		namespace_.clear();
@@ -215,13 +280,13 @@ int TxO::serialize (std::wostream & _stream)
 }
 int TxO::serialize_rPr	(std::wostream & _stream, int iFmt, std::wstring namespace_)
 {
-	if (!pGlobalWorkbookInfoPtr)			return 0;
-	if (!pGlobalWorkbookInfoPtr->m_arFonts) return 0;
+	if (!global_info)			return 0;
+	if (!global_info->m_arFonts) return 0;
 
-	int sz = pGlobalWorkbookInfoPtr->m_arFonts->size();
+	int sz = global_info->m_arFonts->size();
 	if (iFmt - 1 >= sz || iFmt < 1) return 0;
 
-	Font * font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts->at(iFmt-1).get());
+	Font * font = dynamic_cast<Font*>(global_info->m_arFonts->at(iFmt-1).get());
 
 	if (!font) return 0;
 

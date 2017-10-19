@@ -125,6 +125,7 @@ class DirEntry
   public:
     DirEntry(): valid(), name(), dir(), size(), start(), prev(), next(), child() {}
     bool valid;          // false if invalid (should be skipped)
+	unsigned char prefix;
     std::string name;    // the name, not in unicode anymore 
     bool dir;            // true if directory   
     uint64 size;         // size (not valid if directory)
@@ -805,49 +806,67 @@ DirEntry* DirTree::entry( const std::string& name, bool create, int64 bigBlockSi
 	 }
      else
      {
-       // not found among children
-       if( !create || !io->writeable) 
+		std::vector<uint64> chi = children( index );
+		for( unsigned i = 0; i < chi.size(); i++ )
+		{
+			DirEntry* ce = entry( chi[i] );
+			if( ce ) 
+				if( ce->valid && ( ce->name.length()>1 ) )
+					if( ce->name == *it )
+					{
+						child = chi[i];
+						break;
+					}
+		}
+	}     
+	if( child > 0 )
+	{
+		index = child;
+	}
+	else
+	{		   
+		// not found among children ..wrong header???
+		if( !create || !io->writeable) 
+		{
+		   return (DirEntry*)0;
+		}
+	   // create a new entry
+	   uint64 parent2 = index;
+	   index = unused();
+	   DirEntry* e = entry( index );
+	   e->valid = true;
+	   e->name = *it;
+	   e->dir = (levelsLeft > 0);
+	   if (!e->dir)
+		   e->size = streamSize;
+	   else
+		   e->size = 0;
+	   e->start = AllocTable::Eof;
+	   e->child = End;
+	   if (closest == End)
 	   {
-			return (DirEntry*)0;
+		   e->prev = End;
+		   e->next = entry(parent2)->child;
+		   entry(parent2)->child = index;
+		   markAsDirty(parent2, bigBlockSize);
 	   }
-       
-       // create a new entry
-       uint64 parent2 = index;
-       index = unused();
-       DirEntry* e = entry( index );
-       e->valid = true;
-       e->name = *it;
-       e->dir = (levelsLeft > 0);
-       if (!e->dir)
-           e->size = streamSize;
-       else
-           e->size = 0;
-       e->start = AllocTable::Eof;
-       e->child = End;
-       if (closest == End)
-       {
-           e->prev = End;
-           e->next = entry(parent2)->child;
-           entry(parent2)->child = index;
-           markAsDirty(parent2, bigBlockSize);
-       }
-       else
-       {
-           DirEntry* closeE = entry( closest );
-           if (closeE->compare(*e) < 0)
-           {
-               e->prev = closeE->next;
-               e->next = End;
-               closeE->next = index;
-           }
-           else
-           {
-               e->next = closeE->prev;
-               e->prev = End;
-               closeE->prev = index;
-           }
-           markAsDirty(closest, bigBlockSize);
-       }
+	   else
+	   {
+		   DirEntry* closeE = entry( closest );
+		   if (closeE->compare(*e) < 0)
+		   {
+			   e->prev = closeE->next;
+			   e->next = End;
+			   closeE->next = index;
+		   }
+		   else
+		   {
+			   e->next = closeE->prev;
+			   e->prev = End;
+			   closeE->prev = index;
+		   }
+		   markAsDirty(closest, bigBlockSize);
+	   }
        markAsDirty(index, bigBlockSize);
        uint64 bbidx = index / (bigBlockSize / 128);
        std::vector <uint64> blocks = io->bbat->follow(io->header->dirent_start);
@@ -937,7 +956,7 @@ void DirTree::load( unsigned char* buffer, uint64 size )
     uint64 p = i * 128;
     
     // would be < 32 if first char in the name isn't printable
-    unsigned prefix = 32;
+    unsigned char prefix = 32;
     
     // parse name of this entry, which stored as Unicode 16-bit
     std::string name;
@@ -949,7 +968,7 @@ void DirTree::load( unsigned char* buffer, uint64 size )
     // first char isn't printable ? remove it...
     if( buffer[p] < 32 )
     { 
-      prefix = buffer[0]; 
+      prefix = name[0]; 
       name.erase( 0,1 ); 
     }
     
@@ -959,6 +978,7 @@ void DirTree::load( unsigned char* buffer, uint64 size )
     DirEntry e;
     e.valid = ( type != 0 );
     e.name = name;
+	e.prefix = prefix;
     e.start = readU32( buffer + 0x74+p );
     e.size = readU32( buffer + 0x78+p );
     e.prev = readU32( buffer + 0x44+p );
@@ -2225,12 +2245,35 @@ std::list<std::string> Storage::entries( const std::string& path )
     uint64 parent = dt->indexOf( e );
     std::vector<uint64> children = dt->children( parent );
     for( uint64 i = 0; i < children.size(); i++ )
-      localResult.push_back( dt->entry( children[i] )->name );
+	{
+		localResult.push_back( dt->entry( children[i] )->name );
+	}
   }
   
   return localResult;
 }
+std::list<std::string> Storage::entries_with_prefix( const std::string& path )
+{
+  std::list<std::string> localResult;
+  DirTree* dt = io->dirtree;
+  DirEntry* e = dt->entry( path, false );
+  if( e  && e->dir )
+  {
+    uint64 parent = dt->indexOf( e );
+    std::vector<uint64> children = dt->children( parent );
+    for( uint64 i = 0; i < children.size(); i++ )
+	{
+		std::string val;
+		if (dt->entry( children[i] )->prefix != 32)
+			val = (char) dt->entry( children[i] )->prefix;
+		val += dt->entry( children[i] )->name;
 
+		localResult.push_back(val);
+	}
+  }
+  
+  return localResult;
+}
 bool Storage::isDirectory( const std::string& name )
 {
   DirEntry* e = io->dirtree->entry( name, false );
@@ -2271,7 +2314,9 @@ void CollectStreams( std::list<std::string>& result, DirTree* tree, DirEntry* pa
   DirEntry* c = tree->entry( parent->child );
   std::queue<DirEntry*> queue;
   if ( c ) queue.push( c );
-  while ( !queue.empty() ) {
+
+  while ( !queue.empty() ) 
+  {
     DirEntry* e = queue.front();
     queue.pop();
     if ( e->dir )

@@ -77,7 +77,7 @@ public:
     void set_vml_drawing_link	(std::wstring const & fileName, std::wstring const & id);
     void set_comments_link		(std::wstring const & fileName, std::wstring const & id);
 	void set_state				(std::wstring const & state);
-    void set_vml_drawing_link_HF(std::wstring const & fileName, std::wstring const & id);
+    void set_vml_HF_drawing_link(std::wstring const & fileName, std::wstring const & id);
 	
 	std::pair<std::wstring, std::wstring> get_drawing_link()		const;
 	std::pair<std::wstring, std::wstring> get_vml_drawing_link()	const;

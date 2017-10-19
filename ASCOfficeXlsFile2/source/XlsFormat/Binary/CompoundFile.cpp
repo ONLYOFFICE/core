@@ -97,9 +97,9 @@ CompoundFile::CompoundFile(const std::wstring & file_path, const ReadWriteMode m
 	Open(file_path, mode);
 }
 
-void CompoundFile::copy_stream(std::string streamName, POLE::Storage * storageOut, bool bWithRoot)
+void CompoundFile::copy_stream(std::string streamNameOpen, std::string streamNameCreate, POLE::Storage * storageOut, bool bWithRoot)
 {
-	POLE::Stream *stream = new POLE::Stream(storage_, streamName);
+	POLE::Stream *stream = new POLE::Stream(storage_, streamNameOpen);
 	if (!stream) return;
 
 	stream->seek(0);
@@ -107,12 +107,12 @@ void CompoundFile::copy_stream(std::string streamName, POLE::Storage * storageOu
 
 	if (bWithRoot == false)
 	{
-		int pos = streamName.find("/");
+		int pos = streamNameCreate.find("/");
 		if (pos >= 0)
-			streamName = streamName.substr(pos + 1);
+			streamNameCreate = streamNameCreate.substr(pos + 1);
 	}
 	
-	POLE::Stream *streamNew = new POLE::Stream(storageOut, streamName, true, size_stream);
+	POLE::Stream *streamNew = new POLE::Stream(storageOut, streamNameCreate, true, size_stream);
 	if (!streamNew) return;
 
 	unsigned char* data_stream = new unsigned char[size_stream];
@@ -135,7 +135,8 @@ void CompoundFile::copy_stream(std::string streamName, POLE::Storage * storageOu
 void CompoundFile::copy( int indent, std::string path, POLE::Storage * storageOut, bool bWithRoot, bool bSortFiles)
 {
     std::list<std::string> entries, entries_files, entries_dir;
-    entries = storage_->entries( path );
+    
+	entries = storage_->entries_with_prefix( path );
 	
 	for( std::list<std::string>::iterator it = entries.begin(); it != entries.end(); it++ )
 	{
@@ -157,16 +158,18 @@ void CompoundFile::copy( int indent, std::string path, POLE::Storage * storageOu
        
 		copy( indent + 1, fullname + "/", storageOut, bWithRoot, bSortFiles );
     }
-	if (bSortFiles)
-	{
-		entries_files.sort();
-		//todooo ??? со спецсимволами выше
-	}
+	
+	entries_files.sort();
+
 	for( std::list<std::string>::iterator it = entries_files.begin(); it != entries_files.end(); it++ )
 	{
-        std::string fullname = path + *it;
+        std::string createName = path + *it;
+		std::string openName;
+		
+		if (it->at(0) < 32) openName = path + it->substr(1);
+		else				openName = path + *it;
        
-		copy_stream(fullname, storageOut, bWithRoot);
+		copy_stream(openName, createName, storageOut, bWithRoot);
     }
 }
 CFStreamPtr CompoundFile::getWorkbookStream()

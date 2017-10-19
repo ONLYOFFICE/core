@@ -32,14 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/BiffString.h>
-#include <Logic/Biff_structures/BorderFillInfo.h>
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/BorderFillInfo.h"
 
 namespace XLS
 {
 
-
-// Logical representation of Font record in BIFF8
 class Font: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Font)

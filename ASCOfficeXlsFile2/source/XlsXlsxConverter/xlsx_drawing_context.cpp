@@ -46,6 +46,155 @@
 
 namespace oox {
 
+	class PathParser
+	{
+	public:
+
+		PathParser (std::vector<ODRAW::MSOPATHINFO> &arSegments, std::vector<ODRAW::MSOPOINT>& arPoints, std::vector<ODRAW::MSOSG> & arGuides)
+			: m_arSegments(arSegments)
+		{
+			LONG lMinF = (_INT32)0x80000000;
+			POINT point;
+			for (size_t i = 0; i < arPoints.size(); i++)
+			{
+				point.x = arPoints[i].x;
+				point.y = arPoints[i].y;
+
+				if (lMinF <= point.x)
+				{
+					int index = (_UINT32)point.x - 0x80000000;
+					if (index >= 0 && index < arGuides.size())
+					{
+						point.x = arGuides[index].m_param_value3;
+					}
+				}
+				if (lMinF <= point.y)
+				{
+					int index = (_UINT32)point.y - 0x80000000;
+					if (index >= 0 && index < arGuides.size())
+					{
+						point.y = arGuides[index].m_param_value3;
+					}
+				}
+				if ((size_t)point.y > 0xffff)	point.y &= 0xffff;
+				if ((size_t)point.x > 0xffff)	point.x &= 0xffff;
+
+				m_arPoints.push_back(point);
+			}
+		}
+
+		inline std::wstring GetVmlPath () const
+		{
+			if (m_arSegments.empty() && m_arPoints.empty())
+				return std::wstring(L"");
+
+			std::wstring strVmlPath;
+			size_t valuePointer = 0;
+
+			if (m_arSegments.empty())
+			{
+				for (size_t i = 0; i < m_arPoints.size(); ++i)
+				{
+                    strVmlPath += L"l";
+					strVmlPath += std::to_wstring(m_arPoints[i].x);
+                    strVmlPath += L",";
+					strVmlPath += std::to_wstring(m_arPoints[i].y);
+					
+					++valuePointer;
+				}
+
+                strVmlPath += L"xe";
+
+				return strVmlPath;
+			}
+			
+			for (size_t i = 0; i < m_arSegments.size(); i++)
+			{
+				switch (m_arSegments[i].m_eRuler)
+				{
+					case NSCustomShapesConvert::rtLineTo:
+					{
+						for (_UINT16 i = 0; i < m_arSegments[i].m_nCount; ++i)
+						{
+							if (valuePointer + 1 > m_arPoints.size())
+							{
+								break;
+
+								strVmlPath += L"l";
+								strVmlPath += std::to_wstring(m_arPoints[0].x);
+								strVmlPath += L",";
+								strVmlPath += std::to_wstring(m_arPoints[0].y);
+								
+								++valuePointer;
+							}
+							else
+							{
+								strVmlPath += L"l";
+								strVmlPath += std::to_wstring(m_arPoints[valuePointer].x );
+								strVmlPath += L",";
+								strVmlPath += std::to_wstring(m_arPoints[valuePointer].y );
+								
+								++valuePointer;
+							}
+						}
+					}break;
+					case NSCustomShapesConvert::rtCurveTo:
+					{
+						for (_UINT16 i = 0; i < m_arSegments[i].m_nCount; ++i)
+						{
+							if (valuePointer + 3 > m_arPoints.size()) 
+								break;
+							strVmlPath += L"c";
+							strVmlPath += std::to_wstring(m_arPoints[valuePointer].x );
+							strVmlPath += L",";
+							strVmlPath += std::to_wstring(m_arPoints[valuePointer].y );
+							strVmlPath += L",";
+							strVmlPath += std::to_wstring(m_arPoints[valuePointer + 1].x );
+							strVmlPath += L",";
+							strVmlPath += std::to_wstring(m_arPoints[valuePointer + 1].y );
+							strVmlPath += L",";
+							strVmlPath += std::to_wstring(m_arPoints[valuePointer + 2].x );
+							strVmlPath += L",";
+							strVmlPath += std::to_wstring(m_arPoints[valuePointer + 2].y );
+							valuePointer += 3;
+						}
+					}break;
+					case NSCustomShapesConvert::rtMoveTo:
+					{
+						if (valuePointer < m_arPoints.size()) 
+						{
+							strVmlPath += L"m";
+							strVmlPath += std::to_wstring(m_arPoints[valuePointer].x );
+							strVmlPath += L",";
+							strVmlPath += std::to_wstring(m_arPoints[valuePointer].y );
+							
+							++valuePointer;
+						}
+					}
+					break;
+					case NSCustomShapesConvert::rtClose:
+					{
+						strVmlPath += L"x";
+					}
+					break;
+					case NSCustomShapesConvert::rtEnd:
+					{
+						strVmlPath += L"e";
+					}break;	
+				}
+			}
+
+            if ( !strVmlPath.empty() && ( strVmlPath[strVmlPath.size() - 1] != L'e' ) )
+                strVmlPath +=L"e";
+
+			return strVmlPath;
+		}
+
+	private:
+		std::vector<ODRAW::MSOPATHINFO>	&m_arSegments;
+		std::vector<POINT> m_arPoints;
+	};
+//-----------------------------------------------------------------------------------------------------------
 	const static std::wstring shemeColor[18] = 
 	{L"accent1",L"accent2",L"accent3",L"accent4",L"accent5",L"accent6",L"bk1",L"bk2",L"dk1",L"dk2",L"folHlink",L"hlink",L"lt1",L"lt2",L"none", L"tx1",L"tx2",L"phClr"};
 
@@ -284,11 +433,11 @@ _color xlsx_drawing_context::CorrectSysColor(int nColorCode, _drawing_state_ptr 
 	//}
 	return color;
 }
-
+//-----------------------------------------------------------------------------------------------------------
 xlsx_drawing_context::xlsx_drawing_context(xlsx_conversion_context & Context) : context_(Context), handle_(Context.get_drawing_context_handle())
 	, rels_				(xlsx_drawings_rels::create())
 	, vml_HF_rels_		(xlsx_drawings_rels::create())
-	, vml_comments_rels_(xlsx_drawings_rels::create())
+	, vml_rels_(xlsx_drawings_rels::create())
 	, sheet_rels_		(xlsx_drawings_rels::create())
 {    
 	in_chart_		= false;
@@ -326,10 +475,9 @@ bool xlsx_drawing_context::start_drawing(int type)
 	case 0x0010: // Spin control
 	case 0x0012: // List
 	case 0x0013: // Group box
-		start_shape(0x0002); return true;
 	case 0x0011: // Scrollbar
 	case 0x0014: // Dropdown list
-		break;
+		start_control(type); return true;
 	case 0x0019: // Note
 		start_comment(); return true;
 		break;
@@ -357,6 +505,7 @@ void xlsx_drawing_context::start_image()
 	current_drawing_states->push_back(create_drawing_state());
 
 	current_drawing_states->back()->type = external_items::typeImage;
+	current_drawing_states->back()->type_control = 0x0008;
 	
 	count_object++;
 }
@@ -367,9 +516,12 @@ void xlsx_drawing_context::start_comment()
 
 	current_drawing_states->push_back(create_drawing_state());
 
-	current_drawing_states->back()->type			= external_items::typeComment;
-	//current_drawing_states->back()->vmlwrite_mode_	= true; это только для HF !!!
+	current_drawing_states->back()->type = external_items::typeComment;
 	
+	current_drawing_states->back()->shape_id = MSOSPT::msosptRectangle;
+	current_drawing_states->back()->type_control = 0x0019;
+	current_drawing_states->back()->object.visible = false;
+
 	count_object++;
 
 	context_.get_comments_context().start_comment();
@@ -389,6 +541,7 @@ void xlsx_drawing_context::start_group()
 	current_drawing_states->push_back(newState);
 
 	current_drawing_states->back()->type = external_items::typeGroup;
+	current_drawing_states->back()->type_control = 0x0000;
 }
 void xlsx_drawing_context::end_group()
 {
@@ -412,7 +565,19 @@ void xlsx_drawing_context::start_chart()
 	in_chart_ = true;
 	count_object++;
 }
+void xlsx_drawing_context::start_control(int type)
+{
+	if (current_drawing_states == NULL) return;
 
+	current_drawing_states->push_back(create_drawing_state());
+
+	current_drawing_states->back()->type = external_items::typeControl;
+
+	current_drawing_states->back()->shape_id = MSOSPT::msosptRectangle;
+	current_drawing_states->back()->type_control = type;
+
+	count_object++;
+}
 void xlsx_drawing_context::start_shape(int type)
 {
 	if (current_drawing_states == NULL) return;
@@ -420,6 +585,7 @@ void xlsx_drawing_context::start_shape(int type)
 	current_drawing_states->push_back(create_drawing_state());
 
 	current_drawing_states->back()->type = external_items::typeShape;
+	current_drawing_states->back()->type_control = type;
 
 	switch(type)
 	{
@@ -465,14 +631,14 @@ void xlsx_drawing_context::set_shape_id(int id)
 
 	current_drawing_states->back()->shape_id = (MSOSPT)id;
 }
-void xlsx_drawing_context::set_object_visible	(bool val)
+void xlsx_drawing_context::set_object_visible(bool val)
 {
 	if (current_drawing_states == NULL) return;
 	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->object.visible = val;
 }
-void xlsx_drawing_context::set_object_anchor	(int col, int row)
+void xlsx_drawing_context::set_object_anchor(int col, int row)
 {
 	if (current_drawing_states == NULL) return;
 	if (current_drawing_states->empty()) return;
@@ -484,7 +650,13 @@ void xlsx_drawing_context::set_object_anchor	(int col, int row)
 void xlsx_drawing_context::set_object_id(int val)
 {
 }
+void xlsx_drawing_context::set_object_link(const std::wstring & formula)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
 
+	current_drawing_states->back()->object.link = formula;
+}
 
 void xlsx_drawing_context::end_drawing()
 {
@@ -495,17 +667,19 @@ void xlsx_drawing_context::end_drawing()
 	
 	end_drawing(current_drawing_states->back());
 
-	if ( current_drawing_states->back()->type == external_items::typeComment )
+	if ( current_drawing_states->back()->type == external_items::typeComment ||
+		 current_drawing_states->back()->type == external_items::typeControl )
 	{
-		drawing_states_vml_comments.push_back(current_drawing_states->back());
+		drawing_states_vml.push_back(current_drawing_states->back());
+
+		if (current_drawing_states->back()->type == external_items::typeComment)
+			current_drawing_states->pop_back();
+	}
+	else if (!current_drawing_states->back()->vml_shape.empty())
+	{ // && current_drawing_states->back()->vml_HF_mode_
+		drawing_states_vml_HF.push_back(current_drawing_states->back());
 		current_drawing_states->pop_back();
 	}
-	else 
-		if (current_drawing_states->back()->vmlwrite_mode_)
-		{
-			drawing_states_vml_HF.push_back(current_drawing_states->back());
-			current_drawing_states->pop_back();
-		}
 }
 
 void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
@@ -527,10 +701,14 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 			
 			serialize_pic(drawing_state, rId);
 		
-			if (drawing_state->vmlwrite_mode_)
+			if (drawing_state->vml_HF_mode_)
+			{
 				vml_HF_rels_->add(isIternal, rId , drawing_state->fill.texture_target, drawing_state->type);
+			}
 			else
+			{
 				rels_->add(isIternal, rId , drawing_state->fill.texture_target, drawing_state->type);
+			}
 		}
 		else 
 			drawing_state->type = external_items::typeShape;
@@ -561,14 +739,17 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 	{
 		context_.get_comments_context().set_content(drawing_state->text.content);
 		
-		serialize_shape_comment(drawing_state);
+		serialize_vml_shape(drawing_state);
 	
-		//context_.get_comments_context().set_shape_drawing(drawing_state->shape); 
 		context_.get_comments_context().end_comment();
 	}
 	if ( drawing_state->type == external_items::typeShape)
 	{
 		serialize_shape(drawing_state);
+	}
+	if ( drawing_state->type == external_items::typeControl)
+	{
+		serialize_control(drawing_state);
 	}
 }
 
@@ -640,7 +821,7 @@ void xlsx_drawing_context::serialize_group()
 
 	drawing_state->shape = strm.str();
 }
-void xlsx_drawing_context::serialize_shape_comment(_drawing_state_ptr & drawing_state)
+void xlsx_drawing_context::serialize_vml_shape(_drawing_state_ptr & drawing_state)
 {
 	std::wstringstream strm;
 	
@@ -651,18 +832,23 @@ void xlsx_drawing_context::serialize_shape_comment(_drawing_state_ptr & drawing_
 		strmStyle << L"position:absolute;";	
 		strmStyle << L"margin-left:" << std::to_wstring(drawing_state->child_anchor.x / 12700.)	<< L"pt;";	//in pt (1 pt = 12700 emu)
 		strmStyle << L"margin-top:"	<< std::to_wstring(drawing_state->child_anchor.y / 12700.)	<< L"pt;";
-		strmStyle << L"width:"		<< std::to_wstring(drawing_state->child_anchor.cx / 12700.)	<< L"pt;";
-		strmStyle << L"height:"		<< std::to_wstring(drawing_state->child_anchor.cy / 12700.)	<< L"pt;";
-		strmStyle << L"z-index:"		<< std::to_wstring(drawing_state->id)	 << L";";
+		strmStyle << L"width:" << std::to_wstring(drawing_state->child_anchor.cx / 12700.)	<< L"pt;";
+		strmStyle << L"height:"	<< std::to_wstring(drawing_state->child_anchor.cy / 12700.)	<< L"pt;";
+		strmStyle << L"z-index:" << std::to_wstring(drawing_state->id)	 << L";";
 		
 		if (drawing_state->object.visible == false) 
 			strmStyle << L"visibility:hidden;";	
 
 		CP_XML_NODE(L"v:shape")
 		{
-			//CP_XML_ATTR(L"id"			, std::to_wstring(drawing_state->object.id));
-			CP_XML_ATTR(L"type"			, L"_x0000_t202");
-			CP_XML_ATTR(L"fillcolor"	, L"#" + drawing_state->fill.color.sRGB);
+			CP_XML_ATTR(L"id", L"_x0000_s" + std::to_wstring(drawing_state->id));
+
+			if (drawing_state->shape_id != msosptNotPrimitive)
+			{
+				CP_XML_ATTR(L"type", L"#_x0000_t" + std::to_wstring(drawing_state->shape_id));
+				CP_XML_ATTR(L"o:spt", drawing_state->shape_id);
+			}
+			CP_XML_ATTR(L"fillcolor", L"#" + drawing_state->fill.color.sRGB);
 
 			if (drawing_state->line.width > 0)
 			{
@@ -670,6 +856,32 @@ void xlsx_drawing_context::serialize_shape_comment(_drawing_state_ptr & drawing_
 			}
 			CP_XML_ATTR(L"style", strmStyle.str());
 
+			if (!current_drawing_states->back()->custom_verticles.empty() &&
+				!current_drawing_states->back()->custom_segments.empty())
+			{		
+				PathParser oParser (current_drawing_states->back()->custom_segments, current_drawing_states->back()->custom_verticles, current_drawing_states->back()->custom_guides);
+				std::wstring path = oParser.GetVmlPath();
+
+				if (false == path.empty())
+					CP_XML_ATTR(L"path", path);
+			}
+			if (drawing_state->type == external_items::typeControl)
+			{
+				CP_XML_ATTR(L"o:button", L"t");
+			}
+			if (drawing_state->line.fill.type == fillNone)
+			{
+				CP_XML_ATTR(L"stroked", L"f");
+			}
+			if (drawing_state->line.fill.type == fillNone)
+			{
+				CP_XML_ATTR(L"stroked", L"f");
+			}
+			if (drawing_state->fill.type == fillNone)
+			{
+				CP_XML_ATTR(L"filled", L"f");
+			}
+//----------------------------------------------------------------------------------------------
 			CP_XML_NODE(L"v:shadow")
 			{
 				CP_XML_ATTR(L"color", L"black");
@@ -696,7 +908,14 @@ void xlsx_drawing_context::serialize_shape_comment(_drawing_state_ptr & drawing_
 					CP_XML_ATTR(L"o:relid"	, rId);
 					CP_XML_ATTR(L"type"		, L"tile");
 
-					vml_comments_rels_->add(isIternal, rId , drawing_state->fill.texture_target, external_items::typeImage);
+					if (current_drawing_states->back()->vml_HF_mode_ )
+					{
+						vml_HF_rels_->add(isIternal, rId , drawing_state->fill.texture_target, external_items::typeImage);
+					}
+					else
+					{
+						vml_rels_->add(isIternal, rId , drawing_state->fill.texture_target, external_items::typeImage);
+					}
 				}
 				else if (drawing_state->fill.type == fillGradient || drawing_state->fill.type == fillGradientOne)
 				{
@@ -725,10 +944,43 @@ void xlsx_drawing_context::serialize_shape_comment(_drawing_state_ptr & drawing_
 				case lineDashDot:	CP_XML_ATTR(L"dashstyle", L"dashDot");		break;
 				case lineDashDotDot:CP_XML_ATTR(L"dashstyle", L"lgDashDotDot"); break;
 				}
-			}	
+			}
+			if (!drawing_state->text.vml_content.empty())
+			{
+				CP_XML_NODE(L"v:textbox")
+				{
+					//style='mso-direction-alt:auto' 
+					//o:singleclick="f"
+					CP_XML_STREAM() << drawing_state->text.vml_content;
+				}
+			}
 			CP_XML_NODE(L"x:ClientData")
 			{
-				CP_XML_ATTR(L"ObjectType", L"Note");
+				switch(drawing_state->type_control)
+				{
+					case 0x0000: CP_XML_ATTR(L"ObjectType", L"Group");		break;
+					case 0x0001: CP_XML_ATTR(L"ObjectType", L"Shape");		break; // Line
+					case 0x0002: CP_XML_ATTR(L"ObjectType", L"Rect");		break;
+					case 0x0003: CP_XML_ATTR(L"ObjectType", L"Shape");		break; // Oval
+					case 0x0004: CP_XML_ATTR(L"ObjectType", L"Shape");		break; // Arc
+					case 0x0006: CP_XML_ATTR(L"ObjectType", L"Shape");		break; // Text
+					case 0x0007: CP_XML_ATTR(L"ObjectType", L"Button");		break;
+					case 0x0008: CP_XML_ATTR(L"ObjectType", L"Pict");		break;
+					case 0x0009: CP_XML_ATTR(L"ObjectType", L"Shape");		break; // Polygon:			
+					case 0x000B: CP_XML_ATTR(L"ObjectType", L"Checkbox");	break;
+					case 0x000C: CP_XML_ATTR(L"ObjectType", L"Radio");		break;
+					case 0x000D: CP_XML_ATTR(L"ObjectType", L"Edit");		break;
+					case 0x000E: CP_XML_ATTR(L"ObjectType", L"Label");		break;
+					case 0x000F: CP_XML_ATTR(L"ObjectType", L"Dialog");		break;
+					case 0x0010: CP_XML_ATTR(L"ObjectType", L"Spin");		break;
+					case 0x0012: CP_XML_ATTR(L"ObjectType", L"List");		break;
+					case 0x0013: CP_XML_ATTR(L"ObjectType", L"GBox");		break;
+					case 0x0011: CP_XML_ATTR(L"ObjectType", L"Scroll");		break;
+					case 0x0014: CP_XML_ATTR(L"ObjectType", L"Drop");		break;
+					case 0x001E: CP_XML_ATTR(L"ObjectType", L"Shape");		break; // OfficeArt object
+					case 0x0019: CP_XML_ATTR(L"ObjectType", L"Note");		break;
+					default: break;
+				}
 				CP_XML_NODE(L"x:MoveWithCells"){}
 				CP_XML_NODE(L"x:SizeWithCells"){}
 
@@ -748,16 +1000,22 @@ void xlsx_drawing_context::serialize_shape_comment(_drawing_state_ptr & drawing_
 				CP_XML_NODE(L"x:AutoFill")	{CP_XML_CONTENT("False");}
 				CP_XML_NODE(L"x:Row")		{CP_XML_CONTENT(drawing_state->object.row);}
 				CP_XML_NODE(L"x:Column")	{CP_XML_CONTENT(drawing_state->object.col);}
-				
+
 				if (drawing_state->object.visible) CP_XML_NODE(L"x:Visible");
+
+				if (!drawing_state->object.macro.empty())
+				{
+					CP_XML_NODE(L"x:FmlaMacro"){CP_XML_CONTENT(drawing_state->object.macro);}
+				}
+				if (!drawing_state->object.link.empty() )
+				{
+					CP_XML_NODE(L"x:FmlaLink"){CP_XML_CONTENT(drawing_state->object.link);}
+				}
 			}
 		}	
 	
 	}
-	drawing_state->shape = strm.str();
-}
-void xlsx_drawing_context::serialize_vml_shape(_drawing_state_ptr & drawing_state)
-{
+	drawing_state->vml_shape = strm.str();
 }
 void xlsx_drawing_context::serialize_vml_pic(_drawing_state_ptr & drawing_state, std::wstring rId)
 {
@@ -790,12 +1048,12 @@ void xlsx_drawing_context::serialize_vml_pic(_drawing_state_ptr & drawing_state,
 			}
 		}
 	}
-	drawing_state->shape = strm.str();
+	drawing_state->vml_shape = strm.str();
 }
 
 void xlsx_drawing_context::serialize_pic(_drawing_state_ptr & drawing_state, std::wstring rId)
 {
-	if (drawing_state->vmlwrite_mode_) 
+	if (drawing_state->vml_HF_mode_) 
 		return serialize_vml_pic(drawing_state, rId);
 
 	std::wstringstream strm;
@@ -804,7 +1062,7 @@ void xlsx_drawing_context::serialize_pic(_drawing_state_ptr & drawing_state, std
 	{
 		CP_XML_NODE(L"xdr:pic")
 		{ 
-			CP_XML_ATTR(L"macro", drawing_state->macro);
+			CP_XML_ATTR(L"macro", drawing_state->object.macro);
 
 			CP_XML_NODE(L"xdr:nvPicPr")
 			{
@@ -914,10 +1172,73 @@ void xlsx_drawing_context::serialize_chart(_drawing_state_ptr & drawing_state, s
     }  
 	drawing_state->shape = strm.str();
 }
+void xlsx_drawing_context::serialize_control(_drawing_state_ptr & drawing_state)
+{
+	std::wstringstream strm;
+	CP_XML_WRITER(strm)    
+	{
+		CP_XML_NODE(L"xdr:sp")
+		{ 
+			CP_XML_NODE(L"xdr:nvSpPr")
+			{
+				CP_XML_NODE(L"xdr:cNvPr")
+				{
+					CP_XML_ATTR(L"id", drawing_state->id);
+					
+					if (drawing_state->name.empty())
+					{
+						drawing_state->name = L"Control_" + std::to_wstring(count_object);
+					}
+					CP_XML_ATTR(L"name", drawing_state->name);
+					
+					if (!drawing_state->description.empty())
+					{
+						CP_XML_ATTR(L"descr", drawing_state->description);
+					}
+					CP_XML_ATTR(L"hidden", 1);
 
+					CP_XML_NODE(L"a:extLst")
+					{
+						CP_XML_NODE(L"a:ext")
+						{
+							CP_XML_ATTR(L"uri", L"{63B3BB69-23CF-44E3-9099-C40C66FF867C}");
+							CP_XML_ATTR(L"xmlns:a14", L"http://schemas.microsoft.com/office/drawing/2010/main");
+
+							CP_XML_NODE(L"a14:compatExt")
+							{
+								CP_XML_ATTR(L"spid", L"_x0000_s" + std::to_wstring(drawing_state->id));
+							}
+						}
+					}
+				}
+				CP_XML_NODE(L"xdr:cNvSpPr");
+			}
+			
+			CP_XML_NODE(L"xdr:spPr")
+			{
+				serialize_xfrm(CP_XML_STREAM(), drawing_state);
+
+				CP_XML_NODE(L"a:prstGeom")
+				{
+					CP_XML_ATTR(L"prst", L"rect");
+					if (!drawing_state->wordart.is)	CP_XML_NODE(L"a:avLst");
+				}
+				CP_XML_NODE(L"a:noFill");
+				CP_XML_NODE(L"a:ln")
+				{
+					CP_XML_NODE(L"a:noFill");
+				}
+			}
+			serialize_text(CP_XML_STREAM(), drawing_state);
+		}
+	}
+	drawing_state->shape = strm.str();
+
+	serialize_vml_shape(drawing_state);
+}
 void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 {
-	if (drawing_state->vmlwrite_mode_) 
+	if (drawing_state->vml_HF_mode_) 
 		return serialize_vml_shape(drawing_state);
 
 	std::wstringstream strm;
@@ -949,7 +1270,7 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 	{
 		CP_XML_NODE(L"xdr:sp")
 		{ 
-			CP_XML_ATTR(L"macro", drawing_state->macro);
+			CP_XML_ATTR(L"macro", drawing_state->object.macro);
 
 			CP_XML_NODE(L"xdr:nvSpPr")
 			{
@@ -1748,11 +2069,6 @@ void xlsx_drawing_context::serialize_bitmap_fill(std::wostream & stream, _drawin
 	}
 }
 
-void xlsx_drawing_context::serialize_vml(std::wostream & stream, _drawing_state_ptr & drawing_state)
-{
-	stream << drawing_state->shape;
-}
-
 void xlsx_drawing_context::serialize(std::wostream & stream, _drawing_state_ptr & drawing_state)
 {
 	if		(drawing_state->type_anchor == 0) return;
@@ -1836,7 +2152,7 @@ void xlsx_drawing_context::set_macro(const std::wstring & str)
 {
 	if (current_drawing_states == NULL) return;	
 
-	current_drawing_states->back()->macro = str;
+	current_drawing_states->back()->object.macro = str;
 }
 void xlsx_drawing_context::set_ole_object(const std::wstring & id, const std::wstring & info)
 {
@@ -2446,6 +2762,13 @@ void xlsx_drawing_context::set_text (const std::wstring & text)
 
 	current_drawing_states->back()->text.content = text;
 }
+void xlsx_drawing_context::set_text_vml (const std::wstring & text)
+{
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->text.vml_content = text;
+}
 void xlsx_drawing_context::set_text_wrap (int val)
 {
 	if (current_drawing_states == NULL) return;	
@@ -2547,24 +2870,28 @@ void xlsx_drawing_context::set_custom_y_limo(int val)
 	current_drawing_states->back()->custom_y_limo = val;
 }
 //----------------------------------------------------------------------------------------------------------
-bool xlsx_drawing_context::get_mode_vmlwrite ()
+bool xlsx_drawing_context::get_mode_HF ()
 {//comment, shapes in header/footer, ....
 	if (current_drawing_states == NULL) return false;	
 	if (current_drawing_states->empty()) return false;
 
-	return current_drawing_states->back()->vmlwrite_mode_;
+	return current_drawing_states->back()->vml_HF_mode_;
 }
-void xlsx_drawing_context::set_mode_vmlwrite (bool val)
+void xlsx_drawing_context::set_mode_HF (bool val)
 {//comment, shapes in header/footer, ....
 	if (current_drawing_states == NULL) return;	
 	if (current_drawing_states->empty()) return;
 
-	current_drawing_states->back()->vmlwrite_mode_ = val;
+	current_drawing_states->back()->vml_HF_mode_ = val;
 }
 //----------------------------------------------------------------------------------------------------------
 bool xlsx_drawing_context::empty()
 {
 	return drawing_states.empty();
+}
+bool xlsx_drawing_context::empty_vml()
+{
+	return drawing_states_vml.empty();
 }
 bool xlsx_drawing_context::empty_vml_HF()
 {
@@ -2578,9 +2905,9 @@ xlsx_drawings_rels_ptr xlsx_drawing_context::get_vml_HF_rels()
 {
     return vml_HF_rels_;
 }
-xlsx_drawings_rels_ptr xlsx_drawing_context::get_vml_comments_rels()
+xlsx_drawings_rels_ptr xlsx_drawing_context::get_vml_rels()
 {
-    return vml_comments_rels_;
+    return vml_rels_;
 }
 xlsx_drawings_rels_ptr xlsx_drawing_context::get_sheet_rels()
 {
@@ -2608,6 +2935,7 @@ void xlsx_drawing_context::serialize_objects(std::wostream & strm)
 		serialize_object(strm, drawing_states[i]);
 	}
 }
+//-------------------------------------------------------------------------------------------------------------------
 void xlsx_drawing_context::serialize_vml_HF(std::wostream & strm) 
 {
     CP_XML_WRITER(strm)
@@ -2620,13 +2948,13 @@ void xlsx_drawing_context::serialize_vml_HF(std::wostream & strm)
 
 			for (size_t i = 0 ; i < drawing_states_vml_HF.size(); i++)
 			{
-				serialize_vml(CP_XML_STREAM(), drawing_states_vml_HF[i]);
+				CP_XML_STREAM() << drawing_states_vml_HF[i]->vml_shape;
 			}
 
 		}
     }
 }
-void xlsx_drawing_context::serialize_vml_comments(std::wostream & strm) 
+void xlsx_drawing_context::serialize_vml(std::wostream & strm) 
 {
     CP_XML_WRITER(strm)
     {
@@ -2636,27 +2964,9 @@ void xlsx_drawing_context::serialize_vml_comments(std::wostream & strm)
             CP_XML_ATTR(L"xmlns:o"	, L"urn:schemas-microsoft-com:office:office");
             CP_XML_ATTR(L"xmlns:x"	, L"urn:schemas-microsoft-com:office:excel");
 
-			CP_XML_NODE(L"v:shapetype")
+			for (size_t i = 0 ; i < drawing_states_vml.size(); i++)
 			{
-				CP_XML_ATTR(L"id"		, L"_x0000_t202");
-				CP_XML_ATTR(L"coordsize", L"21600,21600");
-				CP_XML_ATTR(L"o:spt"	, L"202");
-				CP_XML_ATTR(L"path"		, L"m,l,21600r21600,l21600,xe");
-
-				CP_XML_NODE(L"v:stroke")
-				{
-					CP_XML_ATTR(L"joinstyle", L"miter");
-				}
-				CP_XML_NODE(L"v:path")
-				{
-					CP_XML_ATTR(L"gradientshapeok", L"t");				
-					CP_XML_ATTR(L"o:connecttype", L"rect");
-				}
-			}				
-
-			for (size_t i = 0 ; i < drawing_states_vml_comments.size(); i++)
-			{
-				serialize_vml(CP_XML_STREAM(), drawing_states_vml_comments[i]);
+				CP_XML_STREAM() << drawing_states_vml[i]->vml_shape;
 			}
 
 		}

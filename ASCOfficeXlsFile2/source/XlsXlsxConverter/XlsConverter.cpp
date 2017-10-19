@@ -1040,7 +1040,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 
 		if (text_obj)
 		{ 
-			if (type_object <0) type_object = 0x0006;			
+			if (type_object < 0) type_object = 0x0006;			
 		}
 
 //-----------------------------------------------------------------------------
@@ -1115,7 +1115,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 void XlsConverter::convert(ODRAW::OfficeArtSpgrContainer * spgr)
 {
 	if (spgr == NULL) return;
-	if (spgr->anchor_type_ != ODRAW::OfficeArtRecord::CA_HF) return; //todooo проверить что тока для header/footer это нужно
+	if (spgr->anchor_type_ != ODRAW::OfficeArtRecord::CA_HF) return;
 
 	for (size_t i = 0; i < spgr->child_records.size(); i++)
 	{
@@ -1123,7 +1123,7 @@ void XlsConverter::convert(ODRAW::OfficeArtSpgrContainer * spgr)
 
 		if (xlsx_context->get_drawing_context().start_drawing(type_object))
 		{
-			xlsx_context->get_drawing_context().set_mode_vmlwrite(true);
+			xlsx_context->get_drawing_context().set_mode_HF(true);
 			convert(spgr->child_records[i].get());
 
 			xlsx_context->get_drawing_context().end_drawing();
@@ -1515,7 +1515,7 @@ void XlsConverter::convert_blip(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 				std::wstring target;
 
 				int id = props[i]->op;
-				if (xlsx_context->get_drawing_context().get_mode_vmlwrite()) 
+				if (xlsx_context->get_drawing_context().get_mode_HF()) 
 					id += 3000;
 				
 				std::wstring rId = xlsx_context->get_mediaitems().find_image(id , target, isIternal);
@@ -1894,9 +1894,6 @@ void XlsConverter::convert(XLS::TxO * text_obj)
 {
 	if (text_obj == NULL) return;
 	
-	std::wstringstream strm;
-	text_obj->serialize(strm);
-
 	int rot = text_obj->rot;
 
 	if (rot > 0)
@@ -1928,7 +1925,14 @@ void XlsConverter::convert(XLS::TxO * text_obj)
 	xlsx_context->get_drawing_context().set_text_align		(text_obj->hAlignment);
 	xlsx_context->get_drawing_context().set_text_vert_align	(text_obj->vAlignment);
 	
+	std::wstringstream strm, strm_vml;
+
+	text_obj->serialize(strm);	
 	xlsx_context->get_drawing_context().set_text(strm.str());
+
+	text_obj->serialize_vml(strm_vml);	
+	xlsx_context->get_drawing_context().set_text_vml(strm_vml.str());
+
 }
 
 void XlsConverter::convert(XLS::Obj * obj)
@@ -1991,9 +1995,17 @@ void XlsConverter::convert(XLS::Obj * obj)
 	if (obj->list.fExist)
 	{
 	}
+	bool full_ref = false;
+	if (obj->cmo.ot > 0x06) full_ref = true;
+	
+	if (obj->linkFmla.fExist && obj->linkFmla.fmla.bFmlaExist)
+	{		
+		std::wstring link = obj->linkFmla.fmla.fmla.getAssembledFormula(full_ref);
+		xlsx_context->get_drawing_context().set_object_link(link);
+	}
 	if (obj->macro.fExist && obj->macro.fmla.bFmlaExist)
 	{
-		std::wstring macro = obj->macro.fmla.fmla.getAssembledFormula();
+		std::wstring macro = obj->macro.fmla.fmla.getAssembledFormula(full_ref);
 		xlsx_context->get_drawing_context().set_macro(macro);
 	}
 }

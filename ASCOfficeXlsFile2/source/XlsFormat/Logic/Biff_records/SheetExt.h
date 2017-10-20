@@ -32,13 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/SheetExtOptional.h>
+#include "../Biff_structures/SheetExtOptional.h"
 
 namespace XLS
 {
 
-
-// Logical representation of SheetExt record in BIFF8
 class SheetExt: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SheetExt)
@@ -48,13 +46,11 @@ public:
 	~SheetExt();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 	
-	static const ElementType	type = typeSheetExt;
+	static const ElementType type = typeSheetExt;
 
-	int serialize(std::wostream & stream);
 //-----------------------------
 	_UINT32	cb;
 	unsigned char	icvPlain;

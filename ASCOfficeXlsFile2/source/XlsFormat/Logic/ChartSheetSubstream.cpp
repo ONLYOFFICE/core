@@ -150,7 +150,14 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 		switch(type)
 		{
 			case rt_WriteProtect:		proc.optional<WriteProtect>();	break;
-			case rt_SheetExt:			proc.optional<SheetExt>();		break;
+			case rt_SheetExt:			
+			{
+				if (proc.optional<SheetExt>())
+				{
+					m_SheetExt = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_WebPub:				proc.optional<WebPub>();		break;
 			case rt_HFPicture:			proc.repeated<HFPicture>(0, 0);	break;
 		

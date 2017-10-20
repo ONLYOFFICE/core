@@ -82,6 +82,8 @@ public:
 	BaseObjectPtr				m_PivotChartBits;
 	BaseObjectPtr				m_SBaseRef;
 
+	BaseObjectPtr				m_CodeName;
+	BaseObjectPtr				m_SheetExt;
 private:
 
 	void recalc(CHARTFORMATS*	charts);

@@ -431,11 +431,9 @@ void XlsConverter::convert (XLS::WorksheetSubstream* sheet)
 	{
 		sheet->m_Dimensions->serialize(xlsx_context->current_sheet().dimension());
 	}
-	if (sheet->m_SheetExt)
-	{
-		sheet->m_SheetExt->serialize(xlsx_context->current_sheet().sheetProperties());
-		// todooo + GLOBALS->WsBool
-	}
+	
+	sheet->serialize_format(xlsx_context->current_sheet().sheetProperties());
+
 	if (sheet->m_GLOBALS)
 	{
 		XLS::GLOBALS * globals  = dynamic_cast<XLS::GLOBALS *>(sheet->m_GLOBALS.get());

@@ -54,6 +54,9 @@ public:
 	BaseObjectPtr				m_GLOBALS;
 	BaseObjectPtr				m_OBJECTS;
 	std::vector<BaseObjectPtr>	m_arCUSTOMVIEW;
+
+	BaseObjectPtr				m_SheetExt;
+	BaseObjectPtr				m_CodeName;
 	
 };
 

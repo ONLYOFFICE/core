@@ -115,7 +115,8 @@ void CompoundFile::copy_stream(std::string streamNameOpen, std::string streamNam
 	POLE::Stream *streamNew = new POLE::Stream(storageOut, streamNameCreate, true, size_stream);
 	if (!streamNew) return;
 
-	unsigned char* data_stream = new unsigned char[size_stream];
+	unsigned char* data_stream = new unsigned char[size_stream + 64];
+	memset(data_stream, 0, size_stream + 64);
 	if (data_stream)
 	{
 		stream->read(data_stream, size_stream);
@@ -140,16 +141,15 @@ void CompoundFile::copy( int indent, std::string path, POLE::Storage * storageOu
 	
 	for( std::list<std::string>::iterator it = entries.begin(); it != entries.end(); it++ )
 	{
-        std::string name = *it;
-        std::string fullname = path + name;
+        std::string fullname = path + *it;
        
-        if( storage_->isDirectory( fullname ) )
+        if ((it->at(0) >= 32) && (storage_->isDirectory( fullname ) ))
 		{
-			entries_dir.push_back(name);
+			entries_dir.push_back(*it);
 		}
 		else
 		{
-			entries_files.push_front(name);
+			entries_files.push_front(*it);
 		}
 	}
 	for( std::list<std::string>::iterator it = entries_dir.begin(); it != entries_dir.end(); it++ )
@@ -158,8 +158,8 @@ void CompoundFile::copy( int indent, std::string path, POLE::Storage * storageOu
        
 		copy( indent + 1, fullname + "/", storageOut, bWithRoot, bSortFiles );
     }
-	
-	entries_files.sort();
+	//if (bSortFiles)
+		entries_files.sort();
 
 	for( std::list<std::string>::iterator it = entries_files.begin(); it != entries_files.end(); it++ )
 	{

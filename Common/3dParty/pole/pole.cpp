@@ -399,13 +399,13 @@ void Header::save( unsigned char* buffer )
 {
   memset( buffer, 0, 0x4c );
   memcpy( buffer, pole_magic, 8 );        // ole signature
-  writeU32( buffer + 8, 0 );              // unknown 
-  writeU32( buffer + 12, 0 );             // unknown
-  writeU32( buffer + 16, 0 );             // unknown
-  writeU16( buffer + 24, 0x003e );        // revision ?
-  writeU16( buffer + 26, 3 );             // version ?
-  writeU16( buffer + 28, 0xfffe );        // unknown
-  writeU16( buffer + 0x1e, (uint32) b_shift );
+  writeU32( buffer + 8, 0 );              // reserved must be zero
+  writeU32( buffer + 12, 0 );             // reserved must be zero
+  writeU32( buffer + 16, 0 );             // reserved must be zero
+  writeU16( buffer + 24, 0x003e );        // minor version of the format: 33
+  writeU16( buffer + 26, 3 );             // major version (512 clasters)
+  writeU16( buffer + 28, 0xfffe );        // indicates Intel byte-ordering
+  writeU16( buffer + 0x1e, (uint32) b_shift ); //size of sectors in power-of-two
   writeU16( buffer + 0x20, (uint32) s_shift );
   writeU32( buffer + 0x2c, (uint32) num_bat );
   writeU32( buffer + 0x30, (uint32) dirent_start );
@@ -415,8 +415,8 @@ void Header::save( unsigned char* buffer )
   writeU32( buffer + 0x44, (uint32) mbat_start );
   writeU32( buffer + 0x48, (uint32) num_mbat );
   
-  for( unsigned int i=0; i<109; i++ )
-    writeU32( buffer + 0x4C+i*4, (uint32) bb_blocks[i] );
+  for( unsigned int i = 0; i < 109; i++ )
+    writeU32( buffer + 0x4C  + i * 4, (uint32) bb_blocks[i] );
   dirty = false;
 }
 
@@ -711,7 +711,7 @@ int64 DirTree::parent( uint64 index )
   for( uint64 j=0; j<entryCount(); j++ )
   {
     std::vector<uint64> chi = children( j );
-    for( unsigned i=0; i<chi.size();i++ )
+    for( size_t i=0; i<chi.size();i++ )
       if( chi[i] == index )
         return j;
   }
@@ -748,7 +748,7 @@ std::string DirTree::fullName( uint64 index )
 // if create is true, a new entry is returned
 DirEntry* DirTree::entry( const std::string& name, bool create, int64 bigBlockSize, StorageIO *const io, int64 streamSize)
 {
-   if( !name.length() ) return (DirEntry*)0;
+   if( name.empty() ) return (DirEntry*)0;
  
    // quick check for "/" (that's root)
    if( name == "/" ) return entry( 0 );
@@ -778,23 +778,21 @@ DirEntry* DirTree::entry( const std::string& name, bool create, int64 bigBlockSi
    {
      // find among the children of index
      levelsLeft--;
-     uint64 child = 0;
-
+     uint64 child = 0;     
      
-     /*
      // dima: this block is really inefficient
-     std::vector<unsigned> chi = children( index );
-     for( unsigned i = 0; i < chi.size(); i++ )
-     {
-       DirEntry* ce = entry( chi[i] );
-       if( ce ) 
-       if( ce->valid && ( ce->name.length()>1 ) )
-       if( ce->name == *it ) {
-             child = chi[i];
-             break;
-       }
-     }
-     */
+     //std::vector<uint64> chi = children( index );
+     //for( size_t i = 0; i < chi.size(); i++ )
+     //{
+     //  DirEntry* ce = entry( chi[i] );
+     //  if( ce ) 
+     //  if( ce->valid && ( ce->name !="/" ) )
+     //  if( ce->name == *it ) {
+     //        child = chi[i];
+     //        break;
+     //  }
+     //}
+     
      // dima: performance optimisation of the previous
      uint64 closest = End;
      child = find_child( index, *it, closest );
@@ -804,14 +802,14 @@ DirEntry* DirTree::entry( const std::string& name, bool create, int64 bigBlockSi
 	 {
 		 index = child;
 	 }
-     else
+     else if( !create || !io->writeable)
      {
 		std::vector<uint64> chi = children( index );
-		for( unsigned i = 0; i < chi.size(); i++ )
+		for( size_t i = 0; i < chi.size(); i++ )
 		{
 			DirEntry* ce = entry( chi[i] );
 			if( ce ) 
-				if( ce->valid && ( ce->name.length()>1 ) )
+				if( ce->valid && ( ce->name !="/" )/*( ce->name.length()>1 )*/ )
 					if( ce->name == *it )
 					{
 						child = chi[i];
@@ -1502,13 +1500,28 @@ void StorageIO::flush()
 void StorageIO::close()
 {
   if( !opened ) return;
-  
+
+  if (writeable)
+  {	
+	  file.seekg(0, std::ios::end );
+	  filesize = static_cast<uint64>(file.tellg());
+	  
+	  if (filesize % 512 != 0)
+	  {
+		  char padding[512];
+		  memset(padding, 0, 512);
+		  file.write(padding, (filesize / 512 + 1 ) * 512 - filesize);
+		  fileCheck(file);
+	  }
+  }
   file.close(); 
   opened = false;
   
   std::list<Stream*>::iterator it;
   for( it = streams.begin(); it != streams.end(); ++it )
     delete *it;
+  
+  streams.clear();
 }
 
 
@@ -1595,8 +1608,7 @@ bool StorageIO::deleteLeaf(DirEntry *entry, const std::string& fullName)
     return true;
 }
 
-uint64 StorageIO::loadBigBlocks( std::vector<uint64> blocks,
-  unsigned char* data, uint64 maxlen )
+uint64 StorageIO::loadBigBlocks( std::vector<uint64> blocks, unsigned char* data, uint64 maxlen )
 {
   // sentinel
   if( !data ) return 0;
@@ -1624,8 +1636,7 @@ uint64 StorageIO::loadBigBlocks( std::vector<uint64> blocks,
   return bytes;
 }
 
-uint64 StorageIO::loadBigBlock( uint64 block,
-  unsigned char* data, uint64 maxlen )
+uint64 StorageIO::loadBigBlock( uint64 block,  unsigned char* data, uint64 maxlen )
 {
   // sentinel
   if( !data ) return 0;
@@ -1651,7 +1662,7 @@ uint64 StorageIO::saveBigBlocks( std::vector<uint64> blocks, uint64 offset, unsi
 
   // write block one by one, seems fast enough
   uint64 bytes = 0;
-  for( unsigned int i=0; (i < blocks.size() ) & ( bytes<len ); i++ )
+  for( size_t i=0; (i < blocks.size() ) & ( bytes<len ); i++ )
   {
     uint64 block = blocks[i];
     uint64 pos =  (bbat->blockSize * ( block+1 ) ) + offset;
@@ -1686,8 +1697,7 @@ uint64 StorageIO::saveBigBlock( uint64 block, uint64 offset, unsigned char* data
 }
 
 // return number of bytes which has been read
-uint64 StorageIO::loadSmallBlocks( std::vector<uint64> blocks,
-  unsigned char* data, uint64 maxlen )
+uint64 StorageIO::loadSmallBlocks( std::vector<uint64> blocks, unsigned char* data, uint64 maxlen )
 {
   // sentinel
   if( !data ) return 0;
@@ -1725,8 +1735,7 @@ uint64 StorageIO::loadSmallBlocks( std::vector<uint64> blocks,
   return bytes;
 }
 
-uint64 StorageIO::loadSmallBlock( uint64 block,
-  unsigned char* data, uint64 maxlen )
+uint64 StorageIO::loadSmallBlock( uint64 block, unsigned char* data, uint64 maxlen )
 {
   // sentinel
   if( !data ) return 0;

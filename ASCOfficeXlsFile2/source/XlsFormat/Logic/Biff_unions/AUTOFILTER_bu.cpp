@@ -145,7 +145,7 @@ int AUTOFILTER::serialize(std::wostream & stream)
 	if (it == pGlobalWorkbookInfoPtr->mapDefineNames.end()) return 0;
 
 	int count_columns = info->cEntries;
-	int ind = pGlobalWorkbookInfoPtr->current_sheet;
+	size_t ind = pGlobalWorkbookInfoPtr->current_sheet;
 	std::wstring ref;
 	
 	if (ind < it->second.size() && ind >= 0)

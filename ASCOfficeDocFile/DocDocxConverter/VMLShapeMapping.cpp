@@ -754,7 +754,7 @@ namespace DocFileFormat
 			case gtextFont:
 				{
 					std::wstring font = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex.get(), (iter->op)/2);
-					int i = font.size();
+					size_t i = font.size();
 					while (i > 0)
 					{
 						if (font[i-1] != 0) break;
@@ -1963,7 +1963,7 @@ namespace DocFileFormat
         {
             int index = (DWORD)val - 0x80000000;
 		
-			if (index >= 0 && index < m_arrGuides.size())
+			if (index >= 0 && index < (int)m_arrGuides.size())
 			{
 				new_val = m_arrGuides[index].param3;
 			}
@@ -2130,7 +2130,7 @@ namespace DocFileFormat
 	
 	void VMLShapeMapping::ApplyPrimitives(DrawingPrimitives * primitives)
 	{
-		int index = 0;
+		size_t index = 0;
 
 		while(true)
 		{
@@ -2142,7 +2142,7 @@ namespace DocFileFormat
 
 	static int currentTextBoxIndex = 1;
 	
-	int VMLShapeMapping::ApplyPrimitive(DrawingPrimitives * primitives, int index)
+	size_t VMLShapeMapping::ApplyPrimitive(DrawingPrimitives * primitives, size_t index)
 	{
 		if (!primitives) return index++;
 		if (index >= primitives->size()) return index++;
@@ -2165,7 +2165,7 @@ namespace DocFileFormat
 			//todooo нарисовать кастомный шейп
 		}
 		else 
-			WritePrimitiveProps(primitive, (index==0?true:false));
+			WritePrimitiveProps(primitive, (index==0 ? true : false));
 
 		
 		if (primitive->type == 0x0000) 
@@ -2241,11 +2241,11 @@ namespace DocFileFormat
 			{
 				//strStyle += L"left:"		+ FormatUtils::IntToWideString( x.ToPoints()) + L"pt;";
 				//strStyle += L"top:"		+ FormatUtils::IntToWideString( y.ToPoints()) + L"pt;";
-				strStyle +=	L"width:"		+ FormatUtils::IntToWideString( w.ToPoints()) + L"pt;";
-				strStyle +=	L"height:"		+ FormatUtils::IntToWideString( h.ToPoints()) + L"pt;";
+				strStyle +=	L"width:"		+ FormatUtils::IntToWideString( (int)w.ToPoints()) + L"pt;";
+				strStyle +=	L"height:"		+ FormatUtils::IntToWideString( (int)h.ToPoints()) + L"pt;";
 
-				strStyle += L"margin-left:"	+ FormatUtils::IntToWideString( x.ToPoints()) + L"pt;";
-				strStyle +=	L"margin-top:"	+ FormatUtils::IntToWideString( y.ToPoints()) + L"pt;";
+				strStyle += L"margin-left:"	+ FormatUtils::IntToWideString( (int)x.ToPoints()) + L"pt;";
+				strStyle +=	L"margin-top:"	+ FormatUtils::IntToWideString( (int)y.ToPoints()) + L"pt;";
 
 				std::wstring xMargin;
 				std::wstring yMargin;

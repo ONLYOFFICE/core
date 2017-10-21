@@ -92,7 +92,7 @@ int DBB::serialize(std::wostream & strm)
 	{
 		CP_XML_NODE(L"r")
 		{ 		
-			int indexOPER = 0;
+			size_t indexOPER = 0;
 			size_t posBlob = 0;
 
 			for (size_t i = 0; i < arPivotCacheFields.size(); i++)

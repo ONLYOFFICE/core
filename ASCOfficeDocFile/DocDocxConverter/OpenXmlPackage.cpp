@@ -136,7 +136,7 @@ namespace DocFileFormat
 	{
 		NSFile::CFileBinary file;
 		file.CreateFileW(fileName);
-		file.WriteFile((BYTE*)data.c_str(), data.size());
+		file.WriteFile((BYTE*)data.c_str(), (_UINT32)data.size());
 		file.CloseFile();
 		return S_OK;
 	}
@@ -154,20 +154,19 @@ namespace DocFileFormat
 		POLE::Storage *storageInp = docFile->GetStorage()->GetStorage();
 
 		{
-			std::string id(oleObjectFileStructure.objectID.begin(),oleObjectFileStructure.objectID.end());
-
-			POLE::Stream* oleStorage = new POLE::Stream(storageInp, id);
+			POLE::Stream* oleStorage = new POLE::Stream(storageInp, oleObjectFileStructure.objectID);
 
 			if (oleStorage)
 			{
-				std::string path = "ObjectPool/" + id;
-				std::list<std::string> entries = storageInp->entries(path);
-				for (std::list<std::string>::iterator it = entries.begin(); it != entries.end(); it++)
+				std::wstring path = L"ObjectPool/" + oleObjectFileStructure.objectID;
+
+				std::list<std::wstring> entries = storageInp->entries(path);
+				for (std::list<std::wstring>::iterator it = entries.begin(); it != entries.end(); it++)
 				{
-					POLE::Stream *stream_inp = new POLE::Stream(storageInp, path + "/"+ (*it));
+					POLE::Stream *stream_inp = new POLE::Stream(storageInp, path + L"/"+ (*it));
 					if (stream_inp == NULL)continue;
 
-					int size = stream_inp->size();
+					POLE::uint64 size = stream_inp->size();
 					
 					POLE::Stream *stream_out = new POLE::Stream(storageOut, *it, true, size);
 

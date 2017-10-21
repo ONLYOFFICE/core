@@ -393,7 +393,7 @@ namespace XMLTools
 			else
 			{
 				std::string s(m_str.begin(), m_str.end());
-				file.WriteFile((unsigned char*)s.c_str(), s.length());
+				file.WriteFile((unsigned char*)s.c_str(), (DWORD)s.length());
 			}
 			file.CloseFile();
 			return true;

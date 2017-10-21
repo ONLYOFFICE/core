@@ -49,12 +49,9 @@
 	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
 #endif
 
-int _tmain(int argc, _TCHAR* argv[])
+HRESULT convert_single(std::wstring sSrcDoc)
 {
-	if (argc < 2) return 1;
-
-	std::wstring sSrcDoc	= argv[1];
-	std::wstring sDstDocx;
+	HRESULT hr = S_OK;
 
 	std::wstring outputDir		= NSDirectory::GetFolderPath(sSrcDoc);
 	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
@@ -66,6 +63,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	bool bMacros = true;
 	HRESULT hRes = docFile.LoadFromFile( sSrcDoc, dstTempPath, L"password", bMacros, NULL);
 	
+	std::wstring sDstDocx;
 	if (bMacros)
 	{
 		sDstDocx = sSrcDoc + L"-my.docm";
@@ -86,3 +84,33 @@ int _tmain(int argc, _TCHAR* argv[])
 	return hRes;
 }
 
+
+HRESULT convert_directory(std::wstring pathName)
+{
+	HRESULT hr = S_OK;
+
+	std::vector<std::wstring> arFiles = NSDirectory::GetFiles(pathName, false);
+
+	for (size_t i = 0; i < arFiles.size(); i++)
+	{
+		convert_single(arFiles[i]);
+	}
+	return S_OK;
+}
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+	if (argc < 2) return 1;
+
+	HRESULT hr = -1;
+	if (NSFile::CFileBinary::Exists(argv[1]))
+	{	
+		hr = convert_single(argv[1]);
+	}
+	else if (NSDirectory::Exists(argv[1]))
+	{
+		hr = convert_directory(argv[1]);
+	}
+
+	return hr;
+}

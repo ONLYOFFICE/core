@@ -62,6 +62,55 @@ wide string into utf8 char*:
 #include <string>
 #include <list>
 
+#include "../../../Common/DocxFormat/Source/Base/unicode_util.h"
+
+static std::wstring convertUtf16ToWString(const UTF16 * Data, int nLength)
+{
+    UTF32 *pStrUtf32 = new UTF32 [nLength + 1];
+    memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (nLength + 1));
+
+    // this values will be modificated
+    const UTF16 *pStrUtf16_Conv = Data;
+    UTF32 *pStrUtf32_Conv = pStrUtf32;
+
+    ConversionResult eUnicodeConversionResult =
+            ConvertUTF16toUTF32 (&pStrUtf16_Conv,
+                                 &Data[nLength]
+            , &pStrUtf32_Conv
+            , &pStrUtf32 [nLength]
+            , strictConversion);
+
+    if (conversionOK != eUnicodeConversionResult)
+    {
+        delete [] pStrUtf32;
+        return std::wstring();
+    }
+
+    std::wstring wstr ((wchar_t *) pStrUtf32);
+
+    delete [] pStrUtf32;
+    return wstr;
+}
+static void convertWStringToUtf16(const std::wstring & str, unsigned char *& Data, int & DataSize)
+{			
+	size_t nLength = str.length();
+			
+	DataSize = (int)nLength * 2; 
+	Data = new unsigned char [DataSize]; 
+
+	UTF16* pStrUtf16 = (UTF16*)		Data;
+	UTF32 *pStrUtf32 = (UTF32 *)	str.c_str();
+
+	UTF16 *pStrUtf16_Conv		= pStrUtf16;
+	const UTF32 *pStrUtf32_Conv = pStrUtf32;
+
+    ConversionResult eUnicodeConversionResult = ConvertUTF32toUTF16 (&pStrUtf32_Conv, &pStrUtf32[nLength]
+            , &pStrUtf16_Conv, &pStrUtf16 [nLength], strictConversion);
+
+    if (conversionOK != eUnicodeConversionResult)
+    {
+    }
+}
 namespace POLE
 {
 
@@ -123,18 +172,18 @@ public:
   /**
    * Finds all stream and directories in given path.
    **/
-  std::list<std::string> entries( const std::string& path = "/" );
-  std::list<std::string> entries_with_prefix( const std::string& path = "/" );
+  std::list<std::wstring> entries( const std::wstring& path = L"/" );
+  std::list<std::wstring> entries_with_prefix( const std::wstring& path = L"/" );
   
   /**
    * Returns true if specified entry name is a directory.
    */
-  bool isDirectory( const std::string& name );
+  bool isDirectory( const std::wstring& name );
 
   /**
    * Returns true if specified entry name exists.
    */
-  bool exists( const std::string& name );
+  bool exists( const std::wstring& name );
 
   /**
    * Returns true if storage can be modified.
@@ -146,7 +195,7 @@ public:
    * recursively delete everything underneath said directory.
    * returns true for success
    */
-  bool deleteByName( const std::string& name );
+  bool deleteByName( const std::wstring& name );
 
   /**
    * Returns an accumulation of information, hopefully useful for determining if the storage
@@ -157,7 +206,7 @@ public:
       uint64 *pBigBlocks, uint64 *pUnusedBigBlocks,
       uint64 *pSmallBlocks, uint64 *pUnusedSmallBlocks);
 
-  std::list<std::string> GetAllStreams( const std::string& storageName );
+  std::list<std::wstring> GetAllStreams( const std::wstring& storageName );
 
   Storage( const Storage& );
   Storage& operator=( const Storage& );
@@ -180,7 +229,7 @@ public:
    * Creates a new stream.
    */
   // name must be absolute, e.g "/Workbook"
-  Stream( Storage* storage, const std::string& name, bool bCreate = false, int64 streamSize = 0);
+  Stream( Storage* storage, const std::wstring& name, bool bCreate = false, int64 streamSize = 0);
 
   /**
    * Destroys the stream.
@@ -190,7 +239,7 @@ public:
   /**
    * Returns the full stream name.
    */
-  std::string fullName(); 
+  std::wstring fullName(); 
   
   /**
    * Returns the stream size.

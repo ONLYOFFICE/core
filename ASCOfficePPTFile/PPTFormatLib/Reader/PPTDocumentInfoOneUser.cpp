@@ -195,7 +195,7 @@ void CPPTUserInfo::DecryptStream(POLE::Stream *pStream, int block)
 {
 	int size = pStream->size() - pStream->tell();
 	
-	POLE::Stream *pStreamTmp = new POLE::Stream(m_pStorageDecrypt, "Tmp" + std::to_string(m_arStreamDecrypt.size() + 1), true, size);
+	POLE::Stream *pStreamTmp = new POLE::Stream(m_pStorageDecrypt, L"Tmp" + std::to_wstring(m_arStreamDecrypt.size() + 1), true, size);
 	unsigned char* data_stream = new unsigned char[size]; 
 
 	pStream->read(data_stream, size);

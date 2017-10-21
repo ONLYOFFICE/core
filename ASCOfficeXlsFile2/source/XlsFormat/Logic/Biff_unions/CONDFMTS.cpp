@@ -127,7 +127,7 @@ const bool CONDFMTS::loadContent(BinProcessor& proc)
 		CFEx * cfEx = dynamic_cast<CFEx *>(m_arCFEx[i].get());
 		if (cfEx)
 		{
-			int ind_cf = cfEx->content.icf;
+			size_t ind_cf = cfEx->content.icf;
 
 			for (size_t j = 0 ; j < m_arCONDFMT.size(); j++)
 			{

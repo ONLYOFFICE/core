@@ -73,7 +73,7 @@ namespace DocFileFormat
 	private:
 
 		void ApplyPrimitives	(DrawingPrimitives	* primitives );
-		int  ApplyPrimitive		(DrawingPrimitives	* primitives, int index);
+		size_t  ApplyPrimitive	(DrawingPrimitives	* primitives, size_t index);
 
 		void WritePrimitiveProps(DrawingPrimitive	* primitive, bool root);
 

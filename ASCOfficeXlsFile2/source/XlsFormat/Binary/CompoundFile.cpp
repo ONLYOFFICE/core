@@ -97,7 +97,7 @@ CompoundFile::CompoundFile(const std::wstring & file_path, const ReadWriteMode m
 	Open(file_path, mode);
 }
 
-void CompoundFile::copy_stream(std::string streamNameOpen, std::string streamNameCreate, POLE::Storage * storageOut, bool bWithRoot)
+void CompoundFile::copy_stream(std::wstring streamNameOpen, std::wstring streamNameCreate, POLE::Storage * storageOut, bool bWithRoot)
 {
 	POLE::Stream *stream = new POLE::Stream(storage_, streamNameOpen);
 	if (!stream) return;
@@ -107,7 +107,7 @@ void CompoundFile::copy_stream(std::string streamNameOpen, std::string streamNam
 
 	if (bWithRoot == false)
 	{
-		int pos = streamNameCreate.find("/");
+		int pos = streamNameCreate.find(L"/");
 		if (pos >= 0)
 			streamNameCreate = streamNameCreate.substr(pos + 1);
 	}
@@ -133,15 +133,15 @@ void CompoundFile::copy_stream(std::string streamNameOpen, std::string streamNam
 	delete stream;
 }
 
-void CompoundFile::copy( int indent, std::string path, POLE::Storage * storageOut, bool bWithRoot, bool bSortFiles)
+void CompoundFile::copy( int indent, std::wstring path, POLE::Storage * storageOut, bool bWithRoot, bool bSortFiles)
 {
-    std::list<std::string> entries, entries_files, entries_dir;
+    std::list<std::wstring> entries, entries_files, entries_dir;
     
 	entries = storage_->entries_with_prefix( path );
 	
-	for( std::list<std::string>::iterator it = entries.begin(); it != entries.end(); it++ )
+	for( std::list<std::wstring>::iterator it = entries.begin(); it != entries.end(); it++ )
 	{
-        std::string fullname = path + *it;
+        std::wstring fullname = path + *it;
        
         if ((it->at(0) >= 32) && (storage_->isDirectory( fullname ) ))
 		{
@@ -152,19 +152,19 @@ void CompoundFile::copy( int indent, std::string path, POLE::Storage * storageOu
 			entries_files.push_front(*it);
 		}
 	}
-	for( std::list<std::string>::iterator it = entries_dir.begin(); it != entries_dir.end(); it++ )
+	for( std::list<std::wstring>::iterator it = entries_dir.begin(); it != entries_dir.end(); it++ )
 	{
-        std::string fullname = path + *it;
+        std::wstring fullname = path + *it;
        
-		copy( indent + 1, fullname + "/", storageOut, bWithRoot, bSortFiles );
+		copy( indent + 1, fullname + L"/", storageOut, bWithRoot, bSortFiles );
     }
 	//if (bSortFiles)
 		entries_files.sort();
 
-	for( std::list<std::string>::iterator it = entries_files.begin(); it != entries_files.end(); it++ )
+	for( std::list<std::wstring>::iterator it = entries_files.begin(); it != entries_files.end(); it++ )
 	{
-        std::string createName = path + *it;
-		std::string openName;
+        std::wstring createName = path + *it;
+		std::wstring openName;
 		
 		if (it->at(0) < 32) openName = path + it->substr(1);
 		else				openName = path + *it;
@@ -174,20 +174,20 @@ void CompoundFile::copy( int indent, std::string path, POLE::Storage * storageOu
 }
 CFStreamPtr CompoundFile::getWorkbookStream()
 {
-	CFStreamPtr stream = getNamedStream("Workbook");
+	CFStreamPtr stream = getNamedStream(L"Workbook");
 
 	if (stream == NULL) 
-		stream = getNamedStream("WORKBOOK"); //6447323.xls
+		stream = getNamedStream(L"WORKBOOK"); //6447323.xls
 	if (stream == NULL) 
-		stream = getNamedStream("Book");
+		stream = getNamedStream(L"Book");
 	if (stream == NULL) 
-		stream = getNamedStream("BOOK");//file(6).xls
+		stream = getNamedStream(L"BOOK");//file(6).xls
 	if (stream == NULL) 
-		stream = getNamedStream("book");
+		stream = getNamedStream(L"book");
 	return stream;
 }
 
-CFStreamPtr CompoundFile::getNamedStream(const std::string& name)
+CFStreamPtr CompoundFile::getNamedStream(const std::wstring& name)
 {
 	if(!streams[name])
 	{
@@ -198,7 +198,7 @@ CFStreamPtr CompoundFile::getNamedStream(const std::string& name)
 	return streams[name];
 }
 
-CFStreamPtr CompoundFile::createNamedStream(const std::string& name)
+CFStreamPtr CompoundFile::createNamedStream(const std::wstring& name)
 {
 	if(!streams[name])
 	{
@@ -210,14 +210,14 @@ CFStreamPtr CompoundFile::createNamedStream(const std::string& name)
 }
 
 
-void CompoundFile::closeNamedStream(const std::string& name)
+void CompoundFile::closeNamedStream(const std::wstring& name)
 {
 	streams[name].reset();
 }
 
 
 // Opens a stream in the storage (shall be called not more than once per stream)
-POLE::Stream* CompoundFile::openStream(const std::string & stream_name)
+POLE::Stream* CompoundFile::openStream(const std::wstring & stream_name)
 {
 	if (storage_ == NULL) return NULL;
 
@@ -233,7 +233,7 @@ POLE::Stream* CompoundFile::openStream(const std::string & stream_name)
 
 
 // Creates a new stream in the storage
-POLE::Stream* CompoundFile::createStream(const std::string & stream_name)
+POLE::Stream* CompoundFile::createStream(const std::wstring & stream_name)
 {
 	if (storage_ == NULL) return NULL;
 

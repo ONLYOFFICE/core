@@ -54,12 +54,12 @@ HRESULT ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
 			_UINT32 name_size = name.length() + 1;
 		//Ole
 			BYTE dataOleInfo[] = {0x01,0x00,0x00,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
-			POLE::Stream oStream3(storageOut, "\001Ole", true, 20);
+			POLE::Stream oStream3(storageOut, L"\001Ole", true, 20);
 			oStream3.write(dataOleInfo, 20);
 			oStream3.flush();
 		//CompObj
 			BYTE dataCompObjHeader[28] = {0x01,0x00,0xfe,0xff,0x03,0x0a,0x00,0x00,0xff,0xff,0xff,0xff,0x0a,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0xc0,0x00,0x00,0x00,0x00,0x00,0x00,0x46};
-			POLE::Stream oStream1(storageOut, "\001CompObj", true, 28 + (name_size + 5) + 2 * (ole1Reader.Header.ClassName.size + 4) + 4 * 4);
+			POLE::Stream oStream1(storageOut, L"\001CompObj", true, 28 + (name_size + 5) + 2 * (ole1Reader.Header.ClassName.size + 4) + 4 * 4);
 			oStream1.write(dataCompObjHeader, 28);
 
 			oStream1.write((BYTE*)&name_size, 4);
@@ -84,11 +84,11 @@ HRESULT ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
 
 		//ObjInfo
 			BYTE dataObjInfo[] = {0x00,0x00,0x03,0x00,0x04,0x00};
-			POLE::Stream oStream2(storageOut, "\003ObjInfo", true, 6);
+			POLE::Stream oStream2(storageOut, L"\003ObjInfo", true, 6);
 			oStream2.write(dataObjInfo, 6);
 			oStream2.flush();
 		//Ole10Native
-			POLE::Stream streamData(storageOut, "\001Ole10Native", true, ole1Reader.NativeDataSize + 4);
+			POLE::Stream streamData(storageOut, L"\001Ole10Native", true, ole1Reader.NativeDataSize + 4);
 			streamData.write((BYTE*)&ole1Reader.NativeDataSize, 4);
 			streamData.write(ole1Reader.NativeData, ole1Reader.NativeDataSize);
 			streamData.flush();

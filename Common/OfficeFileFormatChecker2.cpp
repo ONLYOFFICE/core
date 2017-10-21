@@ -133,13 +133,13 @@ bool COfficeFileFormatChecker::isDocFormatFile	(POLE::Storage * storage)
 {
 	if (storage == NULL) return false;
 
-	POLE::Stream stream(storage, "WordDocument");	
+	POLE::Stream stream(storage, L"WordDocument");	
 	
 	unsigned char buffer[10];
 	if (stream.read(buffer,10) > 0)
 	{
 		//ms office 2007 encrypted contains stream WordDocument !!
-		std::list<std::string> entries = storage->entries("DataSpaces");
+		std::list<std::wstring> entries = storage->entries(L"DataSpaces");
 		if (entries.size() > 0)
 			return false;
 
@@ -154,19 +154,29 @@ bool COfficeFileFormatChecker::isXlsFormatFile	(POLE::Storage * storage)
 
     unsigned char buffer[10];
 
-    POLE::Stream stream(storage, "Workbook");
+    POLE::Stream stream(storage, L"Workbook");
 	
 	if (stream.read(buffer,10) >0)
 		return true;
 
-    POLE::Stream stream2(storage, "Book");
+    POLE::Stream stream2(storage, L"Book");
 
-    if (stream2.read(buffer,10) >0)
+    if (stream2.read(buffer,10) > 0)
         return true;
 
-    POLE::Stream stream3(storage, "WORKBOOK");
+    POLE::Stream stream3(storage, L"WORKBOOK");
 
-    if (stream3.read(buffer,10) >0)
+    if (stream3.read(buffer,10) > 0)
+        return true;
+
+    POLE::Stream stream4(storage, L"BOOK");
+
+    if (stream4.read(buffer,10) > 0)
+        return true;
+
+    POLE::Stream stream5(storage, L"book");
+
+    if (stream5.read(buffer,10) > 0)
         return true;
 
 	return false;
@@ -175,7 +185,7 @@ bool COfficeFileFormatChecker::isPptFormatFile	(POLE::Storage * storage)
 {
 	if (storage == NULL) return false;
 
-	POLE::Stream stream(storage, "PowerPoint Document");	
+	POLE::Stream stream(storage, L"PowerPoint Document");	
 
 	unsigned char buffer[10];
 	if (stream.read(buffer,10) >0)
@@ -187,12 +197,12 @@ bool COfficeFileFormatChecker::isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage
 {
     if (storage == NULL) return false;
 
-    std::list<std::string> entries = storage->entries("DataSpaces");
+    std::list<std::wstring> entries = storage->entries(L"DataSpaces");
     if (entries.size() > 0)
         return true;
 
-    if ( storage->exists("EncryptionInfo") && 
-				storage->exists("EncryptedPackage"))
+    if ( storage->exists(L"EncryptionInfo") && 
+				storage->exists(L"EncryptedPackage"))
 				return true;
    return false;
 }

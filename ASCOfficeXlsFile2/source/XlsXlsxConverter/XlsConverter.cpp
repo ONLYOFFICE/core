@@ -148,7 +148,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 
 		try
 		{
-			summary = xls_file->getNamedStream("SummaryInformation");
+			summary = xls_file->getNamedStream(L"SummaryInformation");
 		}
 		catch (...)
 		{
@@ -156,7 +156,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 
 		try
 		{
-			doc_summary = xls_file->getNamedStream("DocumentSummaryInformation");
+			doc_summary = xls_file->getNamedStream(L"DocumentSummaryInformation");
 		}
 		catch (...)
 		{
@@ -197,14 +197,14 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 			if (xls_global_info->decryptor->IsVerify() == false) return;
 		}
 
-		if (xls_file->storage_->isDirectory("_SX_DB_CUR"))
+		if (xls_file->storage_->isDirectory(L"_SX_DB_CUR"))
 		{
-			std::list<std::string> listStream = xls_file->storage_->entries("_SX_DB_CUR");
+			std::list<std::wstring> listStream = xls_file->storage_->entries(L"_SX_DB_CUR");
 
 			int last_index = 0;
-			for (std::list<std::string>::iterator it = listStream.begin(); it != listStream.end(); it++)
+			for (std::list<std::wstring>::iterator it = listStream.begin(); it != listStream.end(); it++)
 			{
-				XLS::CFStreamCacheReader pivot_cache_reader(xls_file->getNamedStream("_SX_DB_CUR/" + *it), xls_global_info);
+				XLS::CFStreamCacheReader pivot_cache_reader(xls_file->getNamedStream(L"_SX_DB_CUR/" + *it), xls_global_info);
 				XLS::BaseObjectPtr pivot_cache = boost::shared_ptr<XLS::PIVOTCACHE>(new XLS::PIVOTCACHE());
 				
 				XLS::BinReaderProcessor proc(pivot_cache_reader , pivot_cache.get() , true);
@@ -217,7 +217,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 				last_index = index;
 			}
 		}
-		if (bMacros && xls_file->storage_->isDirectory("_VBA_PROJECT_CUR"))
+		if (bMacros && xls_file->storage_->isDirectory(L"_VBA_PROJECT_CUR"))
 		{
 			std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";	
 			NSDirectory::CreateDirectory(xl_path.c_str());
@@ -228,7 +228,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 
 			if ((storageVbaProject) && (storageVbaProject->open(true, true)))
 			{			
-				xls_file->copy(0, "_VBA_PROJECT_CUR/", storageVbaProject, false);
+				xls_file->copy(0, L"_VBA_PROJECT_CUR/", storageVbaProject, false);
 
 				storageVbaProject->close();
 				delete storageVbaProject;
@@ -239,7 +239,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 		else 
 			bMacros = false;
 
-		XLS::CFStreamPtr controls = xls_file->getNamedStream("Ctls");
+		XLS::CFStreamPtr controls = xls_file->getNamedStream(L"Ctls");
 		if(controls)
 		{
 			unsigned long size = controls->getStreamSize();
@@ -249,7 +249,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 
 			xls_global_info->controls_data = std::make_pair(buffer, size);			
 		}
-		XLS::CFStreamPtr listdata = xls_file->getNamedStream("List Data");
+		XLS::CFStreamPtr listdata = xls_file->getNamedStream(L"List Data");
 		if(listdata)
 		{
 			unsigned long size = controls->getStreamSize();
@@ -1962,11 +1962,11 @@ void XlsConverter::convert(XLS::Obj * obj)
 		}
 		else if (!obj->pictFlags.fPrstm) 
 		{
-			std::string object_stream;
-			if (obj->pictFlags.fDde)	object_stream = "LNK";
-			else						object_stream = "MBD";
+			std::wstring object_stream;
+			if (obj->pictFlags.fDde)	object_stream = L"LNK";
+			else						object_stream = L"MBD";
 		
-			object_stream += XmlUtils::IntToString(obj->pictFmla.lPosInCtlStm, "%08X") + "/";
+			object_stream += XmlUtils::IntToString(obj->pictFmla.lPosInCtlStm, L"%08X") + L"/";
 			if (xls_file->storage_->isDirectory(object_stream))
 			{
 				xlsx_context->get_mediaitems().create_embeddings_path(xlsx_path);

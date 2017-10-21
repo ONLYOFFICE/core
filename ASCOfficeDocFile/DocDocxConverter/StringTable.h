@@ -81,7 +81,7 @@ namespace DocFileFormat
 			}
 		}
 
-		ByteStructure* operator [] ( unsigned int index ) const
+		ByteStructure* operator [] ( size_t index ) const
 		{
 			if ( index < this->Data.size() )
 			{

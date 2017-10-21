@@ -33,9 +33,6 @@
 #include "CFRecord.h"
 #include "CFStream.h"
 
-#ifdef __linux__
-    #include <string.h>
-#endif
 
 namespace XLS
 {

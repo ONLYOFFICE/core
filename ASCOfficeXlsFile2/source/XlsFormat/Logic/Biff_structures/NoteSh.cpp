@@ -37,7 +37,6 @@
 namespace XLS
 {
 
-
 NoteSh::NoteSh()
 {
 	x_ = y_ = 0;
@@ -47,13 +46,11 @@ NoteSh::NoteSh()
 	fColHidden	= false;
 }
 
-
 NoteSh::NoteSh(CFRecord& record)
 {
 	x_ = y_ = 0;
 	load(record);
 }
-
 
 BiffStructurePtr NoteSh::clone()
 {

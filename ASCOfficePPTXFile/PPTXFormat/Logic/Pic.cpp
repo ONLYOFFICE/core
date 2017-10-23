@@ -511,7 +511,7 @@ namespace PPTX
 			POLE::Storage oStorage(sFilePath.c_str());
 			if(oStorage.open(false, false))
 			{
-				POLE::Stream oStream(&oStorage, "Ole10Native");
+				POLE::Stream oStream(&oStorage, L"Ole10Native");
 				if(oStream.size() > 4)
 				{
 					BYTE head[] = {0x00, 0x00, 0x00, 0x00};

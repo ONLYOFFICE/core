@@ -34,6 +34,7 @@
 
 #include "../Biff_records/Style.h"
 #include "../Biff_records/StyleExt.h"
+#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace XLS
 {
@@ -137,7 +138,13 @@ int STYLES::serialize(std::wostream & stream)
 						}
 						else if (style)
 						{
-							CP_XML_ATTR(L"name", style->user.value());
+							std::wstring name = style->user.value();
+							
+							XmlUtils::replace_all(name, L"\x01", L"_x0001_");
+							XmlUtils::replace_all(name, L"\x0d", L"_x000d_");
+							XmlUtils::replace_all(name, L"\x0a", L"_x000a_");
+
+							CP_XML_ATTR(L"name", name);
 								
 							if (style->fBuiltIn)
 							{

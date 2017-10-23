@@ -159,13 +159,13 @@ namespace DocFileFormat
 		OOX::CDocument docEmbedded(path, path);
 
 		bool res = false;
-		for (int i = 0 ; i < docEmbedded.m_arrItems.size(); i++)
+		for (size_t i = 0 ; i < docEmbedded.m_arrItems.size(); i++)
 		{
 			if (docEmbedded.m_arrItems[i]->getType() == OOX::et_w_p)
 			{
 				OOX::Logic::CParagraph *paragraph = dynamic_cast<OOX::Logic::CParagraph *>(docEmbedded.m_arrItems[i]);
 
-				for (int j = 0; (paragraph) && (j < paragraph->m_arrItems.size()); j++)
+				for (size_t j = 0; (paragraph) && (j < paragraph->m_arrItems.size()); j++)
 				{
 					if (paragraph->m_arrItems[j]->getType() == OOX::et_m_oMath)
 					{
@@ -177,7 +177,7 @@ namespace DocFileFormat
 					{
 						OOX::Logic::COMathPara *mathPara = dynamic_cast<OOX::Logic::COMathPara *>(paragraph->m_arrItems[j]);
 						
-						for (int k = 0; (mathPara) && (k < mathPara->m_arrItems.size()); k++)
+						for (size_t k = 0; (mathPara) && (k < mathPara->m_arrItems.size()); k++)
 						{
 							if (mathPara->m_arrItems[k]->getType() == OOX::et_m_oMath)
 							{

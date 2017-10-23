@@ -72,7 +72,9 @@ void Style::readFields(CFRecord& record)
 			user = s;
 		}
 		else
+		{
 			record >> user;
+		}
 	}
 }
 

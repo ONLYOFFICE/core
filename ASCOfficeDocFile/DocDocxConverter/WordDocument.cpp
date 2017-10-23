@@ -95,7 +95,7 @@ namespace DocFileFormat
             return AVS_ERROR_FILEFORMAT;
 		}
 //-----------------------------------------------------------------------------------------------------------------
-		if (m_pStorage->GetStream ("WordDocument", &WordDocumentStream) == false)
+		if (m_pStorage->GetStream (L"WordDocument", &WordDocumentStream) == false)
 		{
 			Clear();
             return AVS_ERROR_FILEFORMAT;
@@ -121,16 +121,16 @@ namespace DocFileFormat
 
 		if (FIB->m_FibBase.fWhichTblStm)
 		{
-			if (!m_pStorage->GetStream ("1Table", &TableStream))
+			if (!m_pStorage->GetStream (L"1Table", &TableStream))
 			{
-				res	=	m_pStorage->GetStream ("0Table", &TableStream);
+				res	=	m_pStorage->GetStream (L"0Table", &TableStream);
 			}
 		}
 		else
 		{
-			if (!m_pStorage->GetStream ("0Table", &TableStream))
+			if (!m_pStorage->GetStream (L"0Table", &TableStream))
 			{
-				res	=	m_pStorage->GetStream ("1Table", &TableStream);
+				res	=	m_pStorage->GetStream (L"1Table", &TableStream);
 			}
 		}
 
@@ -176,8 +176,8 @@ namespace DocFileFormat
 		POLE::Stream			* Summary		= NULL;
 		POLE::Stream			* DocSummary	= NULL;
 		
-		m_pStorage->GetStream ("SummaryInformation",			&Summary);
-		m_pStorage->GetStream ("DocumentSummaryInformation",	&DocSummary);
+		m_pStorage->GetStream (L"SummaryInformation",			&Summary);
+		m_pStorage->GetStream (L"DocumentSummaryInformation",	&DocSummary);
 
 		document_code_page = ENCODING_WINDOWS_1250;
 		
@@ -206,7 +206,7 @@ namespace DocFileFormat
 //-------------------------------------------------------------------------------------------------
 		try
 		{
-			m_pStorage->GetStream ("Data", &DataStream);
+			m_pStorage->GetStream (L"Data", &DataStream);
 		}
 		catch (...)
 		{
@@ -216,7 +216,7 @@ namespace DocFileFormat
 		if (TableStream->size() < 1 && bOlderVersion)
 		{
 			RELEASEOBJECT(TableStream);
-			m_pStorage->GetStream ("WordDocument", &TableStream);
+			m_pStorage->GetStream (L"WordDocument", &TableStream);
 		}
 
 		RevisionAuthorTable	=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfRMark,		FIB->m_FibWord97.lcbSttbfRMark,			bOlderVersion);
@@ -483,7 +483,7 @@ namespace DocFileFormat
 			delete storageOut;
 			return false;
 		}
-		DecryptStream( 0, "/", storageIn, storageOut, Decryptor);
+		DecryptStream( 0, L"/", storageIn, storageOut, Decryptor);
 
 		//std::list<std::string> listStream = storageIn->entries();
 
@@ -514,59 +514,60 @@ namespace DocFileFormat
 		
 		m_pStorage->SetFile(m_sTempDecryptFileName.c_str());
 		
-		if (m_pStorage->GetStream ("WordDocument", &WordDocumentStream) == false) return false;
+		if (m_pStorage->GetStream (L"WordDocument", &WordDocumentStream) == false) return false;
 
 		if (FIB->m_FibBase.fWhichTblStm)
 		{
-			if (!m_pStorage->GetStream ("1Table", &TableStream))	m_pStorage->GetStream ("0Table", &TableStream);
+			if (!m_pStorage->GetStream (L"1Table", &TableStream))	m_pStorage->GetStream (L"0Table", &TableStream);
 		}
 		else
 		{
-			if (!m_pStorage->GetStream ("0Table", &TableStream))	m_pStorage->GetStream ("1Table", &TableStream);
+			if (!m_pStorage->GetStream (L"0Table", &TableStream))	m_pStorage->GetStream (L"1Table", &TableStream);
 		}
 		return true;
 	}
-	void WordDocument::DecryptStream( int level, std::string path, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor)
+	void WordDocument::DecryptStream( int level, std::wstring path, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor)
 	{
-		std::list<std::string> entries, entries_sort;
-		entries = storageIn->entries( path );
+		std::list<std::wstring> entries, entries_files, entries_dir;
+		entries = storageIn->entries_with_prefix( path );
 		
-		for( std::list<std::string>::iterator it = entries.begin(); it != entries.end(); it++ )
+		for( std::list<std::wstring>::iterator it = entries.begin(); it != entries.end(); it++ )
 		{
-			std::string name = *it;
-			std::string fullname = path + name;
+			std::wstring name = *it;
+			std::wstring fullname = path + name;
 	       
 			if( storageIn->isDirectory( fullname ) )
 			{
-				entries_sort.push_back(name);
+				entries_dir.push_back(name);
 			}
 			else
 			{
-				entries_sort.push_front(name);
+				entries_files.push_front(name);
 			}
 		}	    
-		for( std::list<std::string>::iterator it = entries_sort.begin(); it != entries_sort.end(); ++it )
+		for( std::list<std::wstring>::iterator it = entries_dir.begin(); it != entries_dir.end(); ++it )
 		{
-			std::string name = *it;
-			std::string fullname = path + name;
+			std::wstring fullname = path + *it;
 	       
-			if( storageIn->isDirectory( fullname ) )
-			{
-				DecryptStream( level + 1, fullname + "/", storageIn, storageOut, Decryptor );
-			}
-			else
-			{
-				DecryptStream(fullname, storageIn, storageOut, Decryptor );
-			}
+			DecryptStream( level + 1, fullname + L"/", storageIn, storageOut, Decryptor );
+
 		}    
+	//if (bSortFiles)
+		entries_files.sort();
+
+		for( std::list<std::wstring>::iterator it = entries_files.begin(); it != entries_files.end(); ++it )
+		{
+			std::wstring fullname = path + *it;
+			DecryptStream(fullname, storageIn, storageOut, Decryptor );
+		}  
 	}
-	bool WordDocument::DecryptStream(std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor)
+	bool WordDocument::DecryptStream(std::wstring streamName, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor)
 	{
 		POLE::Stream *stream = new POLE::Stream(storageIn, streamName);
 		if (!stream) return false;
 
 		stream->seek(0);
-		int size_stream = stream->size();
+		POLE::uint64 size_stream = stream->size();
 		
 		POLE::Stream *streamNew = new POLE::Stream(storageOut, streamName, true, size_stream);
 		if (!streamNew) return false;
@@ -577,7 +578,7 @@ namespace DocFileFormat
 		unsigned char* data_store = NULL;
 		int size_data_store = 0;		
 		
-		if ( std::wstring::npos != streamName.find("WordDocument") )
+		if ( std::wstring::npos != streamName.find(L"WordDocument") )
 		{
 			size_data_store = 68;
 			data_store = new unsigned char[size_data_store];
@@ -586,8 +587,10 @@ namespace DocFileFormat
 		if (data_store)
 			memcpy(data_store, data_stream, size_data_store);
 
-		int size_block = 0x200;
-		for (int pos = 0, block = 0 ; pos < size_stream; pos += size_block, block++)
+		size_t			size_block	= 0x200;
+		unsigned long	block		= 0;
+
+		for (POLE::uint64 pos = 0; pos < size_stream; pos += size_block, block++)
 		{
 			if (pos + size_block > size_stream)
 				size_block = size_stream - pos;

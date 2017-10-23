@@ -107,8 +107,8 @@ namespace DocFileFormat
 	private:
 		bool DecryptOfficeFile	(CRYPT::Decryptor* Decryptor);
 		
-		bool DecryptStream		(std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor);
-		void DecryptStream		(int level, std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor);
+		bool DecryptStream		(std::wstring streamName, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor);
+		void DecryptStream		(int level, std::wstring streamName, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor);
 		
 		inline OfficeArtContent* GetOfficeArt ()
 		{

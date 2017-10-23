@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of XFS union of records 
 class XFS: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(XFS)
@@ -62,6 +60,7 @@ public:
 	std::vector<BaseObjectPtr>	m_arCellStyles;
 	std::vector<BaseObjectPtr>	m_arXFext;
 
+	BaseObjectPtr				m_XFCRC;
 };
 
 } // namespace XLS

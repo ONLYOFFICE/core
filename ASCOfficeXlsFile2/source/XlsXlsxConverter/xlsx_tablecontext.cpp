@@ -104,25 +104,27 @@ void xlsx_table_context::end_table()
 		const std::pair<std::wstring, std::wstring> vmlDrawingName	= 
 			context_.get_drawing_context_handle().add_drawing_vml(strm.str(), get_drawing_context().get_vml_HF_rels());
 
-		context_.current_sheet().set_vml_drawing_link_HF(vmlDrawingName.first, vmlDrawingName.second);
+		context_.current_sheet().set_vml_HF_drawing_link(vmlDrawingName.first, vmlDrawingName.second);
+	}
+	if (!get_drawing_context().empty_vml())
+    {
+		std::wstringstream strm;
+		get_drawing_context().serialize_vml(strm);
+		
+		const std::pair<std::wstring, std::wstring> vmlDrawingName	= 
+			context_.get_drawing_context_handle().add_drawing_vml(strm.str(), get_drawing_context().get_vml_rels());
 
+		context_.current_sheet().set_vml_drawing_link(vmlDrawingName.first, vmlDrawingName.second);
 	}
 	if (!get_comments_context().empty())
     {
         std::wstringstream strm;
         get_comments_context().write_comments(strm);
         
-        std::wstringstream vml_strm;
-		get_drawing_context().serialize_vml_comments(vml_strm);
-		
 		const std::pair<std::wstring, std::wstring> commentsName =
             context_.get_comments_context_handle().add_comments_xml(strm.str(), context_.get_comments_context().get_comments());
 
-		const std::pair<std::wstring, std::wstring> vmlDrawingName	= 
-			context_.get_drawing_context_handle().add_drawing_vml(vml_strm.str(), get_drawing_context().get_vml_comments_rels());
-
         context_.current_sheet().set_comments_link		(commentsName.first, commentsName.second);
-        context_.current_sheet().set_vml_drawing_link	(vmlDrawingName.first, vmlDrawingName.second);
     }    
 }
 

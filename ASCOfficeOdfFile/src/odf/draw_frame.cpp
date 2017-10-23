@@ -306,7 +306,7 @@ std::wstring draw_object_ole::detectObject(const std::wstring &fileName)
 		return L"";
 	}
 	std::wstring prog;
-	POLE::Stream* pStream = new POLE::Stream(storage, "CompObj");
+	POLE::Stream* pStream = new POLE::Stream(storage, L"CompObj");
 	if ((pStream) && (pStream->size() > 28))
 	{
 		//skip the CompObjHeader

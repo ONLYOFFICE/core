@@ -170,7 +170,7 @@ namespace OOX
 													m_pStyles->m_oDxfs.Init();
 
 												//DxfId starts from 0
-												rule->m_oDxfId = std::to_wstring(m_pStyles->m_oDxfs->m_arrItems.size());
+												rule->m_oDxfId = std::to_wstring((unsigned int)m_pStyles->m_oDxfs->m_arrItems.size());
 												m_pStyles->m_oDxfs->m_arrItems.push_back(rule->m_oDxf.GetPointerEmptyNullable());
 											}
 										}

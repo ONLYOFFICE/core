@@ -37,17 +37,17 @@
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../Records/Drawing/ArtBlip.h"
 
-#define CURRENT_USER_STREAM		"Current User" 
+#define CURRENT_USER_STREAM		L"Current User" 
 
-#define DOCUMENT_STREAM			"PowerPoint Document" 
+#define DOCUMENT_STREAM			L"PowerPoint Document" 
 
-#define PICTURE_STREAM			"Pictures" 
-#define HEADER_STREAM			"Header" 
+#define PICTURE_STREAM			L"Pictures" 
+#define HEADER_STREAM			L"Header" 
 
-#define PP97_DUALSTORAGE		"PP97_DUALSTORAGE"
+#define PP97_DUALSTORAGE		L"PP97_DUALSTORAGE"
 
-#define ENCRYPTED_SUMMARY_STREAM	"EncryptedSummary" 
-#define DOCUMENT_SUMMARY_STREAM		"DocumentSummaryInformation"
+#define ENCRYPTED_SUMMARY_STREAM	L"EncryptedSummary" 
+#define DOCUMENT_SUMMARY_STREAM		L"DocumentSummaryInformation"
 
 CPPTFileReader::CPPTFileReader(POLE::Storage *pStorage, std::wstring strTemp):
 	   m_pStorage(pStorage),  
@@ -69,7 +69,7 @@ CPPTFileReader::CPPTFileReader(POLE::Storage *pStorage, std::wstring strTemp):
 	{
 		RELEASEOBJECT(pStm);
 	
-		std::string stream_name = std::string(PP97_DUALSTORAGE) + std::string("/") + std::string(CURRENT_USER_STREAM);
+		std::wstring stream_name = std::wstring(PP97_DUALSTORAGE) + std::wstring(L"/") + std::wstring(CURRENT_USER_STREAM);
 		pStm = new POLE::Stream( m_pStorage, stream_name);
 		
 		if (pStm == NULL)
@@ -157,14 +157,14 @@ CFStreamPtr CPPTFileReader::GetPictureStream()
 	} 
 	return m_pPictureStream; 
 }
-CFStreamPtr CPPTFileReader::GetStreamByName(const std::string & name)
+CFStreamPtr CPPTFileReader::GetStreamByName(const std::wstring & name)
 {
 	if (!m_bIsPPTFile) 
 		return CFStreamPtr(); 
 
-	std::string stream_name;
+	std::wstring stream_name;
 
-	if (m_bDualStorage)	stream_name = std::string(PP97_DUALSTORAGE) + std::string("/");
+	if (m_bDualStorage)	stream_name = std::wstring(PP97_DUALSTORAGE) + std::wstring(L"/");
 
 	POLE::Stream *pStream = new POLE::Stream(m_pStorage, stream_name + name);
 

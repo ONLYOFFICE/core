@@ -85,7 +85,7 @@ namespace OOX
                 m_mTable.insert( std::make_pair(  _T("sldm"), _T("application/vnd.ms-powerpoint.slide.macroEnabled.12")));
                 m_mTable.insert( std::make_pair(  _T("sldx"), _T("application/vnd.openxmlformats-officedocument.presentationml.slide")));
                 m_mTable.insert( std::make_pair(  _T("doc"),  _T("application/msword")));
-                m_mTable.insert( std::make_pair(  _T("docm"), _T("aapplication/vnd.ms-word.document.macroEnabled.12")));
+                m_mTable.insert( std::make_pair(  _T("docm"), _T("application/vnd.ms-word.document.macroEnabled.12")));
                 m_mTable.insert( std::make_pair(  _T("docx"), _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document")));
                 m_mTable.insert( std::make_pair(  _T("vml"),  _T("application/vnd.openxmlformats-officedocument.vmlDrawing")));
 			}

@@ -108,15 +108,15 @@ namespace DocFileFormat
 	// Writes the table starts at the given cp value
 		int writeTable		( int initialCp, unsigned int nestingLevel );
 	// Builds a list that contains the width of the several columns of the table.
-		std::vector<short>* buildTableGrid( int initialCp, unsigned int nestingLevel );
+		bool buildTableGrid( int initialCp, unsigned int nestingLevel, std::vector<short>& grid, std::vector<short>& grid_write );
 	// Finds the FC of the next row end mark.
 		int findRowEndFc		( int initialCp, int& rowEndCp, unsigned int nestingLevel );
 	// Finds the FC of the next row end mark.
 		int findRowEndFc		( int initialCp, unsigned int nestingLevel );
 	// Writes the table row that starts at the given cp value and ends at the next row end mark
-		int writeTableRow		( int initialCp, std::vector<short>* grid, unsigned int nestingLevel );
+		int writeTableRow		( int initialCp, std::vector<short>* grid, std::vector<short>* grid_write, unsigned int nestingLevel );
 	// Writes the table cell that starts at the given cp value and ends at the next cell end mark
-		int writeTableCell		( int initialCp, TablePropertyExceptions* tapx, std::vector<short>* grid, int& gridIndex, int cellIndex, unsigned int nestingLevel );
+		int writeTableCell		( int initialCp, TablePropertyExceptions* tapx, std::vector<short>* grid, std::vector<short>* grid_write, int& gridIndex, int cellIndex, unsigned int nestingLevel );
 		int findCellEndCp		( int initialCp, unsigned int nestingLevel );
 		
 		bool writeBookmarks		( int cp );

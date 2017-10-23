@@ -185,7 +185,7 @@ namespace DocFileFormat
 		std::wstring pathWord = m_strOutputPath + FILE_SEPARATOR_STR + L"word" ;
 		NSDirectory::CreateDirectory( pathWord );
 
-		if (bMacros && docFile->GetStorage()->isDirectory("Macros"))
+		if (bMacros && docFile->GetStorage()->isDirectory(L"Macros"))
 		{
 			std::wstring sVbaProjectFile = pathWord + FILE_SEPARATOR_STR + L"vbaProject.bin";
 
@@ -193,7 +193,7 @@ namespace DocFileFormat
 
 			if ((storageVbaProject) && (storageVbaProject->open(true, true)))
 			{			
-				docFile->GetStorage()->copy(0, "Macros/", storageVbaProject, false);
+				docFile->GetStorage()->copy(0, L"Macros/", storageVbaProject, false);
 
 				storageVbaProject->close();
 				delete storageVbaProject;

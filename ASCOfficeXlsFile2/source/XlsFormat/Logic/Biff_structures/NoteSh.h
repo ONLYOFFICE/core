@@ -52,7 +52,6 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
 	Rw				row;
 	Col				col;
 	bool			fShow;

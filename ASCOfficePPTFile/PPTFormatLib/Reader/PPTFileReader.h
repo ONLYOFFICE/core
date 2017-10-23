@@ -51,7 +51,7 @@ protected:
  	CFStreamPtr GetEncryptedSummaryStream();
 	CFStreamPtr GetDocumentSummaryStream();   
 	
-	CFStreamPtr GetStreamByName(const std::string & name);
+	CFStreamPtr GetStreamByName(const std::wstring & name);
 
 	bool ReadCurrentUser(POLE::Stream *pStm);
 	void ReadEncryptedSummary();

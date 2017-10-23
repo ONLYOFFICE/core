@@ -85,7 +85,7 @@ int CEquationReader::Parse()
 {
     //если смотреть реализацию, то pStm можно удалить после конструтора CLEStream,
     //но если не смотреть реализацию,то правильно удалить pStm после pS
-    pStm = new POLE::Stream( &m_oStorage, "Equation Native");
+    pStm = new POLE::Stream( &m_oStorage, L"Equation Native");
     pS = new CLEStream<Stream>(pStm);
 	if (!pS->IsValid())
 		return 0;

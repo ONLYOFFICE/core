@@ -368,6 +368,7 @@ int FDB::serialize_record(std::wostream & strm)
 			}
 		}
 	}
+	return 0;
 }
 
 } // namespace XLS

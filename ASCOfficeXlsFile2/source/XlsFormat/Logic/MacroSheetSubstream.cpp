@@ -144,9 +144,17 @@ const bool MacroSheetSubstream::loadContent(BinProcessor& proc)
 	proc.repeated<SORT>(0, 2);
 	proc.optional<DxGCol>();
 	proc.optional<PHONETICINFO>();
-	proc.optional<CodeName>();
+	if (proc.optional<CodeName>())
+	{
+		m_CodeName  = elements_.back();
+		elements_.pop_back();
+	}
 	proc.repeated<CellWatch>(0, 0);
-	proc.optional<SheetExt>();
+	if (proc.optional<SheetExt>())
+	{
+		m_SheetExt  = elements_.back();
+		elements_.pop_back();
+	}
 	proc.repeated<FEAT>(0, 0);
 	proc.repeated<RECORD12>(0, 0);
 	proc.mandatory<EOF_T>();

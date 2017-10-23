@@ -71,7 +71,7 @@ namespace DocFileFormat
 	class TablePropertiesMapping: public PropertiesMapping, public IMapping
 	{
 	public:
-		TablePropertiesMapping( XMLTools::CStringXmlWriter* writer, StyleSheet* styles, std::vector<short>* grid, bool isTableStyleNeeded = true );
+		TablePropertiesMapping( XMLTools::CStringXmlWriter* writer, StyleSheet* styles, std::vector<short>* grid, std::vector<short>* grid_write, bool isTableStyleNeeded = true );
 		virtual ~TablePropertiesMapping();
 		void Apply( IVisitable* visited );
 
@@ -83,6 +83,7 @@ namespace DocFileFormat
 		
 		StyleSheet* _styles;
 		std::vector<short>* _grid;
+		std::vector<short>* _grid_write;
 		
 		BorderCode* brcLeft;
 		BorderCode* brcTop;

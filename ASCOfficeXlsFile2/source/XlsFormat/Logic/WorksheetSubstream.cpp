@@ -503,7 +503,37 @@ void WorksheetSubstream::LoadHFPicture()
 	}
 }
 
+int WorksheetSubstream::serialize_format(std::wostream & strm)
+{
+	SheetExt *sheet_ext = dynamic_cast<SheetExt*>(m_SheetExt.get());
+	CodeName *code_name = dynamic_cast<CodeName*>(m_CodeName.get());
 
+	CP_XML_WRITER(strm)    
+    {
+		CP_XML_NODE(L"sheetPr")
+		{	
+			if (code_name)
+			{
+				CP_XML_ATTR(L"codeName", code_name->value);
+			}
+			if ((sheet_ext) && (sheet_ext->sheetExtOptional.bEnabled))
+			{
+				if (!sheet_ext->sheetExtOptional.fCondFmtCalc)	
+					CP_XML_ATTR(L"enableFormatConditionsCalculation", false);
+				if (!sheet_ext->sheetExtOptional.fNotPublished)	
+					CP_XML_ATTR(L"published" ,false);
 
+				if (sheet_ext->sheetExtOptional.color.xclrType.type == XColorType::XCLRRGB)
+				{
+					CP_XML_NODE(L"tabColor")
+					{
+						CP_XML_ATTR(L"rgb", sheet_ext->sheetExtOptional.color.rgb.strARGB);
+					}
+				}
+			}
+		}
+	}
+	return 0;
+}
 } // namespace XLS
 

@@ -50,6 +50,7 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const	bool loadContent	(BinProcessor& proc);
+	int serialize_format(std::wostream & _stream);
 
 	static const ElementType type = typeWorksheetSubstream;
 

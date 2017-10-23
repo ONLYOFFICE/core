@@ -90,11 +90,7 @@ namespace OOX
 			}
 
 		public:
-
-			// Attributes
             nullable<std::wstring> m_sSpId;
-
-			// Childs
 		};
 		class CDataModelExt : public WritingElement
 		{

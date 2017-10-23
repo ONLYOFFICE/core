@@ -108,6 +108,10 @@ void table_data_pilot_table::xlsx_convert(oox::xlsx_conversion_context & Context
 		Context.get_pivots_context().set_view_target_range(ref);
 		Context.get_pivots_context().set_view_target_table_name(sheet_name);
 	}
+	if (table_grand_total_)
+	{
+		Context.get_pivots_context().set_grand_total(table_grand_total_->get_type());
+	}
 
 	if (table_buttons_)
 	{
@@ -494,7 +498,7 @@ void table_data_pilot_member::add_attributes( const xml::attributes_wc_ptr & Att
 
 void table_data_pilot_member::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.get_pivots_context().add_field_cache(-1, table_name_.get_value_or(L""));
+	Context.get_pivots_context().add_field_cache(-1, table_name_.get_value_or(L""), table_show_details_ ? table_show_details_->get() : true);
 }
 //-------------------------------------------------------------------------------------------------
 const wchar_t * table_data_pilot_group_member::ns	= L"table";

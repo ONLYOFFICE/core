@@ -1697,7 +1697,7 @@ public:
             std::vector<std::wstring> arSplit;
             boost::algorithm::split(arSplit, pComment->UserName, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 
-            for (int i = 0; i < arSplit.size(); i++)
+            for (size_t i = 0; i < arSplit.size(); i++)
             {
                 sInitials += arSplit[i][0];
             }
@@ -1733,7 +1733,7 @@ public:
 
             bool bFirst = true;
 			int nPrevIndex = 0;
-            for(size_t i = 0; i < sText.length(); i++)
+            for (int i = 0; i < (int)sText.length(); i++)
 			{
                 wchar_t cToken = sText[i];
 				if('\n' == cToken)

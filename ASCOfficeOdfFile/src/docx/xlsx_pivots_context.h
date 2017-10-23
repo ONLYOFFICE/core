@@ -56,7 +56,7 @@ public:
 		void set_field_function (int type);
 		void set_field_user_function (std::wstring f);
 		void add_field_subtotal (int function_type);
-		void add_field_cache (int index, std::wstring value);
+		void add_field_cache (int index, std::wstring value, bool show_details = true);
 		void set_field_show_empty (bool val);
 		void set_field_data_layout (bool val);		
 		void set_field_sort (int type);
@@ -89,6 +89,7 @@ public:
 	void set_identify_categories(bool val);
 	void set_ignore_empty_rows(bool val);
 	void set_drill(bool val);
+	void set_grand_total(int type);
 
 	void set_source_range(std::wstring table_name, std::wstring ref);
 	

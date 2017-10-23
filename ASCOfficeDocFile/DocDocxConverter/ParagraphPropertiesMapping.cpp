@@ -154,7 +154,7 @@ namespace DocFileFormat
 
 				case sprmPFBiDi:
 				{
-					bool val = iter->argumentsSize > 0 ? iter->Arguments[0] : true;
+					bool val = iter->argumentsSize > 0 ? (iter->Arguments[0] != 0) : true;
                     appendFlagElement( _pPr, *iter, L"bidi", val);
 					_isBidi = val;
 				}break;			
@@ -427,7 +427,7 @@ namespace DocFileFormat
 					if (m_document->listTable)
 					{
 						m_document->listTable->appendNumbering(  desc );
-						short numId = m_document->listTable->listNumbering.size();
+						short numId = static_cast<short>(m_document->listTable->listNumbering.size());
                         appendValueElement( &numPr, L"numId", numId, true );
 					}
 				}break;
@@ -485,7 +485,7 @@ namespace DocFileFormat
 				{
                     XMLTools::XMLElement tabs( L"w:tabs" );
 
-					int pos = 0;
+					unsigned int pos = 0;
 
 					//read the removed tabs
 					unsigned char itbdDelMax = iter->Arguments[pos];

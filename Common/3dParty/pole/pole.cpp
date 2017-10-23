@@ -54,11 +54,13 @@
 #include <cstring>
 
 #include "pole.h"
+#include "../../../DesktopEditor/common/File.h"
 
 
 // enable to activate debugging output
 // #define POLE_DEBUG
 #define CACHEBUFSIZE 4096 //a presumably reasonable size for the read cache
+
 
 namespace POLE
 {
@@ -125,7 +127,8 @@ class DirEntry
   public:
     DirEntry(): valid(), name(), dir(), size(), start(), prev(), next(), child() {}
     bool valid;          // false if invalid (should be skipped)
-    std::string name;    // the name, not in unicode anymore 
+	wchar_t prefix;
+    std::wstring name;    // the name, not in unicode anymore 
     bool dir;            // true if directory   
     uint64 size;         // size (not valid if directory)
     uint64 start;        // starting block
@@ -133,7 +136,7 @@ class DirEntry
     uint64 next;         // next sibling
     uint64 child;        // first child
     int compare(const DirEntry& de);
-    int compare(const std::string& name2);
+    int compare(const std::wstring& name2);
 
 };
 
@@ -146,12 +149,12 @@ class DirTree
     inline uint64 entryCount();
     uint64 unusedEntryCount();
     DirEntry* entry( uint64 index );
-    DirEntry* entry( const std::string& name, bool create = false, int64 bigBlockSize = 0, StorageIO *const io = 0, int64 streamSize = 0);
+    DirEntry* entry( const std::wstring& name, bool create = false, int64 bigBlockSize = 0, StorageIO *const io = 0, int64 streamSize = 0);
     int64 indexOf( DirEntry* e );
     int64 parent( uint64 index );
-    std::string fullName( uint64 index );
+    std::wstring fullName( uint64 index );
     std::vector<uint64> children( uint64 index );
-    uint64 find_child( uint64 index, const std::string& name, uint64 &closest );
+    uint64 find_child( uint64 index, const std::wstring& name, uint64 &closest );
     void load( unsigned char* buffer, uint64 len );
     void save( unsigned char* buffer );
     uint64 size();
@@ -160,9 +163,9 @@ class DirTree
     void markAsDirty(uint64 dataIndex, int64 bigBlockSize);
     void flush(std::vector<uint64> blocks, StorageIO *const io, int64 bigBlockSize, uint64 sb_start, uint64 sb_size);
     uint64 unused();
-    void findParentAndSib(uint64 inIdx, const std::string& inFullName, uint64 &parentIdx, uint64 &sibIdx);
+    void findParentAndSib(uint64 inIdx, const std::wstring& inFullName, uint64 &parentIdx, uint64 &sibIdx);
     uint64 findSib(uint64 inIdx, uint64 sibIdx);
-    void deleteEntry(DirEntry *entry, const std::string& inFullName, int64 bigBlockSize);
+    void deleteEntry(DirEntry *entry, const std::wstring& inFullName, int64 bigBlockSize);
   private:
     std::vector<DirEntry> entries;
     std::vector<uint64> dirtyBlocks;
@@ -204,11 +207,11 @@ class StorageIO
     void load(bool bWriteAccess);
     void create();
     void init();
-    bool deleteByName(const std::string& fullName);
+    bool deleteByName(const std::wstring& fullName);
 
-    bool deleteNode(DirEntry *entry, const std::string& fullName);
+    bool deleteNode(DirEntry *entry, const std::wstring& fullName);
 
-    bool deleteLeaf(DirEntry *entry, const std::string& fullName);
+    bool deleteLeaf(DirEntry *entry, const std::wstring& fullName);
 
     uint64 loadBigBlocks( std::vector<uint64> blocks, unsigned char* buffer, uint64 maxlen );
 
@@ -226,7 +229,7 @@ class StorageIO
 
     uint64 saveSmallBlock( uint64 block, uint64 offset, unsigned char* buffer, uint64 len );
     
-    StreamIO* streamIO( const std::string& name, bool bCreate = false, int64 streamSize = 0 ); 
+    StreamIO* streamIO( const std::wstring& name, bool bCreate = false, int64 streamSize = 0 ); 
 
     void flushbbat();
 
@@ -250,7 +253,7 @@ class StreamIO
   public:
     StorageIO* io;
     int64 entryIdx; //needed because a pointer to DirEntry will change whenever entries vector changes.
-    std::string fullName;
+    std::wstring fullName;
     bool eof;
     bool fail;
 
@@ -398,13 +401,13 @@ void Header::save( unsigned char* buffer )
 {
   memset( buffer, 0, 0x4c );
   memcpy( buffer, pole_magic, 8 );        // ole signature
-  writeU32( buffer + 8, 0 );              // unknown 
-  writeU32( buffer + 12, 0 );             // unknown
-  writeU32( buffer + 16, 0 );             // unknown
-  writeU16( buffer + 24, 0x003e );        // revision ?
-  writeU16( buffer + 26, 3 );             // version ?
-  writeU16( buffer + 28, 0xfffe );        // unknown
-  writeU16( buffer + 0x1e, (uint32) b_shift );
+  writeU32( buffer + 8, 0 );              // reserved must be zero
+  writeU32( buffer + 12, 0 );             // reserved must be zero
+  writeU32( buffer + 16, 0 );             // reserved must be zero
+  writeU16( buffer + 24, 0x003e );        // minor version of the format: 33
+  writeU16( buffer + 26, 3 );             // major version (512 clasters)
+  writeU16( buffer + 28, 0xfffe );        // indicates Intel byte-ordering
+  writeU16( buffer + 0x1e, (uint32) b_shift ); //size of sectors in power-of-two
   writeU16( buffer + 0x20, (uint32) s_shift );
   writeU32( buffer + 0x2c, (uint32) num_bat );
   writeU32( buffer + 0x30, (uint32) dirent_start );
@@ -414,8 +417,8 @@ void Header::save( unsigned char* buffer )
   writeU32( buffer + 0x44, (uint32) mbat_start );
   writeU32( buffer + 0x48, (uint32) num_mbat );
   
-  for( unsigned int i=0; i<109; i++ )
-    writeU32( buffer + 0x4C+i*4, (uint32) bb_blocks[i] );
+  for( unsigned int i = 0; i < 109; i++ )
+    writeU32( buffer + 0x4C  + i * 4, (uint32) bb_blocks[i] );
   dirty = false;
 }
 
@@ -636,7 +639,7 @@ int DirEntry::compare(const DirEntry& de)
     return compare(de.name);
 }
 
-int DirEntry::compare(const std::string& name2)
+int DirEntry::compare(const std::wstring& name2)
 {
     if (name.length() < name2.length())
         return -1;
@@ -663,7 +666,7 @@ void DirTree::clear(int64 bigBlockSize)
   // leave only root entry
   entries.resize( 1 );
   entries[0].valid = true;
-  entries[0].name = "Root Entry";
+  entries[0].name = L"Root Entry";
   entries[0].dir = true;
   entries[0].size = 0;
   entries[0].start = End;
@@ -710,7 +713,7 @@ int64 DirTree::parent( uint64 index )
   for( uint64 j=0; j<entryCount(); j++ )
   {
     std::vector<uint64> chi = children( j );
-    for( unsigned i=0; i<chi.size();i++ )
+    for( size_t i=0; i<chi.size();i++ )
       if( chi[i] == index )
         return j;
   }
@@ -718,13 +721,13 @@ int64 DirTree::parent( uint64 index )
   return -1;
 }
 
-std::string DirTree::fullName( uint64 index )
+std::wstring DirTree::fullName( uint64 index )
 {
   // don't use root name ("Root Entry"), just give "/"
-  if( index == 0 ) return "/";
+  if( index == 0 ) return L"/";
 
-  std::string result = entry( index )->name;
-  result.insert( 0,  "/" );
+  std::wstring result = entry( index )->name;
+  result.insert( 0,  L"/" );
   uint64 p = parent( index );
   DirEntry * _entry = 0;
   while( p > 0 )
@@ -733,7 +736,7 @@ std::string DirTree::fullName( uint64 index )
     if (_entry->dir && _entry->valid)
     {
       result.insert( 0,  _entry->name);
-      result.insert( 0,  "/" );
+      result.insert( 0,  L"/" );
     }
     --p;
     index = p;
@@ -745,23 +748,23 @@ std::string DirTree::fullName( uint64 index )
 // given a fullname (e.g "/ObjectPool/_1020961869"), find the entry
 // if not found and create is false, return 0
 // if create is true, a new entry is returned
-DirEntry* DirTree::entry( const std::string& name, bool create, int64 bigBlockSize, StorageIO *const io, int64 streamSize)
+DirEntry* DirTree::entry( const std::wstring& name, bool create, int64 bigBlockSize, StorageIO *const io, int64 streamSize)
 {
-   if( !name.length() ) return (DirEntry*)0;
+   if( name.empty() ) return (DirEntry*)0;
  
    // quick check for "/" (that's root)
-   if( name == "/" ) return entry( 0 );
+   if( name == L"/" ) return entry( 0 );
    
    // split the names, e.g  "/ObjectPool/_1020961869" will become:
    // "ObjectPool" and "_1020961869" 
-   std::list<std::string> names;
-   std::string::size_type start = 0, end = 0;
+   std::list<std::wstring> names;
+   std::wstring::size_type start = 0, end = 0;
    if( name[0] == '/' ) start++;
    int levelsLeft = 0;
    while( start < name.length() )
    {
-     end = name.find_first_of( '/', start );
-     if( end == std::string::npos ) end = name.length();
+     end = name.find_first_of( L'/', start );
+     if( end == std::wstring::npos ) end = name.length();
      names.push_back( name.substr( start, end-start ) );
      levelsLeft++;
      start = end+1;
@@ -771,29 +774,27 @@ DirEntry* DirTree::entry( const std::string& name, bool create, int64 bigBlockSi
    int64 index = 0;
 
    // trace one by one   
-   std::list<std::string>::iterator it; 
+   std::list<std::wstring>::iterator it; 
 
    for( it = names.begin(); it != names.end(); ++it )
    {
      // find among the children of index
      levelsLeft--;
-     uint64 child = 0;
-
+     uint64 child = 0;     
      
-     /*
      // dima: this block is really inefficient
-     std::vector<unsigned> chi = children( index );
-     for( unsigned i = 0; i < chi.size(); i++ )
-     {
-       DirEntry* ce = entry( chi[i] );
-       if( ce ) 
-       if( ce->valid && ( ce->name.length()>1 ) )
-       if( ce->name == *it ) {
-             child = chi[i];
-             break;
-       }
-     }
-     */
+     //std::vector<uint64> chi = children( index );
+     //for( size_t i = 0; i < chi.size(); i++ )
+     //{
+     //  DirEntry* ce = entry( chi[i] );
+     //  if( ce ) 
+     //  if( ce->valid && ( ce->name !="/" ) )
+     //  if( ce->name == *it ) {
+     //        child = chi[i];
+     //        break;
+     //  }
+     //}
+     
      // dima: performance optimisation of the previous
      uint64 closest = End;
      child = find_child( index, *it, closest );
@@ -803,51 +804,69 @@ DirEntry* DirTree::entry( const std::string& name, bool create, int64 bigBlockSi
 	 {
 		 index = child;
 	 }
-     else
+     else if( !create || !io->writeable)
      {
-       // not found among children
-       if( !create || !io->writeable) 
+		std::vector<uint64> chi = children( index );
+		for( size_t i = 0; i < chi.size(); i++ )
+		{
+			DirEntry* ce = entry( chi[i] );
+			if( ce ) 
+				if( ce->valid && ( ce->name != L"/" )/*( ce->name.length()>1 )*/ )
+					if( ce->name == *it )
+					{
+						child = chi[i];
+						break;
+					}
+		}
+	}     
+	if( child > 0 )
+	{
+		index = child;
+	}
+	else
+	{		   
+		// not found among children ..wrong header???
+		if( !create || !io->writeable) 
+		{
+		   return (DirEntry*)0;
+		}
+	   // create a new entry
+	   uint64 parent2 = index;
+	   index = unused();
+	   DirEntry* e = entry( index );
+	   e->valid = true;
+	   e->name = *it;
+	   e->dir = (levelsLeft > 0);
+	   if (!e->dir)
+		   e->size = streamSize;
+	   else
+		   e->size = 0;
+	   e->start = AllocTable::Eof;
+	   e->child = End;
+	   if (closest == End)
 	   {
-			return (DirEntry*)0;
+		   e->prev = End;
+		   e->next = entry(parent2)->child;
+		   entry(parent2)->child = index;
+		   markAsDirty(parent2, bigBlockSize);
 	   }
-       
-       // create a new entry
-       uint64 parent2 = index;
-       index = unused();
-       DirEntry* e = entry( index );
-       e->valid = true;
-       e->name = *it;
-       e->dir = (levelsLeft > 0);
-       if (!e->dir)
-           e->size = streamSize;
-       else
-           e->size = 0;
-       e->start = AllocTable::Eof;
-       e->child = End;
-       if (closest == End)
-       {
-           e->prev = End;
-           e->next = entry(parent2)->child;
-           entry(parent2)->child = index;
-           markAsDirty(parent2, bigBlockSize);
-       }
-       else
-       {
-           DirEntry* closeE = entry( closest );
-           if (closeE->compare(*e) < 0)
-           {
-               e->prev = closeE->next;
-               e->next = End;
-               closeE->next = index;
-           }
-           else
-           {
-               e->next = closeE->prev;
-               e->prev = End;
-               closeE->prev = index;
-           }
-           markAsDirty(closest, bigBlockSize);
-       }
+	   else
+	   {
+		   DirEntry* closeE = entry( closest );
+		   if (closeE->compare(*e) < 0)
+		   {
+			   e->prev = closeE->next;
+			   e->next = End;
+			   closeE->next = index;
+		   }
+		   else
+		   {
+			   e->next = closeE->prev;
+			   e->prev = End;
+			   closeE->prev = index;
+		   }
+		   markAsDirty(closest, bigBlockSize);
+	   }
        markAsDirty(index, bigBlockSize);
        uint64 bbidx = index / (bigBlockSize / 128);
        std::vector <uint64> blocks = io->bbat->follow(io->header->dirent_start);
@@ -896,7 +915,7 @@ std::vector<uint64> DirTree::children( uint64 index )
   return result;
 }
 
-uint64 dirtree_find_sibling( DirTree* dirtree, uint64 index, const std::string& name, uint64& closest ) {
+uint64 dirtree_find_sibling( DirTree* dirtree, uint64 index, const std::wstring& name, uint64& closest ) {
 
     uint64 count = dirtree->entryCount();
     DirEntry* e = dirtree->entry( index );
@@ -918,7 +937,7 @@ uint64 dirtree_find_sibling( DirTree* dirtree, uint64 index, const std::string& 
     return 0;
 }
 
-uint64 DirTree::find_child( uint64 index, const std::string& name, uint64& closest ) {
+uint64 DirTree::find_child( uint64 index, const std::wstring& name, uint64& closest ) {
 
   uint64 count = entryCount();
   DirEntry* p = entry( index );
@@ -937,28 +956,45 @@ void DirTree::load( unsigned char* buffer, uint64 size )
     uint64 p = i * 128;
     
     // would be < 32 if first char in the name isn't printable
-    unsigned prefix = 32;
+    unsigned char prefix = 32;
     
     // parse name of this entry, which stored as Unicode 16-bit
-    std::string name;
-    int name_len = readU16( buffer + 0x40+p );
+    int name_len = readU16( buffer + 0x40 + p );
     if( name_len > 64 ) name_len = 64;
-    for( int j=0; ( buffer[j+p]) && (j<name_len); j+= 2 )
-      name.append( 1, buffer[j+p] );
+    
+    //std::string name;
+	//for( int j = 0; ( buffer[j + p]) && ( j < name_len); j+= 2 )
+	//    name.append( 1, buffer[j + p] );
+
+	//name = std::string((char*)buffer + p, name_len);
       
     // first char isn't printable ? remove it...
-    if( buffer[p] < 32 )
-    { 
-      prefix = buffer[0]; 
-      name.erase( 0,1 ); 
-    }
-    
+
+	std::wstring name;
+
+	if (name_len > 0)
+	{
+		if (sizeof(wchar_t) == 2)
+		{
+			name = std::wstring((wchar_t*)(buffer + p), name_len / 2 - 1);
+		}
+		else
+		{
+			name = convertUtf16ToWString((UTF16*)(buffer + p), name_len / 2 - 1);
+		}
+		if( name[0] < 32 )
+		{ 
+		  prefix = name[0]; 
+		  name.erase( 0, 1 ); 
+		}   
+	}
     // 2 = file (aka stream), 1 = directory (aka storage), 5 = root
     unsigned type = buffer[ 0x42 + p];
     
     DirEntry e;
     e.valid = ( type != 0 );
     e.name = name;
+	e.prefix = prefix;
     e.start = readU32( buffer + 0x74+p );
     e.size = readU32( buffer + 0x78+p );
     e.prev = readU32( buffer + 0x44+p );
@@ -986,10 +1022,26 @@ void DirTree::save( unsigned char* buffer )
   
   // root is fixed as "Root Entry"
   DirEntry* root = entry( 0 );
-  std::string name = "Root Entry";
-  for( unsigned int j = 0; j < name.length(); j++ )
-    buffer[ j*2 ] = name[j];
-  writeU16( buffer + 0x40, static_cast<uint32>(name.length()*2 + 2) );
+  std::wstring name = L"Root Entry";
+  
+  if (sizeof(wchar_t) == 2)
+  {
+	  memcpy( buffer, (unsigned char*)name.c_str(), name.length() * 2);
+  }
+  else
+  {
+	  unsigned char* pData = NULL;
+	  int size = 0;
+	  convertWStringToUtf16(name, pData, size);
+	  if (pData)
+	  {
+		memcpy( buffer, pData, size);
+		delete []pData;
+	  }
+  }
+  
+  writeU16( buffer + 0x40, static_cast<uint32>(name.length() * 2 + 2) );
+  
   writeU32( buffer + 0x74, 0xffffffff );
   writeU32( buffer + 0x78, 0 );
   writeU32( buffer + 0x44, 0xffffffff );
@@ -1009,20 +1061,34 @@ void DirTree::save( unsigned char* buffer )
     }
     
     // max length for name is 32 chars
-    std::string name = e->name;
-    if( name.length() > 32 )
-      name.erase( 32, name.length() );
+	std::wstring name = e->name;
+	if( name.length() > 32 )
+	{
+		name.erase( 32, name.length() );
+	}
       
-    // write name as Unicode 16-bit
-    for( unsigned j = 0; j < name.length(); j++ )
-      buffer[ i*128 + j*2 ] = name[j];
+	if (sizeof(wchar_t) == 2)
+	{
+		memcpy( buffer + i * 128, (unsigned char*)name.c_str(), name.length() * 2);
+	}
+	else
+	{
+		unsigned char* pData = NULL;
+		int size = 0;
+		convertWStringToUtf16(name, pData, size);
+		if (pData)
+		{
+			memcpy( buffer, pData, size);
+			delete []pData;
+		}
+	}
 
-    writeU16( buffer + i*128 + 0x40, static_cast<uint32>(name.length()*2 + 2) );
-    writeU32( buffer + i*128 + 0x74, (uint32) e->start );
-    writeU32( buffer + i*128 + 0x78, (uint32) e->size );
-    writeU32( buffer + i*128 + 0x44, (uint32) e->prev );
-    writeU32( buffer + i*128 + 0x48, (uint32) e->next );
-    writeU32( buffer + i*128 + 0x4c, (uint32) e->child );
+	writeU16( buffer + i*128 + 0x40, static_cast<uint32>(name.length()*2 + 2) );
+	writeU32( buffer + i*128 + 0x74, (uint32) e->start );
+	writeU32( buffer + i*128 + 0x78, (uint32) e->size );
+	writeU32( buffer + i*128 + 0x44, (uint32) e->prev );
+	writeU32( buffer + i*128 + 0x48, (uint32) e->next );
+	writeU32( buffer + i*128 + 0x4c, (uint32) e->child );
     if (!e->valid)
         buffer[ i*128 + 0x42 ] = 0; //STGTY_INVALID
     else
@@ -1092,21 +1158,21 @@ uint64 DirTree::unused()
 // Then look for a sibling dirEntry that points to inIdx. In some circumstances, the dirEntry at inIdx will be the direct child
 // of the parent, in which case sibIdx will be returned as 0. A failure is indicated if both parentIdx and sibIdx are returned as 0.
 
-void DirTree::findParentAndSib(uint64 inIdx, const std::string& inFullName, uint64& parentIdx, uint64& sibIdx)
+void DirTree::findParentAndSib(uint64 inIdx, const std::wstring& inFullName, uint64& parentIdx, uint64& sibIdx)
 {
     sibIdx = 0;
     parentIdx = 0;
-    if (inIdx == 0 || inIdx >= entryCount() || inFullName == "/" || inFullName == "")
+	if (inIdx == 0 || inIdx >= entryCount() || inFullName == L"/" || inFullName == L"")
         return;
-    std::string localName = inFullName;
-    if (localName[0] != '/')
-        localName = '/' + localName;
-    std::string parentName = localName;
-    if (parentName[parentName.size()-1] == '/')
+    std::wstring localName = inFullName;
+    if (localName[0] != L'/')
+		localName = L'/' + localName;
+    std::wstring parentName = localName;
+    if (parentName[parentName.size()-1] == L'/')
         parentName = parentName.substr(0, parentName.size()-1);
-    std::string::size_type lastSlash;
-    lastSlash = parentName.find_last_of('/');
-    if (lastSlash == std::string::npos)
+    std::wstring::size_type lastSlash;
+    lastSlash = parentName.find_last_of(L'/');
+    if (lastSlash == std::wstring::npos)
         return;
     if (lastSlash == 0)
         lastSlash = 1; //leave root
@@ -1136,7 +1202,7 @@ uint64 DirTree::findSib(uint64 inIdx, uint64 sibIdx)
         return findSib(inIdx, sib->next);
 }
 
-void DirTree::deleteEntry(DirEntry *dirToDel, const std::string& inFullName, int64 bigBlockSize)
+void DirTree::deleteEntry(DirEntry *dirToDel, const std::wstring& inFullName, int64 bigBlockSize)
 {
     uint64 parentIdx;
     uint64 sibIdx;
@@ -1205,19 +1271,19 @@ void DirTree::debug()
     DirEntry* e = entry( i );
     if( !e ) continue;
     std::cout << i << ": ";
-    if( !e->valid ) std::cout << "INVALID ";
-    std::cout << e->name << " ";
-    if( e->dir ) std::cout << "(Dir) ";
-    else std::cout << "(File) ";
-    std::cout << e->size << " ";
-    std::cout << "s:" << e->start << " ";
-    std::cout << "(";
-    if( e->child == End ) std::cout << "-"; else std::cout << e->child;
+	if( !e->valid ) std::cout << L"INVALID ";
+    std::wcout << e->name << L" ";
+    if( e->dir ) std::cout << L"(Dir) ";
+    else std::cout << L"(File) ";
+    std::cout << e->size << L" ";
+	std::cout << L"s:" << e->start << L" ";
+    std::cout << L"(";
+    if( e->child == End ) std::cout << L"-"; else std::cout << e->child;
     std::cout << " ";
-    if( e->prev == End ) std::cout << "-"; else std::cout << e->prev;
-    std::cout << ":";
-    if( e->next == End ) std::cout << "-"; else std::cout << e->next;
-    std::cout << ")";    
+    if( e->prev == End ) std::cout << L"-"; else std::cout << e->prev;
+    std::cout << L":";
+    if( e->next == End ) std::cout << L"-"; else std::cout << e->next;
+    std::cout << L")";    
     std::cout << std::endl;
   }
 }
@@ -1482,17 +1548,32 @@ void StorageIO::flush()
 void StorageIO::close()
 {
   if( !opened ) return;
-  
+
+  if (writeable)
+  {	
+	  file.seekg(0, std::ios::end );
+	  filesize = static_cast<uint64>(file.tellg());
+	  
+	  if (filesize % 512 != 0)
+	  {
+		  char padding[512];
+		  memset(padding, 0, 512);
+		  file.write(padding, (filesize / 512 + 1 ) * 512 - filesize);
+		  fileCheck(file);
+	  }
+  }
   file.close(); 
   opened = false;
   
   std::list<Stream*>::iterator it;
   for( it = streams.begin(); it != streams.end(); ++it )
     delete *it;
+  
+  streams.clear();
 }
 
 
-StreamIO* StorageIO::streamIO( const std::string& name, bool bCreate, int64 streamSize )
+StreamIO* StorageIO::streamIO( const std::wstring& name, bool bCreate, int64 streamSize )
 {
   // sanity check
   if( !name.length() ) return (StreamIO*)0;
@@ -1510,7 +1591,7 @@ StreamIO* StorageIO::streamIO( const std::string& name, bool bCreate, int64 stre
   return result2;
 }
 
-bool StorageIO::deleteByName(const std::string& fullName)
+bool StorageIO::deleteByName(const std::wstring& fullName)
 {
     if (!fullName.length())
         return false;
@@ -1529,16 +1610,16 @@ bool StorageIO::deleteByName(const std::string& fullName)
     return retVal;
 }
 
-bool StorageIO::deleteNode(DirEntry *entry, const std::string& fullName)
+bool StorageIO::deleteNode(DirEntry *entry, const std::wstring& fullName)
 {
-    std::string lclName = fullName;
+    std::wstring lclName = fullName;
     if (lclName[lclName.size()-1] != '/')
         lclName += '/';
     bool retVal = true;
     while (entry->child && entry->child < dirtree->entryCount())
     {
         DirEntry* childEnt = dirtree->entry(entry->child);
-        std::string childFullName = lclName + childEnt->name;
+        std::wstring childFullName = lclName + childEnt->name;
         if (childEnt->dir)
             retVal = deleteNode(childEnt, childFullName);
         else
@@ -1550,7 +1631,7 @@ bool StorageIO::deleteNode(DirEntry *entry, const std::string& fullName)
     return retVal;
 }
 
-bool StorageIO::deleteLeaf(DirEntry *entry, const std::string& fullName)
+bool StorageIO::deleteLeaf(DirEntry *entry, const std::wstring& fullName)
 {
     std::vector<uint64> blocks;
     if (entry->size >= header->threshold)
@@ -1575,8 +1656,7 @@ bool StorageIO::deleteLeaf(DirEntry *entry, const std::string& fullName)
     return true;
 }
 
-uint64 StorageIO::loadBigBlocks( std::vector<uint64> blocks,
-  unsigned char* data, uint64 maxlen )
+uint64 StorageIO::loadBigBlocks( std::vector<uint64> blocks, unsigned char* data, uint64 maxlen )
 {
   // sentinel
   if( !data ) return 0;
@@ -1604,8 +1684,7 @@ uint64 StorageIO::loadBigBlocks( std::vector<uint64> blocks,
   return bytes;
 }
 
-uint64 StorageIO::loadBigBlock( uint64 block,
-  unsigned char* data, uint64 maxlen )
+uint64 StorageIO::loadBigBlock( uint64 block,  unsigned char* data, uint64 maxlen )
 {
   // sentinel
   if( !data ) return 0;
@@ -1631,7 +1710,7 @@ uint64 StorageIO::saveBigBlocks( std::vector<uint64> blocks, uint64 offset, unsi
 
   // write block one by one, seems fast enough
   uint64 bytes = 0;
-  for( unsigned int i=0; (i < blocks.size() ) & ( bytes<len ); i++ )
+  for( size_t i=0; (i < blocks.size() ) & ( bytes<len ); i++ )
   {
     uint64 block = blocks[i];
     uint64 pos =  (bbat->blockSize * ( block+1 ) ) + offset;
@@ -1666,8 +1745,7 @@ uint64 StorageIO::saveBigBlock( uint64 block, uint64 offset, unsigned char* data
 }
 
 // return number of bytes which has been read
-uint64 StorageIO::loadSmallBlocks( std::vector<uint64> blocks,
-  unsigned char* data, uint64 maxlen )
+uint64 StorageIO::loadSmallBlocks( std::vector<uint64> blocks, unsigned char* data, uint64 maxlen )
 {
   // sentinel
   if( !data ) return 0;
@@ -1705,8 +1783,7 @@ uint64 StorageIO::loadSmallBlocks( std::vector<uint64> blocks,
   return bytes;
 }
 
-uint64 StorageIO::loadSmallBlock( uint64 block,
-  unsigned char* data, uint64 maxlen )
+uint64 StorageIO::loadSmallBlock( uint64 block, unsigned char* data, uint64 maxlen )
 {
   // sentinel
   if( !data ) return 0;
@@ -2215,9 +2292,9 @@ void Storage::close()
   io->close();
 }
 
-std::list<std::string> Storage::entries( const std::string& path )
+std::list<std::wstring> Storage::entries( const std::wstring& path )
 {
-  std::list<std::string> localResult;
+  std::list<std::wstring> localResult;
   DirTree* dt = io->dirtree;
   DirEntry* e = dt->entry( path, false );
   if( e  && e->dir )
@@ -2225,19 +2302,44 @@ std::list<std::string> Storage::entries( const std::string& path )
     uint64 parent = dt->indexOf( e );
     std::vector<uint64> children = dt->children( parent );
     for( uint64 i = 0; i < children.size(); i++ )
-      localResult.push_back( dt->entry( children[i] )->name );
+	{
+		localResult.push_back( dt->entry( children[i] )->name );
+	}
   }
   
   return localResult;
 }
+std::list<std::wstring> Storage::entries_with_prefix( const std::wstring& path )
+{
+  std::list<std::wstring> localResult;
+  DirTree* dt = io->dirtree;
+  DirEntry* e = dt->entry( path, false );
+  if( e  && e->dir )
+  {
+    uint64 parent = dt->indexOf( e );
+    std::vector<uint64> children = dt->children( parent );
+    for( uint64 i = 0; i < children.size(); i++ )
+	{
+		std::wstring val;
+		if (dt->entry( children[i] )->prefix != 32)
+		{
+			val = dt->entry( children[i] )->prefix;
+		}
+		val += dt->entry( children[i] )->name;
 
-bool Storage::isDirectory( const std::string& name )
+		localResult.push_back(val);
+	}
+  }
+  
+  return localResult;
+}
+bool Storage::isDirectory( const std::wstring& name )
 {
   DirEntry* e = io->dirtree->entry( name, false );
   return e ? e->dir : false;
 }
 
-bool Storage::exists( const std::string& name )
+bool Storage::exists( const std::wstring& name )
 {
     DirEntry* e = io->dirtree->entry( name, false );
     return (e != 0);
@@ -2248,7 +2350,7 @@ bool Storage::isWriteable()
     return io->writeable;
 }
 
-bool Storage::deleteByName( const std::string& name )
+bool Storage::deleteByName( const std::wstring& name )
 {
   return io->deleteByName(name);
 }
@@ -2266,16 +2368,18 @@ void Storage::GetStats(uint64 *pEntries, uint64 *pUnusedEntries,
 }
 
 // recursively collect stream names
-void CollectStreams( std::list<std::string>& result, DirTree* tree, DirEntry* parent, const std::string& path )
+void CollectStreams( std::list<std::wstring>& result, DirTree* tree, DirEntry* parent, const std::wstring& path )
 {
   DirEntry* c = tree->entry( parent->child );
   std::queue<DirEntry*> queue;
   if ( c ) queue.push( c );
-  while ( !queue.empty() ) {
+
+  while ( !queue.empty() ) 
+  {
     DirEntry* e = queue.front();
     queue.pop();
     if ( e->dir )
-      CollectStreams( result, tree, e, path + e->name + "/" );
+      CollectStreams( result, tree, e, path + e->name + L"/" );
     else
       result.push_back( path + e->name );
     DirEntry* p = tree->entry( e->prev );
@@ -2287,9 +2391,9 @@ void CollectStreams( std::list<std::string>& result, DirTree* tree, DirEntry* pa
   }
 }
 
-std::list<std::string> Storage::GetAllStreams( const std::string& storageName )
+std::list<std::wstring> Storage::GetAllStreams( const std::wstring& storageName )
 {
-  std::list<std::string> vresult;
+  std::list<std::wstring> vresult;
   DirEntry* e = io->dirtree->entry( storageName, false );
   if ( e && e->dir ) CollectStreams( vresult, io->dirtree, e, storageName );
   return vresult;
@@ -2297,7 +2401,7 @@ std::list<std::string> Storage::GetAllStreams( const std::string& storageName )
 
 // =========== Stream ==========
 
-Stream::Stream( Storage* storage, const std::string& name, bool bCreate, int64 streamSize )
+Stream::Stream( Storage* storage, const std::wstring& name, bool bCreate, int64 streamSize )
 :   io(storage->io->streamIO( name, bCreate, (int) streamSize ))
 {
 }
@@ -2308,9 +2412,9 @@ Stream::~Stream()
   delete io;
 }
 
-std::string Stream::fullName()
+std::wstring Stream::fullName()
 {
-  return io ? io->fullName : std::string();
+  return io ? io->fullName : std::wstring();
 }
 
 uint64 Stream::tell()
@@ -2338,8 +2442,8 @@ void Stream::setSize(int64 newSize)
         return;
     if (newSize < 0)
         return;
-    if (newSize > std::numeric_limits<int64>::max())
-        return;
+    //if (newSize > std::numeric_limits<int64>::max())
+    //    return;
     io->setSize(newSize);
 }
 

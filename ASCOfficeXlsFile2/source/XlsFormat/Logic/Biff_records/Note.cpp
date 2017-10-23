@@ -39,11 +39,9 @@ Note::Note()
 {
 }
 
-
 Note::~Note()
 {
 }
-
 
 BaseObjectPtr Note::clone()
 {

@@ -3616,7 +3616,7 @@ namespace BinDocxRW
 				m_oBcw.m_oStream.WriteLONG(oDDList.m_oResult->m_oVal->GetValue());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
-			for(int i = 0 ; i < oDDList.m_arrListEntry.size(); ++i)
+			for(size_t i = 0 ; i < oDDList.m_arrListEntry.size(); ++i)
 			{
 				ComplexTypes::Word::String* pVal = oDDList.m_arrListEntry[i];
 				if(pVal->m_sVal.IsInit())

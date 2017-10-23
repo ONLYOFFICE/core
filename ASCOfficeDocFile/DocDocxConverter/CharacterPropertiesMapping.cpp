@@ -321,7 +321,7 @@ namespace DocFileFormat
 
 			case sprmCFtcBi :
 				{//default from FontTable
-					SHORT nIndex	=	FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize);
+					size_t nIndex	=	FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize);
 					if( nIndex < _doc->FontTable->Data.size() )
 					{
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
@@ -373,7 +373,7 @@ namespace DocFileFormat
 			case sprmOldCFtc:
 			case sprmCRgFtc0:
 				{	// font family
-					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+					size_t nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
 					
 					if( nIndex < _doc->FontTable->Data.size() )
 					{
@@ -388,7 +388,8 @@ namespace DocFileFormat
 
 			case sprmCRgFtc1:
 				{
-					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+					size_t nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+
 					if( nIndex >= 0 && nIndex < _doc->FontTable->Data.size() )
 					{
                         XMLTools::XMLAttribute* eastAsia = new XMLTools::XMLAttribute( L"w:eastAsia" );
@@ -403,7 +404,8 @@ namespace DocFileFormat
 
 			case sprmCRgFtc2:
 				{
-					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+					size_t nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+
 					if( nIndex>=0 && nIndex < _doc->FontTable->Data.size() )
 					{
                         XMLTools::XMLAttribute* ansi = new XMLTools::XMLAttribute( L"w:hAnsi" );

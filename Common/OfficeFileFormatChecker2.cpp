@@ -124,6 +124,8 @@ bool COfficeFileFormatChecker::isPdfFormatFile	(unsigned char* pBuffer,int dwByt
     pTempBuffer[nTempBufferSize - 1] = '\0';
 
     char* pFirst = strstr( (char*)pTempBuffer, "%PDF-" );
+	delete [] pTempBuffer;
+	
     if( NULL != pFirst )
         return true;
 

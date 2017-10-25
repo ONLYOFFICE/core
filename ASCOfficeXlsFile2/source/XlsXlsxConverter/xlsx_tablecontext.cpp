@@ -39,7 +39,6 @@
 
 #include "simple_xml_writer.h"
 
-
 namespace oox {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -151,15 +150,18 @@ void xlsx_table_context::serialize_hyperlinks(std::wostream & _Wostream)
 {
     state()->hyperlinks_.serialize(_Wostream);
 }
-void xlsx_table_context::dump_rels_ole_objects(rels & Rels)
+void xlsx_table_context::dump_rels_drawing(rels & Rels)
 {
-	xlsx_drawings_rels_ptr ole_rels = state()->drawing_context_.get_sheet_rels();
+	xlsx_drawings_rels_ptr drawing_rels = state()->drawing_context_.get_sheet_rels();
     
-	ole_rels->dump_rels(Rels);
+	drawing_rels->dump_rels(Rels);
 }
 void xlsx_table_context::serialize_ole_objects(std::wostream & strm)
 {
     state()->drawing_context_.serialize_objects(strm);
 }
-
+void xlsx_table_context::serialize_activeXs(std::wostream & strm)
+{
+    state()->drawing_context_.serialize_activeXs(strm);
+}
 }

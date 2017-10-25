@@ -80,7 +80,8 @@ public:
 	void			RegisterPaletteColor(int id, const std::wstring & argb);
     
 	void			GetDigitFontSizePixels();
-
+	void			CalculateAnchor(int colL, int colR, int rowT, int rowB, _UINT32 & x, _UINT32 &y, _UINT32 &cx, _UINT32 & cy);
+//-----------------------------------------------------------------------------
 	bool									bVbaProjectExist;
 	bool									bMacrosExist;
 

@@ -219,5 +219,68 @@ void GlobalWorkbookInfo::GetDigitFontSizePixels()
     }    
 }
 
+void GlobalWorkbookInfo::CalculateAnchor(int colL, int colR, int rwT, int rwB, _UINT32 & x, _UINT32 &y, _UINT32 &cx, _UINT32 & cy)
+{
+	_sheet_size_info zero;
+	_sheet_size_info & sheet_info = current_sheet >= 0 ? sheet_size_info[current_sheet - 1] : zero;
+
+	GetDigitFontSizePixels();
+
+//----------------------------------------------------------------------------------------------------
+	x = y = cx = cy = 0;
+	//1 inch	=	72 point
+	//1 emu		=	360000 * 2.54 inch
+
+	double kfCol	= 1;// 1250.;//360000 / 72. / 4.;
+	double kfRow	= ( 360000 * 2.54 / 72) / 256. ;
+
+	double Digit_Width	= defaultDigitFontSize.first;
+	double Digit_Height = defaultDigitFontSize.second;
+
+	double width = 0, column_width = 0;
+
+	for (int i = 0 ; i < colL; i++)
+	{
+		if (sheet_info.customColumnsWidth.find(i) != sheet_info.customColumnsWidth.end())
+			x +=  256 * kfCol * sheet_info.customColumnsWidth[i];	
+		else 
+			x +=  256 * kfCol * sheet_info.defaultColumnWidth;
+	}
+
+	for (int i = colL ; i < colR; i++)
+	{
+		if (sheet_info.customColumnsWidth.find(i) != sheet_info.customColumnsWidth.end())
+			cx += 256 * kfCol * sheet_info.customColumnsWidth[i];	
+		else 
+			cx += 256 * kfCol * sheet_info.defaultColumnWidth;
+	}
+
+	for (int i = 0 ; i < rwT; i++)
+	{
+		if (sheet_info.customRowsHeight.find(i) != sheet_info.customRowsHeight.end())
+		{
+			y += 256 * kfRow * sheet_info.customRowsHeight[i];	
+		}
+		else 
+			y += 256 * kfRow * sheet_info.defaultRowHeight;	
+	}
+
+	for (int i = rwT ; i < rwB; i++)
+	{
+		if (sheet_info.customRowsHeight.find(i) != sheet_info.customRowsHeight.end())
+		{
+			cy += 256 * kfRow * sheet_info.customRowsHeight[i];	
+		}
+		else 
+			cy += 256 * kfRow * sheet_info.defaultRowHeight;	
+	}
+	cx = ((int)((cx * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
+	cx = (int)(((256. * cx + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width ); //in pixels
+	
+	x = ((int)((x * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
+	x = (int)(((256. * x + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width ); //in pixels
+
+}
+
 
 } // namespace XLS

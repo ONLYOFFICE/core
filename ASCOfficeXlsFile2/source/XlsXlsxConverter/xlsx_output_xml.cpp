@@ -55,6 +55,7 @@ public:
     std::wstringstream  sheetData_;
     std::wstringstream  mergeCells_;
 	std::wstringstream  ole_objects_;
+	std::wstringstream  activeXs_;
     std::wstringstream  drawing_;
     std::wstringstream  hyperlinks_;
     std::wstringstream  comments_;
@@ -136,6 +137,10 @@ std::wostream & xlsx_xml_worksheet::mergeCells()
 std::wostream & xlsx_xml_worksheet::ole_objects()
 {
     return impl_->ole_objects_;
+}
+std::wostream & xlsx_xml_worksheet::activeXs()
+{
+    return impl_->activeXs_;
 }
 
 std::wostream & xlsx_xml_worksheet::drawing()
@@ -243,7 +248,14 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
                 {
 					CP_XML_STREAM() << impl_->ole_objects_.str();
                 }
-            }			
+            }	
+			if (!impl_->activeXs_.str().empty())
+			{
+                CP_XML_NODE(L"controls")
+                {
+					CP_XML_STREAM() << impl_->activeXs_.str();
+                }
+			}
 			CP_XML_STREAM() << impl_->picture_background_.str();
 
 			//CP_XML_NODE(L"rowBreaks){}

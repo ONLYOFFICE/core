@@ -1181,7 +1181,12 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 			ODRAW::OfficeArtClientAnchorSheet * ch = dynamic_cast<ODRAW::OfficeArtClientAnchorSheet *>(art);
         
 			ch->calculate();
-			//xlsx_context->get_drawing_context().set_child_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
+			if (xlsx_context->get_drawing_context().getType()	== oox::external_items::typeGroup &&
+				xlsx_context->get_drawing_context().getLevel()	== 1)
+			{
+				ch->calculate_1();
+				xlsx_context->get_drawing_context().set_child_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
+			}
 			xlsx_context->get_drawing_context().set_sheet_anchor(ch->colL, ch->_dxL, ch->rwT, ch->_dyT, ch->colR, ch->_dxR, ch->rwB, ch->_dyB);
 		}break;
 	case XLS::typeOfficeArtBStoreContainer:
@@ -1948,17 +1953,25 @@ void XlsConverter::convert(XLS::Obj * obj)
 		}
 		if (obj->pictFlags.fCtl && obj->pictFlags.fPrstm)//Controls Storage
 		{
+			xlsx_context->start_activeX();			
 			xlsx_context->get_mediaitems().create_activeX_path(xlsx_path);
 
-			int id = ++xlsx_context->get_mediaitems().count_activeX;
-			std::wstring file_name = xlsx_context->get_mediaitems().activeX_path() + L"activeX" + std::to_wstring(id) + L".bin";
+		//binary data
+			std::wstring target;
+			std::wstring objectId = xlsx_context->get_mediaitems().add_activeX(target);
 
 			NSFile::CFileBinary file;
-			if ( file.CreateFileW(file_name) )
+			if ( file.CreateFileW(xlsx_context->get_mediaitems().activeX_path() + target) )
 			{		
 				file.WriteFile(xls_global_info->controls_data.first.get() + obj->pictFmla.lPosInCtlStm, obj->pictFmla.cbBufInCtlStm);
 				file.CloseFile();
 			}
+
+			xlsx_context->get_drawing_context().set_control(objectId);
+	
+			xlsx_context->current_activeX().setClassId(info);
+			xlsx_context->current_activeX().setDataBinRid(objectId, target);
+
 		}
 		else if (!obj->pictFlags.fPrstm) 
 		{

@@ -322,6 +322,7 @@ public:
 	~xlsx_drawing_context(){}
 
 	external_items::Type	getType();
+	int						getLevel();
 
 	xlsx_drawings_rels_ptr get_rels();
 	xlsx_drawings_rels_ptr get_vml_HF_rels();
@@ -353,6 +354,7 @@ public:
         void set_description		(const std::wstring & str);
         void set_macro				(const std::wstring & str);
 		void set_ole_object			(const std::wstring & id, const std::wstring & info);
+		void set_control			(const std::wstring & id);
 		
         void set_crop_top			(double val);
         void set_crop_bottom		(double val);
@@ -448,16 +450,18 @@ public:
 		void serialize_vml_shape	(_drawing_state_ptr & drawing_state);			
 		void serialize_vml_pic		(_drawing_state_ptr & drawing_state, std::wstring rId );	
 //-----------------------------------------------------------------------------------		
-		void serialize_fill			(std::wostream & stream, _drawing_state_ptr & drawing_state);
-		void serialize_fill			(std::wostream & stream);
+		void serialize_fill			(std::wostream & strm, _drawing_state_ptr & drawing_state);
+		void serialize_fill			(std::wostream & strm);
 //-----------------------------------------------------------------------------------		
-		void serialize				(std::wostream & stream, _drawing_state_ptr & drawing_state);
-		void serialize_object		(std::wostream & stream, _drawing_state_ptr & drawing_state);
-		void serialize_objects		(std::wostream & stream);  
+		void serialize				(std::wostream & strm, _drawing_state_ptr & drawing_state);		
+		void serialize_object		(std::wostream & strm, _drawing_state_ptr & drawing_state);		
+		void serialize_activeX		(std::wostream & strm, _drawing_state_ptr & drawing_state);
 //-----------------------------------------------------------------------------------		
-		void serialize_vml_HF		(std::wostream & stream);
-		void serialize_vml			(std::wostream & stream);
-		void serialize				(std::wostream & stream);
+		void serialize_activeXs		(std::wostream & strm);
+		void serialize_objects		(std::wostream & strm);  
+		void serialize_vml_HF		(std::wostream & strm);
+		void serialize_vml			(std::wostream & strm);
+		void serialize				(std::wostream & strm);
 //-----------------------------------------------------------------------------------
 		bool is_lined_shape			(_drawing_state_ptr & drawing_state);
 	void end_drawing();
@@ -483,6 +487,9 @@ private:
 
 	std::vector<_drawing_state_ptr>		drawing_states;
 	std::vector<_drawing_state_ptr>*	current_drawing_states;
+
+	std::vector<_drawing_state_ptr>		drawing_states_objects;//копии для сериализации ole
+	std::vector<_drawing_state_ptr>		drawing_states_activeX;//копии для сериализации activeX
 	
 	void end_drawing			(_drawing_state_ptr & drawing_state);
 	void reset_fill_pattern		(_drawing_state_ptr & drawing_state);

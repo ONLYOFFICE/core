@@ -30,9 +30,6 @@
  *
  */
 
-#include <boost/lexical_cast.hpp>
-#include <boost/foreach.hpp>
-
 #include "xlsx_conversion_context.h"
 
 #include <simple_xml_writer.h>
@@ -493,11 +490,17 @@ external_items::Type xlsx_drawing_context::getType()
 
 	return current_drawing_states->back()->type;
 }
+int xlsx_drawing_context::getLevel()
+{
+	if (current_drawing_states == NULL)		return -1;
+	if (current_drawing_states->empty())	return -1;
+
+	return current_level;
+}
 _drawing_state_ptr create_drawing_state()
 {
 	return _drawing_state_ptr(new _drawing_state());
 }
-
 void xlsx_drawing_context::start_image()
 {
 	if (current_drawing_states == NULL) return;
@@ -548,6 +551,32 @@ void xlsx_drawing_context::end_group()
 	if (current_level < 1) return;
 	
 	serialize_group();
+
+	std::vector<_drawing_state_ptr>* cur_states = NULL;
+	for (size_t i = 0; i < current_drawing_states->size(); i++)
+	{	
+		int level = current_level;
+		cur_states = current_drawing_states;
+		while (level > 0)
+		{
+			_drawing_state_ptr & drawing_state = cur_states->front();
+
+			if (i != 0 || level != current_level) // группа сама себя
+			{
+				double kf_x = (double)drawing_state->child_anchor.cx / drawing_state->group_anchor.cx;
+				double kf_y = (double)drawing_state->child_anchor.cy / drawing_state->group_anchor.cy;
+
+				current_drawing_states->at(i)->child_anchor.cx *= kf_x;
+				current_drawing_states->at(i)->child_anchor.cy *= kf_y;
+				
+				current_drawing_states->at(i)->child_anchor.x = current_drawing_states->at(i)->child_anchor.x * kf_x + drawing_state->child_anchor.x;
+				current_drawing_states->at(i)->child_anchor.y = current_drawing_states->at(i)->child_anchor.y * kf_y + drawing_state->child_anchor.y;
+			}
+			level--;
+			cur_states = cur_states->front()->parent_drawing_states;
+		}
+	}
+
 	current_drawing_states = current_drawing_states->front()->parent_drawing_states;
 
 	current_level--;
@@ -716,6 +745,14 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 	if ( drawing_state->type == external_items::typeOleObject )
 	{
 		serialize_shape(drawing_state);
+		drawing_states_objects.push_back(drawing_state); // for serialize in sheet
+	}
+	if ( drawing_state->type == external_items::typeActiveX)
+	{		
+		context_.end_activeX();
+
+		serialize_shape(drawing_state);
+		drawing_states_activeX.push_back(drawing_state); // for serialize in sheet
 	}
 	if ( drawing_state->type == external_items::typeChart )
 	{
@@ -1284,6 +1321,8 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 							drawing_state->name = L"WordArt_" + std::to_wstring(count_object);
 						else if ( drawing_state->type == external_items::typeOleObject )
 							drawing_state->name = L"Object_" + std::to_wstring(count_object);
+						else if ( drawing_state->type == external_items::typeActiveX )
+							drawing_state->name = L"ActiveX_" + std::to_wstring(count_object);
 						else
 							drawing_state->name = L"Shape_" + std::to_wstring(count_object);
 					}
@@ -2077,7 +2116,7 @@ void xlsx_drawing_context::serialize(std::wostream & stream, _drawing_state_ptr 
 
 	if		(drawing_state->type_anchor == 1)	sNodeAnchor = L"xdr:twoCellAnchor";
 	else if (drawing_state->type_anchor == 2)	sNodeAnchor = L"xdr:oneCellAnchor";
-	else										sNodeAnchor = L"xdr:absoluteAnchor";
+	else if (drawing_state->type_anchor == 3)	sNodeAnchor = L"xdr:absoluteAnchor";
 
 	if (sNodeAnchor.empty()) return;
 	
@@ -2095,9 +2134,105 @@ void xlsx_drawing_context::serialize(std::wostream & stream, _drawing_state_ptr 
 		}
 	}
 }
+void xlsx_drawing_context::serialize_activeX(std::wostream & stream, _drawing_state_ptr & drawing_state)
+{
+	if (drawing_state->type != external_items::typeActiveX) return;
+
+	if (drawing_state->type_anchor == 3)
+	{//absolute
+		drawing_state->sheet_anchor.colFrom	= 1;
+		drawing_state->sheet_anchor.colTo	= 1;
+		drawing_state->sheet_anchor.rwFrom	= 0;
+		drawing_state->sheet_anchor.rwTo	= 0;
+		drawing_state->sheet_anchor.xFrom	= drawing_state->absolute_anchor.x;
+		drawing_state->sheet_anchor.yFrom	= drawing_state->absolute_anchor.y;
+		drawing_state->sheet_anchor.xTo		= drawing_state->absolute_anchor.x + drawing_state->absolute_anchor.cx;
+		drawing_state->sheet_anchor.yTo		= drawing_state->absolute_anchor.y + drawing_state->absolute_anchor.cy;
+
+		drawing_state->type_anchor = 1;
+	}
+	else if (drawing_state->type_anchor == 0)
+	{//child in group
+		drawing_state->sheet_anchor.colFrom	= 1;
+		drawing_state->sheet_anchor.colTo	= 1;
+		drawing_state->sheet_anchor.rwFrom	= 0;
+		drawing_state->sheet_anchor.rwTo	= 0;
+		drawing_state->sheet_anchor.xFrom	= drawing_state->child_anchor.x;
+		drawing_state->sheet_anchor.yFrom	= drawing_state->child_anchor.y;
+		drawing_state->sheet_anchor.xTo		= drawing_state->child_anchor.x + drawing_state->child_anchor.cx;
+		drawing_state->sheet_anchor.yTo		= drawing_state->child_anchor.y + drawing_state->child_anchor.cy;
+
+		drawing_state->type_anchor = 1;
+	}
+
+	CP_XML_WRITER(stream)    
+    {
+		CP_XML_NODE(L"control")
+		{
+			CP_XML_ATTR(L"shapeId", drawing_state->id);
+			CP_XML_ATTR(L"r:id",	drawing_state->objectId);
+
+			if (!drawing_state->objectProgId.empty())
+			{
+				CP_XML_ATTR(L"name",	drawing_state->objectProgId);
+			}			
+
+			CP_XML_NODE(L"controlPr")
+			{
+				CP_XML_ATTR(L"defaultSize", 0);
+				//CP_XML_ATTR(L"autoPict", 0);
+				
+				if (!drawing_state->fill.texture_target.empty())
+				{
+					bool isIternal = false;
+					std::wstring rId = handle_.impl_->get_mediaitems().find_image( drawing_state->fill.texture_target, isIternal);
+					
+					CP_XML_ATTR(L"r:id", rId);
+		
+					sheet_rels_->add(isIternal, rId , drawing_state->fill.texture_target, external_items::typeImage);
+				}
+
+				CP_XML_NODE(L"anchor")
+				{
+					CP_XML_ATTR(L"moveWithCells", 1);
+
+					serialize_anchor(CP_XML_STREAM(), drawing_state, L"");
+				}
+			}
+		}
+	}
+}
+
 void xlsx_drawing_context::serialize_object(std::wostream & stream, _drawing_state_ptr & drawing_state)
 {
 	if (drawing_state->type != external_items::typeOleObject) return;
+
+	if (drawing_state->type_anchor == 3)
+	{//absolute
+		drawing_state->sheet_anchor.colFrom	= 1;
+		drawing_state->sheet_anchor.colTo	= 1;
+		drawing_state->sheet_anchor.rwFrom	= 0;
+		drawing_state->sheet_anchor.rwTo	= 0;
+		drawing_state->sheet_anchor.xFrom	= drawing_state->absolute_anchor.x;
+		drawing_state->sheet_anchor.yFrom	= drawing_state->absolute_anchor.y;
+		drawing_state->sheet_anchor.xTo		= drawing_state->absolute_anchor.x + drawing_state->absolute_anchor.cx;
+		drawing_state->sheet_anchor.yTo		= drawing_state->absolute_anchor.y + drawing_state->absolute_anchor.cy;
+
+		drawing_state->type_anchor = 1;
+	}
+	else if (drawing_state->type_anchor == 0)
+	{//child in group
+		drawing_state->sheet_anchor.colFrom	= 1;
+		drawing_state->sheet_anchor.colTo	= 1;
+		drawing_state->sheet_anchor.rwFrom	= 0;
+		drawing_state->sheet_anchor.rwTo	= 0;
+		drawing_state->sheet_anchor.xFrom	= drawing_state->child_anchor.x;
+		drawing_state->sheet_anchor.yFrom	= drawing_state->child_anchor.y;
+		drawing_state->sheet_anchor.xTo		= drawing_state->child_anchor.x + drawing_state->child_anchor.cx;
+		drawing_state->sheet_anchor.yTo		= drawing_state->child_anchor.y + drawing_state->child_anchor.cy;
+
+		drawing_state->type_anchor = 1;
+	}
 
 	CP_XML_WRITER(stream)    
     {
@@ -2162,7 +2297,13 @@ void xlsx_drawing_context::set_ole_object(const std::wstring & id, const std::ws
 	current_drawing_states->back()->objectId = id;
 	current_drawing_states->back()->objectProgId = info;
 }
+void xlsx_drawing_context::set_control(const std::wstring & rid)
+{
+	if (current_drawing_states == NULL) return;	
 
+	current_drawing_states->back()->type = external_items::typeActiveX;
+	current_drawing_states->back()->objectId = rid;
+}
 void xlsx_drawing_context::set_sheet_anchor(int colFrom, int xFrom, int rwFrom, int yFrom, int colTo, int xTo, int rwTo,int yTo)
 {
 	if (current_drawing_states == NULL) return;	
@@ -2928,12 +3069,19 @@ bool xlsx_drawing_context::ChangeBlack2ColorImage(std::wstring sRgbColor1, std::
 }
 void xlsx_drawing_context::serialize_objects(std::wostream & strm) 
 {
-	for (size_t i = 0; i < drawing_states.size(); i++)
+	for (size_t i = 0; i < drawing_states_objects.size(); i++)
 	{
-		if (drawing_states[i]->type != external_items::typeOleObject) continue;
-
-		serialize_object(strm, drawing_states[i]);
+		serialize_object(strm, drawing_states_objects[i]);
 	}
+	drawing_states_objects.clear();
+}
+void xlsx_drawing_context::serialize_activeXs(std::wostream & strm) 
+{
+	for (size_t i = 0; i < drawing_states_activeX.size(); i++)
+	{
+		serialize_activeX(strm, drawing_states_activeX[i]);
+	}
+	drawing_states_activeX.clear();
 }
 //-------------------------------------------------------------------------------------------------------------------
 void xlsx_drawing_context::serialize_vml_HF(std::wostream & strm) 

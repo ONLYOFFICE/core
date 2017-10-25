@@ -150,7 +150,16 @@ public:
     std::vector<chart_content_ptr> charts_;
 
 };
+class xl_activeX_files  : public element
+{
+public:
+	xl_activeX_files(){}
 
+    void			add_activeX(activeX_content_ptr activeX);
+	virtual void	write(const std::wstring & RootPath);
+    
+    std::vector<activeX_content_ptr> activeXs_;
+};
 class xl_externals_files  : public element
 {
 public:
@@ -257,7 +266,9 @@ public:
     void set_drawings		(element_ptr Element);
 	void set_vml_drawings	(element_ptr Element);
 	void set_comments		(element_ptr Element);
-    void add_charts			(chart_content_ptr chart);
+   
+	void add_chart			(chart_content_ptr chart);
+    void add_activeX		(activeX_content_ptr activeX);
     void add_external		(external_content_ptr external);
     void add_pivot_cache	(pivot_cache_content_ptr cache);
 	void add_pivot_table	(pivot_table_content_ptr table);
@@ -270,6 +281,7 @@ private:
     xl_externals_files		externals_files_;
 	xl_pivot_cache_files	pivot_cache_files_;
 	xl_pivot_table_files	pivot_table_files_;
+	xl_activeX_files		activeXs_files_;
 
 	element_ptr				theme_;
     element_ptr				workbook_;

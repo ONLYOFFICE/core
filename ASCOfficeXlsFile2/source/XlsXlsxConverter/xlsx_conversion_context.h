@@ -43,6 +43,7 @@
 #include "xlsx_comments_context.h"
 #include "xlsx_pivots_context.h"
 #include "xlsx_external_context.h"
+#include "xlsx_activeX_context.h"
 
 #include "xlsx_output_xml.h"
 
@@ -71,7 +72,10 @@ public:
     void end_table();
 
     void start_chart();
-    void end_chart();
+	void end_chart(){}
+
+	void start_activeX();
+	void end_activeX(){}
 
     void start_external();
     void end_external();
@@ -88,6 +92,7 @@ public:
  
 	oox_chart_context				& current_chart();
 	oox_external_context			& current_external();
+	oox_activeX_context				& current_activeX();
 
 	xlsx_pivots_context				& get_pivots_context()	{return xlsx_pivots_context_;}
 	xlsx_drawing_context			& get_drawing_context();
@@ -110,6 +115,7 @@ private:
     std::vector<oox_chart_context_ptr>			charts_;
     
 	std::vector<oox_external_context_ptr>		externals_;
+	std::vector<oox_activeX_context_ptr>		activeXs_;
    
 	//std::wstringstream                  defaultOutput_;
     //std::pair<float,float>              maxDigitSize_;

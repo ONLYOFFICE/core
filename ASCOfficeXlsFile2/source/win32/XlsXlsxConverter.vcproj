@@ -345,6 +345,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_activeX_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_activeX_context.h"
+				>
+			</File>
+			<File
 				RelativePath="..\XlsXlsxConverter\xlsx_chart_context.cpp"
 				>
 			</File>

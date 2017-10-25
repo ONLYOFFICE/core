@@ -106,6 +106,15 @@ _CP_PTR(external_content) external_content::create()
     return boost::make_shared<external_content>();
 }
 //--------------------------------------------------------------------------------------------
+activeX_content::activeX_content() : rels_file_(rels_file::create(L""))
+{      
+}
+
+_CP_PTR(activeX_content) activeX_content::create()
+{
+    return boost::make_shared<activeX_content>();
+}
+//--------------------------------------------------------------------------------------------
 sheet_content::sheet_content() : rels_(rels_file::create(L""))
 {
         
@@ -254,14 +263,17 @@ void xl_files::write(const std::wstring & RootPath)
     }
     {
         charts_files_.set_main_document(get_main_document());
-        charts_files_.write(path);
+		charts_files_.write(path);
+    }
+    {
+        activeXs_files_.set_main_document(get_main_document());
+        activeXs_files_.write(path);
     }
     {
 		externals_files_.set_rels(&rels_files_);
         externals_files_.set_main_document(get_main_document());
         externals_files_.write(path);
     }
-
 	if (drawings_)
     {
         drawings_->set_main_document(get_main_document());
@@ -328,9 +340,13 @@ void xl_files::set_vml_drawings(element_ptr Element)
 	xl_drawings* d = dynamic_cast<xl_drawings*>(vml_drawings_.get());
 	d->vml = true;
 }
-void xl_files::add_charts(chart_content_ptr chart)
+void xl_files::add_chart(chart_content_ptr chart)
 {
     charts_files_.add_chart(chart);
+}
+void xl_files::add_activeX(activeX_content_ptr activeX)
+{
+    activeXs_files_.add_activeX(activeX);
 }
 void xl_files::add_external(external_content_ptr external)
 {
@@ -446,23 +462,54 @@ void xl_charts_files::write(const std::wstring & RootPath)
 	
 	for (size_t i = 0; i < charts_.size(); i++)
     {
-        if (charts_[i])
-        {
-            const std::wstring fileName = std::wstring(L"chart") + std::to_wstring(i + 1) + L".xml";
+        if (!charts_[i])continue;
+
+		const std::wstring fileName = std::wstring(L"chart") + std::to_wstring(i + 1) + L".xml";
            
-            contentTypes.add_override(std::wstring(L"/xl/charts/") + fileName, kWSConType);
+        contentTypes.add_override(std::wstring(L"/xl/charts/") + fileName, kWSConType);
 
-            package::simple_element(fileName, charts_[i]->str()).write(path);
+        package::simple_element(fileName, charts_[i]->str()).write(path);
 
-            if (charts_[i]->get_rels().empty() == false)
-			{
-				rels_files relFiles;
-				charts_[i]->rels_file_->set_file_name(fileName + L".rels");
-				
-				relFiles.add_rel_file(charts_[i]->rels_file_);
-				relFiles.write(path);
-			}
-        }
+        if (charts_[i]->get_rels().empty() == false)
+		{
+			rels_files relFiles;
+			charts_[i]->rels_file_->set_file_name(fileName + L".rels");
+			
+			relFiles.add_rel_file(charts_[i]->rels_file_);
+			relFiles.write(path);
+		}
+    }
+}
+//----------------------------------------------------------------------------------------
+void xl_activeX_files::add_activeX(activeX_content_ptr activeX)
+{
+    activeXs_.push_back(activeX);
+}
+void xl_activeX_files::write(const std::wstring & RootPath)
+{
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"activeX";
+
+	content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+	static const std::wstring kWSConType = L"application/vnd.ms-office.activeX+xml";
+	
+	for (size_t i = 0; i < activeXs_.size(); i++)
+    {
+        if (!activeXs_[i])continue;
+
+        const std::wstring fileName = std::wstring(L"activeX") + std::to_wstring(i + 1) + L".xml";
+       
+        contentTypes.add_override(std::wstring(L"/xl/activeX/") + fileName, kWSConType);
+
+        package::simple_element(fileName, activeXs_[i]->str()).write(path);
+
+        if (activeXs_[i]->get_rels().empty() == false)
+		{
+			rels_files relFiles;
+			activeXs_[i]->rels_file_->set_file_name(fileName + L".rels");
+			
+			relFiles.add_rel_file(activeXs_[i]->rels_file_);
+			relFiles.write(path);
+		}
     }
 }
 //----------------------------------------------------------------------------------------

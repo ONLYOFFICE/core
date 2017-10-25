@@ -161,7 +161,7 @@ public:
     static _CP_PTR(chart_content) create();
 
     std::wostream	& content() { return content_; }
-    rels			& get_rels()	{ return rels_file_->get_rels(); }
+    rels			& get_rels(){ return rels_file_->get_rels(); }
 
     std::wstring	str() { return content_.str(); }
 	
@@ -170,7 +170,26 @@ private:
     std::wstringstream	content_;
 	rels_file_ptr		rels_file_;
 };
+//------------------------------------------------------------------------
+class activeX_content;
+typedef _CP_PTR(activeX_content) activeX_content_ptr;
 
+class activeX_content : boost::noncopyable
+{
+public:
+    activeX_content();
+    static _CP_PTR(activeX_content) create();
+
+    std::wostream	& content() { return content_; }
+    rels			& get_rels(){ return rels_file_->get_rels(); }
+
+    std::wstring	str() { return content_.str(); }
+	
+	friend class	xl_activeX_files;
+private:
+    std::wstringstream	content_;
+	rels_file_ptr		rels_file_;
+};
 //------------------------------------------------------------------------
 class document : public element
 {
@@ -207,26 +226,11 @@ private:
 class media : public element
 {
 public:
-    media(external_items & _Mediaitems);
-
-public:
+    media(external_items & _items);
     virtual void write(const std::wstring & RootPath);
 
 private:
-    external_items			& mediaitems_;
-        
-};
-
-class charts : public element
-{
-public:
-    charts(external_items & _ChartsItems);
-
-public:
-    virtual void write(const std::wstring & RootPath);
-
-private:
-    external_items & chartsitems_;
+    external_items & items_;
         
 };
 

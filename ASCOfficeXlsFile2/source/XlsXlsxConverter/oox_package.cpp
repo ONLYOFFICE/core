@@ -113,6 +113,11 @@ void content_types_file::set_media(external_items & _Mediaitems)
 			else
 				content_type_.add_override(L"/xl/embeddings/" + item.uri, link);
 		}
+		else if (item.type == external_items::typeActiveX)
+		{
+			std::wstring link = L"application/vnd.ms-office.activeX";
+			content_type_.add_override(L"/xl/activeX/" + item.uri, link);
+		}
 	}
 }
 
@@ -252,37 +257,15 @@ void docProps_files::write(const std::wstring & RootPath)
 ////////////
 
 
-media::media(external_items & _Mediaitems) : mediaitems_(_Mediaitems)
+media::media(external_items & _items) : items_(_items)
 {    
 }
 
 void media::write(const std::wstring & RootPath)
 {
-   // std::wstring path = RootPath + FILE_SEPARATOR_STR + L"media";
-
-   // BOOST_FOREACH( external_items::item & item, mediaitems_.items() )
-   // {
-   //     if (item.mediaInternal && item.type == external_items::typeImage )
-   //     {
-			////std::wstring & file_name  = item.href;
-			////std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + item.outputName;
-			////
-			////NSFile::CFileBinary::Copy(item.href, file_name_out);
-   //     }
-   // }
 
 }
-///////////////////////////////////////////////////////////////////////////////////
 
-
-charts::charts(external_items & _ChartsItems) : chartsitems_(_ChartsItems)
-{    
-}
-
-void charts::write(const std::wstring & RootPath)
-{
-
-}
 
 }
 }

@@ -107,6 +107,17 @@ oox_external_context & xlsx_conversion_context::current_external()
         throw std::runtime_error("internal error");
     }
 }
+oox_activeX_context & xlsx_conversion_context::current_activeX()
+{
+    if (!activeXs_.empty())
+    {
+        return *activeXs_.back().get();
+    }
+    else
+    {
+        throw std::runtime_error("internal error");
+    }
+}
 bool xlsx_conversion_context::start_table(const std::wstring & name)
 {
     sheets_.push_back(xlsx_xml_worksheet::create(name));
@@ -137,10 +148,18 @@ void xlsx_conversion_context::start_chart()
 	//этот контекст нужно передавать в файл
 
 }
-void xlsx_conversion_context::end_chart()
-{
-}
 
+void xlsx_conversion_context::start_activeX()
+{
+	activeXs_.push_back(oox_activeX_context::create());
+	
+	size_t index = activeXs_.size();
+
+	current_sheet().sheet_rels().add(oox::relationship(L"ctrlId" + std::to_wstring(index),
+		L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/control", 
+		L"../activeX/activeX" + std::to_wstring(index) +L".xml"));
+
+}
 void xlsx_conversion_context::start_external()
 {
 	externals_.push_back(oox_external_context::create());
@@ -153,7 +172,8 @@ void xlsx_conversion_context::end_external()
 void xlsx_conversion_context::end_table()
 {
 	get_table_context().serialize_ole_objects(current_sheet().ole_objects());
-	get_table_context().dump_rels_ole_objects(current_sheet().sheet_rels());
+	get_table_context().serialize_activeXs(current_sheet().activeXs());
+	get_table_context().dump_rels_drawing(current_sheet().sheet_rels());
 	
 	get_table_context().serialize_hyperlinks(current_sheet().hyperlinks());
 	get_table_context().dump_rels_hyperlinks(current_sheet().sheet_rels());
@@ -235,6 +255,15 @@ void xlsx_conversion_context::end_document()
         }
 
     }
+	for (size_t i = 0; i < activeXs_.size(); i++)
+    {
+		package::activeX_content_ptr content = package::activeX_content::create();
+
+        activeXs_[i]->dump_rels(content->get_rels());
+		activeXs_[i]->write_to(content->content());
+
+		output_document_->get_xl_files().add_activeX(content);
+	}
 	for (size_t i = 0; i < charts_.size(); i++)
     {
 		package::chart_content_ptr content = package::chart_content::create();
@@ -242,9 +271,8 @@ void xlsx_conversion_context::end_document()
         charts_[i]->dump_rels(content->get_rels());
 		charts_[i]->write_to(content->content());
 
-		output_document_->get_xl_files().add_charts(content);
+		output_document_->get_xl_files().add_chart(content);
 	}
-
     //workbook_content << L"<calcPr iterateCount=\"100\" refMode=\"A1\" iterate=\"false\" iterateDelta=\"0.0001\" />";
 
 	output_document_->get_xl_files().set_sharedStrings( package::simple_element::create(L"sharedStrings.xml", xlsx_shared_strings_.str()) );

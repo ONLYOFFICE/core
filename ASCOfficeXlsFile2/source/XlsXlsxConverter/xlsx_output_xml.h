@@ -61,6 +61,7 @@ public:
     std::wostream & mergeCells();
     std::wostream & drawing(); 
 	std::wostream & ole_objects();
+	std::wostream & activeXs();
     //std::wostream & comments(); 
 	std::wostream & sheetSortAndFilters();
 	std::wostream & pageProperties();

@@ -62,6 +62,8 @@ std::wstring get_rel_type(external_items::Type type)
         return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
 	case external_items::typeExternalLink:
 		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLinkPath";
+	case external_items::typeActiveX:
+		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/control";
 	default:
         return L"";
     }

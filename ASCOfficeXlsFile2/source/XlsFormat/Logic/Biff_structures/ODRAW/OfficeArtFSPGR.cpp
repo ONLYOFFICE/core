@@ -36,9 +36,7 @@
 namespace ODRAW
 {
 
-
-OfficeArtFSPGR::OfficeArtFSPGR()
-:	OfficeArtRecord(0x01, FSPGR)
+OfficeArtFSPGR::OfficeArtFSPGR() :	OfficeArtRecord(0x01, FSPGR)
 {
 }
 

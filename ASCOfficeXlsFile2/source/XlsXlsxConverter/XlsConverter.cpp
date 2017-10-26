@@ -1659,11 +1659,11 @@ void XlsConverter::convert_geometry_text(std::vector<ODRAW::OfficeArtFOPTEPtr> &
 				ODRAW::GeometryTextBooleanProperties *bools = dynamic_cast<ODRAW::GeometryTextBooleanProperties*>(props[i].get());
 				if (bools) 
 				{
-					if (bools->fUsegFBold		&& bools->fBold)		xlsx_context->get_drawing_context().set_wordart_bold	(true); 
-					if (bools->fUsegFItalic		&& bools->fItalic)		xlsx_context->get_drawing_context().set_wordart_italic	(true); 
-					if (bools->fUsegFVertical	&& bools->fVertical)	xlsx_context->get_drawing_context().set_wordart_vertical(true); 
-					if (bools->fUsegFUnderline	&& bools->fUnderline)	xlsx_context->get_drawing_context().set_wordart_underline(true); 
-					if (bools->fStrikethrough	&& bools->fStrikethrough)xlsx_context->get_drawing_context().set_wordart_strike(true);
+					if (bools->fUsegFBold			&& bools->fBold)		xlsx_context->get_drawing_context().set_wordart_bold	(true); 
+					if (bools->fUsegFItalic			&& bools->fItalic)		xlsx_context->get_drawing_context().set_wordart_italic	(true); 
+					if (bools->fUsegFVertical		&& bools->fVertical)	xlsx_context->get_drawing_context().set_wordart_vertical(true); 
+					if (bools->fUsegFUnderline		&& bools->fUnderline)	xlsx_context->get_drawing_context().set_wordart_underline(true); 
+					if (bools->fUsegStrikethrough	&& bools->fStrikethrough)xlsx_context->get_drawing_context().set_wordart_strike(true);
 
 					//if (bools->fUsegFShrinkFit && bools->fShrinkFit)
 				}

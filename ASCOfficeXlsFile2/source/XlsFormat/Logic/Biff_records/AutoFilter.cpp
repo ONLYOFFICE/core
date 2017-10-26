@@ -37,21 +37,8 @@
 
 namespace XLS
 {
-//static inline std::wstring &ltrim(std::wstring &s) 
-//{
-//	s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(isspace))));
-//	return s;
-//}
-//
-//// trim from end
-//static inline std::wstring &rtrim(std::wstring &s) 
-//{
-//	s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(isspace))).base(), s.end());
-//	return s;
-//}
-
 // trim from both ends
-static inline void/*std::wstring &*/trim(std::wstring &s) 
+static inline void trim(std::wstring &s) 
 {
 	int new_size = s.length();
 	for (int i = new_size - 1; i >=0; i--)
@@ -61,7 +48,6 @@ static inline void/*std::wstring &*/trim(std::wstring &s)
 	}
 	if (new_size < s.length())
 		s.erase(new_size);
-	//return ltrim(rtrim(s));
 }
 
 AutoFilter::AutoFilter()
@@ -102,11 +88,12 @@ void AutoFilter::readFields(CFRecord& record)
 	unsigned short	_wTopN		= wTopN;			
 	
 	if (fTopN != 1)
+	{
 		record >> doper1;			
-	if (fTopN != 1)
 		record >> doper2;
+	}
 
-	if ((doper1.vt == BIFF_BYTE(0)) && (doper1.vt == BIFF_BYTE(0)))
+	if ((doper1.vt == BIFF_BYTE(0)) && (doper2.vt == BIFF_BYTE(0)))
 	{
 		m_bAutoFilter12 = true;	
 		return;

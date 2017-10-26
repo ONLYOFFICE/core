@@ -95,7 +95,6 @@ void PtgFuncVar::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool 
 				func_name == L"DAYSINMONTH"	||
 				func_name == L"ISLEAPYEAR"	||
 				func_name == L"MONTHS"		||
-				func_name == L"WEEKS"		||
 				func_name == L"WEEKSINYEAR"	||
 				func_name == L"YEARS")
 		{

@@ -32,7 +32,7 @@
 
 #include "oox_title.h"
 #include <boost/functional.hpp>
-#include <cpdoccore/CPHash.h>
+#include <cpdoccore/CPOptional.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
 #include "../odf/style_text_properties.h"
 

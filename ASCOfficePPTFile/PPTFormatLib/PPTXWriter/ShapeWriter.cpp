@@ -787,9 +787,9 @@ void NSPresentationEditor::CShapeWriter::WriteShapeInfo()
 		{
 			if (m_pShapeElement->m_lPlaceholderSizePreset == 1)
 				m_oWriter.WriteString(std::wstring(L" size=\"half\""));
-			if (m_pShapeElement->m_lPlaceholderSizePreset == 2)
+			else if (m_pShapeElement->m_lPlaceholderSizePreset == 2)
 				m_oWriter.WriteString(std::wstring(L" size=\"quarter\""));
-			if (m_pShapeElement->m_lPlaceholderSizePreset == 3)
+			else if (m_pShapeElement->m_lPlaceholderSizePreset == 3)
 			{
 				if (isBodyPlaceholder(m_pShapeElement->m_lPlaceholderType))
 					m_oWriter.WriteString(std::wstring(L" size=\"half\""));

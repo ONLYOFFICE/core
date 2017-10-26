@@ -557,11 +557,11 @@ namespace MathEquation
 				BYTE horAlign;
 				switch(eHorAlign)
 				{
-					case matrixhoralignLeft:		horAlign = SimpleTypes::xalignLeft;
-					case matrixhoralignCenter:		horAlign = SimpleTypes::xalignCenter;
-					case matrixhoralignRight:		horAlign = SimpleTypes::xalignRight;
-					case matrixhoralignEqualSign:	horAlign = SimpleTypes::xalignCenter;
-					case matrixhoralignCommaSign:	horAlign = SimpleTypes::xalignCenter;
+					case matrixhoralignLeft:		horAlign = SimpleTypes::xalignLeft;		break;
+					case matrixhoralignCenter:		horAlign = SimpleTypes::xalignCenter;	break;
+					case matrixhoralignRight:		horAlign = SimpleTypes::xalignRight;	break;
+					case matrixhoralignEqualSign:	horAlign = SimpleTypes::xalignCenter;	break;
+					case matrixhoralignCommaSign:	horAlign = SimpleTypes::xalignCenter;	break;
 				}
 				WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::McJc, horAlign);
 

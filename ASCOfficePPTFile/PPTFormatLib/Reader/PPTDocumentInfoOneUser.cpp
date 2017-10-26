@@ -2432,12 +2432,14 @@ void CPPTUserInfo::AddAudioTransition (DWORD dwSlideID, CTransition* pTransition
 	if (NULL==pTransition) 
 		return;
 
-	CAudioElement* pAudio		=	new CAudioElement ();
+	CAudioElement* pAudio = new CAudioElement ();
 	if (pAudio)
 	{
 		pAudio->m_strAudioFileName	=	strFilePath;				
 	}
 	// ??? недоделка ???
+
+	pAudio->Release();
 }
 
 void CPPTUserInfo::CreateDefaultStyle(NSPresentationEditor::CTextStyles& pStyle, NSPresentationEditor::CTheme* pTheme)

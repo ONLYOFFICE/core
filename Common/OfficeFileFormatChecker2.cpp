@@ -417,10 +417,6 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName)
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM;
 		}
-		else if (std::string::npos != strContentTypes.find(ppsmFormatLine))
-		{
-			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM;
-		}
 		else if (std::string::npos != strContentTypes.find(ppsxFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX;

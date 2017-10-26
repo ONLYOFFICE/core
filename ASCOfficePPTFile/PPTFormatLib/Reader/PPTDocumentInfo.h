@@ -100,7 +100,7 @@ public:
 			{
 				delete pInfo;
 
-				if (pInfo->m_bEncrypt)
+				if (m_oCurrentUser.m_bIsEncrypt)
 					return false;
 				else
 					continue;

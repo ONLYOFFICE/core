@@ -75,11 +75,8 @@ office_element_creator * office_element_creator::get()
 {
     if (!instance_)
     {
-        if (!instance_)
-        {
-            office_element_creator * temp = new office_element_creator();
-            instance_ = temp;                
-        }
+		office_element_creator * temp = new office_element_creator();
+		instance_ = temp;                
     }
 
     return instance_;

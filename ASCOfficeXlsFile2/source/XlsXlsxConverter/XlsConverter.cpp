@@ -1663,7 +1663,7 @@ void XlsConverter::convert_geometry_text(std::vector<ODRAW::OfficeArtFOPTEPtr> &
 					if (bools->fUsegFItalic			&& bools->fItalic)		xlsx_context->get_drawing_context().set_wordart_italic	(true); 
 					if (bools->fUsegFVertical		&& bools->fVertical)	xlsx_context->get_drawing_context().set_wordart_vertical(true); 
 					if (bools->fUsegFUnderline		&& bools->fUnderline)	xlsx_context->get_drawing_context().set_wordart_underline(true); 
-					if (bools->fUsegStrikethrough	&& bools->fStrikethrough)xlsx_context->get_drawing_context().set_wordart_strike(true);
+					if (bools->fUsegFStrikethrough	&& bools->fStrikethrough)xlsx_context->get_drawing_context().set_wordart_strike(true);
 
 					//if (bools->fUsegFShrinkFit && bools->fShrinkFit)
 				}

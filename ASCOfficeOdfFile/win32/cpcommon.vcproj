@@ -1112,10 +1112,6 @@
 			>
 		</File>
 		<File
-			RelativePath="..\include\cpdoccore\CPHash.h"
-			>
-		</File>
-		<File
 			RelativePath="..\include\cpdoccore\CPNoncopyable.h"
 			>
 		</File>

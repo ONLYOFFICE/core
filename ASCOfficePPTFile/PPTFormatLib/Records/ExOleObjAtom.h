@@ -98,12 +98,12 @@ public:
 			BYTE* pDataUncompress = new BYTE[decompressedSize + 64];
             if (NSZLib::Decompress(pData, compressedSize, pDataUncompress, decompressedSize))
 			{
-				RELEASEOBJECT(pData);
+				delete []pData;
 				pData = pDataUncompress;
 			}
 			else
 			{
-				RELEASEOBJECT(pData);
+				delete []pData;
 			}
 		}			
 		//if (pDecryptor)

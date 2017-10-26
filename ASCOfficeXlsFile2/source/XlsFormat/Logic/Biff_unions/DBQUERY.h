@@ -53,7 +53,7 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	int serialize(std::wostream & stream);
-	int serialize_connection(std::wostream & strm);
+	int serialize_connection();
 
 	BaseObjectPtr				m_DbQry;
 
@@ -63,7 +63,6 @@ public:
 	std::vector<std::wstring>	m_arSXString;
 //------------------------------------------------------
 	GlobalWorkbookInfoPtr	global_info;
-	int						connectionId;
 };
 
 } // namespace XLS

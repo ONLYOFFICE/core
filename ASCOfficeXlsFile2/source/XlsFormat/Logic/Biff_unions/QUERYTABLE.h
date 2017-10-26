@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of QUERYTABLE union of records 
 class QUERYTABLE: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(QUERYTABLE)
@@ -48,8 +46,22 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+	
+	int serialize(std::wostream & strm);
+	int serialize_connection();
 
-	static const ElementType	type = typeQUERYTABLE;
+	static const ElementType type = typeQUERYTABLE;
+	
+	BaseObjectPtr m_Qsi;
+	BaseObjectPtr m_DBQUERY;
+	BaseObjectPtr m_QsiSXTag;
+	BaseObjectPtr m_DBQUERYEXT;
+	BaseObjectPtr m_SXADDLQSI;
+	BaseObjectPtr m_QSIR;
+	BaseObjectPtr m_SORTDATA12;
+
+//------------------------------------------------------
+	GlobalWorkbookInfoPtr	global_info;
 };
 
 } // namespace XLS

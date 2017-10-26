@@ -56,7 +56,7 @@ void DConnParamBindingValType::load(CFRecord& record)
 	}
 	if (rgbBindingValue)
 	{
-		record >> *rgbBindingValue;
+		rgbBindingValue->load(record);
 	}
 }
 //-----------------------------------------------------------------------------------

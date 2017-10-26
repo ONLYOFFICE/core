@@ -31,8 +31,8 @@
  */
 
 #include "DBQUERY.h"
-#include <Logic/Biff_records/DbOrParamQry.h>
-#include <Logic/Biff_records/SXString.h>
+#include "../Biff_records/DbOrParamQry.h"
+#include "../Biff_records/SXString.h"
 
 namespace XLS
 {
@@ -184,7 +184,8 @@ const bool DBQUERY::loadContent(BinProcessor& proc)
 
 int DBQUERY::serialize(std::wostream & strm)
 {
-	connectionId = ++global_info->connectionId;
+	int connectionId = serialize_connection();
+	
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"cacheSource")
@@ -193,16 +194,17 @@ int DBQUERY::serialize(std::wostream & strm)
 			CP_XML_ATTR(L"connectionId", connectionId);	//connectionId in connections(root)
 		}
 	}
-	serialize_connection(global_info->connections_stream);
 	return 0;
 }
 
-int DBQUERY::serialize_connection(std::wostream & strm)
+int DBQUERY::serialize_connection()
 {
 	DbOrParamQry* queryOrParam = dynamic_cast<DbOrParamQry*>(m_DbQry.get());
-	if (!queryOrParam) return 0;
+	if (!queryOrParam) return -1;
 
-	CP_XML_WRITER(strm)
+	int connectionId = ++global_info->connectionId;
+
+	CP_XML_WRITER(global_info->connections_stream)
 	{
 		CP_XML_NODE(L"connection")
 		{
@@ -212,7 +214,7 @@ int DBQUERY::serialize_connection(std::wostream & strm)
 			CP_XML_ATTR(L"type", queryOrParam->query.dbt);
 			//switch(queryOrParam->query.dbt)
 			//{
-			//	case 0x1:	CP_XML_ATTR(L"type", 1); break;
+			//	case 0x1:
 			//	case 0x2:
 			//	case 0x3:
 			//	case 0x4:
@@ -243,7 +245,7 @@ int DBQUERY::serialize_connection(std::wostream & strm)
 			}
 		}
 	}
-	return 0;
+	return connectionId;
 }
 
 

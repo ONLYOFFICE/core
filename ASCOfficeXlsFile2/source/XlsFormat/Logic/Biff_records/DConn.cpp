@@ -92,17 +92,10 @@ void DConn::readFields(CFRecord& record)
 		case 5:	grbitDbt.reset(new ConnGrbitDbtOledb);	break;
 		case 7:	grbitDbt.reset(new ConnGrbitDbtAdo);	break;
 		default:
-				break;
+			record.skipNunBytes(2); break;	//unused
 	}
 	if (grbitDbt)
-	{
-		record >> *grbitDbt;
-	}
-	else
-	{
-		unsigned short unused;
-		record >> unused;
-	}
+		grbitDbt->load(record);
 
 	record >> bVerDbqueryEdit >> bVerDbqueryRefreshed >> bVerDbqueryRefreshableMin >> wRefreshInterval >> wHtmlFmt >> rcc >> credMethod >> reserved3;
 
@@ -138,7 +131,9 @@ void DConn::readFields(CFRecord& record)
 	}
 
 	if (connection)
-		record >> *connection;
+	{
+		connection->load(record);
+	}
 
 	if (dbt == 1 || dbt == 5)
 	{

@@ -61,6 +61,7 @@
 #include "../XlsFormat/Logic/Biff_unions/PIVOTCACHE.h"
 #include "../XlsFormat/Logic/Biff_unions/PIVOTCACHEDEFINITION.h"
 #include "../XlsFormat/Logic/Biff_unions/SUPBOOK.h"
+#include "../XlsFormat/Logic/Biff_unions/QUERYTABLE.h"
 
 #include "../XlsFormat/Logic/Biff_records/BkHim.h"
 #include "../XlsFormat/Logic/Biff_records/HLink.h"
@@ -343,27 +344,27 @@ void XlsConverter::convert(XLS::BaseObject	*xls_unknown)
 	{
 	case XLS::typeHLINK:
 		{
-			XLS::HLINK * hlink = dynamic_cast<XLS::HLINK *>(xls_unknown);
+			XLS::HLINK * hlink = dynamic_cast<XLS::HLINK*>(xls_unknown);
 			convert(hlink);
 		}break;
 	case XLS::typeLBL:	
 		{
-			XLS::LBL * lbl = dynamic_cast<XLS::LBL *>(xls_unknown);
+			XLS::LBL * lbl = dynamic_cast<XLS::LBL*>(xls_unknown);
 			convert(lbl);
 		}break;
 	case XLS::typeOBJECTS:
 		{
-			XLS::OBJECTS * obj = dynamic_cast<XLS::OBJECTS *>(xls_unknown);
+			XLS::OBJECTS * obj = dynamic_cast<XLS::OBJECTS*>(xls_unknown);
 			convert(obj);
 		}break;
 	case XLS::typeTxO:
 		{
-			XLS::TxO * txo = dynamic_cast<XLS::TxO *>(xls_unknown);
+			XLS::TxO * txo = dynamic_cast<XLS::TxO*>(xls_unknown);
 			convert(txo);
 		}break;
 	case XLS::typeObj:
 		{
-			XLS::Obj * obj = dynamic_cast<XLS::Obj *>(xls_unknown);
+			XLS::Obj * obj = dynamic_cast<XLS::Obj*>(xls_unknown);
 			convert(obj);
 		}break;
 	case XLS::typeAnyObject:	
@@ -417,13 +418,15 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 	{
 		convert(it->get());
 	}
+
+	xlsx_context->add_connections(xls_global_info->connections_stream.str());
 }
 
 void XlsConverter::convert (XLS::WorksheetSubstream* sheet)
 {
 	if (sheet == NULL) return;
 
-	if (sheet->m_arWINDOW.size() > 0)
+	if (!sheet->m_arWINDOW.empty())
 	{
 		sheet->m_arWINDOW[0]->serialize(xlsx_context->current_sheet().sheetViews());
 	}
@@ -488,6 +491,10 @@ void XlsConverter::convert (XLS::WorksheetSubstream* sheet)
 		sheet->m_DVAL->serialize(xlsx_context->current_sheet().dataValidations());
 	}
 
+	for (size_t i = 0; i < sheet->m_arQUERYTABLE.size(); i++)
+	{
+		convert(dynamic_cast<XLS::QUERYTABLE*>(sheet->m_arQUERYTABLE[i].get()));
+	}
 	for (size_t i = 0; i < sheet->m_arPIVOTVIEW.size(); i++)
 	{
 		convert((XLS::PIVOTVIEW*)sheet->m_arPIVOTVIEW[i].get());
@@ -587,8 +594,6 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
 	{
 		convert((XLS::PIVOTCACHEDEFINITION*)global->m_arPIVOTCACHEDEFINITION[i].get());
 	}
-	xlsx_context->get_pivots_context().add_connections(xls_global_info->connections_stream.str());
-
 }
 
 typedef boost::unordered_map<XLS::FillInfo, int>	mapFillInfo;
@@ -1349,7 +1354,7 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			}break;
 			case NSOfficeDrawing::fillShadeColors:
 			{
-				ODRAW::fillShadeColors *shadeColors = (ODRAW::fillShadeColors *)(props[i].get());
+				ODRAW::fillShadeColors *shadeColors = dynamic_cast<ODRAW::fillShadeColors*>(props[i].get());
 
 				for (size_t i = 0 ; (shadeColors) && (i < shadeColors->fillShadeColors_complex.data.size()); i++)
 				{
@@ -2022,7 +2027,7 @@ void XlsConverter::convert(XLS::Obj * obj)
 	}
 }
 
-void XlsConverter::convert_chart_sheet(XLS::ChartSheetSubstream * chart)
+void XlsConverter::convert_chart_sheet(XLS::ChartSheetSubstream* chart)
 {
 	if (chart == NULL) return;
 		
@@ -2034,7 +2039,7 @@ void XlsConverter::convert_chart_sheet(XLS::ChartSheetSubstream * chart)
 		xlsx_context->get_drawing_context().end_drawing();
 	}
 }
-void XlsConverter::convert(XLS::ChartSheetSubstream * chart)
+void XlsConverter::convert(XLS::ChartSheetSubstream* chart)
 {
 	if (chart == NULL) return;
 
@@ -2042,7 +2047,7 @@ void XlsConverter::convert(XLS::ChartSheetSubstream * chart)
 	//convert(chart->m_OBJECTSCHART.get());непонятные какие то текстбоксы - пустые и бз привязок
 }
 
-void XlsConverter::convert(XLS::PIVOTVIEW * pivot_view)
+void XlsConverter::convert(XLS::PIVOTVIEW* pivot_view)
 {
 	if (pivot_view == NULL) return;
 
@@ -2060,7 +2065,7 @@ void XlsConverter::convert(XLS::PIVOTVIEW * pivot_view)
 	}
 }
 
-void XlsConverter::convert(XLS::PIVOTCACHEDEFINITION * pivot_cached)
+void XlsConverter::convert(XLS::PIVOTCACHEDEFINITION* pivot_cached)
 {
 	if (pivot_cached == NULL) return;
 
@@ -2077,7 +2082,7 @@ void XlsConverter::convert(XLS::PIVOTCACHEDEFINITION * pivot_cached)
 	}
 }
 
-void XlsConverter::convert(XLS::SUPBOOK * external)
+void XlsConverter::convert(XLS::SUPBOOK* external)
 {
 	if (external == NULL) return;
 	if (external->IsExternal() == false) return;
@@ -2092,5 +2097,13 @@ void XlsConverter::convert(XLS::SUPBOOK * external)
 	}
 
 	xlsx_context->end_external();
+}
+void XlsConverter::convert(XLS::QUERYTABLE* query_table)
+{
+	if (query_table == NULL) return;
 
+	std::wstringstream strm;		
+	query_table->serialize(strm);
+
+	xlsx_context->add_query_table(strm.str());
 }

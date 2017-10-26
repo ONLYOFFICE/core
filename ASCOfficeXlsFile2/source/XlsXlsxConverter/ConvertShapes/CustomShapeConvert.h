@@ -953,7 +953,7 @@ namespace NSCustomShapesConvert
 			LONG lValue;
 			bool bRes = true;
 
-			for (int nIndex = 0; nIndex < oArray.size(); ++nIndex)
+			for (size_t nIndex = 0; nIndex < oArray.size(); ++nIndex)
 			{
 				std::wstring str = oArray[nIndex];
 				lValue = NSCustomShapesConvert::GetValue(oArray[nIndex], eParamType, bRes);

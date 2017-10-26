@@ -74,6 +74,8 @@ void Qsi::readFields(CFRecord& record)
 	fibitAtrBdr		= GETBIT(flags2, 3);
 	fibitAtrPat		= GETBIT(flags2, 4);
 	fibitAtrProt	= GETBIT(flags2, 5);
+
+	record.skipNunBytes(2);	//unused
 }
 
 } // namespace XLS

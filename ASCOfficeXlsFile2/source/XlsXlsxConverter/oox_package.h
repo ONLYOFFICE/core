@@ -92,19 +92,21 @@ private:
     std::wstring filename_;
 };
 
+
+class simple_element;
+typedef boost::shared_ptr<simple_element> simple_element_ptr;
 class simple_element : public element
 {
 public:
-    simple_element(const std::wstring & FileName, const std::wstring & Content);
-    static element_ptr create(const std::wstring & FileName, const std::wstring & Content);
+    simple_element(const std::wstring & FileName, const std::wstring & content);
+    static simple_element_ptr create(const std::wstring & FileName, const std::wstring & content);
 
-public:
     virtual void write(const std::wstring & RootPath);
+	std::wstring get_filename() {return filename_;}
 
 private:
-    std::wstring file_name_;
-    //std::string content_utf8_;
-    std::wstring content;
+    std::wstring filename_;
+    std::wstring content_;
 
 };
 

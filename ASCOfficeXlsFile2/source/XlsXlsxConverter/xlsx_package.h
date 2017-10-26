@@ -150,7 +150,7 @@ public:
     std::vector<chart_content_ptr> charts_;
 
 };
-class xl_activeX_files  : public element
+class xl_activeX_files : public element
 {
 public:
 	xl_activeX_files(){}
@@ -159,6 +159,16 @@ public:
 	virtual void	write(const std::wstring & RootPath);
     
     std::vector<activeX_content_ptr> activeXs_;
+};
+class xl_query_table_files : public element
+{
+public:
+	xl_query_table_files(){}
+
+    void			add_query_table(simple_element_ptr  query_table);
+	virtual void	write(const std::wstring & RootPath);
+    
+    std::vector<simple_element_ptr> query_tables_;
 };
 class xl_externals_files  : public element
 {
@@ -272,6 +282,7 @@ public:
     void add_external		(external_content_ptr external);
     void add_pivot_cache	(pivot_cache_content_ptr cache);
 	void add_pivot_table	(pivot_table_content_ptr table);
+    void add_query_table	(simple_element_ptr element);
 
 	void add_vba_project	();
 private:
@@ -282,9 +293,11 @@ private:
 	xl_pivot_cache_files	pivot_cache_files_;
 	xl_pivot_table_files	pivot_table_files_;
 	xl_activeX_files		activeXs_files_;
+	xl_query_table_files	query_tables_files_;
 
 	element_ptr				theme_;
     element_ptr				workbook_;
+
 
 	element_ptr		connections_;
     element_ptr		styles_;

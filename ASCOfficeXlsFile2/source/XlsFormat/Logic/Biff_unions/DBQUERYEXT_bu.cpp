@@ -40,16 +40,13 @@
 namespace XLS
 {
 
-
 DBQUERYEXT::DBQUERYEXT()
 {
 }
 
-
 DBQUERYEXT::~DBQUERYEXT()
 {
 }
-
 
 class Parenthesis_DBQUERYEXT_1: public ABNFParenthesis
 {

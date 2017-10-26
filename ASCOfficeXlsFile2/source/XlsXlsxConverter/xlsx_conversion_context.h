@@ -44,6 +44,7 @@
 #include "xlsx_pivots_context.h"
 #include "xlsx_external_context.h"
 #include "xlsx_activeX_context.h"
+#include "xlsx_query_table_context.h"
 
 #include "xlsx_output_xml.h"
 
@@ -86,15 +87,15 @@ public:
 	std::wostream					& custom_views()		{ return xlsx_custom_views_; }
 	std::wostream					& workbook_format()		{ return xlsx_workbook_pr_; }		
 
-	xlsx_text_context				& get_text_context()	{ return xlsx_text_context_; }
-    xlsx_table_context				& get_table_context()	{ return xlsx_table_context_; }
+	xlsx_text_context				& get_text_context()	{ return text_context_; }
+    xlsx_table_context				& get_table_context()	{ return table_context_; }
     xlsx_xml_worksheet				& current_sheet();
  
 	oox_chart_context				& current_chart();
 	oox_external_context			& current_external();
 	oox_activeX_context				& current_activeX();
 
-	xlsx_pivots_context				& get_pivots_context()	{return xlsx_pivots_context_;}
+	xlsx_pivots_context				& get_pivots_context()	{return pivots_context_;}
 	xlsx_drawing_context			& get_drawing_context();
 	xlsx_drawing_context_handle		& get_drawing_context_handle();	
  	xlsx_comments_context			& get_comments_context();
@@ -102,7 +103,9 @@ public:
 
 	external_items & get_mediaitems() { return mediaitems_; }
 
-	void add_exteranal_content(std::wstring content);
+	void add_exteranal_content	(std::wstring content);
+	void add_connections		(std::wstring connections);
+	void add_query_table		(std::wstring query_table);
 private:
 
     void create_new_sheet(std::wstring const & name);
@@ -110,23 +113,20 @@ private:
     package::xlsx_document				*output_document_;
 
 	external_items						mediaitems_;
+    xlsx_table_context					
+		table_context_;
+    xlsx_text_context					text_context_;	
+	xlsx_pivots_context					pivots_context_;
 
-    std::vector<xlsx_xml_worksheet_ptr>			sheets_;
-    std::vector<oox_chart_context_ptr>			charts_;
-    
-	std::vector<oox_external_context_ptr>		externals_;
-	std::vector<oox_activeX_context_ptr>		activeXs_;
-   
-	//std::wstringstream                  defaultOutput_;
-    //std::pair<float,float>              maxDigitSize_;
-    //num_format_context                  num_format_context_;
-    //size_t                              default_style_;
+    std::vector<oox_chart_context_ptr>		charts_;    
+	std::vector<oox_external_context_ptr>	externals_;
+	std::vector<oox_activeX_context_ptr>	activeXs_;
 
 	size_t								next_vml_file_id_; //используется для footer/header & comments
-  
-	xlsx_pivots_context					xlsx_pivots_context_;
-    xlsx_table_context					xlsx_table_context_;
-    xlsx_text_context					xlsx_text_context_;
+
+    std::vector<xlsx_xml_worksheet_ptr>	sheets_;
+	std::wstring						connections_;
+	std::vector<std::wstring>			query_tables_; 
 
 	std::wstringstream					xlsx_shared_strings_;
 	std::wstringstream					xlsx_defined_names_;

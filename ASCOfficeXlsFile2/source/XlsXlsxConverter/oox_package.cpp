@@ -124,26 +124,20 @@ void content_types_file::set_media(external_items & _Mediaitems)
 
 /////////////////////////////////////////////////////////////////////////
 
-simple_element::simple_element(const std::wstring & FileName, const std::wstring & Content) : file_name_(FileName)
+simple_element::simple_element(const std::wstring & fileName, const std::wstring & content) : filename_(fileName), content_(content)
 {
-    //utf8::utf16to8(Content.begin(), Content.end(), std::back_inserter(content_utf8_));
-    //падает на спец символах
-
-    content = Content;
-
 }
 
 void simple_element::write(const std::wstring & RootPath)
 {
-	std::wstring name_ = RootPath + FILE_SEPARATOR_STR +  file_name_;
+	std::wstring name_ = RootPath + FILE_SEPARATOR_STR +  filename_;
 
 	NSFile::CFileBinary file;
 	if ( file.CreateFileW(name_) == true)
 	{
 		std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
         file.WriteFile((BYTE*)root.c_str(), root.length());
-        //file.WriteFile((BYTE*)content_utf8_.c_str(), content_utf8_.length());
-        file.WriteStringUTF8(content);
+        file.WriteStringUTF8(content_);
         file.CloseFile();
 	}
 }
@@ -200,7 +194,7 @@ _CP_PTR(chart_content) chart_content::create()
     return boost::make_shared<chart_content>();
 }
 //----------------------------------------------------------------------------------------
-element_ptr simple_element::create(const std::wstring & FileName, const std::wstring & Content)
+simple_element_ptr simple_element::create(const std::wstring & FileName, const std::wstring & Content)
 {
     return boost::make_shared<simple_element>(FileName, Content);
 }

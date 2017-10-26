@@ -75,7 +75,6 @@ void HyperlinkMoniker::load(XLS::CFRecord& record)
 	{
 		data.reset(new URLMoniker);
 	}
-
 	else if (FileMoniker_CLSID == clsid)
 	{
 		data.reset(new FileMoniker);
@@ -94,10 +93,13 @@ void HyperlinkMoniker::load(XLS::CFRecord& record)
 	}
 	else
 	{
-		// EXCEPT::RT::WrongBiffRecord("Unsupported type of HyperlinkMoniker.", record.getTypeString());
+		//throw;
 	}
 
-	record >> *data;
+	if (data)
+	{
+		data->load(record);
+	}
 }
 
 

@@ -1969,8 +1969,9 @@ void XlsConverter::convert(XLS::Obj * obj)
 
 			xlsx_context->get_drawing_context().set_control(objectId);
 	
-			xlsx_context->current_activeX().setClassId(info);
 			xlsx_context->current_activeX().setDataBinRid(objectId, target);
+			xlsx_context->current_activeX().setProgId(info);
+			xlsx_context->current_activeX().setLicense(obj->pictFmla.key.keyBuf);
 
 		}
 		else if (!obj->pictFlags.fPrstm) 

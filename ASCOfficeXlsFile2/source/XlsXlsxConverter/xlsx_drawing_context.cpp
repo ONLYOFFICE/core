@@ -2172,9 +2172,9 @@ void xlsx_drawing_context::serialize_activeX(std::wostream & stream, _drawing_st
 			CP_XML_ATTR(L"shapeId", drawing_state->id);
 			CP_XML_ATTR(L"r:id",	drawing_state->objectId);
 
-			if (!drawing_state->objectProgId.empty())
+			if (!drawing_state->name.empty())
 			{
-				CP_XML_ATTR(L"name",	drawing_state->objectProgId);
+				CP_XML_ATTR(L"name", drawing_state->name);
 			}			
 
 			CP_XML_NODE(L"controlPr")
@@ -2274,12 +2274,14 @@ void xlsx_drawing_context::serialize_object(std::wostream & stream, _drawing_sta
 void xlsx_drawing_context::set_name(const std::wstring & str)
 {
 	if (current_drawing_states == NULL) return;
+	if (str.empty()) return;
 	
 	current_drawing_states->back()->name = str;
 }
 void xlsx_drawing_context::set_description(const std::wstring & str)
 {
 	if (current_drawing_states == NULL) return;	
+	if (str.empty()) return;
 
 	current_drawing_states->back()->description = str;
 }

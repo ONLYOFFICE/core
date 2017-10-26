@@ -89,17 +89,16 @@ public:
 
 	struct _
 	{
-		_() : bFill(false), enabled(false), fill(0), line(0), flag(0), flag2(0) {}
-		bool						enabled;
+		bool						enabled = false;
 		ODRAW::OfficeArtRecordPtr	anchor;
 		std::vector<BaseObjectPtr>	additional;
-		bool						bFill;
+		bool						bFill = false;
 		ShortXLAnsiString			name;
 
-		_UINT32						fill;
-		_UINT32						line;
-		_UINT16						flag;
-		_UINT16						flag2;
+		_UINT32						fill = 0;
+		_UINT32						line = 0;
+		_UINT16						flag = 0;
+		_UINT16						flag2 = 0;
 	}old_version;
 };
 

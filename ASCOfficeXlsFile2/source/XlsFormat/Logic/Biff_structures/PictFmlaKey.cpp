@@ -53,7 +53,10 @@ void PictFmlaKey::load(CFRecord& record)
 	{
 		char *buf = new char[cbKey];
 		memcpy(buf, record.getCurData<char>(), cbKey);
-		keyBuf = std::string(buf, cbKey);
+		
+		std::string str = std::string(buf, cbKey);
+		keyBuf =std::wstring(str.begin(), str.end());
+
 		record.skipNunBytes(cbKey); 
 		delete []buf;
 	}

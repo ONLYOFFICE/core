@@ -59,8 +59,9 @@ class oox_activeX_context::Impl
 public:
 	Impl() {}
     
-	std::wstring		activeXDataBinRid;
-	std::wstring		activeXClassId;
+	std::wstring		dataBinRid;
+	std::wstring		progId;
+	std::wstring		license;
 
 	std::vector<rel_>	activeXRels_;
    
@@ -110,13 +111,17 @@ oox_activeX_context::~oox_activeX_context()
 }
 void oox_activeX_context::setDataBinRid(const std::wstring &rid, const std::wstring &bin_data)
 {
-    impl_->activeXDataBinRid = rid;
+    impl_->dataBinRid = rid;
 	
 	impl_->add_rels(true, rid, bin_data, L"http://schemas.microsoft.com/office/2006/relationships/activeXControlBinary");
 }
-void oox_activeX_context::setClassId(const std::wstring &classId)
+void oox_activeX_context::setProgId(const std::wstring &progId)
 {
-    impl_->activeXClassId = classId;
+    impl_->progId = progId;
+}
+void oox_activeX_context::setLicense(const std::wstring &license)
+{
+    impl_->license = license;
 }
 void oox_activeX_context::add_rels(
         bool isInternal,
@@ -132,16 +137,95 @@ void oox_activeX_context::dump_rels(rels & Rels)
 }
 void oox_activeX_context::write_to(std::wostream & strm)
 {
+	//https://msdn.microsoft.com/en-us/library/ff533853(v=office.12).aspx
+
 	CP_XML_WRITER(strm)    
 	{
 		CP_XML_NODE(L"ax:ocx")
 		{ 
-			CP_XML_ATTR(L"xmlns:ax", L"http://schemas.microsoft.com/office/2006/activeX");
-			CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-			
-			CP_XML_ATTR(L"ax:classid", impl_->activeXClassId);
+			std::wstring classId;
+
+			if (std::wstring::npos != impl_->progId.find(L"Forms.")) // Microsoft Forms 2.0
+			{
+				if (std::wstring::npos != impl_->progId.find(L".CommandButton."))
+				{
+					classId = L"{D7053240-CE69-11CD-A777-00DD01143C57}";
+				}
+				else if (std::wstring::npos != impl_->progId.find(L".CheckBox."))
+				{
+					classId = L"{8BD21D40-EC42-11CE-9E0D-00AA006002F3}";
+				}
+				else if (std::wstring::npos != impl_->progId.find(L".ComboBox."))
+				{
+					classId = L"{8BD21D30-EC42-11CE-9E0D-00AA006002F3}";
+				}			
+				else if (std::wstring::npos != impl_->progId.find(L".Form."))
+				{
+					classId = L"{C62A69F0-16DC-11CE-9E98-00AA00574A4F}";
+				}	
+				else if (std::wstring::npos != impl_->progId.find(L".Frame."))
+				{
+					classId = L"{6E182020-F460-11CE-9BCD-00AA00608E01}";
+				}	
+				else if (std::wstring::npos != impl_->progId.find(L".Image."))
+				{
+					classId = L"{4C599241-6926-101B-9992-00000B65C6F9}";
+				}	
+				else if (std::wstring::npos != impl_->progId.find(L".OptionButton."))
+				{
+					classId = L"{8BD21D50-EC42-11CE-9E0D-00AA006002F3}";
+				}	
+				else if (std::wstring::npos != impl_->progId.find(L".Label."))
+				{
+					classId = L"{978C9E23-D4B0-11CE-BF2D-00AA003F40D0}";
+				}	
+				else if (std::wstring::npos != impl_->progId.find(L".ListBox."))
+				{
+					classId = L"{8BD21D20-EC42-11CE-9E0D-00AA006002F3}";
+				}	
+				else if (std::wstring::npos != impl_->progId.find(L".ScrollBar."))
+				{
+					classId = L"{DFD181E0-5E2F-11CE-A449-00AA004A803D}";
+				}	
+				else if (std::wstring::npos != impl_->progId.find(L".SpinButton."))
+				{
+					classId = L"{79176FB0-B7F2-11CE-97EF-00AA006D2776}";
+				}	
+				else if (std::wstring::npos != impl_->progId.find(L".TabStrip."))
+				{
+					classId = L"{EAE50EB0-4A62-11CE-BED6-00AA00611080}";
+				}	
+				else if (std::wstring::npos != impl_->progId.find(L".TextBox."))
+				{
+					classId = L"{8BD21D10-EC42-11CE-9E0D-00AA006002F3}";
+				}	
+			}
+			if (!classId.empty())
+			{
+				//classId = L"{00000000-0000-0000-0000-000000000000}";
+				CP_XML_ATTR(L"ax:classid", classId);
+			}
+
 			CP_XML_ATTR(L"ax:persistence", L"persistStreamInit");
-			CP_XML_ATTR(L"r:id", impl_->activeXDataBinRid);
+			CP_XML_ATTR(L"r:id", impl_->dataBinRid);
+		
+			if (!impl_->license.empty())
+			{
+				CP_XML_ATTR(L"ax:license", impl_->license);
+			}	
+			
+			CP_XML_ATTR(L"xmlns:ax", L"http://schemas.microsoft.com/office/2006/activeX");
+			CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");			
+
+			//if (!impl_->progId.empty())
+			//{		
+			//	CP_XML_NODE(L"ax:ocxPr")
+			//	{
+
+			//		CP_XML_ATTR(L"ax:name", L"Name");
+			//		CP_XML_ATTR(L"ax:value", impl_->progId);
+			//	}
+			//}
 		}
 	}
 }

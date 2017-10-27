@@ -4008,6 +4008,19 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
+	int ReadFldChar(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CFldChar* pFldChar = static_cast<OOX::Logic::CFldChar*>(poResult);
+		if ( c_oSer_FldSimpleType::CharType == type )
+		{
+			pFldChar->m_oFldCharType.Init();
+			pFldChar->m_oFldCharType->SetValue((SimpleTypes::EFldCharType)m_oBufferedStream.GetUChar());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
 	int ReadFldSimple(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -6634,7 +6647,7 @@ public:
 			//сбрасываем Shd
             oBinary_tblPrReader.m_sCurTableShd.clear();
 		}
-		else if(c_oSerRunType::fldstart == type)
+		else if(c_oSerRunType::fldstart_deprecated == type)
 		{
             std::wstring sField(m_oBufferedStream.GetString3(length));
 			sField = XmlUtils::EncodeXmlString(sField);
@@ -6648,7 +6661,7 @@ public:
 				m_oCur_rPr.Write(&GetRunStringWriter());
             GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"separate\"/>")));
 		}
-		else if(c_oSerRunType::fldend == type)
+		else if(c_oSerRunType::fldend_deprecated == type)
 		{
             GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"end\"/>")));
 		}
@@ -6696,6 +6709,28 @@ public:
 			OOX::Logic::CEndnoteReference oEndnoteRef;
 			res = Read1(length, &Binary_DocumentTableReader::ReadEndnoteRef, this, &oEndnoteRef);
 			GetRunStringWriter().WriteString(oEndnoteRef.toXML());
+		}
+		else if ( c_oSerRunType::fldChar == type)
+		{
+			OOX::Logic::CFldChar oFldChar;
+			res = Read1(length, &Binary_DocumentTableReader::ReadFldChar, this, &oFldChar);
+			GetRunStringWriter().WriteString(oFldChar.toXML());
+		}
+		else if ( c_oSerRunType::instrText == type)
+		{
+			GetRunStringWriter().WriteString(std::wstring(_T("<w:instrText xml:space=\"preserve\">")));
+			std::wstring sText(m_oBufferedStream.GetString3(length));
+			sText = XmlUtils::EncodeXmlString(sText);
+			GetRunStringWriter().WriteString(sText);
+			GetRunStringWriter().WriteString(std::wstring(_T("</w:instrText>")));
+		}
+		else if ( c_oSerRunType::delInstrText == type)
+		{
+			GetRunStringWriter().WriteString(std::wstring(_T("<w:delInstrText xml:space=\"preserve\">")));
+			std::wstring sText(m_oBufferedStream.GetString3(length));
+			sText = XmlUtils::EncodeXmlString(sText);
+			GetRunStringWriter().WriteString(sText);
+			GetRunStringWriter().WriteString(std::wstring(_T("</w:delInstrText>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

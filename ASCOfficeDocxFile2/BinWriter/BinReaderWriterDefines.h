@@ -503,8 +503,8 @@ extern int g_nCurFormatVersion;
 		image = 6,
 		table = 7,
 		Content = 8,
-		fldstart = 9,
-		fldend = 10,
+		fldstart_deprecated = 9,
+		fldend_deprecated = 10,
 		CommentReference = 11,
 		pptxDrawing = 12,
         object = 14,
@@ -521,7 +521,10 @@ extern int g_nCurFormatVersion;
 		endnoteRef = 25,
 		footnoteReference = 26,
 		endnoteReference = 27,
-		arPr = 28
+		arPr = 28,
+		fldChar = 29,
+		instrText = 30,
+		delInstrText = 31
 	};}
 	namespace c_oSerVbaProjectTypes{enum c_oSerVbaProjectType
 	{
@@ -929,7 +932,8 @@ extern int g_nCurFormatVersion;
 	{
 		Content = 0,
 		Instr = 1,
-		FFData = 2
+		FFData = 2,
+		CharType = 3
 	};}
 	namespace c_oSer_ColorThemeType{ enum c_oSer_ColorThemeType
 	{

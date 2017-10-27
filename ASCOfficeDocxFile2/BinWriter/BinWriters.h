@@ -76,18 +76,6 @@ namespace BinDocxRW
 		{
 		}
 	};
-	class FldStruct
-	{
-	protected:
-		int m_nType;
-	public:
-        std::wstring m_sFld;
-		FldStruct(std::wstring sFld, int nType):m_sFld(sFld),m_nType(nType){}
-		int GetType()
-		{
-			return m_nType;
-		}
-	};
 	class BinaryCommonWriter
 	{
 	public: 
@@ -2992,11 +2980,6 @@ namespace BinDocxRW
         std::wstring			m_sCurParStyle;
 		OOX::CSettings*			m_oSettings;
 
-		//для fldChar
-		//todo в документации описан случай если нет fldchartypeEnd, у нас работает не так.
-		std::vector<FldStruct*>			m_aFldChars;
-        std::wstring					m_sFldChar;
-		SimpleTypes::EFldCharType		m_eFldState;
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 		std::map<int, bool>*			m_mapIgnoreComments;
 	public:
@@ -3012,14 +2995,6 @@ namespace BinDocxRW
 			pBackground		= NULL;
 			pSectPr			= NULL;
 			m_bWriteSectPr	= false; 
-			m_eFldState		= SimpleTypes::fldchartypeEnd;
-		}
-		~BinaryDocumentTableWriter()
-		{
-			for(size_t i = 0, length = m_aFldChars.size(); i < length; ++i)
-			{
-				RELEASEOBJECT(m_aFldChars[i]);
-			}
 		}
 		void prepareOfficeDrawingConverter(NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, OOX::IFileContainer *rels, std::vector<std::wstring>& aShapeTypes)
 		{
@@ -3168,24 +3143,6 @@ namespace BinDocxRW
 				WriteParagraphContent(par.m_arrItems);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 
-		}
-        FldStruct* ParseField(const std::wstring& sFld)
-		{
-            std::wstring sFldCopy = sFld;
-
-            boost::algorithm::trim      (sFldCopy);
-            boost::algorithm::to_upper  (sFldCopy);
-
-            FldStruct* pRes = NULL;
-			int nIndex = 0;
-            
-			if(-1 != (nIndex = (int)sFldCopy.find(_T("TOC"))))
-				pRes = new FldStruct(sFldCopy, fieldstruct_toc);
-            else if(-1 != (nIndex = (int)sFldCopy.find(_T("HYPERLINK"))))
-				pRes = new FldStruct(sFldCopy, fieldstruct_hyperlink);
-			else
-				pRes = new FldStruct(sFldCopy, fieldstruct_none);
-			return pRes;
 		}
 		void WriteParagraphContent(const std::vector<OOX::WritingElement *>& Content, bool bHyperlink = false)
 		{
@@ -3463,6 +3420,16 @@ namespace BinDocxRW
 				m_oBcw.m_oStream.WriteLONG(oId->GetValue());
 				m_oBcw.WriteItemEnd(nCurPos2);
 				m_oBcw.WriteItemEnd(nCurPos);
+			}
+		}
+		void WriteFldChar(OOX::Logic::CFldChar* pFldChar)
+		{
+			int nCurPos = 0;
+			if(pFldChar->m_oFldCharType.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::CharType);
+				m_oBcw.m_oStream.WriteBYTE((BYTE)pFldChar->m_oFldCharType->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 		}
 		void WriteFldSimple(OOX::Logic::CFldSimple* pFldSimple)
@@ -5422,51 +5389,6 @@ namespace BinDocxRW
 			int							nCurPos		= 0;
 			OOX::Logic::CRunProperty*	oCur_rPr	= pRun->m_oRunProperty;
 
-			if(NULL != oCur_rPr)
-			{
-				//Заглушка для содержания
-				if(false == bHyperlink)
-				{
-					//Случай если Hyperlink задан как field
-					for(size_t i = 0, length = m_aFldChars.size(); i < length; ++i)
-					{
-						if(fieldstruct_hyperlink == m_aFldChars[i]->GetType())
-						{
-							bHyperlink = true;
-							break;
-						}
-					}
-				}
-				if(bHyperlink)
-				{
-					bool bInTOC = false;
-					for(size_t i = 0, length = m_aFldChars.size(); i < length; ++i)
-					{
-						if(fieldstruct_toc == m_aFldChars[i]->GetType())
-						{
-							bInTOC = true;
-							break;
-						}
-					}
-					if(bInTOC)
-					{
-						//убираем Runstyle
-						if(oCur_rPr->m_oRStyle.IsInit())
-							oCur_rPr->m_oRStyle.reset();
-						//Если настройки выставлены явно, то убираем их
-						if(oCur_rPr->m_oColor.IsInit() && oCur_rPr->m_oColor->m_oVal.IsInit() && SimpleTypes::hexcolorRGB == oCur_rPr->m_oColor->m_oVal->GetValue())
-						{
-							unsigned char bR = oCur_rPr->m_oColor->m_oVal->Get_R();
-							unsigned char bG = oCur_rPr->m_oColor->m_oVal->Get_G();
-							unsigned char bB = oCur_rPr->m_oColor->m_oVal->Get_B();
-							if(0x00 == bR && 0x00 == bG && 0xFF == bB)
-								oCur_rPr->m_oColor->m_oVal->Set_B(0x00);
-						}
-						if(oCur_rPr->m_oU.IsInit() && oCur_rPr->m_oU->m_oVal.IsInit() && SimpleTypes::underlineSingle == oCur_rPr->m_oU->m_oVal->GetValue())
-							oCur_rPr->m_oU->m_oVal->SetValue(SimpleTypes::underlineNone);
-					}
-				}
-			}
 	//Если первый элемент символ надо выставить в его настройки шрифт
 			if(nIndexStart < (int)pRun->m_arrItems.size() && OOX::et_w_sym == pRun->m_arrItems[nIndexStart]->getType())
 			{
@@ -5543,51 +5465,21 @@ namespace BinDocxRW
 				case OOX::et_w_fldChar:
 					{
 						OOX::Logic::CFldChar* pFldChar = static_cast<OOX::Logic::CFldChar*>(item);
-						if(pFldChar->m_oFldCharType.IsInit())
-						{
-							if(SimpleTypes::fldchartypeBegin == pFldChar->m_oFldCharType.get().GetValue())
-							{
-								m_eFldState = SimpleTypes::fldchartypeBegin;
-                                m_sFldChar.clear();
-							}
-							else if(SimpleTypes::fldchartypeEnd == pFldChar->m_oFldCharType.get().GetValue())
-							{
-								m_eFldState = SimpleTypes::fldchartypeEnd;
-								if(m_aFldChars.size() > 0)
-								{
-									int nIndex = (int)m_aFldChars.size() - 1;
-									FldStruct* pFldStruct = m_aFldChars[nIndex];
-									RELEASEOBJECT(pFldStruct);
-									m_aFldChars.erase(m_aFldChars.begin() + nIndex);
-
-									m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::fldend);
-									m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
-								}
-							}
-							else if(SimpleTypes::fldchartypeSeparate == pFldChar->m_oFldCharType.get().GetValue())
-							{
-								m_eFldState = SimpleTypes::fldchartypeSeparate;
-								FldStruct* pFldStruct = ParseField(m_sFldChar);
-								m_aFldChars.push_back(pFldStruct);
-
-								m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::fldstart);
-								m_oBcw.m_oStream.WriteStringW(m_sFldChar);
-							}
-						}
+						int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::fldChar);
+						WriteFldChar(pFldChar);
+						m_oBcw.WriteItemEnd(nCurPos);
+					}
+					break;
+				case OOX::et_w_delInstrText:
+					{
+						OOX::Logic::CDelInstrText* pInstrText = static_cast<OOX::Logic::CDelInstrText*>(item);
+						WriteText(pInstrText->m_sText, c_oSerRunType::delInstrText);
 					}
 					break;
 				case OOX::et_w_instrText:
 					{
 						OOX::Logic::CInstrText* pInstrText = static_cast<OOX::Logic::CInstrText*>(item);
-						if(SimpleTypes::fldchartypeBegin == m_eFldState)
-							m_sFldChar += pInstrText->m_sText;
-						else
-						{
-                            if(!pInstrText->m_sText.empty())
-							{
-								WriteText(pInstrText->m_sText);
-							}
-						}
+						WriteText(pInstrText->m_sText, c_oSerRunType::instrText);
 					}
 					break;
 				case OOX::et_w_nonBreakHyphen:
@@ -5619,25 +5511,19 @@ namespace BinDocxRW
 						OOX::Logic::CSym* oSym = static_cast<OOX::Logic::CSym*>(item);
                         wchar_t ch = 0x0FFF & oSym->m_oChar->GetValue();
                         std::wstring sText(&ch, 1);
-						WriteText(sText);
+						WriteText(sText, c_oSerRunType::run);
 						break;
 					}
 				case OOX::et_w_delText:
 					{
                         std::wstring& sText = static_cast<OOX::Logic::CDelText*>(item)->m_sText;
-                        if(!sText.empty())
-						{
-							WriteDelText(sText);
-						}
+						WriteText(sText, c_oSerRunType::delText);
 					}
 					break;
 				case OOX::et_w_t:
 					{
                         std::wstring& sText = static_cast<OOX::Logic::CText*>(item)->m_sText;
-                        if(!sText.empty())
-						{
-							WriteText(sText);
-						}
+						WriteText(sText, c_oSerRunType::run);
 					}
 					break;
 				case OOX::et_w_tab:
@@ -5727,19 +5613,15 @@ namespace BinDocxRW
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
-        void WriteDelText(const std::wstring& text)
+		void WriteText(const std::wstring& text, BYTE type)
 		{
-			m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::delText);
-            m_oBcw.m_oStream.WriteStringW(text.c_str());
-			if(NULL != m_oBcw.m_pEmbeddedFontsManager)
-				m_oBcw.m_pEmbeddedFontsManager->CheckString(text);
-		}
-        void WriteText(const std::wstring& text)
-		{
-			m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::run);
-            m_oBcw.m_oStream.WriteStringW(text);
-			if(NULL != m_oBcw.m_pEmbeddedFontsManager)
-				m_oBcw.m_pEmbeddedFontsManager->CheckString(text);
+			if(!text.empty())
+			{
+				m_oBcw.m_oStream.WriteBYTE(type);
+				m_oBcw.m_oStream.WriteStringW(text);
+				if(NULL != m_oBcw.m_pEmbeddedFontsManager)
+					m_oBcw.m_pEmbeddedFontsManager->CheckString(text);
+			}
 		}
 		void WriteDrawingPptx(OOX::WritingElement* item)
 		{

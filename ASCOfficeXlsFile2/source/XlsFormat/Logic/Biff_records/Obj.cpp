@@ -123,7 +123,8 @@ void Obj::readFields(CFRecord& record)
 			OBJ_RadioButton == cmo.ot || 
 			OBJ_SpinControl == cmo.ot || 
 			OBJ_Scrollbar	== cmo.ot || 
-			OBJ_List		== cmo.ot /*|| OBJ_DropdownList == cmo.ot*/)
+			OBJ_List		== cmo.ot || 
+			OBJ_DropdownList == cmo.ot)
 		{
 			linkFmla.load(record);
 		}

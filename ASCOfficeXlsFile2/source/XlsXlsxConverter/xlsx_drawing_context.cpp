@@ -686,7 +686,83 @@ void xlsx_drawing_context::set_object_link(const std::wstring & formula)
 
 	current_drawing_states->back()->object.link = formula;
 }
+void xlsx_drawing_context::set_object_x_val(int val)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
 
+	current_drawing_states->back()->object.x_val = val;
+}
+void xlsx_drawing_context::set_object_x_min(int val)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->object.x_min = val;
+}
+void xlsx_drawing_context::set_object_x_max(int val)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->object.x_max = val;
+}
+void xlsx_drawing_context::set_object_x_inc(int val)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->object.x_inc = val;
+}
+void xlsx_drawing_context::set_object_x_page(int val)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->object.x_page = val;
+}
+void xlsx_drawing_context::set_object_x_sel(int val)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->object.x_sel = val;
+}
+void xlsx_drawing_context::set_object_x_sel_type(int val)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->object.x_sel_type = val;
+}
+void xlsx_drawing_context::set_object_lct(int val)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->object.lct = val;
+}
+void xlsx_drawing_context::set_object_fmlaRange(const std::wstring & fmla)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->object.fmlaRange = fmla;
+}
+void xlsx_drawing_context::set_object_drop_style(int val)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->object.drop_style = val;
+}
+void xlsx_drawing_context::set_object_drop_lines(int val)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	current_drawing_states->back()->object.drop_lines = val;
+}
 void xlsx_drawing_context::end_drawing()
 {
 	if (current_drawing_states == NULL) return;
@@ -787,6 +863,10 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 	if ( drawing_state->type == external_items::typeControl)
 	{
 		serialize_control(drawing_state);
+		if (!drawing_state->objectId.empty())
+		{
+			drawing_states_activeX.push_back(drawing_state); // for serialize in sheet
+		}
 	}
 }
 
@@ -1047,6 +1127,65 @@ void xlsx_drawing_context::serialize_vml_shape(_drawing_state_ptr & drawing_stat
 				if (!drawing_state->object.link.empty() )
 				{
 					CP_XML_NODE(L"x:FmlaLink"){CP_XML_CONTENT(drawing_state->object.link);}
+				}
+				if (drawing_state->object.x_val)
+				{
+					CP_XML_NODE(L"x:Val"){CP_XML_CONTENT(*drawing_state->object.x_val);}
+				}
+				if (drawing_state->object.x_min)
+				{
+					CP_XML_NODE(L"x:Min"){CP_XML_CONTENT(*drawing_state->object.x_min);}
+				}
+				if (drawing_state->object.x_max)
+				{
+					CP_XML_NODE(L"x:Max"){CP_XML_CONTENT(*drawing_state->object.x_max);}
+				}
+				if (drawing_state->object.x_inc)
+				{
+					CP_XML_NODE(L"x:Inc"){CP_XML_CONTENT(*drawing_state->object.x_inc);}
+				}
+				if (drawing_state->object.x_page)
+				{
+					CP_XML_NODE(L"x:Page"){CP_XML_CONTENT(*drawing_state->object.x_page);}
+				}
+				if (!drawing_state->object.fmlaRange.empty() )
+				{
+					CP_XML_NODE(L"x:FmlaRange"){CP_XML_CONTENT(drawing_state->object.fmlaRange);}
+				}			
+				if (drawing_state->object.x_sel)
+				{
+					CP_XML_NODE(L"x:Sel"){CP_XML_CONTENT(*drawing_state->object.x_sel);}
+				}
+				if (drawing_state->object.x_sel_type)
+				{
+					switch(*drawing_state->object.x_sel_type)
+					{
+					case 0:
+					default:
+						CP_XML_NODE(L"x:SelType"){CP_XML_CONTENT(L"Single");}
+					}
+				}
+				if (drawing_state->object.lct)
+				{
+					switch(*drawing_state->object.lct)
+					{
+					case 0:
+					default:
+						CP_XML_NODE(L"x:LCT"){CP_XML_CONTENT(L"Normal");}
+					}
+				}
+				if (drawing_state->object.drop_style)
+				{
+					switch(*drawing_state->object.drop_style)
+					{
+					case 0:
+					default:
+						CP_XML_NODE(L"x:DropStyle"){CP_XML_CONTENT(L"Combo");}
+					}
+				}
+				if (drawing_state->object.drop_lines)
+				{
+					CP_XML_NODE(L"x:DropLines"){CP_XML_CONTENT(*drawing_state->object.drop_lines);}
 				}
 			}
 		}	
@@ -2134,9 +2273,10 @@ void xlsx_drawing_context::serialize(std::wostream & stream, _drawing_state_ptr 
 		}
 	}
 }
-void xlsx_drawing_context::serialize_activeX(std::wostream & stream, _drawing_state_ptr & drawing_state)
+void xlsx_drawing_context::serialize_activeX_control(std::wostream & stream, _drawing_state_ptr & drawing_state)
 {
-	if (drawing_state->type != external_items::typeActiveX) return;
+	if (drawing_state->type != external_items::typeActiveX && 
+		drawing_state->type != external_items::typeControl) return;
 
 	if (drawing_state->type_anchor == 3)
 	{//absolute
@@ -2181,7 +2321,15 @@ void xlsx_drawing_context::serialize_activeX(std::wostream & stream, _drawing_st
 			{
 				CP_XML_ATTR(L"defaultSize", 0);
 				//CP_XML_ATTR(L"autoPict", 0);
-				
+				CP_XML_ATTR(L"autoLine", 0);
+				if (!drawing_state->object.link.empty())
+				{
+					CP_XML_ATTR(L"linkedCell", drawing_state->object.link);
+				}
+				if (!drawing_state->object.fmlaRange.empty())
+				{
+					CP_XML_ATTR(L"listFillRange", drawing_state->object.fmlaRange);
+				}				
 				if (!drawing_state->fill.texture_target.empty())
 				{
 					bool isIternal = false;
@@ -3077,11 +3225,11 @@ void xlsx_drawing_context::serialize_objects(std::wostream & strm)
 	}
 	drawing_states_objects.clear();
 }
-void xlsx_drawing_context::serialize_activeXs(std::wostream & strm) 
+void xlsx_drawing_context::serialize_activeXs_controls(std::wostream & strm) 
 {
 	for (size_t i = 0; i < drawing_states_activeX.size(); i++)
 	{
-		serialize_activeX(strm, drawing_states_activeX[i]);
+		serialize_activeX_control(strm, drawing_states_activeX[i]);
 	}
 	drawing_states_activeX.clear();
 }

@@ -37,6 +37,10 @@
 
 #include <simple_xml_writer.h>
 
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma comment(lib, "Ole32.lib")
+#endif
+
 namespace oox {
 
 class oox_activeX_context::Impl
@@ -139,6 +143,7 @@ void oox_activeX_context::write_to(std::wostream & strm)
 {
 	//https://msdn.microsoft.com/en-us/library/ff533853(v=office.12).aspx
 
+	bool badClassId = false;
 	CP_XML_WRITER(strm)    
 	{
 		CP_XML_NODE(L"ax:ocx")
@@ -200,11 +205,31 @@ void oox_activeX_context::write_to(std::wostream & strm)
 					classId = L"{8BD21D10-EC42-11CE-9E0D-00AA006002F3}";
 				}	
 			}
-			if (!classId.empty())
+#if defined(_WIN32) || defined(_WIN64)
+			if (classId.empty())
 			{
-				//classId = L"{00000000-0000-0000-0000-000000000000}";
-				CP_XML_ATTR(L"ax:classid", classId);
+				//std::wstring test = L"AVSAudioEditor4.EditorFileInfo.1";
+				//LPOLESTR str =(wchar_t*) test.c_str();
+				LPOLESTR str =(wchar_t*) impl_->progId.c_str();
+				CLSID clsid; 
+				HRESULT hr = CLSIDFromProgID(str, &clsid);
+				if (S_OK == hr)
+				{
+					LPOLESTR className;
+					if (S_OK == StringFromCLSID(clsid, &className))
+					{
+						classId = className;
+						CoTaskMemFree(className);
+					}
+				}
 			}
+#endif
+			if (classId.empty())
+			{
+				classId = L"{00024500-0000-0000-C000-000000000046}";
+				badClassId = true;
+			}
+			CP_XML_ATTR(L"ax:classid", classId);
 
 			CP_XML_ATTR(L"ax:persistence", L"persistStreamInit");
 			CP_XML_ATTR(L"r:id", impl_->dataBinRid);
@@ -217,12 +242,11 @@ void oox_activeX_context::write_to(std::wostream & strm)
 			CP_XML_ATTR(L"xmlns:ax", L"http://schemas.microsoft.com/office/2006/activeX");
 			CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");			
 
-			//if (!impl_->progId.empty())
+			//if (!impl_->progId.empty() && badClassId)
 			//{		
 			//	CP_XML_NODE(L"ax:ocxPr")
 			//	{
-
-			//		CP_XML_ATTR(L"ax:name", L"Name");
+			//		CP_XML_ATTR(L"ax:name", L"ProgId");
 			//		CP_XML_ATTR(L"ax:value", impl_->progId);
 			//	}
 			//}

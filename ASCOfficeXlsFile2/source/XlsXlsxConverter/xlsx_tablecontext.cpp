@@ -160,8 +160,8 @@ void xlsx_table_context::serialize_ole_objects(std::wostream & strm)
 {
     state()->drawing_context_.serialize_objects(strm);
 }
-void xlsx_table_context::serialize_activeXs(std::wostream & strm)
+void xlsx_table_context::serialize_activeXs_controls(std::wostream & strm)
 {
-    state()->drawing_context_.serialize_activeXs(strm);
+    state()->drawing_context_.serialize_activeXs_controls(strm);
 }
 }

@@ -300,8 +300,19 @@ public:
 		bool visible;
 		int col;
 		int row;
-		std::wstring macro;
-		std::wstring link;
+		std::wstring	macro;
+		std::wstring	link;
+		_CP_OPT(int)	x_val;
+		_CP_OPT(int)	x_min;
+		_CP_OPT(int)	x_max;
+		_CP_OPT(int)	x_inc;
+		_CP_OPT(int)	x_page;
+		_CP_OPT(int)	x_sel;
+		_CP_OPT(int)	x_sel_type;
+		_CP_OPT(int)	lct	;
+		std::wstring	fmlaRange;
+		_CP_OPT(int)	drop_style;
+		_CP_OPT(int)	drop_lines;
 	}object;
 //for group
 	std::vector<_drawing_state_ptr>		drawing_states;
@@ -425,7 +436,18 @@ public:
 		void set_object_id			(int val);
 		void set_object_visible		(bool val);
 		void set_object_anchor		(int col, int row);
-		void set_object_link		(const std::wstring & text);
+		void set_object_link		(const std::wstring & fmla);
+		void set_object_x_val		(int val);
+		void set_object_x_min		(int val);
+		void set_object_x_max		(int val);
+		void set_object_x_inc		(int val);
+		void set_object_x_page		(int val);
+		void set_object_x_sel		(int val);
+		void set_object_x_sel_type	(int val);
+		void set_object_lct			(int val);
+		void set_object_fmlaRange	(const std::wstring & fmla);
+		void set_object_drop_style	(int val);
+		void set_object_drop_lines	(int val);
 //---------------------------------------------------------------------------------------------
 		void set_custom_rect		(_rect							& rect);
 		void set_custom_verticles	(std::vector<ODRAW::MSOPOINT>	& points);
@@ -455,9 +477,9 @@ public:
 //-----------------------------------------------------------------------------------		
 		void serialize				(std::wostream & strm, _drawing_state_ptr & drawing_state);		
 		void serialize_object		(std::wostream & strm, _drawing_state_ptr & drawing_state);		
-		void serialize_activeX		(std::wostream & strm, _drawing_state_ptr & drawing_state);
+		void serialize_activeX_control(std::wostream & strm, _drawing_state_ptr & drawing_state);
 //-----------------------------------------------------------------------------------		
-		void serialize_activeXs		(std::wostream & strm);
+		void serialize_activeXs_controls(std::wostream & strm);
 		void serialize_objects		(std::wostream & strm);  
 		void serialize_vml_HF		(std::wostream & strm);
 		void serialize_vml			(std::wostream & strm);

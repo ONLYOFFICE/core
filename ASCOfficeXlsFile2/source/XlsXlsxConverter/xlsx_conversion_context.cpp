@@ -172,7 +172,7 @@ void xlsx_conversion_context::end_external()
 void xlsx_conversion_context::end_table()
 {
 	get_table_context().serialize_ole_objects(current_sheet().ole_objects());
-	get_table_context().serialize_activeXs(current_sheet().activeXs());
+	get_table_context().serialize_activeXs_controls(current_sheet().activeXs());
 	get_table_context().dump_rels_drawing(current_sheet().sheet_rels());
 	
 	get_table_context().serialize_hyperlinks(current_sheet().hyperlinks());

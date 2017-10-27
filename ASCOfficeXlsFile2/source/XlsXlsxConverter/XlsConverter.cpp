@@ -147,22 +147,8 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 		XLS::CFStreamPtr summary;
 		XLS::CFStreamPtr doc_summary;
 
-		try
-		{
-			summary = xls_file->getNamedStream(L"SummaryInformation");
-		}
-		catch (...)
-		{
-		}
-
-		try
-		{
-			doc_summary = xls_file->getNamedStream(L"DocumentSummaryInformation");
-		}
-		catch (...)
-		{
-			return;
-		}
+		summary		= xls_file->getNamedStream(L"SummaryInformation");
+		doc_summary = xls_file->getNamedStream(L"DocumentSummaryInformation");
 
         _UINT16 workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
 		if(summary)
@@ -2009,8 +1995,48 @@ void XlsConverter::convert(XLS::Obj * obj)
 			}
 		}
 	}
+	if (obj->sbs.fExist)
+	{
+		xlsx_context->get_drawing_context().set_object_x_val(obj->sbs.iVal);
+		xlsx_context->get_drawing_context().set_object_x_min(obj->sbs.iMin);
+		xlsx_context->get_drawing_context().set_object_x_max(obj->sbs.iMax);
+		xlsx_context->get_drawing_context().set_object_x_inc(obj->sbs.dInc);
+		xlsx_context->get_drawing_context().set_object_x_page(obj->sbs.dPage);
+	}
 	if (obj->list.fExist)
 	{
+		xlsx_context->get_drawing_context().set_object_x_sel(obj->list.iSel);
+		xlsx_context->get_drawing_context().set_object_x_sel_type(obj->list.wListSelType);
+		xlsx_context->get_drawing_context().set_object_lct(obj->list.lct);
+
+		if (obj->list.fmla.bFmlaExist)
+		{
+			std::wstring link = obj->list.fmla.fmla.getAssembledFormula(true);
+			xlsx_context->get_drawing_context().set_object_fmlaRange(link);
+		}
+		if (obj->list.dropData)
+		{
+			xlsx_context->get_drawing_context().set_object_drop_style(obj->list.dropData->wStyle);
+			xlsx_context->get_drawing_context().set_object_drop_lines(obj->list.dropData->cLine);
+		}
+	}
+	if (obj->checkBox.fExist)
+	{
+	//unsigned short fChecked;
+	//unsigned short accel;
+	//bool fNo3d;
+	}
+	if (obj->radioButton.fExist)
+	{
+	//unsigned short idRadNext;
+	//Boolean<unsigned short> fFirstBtn;
+	}
+	if (obj->edit.fExist)
+	{
+	//unsigned short ivtEdit;
+	//Boolean<unsigned short> fMultiLine;
+	//unsigned short fVScroll;
+	//unsigned short id;
 	}
 	bool full_ref = false;
 	if (obj->cmo.ot > 0x06) full_ref = true;

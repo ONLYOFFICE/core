@@ -73,7 +73,7 @@ public:
 	void			serialize_hyperlinks(std::wostream & _Wostream);
     
 	void			serialize_ole_objects(std::wostream & _Wostream);
-	void			serialize_activeXs(std::wostream & _Wostream);
+	void			serialize_activeXs_controls(std::wostream & _Wostream);
 	void			dump_rels_drawing(rels & Rels);
 private:
     xlsx_conversion_context		& context_;

@@ -45,7 +45,7 @@ void ObjLinkFmla::load(CFRecord& record)
 	unsigned short ft;
 	record >> ft;
 
-	if ( ft != 0x0014)
+	if ( ft != 0x0014 && ft != 0x000e)
 	{
 		record.RollRdPtrBack(2);
 		return;

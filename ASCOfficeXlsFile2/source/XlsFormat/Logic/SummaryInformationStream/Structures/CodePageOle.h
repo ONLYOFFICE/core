@@ -31,8 +31,8 @@
  */
 #pragma once
 #include "Property.h"
-
-#include <Binary/BinSmartPointers.h>
+#include "../../../Binary/BinSmartPointers.h"
+#include "../../../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 namespace OLEPS
 {
@@ -106,4 +106,35 @@ public:
 	std::wstring dateCreate;
 };
 typedef boost::shared_ptr<PropertyDateCreate> PropertyDateCreatesPtr;
+//-----------------------------------------------------------------------------------------
+class PropertyWordCount : public Property
+{
+public:
+    PropertyWordCount(const unsigned short value_type, XLS::CFStreamPtr stream);
+	static const unsigned int Type = 0x000f;
+	
+	_UINT32			count;
+	std::wstring	value;
+};
+typedef boost::shared_ptr<PropertyWordCount> PropertyWordCountPtr;
+//-----------------------------------------------------------------------------------------
+class PropertyCharCount : public Property
+{
+public:
+    PropertyCharCount(const unsigned short value_type, XLS::CFStreamPtr stream);
+	static const unsigned int Type = 0x0010;
+	
+	_UINT32			count;
+	std::wstring	value;
+};
+typedef boost::shared_ptr<PropertyCharCount> PropertyCharCountPtr;
+//-----------------------------------------------------------------------------------------
+class PropertyDocSecurity : public Property
+{
+public:
+    PropertyDocSecurity(const unsigned short value_type, XLS::CFStreamPtr stream);
+	static const unsigned int Type = 0x0013;
+	_UINT32 value;
+};
+typedef boost::shared_ptr<PropertyDocSecurity> PropertyDocSecurityPtr;
 } // namespace OLEPS

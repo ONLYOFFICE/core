@@ -44,7 +44,6 @@
 #include "xlsx_pivots_context.h"
 #include "xlsx_external_context.h"
 #include "xlsx_activeX_context.h"
-#include "xlsx_query_table_context.h"
 
 #include "xlsx_output_xml.h"
 

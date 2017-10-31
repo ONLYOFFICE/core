@@ -205,6 +205,10 @@ void oox_activeX_context::write_to(std::wostream & strm)
 					classId = L"{8BD21D10-EC42-11CE-9E0D-00AA006002F3}";
 				}	
 			}
+			else if (std::wstring::npos != impl_->progId.find(L"ShockwaveFlash.")) 
+			{
+					classId = L"{D27CDB6E-AE6D-11CF-96B8-444553540000}";
+			}
 #if defined(_WIN32) || defined(_WIN64)
 			if (classId.empty())
 			{

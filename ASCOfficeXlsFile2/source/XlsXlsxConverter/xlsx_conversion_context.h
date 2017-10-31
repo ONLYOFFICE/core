@@ -74,7 +74,7 @@ public:
     void start_chart();
 	void end_chart(){}
 
-	void start_activeX();
+	std::wstring start_activeX();
 	void end_activeX(){}
 
     void start_external();
@@ -102,9 +102,9 @@ public:
 
 	external_items & get_mediaitems() { return mediaitems_; }
 
-	void add_exteranal_content	(std::wstring content);
-	void add_connections		(std::wstring connections);
-	void add_query_table		(std::wstring query_table);
+	void add_connections		(const std::wstring & connections);
+	void add_query_table		(const std::wstring & query_table);
+	void add_control_props		(const std::wstring & target, const std::wstring &props);
 private:
 
     void create_new_sheet(std::wstring const & name);
@@ -112,8 +112,7 @@ private:
     package::xlsx_document				*output_document_;
 
 	external_items						mediaitems_;
-    xlsx_table_context					
-		table_context_;
+    xlsx_table_context					table_context_;
     xlsx_text_context					text_context_;	
 	xlsx_pivots_context					pivots_context_;
 
@@ -125,7 +124,8 @@ private:
 
     std::vector<xlsx_xml_worksheet_ptr>	sheets_;
 	std::wstring						connections_;
-	std::vector<std::wstring>			query_tables_; 
+	std::map<std::wstring, std::wstring>query_tables_; 
+	std::map<std::wstring, std::wstring>control_props_; 
 
 	std::wstringstream					xlsx_shared_strings_;
 	std::wstringstream					xlsx_defined_names_;

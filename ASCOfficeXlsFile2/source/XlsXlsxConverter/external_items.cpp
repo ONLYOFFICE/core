@@ -63,6 +63,8 @@ std::wstring static get_default_file_name(external_items::Type type)
         return L"media";
 	case external_items::typeActiveX:
        return L"activeX";
+	case external_items::typeControlProps:
+       return L"ctrlProp";
 	default:
         return L"";
     }
@@ -92,7 +94,20 @@ std::wstring external_items::add_chart(std::wstring & oox_target)
 
     return rId;
 }
-std::wstring external_items::add_activeX(std::wstring & oox_target)
+std::wstring external_items::add_control_activeX(std::wstring & oox_target_bin)
+{
+    const bool isMediaInternal = true;
+  
+	count_activeX++;  
+	
+	std::wstring rId = std::wstring(L"ocxId") + std::to_wstring(count_activeX);
+
+	oox_target_bin = std::wstring(L"activeX") + std::to_wstring(count_activeX) + L".bin";
+		
+	items_.push_back( item(oox_target_bin, typeActiveX, isMediaInternal, -1, rId) );
+    return rId;
+}
+std::wstring external_items::add_control_props(std::wstring & oox_target)
 {
     const bool isMediaInternal = true;
   
@@ -100,12 +115,11 @@ std::wstring external_items::add_activeX(std::wstring & oox_target)
 	
 	std::wstring rId = std::wstring(L"ctrlId") + std::to_wstring(count_controls);
 
-	oox_target = std::wstring(L"activeX") + std::to_wstring(count_controls) + L".bin";
+	oox_target = std::wstring(L"ctrlProp") + std::to_wstring(count_controls) + L".xml";
 		
-	items_.push_back( item(oox_target, typeActiveX, isMediaInternal, -1, rId) );
+	items_.push_back( item(oox_target, typeControlProps, isMediaInternal, -1, rId) );
     return rId;
 }
-
 std::wstring external_items::add_embedding(std::wstring & oox_target, const std::wstring & info)
 {
     const bool isMediaInternal = true;

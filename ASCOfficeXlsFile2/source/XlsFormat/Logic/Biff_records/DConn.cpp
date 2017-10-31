@@ -98,7 +98,10 @@ void DConn::readFields(CFRecord& record)
 		grbitDbt->load(record);
 
 	record >> bVerDbqueryEdit >> bVerDbqueryRefreshed >> bVerDbqueryRefreshableMin >> wRefreshInterval >> wHtmlFmt >> rcc >> credMethod >> reserved3;
-
+//wHtmlFmt
+//0x0001 No formatting is applied
+//0x0002 Rich text formatting only
+//0x0003 Full HTML formatting, including cell formatting	
 	if (dbt == 5)
 	{
 		record >> rgchSourceDataFile;
@@ -140,12 +143,12 @@ void DConn::readFields(CFRecord& record)
 		record >> rgbSQL;
 	}
 	
-	if (dbt == 1)
+	if (dbt == 1 || dbt == 5)//7183958.xls
 	{
 		record >> rgbSQLSav;	
 	}
 	
-	if (dbt == 4)
+	if (dbt == 4 || dbt == 5)
 	{
 		record >> rgbEditWebPage;
 	}

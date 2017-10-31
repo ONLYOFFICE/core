@@ -1033,9 +1033,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 		}
 
 //-----------------------------------------------------------------------------
-		if (type_object < 0)continue;
-		
-		ODRAW::OfficeArtSpContainer *sp			= NULL;
+		if (type_object < 0)	continue;
 
 		if (type_object == 0)
 		{
@@ -1043,12 +1041,16 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 			if (group_objects.back().ind < group_objects.back().spgr->child_records.size())
 			{
 				gr.spgr		= dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
-				gr.count	= gr.spgr->child_records.size();
+				gr.count	= gr.spgr ? gr.spgr->child_records.size() : 0;
 				group_objects.push_back(gr);
 			}
 			else //сюда попадать не должно !!!!
 				continue;
 		}
+		if (obj->cmo.fUIObj)	continue; // automatically inserted by the application
+		
+		ODRAW::OfficeArtSpContainer *sp = NULL;
+
 		if ((group_objects.size() > 0) && (group_objects.back().spgr ) && ( group_objects.back().ind < group_objects.back().count))
 		{
 			sp	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
@@ -1944,23 +1946,22 @@ void XlsConverter::convert(XLS::Obj * obj)
 		}
 		if (obj->pictFlags.fCtl && obj->pictFlags.fPrstm)//Controls Storage
 		{
-			xlsx_context->start_activeX();			
-			xlsx_context->get_mediaitems().create_activeX_path(xlsx_path);
-
 		//binary data
-			std::wstring target;
-			std::wstring objectId = xlsx_context->get_mediaitems().add_activeX(target);
+			xlsx_context->get_mediaitems().create_activeX_path(xlsx_path);
+			
+			std::wstring target_bin;
+			std::wstring objectId_bin = xlsx_context->get_mediaitems().add_control_activeX(target_bin);
 
 			NSFile::CFileBinary file;
-			if ( file.CreateFileW(xlsx_context->get_mediaitems().activeX_path() + target) )
+			if ( file.CreateFileW(xlsx_context->get_mediaitems().activeX_path() + target_bin) )
 			{		
 				file.WriteFile(xls_global_info->controls_data.first.get() + obj->pictFmla.lPosInCtlStm, obj->pictFmla.cbBufInCtlStm);
 				file.CloseFile();
 			}
-
-			xlsx_context->get_drawing_context().set_control(objectId);
+			std::wstring objectId_xml = xlsx_context->start_activeX();	
+			xlsx_context->get_drawing_context().set_control_activeX(objectId_xml);
 	
-			xlsx_context->current_activeX().setDataBinRid(objectId, target);
+			xlsx_context->current_activeX().setDataBinRid(objectId_bin, target_bin);
 			xlsx_context->current_activeX().setProgId(info);
 			xlsx_context->current_activeX().setLicense(obj->pictFmla.key.keyBuf);
 
@@ -1993,6 +1994,16 @@ void XlsConverter::convert(XLS::Obj * obj)
 
 				xlsx_context->get_drawing_context().set_ole_object(objectId, info);
 			}
+		}
+		if (obj->pictFmla.key.fmlaLinkedCell.bFmlaExist)
+		{
+			std::wstring link = obj->pictFmla.key.fmlaLinkedCell.fmla.getAssembledFormula(true);
+			xlsx_context->get_drawing_context().set_object_link(link);
+		}
+		if (obj->pictFmla.key.fmlaListFillRange.bFmlaExist)
+		{
+			std::wstring link = obj->pictFmla.key.fmlaListFillRange.fmla.getAssembledFormula(true);
+			xlsx_context->get_drawing_context().set_object_fmlaRange(link);
 		}
 	}
 	if (obj->sbs.fExist)

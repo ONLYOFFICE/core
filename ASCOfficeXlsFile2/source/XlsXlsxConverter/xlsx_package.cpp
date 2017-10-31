@@ -211,10 +211,13 @@ void xl_files::write(const std::wstring & RootPath)
 		sheets_files_.write(path);
 	}
 	{
+		control_props_files_.set_main_document( this->get_main_document() );
+		control_props_files_.write(path);
+	}
+	{
 		query_tables_files_.set_main_document( this->get_main_document() );
 		query_tables_files_.write(path);
 	}
-
 	if (sharedStrings_)
     {
         sharedStrings_->write(path);
@@ -367,6 +370,10 @@ void xl_files::add_pivot_table(pivot_table_content_ptr pivot_table)
 void xl_files::add_query_table (simple_element_ptr element)
 {
 	query_tables_files_.add_query_table(element);
+}
+void xl_files::add_control_props (simple_element_ptr element)
+{
+	control_props_files_.add_control_props(element);
 }
 //----------------------------------------------------------------------------------------
 void xl_pivot_cache_files::add_pivot_cache(pivot_cache_content_ptr pivot_cache)
@@ -597,7 +604,33 @@ void xl_query_table_files::write(const std::wstring & RootPath)
 		query_tables_[i]->write(path);
     }
 }
+//----------------------------------------------------------------------------------------
+void xl_control_props_files::add_control_props(simple_element_ptr query_table)
+{
+	control_props_.push_back(query_table);
+}
+void xl_control_props_files::write(const std::wstring & RootPath)
+{
+	if (control_props_.empty()) return;
 
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"ctrlProps";
+
+	NSDirectory::CreateDirectory(path);
+
+	content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+	static const std::wstring kWSConType = L"application/vnd.ms-excel.controlproperties+xml";
+	
+	for (size_t i = 0; i < control_props_.size(); i++)
+    {
+        if (!control_props_[i])continue;
+
+        const std::wstring fileName = control_props_[i]->get_filename();
+       
+        contentTypes.add_override(std::wstring(L"/xl/ctrlProps/") + fileName, kWSConType);
+
+		control_props_[i]->write(path);
+    }
+}
 //----------------------------------------------------------------------------------------
 xl_drawings_ptr xl_drawings::create(const std::vector<drawing_elm> & elms)
 {

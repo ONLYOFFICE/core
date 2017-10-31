@@ -115,17 +115,33 @@ void CompoundFile::copy_stream(std::wstring streamNameOpen, std::wstring streamN
 	POLE::Stream *streamNew = new POLE::Stream(storageOut, streamNameCreate, true, size_stream);
 	if (!streamNew) return;
 
-	unsigned char* data_stream = new unsigned char[size_stream + 64];
-	memset(data_stream, 0, size_stream + 64);
-	if (data_stream)
+	unsigned char buffer[4096];
+	int bytesRead = 0;
+
+	while(true)
 	{
-		stream->read(data_stream, size_stream);
-
-		streamNew->write(data_stream, size_stream);
-
-		delete []data_stream;
-		data_stream = NULL;
+		int bytesToRead = size_stream - bytesRead;
+		if (bytesToRead <= 0)
+			break;
+		if (bytesToRead > 4096)
+			bytesToRead = 4096;
+	
+		stream->read(buffer, bytesToRead);
+		streamNew->write(buffer, bytesToRead);
+		
+		bytesRead += bytesToRead;
 	}
+	//unsigned char* data_stream = new unsigned char[size_stream + 64];
+	//memset(data_stream, 0, size_stream + 64);
+	//if (data_stream)
+	//{
+	//	stream->read(data_stream, size_stream);
+
+	//	streamNew->write(data_stream, size_stream);
+
+	//	delete []data_stream;
+	//	data_stream = NULL;
+	//}
 
 	streamNew->flush();
 			
@@ -152,25 +168,26 @@ void CompoundFile::copy( int indent, std::wstring path, POLE::Storage * storageO
 			entries_files.push_front(*it);
 		}
 	}
+
 	for( std::list<std::wstring>::iterator it = entries_dir.begin(); it != entries_dir.end(); it++ )
 	{
         std::wstring fullname = path + *it;
        
 		copy( indent + 1, fullname + L"/", storageOut, bWithRoot, bSortFiles );
     }
-	//if (bSortFiles)
-		entries_files.sort();
+
+	//entries_files.sort();
 
 	for( std::list<std::wstring>::iterator it = entries_files.begin(); it != entries_files.end(); it++ )
 	{
-        std::wstring createName = path + *it;
+		std::wstring createName = path + *it;
 		std::wstring openName;
 		
 		if (it->at(0) < 32) openName = path + it->substr(1);
 		else				openName = path + *it;
-       
+	   
 		copy_stream(openName, createName, storageOut, bWithRoot);
-    }
+	}
 }
 CFStreamPtr CompoundFile::getWorkbookStream()
 {

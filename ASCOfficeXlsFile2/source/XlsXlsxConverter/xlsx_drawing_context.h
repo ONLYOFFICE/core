@@ -295,11 +295,12 @@ public:
 	}line;	
 	struct _object
 	{
-		_object() {visible = true; col = row = 0; id = 0;}
-		int id;
-		bool visible;
-		int col;
-		int row;
+		int				id = 0;
+		bool			bVisible = true;
+		int				col = 0;
+		int				row = 0;
+		bool			bAutoLine = false;
+		bool			bAutoPict = false;
 		std::wstring	macro;
 		std::wstring	link;
 		_CP_OPT(int)	x_val;
@@ -365,7 +366,7 @@ public:
         void set_description		(const std::wstring & str);
         void set_macro				(const std::wstring & str);
 		void set_ole_object			(const std::wstring & id, const std::wstring & info);
-		void set_control			(const std::wstring & id);
+		void set_control_activeX	(const std::wstring & id);
 		
         void set_crop_top			(double val);
         void set_crop_bottom		(double val);
@@ -464,22 +465,22 @@ public:
 //------------------------------------------------------------------------------	
 		void serialize_group		();
 		void serialize_shape		(_drawing_state_ptr & drawing_state);
-		void serialize_chart		(_drawing_state_ptr & drawing_state, std::wstring rId );
-		void serialize_pic			(_drawing_state_ptr & drawing_state, std::wstring rId );
-		void serialize_object		(_drawing_state_ptr & drawing_state, std::wstring rId );
+		void serialize_chart		(_drawing_state_ptr & drawing_state);
+		void serialize_pic			(_drawing_state_ptr & drawing_state);
 		void serialize_control		(_drawing_state_ptr & drawing_state);
 //-----------------------------------------------------------------------------------		
 		void serialize_vml_shape	(_drawing_state_ptr & drawing_state);			
-		void serialize_vml_pic		(_drawing_state_ptr & drawing_state, std::wstring rId );	
+		void serialize_vml_pic		(_drawing_state_ptr & drawing_state);	
 //-----------------------------------------------------------------------------------		
 		void serialize_fill			(std::wostream & strm, _drawing_state_ptr & drawing_state);
 		void serialize_fill			(std::wostream & strm);
 //-----------------------------------------------------------------------------------		
 		void serialize				(std::wostream & strm, _drawing_state_ptr & drawing_state);		
 		void serialize_object		(std::wostream & strm, _drawing_state_ptr & drawing_state);		
-		void serialize_activeX_control(std::wostream & strm, _drawing_state_ptr & drawing_state);
+		void serialize_control		(std::wostream & strm, _drawing_state_ptr & drawing_state);
+		void serialize_control_props(std::wostream & strm, _drawing_state_ptr & drawing_state);
 //-----------------------------------------------------------------------------------		
-		void serialize_activeXs_controls(std::wostream & strm);
+		void serialize_controls		(std::wostream & strm);
 		void serialize_objects		(std::wostream & strm);  
 		void serialize_vml_HF		(std::wostream & strm);
 		void serialize_vml			(std::wostream & strm);
@@ -511,7 +512,7 @@ private:
 	std::vector<_drawing_state_ptr>*	current_drawing_states;
 
 	std::vector<_drawing_state_ptr>		drawing_states_objects;//копии для сериализации ole
-	std::vector<_drawing_state_ptr>		drawing_states_activeX;//копии для сериализации activeX
+	std::vector<_drawing_state_ptr>		drawing_states_controls;//копии для сериализации control
 	
 	void end_drawing			(_drawing_state_ptr & drawing_state);
 	void reset_fill_pattern		(_drawing_state_ptr & drawing_state);

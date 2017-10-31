@@ -170,6 +170,16 @@ public:
     
     std::vector<simple_element_ptr> query_tables_;
 };
+class xl_control_props_files : public element
+{
+public:
+	xl_control_props_files(){}
+
+    void			add_control_props(simple_element_ptr  props);
+	virtual void	write(const std::wstring & RootPath);
+    
+    std::vector<simple_element_ptr> control_props_;
+};
 class xl_externals_files  : public element
 {
 public:
@@ -212,8 +222,6 @@ public:
 
     rels_files * rels_;
 };
-///////////////////////////////////////////////////////////
-
 class xl_comments;
 typedef _CP_PTR(xl_comments) xl_comments_ptr;
 
@@ -283,7 +291,7 @@ public:
     void add_pivot_cache	(pivot_cache_content_ptr cache);
 	void add_pivot_table	(pivot_table_content_ptr table);
     void add_query_table	(simple_element_ptr element);
-
+	void add_control_props	(simple_element_ptr element);
 	void add_vba_project	();
 private:
     rels_files				rels_files_;
@@ -294,6 +302,7 @@ private:
 	xl_pivot_table_files	pivot_table_files_;
 	xl_activeX_files		activeXs_files_;
 	xl_query_table_files	query_tables_files_;
+	xl_control_props_files	control_props_files_;
 
 	element_ptr				theme_;
     element_ptr				workbook_;

@@ -219,7 +219,7 @@ public:
 
         HCRYPTPROV hCryptProv = NULL;
 
-        bResult = CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL);
+        bResult = (NULL != m_context) ? CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL) : FALSE;
 
         if (!bResult)
             bResult = CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
@@ -252,7 +252,7 @@ public:
             return "";
         }
 
-        BYTE* pDataHashRaw = new BYTE[dwCount];
+        BYTE* pDataHashRaw = (BYTE*)malloc(cbHashSize);
 
         bResult = CryptGetHashParam(hHash, HP_HASHVAL, pDataHashRaw, &cbHashSize, 0);
 
@@ -270,7 +270,7 @@ public:
         std::string sReturn(pBase64_hash, nBase64Len_hash);
         delete [] pBase64_hash;
 
-        //delete [] pDataHashRaw;
+        free(pDataHashRaw);
         CryptDestroyHash(hHash);
         CryptReleaseContext(hCryptProv, 0);
 

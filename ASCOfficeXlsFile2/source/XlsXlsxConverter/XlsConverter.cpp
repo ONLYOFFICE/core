@@ -246,6 +246,41 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 
 			xls_global_info->listdata_data = std::make_pair(buffer, size);			
 		}
+		if (xls_file->storage_->isDirectory(L"MsoDataStore"))
+		{
+			std::list<std::wstring> msoStores = xls_file->storage_->entries(L"MsoDataStore");
+
+			int index = 0;
+			for (std::list<std::wstring>::iterator it = msoStores.begin(); it != msoStores.end(); it++)
+			{
+				XLS::CFStreamPtr item_stream  = xls_file->getNamedStream(L"MsoDataStore/" + *it + L"/Item");
+				XLS::CFStreamPtr props_stream = xls_file->getNamedStream(L"MsoDataStore/" + *it + L"/Properties");
+
+				if (!item_stream || !props_stream) continue;
+				
+				unsigned long item_size = item_stream->getStreamSize();
+				unsigned long props_size = props_stream->getStreamSize();
+
+				oox::package::customXml_content_ptr content = oox::package::customXml_content::create();
+	
+				char *item_buffer = new char[item_size];
+				if (item_buffer)
+				{
+					item_stream->read(item_buffer, item_size);				
+					content->set_item(item_buffer, item_size);
+					delete []item_buffer;
+				}
+				char *props_buffer = new char[props_size];
+
+				if (props_buffer)
+				{
+					props_stream->read(props_buffer, props_size);
+					content->set_props(props_buffer, props_size);
+					delete []props_buffer;
+				}
+				output_document->add_customXml(content);	
+			}
+		}
 	}
 	catch(...)
 	{

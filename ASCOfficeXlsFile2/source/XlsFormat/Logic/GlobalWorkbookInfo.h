@@ -126,9 +126,6 @@ public:
 	std::pair<boost::shared_array<unsigned char>, size_t>				listdata_data;
 	std::pair<boost::shared_array<unsigned char>, size_t>				controls_data;
 
-	std::map<int, std::pair<boost::shared_array<unsigned char>, size_t> >	embeddings_data; //parsing ???
-	std::map<int, std::pair<boost::shared_array<unsigned char>, size_t> >	link_data;
-
 	struct _xti
 	{
 		int							iSup;

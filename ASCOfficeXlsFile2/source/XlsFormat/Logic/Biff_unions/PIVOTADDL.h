@@ -36,19 +36,21 @@
 namespace XLS
 {
 
-struct _sxAddl
-{
-	_sxAddl(std::vector<_sxAddl> *p, int l) : prev(p), level (l) {}
 
-	std::vector<_sxAddl>*		prev = NULL;
-	int							level = 0;
-	std::vector<BaseObjectPtr>	elements;	
-	std::vector<_sxAddl>		levels;
-};
 
 class PIVOTADDL: public CompositeObject
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTADDL)
+    struct _sxAddl
+    {
+        _sxAddl(std::vector<_sxAddl> *p, int l) : prev(p), level (l) {}
+
+        std::vector<_sxAddl>*		prev = NULL;
+        int							level = 0;
+        std::vector<BaseObjectPtr>	elements;
+        std::vector<_sxAddl>		levels;
+    };
+
+    BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTADDL)
 public:
 	PIVOTADDL();
 	~PIVOTADDL();

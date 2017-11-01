@@ -31,7 +31,7 @@
  */
 
 #include "SXADDLCALCMEMBER.h"
-#include <Logic/Biff_records/SXAddl.h>
+#include "../Biff_records/SXAddl.h"
 
 namespace XLS
 {
@@ -56,16 +56,26 @@ BaseObjectPtr SXADDLCALCMEMBER::clone()
 // SXADDLCALCMEMBER = (SXAddl_SXCView_SXDCalcMember [SXAddl_SXCView_SXDCalcMemString *Continue_SxaddlSxString])
 const bool SXADDLCALCMEMBER::loadContent(BinProcessor& proc)
 {
-	//if(!proc.mandatory<SXAddl_SXCView_SXDCalcMember>())
-	//{
-	//	return false;
-	//}
-	//if(proc.optional<SXAddl_SXCView_SXDCalcMemString>())
-	//{
-	//	int count = proc.repeated<Continue_SxaddlSxString>(0, 0);
-	//}
+	bool result = false;
+	while (true)
+	{
+		CFRecordType::TypeId type = proc.getNextRecordType();	
 
-	return true;
+		if (type == rt_SXAddl)
+		{
+			result = true;
+			proc.optional<SXAddl>();
+
+			SXAddl* addl = dynamic_cast<SXAddl*>(elements_.back().get());				
+			if (!addl) continue;
+			
+			if (addl->bEndElement)
+				break;
+		}
+		else
+			break;
+	}
+	return result;
 }
 
 } // namespace XLS

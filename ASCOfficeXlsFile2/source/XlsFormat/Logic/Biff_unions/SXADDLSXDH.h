@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of SXADDLSXDH union of records 
 class SXADDLSXDH: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(SXADDLSXDH)

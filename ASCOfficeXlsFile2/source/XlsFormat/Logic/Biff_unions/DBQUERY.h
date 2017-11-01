@@ -35,11 +35,13 @@
 
 namespace XLS
 {
-	struct _DbParam
-	{
-		std::wstring	string;
-		BaseObjectPtr	param;
-	};
+struct _DbParam
+{
+	std::wstring	string;
+	BaseObjectPtr	param;
+};
+
+class DBQUERYEXT;
 
 class DBQUERY: public CompositeObject
 {
@@ -53,7 +55,8 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	int serialize(std::wostream & stream);
-	int serialize_connection();
+	
+	int serialize_connection(std::wstring & name, DBQUERYEXT *query_ext = NULL);
 
 	BaseObjectPtr				m_DbQry;
 

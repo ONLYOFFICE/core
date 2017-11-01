@@ -68,6 +68,9 @@ public:
 
 	static const ElementType	type = typeSXAddl;
 
+	bool				bStartElement;
+	bool				bEndElement;
+
 	_UINT32				frtHeaderOld;
 	unsigned char		sxc;
 	unsigned char		sxd;
@@ -95,6 +98,7 @@ private:
 	BiffStructurePtr createSxcSXFilters12(CFRecord& record);
 	BiffStructurePtr createSxcSXFilter12(CFRecord& record);
 };
+
 class Continue_SxaddlSxString : public BiffStructure
 {	
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(Continue_SxaddlSxString)
@@ -556,106 +560,21 @@ public:
     bool    fNoHeaders;
 };
 
-//class SXAddl_SXCCacheItem_SXDItmMpMapCount	: public SXAddl {};
-//class SXAddl_SXCCacheItem_SXDItmMpropMap	: public SXAddl {};
-//class SXAddl_SXCCacheItem_SXDSxrmitmDisp	: public SXAddl {};
-//
-//class SXAddl_SXCField12_SXDAutoshow			: public SXAddl {};
-//class SXAddl_SXCField12_SXDEnd				: public SXAddl {};
-//class SXAddl_SXCField12_SXDId				: public SXAddl {};
-//class SXAddl_SXCField12_SXDISXTH			: public SXAddl {};
-//class SXAddl_SXCField12_SXDMemberCaption	: public SXAddl {};
-//class SXAddl_SXCField12_SXDVer12Info		: public SXAddl {};
-//class SXAddl_SXCField12_SXDVerUpdInv		: public SXAddl {};
-//
-//
-//class SXAddl_SXCGroup_SXDEnd				: public SXAddl {};
-//class SXAddl_SXCGroup_SXDGrpInfo			: public SXAddl {};
-//class SXAddl_SXCGroup_SXDId					: public SXAddl {};
-//class SXAddl_SXCGroup_SXDMember				: public SXAddl {};
-//
-//class SXAddl_SXCGrpLevel_SXDEnd				: public SXAddl {};
-//class SXAddl_SXCGrpLevel_SXDGrpLevelInfo	: public SXAddl {};
-//class SXAddl_SXCGrpLevel_SXDId				: public SXAddl {};
-//
-//class SXAddl_SXCHierarchy_SXDDisplayFolder	: public SXAddl {};
-//class SXAddl_SXCHierarchy_SXDEnd			: public SXAddl {};
-//class SXAddl_SXCHierarchy_SXDFilterMember	: public SXAddl {};
-//class SXAddl_SXCHierarchy_SXDFilterMember12	: public SXAddl {};
-//class SXAddl_SXCHierarchy_SXDIconSet		: public SXAddl {};
-//class SXAddl_SXCHierarchy_SXDId				: public SXAddl {};
-//class SXAddl_SXCHierarchy_SXDInfo12			: public SXAddl {};
-//class SXAddl_SXCHierarchy_SXDKPIGoal		: public SXAddl {};
-//class SXAddl_SXCHierarchy_SXDKPIStatus		: public SXAddl {};
-//class SXAddl_SXCHierarchy_SXDKPITime		: public SXAddl {};
-//class SXAddl_SXCHierarchy_SXDKPITrend		: public SXAddl {};
-//class SXAddl_SXCHierarchy_SXDKPIValue		: public SXAddl {};
-//class SXAddl_SXCHierarchy_SXDKPIWeight		: public SXAddl {};
-//class SXAddl_SXCHierarchy_SXDMeasureGrp		: public SXAddl {};
-//class SXAddl_SXCHierarchy_SXDParentKPI		: public SXAddl {};
-//class SXAddl_SXCHierarchy_SXDProperty		: public SXAddl {};
-//class SXAddl_SXCHierarchy_SXDSXSetParentUnique	: public SXAddl {};
-//class SXAddl_SXCHierarchy_SXDUserCaption	: public SXAddl {};
-//class SXAddl_SXCHierarchy_SXDVerUpdInv		: public SXAddl {};
-//
-//class SXAddl_SXCQsi_SXDEnd					: public SXAddl {};
-//class SXAddl_SXCQsi_SXDId					: public SXAddl {};
-//
-//class SXAddl_SXCQuery_SXDEnd				: public SXAddl {};
-//class SXAddl_SXCQuery_SXDReconnCond			: public SXAddl {};
-//class SXAddl_SXCQuery_SXDSrcConnFile		: public SXAddl {};
-//class SXAddl_SXCQuery_SXDSrcDataFile		: public SXAddl {};
-//class SXAddl_SXCQuery_SXDXMLSource			: public SXAddl {};
-//
-//class SXAddl_SXCSXCondFmt_SXDEnd			: public SXAddl {};
-//class SXAddl_SXCSXCondFmt_SXDSXCondFmt		: public SXAddl {};
-//class SXAddl_SXCSXCondFmts_SXDEnd			: public SXAddl {};
-//class SXAddl_SXCSXCondFmts_SXDId			: public SXAddl {};
-//class SXAddl_SXCSXDH_SXDEnd					: public SXAddl {};
-//class SXAddl_SXCSXDH_SXDId					: public SXAddl {};
-//class SXAddl_SXCSXDH_SXDSxdh				: public SXAddl {};
-//
-//class SXAddl_SXCSXfilt_SXDEnd				: public SXAddl {};
-//class SXAddl_SXCSXfilt_SXDId				: public SXAddl {};
-//class SXAddl_SXCSXfilt_SXDSXfilt			: public SXAddl {};
-//class SXAddl_SXCSXfilt_SXDSXItm				: public SXAddl {};
-//
-//class SXAddl_SXCSXFilter12_SXDCaption		: public SXAddl {};
-//class SXAddl_SXCSXFilter12_SXDEnd			: public SXAddl {};
-//class SXAddl_SXCSXFilter12_SXDId			: public SXAddl {};
-//class SXAddl_SXCSXFilter12_SXDSXFilter		: public SXAddl {};
-//class SXAddl_SXCSXFilter12_SXDSXFilterDesc	: public SXAddl {};
-//class SXAddl_SXCSXFilter12_SXDSXFilterValue1: public SXAddl {};
-//class SXAddl_SXCSXFilter12_SXDSXFilterValue2: public SXAddl {};
-//class SXAddl_SXCSXFilter12_SXDXlsFilter		: public SXAddl {};
-//class SXAddl_SXCSXFilter12_SXDXlsFilterValue1: public SXAddl {};
-//class SXAddl_SXCSXFilter12_SXDXlsFilterValue2: public SXAddl {};
-//class SXAddl_SXCSXFilters12_SXDEnd			: public SXAddl {};
-//class SXAddl_SXCSXFilters12_SXDId			: public SXAddl {};
-//
-//class SXAddl_SXCSXMg_SXDEnd					: public SXAddl {};
-//class SXAddl_SXCSXMg_SXDId					: public SXAddl {};
-//class SXAddl_SXCSXMg_SXDUserCaption			: public SXAddl {};
-//
-//class SXAddl_SXCSXMgs_SXDEnd				: public SXAddl {};
-//class SXAddl_SXCSXMgs_SXDId					: public SXAddl {};
-//class SXAddl_SXCSXMgs_SXDMGrpSXDHMap		: public SXAddl {};
-//
-//class SXAddl_SXCSXrule_SXDEnd				: public SXAddl {};
-//class SXAddl_SXCSXrule_SXDId				: public SXAddl {};
-//class SXAddl_SXCSXrule_SXDSXrule			: public SXAddl {};
-//
-//class SXAddl_SXCView_SXDCalcMember			: public SXAddl {};
-//class SXAddl_SXCView_SXDCalcMemString		: public SXAddl {};
-//class SXAddl_SXCView_SXDCompactColHdr		: public SXAddl {};
-//class SXAddl_SXCView_SXDCompactRwHdr		: public SXAddl {};
+class SXAddl_SXCQsi_SXDId : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCQsi_SXDId)
+public:
+	BiffStructurePtr clone();
 
-//class SXAddl_SXCView_SXDSXPIIvmb
-//{
-//	SXAddl_SXCView_SXDSXPIIvmb(CFRecord& record);
-//};
+	SXAddl_SXCQsi_SXDId(){}
+	~SXAddl_SXCQsi_SXDId(){}
 
-//class SXAddl_SXCView_SXDVerUpdInv			: public SXAddl {};
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	XLUnicodeStringSegmentedSXADDL stName;	
+};
 
 } // namespace XLS
 

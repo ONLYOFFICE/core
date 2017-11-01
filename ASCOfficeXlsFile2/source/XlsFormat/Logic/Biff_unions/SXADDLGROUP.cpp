@@ -31,8 +31,8 @@
  */
 
 #include "SXADDLGROUP.h"
-#include <Logic/Biff_records/SXAddl.h>
-#include <Logic/Biff_unions/UNKNOWNFRT.h>
+#include "UNKNOWNFRT.h"
+#include "../Biff_records/SXAddl.h"
 
 namespace XLS
 {
@@ -60,17 +60,7 @@ SXADDLGROUP = SXAddl_SXCGroup_SXDId *Continue_SxaddlSxString SXAddl_SXCGroup_SXD
 */
 const bool SXADDLGROUP::loadContent(BinProcessor& proc)
 {
-	//if(!proc.mandatory<SXAddl_SXCGroup_SXDId>())
-	//{
-	//	return false;
-	//}
-	//proc.repeated<Continue_SxaddlSxString>(0, 0);
-	//proc.mandatory<SXAddl_SXCGroup_SXDGrpInfo>();
-	//proc.repeated<SXAddl_SXCGroup_SXDMember>(0, 0);
-	//proc.repeated<UNKNOWNFRT>(0, 0);
-	//proc.mandatory<SXAddl_SXCGroup_SXDEnd>();
-
-	return true;
+	return false;
 }
 
 } // namespace XLS

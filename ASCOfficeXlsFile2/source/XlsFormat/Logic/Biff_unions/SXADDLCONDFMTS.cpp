@@ -31,8 +31,8 @@
  */
 
 #include "SXADDLCONDFMTS.h"
-#include <Logic/Biff_records/SXAddl.h>
-#include <Logic/Biff_unions/SXADDLCONDFMT.h>
+
+#include "../Biff_records/SXAddl.h"
 
 namespace XLS
 {
@@ -56,15 +56,9 @@ BaseObjectPtr SXADDLCONDFMTS::clone()
 
 // SXADDLCONDFMTS = SXAddl_SXCSXCondFmts_SXDId *SXADDLCONDFMT SXAddl_SXCSXCondFmts_SXDEnd
 const bool SXADDLCONDFMTS::loadContent(BinProcessor& proc)
-{
-	//if(!proc.mandatory<SXAddl_SXCSXCondFmts_SXDId>())
-	//{
-	//	return false;
-	//}
-	//proc.repeated<SXADDLCONDFMT>(0, 0);
-	//proc.optional<SXAddl_SXCSXCondFmts_SXDEnd>();
+{	
+	return false;
 
-	return true;
 }
 
 } // namespace XLS

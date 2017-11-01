@@ -31,10 +31,12 @@
  */
 
 #include "SXADDLCACHE12.h"
-#include <Logic/Biff_records/SXAddl.h>
-#include <Logic/Biff_unions/SXADDLCACHEFIELD.h>
-#include <Logic/Biff_unions/SXADDLSXDH.h>
-#include <Logic/Biff_unions/SXADDLSXMGS.h>
+#include "SXADDLCACHEFIELD.h"
+#include "SXADDLSXDH.h"
+#include "SXADDLSXMGS.h"
+
+#include "../Biff_records/SXAddl.h"
+
 
 namespace XLS
 {
@@ -50,57 +52,17 @@ SXADDLCACHE12::~SXADDLCACHE12()
 }
 
 
-// SXADDLCACHE12 = SXAddl_SXCCache_SXDVerUpdInv SXAddl_SXCCache_SXDInfo12 SXAddl_SXCCache_SXDInvRefreshReal
 BaseObjectPtr SXADDLCACHE12::clone()
 {
 	return BaseObjectPtr(new SXADDLCACHE12(*this));
 }
 
 
+// SXADDLCACHE12 = SXAddl_SXCCache_SXDVerUpdInv SXAddl_SXCCache_SXDInfo12 SXAddl_SXCCache_SXDInvRefreshReal
 //   *SXADDLCACHEFIELD [SXADDLSXDH] [SXADDLSXMGS] SXAddl_SXCCache_SXDVerUpdInv
 const bool SXADDLCACHE12::loadContent(BinProcessor& proc)
 {
-	//if(!proc.mandatory<SXAddl_SXCCache_SXDVerUpdInv>())
-	//{
-	//	return false;
-	//}
-	//m_SXAddl_SXCCache_SXDVerUpdInv = elements_.back();
-	//elements_.pop_back();
-
-	//if (proc.optional<SXAddl_SXCCache_SXDInfo12>())
-	//{
-	//	m_SXAddl_SXCCache_SXDInfo12 = elements_.back();
-	//	elements_.pop_back();
-	//}
-	//if (proc.optional<SXAddl_SXCCache_SXDInvRefreshReal>())
-	//{
-	//	m_SXAddl_SXCCache_SXDInvRefreshReal = elements_.back();
-	//	elements_.pop_back();
-	//}
-	//
-	//int count  =  proc.repeated<SXADDLCACHEFIELD>(0, 0);	
-	//while(count > 0)
-	//{
-	//	m_arSXADDLCACHEFIELD.push_back(elements_.front());
-	//	elements_.pop_front(); count--;
-	//}
-	//if (proc.optional<SXADDLSXDH>())
-	//{
-	//	m_SXADDLSXDH = elements_.back();
-	//	elements_.pop_back();
-	//}
-	//if (proc.optional<SXADDLSXMGS>())
-	//{
-	//	m_SXADDLSXMGS = elements_.back();
-	//	elements_.pop_back();
-	//}
-	//if (proc.optional<SXAddl_SXCCache_SXDVerUpdInv>())
-	//{
-	//	m_SXAddl_SXCCache_SXDVerUpdInvS = elements_.back();
-	//	elements_.pop_back();
-	//}
-
-	return true;
+	return false;
 }
 
 } // namespace XLS

@@ -31,8 +31,11 @@
  */
 
 #include "DBQUERY.h"
+#include "DBQUERYEXT.h"
+
 #include "../Biff_records/DbOrParamQry.h"
 #include "../Biff_records/SXString.h"
+#include "../Biff_records/TxtQry.h"
 
 namespace XLS
 {
@@ -184,7 +187,9 @@ const bool DBQUERY::loadContent(BinProcessor& proc)
 
 int DBQUERY::serialize(std::wostream & strm)
 {
-	int connectionId = serialize_connection();
+	std::wstring name;
+	
+	int connectionId = serialize_connection(name);
 	
 	CP_XML_WRITER(strm)
 	{
@@ -197,55 +202,90 @@ int DBQUERY::serialize(std::wostream & strm)
 	return 0;
 }
 
-int DBQUERY::serialize_connection()
+int DBQUERY::serialize_connection(std::wstring & name, DBQUERYEXT *query_ext)
 {
 	DbOrParamQry* queryOrParam = dynamic_cast<DbOrParamQry*>(m_DbQry.get());
 	if (!queryOrParam) return -1;
 
-	int connectionId = ++global_info->connectionId;
+	++global_info->connectionId;
+	
+	if (name.empty())
+		name = L"Connection" + std::to_wstring(global_info->connectionId);
 
 	CP_XML_WRITER(global_info->connections_stream)
 	{
 		CP_XML_NODE(L"connection")
 		{
-			CP_XML_ATTR(L"id", connectionId);	
-			CP_XML_ATTR(L"name", L"Connection" + std::to_wstring(connectionId));
+			CP_XML_ATTR(L"id", global_info->connectionId);	
+			CP_XML_ATTR(L"name", name);
 
 			CP_XML_ATTR(L"type", queryOrParam->query.dbt);
-			//switch(queryOrParam->query.dbt)
-			//{
-			//	case 0x1:
-			//	case 0x2:
-			//	case 0x3:
-			//	case 0x4:
-			//	case 0x5:
-			//	case 0x6:
-			//	case 0x7:
-			//}			
+			//background="1" 
+			//saveData="1"
 
 			if (queryOrParam->query.fSavePwd) CP_XML_ATTR(L"savePassword", 1);
+
 			CP_XML_ATTR(L"refreshedVersion", 1);
 
-			int index = 0;
-			CP_XML_NODE(L"dbPr")
+			if (queryOrParam->query.dbt == 6)
 			{
-				std::wstring command, connection;
-				for (index = 0; index < queryOrParam->query.cstQuery; index++)
+				TxtQry *query_txt = dynamic_cast<TxtQry*>(query_ext->m_TxtQry.get());
+				if (query_txt)
 				{
-					command += m_arSXString[index];
+					CP_XML_NODE(L"textPr")
+					{
+						CP_XML_ATTR(L"sourceFile", query_txt->rgchFile.value());
+						//delimited="0"
+						CP_XML_NODE(L"textFields")
+						{
+							for (size_t i = 0; i < query_txt->rgtxtwf.size(); i++)
+							{
+								CP_XML_NODE(L"textField")
+								{
+									switch(query_txt->rgtxtwf[i].fieldType)
+									{
+									case 0:	CP_XML_ATTR(L"type", L"general");	break;
+									case 1:	CP_XML_ATTR(L"type", L"text");	break;
+									case 2:	CP_XML_ATTR(L"type", L"MDY");	break;
+									case 3:	CP_XML_ATTR(L"type", L"DMY");	break;
+									case 4:	CP_XML_ATTR(L"type", L"YMD");	break;
+									case 5:	CP_XML_ATTR(L"type", L"MYD");	break;
+									case 6:	CP_XML_ATTR(L"type", L"DYM");	break;
+									case 7:	CP_XML_ATTR(L"type", L"YDM");	break;
+									case 8:	CP_XML_ATTR(L"type", L"skip");	break;
+									case 9:	CP_XML_ATTR(L"type", L"EMD");	break;
+									}
+									CP_XML_ATTR(L"position", query_txt->rgtxtwf[i].fieldStart);
+								}
+							}
+						}
+					}
 				}
-				
-				for (; index < queryOrParam->query.cstQuery + queryOrParam->query.cstOdbcConn; index++)
+			}
+			else
+			{
+				int index = 0;
+
+				CP_XML_NODE(L"dbPr")
 				{
-					connection += m_arSXString[index];
+					std::wstring command, connection;
+					for (index = 0; index < queryOrParam->query.cstQuery; index++)
+					{
+						command += m_arSXString[index];
+					}
+					
+					for (; index < queryOrParam->query.cstQuery + queryOrParam->query.cstOdbcConn; index++)
+					{
+						connection += m_arSXString[index];
+					}
+					
+					CP_XML_ATTR(L"connection", connection);
+					CP_XML_ATTR(L"command", command);
 				}
-				
-				CP_XML_ATTR(L"connection", connection);
-				CP_XML_ATTR(L"command", command);
 			}
 		}
 	}
-	return connectionId;
+	return global_info->connectionId;
 }
 
 

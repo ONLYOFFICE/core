@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of SXADDLGROUP union of records 
 class SXADDLGROUP: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(SXADDLGROUP)
@@ -50,7 +48,6 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeSXADDLGROUP;
-	
 };
 
 } // namespace XLS

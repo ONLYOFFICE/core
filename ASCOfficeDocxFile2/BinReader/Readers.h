@@ -7064,21 +7064,22 @@ public:
 				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(nChartIndex) + L".xlsx";
 				std::wstring sXlsxPath = pathChartsWorksheetDir.GetPath() + FILE_SEPARATOR_STR + sXlsxFilename;
 				BinXlsxRW::CXlsxSerializer oXlsxSerializer;
-				oXlsxSerializer.writeChartXlsx(sXlsxPath, *pChartSpace);
+				if (oXlsxSerializer.writeChartXlsx(sXlsxPath, *pChartSpace))
+				{
+					std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
+					long rIdXlsx;
+					std::wstring bstrChartsWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
 
-				std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
-				long rIdXlsx;
-                std::wstring bstrChartsWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
-                
-				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rIdXlsx);
-				m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(L"xlsx");
-				
-				pChartSpace->m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
-				pChartSpace->m_oChartSpace.m_externalData->m_id = new std::wstring();
-				pChartSpace->m_oChartSpace.m_externalData->m_id->append(L"rId");
-				pChartSpace->m_oChartSpace.m_externalData->m_id->append(std::to_wstring(rIdXlsx));
-				pChartSpace->m_oChartSpace.m_externalData->m_autoUpdate = new OOX::Spreadsheet::CT_Boolean();
-				pChartSpace->m_oChartSpace.m_externalData->m_autoUpdate->m_val = new bool(false);
+					m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rIdXlsx);
+					m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(L"xlsx");
+
+					pChartSpace->m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
+					pChartSpace->m_oChartSpace.m_externalData->m_id = new std::wstring();
+					pChartSpace->m_oChartSpace.m_externalData->m_id->append(L"rId");
+					pChartSpace->m_oChartSpace.m_externalData->m_id->append(std::to_wstring(rIdXlsx));
+					pChartSpace->m_oChartSpace.m_externalData->m_autoUpdate = new OOX::Spreadsheet::CT_Boolean();
+					pChartSpace->m_oChartSpace.m_externalData->m_autoUpdate->m_val = new bool(false);
+				}
 
 			//save chart.xml
 				NSStringUtils::CStringBuilder sw;

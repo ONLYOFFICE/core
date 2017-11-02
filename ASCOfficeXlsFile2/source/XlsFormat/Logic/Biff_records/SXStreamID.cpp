@@ -55,8 +55,6 @@ void SXStreamID::readFields(CFRecord& record)
 {
 	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
 	record >> idStm;
-
-	global_info->arPivotCacheStream.push_back(idStm);
 }
 
 } // namespace XLS

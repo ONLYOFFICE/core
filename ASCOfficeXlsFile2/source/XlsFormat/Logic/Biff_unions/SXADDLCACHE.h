@@ -59,6 +59,11 @@ public:
 	static const ElementType type = typeSXADDLCACHE;
 	
 	BiffStructurePtr	m_SXAddl_SXCCache_SXDId;
+	BiffStructurePtr	m_SXAddl_SXCCache_SXDVerUpdInv;
+	BiffStructurePtr	m_SXAddl_SXCCache_SXDVer10Info;
+	BiffStructurePtr	m_SXAddl_SXCCache_SXDVerSXMacro;
+	BiffStructurePtr	m_SXAddl_SXCCache_SXDInvRefreshReal;
+	BiffStructurePtr	m_SXAddl_SXCCache_SXDInfo12;
 
 	std::vector<_sxAddl> content;
 	std::vector<_sxAddl> *current;

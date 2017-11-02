@@ -96,12 +96,13 @@ const bool PIVOTADDL::loadContent(BinProcessor& proc)
 		
 		if (addl->bEndElement)
 		{ 
+			elements_.pop_back();
+			
 			if (level == 0)
 				break;
 			else level--;
 			
 			current = current->back().prev;
-			elements_.pop_back();
 			continue;
 		}
 		if (level == 0)
@@ -131,7 +132,7 @@ const bool PIVOTADDL::loadContent(BinProcessor& proc)
 		current->back().elements.push_back(elements_.back());
 		elements_.pop_back();
 	}
-
+	current = NULL;
 	return result;
 }
 

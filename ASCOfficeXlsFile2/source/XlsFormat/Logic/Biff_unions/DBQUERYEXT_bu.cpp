@@ -92,8 +92,21 @@ const bool DBQUERYEXT::loadContent(BinProcessor& proc)
 	}
 	int count = proc.repeated<Parenthesis_DBQUERYEXT_1>(0, 4);
 
-	//.... 
-	
+	while(!elements_.empty())
+	{
+		if (elements_.front()->get_type() == typeOleDbConn)
+		{
+			_oleDbConn conn; 
+			m_arOleDbConn.push_back(conn);
+
+			m_arOleDbConn.back().oleDbConn = elements_.front();
+		}
+		else
+		{
+			m_arOleDbConn.back().arExtString.push_back(elements_.front());
+		}
+		elements_.pop_front();
+	}	
 	if(proc.optional<TxtQry>())
 	{
 		m_TxtQry = elements_.back();

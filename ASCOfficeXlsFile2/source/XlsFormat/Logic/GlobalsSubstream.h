@@ -78,7 +78,8 @@ public:
 	std::vector<BaseObjectPtr>		m_arUserBView;
 	std::vector<BaseObjectPtr>		m_arBUNDLESHEET;
 	std::vector<BaseObjectPtr>		m_arSUPBOOK;
-	std::vector<BaseObjectPtr>		m_arPIVOTCACHEDEFINITION;
+	//std::vector<BaseObjectPtr>	m_arPIVOTCACHEDEFINITION; -> GlobalWorkbookInfo
+	//std::vector<BaseObjectPtr>	m_arDConn;
 
 	std::vector<BiffStructurePtr>	m_arHFPictureDrawing;
 	

@@ -36,6 +36,9 @@
 #include "../Biff_records/DbOrParamQry.h"
 #include "../Biff_records/SXString.h"
 #include "../Biff_records/TxtQry.h"
+#include "../Biff_records/DBQueryExt.h"
+#include "../Biff_records/ExtString.h"
+#include "../Biff_records/DConn.h"
 
 namespace XLS
 {
@@ -187,9 +190,20 @@ const bool DBQUERY::loadContent(BinProcessor& proc)
 
 int DBQUERY::serialize(std::wostream & strm)
 {
-	std::wstring name;
+	std::wstring name, desc;
+
+	if (global_info->connectionId < global_info->arDConn.size())
+	//todooo + поиск по совпадению типа
+	{
+		DConn* dcon = dynamic_cast<DConn*>(global_info->arDConn[global_info->connectionId].get());
+		if (dcon)
+		{
+			name = dcon->rgchConnectionName.strTotal;
+			desc = dcon->rgchConnectionDesc.strTotal;
+		}
+	}
 	
-	int connectionId = serialize_connection(name);
+	int connectionId = serialize_connection(name, desc);
 	
 	CP_XML_WRITER(strm)
 	{
@@ -202,15 +216,18 @@ int DBQUERY::serialize(std::wostream & strm)
 	return 0;
 }
 
-int DBQUERY::serialize_connection(std::wstring & name, DBQUERYEXT *query_ext)
+int DBQUERY::serialize_connection(std::wstring & name, std::wstring desc)
 {
-	DbOrParamQry* queryOrParam = dynamic_cast<DbOrParamQry*>(m_DbQry.get());
-	if (!queryOrParam) return -1;
+	DbOrParamQry* dbQry = dynamic_cast<DbOrParamQry*>(m_DbQry.get());
+	if (!dbQry) return -1;
 
 	++global_info->connectionId;
 	
 	if (name.empty())
 		name = L"Connection" + std::to_wstring(global_info->connectionId);
+
+	DBQUERYEXT *query_ext = dynamic_cast<DBQUERYEXT*>(m_DBQUERYEXT.get());	
+	DBQueryExt *dbQry_ext = query_ext ? dynamic_cast<DBQueryExt*>(query_ext->m_DBQueryExt.get()) : NULL;
 
 	CP_XML_WRITER(global_info->connections_stream)
 	{
@@ -218,69 +235,94 @@ int DBQUERY::serialize_connection(std::wstring & name, DBQUERYEXT *query_ext)
 		{
 			CP_XML_ATTR(L"id", global_info->connectionId);	
 			CP_XML_ATTR(L"name", name);
+			if (!desc.empty())
+			{
+				CP_XML_ATTR(L"description", desc);
+			}
 
-			CP_XML_ATTR(L"type", queryOrParam->query.dbt);
+			CP_XML_ATTR(L"type", dbQry->query.dbt);
 			//background="1" 
 			//saveData="1"
 
-			if (queryOrParam->query.fSavePwd) CP_XML_ATTR(L"savePassword", 1);
+			if (dbQry->query.fSavePwd) CP_XML_ATTR(L"savePassword", 1);
 
 			CP_XML_ATTR(L"refreshedVersion", 1);
 
-			if (queryOrParam->query.dbt == 6)
+			if (dbQry->typeRecord == 1)
 			{
-				TxtQry *query_txt = dynamic_cast<TxtQry*>(query_ext->m_TxtQry.get());
-				if (query_txt)
+			}
+			else
+			{
+				if ( dbQry->query.dbt == 6 )
 				{
-					CP_XML_NODE(L"textPr")
+					TxtQry *query_txt = query_ext ? dynamic_cast<TxtQry*>(query_ext->m_TxtQry.get()) : NULL;
+					if (query_txt)
 					{
-						CP_XML_ATTR(L"sourceFile", query_txt->rgchFile.value());
-						//delimited="0"
-						CP_XML_NODE(L"textFields")
+						CP_XML_NODE(L"textPr")
 						{
-							for (size_t i = 0; i < query_txt->rgtxtwf.size(); i++)
+							CP_XML_ATTR(L"sourceFile", query_txt->rgchFile.value());
+							//delimited="0"
+							CP_XML_NODE(L"textFields")
 							{
-								CP_XML_NODE(L"textField")
+								for (size_t i = 0; i < query_txt->rgtxtwf.size(); i++)
 								{
-									switch(query_txt->rgtxtwf[i].fieldType)
+									CP_XML_NODE(L"textField")
 									{
-									case 0:	CP_XML_ATTR(L"type", L"general");	break;
-									case 1:	CP_XML_ATTR(L"type", L"text");	break;
-									case 2:	CP_XML_ATTR(L"type", L"MDY");	break;
-									case 3:	CP_XML_ATTR(L"type", L"DMY");	break;
-									case 4:	CP_XML_ATTR(L"type", L"YMD");	break;
-									case 5:	CP_XML_ATTR(L"type", L"MYD");	break;
-									case 6:	CP_XML_ATTR(L"type", L"DYM");	break;
-									case 7:	CP_XML_ATTR(L"type", L"YDM");	break;
-									case 8:	CP_XML_ATTR(L"type", L"skip");	break;
-									case 9:	CP_XML_ATTR(L"type", L"EMD");	break;
+										switch(query_txt->rgtxtwf[i].fieldType)
+										{
+										case 0:	CP_XML_ATTR(L"type", L"general");	break;
+										case 1:	CP_XML_ATTR(L"type", L"text");	break;
+										case 2:	CP_XML_ATTR(L"type", L"MDY");	break;
+										case 3:	CP_XML_ATTR(L"type", L"DMY");	break;
+										case 4:	CP_XML_ATTR(L"type", L"YMD");	break;
+										case 5:	CP_XML_ATTR(L"type", L"MYD");	break;
+										case 6:	CP_XML_ATTR(L"type", L"DYM");	break;
+										case 7:	CP_XML_ATTR(L"type", L"YDM");	break;
+										case 8:	CP_XML_ATTR(L"type", L"skip");	break;
+										case 9:	CP_XML_ATTR(L"type", L"EMD");	break;
+										}
+										CP_XML_ATTR(L"position", query_txt->rgtxtwf[i].fieldStart);
 									}
-									CP_XML_ATTR(L"position", query_txt->rgtxtwf[i].fieldStart);
 								}
 							}
 						}
 					}
 				}
-			}
-			else
-			{
-				int index = 0;
-
-				CP_XML_NODE(L"dbPr")
+				else
 				{
-					std::wstring command, connection;
-					for (index = 0; index < queryOrParam->query.cstQuery; index++)
+					size_t index = 0;
+
+					CP_XML_NODE(L"dbPr")
 					{
-						command += m_arSXString[index];
+						std::wstring command, connection, post;
+						size_t index_max = (std::min)((size_t )dbQry->query.cstQuery, m_arSXString.size());
+						for (index = 0; index < index_max; index++)
+						{
+							command += m_arSXString[index];
+						}
+						index_max = (std::min)((size_t )(dbQry->query.cstQuery + dbQry->query.cstOdbcConn), m_arSXString.size());
+						for (; index < index_max; index++)
+						{
+							connection += m_arSXString[index];
+						}
+						index_max = (std::min)((size_t )(dbQry->query.cstQuery + dbQry->query.cstOdbcConn + dbQry->query.cstWebPost), m_arSXString.size());
+
+						for (;index < index_max; index++)
+						{
+							post += m_arSXString[index];
+						}
+						if (connection.empty() && (query_ext) && (!query_ext->m_arOleDbConn.empty()))
+						{
+							for (size_t i = 0; i < query_ext->m_arOleDbConn[0].arExtString.size(); i++)
+							{
+								ExtString* ex_str = dynamic_cast<ExtString*>(query_ext->m_arOleDbConn[0].arExtString[i].get());
+								connection += ex_str->string.value();
+							}
+						}
+						
+						CP_XML_ATTR(L"connection", connection);
+						CP_XML_ATTR(L"command", command);
 					}
-					
-					for (; index < queryOrParam->query.cstQuery + queryOrParam->query.cstOdbcConn; index++)
-					{
-						connection += m_arSXString[index];
-					}
-					
-					CP_XML_ATTR(L"connection", connection);
-					CP_XML_ATTR(L"command", command);
 				}
 			}
 		}

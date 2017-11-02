@@ -73,6 +73,11 @@ const bool PIVOTCACHEDEFINITION::loadContent(BinProcessor& proc)
 	m_SXStreamID = elements_.back();
 	elements_.pop_back();
 
+	SXStreamID* streamId = dynamic_cast<SXStreamID*>(m_SXStreamID.get());
+	if (!streamId) return 0;
+
+	global_info_->mapPivotCacheIndex.insert(std::make_pair(streamId->idStm, global_info_->mapPivotCacheIndex.size()));
+
 	if (proc.mandatory<SXVS>())
 	{
 		m_SXVS = elements_.back();
@@ -92,16 +97,15 @@ const bool PIVOTCACHEDEFINITION::loadContent(BinProcessor& proc)
 }
 int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 {
-	global_info_->arPivotCacheSxNames.clear();
-	global_info_->arPivotSxNames.clear();
-
 	SXStreamID* streamId = dynamic_cast<SXStreamID*>(m_SXStreamID.get());
 	if (!streamId) return 0;
 
+	global_info_->arPivotCacheSxNames.clear();
+	global_info_->arPivotSxNames.clear();
+	global_info_->idPivotCache = streamId->idStm;
+	
 	std::unordered_map<int, BaseObjectPtr>::iterator pFind = global_info_->mapPivotCacheStream.find(streamId->idStm);
 	if (pFind == global_info_->mapPivotCacheStream.end()) return 0;
-
-	global_info_->idPivotCache = streamId->idStm;
 
 	PIVOTCACHE* pivot_cache = dynamic_cast<PIVOTCACHE*>(pFind->second.get());
 	if (!pivot_cache) return 0;
@@ -116,7 +120,6 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 		global_info_->mapPivotCacheStream.erase(pFind);
 		return 0;
 	}
-	global_info_->mapPivotCacheIndex.insert(std::make_pair(global_info_->idPivotCache, global_info_->mapPivotCacheIndex.size()));
 
 	SXSRC* src = dynamic_cast<SXSRC*>(m_SXSRC.get());
 	bool bSql = src ? src->bSql : false;

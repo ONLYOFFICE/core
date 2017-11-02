@@ -79,6 +79,9 @@ const bool QUERYTABLE::loadContent(BinProcessor& proc)
 	if (proc.mandatory<DBQUERYEXT>())
 	{
 		m_DBQUERYEXT = elements_.back(); elements_.pop_back();
+
+		//Qsi* qsi = dynamic_cast<Qsi*>(m_Qsi.get());
+		//global_info->mapDBQueryExt.insert(std::make_pair(qsi->rgchName.value(), m_DBQUERYEXT));
 	}
 	if (proc.optional<SXADDLQSI>())
 	{
@@ -103,11 +106,10 @@ int QUERYTABLE::serialize(std::wostream & strm)
 	DBQUERY *query = dynamic_cast<DBQUERY*>(m_DBQUERY.get());
 	if (!query) return -1;
 
-	DBQUERYEXT *query_ext = dynamic_cast<DBQUERYEXT*>(m_DBQUERYEXT.get());
-	
 	std::wstring name = info->rgchName.value();
 	
-	int connectionId = query->serialize_connection(name, query_ext);
+	query->m_DBQUERYEXT = m_DBQUERYEXT;
+	int connectionId = query->serialize_connection(name, L"");
 	
 	if (connectionId < 1) return 0;
 

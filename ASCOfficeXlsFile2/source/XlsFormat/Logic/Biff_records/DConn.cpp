@@ -44,11 +44,9 @@ DConn::DConn()
 {
 }
 
-
 DConn::~DConn()
 {
 }
-
 
 BaseObjectPtr DConn::clone()
 {

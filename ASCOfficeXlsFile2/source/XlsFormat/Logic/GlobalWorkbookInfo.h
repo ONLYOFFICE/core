@@ -109,7 +109,9 @@ public:
 	short									idPivotCache;
 	std::map<int, int>						mapPivotCacheIndex; //streamIdCache, write index order 
 	std::unordered_map<int, BaseObjectPtr>	mapPivotCacheStream;//streamIdCache, object
-	std::vector<int>						arPivotCacheStream; //order streamIdCache =  iCache
+	
+	std::vector<BaseObjectPtr>				arPIVOTCACHEDEFINITION;
+	std::vector<BaseObjectPtr>				arDConn;
 
 	std::vector<bool>						arPivotCacheFields;
 	std::vector<bool>						arPivotCacheFieldShortSize;

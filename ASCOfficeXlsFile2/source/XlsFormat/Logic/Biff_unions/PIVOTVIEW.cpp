@@ -41,6 +41,9 @@
 #include "PIVOTADDL.h"
 #include "PIVOTFORMAT.h"
 #include "PIVOTFRT9.h"
+#include "PIVOTCACHEDEFINITION.h"
+#include "DBQUERY.h"
+#include "SXSRC.h"
 
 #include "../Biff_records/SXDI.h"
 #include "../Biff_records/SxView.h"
@@ -49,6 +52,7 @@
 #include "../Biff_records/SxFormat.h"
 #include "../Biff_records/SxDXF.h"
 #include "../Biff_records/SXViewEx9.h"
+#include "../Biff_records/SXStreamID.h"
 
 namespace XLS
 {
@@ -93,7 +97,27 @@ const bool PIVOTVIEW::loadContent(BinProcessor& proc)
 		m_PIVOTFRT = elements_.back();
 		elements_.pop_back();
 	}
+//-------------------------------------------------------------------------------------------------
+	PIVOTCACHEDEFINITION* pivot_cache = dynamic_cast<PIVOTCACHEDEFINITION*>(global_info_->arPIVOTCACHEDEFINITION[view->iCache].get());
+	if (pivot_cache)
+	{
+		SXStreamID *stream_id = dynamic_cast<SXStreamID*>(pivot_cache->m_SXStreamID.get());
+		indexStream = stream_id->idStm;
 
+		if (m_PIVOTFRT && pivot_cache->m_SXSRC)
+		{
+			SXSRC* src = dynamic_cast<SXSRC*>(pivot_cache->m_SXSRC.get());
+			PIVOTFRT* frt = dynamic_cast<PIVOTFRT*>(m_PIVOTFRT.get());
+
+			PIVOTFRT9* frt9 = frt ? dynamic_cast<PIVOTFRT9*>(frt->m_PIVOTFRT9.get()) : NULL;
+
+			DBQUERY * db_query = dynamic_cast<DBQUERY *>(src->m_source.get());
+			if (frt9)
+			{
+				db_query->m_DBQUERYEXT = frt9->m_DBQUERYEXT;
+			}
+		}
+	}
 	return true;
 }
 
@@ -105,18 +129,16 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 	SxView* view = dynamic_cast<SxView*>(core->m_SxView.get());
 	if (!view) return 0;
 
-	PIVOTFRT* frt = dynamic_cast<PIVOTFRT*>(m_PIVOTFRT.get());
-	PIVOTEX* pivot_ex = dynamic_cast<PIVOTEX*>(core->m_PIVOTEX.get());
+	PIVOTFRT*	frt			= dynamic_cast<PIVOTFRT*>(m_PIVOTFRT.get());
+	PIVOTEX*	pivot_ex	= dynamic_cast<PIVOTEX*>(core->m_PIVOTEX.get());
 
-	PIVOTADDL* addls = frt ? dynamic_cast<PIVOTADDL*>(frt->m_PIVOTADDL.get()) : NULL;
-    PIVOTFRT9* frt9	= frt ? dynamic_cast<PIVOTFRT9*>(frt->m_PIVOTFRT9.get()) : NULL;
+	PIVOTADDL* addls	= frt ? dynamic_cast<PIVOTADDL*>(frt->m_PIVOTADDL.get()) : NULL;
+    PIVOTFRT9* frt9		= frt ? dynamic_cast<PIVOTFRT9*>(frt->m_PIVOTFRT9.get()) : NULL;
 
-	SXEx *view_ex = pivot_ex ? dynamic_cast<SXEx*>(pivot_ex->m_SXEx.get()) : NULL;
-    SXViewEx9 *view_ex9 = pivot_ex ? dynamic_cast<SXViewEx9*>(frt9->m_SXViewEx9.get()) : NULL;
-    SXAddl_SXCView_SXDVer10Info *view_ex10 = addls ? dynamic_cast<SXAddl_SXCView_SXDVer10Info*>(addls->m_SXAddl_SXCView_SXDVer10Info.get()) : NULL;
-    SXAddl_SXCView_SXDVer12Info *view_ex12 = addls ? dynamic_cast<SXAddl_SXCView_SXDVer12Info*>(addls->m_SXAddl_SXCView_SXDVer12Info.get()) : NULL;
-
-	indexStream = global_info_->arPivotCacheStream[view->iCache];
+	SXEx						*view_ex	= pivot_ex ? dynamic_cast<SXEx*>(pivot_ex->m_SXEx.get()) : NULL;
+    SXViewEx9					*view_ex9	= pivot_ex ? dynamic_cast<SXViewEx9*>(frt9->m_SXViewEx9.get()) : NULL;    
+	SXAddl_SXCView_SXDVer10Info *view_ex10	= addls ? dynamic_cast<SXAddl_SXCView_SXDVer10Info*>(addls->m_SXAddl_SXCView_SXDVer10Info.get()) : NULL;
+    SXAddl_SXCView_SXDVer12Info *view_ex12	= addls ? dynamic_cast<SXAddl_SXCView_SXDVer12Info*>(addls->m_SXAddl_SXCView_SXDVer12Info.get()) : NULL;
 
 	std::map<int, int>::iterator pFindIndex = global_info_->mapPivotCacheIndex.find(indexStream);
 

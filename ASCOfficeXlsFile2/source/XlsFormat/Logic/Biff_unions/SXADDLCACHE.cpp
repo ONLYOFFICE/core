@@ -86,12 +86,13 @@ const bool SXADDLCACHE::loadContent(BinProcessor& proc)
 		
 		if (addl->bEndElement)
 		{ 
+			elements_.pop_back();
+			
 			if (level == 0)
 				break;
 			else level--;
 			
 			current = current->back().prev;
-			elements_.pop_back();
 			continue;
 		}
 		if (level == 0)
@@ -101,15 +102,38 @@ const bool SXADDLCACHE::loadContent(BinProcessor& proc)
 			{
 				m_SXAddl_SXCCache_SXDId = addl->content;
 			}
-			//SXAddl_SXCCache_SXDVer10Info 
-			//[SXAddl_SXCCache_SXDVerSXMacro] 
+			SXAddl_SXCCache_SXDVerUpdInv* p1 = dynamic_cast<SXAddl_SXCCache_SXDVerUpdInv*>(addl->content.get());
+			if (p1)
+			{
+				m_SXAddl_SXCCache_SXDVerUpdInv = addl->content;
+			}
+			SXAddl_SXCCache_SXDVer10Info* p2 = dynamic_cast<SXAddl_SXCCache_SXDVer10Info*>(addl->content.get());
+			if (p2)
+			{
+				m_SXAddl_SXCCache_SXDVer10Info = addl->content;
+			}
+			SXAddl_SXCCache_SXDVerSXMacro* p3 = dynamic_cast<SXAddl_SXCCache_SXDVerSXMacro*>(addl->content.get());
+			if (p3)
+			{
+				m_SXAddl_SXCCache_SXDVerSXMacro = addl->content;
+			}
+			SXAddl_SXCCache_SXDInvRefreshReal* p4 = dynamic_cast<SXAddl_SXCCache_SXDInvRefreshReal*>(addl->content.get());
+			if (p4)
+			{
+				m_SXAddl_SXCCache_SXDVerSXMacro = addl->content;
+			}
+			SXAddl_SXCCache_SXDInfo12* p5 = dynamic_cast<SXAddl_SXCCache_SXDInfo12*>(addl->content.get());
+			if (p5)
+			{
+				m_SXAddl_SXCCache_SXDInfo12 = addl->content;
+			}
 
 		}
 
 		current->back().elements.push_back(elements_.back());
 		elements_.pop_back();
 	}
-
+	current = NULL;
 	return result;
 }
 

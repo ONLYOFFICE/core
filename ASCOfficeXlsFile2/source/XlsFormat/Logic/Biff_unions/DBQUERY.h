@@ -56,7 +56,7 @@ public:
 
 	int serialize(std::wostream & stream);
 	
-	int serialize_connection(std::wstring & name, DBQUERYEXT *query_ext = NULL);
+	int serialize_connection(std::wstring & name, std::wstring desc);
 
 	BaseObjectPtr				m_DbQry;
 
@@ -65,7 +65,8 @@ public:
 	
 	std::vector<std::wstring>	m_arSXString;
 //------------------------------------------------------
-	GlobalWorkbookInfoPtr	global_info;
+	BaseObjectPtr				m_DBQUERYEXT;
+	GlobalWorkbookInfoPtr		global_info;
 };
 
 } // namespace XLS

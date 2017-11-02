@@ -404,7 +404,7 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 {
 	if (woorkbook == NULL) return;
 
-	convert((XLS::GlobalsSubstream*)woorkbook->m_GlobalsSubstream.get());
+	convert(dynamic_cast<XLS::GlobalsSubstream*>(woorkbook->m_GlobalsSubstream.get()));
 
 	int count_sheets = 0, count_chart_sheets = 0;
     for (size_t i = 0 ; i < woorkbook->m_arWorksheetSubstream.size(); i++)
@@ -434,7 +434,6 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 
 		xlsx_context->end_table();
 	}
-
 	for (std::list<XLS::BaseObjectPtr>::iterator it = woorkbook->elements_.begin(); it != woorkbook->elements_.end(); it++)
 	{
 		convert(it->get());
@@ -570,50 +569,50 @@ void XlsConverter::convert (XLS::WorksheetSubstream* sheet)
 	}
 }
 
-void XlsConverter::convert(XLS::GlobalsSubstream* global)
+void XlsConverter::convert(XLS::GlobalsSubstream* globals)
 {
-	if (global == NULL) return;
+	if (globals == NULL) return;
 	
-	convert((XLS::FORMATTING*)global->m_Formating.get());
+	convert((XLS::FORMATTING*)globals->m_Formating.get());
 	
-	convert((XLS::THEME*)global->m_THEME.get());
+	convert((XLS::THEME*)globals->m_THEME.get());
 
-	convert((XLS::SHAREDSTRINGS*)global->m_SHAREDSTRINGS.get());
+	convert((XLS::SHAREDSTRINGS*)globals->m_SHAREDSTRINGS.get());
 
-    for (size_t i = 0 ; i < global->m_arLBL.size(); i++)
+    for (size_t i = 0 ; i < globals->m_arLBL.size(); i++)
 	{
-		convert((XLS::LBL*)global->m_arLBL[i].get());
+		convert((XLS::LBL*)globals->m_arLBL[i].get());
 	}
 
-    for (size_t i = 0 ; i < global->m_arMSODRAWINGGROUP.size(); i++)
+    for (size_t i = 0 ; i < globals->m_arMSODRAWINGGROUP.size(); i++)
 	{
-		convert((XLS::MSODRAWINGGROUP*)global->m_arMSODRAWINGGROUP[i].get());
+		convert((XLS::MSODRAWINGGROUP*)globals->m_arMSODRAWINGGROUP[i].get());
 	}
 
-	for (size_t i = 0 ; i < global->m_arHFPictureDrawing.size(); i++)
+	for (size_t i = 0 ; i < globals->m_arHFPictureDrawing.size(); i++)
 	{
-		convert((ODRAW::OfficeArtDgContainer*)global->m_arHFPictureDrawing[i].get());
+		convert((ODRAW::OfficeArtDgContainer*)globals->m_arHFPictureDrawing[i].get());
 	}
 	
-	global->serialize_format(xlsx_context->workbook_format());
+	globals->serialize_format(xlsx_context->workbook_format());
 
-    for (size_t i = 0 ; i < global->m_arWindow1.size(); i++)
+    for (size_t i = 0 ; i < globals->m_arWindow1.size(); i++)
 	{
-		global->m_arWindow1[i]->serialize(xlsx_context->workbook_views());
+		globals->m_arWindow1[i]->serialize(xlsx_context->workbook_views());
 	}
-    for (size_t i = 0 ; i < global->m_arUserBView.size(); i++)
+    for (size_t i = 0 ; i < globals->m_arUserBView.size(); i++)
 	{
-		global->m_arUserBView[i]->serialize(xlsx_context->custom_views());
-	}
-
-	for (size_t i = 0 ; i < global->m_arSUPBOOK.size(); i++)
-	{
-		convert((XLS::SUPBOOK*)global->m_arSUPBOOK[i].get());
+		globals->m_arUserBView[i]->serialize(xlsx_context->custom_views());
 	}
 
-	for (size_t i = 0 ; i < global->m_arPIVOTCACHEDEFINITION.size(); i++)
+	for (size_t i = 0 ; i < globals->m_arSUPBOOK.size(); i++)
 	{
-		convert((XLS::PIVOTCACHEDEFINITION*)global->m_arPIVOTCACHEDEFINITION[i].get());
+		convert((XLS::SUPBOOK*)globals->m_arSUPBOOK[i].get());
+	}
+
+	for (size_t i = 0 ; i < xls_global_info->arPIVOTCACHEDEFINITION.size(); i++)
+	{
+		convert((XLS::PIVOTCACHEDEFINITION*)xls_global_info->arPIVOTCACHEDEFINITION[i].get());
 	}
 }
 

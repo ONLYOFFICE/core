@@ -70,7 +70,8 @@ void DConnConnectionOleDb::load(CFRecord& record)
 		XLUnicodeStringSegmented val;
 		record >> val;
 		rgConn.push_back(val);
-	}}
+	}
+}
 
 
 } // namespace XLS

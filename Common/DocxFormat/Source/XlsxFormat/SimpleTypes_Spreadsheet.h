@@ -1149,7 +1149,13 @@ namespace SimpleTypes
 
 			virtual std::wstring     ToString  () const 
 			{
-				return _T("always");
+				switch(this->m_eValue)
+				{
+				case updatelinksAlways: return _T("always");break;
+				case updatelinksNever: return _T("never");break;
+				case updatelinksUserSet: return _T("userSet");break;
+				default: return _T("always");
+				}
 			}
 
 			SimpleType_FromString     (EUpdateLinksType)

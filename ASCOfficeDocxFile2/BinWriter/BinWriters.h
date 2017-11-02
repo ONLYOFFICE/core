@@ -1179,6 +1179,12 @@ namespace BinDocxRW
 					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
 					m_oBcw.m_oStream.WriteDouble(TabItem.m_oPos.get().ToMm());
 				}
+				if(false != TabItem.m_oLeader.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::Tab_Item_Leader);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+					m_oBcw.m_oStream.WriteBYTE((BYTE)TabItem.m_oLeader->GetValue());
+				}
 			}
 			void WriteNumPr(const OOX::Logic::CNumPr& numPr, const OOX::Logic::CParagraphProperty& pPr)
 			{

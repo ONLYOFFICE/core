@@ -345,7 +345,8 @@ extern int g_nCurFormatVersion;
 		SectPr = 31,
 		numPr_Ins =  32,
 		pPrChange = 33,
-		outlineLvl = 34
+		outlineLvl = 34,
+		Tab_Item_Leader = 35
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{

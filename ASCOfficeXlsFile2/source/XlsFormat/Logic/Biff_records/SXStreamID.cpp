@@ -53,7 +53,6 @@ BaseObjectPtr SXStreamID::clone()
 
 void SXStreamID::readFields(CFRecord& record)
 {
-	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
 	record >> idStm;
 }
 

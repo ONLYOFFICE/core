@@ -56,7 +56,7 @@ public:
 
 	int serialize(std::wostream & stream);
 	
-	int serialize_connection(std::wstring & name, std::wstring desc);
+	int serialize_connection(std::wstring & name);
 
 	BaseObjectPtr				m_DbQry;
 
@@ -66,6 +66,8 @@ public:
 	std::vector<std::wstring>	m_arSXString;
 //------------------------------------------------------
 	BaseObjectPtr				m_DBQUERYEXT;
+	BaseObjectPtr				m_DConn;
+
 	GlobalWorkbookInfoPtr		global_info;
 };
 

@@ -40,6 +40,9 @@
 #include "../Biff_records/ExtString.h"
 #include "../Biff_records/DConn.h"
 
+#include "../Biff_structures/DConnConnectionWeb.h"
+#include "../Biff_structures/DConnConnectionOleDb.h"
+
 namespace XLS
 {
 
@@ -190,20 +193,9 @@ const bool DBQUERY::loadContent(BinProcessor& proc)
 
 int DBQUERY::serialize(std::wostream & strm)
 {
-	std::wstring name, desc;
-
-	if (global_info->connectionId < global_info->arDConn.size())
-	//todooo + поиск по совпадению типа
-	{
-		DConn* dcon = dynamic_cast<DConn*>(global_info->arDConn[global_info->connectionId].get());
-		if (dcon)
-		{
-			name = dcon->rgchConnectionName.strTotal;
-			desc = dcon->rgchConnectionDesc.strTotal;
-		}
-	}
+	std::wstring name;
 	
-	int connectionId = serialize_connection(name, desc);
+	int connectionId = serialize_connection(name);
 	
 	CP_XML_WRITER(strm)
 	{
@@ -216,28 +208,43 @@ int DBQUERY::serialize(std::wostream & strm)
 	return 0;
 }
 
-int DBQUERY::serialize_connection(std::wstring & name, std::wstring desc)
+int DBQUERY::serialize_connection(std::wstring & name)
 {
 	DbOrParamQry* dbQry = dynamic_cast<DbOrParamQry*>(m_DbQry.get());
 	if (!dbQry) return -1;
 
+	DConn* dcon = dynamic_cast<DConn*>(m_DConn.get());
+
 	++global_info->connectionId;
-	
+
+	if (dcon && name.empty())
+	{
+		name = dcon->rgchConnectionName.strTotal;
+	}
 	if (name.empty())
 		name = L"Connection" + std::to_wstring(global_info->connectionId);
 
 	DBQUERYEXT *query_ext = dynamic_cast<DBQUERYEXT*>(m_DBQUERYEXT.get());	
 	DBQueryExt *dbQry_ext = query_ext ? dynamic_cast<DBQueryExt*>(query_ext->m_DBQueryExt.get()) : NULL;
 
+	DConnConnectionWeb		*webDb = dcon ? dynamic_cast<DConnConnectionWeb*>(dcon->connection.get()) : NULL;
+	DConnConnectionOleDb	*oleDb = dcon ? dynamic_cast<DConnConnectionOleDb*>(dcon->connection.get()) : NULL;
+	XLUnicodeStringSegmented*adoDb = dcon ? dynamic_cast<XLUnicodeStringSegmented*>(dcon->connection.get()) : NULL;
+
 	CP_XML_WRITER(global_info->connections_stream)
 	{
 		CP_XML_NODE(L"connection")
 		{
 			CP_XML_ATTR(L"id", global_info->connectionId);	
-			CP_XML_ATTR(L"name", name);
-			if (!desc.empty())
+			if ( dbQry->query.dbt == 5 )
 			{
-				CP_XML_ATTR(L"description", desc);
+				CP_XML_ATTR(L"keepAlive", 1);
+			}
+			CP_XML_ATTR(L"name", name);
+			
+			if ((dcon) && (!dcon->rgchConnectionDesc.strTotal.empty()))
+			{
+				CP_XML_ATTR(L"description", dcon->rgchConnectionDesc.strTotal);
 			}
 
 			CP_XML_ATTR(L"type", dbQry->query.dbt);
@@ -291,6 +298,7 @@ int DBQUERY::serialize_connection(std::wstring & name, std::wstring desc)
 				else
 				{
 					size_t index = 0;
+					size_t commandType = 1;
 
 					CP_XML_NODE(L"dbPr")
 					{
@@ -322,6 +330,16 @@ int DBQUERY::serialize_connection(std::wstring & name, std::wstring desc)
 						
 						CP_XML_ATTR(L"connection", connection);
 						CP_XML_ATTR(L"command", command);
+						if (commandType > 0)
+							CP_XML_ATTR(L"commandType", commandType);
+					}
+					if (oleDb)
+					{
+						CP_XML_NODE(L"olapPr")
+						{
+							CP_XML_ATTR(L"sendLocale",  1);
+							CP_XML_ATTR(L"rowDrillCount", oleDb->nDrillthroughRows);
+						}
 					}
 				}
 			}

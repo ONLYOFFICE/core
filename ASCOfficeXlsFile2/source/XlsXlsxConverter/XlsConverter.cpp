@@ -191,7 +191,11 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 			int last_index = 0;
 			for (std::list<std::wstring>::iterator it = listStream.begin(); it != listStream.end(); it++)
 			{
-				XLS::CFStreamCacheReader pivot_cache_reader(xls_file->getNamedStream(L"_SX_DB_CUR/" + *it), xls_global_info);
+				XLS::CFStreamPtr pivot_cache_stream = xls_file->getNamedStream(L"_SX_DB_CUR/" + *it);
+				if (pivot_cache_stream->getStreamSize() < 1) continue;
+
+				XLS::CFStreamCacheReader pivot_cache_reader(pivot_cache_stream, xls_global_info);
+
 				XLS::BaseObjectPtr pivot_cache = boost::shared_ptr<XLS::PIVOTCACHE>(new XLS::PIVOTCACHE());
 				
 				XLS::BinReaderProcessor proc(pivot_cache_reader , pivot_cache.get() , true);

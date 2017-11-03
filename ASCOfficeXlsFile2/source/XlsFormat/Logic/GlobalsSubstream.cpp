@@ -387,8 +387,22 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					count--;
 				}
 			}break;
-			case rt_MDTInfo:				proc.optional<METADATA>();				break;
-			case rt_MTRSettings:			proc.optional<MTRSettings>();			break;
+			case rt_MDTInfo:
+			{
+				if (proc.optional<METADATA>())
+				{
+					m_METADATA = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_MTRSettings:
+			{
+				if (proc.optional<MTRSettings>())
+				{
+					m_MTRSettings = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_ForceFullCalculation:	proc.optional<ForceFullCalculation>();	break;
 			case rt_SupBook:
 			{
@@ -473,7 +487,19 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 				count = proc.repeated<DConn>(0, 0);
 				while(count > 0)
 				{
-					global_info_->arDConn.insert(global_info_->arDConn.begin(), elements_.back());
+					DConn *conn = dynamic_cast<DConn*>(elements_.back().get());
+					if (conn)
+					{
+						if (conn->id.bType == 1)
+						{
+							global_info_->mapStrConnection.insert(std::make_pair(conn->id.string.strTotal, elements_.back()));
+						}
+						else if (conn->id.bType == 2)
+						{
+							global_info_->mapIdConnection.insert(std::make_pair(conn->id.sxStreamID.idStm, elements_.back()));
+						}
+					}
+					m_arDConn.insert(m_arDConn.begin(), elements_.back());
 					elements_.pop_back();
 					count--;
 				}
@@ -555,7 +581,7 @@ void GlobalsSubstream::LoadHFPicture()
 {
 	if (m_arHFPicture.empty()) return;
 
-	int current_size_hf = 0, j = 0;
+	size_t current_size_hf = 0, j = 0;
 	for ( size_t i = 0; i < m_arHFPicture.size(); i++)
 	{
 		HFPicture* hf = dynamic_cast<HFPicture*>(m_arHFPicture[i].get());

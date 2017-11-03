@@ -70,6 +70,8 @@ public:
 	BaseObjectPtr					m_FNGROUPS;
 	BaseObjectPtr					m_BookExt;
 	BaseObjectPtr					m_CodeName;
+	BaseObjectPtr					m_METADATA;
+	BaseObjectPtr					m_MTRSettings;
 
 	std::vector<BaseObjectPtr>		m_arHFPicture;
 	std::vector<BaseObjectPtr>		m_arLBL;
@@ -79,7 +81,7 @@ public:
 	std::vector<BaseObjectPtr>		m_arBUNDLESHEET;
 	std::vector<BaseObjectPtr>		m_arSUPBOOK;
 	//std::vector<BaseObjectPtr>	m_arPIVOTCACHEDEFINITION; -> GlobalWorkbookInfo
-	//std::vector<BaseObjectPtr>	m_arDConn;
+	std::vector<BaseObjectPtr>		m_arDConn;
 
 	std::vector<BiffStructurePtr>	m_arHFPictureDrawing;
 	

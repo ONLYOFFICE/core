@@ -53,6 +53,7 @@
 #include "../Biff_records/SxDXF.h"
 #include "../Biff_records/SXViewEx9.h"
 #include "../Biff_records/SXStreamID.h"
+#include "../Biff_records/QsiSXTag.h"
 
 namespace XLS
 {
@@ -111,10 +112,18 @@ const bool PIVOTVIEW::loadContent(BinProcessor& proc)
 
 			PIVOTFRT9* frt9 = frt ? dynamic_cast<PIVOTFRT9*>(frt->m_PIVOTFRT9.get()) : NULL;
 
-			DBQUERY * db_query = dynamic_cast<DBQUERY *>(src->m_source.get());
-			if (frt9)
+			DBQUERY * db_query = dynamic_cast<DBQUERY*>(src->m_source.get());
+			if (db_query && frt9)
 			{
-				db_query->m_DBQUERYEXT = frt9->m_DBQUERYEXT;
+				QsiSXTag *qsiTag =dynamic_cast<QsiSXTag*>(frt9->m_QsiSXTag.get());
+				if (qsiTag->fTensorEx)
+				{
+	//OLAP !!!
+					src->bOLAP = true;
+					core->bOLAP = true;
+				}
+				db_query->m_DBQUERYEXT		= frt9->m_DBQUERYEXT;
+				pivot_cache->m_PIVOTVIEWEX	= frt9->m_PIVOTVIEWEX;
 			}
 		}
 	}
@@ -227,8 +236,8 @@ int PIVOTVIEW::serialize(std::wostream & strm)
 					}
 				}
 			}
-			int index_ivd = 0;
-			int index_tli = 0;
+			size_t index_ivd = 0;
+			size_t index_tli = 0;
 
 			if (view->cDimRw > 0 && index_ivd < core->m_arPIVOTIVD.size())
 			{

@@ -31,8 +31,8 @@
  */
 
 #include "MDBLOCK.h"
-#include <Logic/Biff_records/MDB.h>
-#include <Logic/Biff_records/ContinueFrt12.h>
+#include "../Biff_records/MDB.h"
+#include "../Biff_records/ContinueFrt12.h"
 
 namespace XLS
 {
@@ -61,6 +61,7 @@ const bool MDBLOCK::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+	m_MDB = elements_.back();	elements_.pop_back();
 	proc.repeated<ContinueFrt12>(0, 0);
 	return true;
 }

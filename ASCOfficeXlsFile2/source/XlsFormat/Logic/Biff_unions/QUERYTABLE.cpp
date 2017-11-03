@@ -109,7 +109,7 @@ int QUERYTABLE::serialize(std::wostream & strm)
 	std::wstring name = info->rgchName.value();
 	
 	query->m_DBQUERYEXT = m_DBQUERYEXT;
-	int connectionId = query->serialize_connection(name, L"");
+	int connectionId = query->serialize_connection(name);
 	
 	if (connectionId < 1) return 0;
 

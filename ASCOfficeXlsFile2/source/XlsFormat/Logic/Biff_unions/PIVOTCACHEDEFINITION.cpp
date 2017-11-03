@@ -35,6 +35,9 @@
 #include "SXSRC.h"
 #include "SXADDLCACHE.h"
 #include "FDB.h"
+#include "DBQUERY.h"
+#include "PIVOTVIEWEX.h"
+#include "PIVOTVDTEX.h"
 
 #include "../Biff_records/SXStreamID.h"
 #include "../Biff_records/SXVS.h"
@@ -93,6 +96,7 @@ const bool PIVOTCACHEDEFINITION::loadContent(BinProcessor& proc)
 		m_SXADDLCACHE = elements_.back();
 		elements_.pop_back();
 	}
+
 	return true;
 }
 int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
@@ -123,6 +127,18 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 
 	SXSRC* src = dynamic_cast<SXSRC*>(m_SXSRC.get());
 	bool bSql = src ? src->bSql : false;
+	bool bOLAP = src ? src->bOLAP : false;
+
+	DBQUERY * db_query = src ? dynamic_cast<DBQUERY *>(src->m_source.get()) : NULL;
+	if (db_query)
+	{
+		std::map<int, BaseObjectPtr>::iterator pFind = global_info_->mapIdConnection.find(streamId->idStm);
+		if (pFind != global_info_->mapIdConnection.end())
+		{
+			db_query->m_DConn = pFind->second;
+		}
+	}
+	PIVOTVIEWEX *olap_view = bOLAP ? dynamic_cast<PIVOTVIEWEX *>(m_PIVOTVIEWEX.get()) : NULL;
 
 	CP_XML_WRITER(strm)
 	{
@@ -159,6 +175,14 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 					{
 						FDB *field = dynamic_cast<FDB *>(pivot_cache->m_arFDB[i].get());
 						if (!field) continue;
+						
+						if (olap_view)
+						{
+							PIVOTVDTEX *ex = dynamic_cast<PIVOTVDTEX*>(olap_view->m_arPIVOTVDTEX[i].get());
+							
+							field->m_SXVDTEx	= ex->m_SXVDTEx;
+							field->m_arPIVOTTH	= olap_view->m_arPIVOTTH;
+						}
 
 						field->serialize(CP_XML_STREAM(), bSql, !pivot_cache->m_arDBB.empty());
 					}
@@ -175,6 +199,10 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 						pivot_cache->m_arSXFORMULA[i]->serialize(CP_XML_STREAM());
 					}
 				}
+			}
+			if (bOLAP)
+			{
+				olap_view->serialize(CP_XML_STREAM());
 			}
 		}
 	}

@@ -31,10 +31,13 @@
  */
 
 #include "PIVOTVIEWEX.h"
-#include <Logic/Biff_records/SXViewEx.h>
-#include <Logic/Biff_records/SXPIEx.h>
-#include <Logic/Biff_unions/PIVOTTH.h>
-#include <Logic/Biff_unions/PIVOTVDTEX.h>
+#include "PIVOTTH.h"
+#include "PIVOTVDTEX.h"
+
+#include "../Biff_records/SXTH.h"
+#include "../Biff_records/SXViewEx.h"
+#include "../Biff_records/SXPIEx.h"
+#include "../Biff_records/SXVDTEx.h"
 
 namespace XLS
 {
@@ -59,8 +62,7 @@ const bool PIVOTVIEWEX::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	m_SXViewEx = elements_.back();
-	elements_.pop_back();
+	m_SXViewEx = elements_.back();	elements_.pop_back();
 	
 	int count = 0;
 	count = proc.repeated<PIVOTTH>(0, 0);
@@ -83,6 +85,143 @@ const bool PIVOTVIEWEX::loadContent(BinProcessor& proc)
 
 	return true;
 }
+int PIVOTVIEWEX::serialize(std::wostream & strm)
+{				
+	if (m_arPIVOTTH.empty()) return 0;
 
+	std::unordered_map<std::wstring, std::vector<int>> mapDimensions;
+	std::unordered_map<std::wstring, std::vector<int>> mapMeasures;
+	std::unordered_map<std::wstring, std::vector<int>> mapKpis;
+	std::unordered_map<std::wstring, std::vector<int>> mapNamed;
+
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"cacheHierarchies")
+		{
+			CP_XML_ATTR(L"count", m_arPIVOTTH.size());
+			
+			for (size_t i = 0; i < m_arPIVOTTH.size(); i++)
+			{
+				PIVOTTH* ht = dynamic_cast<PIVOTTH*>(m_arPIVOTTH[i].get());
+				SXTH* szTH = dynamic_cast<SXTH*>(ht->m_SXTH.get());
+				
+				if (szTH->fKPI)	
+				{
+					std::unordered_map<std::wstring, std::vector<int>>::iterator pFind = mapKpis.find(szTH->stUnique.value());
+					if (pFind == mapKpis.end())
+					{
+						std::vector<int> v; v.push_back(i);
+						mapKpis.insert(std::make_pair(szTH->stUnique.value(), v));
+					}
+					else
+					{
+						pFind->second.push_back(i);
+					}
+				}
+				else if (szTH->fMeasure && !szTH->fSet && !szTH->fKPI)
+				{
+					std::unordered_map<std::wstring, std::vector<int>>::iterator pFind = mapMeasures.find(szTH->stUnique.value());
+					if (pFind == mapMeasures.end())
+					{
+						std::vector<int> v; v.push_back(i);
+						mapMeasures.insert(std::make_pair(szTH->stUnique.value(), v));
+					}
+					else
+					{
+						pFind->second.push_back(i);
+					}
+				}
+				else if (szTH->fSet && !szTH->fMeasure && !szTH->fKPI)
+				{
+					std::unordered_map<std::wstring, std::vector<int>>::iterator pFind = mapNamed.find(szTH->stUnique.value());
+					if (pFind == mapNamed.end())
+					{
+						std::vector<int> v; v.push_back(i);
+						mapNamed.insert(std::make_pair(szTH->stUnique.value(), v));
+					}
+					else
+					{
+						pFind->second.push_back(i);
+					}
+				}
+				if (!szTH->stDimension.value().empty())
+				{
+					std::unordered_map<std::wstring, std::vector<int>>::iterator pFind = mapDimensions.find(szTH->stDimension.value());
+					if (pFind == mapDimensions.end())
+					{
+						std::vector<int> v; v.push_back(i);
+						mapDimensions.insert(std::make_pair(szTH->stDimension.value(), v));
+					}
+					else
+					{
+						pFind->second.push_back(i);
+					}
+				}
+				
+				szTH->serialize(CP_XML_STREAM());
+			}
+		}
+		CP_XML_NODE(L"kpis")
+		{
+			CP_XML_ATTR(L"count", mapKpis.size());
+			
+			for (std::unordered_map<std::wstring, std::vector<int>>::iterator it = mapKpis.begin(); it != mapKpis.end(); it++)
+			{
+				CP_XML_NODE(L"kpi")
+				{
+					CP_XML_ATTR(L"uniqueName",	it->first);
+					//measureGroup
+					//value
+					//goal
+					//status
+					//trend
+					//weight
+					//time
+					//parent
+				}
+			}		
+		}
+		CP_XML_NODE(L"dimensions")
+		{
+			CP_XML_ATTR(L"count", mapDimensions.size());
+			for (std::unordered_map<std::wstring, std::vector<int>>::iterator it = mapDimensions.begin(); it != mapDimensions.end(); it++)
+			{
+				CP_XML_NODE(L"dimension")
+				{
+					CP_XML_ATTR(L"name",		it->first.substr(1, it->first.length() - 2));
+					CP_XML_ATTR(L"uniqueName",	it->first);
+					
+					//if (szTH->fMeasure)
+					//	CP_XML_ATTR(L"measure",	true);
+				}
+			}
+		}
+		CP_XML_NODE(L"measureGroups")
+		{
+			CP_XML_ATTR(L"count", mapMeasures.size());
+			for (std::unordered_map<std::wstring, std::vector<int>>::iterator it = mapMeasures.begin(); it != mapMeasures.end(); it++)
+			{
+				CP_XML_ATTR(L"name", it->first.substr(1, it->first.length() - 2));
+
+			}
+			//CP_XML_ATTR(L"count", m_arPIVOTVDTEX.size());
+			//for (size_t i = 0; i < m_arPIVOTVDTEX.size(); i++)
+			//{
+			//	PIVOTVDTEX *VDTEX = dynamic_cast<PIVOTVDTEX*>(m_arPIVOTVDTEX[i].get());
+			//	SXVDTEx  *ex = dynamic_cast<SXVDTEx*>(VDTEX->m_SXVDTEx.get());
+			//	
+			//	PIVOTTH* ht = dynamic_cast<PIVOTTH*>(m_arPIVOTTH[ex->isxth].get());
+			//	SXTH* szTH = dynamic_cast<SXTH*>(ht->m_SXTH.get());
+			//	
+			//	CP_XML_NODE(L"measureGroup")
+			//	{
+			//		CP_XML_ATTR(L"name", szTH->stDimension.value());
+			//	}
+		
+			//}
+		}
+	}
+	return 0;
+}
 } // namespace XLS
 

@@ -828,18 +828,18 @@ public:
                             default:                sVal = L"left";    break;
 						}
 						pCStringWriter->WriteString(L"<w:tab w:val=\"" + sVal + L"\" w:pos=\"" + std::to_wstring(nTab) + L"\"");
-						if (NULL != oTab.Leader)
+						if (oTab.bLeader)
 						{
 							std::wstring sLeader;
-							switch(*oTab.Leader)
+							switch(oTab.Leader)
 							{
-							case SimpleTypes::tabtlcDot        : sLeader = (L"dot");
-							case SimpleTypes::tabtlcHeavy      : sLeader = (L"heavy");
-							case SimpleTypes::tabtlcHyphen     : sLeader = (L"hyphen");
-							case SimpleTypes::tabtlcMiddleDot  : sLeader = (L"middleDot");
-							case SimpleTypes::tabtlcNone       : sLeader = (L"none");
-							case SimpleTypes::tabtlcUnderscore : sLeader = (L"underscore");
-							default                : sLeader = (L"none");
+							case SimpleTypes::tabtlcDot        : sLeader = (L"dot");break;
+							case SimpleTypes::tabtlcHeavy      : sLeader = (L"heavy");break;
+							case SimpleTypes::tabtlcHyphen     : sLeader = (L"hyphen");break;
+							case SimpleTypes::tabtlcMiddleDot  : sLeader = (L"middleDot");break;
+							case SimpleTypes::tabtlcNone       : sLeader = (L"none");break;
+							case SimpleTypes::tabtlcUnderscore : sLeader = (L"underscore");break;
+							default                : sLeader = (L"none");break;
 							}
 							pCStringWriter->WriteString(L" w:leader=\"" + sLeader + L"\"");
 						}
@@ -1026,8 +1026,8 @@ public:
 			poTabItem->Pos = m_oBufferedStream.GetDouble();
 		else if(c_oSerProp_pPrType::Tab_Item_Leader == type)
 		{
-			poTabItem->Leader = new BYTE;
-			*poTabItem->Leader = m_oBufferedStream.GetUChar();
+			poTabItem->bLeader = true;
+			poTabItem->Leader = m_oBufferedStream.GetUChar();
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

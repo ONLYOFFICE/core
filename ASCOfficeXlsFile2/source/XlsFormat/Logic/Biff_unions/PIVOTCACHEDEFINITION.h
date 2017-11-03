@@ -58,8 +58,9 @@ public:
 	BaseObjectPtr	m_SXVS;
 	BaseObjectPtr	m_SXSRC;
 	BaseObjectPtr	m_SXADDLCACHE;
-
+//--------------------------------------------------------------------------
 	GlobalWorkbookInfoPtr global_info_;
+	BaseObjectPtr	m_PIVOTVIEWEX;
 };
 
 } // namespace XLS

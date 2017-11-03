@@ -259,7 +259,6 @@ namespace PPTX
 						else
 						{
 							olePic.Init();  //старый вариант описания объекта через spid в VmlDrawing
-							olePic->spPr.xfrm;
 
 							Logic::PrstGeom* geom = new Logic::PrstGeom();
 							geom->prst = L"rect";

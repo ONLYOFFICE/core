@@ -48,7 +48,7 @@ PropertyPtr PropertyFactory::ReadProperty(const unsigned int prop_type, XLS::CFS
 	stream->seekFromBegin(property_offset);
 	unsigned short value_type;
 
-	if (stream->getStreamPointer() +2 > stream->getStreamSize()) return PropertyPtr();
+	if (stream->getStreamPointer() + 2 > stream->getStreamSize()) return PropertyPtr();
 	*stream >> value_type;
 	stream->seekFromCurForward(2); // Skip 2 reserved unsigned chars
 
@@ -68,7 +68,19 @@ PropertyPtr PropertyFactory::ReadProperty(const unsigned int prop_type, XLS::CFS
             return PropertyPtr(new PropertyComments(value_type, stream));
         case 0x0C://CREATE_DTM
             return PropertyPtr(new PropertyDateCreate(value_type, stream));
+		case 0x0f://PIDSI_WORDCOUNT
+            return PropertyPtr(new PropertyWordCount(value_type, stream));
+		case 0x10://PIDSI_CHARCOUNT
+            return PropertyPtr(new PropertyCharCount(value_type, stream));
+		case 0x13://PIDSI_DOC_SECURITY
+            return PropertyPtr(new PropertyDocSecurity(value_type, stream));
 
+        case 0x08://PIDSI_LASTAUTHOR
+		case 0x0b://PIDSI_LASTPRINTED
+		case 0x0d://PIDSI_LASTSAVE_DTM
+		case 0x12://PIDSI_APPNAME
+		case 0x16://??
+		case 0x17://??
 		default:
 			return PropertyPtr();
 	}

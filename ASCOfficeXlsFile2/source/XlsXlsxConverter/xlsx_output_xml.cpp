@@ -249,6 +249,9 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 					CP_XML_STREAM() << impl_->ole_objects_.str();
                 }
             }	
+			
+			CP_XML_STREAM() << impl_->picture_background_.str();
+			
 			if (!impl_->activeXs_.str().empty())
 			{
                 CP_XML_NODE(L"controls")
@@ -256,7 +259,6 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 					CP_XML_STREAM() << impl_->activeXs_.str();
                 }
 			}
-			CP_XML_STREAM() << impl_->picture_background_.str();
 
 			//CP_XML_NODE(L"rowBreaks){}
 

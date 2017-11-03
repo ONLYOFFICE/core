@@ -276,6 +276,7 @@ namespace oox
         case msosptRoundRectangle : 			return L"roundRect";
         case msosptEllipse : 					return L"ellipse";
         case msosptPictureFrame : 				return L"rect";
+		case msosptHostControl :				return L"rect";
         //case msosptDiamond : 					return L"diamond";
         case msosptIsocelesTriangle :			return L"triangle";
         //case msosptRightTriangle : 			return L"rtTriangle";

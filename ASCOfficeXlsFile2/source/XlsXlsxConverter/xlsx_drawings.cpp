@@ -84,7 +84,16 @@ public:
     {
         BOOST_FOREACH(rel_ const & r, rels_)
         {
-			if (r.type_ == external_items::typeChart)
+			if (r.type_ == external_items::typeHyperlink)
+			{
+				Rels.add(relationship(
+							r.rid_,
+							L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+							r.target_,
+							(r.is_internal_ ? L"" : L"External"))
+				);
+			}
+			else
 			{
 				Rels.add(relationship(
 							r.rid_,
@@ -93,25 +102,6 @@ public:
 							(r.is_internal_ ? L"" : L"External")
 							) 
 					);
-			}
-			else if (r.type_ == external_items::typeImage)
-			{
-				Rels.add(relationship(
-							r.rid_,
-							utils::media::get_rel_type(r.type_),
-							r.is_internal_ ? std::wstring(L"../") + r.target_ : r.target_,
-							(r.is_internal_ ? L"" : L"External")
-							) 
-					);
-			}
- 			else if (r.type_ == external_items::typeHyperlink)
-			{
-				Rels.add(relationship(
-							r.rid_,
-							L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
-							r.target_,
-							(r.is_internal_ ? L"" : L"External"))
-				);
 			}
 		}
     }

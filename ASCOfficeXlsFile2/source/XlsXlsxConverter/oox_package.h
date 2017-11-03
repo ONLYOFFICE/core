@@ -92,20 +92,25 @@ private:
     std::wstring filename_;
 };
 
+
+class simple_element;
+typedef boost::shared_ptr<simple_element> simple_element_ptr;
 class simple_element : public element
 {
 public:
-    simple_element(const std::wstring & FileName, const std::wstring & Content);
-    static element_ptr create(const std::wstring & FileName, const std::wstring & Content);
+    simple_element(const std::wstring & FileName, const std::string & contentUtf8);
+    static simple_element_ptr create(const std::wstring & FileName, const std::string & contentUtf8);
 
-public:
-    virtual void write(const std::wstring & RootPath);
+	simple_element(const std::wstring & FileName, const std::wstring & content);
+    static simple_element_ptr create(const std::wstring & FileName, const std::wstring & content);
+	
+	virtual void write(const std::wstring & RootPath);
+	std::wstring get_filename() {return filename_;}
 
 private:
-    std::wstring file_name_;
-    //std::string content_utf8_;
-    std::wstring content;
-
+    std::wstring	filename_;
+    std::wstring	content_;
+    std::string		content_utf8_;
 };
 
 class rels_file;
@@ -119,7 +124,6 @@ public:
     void set_file_name(std::wstring const & fileName) { filename_ = fileName;} 
     static rels_file_ptr create(std::wstring const & FileName);
 
-public:
     virtual void write(const std::wstring & RootPath);
 
     rels & get_rels() { return rels_; }
@@ -189,6 +193,27 @@ public:
 private:
     std::wstringstream	content_;
 	rels_file_ptr		rels_file_;
+};
+//------------------------------------------------------------------------
+class customXml_content;
+typedef _CP_PTR(customXml_content) customXml_content_ptr;
+
+class customXml_content : boost::noncopyable
+{
+public:
+    customXml_content();
+    static _CP_PTR(customXml_content) create();
+
+	void set_item (char* data, size_t size) {content_item = std::string(data, size);}
+ 	void set_props (char* data, size_t size) {content_props = std::string(data, size);}
+
+    std::string	item()	{ return content_item; }
+    std::string	props() { return content_props; }
+	
+	friend class	xl_customXml_files;
+private:
+    std::string	content_item;
+    std::string	content_props;
 };
 //------------------------------------------------------------------------
 class document : public element

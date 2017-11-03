@@ -35,10 +35,19 @@
 
 namespace XLS
 {
-
 class SXADDLCACHE: public CompositeObject
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(SXADDLCACHE)
+    struct _sxAddl
+    {
+        _sxAddl(std::vector<_sxAddl> *p, int l) : prev(p), level (l) {}
+
+        std::vector<_sxAddl>*		prev = NULL;
+        int							level = 0;
+        std::vector<BaseObjectPtr>	elements;
+        std::vector<_sxAddl>		levels;
+    };
+
+    BASE_OBJECT_DEFINE_CLASS_NAME(SXADDLCACHE)
 public:
 	SXADDLCACHE();
 	~SXADDLCACHE();
@@ -47,14 +56,17 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typeSXADDLCACHE;
-
-	BaseObjectPtr	m_SXCCache_SXDId;
-	BaseObjectPtr	m_SXDVer10Info;
-	BaseObjectPtr	m_SXDVerSXMacro;
-	BaseObjectPtr	m_SXADDLDBQUERY;
-	BaseObjectPtr	m_SXADDLCACHE12;
+	static const ElementType type = typeSXADDLCACHE;
 	
+	BiffStructurePtr	m_SXAddl_SXCCache_SXDId;
+	BiffStructurePtr	m_SXAddl_SXCCache_SXDVerUpdInv;
+	BiffStructurePtr	m_SXAddl_SXCCache_SXDVer10Info;
+	BiffStructurePtr	m_SXAddl_SXCCache_SXDVerSXMacro;
+	BiffStructurePtr	m_SXAddl_SXCCache_SXDInvRefreshReal;
+	BiffStructurePtr	m_SXAddl_SXCCache_SXDInfo12;
+
+	std::vector<_sxAddl> content;
+	std::vector<_sxAddl> *current;
 };
 
 } // namespace XLS

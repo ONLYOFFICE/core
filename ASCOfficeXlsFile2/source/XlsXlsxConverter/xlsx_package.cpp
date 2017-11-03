@@ -58,23 +58,36 @@ xlsx_content_types_file::xlsx_content_types_file()
     content_type_.add_override(L"/docProps/core.xml",            L"application/vnd.openxmlformats-package.core-properties+xml");
 }
 
-xlsx_document::xlsx_document()
+xlsx_document::xlsx_document() 
 {
-	xl_files_.set_main_document(this);
-    rels_file_ptr relFile = rels_file::create(L".rels");
-   
+	rels_file_ptr relFile = rels_file::create(L".rels");
+	
 	relFile->get_rels().add(relationship(L"rId1", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument", L"xl/workbook.xml"));
     relFile->get_rels().add(relationship(L"rId2", L"http://schemas.openxmlformats.org/officedocument/2006/relationships/metadata/core-properties", L"docProps/core.xml"));
     relFile->get_rels().add(relationship(L"rId3", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties", L"docProps/app.xml"));
    
 	rels_files_.add_rel_file( relFile );
+	
+	{
+		xl_files_.set_main_document(this);
+	}
+    {
+		customXml_files_.set_rels(xl_files_.get_rels());
+		customXml_files_.set_main_document(this);
+    }
 }
-
+void xlsx_document::add_customXml(customXml_content_ptr customXml)
+{
+    customXml_files_.add_customXml(customXml);
+}
 void xlsx_document::write(const std::wstring & RootPath)
 {
 	xl_files_.write(RootPath);
-    docProps_files_.write(RootPath);
-    content_type_.write(RootPath);
+	customXml_files_.write(RootPath);
+
+	docProps_files_.write(RootPath);
+    
+	content_type_.write(RootPath);
     rels_files_.write(RootPath);
 }
 
@@ -115,6 +128,14 @@ _CP_PTR(activeX_content) activeX_content::create()
     return boost::make_shared<activeX_content>();
 }
 //--------------------------------------------------------------------------------------------
+customXml_content::customXml_content()
+{      
+}
+_CP_PTR(customXml_content) customXml_content::create()
+{
+    return boost::make_shared<customXml_content>();
+}
+//--------------------------------------------------------------------------------------------
 sheet_content::sheet_content() : rels_(rels_file::create(L""))
 {
         
@@ -131,7 +152,7 @@ void sheet_content::add_rel(relationship const & r)
 
 void sheet_content::add_rels(rels & r)
 {
-	for (int i = 0; i < r.relationships().size(); i++)
+	for (size_t i = 0; i < r.relationships().size(); i++)
 	{
 		rels_->get_rels().add(r.relationships()[i]);
 	}
@@ -210,7 +231,14 @@ void xl_files::write(const std::wstring & RootPath)
 		sheets_files_.set_main_document( this->get_main_document() );
 		sheets_files_.write(path);
 	}
-
+	{
+		control_props_files_.set_main_document( this->get_main_document() );
+		control_props_files_.write(path);
+	}
+	{
+		query_tables_files_.set_main_document( this->get_main_document() );
+		query_tables_files_.write(path);
+	}
 	if (sharedStrings_)
     {
         sharedStrings_->write(path);
@@ -274,6 +302,7 @@ void xl_files::write(const std::wstring & RootPath)
         externals_files_.set_main_document(get_main_document());
         externals_files_.write(path);
     }
+
 	if (drawings_)
     {
         drawings_->set_main_document(get_main_document());
@@ -360,6 +389,14 @@ void xl_files::add_pivot_table(pivot_table_content_ptr pivot_table)
 {
     pivot_table_files_.add_pivot_table(pivot_table);
 }
+void xl_files::add_query_table (simple_element_ptr element)
+{
+	query_tables_files_.add_query_table(element);
+}
+void xl_files::add_control_props (simple_element_ptr element)
+{
+	control_props_files_.add_control_props(element);
+}
 //----------------------------------------------------------------------------------------
 void xl_pivot_cache_files::add_pivot_cache(pivot_cache_content_ptr pivot_cache)
 {
@@ -367,6 +404,8 @@ void xl_pivot_cache_files::add_pivot_cache(pivot_cache_content_ptr pivot_cache)
 }
 void xl_pivot_cache_files::write(const std::wstring & RootPath)
 {
+	if (pivot_caches_.empty()) return;
+
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"pivotCache";
     NSDirectory::CreateDirectory(path.c_str());
 
@@ -377,39 +416,38 @@ void xl_pivot_cache_files::write(const std::wstring & RootPath)
 	
 	for (size_t i = 0; i < pivot_caches_.size(); i++)
     {
-        if (pivot_caches_[i])
-        {
-            const std::wstring fileNameD = std::wstring(L"pivotCacheDefinition") + std::to_wstring(i + 1) + L".xml";
+        if (!pivot_caches_[i]) continue;
+      
+		const std::wstring fileNameD = std::wstring(L"pivotCacheDefinition") + std::to_wstring(i + 1) + L".xml";
            
-            contentTypes.add_override(std::wstring(L"/xl/pivotCache/") + fileNameD, kWSConTypeD);
+        contentTypes.add_override(std::wstring(L"/xl/pivotCache/") + fileNameD, kWSConTypeD);
 
-            package::simple_element(fileNameD, pivot_caches_[i]->str_d()).write(path);
+        package::simple_element(fileNameD, pivot_caches_[i]->str_d()).write(path);
 
-            if (pivot_caches_[i]->get_rels().empty() == false)
-			{
-				rels_files relFiles;
-				pivot_caches_[i]->definitions_rels_file_->set_file_name(fileNameD + L".rels");
-				
-				relFiles.add_rel_file(pivot_caches_[i]->definitions_rels_file_);
-				relFiles.write(path);
-			}
-			if (rels_) //for workbook
-			{
-				const std::wstring id = std::wstring(L"pcId") + std::to_wstring(i + 1);
-				static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition";
-				const std::wstring fileRef = std::wstring(L"pivotCache/") + fileNameD;
-				rels_->add(id, kWSRel, fileRef);
-			}
-			std::wstring content_records = pivot_caches_[i]->str_r();
-			if (!content_records.empty())
-			{
-				const std::wstring fileNameR = std::wstring(L"pivotCacheRecords") + std::to_wstring(i + 1) + L".xml";
-	           
-				contentTypes.add_override(std::wstring(L"/xl/pivotCache/") + fileNameR, kWSConTypeR);
+        if (pivot_caches_[i]->get_rels().empty() == false)
+		{
+			rels_files relFiles;
+			pivot_caches_[i]->definitions_rels_file_->set_file_name(fileNameD + L".rels");
+			
+			relFiles.add_rel_file(pivot_caches_[i]->definitions_rels_file_);
+			relFiles.write(path);
+		}
+		if (rels_) //for workbook
+		{
+			const std::wstring id = std::wstring(L"pcId") + std::to_wstring(i + 1);
+			static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition";
+			const std::wstring fileRef = std::wstring(L"pivotCache/") + fileNameD;
+			rels_->add(id, kWSRel, fileRef);
+		}
+		std::wstring content_records = pivot_caches_[i]->str_r();
+		if (!content_records.empty())
+		{
+			const std::wstring fileNameR = std::wstring(L"pivotCacheRecords") + std::to_wstring(i + 1) + L".xml";
+           
+			contentTypes.add_override(std::wstring(L"/xl/pivotCache/") + fileNameR, kWSConTypeR);
 
-				package::simple_element(fileNameR, content_records).write(path);
-			}
-        }
+			package::simple_element(fileNameR, content_records).write(path);
+		}
     }
 }
 //----------------------------------------------------------------------------------------
@@ -417,8 +455,11 @@ void xl_pivot_table_files::add_pivot_table(pivot_table_content_ptr pivot_table)
 {
     pivot_tables_.push_back(pivot_table);
 }
+
 void xl_pivot_table_files::write(const std::wstring & RootPath)
 {
+	if (pivot_tables_.empty()) return;
+
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"pivotTables";
     NSDirectory::CreateDirectory(path.c_str());
 
@@ -428,23 +469,22 @@ void xl_pivot_table_files::write(const std::wstring & RootPath)
 	
 	for (size_t i = 0; i < pivot_tables_.size(); i++)
     {
-        if (pivot_tables_[i])
-        {
-            const std::wstring fileName = std::wstring(L"pivotTable") + std::to_wstring(i + 1) + L".xml";
-           
-            contentTypes.add_override(std::wstring(L"/xl/pivotTables/") + fileName, kWSConType);
+        if (!pivot_tables_[i]) continue;
 
-            package::simple_element(fileName, pivot_tables_[i]->str()).write(path);
+        const std::wstring fileName = std::wstring(L"pivotTable") + std::to_wstring(i + 1) + L".xml";
+       
+        contentTypes.add_override(std::wstring(L"/xl/pivotTables/") + fileName, kWSConType);
 
-            if (pivot_tables_[i]->get_rels().empty() == false)
-			{
-				rels_files relFiles;
-				pivot_tables_[i]->rels_file_->set_file_name(fileName + L".rels");
-				
-				relFiles.add_rel_file(pivot_tables_[i]->rels_file_);
-				relFiles.write(path);
-			}
-        }
+        package::simple_element(fileName, pivot_tables_[i]->str()).write(path);
+
+        if (pivot_tables_[i]->get_rels().empty() == false)
+		{
+			rels_files relFiles;
+			pivot_tables_[i]->rels_file_->set_file_name(fileName + L".rels");
+			
+			relFiles.add_rel_file(pivot_tables_[i]->rels_file_);
+			relFiles.write(path);
+		}
     }
 }
 //----------------------------------------------------------------------------------------
@@ -454,6 +494,8 @@ void xl_charts_files::add_chart(chart_content_ptr chart)
 }
 void xl_charts_files::write(const std::wstring & RootPath)
 {
+	if (charts_.empty()) return;
+
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"charts";
     NSDirectory::CreateDirectory(path.c_str());
 
@@ -487,7 +529,10 @@ void xl_activeX_files::add_activeX(activeX_content_ptr activeX)
 }
 void xl_activeX_files::write(const std::wstring & RootPath)
 {
+	if (activeXs_.empty()) return;
+
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"activeX";
+    //NSDirectory::CreateDirectory(path.c_str()); уже есть
 
 	content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
 	static const std::wstring kWSConType = L"application/vnd.ms-office.activeX+xml";
@@ -513,15 +558,67 @@ void xl_activeX_files::write(const std::wstring & RootPath)
     }
 }
 //----------------------------------------------------------------------------------------
+void xl_customXml_files::add_customXml(customXml_content_ptr customXml)
+{
+    customXmls_.push_back(customXml);
+}
+void xl_customXml_files::write(const std::wstring & RootPath)
+{
+	if (customXmls_.empty()) return;
+
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"customXml";
+    NSDirectory::CreateDirectory(path.c_str());
+
+	std::wstring path_rels = path + FILE_SEPARATOR_STR + L"_rels";
+    NSDirectory::CreateDirectory(path_rels.c_str());
+
+	content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.customXmlProperties+xml";
+	
+	for (size_t i = 0; i < customXmls_.size(); i++)
+    {
+        if (!customXmls_[i])continue;
+
+        const std::wstring fileNameItem = std::wstring(L"item") + std::to_wstring(i + 1) + L".xml";
+        const std::wstring fileNameProps = std::wstring(L"itemProps") + std::to_wstring(i + 1) + L".xml";
+       
+        contentTypes.add_override(std::wstring(L"/customXml/") + fileNameProps, kWSConType);
+
+        package::simple_element(fileNameItem, customXmls_[i]->item()).write(path);
+        package::simple_element(fileNameProps, customXmls_[i]->props()).write(path);
+
+		{
+			rels_file_ptr rels_file = rels_file::create(fileNameItem + L".rels");
+			
+			rels_file->get_rels().add(relationship(L"rId1", 
+				L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps", 
+				fileNameProps));
+			
+			rels_file->write(path_rels);
+		}
+        if (rels_)
+        {
+            const std::wstring id = std::wstring(L"cstId") + std::to_wstring(i + 1);
+            static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml";
+            const std::wstring fileRef = std::wstring(L"../customXml/") + fileNameItem;
+
+            rels_->add(id, kWSRel, fileRef);
+        }
+
+   }
+}
+//----------------------------------------------------------------------------------------
 void xl_externals_files::add_external(external_content_ptr external)
 {
     externals_.push_back(external);
 }
 void xl_externals_files::write(const std::wstring & RootPath)
 {
+	if (externals_.empty()) return;
+
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"externalLinks";
     NSDirectory::CreateDirectory(path.c_str());
-
+	
 	content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
 	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.externalLink+xml";
 	
@@ -540,7 +637,7 @@ void xl_externals_files::write(const std::wstring & RootPath)
 			rels_files relFiles;
 			externals_[i]->rels_file_->set_file_name(fileName + L".rels");
 			
-			relFiles.add_rel_file(externals_[i]->rels_file_);
+			relFiles.add_rel_file(externals_[i]->rels_file_);			
 			relFiles.write(path);
 		}
         if (rels_)
@@ -554,6 +651,60 @@ void xl_externals_files::write(const std::wstring & RootPath)
     }
 }
 //----------------------------------------------------------------------------------------
+void xl_query_table_files::add_query_table(simple_element_ptr query_table)
+{
+	query_tables_.push_back(query_table);
+}
+void xl_query_table_files::write(const std::wstring & RootPath)
+{
+	if (query_tables_.empty()) return;
+
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"queryTables";
+
+	NSDirectory::CreateDirectory(path);
+
+	content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.queryTable+xml";
+	
+	for (size_t i = 0; i < query_tables_.size(); i++)
+    {
+        if (!query_tables_[i])continue;
+
+        const std::wstring fileName = query_tables_[i]->get_filename();
+       
+        contentTypes.add_override(std::wstring(L"/xl/queryTables/") + fileName, kWSConType);
+
+		query_tables_[i]->write(path);
+    }
+}
+//----------------------------------------------------------------------------------------
+void xl_control_props_files::add_control_props(simple_element_ptr query_table)
+{
+	control_props_.push_back(query_table);
+}
+void xl_control_props_files::write(const std::wstring & RootPath)
+{
+	if (control_props_.empty()) return;
+
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"ctrlProps";
+
+	NSDirectory::CreateDirectory(path);
+
+	content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+	static const std::wstring kWSConType = L"application/vnd.ms-excel.controlproperties+xml";
+	
+	for (size_t i = 0; i < control_props_.size(); i++)
+    {
+        if (!control_props_[i])continue;
+
+        const std::wstring fileName = control_props_[i]->get_filename();
+       
+        contentTypes.add_override(std::wstring(L"/xl/ctrlProps/") + fileName, kWSConType);
+
+		control_props_[i]->write(path);
+    }
+}
+//----------------------------------------------------------------------------------------
 xl_drawings_ptr xl_drawings::create(const std::vector<drawing_elm> & elms)
 {
     return boost::make_shared<xl_drawings>(boost::ref(elms));
@@ -561,6 +712,8 @@ xl_drawings_ptr xl_drawings::create(const std::vector<drawing_elm> & elms)
 
 void xl_drawings::write(const std::wstring & RootPath)
 {
+	if (drawings_.empty()) return;
+
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"drawings";
     NSDirectory::CreateDirectory(path.c_str());
 
@@ -596,8 +749,10 @@ xl_comments_ptr xl_comments::create(const std::vector<comment_elm> & elms)
 
 void xl_comments::write(const std::wstring & RootPath)
 {
+	if (comments_.empty()) return;
+
 	std::wstring vml_path = RootPath + FILE_SEPARATOR_STR + L"drawings";
-    NSDirectory::CreateDirectory(vml_path.c_str());
+    NSDirectory::CreateDirectory(vml_path);
    
 	for (size_t i = 0; i < comments_.size(); i++)
     {

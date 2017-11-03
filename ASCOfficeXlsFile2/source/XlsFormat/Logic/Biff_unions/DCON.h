@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of DCON union of records 
 class DCON: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(DCON)
@@ -50,6 +48,10 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeDCON;
+	
+	BaseObjectPtr				m_DCon;
+	std::vector<BaseObjectPtr>	m_arDCon;
+
 };
 
 } // namespace XLS

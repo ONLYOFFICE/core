@@ -35,10 +35,12 @@
 #include "SXFMLA_bu.h"
 #include "SXOPER.h"
 #include "SXRANGE.h"
-
+#include "PIVOTTH.h"
+#include "../Biff_records/SXVDTEx.h"
 #include "../Biff_records/SXFDB.h"
 #include "../Biff_records/SXFDBType.h"
 #include "../Biff_records/SxIsxoper.h"
+#include "../Biff_records/SXTH.h"
 
 namespace XLS
 {
@@ -103,8 +105,7 @@ const bool FDB::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	m_SXFDB = elements_.back();
-	elements_.pop_back();
+	m_SXFDB = elements_.back(); elements_.pop_back();
 	
 	SXFDB*	fdb	= dynamic_cast<SXFDB*>(m_SXFDB.get());
 
@@ -189,6 +190,21 @@ int FDB::serialize(std::wostream & strm, bool bSql, bool bDBB)
 		CP_XML_NODE(L"cacheField")
 		{ 
 			CP_XML_ATTR(L"name", fdb->stFieldName.value());
+
+			if (m_SXVDTEx)
+			{
+				SXVDTEx *olap_info = dynamic_cast<SXVDTEx*>(m_SXVDTEx.get());
+				if ((olap_info) && (olap_info->isxth >= 0))
+				{
+					CP_XML_ATTR(L"hierarchy", olap_info->isxth);	
+					CP_XML_ATTR(L"level", olap_info->isxtl);	
+					
+					PIVOTTH* ht = dynamic_cast<PIVOTTH*>(m_arPIVOTTH[olap_info->isxth].get());
+					SXTH* sxTH = dynamic_cast<SXTH*>(ht->m_SXTH.get());
+					
+					CP_XML_ATTR(L"caption", sxTH->stDisplay.value());	
+				}
+			}
 
 			if (bSql)
 			{

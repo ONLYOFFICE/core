@@ -67,6 +67,7 @@ static std::wstring get_mime_type(const std::wstring & extension)
 	return L"";
 }
 
+//--------------------------------------------------------------------------------------------------------------------------
 content_types_file::content_types_file() : filename_(L"[Content_Types].xml") 
 {}
 
@@ -122,32 +123,43 @@ void content_types_file::set_media(external_items & _Mediaitems)
 }
 
 
-/////////////////////////////////////////////////////////////////////////
-
-simple_element::simple_element(const std::wstring & FileName, const std::wstring & Content) : file_name_(FileName)
+//--------------------------------------------------------------------------------------------------------------------------
+simple_element_ptr simple_element::create(const std::wstring & FileName, const std::wstring & Content)
 {
-    //utf8::utf16to8(Content.begin(), Content.end(), std::back_inserter(content_utf8_));
-    //падает на спец символах
-
-    content = Content;
-
+    return boost::make_shared<simple_element>(FileName, Content);
 }
-
+simple_element::simple_element(const std::wstring & fileName, const std::wstring & content) : filename_(fileName), content_(content)
+{
+}
+simple_element_ptr simple_element::create(const std::wstring & FileName, const std::string & contentUtf8)
+{
+    return boost::make_shared<simple_element>(FileName, contentUtf8);
+}
+simple_element::simple_element(const std::wstring & fileName, const std::string & contentUtf8) : filename_(fileName), content_utf8_(contentUtf8)
+{
+}
 void simple_element::write(const std::wstring & RootPath)
 {
-	std::wstring name_ = RootPath + FILE_SEPARATOR_STR +  file_name_;
+	std::wstring name_ = RootPath + FILE_SEPARATOR_STR +  filename_;
 
 	NSFile::CFileBinary file;
 	if ( file.CreateFileW(name_) == true)
 	{
-		std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
-        file.WriteFile((BYTE*)root.c_str(), root.length());
-        //file.WriteFile((BYTE*)content_utf8_.c_str(), content_utf8_.length());
-        file.WriteStringUTF8(content);
+		if (!content_utf8_.empty())
+		{
+			file.WriteFile((BYTE*)content_utf8_.c_str(), content_utf8_.size());
+		}
+		else
+		{
+			std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";			
+			file.WriteFile((BYTE*)root.c_str(), root.length());
+
+			file.WriteStringUTF8(content_);
+		}
         file.CloseFile();
 	}
 }
-
+//--------------------------------------------------------------------------------------------------------------------------
 rels_file::rels_file(std::wstring const & FileName) : filename_(FileName) 
 {};
 
@@ -155,7 +167,6 @@ rels_file_ptr rels_file::create(std::wstring const & FileName)
 {
     return boost::make_shared<rels_file>( boost::ref(FileName) );
 }
-
 void rels_file::write(const std::wstring & RootPath)
 {    
     std::wstringstream resStream;
@@ -200,13 +211,6 @@ _CP_PTR(chart_content) chart_content::create()
     return boost::make_shared<chart_content>();
 }
 //----------------------------------------------------------------------------------------
-element_ptr simple_element::create(const std::wstring & FileName, const std::wstring & Content)
-{
-    return boost::make_shared<simple_element>(FileName, Content);
-}
-
-////////////
-
 void core_file::write(const std::wstring & RootPath)
 {
     std::wstringstream resStream;

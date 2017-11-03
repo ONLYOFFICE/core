@@ -53,7 +53,8 @@ public:
 					external_items::Type type);
 
 	void setDataBinRid(const std::wstring &rid, const std::wstring &bin_data);
-	void setClassId(const std::wstring &classId);
+	void setProgId(const std::wstring &classId);
+	void setLicense(const std::wstring &license);
 private:
     class Impl;
     _CP_PTR(Impl) impl_;

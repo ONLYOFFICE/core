@@ -490,7 +490,6 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 							size_t style_ = Context.get_style_manager().xfId(NULL,NULL, &cellFormatProperties, NULL, L"", set_default);	
 
-							if (style_>=0)
 							//if (set_default)
 								CP_XML_ATTR(L"style", style_ );
 						}

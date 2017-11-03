@@ -31,34 +31,34 @@
  */
 
 #include "CHARTFOMATS.h"
-#include <Logic/Biff_records/Chart.h>
-#include <Logic/Biff_records/Begin.h>
-#include <Logic/Biff_records/Scl.h>
-#include <Logic/Biff_records/PlotGrowth.h>
-#include <Logic/Biff_records/ShtProps.h>
-#include <Logic/Biff_records/AxesUsed.h>
-#include <Logic/Biff_records/CrtLayout12A.h>
-#include <Logic/Biff_records/DataLabExt.h>
-#include <Logic/Biff_records/DataLabExtContents.h>
-#include <Logic/Biff_records/StartObject.h>
-#include <Logic/Biff_records/EndObject.h>
-#include <Logic/Biff_records/End.h>
-#include <Logic/Biff_records/ObjectLink.h>
-#include <Logic/Biff_records/FrtWrapper.h>
-#include <Logic/Biff_records/TextPropsStream.h>
+#include "FONTLIST.h"
+#include "FRAME.h"
+#include "SERIESFORMAT.h"
+#include "SS.h"
+#include "DFTTEXT.h"
+#include "AXISPARENT.h"
+#include "DAT.h"
+#include "ATTACHEDLABEL.h"
+#include "CRTMLFRT.h"
+#include "ATTACHEDLABEL.h"
+#include "TEXTPROPS.h"
+#include "SHAPEPROPS.h"
 
-#include <Logic/Biff_unions/FONTLIST.h>
-#include <Logic/Biff_unions/FRAME.h>
-#include <Logic/Biff_unions/SERIESFORMAT.h>
-#include <Logic/Biff_unions/SS.h>
-#include <Logic/Biff_unions/DFTTEXT.h>
-#include <Logic/Biff_unions/AXISPARENT.h>
-#include <Logic/Biff_unions/DAT.h>
-#include <Logic/Biff_unions/ATTACHEDLABEL.h>
-#include <Logic/Biff_unions/CRTMLFRT.h>
-#include <Logic/Biff_unions/ATTACHEDLABEL.h>
-#include <Logic/Biff_unions/TEXTPROPS.h>
-#include <Logic/Biff_unions/SHAPEPROPS.h>
+#include "../Biff_records/Chart.h"
+#include "../Biff_records/Begin.h"
+#include "../Biff_records/Scl.h"
+#include "../Biff_records/PlotGrowth.h"
+#include "../Biff_records/ShtProps.h"
+#include "../Biff_records/AxesUsed.h"
+#include "../Biff_records/CrtLayout12A.h"
+#include "../Biff_records/DataLabExt.h"
+#include "../Biff_records/DataLabExtContents.h"
+#include "../Biff_records/StartObject.h"
+#include "../Biff_records/EndObject.h"
+#include "../Biff_records/End.h"
+#include "../Biff_records/ObjectLink.h"
+#include "../Biff_records/FrtWrapper.h"
+#include "../Biff_records/TextPropsStream.h"
 
 namespace XLS
 {

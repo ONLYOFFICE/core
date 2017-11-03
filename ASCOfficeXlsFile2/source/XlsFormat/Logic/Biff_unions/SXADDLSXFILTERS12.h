@@ -50,7 +50,6 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeSXADDLSXFILTERS12;
-	
 };
 
 } // namespace XLS

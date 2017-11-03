@@ -925,8 +925,9 @@ void PptxConverter::convert(PPTX::Logic::Table *oox_table)
 }
 void PptxConverter::convert(PPTX::Logic::TableRow *oox_table_row)
 {
-	odp_context->slide_context()->start_table_row(oox_table_row->Height.IsInit());
 	if (!oox_table_row) return;
+
+	odp_context->slide_context()->start_table_row(oox_table_row->Height.IsInit());
 
 	if (oox_table_row->Height.IsInit())
 	{

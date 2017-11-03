@@ -70,6 +70,7 @@ public:
 	bool			fibitAtrBdr;
 	bool			fibitAtrPat;
 	bool			fibitAtrProt;
+	
 	XLUnicodeString	rgchName;
 };
 

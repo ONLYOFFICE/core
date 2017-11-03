@@ -44,11 +44,9 @@ DConn::DConn()
 {
 }
 
-
 DConn::~DConn()
 {
 }
-
 
 BaseObjectPtr DConn::clone()
 {
@@ -92,20 +90,16 @@ void DConn::readFields(CFRecord& record)
 		case 5:	grbitDbt.reset(new ConnGrbitDbtOledb);	break;
 		case 7:	grbitDbt.reset(new ConnGrbitDbtAdo);	break;
 		default:
-				break;
+			record.skipNunBytes(2); break;	//unused
 	}
 	if (grbitDbt)
-	{
-		record >> *grbitDbt;
-	}
-	else
-	{
-		unsigned short unused;
-		record >> unused;
-	}
+		grbitDbt->load(record);
 
 	record >> bVerDbqueryEdit >> bVerDbqueryRefreshed >> bVerDbqueryRefreshableMin >> wRefreshInterval >> wHtmlFmt >> rcc >> credMethod >> reserved3;
-
+//wHtmlFmt
+//0x0001 No formatting is applied
+//0x0002 Rich text formatting only
+//0x0003 Full HTML formatting, including cell formatting	
 	if (dbt == 5)
 	{
 		record >> rgchSourceDataFile;
@@ -138,19 +132,21 @@ void DConn::readFields(CFRecord& record)
 	}
 
 	if (connection)
-		record >> *connection;
+	{
+		connection->load(record);
+	}
 
 	if (dbt == 1 || dbt == 5)
 	{
 		record >> rgbSQL;
 	}
 	
-	if (dbt == 1)
+	if (dbt == 1 || dbt == 5)//7183958.xls
 	{
 		record >> rgbSQLSav;	
 	}
 	
-	if (dbt == 4)
+	if (dbt == 4 || dbt == 5)
 	{
 		record >> rgbEditWebPage;
 	}

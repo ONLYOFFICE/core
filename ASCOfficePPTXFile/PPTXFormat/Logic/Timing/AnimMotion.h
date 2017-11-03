@@ -105,7 +105,7 @@ namespace PPTX
 
 					oValue.m_strValue += XmlUtils::CreateNode(_T("p:by"), oAttr1);
 				}
-				if (fromY.IsInit() || fromY.IsInit())
+				if (fromX.IsInit() || fromY.IsInit())
 				{
 					XmlUtils::CAttribute oAttr1;
 					oAttr1.Write(_T("x"), fromX);

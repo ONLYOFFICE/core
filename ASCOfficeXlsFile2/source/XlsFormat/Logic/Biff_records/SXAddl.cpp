@@ -48,7 +48,7 @@ void XLUnicodeStringSegmentedSXADDL::load(CFRecord& record)
 }
 //-----------------------------------------
 
-SXAddl::SXAddl()
+SXAddl::SXAddl() : bEndElement(false), bStartElement(false)
 {
 }
 
@@ -92,6 +92,9 @@ void SXAddl::readFields(CFRecord& record)
 	}
 	if (content)
 		content->load(record);
+
+	if (sxd == 0x00)	bStartElement	= true;
+	if (sxd == 0xff)	bEndElement		= true;
 
 }
 BiffStructurePtr SXAddl::createSxcView(CFRecord& record)
@@ -325,6 +328,16 @@ BiffStructurePtr SXAddl_SXCView_SXDId::clone()
 }
 
 void SXAddl_SXCView_SXDId::load(CFRecord& record)
+{
+	record >> stName;
+}
+//----------------------------------------------------------------------------
+BiffStructurePtr SXAddl_SXCQsi_SXDId::clone()
+{
+	return BiffStructurePtr(new SXAddl_SXCQsi_SXDId(*this));
+}
+
+void SXAddl_SXCQsi_SXDId::load(CFRecord& record)
 {
 	record >> stName;
 }

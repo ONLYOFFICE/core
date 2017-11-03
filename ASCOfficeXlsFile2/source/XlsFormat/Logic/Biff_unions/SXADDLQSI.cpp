@@ -31,18 +31,16 @@
  */
 
 #include "SXADDLQSI.h"
-#include <Logic/Biff_records/SXAddl.h>
-#include <Logic/Biff_unions/SXADDLDBQUERY.h>
-#include <Logic/Biff_unions/UNKNOWNFRT.h>
+#include "../Biff_records/SXAddl.h"
 
 namespace XLS
 {
 
-
-SXADDLQSI::SXADDLQSI()
+SXADDLQSI::SXADDLQSI() : current( &content)
 {
+	_sxAddl elm(NULL, 0);
+	current->push_back(elm);
 }
-
 
 SXADDLQSI::~SXADDLQSI()
 {
@@ -54,19 +52,64 @@ BaseObjectPtr SXADDLQSI::clone()
 	return BaseObjectPtr(new SXADDLQSI(*this));
 }
 
-
 // SXADDLQSI = SXAddl_SXCQsi_SXDId SXADDLDBQUERY *UNKNOWNFRT SXAddl_SXCQsi_SXDEnd
 const bool SXADDLQSI::loadContent(BinProcessor& proc)
 {
-	//if(!proc.mandatory<SXAddl_SXCQsi_SXDId>())
-	//{
-	//	return false;
-	//}
-	//proc.mandatory<SXADDLDBQUERY>();
-	//proc.repeated<UNKNOWNFRT>(0, 0);
-	//proc.mandatory<SXAddl_SXCQsi_SXDEnd>();
+	bool result = false;
+	int level = 0;
+	
+	while (true)
+	{
+		CFRecordType::TypeId type = proc.getNextRecordType();	
 
-	return true;
+		if (type != rt_SXAddl) break;
+	
+		proc.optional<SXAddl>();
+
+		SXAddl* addl = dynamic_cast<SXAddl*>(elements_.back().get());				
+		if (!addl) continue;
+		
+		if (result && addl->bStartElement)
+		{
+			level++;
+			_sxAddl elm(current, level); 
+
+			current = &current->back().levels;
+			
+			current->push_back(elm);
+			
+			elements_.pop_back();
+			continue;
+		}
+		
+		result = true;
+		
+		if (addl->bEndElement)
+		{ 
+			elements_.pop_back();
+			
+			if (level == 0)
+				break;
+			else level--;
+
+			current = current->back().prev;
+			continue;
+		}
+		if (level == 0)
+		{
+			SXAddl_SXCQsi_SXDId* p0 = dynamic_cast<SXAddl_SXCQsi_SXDId*>(addl->content.get());
+			if (p0)
+			{
+				m_SXAddl_SXCQsi_SXDId = addl->content;
+			}
+		}
+
+		current->back().elements.push_back(elements_.back());
+		elements_.pop_back();
+	}
+
+	current = NULL;
+	return result;
 }
 
 } // namespace XLS

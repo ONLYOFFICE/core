@@ -744,7 +744,7 @@ namespace DocFileFormat
 
 					text = FormatUtils::XmlEncode(text);
 
-					if (0 <= text.find(L"\n"))
+					if (std::wstring::npos != text.find(L"\n"))
 					{
 						m_textpath.AppendText(text);
 					}

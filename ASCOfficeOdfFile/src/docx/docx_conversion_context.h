@@ -224,8 +224,9 @@ public:
 	bool & get_use_image_replace()
 	{
 		bool res = false;
-		if (frames_.size()>0)	return frames_.back().use_image_replace;
-		else					return res;
+		if (!frames_.empty())	return frames_.back().use_image_replace;
+		else
+			throw;
 	}
 
 	std::wstring & get_text_stream_shape()

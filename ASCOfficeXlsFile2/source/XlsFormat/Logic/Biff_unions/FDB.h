@@ -67,9 +67,11 @@ public:
 	bool	bEmpty;
 	bool	bInteger;
 	bool	bBool;
-
-	int						index;
-	GlobalWorkbookInfoPtr	global_info;
+//-----------------------------------------------------------
+	int							index;
+	GlobalWorkbookInfoPtr		global_info;
+	BaseObjectPtr				m_SXVDTEx;	// olap info
+	std::vector<BaseObjectPtr>	m_arPIVOTTH;//olap captions
 };
 
 } // namespace XLS

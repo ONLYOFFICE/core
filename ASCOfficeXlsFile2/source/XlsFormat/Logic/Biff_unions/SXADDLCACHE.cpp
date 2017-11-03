@@ -31,69 +31,110 @@
  */
 
 #include "SXADDLCACHE.h"
-#include <Logic/Biff_records/SXAddl.h>
-#include <Logic/Biff_unions/SXADDLCACHE12.h>
-#include <Logic/Biff_unions/SXADDLDBQUERY.h>
-#include <Logic/Biff_unions/UNKNOWNFRT.h>
+
+#include "../Biff_records/SXAddl.h"
 
 namespace XLS
 {
 
-
-SXADDLCACHE::SXADDLCACHE()
+SXADDLCACHE::SXADDLCACHE() : current( &content)
 {
+	_sxAddl elm(NULL, 0);
+	current->push_back(elm);
 }
-
 
 SXADDLCACHE::~SXADDLCACHE()
 {
 }
 
-
-// SXADDLCACHE = SXAddl_SXCCache_SXDId SXAddl_SXCCache_SXDVer10Info [SXAddl_SXCCache_SXDVerSXMacro] 
 BaseObjectPtr SXADDLCACHE::clone()
 {
 	return BaseObjectPtr(new SXADDLCACHE(*this));
 }
 
-
-//[SXADDLCACHE12] [SXADDLDBQUERY] *UNKNOWNFRT SXAddl_SXCCache_SXDEnd
+// SXADDLCACHE = SXAddl_SXCCache_SXDId SXAddl_SXCCache_SXDVer10Info [SXAddl_SXCCache_SXDVerSXMacro] 
+	//[SXADDLCACHE12] [SXADDLDBQUERY] *UNKNOWNFRT SXAddl_SXCCache_SXDEnd
 const bool SXADDLCACHE::loadContent(BinProcessor& proc)
 {
-	//if(!proc.mandatory<SXAddl_SXCCache_SXDId>())
-	//{
-	//	return false;
-	//}
-	//m_SXCCache_SXDId = elements_.back();
-	//elements_.pop_back(); 
+	bool result = false;
+	int level = 0;
+	while (true)
+	{
+		CFRecordType::TypeId type = proc.getNextRecordType();	
 
-	//if (proc.optional<SXAddl_SXCCache_SXDVer10Info>())
-	//{
-	//	m_SXDVer10Info = elements_.back();
-	//	elements_.pop_back(); 
-	//}
-	//if (proc.optional<SXAddl_SXCCache_SXDVerSXMacro>())
-	//{
-	//	m_SXDVerSXMacro = elements_.back();
-	//	elements_.pop_back(); 
-	//}
-	//if (proc.optional<SXADDLCACHE12>())
-	//{
-	//	m_SXADDLCACHE12 = elements_.back();
-	//	elements_.pop_back(); 
-	//}
-	//if (proc.optional<SXADDLDBQUERY>())
-	//{
-	//	m_SXADDLDBQUERY = elements_.back();
-	//	elements_.pop_back(); 
-	//}
-	//int count  = proc.repeated<UNKNOWNFRT>(0, 0);
+		if (type != rt_SXAddl) break;
+	
+		proc.optional<SXAddl>();
 
-	//if (proc.optional<SXAddl_SXCCache_SXDEnd>())
-	//{
-	//	elements_.pop_back(); 
-	//}
-	return true;
+		SXAddl* addl = dynamic_cast<SXAddl*>(elements_.back().get());				
+		if (!addl) continue;
+		
+		if (result && addl->bStartElement)
+		{
+			level++;
+			_sxAddl elm(current, level); 
+
+			current = &current->back().levels;
+			
+			current->push_back(elm);
+			
+			elements_.pop_back();
+			continue;
+		}
+		
+		result = true;
+		
+		if (addl->bEndElement)
+		{ 
+			elements_.pop_back();
+			
+			if (level == 0)
+				break;
+			else level--;
+			
+			current = current->back().prev;
+			continue;
+		}
+		if (level == 0)
+		{
+			SXAddl_SXCCache_SXDId* p0 = dynamic_cast<SXAddl_SXCCache_SXDId*>(addl->content.get());
+			if (p0)
+			{
+				m_SXAddl_SXCCache_SXDId = addl->content;
+			}
+			SXAddl_SXCCache_SXDVerUpdInv* p1 = dynamic_cast<SXAddl_SXCCache_SXDVerUpdInv*>(addl->content.get());
+			if (p1)
+			{
+				m_SXAddl_SXCCache_SXDVerUpdInv = addl->content;
+			}
+			SXAddl_SXCCache_SXDVer10Info* p2 = dynamic_cast<SXAddl_SXCCache_SXDVer10Info*>(addl->content.get());
+			if (p2)
+			{
+				m_SXAddl_SXCCache_SXDVer10Info = addl->content;
+			}
+			SXAddl_SXCCache_SXDVerSXMacro* p3 = dynamic_cast<SXAddl_SXCCache_SXDVerSXMacro*>(addl->content.get());
+			if (p3)
+			{
+				m_SXAddl_SXCCache_SXDVerSXMacro = addl->content;
+			}
+			SXAddl_SXCCache_SXDInvRefreshReal* p4 = dynamic_cast<SXAddl_SXCCache_SXDInvRefreshReal*>(addl->content.get());
+			if (p4)
+			{
+				m_SXAddl_SXCCache_SXDVerSXMacro = addl->content;
+			}
+			SXAddl_SXCCache_SXDInfo12* p5 = dynamic_cast<SXAddl_SXCCache_SXDInfo12*>(addl->content.get());
+			if (p5)
+			{
+				m_SXAddl_SXCCache_SXDInfo12 = addl->content;
+			}
+
+		}
+
+		current->back().elements.push_back(elements_.back());
+		elements_.pop_back();
+	}
+	current = NULL;
+	return result;
 }
 
 } // namespace XLS

@@ -31,20 +31,17 @@
  */
 
 #include "PIVOTADDL.h"
-#include <Logic/Biff_records/SXAddl.h>
-#include <Logic/Biff_unions/SXADDLCALCMEMBER.h>
-#include <Logic/Biff_unions/SXADDLHIERARCHY.h>
-#include <Logic/Biff_unions/SXADDLFIELD.h>
-#include <Logic/Biff_unions/UNKNOWNFRT.h>
-#include <Logic/Biff_unions/SXADDLCONDFMTS.h>
-#include <Logic/Biff_unions/SXADDLSXFILTERS12.h>
+
+#include "../Biff_records/SXAddl.h"
 
 namespace XLS
 {
 
 
-PIVOTADDL::PIVOTADDL()
+PIVOTADDL::PIVOTADDL() : current( &content)
 {
+	_sxAddl elm(NULL, 0);
+	current->push_back(elm);
 }
 
 PIVOTADDL::~PIVOTADDL()
@@ -72,133 +69,71 @@ PIVOTADDL = SXAddl_SXCView_SXDId *Continue_SxaddlSxString
 
 const bool PIVOTADDL::loadContent(BinProcessor& proc)
 {
-	int count = proc.repeated<SXAddl>(0, 0);
-
-	for (std::list<BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); it++)
+	bool result = false;
+	int level = 0;
+	while (true)
 	{
-		SXAddl* addl = dynamic_cast<SXAddl*>(it->get());
+		CFRecordType::TypeId type = proc.getNextRecordType();	
+
+		if (type != rt_SXAddl) break;
+	
+		proc.optional<SXAddl>();
+
+		SXAddl* addl = dynamic_cast<SXAddl*>(elements_.back().get());				
 		if (!addl) continue;
-        SXAddl_SXCView_SXDTableStyleClient* p1 = dynamic_cast<SXAddl_SXCView_SXDTableStyleClient*>(addl->content.get());
-        if (p1)
+		
+		if (result && addl->bStartElement)
 		{
-			m_SXAddl_SXCView_SXDTableStyleClient = addl->content;
-            continue;
+			level++;
+			_sxAddl elm(current, level); 
+
+			current = &current->back().levels;
+			
+			current->push_back(elm);
 		}
-        SXAddl_SXCView_SXDVer10Info* p2 = dynamic_cast<SXAddl_SXCView_SXDVer10Info*>(addl->content.get());
-        if (p2)
-        {
-            m_SXAddl_SXCView_SXDVer10Info = addl->content;
-            continue;
-        }
-        SXAddl_SXCView_SXDVer12Info* p3 = dynamic_cast<SXAddl_SXCView_SXDVer12Info*>(addl->content.get());
-        if (p3)
-        {
-            m_SXAddl_SXCView_SXDVer12Info = addl->content;
-            continue;
-        }
-    }
-	//if(!proc.mandatory<SXAddl_SXCView_SXDId>())
-	//{
-	//	return false;
-	//}
-	//m_SXAddl_SXCView_SXDId = elements_.back();
-	//elements_.pop_back(); 
-	//
-	//int count = proc.repeated<Continue_SxaddlSxString>(0, 0);
-	//
-	//if (proc.optional<SXAddl_SXCView_SXDVer10Info>())
-	//{
-	//	m_SXAddl_SXCView_SXDVer10Info = elements_.back();
-	//	elements_.pop_back(); 
-	//}
-	//if (proc.optional<SXAddl_SXCView_SXDVer12Info>())
-	//{
-	//	m_SXAddl_SXCView_SXDVer12Info = elements_.back();
-	//	elements_.pop_back(); 
-	//}
-	//count = proc.repeated<SXADDLCALCMEMBER>(0, 0);
-	//while(count > 0)
-	//{
-	//	m_arSXADDLCALCMEMBER.push_back(elements_.front());
-	//	elements_.pop_front(); count--;
-	//}
+		
+		result = true;
+		
+		if (addl->bEndElement)
+		{ 
+			elements_.pop_back();
+			
+			if (level == 0)
+				break;
+			else level--;
+			
+			current = current->back().prev;
+			continue;
+		}
+		if (level == 0)
+		{
+			SXAddl_SXCView_SXDId* p0 = dynamic_cast<SXAddl_SXCView_SXDId*>(addl->content.get());
+			if (p0)
+			{
+				m_SXAddl_SXCView_SXDId = addl->content;
+			}
+			SXAddl_SXCView_SXDTableStyleClient* p1 = dynamic_cast<SXAddl_SXCView_SXDTableStyleClient*>(addl->content.get());
+			if (p1)
+			{
+				m_SXAddl_SXCView_SXDTableStyleClient = addl->content;
+			}
+			SXAddl_SXCView_SXDVer10Info* p2 = dynamic_cast<SXAddl_SXCView_SXDVer10Info*>(addl->content.get());
+			if (p2)
+			{
+				m_SXAddl_SXCView_SXDVer10Info = addl->content;
+			}
+			SXAddl_SXCView_SXDVer12Info* p3 = dynamic_cast<SXAddl_SXCView_SXDVer12Info*>(addl->content.get());
+			if (p3)
+			{
+				m_SXAddl_SXCView_SXDVer12Info = addl->content;
+			}
+		}
 
-	//count = proc.repeated<SXADDLHIERARCHY>(0, 0);
-	//while(count > 0)
-	//{
-	//	m_arSXADDLHIERARCHY.push_back(elements_.front());
-	//	elements_.pop_front(); count--;
-	//}	
-	//count = proc.repeated<SXADDLFIELD>(0, 0);
-	//while(count > 0)
-	//{
-	//	m_arSXADDLFIELD.push_back(elements_.front());
-	//	elements_.pop_front(); count--;
-	//}
-
-	//count = proc.repeated<UNKNOWNFRT>(0, 0);
-	//
-	//if (proc.optional<SXAddl_SXCView_SXDTableStyleClient>())
-	//{
-	//	m_SXAddl_SXCView_SXDTableStyleClient = elements_.back();
-	//	elements_.pop_back(); 
-	//}
-
-	//if(proc.optional<SXAddl_SXCView_SXDCompactRwHdr>())
-	//{
-	//	m_SXAddl_SXCView_SXDCompactRwHdr = elements_.back();
-	//	elements_.pop_back(); 
-
-	//	count = proc.repeated<Continue_SxaddlSxString>(0, 0);
-	//}
-	//if(proc.optional<SXAddl_SXCView_SXDCompactColHdr>())
-	//{
-	//	m_SXAddl_SXCView_SXDCompactColHdr = elements_.back();
-	//	elements_.pop_back(); 
-
-	//	count = proc.repeated<Continue_SxaddlSxString>(0, 0);
-	//}
-
-	//if (proc.optional<SXAddl_SXCView_SXDVerUpdInv>())
-	//{
-	//	m_arSXAddl_SXCView_SXDVerUpdInv.push_back(elements_.back());
-	//	elements_.pop_back(); 
-	//}
-	//if (proc.optional<SXADDLCONDFMTS>())
-	//{
-	//	m_SXADDLCONDFMTS = elements_.back();
-	//	elements_.pop_back(); 
-	//}
-	//if (proc.optional<SXADDLSXFILTERS12>())
-	//{
-	//	m_SXAddl_SXADDLSXFILTERS12 = elements_.back();
-	//	elements_.pop_back(); 
-	//}
-	//count = proc.repeated<SXAddl_SXCView_SXDVerUpdInv>(0, 0);
-	//while(count > 0)
-	//{
-	//	m_arSXAddl_SXCView_SXDVerUpdInv.push_back(elements_.front());
-	//	elements_.pop_front(); count--;
-	//}
-
-	//count = proc.repeated<SXAddl_SXCView_SXDSXPIIvmb>(0, 0);
-	//while(count > 0)
-	//{
-	//	m_arSXAddl_SXCView_SXDSXPIIvmb.push_back(elements_.front());
-	//	elements_.pop_front(); count--;
-	//}
-
-	//if (proc.optional<SXAddl_SXCView_SXDVerUpdInv>())
-	//{
-	//	m_arSXAddl_SXCView_SXDVerUpdInv.push_back(elements_.front());
-	//	elements_.pop_front();
-	//}
-
-	//if (proc.optional<SXAddl_SXCView_SXDEnd>())
-	//{
-	//	elements_.pop_back(); 
-	//}
-	return true;
+		current->back().elements.push_back(elements_.back());
+		elements_.pop_back();
+	}
+	current = NULL;
+	return result;
 }
 
 } // namespace XLS

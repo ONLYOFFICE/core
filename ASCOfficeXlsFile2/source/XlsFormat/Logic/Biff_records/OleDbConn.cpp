@@ -56,6 +56,8 @@ void OleDbConn::readFields(CFRecord& record)
 	
 	fPasswd	= GETBIT(flags, 0);
 	fLocal	= GETBIT(flags, 1);
+
+	record.skipNunBytes(4); //reserved2
 }
 
 } // namespace XLS

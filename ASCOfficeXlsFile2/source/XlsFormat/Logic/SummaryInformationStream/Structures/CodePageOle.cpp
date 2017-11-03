@@ -134,6 +134,55 @@ PropertyDateCreate::PropertyDateCreate(const unsigned short value_type, XLS::CFS
 	{
 		*stream >> dwLowDateTime >> dwHighDateTime;
 	}
+}
+PropertyWordCount::PropertyWordCount(const unsigned short value_type, XLS::CFStreamPtr stream)
+{
+	count = 0;
+	if (value_type == Property::VT_I4)
+	{
+		*stream >> count;
+	}
+	else if (value_type == Property::VT_LPSTR)
+	{
+		_UINT32 size;
+		*stream >> size;
 
+		if (size > 0)
+		{
+			char *s = new char[size];
+			stream->read(s,size);
+			value = STR::toStdWString(s, size, 0);
+			delete []s;
+		}
+	}
+}
+PropertyCharCount::PropertyCharCount(const unsigned short value_type, XLS::CFStreamPtr stream)
+{
+	count = 0;
+	if (value_type == Property::VT_I4)
+	{
+		*stream >> count;
+	}
+	else if (value_type == Property::VT_LPSTR)
+	{
+		_UINT32 size;
+		*stream >> size;
+
+		if (size > 0)
+		{
+			char *s = new char[size];
+			stream->read(s,size);
+			value = STR::toStdWString(s, size, 0);
+			delete []s;
+		}
+	}
+}
+PropertyDocSecurity::PropertyDocSecurity(const unsigned short value_type, XLS::CFStreamPtr stream)
+{
+	value = 0;
+	if (value_type == Property::VT_I4)
+	{
+		*stream >> value;
+	}
 }
 } // namespace OLEPS

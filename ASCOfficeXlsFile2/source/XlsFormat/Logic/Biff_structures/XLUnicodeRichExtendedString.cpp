@@ -282,8 +282,8 @@ void XLUnicodeRichExtendedString::loadSymbols(CFRecord& record, const size_t cch
 				char* out_str_char = (char*) out_str;
 				for (int i = 0; i < inp_str_size; i++)
 				{
-					out_str_char[2*i+0] = inp_str.c_str()[i];
-					out_str_char[2*i+1] = 0;
+					out_str_char[2*i + 0] = inp_str.c_str()[i];
+					out_str_char[2*i + 1] = 0;
 				}
 				out_str[inp_str_size] = 0;
 

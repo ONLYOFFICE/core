@@ -71,7 +71,7 @@ namespace ImageHelper
 		__BITMAPINFOHEADER * header = (__BITMAPINFOHEADER*)data;
 		if (!header) return result;
 
-		result == Global::msoblipDIB;
+		result = Global::msoblipDIB;
 
 		if (header->biWidth > 100000 || header->biHeight > 100000 || header->biSize != 40)
 		{

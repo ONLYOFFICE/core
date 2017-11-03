@@ -959,7 +959,7 @@ void NSPresentationEditor::CPPTXWriter::WriteSlide(int nIndexSlide)
 
 void NSPresentationEditor::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CTransition& transition)
 {
-	if (!transition.m_nEffectType == 0xFF)	return;
+	if (transition.m_nEffectType == 0xFF)	return;
 
 	std::wstring type;
 	

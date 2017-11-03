@@ -150,7 +150,7 @@ public:
     std::vector<chart_content_ptr> charts_;
 
 };
-class xl_activeX_files  : public element
+class xl_activeX_files : public element
 {
 public:
 	xl_activeX_files(){}
@@ -159,6 +159,41 @@ public:
 	virtual void	write(const std::wstring & RootPath);
     
     std::vector<activeX_content_ptr> activeXs_;
+};
+class xl_customXml_files : public element
+{
+public:
+	xl_customXml_files(){}
+
+    void set_rels(rels_files * rels)
+    {
+        rels_ = rels;
+    }
+	void			add_customXml(customXml_content_ptr customXml);
+	virtual void	write(const std::wstring & RootPath);
+    
+    std::vector<customXml_content_ptr> customXmls_;
+    rels_files * rels_;
+};
+class xl_query_table_files : public element
+{
+public:
+	xl_query_table_files(){}
+
+    void			add_query_table(simple_element_ptr  query_table);
+	virtual void	write(const std::wstring & RootPath);
+    
+    std::vector<simple_element_ptr> query_tables_;
+};
+class xl_control_props_files : public element
+{
+public:
+	xl_control_props_files(){}
+
+    void			add_control_props(simple_element_ptr  props);
+	virtual void	write(const std::wstring & RootPath);
+    
+    std::vector<simple_element_ptr> control_props_;
 };
 class xl_externals_files  : public element
 {
@@ -202,8 +237,6 @@ public:
 
     rels_files * rels_;
 };
-///////////////////////////////////////////////////////////
-
 class xl_comments;
 typedef _CP_PTR(xl_comments) xl_comments_ptr;
 
@@ -254,8 +287,9 @@ class xl_files : public element
 public:
     xl_files();
 
-public:
     virtual void write(const std::wstring & RootPath);
+
+	rels_files  *get_rels() {return &rels_files_;}
 
     void set_workbook		(element_ptr Element);
     void set_styles			(element_ptr Element);
@@ -272,7 +306,8 @@ public:
     void add_external		(external_content_ptr external);
     void add_pivot_cache	(pivot_cache_content_ptr cache);
 	void add_pivot_table	(pivot_table_content_ptr table);
-
+    void add_query_table	(simple_element_ptr element);
+	void add_control_props	(simple_element_ptr element);
 	void add_vba_project	();
 private:
     rels_files				rels_files_;
@@ -282,9 +317,11 @@ private:
 	xl_pivot_cache_files	pivot_cache_files_;
 	xl_pivot_table_files	pivot_table_files_;
 	xl_activeX_files		activeXs_files_;
+	xl_query_table_files	query_tables_files_;
+	xl_control_props_files	control_props_files_;
 
-	element_ptr				theme_;
-    element_ptr				workbook_;
+	element_ptr		theme_;
+    element_ptr		workbook_;
 
 	element_ptr		connections_;
     element_ptr		styles_;
@@ -302,14 +339,18 @@ class xlsx_document : public document
 {
 public:
 	xlsx_document();
+    virtual content_types_file & content_type() { return content_type_; }
 
     virtual void write(const std::wstring & RootPath);
-    virtual content_types_file & content_type() { return content_type_; }
-    xl_files & get_xl_files() { return xl_files_; }
+   
+	xl_files & get_xl_files() { return xl_files_; }
+   
+	void add_customXml(customXml_content_ptr customXml);
 
 private:
     xlsx_content_types_file content_type_;
     xl_files				xl_files_;
+	xl_customXml_files		customXml_files_;
     docProps_files			docProps_files_;
     rels_files				rels_files_;
 

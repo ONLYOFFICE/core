@@ -59,7 +59,7 @@ public:
 	bool			fWrap;
 	unsigned char	alcV;
 	bool			fJustLast;
-	unsigned char	trot;
+	unsigned short	trot;
 	unsigned char	cIndent;
 	bool			fShrinkToFit;
 	unsigned char	iReadOrder;

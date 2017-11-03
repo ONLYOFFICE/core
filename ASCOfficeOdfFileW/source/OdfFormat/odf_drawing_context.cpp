@@ -2463,8 +2463,6 @@ void odf_drawing_context::start_action(std::wstring value)
 				event_->attlist_.presentation_action_ = L"last-page";
 			else if (std::wstring::npos != value.find(L"endshow"))
 				event_->attlist_.presentation_action_ = L"end";
-			else if (std::wstring::npos != value.find(L"endshow"))
-				event_->attlist_.presentation_action_ = L"end";
 		}
 		else if (std::wstring::npos != value.find(L"hlinksldjump"))
 		{

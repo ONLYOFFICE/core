@@ -33,7 +33,7 @@
 
 #include "BiffStructure.h"
 #include "ObjFmla.h"
-#include <Logic/Biff_structures/FtPioGrbit.h>
+#include "FtPioGrbit.h"
 
 namespace XLS
 {
@@ -51,8 +51,8 @@ public:
 
 	virtual void load(CFRecord& record);
 
-	_UINT32		cbKey;
-	std::string keyBuf;	// ActiveX license key
+	_UINT32			cbKey;
+	std::wstring	keyBuf;	// ActiveX license key
 
 	ObjFmla		fmlaLinkedCell;
 	ObjFmla		fmlaListFillRange;

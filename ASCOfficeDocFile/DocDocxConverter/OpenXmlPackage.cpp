@@ -142,9 +142,11 @@ namespace DocFileFormat
 	}
 	HRESULT OpenXmlPackage::SaveOLEObject( const std::wstring& fileName, const OleObjectFileStructure& oleObjectFileStructure )
 	{
-		POLE::Storage *storageOut = new POLE::Storage(fileName.c_str());
-		
-		if (storageOut == NULL || docFile == NULL) return S_FALSE;
+		if (docFile == NULL) return S_FALSE;
+
+		POLE::Storage *storageOut = new POLE::Storage(fileName.c_str());		
+		if (storageOut == NULL) return S_FALSE;
+
 		if (storageOut->open(true, true)==false)
 		{	
 			delete storageOut;

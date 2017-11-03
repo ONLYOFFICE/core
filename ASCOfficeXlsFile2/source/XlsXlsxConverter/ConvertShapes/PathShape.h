@@ -263,7 +263,8 @@ namespace NSCustomShapesConvert
 		{
 			m_eRuler = oSrc.m_eRuler;
 			m_arPoints.clear();
-			for (int nIndex = 0; nIndex < oSrc.m_arPoints.size(); ++nIndex)
+			
+			for (size_t nIndex = 0; nIndex < oSrc.m_arPoints.size(); ++nIndex)
 			{
 				m_arPoints.push_back(oSrc.m_arPoints[nIndex]);
 			}
@@ -547,7 +548,7 @@ namespace NSCustomShapesConvert
 			LONG lValue;
 			bool bRes = true;
 
-			for (int nIndex = 0; nIndex < oArray.size(); ++nIndex)
+			for (size_t nIndex = 0; nIndex < oArray.size(); ++nIndex)
 			{
 				lValue = GetValue(oArray[nIndex], eParamType, bRes);
 				if (bRes)
@@ -595,7 +596,8 @@ namespace NSCustomShapesConvert
 			height = oSrc.height;
 
 			m_arSlices.clear();
-			for (int nIndex = 0; nIndex < oSrc.m_arSlices.size(); ++nIndex)
+			
+			for (size_t nIndex = 0; nIndex < oSrc.m_arSlices.size(); ++nIndex)
 			{
 				m_arSlices.push_back(oSrc.m_arSlices[nIndex]);
 			}
@@ -615,7 +617,7 @@ namespace NSCustomShapesConvert
 
 			NSStringUtils::ParseString(_T("e"), strPath, oArray);
 
-			for (int nIndex = 0; nIndex < oArray.size(); ++nIndex)
+			for (size_t nIndex = 0; nIndex < oArray.size(); ++nIndex)
 			{
 				CPartPath oPath;
 				m_arParts.push_back(oPath);
@@ -626,7 +628,8 @@ namespace NSCustomShapesConvert
 		CPath& operator =(const CPath& oSrc)
 		{
 			m_arParts.clear();
-			for (int nIndex = 0; nIndex < oSrc.m_arParts.size(); ++nIndex)
+			
+			for (size_t nIndex = 0; nIndex < oSrc.m_arParts.size(); ++nIndex)
 			{
 				m_arParts.push_back(oSrc.m_arParts[nIndex]);
 			}
@@ -635,7 +638,7 @@ namespace NSCustomShapesConvert
 
 		void SetCoordsize(LONG lWidth, LONG lHeight)
 		{
-			for (int nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
+			for (size_t nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
 			{
 				m_arParts[nIndex].width		= lWidth;
 				m_arParts[nIndex].height	= lHeight;

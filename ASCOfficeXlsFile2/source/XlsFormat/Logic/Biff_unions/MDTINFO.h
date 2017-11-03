@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of MDTINFO union of records 
 class MDTINFO: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(MDTINFO)
@@ -49,7 +47,9 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typeMDTINFO;
+	static const ElementType type = typeMDTINFO;
+
+	BaseObjectPtr	m_MDTInfo;
 };
 
 } // namespace XLS

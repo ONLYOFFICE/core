@@ -144,7 +144,7 @@ public:
 			LONG lWidthClient	= m_rcGroupClientAnchor.right	- m_rcGroupClientAnchor.left;
 			LONG lHeightClient	= m_rcGroupClientAnchor.bottom	- m_rcGroupClientAnchor.top;
 
-            bool bIsRecalc = ((lWidthClient > 0) && (lHeightClient > 0) && (lWidthClient > 0) && (lHeightGroup > 0));
+            bool bIsRecalc = ((lWidthClient > 0) && (lHeightClient > 0) && (lWidthGroup > 0) && (lHeightGroup > 0));
 
 			if (bIsRecalc)
 			{

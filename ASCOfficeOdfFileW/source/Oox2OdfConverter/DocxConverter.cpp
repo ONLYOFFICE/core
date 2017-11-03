@@ -2733,10 +2733,10 @@ void DocxConverter::convert(SimpleTypes::CHexColor<>		*color,
             std::wstring strColor = L"#" + oRgbColor->ToString().substr(2);//.Right(6);
 
 			odf_color = odf_types::color(strColor);
-			delete oRgbColor;
-
 			result = true;
 		}
+		if (oRgbColor)
+			delete oRgbColor;
 	}
 	if(theme_color && result == false)
 	{

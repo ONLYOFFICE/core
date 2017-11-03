@@ -555,7 +555,6 @@ HEADERS += \
     ../src/docx/xlsx_xf.h \
     ../include/logging.h \
     ../include/cpdoccore/CPColorUtils.h \
-    ../include/cpdoccore/CPHash.h \
     ../include/cpdoccore/CPNoncopyable.h \
     ../include/cpdoccore/CPOptional.h \
     ../include/cpdoccore/CPScopedPtr.h \

@@ -179,11 +179,11 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 				if (proc.optional<BOF>())
 				{
 					BOF *bof = dynamic_cast<BOF*>(elements_.back().get());
-					proc.getGlobalWorkbookInfo()->Version = bof->vers;
-					if (proc.getGlobalWorkbookInfo()->Version < 0x0600)
+					global_info_->Version = bof->vers;
+					if (global_info_->Version < 0x0600)
 					{				
 
-						proc.getGlobalWorkbookInfo()->CodePage = 0; //???
+						global_info_->CodePage = 0; //???
 					}
 				}
 			}break;
@@ -199,10 +199,10 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			{
 				if (proc.optional<FilePass>())
 				{					
-					if (( proc.getGlobalWorkbookInfo()->decryptor)  &&
-						( proc.getGlobalWorkbookInfo()->decryptor->IsVerify() == false))
+					if (( global_info_->decryptor)  &&
+						( global_info_->decryptor->IsVerify() == false))
 					{
-						if (!proc.getGlobalWorkbookInfo()->decryptor->SetPassword(L"VelvetSweatshop"))
+						if (!global_info_->decryptor->SetPassword(L"VelvetSweatshop"))
 							return false;
 					}
 				}
@@ -281,7 +281,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					if ((CodePage_) && (CodePage_->cv != 0/* && CodePage_->cv != 1200*/))
 						code_page_ = CodePage_->cv;
 
-					proc.getGlobalWorkbookInfo()->CodePage = code_page_;
+					global_info_->CodePage = code_page_;
 				}
 			}break;
 			case rt_Window1:
@@ -314,7 +314,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 						int countryDef = Country_->iCountryDef;
 						int countryWinIni = Country_->iCountryWinIni;
 
-						proc.getGlobalWorkbookInfo()->CodePage;
+						global_info_->CodePage;
 					}
 				}	
 			}break;
@@ -333,8 +333,8 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 
 						if (fmts)
 						{		
-							proc.getGlobalWorkbookInfo()->cellStyleDxfs_count	= fmts->m_arDXF.size(); 
-							proc.getGlobalWorkbookInfo()->m_arFonts				= &fmts->m_arFonts;
+							global_info_->cellStyleDxfs_count	= fmts->m_arDXF.size(); 
+							global_info_->m_arFonts				= &fmts->m_arFonts;
 						}
 					}
 					//else
@@ -347,8 +347,8 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					//		fmts->concatinate(fmts_add);
 					//		elements_.pop_back();
 
-					//		proc.getGlobalWorkbookInfo()->cellStyleDxfs_count	= fmts->m_arDXF.size(); 
-					//		proc.getGlobalWorkbookInfo()->m_arFonts				= &fmts->m_arFonts;
+					//		global_info_->cellStyleDxfs_count	= fmts->m_arDXF.size(); 
+					//		global_info_->m_arFonts				= &fmts->m_arFonts;
 					//	}
 					//}
 				}		
@@ -358,7 +358,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 				count = proc.repeated<PIVOTCACHEDEFINITION>(0, 0);	
 				while(count > 0)
 				{
-					m_arPIVOTCACHEDEFINITION.insert(m_arPIVOTCACHEDEFINITION.begin(), elements_.back());
+					global_info_->arPIVOTCACHEDEFINITION.insert(global_info_->arPIVOTCACHEDEFINITION.begin(), elements_.back());
 					elements_.pop_back();
 					count--;
 				}
@@ -387,8 +387,22 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					count--;
 				}
 			}break;
-			case rt_MDTInfo:				proc.optional<METADATA>();				break;
-			case rt_MTRSettings:			proc.optional<MTRSettings>();			break;
+			case rt_MDTInfo:
+			{
+				if (proc.optional<METADATA>())
+				{
+					m_METADATA = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_MTRSettings:
+			{
+				if (proc.optional<MTRSettings>())
+				{
+					m_MTRSettings = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_ForceFullCalculation:	proc.optional<ForceFullCalculation>();	break;
 			case rt_SupBook:
 			{
@@ -441,7 +455,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					m_SHAREDSTRINGS = elements_.back();
 					elements_.pop_back();
 
-					proc.getGlobalWorkbookInfo()->startAddedSharedStrings = shared_strings.size_;
+					global_info_->startAddedSharedStrings = shared_strings.size_;
 				}
 			}break;
 			case rt_ExtSST:
@@ -468,7 +482,28 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 				FeatHdr feat_hdr(true);
 				proc.repeated(feat_hdr, 0, 0);
 			}break;
-			case rt_DConn:				proc.repeated<DConn>(0, 0);				break;
+			case rt_DConn:
+			{
+				count = proc.repeated<DConn>(0, 0);
+				while(count > 0)
+				{
+					DConn *conn = dynamic_cast<DConn*>(elements_.back().get());
+					if (conn)
+					{
+						if (conn->id.bType == 1)
+						{
+							global_info_->mapStrConnection.insert(std::make_pair(conn->id.string.strTotal, elements_.back()));
+						}
+						else if (conn->id.bType == 2)
+						{
+							global_info_->mapIdConnection.insert(std::make_pair(conn->id.sxStreamID.idStm, elements_.back()));
+						}
+					}
+					m_arDConn.insert(m_arDConn.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
 			case rt_Theme:
 			{
 				if (proc.optional<THEME>())
@@ -518,18 +553,18 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 		}
 	}
 
-	if (proc.getGlobalWorkbookInfo()->CodePage == 0)
+	if (global_info_->CodePage == 0)
 	{	//try from charsets ... todooo make local set on each record (aka Label)
 		//from ixfe -> ifnt from xf -> arFonts
-		for (std::map<int, int>::iterator it = proc.getGlobalWorkbookInfo()->fonts_charsets.begin()
-			; proc.getGlobalWorkbookInfo()->CodePage == 0 && it != proc.getGlobalWorkbookInfo()->fonts_charsets.end()
+		for (std::map<int, int>::iterator it = global_info_->fonts_charsets.begin()
+			; global_info_->CodePage == 0 && it != global_info_->fonts_charsets.end()
 			; it++)
 		{
 			for (int i = 0 ; i < sizeof(aCodePages) / 2; i++)
 			{
 				if (aCodePages[i][0] == it->first)
 				{
-					proc.getGlobalWorkbookInfo()->CodePage = aCodePages[i][1];
+					global_info_->CodePage = aCodePages[i][1];
 					break;
 				}
 			}
@@ -546,7 +581,7 @@ void GlobalsSubstream::LoadHFPicture()
 {
 	if (m_arHFPicture.empty()) return;
 
-	int current_size_hf = 0, j = 0;
+	size_t current_size_hf = 0, j = 0;
 	for ( size_t i = 0; i < m_arHFPicture.size(); i++)
 	{
 		HFPicture* hf = dynamic_cast<HFPicture*>(m_arHFPicture[i].get());

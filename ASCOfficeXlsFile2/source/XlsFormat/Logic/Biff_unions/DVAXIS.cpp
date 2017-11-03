@@ -31,19 +31,19 @@
  */
 
 #include "DVAXIS.h"
-#include <Logic/Biff_records/Axis.h>
-#include <Logic/Biff_records/Begin.h>
-#include <Logic/Biff_records/ValueRange.h>
-#include <Logic/Biff_unions/AXM.h>
-#include <Logic/Biff_unions/AXS.h>
-#include <Logic/Biff_unions/CRTMLFRT.h>
-#include <Logic/Biff_records/End.h>
+#include "AXM.h"
+#include "AXS.h"
+#include "CRTMLFRT.h"
 
-#include <Logic/Biff_records/CatSerRange.h>
-#include <Logic/Biff_records/Tick.h>
-#include <Logic/Biff_records/FontX.h>
-#include <Logic/Biff_records/AxisLine.h>
-#include <Logic/Biff_records/LineFormat.h>
+#include "../Biff_records/Axis.h"
+#include "../Biff_records/Begin.h"
+#include "../Biff_records/ValueRange.h"
+#include "../Biff_records/End.h"
+#include "../Biff_records/CatSerRange.h"
+#include "../Biff_records/Tick.h"
+#include "../Biff_records/FontX.h"
+#include "../Biff_records/AxisLine.h"
+#include "../Biff_records/LineFormat.h"
 
 namespace XLS
 {

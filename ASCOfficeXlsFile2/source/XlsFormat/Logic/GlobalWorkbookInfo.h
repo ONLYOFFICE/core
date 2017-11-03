@@ -106,10 +106,14 @@ public:
 	unsigned int							last_Axes_id;
 	unsigned int							last_Extern_id;
 
+	std::map<std::wstring, BaseObjectPtr>	mapStrConnection;
+	std::map<int, BaseObjectPtr>			mapIdConnection;
+
 	short									idPivotCache;
 	std::map<int, int>						mapPivotCacheIndex; //streamIdCache, write index order 
 	std::unordered_map<int, BaseObjectPtr>	mapPivotCacheStream;//streamIdCache, object
-	std::vector<int>						arPivotCacheStream; //order streamIdCache =  iCache
+	
+	std::vector<BaseObjectPtr>				arPIVOTCACHEDEFINITION;
 
 	std::vector<bool>						arPivotCacheFields;
 	std::vector<bool>						arPivotCacheFieldShortSize;
@@ -125,9 +129,6 @@ public:
 	std::vector<std::pair<boost::shared_array<unsigned char>, size_t> >	bin_data;
 	std::pair<boost::shared_array<unsigned char>, size_t>				listdata_data;
 	std::pair<boost::shared_array<unsigned char>, size_t>				controls_data;
-
-	std::map<int, std::pair<boost::shared_array<unsigned char>, size_t> >	embeddings_data; //parsing ???
-	std::map<int, std::pair<boost::shared_array<unsigned char>, size_t> >	link_data;
 
 	struct _xti
 	{

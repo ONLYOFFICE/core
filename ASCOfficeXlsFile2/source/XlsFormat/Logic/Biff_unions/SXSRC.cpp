@@ -41,6 +41,7 @@ namespace XLS
 SXSRC::SXSRC()
 {
 	bSql = false;
+	bOLAP = false;
 }
 
 

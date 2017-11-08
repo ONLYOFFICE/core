@@ -355,16 +355,13 @@ class Tab
 public:
 	BYTE Val;
 	double Pos;
-	BYTE* Leader;
+	BYTE Leader;
+	bool bLeader;
 	Tab()
 	{
 		Val = shd_Nil;
 		Pos = 0;
-		Leader = NULL;
-	}
-	~Tab()
-	{
-		RELEASEOBJECT(Leader);
+		bLeader = false;
 	}
 };
 class Tabs

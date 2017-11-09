@@ -2340,7 +2340,7 @@ public:
 	{
         return Jc.empty() && TableInd.empty() && TableW.empty() && TableCellMar.empty() && TableBorders.empty() && Shd.empty() && tblpPr.empty()&& Style.empty() && Look.empty() && tblPrChange.empty() && TableCellSpacing.empty() && RowBandSize.empty() && ColBandSize.empty();
 	}
-    std::wstring Write(bool bBandSize, bool bLayout)
+	std::wstring Write()
 	{
         std::wstring sRes;
         sRes += L"<w:tblPr>";
@@ -2364,13 +2364,8 @@ public:
             sRes += (TableBorders);
         if(false == Shd.empty())
             sRes += (Shd);
-		if(bLayout)
-		{
-            if(false == Layout.empty())
-                sRes += (Layout);
-			else if(g_nCurFormatVersion < 4)
-                sRes += L"<w:tblLayout w:type=\"fixed\"/>";
-		}
+		if(false == Layout.empty())
+			sRes += (Layout);
         if(false == TableCellMar.empty())
             sRes += (TableCellMar);
         if(false == Look.empty())
@@ -2758,7 +2753,7 @@ public:
 				}
 				if(NULL != tblPr)
 				{
-					pCStringWriter->WriteString(tblPr->Write(false, true));
+					pCStringWriter->WriteString(tblPr->Write());
 				}
                 if(NULL != tblGridChange)
                 {

@@ -2826,7 +2826,7 @@ public:
 		{
 			CWiterTblPr oWiterTblPr;
 			oBinary_tblPrReader.Read_tblPrOut(length, &oWiterTblPr);
-			odocStyle->TablePr = oWiterTblPr.Write(true, false);
+			odocStyle->TablePr = oWiterTblPr.Write();
 		}
 		else if(c_oSer_sts::Style_RowPr == type)
 		{
@@ -2922,7 +2922,7 @@ public:
 			oBinary_tblPrReader.Read_tblPrOut(length, &oWiterTblPr);
 
             if(false == oWiterTblPr.IsEmpty())
-				ptblStylePr->Writer.WriteString(oWiterTblPr.Write(false, false));
+				ptblStylePr->Writer.WriteString(oWiterTblPr.Write());
 		}
 		else if(c_oSerProp_tblStylePrType::TrPr == type)
 		{
@@ -6851,7 +6851,7 @@ public:
 		{
 			CWiterTblPr oWiterTblPr;
 			oBinary_tblPrReader.Read_tblPrOut(length, &oWiterTblPr);
-			pCStringWriter->WriteString(oWiterTblPr.Write(false, true));
+			pCStringWriter->WriteString(oWiterTblPr.Write());
 		}
 		else if( c_oSerDocTableType::tblGrid == type )
 		{

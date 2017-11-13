@@ -72,7 +72,7 @@ namespace BinXlsxRW {
 		void setDrawingConverter(NSBinPptxRW::CDrawingConverter* pDrawingConverter);
 		void setIsNoBase64		(bool bIsNoBase64);
 
-        void writeChartXlsx     (const std::wstring& sDstFile ,const OOX::Spreadsheet::CChartSpace& oChart);
+		bool writeChartXlsx     (const std::wstring& sDstFile ,const OOX::Spreadsheet::CChartSpace& oChart);
 	};
 }
 #endif	// #ifndef XLSX_SERIALIZER

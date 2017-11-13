@@ -181,20 +181,22 @@ namespace BinXlsxRW{
 				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(lChartNumber) + L".xlsx";
 				std::wstring sXlsxPath = sEmbedingPath + FILE_SEPARATOR_STR + sXlsxFilename;
 				
-				writeChartXlsx(sXlsxPath, oChartSpace);
-				pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(L"xlsx");
+				if (writeChartXlsx(sXlsxPath, oChartSpace))
+				{
+					pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(L"xlsx");
 
-				std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
-				long rId;
-                std::wstring bstrChartsWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
-                m_pExternalDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rId);
+					std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
+					long rId;
+					std::wstring bstrChartsWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
+					m_pExternalDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rId);
 
-				oChartSpace.m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
-				oChartSpace.m_oChartSpace.m_externalData->m_id = new std::wstring();
-				oChartSpace.m_oChartSpace.m_externalData->m_id->append(L"rId");
-				oChartSpace.m_oChartSpace.m_externalData->m_id->append(std::to_wstring(rId));
-				oChartSpace.m_oChartSpace.m_externalData->m_autoUpdate = new OOX::Spreadsheet::CT_Boolean();
-				oChartSpace.m_oChartSpace.m_externalData->m_autoUpdate->m_val = new bool(false);
+					oChartSpace.m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
+					oChartSpace.m_oChartSpace.m_externalData->m_id = new std::wstring();
+					oChartSpace.m_oChartSpace.m_externalData->m_id->append(L"rId");
+					oChartSpace.m_oChartSpace.m_externalData->m_id->append(std::to_wstring(rId));
+					oChartSpace.m_oChartSpace.m_externalData->m_autoUpdate = new OOX::Spreadsheet::CT_Boolean();
+					oChartSpace.m_oChartSpace.m_externalData->m_autoUpdate->m_val = new bool(false);
+				}
 			}
 
 			std::wstring strFilepath	= sFilepath;
@@ -233,7 +235,7 @@ namespace BinXlsxRW{
 		m_bIsNoBase64 = bIsNoBase64;
 	}
 
-	void CXlsxSerializer::writeChartXlsx(const std::wstring& sDstFile, const OOX::Spreadsheet::CChartSpace& oChart)
+	bool CXlsxSerializer::writeChartXlsx(const std::wstring& sDstFile, const OOX::Spreadsheet::CChartSpace& oChart)
 	{
 	//анализируем chart
 		BinXlsxRW::ChartWriter helper;
@@ -252,11 +254,15 @@ namespace BinXlsxRW{
 		helper.toXlsx(oXlsx);
 	//write
 		OOX::CContentTypes oContentTypes;
-		oXlsx.Write(oPath, oContentTypes);
-		//zip
-		COfficeUtils oOfficeUtils(NULL);
-		oOfficeUtils.CompressFileOrDirectory(sTempDir, sDstFile, true);
+		bool res = oXlsx.Write(oPath, oContentTypes);
+		if (res)
+		{
+			//zip
+			COfficeUtils oOfficeUtils(NULL);
+			oOfficeUtils.CompressFileOrDirectory(sTempDir, sDstFile, true);
+		}
 	//clean
 		NSDirectory::DeleteDirectory(sTempDir);
+		return res;
 	}
 };

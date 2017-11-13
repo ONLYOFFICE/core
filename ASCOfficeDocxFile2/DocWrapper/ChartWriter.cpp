@@ -658,8 +658,7 @@ namespace BinXlsxRW{
 			std::wstring wb, sheetFrom, sheetTo;
 			int nRow1, nCol1, nRow2, nCol2;
 			if(OOX::Spreadsheet::CCell::parse3DRef(*pStrRef->m_f, wb, sheetFrom, sheetTo, nRow1, nCol1, nRow2, nCol2) &&
-					sheetFrom.length() > 0 && 0 == wb.length() && 0 == sheetTo.length() &&
-					NULL != pStrRef->m_strCache)
+					sheetFrom.length() > 0 && 0 == sheetTo.length() && NULL != pStrRef->m_strCache)
 			{
 				bool bRow = nRow1 == nRow2;
 				if(bUpdateRange)
@@ -727,7 +726,7 @@ namespace BinXlsxRW{
 			std::wstring wb, sheetFrom, sheetTo;
 			int nRow1, nCol1, nRow2, nCol2;
 			if(OOX::Spreadsheet::CCell::parse3DRef(*pNumRef->m_f, wb, sheetFrom, sheetTo, nRow1, nCol1, nRow2, nCol2) &&
-				sheetFrom.length() > 0 && 0 == wb.length() && 0 == sheetTo.length() && NULL != pNumRef->m_numCache)
+					sheetFrom.length() > 0 && 0 == sheetTo.length() && NULL != pNumRef->m_numCache)
 			{
 				bool bRow = nRow1 == nRow2;
 				if(bUpdateRange)

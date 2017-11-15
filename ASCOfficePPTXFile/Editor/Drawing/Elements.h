@@ -608,7 +608,7 @@ namespace NSPresentationEditor
 			{
 				if (bIsNamespace)
 				{
-					return _T("<a:prstGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" prst=\"line\"><a:avLst/></a:prstGeom>");
+					return _T("<a:prstGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" prst=\"ellipse\"><a:avLst/></a:prstGeom>");
 				}
 				return _T("<a:prstGeom prst=\"ellipse\"><a:avLst/></a:prstGeom>");
 			}

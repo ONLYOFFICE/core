@@ -2057,11 +2057,12 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 		   convert(oox_run_pr->m_oColor.GetPointer(),text_properties->content_.fo_color_);
 	}
 
-    text_properties->content_.style_text_underline_type_= odf_types::line_type(odf_types::line_type::None);
+    //text_properties->content_.style_text_underline_type_= odf_types::line_type(odf_types::line_type::None); //нельзя..если будет выше наследуемого то подчеркивания не будет
 	if (oox_run_pr->m_oU.IsInit())
 	{
 		text_properties->content_.style_text_underline_style_	= odf_types::line_style(odf_types::line_style::Solid);
 		text_properties->content_.style_text_underline_type_	= odf_types::line_type(odf_types::line_type::Single);
+		text_properties->content_.style_text_underline_width_	= odf_types::line_width(odf_types::line_width::Auto);
 
 		_CP_OPT(odf_types::color) color;
 		convert(oox_run_pr->m_oU->m_oColor.GetPointer(), oox_run_pr->m_oU->m_oThemeColor.GetPointer(),
@@ -3187,9 +3188,9 @@ void DocxConverter::convert_table_style(OOX::CStyle *oox_style)
 {
 	if (oox_style == NULL)return;
 
-	std::wstring oox_name = oox_style->m_sStyleId.IsInit() ? *oox_style->m_sStyleId : L"";
+	std::wstring oox_name_id = oox_style->m_sStyleId.IsInit() ? *oox_style->m_sStyleId : L"";
 
-	odt_context->styles_context()->table_styles().start_style(oox_name);
+	odt_context->styles_context()->table_styles().start_style(oox_name_id);
 //общие
 
 	if (oox_style->m_oTblPr.IsInit())
@@ -3303,17 +3304,21 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 			return;
 	}
 
-	std::wstring oox_name = oox_style->m_sStyleId.IsInit() ? *oox_style->m_sStyleId : L"";
+	std::wstring oox_name_id = oox_style->m_sStyleId.IsInit() ? *oox_style->m_sStyleId : L"";
 
-	odt_context->styles_context()->create_style(oox_name, family, false, true, -1); 
+	odt_context->styles_context()->create_style(oox_name_id, family, false, true, -1); 
 
-
+	std::wstring style_name;
 	if (oox_style->m_oName.IsInit() && oox_style->m_oName->m_sVal.IsInit()) 
-		odt_context->styles_context()->last_state()->set_display_name(*oox_style->m_oName->m_sVal);
+	{
+		style_name = *oox_style->m_oName->m_sVal;
+		odt_context->styles_context()->last_state()->set_display_name(style_name);
+	}
 
+	odf_writer::style_text_properties* text_properties = NULL;
 	if (oox_style->m_oRunPr.IsInit())
 	{
-		odf_writer::style_text_properties* text_properties = odt_context->styles_context()->last_state()->get_text_properties();
+		text_properties = odt_context->styles_context()->last_state()->get_text_properties();
 	
 		if (oox_style->m_oDefault.IsInit() && oox_style->m_oDefault->ToBool())
 		{
@@ -3330,14 +3335,14 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 	}
 	if (oox_style->m_oParPr.IsInit())
 	{
-		odf_writer::style_paragraph_properties	* paragraph_properties = odt_context->styles_context()->last_state()->get_paragraph_properties();
+		odf_writer::style_paragraph_properties	*paragraph_properties = odt_context->styles_context()->last_state()->get_paragraph_properties();
 		if (oox_style->m_oDefault.IsInit() && oox_style->m_oDefault->ToBool())
 		{
 			//основан на дефолтовом - накатить
 			odf_writer::odf_style_state_ptr def_style_state;
 			if (odt_context->styles_context()->find_odf_default_style_state(odf_types::style_family::Paragraph, def_style_state) && def_style_state)
 			{
-				odf_writer::style_paragraph_properties * props = def_style_state->get_paragraph_properties();
+				odf_writer::style_paragraph_properties *props = def_style_state->get_paragraph_properties();
 				paragraph_properties->apply_from(props);
 			}
 		}
@@ -3367,9 +3372,19 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 	if (oox_style->m_oBasedOn.IsInit() && oox_style->m_oBasedOn->m_sVal.IsInit())
 		odt_context->styles_context()->last_state()->set_parent_style_name(*oox_style->m_oBasedOn->m_sVal);
 
-		//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oQFormat;
-        //nullable<ComplexTypes::Word::std::wstring_>					m_oAliases;
-
+	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oQFormat;
+	//nullable<ComplexTypes::Word::std::wstring_>					m_oAliases;
+//-------------------------------------------------------------------------------------------------------------------------
+	if (style_name == L"Hyperlink")
+	{
+		odt_context->styles_context()->create_style(L"Internet_20_link", family, false, true, -1); 
+		//odt_context->styles_context()->last_state()->set_parent_style_name(oox_name_id);
+		odt_context->styles_context()->last_state()->set_display_name(L"Internet link");
+		
+		odf_writer::style_text_properties* hyperlink_text_props = odt_context->styles_context()->last_state()->get_text_properties();
+		hyperlink_text_props->apply_from(text_properties);
+		
+	}
 }
 
 void DocxConverter::convert(OOX::Logic::CCommentRangeStart* oox_comm_start)

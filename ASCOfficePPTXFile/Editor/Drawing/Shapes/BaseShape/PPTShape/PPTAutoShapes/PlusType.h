@@ -30,7 +30,7 @@
  *
  */
 #pragma once
-#include "../PPTShape.h"
+#include "../PptShape.h"
 
 // 11
 class CPlusType : public CPPTShape

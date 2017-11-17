@@ -32,15 +32,10 @@
 #pragma once
 #include "GraphicsPath.h"
 
-#if defined(PPTX_DEF)
-    #include "PPTXShape/Formula.h"
-#endif
+#include "PPTXShape/PptxFormula.h"
+#include "PPTShape/PptFormula.h"
 
-#if defined(PPT_DEF)
-    #include "PPTShape/Formula.h"
-    using namespace NSGuidesVML;
-#endif
-
+using namespace NSGuidesVML;
 
 namespace NSPresentationEditor
 {
@@ -236,19 +231,23 @@ namespace NSPresentationEditor
 
     class CSlice
     {
+    private:
+        int m_nCountElementsPoint;
     public:
         RulesType m_eRuler;
         std::vector<Aggplus::POINT> m_arPoints;
 
-    private:
-        int m_nCountElementsPoint;
+		LONG						m_lX;
+		LONG						m_lY;
 
-    public:
-        CSlice(RulesType eType = rtMoveTo)
+        CSlice(RulesType eType = rtMoveTo, LONG x = 0, LONG y = 0)
         {
             m_eRuler = eType;
             m_nCountElementsPoint = 0;
-        }
+ 			
+			m_lX = x;
+			m_lY = y;
+       }
 
         void AddParam(LONG lParam)
         {
@@ -257,16 +256,23 @@ namespace NSPresentationEditor
             {
                 Aggplus::POINT point;
                 point.x = lParam;
+				if (m_eRuler !=  rtRMoveTo && m_eRuler !=  rtRLineTo && m_eRuler !=  rtRCurveTo)
+				{
+					point.x -= m_lX;
+				}
                 point.y = 0;
                 m_arPoints.push_back(point);
             }
             else
             {
-                m_arPoints[m_arPoints.size() - 1].y = lParam;
+                m_arPoints.back().y = lParam;
+				if (m_eRuler !=  rtRMoveTo && m_eRuler !=  rtRLineTo && m_eRuler !=  rtRCurveTo)
+				{
+					m_arPoints.back().y -= m_lY;
+				}
             }
             ++m_nCountElementsPoint;
         }
-    #if defined(PPTX_DEF)
         void FromXML(XmlUtils::CXmlNode& Node, NSGuidesOOXML::CFormulaManager& pManager, double WidthKoef, double HeightKoef)
         {
             m_arPoints.clear();
@@ -310,348 +316,10 @@ namespace NSPresentationEditor
                 }
             }
         }
-    #endif
-        std::wstring ToXml(CGeomShapeInfo& pGeomInfo, long w, long h, NSBaseShape::ClassType ClassType)
+		void ToRenderer(CGraphicPath* pRenderer, CGeomShapeInfo& pGeomInfo, long w, long h, NSBaseShape::ClassType ClassType)
         {
             switch(ClassType)
             {
-    #if defined(PPTX_DEF)
-            case NSBaseShape::pptx:
-            {
-                std::wstring strRes = GetRulerName(m_eRuler);
-
-                if ((rtOOXMLClose == m_eRuler) || (rtOOXMLEnd == m_eRuler))
-                    return _T("<part name='") + strRes + _T("'/>");
-
-                double dLeft = pGeomInfo.m_dLeft;
-                double dTop = pGeomInfo.m_dTop;
-
-                double dKoefX = (std::max)(pGeomInfo.m_dWidth, pGeomInfo.m_dHeight)/ShapeSize;//pGeomInfo.m_dWidth / ShapeSize;
-                double dKoefY = (std::max)(pGeomInfo.m_dWidth, pGeomInfo.m_dHeight)/ShapeSize;//pGeomInfo.m_dHeight / ShapeSize;
-
-                strRes = _T("<part name='") + strRes + _T("' path='");
-
-                std::wstring strPath = _T("");
-
-                switch (m_eRuler)
-                {
-                case rtOOXMLMoveTo:
-                {
-                    pGeomInfo.m_oCurPoint.dX = 0;
-                    pGeomInfo.m_oCurPoint.dY = 0;
-                }
-                case rtOOXMLLineTo:
-                case rtOOXMLCubicBezTo:
-                {
-                    for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
-                    {
-                        double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
-                        double lY = dTop  + (dKoefY * m_arPoints[nIndex].y);
-
-                        //ApplyLimo(pGeomInfo, lX, lY);
-
-                        strPath += std::to_wstring(lX) + L" " + std::to_wstring(lY) + L" ";
-
-                        pGeomInfo.m_oCurPoint.dX = lX;
-                        pGeomInfo.m_oCurPoint.dY = lY;
-                    }
-                    break;
-                }
-                case rtOOXMLQuadBezTo:
-                {
-                    std::vector<CGeomShapeInfo::CPointD> arPoints;
-                    arPoints.push_back(pGeomInfo.m_oCurPoint);
-
-                    for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
-                    {
-                        CGeomShapeInfo::CPointD oPoint;
-
-                        oPoint.dX = dLeft + (dKoefX * m_arPoints[nIndex].x);
-                        oPoint.dY = dTop  + (dKoefY * m_arPoints[nIndex].y);
-
-                        arPoints.push_back(oPoint);
-                    }
-
-                    Bez2_3(arPoints, m_eRuler);
-
-                    strRes = GetRulerName(m_eRuler);
-                    strRes = _T("<part name='") + strRes + _T("' path='");
-
-                    size_t nCountNew = arPoints.size();
-                    if (0 < nCountNew)
-                    {
-                        pGeomInfo.m_oCurPoint = arPoints[nCountNew - 1];
-                    }
-
-                    for (size_t nIndex = 0; nIndex < nCountNew; ++nIndex)
-                    {
-                        strPath += std::to_wstring(arPoints[nIndex].dX) + L" " + std::to_wstring(arPoints[nIndex].dY) + L" ";
-                    }
-                    break;
-                }
-                case rtOOXMLArcTo:
-                {
-                    double lX = pGeomInfo.m_oCurPoint.dX;
-                    double lY = pGeomInfo.m_oCurPoint.dY;
-                    double dAngleP = atan2(m_arPoints[0].x * sin(RadKoef * m_arPoints[1].x), m_arPoints[0].y * cos(RadKoef * m_arPoints[1].x));
-
-                    lX += (m_arPoints[0].x * dKoefX) * (-cos(dAngleP));//(-cos(RadKoef * m_arPoints[1].x));
-                    lY += (m_arPoints[0].y * dKoefY) * (-sin(dAngleP));//(-sin(RadKoef * m_arPoints[1].x));
-
-                    strPath += std::to_wstring(lX) + L" " + std::to_wstring(lY) + L" ";
-
-                    double cx = lX;
-                    double cy = lY;
-
-                    lX = (2 * dKoefX * m_arPoints[0].x);
-                    lY = (2 * dKoefY * m_arPoints[0].y);
-
-                    strPath += std::to_wstring(lX) + L" " + std::to_wstring(lY) + L" ";
-
-                    double dAngle = (m_arPoints[1].y + m_arPoints[1].x)* RadKoef;
-                    dAngleP = atan2(/*dKoefX */ m_arPoints[0].x * sin(dAngle), /*dKoefY */ m_arPoints[0].y * cos(dAngle));
-
-                    lX = (double)m_arPoints[1].x/60000.0;
-                    lY = (double)m_arPoints[1].y/60000.0;
-
-                    //if (lX < 0)
-                    //	lX += 360;
-                    //if (lY < 0)
-                    //	lY += 360;
-                    //dRad = _hypot(m_arPoints[0].x * cos(dAngle) * dKoefX, m_arPoints[0].y * sin(dAngle) * dKoefY);
-                    pGeomInfo.m_oCurPoint.dX = cx + (m_arPoints[0].x * dKoefX) * cos(dAngleP);
-                    pGeomInfo.m_oCurPoint.dY = cy + (m_arPoints[0].y * dKoefY) * sin(dAngleP);
-
-                    strPath += std::to_wstring(lX) + L" " + std::to_wstring(lY) + L" ";
-                    break;
-                }
-                default:
-                    break;
-                };
-
-                if (strPath.length() > 1)
-                {
-                    strPath.erase(strPath.length() - 1);
-                }
-
-                strRes += strPath;
-                strRes += _T("'/>");
-
-                return strRes;
-            }
-    #endif
-    #if defined(PPT_DEF)
-            case NSBaseShape::ppt:
-            {
-                std::wstring strRes = GetRulerName(m_eRuler);
-
-                if ((rtClose == m_eRuler) || (rtNoFill == m_eRuler) ||
-                        (rtNoStroke == m_eRuler) || (rtEnd == m_eRuler))
-                    return _T("<part name='") + strRes + _T("'/>");
-
-                double dLeft = pGeomInfo.m_dLeft;
-                double dTop = pGeomInfo.m_dTop;
-
-                double dKoefX = pGeomInfo.m_dWidth / w;
-                double dKoefY = pGeomInfo.m_dHeight / h;
-
-                strRes = _T("<part name='") + strRes + _T("' path='");
-
-                std::wstring strPath = _T("");
-
-                switch (m_eRuler)
-                {
-                case rtMoveTo:
-                case rtLineTo:
-                case rtCurveTo:
-                case rtEllipticalQuadrX:
-                case rtEllipticalQuadrY:
-                {
-                    if (rtMoveTo == m_eRuler)
-                    {
-                        pGeomInfo.m_oCurPoint.dX = 0;
-                        pGeomInfo.m_oCurPoint.dY = 0;
-                    }
-                    for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
-                    {
-                        double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
-                        double lY = dTop  + (dKoefY * m_arPoints[nIndex].y);
-
-                        //ApplyLimo(pGeomInfo, lX, lY);
-
-                        strPath += std::to_wstring(lX) + L" " + std::to_wstring(lY) + L" ";
-
-                        pGeomInfo.m_oCurPoint.dX = lX;
-                        pGeomInfo.m_oCurPoint.dY = lY;
-                    }
-                    break;
-                }
-                case rtQuadrBesier:
-                {
-                    std::vector<CGeomShapeInfo::CPointD> arPoints;
-                    arPoints.push_back(pGeomInfo.m_oCurPoint);
-
-                    for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
-                    {
-                        CGeomShapeInfo::CPointD oPoint;
-
-                        oPoint.dX = dLeft + (dKoefX * m_arPoints[nIndex].x);
-                        oPoint.dY = dTop  + (dKoefY * m_arPoints[nIndex].y);
-
-                        arPoints.push_back(oPoint);
-                    }
-
-                    Bez2_3(arPoints, m_eRuler);
-
-                    strRes = GetRulerName(m_eRuler);
-                    strRes = _T("<part name='") + strRes + _T("' path='");
-
-                    size_t nCountNew = arPoints.size();
-                    if (0 < nCountNew)
-                    {
-                        pGeomInfo.m_oCurPoint = arPoints[nCountNew - 1];
-                    }
-
-                    for (size_t nIndex = 0; nIndex < nCountNew; ++nIndex)
-                    {
-                        strPath += std::to_wstring(arPoints[nIndex].dX) + L" " + std::to_wstring(arPoints[nIndex].dY) + L" ";
-                    }
-                    break;
-                }
-                case rtArcTo:
-                case rtClockwiseArcTo:
-                {
-                    for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
-                    {
-                        double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
-                        double lY = dTop  + (dKoefY * m_arPoints[nIndex].y);
-
-                        //ApplyLimo(pGeomInfo, lX, lY);
-
-                        strPath += std::to_wstring(lX) + L" " + std::to_wstring(lY) + L" ";
-
-                        if (nIndex % 4 != 1)
-                        {
-                            pGeomInfo.m_oCurPoint.dX = lX;
-                            pGeomInfo.m_oCurPoint.dY = lY;
-                        }
-                    }
-                    break;
-                }
-                case rtArc:
-                case rtClockwiseArc:
-                {
-                    for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
-                    {
-                        double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
-                        double lY = dTop  + (dKoefY * m_arPoints[nIndex].y);
-
-                        //ApplyLimo(pGeomInfo, lX, lY);
-
-                        strPath += std::to_wstring(lX) + L" " + std::to_wstring(lY) + L" ";
-
-                        if (nIndex % 4 > 1)
-                        {
-                            pGeomInfo.m_oCurPoint.dX = lX;
-                            pGeomInfo.m_oCurPoint.dY = lY;
-                        }
-                    }
-                    break;
-                }
-                case rtRMoveTo:
-                case rtRLineTo:
-                case rtRCurveTo:
-                {
-                    for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
-                    {
-                        double lX = pGeomInfo.m_oCurPoint.dX + (dKoefX * m_arPoints[nIndex].x);
-                        double lY = pGeomInfo.m_oCurPoint.dY + (dKoefY * m_arPoints[nIndex].y);
-
-                        //ApplyLimo(pGeomInfo, lX, lY);
-
-                        lX -= pGeomInfo.m_oCurPoint.dX;
-                        lY -= pGeomInfo.m_oCurPoint.dY;
-
-                        strPath += std::to_wstring(lX) + L" " + std::to_wstring(lY) + L" ";
-
-                        pGeomInfo.m_oCurPoint.dX += lX;
-                        pGeomInfo.m_oCurPoint.dY += lY;
-                    }
-                    break;
-                }
-                case rtAngleEllipseTo:
-                case rtAngleEllipse:
-                {
-                    for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
-                    {
-                        double lX = 0;
-                        double lY = 0;
-                        if (nIndex % 3 == 0)
-                        {
-                            lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
-                            lY = dTop  + (dKoefY * m_arPoints[nIndex].y);
-
-                            strPath += std::to_wstring(lX) + L" " + std::to_wstring(lY) + L" ";
-                            continue;
-                        }
-                        else if (nIndex % 3 == 1)
-                        {
-                            lX = (2 * dKoefX * m_arPoints[nIndex].x);
-                            lY = (2 * dKoefY * m_arPoints[nIndex].y);
-
-                            strPath += std::to_wstring(lX) + L" " + std::to_wstring(lY) + L" ";
-                            continue;
-                        }
-                        else
-                        {
-                            double dCx = dLeft + (dKoefX * m_arPoints[nIndex - 2].x);
-                            double dCy = dTop  + (dKoefY * m_arPoints[nIndex - 2].y);
-
-                            double dRadX = dKoefX * m_arPoints[nIndex - 1].x;
-                            double dRadY = dKoefY * m_arPoints[nIndex - 1].y;
-                            double dAng = (m_arPoints[nIndex].x + m_arPoints[nIndex].y) / pow2_16;
-                            dAng *= (M_PI / pow2_16);
-
-                            double dcos = cos(dAng);
-                            double dsin = sin(dAng);
-                            double rad = 1 / sqrt(dRadX * dRadX * dcos * dcos + dRadY * dRadY * dsin * dsin);
-
-                            pGeomInfo.m_oCurPoint.dX = (dCx + rad * dcos);
-                            pGeomInfo.m_oCurPoint.dY = (dCy + rad * dsin);
-
-                            lX = m_arPoints[nIndex].x / pow2_16;
-                            lY = m_arPoints[nIndex].y / pow2_16;
-                        }
-
-                        strPath += std::to_wstring(-lX) + L" " + std::to_wstring(-lY) + L" ";
-                    }
-                    break;
-                }
-                default:
-                    break;
-                };
-
-                if (strPath.length() > 1)
-                {
-                    strPath.erase(strPath.length() - 1);
-                }
-
-                strRes += strPath;
-                strRes += _T("' />");
-
-                return strRes;
-            }
-    #endif
-            };
-
-            return _T("");
-        }
-
-        void ToRenderer(CGraphicPath* pRenderer, CGeomShapeInfo& pGeomInfo, long w, long h, NSBaseShape::ClassType ClassType)
-        {
-            switch(ClassType)
-            {
-    #if defined(PPTX_DEF)
             case NSBaseShape::pptx:
             {
                 if (rtOOXMLClose == m_eRuler)
@@ -768,8 +436,6 @@ namespace NSPresentationEditor
                 };
                 break;
             }
-    #endif
-    #if defined(PPT_DEF)
             case NSBaseShape::ppt:
             {
                 if ((rtClose == m_eRuler) || (rtNoFill == m_eRuler) ||
@@ -959,7 +625,6 @@ namespace NSPresentationEditor
                 };
                 break;
             }
-    #endif
             };
 
         }
@@ -1111,10 +776,6 @@ namespace NSPresentationEditor
             bIsX = !bIsX;
         }
 
-
-
-
-
         void ApplyLimo(CGeomShapeInfo& pGeomInfo, double& lX, double& lY)
         {
             if ((0 == pGeomInfo.m_dLimoX) || (0 == pGeomInfo.m_dLimoY))
@@ -1232,35 +893,42 @@ namespace NSPresentationEditor
         bool m_bStroke;
         long width;
         long height;
-        std::vector<CSlice> m_arSlices;
+		long x;
+        long y;
+		std::vector<CSlice> m_arSlices;
 
-    public:
         CPartPath() : m_arSlices()
         {
             m_bFill = true;
             m_bStroke = true;
-            width = 43200;
-            height = 43200;
+  
+			width = height = 43200;
+ 			x = y = 0;
+           
         }
-    #if defined(PPTX_DEF)
-        void FromXML(XmlUtils::CXmlNode& PathNode, NSGuidesOOXML::CFormulaManager& pManager)
+        void FromXML(XmlUtils::CXmlNode& PathNode, NSGuidesOOXML::CFormulaManager& pManager)// oox
         {
             m_bFill = PathNode.GetAttribute(_T("fill"), _T("norm")) != _T("none");
             std::wstring stroke = PathNode.GetAttribute(_T("stroke"), _T("true"));
             m_bStroke = (stroke == _T("true")) || (stroke == _T("1"));
-            width = (long)XmlUtils::GetInteger(PathNode.GetAttribute(_T("w"), _T("0")));
+            
+			width = (long)XmlUtils::GetInteger(PathNode.GetAttribute(_T("w"), _T("0")));
             height = (long)XmlUtils::GetInteger(PathNode.GetAttribute(_T("h"), _T("0")));
-            if(width == 0) width = (long)pManager.GetWidth();
+            
+			if(width == 0) width = (long)pManager.GetWidth();
             if(height == 0) height = (long)pManager.GetHeight();
 
             XmlUtils::CXmlNodes list;
             PathNode.GetNodes(_T("*"), list);
-            for(long i = 0; i < list.GetCount(); i++)
+           
+			for(int i = 0; i < list.GetCount(); i++)
             {
                 CSlice slice;
                 XmlUtils::CXmlNode node;
                 list.GetAt(i, node);
-                slice.FromXML(node, pManager, pManager.GetWidth()/width, pManager.GetHeight()/height);
+                
+				slice.FromXML(node, pManager, pManager.GetWidth()/width, pManager.GetHeight()/height);
+
                 m_arSlices.push_back(slice);
             }
 
@@ -1268,9 +936,8 @@ namespace NSPresentationEditor
             //EndSlice.m_eRuler = rtEnd;
             //m_arSlices.push_back(EndSlice);
         }
-    #endif
-    #if defined(PPT_DEF)
-        void FromXML(std::wstring strPath, NSGuidesVML::CFormulasManager& pManager)
+
+        void FromXML(std::wstring strPath, NSGuidesVML::CFormulasManager& pManager) //vml
         {
             NSStringUtils::CheckPathOn_Fill_Stroke(strPath, m_bFill, m_bStroke);
             std::vector<std::wstring> oArray;
@@ -1335,15 +1002,15 @@ namespace NSPresentationEditor
                         }
                         else
                         {
-                            CSlice oSlice(eRuler);
+                            CSlice oSlice(eRuler, x, y);
                             m_arSlices.push_back(oSlice);
                         }
                     }
                 }
             }
         }
-    #endif
-        std::wstring ToXml(CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo, NSBaseShape::ClassType ClassType)
+
+		std::wstring ToXml(CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo, NSBaseShape::ClassType ClassType)
         {
             return _T("");
         }
@@ -1396,7 +1063,10 @@ namespace NSPresentationEditor
             width = oSrc.width;
             height = oSrc.height;
 
-            m_arSlices.clear();
+            x = oSrc.x;
+            y = oSrc.y;
+			
+			m_arSlices.clear();
             for (size_t nIndex = 0; nIndex < oSrc.m_arSlices.size(); ++nIndex)
             {
                 m_arSlices.push_back(oSrc.m_arSlices[nIndex]);
@@ -1409,22 +1079,29 @@ namespace NSPresentationEditor
     {
     public:
         std::vector<CPartPath> m_arParts;
-    public:
-    #if defined(PPTX_DEF)
-        void FromXML(XmlUtils::CXmlNodes& list, NSGuidesOOXML::CFormulaManager& pManager)
+		LONG m_lX;
+		LONG m_lY;
+
+		CPath() : m_lX(0), m_lY(0) {}
+
+		void FromXML(XmlUtils::CXmlNodes& list, NSGuidesOOXML::CFormulaManager& pManager)
         {
             m_arParts.clear();
             for(long i = 0; i < list.GetCount(); i++)
             {
                 XmlUtils::CXmlNode path;
                 list.GetAt(i, path);
-                CPartPath part;
-                part.FromXML(path, pManager);
+              
+				CPartPath part;
+				
+				part.x = m_lX;
+				part.y = m_lY;
+
                 m_arParts.push_back(part);
-            }
+                m_arParts.back().FromXML(path, pManager);
+           }
         }
-    #endif
-    #if defined(PPT_DEF)
+
         void FromXML(std::wstring strPath, NSGuidesVML::CFormulasManager& pManager)
         {
             m_arParts.clear();
@@ -1433,12 +1110,15 @@ namespace NSPresentationEditor
 
             for (size_t nIndex = 0; nIndex < oArray.size(); ++nIndex)
             {
-                CPartPath oPath;
-                m_arParts.push_back(oPath);
+                CPartPath part;
+				
+				part.x = m_lX;
+				part.y = m_lY;
+
+                m_arParts.push_back(part);
                 m_arParts.back().FromXML(oArray[nIndex], pManager);
             }
         }
-    #endif
         std::wstring ToXml(CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo, NSBaseShape::ClassType ClassType)
         {
             std::wstring strResult = _T("");
@@ -1472,9 +1152,17 @@ namespace NSPresentationEditor
             {
                 m_arParts.push_back(oSrc.m_arParts[nIndex]);
             }
-            return (*this);
+			m_lX = oSrc.m_lX;   
+			m_lY = oSrc.m_lY; 
+			
+			return (*this);
         }
-
+        
+		void SetCoordpos(LONG lX, LONG lY)
+        {
+            m_lX = lX;
+            m_lY = lY;
+        }
         void SetCoordsize(LONG lWidth, LONG lHeight)
         {
             for (size_t nIndex = 0; nIndex < m_arParts.size(); ++nIndex)

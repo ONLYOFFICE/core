@@ -30,7 +30,7 @@
  *
  */
 #pragma once
-#include "../PPTShape.h"
+#include "../PptShape.h"
 
 // 45
 class CAccentCallout2Type : public CPPTShape

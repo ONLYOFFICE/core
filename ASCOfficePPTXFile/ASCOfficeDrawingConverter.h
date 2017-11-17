@@ -37,7 +37,7 @@
 #include "../Common/DocxFormat/Source/Base/Base.h"
 #include "../Common/DocxFormat/Source/Base/Nullable.h"
 
-#include "./Editor/Drawing/Shapes/BaseShape/PPTShape/PPTShapeEnum.h"
+#include "./Editor/Drawing/Shapes/BaseShape/PPTShape/PptShapeEnum.h"
 
 #include <vector>
 #include <map>
@@ -277,7 +277,9 @@ namespace NSBinPptxRW
         void CheckPenShape          (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, PPTShapes::ShapeType eType, CPPTShape* pPPTShape);
 
         void LoadCoordSize			(XmlUtils::CXmlNode& oNode, ::CShape* pShape);
-        std::wstring GetDrawingMainProps (XmlUtils::CXmlNode& oNode, PPTX::CCSS& oCssStyles, CSpTreeElemProps& oProps);
+		void LoadCoordPos			(XmlUtils::CXmlNode& oNode, ::CShape* pShape);
+       
+		std::wstring GetDrawingMainProps (XmlUtils::CXmlNode& oNode, PPTX::CCSS& oCssStyles, CSpTreeElemProps& oProps);
 
         void ConvertMainPropsToVML  (const std::wstring& sMainProps, NSBinPptxRW::CXmlWriter& oWriter, PPTX::Logic::SpTreeElem& oElem);
         void ConvertPicVML          (PPTX::Logic::SpTreeElem& oElem, const std::wstring& sMainProps, NSBinPptxRW::CXmlWriter& oWriter);

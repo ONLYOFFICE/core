@@ -32,7 +32,7 @@
 #pragma once
 #include "./../BaseShape.h"
 #include "CustomGeomShape.h"
-#include "PPTShapeEnum.h"
+#include "PptShapeEnum.h"
 #include "../../../../../../Common/DocxFormat/Source/DocxFormat/Logic/VmlOfficeDrawing.h"
 
 using namespace NSOfficeDrawing;
@@ -561,7 +561,7 @@ public:
         if (m_oPath.m_arParts.size() == 0)
             return;
 
-        LONG lWidth	= m_oPath.m_arParts[0].width;
+        LONG lWidth		= m_oPath.m_arParts[0].width;
         LONG lHeight	= m_oPath.m_arParts[0].height;
 
         std::vector<std::wstring> oArray;

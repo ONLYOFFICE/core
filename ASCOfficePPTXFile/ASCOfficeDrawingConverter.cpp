@@ -48,7 +48,7 @@
 #include "./PPTXFormat/LegacyDiagramText.h"
 
 #include "./Editor/Drawing/Elements.h"
-#include "./Editor/Drawing/Shapes/BaseShape/PPTXShape/pptx2pptshapeconverter.h"
+#include "./Editor/Drawing/Shapes/BaseShape/PPTXShape/Pptx2PptShapeConverter.h"
 
 #include "../DesktopEditor/common/Directory.h"
 
@@ -974,7 +974,6 @@ HRESULT CDrawingConverter::AddShapeType(const std::wstring& bsXml)
 
 	if (oNode.IsValid())
 	{
-#ifdef PPT_DEF
         CPPTShape* pShape = new CPPTShape();
 		pShape->m_bIsShapeType = true;
 
@@ -984,11 +983,11 @@ HRESULT CDrawingConverter::AddShapeType(const std::wstring& bsXml)
 		pShape->LoadFromXMLShapeType(oNodeST);
 
 		CShape* pS = new CShape(NSBaseShape::unknown, 0);
-		pS->m_pShape = pShape;
+		pS->setBaseShape(pShape);
+		
 		LoadCoordSize(oNodeST, pS);
 
 		m_mapShapeTypes.insert(std::pair<std::wstring, CShape*>(strId, pS));			
-#endif
     }
 
 	return S_OK;
@@ -1850,8 +1849,8 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 			if (m_mapShapeTypes.end() != pPair)
 			{
 				pPPTShape = new CPPTShape();
-				pPair->second->m_pShape->SetToDublicate(pPPTShape);
-				pPPTShape->m_eType = ((CPPTShape*)(pPair->second->m_pShape))->m_eType;
+				pPair->second->getBaseShape()->SetToDublicate(pPPTShape);
+				pPPTShape->m_eType = ((CPPTShape*)(pPair->second->getBaseShape()))->m_eType;
 			}
 		}
 		
@@ -1881,22 +1880,28 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 				pPPTShape->m_eType = PPTShapes::sptCustom;
 			}			
 		}
-
+		oShapeElem.m_oShape.setBaseShape(pPPTShape);
+		
+		if (bIsNeedCoordSizes)
+		{
+			LoadCoordPos(oNodeShape, &oShapeElem.m_oShape); //for path calculate
+		}
 		pPPTShape->LoadFromXMLShapeType(oNodeShape);
 	}
 
 	if (pPPTShape != NULL)
-	{		
-		oShapeElem.m_oShape.m_pShape = pPPTShape;
-
+	{	
+		oShapeElem.m_oShape.setBaseShape(pPPTShape);
 		if (bIsNeedCoordSizes)
+		{
 			LoadCoordSize(oNodeShape, &oShapeElem.m_oShape);
+		}
 		else
 		{
 			oShapeElem.m_oShape.m_dWidthLogic  = 21600;
 			oShapeElem.m_oShape.m_dHeightLogic = 21600;
 
-			oShapeElem.m_oShape.m_pShape->m_oPath.SetCoordsize(21600, 21600);			
+			oShapeElem.m_oShape.getBaseShape()->m_oPath.SetCoordsize(21600, 21600);			
 		}
 
         std::wstring strXmlPPTX;
@@ -2808,7 +2813,8 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
 						pShape->LoadFromXMLShapeType(oNodeT);
 
 						CShape* pS = new CShape(NSBaseShape::unknown, 0);
-						pS->m_pShape = pShape;
+						pS->setBaseShape(pShape);
+						
 						LoadCoordSize(oNodeT, pS);
 
 						m_mapShapeTypes.insert(std::pair<std::wstring, CShape*>(strId, pS));	
@@ -2983,16 +2989,57 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
 	
 	result->InitElem(pTree);
 }
+void CDrawingConverter::LoadCoordPos(XmlUtils::CXmlNode& oNode, CShape* pShape)
+{
+	pShape->m_dXLogic	= 0;
+	pShape->m_dYLogic	= 0;
+
+	XmlUtils::CXmlNode oNodeTemplate;
+    if (oNode.GetNode(L"coordorigin", oNodeTemplate))
+	{
+        std::wstring strCoordSize = oNodeTemplate.GetAttributeOrValue(L"val");
+        if (!strCoordSize.empty())
+		{
+			std::vector<std::wstring> oArray;
+            boost::algorithm::split(oArray, strCoordSize, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+
+			if (oArray.size() >= 2)
+			{
+                pShape->m_dXLogic = XmlUtils::GetInteger(oArray[0]);
+                pShape->m_dYLogic = XmlUtils::GetInteger(oArray[1]);
+			}
+		}
+	}
+	else
+	{
+        std::wstring strCoordSize = oNode.GetAttributeOrValue(L"coordorigin");
+        if (!strCoordSize.empty())
+		{
+			std::vector<std::wstring> oArray;
+            boost::algorithm::split(oArray, strCoordSize, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+
+			if (oArray.size() >= 2)
+			{
+                pShape->m_dXLogic = XmlUtils::GetInteger(oArray[0]);
+                pShape->m_dYLogic = XmlUtils::GetInteger(oArray[1]);
+			}
+		}
+	}
+
+	pShape->getBaseShape()->m_oPath.SetCoordpos((LONG)pShape->m_dXLogic, (LONG)pShape->m_dYLogic);
+}
+
 
 void CDrawingConverter::LoadCoordSize(XmlUtils::CXmlNode& oNode, CShape* pShape)
 {
-	pShape->m_dWidthLogic = ShapeSizeVML;
-	pShape->m_dHeightLogic = ShapeSizeVML;
+	pShape->m_dWidthLogic	= ShapeSizeVML;
+	pShape->m_dHeightLogic	= ShapeSizeVML;
+
 	XmlUtils::CXmlNode oNodeTemplate;
     if (oNode.GetNode(L"coordsize", oNodeTemplate))
 	{
         std::wstring strCoordSize = oNodeTemplate.GetAttributeOrValue(L"val");
-        if (strCoordSize != L"")
+        if (!strCoordSize.empty())
 		{
 			std::vector<std::wstring> oArray;
             boost::algorithm::split(oArray, strCoordSize, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
@@ -3007,7 +3054,7 @@ void CDrawingConverter::LoadCoordSize(XmlUtils::CXmlNode& oNode, CShape* pShape)
 	else
 	{
         std::wstring strCoordSize = oNode.GetAttributeOrValue(L"coordsize");
-        if (strCoordSize != L"")
+        if (!strCoordSize.empty())
 		{
 			std::vector<std::wstring> oArray;
             boost::algorithm::split(oArray, strCoordSize, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
@@ -3020,7 +3067,7 @@ void CDrawingConverter::LoadCoordSize(XmlUtils::CXmlNode& oNode, CShape* pShape)
 		}
 	}
 
-	pShape->m_pShape->m_oPath.SetCoordsize((LONG)pShape->m_dWidthLogic, (LONG)pShape->m_dHeightLogic);
+	pShape->getBaseShape()->m_oPath.SetCoordsize((LONG)pShape->m_dWidthLogic, (LONG)pShape->m_dHeightLogic);
 }
 
 std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, PPTX::CCSS& oCssStyles, CSpTreeElemProps& oProps)

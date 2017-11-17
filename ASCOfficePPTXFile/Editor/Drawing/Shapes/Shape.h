@@ -31,15 +31,10 @@
  */
 #pragma once
 #include "../TextAttributesEx.h"
+
 #include "BaseShape/BaseShape.h"
-
-#if defined(PPTX_DEF)
-#include "BaseShape/PPTXShape/PPTXShape.h"
-#endif
-
-#if defined(PPT_DEF)
-#include "BaseShape/PPTShape/PPTShape.h"
-#endif
+#include "BaseShape/PPTXShape/PptxShape.h"
+#include "BaseShape/PPTShape/PptShape.h"
 
 using namespace NSPresentationEditor;
 
@@ -56,6 +51,8 @@ const LONG c_ShapeDrawType_All		= c_ShapeDrawType_Graphic | c_ShapeDrawType_Text
 
 class CShape
 {
+private:
+	CBaseShape*				m_pShape;
 public:
 	double					m_dStartTime;
 	double					m_dEndTime;
@@ -70,6 +67,9 @@ public:
 	double					m_dWidthLogic;
 	double					m_dHeightLogic;
 
+	double					m_dXLogic;
+	double					m_dYLogic;
+
 	/* в миллиметрах!!! */
 	double					m_dTextMarginX;
 	double					m_dTextMarginY;
@@ -78,11 +78,11 @@ public:
 
 	LONG					m_lDrawType;
 
-	CBaseShape*				m_pShape;
-
 	std::wstring			m_strPPTXShape;
-public:
-	CShape(NSBaseShape::ClassType ClassType, int ShapeType_) : m_rcBounds()
+
+	NSBaseShape::ClassType  m_classType;
+
+	CShape(NSBaseShape::ClassType classType, int ShapeType_) : m_rcBounds()
 	{
 		m_lDrawType			= c_ShapeDrawType_All;
 
@@ -95,6 +95,9 @@ public:
 		m_dWidthLogic		= ShapeSize;
 		m_dHeightLogic		= ShapeSize;
 
+		m_dXLogic			= 0;
+		m_dYLogic			= 0;
+
 		m_dTextMarginX		= 0;
 		m_dTextMarginY		= 0;
 		m_dTextMarginRight	= 0;
@@ -104,16 +107,14 @@ public:
 
 		m_pShape = NULL;
 
-#if defined(PPTX_DEF)
-		if (ClassType == NSBaseShape::pptx)
+		m_classType = classType;
+
+		if (m_classType == NSBaseShape::pptx)
 		{
 			m_pShape = new CPPTXShape();
 			m_pShape->SetType(NSBaseShape::pptx, ShapeType_);
 		}
-#endif
-
-#if defined(PPT_DEF)
-		if (ClassType == NSBaseShape::ppt)
+		else if (m_classType == NSBaseShape::ppt)
 		{
 			m_pShape = CPPTShape::CreateByType((PPTShapes::ShapeType)ShapeType_ );
 			if (m_pShape == NULL)
@@ -130,8 +131,6 @@ public:
 			m_dWidthLogic		= ShapeSizeVML;
 			m_dHeightLogic		= ShapeSizeVML;
 		}
-#endif
-
 	}
 
 	~CShape()
@@ -139,34 +138,28 @@ public:
 		RELEASEOBJECT(m_pShape);
 	}
 
+	CBaseShape* getBaseShape()
+	{
+		return m_pShape;
+	}
+
+	void setBaseShape(CBaseShape* pShape)
+	{
+		if (pShape == NULL) return;
+
+		CPPTXShape *pptxShape = dynamic_cast<CPPTXShape*>(pShape);
+		CPPTShape *pptShape = dynamic_cast<CPPTShape*>(pShape);
+
+		if (pptxShape)	m_classType = NSBaseShape::pptx;
+		if (pptShape)	m_classType = NSBaseShape::ppt;
+
+		m_pShape = pShape;
+	}
+
 	virtual void ReCalculate()
 	{
 		m_pShape->ReCalculate();
 	}
-
-
-        //virtual std::wstring GetTextXml(CGeomShapeInfo& oGeomInfo, CMetricInfo& pInfo, double dStartTime, double dEndTime, CTheme* pTheme, CLayout* pLayout)
-	//{
-	//	if (m_oText.IsEmptyText())
-	//		return _T("");
-
-	//	GetTextRect(oGeomInfo);
-	//	return m_oText.ToString(oGeomInfo, pInfo, dStartTime, dEndTime, pTheme, pLayout);
-	//}
-
-
-        //virtual std::wstring GetBrushXml()
-	//{
-	//	if (!m_pShape->m_bConcentricFill)
-	//		return _T("");
-	//	return m_oBrush.ToString();
-	//}
-
-        //virtual std::wstring GetPenXml()
-	//{
-	//	return m_oPen.ToString();
-	//}
-
 	virtual void GetTextRect(CGeomShapeInfo& oInfo)
 	{
 		// пока сделаем типо - заглушку
@@ -175,41 +168,40 @@ public:
 
 		bool bIsFound = false;
 
-#ifdef PPT_DEF
-		// не очень удобно мне пересчет ректов вести
-		// сделаю так, отдельным методом в ппт
-		double dPercentLeft		= 0;
-		double dPercentTop		= 0;
-		double dPercentRight	= 0;
-		double dPercentBottom	= 0;
-
-		if (NSBaseShape::ppt == m_pShape->GetClassType())
+		if (m_classType == NSBaseShape::ppt)
 		{
-			// как будто могло быть иначе
-			CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_pShape);
-			if (NULL != pPPTShape)
+			// не очень удобно мне пересчет ректов вести
+			// сделаю так, отдельным методом в ппт
+			double dPercentLeft		= 0;
+			double dPercentTop		= 0;
+			double dPercentRight	= 0;
+			double dPercentBottom	= 0;
+
+			if (NSBaseShape::ppt == m_pShape->GetClassType())
 			{
-				pPPTShape->CalcTextRectOffsets(dPercentLeft, dPercentTop, dPercentRight, dPercentBottom);
+				// как будто могло быть иначе
+				CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_pShape);
+				if (NULL != pPPTShape)
+				{
+					pPPTShape->CalcTextRectOffsets(dPercentLeft, dPercentTop, dPercentRight, dPercentBottom);
 
-				oInfo.m_dLeft	+= (dPercentLeft * oInfo.m_dWidth);
-				oInfo.m_dTop	+= (dPercentTop * oInfo.m_dHeight);
+					oInfo.m_dLeft	+= (dPercentLeft * oInfo.m_dWidth);
+					oInfo.m_dTop	+= (dPercentTop * oInfo.m_dHeight);
 
-				oInfo.m_dWidth	-= ((dPercentLeft + dPercentRight) * oInfo.m_dWidth);
-				oInfo.m_dHeight	-= ((dPercentTop + dPercentBottom) * oInfo.m_dHeight);
+					oInfo.m_dWidth	-= ((dPercentLeft + dPercentRight) * oInfo.m_dWidth);
+					oInfo.m_dHeight	-= ((dPercentTop + dPercentBottom) * oInfo.m_dHeight);
+				}
 			}
+
+			// только учтем маргины
+			oInfo.m_dLeft	+= m_dTextMarginX;
+			oInfo.m_dTop	+= m_dTextMarginY;
+			oInfo.m_dWidth  -= (m_dTextMarginX + m_dTextMarginRight);
+			oInfo.m_dHeight -= (m_dTextMarginY + m_dTextMarginBottom);	
+
+			bIsFound = true;
 		}
-
-		// только учтем маргины
-		oInfo.m_dLeft	+= m_dTextMarginX;
-		oInfo.m_dTop	+= m_dTextMarginY;
-		oInfo.m_dWidth  -= (m_dTextMarginX + m_dTextMarginRight);
-		oInfo.m_dHeight -= (m_dTextMarginY + m_dTextMarginBottom);	
-
-		bIsFound = true;
-#endif
-#ifdef PPTX_DEF
-
-		if (!bIsFound)
+		if (m_classType == NSBaseShape::pptx)
 		{
 			if (0 < m_pShape->m_arTextRects.size())
 			{
@@ -227,8 +219,6 @@ public:
 
 			bIsFound = true;
 		}
-#endif
-
 
 		if (oInfo.m_dWidth < 0)
 			oInfo.m_dWidth = 1;
@@ -249,42 +239,42 @@ public:
 
 		bool bIsFound = false;
 
-#ifdef PPT_DEF
-		// не очень удобно мне пересчет ректов вести
-		// сделаю так, отдельным методом в ппт
-		double dPercentLeft		= 0;
-		double dPercentTop		= 0;
-		double dPercentRight	= 0;
-		double dPercentBottom	= 0;
-
-		if ((m_pShape) && (NSBaseShape::ppt == m_pShape->GetClassType()))
+		if (m_classType == NSBaseShape::ppt)
 		{
-			// как будто могло быть иначе
-			CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_pShape);
-			if (NULL != pPPTShape)
+			// не очень удобно мне пересчет ректов вести
+			// сделаю так, отдельным методом в ппт
+			double dPercentLeft		= 0;
+			double dPercentTop		= 0;
+			double dPercentRight	= 0;
+			double dPercentBottom	= 0;
+
+			if ((m_pShape) && (NSBaseShape::ppt == m_pShape->GetClassType()))
 			{
-				//pPPTShape->CalcTextRectOffsets(dPercentLeft, dPercentTop, dPercentRight, dPercentBottom);
+				// как будто могло быть иначе
+				CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_pShape);
+				if (NULL != pPPTShape)
+				{
+					//pPPTShape->CalcTextRectOffsets(dPercentLeft, dPercentTop, dPercentRight, dPercentBottom);
 
-				//dLeft	+= (dPercentLeft * dWidth);
-				//dTop	+= (dPercentTop * dHeight);
+					//dLeft	+= (dPercentLeft * dWidth);
+					//dTop	+= (dPercentTop * dHeight);
 
-				//dWidth	-= ((dPercentLeft + dPercentRight) * dWidth);
-				//dHeight	-= ((dPercentTop + dPercentBottom) * dHeight);
+					//dWidth	-= ((dPercentLeft + dPercentRight) * dWidth);
+					//dHeight	-= ((dPercentTop + dPercentBottom) * dHeight);
+				}
 			}
+
+			// только учтем маргины
+			dLeft	+= m_dTextMarginX;
+			dTop	+= m_dTextMarginY;
+			dWidth  -= (m_dTextMarginX + m_dTextMarginRight);
+			dHeight -= (m_dTextMarginY + m_dTextMarginBottom);	
+
+			bIsFound = true;
 		}
-
-		// только учтем маргины
-		dLeft	+= m_dTextMarginX;
-		dTop	+= m_dTextMarginY;
-		dWidth  -= (m_dTextMarginX + m_dTextMarginRight);
-		dHeight -= (m_dTextMarginY + m_dTextMarginBottom);	
-
-		bIsFound = true;
-#endif
-#ifdef PPTX_DEF
-
-		if (!bIsFound && m_pShape)
+		if (m_classType == NSBaseShape::pptx && m_pShape)
 		{
+
 			if (0 < m_pShape->m_arTextRects.size())
 			{
                 double koef = (std::max)(dWidth, dHeight)/ShapeSize;
@@ -301,13 +291,9 @@ public:
 
 			bIsFound = true;
 		}
-#endif
 
-
-		if (dWidth < 0)
-			dWidth = 1;
-		if (dHeight < 0)
-			dHeight = 1;
+		if (dWidth < 0)			dWidth  = 1;
+		if (dHeight < 0)		dHeight = 1;
 		
 		oInfo.left		= dLeft;
 		oInfo.top		= dTop;
@@ -315,29 +301,6 @@ public:
 		oInfo.bottom	= dTop + dHeight;
 	}
 
-        //virtual std::wstring ToXml(CGeomShapeInfo& oGeomInfo, CMetricInfo& pInfo, double dStartTime, double dEndTime, CTheme* pTheme, CLayout* pLayout)
-	//{
-        //	std::wstring strImageTransform = _T("");
-
-	//	oGeomInfo.m_dLimoX = m_lLimoX;
-	//	oGeomInfo.m_dLimoY = m_lLimoY;
-
-	//	m_pShape->m_oPath.SetCoordsize((LONG)m_dWidthLogic, (LONG)m_dHeightLogic);
-	//	
-	//	CBrush	brush; //копии с уровня выше нужны
-	//	CPen	pen;
-        //	std::wstring strDrawing = m_pShape->ToXML(oGeomInfo, pInfo, dStartTime, dEndTime, brush, pen);
-	//	if (m_lDrawType & c_ShapeDrawType_Graphic)
-	//	{
-	//		strImageTransform += strDrawing;
-	//	}
-	//	if (m_lDrawType & c_ShapeDrawType_Text)
-	//	{
-	//		strImageTransform += GetTextXml(oGeomInfo, pInfo, dStartTime, dEndTime, pTheme, pLayout);
-	//	}
-
-	//	return strImageTransform;
-	//}
 
 	void ToRenderer(IRenderer* pRenderer, CGeomShapeInfo& oGeomInfo, CMetricInfo& pInfo, double dStartTime, double dEndTime)
 	{
@@ -373,7 +336,6 @@ public:
 
 	virtual bool LoadFromXML(XmlUtils::CXmlNode& root)
 	{
-#if defined(PPTX_DEF)
 		if(_T("ooxml-shape") == root.GetName())
 		{
 			if(m_pShape != NULL)
@@ -382,10 +344,7 @@ public:
 			//return m_pShape->LoadFromXML(xml);
 			return ((CPPTXShape*)m_pShape)->LoadFromXML(root);
 		}
-#endif
-
-#if defined(PPT_DEF)
-		if(_T("shape") == root.GetName())
+		else if(_T("shape") == root.GetName())
 		{
 			if(m_pShape != NULL)
 				delete m_pShape;
@@ -397,7 +356,6 @@ public:
 			
 			return ((CPPTShape*)m_pShape)->LoadFromXML(root);			
 		}
-#endif
 
 		return false;
 	}
@@ -468,6 +426,50 @@ public:
 		}
 	}
 
+	void SetCoordPos(XmlUtils::CXmlNode& oNodePict)
+	{
+		if (_T("shape") == oNodePict.GetName())
+		{
+			XmlUtils::CXmlNode oNodeTemplate;
+			if (oNodePict.GetNode(_T("coordorigin"), oNodeTemplate))
+			{
+				std::wstring strCoordSize = oNodeTemplate.GetAttributeOrValue(_T("val"));
+				if (!strCoordSize.empty())
+				{
+					std::vector<std::wstring> oArray;
+					boost::algorithm::split(oArray, strCoordSize, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+
+					m_dXLogic = XmlUtils::GetInteger(oArray[0]);
+					m_dYLogic = XmlUtils::GetInteger(oArray[1]);
+				}
+			}
+			else
+			{
+				std::wstring id = oNodePict.GetAttributeOrValue(_T("type"));
+				if (id != _T(""))
+				{
+					m_dXLogic = 0;
+					m_dYLogic = 0;
+				}
+				else
+				{
+					XmlUtils::CXmlNode oNodeTemplate;
+					if (oNodePict.GetNode(_T("template"), oNodeTemplate))
+					{
+						std::wstring strCoordSize = oNodeTemplate.GetAttributeOrValue(_T("coordorigin"));
+						if (!strCoordSize.empty())
+						{
+							std::vector<std::wstring> oArray;
+							boost::algorithm::split(oArray, strCoordSize, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+
+							m_dXLogic  = XmlUtils::GetInteger(oArray[0]);
+							m_dYLogic = XmlUtils::GetInteger(oArray[1]);
+						}
+					}
+				}
+			}			
+		}
+	}
 	void SetCoordSize(XmlUtils::CXmlNode& oNodePict)
 	{
 		if (_T("shape") == oNodePict.GetName())

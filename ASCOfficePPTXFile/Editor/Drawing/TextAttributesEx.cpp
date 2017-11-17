@@ -104,19 +104,6 @@ namespace NSPresentationEditor
 		}
 	}
 
-	void CTextAttributesEx::RecalcParagraphs(CTheme* pTheme)
-	{
-#ifdef PPT_DEF
-		RecalcParagraphsPPT();
-		ApplyThemeStyle(pTheme);
-#else
-		size_t nCount = m_arParagraphs.size();
-		for (size_t i = 0; i < nCount; ++i)
-		{
-			m_arParagraphs[i].CheckErrors();
-		}
-#endif
-	}
 	void CTextAttributesEx::ApplyThemeStyle(CTheme* pTheme)
 	{
 		if (NULL != pTheme)

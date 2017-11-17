@@ -52,12 +52,33 @@ namespace OOX
 			virtual ~COMathPara()
 			{
 			}
-
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
+				XmlUtils::CXmlNodes oChilds;
+				if ( oNode.GetNodes( _T("*"), oChilds ) )
+				{
+					XmlUtils::CXmlNode oItem;
+					for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+					{
+						if ( oChilds.GetAt( nIndex, oItem ) )
+						{
+							std::wstring sName = oItem.GetName();
+							WritingElement *pItem = NULL;
+
+							if ( _T("w:r") == sName )
+								pItem = new CRun( oItem );
+							else if ( _T("m:oMath") == sName )
+								pItem = new COMath( oItem );
+							else if ( _T("m:oMathParaPr") == sName )
+								pItem = new COMathParaPr( oItem );
+
+							if ( pItem )
+								m_arrItems.push_back( pItem );
+						}
+					}
+				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				if ( oReader.IsEmptyNode() )
 					return;

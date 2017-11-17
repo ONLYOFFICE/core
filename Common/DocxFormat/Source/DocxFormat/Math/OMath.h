@@ -60,9 +60,6 @@ namespace OOX
 			virtual ~CMathArgNodes()
 			{
 			}
-
-		public:
-
 			const CMathArgNodes &operator =(const XmlUtils::CXmlNode& oNode)
 			{
 				ClearItems();
@@ -75,12 +72,9 @@ namespace OOX
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
-			{
-			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			virtual std::wstring      toXML() const
 			{

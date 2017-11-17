@@ -30,55 +30,13 @@
  *
  */
 #pragma once
-#include "Formula.h"
+#include "PptxFormula.h"
 #include "../Path.h"
-#include "../PPTShape/Formula.h"
-#include "../PPTXShape/PPTXShape.h"
-#include "../PPTShape/PPTShape.h"
+#include "../PPTShape/PptFormula.h"
+#include "../PPTShape/PptShape.h"
+#include "../PPTXShape/PptxShape.h"
 namespace NSGuidesVML
 {
-    #ifndef ENABLE_PPT_TO_PPTX_CONVERT
-        class CSlicePath
-        {
-        public:
-            RulesType m_eRuler;
-            std::vector<Aggplus::POINT> m_arPoints;
-            std::vector<SPointType> m_arPointsType;
-
-        private:
-            int m_nCountElementsPoint;
-
-        public:
-            CSlicePath(RulesType eType = rtMoveTo)
-            {
-                m_eRuler = eType;
-                m_nCountElementsPoint = 0;
-            }
-
-            void AddParam(LONG lParam, ParamType eParType)
-            {
-                long lPoint = m_nCountElementsPoint % 2;
-                if (0 == lPoint)
-                {
-                    Aggplus::POINT point;
-                    SPointType pointType;
-
-                    point.x = lParam;
-                    point.y = 0;
-                    pointType.x = eParType;
-                    pointType.y = ptValue;
-                    m_arPoints.push_back(point);
-                    m_arPointsType.push_back(pointType);
-                }
-                else
-                {
-                    m_arPoints[m_arPoints.size() - 1].y = lParam;
-                    m_arPointsType[m_arPoints.size() - 1].y = eParType;
-                }
-                ++m_nCountElementsPoint;
-            }
-        };
-    #endif
 
     class CConverterPPTXPPT
     {

@@ -158,6 +158,8 @@ namespace PdfReader
 		}
 		else
 		{
+            if (!seName)
+                seName = new StringExt("");
 			// TO DO: Error "Unknown font type"
 			pFont = new Gr8BitFont(pXref, sTag, oID, seName, fontUnknownType, pFontDict, pGlobalParams);
 		}

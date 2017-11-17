@@ -37,12 +37,8 @@
     #include "../../../Common/FileDownloader/FileDownloader.h"
 #endif
 
+#include "Shapes/BaseShape/PPTShape/Ppt2PptxShapeConverter.h"
 
-#ifdef ENABLE_PPT_TO_PPTX_CONVERT
-	#include "Shapes/BaseShape/PPTShape/ppt2pptxshapeconverter.h"
-#endif
-
-#if defined(PPTX_DEF)
 namespace PPTX2EditorAdvanced
 {
     AVSINLINE OOXMLShapes::ShapeType GetShapeTypeFromStr(const std::wstring& str)//const
@@ -284,7 +280,7 @@ namespace PPTX2EditorAdvanced
 		return OOXMLShapes::sptNil;
 	}
 }
-#endif
+
 
 namespace NSPresentationEditor
 {
@@ -355,9 +351,6 @@ namespace NSPresentationEditor
 
 			return (IElement*)pImageElement;
 		}
-		
-#ifdef ENABLE_PPT_TO_PPTX_CONVERT
-
         AVSINLINE std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false)
 		{
 			NSGuidesVML::CFormParam pParamCoef;
@@ -383,7 +376,6 @@ namespace NSPresentationEditor
 			return strXmlPPTX;
 		}
 
-#endif
 		AVSINLINE std::wstring DownloadImage(const std::wstring& strFile)
 		{
 #ifndef DISABLE_FILE_DOWNLOADER
@@ -432,7 +424,7 @@ namespace NSPresentationEditor
 			m_bShapePreset	= false;
 
 			m_oShape.LoadFromXML(str);
-			m_ClassType = m_oShape.m_pShape->GetClassType();
+			m_ClassType = m_oShape.getBaseShape()->GetClassType();
 		}
 		virtual void NormalizeCoordsByMetric()
 		{
@@ -469,7 +461,7 @@ namespace NSPresentationEditor
 			m_oShape.m_oText.m_lPlaceholderType = m_lPlaceholderType;
 			m_oShape.m_oText.m_lPlaceholderID	= m_lPlaceholderID;
 
-			m_oShape.m_pShape->ReCalculate();
+			m_oShape.getBaseShape()->ReCalculate();
 
 			SetupTextProperties(pSlide, pTheme, pLayout);
 
@@ -482,11 +474,9 @@ namespace NSPresentationEditor
 
 		void CalculateColor(CColor& oColor, CSlide* pSlide, CTheme* pTheme, CLayout* pLayout);
 
-#ifdef ENABLE_PPT_TO_PPTX_CONVERT
-
         AVSINLINE std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false)
 		{
-			CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_oShape.m_pShape);
+			CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_oShape.getBaseShape());
 			if (NULL == pPPTShape)
 			{
 				// такого быть не может
@@ -608,7 +598,7 @@ namespace NSPresentationEditor
 			{
 				if (bIsNamespace)
 				{
-					return _T("<a:prstGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" prst=\"line\"><a:avLst/></a:prstGeom>");
+					return _T("<a:prstGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" prst=\"ellipse\"><a:avLst/></a:prstGeom>");
 				}
 				return _T("<a:prstGeom prst=\"ellipse\"><a:avLst/></a:prstGeom>");
 			}
@@ -688,7 +678,6 @@ namespace NSPresentationEditor
 		}
 #endif
 
-#endif
 		
 	};
 

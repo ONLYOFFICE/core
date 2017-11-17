@@ -34,7 +34,7 @@
 #include "ElementSettings.h"
 #include "../BaseShape.h"
 #include "../../../Attributes.h"
-#include "Formula.h"
+#include "PptFormula.h"
 
 namespace NSCustomVML
 {

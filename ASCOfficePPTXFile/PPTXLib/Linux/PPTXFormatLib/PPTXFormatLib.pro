@@ -101,7 +101,8 @@ SOURCES += pptxformatlib.cpp \
     ../../../Editor/FontPicker.cpp \
     ../../../Editor/Drawing/TextAttributesEx.cpp \
     ../../../Editor/Drawing/Elements.cpp \
-    ../../../../HtmlRenderer/src/ASCSVGWriter.cpp
+    ../../../../HtmlRenderer/src/ASCSVGWriter.cpp \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTXShape/PptxShape.cpp
 
 HEADERS += pptxformatlib.h \
     ../../../ASCOfficeDrawingConverter.h \

@@ -46,7 +46,6 @@
 #include "Editor/PPTXWriter.h"
 
 #include "PPTXFormat/PPTXEvent.h"
-#include "Editor/PresentationDrawingsDef.h"
 
 CPPTXFile::CPPTXFile(extract_to_directory fCallbackExtract, compress_from_directory fCallbackCompress, progress_operation fCallbackProgress, void* pCallbackArg)
 {

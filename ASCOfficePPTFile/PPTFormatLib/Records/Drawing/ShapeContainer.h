@@ -265,7 +265,7 @@ public:
 		case NSPresentationEditor::etShape:
 			{
 				CShapeElement* pShapeElem = (CShapeElement*)pElement;
-				CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(pShapeElem->m_oShape.m_pShape);
+				CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(pShapeElem->m_oShape.getBaseShape());
 
 				if (NULL != pPPTShape)
 				{
@@ -859,7 +859,7 @@ public:
 		SetUpProperty((IElement*)pElement, pTheme, pInfo, pSlide, pProperty);
 
 		CShape* pParentShape	= &pElement->m_oShape;
-		CPPTShape* pShape		= dynamic_cast<CPPTShape*>(pParentShape->m_pShape);
+		CPPTShape* pShape		= dynamic_cast<CPPTShape*>(pParentShape->getBaseShape());
 
 		if (NULL == pShape)
 			return;
@@ -1402,7 +1402,8 @@ public:
 				{
 					// shape
 					CShapeElement* pShape = new CShapeElement(NSBaseShape::ppt, eType);
-					CPPTShape *ppt_shape = dynamic_cast<CPPTShape *>(pShape->m_oShape.m_pShape);
+					CPPTShape *ppt_shape = dynamic_cast<CPPTShape *>(pShape->m_oShape.getBaseShape());
+
 					if ( (ppt_shape) && (OOXMLShapes::sptCustom == ppt_shape->m_eType))
 					{
 						pShape->m_bShapePreset = true;
@@ -2246,7 +2247,7 @@ protected:
 			ApplyHyperlink(pShape, oColor);
 		}
 
-		CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(pShape->m_oShape.m_pShape);
+		CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(pShape->m_oShape.getBaseShape());
 
 		if (NULL != pPPTShape)		// проверка на wordart
 		{

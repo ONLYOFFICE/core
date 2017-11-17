@@ -46,7 +46,6 @@ namespace NSPresentationEditor
 	{
 	public:
 		LONG	m_lTextMasterType; // only ppt property
-	public:
 		DWORD	m_lTextType;
 		
 		int		m_lStyleThemeIndex;
@@ -77,7 +76,6 @@ namespace NSPresentationEditor
 		bool					m_bIsSlideFontRef;
 		int						m_lFontRef;
 
-	public:
 		CTextAttributesEx() :
 			m_oAttributes(),
 			m_arParagraphs(),
@@ -142,14 +140,11 @@ namespace NSPresentationEditor
 			m_arParagraphs.clear();
 		}
 
-	public:
-
         inline void NormalizeString(std::wstring& strText)
 		{
             strText = XmlUtils::EncodeXmlString(strText);
 		}
 
-		void RecalcParagraphs	(CTheme* pTheme = NULL);
 		void RecalcParagraphsPPT();
 		void ApplyThemeStyle	(CTheme* pTheme = NULL);
 		

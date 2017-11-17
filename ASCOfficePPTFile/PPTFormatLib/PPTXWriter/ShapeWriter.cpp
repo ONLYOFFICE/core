@@ -853,7 +853,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			m_oWriter.WriteString(std::wstring(L" prst=\"") + prstTxWarp + _T("\">"));
 			m_oWriter.WriteString(std::wstring(L"<a:avLst>"));//модификаторы
 
-			CPPTShape *pPPTShape = dynamic_cast<CPPTShape *>(m_pShapeElement->m_oShape.m_pShape);
+			CPPTShape *pPPTShape = dynamic_cast<CPPTShape *>(m_pShapeElement->m_oShape.getBaseShape());
             std::wstring strVal;
 
 			for (int i = 0 ; (pPPTShape) && (i < pPPTShape->m_arAdjustments.size()); i++)
@@ -1308,12 +1308,14 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertShape()
 		m_oWriter.WriteString(std::wstring(L"</a:xfrm>"));
 	}
 
-	if (m_pShapeElement->m_oShape.m_lDrawType & c_ShapeDrawType_Graphic || m_pShapeElement->m_oShape.m_pShape->m_bCustomShape)
+	CBaseShape *shape = m_pShapeElement->m_oShape.getBaseShape();
+
+	if (m_pShapeElement->m_oShape.m_lDrawType & c_ShapeDrawType_Graphic || shape->m_bCustomShape)
 	{
 		m_pShapeElement->m_oShape.ToRenderer(dynamic_cast<IRenderer*>(this), oInfo, m_oMetricInfo, 0.0, 1.0);
 	}
 
-	if ((prstGeom.empty() == false || m_pShapeElement->m_bShapePreset) && prstTxWarp.empty() && !m_pShapeElement->m_oShape.m_pShape->m_bCustomShape)
+	if ((prstGeom.empty() == false || m_pShapeElement->m_bShapePreset) && prstTxWarp.empty() && !shape->m_bCustomShape)
 	{
 		if (prstGeom.empty()) prstGeom = L"rect";
 		m_oWriter.WriteString(std::wstring(L"<a:prstGeom"));

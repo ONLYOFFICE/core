@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "PPTShape.h"
+#include "PptShape.h"
 #include "PresetShapesHeader.h"
 
 const double EMU_MM = 36000;

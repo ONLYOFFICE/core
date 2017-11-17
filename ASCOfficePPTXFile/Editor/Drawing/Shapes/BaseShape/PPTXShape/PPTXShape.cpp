@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-//#include "stdafx.h"
-#include "PPTXShape.h"
+
+#include "PptxShape.h"
 #include "PresetShapesHeader.h"
 
 CPPTXShape* CPPTXShape::CreateByType(OOXMLShapes::ShapeType type)

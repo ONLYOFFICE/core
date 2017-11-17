@@ -45,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;../../DesktopEditor/freetype-2.5.2/include&quot;;../../DesktopEditor/xml/build/vs2005"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_USE_MATH_DEFINES;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;DONT_WRITE_EMBEDDED_FONTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_USE_MATH_DEFINES;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -696,15 +696,59 @@
 				Name="Core"
 				>
 				<File
-					RelativePath="..\Editor\Drawing\Shapes\BaseShape\baseshape.h"
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\BaseShape.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\Editor\Drawing\Shapes\BaseShape\PPTShape\pptshape.h"
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\BaseShape.h"
 					>
 				</File>
 				<File
-					RelativePath="..\Editor\Drawing\Shapes\BaseShape\PPTXShape\PPTXShape.h"
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\PPTShape\Ppt2PptxShapeConverter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\PPTShape\PptFormula.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\PPTShape\PptFormula.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\PPTShape\PptShape.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\PPTShape\PptShape.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\PPTShape\PptShapeEnum.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\PPTXShape\Pptx2PptShapeConverter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\PPTXShape\PptxFormula.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\PPTXShape\PptxFormula.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\PPTXShape\PptxShape.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\PPTXShape\PptxShape.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\PPTXShape\PresetShapesHeader.h"
 					>
 				</File>
 				<File

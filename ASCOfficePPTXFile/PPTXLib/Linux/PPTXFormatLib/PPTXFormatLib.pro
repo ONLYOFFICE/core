@@ -49,8 +49,6 @@ INCLUDEPATH += \
     ../../../../Common/ASCDocxFormat/Source \
     ../../../../DesktopEditor/xml/libxml2/include
 
-SOURCES += pptxformatlib.cpp
-
 core_release {
 SOURCES += \
     pptxformatlib_logic.cpp
@@ -95,7 +93,12 @@ SOURCES += \
     ../../../PPTXFormat/Folder.cpp
 }
 
-SOURCES += \
+SOURCES += pptxformatlib.cpp \
+    ../../../Editor/Drawing/Shapes/BaseShape/BaseShape.cpp \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PptFormula.cpp \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PptShape.cpp \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTXShape/PptxFormula.cpp \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTXShape/PptxShape.cpp \
     ../../../ASCOfficeDrawingConverter.cpp \
     ../../../ASCOfficePPTXFileRealization.cpp \
     ../../../Editor/BinaryFileReaderWriter.cpp \
@@ -488,8 +491,7 @@ HEADERS += pptxformatlib.h \
     ../../../Editor/imagemanager.h \
     ../../../Editor/PPTXWriter.h \
     ../../../Editor/WMFToImageConverter.h \
-    ../../../Editor/PresentationDrawingsDef.h \
-    ../../../Editor/DefaultNotesMaster.h \
+     ../../../Editor/DefaultNotesMaster.h \
     ../../../Editor/DefaultNotesTheme.h \
     ../../../../Common/DocxFormat/Source/Base/Nullable.h \
     ../../../../HtmlRenderer/include/ASCSVGWriter.h \

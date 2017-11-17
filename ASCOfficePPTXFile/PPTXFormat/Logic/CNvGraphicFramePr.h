@@ -112,6 +112,10 @@ namespace PPTX
 
 			virtual std::wstring toXML() const
 			{
+				std::wstring namespaceLocks = L"a";
+				std::wstring namespaceLocksLink = PPTX::g_Namespaces.a.m_strLink;
+				//if (m_namespace == L"wp") namespaceLocks = L"wp";
+
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("noChangeAspect"),	noChangeAspect);
 				oAttr.Write(_T("noDrilldown"),		noDrilldown);
@@ -120,21 +124,23 @@ namespace PPTX
 				oAttr.Write(_T("noResize"),			noResize);
 				oAttr.Write(_T("noSelect"),			noSelect);
 
-				std::wstring namespaceLocks = L"a";
-				//if (m_namespace == L"wp") namespaceLocks = L"wp";
+				bool isAttrEmpty = oAttr.m_strValue.empty();
+				oAttr.Write(_T("xmlns:") + namespaceLocks, namespaceLocksLink);
 
-				return XmlUtils::CreateNode(m_namespace + L":cNvGraphicFramePr", oAttr.m_strValue.empty() ? L"" : XmlUtils::CreateNode(namespaceLocks + L":graphicFrameLocks", oAttr));
+				return XmlUtils::CreateNode(m_namespace + L":cNvGraphicFramePr", isAttrEmpty ? L"" : XmlUtils::CreateNode(namespaceLocks + L":graphicFrameLocks", oAttr));
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				std::wstring namespace_		= m_namespace;
 				std::wstring namespaceLock_ = L"a";
+				std::wstring namespaceLockLink_ = PPTX::g_Namespaces.a.m_strLink;
 
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
 				{
 					namespaceLock_	= L"a";
+					namespaceLockLink_ = PPTX::g_Namespaces.a.m_strLink;
 					namespace_		= L"wp";
 				}
 
@@ -145,7 +151,7 @@ namespace PPTX
 				pWriter->StartNode(namespaceLock_ + L":graphicFrameLocks");
 
 				pWriter->StartAttributes();
-
+				pWriter->WriteAttribute(_T("xmlns:") + namespaceLock_, namespaceLockLink_);
 				pWriter->WriteAttribute(_T("noChangeAspect"), noChangeAspect);
 				pWriter->WriteAttribute(_T("noDrilldown"), noDrilldown);
 				pWriter->WriteAttribute(_T("noGrp"), noGrp);

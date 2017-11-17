@@ -33,8 +33,8 @@
 #include "../TextAttributesEx.h"
 
 #include "BaseShape/BaseShape.h"
-#include "BaseShape/PPTXShape/PPTXShape.h"
-#include "BaseShape/PPTShape/PPTShape.h"
+#include "BaseShape/PPTXShape/PptxShape.h"
+#include "BaseShape/PPTShape/PptShape.h"
 
 using namespace NSPresentationEditor;
 

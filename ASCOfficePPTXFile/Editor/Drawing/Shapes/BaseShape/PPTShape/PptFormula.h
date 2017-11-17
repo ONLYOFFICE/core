@@ -43,7 +43,7 @@
 #include "../../../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../../../../DesktopEditor/graphics/aggplustypes.h"
 
-#include "../../../../../../Common/DocxFormat/Source/XML/utils.h"
+#include "../../../../../../Common/DocxFormat/Source/XML/Utils.h"
 namespace NSGuidesVML
 {
     enum FormulaType

@@ -35,7 +35,7 @@
 
 #include "../../../UnicodeConverter/UnicodeConverter.h"
 
-#include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/PPTShape.h"
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/PptShape.h"
 
 void RtfShape::SetDefault()
 {

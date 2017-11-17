@@ -37,7 +37,7 @@
 #include "../Common/DocxFormat/Source/Base/Base.h"
 #include "../Common/DocxFormat/Source/Base/Nullable.h"
 
-#include "./Editor/Drawing/Shapes/BaseShape/PPTShape/PPTShapeEnum.h"
+#include "./Editor/Drawing/Shapes/BaseShape/PPTShape/PptShapeEnum.h"
 
 #include <vector>
 #include <map>

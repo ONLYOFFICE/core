@@ -33,8 +33,8 @@
 
 #include "BaseShape.h"
 
-#include "PPTXShape/PPTXShape.h"
-#include "PPTShape/PPTShape.h"
+#include "PPTXShape/PptxShape.h"
+#include "PPTShape/PptShape.h"
 
 
 NSPresentationEditor::CBaseShape* NSPresentationEditor::CBaseShape::CreateByType(NSPresentationEditor::NSBaseShape::ClassType ClassType, int ShapeType)

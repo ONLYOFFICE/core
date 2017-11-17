@@ -32,7 +32,7 @@
 #pragma once
 #include "./../BaseShape.h"
 #include "CustomGeomShape.h"
-#include "PPTShapeEnum.h"
+#include "PptShapeEnum.h"
 #include "../../../../../../Common/DocxFormat/Source/DocxFormat/Logic/VmlOfficeDrawing.h"
 
 using namespace NSOfficeDrawing;

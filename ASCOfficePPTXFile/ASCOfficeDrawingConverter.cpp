@@ -48,7 +48,7 @@
 #include "./PPTXFormat/LegacyDiagramText.h"
 
 #include "./Editor/Drawing/Elements.h"
-#include "./Editor/Drawing/Shapes/BaseShape/PPTXShape/pptx2pptshapeconverter.h"
+#include "./Editor/Drawing/Shapes/BaseShape/PPTXShape/Pptx2PptShapeConverter.h"
 
 #include "../DesktopEditor/common/Directory.h"
 

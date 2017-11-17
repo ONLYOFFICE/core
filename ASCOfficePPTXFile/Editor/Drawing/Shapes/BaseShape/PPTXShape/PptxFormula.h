@@ -38,7 +38,7 @@
 #include <math.h>
 #include "./../Common.h"
 #include "../../../../../../DesktopEditor/xml/include/xmlutils.h"
-#include "../../../../../../Common/DocxFormat/Source/XML/utils.h"
+#include "../../../../../../Common/DocxFormat/Source/XML/Utils.h"
 namespace NSGuidesOOXML
 {
     const double dNonDefResult = 27273042316900;

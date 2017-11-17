@@ -30,7 +30,7 @@
  *
  */
 #pragma once
-#include "../PPTShape.h"
+#include "../PptShape.h"
 
 // 132
 class CFlowChartMagneticDiskType : public CPPTShape

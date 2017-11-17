@@ -37,7 +37,7 @@
     #include "../../../Common/FileDownloader/FileDownloader.h"
 #endif
 
-#include "Shapes/BaseShape/PPTShape/ppt2pptxshapeconverter.h"
+#include "Shapes/BaseShape/PPTShape/Ppt2PptxShapeConverter.h"
 
 namespace PPTX2EditorAdvanced
 {

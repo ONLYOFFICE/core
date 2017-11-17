@@ -582,7 +582,7 @@ namespace DocFileFormat
 // The style id is used for a reverse reference. 
 // It can happen that the reference points to the wrong style.
 
-		if (styleIndex != ListData::ISTD_NIL)
+		if (styleIndex != ListData::ISTD_NIL && styleIndex < m_document->Styles->Styles->size())
 		{
             m_pXmlWriter->WriteNodeBegin( L"w:pStyle", TRUE );
             m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::XmlEncode(StyleSheetMapping::MakeStyleId(m_document->Styles->Styles->at(styleIndex))));

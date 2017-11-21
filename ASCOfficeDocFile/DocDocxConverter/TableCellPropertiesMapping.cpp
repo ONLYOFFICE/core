@@ -354,7 +354,7 @@ namespace DocFileFormat
 
 	void TableCellPropertiesMapping::apppendCellShading (unsigned char* sprmArg, int size, int cellIndex)
 	{
-		if (sprmArg)
+		if (sprmArg && cellIndex >= 0)
 		{
 			//shading descriptor can have 10 bytes (Word 2000) or 2 bytes (Word 97)
 			int shdLength = 2;

@@ -70,6 +70,7 @@
 #include "Biff_records/Dat.h"
 #include "Biff_records/Chart.h"
 #include "Biff_records/ExternSheet.h"
+#include "Biff_records/FrtFontList.h"
 
 #include "Biff_unions/PAGESETUP.h"
 #include "Biff_unions/BACKGROUND.h"
@@ -264,6 +265,7 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back();
 				}	
 			}break;
+			
 			case rt_Chart:
 			{
 				if ( proc.mandatory<CHARTFORMATS>() )
@@ -699,6 +701,9 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 {
 	CHARTFORMATS	*chart_formats		= dynamic_cast<CHARTFORMATS*>(m_CHARTFORMATS.get());
 	if (!chart_formats) return 0;
+
+	if (chart_formats->m_arAXISPARENT.empty())
+		return 0;
 
 	AXISPARENT* parent0 = dynamic_cast<AXISPARENT*>(chart_formats->m_arAXISPARENT[0].get());
 	if (parent0 == NULL) return 0;

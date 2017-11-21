@@ -31,10 +31,8 @@
  */
 
 #include "AI.h"
-#include <Logic/Biff_records/BRAI.h>
-#include <Logic/Biff_records/SeriesText.h>
-
-//#include <Logic/Biff_unions/PAGESETUP.h>
+#include "../Biff_records/BRAI.h"
+#include "../Biff_records/SeriesText.h"
 
 namespace XLS
 {

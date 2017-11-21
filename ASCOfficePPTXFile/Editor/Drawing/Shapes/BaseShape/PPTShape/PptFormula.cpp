@@ -48,34 +48,40 @@ LONG NSGuidesVML::CFormula::Calculate(NSGuidesVML::CFormulasManager* pManager)
 	LONG lAdjCount		= (LONG)pManager->m_pAdjustments->size();
 	
 	LONG a1 = m_lParam1;
-	if (ptFormula == m_eType1)
+	if (ptFormula == m_eType1 && !pManager->m_bCalc)
 	{
+		pManager->m_bCalc = true;
 		a1 = (m_lParam1 >= lGuidesCount) ? 0 : pManager->m_arFormulas[m_lParam1].Calculate(pManager);
 	}
 	else if (ptAdjust == m_eType1)
 	{
 		a1 = (m_lParam1 >= lAdjCount) ? 0 : (*(pManager->m_pAdjustments))[m_lParam1];
 	}
+	pManager->m_bCalc = false;
 
 	LONG b1 = m_lParam2;
-	if (ptFormula == m_eType2)
+	if (ptFormula == m_eType2 && !pManager->m_bCalc)
 	{
+		pManager->m_bCalc = true;
 		b1 = (m_lParam2 >= lGuidesCount) ? 0 : pManager->m_arFormulas[m_lParam2].Calculate(pManager);
 	}
 	else if (ptAdjust == m_eType2)
 	{
 		b1 = (m_lParam2 >= lAdjCount) ? 0 : (*(pManager->m_pAdjustments))[m_lParam2];
 	}
+	pManager->m_bCalc = false;
 
 	LONG c1 = m_lParam3;
-	if (ptFormula == m_eType3)
+	if (ptFormula == m_eType3 && !pManager->m_bCalc)
 	{
+		pManager->m_bCalc = true;
 		c1 = (m_lParam3 >= lGuidesCount) ? 0 : pManager->m_arFormulas[m_lParam3].Calculate(pManager);
 	}
 	else if (ptAdjust == m_eType3)
 	{
 		c1 = (m_lParam3 >= lAdjCount) ? 0 : (*(pManager->m_pAdjustments))[m_lParam3];
 	}
+	pManager->m_bCalc = false;
 
 	double a = (double)a1;
 	double b = (double)b1;

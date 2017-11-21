@@ -65,7 +65,10 @@ void DefaultRowHeight::readFields(CFRecord& record)
 	
 	record >> miyRw;
 
-	global_info->sheet_size_info.back().defaultRowHeight = miyRw / 20.;
+	if (!global_info->sheet_size_info.empty())
+	{
+		global_info->sheet_size_info.back().defaultRowHeight = miyRw / 20.;
+	}
 
 }
 

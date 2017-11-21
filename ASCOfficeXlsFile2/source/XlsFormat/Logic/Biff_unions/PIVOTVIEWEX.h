@@ -54,6 +54,8 @@ public:
 	std::vector<BaseObjectPtr>	m_arPIVOTTH;
 	std::vector<BaseObjectPtr>	m_arSXPIEx;
 	std::vector<BaseObjectPtr>	m_arPIVOTVDTEX;
+//-------------------------------------------------------------
+	BaseObjectPtr				m_PIVOTADDL;
 };
 
 } // namespace XLS

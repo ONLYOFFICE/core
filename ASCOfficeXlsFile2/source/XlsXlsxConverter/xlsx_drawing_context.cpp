@@ -1527,11 +1527,18 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 						if (!drawing_state->wordart.is)	CP_XML_NODE(L"a:avLst");
 					}
 				}
-				else
+				else if (customGeom.empty() == false)
 				{
 					CP_XML_NODE(L"a:custGeom")
 					{
 						CP_XML_STREAM() << customGeom;
+					}
+				}
+				else
+				{
+					CP_XML_NODE(L"a:prstGeom")
+					{
+						CP_XML_ATTR(L"prst", L"rect");
 					}
 				}
 				if (!is_lined_shape(drawing_state))

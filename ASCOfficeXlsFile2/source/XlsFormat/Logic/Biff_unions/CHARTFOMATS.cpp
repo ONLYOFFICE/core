@@ -57,8 +57,8 @@
 #include "../Biff_records/EndObject.h"
 #include "../Biff_records/End.h"
 #include "../Biff_records/ObjectLink.h"
-#include "../Biff_records/FrtWrapper.h"
 #include "../Biff_records/TextPropsStream.h"
+#include "../Biff_records/FrtFontList.h"
 
 namespace XLS
 {
@@ -86,7 +86,10 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{
-		if(proc.optional<DataLabExt>())
+		bool bData = proc.optional<DataLabExt>();
+		bool bFont = proc.optional<FrtFontList>();
+
+		if(bFont || bData)
 		{
 			while (true)
 			{
@@ -254,11 +257,8 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 				cf.attachedLABEL = NULL;
 			}
 			cf.dataLabExt = elements_.front();
-			elements_.pop_front();
-			count--;
-			continue;
 		}
-		if ("ATTACHEDLABEL" == elements_.front()->getClassName())
+		else if ("ATTACHEDLABEL" == elements_.front()->getClassName())
 		{//обязат
 			if (cf.attachedLABEL)
 			{
@@ -266,10 +266,12 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 				cf.dataLabExt = NULL;
 			}
 			cf.attachedLABEL = elements_.front();
-			elements_.pop_front();
-			count--;
-			continue;
 		}
+		else
+		{
+		}
+		elements_.pop_front();
+		count--;
 	}
 	if (proc.optional<TEXTPROPS>())
 	{

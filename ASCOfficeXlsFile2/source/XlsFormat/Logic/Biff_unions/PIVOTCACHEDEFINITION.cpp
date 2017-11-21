@@ -200,8 +200,10 @@ int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 					}
 				}
 			}
-			if (bOLAP)
+			if (olap_view)
 			{
+				olap_view->m_PIVOTADDL = m_PIVOTADDL;
+
 				olap_view->serialize(CP_XML_STREAM());
 			}
 		}

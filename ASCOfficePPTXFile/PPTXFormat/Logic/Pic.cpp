@@ -233,7 +233,7 @@ namespace PPTX
 				}		
 				NSDirectory::DeleteDirectory(oox_unpacked.GetPath());
 			}
-			else if ( L"Equation.3" == sProgID || L"Equation.2" == sProgID )
+			else if ( std::wstring::npos != sProgID.find(L"Equation"))
 			{
 				pWriter->StartRecord(1);
 					pWriter->WriteBYTE(4);
@@ -743,7 +743,7 @@ namespace PPTX
 				if(oleObject.IsInit() && oleObject->isValid())
 				{
 					bOle = true;
-					pWriter->WriteString(L"<p:graphicFrame><p:nvGraphicFramePr><p:cNvPr id=\"0\" name=\"\"/><p:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect=\"1\"/></p:cNvGraphicFramePr><p:nvPr><p:extLst><p:ext uri=\"{D42A27DB-BD31-4B8C-83A1-F6EECF244321}\"><p14:modId xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" val=\"2157879785\"/></p:ext></p:extLst></p:nvPr></p:nvGraphicFramePr>");
+					pWriter->WriteString(L"<p:graphicFrame><p:nvGraphicFramePr><p:cNvPr id=\"0\" name=\"\"/><p:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></p:cNvGraphicFramePr><p:nvPr><p:extLst><p:ext uri=\"{D42A27DB-BD31-4B8C-83A1-F6EECF244321}\"><p14:modId xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" val=\"2157879785\"/></p:ext></p:extLst></p:nvPr></p:nvGraphicFramePr>");
 					if(spPr.xfrm.IsInit())
 					{
 						std::wstring oldNamespace = spPr.xfrm->m_ns;

@@ -2318,9 +2318,9 @@ namespace NSEditorApi
 
 	public:
 		CAscMenuEvent(int nType = -1)
+                    : m_nType(nType)
+                    , m_pData(NULL)
 		{
-			m_nType = nType;
-			m_pData = NULL;
 		}
 		virtual ~CAscMenuEvent()
 		{

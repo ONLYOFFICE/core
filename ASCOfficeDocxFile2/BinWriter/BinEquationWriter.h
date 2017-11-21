@@ -144,9 +144,13 @@ namespace MathEquation
 			void AddAccent (MEMBELTYPE eType)
 			{
 				LONG lPos = GetSize() - 1;
+
+				if (lPos < 0) return;
+				
 				EquationRun oRun;
 				oRun = arrRun[lPos];
 				RemoveElem(lPos);
+				
 				oRun.bAccent = true;
 				oRun.eType = eType;
 				Add(oRun);
@@ -1675,7 +1679,7 @@ namespace MathEquation
 
 			void WriteEndNode(BinaryEquationWriter* pWriter)
 			{
-				int nCurPos;
+				int nCurPos = -1;
 				if (!m_aBaseStack.empty())
 				{
 					nCurPos = m_aBaseStack.top();
@@ -1687,14 +1691,20 @@ namespace MathEquation
 				}
 
 				if (bPile && bEqArrayStart)
+				{
 					pWriter->WriteItemEnd(nCurPos);
+				}
 				else if (!bPile && !bEqArrayStart)
+				{
 					pWriter->WriteItemEnd(nCurPos);
+				}
 				else if (!bPile && bEqArrayStart)
 				{					
 					pWriter->m_aRowsCounter.push(nRows);
 					bEqArrayStart = false;
-					pWriter->WriteItemEnd(nCurPos);//eqArr
+					
+					if (nCurPos > 0)
+						pWriter->WriteItemEnd(nCurPos);//eqArr
 
 					if (!m_aBaseStack.empty())
 					{

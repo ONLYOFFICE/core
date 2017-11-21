@@ -982,12 +982,12 @@ HRESULT CDrawingConverter::AddShapeType(const std::wstring& bsXml)
         std::wstring strId = oNodeST.GetAttribute(L"id");
 		pShape->LoadFromXMLShapeType(oNodeST);
 
-		CShape* pS = new CShape(NSBaseShape::unknown, 0);
-		pS->setBaseShape(pShape);
+		CShapePtr pS = CShapePtr(new CShape(NSBaseShape::unknown, 0));
+		pS->setBaseShape(CBaseShapePtr(pShape));
 		
 		LoadCoordSize(oNodeST, pS);
 
-		m_mapShapeTypes.insert(std::pair<std::wstring, CShape*>(strId, pS));			
+		m_mapShapeTypes.insert(std::pair<std::wstring, CShapePtr>(strId, pS));			
     }
 
 	return S_OK;
@@ -1845,12 +1845,16 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 		{
 			strType = strType.substr(1);
 
-			std::map<std::wstring, CShape*>::iterator pPair = m_mapShapeTypes.find(strType);
+			std::map<std::wstring, CShapePtr>::iterator pPair = m_mapShapeTypes.find(strType);
 			if (m_mapShapeTypes.end() != pPair)
 			{
+				CBaseShapePtr & base_shape_type = pPair->second->getBaseShape();
+				CPPTShape* ppt_shape_type = dynamic_cast<CPPTShape*>(base_shape_type.get());
+				
 				pPPTShape = new CPPTShape();
-				pPair->second->getBaseShape()->SetToDublicate(pPPTShape);
-				pPPTShape->m_eType = ((CPPTShape*)(pPair->second->getBaseShape()))->m_eType;
+				base_shape_type->SetToDublicate(pPPTShape);
+
+				pPPTShape->m_eType = ppt_shape_type->m_eType;
 			}
 		}
 		
@@ -1880,28 +1884,28 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 				pPPTShape->m_eType = PPTShapes::sptCustom;
 			}			
 		}
-		oShapeElem.m_oShape.setBaseShape(pPPTShape);
+		oShapeElem.m_pShape->setBaseShape(CBaseShapePtr(pPPTShape));
 		
 		if (bIsNeedCoordSizes)
 		{
-			LoadCoordPos(oNodeShape, &oShapeElem.m_oShape); //for path calculate
+			LoadCoordPos(oNodeShape, oShapeElem.m_pShape); //for path calculate
 		}
 		pPPTShape->LoadFromXMLShapeType(oNodeShape);
 	}
 
 	if (pPPTShape != NULL)
 	{	
-		oShapeElem.m_oShape.setBaseShape(pPPTShape);
+		oShapeElem.m_pShape->setBaseShape(CBaseShapePtr(pPPTShape));
 		if (bIsNeedCoordSizes)
 		{
-			LoadCoordSize(oNodeShape, &oShapeElem.m_oShape);
+			LoadCoordSize(oNodeShape, oShapeElem.m_pShape);
 		}
 		else
 		{
-			oShapeElem.m_oShape.m_dWidthLogic  = 21600;
-			oShapeElem.m_oShape.m_dHeightLogic = 21600;
+			oShapeElem.m_pShape->m_dWidthLogic  = 21600;
+			oShapeElem.m_pShape->m_dHeightLogic = 21600;
 
-			oShapeElem.m_oShape.getBaseShape()->m_oPath.SetCoordsize(21600, 21600);			
+			oShapeElem.m_pShape->getBaseShape()->m_oPath.SetCoordsize(21600, 21600);			
 		}
 
         std::wstring strXmlPPTX;
@@ -2812,12 +2816,12 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
 
 						pShape->LoadFromXMLShapeType(oNodeT);
 
-						CShape* pS = new CShape(NSBaseShape::unknown, 0);
-						pS->setBaseShape(pShape);
+						CShapePtr pS = CShapePtr(new CShape(NSBaseShape::unknown, 0));
+						pS->setBaseShape(CBaseShapePtr(pShape));
 						
 						LoadCoordSize(oNodeT, pS);
 
-						m_mapShapeTypes.insert(std::pair<std::wstring, CShape*>(strId, pS));	
+						m_mapShapeTypes.insert(std::pair<std::wstring, CShapePtr>(strId, pS));	
 					}
 				}
 			}
@@ -2989,8 +2993,10 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
 	
 	result->InitElem(pTree);
 }
-void CDrawingConverter::LoadCoordPos(XmlUtils::CXmlNode& oNode, CShape* pShape)
+void CDrawingConverter::LoadCoordPos(XmlUtils::CXmlNode& oNode, CShapePtr pShape)
 {
+	if (!pShape) return;
+
 	pShape->m_dXLogic	= 0;
 	pShape->m_dYLogic	= 0;
 
@@ -3030,8 +3036,10 @@ void CDrawingConverter::LoadCoordPos(XmlUtils::CXmlNode& oNode, CShape* pShape)
 }
 
 
-void CDrawingConverter::LoadCoordSize(XmlUtils::CXmlNode& oNode, CShape* pShape)
+void CDrawingConverter::LoadCoordSize(XmlUtils::CXmlNode& oNode, CShapePtr pShape)
 {
+	if (!pShape) return;
+	
 	pShape->m_dWidthLogic	= ShapeSizeVML;
 	pShape->m_dHeightLogic	= ShapeSizeVML;
 
@@ -5327,16 +5335,10 @@ int CDrawingConverter::GetDocumentChartsCount ()
 OOX::CContentTypes* CDrawingConverter::GetContentTypes()
 {
 	return m_pImageManager->m_pContentTypes;
-    //return m_pReader->mm_strContentTypes;
 }
 
 void CDrawingConverter::Clear()
 {
-	for (std::map<std::wstring, CShape*>::iterator pPair = m_mapShapeTypes.begin(); pPair != m_mapShapeTypes.end(); ++pPair)
-	{
-		CShape* pMem = pPair->second;
-		RELEASEOBJECT(pMem);
-	}
 	m_mapShapeTypes.clear();
 }
 void CDrawingConverter::SetRels(smart_ptr<OOX::IFileContainer> container)

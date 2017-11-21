@@ -31,43 +31,43 @@
  */
 
 #include "CRT.h"
-#include <Logic/Biff_records/ChartFormat.h>
-#include <Logic/Biff_records/Begin.h>
-#include <Logic/Biff_records/Bar.h>
-#include <Logic/Biff_records/Line.h>
-#include <Logic/Biff_records/BopPop.h>
-#include <Logic/Biff_records/BopPopCustom.h>
-#include <Logic/Biff_records/Pie.h>
-#include <Logic/Biff_records/Area.h>
-#include <Logic/Biff_records/Scatter.h>
-#include <Logic/Biff_records/Radar.h>
-#include <Logic/Biff_records/RadarArea.h>
-#include <Logic/Biff_records/Surf.h>
-#include <Logic/Biff_records/CrtLink.h>
-#include <Logic/Biff_records/SeriesList.h>
-#include <Logic/Biff_records/Chart3d.h>
-#include <Logic/Biff_unions/LD.h>
-#include <Logic/Biff_unions/DROPBAR.h>
-#include <Logic/Biff_records/CrtLine.h>
-#include <Logic/Biff_records/LineFormat.h>
-#include <Logic/Biff_unions/DFTTEXT.h>
-#include <Logic/Biff_records/DataLabExtContents.h>
-#include <Logic/Biff_unions/SS.h>
-#include <Logic/Biff_unions/SHAPEPROPS.h>
-#include <Logic/Biff_records/End.h>
-#include <Logic/Biff_records/ValueRange.h>
-#include <Logic/Biff_records/Tick.h>
-#include <Logic/Biff_records/FontX.h>
-#include <Logic/Biff_records/AxisLine.h>
-#include <Logic/Biff_records/LineFormat.h>
-#include <Logic/Biff_records/ShapePropsStream.h>
-#include <Logic/Biff_records/TextPropsStream.h>
-#include <Logic/Biff_records/PlotArea.h>
-#include <Logic/Biff_records/DropBar.h>
-#include <Logic/Biff_records/CrtMlFrt.h>
+#include "../Biff_records/ChartFormat.h"
+#include "../Biff_records/Begin.h"
+#include "../Biff_records/Bar.h"
+#include "../Biff_records/Line.h"
+#include "../Biff_records/BopPop.h"
+#include "../Biff_records/BopPopCustom.h"
+#include "../Biff_records/Pie.h"
+#include "../Biff_records/Area.h"
+#include "../Biff_records/Scatter.h"
+#include "../Biff_records/Radar.h"
+#include "../Biff_records/RadarArea.h"
+#include "../Biff_records/Surf.h"
+#include "../Biff_records/CrtLink.h"
+#include "../Biff_records/SeriesList.h"
+#include "../Biff_records/Chart3d.h"
+#include "../Biff_unions/LD.h"
+#include "../Biff_unions/DROPBAR.h"
+#include "../Biff_records/CrtLine.h"
+#include "../Biff_records/LineFormat.h"
+#include "../Biff_unions/DFTTEXT.h"
+#include "../Biff_records/DataLabExtContents.h"
+#include "../Biff_unions/SS.h"
+#include "../Biff_unions/SHAPEPROPS.h"
+#include "../Biff_records/End.h"
+#include "../Biff_records/ValueRange.h"
+#include "../Biff_records/Tick.h"
+#include "../Biff_records/FontX.h"
+#include "../Biff_records/AxisLine.h"
+#include "../Biff_records/LineFormat.h"
+#include "../Biff_records/ShapePropsStream.h"
+#include "../Biff_records/TextPropsStream.h"
+#include "../Biff_records/PlotArea.h"
+#include "../Biff_records/DropBar.h"
+#include "../Biff_records/CrtMlFrt.h"
 
-#include <Logic/Biff_records/StartObject.h>
-#include <Logic/Biff_records/EndObject.h>
+#include "../Biff_records/StartObject.h"
+#include "../Biff_records/EndObject.h"
 namespace XLS
 {
 
@@ -176,7 +176,8 @@ const bool CRT::loadContent(BinProcessor& proc)
 	m_ChartFormat = elements_.back();
 	elements_.pop_back(); 
 
-	proc.mandatory<Begin>();				elements_.pop_back();
+	if (proc.optional<Begin>())	elements_.pop_back();
+
 	proc.mandatory<Parenthesis_CRT_1>();
 
 	m_ChartType = elements_.front();
@@ -196,7 +197,9 @@ const bool CRT::loadContent(BinProcessor& proc)
 	}
 	if (proc.optional<StartObject>())
 	{
-		proc.optional<EndObject>();
+		elements_.pop_back();
+		if (proc.optional<EndObject>())
+			elements_.pop_back();
 	}
 	if (proc.optional<SeriesList>())
 	{
@@ -252,6 +255,7 @@ const bool CRT::loadContent(BinProcessor& proc)
 		m_DataLabExtContents = elements_.back();
 		elements_.pop_back();
 	}
+
 	if (proc.optional<SS>())
 	{
 		m_SS = elements_.back();
@@ -268,7 +272,7 @@ const bool CRT::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 	
-	proc.mandatory<End>();					elements_.pop_back();
+	if (proc.optional<End>())	elements_.pop_back();
 //-------------------------------------------------------------------------------------
 	m_bIs3D = false;
 	if (m_Chart3d)

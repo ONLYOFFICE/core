@@ -102,28 +102,33 @@ const bool PIVOTVIEW::loadContent(BinProcessor& proc)
 	PIVOTCACHEDEFINITION* pivot_cache = dynamic_cast<PIVOTCACHEDEFINITION*>(global_info_->arPIVOTCACHEDEFINITION[view->iCache].get());
 	if (pivot_cache)
 	{
-		SXStreamID *stream_id = dynamic_cast<SXStreamID*>(pivot_cache->m_SXStreamID.get());
-		indexStream = stream_id->idStm;
+		SXSRC*			src			= dynamic_cast<SXSRC*>		(pivot_cache->m_SXSRC.get());
+		SXStreamID *	stream_id	= dynamic_cast<SXStreamID*>	(pivot_cache->m_SXStreamID.get());
+		PIVOTFRT*		frt			= dynamic_cast<PIVOTFRT*>	(m_PIVOTFRT.get());
 
-		if (m_PIVOTFRT && pivot_cache->m_SXSRC)
+		indexStream = stream_id ? stream_id->idStm : -1;
+
+		if (frt && src)
 		{
-			SXSRC* src = dynamic_cast<SXSRC*>(pivot_cache->m_SXSRC.get());
-			PIVOTFRT* frt = dynamic_cast<PIVOTFRT*>(m_PIVOTFRT.get());
+			pivot_cache->m_PIVOTADDL = frt->m_PIVOTADDL;
 
-			PIVOTFRT9* frt9 = frt ? dynamic_cast<PIVOTFRT9*>(frt->m_PIVOTFRT9.get()) : NULL;
-
-			DBQUERY * db_query = dynamic_cast<DBQUERY*>(src->m_source.get());
-			if (db_query && frt9)
+			PIVOTFRT9* frt9		= dynamic_cast<PIVOTFRT9*>(frt->m_PIVOTFRT9.get());
+			if (frt9)
 			{
-				QsiSXTag *qsiTag =dynamic_cast<QsiSXTag*>(frt9->m_QsiSXTag.get());
-				if (qsiTag->fTensorEx)
+				pivot_cache->m_PIVOTVIEWEX = frt9->m_PIVOTVIEWEX;
+
+				DBQUERY * db_query	= dynamic_cast<DBQUERY*>(src->m_source.get());
+				if (db_query)
 				{
-	//OLAP !!!
-					src->bOLAP = true;
-					core->bOLAP = true;
+					QsiSXTag *qsiTag =dynamic_cast<QsiSXTag*>(frt9->m_QsiSXTag.get());
+					if (qsiTag->fTensorEx)
+					{
+		//OLAP !!!
+						src->bOLAP = true;
+						core->bOLAP = true;
+					}
+					db_query->m_DBQUERYEXT = frt9->m_DBQUERYEXT;
 				}
-				db_query->m_DBQUERYEXT		= frt9->m_DBQUERYEXT;
-				pivot_cache->m_PIVOTVIEWEX	= frt9->m_PIVOTVIEWEX;
 			}
 		}
 	}

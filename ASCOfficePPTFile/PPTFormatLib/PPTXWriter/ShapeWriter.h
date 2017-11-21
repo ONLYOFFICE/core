@@ -170,7 +170,7 @@ namespace NSPresentationEditor
 			m_lNextShapeID = 1000;
 		}
 
-		bool SetElement(IElement* pElem);
+		bool SetElement(CElementPtr pElem);
 //--------------------------------------------------------------------
             std::wstring	ConvertShape	();
             std::wstring	ConvertImage	();

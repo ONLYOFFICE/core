@@ -49,6 +49,8 @@
 	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
 #endif
 
+#pragma comment(lib, "Rpcrt4.lib")
+
 HRESULT convert_single(std::wstring sSrcDoc)
 {
 	HRESULT hr = S_OK;

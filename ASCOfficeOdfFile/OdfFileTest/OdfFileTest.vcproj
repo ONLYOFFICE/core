@@ -357,6 +357,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\Common\DocxFormat\Source\Base\unicode_util.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\UnicodeConverter\UnicodeConverter.cpp"
 				>
 				<FileConfiguration

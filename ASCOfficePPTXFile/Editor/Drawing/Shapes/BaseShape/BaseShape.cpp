@@ -36,8 +36,9 @@
 #include "PPTXShape/PptxShape.h"
 #include "PPTShape/PptShape.h"
 
+using namespace NSPresentationEditor;
 
-NSPresentationEditor::CBaseShape* NSPresentationEditor::CBaseShape::CreateByType(NSPresentationEditor::NSBaseShape::ClassType ClassType, int ShapeType)
+CBaseShapePtr CBaseShape::CreateByType(NSBaseShape::ClassType ClassType, int ShapeType)
 {
 	if(ClassType == pptx)
 	{
@@ -52,7 +53,7 @@ NSPresentationEditor::CBaseShape* NSPresentationEditor::CBaseShape::CreateByType
 	return NULL;
 }
 
-bool NSPresentationEditor::CBaseShape::SetType(NSPresentationEditor::NSBaseShape::ClassType ClassType, int ShapeType)
+bool CBaseShape::SetType(NSBaseShape::ClassType ClassType, int ShapeType)
 {
 	if (ClassType != GetClassType())
 		return false;

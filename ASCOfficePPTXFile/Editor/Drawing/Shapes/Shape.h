@@ -49,10 +49,13 @@ const LONG c_ShapeDrawType_Graphic	= 0x01;
 const LONG c_ShapeDrawType_Text		= 0x02;
 const LONG c_ShapeDrawType_All		= c_ShapeDrawType_Graphic | c_ShapeDrawType_Text;
 
+class CShape;
+typedef boost::shared_ptr<CShape> CShapePtr;
+
 class CShape
 {
 private:
-	CBaseShape*				m_pShape;
+	CBaseShapePtr			m_pShape;
 public:
 	double					m_dStartTime;
 	double					m_dEndTime;
@@ -103,15 +106,11 @@ public:
 		m_dTextMarginRight	= 0;
 		m_dTextMarginBottom	= 0;
 
-		m_strPPTXShape = _T("");
-
-		m_pShape = NULL;
-
 		m_classType = classType;
 
 		if (m_classType == NSBaseShape::pptx)
 		{
-			m_pShape = new CPPTXShape();
+			m_pShape = CBaseShapePtr(new CPPTXShape());
 			m_pShape->SetType(NSBaseShape::pptx, ShapeType_);
 		}
 		else if (m_classType == NSBaseShape::ppt)
@@ -119,7 +118,7 @@ public:
 			m_pShape = CPPTShape::CreateByType((PPTShapes::ShapeType)ShapeType_ );
 			if (m_pShape == NULL)
 			{
-				m_pShape = new CPPTShape();
+				m_pShape = CBaseShapePtr(new CPPTShape());
 				m_pShape->SetType(NSBaseShape::ppt, ShapeType_);
 			}
 
@@ -135,20 +134,17 @@ public:
 
 	~CShape()
 	{
-		RELEASEOBJECT(m_pShape);
 	}
 
-	CBaseShape* getBaseShape()
+	CBaseShapePtr getBaseShape()
 	{
 		return m_pShape;
 	}
 
-	void setBaseShape(CBaseShape* pShape)
+	void setBaseShape(CBaseShapePtr pShape)
 	{
-		if (pShape == NULL) return;
-
-		CPPTXShape *pptxShape = dynamic_cast<CPPTXShape*>(pShape);
-		CPPTShape *pptShape = dynamic_cast<CPPTShape*>(pShape);
+		CPPTXShape *pptxShape = dynamic_cast<CPPTXShape*>(pShape.get());
+		CPPTShape *pptShape = dynamic_cast<CPPTShape*>(pShape.get());
 
 		if (pptxShape)	m_classType = NSBaseShape::pptx;
 		if (pptShape)	m_classType = NSBaseShape::ppt;
@@ -180,7 +176,7 @@ public:
 			if (NSBaseShape::ppt == m_pShape->GetClassType())
 			{
 				// как будто могло быть иначе
-				CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_pShape);
+				CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_pShape.get());
 				if (NULL != pPPTShape)
 				{
 					pPPTShape->CalcTextRectOffsets(dPercentLeft, dPercentTop, dPercentRight, dPercentBottom);
@@ -251,7 +247,7 @@ public:
 			if ((m_pShape) && (NSBaseShape::ppt == m_pShape->GetClassType()))
 			{
 				// как будто могло быть иначе
-				CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_pShape);
+				CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_pShape.get());
 				if (NULL != pPPTShape)
 				{
 					//pPPTShape->CalcTextRectOffsets(dPercentLeft, dPercentTop, dPercentRight, dPercentBottom);
@@ -338,23 +334,23 @@ public:
 	{
 		if(_T("ooxml-shape") == root.GetName())
 		{
-			if(m_pShape != NULL)
-				delete m_pShape;
-			m_pShape = new CPPTXShape();
-			//return m_pShape->LoadFromXML(xml);
-			return ((CPPTXShape*)m_pShape)->LoadFromXML(root);
+			m_pShape = CBaseShapePtr(new CPPTXShape());
+			
+			CPPTXShape* pptx_shape = dynamic_cast<CPPTXShape*>(m_pShape.get());
+			
+			return pptx_shape ? pptx_shape->LoadFromXML(root) : false;
 		}
 		else if(_T("shape") == root.GetName())
 		{
-			if(m_pShape != NULL)
-				delete m_pShape;
-			m_pShape = new CPPTShape();
+			m_pShape = CBaseShapePtr(new CPPTShape());
 
 			SetCoordSize(root);
 			SetPen		(root);
 			SetBrush	(root);
 			
-			return ((CPPTShape*)m_pShape)->LoadFromXML(root);			
+			CPPTShape* ppt_shape = dynamic_cast<CPPTShape*>(m_pShape.get());
+
+			return ppt_shape ? ppt_shape->LoadFromXML(root) : false;
 		}
 
 		return false;
@@ -386,7 +382,7 @@ public:
 		Shape->m_dTextMarginBottom	= m_dTextMarginBottom;
 
 		if (m_pShape)
-			return m_pShape->SetToDublicate(Shape->m_pShape);
+			return m_pShape->SetToDublicate(Shape->m_pShape.get());
 		return true;
 	}
 

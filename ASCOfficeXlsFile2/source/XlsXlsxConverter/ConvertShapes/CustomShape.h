@@ -51,7 +51,7 @@ public:
 	std::wstring							m_strPathLimoY;
 
 	std::vector<std::wstring> m_arStringTextRects;
-public:
+
 	CCustomShape() : CBaseShape()
 	{
 		m_eType = oox::msosptNotPrimitive;

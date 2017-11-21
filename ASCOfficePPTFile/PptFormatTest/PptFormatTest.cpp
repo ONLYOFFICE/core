@@ -38,6 +38,8 @@
 
 #include <tchar.h>
 
+#pragma comment(lib, "Rpcrt4.lib")
+
 #if defined(_WIN64)
 	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
 #elif defined (_WIN32)
@@ -46,6 +48,10 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+//#ifdef _DEBUG
+//		_CrtDumpMemoryLeaks();
+//#endif
+		
 	if (argc < 2) return 1;
 
 	std::wstring sSrcPpt	= argv[1];

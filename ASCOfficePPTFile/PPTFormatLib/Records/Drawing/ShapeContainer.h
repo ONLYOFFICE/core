@@ -113,9 +113,9 @@ public:
 		}
 		return false;
 	}
-	CColor CorrectSysColor(int nColorCode, IElement* pElement, CTheme* pTheme)
+	CColor CorrectSysColor(int nColorCode, CElementPtr pElement, CTheme* pTheme)
 	{
-		if (pElement == NULL) return CColor();
+		if (!pElement) return CColor();
 
 		CColor  color;
 
@@ -229,7 +229,7 @@ public:
 
 		return color;
 	}
-	inline void SetUpProperties(IElement* pElement, CTheme* pTheme, CSlideInfo* pWrapper, CSlide* pSlide, CProperties* pProperties)
+	inline void SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pWrapper, CSlide* pSlide, CProperties* pProperties)
 	{
 		long lCount = pProperties->m_lCount;
 		switch (pElement->m_etType)
@@ -239,7 +239,7 @@ public:
 				pElement->m_bLine = false;
 				for (long i = 0; i < lCount; ++i)
 				{
-					SetUpPropertyVideo((CVideoElement*)pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
+					SetUpPropertyVideo(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
 				}
 				break;
 			}
@@ -249,7 +249,7 @@ public:
 				pElement->m_bLine = false;
 				for (long i = 0; i < lCount; ++i)
 				{
-					SetUpPropertyImage((CImageElement*)pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
+					SetUpPropertyImage(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
 				}
 				break;
 			}
@@ -258,14 +258,14 @@ public:
 				pElement->m_bLine = false;
 				for (long i = 0; i < lCount; ++i)
 				{
-					SetUpPropertyAudio((CAudioElement*)pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
+					SetUpPropertyAudio(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
 				}
 				break;
 			}
 		case NSPresentationEditor::etShape:
 			{
-				CShapeElement* pShapeElem = (CShapeElement*)pElement;
-				CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(pShapeElem->m_oShape.getBaseShape());
+				CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElement.get());
+				CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(pShapeElem->m_pShape->getBaseShape().get());
 
 				if (NULL != pPPTShape)
 				{
@@ -274,7 +274,7 @@ public:
 
 				for (long i = 0; i < lCount; ++i)
 				{
-					SetUpPropertyShape(pShapeElem, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
+					SetUpPropertyShape(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
 				}
 
 				if (NULL != pPPTShape)
@@ -289,7 +289,7 @@ public:
 		}
 	}
 
-	inline void SetUpProperty(IElement* pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
+	inline void SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
 	{
 		bool bIsFilled	= true;
 
@@ -797,17 +797,19 @@ public:
 		}
 	}
 
-	inline void SetUpPropertyVideo(CVideoElement* pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
+	inline void SetUpPropertyVideo(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
 	{
-		SetUpPropertyImage((CImageElement*)pElement, pTheme, pInfo, pSlide, pProperty);
+		SetUpPropertyImage(pElement, pTheme, pInfo, pSlide, pProperty);
 	}
-	inline void SetUpPropertyAudio(CAudioElement* pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
+	inline void SetUpPropertyAudio(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
 	{
-		SetUpPropertyImage((CImageElement*)pElement, pTheme, pInfo, pSlide, pProperty);
+		SetUpPropertyImage(pElement, pTheme, pInfo, pSlide, pProperty);
 	}
-	inline void SetUpPropertyImage(CImageElement* pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
+	inline void SetUpPropertyImage(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
 	{
-		SetUpProperty((IElement*)pElement, pTheme, pInfo, pSlide, pProperty);
+		SetUpProperty(pElement, pTheme, pInfo, pSlide, pProperty);
+
+		CImageElement* image_element = dynamic_cast<CImageElement*>(pElement.get());
 
 		switch(pProperty->m_ePID)
 		{
@@ -816,50 +818,55 @@ public:
 				int dwOffset = pInfo->GetIndexPicture(pProperty->m_lValue);
 				if (dwOffset >=0)
 				{
-					pElement->m_strImageFileName	+=  pInfo->GetFileNamePicture(dwOffset);
-					pElement->m_bImagePresent		= true;
+					image_element->m_strImageFileName	+=  pInfo->GetFileNamePicture(dwOffset);
+					image_element->m_bImagePresent		= true;
 				}
 			}break;
 		case pictureId://OLE identifier of the picture.
 			{
-				pElement->m_bOLE	= true;
+				image_element->m_bOLE	= true;
 			}break;
 		case pibName:
 			{
-				pElement->m_sImageName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2-1);
+				image_element->m_sImageName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2-1);
 				// TextMining05.ppt, слайд 20  - некорректное имя ( - todooo потом подчистить его
 			}break;
 		case cropFromTop:
 			{
-				pElement->m_lcropFromTop = pProperty->m_lValue; 
-				pElement->m_bCropEnabled = true;
+				image_element->m_lcropFromTop = pProperty->m_lValue; 
+				image_element->m_bCropEnabled = true;
 			}break;
 		case cropFromBottom:
 			{
-				pElement->m_lcropFromBottom = pProperty->m_lValue; 
-				pElement->m_bCropEnabled = true;
+				image_element->m_lcropFromBottom = pProperty->m_lValue; 
+				image_element->m_bCropEnabled = true;
 			}break;
 		case cropFromLeft:
 			{
-				pElement->m_lcropFromLeft = pProperty->m_lValue; 
-				pElement->m_bCropEnabled = true;
+				image_element->m_lcropFromLeft = pProperty->m_lValue; 
+				image_element->m_bCropEnabled = true;
 			}break;
 		case cropFromRight:
 			{
-				pElement->m_lcropFromRight = pProperty->m_lValue; 
-				pElement->m_bCropEnabled = true;
+				image_element->m_lcropFromRight = pProperty->m_lValue; 
+				image_element->m_bCropEnabled = true;
 			}break;
 		case pibFlags:
 			{
 			}break;
 		}
 	}
-	inline void SetUpPropertyShape(CShapeElement* pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
+	inline void SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
 	{
-		SetUpProperty((IElement*)pElement, pTheme, pInfo, pSlide, pProperty);
+		SetUpProperty(pElement, pTheme, pInfo, pSlide, pProperty);
 
-		CShape* pParentShape	= &pElement->m_oShape;
-		CPPTShape* pShape		= dynamic_cast<CPPTShape*>(pParentShape->getBaseShape());
+		CShapeElement* shape_element = dynamic_cast<CShapeElement*>(pElement.get());
+
+		CShapePtr pParentShape = shape_element->m_pShape;
+		if (NULL == pParentShape)
+			return;
+
+		CPPTShape* pShape = dynamic_cast<CPPTShape*>(pParentShape->getBaseShape().get());
 
 		if (NULL == pShape)
 			return;
@@ -1238,22 +1245,19 @@ public:
 	}
 
 
-	virtual void GetElement (IElement** ppElement, CExMedia* pMapIDs,
+	CElementPtr GetElement (CExMedia* pMapIDs,
 							long lSlideWidth, long lSlideHeight, CTheme* pTheme, CLayout* pLayout, 
 							CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide = NULL)
 	{
-		if (NULL == ppElement)	
-			return;
+		if (bGroupShape) return CElementPtr();
 
-		if (bGroupShape) return;
-
-		*ppElement = NULL;
+		CElementPtr pElement;
 
 		std::vector<CRecordShape*> oArrayShape;
 		GetRecordsByType(&oArrayShape, true, true);
 
 		if (0 == oArrayShape.size())
-			return;
+			return pElement;
 
 		std::vector<CRecordPlaceHolderAtom*> oArrayPlaceHolder;
 		GetRecordsByType(&oArrayPlaceHolder, true, true);
@@ -1266,7 +1270,7 @@ public:
 
 		int lMasterID = -1;
 
-		IElement * pElementLayout = NULL;
+		CElementPtr pElementLayout;
 		
 		if (NULL != pSlide)
 		{
@@ -1301,13 +1305,13 @@ public:
 											pLayout->m_arElements[nIndex]->m_lPlaceholderID = placeholder_id;
 									}  
 
-									*ppElement = pLayout->m_arElements[nIndex]->CreateDublicate();								
+									pElement = pLayout->m_arElements[nIndex]->CreateDublicate();								
 
 									if (elType == etShape)
 									{
-										CShapeElement* pShape = dynamic_cast<CShapeElement*>(*ppElement);
+										CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
 										if (NULL != pShape)
-											pShape->m_oShape.m_oText.m_arParagraphs.clear();
+											pShape->m_pShape->m_oText.m_arParagraphs.clear();
 									}
               
 									break;
@@ -1321,9 +1325,7 @@ public:
 		}
 		// раньше искался шейп - и делался дубликат. Теперь думаю это не нужно
 		// нужно ориентироваться на placeholder (type & id)						
-		IElement* pElem = *ppElement;
-
-		if (NULL == pElem)
+		if (!pElement)
 		{
 			switch (eType)
 			{
@@ -1362,11 +1364,12 @@ public:
 						pVideoElem->m_strVideoFileName	= oInfo.m_strFilePath ;
 						pVideoElem->m_strImageFileName	= oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
 
-						pElem							= (IElement*)pVideoElem;
+						pElement = CElementPtr(pVideoElem);
 					}
 					else if (CExFilesInfo::eftAudio == exType)
 					{
 						CAudioElement* pAudioElem		= new CAudioElement();
+						pElement = CElementPtr(pAudioElem);
 						
 						pAudioElem->m_strAudioFileName	= oInfo.m_strFilePath;
 						pAudioElem->m_strImageFileName	= oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
@@ -1385,39 +1388,38 @@ public:
 						else
                         {
                             if (pLayout)
-                                pLayout->m_arElements.push_back(pAudioElem);
+                                pLayout->m_arElements.push_back(pElement);
                         }
 
-						pElem = (IElement*)pAudioElem;
 					}
 					else 
 					{
 						CImageElement* pImageElem		= new CImageElement();
 						pImageElem->m_strImageFileName	= oInfo.m_strFilePath + FILE_SEPARATOR_STR;
 
-						pElem = (IElement*)pImageElem;
+						pElement = CElementPtr(pImageElem);
 					}					
 				}break;
 			default:
 				{
 					// shape
 					CShapeElement* pShape = new CShapeElement(NSBaseShape::ppt, eType);
-					CPPTShape *ppt_shape = dynamic_cast<CPPTShape *>(pShape->m_oShape.getBaseShape());
+					CPPTShape *ppt_shape = dynamic_cast<CPPTShape *>(pShape->m_pShape->getBaseShape().get());
 
 					if ( (ppt_shape) && (OOXMLShapes::sptCustom == ppt_shape->m_eType))
 					{
 						pShape->m_bShapePreset = true;
 					}
-					pElem = (IElement*)pShape;					
+					pElement = CElementPtr(pShape);					
 				}break;
 			}
 		}
 
-		if (NULL == pElem)
-			return;
+		if (!pElement)
+			return pElement;
 
-		pElem->m_lID		= oArrayShape[0]->m_nID;
-		pElem->m_lLayoutID	= lMasterID;
+		pElement->m_lID		= oArrayShape[0]->m_nID;
+		pElement->m_lLayoutID	= lMasterID;
 
 //---------внешние ссылки 
 		{
@@ -1426,7 +1428,7 @@ public:
 
 			if (NULL != pTextureInfo)
 			{
-				pElem->m_oBrush.TexturePath = pTextureInfo->m_strFilePath + FILE_SEPARATOR_STR;
+				pElement->m_oBrush.TexturePath = pTextureInfo->m_strFilePath + FILE_SEPARATOR_STR;
 			}
 
 			std::vector<CRecordExObjRefAtom*> oArrayEx;
@@ -1437,7 +1439,7 @@ public:
 
 				if (CExFilesInfo::eftHyperlink == exType && pInfo)
 				{
-					pElem->m_sHyperlink = pInfo->m_strFilePath;
+					pElement->m_sHyperlink = pInfo->m_strFilePath;
 				}
 			}
 		}
@@ -1446,30 +1448,30 @@ public:
 		// placeholders
 		if (0 < oArrayPlaceHolder.size())
 		{
-			pElem->m_bLine					= false; //по умолчанию у них нет линий
-			pElem->m_lPlaceholderID			= oArrayPlaceHolder[0]->m_nPosition;
-			pElem->m_lPlaceholderType		= oArrayPlaceHolder[0]->m_nPlacementID;
-			pElem->m_lPlaceholderSizePreset	= oArrayPlaceHolder[0]->m_nSize;
+			pElement->m_bLine					= false; //по умолчанию у них нет линий
+			pElement->m_lPlaceholderID			= oArrayPlaceHolder[0]->m_nPosition;
+			pElement->m_lPlaceholderType		= oArrayPlaceHolder[0]->m_nPlacementID;
+			pElement->m_lPlaceholderSizePreset	= oArrayPlaceHolder[0]->m_nSize;
 
 			if (pElementLayout) 
 				pElementLayout->m_lPlaceholderSizePreset	= oArrayPlaceHolder[0]->m_nSize;
 
-			CorrectPlaceholderType(pElem->m_lPlaceholderType);
+			CorrectPlaceholderType(pElement->m_lPlaceholderType);
 		}
 
 		std::vector<CRecordRoundTripHFPlaceholder12Atom*> oArrayHFPlaceholder;
 		GetRecordsByType(&oArrayHFPlaceholder, true, true);
 		if (0 < oArrayHFPlaceholder.size())
 		{
-			pElem->m_lPlaceholderType	= oArrayHFPlaceholder[0]->m_nPlacementID;//PT_MasterDate, PT_MasterSlideNumber, PT_MasterFooter, or PT_MasterHeader
-			CorrectPlaceholderType(pElem->m_lPlaceholderType);
+			pElement->m_lPlaceholderType	= oArrayHFPlaceholder[0]->m_nPlacementID;//PT_MasterDate, PT_MasterSlideNumber, PT_MasterFooter, or PT_MasterHeader
+			CorrectPlaceholderType(pElement->m_lPlaceholderType);
 			
 			if (pLayout)
 			{
-				std::multimap<int, int>::iterator it = pLayout->m_mapPlaceholders.find(pElem->m_lPlaceholderType);
+				std::multimap<int, int>::iterator it = pLayout->m_mapPlaceholders.find(pElement->m_lPlaceholderType);
 				if (it != pLayout->m_mapPlaceholders.end())
 				{
-					pElem->m_lPlaceholderID = pLayout->m_arElements[it->second]->m_lPlaceholderID;
+					pElement->m_lPlaceholderID = pLayout->m_arElements[it->second]->m_lPlaceholderID;
 				}
 			}
 		}
@@ -1479,31 +1481,31 @@ public:
 		GetRecordsByType(&oArrayFooterMeta, true, true);
 		if (0 < oArrayFooterMeta.size())
 		{
-			pElem->m_lPlaceholderType		= PT_MasterFooter;
-			pElem->m_lPlaceholderUserStr	= oArrayFooterMeta[0]->m_nPosition;
+			pElement->m_lPlaceholderType		= PT_MasterFooter;
+			pElement->m_lPlaceholderUserStr	= oArrayFooterMeta[0]->m_nPosition;
 		}
 		std::vector<CRecordSlideNumberMetaAtom*> oArraySlideNumberMeta;
 		GetRecordsByType(&oArraySlideNumberMeta, true, true);
 		if (0 < oArraySlideNumberMeta.size())
 		{
-			pElem->m_lPlaceholderType = PT_MasterSlideNumber;
+			pElement->m_lPlaceholderType = PT_MasterSlideNumber;
 		}
 		std::vector<CRecordGenericDateMetaAtom*> oArrayDateMeta;
 		GetRecordsByType(&oArrayDateMeta, true, true);
 		if (0 < oArrayDateMeta.size())
 		{
-			pElem->m_lPlaceholderType		= PT_MasterDate;
+			pElement->m_lPlaceholderType		= PT_MasterDate;
 			
 			CRecordDateTimeMetaAtom* format_data = dynamic_cast<CRecordDateTimeMetaAtom*>(oArrayDateMeta[0]);
 			if (format_data)
 			{
-				pElem->m_nFormatDate			= 1;
+				pElement->m_nFormatDate			= 1;
 				//todooo сделать форматированый вывод 
 			}
 			else
 			{
-				pElem->m_lPlaceholderUserStr	= oArrayDateMeta[0]->m_nPosition;
-				pElem->m_nFormatDate			= 2;
+				pElement->m_lPlaceholderUserStr	= oArrayDateMeta[0]->m_nPosition;
+				pElement->m_nFormatDate			= 2;
 			}
 		}
 //------------- привязки ---------------------------------------------------------------------------------
@@ -1514,12 +1516,12 @@ public:
 
 		if (0 != oArrayAnchor.size())
 		{
-			pElem->m_rcBoundsOriginal.left		= (LONG)oArrayAnchor[0]->m_oBounds.Left;
-			pElem->m_rcBoundsOriginal.top		= (LONG)oArrayAnchor[0]->m_oBounds.Top;
-			pElem->m_rcBoundsOriginal.right		= (LONG)oArrayAnchor[0]->m_oBounds.Right;
-			pElem->m_rcBoundsOriginal.bottom	= (LONG)oArrayAnchor[0]->m_oBounds.Bottom;
+			pElement->m_rcBoundsOriginal.left		= (LONG)oArrayAnchor[0]->m_oBounds.Left;
+			pElement->m_rcBoundsOriginal.top		= (LONG)oArrayAnchor[0]->m_oBounds.Top;
+			pElement->m_rcBoundsOriginal.right		= (LONG)oArrayAnchor[0]->m_oBounds.Right;
+			pElement->m_rcBoundsOriginal.bottom	= (LONG)oArrayAnchor[0]->m_oBounds.Bottom;
 			
-			pElem->m_bBoundsEnabled	= true;
+			pElement->m_bBoundsEnabled	= true;
 			bAnchor = true;
 		}
 		else
@@ -1529,14 +1531,14 @@ public:
 
 			if (0 != oArrayChildAnchor.size())
 			{
-				pElem->m_rcBoundsOriginal.left		= oArrayChildAnchor[0]->m_oBounds.left;
-				pElem->m_rcBoundsOriginal.top		= oArrayChildAnchor[0]->m_oBounds.top;
-				pElem->m_rcBoundsOriginal.right		= oArrayChildAnchor[0]->m_oBounds.right;
-				pElem->m_rcBoundsOriginal.bottom	= oArrayChildAnchor[0]->m_oBounds.bottom;
+				pElement->m_rcBoundsOriginal.left		= oArrayChildAnchor[0]->m_oBounds.left;
+				pElement->m_rcBoundsOriginal.top		= oArrayChildAnchor[0]->m_oBounds.top;
+				pElement->m_rcBoundsOriginal.right		= oArrayChildAnchor[0]->m_oBounds.right;
+				pElement->m_rcBoundsOriginal.bottom	= oArrayChildAnchor[0]->m_oBounds.bottom;
 
-				RecalcGroupShapeAnchor(pElem->m_rcBoundsOriginal);
+				RecalcGroupShapeAnchor(pElement->m_rcBoundsOriginal);
 			
-				pElem->m_bBoundsEnabled	= true;
+				pElement->m_bBoundsEnabled	= true;
 				bAnchor = true;
 			}
 			else
@@ -1544,18 +1546,18 @@ public:
 				if (oArrayShape[0]->m_bBackground)
 				{
 					// здесь background
-					pElem->m_rcBoundsOriginal.left		= 0;
-					pElem->m_rcBoundsOriginal.top		= 0;
-					pElem->m_rcBoundsOriginal.right		= lSlideWidth;
-					pElem->m_rcBoundsOriginal.bottom	= lSlideHeight;
+					pElement->m_rcBoundsOriginal.left		= 0;
+					pElement->m_rcBoundsOriginal.top		= 0;
+					pElement->m_rcBoundsOriginal.right		= lSlideWidth;
+					pElement->m_rcBoundsOriginal.bottom	= lSlideHeight;
 				}
 				else
 				{
 					// не понятно...			
-					pElem->m_rcBoundsOriginal.left		= 0;
-					pElem->m_rcBoundsOriginal.top		= 0;
-					pElem->m_rcBoundsOriginal.right		= 0;
-					pElem->m_rcBoundsOriginal.bottom	= 0;
+					pElement->m_rcBoundsOriginal.left		= 0;
+					pElement->m_rcBoundsOriginal.top		= 0;
+					pElement->m_rcBoundsOriginal.right		= 0;
+					pElement->m_rcBoundsOriginal.bottom	= 0;
 				}
 			}
 		}
@@ -1563,30 +1565,30 @@ public:
 		double dScaleX = c_dMasterUnitsToMillimetreKoef;
 		double dScaleY = c_dMasterUnitsToMillimetreKoef;
 
-		pElem->NormalizeCoords(dScaleX, dScaleY);
+		pElement->NormalizeCoords(dScaleX, dScaleY);
 
-		pElem->m_bFlipH = oArrayShape[0]->m_bFlipH;
-		pElem->m_bFlipV = oArrayShape[0]->m_bFlipV;
+		pElement->m_bFlipH = oArrayShape[0]->m_bFlipH;
+		pElement->m_bFlipV = oArrayShape[0]->m_bFlipV;
 
 
 		if (pElementLayout && bAnchor)
 		{
-			pElementLayout->m_rcBoundsOriginal	= pElem->m_rcBoundsOriginal;
-			pElementLayout->m_rcBounds			= pElem->m_rcBounds;
+			pElementLayout->m_rcBoundsOriginal	= pElement->m_rcBoundsOriginal;
+			pElementLayout->m_rcBounds			= pElement->m_rcBounds;
 
 			pElementLayout->m_bPlaceholderSet	= true;
 			pElementLayout->m_bBoundsEnabled	= true;
 		}
 //--------- наличие текста --------------------------------------------------------------------------
-		CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElem);
+		CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElement.get());
 		if (NULL != pShapeElem)
 		{
 			CElementInfo oElementInfo;
 
-			oElementInfo.m_lMasterPlaceholderType = pElem->m_lPlaceholderType;
+			oElementInfo.m_lMasterPlaceholderType = pElement->m_lPlaceholderType;
 
-			pShapeElem->m_oShape.m_dWidthLogic  = ShapeSizeVML;
-			pShapeElem->m_oShape.m_dHeightLogic = ShapeSizeVML;
+			pShapeElem->m_pShape->m_dWidthLogic  = ShapeSizeVML;
+			pShapeElem->m_pShape->m_dHeightLogic = ShapeSizeVML;
 
 			// проверка на textheader present
 			std::vector<CRecordTextHeaderAtom*> oArrayTextHeader;
@@ -1594,14 +1596,14 @@ public:
 			
 			if (0 < oArrayTextHeader.size())
 			{
-				pShapeElem->m_oShape.m_oText.m_lTextType		= oArrayTextHeader[0]->m_nTextType;
-				pShapeElem->m_oShape.m_oText.m_lTextMasterType	= oArrayTextHeader[0]->m_nTextType;
+				pShapeElem->m_pShape->m_oText.m_lTextType		= oArrayTextHeader[0]->m_nTextType;
+				pShapeElem->m_pShape->m_oText.m_lTextMasterType	= oArrayTextHeader[0]->m_nTextType;
 				oElementInfo.m_lMasterTextType					= oArrayTextHeader[0]->m_nTextType;
 			}
 			else
 			{
-				pShapeElem->m_oShape.m_oText.m_lTextType		= NSOfficePPT::NoPresent;
-				pShapeElem->m_oShape.m_oText.m_lTextMasterType	= NSOfficePPT::NoPresent;
+				pShapeElem->m_pShape->m_oText.m_lTextType		= NSOfficePPT::NoPresent;
+				pShapeElem->m_pShape->m_oText.m_lTextMasterType	= NSOfficePPT::NoPresent;
 				oElementInfo.m_lMasterTextType					= NSOfficePPT::NoPresent;
 			}
 
@@ -1630,17 +1632,17 @@ public:
 				strShapeText = oArrayTextChars[0]->m_strText;
 			}
 
-			if (pElem->m_lPlaceholderType == PT_MasterSlideNumber && strShapeText.length() > 5)
+			if (pElement->m_lPlaceholderType == PT_MasterSlideNumber && strShapeText.length() > 5)
 			{
 				int pos = strShapeText.find(L"*"); 
-				if (pos < 0) pElem->m_lPlaceholderType = PT_MasterFooter; ///???? 1-(33).ppt
+				if (pos < 0) pElement->m_lPlaceholderType = PT_MasterFooter; ///???? 1-(33).ppt
 			}
 
 //------ shape properties ----------------------------------------------------------------------------------------
 			for (int nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
 			{
 				CPPTElement oElement;
-				oElement.SetUpProperties(pElem, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties);
+				oElement.SetUpProperties(pElement, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties);
 			}
 
 			std::vector<CRecordStyleTextPropAtom*> oArrayTextStyle;
@@ -1663,7 +1665,7 @@ public:
 			this->GetRecordsByType(&oArrayTextRuler, true, true);
 			if (0 != oArrayTextRuler.size())
 			{
-				pShapeElem->m_oShape.m_oText.m_oRuler = oArrayTextRuler[0]->m_oTextRuler;
+				pShapeElem->m_pShape->m_oText.m_oRuler = oArrayTextRuler[0]->m_oTextRuler;
 			}
 
 			std::vector<CRecordInteractiveInfoAtom*> oArrayInteractive;
@@ -1750,38 +1752,38 @@ public:
 
 			pSlideWrapper->m_mapElements.insert(std::pair<LONG, CElementInfo>(pShapeElem->m_lID, oElementInfo));
 			
-			SetUpTextStyle(strShapeText, pTheme, pLayout, pElem, pThemeWrapper, pSlideWrapper, pSlide, master_level);
+			SetUpTextStyle(strShapeText, pTheme, pLayout, pElement, pThemeWrapper, pSlideWrapper, pSlide, master_level);
 		}
 		else
 		{//image, audio, video ....
 			for (int nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
 			{
 				CPPTElement oElement;
-				oElement.SetUpProperties(pElem, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties);
+				oElement.SetUpProperties(pElement, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties);
 			}
 
-			pElem->m_lLayoutID = lMasterID;
+			pElement->m_lLayoutID = lMasterID;
 		}
 //----------------------------------------------------------------------------------------------------
 		if (NULL != pSlide)
 		{
-			pElem->m_dStartTime		= pSlide->m_dStartTime;
-			pElem->m_dEndTime		= pSlide->m_dEndTime;
+			pElement->m_dStartTime		= pSlide->m_dStartTime;
+			pElement->m_dEndTime		= pSlide->m_dEndTime;
 
-			pElem->m_oMetric.SetUnitsContainerSize(pSlide->m_lOriginalWidth, pSlide->m_lOriginalHeight);
+			pElement->m_oMetric.SetUnitsContainerSize(pSlide->m_lOriginalWidth, pSlide->m_lOriginalHeight);
 		}
 		else
 		{
-			pElem->m_dStartTime		= 0;
-			pElem->m_dEndTime		= 0;
+			pElement->m_dStartTime		= 0;
+			pElement->m_dEndTime		= 0;
 
-			pElem->m_oMetric.SetUnitsContainerSize(lSlideWidth, lSlideHeight);
+			pElement->m_oMetric.SetUnitsContainerSize(lSlideWidth, lSlideHeight);
 		}
 
-		pElem->m_bIsBackground	=	(true == oArrayShape[0]->m_bBackground);
-		pElem->m_bHaveAnchor	=	(true == oArrayShape[0]->m_bHaveAnchor);
+		pElement->m_bIsBackground	=	(true == oArrayShape[0]->m_bBackground);
+		pElement->m_bHaveAnchor		=	(true == oArrayShape[0]->m_bHaveAnchor);
 
-		*ppElement = pElem;
+		return pElement;
 	}
 
 	void RecalcGroupShapeAnchor(CDoubleRect& rcChildAnchor)
@@ -1847,13 +1849,13 @@ public:
 
 protected:
 
-	void ApplyThemeStyle(IElement* pElem, CTheme* pTheme, CRecordMasterTextPropAtom* master_levels)
+	void ApplyThemeStyle(CElementPtr pElem, CTheme* pTheme, CRecordMasterTextPropAtom* master_levels)
 	{
-		CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElem);
+		CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElem.get());
 		if (NULL == pShape)
 			return;
 		
-		CTextAttributesEx* pText = &(pShape->m_oShape.m_oText);
+		CTextAttributesEx* pText = &(pShape->m_pShape->m_oText);
 
 		
 		if (master_levels)
@@ -1871,7 +1873,7 @@ protected:
 		pText->ApplyThemeStyle(pTheme);
 
 	}
-	void SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, IElement* pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide, CRecordMasterTextPropAtom* master_levels)
+	void SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, CElementPtr pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide, CRecordMasterTextPropAtom* master_levels)
 	{
 		// сначала проверяем на shape
 		// затем применяем все настройки по-очереди
@@ -1891,11 +1893,11 @@ protected:
 		if (etShape != pElem->m_etType)
 			return;
 
-		CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElem);
+		CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElem.get());
 		if (NULL == pShape)
 			return;
 
-		CTextAttributesEx* pTextSettings = &(pShape->m_oShape.m_oText);
+		CTextAttributesEx* pTextSettings = &(pShape->m_pShape->m_oText);
 
 		// сначала применим ссылки на masterstyle (для шаблонного элемента)
 		// как узнать - просто есть ли массивы (т.к. они могли появиться пока только оттуда)
@@ -1924,11 +1926,11 @@ protected:
             {
                 for (size_t i = 0; i < pLayout->m_arElements.size(); ++i)
                 {
-                    IElement* pPh = pLayout->m_arElements[i];
+                    CElementPtr & pPh = pLayout->m_arElements[i];
                     if ((etShape == pPh->m_etType) && (ph_type == pPh->m_lPlaceholderType) && (/*ph_pos == pPh->m_lPlaceholderID*/true))
                     {
-                        pElementLayoutPH = dynamic_cast<CShapeElement*>(pPh);
-                        eTypeMaster = (NSOfficePPT::TextType)pElementLayoutPH->m_oShape.m_oText.m_lTextMasterType;
+                        pElementLayoutPH = dynamic_cast<CShapeElement*>(pPh.get());
+                        eTypeMaster = (NSOfficePPT::TextType)pElementLayoutPH->m_pShape->m_oText.m_lTextMasterType;
                         break;
                     }
                 }
@@ -1985,7 +1987,7 @@ protected:
 
 				pStyle->ReadFromStream(oHeader, oElemInfo.m_pStream);
 
-				NSPresentationEditor::ConvertPPTTextToEditorStructure(pStyle->m_arrPFs, pStyle->m_arrCFs, strText, pShape->m_oShape.m_oText);
+				NSPresentationEditor::ConvertPPTTextToEditorStructure(pStyle->m_arrPFs, pStyle->m_arrCFs, strText, pShape->m_pShape->m_oText);
 
 				bIsOwnPresentSettings = (0 < pStyle->m_lCount);
 
@@ -2113,9 +2115,9 @@ protected:
 			{
 				if (NULL != pElementLayoutPH)
 				{
-					pTextSettings->m_oLayoutStyles		= pElementLayoutPH->m_oShape.m_oText.m_oStyles;
-					pTextSettings->m_lTextType			= pElementLayoutPH->m_oShape.m_oText.m_lTextType;
-					pTextSettings->m_lStyleThemeIndex	= pElementLayoutPH->m_oShape.m_oText.m_lStyleThemeIndex;
+					pTextSettings->m_oLayoutStyles		= pElementLayoutPH->m_pShape->m_oText.m_oStyles;
+					pTextSettings->m_lTextType			= pElementLayoutPH->m_pShape->m_oText.m_lTextType;
+					pTextSettings->m_lStyleThemeIndex	= pElementLayoutPH->m_pShape->m_oText.m_lStyleThemeIndex;
 				}
 				else
 				{	
@@ -2225,13 +2227,13 @@ protected:
 				pSpecInfo->m_lCount = -1;
 
 				pSpecInfo->ReadFromStream(oHeader, oElemInfo.m_pStream);
-				pSpecInfo->ApplyProperties(&(pShape->m_oShape.m_oText));
+				pSpecInfo->ApplyProperties(&(pShape->m_pShape->m_oText));
 
 				RELEASEOBJECT(pSpecInfo);
 			}
 			StreamUtils::StreamSeek(lPosition, oElemInfo.m_pStream);
 		}
-		pShape->m_oShape.m_oText.RecalcParagraphsPPT();
+		pShape->m_pShape->m_oText.RecalcParagraphsPPT();
 		
 		ApplyThemeStyle(pElem, pTheme, master_levels);
 
@@ -2247,7 +2249,7 @@ protected:
 			ApplyHyperlink(pShape, oColor);
 		}
 
-		CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(pShape->m_oShape.getBaseShape());
+		CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(pShape->m_pShape->getBaseShape().get());
 
 		if (NULL != pPPTShape)		// проверка на wordart
 		{
@@ -2294,12 +2296,12 @@ protected:
 			case sptTextCanUp:   
 			case sptTextCanDown:
 				{
-					pShape->m_oShape.m_oText.m_oAttributes.m_oTextBrush = pShape->m_oBrush;
+					pShape->m_pShape->m_oText.m_oAttributes.m_oTextBrush = pShape->m_oBrush;
 
-					pShape->m_oShape.m_oText.m_oAttributes.m_nTextAlignHorizontal	= 1;
-					pShape->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical		= 1;
+					pShape->m_pShape->m_oText.m_oAttributes.m_nTextAlignHorizontal	= 1;
+					pShape->m_pShape->m_oText.m_oAttributes.m_nTextAlignVertical		= 1;
 
-					pShape->m_oShape.m_lDrawType = c_ShapeDrawType_Text;
+					pShape->m_pShape->m_lDrawType = c_ShapeDrawType_Text;
 					break;
 				}
 			default:
@@ -2311,7 +2313,7 @@ protected:
 	void ApplyHyperlink(CShapeElement* pShape, CColor& oColor)
 	{
 		std::vector<CTextRange>* pRanges	= &pShape->m_oTextActions.m_arRanges;
-		CTextAttributesEx* pTextAttributes	= &pShape->m_oShape.m_oText;
+		CTextAttributesEx* pTextAttributes	= &pShape->m_pShape->m_oText;
 
 		int lCountHyper	= pRanges->size();
 

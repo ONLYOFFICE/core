@@ -56,26 +56,7 @@ BaseObjectPtr SXADDLCALCMEMBER::clone()
 // SXADDLCALCMEMBER = (SXAddl_SXCView_SXDCalcMember [SXAddl_SXCView_SXDCalcMemString *Continue_SxaddlSxString])
 const bool SXADDLCALCMEMBER::loadContent(BinProcessor& proc)
 {
-	bool result = false;
-	while (true)
-	{
-		CFRecordType::TypeId type = proc.getNextRecordType();	
-
-		if (type == rt_SXAddl)
-		{
-			result = true;
-			proc.optional<SXAddl>();
-
-			SXAddl* addl = dynamic_cast<SXAddl*>(elements_.back().get());				
-			if (!addl) continue;
-			
-			if (addl->bEndElement)
-				break;
-		}
-		else
-			break;
-	}
-	return result;
+	return false;
 }
 
 } // namespace XLS

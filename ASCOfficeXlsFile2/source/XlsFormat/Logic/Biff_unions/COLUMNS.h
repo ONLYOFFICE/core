@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of COLUMNS union of records 
 class COLUMNS: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(COLUMNS)
@@ -51,7 +49,7 @@ public:
 
 	int serialize(std::wostream & stream);
 
-	static const ElementType	type = typeCOLUMNS;
+	static const ElementType type = typeCOLUMNS;
 
 	BaseObjectPtr m_DefColWidth;
 

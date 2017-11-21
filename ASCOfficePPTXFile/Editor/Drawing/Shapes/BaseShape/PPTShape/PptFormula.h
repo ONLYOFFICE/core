@@ -341,8 +341,9 @@ namespace NSGuidesVML
         long m_lShapeWidth;
         long m_lShapeHeight;
 
-    public:
-        CFormulasManager() : m_arFormulas(), m_arResults()
+		bool m_bCalc; //status
+
+        CFormulasManager() : m_bCalc(false)
         {
             m_pAdjustments	= NULL;
             m_lShapeWidth	= ShapeSizeVML;
@@ -350,6 +351,7 @@ namespace NSGuidesVML
         }
         CFormulasManager& operator =(const CFormulasManager& oSrc)
         {
+			m_bCalc			= oSrc.m_bCalc;
             m_pAdjustments	= oSrc.m_pAdjustments;
             m_lShapeWidth	= oSrc.m_lShapeWidth;
             m_lShapeHeight	= oSrc.m_lShapeHeight;
@@ -370,6 +372,7 @@ namespace NSGuidesVML
 
         void Clear()
         {
+			m_bCalc			= false;
             m_pAdjustments	= NULL;
             m_lShapeWidth	= ShapeSizeVML;
             m_lShapeHeight	= ShapeSizeVML;

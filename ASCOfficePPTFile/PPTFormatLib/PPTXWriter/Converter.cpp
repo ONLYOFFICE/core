@@ -794,7 +794,7 @@ void NSPresentationEditor::CPPTXWriter::WriteBackground(CStringWriter& oWriter, 
 	oWriter.WriteString(std::wstring(L"</p:bgPr></p:bg>"));
 }
 
-void NSPresentationEditor::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerator& oRels, IElement* pElement, CLayout* pLayout)
+void NSPresentationEditor::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)
 {
 	if (!pElement) return;
 
@@ -817,7 +817,7 @@ void NSPresentationEditor::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRe
 					if ((pElement->m_lPlaceholderType == pLayout->m_arElements[nIndex]->m_lPlaceholderType) &&
 						(pElement->m_lPlaceholderID == pLayout->m_arElements[nIndex]->m_lPlaceholderID))
 					{
-						IElement* pElLayout = pLayout->m_arElements[nIndex];
+						CElementPtr pElLayout = pLayout->m_arElements[nIndex];
 						
 						bool bIsEqualTransform = ((pElement->m_dRotate == pElLayout->m_dRotate) 
 							&& (pElement->m_bFlipH == pElLayout->m_bFlipH) && (pElement->m_bFlipV == pElLayout->m_bFlipV));

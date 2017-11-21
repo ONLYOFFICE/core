@@ -43,10 +43,13 @@
 #include <map>
 
 class IRenderer;
-class CShape;
-class CPPTShape;
 class CFontManager;
 class COfficeFontPicker;
+
+class CShape;
+typedef boost::shared_ptr<CShape> CShapePtr;
+
+class CPPTShape;
 
 namespace XmlUtils
 {
@@ -187,7 +190,7 @@ namespace NSBinPptxRW
 		};
 
 
-        std::map<std::wstring, CShape*>						m_mapShapeTypes;
+        std::map<std::wstring, CShapePtr>					m_mapShapeTypes;
 
         NSBinPptxRW::CBinaryFileWriter*                     m_pBinaryWriter;
         int                                                 m_lNextId;
@@ -276,8 +279,8 @@ namespace NSBinPptxRW
         void CheckBrushShape        (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, PPTShapes::ShapeType eType, CPPTShape* pPPTShape);
         void CheckPenShape          (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, PPTShapes::ShapeType eType, CPPTShape* pPPTShape);
 
-        void LoadCoordSize			(XmlUtils::CXmlNode& oNode, ::CShape* pShape);
-		void LoadCoordPos			(XmlUtils::CXmlNode& oNode, ::CShape* pShape);
+        void LoadCoordSize			(XmlUtils::CXmlNode& oNode, ::CShapePtr pShape);
+		void LoadCoordPos			(XmlUtils::CXmlNode& oNode, ::CShapePtr pShape);
        
 		std::wstring GetDrawingMainProps (XmlUtils::CXmlNode& oNode, PPTX::CCSS& oCssStyles, CSpTreeElemProps& oProps);
 

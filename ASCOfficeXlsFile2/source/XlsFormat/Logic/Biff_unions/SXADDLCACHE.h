@@ -41,10 +41,10 @@ class SXADDLCACHE: public CompositeObject
     {
         _sxAddl(std::vector<_sxAddl> *p, int l) : prev(p), level (l) {}
 
-        std::vector<_sxAddl>*		prev = NULL;
-        int							level = 0;
-        std::vector<BaseObjectPtr>	elements;
-        std::vector<_sxAddl>		levels;
+        std::vector<_sxAddl>*			prev = NULL;
+        int								level = 0;
+        std::vector<BiffStructurePtr>	elements;
+        std::vector<_sxAddl>			levels;
     };
 
     BASE_OBJECT_DEFINE_CLASS_NAME(SXADDLCACHE)
@@ -58,13 +58,6 @@ public:
 
 	static const ElementType type = typeSXADDLCACHE;
 	
-	BiffStructurePtr	m_SXAddl_SXCCache_SXDId;
-	BiffStructurePtr	m_SXAddl_SXCCache_SXDVerUpdInv;
-	BiffStructurePtr	m_SXAddl_SXCCache_SXDVer10Info;
-	BiffStructurePtr	m_SXAddl_SXCCache_SXDVerSXMacro;
-	BiffStructurePtr	m_SXAddl_SXCCache_SXDInvRefreshReal;
-	BiffStructurePtr	m_SXAddl_SXCCache_SXDInfo12;
-
 	std::vector<_sxAddl> content;
 	std::vector<_sxAddl> *current;
 };

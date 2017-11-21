@@ -96,6 +96,15 @@ const bool MacroSheetSubstream::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+	global_info_ = proc.getGlobalWorkbookInfo();
+	
+	GlobalWorkbookInfo::_sheet_size_info sheet_size_info;
+	
+	global_info_->sheet_size_info.push_back(sheet_size_info);
+	global_info_->current_sheet = global_info_->sheet_size_info.size();
+
+	global_info_->sheet_size_info.back().bMacrosSheet = true;
+
 	proc.optional<Uncalced>();
 	proc.mandatory<Index>();
 	proc.optional<Intl>();

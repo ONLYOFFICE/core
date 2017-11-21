@@ -35,9 +35,10 @@
 
 namespace XLS
 {;
+
 class MacroSheetSubstream;
-typedef boost::shared_ptr<MacroSheetSubstream>			MacroSheetSubstreamPtr;
-// Logical representation of MacroSheetSubstream union of records 
+typedef boost::shared_ptr<MacroSheetSubstream> MacroSheetSubstreamPtr;
+
 class MacroSheetSubstream: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(MacroSheetSubstream)
@@ -53,10 +54,13 @@ public:
 
 	BaseObjectPtr				m_GLOBALS;
 	BaseObjectPtr				m_OBJECTS;
+
 	std::vector<BaseObjectPtr>	m_arCUSTOMVIEW;
 
 	BaseObjectPtr				m_SheetExt;
 	BaseObjectPtr				m_CodeName;
+
+	GlobalWorkbookInfoPtr		global_info_;
 	
 };
 

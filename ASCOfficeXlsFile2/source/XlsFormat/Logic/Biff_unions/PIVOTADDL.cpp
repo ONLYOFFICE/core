@@ -38,7 +38,7 @@ namespace XLS
 {
 
 
-PIVOTADDL::PIVOTADDL() : current( &content)
+PIVOTADDL::PIVOTADDL() : current( &content), m_SXADDLCONDFMTS(NULL, -1), m_SXADDLSXFILTERS12(NULL, -1)
 {
 	_sxAddl elm(NULL, 0);
 	current->push_back(elm);
@@ -94,38 +94,51 @@ const bool PIVOTADDL::loadContent(BinProcessor& proc)
 		
 		result = true;
 		
-		if (addl->bEndElement)
-		{ 
-			elements_.pop_back();
+		if (level == 0 && addl->bEndElement)
+		{
+			elements_.pop_back(); //end элемент не нужен в дальнейшем
+			break;
+		}
+		else if (addl->bEndElement)
+		{ 			
+			level--;
+			std::vector<_sxAddl> *current_old = current;
 			
+			_sxAddl & current_level = current->back();
+			
+			current = current_level.prev;			
+			current_level.prev = NULL;
+
 			if (level == 0)
-				break;
-			else level--;
+			{
+				switch(addl->sxc)
+				{
+					case 0x01:	
+					case 0x17:
+								m_arSXADDLFIELD.push_back(current_level);		break;
+					case 0x02:	m_arSXADDLHIERARCHY.push_back(current_level);	break;
+					case 0x03:	m_arSXADDLCALCMEMBER.push_back(current_level);	break;
+					case 0x1a:	m_SXADDLCONDFMTS	= current_level;			break;
+					case 0x1c:	m_SXADDLSXFILTERS12 = current_level;			break;
+				}
+			}			
 			
-			current = current->back().prev;
+			elements_.pop_back(); //end элемент не нужен в дальнейшем
 			continue;
 		}
-		if (level == 0)
+		else if (level == 0)
 		{
-			SXAddl_SXCView_SXDId* p0 = dynamic_cast<SXAddl_SXCView_SXDId*>(addl->content.get());
-			if (p0)
+			switch(addl->sxd)
 			{
-				m_SXAddl_SXCView_SXDId = addl->content;
+				case 0x00: m_SXAddl_SXCView_SXDId				= addl->content;	break;
+ 				case 0x02: m_SXAddl_SXCView_SXDVer10Info		= addl->content;    break;
+				case 0x19: m_SXAddl_SXCView_SXDVer12Info		= addl->content;    break;
+				case 0x1E: m_SXAddl_SXCView_SXDTableStyleClient = addl->content;	break;
 			}
-			SXAddl_SXCView_SXDTableStyleClient* p1 = dynamic_cast<SXAddl_SXCView_SXDTableStyleClient*>(addl->content.get());
-			if (p1)
+			if (addl->sxd == 0x00 || addl->sxd == 0x02 || addl->sxd == 0x19 || addl->sxd == 0x1e)
 			{
-				m_SXAddl_SXCView_SXDTableStyleClient = addl->content;
-			}
-			SXAddl_SXCView_SXDVer10Info* p2 = dynamic_cast<SXAddl_SXCView_SXDVer10Info*>(addl->content.get());
-			if (p2)
-			{
-				m_SXAddl_SXCView_SXDVer10Info = addl->content;
-			}
-			SXAddl_SXCView_SXDVer12Info* p3 = dynamic_cast<SXAddl_SXCView_SXDVer12Info*>(addl->content.get());
-			if (p3)
-			{
-				m_SXAddl_SXCView_SXDVer12Info = addl->content;
+				elements_.pop_back();
+				continue;
 			}
 		}
 

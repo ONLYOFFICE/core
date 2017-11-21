@@ -34,8 +34,9 @@
 #include "PptxShape.h"
 //#include "PresetShapesHeader.h"
 
-CPPTXShape* CPPTXShape::CreateByType(OOXMLShapes::ShapeType type)
+CBaseShapePtr CPPTXShape::CreateByType(OOXMLShapes::ShapeType type)
 {
+	CBaseShapePtr shape;
 //    switch(type)
 //	{
 //	case OOXMLShapes::sptCAccentBorderCallout1:		return new OOXMLShapes::CAccentBorderCallout1();
@@ -266,5 +267,5 @@ CPPTXShape* CPPTXShape::CreateByType(OOXMLShapes::ShapeType type)
 //	case OOXMLShapes::sptCWedgeRectCallout:			return new OOXMLShapes::CWedgeRectCallout();
 //	case OOXMLShapes::sptCWedgeRoundRectCallout:	return new OOXMLShapes::CWedgeRoundRectCallout();
 //	}
-	return NULL;
+	return shape;
 }

@@ -280,7 +280,7 @@ public:
     OOXMLShapes::ShapeType m_eType;
 
     NSGuidesOOXML::CFormulaManager FManager;
-public:
+
     CPPTXShape() : CBaseShape(), FManager(m_arAdjustments, m_arGuides)
     {
         m_eType = OOXMLShapes::sptMin;
@@ -507,7 +507,7 @@ public:
         LoadPathList(m_strPath);
     }
 
-    static CPPTXShape* CreateByType(OOXMLShapes::ShapeType type);
+    static CBaseShapePtr CreateByType(OOXMLShapes::ShapeType type);
     
 	virtual const ClassType GetClassType()const
     {
@@ -540,13 +540,12 @@ public:
 
     bool SetShapeType(OOXMLShapes::ShapeType type)
     {
-        CPPTXShape* l_pShape = CreateByType(type);
-        if(l_pShape != NULL)
+        CBaseShapePtr pShape = CreateByType(type);
+        if(pShape)
         {
             m_eType = type;
 
-            SetProperties(l_pShape);
-            delete l_pShape;
+            SetProperties(pShape.get());
             return true;
         }
 

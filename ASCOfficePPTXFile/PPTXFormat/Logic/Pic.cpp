@@ -233,7 +233,7 @@ namespace PPTX
 				}		
 				NSDirectory::DeleteDirectory(oox_unpacked.GetPath());
 			}
-			else if ( L"Equation.3" == sProgID || L"Equation.2" == sProgID )
+			else if ( std::wstring::npos != sProgID.find(L"Equation"))
 			{
 				pWriter->StartRecord(1);
 					pWriter->WriteBYTE(4);

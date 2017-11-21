@@ -31,23 +31,22 @@
  */
 
 #include "ATTACHEDLABEL.h"
-#include <Logic/Biff_records/Text.h>
-#include <Logic/Biff_records/Begin.h>
-#include <Logic/Biff_records/Pos.h>
-#include <Logic/Biff_records/FontX.h>
-#include <Logic/Biff_records/AlRuns.h>
-#include <Logic/Biff_records/ObjectLink.h>
-#include <Logic/Biff_records/DataLabExtContents.h>
-#include <Logic/Biff_records/CrtLayout12.h>
-#include <Logic/Biff_records/End.h>
-#include <Logic/Biff_records/SeriesText.h>
-#include <Logic/Biff_records/Font.h>
-#include <Logic/Biff_records/FrtWrapper.h>
+#include "AI.h"
+#include "FRAME.h"
+#include "TEXTPROPS.h"
+#include "CRTMLFRT.h"
 
-#include <Logic/Biff_unions/AI.h>
-#include <Logic/Biff_unions/FRAME.h>
-#include <Logic/Biff_unions/TEXTPROPS.h>
-#include <Logic/Biff_unions/CRTMLFRT.h>
+#include "../Biff_records/Text.h"
+#include "../Biff_records/Begin.h"
+#include "../Biff_records/Pos.h"
+#include "../Biff_records/FontX.h"
+#include "../Biff_records/AlRuns.h"
+#include "../Biff_records/ObjectLink.h"
+#include "../Biff_records/DataLabExtContents.h"
+#include "../Biff_records/CrtLayout12.h"
+#include "../Biff_records/End.h"
+#include "../Biff_records/SeriesText.h"
+#include "../Biff_records/Font.h"
 
 #include <utils.h>
 
@@ -149,7 +148,7 @@ const bool ATTACHEDLABEL::loadContent(BinProcessor& proc)
 	}
 	
 	proc.optional<CRTMLFRT>();
-	proc.optional<FrtWrapper>();
+
 	proc.mandatory<End>();			elements_.pop_back();
 
 	return true;

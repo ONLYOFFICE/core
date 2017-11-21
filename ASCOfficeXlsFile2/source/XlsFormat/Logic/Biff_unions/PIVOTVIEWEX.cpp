@@ -33,11 +33,13 @@
 #include "PIVOTVIEWEX.h"
 #include "PIVOTTH.h"
 #include "PIVOTVDTEX.h"
+#include "PIVOTADDL.h"
 
 #include "../Biff_records/SXTH.h"
 #include "../Biff_records/SXViewEx.h"
 #include "../Biff_records/SXPIEx.h"
 #include "../Biff_records/SXVDTEx.h"
+#include "../Biff_records/SXAddl.h"
 
 namespace XLS
 {
@@ -89,10 +91,14 @@ int PIVOTVIEWEX::serialize(std::wostream & strm)
 {				
 	if (m_arPIVOTTH.empty()) return 0;
 
-	std::unordered_map<std::wstring, std::vector<int>> mapDimensions;
-	std::unordered_map<std::wstring, std::vector<int>> mapMeasures;
-	std::unordered_map<std::wstring, std::vector<int>> mapKpis;
-	std::unordered_map<std::wstring, std::vector<int>> mapNamed;
+	std::unordered_map<std::wstring, std::vector<int>>	mapDimensions;
+	std::unordered_map<std::wstring, std::vector<int>>	mapMeasures;
+	std::unordered_map<std::wstring, int>				mapKpis;
+	std::unordered_map<std::wstring, std::vector<int>>	mapNamed;
+	
+	PIVOTADDL *addls = dynamic_cast<PIVOTADDL*>(m_PIVOTADDL.get());
+
+	bool bAddl = addls ? (addls->m_arSXADDLHIERARCHY.size() == m_arPIVOTTH.size()) : false;
 
 	CP_XML_WRITER(strm)
 	{
@@ -102,55 +108,70 @@ int PIVOTVIEWEX::serialize(std::wostream & strm)
 			
 			for (size_t i = 0; i < m_arPIVOTTH.size(); i++)
 			{
-				PIVOTTH* ht = dynamic_cast<PIVOTTH*>(m_arPIVOTTH[i].get());
-				SXTH* szTH = dynamic_cast<SXTH*>(ht->m_SXTH.get());
+				PIVOTTH* th = dynamic_cast<PIVOTTH*>(m_arPIVOTTH[i].get());
+				SXTH* sxTH = dynamic_cast<SXTH*>(th->m_SXTH.get());
 				
-				if (szTH->fKPI)	
+				SXAddl_SXCHierarchy_SXDId			*id				= NULL;
+				SXAddl_SXCHierarchy_SXDInfo12		*info12			= NULL;
+				SXAddl_SXCHierarchy_SXDUserCaption	*user_caption	= NULL;
+				SXAddl_SXCHierarchy_SXDMeasureGrp	*measure_grp	= NULL;
+				
+				for (size_t j = 0; bAddl && j < addls->m_arSXADDLHIERARCHY[i].elements.size(); j++)
 				{
-					std::unordered_map<std::wstring, std::vector<int>>::iterator pFind = mapKpis.find(szTH->stUnique.value());
+					SXAddl * addl = dynamic_cast<SXAddl*>(addls->m_arSXADDLHIERARCHY[i].elements[j].get());
+					if (!addl) continue;
+
+					if (!id)			id				= dynamic_cast<SXAddl_SXCHierarchy_SXDId*>			(addl->content.get());
+					if (!info12)		info12			= dynamic_cast<SXAddl_SXCHierarchy_SXDInfo12*>		(addl->content.get());
+					if (!user_caption)	user_caption	= dynamic_cast<SXAddl_SXCHierarchy_SXDUserCaption*>	(addl->content.get());
+					if (!measure_grp)	measure_grp		= dynamic_cast<SXAddl_SXCHierarchy_SXDMeasureGrp*>	(addl->content.get());
+				}
+				if (sxTH->fKPI)	
+				{
+					std::unordered_map<std::wstring, int>::iterator pFind = mapKpis.find(sxTH->stUnique.value());
 					if (pFind == mapKpis.end())
 					{
-						std::vector<int> v; v.push_back(i);
-						mapKpis.insert(std::make_pair(szTH->stUnique.value(), v));
+						//std::vector<int> v; v.push_back(i);
+						mapKpis.insert(std::make_pair(sxTH->stUnique.value(), i/*v*/));
 					}
 					else
 					{
-						pFind->second.push_back(i);
+						//pFind->second.push_back(i);
 					}
 				}
-				else if (szTH->fMeasure && !szTH->fSet && !szTH->fKPI)
+				else if (sxTH->fMeasure && !sxTH->fSet && !sxTH->fKPI && measure_grp)
 				{
-					std::unordered_map<std::wstring, std::vector<int>>::iterator pFind = mapMeasures.find(szTH->stUnique.value());
+					std::unordered_map<std::wstring, std::vector<int>>::iterator pFind = mapMeasures.find(measure_grp->stMeasureGroup.string.value());
 					if (pFind == mapMeasures.end())
 					{
 						std::vector<int> v; v.push_back(i);
-						mapMeasures.insert(std::make_pair(szTH->stUnique.value(), v));
+						mapMeasures.insert(std::make_pair(measure_grp->stMeasureGroup.string.value(), v));
 					}
 					else
 					{
 						pFind->second.push_back(i);
 					}
 				}
-				else if (szTH->fSet && !szTH->fMeasure && !szTH->fKPI)
+				else if (sxTH->fSet && !sxTH->fMeasure && !sxTH->fKPI)
 				{
-					std::unordered_map<std::wstring, std::vector<int>>::iterator pFind = mapNamed.find(szTH->stUnique.value());
+					std::unordered_map<std::wstring, std::vector<int>>::iterator pFind = mapNamed.find(sxTH->stUnique.value());
 					if (pFind == mapNamed.end())
 					{
 						std::vector<int> v; v.push_back(i);
-						mapNamed.insert(std::make_pair(szTH->stUnique.value(), v));
+						mapNamed.insert(std::make_pair(sxTH->stUnique.value(), v));
 					}
 					else
 					{
 						pFind->second.push_back(i);
 					}
 				}
-				if (!szTH->stDimension.value().empty())
+				if (!sxTH->stDimension.value().empty())
 				{
-					std::unordered_map<std::wstring, std::vector<int>>::iterator pFind = mapDimensions.find(szTH->stDimension.value());
+					std::unordered_map<std::wstring, std::vector<int>>::iterator pFind = mapDimensions.find(sxTH->stDimension.value());
 					if (pFind == mapDimensions.end())
 					{
 						std::vector<int> v; v.push_back(i);
-						mapDimensions.insert(std::make_pair(szTH->stDimension.value(), v));
+						mapDimensions.insert(std::make_pair(sxTH->stDimension.value(), v));
 					}
 					else
 					{
@@ -158,15 +179,100 @@ int PIVOTVIEWEX::serialize(std::wostream & strm)
 					}
 				}
 				
-				szTH->serialize(CP_XML_STREAM());
+				CP_XML_NODE(L"cacheHierarchy")
+				{ 
+					CP_XML_ATTR(L"uniqueName",				sxTH->stUnique.value());
+
+					if (user_caption)
+					{
+						CP_XML_ATTR(L"caption",				user_caption->stCaption.string.value());
+					}
+					else
+					{
+						CP_XML_ATTR(L"caption",				sxTH->stDisplay.value());
+					}
+					if (sxTH->fMeasure)
+					{
+						CP_XML_ATTR(L"measure", true);
+						if (measure_grp)
+						{
+							CP_XML_ATTR(L"measureGroup", measure_grp->stMeasureGroup.string.value());
+						}
+						if (sxTH->cisxvd > 0)
+							CP_XML_ATTR(L"oneField", sxTH->cisxvd);
+					}
+					else
+					{
+						//if (!sxTH->stDimension.value().empty())
+						//{
+						//	CP_XML_ATTR(L"attribute",			sxTH->fKeyAttributeHierarchy); 
+						//	CP_XML_ATTR(L"keyAttribute",		sxTH->fKeyAttributeHierarchy); 
+						//}
+						//else
+						{
+							CP_XML_ATTR(L"attribute",			!sxTH->fKeyAttributeHierarchy); 
+						}
+						//keyAttribute
+						CP_XML_ATTR(L"defaultMemberUniqueName", sxTH->stDefault.value());
+						CP_XML_ATTR(L"allUniqueName",			sxTH->stAll.value());
+						CP_XML_ATTR(L"dimensionUniqueName",		sxTH->stDimension.value());
+
+						CP_XML_ATTR(L"count", 0);//levels in this hierarchy.
+						
+						if (info12)
+						{
+							CP_XML_ATTR(L"unbalanced", info12->fUnbalancedReal);//??
+							if (info12->fHidden)
+								CP_XML_ATTR(L"hidden", info12->fHidden);
+						}
+					}
+
+					if (sxTH->cisxvd > 0)
+					{
+						CP_XML_NODE(L"fieldsUsage")
+						{
+							CP_XML_ATTR(L"count", sxTH->cisxvd);
+							for (size_t i = 0; i < sxTH->rgisxvd.size(); i++)
+							{
+								CP_XML_NODE(L"fieldUsage")
+								{
+									CP_XML_ATTR(L"x", sxTH->rgisxvd[i]);
+								}
+							}
+						}
+					}
+				}
+
 			}
 		}
 		CP_XML_NODE(L"kpis")
 		{
 			CP_XML_ATTR(L"count", mapKpis.size());
 			
-			for (std::unordered_map<std::wstring, std::vector<int>>::iterator it = mapKpis.begin(); it != mapKpis.end(); it++)
+			for (std::unordered_map<std::wstring, int>::iterator it = mapKpis.begin(); it != mapKpis.end(); it++)
 			{
+				SXAddl_SXCHierarchy_SXDKPIValue		*value	= NULL;
+				SXAddl_SXCHierarchy_SXDKPIGoal		*goal	= NULL;
+				SXAddl_SXCHierarchy_SXDKPIStatus	*status = NULL;
+				SXAddl_SXCHierarchy_SXDKPITrend		*trend	= NULL;
+				SXAddl_SXCHierarchy_SXDKPIWeight	*weight = NULL;
+				SXAddl_SXCHierarchy_SXDKPITime		*time	= NULL;
+
+				PIVOTADDL::_sxAddl & tmp = addls->m_arSXADDLHIERARCHY[it->second];
+
+				for (size_t i = 0; bAddl && i < tmp.elements.size(); i++)
+				{
+					SXAddl * addl = dynamic_cast<SXAddl*>(tmp.elements[i].get());
+					if (!addl) continue;
+
+					if (!value)		value	= dynamic_cast<SXAddl_SXCHierarchy_SXDKPIValue*>	(addl->content.get());
+					if (!goal)		goal	= dynamic_cast<SXAddl_SXCHierarchy_SXDKPIGoal*>		(addl->content.get());
+					if (!status)	status	= dynamic_cast<SXAddl_SXCHierarchy_SXDKPIStatus*>	(addl->content.get());
+					if (!trend)		trend	= dynamic_cast<SXAddl_SXCHierarchy_SXDKPITrend*>	(addl->content.get());
+					if (!weight)	weight	= dynamic_cast<SXAddl_SXCHierarchy_SXDKPIWeight*>	(addl->content.get());
+					if (!time)		time	= dynamic_cast<SXAddl_SXCHierarchy_SXDKPITime*>		(addl->content.get());
+				}
+
 				CP_XML_NODE(L"kpi")
 				{
 					CP_XML_ATTR(L"uniqueName",	it->first);
@@ -183,7 +289,18 @@ int PIVOTVIEWEX::serialize(std::wostream & strm)
 		}
 		CP_XML_NODE(L"dimensions")
 		{
-			CP_XML_ATTR(L"count", mapDimensions.size());
+			CP_XML_ATTR(L"count", mapDimensions.size() + (mapMeasures.empty() ? 0 : 1));
+
+			if (!mapMeasures.empty())
+			{
+				CP_XML_NODE(L"dimension")
+				{
+					CP_XML_ATTR(L"measure",		L"1");
+					CP_XML_ATTR(L"name",		L"Measures");
+					CP_XML_ATTR(L"uniqueName",	L"[Measures]");
+					CP_XML_ATTR(L"caption",		L"Measures");
+				}
+			}
 			for (std::unordered_map<std::wstring, std::vector<int>>::iterator it = mapDimensions.begin(); it != mapDimensions.end(); it++)
 			{
 				CP_XML_NODE(L"dimension")
@@ -191,34 +308,49 @@ int PIVOTVIEWEX::serialize(std::wostream & strm)
 					CP_XML_ATTR(L"name",		it->first.substr(1, it->first.length() - 2));
 					CP_XML_ATTR(L"uniqueName",	it->first);
 					
-					//if (szTH->fMeasure)
+					//if (sxTH->fMeasure)
 					//	CP_XML_ATTR(L"measure",	true);
 				}
 			}
 		}
+		int count_maps = 0;
 		CP_XML_NODE(L"measureGroups")
 		{
 			CP_XML_ATTR(L"count", mapMeasures.size());
 			for (std::unordered_map<std::wstring, std::vector<int>>::iterator it = mapMeasures.begin(); it != mapMeasures.end(); it++)
 			{
-				CP_XML_ATTR(L"name", it->first.substr(1, it->first.length() - 2));
+				CP_XML_NODE(L"measureGroup")
+				{
+					CP_XML_ATTR(L"name", it->first);
+					CP_XML_ATTR(L"caption", it->first);
+				}
+				//if (it->second.size() > 1)
+				//	count_maps += mapDimensions;
+				//else 
+				//	count_maps += 1;				
+				count_maps += it->second.size();
+			}
+		}
+		CP_XML_NODE(L"maps")
+		{
+			int i = 0;
+			CP_XML_ATTR(L"count", count_maps);
+			for (std::unordered_map<std::wstring, std::vector<int>>::iterator it = mapMeasures.begin(); it != mapMeasures.end(); it++, i++)
+			{
+				for (size_t j = 0; j < it->second.size(); j++)
+				{
+					CP_XML_NODE(L"map")
+					{
+						CP_XML_ATTR(L"measureGroup", i);
+						
+						PIVOTTH* th = dynamic_cast<PIVOTTH*>(m_arPIVOTTH[it->second[j]].get());
+						SXTH* sxTH = dynamic_cast<SXTH*>(th->m_SXTH.get());
+						
+						CP_XML_ATTR(L"dimension", j + 1/*it->first*/);
+					}
+				}
 
 			}
-			//CP_XML_ATTR(L"count", m_arPIVOTVDTEX.size());
-			//for (size_t i = 0; i < m_arPIVOTVDTEX.size(); i++)
-			//{
-			//	PIVOTVDTEX *VDTEX = dynamic_cast<PIVOTVDTEX*>(m_arPIVOTVDTEX[i].get());
-			//	SXVDTEx  *ex = dynamic_cast<SXVDTEx*>(VDTEX->m_SXVDTEx.get());
-			//	
-			//	PIVOTTH* ht = dynamic_cast<PIVOTTH*>(m_arPIVOTTH[ex->isxth].get());
-			//	SXTH* szTH = dynamic_cast<SXTH*>(ht->m_SXTH.get());
-			//	
-			//	CP_XML_NODE(L"measureGroup")
-			//	{
-			//		CP_XML_ATTR(L"name", szTH->stDimension.value());
-			//	}
-		
-			//}
 		}
 	}
 	return 0;

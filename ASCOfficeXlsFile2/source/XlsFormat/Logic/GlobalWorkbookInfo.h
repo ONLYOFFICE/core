@@ -148,7 +148,9 @@ public:
 		std::map<int, double>		customRowsHeight;
 		
 		double						defaultColumnWidth = 8.0;
-		double						defaultRowHeight = 14.4;		
+		double						defaultRowHeight = 14.4;
+
+		bool						bMacrosSheet = false;
 	};
 	std::vector<_sheet_size_info>	sheet_size_info;
 

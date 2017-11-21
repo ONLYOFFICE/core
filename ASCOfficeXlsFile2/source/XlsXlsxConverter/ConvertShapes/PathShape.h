@@ -229,18 +229,20 @@ namespace NSCustomShapesConvert
 	
 	class CSlice
 	{
-	public:
-		RulesType m_eRuler;
-        std::vector<Aggplus::POINT> m_arPoints;
-
 	private:
 		int m_nCountElementsPoint;
-
 	public:
-		CSlice(RulesType eType = rtMoveTo)
+		RulesType					m_eRuler;
+        std::vector<Aggplus::POINT> m_arPoints;
+		//LONG						m_lX;
+		//LONG						m_lY;
+
+		CSlice(RulesType eType = rtMoveTo/*, LONG x = 0, LONG y = 0*/)
 		{
 			m_eRuler = eType;
 			m_nCountElementsPoint = 0;
+			//m_lX = x;
+			//m_lY = y;
 		}
 
 		void AddParam(LONG lParam)
@@ -249,13 +251,13 @@ namespace NSCustomShapesConvert
 			if (0 == lPoint)
 			{
                 Aggplus::POINT point;
-				point.x = lParam;
+				point.x = lParam/* - m_lX*/;
 				point.y = 0;
 				m_arPoints.push_back(point);
 			}
 			else
 			{
-				m_arPoints[m_arPoints.size() - 1].y = lParam;
+				m_arPoints[m_arPoints.size() - 1].y = lParam/* - m_lY*/;
 			}
 			++m_nCountElementsPoint;
 		}

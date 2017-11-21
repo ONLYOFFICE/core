@@ -31,11 +31,11 @@
  */
 
 #include "AXM.h"
-#include <Logic/Biff_records/YMult.h>
-#include <Logic/Biff_records/StartObject.h>
-#include <Logic/Biff_unions/ATTACHEDLABEL.h>
-#include <Logic/Biff_records/EndObject.h>
-#include <Logic/Biff_records/FrtWrapper.h>
+#include "ATTACHEDLABEL.h"
+
+#include "../Biff_records/YMult.h"
+#include "../Biff_records/StartObject.h"
+#include "../Biff_records/EndObject.h"
 
 namespace XLS
 {
@@ -68,7 +68,6 @@ const bool AXM::loadContent(BinProcessor& proc)
 	
 	if (proc.optional<StartObject>())		elements_.pop_back();
 	
-	int count = proc.repeated<FrtWrapper>(0,0);
 	if (proc.optional<ATTACHEDLABEL>())
 	{
 		m_ATTACHEDLABEL = elements_.back();	elements_.pop_back();

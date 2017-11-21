@@ -129,14 +129,14 @@ public:
 
 	XLUnicodeStringSegmentedSXADDL stName;	
 };
-class SXAddl_SXCField_SXDEnd : public BiffStructure
+class SXAddl_Universal_End : public BiffStructure
 {	
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCField_SXDEnd)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_Universal_End)
 public:
 	BiffStructurePtr clone();
 
-	SXAddl_SXCField_SXDEnd(){}
-	~SXAddl_SXCField_SXDEnd(){}
+	SXAddl_Universal_End(){}
+	~SXAddl_Universal_End(){}
 
 	static const ElementType	type = typeSXAddl;
 
@@ -173,18 +173,20 @@ public:
 
 	XLUnicodeStringSegmentedSXADDL stName;
 };
-class SXAddl_SXCView_SXDEnd	: public BiffStructure
+class SXAddl_SXCView_SXDVerUpdInv	: public BiffStructure
 {	
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCView_SXDEnd)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCView_SXDVerUpdInv)
 public:
 	BiffStructurePtr clone();
 
-	SXAddl_SXCView_SXDEnd(){}
-	~SXAddl_SXCView_SXDEnd(){}
+	SXAddl_SXCView_SXDVerUpdInv(){}
+	~SXAddl_SXCView_SXDVerUpdInv(){}
 
 	static const ElementType	type = typeSXAddl;
 
 	virtual void load(CFRecord& record);
+
+	unsigned char dwVersionInvalidates;
 };
 class SXAddl_SXCView_SXDTableStyleClient : public BiffStructure
 {	
@@ -208,19 +210,7 @@ public:
 
 	LPWideString stName;
 };
-class SXAddl_SXCAutoSort_SXDEnd : public BiffStructure
-{	
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCAutoSort_SXDEnd)
-public:
-	BiffStructurePtr clone();
 
-	SXAddl_SXCAutoSort_SXDEnd(){}
-	~SXAddl_SXCAutoSort_SXDEnd(){}
-
-	virtual void load(CFRecord& record);
-
-	static const ElementType	type = typeSXAddl;
-};
 class SXAddl_SXCAutoSort_SXDId  : public BiffStructure
 {	
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCAutoSort_SXDId)
@@ -235,20 +225,6 @@ public:
 	static const ElementType	type = typeSXAddl;
 
 	bool fAscendSort;
-};
-class SXAddl_SXCCache_SXDEnd  : public BiffStructure
-{	
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCCache_SXDEnd)
-public:
-	BiffStructurePtr clone();
-
-	SXAddl_SXCCache_SXDEnd(){}
-	~SXAddl_SXCCache_SXDEnd(){}
-
-	virtual void load(CFRecord& record);
-
-	static const ElementType	type = typeSXAddl;
-	SXAddl_SXCCache_SXDEnd(CFRecord& record);
 };
 
 class SXAddl_SXCCache_SXDId : public BiffStructure
@@ -369,19 +345,6 @@ public:
 
 	XLUnicodeStringSegmentedSXADDL stCaption;
 };
-class SXAddl_SXCCacheField_SXDEnd : public BiffStructure
-{	
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCCacheField_SXDEnd)
-public:
-	BiffStructurePtr clone();
-
-	SXAddl_SXCCacheField_SXDEnd(){}
-	~SXAddl_SXCCacheField_SXDEnd(){}
-
-	virtual void load(CFRecord& record);
-
-	static const ElementType	type = typeSXAddl;
-};
 
 class SXAddl_SXCCacheField_SXDId : public BiffStructure
 {	
@@ -475,21 +438,6 @@ public:
 	_UINT32 citm;
 };
 
-class SXAddl_SXCCacheItem_SXDEnd : public BiffStructure
-{	
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCCacheItem_SXDEnd)
-public:
-	BiffStructurePtr clone();
-
-	SXAddl_SXCCacheItem_SXDEnd(){}
-	~SXAddl_SXCCacheItem_SXDEnd(){}
-
-	virtual void load(CFRecord& record);
-
-	static const ElementType	type = typeSXAddl;
-
-};
-
 class SXAddl_SXCCacheItem_SXDId : public BiffStructure
 {	
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCCacheItem_SXDId)
@@ -575,6 +523,519 @@ public:
 
 	XLUnicodeStringSegmentedSXADDL stName;	
 };
+class SXAddl_SXCField12_SXDId : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCField12_SXDId)
+public:
+	BiffStructurePtr clone();
 
+	SXAddl_SXCField12_SXDId(){}
+	~SXAddl_SXCField12_SXDId(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	XLUnicodeStringSegmentedSXADDL stName;	
+};
+class SXAddl_SXCField12_SXDISXTH : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCField12_SXDISXTH)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCField12_SXDISXTH(){}
+	~SXAddl_SXCField12_SXDISXTH(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	_UINT32 isxth;
+};
+class SXAddl_SXCField12_SXDVer12Info : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCField12_SXDVer12Info)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCField12_SXDVer12Info(){}
+	~SXAddl_SXCField12_SXDVer12Info(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	bool fHiddenLvl;
+	bool fUseMemPropCaption;
+	bool fCompact;
+	bool fNotAutoSortDft;
+	bool fFilterInclusive;
+};
+class SXAddl_SXCField12_SXDVerUpdInv : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCField12_SXDVerUpdInv)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCField12_SXDVerUpdInv(){}
+	~SXAddl_SXCField12_SXDVerUpdInv(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	unsigned char dwVersionInvalidates;
+};
+class SXAddl_SXCField12_SXDMemberCaption : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCField12_SXDMemberCaption)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCField12_SXDMemberCaption(){}
+	~SXAddl_SXCField12_SXDMemberCaption(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	XLUnicodeStringSegmentedSXADDL stMemberPropertyCaptionUnique;
+};
+class SXAddl_SXCField12_SXDAutoshow : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCField12_SXDAutoshow)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCField12_SXDAutoshow(){}
+	~SXAddl_SXCField12_SXDAutoshow(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	_UINT32 citmAutoShow;
+
+};
+class SXAddl_SXCCacheItem_SXDSxrmitmDisp : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCCacheItem_SXDSxrmitmDisp)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCCacheItem_SXDSxrmitmDisp(){}
+	~SXAddl_SXCCacheItem_SXDSxrmitmDisp(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	XLUnicodeStringSegmentedSXADDL stDisplay;
+};
+class SXAddl_SXCCacheItem_SXDItmMpropMap : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCCacheItem_SXDItmMpropMap)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCCacheItem_SXDItmMpropMap(){}
+	~SXAddl_SXCCacheItem_SXDItmMpropMap(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	std::vector<_INT32> rgMemProps;
+};
+class SxAddl_SXCCacheItem_SXDItmMpMapCount : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SxAddl_SXCCacheItem_SXDItmMpMapCount)
+public:
+	BiffStructurePtr clone();
+
+	SxAddl_SXCCacheItem_SXDItmMpMapCount(){}
+	~SxAddl_SXCCacheItem_SXDItmMpMapCount(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	_UINT32 cMemProps;
+};
+class SXAddl_SXCSXDH_SXDId : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXDH_SXDId)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXDH_SXDId(){}
+	~SXAddl_SXCSXDH_SXDId(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	_UINT32 dwCount;
+};
+class SXAddl_SXCSXDH_SXDSxdh : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXDH_SXDSxdh)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXDH_SXDSxdh(){}
+	~SXAddl_SXCSXDH_SXDSxdh(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	_INT32 isxth;
+	unsigned short cchDimensionName;
+	unsigned short cchDimensionUnique;
+	unsigned short cchDimensionCaption;
+
+	XLUnicodeStringNoCch stDimensionName;
+	XLUnicodeStringNoCch stDimensionUnique;
+	XLUnicodeStringNoCch stDimensionCaption;
+};
+class SXAddl_SXCSXMg_SXDId : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXMg_SXDId)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXMg_SXDId(){}
+	~SXAddl_SXCSXMg_SXDId(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	XLUnicodeStringSegmentedSXADDL stName;
+};
+class SXAddl_SXCSXMg_SXDUserCaption : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXMg_SXDUserCaption)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXMg_SXDUserCaption(){}
+	~SXAddl_SXCSXMg_SXDUserCaption(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	XLUnicodeStringSegmentedSXADDL stUserCaption;
+};
+class SXAddl_SXCSXMgs_SXDId : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXMgs_SXDId)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXMgs_SXDId(){}
+	~SXAddl_SXCSXMgs_SXDId(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	_UINT32 cmgs;
+	_UINT32 cmaps;
+};
+class SXAddl_SXCSXMgs_SXDMGrpSXDHMap : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCSXMgs_SXDMGrpSXDHMap)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCSXMgs_SXDMGrpSXDHMap(){}
+	~SXAddl_SXCSXMgs_SXDMGrpSXDHMap(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	_UINT32 iKey;
+	_UINT32 iVal;
+};
+class SXAddl_SXCHierarchy_SXDId : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCHierarchy_SXDId)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCHierarchy_SXDId(){}
+	~SXAddl_SXCHierarchy_SXDId(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	XLUnicodeStringSegmentedSXADDL stHierUnq;
+};
+class SXAddl_SXCHierarchy_SXDVerUpdInv : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCHierarchy_SXDVerUpdInv)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCHierarchy_SXDVerUpdInv(){}
+	~SXAddl_SXCHierarchy_SXDVerUpdInv(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	unsigned char dwVersionInvalidates;
+};
+class SXAddl_SXCHierarchy_SXDProperty : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCHierarchy_SXDProperty)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCHierarchy_SXDProperty(){}
+	~SXAddl_SXCHierarchy_SXDProperty(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	bool	fDisplayInReport;
+	bool	fDisplayInTip;
+	bool	fDisplayInCaption;
+
+	unsigned short			cchProperty;
+	XLUnicodeStringNoCch	stProperty;
+
+	unsigned short			cchLevelUnq;
+	unsigned short			ichPropName;
+	unsigned short			cchPropName;
+	short					isxtl;
+};
+class SXAddl_SXCHierarchy_SXDFilterMember : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCHierarchy_SXDFilterMember)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCHierarchy_SXDFilterMember(){}
+	~SXAddl_SXCHierarchy_SXDFilterMember(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	bool							fMultFiltHavePlex;
+	unsigned short					cItems;
+	std::vector<std::wstring>		rgStMembers;
+};
+class SXAddl_SXCHierarchy_SXDFilterMember12 : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCHierarchy_SXDFilterMember12)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCHierarchy_SXDFilterMember12(){}
+	~SXAddl_SXCHierarchy_SXDFilterMember12(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	_UINT32							isxtl;
+	unsigned short					cItems;
+	std::vector<std::wstring>		rgStMembers;
+};
+class SXAddl_SXCHierarchy_SXDSXSetParentUnique : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCHierarchy_SXDSXSetParentUnique)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCHierarchy_SXDSXSetParentUnique(){}
+	~SXAddl_SXCHierarchy_SXDSXSetParentUnique(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	XLUnicodeStringSegmentedSXADDL stHierUnique;
+};
+class SXAddl_SXCHierarchy_SXDUserCaption : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCHierarchy_SXDUserCaption)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCHierarchy_SXDUserCaption(){}
+	~SXAddl_SXCHierarchy_SXDUserCaption(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	XLUnicodeStringSegmentedSXADDL stCaption;
+};
+class SXAddl_SXCHierarchy_SXDMeasureGrp : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCHierarchy_SXDMeasureGrp)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCHierarchy_SXDMeasureGrp(){}
+	~SXAddl_SXCHierarchy_SXDMeasureGrp(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	XLUnicodeStringSegmentedSXADDL stMeasureGroup;
+};
+class SXAddl_SXCHierarchy_SXDDisplayFolder : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCHierarchy_SXDDisplayFolder)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCHierarchy_SXDDisplayFolder(){}
+	~SXAddl_SXCHierarchy_SXDDisplayFolder(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	XLUnicodeStringSegmentedSXADDL stDisplayFolder;
+};
+class SXAddl_SXCHierarchy_SXDParentKPI : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCHierarchy_SXDParentKPI)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCHierarchy_SXDParentKPI(){}
+	~SXAddl_SXCHierarchy_SXDParentKPI(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	XLUnicodeStringSegmentedSXADDL stParentKPI;
+};
+class SXAddl_SXCHierarchy_SXDKPIValue : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCHierarchy_SXDKPIValue)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCHierarchy_SXDKPIValue(){}
+	~SXAddl_SXCHierarchy_SXDKPIValue(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	XLUnicodeStringSegmentedSXADDL stKPIValue;
+};
+class SXAddl_SXCHierarchy_SXDKPIGoal : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCHierarchy_SXDKPIGoal)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCHierarchy_SXDKPIGoal(){}
+	~SXAddl_SXCHierarchy_SXDKPIGoal(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	XLUnicodeStringSegmentedSXADDL stKPIGoal;
+};
+class SXAddl_SXCHierarchy_SXDKPIStatus : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCHierarchy_SXDKPIStatus)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCHierarchy_SXDKPIStatus(){}
+	~SXAddl_SXCHierarchy_SXDKPIStatus(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	XLUnicodeStringSegmentedSXADDL stKPIStatus;
+};
+class SXAddl_SXCHierarchy_SXDKPITrend : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCHierarchy_SXDKPITrend)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCHierarchy_SXDKPITrend(){}
+	~SXAddl_SXCHierarchy_SXDKPITrend(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	XLUnicodeStringSegmentedSXADDL stKPITrend;
+};
+class SXAddl_SXCHierarchy_SXDKPIWeight : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCHierarchy_SXDKPIWeight)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCHierarchy_SXDKPIWeight(){}
+	~SXAddl_SXCHierarchy_SXDKPIWeight(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	XLUnicodeStringSegmentedSXADDL stKPIWeight;
+};
+class SXAddl_SXCHierarchy_SXDKPITime : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCHierarchy_SXDKPITime)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCHierarchy_SXDKPITime(){}
+	~SXAddl_SXCHierarchy_SXDKPITime(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	XLUnicodeStringSegmentedSXADDL stKPITime;
+};
+
+class SXAddl_SXCHierarchy_SXDInfo12 : public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SXAddl_SXCHierarchy_SXDInfo12)
+public:
+	BiffStructurePtr clone();
+
+	SXAddl_SXCHierarchy_SXDInfo12(){}
+	~SXAddl_SXCHierarchy_SXDInfo12(){}
+
+	static const ElementType type = typeSXAddl;
+
+	virtual void load(CFRecord& record);
+
+	bool fUnbalancedRealKnown;
+	bool fUnbalancedReal;
+	bool fUnbalancedGroupKnown;
+	bool fUnbalancedGroup;
+	bool fHidden;
+};
 } // namespace XLS
+
 

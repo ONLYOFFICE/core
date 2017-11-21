@@ -63,7 +63,7 @@ void NSPresentationEditor::CShapeElement::CalculateColor(CColor& oColor, CSlide*
 
 void NSPresentationEditor::CShapeElement::SetupTextProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
 {
-	NSPresentationEditor::CTextAttributesEx* pAttributes = &m_oShape.m_oText;
+	NSPresentationEditor::CTextAttributesEx* pAttributes = &m_pShape->m_oText;
 	int nCountColors = 0;
 	if (NULL != pTheme)
 		nCountColors = (int)pTheme->m_arColorScheme.size();
@@ -123,7 +123,7 @@ void NSPresentationEditor::CShapeElement::SetupTextProperties(CSlide* pSlide, CT
 bool NSPresentationEditor::CShapeElement::SetUpTextPlaceholder(std::wstring newText)
 {
 	bool result = false;
-	NSPresentationEditor::CTextAttributesEx* pText = &m_oShape.m_oText;
+	NSPresentationEditor::CTextAttributesEx* pText = &m_pShape->m_oText;
 
 	for (size_t p = 0 ; p < pText->m_arParagraphs.size(); p++) //тут по всем -> 1-(33).ppt
 	{

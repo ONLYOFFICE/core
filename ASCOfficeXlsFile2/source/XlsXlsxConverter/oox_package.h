@@ -64,7 +64,6 @@ public:
     void set_main_document(document * _document) { document_ = _document; }
     document * get_main_document() { return document_; }
 
-public:
     virtual void write(const std::wstring & RootPath) = 0;
 
 private:

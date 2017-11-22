@@ -66,10 +66,12 @@ public:
     void start_document();
     void end_document();
 
-	bool start_table(const std::wstring & name);
-		void set_state(const std::wstring & state);
-		void set_chart_view();
-    void end_table();
+	bool start_table();
+		void set_table_state(const std::wstring & state);
+		void set_table_type(int type);
+ 		void set_table_name(const std::wstring & name);
+		void set_table_id(int id);
+   void end_table();
 
     void start_chart();
 	void end_chart(){}

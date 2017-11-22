@@ -58,8 +58,7 @@ class xlsx_table_context
 public:
     xlsx_table_context(xlsx_conversion_context & Context);
 
-public:
-	void start_table(const std::wstring & name);
+	void start_table();
 		void set_chart_view();
     void end_table();
 

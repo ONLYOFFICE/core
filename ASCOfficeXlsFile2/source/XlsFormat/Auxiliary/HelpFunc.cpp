@@ -513,7 +513,23 @@ const std::wstring tab2sheet_name(const short tabid, std::vector<std::wstring>& 
 	}
 	return L"#REF";
 }
-
+const std::wstring name2sheet_name(std::wstring name, const std::wstring prefix)
+{
+	static boost::wregex correct_sheet_name(L"^\\'.+?\\'$");
+    static boost::wregex test_sheet_name(L"[\\s)(\\'&:-]+"); //.??? 6442946.xls
+	
+	std::wstring sheet_first = prefix + name;
+	
+	if(!boost::regex_search(sheet_first.begin(), sheet_first.end(), correct_sheet_name))
+	{	
+		if(boost::regex_search(sheet_first.begin(), sheet_first.end(), test_sheet_name))
+		{	
+			sheet_first = boost::algorithm::replace_all_copy(sheet_first, L"'", L"''"); 
+			sheet_first = std::wstring(L"'") + sheet_first + std::wstring(L"'");
+		}
+	}
+	return sheet_first;
+}
 const std::wstring xti_indexes2sheet_name(const short tabFirst, const short tabLast, std::vector<std::wstring>& names, const std::wstring prefix)
 {
 	if(-1 == tabFirst)
@@ -538,7 +554,7 @@ const std::wstring xti_indexes2sheet_name(const short tabFirst, const short tabL
 	std::wstring sheet_last;
 	if (tabLast != tabFirst)
 	{
-		sheet_last = prefix + tab2sheet_name(tabLast, names);
+		sheet_last = std::wstring(L":") + prefix + tab2sheet_name(tabLast, names);
 		
 		if(!boost::regex_search(sheet_last.begin(), sheet_last.end(), correct_sheet_name))
 		{	
@@ -548,7 +564,6 @@ const std::wstring xti_indexes2sheet_name(const short tabFirst, const short tabL
 				sheet_last = std::wstring(L"\'") + sheet_last + std::wstring(L"\'");
 			}
 		}
-		sheet_last = std::wstring(L":") + sheet_last;
 	}
 
 	return sheet_first + sheet_last;

@@ -221,8 +221,8 @@ void GlobalWorkbookInfo::GetDigitFontSizePixels()
 
 void GlobalWorkbookInfo::CalculateAnchor(int colL, int colR, int rwT, int rwB, _UINT32 & x, _UINT32 &y, _UINT32 &cx, _UINT32 & cy)
 {
-	_sheet_size_info zero;
-	_sheet_size_info & sheet_info = current_sheet >= 0 ? sheet_size_info[current_sheet - 1] : zero;
+	_sheet_info zero;
+	_sheet_info & sheet_info = current_sheet >= 0 ? sheets_info[current_sheet - 1] : zero;
 
 	GetDigitFontSizePixels();
 

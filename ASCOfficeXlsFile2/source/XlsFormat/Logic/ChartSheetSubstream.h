@@ -44,12 +44,11 @@ class CRT;
 class ChartSheetSubstream;
 typedef boost::shared_ptr<ChartSheetSubstream>	ChartSheetSubstreamPtr;
 
-// Logical representation of ChartSheetSubstream union of records 
 class ChartSheetSubstream: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(ChartSheetSubstream)
 public:
-	ChartSheetSubstream();
+	ChartSheetSubstream(const size_t ws_index);
 	~ChartSheetSubstream();
 
 	BaseObjectPtr clone();
@@ -68,6 +67,10 @@ public:
 	int serialize_scatter_style(std::wostream & _stream, CRT *crt);
 
 	static const ElementType	type = typeChartSheetSubstream;
+
+
+	GlobalWorkbookInfoPtr		global_info_;
+	size_t						ws_index_;
 
 	BaseObjectPtr				m_BACKGROUND;
 	std::vector<BaseObjectPtr>	m_arFbi;
@@ -90,8 +93,6 @@ private:
 	void recalc(SERIESDATA*		data);
 
 	std::unordered_map<int, std::vector<int>> m_mapTypeChart;
-
-	GlobalWorkbookInfoPtr pGlobalWorkbookInfo;
 };
 
 } // namespace XLS

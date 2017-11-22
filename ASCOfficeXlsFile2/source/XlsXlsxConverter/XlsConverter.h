@@ -63,6 +63,7 @@ namespace XLS
 	class WorksheetSubstream;
 	class GlobalsSubstream;
 	class ChartSheetSubstream;
+	class MacroSheetSubstream;
 	
 	class BACKGROUND;
 	class FORMATTING;
@@ -113,6 +114,7 @@ public:
 	void convert(XLS::WorksheetSubstream		* sheet);
 	void convert(XLS::ChartSheetSubstream		* chart);
 	void convert(XLS::GlobalsSubstream			* elem);
+	void convert(XLS::MacroSheetSubstream		* chart);
 
 	void convert(XLS::FORMATTING				* formating);
 	void convert(XLS::THEME						* theme);

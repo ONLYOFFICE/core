@@ -109,10 +109,22 @@ void PtgRef3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 		ixti = ixals;
 		if (ixals == 0xffff)
 		{
-			std::wstring prefix = XMLSTUFF::xti_indexes2sheet_name(itabFirst, itabLast, global_info->sheets_names);
-			if (!prefix.empty()) prefix += L"!";
+			std::wstring strRange;
+			if(-1 == itabFirst)
+			{
+				strRange = L"#REF";
+			}
+			else
+			{
+				strRange = XMLSTUFF::name2sheet_name(global_info->sheets_info[itabFirst].name, L"");
+				if (itabFirst != itabLast)
+				{
+					strRange += std::wstring(L":") + XMLSTUFF::name2sheet_name(global_info->sheets_info[itabLast].name, L"");
+				}
+			}
+			if (!strRange.empty()) strRange += L"!";
 
-			ptg_stack.push(prefix + cell_ref);
+			ptg_stack.push(strRange + cell_ref);
 		}
 	}
 	if (ixti != 0xffff)

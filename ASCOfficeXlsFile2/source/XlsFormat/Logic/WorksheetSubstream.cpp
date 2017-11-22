@@ -81,8 +81,7 @@ namespace XLS
 {;
 
 
-WorksheetSubstream::WorksheetSubstream(const size_t ws_index)
-:	ws_index_(ws_index)
+WorksheetSubstream::WorksheetSubstream(const size_t ws_index) :	ws_index_(ws_index)
 {
 }
 
@@ -110,10 +109,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 {
 	global_info_ = proc.getGlobalWorkbookInfo();
 	
-	GlobalWorkbookInfo::_sheet_size_info sheet_size_info;
-	
-	global_info_->sheet_size_info.push_back(sheet_size_info);
-	global_info_->current_sheet = global_info_->sheet_size_info.size();
+	global_info_->current_sheet = global_info_->sheets_info.size();
 
 	global_info_->cmt_rules	= 0;
 
@@ -145,8 +141,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			case rt_CalcMode:
 			case rt_PrintRowCol:
 			{
-				GLOBALS globals(false);
-				if (proc.mandatory(globals))
+				if (proc.mandatory<GLOBALS>())
 				{
 					m_GLOBALS = elements_.back();
 					elements_.pop_back();
@@ -336,7 +331,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back(); 
 					
 					DxGCol* dx = dynamic_cast<DxGCol*>(m_DxGCol.get());
-					global_info_->sheet_size_info.back().defaultColumnWidth = dx->dxgCol / 256.;
+					global_info_->sheets_info.back().defaultColumnWidth = dx->dxgCol / 256.;
 				}
 			}break;				
 			case rt_MergeCells:

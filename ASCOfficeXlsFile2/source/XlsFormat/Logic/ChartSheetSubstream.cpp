@@ -101,7 +101,7 @@ namespace XLS
 {;
 
 
-ChartSheetSubstream::ChartSheetSubstream()
+ChartSheetSubstream::ChartSheetSubstream(const size_t ws_index) :	ws_index_(ws_index)
 {
 }
 
@@ -126,7 +126,7 @@ CHARTSHEETCONTENT = [WriteProtect] [SheetExt] [WebPub] *HFPicture PAGESETUP Prin
 */
 const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 {
-	pGlobalWorkbookInfo = proc.getGlobalWorkbookInfo();
+	global_info_ = proc.getGlobalWorkbookInfo();
 	
 	int count = 0 ;
 
@@ -507,7 +507,7 @@ int ChartSheetSubstream::serialize(std::wostream & _stream)
 
 	if (chart_rect)
 	{
-		pGlobalWorkbookInfo->xls_converter->xlsx_context->get_drawing_context().set_absolute_anchor(
+		global_info_->xls_converter->xlsx_context->get_drawing_context().set_absolute_anchor(
 			0, 0, chart_rect->dx.dVal, chart_rect->dy.dVal);
 		
 	}

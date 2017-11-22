@@ -55,9 +55,9 @@ void DefColWidth::readFields(CFRecord& record)
 	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
 	record >> cchdefColWidth;
 
-	if (!global_info->sheet_size_info.empty())
+	if (!global_info->sheets_info.empty())
 	{
-		global_info->sheet_size_info.back().defaultColumnWidth = cchdefColWidth ;
+		global_info->sheets_info.back().defaultColumnWidth = cchdefColWidth ;
 	}
 }
 

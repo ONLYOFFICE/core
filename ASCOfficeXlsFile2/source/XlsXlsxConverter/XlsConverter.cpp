@@ -39,6 +39,7 @@
 #include "../XlsFormat/Logic/WorksheetSubstream.h"
 #include "../XlsFormat/Logic/GlobalsSubstream.h"
 #include "../XlsFormat/Logic/ChartSheetSubstream.h"
+#include "../XlsFormat/Logic/MacroSheetSubstream.h"
 
 #include "../XlsFormat/Logic/BinProcessor.h"
 #include "../XlsFormat/Logic/SummaryInformationStream/SummaryInformation.h"
@@ -71,6 +72,7 @@
 #include "../XlsFormat/Logic/Biff_records/TxO.h"
 #include "../XlsFormat/Logic/Biff_records/IMDATA.h"
 #include "../XlsFormat/Logic/Biff_records/Note.h"
+#include "../XlsFormat/Logic/Biff_records/WsBool.h"
 
 #include "../XlsFormat/Logic/Biff_structures/URLMoniker.h"
 #include "../XlsFormat/Logic/Biff_structures/FileMoniker.h"
@@ -382,7 +384,7 @@ void XlsConverter::convert(XLS::BaseObject	*xls_unknown)
 	case XLS::typeOBJECTS:
 		{
 			XLS::OBJECTS * obj = dynamic_cast<XLS::OBJECTS*>(xls_unknown);
-			convert(obj);
+			convert(obj, NULL);
 		}break;
 	case XLS::typeTxO:
 		{
@@ -412,34 +414,25 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 
 	convert(dynamic_cast<XLS::GlobalsSubstream*>(woorkbook->m_GlobalsSubstream.get()));
 
-	int count_sheets = 0, count_chart_sheets = 0;
     for (size_t i = 0 ; i < woorkbook->m_arWorksheetSubstream.size(); i++)
 	{
-		if (woorkbook->m_arWorksheetSubstream[i]->get_type() == XLS::typeWorksheetSubstream)
-		{
-			count_sheets++;
-			xls_global_info->current_sheet = count_sheets;
-		
-			xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"Sheet_" + std::to_wstring(count_sheets));
-			xlsx_context->set_state(xls_global_info->sheets_state.size() > i ? xls_global_info->sheets_state[i] : L"visible");
-
+		xlsx_context->start_table();
 			convert(dynamic_cast<XLS::WorksheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get()));
-		}
-		else if (woorkbook->m_arWorksheetSubstream[i]->get_type() == XLS::typeChartSheetSubstream)
-		{
-			count_chart_sheets++;
-			xls_global_info->current_sheet = -1; 
-			xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"ChartSheet_" + std::to_wstring(count_chart_sheets));
-
-			xlsx_context->set_chart_view();
-
-			XLS::ChartSheetSubstream* chart = dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get());
-
-			convert_chart_sheet(chart);
-		}
-
 		xlsx_context->end_table();
 	}
+	for (size_t i = 0 ; i < woorkbook->m_arChartSheetSubstream.size(); i++)
+	{
+		xlsx_context->start_table();
+			convert_chart_sheet(dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_arChartSheetSubstream[i].get()));
+		xlsx_context->end_table();
+	}
+	for (size_t i = 0 ; i < woorkbook->m_arMacroSheetSubstream.size(); i++)
+	{
+		xlsx_context->start_table();
+			convert(dynamic_cast<XLS::MacroSheetSubstream*>(woorkbook->m_arMacroSheetSubstream[i].get()));
+		xlsx_context->end_table();
+	}
+
 	for (std::list<XLS::BaseObjectPtr>::iterator it = woorkbook->elements_.begin(); it != woorkbook->elements_.end(); it++)
 	{
 		convert(it->get());
@@ -451,6 +444,17 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 void XlsConverter::convert (XLS::WorksheetSubstream* sheet)
 {
 	if (sheet == NULL) return;
+
+	xls_global_info->current_sheet = sheet->ws_index_ + 1; 
+	
+	std::wstring name = xls_global_info->sheets_info[sheet->ws_index_].name;
+	if (name.empty()) 
+		name = L"Sheet_" + std::to_wstring(sheet->ws_index_ + 1);
+
+	xlsx_context->set_table_type(1);
+	xlsx_context->set_table_name(name) ;
+	xlsx_context->set_table_id(sheet->ws_index_ + 1);
+	xlsx_context->set_table_state(xls_global_info->sheets_info[sheet->ws_index_].state);
 
 	if (!sheet->m_arWINDOW.empty())
 	{
@@ -475,6 +479,9 @@ void XlsConverter::convert (XLS::WorksheetSubstream* sheet)
 		globals->m_DxGCol = sheet->m_DxGCol;
 		
 		sheet->m_GLOBALS->serialize(xlsx_context->current_sheet().sheetFormat());
+
+		if (globals->is_dialog)
+			xlsx_context->set_table_type(2);
 	}
 	if (sheet->m_COLUMNS)
 	{
@@ -573,6 +580,102 @@ void XlsConverter::convert (XLS::WorksheetSubstream* sheet)
 	{
 		convert((ODRAW::OfficeArtDgContainer*)sheet->m_arHFPictureDrawing[i].get());
 	}
+}
+
+void XlsConverter::convert (XLS::MacroSheetSubstream* sheet)
+{
+	if (sheet == NULL) return;
+
+	xls_global_info->current_sheet = sheet->ws_index_ + 1; 
+	
+	std::wstring name = xls_global_info->sheets_info[sheet->ws_index_].name;
+	if (name.empty()) 
+		name = L"MacroSheet_" + std::to_wstring(sheet->ws_index_ + 1);
+
+	xlsx_context->set_table_type(4);
+	xlsx_context->set_table_name(name) ;
+	xlsx_context->set_table_id(sheet->ws_index_ + 1);
+	xlsx_context->set_table_state(xls_global_info->sheets_info[sheet->ws_index_].state);
+
+	if (!sheet->m_arWINDOW.empty())
+	{
+		sheet->m_arWINDOW[0]->serialize(xlsx_context->current_sheet().sheetViews());
+	}
+	if (sheet->m_Dimensions)
+	{
+		sheet->m_Dimensions->serialize(xlsx_context->current_sheet().dimension());
+	}
+	
+	//sheet->serialize_format(xlsx_context->current_sheet().sheetProperties());
+
+	if (sheet->m_GLOBALS)
+	{
+		XLS::GLOBALS * globals  = dynamic_cast<XLS::GLOBALS *>(sheet->m_GLOBALS.get());
+		XLS::COLUMNS * columns = dynamic_cast<XLS::COLUMNS *>(sheet->m_COLUMNS.get());
+
+		if (columns)
+		{
+			globals->m_DefColWidth	= columns->m_DefColWidth; 
+		}
+		globals->m_DxGCol = sheet->m_DxGCol;
+		
+		sheet->m_GLOBALS->serialize(xlsx_context->current_sheet().sheetFormat());
+	}
+	if (sheet->m_COLUMNS)
+	{
+		sheet->m_COLUMNS->serialize(xlsx_context->current_sheet().cols());
+	}
+	if (sheet->m_CELLTABLE)
+	{
+		sheet->m_CELLTABLE->serialize(xlsx_context->current_sheet().sheetData());
+	}
+	convert((XLS::OBJECTS*)sheet->m_OBJECTS.get(), NULL);
+
+	if (!sheet->m_arNote.empty() && xls_global_info->Version < 0x0600)
+	{
+		xlsx_context->get_drawing_context().start_drawing(0);
+		for (size_t i = 0 ; i < sheet->m_arNote.size(); i++)
+		{
+			xlsx_context->get_drawing_context().start_drawing(0x0019);
+				convert(dynamic_cast<XLS::Note*>(sheet->m_arNote[i].get()));
+			xlsx_context->get_drawing_context().end_drawing();
+		}
+		xlsx_context->get_drawing_context().end_group();
+	}
+
+	if (sheet->m_PAGESETUP)
+	{
+		sheet->m_PAGESETUP->serialize(xlsx_context->current_sheet().pageProperties());
+	}
+
+	//for (size_t i = 0 ; i < sheet->m_arHFPictureDrawing.size(); i++)
+	//{
+	//	//convert(dynamic_cast<XLS::Note*>(sheet->sheet->m_arHFPictureDrawing[i].get(), 
+	//}
+ 	
+	if (sheet->m_arCUSTOMVIEW.size() > 0)
+	{
+		CP_XML_WRITER(xlsx_context->current_sheet().customViews())    
+		{
+			CP_XML_NODE(L"customSheetViews")
+            {
+				for (size_t i = 0 ; i < sheet->m_arCUSTOMVIEW.size(); i++)
+				{
+					sheet->m_arCUSTOMVIEW[i]->serialize(CP_XML_STREAM());
+				}
+			}
+		}
+	}
+
+	if (sheet->m_BACKGROUND)
+	{
+		convert(dynamic_cast<XLS::BACKGROUND*>(sheet->m_BACKGROUND.get()));
+	}
+
+	//for (size_t i = 0 ; i < sheet->m_arHFPictureDrawing.size(); i++)
+	//{
+	//	convert((ODRAW::OfficeArtDgContainer*)sheet->m_arHFPictureDrawing[i].get());
+	//}
 }
 
 void XlsConverter::convert(XLS::GlobalsSubstream* globals)
@@ -1112,7 +1215,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 			{	
 				text_obj->preserve_enabled = true;
 
-				for (size_t i = 0 ; i < sheet->m_arNote.size(); i++)
+				for (size_t i = 0 ; sheet && i < sheet->m_arNote.size(); i++)
 				{
 					XLS::Note* note = dynamic_cast<XLS::Note*>(sheet->m_arNote[i].get());
 					if ((note) && (note->note_sh.idObj == obj->cmo.id))
@@ -2104,14 +2207,25 @@ void XlsConverter::convert(XLS::Obj * obj)
 	}
 }
 
-void XlsConverter::convert_chart_sheet(XLS::ChartSheetSubstream* chart)
+void XlsConverter::convert_chart_sheet(XLS::ChartSheetSubstream* chartsheet)
 {
-	if (chart == NULL) return;
+	if (chartsheet == NULL) return;
 		
+	xls_global_info->current_sheet = chartsheet->ws_index_ + 1; 
+	
+	std::wstring name = xls_global_info->sheets_info[chartsheet->ws_index_].name;
+	if (name.empty()) 
+		name = L"ChartSheet_" + std::to_wstring(chartsheet->ws_index_ + 1);
+
+	xlsx_context->set_table_type(3);
+	xlsx_context->set_table_name(name) ;
+	xlsx_context->set_table_id(chartsheet->ws_index_ + 1);
+	xlsx_context->set_table_state(xls_global_info->sheets_info[chartsheet->ws_index_].state);
+
 	if (xlsx_context->get_drawing_context().start_drawing(0x0005))		
 	{
 		xlsx_context->get_drawing_context().set_id(1);
-		convert(chart);
+		convert(chartsheet);
 
 		xlsx_context->get_drawing_context().end_drawing();
 	}

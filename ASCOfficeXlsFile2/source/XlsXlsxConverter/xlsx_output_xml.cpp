@@ -37,18 +37,14 @@
 
 namespace oox {
 
-/// \class  xlsx_xml_worksheet::Impl
+
 class xlsx_xml_worksheet::Impl
 {
 public:
-    Impl(std::wstring const & name) : name_(name)
+    Impl() 
 	{
-		state_ = L"visible";
 	}
-    
-	std::wstring name_;
-	std::wstring state_;
-  
+
 	std::wstringstream  cols_;
 	std::wstringstream  sheetPr_;
 	std::wstringstream  sheetFormatPr_;
@@ -83,21 +79,12 @@ public:
 	std::wstring vml_HF_drawingId_;
 };
 
-std::wstring xlsx_xml_worksheet::name() const
+xlsx_xml_worksheet_ptr xlsx_xml_worksheet::create()
 {
-    return impl_->name_;
-}
-std::wstring xlsx_xml_worksheet::state() const
-{
-    return impl_->state_;
-}
-xlsx_xml_worksheet_ptr xlsx_xml_worksheet::create(std::wstring const & name)
-{
-    return boost::make_shared<xlsx_xml_worksheet>(name);
+    return boost::make_shared<xlsx_xml_worksheet>();
 }
 
-xlsx_xml_worksheet::xlsx_xml_worksheet(std::wstring const & name)
- : impl_(new xlsx_xml_worksheet::Impl(name))
+xlsx_xml_worksheet::xlsx_xml_worksheet() : impl_(new xlsx_xml_worksheet::Impl()), type(1), id(0)
 {
 }
 
@@ -186,12 +173,25 @@ rels & xlsx_xml_worksheet::sheet_rels()
 }
 void xlsx_xml_worksheet::write_to(std::wostream & strm)
 {
+	std::wstring node_name;
+	switch(type)
+	{
+	case 2: node_name = L"dialogsheet";		break;
+	case 3: node_name = L"chartsheet";		break;
+	case 4: node_name = L"xm:macrosheet";	break;
+	case 1:
+	default: node_name = L"worksheet";		break;
+	}
     CP_XML_WRITER(strm)
     {
-        CP_XML_NODE(L"worksheet")
+        CP_XML_NODE(node_name)
         {
             CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");        
             CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+			if (type == 4)
+			{
+				CP_XML_ATTR(L"xmlns:xm", L"http://schemas.microsoft.com/office/excel/2006/main");
+			}
             CP_XML_ATTR(L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006");
 			CP_XML_ATTR(L"xmlns:xdr", L"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing");
 			CP_XML_ATTR(L"xmlns:x14", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
@@ -266,10 +266,7 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 		}
     }
 }
-void xlsx_xml_worksheet::set_state (std::wstring const & state)
-{
-	impl_->state_ = state;
-}
+
 void xlsx_xml_worksheet::set_drawing_link(std::wstring const & fileName, std::wstring const & id)
 {
     impl_->drawingName_		= fileName;

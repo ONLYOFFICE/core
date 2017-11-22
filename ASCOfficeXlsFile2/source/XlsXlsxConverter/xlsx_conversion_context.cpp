@@ -118,28 +118,42 @@ oox_activeX_context & xlsx_conversion_context::current_activeX()
         throw std::runtime_error("internal error");
     }
 }
-bool xlsx_conversion_context::start_table(const std::wstring & name)
+bool xlsx_conversion_context::start_table()
 {
-    sheets_.push_back(xlsx_xml_worksheet::create(name));
-    get_table_context().start_table(name);
+    sheets_.push_back(xlsx_xml_worksheet::create());
+    get_table_context().start_table();
 
 	return true;
 }
 
-void xlsx_conversion_context::set_chart_view()
+void xlsx_conversion_context::set_table_type(int type)
 {
 	if (sheets_.empty()) return;
 
-	get_table_context().set_chart_view();
-}
+	sheets_.back()->type = type;
+	if (type == 3)
+	{
+		get_table_context().set_chart_view();
+	}
 
-void xlsx_conversion_context::set_state(const std::wstring & state)
+}
+void xlsx_conversion_context::set_table_name(const std::wstring & name)
+{
+	if (name.empty()) return;
+
+	sheets_.back()->name = name;
+}
+void xlsx_conversion_context::set_table_state(const std::wstring & state)
 {
 	if (state.empty()) return;
 
-	sheets_.back()->set_state(state);
+	sheets_.back()->state = state;
 }
-
+void xlsx_conversion_context::set_table_id(int id)
+{
+	if (id < 0) return;
+	sheets_.back()->id = id;
+}
 void xlsx_conversion_context::start_chart()
 {
 	charts_.push_back(oox_chart_context::create());
@@ -215,17 +229,15 @@ void xlsx_conversion_context::end_document()
 {
 	std::wstringstream workbook_content;
 
-    unsigned int count = 0;
-
 	for (size_t i = 0; i < sheets_.size(); i++)
 	{
-		xlsx_xml_worksheet_ptr & sheet = sheets_[i];
-        count++;
-		const std::wstring slideRId = std::wstring(L"sId") + std::to_wstring(count);
-
         package::sheet_content_ptr content = package::sheet_content::create();
+				
+		const std::wstring slideRId = std::wstring(L"sId") + std::to_wstring(i + 1);
+		content->set_rId(slideRId);
+
  ////////////////////////////////////////////////////////////////////////////////////////////       
-		const std::pair<std::wstring, std::wstring> p1 = sheet->get_drawing_link();
+		const std::pair<std::wstring, std::wstring> p1 = sheets_[i]->get_drawing_link();
         
 		if (!p1.first.empty())
         {
@@ -235,9 +247,9 @@ void xlsx_conversion_context::end_document()
             content->add_rel(relationship(dId, kType, dName));
         }
 //////////////////////////////////////////////////////////////////////////////////////////////////
-        content->add_rels(sheet->sheet_rels());
+        content->add_rels(sheets_[i]->sheet_rels());
 /////////////////////////////////////////////////////////////////////////////////////////////////
-		const std::pair<std::wstring, std::wstring> p2 = sheet->get_comments_link();        
+		const std::pair<std::wstring, std::wstring> p2 = sheets_[i]->get_comments_link();        
 		if (!p2.first.empty())
         {
             const std::wstring			dId		= p2.second;
@@ -246,7 +258,7 @@ void xlsx_conversion_context::end_document()
             content->add_rel(relationship(dId, kType, dName));
         }
 
-		const std::pair<std::wstring, std::wstring> p3 = sheet->get_vml_drawing_link();		
+		const std::pair<std::wstring, std::wstring> p3 = sheets_[i]->get_vml_drawing_link();		
 		if (!p3.first.empty())
         {
             const std::wstring			dId		= p3.second;
@@ -255,7 +267,7 @@ void xlsx_conversion_context::end_document()
 			content->add_rel(relationship(dId, kType, dName));
        }
 
-		const std::pair<std::wstring, std::wstring> p4 = sheet->get_vml_drawing_HF_link();		
+		const std::pair<std::wstring, std::wstring> p4 = sheets_[i]->get_vml_drawing_HF_link();		
 		if (!p4.first.empty())
         {
             const std::wstring			dId		= p4.second;
@@ -264,22 +276,24 @@ void xlsx_conversion_context::end_document()
 			content->add_rel(relationship(dId, kType, dName));
        }
 /////////////////////////////////////////////////////////////////////////////////////////////////
-		sheet->write_to(content->content());
-        output_document_->get_xl_files().add_sheet(content);
+		sheets_[i]->write_to(content->content());
+
+		output_document_->get_xl_files().add_sheet(sheets_[i]->type, content);
 
 	/////////////////////////////////////////////
         CP_XML_WRITER(workbook_content)
         {
             CP_XML_NODE(L"sheet")
             {
-                CP_XML_ATTR(L"name",	sheet->name());
-                CP_XML_ATTR(L"sheetId", count);
-                CP_XML_ATTR(L"state",	sheet->state()	);
+                CP_XML_ATTR(L"name",	sheets_[i]->name);
+                CP_XML_ATTR(L"sheetId", sheets_[i]->id);
+                CP_XML_ATTR(L"state",	sheets_[i]->state);
                 CP_XML_ATTR(L"r:id",	slideRId);            
             }
         }
 
     }
+    unsigned int count = 0;
 	for (size_t i = 0; i < activeXs_.size(); i++)
     {
 		package::activeX_content_ptr content = package::activeX_content::create();

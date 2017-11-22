@@ -162,44 +162,74 @@ void sheet_content::add_rels(rels & r)
 sheets_files::sheets_files()
 {}
 
-void sheets_files::add_sheet(sheet_content_ptr sheet)
+void sheets_files::add_sheet(int type, sheet_content_ptr sheet)
 {
-    sheets_.push_back(sheet);
+	switch(type)
+	{
+		case 2:		dialogsheets_.push_back(sheet); break;
+		case 3:		chartsheets_.push_back(sheet); break;
+		case 4:		macrosheets_.push_back(sheet); break;
+		case 1:
+		default:    worksheets_.push_back(sheet); break;
+
+	}
+
 }
 
 void sheets_files::write(const std::wstring & RootPath)
 {
-	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"worksheets";
-    NSDirectory::CreateDirectory(path.c_str());
+	int id = 0;
+	write_(worksheets_,	id, RootPath, L"worksheet",	 L"sheet", 
+		L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet",
+		L"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml");
+	
+	write_(dialogsheets_,id, RootPath, L"dialogsheet", L"sheet", 
+		L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/dialogsheet",
+		L"application/vnd.openxmlformats-officedocument.spreadsheetml.dialogsheet+xml");
+	
+	write_(chartsheets_, id, RootPath, L"chartsheet", L"sheet", 
+		L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet",
+		L"application/vnd.openxmlformats-officedocument.spreadsheetml.chartsheet+xml");
+	
+	write_(macrosheets_, id, RootPath, L"macrosheet", L"intlsheet", 
+		L"http://schemas.microsoft.com/office/2006/relationships/xlIntlMacrosheet",
+		L"application/vnd.ms-excel.intlmacrosheet+xml");
+}
 
-	for (size_t i = 0; i < sheets_.size(); i++)
-    {
-        if (!sheets_[i]) continue;
+void sheets_files::write_(std::vector<sheet_content_ptr> & sheets_, int & id, 
+						  const std::wstring & RootPath, const std::wstring & local, const std::wstring & name, 
+						  const std::wstring & rels_type, const std::wstring & content_type)
+{
+	if (sheets_.empty()) return;
+
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + local + L"s";
+	NSDirectory::CreateDirectory(path.c_str());
+
+	oox::content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+	for (size_t i = 0; i < sheets_.size(); i++, id++)
+	{
+		if (!sheets_[i]) continue;
            
-		const std::wstring fileName = std::wstring(L"sheet") + std::to_wstring(i + 1) + L".xml";
-        content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+		const std::wstring fileName = name + std::to_wstring(i + 1) + L".xml";			
 
-        static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml";
-        contentTypes.add_override(std::wstring(L"/xl/worksheets/") + fileName, kWSConType);
+		contentTypes.add_override(L"/xl/" + local + L"s/" + fileName, content_type);
 
-        if (rels_)
-        {
-            const std::wstring id = std::wstring(L"sId") + std::to_wstring(i + 1);
-            static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet";
-            const std::wstring fileRef = std::wstring(L"worksheets/") + fileName;
-            rels_->add(id, kWSRel, fileRef);
-        }
+		if (rels_)
+		{
+			std::wstring fileRef = local + L"s/" + fileName;
+			rels_->add(sheets_[i]->get_rId(), rels_type, fileRef);
+		}
 
-        sheets_[i]->get_rel_file()->set_file_name(fileName + L".rels"); 
+		sheets_[i]->get_rel_file()->set_file_name(fileName + L".rels"); 
         
 		rels_files relFiles;
-        relFiles.add_rel_file(sheets_[i]->get_rel_file());
-        relFiles.write(path);
+		relFiles.add_rel_file(sheets_[i]->get_rel_file());
+		relFiles.write(path);
         
-        //item->get_rel_file()->write(path.string<std::wstring>());
+		//item->get_rel_file()->write(path.string<std::wstring>());
 
-        package::simple_element(fileName, sheets_[i]->str()).write(path);
-    }
+		package::simple_element(fileName, sheets_[i]->str()).write(path);
+	}
 }
 
 ////////////////////////////////////////////
@@ -346,9 +376,9 @@ void xl_files::set_connections(element_ptr Element)
     connections_ = Element;
 }
 
-void xl_files::add_sheet(sheet_content_ptr sheet)
+void xl_files::add_sheet(int type, sheet_content_ptr sheet)
 {
-    sheets_files_.add_sheet(sheet);
+    sheets_files_.add_sheet(type, sheet);
 }
 
 void xl_files::set_media(external_items & _Mediaitems)

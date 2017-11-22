@@ -40,12 +40,12 @@ class GLOBALS: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(GLOBALS)
 public:
-	GLOBALS(const bool is_dialog_sheet);
+	GLOBALS();
 	~GLOBALS();
 
 	BaseObjectPtr clone();
 
-	virtual const	bool loadContent	(BinProcessor& proc);
+	virtual const	bool loadContent (BinProcessor& proc);
 
 	static const ElementType type = typeGLOBALS;
 

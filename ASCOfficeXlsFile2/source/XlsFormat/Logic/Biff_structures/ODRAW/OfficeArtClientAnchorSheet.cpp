@@ -79,9 +79,9 @@ void OfficeArtClientAnchorSheet::calculate()
 {
 	global_info->GetDigitFontSizePixels();
 
-	XLS::GlobalWorkbookInfo::_sheet_size_info zero;
-	XLS::GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info->current_sheet >= 0 ? 
-										global_info->sheet_size_info[global_info->current_sheet - 1] : zero;
+	XLS::GlobalWorkbookInfo::_sheet_info zero;
+	XLS::GlobalWorkbookInfo::_sheet_info & sheet_info = global_info->current_sheet >= 0 ? 
+										global_info->sheets_info[global_info->current_sheet - 1] : zero;
 
 //----------------------------------------------------------------------------------------------------
 	//1 inch	=	72 point
@@ -134,9 +134,9 @@ void OfficeArtClientAnchorSheet::calculate_1()
 {
 	global_info->GetDigitFontSizePixels();
 
-	XLS::GlobalWorkbookInfo::_sheet_size_info zero;
-	XLS::GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info->current_sheet >= 0 ? 
-										global_info->sheet_size_info[global_info->current_sheet - 1] : zero;
+	XLS::GlobalWorkbookInfo::_sheet_info zero;
+	XLS::GlobalWorkbookInfo::_sheet_info & sheet_info = global_info->current_sheet >= 0 ? 
+										global_info->sheets_info[global_info->current_sheet - 1] : zero;
 	
 	double kfRow	= ( 360000 * 2.54 / 72) / 256. ;
 	double Digit_Width	= global_info->defaultDigitFontSize.first;

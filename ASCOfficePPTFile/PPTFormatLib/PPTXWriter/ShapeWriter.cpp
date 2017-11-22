@@ -1308,7 +1308,7 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertShape()
 		m_oWriter.WriteString(std::wstring(L"</a:xfrm>"));
 	}
 
-	CBaseShapePtr & shape = m_pShapeElement->m_pShape->getBaseShape();
+    CBaseShapePtr shape = m_pShapeElement->m_pShape->getBaseShape();
 
 	if (m_pShapeElement->m_pShape->m_lDrawType & c_ShapeDrawType_Graphic || shape->m_bCustomShape)
 	{

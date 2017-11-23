@@ -382,6 +382,7 @@ namespace NExtractTools
 		int* m_nDoctParams;
 		std::wstring* m_sHtmlFileInternalPath;
 		std::wstring* m_sPassword;
+		std::wstring* m_sSavePassword;
 		std::wstring* m_sTempDir;
 		bool* m_bIsNoBase64;
 		//output params
@@ -408,6 +409,7 @@ namespace NExtractTools
 			m_nDoctParams = NULL;
 			m_sHtmlFileInternalPath = NULL;
 			m_sPassword = NULL;
+			m_sSavePassword = NULL;
 			m_sTempDir = NULL;
 			m_bIsNoBase64 = NULL;
 
@@ -434,6 +436,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_nDoctParams);
 			RELEASEOBJECT(m_sHtmlFileInternalPath);
 			RELEASEOBJECT(m_sPassword);
+			RELEASEOBJECT(m_sSavePassword);
 			RELEASEOBJECT(m_sTempDir);
 			RELEASEOBJECT(m_bIsNoBase64);
 		}
@@ -522,6 +525,8 @@ namespace NExtractTools
 									m_sHtmlFileInternalPath = new std::wstring(sValue);
 								else if(_T("m_sPassword") == sName)
 									m_sPassword = new std::wstring(sValue);
+								else if(_T("m_sSavePassword") == sName)
+									m_sSavePassword = new std::wstring(sValue);
 								else if(_T("m_sTempDir") == sName)
 									m_sTempDir = new std::wstring(sValue);
 								else if(_T("m_bIsNoBase64") == sName)
@@ -549,6 +554,14 @@ namespace NExtractTools
         {
             return (NULL != m_sPassword) ? (*m_sPassword) : L"";
         }
+		bool hasSavePassword() const
+		{
+			return NULL != m_sSavePassword;
+		}
+		std::wstring getSavePassword() const
+		{
+			return (NULL != m_sSavePassword) ? (*m_sSavePassword) : L"";
+		}
 		std::wstring getFontPath() const
         {
             return (NULL != m_sFontDir) ? (*m_sFontDir) : L"";

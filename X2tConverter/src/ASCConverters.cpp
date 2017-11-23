@@ -4177,6 +4177,14 @@ namespace NExtractTools
 			{
 				result = fromMscrypt (sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
+			case TCD_MSCRYPT2_RAW:
+			{
+				result = mscrypt2oox(sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_2MSCRYPT_RAW:
+			{
+				result = oox2mscrypt(sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
 			case TCD_MSCRYPT2DOCT:
 			case TCD_MSCRYPT2XLST:
 			case TCD_MSCRYPT2PPTT:

@@ -78,13 +78,16 @@ int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Contex
 
 void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
+	bool bEndTable = Context.get_table_context().state()->get_end_table();
+	
 	if (attlist_.table_number_rows_repeated_ > 1 && empty())
 	{
 		Context.get_table_context().state()->add_empty_row(attlist_.table_number_rows_repeated_);
 		return;
 	}
-	if (attlist_.table_number_rows_repeated_ > 0xf000 && empty_content_cells())
+	if (attlist_.table_number_rows_repeated_ > 0x0f00 && empty_content_cells() || bEndTable)//0xf000 - conv_KDZO3J3xLIbZ5fC0HR0__xlsx.ods
 	{
+		Context.get_table_context().state()->set_end_table();
 		Context.get_table_context().state()->add_empty_row(attlist_.table_number_rows_repeated_);
 		return;		//conv_hSX8n3lVbhALjt0aafg__xlsx.ods, conv_MA2CauoNfX_7ejKS5eg__xlsx.ods
 	}
@@ -731,7 +734,15 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
             int y, m, d;
             if (oox::parseDate(attr.office_date_value_.get(), y, m, d))
             {
-                number_val = boost::lexical_cast<std::wstring>(oox::convertDate(y, m, d));
+				boost::int64_t intDate = oox::convertDate(y, m, d);
+				if (intDate > 0)
+				{
+					number_val = boost::lexical_cast<std::wstring>(intDate);
+				}
+				else
+				{
+					str_val = attr.office_date_value_.get();
+				}
             }
         }
     }
@@ -742,11 +753,19 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
         if (attr.office_time_value_)
         {
             const std::wstring tv = attr.office_time_value_.get();
-            int h,m;
+            int h, m;
             double s;
             if (oox::parseTime(tv, h, m, s))
             {
-                number_val = boost::lexical_cast<std::wstring>(oox::convertTime(h, m, s));
+				boost::int64_t intTime = oox::convertTime(h, m, s);
+				if (intTime > 0)
+				{
+					number_val = boost::lexical_cast<std::wstring>(intTime);
+				}
+				else
+				{
+					str_val = tv;
+				}
             }                
         }
     }
@@ -999,7 +1018,15 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
             int y, m, d;
             if (oox::parseDate(attr.office_date_value_.get(), y, m, d))
             {
-                number_val = boost::lexical_cast<std::wstring>(oox::convertDate(y, m, d));
+				boost::int64_t intDate = oox::convertDate(y, m, d);
+				if (intDate > 0)
+				{
+					number_val = boost::lexical_cast<std::wstring>(intDate);
+				}
+				else
+				{
+					str_val = attr.office_date_value_.get();
+				}
             }
         }
     }

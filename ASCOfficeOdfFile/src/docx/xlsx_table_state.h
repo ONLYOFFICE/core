@@ -91,6 +91,9 @@ public:
     void end_row		();
 
 	void add_empty_row(int count);
+
+	void set_end_table(){ bEndTable = true; }
+	bool get_end_table(){ return bEndTable; }
     
 	std::wstring current_row_style			() const;
     std::wstring default_row_cell_style		() const;
@@ -153,6 +156,7 @@ public:
 	friend class xlsx_table_context;
 
 private:	
+	bool								bEndTable;
     xlsx_conversion_context *			context_;    
 
     std::wstring						tableName_;

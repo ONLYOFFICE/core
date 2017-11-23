@@ -309,7 +309,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 			//	output_document->get_xl_files().add_attachedToolbars();
 			//}		
 			NSFile::CFileBinary file;
-			if (file.CreateFile(sToolbarsFile))
+            if (file.CreateFileW(sToolbarsFile))
 			{
 				unsigned long size = toolbar_data->getStreamSize();
 				boost::shared_array<BYTE> buffer(new BYTE[size]);

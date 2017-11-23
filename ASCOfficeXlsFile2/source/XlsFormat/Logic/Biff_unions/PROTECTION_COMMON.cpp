@@ -94,15 +94,15 @@ int PROTECTION_COMMON::serialize (std::wostream & _stream)
 		{
 			if (protect)
 			{
-				CP_XML_ATTR(L"sheet", protect->fLock);
+                CP_XML_ATTR(L"sheet", (protect->fLock ? 1 : 0));
 			}
 			if (object)
 			{
-				CP_XML_ATTR(L"objects", object->fLockObj);
+                CP_XML_ATTR(L"objects", (object->fLockObj ? 1 : 0));
 			}
 			if (scenario)
 			{
-				CP_XML_ATTR(L"scenarios", scenario->fScenProtect);
+                CP_XML_ATTR(L"scenarios", (scenario->fScenProtect ? 1 : 0));
 			}
 			CP_XML_ATTR(L"selectLockedCells", 1);
 		}

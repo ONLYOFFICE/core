@@ -410,7 +410,7 @@ private:
             }
 
             if (carry > 0)
-                temp.insert(0, 1, (carry+'0'));
+                temp.insert(0, 1, (char)(carry+'0'));
 
             temp.append((n1.length() - i - 1), '0'); // as like mult by 10, 100, 1000, 10000 and so on
 

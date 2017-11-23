@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of BIGNAME union of records 
 class BIGNAME: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(BIGNAME)
@@ -49,6 +47,7 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	BaseObjectPtr m_BigName;
 };
 
 } // namespace XLS

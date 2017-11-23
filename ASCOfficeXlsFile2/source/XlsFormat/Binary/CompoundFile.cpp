@@ -103,7 +103,7 @@ void CompoundFile::copy_stream(std::wstring streamNameOpen, std::wstring streamN
 	if (!stream) return;
 
 	stream->seek(0);
-	int size_stream = stream->size();
+	POLE::uint64 size_stream = stream->size();
 
 	if (bWithRoot == false)
 	{

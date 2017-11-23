@@ -60,6 +60,7 @@ namespace XLS
 	typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;
 
 	class WorkbookStreamObject;
+	class CommonSubstream;
 	class WorksheetSubstream;
 	class GlobalsSubstream;
 	class ChartSheetSubstream;
@@ -109,6 +110,8 @@ public:
 	void write();
 
 	void convert(XLS::BaseObject				* xls_unknown);
+
+	void convert_common(XLS::CommonSubstream* strm);
 
 	void convert(XLS::WorkbookStreamObject		* woorkbook);
 	void convert(XLS::WorksheetSubstream		* sheet);

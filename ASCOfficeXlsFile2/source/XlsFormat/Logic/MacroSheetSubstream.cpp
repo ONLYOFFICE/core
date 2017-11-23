@@ -67,7 +67,7 @@ namespace XLS
 {;
 
 
-MacroSheetSubstream::MacroSheetSubstream(const size_t ws_index) :	ws_index_(ws_index)
+MacroSheetSubstream::MacroSheetSubstream(const size_t ws_index) :	CommonSubstream(ws_index)
 {
 }
 
@@ -125,7 +125,12 @@ const bool MacroSheetSubstream::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 	proc.repeated<BIGNAME>(0, 0);
-	proc.optional<PROTECTION_COMMON>();
+
+	if (proc.optional<PROTECTION_COMMON>())
+	{
+		m_PROTECTION = elements_.back();
+		elements_.pop_back();
+	}
 	
 	if (proc.mandatory<COLUMNS>())
 	{
@@ -186,8 +191,7 @@ const bool MacroSheetSubstream::loadContent(BinProcessor& proc)
 		m_arWINDOW.insert(m_arWINDOW.begin(), elements_.back());
 		elements_.pop_back();
 		count--;
-	}
-	
+	}	
 	count = proc.repeated<CUSTOMVIEW>(0, 0);
 	while(count > 0)
 	{
@@ -224,7 +228,7 @@ const bool MacroSheetSubstream::loadContent(BinProcessor& proc)
 		m_SheetExt  = elements_.back();
 		elements_.pop_back();
 	}
-	count = proc.repeated<FEAT>		(0, 0);
+	count = proc.repeated<FEAT>	(0, 0);
 	while(count > 0)
 	{
 		m_arFEAT.insert(m_arFEAT.begin(), elements_.back());
@@ -239,6 +243,8 @@ const bool MacroSheetSubstream::loadContent(BinProcessor& proc)
 		count--;
 	}
 	proc.mandatory<EOF_T>();
+
+	LoadHFPicture();
 
 	return true;
 }

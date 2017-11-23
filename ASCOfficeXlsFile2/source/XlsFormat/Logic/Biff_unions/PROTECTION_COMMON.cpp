@@ -31,24 +31,22 @@
  */
 
 #include "PROTECTION_COMMON.h"
-#include <Logic/Biff_records/Protect.h>
-#include <Logic/Biff_records/ScenarioProtect.h>
-#include <Logic/Biff_records/ObjProtect.h>
-#include <Logic/Biff_records/Password.h>
+
+#include "../Biff_records/Protect.h"
+#include "../Biff_records/ScenarioProtect.h"
+#include "../Biff_records/ObjProtect.h"
+#include "../Biff_records/Password.h"
 
 namespace XLS
 {
-
 
 PROTECTION_COMMON::PROTECTION_COMMON()
 {
 }
 
-
 PROTECTION_COMMON::~PROTECTION_COMMON()
 {
 }
-
 
 BaseObjectPtr PROTECTION_COMMON::clone()
 {
@@ -59,12 +57,40 @@ BaseObjectPtr PROTECTION_COMMON::clone()
 // PROTECTION_COMMON = [Protect] [ScenarioProtect] [ObjProtect] [Password]
 const bool PROTECTION_COMMON::loadContent(BinProcessor& proc)
 {
-	bool res1 = proc.optional<Protect>();
-	bool res2 = proc.optional<ScenarioProtect>();
-	bool res3 = proc.optional<ObjProtect>();
-	bool res4 = proc.optional<Password>();
+	if (proc.optional<Protect>())
+	{
+		m_Protect = elements_.back();
+		elements_.pop_back();
+	}
+	if (proc.optional<ScenarioProtect>())
+	{
+		m_ScenarioProtect = elements_.back();
+		elements_.pop_back();
+	}
+	if (proc.optional<ObjProtect>())
+	{
+		m_ObjProtect = elements_.back();
+		elements_.pop_back();
+	}
+	if (proc.optional<Password>())
+	{
+		m_Password = elements_.back();
+		elements_.pop_back();
+	}
 
-	return res1 || res2 || res3 || res4;
+	return m_Protect || m_ScenarioProtect || m_ObjProtect || m_Password;
+}
+
+int PROTECTION_COMMON::serialize (std::wostream & _stream)
+{
+	CP_XML_WRITER(_stream)    
+	{
+		CP_XML_NODE(L"sheetProtection") 
+		{
+		}
+		
+	}
+	return 0;
 }
 
 } // namespace XLS

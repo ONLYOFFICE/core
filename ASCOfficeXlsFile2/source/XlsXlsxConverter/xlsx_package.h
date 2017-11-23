@@ -324,6 +324,7 @@ public:
     void add_query_table	(simple_element_ptr element);
 	void add_control_props	(simple_element_ptr element);
 	void add_vba_project	();
+	void add_attachedToolbars();
 private:
     rels_files				rels_files_;
     sheets_files			sheets_files_;
@@ -347,6 +348,7 @@ private:
 	element_ptr		comments_;
 
 	bool			bVbaProject;
+	bool			bAttachedToolbars;
 
 };
 

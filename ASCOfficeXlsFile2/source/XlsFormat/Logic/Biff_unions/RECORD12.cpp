@@ -31,11 +31,10 @@
  */
 
 #include "RECORD12.h"
-#include <Logic/Biff_records/HeaderFooter.h>
+#include "../Biff_records/HeaderFooter.h"
 
 namespace XLS
 {
-
 
 RECORD12::RECORD12()
 {
@@ -60,6 +59,9 @@ const bool RECORD12::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+	
+	m_HeaderFooter = elements_.back();
+	elements_.pop_back();
 
 	return true;
 }

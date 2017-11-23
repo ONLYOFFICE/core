@@ -237,7 +237,9 @@ void sheets_files::write_(std::vector<sheet_content_ptr> & sheets_, int & id,
 xl_files::xl_files()
 {
 	rels_files_.add_rel_file(rels_file::create(L"workbook.xml.rels"));
+	
 	bVbaProject = false;
+	bAttachedToolbars = false;
 }
 
 void xl_files::write(const std::wstring & RootPath)
@@ -308,6 +310,11 @@ void xl_files::write(const std::wstring & RootPath)
 			contentTypes.add_override(L"/xl/workbook.xml", L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml");
 		}
     }
+	if (bAttachedToolbars)
+	{
+		rels_files_.add( relationship( L"vbId2",  L"http://schemas.microsoft.com/office/2006/relationships/attachedToolbars", L"attachedToolbars.bin" ) );
+		contentTypes.add_override(L"/xl/attachedToolbars.bin", L"application/vnd.ms-excel.attachedToolbars");
+	}
 
     if (theme_)
     {
@@ -356,7 +363,10 @@ void xl_files::add_vba_project()
 {
 	bVbaProject = true;
 }
-
+void xl_files::add_attachedToolbars()
+{
+	bAttachedToolbars = true;
+}
 void xl_files::set_workbook(element_ptr Element)
 {
     workbook_ = Element;

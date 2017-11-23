@@ -71,7 +71,8 @@ public:
 	std::wostream & conditionalFormatting();
 	std::wostream & picture_background();
 	std::wostream & dataValidations();
-	
+	std::wostream & protection();
+
 	rels & sheet_rels();//hyperlink, background image, external, media ...
 
     void write_to(std::wostream & strm);

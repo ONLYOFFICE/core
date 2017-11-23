@@ -493,7 +493,7 @@ void XlsConverter::convert_common (XLS::CommonSubstream* sheet)
 
 	if (sheet->m_PROTECTION)
 	{
-		//sheet->m_PROTECTION->serialize(xlsx_context->current_sheet().protection());
+		sheet->m_PROTECTION->serialize(xlsx_context->current_sheet().protection());
 	}
 	if (sheet->m_COLUMNS)
 	{
@@ -512,11 +512,6 @@ void XlsConverter::convert_common (XLS::CommonSubstream* sheet)
 		sheet->m_PAGESETUP->serialize(xlsx_context->current_sheet().pageProperties());
 	}
 
-	for (size_t i = 0 ; i < sheet->m_arHFPictureDrawing.size(); i++)
-	{
-		//convert(dynamic_cast<XLS::Note*>(sheet->sheet->m_arHFPictureDrawing[i].get(), 
-	}
- 	
 	if (sheet->m_arCUSTOMVIEW.size() > 0)
 	{
 		CP_XML_WRITER(xlsx_context->current_sheet().customViews())    

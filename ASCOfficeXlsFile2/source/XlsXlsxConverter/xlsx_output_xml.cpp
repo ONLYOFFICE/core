@@ -63,6 +63,7 @@ public:
 	std::wstringstream  conditionalFormatting_;
 	std::wstringstream  picture_background_;
 	std::wstringstream  dataValidations_;
+	std::wstringstream  protection_;
 
 	rels rels_;
 
@@ -166,6 +167,11 @@ std::wostream & xlsx_xml_worksheet::dataValidations()
 {
     return impl_->dataValidations_;
 }
+std::wostream & xlsx_xml_worksheet::protection()
+{
+    return impl_->protection_;
+}
+
 //-----------------------------------------------------------------
 rels & xlsx_xml_worksheet::sheet_rels()
 {
@@ -209,6 +215,9 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
             {
                 CP_XML_STREAM() << impl_->sheetData_.str();
             }
+
+			CP_XML_STREAM() << impl_->protection_.str();
+
 			//оказывается порядок нахождения элементов важен !!! (для office 2010)
 			//объединенные ячейки раньше чем гиперлинки !!!
 

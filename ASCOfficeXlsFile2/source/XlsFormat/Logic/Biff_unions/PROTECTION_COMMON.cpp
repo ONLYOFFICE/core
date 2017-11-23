@@ -83,10 +83,28 @@ const bool PROTECTION_COMMON::loadContent(BinProcessor& proc)
 
 int PROTECTION_COMMON::serialize (std::wostream & _stream)
 {
+	Protect			*protect	= dynamic_cast<Protect*>		(m_Protect.get());
+	Password		*password	= dynamic_cast<Password*>		(m_Password.get());
+	ScenarioProtect	*scenario	= dynamic_cast<ScenarioProtect*>(m_ScenarioProtect.get());
+	ObjProtect		*object		= dynamic_cast<ObjProtect*>		(m_ObjProtect.get());
+
 	CP_XML_WRITER(_stream)    
 	{
 		CP_XML_NODE(L"sheetProtection") 
 		{
+			if (protect)
+			{
+				CP_XML_ATTR(L"sheet", protect->fLock);
+			}
+			if (object)
+			{
+				CP_XML_ATTR(L"objects", object->fLockObj);
+			}
+			if (scenario)
+			{
+				CP_XML_ATTR(L"scenarios", scenario->fScenProtect);
+			}
+			CP_XML_ATTR(L"selectLockedCells", 1);
 		}
 		
 	}

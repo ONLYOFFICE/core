@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of ScenarioProtect record in BIFF8
 class ScenarioProtect: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(ScenarioProtect)
@@ -48,14 +46,12 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeScenarioProtect;
 
 //-----------------------------
 	Boolean<unsigned short> fScenProtect;
-
 };
 
 } // namespace XLS

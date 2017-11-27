@@ -2553,7 +2553,7 @@ namespace NExtractTools
 	}
 	int oox2mscrypt	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
-        std::wstring password = params.getPassword();
+		std::wstring password = params.getSavePassword();
 
 		ECMACryptFile cryptReader;
 
@@ -2987,7 +2987,7 @@ namespace NExtractTools
        {
            if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo)
            {
-				if(params.hasPassword())
+				if(params.hasSavePassword())
 				{
 					std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.docx");
 					nRes = dir2zip(sFrom, sToMscrypt);
@@ -3199,7 +3199,7 @@ namespace NExtractTools
        {
            if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatTo)
            {
-				if(params.hasPassword())
+				if(params.hasSavePassword())
 				{
 					std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.xlsx");
 					nRes = dir2zip(sFrom, sToMscrypt);
@@ -3386,7 +3386,7 @@ namespace NExtractTools
 		{
 			if(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX == nFormatTo)
 			{
-				if(params.hasPassword())
+				if(params.hasSavePassword())
 				{
 					std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.pptx");
 					nRes = dir2zip(sFrom, sToMscrypt);
@@ -4176,6 +4176,14 @@ namespace NExtractTools
 			case TCD_MSCRYPT2:
 			{
 				result = fromMscrypt (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_MSCRYPT2_RAW:
+			{
+				result = mscrypt2oox(sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_2MSCRYPT_RAW:
+			{
+				result = oox2mscrypt(sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
 			case TCD_MSCRYPT2DOCT:
 			case TCD_MSCRYPT2XLST:

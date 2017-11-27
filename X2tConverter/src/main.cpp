@@ -146,6 +146,7 @@ static std::wstring utf8_to_unicode(const char *src)
 		if (argc > 4)
 		{
 			oInputParams.m_sPassword = new std::wstring(sArg4);
+			oInputParams.m_sSavePassword = new std::wstring(sArg4);
 		}
 		result = NExtractTools::fromInputParams(oInputParams);
 	}

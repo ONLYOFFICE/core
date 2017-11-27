@@ -145,6 +145,7 @@ int AUTOFILTER::serialize(std::wostream & stream)
 	if (it == pGlobalWorkbookInfoPtr->mapDefineNames.end()) return 0;
 
 	int count_columns = info->cEntries;
+	
 	size_t ind = pGlobalWorkbookInfoPtr->current_sheet;
 	std::wstring ref;
 	
@@ -159,7 +160,7 @@ int AUTOFILTER::serialize(std::wostream & stream)
 	}
 	if (ref.empty()) return 0;
 
-	std::wstring sheet_name = ind <= pGlobalWorkbookInfoPtr->sheets_names.size() ? pGlobalWorkbookInfoPtr->sheets_names[ind-1] : L"";
+	std::wstring sheet_name = ind <= pGlobalWorkbookInfoPtr->sheets_info.size() ? pGlobalWorkbookInfoPtr->sheets_info[ind-1].name : L"";
 	if (!sheet_name.empty())
 	{
 		int pos = ref.find(sheet_name);

@@ -31,11 +31,12 @@
  */
 
 #include "PROTECTION.h"
-#include <Logic/Biff_records/WinProtect.h>
-#include <Logic/Biff_records/Protect.h>
-#include <Logic/Biff_records/Password.h>
-#include <Logic/Biff_records/Prot4Rev.h>
-#include <Logic/Biff_records/Prot4RevPass.h>
+
+#include "../Biff_records/WinProtect.h"
+#include "../Biff_records/Protect.h"
+#include "../Biff_records/Password.h"
+#include "../Biff_records/Prot4Rev.h"
+#include "../Biff_records/Prot4RevPass.h"
 
 namespace XLS
 {
@@ -85,7 +86,7 @@ const bool PROTECTION::loadContent(BinProcessor& proc)
 		m_Prot4RevPass = elements_.back();
 		elements_.pop_back();
 	}
-	return true;
+	return m_WinProtect || m_Protect || m_Password;
 }
 
 } // namespace XLS

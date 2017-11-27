@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "CommonSubstream.h"
 
 namespace XLS
 {;
@@ -39,11 +39,11 @@ namespace XLS
 class MacroSheetSubstream;
 typedef boost::shared_ptr<MacroSheetSubstream> MacroSheetSubstreamPtr;
 
-class MacroSheetSubstream: public CompositeObject
+class MacroSheetSubstream : public CompositeObject, public CommonSubstream
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(MacroSheetSubstream)
 public:
-	MacroSheetSubstream();
+	MacroSheetSubstream(const size_t ws_index);
 	~MacroSheetSubstream();
 
 	BaseObjectPtr clone();
@@ -52,16 +52,12 @@ public:
 
 	static const ElementType	type = typeMacroSheetSubstream;
 
-	BaseObjectPtr				m_GLOBALS;
-	BaseObjectPtr				m_OBJECTS;
+	BaseObjectPtr					m_DxGCol;
+	BaseObjectPtr					m_Dimensions;
 
-	std::vector<BaseObjectPtr>	m_arCUSTOMVIEW;
+	BaseObjectPtr					m_MACROSORTANDFILTER;
 
-	BaseObjectPtr				m_SheetExt;
-	BaseObjectPtr				m_CodeName;
-
-	GlobalWorkbookInfoPtr		global_info_;
-	
+	std::vector<BaseObjectPtr>		m_arNote;
 };
 
 } // namespace XLS

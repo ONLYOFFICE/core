@@ -375,6 +375,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\XlsFormat\Logic\CommonSubstream.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsFormat\Logic\CommonSubstream.h"
+				>
+			</File>
+			<File
 				RelativePath="..\XlsFormat\Logic\CompositeObject.cpp"
 				>
 			</File>

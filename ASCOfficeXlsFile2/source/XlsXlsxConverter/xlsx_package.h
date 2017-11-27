@@ -50,17 +50,24 @@ public:
 class sheet_content : boost::noncopyable
 {
 public:
+    static _CP_PTR(sheet_content) create();
+
     sheet_content();
-    std::wostream & content() { return content_; }
+
     void add_rel(relationship const & r);
 	void add_rels(rels & r);
     rels_file_ptr get_rel_file() { return rels_; }
-    std::wstring str() { return content_.str(); }
-    static _CP_PTR(sheet_content) create();
+    
+    std::wostream & content() { return content_; }
+	std::wstring str() { return content_.str(); }
+
+	void set_rId(std::wstring rid) {rId_ = rid;}
+	std::wstring get_rId() {return rId_;}
 
 private:
-    std::wstringstream content_;
-    rels_file_ptr rels_;
+	std::wstring		rId_;
+    std::wstringstream	content_;
+    rels_file_ptr		rels_;
 };
 typedef _CP_PTR(sheet_content) sheet_content_ptr;
 //------------------------------------------------------------------------
@@ -126,7 +133,7 @@ class sheets_files  : public element
 public:
     sheets_files();
 
-    void add_sheet(sheet_content_ptr sheet);
+    void add_sheet(int type, sheet_content_ptr sheet);
 
     void set_rels(rels_files * rels)
     {
@@ -135,7 +142,15 @@ public:
 
     virtual void write(const std::wstring & RootPath);
 
-    std::vector<sheet_content_ptr> sheets_;
+    std::vector<sheet_content_ptr> worksheets_;
+    std::vector<sheet_content_ptr> dialogsheets_;
+    std::vector<sheet_content_ptr> macrosheets_;
+    std::vector<sheet_content_ptr> chartsheets_;
+
+private:
+	void write_(std::vector<sheet_content_ptr> & sheets_, int & id, 
+				  const std::wstring & RootPath, const std::wstring & local, const std::wstring & name, 
+				  const std::wstring & rels_type, const std::wstring & content_type);
     rels_files * rels_;
 
 };
@@ -295,7 +310,7 @@ public:
     void set_styles			(element_ptr Element);
     void set_sharedStrings	(element_ptr Element);
 	void set_connections	(element_ptr Element);
-    void add_sheet			(sheet_content_ptr sheet);
+    void add_sheet			(int type, sheet_content_ptr sheet);
     void set_media			(external_items & _Mediaitems);    
     void set_drawings		(element_ptr Element);
 	void set_vml_drawings	(element_ptr Element);
@@ -309,6 +324,7 @@ public:
     void add_query_table	(simple_element_ptr element);
 	void add_control_props	(simple_element_ptr element);
 	void add_vba_project	();
+	void add_attachedToolbars();
 private:
     rels_files				rels_files_;
     sheets_files			sheets_files_;
@@ -332,6 +348,7 @@ private:
 	element_ptr		comments_;
 
 	bool			bVbaProject;
+	bool			bAttachedToolbars;
 
 };
 

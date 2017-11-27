@@ -73,6 +73,47 @@ void CFStream::read(void* buf, const size_t size)
 		return;// EndOfStreamReached
 	}
 }
+void CFStream::copy( std::wstring streamNameCreate, POLE::Storage * storageOut)
+{
+	stream_->seek(0);
+	int size_stream = stream_->size();
+
+	POLE::Stream *streamNew = new POLE::Stream(storageOut, streamNameCreate, true, size_stream);
+	if (!streamNew) return;
+
+	unsigned char buffer[4096];
+	int bytesRead = 0;
+
+	while(true)
+	{
+		int bytesToRead = size_stream - bytesRead;
+		if (bytesToRead <= 0)
+			break;
+		if (bytesToRead > 4096)
+			bytesToRead = 4096;
+	
+		stream_->read(buffer, bytesToRead);
+		streamNew->write(buffer, bytesToRead);
+		
+		bytesRead += bytesToRead;
+	}
+	//unsigned char* data_stream = new unsigned char[size_stream + 64];
+	//memset(data_stream, 0, size_stream + 64);
+	//if (data_stream)
+	//{
+	//	stream->read(data_stream, size_stream);
+
+	//	streamNew->write(data_stream, size_stream);
+
+	//	delete []data_stream;
+	//	data_stream = NULL;
+	//}
+
+	streamNew->flush();
+			
+	delete streamNew;
+}
+
 
 
 // Write 'size' unsigned chars to the stream

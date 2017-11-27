@@ -89,9 +89,6 @@ public:
 	CRYPT::DecryptorPtr						decryptor;
 	std::wstring							password;
 	
-	std::vector<std::wstring>				sheets_state;
-	std::vector<std::wstring>				sheets_names;
-	
 	boost::unordered_map<BorderInfo, int>	border_x_ids;
 	boost::unordered_map<FillInfo, int>		fill_x_ids;
 	
@@ -141,18 +138,18 @@ public:
 	unsigned int					startAddedSharedStrings;
 	std::vector<std::wstring>		arAddedSharedStrings;
 
-
-	struct _sheet_size_info
+	struct _sheet_info
 	{
+		std::wstring				state;
+		std::wstring				name;
+
 		std::map<int, double>		customColumnsWidth;
 		std::map<int, double>		customRowsHeight;
 		
 		double						defaultColumnWidth = 8.0;
 		double						defaultRowHeight = 14.4;
-
-		bool						bMacrosSheet = false;
 	};
-	std::vector<_sheet_size_info>	sheet_size_info;
+	std::vector<_sheet_info>		sheets_info;
 
 	std::pair<float, float>			defaultDigitFontSize;
     CApplicationFonts				*applicationFonts;

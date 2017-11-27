@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of RECORD12 union of records 
 class RECORD12: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(RECORD12)
@@ -49,7 +47,9 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typeRECORD12;
+	static const ElementType type = typeRECORD12;
+
+	BaseObjectPtr m_HeaderFooter;
 };
 
 } // namespace XLS

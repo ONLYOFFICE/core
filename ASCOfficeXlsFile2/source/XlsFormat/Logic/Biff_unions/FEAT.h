@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of FEAT union of records 
 class FEAT: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(FEAT)
@@ -49,7 +47,7 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typeFEAT;
+	static const ElementType type = typeFEAT;
 };
 
 } // namespace XLS

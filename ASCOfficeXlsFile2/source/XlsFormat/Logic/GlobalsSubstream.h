@@ -73,6 +73,7 @@ public:
 	BaseObjectPtr					m_METADATA;
 	BaseObjectPtr					m_MTRSettings;
 
+	std::vector<BaseObjectPtr>		m_arBIGNAME;
 	std::vector<BaseObjectPtr>		m_arHFPicture;
 	std::vector<BaseObjectPtr>		m_arLBL;
 	std::vector<BaseObjectPtr>		m_arMSODRAWINGGROUP;

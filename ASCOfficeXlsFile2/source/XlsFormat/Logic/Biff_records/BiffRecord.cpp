@@ -70,7 +70,7 @@ const bool BiffRecord::read(CFStreamCacheReader& reader, BaseObject* parent, con
 		size_t rdPtr = record->getRdPtr();
 		size_t typeId = getTypeId();
 
-		if(record->getDataSize() != record->getRdPtr() && getTypeId() != rt_ANY_TYPE && getTypeId() != rt_MsoDrawing)
+		if(record->getDataSize() != record->getRdPtr() && getTypeId() != rt_ANY_TYPE/* && getTypeId() != rt_MsoDrawing*/)
 		{
 			Log::warning(STR::int2str(record->getDataSize() - record->getRdPtr(), 10) + " unsigned chars were not processed while reading from " + record->getTypeString());
 		}

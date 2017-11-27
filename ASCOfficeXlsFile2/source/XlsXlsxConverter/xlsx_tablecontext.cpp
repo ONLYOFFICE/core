@@ -55,7 +55,7 @@ xlsx_table_context::xlsx_table_context(xlsx_conversion_context & Context) : cont
 {        
 }
 
-void xlsx_table_context::start_table(const std::wstring & name)
+void xlsx_table_context::start_table()
 {
 	tables_state_.push_back( table_state_ptr(new table_state(context_)));
 }

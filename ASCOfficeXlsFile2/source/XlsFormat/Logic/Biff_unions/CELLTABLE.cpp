@@ -61,9 +61,9 @@ public:
 	{
 		global_info_ = proc.getGlobalWorkbookInfo();
 
-		XLS::GlobalWorkbookInfo::_sheet_size_info zero;
-		XLS::GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info_->current_sheet >=0 ? 
-											global_info_->sheet_size_info[global_info_->current_sheet - 1] : zero;
+		XLS::GlobalWorkbookInfo::_sheet_info zero;
+		XLS::GlobalWorkbookInfo::_sheet_info & sheet_info = global_info_->current_sheet >=0 ? 
+											global_info_->sheets_info[global_info_->current_sheet - 1] : zero;
 		
 		int count, count_row = 0;
 		
@@ -175,9 +175,9 @@ struct _CompareColumnCell
 
 int CELL_GROUP::serialize(std::wostream & stream)
 {
-	XLS::GlobalWorkbookInfo::_sheet_size_info zero;
-	XLS::GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info_->current_sheet >=0 ? 
-										global_info_->sheet_size_info[global_info_->current_sheet - 1] : zero;
+	XLS::GlobalWorkbookInfo::_sheet_info zero;
+	XLS::GlobalWorkbookInfo::_sheet_info & sheet_info = global_info_->current_sheet >=0 ? 
+										global_info_->sheets_info[global_info_->current_sheet - 1] : zero;
 	
 	CP_XML_WRITER(stream)    
     {	

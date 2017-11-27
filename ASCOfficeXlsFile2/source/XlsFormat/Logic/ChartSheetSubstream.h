@@ -31,7 +31,8 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "CommonSubstream.h"
+
 #include <unordered_map>
 
 namespace XLS
@@ -44,12 +45,11 @@ class CRT;
 class ChartSheetSubstream;
 typedef boost::shared_ptr<ChartSheetSubstream>	ChartSheetSubstreamPtr;
 
-// Logical representation of ChartSheetSubstream union of records 
-class ChartSheetSubstream: public CompositeObject
+class ChartSheetSubstream: public CompositeObject, public CommonSubstream
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(ChartSheetSubstream)
 public:
-	ChartSheetSubstream();
+	ChartSheetSubstream(const size_t ws_index);
 	~ChartSheetSubstream();
 
 	BaseObjectPtr clone();
@@ -69,29 +69,23 @@ public:
 
 	static const ElementType	type = typeChartSheetSubstream;
 
-	BaseObjectPtr				m_BACKGROUND;
 	std::vector<BaseObjectPtr>	m_arFbi;
 	BaseObjectPtr				m_CHARTFORMATS;
 	BaseObjectPtr				m_SERIESDATA;
-	BaseObjectPtr				m_OBJECTSCHART;
-	std::vector<BaseObjectPtr>	m_arWINDOW;
-	std::vector<BaseObjectPtr>	m_arCUSTOMVIEW;
 	BaseObjectPtr				m_Units;
 	BaseObjectPtr				m_ExternSheet;
 	BaseObjectPtr				m_SXViewLink;
 	BaseObjectPtr				m_PivotChartBits;
 	BaseObjectPtr				m_SBaseRef;
-
-	BaseObjectPtr				m_CodeName;
-	BaseObjectPtr				m_SheetExt;
+	BaseObjectPtr				m_PrintSize;
+	BaseObjectPtr				m_Palette;
+	BaseObjectPtr				m_WriteProtect;
 private:
 
 	void recalc(CHARTFORMATS*	charts);
 	void recalc(SERIESDATA*		data);
 
 	std::unordered_map<int, std::vector<int>> m_mapTypeChart;
-
-	GlobalWorkbookInfoPtr pGlobalWorkbookInfo;
 };
 
 } // namespace XLS

@@ -44,7 +44,6 @@ ScenarioProtect::~ScenarioProtect()
 {
 }
 
-
 BaseObjectPtr ScenarioProtect::clone()
 {
 	return BaseObjectPtr(new ScenarioProtect(*this));

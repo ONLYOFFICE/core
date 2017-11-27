@@ -140,8 +140,7 @@ static const int aCodePages[][2] = {
     255,	850//OEM
 };
 
-GlobalsSubstream::GlobalsSubstream(const unsigned short code_page)
-:	code_page_(code_page)
+GlobalsSubstream::GlobalsSubstream(const unsigned short code_page) :	code_page_(code_page)
 {
 }
 
@@ -653,7 +652,20 @@ void GlobalsSubstream::UpdateXti()
 			{
 				if (info->rgst.empty() && index_book->nExternIndex < 0)
 				{
-					val.link = XMLSTUFF::xti_indexes2sheet_name(xti->itabFirst, xti->itabLast, global_info_->sheets_names); 
+					std::wstring strRange;
+					if(-1 == xti->itabFirst)
+					{
+						strRange = L"#REF";
+					}
+					else
+					{
+						strRange = XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabFirst].name, L"");
+						if (xti->itabFirst != xti->itabLast)
+						{
+							strRange += std::wstring(L":") + XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabLast].name, L"");
+						}
+					}
+					val.link = strRange;
 				}
 				else
 				{

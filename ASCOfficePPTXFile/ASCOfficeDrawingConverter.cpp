@@ -1687,6 +1687,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 
 	NSPresentationEditor::CShapeElement oShapeElem;
 	CPPTShape* pPPTShape = NULL;
+	bool bSetShape = false;
 
     if (L"v:background" == strNameNode)
     {
@@ -1848,7 +1849,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 			std::map<std::wstring, CShapePtr>::iterator pPair = m_mapShapeTypes.find(strType);
 			if (m_mapShapeTypes.end() != pPair)
 			{
-				CBaseShapePtr & base_shape_type = pPair->second->getBaseShape();
+                CBaseShapePtr base_shape_type = pPair->second->getBaseShape();
 				CPPTShape* ppt_shape_type = dynamic_cast<CPPTShape*>(base_shape_type.get());
 				
 				pPPTShape = new CPPTShape();
@@ -1885,6 +1886,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 			}			
 		}
 		oShapeElem.m_pShape->setBaseShape(CBaseShapePtr(pPPTShape));
+		bSetShape = true;
 		
 		if (bIsNeedCoordSizes)
 		{
@@ -1895,7 +1897,8 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 
 	if (pPPTShape != NULL)
 	{	
-		oShapeElem.m_pShape->setBaseShape(CBaseShapePtr(pPPTShape));
+		if (!bSetShape)
+			oShapeElem.m_pShape->setBaseShape(CBaseShapePtr(pPPTShape));
 		if (bIsNeedCoordSizes)
 		{
 			LoadCoordSize(oNodeShape, oShapeElem.m_pShape);

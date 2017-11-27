@@ -37,7 +37,6 @@
 #include "Biff_records/WebPub.h"
 #include "Biff_records/HFPicture.h"
 #include "Biff_records/PrintSize.h"
-#include "Biff_records/HeaderFooter.h"
 #include "Biff_records/Fbi.h"
 #include "Biff_records/Fbi2.h"
 #include "Biff_records/ClrtClient.h"
@@ -92,6 +91,7 @@
 #include "Biff_unions/LD.h"
 #include "Biff_unions/DAT.h"
 #include "Biff_unions/PIVOTVIEW.h"
+#include "Biff_unions/RECORD12.h"
 
 #include "../../XlsXlsxConverter/XlsConverter.h"
 #include "../../XlsXlsxConverter/xlsx_conversion_context.h"
@@ -101,7 +101,7 @@ namespace XLS
 {;
 
 
-ChartSheetSubstream::ChartSheetSubstream()
+ChartSheetSubstream::ChartSheetSubstream(const size_t ws_index) : CommonSubstream(ws_index)
 {
 }
 
@@ -126,7 +126,8 @@ CHARTSHEETCONTENT = [WriteProtect] [SheetExt] [WebPub] *HFPicture PAGESETUP Prin
 */
 const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 {
-	pGlobalWorkbookInfo = proc.getGlobalWorkbookInfo();
+	global_info_ = proc.getGlobalWorkbookInfo();
+	global_info_->current_sheet = ws_index_ + 1; 
 	
 	int count = 0 ;
 
@@ -150,7 +151,14 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 
 		switch(type)
 		{
-			case rt_WriteProtect:		proc.optional<WriteProtect>();	break;
+			case rt_WriteProtect:		
+			{
+				if (proc.optional<WriteProtect>())
+				{
+					m_WriteProtect = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_SheetExt:			
 			{
 				if (proc.optional<SheetExt>())
@@ -160,19 +168,47 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 				}
 			}break;
 			case rt_WebPub:				proc.optional<WebPub>();		break;
-			case rt_HFPicture:			proc.repeated<HFPicture>(0, 0);	break;
-		
+			case rt_HFPicture:
+			{
+				count = proc.repeated<HFPicture>(0, 0);	
+				while(count > 0)
+				{
+					m_arHFPicture.insert(m_arHFPicture.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;		
 			case rt_Header:
 			case rt_Footer:		
 			case rt_BottomMargin:
 			case rt_TopMargin:
 			case rt_LeftMargin:
 			case rt_RightMargin:
-										proc.mandatory<PAGESETUP>();	break;
-			
-			case rt_PrintSize:			proc.mandatory<PrintSize>();	break;
-			case rt_HeaderFooter:		proc.optional<HeaderFooter>();	break;
-			
+			{
+				if (proc.mandatory<PAGESETUP>())
+				{
+					m_PAGESETUP = elements_.back();
+					elements_.pop_back();
+				}
+			}break;			
+			case rt_PrintSize:
+			{
+				if (proc.mandatory<PrintSize>())
+				{
+					m_PrintSize = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_HeaderFooter:		
+			{
+				count = proc.repeated<RECORD12>	(0, 0);		
+				while(count > 0)
+				{
+					m_arRECORD12.insert(m_arRECORD12.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;		
 			case rt_BkHim:
 			{
 				if (proc.optional<BACKGROUND>())
@@ -207,10 +243,22 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 			case rt_Protect:	
 			case rt_ScenarioProtect:
 			case rt_ObjProtect:
-			case rt_Password:
-										proc.optional<PROTECTION_COMMON>();	break;
-			
-			case rt_Palette:			proc.optional<Palette>();			break;
+			case rt_Password:										
+			{
+				if (proc.optional<PROTECTION_COMMON>())
+				{
+					m_PROTECTION = elements_.back();
+					elements_.pop_back();
+				}
+			}break;			
+			case rt_Palette:
+			{
+				if (proc.optional<Palette>())
+				{
+					m_Palette = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_SXViewLink:
 			{
 				if (proc.optional<SXViewLink>())
@@ -244,7 +292,7 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 				OBJECTS objects(true);
 				if (proc.mandatory(objects))
 				{
-					m_OBJECTSCHART = elements_.back(); 
+					m_OBJECTS = elements_.back(); 
 					elements_.pop_back();
 				}
 			}break;
@@ -310,7 +358,14 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 				}
 			}break;
 			
-			case rt_CodeName:			proc.optional<CodeName>();	break;
+			case rt_CodeName:
+			{
+				if (proc.optional<CodeName>())
+				{
+					m_CodeName = elements_.back(); 
+					elements_.pop_back();
+				}
+			}break;
 			case rt_CrtMlFrt:			proc.optional<CRTMLFRT>();	break;
 
 			default://unknown .... skip					
@@ -319,7 +374,8 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 			}break;
 		}
 	}
-	
+	LoadHFPicture();
+
 	return true;
 }
 
@@ -507,7 +563,7 @@ int ChartSheetSubstream::serialize(std::wostream & _stream)
 
 	if (chart_rect)
 	{
-		pGlobalWorkbookInfo->xls_converter->xlsx_context->get_drawing_context().set_absolute_anchor(
+		global_info_->xls_converter->xlsx_context->get_drawing_context().set_absolute_anchor(
 			0, 0, chart_rect->dx.dVal, chart_rect->dy.dVal);
 		
 	}

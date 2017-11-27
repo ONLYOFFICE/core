@@ -80,23 +80,18 @@
 namespace XLS
 {;
 
-
-WorksheetSubstream::WorksheetSubstream(const size_t ws_index)
-:	ws_index_(ws_index)
+WorksheetSubstream::WorksheetSubstream(const size_t ws_index) :	CommonSubstream(ws_index)
 {
 }
-
 
 WorksheetSubstream::~WorksheetSubstream()
 {
 }
 
-
 BaseObjectPtr WorksheetSubstream::clone()
 {
 	return BaseObjectPtr(new WorksheetSubstream(*this));
 }
-
 
 /*
 WORKSHEETCONTENT = [Uncalced] Index GLOBALS PAGESETUP [HeaderFooter] [BACKGROUND] *BIGNAME [PROTECTION] 
@@ -109,11 +104,7 @@ WORKSHEET = BOF WORKSHEETCONTENT
 const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 {
 	global_info_ = proc.getGlobalWorkbookInfo();
-	
-	GlobalWorkbookInfo::_sheet_size_info sheet_size_info;
-	
-	global_info_->sheet_size_info.push_back(sheet_size_info);
-	global_info_->current_sheet = global_info_->sheet_size_info.size();
+	global_info_->current_sheet = ws_index_ + 1; 
 
 	global_info_->cmt_rules	= 0;
 
@@ -145,8 +136,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			case rt_CalcMode:
 			case rt_PrintRowCol:
 			{
-				GLOBALS globals(false);
-				if (proc.mandatory(globals))
+				if (proc.mandatory<GLOBALS>())
 				{
 					m_GLOBALS = elements_.back();
 					elements_.pop_back();
@@ -210,8 +200,27 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back();
 				}
 			}break;
-			case rt_BigName:		proc.repeated<BIGNAME>(0, 0);		break;
-			case rt_Protect:		proc.optional<PROTECTION_COMMON>();	break;
+			case rt_BigName:		
+			{
+				count = proc.repeated<BIGNAME>(0, 0);
+				while(count > 0)
+				{
+					m_arBIGNAME.insert(m_arNote.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
+			case rt_Protect:		
+			case rt_ScenarioProtect:		
+			case rt_ObjProtect:		
+			case rt_Password:		
+			{
+				if (proc.optional<PROTECTION_COMMON>())
+				{
+					m_PROTECTION = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_ScenMan:		proc.optional<SCENARIOS>();			break;	
 			case rt_Sort:
 			case rt_AutoFilterInfo:
@@ -336,7 +345,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back(); 
 					
 					DxGCol* dx = dynamic_cast<DxGCol*>(m_DxGCol.get());
-					global_info_->sheet_size_info.back().defaultColumnWidth = dx->dxgCol / 256.;
+					global_info_->sheets_info.back().defaultColumnWidth = dx->dxgCol / 256.;
 				}
 			}break;				
 			case rt_MergeCells:
@@ -462,78 +471,6 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 
 	return true;
 }
-void WorksheetSubstream::LoadHFPicture()
-{
-	if (m_arHFPicture.empty()) return;
 
-	size_t current_size_hf = 0, j = 0;
-	for ( size_t i = 0; i < m_arHFPicture.size(); i++)
-	{
-		HFPicture* hf = dynamic_cast<HFPicture*>(m_arHFPicture[i].get());
-		if ((hf) && (hf->recordDrawingGroup))
-		{
-			if (!hf->fContinue && current_size_hf > 0)
-			{
-				XLS::CFRecord record(CFRecordType::ANY_TYPE, global_info_);
-				for (; j < i; j++)
-				{
-					hf = dynamic_cast<HFPicture*>(m_arHFPicture[j].get());
-					record.appendRawData(hf->recordDrawingGroup);
-				}
-				ODRAW::OfficeArtDgContainerPtr rgDrawing = ODRAW::OfficeArtDgContainerPtr(new ODRAW::OfficeArtDgContainer(ODRAW::OfficeArtRecord::CA_HF));
-				rgDrawing->loadFields(record);
-				m_arHFPictureDrawing.push_back(rgDrawing);
-				current_size_hf = 0;
-
-			}
-			current_size_hf += hf->recordDrawingGroup->getDataSize();
-		}
-	}
-	if (current_size_hf > 0)
-	{
-		XLS::CFRecord record(ODRAW::OfficeArtRecord::DggContainer, global_info_);
-		for (; j < m_arHFPicture.size(); j++)
-		{
-			HFPicture* hf = dynamic_cast<HFPicture*>(m_arHFPicture[j].get());
-			record.appendRawData(hf->recordDrawingGroup);
-		}
-		ODRAW::OfficeArtDgContainerPtr rgDrawing = ODRAW::OfficeArtDgContainerPtr(new ODRAW::OfficeArtDgContainer(ODRAW::OfficeArtRecord::CA_HF));
-		rgDrawing->loadFields(record);
-		m_arHFPictureDrawing.push_back(rgDrawing);
-	}
-}
-
-int WorksheetSubstream::serialize_format(std::wostream & strm)
-{
-	SheetExt *sheet_ext = dynamic_cast<SheetExt*>(m_SheetExt.get());
-	CodeName *code_name = dynamic_cast<CodeName*>(m_CodeName.get());
-
-	CP_XML_WRITER(strm)    
-    {
-		CP_XML_NODE(L"sheetPr")
-		{	
-			if (code_name)
-			{
-				CP_XML_ATTR(L"codeName", code_name->value);
-			}
-			if ((sheet_ext) && (sheet_ext->sheetExtOptional.bEnabled))
-			{
-				if (!sheet_ext->sheetExtOptional.fCondFmtCalc)	
-					CP_XML_ATTR(L"enableFormatConditionsCalculation", false);
-				if (!sheet_ext->sheetExtOptional.fNotPublished)	
-					CP_XML_ATTR(L"published" ,false);
-
-				if (sheet_ext->sheetExtOptional.color.xclrType.type == XColorType::XCLRRGB)
-				{
-					CP_XML_NODE(L"tabColor")
-					{
-						CP_XML_ATTR(L"rgb", sheet_ext->sheetExtOptional.color.rgb.strARGB);
-					}
-				}
-			}
-		}
-	}
-	return 0;
-}
 } // namespace XLS
 

@@ -96,21 +96,21 @@ const bool METADATA::loadContent(BinProcessor& proc)
 	int count2 = proc.repeated<MDXSTR>(0, 0);
 	while(!elements_.empty())
 	{
-		m_arMDXSTR.insert(m_arMDTINFO.begin(), elements_.back());
+		m_arMDXSTR.insert(m_arMDXSTR.begin(), elements_.back());
 		elements_.pop_back();
 	}	
 	
 	int count3 = proc.repeated<Parenthesis_METADATA_1>(0, 0);
 	while(!elements_.empty())
 	{
-		m_arMDTSET.insert(m_arMDTINFO.begin(), elements_.back());
+		m_arMDTSET.insert(m_arMDTSET.begin(), elements_.back());
 		elements_.pop_back();
 	}
 
 	int count4 = proc.repeated<MDBLOCK>(0, 0);
 	while(!elements_.empty())
 	{
-		m_arMDBLOCK.insert(m_arMDTINFO.begin(), elements_.back());
+		m_arMDBLOCK.insert(m_arMDBLOCK.begin(), elements_.back());
 		elements_.pop_back();
 	}
 	if (count1 > 0 || count2 > 0 || count3 > 0 || count4 > 0)

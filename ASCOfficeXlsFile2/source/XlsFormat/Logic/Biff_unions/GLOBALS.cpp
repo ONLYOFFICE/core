@@ -31,34 +31,33 @@
  */
 
 #include "GLOBALS.h"
-#include <Logic/Biff_records/DefColWidth.h>
-#include <Logic/Biff_records/DxGCol.h>
 
-#include <Logic/Biff_records/Protect.h>
-#include <Logic/Biff_records/CalcMode.h>
-#include <Logic/Biff_records/CalcCount.h>
-#include <Logic/Biff_records/CalcRefMode.h>
-#include <Logic/Biff_records/CalcIter.h>
-#include <Logic/Biff_records/CalcDelta.h>
-#include <Logic/Biff_records/CalcSaveRecalc.h>
-#include <Logic/Biff_records/PrintRowCol.h>
-#include <Logic/Biff_records/PrintGrid.h>
-#include <Logic/Biff_records/GridSet.h>
-#include <Logic/Biff_records/Guts.h>
-#include <Logic/Biff_records/DefaultRowHeight.h>
-#include <Logic/Biff_records/WsBool.h>
-#include <Logic/Biff_records/Sync.h>
-#include <Logic/Biff_records/LPr.h>
-#include <Logic/Biff_records/HorizontalPageBreaks.h>
-#include <Logic/Biff_records/VerticalPageBreaks.h>
-#include <Logic/Biff_records/Country.h>
+#include "../Biff_records/DefColWidth.h"
+#include "../Biff_records/DxGCol.h"
+#include "../Biff_records/Protect.h"
+#include "../Biff_records/CalcMode.h"
+#include "../Biff_records/CalcCount.h"
+#include "../Biff_records/CalcRefMode.h"
+#include "../Biff_records/CalcIter.h"
+#include "../Biff_records/CalcDelta.h"
+#include "../Biff_records/CalcSaveRecalc.h"
+#include "../Biff_records/PrintRowCol.h"
+#include "../Biff_records/PrintGrid.h"
+#include "../Biff_records/GridSet.h"
+#include "../Biff_records/Guts.h"
+#include "../Biff_records/DefaultRowHeight.h"
+#include "../Biff_records/WsBool.h"
+#include "../Biff_records/Sync.h"
+#include "../Biff_records/LPr.h"
+#include "../Biff_records/HorizontalPageBreaks.h"
+#include "../Biff_records/VerticalPageBreaks.h"
+#include "../Biff_records/Country.h"
 
 namespace XLS
 {
 
 
-GLOBALS::GLOBALS(const bool is_dialog_sheet)
-:	is_dialog(is_dialog_sheet)
+GLOBALS::GLOBALS() : is_dialog(false)
 {
 }
 

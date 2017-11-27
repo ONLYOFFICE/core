@@ -771,6 +771,7 @@
 #include "../XlsFormat/Logic/MacroSheetSubstream.cpp"
 #include "../XlsFormat/Logic/WorkbookStreamObject.cpp"
 #include "../XlsFormat/Logic/WorksheetSubstream.cpp"
+#include "../XlsFormat/Logic/CommonSubstream.cpp"
 
 #include "../XlsFormat/Logic/Biff_unions/IMDATAOBJECT.cpp"
 #include "../XlsFormat/Logic/Biff_records/IMDATA.cpp"

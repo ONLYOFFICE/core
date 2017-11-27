@@ -550,32 +550,34 @@ void xlsx_drawing_context::end_group()
 {
 	if (current_level < 1) return;
 	
-	serialize_group();
-
 	std::vector<_drawing_state_ptr>* cur_states = NULL;
 	for (size_t i = 0; i < current_drawing_states->size(); i++)
-	{	
-		int level = current_level;
-		cur_states = current_drawing_states;
-		while (level > 0)
-		{
-			_drawing_state_ptr & drawing_state = cur_states->front();
-
-			if (i != 0 || level != current_level) // группа сама себя
+	{
+		if (!current_drawing_states->empty())
+		{	
+			int level = current_level;
+			cur_states = current_drawing_states;
+			while (level > 0)
 			{
-				double kf_x = (double)drawing_state->child_anchor.cx / drawing_state->group_anchor.cx;
-				double kf_y = (double)drawing_state->child_anchor.cy / drawing_state->group_anchor.cy;
+				_drawing_state_ptr & drawing_state = cur_states->front();
 
-				current_drawing_states->at(i)->child_anchor.cx *= kf_x;
-				current_drawing_states->at(i)->child_anchor.cy *= kf_y;
+				if (i != 0 || level != current_level) // группа сама себя
+				{
+					double kf_x = (double)drawing_state->child_anchor.cx / drawing_state->group_anchor.cx;
+					double kf_y = (double)drawing_state->child_anchor.cy / drawing_state->group_anchor.cy;
+
+					current_drawing_states->at(i)->child_anchor.cx *= kf_x;
+					current_drawing_states->at(i)->child_anchor.cy *= kf_y;
 				
-				current_drawing_states->at(i)->child_anchor.x = current_drawing_states->at(i)->child_anchor.x * kf_x + drawing_state->child_anchor.x;
-				current_drawing_states->at(i)->child_anchor.y = current_drawing_states->at(i)->child_anchor.y * kf_y + drawing_state->child_anchor.y;
+					current_drawing_states->at(i)->child_anchor.x = current_drawing_states->at(i)->child_anchor.x * kf_x + drawing_state->child_anchor.x;
+					current_drawing_states->at(i)->child_anchor.y = current_drawing_states->at(i)->child_anchor.y * kf_y + drawing_state->child_anchor.y;
+				}
+				level--;
+				cur_states = cur_states->front()->parent_drawing_states;
 			}
-			level--;
-			cur_states = cur_states->front()->parent_drawing_states;
 		}
 	}
+	serialize_group();
 
 	current_drawing_states = current_drawing_states->front()->parent_drawing_states;
 
@@ -770,6 +772,29 @@ void xlsx_drawing_context::end_drawing()
 
 	if (current_drawing_states->back()->type == external_items::typeGroup)  return;
 	
+	//std::vector<_drawing_state_ptr>* cur_states = current_drawing_states;;
+	//
+	//int level = current_level;
+
+	//while (level > 0)
+	//{
+	//	_drawing_state_ptr & drawing_state = cur_states->front();
+
+	//	double kf_x = (double)drawing_state->child_anchor.cx / drawing_state->group_anchor.cx;
+	//	double kf_y = (double)drawing_state->child_anchor.cy / drawing_state->group_anchor.cy;
+
+	//	current_drawing_states->back()->child_anchor.cx *= kf_x;
+	//	current_drawing_states->back()->child_anchor.cy *= kf_y;
+	//
+	//	current_drawing_states->back()->child_anchor.x = drawing_state->group_anchor.x	+ 
+	//		(long)(kf_x * (current_drawing_states->back()->child_anchor.x - drawing_state->group_anchor.x));
+	//	current_drawing_states->back()->child_anchor.y = drawing_state->group_anchor.y	+ 
+	//		(long)(kf_y * (current_drawing_states->back()->child_anchor.y - drawing_state->group_anchor.y));
+
+	//	level--;
+	//	cur_states = cur_states->front()->parent_drawing_states;
+	//}
+	
 	end_drawing(current_drawing_states->back());
 
 	if ( current_drawing_states->back()->type == external_items::typeComment ||
@@ -793,6 +818,13 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 
 	if (drawing_state->id < 0)	
 		drawing_state->id = count_object + 0x20000;
+
+	if ( current_level > 0 && drawing_state->rotation > 0 && ((int)drawing_state->rotation % 90 == 0))
+	{
+		int v = drawing_state->child_anchor.cx;
+		drawing_state->child_anchor.cx = drawing_state->child_anchor.cy;
+		drawing_state->child_anchor.cy = v;
+	}
 
 	if (  drawing_state->type == external_items::typeImage ||
 		( drawing_state->type == external_items::typeShape && drawing_state->shape_id == msosptPictureFrame ))
@@ -993,10 +1025,6 @@ void xlsx_drawing_context::serialize_vml_shape(_drawing_state_ptr & drawing_stat
 			{
 				CP_XML_ATTR(L"stroked", L"f");
 			}
-			if (drawing_state->line.fill.type == fillNone)
-			{
-				CP_XML_ATTR(L"stroked", L"f");
-			}
 			if (drawing_state->fill.type == fillNone)
 			{
 				CP_XML_ATTR(L"filled", L"f");
@@ -1009,10 +1037,10 @@ void xlsx_drawing_context::serialize_vml_shape(_drawing_state_ptr & drawing_stat
 				CP_XML_ATTR(L"on", L"t");
 			}
 
-			CP_XML_NODE(L"v:wrap")
-			{
-				CP_XML_ATTR(L"v:type", L"none");
-			}
+			//CP_XML_NODE(L"v:wrap")
+			//{
+			//	CP_XML_ATTR(L"v:type", L"none");
+			//}
 		
 			CP_XML_NODE(L"v:fill")
 			{
@@ -1074,6 +1102,17 @@ void xlsx_drawing_context::serialize_vml_shape(_drawing_state_ptr & drawing_stat
 					CP_XML_STREAM() << drawing_state->text.vml_content;
 				}
 			}
+			if (drawing_state->type_control == 0x000b)
+			{
+				CP_XML_NODE(L"v:textbox")
+				{
+					CP_XML_ATTR(L"o:singleclick", L"f");
+					CP_XML_NODE(L"div")
+					{
+						CP_XML_ATTR(L"style", L"text-align:left");
+					}
+				}
+			}
 			CP_XML_NODE(L"x:ClientData")
 			{
 				switch(drawing_state->type_control)
@@ -1118,8 +1157,12 @@ void xlsx_drawing_context::serialize_vml_shape(_drawing_state_ptr & drawing_stat
 					}
 				}
 				CP_XML_NODE(L"x:AutoFill")	{CP_XML_CONTENT("False");}
-				CP_XML_NODE(L"x:Row")		{CP_XML_CONTENT(drawing_state->object.row);}
-				CP_XML_NODE(L"x:Column")	{CP_XML_CONTENT(drawing_state->object.col);}
+
+				//if (drawing_state->type_control != 0x000b)
+				{
+					CP_XML_NODE(L"x:Row")		{CP_XML_CONTENT(drawing_state->object.row);}
+					CP_XML_NODE(L"x:Column")	{CP_XML_CONTENT(drawing_state->object.col);}
+				}
 
 				if (drawing_state->object.bVisible) CP_XML_NODE(L"x:Visible");
 
@@ -1507,11 +1550,11 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 				CP_XML_NODE(L"xdr:cNvSpPr")
 				{
 					if (drawing_state->bTextBox)CP_XML_ATTR(L"txBox", 1);
-					CP_XML_NODE(L"a:spLocks")
-					{
-						CP_XML_ATTR(L"noGrp", 1); 
-						CP_XML_ATTR(L"noChangeArrowheads", 1);
-					}
+					//CP_XML_NODE(L"a:spLocks")
+					//{
+					//	CP_XML_ATTR(L"noGrp", 1); 
+					//	CP_XML_ATTR(L"noChangeArrowheads", 1);
+					//}
 				}
 			}
 			
@@ -1938,7 +1981,7 @@ void xlsx_drawing_context::serialize_xfrm(std::wostream & stream, _drawing_state
 			if (drawing_state->flipV)			CP_XML_ATTR(L"flipV", true);
 			if (drawing_state->flipH)			CP_XML_ATTR(L"flipH", true);
 			
-			if (drawing_state->rotation != 0)	CP_XML_ATTR(L"rot", drawing_state->rotation);
+			if (drawing_state->rotation != 0)	CP_XML_ATTR(L"rot", (int)(drawing_state->rotation * 60000));
 			
 			CP_XML_NODE(L"a:off")
 			{
@@ -2655,8 +2698,16 @@ void xlsx_drawing_context::set_rotation (double val)
 {
 	if (current_drawing_states == NULL) return;	
 	if (current_drawing_states->empty()) return;
+	if (val < 0.001) return;
 
 	current_drawing_states->back()->rotation = val;
+
+	if (((int)current_drawing_states->back()->rotation % 90) == 0 && current_level > 0)
+	{
+		int v = current_drawing_states->back()->child_anchor.cx;
+		current_drawing_states->back()->child_anchor.cx = current_drawing_states->back()->child_anchor.cy;
+		current_drawing_states->back()->child_anchor.cy = v;
+	}
 }
 void xlsx_drawing_context::set_line_color (int nColor, const std::wstring & sColor)
 {

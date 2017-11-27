@@ -1991,10 +1991,10 @@ void XlsConverter::convert_transform(std::vector<ODRAW::OfficeArtFOPTEPtr> & pro
 		{
 			case 0x0004:
 			{
-				double d = props[i]->op / 65536.;
-				d *= 60000; //60 000 per 1 gr - 19.5.5 oox 
+				double d = props[i]->op / 65536.;				
+				if (d < 0) d += 360;
 
-				xlsx_context->get_drawing_context().set_rotation((int)d);
+				xlsx_context->get_drawing_context().set_rotation(d);
 			}break;
 		}
 	}

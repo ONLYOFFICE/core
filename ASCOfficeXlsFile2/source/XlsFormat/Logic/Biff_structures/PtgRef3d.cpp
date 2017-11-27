@@ -41,8 +41,7 @@ namespace XLS
 {
 
 
-PtgRef3d::PtgRef3d(const CellRef& cell_base_ref_init)
-:	cell_base_ref(cell_base_ref_init)
+PtgRef3d::PtgRef3d(const CellRef& cell_base_ref_init) :	cell_base_ref(cell_base_ref_init)
 {
 }
 
@@ -133,7 +132,11 @@ void PtgRef3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 		if (!link.empty() && !cell_ref.empty()) 
 			link += L"!";
 		
-		ptg_stack.push(link + cell_ref); // full_ref ???
+		if (full_ref && link.empty()) //Stock symbols comparison1.xls defined name "check_phrase"
+		{
+			link = L"#REF!";
+		}
+		ptg_stack.push(link + cell_ref);
 	}
 }
 

@@ -42,9 +42,7 @@ PtgErr::PtgErr()
 }
 
 
-PtgErr::PtgErr(const std::wstring  str)
-:	err(str),
-	OperandPtg(fixed_id)
+PtgErr::PtgErr(const std::wstring  str) : err(str),	OperandPtg(fixed_id)
 {
 }
 

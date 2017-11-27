@@ -127,6 +127,7 @@ CHARTSHEETCONTENT = [WriteProtect] [SheetExt] [WebPub] *HFPicture PAGESETUP Prin
 const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 {
 	global_info_ = proc.getGlobalWorkbookInfo();
+	global_info_->current_sheet = ws_index_ + 1; 
 	
 	int count = 0 ;
 

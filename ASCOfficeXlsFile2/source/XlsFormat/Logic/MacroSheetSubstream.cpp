@@ -98,8 +98,7 @@ const bool MacroSheetSubstream::loadContent(BinProcessor& proc)
 		return false;
 	}
 	global_info_ = proc.getGlobalWorkbookInfo();
-	
-	global_info_->current_sheet = global_info_->sheets_info.size();
+	global_info_->current_sheet = ws_index_ + 1; 
 
 	proc.optional<Uncalced>();
 	proc.mandatory<Index>();

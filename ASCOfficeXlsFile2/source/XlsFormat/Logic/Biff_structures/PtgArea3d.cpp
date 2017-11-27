@@ -41,8 +41,7 @@ namespace XLS
 {
 
 
-PtgArea3d::PtgArea3d(const CellRef& cell_base_ref_init)
-:	cell_base_ref(cell_base_ref_init)
+	PtgArea3d::PtgArea3d(const CellRef& cell_base_ref_init) : cell_base_ref(cell_base_ref_init)
 {
 }
 
@@ -137,8 +136,13 @@ void PtgArea3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
 		std::wstring link = global_info->arXti[ixti].link;
 		if (!link.empty() && !range_ref.empty()) 
 			link += L"!";
+
+		if (full_ref && link.empty()) //4673306.xls defined name "Категория"
+		{
+			link = L"#REF!";
+		}
 		
-		ptg_stack.push(link + range_ref); // full_ref ???
+		ptg_stack.push(link + range_ref); 
 	}
 
 }

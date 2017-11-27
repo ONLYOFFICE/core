@@ -104,8 +104,7 @@ WORKSHEET = BOF WORKSHEETCONTENT
 const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 {
 	global_info_ = proc.getGlobalWorkbookInfo();
-	
-	global_info_->current_sheet = global_info_->sheets_info.size();
+	global_info_->current_sheet = ws_index_ + 1; 
 
 	global_info_->cmt_rules	= 0;
 

@@ -68,7 +68,7 @@ const bool XFS::loadContent(BinProcessor& proc)
 	int cellXfs_count		= 0;
 	
     XF xf(cell_xf_current_id, style_xf_current_id);
-    int count = proc.repeated(xf ,16, 0);
+    int count = proc.repeated(xf , 0/*16*/, 0); // "Stock symbols comparison1.xls" (второй FORMATING)
 
 	int ind = 0;
 	while (count > 0 && elements_.size() > 0)

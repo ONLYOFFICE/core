@@ -40,8 +40,7 @@ namespace ODRAW
 {
 
 
-OfficeArtClientAnchorSheet::OfficeArtClientAnchorSheet()
-:	OfficeArtRecord(0x00, ClientAnchor)
+OfficeArtClientAnchorSheet::OfficeArtClientAnchorSheet() :	OfficeArtRecord(0x00, ClientAnchor)
 {
 	_x = _y = _cx = _cy = 0;
 }

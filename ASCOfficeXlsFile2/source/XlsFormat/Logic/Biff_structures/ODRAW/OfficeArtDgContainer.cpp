@@ -36,8 +36,7 @@
 namespace ODRAW
 {
 
-OfficeArtDgContainer::OfficeArtDgContainer(const OfficeArtClientAnchorType anchor_type)
-:	OfficeArtContainer(0x0F, DgContainer, anchor_type)
+OfficeArtDgContainer::OfficeArtDgContainer(const OfficeArtClientAnchorType anchor_type) : OfficeArtContainer(0x0F, DgContainer, anchor_type)
 {
 }
 
@@ -73,6 +72,14 @@ void OfficeArtDgContainer::loadFields(XLS::CFRecord& record)
 {
 	try
 	{
+		OfficeArtRecordHeader rh_test;
+		record >> rh_test;
+		record.RollRdPtrBack(8);//sizeof(OfficeArtRecordHeader)
+		
+		if ((rh_test.recType & 0xF000) != 0xF000)
+		{
+			return;
+		}
 		OfficeArtContainer::loadFields(record);
 	}catch(...)
 	{

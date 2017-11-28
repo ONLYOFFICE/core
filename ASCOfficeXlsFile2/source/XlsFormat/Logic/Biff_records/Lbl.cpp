@@ -44,8 +44,7 @@ const wchar_t* const AutoFilterDefineNames[] =
 };
 
 
-Lbl::Lbl()
-:	rgce(false), fGrp(0)
+Lbl::Lbl() : rgce(false), fGrp(0)
 {
 }
 
@@ -167,10 +166,6 @@ void Lbl::readFields(CFRecord& record)
 	}
 }
 
-const XLUnicodeStringNoCch Lbl::getName() const
-{
-	return Name_bin;
-}
 
 } // namespace XLS
 

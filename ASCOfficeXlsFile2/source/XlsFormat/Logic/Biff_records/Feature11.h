@@ -50,21 +50,17 @@ public:
 	~Feature11();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeFeature11;
 
-
-
-public:
 	FrtRefHeaderU			frtRefHeaderU;
 	_UINT16					isf;
 	_UINT16					cref2;
 	_UINT32					cbFeatData;
 	BiffStructurePtrVector	refs2;
-	BIFF_BSTR				sqref;
+	std::wstring			sqref;
 
 	TableFeatureType rgbFeat;
 };

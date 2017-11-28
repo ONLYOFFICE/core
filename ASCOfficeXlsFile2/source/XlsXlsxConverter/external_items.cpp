@@ -33,7 +33,7 @@
 #include "external_items.h"
 
 #include <utils.h>
-#include "simple_xml_writer.h"
+#include <simple_xml_writer.h>
 
 #include "oox_rels.h"
 #include "mediaitems_utils.h"

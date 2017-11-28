@@ -56,7 +56,7 @@ public:
 //-----------------------------
 	std::wstring	guid;
 	TabId			iTabid;
-	BIFF_DWORD		wScale;
+	_UINT32			wScale;
 	Icv				icvHdr;
 	PaneType		pnnSel;
 

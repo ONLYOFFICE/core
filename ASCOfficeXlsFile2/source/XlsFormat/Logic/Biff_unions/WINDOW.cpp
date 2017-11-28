@@ -129,9 +129,9 @@ int WINDOW::serialize(std::wostream & stream)
 				{
 					CP_XML_ATTR(L"view", L"pageLayout");
 				}
-				if ((window2->topLeftCell.value()) && (*window2->topLeftCell.value() != L"A1"))
+				if (window2->topLeftCell != L"A1")
 				{
-					CP_XML_ATTR(L"topLeftCell", *window2->topLeftCell.value());
+					CP_XML_ATTR(L"topLeftCell", window2->topLeftCell);
 				}
 				if ( window2->icvHdr != (_UINT16)64)
 				{
@@ -159,8 +159,8 @@ int WINDOW::serialize(std::wostream & stream)
 						if (pane->x != (_INT32)0)	CP_XML_ATTR(L"xSplit", pane->x);
 						if (pane->y != (_INT32)0)	CP_XML_ATTR(L"ySplit", pane->y);
 						
-						if ((pane->topLeftCell.value()) && (*pane->topLeftCell.value() != L"A1"))
-							CP_XML_ATTR(L"topLeftCell", *pane->topLeftCell.value());
+						if (pane->topLeftCell != L"A1")
+							CP_XML_ATTR(L"topLeftCell", pane->topLeftCell);
 						switch(pane->pnnAcct)
 						{
 						case PaneType::REVTPNNBOTRIGHT:	CP_XML_ATTR(L"activePane", L"bottomRight");	break;

@@ -31,10 +31,9 @@
  */
 #pragma once
 
-#include "BiffStructure.h"
-#include <Logic/Biff_structures/BiffString.h>
-#include <Logic/Biff_structures/DXFN12List.h>
-#include <Logic/Biff_structures/Feat11FdaAutoFilter.h>
+#include "BiffString.h"
+#include "DXFN12List.h"
+#include "Feat11FdaAutoFilter.h"
 
 namespace XLS
 {
@@ -51,7 +50,6 @@ public:
 	
 	virtual void load(CFRecord& record);
 
-
 	_UINT32	idField;
 	_UINT32	lfdt;
 	_UINT32	lfxidt;
@@ -59,15 +57,15 @@ public:
 	_UINT32	cbFmtAgg;
 	_UINT32	istnAgg;
 
-	unsigned char	fAutoFilter;
-	unsigned char	fAutoFilterHidden;
-	unsigned char	fLoadXmapi;
-	unsigned char	fLoadFmla;
-	unsigned char	fLoadTotalFmla;
-	unsigned char	fLoadTotalArray;
-	unsigned char	fSaveStyleName;
-	unsigned char	fLoadTotalStr;
-	unsigned char	fAutoCreateCalcCol;
+	bool	fAutoFilter;
+	bool	fAutoFilterHidden;
+	bool	fLoadXmapi;
+	bool	fLoadFmla;
+	bool	fLoadTotalFmla;
+	bool	fLoadTotalArray;
+	bool	fSaveStyleName;
+	bool	fLoadTotalStr;
+	bool	fAutoCreateCalcCol;
 	
 	_UINT32	cbFmtInsertRow;
 	_UINT32	istnInsertRow;
@@ -82,6 +80,60 @@ public:
 };
 
 typedef boost::shared_ptr<Feat11FieldDataItem> Feat11FieldDataItemPtr;
+//--------------------------------------------------------------------------------------------------
+class Feat11RgSharepointIdDel : public BiffStructure
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(Feat11RgSharepointIdDel)
+public:
+	BiffStructurePtr clone();
+
+	static const ElementType	type = typeFeat11RgSharepointIdDel;
+	
+	virtual void load(CFRecord& record);
+
+	_UINT16					cId;
+	std::vector<_UINT32>	rgId;
+};
+
+typedef boost::shared_ptr<Feat11RgSharepointIdDel> Feat11RgSharepointIdDelPtr;
+//--------------------------------------------------------------------------------------------------
+class Feat11RgSharepointIdChange : public BiffStructure
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(Feat11RgSharepointIdChange)
+public:
+	BiffStructurePtr clone();
+
+	static const ElementType	type = typeFeat11RgSharepointIdChange;
+	
+	virtual void load(CFRecord& record);
+
+	_UINT16					cId;
+	std::vector<_UINT32>	rgId;
+};
+
+typedef boost::shared_ptr<Feat11RgSharepointIdChange> Feat11RgSharepointIdChangePtr;
+//--------------------------------------------------------------------------------------------------
+
+struct Feat11CellStruct
+{
+	_UINT32 idxRow		= 0;
+	_UINT32 idxField	= 0;
+};
+class Feat11RgInvalidCells : public BiffStructure
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(Feat11RgInvalidCells)
+public:
+	BiffStructurePtr clone();
+
+	static const ElementType	type = typeFeat11RgInvalidCells;
+	
+	virtual void load(CFRecord& record);
+
+	_UINT16							cCellInvalid;
+	std::vector<Feat11CellStruct>	rgCellInvalid;
+};
+
+typedef boost::shared_ptr<Feat11RgInvalidCells> Feat11RgInvalidCellsPtr;
 
 } // namespace XLS
 

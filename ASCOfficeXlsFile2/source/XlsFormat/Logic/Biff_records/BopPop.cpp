@@ -56,6 +56,7 @@ void BopPop::readFields(CFRecord& record)
 {
 	unsigned short flags;
 	record >> pst >> fAutoSplit >> split >> iSplitPos >> pcSplitPercent >> pcPie2Size >> pcGap >> numSplitValue >> flags;
+	
 	fHasShadow = GETBIT(flags, 0);
 }
 

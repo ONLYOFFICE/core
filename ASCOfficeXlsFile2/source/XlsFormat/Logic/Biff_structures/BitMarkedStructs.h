@@ -78,9 +78,7 @@ typedef unsigned char	FillPattern;
 typedef BiffAttributeSimple<unsigned char>		BIFF_BYTE;
 typedef BiffAttributeSimple<_UINT16>			BIFF_WORD;
 typedef BiffAttributeSimple<_UINT32>			BIFF_DWORD;
-typedef BiffAttributeSimple<_INT32>				BIFF_LONG;
 typedef BiffAttributeSimple<double>				BIFF_DOUBLE;
-typedef BiffAttributeSimple<std::wstring>		BIFF_BSTR;
 
 
 struct PtgAttrSpaceType : public BiffStructure_NoVtbl

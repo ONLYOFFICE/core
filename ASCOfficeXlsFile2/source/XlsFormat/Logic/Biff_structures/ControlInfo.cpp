@@ -47,10 +47,10 @@ void ControlInfo::load(CFRecord& record)
 	unsigned short flags;
 	record >> flags;
 
-	fDefault = GETBIT(flags, 0);
-	fHelp = GETBIT(flags, 1);
-	fCancel = GETBIT(flags, 2);
-	fDismiss = GETBIT(flags, 3);
+	fDefault	= GETBIT(flags, 0);
+	fHelp		= GETBIT(flags, 1);
+	fCancel		= GETBIT(flags, 2);
+	fDismiss	= GETBIT(flags, 3);
 
 	record >> accel1;
 	record.skipNunBytes(2);	// reserved2

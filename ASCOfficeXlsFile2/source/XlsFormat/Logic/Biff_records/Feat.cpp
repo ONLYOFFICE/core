@@ -31,7 +31,7 @@
  */
 
 #include "Feat.h"
-#include <Logic/Biff_structures/FrtHeader.h>
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
@@ -54,20 +54,21 @@ BaseObjectPtr Feat::clone()
 void Feat::readFields(CFRecord& record)
 {
 	FrtHeader frtHeader(rt_Feat);
-	record >> frtHeader;
-	record >> isf;
+	
+	record >> frtHeader >> isf;
 	record.skipNunBytes(5); // reserved
+
 	record >> cref >> cbFeatData;
 	record.skipNunBytes(2); // reserved
-	std::wstring  sqref_str;
+	
 	for (int i = 0; i < cref ; ++i)
 	{
 		Ref8U reff;
 		record >> reff;
 		refs.push_back(BiffStructurePtr(new Ref8U(reff)));
-		sqref_str += std::wstring (reff.toString().c_str()) + ((i == cref - 1) ? L"" : L" ");
+		
+		sqref += reff.toString() + ((i == cref - 1) ? L"" : L" ");
 	}
-	sqref = sqref_str;
 
 	switch(isf)
 	{

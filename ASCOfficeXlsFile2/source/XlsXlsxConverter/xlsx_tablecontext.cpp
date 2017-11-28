@@ -31,137 +31,47 @@
  */
 
 #include "xlsx_tablecontext.h"
-#include "xlsx_textcontext.h"
-#include "xlsx_conversion_context.h"
 
-#include <boost/foreach.hpp>
-#include <sstream>
-
-#include "simple_xml_writer.h"
+#include <boost/make_shared.hpp>
+#include <simple_xml_writer.h>
 
 namespace oox {
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-table_state::table_state(xlsx_conversion_context & Context) : drawing_context_(Context), comments_context_(Context.get_comments_context_handle())
+
+class xlsx_tables_context::Impl
 {
-}
-
-table_state_ptr & xlsx_table_context::state()
-{
-    return tables_state_.back();
-}
-
-xlsx_table_context::xlsx_table_context(xlsx_conversion_context & Context) : context_(Context)
-{        
-}
-
-void xlsx_table_context::start_table()
-{
-	tables_state_.push_back( table_state_ptr(new table_state(context_)));
-}
-
-void xlsx_table_context::set_chart_view()
-{
-	CP_XML_WRITER(context_.current_sheet().sheetViews())
-	{
-        CP_XML_NODE(L"sheetViews")
-        {
-			CP_XML_NODE(L"sheetView")
-            {
-                CP_XML_ATTR(L"showGridLines", 0);
-				CP_XML_ATTR(L"workbookViewId", 0);
-            }
-		}
-	}
-}
-
-void xlsx_table_context::end_table()
-{
-	if (!get_drawing_context().empty())
-    {
-		std::wstringstream strm;
-		get_drawing_context().serialize(strm);
-		
-		const std::pair<std::wstring, std::wstring> drawingName	= 
-			context_.get_drawing_context_handle().add_drawing_xml(strm.str(), get_drawing_context().get_rels());
-
-		context_.current_sheet().set_drawing_link(drawingName.first, drawingName.second);
-
-        CP_XML_WRITER(context_.current_sheet().drawing())
-        {
-            CP_XML_NODE(L"drawing")
-            {
-                CP_XML_ATTR(L"r:id", drawingName.second);
-            }
-        }
-    }
-	if (!get_drawing_context().empty_vml_HF())
-    {
-		std::wstringstream strm;
-		get_drawing_context().serialize_vml_HF(strm);
-		
-		const std::pair<std::wstring, std::wstring> vmlDrawingName	= 
-			context_.get_drawing_context_handle().add_drawing_vml(strm.str(), get_drawing_context().get_vml_HF_rels());
-
-		context_.current_sheet().set_vml_HF_drawing_link(vmlDrawingName.first, vmlDrawingName.second);
-	}
-	if (!get_drawing_context().empty_vml())
-    {
-		std::wstringstream strm;
-		get_drawing_context().serialize_vml(strm);
-		
-		const std::pair<std::wstring, std::wstring> vmlDrawingName	= 
-			context_.get_drawing_context_handle().add_drawing_vml(strm.str(), get_drawing_context().get_vml_rels());
-
-		context_.current_sheet().set_vml_drawing_link(vmlDrawingName.first, vmlDrawingName.second);
-	}
-	if (!get_comments_context().empty())
-    {
-        std::wstringstream strm;
-        get_comments_context().write_comments(strm);
-        
-		const std::pair<std::wstring, std::wstring> commentsName =
-            context_.get_comments_context_handle().add_comments_xml(strm.str(), context_.get_comments_context().get_comments());
-
-        context_.current_sheet().set_comments_link		(commentsName.first, commentsName.second);
-    }    
-}
-
-
-xlsx_drawing_context & xlsx_table_context::get_drawing_context()
-{
-    return state()->drawing_context_;
-}
-
-xlsx_comments_context & xlsx_table_context::get_comments_context()
-{
-    return state()->comments_context_;
-}
-
-std::wstring xlsx_table_context::add_hyperlink(std::wstring const & ref, std::wstring const & target, std::wstring const & display, bool bExternal)
-{
-    return state()->hyperlinks_.add( ref, target, display, bExternal);
-}
- void xlsx_table_context::dump_rels_hyperlinks(rels & Rels)
-{
-	state()->hyperlinks_.dump_rels(Rels);
-}
-void xlsx_table_context::serialize_hyperlinks(std::wostream & _Wostream)
-{
-    state()->hyperlinks_.serialize(_Wostream);
-}
-void xlsx_table_context::dump_rels_drawing(rels & Rels)
-{
-	xlsx_drawings_rels_ptr drawing_rels = state()->drawing_context_.get_sheet_rels();
+public:
+	Impl() {}
     
-	drawing_rels->dump_rels(Rels);
-}
-void xlsx_table_context::serialize_ole_objects(std::wostream & strm)
+	std::vector<std::wstring>	tables_;
+};
+
+xlsx_tables_context::xlsx_tables_context() : impl_(new xlsx_tables_context::Impl())
 {
-    state()->drawing_context_.serialize_objects(strm);
 }
-void xlsx_table_context::serialize_controls(std::wostream & strm)
+
+void xlsx_tables_context::add_table(std::wstring table)
 {
-    state()->drawing_context_.serialize_controls(strm);
+	if (table.empty()) return;
+
+	impl_->tables_.push_back(table);
 }
+
+void xlsx_tables_context::dump_rels(int index, rels & Rels)
+{
+
+}
+void xlsx_tables_context::write_to(int index, std::wostream & strm)
+{
+	strm << impl_->tables_[index];
+}
+int xlsx_tables_context::get_count()
+{
+	return (int)impl_->tables_.size();
+}
+
+xlsx_tables_context::~xlsx_tables_context()
+{
+}
+
 }

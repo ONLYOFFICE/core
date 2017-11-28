@@ -42,6 +42,9 @@
 
 #include "../Biff_structures/DConnConnectionWeb.h"
 #include "../Biff_structures/DConnConnectionOleDb.h"
+#include "../Biff_structures/ConnGrbitDbtWeb.h"
+#include "../Biff_structures/ConnGrbitDbtOledb.h"
+#include "../Biff_structures/ConnGrbitDbtAdo.h"
 
 namespace XLS
 {
@@ -231,6 +234,10 @@ int DBQUERY::serialize_connection(std::wstring & name)
 	DConnConnectionOleDb	*oleDb = dcon ? dynamic_cast<DConnConnectionOleDb*>(dcon->connection.get()) : NULL;
 	XLUnicodeStringSegmented*adoDb = dcon ? dynamic_cast<XLUnicodeStringSegmented*>(dcon->connection.get()) : NULL;
 
+	ConnGrbitDbtWeb		*webGrDb = dcon ? dynamic_cast<ConnGrbitDbtWeb*>(dcon->grbitDbt.get()) : NULL;
+	ConnGrbitDbtOledb	*oleGrDb = dcon ? dynamic_cast<ConnGrbitDbtOledb*>(dcon->grbitDbt.get()) : NULL;
+	ConnGrbitDbtAdo		*adoGrDb = dcon ? dynamic_cast<ConnGrbitDbtAdo*>(dcon->grbitDbt.get()) : NULL;
+
 	CP_XML_WRITER(global_info->connections_stream)
 	{
 		CP_XML_NODE(L"connection")
@@ -330,15 +337,28 @@ int DBQUERY::serialize_connection(std::wstring & name)
 						
 						CP_XML_ATTR(L"connection", connection);
 						CP_XML_ATTR(L"command", command);
-						if (commandType > 0)
-							CP_XML_ATTR(L"commandType", commandType);
+
+						if (oleGrDb && commandType > 0)
+						{
+	//1. Query specifies a cube name
+	//2. Query specifies a SQL statement
+	//3. Query specifies a table name
+	//4. Query specifies that default information has been given, and it is up to the provider
+	//5. Query is against a web based List Data Provider.
+							CP_XML_ATTR(L"commandType", oleGrDb->dbost);
+						}
 					}
 					if (oleDb)
 					{
 						CP_XML_NODE(L"olapPr")
 						{
-							CP_XML_ATTR(L"sendLocale",  1);
-							CP_XML_ATTR(L"rowDrillCount", oleDb->nDrillthroughRows);
+							if (oleGrDb)
+							{
+								if (oleGrDb->fLocalConn)	
+									CP_XML_ATTR(L"local",  oleGrDb->fLocalConn);
+							}							
+							if (oleDb->nDrillthroughRows > 0)
+								CP_XML_ATTR(L"rowDrillCount", oleDb->nDrillthroughRows);
 						}
 					}
 				}

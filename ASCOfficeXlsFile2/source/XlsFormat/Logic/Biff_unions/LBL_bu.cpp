@@ -77,7 +77,7 @@ const bool LBL::loadContent(BinProcessor& proc)
 
 	std::wstring name;
 
-	if (lbl->fBuiltin)	name = lbl->Name.value().get_value_or(L"");	
+	if (lbl->fBuiltin)	name = lbl->Name;	
 	if (name.empty())	name = lbl->Name_bin.value();
 	
     NameCmt namecmt(name);
@@ -139,7 +139,7 @@ int LBL::serialize(std::wostream & stream)
 		CP_XML_NODE(L"definedName")
 		{
 			std::wstring name;
-			if (lbl->fBuiltin)	name = lbl->Name.value().get_value_or(L"");
+			if (lbl->fBuiltin)	name = lbl->Name;
 			
 			if (name.empty())	name = lbl->Name_bin.value();
 

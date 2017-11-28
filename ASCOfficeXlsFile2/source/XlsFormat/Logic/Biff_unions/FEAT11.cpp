@@ -31,15 +31,15 @@
  */
 
 #include "FEAT11.h"
-#include <Logic/Biff_records/FeatHdr11.h>
-#include <Logic/Biff_records/Feature11.h>
-#include <Logic/Biff_records/Feature12.h>
-#include <Logic/Biff_records/ContinueFrt11.h>
-#include <Logic/Biff_records/List12.h>
-#include <Logic/Biff_records/AutoFilter12.h>
-#include <Logic/Biff_records/ContinueFrt12.h>
-#include <Logic/Biff_records/List12.h>
-#include <Logic/Biff_unions/SORTDATA12.h>
+#include "../Biff_records/FeatHdr11.h"
+#include "../Biff_records/Feature11.h"
+#include "../Biff_records/Feature12.h"
+#include "../Biff_records/ContinueFrt11.h"
+#include "../Biff_records/List12.h"
+#include "../Biff_records/AutoFilter12.h"
+#include "../Biff_records/ContinueFrt12.h"
+#include "../Biff_records/List12.h"
+#include "../Biff_unions/SORTDATA12.h"
 
 namespace XLS
 {
@@ -112,34 +112,47 @@ const bool FEAT11::loadContent(BinProcessor& proc)
 
 	while(!elements_.empty())
 	{
-		if (elements_.front()->get_type() == typeFeature11 || 
-			elements_.front()->get_type() == typeFeature12 )
+		switch(elements_.front()->get_type())
 		{
-			_data new_data;
-			new_data.m_Feature = elements_.front();
+			case typeFeature11: 
+			case typeFeature12:
+			{
+				_data new_data;
+				new_data.m_Feature = elements_.front();
 
-			m_arFEAT.push_back(new_data);
-		}
-
-		if (elements_.front()->get_type() == typeList12)
-		{
-			if (m_arFEAT.back().m_AutoFilter12)
-				m_arFEAT.back().m_arList12_second.push_back(elements_.front());
-			else
-				m_arFEAT.back().m_arList12.push_back(elements_.front());
-		}
-		if (elements_.front()->get_type() == typeAutoFilter12)
-		{
-			m_arFEAT.back().m_AutoFilter12 = elements_.front();
-		}
-		if (elements_.front()->get_type() == typeSORTDATA12)
-		{
-			m_arFEAT.back().m_SORTDATA12 = elements_.front();
+				m_arFEAT.push_back(new_data);
+			}break;
+			case typeList12:
+			{
+				if (m_arFEAT.back().m_AutoFilter12)
+					m_arFEAT.back().m_arList12_second.push_back(elements_.front());
+				else
+					m_arFEAT.back().m_arList12.push_back(elements_.front());
+			}break;
+			case typeAutoFilter12:
+			{
+				m_arFEAT.back().m_AutoFilter12 = elements_.front();
+			}break;
+			case typeSORTDATA12:
+			{
+				m_arFEAT.back().m_SORTDATA12 = elements_.front();
+			}break;
 		}
 		elements_.pop_front();
 	}
 	return true;
 }
 
+int FEAT11::serialize(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"table")
+		{
+			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");	
+		}
+	}
+	return 0;
+}
 } // namespace XLS
 

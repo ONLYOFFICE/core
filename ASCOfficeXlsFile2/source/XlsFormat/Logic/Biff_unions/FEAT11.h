@@ -37,8 +37,6 @@
 namespace XLS
 {
 
-
-// Logical representation of FEAT11 union of records 
 class FEAT11: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(FEAT11)
@@ -49,6 +47,7 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+	int serialize(std::wostream & stream);
 
 	static const ElementType	type = typeFEAT11;
 

@@ -35,9 +35,6 @@
 
 namespace XLS
 {
-
-
-// Logical representation of CrtLayout12 record in BIFF8
 class CrtLayout12: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(CrtLayout12)

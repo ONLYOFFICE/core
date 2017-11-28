@@ -56,7 +56,7 @@ void AF12Criteria::load(CFRecord& record)
 	doper.m_bAutoFilter = false;
 	record >> doper;
 
-	if (doper.vt == BIFF_BYTE(0x06))
+	if (doper.vt == 0x06)
 	{
 		unsigned char _cch = doper.vtValueStr.cch;
 

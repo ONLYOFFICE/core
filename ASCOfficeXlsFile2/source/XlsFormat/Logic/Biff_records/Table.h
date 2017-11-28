@@ -37,8 +37,6 @@
 namespace XLS
 {
 
-
-// Logical representation of Table record in BIFF8
 class Table: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Table)
@@ -54,7 +52,6 @@ public:
 
 	static const ElementType	type = typeTable;
 
-//-----------------------------
 	Ref ref_;
 
 	bool fAlwaysCalc;
@@ -63,8 +60,8 @@ public:
 	bool fDeleted1;
 	bool fDeleted2;
 
-	BIFF_BSTR r1;
-	BIFF_BSTR r2;
+	std::wstring r1;
+	std::wstring r2;
 
 };
 

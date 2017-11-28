@@ -33,7 +33,7 @@
 #include "xlsx_output_xml.h"
 #include <boost/make_shared.hpp>
 
-#include "simple_xml_writer.h"
+#include <simple_xml_writer.h>
 
 namespace oox {
 
@@ -64,6 +64,7 @@ public:
 	std::wstringstream  picture_background_;
 	std::wstringstream  dataValidations_;
 	std::wstringstream  protection_;
+	std::wstringstream  tableParts_;
 
 	rels rels_;
 
@@ -171,7 +172,10 @@ std::wostream & xlsx_xml_worksheet::protection()
 {
     return impl_->protection_;
 }
-
+std::wostream & xlsx_xml_worksheet::tableParts()
+{
+    return impl_->tableParts_;
+}
 //-----------------------------------------------------------------
 rels & xlsx_xml_worksheet::sheet_rels()
 {
@@ -266,6 +270,14 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
                 CP_XML_NODE(L"controls")
                 {
 					CP_XML_STREAM() << impl_->activeXs_.str();
+                }
+			}
+
+			if (!impl_->tableParts_.str().empty())
+			{
+                CP_XML_NODE(L"tableParts")
+                {
+					CP_XML_STREAM() << impl_->tableParts_.str();
                 }
 			}
 

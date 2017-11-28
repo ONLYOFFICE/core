@@ -842,6 +842,7 @@ SOURCES +=  \
     ../XlsXlsxConverter/xlsx_textcontext.cpp \
     ../XlsXlsxConverter/xlsx_chart_context.cpp \
     ../XlsXlsxConverter/xlsx_pivots_context.cpp \
+    ../XlsXlsxConverter/xlsx_sheet_context.cpp \
     ../XlsXlsxConverter/xlsx_external_context.cpp \
     ../XlsXlsxConverter/xlsx_activeX_context.cpp \
     ../XlsXlsxConverter/xlsx_comments.cpp \
@@ -1601,6 +1602,7 @@ HEADERS +=  \
     ../XlsXlsxConverter/xlsx_conversion_context.h \
     ../XlsXlsxConverter/xlsx_drawing_context.h \
     ../XlsXlsxConverter/xlsx_drawings.h \
+    ../XlsXlsxConverter/xlsx_sheet_context.cpp \
     ../XlsXlsxConverter/xlsx_pivots_context.cpp \
     ../XlsXlsxConverter/xlsx_hyperlinks.h \
     ../XlsXlsxConverter/xlsx_output_xml.h \

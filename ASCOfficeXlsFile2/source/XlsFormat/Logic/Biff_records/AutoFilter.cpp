@@ -46,7 +46,7 @@ static inline void trim(std::wstring &s)
 		if (s[i] != 0) break;
 		else new_size--;
 	}
-	if (new_size < s.length())
+	if (new_size < (int)s.length())
 		s.erase(new_size);
 }
 
@@ -93,13 +93,13 @@ void AutoFilter::readFields(CFRecord& record)
 		record >> doper2;
 	}
 
-	if ((doper1.vt == BIFF_BYTE(0)) && (doper2.vt == BIFF_BYTE(0)))
+	if (doper1.vt == 0 && doper2.vt == 0)
 	{
 		m_bAutoFilter12 = true;	
 		return;
 	}
 
-	if (doper1.vt == BIFF_BYTE(0x06))
+	if (doper1.vt == 0x06)
 	{
 		XLUnicodeStringNoCch s;
 		s.setSize(doper1.vtValueStr.cch);
@@ -109,7 +109,7 @@ void AutoFilter::readFields(CFRecord& record)
 		trim(str1);
 	}
 
-	if (doper2.vt == BIFF_BYTE(0x06))
+	if (doper2.vt == 0x06)
 	{
 		XLUnicodeStringNoCch s;
 		s.setSize(doper2.vtValueStr.cch);

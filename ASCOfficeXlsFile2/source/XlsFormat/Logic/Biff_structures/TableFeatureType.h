@@ -31,10 +31,8 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
-#include <Logic/Biff_structures/BiffString.h>
-#include <Logic/Biff_structures/Feat11FieldDataItem.h>
-
+#include "../Biff_records/BiffRecord.h"
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {
@@ -48,10 +46,9 @@ public:
 	TableFeatureType();
 	~TableFeatureType();
 
-	static const ElementType	type = typeTableFeatureType;
+	static const ElementType type = typeTableFeatureType;
 	
 	virtual void load(CFRecord& record);
-
 
 	_UINT32	lt;		// SourceType
 	_UINT32	idList;
@@ -61,36 +58,40 @@ public:
 	_UINT32	cbFSData;
 	_UINT16 rupBuild;
 
-	unsigned char	fAutoFilter;
-	unsigned char	fPersistAutoFilter;
-	unsigned char	fShowInsertRow;
-	unsigned char	fInsertRowInsCells;
-	unsigned char	fLoadPldwIdDeleted;
-	unsigned char	fShownTotalRow;
-	unsigned char	fNeedsCommit;
-	unsigned char	fSingleCell;
-	unsigned char	fApplyAutoFilter;
-	unsigned char	fForceInsertToBeVis;
-	unsigned char	fCompressedXml;
-	unsigned char	fLoadCSPName;
-	unsigned char	fLoadPldwIdChanged;
-	unsigned char	verXL;
-	unsigned char	fLoadEntryId;
-	unsigned char	fLoadPllstclInvalid;
-	unsigned char	fGoodRupBld;
-	unsigned char	fPublished;
+	bool	fAutoFilter;
+	bool	fPersistAutoFilter;
+	bool	fShowInsertRow;
+	bool	fInsertRowInsCells;
+	bool	fLoadPldwIdDeleted;
+	bool	fShownTotalRow;
+	bool	fNeedsCommit;
+	bool	fSingleCell;
+	bool	fApplyAutoFilter;
+	bool	fForceInsertToBeVis;
+	bool	fCompressedXml;
+	bool	fLoadCSPName;
+	bool	fLoadPldwIdChanged;
+	bool	fLoadEntryId;
+	bool	fLoadPllstclInvalid;
+	bool	fGoodRupBld;
+	bool	fPublished;
 	
-	_UINT32	lPosStmCache;
-	_UINT32	cbStmCache;
-	_UINT32	cchStmCache;
-	_UINT32	lem;		// LEMMode
+	unsigned char	verXL;
+	_UINT32			lPosStmCache;
+	_UINT32			cbStmCache;
+	_UINT32			cchStmCache;
+	_UINT32			lem;		// LEMMode
 
 	XLUnicodeString rgbName;
-	_UINT16 cFieldData;
+	_UINT16			cFieldData;
 	XLUnicodeString cSPName;
 	XLUnicodeString entryId;
 
-	BiffStructurePtrVector fieldData;
+	BiffStructurePtrVector	arFieldData;
+
+	BiffStructurePtr		idDeleted;
+	BiffStructurePtr		idChanged;
+	BiffStructurePtr		cellInvalid;
 };
 
 typedef boost::shared_ptr<TableFeatureType> TableFeatureTypePtr;

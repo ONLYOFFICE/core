@@ -32,17 +32,16 @@
 #pragma once
 
 #include "BiffRecordContinued.h"
-#include <Logic/Biff_structures/FrtRefHeader.h>
-#include <Logic/Biff_structures/BiffString.h>
-#include <Logic/Biff_structures/FrtRefHeader.h>
-#include <Logic/Biff_structures/AFDOper.h>
-#include <Logic/Biff_structures/AF12Criteria.h>
+
+#include "../Biff_structures/FrtRefHeader.h"
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/FrtRefHeader.h"
+#include "../Biff_structures/AFDOper.h"
+#include "../Biff_structures/AF12Criteria.h"
 
 namespace XLS
 {
 
-
-// Logical representation of AutoFilter12 record in BIFF8
 class AutoFilter12: public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(AutoFilter12)
@@ -53,21 +52,21 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeAutoFilter12;
 
 	FrtRefHeader frtRefHeader;
-	_UINT16		iEntry;
-	BIFF_DWORD	fHideArrow;
-	BIFF_DWORD	ft;
-	BIFF_DWORD	cft;
-	BIFF_DWORD	cCriteria;
-	BIFF_DWORD	cDateGroupings;
-	BIFF_DWORD	idList;
 	
-	BiffStructurePtrVector rgbAF12Criteries;
+	_UINT16		iEntry;
+	_UINT32		fHideArrow;
+	_UINT32		ft;
+	_UINT32		cft;
+	_UINT32		cCriteria;
+	_UINT32		cDateGroupings;
+	_UINT32		idList;
+	
+	BiffStructurePtrVector arAF12Criteries;
 };
 
 } // namespace XLS

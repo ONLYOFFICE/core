@@ -31,9 +31,9 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
-#include <Logic/Biff_structures/BiffString.h>
-#include <Logic/Biff_structures/DXFN12List.h>
+#include "../Biff_records/BiffRecord.h"
+#include "BiffString.h"
+#include "DXFN12List.h"
 
 namespace XLS
 {
@@ -50,7 +50,6 @@ public:
 	static const ElementType	type = typeList12BlockLevel;
 	
 	virtual void load(CFRecord& record);
-
 
 	_UINT32	cbdxfHeader;
 	_UINT32	istnHeader;

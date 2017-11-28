@@ -79,6 +79,7 @@ namespace XLS
 	class PIVOTCACHEDEFINITION;
 	class SUPBOOK;
 	class QUERYTABLE;
+	class FEAT11;
 
 	class Note;
 	class TxO;
@@ -135,6 +136,7 @@ public:
 	void convert(XLS::PIVOTCACHEDEFINITION		* pivot_cached);
 	void convert(XLS::SUPBOOK					* external);
 	void convert(XLS::QUERYTABLE				* query_table);
+	void convert(XLS::FEAT11					* shared_feature);
 
 	void convert(ODRAW::OfficeArtRecord			* art);
 	void convert(ODRAW::OfficeArtBStoreContainer* art_bstore, int start_id = 0);

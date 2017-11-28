@@ -1663,6 +1663,8 @@ namespace NSDoctRenderer
                         nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
                     else if (L"pptx" == _builder_params[0])
                         nFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
+                    else if (L"odp" == _builder_params[0])
+                        nFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
                     else if (L"xlsx" == _builder_params[0])
                         nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
                     else if (L"xls" == _builder_params[0])

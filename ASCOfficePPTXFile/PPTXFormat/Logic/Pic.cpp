@@ -637,11 +637,18 @@ namespace PPTX
 			{
 				pWriter->StartRecord(SPTREE_TYPE_OLE);
 				
-				if (oleObject->m_sShapeId.IsInit() && (!blipFill.blip->embed.IsInit() && blipFill.blip->oleFilepathImage.empty())  &&
-						parentFileIs<PPTX::Slide>() && parentFileAs<PPTX::Slide>().Vml.IsInit())
+				OOX::CVmlDrawing *pVml = NULL;
+				
+				if (parentFileIs<PPTX::Slide>())
 				{
-					OOX::CVmlDrawing *pVml = parentFileAs<PPTX::Slide>().Vml.operator->();
-					
+					pVml = parentFileAs<PPTX::Slide>().Vml.operator->();
+				}
+				else if (parentFileIs<PPTX::SlideMaster>())
+				{
+					pVml = parentFileAs<PPTX::SlideMaster>().Vml.operator->();
+				}
+				if (oleObject->m_sShapeId.IsInit() && pVml && !blipFill.blip->embed.IsInit() && blipFill.blip->oleFilepathImage.empty())
+				{					
 					std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pPair = pVml->m_mapShapes.find(*oleObject->m_sShapeId);
 					if (pVml->m_mapShapes.end() != pPair)
 					{

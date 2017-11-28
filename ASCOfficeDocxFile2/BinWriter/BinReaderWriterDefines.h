@@ -476,7 +476,9 @@ extern int g_nCurFormatVersion;
 		MoveFromRangeStart = 18,
 		MoveFromRangeEnd = 19,
 		MoveToRangeStart = 20,
-		MoveToRangeEnd = 21
+		MoveToRangeEnd = 21,
+		BookmarkStart = 22,
+		BookmarkEnd = 23
 	};}
 	namespace c_oSerDocTableType{enum c_oSerDocTableType
 	{
@@ -491,7 +493,9 @@ extern int g_nCurFormatVersion;
 		Cell_Pr =  7,
 		Cell_Content =  8,
 		tblGridChange = 9,
-		Sdt = 10
+		Sdt = 10,
+		BookmarkStart = 11,
+		BookmarkEnd = 12
 	};}
 	namespace c_oSerRunType{enum c_oSerRunType
 	{
@@ -900,7 +904,9 @@ extern int g_nCurFormatVersion;
 		Ins = 62,
 		Del = 63,
 		columnbreak = 64,
-		ARPr = 65
+		ARPr = 65,
+		BookmarkStart = 66,
+		BookmarkEnd = 67
 	};}
 	namespace c_oSer_FramePrType{ enum c_oSer_FramePrType
 	{		
@@ -1104,6 +1110,14 @@ extern int g_nCurFormatVersion;
 		Id = 5,
 		Name = 6,
 		UserId = 7
+	};}
+	namespace c_oSerBookmark{enum c_oSerBookmark
+	{
+		Id = 0,
+		Name = 1,
+		DisplacedByCustomXml = 2,
+		ColFirst = 3,
+		ColLast = 4
 	};}
 }
 

@@ -3076,6 +3076,20 @@ namespace BinDocxRW
 						OOX::Logic::CBdo* pBdo = static_cast<OOX::Logic::CBdo*>(item);
 						WriteDocumentContent(pBdo->m_arrItems);
 					}break;
+					case OOX::et_w_bookmarkStart:
+					{
+						OOX::Logic::CBookmarkStart* pBookmarkStart = static_cast<OOX::Logic::CBookmarkStart*>(item);
+						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::BookmarkStart);
+						WriteBookmarkStart(*pBookmarkStart);
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}break;
+					case OOX::et_w_bookmarkEnd:
+					{
+						OOX::Logic::CBookmarkEnd* pBookmarkEnd = static_cast<OOX::Logic::CBookmarkEnd*>(item);
+						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::BookmarkEnd);
+						WriteBookmarkEnd(*pBookmarkEnd);
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}break;
                 default:
                     break;
 				}
@@ -3247,6 +3261,22 @@ namespace BinDocxRW
 					{
 						OOX::Logic::CCommentRangeEnd* pCommentRangeEnd = static_cast<OOX::Logic::CCommentRangeEnd*>(item);
 						WriteComment(OOX::et_w_commentRangeEnd, pCommentRangeEnd->m_oId);
+						break;
+					}
+				case OOX::et_w_bookmarkStart:
+					{
+						OOX::Logic::CBookmarkStart* pBookmarkStart = static_cast<OOX::Logic::CBookmarkStart*>(item);
+						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::BookmarkStart);
+						WriteBookmarkStart(*pBookmarkStart);
+						m_oBcw.WriteItemEnd(nCurPos);
+						break;
+					}
+				case OOX::et_w_bookmarkEnd:
+					{
+						OOX::Logic::CBookmarkEnd* pBookmarkEnd = static_cast<OOX::Logic::CBookmarkEnd*>(item);
+						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::BookmarkEnd);
+						WriteBookmarkEnd(*pBookmarkEnd);
+						m_oBcw.WriteItemEnd(nCurPos);
 						break;
 					}
 				//todo moveRange on all levels(body, p ...)
@@ -3657,6 +3687,56 @@ namespace BinDocxRW
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerFFData::TIType);
 				m_oBcw.m_oStream.WriteBYTE(oTextInput.m_oType->m_oVal->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+		void WriteBookmarkStart(const OOX::Logic::CBookmarkStart& oBookmarkStart)
+		{
+			int nCurPos = 0;
+			if (oBookmarkStart.m_oId.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerBookmark::Id);
+				m_oBcw.m_oStream.WriteLONG(oBookmarkStart.m_oId->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (oBookmarkStart.m_sName.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerBookmark::Name);
+				m_oBcw.m_oStream.WriteStringW3(oBookmarkStart.m_sName.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (oBookmarkStart.m_oDisplacedByCustomXml.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerBookmark::DisplacedByCustomXml);
+				m_oBcw.m_oStream.WriteBYTE((BYTE)oBookmarkStart.m_oDisplacedByCustomXml->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (oBookmarkStart.m_oColFirst.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerBookmark::ColFirst);
+				m_oBcw.m_oStream.WriteLONG(oBookmarkStart.m_oColFirst->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (oBookmarkStart.m_oColLast.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerBookmark::ColLast);
+				m_oBcw.m_oStream.WriteLONG(oBookmarkStart.m_oColLast->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+		void WriteBookmarkEnd(const OOX::Logic::CBookmarkEnd& oBookmarkEnd)
+		{
+			int nCurPos = 0;
+			if (oBookmarkEnd.m_oId.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerBookmark::Id);
+				m_oBcw.m_oStream.WriteLONG(oBookmarkEnd.m_oId->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (oBookmarkEnd.m_oDisplacedByCustomXml.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerBookmark::DisplacedByCustomXml);
+				m_oBcw.m_oStream.WriteBYTE((BYTE)oBookmarkEnd.m_oDisplacedByCustomXml->GetValue());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 		}
@@ -4094,6 +4174,22 @@ namespace BinDocxRW
 						if ( pSSup->m_oSup.IsInit() )
 							WriteMathSup(pSSup->m_oSup.get());												
 											
+						m_oBcw.WriteItemEnd(nCurPos);
+						break;
+					}
+				case OOX::et_w_bookmarkStart:
+					{
+						OOX::Logic::CBookmarkStart* pBookmarkStart = static_cast<OOX::Logic::CBookmarkStart*>(item);
+						nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::BookmarkStart);
+						WriteBookmarkStart(*pBookmarkStart);
+						m_oBcw.WriteItemEnd(nCurPos);
+						break;
+					}
+				case OOX::et_w_bookmarkEnd:
+					{
+						OOX::Logic::CBookmarkEnd* pBookmarkEnd = static_cast<OOX::Logic::CBookmarkEnd*>(item);
+						nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::BookmarkEnd);
+						WriteBookmarkEnd(*pBookmarkEnd);
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
 					}
@@ -6638,6 +6734,20 @@ namespace BinDocxRW
 					OOX::Logic::CBdo* pBdo = static_cast<OOX::Logic::CBdo*>(item);
 					WriteTableContent(pBdo->m_arrItems, pTblPr, nRows, nCols);
 				}
+				else if(OOX::et_w_bookmarkStart == item->getType())
+				{
+					OOX::Logic::CBookmarkStart* pBookmarkStart = static_cast<OOX::Logic::CBookmarkStart*>(item);
+					nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::BookmarkStart);
+					WriteBookmarkStart(*pBookmarkStart);
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+				else if(OOX::et_w_bookmarkEnd == item->getType())
+				{
+					OOX::Logic::CBookmarkEnd* pBookmarkEnd = static_cast<OOX::Logic::CBookmarkEnd*>(item);
+					nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::BookmarkEnd);
+					WriteBookmarkEnd(*pBookmarkEnd);
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
 			}
 		}
 		void WriteRow(const OOX::Logic::CTr& Row, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex, int nRows, int nCols)
@@ -6697,6 +6807,20 @@ namespace BinDocxRW
 				{
 					OOX::Logic::CBdo* pBdo = static_cast<OOX::Logic::CBdo*>(item);
 					WriteRowContent(pBdo->m_arrItems, pTblPr, nCurRowIndex, nRows, nCols);
+				}
+				else if(OOX::et_w_bookmarkStart == item->getType())
+				{
+					OOX::Logic::CBookmarkStart* pBookmarkStart = static_cast<OOX::Logic::CBookmarkStart*>(item);
+					nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::BookmarkStart);
+					WriteBookmarkStart(*pBookmarkStart);
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+				else if(OOX::et_w_bookmarkEnd == item->getType())
+				{
+					OOX::Logic::CBookmarkEnd* pBookmarkEnd = static_cast<OOX::Logic::CBookmarkEnd*>(item);
+					nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::BookmarkEnd);
+					WriteBookmarkEnd(*pBookmarkEnd);
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
 			}
 		}

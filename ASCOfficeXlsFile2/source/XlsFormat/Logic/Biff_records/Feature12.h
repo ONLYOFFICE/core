@@ -32,6 +32,8 @@
 #pragma once
 
 #include "BiffRecordContinued.h"
+#include "Feature11.h"
+
 
 namespace XLS
 {
@@ -50,6 +52,7 @@ public:
 
 	static const ElementType type = typeFeature12;
 
+	Feature11 feature11;
 };
 
 } // namespace XLS

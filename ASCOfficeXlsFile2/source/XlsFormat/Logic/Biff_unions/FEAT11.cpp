@@ -34,7 +34,6 @@
 #include "SORTDATA12.h"
 
 #include "../Biff_records/FeatHdr11.h"
-#include "../Biff_records/Feature11.h"
 #include "../Biff_records/Feature12.h"
 #include "../Biff_records/ContinueFrt11.h"
 #include "../Biff_records/List12.h"
@@ -128,7 +127,14 @@ const bool FEAT11::loadContent(BinProcessor& proc)
 			}break;
 			case typeList12:
 			{
-				m_arFEAT.back().m_arList12.push_back(elements_.front());
+				if (m_arFEAT.back().m_AutoFilter12)
+				{
+					m_arFEAT.back().m_arList12_2.push_back(elements_.front());
+				}
+				else
+				{
+					m_arFEAT.back().m_arList12.push_back(elements_.front());
+				}
 			}break;
 			case typeAutoFilter12:
 			{
@@ -150,6 +156,11 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 
 	Feature11 * feature11 = dynamic_cast<Feature11*>(m_arFEAT[index].m_Feature.get());
 	Feature12 * feature12 = dynamic_cast<Feature12*>(m_arFEAT[index].m_Feature.get());
+
+	if (feature12 && !feature11)
+	{
+		feature11 = &feature12->feature11;
+	}
 	
 	List12BlockLevel			*block_level = NULL;
 	List12TableStyleClientInfo	*table_style = NULL;
@@ -221,9 +232,7 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 					}
 				}
 			}
-			else if (feature12)
-			{
-			}
+
 			if (table_style)
 			{
 				CP_XML_NODE(L"tableStyleInfo")

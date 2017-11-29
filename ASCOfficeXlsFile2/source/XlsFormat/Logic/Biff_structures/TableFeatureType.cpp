@@ -32,7 +32,7 @@
 
 #include "TableFeatureType.h"
 #include <Binary/CFRecord.h>
-#include "../Biff_structures/Feat11FieldDataItem.h"
+#include "Feat11FieldDataItem.h"
 
 namespace XLS
 {
@@ -117,11 +117,9 @@ void TableFeatureType::load(CFRecord& record)
 	{
 		if (record.getRdPtr() >= record.getDataSize())
 			return;
-		
-		BiffStructurePtr item(new Feat11FieldDataItem);
-		item->load(record);
-		
-		arFieldData.push_back(item);
+
+		arFieldData.push_back(BiffStructurePtr(new Feat11FieldDataItem(lt, (crwHeader == 0x0000 && fSingleCell))));
+		arFieldData.back()->load(record);
 	}
 	if (fLoadPldwIdDeleted)
 	{

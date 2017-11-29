@@ -32,7 +32,8 @@
 #pragma once
 
 #include "../Biff_records/BiffRecord.h"
-#include "../Biff_structures/BiffString.h"
+
+#include "Feat11FieldDataItem.h"
 
 namespace XLS
 {

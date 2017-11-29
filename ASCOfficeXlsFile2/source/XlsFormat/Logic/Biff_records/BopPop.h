@@ -55,7 +55,7 @@ public:
 
 //-----------------------------
 	unsigned char	pst;
-	bool			fAutoSplit;
+	unsigned char	fAutoSplit;
 	_UINT16			split;
 	_INT16			iSplitPos;
 	_INT16			pcSplitPercent;

@@ -53,6 +53,8 @@ static inline void trim(std::wstring &s)
 AutoFilter::AutoFilter()
 {
 	wTopN = wJoin = 0;
+	size = -1;
+	bExist = false;
 }
 
 
@@ -68,6 +70,15 @@ BaseObjectPtr AutoFilter::clone()
 
 void AutoFilter::readFields(CFRecord& record)
 {
+	size_t pos_record = record.getRdPtr();
+
+	if (size < 0) size = record.getDataSize() - pos_record;
+
+	if (size > 0)
+	{
+		bExist = true;
+	}
+
 	m_bAutoFilter12 = false;
 
 	unsigned short flags;
@@ -119,9 +130,9 @@ void AutoFilter::readFields(CFRecord& record)
 		trim(str2);
 	}	
 
-	if (record.getRdPtr()  < record.getDataSize())
+	if (record.getRdPtr() - pos_record < size)
 	{
-		int sz = record.getDataSize() - record.getRdPtr();
+		int sz = size - (record.getRdPtr() - pos_record);
 		char *dd = new char [sz];
 		
 		memcpy(dd, record.getCurData<char>(), sz);

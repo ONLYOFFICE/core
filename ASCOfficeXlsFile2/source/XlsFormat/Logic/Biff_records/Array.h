@@ -32,8 +32,8 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/CellRangeRef.h>
-#include <Logic/Biff_structures/ArrayParsedFormula.h>
+#include "../Biff_structures/CellRangeRef.h"
+#include "../Biff_structures/ArrayParsedFormula.h"
 
 namespace XLS
 {
@@ -49,7 +49,6 @@ public:
 	~Array();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 	

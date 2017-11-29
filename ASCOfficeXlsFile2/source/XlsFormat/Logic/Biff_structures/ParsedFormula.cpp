@@ -34,7 +34,7 @@
 #include <Binary/CFRecord.h>
 #include "StringPtgParser.h"
 
-#include <boost/algorithm/string.hpp>
+//#include <boost/algorithm/string.hpp>
 
 namespace XLS
 {

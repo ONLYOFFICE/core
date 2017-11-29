@@ -51,6 +51,7 @@
 #include "Biff_records/BOF.h"
 #include "Biff_records/DefaultRowHeight.h"
 #include "Biff_records/Label.h"
+#include "Biff_records/List12.h"
 
 #include "Biff_unions/BACKGROUND.h"
 #include "Biff_unions/BIGNAME.h"
@@ -439,6 +440,10 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back();
 					count--;
 				}
+			}break;
+			case rt_List12://LCA BI - Financial Report Usage2010.xls ??
+			{
+				count = proc.repeated<List12>	(0, 0);
 			}break;
 			case rt_FeatHdr11:
 			{

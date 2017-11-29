@@ -37,8 +37,7 @@ namespace XLS
 {
 
 
-ObjectParsedFormula::ObjectParsedFormula()
-:	ParsedFormula(CellRef())
+ObjectParsedFormula::ObjectParsedFormula() : ParsedFormula(CellRef())
 {
 }
 

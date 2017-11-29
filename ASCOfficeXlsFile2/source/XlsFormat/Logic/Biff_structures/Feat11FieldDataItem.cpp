@@ -30,12 +30,15 @@
  *
  */
 
-#include "Feat11FieldDataItem.h"
 #include <Binary/CFRecord.h>
+#include "Feat11FieldDataItem.h"
+#include "CellRangeRef.h"
 
 namespace XLS
 {
-
+Feat11FieldDataItem::Feat11FieldDataItem(_UINT32 _lt, bool bDskHeaderCache) : lt(_lt), bDiskHdrCache(bDskHeaderCache)
+{
+}
 BiffStructurePtr Feat11FieldDataItem::clone()
 {
 	return BiffStructurePtr(new Feat11FieldDataItem(*this));
@@ -83,7 +86,45 @@ void Feat11FieldDataItem::load(CFRecord& record)
 	}
 	
 	if (fAutoFilter)
+	{
 		record >> AutoFilter;
+	}
+
+	if (fLoadXmapi)
+	{
+		record >> AutoFilter;
+	}
+
+	if (fLoadFmla)
+	{
+		fmla.load(record);
+	}
+	if (fLoadTotalFmla)
+	{
+		if (fLoadTotalArray)
+		{
+			totalArrayFmla.load(record);
+		}	
+		else
+		{
+			totalFmla.load(record);
+		}	
+	}
+	record >> strTotal;
+
+	if (lt == 0x00000001)
+	{
+		wssInfo.lfdt = lfdt;
+		record >> wssInfo;
+	}
+	if (lt == 0x00000003)
+	{
+		record >> qsif;
+	}
+	if (bDiskHdrCache)
+	{
+		record >> dskHdrCache;
+	}
 }
 
 

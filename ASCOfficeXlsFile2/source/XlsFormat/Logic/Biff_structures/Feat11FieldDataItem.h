@@ -33,7 +33,13 @@
 
 #include "BiffString.h"
 #include "DXFN12List.h"
+#include "ListParsedFormula.h"
+
 #include "Feat11FdaAutoFilter.h"
+#include "Feat11Fmla.h"
+#include "Feat11XMap.h"
+#include "Feat11WSSListInfo.h"
+#include "CachedDiskHeader.h"
 
 namespace XLS
 {
@@ -44,9 +50,10 @@ class Feat11FieldDataItem : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(Feat11FieldDataItem)
 public:
+	Feat11FieldDataItem(_UINT32 lt, bool bDskHeaderCache);
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeFeat11FieldDataItem;
+	static const ElementType type = typeFeat11FieldDataItem;
 	
 	virtual void load(CFRecord& record);
 
@@ -77,6 +84,19 @@ public:
 	DXFN12List dxfFmtInsertRow;
 
 	Feat11FdaAutoFilter AutoFilter;
+
+	Feat11XMap				rgXmap;
+	Feat11Fmla				fmla;
+	ListParsedFormula		totalFmla;
+	ListParsedArrayFormula	totalArrayFmla;
+	XLUnicodeString			strTotal;
+	Feat11WSSListInfo		wssInfo;
+	_UINT32					qsif;
+	CachedDiskHeader		dskHdrCache;
+
+//------------------------------------------------
+	_UINT32					lt;
+	bool					bDiskHdrCache;
 };
 
 typedef boost::shared_ptr<Feat11FieldDataItem> Feat11FieldDataItemPtr;

@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of Feature12 record in BIFF8
 class Feature12: public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Feature12)
@@ -47,11 +45,10 @@ public:
 	~Feature12();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeFeature12;
+	static const ElementType type = typeFeature12;
 
 };
 

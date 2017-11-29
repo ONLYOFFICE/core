@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
 
-
-// Logical representation of TopMargin record in BIFF8
 class TopMargin: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(TopMargin)
@@ -50,10 +49,10 @@ public:
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeTopMargin;
+	static const ElementType type = typeTopMargin;
 
 //-----------------------------
-	BIFF_DOUBLE num;
+	Xnum num;
 
 };
 

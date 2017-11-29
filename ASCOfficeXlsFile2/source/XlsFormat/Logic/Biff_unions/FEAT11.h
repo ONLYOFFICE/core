@@ -47,7 +47,7 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
-	int serialize(std::wostream & stream);
+	int serialize(std::wostream & stream, size_t index);
 
 	static const ElementType	type = typeFEAT11;
 
@@ -58,8 +58,6 @@ public:
 		BaseObjectPtr					m_Feature; //11 or 12
 		BaseObjectPtr					m_AutoFilter12;
 		std::vector<BaseObjectPtr>		m_arList12;
-		std::vector<BaseObjectPtr>		m_arList12_second;
-		std::vector<BaseObjectPtr>		m_arAutoFilter12;
 		BaseObjectPtr					m_SORTDATA12;
 	};
 

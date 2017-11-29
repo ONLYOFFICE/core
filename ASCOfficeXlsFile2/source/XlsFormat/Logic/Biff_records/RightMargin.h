@@ -32,12 +32,10 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
-
-
-// Logical representation of RightMargin record in BIFF8
 class RightMargin: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(RightMargin)
@@ -48,14 +46,12 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeRightMargin;
+	static const ElementType type = typeRightMargin;
 
 //-----------------------------
-	BIFF_DOUBLE num;
-
+	Xnum num;
 };
 
 } // namespace XLS

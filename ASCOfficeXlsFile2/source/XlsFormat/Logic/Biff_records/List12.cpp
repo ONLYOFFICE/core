@@ -43,11 +43,9 @@ List12::List12()
 {
 }
 
-
 List12::~List12()
 {
 }
-
 
 BaseObjectPtr List12::clone()
 {

@@ -32,6 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
@@ -44,7 +45,6 @@ public:
 	~CrtLayout12();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
@@ -59,10 +59,10 @@ public:
 	CrtLayout12Mode wWidthMode;
 	CrtLayout12Mode wHeightMode;
 	
-	BIFF_DOUBLE x;
-	BIFF_DOUBLE y;
-	BIFF_DOUBLE dx;
-	BIFF_DOUBLE dy;
+	Xnum x;
+	Xnum y;
+	Xnum dx;
+	Xnum dy;
 };
 
 } // namespace XLS

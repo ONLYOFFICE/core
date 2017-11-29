@@ -32,6 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
@@ -60,7 +61,7 @@ public:
 	_INT16			pcSplitPercent;
 	_INT16			pcPie2Size;
 	_INT16			pcGap;
-	BIFF_DOUBLE		numSplitValue;
+	Xnum			numSplitValue;
 	
 	bool			fHasShadow;
 

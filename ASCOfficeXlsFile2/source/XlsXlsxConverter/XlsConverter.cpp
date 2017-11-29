@@ -75,9 +75,6 @@
 #include "../XlsFormat/Logic/Biff_records/IMDATA.h"
 #include "../XlsFormat/Logic/Biff_records/Note.h"
 #include "../XlsFormat/Logic/Biff_records/WsBool.h"
-#include "../XlsFormat/Logic/Biff_records/FeatHdr11.h"
-#include "../XlsFormat/Logic/Biff_records/Feature11.h"
-#include "../XlsFormat/Logic/Biff_records/Feature12.h"
 
 #include "../XlsFormat/Logic/Biff_structures/URLMoniker.h"
 #include "../XlsFormat/Logic/Biff_structures/FileMoniker.h"
@@ -994,30 +991,18 @@ void XlsConverter::convert(ODRAW::OfficeArtBStoreContainer* art_bstore, int star
 void XlsConverter::convert(XLS::FEAT11 * shared_feature)
 {
 	if (!shared_feature) return;
-	
-	xlsx_context->start_table();
 
-	std::wstringstream strm;
-	shared_feature->serialize(strm);
+	for (size_t i = 0; i < shared_feature->m_arFEAT.size(); i++)
+	{
+		xlsx_context->start_table();
 
-	xlsx_context->get_tables_context().add_table(strm.str());
+		std::wstringstream strm;
+		shared_feature->serialize(strm, i);
 
-	xlsx_context->end_table();	
-	
-	//XLS::FeatHdr11 * feature = dynamic_cast<XLS::FeatHdr11*>(shared_feature->m_FeatHdr11.get());
+		xlsx_context->get_tables_context().add_table(strm.str());
 
-	//for (size_t i = 0; i < shared_feature->m_arFEAT.size(); i++)
-	//{
-	//	XLS::Feature11 * feature11 = dynamic_cast<XLS::Feature11*>(shared_feature->m_arFEAT[i].m_Feature.get());
-	//	XLS::Feature12 * feature12 = dynamic_cast<XLS::Feature12*>(shared_feature->m_arFEAT[i].m_Feature.get());
-	//	
-	//	if (feature11)
-	//	{
-	//	}
-	//	else if (feature12)
-	//	{
-	//	}
-	//}
+		xlsx_context->end_table();	
+	}
 }
 
 void XlsConverter::convert(XLS::HLINK * HLINK_)

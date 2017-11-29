@@ -63,10 +63,10 @@ void FeatHdr::readFields(CFRecord& record)
 	{
 		switch(isf)
 		{
-			case SharedFeatureType::ISFPROTECTION:
+			case 0x0002://ISFPROTECTION:
 				record >> protection;
 				break;
-			case SharedFeatureType::ISFFACTOID:
+			case 0x0004://ISFFACTOID:
 				if(is_contained_in_Globals)
 				{
 					record >> prop;

@@ -45,11 +45,14 @@ Feat::~Feat()
 {
 }
 
-
 BaseObjectPtr Feat::clone()
 {
 	return BaseObjectPtr(new Feat(*this));
 }
+//		ISFPROTECTION	= 0x0002, // Specifies the enhanced protection type. 
+//		ISFFEC2			= 0x0003, // Specifies the ignored formula errors type.
+//		ISFFACTOID		= 0x0004, // Specifies the smart tag type.
+//		ISFLIST			= 0x0005, // Specifies the list type.
 
 void Feat::readFields(CFRecord& record)
 {
@@ -72,17 +75,18 @@ void Feat::readFields(CFRecord& record)
 
 	switch(isf)
 	{
-		case SharedFeatureType::ISFPROTECTION:
-			record >> protection;
+		case 0x0002://ISFPROTECTION:
+			is_object = BiffStructurePtr(new FeatProtection);
 			break;
-		case SharedFeatureType::ISFFEC2:
-			record >> formula_err;
+		case 0x0003://ISFFEC2:
+			is_object = BiffStructurePtr(new FeatFormulaErr2);
 			break;
-		case SharedFeatureType::ISFFACTOID:
-			record >> smart_tag;
+		case 0x0004://ISFFACTOID:
+			is_object = BiffStructurePtr(new FeatSmartTag);
 			break;
 	}
-
+	if (is_object)
+		is_object->load(record);
 }
 
 } // namespace XLS

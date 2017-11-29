@@ -54,16 +54,13 @@ public:
 
 	static const ElementType	type = typeFeat;
 
-	SharedFeatureType	isf;
+	_UINT16				isf;
 	_UINT16				cref;
 	_UINT32				cbFeatData;
 	BiffStructurePtrVector refs;
 	std::wstring		sqref;
 
-	FeatProtection		protection;
-	FeatFormulaErr2		formula_err;
-	FeatSmartTag		smart_tag;
-
+	BiffStructurePtr	is_object;
 };
 
 } // namespace XLS

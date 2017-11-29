@@ -32,6 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
@@ -55,7 +56,7 @@ public:
 	unsigned char	sertm;
 	unsigned char	ebsrc;
 	unsigned char	fTeeTop;
-	BIFF_DOUBLE		numValue;
+	Xnum			numValue;
 	_UINT16			cnum;
 
 };

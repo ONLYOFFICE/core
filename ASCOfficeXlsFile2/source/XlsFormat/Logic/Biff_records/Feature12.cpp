@@ -39,11 +39,9 @@ Feature12::Feature12()
 {
 }
 
-
 Feature12::~Feature12()
 {
 }
-
 
 BaseObjectPtr Feature12::clone()
 {

@@ -3555,6 +3555,11 @@ namespace BinXlsxRW {
 				pCell->m_oValue.Init();
 				pCell->m_oValue->m_sText.append(OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(dValue));
 			}
+			else if(c_oSerCellTypes::ValueText == type)
+			{
+				pCell->m_oValue.Init();
+				pCell->m_oValue->m_sText.append(m_oBufferedStream.GetString4(length));
+			}
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;

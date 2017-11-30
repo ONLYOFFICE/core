@@ -298,7 +298,8 @@ namespace BinXlsxRW
 		Type = 2,
 		Value = 3,
 		Formula = 4,
-		RefRowCol = 5
+		RefRowCol = 5,
+		ValueText = 6
 	};}
 	namespace c_oSerFormulaTypes{enum c_oSerFormulaTypes
 	{

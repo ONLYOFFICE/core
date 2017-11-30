@@ -215,7 +215,6 @@ void GlobalWorkbookInfo::GetDigitFontSizePixels()
     }
     catch(...)
     {
-        // TODO: default value!
     }    
 }
 

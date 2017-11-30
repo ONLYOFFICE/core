@@ -50,7 +50,6 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
 	unsigned short cb;
 	XLUnicodeString fmt;
 };

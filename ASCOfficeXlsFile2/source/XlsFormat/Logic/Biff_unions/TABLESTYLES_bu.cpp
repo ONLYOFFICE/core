@@ -163,19 +163,19 @@ int TABLESTYLES::serialize(std::wostream & stream)
 							case 0x0000000a: CP_XML_ATTR(L"type", L"lastHeaderCell");		break;
 							case 0x0000000b: CP_XML_ATTR(L"type", L"firstTotalCell");		break;
 							case 0x0000000c: CP_XML_ATTR(L"type", L"lastTotalCell");		break;
-							case 0x0000000d: CP_XML_ATTR(L"type", L"firstSubtotalColumn");	break;//??
-							case 0x0000000e: CP_XML_ATTR(L"type", L"firstSubtotalColumn");	break;//even
-							case 0x0000000f: CP_XML_ATTR(L"type", L"lastSubtotalColumn");	break;//odd
-							case 0x00000010: CP_XML_ATTR(L"type", L"firstSubtotalRow");		break;//??
-							case 0x00000011: CP_XML_ATTR(L"type", L"firstSubtotalRow");		break;//even
-							case 0x00000012: CP_XML_ATTR(L"type", L"lastSubtotalRow");		break;//odd
+							case 0x0000000d: CP_XML_ATTR(L"type", L"firstSubtotalColumn");	break;
+							case 0x0000000e: CP_XML_ATTR(L"type", L"secondSubtotalColumn");	break;
+							case 0x0000000f: CP_XML_ATTR(L"type", L"thirdSubtotalColumn");	break;
+							case 0x00000010: CP_XML_ATTR(L"type", L"firstSubtotalRow");		break;
+							case 0x00000011: CP_XML_ATTR(L"type", L"secondSubtotalRow");	break;
+							case 0x00000012: CP_XML_ATTR(L"type", L"thirdSubtotalRow");		break;
 							case 0x00000013: CP_XML_ATTR(L"type", L"blankRow");				break;
 							case 0x00000014: CP_XML_ATTR(L"type", L"firstColumnSubheading");break;
-							case 0x00000015: CP_XML_ATTR(L"type", L"firstColumnSubheading");break;
-							case 0x00000016: CP_XML_ATTR(L"type", L"lastColumnSubheading");	break;
+							case 0x00000015: CP_XML_ATTR(L"type", L"secondColumnSubheading");break;
+							case 0x00000016: CP_XML_ATTR(L"type", L"thirdColumnSubheading");break;
 							case 0x00000017: CP_XML_ATTR(L"type", L"firstRowSubheading");	break;
-							case 0x00000018: CP_XML_ATTR(L"type", L"firstRowSubheading");	break;
-							case 0x00000019: CP_XML_ATTR(L"type", L"lastRowSubheading");	break;
+							case 0x00000018: CP_XML_ATTR(L"type", L"secondRowSubheading");	break;
+							case 0x00000019: CP_XML_ATTR(L"type", L"thirdRowSubheading");	break;
 							case 0x0000001a: CP_XML_ATTR(L"type", L"pageFieldLabels");		break;
 							case 0x0000001b: CP_XML_ATTR(L"type", L"pageFieldValues");		break;
 							}

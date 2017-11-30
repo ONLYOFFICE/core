@@ -546,6 +546,7 @@ enum ElementType
 	typeBopPopCustomPiesIndices,
 	typeIXFCellMulBlankSpecial,
 	typeAddinUdf,
+	typeAF12CellIcon,
 	typeAF12Criteria,
 	typeAFDOper,
 	typeAFDOperRk,

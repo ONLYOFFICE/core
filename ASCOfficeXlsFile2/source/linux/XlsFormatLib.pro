@@ -375,6 +375,7 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_structures/AFDOper.cpp \
     ../XlsFormat/Logic/Biff_structures/AFDOperRk.cpp \
     ../XlsFormat/Logic/Biff_structures/AFDOperStr.cpp \
+    ../XlsFormat/Logic/Biff_structures/AF12CellIcon.cpp \
     ../XlsFormat/Logic/Biff_structures/AntiMoniker.cpp \
     ../XlsFormat/Logic/Biff_structures/ArrayParsedFormula.cpp \
     ../XlsFormat/Logic/Biff_structures/Bes.cpp \
@@ -1183,6 +1184,7 @@ HEADERS +=  \
     ../XlsFormat/Logging/Logger.h \
     ../XlsFormat/Logic/Biff_structures/AddinUdf.h \
     ../XlsFormat/Logic/Biff_structures/AF12Criteria.h \
+    ../XlsFormat/Logic/Biff_structures/AF12CellIcon.h \
     ../XlsFormat/Logic/Biff_structures/AFDOper.h \
     ../XlsFormat/Logic/Biff_structures/AFDOperRk.h \
     ../XlsFormat/Logic/Biff_structures/AFDOperStr.h \

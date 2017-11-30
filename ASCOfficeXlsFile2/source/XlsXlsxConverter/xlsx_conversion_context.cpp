@@ -128,10 +128,6 @@ void xlsx_conversion_context::set_sheet_type(int type)
 	if (sheets_.empty()) return;
 
 	sheets_.back()->type = type;
-	if (type == 3)
-	{
-		get_sheet_context().set_chart_view();
-	}
 }
 void xlsx_conversion_context::start_table()
 {
@@ -170,6 +166,8 @@ void xlsx_conversion_context::set_sheet_id(int id)
 {
 	if (id < 0) return;
 	sheets_.back()->id = id;
+	
+	sheets_map_.insert(std::make_pair(id, sheets_.size() - 1));
 }
 void xlsx_conversion_context::start_chart()
 {
@@ -246,8 +244,11 @@ void xlsx_conversion_context::end_document()
 {
 	std::wstringstream workbook_content;
 
-	for (size_t i = 0; i < sheets_.size(); i++)
+	//for (size_t i = 0; i < sheets_.size(); i++) нужно по id
+	for (std::map<int, int>::iterator it = sheets_map_.begin(); it != sheets_map_.end(); it++)
 	{
+		int i = it->second;
+
         package::sheet_content_ptr content = package::sheet_content::create();
 				
 		const std::wstring slideRId = std::wstring(L"sId") + std::to_wstring(i + 1);

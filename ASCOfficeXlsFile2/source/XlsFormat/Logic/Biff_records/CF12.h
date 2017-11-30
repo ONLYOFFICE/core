@@ -32,18 +32,16 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/FrtRefHeader.h>
-#include <Logic/Biff_structures/DXFN12.h>
-#include <Logic/Biff_structures/CFParsedFormulaNoCCE.h>
-#include <Logic/Biff_structures/CFParsedFormula.h>
-#include <Logic/Biff_structures/CFExTemplateParams.h>
+#include "../Biff_structures/FrtRefHeader.h"
+#include "../Biff_structures/DXFN12.h"
+#include "../Biff_structures/CFParsedFormulaNoCCE.h"
+#include "../Biff_structures/CFParsedFormula.h"
+#include "../Biff_structures/CFExTemplateParams.h"
 
 
 namespace XLS
 {
 
-
-// Logical representation of CF12 record in BIFF8
 class CF12: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(CF12)
@@ -84,6 +82,7 @@ public:
 	int						dxfId_;
 
 	BaseObjectPtr			m_CFEx;
+	BaseObjectPtr			m_CF12_2;
 };
 
 typedef boost::shared_ptr<CF12> CF12Ptr;

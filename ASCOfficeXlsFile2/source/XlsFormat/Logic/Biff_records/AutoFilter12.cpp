@@ -31,6 +31,13 @@
  */
 
 #include "AutoFilter12.h"
+#include "../Biff_structures/DXFN12List.h"
+
+#include "../Biff_structures/BiffString.h"
+
+#include "../Biff_structures/AFDOper.h"
+#include "../Biff_structures/AF12Criteria.h"
+#include "../Biff_structures/AF12CellIcon.h"
 
 namespace XLS
 {
@@ -58,11 +65,28 @@ void AutoFilter12::readFields(CFRecord& record)
 	
 	record >> frtRefHeader >> iEntry >> fHideArrow >> ft >> cft >> cCriteria >> cDateGroupings >> flags >> unused2 >> idList;
 
-	// TODO доделать
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	_GUID_ guid_num;
+	record >> guid_num;
+	guidSview = STR::guid2bstr(guid_num);
 
+	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+//-------------------------------------------------------------------------------------------------------
 	std::list<CFRecordPtr>& recs = continue_records[rt_ContinueFrt12];
 	size_t size = recs.size();
+
+	switch(ft)
+	{
+	case 0x00000000://not exist
+		break;
+	case 0x00000001: rgb = BiffStructurePtr(new DXFN12List); //color
+		break;
+	case 0x00000002: rgb = BiffStructurePtr(new DXFN12List); //font
+		break;
+	case 0x00000003: rgb = BiffStructurePtr(new AF12CellIcon); //icon
+		break;
+	}
+	if (rgb)
+		rgb->load(record);
 
 	while( !recs.empty() )
 	{

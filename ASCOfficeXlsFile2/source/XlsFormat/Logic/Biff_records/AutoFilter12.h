@@ -34,10 +34,7 @@
 #include "BiffRecordContinued.h"
 
 #include "../Biff_structures/FrtRefHeader.h"
-#include "../Biff_structures/BiffString.h"
-#include "../Biff_structures/FrtRefHeader.h"
-#include "../Biff_structures/AFDOper.h"
-#include "../Biff_structures/AF12Criteria.h"
+
 
 namespace XLS
 {
@@ -65,6 +62,9 @@ public:
 	_UINT32		cCriteria;
 	_UINT32		cDateGroupings;
 	_UINT32		idList;
+
+	std::wstring			guidSview;
+	BiffStructurePtr		rgb;
 	
 	BiffStructurePtrVector arAF12Criteries;
 };

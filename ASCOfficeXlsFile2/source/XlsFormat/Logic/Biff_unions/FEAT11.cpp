@@ -40,11 +40,14 @@
 #include "../Biff_records/AutoFilter12.h"
 #include "../Biff_records/ContinueFrt12.h"
 #include "../Biff_records/List12.h"
+#include "../Biff_records/SortData.h"
 
 #include "../Biff_structures/List12BlockLevel.h"
 #include "../Biff_structures/List12TableStyleClientInfo.h"
 #include "../Biff_structures/List12DisplayName.h"
 #include "../Biff_structures/Feat11FieldDataItem.h"
+#include "../Biff_structures/AF12Criteria.h"
+#include "../Biff_structures/SortCond12.h"
 
 namespace XLS
 {
@@ -154,8 +157,10 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 {
 	FeatHdr11 * feature = dynamic_cast<FeatHdr11*>(m_FeatHdr11.get());
 
-	Feature11 * feature11 = dynamic_cast<Feature11*>(m_arFEAT[index].m_Feature.get());
-	Feature12 * feature12 = dynamic_cast<Feature12*>(m_arFEAT[index].m_Feature.get());
+	Feature11		*feature11	= dynamic_cast<Feature11*>(m_arFEAT[index].m_Feature.get());
+	Feature12		*feature12	= dynamic_cast<Feature12*>(m_arFEAT[index].m_Feature.get());
+	AutoFilter12	*filter		= dynamic_cast<AutoFilter12*>(m_arFEAT[index].m_AutoFilter12.get());
+	SORTDATA12		*sort		= dynamic_cast<SORTDATA12*>(m_arFEAT[index].m_SORTDATA12.get());
 
 	if (feature12 && !feature11)
 	{
@@ -176,34 +181,78 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 		if (!display_name)	display_name	= dynamic_cast<List12DisplayName*>			(list_prop->rgbList12.get());
 	}
 //----------------------------------------------------------------------------------------------------------------------------------
+	std::wstring display, comment;
+	if (display_name)
+	{
+		display = display_name->stListName.value();
+		comment	= display_name->stListComment.value();
+	}
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"table")
 		{
 			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");	
-			if (display_name)
-			{
-				if (!display_name->stListName.value().empty())
-					CP_XML_ATTR(L"displayName", display_name->stListName.value());	
-				if (!display_name->stListComment.value().empty())
-					CP_XML_ATTR(L"comment", display_name->stListComment.value());	
-			}
-			if (block_level)
-			{
-				if (!block_level->stData.value().empty())
-					CP_XML_ATTR(L"dataCellStyle", block_level->stData.value());	
-			}
+
 			if (feature11)
 			{
-				CP_XML_ATTR(L"id", feature11->rgbFeat.idList);
-				CP_XML_ATTR(L"name", feature11->rgbFeat.rgbName.value());
-				CP_XML_ATTR(L"ref", feature11->sqref);
+				if (display.empty()) display = feature11->rgbFeat.rgbName.value();
 
-				if (feature11->rgbFeat.fAutoFilter)
+				CP_XML_ATTR(L"id",		feature11->rgbFeat.idList);
+				CP_XML_ATTR(L"name",	feature11->rgbFeat.rgbName.value());
+				CP_XML_ATTR(L"displayName", display);
+				CP_XML_ATTR(L"ref",		feature11->sqref);
+				
+				if (!comment.empty()) 
+					CP_XML_ATTR(L"comment", comment);
+
+				if (block_level)
 				{
-					CP_XML_NODE(L"autoFilter")
+					if (!block_level->stData.value().empty())
+						CP_XML_ATTR(L"dataCellStyle", block_level->stData.value());	
+				}
+				if (feature11->rgbFeat.fAutoFilter && (filter || sort))
+				{
+					if(sort)
 					{
-						CP_XML_ATTR(L"ref", feature11->sqref);
+						SortData *sort_data = dynamic_cast<SortData*>(sort->m_SortData.get());
+
+						CP_XML_NODE(L"autoFilter")
+						{
+							//if (filter)
+							//else
+								CP_XML_ATTR(L"ref", sort_data->rfx);
+						}
+						CP_XML_NODE(L"sortState")
+						{
+							CP_XML_ATTR(L"ref", sort_data->rfx);
+							for (size_t s = 0; s < sort_data->sortCond12Array.size(); s++)
+							{
+								SortCond12 *sort_cond = dynamic_cast<SortCond12*>(sort_data->sortCond12Array[s].get());
+								CP_XML_NODE(L"sortCondition")
+								{
+									CP_XML_ATTR(L"descending", sort_cond->fSortDes);
+									CP_XML_ATTR(L"ref", sort_cond->rfx.toString());
+								}
+							}
+						}
+					}
+					else
+					{
+						CP_XML_NODE(L"autoFilter")
+						{
+							//CP_XML_ATTR(L"ref", filter->rfx);
+							for (size_t k = 0 ; k < (std::min)((size_t)1, filter->arAF12Criteries.size()); k++)
+							{
+								AF12Criteria * af12Criteria = dynamic_cast<AF12Criteria *>(filter->arAF12Criteries[k].get());
+								if (af12Criteria == NULL) continue;
+
+								//CP_XML_NODE(L"filter")
+								{									
+									//CP_XML_ATTR(L"val", af12Criteria->_str);
+									CP_XML_ATTR(L"ref", af12Criteria->_str);
+								}
+							}
+						}
 					}
 				}
 
@@ -228,6 +277,7 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 							//if (!field->stData.value().empty())
 							//	CP_XML_ATTR(L"dataDxfId", field->stData.value());	
 							}
+							//totalsRowFunction
 						}
 					}
 				}

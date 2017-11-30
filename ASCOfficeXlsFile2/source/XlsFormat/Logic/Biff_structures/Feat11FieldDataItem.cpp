@@ -77,14 +77,12 @@ void Feat11FieldDataItem::load(CFRecord& record)
 	{
 		dxfFmtAgg.size = cbFmtAgg;
 		record >> dxfFmtAgg;
-	}
-	
+	}	
 	if (cbFmtInsertRow > 0)
 	{
 		dxfFmtInsertRow.size = cbFmtInsertRow;
 		record >> dxfFmtInsertRow;
-	}
-	
+	}	
 	if (fAutoFilter)
 	{
 		record >> AutoFilter;
@@ -92,9 +90,8 @@ void Feat11FieldDataItem::load(CFRecord& record)
 
 	if (fLoadXmapi)
 	{
-		record >> AutoFilter;
+		record >> rgXmap;
 	}
-
 	if (fLoadFmla)
 	{
 		fmla.load(record);
@@ -110,8 +107,10 @@ void Feat11FieldDataItem::load(CFRecord& record)
 			totalFmla.load(record);
 		}	
 	}
-	record >> strTotal;
-
+	if (fLoadTotalStr)
+	{
+		record >> strTotal;
+	}
 	if (lt == 0x00000001)
 	{
 		wssInfo.lfdt = lfdt;

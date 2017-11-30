@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
 
-
-// Logical representation of SerAuxErrBar record in BIFF8
 class SerAuxErrBar: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SerAuxErrBar)
@@ -57,7 +56,7 @@ public:
 	unsigned char	sertm;
 	unsigned char	ebsrc;
 	unsigned char	fTeeTop;
-	BIFF_DOUBLE		numValue;
+	Xnum			numValue;
 	_UINT16			cnum;
 
 };

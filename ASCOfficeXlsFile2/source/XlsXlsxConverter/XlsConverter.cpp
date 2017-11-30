@@ -63,6 +63,8 @@
 #include "../XlsFormat/Logic/Biff_unions/PIVOTCACHEDEFINITION.h"
 #include "../XlsFormat/Logic/Biff_unions/SUPBOOK.h"
 #include "../XlsFormat/Logic/Biff_unions/QUERYTABLE.h"
+#include "../XlsFormat/Logic/Biff_unions/FEAT.h"
+#include "../XlsFormat/Logic/Biff_unions/FEAT11.h"
 
 #include "../XlsFormat/Logic/Biff_records/BkHim.h"
 #include "../XlsFormat/Logic/Biff_records/HLink.h"
@@ -448,21 +450,21 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 
     for (size_t i = 0 ; i < woorkbook->m_arWorksheetSubstream.size(); i++)
 	{
-		xlsx_context->start_table();
+		xlsx_context->start_sheet();
 			convert(dynamic_cast<XLS::WorksheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get()));
-		xlsx_context->end_table();
+		xlsx_context->end_sheet();
 	}
 	for (size_t i = 0 ; i < woorkbook->m_arChartSheetSubstream.size(); i++)
 	{
-		xlsx_context->start_table();
+		xlsx_context->start_sheet();
 			convert_chart_sheet(dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_arChartSheetSubstream[i].get()));
-		xlsx_context->end_table();
+		xlsx_context->end_sheet();
 	}
 	for (size_t i = 0 ; i < woorkbook->m_arMacroSheetSubstream.size(); i++)
 	{
-		xlsx_context->start_table();
+		xlsx_context->start_sheet();
 			convert(dynamic_cast<XLS::MacroSheetSubstream*>(woorkbook->m_arMacroSheetSubstream[i].get()));
-		xlsx_context->end_table();
+		xlsx_context->end_sheet();
 	}
 
 	for (std::list<XLS::BaseObjectPtr>::iterator it = woorkbook->elements_.begin(); it != woorkbook->elements_.end(); it++)
@@ -535,6 +537,16 @@ void XlsConverter::convert_common (XLS::CommonSubstream* sheet)
 	{
 		convert((ODRAW::OfficeArtDgContainer*)sheet->m_arHFPictureDrawing[i].get());
 	}
+
+	//for (size_t i = 0 ; i < sheet->m_arFEAT.size(); i++)
+	//{
+	//	convert(dynamic_cast<XLS::FEAT*>(sheet->m_arFEAT.get()));
+	//}
+
+	for (size_t i = 0 ; i < sheet->m_arFEAT11.size(); i++)
+	{
+		convert(dynamic_cast<XLS::FEAT11*>(sheet->m_arFEAT11[i].get()));
+	}
 }
 
 void XlsConverter::convert (XLS::WorksheetSubstream* sheet)
@@ -545,10 +557,10 @@ void XlsConverter::convert (XLS::WorksheetSubstream* sheet)
 	if (name.empty()) 
 		name = L"Sheet_" + std::to_wstring(sheet->ws_index_ + 1);
 
-	xlsx_context->set_table_type(1);
-	xlsx_context->set_table_name(name) ;
-	xlsx_context->set_table_id(sheet->ws_index_ + 1);
-	xlsx_context->set_table_state(xls_global_info->sheets_info[sheet->ws_index_].state);
+	xlsx_context->set_sheet_type(1);
+	xlsx_context->set_sheet_name(name) ;
+	xlsx_context->set_sheet_id(sheet->ws_index_ + 1);
+	xlsx_context->set_sheet_state(xls_global_info->sheets_info[sheet->ws_index_].state);
 
 	if (sheet->m_GLOBALS)
 	{
@@ -562,7 +574,7 @@ void XlsConverter::convert (XLS::WorksheetSubstream* sheet)
 		globals->m_DxGCol = sheet->m_DxGCol;		
 
 		if (globals->is_dialog)
-			xlsx_context->set_table_type(2);
+			xlsx_context->set_sheet_type(2);
 	}
 
 	convert_common(dynamic_cast<XLS::CommonSubstream*>(sheet));
@@ -630,10 +642,10 @@ void XlsConverter::convert (XLS::MacroSheetSubstream* sheet)
 	if (name.empty()) 
 		name = L"MacroSheet_" + std::to_wstring(sheet->ws_index_ + 1);
 
-	xlsx_context->set_table_type(4);
-	xlsx_context->set_table_name(name) ;
-	xlsx_context->set_table_id(sheet->ws_index_ + 1);
-	xlsx_context->set_table_state(xls_global_info->sheets_info[sheet->ws_index_].state);
+	xlsx_context->set_sheet_type(4);
+	xlsx_context->set_sheet_name(name) ;
+	xlsx_context->set_sheet_id(sheet->ws_index_ + 1);
+	xlsx_context->set_sheet_state(xls_global_info->sheets_info[sheet->ws_index_].state);
 
 	if (sheet->m_GLOBALS)
 	{
@@ -647,7 +659,7 @@ void XlsConverter::convert (XLS::MacroSheetSubstream* sheet)
 		globals->m_DxGCol = sheet->m_DxGCol;		
 
 		if (globals->is_dialog)
-			xlsx_context->set_table_type(2);
+			xlsx_context->set_sheet_type(2);
 	}
 	convert_common(dynamic_cast<XLS::CommonSubstream*>(sheet));
 
@@ -728,10 +740,10 @@ void XlsConverter::convert_chart_sheet(XLS::ChartSheetSubstream* chartsheet)
 	if (name.empty()) 
 		name = L"ChartSheet_" + std::to_wstring(chartsheet->ws_index_ + 1);
 
-	xlsx_context->set_table_type(3);
-	xlsx_context->set_table_name(name) ;
-	xlsx_context->set_table_id(chartsheet->ws_index_ + 1);
-	xlsx_context->set_table_state(xls_global_info->sheets_info[chartsheet->ws_index_].state);
+	xlsx_context->set_sheet_type(3);
+	xlsx_context->set_sheet_name(name) ;
+	xlsx_context->set_sheet_id(chartsheet->ws_index_ + 1);
+	xlsx_context->set_sheet_state(xls_global_info->sheets_info[chartsheet->ws_index_].state);
 
 	convert_common(dynamic_cast<XLS::CommonSubstream*>(chartsheet));
 
@@ -976,11 +988,29 @@ void XlsConverter::convert(ODRAW::OfficeArtBStoreContainer* art_bstore, int star
 		WriteMediaFile(art_bstore->rgfb[i]->pict_data, art_bstore->rgfb[i]->pict_size, art_bstore->rgfb[i]->pict_type, bin_id);
 	}
 }
+void XlsConverter::convert(XLS::FEAT11 * shared_feature)
+{
+	if (!shared_feature) return;
+
+	for (size_t i = 0; i < shared_feature->m_arFEAT.size(); i++)
+	{
+		xlsx_context->start_table();
+
+		std::wstringstream strm;
+		shared_feature->serialize(strm, i);
+
+		xlsx_context->get_tables_context().add_table(strm.str());
+
+		xlsx_context->end_table();	
+	}
+}
 
 void XlsConverter::convert(XLS::HLINK * HLINK_)
 {
+	if (!HLINK_) return;
 	XLS::HLink * hLink = dynamic_cast<XLS::HLink*>(HLINK_->m_HLink.get());
-	
+	if (!hLink) return;
+
 	std::wstring target;
 	
 	bool bExternal = false;
@@ -999,7 +1029,7 @@ void XlsConverter::convert(XLS::HLINK * HLINK_)
 
 	if (display.empty())	display = target;
 
-	xlsx_context->get_table_context().add_hyperlink( hLink->ref8.toString(), target, display, bExternal);
+	xlsx_context->get_sheet_context().add_hyperlink( hLink->ref8.toString(), target, display, bExternal);
 }
 
 void XlsConverter::convert(XLS::LBL * def_name)

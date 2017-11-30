@@ -110,6 +110,15 @@ _CP_PTR(pivot_table_content) pivot_table_content::create()
     return boost::make_shared<pivot_table_content>();
 }
 //--------------------------------------------------------------------------------------------
+table_part_content::table_part_content() : rels_file_(rels_file::create(L""))
+{      
+}
+
+_CP_PTR(table_part_content) table_part_content::create()
+{
+    return boost::make_shared<table_part_content>();
+}
+//--------------------------------------------------------------------------------------------
 external_content::external_content() : rels_file_(rels_file::create(L""))
 {      
 }
@@ -257,6 +266,10 @@ void xl_files::write(const std::wstring & RootPath)
 	{
 		pivot_table_files_.set_main_document(get_main_document());
 		pivot_table_files_.write(path);
+	}
+	{
+		table_part_files_.set_main_document(get_main_document());
+		table_part_files_.write(path);
 	}
 	{
 		sheets_files_.set_rels(&rels_files_);
@@ -437,6 +450,10 @@ void xl_files::add_control_props (simple_element_ptr element)
 {
 	control_props_files_.add_control_props(element);
 }
+void xl_files::add_table_part(table_part_content_ptr table)
+{
+    table_part_files_.add_table_part(table);
+}
 //----------------------------------------------------------------------------------------
 void xl_pivot_cache_files::add_pivot_cache(pivot_cache_content_ptr pivot_cache)
 {
@@ -523,6 +540,43 @@ void xl_pivot_table_files::write(const std::wstring & RootPath)
 			pivot_tables_[i]->rels_file_->set_file_name(fileName + L".rels");
 			
 			relFiles.add_rel_file(pivot_tables_[i]->rels_file_);
+			relFiles.write(path);
+		}
+    }
+}
+//----------------------------------------------------------------------------------------
+void xl_table_part_files::add_table_part(table_part_content_ptr table)
+{
+    table_parts_.push_back(table);
+}
+
+void xl_table_part_files::write(const std::wstring & RootPath)
+{
+	if (table_parts_.empty()) return;
+
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"tables";
+    NSDirectory::CreateDirectory(path.c_str());
+
+	content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+	
+	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.table+xml";
+	
+	for (size_t i = 0; i < table_parts_.size(); i++)
+    {
+        if (!table_parts_[i]) continue;
+
+        const std::wstring fileName = std::wstring(L"table") + std::to_wstring(i + 1) + L".xml";
+       
+        contentTypes.add_override(std::wstring(L"/xl/tables/") + fileName, kWSConType);
+
+        package::simple_element(fileName, table_parts_[i]->str()).write(path);
+
+        if (table_parts_[i]->get_rels().empty() == false)
+		{
+			rels_files relFiles;
+			table_parts_[i]->rels_file_->set_file_name(fileName + L".rels");
+			
+			relFiles.add_rel_file(table_parts_[i]->rels_file_);
 			relFiles.write(path);
 		}
     }

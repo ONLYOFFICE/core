@@ -37,14 +37,12 @@
 #include "ExtPtgRefErr3D.h"
 #include "ExtPtgAreaErr3D.h"
 #include "ExtPtgErr.h"
-//#include <Exception/UnexpectedProgramPath.h>
 
 namespace XLS
 {
 
 
-ExtNameParsedFormula::ExtNameParsedFormula()
-:	ParsedFormula(CellRef())
+ExtNameParsedFormula::ExtNameParsedFormula() :	ParsedFormula(CellRef())
 {
 }
 

@@ -32,6 +32,7 @@
 
 #include "TableFeatureType.h"
 #include <Binary/CFRecord.h>
+#include "Feat11FieldDataItem.h"
 
 namespace XLS
 {
@@ -53,7 +54,13 @@ TableFeatureType::~TableFeatureType()
 
 void TableFeatureType::load(CFRecord& record)
 {	
-	record >> lt;				// SourceType
+	record >> lt;
+
+//LTRANGE			0x00000000 Range 
+//LTSHAREPOINT		0x00000001 Read/write Web-based data provider list 
+//LTXML				0x00000002 XML Mapper data
+//LTEXTERNALDATA	0x00000003 External data source (query table)<180>
+
 	record >> idList;			// Unique ID
 	record >> crwHeader;		// 0 - Table has no header row, 1 - Table has a header row
 	record >> crwTotals;		// 0 - Table has no total row, 1 - Table has a total row
@@ -61,39 +68,31 @@ void TableFeatureType::load(CFRecord& record)
 	record >> cbFSData;			// 64
 	record >> rupBuild;			// Build number of the application
 
-	_UINT32 _lt = lt;
-	_UINT32 _idList = idList;
-	_UINT32 _crwHeader = crwHeader;
-	_UINT32 _crwTotals = crwTotals;
-	_UINT32 _idFieldNext = idFieldNext;
-	_UINT32 _cbFSData = cbFSData;
-	_UINT32 _rupBuild = rupBuild;
-
 	record.skipNunBytes(2);		// unused1
 
 	_UINT16 flags;
 	record >> flags;
 	
-	fAutoFilter = static_cast<unsigned char>(GETBIT(flags, 1));
-	fPersistAutoFilter = static_cast<unsigned char>(GETBIT(flags, 2));
-	fShowInsertRow = static_cast<unsigned char>(GETBIT(flags, 3));
-	fInsertRowInsCells = static_cast<unsigned char>(GETBIT(flags, 4));
-	fLoadPldwIdDeleted = static_cast<unsigned char>(GETBIT(flags, 5));
-	fShownTotalRow = static_cast<unsigned char>(GETBIT(flags, 6));
-	fNeedsCommit = static_cast<unsigned char>(GETBIT(flags, 8));
-	fSingleCell = static_cast<unsigned char>(GETBIT(flags, 9));
-	fApplyAutoFilter = static_cast<unsigned char>(GETBIT(flags, 11));
-	fForceInsertToBeVis = static_cast<unsigned char>(GETBIT(flags, 12));
-	fCompressedXml = static_cast<unsigned char>(GETBIT(flags, 13));
-	fLoadCSPName = static_cast<unsigned char>(GETBIT(flags, 14));
-	fLoadPldwIdChanged = static_cast<unsigned char>(GETBIT(flags, 15));
+	fAutoFilter			= GETBIT(flags, 1);
+	fPersistAutoFilter	= GETBIT(flags, 2);
+	fShowInsertRow		= GETBIT(flags, 3);
+	fInsertRowInsCells	= GETBIT(flags, 4);
+	fLoadPldwIdDeleted	= GETBIT(flags, 5);
+	fShownTotalRow		= GETBIT(flags, 6);
+	fNeedsCommit		= GETBIT(flags, 8);
+	fSingleCell			= GETBIT(flags, 9);
+	fApplyAutoFilter	= GETBIT(flags, 11);
+	fForceInsertToBeVis = GETBIT(flags, 12);
+	fCompressedXml		= GETBIT(flags, 13);
+	fLoadCSPName		= GETBIT(flags, 14);
+	fLoadPldwIdChanged	= GETBIT(flags, 15);
 
 	record >> flags;
-	verXL = static_cast<unsigned char>(GETBITS(flags, 0, 4));
-	fLoadEntryId = static_cast<unsigned char>(GETBIT(flags, 4));
-	fLoadPllstclInvalid = static_cast<unsigned char>(GETBIT(flags, 5));
-	fGoodRupBld = static_cast<unsigned char>(GETBIT(flags, 6));
-	fPublished = static_cast<unsigned char>(GETBIT(flags, 8));
+	verXL				= GETBITS(flags, 0, 4);
+	fLoadEntryId		= GETBIT(flags, 4);
+	fLoadPllstclInvalid = GETBIT(flags, 5);
+	fGoodRupBld			= GETBIT(flags, 6);
+	fPublished			= GETBIT(flags, 8);
 
 	if (lt != 1)
 	{
@@ -106,24 +105,37 @@ void TableFeatureType::load(CFRecord& record)
 		record.skipNunBytes(16);		// rgbHashParam
 
 	record >> rgbName;
-	record >> cFieldData;
-
-	int r = cFieldData;
+	record >> cFieldData; //from 1 to 100
 
 	if (fLoadCSPName)
 		record >> cSPName;
 
-	if (fLoadEntryId == BIFF_BYTE(1))
+	if (fLoadEntryId)
 		record >> entryId;
 	
-	for (size_t i = 0; i < cFieldData; i++)
+	for (_UINT16 i = 0; i < cFieldData; i++)
 	{
 		if (record.getRdPtr() >= record.getDataSize())
 			return;
-		
-		Feat11FieldDataItemPtr item(new Feat11FieldDataItem);
-		item->load(record);
-		fieldData.push_back(item);
+
+		arFieldData.push_back(BiffStructurePtr(new Feat11FieldDataItem(lt, (crwHeader == 0x0000 && fSingleCell))));
+		arFieldData.back()->load(record);
+	}
+	if (fLoadPldwIdDeleted)
+	{
+		idDeleted = BiffStructurePtr (new Feat11RgSharepointIdDel);
+		idDeleted->load(record);
+	}
+	if (fLoadPldwIdChanged)
+	{
+		idChanged = BiffStructurePtr (new Feat11RgSharepointIdChange);
+		idChanged->load(record);
+
+	}
+	if (fLoadPllstclInvalid)
+	{
+		cellInvalid = BiffStructurePtr(new Feat11RgInvalidCells);
+		cellInvalid->load(record);
 	}
 }
 

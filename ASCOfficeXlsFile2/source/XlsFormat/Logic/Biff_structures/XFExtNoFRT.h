@@ -47,12 +47,10 @@ public:
 	XFExtNoFRT(CFRecord& record);
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeXFExtNoFRT;
+	static const ElementType type = typeXFExtNoFRT;
 
 	virtual void load(CFRecord& record);
 
-
-private:
 	std::vector<ExtProp> rgExt;
 };
 

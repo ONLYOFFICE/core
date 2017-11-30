@@ -3734,6 +3734,18 @@ public:
             res = Read2(length, &Binary_DocumentTableReader::Read_Background, this, &oBackground);
             m_oDocumentWriter.m_oBackground.WriteString(oBackground.Write());
         }
+		else if ( c_oSerParType::BookmarkStart == type )
+		{
+			OOX::Logic::CBookmarkStart oBookmarkStart;
+			res = Read1(length, &Binary_DocumentTableReader::ReadBookmarkStart, this, &oBookmarkStart);
+			m_oDocumentWriter.m_oContent.WriteString(oBookmarkStart.toXML());
+		}
+		else if ( c_oSerParType::BookmarkEnd == type )
+		{
+			OOX::Logic::CBookmarkEnd oBookmarkEnd;
+			res = Read1(length, &Binary_DocumentTableReader::ReadBookmarkEnd, this, &oBookmarkEnd);
+			m_oDocumentWriter.m_oContent.WriteString(oBookmarkEnd.toXML());
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -3871,6 +3883,18 @@ public:
 		{
 			SdtWraper oSdt(1);
 			res = Read1(length, &Binary_DocumentTableReader::ReadSdt, this, &oSdt);
+		}
+		else if ( c_oSerParType::BookmarkStart == type )
+		{
+			OOX::Logic::CBookmarkStart oBookmarkStart;
+			res = Read1(length, &Binary_DocumentTableReader::ReadBookmarkStart, this, &oBookmarkStart);
+			m_oDocumentWriter.m_oContent.WriteString(oBookmarkStart.toXML());
+		}
+		else if ( c_oSerParType::BookmarkEnd == type )
+		{
+			OOX::Logic::CBookmarkEnd oBookmarkEnd;
+			res = Read1(length, &Binary_DocumentTableReader::ReadBookmarkEnd, this, &oBookmarkEnd);
+			m_oDocumentWriter.m_oContent.WriteString(oBookmarkEnd.toXML());
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4267,6 +4291,57 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
+	int ReadBookmarkStart(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CBookmarkStart* pBookmarkStart = static_cast<OOX::Logic::CBookmarkStart*>(poResult);
+		if ( c_oSerBookmark::Id == type )
+		{
+			pBookmarkStart->m_oId.Init();
+			pBookmarkStart->m_oId->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if ( c_oSerBookmark::Name == type )
+		{
+			pBookmarkStart->m_sName.Init();
+			pBookmarkStart->m_sName->append(m_oBufferedStream.GetString3(length));
+		}
+		else if ( c_oSerBookmark::DisplacedByCustomXml == type )
+		{
+			pBookmarkStart->m_oDisplacedByCustomXml.Init();
+			pBookmarkStart->m_oDisplacedByCustomXml->SetValue((SimpleTypes::EDisplacedByCustomXml)m_oBufferedStream.GetUChar());
+		}
+		else if ( c_oSerBookmark::ColFirst == type )
+		{
+			pBookmarkStart->m_oColFirst.Init();
+			pBookmarkStart->m_oColFirst->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if ( c_oSerBookmark::ColLast == type )
+		{
+			pBookmarkStart->m_oColLast.Init();
+			pBookmarkStart->m_oColLast->SetValue(m_oBufferedStream.GetLong());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadBookmarkEnd(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Logic::CBookmarkEnd* pBookmarkEnd = static_cast<OOX::Logic::CBookmarkEnd*>(poResult);
+		if ( c_oSerBookmark::Id == type )
+		{
+			pBookmarkEnd->m_oId.Init();
+			pBookmarkEnd->m_oId->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if ( c_oSerBookmark::DisplacedByCustomXml == type )
+		{
+			pBookmarkEnd->m_oDisplacedByCustomXml.Init();
+			pBookmarkEnd->m_oDisplacedByCustomXml->SetValue((SimpleTypes::EDisplacedByCustomXml)m_oBufferedStream.GetUChar());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
 
 	int ReadHyperlink(BYTE type, long length, void* poResult)
 	{		
@@ -4459,6 +4534,18 @@ public:
             GetRunStringWriter().WriteString(std::wstring(_T("<m:sSup>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathSSup, this, poResult);
             GetRunStringWriter().WriteString(std::wstring(_T("</m:sSup>")));
+		}
+		else if ( c_oSer_OMathContentType::BookmarkStart == type )
+		{
+			OOX::Logic::CBookmarkStart oBookmarkStart;
+			res = Read1(length, &Binary_DocumentTableReader::ReadBookmarkStart, this, &oBookmarkStart);
+			GetRunStringWriter().WriteString(oBookmarkStart.toXML());
+		}
+		else if ( c_oSer_OMathContentType::BookmarkEnd == type )
+		{
+			OOX::Logic::CBookmarkEnd oBookmarkEnd;
+			res = Read1(length, &Binary_DocumentTableReader::ReadBookmarkEnd, this, &oBookmarkEnd);
+			GetRunStringWriter().WriteString(oBookmarkEnd.toXML());
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -6923,6 +7010,18 @@ public:
 			SdtWraper oSdt(2);
 			res = Read1(length, &Binary_DocumentTableReader::ReadSdt, this, &oSdt);
 		}
+		else if (c_oSerDocTableType::BookmarkStart == type)
+		{
+			OOX::Logic::CBookmarkStart oBookmarkStart;
+			res = Read1(length, &Binary_DocumentTableReader::ReadBookmarkStart, this, &oBookmarkStart);
+			pCStringWriter->WriteString(oBookmarkStart.toXML());
+		}
+		else if (c_oSerDocTableType::BookmarkEnd == type)
+		{
+			OOX::Logic::CBookmarkEnd oBookmarkEnd;
+			res = Read1(length, &Binary_DocumentTableReader::ReadBookmarkEnd, this, &oBookmarkEnd);
+			pCStringWriter->WriteString(oBookmarkEnd.toXML());
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -6959,6 +7058,18 @@ public:
 		{
 			SdtWraper oSdt(3);
 			res = Read1(length, &Binary_DocumentTableReader::ReadSdt, this, &oSdt);
+		}
+		else if (c_oSerDocTableType::BookmarkStart == type)
+		{
+			OOX::Logic::CBookmarkStart oBookmarkStart;
+			res = Read1(length, &Binary_DocumentTableReader::ReadBookmarkStart, this, &oBookmarkStart);
+			pCStringWriter->WriteString(oBookmarkStart.toXML());
+		}
+		else if (c_oSerDocTableType::BookmarkEnd == type)
+		{
+			OOX::Logic::CBookmarkEnd oBookmarkEnd;
+			res = Read1(length, &Binary_DocumentTableReader::ReadBookmarkEnd, this, &oBookmarkEnd);
+			pCStringWriter->WriteString(oBookmarkEnd.toXML());
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

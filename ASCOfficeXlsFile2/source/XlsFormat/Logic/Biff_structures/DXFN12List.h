@@ -31,10 +31,10 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
-#include <Logic/Biff_structures/BiffString.h>
-#include <Logic/Biff_structures/DXFN.h>
-#include <Logic/Biff_structures/XFExtNoFRT.h>
+#include "../Biff_records/BiffRecord.h"
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/DXFN.h"
+#include "../Biff_structures/XFExtNoFRT.h"
 
 namespace XLS
 {
@@ -52,9 +52,11 @@ public:
 	
 	virtual void load(CFRecord& record);
 
-
-	DXFN dxfn;
-	XFExtNoFRT xfext;
+	DXFN		dxfn;
+	XFExtNoFRT	xfext;
+//-----------------------------------------------------------------
+	bool		bExist;
+	int			size;
 };
 
 typedef boost::shared_ptr<DXFN12List> DXFN12ListPtr;

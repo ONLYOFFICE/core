@@ -84,14 +84,14 @@ int Selection::serialize(std::wostream & stream)
 			//	default:					CP_XML_ATTR(L"pane", L"topLeft"); 
 			}
 
-			if (*activeCell.value() != L"A1") 
-				CP_XML_ATTR(L"activeCell", *activeCell.value());
+			if (activeCell != L"A1") 
+				CP_XML_ATTR(L"activeCell", activeCell);
 
 			if (irefAct != 0) 
 				CP_XML_ATTR(L"activeCellId", irefAct);
 
-			if (*sqref.value() != L"A1") 
-				CP_XML_ATTR(L"sqref", *sqref.value());
+			if (sqref != L"A1") 
+				CP_XML_ATTR(L"sqref", sqref);
 		}
 	}
 	return 0;

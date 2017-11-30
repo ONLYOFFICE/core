@@ -83,12 +83,9 @@ int Number::serialize(std::wostream & stream)
 			{
 				CP_XML_ATTR(L"s", cell.ixfe - global_info_->cellStyleXfs_count);
 			}
-			if (num.value())
+			CP_XML_NODE(L"v")
 			{
-				CP_XML_NODE(L"v")
-				{
-					CP_XML_STREAM() << STR::double2str(num);
-				}
+				CP_XML_STREAM() << std::to_wstring(num.data.value);
 			}
 		}			
 	}

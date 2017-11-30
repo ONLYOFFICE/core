@@ -38,8 +38,6 @@
 namespace XLS
 {
 
-
-// Logical representation of Pane record in BIFF8
 class Pane: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Pane)
@@ -49,20 +47,18 @@ public:
 	~Pane();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typePane;
+	static const ElementType type = typePane;
 
-//-----------------------------
 	_UINT16		x;
 	_UINT16		y;
 	_UINT16		rwTop;
 	_UINT16		colLeft;
 	PaneType	pnnAcct;
 	
-	BIFF_BSTR	topLeftCell;
+	std::wstring	topLeftCell;
 };
 
 } // namespace XLS

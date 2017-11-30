@@ -33,20 +33,17 @@
 #include "xlsx_conversion_context.h"
 
 #include <iostream>
-
-#include "simple_xml_writer.h"
+#include <simple_xml_writer.h>
 
 #include "xlsx_package.h"
 
-#include <boost/foreach.hpp>
-#include <boost/lexical_cast.hpp>
 
 namespace oox {
     
 
 xlsx_conversion_context::xlsx_conversion_context( package::xlsx_document * outputDocument)	: output_document_(outputDocument),
 	next_vml_file_id_				( 1 ),
-	table_context_				( *this ), 
+	sheet_context_					( *this ), 
 	xlsx_drawing_context_handle_	( next_vml_file_id_, get_mediaitems())
 {
 }
@@ -56,7 +53,7 @@ xlsx_conversion_context::~xlsx_conversion_context()
 
 xlsx_comments_context & xlsx_conversion_context::get_comments_context()
 {
-    return get_table_context().get_comments_context();
+    return get_sheet_context().get_comments_context();
 }
 
 xlsx_comments_context_handle & xlsx_conversion_context::get_comments_context_handle()
@@ -66,7 +63,7 @@ xlsx_comments_context_handle & xlsx_conversion_context::get_comments_context_han
 
 xlsx_drawing_context & xlsx_conversion_context::get_drawing_context()
 {
-    return get_table_context().get_drawing_context();
+    return get_sheet_context().get_drawing_context();
 }
 
 void xlsx_conversion_context::start_document()
@@ -118,38 +115,58 @@ oox_activeX_context & xlsx_conversion_context::current_activeX()
         throw std::runtime_error("internal error");
     }
 }
-bool xlsx_conversion_context::start_table()
+bool xlsx_conversion_context::start_sheet()
 {
     sheets_.push_back(xlsx_xml_worksheet::create());
-    get_table_context().start_table();
+    get_sheet_context().start_table();
 
 	return true;
 }
 
-void xlsx_conversion_context::set_table_type(int type)
+void xlsx_conversion_context::set_sheet_type(int type)
 {
 	if (sheets_.empty()) return;
 
 	sheets_.back()->type = type;
 	if (type == 3)
 	{
-		get_table_context().set_chart_view();
+		get_sheet_context().set_chart_view();
 	}
-
 }
-void xlsx_conversion_context::set_table_name(const std::wstring & name)
+void xlsx_conversion_context::start_table()
+{
+}
+void xlsx_conversion_context::end_table()
+{
+	int index = tables_context_.get_count();
+
+	std::wstring rid = L"tpId" + std::to_wstring(index);
+
+	current_sheet().sheet_rels().add(oox::relationship(rid,
+		L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/table", 
+		L"../tables/table" + std::to_wstring(index) +L".xml"));
+
+	CP_XML_WRITER(current_sheet().tableParts())
+	{
+        CP_XML_NODE(L"tablePart")
+        {
+			CP_XML_ATTR(L"r:id", rid);
+		}
+	}
+}
+void xlsx_conversion_context::set_sheet_name(const std::wstring & name)
 {
 	if (name.empty()) return;
 
 	sheets_.back()->name = name;
 }
-void xlsx_conversion_context::set_table_state(const std::wstring & state)
+void xlsx_conversion_context::set_sheet_state(const std::wstring & state)
 {
 	if (state.empty()) return;
 
 	sheets_.back()->state = state;
 }
-void xlsx_conversion_context::set_table_id(int id)
+void xlsx_conversion_context::set_sheet_id(int id)
 {
 	if (id < 0) return;
 	sheets_.back()->id = id;
@@ -186,17 +203,17 @@ void xlsx_conversion_context::end_external()
 }
 
 
-void xlsx_conversion_context::end_table()
+void xlsx_conversion_context::end_sheet()
 {
-	get_table_context().serialize_ole_objects	(current_sheet().ole_objects());
-	get_table_context().serialize_controls		(current_sheet().activeXs());
+	get_sheet_context().serialize_ole_objects	(current_sheet().ole_objects());
+	get_sheet_context().serialize_controls		(current_sheet().activeXs());
 
-	get_table_context().dump_rels_drawing(current_sheet().sheet_rels());
+	get_sheet_context().dump_rels_drawing(current_sheet().sheet_rels());
 	
-	get_table_context().serialize_hyperlinks(current_sheet().hyperlinks());
-	get_table_context().dump_rels_hyperlinks(current_sheet().sheet_rels());
+	get_sheet_context().serialize_hyperlinks(current_sheet().hyperlinks());
+	get_sheet_context().dump_rels_hyperlinks(current_sheet().sheet_rels());
 
-    get_table_context().end_table();
+    get_sheet_context().end_table();
 }
 
 xlsx_drawing_context_handle & xlsx_conversion_context::get_drawing_context_handle()
@@ -439,7 +456,19 @@ void xlsx_conversion_context::end_document()
 			}
 
 		}
+		int table_parts_count = tables_context_.get_count();
+		if (table_parts_count > 0)
+		{
+			for (int i = 0; i < table_parts_count; i++)
+			{
+				package::table_part_content_ptr content = package::table_part_content::create();
 
+				tables_context_.dump_rels(i, content->get_rels());
+				tables_context_.write_to(i, content->content());
+
+				output_document_->get_xl_files().add_table_part(content);	
+			}
+		}
 		output_document_->get_xl_files().set_workbook( package::simple_element::create(L"workbook.xml", strm_workbook.str()) );
 
 		output_document_->content_type().set_media(get_mediaitems());

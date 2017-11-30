@@ -48,6 +48,14 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType type = typeFEAT;
+	
+	struct _data
+	{
+		BaseObjectPtr					m_Feat; 
+		std::vector<BaseObjectPtr>		m_arContinueFrt;
+	};
+	BaseObjectPtr						m_FeatHdr;
+	std::vector<_data>					m_arFEAT;
 };
 
 } // namespace XLS

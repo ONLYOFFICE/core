@@ -46,13 +46,15 @@ static inline void trim(std::wstring &s)
 		if (s[i] != 0) break;
 		else new_size--;
 	}
-	if (new_size < s.length())
+	if (new_size < (int)s.length())
 		s.erase(new_size);
 }
 
 AutoFilter::AutoFilter()
 {
 	wTopN = wJoin = 0;
+	size = -1;
+	bExist = false;
 }
 
 
@@ -68,6 +70,15 @@ BaseObjectPtr AutoFilter::clone()
 
 void AutoFilter::readFields(CFRecord& record)
 {
+	size_t pos_record = record.getRdPtr();
+
+	if (size < 0) size = record.getDataSize() - pos_record;
+
+	if (size > 0)
+	{
+		bExist = true;
+	}
+
 	m_bAutoFilter12 = false;
 
 	unsigned short flags;
@@ -93,13 +104,13 @@ void AutoFilter::readFields(CFRecord& record)
 		record >> doper2;
 	}
 
-	if ((doper1.vt == BIFF_BYTE(0)) && (doper2.vt == BIFF_BYTE(0)))
+	if (doper1.vt == 0 && doper2.vt == 0)
 	{
 		m_bAutoFilter12 = true;	
 		return;
 	}
 
-	if (doper1.vt == BIFF_BYTE(0x06))
+	if (doper1.vt == 0x06)
 	{
 		XLUnicodeStringNoCch s;
 		s.setSize(doper1.vtValueStr.cch);
@@ -109,7 +120,7 @@ void AutoFilter::readFields(CFRecord& record)
 		trim(str1);
 	}
 
-	if (doper2.vt == BIFF_BYTE(0x06))
+	if (doper2.vt == 0x06)
 	{
 		XLUnicodeStringNoCch s;
 		s.setSize(doper2.vtValueStr.cch);
@@ -119,9 +130,9 @@ void AutoFilter::readFields(CFRecord& record)
 		trim(str2);
 	}	
 
-	if (record.getRdPtr()  < record.getDataSize())
+	if (record.getRdPtr() - pos_record < size)
 	{
-		int sz = record.getDataSize() - record.getRdPtr();
+		int sz = size - (record.getRdPtr() - pos_record);
 		char *dd = new char [sz];
 		
 		memcpy(dd, record.getCurData<char>(), sz);

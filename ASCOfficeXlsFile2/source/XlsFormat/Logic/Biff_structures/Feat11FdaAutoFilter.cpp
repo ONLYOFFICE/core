@@ -47,9 +47,11 @@ void Feat11FdaAutoFilter::load(CFRecord& record)
 	record >> cbAutoFilter;	
 	record.skipNunBytes(2);	
 
-	_UINT32 size = cbAutoFilter;
-	if (cbAutoFilter)
+	if (cbAutoFilter > 0 && cbAutoFilter < 2080)
+	{
+		recAutoFilter.size = cbAutoFilter;
 		recAutoFilter.readFields(record);
+	}
 }
 
 } // namespace XLS

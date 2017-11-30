@@ -642,6 +642,11 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtSplitMenuColorContainer.cpp \
     ../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtTertiaryFOPT.cpp \
     ../XlsFormat/Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.cpp \
+    ../XlsFormat/Logic/Biff_structures/ListParsedFormula.cpp \
+    ../XlsFormat/Logic/Biff_structures/CachedDiskHeader.cpp \
+    ../XlsFormat/Logic/Biff_structures/Feat11Fmla.cpp \
+    ../XlsFormat/Logic/Biff_structures/Feat11WSSListInfo.cpp \
+    ../XlsFormat/Logic/Biff_structures/Feat11XMap.cpp \
     ../XlsFormat/Logic/Biff_unions/AI.cpp \
     ../XlsFormat/Logic/Biff_unions/ATTACHEDLABEL_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/AUTOFILTER_bu.cpp \
@@ -842,6 +847,7 @@ SOURCES +=  \
     ../XlsXlsxConverter/xlsx_textcontext.cpp \
     ../XlsXlsxConverter/xlsx_chart_context.cpp \
     ../XlsXlsxConverter/xlsx_pivots_context.cpp \
+    ../XlsXlsxConverter/xlsx_sheet_context.cpp \
     ../XlsXlsxConverter/xlsx_external_context.cpp \
     ../XlsXlsxConverter/xlsx_activeX_context.cpp \
     ../XlsXlsxConverter/xlsx_comments.cpp \
@@ -1424,6 +1430,11 @@ HEADERS +=  \
     ../XlsFormat/Logic/Biff_structures/TxtWf.h \
     ../XlsFormat/Logic/Biff_structures/Xnum.h \
     ../XlsFormat/Logic/Biff_structures/PBT.h \
+    ../XlsFormat/Logic/Biff_structures/ListParsedFormula.h \
+    ../XlsFormat/Logic/Biff_structures/CachedDiskHeader.h \
+    ../XlsFormat/Logic/Biff_structures/Feat11Fmla.h \
+    ../XlsFormat/Logic/Biff_structures/Feat11WSSListInfo.h \
+    ../XlsFormat/Logic/Biff_structures/Feat11XMap.h \
     ../XlsFormat/Logic/Biff_structures/FontInfo.h \
     ../XlsFormat/Logic/Biff_structures/ODRAW/IMsoArray.h \
     ../XlsFormat/Logic/Biff_structures/ODRAW/MSOCR.h \
@@ -1601,6 +1612,7 @@ HEADERS +=  \
     ../XlsXlsxConverter/xlsx_conversion_context.h \
     ../XlsXlsxConverter/xlsx_drawing_context.h \
     ../XlsXlsxConverter/xlsx_drawings.h \
+    ../XlsXlsxConverter/xlsx_sheet_context.cpp \
     ../XlsXlsxConverter/xlsx_pivots_context.cpp \
     ../XlsXlsxConverter/xlsx_hyperlinks.h \
     ../XlsXlsxConverter/xlsx_output_xml.h \

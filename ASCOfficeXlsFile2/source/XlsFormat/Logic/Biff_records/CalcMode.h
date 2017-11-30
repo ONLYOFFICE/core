@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of CalcMode record in BIFF8
 class CalcMode: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(CalcMode)
@@ -53,8 +51,7 @@ public:
 
 	static const ElementType	type = typeCalcMode;
 
-//-----------------------------
-	BIFF_BSTR fAutoRecalc;
+	std::wstring fAutoRecalc;
 
 };
 

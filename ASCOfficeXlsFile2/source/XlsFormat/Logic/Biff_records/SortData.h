@@ -58,8 +58,8 @@ public:
 	bool			fAltMethod;
 	unsigned char	sfp;
 
-	BIFF_DWORD		cconditions;
-	BIFF_DWORD		idParent;
+	_UINT32			cconditions;
+	_UINT32			idParent;
 
 	BiffStructurePtrVector	sortCond12Array;
 	FrtHeader				frtHeader;

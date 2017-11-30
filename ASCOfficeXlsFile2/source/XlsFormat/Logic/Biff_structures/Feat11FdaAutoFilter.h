@@ -32,9 +32,9 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/BiffString.h>
-#include <Logic/Biff_records/AutoFilter.h>
 
+#include "BiffString.h"
+#include "../Biff_records/AutoFilter.h"
 
 namespace XLS
 {
@@ -50,7 +50,6 @@ public:
 	static const ElementType	type = typeFeat11FdaAutoFilter;
 	
 	virtual void load(CFRecord& record);
-
 
 	_UINT32	cbAutoFilter;
 	AutoFilter recAutoFilter;

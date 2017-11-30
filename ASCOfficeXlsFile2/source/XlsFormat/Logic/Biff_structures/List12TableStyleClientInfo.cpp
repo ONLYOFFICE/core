@@ -57,11 +57,11 @@ void List12TableStyleClientInfo::load(CFRecord& record)
 	unsigned short flags;
 	record >> flags;
 
-	fFirstColumn = static_cast<unsigned char>(GETBITS(flags, 0, 1));
-	fLastColumn = static_cast<unsigned char>(GETBITS(flags, 1, 2));
-	fRowStripes = static_cast<unsigned char>(GETBITS(flags, 3, 4));
-	fColumnStripes = static_cast<unsigned char>(GETBITS(flags, 5, 6));
-	fDefaultStyle  = static_cast<unsigned char>(GETBITS(flags, 9, 10));
+	nFirstColumn	= GETBITS(flags, 0, 1);
+	nLastColumn		= GETBITS(flags, 1, 2);
+	nRowStripes		= GETBITS(flags, 3, 4);
+	nColumnStripes	= GETBITS(flags, 5, 6);
+	nDefaultStyle	= GETBITS(flags, 9, 10);
 
 	record >> stListStyleName;
 }

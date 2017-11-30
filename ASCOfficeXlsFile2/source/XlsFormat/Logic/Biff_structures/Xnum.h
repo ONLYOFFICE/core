@@ -43,7 +43,7 @@ class Xnum : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeXnum;
+	static const ElementType type = typeXnum;
 	
 	virtual void load(CFRecord& record);
 

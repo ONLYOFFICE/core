@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of TABLESTYLES union of records 
 class TABLESTYLES: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(TABLESTYLES)
@@ -49,7 +47,7 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typeTABLESTYLES;
+	static const ElementType type = typeTABLESTYLES;
 
 	int serialize(std::wostream & stream);
 //----------------------------------------------------------------------------------

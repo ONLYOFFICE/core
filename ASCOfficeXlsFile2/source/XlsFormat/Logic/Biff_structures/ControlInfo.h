@@ -46,11 +46,12 @@ public:
 	
 	virtual void load(CFRecord& record);
 
-	unsigned char	fDefault;
-	unsigned char	fHelp;
-	unsigned char	fCancel;
-	unsigned char	fDismiss;
-	_UINT16			accel1;
+	bool	fDefault;
+	bool	fHelp;
+	bool	fCancel;
+	bool	fDismiss;
+
+	_UINT16	accel1;
 };
 
 } // namespace XLS

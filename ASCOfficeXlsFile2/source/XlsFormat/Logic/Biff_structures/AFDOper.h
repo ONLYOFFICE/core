@@ -54,7 +54,6 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
 	static const ElementType	type = typeAFDOper;
 
 	unsigned char	vt;

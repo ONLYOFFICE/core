@@ -692,7 +692,7 @@ void GlobalsSubstream::UpdateDefineNames()
 		std::wstring name;
 		std::wstring comment;
 
-		if (lbl->fBuiltin)	name = lbl->Name.value().get_value_or(L"");	
+		if (lbl->fBuiltin)	name = lbl->Name;	
 		if (name.empty())	name = lbl->Name_bin.value();
 		
 		NameCmt *namecmt = dynamic_cast<NameCmt*>(LBL_->m_NameCmt.get());

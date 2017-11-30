@@ -619,6 +619,11 @@
 #include "../XlsFormat/Logic/Biff_structures/AFDOperBoolErr.cpp"
 #include "../XlsFormat/Logic/Biff_structures/AFDOperXNum.cpp"
 #include "../XlsFormat/Logic/Biff_structures/PivotParsedFormula.cpp"
+#include "../XlsFormat/Logic/Biff_structures/ListParsedFormula.cpp"
+#include "../XlsFormat/Logic/Biff_structures/CachedDiskHeader.cpp"
+#include "../XlsFormat/Logic/Biff_structures/Feat11Fmla.cpp"
+#include "../XlsFormat/Logic/Biff_structures/Feat11WSSListInfo.cpp"
+#include "../XlsFormat/Logic/Biff_structures/Feat11XMap.cpp"
 
 #include "../XlsFormat/Logic/Biff_unions/AI.cpp"
 #include "../XlsFormat/Logic/Biff_unions/ATTACHEDLABEL_bu.cpp"

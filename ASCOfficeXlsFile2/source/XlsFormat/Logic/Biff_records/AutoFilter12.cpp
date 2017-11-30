@@ -58,14 +58,6 @@ void AutoFilter12::readFields(CFRecord& record)
 	
 	record >> frtRefHeader >> iEntry >> fHideArrow >> ft >> cft >> cCriteria >> cDateGroupings >> flags >> unused2 >> idList;
 
-	_UINT16 _iEntry = iEntry;
-	_UINT32 _fHideArrow = fHideArrow;
-	_UINT32 _ft = ft;
-	_UINT32 _cft = cft;
-	_UINT32 _cCriteria = cCriteria;
-	_UINT32 _cDateGroupings = cDateGroupings;
-	_UINT32 _idList = idList;	
-
 	// TODO доделать
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 
@@ -82,11 +74,12 @@ void AutoFilter12::readFields(CFRecord& record)
 		record >> frtRefHeaderContinue;
 		if (frtRefHeaderContinue.rt == 0x087F)
 		{		
-			if ( (ft == BIFF_DWORD(0)) && (cCriteria > 0) )
+			if ( ft == 0 && cCriteria > 0)
 			{
 				AF12CriteriaPtr item(new AF12Criteria);
 				item->load(record);
-				rgbAF12Criteries.push_back(item);
+				
+				arAF12Criteries.push_back(item);
 			}
 		}		
 	}

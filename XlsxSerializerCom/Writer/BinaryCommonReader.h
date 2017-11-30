@@ -79,7 +79,7 @@ namespace BinXlsxRW {
 					return c_oSerConstants::ReadOk;
 				} 
 				res = (((CallbackType*)poFuncObj)->*fReadFunction)(type, length, arg);
-                if(res == c_oSerConstants::ReadUnknown && length > 0)
+				if(res == c_oSerConstants::ReadUnknown)
 				{
 					m_oBufferedStream.GetPointer(length);
 					res = c_oSerConstants::ReadOk;

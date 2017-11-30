@@ -167,15 +167,13 @@ int PAGESETUP::serialize(std::wostream & stream)
 		{
 			if (setup)
 			{
-				if (setup->numHdr.value())
 				{
-					CP_XML_ATTR(L"header", setup->numHdr);
+					CP_XML_ATTR(L"header", std::to_wstring(setup->numHdr.data.value));
 					header = true;
 				}
 
-				if (setup->numFtr.value())
 				{
-					CP_XML_ATTR(L"footer", setup->numFtr);
+					CP_XML_ATTR(L"footer", std::to_wstring(setup->numFtr.data.value));
 					footer = true;
 				}
 			}
@@ -187,26 +185,26 @@ int PAGESETUP::serialize(std::wostream & stream)
 					if (!t)
 					{
 						TopMargin* top = dynamic_cast<TopMargin*>(it->get());
-						CP_XML_ATTR(L"top", top->num);
+						CP_XML_ATTR(L"top", std::to_wstring(top->num.data.value));
 						t = true;
 					}break;
 				case typeBottomMargin:
 					if (!b)
 					{
 						BottomMargin* bottom = dynamic_cast<BottomMargin*>(it->get());
-						CP_XML_ATTR(L"bottom", bottom->num);
+						CP_XML_ATTR(L"bottom", std::to_wstring(bottom->num.data.value));
 						b= true;
 					}break;
 				case typeLeftMargin:
 					{
 						LeftMargin* left = dynamic_cast<LeftMargin*>(it->get());
-						CP_XML_ATTR(L"left", left->num);
+						CP_XML_ATTR(L"left", std::to_wstring(left->num.data.value));
 						l= true;
 					}break;				
 				case typeRightMargin:
 					{
 						RightMargin* right = dynamic_cast<RightMargin*>(it->get());
-						CP_XML_ATTR(L"right", right->num);
+						CP_XML_ATTR(L"right", std::to_wstring(right->num.data.value));
 						r= true;
 					}break;		
 				}

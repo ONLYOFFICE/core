@@ -46,7 +46,6 @@ UserSViewBegin::~UserSViewBegin()
 {
 }
 
-
 BaseObjectPtr UserSViewBegin::clone()
 {
 	return BaseObjectPtr(new UserSViewBegin(*this));

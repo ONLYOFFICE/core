@@ -87,6 +87,8 @@ int CommonSubstream::serialize_format(std::wostream & strm)
 	SheetExt *sheet_ext = dynamic_cast<SheetExt*>(m_SheetExt.get());
 	CodeName *code_name = dynamic_cast<CodeName*>(m_CodeName.get());
 
+	if (!code_name || !sheet_ext) return 0;
+
 	CP_XML_WRITER(strm)    
     {
 		CP_XML_NODE(L"sheetPr")

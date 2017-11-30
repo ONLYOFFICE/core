@@ -72,6 +72,7 @@ public:
 	std::wostream & picture_background();
 	std::wostream & dataValidations();
 	std::wostream & protection();
+	std::wostream & tableParts();
 
 	rels & sheet_rels();//hyperlink, background image, external, media ...
 

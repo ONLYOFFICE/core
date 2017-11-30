@@ -31,15 +31,20 @@
  */
 
 #include "FEAT11.h"
-#include <Logic/Biff_records/FeatHdr11.h>
-#include <Logic/Biff_records/Feature11.h>
-#include <Logic/Biff_records/Feature12.h>
-#include <Logic/Biff_records/ContinueFrt11.h>
-#include <Logic/Biff_records/List12.h>
-#include <Logic/Biff_records/AutoFilter12.h>
-#include <Logic/Biff_records/ContinueFrt12.h>
-#include <Logic/Biff_records/List12.h>
-#include <Logic/Biff_unions/SORTDATA12.h>
+#include "SORTDATA12.h"
+
+#include "../Biff_records/FeatHdr11.h"
+#include "../Biff_records/Feature12.h"
+#include "../Biff_records/ContinueFrt11.h"
+#include "../Biff_records/List12.h"
+#include "../Biff_records/AutoFilter12.h"
+#include "../Biff_records/ContinueFrt12.h"
+#include "../Biff_records/List12.h"
+
+#include "../Biff_structures/List12BlockLevel.h"
+#include "../Biff_structures/List12TableStyleClientInfo.h"
+#include "../Biff_structures/List12DisplayName.h"
+#include "../Biff_structures/Feat11FieldDataItem.h"
 
 namespace XLS
 {
@@ -53,8 +58,6 @@ FEAT11::FEAT11()
 FEAT11::~FEAT11()
 {
 }
-
-
 
 class Parenthesis_FEAT11_1: public ABNFParenthesis
 {
@@ -112,34 +115,138 @@ const bool FEAT11::loadContent(BinProcessor& proc)
 
 	while(!elements_.empty())
 	{
-		if (elements_.front()->get_type() == typeFeature11 || 
-			elements_.front()->get_type() == typeFeature12 )
+		switch(elements_.front()->get_type())
 		{
-			_data new_data;
-			new_data.m_Feature = elements_.front();
+			case typeFeature11: 
+			case typeFeature12:
+			{
+				_data new_data;
+				new_data.m_Feature = elements_.front();
 
-			m_arFEAT.push_back(new_data);
-		}
-
-		if (elements_.front()->get_type() == typeList12)
-		{
-			if (m_arFEAT.back().m_AutoFilter12)
-				m_arFEAT.back().m_arList12_second.push_back(elements_.front());
-			else
-				m_arFEAT.back().m_arList12.push_back(elements_.front());
-		}
-		if (elements_.front()->get_type() == typeAutoFilter12)
-		{
-			m_arFEAT.back().m_AutoFilter12 = elements_.front();
-		}
-		if (elements_.front()->get_type() == typeSORTDATA12)
-		{
-			m_arFEAT.back().m_SORTDATA12 = elements_.front();
+				m_arFEAT.push_back(new_data);
+			}break;
+			case typeList12:
+			{
+				if (m_arFEAT.back().m_AutoFilter12)
+				{
+					m_arFEAT.back().m_arList12_2.push_back(elements_.front());
+				}
+				else
+				{
+					m_arFEAT.back().m_arList12.push_back(elements_.front());
+				}
+			}break;
+			case typeAutoFilter12:
+			{
+				m_arFEAT.back().m_AutoFilter12 = elements_.front();
+			}break;
+			case typeSORTDATA12:
+			{
+				m_arFEAT.back().m_SORTDATA12 = elements_.front();
+			}break;
 		}
 		elements_.pop_front();
 	}
 	return true;
 }
 
+int FEAT11::serialize(std::wostream & strm, size_t index)
+{
+	FeatHdr11 * feature = dynamic_cast<FeatHdr11*>(m_FeatHdr11.get());
+
+	Feature11 * feature11 = dynamic_cast<Feature11*>(m_arFEAT[index].m_Feature.get());
+	Feature12 * feature12 = dynamic_cast<Feature12*>(m_arFEAT[index].m_Feature.get());
+
+	if (feature12 && !feature11)
+	{
+		feature11 = &feature12->feature11;
+	}
+	
+	List12BlockLevel			*block_level = NULL;
+	List12TableStyleClientInfo	*table_style = NULL;
+	List12DisplayName			*display_name = NULL;
+
+	for (size_t i = 0; i < m_arFEAT[index].m_arList12.size(); i++)
+	{
+		List12* list_prop = dynamic_cast<List12*>(m_arFEAT[index].m_arList12[i].get());
+		if (!list_prop) continue;
+
+		if (!block_level)	block_level		= dynamic_cast<List12BlockLevel*>			(list_prop->rgbList12.get());
+		if (!table_style)	table_style		= dynamic_cast<List12TableStyleClientInfo*>	(list_prop->rgbList12.get());
+		if (!display_name)	display_name	= dynamic_cast<List12DisplayName*>			(list_prop->rgbList12.get());
+	}
+//----------------------------------------------------------------------------------------------------------------------------------
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"table")
+		{
+			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");	
+			if (display_name)
+			{
+				if (!display_name->stListName.value().empty())
+					CP_XML_ATTR(L"displayName", display_name->stListName.value());	
+				if (!display_name->stListComment.value().empty())
+					CP_XML_ATTR(L"comment", display_name->stListComment.value());	
+			}
+			if (block_level)
+			{
+				if (!block_level->stData.value().empty())
+					CP_XML_ATTR(L"dataCellStyle", block_level->stData.value());	
+			}
+			if (feature11)
+			{
+				CP_XML_ATTR(L"id", feature11->rgbFeat.idList);
+				CP_XML_ATTR(L"name", feature11->rgbFeat.rgbName.value());
+				CP_XML_ATTR(L"ref", feature11->sqref);
+
+				if (feature11->rgbFeat.fAutoFilter)
+				{
+					CP_XML_NODE(L"autoFilter")
+					{
+						CP_XML_ATTR(L"ref", feature11->sqref);
+					}
+				}
+
+				CP_XML_NODE(L"tableColumns")
+				{
+					CP_XML_ATTR(L"count", feature11->rgbFeat.arFieldData.size());
+					for (size_t i = 0; i < feature11->rgbFeat.arFieldData.size(); i++)
+					{
+						Feat11FieldDataItem* field = dynamic_cast<Feat11FieldDataItem*>(feature11->rgbFeat.arFieldData[i].get());
+						if(!field) continue;
+
+						CP_XML_NODE(L"tableColumn")
+						{
+							CP_XML_ATTR(L"id", field->idField);
+							CP_XML_ATTR(L"name", field->strCaption.value());
+
+							if (field->dxfFmtAgg.bExist || 
+								field->dxfFmtInsertRow.bExist)
+							{
+							//if (!field->stData.value().empty())
+							//	CP_XML_ATTR(L"dataCellStyle", field->stData.value());	
+							//if (!field->stData.value().empty())
+							//	CP_XML_ATTR(L"dataDxfId", field->stData.value());	
+							}
+						}
+					}
+				}
+			}
+
+			if (table_style)
+			{
+				CP_XML_NODE(L"tableStyleInfo")
+				{
+					CP_XML_ATTR(L"name", table_style->stListStyleName.value());	
+					CP_XML_ATTR(L"showFirstColumn", table_style->nFirstColumn);	
+					CP_XML_ATTR(L"showLastColumn", table_style->nLastColumn);	
+					CP_XML_ATTR(L"showRowStripes", table_style->nRowStripes);	
+					CP_XML_ATTR(L"showColumnStripes", table_style->nColumnStripes);	
+				}
+			}
+		}
+	}
+	return 0;
+}
 } // namespace XLS
 

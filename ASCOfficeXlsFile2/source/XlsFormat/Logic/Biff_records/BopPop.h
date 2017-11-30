@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
 
-
-// Logical representation of BopPop record in BIFF8
 class BopPop: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(BopPop)
@@ -47,7 +46,6 @@ public:
 	~BopPop();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
@@ -63,7 +61,7 @@ public:
 	_INT16			pcSplitPercent;
 	_INT16			pcPie2Size;
 	_INT16			pcGap;
-	BIFF_DOUBLE		numSplitValue;
+	Xnum			numSplitValue;
 	
 	bool			fHasShadow;
 

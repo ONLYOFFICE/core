@@ -30,22 +30,21 @@
  *
  */
 
-#include "Feat11FieldDataItem.h"
 #include <Binary/CFRecord.h>
+#include "Feat11FieldDataItem.h"
+#include "CellRangeRef.h"
 
 namespace XLS
 {
-
-
+Feat11FieldDataItem::Feat11FieldDataItem(_UINT32 _lt, bool bDskHeaderCache) : lt(_lt), bDiskHdrCache(bDskHeaderCache)
+{
+}
 BiffStructurePtr Feat11FieldDataItem::clone()
 {
 	return BiffStructurePtr(new Feat11FieldDataItem(*this));
 }
-
-
 void Feat11FieldDataItem::load(CFRecord& record)
 {	
-
 	record >> idField;
 	record >> lfdt;
 	record >> lfxidt;
@@ -56,15 +55,15 @@ void Feat11FieldDataItem::load(CFRecord& record)
 	_UINT32 flags;
 	record >> flags;
 
-	fAutoFilter = static_cast<unsigned char>(GETBIT(flags, 0));
-	fAutoFilterHidden = static_cast<unsigned char>(GETBIT(flags, 1));
-	fLoadXmapi = static_cast<unsigned char>(GETBIT(flags, 2));
-	fLoadFmla = static_cast<unsigned char>(GETBIT(flags, 3));	
-	fLoadTotalFmla = static_cast<unsigned char>(GETBIT(flags, 7));
-	fLoadTotalArray = static_cast<unsigned char>(GETBIT(flags, 8));
-	fSaveStyleName = static_cast<unsigned char>(GETBIT(flags, 9));
-	fLoadTotalStr = static_cast<unsigned char>(GETBIT(flags, 10));
-	fAutoCreateCalcCol = static_cast<unsigned char>(GETBIT(flags, 11));
+	fAutoFilter			= GETBIT(flags, 0);
+	fAutoFilterHidden	= GETBIT(flags, 1);
+	fLoadXmapi			= GETBIT(flags, 2);
+	fLoadFmla			= GETBIT(flags, 3);	
+	fLoadTotalFmla		= GETBIT(flags, 7);
+	fLoadTotalArray		= GETBIT(flags, 8);
+	fSaveStyleName		= GETBIT(flags, 9);
+	fLoadTotalStr		= GETBIT(flags, 10);
+	fAutoCreateCalcCol	= GETBIT(flags, 11);
 
 	record >> cbFmtInsertRow;
 	record >> istnInsertRow;
@@ -75,12 +74,107 @@ void Feat11FieldDataItem::load(CFRecord& record)
 		return;//125 Planilhas de Excel.xls
 
 	if (cbFmtAgg > 0)
+	{
+		dxfFmtAgg.size = cbFmtAgg;
 		record >> dxfFmtAgg;
+	}
+	
 	if (cbFmtInsertRow > 0)
+	{
+		dxfFmtInsertRow.size = cbFmtInsertRow;
 		record >> dxfFmtInsertRow;
-	if (fAutoFilter == BIFF_BYTE(1))
+	}
+	
+	if (fAutoFilter)
+	{
 		record >> AutoFilter;
+	}
+
+	if (fLoadXmapi)
+	{
+		record >> AutoFilter;
+	}
+
+	if (fLoadFmla)
+	{
+		fmla.load(record);
+	}
+	if (fLoadTotalFmla)
+	{
+		if (fLoadTotalArray)
+		{
+			totalArrayFmla.load(record);
+		}	
+		else
+		{
+			totalFmla.load(record);
+		}	
+	}
+	record >> strTotal;
+
+	if (lt == 0x00000001)
+	{
+		wssInfo.lfdt = lfdt;
+		record >> wssInfo;
+	}
+	if (lt == 0x00000003)
+	{
+		record >> qsif;
+	}
+	if (bDiskHdrCache)
+	{
+		record >> dskHdrCache;
+	}
 }
 
+
+//---------------------------------------------------------------------------------------------------------
+BiffStructurePtr Feat11RgSharepointIdDel::clone()
+{
+	return BiffStructurePtr(new Feat11RgSharepointIdDel(*this));
+}
+void Feat11RgSharepointIdDel::load(CFRecord& record)
+{
+	record >> cId;
+
+	for (_UINT16 i = 0; i < cId; i++)
+	{
+		_UINT32 val;
+		record >> val;
+		rgId.push_back(val);
+	}
+}
+//---------------------------------------------------------------------------------------------------------
+BiffStructurePtr Feat11RgSharepointIdChange::clone()
+{
+	return BiffStructurePtr(new Feat11RgSharepointIdChange(*this));
+}
+void Feat11RgSharepointIdChange::load(CFRecord& record)
+{
+	record >> cId;
+
+	for (_UINT16 i = 0; i < cId; i++)
+	{
+		_UINT32 val;
+		record >> val;
+		rgId.push_back(val);
+	}
+}
+//---------------------------------------------------------------------------------------------------------
+BiffStructurePtr Feat11RgInvalidCells::clone()
+{
+	return BiffStructurePtr(new Feat11RgInvalidCells(*this));
+}
+void Feat11RgInvalidCells::load(CFRecord& record)
+{
+	record >> cCellInvalid;
+
+	for (_UINT16 i = 0; i < cCellInvalid; i++)
+	{
+		Feat11CellStruct val;
+		record >> val.idxRow >> val.idxField;
+		rgCellInvalid.push_back(val);
+	}
+}
 } // namespace XLS
 

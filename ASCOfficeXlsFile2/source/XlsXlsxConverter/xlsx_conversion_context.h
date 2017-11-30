@@ -37,13 +37,14 @@
 #include "common.h"
 
 #include "xlsx_textcontext.h"
-#include "xlsx_tablecontext.h"
+#include "xlsx_sheet_context.h"
 #include "xlsx_drawing_context.h"
 #include "xlsx_chart_context.h"
 #include "xlsx_comments_context.h"
 #include "xlsx_pivots_context.h"
 #include "xlsx_external_context.h"
 #include "xlsx_activeX_context.h"
+#include "xlsx_tablecontext.h"
 
 #include "xlsx_output_xml.h"
 
@@ -66,15 +67,18 @@ public:
     void start_document();
     void end_document();
 
-	bool start_table();
-		void set_table_state(const std::wstring & state);
-		void set_table_type(int type);
- 		void set_table_name(const std::wstring & name);
-		void set_table_id(int id);
-   void end_table();
+	bool start_sheet();
+		void set_sheet_state(const std::wstring & state);
+		void set_sheet_type(int type);
+ 		void set_sheet_name(const std::wstring & name);
+		void set_sheet_id(int id);
+   void end_sheet();
 
     void start_chart();
 	void end_chart(){}
+
+    void start_table();
+	void end_table();
 
 	std::wstring start_activeX();
 	void end_activeX(){}
@@ -89,7 +93,7 @@ public:
 	std::wostream					& workbook_format()		{ return xlsx_workbook_pr_; }		
 
 	xlsx_text_context				& get_text_context()	{ return text_context_; }
-    xlsx_table_context				& get_table_context()	{ return table_context_; }
+    xlsx_sheet_context				& get_sheet_context()	{ return sheet_context_; }
     xlsx_xml_worksheet				& current_sheet();
  
 	oox_chart_context				& current_chart();
@@ -101,6 +105,7 @@ public:
 	xlsx_drawing_context_handle		& get_drawing_context_handle();	
  	xlsx_comments_context			& get_comments_context();
 	xlsx_comments_context_handle	& get_comments_context_handle();
+ 	xlsx_tables_context				& get_tables_context()	{return tables_context_;}
 
 	external_items & get_mediaitems() { return mediaitems_; }
 
@@ -114,9 +119,10 @@ private:
     package::xlsx_document				*output_document_;
 
 	external_items						mediaitems_;
-    xlsx_table_context					table_context_;
+    xlsx_sheet_context					sheet_context_;
     xlsx_text_context					text_context_;	
 	xlsx_pivots_context					pivots_context_;
+	xlsx_tables_context					tables_context_;
 
     std::vector<oox_chart_context_ptr>		charts_;    
 	std::vector<oox_external_context_ptr>	externals_;

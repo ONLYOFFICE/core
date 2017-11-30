@@ -15,7 +15,7 @@ cd "%SCRIPTPATH%%PLATFORM%"
 if exist "cef_binary.7z" (
     echo "cef_binary.7z already downloaded"
 ) else (
-    Powershell.exe Invoke-WebRequest -OutFile cef_binary.7z http://d2ettrnqo7v976.cloudfront.net/cef/2454/%PLATFORM%/cef_binary.7z
+    Powershell.exe Invoke-WebRequest -OutFile cef_binary.7z http://d2ettrnqo7v976.cloudfront.net/cef/3163/%PLATFORM%/cef_binary.7z
 )
 
 SET UNSIP_PROGRAMM="%ProgramFiles%\7-Zip\7z.exe"

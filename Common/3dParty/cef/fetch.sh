@@ -42,7 +42,7 @@ if [[ -f "cef_binary.7z" ]]
 then 
 echo "cef_binary already downloaded"
 else
-wget http://d2ettrnqo7v976.cloudfront.net/cef/2454/$platform$arch/cef_binary.7z
+wget http://d2ettrnqo7v976.cloudfront.net/cef/3163/$platform$arch/cef_binary.7z
 fi
 if [ -d cef_binary ]
 then

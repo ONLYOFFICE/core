@@ -939,7 +939,7 @@ namespace NSDoctRenderer
             MoveFileOpen(path, sFileCopy);
 
             COfficeFileFormatChecker oChecker;
-            if (!oChecker.isOfficeFile(path))
+            if (!oChecker.isOfficeFile(sFileCopy))
                 return false;
 
             if (oChecker.nFileType & AVS_OFFICESTUDIO_FILE_DOCUMENT)

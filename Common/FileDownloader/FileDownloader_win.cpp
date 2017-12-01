@@ -70,7 +70,7 @@ public :
     virtual int DownloadFile()
     {
         CoInitialize ( NULL );
-        if ( S_OK != _DownloadFile ( m_sFileUrl ) )
+        if ( /*S_OK != _DownloadFile ( m_sFileUrl )*/TRUE )
         {
             HRESULT hrResultAll = DownloadFileAll(m_sFileUrl, m_sFilePath);
 

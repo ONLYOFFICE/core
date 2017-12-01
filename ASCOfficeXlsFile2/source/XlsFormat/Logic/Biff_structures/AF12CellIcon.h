@@ -31,55 +31,28 @@
  */
 #pragma once
 
-#include <list>
+#include "BiffStructure.h"
 
-#include "xlsx_drawing_context.h"
-#include "xlsx_comments_context.h"
-#include "xlsx_hyperlinks.h"
-
-namespace oox {
-
-class xlsx_conversion_context;
-class xlsx_text_context;
-
-struct table_state
+namespace XLS
 {
-	table_state(xlsx_conversion_context & Context);
 
-	xlsx_hyperlinks				hyperlinks_;
-	xlsx_drawing_context		drawing_context_;
-	xlsx_comments_context		comments_context_;
-
-};
-typedef _CP_PTR(table_state) table_state_ptr;
-
-class xlsx_sheet_context
-{
+class AF12CellIcon: public BiffStructure
+{	
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(AF12CellIcon)
 public:
-    xlsx_sheet_context(xlsx_conversion_context & Context);
+	BiffStructurePtr clone();
 
-	void start_table();
-    void end_table();
+	AF12CellIcon();
+	~AF12CellIcon();
 
-	xlsx_drawing_context	& get_drawing_context();
-	xlsx_comments_context	& get_comments_context();
-	//
-	table_state_ptr & state();
+	virtual void load(CFRecord& record);
 
-	std::wstring	add_hyperlink(std::wstring const & ref, std::wstring const & target, std::wstring const & display, bool bExternal);
-	void			serialize_hyperlinks(std::wostream & _Wostream);
-	void			dump_rels_hyperlinks(rels & Rels);
-    
-	void			serialize_ole_objects(std::wostream & _Wostream);
-	void			serialize_controls(std::wostream & _Wostream);
-	
-	void			dump_rels_drawing(rels & Rels);
-private:
-    xlsx_conversion_context		& context_;
+	static const ElementType type = typeAF12CellIcon;
 
-	std::list<table_state_ptr>	tables_state_;
+	_UINT32 iIconSet;
+	_UINT32 iIcon;
 };
 
+typedef boost::shared_ptr<AF12CellIcon> AF12CellIconPtr;
 
-}
-
+} // namespace XLS

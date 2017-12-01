@@ -122,8 +122,6 @@ void OfficeArtFOPTE::load(XLS::CFRecord& record)
 	opid		= GETBITS(flags, 0, 13);
 	fBid		= GETBIT(flags, 14);
 	fComplex	= GETBIT(flags, 15);
-
-	// TODO: complex data shall be parsed here
 }
 
 OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)

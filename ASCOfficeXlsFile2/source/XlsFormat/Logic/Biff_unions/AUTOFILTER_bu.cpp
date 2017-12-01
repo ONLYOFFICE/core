@@ -31,11 +31,13 @@
  */
 
 #include "AUTOFILTER.h"
-#include <Logic/Biff_records/AutoFilterInfo.h>
-#include <Logic/Biff_records/AutoFilter12.h>
-#include <Logic/Biff_records/AutoFilter.h>
-#include <Logic/Biff_records/ContinueFrt12.h>
-#include <Logic/Biff_unions/SORTDATA12.h>
+#include "SORTDATA12.h"
+
+#include "../Biff_records/AutoFilterInfo.h"
+#include "../Biff_records/AutoFilter12.h"
+#include "../Biff_records/AutoFilter.h"
+#include "../Biff_records/ContinueFrt12.h"
+#include "../Biff_structures/AF12Criteria.h"
 
 namespace XLS
 {
@@ -45,11 +47,9 @@ AUTOFILTER::AUTOFILTER()
 {
 }
 
-
 AUTOFILTER::~AUTOFILTER()
 {
 }
-
 
 class Parenthesis_AUTOFILTER_1: public ABNFParenthesis
 {
@@ -78,7 +78,6 @@ BaseObjectPtr AUTOFILTER::clone()
 {
 	return BaseObjectPtr(new AUTOFILTER(*this));
 }
-
 
 // AUTOFILTER = AutoFilterInfo *(AutoFilter / (AutoFilter12 *ContinueFrt12)) *SORTDATA12
 const bool AUTOFILTER::loadContent(BinProcessor& proc)

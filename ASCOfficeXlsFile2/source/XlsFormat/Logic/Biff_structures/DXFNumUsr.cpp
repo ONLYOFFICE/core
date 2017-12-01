@@ -50,7 +50,10 @@ BiffStructurePtr DXFNumUsr::clone()
 
 void DXFNumUsr::load(CFRecord& record)
 {
-	record >> cb >> fmt;
+	record >> cb;
+	
+	fmt.setSize(cb);
+	record >> fmt;
 }
 
 

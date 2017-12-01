@@ -624,6 +624,7 @@
 #include "../XlsFormat/Logic/Biff_structures/Feat11Fmla.cpp"
 #include "../XlsFormat/Logic/Biff_structures/Feat11WSSListInfo.cpp"
 #include "../XlsFormat/Logic/Biff_structures/Feat11XMap.cpp"
+#include "../XlsFormat/Logic/Biff_structures/AF12CellIcon.cpp"
 
 #include "../XlsFormat/Logic/Biff_unions/AI.cpp"
 #include "../XlsFormat/Logic/Biff_unions/ATTACHEDLABEL_bu.cpp"

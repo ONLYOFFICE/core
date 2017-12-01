@@ -32,14 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/DXFN.h>
-#include <Logic/Biff_structures/CFParsedFormulaNoCCE.h>
+#include "../Biff_structures/DXFN.h"
+#include "../Biff_structures/CFParsedFormulaNoCCE.h"
 
 namespace XLS
 {
 
-
-// Logical representation of CF record in BIFF8
 class CF: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(CF)
@@ -50,7 +48,6 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeCF;
@@ -69,6 +66,7 @@ public:
 	CFParsedFormulaNoCCE rgce2;
 
 	BaseObjectPtr	m_CFEx;
+	BaseObjectPtr	m_CF12;
 
 	GlobalWorkbookInfoPtr global_info_;
 };

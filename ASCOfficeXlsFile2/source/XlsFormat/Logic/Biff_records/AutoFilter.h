@@ -73,9 +73,8 @@ public:
 	std::wstring str2;
 
 //----------------------------------------
-	int		size;
 	bool	bExist;
-
+	_UINT32	size;
 };
 
 } // namespace XLS

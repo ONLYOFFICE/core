@@ -217,9 +217,9 @@ int PAGESETUP::serialize(std::wostream & stream)
 			if (!r)			CP_XML_ATTR(L"right"	, 0.75);
 		}
 
-		CP_XML_NODE(L"pageSetup")
-		{
-		}
+		//CP_XML_NODE(L"pageSetup") - для chartsheet аккуратнее
+		//{
+		//}
 
 		if (m_Header || m_Footer)
 		{

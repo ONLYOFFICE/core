@@ -59,21 +59,6 @@ void xlsx_sheet_context::start_table()
 	tables_state_.push_back( table_state_ptr(new table_state(context_)));
 }
 
-void xlsx_sheet_context::set_chart_view()
-{
-	CP_XML_WRITER(context_.current_sheet().sheetViews())
-	{
-        CP_XML_NODE(L"sheetViews")
-        {
-			CP_XML_NODE(L"sheetView")
-            {
-                CP_XML_ATTR(L"showGridLines", 0);
-				CP_XML_ATTR(L"workbookViewId", 0);
-            }
-		}
-	}
-}
-
 void xlsx_sheet_context::end_table()
 {
 	if (!get_drawing_context().empty())

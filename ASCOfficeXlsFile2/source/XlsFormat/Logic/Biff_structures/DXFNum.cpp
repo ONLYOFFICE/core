@@ -47,12 +47,13 @@ BiffStructurePtr DXFNum::clone()
 void DXFNum::load(CFRecord& record)
 {
 	if (!parent) return;
+	if (parent->ifmtNinch)return;
 
 	if (parent->fIfmtUser)
 	{
 		record >> user_defined;
 	}
-	if (!parent->ifmtNinch)//else
+	else
 	{
 		record >> fmt_id;
 	}

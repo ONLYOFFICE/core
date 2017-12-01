@@ -44,8 +44,8 @@ BiffStructurePtr DXFN12List::clone()
 
 DXFN12List::DXFN12List()
 {		
-	bExist = false;
-	size = -1;
+	bExist	= false;
+	size	= 0xffffffff;
 }
 
 
@@ -57,7 +57,7 @@ void DXFN12List::load(CFRecord& record)
 {
 	size_t pos_record = record.getRdPtr();
 	
-	if (size < 0) size = record.getDataSize() - pos_record;
+	if (size == 0xffffffff) size = record.getDataSize() - pos_record;
 
 	if (size > 0)
 	{

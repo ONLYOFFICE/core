@@ -29,57 +29,28 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <list>
+#include "AF12CellIcon.h"
+#include <Binary/CFRecord.h>
 
-#include "xlsx_drawing_context.h"
-#include "xlsx_comments_context.h"
-#include "xlsx_hyperlinks.h"
-
-namespace oox {
-
-class xlsx_conversion_context;
-class xlsx_text_context;
-
-struct table_state
+namespace XLS
 {
-	table_state(xlsx_conversion_context & Context);
-
-	xlsx_hyperlinks				hyperlinks_;
-	xlsx_drawing_context		drawing_context_;
-	xlsx_comments_context		comments_context_;
-
-};
-typedef _CP_PTR(table_state) table_state_ptr;
-
-class xlsx_sheet_context
+BiffStructurePtr AF12CellIcon::clone()
 {
-public:
-    xlsx_sheet_context(xlsx_conversion_context & Context);
-
-	void start_table();
-    void end_table();
-
-	xlsx_drawing_context	& get_drawing_context();
-	xlsx_comments_context	& get_comments_context();
-	//
-	table_state_ptr & state();
-
-	std::wstring	add_hyperlink(std::wstring const & ref, std::wstring const & target, std::wstring const & display, bool bExternal);
-	void			serialize_hyperlinks(std::wostream & _Wostream);
-	void			dump_rels_hyperlinks(rels & Rels);
-    
-	void			serialize_ole_objects(std::wostream & _Wostream);
-	void			serialize_controls(std::wostream & _Wostream);
-	
-	void			dump_rels_drawing(rels & Rels);
-private:
-    xlsx_conversion_context		& context_;
-
-	std::list<table_state_ptr>	tables_state_;
-};
-
-
+	return BiffStructurePtr(new AF12CellIcon(*this));
 }
+
+AF12CellIcon::AF12CellIcon()
+{		
+}
+AF12CellIcon::~AF12CellIcon()
+{
+}
+void AF12CellIcon::load(CFRecord& record)
+{	
+	record >> iIconSet >> iIcon;
+}
+
+
+} // namespace XLS
 

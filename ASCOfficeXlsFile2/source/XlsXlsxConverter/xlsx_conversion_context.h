@@ -130,7 +130,9 @@ private:
 
 	size_t								next_vml_file_id_; //используется для footer/header & comments
 
+	std::map<int, int>					sheets_map_;
     std::vector<xlsx_xml_worksheet_ptr>	sheets_;
+
 	std::wstring						connections_;
 	std::map<std::wstring, std::wstring>query_tables_; 
 	std::map<std::wstring, std::wstring>control_props_; 

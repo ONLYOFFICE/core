@@ -550,33 +550,33 @@ void xlsx_drawing_context::end_group()
 {
 	if (current_level < 1) return;
 	
-	std::vector<_drawing_state_ptr>* cur_states = NULL;
-	for (size_t i = 0; i < current_drawing_states->size(); i++)
-	{
-		if (!current_drawing_states->empty())
-		{	
-			int level = current_level;
-			cur_states = current_drawing_states;
-			while (level > 0)
-			{
-				_drawing_state_ptr & drawing_state = cur_states->front();
+	//std::vector<_drawing_state_ptr>* cur_states = NULL;
+	//for (size_t i = 0; i < current_drawing_states->size(); i++)
+	//{
+	//	if (!current_drawing_states->empty())
+	//	{	
+	//		int level = current_level;
+	//		cur_states = current_drawing_states;
+	//		while (level > 0)
+	//		{
+	//			_drawing_state_ptr & drawing_state = cur_states->front();
 
-				if (i != 0 || level != current_level) // группа сама себя
-				{
-					double kf_x = (double)drawing_state->child_anchor.cx / drawing_state->group_anchor.cx;
-					double kf_y = (double)drawing_state->child_anchor.cy / drawing_state->group_anchor.cy;
+	//			if (i != 0 || level != current_level) // группа сама себя
+	//			{
+	//				double kf_x = (double)drawing_state->child_anchor.cx / drawing_state->group_anchor.cx;
+	//				double kf_y = (double)drawing_state->child_anchor.cy / drawing_state->group_anchor.cy;
 
-					current_drawing_states->at(i)->child_anchor.cx *= kf_x;
-					current_drawing_states->at(i)->child_anchor.cy *= kf_y;
-				
-					current_drawing_states->at(i)->child_anchor.x = current_drawing_states->at(i)->child_anchor.x * kf_x + drawing_state->child_anchor.x;
-					current_drawing_states->at(i)->child_anchor.y = current_drawing_states->at(i)->child_anchor.y * kf_y + drawing_state->child_anchor.y;
-				}
-				level--;
-				cur_states = cur_states->front()->parent_drawing_states;
-			}
-		}
-	}
+	//				current_drawing_states->at(i)->child_anchor.cx *= kf_x;
+	//				current_drawing_states->at(i)->child_anchor.cy *= kf_y;
+	//			
+	//				current_drawing_states->at(i)->child_anchor.x = current_drawing_states->at(i)->child_anchor.x * kf_x + drawing_state->child_anchor.x;
+	//				current_drawing_states->at(i)->child_anchor.y = current_drawing_states->at(i)->child_anchor.y * kf_y + drawing_state->child_anchor.y;
+	//			}
+	//			level--;
+	//			cur_states = cur_states->front()->parent_drawing_states;
+	//		}
+	//	}
+	//}
 	serialize_group();
 
 	current_drawing_states = current_drawing_states->front()->parent_drawing_states;

@@ -210,7 +210,7 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 					if (!block_level->stData.value().empty())
 						CP_XML_ATTR(L"dataCellStyle", block_level->stData.value());	
 				}
-				if (feature11->rgbFeat.fAutoFilter && (filter || sort))
+				if (feature11->rgbFeat.fAutoFilter)
 				{
 					if(sort)
 					{
@@ -236,7 +236,7 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 							}
 						}
 					}
-					else
+					else if (filter)
 					{
 						CP_XML_NODE(L"autoFilter")
 						{
@@ -252,6 +252,13 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 									CP_XML_ATTR(L"ref", af12Criteria->_str);
 								}
 							}
+						}
+					}
+					else
+					{
+						CP_XML_NODE(L"autoFilter")
+						{
+							CP_XML_ATTR(L"ref", feature11->sqref);
 						}
 					}
 				}

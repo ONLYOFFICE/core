@@ -100,6 +100,27 @@ void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 		else
 		{
 			name = global_info->arDefineNames[nameindex - 1];
+
+			std::map<std::wstring, std::vector<std::wstring>>::iterator pFind = global_info->mapDefineNames.find(name);
+			if (link.empty() && full_ref && pFind != global_info->mapDefineNames.end())
+			{
+				if (ixti < pFind->second.size() && ixti >= 0)
+				{
+					if (!pFind->second[ixti].empty())
+						name = pFind->second[ixti]; //значение 
+				}
+				else
+				{
+					for (size_t i = 0; i < pFind->second.size(); i++)
+					{
+						if (pFind->second[i].empty() == false)
+						{
+							link = L"[" + std::to_wstring(i) + L"]";
+							break;
+						}
+					}
+				}
+			}
 		}
 		if (!link.empty() && !name.empty())
 		{

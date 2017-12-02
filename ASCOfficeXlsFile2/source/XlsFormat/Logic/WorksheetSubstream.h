@@ -59,6 +59,7 @@ public:
 	BaseObjectPtr					m_DxGCol;
 	BaseObjectPtr					m_DVAL;
 	BaseObjectPtr					m_LRng;
+	BaseObjectPtr					m_PLV;
 	
 	std::vector<BaseObjectPtr>		m_arMergeCells;
 	std::vector<BaseObjectPtr>		m_arPIVOTVIEW;

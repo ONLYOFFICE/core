@@ -166,6 +166,7 @@ public:
 	std::wstringstream				connections_stream;
 	
 	int								connectionId;
+	std::map<std::wstring, int>		connectionNames;
 
 	XlsConverter					*xls_converter;
 

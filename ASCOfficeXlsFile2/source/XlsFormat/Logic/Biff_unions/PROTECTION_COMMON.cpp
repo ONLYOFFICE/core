@@ -92,6 +92,10 @@ int PROTECTION_COMMON::serialize (std::wostream & _stream)
 	{
 		CP_XML_NODE(L"sheetProtection") 
 		{
+			if (password)
+			{
+                CP_XML_ATTR(L"password", password->wPassword);
+			}
 			if (protect)
 			{
                 CP_XML_ATTR(L"sheet", (protect->fLock ? 1 : 0));
@@ -105,6 +109,7 @@ int PROTECTION_COMMON::serialize (std::wostream & _stream)
                 CP_XML_ATTR(L"scenarios", (scenario->fScenProtect ? 1 : 0));
 			}
 			CP_XML_ATTR(L"selectLockedCells", 1);
+			CP_XML_ATTR(L"selectUnlockedCells", 1);
 		}
 		
 	}

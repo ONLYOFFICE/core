@@ -66,6 +66,7 @@ public:
 	std::vector<std::wstring>	m_arSXString;
 //------------------------------------------------------
 	BaseObjectPtr				m_DBQUERYEXT;
+	BaseObjectPtr				m_Qsi;
 	BaseObjectPtr				m_DConn;
 
 	GlobalWorkbookInfoPtr		global_info;

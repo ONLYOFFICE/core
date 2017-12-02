@@ -31,6 +31,7 @@
  */
 
 #include "MsoDrawing.h"
+#include "../Biff_structures/ODRAW/OfficeArtRecord.h"
 
 namespace XLS
 {
@@ -78,13 +79,24 @@ void MsoDrawing::readFields()
 
 void MsoDrawing::readFields(CFRecord& record)
 {
-	record >> rgChildRec;
-
-	isReading = true;
-
-	if (record.getRdPtr()  < record.getDataSize())
+	ODRAW::OfficeArtRecordHeader rh_test;
+	record >> rh_test;
+	record.RollRdPtrBack(8);//sizeof(OfficeArtRecordHeader)
+	
+	if (rh_test.recType == 0xF002) //OfficeArtDgContainer
 	{
-		int g = 0;
+		record >> rgChildRec;
+		isReading = true;
+	}
+	else if ((rh_test.recType & 0xF000) == 0xF000)
+	{
+		//074_JKH.OPEN.INFO.PRICE.VO_зПТПДУЛЙЕ ПЛТХЗБ юЕМСВЙОУЛПК ПВМБУФЙ_пбп юЕМСВЙОУЛПЕ БЧЙБРТЕДРТЙСФЙЕ.xls
+		rgChildRec.rh_own.recLen = record.getDataSize();
+		rgChildRec.loadFields(record); 
+		isReading = true;
+	}
+	else
+	{
 	}
 }
 

@@ -1217,7 +1217,7 @@ int ChartSheetSubstream::serialize_ser (std::wstring sNodeSer, std::wostream & _
 	AI		* ai	= dynamic_cast<AI *>(ai_.get());
 	BRAI	* brai	= dynamic_cast<BRAI *>(ai->m_BRAI.get());
 	
-	std::wstring formula = brai->formula.getAssembledFormula();
+	std::wstring formula = brai->formula.getAssembledFormula(true);
 	
 	int rt = brai->rt;
 	bool b = brai->fUnlinkedIfmt;

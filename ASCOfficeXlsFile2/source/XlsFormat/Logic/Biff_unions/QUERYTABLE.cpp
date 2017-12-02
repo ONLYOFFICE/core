@@ -42,6 +42,8 @@
 #include "../Biff_records/DbOrParamQry.h"
 #include "../Biff_records/SXString.h"
 
+#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
+
 namespace XLS
 {
 
@@ -107,8 +109,10 @@ int QUERYTABLE::serialize(std::wostream & strm)
 	if (!query) return -1;
 
 	std::wstring name = info->rgchName.value();
-	
+
 	query->m_DBQUERYEXT = m_DBQUERYEXT;
+	query->m_Qsi		= m_Qsi;
+
 	int connectionId = query->serialize_connection(name);
 	
 	if (connectionId < 1) return 0;
@@ -121,16 +125,16 @@ int QUERYTABLE::serialize(std::wostream & strm)
 			CP_XML_ATTR(L"connectionId", connectionId);	
 			CP_XML_ATTR(L"name", name);
 
-			if (info->fAutoFormat)
+			if (!info->fAutoFormat)
 			{
 				CP_XML_ATTR(L"autoFormatId", info->itblAutoFmt); 
 			}
-			CP_XML_ATTR(L"applyNumberFormats",		info->fibitAtrNum);//0" 
-			CP_XML_ATTR(L"applyBorderFormats",		info->fibitAtrBdr);//0" 
-			CP_XML_ATTR(L"applyFontFormats",		info->fibitAtrFnt);//1" 
-			CP_XML_ATTR(L"applyPatternFormats",		info->fibitAtrPat);//1" 
-			CP_XML_ATTR(L"applyAlignmentFormats",	info->fibitAtrAlc);//0" 
-			//CP_XML_ATTR(L"applyWidthHeightFormats", info->);//0"/>
+			CP_XML_ATTR(L"applyNumberFormats",		info->fibitAtrNum);
+			CP_XML_ATTR(L"applyBorderFormats",		info->fibitAtrBdr);
+			CP_XML_ATTR(L"applyFontFormats",		info->fibitAtrFnt);
+			CP_XML_ATTR(L"applyPatternFormats",		info->fibitAtrPat);
+			CP_XML_ATTR(L"applyAlignmentFormats",	info->fibitAtrAlc);
+			CP_XML_ATTR(L"applyWidthHeightFormats", 0);
 		}
 	}
 

@@ -31,11 +31,11 @@
  */
 
 #include "WINDOW.h"
-#include <Logic/Biff_records/Window2.h>
-#include <Logic/Biff_records/PLV.h>
-#include <Logic/Biff_records/Scl.h>
-#include <Logic/Biff_records/Pane.h>
-#include <Logic/Biff_records/Selection.h>
+#include "../Biff_records/Window2.h"
+#include "../Biff_records/PLV.h"
+#include "../Biff_records/Scl.h"
+#include "../Biff_records/Pane.h"
+#include "../Biff_records/Selection.h"
 
 namespace XLS
 {

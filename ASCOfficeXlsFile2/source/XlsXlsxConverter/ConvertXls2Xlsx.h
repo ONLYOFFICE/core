@@ -33,4 +33,4 @@
 
 struct ProgressCallback;
 
-long ConvertXls2Xlsx(const std::wstring & srcFile, const std::wstring & dstPath, const std::wstring & password, const std::wstring& fontsPath, const ProgressCallback* CallBack, bool & bMacros);
+long ConvertXls2Xlsx(const std::wstring & srcFile, const std::wstring & dstPath, const std::wstring & password, const std::wstring& fontsPath, const std::wstring & tempPath, const ProgressCallback* CallBack, bool & bMacros);

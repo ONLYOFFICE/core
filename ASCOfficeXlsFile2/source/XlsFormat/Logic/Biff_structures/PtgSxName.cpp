@@ -94,7 +94,8 @@ void PtgSxName::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
 								{
 									_Name = field_db->stFieldName.value();
 
-									if (std::wstring::npos != _Name.find(L" "))
+									if (std::wstring::npos != _Name.find(L" ") || 
+										std::wstring::npos != _Name.find(L":"))
 									{
 										_Name = L"'" + _Name + L"'";
 									}
@@ -104,7 +105,13 @@ void PtgSxName::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
 									SXOPER* cache = dynamic_cast<SXOPER*>(field->m_arSRCSXOPER[pair->iCache].get());
 									if (cache)
 									{
-										_Name += L"[" + cache->value + L"]";
+										std::wstring value = cache->value;
+										if (std::wstring::npos != value.find(L" ") || 
+											std::wstring::npos != value.find(L":"))
+										{
+											value = L"'" + value + L"'";
+										}
+										_Name += L"[" + value + L"]";
 									}
 								}
 							}

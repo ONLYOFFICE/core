@@ -155,6 +155,8 @@ public:
     CApplicationFonts				*applicationFonts;
 	std::wstring					fontsDirectory;
 
+	std::wstring					tempDirectory;
+
 	int								Version;
 
 	int								cmt_rules;

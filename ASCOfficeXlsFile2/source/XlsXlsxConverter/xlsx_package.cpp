@@ -137,14 +137,6 @@ _CP_PTR(activeX_content) activeX_content::create()
     return boost::make_shared<activeX_content>();
 }
 //--------------------------------------------------------------------------------------------
-customXml_content::customXml_content()
-{      
-}
-_CP_PTR(customXml_content) customXml_content::create()
-{
-    return boost::make_shared<customXml_content>();
-}
-//--------------------------------------------------------------------------------------------
 sheet_content::sheet_content() : rels_(rels_file::create(L""))
 {
         
@@ -300,11 +292,15 @@ void xl_files::write(const std::wstring & RootPath)
 
 		contentTypes.add_override(L"/xl/connections.xml", L"application/vnd.openxmlformats-officedocument.spreadsheetml.connections+xml");
 	}
-
+	{
+		theme_files_.set_rels(&rels_files_);
+		theme_files_.set_main_document( this->get_main_document() );
+        theme_files_.write(path);
+ 	}
     if (styles_)
     {
-       styles_->write(path);
-       rels_files_.add( relationship( L"stId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles", L"styles.xml" ) );
+		styles_->write(path);
+		rels_files_.add( relationship( L"stId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles", L"styles.xml" ) );
     }
 
     if (workbook_)
@@ -328,11 +324,6 @@ void xl_files::write(const std::wstring & RootPath)
 		rels_files_.add( relationship( L"vbId2",  L"http://schemas.microsoft.com/office/2006/relationships/attachedToolbars", L"attachedToolbars.bin" ) );
 		contentTypes.add_override(L"/xl/attachedToolbars.bin", L"application/vnd.ms-excel.attachedToolbars");
 	}
-
-    if (theme_)
-    {
-        theme_->write(path);
-    }
 
     if (media_)
     {
@@ -398,7 +389,6 @@ void xl_files::set_connections(element_ptr Element)
 {
     connections_ = Element;
 }
-
 void xl_files::add_sheet(int type, sheet_content_ptr sheet)
 {
     sheets_files_.add_sheet(type, sheet);
@@ -421,6 +411,10 @@ void xl_files::set_vml_drawings(element_ptr Element)
     vml_drawings_ = Element;
 	xl_drawings* d = dynamic_cast<xl_drawings*>(vml_drawings_.get());
 	d->vml = true;
+}
+void xl_files::add_theme(theme_content_ptr theme)
+{
+    theme_files_.add_theme(theme);
 }
 void xl_files::add_chart(chart_content_ptr chart)
 {
@@ -699,6 +693,44 @@ void xl_customXml_files::write(const std::wstring & RootPath)
             rels_->add(id, kWSRel, fileRef);
         }
 
+   }
+}
+//----------------------------------------------------------------------------------------
+void xl_theme_files::add_theme(theme_content_ptr themeXml)
+{
+    themes_.push_back(themeXml);
+}
+void xl_theme_files::write(const std::wstring & RootPath)
+{
+	if (themes_.empty()) return;
+
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"theme";
+    NSDirectory::CreateDirectory(path.c_str());
+
+	std::wstring path_rels = path + FILE_SEPARATOR_STR + L"_rels";
+    NSDirectory::CreateDirectory(path_rels.c_str());
+
+	content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.theme+xml";
+	
+	for (size_t i = 0; i < themes_.size(); i++)
+    {
+        if (!themes_[i])continue;
+
+        const std::wstring fileName = std::wstring(L"theme") + std::to_wstring(i + 1) + L".xml";
+       
+        contentTypes.add_override(std::wstring(L"/xl/theme/") + fileName, kWSConType);
+
+        package::simple_element(fileName, themes_[i]->content()).write(path);
+
+        if (rels_)
+        {
+            const std::wstring id = std::wstring(L"thmId") + std::to_wstring(i + 1);
+            static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme";
+            const std::wstring fileRef = std::wstring(L"theme/") + fileName;
+
+            rels_->add(id, kWSRel, fileRef);
+        }
    }
 }
 //----------------------------------------------------------------------------------------

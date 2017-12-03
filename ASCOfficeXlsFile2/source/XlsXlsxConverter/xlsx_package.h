@@ -208,6 +208,21 @@ public:
     std::vector<customXml_content_ptr> customXmls_;
     rels_files * rels_;
 };
+class xl_theme_files : public element
+{
+public:
+	xl_theme_files(){}
+
+    void set_rels(rels_files * rels)
+    {
+        rels_ = rels;
+    }
+	void			add_theme(theme_content_ptr themeXml);
+	virtual void	write(const std::wstring & RootPath);
+    
+    std::vector<theme_content_ptr> themes_;
+    rels_files * rels_;
+};
 class xl_query_table_files : public element
 {
 public:
@@ -344,6 +359,7 @@ public:
 	void set_vml_drawings	(element_ptr Element);
 	void set_comments		(element_ptr Element);
    
+	void add_theme			(theme_content_ptr theme);
 	void add_chart			(chart_content_ptr chart);
     void add_activeX		(activeX_content_ptr activeX);
     void add_external		(external_content_ptr external);
@@ -357,6 +373,7 @@ public:
 private:
     rels_files				rels_files_;
     sheets_files			sheets_files_;
+    xl_theme_files			theme_files_;
     xl_charts_files			charts_files_;
     xl_externals_files		externals_files_;
 	xl_pivot_cache_files	pivot_cache_files_;
@@ -366,11 +383,10 @@ private:
 	xl_control_props_files	control_props_files_;
 	xl_table_part_files		table_part_files_;
 
-	element_ptr		theme_;
     element_ptr		workbook_;
 
 	element_ptr		connections_;
-    element_ptr		styles_;
+	element_ptr		styles_;
     element_ptr		sharedStrings_;
     element_ptr		media_;
     element_ptr		drawings_;

@@ -75,6 +75,7 @@
 #include "../XlsFormat/Logic/Biff_records/IMDATA.h"
 #include "../XlsFormat/Logic/Biff_records/Note.h"
 #include "../XlsFormat/Logic/Biff_records/WsBool.h"
+#include "../XlsFormat/Logic/Biff_records/Theme.h"
 
 #include "../XlsFormat/Logic/Biff_structures/URLMoniker.h"
 #include "../XlsFormat/Logic/Biff_structures/FileMoniker.h"
@@ -94,9 +95,9 @@
 
 #include <simple_xml_writer.h>
 #include <utils.h>
+#include "../../../OfficeUtils/src/OfficeUtils.h"
 
-#include <boost/lexical_cast.hpp>
-#include <boost/utility.hpp>
+//#include <boost/utility.hpp>
 
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/raster/BgraFrame.h"
@@ -127,7 +128,7 @@ typedef struct tagBITMAPCOREHEADER {
 } BITMAPCOREHEADER;
 #endif
 
-XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring & xlsxFilePath, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* CallBack, bool & bMacros) 
+XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring & xlsxFilePath, const std::wstring & password, const std::wstring & fontsPath, const std::wstring & tempPath, const ProgressCallback* CallBack, bool & bMacros) 
 {
 	xlsx_path			= xlsxFilePath;
 	output_document		= NULL;
@@ -174,6 +175,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 		
 		xls_global_info->fontsDirectory = fontsPath;
 		xls_global_info->password		= password;
+		xls_global_info->tempDirectory	= tempPath;
 
 		XLS::CFStreamCacheReader stream_reader(xls_file->getWorkbookStream(), xls_global_info);
 
@@ -1086,9 +1088,45 @@ void XlsConverter::convert(XLS::BACKGROUND * back)
 
 }
 
-void XlsConverter::convert(XLS::THEME* theme)
+void XlsConverter::convert(XLS::THEME* THEME_)
 {
-	if (theme == NULL) return;
+	if (THEME_ == NULL) return;
+
+	XLS::Theme *theme = dynamic_cast<XLS::Theme*>(THEME_->m_Theme.get());
+	if (!theme) return;
+
+	if (theme->nThemeDataSize < 1) return;
+
+	std::wstring tempThemePath = xls_global_info->tempDirectory + FILE_SEPARATOR_STR + L"theme.temp";
+	
+	NSFile::CFileBinary file;	
+	if (!file.CreateFileW(tempThemePath)) return;
+
+	file.WriteFile((BYTE*)theme->pThemeData.get(), theme->nThemeDataSize);
+	file.CloseFile();
+
+	COfficeUtils OfficeUtils(NULL);
+	
+	ULONG nBufferSize = 0;
+	BYTE *pBuffer = NULL;
+
+	HRESULT hresult = OfficeUtils.LoadFileFromArchive(tempThemePath, L"theme1.xml", &pBuffer, nBufferSize);// todooo - parsing ThemeManager
+
+	if (hresult != S_OK || pBuffer == NULL)
+		hresult = OfficeUtils.LoadFileFromArchive(tempThemePath, L"theme/theme1.xml", &pBuffer, nBufferSize);
+	
+	if (hresult != S_OK || pBuffer == NULL)
+		hresult = OfficeUtils.LoadFileFromArchive(tempThemePath, L"theme/theme/theme1.xml", &pBuffer, nBufferSize);
+	
+	if (hresult == S_OK && pBuffer != NULL)
+	{
+		oox::package::theme_content_ptr content = oox::package::theme_content::create((char*)pBuffer, nBufferSize);
+		output_document->get_xl_files().add_theme(content);
+
+		delete []pBuffer;
+		pBuffer = NULL;
+	}
+
 }
 
 struct _group_object

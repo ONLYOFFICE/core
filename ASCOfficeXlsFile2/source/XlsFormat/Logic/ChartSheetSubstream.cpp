@@ -586,7 +586,7 @@ int ChartSheetSubstream::serialize_3D (std::wostream & _stream)
 
 		if (ax_parent->iax == 0) //primary axes
 		{
-			for (int i = 0 ; i < parent->m_arCRT.size() ; i++)
+			for (size_t i = 0 ; i < parent->m_arCRT.size() ; i++)
 			{
 				CRT* crt = dynamic_cast<CRT*>(parent->m_arCRT[i].get());
 				if((crt) && (crt->m_Chart3d))

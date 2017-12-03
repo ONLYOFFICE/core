@@ -36,9 +36,9 @@
 #include "../../../Common/OfficeFileErrorDescription.h"
 
 
-long ConvertXls2Xlsx(const std::wstring & srcFile, const std::wstring & dstPath, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* pCallBack, bool &bMacros)
+long ConvertXls2Xlsx(const std::wstring & srcFile, const std::wstring & dstPath, const std::wstring & password, const std::wstring & fontsPath, const std::wstring & tempPath, const ProgressCallback* pCallBack, bool &bMacros)
 {
-	XlsConverter converter(srcFile, dstPath, password, fontsPath, pCallBack, bMacros);
+	XlsConverter converter(srcFile, dstPath, password, fontsPath, tempPath, pCallBack, bMacros);
 
 	if (converter.isError())
 	{

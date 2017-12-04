@@ -32,7 +32,7 @@
 
 #include "TxO.h"
 
-#include <Logic/Biff_records/Font.h>
+#include "Font.h"
 
 #include <utils.h>
 

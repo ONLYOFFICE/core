@@ -29,16 +29,15 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include <Binary/CFRecord.h>
 
 #include "XFProp.h"
-#include <Binary/CFRecord.h>
 #include "XFPropColor.h"
 #include "XFPropGradient.h"
 #include "XFPropGradientStop.h"
 #include "XFPropBorder.h"
 #include "BiffString.h"
-
-#include <Logic/Biff_structures/BitMarkedStructs.h>
+#include "BitMarkedStructs.h"
 
 #include <utils.h>
 
@@ -145,8 +144,7 @@ static void serialize_color_prop(std::wostream & stream, const std::wstring & na
 	XFPropColor * color = dynamic_cast<XFPropColor*>(val.get());
 	if (!color) return;
 
-	color->node_name = name;
-	color->serialize(stream);
+	color->serialize(stream, name);
 }
 
 static void serialize_val_prop(std::wostream & stream, const std::wstring & name, BiffStructurePtr & val)
@@ -218,7 +216,7 @@ static void serialize_border_prop(std::wostream & stream, const std::wstring & n
 			}
 			if (border->dgBorder != 0)
 			{
-				border->color.serialize(CP_XML_STREAM());
+				border->color.serialize(CP_XML_STREAM(), L"color");
 			}
 		}
 	}

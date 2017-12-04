@@ -32,8 +32,7 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/FullColorExt.h>
-#include <Logic/Biff_structures/XFExtGradient.h>
+#include "FullColorExt.h"
 
 #include <simple_xml_writer.h>
 
@@ -59,5 +58,6 @@ public:
 	unsigned short		cb;
 	BiffStructurePtr	xfPropDataBlob;
 };
+typedef boost::shared_ptr<XFProp> XFPropPtr;
 
 } // namespace XLS

@@ -51,11 +51,11 @@ public:
 	
 	virtual void load(CFRecord& record);
 
-	unsigned char	nFirstColumn;
-	unsigned char	nLastColumn;
-	unsigned char	nRowStripes;
-	unsigned char	nColumnStripes;
-	unsigned char	nDefaultStyle;
+	bool	fFirstColumn;
+	bool	fLastColumn;
+	bool	fRowStripes;
+	bool	fColumnStripes;
+	bool	fDefaultStyle;
 
 	XLUnicodeString stListStyleName;
 };

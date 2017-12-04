@@ -32,15 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/FontIndex.h>
-#include <Logic/Biff_structures/CellXF.h>
-#include <Logic/Biff_structures/StyleXF.h>
+#include "../Biff_structures/FontIndex.h"
+#include "../Biff_structures/CellXF.h"
+#include "../Biff_structures/StyleXF.h"
 
 namespace XLS
 {
-
-
-// Logical representation of XF record in BIFF8
 class XF: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(XF)

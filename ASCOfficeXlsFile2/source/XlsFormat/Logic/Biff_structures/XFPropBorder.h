@@ -49,7 +49,6 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
 	XFPropColor		color;
 	unsigned short	dgBorder;
 };

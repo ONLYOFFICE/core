@@ -84,6 +84,7 @@ public:
 //-----------------------------------------------------------------------------
 	bool									bVbaProjectExist;
 	bool									bMacrosExist;
+	bool									bThemePresent;
 
 	unsigned short							CodePage;
 	CRYPT::DecryptorPtr						decryptor;

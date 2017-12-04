@@ -2146,6 +2146,7 @@ void xlsx_drawing_context::serialize_text(std::wostream & stream, _drawing_state
 							if (drawing_state->wordart.italic)		CP_XML_ATTR(L"i", 1);
 							if (drawing_state->wordart.underline)	CP_XML_ATTR(L"u", L"sng");
 							if (drawing_state->wordart.strike)		CP_XML_ATTR(L"strike", L"sngStrike");
+							//if (drawing_state->wordart.cap)			CP_XML_ATTR(L"cap", *cap);
 						
 							CP_XML_ATTR(L"kern", 10);
 							

@@ -71,6 +71,7 @@ BaseObjectPtr FORMATTING::clone()
 const bool FORMATTING::loadContent(BinProcessor& proc)
 {
 	global_info = proc.getGlobalWorkbookInfo();
+	global_info->m_arFonts = &m_arFonts;
 
 	int count = 0;
 	count = proc.repeated<Font>(0, 510); // Wrong records sequence workaround (originally  at least one Font is mandatory)
@@ -156,40 +157,40 @@ void FORMATTING::update_xfs()
 
 	if (!xfs) return;
 
-	//for (size_t i = 0; (st) && (i < st->m_arStyles.size()); i++)
-	//{
-	//	XLS::Style * style = dynamic_cast<Style*>(st->m_arStyles[i].first.get());
-	//	XLS::StyleExt * styleExt = dynamic_cast<StyleExt*>(st->m_arStyles[i].second.get());
-	//		
-	//	if (styleExt && style)
-	//	{
-	//		if (styleExt->fBuiltIn && styleExt->xfProps.cprops > 0)
-	//		{
-	//			bool bFound = false;
-	//			for (size_t i = 0; i < xfs->m_arCellStyles.size(); i++)
-	//			{
-	//				XF* xf = dynamic_cast<XF*>(xfs->m_arCellStyles[i].get());
+	for (size_t i = 0; (st) && (i < st->m_arStyles.size()); i++)
+	{
+		XLS::Style		*style		= dynamic_cast<Style*>		(st->m_arStyles[i].first.get());
+		XLS::StyleExt	*styleExt	= dynamic_cast<StyleExt*>	(st->m_arStyles[i].second.get());
+			
+		if (styleExt && style)
+		{
+			if (styleExt->fBuiltIn && styleExt->xfProps.cprops > 0)
+			{
+				bool bFound = false;
+				for (size_t i = 0; i < xfs->m_arCellStyles.size(); i++)
+				{
+					XF* xf = dynamic_cast<XF*>(xfs->m_arCellStyles[i].get());
 
-	//				if (xf->ind_xf == style->ixfe)
-	//				{
-	//					xf->style.Update(&styleExt->xfProps);
-	//					bFound = true;
-	//					break;
-	//				}
-	//			}
-	//			//for (size_t i = 0; !bFound && i < xfs->m_arCellXFs.size(); i++)
-	//			//{
-	//			//	XF* xf = dynamic_cast<XF*>(xfs->m_arCellXFs[i].get());
-	//			//	if (xf->ind_xf == style->ixfe)
-	//			//	{
-	//			//		xf->cell.Update(&styleExt->xfProps);
-	//			//		bFound = true;
-	//			//		break;
-	//			//	}
-	//			//}
-	//		}
-	//	}
-	//}
+					if (xf->ind_xf == style->ixfe)
+					{
+						xf->style.xf_props = styleExt->xfProps.rgExt;
+						bFound = true;
+						break;
+					}
+				}
+				//for (size_t i = 0; !bFound && i < xfs->m_arCellXFs.size(); i++) небывает совпадений
+				//{
+				//	XF* xf = dynamic_cast<XF*>(xfs->m_arCellXFs[i].get());
+				//	if (xf->ind_xf == style->ixfe)
+				//	{
+				//		xf->cell.xf_props = styleExt->xfProps.rgExt;
+				//		bFound = true;
+				//		break;
+				//	}
+				//}
+			}
+		}
+	}
 	xfs->RegisterFillBorder();
 }
 void FORMATTING::concatinate(FORMATTING* ext)

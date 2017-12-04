@@ -94,8 +94,7 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
     return std::pair<float, float>(width, maxHeight);
 }
 
-GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConverter * xls_converter_)
-:	CodePage(code_page)
+GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConverter * converter) :	CodePage(code_page), xls_converter(converter)
 {
 	fill_x_ids[FillInfo(0, 0, 0)]		= 0;
 	fill_x_ids[FillInfo(17, 64, 65)]	= 1;
@@ -104,8 +103,6 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 	last_Extern_id			= 1;
 
 	Version					= 0x0600; 
-
-	xls_converter			= xls_converter_;
 
 	startAddedSharedStrings = 0;
 	current_sheet			= 0;
@@ -122,6 +119,7 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 
 	bVbaProjectExist		= false;
 	bMacrosExist			= false;
+	bThemePresent			= false;
 
 	idPivotCache			= 0;	
 }

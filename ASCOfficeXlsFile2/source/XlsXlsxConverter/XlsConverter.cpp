@@ -689,9 +689,9 @@ void XlsConverter::convert(XLS::GlobalsSubstream* globals)
 {
 	if (globals == NULL) return;
 	
-	convert((XLS::FORMATTING*)globals->m_Formating.get());
-	
 	convert((XLS::THEME*)globals->m_THEME.get());
+	
+	convert((XLS::FORMATTING*)globals->m_Formating.get());	
 
 	convert((XLS::SHAREDSTRINGS*)globals->m_SHAREDSTRINGS.get());
 
@@ -1117,16 +1117,16 @@ void XlsConverter::convert(XLS::THEME* THEME_)
 	
 	if (hresult != S_OK || pBuffer == NULL)
 		hresult = OfficeUtils.LoadFileFromArchive(tempThemePath, L"theme/theme/theme1.xml", &pBuffer, nBufferSize);
-	
+	//???  переписать по нормальному
 	if (hresult == S_OK && pBuffer != NULL)
 	{
+		xls_global_info->bThemePresent = true;
 		oox::package::theme_content_ptr content = oox::package::theme_content::create((char*)pBuffer, nBufferSize);
 		output_document->get_xl_files().add_theme(content);
 
 		delete []pBuffer;
 		pBuffer = NULL;
 	}
-
 }
 
 struct _group_object

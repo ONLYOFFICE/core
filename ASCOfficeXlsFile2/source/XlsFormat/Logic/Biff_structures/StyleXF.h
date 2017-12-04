@@ -36,9 +36,10 @@
 
 namespace XLS
 {
-class XFProps;
+class XFProp;
 class ExtProp;
 class CFRecord;
+class Font;
 
 class GlobalWorkbookInfo;
 typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;
@@ -52,16 +53,9 @@ public:
 
 	virtual void load(CFRecord& record);
 
-	GlobalWorkbookInfoPtr m_GlobalWorkbookInfo;
-
 	static const ElementType	type = typeStyleXF;
 
 	int serialize(std::wostream & stream);
-
-	void Update(ExtProp* extProp); // xls style
-	void Update(XFProps* xfProps); //xlsx style
-
-	void RegisterFillBorder();
 
 	unsigned char	alc;
 	bool			fWrap;
@@ -72,13 +66,22 @@ public:
 	bool			fShrinkToFit;
 	unsigned char	iReadOrder;
 
+//------------------------------------------------------------------
+	GlobalWorkbookInfoPtr global_info;
+	
 	BorderInfo		border;
 	FillInfo		fill;
-	
 	FillInfoExt		font_color;
 	size_t			font_id;
+	Font			*font;
 
 	BiffStructurePtrVector ext_props;
+	BiffStructurePtrVector xf_props;
+
+	void Update(ExtProp* extProp); // xls style
+	void Update(XFProp* xfProp); //xlsx style
+
+	void RegisterFillBorder();
 
 	size_t border_x_id;
 	size_t fill_x_id;

@@ -276,6 +276,9 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 							CP_XML_ATTR(L"id", field->idField);
 							CP_XML_ATTR(L"name", field->strCaption.value());
 
+							if (!field->strTotal.value().empty())
+								CP_XML_ATTR(L"totalsRowLabel", field->strTotal.value());	
+							
 							if (field->dxfFmtAgg.bExist || 
 								field->dxfFmtInsertRow.bExist)
 							{
@@ -294,11 +297,11 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 			{
 				CP_XML_NODE(L"tableStyleInfo")
 				{
-					CP_XML_ATTR(L"name", table_style->stListStyleName.value());	
-					CP_XML_ATTR(L"showFirstColumn", table_style->nFirstColumn);	
-					CP_XML_ATTR(L"showLastColumn", table_style->nLastColumn);	
-					CP_XML_ATTR(L"showRowStripes", table_style->nRowStripes);	
-					CP_XML_ATTR(L"showColumnStripes", table_style->nColumnStripes);	
+					CP_XML_ATTR(L"name",			table_style->stListStyleName.value());	
+					CP_XML_ATTR(L"showFirstColumn", table_style->fFirstColumn);	
+					CP_XML_ATTR(L"showLastColumn",	table_style->fLastColumn);	
+					CP_XML_ATTR(L"showRowStripes",	table_style->fRowStripes);	
+					CP_XML_ATTR(L"showColumnStripes", table_style->fColumnStripes);	
 				}
 			}
 		}

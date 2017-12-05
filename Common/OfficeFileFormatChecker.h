@@ -42,11 +42,13 @@ namespace POLE
 class COfficeFileFormatChecker
 {
 public:
-	int nFileType;
+	int		nFileType;
+	bool	bMacroEnabled;
 	
 	COfficeFileFormatChecker()
 	{
-		nFileType = AVS_OFFICESTUDIO_FILE_UNKNOWN;
+		nFileType		= AVS_OFFICESTUDIO_FILE_UNKNOWN;
+		bMacroEnabled	= false;
 	}
 	COfficeFileFormatChecker(std::wstring sFileName)
 	{

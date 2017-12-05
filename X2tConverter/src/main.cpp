@@ -118,7 +118,7 @@ static std::wstring utf8_to_unicode(const char *src)
 
 	int result = 0;
     std::wstring sXmlExt = _T(".xml");
-    if(sXmlExt == sArg1.substr(sArg1.length() - sXmlExt.length(), sXmlExt.length()))
+    if((sArg1.length() > 3) && (sXmlExt == sArg1.substr(sArg1.length() - sXmlExt.length(), sXmlExt.length())))
 	{
 		NExtractTools::InputParams oInputParams;
 		if (oInputParams.FromXmlFile(sArg1) && (sArg2.empty() || oInputParams.FromXml(sArg2)))
@@ -143,20 +143,30 @@ static std::wstring utf8_to_unicode(const char *src)
 		if (argc >= 5) sArg4 = std::wstring(argv [4]);
 		if (argc >= 6) sArg5 = std::wstring(argv [5]);
 #endif
-		InputParams oInputParams;
-		oInputParams.m_sFileFrom	= new std::wstring(sArg1);
-		oInputParams.m_sFileTo		= new std::wstring(sArg2);
+		if (sArg1 == L"-detectmacro")
+		{
+			InputParams oInputParams;
+			oInputParams.m_sFileFrom	= new std::wstring(sArg2);
+			
+			result = NExtractTools::detectMacroInFile(oInputParams);
+		}
+		else
+		{
+			InputParams oInputParams;
+			oInputParams.m_sFileFrom	= new std::wstring(sArg1);
+			oInputParams.m_sFileTo		= new std::wstring(sArg2);
 
-		if (argc > 3)
-		{
-			oInputParams.m_sFontDir = new std::wstring(sArg3);
+			if (argc > 3)
+			{
+				oInputParams.m_sFontDir = new std::wstring(sArg3);
+			}
+			if (argc > 4)
+			{
+				oInputParams.m_sPassword = new std::wstring(sArg4);
+				oInputParams.m_sSavePassword = new std::wstring(sArg4);
+			}
+			result = NExtractTools::fromInputParams(oInputParams);
 		}
-		if (argc > 4)
-		{
-			oInputParams.m_sPassword = new std::wstring(sArg4);
-			oInputParams.m_sSavePassword = new std::wstring(sArg4);
-		}
-		result = NExtractTools::fromInputParams(oInputParams);
 	}
 
 	return getReturnErrorCode(result);

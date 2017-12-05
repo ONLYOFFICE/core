@@ -3801,6 +3801,23 @@ namespace NExtractTools
 	}
 
 //------------------------------------------------------------------------------------------------------------------
+	int detectMacroInFile(InputParams& oInputParams)
+	{
+        int nRes = 0;// no macro
+		std::wstring sFileFrom	= *oInputParams.m_sFileFrom;
+
+		COfficeFileFormatChecker OfficeFileFormatChecker;
+
+		if (OfficeFileFormatChecker.isOfficeFile(sFileFrom))
+        {
+           if (OfficeFileFormatChecker.bMacroEnabled)
+		   {
+			   nRes = AVS_ERROR_MACRO; 
+		   }
+		}
+
+		return nRes;
+	}
 	int fromInputParams(InputParams& oInputParams)
 	{
 		TConversionDirection conversion  = oInputParams.getConversionDirection();

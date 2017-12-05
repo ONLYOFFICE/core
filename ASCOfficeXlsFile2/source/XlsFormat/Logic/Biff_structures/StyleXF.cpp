@@ -240,9 +240,9 @@ void StyleXF::Update(XFProp* xfProp)
 			case 0x0025:
 			{
 				font_id = *byte_->value();
-				if ((global_info->m_arFonts) && (font_id >=0 && font_id < global_info->m_arFonts->size()))
+				if (font_id >=0 && font_id < global_info->m_arFonts.size())
 				{
-					font = dynamic_cast<Font*>(global_info->m_arFonts->at(font_id).get());
+					font = dynamic_cast<Font*>(global_info->m_arFonts[font_id].get());
 				}
 
 			}break;

@@ -31,15 +31,17 @@
  */
 
 #include "DROPBAR.h"
-#include <Logic/Biff_records/DropBar.h>
-#include <Logic/Biff_records/Begin.h>
-#include <Logic/Biff_records/LineFormat.h>
-#include <Logic/Biff_records/AreaFormat.h>
-#include <Logic/Biff_unions/GELFRAME.h>
-#include <Logic/Biff_unions/SHAPEPROPS.h>
-#include <Logic/Biff_records/End.h>
-#include <Logic/Biff_records/StartObject.h>
-#include <Logic/Biff_records/EndObject.h>
+#include "GELFRAME.h"
+#include "SHAPEPROPS.h"
+
+#include "../Biff_records/DropBar.h"
+#include "../Biff_records/LineFormat.h"
+#include "../Biff_records/AreaFormat.h"
+
+#include "../Biff_records/Begin.h"
+#include "../Biff_records/End.h"
+#include "../Biff_records/StartObject.h"
+#include "../Biff_records/EndObject.h"
 
 namespace XLS
 {
@@ -72,7 +74,7 @@ const bool DROPBAR::loadContent(BinProcessor& proc)
 	
 	if (proc.mandatory<Begin>())			elements_.pop_back();
 	
-	if (proc.mandatory<LineFormat>())
+	if (proc.optional<LineFormat>())
 	{
 		m_LineFormat = elements_.back();	elements_.pop_back();
 	}
@@ -81,11 +83,10 @@ const bool DROPBAR::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 		if (proc.mandatory<EndObject>())	elements_.pop_back();
 	}	
-	if (proc.mandatory<AreaFormat>())
+	if (proc.optional<AreaFormat>())
 	{
 		m_AreaFormat = elements_.back();	elements_.pop_back();
 	}
-	
 	if (proc.optional<GELFRAME>())
 	{
 		m_GELFRAME = elements_.back();		elements_.pop_back();

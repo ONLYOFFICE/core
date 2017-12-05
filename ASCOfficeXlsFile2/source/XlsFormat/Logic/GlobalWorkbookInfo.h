@@ -97,7 +97,7 @@ public:
 	std::map<int, int>						fonts_charsets;
 	std::map<int,  std::wstring>			colors_palette;
 
-	std::vector<BaseObjectPtr>				*m_arFonts;
+	std::vector<BaseObjectPtr>				m_arFonts;
 	
 	unsigned int							current_sheet;
 

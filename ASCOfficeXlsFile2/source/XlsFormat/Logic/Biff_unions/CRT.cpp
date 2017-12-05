@@ -31,6 +31,12 @@
  */
 
 #include "CRT.h"
+#include "LD.h"
+#include "DROPBAR.h"
+#include "SS.h"
+#include "SHAPEPROPS.h"
+#include "DFTTEXT.h"
+
 #include "../Biff_records/ChartFormat.h"
 #include "../Biff_records/Begin.h"
 #include "../Biff_records/Bar.h"
@@ -46,14 +52,9 @@
 #include "../Biff_records/CrtLink.h"
 #include "../Biff_records/SeriesList.h"
 #include "../Biff_records/Chart3d.h"
-#include "../Biff_unions/LD.h"
-#include "../Biff_unions/DROPBAR.h"
 #include "../Biff_records/CrtLine.h"
 #include "../Biff_records/LineFormat.h"
-#include "../Biff_unions/DFTTEXT.h"
 #include "../Biff_records/DataLabExtContents.h"
-#include "../Biff_unions/SS.h"
-#include "../Biff_unions/SHAPEPROPS.h"
 #include "../Biff_records/End.h"
 #include "../Biff_records/ValueRange.h"
 #include "../Biff_records/Tick.h"
@@ -65,6 +66,7 @@
 #include "../Biff_records/PlotArea.h"
 #include "../Biff_records/DropBar.h"
 #include "../Biff_records/CrtMlFrt.h"
+#include "../Biff_records/DataFormat.h"
 
 #include "../Biff_records/StartObject.h"
 #include "../Biff_records/EndObject.h"

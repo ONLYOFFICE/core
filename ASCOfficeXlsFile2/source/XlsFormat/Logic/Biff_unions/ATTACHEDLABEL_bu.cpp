@@ -347,12 +347,11 @@ int ATTACHEDLABEL::serialize(std::wostream & _stream, bool isPosition)
 int ATTACHEDLABEL::serialize_rPr (std::wostream & _stream, int iFmt, bool rtl, bool defRPr)
 {
 	if (!pGlobalWorkbookInfoPtr)			return 0;
-	if (!pGlobalWorkbookInfoPtr->m_arFonts) return 0;
 
-	int sz = pGlobalWorkbookInfoPtr->m_arFonts->size();
+	int sz = pGlobalWorkbookInfoPtr->m_arFonts.size();
 	if (iFmt -1 > sz || iFmt < 1) return 0;
 
-	Font * font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts->at(iFmt-1).get());
+	Font * font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts[iFmt-1].get());
 
 	Text * text_props = dynamic_cast<Text*>(m_TextProperties.get());
 	

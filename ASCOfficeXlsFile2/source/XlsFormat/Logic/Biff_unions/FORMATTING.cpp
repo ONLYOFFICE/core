@@ -71,7 +71,6 @@ BaseObjectPtr FORMATTING::clone()
 const bool FORMATTING::loadContent(BinProcessor& proc)
 {
 	global_info = proc.getGlobalWorkbookInfo();
-	global_info->m_arFonts = &m_arFonts;
 
 	int count = 0;
 	count = proc.repeated<Font>(0, 510); // Wrong records sequence workaround (originally  at least one Font is mandatory)
@@ -80,7 +79,7 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 		Font *font = dynamic_cast<Font *>(elements_.front().get());
 		if ((font) && (font->correct))
 		{
-			m_arFonts.push_back(elements_.front());
+			global_info->m_arFonts.push_back(elements_.front());
 		}
 		elements_.pop_front();
 		count--;
@@ -95,10 +94,10 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 	}
 //----------------------------------------------------------------------------------------------------	
 	count = proc.repeated<Font>(0, 510); // Wrong records sequence workaround (originally Font follows by Format)
-	int countFonts = m_arFonts.size();
+	int countFonts = global_info->m_arFonts.size();
 	while(count > 0)
 	{
-		m_arFonts.insert(m_arFonts.begin()+countFonts, elements_.back());
+		global_info->m_arFonts.insert(global_info->m_arFonts.begin() + countFonts, elements_.back());
 		elements_.pop_back();
 		count--;
 	}	
@@ -235,20 +234,23 @@ int FORMATTING::serialize1(std::wostream & stream)
 				}
 			}
 		}
-		if (m_arFonts.size() > 0)
+		if (!global_info->m_arFonts.empty())
 		{
 			CP_XML_NODE(L"fonts")
 			{
-				CP_XML_ATTR(L"count", m_arFonts.size());
-                for (size_t i = 0 ; i < m_arFonts.size(); i++)
+				CP_XML_ATTR(L"count", global_info->m_arFonts.size());
+               
+				for (size_t i = 0; i < global_info->m_arFonts.size(); i++)
 				{
-					Font * font = dynamic_cast<Font*>(m_arFonts[i].get());
+					Font * font = dynamic_cast<Font*>(global_info->m_arFonts[i].get());
+					
 					std::map<int, FillInfoExt>::iterator it = global_info->fonts_color_ext.find(i);
-					if (font && (it!=global_info->fonts_color_ext.end()))
+					
+					if (font && (it != global_info->fonts_color_ext.end()))
 					{					
 						font->set_color_ext(it->second);
 					}
-					m_arFonts[i]->serialize(CP_XML_STREAM());
+					global_info->m_arFonts[i]->serialize(CP_XML_STREAM());
 				}
 			}
 		}

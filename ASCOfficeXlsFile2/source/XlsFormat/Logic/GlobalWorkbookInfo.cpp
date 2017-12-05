@@ -186,9 +186,9 @@ void GlobalWorkbookInfo::GetDigitFontSizePixels()
 	}
 
 	defaultDigitFontSize = std::pair<float, float>(7,8);
-	if (m_arFonts->size() < 1) return;
+	if (m_arFonts.empty()) return;
 
-	Font * font = dynamic_cast<Font*>(m_arFonts->at(0).get());
+	Font * font = dynamic_cast<Font*>(m_arFonts[0].get());
 	if (!font) return;
 
 	std::wstring	fontName = font->fontName.value();

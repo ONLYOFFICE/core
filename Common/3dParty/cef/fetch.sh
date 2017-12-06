@@ -46,8 +46,6 @@ then
   then
     cef_mod_time=$(date -d"$(curl -sI $cef_url | awk '/Last-Modified/ {print ($3, $4, $5, $6, $7, $8)}')" +"%s")
     local_mod_time=$(stat -c %Y $cef_arch)
-    echo $cef_mod_time
-    echo $local_mod_time
     if [[ $cef_mod_time -eq $local_mod_time ]]
     then
       echo "cef_binary already downloaded"

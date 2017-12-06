@@ -12,11 +12,7 @@ if defined TARGET (
 mkdir "%SCRIPTPATH%%PLATFORM%"
 cd "%SCRIPTPATH%%PLATFORM%"
 
-if exist "cef_binary.7z" (
-    echo "cef_binary.7z already downloaded"
-) else (
-    Powershell.exe Invoke-WebRequest -OutFile cef_binary.7z http://d2ettrnqo7v976.cloudfront.net/cef/3163/%PLATFORM%/cef_binary.7z
-)
+Powershell.exe -executionpolicy remotesigned -file %SCRIPTPATH%download.ps1 http://d2ettrnqo7v976.cloudfront.net/cef/3163/%PLATFORM%/cef_binary.7z cef_binary.7z cef_binary
 
 SET UNSIP_PROGRAMM="%ProgramFiles%\7-Zip\7z.exe"
 SET UNSIP_PROGRAMM2="%ProgramFiles(x86)%\7-Zip\7z.exe"

@@ -33,7 +33,10 @@
 
 #include "../DesktopEditor/common/File.h"
 #include "../OfficeUtils/src/OfficeUtils.h"
-#include "../ASCOfficePPTFile/PPTFormatLib/PPTFormatLib.h"
+
+#if defined FILE_FORMAT_CHECKER_WITH_MACRO
+	#include "../ASCOfficePPTFile/PPTFormatLib/PPTFormatLib.h"
+#endif
 
 #include "3dParty/pole/pole.h"
 #include <algorithm>
@@ -146,10 +149,12 @@ bool COfficeFileFormatChecker::isDocFormatFile	(POLE::Storage * storage)
 		if (entries.size() > 0)
 			return false;
 
+#if defined FILE_FORMAT_CHECKER_WITH_MACRO
 		if (storage->isDirectory(L"Macros"))
 		{
 			bMacroEnabled = true;
 		}
+#endif
 		return true;
 	}
 
@@ -185,11 +190,12 @@ bool COfficeFileFormatChecker::isXlsFormatFile	(POLE::Storage * storage)
 			}
 		}
 	}
+#if defined FILE_FORMAT_CHECKER_WITH_MACRO
 	if (storage->isDirectory(L"_VBA_PROJECT_CUR"))
 	{
 		bMacroEnabled = true;
 	}
-
+#endif
 	return true;
 }
 
@@ -237,6 +243,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
         }
         else if ( isPptFormatFile(&storage) )
         {
+#if defined FILE_FORMAT_CHECKER_WITH_MACRO
 			COfficePPTFile pptFile;
 			
 			bMacroEnabled = true;
@@ -246,6 +253,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
 				return false;
 			}         
 			pptFile.CloseFile();
+#endif
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT;
             return true;
         }

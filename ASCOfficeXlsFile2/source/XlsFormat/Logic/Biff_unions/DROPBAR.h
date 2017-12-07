@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of DROPBAR union of records 
 class DROPBAR: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(DROPBAR)

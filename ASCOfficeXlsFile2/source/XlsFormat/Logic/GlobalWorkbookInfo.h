@@ -84,6 +84,7 @@ public:
 //-----------------------------------------------------------------------------
 	bool									bVbaProjectExist;
 	bool									bMacrosExist;
+	bool									bThemePresent;
 
 	unsigned short							CodePage;
 	CRYPT::DecryptorPtr						decryptor;
@@ -96,7 +97,7 @@ public:
 	std::map<int, int>						fonts_charsets;
 	std::map<int,  std::wstring>			colors_palette;
 
-	std::vector<BaseObjectPtr>				*m_arFonts;
+	std::vector<BaseObjectPtr>				m_arFonts;
 	
 	unsigned int							current_sheet;
 
@@ -155,6 +156,8 @@ public:
     CApplicationFonts				*applicationFonts;
 	std::wstring					fontsDirectory;
 
+	std::wstring					tempDirectory;
+
 	int								Version;
 
 	int								cmt_rules;
@@ -166,6 +169,7 @@ public:
 	std::wstringstream				connections_stream;
 	
 	int								connectionId;
+	std::map<std::wstring, int>		connectionNames;
 
 	XlsConverter					*xls_converter;
 

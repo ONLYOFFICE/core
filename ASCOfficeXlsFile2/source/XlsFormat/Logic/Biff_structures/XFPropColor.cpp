@@ -47,8 +47,6 @@ BiffStructurePtr XFPropColor::clone()
 
 void XFPropColor::load(CFRecord& record)
 {
-	node_name = L"color";
-
 	unsigned char flags;
 	record >> flags;
 	
@@ -58,7 +56,7 @@ void XFPropColor::load(CFRecord& record)
 	record >> icv >> nTintShade >> dwRgba;
 }
 
-int XFPropColor::serialize(std::wostream & stream)
+int XFPropColor::serialize(std::wostream & stream, const std::wstring &node_name)
 {
 	if (xclrType > 3 )return 0;//not set
 
@@ -68,11 +66,11 @@ int XFPropColor::serialize(std::wostream & stream)
 		{
 			switch(xclrType)
 			{
-				case 0: CP_XML_ATTR(L"auto",	1);				break;
-				case 1: CP_XML_ATTR(L"indexed", icv);			break;
-				case 2:	
-				case 3: CP_XML_ATTR(L"rgb",		dwRgba.strRGB);	break;
-					//CP_XML_ATTR(L"theme",	icv);			break;
+				case 0: CP_XML_ATTR(L"auto",	1);		break;
+				case 1: CP_XML_ATTR(L"indexed", icv);	break;
+				case 3: CP_XML_ATTR(L"theme",	icv);	break;
+				default:
+					CP_XML_ATTR(L"rgb", dwRgba.strRGB);	break;
 			}
 			if (nTintShade != 0)
 			{

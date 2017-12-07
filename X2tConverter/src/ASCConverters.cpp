@@ -3661,7 +3661,7 @@ namespace NExtractTools
    {
 	   bool bMacros = false;
 
-       long hRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), NULL, bMacros);
+       long hRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), sTemp, NULL, bMacros);
        if (AVS_ERROR_DRM == hRes)
        {
            if(!params.getDontSaveAdditional())
@@ -3696,7 +3696,7 @@ namespace NExtractTools
 	{
 		bool bMacros = true;
 		
-		long hRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), NULL, bMacros);
+		long hRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), sTemp, NULL, bMacros);
 		if (AVS_ERROR_DRM == hRes)
 		{
            if(!params.getDontSaveAdditional())
@@ -3740,7 +3740,7 @@ namespace NExtractTools
 
 		bool bMacros = true;
 
-		if (ConvertXls2Xlsx( sFrom, sResultXlsxDir, params.getPassword(), params.getFontPath(), NULL, bMacros)== S_OK)
+        if (ConvertXls2Xlsx( sFrom, sResultXlsxDir, params.getPassword(), params.getFontPath(), sTemp, NULL, bMacros)== S_OK)
         {
             BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
@@ -3801,6 +3801,23 @@ namespace NExtractTools
 	}
 
 //------------------------------------------------------------------------------------------------------------------
+	int detectMacroInFile(InputParams& oInputParams)
+	{
+        int nRes = 0;// no macro
+		std::wstring sFileFrom	= *oInputParams.m_sFileFrom;
+
+		COfficeFileFormatChecker OfficeFileFormatChecker;
+
+		if (OfficeFileFormatChecker.isOfficeFile(sFileFrom))
+        {
+           if (OfficeFileFormatChecker.bMacroEnabled)
+		   {
+			   nRes = AVS_ERROR_MACRO; 
+		   }
+		}
+
+		return nRes;
+	}
 	int fromInputParams(InputParams& oInputParams)
 	{
 		TConversionDirection conversion  = oInputParams.getConversionDirection();

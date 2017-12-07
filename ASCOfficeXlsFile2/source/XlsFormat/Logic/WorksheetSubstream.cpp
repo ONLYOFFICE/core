@@ -52,6 +52,8 @@
 #include "Biff_records/DefaultRowHeight.h"
 #include "Biff_records/Label.h"
 #include "Biff_records/List12.h"
+#include "Biff_records/PLV.h"
+#include "Biff_records/CFEx.h"
 
 #include "Biff_unions/BACKGROUND.h"
 #include "Biff_unions/BIGNAME.h"
@@ -453,6 +455,18 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					m_arFEAT11.insert(m_arFEAT11.begin(), elements_.back());
 					elements_.pop_back();
 					count--;
+				}
+			}break;
+			case rt_CFEx:	//Calculadora.xls не в FORMATING
+			{
+				count = proc.repeated<CFEx>	(0, 0);
+			}break;
+			case rt_PLV:	//Calculadora.xls не в FORMATING
+			{
+				if (proc.optional<PLV>())
+				{
+					m_PLV = elements_.back();
+					elements_.pop_back();
 				}
 			}break;
 			case rt_HeaderFooter:		

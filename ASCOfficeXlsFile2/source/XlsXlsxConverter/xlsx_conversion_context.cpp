@@ -229,9 +229,15 @@ void xlsx_conversion_context::add_query_table (const std::wstring & query_table)
 {
 	if (query_table.empty()) return;
 
+	std::wstring rid	= L"qtId" + std::to_wstring(query_tables_.size() + 1);
 	std::wstring target = L"queryTable" + std::to_wstring(query_tables_.size() + 1) + L".xml";
 
 	query_tables_.insert(std::make_pair(target, query_table));
+
+	current_sheet().sheet_rels().add(oox::relationship(rid,
+		L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/queryTable", 
+		L"../queryTables/" + target));
+
 }
 
 void xlsx_conversion_context::add_control_props(const std::wstring & target, const std::wstring & props)

@@ -215,6 +215,22 @@ private:
     std::string	content_props;
 };
 //------------------------------------------------------------------------
+class theme_content;
+typedef _CP_PTR(theme_content) theme_content_ptr;
+
+class theme_content : boost::noncopyable
+{
+public:
+    theme_content(char* data, size_t size);
+    static _CP_PTR(theme_content) create(char* data, size_t size);
+
+	std::string	content()	{ return content_; }
+	
+	friend class	xl_theme_files;
+private:
+    std::string	content_;
+};
+//------------------------------------------------------------------------
 class document : public element
 {
 public:

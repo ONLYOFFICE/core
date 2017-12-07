@@ -47,10 +47,9 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
 	static const ElementType	type = typeXFPropColor;
 
-	int serialize(std::wostream & stream);
+	int serialize(std::wostream & stream, const std::wstring &sNode);
 
 	bool			fValidRGBA;
 	unsigned char	xclrType;

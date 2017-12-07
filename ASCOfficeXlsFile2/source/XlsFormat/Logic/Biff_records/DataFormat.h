@@ -35,9 +35,6 @@
 
 namespace XLS
 {
-
-
-// Logical representation of DataFormat record in BIFF8
 class DataFormat: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(DataFormat)
@@ -47,11 +44,10 @@ public:
 	~DataFormat();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeDataFormat;
+	static const ElementType type = typeDataFormat;
 
 	_UINT16 xi;
 	_UINT16 yi;

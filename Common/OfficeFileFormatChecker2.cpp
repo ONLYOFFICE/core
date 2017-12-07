@@ -34,6 +34,10 @@
 #include "../DesktopEditor/common/File.h"
 #include "../OfficeUtils/src/OfficeUtils.h"
 
+#if defined FILE_FORMAT_CHECKER_WITH_MACRO
+	#include "../ASCOfficePPTFile/PPTFormatLib/PPTFormatLib.h"
+#endif
+
 #include "3dParty/pole/pole.h"
 #include <algorithm>
 
@@ -118,6 +122,9 @@ bool COfficeFileFormatChecker::isPdfFormatFile	(unsigned char* pBuffer,int dwByt
 	if (pBuffer == NULL) return false;
 
     int nTempBufferSize = dwBytes < 20 ? dwBytes : 20;
+    if (nTempBufferSize < 1)
+        return false;
+
     char* pTempBuffer = new char[nTempBufferSize];
 
     memcpy ( pTempBuffer, pBuffer, nTempBufferSize );
@@ -145,6 +152,12 @@ bool COfficeFileFormatChecker::isDocFormatFile	(POLE::Storage * storage)
 		if (entries.size() > 0)
 			return false;
 
+#if defined FILE_FORMAT_CHECKER_WITH_MACRO
+		if (storage->isDirectory(L"Macros"))
+		{
+			bMacroEnabled = true;
+		}
+#endif
 		return true;
 	}
 
@@ -158,31 +171,37 @@ bool COfficeFileFormatChecker::isXlsFormatFile	(POLE::Storage * storage)
 
     POLE::Stream stream(storage, L"Workbook");
 	
-	if (stream.read(buffer,10) >0)
-		return true;
+	if (stream.read(buffer,10) < 1)
+	{
+		POLE::Stream stream2(storage, L"Book");
 
-    POLE::Stream stream2(storage, L"Book");
+		if (stream2.read(buffer,10) < 1)
+		{
+			POLE::Stream stream3(storage, L"WORKBOOK");
 
-    if (stream2.read(buffer,10) > 0)
-        return true;
+			if (stream3.read(buffer,10) < 1)
+			{
+				POLE::Stream stream4(storage, L"BOOK");
 
-    POLE::Stream stream3(storage, L"WORKBOOK");
+				if (stream4.read(buffer,10) < 1)
+				{
+					POLE::Stream stream5(storage, L"book");
 
-    if (stream3.read(buffer,10) > 0)
-        return true;
-
-    POLE::Stream stream4(storage, L"BOOK");
-
-    if (stream4.read(buffer,10) > 0)
-        return true;
-
-    POLE::Stream stream5(storage, L"book");
-
-    if (stream5.read(buffer,10) > 0)
-        return true;
-
-	return false;
+					if (stream5.read(buffer,10) < 1)
+						return false;
+				}
+			}
+		}
+	}
+#if defined FILE_FORMAT_CHECKER_WITH_MACRO
+	if (storage->isDirectory(L"_VBA_PROJECT_CUR"))
+	{
+		bMacroEnabled = true;
+	}
+#endif
+	return true;
 }
+
 bool COfficeFileFormatChecker::isPptFormatFile	(POLE::Storage * storage)
 {
 	if (storage == NULL) return false;
@@ -190,10 +209,10 @@ bool COfficeFileFormatChecker::isPptFormatFile	(POLE::Storage * storage)
 	POLE::Stream stream(storage, L"PowerPoint Document");	
 
 	unsigned char buffer[10];
-	if (stream.read(buffer,10) >0)
-		return true;
+	if (stream.read(buffer,10) < 1)
+		return false;
 
-	return false;
+	return true;
 }
 bool COfficeFileFormatChecker::isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage)
 {
@@ -227,7 +246,18 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
         }
         else if ( isPptFormatFile(&storage) )
         {
-            nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT;
+#if defined FILE_FORMAT_CHECKER_WITH_MACRO
+			COfficePPTFile pptFile;
+			
+			bMacroEnabled = true;
+			long nResult = pptFile.OpenFile(fileName, L"", bMacroEnabled);
+			if (nResult != S_OK)
+			{
+				return false;
+			}         
+			pptFile.CloseFile();
+#endif
+			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT;
             return true;
         }
         else if ( isMS_OFFCRYPTOFormatFile(&storage) )
@@ -380,6 +410,7 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName)
 		else if (std::string::npos != strContentTypes.find(docmFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM;
+			bMacroEnabled = true;
 		}
         else if (std::string::npos != strContentTypes.find(dotxFormatLine))
 		{
@@ -388,6 +419,7 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName)
 		else if (std::string::npos != strContentTypes.find(dotmFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM;
+			bMacroEnabled = true;
 		}
 		else if (std::string::npos != strContentTypes.find(xlsxFormatLine))
 		{
@@ -396,6 +428,7 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName)
 		else if (std::string::npos != strContentTypes.find(xlsmFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM;
+			bMacroEnabled = true;
 		}
         else if (std::string::npos != strContentTypes.find(xltxFormatLine))
 		{
@@ -404,6 +437,7 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName)
 		else if (std::string::npos != strContentTypes.find(xltmFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM;
+			bMacroEnabled = true;
 		}
 		else if (std::string::npos != strContentTypes.find(pptxFormatLine))
 		{
@@ -412,10 +446,12 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName)
 		else if (std::string::npos != strContentTypes.find(pptmFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM;
+			bMacroEnabled = true;
 		}
 		else if (std::string::npos != strContentTypes.find(ppsmFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM;
+			bMacroEnabled = true;
 		}
 		else if (std::string::npos != strContentTypes.find(ppsxFormatLine))
 		{
@@ -428,6 +464,7 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName)
         else if (std::string::npos != strContentTypes.find(potmFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM;
+			bMacroEnabled = true;
 		}
 		delete []pBuffer;
 		pBuffer = NULL;

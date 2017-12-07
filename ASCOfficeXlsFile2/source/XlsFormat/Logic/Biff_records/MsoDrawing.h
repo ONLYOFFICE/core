@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffRecordSplit.h"
-#include <Logic/Biff_structures/ODRAW/OfficeArtDgContainer.h>
+#include "../Biff_structures/ODRAW/OfficeArtDgContainer.h"
 
 namespace XLS
 {

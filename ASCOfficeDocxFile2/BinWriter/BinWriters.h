@@ -3744,7 +3744,6 @@ namespace BinDocxRW
 		void WriteHyperlink(OOX::Logic::CHyperlink* pHyperlink)
 		{
 			int nCurPos = 0;
-            std::wstring sField;
             std::wstring sLink;
 			if(pHyperlink->m_oId.IsInit())
 			{
@@ -3757,24 +3756,20 @@ namespace BinDocxRW
 				}
 			}
 			
-            if(!sLink.empty())
-			{
-				nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Hyperlink);
-					WriteHyperlinkContent(sLink, pHyperlink);
-				m_oBcw.WriteItemWithLengthEnd(nCurPos);
-			}
-			else
-			{
-				WriteParagraphContent(pHyperlink->m_arrItems, true);
-			}
+			nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Hyperlink);
+				WriteHyperlinkContent(sLink, pHyperlink);
+			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 		}
         void WriteHyperlinkContent(std::wstring& sLink, OOX::Logic::CHyperlink* pHyperlink)
 		{
 			int nCurPos = 0;
 	//Link
-			nCurPos = m_oBcw.WriteItemStart(c_oSer_HyperlinkType::Link);
-				m_oBcw.m_oStream.WriteStringW3(sLink);
-			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			if(!sLink.empty())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_HyperlinkType::Link);
+					m_oBcw.m_oStream.WriteStringW3(sLink);
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
 	//Anchor
 			if(pHyperlink->m_sAnchor.IsInit())
 			{

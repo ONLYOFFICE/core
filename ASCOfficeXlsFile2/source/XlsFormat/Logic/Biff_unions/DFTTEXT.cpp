@@ -76,11 +76,16 @@ const bool DFTTEXT::loadContent(BinProcessor& proc)
 		m_DefaultText = elements_.back();
 		elements_.pop_back();
 	}
+
 	if (proc.optional<DataLabExtContents>())
 	{
 		m_DataLabExtContents = elements_.back();
 		elements_.pop_back();
 	}	
+	
+	if (!m_DefaultText && !m_DataLabExtContents)
+		return false;
+
 	if (proc.mandatory<ATTACHEDLABEL>())
 	{
 		m_ATTACHEDLABEL = elements_.back();
@@ -89,10 +94,7 @@ const bool DFTTEXT::loadContent(BinProcessor& proc)
 
 	if (proc.optional<EndObject>()) elements_.pop_back();
 
-	if (m_DefaultText || m_DataLabExtContents)
-		return true;
-	else
-		return false;
+	return true;
 }
 
 } // namespace XLS

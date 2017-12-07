@@ -333,7 +333,6 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 						if (fmts)
 						{		
 							global_info_->cellStyleDxfs_count	= fmts->m_arDXF.size(); 
-							global_info_->m_arFonts				= &fmts->m_arFonts;
 						}
 					}
 					//else

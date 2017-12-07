@@ -39,6 +39,7 @@
 #include "../Biff_records/DBQueryExt.h"
 #include "../Biff_records/ExtString.h"
 #include "../Biff_records/DConn.h"
+#include "../Biff_records/Qsi.h"
 
 #include "../Biff_structures/DConnConnectionWeb.h"
 #include "../Biff_structures/DConnConnectionOleDb.h"
@@ -224,11 +225,24 @@ int DBQUERY::serialize_connection(std::wstring & name)
 	{
 		name = dcon->rgchConnectionName.strTotal;
 	}
+	//имена уникальны должны быть!!!
 	if (name.empty())
 		name = L"Connection" + std::to_wstring(global_info->connectionId);
 
-	DBQUERYEXT *query_ext = dynamic_cast<DBQUERYEXT*>(m_DBQUERYEXT.get());	
-	DBQueryExt *dbQry_ext = query_ext ? dynamic_cast<DBQueryExt*>(query_ext->m_DBQueryExt.get()) : NULL;
+	std::map<std::wstring, int>::iterator pFind = global_info->connectionNames.find(name);
+	if (pFind == global_info->connectionNames.end())
+	{
+		global_info->connectionNames.insert(std::make_pair(name, 1));
+	}
+	else
+	{
+		name = name + L"_" + std::to_wstring(pFind->second);
+		pFind->second++;
+	}
+
+	DBQUERYEXT	*query_ext	= dynamic_cast<DBQUERYEXT*>(m_DBQUERYEXT.get());	
+	DBQueryExt	*dbQry_ext	= query_ext ? dynamic_cast<DBQueryExt*>(query_ext->m_DBQueryExt.get()) : NULL;
+	Qsi			*info		= dynamic_cast<Qsi*>(m_Qsi.get());
 
 	DConnConnectionWeb		*webDb = dcon ? dynamic_cast<DConnConnectionWeb*>(dcon->connection.get()) : NULL;
 	DConnConnectionOleDb	*oleDb = dcon ? dynamic_cast<DConnConnectionOleDb*>(dcon->connection.get()) : NULL;
@@ -243,11 +257,12 @@ int DBQUERY::serialize_connection(std::wstring & name)
 		CP_XML_NODE(L"connection")
 		{
 			CP_XML_ATTR(L"id", global_info->connectionId);	
+			CP_XML_ATTR(L"name", name);
+			
 			if ( dbQry->query.dbt == 5 )
 			{
 				CP_XML_ATTR(L"keepAlive", 1);
 			}
-			CP_XML_ATTR(L"name", name);
 			
 			if ((dcon) && (!dcon->rgchConnectionDesc.strTotal.empty()))
 			{
@@ -255,12 +270,15 @@ int DBQUERY::serialize_connection(std::wstring & name)
 			}
 
 			CP_XML_ATTR(L"type", dbQry->query.dbt);
-			//background="1" 
-			//saveData="1"
+			CP_XML_ATTR(L"refreshedVersion", 2);
+
+			if (info)
+			{
+				CP_XML_ATTR(L"background", info->fAsync);
+				CP_XML_ATTR(L"saveData", info->fSaveData);
+			}
 
 			if (dbQry->query.fSavePwd) CP_XML_ATTR(L"savePassword", 1);
-
-			CP_XML_ATTR(L"refreshedVersion", 1);
 
 			if (dbQry->typeRecord == 1)
 			{
@@ -270,21 +288,30 @@ int DBQUERY::serialize_connection(std::wstring & name)
 				if ( dbQry->query.dbt == 6 )
 				{
 					TxtQry *query_txt = query_ext ? dynamic_cast<TxtQry*>(query_ext->m_TxtQry.get()) : NULL;
+
 					if (query_txt)
 					{
 						CP_XML_NODE(L"textPr")
 						{
+							CP_XML_ATTR(L"codePage", 1148);
 							CP_XML_ATTR(L"sourceFile", query_txt->rgchFile.value());
-							//delimited="0"
+							CP_XML_ATTR(L"delimited", query_txt->fDelimited);
+							wchar_t v = query_txt->chDecimal;
+							CP_XML_ATTR(L"decimal", std::wstring(&v, 1));
+							v = query_txt->chThousSep;
+							CP_XML_ATTR(L"thousands", std::wstring(&v, 1));
+
 							CP_XML_NODE(L"textFields")
 							{
+								CP_XML_ATTR(L"count", query_txt->rgtxtwf.size());
+
 								for (size_t i = 0; i < query_txt->rgtxtwf.size(); i++)
 								{
 									CP_XML_NODE(L"textField")
 									{
 										switch(query_txt->rgtxtwf[i].fieldType)
 										{
-										case 0:	CP_XML_ATTR(L"type", L"general");	break;
+										//case 0:	CP_XML_ATTR(L"type", L"general");	break;
 										case 1:	CP_XML_ATTR(L"type", L"text");	break;
 										case 2:	CP_XML_ATTR(L"type", L"MDY");	break;
 										case 3:	CP_XML_ATTR(L"type", L"DMY");	break;
@@ -303,7 +330,7 @@ int DBQUERY::serialize_connection(std::wstring & name)
 					}
 				}
 				else
-				{
+				{					
 					size_t index = 0;
 					size_t commandType = 1;
 

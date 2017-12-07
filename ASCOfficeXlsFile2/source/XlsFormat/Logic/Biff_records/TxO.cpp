@@ -32,7 +32,7 @@
 
 #include "TxO.h"
 
-#include <Logic/Biff_records/Font.h>
+#include "Font.h"
 
 #include <utils.h>
 
@@ -184,9 +184,9 @@ int TxO::serialize_vml (std::wostream & _stream)
 				{
 					iFmt = run->formatRun.ifnt;
 					Font *font = NULL;
-					if ((global_info->m_arFonts) && (iFmt >=0 && iFmt < global_info->m_arFonts->size()))
+					if (iFmt >= 0 && iFmt < global_info->m_arFonts.size())
 					{
-						font = dynamic_cast<Font *>(global_info->m_arFonts->at(iFmt).get());
+						font = dynamic_cast<Font *>(global_info->m_arFonts[iFmt].get());
 					}
 					if (font)
 					{
@@ -281,12 +281,11 @@ int TxO::serialize (std::wostream & _stream)
 int TxO::serialize_rPr	(std::wostream & _stream, int iFmt, std::wstring namespace_)
 {
 	if (!global_info)			return 0;
-	if (!global_info->m_arFonts) return 0;
 
-	int sz = global_info->m_arFonts->size();
+	int sz = global_info->m_arFonts.size();
 	if (iFmt - 1 >= sz || iFmt < 1) return 0;
 
-	Font * font = dynamic_cast<Font*>(global_info->m_arFonts->at(iFmt-1).get());
+	Font * font = dynamic_cast<Font*>(global_info->m_arFonts[iFmt-1].get());
 
 	if (!font) return 0;
 

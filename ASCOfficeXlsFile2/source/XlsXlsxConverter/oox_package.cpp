@@ -201,7 +201,23 @@ void rels_files::add(std::wstring const & Id,
 {
     return add(relationship(Id, Type, Target, TargetMode));
 }
-
+//--------------------------------------------------------------------------------------------
+customXml_content::customXml_content()
+{      
+}
+_CP_PTR(customXml_content) customXml_content::create()
+{
+    return boost::make_shared<customXml_content>();
+}
+//--------------------------------------------------------------------------------------------
+theme_content::theme_content(char* data, size_t size)
+{      
+	content_ = std::string(data, size);
+}
+_CP_PTR(theme_content) theme_content::create(char* data, size_t size)
+{
+    return boost::make_shared<theme_content>(data, size);
+}
 //----------------------------------------------------------------------------------------
 chart_content::chart_content() : rels_file_(rels_file::create(L""))
 {      

@@ -50,7 +50,6 @@ public:
 	
 	virtual void load(CFRecord& record);
 
-
 	unsigned char red;
 	unsigned char green;
 	unsigned char blue;
@@ -58,6 +57,8 @@ public:
 	
 	std::wstring  strARGB;
 	std::wstring  strRGB;
+
+	_UINT32 ToRGBA();
 
 	bool is_alpha;
 };

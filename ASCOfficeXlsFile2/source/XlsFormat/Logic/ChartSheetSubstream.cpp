@@ -586,7 +586,7 @@ int ChartSheetSubstream::serialize_3D (std::wostream & _stream)
 
 		if (ax_parent->iax == 0) //primary axes
 		{
-			for (int i = 0 ; i < parent->m_arCRT.size() ; i++)
+			for (size_t i = 0 ; i < parent->m_arCRT.size() ; i++)
 			{
 				CRT* crt = dynamic_cast<CRT*>(parent->m_arCRT[i].get());
 				if((crt) && (crt->m_Chart3d))
@@ -1217,7 +1217,7 @@ int ChartSheetSubstream::serialize_ser (std::wstring sNodeSer, std::wostream & _
 	AI		* ai	= dynamic_cast<AI *>(ai_.get());
 	BRAI	* brai	= dynamic_cast<BRAI *>(ai->m_BRAI.get());
 	
-	std::wstring formula = brai->formula.getAssembledFormula();
+	std::wstring formula = brai->formula.getAssembledFormula(true);
 	
 	int rt = brai->rt;
 	bool b = brai->fUnlinkedIfmt;

@@ -63,6 +63,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/ExternalImage.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/ExternalAudio.h"
@@ -144,6 +145,8 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new OOX::OleObject( filename, true ));
 		else if (relation.Type() == OOX::FileTypes::VbaProject)
 			return smart_ptr<OOX::File>(new OOX::VbaProject( filename, filename ));
+		else if (relation.Type() == OOX::FileTypes::JsaProject)
+			return smart_ptr<OOX::File>(new OOX::JsaProject( filename ));
 
 		return smart_ptr<OOX::File>(new OOX::UnknowTypeFile());
 	}

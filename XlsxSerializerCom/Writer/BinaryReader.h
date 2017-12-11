@@ -37,6 +37,7 @@
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
 
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Directory.h"
@@ -1507,9 +1508,10 @@ namespace BinXlsxRW {
 		OOX::Spreadsheet::CWorkbook& m_oWorkbook;
 		std::map<long, NSCommon::smart_ptr<OOX::File>>& m_mapPivotCacheDefinitions;
         const std::wstring& m_sDestinationDir;
+		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 	public:
-		BinaryWorkbookTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook, std::map<long, NSCommon::smart_ptr<OOX::File>>& mapPivotCacheDefinitions, const std::wstring& sDestinationDir) 
-			: Binary_CommonReader(oBufferedStream), m_oWorkbook(oWorkbook), m_mapPivotCacheDefinitions(mapPivotCacheDefinitions), m_sDestinationDir(sDestinationDir)
+		BinaryWorkbookTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook, std::map<long, NSCommon::smart_ptr<OOX::File>>& mapPivotCacheDefinitions, const std::wstring& sDestinationDir, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
+			: Binary_CommonReader(oBufferedStream), m_oWorkbook(oWorkbook), m_mapPivotCacheDefinitions(mapPivotCacheDefinitions), m_sDestinationDir(sDestinationDir), m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 		{
 		}
 		int Read()
@@ -1557,6 +1559,21 @@ namespace BinXlsxRW {
 
                 m_oWorkbook.m_bMacroEnabled = true;
             }
+			else if(c_oSerWorkbookTypes::JsaProject == type)
+			{
+				BYTE* pData = m_oBufferedStream.GetPointer(length);
+				OOX::CPath oJsaProject = OOX::FileTypes::JsaProject.DefaultFileName();
+				std::wstring filePath = m_sDestinationDir  + FILE_SEPARATOR_STR + _T("xl") + FILE_SEPARATOR_STR + oJsaProject.GetPath();
+
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(filePath);
+				oFile.WriteFile(pData, length);
+				oFile.CloseFile();
+
+				smart_ptr<OOX::JsaProject> oFileJsaProject(new OOX::JsaProject());
+				m_oWorkbook.Add(oFileJsaProject.smart_dynamic_cast<OOX::File>());
+				m_pOfficeDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(oJsaProject.GetExtention(false));
+			}
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
@@ -4445,7 +4462,7 @@ namespace BinXlsxRW {
 			if(-1 != nWorkbookOffBits)
 			{
 				oBufferedStream.Seek(nWorkbookOffBits);
-				res = BinaryWorkbookTableReader(oBufferedStream, *pWorkbook, m_mapPivotCacheDefinitions, sOutDir).Read();
+				res = BinaryWorkbookTableReader(oBufferedStream, *pWorkbook, m_mapPivotCacheDefinitions, sOutDir, pOfficeDrawingConverter).Read();
 				if(c_oSerConstants::ReadOk != res)
 					return res;
 			}

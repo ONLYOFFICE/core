@@ -2992,6 +2992,7 @@ namespace BinDocxRW
 		Binary_tblPrWriter				btblPrs;
 		OOX::Logic::CSectionProperty*	pSectPr;
 		OOX::Logic::CBackground *		pBackground;
+		OOX::CDocument*					poDocument;
 		
 		bool							m_bWriteSectPr;//Записывать ли свойства верхнего уровня в данном экземпляре BinaryOtherTableWriter
 //---------------------------------
@@ -3000,6 +3001,7 @@ namespace BinDocxRW
 		{
 			pBackground		= NULL;
 			pSectPr			= NULL;
+			poDocument		= NULL;
 			m_bWriteSectPr	= false; 
 		}
 		void prepareOfficeDrawingConverter(NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, OOX::IFileContainer *rels, std::vector<std::wstring>& aShapeTypes)
@@ -3108,6 +3110,23 @@ namespace BinDocxRW
 					nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Background);
 						WriteBackground(pBackground);
 					m_oBcw.WriteItemEnd(nCurPos);
+				}
+			}
+	//Write JsaProject
+			if (NULL != poDocument)
+			{
+				smart_ptr<OOX::File> pFile = poDocument->Get(OOX::FileTypes::JsaProject);
+				if (pFile.IsInit() && OOX::FileTypes::JsaProject == pFile->type())
+				{
+					OOX::JsaProject& jsaProject = pFile.as<OOX::JsaProject>();
+					BYTE* pData = NULL;
+					DWORD nBytesCount;
+					if(NSFile::CFileBinary::ReadAllBytes(jsaProject.filename().GetPath(), &pData, nBytesCount))
+					{
+						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::JsaProject);
+						m_oBcw.m_oStream.WriteBYTEArray(pData, nBytesCount);
+						m_oBcw.WriteItemEnd(nCurPos);
+					}
 				}
 			}
 		}
@@ -7893,6 +7912,7 @@ namespace BinDocxRW
 				
 				oBinaryDocumentTableWriter.pSectPr			= pFirstSectPr;
 				oBinaryDocumentTableWriter.pBackground		= poDocument->m_oBackground.GetPointer();
+				oBinaryDocumentTableWriter.poDocument		= poDocument;
 
 				oBinaryDocumentTableWriter.m_bWriteSectPr	= true;
 		//Write Vba

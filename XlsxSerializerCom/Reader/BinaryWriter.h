@@ -1536,6 +1536,20 @@ namespace BinXlsxRW
 
                 m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
+			//Write JsaProject
+			smart_ptr<OOX::File> fileJsaProject = workbook.Get(OOX::FileTypes::JsaProject);
+			if (fileJsaProject.IsInit() && OOX::FileTypes::JsaProject == fileJsaProject->type())
+			{
+				smart_ptr<OOX::JsaProject> jsaProject = fileJsaProject.smart_dynamic_cast<OOX::JsaProject>();
+				BYTE* pData = NULL;
+				DWORD nBytesCount;
+				if(NSFile::CFileBinary::ReadAllBytes(jsaProject->filename().GetPath(), &pData, nBytesCount))
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::JsaProject);
+					m_oBcw.m_oStream.WriteBYTEArray(pData, nBytesCount);
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+			}
         }
 		void WriteWorkbookPr(const OOX::Spreadsheet::CWorkbookPr& workbookPr)
 		{

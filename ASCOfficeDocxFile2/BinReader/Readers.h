@@ -3746,6 +3746,21 @@ public:
 			res = Read1(length, &Binary_DocumentTableReader::ReadBookmarkEnd, this, &oBookmarkEnd);
 			m_oDocumentWriter.m_oContent.WriteString(oBookmarkEnd.toXML());
 		}
+		else if(c_oSerParType::JsaProject == type)
+		{
+			BYTE* pData = m_oBufferedStream.GetPointer(length);
+			OOX::CPath sJsaProject = OOX::FileTypes::JsaProject.DefaultFileName();
+			std::wstring filePath = m_oFileWriter.m_oDocumentWriter.m_sDir + FILE_SEPARATOR_STR + L"word"+ FILE_SEPARATOR_STR + sJsaProject.GetPath();
+
+			NSFile::CFileBinary oFile;
+			oFile.CreateFileW(filePath);
+			oFile.WriteFile(pData, length);
+			oFile.CloseFile();
+
+			long lId;
+			m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::JsaProject.RelationType(), sJsaProject.GetPath(), L"", &lId);
+			m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(sJsaProject.GetExtention(false));
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;

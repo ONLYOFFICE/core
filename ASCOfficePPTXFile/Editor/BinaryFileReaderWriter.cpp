@@ -293,7 +293,7 @@ namespace NSBinPptxRW
 				}
 			}
 		}
-		else if (!strExts.empty())
+		if (!strExts.empty())
 		{
 			m_pContentTypes->AddDefault(strExts.substr(1));
 		}

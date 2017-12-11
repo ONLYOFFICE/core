@@ -1571,7 +1571,8 @@ namespace BinXlsxRW {
 				oFile.CloseFile();
 
 				smart_ptr<OOX::JsaProject> oFileJsaProject(new OOX::JsaProject());
-				m_oWorkbook.Add(oFileJsaProject.smart_dynamic_cast<OOX::File>());
+				smart_ptr<OOX::File> oFileJsaProjectFile = oFileJsaProject.smart_dynamic_cast<OOX::File>();
+				m_oWorkbook.Add(oFileJsaProjectFile);
 				m_pOfficeDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(oJsaProject.GetExtention(false));
 			}
 			else

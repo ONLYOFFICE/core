@@ -147,6 +147,7 @@ HEADERS += docxformatlib.h \
     ../Source/DocxFormat/Media/Media.h \
     ../Source/DocxFormat/Media/OleObject.h \
     ../Source/DocxFormat/Media/Video.h \
+    ../Source/DocxFormat/Media/JsaProject.h \
     ../Source/DocxFormat/Settings/Settings.h \
     ../Source/DocxFormat/Settings/WebSettings.h \
     ../Source/DocxFormat/App.h \

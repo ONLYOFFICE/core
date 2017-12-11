@@ -40,6 +40,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/Video.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/Audio.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
 
 #include "../../Common/Base64.h"
 
@@ -1235,7 +1236,7 @@ namespace NSBinPptxRW
 
 		m_pWriter->WriteString(strRels);
 	}
-	void CRelsGenerator::EndPresentationRels(bool bIsCommentsAuthors, bool bIsNotesMaster, bool bIsVbaProject)
+	void CRelsGenerator::EndPresentationRels(bool bIsCommentsAuthors, bool bIsNotesMaster, bool bIsVbaProject, bool bIsJsaProject)
 	{
  		if (bIsNotesMaster)
 		{
@@ -1265,6 +1266,12 @@ namespace NSBinPptxRW
             std::wstring strRels4 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
                     L"\" Type=\"http://schemas.microsoft.com/office/2006/relationships/vbaProject\" Target=\"vbaProject.bin\"/>";
 			m_pWriter->WriteString(strRels4);
+		}
+		if (bIsJsaProject)
+		{
+			std::wstring strRels5 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+					L"\" Type=\"" + OOX::FileTypes::JsaProject.RelationType() + L"\" Target=\"" + OOX::FileTypes::JsaProject.DefaultFileName().GetPath() + L"\"/>";
+			m_pWriter->WriteString(strRels5);
 		}
 	}
 	int CRelsGenerator::GetNextId()

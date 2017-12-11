@@ -54,6 +54,7 @@
 #include "Media/OleObject.h"
 #include "Media/ActiveX.h"
 #include "Media/VbaProject.h"
+#include "Media/JsaProject.h"
 #include "HeaderFooter.h"
 
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"

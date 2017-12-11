@@ -474,7 +474,8 @@ extern int g_nCurFormatVersion;
 		MoveFromRangeStart = 18,
 		MoveFromRangeEnd = 19,
 		MoveToRangeStart = 20,
-		MoveToRangeEnd = 21
+		MoveToRangeEnd = 21,
+		JsaProject = 22
 	};}
 	namespace c_oSerDocTableType{enum c_oSerDocTableType
 	{

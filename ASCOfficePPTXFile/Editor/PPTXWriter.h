@@ -812,7 +812,7 @@ namespace NSBinPptxRW
 					++nCurrentRels;
 				}
 
-				m_oReader.m_pRels->EndPresentationRels(m_oPresentation.commentAuthors.is_init(), bNotesMasterPresent, m_oPresentation.m_pVbaProject.is_init());
+				m_oReader.m_pRels->EndPresentationRels(m_oPresentation.commentAuthors.is_init(), bNotesMasterPresent, m_oPresentation.m_pVbaProject.is_init(), m_oPresentation.m_pJsaProject.is_init());
 				m_oReader.m_pRels->CloseRels();
 
 				oXmlWriter.ClearNoAttack();

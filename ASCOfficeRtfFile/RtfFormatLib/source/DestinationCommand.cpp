@@ -1027,7 +1027,14 @@ bool RtfParagraphPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 		}
 	}
     COMMAND_RTF_BOOL( "intbl", paragraphProps->m_bInTable,	sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT	( "itap",	paragraphProps->m_nItap,	sCommand, hasParameter, parameter )
+    else if ( "itap" == sCommand && hasParameter)
+	{
+		paragraphProps->m_nItap = parameter;
+		if (parameter == 0)
+		{
+			paragraphProps->m_bInTable = 0;
+		}
+	}
     COMMAND_RTF_BOOL( "keep",	paragraphProps->m_bKeep,	sCommand, hasParameter, parameter )
     COMMAND_RTF_BOOL( "keepn", paragraphProps->m_bKeepNext, sCommand, hasParameter, parameter )
     COMMAND_RTF_BOOL( "pagebb", paragraphProps->m_bPageBB,	sCommand, hasParameter, parameter )
@@ -2283,7 +2290,8 @@ void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oRe
 {
 	 // 1 != oItem->m_oProperty.m_bInTable - параграф не в таблице
 	 // PROP_DEF != nTargetItap && oItem->m_oProperty.m_nItap <= nTargetItap - выставлено свойство,что вложенность - nTargetItap - это не таблица( Нужно для чтения параграфов в таблицах )
-	if ( 1 != oItem->m_oProperty.m_bInTable || ( PROP_DEF != nTargetItap && oItem->m_oProperty.m_nItap <= nTargetItap ) )
+	if (	( 1 != oItem->m_oProperty.m_bInTable || 0 == oItem->m_oProperty.m_nItap ) //Платежное_поручение.rtf
+		||	( PROP_DEF != nTargetItap && oItem->m_oProperty.m_nItap <= nTargetItap ) )
 	{
 		if ( nCurItap > 0 ) //Если до этого были только параграфы в таблицах - завершаем таблицу
 		{
@@ -2292,15 +2300,13 @@ void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oRe
 
 			for( int k = (int)aRows.size() - 1; k >= 0 ; k-- )
 			{
-				if ( aRowItaps[k] == nCurItap )
-				{
-					oNewTable->InsertItem( aRows[k], 0 );
-
-					aRows.erase(aRows.begin() + k);
-					aRowItaps.erase(aRowItaps.begin() + k);
-				}
-				else
+				if ( aRowItaps[k] != nCurItap )
 					break;
+				
+				oNewTable->InsertItem( aRows[k], 0 );
+
+				aRows.erase(aRows.begin() + k);
+				aRowItaps.erase(aRowItaps.begin() + k);
 			}
 			//вычисляем свойства для OOX
 			oNewTable->CalculateGridProp();
@@ -2339,15 +2345,13 @@ void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oRe
 			
 			for( int k = (int)aRows.size() - 1; k >= 0 ; k-- )
 			{
-				if ( aRowItaps[k] == nCurItap )
-				{
-					oNewTable->InsertItem( aRows[k], 0 );
-					
-					aRows.erase(aRows.begin() + k);
-					aRowItaps.erase(aRowItaps.begin() + k);
-				}
-				else
+				if ( aRowItaps[k] != nCurItap )
 					break;
+
+				oNewTable->InsertItem( aRows[k], 0 );
+				
+				aRows.erase(aRows.begin() + k);
+				aRowItaps.erase(aRowItaps.begin() + k);
 			}
 			//вычисляем свойства для OOX
 			oNewTable->CalculateGridProp();
@@ -2386,7 +2390,7 @@ void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oRe
 			//добавляем параграф во временные cell
 			aCellRenderables.push_back( oItem ); //содержит все параграфы, не разложенные по cell
 			aItaps.push_back( nCurItap ); //содержит все номера вложенности параграфов
-
+			
 			if ( bEndCell )
 			{
 				RtfTableCellPtr oNewTableCell ( new RtfTableCell() );

@@ -54,12 +54,12 @@ HRESULT ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
 			_UINT32 name_size = name.length() + 1;
 		//Ole
 			BYTE dataOleInfo[] = {0x01,0x00,0x00,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
-			POLE::Stream oStream3(storageOut, "\001Ole", true, 20);
+			POLE::Stream oStream3(storageOut, L"\001Ole", true, 20);
 			oStream3.write(dataOleInfo, 20);
 			oStream3.flush();
 		//CompObj
 			BYTE dataCompObjHeader[28] = {0x01,0x00,0xfe,0xff,0x03,0x0a,0x00,0x00,0xff,0xff,0xff,0xff,0x0a,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0xc0,0x00,0x00,0x00,0x00,0x00,0x00,0x46};
-			POLE::Stream oStream1(storageOut, "\001CompObj", true, 28 + (name_size + 5) + 2 * (ole1Reader.Header.ClassName.size + 4) + 4 * 4);
+			POLE::Stream oStream1(storageOut, L"\001CompObj", true, 28 + (name_size + 5) + 2 * (ole1Reader.Header.ClassName.size + 4) + 4 * 4);
 			oStream1.write(dataCompObjHeader, 28);
 
 			oStream1.write((BYTE*)&name_size, 4);
@@ -1027,7 +1027,14 @@ bool RtfParagraphPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 		}
 	}
     COMMAND_RTF_BOOL( "intbl", paragraphProps->m_bInTable,	sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT	( "itap",	paragraphProps->m_nItap,	sCommand, hasParameter, parameter )
+    else if ( "itap" == sCommand && hasParameter)
+	{
+		paragraphProps->m_nItap = parameter;
+		if (parameter == 0)
+		{
+			paragraphProps->m_bInTable = 0;
+		}
+	}
     COMMAND_RTF_BOOL( "keep",	paragraphProps->m_bKeep,	sCommand, hasParameter, parameter )
     COMMAND_RTF_BOOL( "keepn", paragraphProps->m_bKeepNext, sCommand, hasParameter, parameter )
     COMMAND_RTF_BOOL( "pagebb", paragraphProps->m_bPageBB,	sCommand, hasParameter, parameter )
@@ -2283,7 +2290,8 @@ void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oRe
 {
 	 // 1 != oItem->m_oProperty.m_bInTable - параграф не в таблице
 	 // PROP_DEF != nTargetItap && oItem->m_oProperty.m_nItap <= nTargetItap - выставлено свойство,что вложенность - nTargetItap - это не таблица( Нужно для чтения параграфов в таблицах )
-	if ( 1 != oItem->m_oProperty.m_bInTable || ( PROP_DEF != nTargetItap && oItem->m_oProperty.m_nItap <= nTargetItap ) )
+	if (	( 1 != oItem->m_oProperty.m_bInTable || 0 == oItem->m_oProperty.m_nItap ) //Платежное_поручение.rtf
+		||	( PROP_DEF != nTargetItap && oItem->m_oProperty.m_nItap <= nTargetItap ) )
 	{
 		if ( nCurItap > 0 ) //Если до этого были только параграфы в таблицах - завершаем таблицу
 		{
@@ -2292,15 +2300,13 @@ void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oRe
 
 			for( int k = (int)aRows.size() - 1; k >= 0 ; k-- )
 			{
-				if ( aRowItaps[k] == nCurItap )
-				{
-					oNewTable->InsertItem( aRows[k], 0 );
-
-					aRows.erase(aRows.begin() + k);
-					aRowItaps.erase(aRowItaps.begin() + k);
-				}
-				else
+				if ( aRowItaps[k] != nCurItap )
 					break;
+				
+				oNewTable->InsertItem( aRows[k], 0 );
+
+				aRows.erase(aRows.begin() + k);
+				aRowItaps.erase(aRowItaps.begin() + k);
 			}
 			//вычисляем свойства для OOX
 			oNewTable->CalculateGridProp();
@@ -2339,15 +2345,13 @@ void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oRe
 			
 			for( int k = (int)aRows.size() - 1; k >= 0 ; k-- )
 			{
-				if ( aRowItaps[k] == nCurItap )
-				{
-					oNewTable->InsertItem( aRows[k], 0 );
-					
-					aRows.erase(aRows.begin() + k);
-					aRowItaps.erase(aRowItaps.begin() + k);
-				}
-				else
+				if ( aRowItaps[k] != nCurItap )
 					break;
+
+				oNewTable->InsertItem( aRows[k], 0 );
+				
+				aRows.erase(aRows.begin() + k);
+				aRowItaps.erase(aRowItaps.begin() + k);
 			}
 			//вычисляем свойства для OOX
 			oNewTable->CalculateGridProp();
@@ -2386,7 +2390,7 @@ void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oRe
 			//добавляем параграф во временные cell
 			aCellRenderables.push_back( oItem ); //содержит все параграфы, не разложенные по cell
 			aItaps.push_back( nCurItap ); //содержит все номера вложенности параграфов
-
+			
 			if ( bEndCell )
 			{
 				RtfTableCellPtr oNewTableCell ( new RtfTableCell() );

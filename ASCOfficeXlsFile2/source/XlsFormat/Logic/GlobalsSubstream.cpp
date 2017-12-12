@@ -625,9 +625,7 @@ void GlobalsSubstream::UpdateXti()
 
 		ExternSheet* extern_sheet = dynamic_cast<ExternSheet*>(SUPP->m_ExternSheet.get());
 
-		if (!extern_sheet) continue;
-
-		for (size_t i = 0; i < extern_sheet->rgXTI.size(); i++)
+		for (size_t i = 0; extern_sheet && i < extern_sheet->rgXTI.size(); i++)
 		{
 			XTI* xti = dynamic_cast<XTI*>(extern_sheet->rgXTI[i].get());
 			if (!xti) continue;
@@ -671,9 +669,17 @@ void GlobalsSubstream::UpdateXti()
 					val.link = XMLSTUFF::xti_indexes2sheet_name(xti->itabFirst, xti->itabLast, info->rgst, val.link); 
 				}
 			}
-
+			global_info_->arXti.push_back(val);
+		}
+		if (!extern_sheet && !SUPP->m_arExternName.empty())
+		{
+			GlobalWorkbookInfo::_xti val;
+		
+			val.iSup	= s;
+			val.pNames	= &SUPP->arNames;
 
 			global_info_->arXti.push_back(val);
+
 		}
 	}
 }

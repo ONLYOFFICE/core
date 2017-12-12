@@ -443,6 +443,10 @@
 			>
 		</File>
 		<File
+			RelativePath="..\..\Common\3dParty\pole\pole.cpp"
+			>
+		</File>
+		<File
 			RelativePath="..\..\UnicodeConverter\UnicodeConverter.cpp"
 			>
 		</File>

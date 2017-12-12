@@ -36,7 +36,6 @@
 namespace XLS
 {
 
-// Logical representation of InterfaceEnd record in BIFF8
 class InterfaceEnd: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(InterfaceEnd)
@@ -47,6 +46,7 @@ public:
 
 	BaseObjectPtr clone();
 
+	static const ElementType type = typeInterfaceEnd;
 	
 	void readFields(CFRecord& record);
 

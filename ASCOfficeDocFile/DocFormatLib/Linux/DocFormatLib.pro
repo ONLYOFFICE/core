@@ -94,6 +94,7 @@ SOURCES += \
     ../../DocDocxConverter/VMLShapeTypeMapping.cpp \
     ../../DocDocxConverter/WordDocument.cpp \
     ../../DocDocxConverter/WordprocessingDocument.cpp \
+    ../../DocDocxConverter/FormFieldData.cpp \
     ../../DocDocxConverter/OfficeDrawing/Record.cpp \
     ../../DocDocxConverter/OfficeDrawing/RecordFactory.cpp \
     ../../DocDocxConverter/OfficeDrawing/ShapeTypeFactory.cpp

@@ -74,6 +74,7 @@
 #include "../../DocDocxConverter/VMLShapeTypeMapping.cpp"
 #include "../../DocDocxConverter/WordDocument.cpp"
 #include "../../DocDocxConverter/WordprocessingDocument.cpp"
+#include "../../DocDocxConverter/FormFieldData.cpp"
 #include "../../DocDocxConverter/OfficeDrawing/Record.cpp"
 #include "../../DocDocxConverter/OfficeDrawing/RecordFactory.cpp"
 #include "../../DocDocxConverter/OfficeDrawing/ShapeTypeFactory.cpp"

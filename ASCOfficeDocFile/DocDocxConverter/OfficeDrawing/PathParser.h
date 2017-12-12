@@ -53,62 +53,31 @@ namespace DocFileFormat
 
 		PathParser (const unsigned char* pSegmentInfo, unsigned int pSegmentInfoSize, const unsigned char* pVertices, unsigned int pVerticesSize, std::vector<_guides> & guides)
 		{
+			int offset = 6;
+			
 			if ((pSegmentInfo != NULL) && (pSegmentInfoSize > 0))
 			{
-				int offset					=	6;
-
 				unsigned short nElems		=	FormatUtils::BytesToUInt16(pSegmentInfo, 0, pSegmentInfoSize);
 				unsigned short nElemsAlloc	=	FormatUtils::BytesToUInt16(pSegmentInfo, 2, pSegmentInfoSize);
 				unsigned short cb			=	FormatUtils::BytesToUInt16(pSegmentInfo, 4, pSegmentInfoSize);
 				
-				// видимо без шапки сразу пишутся все элементы
-				bool headerIs = ((0xfff0 != cb) && (cb > 8) || nElems > nElemsAlloc);
-				if (headerIs)
-				{	
-					cb		=	2;
-					offset	=	0;
-					nElems	=	pSegmentInfoSize / 2;
+				unsigned short cbElement = 4;
 
-					for (unsigned short i = 0; i < nElems; ++i)
-					{
-						PathSegment oSegment = PathSegment(FormatUtils::BytesToUInt16(pSegmentInfo + offset, (i * cb), pSegmentInfoSize));
-						m_arSegments.push_back (oSegment);
-					}
-				}
-				else
+				if (cb == 0xfff0)
+					cbElement = 2;
+
+				if (nElems == 0)
 				{
-					if ((0xfff0 != cb) && (8 != cb) && (4 != cb) && (2 != cb))
-					{
-						cb		=	0xfff0;
-						offset	=	0;
-						nElems	=	pSegmentInfoSize / 2;
-					}
-
-					if (0xfff0 == cb)	
-					{
-						cb = 4;
-
-						for (unsigned short i = 0; i < nElems; ++i)
-						{
-							PathSegment oSegment = PathSegment(FormatUtils::BytesToUInt16(pSegmentInfo + offset, (i * cb), pSegmentInfoSize));
-							m_arSegments.push_back (oSegment);
-						}
-					}
-					else
-					{
-						if ((2 != cb) && (1 != cb))
-							cb = 8;
-
-						for (unsigned short i = 0; i < nElems; ++i)
-						{
-							PathSegment oSegment = PathSegment(FormatUtils::BytesToInt32(pSegmentInfo + offset, (i * cb), pSegmentInfoSize));
-							m_arSegments.push_back (oSegment);
-						}
-
-						if ((long)pSegmentInfoSize < (long)(cb*nElems))		// Есть несколько файлов с мусором вместо данных
-							m_arSegments.clear();
-					}
+					nElems = (pSegmentInfoSize - offset) / cbElement;
 				}
+				for (unsigned short i = 0; i < nElems; ++i)
+				{
+					PathSegment oSegment = PathSegment(FormatUtils::BytesToInt32(pSegmentInfo + offset, (i * cbElement), pSegmentInfoSize - offset));
+					m_arSegments.push_back (oSegment);
+				}
+
+				if ((long)pSegmentInfoSize < (long)(cb * nElems))		// Есть несколько файлов с мусором вместо данных
+					m_arSegments.clear();
 			}
 
 			if ((NULL != pVertices) && (pVerticesSize > 0))
@@ -117,19 +86,23 @@ namespace DocFileFormat
 				unsigned short nElemsAlloc	=	FormatUtils::BytesToUInt16(pVertices, 2, pVerticesSize);
 				unsigned short cb			=	FormatUtils::BytesToUInt16(pVertices, 4, pVerticesSize);
 
+				unsigned short cbElement = cb;
+
+				if (cb == 0xfff0)
+					cbElement = 4;
+
 				for (unsigned short i = 0; i < nElems; ++i)
 				{				
 					POINT point;	
-					if (0xfff0 == cb)
+					if (cbElement == 4)
 					{
-						cb	=	4;						
-						point.x	= FormatUtils::BytesToInt16(pVertices + 6, (i * cb), pVerticesSize);
-						point.y	= FormatUtils::BytesToInt16(pVertices + 6, (i * cb) + (cb / 2), pVerticesSize);
+						point.x	= FormatUtils::BytesToInt16(pVertices + offset, (i * cbElement), pVerticesSize - offset);
+						point.y	= FormatUtils::BytesToInt16(pVertices + offset, (i * cbElement) + (cbElement / 2), pVerticesSize - offset);
 					}
 					else
 					{
-						point.x	= FormatUtils::BytesToInt32(pVertices + 6, (i * cb), pVerticesSize);
-						point.y	= FormatUtils::BytesToInt32(pVertices + 6, (i * cb) + (cb / 2), pVerticesSize);
+						point.x	= FormatUtils::BytesToInt32(pVertices + offset, (i * cbElement), pVerticesSize - offset);
+						point.y	= FormatUtils::BytesToInt32(pVertices + offset, (i * cbElement) + (cbElement / 2), pVerticesSize - offset);
 					}
 
 					LONG lMinF = (LONG)0x80000000;

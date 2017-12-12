@@ -29,19 +29,16 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-// DocFormatTest.cpp : Defines the entry point for the console application.
-//
-#include "../DocFormatLib/DocFormatLib.h"
+#include <iostream>
 
-#include "../../OfficeUtils/src/ASCOfficeCriticalSection.h"
-
+#include "../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../DesktopEditor/common/Directory.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
-#include "../../DesktopEditor/common/Directory.h"
+#include "../DocFormatLib/DocFormatLib.h"
 
-#include <string>
-#include <windows.h>
-#include <tchar.h>
+#pragma comment(lib,"Shell32.lib")	
+#pragma comment(lib,"Advapi32.lib")
 
 #if defined(_WIN64)
 	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
@@ -49,36 +46,34 @@
 	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
 #endif
 
-int _tmain(int argc, _TCHAR* argv[])
+HRESULT convert_single(std::wstring srcFileName)
 {
-	if (argc < 2) return 1;
+	HRESULT hr = S_OK;
 
-	std::wstring sSrcDoc	= argv[1];
-	std::wstring sDstDocx;
-
-	std::wstring outputDir		= NSDirectory::GetFolderPath(sSrcDoc);
+	std::wstring outputDir		= NSDirectory::GetFolderPath(srcFileName);	
 	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
+	std::wstring dstPath;
 
 	COfficeDocFile docFile;
 
 	docFile.m_sTempFolder = outputDir;
 	
 	bool bMacros = true;
-	HRESULT hRes = docFile.LoadFromFile( sSrcDoc, dstTempPath, L"password", bMacros, NULL);
+	HRESULT hRes = docFile.LoadFromFile( srcFileName, dstTempPath, L"password", bMacros, NULL);
 	
 	if (bMacros)
 	{
-		sDstDocx = sSrcDoc + L"-my.docm";
+		dstPath = srcFileName + L"-my.docm";
 	}
 	else
 	{
-		sDstDocx = sSrcDoc + L"-my.docx";
+		dstPath = srcFileName + L"-my.docx";
 
 	}
 	if (hRes == S_OK)
 	{
 		COfficeUtils oCOfficeUtils(NULL);
-		hRes = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), sDstDocx, -1);
+		hRes = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath, -1);
 	}
 	
 	NSDirectory::DeleteDirectory(dstTempPath);
@@ -86,3 +81,33 @@ int _tmain(int argc, _TCHAR* argv[])
 	return hRes;
 }
 
+
+HRESULT convert_directory(std::wstring pathName)
+{
+	HRESULT hr = S_OK;
+
+	std::vector<std::wstring> arFiles = NSDirectory::GetFiles(pathName, false);
+
+	for (size_t i = 0; i < arFiles.size(); i++)
+	{
+		convert_single(arFiles[i]);
+	}
+	return S_OK;
+}
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+	if (argc < 2) return 1;
+
+	HRESULT hr = -1;
+	if (NSFile::CFileBinary::Exists(argv[1]))
+	{	
+		hr = convert_single(argv[1]);
+	}
+	else if (NSDirectory::Exists(argv[1]))
+	{
+		hr = convert_directory(argv[1]);
+	}
+
+	return hr;
+}

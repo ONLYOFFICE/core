@@ -809,7 +809,13 @@ namespace DocFileFormat
 			{
 				if (_fldCharCounter > 0)
 				{
-                    XMLTools::XMLElement elem( L"w:fldChar" );
+					if (_writeInstrText == true && !text.empty())
+					{
+						writeTextElement(text, textType);
+						text.clear();
+					}
+					_writeInstrText = false;
+					XMLTools::XMLElement elem( L"w:fldChar" );
                     elem.AppendAttribute( L"w:fldCharType", L"end" );
 
 					m_pXmlWriter->WriteString( elem.GetXMLString());

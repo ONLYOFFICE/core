@@ -1029,11 +1029,13 @@ bool RtfParagraphPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader&
     COMMAND_RTF_BOOL( "intbl", paragraphProps->m_bInTable,	sCommand, hasParameter, parameter )
     else if ( "itap" == sCommand && hasParameter)
 	{
+		//if (parameter == 0 && paragraphProps->m_bInTable && paragraphProps->m_nItap > 0)
+		//{
+		//
+		////	paragraphProps->m_bInTable = 0;
+		//}
+		//else
 		paragraphProps->m_nItap = parameter;
-		if (parameter == 0)
-		{
-			paragraphProps->m_bInTable = 0;
-		}
 	}
     COMMAND_RTF_BOOL( "keep",	paragraphProps->m_bKeep,	sCommand, hasParameter, parameter )
     COMMAND_RTF_BOOL( "keepn", paragraphProps->m_bKeepNext, sCommand, hasParameter, parameter )
@@ -2460,6 +2462,9 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	}
     else if ( "cell" == sCommand  || "nestcell" == sCommand )
 	{
+		if (oReader.m_oState->m_oParagraphProp.m_bInTable == 1 && 0 == oReader.m_oState->m_oParagraphProp.m_nItap )//Платежное_поручение.rtf (ели по другому сбойная строка заменяется параграфами
+				oReader.m_oState->m_oParagraphProp.m_nItap = 1;	
+
 		m_oCurParagraph->m_oProperty	= oReader.m_oState->m_oParagraphProp;
 		m_oCurParagraph->m_oOldList		= RtfOldListPtr( new RtfOldList() );
 		*m_oCurParagraph->m_oOldList	= oReader.m_oState->m_oCurOldList;

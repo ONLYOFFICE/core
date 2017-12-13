@@ -295,6 +295,12 @@ namespace PPTX
 						oNode.ReadAttributeBase(L"spid", vmlSpid);
 						result = true;
 					}
+					else
+					{
+						element.fromXML( oNode );
+						if (element.is_init())
+							result = true;
+					}
 				}
 			}
 			return result;

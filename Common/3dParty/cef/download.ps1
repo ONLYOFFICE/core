@@ -10,7 +10,7 @@ function Download-File
 	$downloadRequired = $true
 	if (Test-Path $file)
 	{
-		$localModified = (Get-Item $file).LastWriteTime
+		$localModified = (Get-Item $file).CreationTime
 		$webRequest = [System.Net.HttpWebRequest]::Create($url)
 		$webRequest.Method = "HEAD"
 		$webResponse = $webRequest.GetResponse()

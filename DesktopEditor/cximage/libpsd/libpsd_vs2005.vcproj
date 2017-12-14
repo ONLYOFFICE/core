@@ -344,7 +344,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				PrecompiledHeaderFile=""
 				AssemblerListingLocation="$(ConfigurationName)\"
 				ObjectFile="$(IntDir)\"

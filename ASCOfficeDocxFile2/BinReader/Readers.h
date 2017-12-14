@@ -61,6 +61,13 @@ enum ETblStyleOverrideType
 	tblstyleoverridetypeSwCell     = 11,
 	tblstyleoverridetypeWholeTable = 12
 };
+
+struct RowHeight
+{
+	unsigned char	HRule	= 0;
+	long			nHeight	= 0;
+};
+
 class SdtWraper
 {
 public:
@@ -2111,7 +2118,17 @@ public:
 		}
 		else if( c_oSerProp_rowPrType::Height == type )
 		{
-			res = Read2(length, &Binary_tblPrReader::ReadHeight, this, poResult);
+			RowHeight val;
+			res = Read2(length, &Binary_tblPrReader::ReadHeight, this, &val);
+           
+			pCStringWriter->WriteString(L"<w:trHeight w:val=\"" + std::to_wstring(val.nHeight) + L"\"");
+			
+			switch (val.HRule)
+			{
+				case 1: pCStringWriter->WriteString(L" w:hRule=\"auto\"");	break;
+				case 2: pCStringWriter->WriteString(L" w:hRule=\"exact\"");	break;
+			}
+			pCStringWriter->WriteString(L"/>");
 		}
 		else if( c_oSerProp_rowPrType::TableHeader == type )
 		{
@@ -2180,17 +2197,17 @@ public:
 	int ReadHeight(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
-		/*if( c_oSerProp_rowPrType::Height_Rule == type )
+
+		RowHeight* pHeight = static_cast<RowHeight*>(poResult);
+		
+		if( c_oSerProp_rowPrType::Height_Rule == type )
 		{
-		Height.HRule = this.stream.GetUChar();
+			pHeight->HRule = m_oBufferedStream.GetUChar();
 		}
-		else */if( c_oSerProp_rowPrType::Height_Value == type )
+		else if( c_oSerProp_rowPrType::Height_Value == type )
 		{
 			double dHeight = m_oBufferedStream.GetDouble();
-			long nHeight = SerializeCommon::Round( g_dKoef_mm_to_twips * dHeight);
-
-            pCStringWriter->WriteString(L"<w:trHeight w:val=\"" + std::to_wstring(nHeight) + L"\"/>");
+			pHeight->nHeight = SerializeCommon::Round( g_dKoef_mm_to_twips * dHeight);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

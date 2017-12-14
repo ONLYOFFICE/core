@@ -2104,14 +2104,11 @@ namespace BinDocxRW
 					SimpleTypes::EHeightRule eHRule = SimpleTypes::heightruleAtLeast;
 					if(rowHeight.m_oHRule.IsInit())
 						eHRule = rowHeight.m_oHRule->GetValue();
+				
 					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rowPrType::Height_Rule);
 					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-					switch(eHRule)
-					{
-					case SimpleTypes::heightruleAtLeast :
-					case SimpleTypes::heightruleExact :m_oBcw.m_oStream.WriteBYTE(heightrule_AtLeast);break;
-					default :m_oBcw.m_oStream.WriteBYTE(heightrule_Auto);break;
-					}
+					m_oBcw.m_oStream.WriteBYTE(eHRule);
+
 
 					//Value
 					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rowPrType::Height_Value);

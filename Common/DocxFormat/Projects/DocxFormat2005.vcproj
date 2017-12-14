@@ -47,7 +47,7 @@
 				PreprocessorDefinitions="USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				ProgramDataBaseFileName="$(IntDir)\DocxFormat.pdb"
 				WarningLevel="3"
 				DebugInformationFormat="4"

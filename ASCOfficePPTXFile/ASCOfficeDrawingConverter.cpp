@@ -3247,14 +3247,23 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
         oWriter.WriteAttribute(L"distR", margR);
 		oWriter.EndAttributes();
 
-        oWriter.StartNode(L"wp:extent");
+		oWriter.StartNode(L"wp:extent");
 		oWriter.StartAttributes();
         oWriter.WriteAttribute(L"cx", width);
         oWriter.WriteAttribute(L"cy", height);
 		oWriter.EndAttributes();
         oWriter.EndNode(L"wp:extent");
 
-        std::wstring strId = L"<wp:docPr id=\"" + std::to_wstring(m_lNextId) + L"\" name=\"\"/>";
+        oWriter.StartNode(L"wp:effectExtent");
+		oWriter.StartAttributes();
+        oWriter.WriteAttribute(L"l", 0);
+        oWriter.WriteAttribute(L"t", 0);
+        oWriter.WriteAttribute(L"r", 0);
+        oWriter.WriteAttribute(L"b", 0);
+		oWriter.EndAttributes();
+        oWriter.EndNode(L"wp:effectExtent");
+
+		std::wstring strId = L"<wp:docPr id=\"" + std::to_wstring(m_lNextId) + L"\" name=\"\"/>";
 		m_lNextId++;
 
 		oWriter.WriteString(strId);

@@ -49,7 +49,7 @@
 				PreprocessorDefinitions="_DEBUG;WIN32;_LIB;JAS_WIN_MSVC_BUILD;_CRT_SECURE_NO_DEPRECATE;EXCLUDE_JPG_SUPPORT"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				PrecompiledHeaderFile=""
 				AssemblerListingLocation="$(ConfigurationName)\"
 				ObjectFile="$(IntDir)\"

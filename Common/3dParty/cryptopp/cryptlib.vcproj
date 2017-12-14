@@ -335,7 +335,7 @@
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
 				PreprocessorDefinitions="_DEBUG;_WINDOWS;USE_PRECOMPILED_HEADERS;WIN32"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				EnableEnhancedInstructionSet="1"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="pch.h"

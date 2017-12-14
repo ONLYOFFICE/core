@@ -214,7 +214,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE;$(NOINHERIT)"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				StructMemberAlignment="0"
 				DisableLanguageExtensions="false"
 				PrecompiledHeaderFile=""

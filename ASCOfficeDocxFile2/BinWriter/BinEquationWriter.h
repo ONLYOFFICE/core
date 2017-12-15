@@ -618,7 +618,7 @@ namespace MathEquation
                         nRows = m_aRowsCounter.top();
                         m_aRowsCounter.pop();
                     }
-                    int nPos = 0;
+                    int nPos = m_oStream.GetPosition();
                     if (!m_aRowsPosCounter.empty())
                     {
                         nPos = m_aRowsPosCounter.top();

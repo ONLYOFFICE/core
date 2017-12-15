@@ -153,7 +153,7 @@ namespace NS_DWC_Common
             s.erase(nLen - 1);
 			int nVal = XmlUtils::GetInteger(s);
 			double dKoef = 100000.0 / 65536;
-			nVal = (int)(dKoef * nVal);
+			nVal = (int)(dKoef * nVal + 0.5);
             s = std::to_wstring(nVal);
 		}
 	}
@@ -1499,60 +1499,34 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
 						if (bIsFound)
 							break;
 					}
-					if(NULL != pElem)
+					if(pElem && NULL != pOle && pOle->m_sProgId.IsInit() && (pOle->m_oId.IsInit() || pOle->m_OleObjectFile.IsInit()))
 					{
-						if(NULL != pOle && pOle->m_sProgId.IsInit() && (pOle->m_oId.IsInit() || pOle->m_OleObjectFile.IsInit()))
+						PPTX::Logic::Pic* pPicture = dynamic_cast<PPTX::Logic::Pic*>(pElem->GetElem().operator ->());
+						if ((NULL != pPicture) && (pPicture->blipFill.blip.IsInit()))
 						{
-							PPTX::Logic::Shape* pShape = dynamic_cast<PPTX::Logic::Shape*>(pElem->GetElem().operator ->());
-							if(NULL != pShape && pShape->spPr.Fill.Fill.IsInit())
+							if (pOle->m_OleObjectFile.IsInit())
 							{
-								bool bImageOle = false;
-
-								if (pShape->spPr.Fill.m_type == PPTX::Logic::UniFill::blipFill) bImageOle = true;
-								
-								PPTX::Logic::BlipFill oBlipFillNew;
-
-								if (!bImageOle)
-									oBlipFillNew.blip = new PPTX::Logic::Blip();
-
-								const PPTX::Logic::BlipFill& oBlipFill = bImageOle ? pShape->spPr.Fill.Fill.as<PPTX::Logic::BlipFill>() :
-																			oBlipFillNew;
-								if(oBlipFill.blip.IsInit())
+								pPicture->blipFill.blip->oleFilepathBin = pOle->m_OleObjectFile->filename().GetPath();
+							}
+							else if (pOle->m_oId.IsInit())
+							{
+								pPicture->blipFill.blip->oleRid = pOle->m_oId.get().ToString();
+							}
+                            if(strName == L"object")
+							{
+                                int nDxaOrig = oParseNode.ReadAttributeInt(L"w:dxaOrig");
+                                int nDyaOrig = oParseNode.ReadAttributeInt(L"w:dyaOrig");
+								if (nDxaOrig > 0 && nDyaOrig > 0)
 								{
-									if (pOle->m_OleObjectFile.IsInit())
-									{
-										oBlipFill.blip->oleFilepathBin = pOle->m_OleObjectFile->filename().GetPath();
-									}
-									else if (pOle->m_oId.IsInit())
-									{
-										oBlipFill.blip->oleRid = pOle->m_oId.get().ToString();
-									}
-                                    if(strName == L"object")
-									{
-                                        int nDxaOrig = oParseNode.ReadAttributeInt(L"w:dxaOrig");
-                                        int nDyaOrig = oParseNode.ReadAttributeInt(L"w:dyaOrig");
-										if (nDxaOrig > 0 && nDyaOrig > 0)
-										{
-											pOle->m_oDxaOrig = nDxaOrig;
-											pOle->m_oDyaOrig = nDyaOrig;
-										}
-									}
-
-									PPTX::Logic::Pic *newElem = new PPTX::Logic::Pic();
-
-									newElem->blipFill	= oBlipFill;
-									newElem->spPr		= pShape->spPr;
-									newElem->style		= pShape->style;									
-									newElem->oleObject.reset(pOle);
-
-									newElem->spPr.Fill.Fill.reset();									
-									pOle = NULL;								
-									
-									pElem->InitElem(newElem);
+									pOle->m_oDxaOrig = nDxaOrig;
+									pOle->m_oDyaOrig = nDyaOrig;
 								}
 							}
+							pPicture->oleObject.reset(pOle);
+							pOle = NULL;								
 						}
-						m_pBinaryWriter->WriteRecord1(1, *pElem);
+						if (pElem)
+							m_pBinaryWriter->WriteRecord1(1, *pElem);
 					}
 					RELEASEOBJECT(pElem)
 					RELEASEOBJECT(pOle)
@@ -2555,9 +2529,9 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 					ConvertTextVML(oNodeTextBox, pShape);
 				}
 
-				std::wstring sTextInset		= oNodeTextBox.GetAttribute(L"inset");
-				std::wstring sTextInsetMode	= oNodeTextBox.GetAttribute(L"o:insetmode");
-						sTextboxStyle	= oNodeTextBox.GetAttribute(L"style");
+				std::wstring	sTextInset		= oNodeTextBox.GetAttribute(L"inset");
+				std::wstring	sTextInsetMode	= oNodeTextBox.GetAttribute(L"o:insetmode");
+								sTextboxStyle	= oNodeTextBox.GetAttribute(L"style");
 
 				if (L"" != sTextInset && ((L"" == sTextInsetMode) || (L"custom" == sTextInsetMode)))
 				{
@@ -2565,15 +2539,15 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 					oTrimmer.m_Separator = (wchar_t)',';
 					oTrimmer.LoadFromString(sTextInset);
 
-					double dTextMarginLeft = oTrimmer.GetParameter(0, 0.1);
-					double dTextMarginTop = oTrimmer.GetParameter(1, 0.05);
-					double dTextMarginRight = oTrimmer.GetParameter(2, 0.1);
-					double dTextMarginBottom = oTrimmer.GetParameter(3, 0.05);
+					double dTextMarginLeft		= oTrimmer.GetParameter(0, 0.1);
+					double dTextMarginTop		= oTrimmer.GetParameter(1, 0.05);
+					double dTextMarginRight		= oTrimmer.GetParameter(2, 0.1);
+					double dTextMarginBottom	= oTrimmer.GetParameter(3, 0.05);
 
-					pShape->oTextBoxBodyPr->lIns = (int)(12700 * dTextMarginLeft);
-					pShape->oTextBoxBodyPr->tIns = (int)(12700 * dTextMarginTop);
-					pShape->oTextBoxBodyPr->rIns = (int)(12700 * dTextMarginRight);
-					pShape->oTextBoxBodyPr->bIns = (int)(12700 * dTextMarginBottom);
+					pShape->oTextBoxBodyPr->lIns = (int)(12700 * dTextMarginLeft	+ 0.5);
+					pShape->oTextBoxBodyPr->tIns = (int)(12700 * dTextMarginTop		+ 0.5);
+					pShape->oTextBoxBodyPr->rIns = (int)(12700 * dTextMarginRight	+ 0.5);
+					pShape->oTextBoxBodyPr->bIns = (int)(12700 * dTextMarginBottom	+ 0.5);
 				}
 
 				if (!sTextboxStyle.empty())
@@ -3164,7 +3138,7 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 
 		if (oCssStyles.m_mapSettings.end() != pPair)
 		{
-			 left = (LONG)(dKoefSize * parserPoint.FromString(pPair->second));
+			 left = (LONG)(dKoefSize * parserPoint.FromString(pPair->second) + 0.5);
 		}
 
         pPair = oCssStyles.m_mapSettings.find(L"margin-top");
@@ -3174,54 +3148,54 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 
 		if (oCssStyles.m_mapSettings.end() != pPair)
 		{
-			 top = (LONG)(dKoefSize * parserPoint.FromString(pPair->second));
+			 top = (LONG)(dKoefSize * parserPoint.FromString(pPair->second) + 0.5);
 		}
 	}
 
     pPair = oCssStyles.m_mapSettings.find(L"width");
 	if (oCssStyles.m_mapSettings.end() != pPair)
 	{
-		width = (LONG)(dKoefSize * parserPoint.FromString(pPair->second));
+		width = (LONG)(dKoefSize * parserPoint.FromString(pPair->second) + 0.5);
 	}
 	else
 	{
         pPair = oCssStyles.m_mapSettings.find(L"margin-right");
 		if (oCssStyles.m_mapSettings.end() != oCssStyles.m_mapSettings.end())
-			width = (LONG)(dKoefSize * parserPoint.FromString(pPair->second)) - left;
+			width = (LONG)(dKoefSize * parserPoint.FromString(pPair->second) + 0.5) - left;
 	}
 
     pPair = oCssStyles.m_mapSettings.find(L"height");
 	if (oCssStyles.m_mapSettings.end() != pPair)
 	{
-		height = (LONG)(dKoefSize * parserPoint.FromString(pPair->second));
+		height = (LONG)(dKoefSize * parserPoint.FromString(pPair->second) + 0.5);
 	}
 	else
 	{
         pPair = oCssStyles.m_mapSettings.find(L"margin-bottom");
 		if (oCssStyles.m_mapSettings.end() != oCssStyles.m_mapSettings.end())
-			height = (LONG)(dKoefSize * parserPoint.FromString(pPair->second)) - top;
+			height = (LONG)(dKoefSize * parserPoint.FromString(pPair->second) + 0.5) - top;
 	}
 
-	unsigned long margL = (unsigned long)(9 * dKoef);
+	unsigned long margL = (unsigned long)(9 * dKoef + 0.5);
 	unsigned long margT = 0;
-	unsigned long margR = (unsigned long)(9 * dKoef);
+	unsigned long margR = (unsigned long)(9 * dKoef + 0.5);
 	unsigned long margB = 0;
 
     pPair = oCssStyles.m_mapSettings.find(L"mso-wrap-distance-left");
 	if (oCssStyles.m_mapSettings.end() != pPair)
-		margL = (unsigned long)(dKoef * parserPoint.FromString(pPair->second));
+		margL = (unsigned long)(dKoef * parserPoint.FromString(pPair->second) + 0.5);
 
     pPair = oCssStyles.m_mapSettings.find(L"mso-wrap-distance-top");
 	if (oCssStyles.m_mapSettings.end() != pPair)
-		margT = (unsigned long)(dKoef * parserPoint.FromString(pPair->second));
+		margT = (unsigned long)(dKoef * parserPoint.FromString(pPair->second) + 0.5);
 
     pPair = oCssStyles.m_mapSettings.find(L"mso-wrap-distance-right");
 	if (oCssStyles.m_mapSettings.end() != pPair)
-		margR = (unsigned long)(dKoef * parserPoint.FromString(pPair->second));
+		margR = (unsigned long)(dKoef * parserPoint.FromString(pPair->second) + 0.5);
 
     pPair = oCssStyles.m_mapSettings.find(L"mso-wrap-distance-bottom");
 	if (oCssStyles.m_mapSettings.end() != pPair)
-		margB = (unsigned long)(dKoef * parserPoint.FromString(pPair->second));
+		margB = (unsigned long)(dKoef * parserPoint.FromString(pPair->second) + 0.5);
 
 	oProps.X		= left;
 	oProps.Y		= top;
@@ -5028,8 +5002,8 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 
                     int nX = oNodeT.ReadAttributeInt(L"x");
                     int nY = oNodeT.ReadAttributeInt(L"y");
-					nX = (int)(dKoefX * nX);
-					nY = (int)(dKoefY * nY);
+					nX = (int)(dKoefX * nX + 0.5);
+					nY = (int)(dKoefY * nY + 0.5);
 
                     std::wstring strFP = std::to_wstring(nX) + L" " + std::to_wstring(nY);
 					strAttr += strFP;

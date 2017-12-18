@@ -254,8 +254,6 @@ ARTIFACTS += Common/3dParty/*/$(TARGET)/build/*
 
 ifeq ($(OS),Windows_NT)
 ARTIFACTS += Common/3dParty/v8/$(TARGET)/*/*.dll
-else
-ARTIFACTS += Common/3dParty/v8/$(TARGET)/*.S
 endif
 
 #Template for next statment:

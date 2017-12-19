@@ -32,13 +32,11 @@
 #pragma once
 
 #include "BiffRecordContinued.h"
-#include <Logic/Biff_structures/BiffString.h>
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {
 
-
-// Logical representation of String record in BIFF8
 class String: public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(String)

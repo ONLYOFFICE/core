@@ -31,16 +31,17 @@
  */
 
 #include "FORMULA.h"
-#include <Logic/Biff_records/Uncalced.h>
-#include <Logic/Biff_records/Formula.h>
-#include <Logic/Biff_records/Array.h>
-#include <Logic/Biff_records/Table.h>
-#include <Logic/Biff_records/ShrFmla.h>
-#include <Logic/Biff_unions/SUB.h>
-#include <Logic/Biff_records/String.h>
-#include <Logic/Biff_records/Continue.h>
+#include "../Biff_records/Uncalced.h"
+#include "../Biff_records/Formula.h"
+#include "../Biff_records/Array.h"
+#include "../Biff_records/Table.h"
+#include "../Biff_records/ShrFmla.h"
+#include "../Biff_unions/SUB.h"
+#include "../Biff_records/String.h"
+#include "../Biff_records/Continue.h"
 
-#include <utils.h>
+#include "../../../../source/Common/utils.h"
+#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace XLS
 {
@@ -105,14 +106,18 @@ const bool FORMULA::loadContent(BinProcessor& proc)
 			m_sharedIndex = shared_formulas_locations_ref_.size();
 			shared_formulas_locations_ref_.push_back(shr_formula.ref_);
 		}
-		//proc.optional<SUB>(); 
+		else
+		{
+			//proc.optional<SUB>(); 
+		}
 	}
 
 	if ((formula) && (formula->fShrFmla))
 	{
 		for (size_t i = 0; i < shared_formulas_locations_ref_.size(); i++)
 		{
-			if (shared_formulas_locations_ref_[i].inRange(location)) m_sharedIndex = i;
+			if (shared_formulas_locations_ref_[i].inRange(location)) 
+				m_sharedIndex = i;
 		}		
 	}
 
@@ -208,21 +213,20 @@ int FORMULA::serialize(std::wostream & stream)
 				}
 			}
 
-			//if (formula_cash.empty())
-			//{ todooo неверно читается - general_formulas.xls
-			//	if (m_Cash)
-			//	
-			//		String * str = dynamic_cast<String*>(m_Cash.get());
-			//		if (str)
-			//			formula_cash =str->string.value();
-			//	}
-			//}
+			if (formula_cash.empty() && m_Cash)
+			{
+				String * str = dynamic_cast<String*>(m_Cash.get());
+				if (str)
+				{
+					formula_cash =str->string.value();
+				}
+			}
 
 			if (!formula_cash.empty())
 			{
 				CP_XML_NODE(L"v")
 				{
-					CP_XML_STREAM() << xml::utils::replace_text_to_xml(formula_cash);
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(formula_cash, true);
 				}
 			}
 		}

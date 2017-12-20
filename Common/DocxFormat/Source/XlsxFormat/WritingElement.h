@@ -137,7 +137,7 @@ namespace Spreadsheet
 		}
 		virtual void ClearItems()
 		{
-			for ( SpreadsheetElemArray::iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+            for ( auto it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 			{
 				if ( *it ) delete *it;
 				*it = NULL;

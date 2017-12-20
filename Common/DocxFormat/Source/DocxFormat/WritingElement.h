@@ -1155,7 +1155,7 @@ namespace OOX
 		}
 		virtual void ClearItems()
 		{
-			for ( ElemArray::iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+            for ( auto it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 			{
 				if ( *it ) delete *it;
 				*it = NULL;

@@ -3836,7 +3836,8 @@ namespace BinDocxRW
 			bool bWasText		= false;
 			int nRecordType		= 0;
 			
-			std::list<OOX::WritingElement*>::iterator nIndexStart = pRun->m_arrItems.begin();
+            std::list<OOX::WritingElement*>::iterator nIndexStart   = pRun->m_arrItems.begin();
+            std::list<OOX::WritingElement*>::iterator nIndexEnd     = pRun->m_arrItems.end();
 
 			if (bMathRun)
 				nRecordType = c_oSer_OMathContentType::Run;
@@ -3844,7 +3845,7 @@ namespace BinDocxRW
 				nRecordType = c_oSerParType::Run;
 
 	//Разбиваем массив по знаку et_w_sym			
-			for (std::list<OOX::WritingElement*>::iterator it = pRun->m_arrItems.begin(); it != pRun->m_arrItems.end(); it++)
+            for (std::list<OOX::WritingElement*>::iterator it = pRun->m_arrItems.begin(); it != nIndexEnd; it++)
 			{
 				OOX::WritingElement* item = *it;
 				
@@ -3866,10 +3867,10 @@ namespace BinDocxRW
 				else if(OOX::et_w_rPr != item->getType())
 					bWasText = true;
 			}
-			if(nIndexStart != pRun->m_arrItems.end())
+            if(nIndexStart != nIndexEnd)
 			{
 				nCurPos = m_oBcw.WriteItemStart(nRecordType);
-					WritePreparedRun( pRun, bHyperlink, nIndexStart, pRun->m_arrItems.end());
+                    WritePreparedRun( pRun, bHyperlink, nIndexStart, nIndexEnd);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 		}

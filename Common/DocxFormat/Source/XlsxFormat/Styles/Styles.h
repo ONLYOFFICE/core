@@ -222,13 +222,14 @@ namespace OOX
 					m_oBorders->m_oCount.Init();
 					m_oBorders->m_oCount->SetValue((unsigned int)m_oBorders->m_arrItems.size());
 				}
-				//cellXfs
+			//cellXfs
 				if(m_oCellXfs.IsInit())
 				{
-					for(size_t i = 0, length = m_oCellXfs->m_arrItems.size(); i < length; ++i)
+					for ( std::list<CXfs*>::iterator it = m_oCellXfs->m_arrItems.begin(); it != m_oCellXfs->m_arrItems.end(); it++)
 					{
-						OOX::Spreadsheet::CXfs* xfs = m_oCellXfs->m_arrItems[i];
-						if (false == xfs->m_oXfId.IsInit())
+						CXfs* xfs = *it;
+						
+						if ((xfs) && (false == xfs->m_oXfId.IsInit()))
 						{
 							xfs->m_oXfId.Init();
 							xfs->m_oXfId->SetValue(0);
@@ -239,7 +240,7 @@ namespace OOX
 				if(false == m_oCellStyles.IsInit())
 					m_oCellStyles.Init();
 
-				if(0 == m_oCellStyles->m_arrItems.size())
+				if(m_oCellStyles->m_arrItems.empty())
 				{
 					CCellStyle* pCellStyle = new CCellStyle();
 						pCellStyle->m_oName = _T("Normal");
@@ -247,6 +248,7 @@ namespace OOX
 						pCellStyle->m_oXfId->SetValue(0);
 						pCellStyle->m_oBuiltinId.Init();
 						pCellStyle->m_oBuiltinId->SetValue(0);
+					
 					m_oCellStyles->m_arrItems.push_back(pCellStyle);
 				}
 				if(false == m_oCellStyles->m_oCount.IsInit())
@@ -314,10 +316,10 @@ namespace OOX
 			}
 
 		private:
-			CPath									m_oReadPath;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
+			CPath										m_oReadPath;
 
 		public:
 			nullable<OOX::Spreadsheet::CBorders>		m_oBorders;

@@ -69,7 +69,7 @@ namespace OOX
 		static std::map<std::wstring, size_t>			m_mapEnumeratedGlobal;
 	protected:
         std::map<std::wstring, smart_ptr<OOX::File>>	m_mContainer;
-		std::map<std::wstring, std::wstring>	m_mNoWriteContainer;
+		std::map<std::wstring, std::wstring>			m_mNoWriteContainer;
 		size_t											m_lMaxRid;
 
 		void Read (const OOX::CRels& oRels, const OOX::CPath& oRootPath, const CPath& oPath);

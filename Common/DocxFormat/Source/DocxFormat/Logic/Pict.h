@@ -393,10 +393,12 @@ namespace OOX
 			{
                 std::wstring sResult = _T("<w:pict>");
 
-				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					if ( m_arrItems[nIndex] )
-						sResult += m_arrItems[nIndex]->toXML();
+					if ( *it )
+					{
+						sResult += (*it)->toXML();
+					}
 				}
 
 				if ( m_oControl.IsInit() )

@@ -437,11 +437,11 @@ namespace OOX
 				sResult += m_oTblGrid->toXML();
 			}
 
-			for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+			for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 			{
-				if ( m_arrItems[nIndex] )
+				if ( *it )
 				{
-					sResult += m_arrItems[nIndex]->toXML();
+					sResult += (*it)->toXML();
 				}
 			}
 
@@ -459,7 +459,7 @@ namespace OOX
 //        <w:moveFrom>
 //        <w:moveTo>
 
-		void    CTr::fromXML(XmlUtils::CXmlNode& oNode)
+		void CTr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			oNode.ReadAttributeBase( _T("w:rsidDel"), m_oRsidDel );
 			oNode.ReadAttributeBase( _T("w:rsidR"),   m_oRsidR );
@@ -542,11 +542,10 @@ namespace OOX
 								CTc *pCell = (CTc *)pItem;
 								pCell->m_nNumCol = nNumCol;
 								
-								CTableCellProperties *pProps = pCell->GetProperties();
-								if ( pProps )
+								if ( pCell->m_pTableCellProperties )
 								{
-									if ( pProps->m_oGridSpan.IsInit() && pProps->m_oGridSpan->m_oVal.IsInit() )
-										nNumCol += pProps->m_oGridSpan->m_oVal->GetValue();
+									if ( pCell->m_pTableCellProperties->m_oGridSpan.IsInit() && pCell->m_pTableCellProperties->m_oGridSpan->m_oVal.IsInit() )
+										nNumCol += pCell->m_pTableCellProperties->m_oGridSpan->m_oVal->GetValue();
 									else
 										nNumCol++;
 								}
@@ -556,7 +555,7 @@ namespace OOX
 						}
 						else if ( _T("w:trPr") == sName )
 						{
-							pItem = m_oTableRowProperties = new CTableRowProperties( oItem );
+							pItem = m_pTableRowProperties = new CTableRowProperties( oItem );
 						}
 
 						if ( pItem )
@@ -567,7 +566,7 @@ namespace OOX
 		}
 
 
-		void    CTr::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		void CTr::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
 
@@ -645,11 +644,10 @@ namespace OOX
 						CTc *pCell = (CTc *)pItem;
 						pCell->m_nNumCol = nNumCol;
 
-						CTableCellProperties *pProps = pCell->GetProperties();
-						if ( pProps )
+						if ( pCell->m_pTableCellProperties )
 						{
-							if ( pProps->m_oGridSpan.IsInit() && pProps->m_oGridSpan->m_oVal.IsInit() )
-								nNumCol += pProps->m_oGridSpan->m_oVal->GetValue();
+							if ( pCell->m_pTableCellProperties->m_oGridSpan.IsInit() && pCell->m_pTableCellProperties->m_oGridSpan->m_oVal.IsInit() )
+								nNumCol += pCell->m_pTableCellProperties->m_oGridSpan->m_oVal->GetValue();
 							else
 								nNumCol++;
 						}
@@ -659,7 +657,7 @@ namespace OOX
 				}
 				else if ( _T("w:trPr") == sName )
 				{
-					pItem = m_oTableRowProperties = new CTableRowProperties( oReader );
+					pItem = m_pTableRowProperties = new CTableRowProperties( oReader );
 				}
 
 				if ( pItem )
@@ -680,11 +678,11 @@ namespace OOX
 
 				sResult += _T(">");
 
-				for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					if ( m_arrItems[nIndex] )
+					if ( *it )
 					{
-						sResult += m_arrItems[nIndex]->toXML();
+						sResult += (*it)->toXML();
 					}
 				}
 
@@ -712,7 +710,7 @@ namespace OOX
 //        <w:moveFrom>
 //        <w:moveTo>
 
-		void    CTc::fromXML(XmlUtils::CXmlNode& oNode)
+		void CTc::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			oNode.ReadAttributeBase( _T("w:id"), m_sId );
 
@@ -789,7 +787,7 @@ namespace OOX
 							pItem = new CTbl( oItem );
 						else if ( _T("w:tcPr") == sName )
 						{
-							pItem = m_oTableCellProperties = new CTableCellProperties( oItem );
+							pItem = m_pTableCellProperties = new CTableCellProperties( oItem );
 						}
 
 						if ( pItem )
@@ -800,7 +798,7 @@ namespace OOX
 		}
 
 
-		void    CTc::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		void CTc::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
 
@@ -875,7 +873,7 @@ namespace OOX
 					pItem = new CTbl( oReader );
 				else if ( _T("w:tcPr") == sName )
 				{
-					pItem = m_oTableCellProperties = new CTableCellProperties( oReader );
+					pItem = m_pTableCellProperties = new CTableCellProperties( oReader );
 				}
 
 				if ( pItem )
@@ -896,11 +894,11 @@ namespace OOX
 				else
 					sResult = _T("<w:tc>");
 
-				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					if ( m_arrItems[nIndex] )
+					if ( *it )
 					{
-						sResult += m_arrItems[nIndex]->toXML();
+						sResult += (*it)->toXML();
 					}
 				}
 

@@ -100,7 +100,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>					m_oCustomBuiltin;
 			nullable<SimpleTypes::COnOff<>>					m_oHidden;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oILevel;
-			nullable<std::wstring>								m_oName;
+			nullable<std::wstring>							m_oName;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oXfId;
 		};
 
@@ -126,8 +126,15 @@ namespace OOX
 				writer.WriteString(_T("<cellStyles"));
 				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
 				writer.WriteString(_T(">"));
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-					m_arrItems[i]->toXML(writer);
+				
+				for ( std::list<CCellStyle*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+				{
+					if ( *it )
+					{
+						(*it)->toXML(writer);
+					}
+				}
+				
 				writer.WriteString(_T("</cellStyles>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)

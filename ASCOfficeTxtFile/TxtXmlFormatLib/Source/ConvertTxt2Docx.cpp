@@ -69,10 +69,11 @@ namespace Txt2Docx
 
     void Converter::write(/*const std::wstring& path*/XmlUtils::CStringWriter & stringWriter)
     {
-		for (long i=0;i < converter_->m_outputFile.m_arrItems.size(); i++)
+		for (std::list<OOX::WritingElement*>::iterator	it = converter_->m_outputFile.m_arrItems.begin();
+														it != converter_->m_outputFile.m_arrItems.end(); it++)
 		{
-			if (converter_->m_outputFile.m_arrItems[i] != NULL)
-				stringWriter.WriteString(converter_->m_outputFile.m_arrItems[i]->toXML());
+			if ( *it )
+				stringWriter.WriteString((*it)->toXML());
 		}
 		//BOOL res = converter_->m_outputFile.Write(std_string2string(path.string()));
 		return;

@@ -66,20 +66,19 @@ namespace OOX
 			{
 			}
 
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml );
 				oNode.ReadAttributeBase( _T("w:id"),                   m_oId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<w:commentRangeEnd ");
 
@@ -126,21 +125,19 @@ namespace OOX
 			virtual ~CCommentRangeStart()
 			{
 			}
-
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml );
 				oNode.ReadAttributeBase( _T("w:id"),                   m_oId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<w:commentRangeStart ");
 
@@ -1111,26 +1108,9 @@ namespace OOX
 			virtual ~CMoveFrom()
 			{
 			}
-
-		public:
-			void Clear()
-			{
-				for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.clear();
-			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_moveFrom;
@@ -1152,9 +1132,9 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<std::wstring > m_sAuthor;
-			nullable<SimpleTypes::CDateTime > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+			nullable<std::wstring >						m_sAuthor;
+			nullable<SimpleTypes::CDateTime >			m_oDate;
+			nullable<SimpleTypes::CDecimalNumber<> >	m_oId;
 			nullable<std::wstring > m_sUserId;
 
 			// Childs
@@ -1177,26 +1157,9 @@ namespace OOX
 			virtual ~CMoveTo()
 			{
 			}
-
-		public:
-			void Clear()
-			{
-				for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.clear();
-			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_moveTo;
@@ -1610,26 +1573,9 @@ namespace OOX
 			virtual ~CIns()
 			{
 			}
-
-		public:
-			void Clear()
-			{		
-				for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.clear();
-			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-            virtual std::wstring      toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_ins;
@@ -1675,22 +1621,6 @@ namespace OOX
 			virtual ~CDel()
 			{
 			}
-
-		public:
-			void Clear()
-			{		
-				for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.clear();
-			}
-
-		public:
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);

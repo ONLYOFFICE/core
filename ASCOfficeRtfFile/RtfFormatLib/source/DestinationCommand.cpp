@@ -434,14 +434,13 @@ bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader
 		{
 			section.props->m_bFinalize = true;
 			section.props->m_oProperty = oReader.m_oCurSectionProp;
-		}
-					
-		RtfSectionPtr oNewSection ( new RtfSection() );
-		
-		_section new_section(oNewSection);
+		}		
+		_section new_section;
+		new_section.props = RtfSectionPtr( new RtfSection() );
+
 		oDocument.AddItem( new_section );
 		
-		oParagraphReaderDestination.m_oTextItems	= oNewSection;
+		oParagraphReaderDestination.m_oTextItems = new_section.props;
 
 		//вручную обнуляем footer, т.к. sectd может встретиться и после field
 		///?????

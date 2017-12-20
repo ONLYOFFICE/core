@@ -325,7 +325,8 @@ namespace OOX
 					for (std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_mapComments->begin(); it != m_mapComments->end(); ++it)
 					{
 						OOX::Spreadsheet::CCommentItem* comment = it->second;
-                                                std::wstring sStyle;
+                                                
+						std::wstring sStyle;
 						if(comment->m_dLeftMM.IsInit())
 						{
 							SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dLeftMM.get());

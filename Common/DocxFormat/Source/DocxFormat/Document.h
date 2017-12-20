@@ -211,15 +211,7 @@ namespace OOX
 		}
 		virtual ~CDocument()
 		{
-			for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-			{
-				if ( m_arrItems[nIndex] )
-					delete m_arrItems[nIndex];
-
-				m_arrItems[nIndex] = NULL;
-			}
-
-			m_arrItems.clear();
+			ClearItems();
 		}
 
 		virtual void read(const CPath& oPath)
@@ -311,7 +303,9 @@ namespace OOX
 				}
 
 				if ( pItem )
+				{
 					m_arrItems.push_back( pItem );
+				}
 			}
 		}
 
@@ -490,11 +484,11 @@ mc:Ignorable=\"w14 wp14\">";
 
 			sXml += _T("<w:body>");
 
-			for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+			for ( std::list<WritingElement *>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 			{
-				if ( m_arrItems[nIndex] )
+				if ( *it )
 				{
-					sXml += m_arrItems[nIndex]->toXML();
+					sXml += (*it)->toXML();
 				}
 			}
 
@@ -525,14 +519,12 @@ mc:Ignorable=\"w14 wp14\">";
 		{
 			return m_oReadPath;
 		}
-	public:
-
 		void ClearItems()
 		{
-			for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+			for ( std::list<WritingElement *>::iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 			{
-				if ( m_arrItems[nIndex] )delete m_arrItems[nIndex];
-				m_arrItems[nIndex] = NULL;
+				if ( *it )delete *it;
+				*it = NULL;
 			}
 			m_arrItems.clear();
 		}
@@ -577,11 +569,12 @@ mc:Ignorable=\"w14 wp14\">";
 
 			//m_arrItems.push_back( pPara );
 		}
+		
 		void AddSpaceToLast(const int nCount)
 		{
-			if ( m_arrItems.size() > 0 && et_w_p == m_arrItems[m_arrItems.size() - 1]->getType() )
+			if ( (!m_arrItems.empty()) && (et_w_p == m_arrItems.back()->getType()) )
 			{
-				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems[m_arrItems.size() - 1];
+				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems.back();
 				pPara->AddSpace( nCount );
 			}
 		}
@@ -609,9 +602,9 @@ mc:Ignorable=\"w14 wp14\">";
 		}
 		void AddTextToLast(std::wstring& sText)
 		{
-			if ( m_arrItems.size() > 0 && et_w_p == m_arrItems[m_arrItems.size() - 1]->getType() )
+			if ( (!m_arrItems.empty()) && (et_w_p == m_arrItems.back()->getType()) )
 			{
-				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems[m_arrItems.size() - 1];
+				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems.back();
 				pPara->AddText( sText );
 			}
 		}
@@ -633,9 +626,9 @@ mc:Ignorable=\"w14 wp14\">";
 		}
 		void AddHyperlinkToLast(std::wstring& sNameHref, std::wstring& sText)
 		{
-			if ( m_arrItems.size() > 0 && et_w_p == m_arrItems[m_arrItems.size() - 1]->getType() )
+			if ( (!m_arrItems.empty()) && (et_w_p == m_arrItems.back()->getType()) )
 			{
-				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems[m_arrItems.size() - 1];
+				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems.back();
 
 				smart_ptr<OOX::File> oHyperlink = smart_ptr<OOX::File>( new OOX::HyperLink( sNameHref ) );
 				const OOX::RId rId = Add( oHyperlink );
@@ -663,7 +656,7 @@ mc:Ignorable=\"w14 wp14\">";
 		nullable<OOX::Logic::CSectionProperty> m_oSectPr;
 		nullable<OOX::Logic::CBackground     > m_oBackground;
 
-		std::vector<WritingElement *>			m_arrItems;
+		std::list<WritingElement *>				m_arrItems;
 		std::vector<std::wstring>				m_arrShapeTypes;
 
 	};

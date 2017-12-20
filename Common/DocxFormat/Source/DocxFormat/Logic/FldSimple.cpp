@@ -245,40 +245,40 @@ namespace OOX
 
 		std::wstring CFldSimple::toXML() const
 		{
-				std::wstring sResult = _T("<w:fldSimple ");
+			std::wstring sResult = _T("<w:fldSimple ");
 
-				sResult += _T("w:dirty=\"");
-				sResult += m_oDirty.ToString();
+			sResult += _T("w:dirty=\"");
+			sResult += m_oDirty.ToString();
+			sResult += _T("\" ");
+			sResult += _T("w:fldLock=\"");
+			sResult += m_oFldLock.ToString();
+			sResult += _T("\" ");
+
+			if ( m_sInstr.IsInit() )
+			{
+				sResult += _T("w:instr=\"");
+                sResult += m_sInstr.get2();
 				sResult += _T("\" ");
-				sResult += _T("w:fldLock=\"");
-				sResult += m_oFldLock.ToString();
-				sResult += _T("\" ");
+			}
 
-				if ( m_sInstr.IsInit() )
+			sResult += _T(">");
+
+			if (m_oFFData.IsInit())
+			{
+				sResult += m_oFFData->toXML();
+			}
+
+			for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+			{
+				if ( *it )
 				{
-					sResult += _T("w:instr=\"");
-                    sResult += m_sInstr.get2();
-					sResult += _T("\" ");
+					sResult += (*it)->toXML();
 				}
+			}
 
-				sResult += _T(">");
+			sResult += _T("</w:fldSimple>");
 
-				if (m_oFFData.IsInit())
-				{
-					sResult += m_oFFData->toXML();
-				}
-
-				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-					{
-						sResult += m_arrItems[nIndex]->toXML();
-					}
-				}
-
-				sResult += _T("</w:fldSimple>");
-
-				return sResult;
+			return sResult;
 		}
 
 	} // namespace Logic

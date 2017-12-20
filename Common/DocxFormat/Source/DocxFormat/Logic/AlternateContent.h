@@ -71,8 +71,6 @@ namespace OOX
 				}
 				m_arrFallbackItems.clear();
 			}
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
@@ -85,8 +83,7 @@ namespace OOX
 			{
 				return OOX::et_mc_alternateContent;
 			}
-		public:
-		
+	
 			std::vector<WritingElement *> m_arrChoiceItems;
 			std::vector<WritingElement *> m_arrFallbackItems;
 		};

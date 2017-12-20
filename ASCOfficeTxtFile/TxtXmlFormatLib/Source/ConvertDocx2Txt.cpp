@@ -72,7 +72,7 @@ namespace Docx2Txt
 		OOX::CDocx		m_inputFile;
 
     private:
-        void convert(std::vector<OOX::WritingElement *> & items, std::list<std::wstring>& textOut, TxtXml::ITxtXmlEvent& Event, bool isFirstLevel, 
+        void convert(std::list<OOX::WritingElement *> & items, std::list<std::wstring>& textOut, TxtXml::ITxtXmlEvent& Event, bool isFirstLevel, 
 							 OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
        
 		int m_lPercent;
@@ -248,17 +248,19 @@ namespace Docx2Txt
 	}
 
 
-	void Converter_Impl::convert(std::vector<OOX::WritingElement *> & items, std::list<std::wstring>& textOut, TxtXml::ITxtXmlEvent& Event, 
+	void Converter_Impl::convert(std::list<OOX::WritingElement*> & items, std::list<std::wstring>& textOut, TxtXml::ITxtXmlEvent& Event, 
 										bool isFirstLevel, OOX::CDocument *pDocument,  OOX::CNumbering* pNumbering, OOX::CStyles *pStyles)
 	{
-		if(items.size() > 0)
+		if( !items.empty() )
 		{
 			if(isFirstLevel)
 				m_lAddition = m_lAddition / items.size();
 			
-			for (int i=0 ; i< items.size(); i++)
+			for (std::list<OOX::WritingElement*>::iterator it = items.begin(); it != items.end(); it++)
 			{
-				OOX::WritingElement * item = items[i];
+				OOX::WritingElement* item = *it;
+
+				if (!item)continue;
 
 				if (item->getType() == OOX::et_w_p)
 				{
@@ -301,6 +303,7 @@ namespace Docx2Txt
 				{
 					//todoooo  проверить - это общий случай - вместо CSdt ... да и Tbl тож
 					OOX::WritingElementWithChilds<OOX::WritingElement> *item_with_items = dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(item);
+					
 					if (item_with_items)
 					{
 						convert(item_with_items->m_arrItems, textOut, Event, false, pDocument, pNumbering, pStyles);
@@ -461,16 +464,23 @@ namespace Docx2Txt
 
 		bool inField = false;
 
-		for (long i=0; i < pParagraph->m_arrItems.size(); i++)
+		for (std::list<OOX::WritingElement*>::iterator	it = pParagraph->m_arrItems.begin();
+														it != pParagraph->m_arrItems.end(); it++)
 		{
-			if (pParagraph->m_arrItems[i]->getType() == OOX::et_w_r)
+			if (*it== NULL) continue;
+
+			if ((*it)->getType() == OOX::et_w_r)
 			{
-				OOX::Logic::CRun *run = dynamic_cast<OOX::Logic::CRun*>(pParagraph->m_arrItems[i]);
-				for (long j = 0 ; j < run->m_arrItems.size();j++)
+				OOX::Logic::CRun *run = dynamic_cast<OOX::Logic::CRun*>(*it);
+
+				for (std::list<OOX::WritingElement*>::iterator jt = run->m_arrItems.begin(); jt != run->m_arrItems.end(); jt++)
 				{
-					if (run->m_arrItems[j]->getType() == OOX::et_w_fldChar)
+					if (*jt== NULL) continue;
+
+					if ((*jt)->getType() == OOX::et_w_fldChar)
 					{
-						OOX::Logic::CFldChar *fldChar = dynamic_cast<OOX::Logic::CFldChar*>(run->m_arrItems[j]);
+						OOX::Logic::CFldChar *fldChar = dynamic_cast<OOX::Logic::CFldChar*>(*jt);
+
 						if ((fldChar) && (fldChar->m_oFldCharType.IsInit()))
 						{
 							if (fldChar->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeBegin)	inField = true;
@@ -484,13 +494,13 @@ namespace Docx2Txt
 						if ((run->m_oRunProperty) && (run->m_oRunProperty->m_oCaps.Init()) && (run->m_oRunProperty->m_oCaps->m_oVal.ToBool()))	caps = true;
 
 						std::wstring wstr;						
-						if (run->m_arrItems[j]->getType() == OOX::et_w_tab)
+						if ((*jt)->getType() == OOX::et_w_tab)
 						{
 							wstr = L"\x09";
 						}
-						else if (run->m_arrItems[j]->getType() == OOX::et_w_t)
+						else if ((*jt)->getType() == OOX::et_w_t)
 						{
-							OOX::Logic::CText* text = dynamic_cast<OOX::Logic::CText*>(run->m_arrItems[j]);
+							OOX::Logic::CText* text = dynamic_cast<OOX::Logic::CText*>(*jt);
 							wstr = text->m_sText;
 							if(caps)
 							{
@@ -499,13 +509,13 @@ namespace Docx2Txt
 							}
 						}
 						
-						if (run->m_arrItems[j]->getType() == OOX::et_w_footnoteReference || run->m_arrItems[j]->getType() == OOX::et_w_endnoteReference)
+						if ((*jt)->getType() == OOX::et_w_footnoteReference || (*it)->getType() == OOX::et_w_endnoteReference)
 						{// todooo Ref ????
 
 							std::list<std::wstring> notes_content;
 
-							OOX::Logic::CFootnoteReference* footnote_ref = dynamic_cast<OOX::Logic::CFootnoteReference*>(run->m_arrItems[j]);
-							OOX::Logic::CEndnoteReference* endnote_ref = dynamic_cast<OOX::Logic::CEndnoteReference*>(run->m_arrItems[j]);
+							OOX::Logic::CFootnoteReference* footnote_ref = dynamic_cast<OOX::Logic::CFootnoteReference*>(*jt);
+							OOX::Logic::CEndnoteReference* endnote_ref = dynamic_cast<OOX::Logic::CEndnoteReference*>(*jt);
 							NoteCount++;
 
 							if (footnote_ref)
@@ -514,6 +524,7 @@ namespace Docx2Txt
 								if (pFile.IsInit())
 								{
 									OOX::CFootnotes *pFootnotes = (OOX::CFootnotes*)pFile.operator->();
+									
 									for (size_t r = 0; r < pFootnotes->m_arrFootnote.size(); r++)
 									{
 										OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(pFootnotes->m_arrFootnote[r]);

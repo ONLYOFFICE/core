@@ -55,25 +55,27 @@ public:
 
 		CcnfStyle oConditionStyle;
 		//с начала применяем свойства
-		if( m_ooxRowTable->m_oTableRowProperties )
+		if( m_ooxRowTable->m_pTableRowProperties )
 		{
-			OOXtrPrReader otrPrReader(m_ooxRowTable->m_oTableRowProperties);
+			OOXtrPrReader otrPrReader(m_ooxRowTable->m_pTableRowProperties);
 			otrPrReader.Parse( oParam, oOutputRow.m_oProperty, oConditionStyle);// может поменяться на любой condition(first row)
 		}
 
 		int nCellCount = m_ooxRowTable->m_nCountCell, nCurCell = 0;
 
-		for (size_t i = 0; i < m_ooxRowTable->m_arrItems.size(); i++)
+		for (std::list<OOX::WritingElement*>::iterator it = m_ooxRowTable->m_arrItems.begin(); it != m_ooxRowTable->m_arrItems.end(); it++)
 		{
-			if (m_ooxRowTable->m_arrItems[i]			== NULL)		continue;
-			if (m_ooxRowTable->m_arrItems[i]->getType() != OOX::et_w_tc)continue;//todooo bookmarks
+			if ( (*it) == NULL )		continue;
+			if ( (*it)->getType() != OOX::et_w_tc)continue;//todooo bookmarks
 
 			RtfTableCellPtr oNewCell( new RtfTableCell() );
 
             OOX::Logic::CTc *ooxCell = NULL;
 
             if (nCurCell < m_ooxRowTable->m_arrItems.size())
-                ooxCell = dynamic_cast<OOX::Logic::CTc *>(m_ooxRowTable->m_arrItems[i]);
+			{
+                ooxCell = dynamic_cast<OOX::Logic::CTc *>(*it);
+			}
 
 			OOXTableCellReader oCellReader(ooxCell, m_ooxTableProps );
 			oCellReader.Parse( oParam, *oNewCell, oConditionStyle, nCurCell++, nCurRow, nCellCount, nRowCount );

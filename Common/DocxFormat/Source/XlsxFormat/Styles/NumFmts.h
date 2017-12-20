@@ -120,15 +120,19 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_arrItems.size() > 0 )
+				if(m_arrItems.empty()) return;
+
+				writer.WriteString(_T("<numFmts"));
+				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
+				writer.WriteString(_T(">"));
+				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					writer.WriteString(_T("<numFmts"));
-					WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
-					writer.WriteString(_T(">"));
-					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
-					writer.WriteString(_T("</numFmts>"));
+					if ( *it )
+					{
+						(*it)->toXML(writer);
+					}
 				}
+				writer.WriteString(_T("</numFmts>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

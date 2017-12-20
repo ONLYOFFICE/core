@@ -186,9 +186,12 @@ namespace OOX
 				//BookViews
 				if(false == m_oBookViews.IsInit())
 					m_oBookViews.Init();
-				if(0 == m_oBookViews->m_arrItems.size())
+				
+				if(m_oBookViews->m_arrItems.empty())
 					m_oBookViews->m_arrItems.push_back(new OOX::Spreadsheet::CWorkbookView());
-				OOX::Spreadsheet::CWorkbookView* pWorkbookView = m_oBookViews->m_arrItems[0];
+				
+				OOX::Spreadsheet::CWorkbookView* pWorkbookView = m_oBookViews->m_arrItems.front();
+
 				if(false == pWorkbookView->m_oXWindow.IsInit())
 				{
 					pWorkbookView->m_oXWindow.Init();
@@ -211,7 +214,7 @@ namespace OOX
 				}
 			}
 		private:
-			CPath									m_oReadPath;
+			CPath											m_oReadPath;
 
 		public:
 			nullable<OOX::Spreadsheet::CBookViews>			m_oBookViews;

@@ -2647,12 +2647,12 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = et_Unknown;
 				// TO DO: Реализовать CShapeDefaults::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{			
 				m_eType = et_Unknown;
 				std::wstring sName = oReader.GetName();
@@ -2769,7 +2769,7 @@ namespace OOX
 				}
 			}
 
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult;
 				
@@ -2780,10 +2780,12 @@ namespace OOX
 				else
 					return _T("");
 
-				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					if ( m_arrItems[nIndex] )
-						sResult += m_arrItems[nIndex]->toXML();
+					if ( *it )
+					{
+						sResult += (*it)->toXML();
+					}
 				}
 
 				if ( et_w_hdrShapeDefaults == m_eType )
@@ -2802,7 +2804,7 @@ namespace OOX
 
 		public:
 
-			EElementType                   m_eType;
+			EElementType m_eType;
 
 			// Childs
 

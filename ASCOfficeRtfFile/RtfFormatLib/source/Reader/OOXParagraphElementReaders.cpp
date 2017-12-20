@@ -120,9 +120,9 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 {
 	if (m_ooxElement == NULL) return false;
 	
-	for (size_t i = 0; i< m_ooxElement->m_arrItems.size(); i++)
+	for (std::list<OOX::WritingElement*>::iterator it = m_ooxElement->m_arrItems.begin(); it != m_ooxElement->m_arrItems.end(); it++)
 	{
-		Parse3(oParam , oOutputParagraph, oConditionalTableStyle, poStyle , m_ooxElement->m_arrItems[i]);
+		Parse3(oParam , oOutputParagraph, oConditionalTableStyle, poStyle , *it);
 	}
 	return true;
 }
@@ -400,9 +400,9 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 		{
 			OOX::Logic::CSmartTag * pSmartTag = dynamic_cast<OOX::Logic::CSmartTag*>(m_ooxElement);
 
-			for (size_t i = 0 ; i < pSmartTag->m_arrItems.size(); i++)
+			for (std::list<OOX::WritingElement*>::iterator it = pSmartTag->m_arrItems.begin(); it != pSmartTag->m_arrItems.end(); it++)
 			{
-				OOX::Logic::CRun * pRun = dynamic_cast<OOX::Logic::CRun*>(pSmartTag->m_arrItems[i]);
+				OOX::Logic::CRun * pRun = dynamic_cast<OOX::Logic::CRun*>(*it);
 				if (pRun == NULL) continue;
 
 				OOXRunReader oRunReader(pRun);
@@ -1018,9 +1018,9 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 			orPrReader.Parse( oParam, oNewProperty );
 		}
 
-		for (size_t i =0 ; i < m_ooxRun->m_arrItems.size(); i++)
+		for (std::list<OOX::WritingElement*>::iterator it = m_ooxRun->m_arrItems.begin(); it != m_ooxRun->m_arrItems.end(); it++)
 		{
-			Parse(oParam, oOutputParagraph, poStyle, oNewProperty, m_ooxRun->m_arrItems[i]);
+			Parse(oParam, oOutputParagraph, poStyle, oNewProperty, *it);
 		}
 	}
 	return true;

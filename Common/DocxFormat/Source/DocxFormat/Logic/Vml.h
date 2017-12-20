@@ -711,8 +711,6 @@ namespace OOX
 			{
 			}
 
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CFormulas::fromXML(XmlUtils::CXmlNode& oNode)
@@ -737,10 +735,12 @@ namespace OOX
 			{
 				std::wstring sResult = _T("<v:formulas>");
 
-				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					if (m_arrItems[nIndex])
-						sResult += m_arrItems[nIndex]->toXML();
+					if ( *it )
+					{
+						sResult += (*it)->toXML();
+					}
 				}
 
 				sResult += _T("</v:formulas>");
@@ -937,14 +937,16 @@ namespace OOX
 					}
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<v:handles>");
 
-				for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					if (m_arrItems[nIndex])
-						sResult += m_arrItems[nIndex]->toXML();
+					if ( *it )
+					{
+						sResult += (*it)->toXML();
+					}
 				}
 
 				sResult += _T("</v:handles>");

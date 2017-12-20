@@ -67,42 +67,34 @@ namespace OOX
 			}
 			virtual ~CRun()
 			{
-				Clear();
+				ClearItems();
 			}
-
-		public:
-
 			const CRun &operator =(const XmlUtils::CXmlNode& oNode)
 			{
-				Clear();
+				ClearItems();
+				
 				fromXML( (XmlUtils::CXmlNode&)oNode );
 				return *this;
 			}
 			const CRun &operator =(const XmlUtils::CXmlLiteReader& oReader)
 			{
-				Clear();
+				ClearItems();
+				
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
 
-			void Clear()
+			virtual void ClearItems()
 			{
 				m_oRsidDel.reset();
 				m_oRsidR.reset();
 				m_oRsidRPr.reset();
+				
 				m_oRunProperty = NULL;
 
-				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )delete m_arrItems[nIndex];
-					m_arrItems[nIndex] = NULL;
-				}
-				m_arrItems.clear();
+				WritingElementWithChilds<>::ClearItems();
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_oRunProperty = NULL;
 				
@@ -198,7 +190,7 @@ namespace OOX
 					}
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_oRunProperty = NULL;
 
@@ -288,7 +280,7 @@ namespace OOX
 						m_arrItems.push_back( pItem );
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<w:r ");
 
@@ -301,12 +293,12 @@ namespace OOX
 				if (m_oRunProperty)
 					sResult += m_oRunProperty->toXML();
 
-				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					if ( m_arrItems[nIndex] )
+					if ( *it )
 					{
-						if (m_arrItems[nIndex]->getType() == OOX::et_w_rPr) continue;
-						sResult += m_arrItems[nIndex]->toXML();
+						if ((*it)->getType() == OOX::et_w_rPr) continue;
+						sResult += (*it)->toXML();
 					}
 				}
 
@@ -349,14 +341,12 @@ namespace OOX
 			}
 
 		public:
-
-			// Attributes
+	// Attributes
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidDel;
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidR;
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidRPr;
-
-			// Childs
-			OOX::Logic::CRunProperty						*m_oRunProperty;	// копия того что в m_arrItems...  - для быстрого доступа/анализа
+	// Childs
+			OOX::Logic::CRunProperty				*m_oRunProperty;	// копия того что в m_arrItems...  - для быстрого доступа/анализа
 			// по идее нужно сделать как в Drawing::Run - то есть единственные подобъекты вынести отдельно
 		};
 	} // namespace Logic

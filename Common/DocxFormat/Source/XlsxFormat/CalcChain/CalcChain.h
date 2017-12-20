@@ -114,8 +114,6 @@ namespace OOX
 			{
 				ClearItems();
 			}
-		public:
-
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -172,27 +170,26 @@ namespace OOX
 			{
 				return m_oReadPath;
 			}
-
-		private:
-			CPath									m_oReadPath;
 			void ClearItems()
 			{
-				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				for ( std::list<CCalcCell*>::iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
+					if ( *it )
+						delete *it;
+					*it = NULL;
 				}
 
 				m_arrItems.clear();
 			}
+		private:
+			CPath m_oReadPath;
+
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
 
 		public:
-			std::vector<CCalcCell *>         m_arrItems;
+			std::list<CCalcCell *>  m_arrItems;
 		};
 	} //Spreadsheet
 } // namespace OOX

@@ -43,7 +43,7 @@ namespace OOX
 	namespace Spreadsheet
 	{
 		//необработано:
-		class CRun : public WritingElementWithChilds<CText>
+		class CRun : public OOX::Spreadsheet::WritingElementWithChilds<CText>
 		{
 		public:
 			WritingElement_AdditionConstructors(CRun)
@@ -66,9 +66,12 @@ namespace OOX
 				if(m_oRPr.IsInit())
 					m_oRPr->toXML(writer);
 				
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
+				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					m_arrItems[i]->toXML(writer);
+					if ( *it )
+					{
+						(*it)->toXML(writer);
+					}
 				}
 				writer.WriteString(_T("</r>"));
 			}

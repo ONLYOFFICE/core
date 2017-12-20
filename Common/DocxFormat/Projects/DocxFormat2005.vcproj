@@ -1439,15 +1439,7 @@
 				RelativePath="..\Source\XlsxFormat\FileFactory_Spreadsheet.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalOptions="/bigobj"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|x64"
+					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2068,10 +2060,6 @@
 		</File>
 		<File
 			RelativePath="..\Source\DocxFormat\WritingElement.h"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\DocxFormat\WritingVector.h"
 			>
 		</File>
 	</Files>

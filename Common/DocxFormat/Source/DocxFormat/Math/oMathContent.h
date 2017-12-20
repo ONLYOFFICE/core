@@ -1010,11 +1010,11 @@ namespace OOX
 			{
 				std::wstring sResult = _T("<m:d>");
 
-				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					if ( m_arrItems[nIndex])
+					if ( *it )
 					{
-						sResult += m_arrItems[nIndex]->toXML();
+						sResult += (*it)->toXML();
 					}
 				}
 				
@@ -1200,11 +1200,11 @@ namespace OOX
 			{
 				std::wstring sResult = _T("<m:eqArr>");
 
-				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					if ( m_arrItems[nIndex])
+					if ( *it )
 					{
-						sResult += m_arrItems[nIndex]->toXML();
+						sResult += (*it)->toXML();
 					}
 				}
 				
@@ -2064,11 +2064,11 @@ namespace OOX
 			{
 				std::wstring sResult = _T("<m:mathPr>");
 
-				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					if ( m_arrItems[nIndex])
+					if ( *it )
 					{
-						sResult += m_arrItems[nIndex]->toXML();
+						sResult += (*it)->toXML();
 					}
 				}
 				
@@ -2271,11 +2271,11 @@ namespace OOX
 			{
 				std::wstring sResult = _T("<m:mcs>");
 
-				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					if ( m_arrItems[nIndex])
+					if ( *it )
 					{
-						sResult += m_arrItems[nIndex]->toXML();
+						sResult += (*it)->toXML();
 					}
 				}
 				
@@ -2490,11 +2490,11 @@ namespace OOX
 			{
 				std::wstring sResult = _T("<m:mr>");
 
-				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					if ( m_arrItems[nIndex])
+					if ( *it )
 					{
-						sResult += m_arrItems[nIndex]->toXML();
+						sResult += (*it)->toXML();
 					}
 				}
 				
@@ -2583,11 +2583,11 @@ namespace OOX
 			{
 				std::wstring sResult = _T("<m:m>");
 
-				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					if ( m_arrItems[nIndex])
+					if ( *it )
 					{
-						sResult += m_arrItems[nIndex]->toXML();
+						sResult += (*it)->toXML();
 					}
 				}
 				

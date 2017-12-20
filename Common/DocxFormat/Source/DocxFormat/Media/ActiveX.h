@@ -106,7 +106,7 @@ namespace OOX
 		{
 			ClearItems();
 		}
-		void ClearItems()
+		virtual void ClearItems()
 		{
 			for (size_t nIndex = 0; nIndex < m_arrOcxPr.size(); ++nIndex)
 			{

@@ -125,15 +125,19 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_arrItems.size() > 0)
+				if(m_arrItems.empty()) return;
+
+				writer.WriteString(_T("<hyperlinks>"));
+					
+				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					writer.WriteString(_T("<hyperlinks>"));
-					
-					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
-					
-					writer.WriteString(_T("</hyperlinks>"));
+					if ( *it )
+					{
+						(*it)->toXML(writer);
+					}
 				}
+				
+				writer.WriteString(_T("</hyperlinks>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

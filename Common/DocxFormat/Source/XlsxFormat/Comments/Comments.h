@@ -94,11 +94,15 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(L"<authors>");
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
+
+				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					writer.WriteString(L"<author>");
-					writer.WriteEncodeXmlString(*m_arrItems[i]);
-					writer.WriteString(L"</author>");
+					if ( *it )
+					{
+						writer.WriteString(L"<author>");
+							writer.WriteEncodeXmlString(*(*it));
+						writer.WriteString(L"</author>");
+					}
 				}
 				writer.WriteString(L"</authors>");
 			}
@@ -220,10 +224,15 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(L"<commentList>");
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
+
+				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					m_arrItems[i]->toXML(writer);
+					if ( *it )
+					{
+						(*it)->toXML(writer);
+					}
 				}
+
 				writer.WriteString(L"</commentList>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)

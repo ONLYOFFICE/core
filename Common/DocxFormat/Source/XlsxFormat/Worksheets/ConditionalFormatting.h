@@ -104,7 +104,7 @@ namespace OOX
 			nullable<std::wstring>								m_oVal;
 		};
 
-		class CColorScale : public WritingElementWithChilds<WritingElement>
+		class CColorScale : public WritingElementWithChilds<>
 		{
 		public:
 			WritingElement_AdditionConstructors(CColorScale)
@@ -128,8 +128,13 @@ namespace OOX
                     std::wstring sValue;
 					writer.WriteString(_T("<colorScale>"));
 
-					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
+					for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+					{
+						if ( *it )
+						{
+							(*it)->toXML(writer);
+						}
+					}
 
 					writer.WriteString(_T("</colorScale>"));
 				}
@@ -190,8 +195,13 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
+					for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+					{
+						if ( *it )
+						{
+							(*it)->toXML(writer);
+						}
+					}
 
 					m_oColor->toXML2(writer, _T("color"));
 
@@ -320,8 +330,13 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
+					for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+					{
+						if ( *it )
+						{
+							(*it)->toXML(writer);
+						}
+					}
 
 					writer.WriteString(_T("</iconSet>"));
 				}
@@ -414,8 +429,13 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
+					for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+					{
+						if ( *it )
+						{
+							(*it)->toXML(writer);
+						}
+					}
 
 					writer.WriteString(_T("</cfRule>"));
 				}
@@ -518,9 +538,10 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				bool isValid = false;
-				for(size_t i = 0; i < m_arrItems.size(); ++i)
+
+				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					if(m_arrItems[i]->isValid())
+					if ( (*it) && ((*it)->isValid()) )
 					{
 						isValid = true;
 						break;
@@ -538,8 +559,13 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
+					for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+					{
+						if ( *it )
+						{
+							(*it)->toXML(writer);
+						}
+					}
 
 					writer.WriteString(_T("</conditionalFormatting>"));
 				}

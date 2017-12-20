@@ -182,12 +182,12 @@ namespace BinXlsxRW{
 			}
 			OOX::Spreadsheet::CSi* pSi = new OOX::Spreadsheet::CSi();
 			pSi->m_arrItems.push_back(pText);
-			pSharedStrings->m_arrItems.push_back(pSi);
+			pSharedStrings->AddSi(pSi);
 		}
 		pSharedStrings->m_oCount.Init();
-		pSharedStrings->m_oCount->SetValue(pSharedStrings->m_arrItems.size());
+		pSharedStrings->m_oCount->SetValue(pSharedStrings->m_nCount);
 		pSharedStrings->m_oUniqueCount.Init();
-		pSharedStrings->m_oUniqueCount->SetValue(pSharedStrings->m_arrItems.size());
+		pSharedStrings->m_oUniqueCount->SetValue(pSharedStrings->m_nCount);
 		//Styles
 		OOX::Spreadsheet::CStyles* pStyles = oXlsx.CreateStyles();
 		pStyles->m_oCellXfs.Init();

@@ -282,17 +282,21 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_arrItems.size() > 0)
+				if(m_arrItems.empty()) return;
+
+				writer.WriteString(L"<tableColumns");
+				WritingStringAttrInt(L"count", (int)m_arrItems.size());
+				writer.WriteString(L">");
+				
+				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					writer.WriteString(L"<tableColumns");
-					WritingStringAttrInt(L"count", (int)m_arrItems.size());
-					writer.WriteString(L">");
-					
-					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
-					
-					writer.WriteString(L"</tableColumns>");
+					if ( *it )
+					{
+						(*it)->toXML(writer);
+					}
 				}
+				
+				writer.WriteString(L"</tableColumns>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -428,18 +432,18 @@ namespace OOX
 					WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CRelationshipId > m_oRef;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oHeaderRowCount;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oTotalsRowCount;
+			nullable<SimpleTypes::CRelationshipId >				m_oRef;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<> >	m_oHeaderRowCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<> >	m_oTotalsRowCount;
 			nullable<std::wstring > m_oDisplayName;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oTableBorderDxfId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<> >	m_oTableBorderDxfId;
 
-			nullable<CAutofilter > m_oAutoFilter;
-			nullable<CSortState > m_oSortState;
-			nullable<CTableColumns > m_oTableColumns;
-			nullable<CTableStyleInfo > m_oTableStyleInfo;
+			nullable<CAutofilter >								m_oAutoFilter;
+			nullable<CSortState >								m_oSortState;
+			nullable<CTableColumns >							m_oTableColumns;
+			nullable<CTableStyleInfo >							m_oTableStyleInfo;
 
-			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
+			nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 		};
 		class CTablePart : public WritingElement
 		{
@@ -512,17 +516,21 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_arrItems.size() > 0)
+				if(m_arrItems.empty()) return;
+
+				writer.WriteString(L"<tableParts");
+				WritingStringAttrInt(L"count", (int)m_arrItems.size());
+				writer.WriteString(L">");
+				
+				for ( std::list<CTablePart*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					writer.WriteString(L"<tableParts");
-					WritingStringAttrInt(L"count", (int)m_arrItems.size());
-					writer.WriteString(L">");
-					
-					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
-					
-					writer.WriteString(L"</tableParts>");	
+					if ( *it )
+					{
+						(*it)->toXML(writer);
+					}
 				}
+				
+				writer.WriteString(L"</tableParts>");	
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

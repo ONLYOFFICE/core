@@ -189,14 +189,18 @@ namespace OOX
 			}
 			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::CVmlDrawing* pVmlDrawing)
 			{
-				std::vector<std::wstring*> & aAuthors = pComments->m_oAuthors->m_arrItems;
+				std::list<std::wstring*> & aAuthors = pComments->m_oAuthors->m_arrItems;
 				
 				if(pComments->m_oCommentList.IsInit())
 				{
-					std::vector<OOX::Spreadsheet::CComment*> & aComments = pComments->m_oCommentList->m_arrItems;
-					for(size_t i = 0, length = aComments.size(); i < length; ++i)
+					std::list<OOX::Spreadsheet::CComment*> & aComments = pComments->m_oCommentList->m_arrItems;
+					
+					for ( std::list<OOX::Spreadsheet::CComment*>::iterator it = aComments.begin(); it != aComments.end(); it++)
 					{
-						OOX::Spreadsheet::CComment* pComment = aComments[i];
+						OOX::Spreadsheet::CComment* pComment = (*it);
+
+						if (!pComment) continue;
+
 						if(pComment->m_oRef.IsInit() && pComment->m_oAuthorId.IsInit())
 						{
 							int nRow, nCol;
@@ -207,8 +211,13 @@ namespace OOX
 								pCommentItem->m_nCol = nCol - 1;
 
 								unsigned int nAuthorId = pComment->m_oAuthorId->GetValue();
-								if(nAuthorId < aAuthors.size())
-									pCommentItem->m_sAuthor = *aAuthors[nAuthorId];
+								
+								std::list<std::wstring*>::iterator itA = aAuthors.begin();
+								for(int a = 0; a < nAuthorId; a++)
+									itA++;
+
+								if(itA != aAuthors.end())
+									pCommentItem->m_sAuthor = *itA;
 
 								OOX::Spreadsheet::CSi* pSi = pComment->m_oText.GetPointerEmptyNullable();
 								if(NULL != pSi)
@@ -220,9 +229,9 @@ namespace OOX
 					}
 				}
 
-				for(size_t i = 0, length = pVmlDrawing->m_arrItems.size(); i < length; ++i)
+				for ( std::list<OOX::WritingElement*>::iterator it = pVmlDrawing->m_arrItems.begin(); it != pVmlDrawing->m_arrItems.end(); it++)
 				{
-					OOX::Vml::CShape* pShape =  dynamic_cast<OOX::Vml::CShape*>(pVmlDrawing->m_arrItems[i]);
+					OOX::Vml::CShape* pShape =  dynamic_cast<OOX::Vml::CShape*>(*it);
 					
 					if (pShape == NULL) continue;
 
@@ -234,9 +243,11 @@ namespace OOX
                             pFind->second.bUsed = true;
                         }
                     }
-                    for(size_t j = 0, length2 = pShape->m_arrItems.size(); j < length2; ++j)
+					for ( std::list<OOX::WritingElement*>::iterator it1 = pShape->m_arrItems.begin(); it1 != pShape->m_arrItems.end(); it1++)
 					{
-						OOX::WritingElement* pElem = pShape->m_arrItems[j];
+						OOX::WritingElement* pElem = *it;
+						if ( !pElem ) continue;
+						
 						if( OOX::et_v_ClientData == pElem->getType())
 						{
 							OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pElem);
@@ -334,9 +345,12 @@ namespace OOX
 				}
 				if(false == m_oSheetViews.IsInit())
 					m_oSheetViews.Init();
-				if(0 == m_oSheetViews->m_arrItems.size())
+				
+				if(m_oSheetViews->m_arrItems.empty())
 					m_oSheetViews->m_arrItems.push_back(new CSheetView());
-				CSheetView* pSheetView = m_oSheetViews->m_arrItems[0];
+				
+				CSheetView* pSheetView = m_oSheetViews->m_arrItems.front();
+
 				if(false == pSheetView->m_oWorkbookViewId.IsInit())
 				{
 					pSheetView->m_oWorkbookViewId.Init();
@@ -426,7 +440,6 @@ namespace OOX
 					return rId;
 				}
 			}
-		private:
 			void ClearItems()
 			{
 				for (std::map<std::wstring, CCommentItem*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)

@@ -30,9 +30,9 @@
  *
  */
 #include "MathParaWrapper.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Math/oMathPara.h"
-#include "../../../ASCOfficeDocxFile2/BinWriter/BinWriters.h"
-#include "../../../ASCOfficeDocxFile2/BinReader/FileWriter.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Math/oMathPara.h"
+#include "../../../../ASCOfficeDocxFile2/BinWriter/BinWriters.h"
+#include "../../../../ASCOfficeDocxFile2/BinReader/FileWriter.h"
 
 namespace PPTX
 {

@@ -29,19 +29,17 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-// DocFormatTest.cpp : Defines the entry point for the console application.
-//
-#include "../DocFormatLib/DocFormatLib.h"
+#include <iostream>
 
-#include "../../OfficeUtils/src/ASCOfficeCriticalSection.h"
-
+#include "../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../DesktopEditor/common/Directory.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
-#include "../../DesktopEditor/common/Directory.h"
+#include "../DocFormatLib/DocFormatLib.h"
 
-#include <string>
-#include <windows.h>
-#include <tchar.h>
+#pragma comment(lib,"Shell32.lib")	
+#pragma comment(lib,"Advapi32.lib")
+#pragma comment(lib,"Rpcrt4.lib")
 
 #if defined(_WIN64)
 	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
@@ -49,36 +47,34 @@
 	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
 #endif
 
-#pragma comment(lib, "Rpcrt4.lib")
-
-HRESULT convert_single(std::wstring sSrcDoc)
+HRESULT convert_single(std::wstring srcFileName)
 {
 	HRESULT hr = S_OK;
 
-	std::wstring outputDir		= NSDirectory::GetFolderPath(sSrcDoc);
+	std::wstring outputDir		= NSDirectory::GetFolderPath(srcFileName);	
 	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
+	std::wstring dstPath;
 
 	COfficeDocFile docFile;
 
 	docFile.m_sTempFolder = outputDir;
 	
 	bool bMacros = true;
-	HRESULT hRes = docFile.LoadFromFile( sSrcDoc, dstTempPath, L"password", bMacros, NULL);
+	HRESULT hRes = docFile.LoadFromFile( srcFileName, dstTempPath, L"password", bMacros, NULL);
 	
-	std::wstring sDstDocx;
 	if (bMacros)
 	{
-		sDstDocx = sSrcDoc + L"-my.docm";
+		dstPath = srcFileName + L"-my.docm";
 	}
 	else
 	{
-		sDstDocx = sSrcDoc + L"-my.docx";
+		dstPath = srcFileName + L"-my.docx";
 
 	}
 	if (hRes == S_OK)
 	{
 		COfficeUtils oCOfficeUtils(NULL);
-		hRes = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), sDstDocx, -1);
+		hRes = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath, -1);
 	}
 	
 	NSDirectory::DeleteDirectory(dstTempPath);

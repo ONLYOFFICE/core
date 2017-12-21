@@ -43,6 +43,7 @@
 #include "MainDocumentMapping.h"
 #include "OleObjectMapping.h"
 #include "VMLPictureMapping.h"
+#include "FormFieldDataMapping.h"
 
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
@@ -144,9 +145,9 @@ namespace DocFileFormat
 	{
 		if (docFile == NULL) return S_FALSE;
 
-		POLE::Storage *storageOut = new POLE::Storage(fileName.c_str());		
+		POLE::Storage *storageOut = new POLE::Storage(fileName.c_str());
 		if (storageOut == NULL) return S_FALSE;
-
+		
 		if (storageOut->open(true, true)==false)
 		{	
 			delete storageOut;

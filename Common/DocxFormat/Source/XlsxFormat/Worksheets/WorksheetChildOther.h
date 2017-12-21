@@ -515,9 +515,12 @@ namespace OOX
 				if (m_oPane.IsInit())
 					m_oPane->toXML(writer);
 				
-				for(size_t i = 0 ; i < m_arrItems.size(); ++i)
+				for ( std::list<CSelection*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					m_arrItems[i]->toXML(writer);
+					if ( *it )
+					{
+						(*it)->toXML(writer);
+					}
 				}
 
 				writer.WriteString(_T("</sheetView>"));
@@ -618,15 +621,19 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_arrItems.size() > 0)
+				if(m_arrItems.empty())
+
+				writer.WriteString(_T("<sheetViews>"));
+				
+				for ( std::list<CSheetView*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					writer.WriteString(_T("<sheetViews>"));
-					
-					for(size_t i = 0, length = m_arrItems.size();  i< length; ++i)
-						m_arrItems[i]->toXML(writer);
-					
-					writer.WriteString(_T("</sheetViews>"));
+					if ( *it )
+					{
+						(*it)->toXML(writer);
+					}
 				}
+				
+				writer.WriteString(_T("</sheetViews>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

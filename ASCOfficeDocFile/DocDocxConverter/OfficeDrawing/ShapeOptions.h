@@ -597,15 +597,11 @@ namespace DocFileFormat
 
 		virtual ~ShapeOptions()
 		{
-			//for (std::vector<OptionEntry>::iterator iter = Options.begin(); iter != Options.end(); ++iter)
-			//	RELEASEARRAYOBJECTS( iter->opComplex );
 		}
 
 		ShapeOptions (IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance) : Record (_reader, size, typeCode, version, instance)
 		{
 			long pos = Reader->GetPosition();
-
-			//instance is the count of properties stored in this record
 
 			//parse the flags and the simple values
 			for (unsigned int i = 0; i < instance; ++i)
@@ -621,9 +617,7 @@ namespace DocFileFormat
 				Options.push_back( entry );
 			}
 
-			//parse the complex values
-			//these values are stored directly at the end  
-			//of the OptionEntry arry, sorted by pid
+			//parse the complex values & sorted by pid
 			for (unsigned int i = 0; i < instance; ++i)
 			{
 				if (Options[i]->fComplex && Options[i]->op > 0)

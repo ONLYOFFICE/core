@@ -516,7 +516,7 @@ const std::wstring tab2sheet_name(const short tabid, std::vector<std::wstring>& 
 const std::wstring name2sheet_name(std::wstring name, const std::wstring prefix)
 {
 	static boost::wregex correct_sheet_name(L"^\\'.+?\\'$");
-    static boost::wregex test_sheet_name(L"[\\s)(\\'&:-]+"); //.??? 6442946.xls
+    static boost::wregex test_sheet_name(L"[\\s)(\\!\\'&:-]+"); //.??? 6442946.xls
 	
 	std::wstring sheet_first = prefix + name;
 	
@@ -537,7 +537,7 @@ const std::wstring xti_indexes2sheet_name(const short tabFirst, const short tabL
 		return L"#REF";
 	}
 	static boost::wregex correct_sheet_name(L"^\\'.+?\\'$");
-    static boost::wregex test_sheet_name(L"[\\s)(\\'&:-]+"); //.??? 6442946.xls
+    static boost::wregex test_sheet_name(L"[\\s)(\\!\\'&:-]+"); //.??? 6442946.xls
 	
 	std::wstring sheet_first = prefix + tab2sheet_name(tabFirst, names);
 	

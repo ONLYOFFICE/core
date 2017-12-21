@@ -157,12 +157,12 @@ namespace OOX
 			return sRes;
 		}
 	private:
-		std::wstring getTextArr(const std::vector<WritingElement* > & arrItems, bool& bFirstPar) const
+		std::wstring getTextArr(const std::list<WritingElement* > & arrItems, bool& bFirstPar) const
 		{
 			std::wstring sRes;
-			for(size_t i = 0, length = arrItems.size(); i < length; ++i)
+			for ( std::list<WritingElement *>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 			{
-				WritingElement* item = arrItems[i];
+				WritingElement* item = *it;
 				if (item == NULL) continue;
 
 				switch(item->getType())
@@ -312,8 +312,6 @@ namespace OOX
 				if (m_arrComments[i]) delete m_arrComments[i];
 			m_arrComments.clear();
 		}
-	public:
-
 		virtual void read(const CPath& oFilePath)
 		{
 #ifdef USE_LITE_READER
@@ -343,9 +341,6 @@ namespace OOX
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 		}
-
-	public:
-
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::Comments;
@@ -358,8 +353,6 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
-
-	public:
 
 		std::vector<CComment*> m_arrComments;
 
@@ -374,8 +367,6 @@ namespace OOX
 		virtual ~CCommentExt()
 		{
 		}
-
-	public:
 		virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 		{
 		}
@@ -408,9 +399,7 @@ namespace OOX
 		}
 
 	public:
-
-		// Attributes
-
+	// Attributes
 		nullable<SimpleTypes::CLongHexNumber<> > m_oParaId;
 		nullable<SimpleTypes::CLongHexNumber<> > m_oParaIdParent;
 		nullable<SimpleTypes::COnOff<> > m_oDone;
@@ -432,8 +421,6 @@ namespace OOX
 				if (m_arrComments[i]) delete m_arrComments[i];
 			m_arrComments.clear();
 		}
-	public:
-
 		virtual void read(const CPath& oFilePath)
 		{
 #ifdef USE_LITE_READER
@@ -463,9 +450,6 @@ namespace OOX
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 		}
-
-	public:
-
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::CommentsExt;
@@ -479,10 +463,7 @@ namespace OOX
 			return type().DefaultFileName();
 		}
 
-	public:
-
 		std::vector<CCommentExt*> m_arrComments;
-
 	};
 
 	class CPresenceInfo : public WritingElement
@@ -495,8 +476,6 @@ namespace OOX
 		virtual ~CPresenceInfo()
 		{
 		}
-
-	public:
 		virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 		{
 		}
@@ -528,9 +507,7 @@ namespace OOX
 		}
 
 	public:
-
-		// Attributes
-
+	// Attributes
 		nullable<std::wstring > m_oProviderId;
 		nullable<std::wstring > m_oUserId;
 	};
@@ -545,8 +522,6 @@ namespace OOX
 		virtual ~CPerson()
 		{
 		}
-
-	public:
 		virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 		{
 		}
@@ -585,10 +560,8 @@ namespace OOX
 		}
 
 	public:
-
-		// Attributes
+	// Attributes
 		nullable<std::wstring > m_oAuthor;
-
 		nullable<CPresenceInfo> m_oPresenceInfo;
 	};
 	class CPeople : public OOX::File
@@ -607,8 +580,6 @@ namespace OOX
 				if (m_arrPeoples[i]) delete m_arrPeoples[i];
 			m_arrPeoples.clear();
 		}
-	public:
-
 		virtual void read(const CPath& oFilePath)
 		{
 #ifdef USE_LITE_READER
@@ -637,9 +608,6 @@ namespace OOX
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 		}
-
-	public:
-
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::People;
@@ -652,8 +620,6 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
-
-	public:
 
 		std::vector<CPerson*> m_arrPeoples;
 	};

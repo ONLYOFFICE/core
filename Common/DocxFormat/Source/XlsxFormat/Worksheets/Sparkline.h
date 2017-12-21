@@ -131,8 +131,13 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<x14:sparklines>"));
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-					m_arrItems[i]->toXML(writer);
+				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+				{
+					if ( *it )
+					{
+						(*it)->toXML(writer);
+					}
+				}
 				writer.WriteString(_T("</x14:sparklines>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -461,8 +466,13 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<x14:sparklineGroups xmlns:xm=\"http://schemas.microsoft.com/office/excel/2006/main\">"));
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-					m_arrItems[i]->toXML(writer);
+				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+				{
+					if ( *it )
+					{
+						(*it)->toXML(writer);
+					}
+				}
 				writer.WriteString(_T("</x14:sparklineGroups>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)

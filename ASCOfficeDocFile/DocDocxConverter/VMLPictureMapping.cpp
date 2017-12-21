@@ -159,30 +159,32 @@ namespace DocFileFormat
 		OOX::CDocument docEmbedded(path, path);
 
 		bool res = false;
-		for (size_t i = 0 ; i < docEmbedded.m_arrItems.size(); i++)
+		for (std::list<OOX::WritingElement*>::iterator it = docEmbedded.m_arrItems.begin(); it != docEmbedded.m_arrItems.end(); it++)
 		{
-			if (docEmbedded.m_arrItems[i]->getType() == OOX::et_w_p)
+			if ((*it)->getType() == OOX::et_w_p)
 			{
-				OOX::Logic::CParagraph *paragraph = dynamic_cast<OOX::Logic::CParagraph *>(docEmbedded.m_arrItems[i]);
+				OOX::Logic::CParagraph *paragraph = dynamic_cast<OOX::Logic::CParagraph *>(*it);
 
-				for (size_t j = 0; (paragraph) && (j < paragraph->m_arrItems.size()); j++)
+				for (std::list<OOX::WritingElement*>::iterator		jt = paragraph->m_arrItems.begin(); 
+													(paragraph) && (jt != paragraph->m_arrItems.end()); jt++)
 				{
-					if (paragraph->m_arrItems[j]->getType() == OOX::et_m_oMath)
+					if ((*jt)->getType() == OOX::et_m_oMath)
 					{
 						res = true;
-                        newXmlString = paragraph->m_arrItems[j]->toXML();
+                        newXmlString = (*jt)->toXML();
 						break;
 					}
-					else if (paragraph->m_arrItems[j]->getType() == OOX::et_m_oMathPara)
+					else if ((*jt)->getType() == OOX::et_m_oMathPara)
 					{
-						OOX::Logic::COMathPara *mathPara = dynamic_cast<OOX::Logic::COMathPara *>(paragraph->m_arrItems[j]);
+						OOX::Logic::COMathPara *mathPara = dynamic_cast<OOX::Logic::COMathPara *>(*jt);
 						
-						for (size_t k = 0; (mathPara) && (k < mathPara->m_arrItems.size()); k++)
+						for (std::list<OOX::WritingElement*>::iterator kt = mathPara->m_arrItems.begin(); 
+														(mathPara) && (kt != mathPara->m_arrItems.end()); kt++)
 						{
-							if (mathPara->m_arrItems[k]->getType() == OOX::et_m_oMath)
+							if ((*kt)->getType() == OOX::et_m_oMath)
 							{
 								res = true;
-                                newXmlString = mathPara->m_arrItems[k]->toXML();
+                                newXmlString = (*kt)->toXML();
 								break;
 							}
 						}

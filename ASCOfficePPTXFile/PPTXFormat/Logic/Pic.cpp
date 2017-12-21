@@ -654,9 +654,11 @@ namespace PPTX
 					{
 						pPair->second.bUsed = true;
 						OOX::Vml::CShape* pShape = dynamic_cast<OOX::Vml::CShape*>(pPair->second.pElement);
-						for(size_t j = 0; (pShape) && (j < pShape->m_arrItems.size()); ++j)
+						
+						for(std::list<OOX::WritingElement*>::iterator it = pShape->m_arrItems.begin(); 
+															(pShape) && (it != pShape->m_arrItems.end()); it++)
 						{
-							OOX::WritingElement* pChildElemShape = pShape->m_arrItems[j];
+							OOX::WritingElement* pChildElemShape = *it;
 							if(OOX::et_v_imagedata == pChildElemShape->getType())
 							{
 								OOX::Vml::CImageData* pImageData = static_cast<OOX::Vml::CImageData*>(pChildElemShape);									

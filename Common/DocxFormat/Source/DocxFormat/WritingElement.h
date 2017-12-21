@@ -1140,21 +1140,27 @@ namespace OOX
 		}
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) {}
 	};
+	
 	template<typename ElemType = WritingElement>
 	class WritingElementWithChilds : public WritingElement
 	{
 	public:
-		WritingElementWithChilds(){}
-		virtual ~WritingElementWithChilds() {ClearItems();}
+        std::list<ElemType *>  m_arrItems;
+		using ElemArray = std::list<ElemType *>;
+		
+		WritingElementWithChilds() {}
+		virtual ~WritingElementWithChilds() 
+		{
+			ClearItems();
+		}
 		virtual void ClearItems()
 		{
-            for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+            for ( auto it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 			{
-				if ( m_arrItems[nIndex] ) delete m_arrItems[nIndex];
-				m_arrItems[nIndex] = NULL;
+				if ( *it ) delete *it;
+				*it = NULL;
 			}
 			m_arrItems.clear();
 		}
-        std::vector<ElemType *>     m_arrItems;
 	};
 }

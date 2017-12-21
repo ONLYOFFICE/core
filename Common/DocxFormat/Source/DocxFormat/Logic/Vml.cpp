@@ -144,11 +144,11 @@ namespace OOX
 		{
 			std::wstring sResult = _T("<w:txbxContent>");
 
-			for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+			for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 			{
-				if ( m_arrItems[nIndex] )
+				if ( *it )
 				{
-					sResult += m_arrItems[nIndex]->toXML();
+					sResult += (*it)->toXML();
 				}
 			}
 
@@ -458,10 +458,12 @@ namespace OOX
 		{
 			std::wstring sResult;
 
-			for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+			for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 			{
-				if ( m_arrItems[nIndex] )
-					sResult += m_arrItems[nIndex]->toXML();
+				if ( *it )
+				{
+					sResult += (*it)->toXML();
+				}
 			}
 
 			return sResult;
@@ -887,10 +889,12 @@ namespace OOX
 
 			sResult += _T(">");
 
-			for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+			for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 			{
-				if ( m_arrItems[nIndex] )
-					sResult += m_arrItems[nIndex]->toXML();
+				if ( *it )
+				{
+					sResult += (*it)->toXML();
+				}
 			}
 
 			sResult += _T("</v:group>");

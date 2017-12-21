@@ -31,8 +31,8 @@
  */
 
 #include "ExternSheet.h"
-#include <Logic/Biff_structures/XTI.h>
-#include <Logic/Biff_structures/BiffString.h>
+#include "../Biff_structures/XTI.h"
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {

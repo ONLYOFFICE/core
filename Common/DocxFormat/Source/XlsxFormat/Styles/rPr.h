@@ -81,8 +81,9 @@ namespace OOX
 					WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::Spreadsheet::CHexColor>						m_oRgb;
+			nullable<SimpleTypes::Spreadsheet::CHexColor> m_oRgb;
 		};
+		
 		class CIndexedColors : public WritingElementWithChilds<CRgbColor>
 		{
 		public:
@@ -111,12 +112,17 @@ namespace OOX
 					return;
 
 				int nCurDepth = oReader.GetDepth();
+				int index = 0;
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("rgbColor") == sName )
-						m_arrItems.push_back( new CRgbColor( oReader ));
+					{
+						CRgbColor* color = new CRgbColor( oReader );
+						mapIndexedColors.insert(std::make_pair(index++, color));
+						m_arrItems.push_back( color );
+					}
 				}
 			}
 
@@ -351,6 +357,7 @@ namespace OOX
 					nIndex = 63;
 				return nIndex;
 			}
+			std::map<int, CRgbColor*> mapIndexedColors;
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{

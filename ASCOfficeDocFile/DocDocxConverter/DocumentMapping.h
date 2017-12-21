@@ -48,6 +48,8 @@
 #include "OleObjectMapping.h"
 #include "ConversionContext.h"
 #include "IMapping.h"
+#include "FormFieldData.h"
+#include "FormFieldDataMapping.h"
 
 namespace DocFileFormat
 {

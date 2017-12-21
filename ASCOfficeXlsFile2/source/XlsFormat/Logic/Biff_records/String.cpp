@@ -60,7 +60,9 @@ void String::readFields(CFRecord& record)
 		string = s;
 	}
 	else
+	{
 		record >> string;
+	}
 }
 
 } // namespace XLS

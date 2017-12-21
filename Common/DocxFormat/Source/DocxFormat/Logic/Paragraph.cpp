@@ -267,14 +267,17 @@ namespace OOX
 			sResult += _T(">");
 
 			if (m_oParagraphProperty)
-				sResult += m_oParagraphProperty->toXML();
-
-			for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
-				if ( m_arrItems[nIndex] )
+				sResult += m_oParagraphProperty->toXML();
+			}
+
+			for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+			{
+				if ( *it )
 				{
-					if (m_arrItems[nIndex]->getType() == OOX::et_w_pPr) continue;
-					sResult += m_arrItems[nIndex]->toXML();
+					if ( (*it)->getType() == OOX::et_w_pPr ) continue;
+					
+					sResult += (*it)->toXML();
 				}
 			}
 

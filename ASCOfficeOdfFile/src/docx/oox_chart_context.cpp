@@ -153,7 +153,7 @@ void oox_chart_context::serialize(std::wostream & strm)
 				}	
 				CP_XML_NODE(L"c:dispBlanksAs")
 				{
-					CP_XML_ATTR(L"val", L"zero");
+					CP_XML_ATTR(L"val", plot_area_.current_chart_->dispBlanksAs_);
 				}
 				CP_XML_NODE(L"c:showDLblsOverMax")
 				{

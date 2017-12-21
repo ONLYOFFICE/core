@@ -145,8 +145,15 @@ namespace OOX
 				writer.WriteString(_T("<dxfs"));
 				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
 				writer.WriteString(_T(">"));
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-					m_arrItems[i]->toXML(writer);
+
+				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+				{
+					if ( *it )
+					{
+						(*it)->toXML(writer);
+					}
+				}
+
 				writer.WriteString(_T("</dxfs>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)

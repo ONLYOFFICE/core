@@ -425,7 +425,7 @@ namespace NSBinPptxRW
 		int WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode);
 		int WriteHyperlink	(const std::wstring& strLink, const bool& bIsActionInit);		
 	
-		void EndPresentationRels (bool bIsCommentsAuthors = false, bool bIsNotesMaster = false, bool bIsVbaProject = false  );
+		void EndPresentationRels (bool bIsCommentsAuthors = false, bool bIsNotesMaster = false, bool bIsVbaProject = false, bool bIsJsaProject = false  );
 		int GetNextId ();
 		void CloseRels ();
 

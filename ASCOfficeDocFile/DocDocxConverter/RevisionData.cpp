@@ -40,19 +40,13 @@ namespace DocFileFormat
 		RELEASEOBJECT( Changes );
 	}
 
-	/*========================================================================================================*/
-
 	RevisionData::RevisionData():
 	Dttm(), Isbt(0), Type(NoRevision), Changes(NULL), RsidDel(0), RsidProp(0), Rsid(0)
 	{
 		this->Changes = new std::list<SinglePropertyModifier>();
 	}
 
-	/*========================================================================================================*/
-
-	/// Collects the revision data of a CHPX
-	RevisionData::RevisionData( CharacterPropertyExceptions* chpx ):
-	Dttm(), Isbt(0), Type(NoRevision), Changes(NULL), RsidDel(0), RsidProp(0), Rsid(0)
+	RevisionData::RevisionData( CharacterPropertyExceptions* chpx ) : Dttm(), Isbt(0), Type(NoRevision), Changes(NULL), RsidDel(0), RsidProp(0), Rsid(0)
 	{
 		bool collectRevisionData = true;
 		this->Changes = new std::list<SinglePropertyModifier>();

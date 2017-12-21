@@ -31,10 +31,10 @@
  */
 
 #include "oox_plot_area.h"
-#include <boost/foreach.hpp>
-#include <boost/functional.hpp>
+
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
+
 #include "../odf/style_text_properties.h"
 
 #include "oox_chart_shape.h"
@@ -90,7 +90,7 @@ void oox_plot_area::add_chart(int type)
 
 void oox_plot_area::add_axis(int type, odf_reader::chart::axis & content)
 {
-	oox_axis_content_ptr ax=oox_axis_content::create(type);
+	oox_axis_content_ptr ax = oox_axis_content::create(type);
 	ax->content_ = content;
 
 	axis_.push_back(ax);
@@ -98,21 +98,25 @@ void oox_plot_area::add_axis(int type, odf_reader::chart::axis & content)
 
 void oox_plot_area::reset_cross_axis()//обязательно после всех добавлений
 {
-	BOOST_FOREACH(oox_axis_content_ptr const & ax, axis_)
+	for (size_t i = 0; i < axis_.size(); i++)
 	{
-		BOOST_FOREACH(oox_chart_ptr const & ch, charts_)
+		for (size_t j = 0; j < charts_.size(); j++)
 		{
-			ch->add_axis(ax->get_Id());		
+			charts_[j]->add_axis(axis_[i]->get_Id());		
 		}
 	}
 	
-	BOOST_FOREACH(oox_axis_content_ptr const & a, axis_)
-	{
-		int curr_id = a->get_Id();
-		BOOST_FOREACH(oox_axis_content_ptr const & b, axis_)
-		{
-			if (b->get_Id()==curr_id)continue;
-			b->add_CrossedId(curr_id);
+	for (size_t i = 0; i < axis_.size(); i++)
+	{		
+		int curr_id = axis_[i]->get_Id();
+
+		if (curr_id < 1) continue;
+
+		for (size_t j = 0; j < axis_.size(); j++)
+		{	
+			if (axis_[j]->get_Id() == curr_id)continue;
+			
+			axis_[j]->add_CrossedId(curr_id);
 		}
 	}
 }
@@ -130,18 +134,18 @@ void oox_plot_area::oox_serialize(std::wostream & _Wostream)
 			//CP_XML_NODE(L"c:layout"){}
 			bool axisPresent = true;
 			
-			BOOST_FOREACH(oox_chart_ptr const & ch, charts_)
-			{
-				ch->oox_serialize(CP_XML_STREAM());
+			for (size_t i = 0; i < charts_.size(); i++)
+			{		
+				charts_[i]->oox_serialize(CP_XML_STREAM());
 
-				if (ch->type_ == CHART_TYPE_PIE || 
-					ch->type_ == CHART_TYPE_DOUGHNUT) axisPresent = false;
+				if (charts_[i]->type_ == CHART_TYPE_PIE || 
+					charts_[i]->type_ == CHART_TYPE_DOUGHNUT) axisPresent = false;
 			}
 			if (axisPresent)
 			{
-				BOOST_FOREACH(oox_axis_content_ptr const & a, axis_)
-				{
-					a->oox_serialize(CP_XML_STREAM());
+				for (size_t i = 0; i < axis_.size(); i++)
+				{		
+					axis_[i]->oox_serialize(CP_XML_STREAM());
 				}
 			}
 			shape.oox_serialize(CP_XML_STREAM());

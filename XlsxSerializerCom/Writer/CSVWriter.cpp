@@ -138,11 +138,11 @@ namespace CSVWriter
 		if (NULL != pWorkbook)
 		{
 			// Get active sheet
-			if (pWorkbook->m_oBookViews.IsInit() && 0 < pWorkbook->m_oBookViews->m_arrItems.size())
+			if (pWorkbook->m_oBookViews.IsInit() && !pWorkbook->m_oBookViews->m_arrItems.empty())
 			{
-				if (pWorkbook->m_oBookViews->m_arrItems[0]->m_oActiveTab.IsInit())
+				if (pWorkbook->m_oBookViews->m_arrItems.front()->m_oActiveTab.IsInit())
 				{
-					lActiveSheet = pWorkbook->m_oBookViews->m_arrItems[0]->m_oActiveTab->GetValue();
+					lActiveSheet = pWorkbook->m_oBookViews->m_arrItems.front()->m_oActiveTab->GetValue();
 					if (0 > lActiveSheet)
 						lActiveSheet = 0;
 				}
@@ -150,13 +150,16 @@ namespace CSVWriter
 
 			// Get active sheet rId (для конвертации в CSV нужно использовать name, т.к. это наш бинарник из js-скриптов и еще нет rId
 			// А для json-а нужно пользовать rId, т.к. при открытии они используются
-			if (pWorkbook->m_oSheets.IsInit() && 0 <= pWorkbook->m_oSheets->m_arrItems.size())
+			if (pWorkbook->m_oSheets.IsInit() && !pWorkbook->m_oSheets->m_arrItems.empty())
 			{
-				OOX::Spreadsheet::CSheet *pSheet;
-				if (lActiveSheet <= pWorkbook->m_oSheets->m_arrItems.size())
-					pSheet = pWorkbook->m_oSheets->m_arrItems[lActiveSheet];
+				std::map<int, OOX::Spreadsheet::CSheet*>::iterator pFind = pWorkbook->m_oSheets->mapSheets.find(lActiveSheet);
+				
+				OOX::Spreadsheet::CSheet *pSheet = NULL;
+				
+				if (pFind != pWorkbook->m_oSheets->mapSheets.end())
+					pSheet = pFind->second;
 				else
-					pSheet = pWorkbook->m_oSheets->m_arrItems[0];
+					pSheet = pWorkbook->m_oSheets->m_arrItems.front();
 
 				sSheetRId = bJSON ? pSheet->m_oRid->GetValue() : pSheet->m_oName.get2();
 			}
@@ -180,10 +183,11 @@ namespace CSVWriter
 					if (bJSON)
                         CSVWriter::WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sBkt, nCodePage);
 
-					INT nRowCurrent = 1;
-					for (INT i = 0; i < pWorksheet->m_oSheetData->m_arrItems.size(); ++i)
+					INT nRowCurrent = 1, i = 0;
+					for (std::list<OOX::Spreadsheet::CRow*>::iterator	it = pWorksheet->m_oSheetData->m_arrItems.begin(); 
+																		it != pWorksheet->m_oSheetData->m_arrItems.end(); it++, i++)
 					{
-						OOX::Spreadsheet::CRow *pRow = static_cast<OOX::Spreadsheet::CRow *>(pWorksheet->m_oSheetData->m_arrItems[i]);
+						OOX::Spreadsheet::CRow *pRow = *it;
 						INT nRow = pRow->m_oR.IsInit() ? pRow->m_oR->GetValue() : 0 == i ? nRowCurrent : nRowCurrent + 1;
 
 						if (bJSON)
@@ -198,13 +202,15 @@ namespace CSVWriter
 							}
 						}
 
-						INT nColCurrent = 1;
+						INT nColCurrent = 1, j = 0;
                         bool bIsWriteCell = false; // Нужно только для записи JSON-а
-						for (INT j = 0; j < pRow->m_arrItems.size(); ++j)
+
+						for (std::list<OOX::Spreadsheet::CCell*>::iterator	jt = pRow->m_arrItems.begin(); 
+																			jt != pRow->m_arrItems.end(); jt++, j++)
 						{
 							INT nRowTmp = 0;
 							INT nCol = 0;
-							OOX::Spreadsheet::CCell *pCell = static_cast<OOX::Spreadsheet::CCell *>(pRow->m_arrItems[j]);
+							OOX::Spreadsheet::CCell *pCell = *jt;
 							if (pCell->isInitRef())
 							{
 								pCell->getRowCol(nRowTmp, nCol);
@@ -236,9 +242,11 @@ namespace CSVWriter
 								if (pCell->m_oType.IsInit() && SimpleTypes::Spreadsheet::celltypeNumber != pCell->m_oType->GetValue())
 								{
 									int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
-									if (0 <= nValue && nValue < pSharedStrings->m_arrItems.size())
+
+									std::unordered_map<int, OOX::Spreadsheet::CSi*>::iterator pFind = pSharedStrings->m_mapItems.find(nValue);
+									if (pFind != pSharedStrings->m_mapItems.end())
 									{
-										OOX::Spreadsheet::CSi *pSi = static_cast<OOX::Spreadsheet::CSi *>(pSharedStrings->m_arrItems[nValue]);
+										OOX::Spreadsheet::CSi *pSi = pFind->second;
 										if(NULL != pSi)
 										{
 											sCellValue = pSi->ToString();

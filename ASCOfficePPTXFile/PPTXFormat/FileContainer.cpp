@@ -103,11 +103,9 @@ namespace PPTX
 						pSrcFile->type() == OOX::Presentation::FileTypes::NotesSlide) ? true : false;
 		}
 
-		size_t nCount = rels.m_arrRelations.size();
-
-        for (size_t i = 0; i < nCount; ++i)
-		{
-			OOX::Rels::CRelationShip* pRelation = rels.m_arrRelations[i];
+		for (std::map<std::wstring, OOX::Rels::CRelationShip*>::const_iterator it = rels.m_mapRelations.begin(); it != rels.m_mapRelations.end(); it++)
+		{       
+			OOX::Rels::CRelationShip* pRelation = it->second;
 
  			OOX::CPath normPath = CorrectPathRels(path, pRelation);
 

@@ -36,6 +36,7 @@
 #include "../CommonInclude.h"
 
 #include "Si.h"
+#include <unordered_map>
 
 namespace OOX
 {
@@ -57,8 +58,6 @@ namespace OOX
 			{
 				ClearItems();
 			}
-		public:
-
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -89,6 +88,8 @@ namespace OOX
 				{
 					ReadAttributes( oReader );
 
+					m_nCount = 0;
+
 					if ( !oReader.IsEmptyNode() )
 					{
 						int nSharedStringsDepth = oReader.GetDepth();
@@ -96,13 +97,11 @@ namespace OOX
 						{
 							sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-							WritingElement *pItem = NULL;
-
 							if ( _T("si") == sName )
-								pItem = new CSi( oReader );
-
-							if ( pItem )
-								m_arrItems.push_back( pItem );
+							{
+								CSi* pItem = new CSi( oReader );
+								m_mapItems.insert(std::make_pair( m_nCount++, pItem ));
+							}
 						}
 					}
 				}		
@@ -115,8 +114,10 @@ namespace OOX
 				WritingStringNullableAttrInt(L"uniqueCount", m_oUniqueCount, m_oUniqueCount->GetValue());
 				writer.WriteString(_T(">"));
 
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-					m_arrItems[i]->toXML(writer);
+				for(auto it = m_mapItems.begin(); it != m_mapItems.end(); it++)
+				{
+					(it->second)->toXML(writer);
+				}
 
 				writer.WriteString(_T("</sst>"));
                 std::wstring sPath = oPath.GetPath();
@@ -142,8 +143,8 @@ namespace OOX
 			}
 			const int AddSi(CSi* pSi)
 			{
-				int nIndex = (int)m_arrItems.size();
-				m_arrItems.push_back( pSi );
+				int nIndex = m_nCount++;
+				m_mapItems.insert(std::make_pair(nIndex, pSi) );
 				return nIndex;
 			}
 		private:
@@ -151,30 +152,28 @@ namespace OOX
 
 			void ClearItems()
 			{
-				for (size_t nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				m_nCount = 0;
+				for (auto it = m_mapItems.begin(); it != m_mapItems.end(); it++ )
 				{
-					if ( m_arrItems[nIndex] )delete m_arrItems[nIndex];
+					if ( it->second )delete (it->second);
 
-					m_arrItems[nIndex] = NULL;
+					it->second = NULL;
 				}
-				m_arrItems.clear();
+				m_mapItems.clear();
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("uniqueCount"),      m_oUniqueCount )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, _T("count"),		m_oCount )
+					WritingElement_ReadAttributes_Read_if ( oReader, _T("uniqueCount"),	m_oUniqueCount )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oUniqueCount;
-
-			std::vector<WritingElement *>         m_arrItems;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oUniqueCount;
+			std::unordered_map<int, CSi*>					m_mapItems;
+			int												m_nCount;
 
 		};
 	} //Spreadsheet

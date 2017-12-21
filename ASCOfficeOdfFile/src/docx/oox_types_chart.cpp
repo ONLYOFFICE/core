@@ -63,7 +63,7 @@ void oox_chart::set_content_series(odf_reader::chart::series & content)
 }
 void oox_chart::set_values_series(int ind, std::vector<std::wstring> & val)
 {
-	if (val.size()<1)return;
+	if (val.empty())return;
 
 	oox_series_ptr & current_ptr = series_.back();
 	current_ptr->setValues (ind, val);
@@ -74,9 +74,11 @@ void oox_chart::set_properties(std::vector<odf_reader::_property> g)
 
 	_CP_OPT(bool) bStacked;
 	_CP_OPT(bool) bPercent;
+	_CP_OPT(int) iGapWidth;
 
-	odf_reader::GetProperty(g, L"stacked",bStacked);
-	odf_reader::GetProperty(g, L"percentage",bPercent);
+	odf_reader::GetProperty(g, L"stacked", bStacked);
+	odf_reader::GetProperty(g, L"percentage", bPercent);
+	odf_reader::GetProperty(g, L"gap-width", iGapWidth);
 
 	if ( (bStacked) && (bStacked.get()))
 	{
@@ -86,6 +88,10 @@ void oox_chart::set_properties(std::vector<odf_reader::_property> g)
 	if ( (bPercent) && (bPercent.get()))
 	{
 		grouping_ = L"percentStacked";	
+	}
+	if (iGapWidth)
+	{
+		dispBlanksAs_ = L"gap";
 	}
 	//solid-type - трехмерные
 }
@@ -128,17 +134,15 @@ void oox_bar_chart::set_properties(std::vector<odf_reader::_property> g)
 {
 	oox_chart::set_properties(g);
 
-	odf_reader::GetProperty(g, L"vertical",bVertical);
-	odf_reader::GetProperty(g, L"connect-bars",bConnectBars);
+	odf_reader::GetProperty(g, L"vertical", bVertical);
+	odf_reader::GetProperty(g, L"connect-bars", bConnectBars);
 	
-	odf_reader::GetProperty(g, L"gap-width",iGapWidth);
-	odf_reader::GetProperty(g, L"overlap",iOverlap);
+	odf_reader::GetProperty(g, L"gap-width", iGapWidth);
+	odf_reader::GetProperty(g, L"overlap", iOverlap);
 }
 
 void oox_bar_chart::set_additional_properties(std::vector<odf_reader::_property> g)
 {
-	odf_reader::GetProperty(g, L"gap-width",iGapWidth);
-	odf_reader::GetProperty(g, L"overlap",iOverlap);
 }
 
 void oox_bar_chart::oox_serialize(std::wostream & _Wostream)
@@ -169,13 +173,13 @@ void oox_bar_chart::oox_serialize(std::wostream & _Wostream)
 			}
 			CP_XML_NODE(L"c:overlap")//-100 to 100
 			{
-				CP_XML_ATTR(L"val",Overlap); 
+				CP_XML_ATTR(L"val", Overlap); 
 			}
 			if (iGapWidth)
 			{
 				CP_XML_NODE(L"c:gapWidth")
 				{
-					CP_XML_ATTR(L"val",iGapWidth.get()); 
+					CP_XML_ATTR(L"val", iGapWidth.get()); 
 				}
 			}
 			CP_XML_NODE(L"c:varyColors")

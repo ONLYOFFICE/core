@@ -82,11 +82,11 @@ namespace OOX
 
 				std::wstring sResult = _T("<") + sNodeName + _T(">");
 
-				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					if ( m_arrItems[nIndex])
+					if ( *it )
 					{
-						sResult += m_arrItems[nIndex]->toXML();
+						sResult += (*it)->toXML();
 					}
 				}
 
@@ -102,7 +102,7 @@ namespace OOX
 		private:
 			EElementType	eType;
 		public:
-			std::wstring			sNodeName;
+			std::wstring	sNodeName;
 
 			std::wstring GetMathNodeName(const EElementType & enumType)  const
 			{//todooo вытащить в одно место - пересекается с MathBottomNodes

@@ -70,12 +70,10 @@ namespace OOX
 		}
 		virtual ~CHdrFtr()
 		{
-			for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+			for ( std::list<OOX::WritingElement*>::iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++ )
 			{
-				if ( m_arrItems[nIndex] )
-					delete m_arrItems[nIndex];
-
-				m_arrItems[nIndex] = NULL;
+				if ( *it) delete (*it);
+				*it = NULL;
 			}
 
 			m_arrItems.clear();
@@ -321,11 +319,11 @@ mc:Ignorable=\"w14 wp14\">");
 			else
 				return;
 
-			for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+			for (std::list<OOX::WritingElement*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 			{
-				if ( m_arrItems[nIndex] )
+				if ( *it )
 				{
-					sXml += m_arrItems[nIndex]->toXML();
+					sXml += (*it)->toXML();
 				}
 			}
 
@@ -373,9 +371,8 @@ mc:Ignorable=\"w14 wp14\">");
 		CPath							m_oReadPath;
 		OOX::EElementType				m_eType;
 
-		// Childs
-		std::vector<WritingElement* >	m_arrItems;
-		std::vector<std::wstring>			m_arrShapeTypes;
+		std::list<WritingElement* >		m_arrItems;
+		std::vector<std::wstring>		m_arrShapeTypes;
 	};
 
 } // namespace OOX

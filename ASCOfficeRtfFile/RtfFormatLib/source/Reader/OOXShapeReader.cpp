@@ -290,15 +290,15 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 {
 	if (m_arrElement == NULL) return false;
 
-	for (size_t i = 0; i < m_arrElement->m_arrItems.size(); i++ )
+	for (std::list<OOX::WritingElement*>::iterator it = m_arrElement->m_arrItems.begin(); it != m_arrElement->m_arrItems.end(); it++)
 	{
-		if (m_arrElement->m_arrItems[i] == NULL) continue;
+		if ((*it) == NULL) continue;
 
-		switch(m_arrElement->m_arrItems[i]->getType())
+		switch((*it)->getType())
 		{
 			case OOX::et_v_fill:
 			{
-				OOX::Vml::CFill* fill = dynamic_cast<OOX::Vml::CFill*>(m_arrElement->m_arrItems[i]); 
+				OOX::Vml::CFill* fill = dynamic_cast<OOX::Vml::CFill*>(*it); 
 				if (!fill) break;
 				
 				std::wstring srId = fill->m_sId.IsInit() ? fill->m_sId.get2() : L"" ;
@@ -374,7 +374,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 			}break;
 			case OOX::et_v_stroke:
 			{
-				OOX::Vml::CStroke* stroke = dynamic_cast<OOX::Vml::CStroke*>(m_arrElement->m_arrItems[i]); 
+				OOX::Vml::CStroke* stroke = dynamic_cast<OOX::Vml::CStroke*>(*it); 
 				if (!stroke) break;
 				pOutput->m_nLineDashing = stroke->m_oDahsStyle.GetValue(); //совпадают значения
 
@@ -383,7 +383,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 			}break;
 			case OOX::et_v_imagedata:
 			{
-				OOX::Vml::CImageData* image_data = dynamic_cast<OOX::Vml::CImageData*>(m_arrElement->m_arrItems[i]);
+				OOX::Vml::CImageData* image_data = dynamic_cast<OOX::Vml::CImageData*>(*it);
 				if (!image_data) break;
 
 				std::wstring srId = image_data->m_oId.IsInit() ? image_data->m_oId.get2() : L"" ;
@@ -462,7 +462,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 			}break;
 			case OOX::et_wd_wrap:
 			{
-				OOX::VmlWord::CWrap *wrap = dynamic_cast<OOX::VmlWord::CWrap*>(m_arrElement->m_arrItems[i]);
+				OOX::VmlWord::CWrap *wrap = dynamic_cast<OOX::VmlWord::CWrap*>(*it);
 
 				if (wrap->m_oType.IsInit() && pOutput->m_nZOrderRelative == PROP_DEF)
 				{
@@ -488,15 +488,17 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 			}break;
 			case OOX::et_v_textbox:
 			{
-				OOX::Vml::CTextbox *text_box= dynamic_cast<OOX::Vml::CTextbox*>(m_arrElement->m_arrItems[i]);
+				OOX::Vml::CTextbox *text_box= dynamic_cast<OOX::Vml::CTextbox*>(*it);
 
 				if ((text_box) && (text_box->m_oTxtbxContent.IsInit()))
 				{
 					OOXTextItemReader oTextItemReader;
 					
 					for (size_t i = 0; i < text_box->m_oTxtbxContent->m_arrItems.size(); i++)
+					for (std::list<OOX::WritingElement*>::iterator	it = text_box->m_oTxtbxContent->m_arrItems.begin(); 
+																	it != text_box->m_oTxtbxContent->m_arrItems.end(); it++)
 					{
-						oTextItemReader.Parse( text_box->m_oTxtbxContent->m_arrItems[i], oParam );
+						oTextItemReader.Parse( *it, oParam );
 					}
 
 					if( oTextItemReader.m_oTextItems->GetCount() > 0 )
@@ -505,7 +507,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 			}break;
 			case OOX::et_v_textpath:
 			{
-				OOX::Vml::CTextPath *text_path= dynamic_cast<OOX::Vml::CTextPath*>(m_arrElement->m_arrItems[i]);
+				OOX::Vml::CTextPath *text_path= dynamic_cast<OOX::Vml::CTextPath*>(*it);
 				if (text_path)
 				{
 					pOutput->m_bGtext = 1;
@@ -531,7 +533,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 			}break;
 			case OOX::et_o_signatureline:
 			{
-				OOX::VmlOffice::CSignatureLine *signature = dynamic_cast<OOX::VmlOffice::CSignatureLine*>(m_arrElement->m_arrItems[i]);
+				OOX::VmlOffice::CSignatureLine *signature = dynamic_cast<OOX::VmlOffice::CSignatureLine*>(*it);
 				if ( signature )
 				{
 					if (signature->m_oIsSignatureLine.IsInit() && signature->m_oIsSignatureLine->ToBool())
@@ -1514,31 +1516,31 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 			pOutput->m_nGroupBottom =(pOutput->m_nGroupTop != PROP_DEF  ? pOutput->m_nGroupTop : 0)		+ m_vmlGroup->m_oCoordSize->GetY();
 		}
 
-		for (size_t i = 0; i < m_vmlGroup->m_arrItems.size() ; i++ )
+		for (std::list<OOX::WritingElement*>::iterator	it = m_vmlGroup->m_arrItems.begin(); it != m_vmlGroup->m_arrItems.end(); it++)
 		{
-			if (m_vmlGroup->m_arrItems[i] == NULL) continue;
+			if (*it == NULL) continue;
 
-			if (m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_group)
+			if ((*it)->getType() == OOX::et_v_group)
 			{
 				RtfShapePtr pNewShape( new RtfShape() );
 				
-				OOXShapeGroupReader oShapeReader(dynamic_cast<OOX::Vml::CGroup*>(m_vmlGroup->m_arrItems[i]));
+				OOXShapeGroupReader oShapeReader(dynamic_cast<OOX::Vml::CGroup*>(*it));
 				
 				if( true == oShapeReader.Parse( oParam, pNewShape ) )
 					 pOutput->AddItem( pNewShape );
 			}
-			else if (	m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_arc		||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_line		||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_oval		||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_shape		||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_rect		||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_roundrect ||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_polyline	||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_shapetype)
+			else if (	(*it)->getType() == OOX::et_v_arc		||
+						(*it)->getType() == OOX::et_v_line		||
+						(*it)->getType() == OOX::et_v_oval		||
+						(*it)->getType() == OOX::et_v_shape		||
+						(*it)->getType() == OOX::et_v_rect		||
+						(*it)->getType() == OOX::et_v_roundrect ||
+						(*it)->getType() == OOX::et_v_polyline	||
+						(*it)->getType() == OOX::et_v_shapetype)
 			{
 				RtfShapePtr pNewShape ( new RtfShape() );//set type .. .todooo
 				
-				OOXShapeReader oShapeReader(dynamic_cast<OOX::Vml::CVmlCommonElements*>(m_vmlGroup->m_arrItems[i]));
+				OOXShapeReader oShapeReader(dynamic_cast<OOX::Vml::CVmlCommonElements*>(*it));
 				
 				pNewShape->m_bInGroup = true;
 				if( true == oShapeReader.Parse( oParam, pNewShape ) )

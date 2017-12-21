@@ -49,8 +49,13 @@ namespace OOX
 				{
 					CRun altRun(oReader);
 					
-					for (unsigned int i = 0; i < altRun.m_arrItems.size(); ++i)
-						m_arrChoiceItems.push_back(altRun.m_arrItems[i]);
+					for ( CRun::ElemArray::iterator it = altRun.m_arrItems.begin(); it != altRun.m_arrItems.end(); it++)
+					{
+						if ( *it )
+						{			
+							m_arrChoiceItems.push_back(*it);
+						}
+					}
 					
 					//без RemoveAll они очистятся вместе с altRun
 					altRun.m_arrItems.clear();
@@ -59,8 +64,13 @@ namespace OOX
 				{
 					CRun altRun(oReader);
 					
-					for (unsigned int i = 0; i < altRun.m_arrItems.size(); ++i)
-						m_arrFallbackItems.push_back(altRun.m_arrItems[i]);
+					for ( CRun::ElemArray::const_iterator it = altRun.m_arrItems.begin(); it != altRun.m_arrItems.end(); it++)
+					{
+						if ( *it )
+						{			
+							m_arrFallbackItems.push_back(*it);
+						}
+					}
 					
 					//без RemoveAll они очистятся вместе с altRun
 					altRun.m_arrItems.clear();

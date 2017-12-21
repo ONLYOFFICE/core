@@ -159,9 +159,10 @@ namespace OOX
 									{
 										if (!pExt->m_arrConditionalFormatting[j]) continue;
 
-										for (size_t k = 0 ; k < pExt->m_arrConditionalFormatting[j]->m_arrItems.size(); k++)
+										for ( std::list<CConditionalFormattingRule*>::iterator	it = pExt->m_arrConditionalFormatting[j]->m_arrItems.begin(); 
+																								it != pExt->m_arrConditionalFormatting[j]->m_arrItems.end(); it++)
 										{
-											OOX::Spreadsheet::CConditionalFormattingRule *rule = pExt->m_arrConditionalFormatting[j]->m_arrItems[k];
+											OOX::Spreadsheet::CConditionalFormattingRule *rule = *it;
 											if (!rule) continue;
 
 											if (rule->m_oDxf.IsInit())
@@ -225,7 +226,7 @@ namespace OOX
 					m_pWorkbook->Add(pThemeFile);
 				}
 		//SharedStrings
-                if(NULL != m_pSharedStrings && m_pSharedStrings->m_arrItems.size() > 0)
+                if(NULL != m_pSharedStrings && m_pSharedStrings->m_nCount > 0)
                 {
                     smart_ptr<OOX::File> pSharedStringsFile(m_pSharedStrings);
                     bDeleteSharedStrings = false;
@@ -393,9 +394,12 @@ namespace OOX
 					//Fonts
 					if(false == m_pStyles->m_oFonts.IsInit())
 						m_pStyles->m_oFonts.Init();
-					if(m_pStyles->m_oFonts->m_arrItems.size() == 0)
+					
+					if(m_pStyles->m_oFonts->m_arrItems.empty())
 						m_pStyles->m_oFonts->AddFont(new OOX::Spreadsheet::CFont());
-					OOX::Spreadsheet::CFont* pFont = m_pStyles->m_oFonts->m_arrItems[0];
+					
+					OOX::Spreadsheet::CFont* pFont = m_pStyles->m_oFonts->m_arrItems.front();
+					
 					if(false == pFont->m_oRFont.IsInit())
 					{
 						pFont->m_oRFont.Init();
@@ -416,17 +420,19 @@ namespace OOX
 					//Fills
 					if(false == m_pStyles->m_oFills.IsInit())
 						m_pStyles->m_oFills.Init();
-					if(m_pStyles->m_oFills->m_arrItems.size() == 0)
+					
+					if(m_pStyles->m_oFills->m_arrItems.empty())
 						m_pStyles->m_oFills->m_arrItems.push_back(new OOX::Spreadsheet::CFill());
-						OOX::Spreadsheet::CFill* pFill = m_pStyles->m_oFills->m_arrItems[0];
-						if(false == pFill->m_oGradientFill.IsInit())
-						{
-							if(false == pFill->m_oPatternFill.IsInit())
-								pFill->m_oPatternFill.Init();
-							if(false == pFill->m_oPatternFill->m_oPatternType.IsInit())
-								pFill->m_oPatternFill->m_oPatternType.Init();
-							pFill->m_oPatternFill->m_oPatternType->SetValue(SimpleTypes::Spreadsheet::patterntypeNone);
-						}
+
+					OOX::Spreadsheet::CFill* pFill = m_pStyles->m_oFills->m_arrItems.front();
+					if(false == pFill->m_oGradientFill.IsInit())
+					{
+						if(false == pFill->m_oPatternFill.IsInit())
+							pFill->m_oPatternFill.Init();
+						if(false == pFill->m_oPatternFill->m_oPatternType.IsInit())
+							pFill->m_oPatternFill->m_oPatternType.Init();
+						pFill->m_oPatternFill->m_oPatternType->SetValue(SimpleTypes::Spreadsheet::patterntypeNone);
+					}
 					if(false == m_pStyles->m_oBorders.IsInit())
 						m_pStyles->m_oBorders.Init();
 					if(m_pStyles->m_oBorders->m_arrItems.size() == 0)
@@ -435,10 +441,11 @@ namespace OOX
 					//Xfs
 					if(false == m_pStyles->m_oCellXfs.IsInit())
 						m_pStyles->m_oCellXfs.Init();
-					if(m_pStyles->m_oCellXfs->m_arrItems.size() == 0)
+					
+					if(m_pStyles->m_oCellXfs->m_arrItems.empty())
 						m_pStyles->m_oCellXfs->m_arrItems.push_back(new OOX::Spreadsheet::CXfs());
 
-					OOX::Spreadsheet::CXfs* pXfs = m_pStyles->m_oCellXfs->m_arrItems[0];
+					OOX::Spreadsheet::CXfs* pXfs = m_pStyles->m_oCellXfs->m_arrItems.front();
 					if(false == pXfs->m_oBorderId.IsInit())
 					{
 						pXfs->m_oBorderId.Init();
@@ -472,14 +479,19 @@ namespace OOX
 			{
 				if(pWorksheet->m_oSheetData.IsInit())
 				{
-					std::vector<OOX::Spreadsheet::CRow*>& aRows = pWorksheet->m_oSheetData->m_arrItems;
-					for(size_t i = 0, length = aRows.size(); i < length; ++i)
+					std::list<OOX::Spreadsheet::CRow*>& aRows = pWorksheet->m_oSheetData->m_arrItems;
+					
+					for(std::list<OOX::Spreadsheet::CRow*>::iterator it = aRows.begin(); it != aRows.end(); it++)
 					{
-						OOX::Spreadsheet::CRow* pRow = aRows[i];
-						std::vector<OOX::Spreadsheet::CCell*> & aCells = pRow->m_arrItems;
-						for(size_t j = 0, length2 = aCells.size(); j < length2; ++j)
+						OOX::Spreadsheet::CRow* pRow = *it;
+						
+						std::list<OOX::Spreadsheet::CCell*> & aCells = pRow->m_arrItems;
+						
+						for(std::list<OOX::Spreadsheet::CCell*>::iterator it = aCells.begin(); it != aCells.end(); it++)
 						{
-							OOX::Spreadsheet::CCell* pCell = aCells[j];
+							OOX::Spreadsheet::CCell* pCell = *it;
+							if (!pCell)continue;
+
 							if(pCell->m_oType.IsInit())
 							{
 								if(SimpleTypes::Spreadsheet::celltypeInlineStr == pCell->m_oType->GetValue())
@@ -487,6 +499,7 @@ namespace OOX
 									CSharedStrings* pSharedStrings = GetSharedStrings();
 									if(NULL == pSharedStrings)
 										pSharedStrings = CreateSharedStrings();
+									
 									OOX::Spreadsheet::CSi* pSi = pCell->m_oRichText.GetPointerEmptyNullable();
 									if(NULL != pSi)
 									{

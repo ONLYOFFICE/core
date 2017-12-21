@@ -56,37 +56,37 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(_T("<patternFill"));
+				writer.WriteString(L"<patternFill");
 				WritingStringNullableAttrString(L"patternType", m_oPatternType, m_oPatternType->ToString());
 				if(m_oBgColor.IsInit() || m_oFgColor.IsInit())
 				{
-					writer.WriteString(_T(">"));
+					writer.WriteString(L">");
 					if(m_oBgColor.IsInit() && m_oFgColor.IsInit())
 					{
-						m_oFgColor->toXML2(writer, _T("fgColor"));
-						m_oBgColor->toXML2(writer, _T("bgColor"));
+						m_oFgColor->toXML2(writer, L"fgColor");
+						m_oBgColor->toXML2(writer, L"bgColor");
 					}
 					else if(m_oFgColor.IsInit())
 					{
-						m_oFgColor->toXML2(writer, _T("fgColor"));
-						m_oFgColor->toXML2(writer, _T("bgColor"));
+						m_oFgColor->toXML2(writer, L"fgColor");
+						m_oFgColor->toXML2(writer, L"bgColor");
 					}
 					else if(m_oBgColor.IsInit())
 					{
-						m_oBgColor->toXML2(writer, _T("fgColor"));
-						m_oBgColor->toXML2(writer, _T("bgColor"));
+						m_oBgColor->toXML2(writer, L"fgColor");
+						m_oBgColor->toXML2(writer, L"bgColor");
 					}
 					
-					writer.WriteString(_T("</patternFill>"));
+					writer.WriteString(L"</patternFill>");
 				}
 				else
-					writer.WriteString(_T("/>"));
+					writer.WriteString(L"/>");
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -98,9 +98,9 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("bgColor") == sName )
+					if ( L"bgColor" == sName )
 						m_oBgColor = oReader;
-					else if ( _T("fgColor") == sName )
+					else if ( L"fgColor" == sName )
 						m_oFgColor = oReader;
 				}
 			}
@@ -113,12 +113,9 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("patternType"),      m_oPatternType )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, L"patternType", m_oPatternType )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CPatternType<>>	m_oPatternType;
@@ -140,12 +137,12 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -157,7 +154,7 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("color") == sName )
+					if ( L"color" == sName )
 						m_oColor = oReader;
 				}
 			}
@@ -170,12 +167,9 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("position"),      m_oPosition )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, L"position", m_oPosition )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CDouble>		m_oPosition;
@@ -196,7 +190,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
@@ -213,7 +207,7 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("stop") == sName )
+					if ( L"stop" == sName )
 						m_arrItems.push_back( new CGradientStop( oReader ));
 				}
 			}
@@ -226,17 +220,14 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("bottom"),      m_oBottom )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("degree"),      m_oDegree )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("left"),      m_oLeft )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("right"),      m_oRight )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("top"),      m_oTop )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("type"),      m_oType )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"bottom",	m_oBottom )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"degree",	m_oDegree )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"left",	m_oLeft )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"right",	m_oRight )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"top",	m_oTop )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"type",	m_oType )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CDouble>		m_oBottom;
@@ -261,14 +252,14 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(_T("<fill>"));
+				writer.WriteString(L"<fill>");
 				if(m_oPatternFill.IsInit())
 					m_oPatternFill->toXML(writer);
-				writer.WriteString(_T("</fill>"));
+				writer.WriteString(L"</fill>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -282,9 +273,9 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("gradientFill") == sName )
+					if ( L"gradientFill" == sName )
 						m_oGradientFill = oReader;
-					else if ( _T("patternFill") == sName )
+					else if ( L"patternFill" == sName )
 						m_oPatternFill = oReader;
 				}
 			}
@@ -317,16 +308,23 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(_T("<fills"));
+				writer.WriteString(L"<fills");
 				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
-				writer.WriteString(_T(">"));
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-					m_arrItems[i]->toXML(writer);
-				writer.WriteString(_T("</fills>"));
+				writer.WriteString(L">");
+
+				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+				{
+					if ( *it )
+					{
+						(*it)->toXML(writer);
+					}
+				}
+				
+				writer.WriteString(L"</fills>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -335,13 +333,19 @@ namespace OOX
 				if ( oReader.IsEmptyNode() )
 					return;
 
+				int index = 0;
+
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("fill") == sName )
-						m_arrItems.push_back( new CFill( oReader ));
+					if ( L"fill" == sName )
+					{
+						CFill* pFill = new CFill( oReader );
+						m_arrItems.push_back( pFill );
+						m_mapFills.insert(std::make_pair(index++, pFill));
+					}
 				}
 			}
 
@@ -353,15 +357,13 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, L"count", m_oCount )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
+			std::map<int, CFill*>								m_mapFills;
 		};
 	} //Spreadsheet
 } // namespace OOX

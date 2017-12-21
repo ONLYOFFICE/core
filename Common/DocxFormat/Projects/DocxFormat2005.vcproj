@@ -47,7 +47,7 @@
 				PreprocessorDefinitions="USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				ProgramDataBaseFileName="$(IntDir)\DocxFormat.pdb"
 				WarningLevel="3"
 				DebugInformationFormat="4"
@@ -1439,15 +1439,7 @@
 				RelativePath="..\Source\XlsxFormat\FileFactory_Spreadsheet.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalOptions="/bigobj"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|x64"
+					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2068,10 +2060,6 @@
 		</File>
 		<File
 			RelativePath="..\Source\DocxFormat\WritingElement.h"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\DocxFormat\WritingVector.h"
 			>
 		</File>
 	</Files>

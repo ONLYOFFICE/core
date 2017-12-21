@@ -257,11 +257,11 @@ namespace OOX
 		{
 				std::wstring sResult = _T("<w:sdtContent>");
 
-				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
 				{
-					if ( m_arrItems[nIndex] )
+					if ( *it )
 					{
-						sResult += m_arrItems[nIndex]->toXML();
+						sResult += (*it)->toXML();
 					}
 				}
 

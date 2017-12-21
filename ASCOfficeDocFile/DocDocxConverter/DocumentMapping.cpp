@@ -559,7 +559,7 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteString(elem.GetXMLString());
 			}
 			else if (TextMark::FieldBeginMark == code)
-			{
+			{//todooo в отдельный mapping
 				int cpFieldStart = initialCp + i;
 				int cpFieldEnd = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::FieldEndMark );
 				
@@ -599,20 +599,38 @@ namespace DocFileFormat
 			
 				if ( bFORM )
 				{
-                    m_pXmlWriter->WriteNodeBegin( L"w:fldChar" , true );
+					std::wstring FORMTEXT		( L" FORMTEXT" );
+					std::wstring FORMCHECKBOX	( L" FORMCHECKBOX" );
+					std::wstring FORMDROPDOWN	( L" FORMDROPDOWN" );
+					
+					m_pXmlWriter->WriteNodeBegin( L"w:fldChar" , true );
                     m_pXmlWriter->WriteAttribute( L"w:fldCharType" , L"begin" );
                     m_pXmlWriter->WriteNodeEnd( L"", true, false );
 
-					int cpPic = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::Picture );
+					bool bFORMTEXT		= search( f.begin(), f.end(), FORMTEXT.begin(),		FORMTEXT.end())	!= f.end();
+					bool bFORMCHECKBOX	= search( f.begin(), f.end(), FORMCHECKBOX.begin(),	FORMCHECKBOX.end())	!= f.end();
+					bool bFORMDROPDOWN	= search( f.begin(), f.end(), FORMDROPDOWN.begin(),	FORMDROPDOWN.end())	!= f.end();
 
-					/*if (cpPic < cpFieldEnd)
+					if (bFORMTEXT || bFORMCHECKBOX || bFORMDROPDOWN)
 					{
-					int fcPic = _doc.PieceTable.FileCharacterPositions[cpPic];
-					CharacterPropertyExceptions chpxPic = _doc.GetCharacterPropertyExceptions(fcPic, fcPic + 1)[0];
-					NilPicfAndBinData npbd = new NilPicfAndBinData(chpxPic, _doc.DataStream);
-					FormFieldData ffdata = new FormFieldData(npbd.binData);
-					ffdata.Convert(new FormFieldDataMapping(m_pXmlWriter));
-					}*/
+						int cpPic = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::Picture );
+						if (cpPic < cpFieldEnd)
+						{
+							int fcPic = m_document->FindFileCharPos( cpPic );
+							std::list<CharacterPropertyExceptions*>* chpxs	= m_document->GetCharacterPropertyExceptions(fcPic, fcPic + 1); 
+
+							if (chpxs)
+							{
+								CharacterPropertyExceptions* chpxSep = chpxs->front();
+								
+								FormFieldData ffdata (2, chpxSep, m_document->DataStream, false);
+								FormFieldDataMapping data_mapping(m_pXmlWriter, m_context, _caller);
+								ffdata.Convert(&data_mapping);
+								
+								RELEASEOBJECT( chpxs );
+							}
+						}
+					}
 
                     m_pXmlWriter->WriteNodeEnd( L"w:fldChar" );
 
@@ -809,6 +827,13 @@ namespace DocFileFormat
 			{
 				if (_fldCharCounter > 0)
 				{
+					if (_writeInstrText == true && !text.empty())
+					{
+						writeTextElement(text, textType);
+						text.clear();
+					}
+					_writeInstrText = false;
+					
                     XMLTools::XMLElement elem( L"w:fldChar" );
                     elem.AppendAttribute( L"w:fldCharType", L"end" );
 
@@ -1257,20 +1282,20 @@ namespace DocFileFormat
 				{
 				case sprmTDefTable:
 				case sprmOldTDefTable:
-					{
-						unsigned char itcMac = iter->Arguments[0];
+				{
+					unsigned char itcMac = iter->Arguments[0];
 
 						while(boundaries.size() < itcMac + 1)
 							boundaries.push_back(-0x7fff);
 
 						short boundary0 = -0x7fff;
 						for (unsigned char i = 0; i < itcMac; i++)
-						{
-							short boundary1 = FormatUtils::BytesToInt16( iter->Arguments, 1 + ( i * 2 ), iter->argumentsSize );
+					{
+						short boundary1 = FormatUtils::BytesToInt16( iter->Arguments, 1 + ( i * 2 ), iter->argumentsSize );
 							short boundary2 = FormatUtils::BytesToInt16( iter->Arguments, 1 + ( ( i + 1 ) * 2 ), iter->argumentsSize );
 
 							if (boundary2 - boundary1 > 1 && boundary1 - boundary0 > 1)
-							{
+						{
 								if ( boundaries[i] == -0x7fff || boundaries[i+1] == -0x7fff)
 								{
 									boundaries[i]	= boundary1;
@@ -1280,12 +1305,12 @@ namespace DocFileFormat
 							if ( find( boundaries_all.begin(), boundaries_all.end(), boundary1 ) == boundaries_all.end() )
 							{
 								boundaries_all.push_back( boundary1 );
-							}
+						}
 
 							if ( find( boundaries_all.begin(), boundaries_all.end(), boundary2 ) == boundaries_all.end() )
-							{
+						{
 								boundaries_all.push_back( boundary2 );
-							}
+						}
 							boundary0 = boundary1;
 						}break;
 					}
@@ -1513,11 +1538,11 @@ namespace DocFileFormat
 	/// Writes the table cell that starts at the given cp value and ends at the next cell end mark
 	int DocumentMapping::writeTableCell(int initialCp, TablePropertyExceptions* tapx, std::vector<short>* grid, std::vector<short>* grid_write, int& gridIndex, int cellIndex, unsigned int nestingLevel )  
 	{
-		int cp			= initialCp;		
+		int cp = initialCp;
 		int cpCellEnd	= findCellEndCp( initialCp, nestingLevel );
 
-	//start w:tc			
-		m_pXmlWriter->WriteNodeBegin( L"w:tc" );
+		//start w:tc
+        m_pXmlWriter->WriteNodeBegin( L"w:tc" );
 
 		TableCellPropertiesMapping* tcpMapping = new TableCellPropertiesMapping( m_pXmlWriter, grid, grid_write, gridIndex, cellIndex );
 
@@ -1530,7 +1555,7 @@ namespace DocFileFormat
 
 		RELEASEOBJECT( tcpMapping );
 
-	//write the paragraphs of the cell
+		//write the paragraphs of the cell
 		while ( cp < cpCellEnd )
 		{
 			//cp = writeParagraph(cp);
@@ -1561,7 +1586,7 @@ namespace DocFileFormat
 			}
 		}
 
-	//end w:tc
+		//end w:tc
         m_pXmlWriter->WriteNodeEnd( L"w:tc" );
 
 		return cp;

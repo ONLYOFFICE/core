@@ -591,7 +591,7 @@ namespace NSPresentationEditor
 #else
         std::wstring ConvertPPTtoPPTX(CPPTShape* pPPTShape, const NSGuidesVML::CFormParam& pCoef, bool bIsNamespace = false)
 		{
-			if (pPPTShape->m_eType == PPTShapes::sptCRect || pPPTShape->m_eType == PPTShapes::sptCFrame)
+			if (pPPTShape->m_eType == PPTShapes::sptCRect || pPPTShape->m_eType == PPTShapes::sptCFrame || pPPTShape->m_eType == PPTShapes::sptCTextBox)
 			{
 				if (bIsNamespace)
 				{

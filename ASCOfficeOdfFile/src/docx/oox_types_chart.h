@@ -63,9 +63,10 @@ public:
 
 	oox_chart()
 	{
-		grouping_	= L"standard";
-		is3D_		= false;
-		type_		= 0;
+		grouping_		= L"standard";
+		is3D_			= false;
+		type_			= 0;
+		dispBlanksAs_	= L"zero";
 	}
 	~oox_chart(){}
  
@@ -98,9 +99,10 @@ public:
 
 	int								type_;
 	bool							is3D_;
-	std::vector<int>				axisId_;	//axId (Axis ID) §21.2.2.9
+	std::wstring					dispBlanksAs_;
+	std::vector<int>				axisId_;	//	axId (Axis ID) §21.2.2.9
 	std::wstring					grouping_;	//	clustered | percentStacked | stacked | standard 
-	std::vector<oox_series_ptr>		series_;	//ser (Bar Chart Series) §21.2.2.170
+	std::vector<oox_series_ptr>		series_;	//	ser (Bar Chart Series) §21.2.2.170
 
 	virtual void set_properties(std::vector<odf_reader::_property> g);
 	virtual void set_additional_properties(std::vector<odf_reader::_property> g){}

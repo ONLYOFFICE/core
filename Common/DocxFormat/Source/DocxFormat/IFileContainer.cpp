@@ -74,19 +74,19 @@ namespace OOX
 
 	void IFileContainer::Read (const OOX::CRels& oRels, const OOX::CPath& oRootPath, const OOX::CPath& oPath)
 	{
-		unsigned int nCount = oRels.m_arrRelations.size();
-
-		for ( unsigned int nIndex = 0; nIndex < nCount; ++nIndex )
+		for (std::map<std::wstring, Rels::CRelationShip*>::const_iterator it = oRels.m_mapRelations.begin(); it != oRels.m_mapRelations.end(); it++)
 		{
+			if (!it->second) continue;
+
 			smart_ptr<OOX::File> pFile;
 			
 			if (m_bSpreadsheets)
-				pFile = OOX::Spreadsheet::CreateFile( oRootPath, oPath, oRels.m_arrRelations[nIndex] );
+				pFile = OOX::Spreadsheet::CreateFile( oRootPath, oPath, it->second );
 			
 			if (pFile.IsInit() == false || pFile->type() == FileTypes::Unknow)
-				pFile = OOX::CreateFile( oRootPath, oPath, oRels.m_arrRelations[nIndex] );
+				pFile = OOX::CreateFile( oRootPath, oPath, it->second );
 			
-			Add( oRels.m_arrRelations[nIndex]->rId(), pFile );
+			Add( it->second->rId(), pFile );
 		}
     }
 

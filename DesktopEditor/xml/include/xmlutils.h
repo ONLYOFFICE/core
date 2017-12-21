@@ -35,6 +35,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <list>
 
 #include "../../common/File.h"
 #include "../../common/StringBuilder.h"

@@ -401,7 +401,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		std::vector<std::wstring>		cell_cash;
 		std::vector<std::wstring>		cat_cash;
 
-		calc_cache_series (domain_cell_range_adress_,	domain_cash);
+		calc_cache_series (domain_cell_range_adress_,			domain_cash);
 		calc_cache_series (series_[i].cell_range_address_,		cell_cash);
 		
 		if (categories_.size() >0)
@@ -462,10 +462,19 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 
 	std::sort(axises_.begin(), axises_.end(), axises_sort());//file_1_ (1).odp
 	
-	bool x_enabled = false;
-	bool y_enabled = false;
-	bool z_enabled = false;
+	bool x_enabled	= false;
+	bool y_enabled	= false;
+	bool z_enabled	= false;
+	bool is3D		= false;
 	
+	_CP_OPT(bool) boolVal;
+	odf_reader::GetProperty(plot_area_.properties_, L"three-dimensional", boolVal);
+
+	if ((boolVal) && (*boolVal)) 
+	{
+		is3D = true;
+	}
+
 	for (int i = 0; i < axises_.size(); i++)
 	{
 		axis & a  = axises_[i];
@@ -481,6 +490,8 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 
 			if (class_ == chart_stock && a.type_ == 3 )		
 				a.type_ = 4; //шкала дат.
+
+			if (is3D) a.type_ = 1; // шкала категорий
 			
 			x_enabled = true;
 		}
@@ -499,13 +510,25 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		}
 		else if (a.dimension_ == L"z")
 		{
-			chart_context.set_3D_chart (true);
+			is3D = true;
 			continue;
 			a.type_ = 2;
 			z_enabled = true;
 		}
 
 		chart_context.add_axis(a.type_, a);
+	}
+
+	if (is3D)
+	{
+		if (!z_enabled)
+		{
+			chart::axis a;
+			a.type_ = 0;	// blank
+
+			chart_context.add_axis(a.type_, a);
+		}
+		chart_context.set_3D_chart (true);
 	}
 }
 

@@ -77,9 +77,12 @@ namespace BinXlsxRW {
 			if(color.m_oIndexed.IsInit())
 			{
 				int nIndex = (int)color.m_oIndexed->GetValue();
-				if(NULL != pIndexedColors && nIndex < pIndexedColors->m_arrItems.size())
+
+				std::map<int, OOX::Spreadsheet::CRgbColor*>::iterator pFind = pIndexedColors->mapIndexedColors.find(nIndex);
+
+				if(pFind != pIndexedColors->mapIndexedColors.end())
 				{
-					OOX::Spreadsheet::CRgbColor* pRgbColor = pIndexedColors->m_arrItems[nIndex];
+					OOX::Spreadsheet::CRgbColor* pRgbColor = pFind->second;
 					if(pRgbColor->m_oRgb.IsInit())
 					{
 						bEmpty = false;

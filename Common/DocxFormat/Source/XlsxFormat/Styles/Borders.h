@@ -110,8 +110,7 @@ namespace OOX
 			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CBorderStyle<>>	m_oStyle;
-
-			nullable<CColor>						m_oColor;
+			nullable<CColor>									m_oColor;
 		};
 
 		class CBorder : public WritingElement
@@ -206,27 +205,24 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("diagonalDown"),      m_oDiagonalDown )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("diagonalUp"),      m_oDiagonalUp )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("outline"),      m_oOutline )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("diagonalDown"),	m_oDiagonalDown )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("diagonalUp"),		m_oDiagonalUp )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("outline"),			m_oOutline )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::COnOff<>>				m_oDiagonalDown;
-			nullable<SimpleTypes::COnOff<>>				m_oDiagonalUp;
-			nullable<SimpleTypes::COnOff<>>				m_oOutline;
+			nullable<SimpleTypes::COnOff<>>	m_oDiagonalDown;
+			nullable<SimpleTypes::COnOff<>>	m_oDiagonalUp;
+			nullable<SimpleTypes::COnOff<>>	m_oOutline;
 
-			nullable<CBorderProp>						m_oBottom;
-			nullable<CBorderProp>						m_oDiagonal;
-			nullable<CBorderProp>						m_oEnd;
-			nullable<CBorderProp>						m_oHorizontal;
-			nullable<CBorderProp>						m_oStart;
-			nullable<CBorderProp>						m_oTop;
-			nullable<CBorderProp>						m_oVertical;
+			nullable<CBorderProp>			m_oBottom;
+			nullable<CBorderProp>			m_oDiagonal;
+			nullable<CBorderProp>			m_oEnd;
+			nullable<CBorderProp>			m_oHorizontal;
+			nullable<CBorderProp>			m_oStart;
+			nullable<CBorderProp>			m_oTop;
+			nullable<CBorderProp>			m_oVertical;
 		};
 
 		class CBorders : public WritingElementWithChilds<CBorder>
@@ -244,18 +240,23 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(_T("<borders"));
+				writer.WriteString(L"<borders");
 				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
-				writer.WriteString(_T(">"));
+				writer.WriteString(L">");
 				
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-					m_arrItems[i]->toXML(writer);
+				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+				{
+					if ( *it )
+					{
+						(*it)->toXML(writer);
+					}
+				}
 				
-				writer.WriteString(_T("</borders>"));
+				writer.WriteString(L"</borders>");
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -264,13 +265,19 @@ namespace OOX
 				if ( oReader.IsEmptyNode() )
 					return;
 
+				int index = 0;
+
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("border") == sName )
-						m_arrItems.push_back( new CBorder( oReader ));
+					if ( L"border" == sName )
+					{
+						CBorder *pBorder = new CBorder( oReader );
+						m_arrItems.push_back( pBorder );
+						m_mapBorders.insert(std::make_pair(index++, pBorder));
+					}
 				}
 			}
 
@@ -282,15 +289,13 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, L"count", m_oCount )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			std::map<int, CBorder*>							m_mapBorders;
 		};
 	} //Spreadsheet
 } // namespace OOX

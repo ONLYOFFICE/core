@@ -48,7 +48,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;USE_ATL_CSTRINGS;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -392,6 +392,14 @@
 			<File
 				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<File
@@ -440,6 +448,10 @@
 		</File>
 		<File
 			RelativePath="..\..\Common\OfficeFileFormatChecker2.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Common\3dParty\pole\pole.cpp"
 			>
 		</File>
 		<File

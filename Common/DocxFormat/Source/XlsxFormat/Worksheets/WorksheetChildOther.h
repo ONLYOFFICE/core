@@ -621,7 +621,7 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_arrItems.empty())
+				if(m_arrItems.empty()) return;
 
 				writer.WriteString(_T("<sheetViews>"));
 				

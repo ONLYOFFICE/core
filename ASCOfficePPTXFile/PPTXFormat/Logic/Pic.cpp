@@ -1212,7 +1212,7 @@ namespace PPTX
 				}
 			}
 
-			bool bRect = bOle; //ole ВСЕГДА rect
+			bool bRect = bOle; //ole ВСЕГДА rect или shape c типом ctPictFrame(75)
 
 			if (spPr.Geometry.is<PPTX::Logic::PrstGeom>())
 			{

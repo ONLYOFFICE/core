@@ -89,6 +89,7 @@ public:
 					long get_count_data_points_series();
 
 					void set_series_pie_explosion(int val);
+					void set_series_pie_bubble(bool val);
 				void end_series();
 		void end_group_series();
 		

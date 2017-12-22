@@ -1478,6 +1478,13 @@ void odf_chart_context::set_series_pie_explosion(int val)//или точка с�
 
 	impl_->current_level_.back().chart_properties_->content_.chart_pie_offset_ = val;	
 }
+void odf_chart_context::set_series_pie_bubble(bool val)
+{
+	if (!impl_->current_level_.back().chart_properties_)return;
+	
+	impl_->current_level_.back().chart_properties_->content_.chart_pie_bubble_ = val;	
+	
+}
 //void odf_chart_context::set_cash(std::wstring format, std::vector<double> &data_double)
 //{
 //	if (data_double.size() <1 || impl_->data_cell_ranges_.size() < 1) return;

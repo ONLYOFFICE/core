@@ -95,6 +95,7 @@ public:
 	_CP_OPT(int) chart_spline_order_;
 	_CP_OPT(int) chart_spline_resolution_;
 	_CP_OPT(int) chart_pie_offset_;	
+	_CP_OPT(bool) chart_pie_bubble_;
 	_CP_OPT(int) chart_interval_minor_divisor_;
 
     _CP_OPT(double) chart_maximum_;

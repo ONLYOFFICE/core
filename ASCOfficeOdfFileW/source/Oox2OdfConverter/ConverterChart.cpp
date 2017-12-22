@@ -971,6 +971,8 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Marker* marker, std::vector<OOX:
 			convert(dPt[i]->m_marker);
 			if (dPt[i]->m_explosion && dPt[i]->m_explosion->m_val)
 					odf_context()->chart_context()->set_series_pie_explosion(*dPt[i]->m_explosion->m_val);
+			if (dPt[i]->m_bubble3D && dPt[i]->m_bubble3D->m_val)
+					odf_context()->chart_context()->set_series_pie_bubble(*dPt[i]->m_bubble3D->m_val);
 		odf_context()->chart_context()->end_element();
 		
 		current_point = set_point+1;			

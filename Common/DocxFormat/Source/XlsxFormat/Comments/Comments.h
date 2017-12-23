@@ -83,13 +83,18 @@ namespace OOX
 			}
 			virtual ~CAuthors()
 			{
+				ClearItems();
+			}
+			virtual void ClearItems()
+			{
+				m_arrItems.clear();
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
@@ -106,7 +111,7 @@ namespace OOX
 				}
 				writer.WriteString(L"</authors>");
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -118,8 +123,11 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("author") == sName )
-						m_arrItems.push_back(new std::wstring(oReader.GetText3()));
+					if ( L"author" == sName )
+					{
+						std::wstring *str = new std::wstring(oReader.GetText3());
+						m_arrItems.push_back(str);
+					}
 				}
 			}
 
@@ -148,7 +156,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
@@ -190,13 +198,10 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"),      m_oRef )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("authorId"),      m_oAuthorId )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, L"ref",      m_oRef )
+					WritingElement_ReadAttributes_Read_if ( oReader, L"authorId", m_oAuthorId )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oRef;
@@ -219,7 +224,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
@@ -247,7 +252,7 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("comment") == sName )
+					if ( L"comment" == sName )
 						m_arrItems.push_back(new CComment(oReader));
 				}
 			}
@@ -277,8 +282,6 @@ namespace OOX
 			virtual ~CComments()
 			{
 			}
-		public:
-
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -299,7 +302,7 @@ namespace OOX
 					return;
 
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if ( _T("comments") == sName )
+				if ( L"comments" == sName )
 				{
 					ReadAttributes( oReader );
 
@@ -310,9 +313,9 @@ namespace OOX
 						{
 							sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-							if ( _T("authors") == sName )
+							if ( L"authors" == sName )
 								m_oAuthors = oReader;
-							else if ( _T("commentList") == sName )
+							else if ( L"commentList" == sName )
 								m_oCommentList = oReader;
 						}
 					}
@@ -321,12 +324,12 @@ namespace OOX
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
 				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><comments xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">"));
+				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><comments xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">");
 				if(m_oAuthors.IsInit())
 					m_oAuthors->toXML(sXml);
 				if(m_oCommentList.IsInit())
 					m_oCommentList->toXML(sXml);
-				sXml.WriteString(_T("</comments>"));
+				sXml.WriteString(L"</comments>");
 
                 std::wstring sPath = oPath.GetPath();
                 NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
@@ -375,7 +378,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
@@ -403,12 +406,9 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),      m_oId )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, L"r:id", m_oId )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oId;

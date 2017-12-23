@@ -187,7 +187,7 @@ namespace BinXlsxRW
 				WriteFilterColumns(oAutofilter.m_arrItems);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
-			if(!oAutofilter.m_oSortState.IsInit())
+			if(oAutofilter.m_oSortState.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_AutoFilter::SortState);
 				WriteSortState(oAutofilter.m_oSortState.get());

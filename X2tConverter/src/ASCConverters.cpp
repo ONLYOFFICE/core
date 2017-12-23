@@ -3882,8 +3882,7 @@ namespace NExtractTools
 		}
 		else
 		{
-			sTempDir = NSDirectory::GetFolderPath(sFileFrom) + FILE_SEPARATOR_STR + _T("Temp");
-			NSDirectory::CreateDirectory(sTempDir);
+			sTempDir = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetFolderPath(sFileTo));
 		}
 		if (sTempDir.empty())
 		{

@@ -38,7 +38,7 @@
 
 #include "../../DocxFormat/IFileContainer.h"
 
-#include <map>
+#include <unordered_map>
 
 namespace OOX
 {
@@ -74,7 +74,7 @@ namespace OOX
 				return m_nRow.IsInit() && m_nCol.IsInit() && m_sAuthor.IsInit();
 			}
 		};
-		class CAuthors : public WritingElementWithChilds<std::wstring>
+		class CAuthors : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CAuthors)
@@ -87,7 +87,7 @@ namespace OOX
 			}
 			virtual void ClearItems()
 			{
-				m_arrItems.clear();
+				m_mapItems.clear();
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
@@ -100,14 +100,11 @@ namespace OOX
 			{
 				writer.WriteString(L"<authors>");
 
-				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+				for ( std::unordered_map<int, std::wstring>::const_iterator it = m_mapItems.begin(); it != m_mapItems.end(); it++)
 				{
-					if ( *it )
-					{
-						writer.WriteString(L"<author>");
-							writer.WriteEncodeXmlString(*(*it));
-						writer.WriteString(L"</author>");
-					}
+					writer.WriteString(L"<author>");
+						writer.WriteEncodeXmlString(it->second);
+					writer.WriteString(L"</author>");
 				}
 				writer.WriteString(L"</authors>");
 			}
@@ -118,6 +115,8 @@ namespace OOX
 				if ( oReader.IsEmptyNode() )
 					return;
 
+				int index = 0;
+
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
@@ -125,8 +124,7 @@ namespace OOX
 
 					if ( L"author" == sName )
 					{
-						std::wstring *str = new std::wstring(oReader.GetText3());
-						m_arrItems.push_back(str);
+						m_mapItems.insert(std::make_pair(index++, oReader.GetText3()));
 					}
 				}
 			}
@@ -140,6 +138,8 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
+		public:
+			std::unordered_map<int, std::wstring>  m_mapItems;
 		};
 		class CComment : public WritingElement
 		{

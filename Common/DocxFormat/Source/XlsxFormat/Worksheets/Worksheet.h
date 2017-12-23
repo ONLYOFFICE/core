@@ -189,7 +189,7 @@ namespace OOX
 			}
 			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::CVmlDrawing* pVmlDrawing)
 			{
-				std::list<std::wstring*> & aAuthors = pComments->m_oAuthors->m_arrItems;
+				std::unordered_map<int, std::wstring> & mapAuthors = pComments->m_oAuthors->m_mapItems;
 				
 				if(pComments->m_oCommentList.IsInit())
 				{
@@ -212,12 +212,12 @@ namespace OOX
 
 								unsigned int nAuthorId = pComment->m_oAuthorId->GetValue();
 								
-								std::list<std::wstring*>::iterator itA = aAuthors.begin();
-								for(int a = 0; a < nAuthorId; a++)
-									itA++;
-
-								if(itA != aAuthors.end())
-									pCommentItem->m_sAuthor = *itA;
+								std::unordered_map<int, std::wstring>::iterator pFind = mapAuthors.find(nAuthorId);
+								
+								if (pFind != mapAuthors.end())
+								{
+									pCommentItem->m_sAuthor = pFind->second;
+								}
 
 								OOX::Spreadsheet::CSi* pSi = pComment->m_oText.GetPointerEmptyNullable();
 								if(NULL != pSi)

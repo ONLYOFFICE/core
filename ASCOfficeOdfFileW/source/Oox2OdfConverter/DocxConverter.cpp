@@ -3942,6 +3942,7 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 			{
 				//динамическое расширение - автоподбор по содержимому.
 				odt_context->table_context()->set_optimal_column_width(true);
+				table_properties->table_format_properties_.style_use_optimal_column_width_ = true;
 			}
 		}
 	}

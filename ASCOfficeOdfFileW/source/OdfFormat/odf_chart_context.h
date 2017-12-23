@@ -137,6 +137,10 @@ public:
 		void start_text();
 		void end_text();
 
+		void set_textarea_vertical_align(int align);
+		void set_textarea_padding		(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom);//in pt
+		void set_textarea_rotation		(double val);
+
 		void add_domain(std::wstring formula);
 		void add_categories(std::wstring formula, office_element_ptr & axis);
 

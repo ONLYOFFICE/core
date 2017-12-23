@@ -231,6 +231,7 @@ public:
 	void set_textarea_fontcolor		(std::wstring hexColor);
 	void set_textarea_font			(std::wstring & latin, std::wstring & cs, std::wstring & ea);
 	void set_textarea_fit_to_size	(bool val);
+	void set_textarea_rotation		(double val);
 
 	void set_placeholder_id			(std::wstring val);
 	void set_placeholder_type		(int val);

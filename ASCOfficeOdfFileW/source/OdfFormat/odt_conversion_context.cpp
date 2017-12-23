@@ -105,7 +105,8 @@ void odt_conversion_context::start_document()
 	
 	root_document_		= get_current_object_element();
 	root_text_			= dynamic_cast<office_text*>(root_document_.get());
-	main_text_context_	= new odf_text_context(this); 
+	
+	main_text_context_	= new odf_text_context(this, styles_context()); 
 
 	page_layout_context()->set_styles_context(styles_context());
 
@@ -182,7 +183,7 @@ odf_text_context* odt_conversion_context::text_context()
 } 
 void odt_conversion_context::start_text_context()
 {
-	odf_text_context_ptr new_text_context_ = boost::shared_ptr<odf_text_context>(new odf_text_context(this));
+	odf_text_context_ptr new_text_context_ = boost::shared_ptr<odf_text_context>(new odf_text_context(this, odf_conversion_context::styles_context()));
 	if (!new_text_context_)return;
 
 	text_context_.push_back(new_text_context_);

@@ -52,10 +52,9 @@ void oox_chart_legend::oox_serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE(L"c:legend")
         {
-
 			CP_XML_NODE(L"c:legendPos")
 			{
-				CP_XML_ATTR(L"val", "r");//  "b" | "l" |  "r" |  "t"// == bottom left right top
+				CP_XML_ATTR(L"val", content_.position);
 
 			}
             layout_.oox_serialize(CP_XML_STREAM());		

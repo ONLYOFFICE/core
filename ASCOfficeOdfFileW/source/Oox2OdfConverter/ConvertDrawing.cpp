@@ -1165,6 +1165,10 @@ void OoxConverter::convert(PPTX::Logic::BodyPr *oox_bodyPr)
 		//+ style section
 		//+element text:section в котором параграфы
 	}
+	if (oox_bodyPr->rot.IsInit())
+	{
+		odf_context()->drawing_context()->set_textarea_rotation(oox_bodyPr->rot.get() / 60000);
+	}
 
 	switch(oox_bodyPr->Fit.type)
 	{
@@ -1505,7 +1509,7 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 		}
 														//свойства могут быть приписаны не только к параграфу, но и к самому объекту		
 		odf_writer::style_paragraph_properties* paragraph_properties = odf_context()->text_context()->get_paragraph_properties();
-		odf_writer::style_text_properties*		text_properties = NULL;
+		odf_writer::style_text_properties*		text_properties = odf_context()->text_context()->get_text_properties();
 		
 		if (!paragraph_properties)
 		{

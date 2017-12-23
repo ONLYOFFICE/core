@@ -72,7 +72,6 @@ class common_chart_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-public:
     _CP_OPT(std::wstring)		chart_style_name_;
 };
 
@@ -117,7 +116,6 @@ class chart_title_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-public:
     _CP_OPT(std::wstring)					table_cell_range_;
     odf_types::common_draw_position_attlist common_draw_position_attlist_;
     common_chart_attlist					common_attlist_;
@@ -194,13 +192,13 @@ class chart_legend_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-public:
     _CP_OPT(std::wstring)		chart_legend_position_;
     _CP_OPT(std::wstring)		chart_legend_align_;
-    odf_types::common_draw_position_attlist common_draw_position_attlist_;
     _CP_OPT(std::wstring)		style_legend_expansion_;
     _CP_OPT(double)				style_legend_expansion_aspect_ratio_;
-    common_chart_attlist		common_attlist_;
+	
+	odf_types::common_draw_position_attlist		common_draw_position_attlist_;
+	common_chart_attlist						common_attlist_;
 
 };
 

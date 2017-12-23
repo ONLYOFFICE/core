@@ -49,6 +49,61 @@
 
 namespace Oox2Odf
 {
+void OoxConverter::convert_chart_text(PPTX::Logic::TxBody *oox_txBody)
+{
+	if (!oox_txBody) return;
+	if (oox_txBody->Paragrs.empty()) return;
+
+	odf_context()->chart_context()->start_text();	
+
+	convert(oox_txBody->lstStyle.GetPointer());
+
+	for (size_t i = 0; i < oox_txBody->Paragrs.size(); i++)
+	{
+		convert(&oox_txBody->Paragrs[i], oox_txBody->lstStyle.GetPointer());
+	
+	//внешние настройки для текста
+		convert_chart_text(oox_txBody->bodyPr.GetPointer());			
+	}
+
+	odf_context()->chart_context()->end_text();	
+}
+void OoxConverter::convert_chart_text(PPTX::Logic::BodyPr *oox_bodyPr)
+{
+	if (!oox_bodyPr) return;
+
+	if (oox_bodyPr->vert.IsInit())
+	{
+		//odf_context()->chart_context()->set_textarea_writing_mode (oox_bodyPr->vert->GetBYTECode());
+	}
+	if (oox_bodyPr->anchor.IsInit())
+	{
+		//odf_context()->chart_context()->set_textarea_vertical_align (oox_bodyPr->anchor->GetBYTECode());
+	}
+
+	_CP_OPT(double) lIns, tIns, rIns, bIns;
+
+	if (oox_bodyPr->lIns.IsInit()) lIns = oox_bodyPr->lIns.get() / 12700.; //pt
+	if (oox_bodyPr->tIns.IsInit()) tIns = oox_bodyPr->tIns.get() / 12700.;
+	if (oox_bodyPr->rIns.IsInit()) rIns = oox_bodyPr->rIns.get() / 12700.;
+	if (oox_bodyPr->bIns.IsInit()) bIns = oox_bodyPr->bIns.get() / 12700.;	
+		
+	//odf_context()->chart_context()->set_textarea_padding (lIns, tIns, rIns, bIns);
+
+	//if (oox_bodyPr->wrap.IsInit())
+	//	odf_context()->chart_context()->set_textarea_wrap(oox_bodyPr->wrap->GetBYTECode());
+
+	if ((oox_bodyPr->numCol.IsInit()) && (oox_bodyPr->numCol.get() > 1))
+	{
+		//+ style section
+		//+element text:section в котором параграфы
+	}
+	if (oox_bodyPr->rot.IsInit())
+	{
+		odf_context()->chart_context()->set_textarea_rotation(oox_bodyPr->rot.get() / 60000);
+	}
+}
+
 void OoxConverter::convert(OOX::Spreadsheet::CT_ChartSpace  *oox_chart)
 {
 	if (!oox_chart)return;
@@ -56,7 +111,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ChartSpace  *oox_chart)
 	convert(oox_chart->m_externalData);
 
 	convert(oox_chart->m_oSpPr.GetPointer());	
-	convert(oox_chart->m_oTxPr.GetPointer());
+	convert_chart_text(oox_chart->m_oTxPr.GetPointer());
 
 	convert(oox_chart->m_chart->m_title);
 	convert(oox_chart->m_chart->m_legend);
@@ -103,7 +158,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Tx* ct_tx)
 {
 	if (ct_tx == NULL)return;
 
-	convert(ct_tx->m_oRich.GetPointer());
+	convert_chart_text(ct_tx->m_oRich.GetPointer());
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_Layout* ct_layout)
 {
@@ -130,7 +185,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Title* ct_title)
 	odf_context()->chart_context()->start_title();
 		convert(ct_title->m_oSpPr.GetPointer());
 		convert(ct_title->m_layout);
-		convert(ct_title->m_oTxPr.GetPointer());
+		convert_chart_text(ct_title->m_oTxPr.GetPointer());
 	///////////////////////////////
 		convert(ct_title->m_tx);
 	odf_context()->chart_context()->end_element();
@@ -145,7 +200,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Legend* ct_legend)
 		if ((ct_legend->m_legendPos) && (ct_legend->m_legendPos->m_val))
 			odf_context()->chart_context()->set_legend_position(*ct_legend->m_legendPos->m_val);
 		
-		convert(ct_legend->m_oTxPr.GetPointer());
+		convert_chart_text(ct_legend->m_oTxPr.GetPointer());
 		if (ct_legend->m_legendEntry.size() > 0)
 		{
 			convert(ct_legend->m_legendEntry[0]); // в odf_writer нет в легенде множественности стилей
@@ -157,7 +212,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_LegendEntry* ct_legend)
 {
 	if (ct_legend == NULL)return;
 
-	convert(ct_legend->m_oTxPr.GetPointer());
+	convert_chart_text(ct_legend->m_oTxPr.GetPointer());
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_PlotArea* ct_plotArea)
 {
@@ -222,7 +277,9 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_CatAx* axis)
 		odf_context()->chart_context()->set_axis_dimension(1);
 		if (axis->m_axId && axis->m_axId->m_val)
 			odf_context()->chart_context()->set_axis_id(*axis->m_axId->m_val);
+		
 		convert(axis->m_oSpPr.GetPointer());
+		
 		if (axis->m_scaling)
 		{
 			if (axis->m_scaling->m_logBase)
@@ -249,7 +306,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_CatAx* axis)
 			odf_context()->chart_context()->set_axis_label_position(*axis->m_tickLblPos->m_val);
 
 	///////////////////
-		convert(axis->m_oTxPr.GetPointer());
+		convert_chart_text(axis->m_oTxPr.GetPointer());
 		convert(axis->m_title);
 		convert(axis->m_majorGridlines, 1);
 		convert(axis->m_minorGridlines, 2);
@@ -263,7 +320,9 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_DateAx* axis)
 		odf_context()->chart_context()->set_axis_dimension(1);
 		if (axis->m_axId && axis->m_axId->m_val)
 			odf_context()->chart_context()->set_axis_id(*axis->m_axId->m_val);
+		
 		convert(axis->m_oSpPr.GetPointer());
+		
 		if (axis->m_scaling)
 		{
 			if (axis->m_scaling->m_logBase)
@@ -288,7 +347,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_DateAx* axis)
 		if (axis->m_axPos && axis->m_axPos->m_val)
 			odf_context()->chart_context()->set_axis_position(*axis->m_axPos->m_val);
 	//////////////////
-		convert(axis->m_oTxPr.GetPointer());
+		convert_chart_text(axis->m_oTxPr.GetPointer());
 		convert(axis->m_title);
 		convert(axis->m_majorGridlines, 1);
 		convert(axis->m_minorGridlines, 2);
@@ -302,7 +361,9 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_SerAx* axis)
 		odf_context()->chart_context()->set_axis_dimension(1);
 		if (axis->m_axId && axis->m_axId->m_val)
 			odf_context()->chart_context()->set_axis_id(*axis->m_axId->m_val);
+		
 		convert(axis->m_oSpPr.GetPointer());
+		
 		if (axis->m_scaling)
 		{
 			if (axis->m_scaling->m_logBase)
@@ -327,7 +388,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_SerAx* axis)
 		if (axis->m_axPos && axis->m_axPos->m_val)
 			odf_context()->chart_context()->set_axis_position(*axis->m_axPos->m_val);
 	///////////////////////////
-		convert(axis->m_oTxPr.GetPointer());
+		convert_chart_text(axis->m_oTxPr.GetPointer());
 		convert(axis->m_title);
 		convert(axis->m_majorGridlines, 1);
 		convert(axis->m_minorGridlines, 2);
@@ -341,7 +402,9 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ValAx* axis)
 		odf_context()->chart_context()->set_axis_dimension(2);
 		if (axis->m_axId && axis->m_axId->m_val)
 			odf_context()->chart_context()->set_axis_id(*axis->m_axId->m_val);
+		
 		convert(axis->m_oSpPr.GetPointer());
+		
 		if (axis->m_scaling)
 		{
 			if (axis->m_scaling->m_logBase)
@@ -365,7 +428,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ValAx* axis)
 		if (axis->m_axPos && axis->m_axPos->m_val)
 			odf_context()->chart_context()->set_axis_position(*axis->m_axPos->m_val);
 	/////////////////////////////
-		convert(axis->m_oTxPr.GetPointer());
+		convert_chart_text(axis->m_oTxPr.GetPointer());
 		convert(axis->m_title);
 		convert(axis->m_majorGridlines, 1);
 		convert(axis->m_minorGridlines, 2);

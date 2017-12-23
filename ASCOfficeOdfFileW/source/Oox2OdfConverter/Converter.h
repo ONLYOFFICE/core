@@ -395,7 +395,6 @@ public:
 		void convert(PPTX::Logic::StyleRef						*oox_styleRef, int type);
 		void convert(PPTX::Logic::Path2D						*oox_path2D);
 		void convert(PPTX::Logic::PathBase						*oox_path);
-		void convert(PPTX::Logic::BodyPr						*oox_bodyPr);
         void convert(PPTX::Logic::UniFill						*oox_fill, DWORD ARGB = 0);
 		void convert(PPTX::Logic::UniColor						*color, DWORD & nARGB);
         void convert(PPTX::Logic::UniColor						*color, std::wstring & hexString, _CP_OPT(double) & opacity, DWORD ARGB = 0);
@@ -420,7 +419,12 @@ public:
 		void convert(PPTX::Logic::Run							*oox_run);
 		void convert(PPTX::Logic::Fld							*oox_fld);
 		void convert(PPTX::Logic::Br							*oox_br);
+		
 		void convert(PPTX::Logic::TxBody						*oox_txBody, PPTX::Logic::ShapeStyle* oox_style = NULL);
+		void convert_chart_text(PPTX::Logic::TxBody				*oox_txBody);
+		void convert(PPTX::Logic::BodyPr						*oox_bodyPr);
+		void convert_chart_text(PPTX::Logic::BodyPr				*oox_bodyPr);
+		
 		void convert(PPTX::Logic::MathParaWrapper				*oox_math);
 		void convert(PPTX::Logic::NvGraphicFramePr				*oox_framePr);
 		void convert(PPTX::Logic::ChartRec						*oox_chart);

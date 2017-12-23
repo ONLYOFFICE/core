@@ -337,23 +337,6 @@ void table_columns_and_groups::add_child_element( xml::sax * Reader, const std::
     }
     else
         not_applicable_element(L"table-columns-and-groups", Reader, Ns, Name);
-    /*
-    if (CP_CHECK_NAME(L"table", L"table-column-group") && type_ != 1)
-    {
-        type_ = 0;
-        CP_CREATE_ELEMENT_SIMPLE(table_table_column_group_);
-    } 
-    else if ((  CP_CHECK_NAME(L"table", L"table-columns") ||
-                CP_CHECK_NAME(L"table", L"table-column") ||
-                CP_CHECK_NAME(L"table", L"table-header-columns") ) 
-                && type_ != 0)
-    {
-        type_ = 1;
-        table_columns_no_group_.add_child_element(Reader, Ns, Name, Context);
-    }
-    else
-        not_applicable_element(L"table-columns-and-groups", Reader, Ns, Name);
-    */
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

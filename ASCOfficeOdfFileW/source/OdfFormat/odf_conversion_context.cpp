@@ -177,7 +177,7 @@ void odf_conversion_context::start_chart()
 	create_object();
 	create_element(L"office", L"chart", objects_.back().content, this, true);
 
-	chart_context_.set_styles_context(styles_context());
+	chart_context_.set_styles_context(odf_conversion_context::styles_context());
 	chart_context_.start_chart(get_current_object_element());
 }
 void odf_conversion_context::start_spreadsheet()

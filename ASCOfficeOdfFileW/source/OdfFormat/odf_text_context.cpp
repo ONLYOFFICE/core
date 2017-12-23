@@ -54,10 +54,10 @@ namespace cpdoccore {
 namespace odf_writer
 {
 
-odf_text_context::odf_text_context(odf_conversion_context *odf_context)
+odf_text_context::odf_text_context(odf_conversion_context *odf_context, odf_style_context *styles_context)
 {
 	odf_context_				= odf_context;
-	styles_context_				= odf_context->styles_context();
+	styles_context_				= styles_context;
 	
 	single_paragraph_			= false;
 	paragraph_properties_		= NULL;

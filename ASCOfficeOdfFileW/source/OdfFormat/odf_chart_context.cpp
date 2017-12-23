@@ -335,7 +335,7 @@ void odf_chart_context::start_chart(office_element_ptr & root)
 
 	root->add_child_element(chart_elm);
 //////////	
-	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
+	impl_->styles_context_->create_style(L"", style_family::Chart, true, false, -1);		
 	
 	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
@@ -916,18 +916,19 @@ void odf_chart_context::start_text()
 	style *style_ = dynamic_cast<style*>(impl_->current_chart_state_.elements_.back().style_elm.get());
 	if (style_)
 	{
-		impl_->current_level_.back().paragraph_properties_ = style_->content_.get_style_paragraph_properties();
-		impl_->current_level_.back().text_properties_ = style_->content_.get_style_text_properties();
+		impl_->current_level_.back().paragraph_properties_	= style_->content_.get_style_paragraph_properties();
+		impl_->current_level_.back().text_properties_		= style_->content_.get_style_text_properties();
 	}
 	
-	impl_->odf_context_->text_context()->set_single_object(true,impl_->current_level_.back().paragraph_properties_,impl_->current_level_.back().text_properties_);
+	impl_->odf_context_->text_context()->set_single_object(true, impl_->current_level_.back().paragraph_properties_, impl_->current_level_.back().text_properties_);
 }
 void odf_chart_context::end_text()
 {
-	odf_text_context * text_context_ = text_context();
+	odf_text_context *text_context_ = text_context();
+	
 	if (text_context_ == NULL || impl_->current_level_.size() <1 )return;
 
-	for (size_t i=0; i< text_context_->text_elements_list_.size(); i++)
+	for (size_t i = 0; i < text_context_->text_elements_list_.size(); i++)
 	{
 		if (text_context_->text_elements_list_[i].level ==0)
 		{
@@ -945,6 +946,45 @@ void odf_chart_context::end_text()
 
 	impl_->odf_context_->end_text_context();
 }
+void odf_chart_context::set_textarea_vertical_align(int align)
+{
+	if (!impl_->current_level_.back().chart_properties_)return;
+	//switch(align)
+	//{
+	//case 0://SimpleTypes::textanchoringtypeB: 
+	//		impl_->current_graphic_properties->draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Bottom);	break;
+	//case 1://SimpleTypes::textanchoringtypeCtr: 
+	//		impl_->current_graphic_properties->draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Middle);	break;
+	//case 2://SimpleTypes::textanchoringtypeDist: 
+	//		impl_->current_graphic_properties->draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Baseline);break;
+	//case 3://SimpleTypes::textanchoringtypeJust: 
+	//		impl_->current_graphic_properties->draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Justify);	break;
+	//case 4://SimpleTypes::textanchoringtypeT: 
+	//		impl_->current_graphic_properties->draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Top);		break;
+	//}
+}
+void odf_chart_context::set_textarea_rotation(double val)
+{
+	if (!impl_->current_level_.back().chart_properties_)return;
+	if (val < 0.001 && val > -0.001) return;
+	if (val < -360 || val > 360) return;
+
+	if (val < 0) val += 360;
+	val = 360 - val;
+
+	impl_->current_level_.back().chart_properties_->content_.common_rotation_angle_attlist_.style_rotation_angle_ = (unsigned int)val;
+}
+
+void odf_chart_context::set_textarea_padding(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom)//in pt
+{
+	if (!impl_->current_level_.back().chart_properties_)return;
+
+	//if (left)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_left_		= length(*left,	length::pt);
+	//if (top)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_top_		= length(*top,	length::pt);
+	//if (right)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_right_	= length(*right,length::pt);
+	//if (bottom)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_bottom_	= length(*bottom,length::pt);
+}
+
 void odf_chart_context::start_floor()
 {
 	office_element_ptr elm;

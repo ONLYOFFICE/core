@@ -457,7 +457,9 @@ public:
 		void convert(OOX::Spreadsheet::CT_Area3DChart			*chart);
 		void convert(OOX::Spreadsheet::CT_AreaChart				*chart);
 		void convert(OOX::Spreadsheet::CT_Bar3DChart			*chart);
+		void convert_before(OOX::Spreadsheet::CT_Bar3DChart		*chart);
 		void convert(OOX::Spreadsheet::CT_BarChart				*chart);
+		void convert_before(OOX::Spreadsheet::CT_BarChart		*chart);
 		void convert(OOX::Spreadsheet::CT_Line3DChart			*chart);
 		void convert(OOX::Spreadsheet::CT_LineChart				*chart);
 		void convert(OOX::Spreadsheet::CT_Pie3DChart			*chart);

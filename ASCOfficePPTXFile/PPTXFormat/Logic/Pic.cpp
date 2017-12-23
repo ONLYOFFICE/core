@@ -653,31 +653,34 @@ namespace PPTX
 					if (pVml->m_mapShapes.end() != pPair)
 					{
 						pPair->second.bUsed = true;
-						OOX::Vml::CShape* pShape = dynamic_cast<OOX::Vml::CShape*>(pPair->second.pElement);
-						
-						for(std::list<OOX::WritingElement*>::iterator it = pShape->m_arrItems.begin(); 
-															(pShape) && (it != pShape->m_arrItems.end()); it++)
-						{
-							OOX::WritingElement* pChildElemShape = *it;
-							if(OOX::et_v_imagedata == pChildElemShape->getType())
-							{
-								OOX::Vml::CImageData* pImageData = static_cast<OOX::Vml::CImageData*>(pChildElemShape);									
-													
-								std::wstring sIdImageFileCache;
+						OOX::Vml::CVmlCommonElements* pShape = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pPair->second.pElement);
 
-								if (pImageData->m_oRelId.IsInit())		sIdImageFileCache = pImageData->m_oRelId->GetValue();
-								else if (pImageData->m_rId.IsInit())	sIdImageFileCache = pImageData->m_rId->GetValue();
-																	
-								if (!sIdImageFileCache.empty())
+						if (pShape)
+						{						
+							for(std::list<OOX::WritingElement*>::iterator	it = pShape->m_arrItems.begin(); 
+																			it != pShape->m_arrItems.end(); it++)
+							{
+								OOX::WritingElement* pChildElemShape = *it;
+								if(OOX::et_v_imagedata == pChildElemShape->getType())
 								{
-									//ищем физический файл ( rId относительно vml_drawing)									
-									smart_ptr<OOX::File> pFile = pVml->Find(sIdImageFileCache);
-									
-									if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
+									OOX::Vml::CImageData* pImageData = static_cast<OOX::Vml::CImageData*>(pChildElemShape);									
+														
+									std::wstring sIdImageFileCache;
+
+									if (pImageData->m_oRelId.IsInit())		sIdImageFileCache = pImageData->m_oRelId->GetValue();
+									else if (pImageData->m_rId.IsInit())	sIdImageFileCache = pImageData->m_rId->GetValue();
+																		
+									if (!sIdImageFileCache.empty())
 									{
-										OOX::Image*	pImageFileCache = static_cast<OOX::Image*>(pFile.operator->());
+										//ищем физический файл ( rId относительно vml_drawing)									
+										smart_ptr<OOX::File> pFile = pVml->Find(sIdImageFileCache);
 										
-										blipFill.blip->oleFilepathImage = pImageFileCache->filename().GetPath();
+										if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
+										{
+											OOX::Image*	pImageFileCache = static_cast<OOX::Image*>(pFile.operator->());
+											
+											blipFill.blip->oleFilepathImage = pImageFileCache->filename().GetPath();
+										}
 									}
 								}
 							}

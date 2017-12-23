@@ -125,7 +125,7 @@ namespace odf_writer
 class odf_chart_context::Impl
 {
 public:
-	Impl(odf_conversion_context *odf_context) :odf_context_(odf_context)
+	Impl(odf_conversion_context *odf_context) : odf_context_(odf_context)
     {	
 		styles_context_			= NULL;
 		current_series_count_	= 0;
@@ -150,6 +150,9 @@ public:
 	std::vector<odf_axis_state>				axis_;
 	std::vector<office_element_ptr>			group_series_;
 	std::vector<unsigned int>				axis_group_series_;
+
+	_CP_OPT(int)							bar_overlap;
+	_CP_OPT(int)							bar_gap_width;
 
 	struct _range
 	{
@@ -277,6 +280,9 @@ void odf_chart_context::Impl::clear_current()
 	group_series_.clear();
 	data_cell_ranges_.clear();
 	cash_.clear();
+	
+	bar_gap_width	= boost::none;
+	bar_overlap		= boost::none;
 
 	current_series_count_	= 0;
 	local_table_reset_ref_	= false;
@@ -427,8 +433,6 @@ void odf_chart_context::set_chart_bar_direction(int type)
 }
 void odf_chart_context::set_chart_bar_gap_width(std::wstring val)
 {
-	if (!impl_->current_level_.back().chart_properties_) return;
-	
 	int res = val.find(L"%");
 
 	bool percent=false;
@@ -438,21 +442,22 @@ void odf_chart_context::set_chart_bar_gap_width(std::wstring val)
 		percent=true;
 	}
 	double dVal = boost::lexical_cast<double>(val);
-	impl_->current_level_.back().chart_properties_->content_.chart_gap_width_ = (int)dVal;
+	
+	impl_->bar_gap_width = (int)dVal;
 }
 void odf_chart_context::set_chart_bar_overlap(std::wstring val)
 {
-	if (!impl_->current_level_.back().chart_properties_) return;
 	int res = val.find(L"%");
 
-	bool percent=false;
+	bool percent = false;
 	if (res > 0)
 	{
 		val = val.substr(0,res);
-		percent=true;
+		percent = true;
 	}
 	double dVal = boost::lexical_cast<double>(val);
-	impl_->current_level_.back().chart_properties_->content_.chart_overlap_ = (int)dVal;
+
+	impl_->bar_overlap = (int)dVal;
 }
 
 void odf_chart_context::set_chart_stock_candle_stick(bool val)
@@ -702,15 +707,17 @@ void odf_chart_context::end_group_series()
 
 	std::wstring axis_name;
 
-	bool presentZ = false;
 	long countX = 0;
 	long countY = 0;
+	long countZ = 0;
+	
 	for (size_t j = 0; j < impl_->axis_.size(); j++)
 	{
-		if (impl_->axis_[j].dimension ==1)		countX++;
-		else if (impl_->axis_[j].dimension ==3)	presentZ = true;
-		else countY++;
+			 if (impl_->axis_[j].dimension == 1)	countX++;
+		else if (impl_->axis_[j].dimension == 2)	countY++;
+		else if (impl_->axis_[j].dimension == 3)	countZ++;
 	}
+	
 	if (countX < 1 && countY > 1)
 	{
 		impl_->axis_[0].dimension == 1;
@@ -718,15 +725,15 @@ void odf_chart_context::end_group_series()
 		axis->chart_axis_attlist_.chart_dimension_ = L"x";
 		countY--;
 	}
-	if (presentZ == false && impl_->axis_group_series_.size() == 3 && (countY > 1 || countX > 1))
-	{
-		impl_->axis_.back().dimension == 3;
-		chart_axis *axis = dynamic_cast<chart_axis*>(impl_->axis_.back().elm.get());
-		axis->chart_axis_attlist_.chart_dimension_ = L"z";
-		countY--;
-	}
+	//if (countZ > 0 && impl_->axis_group_series_.size() == 3 && (countY > 1 || countX > 1))
+	//{
+	//	impl_->axis_.back().dimension == 3;
+	//	chart_axis *axis = dynamic_cast<chart_axis*>(impl_->axis_.back().elm.get());
+	//	axis->chart_axis_attlist_.chart_dimension_ = L"z";
+	//	countY--;
+	//}
 
-	for (size_t i=0; i < impl_->axis_group_series_.size(); i++)
+	for (size_t i = 0; i < impl_->axis_group_series_.size(); i++)
 	{
 		for (size_t j = 0; j < impl_->axis_.size(); j++)
 		{
@@ -740,7 +747,7 @@ void odf_chart_context::end_group_series()
 	}
 
 
-	for (size_t i =0; i < impl_->group_series_.size() && axis_name.length() > 0; i++)
+	for (size_t i = 0; i < impl_->group_series_.size() && axis_name.length() > 0; i++)
 	{
 		chart_series *series= dynamic_cast<chart_series*>(impl_->group_series_[i].get());
 		if (series)
@@ -796,7 +803,7 @@ void odf_chart_context::start_axis()
 	chart_axis *axis = dynamic_cast<chart_axis*>(elm.get());
 	if (axis == NULL)return;
 //////////	
-	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
+	impl_->styles_context_->create_style(L"", style_family::Chart, true, false, -1);		
 	
 	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
@@ -810,10 +817,19 @@ void odf_chart_context::start_axis()
 	}
 	start_element(elm, style_elm, style_name);
 
-	odf_axis_state axis_state={0,0,L"",elm};
+	odf_axis_state axis_state={0, 0, L"", elm};
 	impl_->axis_.push_back(axis_state);
 /////////////////////defaults
 	impl_->current_level_.back().chart_properties_->content_.chart_reverse_direction_ = false;
+	
+	if (impl_->bar_overlap)
+	{
+		impl_->current_level_.back().chart_properties_->content_.chart_overlap_ = impl_->bar_overlap.get();
+	}
+	if (impl_->bar_gap_width)
+	{
+		impl_->current_level_.back().chart_properties_->content_.chart_gap_width_ = impl_->bar_gap_width.get();
+	}
 }
 void odf_chart_context::start_grid(int type)
 {
@@ -826,7 +842,7 @@ void odf_chart_context::start_grid(int type)
 	if (type == 1) grid->chart_grid_attlist_.chart_class_ = L"major";
 	if (type == 2) grid->chart_grid_attlist_.chart_class_ = L"minor";
 
-	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
+	impl_->styles_context_->create_style(L"", style_family::Chart, true, false, -1);		
 	
 	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
@@ -850,7 +866,7 @@ void odf_chart_context::start_title()
 	chart_title *title = dynamic_cast<chart_title*>(chart_elm.get());
 	if (title == NULL)return;
 //////////	
-	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
+	impl_->styles_context_->create_style(L"", style_family::Chart, true, false, -1);		
 	
 	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
@@ -874,7 +890,7 @@ void odf_chart_context::start_plot_area()
 
 	plot_area->chart_plot_area_attlist_.chart_data_source_has_labels_ = L"both";
 //////////	
-	impl_->styles_context_->create_style(L"",style_family::Chart, true, false, -1);		
+	impl_->styles_context_->create_style(L"", style_family::Chart, true, false, -1);		
 	
 	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
@@ -911,8 +927,6 @@ void odf_chart_context::start_text()
 	impl_->odf_context_->start_text_context();
 	impl_->odf_context_->text_context()->set_styles_context(impl_->styles_context_);
 
-	style_text_properties *text_props = NULL;
-
 	style *style_ = dynamic_cast<style*>(impl_->current_chart_state_.elements_.back().style_elm.get());
 	if (style_)
 	{
@@ -926,7 +940,7 @@ void odf_chart_context::end_text()
 {
 	odf_text_context *text_context_ = text_context();
 	
-	if (text_context_ == NULL || impl_->current_level_.size() <1 )return;
+	if (text_context_ == NULL || impl_->current_level_.size() < 1 )return;
 
 	for (size_t i = 0; i < text_context_->text_elements_list_.size(); i++)
 	{

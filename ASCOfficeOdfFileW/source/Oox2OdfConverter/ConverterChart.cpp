@@ -222,6 +222,17 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_PlotArea* ct_plotArea)
 
 	convert(ct_plotArea->m_layout);
 ///////////////////////
+
+	for (size_t i=0; i< ct_plotArea->m_Items.size(); i++)//
+	{
+		if (!ct_plotArea->m_ItemsElementName0[i]) continue;
+		switch(*ct_plotArea->m_ItemsElementName0[i])
+		{
+			case OOX::Spreadsheet::itemschoicetype5BAR3DCHART:	convert_before((OOX::Spreadsheet::CT_Bar3DChart*)	ct_plotArea->m_Items[i]); break;
+			case OOX::Spreadsheet::itemschoicetype5BARCHART:	convert_before((OOX::Spreadsheet::CT_BarChart*)		ct_plotArea->m_Items[i]); break;
+
+		}
+	}
 	for (size_t i = 0; i < ct_plotArea->m_Items1.size(); i++)
 	{
 		if (!ct_plotArea->m_ItemsElementName1[i]) continue;
@@ -514,12 +525,6 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Bar3DChart *chart)
 	if (chart->m_barDir && chart->m_barDir->m_val)
 		odf_context()->chart_context()->set_chart_bar_direction(*chart->m_barDir->m_val);
 
-	if (chart->m_gapWidth && chart->m_gapWidth->m_val)
-		odf_context()->chart_context()->set_chart_bar_gap_width(*chart->m_gapWidth->m_val);
-	
-	//if (chart->m_overlap && chart->m_overlap->m_val)
-	//	odf_context()->chart_context()->set_chart_bar_overlap(*chart->m_overlap->m_val);
-
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
 
@@ -533,6 +538,34 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Bar3DChart *chart)
 		}		
 	odf_context()->chart_context()->end_group_series();
 }
+void OoxConverter::convert_before(OOX::Spreadsheet::CT_Bar3DChart *chart)
+{
+	if (chart == NULL)return;
+
+	if (chart->m_gapWidth && chart->m_gapWidth->m_val)
+		odf_context()->chart_context()->set_chart_bar_gap_width(*chart->m_gapWidth->m_val);
+	
+	//if (chart->m_overlap && chart->m_overlap->m_val)
+	//	odf_context()->chart_context()->set_chart_bar_overlap(*chart->m_overlap->m_val);
+	//else
+	//	odf_context()->chart_context()->set_chart_bar_overlap(L"0");
+
+}
+void OoxConverter::convert_before(OOX::Spreadsheet::CT_BarChart *chart)
+{
+	if (chart == NULL)return;	
+	
+	if (chart->m_gapWidth && chart->m_gapWidth->m_val)
+		odf_context()->chart_context()->set_chart_bar_gap_width(*chart->m_gapWidth->m_val);
+	else
+		odf_context()->chart_context()->set_chart_bar_overlap(L"100");
+
+	if (chart->m_overlap && chart->m_overlap->m_val)
+		odf_context()->chart_context()->set_chart_bar_overlap(*chart->m_overlap->m_val);
+	else
+		odf_context()->chart_context()->set_chart_bar_overlap(L"0");
+}
+
 void OoxConverter::convert(OOX::Spreadsheet::CT_BarChart *chart)
 {
 	if (chart == NULL)return;
@@ -544,12 +577,6 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_BarChart *chart)
 	
 	if (chart->m_barDir && chart->m_barDir->m_val)
 		odf_context()->chart_context()->set_chart_bar_direction(*chart->m_barDir->m_val);
-
-	if (chart->m_gapWidth && chart->m_gapWidth->m_val)
-		odf_context()->chart_context()->set_chart_bar_gap_width(*chart->m_gapWidth->m_val);
-
-	if (chart->m_overlap && chart->m_overlap->m_val)
-		odf_context()->chart_context()->set_chart_bar_overlap(*chart->m_overlap->m_val);
 
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);

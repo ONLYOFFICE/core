@@ -2535,7 +2535,7 @@ namespace BinXlsxRW {
 				{
 					m_pCurVmlDrawing->m_mapComments = &m_pCurWorksheet->m_mapComments;
 
-					std::map<std::wstring, unsigned int> mapByAuthors;
+                    std::unordered_map<std::wstring, unsigned int> mapByAuthors;
 					OOX::Spreadsheet::CComments* pComments = new OOX::Spreadsheet::CComments();
 					
 					pComments->m_oCommentList.Init();
@@ -2559,7 +2559,7 @@ namespace BinXlsxRW {
 							if(pCommentItem->m_sAuthor.IsInit())
 							{
 								const std::wstring& sAuthor = pCommentItem->m_sAuthor.get();
-								std::map<std::wstring, unsigned int>::const_iterator pFind = mapByAuthors.find(sAuthor);
+                                std::unordered_map<std::wstring, unsigned int>::const_iterator pFind = mapByAuthors.find(sAuthor);
 								
 								int nAuthorId;
 								if(pFind != mapByAuthors.end())
@@ -3522,7 +3522,7 @@ namespace BinXlsxRW {
 					{
 						int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
 
-						std::unordered_map<int, OOX::Spreadsheet::CSi*>::iterator pFind = m_pSharedStrings->m_mapItems.find(nValue);
+                        std::map<int, OOX::Spreadsheet::CSi*>::iterator pFind = m_pSharedStrings->m_mapItems.find(nValue);
 
 						if(pFind != m_pSharedStrings->m_mapItems.end())
 						{

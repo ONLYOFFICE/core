@@ -1376,7 +1376,7 @@ namespace BinXlsxRW
 		{
 			int nCurPos;
 			
-			for ( auto it = sharedString.m_mapItems.begin(); it != sharedString.m_mapItems.end(); it++)
+            for ( std::map<int, OOX::Spreadsheet::CSi*>::iterator it = sharedString.m_mapItems.begin(); it != sharedString.m_mapItems.end(); it++)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerSharedStringTypes::Si);
 				WriteSharedString(it->second, pIndexedColors, pTheme, oFontProcessor);

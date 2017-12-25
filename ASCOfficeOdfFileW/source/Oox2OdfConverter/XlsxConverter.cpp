@@ -585,7 +585,7 @@ void XlsxConverter::convert_sharing_string(int number)
 	const OOX::Spreadsheet::CSharedStrings *SharedStrings= xlsx_document->GetSharedStrings();
 	if (!SharedStrings) return;
 
-	std::unordered_map<int, OOX::Spreadsheet::CSi*>::const_iterator pFind = SharedStrings->m_mapItems.find(number);
+    std::map<int, OOX::Spreadsheet::CSi*>::const_iterator pFind = SharedStrings->m_mapItems.find(number);
 
 	if (pFind != SharedStrings->m_mapItems.end())
 	{

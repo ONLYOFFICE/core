@@ -243,7 +243,7 @@ namespace CSVWriter
 								{
 									int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
 
-									std::unordered_map<int, OOX::Spreadsheet::CSi*>::iterator pFind = pSharedStrings->m_mapItems.find(nValue);
+                                    std::map<int, OOX::Spreadsheet::CSi*>::iterator pFind = pSharedStrings->m_mapItems.find(nValue);
 									if (pFind != pSharedStrings->m_mapItems.end())
 									{
 										OOX::Spreadsheet::CSi *pSi = pFind->second;

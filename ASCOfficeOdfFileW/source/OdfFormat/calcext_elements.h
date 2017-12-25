@@ -88,7 +88,7 @@ public:
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-/// \brief  calcext:color-scale-entry
+///  calcext:color-scale-entry
 class calcext_color_scale_entry : public office_element_impl<calcext_color_scale_entry>
 {
 public:
@@ -104,13 +104,13 @@ public:
 	virtual void serialize(std::wostream & _Wostream);
 
 	_CP_OPT(odf_types::color)			calcext_color_;
-	_CP_OPT(std::wstring)	calcext_value_;
+	_CP_OPT(std::wstring)				calcext_value_;
 	_CP_OPT(odf_types::calcext_type)	calcext_type_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_color_scale_entry);
 
-/// \brief  calcext:formatting-entry
+///  calcext:formatting-entry
 class calcext_formatting_entry : public office_element_impl<calcext_formatting_entry>
 {
 public:
@@ -125,13 +125,13 @@ public:
 
 	virtual void serialize(std::wostream & _Wostream);
 
-	_CP_OPT(std::wstring) calcext_value_;
-	_CP_OPT(odf_types::calcext_type) calcext_type_;
+	_CP_OPT(std::wstring)				calcext_value_;
+	_CP_OPT(odf_types::calcext_type)	calcext_type_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_formatting_entry);
 
-/// \brief  calcext:icon-set
+///  calcext:icon-set
 class calcext_icon_set : public office_element_impl<calcext_icon_set>
 {
 public:
@@ -146,15 +146,13 @@ public:
 
 	virtual void serialize(std::wostream & _Wostream);
 	
-	calcext_icon_set_attr calcext_icon_set_attr_;
-
-private:
-    office_element_ptr_array content_;//entries
+	calcext_icon_set_attr		attr_;
+    office_element_ptr_array	content_;//entries
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_icon_set);
 
-/// \brief  calcext:data-bar
+///  calcext:data-bar
 class calcext_data_bar: public office_element_impl<calcext_data_bar>
 {
 public:
@@ -169,14 +167,12 @@ public:
 
 	virtual void serialize(std::wostream & _Wostream);
 	
-	calcext_data_bar_attr calcext_data_bar_attr_;
-
-private:
-    office_element_ptr_array content_;//entries
+	calcext_data_bar_attr		attr_;
+    office_element_ptr_array	content_;//entries
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_data_bar)
 
-/// \brief  calcext:color-scale
+///  calcext:color-scale
 class calcext_color_scale: public office_element_impl<calcext_color_scale>
 {
 public:
@@ -191,12 +187,11 @@ public:
 
 	virtual void serialize(std::wostream & _Wostream);
 
-private:
-    office_element_ptr_array content_;//color_scale_entries
+    office_element_ptr_array content_;	//color_scale_entries
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_color_scale)
 
-/// \brief  calcext:date-is
+///  calcext:date-is
 class calcext_date_is: public office_element_impl<calcext_date_is>
 {
 public:
@@ -211,11 +206,11 @@ public:
 
 	virtual void serialize(std::wostream & _Wostream);
 
-	calcext_date_is_attr calcext_date_is_attr_;
+	calcext_date_is_attr attr_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_date_is)
 
-/// \brief  calcext:condition
+///  calcext:condition
 class calcext_condition: public office_element_impl<calcext_condition>
 {
 public:
@@ -230,11 +225,11 @@ public:
 
 	virtual void serialize(std::wostream & _Wostream);
 
-	calcext_condition_attr calcext_condition_attr_;
+	calcext_condition_attr attr_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_condition)
 
-/// \brief  calcext:conditional-format
+///  calcext:conditional-format
 class calcext_conditional_format: public office_element_impl<calcext_conditional_format>
 {
 public:
@@ -257,7 +252,7 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_conditional_format)
 
-/// \brief  calcext:conditional-formats
+///  calcext:conditional-formats
 class calcext_conditional_formats: public office_element_impl<calcext_conditional_formats>
 {
 public:

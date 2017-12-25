@@ -78,6 +78,8 @@ namespace OOX
 		//class CPresetTextShape;
 		class CInline;
 		class CAnchor;
+		class COfficeArtExtensionList;
+		class COfficeArtExtension;
 	}
 	namespace Spreadsheet
 	{
@@ -520,6 +522,9 @@ public:
 		void convert(OOX::Vml::CGroup					*vml_group);
 		void convert(OOX::Vml::CVmlCommonElements		*vml_attr);
 		void convert(OOX::Vml::CFormulas				*vml_formulas);
+
+		void convert(OOX::Drawing::COfficeArtExtensionList		*ext_list);
+		void convert(OOX::Drawing::COfficeArtExtension			*art_ext);
 	};
 
 } // namespace Oox2Odf

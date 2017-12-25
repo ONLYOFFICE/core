@@ -89,7 +89,9 @@ namespace OOX
 		class CSi;
 		class CWorkbookView;
 		class CPictureWorksheet;
-		class CHeaderFooter;
+		class CHeaderFooter;		
+		class CSparklineGroups;
+		class CAltTextTable;
 	}
 }
 
@@ -126,6 +128,8 @@ namespace Oox2Odf
 	class XlsxConverter : public OoxConverter
 	{
 	public:
+		friend class OoxConverter;
+
 		XlsxConverter(const std::wstring & path, const ProgressCallback* ffCallBack);
 		~XlsxConverter();
 
@@ -206,6 +210,9 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CConditionalFormatValueObject*oox_cond_value);
 		void convert(OOX::Spreadsheet::CFormulaCF					*oox_cond_formula);
 		void convert(OOX::Spreadsheet::CSi							*oox_rtf_text);
+
+		void convert(OOX::Spreadsheet::CSparklineGroups				*sparkline);
+		void convert(OOX::Spreadsheet::CAltTextTable				*alt_text);
 
 		void convert(double oox_size,						_CP_OPT(odf_types::length) & odf_size);
 		void convert_sharing_string(int number);

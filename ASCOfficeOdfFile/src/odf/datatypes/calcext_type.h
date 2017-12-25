@@ -49,7 +49,8 @@ public:
         Minimum,
         AutoMaximum,
         AutoMinimum,
-		Formula
+		Formula,
+		Percentile
     };
 
     calcext_type() {}

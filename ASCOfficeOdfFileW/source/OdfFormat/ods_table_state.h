@@ -274,7 +274,7 @@ public:
 				void set_conditional_formula(std::wstring formula);
                 void set_conditional_value(int type, std::wstring value );
                 void set_conditional_iconset(int type_iconset);
-				void add_conditional_colorscale(_CP_OPT(odf_types::color) color);
+				void add_conditional_colorscale(int index, _CP_OPT(odf_types::color) color);
 				void set_conditional_databar_color(_CP_OPT(odf_types::color) color);
 				
 				void set_conditional_style_name(std::wstring style_name);

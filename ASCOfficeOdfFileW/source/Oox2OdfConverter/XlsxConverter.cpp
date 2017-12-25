@@ -247,11 +247,14 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	convert(oox_sheet->m_oSheetPr.GetPointer());
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Предобработка
-	for (std::list<OOX::Spreadsheet::CHyperlink*>::iterator	it = oox_sheet->m_oHyperlinks->m_arrItems.begin(); 
-															it != oox_sheet->m_oHyperlinks->m_arrItems.end(); it++)
+	if (oox_sheet->m_oHyperlinks.IsInit())
 	{
-		convert(*it, oox_sheet);
-	}	
+		for (std::list<OOX::Spreadsheet::CHyperlink*>::iterator	it = oox_sheet->m_oHyperlinks->m_arrItems.begin(); 
+																it != oox_sheet->m_oHyperlinks->m_arrItems.end(); it++)
+		{
+			convert(*it, oox_sheet);
+		}	
+	}
 	//комментарии
 	std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>::iterator pos = oox_sheet->m_mapComments.begin();
 	while ( oox_sheet->m_mapComments.end() != pos )
@@ -262,13 +265,16 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	//todooo для оптимизации - перенести мержи в начало
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	//колонки
-	ods_context->start_columns();
-		for (std::list<OOX::Spreadsheet::CCol*>::iterator	it = oox_sheet->m_oCols->m_arrItems.begin(); 
-															it != oox_sheet->m_oCols->m_arrItems.end(); it++)
-		{
-			convert(*it);
-		}
-	ods_context->end_columns();
+	if (oox_sheet->m_oCols.IsInit())
+	{
+		ods_context->start_columns();
+			for (std::list<OOX::Spreadsheet::CCol*>::iterator	it = oox_sheet->m_oCols->m_arrItems.begin(); 
+																it != oox_sheet->m_oCols->m_arrItems.end(); it++)
+			{
+				convert(*it);
+			}
+		ods_context->end_columns();
+	}
 
 	if (oox_sheet->m_oSheetData.IsInit() )
 	{
@@ -287,15 +293,18 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		oox_sheet->m_oSheetData.reset();
 	}
 
-	for (std::list<OOX::Spreadsheet::CMergeCell*>::iterator	it = oox_sheet->m_oMergeCells->m_arrItems.begin(); 
-															it != oox_sheet->m_oMergeCells->m_arrItems.end(); it++)
+	if (oox_sheet->m_oMergeCells.IsInit())
 	{
-		if ((*it) && ((*it)->m_oRef.IsInit()))
+		for (std::list<OOX::Spreadsheet::CMergeCell*>::iterator	it = oox_sheet->m_oMergeCells->m_arrItems.begin(); 
+																it != oox_sheet->m_oMergeCells->m_arrItems.end(); it++)
 		{
-			ods_context->add_merge_cells((*it)->m_oRef.get());
+			if ((*it) && ((*it)->m_oRef.IsInit()))
+			{
+				ods_context->add_merge_cells((*it)->m_oRef.get());
+			}
 		}
 	}
-	if (oox_sheet->m_oDrawing.IsInit() && oox_sheet->m_oDrawing->m_oId.IsInit())
+	if ((oox_sheet->m_oDrawing.IsInit()) && (oox_sheet->m_oDrawing->m_oId.IsInit()))
 	{
 		smart_ptr<OOX::File> oFile = oox_sheet->Find(oox_sheet->m_oDrawing->m_oId->GetValue());
 		if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Drawings == oFile->type())

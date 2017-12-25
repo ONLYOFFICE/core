@@ -68,8 +68,8 @@ std::wstring create_file_name(const std::wstring & uri, _mediaitems::Type type, 
 {
  	std::wstring sExt;
 	
-	if (type == _mediaitems::typeOleObject &&
-		type == _mediaitems::typeObjectReplacement)
+	//if (type == _mediaitems::typeOleObject &&
+	//	type == _mediaitems::typeObjectReplacement)
 	{
 		int n = uri.rfind(L".");
 		if (n >= 0) sExt = uri.substr(n);

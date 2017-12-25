@@ -86,7 +86,7 @@ void _mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wst
 	
 	std::wstring input_path = oox_ref;
 
-#if defined (_WIN32) || defined(_WIN64) // + mac???
+#if defined (_WIN32) || defined(_WIN64) 
     boost::to_lower(input_path);
 #endif
 
@@ -100,7 +100,7 @@ void _mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wst
 			break;
 		}
 	}
-	if (output_path.length() < 1)
+	if (output_path.empty())
 	{
 		output_path = ( output_sub_path + output_fileName) ;
 		if ( type == typeImage)

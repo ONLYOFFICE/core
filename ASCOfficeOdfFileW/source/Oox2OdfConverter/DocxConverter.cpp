@@ -2415,8 +2415,8 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 			odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + std::to_wstring(sptType));
 			odf_context()->drawing_context()->start_shape(OOX::VmlShapeType2PrstShape(sptType));
 			
-			OoxConverter::convert(oox_pic->m_oShape.GetPointer());	
 			OoxConverter::convert(oox_pic->m_oShapeType.GetPointer());
+			OoxConverter::convert(oox_pic->m_oShape.GetPointer());	
 			
 			odf_context()->drawing_context()->end_shape(); 
 		}

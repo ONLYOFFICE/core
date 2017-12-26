@@ -58,7 +58,7 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/CxnSp.h"
 
-#include "../../../Common/DocxFormat/Source/XlsxFormat/Worksheets/sparkline.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
 
 #define PROGRESSEVENT_ID	0
 

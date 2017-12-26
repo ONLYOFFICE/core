@@ -47,30 +47,17 @@ namespace DocFileFormat
 
 		virtual ~ConversionContext()
 		{
-
 		}
 
-		// Adds a new RSID to the set
 		inline void AddRsid(const std::wstring& rsid)
 		{
 			if (AllRsids.find(rsid) == AllRsids.end())
 				AllRsids.insert(rsid);
 		}
 
-		inline WordDocument* GetDocument()
-		{
-			return _doc;
-		}
-
-		inline WordprocessingDocument* GetXmlDocument()
-		{
-			return _docx;
-		}
-	
-	public:
 		WordprocessingDocument*		_docx;	
 		WordDocument*				_doc;	
-		/// A set thta contains all revision ids.
+
 		std::set<std::wstring>		AllRsids;
 	};
 }

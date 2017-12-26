@@ -41,6 +41,7 @@ namespace DocFileFormat
 {
 	template<class T> class StringTable: public IVisitable
 	{
+		friend class WordDocument;
 		friend class CharacterPropertiesMapping;
 		friend class FontTableMapping;
 		friend class StyleSheetMapping;	

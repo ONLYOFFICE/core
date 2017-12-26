@@ -69,7 +69,6 @@ namespace DocFileFormat
 {
 	class WordDocument: public IVisitable
 	{
-		/*Mapping classes with direct access to the Word Document.*/
 		friend class FootnotesMapping;
 		friend class EndnotesMapping;
         friend class CommentsMapping;
@@ -98,7 +97,8 @@ namespace DocFileFormat
 		long LoadDocument (const std::wstring & fileName, const std::wstring & password);
 
 		bool	bOlderVersion;
-		int		document_code_page;
+		int		nDocumentCodePage;
+		bool	bDocumentCodePage;
 		
 		inline StructuredStorageReader* GetStorage() const
 		{

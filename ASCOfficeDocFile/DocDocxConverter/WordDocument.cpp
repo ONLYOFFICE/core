@@ -40,8 +40,45 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
 
+#include <unordered_map>
+
 namespace DocFileFormat
 {
+	static const int aCodePages[][2] = {
+		//charset	codepage
+		0,	1252, //ANSI
+		1,	0,//Default
+		2,	42,//Symbol
+		77,	10000,//Mac Roman
+		78,	10001,//Mac Shift Jis
+		79,	10003,//Mac Hangul
+		80,	10008,//Mac GB2312
+		81,	10002,//Mac Big5
+		83,	10005,//Mac Hebrew
+		84,	10004,//Mac Arabic
+		85,	10006,//Mac Greek
+		86,	10081,//Mac Turkish
+		87,	10021,//Mac Thai
+		88,	10029,//Mac East Europe
+		89,	10007,//Mac Russian
+		128,	932,//Shift JIS
+		129,	949,//Hangul
+		130,	1361,//Johab
+		134,	936,//GB2312
+		136,	950,//Big5
+		238,	1250,//Greek
+		161,	1253,//Greek
+		162,	1254,//Turkish
+		163,	1258,//Vietnamese
+		177,	1255,//Hebrew
+		178,	1256, //Arabic
+		186,	1257,//Baltic
+		204,	1251,//Russian
+		222,	874,//Thai
+		238,	1250,//Eastern European
+		254,	437,//PC 437
+		255,	850//OEM
+	};
 	WordDocument::WordDocument (const ProgressCallback* pCallFunc, const std::wstring & sTempFolder ) :	
 		m_PieceTable(NULL), WordDocumentStream(NULL), TableStream(NULL), DataStream(NULL),  FIB(NULL), 
 		Text(NULL), RevisionAuthorTable(NULL), FontTable(NULL), BookmarkNames(NULL), AutoTextNames(NULL), 
@@ -55,12 +92,15 @@ namespace DocFileFormat
 		AnnotationOwners(NULL), DocProperties(NULL), listFormatOverrideTable(NULL), headerAndFooterTable(NULL),
 		AnnotStartPlex(NULL), AnnotEndPlex(NULL), encryptionHeader(NULL)
 	{
-		m_pCallFunc			=	pCallFunc;	
-		m_sTempFolder		=	sTempFolder;
+		m_pCallFunc			= pCallFunc;	
+		m_sTempFolder		= sTempFolder;
 		
-		m_pStorage			=	NULL;
-		officeArtContent	=	NULL;
-		bOlderVersion		=	false;
+		m_pStorage			= NULL;
+		officeArtContent	= NULL;
+		bOlderVersion		= false;
+		
+		bDocumentCodePage	= false;
+		nDocumentCodePage	= ENCODING_WINDOWS_1250;
 	}
 
 	WordDocument::~WordDocument()
@@ -178,8 +218,6 @@ namespace DocFileFormat
 		
 		m_pStorage->GetStream (L"SummaryInformation",			&Summary);
 		m_pStorage->GetStream (L"DocumentSummaryInformation",	&DocSummary);
-
-		document_code_page = ENCODING_WINDOWS_1250;
 		
 		if ((Summary) && (Summary->size() > 0))
 		{
@@ -188,7 +226,10 @@ namespace DocFileFormat
 			int document_code_page1 = summary_info.GetCodePage(); //from software last open 
 			
 			if (document_code_page1 > 0)
-				document_code_page = document_code_page1;		
+			{
+				nDocumentCodePage = document_code_page1;		
+				bDocumentCodePage = true;
+			}
 		}
 		if ((DocSummary) && (DocSummary->size() > 0))
 		{
@@ -197,12 +238,18 @@ namespace DocFileFormat
 			int document_code_page2 = doc_summary_info.GetCodePage();
 
 			if (document_code_page2 > 0)
-				document_code_page = document_code_page2;
+			{
+				nDocumentCodePage = document_code_page2;
+				bDocumentCodePage = true;
+			}
 		}
 		if (!bOlderVersion)
-			document_code_page = ENCODING_UTF16;
+		{
+			nDocumentCodePage = ENCODING_UTF16;
+			bDocumentCodePage = true;
+		}
 
-		FIB->m_CodePage =  document_code_page;
+		FIB->m_CodePage =  nDocumentCodePage;
 //-------------------------------------------------------------------------------------------------
 		try
 		{
@@ -353,6 +400,31 @@ namespace DocFileFormat
 				return AVS_ERROR_FILEFORMAT;
 			}
 		}
+		if (!bDocumentCodePage && FontTable)
+		{
+			std::unordered_map<int, int> fonts_charsets;
+
+			for ( std::vector<ByteStructure*>::iterator iter = FontTable->Data.begin();!bDocumentCodePage &&  iter != FontTable->Data.end(); iter++ )
+			{
+				FontFamilyName* font = dynamic_cast<FontFamilyName*>( *iter );
+				if (!font) continue;
+
+				if (fonts_charsets.find(font->chs) == fonts_charsets.end())
+				{
+					fonts_charsets.insert(std::make_pair(font->chs, font->ff));
+					
+					for (int i = 0 ; i < sizeof(aCodePages) / 2; i++)
+					{
+						if (aCodePages[i][0] == font->chs && font->chs != 0)
+						{
+							nDocumentCodePage = aCodePages[i][1];
+							bDocumentCodePage = true;
+							break;
+						}
+					}	
+				}
+			}
+		}
 
 		if (FIB->m_FibWord97.lcbClx > 0)
 		{
@@ -371,7 +443,7 @@ namespace DocFileFormat
 			WordDocumentStream->read (bytes, cb);
 
 			Text = new std::vector<wchar_t>();
-			FormatUtils::GetSTLCollectionFromBytes<std::vector<wchar_t> >(Text, bytes, cb, document_code_page);
+			FormatUtils::GetSTLCollectionFromBytes<std::vector<wchar_t> >(Text, bytes, cb, nDocumentCodePage);
 
 			RELEASEARRAYOBJECTS(bytes);
 		}

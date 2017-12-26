@@ -38,8 +38,8 @@ namespace DocFileFormat
 	{
 		if (m_context)
 		{
-			m_document		=	m_context->GetDocument();
-			m_xmldocument	=	m_context->GetXmlDocument();
+			m_document		=	m_context->_doc;
+			m_xmldocument	=	m_context->_docx;
 		}
 	}
 

@@ -48,7 +48,8 @@ namespace DocFileFormat
 
   class FontFamilyName: public ByteStructure
   {
-    friend class CharacterPropertiesMapping;
+	friend class WordDocument;
+	friend class CharacterPropertiesMapping;
 	friend class DocumentMapping;
 	friend class FontTableMapping;
 	friend class StyleSheetMapping;

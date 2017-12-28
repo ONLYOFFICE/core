@@ -558,7 +558,8 @@ namespace NSCommon
 
                             if (NULL != pOS2)
                             {
-                                if (0 == (pOS2->ulCodePageRange1 & 0xF0000000))
+                                if ((0 == (pOS2->ulCodePageRange1 & 0x003E0000)) /*exclude CJK fonts*/
+                                            && (0 == (pOS2->ulCodePageRange1 & 0xF0000000)))
                                     bIsSymbol = TRUE;
                             }
                         }

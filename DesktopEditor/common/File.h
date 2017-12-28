@@ -102,6 +102,24 @@ namespace NSFile
 	{
 	public:
 
+		static std::wstring GetUnicodeFromUTF16CharPtr(const char* pData, LONG lCount)
+		{
+            LONG nCnt = lCount / 2;
+			wchar_t* pUnicode = new wchar_t[nCnt + 1]();
+			for (LONG i=0, j=0; i < nCnt; ++i){
+				pUnicode[i] = (wchar_t)(BYTE)pData[j];
+                pUnicode[i] = pUnicode[i] << 8 | (BYTE)pData[j+1];
+                j+=2;
+            }
+
+			pUnicode[nCnt] = 0;
+
+			std::wstring s(pUnicode, nCnt);
+			RELEASEARRAYOBJECTS(pUnicode);
+
+			return s;
+		}
+
 		static std::wstring GetUnicodeFromCharPtr(const char* pData, LONG lCount, INT bIsUtf8 = FALSE)
 		{
 			if (bIsUtf8)

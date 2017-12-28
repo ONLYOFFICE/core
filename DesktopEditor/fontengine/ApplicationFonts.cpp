@@ -1461,6 +1461,9 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
 
 			int nNamesCount = FT_Get_Sfnt_Name_Count(pFace);
 
+            std::wstring wsUnicodeFamilyName = L"";
+            bool bIsCJKFonts = false;
+
 			for (int nNameIndex = 0; nNameIndex < nNamesCount; ++nNameIndex)
 			{
 				FT_SfntName_ oSfntName;
@@ -1476,6 +1479,14 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
 					// Preffered family
 					int k= 10;
 				}
+				if ( (oSfntName.language_id == 0x0804 || oSfntName.language_id == 0x0411
+                    || oSfntName.language_id == 0x0412) && oSfntName.name_id == 1 && oSfntName.platform_id == 3 )
+				{
+					// CJK fonts unicode(utf16) family name
+                    wsUnicodeFamilyName = NSFile::CUtf8Converter::GetUnicodeFromUTF16CharPtr((char*)oSfntName.string,
+                        oSfntName.string_len);
+                    bIsCJKFonts = true;
+				}
 			}
 
             INT bFixedWidth = FT_IS_FIXED_WIDTH( pFace );
@@ -1486,7 +1497,6 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
 			ULONG ulRange1 = 0, ulRange2 = 0, ulRange3 = 0, ulRange4 = 0, ulCodeRange1 = 0, ulCodeRange2 = 0;
 			USHORT usWidth = 0, usWeight = 0;
 			SHORT sFamilyClass = 0;
-
 			SHORT shAvgCharWidth = 0, shAscent = 0, shDescent = 0, shLineGap = 0, shXHeight = 0, shCapHeight = 0;
 			if ( NULL != pOs2 )
 			{
@@ -1585,7 +1595,12 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
 			if (NULL != pFace->style_name)
 				sStyleName = pFace->style_name;
 
-			std::wstring wsFamilyName = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(sFamilyName);
+            std::wstring wsFamilyName = L"";
+            if(bIsCJKFonts){
+			    wsFamilyName = wsUnicodeFamilyName;
+            }else{
+			    wsFamilyName = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(sFamilyName);
+            }
 			std::wstring wsStyleName = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(sStyleName);
             
 #ifdef _MAC

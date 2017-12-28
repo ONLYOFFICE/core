@@ -162,7 +162,7 @@ public:
 	{
 		RemoveAll();
 		if (m_aT)
-			::free(m_aT);
+            delete[] m_aT;
 	}
 
 	CArray(const CArray<T>& src) : m_aT(NULL), m_nSize(0), m_nAllocSize(0)
@@ -170,12 +170,12 @@ public:
 		int nSrcSize = src.GetCount();
 		if (0 != nSrcSize)
 		{
-			m_aT = (T*)::calloc(nSrcSize, sizeof(T));
+            m_aT = new T[nSrcSize];
 			if (m_aT != NULL)
 			{
 				m_nAllocSize = nSrcSize;
 				for (int i = 0; i < nSrcSize; i++)
-					::new(m_aT + i) T(src.m_aT[i]);
+                    m_aT[i] = src[i];
 
 				m_nSize = nSrcSize;
 			}
@@ -188,12 +188,12 @@ public:
 
 		if (0 != nSrcSize)
 		{
-			m_aT = (T*)::calloc(nSrcSize, sizeof(T));
+            m_aT = new T[nSrcSize];
 			if (m_aT != NULL)
 			{
 				m_nAllocSize = nSrcSize;
 				for (int i = 0; i < nSrcSize; i++)
-					::new(m_aT + i) T(src.m_aT[i]);
+                    m_aT[i] = src[i];
 
 				m_nSize = nSrcSize;
 			}
@@ -218,10 +218,7 @@ public:
 		{
 			int nNewAllocSize = nAllocSize;
 
-			m_aT = (T*)::calloc(nNewAllocSize, sizeof(T));
-            for (int i = 0; i < nNewAllocSize; i++)
-                ::new(m_aT + i) T;
-
+            m_aT = new T[nNewAllocSize];
 			if (NULL == m_aT)
 				return FALSE;
 
@@ -238,8 +235,7 @@ public:
 		{
             int nNewAllocSize = (m_nAllocSize == 0) ? 1 : (m_nSize * 2);
 
-            T* newT = (T*)::calloc(nNewAllocSize, sizeof(T));
-            //T* newT = (T*)malloc(nNewAllocSize * sizeof(T));
+            T* newT = new T[nNewAllocSize];
 
 			if (NULL == newT)
 				return FALSE;
@@ -247,14 +243,16 @@ public:
 			m_nAllocSize = nNewAllocSize;
 
 			// без операторов копирования и деструкторов
-			MoveElements(newT, m_aT, m_nSize);
+            //copy
+			for (int i = 0; i < m_nSize; i++)
+			    newT[i] = m_aT[i];
+
 			if (NULL != m_aT)
-				::free(m_aT);
+				delete[] m_aT;
 
 			m_aT = newT;
 		}
 
-        ::new(m_aT + m_nSize) T;
 		m_nSize++;
 		return TRUE;
 	}
@@ -274,17 +272,21 @@ public:
 		if ((nIndex + nCount) > m_nSize)
 			nCount = m_nSize - nIndex;
 
-		// вызываем деструкторы
-		for (int i = 0; i < nCount; ++i)
-			m_aT[nIndex + i].~T();
+        m_nAllocSize = (m_nSize - nCount) * 2;
+        T* newT = new T[m_nAllocSize];
 
-		int nNewCount = nIndex + nCount;
-		int nMoveCount = m_nSize - nNewCount;
+        int nNewIndex = 0;
+        for(int i = 0; i < nIndex; i++){
+            newT[nNewIndex++] = m_aT[i];
+        }
+        for(int i = nIndex + nCount; i < m_nSize; i++){
+            newT[nNewIndex++] = m_aT[i];
+        }
 
-		if (nNewCount != m_nSize)
-		{
-			MoveElements(m_aT + nIndex, m_aT + nNewCount, nMoveCount);
-		}
+		if (NULL != m_aT)
+            delete[] m_aT;
+
+        m_aT = newT;
 		m_nSize -= nCount;
 		return TRUE;
 	}
@@ -294,10 +296,7 @@ public:
 		if (m_aT != NULL)
 		{
 			// вызываем деструкторы
-			for (int i = 0; i < m_nSize; i++)
-				m_aT[i].~T();
-
-			::free(m_aT);
+            delete[] m_aT;
 			m_aT = NULL;
 		}
 		m_nSize = 0;

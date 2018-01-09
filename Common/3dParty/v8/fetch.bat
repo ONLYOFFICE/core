@@ -1,7 +1,7 @@
 SET SCRIPTPATH=%~dp0
 CD /D %~dp0
 
-SET DEPOT_TOOLSPWIN_TOOLCHAIN=0
+SET DEPOT_TOOLS_WIN_TOOLCHAIN=0
 SET GYP_MSVS_VERSION=2015
 
 if exist "depot_tools" (
@@ -13,10 +13,11 @@ if exist "depot_tools" (
 
 SET PATH=%SCRIPTPATH%depot_tools;%PATH%
 
+call gclient
+
 call ./depot_tools/fetch v8
 cd v8
 call git checkout -b 6.0 -t branch-heads/6.0
+cd ../
 
-SET DEPOT_TOOLSPWIN_TOOLCHAIN=0
-SET GYP_MSVS_VERSION=2015
 call gclient sync

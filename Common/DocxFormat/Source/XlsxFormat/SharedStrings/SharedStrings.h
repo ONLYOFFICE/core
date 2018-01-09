@@ -36,7 +36,7 @@
 #include "../CommonInclude.h"
 
 #include "Si.h"
-#include <unordered_map>
+#include <map>
 
 namespace OOX
 {
@@ -172,7 +172,7 @@ namespace OOX
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oUniqueCount;
-			std::unordered_map<int, CSi*>					m_mapItems;
+            std::map<int, CSi*>                             m_mapItems;
 			int												m_nCount;
 
 		};

@@ -79,7 +79,6 @@ public:
    
     _CP_OPT(odf_types::length)			style_width_;
     _CP_OPT(odf_types::percent)			style_rel_width_;
-	office_element_ptr					style_background_image_;
     _CP_OPT(bool)						style_may_break_between_rows_;
 
     _CP_OPT(odf_types::border_model)	table_border_model_;
@@ -87,6 +86,8 @@ public:
     _CP_OPT(bool)						table_display_;	
 	_CP_OPT(odf_types::color)			tableooo_tab_color_;
        
+    _CP_OPT(odf_types::Bool)			style_use_optimal_column_width_; //not specification
+	office_element_ptr					style_background_image_;
 };
 
 class style_table_properties : public office_element_impl<style_table_properties>

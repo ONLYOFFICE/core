@@ -214,6 +214,7 @@ void DocxConverter::convert_document()
 	section.props		= document->m_oSectPr.GetPointer();
 	section.start_para	= last_section_start;
 	section.end_para	= document->m_arrItems.end(); 
+	sections.push_back(section);
 					
 //----------------------------------------------------------------------------------------------------------
 
@@ -2414,8 +2415,8 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 			odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + std::to_wstring(sptType));
 			odf_context()->drawing_context()->start_shape(OOX::VmlShapeType2PrstShape(sptType));
 			
-			OoxConverter::convert(oox_pic->m_oShape.GetPointer());	
 			OoxConverter::convert(oox_pic->m_oShapeType.GetPointer());
+			OoxConverter::convert(oox_pic->m_oShape.GetPointer());	
 			
 			odf_context()->drawing_context()->end_shape(); 
 		}
@@ -3926,13 +3927,23 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 	if (oox_table_pr == NULL) return false;
 	if (table_properties == NULL) return false;
 
-	if (oox_table_pr->m_oTblW.IsInit())
+	if (oox_table_pr->m_oTblW.IsInit() && oox_table_pr->m_oTblW->m_oW.IsInit())
 	{
-		if ((oox_table_pr->m_oTblW->m_oType.IsInit() && oox_table_pr->m_oTblW->m_oType->GetValue() == SimpleTypes::tblwidthDxa) &&
-			(oox_table_pr->m_oTblW->m_oW.IsInit() && oox_table_pr->m_oTblW->m_oW->GetValue() >0))
+		if (oox_table_pr->m_oTblW->m_oType.IsInit() && oox_table_pr->m_oTblW->m_oW.IsInit())
 		{
-			if (oox_table_pr->m_oTblW->m_oW->IsPercent() == false)
-				odt_context->table_context()->set_default_column_width(oox_table_pr->m_oTblW->m_oW->GetValue()/20.);
+			if ( oox_table_pr->m_oTblW->m_oType->GetValue() == SimpleTypes::tblwidthDxa &&
+				oox_table_pr->m_oTblW->m_oW->GetValue() > 0 )
+			{
+				if ( oox_table_pr->m_oTblW->m_oW->IsPercent() == false)
+					odt_context->table_context()->set_default_column_width(oox_table_pr->m_oTblW->m_oW->GetValue() / 20.);
+			}
+			else if ( oox_table_pr->m_oTblW->m_oType->GetValue() == SimpleTypes::tblwidthAuto && 
+				oox_table_pr->m_oTblW->m_oW->GetValue()	== 0 )
+			{
+				//динамическое расширение - автоподбор по содержимому.
+				odt_context->table_context()->set_optimal_column_width(true);
+				table_properties->table_format_properties_.style_use_optimal_column_width_ = true;
+			}
 		}
 	}
 
@@ -4033,7 +4044,7 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, bool base_
 	{//напрямую задать cell_prop на саму таблицу низя - тока как default-cell-style-name на columns & row
 
 		//общие свойства ячеек
-		odt_context->styles_context()->create_style(L"",odf_types::style_family::TableCell, true, false, -1); //ради нормального задания дефолтовых свойств на cells
+		odt_context->styles_context()->create_style(L"", odf_types::style_family::TableCell, true, false, -1); //ради нормального задания дефолтовых свойств на cells
 		odt_context->styles_context()->last_state()->set_dont_write(true);
 		odf_writer::style_table_cell_properties	* table_cell_properties = odt_context->styles_context()->last_state()->get_table_cell_properties();
 		

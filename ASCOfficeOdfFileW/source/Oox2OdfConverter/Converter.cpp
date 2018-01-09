@@ -58,6 +58,8 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/CxnSp.h"
 
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
+
 #define PROGRESSEVENT_ID	0
 
 namespace Oox2Odf
@@ -284,6 +286,14 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			case OOX::et_wd_wrap:
 			{
 				convert(dynamic_cast<OOX::VmlWord::CWrap*>(oox_unknown));
+			}break;
+			case OOX::et_a_extLst:
+			{
+				convert(dynamic_cast<OOX::Drawing::COfficeArtExtensionList*>(oox_unknown));
+			}break;
+			case OOX::et_a_ext:
+			{
+				convert(dynamic_cast<OOX::Drawing::COfficeArtExtension*>(oox_unknown));
 			}break;
 			// "ненужные" элементы
 			case OOX::et_w_softHyphen:

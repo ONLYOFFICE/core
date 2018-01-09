@@ -48,6 +48,7 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
+				EnableEnhancedInstructionSet="0"
 				ProgramDataBaseFileName="$(IntDir)\DocxFormat.pdb"
 				WarningLevel="3"
 				DebugInformationFormat="4"

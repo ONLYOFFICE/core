@@ -103,27 +103,21 @@ public:
 			}
 		}
 //----------------------------------------------------------------------------------------------------------
-		_section last_section;
-		m_poDocument->GetItem(last_section);
-		
-		if (last_section.end_para != m_ooxDocument->m_arrItems.end())
+		_section section;
+
+        section.props		= RtfSectionPtr(new RtfSection());
+		section.start_para	= last_section_start;
+		section.end_para	= m_ooxDocument->m_arrItems.end();
+       			
+		section.props->m_oProperty.SetDefaultOOX();
+		if (m_ooxDocument->m_oSectPr.IsInit())// свойства последней секции
 		{
-			_section section;
-            section.props		= RtfSectionPtr(new RtfSection());
-			section.start_para	= last_section.end_para;
-			section.end_para	= m_ooxDocument->m_arrItems.end();
-           			
-			section.props->m_oProperty.SetDefaultOOX();
-			if (m_ooxDocument->m_oSectPr.IsInit())// свойства последней секции
+			OOXSectionPropertyReader oSectReader(m_ooxDocument->m_oSectPr.GetPointer());
+			if (oSectReader.Parse( oParam, section.props->m_oProperty ))
 			{
-				OOXSectionPropertyReader oSectReader(m_ooxDocument->m_oSectPr.GetPointer());
-				if (oSectReader.Parse( oParam, section.props->m_oProperty ))
-				{
-				}
+				m_poDocument->AddItem( section );
 			}
-			
-			m_poDocument->AddItem( section );
-		}
+		}		
 
 		m_poDocument->RemoveItem(0);
 

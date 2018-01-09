@@ -74,22 +74,30 @@ namespace BinXlsxRW {
 		{
 			bool bEmpty = true;
 			SimpleTypes::Spreadsheet::CHexColor oRgbColor;
+			
 			if(color.m_oIndexed.IsInit())
 			{
 				int nIndex = (int)color.m_oIndexed->GetValue();
+				
+				bool bDefault = true;
 
-				std::map<int, OOX::Spreadsheet::CRgbColor*>::iterator pFind = pIndexedColors->mapIndexedColors.find(nIndex);
-
-				if(pFind != pIndexedColors->mapIndexedColors.end())
+				if (pIndexedColors)
 				{
-					OOX::Spreadsheet::CRgbColor* pRgbColor = pFind->second;
-					if(pRgbColor->m_oRgb.IsInit())
+					std::map<int, OOX::Spreadsheet::CRgbColor*>::iterator pFind = pIndexedColors->mapIndexedColors.find(nIndex);
+
+					if(pFind != pIndexedColors->mapIndexedColors.end())
 					{
-						bEmpty = false;
-						oRgbColor = pRgbColor->m_oRgb.get();
+						OOX::Spreadsheet::CRgbColor* pRgbColor = pFind->second;
+						if(pRgbColor->m_oRgb.IsInit())
+						{
+							bEmpty = false;
+							oRgbColor = pRgbColor->m_oRgb.get();
+
+							bDefault = false;
+						}
 					}
 				}
-				else
+				if (bDefault)
 				{
 					unsigned char ucA;
 					unsigned char ucR;

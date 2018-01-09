@@ -1502,7 +1502,22 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
 					if(pElem && NULL != pOle && pOle->m_sProgId.IsInit() && (pOle->m_oId.IsInit() || pOle->m_OleObjectFile.IsInit()))
 					{
 						PPTX::Logic::Pic* pPicture = dynamic_cast<PPTX::Logic::Pic*>(pElem->GetElem().operator ->());
-						if ((NULL != pPicture) && (pPicture->blipFill.blip.IsInit()))
+						PPTX::Logic::Shape* pShape = dynamic_cast<PPTX::Logic::Shape*>(pElem->GetElem().operator ->());
+						
+						if ((!pPicture && pShape) && (pShape->spPr.Fill.is<PPTX::Logic::BlipFill>()))
+						{//convert pptx shape to pptx picture
+							pPicture = new PPTX::Logic::Pic();
+
+							pPicture->nvPicPr.nvPr	= pShape->nvSpPr.nvPr;
+							pPicture->nvPicPr.cNvPr	= pShape->nvSpPr.cNvPr;
+							pPicture->spPr			= pShape->spPr;
+							pPicture->blipFill		= pShape->spPr.Fill.as<PPTX::Logic::BlipFill>();
+							pPicture->spPr.Fill		= PPTX::Logic::UniFill();
+
+							pShape = NULL; 
+							pElem->InitElem(pPicture);							
+						}
+						if ((pPicture) && (pPicture->blipFill.blip.IsInit()))
 						{
 							if (pOle->m_OleObjectFile.IsInit())
 							{

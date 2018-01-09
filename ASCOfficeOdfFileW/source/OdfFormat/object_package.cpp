@@ -39,7 +39,7 @@
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
 
-#include "../../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 
 namespace cpdoccore 
 {
@@ -180,8 +180,8 @@ namespace odf_writer
 
 		void media::write(const std::wstring & RootPath)
 		{
-			std::wstring path = RootPath + (folder_.empty() ? L"" : FILE_SEPARATOR_STR) + folder_;
-            NSDirectory::CreateDirectory(path);
+			OOX::CPath path (RootPath + (folder_.empty() ? L"" : FILE_SEPARATOR_STR) + folder_);
+            NSDirectory::CreateDirectory(path.GetPath());
 
 			std::vector< _mediaitems::item >  & items =  mediaitems_.items();
 			
@@ -189,9 +189,10 @@ namespace odf_writer
 			{
 				if (items[i].type == type_)
 				{
-					std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + items[i].odf_ref;
+					OOX::CPath file_name_inp ( items[i].oox_ref);
+					OOX::CPath file_name_out ( RootPath + FILE_SEPARATOR_STR + items[i].odf_ref); //ref содержит уже folder_
 
-					NSFile::CFileBinary::Copy(items[i].oox_ref, file_name_out);
+					NSFile::CFileBinary::Copy(file_name_inp.GetPath(), file_name_out.GetPath());
 				}
 			}
 
@@ -206,7 +207,7 @@ namespace odf_writer
 		{
 			if (mediaitems.count_image > 0)
 			{
-				pictures_ = element_ptr( new media(mediaitems, L"Picture", 1) );
+				pictures_ = element_ptr( new media(mediaitems, L"Pictures", 1) );
 			}
 			if (mediaitems.count_media > 0)
 			{

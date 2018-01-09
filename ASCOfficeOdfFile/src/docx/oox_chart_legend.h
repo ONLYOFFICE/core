@@ -48,7 +48,7 @@ public:
  
     void oox_serialize(std::wostream & _Wostream);
 
-	odf_reader::chart::simple content_;  
+	odf_reader::chart::legend content_;  
 private:
 	
 	cpdoccore::oox::oox_layout layout_;	//layout (Layout) §21.2.2.88

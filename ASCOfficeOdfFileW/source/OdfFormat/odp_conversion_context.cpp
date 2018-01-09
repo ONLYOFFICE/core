@@ -132,8 +132,7 @@ void odp_conversion_context::end_layout_slide()
 }
 void odp_conversion_context::start_text_context()
 {
-	text_context_ = new odf_text_context(this);
-	text_context_->set_styles_context(slide_context_.get_styles_context());
+	text_context_ = new odf_text_context(this, slide_context_.get_styles_context());
 }
 void odp_conversion_context::end_text_context()
 {

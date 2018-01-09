@@ -67,10 +67,11 @@ void table_format_properties::add_attributes( const xml::attributes_wc_ptr & Att
     CP_APPLY_ATTR(L"style:rel-width",				style_rel_width_);
     CP_APPLY_ATTR(L"style:may-break-between-rows",	style_may_break_between_rows_);
     
-	CP_APPLY_ATTR(L"table:align",			table_align_);
-    CP_APPLY_ATTR(L"table:border-model",	table_border_model_);
-    CP_APPLY_ATTR(L"table:display",			table_display_);
-	CP_APPLY_ATTR(L"tableooo:tab-color",	tableooo_tab_color_);			
+	CP_APPLY_ATTR(L"table:align",					table_align_);
+    CP_APPLY_ATTR(L"table:border-model",			table_border_model_);
+    CP_APPLY_ATTR(L"table:display",					table_display_);
+	CP_APPLY_ATTR(L"tableooo:tab-color",			tableooo_tab_color_);			
+	CP_APPLY_ATTR(L"style:use-optimal-column-width",style_use_optimal_column_width_);
 }
 
 bool table_format_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
@@ -94,17 +95,22 @@ void table_format_properties::docx_convert(oox::docx_conversion_context & Contex
     if (style_rel_width_)
     {
         int w_w = (int)(0.5 + 50.0 * style_rel_width_->get_value());
-        _tblPr << L"<w:tblW w:type=\"pct\" w:w=\"" <<  w_w << "\" />";
+        _tblPr << L"<w:tblW w:type=\"pct\" w:w=\"" <<  w_w << "\"/>";
     }
-    else if (style_width_)
+	else if (style_use_optimal_column_width_)
+	{
+       _tblPr << L"<w:tblW w:type=\"auto\" w:w=\"0\"/>";
+	}    
+	else if (style_width_)
     {
         int w_w = (int)(0.5 + 20.0 * style_width_->get_value_unit(length::pt));
  		if (w_w > 31680)w_w = 31680;
-       _tblPr << L"<w:tblW w:type=\"dxa\" w:w=\"" <<  w_w << "\" />";
+       _tblPr << L"<w:tblW w:type=\"dxa\" w:w=\"" <<  w_w << "\"/>";
     }
+
     else
     {
-        _tblPr << L"<w:tblW w:type=\"pct\" w:w=\"5000\" />";
+        _tblPr << L"<w:tblW w:type=\"pct\" w:w=\"5000\"/>";
     }
 
     if (common_break_attlist_.fo_break_before_)
@@ -127,23 +133,26 @@ void table_format_properties::docx_convert(oox::docx_conversion_context & Contex
 			{
 				odf_types::length indent = common_horizontal_margin_attlist_.fo_margin_left_->get_length();
 				
-				_tblPr << L"<w:tblInd w:w=\"" << indent.get_value_unit(odf_types::length::pt) * 20 << "\" w:type=\"dxa\" />";
+				_tblPr << L"<w:tblInd w:w=\"" << indent.get_value_unit(odf_types::length::pt) * 20 << "\" w:type=\"dxa\"/>";
 			}
 		}
         else //if (table_align_->get_type() == table_align::Center)
 			w_val = boost::lexical_cast<std::wstring>(*table_align_);
 
-        _tblPr << L"<w:jc w:val=\"" << w_val << "\" />";
+        _tblPr << L"<w:jc w:val=\"" << w_val << "\"/>";
     }
 
-	_tblPr << "<w:tblLayout w:type=\"fixed\" />";
+	if (!style_use_optimal_column_width_)
+	{
+		_tblPr << "<w:tblLayout w:type=\"fixed\"/>";
+	}
 
     if (common_background_color_attlist_.fo_background_color_)
     {
         const std::wstring w_fill = (common_background_color_attlist_.fo_background_color_->get_type() == background_color::Enabled 
             ? common_background_color_attlist_.fo_background_color_->get_color().get_hex_value() : L"auto");
 
-        _tblPr << L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" << w_fill << "\" />";
+        _tblPr << L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" << w_fill << "\"/>";
     }
 
 }

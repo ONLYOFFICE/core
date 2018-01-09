@@ -100,6 +100,7 @@ public:
 	Impl(odf_conversion_context *odf_context) :odf_context_(odf_context)
     {	
 		default_column_width = -1;
+		optimal_column_width = false;
 	} 
 
 	odf_table_state & current_table()	{return tables_.back();}
@@ -107,13 +108,21 @@ public:
 
 	void start_table(odf_table_state & state) {tables_.push_back(state);}
 
-	void end_table() {if (tables_.size() > 0) tables_.pop_back(); default_column_width = -1; default_cell_properties = L"";}
+	void end_table() 
+	{
+		if (tables_.size() > 0) tables_.pop_back(); 
+		
+		default_column_width	= -1;  // todo .. in level ???
+		default_cell_properties = L""; 
+		optimal_column_width	= false;
+	}
 
 	odf_style_context	* styles_context() {return odf_context_->styles_context();}
 
 	odf_conversion_context *odf_context_; 
 
-	double default_column_width;
+	double	default_column_width;
+	bool	optimal_column_width;
 	std::wstring default_cell_properties; // для предустановки ..
 
 private:
@@ -307,6 +316,10 @@ void odf_table_context::set_default_column_width(double width)
 {
 	impl_->default_column_width = width;
 }
+void odf_table_context::set_optimal_column_width(bool val)
+{
+	impl_->optimal_column_width = val;
+}
 void odf_table_context::set_column_optimal(bool val)
 {
 	if (impl_->empty()) return;
@@ -362,7 +375,11 @@ void odf_table_context::set_column_width(double width)
 	{
 		properties->style_table_column_properties_attlist_.style_column_width_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);
 		//properties->style_table_column_properties_attlist_.style_rel_column_width_ = length(length(width,length::pt).get_value_unit(length::cm),length::cm);
-		//properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = false;
+
+		if (impl_->optimal_column_width)
+		{
+			properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = true;
+		}
 
 		impl_->current_table().table_width += width;
 	}
@@ -370,7 +387,7 @@ void odf_table_context::set_column_width(double width)
 	{
 		properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = true;
 
-		if (impl_->default_column_width >=0)
+		if (impl_->default_column_width >= 0)
 		{
 			properties->style_table_column_properties_attlist_.style_column_width_ = length(length(impl_->default_column_width,length::pt).get_value_unit(length::cm),length::cm);
 			//properties->style_table_column_properties_attlist_.style_rel_column_width_ = length(length(impl_->current_table().table_width,length::pt).get_value_unit(length::cm),length::cm);

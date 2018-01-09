@@ -34,32 +34,30 @@
 
 namespace DocFileFormat
 {
-	FontTableMapping::FontTableMapping( ConversionContext* ctx ): AbstractOpenXmlMapping( new XMLTools::CStringXmlWriter() )
+	FontTableMapping::FontTableMapping( ConversionContext* ctx ) : AbstractOpenXmlMapping( new XMLTools::CStringXmlWriter() )
 	{
 		_ctx = ctx;
 	}
 
-	/*========================================================================================================*/
 
 	FontTableMapping::~FontTableMapping()
 	{
 		RELEASEOBJECT (m_pXmlWriter);
 	}
 
-	/*========================================================================================================*/
 
 	void FontTableMapping::Apply( IVisitable* visited )
 	{
 		StringTable<FontFamilyName>* table = static_cast<StringTable<FontFamilyName>*>( visited );
 
-		this->_ctx->_docx->RegisterFontTable();
+		_ctx->_docx->RegisterFontTable();
 
         m_pXmlWriter->WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?" );
         m_pXmlWriter->WriteNodeBegin( L"w:fonts", TRUE );
         m_pXmlWriter->WriteAttribute( L"xmlns:w", OpenXmlNamespaces::WordprocessingML );
         m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
-		int sz_fonts	= table->Data.size();
+		int sz_fonts = table->Data.size();
 		int users_fonts = 0;
 
 		for ( std::vector<ByteStructure*>::iterator iter = table->Data.begin(); iter != table->Data.end(); iter++ )
@@ -140,6 +138,6 @@ namespace DocFileFormat
 
         m_pXmlWriter->WriteNodeEnd( L"w:fonts");
 
-		this->_ctx->_docx->FontTableXML = std::wstring( m_pXmlWriter->GetXmlString() );
+		_ctx->_docx->FontTableXML = m_pXmlWriter->GetXmlString() ;
 	}
 }

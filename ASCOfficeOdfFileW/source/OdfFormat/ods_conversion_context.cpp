@@ -472,8 +472,7 @@ void ods_conversion_context::add_column(int start_column, int repeated, int leve
 }
 void ods_conversion_context::start_text_context()
 {
-	current_text_context_ = new odf_text_context(this);
-
+	current_text_context_ = new odf_text_context(this, styles_context());
 }
 void ods_conversion_context::end_text_context()
 {

@@ -2535,14 +2535,14 @@ namespace BinXlsxRW {
 				{
 					m_pCurVmlDrawing->m_mapComments = &m_pCurWorksheet->m_mapComments;
 
-					std::map<std::wstring, unsigned int> mapAuthors;
+                    std::unordered_map<std::wstring, unsigned int> mapByAuthors;
 					OOX::Spreadsheet::CComments* pComments = new OOX::Spreadsheet::CComments();
 					
 					pComments->m_oCommentList.Init();
 					std::list<OOX::Spreadsheet::CComment*>& aComments = pComments->m_oCommentList->m_arrItems;
 					
 					pComments->m_oAuthors.Init();
-					std::list<std::wstring*>& aAuthors = pComments->m_oAuthors->m_arrItems;
+					std::unordered_map<int, std::wstring> & mapByIndex = pComments->m_oAuthors->m_mapItems;
 
 					for (std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_pCurWorksheet->m_mapComments.begin(); it != m_pCurWorksheet->m_mapComments.end(); ++it)
 					{
@@ -2559,15 +2559,18 @@ namespace BinXlsxRW {
 							if(pCommentItem->m_sAuthor.IsInit())
 							{
 								const std::wstring& sAuthor = pCommentItem->m_sAuthor.get();
-								std::map<std::wstring, unsigned int>::const_iterator pair = mapAuthors.find(sAuthor);
+                                std::unordered_map<std::wstring, unsigned int>::const_iterator pFind = mapByAuthors.find(sAuthor);
+								
 								int nAuthorId;
-								if(mapAuthors.end() != pair)
-									nAuthorId = (int)pair->second;
+								if(pFind != mapByAuthors.end())
+									nAuthorId = pFind->second;
 								else
 								{
-									nAuthorId = (int)mapAuthors.size();
-									mapAuthors[sAuthor] = nAuthorId;
-									aAuthors.push_back(new std::wstring(sAuthor));
+									nAuthorId = (int)mapByAuthors.size();
+								
+									mapByAuthors.insert(std::make_pair(sAuthor, nAuthorId));
+									
+									mapByIndex.insert(std::make_pair(nAuthorId, sAuthor));
 								}
 								pNewComment->m_oAuthorId.Init();
 								pNewComment->m_oAuthorId->SetValue(nAuthorId);
@@ -3519,7 +3522,7 @@ namespace BinXlsxRW {
 					{
 						int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
 
-						std::unordered_map<int, OOX::Spreadsheet::CSi*>::iterator pFind = m_pSharedStrings->m_mapItems.find(nValue);
+                        std::map<int, OOX::Spreadsheet::CSi*>::iterator pFind = m_pSharedStrings->m_mapItems.find(nValue);
 
 						if(pFind != m_pSharedStrings->m_mapItems.end())
 						{

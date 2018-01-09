@@ -38,8 +38,7 @@
 namespace OLEPS
 {
 
-SummaryInformation::SummaryInformation(XLS::CFStreamPtr stream)
-:	property_set_stream(stream)
+SummaryInformation::SummaryInformation(XLS::CFStreamPtr stream) : property_set_stream(stream)
 {
 }
 

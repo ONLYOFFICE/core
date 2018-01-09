@@ -29,6 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "XlsxConverter.h"
 #include "PptxConverter.h"
 #include "DocxConverter.h"
 
@@ -664,12 +665,48 @@ void OoxConverter::convert(PPTX::Logic::SpPr *oox_spPr, PPTX::Logic::ShapeStyle*
 	if		(effectLst)		convert(effectLst);
 	else if (oox_sp_style)	convert(&oox_sp_style->effectRef, 3);
 
+	//convert(oox_spPr->ExtLst.GetPointer());
+
 	//nullable<OOX::Drawing::CEffectContainer>          EffectDag;
 
 	//nullable<OOX::Drawing::COfficeArtExtensionList>   ExtLst;
 	//nullable<OOX::Drawing::CScene3D>                  Scene3D;
 	//nullable<OOX::Drawing::CShape3D>                  Sp3D;	
 //-----------------------------------------------------------------------------------------------------------------------------
+}
+
+void OoxConverter::convert(OOX::Drawing::COfficeArtExtensionList *ext_list)
+{
+	if (ext_list == NULL)return;
+
+	for (size_t i = 0; i < ext_list->m_arrExt.size(); i++)
+	{
+		convert(ext_list->m_arrExt[i]);
+	}
+}
+
+void OoxConverter::convert(OOX::Drawing::COfficeArtExtension *art_ext)
+{
+	if (art_ext == NULL)return;
+
+	if (art_ext->m_oSparklineGroups.IsInit() || art_ext->m_oAltTextTable.IsInit() || !art_ext->m_arrConditionalFormatting.empty())
+	{
+		XlsxConverter *xlsx_converter = dynamic_cast<XlsxConverter*>(this);
+		if (xlsx_converter)
+		{		
+			xlsx_converter->convert(art_ext->m_oSparklineGroups.GetPointer());
+			xlsx_converter->convert(art_ext->m_oAltTextTable.GetPointer());
+		
+			for (size_t i = 0; i < art_ext->m_arrConditionalFormatting.size(); i++)
+			{
+				xlsx_converter->convert(art_ext->m_arrConditionalFormatting[i]);
+			}	
+		}
+	}
+
+
+	//convert(art_ext->m_oCompatExt.GetPointer());
+	//convert(art_ext->m_oDataModelExt.GetPointer());
 }
 
 void OoxConverter::convert(PPTX::Logic::UniFill *oox_fill, DWORD nARGB)
@@ -1165,6 +1202,10 @@ void OoxConverter::convert(PPTX::Logic::BodyPr *oox_bodyPr)
 		//+ style section
 		//+element text:section в котором параграфы
 	}
+	if (oox_bodyPr->rot.IsInit())
+	{
+		odf_context()->drawing_context()->set_textarea_rotation(oox_bodyPr->rot.get() / 60000);
+	}
 
 	switch(oox_bodyPr->Fit.type)
 	{
@@ -1505,7 +1546,7 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 		}
 														//свойства могут быть приписаны не только к параграфу, но и к самому объекту		
 		odf_writer::style_paragraph_properties* paragraph_properties = odf_context()->text_context()->get_paragraph_properties();
-		odf_writer::style_text_properties*		text_properties = NULL;
+		odf_writer::style_text_properties*		text_properties = odf_context()->text_context()->get_text_properties();
 		
 		if (!paragraph_properties)
 		{

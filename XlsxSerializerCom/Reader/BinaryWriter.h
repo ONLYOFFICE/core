@@ -187,7 +187,7 @@ namespace BinXlsxRW
 				WriteFilterColumns(oAutofilter.m_arrItems);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
-			if(!oAutofilter.m_oSortState.IsInit())
+			if(oAutofilter.m_oSortState.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_AutoFilter::SortState);
 				WriteSortState(oAutofilter.m_oSortState.get());
@@ -1376,7 +1376,7 @@ namespace BinXlsxRW
 		{
 			int nCurPos;
 			
-			for ( auto it = sharedString.m_mapItems.begin(); it != sharedString.m_mapItems.end(); it++)
+            for ( std::map<int, OOX::Spreadsheet::CSi*>::iterator it = sharedString.m_mapItems.begin(); it != sharedString.m_mapItems.end(); it++)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerSharedStringTypes::Si);
 				WriteSharedString(it->second, pIndexedColors, pTheme, oFontProcessor);

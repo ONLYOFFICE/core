@@ -762,6 +762,28 @@ void process_build_object::visit(const chart_footer& val)
 void process_build_object::visit(const chart_legend& val)
 {
 	object_odf_context_.legend_.bEnabled = true;
+	object_odf_context_.legend_.position = L"r"; 
+
+	if (val.attlist_.chart_legend_position_)
+	{
+		std::wstring pos = val.attlist_.chart_legend_position_.get();
+		
+		if ( pos == L"bottom")		object_odf_context_.legend_.position = L"b"; 
+		if ( pos == L"start")		object_odf_context_.legend_.position = L"l"; 
+		if ( pos == L"top")			object_odf_context_.legend_.position = L"t"; 
+		if ( pos == L"top-end")		object_odf_context_.legend_.position = L"tr"; 
+		if ( pos == L"top-start")	object_odf_context_.legend_.position = L"tl"; 
+		if ( pos == L"bottom-start")	object_odf_context_.legend_.position = L"bl"; 
+		if ( pos == L"bottom-end")	object_odf_context_.legend_.position = L"br"; 
+	}
+	if (val.attlist_.chart_legend_align_)
+	{
+		std::wstring align = val.attlist_.chart_legend_align_.get();
+		
+		//if ( pos == L"start")		object_odf_context_.legend_.align = L"b"; 
+		//if ( pos == L"center")		object_odf_context_.legend_.align = L"l"; 
+		//if ( pos == L"end")			object_odf_context_.legend_.align = L"t"; 
+	}
 	
 	ApplyChartProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.properties_);
 	ApplyGraphicProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.graphic_properties_,object_odf_context_.legend_.fill_);

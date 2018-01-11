@@ -245,7 +245,7 @@ namespace OOX
                     }
 					for ( std::list<OOX::WritingElement*>::iterator it1 = pShape->m_arrItems.begin(); it1 != pShape->m_arrItems.end(); it1++)
 					{
-						OOX::WritingElement* pElem = *it;
+						OOX::WritingElement* pElem = *it1;
 						if ( !pElem ) continue;
 						
 						if( OOX::et_v_ClientData == pElem->getType())

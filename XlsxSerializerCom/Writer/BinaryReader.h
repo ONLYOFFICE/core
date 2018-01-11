@@ -2340,22 +2340,32 @@ namespace BinXlsxRW {
 		{
 			if(NULL != pCommentData && false == pCommentData->sText.empty())
 			{
-				OOX::Spreadsheet::CRun* pRun = new OOX::Spreadsheet::CRun();
-				pRun->m_oRPr.Init();
-				OOX::Spreadsheet::CRPr& pRPr = pRun->m_oRPr.get2();
-				pRPr.m_oRFont.Init();
-				pRPr.m_oRFont->m_sVal.Init();
-				pRPr.m_oRFont->m_sVal->append(_T("Tahoma"));
-				pRPr.m_oSz.Init();
-				pRPr.m_oSz->m_oVal.Init();
-				pRPr.m_oSz->m_oVal->SetValue(8);
-
-				OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
-				pText->m_sText.append(pCommentData->sText);
-
-				pRun->m_arrItems.push_back(pText);
-				oSi.m_arrItems.push_back(pRun);
+				addCommentRun(oSi, pCommentData->sUserName + _T(":"), true);
+				addCommentRun(oSi, _T("\n") + pCommentData->sText, false);
 			}
+		}
+		void addCommentRun(OOX::Spreadsheet::CSi& oSi, const std::wstring& text, bool isBold)
+		{
+			OOX::Spreadsheet::CRun* pRun = new OOX::Spreadsheet::CRun();
+			pRun->m_oRPr.Init();
+			OOX::Spreadsheet::CRPr& pRPr = pRun->m_oRPr.get2();
+			if(isBold)
+			{
+				pRPr.m_oBold.Init();
+				pRPr.m_oBold->m_oVal.FromBool(true);
+			}
+			pRPr.m_oRFont.Init();
+			pRPr.m_oRFont->m_sVal.Init();
+			pRPr.m_oRFont->m_sVal->append(_T("Tahoma"));
+			pRPr.m_oSz.Init();
+			pRPr.m_oSz->m_oVal.Init();
+			pRPr.m_oSz->m_oVal->SetValue(9);
+
+			OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
+			pText->m_sText.append(text);
+
+			pRun->m_arrItems.push_back(pText);
+			oSi.m_arrItems.push_back(pRun);
 		}
 	};
 	class BinaryWorksheetsTableReader : public Binary_CommonReader<BinaryWorksheetsTableReader>
@@ -4097,7 +4107,7 @@ namespace BinXlsxRW {
 			pRPr.m_oRFont->m_sVal->append(_T("Tahoma"));
 			pRPr.m_oSz.Init();
 			pRPr.m_oSz->m_oVal.Init();
-			pRPr.m_oSz->m_oVal->SetValue(8);
+			pRPr.m_oSz->m_oVal->SetValue(9);
 			pRPr.m_oBold.Init();
 			pRPr.m_oBold->FromBool(true);
 

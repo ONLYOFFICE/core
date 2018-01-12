@@ -1320,7 +1320,7 @@ void docx_conversion_context::start_changes()
 	text_tracked_context_.dumpTcPr_.clear();
 	text_tracked_context_.dumpTblPr_.clear();
 
-	for (map_changes_iterator it = map_current_changes_.begin(); it != map_current_changes_.end(); it++)
+	for (map_changes_iterator it = map_current_changes_.begin(); it != map_current_changes_.end(); ++it)
 	{
 		text_tracked_context::_state  &state = it->second;
 
@@ -1413,7 +1413,7 @@ void docx_conversion_context::end_changes()
 {
 	if (process_comment_) return;
 
-	for (map_changes_iterator it = map_current_changes_.begin(); it != map_current_changes_.end(); it++)
+	for (map_changes_iterator it = map_current_changes_.begin(); it != map_current_changes_.end(); ++it)
 	{
 		text_tracked_context::_state  &state = it->second;
 

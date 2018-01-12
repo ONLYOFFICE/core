@@ -559,7 +559,7 @@ namespace DocFileFormat
 
 		//std::list<std::string> listStream = storageIn->entries();
 
-		//for (std::list<std::string>::iterator it = listStream.begin(); it != listStream.end(); it++)
+		//for (std::list<std::string>::iterator it = listStream.begin(); it != listStream.end(); ++it)
 		//{
 		//	if (storageIn->isDirectory(*it)) 
 		//	{
@@ -603,7 +603,7 @@ namespace DocFileFormat
 		std::list<std::wstring> entries, entries_files, entries_dir;
 		entries = storageIn->entries_with_prefix( path );
 		
-		for( std::list<std::wstring>::iterator it = entries.begin(); it != entries.end(); it++ )
+		for( std::list<std::wstring>::iterator it = entries.begin(); it != entries.end(); ++it )
 		{
 			std::wstring name = *it;
 			std::wstring fullname = path + name;

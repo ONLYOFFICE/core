@@ -290,7 +290,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 {
 	if (m_arrElement == NULL) return false;
 
-	for (std::list<OOX::WritingElement*>::iterator it = m_arrElement->m_arrItems.begin(); it != m_arrElement->m_arrItems.end(); it++)
+    for (std::vector<OOX::WritingElement*>::iterator it = m_arrElement->m_arrItems.begin(); it != m_arrElement->m_arrItems.end(); ++it)
 	{
 		if ((*it) == NULL) continue;
 
@@ -493,10 +493,9 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 				if ((text_box) && (text_box->m_oTxtbxContent.IsInit()))
 				{
 					OOXTextItemReader oTextItemReader;
-					
-					for (size_t i = 0; i < text_box->m_oTxtbxContent->m_arrItems.size(); i++)
-					for (std::list<OOX::WritingElement*>::iterator	it = text_box->m_oTxtbxContent->m_arrItems.begin(); 
-																	it != text_box->m_oTxtbxContent->m_arrItems.end(); it++)
+
+                    for (std::vector<OOX::WritingElement*>::iterator	it = text_box->m_oTxtbxContent->m_arrItems.begin();
+																	it != text_box->m_oTxtbxContent->m_arrItems.end(); ++it)
 					{
 						oTextItemReader.Parse( *it, oParam );
 					}
@@ -1516,7 +1515,7 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 			pOutput->m_nGroupBottom =(pOutput->m_nGroupTop != PROP_DEF  ? pOutput->m_nGroupTop : 0)		+ m_vmlGroup->m_oCoordSize->GetY();
 		}
 
-		for (std::list<OOX::WritingElement*>::iterator	it = m_vmlGroup->m_arrItems.begin(); it != m_vmlGroup->m_arrItems.end(); it++)
+        for (std::vector<OOX::WritingElement*>::iterator	it = m_vmlGroup->m_arrItems.begin(); it != m_vmlGroup->m_arrItems.end(); ++it)
 		{
 			if (*it == NULL) continue;
 

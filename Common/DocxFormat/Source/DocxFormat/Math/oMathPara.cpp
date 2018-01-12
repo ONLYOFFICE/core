@@ -38,13 +38,14 @@ namespace OOX
 		{
             std::wstring sResult = _T("<m:oMathPara>");
 
-			for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-			{
-				if ( *it )
-				{
-					sResult += (*it)->toXML();
-				}
-			}			
+            for ( size_t i = 0; i < m_arrItems.size(); ++i)
+            {
+                if ( m_arrItems[i] )
+                {
+                    sResult += m_arrItems[i]->toXML();
+                }
+            }
+
 			sResult += _T("</m:oMathPara>");
 
 			return sResult;

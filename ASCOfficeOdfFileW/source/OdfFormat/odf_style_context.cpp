@@ -199,7 +199,7 @@ std::wstring odf_style_context::find_odf_style_name(int oox_id_style, style_fami
 }
 //office_element_ptr odf_style_context::find_odf_style(int oox_id_style, style_family::type family, bool root, _CP_OPT(bool) automatic)
 //{
-//	//for (std::list<odf_style_state>::iterator it = style_state_list_.begin(); it != style_state_list_.end(); it++)
+//	//for (std::list<odf_style_state>::iterator it = style_state_list_.begin(); it != style_state_list_.end(); ++it)
 //	for (size_t i=0;i<style_state_list_.size(); i++)
 //	{
 //		if (style_state_list_[i]->odf_style_)

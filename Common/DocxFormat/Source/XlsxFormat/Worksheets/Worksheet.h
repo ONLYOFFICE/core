@@ -189,15 +189,15 @@ namespace OOX
 			}
 			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::CVmlDrawing* pVmlDrawing)
 			{
-				std::unordered_map<int, std::wstring> & mapAuthors = pComments->m_oAuthors->m_mapItems;
+                std::vector<std::wstring> & arAuthors = pComments->m_oAuthors->m_arrItems;
 				
 				if(pComments->m_oCommentList.IsInit())
 				{
-					std::list<OOX::Spreadsheet::CComment*> & aComments = pComments->m_oCommentList->m_arrItems;
+                    std::vector<OOX::Spreadsheet::CComment*> & aComments = pComments->m_oCommentList->m_arrItems;
 					
-					for ( std::list<OOX::Spreadsheet::CComment*>::iterator it = aComments.begin(); it != aComments.end(); it++)
+                    for ( size_t i = 0; i < aComments.size(); ++i)
 					{
-						OOX::Spreadsheet::CComment* pComment = (*it);
+                        OOX::Spreadsheet::CComment* pComment = aComments[i];
 
 						if (!pComment) continue;
 
@@ -212,11 +212,9 @@ namespace OOX
 
 								unsigned int nAuthorId = pComment->m_oAuthorId->GetValue();
 								
-								std::unordered_map<int, std::wstring>::iterator pFind = mapAuthors.find(nAuthorId);
-								
-								if (pFind != mapAuthors.end())
-								{
-									pCommentItem->m_sAuthor = pFind->second;
+                                if (nAuthorId >= 0 && nAuthorId < arAuthors.size())
+                                {
+                                    pCommentItem->m_sAuthor = arAuthors[nAuthorId];
 								}
 
 								OOX::Spreadsheet::CSi* pSi = pComment->m_oText.GetPointerEmptyNullable();
@@ -229,23 +227,23 @@ namespace OOX
 					}
 				}
 
-				for ( std::list<OOX::WritingElement*>::iterator it = pVmlDrawing->m_arrItems.begin(); it != pVmlDrawing->m_arrItems.end(); it++)
+                for ( size_t i = 0; i < pVmlDrawing->m_arrItems.size(); ++i)
 				{
-					OOX::Vml::CShape* pShape =  dynamic_cast<OOX::Vml::CShape*>(*it);
+                    OOX::Vml::CShape* pShape =  dynamic_cast<OOX::Vml::CShape*>(pVmlDrawing->m_arrItems[i]);
 					
 					if (pShape == NULL) continue;
 
                     if (pShape->m_sId.IsInit())
                     {//mark shape as used
-                        std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(pShape->m_sId.get());
+                        boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(pShape->m_sId.get());
                         if (pFind != pVmlDrawing->m_mapShapes.end())
                         {
                             pFind->second.bUsed = true;
                         }
                     }
-					for ( std::list<OOX::WritingElement*>::iterator it1 = pShape->m_arrItems.begin(); it1 != pShape->m_arrItems.end(); it1++)
+                    for ( size_t j = 0; j < pShape->m_arrItems.size(); ++j)
 					{
-						OOX::WritingElement* pElem = *it;
+                        OOX::WritingElement* pElem = pShape->m_arrItems[j];
 						if ( !pElem ) continue;
 						
 						if( OOX::et_v_ClientData == pElem->getType())
@@ -257,7 +255,7 @@ namespace OOX
 								int nCol = pClientData->m_oColumn->GetValue();
                                 std::wstring sId = std::to_wstring(nRow) + L"-" + std::to_wstring(nCol);
 
-								std::map<std::wstring, CCommentItem*>::const_iterator pPair = m_mapComments.find(sId);
+                                boost::unordered_map<std::wstring, CCommentItem*>::const_iterator pPair = m_mapComments.find(sId);
 								if(pPair != m_mapComments.end())
 								{
 									CCommentItem* pCommentItem = pPair->second;
@@ -442,7 +440,7 @@ namespace OOX
 			}
 			void ClearItems()
 			{
-				for (std::map<std::wstring, CCommentItem*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+                for (boost::unordered_map<std::wstring, CCommentItem*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 				{
 					delete it->second;
 				}
@@ -475,7 +473,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CLegacyDrawingWorksheet>		m_oLegacyDrawing;
 			nullable<OOX::Spreadsheet::COleObjects>					m_oOleObjects;
 			nullable<OOX::Spreadsheet::CControls>					m_oControls;
-			std::map<std::wstring, CCommentItem*>					m_mapComments;
+            boost::unordered_map<std::wstring, CCommentItem*>       m_mapComments;
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
 			nullable<OOX::Spreadsheet::CSheetPr>					m_oSheetPr;
 			nullable<OOX::Spreadsheet::CHeaderFooter>				m_oHeaderFooter;

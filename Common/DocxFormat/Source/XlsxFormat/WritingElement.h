@@ -127,8 +127,7 @@ namespace Spreadsheet
 	class WritingElementWithChilds : public WritingElement
 	{
 	public:
-        std::list<ElemType *>  m_arrItems;
-		using SpreadsheetElemArray = std::list<ElemType *>;
+        std::vector<ElemType *>  m_arrItems;
 		
 		WritingElementWithChilds() {}
 		virtual ~WritingElementWithChilds() 
@@ -137,11 +136,10 @@ namespace Spreadsheet
 		}
 		virtual void ClearItems()
 		{
-            for ( auto it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-			{
-				if ( *it ) delete *it;
-				*it = NULL;
-			}
+            for ( size_t i = 0; i < m_arrItems.size(); ++i)
+            {
+                if ( m_arrItems[i] ) delete m_arrItems[i];
+            }
 			m_arrItems.clear();
 		}
 	};

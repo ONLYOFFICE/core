@@ -33,8 +33,8 @@
 #define CHART_WRITER
 
 #include <string>
-#include <map>
 #include <vector>
+#include <boost/unordered_map.hpp>
 
 namespace OOX
 {
@@ -59,22 +59,25 @@ namespace BinXlsxRW {
 	class ChartWriter
 	{
 	public:
-		std::map<std::wstring, std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>*> m_mapSheets;
-		std::map<std::wstring, int> m_mapFormats;
-		std::vector<OOX::Spreadsheet::CXfs*> m_aXfs;
-		std::vector<std::wstring> m_aTableNames;
-		int m_nRow1;
+        boost::unordered_map<std::wstring, boost::unordered_map<int, boost::unordered_map<int, OOX::Spreadsheet::CCell*>*>*>  m_mapSheets;
+        boost::unordered_map<std::wstring, int>                                                                           m_mapFormats;
+
+        std::vector<OOX::Spreadsheet::CXfs*>    m_aXfs;
+        std::vector<std::wstring>               m_aTableNames;
+
+        int m_nRow1;
 		int m_nCol1;
 		int m_nRow2;
 		int m_nCol2;
-	public:
-		ChartWriter();
+
+        ChartWriter();
 		~ChartWriter();
 		void toXlsx(OOX::Spreadsheet::CXlsx& oXlsx);
 		void parseChart(const OOX::Spreadsheet::CT_Chart* pChart);
-	private:
-		OOX::Spreadsheet::CWorksheet* toXlsxGetSheet(std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets, const std::wstring& sName);
-		void toXlsxSheetdata(OOX::Spreadsheet::CWorksheet* pWorksheet, const std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>& rows, std::vector<std::wstring>& aSharedStrings);
+
+    private:
+        OOX::Spreadsheet::CWorksheet* toXlsxGetSheet(boost::unordered_map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets, const std::wstring& sName);
+        void toXlsxSheetdata(OOX::Spreadsheet::CWorksheet* pWorksheet, const boost::unordered_map<int, boost::unordered_map<int, OOX::Spreadsheet::CCell*>*>& rows, std::vector<std::wstring>& aSharedStrings);
 		void parseCell(const std::wstring& sheet, const int& nRow, const int& nCol, const std::wstring& val, std::wstring* format);
 		OOX::Spreadsheet::CCell* parseCreateCell(const int& nRow, const int& nCol, const std::wstring& val, std::wstring* format);
 		void parseStrRef(const OOX::Spreadsheet::CT_StrRef* pStrRef, bool bUpdateRange, const wchar_t* cRangeName);

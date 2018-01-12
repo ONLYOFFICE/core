@@ -159,13 +159,13 @@ namespace DocFileFormat
 		OOX::CDocument docEmbedded(path, path);
 
 		bool res = false;
-		for (std::list<OOX::WritingElement*>::iterator it = docEmbedded.m_arrItems.begin(); it != docEmbedded.m_arrItems.end(); it++)
+        for (std::vector<OOX::WritingElement*>::iterator it = docEmbedded.m_arrItems.begin(); it != docEmbedded.m_arrItems.end(); ++it)
 		{
 			if ((*it)->getType() == OOX::et_w_p)
 			{
 				OOX::Logic::CParagraph *paragraph = dynamic_cast<OOX::Logic::CParagraph *>(*it);
 
-				for (std::list<OOX::WritingElement*>::iterator		jt = paragraph->m_arrItems.begin(); 
+                for (std::vector<OOX::WritingElement*>::iterator		jt = paragraph->m_arrItems.begin();
 													(paragraph) && (jt != paragraph->m_arrItems.end()); jt++)
 				{
 					if ((*jt)->getType() == OOX::et_m_oMath)
@@ -178,7 +178,7 @@ namespace DocFileFormat
 					{
 						OOX::Logic::COMathPara *mathPara = dynamic_cast<OOX::Logic::COMathPara *>(*jt);
 						
-						for (std::list<OOX::WritingElement*>::iterator kt = mathPara->m_arrItems.begin(); 
+                        for (std::vector<OOX::WritingElement*>::iterator kt = mathPara->m_arrItems.begin();
 														(mathPara) && (kt != mathPara->m_arrItems.end()); kt++)
 						{
 							if ((*kt)->getType() == OOX::et_m_oMath)

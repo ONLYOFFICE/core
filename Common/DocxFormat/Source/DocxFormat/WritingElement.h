@@ -1145,9 +1145,8 @@ namespace OOX
 	class WritingElementWithChilds : public WritingElement
 	{
 	public:
-        std::list<ElemType *>  m_arrItems;
-		using ElemArray = std::list<ElemType *>;
-		
+        std::vector<ElemType *>  m_arrItems;
+
 		WritingElementWithChilds() {}
 		virtual ~WritingElementWithChilds() 
 		{
@@ -1155,10 +1154,9 @@ namespace OOX
 		}
 		virtual void ClearItems()
 		{
-            for ( auto it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+            for ( size_t i = 0; i < m_arrItems.size(); ++i)
 			{
-				if ( *it ) delete *it;
-				*it = NULL;
+                if ( m_arrItems[i] ) delete m_arrItems[i];
 			}
 			m_arrItems.clear();
 		}

@@ -38,7 +38,7 @@
 
 #include "../XlsxFormat/Comments/Comments.h"
 
-#include <map>
+#include <boost/unordered_map.hpp>
 
 namespace OOX
 {
@@ -322,7 +322,7 @@ namespace OOX
 				long nIndex = m_lObjectIdVML + 1;
 				if(NULL != m_mapComments && m_mapComments->size() > 0)
 				{
-					for (std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_mapComments->begin(); it != m_mapComments->end(); ++it)
+                    for (boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_mapComments->begin(); it != m_mapComments->end(); ++it)
 					{
 						OOX::Spreadsheet::CCommentItem* comment = it->second;
                                                 
@@ -431,12 +431,12 @@ namespace OOX
 
 	public:
 //reading
-		CPath														m_oReadPath;
-		std::map<std::wstring, _vml_shape>							m_mapShapes;
+        CPath                                                                   m_oReadPath;
+        boost::unordered_map<std::wstring, _vml_shape>							m_mapShapes;
 //writing
-        std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>*    m_mapComments;
-        std::vector<std::wstring>                                   m_aXml;			
-        long                                                        m_lObjectIdVML;
+        boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>*    m_mapComments;
+        std::vector<std::wstring>                                               m_aXml;
+        long                                                                    m_lObjectIdVML;
 	};
 } // namespace OOX
 

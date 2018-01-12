@@ -434,9 +434,9 @@ namespace PPTX
 							std::wstring sXmlOptions, sMediaPath, sEmbedPath;
 							BinXlsxRW::CXlsxSerializer::CreateXlsxFolders (sXmlOptions, sDstEmbeddedTemp, sMediaPath, sEmbedPath);
 							
-							std::map<std::wstring, size_t>	old_enum_map	= oXlsx.m_mapEnumeratedGlobal;
-							NSBinPptxRW::CBinaryFileReader*	old_reader		= oDrawingConverter.m_pReader;
-							NSBinPptxRW::CRelsGenerator*	old_rels		= pReader->m_pRels;
+                            boost::unordered_map<std::wstring, size_t>	old_enum_map	= oXlsx.m_mapEnumeratedGlobal;
+                            NSBinPptxRW::CBinaryFileReader*             old_reader		= oDrawingConverter.m_pReader;
+                            NSBinPptxRW::CRelsGenerator*                old_rels		= pReader->m_pRels;
 							
 							oXlsx.m_mapEnumeratedGlobal.clear();
 
@@ -649,18 +649,19 @@ namespace PPTX
 				}
 				if (oleObject->m_sShapeId.IsInit() && pVml && !blipFill.blip->embed.IsInit() && blipFill.blip->oleFilepathImage.empty())
 				{					
-					std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pPair = pVml->m_mapShapes.find(*oleObject->m_sShapeId);
-					if (pVml->m_mapShapes.end() != pPair)
+                    boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pPair = pVml->m_mapShapes.find(*oleObject->m_sShapeId);
+
+                    if (pVml->m_mapShapes.end() != pPair)
 					{
 						pPair->second.bUsed = true;
 						OOX::Vml::CVmlCommonElements* pShape = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pPair->second.pElement);
 
 						if (pShape)
 						{						
-							for(std::list<OOX::WritingElement*>::iterator	it = pShape->m_arrItems.begin(); 
-																			it != pShape->m_arrItems.end(); it++)
+                            for(size_t i = 0; i < pShape->m_arrItems.size(); ++i)
 							{
-								OOX::WritingElement* pChildElemShape = *it;
+                                OOX::WritingElement* pChildElemShape = pShape->m_arrItems[i];
+
 								if(OOX::et_v_imagedata == pChildElemShape->getType())
 								{
 									OOX::Vml::CImageData* pImageData = static_cast<OOX::Vml::CImageData*>(pChildElemShape);									

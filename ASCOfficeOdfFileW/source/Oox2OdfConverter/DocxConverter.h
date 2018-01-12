@@ -158,9 +158,9 @@ namespace Oox2Odf
     private:
 		struct _section
 		{
-			OOX::Logic::CSectionProperty					*props;
-			std::list<OOX::WritingElement*>::const_iterator	start_para;
-			std::list<OOX::WritingElement*>::const_iterator	end_para;
+            OOX::Logic::CSectionProperty                        *props;
+            std::vector<OOX::WritingElement*>::const_iterator    start_para;
+            std::vector<OOX::WritingElement*>::const_iterator	end_para;
 
 			bool root;
 		}												*current_section_properties;

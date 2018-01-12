@@ -69,8 +69,8 @@ namespace Txt2Docx
 
     void Converter::write(/*const std::wstring& path*/XmlUtils::CStringWriter & stringWriter)
     {
-		for (std::list<OOX::WritingElement*>::iterator	it = converter_->m_outputFile.m_arrItems.begin();
-														it != converter_->m_outputFile.m_arrItems.end(); it++)
+        for (std::vector<OOX::WritingElement*>::iterator	it = converter_->m_outputFile.m_arrItems.begin();
+														it != converter_->m_outputFile.m_arrItems.end(); ++it)
 		{
 			if ( *it )
 				stringWriter.WriteString((*it)->toXML());
@@ -110,7 +110,7 @@ namespace Txt2Docx
             font.m_sHAnsi.Init();	*font.m_sHAnsi	= L"Courier New";
             font.m_sCs.Init();		*font.m_sCs		= L"Courier New";
 
-			for (std::list<std::wstring>::iterator line = m_inputFile.m_listContent.begin(); line != m_inputFile.m_listContent.end(); line++)
+            for (std::vector<std::wstring>::iterator line = m_inputFile.m_listContent.begin(); line != m_inputFile.m_listContent.end(); line++)
 			{
 				OOX::Logic::CParagraph			*paragraph	= new OOX::Logic::CParagraph();
 				OOX::Logic::CParagraphProperty	*pPr		= new OOX::Logic::CParagraphProperty();

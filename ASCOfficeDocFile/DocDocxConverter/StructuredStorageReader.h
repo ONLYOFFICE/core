@@ -90,7 +90,7 @@ namespace DocFileFormat
 			std::list<std::wstring> entries, entries_sort;
 			entries = m_pStorage->entries_with_prefix( path );
 			
-			for( std::list<std::wstring>::iterator it = entries.begin(); it != entries.end(); it++ )
+			for( std::list<std::wstring>::iterator it = entries.begin(); it != entries.end(); ++it )
 			{
 				std::wstring name = *it;
 				std::wstring fullname = path + name;
@@ -104,8 +104,8 @@ namespace DocFileFormat
 					entries_sort.push_front(name);
 				}
 			}
-			//for( std::list<std::string>::iterator it = entries.begin(); it != entries.end(); it++ )
-			for( std::list<std::wstring>::iterator it = entries_sort.begin(); it != entries_sort.end(); it++ )
+			//for( std::list<std::string>::iterator it = entries.begin(); it != entries.end(); ++it )
+			for( std::list<std::wstring>::iterator it = entries_sort.begin(); it != entries_sort.end(); ++it )
 			{
 				std::wstring name = *it;
 				std::wstring fullname = path + name;

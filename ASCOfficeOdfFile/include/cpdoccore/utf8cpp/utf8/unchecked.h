@@ -66,7 +66,7 @@ namespace utf8
                 case 1:
                     break;
                 case 2:
-                    it++;
+                    ++it;
                     cp = ((cp << 6) & 0x7ff) + ((*it) & 0x3f);
                     break;
                 case 3:

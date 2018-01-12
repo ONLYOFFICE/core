@@ -521,8 +521,8 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 { 
 	if ( ( dir != NULL ) && ( outputFile != NULL ) )
 	{
-		deque<wstring> StringDeque;
-		deque<wstring> zipDeque;
+        deque<wstring> StringDeque;
+        deque<wstring> zipDeque;
 		StringDeque.push_back( wstring( dir ) );
 
 		wstring zipDir;

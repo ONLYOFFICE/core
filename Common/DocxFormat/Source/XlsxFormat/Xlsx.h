@@ -53,7 +53,7 @@
 
 #include "../../../DesktopEditor/common/Directory.h"
 
-#include <map>
+#include <boost/unordered_map.hpp>
 
 namespace OOX
 {
@@ -82,7 +82,7 @@ namespace OOX
                 
 				if(bDeleteWorksheets)
                 {
-					for (std::map<std::wstring, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
+                    for (boost::unordered_map<std::wstring, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
                     {
                         if (NULL != it->second)
                             delete it->second;
@@ -138,11 +138,12 @@ namespace OOX
 						m_pCalcChain = NULL;
 
 
-					std::map<std::wstring, smart_ptr<OOX::File>> aWorksheetsFiles;
-					pDocumentContainer->FindAllByType(OOX::Spreadsheet::FileTypes::Worksheet, aWorksheetsFiles);
+                    boost::unordered_map<std::wstring, smart_ptr<OOX::File>> aWorksheetsFiles;
+
+                    pDocumentContainer->FindAllByType(OOX::Spreadsheet::FileTypes::Worksheet, aWorksheetsFiles);
 					pDocumentContainer->FindAllByType(OOX::Spreadsheet::FileTypes::Chartsheets, aWorksheetsFiles);
 
-					for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator it = aWorksheetsFiles.begin(); it != aWorksheetsFiles.end(); ++it)
+                    for (boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator it = aWorksheetsFiles.begin(); it != aWorksheetsFiles.end(); ++it)
 					{
 						OOX::Spreadsheet::CWorksheet* sheet = (OOX::Spreadsheet::CWorksheet*) it->second.operator->();
 						m_aWorksheets [it->first] = sheet;
@@ -159,8 +160,8 @@ namespace OOX
 									{
 										if (!pExt->m_arrConditionalFormatting[j]) continue;
 
-										for ( std::list<CConditionalFormattingRule*>::iterator	it = pExt->m_arrConditionalFormatting[j]->m_arrItems.begin(); 
-																								it != pExt->m_arrConditionalFormatting[j]->m_arrItems.end(); it++)
+                                        for ( std::vector<CConditionalFormattingRule*>::iterator	it = pExt->m_arrConditionalFormatting[j]->m_arrItems.begin();
+																								it != pExt->m_arrConditionalFormatting[j]->m_arrItems.end(); ++it)
 										{
 											OOX::Spreadsheet::CConditionalFormattingRule *rule = *it;
 											if (!rule) continue;
@@ -253,7 +254,7 @@ namespace OOX
                 if(NULL != m_pStyles)
                     m_pStyles->PrepareToWrite();
 
-				for (std::map<std::wstring, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
+                for (boost::unordered_map<std::wstring, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
                 {
                     if (NULL != it->second)
                         it->second->PrepareToWrite();
@@ -308,7 +309,7 @@ namespace OOX
 			{
 				return m_pCalcChain;
 			}
-			std::map<std::wstring, CWorksheet*>  &GetWorksheets ()
+            boost::unordered_map<std::wstring, CWorksheet*>  &GetWorksheets ()
 			{
 				return m_aWorksheets;
 			}
@@ -468,7 +469,7 @@ namespace OOX
 					}
 				}
 				//переносим теги <is> и ячейки с типом str в sharedString
-				for (std::map<std::wstring, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
+                for (boost::unordered_map<std::wstring, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
 				{
 					PrepareWorksheet(it->second);
 				}
@@ -479,17 +480,17 @@ namespace OOX
 			{
 				if(pWorksheet->m_oSheetData.IsInit())
 				{
-					std::list<OOX::Spreadsheet::CRow*>& aRows = pWorksheet->m_oSheetData->m_arrItems;
+                    std::vector<OOX::Spreadsheet::CRow*>& aRows = pWorksheet->m_oSheetData->m_arrItems;
 					
-					for(std::list<OOX::Spreadsheet::CRow*>::iterator it = aRows.begin(); it != aRows.end(); it++)
+                    for(size_t i = 0; i < aRows.size(); ++i)
 					{
-						OOX::Spreadsheet::CRow* pRow = *it;
+                        OOX::Spreadsheet::CRow* pRow = aRows[i];
 						
-						std::list<OOX::Spreadsheet::CCell*> & aCells = pRow->m_arrItems;
+                        std::vector<OOX::Spreadsheet::CCell*> & aCells = pRow->m_arrItems;
 						
-						for(std::list<OOX::Spreadsheet::CCell*>::iterator it = aCells.begin(); it != aCells.end(); it++)
+                        for(size_t j = 0; j < aCells.size(); ++j)
 						{
-							OOX::Spreadsheet::CCell* pCell = *it;
+                            OOX::Spreadsheet::CCell* pCell = aCells[j];
 							if (!pCell)continue;
 
 							if(pCell->m_oType.IsInit())
@@ -573,14 +574,14 @@ namespace OOX
 				bDeleteWorksheets		= false;
 			}
 		private:
-			CWorkbook*							m_pWorkbook;
-			CSharedStrings*						m_pSharedStrings;
-			CStyles*							m_pStyles;
-			CCalcChain*							m_pCalcChain;
-			smart_ptr<PPTX::Theme>				m_pTheme;
-			std::map<std::wstring, CWorksheet*> m_aWorksheets;
+            CWorkbook*                                      m_pWorkbook;
+            CSharedStrings*                                 m_pSharedStrings;
+            CStyles*                                        m_pStyles;
+            CCalcChain*                                     m_pCalcChain;
+            smart_ptr<PPTX::Theme>                          m_pTheme;
 
-			std::map<std::wstring, size_t>		m_mapXlsxEnumeratedGlobal;
+            boost::unordered_map<std::wstring, CWorksheet*>   m_aWorksheets;
+            boost::unordered_map<std::wstring, size_t>		m_mapXlsxEnumeratedGlobal;
 			
 			bool bDeleteWorkbook;
 			bool bDeleteSharedStrings;

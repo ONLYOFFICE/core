@@ -45,7 +45,7 @@
 
 #include "../../../../DesktopEditor/common/File.h"
 
-#include <boost/algorithm/string.hpp>
+#include <boost/unordered_map.hpp>
 
 namespace OOX
 {
@@ -172,7 +172,7 @@ namespace OOX
 		}
 		~CRels()
 		{
-			for (std::map<std::wstring, Rels::CRelationShip*>::iterator it = m_mapRelations.begin(); it != m_mapRelations.end(); it++)
+            for (boost::unordered_map<std::wstring, Rels::CRelationShip*>::iterator it = m_mapRelations.begin(); it != m_mapRelations.end(); ++it)
 			{
 				if ( it->second ) delete it->second;
 				it->second = NULL;
@@ -257,7 +257,7 @@ namespace OOX
 				oWriter.WriteAttribute( _T("xmlns"), _T("http://schemas.openxmlformats.org/package/2006/relationships") );
                 oWriter.WriteNodeEnd( _T("Relationships"), true, false );
 
-				for (std::map<std::wstring, Rels::CRelationShip*>::const_iterator it = m_mapRelations.begin(); it != m_mapRelations.end(); it++)
+                for (boost::unordered_map<std::wstring, Rels::CRelationShip*>::const_iterator it = m_mapRelations.begin(); it != m_mapRelations.end(); ++it)
 				{
 					if ( it->second )
 						oWriter.WriteString( it->second->toXML() );
@@ -304,7 +304,7 @@ namespace OOX
 		{
 			(*ppRelationShip) = NULL;
 
-			std::map<std::wstring, Rels::CRelationShip*>::iterator pFind = m_mapRelations.find(rId.get());
+            boost::unordered_map<std::wstring, Rels::CRelationShip*>::iterator pFind = m_mapRelations.find(rId.get());
 			if (pFind != m_mapRelations.end())
 			{
 				(*ppRelationShip) = pFind->second;
@@ -326,7 +326,7 @@ namespace OOX
 
 	public:
 
-		std::map<std::wstring, Rels::CRelationShip*> m_mapRelations;
+        boost::unordered_map<std::wstring, Rels::CRelationShip*> m_mapRelations;
 	};
 
 } // namespace OOX

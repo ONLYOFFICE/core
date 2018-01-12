@@ -45,8 +45,8 @@ namespace OOX
 struct _section
 {
 	RtfSectionPtr								props;
-	std::list<OOX::WritingElement*>::iterator	start_para;
-	std::list<OOX::WritingElement*>::iterator	end_para;
+    std::vector<OOX::WritingElement*>::iterator	start_para;
+    std::vector<OOX::WritingElement*>::iterator	end_para;
 };
 
 class RtfDocument : public ItemContainer<_section>

@@ -39,6 +39,7 @@
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "Common//ToString.h"
+#include <map>
 
 namespace Docx2Txt
 {
@@ -72,7 +73,7 @@ namespace Docx2Txt
 		OOX::CDocx		m_inputFile;
 
     private:
-        void convert(std::list<OOX::WritingElement *> & items, std::list<std::wstring>& textOut, TxtXml::ITxtXmlEvent& Event, bool isFirstLevel, 
+        void convert(std::vector<OOX::WritingElement *> & items, std::vector<std::wstring>& textOut, TxtXml::ITxtXmlEvent& Event, bool isFirstLevel,
 							 OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
        
 		int m_lPercent;
@@ -85,7 +86,7 @@ namespace Docx2Txt
 									OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
 
         size_t NoteCount;
-		std::map<std::wstring, std::list<std::wstring>> Notes;
+        std::map<std::wstring, std::vector<std::wstring>> Notes;
 
         static std::wstring IntToLowerLetter	(int number);
         static std::wstring IntToUpperLetter	(int number);
@@ -201,11 +202,11 @@ namespace Docx2Txt
 				m_outputFile.m_listContent.push_back(L"");
 				m_outputFile.m_listContent.push_back(L"---------------------------");
 				
-				for(std::map<std::wstring, std::list<std::wstring>>::const_iterator iter_map = Notes.begin(); iter_map != Notes.end(); iter_map++)
+                for(std::map<std::wstring, std::vector<std::wstring>>::const_iterator iter_map = Notes.begin(); iter_map != Notes.end(); iter_map++)
 				{
 					bool bFirst = true;
 					
-					for(std::list<std::wstring>::const_iterator iter = iter_map->second.begin(); iter != iter_map->second.end(); iter++)
+                    for(std::vector<std::wstring>::const_iterator iter = iter_map->second.begin(); iter != iter_map->second.end(); iter++)
 					{
 						if (bFirst) m_outputFile.m_listContent.push_back(iter_map->first + L" " + *iter);
 						else		m_outputFile.m_listContent.push_back(*iter);
@@ -248,7 +249,7 @@ namespace Docx2Txt
 	}
 
 
-	void Converter_Impl::convert(std::list<OOX::WritingElement*> & items, std::list<std::wstring>& textOut, TxtXml::ITxtXmlEvent& Event, 
+    void Converter_Impl::convert(std::vector<OOX::WritingElement*> & items, std::vector<std::wstring>& textOut, TxtXml::ITxtXmlEvent& Event,
 										bool isFirstLevel, OOX::CDocument *pDocument,  OOX::CNumbering* pNumbering, OOX::CStyles *pStyles)
 	{
 		if( !items.empty() )
@@ -256,7 +257,7 @@ namespace Docx2Txt
 			if(isFirstLevel)
 				m_lAddition = m_lAddition / items.size();
 			
-			for (std::list<OOX::WritingElement*>::iterator it = items.begin(); it != items.end(); it++)
+            for (std::vector<OOX::WritingElement*>::iterator it = items.begin(); it != items.end(); ++it)
 			{
 				OOX::WritingElement* item = *it;
 
@@ -464,8 +465,8 @@ namespace Docx2Txt
 
 		bool inField = false;
 
-		for (std::list<OOX::WritingElement*>::iterator	it = pParagraph->m_arrItems.begin();
-														it != pParagraph->m_arrItems.end(); it++)
+        for (std::vector<OOX::WritingElement*>::iterator	it = pParagraph->m_arrItems.begin();
+														it != pParagraph->m_arrItems.end(); ++it)
 		{
 			if (*it== NULL) continue;
 
@@ -473,7 +474,7 @@ namespace Docx2Txt
 			{
 				OOX::Logic::CRun *run = dynamic_cast<OOX::Logic::CRun*>(*it);
 
-				for (std::list<OOX::WritingElement*>::iterator jt = run->m_arrItems.begin(); jt != run->m_arrItems.end(); jt++)
+                for (std::vector<OOX::WritingElement*>::iterator jt = run->m_arrItems.begin(); jt != run->m_arrItems.end(); jt++)
 				{
 					if (*jt== NULL) continue;
 
@@ -512,7 +513,7 @@ namespace Docx2Txt
 						if ((*jt)->getType() == OOX::et_w_footnoteReference || (*it)->getType() == OOX::et_w_endnoteReference)
 						{// todooo Ref ????
 
-							std::list<std::wstring> notes_content;
+                            std::vector<std::wstring> notes_content;
 
 							OOX::Logic::CFootnoteReference* footnote_ref = dynamic_cast<OOX::Logic::CFootnoteReference*>(*jt);
 							OOX::Logic::CEndnoteReference* endnote_ref = dynamic_cast<OOX::Logic::CEndnoteReference*>(*jt);

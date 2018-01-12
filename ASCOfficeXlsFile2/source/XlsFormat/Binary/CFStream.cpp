@@ -239,7 +239,7 @@ void CFStream::applyDelayedItems()
 				seekFromBegin(it->data_place);
 				write(&its->data, it->data_size);
 			}
-			receiver_items.erase(it++);
+			receiver_items.erase(++it);
 			source_items.erase(its);
 			continue;
 		}

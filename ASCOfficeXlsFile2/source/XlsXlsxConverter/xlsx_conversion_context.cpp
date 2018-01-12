@@ -251,7 +251,7 @@ void xlsx_conversion_context::end_document()
 	std::wstringstream workbook_content;
 
 	//for (size_t i = 0; i < sheets_.size(); i++) нужно по id
-	for (std::map<int, int>::iterator it = sheets_map_.begin(); it != sheets_map_.end(); it++)
+	for (std::map<int, int>::iterator it = sheets_map_.begin(); it != sheets_map_.end(); ++it)
 	{
 		int i = it->second;
 
@@ -350,11 +350,11 @@ void xlsx_conversion_context::end_document()
 		}
 		output_document_->get_xl_files().set_connections( package::simple_element::create(L"connections.xml", strm.str()) );
 	}     
-	for (std::map<std::wstring, std::wstring>::iterator it = query_tables_.begin(); it != query_tables_.end(); it++)
+	for (std::map<std::wstring, std::wstring>::iterator it = query_tables_.begin(); it != query_tables_.end(); ++it)
 	{
 		output_document_->get_xl_files().add_query_table( package::simple_element::create(it->first, it->second) );
 	}
-	for (std::map<std::wstring, std::wstring>::iterator it = control_props_.begin(); it != control_props_.end(); it++)
+	for (std::map<std::wstring, std::wstring>::iterator it = control_props_.begin(); it != control_props_.end(); ++it)
 	{
 		output_document_->get_xl_files().add_control_props( package::simple_element::create(it->first, it->second) );
 	}

@@ -164,7 +164,7 @@ namespace DocFileFormat
 				std::wstring path = L"ObjectPool/" + oleObjectFileStructure.objectID;
 
 				std::list<std::wstring> entries = storageInp->entries(path);
-				for (std::list<std::wstring>::iterator it = entries.begin(); it != entries.end(); it++)
+				for (std::list<std::wstring>::iterator it = entries.begin(); it != entries.end(); ++it)
 				{
 					POLE::Stream *stream_inp = new POLE::Stream(storageInp, path + L"/"+ (*it));
 					if (stream_inp == NULL)continue;

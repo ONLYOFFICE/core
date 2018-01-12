@@ -36,7 +36,7 @@
 #include "RId.h"
 #include "UnknowTypeFile.h"
 #include "IFileBuilder.h"
-#include <map>
+#include <boost/unordered_map.hpp>
 
 namespace OOX 
 {
@@ -65,12 +65,12 @@ namespace OOX
 		IFileContainer();
 		virtual ~IFileContainer();
 
-		bool											m_bSpreadsheets;
-		static std::map<std::wstring, size_t>			m_mapEnumeratedGlobal;
+        bool                                                        m_bSpreadsheets;
+        static boost::unordered_map<std::wstring, size_t>			m_mapEnumeratedGlobal;
 	protected:
-        std::map<std::wstring, smart_ptr<OOX::File>>	m_mContainer;
-		std::map<std::wstring, std::wstring>			m_mNoWriteContainer;
-		size_t											m_lMaxRid;
+        boost::unordered_map<std::wstring, smart_ptr<OOX::File>>	m_mContainer;
+        boost::unordered_map<std::wstring, std::wstring>			m_mNoWriteContainer;
+        size_t                                                      m_lMaxRid;
 
 		void Read (const OOX::CRels& oRels, const OOX::CPath& oRootPath, const CPath& oPath);
 		void Write (const OOX::CPath& oFileName, const CPath& oDir, OOX::CContentTypes& oContent) const;
@@ -116,7 +116,7 @@ namespace OOX
 		smart_ptr<OOX::File> Find(const FileType& type) const;
 		smart_ptr<OOX::File> Find(const OOX::RId& type) const;
 
-		void FindAllByType(const FileType& oType, std::map<std::wstring, smart_ptr<OOX::File>>& aOutput) const;
+        void FindAllByType(const FileType& oType, boost::unordered_map<std::wstring, smart_ptr<OOX::File>>& aOutput) const;
 
 		smart_ptr<OOX::File> operator [](const OOX::RId rId);
 		smart_ptr<OOX::File> operator [](const FileType& oType);
@@ -126,9 +126,9 @@ namespace OOX
 	protected:
 		static UnknowTypeFile Unknown;
 	private:
-		std::map<std::wstring, size_t>	m_mapAddNamePair;
-		OOX::CRels*						m_pCurRels;
-		const RId						GetMaxRId();
+        boost::unordered_map<std::wstring, size_t>	m_mapAddNamePair;
+        OOX::CRels*                                 m_pCurRels;
+        const RId                                   GetMaxRId();
 	};
 
 } // namespace OOX

@@ -225,16 +225,17 @@ namespace OOX
 			//cellXfs
 				if(m_oCellXfs.IsInit())
 				{
-					for ( std::list<CXfs*>::iterator it = m_oCellXfs->m_arrItems.begin(); it != m_oCellXfs->m_arrItems.end(); it++)
-					{
-						CXfs* xfs = *it;
-						
-						if ((xfs) && (false == xfs->m_oXfId.IsInit()))
-						{
-							xfs->m_oXfId.Init();
-							xfs->m_oXfId->SetValue(0);
-						}
-					}
+                    for ( size_t i = 0; i < m_oCellXfs->m_arrItems.size(); ++i)
+                    {
+                        CXfs* xfs = m_oCellXfs->m_arrItems[i];
+
+                        if ((xfs) && (false == xfs->m_oXfId.IsInit()))
+                        {
+                            xfs->m_oXfId.Init();
+                            xfs->m_oXfId->SetValue(0);
+                        }
+
+                    }
 				}
 				//cellStyles
 				if(false == m_oCellStyles.IsInit())

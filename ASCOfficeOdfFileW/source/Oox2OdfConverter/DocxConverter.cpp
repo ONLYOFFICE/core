@@ -181,10 +181,10 @@ void DocxConverter::convert_document()
 
 	std::vector<_section> sections;
 //----------------------------------------------------------------------------------------------------------
-	std::list<OOX::WritingElement*>::const_iterator last_section_start = document->m_arrItems.begin();
+    std::vector<OOX::WritingElement*>::const_iterator last_section_start = document->m_arrItems.begin();
 
 	//считаем количесво секций и запоминаем их свойства .. 
-	for (std::list<OOX::WritingElement*>::const_iterator it = document->m_arrItems.begin(); it != document->m_arrItems.end(); it++)
+    for (std::vector<OOX::WritingElement*>::const_iterator it = document->m_arrItems.begin(); it != document->m_arrItems.end(); ++it)
 	{
 		if ((*it) == NULL) continue;
 
@@ -224,7 +224,7 @@ void DocxConverter::convert_document()
 	{
 		current_section_properties = &sections[sect];
 
-		for (std::list<OOX::WritingElement*>::const_iterator it = sections[sect].start_para; it != sections[sect].end_para; it++)
+        for (std::vector<OOX::WritingElement*>::const_iterator it = sections[sect].start_para; it != sections[sect].end_para; ++it)
 		{
 			convert(*it);
 		}
@@ -374,7 +374,7 @@ void DocxConverter::convert(OOX::Logic::CSdtContent *oox_sdt)
 {
 	if (oox_sdt == NULL) return;
 
-	for (std::list<OOX::WritingElement*>::iterator it = oox_sdt->m_arrItems.begin(); it != oox_sdt->m_arrItems.end(); it++)
+    for (std::vector<OOX::WritingElement*>::iterator it = oox_sdt->m_arrItems.begin(); it != oox_sdt->m_arrItems.end(); ++it)
 	{
 		convert(*it);
 	}
@@ -532,7 +532,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 	{//rapcomnat12.docx - стр 185
 		bool empty_para = true;
 
-		for (std::list<OOX::WritingElement*>::iterator it = oox_paragraph->m_arrItems.begin(); it != oox_paragraph->m_arrItems.end(); it++)
+        for (std::vector<OOX::WritingElement*>::iterator it = oox_paragraph->m_arrItems.begin(); it != oox_paragraph->m_arrItems.end(); ++it)
 		{		
 			switch((*it)->getType())
 			{
@@ -556,7 +556,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 	}
 
 //---------------------------------------------------------------------------------------------------------------------
-	for (std::list<OOX::WritingElement*>::iterator it = oox_paragraph->m_arrItems.begin(); it != oox_paragraph->m_arrItems.end(); it++)
+    for (std::vector<OOX::WritingElement*>::iterator it = oox_paragraph->m_arrItems.begin(); it != oox_paragraph->m_arrItems.end(); ++it)
 	{
 		//те элементы которые тока для Paragraph - здесь - остальные в общей куче		
 		switch((*it)->getType())
@@ -618,7 +618,7 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 
 	odt_context->start_run(styled);
 	
-	for (std::list<OOX::WritingElement*>::iterator it = oox_run->m_arrItems.begin(); it != oox_run->m_arrItems.end(); it++)
+    for (std::vector<OOX::WritingElement*>::iterator it = oox_run->m_arrItems.begin(); it != oox_run->m_arrItems.end(); ++it)
 	{
 		//те элементы которые тока для Run - здесь - остальные в общей куче		
 		switch((*it)->getType())
@@ -788,7 +788,7 @@ void DocxConverter::convert(OOX::Logic::CFldSimple	*oox_fld)
 		if (oox_fld->m_sInstr.IsInit())	
 			odt_context->set_field_instr(oox_fld->m_sInstr.get2());
 
-		for (std::list<OOX::WritingElement*>::iterator it = oox_fld->m_arrItems.begin(); it != oox_fld->m_arrItems.end(); it++)
+        for (std::vector<OOX::WritingElement*>::iterator it = oox_fld->m_arrItems.begin(); it != oox_fld->m_arrItems.end(); ++it)
 		{
 			convert(*it);
 		}
@@ -825,7 +825,7 @@ void DocxConverter::convert(OOX::Logic::CIns *oox_ins)
 			
 	bool start_change = odt_context->start_change(id, 1, author, userId, date);
 
-	for (std::list<OOX::WritingElement*>::iterator it = oox_ins->m_arrItems.begin(); it != oox_ins->m_arrItems.end(); it++)
+    for (std::vector<OOX::WritingElement*>::iterator it = oox_ins->m_arrItems.begin(); it != oox_ins->m_arrItems.end(); ++it)
 	{
 		convert(*it);
 	}
@@ -1030,7 +1030,7 @@ void DocxConverter::convert(OOX::Logic::CDel *oox_del)
 
 	bool res_change  = odt_context->start_change(id, 2, author, userId, date);
 
-	for (std::list<OOX::WritingElement*>::iterator it = oox_del->m_arrItems.begin(); it != oox_del->m_arrItems.end(); it++)
+    for (std::vector<OOX::WritingElement*>::iterator it = oox_del->m_arrItems.begin(); it != oox_del->m_arrItems.end(); ++it)
 	{
 		convert(*it);
 	}
@@ -1041,7 +1041,7 @@ void DocxConverter::convert(OOX::Logic::CSmartTag *oox_tag)
 {
 	if (oox_tag == NULL) return;
 
-	for (std::list<OOX::WritingElement*>::iterator it = oox_tag->m_arrItems.begin(); it != oox_tag->m_arrItems.end(); it++)
+    for (std::vector<OOX::WritingElement*>::iterator it = oox_tag->m_arrItems.begin(); it != oox_tag->m_arrItems.end(); ++it)
 	{
 		convert(*it);
 	}
@@ -2914,7 +2914,7 @@ void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
 
 		odt_context->start_hyperlink(ref);
 		
-		for (std::list<OOX::WritingElement*>::iterator it = oox_hyperlink->m_arrItems.begin(); it != oox_hyperlink->m_arrItems.end(); it++)
+        for (std::vector<OOX::WritingElement*>::iterator it = oox_hyperlink->m_arrItems.begin(); it != oox_hyperlink->m_arrItems.end(); ++it)
 		{
 			convert(*it);
 		}
@@ -2923,7 +2923,7 @@ void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
 	else
 	{//ссылка внутри дока
 		//anchor todooo
-		for (std::list<OOX::WritingElement*>::iterator it = oox_hyperlink->m_arrItems.begin(); it != oox_hyperlink->m_arrItems.end(); it++)
+        for (std::vector<OOX::WritingElement*>::iterator it = oox_hyperlink->m_arrItems.begin(); it != oox_hyperlink->m_arrItems.end(); ++it)
 		{
 			convert(*it);
 		}
@@ -3478,7 +3478,7 @@ void DocxConverter::convert_comment(int oox_comm_id)
 				if (oox_comment->m_oDate.IsInit())		odt_context->comment_context()->set_date	(oox_comment->m_oDate->GetValue());
 				if (oox_comment->m_oInitials.IsInit())	{}
 
-				for (std::list<OOX::WritingElement*>::iterator it = oox_comment->m_arrItems.begin(); it != oox_comment->m_arrItems.end(); it++)
+                for (std::vector<OOX::WritingElement*>::iterator it = oox_comment->m_arrItems.begin(); it != oox_comment->m_arrItems.end(); ++it)
 				{
 					convert(*it);
 				}
@@ -3505,7 +3505,7 @@ void DocxConverter::convert_footnote(int oox_ref_id)
 		{
 			odt_context->start_note_content();
 			{
-				for (std::list<OOX::WritingElement*>::iterator it = oox_note->m_arrItems.begin(); it != oox_note->m_arrItems.end(); it++)
+                for (std::vector<OOX::WritingElement*>::iterator it = oox_note->m_arrItems.begin(); it != oox_note->m_arrItems.end(); ++it)
 				{
 					convert(*it);
 				}
@@ -3533,7 +3533,7 @@ void DocxConverter::convert_endnote(int oox_ref_id)
 		{
 			odt_context->start_note_content();
 			{
-				for (std::list<OOX::WritingElement*>::iterator it = oox_note->m_arrItems.begin(); it != oox_note->m_arrItems.end(); it++)
+                for (std::vector<OOX::WritingElement*>::iterator it = oox_note->m_arrItems.begin(); it != oox_note->m_arrItems.end(); ++it)
 				{
 					convert(*it);
 				}
@@ -3550,7 +3550,7 @@ void DocxConverter::convert_hdr_ftr	(std::wstring sId)
 
 	oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(oox_hdr_ftr);
 
-	for (std::list<OOX::WritingElement*>::iterator it = oox_hdr_ftr->m_arrItems.begin(); it != oox_hdr_ftr->m_arrItems.end(); it++)
+    for (std::vector<OOX::WritingElement*>::iterator it = oox_hdr_ftr->m_arrItems.begin(); it != oox_hdr_ftr->m_arrItems.end(); ++it)
 	{
 		convert(*it);
 	}
@@ -3729,7 +3729,7 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 	convert(oox_table->m_oTblGrid.GetPointer());
 
 //------ строки
-	for (std::list<OOX::WritingElement*>::iterator it = oox_table->m_arrItems.begin(); it != oox_table->m_arrItems.end(); it++)
+    for (std::vector<OOX::WritingElement*>::iterator it = oox_table->m_arrItems.begin(); it != oox_table->m_arrItems.end(); ++it)
 	{
 		switch((*it)->getType())
 		{
@@ -3845,7 +3845,7 @@ void DocxConverter::convert(OOX::Logic::CTr	*oox_table_row)
 	
 	convert(oox_table_row->m_pTableRowProperties);
 
-	for (std::list<OOX::WritingElement*>::iterator it = oox_table_row->m_arrItems.begin(); it != oox_table_row->m_arrItems.end(); it++)
+    for (std::vector<OOX::WritingElement*>::iterator it = oox_table_row->m_arrItems.begin(); it != oox_table_row->m_arrItems.end(); ++it)
 	{
 		switch((*it)->getType())
 		{
@@ -3905,7 +3905,7 @@ void DocxConverter::convert(OOX::Logic::CTc	*oox_table_cell)
 			odt_context->table_context()->set_cell_column_span(oox_table_cell->m_pTableCellProperties->m_oGridSpan->m_oVal->GetValue());
 	}
 
-	for (std::list<OOX::WritingElement*>::iterator it = oox_table_cell->m_arrItems.begin(); it != oox_table_cell->m_arrItems.end(); it++)
+    for (std::vector<OOX::WritingElement*>::iterator it = oox_table_cell->m_arrItems.begin(); it != oox_table_cell->m_arrItems.end(); ++it)
 	{
 		switch((*it)->getType())
 		{

@@ -194,7 +194,7 @@ private:
 		std::map<size_t, size_t> count;
 
 		size_t max_size = 0;
-		for (std::map<size_t, size_t>::iterator it = map.begin(); it != map.end(); it++)
+		for (std::map<size_t, size_t>::iterator it = map.begin(); it != map.end(); ++it)
 		{
 			std::map<size_t, size_t>::iterator pFind = count.find(it->second);
 			if (pFind != count.end())
@@ -215,7 +215,7 @@ private:
 
 		size_t found = 0;
 
-		for (std::map<size_t, size_t>::iterator it = count.begin() ; it != count.end(); it++)
+		for (std::map<size_t, size_t>::iterator it = count.begin() ; it != count.end(); ++it)
 		{
 			if (it->second == max_size)
 			{
@@ -229,16 +229,16 @@ private:
 		{
 			if (it->second != found)
 			{
-				std::map<size_t, size_t>::iterator del = it; it++;
+				std::map<size_t, size_t>::iterator del = it; ++it;
 				map.erase(del);
 			}
-			else it++;
+			else ++it;
 		}
 		return true;
 	}
 	void clear_header_map2(std::map<size_t, size_t> & map, std::map<size_t, size_t> & map_by)
 	{//отсев тех кто во втором
-		for (std::map<size_t, size_t>::iterator it = map_by.begin() ; it != map_by.end(); it++)
+		for (std::map<size_t, size_t>::iterator it = map_by.begin() ; it != map_by.end(); ++it)
 		{
 			std::map<size_t, size_t>::iterator pFind = map.find(it->second);
 			if (pFind != map.end())

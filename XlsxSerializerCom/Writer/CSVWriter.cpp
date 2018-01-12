@@ -164,8 +164,8 @@ namespace CSVWriter
 				sSheetRId = bJSON ? pSheet->m_oRid->GetValue() : pSheet->m_oName.get2();
 			}
 
-			std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();
-			std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::const_iterator pPair = arrWorksheets.find(sSheetRId);
+            boost::unordered_map<std::wstring, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();
+            boost::unordered_map<std::wstring, OOX::Spreadsheet::CWorksheet*>::const_iterator pPair = arrWorksheets.find(sSheetRId);
 			if (pPair != arrWorksheets.end())
 			{
 				OOX::Spreadsheet::CWorksheet *pWorksheet = pPair->second;
@@ -183,11 +183,11 @@ namespace CSVWriter
 					if (bJSON)
                         CSVWriter::WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sBkt, nCodePage);
 
-					INT nRowCurrent = 1, i = 0;
-					for (std::list<OOX::Spreadsheet::CRow*>::iterator	it = pWorksheet->m_oSheetData->m_arrItems.begin(); 
-																		it != pWorksheet->m_oSheetData->m_arrItems.end(); it++, i++)
+                    INT nRowCurrent = 1;
+                    for (size_t i = 0; i < pWorksheet->m_oSheetData->m_arrItems.size(); ++i)
 					{
-						OOX::Spreadsheet::CRow *pRow = *it;
+                        OOX::Spreadsheet::CRow *pRow = pWorksheet->m_oSheetData->m_arrItems[i];
+
 						INT nRow = pRow->m_oR.IsInit() ? pRow->m_oR->GetValue() : 0 == i ? nRowCurrent : nRowCurrent + 1;
 
 						if (bJSON)
@@ -202,15 +202,15 @@ namespace CSVWriter
 							}
 						}
 
-						INT nColCurrent = 1, j = 0;
+                        INT nColCurrent = 1;
                         bool bIsWriteCell = false; // Нужно только для записи JSON-а
 
-						for (std::list<OOX::Spreadsheet::CCell*>::iterator	jt = pRow->m_arrItems.begin(); 
-																			jt != pRow->m_arrItems.end(); jt++, j++)
+                        for (size_t j = 0; j < pRow->m_arrItems.size(); ++j)
 						{
 							INT nRowTmp = 0;
 							INT nCol = 0;
-							OOX::Spreadsheet::CCell *pCell = *jt;
+                            OOX::Spreadsheet::CCell *pCell = pRow->m_arrItems[j];
+
 							if (pCell->isInitRef())
 							{
 								pCell->getRowCol(nRowTmp, nCol);
@@ -239,20 +239,19 @@ namespace CSVWriter
 							std::wstring sCellValue = _T("");
 							if (pCell->m_oValue.IsInit())
 							{
-								if (pCell->m_oType.IsInit() && SimpleTypes::Spreadsheet::celltypeNumber != pCell->m_oType->GetValue())
-								{
-									int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
+                                if (pCell->m_oType.IsInit() && SimpleTypes::Spreadsheet::celltypeNumber != pCell->m_oType->GetValue())
+                                {
+                                    int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
 
-                                    std::map<int, OOX::Spreadsheet::CSi*>::iterator pFind = pSharedStrings->m_mapItems.find(nValue);
-									if (pFind != pSharedStrings->m_mapItems.end())
-									{
-										OOX::Spreadsheet::CSi *pSi = pFind->second;
-										if(NULL != pSi)
-										{
-											sCellValue = pSi->ToString();
-										}
-									}
-								}
+                                    if (nValue >= 0 && nValue < pSharedStrings->m_arrItems.size())
+                                    {
+                                        OOX::Spreadsheet::CSi *pSi = pSharedStrings->m_arrItems[nValue];
+                                        if(NULL != pSi)
+                                        {
+                                            sCellValue = pSi->ToString();
+                                        }
+                                    }
+                                }
 								else 
 								{
 									sCellValue = pCell->m_oValue->ToString();

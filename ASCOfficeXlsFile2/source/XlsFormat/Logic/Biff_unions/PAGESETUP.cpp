@@ -177,7 +177,7 @@ int PAGESETUP::serialize(std::wostream & stream)
 					footer = true;
 				}
 			}
-			for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); it++)
+			for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); ++it)
 			{
 				switch((*it)->get_type())
 				{

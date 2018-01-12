@@ -70,10 +70,9 @@ namespace OOX
 		}
 		virtual ~CHdrFtr()
 		{
-			for ( std::list<OOX::WritingElement*>::iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++ )
+            for ( size_t i = 0; i < m_arrItems.size(); ++i )
 			{
-				if ( *it) delete (*it);
-				*it = NULL;
+                if ( m_arrItems[i] ) delete m_arrItems[i];
 			}
 
 			m_arrItems.clear();
@@ -319,11 +318,11 @@ mc:Ignorable=\"w14 wp14\">");
 			else
 				return;
 
-			for (std::list<OOX::WritingElement*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+            for (size_t i = 0; i < m_arrItems.size(); ++i)
 			{
-				if ( *it )
+                if ( m_arrItems[i] )
 				{
-					sXml += (*it)->toXML();
+                    sXml += m_arrItems[i]->toXML();
 				}
 			}
 
@@ -371,7 +370,7 @@ mc:Ignorable=\"w14 wp14\">");
 		CPath							m_oReadPath;
 		OOX::EElementType				m_eType;
 
-		std::list<WritingElement* >		m_arrItems;
+        std::vector<WritingElement* >	m_arrItems;
 		std::vector<std::wstring>		m_arrShapeTypes;
 	};
 

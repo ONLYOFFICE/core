@@ -46,9 +46,9 @@ const int TxtFile::getLinesCount()
 {
 	return m_linesCount;
 }
-const std::list<std::string> TxtFile::readAnsiOrCodePage() // == readUtf8withoutPref также
+const std::vector<std::string> TxtFile::readAnsiOrCodePage() // == readUtf8withoutPref также
 {
-	std::list<std::string> result;
+    std::vector<std::string> result;
 	NSFile::CFileBinary file_binary;
 
 	if (file_binary.OpenFile(m_path) == false) return result;
@@ -87,9 +87,9 @@ const std::list<std::string> TxtFile::readAnsiOrCodePage() // == readUtf8without
 	return result;
 }
 
-const std::list<std::wstring> TxtFile::readUnicodeFromBytes(char *file_data, long file_size)
+const std::vector<std::wstring> TxtFile::readUnicodeFromBytes(char *file_data, long file_size)
 {
-    std::list<std::wstring> result;
+    std::vector<std::wstring> result;
     long start_pos = 2;	// skip Header
 
     for (long end_pos = start_pos; end_pos + 1 < file_size; end_pos += 2)
@@ -113,9 +113,9 @@ const std::list<std::wstring> TxtFile::readUnicodeFromBytes(char *file_data, lon
     return result;
 }
 
-const std::list<std::wstring> TxtFile::readUnicode()
+const std::vector<std::wstring> TxtFile::readUnicode()
 {
-    std::list<std::wstring> result;
+    std::vector<std::wstring> result;
 	NSFile::CFileBinary file_binary;
 
 	if (file_binary.OpenFile(m_path) == false ) return result;
@@ -130,9 +130,9 @@ const std::list<std::wstring> TxtFile::readUnicode()
     return readUnicodeFromBytes(file_data, file_size);
 }
 
-const std::list<std::wstring> TxtFile::readBigEndian()
+const std::vector<std::wstring> TxtFile::readBigEndian()
 {
-    std::list<std::wstring> result;
+    std::vector<std::wstring> result;
 	NSFile::CFileBinary file_binary;
 
 	if (file_binary.OpenFile(m_path) == false) return result;
@@ -155,9 +155,9 @@ const std::list<std::wstring> TxtFile::readBigEndian()
 }
 
 
-const std::list<std::string> TxtFile::readUtf8()
+const std::vector<std::string> TxtFile::readUtf8()
 {
-	std::list<std::string> result;
+    std::vector<std::string> result;
 	NSFile::CFileBinary file_binary;
 
 	if (file_binary.OpenFile(m_path) == false) return result;
@@ -195,13 +195,13 @@ const std::list<std::string> TxtFile::readUtf8()
 	return result;
 }
 
-void TxtFile::writeAnsiOrCodePage(const std::list<std::string>& content) // === writeUtf8withoutPref также
+void TxtFile::writeAnsiOrCodePage(const std::vector<std::string>& content) // === writeUtf8withoutPref также
 {
 	NSFile::CFileBinary file;
     if (file.CreateFileW(m_path))
 	{
 		BYTE endLine[2] = {0x0d, 0x0a};
-		for (std::list<std::string>::const_iterator iter = content.begin(); iter != content.end(); ++iter)	
+        for (std::vector<std::string>::const_iterator iter = content.begin(); iter != content.end(); ++iter)
 		{
 			file.WriteFile((BYTE*)(*iter).c_str(), (*iter).length());
 			file.WriteFile(endLine, 2);
@@ -211,7 +211,7 @@ void TxtFile::writeAnsiOrCodePage(const std::list<std::string>& content) // === 
 	}
 }
 
-void TxtFile::writeUnicode(const std::list<std::wstring>& content)
+void TxtFile::writeUnicode(const std::vector<std::wstring>& content)
 {
 	NSFile::CFileBinary file;
     if (file.CreateFileW(m_path))
@@ -221,7 +221,7 @@ void TxtFile::writeUnicode(const std::list<std::wstring>& content)
 		
 		file.WriteFile(Header,2);
 
-		for (std::list<std::wstring>::const_iterator iter = content.begin(); iter != content.end(); ++iter)	
+        for (std::vector<std::wstring>::const_iterator iter = content.begin(); iter != content.end(); ++iter)
 		{
 			const wchar_t *	data = (*iter).c_str();
 			int				size = (*iter).length();
@@ -242,7 +242,7 @@ void TxtFile::writeUnicode(const std::list<std::wstring>& content)
 	}	
 }
 
-void TxtFile::writeBigEndian(const std::list<std::wstring>& content)
+void TxtFile::writeBigEndian(const std::vector<std::wstring>& content)
 {
 	NSFile::CFileBinary file;
     if (file.CreateFileW(m_path))
@@ -252,7 +252,7 @@ void TxtFile::writeBigEndian(const std::list<std::wstring>& content)
 		
 		file.WriteFile(Header,2);
 
-		for (std::list<std::wstring>::const_iterator iter = content.begin(); iter != content.end(); ++iter)	
+        for (std::vector<std::wstring>::const_iterator iter = content.begin(); iter != content.end(); ++iter)
 		{
 			if(sizeof(wchar_t) == 2)
 			{
@@ -279,7 +279,7 @@ void TxtFile::writeBigEndian(const std::list<std::wstring>& content)
 	}	
 }
 
-void TxtFile::writeUtf8(const std::list<std::string>& content)
+void TxtFile::writeUtf8(const std::vector<std::string>& content)
 {
 	NSFile::CFileBinary file;
     if (file.CreateFileW(m_path))
@@ -289,7 +289,7 @@ void TxtFile::writeUtf8(const std::list<std::string>& content)
 
 		file.WriteFile(Header,3);
 
-		for (std::list<std::string>::const_iterator iter = content.begin(); iter != content.end(); ++iter)	
+        for (std::vector<std::string>::const_iterator iter = content.begin(); iter != content.end(); ++iter)
 		{
 			file.WriteFile((BYTE*)(*iter).c_str(), (*iter).length());
 			file.WriteFile((BYTE*)EndLine, 2);

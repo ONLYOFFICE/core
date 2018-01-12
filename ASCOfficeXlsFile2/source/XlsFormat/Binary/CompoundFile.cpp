@@ -155,7 +155,7 @@ void CompoundFile::copy( int indent, std::wstring path, POLE::Storage * storageO
     
 	entries = storage_->entries_with_prefix( path );
 	
-	for( std::list<std::wstring>::iterator it = entries.begin(); it != entries.end(); it++ )
+	for( std::list<std::wstring>::iterator it = entries.begin(); it != entries.end(); ++it )
 	{
         std::wstring fullname = path + *it;
        
@@ -169,7 +169,7 @@ void CompoundFile::copy( int indent, std::wstring path, POLE::Storage * storageO
 		}
 	}
 
-	for( std::list<std::wstring>::iterator it = entries_dir.begin(); it != entries_dir.end(); it++ )
+	for( std::list<std::wstring>::iterator it = entries_dir.begin(); it != entries_dir.end(); ++it )
 	{
         std::wstring fullname = path + *it;
        
@@ -178,7 +178,7 @@ void CompoundFile::copy( int indent, std::wstring path, POLE::Storage * storageO
 
 	//entries_files.sort();
 
-	for( std::list<std::wstring>::iterator it = entries_files.begin(); it != entries_files.end(); it++ )
+	for( std::list<std::wstring>::iterator it = entries_files.begin(); it != entries_files.end(); ++it )
 	{
 		std::wstring createName = path + *it;
 		std::wstring openName;

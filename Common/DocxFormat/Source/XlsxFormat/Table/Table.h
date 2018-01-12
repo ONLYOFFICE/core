@@ -288,13 +288,13 @@ namespace OOX
 				WritingStringAttrInt(L"count", (int)m_arrItems.size());
 				writer.WriteString(L">");
 				
-				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-				{
-					if ( *it )
-					{
-						(*it)->toXML(writer);
-					}
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
 				
 				writer.WriteString(L"</tableColumns>");
 			}
@@ -522,13 +522,13 @@ namespace OOX
 				WritingStringAttrInt(L"count", (int)m_arrItems.size());
 				writer.WriteString(L">");
 				
-				for ( std::list<CTablePart*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-				{
-					if ( *it )
-					{
-						(*it)->toXML(writer);
-					}
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if ( m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
 				
 				writer.WriteString(L"</tableParts>");	
 			}

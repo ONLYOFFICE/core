@@ -1506,11 +1506,11 @@ namespace BinXlsxRW {
 	class BinaryWorkbookTableReader : public Binary_CommonReader<BinaryWorkbookTableReader>
 	{
 		OOX::Spreadsheet::CWorkbook& m_oWorkbook;
-		std::map<long, NSCommon::smart_ptr<OOX::File>>& m_mapPivotCacheDefinitions;
+        boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>& m_mapPivotCacheDefinitions;
         const std::wstring& m_sDestinationDir;
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 	public:
-		BinaryWorkbookTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook, std::map<long, NSCommon::smart_ptr<OOX::File>>& mapPivotCacheDefinitions, const std::wstring& sDestinationDir, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
+        BinaryWorkbookTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook, boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>& mapPivotCacheDefinitions, const std::wstring& sDestinationDir, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
 			: Binary_CommonReader(oBufferedStream), m_oWorkbook(oWorkbook), m_mapPivotCacheDefinitions(mapPivotCacheDefinitions), m_sDestinationDir(sDestinationDir), m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 		{
 		}
@@ -2362,13 +2362,13 @@ namespace BinXlsxRW {
 	{
 		Binary_CommonReader2				m_oBcr2;
 
-		OOX::Spreadsheet::CWorkbook&		m_oWorkbook;
-		OOX::Spreadsheet::CSharedStrings*	m_pSharedStrings;
-		std::map<long, ImageObject*>&		m_mapMedia;
-		OOX::Spreadsheet::CSheet*			m_pCurSheet;
-		OOX::Spreadsheet::CWorksheet*		m_pCurWorksheet;
-		OOX::Spreadsheet::CDrawing*			m_pCurDrawing;
-		OOX::CVmlDrawing*					m_pCurVmlDrawing;
+        OOX::Spreadsheet::CWorkbook&                m_oWorkbook;
+        OOX::Spreadsheet::CSharedStrings*           m_pSharedStrings;
+        boost::unordered_map<long, ImageObject*>&		m_mapMedia;
+        OOX::Spreadsheet::CSheet*                   m_pCurSheet;
+        OOX::Spreadsheet::CWorksheet*               m_pCurWorksheet;
+        OOX::Spreadsheet::CDrawing*                 m_pCurDrawing;
+        OOX::CVmlDrawing*                           m_pCurVmlDrawing;
 
         const std::wstring&					m_sDestinationDir;
         const std::wstring&					m_sMediaDir;
@@ -2376,14 +2376,14 @@ namespace BinXlsxRW {
 		int									m_nNextObjectId;
 		NSBinPptxRW::CDrawingConverter*		m_pOfficeDrawingConverter;
 
-		std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>&  m_mapWorksheets;
-		std::map<long, NSCommon::smart_ptr<OOX::File>>& m_mapPivotCacheDefinitions;
+        boost::unordered_map<std::wstring, OOX::Spreadsheet::CWorksheet*>&    m_mapWorksheets;
+        boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>&           m_mapPivotCacheDefinitions;
 		
 	public:
 		BinaryWorksheetsTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook,
-			OOX::Spreadsheet::CSharedStrings* pSharedStrings, std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets,
-            std::map<long, ImageObject*>& mapMedia, const std::wstring& sDestinationDir, const std::wstring& sMediaDir, SaveParams& oSaveParams,
-			NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, std::map<long, NSCommon::smart_ptr<OOX::File>>& mapPivotCacheDefinitions)
+            OOX::Spreadsheet::CSharedStrings* pSharedStrings, boost::unordered_map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets,
+            boost::unordered_map<long, ImageObject*>& mapMedia, const std::wstring& sDestinationDir, const std::wstring& sMediaDir, SaveParams& oSaveParams,
+            NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>& mapPivotCacheDefinitions)
 	: Binary_CommonReader(oBufferedStream), m_oWorkbook(oWorkbook), m_oBcr2(oBufferedStream), m_sMediaDir(sMediaDir), m_oSaveParams(oSaveParams), 
 		m_mapMedia(mapMedia), m_sDestinationDir(sDestinationDir), m_mapWorksheets(mapWorksheets), m_pSharedStrings(pSharedStrings),m_mapPivotCacheDefinitions(mapPivotCacheDefinitions)
 		{
@@ -2535,16 +2535,15 @@ namespace BinXlsxRW {
 				{
 					m_pCurVmlDrawing->m_mapComments = &m_pCurWorksheet->m_mapComments;
 
-                    std::unordered_map<std::wstring, unsigned int> mapByAuthors;
+                    boost::unordered_map<std::wstring, unsigned int> mapByAuthors;
 					OOX::Spreadsheet::CComments* pComments = new OOX::Spreadsheet::CComments();
 					
 					pComments->m_oCommentList.Init();
-					std::list<OOX::Spreadsheet::CComment*>& aComments = pComments->m_oCommentList->m_arrItems;
+                    std::vector<OOX::Spreadsheet::CComment*>& aComments = pComments->m_oCommentList->m_arrItems;
 					
 					pComments->m_oAuthors.Init();
-					std::unordered_map<int, std::wstring> & mapByIndex = pComments->m_oAuthors->m_mapItems;
 
-					for (std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_pCurWorksheet->m_mapComments.begin(); it != m_pCurWorksheet->m_mapComments.end(); ++it)
+                    for (boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_pCurWorksheet->m_mapComments.begin(); it != m_pCurWorksheet->m_mapComments.end(); ++it)
 					{
 						if(it->second->IsValid())
 						{
@@ -2559,7 +2558,7 @@ namespace BinXlsxRW {
 							if(pCommentItem->m_sAuthor.IsInit())
 							{
 								const std::wstring& sAuthor = pCommentItem->m_sAuthor.get();
-                                std::unordered_map<std::wstring, unsigned int>::const_iterator pFind = mapByAuthors.find(sAuthor);
+                                boost::unordered_map<std::wstring, unsigned int>::const_iterator pFind = mapByAuthors.find(sAuthor);
 								
 								int nAuthorId;
 								if(pFind != mapByAuthors.end())
@@ -2570,7 +2569,7 @@ namespace BinXlsxRW {
 								
 									mapByAuthors.insert(std::make_pair(sAuthor, nAuthorId));
 									
-									mapByIndex.insert(std::make_pair(nAuthorId, sAuthor));
+                                    pComments->m_oAuthors->m_arrItems.push_back( sAuthor );
 								}
 								pNewComment->m_oAuthorId.Init();
 								pNewComment->m_oAuthorId->SetValue(nAuthorId);
@@ -2620,7 +2619,7 @@ namespace BinXlsxRW {
 				PivotCachesTemp oPivotCachesTemp;
 				
 				res = Read1(length, &BinaryWorksheetsTableReader::ReadPivotTable, this, &oPivotCachesTemp);
-				std::map<long, NSCommon::smart_ptr<OOX::File>>::const_iterator pair = m_mapPivotCacheDefinitions.find(oPivotCachesTemp.nCacheId);
+                boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>::const_iterator pair = m_mapPivotCacheDefinitions.find(oPivotCachesTemp.nCacheId);
 				
 				if(m_mapPivotCacheDefinitions.end() != pair && NULL != oPivotCachesTemp.pTable)
 				{
@@ -3522,11 +3521,9 @@ namespace BinXlsxRW {
 					{
 						int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
 
-                        std::map<int, OOX::Spreadsheet::CSi*>::iterator pFind = m_pSharedStrings->m_mapItems.find(nValue);
-
-						if(pFind != m_pSharedStrings->m_mapItems.end())
+                        if (nValue >= 0 && nValue < m_pSharedStrings->m_arrItems.size())
 						{
-							OOX::Spreadsheet::CSi *pSi = pFind->second;
+                            OOX::Spreadsheet::CSi *pSi = m_pSharedStrings->m_arrItems[nValue];
 							if(NULL != pSi && !pSi->m_arrItems.empty())
 							{
 								OOX::Spreadsheet::WritingElement* pWe = pSi->m_arrItems.front();
@@ -4110,16 +4107,16 @@ namespace BinXlsxRW {
 	};
 	class BinaryOtherTableReader : public Binary_CommonReader<BinaryOtherTableReader>
 	{
-        std::map<long, ImageObject*>&   m_mapMedia;
-        const std::wstring&             m_sFileInDir;
-        long                            m_nCurId;
-        std::wstring                    m_sCurSrc;
-        long                            m_nCurIndex;
-        SaveParams&                     m_oSaveParams;
-		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
-        const std::wstring&             m_sMediaDir;
+        boost::unordered_map<long, ImageObject*>&     m_mapMedia;
+        const std::wstring&                         m_sFileInDir;
+        long                                        m_nCurId;
+        std::wstring                                m_sCurSrc;
+        long                                        m_nCurIndex;
+        SaveParams&                                 m_oSaveParams;
+        NSBinPptxRW::CDrawingConverter*             m_pOfficeDrawingConverter;
+        const std::wstring&                         m_sMediaDir;
 	public:
-        BinaryOtherTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, std::map<long, ImageObject*>& mapMedia,
+        BinaryOtherTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, boost::unordered_map<long, ImageObject*>& mapMedia,
                                const std::wstring& sFileInDir, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter,
                                const std::wstring& sMediaDir) :
             Binary_CommonReader(oBufferedStream),   m_mapMedia(mapMedia), m_sFileInDir(sFileInDir), m_oSaveParams(oSaveParams),
@@ -4450,7 +4447,7 @@ namespace BinXlsxRW {
             OOX::CPath pathMedia = sOutDir + FILE_SEPARATOR_STR + _T("xl")   + FILE_SEPARATOR_STR + _T("media");
             std::wstring sMediaDir = pathMedia.GetPath();
 
-            std::map<long, ImageObject*> mapMedia;
+            boost::unordered_map<long, ImageObject*> mapMedia;
 			if(-1 != nOtherOffBits)
 			{
 				oBufferedStream.Seek(nOtherOffBits);
@@ -4470,7 +4467,8 @@ namespace BinXlsxRW {
 					return res;
 			}
 			OOX::Spreadsheet::CWorkbook* pWorkbook = oXlsx.CreateWorkbook();
-			std::map<long, NSCommon::smart_ptr<OOX::File>> m_mapPivotCacheDefinitions;
+
+            boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>> m_mapPivotCacheDefinitions;
 			if(-1 != nWorkbookOffBits)
 			{
 				oBufferedStream.Seek(nWorkbookOffBits);
@@ -4502,7 +4500,7 @@ namespace BinXlsxRW {
 				if(c_oSerConstants::ReadOk != res)
 					return res;
 			}
-			for (std::map<long, ImageObject*>::const_iterator pPair = mapMedia.begin(); pPair != mapMedia.end(); ++pPair)
+            for (boost::unordered_map<long, ImageObject*>::const_iterator pPair = mapMedia.begin(); pPair != mapMedia.end(); ++pPair)
 			{
 				delete pPair->second;
 			}

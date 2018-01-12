@@ -70,7 +70,7 @@ void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 	}	
 	//m_oPreferRelative//типо можно менять размер 
 
-	for (std::list<OOX::WritingElement*>::iterator	it = vml_shape_type->m_arrItems.begin(); it != vml_shape_type->m_arrItems.end(); it++)
+    for (std::vector<OOX::WritingElement*>::iterator	it = vml_shape_type->m_arrItems.begin(); it != vml_shape_type->m_arrItems.end(); ++it)
 	{
 		convert(*it);
 	}
@@ -90,7 +90,7 @@ void OoxConverter::convert(OOX::Vml::CFormulas *vml_formulas)
 {
 	if (vml_formulas == NULL) return;
 
-	for (std::list<OOX::Vml::CF*>::iterator	it = vml_formulas->m_arrItems.begin(); it != vml_formulas->m_arrItems.end(); it++)
+    for (std::vector<OOX::Vml::CF*>::iterator	it = vml_formulas->m_arrItems.begin(); it != vml_formulas->m_arrItems.end(); ++it)
 	{	
 		OOX::Vml::CF *cf = dynamic_cast<OOX::Vml::CF *>(*it);
 		if (cf == NULL) continue;
@@ -717,7 +717,7 @@ void OoxConverter::convert(OOX::Vml::CTextbox *vml_textbox)
 	{
 		odf_context()->start_text_context();
 		{
-			for (std::list<OOX::WritingElement*>::iterator it = vml_textbox->m_oTxtbxContent->m_arrItems.begin(); it != vml_textbox->m_oTxtbxContent->m_arrItems.end(); it++)
+            for (std::vector<OOX::WritingElement*>::iterator it = vml_textbox->m_oTxtbxContent->m_arrItems.begin(); it != vml_textbox->m_oTxtbxContent->m_arrItems.end(); ++it)
 			{
 				docx_converter->convert(*it);
 			}
@@ -890,7 +890,7 @@ void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 			delete oRgbColor;
 		}
 	}
-	for (std::list<OOX::WritingElement*>::iterator it = vml_common->m_arrItems.begin(); it != vml_common->m_arrItems.end(); it++)
+    for (std::vector<OOX::WritingElement*>::iterator it = vml_common->m_arrItems.begin(); it != vml_common->m_arrItems.end(); ++it)
 	{
 		convert(*it);
 	}
@@ -920,7 +920,7 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 			odf_context()->drawing_context()->set_group_shift(vml_group->m_oCoordOrigin->GetX(), vml_group->m_oCoordOrigin->GetY());
 		}		
 
-		for (std::list<OOX::WritingElement*>::iterator it = vml_group->m_arrItems.begin(); it != vml_group->m_arrItems.end(); it++)
+        for (std::vector<OOX::WritingElement*>::iterator it = vml_group->m_arrItems.begin(); it != vml_group->m_arrItems.end(); ++it)
 		{
 			if (*it == NULL) continue;
 

@@ -289,7 +289,7 @@ namespace CSVReader
 			}
 		}
 
-		std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();
+        boost::unordered_map<std::wstring, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();
 		arrWorksheets [sSheetRId] = pWorksheet;
 	}
 }

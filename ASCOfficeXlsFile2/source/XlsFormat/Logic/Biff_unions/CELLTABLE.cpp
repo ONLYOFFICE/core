@@ -314,7 +314,7 @@ const bool CELLTABLE::loadContent(BinProcessor& proc)
 
 int CELLTABLE::serialize(std::wostream & stream)
 {
-	for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); it++)
+	for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); ++it)
 	{
 		it->get()->serialize(stream);
 	}

@@ -81,7 +81,7 @@ namespace PPTX
 			if (m_OleObjectFile.IsInit() == false && !ole_bin.empty())
 			{
 				m_OleObjectFile = new OOX::OleObject(!mspackage.empty());
-				m_OleObjectFile->set_filename		(ole_bin);
+				m_OleObjectFile->set_filename		(ole_bin, false);
 				m_OleObjectFile->set_filename_cache	(ole_image);
 			}
 		}
@@ -286,7 +286,7 @@ namespace PPTX
 				{
 					m_OleObjectFile = new OOX::OleObject(false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 					std::wstring strOlePath = pReader->GetString2();
-					m_OleObjectFile->set_filename(strOlePath); //temp !!! for ImageManager original file name
+					m_OleObjectFile->set_filename(strOlePath, false); //temp !!! for ImageManager original file name
 				}
 				else
 					break;
@@ -329,7 +329,7 @@ namespace PPTX
 							m_OleObjectFile = new OOX::OleObject(true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 							
 							std::wstring strOlePath = pReader->GetString(_embed_data_size);
-							m_OleObjectFile->set_filename(strOlePath); //temp !!! for ImageManager original file name
+							m_OleObjectFile->set_filename(strOlePath, false); //temp !!! for ImageManager original file name
 						}
 						else if (embedded_type == 1)
 						{
@@ -416,7 +416,7 @@ namespace PPTX
 							//std::wstring sEmbWorksheetRelType	= OOX::FileTypes::MicrosoftOfficeWordDocument.RelationType();
 							//
 							//m_oId = pReader->m_pRels->WriteRels(sEmbWorksheetRelType, sEmbWorksheetRelsName, std::wstring());
-							m_OleObjectFile->set_filename(sDstEmbedded + FILE_SEPARATOR_STR + sDocxFilename);
+							m_OleObjectFile->set_filename(sDstEmbedded + FILE_SEPARATOR_STR + sDocxFilename, false);
 							
 							pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(L"docx");				
 						}
@@ -470,7 +470,7 @@ namespace PPTX
 							//std::wstring sEmbWorksheetRelType	= OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
 							//
 							//m_oId = pReader->m_pRels->WriteRels(sEmbWorksheetRelType, sEmbWorksheetRelsName, std::wstring());
-							m_OleObjectFile->set_filename(sDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename);
+							m_OleObjectFile->set_filename(sDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, false);
 							
 							pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(L"xlsx");
 						}						
@@ -496,11 +496,12 @@ namespace PPTX
 			smart_ptr<OOX::OleObject> ole_file = m_OleObjectFile;
 			if (ole_file.IsInit() == false)
 			{
-				if (pRels != NULL)						ole_file = pRels->GetOleObject(oRId);
-				else if(parentFileIs<Slide>())			ole_file = parentFileAs<Slide>().GetOleObject(oRId);
-				else if(parentFileIs<SlideLayout>())	ole_file = parentFileAs<SlideLayout>().GetOleObject(oRId);
-				else if(parentFileIs<SlideMaster>())	ole_file = parentFileAs<SlideMaster>().GetOleObject(oRId);
-				else if(parentFileIs<Theme>())			ole_file = parentFileAs<Theme>().GetOleObject(oRId);
+				if (pRels != NULL)						ole_file = pRels->Get<OOX::OleObject>(oRId);
+
+				else if(parentFileIs<Slide>())			ole_file = parentFileAs<Slide>().Get<OOX::OleObject>(oRId);
+				else if(parentFileIs<SlideLayout>())	ole_file = parentFileAs<SlideLayout>().Get<OOX::OleObject>(oRId);
+				else if(parentFileIs<SlideMaster>())	ole_file = parentFileAs<SlideMaster>().Get<OOX::OleObject>(oRId);
+				else if(parentFileIs<Theme>())			ole_file = parentFileAs<Theme>().Get<OOX::OleObject>(oRId);
 			}
 			return ole_file;
 		}
@@ -697,14 +698,18 @@ namespace PPTX
 				if (mediaFile.IsInit() && blipFill.blip.IsInit())
 				{
 					blipFill.blip->mediaFilepath = mediaFile->filename().GetPath();
+					blipFill.blip->mediaExternal = mediaFile->IsExternal();
 				}
 
 				if (nvPicPr.nvPr.media.is<MediaFile>())
 				{
 					if (nvPicPr.nvPr.media.as<MediaFile>().name == L"audioFile")
 						pWriter->StartRecord(SPTREE_TYPE_AUDIO);
-					else if (nvPicPr.nvPr.media.as<MediaFile>().name == L"videoFile")
+					else if (nvPicPr.nvPr.media.as<MediaFile>().name == L"videoFile" || 
+							 nvPicPr.nvPr.media.as<MediaFile>().name == L"quickTimeFile")
 						pWriter->StartRecord(SPTREE_TYPE_VIDEO);
+					else 
+						pWriter->StartRecord(SPTREE_TYPE_PIC);
 				}
 				else if (nvPicPr.nvPr.media.is<WavAudioFile>() || nvPicPr.nvPr.media.is<AudioCD>())
 				{
@@ -725,8 +730,12 @@ namespace PPTX
 				pWriter->StartRecord(5);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 					std::wstring sExt = mediaFile->filename().GetExtention(false);
-					if (!sExt.empty())
+					if (!sExt.empty() && !mediaFile->IsExternal())
 						pWriter->WriteString1(0, L"maskFile." + sExt);
+					else
+						pWriter->WriteString1(0, mediaFile->filename().GetPath());
+
+					pWriter->WriteBool1(1, mediaFile->IsExternal());
 				//todoo start, end positions ..
 
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
@@ -846,15 +855,20 @@ namespace PPTX
 							oleObject->m_OleObjectFile->set_filename_cache (blipFill.blip->oleFilepathImage);
 
 							if (NSFile::CFileBinary::Exists(oleObject->m_OleObjectFile->filename().GetPath()) == false)
-								oleObject->m_OleObjectFile->set_filename (blipFill.blip->oleFilepathBin);
+							{
+								oleObject->m_OleObjectFile->set_filename (blipFill.blip->oleFilepathBin, false);
+							}
 						}
 
 						smart_ptr<OOX::Media> mediaFile = blipFill.additionalFile.smart_dynamic_cast<OOX::Media>();
 						if (mediaFile.IsInit() && blipFill.blip.IsInit())
 						{
-							if (NSFile::CFileBinary::Exists(mediaFile->filename().GetPath()) == false)
-								mediaFile->set_filename (blipFill.blip->mediaFilepath);
-						}						
+							if (!mediaFile->IsExternal() && NSFile::CFileBinary::Exists(mediaFile->filename().GetPath()) == false)
+							{
+								mediaFile->set_filename (blipFill.blip->mediaFilepath, 
+										false == NSFile::CFileBinary::Exists(blipFill.blip->mediaFilepath));
+							}
+						}
 					}break;
 					case 2:
 					{
@@ -877,10 +891,11 @@ namespace PPTX
 					}break;
 					case 5:
 					{
+						bool isExternal = false;
+						std::wstring strMediaFileMask;
+
 						LONG _end_rec1 = pReader->GetPos() + pReader->GetLong() + 4;
-
 						pReader->Skip(1); // start attributes
-
 						while (true)
 						{
 							BYTE _at = pReader->GetUChar_TypeNode();
@@ -889,16 +904,19 @@ namespace PPTX
 
 							if (0 == _at)		
 							{
-								std::wstring strMediaFileMask = pReader->GetString2();
-
-								smart_ptr<OOX::Media> mediaFile = blipFill.additionalFile.smart_dynamic_cast<OOX::Media>();
-								if (mediaFile.IsInit())
-								{
-									mediaFile->set_filename(strMediaFileMask);
-								}
+								strMediaFileMask = pReader->GetString2();
+							}
+							else if (1 == _at)		
+							{
+								isExternal = pReader->GetBool();
 							}
 							else
 								break;
+						}
+						smart_ptr<OOX::Media> mediaFile = blipFill.additionalFile.smart_dynamic_cast<OOX::Media>();
+						if (mediaFile.IsInit())
+						{
+							mediaFile->set_filename(strMediaFileMask, isExternal);
 						}
 						pReader->Seek(_end_rec1);
 					}
@@ -918,41 +936,49 @@ namespace PPTX
 					{
 						oleObject->m_OleObjectFile = new OOX::OleObject(false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 						
-						oleObject->m_OleObjectFile->set_filename		(blipFill.blip->oleFilepathBin);
+						oleObject->m_OleObjectFile->set_filename		(blipFill.blip->oleFilepathBin, false);
 						oleObject->m_OleObjectFile->set_filename_cache	(blipFill.blip->oleFilepathImage);
 					}
 				}
 				if (!blipFill.blip->mediaRid.empty())
 				{
-                    PPTX::Logic::Ext ext;
-					ext.link	= OOX::RId(blipFill.blip->mediaRid);
-					nvPicPr.nvPr.extLst.push_back(ext);
-
+					smart_ptr<OOX::Media> mediaFile = blipFill.additionalFile.smart_dynamic_cast<OOX::Media>();                    
+					bool bExternal = mediaFile->IsExternal();
+					
                     std::wstring strMediaRelsPath;
                     if (pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX)	strMediaRelsPath = L"media/";
                     else														strMediaRelsPath = L"../media/";
+					
+					if (bExternal)
+					{
+						strMediaRelsPath = mediaFile->filename().GetFilename();
+					}
+					else
+					{
+						strMediaRelsPath += mediaFile->filename().GetFilename();
 
-                    smart_ptr<OOX::Media> mediaFile = blipFill.additionalFile.smart_dynamic_cast<OOX::Media>();
-                    strMediaRelsPath += mediaFile->filename().GetFilename();
+						PPTX::Logic::Ext ext;
+						ext.link	= OOX::RId(blipFill.blip->mediaRid);
+						nvPicPr.nvPr.extLst.push_back(ext);
+					}
 
                     int nRId = -1;
 					if (blipFill.additionalFile.is<OOX::Audio>())
 					{
 						nvPicPr.nvPr.media.Media = new PPTX::Logic::MediaFile(L"audioFile");
-                        nRId = pReader->m_pRels->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio", strMediaRelsPath, L"");
+                        nRId = pReader->m_pRels->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio", strMediaRelsPath, bExternal ? L"External" : L"");
 
 					}
 					if (blipFill.additionalFile.is<OOX::Video>())
 					{
 						nvPicPr.nvPr.media.Media = new PPTX::Logic::MediaFile(L"videoFile");
-                        nRId = pReader->m_pRels->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video", strMediaRelsPath, L"");
+						nRId = pReader->m_pRels->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video", strMediaRelsPath, bExternal ? L"External" : L"");
 					}
 
 					if (nvPicPr.nvPr.media.Media.IsInit() && nRId > 0)
 					{
 						PPTX::Logic::MediaFile& mediaFile = nvPicPr.nvPr.media.Media.as<PPTX::Logic::MediaFile>();
 						mediaFile.link = OOX::RId((size_t)nRId);
-
 					}
 					if (nvPicPr.cNvPr.hlinkClick.IsInit() == false)
 						nvPicPr.cNvPr.hlinkClick.Init();

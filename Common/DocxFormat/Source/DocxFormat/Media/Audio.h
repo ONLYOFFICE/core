@@ -43,9 +43,8 @@ namespace OOX
 		Audio(bool bDocument = true) : Media (bDocument)
 		{
 		}
-		Audio(const CPath& filename)
+		Audio(const CPath& filename, bool bExternal = false) : Media(filename, bExternal)
 		{
-			read(filename);
 		}
 		virtual ~Audio()
 		{

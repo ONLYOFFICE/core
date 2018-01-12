@@ -1038,7 +1038,7 @@ namespace BinXlsxRW
 			poVal->m_name = L"c:clrMapOvr";
 			long nCurPos = m_oBufferedStream.GetPos();
 
-			BYTE typeRec1 = m_oBufferedStream.GetUChar();
+			//BYTE typeRec1 = m_oBufferedStream.GetUChar();
 			poVal->fromPPTY(&m_oBufferedStream);
 
 			m_oBufferedStream.Seek(nCurPos + length);
@@ -6167,8 +6167,9 @@ namespace BinXlsxRW
 		{
 			PPTX::Theme* pThemeOverride = static_cast<PPTX::Theme*>(pFile.operator->());
 	
-			m_oBcw.m_oStream.WriteBYTE(c_oserct_chartspaceTHEMEOVERRIDE);
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceTHEMEOVERRIDE);
 			pThemeOverride->toPPTY(&m_oBcw.m_oStream);
+			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
 	void BinaryChartWriter::WriteCT_Boolean(CT_Boolean& oVal)

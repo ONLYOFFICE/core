@@ -274,7 +274,12 @@ namespace NSBinPptxRW
 				size_t _countL = m_arSlideMasters_Theme[i].m_arLayouts.size();				
 				for (size_t j = 0; j < _countL; ++j)
 				{
-					m_arSlideLayouts_Master[m_arSlideMasters_Theme[i].m_arLayouts[j]] = (LONG)i;
+					int index = m_arSlideMasters_Theme[i].m_arLayouts[j];
+					
+					if (index >= 0 && index < m_arSlideLayouts_Master.size())
+					{
+						m_arSlideLayouts_Master[index] = (LONG)i;
+					}
 				}
 			}
 
@@ -350,7 +355,11 @@ namespace NSBinPptxRW
 
 			for (size_t i = 0; i < m_arNotesMasters_Theme.size(); i++)
 			{
-				arThemesSave[m_arNotesMasters_Theme[i]] = true;
+				int index = m_arNotesMasters_Theme[i];
+				if (index >= 0 && index < arThemesSave.size())
+				{
+					arThemesSave[index] = true;
+				}
 			}
 			LONG lCurrectTheme = 0;
 			for (LONG i = 0; i < nCountMasters; ++i)

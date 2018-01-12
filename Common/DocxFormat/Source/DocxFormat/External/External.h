@@ -63,7 +63,11 @@ namespace OOX
 		{
 			return m_uri;
 		}
-
+		void set_Uri(CPath & file_path)
+		{
+			m_uri				= file_path;
+			m_sOutputFilename	= file_path.GetFilename();
+		}
 	protected:
 		CPath m_uri;
 	};

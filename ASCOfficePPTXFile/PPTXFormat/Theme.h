@@ -277,7 +277,8 @@ namespace PPTX
 		}
 		virtual const OOX::FileType type() const
 		{
-			return OOX::FileTypes::Theme;
+			if (isThemeOverride)	return OOX::FileTypes::ThemeOverride;
+			else					return OOX::FileTypes::Theme;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -324,23 +325,28 @@ namespace PPTX
 			return GetABGRFromScheme(m_map->GetColorSchemeIndex(str));
 		}
 
-		virtual std::wstring GetMediaFullPathNameFromRId(const OOX::RId& rid)const
+		virtual std::wstring GetImagePathNameFromRId(const OOX::RId& rid)const
 		{
-			smart_ptr<OOX::Image> p = GetImage(rid);
+			smart_ptr<OOX::Image> p = Get<OOX::Image>(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->filename().m_strFilename;
 		}
-		virtual std::wstring GetFullHyperlinkNameFromRId(const OOX::RId& rid)const
+		virtual std::wstring GetLinkFromRId(const OOX::RId& rid)const
 		{
-			smart_ptr<OOX::HyperLink> p = GetHyperlink(rid);
-			if (!p.is_init())
-				return _T("");
-			return p->Uri().m_strFilename;
+			smart_ptr<OOX::External> pExt = Find(rid).smart_dynamic_cast<OOX::External>();
+			if (pExt.IsInit())
+				return pExt->Uri().m_strFilename;
+
+			smart_ptr<OOX::Media> pMedia = Find(rid).smart_dynamic_cast<OOX::Media>();
+			if (pMedia.IsInit())
+				return pMedia->filename().m_strFilename;
+
+			return _T("");
 		}
 		virtual std::wstring GetOleFromRId(const OOX::RId& rid)const
 		{
-			smart_ptr<OOX::OleObject> p = GetOleObject(rid);
+			smart_ptr<OOX::OleObject> p = Get<OOX::OleObject>(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->filename().m_strFilename;

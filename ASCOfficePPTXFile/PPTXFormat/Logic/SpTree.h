@@ -212,7 +212,6 @@ namespace PPTX
 
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
 				{
-					//nvGrpSpPr.cNvPr.toXmlWriter2(_T("wpg"), pWriter);
 					nvGrpSpPr.cNvGrpSpPr.toXmlWriter2(_T("wpg"), pWriter);
 				}
 				else

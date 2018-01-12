@@ -313,8 +313,8 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(std::wstring bsInput, std::wstring bsOutp
 	m_strMediaDirectory = pathMedia.GetPath();
 	oBinaryWriter.m_strMainFolder = pathDstFileOutput.GetDirectory();
 
- 	oBinaryWriter.m_pCommon->m_pImageManager->m_strDstMedia = m_strMediaDirectory;
-	oBinaryWriter.m_pCommon->m_pImageManager->SetFontManager(oBinaryWriter.m_pCommon->m_pNativePicker->m_pFontManager);
+ 	oBinaryWriter.m_pCommon->m_pMediaManager->m_strDstMedia = m_strMediaDirectory;
+	oBinaryWriter.m_pCommon->m_pMediaManager->SetFontManager(oBinaryWriter.m_pCommon->m_pNativePicker->m_pFontManager);
 
     NSDirectory::CreateDirectory(m_strMediaDirectory);
 

@@ -89,7 +89,7 @@ namespace OOX
 
 				pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(OOX::FileTypes::JsaProject.DefaultFileName().GetExtention(false));
 
-				set_filename(filePath);
+				set_filename(filePath, false);
 			}
 			pReader->Seek(_end_rec);
 		}

@@ -53,6 +53,7 @@ SOURCES += \
 
 core_debug {
 SOURCES += \
+    ../../../PPTXFormat/Logic/Media/WavAudioFile.cpp \
     ../../../PPTXFormat/Logic/Colors/SchemeClr.cpp \
     ../../../PPTXFormat/Logic/Fills/Blip.cpp \
     ../../../PPTXFormat/Logic/Table/TableCell.cpp \

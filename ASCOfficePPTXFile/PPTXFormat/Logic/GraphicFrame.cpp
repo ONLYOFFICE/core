@@ -468,8 +468,8 @@ namespace PPTX
 				NSBinPptxRW::CDrawingConverter oDrawingConverter;
 				//oDrawingConverter.SetFontManager(pFontManager);
 
-				RELEASEOBJECT(oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pImageManager);
-				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pImageManager = pWriter->m_pCommon->m_pImageManager;
+				RELEASEOBJECT(oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager);
+				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pWriter->m_pCommon->m_pMediaManager;
 	
 				std::wstring *main_props = NULL;
 
@@ -481,7 +481,7 @@ namespace PPTX
 				{
 					pWriter->WriteBYTEArray(oDrawingConverter.m_pBinaryWriter->GetBuffer()+10,oDrawingConverter.m_pBinaryWriter->GetPosition()-10);
 				}
-				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pImageManager =  NULL;
+				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager =  NULL;
 				return;
 			}
 			pWriter->StartRecord(SPTREE_TYPE_GRFRAME);

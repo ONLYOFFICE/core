@@ -83,7 +83,7 @@ namespace OOX
 
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			
-			copy_to(pWriter->m_pCommon->m_pImageManager->m_strDstMedia);
+			copy_to(pWriter->m_pCommon->m_pMediaManager->m_strDstMedia);
 		}
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -107,7 +107,7 @@ namespace OOX
 
 						NSFile::CFileBinary::Copy(inputPath.GetPath(), outputPath.GetPath());
 
-						set_filename(outputPath.GetPath());
+						set_filename(outputPath.GetPath(), false);
 						
 					}break;
 

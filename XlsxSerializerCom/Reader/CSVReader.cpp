@@ -32,13 +32,154 @@
 #include "CSVReader.h"
 
 #include <map>
+#include <locale>
+
 #include "../../DesktopEditor/common/File.h"
+#include "../../Common/DocxFormat/Source/Base/unicode_util.h"
+
 #include "../../UnicodeConverter/UnicodeConverter.h"
 #include "../../UnicodeConverter/UnicodeConverter_Encodings.h"
 
 namespace CSVReader
 {
-    void AddCell(std::wstring &sText, INT nStartCell, std::stack<INT> &oDeleteChars, OOX::Spreadsheet::CRow &oRow, INT nRow, INT nCol, bool bIsWrap)
+	const std::wstring ansi_2_unicode(const unsigned char* data, DWORD data_size)
+	{
+		std::wstring result;
+
+		std::locale loc("");
+		std::ctype<wchar_t> const &facet = std::use_facet<std::ctype<wchar_t> >(loc);
+
+		result.resize(data_size);
+	    
+		facet.widen((char*)data, (char*)data + data_size, &result[0]);
+		return result;
+	}
+	const std::wstring utf8_2_unicode(const unsigned char* data, DWORD data_size)
+	{
+		if (sizeof(wchar_t) == 2)//utf8 -> utf16
+		{
+			unsigned int nLength = data_size;
+
+			UTF16 *pStrUtf16 = new UTF16 [nLength + 1];
+			memset ((void *) pStrUtf16, 0, sizeof (UTF16) * (nLength + 1));
+
+			UTF8 *pStrUtf8 = (UTF8 *) data;
+
+			const UTF8 *pStrUtf8_Conv = pStrUtf8;
+			UTF16 *pStrUtf16_Conv = pStrUtf16;
+
+			ConversionResult eUnicodeConversionResult = ConvertUTF8toUTF16 (&pStrUtf8_Conv,	 &pStrUtf8[nLength]
+					, &pStrUtf16_Conv, &pStrUtf16 [nLength]
+					, strictConversion);
+
+			if (conversionOK != eUnicodeConversionResult)
+			{
+				delete [] pStrUtf16;
+				return std::wstring();
+			}
+			std::wstring utf16Str ((wchar_t *) pStrUtf16);
+
+			delete [] pStrUtf16;
+			return utf16Str;
+		}
+		else //utf8 -> utf32
+		{
+			unsigned int nLength = data_size;
+
+			UTF32 *pStrUtf32 = new UTF32 [nLength + 1];
+			memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (nLength + 1));
+
+			UTF8 *pStrUtf8 = (UTF8 *) data;
+
+			const UTF8 *pStrUtf8_Conv = pStrUtf8;
+			UTF32 *pStrUtf32_Conv = pStrUtf32;
+
+			ConversionResult eUnicodeConversionResult = ConvertUTF8toUTF32 (&pStrUtf8_Conv, &pStrUtf8[nLength]
+					, &pStrUtf32_Conv, &pStrUtf32 [nLength]
+					, strictConversion);
+
+			if (conversionOK != eUnicodeConversionResult)
+			{
+				delete [] pStrUtf32;
+				return ansi_2_unicode(data, data_size);
+			}
+			std::wstring utf32Str ((wchar_t *) pStrUtf32);
+
+			delete [] pStrUtf32;
+			return utf32Str;
+		}
+	}
+
+	const std::wstring utf16_2_unicode(const unsigned char* data, DWORD data_size)
+	{
+		if (sizeof(wchar_t) == 2)//utf16 -> utf16
+		{
+			return std::wstring((wchar_t*)data, data_size / 2);
+		}
+		else //utf16 -> utf32
+		{
+			unsigned int nLength = data_size / 2;
+
+			UTF32 *pStrUtf32 = new UTF32 [nLength + 1];
+			memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (nLength + 1));
+
+			UTF16 *pStrUtf16 = (UTF16 *) data;
+
+			const UTF16 *pStrUtf16_Conv = pStrUtf16;
+			UTF32 *pStrUtf32_Conv = pStrUtf32;
+
+			ConversionResult eUnicodeConversionResult = ConvertUTF16toUTF32 (&pStrUtf16_Conv, &pStrUtf16[nLength]
+					, &pStrUtf32_Conv, &pStrUtf32 [nLength]
+					, strictConversion);
+
+			if (conversionOK != eUnicodeConversionResult)
+			{
+				delete [] pStrUtf32;
+				return ansi_2_unicode(data, data_size);
+			}
+			std::wstring utf32Str ((wchar_t *) pStrUtf32);
+
+			delete [] pStrUtf32;
+			return utf32Str;
+		}
+	}
+
+	const std::wstring utf32_2_unicode(const unsigned char* data, DWORD data_size)
+	{
+		if (sizeof(wchar_t) == 4)//utf32 -> utf32
+		{
+			return std::wstring((wchar_t*)data, data_size / 4);
+		}
+		else //utf32 -> utf16
+		{
+			unsigned int nLength = data_size / 4;
+
+			UTF16 *pStrUtf16 = new UTF16 [nLength + 1];
+			memset ((void *) pStrUtf16, 0, sizeof (UTF16) * (nLength + 1));
+
+			UTF32 *pStrUtf32 = (UTF32 *) data;
+
+			const UTF32 *pStrUtf32_Conv = pStrUtf32;
+			UTF16 *pStrUtf16_Conv = pStrUtf16;
+
+			ConversionResult eUnicodeConversionResult = ConvertUTF32toUTF16 (&pStrUtf32_Conv, &pStrUtf32[nLength]
+					, &pStrUtf16_Conv, &pStrUtf16 [nLength]
+					, strictConversion);
+
+			if (conversionOK != eUnicodeConversionResult)
+			{
+				delete [] pStrUtf16;
+				return ansi_2_unicode(data, data_size);
+			}
+			std::wstring utf16Str ((wchar_t *) pStrUtf16);
+
+			delete [] pStrUtf16;
+			return utf16Str;
+		}
+	}
+
+//-----------------------------------------------------------------------------------------------	
+	void AddCell(std::wstring &sText, INT nStartCell, std::stack<INT> &oDeleteChars, OOX::Spreadsheet::CRow &oRow, INT nRow, INT nCol, bool bIsWrap)
 	{
 		while(!oDeleteChars.empty())
 		{
@@ -162,11 +303,34 @@ namespace CSVReader
 				nInputBufferSize -= 2;
 				pInputBuffer += 2;
 			}
+			
+			std::wstring sFileDataW;
 
-            const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[nCodePage];
-            NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
-            std::wstring sFileDataW = oUnicodeConverter.toUnicode((const char*)pInputBuffer, nInputBufferSize, oEncodindId.Name);
-            INT nSize = sFileDataW.length();
+			if (nCodePage == 1000)
+			{
+				sFileDataW = ansi_2_unicode(pInputBuffer, nInputBufferSize);
+			}
+			else if (nCodePage == 46)//utf-8
+			{
+				sFileDataW = utf8_2_unicode(pInputBuffer, nInputBufferSize);
+			}
+			else if (nCodePage == 48)//utf-16
+			{
+				sFileDataW = utf16_2_unicode(pInputBuffer, nInputBufferSize);
+			}
+			else if (nCodePage == 50) // utf-32
+			{
+				sFileDataW = utf32_2_unicode(pInputBuffer, nInputBufferSize);
+			}
+			else
+			{
+				const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[nCodePage];
+	            
+				NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
+				sFileDataW = oUnicodeConverter.toUnicode((const char*)pInputBuffer, nInputBufferSize, oEncodindId.Name);
+			}
+            
+			INT nSize = sFileDataW.length();
             const WCHAR *pTemp =sFileDataW.c_str();
 
 			WCHAR wcDelimiterLeading = L'\0';

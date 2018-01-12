@@ -83,14 +83,16 @@ namespace OOX
 	public:
 		void Read (const OOX::CPath& oRootPath, const OOX::CPath& oPath);
 		void ExtractPictures(const OOX::CPath& oPath) const;
-
-		virtual smart_ptr<Image>					GetImage    (const RId& rId) const;
-		virtual smart_ptr<HyperLink>				GetHyperlink(const RId& rId) const;
-		virtual smart_ptr<OleObject>				GetOleObject(const RId& rId) const;
-		virtual smart_ptr<ActiveX_xml>				GetActiveX_xml(const RId& rId) const;
-		virtual smart_ptr<ActiveX_bin>				GetActiveX_bin(const RId& rId) const;
-		virtual smart_ptr<PPTX::LegacyDiagramText>	GetLegacyDiagramText (const OOX::RId& rId) const;
 		
+		template<class TypeOut> 
+		smart_ptr<TypeOut> Get (const RId& rId) const
+		{
+			boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.find(rId.get());
+			if (pPair == m_mContainer.end ())
+				return smart_ptr<TypeOut>();
+			return pPair->second.smart_dynamic_cast<TypeOut>();
+		}
+
 		OOX::CRels* GetCurRls()
 		{
 			return m_pCurRels;

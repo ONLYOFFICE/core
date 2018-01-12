@@ -246,7 +246,7 @@ namespace PPTX
 				m_elem.reset(new Logic::Pic(oReader));
 			else if (name == _T("cxnSp"))
 				m_elem.reset(new Logic::CxnSp(oReader));
-			else if (name == _T("grpSp") || name == _T("wgp") || name == _T("spTree") || name == _T("lockedCanvas"))
+			else if (name == _T("grpSp") || name == _T("wgp") || name == _T("spTree") || name == _T("lockedCanvas") || name == _T("wpc"))
 				m_elem.reset(new Logic::SpTree(oReader));
 			else if (name == _T("graphicFrame"))
 			{
@@ -296,7 +296,7 @@ namespace PPTX
 				m_elem.reset(new Logic::Pic(node));
 			else if (name == _T("cxnSp"))
 				m_elem.reset(new Logic::CxnSp(node));
-			else if (name == _T("grpSp") || name == _T("wgp") || name == _T("spTree") || name == _T("lockedCanvas"))
+			else if (name == _T("grpSp") || name == _T("wgp") || name == _T("spTree") || name == _T("lockedCanvas") || name == _T("wpc"))
 				m_elem.reset(new Logic::SpTree(node));
 			else if (name == _T("graphicFrame"))
 				m_elem.reset(new Logic::GraphicFrame(node));

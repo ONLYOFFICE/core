@@ -48,6 +48,7 @@ namespace OOX
 			CSharedStrings()
 			{
                 m_nCount        = 0;
+
 				m_bSpreadsheets = true;
 			}
 			CSharedStrings(const CPath& oRootPath, const CPath& oPath)

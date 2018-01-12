@@ -65,9 +65,6 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/External/ExternalImage.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/External/ExternalAudio.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/External/ExternalVideo.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/UnknowTypeFile.h"
 //
 
@@ -76,7 +73,7 @@ namespace PPTX
 {
 	const smart_ptr<OOX::File> FileFactory::CreateFilePPTX(const OOX::CPath& filename, OOX::Rels::CRelationShip& relation, FileMap& map)
 	{
-		if (NSFile::CFileBinary::Exists(filename.GetPath()) == false)
+		if (NSFile::CFileBinary::Exists(filename.GetPath()) == false && !relation.IsExternal())
 		{
 			return smart_ptr<OOX::File>(NULL);
 		}
@@ -121,20 +118,14 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace(filename, filename));
 		else if (relation.Type() == OOX::FileTypes::HyperLink)
 			return smart_ptr<OOX::File>(new OOX::HyperLink(relation.Target()));
-		else if ((relation.Type() == OOX::FileTypes::ExternalImage) && (relation.IsExternal()))
-			return smart_ptr<OOX::File>(new OOX::ExternalImage(relation.Target()));
-		else if ((relation.Type() == OOX::FileTypes::ExternalAudio) && (relation.IsExternal()))
-			return smart_ptr<OOX::File>(new OOX::ExternalAudio(relation.Target()));
-		else if ((relation.Type() == OOX::FileTypes::ExternalVideo) && (relation.IsExternal()))
-			return smart_ptr<OOX::File>(new OOX::ExternalVideo(relation.Target()));
 		else if (relation.Type() == OOX::FileTypes::Image)
-			return smart_ptr<OOX::File>(new OOX::Image(filename));
+			return smart_ptr<OOX::File>(new OOX::Image(filename, relation.IsExternal()));
 		else if (relation.Type() == OOX::FileTypes::Audio)
-			return smart_ptr<OOX::File>(new OOX::Audio(filename));
+			return smart_ptr<OOX::File>(new OOX::Audio(filename, relation.IsExternal()));
 		else if (relation.Type() == OOX::FileTypes::Media)
-			return smart_ptr<OOX::File>(new OOX::Media(filename));
+			return smart_ptr<OOX::File>(new OOX::Media(filename, relation.IsExternal()));
 		else if (relation.Type() == OOX::FileTypes::Video)
-			return smart_ptr<OOX::File>(new OOX::Video(filename));
+			return smart_ptr<OOX::File>(new OOX::Video(filename, relation.IsExternal()));
 		else if (relation.Type() == OOX::FileTypes::Data) 
 			return smart_ptr<OOX::File>(new OOX::CDiagramData(filename));
 		else if (relation.Type() == OOX::FileTypes::DiagDrawing)	

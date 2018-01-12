@@ -380,12 +380,12 @@ namespace PPTX2EditorAdvanced
 		oBinaryWriter.StartRecord(NSMainTables::ImageMap);
 		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
-		std::map<std::wstring, NSShapeImageGen::CImageInfo>* pIMaps = &oBinaryWriter.m_pCommon->m_pImageManager->m_mapImagesFile;
+		std::map<std::wstring, NSShapeImageGen::CMediaInfo>* pIMaps = &oBinaryWriter.m_pCommon->m_pMediaManager->m_mapMediaFiles;
 
 		LONG lIndexI = 0;
-		for (std::map<std::wstring, NSShapeImageGen::CImageInfo>::iterator pPair = pIMaps->begin(); pPair != pIMaps->end(); ++pPair)
+		for (std::map<std::wstring, NSShapeImageGen::CMediaInfo>::iterator pPair = pIMaps->begin(); pPair != pIMaps->end(); ++pPair)
 		{
-			NSShapeImageGen::CImageInfo& oRec = pPair->second;
+			NSShapeImageGen::CMediaInfo& oRec = pPair->second;
 			oBinaryWriter.WriteString1(lIndexI++, oRec.GetPath2());
 		}
 

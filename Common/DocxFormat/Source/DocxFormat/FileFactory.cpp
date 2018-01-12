@@ -51,9 +51,6 @@
 #include "Media/VbaProject.h"
 #include "Media/JsaProject.h"
 #include "External/HyperLink.h"
-#include "External/ExternalVideo.h"
-#include "External/ExternalAudio.h"
-#include "External/ExternalImage.h"
 #include "HeaderFooter.h"
 #include "Numbering.h"
 #include "Comments.h"
@@ -115,20 +112,14 @@ namespace OOX
 			return smart_ptr<OOX::File>(new PPTX::Theme( oFileName ));
 		else if ( oRelation.Type() == FileTypes::HyperLink)
 			return smart_ptr<OOX::File>(new HyperLink( oRelation.Target()));
-		else if (( oRelation.Type() == FileTypes::ExternalVideo ) && ( oRelation.IsExternal() ))
-			return smart_ptr<OOX::File>(new ExternalVideo( oRelation.Target()));
-		else if (( oRelation.Type() == FileTypes::ExternalAudio ) && ( oRelation.IsExternal() ))
-			return smart_ptr<OOX::File>(new ExternalAudio( oRelation.Target()));
-		else if (( oRelation.Type() == FileTypes::ExternalImage ) && ( oRelation.IsExternal() ))
-			return smart_ptr<OOX::File>(new ExternalImage( oRelation.Target()));
-		else if ( oRelation.Type() == FileTypes::Image)
-			return smart_ptr<OOX::File>(new Image( oFileName ));
 		else if ( oRelation.Type() == FileTypes::OleObject)
 			return smart_ptr<OOX::File>(new OleObject( oFileName ));
+		else if ( oRelation.Type() == FileTypes::Image)
+			return smart_ptr<OOX::File>(new Image( oFileName, oRelation.IsExternal() ));
 		else if ( oRelation.Type() == FileTypes::Audio)
-			return smart_ptr<OOX::File>(new Audio( oFileName ));
+			return smart_ptr<OOX::File>(new Audio( oFileName, oRelation.IsExternal() ));
 		else if ( oRelation.Type() == FileTypes::Video)
-			return smart_ptr<OOX::File>(new Video( oFileName ));
+			return smart_ptr<OOX::File>(new Video( oFileName, oRelation.IsExternal() ));
 		else if (oRelation.Type() == FileTypes::Data)			
 			return smart_ptr<OOX::File>(new CDiagramData( oRootPath, oFileName ));
 		else if (oRelation.Type() == FileTypes::DiagDrawing)
@@ -199,20 +190,14 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CWebSettings( oFileName ));
 		else if ( pRelation->Type() == FileTypes::HyperLink)
 			return smart_ptr<OOX::File>(new HyperLink( pRelation->Target()));
-		else if (( pRelation->Type() == FileTypes::ExternalVideo ) && ( pRelation->IsExternal() ))
-			return smart_ptr<OOX::File>(new ExternalVideo( pRelation->Target()));
-		else if (( pRelation->Type() == FileTypes::ExternalAudio ) && ( pRelation->IsExternal() ))
-			return smart_ptr<OOX::File>(new ExternalAudio( pRelation->Target()));
-		else if (( pRelation->Type() == FileTypes::ExternalImage ) && ( pRelation->IsExternal() ))
-			return smart_ptr<OOX::File>(new ExternalImage( pRelation->Target()));
-		else if ( pRelation->Type() == FileTypes::Image)
-			return smart_ptr<OOX::File>(new Image( oFileName ));
 		else if ( pRelation->Type() == FileTypes::OleObject)
 			return smart_ptr<OOX::File>(new OleObject( oFileName ));
+		else if ( pRelation->Type() == FileTypes::Image)
+			return smart_ptr<OOX::File>(new Image( oFileName, pRelation->IsExternal() ));
 		else if ( pRelation->Type() == FileTypes::Audio)
-			return smart_ptr<OOX::File>(new Audio( oFileName ));
+			return smart_ptr<OOX::File>(new Audio( oFileName, pRelation->IsExternal() ));
 		else if ( pRelation->Type() == FileTypes::Video)
-			return smart_ptr<OOX::File>(new Video( oFileName ));
+			return smart_ptr<OOX::File>(new Video( oFileName, pRelation->IsExternal() ));
 		else if ( pRelation->Type() == FileTypes::Numbering)
 			return smart_ptr<OOX::File>(new CNumbering( oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Header)

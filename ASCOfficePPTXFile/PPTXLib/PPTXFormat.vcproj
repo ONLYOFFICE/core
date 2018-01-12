@@ -2879,6 +2879,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\PPTXFormat\Logic\Media\WavAudioFile.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\.\PPTXFormat\Logic\Media\WavAudioFile.h"
 						>
 					</File>

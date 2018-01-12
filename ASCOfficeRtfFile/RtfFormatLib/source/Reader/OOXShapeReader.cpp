@@ -1045,8 +1045,8 @@ void OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::
 		}
 		if (xfrm->extX.IsInit() && xfrm->extY.IsInit())
 		{
-			pOutput->m_nRelRight	= (int)pOutput->m_nRelLeft + xfrm->offX.get();
-			pOutput->m_nRelBottom	= (int)pOutput->m_nRelTop + xfrm->offY.get();
+			pOutput->m_nRelRight	= (int)pOutput->m_nRelLeft + xfrm->extX.get();
+			pOutput->m_nRelBottom	= (int)pOutput->m_nRelTop + xfrm->extY.get();
 		}
 		else
 		{
@@ -1224,6 +1224,18 @@ bool OOXShapeReader::ParsePic( ReaderParameter oParam, RtfShapePtr& pOutput)
 	if (ooxPic->spPr.ln.IsInit())
 	{
 		Parse(oParam, pOutput, ooxPic->spPr.ln.GetPointer());	
+	}
+//scale picture
+	if (ooxPic->spPr.xfrm.IsInit() && pOutput->m_oPicture)
+	{
+		if (ooxPic->spPr.xfrm->extX.IsInit() && ooxPic->spPr.xfrm->extY.IsInit())
+		{
+			double cx = ooxPic->spPr.xfrm->extX.get();
+			double cy = ooxPic->spPr.xfrm->extY.get();
+
+			pOutput->m_oPicture->m_dScaleX = (pOutput->m_nRight - pOutput->m_nLeft) * 100. / pOutput->m_oPicture->m_nWidthGoal;
+			pOutput->m_oPicture->m_dScaleY = (pOutput->m_nBottom - pOutput->m_nTop)* 100. / pOutput->m_oPicture->m_nHeightGoal;
+		}
 	}
 	return true;		
 }

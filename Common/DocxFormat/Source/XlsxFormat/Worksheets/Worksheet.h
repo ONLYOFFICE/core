@@ -244,6 +244,7 @@ namespace OOX
                     for ( size_t j = 0; j < pShape->m_arrItems.size(); ++j)
 					{
                         OOX::WritingElement* pElem = pShape->m_arrItems[j];
+
 						if ( !pElem ) continue;
 						
 						if( OOX::et_v_ClientData == pElem->getType())

@@ -3517,15 +3517,15 @@ namespace BinXlsxRW
 		void WriteCommentDataContent(OOX::Spreadsheet::CCommentItem* pComment, SerializeCommon::CommentData* pCommentData, nullable<OOX::Spreadsheet::CSi>* pCommentText)
 		{
 			int nCurPos = 0;
-			if(NULL != pCommentText && pCommentText->IsInit())
-			{
-				m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::Text);
-				m_oBcw.m_oStream.WriteStringW((*pCommentText)->ToString());
-			}
-			else if(NULL != pCommentData && !pCommentData->sText.empty())
+			if(NULL != pCommentData && !pCommentData->sText.empty())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::Text);
 				m_oBcw.m_oStream.WriteStringW(pCommentData->sText);
+			}
+			else if(NULL != pCommentText && pCommentText->IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::Text);
+				m_oBcw.m_oStream.WriteStringW((*pCommentText)->ToString());
 			}
 			if(NULL != pCommentData)
 			{

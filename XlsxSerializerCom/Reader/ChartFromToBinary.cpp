@@ -893,6 +893,8 @@ namespace BinXlsxRW
 		}
 		else if(c_oserct_chartspaceCLRMAPOVR == type)
 		{
+			BYTE typeRec1 = m_oBufferedStream.GetUChar();
+			
 			poVal->m_oClrMapOvr = new PPTX::Logic::ClrMap();
 
 			poVal->m_oClrMapOvr->m_name = L"c:clrMapOvr";

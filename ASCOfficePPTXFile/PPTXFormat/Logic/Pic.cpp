@@ -33,6 +33,7 @@
 
 #include "Pic.h"
 #include "SpTree.h"
+#include "Shape.h"
 
 #include "./../SlideLayout.h"
 #include "./../SlideMaster.h"
@@ -530,22 +531,26 @@ namespace PPTX
 		Pic::Pic(std::wstring ns)
 		{
 			m_namespace = ns;
+			m_pLevelUp	= NULL;
 		}
 		Pic::~Pic()
 		{
 		}
 		Pic::Pic(XmlUtils::CXmlNode& node)
 		{
+			m_pLevelUp	= NULL;
 			fromXML(node);
 		}
+		Pic::Pic(XmlUtils::CXmlLiteReader& oReader)
+		{
+			m_pLevelUp	= NULL;
+			fromXML(oReader);
+		}		
+		
 		const Pic& Pic::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 			return *this;
-		}
-		Pic::Pic(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML(oReader);
 		}
 		const Pic& Pic::operator =(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -991,6 +996,45 @@ namespace PPTX
 			pReader->Seek(_end_rec);
 		}
 
+		void Pic::FillLevelUp()
+		{
+			if ((m_pLevelUp == NULL) && (nvPicPr.nvPr.ph.IsInit()))
+			{
+				if ((nvPicPr.nvPr.ph->type.IsInit()) || (nvPicPr.nvPr.ph->idx.IsInit()))
+				{
+					if (parentFileIs<Slide>())
+					{
+						parentFileAs<Slide>().Layout->GetLevelUp(this);
+					}
+					else if(parentFileIs<SlideLayout>())
+					{
+						parentFileAs<SlideLayout>().Master->GetLevelUp(this);
+					}
+					else if(parentFileIs<NotesSlide>())
+					{
+						parentFileAs<NotesSlide>().master_->GetLevelUp(this);
+					}
+				}
+			}
+		}
+
+		void Pic::Merge(Pic& pic, bool bIsSlidePlaceholder)
+		{
+			if (m_pLevelUp)
+				m_pLevelUp->Merge(pic, true);
+
+			pic.nvPicPr		= nvPicPr;			
+			pic.blipFill	= blipFill;
+			pic.oleObject	= oleObject;
+
+			spPr.Merge(pic.spPr);
+
+			if (style.is_init())
+			{
+				pic.style = style;
+				pic.style->SetParentFilePointer(parentFile);
+			}
+		}
 
 		void Pic::FillParentPointersForChilds()
 		{

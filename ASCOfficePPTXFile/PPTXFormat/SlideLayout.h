@@ -124,52 +124,64 @@ namespace PPTX
 			return type().DefaultFileName();
 		}
 
-		virtual void GetLevelUp(Logic::Shape* pShape)
+		virtual void GetLevelUp(WrapperWritingElement* pElem)
 		{
-			if (!pShape) return;
+			Logic::Shape	*pShape	= dynamic_cast<PPTX::Logic::Shape*>(pElem);
+			Logic::Pic		*pPic	= dynamic_cast<PPTX::Logic::Pic*>(pElem);
+			
+			if (!pShape && !pPic) return;
 
-			if (pShape->nvSpPr.nvPr.ph.is_init())
+			Logic::NvPr *pNvPr = NULL;
+			
+			if (pShape)	pNvPr = &pShape->nvSpPr.nvPr;
+			if (pPic)	pNvPr = &pPic->nvPicPr.nvPr;
+
+			if (!pNvPr) return;
+			if (pNvPr->ph.is_init() == false) return;
+
+			std::wstring idx = pNvPr->ph->idx.get_value_or(L"");
+			std::wstring type = pNvPr->ph->type.get_value_or(L"body");
+			
+			if (type == L"ctrTitle") type = L"title";
+
+			for (size_t i = 0; i < cSld.spTree.SpTreeElems.size(); ++i)
 			{
-				std::wstring idx = pShape->nvSpPr.nvPr.ph->idx.get_value_or(L"");
-				std::wstring type = pShape->nvSpPr.nvPr.ph->type.get_value_or(L"body");
-				
-				if (type == L"ctrTitle") type = L"title";
+				smart_ptr<Logic::Shape> pLayoutShape = cSld.spTree.SpTreeElems[i].GetElem().smart_dynamic_cast<Logic::Shape>();
 
-				for (size_t i = 0; i < cSld.spTree.SpTreeElems.size(); ++i)
+				if (pLayoutShape.IsInit())
 				{
-					smart_ptr<Logic::Shape> pLayoutShape = cSld.spTree.SpTreeElems[i].GetElem().smart_dynamic_cast<Logic::Shape>();
-
-					if (pLayoutShape.IsInit())
+					if (pLayoutShape->nvSpPr.nvPr.ph.is_init())
 					{
-						if (pLayoutShape->nvSpPr.nvPr.ph.is_init())
-						{
-							std::wstring lIdx	= pLayoutShape->nvSpPr.nvPr.ph->idx.get_value_or(_T(""));
-							std::wstring lType	= pLayoutShape->nvSpPr.nvPr.ph->type.get_value_or(_T("body"));
-							
-							if (lType == L"ctrTitle") lType = L"title";
+						std::wstring lIdx	= pLayoutShape->nvSpPr.nvPr.ph->idx.get_value_or(_T(""));
+						std::wstring lType	= pLayoutShape->nvSpPr.nvPr.ph->type.get_value_or(_T("body"));
+						
+						if (lType == L"ctrTitle") lType = L"title";
 
-							if ((type == lType) && (idx == lIdx) && !idx.empty())
-							{
-								pShape->SetLevelUpElement(pLayoutShape.operator->());
-								return;
-							}
-							else if ((type == lType) && idx.empty() && lIdx.empty())
-							{
-								pShape->SetLevelUpElement(pLayoutShape.operator->());
-								return;
-							}
+						if ((type == lType) && (idx == lIdx) && !idx.empty())
+						{
+							if (pShape)	pShape->SetLevelUpElement(pLayoutShape.operator->());
+							if (pPic)	pPic->SetLevelUpElement(pLayoutShape.operator->());
+							
+							return;
+						}
+						else if ((type == lType) && idx.empty() && lIdx.empty())
+						{
+							if (pShape)	pShape->SetLevelUpElement(pLayoutShape.operator->());
+							if (pPic)	pPic->SetLevelUpElement(pLayoutShape.operator->());
+							
+							return;
 						}
 					}
 				}
+			}
 
-				if (pShape->nvSpPr.nvPr.ph->idx.IsInit())
+			if (pNvPr->ph->idx.IsInit())
+			{
+				//not found in layout !! 100818_건강보험과_보건의료_김용익_최종.pptx
+				bool bShapeMaster = showMasterSp.get_value_or(true);
+				if (Master.IsInit() && bShapeMaster)
 				{
-					//not found in layout !! 100818_건강보험과_보건의료_김용익_최종.pptx
-					bool bShapeMaster = showMasterSp.get_value_or(true);
-					if (Master.IsInit() && bShapeMaster)
-					{
-						Master->GetLevelUp(pShape);
-					}
+					Master->GetLevelUp(pElem);
 				}
 			}
 		}

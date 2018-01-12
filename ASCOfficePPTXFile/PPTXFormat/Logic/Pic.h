@@ -179,6 +179,7 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		class Shape;
 		class COLEObject : public WrapperWritingElement
 		{
 		public:
@@ -251,6 +252,11 @@ namespace PPTX
 			double GetEndTrim () const;
 			long GetRefId() const;
 
+			void FillLevelUp();
+			void Merge(Pic& pic, bool bIsSlidePlaceholder = false);
+
+			void SetLevelUpElement( Shape* p){m_pLevelUp = p;};
+
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			
@@ -258,6 +264,7 @@ namespace PPTX
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			void toXmlWriterVML(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group = false);
 //----------------------------------------------------------------------
+			Shape*					m_pLevelUp;
 			NvPicPr					nvPicPr;
 			mutable BlipFill		blipFill;
 			SpPr					spPr;

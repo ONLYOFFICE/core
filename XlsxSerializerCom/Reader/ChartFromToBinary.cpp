@@ -894,7 +894,9 @@ namespace BinXlsxRW
 		else if(c_oserct_chartspaceCLRMAPOVR == type)
 		{
 			poVal->m_oClrMapOvr = new PPTX::Logic::ClrMap();
-			res = Read1(length, &BinaryChartReader::ReadCT_ClrMapOvr, this, poVal->m_oClrMapOvr.GetPointer());
+
+			poVal->m_oClrMapOvr->m_name = L"c:clrMapOvr";
+			poVal->m_oClrMapOvr->fromPPTY(&m_oBufferedStream);
 		}
 		else if(c_oserct_chartspacePIVOTSOURCE == type)
 		{
@@ -1023,22 +1025,6 @@ namespace BinXlsxRW
 			long nCurPos = m_oBufferedStream.GetPos();
 
 			BYTE typeRec1 = m_oBufferedStream.GetUChar();
-			poVal->fromPPTY(&m_oBufferedStream);
-
-			m_oBufferedStream.Seek(nCurPos + length);
-		}
-		return res;
-	}
-	int BinaryChartReader::ReadCT_ClrMapOvr(BYTE type, long length, void* poResult)
-	{
-		int res = c_oSerConstants::ReadOk;
-		PPTX::Logic::ClrMap* poVal = static_cast<PPTX::Logic::ClrMap*>(poResult);
-		if(length > 0)
-		{
-			poVal->m_name = L"c:clrMapOvr";
-			long nCurPos = m_oBufferedStream.GetPos();
-
-			//BYTE typeRec1 = m_oBufferedStream.GetUChar();
 			poVal->fromPPTY(&m_oBufferedStream);
 
 			m_oBufferedStream.Seek(nCurPos + length);

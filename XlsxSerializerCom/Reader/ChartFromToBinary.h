@@ -203,7 +203,6 @@ namespace BinXlsxRW
 		int ReadAlternateContentFallback(BYTE type, long length, void* poResult);
 		int ReadCT_SpPr					(BYTE type, long length, void* poResult);
 		int ReadCT_TxPr					(BYTE type, long length, void* poResult);
-		int ReadCT_ClrMapOvr			(BYTE type, long length, void* poResult);
 	};
 	class BinaryChartWriter
 	{

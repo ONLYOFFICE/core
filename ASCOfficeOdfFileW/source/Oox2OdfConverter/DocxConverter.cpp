@@ -58,6 +58,37 @@ using namespace cpdoccore;
 
 namespace Oox2Odf
 {
+
+	bool compare (OOX::Logic::CSectionProperty* props1, OOX::Logic::CSectionProperty* props2)
+	{
+		size_t cols_1 = 1, cols_2 = 1;
+		if (props1 && props1->m_oCols.IsInit()) 
+		{
+			cols_1 = props1->m_oCols->m_oNum.IsInit() ? props1->m_oCols->m_oNum->GetValue() : 1;
+
+			if (!props1->m_oCols->m_arrColumns.empty())
+				cols_1 = min(cols_1, props1->m_oCols->m_arrColumns.size());
+		}
+		if (props2)
+		{
+			if (props2->m_oCols.IsInit()) 
+			{
+				cols_2 = props2->m_oCols->m_oNum.IsInit() ? props2->m_oCols->m_oNum->GetValue() : 1;
+				
+				if (!props2->m_oCols->m_arrColumns.empty())
+					cols_2 = min(cols_2, props2->m_oCols->m_arrColumns.size());
+			}
+			else
+			{
+				if (props2->m_oType.IsInit() && props2->m_oType->m_oVal.IsInit()) 
+				{
+					if (props2->m_oType->m_oVal->GetValue() == SimpleTypes::sectionmarkContinious)
+						cols_2 = cols_1;
+				}
+			}
+		}
+		return cols_1 == cols_2;
+	}
 DocxConverter::DocxConverter(const std::wstring & path, const ProgressCallback* CallBack)
 {
     const OOX::CPath oox_path(std::wstring(path.c_str()));
@@ -181,16 +212,18 @@ void DocxConverter::convert_document()
 
 	std::vector<_section> sections;
 //----------------------------------------------------------------------------------------------------------
-    std::vector<OOX::WritingElement*>::const_iterator last_section_start = document->m_arrItems.begin();
-
 	//считаем количесво секций и запоминаем их свойства .. 
-    for (std::vector<OOX::WritingElement*>::const_iterator it = document->m_arrItems.begin(); it != document->m_arrItems.end(); ++it)
-	{
-		if ((*it) == NULL) continue;
+	size_t last_section_start = 0;
 
-		if ((*it)->getType() == OOX::et_w_p)
+	OOX::Logic::CSectionProperty* prev = NULL;
+
+    for (size_t i = 0; i < document->m_arrItems.size(); ++i)
+	{
+		if ((document->m_arrItems[i]) == NULL) continue;
+
+		if (document->m_arrItems[i]->getType() == OOX::et_w_p)
 		{
-			OOX::Logic::CParagraph * para = dynamic_cast<OOX::Logic::CParagraph *>(*it);
+			OOX::Logic::CParagraph * para = dynamic_cast<OOX::Logic::CParagraph *>(document->m_arrItems[i]);
 			
 			if ((para) && (para->m_oParagraphProperty))
 			{
@@ -200,11 +233,13 @@ void DocxConverter::convert_document()
 					
 					section.props		= para->m_oParagraphProperty->m_oSectPr.GetPointer();
 					section.start_para	= last_section_start;
-					section.end_para	= it; section.end_para++;
+					section.end_para	= i + 1; 
+					section.bContinue	= compare (prev, section.props);
 					
 					sections.push_back(section);
 					
-					last_section_start = it; last_section_start++;
+					last_section_start = i + 1;
+					prev = section.props;
 				}
 			}
 		}
@@ -213,7 +248,9 @@ void DocxConverter::convert_document()
 	
 	section.props		= document->m_oSectPr.GetPointer();
 	section.start_para	= last_section_start;
-	section.end_para	= document->m_arrItems.end(); 
+	section.end_para	= document->m_arrItems.size(); 
+	section.bContinue	= compare (prev, section.props);
+
 	sections.push_back(section);
 					
 //----------------------------------------------------------------------------------------------------------
@@ -224,9 +261,9 @@ void DocxConverter::convert_document()
 	{
 		current_section_properties = &sections[sect];
 
-        for (std::vector<OOX::WritingElement*>::const_iterator it = sections[sect].start_para; it != sections[sect].end_para; ++it)
+        for (size_t i = sections[sect].start_para; i < sections[sect].end_para; ++i)
 		{
-			convert(*it);
+			convert(document->m_arrItems[i]);
 		}
 	}
 }
@@ -382,7 +419,7 @@ void DocxConverter::convert(OOX::Logic::CSdtContent *oox_sdt)
 void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 {
 	if (oox_paragraph == NULL) return; 
-
+	
 //---------------------------------------------------------------------------------------------------------------------
 	if (current_section_properties)
 	{
@@ -479,20 +516,29 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 
 		if (odt_context->text_context()->get_KeepNextParagraph())
 		{
-			odf_writer::odf_style_state_ptr state =  odt_context->styles_context()->last_state(odf_types::style_family::Paragraph);
+			odf_writer::odf_style_state_ptr state = odt_context->styles_context()->last_state(odf_types::style_family::Paragraph);
 			if (state)
 			{
-				paragraph_properties	= state->get_paragraph_properties();
+				paragraph_properties = state->get_paragraph_properties();
 
-				if (bRunPara)
-					text_properties		= state->get_text_properties();
-
-				if (oox_paragraph->m_oParagraphProperty && oox_paragraph->m_oParagraphProperty->m_oPStyle.IsInit() && oox_paragraph->m_oParagraphProperty->m_oPStyle->m_sVal.IsInit())
+				if (bRunPara) 
+					text_properties = state->get_text_properties();
+				
+				if (odt_context->in_drop_cap()) //после буквицы (Nadpis.docx) - нужно накатить свойства параграфа нормального
 				{
-					//перезатираем все свойства ... наложение не катит -- ваще то надо чистить после буквицы (Nadpis.docx) .. проверить надобность с остальными случами
-					paragraph_properties->content_.clear();
-					if (text_properties)
-						text_properties->content_.clear();
+					//очистить все кроме drop_cap
+					paragraph_properties->content_.clear(false);
+				}
+				else
+				{
+					// ????
+					if (oox_paragraph->m_oParagraphProperty && oox_paragraph->m_oParagraphProperty->m_oPStyle.IsInit() && oox_paragraph->m_oParagraphProperty->m_oPStyle->m_sVal.IsInit())
+					{
+						//перезатираем все свойства ... наложение не катит -- ваще то надо чистить после буквицы (Nadpis.docx) .. проверить надобность с остальными случами
+						paragraph_properties->content_.clear(true);
+						if (text_properties)
+							text_properties->content_.clear();
+					}
 				}
 			}
 		}
@@ -510,10 +556,25 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 				odt_context->styles_context()->last_state()->set_list_style_name(list_style_name);
 			}
 		}
+		if (odt_context->in_drop_cap())
+		{
+			odt_context->end_drop_cap(); 
+		}
+
 		convert(oox_paragraph->m_oParagraphProperty, paragraph_properties); 
 		
 		if (text_properties && oox_paragraph->m_oParagraphProperty)
-			convert(oox_paragraph->m_oParagraphProperty->m_oRPr.GetPointer(), text_properties); 
+		{
+			if (odt_context->in_drop_cap())
+			{
+				convert(oox_paragraph->m_oParagraphProperty->m_oRPr.GetPointer(), odt_context->get_drop_cap_properties()); 
+				//вообще то свойства правильные параграфа идут в следующем после буквицы параграфе
+			}
+			else
+			{
+				convert(oox_paragraph->m_oParagraphProperty->m_oRPr.GetPointer(), text_properties); 
+			}
+		}
 	}
 	else 
 	{
@@ -571,8 +632,6 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 		}
 	}
 //---------------------------------------------------------------------------------------------------------------------
-
-	if (odt_context->text_context()->get_KeepNextParagraph())	odt_context->end_drop_cap();
 
 	if (!odt_context->text_context()->get_KeepNextParagraph())  odt_context->end_paragraph();
 	
@@ -1055,7 +1114,7 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 	{
 		if (current_section_properties)
 		{
-			convert(current_section_properties->props, current_section_properties->root);
+			convert(current_section_properties->props, !current_section_properties->bContinue);
 		}
 		return;
 	}
@@ -1232,7 +1291,7 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 		{
 			paragraph_properties->content_.style_page_number_ = current_section_properties->props->m_oPgNumType->m_oStart->GetValue();
 		}
-		convert(current_section_properties->props, current_section_properties->root);
+		convert(current_section_properties->props, !current_section_properties->bContinue);
 	
 		//odf_writer::odf_style_state_ptr state =  odt_context->styles_context()->last_state(odf_types::style_family::Paragraph);
 		//if (odt_context->is_paragraph_in_current_section_ && state)
@@ -1328,7 +1387,7 @@ void DocxConverter::apply_HF_from(OOX::Logic::CSectionProperty *props, OOX::Logi
 		}
 	}
 }
-void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool root)
+void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool bSection)
 {
 	if (oox_section_pr == NULL) return;
 	current_section_properties = NULL;
@@ -1353,18 +1412,18 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		}
 	}
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   if (!last_section_properties && (root || continuous == false || oox_section_pr->m_oTitlePg.IsInit()))
+   if (!last_section_properties && (!bSection || continuous == false || oox_section_pr->m_oTitlePg.IsInit()))
 	{	
 		last_section_properties = oox_section_pr;
 	}
-	else if (root || continuous == false)
+	else if (!bSection || continuous == false)
 	{
         apply_HF_from(last_section_properties, oox_section_pr);
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	if (root  || continuous == false)
+	if (!bSection || continuous == false)
 	{
-		odt_context->page_layout_context()->add_master_page(root ? L"Standard" : L"");
+		odt_context->page_layout_context()->add_master_page(bSection ? L"" : L"Standard");
 	}
 	
 	bool present_header		= false;
@@ -1499,7 +1558,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 			//nullable<SimpleTypes::CDecimalNumber<> > m_oChapStyle;	
 	}
 	
-	if (continuous == false || root || oox_section_pr->m_oTitlePg.IsInit())
+	if (continuous == false || oox_section_pr->m_oTitlePg.IsInit())
 	{
 		OOX::Logic::CSectionProperty*	s = last_section_properties; 
 		
@@ -1590,53 +1649,46 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 			//nullable<ComplexTypes::Word::CRel                            > m_oPrinterSettings;
 			//nullable<OOX::Logic::CSectPrChange                           > m_oSectPrChange;
 //--------------------------------------------------------------------------------------------------------------------------------------------		
-
-	int num_columns = 1;
-	
-	if (oox_section_pr->m_oCols.IsInit())
+	if (bSection)
 	{
-		num_columns = oox_section_pr->m_oCols->m_oNum.IsInit() ? oox_section_pr->m_oCols->m_oNum->GetValue() : 1;
+		odt_context->add_section(continuous);
+	}
+	
+	if (bSection && oox_section_pr->m_oCols.IsInit())
+	{
+		int num_columns = oox_section_pr->m_oCols->m_oNum.IsInit() ? oox_section_pr->m_oCols->m_oNum->GetValue() : 1;
 		
 		if (num_columns > 1 && oox_section_pr->m_oCols->m_arrColumns.size() > 0)
 			num_columns = /*(std::max)*/( /*num_columns,*/ (int)oox_section_pr->m_oCols->m_arrColumns.size()) ; 
-	}
 
-	if (/*num_columns != odt_context->get_current_section_columns() || */num_columns >= 1) //колонки
-	{
-		if (!root || num_columns > 1)
-			odt_context->add_section(continuous);
+		double default_space_pt = -1;
+		if (oox_section_pr->m_oCols->m_oSpace.IsInit())	default_space_pt = oox_section_pr->m_oCols->m_oSpace->ToPoints();
 		
-		if (oox_section_pr->m_oCols.IsInit())
-		{
-			double default_space_pt = -1;
-			if (oox_section_pr->m_oCols->m_oSpace.IsInit())	default_space_pt = oox_section_pr->m_oCols->m_oSpace->ToPoints();
-			
-			bool separator = oox_section_pr->m_oCols->m_oSep.IsInit() && oox_section_pr->m_oCols->m_oSep->ToBool();
-			
-			odt_context->add_section_columns(num_columns, 
-				oox_section_pr->m_oCols->m_arrColumns.size() > 0 ? -1 : default_space_pt , separator );
+		bool separator = oox_section_pr->m_oCols->m_oSep.IsInit() && oox_section_pr->m_oCols->m_oSep->ToBool();
+		
+		odt_context->add_section_columns(num_columns, 
+			oox_section_pr->m_oCols->m_arrColumns.size() > 0 ? -1 : default_space_pt , separator );
 
-			std::vector<std::pair<double,double>> width_space;
+		std::vector<std::pair<double,double>> width_space;
+		
+		for (size_t i =0; i< oox_section_pr->m_oCols->m_arrColumns.size(); i++)
+		{
+			if (oox_section_pr->m_oCols->m_arrColumns[i] == NULL) continue;
+			double space = default_space_pt;
+			if (oox_section_pr->m_oCols->m_arrColumns[i]->m_oSpace.IsInit())
+				space = oox_section_pr->m_oCols->m_arrColumns[i]->m_oSpace->ToPoints();
+		
+			double w = -1; 
+			if (oox_section_pr->m_oCols->m_arrColumns[i]->m_oW.IsInit())
+				w = oox_section_pr->m_oCols->m_arrColumns[i]->m_oW->ToPoints();
 			
-			for (size_t i =0; i< oox_section_pr->m_oCols->m_arrColumns.size(); i++)
-			{
-				if (oox_section_pr->m_oCols->m_arrColumns[i] == NULL) continue;
-				double space = default_space_pt;
-				if (oox_section_pr->m_oCols->m_arrColumns[i]->m_oSpace.IsInit())
-					space = oox_section_pr->m_oCols->m_arrColumns[i]->m_oSpace->ToPoints();
-			
-				double w = -1; 
-				if (oox_section_pr->m_oCols->m_arrColumns[i]->m_oW.IsInit())
-					w = oox_section_pr->m_oCols->m_arrColumns[i]->m_oW->ToPoints();
-				
-				width_space.push_back(std::pair<double,double>(w, space));
-			}
-			//for (size_t i= oox_section_pr->m_oCols->m_arrColumns.size(); i< num_columns; i ++)
-			//{
-			//	width_space.push_back(std::pair<double,double>(-1, default_space_pt));
-			//}
-			odt_context->add_section_column(width_space);
+			width_space.push_back(std::pair<double,double>(w, space));
 		}
+		//for (size_t i= oox_section_pr->m_oCols->m_arrColumns.size(); i< num_columns; i ++)
+		//{
+		//	width_space.push_back(std::pair<double,double>(-1, default_space_pt));
+		//}
+		odt_context->add_section_column(width_space);
 	}
 }
 void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
@@ -3612,7 +3664,7 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 	if (in_frame)
 	{
 		if (current_section_properties)
-			convert(current_section_properties->props, current_section_properties->root);
+			convert(current_section_properties->props, !current_section_properties->bContinue);
 		
 		odt_context->start_paragraph();
 

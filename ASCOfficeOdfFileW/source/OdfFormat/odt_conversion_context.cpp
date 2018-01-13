@@ -118,7 +118,7 @@ void odt_conversion_context::start_document()
 void odt_conversion_context::end_document()
 {
 	//add sections to root
-	for (size_t i = 0; i< sections_.size(); i++)
+	for (size_t i = 0; i < sections_.size(); i++)
 	{
 		root_document_->add_child_element(sections_[i].elm);
 	}
@@ -183,7 +183,8 @@ odf_text_context* odt_conversion_context::text_context()
 } 
 void odt_conversion_context::start_text_context()
 {
-	odf_text_context_ptr new_text_context_ = boost::shared_ptr<odf_text_context>(new odf_text_context(this, odf_conversion_context::styles_context()));
+	odf_text_context_ptr new_text_context_ = boost::shared_ptr<odf_text_context>(new odf_text_context(this, /*odf_conversion_context::*/styles_context()));
+	//объекты с текстом в колонтитулах
 	if (!new_text_context_)return;
 
 	text_context_.push_back(new_text_context_);
@@ -199,17 +200,18 @@ void odt_conversion_context::add_text_content(const std::wstring & text)
 {
 	if (drop_cap_state_.enabled)
 	{
-		int count = text.size();
+		int count = text.length();
 		drop_cap_state_.characters += count;
-		if (drop_cap_state_.inline_style == false)
+		
+		style_text_properties * props = text_context()->get_text_properties();
+		if (props)
 		{
-			style_text_properties * props = text_context()->get_text_properties();
-			if (props)
+			if (drop_cap_state_.inline_style == false)
 			{
 				std::wstring f_name = props->content_.fo_font_family_.get_value_or(L"Arial");
-				double f_size = props->content_.fo_font_size_.get_value_or(font_size(length(12,length::pt))).get_length().get_value_unit(length::pt);
-				
-                drop_cap_state_.characters_size_pt += utils::calculate_size_font_symbols(text, f_name, f_size, applicationFonts_);
+				double f_size = props->content_.fo_font_size_.get_value_or(font_size(length(12, length::pt))).get_length().get_value_unit(length::pt);
+					
+				drop_cap_state_.characters_size_pt += utils::calculate_size_font_symbols(text, f_name, f_size, applicationFonts_);
 			}
 		}
 	}
@@ -479,6 +481,14 @@ int odt_conversion_context::get_current_section_columns()
 }
 void odt_conversion_context::add_section(bool continuous)
 {
+//--dump first elements to root------------------------------------------------
+	for (size_t i = 0; i< current_root_elements_.size(); i++)
+	{
+		root_document_->add_child_element(current_root_elements_[i].elm);
+	}
+	current_root_elements_.clear();
+
+//----------------------------------------------------------------------------
 	odt_section_state state;
 	
 	state.empty			= true;
@@ -662,9 +672,9 @@ void odt_conversion_context::set_no_list()
 }
 void odt_conversion_context::flush_section()
 {
-	if (sections_.size() > 0 && sections_.back().empty)
+	if (!sections_.empty() && sections_.back().empty)
 	{
-		for (size_t i=0; i< current_root_elements_.size(); i++)
+		for (size_t i = 0; i < current_root_elements_.size(); i++)
 		{
 			if ((sections_.back().continuous && i < 2) || !sections_.back().continuous)
 				// при вставлении параграфа возможен искусственный разрыв в параграфах - см add_page_break
@@ -697,7 +707,7 @@ void odt_conversion_context::start_run(bool styled)
 	if (is_hyperlink_ && text_context_.size() > 0) return;
 	
 
-	if (current_field_.started== false && current_field_.type >1 && current_field_.enabled ==true && !current_field_.in_span)
+	if (current_field_.started == false && current_field_.type > 1 && current_field_.enabled == true && !current_field_.in_span)
 	{
 		text_context()->start_field(current_field_.type);
 		current_field_.started = true;
@@ -705,7 +715,14 @@ void odt_conversion_context::start_run(bool styled)
 	
 	text_context()->start_span(styled);
 
-	if (current_field_.started== false && current_field_.type >1 && current_field_.enabled ==true && current_field_.in_span)//поле стартуется в span - нужно для сохранения стиля
+	if (drop_cap_state_.enabled)
+	{
+		style_text_properties *props = text_context()->get_text_properties();
+		if (props)
+			props->apply_from(dynamic_cast<style_text_properties*>(drop_cap_state_.text_properties.get()));
+
+	}
+	if (current_field_.started == false && current_field_.type > 1 && current_field_.enabled == true && current_field_.in_span)//поле стартуется в span - нужно для сохранения стиля
 	{
 		text_context()->start_field(current_field_.type);
 		current_field_.started = true;
@@ -945,7 +962,14 @@ void odt_conversion_context::end_change (int id, int type)
 //	return (text_changes_state_.current_types.back() == 2);
 //}
 //--------------------------------------------------------------------------------------------------------
-
+style_text_properties* odt_conversion_context::get_drop_cap_properties() 
+{
+	if (!drop_cap_state_.text_properties)
+	{
+		create_element(L"style", L"text-properties", drop_cap_state_.text_properties, this);
+	}
+	return dynamic_cast<style_text_properties *>(drop_cap_state_.text_properties.get());
+}
 void odt_conversion_context::start_drop_cap(style_paragraph_properties *paragraph_properties)
 {
 	if (drop_cap_state_.enabled) 
@@ -967,6 +991,8 @@ void odt_conversion_context::set_drop_cap_lines(int lines)
 
 	style_drop_cap *drop_cap = dynamic_cast<style_drop_cap*>(drop_cap_state_.paragraph_properties->content_.style_drop_cap_.get());
 	if (drop_cap)drop_cap->style_lines_ = lines;
+
+	drop_cap_state_.lines = lines;
 }
 void odt_conversion_context::set_drop_cap_margin(bool val)
 {
@@ -977,7 +1003,7 @@ void odt_conversion_context::end_drop_cap()
 {
 	if (!drop_cap_state_.enabled) return;
 
-	if (drop_cap_state_.characters >0 && drop_cap_state_.paragraph_properties)
+	if (drop_cap_state_.characters > 0 && drop_cap_state_.paragraph_properties)
 	{
 		style_drop_cap *drop_cap = dynamic_cast<style_drop_cap*>(drop_cap_state_.paragraph_properties->content_.style_drop_cap_.get());
 		if (drop_cap)

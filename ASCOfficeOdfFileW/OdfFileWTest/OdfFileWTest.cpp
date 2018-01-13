@@ -59,7 +59,7 @@ HRESULT convert_single(std::wstring srcFileName)
 	switch(fileChecker.nFileType)
 	{
 		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
-		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:		dstPath += L"-my.odt"; type = L"document";		break;
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:		dstPath += L"-my.odt"; type = L"text";		break;
 		
 		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
 		case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:	dstPath += L"-my.ods"; type = L"spreadsheet";	break;

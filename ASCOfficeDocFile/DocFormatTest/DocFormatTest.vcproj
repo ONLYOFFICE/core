@@ -67,7 +67,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="Urlmon.lib"
 				LinkIncremental="1"
-				IgnoreDefaultLibraryNames="LIBCMTD.lib"
+				IgnoreDefaultLibraryNames=""
 				IgnoreEmbeddedIDL="true"
 				GenerateDebugInformation="true"
 				SubSystem="1"

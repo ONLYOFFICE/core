@@ -67,7 +67,7 @@ namespace Oox2Odf
 			cols_1 = props1->m_oCols->m_oNum.IsInit() ? props1->m_oCols->m_oNum->GetValue() : 1;
 
 			if (!props1->m_oCols->m_arrColumns.empty())
-				cols_1 = min(cols_1, props1->m_oCols->m_arrColumns.size());
+                cols_1 = std::min(cols_1, props1->m_oCols->m_arrColumns.size());
 		}
 		if (props2)
 		{
@@ -76,7 +76,7 @@ namespace Oox2Odf
 				cols_2 = props2->m_oCols->m_oNum.IsInit() ? props2->m_oCols->m_oNum->GetValue() : 1;
 				
 				if (!props2->m_oCols->m_arrColumns.empty())
-					cols_2 = min(cols_2, props2->m_oCols->m_arrColumns.size());
+                    cols_2 = std::min(cols_2, props2->m_oCols->m_arrColumns.size());
 			}
 			else
 			{

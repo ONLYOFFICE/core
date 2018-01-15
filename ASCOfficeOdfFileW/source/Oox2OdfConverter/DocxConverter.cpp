@@ -69,7 +69,7 @@ namespace Oox2Odf
 			cols_1 = props1->m_oCols->m_oNum.IsInit() ? props1->m_oCols->m_oNum->GetValue() : 1;
 
 			if (!props1->m_oCols->m_arrColumns.empty())
-                cols_1 = std::min(cols_1, props1->m_oCols->m_arrColumns.size());
+                cols_1 = (std::min)(cols_1, props1->m_oCols->m_arrColumns.size());
 		}
 		if (props2)
 		{
@@ -78,7 +78,7 @@ namespace Oox2Odf
 				cols_2 = props2->m_oCols->m_oNum.IsInit() ? props2->m_oCols->m_oNum->GetValue() : 1;
 				
 				if (!props2->m_oCols->m_arrColumns.empty())
-                    cols_2 = std::min(cols_2, props2->m_oCols->m_arrColumns.size());
+                    cols_2 = (std::min)(cols_2, props2->m_oCols->m_arrColumns.size());
 			}
 			else
 			{
@@ -430,7 +430,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 		odt_context->text_context()->set_KeepNextParagraph(false);
 	}
 //---------------------------------------------------------------------------------------------------------------------
-	current_font_size.clear();
+	current_font_size.erase(current_font_size.begin() + 1, current_font_size.end());
 
 	bool bStyled			= false;
 	bool bStartNewParagraph = !odt_context->text_context()->get_KeepNextParagraph();
@@ -2093,8 +2093,6 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 {
 	if (oox_run_pr		== NULL) return;
 	if (text_properties == NULL) return;
-
-	double font_size_pt = 0;
 	
 	if (oox_run_pr->m_oRStyle.IsInit() && oox_run_pr->m_oRStyle->m_sVal.IsInit())
 	{
@@ -2207,7 +2205,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	}
 	if (oox_run_pr->m_oSz.IsInit() && oox_run_pr->m_oSz->m_oVal.IsInit())
 	{
-		font_size_pt = oox_run_pr->m_oSz->m_oVal->ToPoints();
+		double font_size_pt = oox_run_pr->m_oSz->m_oVal->ToPoints();
 		current_font_size.push_back(font_size_pt);
 
 		OoxConverter::convert(font_size_pt, text_properties->content_.fo_font_size_);
@@ -2273,7 +2271,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	if (oox_run_pr->m_oPosition.IsInit() && oox_run_pr->m_oPosition->m_oVal.IsInit())
 	{
 		double position_pt = oox_run_pr->m_oPosition->m_oVal->ToPoints();
-		double percent = font_size_pt > 0 ? position_pt / font_size_pt * 100 : 0;
+		double percent = current_font_size.empty() ? 0 : position_pt / current_font_size.back() * 100;
 
 		text_properties->content_.style_text_position_ = odf_types::text_position(percent, 100.);
 	}
@@ -2975,6 +2973,8 @@ void DocxConverter::convert_styles()
 	for (size_t i=0; i< docx_styles->m_arrStyle.size(); i++)
 	{
 		if (docx_styles->m_arrStyle[i] == NULL) continue;
+		
+		current_font_size.erase(current_font_size.begin() + 1, current_font_size.end());
 
 		convert(docx_styles->m_arrStyle[i]);
 	
@@ -2996,6 +2996,11 @@ void DocxConverter::convert_styles()
 
 				def_para_properties->apply_from(para_properties);
 				def_text_properties->apply_from(text_properties);
+
+				if (def_text_properties->content_.fo_font_size_)
+				{
+					current_font_size.push_back(def_text_properties->content_.fo_font_size_->get_length().get_value_unit(odf_types::length::pt));
+				}
 			}
 		}
 	}

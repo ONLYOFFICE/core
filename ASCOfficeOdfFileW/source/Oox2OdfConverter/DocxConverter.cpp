@@ -56,6 +56,8 @@
 
 using namespace cpdoccore;
 
+std::vector<double> current_font_size;
+
 namespace Oox2Odf
 {
 
@@ -428,6 +430,8 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 		odt_context->text_context()->set_KeepNextParagraph(false);
 	}
 //---------------------------------------------------------------------------------------------------------------------
+	current_font_size.clear();
+
 	bool bStyled			= false;
 	bool bStartNewParagraph = !odt_context->text_context()->get_KeepNextParagraph();
 	
@@ -1135,6 +1139,14 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 			outline_level = *parent_paragraph_properties.content_.outline_level_;
 		}
 		//список тож явно ??? угу :( - выше + велосипед для хранения
+		odf_writer::style_text_properties  parent_text_properties;
+		odt_context->styles_context()->calc_text_properties(style_name, odf_types::style_family::Paragraph, &parent_text_properties.content_);
+
+		if (parent_text_properties.content_.fo_font_size_)
+		{
+			current_font_size.push_back(parent_text_properties.content_.fo_font_size_->get_length().get_value_unit(odf_types::length::pt));
+		}
+
 	}
 
 	if (oox_paragraph_pr->m_oSpacing.IsInit())
@@ -2081,10 +2093,21 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 {
 	if (oox_run_pr		== NULL) return;
 	if (text_properties == NULL) return;
+
+	double font_size_pt = 0;
 	
 	if (oox_run_pr->m_oRStyle.IsInit() && oox_run_pr->m_oRStyle->m_sVal.IsInit())
 	{
-		odt_context->styles_context()->last_state()->set_parent_style_name(*oox_run_pr->m_oRStyle->m_sVal);
+		std::wstring style_name = *oox_run_pr->m_oRStyle->m_sVal;
+		odt_context->styles_context()->last_state()->set_parent_style_name(style_name);
+		
+		odf_writer::style_text_properties  parent_text_properties;
+		odt_context->styles_context()->calc_text_properties(style_name, odf_types::style_family::Text, &parent_text_properties.content_);
+
+		if (parent_text_properties.content_.fo_font_size_)
+		{
+			current_font_size.push_back(parent_text_properties.content_.fo_font_size_->get_length().get_value_unit(odf_types::length::pt));
+		}
 	}
 	if (oox_run_pr->m_oBold.IsInit())
 	{
@@ -2184,7 +2207,10 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	}
 	if (oox_run_pr->m_oSz.IsInit() && oox_run_pr->m_oSz->m_oVal.IsInit())
 	{
-		OoxConverter::convert(oox_run_pr->m_oSz->m_oVal->ToPoints(), text_properties->content_.fo_font_size_);
+		font_size_pt = oox_run_pr->m_oSz->m_oVal->ToPoints();
+		current_font_size.push_back(font_size_pt);
+
+		OoxConverter::convert(font_size_pt, text_properties->content_.fo_font_size_);
 	}
 	if (oox_run_pr->m_oKern.IsInit() && oox_run_pr->m_oKern->m_oVal.IsInit())
 	{
@@ -2235,7 +2261,22 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	{
 		text_properties->content_.style_text_line_through_type_ = odf_types::line_type(odf_types::line_type::Single);
 	}
+	if (oox_run_pr->m_oDStrike.IsInit()  && oox_run_pr->m_oDStrike->m_oVal.ToBool())
+	{
+		text_properties->content_.style_text_line_through_type_ = odf_types::line_type(odf_types::line_type::Double);
+	}
+	if (oox_run_pr->m_oSpacing.IsInit() && oox_run_pr->m_oSpacing->m_oVal.IsInit())
+	{
+		double spacing = oox_run_pr->m_oSpacing->m_oVal->ToPoints();
+		text_properties->content_.fo_letter_spacing_ = odf_types::letter_spacing(odf_types::length(spacing, odf_types::length::pt));
+	}
+	if (oox_run_pr->m_oPosition.IsInit() && oox_run_pr->m_oPosition->m_oVal.IsInit())
+	{
+		double position_pt = oox_run_pr->m_oPosition->m_oVal->ToPoints();
+		double percent = font_size_pt > 0 ? position_pt / font_size_pt * 100 : 0;
 
+		text_properties->content_.style_text_position_ = odf_types::text_position(percent, 100.);
+	}
 	if (oox_run_pr->m_oBdr.IsInit())
 	{
 		std::wstring odf_border;
@@ -2703,6 +2744,9 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 	else if (oox_anchor->m_oWrapTight.IsInit())
 	{
 		odt_context->drawing_context()->set_wrap_style(odf_types::style_wrap::Parallel);
+		if (oox_anchor->m_oWrapTight->m_oWrapPolygon.IsInit())
+		{
+		}
 		wrap_set = true;
 	}
 	else if (oox_anchor->m_oWrapTopAndBottom.IsInit())

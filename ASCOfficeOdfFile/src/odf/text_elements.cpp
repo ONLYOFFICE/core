@@ -185,6 +185,29 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 					Context.end_automatic_style();
 
                     Context.push_text_properties(styleContent->get_style_text_properties());
+
+					if (!Context.get_section_context().dump_.empty()
+						&& !Context.get_table_context().in_table()
+						&& (Context.get_process_note() == oox::docx_conversion_context::noNote)
+						&& !in_drawing)
+					{
+						Context.output_stream() << L"<w:pPr>";
+						if (Context.is_paragraph_header() )
+						{
+							Context.output_stream() << Context.get_section_context().dump_;
+							Context.get_section_context().dump_.clear();
+
+							Context.output_stream() << L"</w:pPr>";
+							Context.finish_paragraph();
+							Context.start_paragraph();					
+						}
+						else
+						{
+							Context.output_stream() << Context.get_section_context().dump_;
+							Context.get_section_context().dump_.clear();
+							Context.output_stream() << L"</w:pPr>";
+						}
+					}
 					return 1;
                 }            
             }
@@ -434,7 +457,11 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 
 		is_empty = false;
     }    
-
+	std::wstringstream strm;
+	if (Context.process_page_properties(strm))
+	{
+		Context.get_section_context().dump_ = strm.str();
+	}
 	process_paragraph_drop_cap_attr(attrs_, Context);
 
 	if (Context.get_drop_cap_context().state() == 2)//active
@@ -495,14 +522,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 	if (is_empty)
 		Context.output_stream() << emptyParagraphContent;
 
-
 	Context.finish_paragraph();
-
-	std::wstringstream strm;
-	if (Context.process_page_properties(strm))
-	{
-		Context.get_section_context().dump_ = strm.str();
-	}
 }
 
 void paragraph::xlsx_convert(oox::xlsx_conversion_context & Context)

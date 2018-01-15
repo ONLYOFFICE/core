@@ -48,14 +48,14 @@ std::wostream & operator << (std::wostream & _Wostream, const text_position & _V
         _Wostream << L"super";
         break;
     case text_position::Percent:
-        _Wostream << _Val.get_position();
+        _Wostream << _Val.get_position() << L"%" ;
         break;
     default:
         break;
     }
 
     if (_Val.has_font_size())
-        _Wostream << L" "  << _Val.font_size();
+        _Wostream << L" "  << _Val.font_size() << L"%";
 
     return _Wostream;
 }

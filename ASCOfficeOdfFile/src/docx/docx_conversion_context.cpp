@@ -787,7 +787,7 @@ void docx_conversion_context::process_section(std::wostream & strm, odf_reader::
 			CP_XML_ATTR(L"w:equalWidth", L"true");
 			CP_XML_ATTR(L"w:num", count_columns);
 			CP_XML_ATTR(L"w:sep", sep_columns);
-			CP_XML_ATTR(L"w:space",0);
+			CP_XML_ATTR(L"w:space", 708);
 		}
 	}
 }

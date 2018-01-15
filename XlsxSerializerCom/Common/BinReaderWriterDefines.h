@@ -192,7 +192,8 @@ namespace BinXlsxRW
 		ExternalBook = 9,
 		OleLink = 10,
 		DdeLink = 11,
-		VbaProject = 12
+		VbaProject = 12,
+		JsaProject = 13
 	};}
 	namespace c_oSerWorkbookVbaProjectTypes{enum c_oSerWorkbookVbaProjectTypes
 	{

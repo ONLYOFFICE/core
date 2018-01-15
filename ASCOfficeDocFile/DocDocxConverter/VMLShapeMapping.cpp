@@ -288,6 +288,7 @@ namespace DocFileFormat
 		int ndyTextBottom		=	-1;
 
 		bool bHavePath			=	false;
+		int nShapePath			=	-1;
 		int	nAdjValues			=	0;
 		int	nLTxID				=	-1;
 
@@ -361,6 +362,7 @@ namespace DocFileFormat
 			case shapePath :
 				{
 					bHavePath =	true;
+					nShapePath = iter->op;
 				}break;
 			case pVertices:
 				{
@@ -1653,7 +1655,7 @@ namespace DocFileFormat
 		}
 		if (!bRelV && m_pSpa)
 		{
-			appendStyleProperty(oStyle, L"mso-position-vertical-relative", mapVerticalPositionRelative(m_pSpa->bx));
+			appendStyleProperty(oStyle, L"mso-position-vertical-relative", mapVerticalPositionRelative(m_pSpa->by));
 		}
 		if (!m_isInlineShape && !bZIndex)
 		{

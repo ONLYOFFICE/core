@@ -65,7 +65,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Urlmon.lib"
+				AdditionalDependencies="Urlmon.lib Rpcrt4.lib"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="LIBCMT.lib"
 				IgnoreEmbeddedIDL="true"
@@ -405,6 +405,10 @@
 			</File>
 			<File
 				RelativePath="..\..\ASCOfficeOdfFile\src\odf\svg_parser.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\DocxFormat\Source\Base\unicode_util.cpp"
 				>
 			</File>
 			<File

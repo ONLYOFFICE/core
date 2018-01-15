@@ -118,6 +118,9 @@ bool COfficeFileFormatChecker::isPdfFormatFile	(unsigned char* pBuffer,int dwByt
 	if (pBuffer == NULL) return false;
 
     int nTempBufferSize = dwBytes < 20 ? dwBytes : 20;
+    if (nTempBufferSize < 1)
+        return false;
+
     char* pTempBuffer = new char[nTempBufferSize];
 
     memcpy ( pTempBuffer, pBuffer, nTempBufferSize );

@@ -51,6 +51,7 @@
 #include "Theme/ClrScheme.h"
 
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
 
 namespace PPTX
 {
@@ -233,6 +234,7 @@ namespace PPTX
 				}
 				pWriter->EndRecord();
 			}
+			pWriter->WriteRecord2(9, m_pJsaProject);
 
 			pWriter->EndRecord();
 		}
@@ -352,9 +354,17 @@ namespace PPTX
 
 						m_bMacroEnabled = true;
 					}break;
+					case 9:
+					{
+						m_pJsaProject = new OOX::JsaProject();
+						m_pJsaProject->fromPPTY(pReader);
+
+						smart_ptr<OOX::File> file = m_pJsaProject.smart_dynamic_cast<OOX::File>();
+						FileContainer::Add(file);
+					}break;
 					default:
 					{
-						pReader->Seek(_end_pos);
+						pReader->SkipRecord();
 						return;
 					}
 				}
@@ -468,6 +478,7 @@ namespace PPTX
 	public:
 		bool						m_bMacroEnabled;
 		smart_ptr<OOX::VbaProject>	m_pVbaProject;
+		smart_ptr<OOX::JsaProject>	m_pJsaProject;
 		
         void SetClrMap(Logic::ClrMap map)				{m_clrMap = map;}
         void SetClrScheme(nsTheme::ClrScheme scheme)	{m_clrScheme = scheme;}

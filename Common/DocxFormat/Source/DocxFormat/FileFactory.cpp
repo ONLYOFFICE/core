@@ -49,6 +49,7 @@
 #include "Media/Audio.h"
 #include "Media/Video.h"
 #include "Media/VbaProject.h"
+#include "Media/JsaProject.h"
 #include "External/HyperLink.h"
 #include "External/ExternalVideo.h"
 #include "External/ExternalAudio.h"
@@ -146,6 +147,8 @@ namespace OOX
 			return smart_ptr<OOX::File>(new OOX::VbaProject( oRootPath, oFileName ));
 		//else if ( oRelation.Type() == OOX::FileTypes::VbaData)
 		//	return smart_ptr<OOX::File>(new OOX::VbaData( oFileName ));
+		else if ( oRelation.Type() == FileTypes::JsaProject)
+			return smart_ptr<OOX::File>(new JsaProject( oFileName ));
 
 		return smart_ptr<OOX::File>( new UnknowTypeFile() );
 	}
@@ -238,6 +241,8 @@ namespace OOX
 			return smart_ptr<OOX::File>(new OOX::VbaProject( oRootPath, oFileName ));
 		//else if ( pRelation->Type() == FileTypes::VbaData)
 		//	return smart_ptr<OOX::File>(new OOX::VbaData( oFileName ));
+		else if ( pRelation->Type() == FileTypes::JsaProject)
+			return smart_ptr<OOX::File>(new JsaProject( oFileName ));
 
 		return smart_ptr<OOX::File>( new UnknowTypeFile() );
 	}

@@ -3426,8 +3426,16 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 	{
         oWriter.WriteString(L"<wp:wrapNone/>");
 	}	
+	bool bHidden = false;
+    pPair = oCssStyles.m_mapSettings.find(L"visibility");
+	if (oCssStyles.m_mapSettings.end() != pPair)
+	{
+		if (L"hidden" == pPair->second)
+			bHidden = true;
+	}
 
-    std::wstring strId = L"<wp:docPr id=\"" + std::to_wstring(m_lNextId) + L"\" name=\"\"/>";
+
+	std::wstring strId = L"<wp:docPr id=\"" + std::to_wstring(m_lNextId) + L"\" name=\"\"" + (bHidden ? L" hidden=\"true\"" : L"") + L"/>";
 	m_lNextId++;
 
 	oWriter.WriteString(strId);

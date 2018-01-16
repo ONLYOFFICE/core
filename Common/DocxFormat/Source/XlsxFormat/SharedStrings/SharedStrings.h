@@ -105,6 +105,7 @@ namespace OOX
 							{
 								CSi* pItem = new CSi( oReader );
                                 m_arrItems.push_back(pItem );
+								m_nCount++;
 							}
 						}
 					}

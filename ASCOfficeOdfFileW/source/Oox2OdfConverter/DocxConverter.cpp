@@ -571,8 +571,16 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 		{
 			if (odt_context->in_drop_cap())
 			{
-				convert(oox_paragraph->m_oParagraphProperty->m_oRPr.GetPointer(), odt_context->get_drop_cap_properties()); 
 				//вообще то свойства правильные параграфа идут в следующем после буквицы параграфе
+				odf_writer::style_text_properties *text_properties_drop_cap = odt_context->get_drop_cap_properties();
+				convert(oox_paragraph->m_oParagraphProperty->m_oRPr.GetPointer(), text_properties_drop_cap); 
+				if (text_properties_drop_cap->content_.fo_font_size_)
+				{
+					double sz = text_properties_drop_cap->content_.fo_font_size_->get_length().get_value_unit(odf_types::length::pt);
+
+					sz = sz / 1.75 / odt_context->get_drop_cap_lines();
+					text_properties_drop_cap->content_.fo_font_size_= odf_types::length(sz, odf_types::length::pt);
+				}
 			}
 			else
 			{
@@ -1683,9 +1691,10 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 
 		std::vector<std::pair<double,double>> width_space;
 		
-		for (size_t i =0; i< oox_section_pr->m_oCols->m_arrColumns.size(); i++)
+		for (size_t i = 0; i< oox_section_pr->m_oCols->m_arrColumns.size(); i++)
 		{
 			if (oox_section_pr->m_oCols->m_arrColumns[i] == NULL) continue;
+			
 			double space = default_space_pt;
 			if (oox_section_pr->m_oCols->m_arrColumns[i]->m_oSpace.IsInit())
 				space = oox_section_pr->m_oCols->m_arrColumns[i]->m_oSpace->ToPoints();
@@ -1696,10 +1705,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 			
 			width_space.push_back(std::pair<double,double>(w, space));
 		}
-		//for (size_t i= oox_section_pr->m_oCols->m_arrColumns.size(); i< num_columns; i ++)
-		//{
-		//	width_space.push_back(std::pair<double,double>(-1, default_space_pt));
-		//}
+
 		odt_context->add_section_column(width_space);
 	}
 }

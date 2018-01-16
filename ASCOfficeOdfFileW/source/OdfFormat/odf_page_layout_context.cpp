@@ -482,14 +482,12 @@ void odf_page_layout_context::set_page_size(_CP_OPT(length) width, _CP_OPT(lengt
 
 	if (width)
 	{
-		props->attlist_.fo_page_width_ = 
-												length(width->get_value_unit(length::cm), length::cm);
+		props->attlist_.fo_page_width_ = length(width->get_value_unit(length::cm), length::cm);
 
 		current_page_width_ = width->get_value_unit(length::pt);
 	}
 	if (height)
-		props->attlist_.fo_page_height_ = 
-												length(height->get_value_unit(length::cm),length::cm);
+		props->attlist_.fo_page_height_ = length(height->get_value_unit(length::cm), length::cm);
 }
 void odf_page_layout_context::set_page_number_format(_CP_OPT(int) & type, _CP_OPT(int) & start)
 {

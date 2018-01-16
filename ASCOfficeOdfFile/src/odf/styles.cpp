@@ -734,7 +734,7 @@ void style_columns::add_attributes( const xml::attributes_wc_ptr & Attributes )
 void style_columns::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"column" == Name)
-        CP_CREATE_ELEMENT(style_column_);
+        CP_CREATE_ELEMENT(style_columns_);
     else if (L"style" == Ns && L"column-sep" == Name)
         CP_CREATE_ELEMENT(style_column_sep_);
     else
@@ -750,11 +750,10 @@ const wchar_t * style_column::name = L"column";
 void style_column::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"style:rel-width",	style_rel_width_);
-    CP_APPLY_ATTR(L"fo:start-indent",	fo_start_indent_,	length(0.0, length::cm));
-    CP_APPLY_ATTR(L"fo:end-indent",		fo_end_indent_,		length(0.0, length::cm));
-    CP_APPLY_ATTR(L"fo:space-before",	fo_space_before_,	length(0.0, length::cm));
-    CP_APPLY_ATTR(L"fo:space-after",	fo_space_after_,	length(0.0, length::cm));
-    
+    CP_APPLY_ATTR(L"fo:start-indent",	fo_start_indent_);
+    CP_APPLY_ATTR(L"fo:end-indent",		fo_end_indent_);
+    CP_APPLY_ATTR(L"fo:space-before",	fo_space_before_);
+    CP_APPLY_ATTR(L"fo:space-after",	fo_space_after_);    
 }
 
 void style_column::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -764,7 +763,7 @@ void style_column::add_child_element( xml::sax * Reader, const std::wstring & Ns
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_column_sep::ns = L"style";
-const wchar_t * style_column_sep::name = L":column-sep";
+const wchar_t * style_column_sep::name = L"column-sep";
 
 void style_column_sep::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {

@@ -732,16 +732,38 @@ void docx_conversion_context::start_process_style_content()
     styles_context_.start();
 }
 
-void docx_conversion_context::process_section(std::wostream & strm, odf_reader::style_columns * columns)
+void docx_conversion_context::process_section(std::wostream & strm, odf_reader::style_columns * columns)//from page layout
 {
 	int count_columns = 1;
 	bool sep_columns = false;
 
 	oox::section_context::_section & section = get_section_context().get();
+
+	if (!columns)
+	{
+		if (const odf_reader::style_instance * secStyle = root()->odf_context().styleContainer().style_by_name(section.style_, odf_types::style_family::Section, process_headers_footers_))
+		{
+			if (const odf_reader::style_content * content = secStyle->content())
+			{
+				if (odf_reader::style_section_properties * sectPr = content->get_style_section_properties())
+				{
+					columns = dynamic_cast<odf_reader::style_columns *>( sectPr->style_columns_.get());
+					
+					section.margin_left_	= sectPr->common_horizontal_margin_attlist_.fo_margin_left_;
+					section.margin_right_	= sectPr->common_horizontal_margin_attlist_.fo_margin_right_;		
+				}
+			}
+			if (section.is_dump_)
+			{
+				get_section_context().remove_section();				
+			}
+		}
+	}
 	
+	std::vector<std::pair<double, double>> width_space;
 	if (columns)
 	{
-		if ((columns->fo_column_count_) && (*columns->fo_column_count_ > 1))
+		if (columns->fo_column_count_)
 		{
 			count_columns =  *columns->fo_column_count_;
 		}
@@ -750,44 +772,63 @@ void docx_conversion_context::process_section(std::wostream & strm, odf_reader::
 			if (columns_sep->style_style_ != _T("none"))
 				sep_columns = true;
 		}
-	}
-	if (const odf_reader::style_instance * secStyle = root()->odf_context().styleContainer().style_by_name(section.style_, odf_types::style_family::Section, process_headers_footers_))
-	{
-		if (const odf_reader::style_content * content = secStyle->content())
-		{
-			if (odf_reader::style_section_properties * sectPr = content->get_style_section_properties())
-			{
-				if (odf_reader::style_columns * columns = dynamic_cast<odf_reader::style_columns *>( sectPr->style_columns_.get() ))
-				{
-					if (columns->fo_column_count_)
-					{
-						count_columns =  *columns->fo_column_count_;
-					}
-					if (odf_reader::style_column_sep * columns_sep = dynamic_cast<odf_reader::style_column_sep *>( columns->style_column_sep_.get() ))
-					{
-						if (columns_sep->style_style_ != _T("none"))
-							sep_columns = true;
-					}
-				}
 
-				section.margin_left_	= sectPr->common_horizontal_margin_attlist_.fo_margin_left_;
-				section.margin_right_	= sectPr->common_horizontal_margin_attlist_.fo_margin_right_;
+		if (!columns->style_columns_.empty())
+		{
+			double page_width = 0;
+			const odf_reader::page_layout_instance * pp = root()->odf_context().pageLayoutContainer().page_layout_first();
+			if (pp)
+			{
+				odf_reader::style_page_layout_properties_attlist & attr_page = pp->properties()->attlist_;
+				if (attr_page.fo_page_width_)
+				{
+					page_width = attr_page.fo_page_width_->get_value_unit(odf_types::length::pt);
+				}
+				if (attr_page.common_horizontal_margin_attlist_.fo_margin_left_)
+				{
+					page_width -= attr_page.common_horizontal_margin_attlist_.fo_margin_left_->get_length().get_value_unit(odf_types::length::pt);
+				}
+				if (attr_page.common_horizontal_margin_attlist_.fo_margin_right_)
+				{
+					page_width -= attr_page.common_horizontal_margin_attlist_.fo_margin_right_->get_length().get_value_unit(odf_types::length::pt);
+				}
+			}		
+			for (size_t i = 0; page_width > 0, i < columns->style_columns_.size(); i++)
+			{
+				odf_reader::style_column * col = dynamic_cast<odf_reader::style_column*>( columns->style_columns_[i].get());
+				if (!col) continue;
+
+				double width = page_width * (col->style_rel_width_ ? col->style_rel_width_->get_value() / 65535. : 0);
+
+				double space = col->fo_end_indent_ ? col->fo_end_indent_->get_value_unit(odf_types::length::pt) : 0;
+
+				if (i < columns->style_columns_.size() - 1)
+				{
+					col = dynamic_cast<odf_reader::style_column*>( columns->style_columns_[i + 1].get());
+					space += col->fo_start_indent_ ? col->fo_start_indent_->get_value_unit(odf_types::length::pt) : 0;
+				}
+				
+				width_space.push_back(std::make_pair(width, space));
 			}
 		}
-		if (section.is_dump_)
-		{
-			get_section_context().remove_section();				
-		}
 	}
-
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"w:cols")
 		{
-			CP_XML_ATTR(L"w:equalWidth", L"true");
+			CP_XML_ATTR(L"w:equalWidth", width_space.empty());
 			CP_XML_ATTR(L"w:num", count_columns);
 			CP_XML_ATTR(L"w:sep", sep_columns);
 			CP_XML_ATTR(L"w:space", 708);
+
+			for (size_t i = 0; i < width_space.size(); i++)
+			{
+				CP_XML_NODE(L"w:col")
+				{
+					CP_XML_ATTR(L"w:w", (int)(width_space[i].first * 20));	
+					CP_XML_ATTR(L"w:space", (int)(width_space[i].second * 20));	
+				}
+			}
 		}
 	}
 }

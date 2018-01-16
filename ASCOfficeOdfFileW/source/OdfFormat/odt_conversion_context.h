@@ -115,6 +115,7 @@ public:
 	void end_drop_cap			();
 	bool in_drop_cap			() {return drop_cap_state_.enabled;}
 	style_text_properties* get_drop_cap_properties();
+	int get_drop_cap_lines() {return drop_cap_state_.lines;}
 
 	bool start_comment			(int oox_comment_id);
 	void end_comment			(int oox_comment_id);

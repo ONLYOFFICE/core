@@ -34,6 +34,7 @@
 #include "Property.h"
 #include "../../../Binary/BinSmartPointers.h"
 
+#include <map>
 #include <vector>
 
 namespace OLEPS
@@ -46,7 +47,11 @@ public:
 	
 	const unsigned short GetCodePage();
 
+    std::map<unsigned int, PropertyPtr> properties;
+	
 private:
+	unsigned short code_page;
+
 #pragma pack(1)
 	struct PropertyIdentifierAndOffset
 	{
@@ -55,9 +60,6 @@ private:
 	};
 #pragma pack()
 
-private:
-	std::vector<PropertyPtr> properties;
-	unsigned short code_page; // no need to initialize because this info is a must for every SummaryInformation stream in a compound file
 };
 
 typedef boost::shared_ptr<PropertySet> PropertySetPtr;

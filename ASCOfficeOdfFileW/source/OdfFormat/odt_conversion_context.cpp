@@ -507,7 +507,7 @@ void odt_conversion_context::add_section(bool continuous)
 }
 void odt_conversion_context::add_section_columns(int count, double space_pt, bool separator)
 {
-	if (sections_.size() < 1 || count < 1) return;
+	if (sections_.empty() || count < 1) return;
 
 	style* style_ = dynamic_cast<style*>(sections_.back().style_elm.get());
 	if (!style_)return;
@@ -515,8 +515,10 @@ void odt_conversion_context::add_section_columns(int count, double space_pt, boo
 	style_section_properties	* section_properties	= style_->content_.get_style_section_properties();
 	
 	create_element(L"style", L"columns",section_properties->style_columns_,this);	
+	
 	style_columns* columns = dynamic_cast<style_columns*>(section_properties->style_columns_.get());
 	if (!columns)return;
+
 	sections_.back().count_columns	= count;
 
 						columns->fo_column_count_	= count;
@@ -528,14 +530,14 @@ void odt_conversion_context::add_section_columns(int count, double space_pt, boo
 		style_column_sep* sep = dynamic_cast<style_column_sep*>(columns->style_column_sep_.get());
 		if (sep)//default set
 		{
-			sep->style_width_			= length(0,length::cm);
+			sep->style_width_			= length(0.035, length::cm);
 			sep->style_height_			= percent(100);
 			sep->style_vertical_align_	= vertical_align(vertical_align::Middle);
 			sep->style_color_			= color(L"#000000");	
 		}
 	}
 }
-void odt_conversion_context::add_section_column(std::vector<std::pair<double,double>> width_space)
+void odt_conversion_context::add_section_column(std::vector<std::pair<double, double>> width_space)
 {
 	if (sections_.size() < 1 || width_space.size() < 1) return;
 
@@ -553,15 +555,14 @@ void odt_conversion_context::add_section_column(std::vector<std::pair<double,dou
 	{
 		if (width_space[i].first >= 0) 
 		
-			width_all += width_space[i].first/* + width_space[i].second*/;
+			width_all += width_space[i].first + width_space[i].second;
 	}
-
-	double curr = 0;
-	int width_absolute = 0;
 
 	if (width_all < 1)	return;
 
 	section_properties->style_editable_ = false;
+
+	double last_space = 0;
 
 	for (size_t i = 0; i < width_space.size() && width_all > 0 ; i++)
 	{
@@ -571,17 +572,16 @@ void odt_conversion_context::add_section_column(std::vector<std::pair<double,dou
 		style_column* col = dynamic_cast<style_column*>(col_elm.get());
 		if (!col) continue;
 
-		int val =  (width_space[i].first/* + width_space[i].second*/)* 65535. /width_all /*:65535 - width_absolute*/;
+		int val =  (width_space[i].first)* 65535. / width_all ;
 		col->style_rel_width_ = odf_types::percent_rel(val);
-		width_absolute += val;
 		
-		//col->fo_start_indent_ = odf_types::length(curr,odf_types::length::pt);
-		//curr += width_space[0].first;
-		//
-		//col->fo_end_indent_ = odf_types::length(curr,odf_types::length::pt);
-		//curr += width_space[0].second;
+		col->fo_start_indent_ = odf_types::length(last_space / 2, odf_types::length::pt);
+		
+		col->fo_end_indent_ = odf_types::length(width_space[i].second / 2, odf_types::length::pt);
 		
 		columns->add_child_element(col_elm);
+
+		last_space = width_space[i].second;
 
 	}
 }

@@ -35,14 +35,15 @@
 
 namespace OLEPS
 {
-
-// The only necessity of this class is to place all properties into a single array
 class Property
 {
 public:
-	Property();
-	virtual ~Property() = 0;
+	Property(unsigned int type) : Type(type) {}
+	virtual ~Property()
+	{
+	}
 
+	unsigned int Type;
 	enum ValueTypes
 	{
 		VT_I2 = 0x0002,

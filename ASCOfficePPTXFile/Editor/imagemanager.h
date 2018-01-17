@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
@@ -267,51 +267,51 @@ namespace NSShapeImageGen
 			if (width < 0 && height < 0)	return GenerateImageID(strFile, L"", -1, -1, strAdditionalFile, typeAdditionalFile);
 											return GenerateImageID(strFile, L"", (std::max)(1.0, width), (std::max)(1.0, height), strAdditionalFile, typeAdditionalFile);
 		}
-		CMediaInfo WriteMedia(const std::wstring& strFile)
-		{
-			bool bIsDownload = false;
-			int n1 = (int)strFile.find (L"www");
-			int n2 = (int)strFile.find (L"http");
-			int n3 = (int)strFile.find (L"ftp");
-			int n4 = (int)strFile.find (L"https");
-
+        CMediaInfo WriteMedia(const std::wstring& strFile)
+        {
+            bool bIsDownload = false;
+            int n1 = (int)strFile.find (L"www");
+            int n2 = (int)strFile.find (L"http");
+            int n3 = (int)strFile.find (L"ftp");
+            int n4 = (int)strFile.find (L"https");
+            
             //если nI сранивать не с 0, то будут проблемы
             //потому что в инсталяции мы кладем файлы в /var/www...
             if (0 == n1 || 0 == n2 || 0 == n3 || 0 == n4)
-				bIsDownload = true;
-
-			if (bIsDownload)
-			{
-
-				std::wstring strFileUrl = strFile;
-				
-				XmlUtils::replace_all(strFileUrl, L"\\",		L"/");
-				XmlUtils::replace_all(strFileUrl, L"http:/",	L"http://");
-				XmlUtils::replace_all(strFileUrl, L"https:/",	L"https://");
-				XmlUtils::replace_all(strFileUrl, L"ftp:/",	L"ftp://");
-
-
-				CMediaInfo oInfo;
-				std::map<std::wstring, CMediaInfo>::iterator pPair = m_mapMediaFiles.find(strFileUrl);
-				
-				if (pPair != m_mapMediaFiles.end())
-					return pPair->second;
-
-				std::wstring strDownload;
-
+                bIsDownload = true;
+            
+            if (bIsDownload)
+            {
+                
+                std::wstring strFileUrl = strFile;
+                
+                XmlUtils::replace_all(strFileUrl, L"\\",		L"/");
+                XmlUtils::replace_all(strFileUrl, L"http:/",	L"http://");
+                XmlUtils::replace_all(strFileUrl, L"https:/",	L"https://");
+                XmlUtils::replace_all(strFileUrl, L"ftp:/",	L"ftp://");
+                
+                
+                CMediaInfo oInfo;
+                std::map<std::wstring, CMediaInfo>::iterator pPair = m_mapMediaFiles.find(strFileUrl);
+                
+                if (pPair != m_mapMediaFiles.end())
+                    return pPair->second;
+                
+                std::wstring strDownload;
+                
 #ifndef DISABLE_FILE_DOWNLOADER
-
-				CFileDownloader oDownloader(strFileUrl, true);
-				if (oDownloader.DownloadSync())
-				{
-					strDownload = oDownloader.GetFilePath();
-				}
-
-#endif			return GenerateMediaID(strDownload, strFileUrl);
-			}
-			else
-				return GenerateMediaID(strFile, L"");
-		}
+                
+                CFileDownloader oDownloader(strFileUrl, true);
+                if (oDownloader.DownloadSync())
+                {
+                    strDownload = oDownloader.GetFilePath();
+                }
+#endif
+                return GenerateMediaID(strDownload, strFileUrl);
+            }
+            
+            return GenerateMediaID(strFile, L"");
+        }
 		void SetFontManager(CFontManager* pFontManager)
 		{
 			m_pFontManager = pFontManager;

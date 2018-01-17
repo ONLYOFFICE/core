@@ -2715,7 +2715,7 @@ namespace BinXlsxRW
 					m_oBcw.m_oStream.WriteStringW(oHyperlink.m_oDisplay.get2());
 				}
 			}
-		};
+        }
 		void WriteMergeCells(const OOX::Spreadsheet::CMergeCells& oMergeCells)
 		{
 			for(size_t i = 0, length = oMergeCells.m_arrItems.size(); i < length; ++i)
@@ -2727,7 +2727,7 @@ namespace BinXlsxRW
 					m_oBcw.m_oStream.WriteStringW(pMergeCell->m_oRef.get2());
 				}
 			}
-		};
+        }
 		void WriteSheetData(const OOX::Spreadsheet::CSheetData& oSheetData)
 		{
 			int nCurPos;
@@ -2738,7 +2738,7 @@ namespace BinXlsxRW
 				WriteRow(*pRow);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
-		};
+        }
 		void WriteRow(const OOX::Spreadsheet::CRow& oRows)
 		{
 			int nCurPos;
@@ -2791,7 +2791,7 @@ namespace BinXlsxRW
 				WriteCells(oRows);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
-		};
+        }
 		void WriteCells(const OOX::Spreadsheet::CRow& oRows)
 		{
 			int nCurPos;
@@ -2802,7 +2802,7 @@ namespace BinXlsxRW
 				WriteCell(*oCell);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
-		};
+        }
 		void WriteCell(const OOX::Spreadsheet::CCell& oCell)
 		{
 			int nCurPos;
@@ -2861,7 +2861,7 @@ namespace BinXlsxRW
 				m_oBcw.m_oStream.WriteDoubleReal(dValue);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
-		};
+        }
 		void WriteFormula(OOX::Spreadsheet::CFormula& oFormula)
 		{
 			//Aca
@@ -2958,7 +2958,7 @@ namespace BinXlsxRW
 				if(NULL != m_pEmbeddedFontsManager)
 					m_pEmbeddedFontsManager->CheckString(oFormula.m_sText);
 			}
-		};
+        }
 
         void WriteDrawings(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::CVmlDrawing *pVmlDrawing = NULL)
 		{

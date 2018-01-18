@@ -38,6 +38,9 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		MathParaWrapper::~MathParaWrapper()
+		{
+		}
 		MathParaWrapper& MathParaWrapper::operator=(const MathParaWrapper& oSrc)
 		{
 			//todo

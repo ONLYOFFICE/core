@@ -50,6 +50,7 @@ namespace PPTX
 			Blip(std::wstring ns = L"a")
 			{
 				m_namespace = ns;
+				mediaExternal = false;
 			}	
 			Blip& operator=(const Blip& oSrc)
 			{
@@ -69,6 +70,7 @@ namespace PPTX
 
 				mediaRid		= oSrc.mediaRid;
 				mediaFilepath	= oSrc.mediaFilepath;
+				mediaExternal	= oSrc.mediaExternal;
 
 				return *this;
 			}
@@ -105,6 +107,7 @@ namespace PPTX
 	//internal
 			std::wstring		mediaRid;
 			std::wstring		mediaFilepath;
+			bool				mediaExternal;
 
 			std::wstring		oleRid;
 			std::wstring		oleFilepathBin;

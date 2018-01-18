@@ -53,10 +53,10 @@ namespace PPTX
 	class ViewProps : public WrapperFile, public PPTX::FileContainer
 	{
 	public:
-		ViewProps()
+		ViewProps(OOX::Document* pMain) : WrapperFile(pMain), PPTX::FileContainer(pMain)
 		{
 		}
-		ViewProps(const OOX::CPath& filename, FileMap& map)
+		ViewProps(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), PPTX::FileContainer(pMain)
 		{
 			read(filename, map);
 		}

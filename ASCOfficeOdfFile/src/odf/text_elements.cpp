@@ -126,8 +126,8 @@ void process_paragraph_drop_cap_attr(const paragraph_attrs & Attr, oox::docx_con
 	if ((text_properties) && (text_properties->content().fo_font_size_))
 	{
 		Context.get_drop_cap_context().FontSize = styleContent->get_style_text_properties()->content().process_font_size(
-				text_properties->content().fo_font_size_, Context.get_styles_context().get_current_processed_style(),false,
-					 7.25 * (Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7));//формула ачуметь !! - подбор вручную
+				text_properties->content().fo_font_size_, Context.get_styles_context().get_current_processed_style(), false, //1.);
+		7.25 * (Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7));//формула ачуметь !! - подбор вручную
 	}
 	return;
 }
@@ -185,6 +185,29 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 					Context.end_automatic_style();
 
                     Context.push_text_properties(styleContent->get_style_text_properties());
+
+					if (!Context.get_section_context().dump_.empty()
+						&& !Context.get_table_context().in_table()
+						&& (Context.get_process_note() == oox::docx_conversion_context::noNote)
+						&& !in_drawing)
+					{
+						Context.output_stream() << L"<w:pPr>";
+						if (Context.is_paragraph_header() )
+						{
+							Context.output_stream() << Context.get_section_context().dump_;
+							Context.get_section_context().dump_.clear();
+
+							Context.output_stream() << L"</w:pPr>";
+							Context.finish_paragraph();
+							Context.start_paragraph();					
+						}
+						else
+						{
+							Context.output_stream() << Context.get_section_context().dump_;
+							Context.get_section_context().dump_.clear();
+							Context.output_stream() << L"</w:pPr>";
+						}
+					}
 					return 1;
                 }            
             }
@@ -326,18 +349,29 @@ void paragraph::drop_cap_text_docx_convert(office_element_ptr first_text_element
 
 	str=store_str.substr(str_start, str_size);
 }
-void paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
+
+size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 {
-	if ( content_.empty()) return;
+	if ( content_.empty()) return 0;
+
+	size_t index = 0;
+
+	while(index < content_.size()) // могут быть track-change, ...
+	{
+		if (content_[index]->get_type() == typeTextText || 
+			content_[index]->get_type() == typeTextSpan)
+			break;
+		content_[index++]->docx_convert(Context); 
+	}
 
 	//в рассчет берутся только первые элементы !!! разные там break-и отменяют реэжим drop_cap!!- todooo сделать возможным множественным span
-	if ( content_[0]->get_type() == typeTextText)
+	if ( content_[index]->get_type() == typeTextText)
 	{
-		drop_cap_text_docx_convert(content_[0],Context);
+		drop_cap_text_docx_convert(content_[index], Context);
 	}
-	else if (content_[0]->get_type() == typeTextSpan)
+	else if (content_[index]->get_type() == typeTextSpan)
 	{
-		span* first_span_in_paragraph = dynamic_cast<span*>(content_[0].get());
+		span* first_span_in_paragraph = dynamic_cast<span*>(content_[index].get());
 		if (Context.get_drop_cap_context().FontSize < 1)
 		{
 			style_instance * styleInst = Context.root()->odf_context().styleContainer().style_by_name(first_span_in_paragraph->text_style_name_, style_family::Text,Context.process_headers_footers_);
@@ -350,19 +384,20 @@ void paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 					if ((text_properties) && (text_properties->content().fo_font_size_))
 					{
 						Context.get_drop_cap_context().FontSize = styleContent->get_style_text_properties()->content().process_font_size(
-							text_properties->content().fo_font_size_, Context.get_styles_context().get_current_processed_style(),false,
+							text_properties->content().fo_font_size_, Context.get_styles_context().get_current_processed_style(),  false, //1);
 									 7.25 * (Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7));
 					}
 				}
 			}
 		}
 		//в рассчет берутся только первые элементы !!! разные там break-и отменяют реэжим drop_cap!!
-		if ((first_span_in_paragraph->content_.size()>0) &&
+		if ((!first_span_in_paragraph->content_.empty()) &&
 			 (first_span_in_paragraph->content_[0]->get_type() == typeTextText))
 		{
-			drop_cap_text_docx_convert(first_span_in_paragraph->content_[0],Context);
+			drop_cap_text_docx_convert(first_span_in_paragraph->content_[0], Context);
 		}
 	}
+	return index;
 }
 void paragraph::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -404,8 +439,8 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
     {
         // проверяем не сменит ли следующий параграф свойства страницы.
         // если да — устанавливаем контексту флаг на то что необходимо в конце текущего параграфа 
-        // распечатать свойства секции
-		//проверить ... не она ли основная - может быть прописан дубляж - и тогда разрыв нарисуется ненужный
+        // распечатать свойства раздела
+		//проверить ... не она ли текущая - может быть прописан дубляж - и тогда разрыв нарисуется ненужный
         const std::wstring & next_styleName				= next_par_->attrs_.text_style_name_;
         const _CP_OPT(std::wstring) next_masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(next_styleName);
 
@@ -434,12 +469,17 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 
 		is_empty = false;
     }    
-
+	std::wstringstream strm;
+	if (Context.process_page_properties(strm))
+	{
+		Context.get_section_context().dump_ = strm.str();
+	}
 	process_paragraph_drop_cap_attr(attrs_, Context);
 
+	size_t index = 0;
 	if (Context.get_drop_cap_context().state() == 2)//active
 	{
-		drop_cap_docx_convert(Context); 
+		index = drop_cap_docx_convert(Context); 
 		
 		Context.finish_run();
 		Context.finish_paragraph();		
@@ -453,7 +493,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 
     Context.add_note_reference();
 
-  	for (size_t i = 0; i < content_.size(); i++)
+  	for (size_t i = index; i < content_.size(); i++)
 	{
 		if (Context.get_page_break())
 		{
@@ -495,14 +535,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 	if (is_empty)
 		Context.output_stream() << emptyParagraphContent;
 
-
 	Context.finish_paragraph();
-
-	std::wstringstream strm;
-	if (Context.process_page_properties(strm))
-	{
-		Context.get_section_context().dump_ = strm.str();
-	}
 }
 
 void paragraph::xlsx_convert(oox::xlsx_conversion_context & Context)

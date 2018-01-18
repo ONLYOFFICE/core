@@ -57,7 +57,7 @@ public:
 	{
 		if (m_ooxElem == NULL) return false;
 
-		for (std::list<OOX::WritingElement*>::iterator it = m_ooxElem->m_arrItems.begin(); it != m_ooxElem->m_arrItems.end(); it++)
+        for (std::vector<OOX::WritingElement*>::iterator it = m_ooxElem->m_arrItems.begin(); it != m_ooxElem->m_arrItems.end(); ++it)
 		{
 			RtfMathPtr pNewMath;
 			

@@ -133,7 +133,7 @@ namespace PPTX
 			if(style.is_init())
 				style->SetParentPointer(this);
 		}
-
+		
 		void CxnSp::GetRect(Aggplus::RECT& pRect)const
 		{
 			pRect.bottom = 0;

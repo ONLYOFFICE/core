@@ -135,7 +135,7 @@ public:
 		int nId = ooxFtnEdn->m_oId->GetValue();
 		OOXTextItemReader oTextItemReader;
 		
-		for (std::list<OOX::WritingElement*>::iterator it = ooxFtnEdn->m_arrItems.begin(); it != ooxFtnEdn->m_arrItems.end(); it++)
+        for (std::vector<OOX::WritingElement*>::iterator it = ooxFtnEdn->m_arrItems.begin(); it != ooxFtnEdn->m_arrItems.end(); ++it)
 		{	
 			if( nSeparatorId == nId )
 			{

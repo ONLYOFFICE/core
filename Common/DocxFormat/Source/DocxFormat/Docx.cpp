@@ -31,94 +31,50 @@
  */
 #include "Docx.h"
 
+#include "App.h"
+#include "Core.h"
+#include "Document.h"
+#include "FontTable.h"
+#include "Numbering.h"
+#include "Comments.h"
+#include "Styles.h"
+#include "Footnote.h"
+#include "Endnote.h"
+#include "Settings/WebSettings.h"
+#include "Settings/Settings.h"
+#include "External/HyperLink.h"
+#include "Media/Image.h"
+#include "Media/OleObject.h"
+#include "Media/ActiveX.h"
+#include "Media/VbaProject.h"
+#include "Media/JsaProject.h"
+#include "HeaderFooter.h"
+
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
+
 namespace OOX {
 	
-        bool CDocx::Read(const CPath& oFilePath)
-        {
-            // Ищем "/_rels/.rels" и читаем все файлы по рельсам
-            OOX::CRels oRels( oFilePath / FILE_SEPARATOR_STR );
-            IFileContainer::Read( oRels, oFilePath, oFilePath );
+    bool CDocx::Read(const CPath& oFilePath)
+    {
+        // Ищем "/_rels/.rels" и читаем все файлы по рельсам
+        OOX::CRels oRels( oFilePath / FILE_SEPARATOR_STR );
+        IFileContainer::Read( oRels, oFilePath, oFilePath );
 
-            // Выполняем дополнительные действия для более удобной работы с файлом
-
-            // Ищем основной документ
-            smart_ptr<OOX::File> pFile = Find(OOX::FileTypes::Document);
-			if (pFile.IsInit() == false)
-			{
-				pFile = Find(OOX::FileTypes::DocumentMacro);
-			}
-            if (pFile.IsInit())
-                m_pDocument = dynamic_cast<OOX::CDocument*>(pFile.operator->());
-
-            if ( m_pDocument )
-            {
-                // Ищем таблицу шрифтов
-                pFile = m_pDocument->Find( OOX::FileTypes::FontTable );
-                if ( pFile.IsInit() )
-                    m_pFontTable = dynamic_cast<OOX::CFontTable*>(pFile.operator->());
-
-                // Ищем таблицу нумераций
-                pFile = m_pDocument->Find( OOX::FileTypes::Numbering );
-                if ( pFile.IsInit())
-                    m_pNumbering = dynamic_cast<OOX::CNumbering*>(pFile.operator->());
-
-                // Ищем таблицу стилей
-                pFile = m_pDocument->Find( OOX::FileTypes::Style );
-                if ( pFile.IsInit())
-                    m_pStyles = dynamic_cast<OOX::CStyles*>(pFile.operator->());
-
-                // Ищем сноски для страниц
-                pFile = m_pDocument->Find( OOX::FileTypes::FootNote );
-                if ( pFile.IsInit())
-                    m_pFootnotes = dynamic_cast<OOX::CFootnotes*>(pFile.operator->());
-
-                pFile = m_pDocument->Find( OOX::FileTypes::EndNote );
-                if ( pFile.IsInit())
-                    m_pEndnotes = dynamic_cast<OOX::CEndnotes*>(pFile.operator->());
-
-                // Ищем файл с наcтройками
-                pFile = m_pDocument->Find( OOX::FileTypes::Setting );
-                if ( pFile.IsInit() )
-                    m_pSettings = dynamic_cast<OOX::CSettings*>(pFile.operator->());
-
-                // Ищем файл с комментариями
-                pFile = m_pDocument->Find( OOX::FileTypes::Comments );
-                if ( pFile.IsInit())
-                    m_pComments = dynamic_cast<OOX::CComments*>(pFile.operator->());
-
-                // Ищем файл с комментариями Ext
-                pFile = m_pDocument->Find( OOX::FileTypes::CommentsExt );
-                if ( pFile.IsInit())
-                    m_pCommentsExt = dynamic_cast<OOX::CCommentsExt*>(pFile.operator->());
-
-                // Ищем файл с авторами
-                pFile = m_pDocument->Find( OOX::FileTypes::People );
-                if ( pFile.IsInit())
-                    m_pPeople = dynamic_cast<OOX::CPeople*>(pFile.operator->());
-
-                //OOX::CRels rels(oFilePath / m_pDocument->DefaultDirectory() / m_pDocument->DefaultFileName());
-                //IFileContainer::Read(rels, oFilePath);
-
-                // Ищем файл с темами
-                pFile = m_pDocument->Find(OOX::FileTypes::Theme);
-                if (pFile.IsInit())
-					m_pTheme = dynamic_cast<PPTX::Theme*>(pFile.operator->());
-
-                pFile = m_pDocument->Find(OOX::FileTypes::VbaProject);
-                if (pFile.IsInit())
-					m_pVbaProject = dynamic_cast<OOX::VbaProject*>(pFile.operator->());
-			}
-
-            // Ищем настройки
-            pFile = Find( OOX::FileTypes::App );
-            if ( pFile.IsInit())
-                m_pApp = dynamic_cast<OOX::CApp*>(pFile.operator->());
-
-            pFile = Find( OOX::FileTypes::Core );
-            if ( pFile.IsInit())
-                m_pCore = dynamic_cast<OOX::CCore*>(pFile.operator->());
-
-            return true;
+         return true;
 	}
-	
+	OOX::CHdrFtr *CDocx::GetHeaderOrFooter(const OOX::RId& rId) const
+	{
+		if ( m_pDocument )
+		{
+			OOX::IFileContainer* pDocumentContainer = (OOX::IFileContainer*)m_pDocument;
+
+            smart_ptr<OOX::File> pFile = pDocumentContainer->Find( rId );
+			if ( pFile.IsInit() && ( OOX::FileTypes::Header == pFile->type() || OOX::FileTypes::Footer == pFile->type() ) )
+				return (OOX::CHdrFtr*)pFile.operator->();
+			else 
+				return NULL;
+		}
+		
+		return NULL;
+	}	
 }

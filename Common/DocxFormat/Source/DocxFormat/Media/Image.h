@@ -40,20 +40,19 @@ namespace OOX
 	class Image : public Media
 	{
 	public:
-		Image(bool bDocument = true) : Media (bDocument)
+		Image(OOX::Document* pMain, bool bDocument = true) : Media (pMain, bDocument)
 		{
 		}
-		Image(const CPath& filename)
+		Image(OOX::Document* pMain, const CPath& filename, bool bExternal = false) : Media(pMain, filename, bExternal)
 		{
-			read(filename);
 		}
 		virtual ~Image()
 		{
 		}
-
-	public:
 		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const
 		{
+			if (m_bExternal) return;
+
             std::wstring newFilename = filename.GetFilename();
 			CPath newFilePath = filename.GetDirectory();
 
@@ -79,8 +78,6 @@ namespace OOX
 			//else
 			//	content.Default->add(newFilePath/newFilename);
 		}
-
-	public:
 		virtual const FileType type() const
 		{
 			return FileTypes::Image;

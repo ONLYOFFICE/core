@@ -39,8 +39,8 @@ std::wstring RtfPicture::GenerateWMF(RenderParameter oRenderParameter)
     std::wstring sResult;
 	sResult += L"{\\pict";
 
-	RENDER_RTF_INT( 100,			sResult, L"picscalex" )
-	RENDER_RTF_INT( 100,			sResult, L"picscaley" )
+	RENDER_RTF_INT( (int)m_dScaleX, sResult, L"picscalex" )
+	RENDER_RTF_INT( (int)m_dScaleY, sResult, L"picscaley" )
 
 	RENDER_RTF_INT( m_nCropL,		sResult, L"piccropl" )
 	RENDER_RTF_INT( m_nCropT,		sResult, L"piccropt" )

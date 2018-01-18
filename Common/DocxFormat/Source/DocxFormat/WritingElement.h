@@ -1126,10 +1126,17 @@ namespace OOX
 		et_x_Sparkline
 	};
 
+	class Document
+	{
+	public:
+		Document() {}
+		virtual ~Document() {}
+	};
+
 	class WritingElement
 	{
 	public:
-		WritingElement(){}
+		WritingElement(OOX::Document *pMain = NULL) : m_pMainDocument(pMain) {}
 		virtual ~WritingElement() {}
 
 		virtual void			fromXML(XmlUtils::CXmlNode& node)	= 0;
@@ -1139,15 +1146,16 @@ namespace OOX
 			return OOX::et_Unknown;
 		}
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) {}
+
+		OOX::Document *m_pMainDocument;
 	};
 	
 	template<typename ElemType = WritingElement>
 	class WritingElementWithChilds : public WritingElement
 	{
 	public:
-        std::list<ElemType *>  m_arrItems;
-		using ElemArray = std::list<ElemType *>;
-		
+        std::vector<ElemType *>  m_arrItems;
+
 		WritingElementWithChilds() {}
 		virtual ~WritingElementWithChilds() 
 		{
@@ -1155,10 +1163,9 @@ namespace OOX
 		}
 		virtual void ClearItems()
 		{
-            for ( auto it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+            for ( size_t i = 0; i < m_arrItems.size(); ++i)
 			{
-				if ( *it ) delete *it;
-				*it = NULL;
+                if ( m_arrItems[i] ) delete m_arrItems[i];
 			}
 			m_arrItems.clear();
 		}

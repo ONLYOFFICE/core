@@ -182,13 +182,13 @@ namespace OOX
                     std::wstring sValue;
 					writer.WriteString(_T("<colorScale>"));
 
-					for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-					{
-						if ( *it )
-						{
-							(*it)->toXML(writer);
-						}
-					}
+                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    {
+                        if (  m_arrItems[i] )
+                        {
+                            m_arrItems[i]->toXML(writer);
+                        }
+                    }
 
 					writer.WriteString(_T("</colorScale>"));
 				}
@@ -249,13 +249,13 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-					{
-						if ( *it )
-						{
-							(*it)->toXML(writer);
-						}
-					}
+                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    {
+                        if (  m_arrItems[i] )
+                        {
+                            m_arrItems[i]->toXML(writer);
+                        }
+                    }
 
 					m_oColor->toXML2(writer, _T("color"));
 
@@ -345,13 +345,13 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-					{
-						if ( *it )
-						{
-							(*it)->toXML(writer);
-						}
-					}
+                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    {
+                        if (  m_arrItems[i] )
+                        {
+                            m_arrItems[i]->toXML(writer);
+                        }
+                    }
 
 					writer.WriteString(_T("</iconSet>"));
 				}
@@ -444,13 +444,13 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-					{
-						if ( *it )
-						{
-							(*it)->toXML(writer);
-						}
-					}
+                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    {
+                        if (  m_arrItems[i] )
+                        {
+                            m_arrItems[i]->toXML(writer);
+                        }
+                    }
 
 					writer.WriteString(_T("</cfRule>"));
 				}
@@ -554,9 +554,9 @@ namespace OOX
 			{
 				bool isValid = false;
 
-				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
 				{
-					if ( (*it) && ((*it)->isValid()) )
+                    if ( (m_arrItems[i]) && (m_arrItems[i]->isValid()) )
 					{
 						isValid = true;
 						break;
@@ -574,13 +574,13 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-					{
-						if ( *it )
-						{
-							(*it)->toXML(writer);
-						}
-					}
+                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    {
+                        if (  m_arrItems[i] )
+                        {
+                            m_arrItems[i]->toXML(writer);
+                        }
+                    }
 
 					writer.WriteString(_T("</conditionalFormatting>"));
 				}

@@ -146,10 +146,10 @@ namespace OOX
 	class CWebSettings : public OOX::File
 	{
 	public:
-		CWebSettings()
+		CWebSettings(OOX::Document *pMain) : OOX::File(pMain)
 		{
 		}
-		CWebSettings(const CPath& oPath)
+		CWebSettings(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
 		{
 			read( oPath );
 		}

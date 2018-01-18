@@ -33,7 +33,7 @@
 #ifndef TXT_FILE_INCLUDE_H_
 #define TXT_FILE_INCLUDE_H_
 
-#include <list>
+#include <vector>
 #include <string>
 
 namespace Txt
@@ -57,11 +57,11 @@ namespace Txt
 		
         const bool isValid	(const std::wstring& filename) const;
 		
-		std::list<std::wstring>		m_listContent;			//unicode  (ранее было utf8)
+        std::vector<std::wstring>	m_listContent;			//unicode  (ранее было utf8)
 		int							m_listContentSize;		//для вывода процентов конвертации
 		int							m_nEncoding;
 	private:
-		void correctUnicode(std::list<std::wstring>& oList);
+        void correctUnicode(std::vector<std::wstring>& oList);
 		bool IsUnicodeSymbol( wchar_t symbol );
 	};
 } // namespace Txt

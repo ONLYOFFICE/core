@@ -47,10 +47,10 @@ namespace PPTX
 	class HandoutMaster : public WrapperFile, public PPTX::FileContainer
 	{
 	public:
-		HandoutMaster()
+		HandoutMaster(OOX::Document* pMain): WrapperFile(pMain), PPTX::FileContainer(pMain)
 		{
 		}
-		HandoutMaster(const OOX::CPath& filename, FileMap& map)
+		HandoutMaster(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), PPTX::FileContainer(pMain)
 		{
 			read(filename, map);
 		}

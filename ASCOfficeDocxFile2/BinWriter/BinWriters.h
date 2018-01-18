@@ -37,11 +37,29 @@
 #include "../../Common/Base64.h"
 #include "../../ASCOfficePPTXFile/Editor/FontCutter.h"
 #include "../../XlsxSerializerCom/Reader/BinaryWriter.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
-#include "../../Common/DocxFormat/Source/MathEquation/MathEquation.h"
 #include "BinEquationWriter.h"
 
 #include "../../OfficeUtils/src/OfficeUtils.h"
+
+#include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+#include "../../Common/DocxFormat/Source/MathEquation/MathEquation.h"
+
+#include "../../Common/DocxFormat/Source/DocxFormat/Document.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/FontTable.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Numbering.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Comments.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Styles.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Footnote.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Settings/WebSettings.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Settings/Settings.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/Image.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/HeaderFooter.h"
 
 namespace BinDocxRW
 {
@@ -3024,18 +3042,18 @@ namespace BinDocxRW
             m_oBcw.m_oStream.EndRecord();
 
 		}
-		void Write(std::list<OOX::WritingElement*> & aElems)
+        void Write(std::vector<OOX::WritingElement*> & aElems)
 		{
 			int nStart = m_oBcw.WriteItemWithLengthStart();
 			WriteDocumentContent(aElems);
 			m_oBcw.WriteItemWithLengthEnd(nStart);
 		}
-		void WriteDocumentContent(const std::list<OOX::WritingElement*> & aElems)
+        void WriteDocumentContent(const std::vector<OOX::WritingElement*> & aElems)
 		{
 			int nCurPos = 0;
-			for ( std::list<OOX::WritingElement*>::const_iterator it = aElems.begin(); it != aElems.end(); it++)
+            for ( size_t i = 0; i < aElems.size(); ++i)
 			{
-				OOX::WritingElement* item = *it;
+                OOX::WritingElement* item = aElems[i];
 
 				switch(item->getType())
 				{				
@@ -3184,12 +3202,13 @@ namespace BinDocxRW
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 
 		}
-		void WriteParagraphContent(const std::list<OOX::WritingElement*> & content, bool bHyperlink = false)
+        void WriteParagraphContent(const std::vector<OOX::WritingElement*> & content, bool bHyperlink = false)
 		{
 			int nCurPos = 0;
-			for(std::list<OOX::WritingElement*>::const_iterator it = content.begin(); it != content.end(); it++)
-			{
-				OOX::WritingElement* item = *it;
+            for ( size_t i = 0; i < content.size(); ++i)
+            {
+                OOX::WritingElement* item = content[i];
+
 				switch (item->getType())
 				{
 				case OOX::et_w_fldSimple:
@@ -3836,8 +3855,8 @@ namespace BinDocxRW
 			bool bWasText		= false;
 			int nRecordType		= 0;
 			
-            std::list<OOX::WritingElement*>::iterator nIndexStart   = pRun->m_arrItems.begin();
-            std::list<OOX::WritingElement*>::iterator nIndexEnd     = pRun->m_arrItems.end();
+            std::vector<OOX::WritingElement*>::iterator nIndexStart   = pRun->m_arrItems.begin();
+            std::vector<OOX::WritingElement*>::iterator nIndexEnd     = pRun->m_arrItems.end();
 
 			if (bMathRun)
 				nRecordType = c_oSer_OMathContentType::Run;
@@ -3845,9 +3864,9 @@ namespace BinDocxRW
 				nRecordType = c_oSerParType::Run;
 
 	//Разбиваем массив по знаку et_w_sym			
-            for (std::list<OOX::WritingElement*>::iterator it = pRun->m_arrItems.begin(); it != nIndexEnd; it++)
+            for (std::vector<OOX::WritingElement*>::iterator it = nIndexStart; it != nIndexEnd; ++it)
 			{
-				OOX::WritingElement* item = *it;
+                OOX::WritingElement* item = (*it);
 				
 				if(OOX::et_w_sym == item->getType())
 				{
@@ -3859,7 +3878,7 @@ namespace BinDocxRW
 						m_oBcw.WriteItemWithLengthEnd(nCurPos);
 					}
 					nCurPos = m_oBcw.WriteItemStart(nRecordType);
-						std::list<OOX::WritingElement*>::iterator it_next = it; it_next++;
+                        std::vector<OOX::WritingElement*>::iterator it_next = it; it_next++;
 						WritePreparedRun( pRun, bHyperlink, it, it_next);
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 					nIndexStart = it; nIndexStart++;
@@ -3874,11 +3893,11 @@ namespace BinDocxRW
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 		}
-		void WriteMathArgNodes(const std::list<OOX::WritingElement*>& m_arrItems)
+        void WriteMathArgNodes(const std::vector<OOX::WritingElement*>& arrItems)
 		{
-			for(std::list<OOX::WritingElement*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-			{
-				OOX::WritingElement* item = *it;
+            for (size_t i = 0; i < arrItems.size(); ++i)
+            {
+                OOX::WritingElement* item = arrItems[i];
 				
 				OOX::EElementType eType = item->getType();
 				int nCurPos = 0;
@@ -4046,7 +4065,7 @@ namespace BinDocxRW
 
 						LONG lCol = 0; 
 		//TODO убрать, тк при отсутствии m:mcs, к-во столбцов должно разруливаться динамически в скрипте
-						for (std::list<OOX::WritingElement*>::iterator jt = pMatrix->m_arrItems.begin(); jt != pMatrix->m_arrItems.end(); jt++)
+                        for (std::vector<OOX::WritingElement*>::iterator jt = pMatrix->m_arrItems.begin(); jt != pMatrix->m_arrItems.end(); jt++)
 						{
 							OOX::WritingElement* item = *jt;
 							if (item->getType() == OOX::et_m_mr)
@@ -4496,11 +4515,11 @@ namespace BinDocxRW
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		void WriteMathDelimiter(const std::list<OOX::WritingElement*> & arrItems, LONG &lColumn)
+        void WriteMathDelimiter(const std::vector<OOX::WritingElement*> & arrItems, LONG &lColumn)
 		{
-			for(std::list<OOX::WritingElement*>::const_iterator it = arrItems.begin(); it != arrItems.end(); it++)
+            for(size_t i = 0; i < arrItems.size(); ++i)
 			{
-				OOX::WritingElement* item = *it;
+                OOX::WritingElement* item = arrItems[i];
 				
 				OOX::EElementType eType = item->getType();
 				int nCurPos = 0;
@@ -4616,11 +4635,12 @@ namespace BinDocxRW
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		void WriteMathEqArr(const std::list<OOX::WritingElement*> & arrItems, LONG& lRow)
+        void WriteMathEqArr(const std::vector<OOX::WritingElement*> & arrItems, LONG& lRow)
 		{
-			for(std::list<OOX::WritingElement*>::const_iterator it = arrItems.begin(); it != arrItems.end(); it++)
-			{
-				OOX::WritingElement* item = *it;
+            for(size_t i = 0; i < arrItems.size(); ++i)
+            {
+                OOX::WritingElement* item = arrItems[i];
+
 				OOX::EElementType eType = item->getType();
 				int nCurPos = 0;
 				switch(eType)
@@ -4844,12 +4864,13 @@ namespace BinDocxRW
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		void WriteMathMatrix(const std::list<OOX::WritingElement*> & arrItems, LONG &lRow, LONG &lCol)
+        void WriteMathMatrix(const std::vector<OOX::WritingElement*> & arrItems, LONG &lRow, LONG &lCol)
 		{
             bool bColumn = false;
-			for(std::list<OOX::WritingElement*>::const_iterator it = arrItems.begin(); it != arrItems.end(); it++)
-			{
-				OOX::WritingElement* item = *it;
+            for(size_t i = 0; i < arrItems.size(); ++i)
+            {
+                OOX::WritingElement* item = arrItems[i];
+
 				OOX::EElementType eType = item->getType();
 				int nCurPos = 0;
 				switch(eType)
@@ -4946,9 +4967,9 @@ namespace BinDocxRW
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathBottomNodesType::Mcs);
 
-			for(std::list<OOX::WritingElement*>::const_iterator it = pMcs.m_arrItems.begin(); it != pMcs.m_arrItems.end(); it++)
+            for(size_t i = 0; i < pMcs.m_arrItems.size(); ++i)
 			{			
-				OOX::WritingElement* item = *it;
+                OOX::WritingElement* item = pMcs.m_arrItems[i];
 				
 				OOX::EElementType eType = item->getType();
 				int nCurPos1 = 0;
@@ -5007,11 +5028,12 @@ namespace BinDocxRW
 								
 			m_oBcw.WriteItemEnd(nCurPos);
 		}		
-		void WriteMathMr(const std::list<OOX::WritingElement*> & arrItems)
+        void WriteMathMr(const std::vector<OOX::WritingElement*> & arrItems)
 		{
-			for(std::list<OOX::WritingElement*>::const_iterator it = arrItems.begin(); it != arrItems.end(); it++)
-			{
-				OOX::WritingElement* item = *it;
+            for(size_t i = 0; i < arrItems.size(); ++i)
+            {
+                OOX::WritingElement* item = arrItems[i];
+
 				OOX::EElementType eType = item->getType();
 				int nCurPos = 0;
 				if (eType == OOX::et_m_e)
@@ -5089,11 +5111,12 @@ namespace BinDocxRW
 			WriteMathArgNodes(pOMath.m_arrItems);			
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		void WriteMathOMathPara(const std::list<OOX::WritingElement*> & arrItems)
+        void WriteMathOMathPara(const std::vector<OOX::WritingElement*> & arrItems)
 		{
-			for(std::list<OOX::WritingElement*>::const_iterator it = arrItems.begin(); it != arrItems.end(); it++)
-			{
-				OOX::WritingElement* item = *it;
+            for(size_t i = 0; i < arrItems.size(); ++i)
+            {
+                OOX::WritingElement* item = arrItems[i];
+
 				OOX::EElementType eType = item->getType();
 				int nCurPos = 0;
 				if (eType == OOX::et_m_oMath)
@@ -5505,7 +5528,7 @@ namespace BinDocxRW
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		void WritePreparedRun(OOX::Logic::CRun *pRun, bool bHyperlink, std::list<OOX::WritingElement*>::iterator &start, std::list<OOX::WritingElement*>::iterator &end)
+        void WritePreparedRun(OOX::Logic::CRun *pRun, bool bHyperlink, std::vector<OOX::WritingElement*>::iterator &start, std::vector<OOX::WritingElement*>::iterator &end)
 		{
 			if (!pRun) return;
 
@@ -5543,12 +5566,12 @@ namespace BinDocxRW
 
 			//Content пишется начиная от индекса nIndexStart и заканчивая предшествующим элементом для nIndexStop
 			nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::Content);
-				WriteRunContent(pRun->m_arrItems, start, end, bHyperlink);
+                WriteRunContent( start, end, bHyperlink);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 		}
-		void WriteRunContent(std::list<OOX::WritingElement*>& m_arrItems, std::list<OOX::WritingElement*>::iterator &start, std::list<OOX::WritingElement*>::iterator &end, bool bHyperlink = false)
+        void WriteRunContent(std::vector<OOX::WritingElement*>::iterator &start, std::vector<OOX::WritingElement*>::iterator &end, bool bHyperlink = false)
 		{
-			for ( std::list<OOX::WritingElement*>::iterator it = start; it != end; it++ )
+            for ( std::vector<OOX::WritingElement*>::iterator it = start; it != end; ++it )
 			{
 				OOX::WritingElement* item = *it;
 				switch (item->getType())
@@ -6533,13 +6556,15 @@ namespace BinDocxRW
 
 			RELEASEOBJECT(pTblPr);
 		}
-		bool ValidateRow(const std::list<OOX::WritingElement *> & arrItems)
+        bool ValidateRow(const std::vector<OOX::WritingElement *> & arrItems)
 		{
 	//Проверяем чтобы не все ячейки в ряду были вертикально замержены
 			bool bRes = true;
-			for(std::list<OOX::WritingElement*>::const_iterator it = arrItems.begin(); it != arrItems.end(); it++)
-			{
-				OOX::WritingElement* item = *it;
+
+            for(size_t i = 0; i < arrItems.size(); ++i)
+            {
+                OOX::WritingElement* item = arrItems[i];
+
 				if(OOX::et_w_tc == item->getType())
 				{
 					OOX::Logic::CTc* tc = static_cast<OOX::Logic::CTc*>(item);
@@ -6581,11 +6606,12 @@ namespace BinDocxRW
 			}
 			return false;
 		}
-		void GetTableSize(std::list<OOX::WritingElement *> & rows, int& nRows, int& nCols, OOX::Logic::CTableProperty** ppTblPr)
+        void GetTableSize(std::vector<OOX::WritingElement *> & rows, int& nRows, int& nCols, OOX::Logic::CTableProperty** ppTblPr)
 		{
-			for(std::list<OOX::WritingElement*>::iterator it = rows.begin(); it != rows.end(); it++)
+            for(size_t i = 0; i < rows.size(); ++i)
 			{
-				OOX::WritingElement* item = *it;
+                OOX::WritingElement* item = rows[i];
+
 				if(OOX::et_w_tblPr == item->getType())
 				{
 					*ppTblPr = new OOX::Logic::CTableProperty();
@@ -6605,8 +6631,7 @@ namespace BinDocxRW
 					}
 					else
 					{
-						//
-						rows.erase(it);
+                        rows.erase(rows.begin() + i);
 					}
 				}
 				else if(OOX::et_w_sdt == item->getType())
@@ -6632,18 +6657,20 @@ namespace BinDocxRW
 				}
 			}
 		}
-		int GetColsCount(const std::list<OOX::WritingElement *>& arrItems)
+        int GetColsCount(const std::vector<OOX::WritingElement *>& arrItems)
 		{
 			int nColCount = 0;
-			for(std::list<OOX::WritingElement *>::const_iterator it = arrItems.begin(); it != arrItems.end(); it++)
+
+            for(size_t i = 0; i <  arrItems.size(); ++i)
 			{
-				OOX::WritingElement* item = *it;
+                OOX::WritingElement* item = arrItems[i];
+
 				if(OOX::et_w_tc == item->getType())
 				{
 					nColCount++;
 					OOX::Logic::CTc* tc = static_cast<OOX::Logic::CTc*>(item);
 					
-					for(std::list<OOX::WritingElement *>::iterator jt = tc->m_arrItems.begin(); jt != tc->m_arrItems.end(); jt++)
+                    for(std::vector<OOX::WritingElement *>::iterator jt = tc->m_arrItems.begin(); jt != tc->m_arrItems.end(); jt++)
 					{
 						OOX::WritingElement* item2 = *jt;
 
@@ -6723,14 +6750,15 @@ namespace BinDocxRW
 			}
 		}
 
-		void WriteTableContent(std::list<OOX::WritingElement *>& content, OOX::Logic::CTableProperty* pTblPr, int nRows, int nCols)
+        void WriteTableContent(std::vector<OOX::WritingElement *>& content, OOX::Logic::CTableProperty* pTblPr, int nRows, int nCols)
 		{
 			int nCurPos			= 0;
 			int nCurRowIndex	= 0;
 			
-			for(std::list<OOX::WritingElement*>::iterator it = content.begin(); it != content.end(); it++)
+            for(size_t i = 0; i < content.size(); ++i)
 			{
-				OOX::WritingElement* item = *it;
+                OOX::WritingElement* item = content[i];
+
 				if(OOX::et_w_tr == item->getType())
 				{
 					nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::Row);
@@ -6793,14 +6821,14 @@ namespace BinDocxRW
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 
-		void WriteRowContent(const std::list<OOX::WritingElement *> & content, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex, int nRows, int nCols)
+        void WriteRowContent(const std::vector<OOX::WritingElement *> & content, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex, int nRows, int nCols)
 		{
 			int nCurPos = 0;
 			int nCurColIndex = 0;
 			
-			for(std::list<OOX::WritingElement*>::const_iterator it = content.begin(); it != content.end(); it++)
-			{
-				OOX::WritingElement* item = *it;
+            for(size_t i = 0; i < content.size(); ++i)
+            {
+                OOX::WritingElement* item = content[i];
 				
 				if(OOX::et_w_tc == item->getType())
 				{
@@ -7200,7 +7228,7 @@ namespace BinDocxRW
 					if(mapAuthorToUserId.end() != pPair)
 						pNewCommentWriteTemp->sUserId = pPair->second;
 				}
-				for(std::list<OOX::WritingElement*>::iterator jt = pComment->m_arrItems.begin(); jt != pComment->m_arrItems.end(); jt++)
+                for(std::vector<OOX::WritingElement*>::iterator jt = pComment->m_arrItems.begin(); jt != pComment->m_arrItems.end(); jt++)
 				{
 					OOX::WritingElement* pWe = *jt;
 
@@ -7384,9 +7412,10 @@ namespace BinDocxRW
 		};
 		void WriteMathPr(const OOX::Logic::CMathPr &pMathPr)
 		{
-			for(std::list<OOX::WritingElement*>::const_iterator it = pMathPr.m_arrItems.begin(); it != pMathPr.m_arrItems.end(); it++)
+            for(size_t i = 0; i < pMathPr.m_arrItems.size(); ++i)
 			{
-				OOX::WritingElement* item = *it;
+                OOX::WritingElement* item = pMathPr.m_arrItems[i];
+
 				OOX::EElementType eType = item->getType();
 				switch(eType)
 				{
@@ -7960,9 +7989,11 @@ namespace BinDocxRW
 				if(NULL != pParagraph)
 				{
 					OOX::Logic::CParagraphProperty* pPr = NULL;
-					for(std::list<OOX::WritingElement*>::iterator it = pParagraph->m_arrItems.begin(); it != pParagraph->m_arrItems.end(); it++)
+
+                    for(size_t i = 0; i < pParagraph->m_arrItems.size(); ++i)
 					{
-						OOX::WritingElement* we = *it;
+                        OOX::WritingElement* we = pParagraph->m_arrItems[i];
+
 						if(OOX::et_w_pPr == we->getType())
 						{
 							pPr = static_cast<OOX::Logic::CParagraphProperty*>(we);

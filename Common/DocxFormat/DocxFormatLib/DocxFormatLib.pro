@@ -59,6 +59,8 @@ SOURCES += \
     ../Source/DocxFormat/Docx.cpp \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
     ../Source/XlsxFormat/Common.cpp \
+    ../Source/XlsxFormat/Xlsx.cpp \
+    ../Source/XlsxFormat/Worksheets/SheetData.cpp \
     ../Source/DocxFormat/FileFactory.cpp \
     ../Source/DocxFormat/IFileContainer.cpp \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.cpp \
@@ -111,9 +113,6 @@ HEADERS += docxformatlib.h \
     ../Source/DocxFormat/Drawing/DrawingBody.h \
     ../Source/DocxFormat/Drawing/DrawingExt.h \
     ../Source/DocxFormat/External/External.h \
-    ../Source/DocxFormat/External/ExternalAudio.h \
-    ../Source/DocxFormat/External/ExternalImage.h \
-    ../Source/DocxFormat/External/ExternalVideo.h \
     ../Source/DocxFormat/External/HyperLink.h \
     ../Source/DocxFormat/Logic/AlternateContent.h \
     ../Source/DocxFormat/Logic/Annotations.h \

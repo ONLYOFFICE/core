@@ -38,38 +38,36 @@
 #include "Rels.h"
 #include "IFileContainer.h"
 #include "FileTypes.h"
-#include "App.h"
-#include "Core.h"
-#include "Document.h"
-#include "FontTable.h"
-#include "Numbering.h"
-#include "Comments.h"
-#include "Styles.h"
-#include "Footnote.h"
-#include "Endnote.h"
-#include "Settings/WebSettings.h"
-#include "Settings/Settings.h"
-#include "External/HyperLink.h"
-#include "Media/Image.h"
-#include "Media/OleObject.h"
-#include "Media/ActiveX.h"
-#include "Media/VbaProject.h"
-#include "Media/JsaProject.h"
-#include "HeaderFooter.h"
-
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 
 #if !defined(_WIN32) && !defined (_WIN64)
 #include <sys/stat.h>
 #endif
-
+namespace PPTX
+{
+	class Theme;
+}
 namespace OOX
 {
-	class CDocx : public OOX::IFileContainer
+	class CApp;
+	class CCore;
+	class CDocument;
+	class CFontTable;
+	class CNumbering;
+	class CStyles;
+	class CFootnotes;
+	class CEndnotes;
+	class CSettings;
+	class CComments;
+	class CCommentsExt;
+	class CPeople;
+	class VbaProject;
+	class CHdrFtr;
+
+	class CDocx : public OOX::Document, public OOX::IFileContainer
 	{
 	public:
 
-		CDocx()
+		CDocx() : OOX::IFileContainer(dynamic_cast<OOX::Document*>(this))
 		{
 			m_pDocument  = NULL;
 			m_pFontTable = NULL;
@@ -86,7 +84,7 @@ namespace OOX
 			m_pPeople	= NULL;
 			m_pVbaProject = NULL;
 		}
-		CDocx(const CPath& oFilePath)
+		CDocx(const CPath& oFilePath) : OOX::IFileContainer(this)
 		{
 			m_pDocument  = NULL;
 			m_pFontTable = NULL;
@@ -186,22 +184,9 @@ namespace OOX
 			return m_pTheme;
 		}
 
-		OOX::CHdrFtr *GetHeaderOrFooter(const OOX::RId& rId) const
-		{
-			if ( m_pDocument )
-			{
-				OOX::IFileContainer* pDocumentContainer = (OOX::IFileContainer*)m_pDocument;
+		OOX::CHdrFtr *GetHeaderOrFooter(const OOX::RId& rId) const;
 
-                smart_ptr<OOX::File> pFile = pDocumentContainer->Find( rId );
-				if ( pFile.IsInit() && ( OOX::FileTypes::Header == pFile->type() || OOX::FileTypes::Footer == pFile->type() ) )
-					return (OOX::CHdrFtr*)pFile.operator->();
-				else 
-					return NULL;
-			}
-			
-			return NULL;
-		}
-
+		
 		OOX::CApp			*m_pApp;
 		OOX::CCore			*m_pCore;
 

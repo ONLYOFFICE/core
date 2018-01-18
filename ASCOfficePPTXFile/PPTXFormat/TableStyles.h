@@ -43,10 +43,10 @@ namespace PPTX
 	class TableStyles: public WrapperFile
 	{
 	public:
-		TableStyles()
+		TableStyles(OOX::Document* pMain) : WrapperFile(pMain)
 		{
 		}
-		TableStyles(const OOX::CPath& filename, FileMap& map)
+		TableStyles(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain)
 		{
 			read(filename, map);
 		}

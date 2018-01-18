@@ -772,11 +772,16 @@ namespace OOX
 	{
 	public:
 		
-		CStyles()
+		CStyles(OOX::Document *pMain) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pStyles = this;			
 		}
-		CStyles(const CPath& oPath)
+		CStyles(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pStyles = this;			
+
 			read( oPath );
 		}
 		virtual ~CStyles()

@@ -1473,6 +1473,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Source\XlsxFormat\Xlsx.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\XlsxFormat\Xlsx.h"
 				>
 			</File>
@@ -1665,6 +1669,10 @@
 				</File>
 				<File
 					RelativePath="..\Source\XlsxFormat\Worksheets\MergeCells.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Worksheets\SheetData.cpp"
 					>
 				</File>
 				<File

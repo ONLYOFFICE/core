@@ -2879,6 +2879,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\PPTXFormat\Logic\Media\WavAudioFile.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\.\PPTXFormat\Logic\Media\WavAudioFile.h"
 						>
 					</File>
@@ -3106,18 +3110,6 @@
 				</File>
 				<File
 					RelativePath="..\.\PPTXFormat\Theme\ThemeElements.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="VectorML"
-				>
-				<File
-					RelativePath="..\PPTXFormat\DocxFormat\Drawing\LegacyDiagramText.h"
-					>
-				</File>
-				<File
-					RelativePath="..\PPTXFormat\DocxFormat\Drawing\VmlDrawing.h"
 					>
 				</File>
 			</Filter>

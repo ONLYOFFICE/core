@@ -47,11 +47,16 @@ namespace OOX
 	{
 	public:
 
-		CEndnotes()
+		CEndnotes(OOX::Document *pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pEndnotes = this;
 		}
-		CEndnotes(const CPath& oRootPath, const CPath& oPath)
+		CEndnotes(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pEndnotes = this;
+
 			read( oRootPath, oPath );
 		}
 		virtual ~CEndnotes()
@@ -64,8 +69,6 @@ namespace OOX
 
 			m_arrEndnote.clear();
 		}
-	public:
-
 		virtual void read(const CPath& oPath)
 		{
 			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -118,8 +121,6 @@ namespace OOX
 			oContent.Registration( type().OverrideType(), oDirectory, oPath );
 			IFileContainer::Write( oPath, oDirectory, oContent );
 		}
-
-	public:
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::EndNote;
@@ -132,8 +133,6 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
-
-	public:
 
 		OOX::CFtnEdn *Find(const OOX::Logic::CEndnoteReference& oReference) const
 		{
@@ -148,7 +147,7 @@ namespace OOX
 
 			return NULL;
 		}
-		void       Add(OOX::CFtnEdn* pEndnote)
+        void Add(OOX::CFtnEdn* pEndnote)
 		{
 			m_arrEndnote.push_back( pEndnote );
 		}		
@@ -157,10 +156,9 @@ namespace OOX
 			return (unsigned int)m_arrEndnote.size();
 		}
 
-	public:
 		CPath						m_oReadPath;
-		std::vector<OOX::CFtnEdn*> m_arrEndnote;
-		std::vector<std::wstring>			m_arrShapeTypes;
+        std::vector<OOX::CFtnEdn*>  m_arrEndnote;
+        std::vector<std::wstring>	m_arrShapeTypes;
 	};
 } // namespace OOX
 #endif // OOX_ENDNOTE_INCLUDE_H_

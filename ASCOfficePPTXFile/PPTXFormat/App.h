@@ -46,10 +46,10 @@ namespace PPTX
 	class App : public WrapperFile
 	{
 	public:
-		App()
+		App(OOX::Document* pMain) : WrapperFile(pMain)
 		{
 		}
-		App(const OOX::CPath& filename, FileMap& map)
+		App(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain)
 		{
 			read(filename, map);
 		}
@@ -57,7 +57,6 @@ namespace PPTX
 		{
 		}
 
-	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			HeadingPairs.clear();
@@ -116,8 +115,6 @@ namespace PPTX
 		{
 			WrapperFile::write(filename, directory, content);
 		}
-
-	public:
 		virtual const OOX::FileType type() const
 		{
 			return OOX::FileTypes::App;
@@ -220,7 +217,7 @@ namespace PPTX
 			pWriter->EndNode(_T("Properties"));
 		}
 
-	public:
+
 		nullable_string						Template;				// (Name of Document Template)
 		nullable_int						TotalTime;				// (Total Edit Time Metadata Element)
 		nullable_int						Words;					// (Word Count)

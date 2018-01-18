@@ -62,10 +62,10 @@ namespace PPTX
 	class Slide : public WrapperFile, public FileContainer
 	{
 	public:
-		Slide()
+		Slide(OOX::Document* pMain) : WrapperFile(pMain), FileContainer(pMain)
 		{
 		}
-		Slide(const OOX::CPath& filename, FileMap& map)
+		Slide(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), FileContainer(pMain)
 		{
 			read(filename, map);
 		}
@@ -145,23 +145,15 @@ namespace PPTX
 		}
 //-------------------------------------------------
 
-		virtual std::wstring GetMediaFullPathNameFromRId(const OOX::RId& rid)const
+		virtual std::wstring GetImagePathNameFromRId(const OOX::RId& rid)const
 		{
-			smart_ptr<OOX::Image> p = GetImage(rid);
+			smart_ptr<OOX::Image> p = Get<OOX::Image>(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->filename().m_strFilename;
 		}
-		virtual std::wstring GetFullHyperlinkNameFromRId(const OOX::RId& rid)const
-		{
-			smart_ptr<OOX::HyperLink> p = GetHyperlink(rid);
-			if (!p.is_init())
-				return _T("");
-			return p->Uri().m_strFilename;
-		}
 		virtual std::wstring GetLinkFromRId(const OOX::RId& rid)const
 		{
-			//return relsTable.Links.GetTargetById(rid);
 			smart_ptr<OOX::External> pExt = Find(rid).smart_dynamic_cast<OOX::External>();
 			if (pExt.IsInit())
 				return pExt->Uri().m_strFilename;
@@ -172,9 +164,9 @@ namespace PPTX
 
 			return _T("");
 		}
-		virtual std::wstring GetOleFromRId		(const OOX::RId& rid)const
+		virtual std::wstring GetOleFromRId(const OOX::RId& rid)const
 		{
-			smart_ptr<OOX::OleObject> p = GetOleObject(rid);
+			smart_ptr<OOX::OleObject> p = Get<OOX::OleObject>(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->filename().m_strFilename;
@@ -313,7 +305,7 @@ namespace PPTX
 					}
 					case 4:
 					{
-						comments = new PPTX::Comments();
+						comments = new PPTX::Comments(OOX::File::m_pMainDocument);
 						comments->fromPPTY(pReader);
 						break;
 					}
@@ -372,7 +364,7 @@ namespace PPTX
 		{
 			if(Vml.is_init() && !spid.empty())
 			{
-				std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pPair = Vml->m_mapShapes.find(spid);
+                boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pPair = Vml->m_mapShapes.find(spid);
 				if (Vml->m_mapShapes.end() != pPair)
 				{
 					pPair->second.bUsed = true;

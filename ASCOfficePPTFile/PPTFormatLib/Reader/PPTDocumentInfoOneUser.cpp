@@ -1055,7 +1055,7 @@ CElementPtr CPPTUserInfo::AddLayoutSlidePlaceholder (CSlide *pSlide, int placeho
 {
 	CElementPtr pElement;
 
-	for (std::multimap<int, int>::iterator it = pLayout->m_mapPlaceholders.begin(); it != pLayout->m_mapPlaceholders.end(); it++)
+	for (std::multimap<int, int>::iterator it = pLayout->m_mapPlaceholders.begin(); it != pLayout->m_mapPlaceholders.end(); ++it)
 	{
 		pElement = NULL;
 		if (it->first == placeholderType )
@@ -1099,7 +1099,7 @@ CElementPtr  CPPTUserInfo::AddThemeLayoutPlaceholder (CLayout *pLayout, int plac
 {
 	CElementPtr pElement;
 
-	for (std::multimap<int, int>::iterator it = pTheme->m_mapPlaceholders.begin(); it != pTheme->m_mapPlaceholders.end(); it++)
+	for (std::multimap<int, int>::iterator it = pTheme->m_mapPlaceholders.begin(); it != pTheme->m_mapPlaceholders.end(); ++it)
 	{
 		if (it->first == placeholderType )
 		{			
@@ -1230,7 +1230,7 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 	//if (layoutRecord.m_nGeom==0x0F) return ind; // big object only !!!
 
 	//копируем все элементы без idx которые не были прописаны явно
-	for (std::multimap<int, int>::iterator it = pTheme->m_mapPlaceholders.begin(); it != pTheme->m_mapPlaceholders.end(); it++)
+	for (std::multimap<int, int>::iterator it = pTheme->m_mapPlaceholders.begin(); it != pTheme->m_mapPlaceholders.end(); ++it)
 	{		
 		if (pTheme->m_arElements[it->second]->m_lPlaceholderID >= 0) continue;
 

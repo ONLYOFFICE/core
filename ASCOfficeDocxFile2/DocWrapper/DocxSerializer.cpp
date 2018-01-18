@@ -39,6 +39,9 @@
 #include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
+#include "../../Common/DocxFormat/Source/DocxFormat/App.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
+
 int BinDocxRW::g_nCurFormatVersion = 0;
 
 BinDocxRW::CDocxSerializer::CDocxSerializer()
@@ -47,7 +50,7 @@ BinDocxRW::CDocxSerializer::CDocxSerializer()
 	m_pCurFileWriter	= NULL;
 
 	m_bIsNoBase64Save	= false;
-	m_bIsNoBase64	= false;
+	m_bIsNoBase64		= false;
 	m_bSaveChartAsImg	= false;
 }
 BinDocxRW::CDocxSerializer::~CDocxSerializer()
@@ -292,7 +295,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 				
                 OOX::CPath DocProps = std::wstring(_T("docProps"));
 
-				OOX::CApp* pApp = new OOX::CApp();
+				OOX::CApp* pApp = new OOX::CApp(NULL);
 				if (pApp)
 				{
 					pApp->SetApplication(_T("OnlyOffice"));
@@ -306,7 +309,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 					pApp->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, *pContentTypes);
 					delete pApp;
 				}				
-				OOX::CCore* pCore = new OOX::CCore();
+				OOX::CCore* pCore = new OOX::CCore(NULL);
 				if (pCore)
 				{
 					pCore->SetCreator(_T(""));

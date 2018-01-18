@@ -36,7 +36,7 @@ namespace BinDocxRW {
 
 int Binary_VbaProjectTableReader::Read()
 {
-		m_oFileWriter.m_pVbaProject = new OOX::VbaProject();
+	m_oFileWriter.m_pVbaProject = new OOX::VbaProject(NULL);
     m_oFileWriter.m_pVbaProject->fromPPTY(&m_oBufferedStream);
 
     return c_oSerConstants::ReadOk;

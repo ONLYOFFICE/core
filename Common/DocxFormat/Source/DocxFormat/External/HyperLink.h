@@ -41,11 +41,11 @@ namespace OOX
 	class HyperLink : public External
 	{
 	public:
-		HyperLink()
+		HyperLink(OOX::Document* pMain) : External(pMain)
 		{
 			bHyperlink = true;
 		}
-		HyperLink(const CPath& uri)
+		HyperLink(OOX::Document* pMain, const CPath& uri) : External(pMain)
 		{
 			bHyperlink = true;
 			read(uri);

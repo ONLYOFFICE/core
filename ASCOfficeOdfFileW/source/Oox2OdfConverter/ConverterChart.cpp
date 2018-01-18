@@ -45,7 +45,10 @@
 #include "../OdfFormat/style_paragraph_properties.h"
 
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
-
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/SharedStrings/SharedStrings.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Styles/Styles.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
 
 namespace Oox2Odf
 {
@@ -1091,6 +1094,27 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_DLbls* ser_lbls)
 	for (size_t i = 0; i < ser_lbls->m_Items.size(); i++)
 	{
 		bool boolVal = false;
+
+        bool bIsFound = false;
+        switch(*ser_lbls->m_ItemsElementName0[i])
+        {
+
+            case OOX::Spreadsheet::itemschoicetype3DELETE :
+            case OOX::Spreadsheet::itemschoicetype3SHOWBUBBLESIZE:
+            case OOX::Spreadsheet::itemschoicetype3SHOWCATNAME:
+            case OOX::Spreadsheet::itemschoicetype3SHOWLEADERLINES:
+            case OOX::Spreadsheet::itemschoicetype3SHOWLEGENDKEY:
+            case OOX::Spreadsheet::itemschoicetype3SHOWPERCENT:
+            case OOX::Spreadsheet::itemschoicetype3SHOWSERNAME:
+            case OOX::Spreadsheet::itemschoicetype3SHOWVAL:
+                bIsFound = true;
+                break;
+            default:
+                break;
+        }
+
+        if (!bIsFound)
+            continue;
 
 		OOX::Spreadsheet::CT_Boolean * ct_boolean = (OOX::Spreadsheet::CT_Boolean*)ser_lbls->m_Items[i];
 		if (ct_boolean && ct_boolean->m_val) boolVal = * ct_boolean->m_val;

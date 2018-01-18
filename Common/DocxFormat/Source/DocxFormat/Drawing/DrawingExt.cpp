@@ -39,6 +39,10 @@ namespace OOX
 {
 	namespace Drawing
 	{
+		CCompatExt::~CCompatExt()
+		{
+		}
+
 		COfficeArtExtension::~COfficeArtExtension()
 		{
 			m_oSparklineGroups.reset();

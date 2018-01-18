@@ -45,7 +45,7 @@ namespace PPTX
 	class FileFactory
 	{
 	public:
-		static const smart_ptr<OOX::File> CreateFilePPTX(const OOX::CPath& path, OOX::Rels::CRelationShip& relation, FileMap& map);
+		static const smart_ptr<OOX::File> CreateFilePPTX(const OOX::CPath& path, OOX::Rels::CRelationShip& relation, FileMap& map, OOX::Document *pMain);
 	};
 } // namespace PPTX
 #endif // PPTX_FILEFACTORY_PPTX_INCLUDE_H_

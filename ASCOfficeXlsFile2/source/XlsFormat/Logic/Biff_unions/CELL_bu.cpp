@@ -132,7 +132,7 @@ int CELL::serialize(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    
     {
-		for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); it++)
+		for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); ++it)
 		{
 			it->get()->serialize(stream);
 		}

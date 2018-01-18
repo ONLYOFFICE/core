@@ -67,7 +67,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="&#x0D;&#x0A;Rpcrt4.lib"
 				LinkIncremental="2"
-				IgnoreDefaultLibraryNames="LIBCMTD.lib"
+				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"

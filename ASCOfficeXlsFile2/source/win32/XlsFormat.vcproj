@@ -6530,10 +6530,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\XlsFormat\Logic\SummaryInformationStream\Structures\Property_Structures.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\XlsFormat\Logic\SummaryInformationStream\Structures\PropertyFactory.cpp"
 						>
 					</File>

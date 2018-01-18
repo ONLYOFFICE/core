@@ -33,6 +33,7 @@
 #ifndef OOX_VBA_PROJECT_INCLUDE_H_
 #define OOX_VBA_PROJECT_INCLUDE_H_
 
+#include "../Docx.h"
 #include "Media.h"
 #include "../../../../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
 #include "../../../../../ASCOfficePPTXFile/Editor/imagemanager.h"
@@ -45,11 +46,16 @@ namespace OOX
 	class VbaProject : public Media, public OOX::IFileContainer
 	{
 	public:
-		VbaProject( ) 
+		VbaProject( OOX::Document *pMain ) : Media(pMain), OOX::IFileContainer(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pVbaProject = this;
 		}
-		VbaProject(const CPath& oRootPath, const CPath& filename)
+		VbaProject(OOX::Document *pMain, const CPath& oRootPath, const CPath& filename) : Media(pMain), OOX::IFileContainer(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pVbaProject = this;
+
 			read( oRootPath, filename );
 		}
 		virtual void read(const CPath& oRootPath, const CPath& oPath)
@@ -83,7 +89,7 @@ namespace OOX
 
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			
-			copy_to(pWriter->m_pCommon->m_pImageManager->m_strDstMedia);
+			copy_to(pWriter->m_pCommon->m_pMediaManager->m_strDstMedia);
 		}
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -107,7 +113,7 @@ namespace OOX
 
 						NSFile::CFileBinary::Copy(inputPath.GetPath(), outputPath.GetPath());
 
-						set_filename(outputPath.GetPath());
+						set_filename(outputPath.GetPath(), false);
 						
 					}break;
 

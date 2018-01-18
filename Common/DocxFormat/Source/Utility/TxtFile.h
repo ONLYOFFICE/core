@@ -46,19 +46,19 @@ public:
 	TxtFile(const boost::filesystem::wpath& path);
 
 public:
-	const std::list<std::string> readAnsi() const;
-	const std::list<std::wstring> readUnicode() const;
-	const std::list<std::wstring> readUnicodeWithOutBOM() const;
-	const std::list<std::wstring> readBigEndian() const;
-	const std::list<std::string> readUtf8() const;
-	const std::list<std::string> readUtf8withoutPref() const;
+    const std::vector<std::string> readAnsi() const;
+    const std::vector<std::wstring> readUnicode() const;
+    const std::vector<std::wstring> readUnicodeWithOutBOM() const;
+    const std::vector<std::wstring> readBigEndian() const;
+    const std::vector<std::string> readUtf8() const;
+    const std::vector<std::string> readUtf8withoutPref() const;
 
 public:
-	void writeAnsi(const std::list<std::string>& content) const;
-	void writeUnicode(const std::list<std::wstring>& content) const;
-	void writeBigEndian(const std::list<std::wstring>& content) const;
-	void writeUtf8(const std::list<std::string>& content) const;
-	void writeUtf8withoutPref(const std::list<std::string>& content) const;
+    void writeAnsi(const std::vector<std::string>& content) const;
+    void writeUnicode(const std::vector<std::wstring>& content) const;
+    void writeBigEndian(const std::vector<std::wstring>& content) const;
+    void writeUtf8(const std::vector<std::string>& content) const;
+    void writeUtf8withoutPref(const std::vector<std::string>& content) const;
 
 public:
 	const bool isAnsi() const;

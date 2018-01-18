@@ -43,6 +43,8 @@
 #include "OOXFootnoteWriter.h"
 
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/App.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Core.h"
 
 #include "../../../../ASCOfficeDocxFile2/BinReader/DefaultThemeWriter.h"
 
@@ -65,8 +67,8 @@ OOXWriter::OOXWriter( RtfDocument& oDocument, std::wstring sPath ) :
 	m_poSettingsWriter	= new OOXSettingsWriter	( *this, m_oDocument );
 	m_poStylesWriter	= new OOXStylesWriter	( *this, m_oDocument );
 
-	m_poDocPropsApp		= new OOX::CApp();
-	m_poDocPropsCore	= new OOX::CCore();
+	m_poDocPropsApp		= new OOX::CApp(NULL);
+	m_poDocPropsCore	= new OOX::CCore(NULL);
 
 //default properties
 

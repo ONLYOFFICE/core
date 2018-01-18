@@ -58,11 +58,11 @@ namespace PPTX
 	class Presentation : public WrapperFile, public PPTX::FileContainer
 	{
 	public:
-		Presentation()
+		Presentation(OOX::Document *pMain) : WrapperFile(pMain), PPTX::FileContainer(pMain)
 		{
 			m_bMacroEnabled = false;
 		}
-		Presentation(const OOX::CPath& filename, FileMap& map)
+		Presentation(OOX::Document *pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), PPTX::FileContainer(pMain)
 		{
 			m_bMacroEnabled = false;
 			read(filename, map);
@@ -336,7 +336,7 @@ namespace PPTX
 					}break;
 					case 6:
 					{
-						commentAuthors = new PPTX::Authors();
+						commentAuthors = new PPTX::Authors(File::m_pMainDocument);
 						commentAuthors->fromPPTY(pReader);						
 					}break;
 					case 7:
@@ -346,7 +346,7 @@ namespace PPTX
 					}break;
 					case 8:
 					{
-						m_pVbaProject = new OOX::VbaProject();
+						m_pVbaProject = new OOX::VbaProject(File::m_pMainDocument);
 						m_pVbaProject->fromPPTY(pReader);
 						
 						smart_ptr<OOX::File> file = m_pVbaProject.smart_dynamic_cast<OOX::File>();
@@ -356,7 +356,7 @@ namespace PPTX
 					}break;
 					case 9:
 					{
-						m_pJsaProject = new OOX::JsaProject();
+						m_pJsaProject = new OOX::JsaProject(File::m_pMainDocument);
 						m_pJsaProject->fromPPTY(pReader);
 
 						smart_ptr<OOX::File> file = m_pJsaProject.smart_dynamic_cast<OOX::File>();

@@ -808,11 +808,16 @@ namespace OOX
 	class CNumbering : public OOX::File, public IFileContainer
 	{
 	public:
-		CNumbering()
+		CNumbering(OOX::Document *pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pNumbering = this;			
 		}
-		CNumbering(const CPath& oRootPath, const CPath& oPath)
+		CNumbering(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pNumbering = this;			
+
 			read( oRootPath, oPath );
 		}
 		virtual ~CNumbering()

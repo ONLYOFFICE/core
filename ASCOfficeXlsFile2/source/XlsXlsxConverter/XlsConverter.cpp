@@ -195,7 +195,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 			std::list<std::wstring> listStream = xls_file->storage_->entries(L"_SX_DB_CUR");
 
 			int last_index = 0;
-			for (std::list<std::wstring>::iterator it = listStream.begin(); it != listStream.end(); it++)
+			for (std::list<std::wstring>::iterator it = listStream.begin(); it != listStream.end(); ++it)
 			{
 				XLS::CFStreamPtr pivot_cache_stream = xls_file->getNamedStream(L"_SX_DB_CUR/" + *it);
 				
@@ -263,7 +263,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 			std::list<std::wstring> msoStores = xls_file->storage_->entries(L"MsoDataStore");
 
 			int index = 0;
-			for (std::list<std::wstring>::iterator it = msoStores.begin(); it != msoStores.end(); it++)
+			for (std::list<std::wstring>::iterator it = msoStores.begin(); it != msoStores.end(); ++it)
 			{
 				XLS::CFStreamPtr item_stream  = xls_file->getNamedStream(L"MsoDataStore/" + *it + L"/Item");
 				XLS::CFStreamPtr props_stream = xls_file->getNamedStream(L"MsoDataStore/" + *it + L"/Properties");
@@ -435,7 +435,7 @@ void XlsConverter::convert(XLS::BaseObject	*xls_unknown)
 	case XLS::typeAnyObject:	
 	default:
 		{
-			for (std::list<XLS::BaseObjectPtr>::iterator it = xls_unknown->elements_.begin(); it != xls_unknown->elements_.end(); it++)
+			for (std::list<XLS::BaseObjectPtr>::iterator it = xls_unknown->elements_.begin(); it != xls_unknown->elements_.end(); ++it)
 			{
 				(*it)->serialize(xlsx_context->current_sheet().sheetData());
 			}
@@ -469,7 +469,7 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 		xlsx_context->end_sheet();
 	}
 
-	for (std::list<XLS::BaseObjectPtr>::iterator it = woorkbook->elements_.begin(); it != woorkbook->elements_.end(); it++)
+	for (std::list<XLS::BaseObjectPtr>::iterator it = woorkbook->elements_.begin(); it != woorkbook->elements_.end(); ++it)
 	{
 		convert(it->get());
 	}
@@ -782,7 +782,7 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 				std::vector<XLS::FillInfo> fills_out;
 				fills_out.resize(xls_global_info->fill_x_ids.size());
 
-				for (mapFillInfo::iterator it = xls_global_info->fill_x_ids.begin(); it != xls_global_info->fill_x_ids.end(); it++)
+				for (mapFillInfo::iterator it = xls_global_info->fill_x_ids.begin(); it != xls_global_info->fill_x_ids.end(); ++it)
 				{
 					fills_out[it->second] = it->first;
 				}
@@ -798,7 +798,7 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 				std::vector<XLS::BorderInfo> borders_out;
 				borders_out.resize(xls_global_info->border_x_ids.size());
 
-				for (mapBorderInfo::iterator it = xls_global_info->border_x_ids.begin(); it != xls_global_info->border_x_ids.end(); it++)
+				for (mapBorderInfo::iterator it = xls_global_info->border_x_ids.begin(); it != xls_global_info->border_x_ids.end(); ++it)
 				{
 					borders_out[it->second] = it->first;
 				}
@@ -2095,7 +2095,7 @@ void XlsConverter::convert(XLS::SHAREDSTRINGS* sharedstrings)
 			CP_XML_ATTR(L"xmlns", "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
 			if (sharedstrings)
 			{	
-				for (std::list<XLS::BaseObjectPtr>::iterator it = sharedstrings->elements_.begin(); it != sharedstrings->elements_.end(); it++)
+				for (std::list<XLS::BaseObjectPtr>::iterator it = sharedstrings->elements_.begin(); it != sharedstrings->elements_.end(); ++it)
 				{
 					(*it)->serialize(CP_XML_STREAM());
 				}

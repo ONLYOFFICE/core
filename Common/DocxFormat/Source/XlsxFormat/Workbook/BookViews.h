@@ -143,11 +143,11 @@ namespace OOX
 			{
 				writer.WriteString(_T("<bookViews>"));
 				
-				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
 				{
-					if ( *it )
+                    if (  m_arrItems[i] )
 					{
-						(*it)->toXML(writer);
+                        m_arrItems[i]->toXML(writer);
 					}
 				}
 				

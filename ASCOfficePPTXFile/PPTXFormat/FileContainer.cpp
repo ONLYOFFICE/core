@@ -40,10 +40,11 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Rels.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/ContentTypes.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/Media.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
 #include "../../DesktopEditor/common/Directory.h"
 
-#include <map>
+#include <boost/unordered_map.hpp>
 
 namespace PPTX
 {
@@ -103,7 +104,7 @@ namespace PPTX
 						pSrcFile->type() == OOX::Presentation::FileTypes::NotesSlide) ? true : false;
 		}
 
-		for (std::map<std::wstring, OOX::Rels::CRelationShip*>::const_iterator it = rels.m_mapRelations.begin(); it != rels.m_mapRelations.end(); it++)
+        for (boost::unordered_map<std::wstring, OOX::Rels::CRelationShip*>::const_iterator it = rels.m_mapRelations.begin(); it != rels.m_mapRelations.end(); ++it)
 		{       
 			OOX::Rels::CRelationShip* pRelation = it->second;
 
@@ -113,9 +114,9 @@ namespace PPTX
 
             if (bIsSlide && (pRelation->Type() == OOX::FileTypes::HyperLink ||
                              pRelation->Type() == OOX::Presentation::FileTypes::Slide))
-			{// + external audio, video ...
+			{// + external audio, video ... - в обычных ...
 
-                smart_ptr<OOX::File> file = smart_ptr<OOX::File>(new OOX::HyperLink(pRelation->Target()));
+				smart_ptr<OOX::File> file = smart_ptr<OOX::File>(new OOX::HyperLink(OOX::IFileContainer::m_pMainDocument, pRelation->Target()));
 
 				if (pRelation->Type() == OOX::Presentation::FileTypes::Slide)
 				{
@@ -138,7 +139,7 @@ namespace PPTX
 				{
 					long percent = Event ? Event->GetPercent() : 0;
 
-					smart_ptr<OOX::File> file = PPTX::FileFactory::CreateFilePPTX(normPath, *pRelation, map);
+					smart_ptr<OOX::File> file = PPTX::FileFactory::CreateFilePPTX(normPath, *pRelation, map, OOX::IFileContainer::m_pMainDocument);
 
 					if (file.IsInit() == false)
 						continue;
@@ -177,12 +178,15 @@ namespace PPTX
 
 	void FileContainer::write(OOX::CRels& rels, const OOX::CPath& curdir, const OOX::CPath& directory, OOX::CContentTypes& content) const
 	{
-		std::map<std::wstring, size_t> mNamePair;
-		for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
+        boost::unordered_map<std::wstring, size_t> mNamePair;
+        for (boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
 		{
-			smart_ptr<OOX::File>     pFile = pPair->second;
-			smart_ptr<OOX::External> pExt  = pFile.smart_dynamic_cast<OOX::External>();
-			if ( !pExt.IsInit() )
+			smart_ptr<OOX::File>		pFile	= pPair->second;
+			smart_ptr<OOX::External>	pExt	= pFile.smart_dynamic_cast<OOX::External>();
+			smart_ptr<OOX::Media>		pMedia  = pFile.smart_dynamic_cast<OOX::Media>();
+
+			bool bExternal = pExt.IsInit() || ((pMedia.IsInit()) && (pMedia->IsExternal()));
+			if ( !bExternal )
 			{
 				smart_ptr<PPTX::WrapperFile> file = pFile.smart_dynamic_cast<PPTX::WrapperFile>();
 
@@ -226,7 +230,7 @@ namespace PPTX
 
 	void FileContainer::WrittenSetFalse()
 	{
-		for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
+        for (boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
 		{
 			smart_ptr<OOX::File> pFile = pPair->second;
 

@@ -1236,12 +1236,19 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
     {
          int fontSize=0;
 		 if (Context.get_drop_cap_context().state()==2)
+		 {
 			 fontSize = process_font_size(fo_font_size_, Context.get_styles_context().get_current_processed_style(),false,
 				 Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7);//вместо 1 ДОЛЖНОБЫТЬ коэфф. межстрочного интервала!!!
+
+			 if (fontSize < 1)
+				 fontSize = Context.get_drop_cap_context().FontSize / 7.52;
+		 }
 		 else
+		 {
 			 fontSize = process_font_size(fo_font_size_, Context.get_styles_context().get_current_processed_style());
+		 }
        
-		 if (fontSize>0)
+		if (fontSize >  0)
 		{
             _rPr << L"<w:sz w:val=\"" << fontSize << "\" />";
 		}

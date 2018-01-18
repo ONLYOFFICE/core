@@ -44,7 +44,7 @@ namespace PPTX
 	class WrapperFile : public OOX::File
 	{
 	public:
-		WrapperFile()
+		WrapperFile(OOX::Document *pMain) : OOX::File(pMain)
 		{
 			m_written = false;
 			m_WrittenFileName = _T("");

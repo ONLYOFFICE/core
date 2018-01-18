@@ -437,13 +437,13 @@ namespace OOX
 				sResult += m_oTblGrid->toXML();
 			}
 
-			for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-			{
-				if ( *it )
-				{
-					sResult += (*it)->toXML();
-				}
-			}
+            for ( size_t i = 0; i < m_arrItems.size(); ++i)
+            {
+                if ( m_arrItems[i] )
+                {
+                    sResult += m_arrItems[i]->toXML();
+                }
+            }
 
 			sResult += _T("</w:tbl>");
 
@@ -678,13 +678,13 @@ namespace OOX
 
 				sResult += _T(">");
 
-				for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-				{
-					if ( *it )
-					{
-						sResult += (*it)->toXML();
-					}
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if ( m_arrItems[i] )
+                    {
+                        sResult += m_arrItems[i]->toXML();
+                    }
+                }
 
 				sResult += _T("</w:tr>");
 
@@ -894,13 +894,13 @@ namespace OOX
 				else
 					sResult = _T("<w:tc>");
 
-				for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-				{
-					if ( *it )
-					{
-						sResult += (*it)->toXML();
-					}
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if ( m_arrItems[i] )
+                    {
+                        sResult += m_arrItems[i]->toXML();
+                    }
+                }
 
 				sResult += _T("</w:tc>");
 

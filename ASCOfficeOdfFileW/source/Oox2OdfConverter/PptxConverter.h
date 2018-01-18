@@ -45,12 +45,12 @@ namespace OOX
 }
 namespace PPTX
 {
+	class Document;
 	class TableStyles;
 	class NotesSlide;
 	class NotesMaster;
 	class Presentation;
 	class Comments;
-	class Folder;
 
 	namespace Logic
 	{
@@ -161,7 +161,7 @@ private:
 		void convert(PPTX::Logic::SplitTransition			*oox_transition);
 		void convert(PPTX::Logic::ZoomTransition			*oox_transition);
 
-		PPTX::Folder									*pptx_document;
+		PPTX::Document									*pptx_document;
 		PPTX::Presentation								*presentation;
 		cpdoccore::odf_writer::package::odf_document	*output_document;
 		

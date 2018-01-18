@@ -556,7 +556,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 		//from ixfe -> ifnt from xf -> arFonts
 		for (std::map<int, int>::iterator it = global_info_->fonts_charsets.begin()
 			; global_info_->CodePage == 0 && it != global_info_->fonts_charsets.end()
-			; it++)
+			; ++it)
 		{
 			for (int i = 0 ; i < sizeof(aCodePages) / 2; i++)
 			{

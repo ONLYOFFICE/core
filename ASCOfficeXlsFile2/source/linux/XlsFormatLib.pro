@@ -781,7 +781,6 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_unions/SXFORMULA_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/SXOPER.cpp \
     ../XlsFormat/Logic/Biff_unions/SXRANGE.cpp \
-    ../XlsFormat/Logic/SummaryInformationStream/Structures/Property_Structures.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertyFactory.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySet.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySetStream.cpp \

@@ -903,7 +903,7 @@ CDrawingConverter::~CDrawingConverter()
 HRESULT CDrawingConverter::SetMainDocument(BinDocxRW::CDocxSerializer* pDocument)
 {
 	m_pBinaryWriter->ClearNoAttack();
-	m_pBinaryWriter->m_pCommon->m_pImageManager->NewDocument();
+	m_pBinaryWriter->m_pCommon->m_pMediaManager->Clear();
 	
 	m_pBinaryWriter->SetMainDocument(pDocument);
 	m_pReader->SetMainDocument(pDocument);
@@ -926,7 +926,7 @@ void CDrawingConverter::SetDstPath(const std::wstring& sPath)
 }
 void CDrawingConverter::SetMediaDstPath(const std::wstring& sPath)
 {
-    m_pBinaryWriter->m_pCommon->m_pImageManager->m_strDstMedia = sPath;
+    m_pBinaryWriter->m_pCommon->m_pMediaManager->m_strDstMedia = sPath;
     m_pImageManager->SetDstMedia(sPath);
 
     NSDirectory::CreateDirectory(sPath);
@@ -1616,7 +1616,7 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 
 			if (NSFile::CFileBinary::Exists(pathDiagramDrawing.GetPath()))
 			{
-				oFileDrawing = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(new OOX::CDiagramDrawing(pathDiagramDrawing)));
+				oFileDrawing = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(new OOX::CDiagramDrawing(NULL, pathDiagramDrawing)));
 				if (oFileDrawing.IsInit())
 					pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.operator->());
 			}
@@ -2632,7 +2632,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 				if (sId.length() > 0 && m_pBinaryWriter->m_pCurrentContainer->IsInit())
 				{
 					OOX::RId rId(sId);
-					smart_ptr<PPTX::LegacyDiagramText> pExt = (*m_pBinaryWriter->m_pCurrentContainer)->GetLegacyDiagramText(rId);
+					smart_ptr<PPTX::LegacyDiagramText> pExt = (*m_pBinaryWriter->m_pCurrentContainer)->Get<PPTX::LegacyDiagramText>(rId);
 
 					if (pExt.IsInit())
 					{
@@ -5379,6 +5379,8 @@ smart_ptr<OOX::IFileContainer> CDrawingConverter::GetRels()
 }
 void CDrawingConverter::SetFontManager(CFontManager* pFontManager)
 {
-	if(NULL != m_pBinaryWriter && NULL != m_pBinaryWriter->m_pCommon && NULL != m_pBinaryWriter->m_pCommon->m_pImageManager)
-		m_pBinaryWriter->m_pCommon->m_pImageManager->SetFontManager(pFontManager);
+	if(NULL != m_pBinaryWriter && NULL != m_pBinaryWriter->m_pCommon && NULL != m_pBinaryWriter->m_pCommon->m_pMediaManager)
+	{
+		m_pBinaryWriter->m_pCommon->m_pMediaManager->SetFontManager(pFontManager);
+	}
 }

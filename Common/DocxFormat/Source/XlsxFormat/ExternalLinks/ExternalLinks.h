@@ -74,12 +74,12 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(L"<sheetNames>");
-				for (std::list<ComplexTypes::Spreadsheet::String*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+                for (size_t i = 0; i < m_arrItems.size(); ++i)
 				{
-					if (*it)
+                    if (m_arrItems[i])
 					{
 						writer.WriteString(L"<sheetName");
-						WritingStringAttrEncodeXmlString(L"val", (*it)->ToString2());
+                        WritingStringAttrEncodeXmlString(L"val", m_arrItems[i]->ToString2());
 						writer.WriteString(L"/>");
 					}
 				}
@@ -188,11 +188,11 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(L"<definedNames>");
-				for ( std::list<CExternalDefinedName*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
 				{
-					if ( *it )
+                    if ( m_arrItems[i] )
 					{
-						(*it)->toXML(writer);
+                        m_arrItems[i]->toXML(writer);
 					}
 				}
 				writer.WriteString(L"</definedNames>");
@@ -320,13 +320,13 @@ namespace OOX
 				WritingStringNullableAttrInt(L"r", m_oR, m_oR->GetValue());
 				writer.WriteString(L">");
 				
-				for ( std::list<CExternalCell*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-				{
-					if ( *it )
-					{
-						(*it)->toXML(writer);
-					}
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if ( m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
 				
 				writer.WriteString(L"</row>");
 			}
@@ -391,13 +391,13 @@ namespace OOX
 				WritingStringNullableAttrBool(L"refreshError", m_oRefreshError);
 				writer.WriteString(L">");
 				
-				for ( std::list<CExternalRow*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-				{
-					if ( *it )
-					{
-						(*it)->toXML(writer);
-					}
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if ( m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
 
 				writer.WriteString(L"</sheetData>");
 			}
@@ -458,13 +458,13 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(L"<sheetDataSet>");
-				for ( std::list<CExternalSheetData*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-				{
-					if ( *it )
-					{
-						(*it)->toXML(writer);
-					}
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if ( m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
 				writer.WriteString(L"</sheetDataSet>");
 			}
 			virtual std::wstring      toXML() const
@@ -609,13 +609,13 @@ namespace OOX
 				WritingStringNullableAttrString(L"t", m_oType, m_oType->ToString());
 				writer.WriteString(L">");
 
-				for ( std::list<CText*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-				{
-					if ( *it )
-					{
-						(*it)->toXML2(writer, L"val");
-					}
-				}				
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if ( m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
 				writer.WriteString(L"</value>");
 			}
 			virtual std::wstring toXML() const
@@ -680,13 +680,13 @@ namespace OOX
 				WritingStringNullableAttrInt(L"cols", m_oCols, m_oCols->GetValue());
 				writer.WriteString(L">");
 				
-				for ( std::list<CDdeValue*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-				{
-					if ( *it )
-					{
-						(*it)->toXML(writer);
-					}
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if ( m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
 				writer.WriteString(L"</values>");
 			}
 			virtual std::wstring      toXML() const
@@ -821,11 +821,11 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(L"<ddeItems>");
-				for ( std::list<CDdeItem*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
 				{
-					if ( *it )
+                    if ( m_arrItems[i] )
 					{
-						(*it)->toXML(writer);
+                        m_arrItems[i]->toXML(writer);
 					}
 				}
 				writer.WriteString(L"</ddeItems>");
@@ -1009,13 +1009,13 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(L"<oleItems>");
-				for ( std::list<COleItem*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-				{
-					if ( *it )
-					{
-						(*it)->toXML(writer);
-					}
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if ( m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
 				writer.WriteString(L"</oleItems>");
 			}
 			virtual std::wstring      toXML() const
@@ -1105,11 +1105,11 @@ namespace OOX
 		class CExternalLink : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CExternalLink()
+			CExternalLink(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 			}
-			CExternalLink(const CPath& oRootPath, const CPath& oPath)
+			CExternalLink(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 				read( oRootPath, oPath );

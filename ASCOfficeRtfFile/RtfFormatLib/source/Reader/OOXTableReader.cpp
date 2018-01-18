@@ -172,7 +172,7 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 
 	long nRowCount = m_ooxTable->m_nCountRow, nCurRow = 0;
 
-	for (std::list<OOX::WritingElement*>::iterator it = m_ooxTable->m_arrItems.begin(); it != m_ooxTable->m_arrItems.end(); it++)
+    for (std::vector<OOX::WritingElement*>::iterator it = m_ooxTable->m_arrItems.begin(); it != m_ooxTable->m_arrItems.end(); ++it)
 	{	
 		if ( (*it) == NULL) continue;
 		if ( (*it)->getType() != OOX::et_w_tr) continue;

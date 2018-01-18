@@ -48,8 +48,7 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Control)
 
-		public:
-			void AddObjectTo (const std::vector<SpTreeElem> *spTreeElements, NSShapeImageGen::CImageManager* pImageManager) const ;
+			void AddObjectTo (const std::vector<SpTreeElem> *spTreeElements, NSShapeImageGen::CMediaManager* pMediaManager) const ;
 			
 			std::wstring GetVmlXmlBySpid(std::wstring spid, smart_ptr<OOX::IFileContainer> & rels) const ;
 			
@@ -175,7 +174,7 @@ namespace PPTX
 				for (size_t i = 0; i <arrControls.size(); i++)
 					arrControls[i].toPPTY(pWriter);
 			}	
-			void AddObjectsTo (const std::vector<PPTX::Logic::SpTreeElem> *spTreeElements, NSShapeImageGen::CImageManager* pImageManager) const;
+			void AddObjectsTo (const std::vector<PPTX::Logic::SpTreeElem> *spTreeElements, NSShapeImageGen::CMediaManager* pMediaManager) const;
 
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{

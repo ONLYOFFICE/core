@@ -2403,7 +2403,7 @@ namespace BinXlsxRW
 		int									m_nNextObjectId;
 		NSBinPptxRW::CDrawingConverter*		m_pOfficeDrawingConverter;
 
-		std::vector<OOX::Spreadsheet::CWorksheet*>					m_arWorksheets;
+		std::vector<OOX::Spreadsheet::CWorksheet*>&					m_arWorksheets;
 		std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>&		m_mapWorksheets; // for fast find 
 
         boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>&	m_mapPivotCacheDefinitions;

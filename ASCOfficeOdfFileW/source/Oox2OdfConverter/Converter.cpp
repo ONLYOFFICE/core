@@ -52,11 +52,15 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Presentation.h"
 
+#include "../../../Common/DocxFormat/Source/DocxFormat/Logic/Vml.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/CxnSp.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/GraphicFrame.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Pic.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SmartArt.h"
 
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
 

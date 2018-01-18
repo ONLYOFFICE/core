@@ -61,10 +61,10 @@ namespace PPTX
 	class SlideMaster : public WrapperFile, public FileContainer
 	{
 	public:
-		SlideMaster()
+		SlideMaster(OOX::Document* pMain) : WrapperFile(pMain), FileContainer(pMain)
 		{
 		}
-		SlideMaster(const OOX::CPath& filename, FileMap& map)
+		SlideMaster(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), FileContainer(pMain)
 		{
 			read(filename, map);
 		}

@@ -57,13 +57,13 @@ namespace OOX
 			OOX::WritingElement*	pElement;	// for docx/xlsx
 			bool					bUsed;		// for single drawing
 		};
-		CVmlDrawing(bool bDocument = true)
+		CVmlDrawing(OOX::Document* pMain, bool bDocument = true) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 		{
 			m_bDocument		= bDocument;
 			m_mapComments	= NULL;
 			m_lObjectIdVML	= 0;
 		}
-		CVmlDrawing(const CPath& oRootPath, const CPath& oPath)
+		CVmlDrawing(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 		{
 			m_bDocument = false;
 			m_mapComments = NULL;

@@ -34,6 +34,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <boost/unordered_map.hpp>
 
 namespace OOX
@@ -76,8 +77,9 @@ namespace BinXlsxRW {
 		void parseChart(const OOX::Spreadsheet::CT_Chart* pChart);
 
     private:
-        OOX::Spreadsheet::CWorksheet* toXlsxGetSheet(boost::unordered_map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets, const std::wstring& sName);
-        void toXlsxSheetdata(OOX::Spreadsheet::CWorksheet* pWorksheet, const std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>& rows, std::vector<std::wstring>& aSharedStrings);
+		OOX::Spreadsheet::CWorksheet* toXlsxGetSheet(std::vector<OOX::Spreadsheet::CWorksheet*>& arWorksheets, std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets, const std::wstring& sName);
+		void toXlsxSheetdata(OOX::Spreadsheet::CWorksheet* pWorksheet, const std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>& rows, std::vector<std::wstring>& aSharedStrings);
+		
 		void parseCell(const std::wstring& sheet, const int& nRow, const int& nCol, const std::wstring& val, std::wstring* format);
 		OOX::Spreadsheet::CCell* parseCreateCell(const int& nRow, const int& nCol, const std::wstring& val, std::wstring* format);
 		void parseStrRef(const OOX::Spreadsheet::CT_StrRef* pStrRef, bool bUpdateRange, const wchar_t* cRangeName);

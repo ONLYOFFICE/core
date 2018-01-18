@@ -33,7 +33,6 @@
 #ifndef PPTX_INCLUDE_H_
 #define PPTX_INCLUDE_H_
 
-//#include "FileFactory.h"
 #include "Folder.h"
 #include "Presentation.h"
 #include "Slide.h"

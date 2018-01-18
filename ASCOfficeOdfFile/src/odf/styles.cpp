@@ -1348,16 +1348,20 @@ void style_page_layout_properties::docx_serialize(std::wostream & strm, oox::doc
 		{
 			Context.process_section( CP_XML_STREAM(), columns);
 			
-			bool next_page = Context.is_next_dump_page_properties();
+			bool change_page_layout = Context.is_next_dump_page_properties();
 			
 			CP_XML_NODE(L"w:type")
 			{				
-				if (next_page)	CP_XML_ATTR(L"w:val", L"nextPage");
-				else			CP_XML_ATTR(L"w:val", L"continuous");
+				if (change_page_layout)
+				{
+					CP_XML_ATTR(L"w:val", L"nextPage");
+				}
+				else			
+					CP_XML_ATTR(L"w:val", L"continuous");
 			}			
 
 			std::wstring masterPageName = Context.get_master_page_name();
-			bool res = Context.get_headers_footers().write_sectPr(masterPageName, next_page, strm);
+			bool res = Context.get_headers_footers().write_sectPr(masterPageName, change_page_layout, strm);
 			
 			if (res == false)
 			{
@@ -1368,7 +1372,7 @@ void style_page_layout_properties::docx_serialize(std::wostream & strm, oox::doc
 				Context.remove_page_properties();
 				Context.add_page_properties(masterPageNameLayout);
 				
-				bool res = Context.get_headers_footers().write_sectPr(masterPageName, next_page, strm);
+				bool res = Context.get_headers_footers().write_sectPr(masterPageName, change_page_layout, strm);
 			}
 	
 			oox::section_context::_section & section = Context.get_section_context().get();

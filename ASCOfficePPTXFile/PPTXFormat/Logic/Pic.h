@@ -39,6 +39,10 @@
 #include "SpPr.h"
 #include "ShapeStyle.h"
 
+namespace OOX
+{
+	class OleObject;
+}
 namespace PPTX
 {
 	namespace Limit

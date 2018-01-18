@@ -32,7 +32,12 @@
 #include "ChartWriter.h"
 
 #include <algorithm>
+
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/SharedStrings/SharedStrings.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Styles/Styles.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
 
 #define NUMID_START 160
 const wchar_t* gc_Cat = L"cat";
@@ -142,29 +147,33 @@ namespace BinXlsxRW{
 	{
 		std::vector<std::wstring> aSharedStrings;
 		//Sheet
-		OOX::Spreadsheet::CWorkbook* pWorkbook = oXlsx.CreateWorkbook();
+		OOX::Spreadsheet::CWorkbook* pWorkbook = oXlsx.m_pWorkbook;
 		pWorkbook->m_oSheets.Init();
 
-        boost::unordered_map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets = oXlsx.GetWorksheets();
 		int nSheetId = 1;
 		OOX::Spreadsheet::CWorksheet* pFirstWorksheet = NULL;
 
         for (std::map<std::wstring, std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>*>::iterator it = m_mapSheets.begin(); it != m_mapSheets.end(); ++it)
 		{
 			const std::wstring& sSheetName = it->first;
-			OOX::Spreadsheet::CWorksheet* pWorksheet = toXlsxGetSheet(mapWorksheets, sSheetName);
+			
+			//find or generate black worksheet
+			OOX::Spreadsheet::CWorksheet* pWorksheet = toXlsxGetSheet(oXlsx.m_arWorksheets, oXlsx.m_mapWorksheets, sSheetName);
+			//fill data to worksheet
 			toXlsxSheetdata(pWorksheet, *it->second, aSharedStrings);
+			
 			OOX::Spreadsheet::CSheet* pSheet = new OOX::Spreadsheet::CSheet();
 			pSheet->m_oName.Init();
 			pSheet->m_oName->append(sSheetName);
 			pSheet->m_oSheetId.Init();
 			pSheet->m_oSheetId->SetValue(nSheetId++);
+			
 			smart_ptr<OOX::File> oWorksheetFile = smart_ptr<OOX::File>(pWorksheet);
 			const OOX::RId oRId = pWorkbook->Add(oWorksheetFile);
 			pSheet->m_oRid.Init();
 			pSheet->m_oRid->SetValue(oRId.get());
+			
 			pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
-			mapWorksheets[pSheet->m_oName.get()] = pWorksheet;
 
 			if(NULL == pFirstWorksheet)
 			{
@@ -247,7 +256,7 @@ namespace BinXlsxRW{
 		//todo table в случае нескольких sheet или если серии разнесены по sheet
 		if(m_aTableNames.size() > 0)
 		{
-			OOX::Spreadsheet::CTableFile* pTable = new OOX::Spreadsheet::CTableFile();
+			OOX::Spreadsheet::CTableFile* pTable = new OOX::Spreadsheet::CTableFile(NULL);
 			pTable->m_oTable.Init();
 			pTable->m_oTable->m_oDisplayName.Init();
 			pTable->m_oTable->m_oDisplayName->append(L"Table1");
@@ -290,9 +299,11 @@ namespace BinXlsxRW{
 			{
 				OOX::Spreadsheet::CTablePart* pTablePart = new OOX::Spreadsheet::CTablePart();
 				NSCommon::smart_ptr<OOX::File> pTableFile(pTable);
+				
 				const OOX::RId oRId = pFirstWorksheet->Add(pTableFile);
 				pTablePart->m_oRId.Init();
 				pTablePart->m_oRId->SetValue(oRId.get());
+				
 				pFirstWorksheet->m_oTableParts.Init();
 				pFirstWorksheet->m_oTableParts->m_arrItems.push_back(pTablePart);
 				pFirstWorksheet->m_oTableParts->m_oCount.Init();
@@ -490,14 +501,14 @@ namespace BinXlsxRW{
 			}
 		}
 	}
-    OOX::Spreadsheet::CWorksheet* ChartWriter::toXlsxGetSheet(boost::unordered_map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets, const std::wstring& sName)
+	OOX::Spreadsheet::CWorksheet* ChartWriter::toXlsxGetSheet(std::vector<OOX::Spreadsheet::CWorksheet*>& arWorksheets, std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets, const std::wstring& sName)
 	{
 		OOX::Spreadsheet::CWorksheet* pWorksheet = NULL;
-        boost::unordered_map<std::wstring, OOX::Spreadsheet::CWorksheet*>::const_iterator it = mapWorksheets.find(sName);
+		std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::const_iterator pFind = mapWorksheets.find(sName);
 
-        if (it == mapWorksheets.end())
+        if (pFind == mapWorksheets.end())
 		{
-			pWorksheet = new OOX::Spreadsheet::CWorksheet();
+			pWorksheet = new OOX::Spreadsheet::CWorksheet(NULL);
 			pWorksheet->m_oSheetFormatPr.Init();
 			pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight.Init();
 			pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight->SetValue(15);
@@ -517,10 +528,11 @@ namespace BinXlsxRW{
 			pWorksheet->m_oPageMargins->m_oFooter->FromInches(0.3);
 
 			mapWorksheets[sName] = pWorksheet;
+			arWorksheets.push_back(pWorksheet);
 		}
 		else
 		{
-			pWorksheet = it->second;
+			pWorksheet = pFind->second;
 		}
 		return pWorksheet;
 	}

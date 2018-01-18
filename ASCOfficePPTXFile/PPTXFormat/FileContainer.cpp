@@ -116,7 +116,7 @@ namespace PPTX
                              pRelation->Type() == OOX::Presentation::FileTypes::Slide))
 			{// + external audio, video ... - в обычных ...
 
-                smart_ptr<OOX::File> file = smart_ptr<OOX::File>(new OOX::HyperLink(pRelation->Target()));
+				smart_ptr<OOX::File> file = smart_ptr<OOX::File>(new OOX::HyperLink(OOX::IFileContainer::m_pMainDocument, pRelation->Target()));
 
 				if (pRelation->Type() == OOX::Presentation::FileTypes::Slide)
 				{
@@ -139,7 +139,7 @@ namespace PPTX
 				{
 					long percent = Event ? Event->GetPercent() : 0;
 
-					smart_ptr<OOX::File> file = PPTX::FileFactory::CreateFilePPTX(normPath, *pRelation, map);
+					smart_ptr<OOX::File> file = PPTX::FileFactory::CreateFilePPTX(normPath, *pRelation, map, OOX::IFileContainer::m_pMainDocument);
 
 					if (file.IsInit() == false)
 						continue;

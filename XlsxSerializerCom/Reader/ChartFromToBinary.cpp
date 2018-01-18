@@ -35,6 +35,9 @@
 #include "../../ASCOfficePPTXFile/Editor/BinReaderWriterDefines.h"
 #include "../../ASCOfficeDocxFile2/BinReader/DefaultThemeWriter.h"
 
+#include "../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
+
 using namespace OOX::Spreadsheet;
 
 namespace BinXlsxRW
@@ -959,7 +962,7 @@ namespace BinXlsxRW
 
             OOX::CPath pathThemeOverrideFile = m_oSaveParams.sThemePath + FILE_SEPARATOR_STR + sThemeOverrideName;
 
-			smart_ptr<PPTX::Theme> pTheme = new PPTX::Theme();
+			smart_ptr<PPTX::Theme> pTheme = new PPTX::Theme(NULL);
 			pTheme->isThemeOverride = true;
 
 			pTheme->fromPPTY(&m_oBufferedStream);
@@ -6153,7 +6156,7 @@ namespace BinXlsxRW
 		smart_ptr<OOX::File> pFile = oChartSpace.Find(OOX::FileTypes::ThemeOverride);
 		if (pFile.IsInit() && OOX::FileTypes::ThemeOverride == pFile->type())
 		{
-			PPTX::Theme* pThemeOverride = static_cast<PPTX::Theme*>(pFile.operator->());
+			PPTX::Theme* pThemeOverride = dynamic_cast<PPTX::Theme*>(pFile.operator->());
 	
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceTHEMEOVERRIDE);
 			pThemeOverride->toPPTY(&m_oBcw.m_oStream);

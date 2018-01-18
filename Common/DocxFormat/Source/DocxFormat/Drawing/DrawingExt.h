@@ -53,24 +53,20 @@ namespace OOX
 			CCompatExt()
 			{
 			}
-			virtual ~CCompatExt()
-			{
-			}
+			virtual ~CCompatExt();
 
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
                 //todo
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -155,8 +151,6 @@ namespace OOX
 			{
 			}
 			virtual ~COfficeArtExtension();
-
-		public:
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{

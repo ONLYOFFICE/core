@@ -42,12 +42,12 @@ namespace OOX
 	class Media : public File
 	{
 	public:
-		Media(bool bDocument = true)
+		Media(OOX::Document *pMain, bool bDocument = true) : File(pMain)
 		{
 			m_bExternal = false;
 			m_bDocument = bDocument;
 		}
-		Media(const CPath& filename, bool bExternal = false)
+		Media(OOX::Document *pMain, const CPath& filename, bool bExternal = false) : File(pMain)
 		{
 			m_bExternal	= bExternal;			
 			m_filename	= filename;

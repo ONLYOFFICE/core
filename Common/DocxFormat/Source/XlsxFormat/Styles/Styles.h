@@ -33,6 +33,7 @@
 #ifndef OOX_STYLES_FILE_INCLUDE_H_
 #define OOX_STYLES_FILE_INCLUDE_H_
 
+#include "../Xlsx.h"
 #include "../CommonInclude.h"
 
 #include "Borders.h"
@@ -54,13 +55,20 @@ namespace OOX
 		class CStyles : public OOX::File, public OOX::IFileContainer
 		{
 		public:
-			CStyles()
+			CStyles(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+				
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if (xlsx) xlsx->m_pStyles = this;
 			}
-			CStyles(const CPath& oRootPath, const CPath& oPath)
+			CStyles(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if (xlsx) xlsx->m_pStyles = this;
+
 				read( oRootPath, oPath );
 			}
 			virtual ~CStyles()

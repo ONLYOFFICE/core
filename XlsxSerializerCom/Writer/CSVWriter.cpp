@@ -34,6 +34,11 @@
 #include "../../UnicodeConverter/UnicodeConverter_Encodings.h"
 #include "../../DesktopEditor/common/StringBuilder.h"
 
+#include "../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/SharedStrings/SharedStrings.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Styles/Styles.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
+
 namespace CSVWriter
 {
 	void escapeJson(const std::wstring& sInput, NSStringUtils::CStringBuilder& oBuilder)
@@ -134,7 +139,7 @@ namespace CSVWriter
 		WCHAR *pWriteBuffer = NULL;
 
 		std::wstring sSheetRId = _T("Sheet1"); // Читаем не по rId, а по имени листа
-		OOX::Spreadsheet::CWorkbook *pWorkbook = oXlsx.GetWorkbook();
+		OOX::Spreadsheet::CWorkbook *pWorkbook = oXlsx.m_pWorkbook;
 		if (NULL != pWorkbook)
 		{
 			// Get active sheet
@@ -164,14 +169,14 @@ namespace CSVWriter
 				sSheetRId = bJSON ? pSheet->m_oRid->GetValue() : pSheet->m_oName.get2();
 			}
 
-            boost::unordered_map<std::wstring, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();
-            boost::unordered_map<std::wstring, OOX::Spreadsheet::CWorksheet*>::const_iterator pPair = arrWorksheets.find(sSheetRId);
-			if (pPair != arrWorksheets.end())
+			std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::const_iterator pFind = oXlsx.m_mapWorksheets.find(sSheetRId);
+			if (pFind != oXlsx.m_mapWorksheets.end())
 			{
-				OOX::Spreadsheet::CWorksheet *pWorksheet = pPair->second;
+				OOX::Spreadsheet::CWorksheet *pWorksheet = pFind->second;
+				
 				if (NULL != pWorksheet && pWorksheet->m_oSheetData.IsInit())
 				{
-					OOX::Spreadsheet::CSharedStrings *pSharedStrings = oXlsx.GetSharedStrings();
+					OOX::Spreadsheet::CSharedStrings *pSharedStrings = oXlsx.m_pSharedStrings;
 					std::wstring sEscape = _T("\"\n");
 					sEscape += sDelimiter;
                     std::wstring sEndJson = std::wstring(_T("]"));

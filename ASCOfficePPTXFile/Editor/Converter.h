@@ -38,7 +38,7 @@ namespace PPTX2EditorAdvanced
 {
 	using namespace NSBinPptxRW;
 
-	DWORD Convert(NSBinPptxRW::CBinaryFileWriter& oBinaryWriter, PPTX::Folder& oFolder, const std::wstring& strSourceDirectory, const std::wstring& strDstFile, bool bIsNoBase64)
+	DWORD Convert(NSBinPptxRW::CBinaryFileWriter& oBinaryWriter, PPTX::Document& oFolder, const std::wstring& strSourceDirectory, const std::wstring& strDstFile, bool bIsNoBase64)
 	{	
 		// сначала соберем все объекты для конвертации и сформируем main-таблицы
 		NSBinPptxRW::CCommonWriter* pCommon = oBinaryWriter.m_pCommon;

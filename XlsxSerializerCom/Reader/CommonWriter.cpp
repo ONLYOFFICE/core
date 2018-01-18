@@ -32,8 +32,13 @@
 //#include "stdafx.h"
 #include "CommonWriter.h"
 #include "../Common/BinReaderWriterDefines.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/SharedStrings/SharedStrings.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Styles/Styles.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
 
-namespace BinXlsxRW {
+namespace BinXlsxRW 
+{
 	BinaryCommonWriter::BinaryCommonWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream):m_oStream(oCBufferedStream)
 	{
 	}

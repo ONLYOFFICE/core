@@ -199,13 +199,19 @@ namespace OOX
 	class CDocument : public OOX::File, public IFileContainer
 	{
 	public:
-		CDocument()
+		CDocument(OOX::Document *pMain) : File(pMain), IFileContainer(pMain)
 		{
 			m_bMacroEnabled = false;
+			
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pDocument = this;
 		}
-		CDocument(const CPath& oRootPath, const CPath& oPath)
+		CDocument(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath) : File(pMain), IFileContainer(pMain)
 		{
 			m_bMacroEnabled = false;
+
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pDocument = this;
 			
 			read( oRootPath, oPath );
 		}
@@ -615,7 +621,7 @@ mc:Ignorable=\"w14 wp14\">";
 
 			Logic::CParagraph* pPara = (Logic::CParagraph*)pNewElement;
 
-			smart_ptr<OOX::File> oHyperlink = smart_ptr<OOX::File>( new OOX::HyperLink( sNameHref ) );
+			smart_ptr<OOX::File> oHyperlink = smart_ptr<OOX::File>( new OOX::HyperLink(File::m_pMainDocument, sNameHref ) );
 			const OOX::RId rId = Add( oHyperlink );
 
 			// TO DO: Сделать добавление гиперссылок в параграфах
@@ -629,7 +635,7 @@ mc:Ignorable=\"w14 wp14\">";
 			{
 				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems.back();
 
-				smart_ptr<OOX::File> oHyperlink = smart_ptr<OOX::File>( new OOX::HyperLink( sNameHref ) );
+				smart_ptr<OOX::File> oHyperlink = smart_ptr<OOX::File>( new OOX::HyperLink( File::m_pMainDocument, sNameHref ) );
 				const OOX::RId rId = Add( oHyperlink );
 
 				// TO DO: Сделать добавление гиперссылок в параграфах

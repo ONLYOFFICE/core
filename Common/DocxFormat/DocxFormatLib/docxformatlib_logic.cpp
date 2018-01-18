@@ -66,3 +66,5 @@
 #include "../Source/Common/ZIndex.cpp"
 #include "../Source/Common/SimpleTypes_Word.cpp"
 #include "../Source/SystemUtility/SystemUtility.cpp"
+#include "../Source/XlsxFormat/Xlsx.cpp"
+#include "../Source/XlsxFormat/Worksheets/SheetData.cpp"

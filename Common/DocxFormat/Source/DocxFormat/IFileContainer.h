@@ -44,12 +44,7 @@ namespace OOX
 	class FileType;
 	class CRels;
 	class CContentTypes;
-	
-	class Image;
 	class HyperLink;
-	class OleObject;
-	class ActiveX_xml;
-	class ActiveX_bin;
 }
 
 namespace PPTX
@@ -62,11 +57,12 @@ namespace OOX
 	class IFileContainer
 	{
 	public:
-		IFileContainer();
+		IFileContainer(OOX::Document* pMain);
 		virtual ~IFileContainer();
 
         bool                                                        m_bSpreadsheets;
         static boost::unordered_map<std::wstring, size_t>			m_mapEnumeratedGlobal;
+		OOX::Document*												m_pMainDocument;
 	protected:
         boost::unordered_map<std::wstring, smart_ptr<OOX::File>>	m_mContainer;
         boost::unordered_map<std::wstring, std::wstring>			m_mNoWriteContainer;

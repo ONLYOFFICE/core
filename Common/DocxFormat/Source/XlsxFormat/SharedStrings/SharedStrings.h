@@ -33,6 +33,7 @@
 #ifndef OOX_SHAREDSTRINGS_FILE_INCLUDE_H_
 #define OOX_SHAREDSTRINGS_FILE_INCLUDE_H_
 
+#include "../Xlsx.h"
 #include "../CommonInclude.h"
 
 #include "Si.h"
@@ -45,18 +46,23 @@ namespace OOX
 		class CSharedStrings : public OOX::File, public OOX::IFileContainer
 		{
 		public:
-			CSharedStrings()
+			CSharedStrings(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
                 m_nCount        = 0;
-
 				m_bSpreadsheets = true;
+
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if (xlsx) xlsx->m_pSharedStrings = this;
 			}
-			CSharedStrings(const CPath& oRootPath, const CPath& oPath)
+			CSharedStrings(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
                 m_nCount        = 0;
                 m_bSpreadsheets = true;
 
-                read( oRootPath, oPath );
+  				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if (xlsx) xlsx->m_pSharedStrings = this;
+
+				read( oRootPath, oPath );
 			}
 			virtual ~CSharedStrings()
 			{

@@ -101,13 +101,20 @@ namespace OOX
 		class CCalcChain : public OOX::File, public OOX::IFileContainer
 		{
 		public:
-			CCalcChain()
+			CCalcChain(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+  				
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if (xlsx) xlsx->m_pCalcChain = this;
 			}
-			CCalcChain(const CPath& oRootPath, const CPath& oPath)
+			CCalcChain(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if (xlsx) xlsx->m_pCalcChain = this;
+
 				read( oRootPath, oPath );
 			}
 			virtual ~CCalcChain()

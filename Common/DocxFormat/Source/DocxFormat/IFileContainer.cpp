@@ -50,9 +50,9 @@ namespace OOX
 {
     boost::unordered_map<std::wstring, size_t> IFileContainer::m_mapEnumeratedGlobal;
 
-    UnknowTypeFile IFileContainer::Unknown;
+    //UnknowTypeFile IFileContainer::Unknown;
 
-	IFileContainer::IFileContainer()
+	IFileContainer::IFileContainer(OOX::Document* pMain) : m_pMainDocument(pMain)
 	{
 		m_bSpreadsheets = false;
 		m_lMaxRid		= 0;
@@ -82,10 +82,10 @@ namespace OOX
 			smart_ptr<OOX::File> pFile;
 			
 			if (m_bSpreadsheets)
-				pFile = OOX::Spreadsheet::CreateFile( oRootPath, oPath, it->second );
+				pFile = OOX::Spreadsheet::CreateFile( oRootPath, oPath, it->second, m_pMainDocument );
 			
 			if (pFile.IsInit() == false || pFile->type() == FileTypes::Unknow)
-				pFile = OOX::CreateFile( oRootPath, oPath, it->second );
+				pFile = OOX::CreateFile( oRootPath, oPath, it->second, m_pMainDocument );
 			
 			Add( it->second->rId(), pFile );
 		}
@@ -321,7 +321,7 @@ namespace OOX
 				return it->second;
 		}
 
-		return smart_ptr<OOX::File>(new UnknowTypeFile( Unknown ));
+		return smart_ptr<OOX::File>(new UnknowTypeFile( m_pMainDocument ));
 	}
 
 	void IFileContainer::Get(const FileType& oType, std::vector<smart_ptr<OOX::File>> & files)
@@ -411,7 +411,7 @@ namespace OOX
 			if ( oType == pPair->second->type() )
 				return pPair->second;
 		}
-		return smart_ptr<OOX::File>( (OOX::File*)new UnknowTypeFile() );
+		return smart_ptr<OOX::File>( (OOX::File*)new UnknowTypeFile(m_pMainDocument) );
 	}
     void IFileContainer::FindAllByType(const FileType& oType, boost::unordered_map<std::wstring, smart_ptr<OOX::File>>& aOutput) const
 	{
@@ -430,7 +430,7 @@ namespace OOX
 			if ( pPair != m_mContainer.end())
 				return pPair->second;
 
-		return smart_ptr<OOX::File>( (OOX::File*)new UnknowTypeFile() );
+		return smart_ptr<OOX::File>( (OOX::File*)new UnknowTypeFile(m_pMainDocument) );
 	}
 
 	template<typename T>
@@ -445,7 +445,7 @@ namespace OOX
 		if ( pPair != m_mContainer.end())
 			return pPair->second;
 
-		return smart_ptr<OOX::File>( (OOX::File*)new UnknowTypeFile() );
+		return smart_ptr<OOX::File>( (OOX::File*)new UnknowTypeFile(m_pMainDocument) );
 	}
 
 	smart_ptr<OOX::File> IFileContainer::operator [](const FileType& oType)

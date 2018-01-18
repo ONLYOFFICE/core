@@ -33,6 +33,7 @@
 #ifndef OOX_APP_INCLUDE_H_
 #define OOX_APP_INCLUDE_H_
 
+#include "Docx.h"
 #include "File.h"
 #include "../Base/Nullable.h"
 #include "../Common/SimpleTypes_Word.h"
@@ -43,19 +44,21 @@ namespace OOX
 	class CApp : public OOX::File
 	{
 	public:
-		CApp()
+		CApp(OOX::Document* pMain) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pApp = this;
 		}
-		CApp(const CPath& oPath)
+		CApp(OOX::Document* pMain, const CPath& oPath) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pApp = this;
+
 			read( oPath );
 		}
 		virtual ~CApp()
 		{
 		}
-
-
-	public:
 		virtual void read(const CPath& oPath)
 		{
 			XmlUtils::CXmlNode oProperties;
@@ -393,7 +396,6 @@ namespace OOX
 			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 		}
 
-	public:
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::App;

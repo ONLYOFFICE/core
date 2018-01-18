@@ -59,11 +59,11 @@ namespace OOX
 	class CHdrFtr : public OOX::File, public IFileContainer
 	{
 	public:
-		CHdrFtr()
+		CHdrFtr(OOX::Document *pMain) : OOX::File(pMain), IFileContainer(pMain)
 		{
 			m_eType = et_Unknown;
 		}
-		CHdrFtr(const CPath& oRootPath, const CPath& oFilePath)
+		CHdrFtr(OOX::Document *pMain, const CPath& oRootPath, const CPath& oFilePath) : OOX::File(pMain), IFileContainer(pMain)
 		{
 			m_eType = et_Unknown;
 			read( oRootPath, oFilePath );

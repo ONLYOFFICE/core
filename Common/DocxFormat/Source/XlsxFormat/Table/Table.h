@@ -572,11 +572,11 @@ namespace OOX
 		class CTableFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CTableFile()
+			CTableFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 			}
-			CTableFile(const CPath& oRootPath, const CPath& oPath)
+			CTableFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 				read( oRootPath, oPath );

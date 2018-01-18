@@ -33,6 +33,12 @@
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+
+#include "../../Common/DocxFormat/Source/DocxFormat/FontTable.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Styles/TableStyles.h"
+
+#include "../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
+
 #include "../../Common/ASCUtils.h"
 
 namespace DocWrapper {

@@ -42,10 +42,10 @@ namespace OOX
 	class External : public File
 	{
 	public:
-		External()
+		External(OOX::Document* pMain) : File(pMain)
 		{
 		}
-		External(const CPath& uri)
+		External(OOX::Document* pMain, const CPath& uri) : File(pMain)
 		{
 			read(uri);
 		}

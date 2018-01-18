@@ -44,7 +44,7 @@ namespace PPTX
 	class FileContainer : public OOX::IFileContainer
 	{
 	public:
-		FileContainer()
+		FileContainer(OOX::Document *pMain) : OOX::IFileContainer(pMain)
 		{
 			m_lPercent = 0;
 			m_bCancelled = false;

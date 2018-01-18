@@ -1126,10 +1126,17 @@ namespace OOX
 		et_x_Sparkline
 	};
 
+	class Document
+	{
+	public:
+		Document() {}
+		virtual ~Document() {}
+	};
+
 	class WritingElement
 	{
 	public:
-		WritingElement(){}
+		WritingElement(OOX::Document *pMain = NULL) : m_pMainDocument(pMain) {}
 		virtual ~WritingElement() {}
 
 		virtual void			fromXML(XmlUtils::CXmlNode& node)	= 0;
@@ -1139,6 +1146,8 @@ namespace OOX
 			return OOX::et_Unknown;
 		}
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) {}
+
+		OOX::Document *m_pMainDocument;
 	};
 	
 	template<typename ElemType = WritingElement>

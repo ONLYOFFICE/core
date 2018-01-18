@@ -43,13 +43,13 @@ namespace OOX
 		class CPivotCacheRecords : public OOX::File, public OOX::IFileContainer
 		{
 		public:
-			CPivotCacheRecords()
+			CPivotCacheRecords(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 				m_pData = NULL;
 				m_nDataLength = 0;
 			}
-			CPivotCacheRecords(const CPath& oRootPath, const CPath& oPath)
+			CPivotCacheRecords(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 				m_pData = NULL;

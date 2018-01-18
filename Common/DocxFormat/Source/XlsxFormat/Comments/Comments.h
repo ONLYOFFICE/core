@@ -268,11 +268,11 @@ namespace OOX
 		class CComments : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CComments()
+			CComments(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 			}
-			CComments(const CPath& oRootPath, const CPath& oPath)
+			CComments(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 				read( oRootPath, oPath );

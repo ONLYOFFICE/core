@@ -2016,16 +2016,16 @@ namespace BinXlsxRW
 		  m_oBcw(oCBufferedStream),m_pEmbeddedFontsManager(pEmbeddedFontsManager),m_pIndexedColors(pIndexedColors),m_pTheme(pTheme),m_oFontProcessor(oFontProcessor),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 		{
         }
-        void Write(OOX::Spreadsheet::CWorkbook& workbook, boost::unordered_map<std::wstring, OOX::Spreadsheet::CWorksheet*>& aWorksheets)
+		void Write(OOX::Spreadsheet::CWorkbook& workbook,  std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets)
 		{
 			int nStart = m_oBcw.WriteItemWithLengthStart();
-			WriteWorksheets(workbook, aWorksheets);
+			WriteWorksheets(workbook, mapWorksheets);
 			m_oBcw.WriteItemWithLengthEnd(nStart);
         }
-        void WriteWorksheets(OOX::Spreadsheet::CWorkbook& workbook, boost::unordered_map<std::wstring, OOX::Spreadsheet::CWorksheet*>& aWorksheets)
+		void WriteWorksheets(OOX::Spreadsheet::CWorkbook& workbook, std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets)
 		{
 			int nCurPos;
-			//определяем порядок следования
+			//определяем порядок следования .. излинише с vector
 			if(workbook.m_oSheets.IsInit())
 			{
                 for(size_t i = 0; i < workbook.m_oSheets->m_arrItems.size(); ++i)
@@ -2034,11 +2034,11 @@ namespace BinXlsxRW
 
                     if(pSheet->m_oRid.IsInit())
 					{
-                        boost::unordered_map<std::wstring, OOX::Spreadsheet::CWorksheet*>::const_iterator pair = aWorksheets.find(pSheet->m_oRid->GetValue());
-						if(aWorksheets.end() != pair)
+						std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::const_iterator pFind = mapWorksheets.find(pSheet->m_oRid->GetValue());
+						if(mapWorksheets.end() != pFind)
 						{
 							nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Worksheet);
-							WriteWorksheet(*pSheet, *pair->second);
+							WriteWorksheet(*pSheet, *pFind->second);
 							m_oBcw.WriteItemWithLengthEnd(nCurPos);
 						}
 					}
@@ -2972,7 +2972,7 @@ namespace BinXlsxRW
 				{
 					if(oWorksheet.m_oOleObjects.IsInit() && pCellAnchor->m_nId.IsInit())
 					{
-                        boost::unordered_map<int, COleObject*>::const_iterator pFind = oWorksheet.m_oOleObjects->m_mapOleObjects.find(pCellAnchor->m_nId.get());
+                        boost::unordered_map<int, OOX::Spreadsheet::COleObject*>::const_iterator pFind = oWorksheet.m_oOleObjects->m_mapOleObjects.find(pCellAnchor->m_nId.get());
 						if (pFind != oWorksheet.m_oOleObjects->m_mapOleObjects.end())
 						{
 							pCellAnchor->m_bShapeOle = true;
@@ -2987,7 +2987,7 @@ namespace BinXlsxRW
 	//OleObjects
 			if(oWorksheet.m_oOleObjects.IsInit())
 			{
-                for (boost::unordered_map<int, COleObject*>::const_iterator it = oWorksheet.m_oOleObjects->m_mapOleObjects.begin(); it != oWorksheet.m_oOleObjects->m_mapOleObjects.end(); ++it)
+				for (boost::unordered_map<int, OOX::Spreadsheet::COleObject*>::const_iterator it = oWorksheet.m_oOleObjects->m_mapOleObjects.begin(); it != oWorksheet.m_oOleObjects->m_mapOleObjects.end(); ++it)
 				{
 					OOX::Spreadsheet::COleObject*	pOleObject	= it->second;
 					OOX::WritingElement*			pShapeElem	= NULL;
@@ -4384,9 +4384,9 @@ namespace BinXlsxRW
 				m_oBcw = new BinaryCommonWriter(oBufferedStream);
 			int nCurPos;
 			WriteMainTableStart();
-			OOX::Spreadsheet::CStyles* pStyle = oXlsx.GetStyles();
+			OOX::Spreadsheet::CStyles* pStyle = oXlsx.m_pStyles;
 	//SharedString
-			OOX::Spreadsheet::CSharedStrings* pSharedStrings = oXlsx.GetSharedStrings();
+			OOX::Spreadsheet::CSharedStrings* pSharedStrings = oXlsx.m_pSharedStrings;
 			OOX::Spreadsheet::CIndexedColors* pIndexedColors = NULL;
 			if(NULL != pStyle && pStyle->m_oColors.IsInit() && pStyle->m_oColors->m_oIndexedColors.IsInit())
 				pIndexedColors = pStyle->m_oColors->m_oIndexedColors.operator ->();
@@ -4417,7 +4417,7 @@ namespace BinXlsxRW
 			//}
 
 	//Workbook
-			OOX::Spreadsheet::CWorkbook* pWorkbook = oXlsx.GetWorkbook();
+			OOX::Spreadsheet::CWorkbook* pWorkbook = oXlsx.m_pWorkbook;
 			if(NULL != pWorkbook)
 			{
 				nCurPos = WriteTableStart(c_oSerTableTypes::Workbook);
@@ -4428,7 +4428,7 @@ namespace BinXlsxRW
 	//Worksheets
 				nCurPos = WriteTableStart(c_oSerTableTypes::Worksheets);
 				BinaryWorksheetTableWriter oBinaryWorksheetTableWriter(oBufferedStream, pEmbeddedFontsManager, pIndexedColors, oXlsx.GetTheme(), m_oFontProcessor, pOfficeDrawingConverter);
-				oBinaryWorksheetTableWriter.Write(*pWorkbook, oXlsx.GetWorksheets());
+				oBinaryWorksheetTableWriter.Write(*pWorkbook, oXlsx.m_mapWorksheets); 
 				WriteTableEnd(nCurPos);
 			}
 

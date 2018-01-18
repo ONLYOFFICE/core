@@ -47,11 +47,16 @@ namespace OOX
 	{
 	public:
 
-		CEndnotes()
+		CEndnotes(OOX::Document *pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pEndnotes = this;
 		}
-		CEndnotes(const CPath& oRootPath, const CPath& oPath)
+		CEndnotes(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pEndnotes = this;
+
 			read( oRootPath, oPath );
 		}
 		virtual ~CEndnotes()

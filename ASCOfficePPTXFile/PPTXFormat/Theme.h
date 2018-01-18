@@ -43,6 +43,8 @@
 #include "Logic/ClrMap.h"
 
 #include "Presentation.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/Image.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
@@ -52,26 +54,34 @@ namespace PPTX
 	class Theme : public PPTX::WrapperFile, public PPTX::FileContainer
 	{
 	public:
-		Theme()
+		Theme(OOX::Document *pMain) : WrapperFile(pMain), PPTX::FileContainer(pMain)
 		{
 			isThemeOverride = false;
+			
+			OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pTheme = this;
 		}
-		Theme(const OOX::CPath& filename)
+		Theme(OOX::Document *pMain, const OOX::CPath& filename) : WrapperFile(pMain), PPTX::FileContainer(pMain)
 		{
 			FileMap map;
 			
 			isThemeOverride = false;
 			m_map = NULL;
+
+			OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pTheme = this;
+
 			read(filename, map);
 		}
-		Theme(const OOX::CPath& filename, FileMap& map)
+		Theme(OOX::Document *pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), PPTX::FileContainer(pMain)
 		{
 			isThemeOverride = false;
 			m_map = NULL;
+			
+			OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pTheme = this;
+
 			read(filename, map);
-		}
-		virtual ~Theme()
-		{
 		}
 
 		virtual void read(const OOX::CPath& filename, FileMap& map)

@@ -79,13 +79,21 @@ namespace OOX
 		class CWorksheet : public OOX::File, public OOX::IFileContainer
 		{
 		public:
-			CWorksheet()
+			CWorksheet(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 			}
-			CWorksheet(const CPath& oRootPath, const CPath& oPath)
+			CWorksheet(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath, const std::wstring & rId) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if (xlsx)
+				{
+					xlsx->m_arWorksheets.push_back( this );
+					xlsx->m_mapWorksheets.insert( std::make_pair(rId, this) );
+				}
+				
 				read( oRootPath, oPath );
 			}
 			virtual ~CWorksheet()
@@ -138,7 +146,11 @@ namespace OOX
 							else if ( _T("printOptions") == sName )
 								m_oPrintOptions = oReader;
 							else if ( _T("sheetData") == sName )
-								m_oSheetData = oReader;
+							{
+								m_oSheetData.Init();
+								m_oSheetData->m_pMainDocument = OOX::File::m_pMainDocument; //todooo передалать на неявное
+								m_oSheetData->fromXML(oReader);
+							}
 							else if (_T("conditionalFormatting") == sName)
 								m_arrConditionalFormatting.push_back(new CConditionalFormatting(oReader));
 							else if ( _T("sheetFormatPr") == sName )
@@ -425,7 +437,7 @@ namespace OOX
 			}
             const OOX::RId AddHyperlink (std::wstring& sHref)
 			{
-				smart_ptr<OOX::HyperLink> oHyperlink = smart_ptr<OOX::HyperLink>( new OOX::HyperLink( OOX::CPath(sHref, false) ) );
+				smart_ptr<OOX::HyperLink> oHyperlink = smart_ptr<OOX::HyperLink>( new OOX::HyperLink( File::m_pMainDocument, OOX::CPath(sHref, false) ) );
                 std::wstring sExistRId = IsExistHyperlink(oHyperlink);
                 if(sExistRId.empty())
 				{

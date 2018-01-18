@@ -88,7 +88,7 @@ PptxConverter::PptxConverter(const std::wstring & path, const ProgressCallback* 
 
 	const OOX::CPath oox_path(std::wstring(path.c_str()));
 
-	pptx_document = new PPTX::Folder();
+	pptx_document = new PPTX::Document();
 	if (!pptx_document->isValid(oox_path.GetPath())) // true ???
 	{
 		delete pptx_document;

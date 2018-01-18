@@ -41,10 +41,10 @@ namespace OOX
 	class JsaProject : public Media
 	{
 	public:
-		JsaProject()
+		JsaProject( OOX::Document *pMain ) : Media(pMain)
 		{
 		}
-		JsaProject(const CPath& filename)
+		JsaProject(OOX::Document *pMain, const CPath& filename) : Media(pMain)
 		{
 			read(filename);
 		}

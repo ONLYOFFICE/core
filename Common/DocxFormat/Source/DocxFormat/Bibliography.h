@@ -45,20 +45,15 @@ namespace OOX
 	class CBibliography : public OOX::File
 	{
 	public:
-		CBibliography()
+		CBibliography(OOX::Document* pMain) : OOX::File(pMain)
 		{
 
 		}
-		CBibliography(const CPath& oPath)
+		CBibliography(OOX::Document* pMain, const CPath& oPath) : OOX::File(pMain)
 		{
 			read( oPath );
 		}
-		virtual ~CBibliography()
-		{
 
-		}
-
-	public:
 		virtual void read(const CPath& oFilePath)
 		{
 			XmlUtils::CXmlLiteReader oReader;

@@ -163,14 +163,14 @@ namespace OOX
     class CDiagramData : public OOX::File, public OOX::IFileContainer
     {
     public:
-        CDiagramData()
+        CDiagramData(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
         {
         }
-		CDiagramData(const CPath& uri)
+		CDiagramData(OOX::Document* pMain, const CPath& uri) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
 			read(uri.GetDirectory(), uri);
 		}
-		CDiagramData(const CPath& oRootPath, const CPath& oPath)
+		CDiagramData(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
         {
             read( oRootPath, oPath );
         }

@@ -59,6 +59,8 @@ SOURCES += \
     ../Source/DocxFormat/Docx.cpp \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
     ../Source/XlsxFormat/Common.cpp \
+    ../Source/XlsxFormat/Xlsx.cpp \
+    ../Source/XlsxFormat/Worksheets/SheetData.cpp \
     ../Source/DocxFormat/FileFactory.cpp \
     ../Source/DocxFormat/IFileContainer.cpp \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.cpp \

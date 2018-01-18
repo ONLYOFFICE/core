@@ -1105,11 +1105,11 @@ namespace OOX
 		class CExternalLink : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CExternalLink()
+			CExternalLink(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 			}
-			CExternalLink(const CPath& oRootPath, const CPath& oPath)
+			CExternalLink(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 				read( oRootPath, oPath );

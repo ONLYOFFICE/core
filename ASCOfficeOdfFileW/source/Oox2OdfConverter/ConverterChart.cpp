@@ -45,7 +45,10 @@
 #include "../OdfFormat/style_paragraph_properties.h"
 
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
-
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/SharedStrings/SharedStrings.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Styles/Styles.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
 
 namespace Oox2Odf
 {

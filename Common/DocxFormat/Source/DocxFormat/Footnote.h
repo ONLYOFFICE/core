@@ -47,11 +47,16 @@ namespace OOX
 	{
 	public:
 
-		CFootnotes()
+		CFootnotes(OOX::Document *pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pFootnotes = this;
 		}
-		CFootnotes(const CPath& oRootPath, const CPath& oPath)
+		CFootnotes(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pFootnotes = this;
+
 			read( oRootPath, oPath );
 		}
 		virtual ~CFootnotes()

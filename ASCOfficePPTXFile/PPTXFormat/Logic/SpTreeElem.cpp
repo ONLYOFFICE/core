@@ -358,12 +358,12 @@ namespace PPTX
 
 					if (_type == SPTREE_TYPE_AUDIO)	
 					{
-						OOX::Audio *pAudio = new OOX::Audio(pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+						OOX::Audio *pAudio = new OOX::Audio(NULL, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 						p->blipFill.additionalFile = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(pAudio));
 					}
 					else if (_type == SPTREE_TYPE_VIDEO)
 					{
-						OOX::Video* pVideo = new OOX::Video(pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+						OOX::Video* pVideo = new OOX::Video(NULL, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 						p->blipFill.additionalFile = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(pVideo));
 					}
 					

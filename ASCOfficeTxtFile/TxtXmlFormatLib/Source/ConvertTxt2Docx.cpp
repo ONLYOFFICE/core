@@ -32,6 +32,15 @@
 #include "ConvertTxt2Docx.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+
+#include "../../../Common/DocxFormat/Source/DocxFormat/Document.h"
+//#include "../../../Common/DocxFormat/Source/DocxFormat/Numbering.h"
+//#include "../../../Common/DocxFormat/Source/DocxFormat/Comments.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Styles.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Footnote.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/HeaderFooter.h"
+
 #include "TxtFormat/TxtFormat.h"
 #include "TxtXmlEvent.h"
 
@@ -79,7 +88,7 @@ namespace Txt2Docx
 		return;
     }
 
-	Converter_Impl::Converter_Impl(int encoding)
+	Converter_Impl::Converter_Impl(int encoding) : m_outputFile(NULL)
 	{
 		m_inputFile.m_nEncoding = encoding;
 		

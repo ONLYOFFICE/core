@@ -156,7 +156,7 @@ namespace DocFileFormat
 		file.CloseFile();
 
 		OOX::CPath path(sTempXmlFile);
-		OOX::CDocument docEmbedded(path, path);
+		OOX::CDocument docEmbedded(NULL, path, path);
 
 		bool res = false;
         for (std::vector<OOX::WritingElement*>::iterator it = docEmbedded.m_arrItems.begin(); it != docEmbedded.m_arrItems.end(); ++it)

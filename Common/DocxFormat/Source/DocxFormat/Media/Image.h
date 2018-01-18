@@ -40,10 +40,10 @@ namespace OOX
 	class Image : public Media
 	{
 	public:
-		Image(bool bDocument = true) : Media (bDocument)
+		Image(OOX::Document* pMain, bool bDocument = true) : Media (pMain, bDocument)
 		{
 		}
-		Image(const CPath& filename, bool bExternal = false) : Media(filename, bExternal)
+		Image(OOX::Document* pMain, const CPath& filename, bool bExternal = false) : Media(pMain, filename, bExternal)
 		{
 		}
 		virtual ~Image()

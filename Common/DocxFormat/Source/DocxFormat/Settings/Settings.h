@@ -2821,11 +2821,16 @@ namespace OOX
 	class CSettings : public OOX::File
 	{
 	public:
-		CSettings()
+		CSettings(OOX::Document *pMain) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pSettings = this;			
 		}
-		CSettings(const CPath& oPath)
+		CSettings(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pSettings = this;			
+
 			read( oPath );
 		}
 		virtual ~CSettings()

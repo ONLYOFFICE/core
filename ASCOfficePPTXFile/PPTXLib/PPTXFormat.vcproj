@@ -3114,18 +3114,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="VectorML"
-				>
-				<File
-					RelativePath="..\PPTXFormat\DocxFormat\Drawing\LegacyDiagramText.h"
-					>
-				</File>
-				<File
-					RelativePath="..\PPTXFormat\DocxFormat\Drawing\VmlDrawing.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="ViewProps"
 				>
 				<File

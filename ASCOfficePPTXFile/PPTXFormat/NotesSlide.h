@@ -44,10 +44,10 @@ namespace PPTX
 	class NotesSlide : public WrapperFile, public FileContainer
 	{
 	public:
-		NotesSlide()
+		NotesSlide(OOX::Document* pMain) : WrapperFile(pMain), FileContainer(pMain)
 		{
 		}
-		NotesSlide(const OOX::CPath& filename, FileMap& map)
+		NotesSlide(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), FileContainer(pMain)
 		{
 			read(filename, map);
 		}

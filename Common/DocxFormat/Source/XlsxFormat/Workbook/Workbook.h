@@ -33,6 +33,7 @@
 #ifndef OOX_WORKBOOK_FILE_INCLUDE_H_
 #define OOX_WORKBOOK_FILE_INCLUDE_H_
 
+#include "../Xlsx.h"
 #include "../CommonInclude.h"
 
 #include "BookViews.h"
@@ -64,16 +65,22 @@ namespace OOX
 		class CWorkbook : public OOX::File, public OOX::IFileContainer
 		{
 		public:
-			CWorkbook()
+			CWorkbook(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bMacroEnabled	= false;
 				m_bSpreadsheets = true;
+
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if (xlsx) xlsx->m_pWorkbook = this;
 			}
-			CWorkbook(const CPath& oRootPath, const CPath& oPath)
+			CWorkbook(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bMacroEnabled	= false;
 				m_bSpreadsheets = true;				
 				
+  				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if (xlsx) xlsx->m_pWorkbook = this;
+
 				read(oRootPath, oPath);
 			}
 			virtual ~CWorkbook()

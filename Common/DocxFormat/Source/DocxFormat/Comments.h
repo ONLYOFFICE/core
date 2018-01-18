@@ -297,11 +297,16 @@ namespace OOX
 	class CComments : public OOX::File
 	{
 	public:
-		CComments()
+		CComments(OOX::Document *pMain) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pComments = this;			
 		}
-		CComments(const CPath& oPath)
+		CComments(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pComments = this;			
+
 			read( oPath );
 		}
 		virtual ~CComments()
@@ -408,11 +413,16 @@ namespace OOX
 	class CCommentsExt : public OOX::File
 	{
 	public:
-		CCommentsExt()
+		CCommentsExt(OOX::Document *pMain) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pCommentsExt = this;			
 		}
-		CCommentsExt(const CPath& oPath)
+		CCommentsExt(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pCommentsExt = this;			
+
 			read( oPath );
 		}
 		virtual ~CCommentsExt()
@@ -568,11 +578,16 @@ namespace OOX
 	class CPeople : public OOX::File
 	{
 	public:
-		CPeople()
+		CPeople(OOX::Document *pMain) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pPeople = this;			
 		}
-		CPeople(const CPath& oPath)
+		CPeople(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pPeople = this;			
+
 			read( oPath );
 		}
 		virtual ~CPeople()

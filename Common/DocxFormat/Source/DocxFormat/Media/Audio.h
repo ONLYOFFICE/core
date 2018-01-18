@@ -40,10 +40,10 @@ namespace OOX
 	class Audio : public Media
 	{
 	public:
-		Audio(bool bDocument = true) : Media (bDocument)
+		Audio(OOX::Document* pMain, bool bDocument = true) : Media (pMain, bDocument)
 		{
 		}
-		Audio(const CPath& filename, bool bExternal = false) : Media(filename, bExternal)
+		Audio(OOX::Document* pMain, const CPath& filename, bool bExternal = false) : Media(pMain, filename, bExternal)
 		{
 		}
 		virtual ~Audio()

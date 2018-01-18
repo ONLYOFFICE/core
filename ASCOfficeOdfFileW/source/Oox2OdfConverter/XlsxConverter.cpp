@@ -31,6 +31,16 @@
  */
 #include "XlsxConverter.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/SharedStrings/SharedStrings.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Styles/Styles.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/CalcChain/CalcChain.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/ExternalLinks/ExternalLinks.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/ExternalLinks/ExternalLinkPath.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotTable.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheDefinition.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheRecords.h"
 
 #include "../OdfFormat/ods_conversion_context.h"
 
@@ -89,7 +99,7 @@ odf_writer::odf_conversion_context* XlsxConverter::odf_context()
 PPTX::Theme* XlsxConverter::oox_theme()
 {
 	if (xlsx_document)
-		return xlsx_document->GetTheme();
+		return xlsx_document->m_pTheme.operator->();
 	else
 		return NULL;
 }
@@ -159,10 +169,10 @@ void XlsxConverter::convert_sheets()
 {
 	if (!ods_context) return;
 	
-	const OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->GetWorkbook();
+	const OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->m_pWorkbook;
 	if (!Workbook) return;
 
-    boost::unordered_map<std::wstring, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = xlsx_document->GetWorksheets();
+	std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &mapWorksheets = xlsx_document->m_mapWorksheets;
 	
 	if(Workbook->m_oBookViews.IsInit())
 	{	
@@ -180,9 +190,9 @@ void XlsxConverter::convert_sheets()
 			if(pSheet->m_oRid.IsInit())
 			{
                 std::wstring sSheetRId = pSheet->m_oRid.get2().ToString();
-                boost::unordered_map<std::wstring, OOX::Spreadsheet::CWorksheet*>::iterator pItWorksheet = arrWorksheets.find(sSheetRId);
+				std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::iterator pFind = mapWorksheets.find(sSheetRId);
 				
-				if (pItWorksheet->second)
+				if (pFind != mapWorksheets.end())
 				{
 					ods_context->start_sheet();
 						ods_context->current_table().set_table_name(pSheet->m_oName.get2());
@@ -190,7 +200,7 @@ void XlsxConverter::convert_sheets()
 															pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleVeryHidden))
 							ods_context->current_table().set_table_hidden(true);
 						
-						convert(pItWorksheet->second);
+						convert(pFind->second);
 					ods_context->end_sheet();	
 				}
 			}
@@ -567,7 +577,7 @@ void XlsxConverter::convert_sharing_string(int number)
 {
 	if (!ods_context) return;
 	
-	const OOX::Spreadsheet::CSharedStrings *SharedStrings= xlsx_document->GetSharedStrings();
+	const OOX::Spreadsheet::CSharedStrings *SharedStrings= xlsx_document->m_pSharedStrings;
 	if (!SharedStrings) return;
 
     if (number >=0 && number < SharedStrings->m_arrItems.size())
@@ -877,7 +887,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetPr *oox_sheet_pr)
 void XlsxConverter::convert(OOX::Spreadsheet::CWorkbookView *oox_book_views)
 {
 	if (!oox_book_views)return;
-	const OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->GetWorkbook();
+	const OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->m_pWorkbook;
 	if (!Workbook) return;
 
 	ods_context->settings_context()->start_view();
@@ -1208,7 +1218,7 @@ void XlsxConverter::convert_styles()
 	ods_context->styles_context()->create_default_style(odf_types::style_family::TableCell);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-	OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->GetStyles();
+	OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->m_pStyles;
 	
 	if (!xlsx_styles)return;
 //todooo ?? стоит ли обращать на параметр Count ??
@@ -1632,7 +1642,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf_types::
 	}
 	if(color->m_oIndexed.IsInit())
 	{
-		OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->GetStyles();
+		OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->m_pStyles;
 	
 		int ind = color->m_oIndexed->GetValue();
 
@@ -1755,7 +1765,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDxf *dxFmt, int oox_dx_id)
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool automatic, bool root)
 {
-	OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->GetStyles();
+	OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->m_pStyles;
 
 	int id_parent	= xfc_style->m_oXfId.IsInit()		? xfc_style->m_oXfId->GetValue()	: -1; 
 	int fill_id		= xfc_style->m_oFillId.IsInit()		? xfc_style->m_oFillId->GetValue()	: -1;

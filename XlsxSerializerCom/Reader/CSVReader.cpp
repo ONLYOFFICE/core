@@ -39,6 +39,9 @@
 
 #include "../../UnicodeConverter/UnicodeConverter.h"
 #include "../../UnicodeConverter/UnicodeConverter_Encodings.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/SharedStrings/SharedStrings.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Styles/Styles.h"
 
 namespace CSVReader
 {
@@ -230,7 +233,7 @@ namespace CSVReader
 		oXlsx.CreateStyles();
 
 		// Добавим стили для wrap-а
-		OOX::Spreadsheet::CStyles *pStyles = oXlsx.GetStyles();
+		OOX::Spreadsheet::CStyles *pStyles = oXlsx.m_pStyles;
 		pStyles->m_oCellXfs.Init();
 		pStyles->m_oCellXfs->m_oCount.Init();
 		pStyles->m_oCellXfs->m_oCount->SetValue(2);
@@ -267,7 +270,7 @@ namespace CSVReader
 		pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
 
 		std::wstring sSheetRId = L"rId1";
-		OOX::Spreadsheet::CWorksheet* pWorksheet = new OOX::Spreadsheet::CWorksheet();
+		OOX::Spreadsheet::CWorksheet* pWorksheet = new OOX::Spreadsheet::CWorksheet(NULL);
 		pWorksheet->m_oSheetData.Init();
 		
 		OOX::Spreadsheet::CSheet *pSheet = new OOX::Spreadsheet::CSheet();
@@ -279,7 +282,7 @@ namespace CSVReader
 		pSheet->m_oRid.Init();
 		pSheet->m_oRid->SetValue(sSheetRId);
 
-		OOX::Spreadsheet::CWorkbook *pWorkbook = oXlsx.GetWorkbook();
+		OOX::Spreadsheet::CWorkbook *pWorkbook = oXlsx.m_pWorkbook;
 		pWorkbook->m_oSheets.Init();
 		pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
 
@@ -453,7 +456,6 @@ namespace CSVReader
 			}
 		}
 
-        boost::unordered_map<std::wstring, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();
-		arrWorksheets [sSheetRId] = pWorksheet;
+		oXlsx.m_arWorksheets.push_back(pWorksheet);
 	}
 }

@@ -47,10 +47,10 @@ namespace PPTX
 	class NotesMaster : public WrapperFile, public FileContainer
 	{
 	public:
-		NotesMaster()
+		NotesMaster(OOX::Document* pMain) : WrapperFile(pMain), FileContainer(pMain)
 		{
 		}
-		NotesMaster(const OOX::CPath& filename, FileMap& map)
+		NotesMaster(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), FileContainer(pMain)
 		{
 			read(filename, map);
 		}

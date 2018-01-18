@@ -62,10 +62,10 @@ namespace PPTX
 	class SlideLayout : public WrapperFile, public FileContainer
 	{
 	public:
-		SlideLayout()
+		SlideLayout(OOX::Document* pMain) : WrapperFile(pMain), FileContainer(pMain)
 		{
 		}
-		SlideLayout(const OOX::CPath& filename, FileMap& map)
+		SlideLayout(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), FileContainer(pMain)
 		{
 			read(filename, map);
 		}

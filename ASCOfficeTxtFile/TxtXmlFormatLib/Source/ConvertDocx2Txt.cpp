@@ -38,6 +38,14 @@
 #include "TxtFormat/TxtFormat.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Document.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Numbering.h"
+//#include "../../../Common/DocxFormat/Source/DocxFormat/Comments.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Styles.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Footnote.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/HeaderFooter.h"
+
 #include "Common//ToString.h"
 #include <map>
 

@@ -42,6 +42,9 @@
 #include "Media/MediaFile.h"
 #include "Media/WavAudioFile.h"
 
+#include "../../../Common/DocxFormat/Source/DocxFormat/App.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Core.h"
+
 #include "../../../Common/DocxFormat/Source/DocxFormat/Media/Audio.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Media/Video.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
@@ -81,7 +84,7 @@ namespace PPTX
 
 			if (m_OleObjectFile.IsInit() == false && !ole_bin.empty())
 			{
-				m_OleObjectFile = new OOX::OleObject(!mspackage.empty());
+				m_OleObjectFile = new OOX::OleObject(NULL, !mspackage.empty());
 				m_OleObjectFile->set_filename		(ole_bin, false);
 				m_OleObjectFile->set_filename_cache	(ole_image);
 			}
@@ -327,14 +330,14 @@ namespace PPTX
 								
 						if (embedded_type == 0) //unknown ms package
 						{
-							m_OleObjectFile = new OOX::OleObject(true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+							m_OleObjectFile = new OOX::OleObject(NULL, true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 							
 							std::wstring strOlePath = pReader->GetString(_embed_data_size);
 							m_OleObjectFile->set_filename(strOlePath, false); //temp !!! for ImageManager original file name
 						}
 						else if (embedded_type == 1)
 						{
-							m_OleObjectFile = new OOX::OleObject(true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+							m_OleObjectFile = new OOX::OleObject(NULL, true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 
 							int id = pReader->m_lChartNumber++; //todoooo -> countEmbeddedObjects
 							
@@ -379,7 +382,7 @@ namespace PPTX
 				
 							OOX::CPath DocProps = std::wstring(_T("docProps"));
 
-							OOX::CApp* pApp = new OOX::CApp();
+							OOX::CApp* pApp = new OOX::CApp(NULL);
 							if (pApp)
 							{
 								pApp->SetApplication(_T("OnlyOffice"));
@@ -393,7 +396,7 @@ namespace PPTX
 								pApp->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, *pContentTypes);
 								delete pApp;
 							}				
-							OOX::CCore* pCore = new OOX::CCore();
+							OOX::CCore* pCore = new OOX::CCore(NULL);
 							if (pCore)
 							{
 								pCore->SetCreator(_T(""));
@@ -423,7 +426,7 @@ namespace PPTX
 						}
 						else if (embedded_type == 2)
 						{
-							m_OleObjectFile = new OOX::OleObject(true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+							m_OleObjectFile = new OOX::OleObject(NULL, true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 
 							int id = pReader->m_lChartNumber++; //todoooo -> countEmbeddedObjects
 							

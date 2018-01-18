@@ -139,10 +139,10 @@ namespace PPTX
 	public:
 		std::vector<PPTX::Logic::CommentAuthor> m_arAuthors;
 
-		Authors()
+		Authors(OOX::Document* pMain) : WrapperFile(pMain)
 		{
 		}
-		Authors(const OOX::CPath& filename, FileMap& map)
+		Authors(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain)
 		{
 			read(filename, map);
 		}

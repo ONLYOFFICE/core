@@ -887,18 +887,18 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
    
 	CP_XML_WRITER(strm)
 	{
-		//Tutor_Charlotte_Tutor_the_Entire_World_.odt
-		if (get_section_context().dump_.empty() == false && (!ParentId.empty() || get_section_context().get().is_dump_ || in_header_) 
-			 && !get_table_context().in_table() && !in_drawing)
-		{//две подряд секции или если стиль определен и в заголовки нельзя пихать !!!
-			CP_XML_NODE(L"w:pPr")
-			{
-				CP_XML_STREAM() << get_section_context().dump_;
-				get_section_context().dump_.clear();
-			}
-			finish_paragraph();
-			start_paragraph();
-		}
+		////Tutor_Charlotte_Tutor_the_Entire_World_.odt
+		//if (get_section_context().dump_.empty() == false && (!ParentId.empty() || get_section_context().get().is_dump_ || in_header_) 
+		//	 && !get_table_context().in_table() && !in_drawing)
+		//{//две подряд секции или если стиль определен и в заголовки нельзя пихать !!!
+		//	CP_XML_NODE(L"w:pPr")
+		//	{
+		//		CP_XML_STREAM() << get_section_context().dump_;
+		//		get_section_context().dump_.clear();
+		//	}
+		//	finish_paragraph();
+		//	start_paragraph();
+		//}
 
 		if (!paragraph_style.str().empty() || !ParentId.empty())
 		{		

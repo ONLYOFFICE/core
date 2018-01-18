@@ -62,10 +62,10 @@ namespace PPTX
 	class Slide : public WrapperFile, public FileContainer
 	{
 	public:
-		Slide()
+		Slide(OOX::Document* pMain) : WrapperFile(pMain), FileContainer(pMain)
 		{
 		}
-		Slide(const OOX::CPath& filename, FileMap& map)
+		Slide(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), FileContainer(pMain)
 		{
 			read(filename, map);
 		}
@@ -305,7 +305,7 @@ namespace PPTX
 					}
 					case 4:
 					{
-						comments = new PPTX::Comments();
+						comments = new PPTX::Comments(OOX::File::m_pMainDocument);
 						comments->fromPPTY(pReader);
 						break;
 					}

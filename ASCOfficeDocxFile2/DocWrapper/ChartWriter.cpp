@@ -146,7 +146,8 @@ namespace BinXlsxRW{
 	void ChartWriter::toXlsx(OOX::Spreadsheet::CXlsx& oXlsx)
 	{
 		std::vector<std::wstring> aSharedStrings;
-		//Sheet
+		
+		oXlsx.CreateWorkbook();
 		oXlsx.m_pWorkbook->m_oSheets.Init();
 
 		int nSheetId = 1;

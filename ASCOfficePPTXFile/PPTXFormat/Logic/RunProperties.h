@@ -153,6 +153,18 @@ namespace PPTX
 
 				pReader->Skip(1); // start attributes
 
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						default:
+							break;
+					}
+				}
 				while (pReader->GetPos() < _end_rec)
 				{
 					BYTE _at = pReader->GetUChar();
@@ -161,12 +173,10 @@ namespace PPTX
 						case 0:
 						{
 							Fill.fromPPTY(pReader);
-							break;
-						}
+						}break;
 						default:
 						{
-							pReader->SkipRecord();
-						}
+						}break;
 					}
 				}
 				pReader->Seek(_end_rec);
@@ -244,6 +254,18 @@ namespace PPTX
 
 				pReader->Skip(1); // start attributes
 
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						default:
+							break;
+					}
+				}
 				while (pReader->GetPos() < _end_rec)
 				{
 					BYTE _at = pReader->GetUChar();
@@ -252,12 +274,10 @@ namespace PPTX
 						case 0:
 						{
 							Color.fromPPTY(pReader);
-							break;
-						}
+						}break;
 						default:
 						{
-							pReader->SkipRecord();
-						}
+						}break;
 					}
 				}
 				pReader->Seek(_end_rec);
@@ -599,101 +619,82 @@ namespace PPTX
 						case 0:
 						{
 							altLang = pReader->GetString2();
-							break;
-						}
+						}break;
 						case 1:
 						{
 							b = pReader->GetBool();
-							break;
-						}
+						}break;
 						case 2:
 						{
 							baseline = pReader->GetLong();
-							break;
-						}
+						}break;
 						case 3:
 						{
 							bmk = pReader->GetString2();
-							break;
-						}
+						}break;
 						case 4:
 						{
 							cap = new Limit::TextCaps();
 							cap->SetBYTECode(pReader->GetUChar());
-							break;
-						}
+						}break;
 						case 5:
 						{
 							dirty = pReader->GetBool();
-							break;
-						}
+						}break;
 						case 6:
 						{
 							err = pReader->GetBool();
-							break;
-						}
+						}break;
 						case 7:
 						{
 							i = pReader->GetBool();
-							break;
-						}
+						}break;
 						case 8:
 						{
 							kern = pReader->GetLong();
-							break;
-						}
+						}break;
 						case 9:
 						{
 							kumimoji = pReader->GetBool();
-							break;
-						}
+						}break;
 						case 10:
 						{
 							lang = pReader->GetString2();
-							break;
-						}
+						}break;
 						case 11:
 						{
 							noProof = pReader->GetBool(); // noproof
-							break;
-						}
+						}break;
 						case 12:
 						{
 							normalizeH = pReader->GetBool();
-							break;
-						}
+						}break;
 						case 13:
 						{
 							smtClean = pReader->GetBool();
-							break;
-						}
+						}break;
 						case 14:
 						{
 							smtId = pReader->GetLong();
-							break;
-						}
+						}break;
 						case 15:
 						{
 							spc = pReader->GetLong();
-							break;
-						}
+						}break;
 						case 16:
 						{
 							strike = new Limit::TextStrike();
 							strike->SetBYTECode(pReader->GetUChar());
-							break;
-						}
+						}break;
 						case 17:
 						{
 							sz = pReader->GetLong();
-							break;
-						}
+						}break;
 						case 18:
 						{
 							u = new Limit::TextUnderline();
 							u->SetBYTECode(pReader->GetUChar());
-							break;
-						}
+						}break;
 						default:
 							break;
 					}
@@ -708,77 +709,69 @@ namespace PPTX
 						{
 							ln = new Logic::Ln();
 							ln->fromPPTY(pReader);
-							break;
-						}
+						}break;
 						case 1:
 						{
 							Fill.fromPPTY(pReader);
-							break;
-						}
+						}break;
 						case 2:
 						{
 							EffectList.fromPPTY(pReader);
-							break;
-						}
+						}break;
 						case 3:
 						{
 							latin = new Logic::TextFont();
 							latin->m_name = L"a:latin";
 							latin->fromPPTY(pReader);
-							break;
-						}
+						}break;
 						case 4:
 						{
 							ea = new Logic::TextFont();
 							ea->m_name = L"a:ea";
 							ea->fromPPTY(pReader);
-							break;
-						}
+						}break;
 						case 5:
 						{
 							cs = new Logic::TextFont();
 							cs->m_name = L"a:cs";
 							cs->fromPPTY(pReader);
-							break;
-						}
+						}break;
 						case 6:
 						{
 							sym = new Logic::TextFont();
 							sym->m_name = L"a:sym";
 							sym->fromPPTY(pReader);
-							break;
-						}
+						}break;
 						case 7:
 						{
 							hlinkClick = new Logic::Hyperlink(L"hlinkClick");
-							hlinkClick->fromPPTY(pReader);
-							break;
-						}
+							hlinkClick->fromPPTY(pReader);							
+						}break;
 						case 8:
 						{
 							hlinkMouseOver = new Logic::Hyperlink(L"hlinkMouseOver");
 							hlinkMouseOver->fromPPTY(pReader);
-						}
+						}break;
 						case 9:
 						{
 							rtl = new Logic::Rtl();
 							rtl->fromPPTY(pReader);
-						}
+						}break;
 						case 10:
 						{
 							uFill = new Logic::UFillTx(L"a:uFill");
 							uFill->fromPPTY(pReader);
-						}
+						}break;
 						case 11:
 						{
 							uFillTx = new Logic::UFillTx(L"a:uFillTx");
 							uFillTx->fromPPTY(pReader);
-						}
+						}break;
 						case 12:
 						{
 							highlight = new Logic::Highlight();
 							highlight->fromPPTY(pReader);
-						}						
+						}break;					
 						default:
 						{
 							pReader->SkipRecord();

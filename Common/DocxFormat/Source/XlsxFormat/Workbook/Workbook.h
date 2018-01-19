@@ -71,7 +71,10 @@ namespace OOX
 				m_bSpreadsheets = true;
 
 				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
-				if (xlsx) xlsx->m_pWorkbook = this;
+				if (xlsx)
+				{
+					xlsx->m_pWorkbook = this;
+				}
 			}
 			CWorkbook(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
@@ -79,8 +82,10 @@ namespace OOX
 				m_bSpreadsheets = true;				
 				
   				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
-				if (xlsx) xlsx->m_pWorkbook = this;
-
+				if (xlsx)
+				{
+					xlsx->m_pWorkbook = this;
+				}
 				read(oRootPath, oPath);
 			}
 			virtual ~CWorkbook()

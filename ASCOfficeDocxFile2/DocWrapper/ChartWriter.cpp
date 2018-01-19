@@ -147,8 +147,7 @@ namespace BinXlsxRW{
 	{
 		std::vector<std::wstring> aSharedStrings;
 		//Sheet
-		OOX::Spreadsheet::CWorkbook* pWorkbook = oXlsx.m_pWorkbook;
-		pWorkbook->m_oSheets.Init();
+		oXlsx.m_pWorkbook->m_oSheets.Init();
 
 		int nSheetId = 1;
 		OOX::Spreadsheet::CWorksheet* pFirstWorksheet = NULL;
@@ -169,11 +168,11 @@ namespace BinXlsxRW{
 			pSheet->m_oSheetId->SetValue(nSheetId++);
 			
 			smart_ptr<OOX::File> oWorksheetFile = smart_ptr<OOX::File>(pWorksheet);
-			const OOX::RId oRId = pWorkbook->Add(oWorksheetFile);
+			const OOX::RId oRId = oXlsx.m_pWorkbook->Add(oWorksheetFile);
 			pSheet->m_oRid.Init();
 			pSheet->m_oRid->SetValue(oRId.get());
 			
-			pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
+			oXlsx.m_pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
 
 			if(NULL == pFirstWorksheet)
 			{
@@ -182,7 +181,7 @@ namespace BinXlsxRW{
 		}
 
 		//SharedStrings
-		OOX::Spreadsheet::CSharedStrings* pSharedStrings = oXlsx.CreateSharedStrings();
+		oXlsx.CreateSharedStrings();
 		for(size_t i = 0; i < aSharedStrings.size(); ++i)
 		{
 			OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
@@ -194,20 +193,20 @@ namespace BinXlsxRW{
 			}
 			OOX::Spreadsheet::CSi* pSi = new OOX::Spreadsheet::CSi();
 			pSi->m_arrItems.push_back(pText);
-			pSharedStrings->AddSi(pSi);
+			oXlsx.m_pSharedStrings->AddSi(pSi);
 		}
-		pSharedStrings->m_oCount.Init();
-		pSharedStrings->m_oCount->SetValue(pSharedStrings->m_nCount);
-		pSharedStrings->m_oUniqueCount.Init();
-		pSharedStrings->m_oUniqueCount->SetValue(pSharedStrings->m_nCount);
+		oXlsx.m_pSharedStrings->m_oCount.Init();
+		oXlsx.m_pSharedStrings->m_oCount->SetValue(oXlsx.m_pSharedStrings->m_nCount);
+		oXlsx.m_pSharedStrings->m_oUniqueCount.Init();
+		oXlsx.m_pSharedStrings->m_oUniqueCount->SetValue(oXlsx.m_pSharedStrings->m_nCount);
 		//Styles
-		OOX::Spreadsheet::CStyles* pStyles = oXlsx.CreateStyles();
-		pStyles->m_oCellXfs.Init();
+		oXlsx.CreateStyles();
+		oXlsx.m_pStyles->m_oCellXfs.Init();
 		for(size_t i = 0; i < m_aXfs.size(); ++i)
 		{
-			pStyles->m_oCellXfs->m_arrItems.push_back(m_aXfs[i]);
+			oXlsx.m_pStyles->m_oCellXfs->m_arrItems.push_back(m_aXfs[i]);
 		}
-		pStyles->m_oNumFmts.Init();
+		oXlsx.m_pStyles->m_oNumFmts.Init();
 
         for (boost::unordered_map<std::wstring, int>::iterator it = m_mapFormats.begin(); it != m_mapFormats.end(); ++it)
 		{
@@ -216,12 +215,13 @@ namespace BinXlsxRW{
 			pNumFmt->m_oFormatCode->append(it->first);
 			pNumFmt->m_oNumFmtId.Init();
 			pNumFmt->m_oNumFmtId->SetValue(NUMID_START + it->second);
-			pStyles->m_oNumFmts->m_arrItems.push_back(pNumFmt);
+			oXlsx.m_pStyles->m_oNumFmts->m_arrItems.push_back(pNumFmt);
 		}
-		pStyles->m_oNumFmts->m_oCount.Init();
-		pStyles->m_oNumFmts->m_oCount->SetValue(pStyles->m_oNumFmts->m_arrItems.size());
-		pStyles->m_oCellXfs->m_oCount.Init();
-		pStyles->m_oCellXfs->m_oCount->SetValue(pStyles->m_oCellXfs->m_arrItems.size());
+		oXlsx.m_pStyles->m_oNumFmts->m_oCount.Init();
+		oXlsx.m_pStyles->m_oNumFmts->m_oCount->SetValue(oXlsx.m_pStyles->m_oNumFmts->m_arrItems.size());
+		oXlsx.m_pStyles->m_oCellXfs->m_oCount.Init();
+		oXlsx.m_pStyles->m_oCellXfs->m_oCount->SetValue(oXlsx.m_pStyles->m_oCellXfs->m_arrItems.size());
+		
 		OOX::Spreadsheet::CDxf* pDxf = new OOX::Spreadsheet::CDxf();
 		pDxf->m_oBorder.Init();
 		pDxf->m_oBorder->m_oStart.Init();
@@ -248,10 +248,11 @@ namespace BinXlsxRW{
 		pDxf->m_oBorder->m_oBottom->m_oColor.Init();
 		pDxf->m_oBorder->m_oBottom->m_oColor->m_oIndexed.Init();
 		pDxf->m_oBorder->m_oBottom->m_oColor->m_oIndexed->SetValue(12);
-		pStyles->m_oDxfs.Init();
-		pStyles->m_oDxfs->m_arrItems.push_back(pDxf);
-		pStyles->m_oDxfs->m_oCount.Init();
-		pStyles->m_oDxfs->m_oCount->SetValue(pStyles->m_oDxfs->m_arrItems.size());
+		
+		oXlsx.m_pStyles->m_oDxfs.Init();
+		oXlsx.m_pStyles->m_oDxfs->m_arrItems.push_back(pDxf);
+		oXlsx.m_pStyles->m_oDxfs->m_oCount.Init();
+		oXlsx.m_pStyles->m_oDxfs->m_oCount->SetValue(oXlsx.m_pStyles->m_oDxfs->m_arrItems.size());
 		//Table
 		//todo table в случае нескольких sheet или если серии разнесены по sheet
 		if(m_aTableNames.size() > 0)

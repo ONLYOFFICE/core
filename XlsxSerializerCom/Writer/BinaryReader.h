@@ -4494,18 +4494,18 @@ namespace BinXlsxRW
 			if(-1 != nSharedStringsOffBits)
 			{
 				oBufferedStream.Seek(nSharedStringsOffBits);
-				pSharedStrings = oXlsx.CreateSharedStrings();
-				res = BinarySharedStringTableReader(oBufferedStream, *pSharedStrings).Read();
+				oXlsx.CreateSharedStrings();
+				res = BinarySharedStringTableReader(oBufferedStream, *oXlsx.m_pSharedStrings).Read();
 				if(c_oSerConstants::ReadOk != res)
 					return res;
 			}
-			OOX::Spreadsheet::CWorkbook* pWorkbook = oXlsx.CreateWorkbook();
+			oXlsx.CreateWorkbook();
 
             boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>> m_mapPivotCacheDefinitions;
 			if(-1 != nWorkbookOffBits)
 			{
 				oBufferedStream.Seek(nWorkbookOffBits);
-				res = BinaryWorkbookTableReader(oBufferedStream, *pWorkbook, m_mapPivotCacheDefinitions, sOutDir, pOfficeDrawingConverter).Read();
+				res = BinaryWorkbookTableReader(oBufferedStream, *oXlsx.m_pWorkbook, m_mapPivotCacheDefinitions, sOutDir, pOfficeDrawingConverter).Read();
 				if(c_oSerConstants::ReadOk != res)
 					return res;
 			}
@@ -4520,13 +4520,13 @@ namespace BinXlsxRW
 				{
 				case c_oSerTableTypes::Styles:
 					{
-						OOX::Spreadsheet::CStyles* pStyles = oXlsx.CreateStyles();
-						res = BinaryStyleTableReader(oBufferedStream, *pStyles).Read();
+						oXlsx.CreateStyles();
+						res = BinaryStyleTableReader(oBufferedStream, *oXlsx.m_pStyles).Read();
 					}
 					break;
 				case c_oSerTableTypes::Worksheets:
 					{
-						res = BinaryWorksheetsTableReader(oBufferedStream, *pWorkbook, pSharedStrings, oXlsx.m_arWorksheets, oXlsx.m_mapWorksheets, mapMedia, sOutDir, sMediaDir, oSaveParams, pOfficeDrawingConverter, m_mapPivotCacheDefinitions).Read();
+						res = BinaryWorksheetsTableReader(oBufferedStream, *oXlsx.m_pWorkbook, pSharedStrings, oXlsx.m_arWorksheets, oXlsx.m_mapWorksheets, mapMedia, sOutDir, sMediaDir, oSaveParams, pOfficeDrawingConverter, m_mapPivotCacheDefinitions).Read();
 					}
 					break;
 				}

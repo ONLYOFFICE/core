@@ -47,15 +47,12 @@
 
 OOX::Spreadsheet::CXlsx::~CXlsx()
 {
-    if(bDeleteWorkbook)			RELEASEOBJECT(m_pWorkbook);
-    if(bDeleteSharedStrings)	RELEASEOBJECT(m_pSharedStrings);
-    if(bDeleteStyles)			RELEASEOBJECT(m_pStyles);
-    if(bDeleteCalcChain)		RELEASEOBJECT(m_pCalcChain);
-    
     for (size_t i = 0; i < m_arWorksheets.size(); ++i)
     {
         if (bDeleteWorksheets && m_arWorksheets[i])
+		{
             delete m_arWorksheets[i];
+		}
     }
 	m_arWorksheets.clear();
 	m_mapWorksheets.clear();
@@ -75,6 +72,7 @@ bool OOX::Spreadsheet::CXlsx::Read(const CPath& oFilePath)
     for (size_t i = 0; i < m_arWorksheets.size(); i++)
 	{
 		OOX::Spreadsheet::CWorksheet* sheet = m_arWorksheets[i];
+
 //dxf from x14:... to styles
 		if (sheet->m_oExtLst.IsInit() && m_pStyles)
 		{
@@ -155,14 +153,14 @@ bool OOX::Spreadsheet::CXlsx::WriteWorkbook(const CPath& oDirPath)
 		m_pWorkbook->Add(pThemeFile);
 	}
 //SharedStrings
-    if(NULL != m_pSharedStrings && m_pSharedStrings->m_nCount > 0)
+    if(m_pSharedStrings && m_pSharedStrings->m_nCount > 0)
     {
         smart_ptr<OOX::File> pSharedStringsFile(m_pSharedStrings);
         bDeleteSharedStrings = false;
         m_pWorkbook->Add(pSharedStringsFile);
     }
 //Styles
-    if(NULL != m_pStyles)
+    if(m_pStyles)
     {
         smart_ptr<OOX::File> pStylesFile(m_pStyles);
         bDeleteStyles = false;
@@ -177,10 +175,8 @@ bool OOX::Spreadsheet::CXlsx::WriteWorkbook(const CPath& oDirPath)
 }
 void OOX::Spreadsheet::CXlsx::PrepareToWrite()
 {
-    if(NULL != m_pWorkbook)
-        m_pWorkbook->PrepareToWrite();
-    if(NULL != m_pStyles)
-        m_pStyles->PrepareToWrite();
+    if( m_pWorkbook)	m_pWorkbook->PrepareToWrite();
+    if( m_pStyles)		m_pStyles->PrepareToWrite();
 
     for (size_t i = 0; i < m_arWorksheets.size(); ++i)
     {
@@ -189,37 +185,34 @@ void OOX::Spreadsheet::CXlsx::PrepareToWrite()
     }
 }
 
-OOX::Spreadsheet::CWorkbook  *OOX::Spreadsheet::CXlsx::CreateWorkbook ()
+void OOX::Spreadsheet::CXlsx::CreateWorkbook ()
 {
 	if(bDeleteWorkbook)
 		RELEASEOBJECT(m_pWorkbook);
-	m_pWorkbook = new CWorkbook(this);
+	m_pWorkbook = new CWorkbook(NULL);
 	bDeleteWorkbook = true;
-	return m_pWorkbook;
 }
 
-OOX::Spreadsheet::CSharedStrings  *OOX::Spreadsheet::CXlsx::CreateSharedStrings ()
+void OOX::Spreadsheet::CXlsx::CreateSharedStrings ()
 {
 	if(bDeleteSharedStrings)
 		RELEASEOBJECT(m_pSharedStrings);
-	m_pSharedStrings = new CSharedStrings(this);
+	m_pSharedStrings = new CSharedStrings(NULL);
 	bDeleteSharedStrings = true;
-	return m_pSharedStrings;
 }
 
-OOX::Spreadsheet::CStyles  *OOX::Spreadsheet::CXlsx::CreateStyles ()
+void OOX::Spreadsheet::CXlsx::CreateStyles ()
 {
 	if(bDeleteStyles)
 		RELEASEOBJECT(m_pStyles);
-	m_pStyles = new CStyles(this);
+	m_pStyles = new CStyles(NULL);
 	bDeleteStyles = true;
-	return m_pStyles;
 }
 
 void OOX::Spreadsheet::CXlsx::PrepareWorkbook()
 {
 	IFileContainer::m_mapEnumeratedGlobal.clear();
-	if(NULL == m_pWorkbook)
+	if(!m_pWorkbook)
 	{
 		m_pWorkbook = new OOX::Spreadsheet::CWorkbook(this);
 		m_pWorkbook->m_oWorkbookPr.Init();
@@ -293,7 +286,7 @@ void OOX::Spreadsheet::CXlsx::PrepareWorkbook()
 		m_pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
 	}
 	//делаем так чтобы всегда были нулевые стили и первый font всегда имел шрифт и размер
-	if(NULL != m_pStyles )
+	if( m_pStyles )
 	{
 		//Fonts
 		if(false == m_pStyles->m_oFonts.IsInit())
@@ -371,5 +364,95 @@ void OOX::Spreadsheet::CXlsx::PrepareWorkbook()
 			pXfs->m_oNumFmtId->SetValue(0);
 		}
 	}
+	//переносим теги <is> и ячейки с типом str в sharedString если они не перенеслисьпричтении
+	for (size_t i = 0; i < m_arWorksheets.size(); ++i)
+	{
+		PrepareWorksheet(m_arWorksheets[i]);
+	}
 	//todo парсим даты в формате iso 8601
+}
+void OOX::Spreadsheet::CXlsx::PrepareWorksheet(CWorksheet* pWorksheet)
+{
+	if (!pWorksheet) return;
+	if (pWorksheet->m_bPrepareForBinaryWriter) return;
+
+	pWorksheet->m_bPrepareForBinaryWriter = true;
+
+	if(pWorksheet->m_oSheetData.IsInit())
+	{
+        std::vector<OOX::Spreadsheet::CRow*>& aRows = pWorksheet->m_oSheetData->m_arrItems;
+		
+        for(size_t i = 0; i < aRows.size(); ++i)
+		{
+            OOX::Spreadsheet::CRow* pRow = aRows[i];
+			
+            std::vector<OOX::Spreadsheet::CCell*> & aCells = pRow->m_arrItems;
+			
+            for(size_t j = 0; j < aCells.size(); ++j)
+			{
+                OOX::Spreadsheet::CCell* pCell = aCells[j];
+				if (!pCell)continue;
+
+				if(pCell->m_oType.IsInit())
+				{
+					if(SimpleTypes::Spreadsheet::celltypeInlineStr == pCell->m_oType->GetValue())
+					{
+						if(!m_pSharedStrings) CreateSharedStrings();
+						
+						OOX::Spreadsheet::CSi* pSi = pCell->m_oRichText.GetPointerEmptyNullable();
+						if(NULL != pSi)
+						{
+							int nIndex = m_pSharedStrings->AddSi(pSi);
+							//меняем значение ячейки
+							pCell->m_oValue.Init();
+                            pCell->m_oValue->m_sText = std::to_wstring(nIndex);
+							//меняем тип ячейки
+							pCell->m_oType.Init();
+							pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
+						}
+					}
+					else if(SimpleTypes::Spreadsheet::celltypeStr == pCell->m_oType->GetValue() || SimpleTypes::Spreadsheet::celltypeError == pCell->m_oType->GetValue())
+					{
+						if(!m_pSharedStrings) CreateSharedStrings();
+
+						std::wstring sValue;
+						if(pCell->m_oValue.IsInit())
+							sValue = pCell->m_oValue->ToString();
+						//добавляем в SharedStrings
+						CSi* pSi = new CSi();
+						CText* pText =  new CText();
+						pText->m_sText = sValue;
+						pSi->m_arrItems.push_back(pText);
+
+						int nIndex = m_pSharedStrings->AddSi(pSi);
+						//меняем значение ячейки
+						pCell->m_oValue.Init();
+                        pCell->m_oValue->m_sText = std::to_wstring(nIndex);
+						//меняем тип ячейки
+						if(SimpleTypes::Spreadsheet::celltypeStr == pCell->m_oType->GetValue())
+						{
+							pCell->m_oType.Init();
+							pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
+						}
+					}
+					else if(SimpleTypes::Spreadsheet::celltypeBool == pCell->m_oType->GetValue())
+					{
+						//обычно пишется 1/0, но встречается, что пишут true/false
+						if(pCell->m_oValue.IsInit())
+						{
+							SimpleTypes::COnOff<> oOnOff;
+                            std::wstring sVal = pCell->m_oValue->ToString();
+                            oOnOff.FromString(sVal.c_str());
+							pCell->m_oValue.Init();
+							if(oOnOff.ToBool())
+								pCell->m_oValue->m_sText = _T("1");
+							else
+								pCell->m_oValue->m_sText = _T("0");
+						}
+					}
+				}
+				
+			}
+		}
+	}
 }

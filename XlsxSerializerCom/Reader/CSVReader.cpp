@@ -233,10 +233,9 @@ namespace CSVReader
 		oXlsx.CreateStyles();
 
 		// Добавим стили для wrap-а
-		OOX::Spreadsheet::CStyles *pStyles = oXlsx.m_pStyles;
-		pStyles->m_oCellXfs.Init();
-		pStyles->m_oCellXfs->m_oCount.Init();
-		pStyles->m_oCellXfs->m_oCount->SetValue(2);
+		oXlsx.m_pStyles->m_oCellXfs.Init();
+		oXlsx.m_pStyles->m_oCellXfs->m_oCount.Init();
+		oXlsx.m_pStyles->m_oCellXfs->m_oCount->SetValue(2);
 
 		// Normall default
 		OOX::Spreadsheet::CXfs* pXfs = NULL;
@@ -249,7 +248,8 @@ namespace CSVReader
 		pXfs->m_oFontId->SetValue(0);
 		pXfs->m_oNumFmtId.Init();
 		pXfs->m_oNumFmtId->SetValue(0);
-		pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
+		
+		oXlsx.m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
 
 		// Wrap style
 		pXfs = new OOX::Spreadsheet::CXfs();
@@ -267,7 +267,8 @@ namespace CSVReader
 		pXfs->m_oAligment.Init();
 		pXfs->m_oAligment->m_oWrapText.Init();
 		pXfs->m_oAligment->m_oWrapText->SetValue(SimpleTypes::onoffTrue);
-		pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
+		
+		oXlsx.m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
 
 		std::wstring sSheetRId = L"rId1";
 		OOX::Spreadsheet::CWorksheet* pWorksheet = new OOX::Spreadsheet::CWorksheet(NULL);
@@ -282,9 +283,8 @@ namespace CSVReader
 		pSheet->m_oRid.Init();
 		pSheet->m_oRid->SetValue(sSheetRId);
 
-		OOX::Spreadsheet::CWorkbook *pWorkbook = oXlsx.m_pWorkbook;
-		pWorkbook->m_oSheets.Init();
-		pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
+		oXlsx.m_pWorkbook->m_oSheets.Init();
+		oXlsx.m_pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
 
 		NSFile::CFileBinary oFile;
 		if(oFile.OpenFile(sFileName))

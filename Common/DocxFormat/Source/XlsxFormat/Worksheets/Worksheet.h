@@ -82,6 +82,17 @@ namespace OOX
 			CWorksheet(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+				
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if (xlsx)
+				{
+					m_bPrepareForBinaryWriter = true; // подготовка для бинарника при чтении
+					
+					xlsx->m_arWorksheets.push_back( this );
+					//xlsx->m_mapWorksheets.insert( std::make_pair(rId, this) );
+				}
+				else 
+					m_bPrepareForBinaryWriter = false;
 			}
 			CWorksheet(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath, const std::wstring & rId) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
@@ -90,10 +101,14 @@ namespace OOX
 				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
 				if (xlsx)
 				{
+					m_bPrepareForBinaryWriter = true;
+					
 					xlsx->m_arWorksheets.push_back( this );
 					xlsx->m_mapWorksheets.insert( std::make_pair(rId, this) );
 				}
-				
+				else 
+					m_bPrepareForBinaryWriter = false;
+
 				read( oRootPath, oPath );
 			}
 			virtual ~CWorksheet()
@@ -467,9 +482,11 @@ namespace OOX
 				}
 				m_arrConditionalFormatting.clear();
 			}
-			CPath													m_oReadPath;
+			CPath	m_oReadPath;
 
 		public:
+			bool	m_bPrepareForBinaryWriter;
+
 			nullable<OOX::Spreadsheet::CCols>						m_oCols;
 			nullable<OOX::Spreadsheet::CDimension>					m_oDimension;
 			nullable<OOX::Spreadsheet::CDrawingWorksheet>			m_oDrawing;

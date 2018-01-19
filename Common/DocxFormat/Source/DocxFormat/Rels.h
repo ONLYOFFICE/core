@@ -45,8 +45,6 @@
 
 #include "../../../../DesktopEditor/common/File.h"
 
-#include <boost/unordered_map.hpp>
-
 namespace OOX
 {
 	namespace Rels
@@ -172,13 +170,12 @@ namespace OOX
 		}
 		~CRels()
 		{
-            for (boost::unordered_map<std::wstring, Rels::CRelationShip*>::iterator it = m_mapRelations.begin(); it != m_mapRelations.end(); ++it)
+            for (size_t i = 0; i < m_arRelations.size(); ++i)
 			{
-				if ( it->second ) delete it->second;
-				it->second = NULL;
+				if ( m_arRelations[i] ) delete m_arRelations[i];
 			}
+			m_arRelations.clear();
 			m_mapRelations.clear();
-
 		}
 
 		void Read (const CPath& oFilePath)
@@ -210,6 +207,8 @@ namespace OOX
                             if (pRel) 
 							{
 								std::wstring rid = pRel->rId().get();
+								
+								m_arRelations.push_back(pRel);			
 								m_mapRelations.insert(std::make_pair( rid, pRel) );
 							}
                         }
@@ -234,6 +233,8 @@ namespace OOX
                             if (pRel) 
 							{
 								std::wstring rid = pRel->rId().get();
+
+								m_arRelations.push_back(pRel);
 								m_mapRelations.insert(std::make_pair( rid, pRel) );
 							}
                         }
@@ -244,67 +245,75 @@ namespace OOX
 		}
 		void Write(const CPath& oFilePath) const
 		{
-			if ( !m_mapRelations.empty() )
+			if ( m_mapRelations.empty() )return;
+			CPath oFile = CreateFileName( oFilePath );
+			CSystemUtility::CreateDirectories( oFile.GetDirectory() );
+
+			XmlUtils::CXmlWriter oWriter;
+
+			oWriter.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
+
+            oWriter.WriteNodeBegin( _T("Relationships"), true );
+			oWriter.WriteAttribute( _T("xmlns"), _T("http://schemas.openxmlformats.org/package/2006/relationships") );
+            oWriter.WriteNodeEnd( _T("Relationships"), true, false );
+
+			for (size_t i = 0; i < m_arRelations.size(); ++i)
 			{
-				CPath oFile = CreateFileName( oFilePath );
-				CSystemUtility::CreateDirectories( oFile.GetDirectory() );
-
-				XmlUtils::CXmlWriter oWriter;
-
-				oWriter.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
-
-                oWriter.WriteNodeBegin( _T("Relationships"), true );
-				oWriter.WriteAttribute( _T("xmlns"), _T("http://schemas.openxmlformats.org/package/2006/relationships") );
-                oWriter.WriteNodeEnd( _T("Relationships"), true, false );
-
-                for (boost::unordered_map<std::wstring, Rels::CRelationShip*>::const_iterator it = m_mapRelations.begin(); it != m_mapRelations.end(); ++it)
-				{
-					if ( it->second )
-						oWriter.WriteString( it->second->toXML() );
-				}
-
-				oWriter.WriteNodeEnd(_T("Relationships") );
-
-				NSFile::CFileBinary::SaveToFile(oFile.GetPath(), oWriter.GetXmlString());
+				if ( m_arRelations[i] )
+					oWriter.WriteString( m_arRelations[i]->toXML() );
 			}
+
+			oWriter.WriteNodeEnd(_T("Relationships") );
+
+			NSFile::CFileBinary::SaveToFile(oFile.GetPath(), oWriter.GetXmlString());
 		}
 
 
 		void Registration(const RId& rId, const FileType& oType, const CPath& oPath)
 		{
-			if( !( FileTypes::Unknow == oType ) )
-			{
-                std::wstring strFileName	= oPath.m_strFilename;
-                std::wstring strDir		= oPath.GetDirectory() + _T("");
+			if( FileTypes::Unknow == oType ) return;
 
-				if ( L"" == oPath.GetExtention() )
+			std::wstring strFileName	= oPath.m_strFilename;
+            std::wstring strDir			= oPath.GetDirectory() + _T("");
+
+			Rels::CRelationShip* pRel = NULL;
+
+			if ( L"" == oPath.GetExtention() )
+			{
+				if ( oType.RelationType() == L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject" )
 				{
-					if ( oType.RelationType() == L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject" )
-					{
-						strFileName += L".bin";
-						m_mapRelations.insert( std::make_pair( rId.get(), new Rels::CRelationShip( rId, oType.RelationType(), strDir + strFileName )) );
-					}
-					else if ( oType.RelationType() == L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" )
-					{
-						strFileName += L".wmf" ;
-						m_mapRelations.insert( std::make_pair( rId.get(), new Rels::CRelationShip( rId, oType.RelationType(), strDir + strFileName )) );
-					}
+					strFileName += L".bin";
+					pRel = new Rels::CRelationShip( rId, oType.RelationType(), strDir + strFileName );
 				}
-				else
+				else if ( oType.RelationType() == L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" )
 				{
-					m_mapRelations.insert( std::make_pair( rId.get(), new Rels::CRelationShip( rId, oType.RelationType(), oPath.GetPath())));
+					strFileName += L".wmf" ;					
+					pRel = new Rels::CRelationShip( rId, oType.RelationType(), strDir + strFileName );
 				}
+			}
+			else
+			{
+				pRel = new Rels::CRelationShip( rId, oType.RelationType(), oPath.GetPath());
+				
+			}
+			if (pRel)
+			{
+				m_arRelations.push_back(pRel);
+				m_mapRelations.insert( std::make_pair( rId.get(), pRel));
 			}
 		}
 		void Registration(const RId& rId, const smart_ptr<External> pExternal)
 		{
-			m_mapRelations.insert( std::make_pair( rId.get(), new Rels::CRelationShip( rId, pExternal )) );
+			Rels::CRelationShip* pRel = new Rels::CRelationShip( rId, pExternal );
+			
+			m_arRelations.push_back(pRel);
+			m_mapRelations.insert( std::make_pair( rId.get(), pRel) );
 		}
 		void GetRel(const RId& rId, Rels::CRelationShip** ppRelationShip)
 		{
 			(*ppRelationShip) = NULL;
 
-            boost::unordered_map<std::wstring, Rels::CRelationShip*>::iterator pFind = m_mapRelations.find(rId.get());
+            std::map<std::wstring, Rels::CRelationShip*>::iterator pFind = m_mapRelations.find(rId.get());
 			if (pFind != m_mapRelations.end())
 			{
 				(*ppRelationShip) = pFind->second;
@@ -326,7 +335,8 @@ namespace OOX
 
 	public:
 
-        boost::unordered_map<std::wstring, Rels::CRelationShip*> m_mapRelations;
+		std::vector<Rels::CRelationShip*>				m_arRelations;
+		std::map<std::wstring, Rels::CRelationShip*>	m_mapRelations;
 	};
 
 } // namespace OOX

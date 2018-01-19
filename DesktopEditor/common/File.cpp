@@ -52,7 +52,9 @@ namespace NSFile
         m_pFile = fopen(fileSystemRepresentation(sFileName), bRewrite ? "rb+" : "rb");
         
         if (NULL == m_pFile) {
+#if DEBUG
             printf ("NSFile::OpenFile - error open file : %s\n",strerror(errno));
+#endif
             return false;
         }
         
@@ -84,7 +86,9 @@ namespace NSFile
         m_pFile = fopen(fileSystemRepresentation(sFileName), "wb");
         
         if (NULL == m_pFile) {
+#if DEBUG
             printf ("NSFile::CreateFileW - error create file : %s\n",strerror(errno));
+#endif
             return false;
         }
         

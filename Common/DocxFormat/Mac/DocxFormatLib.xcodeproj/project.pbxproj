@@ -214,6 +214,7 @@
 		690FE0821E9BBA23004B26D0 /* DiagramData.h in Headers */ = {isa = PBXBuildFile; fileRef = 690FE0801E9BBA23004B26D0 /* DiagramData.h */; };
 		690FE0831E9BBA23004B26D0 /* DiagramDrawing.h in Headers */ = {isa = PBXBuildFile; fileRef = 690FE0811E9BBA23004B26D0 /* DiagramDrawing.h */; };
 		691C3E131F20C3D500F1775E /* File.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 691C3E121F20C3D500F1775E /* File.cpp */; };
+		69B3ADA920120093000EC6A7 /* VmlDrawing.h in Headers */ = {isa = PBXBuildFile; fileRef = 69B3ADA820120093000EC6A7 /* VmlDrawing.h */; };
 		69F181EC1C7734A700B2952B /* strings_hack_printf.h in Headers */ = {isa = PBXBuildFile; fileRef = 69F181EA1C7734A700B2952B /* strings_hack_printf.h */; };
 /* End PBXBuildFile section */
 
@@ -433,6 +434,7 @@
 		690FE0801E9BBA23004B26D0 /* DiagramData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiagramData.h; sourceTree = "<group>"; };
 		690FE0811E9BBA23004B26D0 /* DiagramDrawing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiagramDrawing.h; sourceTree = "<group>"; };
 		691C3E121F20C3D500F1775E /* File.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp.preprocessed; fileEncoding = 4; path = File.cpp; sourceTree = "<group>"; };
+		69B3ADA820120093000EC6A7 /* VmlDrawing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VmlDrawing.h; sourceTree = "<group>"; };
 		69F181EA1C7734A700B2952B /* strings_hack_printf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = strings_hack_printf.h; path = ../../Common/DocxFormat/Source/Base/strings_hack_printf.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -590,6 +592,7 @@
 				17E6A0921AC4262700F28F8B /* Styles.h */,
 				17E6A0961AC4262700F28F8B /* Unit.h */,
 				17E6A0971AC4262700F28F8B /* UnknowTypeFile.h */,
+				69B3ADA820120093000EC6A7 /* VmlDrawing.h */,
 				17E6A0981AC4262700F28F8B /* WritingElement.h */,
 			);
 			path = DocxFormat;
@@ -944,6 +947,7 @@
 				17C1FBE61ACC4250006B99B3 /* ComplexTypes_Spreadsheet.h in Headers */,
 				17C1FBE71ACC4250006B99B3 /* Workbook.h in Headers */,
 				17C1FBE81ACC4250006B99B3 /* RunProperty.h in Headers */,
+				69B3ADA920120093000EC6A7 /* VmlDrawing.h in Headers */,
 				17C1FBEA1ACC4250006B99B3 /* Sheets.h in Headers */,
 				17C1FBEB1ACC4250006B99B3 /* Index.h in Headers */,
 				17C1FBEC1ACC4250006B99B3 /* dxf.h in Headers */,

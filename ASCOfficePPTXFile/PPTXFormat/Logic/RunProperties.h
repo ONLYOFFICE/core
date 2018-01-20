@@ -185,6 +185,7 @@ namespace PPTX
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(m_name);
+				pWriter->EndAttributes();
 				Fill.toXmlWriter(pWriter);
 				pWriter->EndNode(m_name);
 			}
@@ -286,6 +287,7 @@ namespace PPTX
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(L"a:highlight");
+				pWriter->EndAttributes();
 					Color.toXmlWriter(pWriter);
 				pWriter->EndNode(L"a:highlight");
 			}
@@ -498,7 +500,6 @@ namespace PPTX
 				pWriter->Write(hlinkMouseOver);
 				pWriter->Write(rtl);
 				pWriter->Write(uFill);
-				pWriter->Write(uFillTx);
 				pWriter->Write(uFillTx);
 				pWriter->Write(highlight);
 

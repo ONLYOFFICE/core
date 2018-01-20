@@ -162,6 +162,7 @@ namespace PPTX
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(_T("p:controls"));
+				pWriter->EndAttributes();
 
 				for (size_t i = 0; i < arrControls.size(); ++i)
 					arrControls[i].toXmlWriter(pWriter);

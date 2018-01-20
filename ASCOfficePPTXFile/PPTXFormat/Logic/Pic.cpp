@@ -1148,7 +1148,7 @@ namespace PPTX
 		{
 			double trim = 0.0;
 			
-			if (parentFileIs<Slide>())
+			if (parentFileIs<FileContainer>())
 			{
 				if (nvPicPr.nvPr.media.is<MediaFile>())
 				{
@@ -1156,7 +1156,7 @@ namespace PPTX
 						(nvPicPr.nvPr.media.as<MediaFile>().name == _T("quickTimeFile")) ||
 						(nvPicPr.nvPr.media.as<MediaFile>().name == _T("audioFile")) )
 					{
-						if (std::wstring (_T("NULL")) == parentFileAs<Slide>().GetLinkFromRId(nvPicPr.nvPr.media.as<MediaFile>().link.get()) )	//	HAVE TRIM
+						if (std::wstring (_T("NULL")) == parentFileAs<FileContainer>().GetLinkFromRId(nvPicPr.nvPr.media.as<MediaFile>().link.get()) )	//	HAVE TRIM
 						{
 							if(nvPicPr.nvPr.extLst.size())
 							{
@@ -1175,15 +1175,15 @@ namespace PPTX
 		{
 			double trim = -1.0;
 			
-			if (parentFileIs<Slide>())
+			if (nvPicPr.nvPr.media.is<MediaFile>())
 			{
-				if (nvPicPr.nvPr.media.is<MediaFile>())
+				if ((nvPicPr.nvPr.media.as<MediaFile>().name == _T("videoFile")) ||
+					(nvPicPr.nvPr.media.as<MediaFile>().name == _T("quickTimeFile")) ||
+					(nvPicPr.nvPr.media.as<MediaFile>().name == _T("audioFile")) )
 				{
-					if ((nvPicPr.nvPr.media.as<MediaFile>().name == _T("videoFile")) ||
-						(nvPicPr.nvPr.media.as<MediaFile>().name == _T("quickTimeFile")) ||
-						(nvPicPr.nvPr.media.as<MediaFile>().name == _T("audioFile")) )
+					if (parentFileIs<FileContainer>())
 					{
-						if (std::wstring (_T("NULL")) == parentFileAs<Slide>().GetLinkFromRId(nvPicPr.nvPr.media.as<MediaFile>().link.get()))	//	HAVE TRIM
+						if (std::wstring (_T("NULL")) == parentFileAs<FileContainer>().GetLinkFromRId(nvPicPr.nvPr.media.as<MediaFile>().link.get()))	//	HAVE TRIM
 						{
 							if(nvPicPr.nvPr.extLst.size())
 							{

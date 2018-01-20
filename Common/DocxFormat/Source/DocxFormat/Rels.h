@@ -45,6 +45,8 @@
 
 #include "../../../../DesktopEditor/common/File.h"
 
+#include <boost/unordered_map.hpp>
+
 namespace OOX
 {
 	namespace Rels
@@ -313,7 +315,7 @@ namespace OOX
 		{
 			(*ppRelationShip) = NULL;
 
-            std::map<std::wstring, Rels::CRelationShip*>::iterator pFind = m_mapRelations.find(rId.get());
+            boost::unordered_map<std::wstring, Rels::CRelationShip*>::iterator pFind = m_mapRelations.find(rId.get());
 			if (pFind != m_mapRelations.end())
 			{
 				(*ppRelationShip) = pFind->second;
@@ -336,7 +338,7 @@ namespace OOX
 	public:
 
 		std::vector<Rels::CRelationShip*>				m_arRelations;
-		std::map<std::wstring, Rels::CRelationShip*>	m_mapRelations;
+		boost::unordered_map<std::wstring, Rels::CRelationShip*>	m_mapRelations;
 	};
 
 } // namespace OOX

@@ -110,11 +110,9 @@ namespace PPTX
 						return p->filename().m_strFilename;
 				}
 
-				if(parentFileIs<Slide>())				return parentFileAs<Slide>().GetImagePathNameFromRId(*embed);
-				else if(parentFileIs<SlideLayout>())	return parentFileAs<SlideLayout>().GetImagePathNameFromRId(*embed);
-				else if(parentFileIs<SlideMaster>())	return parentFileAs<SlideMaster>().GetImagePathNameFromRId(*embed);
-				else if(parentFileIs<Theme>())			return parentFileAs<Theme>().GetImagePathNameFromRId(*embed);
-				else if(parentFileIs<NotesSlide>())		return parentFileAs<NotesSlide>().GetImagePathNameFromRId(*embed);
+				if(parentFileIs<FileContainer>())
+					return parentFileAs<FileContainer>().GetImagePathNameFromRId(*embed);
+
 				return _T("");
 			}
 			else if(link.IsInit())
@@ -126,11 +124,9 @@ namespace PPTX
 						return p->filename().m_strFilename;
 				}
 
-				if(parentFileIs<Slide>())					return parentFileAs<Slide>().GetImagePathNameFromRId(*link);
-				else if(parentFileIs<SlideLayout>())		return parentFileAs<SlideLayout>().GetImagePathNameFromRId(*link);
-				else if(parentFileIs<SlideMaster>())		return parentFileAs<SlideMaster>().GetImagePathNameFromRId(*link);
-				else if(parentFileIs<Theme>())				return parentFileAs<Theme>().GetImagePathNameFromRId(*link);
-				else if(parentFileIs<NotesSlide>())			return parentFileAs<NotesSlide>().GetImagePathNameFromRId(*link);
+				if(parentFileIs<FileContainer>())
+					return parentFileAs<FileContainer>().GetImagePathNameFromRId(*link);
+
 				return _T("");
 			}
 			return _T("");
@@ -140,12 +136,7 @@ namespace PPTX
 			smart_ptr<OOX::OleObject> pOleObject;
 			
 			if (pRels != NULL)						pOleObject = pRels->Get<OOX::OleObject>(oRId);
-
-			else if(parentFileIs<Slide>())			pOleObject = parentFileAs<Slide>().Get<OOX::OleObject>(oRId);
-			else if(parentFileIs<SlideLayout>())	pOleObject = parentFileAs<SlideLayout>().Get<OOX::OleObject>(oRId);
-			else if(parentFileIs<SlideMaster>())	pOleObject = parentFileAs<SlideMaster>().Get<OOX::OleObject>(oRId);
-			else if(parentFileIs<Theme>())			pOleObject = parentFileAs<Theme>().Get<OOX::OleObject>(oRId);
-			else if(parentFileIs<NotesSlide>())		pOleObject = parentFileAs<NotesSlide>().Get<OOX::OleObject>(oRId);
+			else if(parentFileIs<FileContainer>())	pOleObject = parentFileAs<FileContainer>().Get<OOX::OleObject>(oRId);
 			
 			if (pOleObject.IsInit())
 				return pOleObject->filename().m_strFilename;

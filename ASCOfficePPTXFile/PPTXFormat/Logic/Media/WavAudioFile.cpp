@@ -57,11 +57,8 @@ namespace PPTX
 			}
 			if(sLink.empty())
 			{
-					 if(parentFileIs<Slide>())			sLink = parentFileAs<Slide>().GetLinkFromRId(rid);
-				else if(parentFileIs<SlideLayout>())	sLink = parentFileAs<SlideLayout>().GetLinkFromRId(rid);
-				else if(parentFileIs<SlideMaster>())	sLink = parentFileAs<SlideMaster>().GetLinkFromRId(rid);
-				else if(parentFileIs<Theme>())			sLink = parentFileAs<Theme>().GetLinkFromRId(rid);
-				else if(parentFileIs<NotesSlide>())		sLink = parentFileAs<NotesSlide>().GetLinkFromRId(rid);
+				 if(parentFileIs<FileContainer>())
+					 sLink = parentFileAs<FileContainer>().GetLinkFromRId(rid);
 			}
 
 			return sLink;

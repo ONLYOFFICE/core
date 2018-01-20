@@ -33,9 +33,12 @@
 #ifndef PPTX_IFILE_CONTAINER_INCLUDE_H_
 #define PPTX_IFILE_CONTAINER_INCLUDE_H_
 
-#include "../../Common/DocxFormat/Source/DocxFormat/IFileContainer.h"
 #include "FileMap.h"
 #include "PPTXEvent.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/IFileContainer.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/Image.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/External/External.h"
 
 namespace PPTX
 {
@@ -52,7 +55,32 @@ namespace PPTX
 		virtual ~FileContainer()
 		{
 		}
+		virtual std::wstring GetImagePathNameFromRId(const OOX::RId& rid)const
+		{
+			smart_ptr<OOX::Image> p = Get<OOX::Image>(rid);
+			if (!p.is_init())
+				return _T("");
+			return p->filename().m_strFilename;
+		}
+		virtual std::wstring GetLinkFromRId(const OOX::RId& rid)const
+		{
+			smart_ptr<OOX::External> pExt = Find(rid).smart_dynamic_cast<OOX::External>();
+			if (pExt.IsInit())
+				return pExt->Uri().m_strFilename;
 
+			smart_ptr<OOX::Media> pMedia = Find(rid).smart_dynamic_cast<OOX::Media>();
+			if (pMedia.IsInit())
+				return pMedia->filename().m_strFilename;
+
+			return _T("");
+		}
+		virtual std::wstring GetOleFromRId(const OOX::RId& rid)const
+		{
+			smart_ptr<OOX::OleObject> p = Get<OOX::OleObject>(rid);
+			if (!p.is_init())
+				return _T("");
+			return p->filename().m_strFilename;
+		}
 	protected:
 		void read(const OOX::CPath& filename);
 		void read(const OOX::CRels& rels, const OOX::CPath& path);

@@ -110,6 +110,11 @@ namespace DocFileFormat
 			unused2		=	Reader->ReadByte();
 			unused3		=	Reader->ReadByte();
 
+			if (btMacOS != btWin32)
+			{
+				btWin32 = btMacOS = (Global::BlipType)this->Instance;
+			}
+
 			if (BodySize > 0x24)
 			{
 				Blip	=	RecordFactory::ReadRecord(Reader, 0);

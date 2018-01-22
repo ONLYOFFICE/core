@@ -500,6 +500,7 @@ namespace DocFileFormat
 			{
 				case Global::msoblipEMF:
 				case Global::msoblipWMF:
+				case Global::msoblipPICT:
 				{
 					MetafilePictBlip* metaBlip = static_cast<MetafilePictBlip*>(oBlipEntry->Blip);
 					if (metaBlip)
@@ -567,6 +568,9 @@ namespace DocFileFormat
 		case Global::msoblipWMF:
 			return std::wstring(L".wmf");
 
+		case Global::msoblipPICT:
+			return std::wstring(L".pcz");
+
 		default:
 			return std::wstring(L".png");
 		}
@@ -600,6 +604,9 @@ namespace DocFileFormat
 
 		case Global::msoblipWMF:
 			return std::wstring(OpenXmlContentTypes::Wmf);
+
+		case Global::msoblipPICT:
+			return std::wstring(OpenXmlContentTypes::Pcz);
 
 		case Global::msoblipDIB:
 			return std::wstring(OpenXmlContentTypes::Bmp);

@@ -165,7 +165,7 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 						isCompressed = true;
 						readCompressedData(record, metafileHeader);
 					}
-					pict_type = L".pic";///???? todooo
+					pict_type = L".pcz";///???? todooo
 				}
 				break;				
 			case OfficeArtRecord::BlipJPEG:

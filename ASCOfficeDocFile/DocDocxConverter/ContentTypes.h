@@ -69,6 +69,7 @@ namespace OpenXmlContentTypes
     static const wchar_t* Tiff					=	L"image/tiff";
     static const wchar_t* Wmf					=	L"image/x-wmf";
     static const wchar_t* Bmp					=	L"image/bmp";
+	static const wchar_t* Pcz					=	L"image/x-pcz";
 }
 
 namespace WordprocessingMLContentTypes

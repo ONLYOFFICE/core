@@ -1540,9 +1540,10 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
 							pPicture->oleObject.reset(pOle);
 							pOle = NULL;								
 						}
-						if (pElem)
-							m_pBinaryWriter->WriteRecord1(1, *pElem);
 					}
+					if (pElem)
+						m_pBinaryWriter->WriteRecord1(1, *pElem);
+
 					RELEASEOBJECT(pElem)
 					RELEASEOBJECT(pOle)
 				}

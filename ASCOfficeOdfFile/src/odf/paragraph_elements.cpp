@@ -39,7 +39,6 @@
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/utils.h>
 #include <cpdoccore/common/readstring.h>
 #include <cpdoccore/odf/odf_document.h>
@@ -742,7 +741,7 @@ std::wostream & title::text_to_stream(std::wostream & _Wostream) const
 
 void title::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    common_field_fixed_attlist_.add_attributes(Attributes);
+    attlist_.add_attributes(Attributes);
 }
 
 void title::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -806,7 +805,7 @@ std::wostream & subject::text_to_stream(std::wostream & _Wostream) const
 
 void subject::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    common_field_fixed_attlist_.add_attributes(Attributes);
+    attlist_.add_attributes(Attributes);
 }
 
 void subject::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -823,8 +822,8 @@ void subject::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & strm = Context.output_stream();
     Context.finish_run();
-    strm << L"<w:r><w:fldChar w:fldCharType=\"begin\" /></w:r>";
-    strm << L"<w:r><w:instrText>SUBJECT</w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"separate\" /></w:r>";
+    strm << L"<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>";
+    strm << L"<w:r><w:instrText>SUBJECT</w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
     Context.add_new_run();
 	
 	std::wstring textNode = L"w:t";
@@ -838,7 +837,7 @@ void subject::docx_convert(oox::docx_conversion_context & Context)
     strm << L"</" << textNode << L">"; 
     
 	Context.finish_run();
-    strm << L"<w:r><w:fldChar w:fldCharType=\"end\" /></w:r>";
+    strm << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
 }
 
 void subject::xlsx_convert(oox::xlsx_conversion_context & Context)
@@ -869,7 +868,7 @@ std::wostream & chapter::text_to_stream(std::wostream & _Wostream) const
 
 void chapter::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    common_field_fixed_attlist_.add_attributes(Attributes);
+    attlist_.add_attributes(Attributes);
 }
 
 void chapter::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -1379,9 +1378,77 @@ void sequence::pptx_convert(oox::pptx_conversion_context & Context)
         text_[i]->pptx_convert(Context);
     }
 }
+//-------------------------------------------------------------------------------------------------------------------
+// text:drop-down
+//-------------------------------------------------------------------------------------------------------------------
+const wchar_t * text_drop_down::ns		= L"text";
+const wchar_t * text_drop_down::name	= L"drop-down";
 
-// text:sequesheet-namence
-//////////////////////////////////////////////////////////////////////////////////////////////////
+void text_drop_down::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"text:name", text_name_);
+}
+
+void text_drop_down::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	if CP_CHECK_NAME(L"text", L"label")
+	{
+		CP_CREATE_ELEMENT(content_);
+	}
+	else
+	{
+	}
+}
+
+void text_drop_down::add_text(const std::wstring & Text) 
+{
+    text_ = Text;
+}
+std::wostream & text_drop_down::text_to_stream(std::wostream & _Wostream) const
+{
+    _Wostream << xml::utils::replace_text_to_xml( text_ );
+    return _Wostream;
+}
+
+void text_drop_down::docx_convert(oox::docx_conversion_context & Context) 
+{
+    std::wostream & strm = Context.output_stream();
+	Context.finish_run();
+	
+	strm << L"<w:r><w:fldChar w:fldCharType=\"begin\"><w:ffData><w:name w:val=\"" << text_name_.get_value_or(L"") << L"\"/><w:enabled/>";
+
+	strm << L"<w:ddList><w:result w:val=\"0\"/>";
+	for (size_t i = 0; i < content_.size(); i++)
+    {
+        content_[i]->docx_convert(Context);
+    }
+	strm << L"</w:ddList></w:ffData>";
+
+	strm << L"</w:fldChar></w:r>";
+	strm << L"<w:r><w:instrText>FORMDROPDOWN</w:instrText></w:r>";
+	strm << L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
+	strm << L"<w:r><w:t>" << text_ << L"</w:t></w:r>";
+    strm << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
+}
+//-------------------------------------------------------------------------------------------------------------------
+// text:label
+//-------------------------------------------------------------------------------------------------------------------
+const wchar_t * text_label::ns		= L"text";
+const wchar_t * text_label::name	= L"label";
+
+void text_label::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"text:value", text_value_);
+}
+void text_label::docx_convert(oox::docx_conversion_context & Context) 
+{
+    std::wostream & strm = Context.output_stream();
+	
+	strm << L"<w:listEntry w:val=\"" << text_value_.get_value_or(L"") << L"\"/>";
+}
+//-------------------------------------------------------------------------------------------------------------------
+// text:sheet-name
+//-------------------------------------------------------------------------------------------------------------------
 const wchar_t * sheet_name::ns = L"text";
 const wchar_t * sheet_name::name = L"sheet-name";
 

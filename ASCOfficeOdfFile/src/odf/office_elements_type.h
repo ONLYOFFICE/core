@@ -69,14 +69,22 @@ enum ElementType
     typeTextTime,
     typeTextModificationTime,
     typeTextFileName,
-    typeTextSequence,
     typeTextSheetName,
+    typeTextTemplateName,
+	typeTextDropDown,
+	typeTextLabel,
+
+    typeTextSequenceDecls,
+    typeTextSequenceDecl,
+    typeTextSequence,
 
 	typePresentationFooter,
 	typePresentationDateTime,
 
 	typeDcCreator,
 	typeDcDate,
+
+	typeDrawA,
 
     typeTextH,
     typeTextP,
@@ -90,28 +98,42 @@ enum ElementType
     typeTextSectionSource,
     typeTextIndexTitle,
     typeTextIndexBody,
-
-    typeTextNumberedParagraph,    
-   
-    typeDrawA,
+    typeTextNumberedParagraph, 
+	typeTextExpression,    
 
     typeTextTableOfContent,
-    typeTextIllustrationIndex,
-    typeTextTableIndex,
-    typeTextObjectIndex,
-    typeTextUserIndex,
-    typeTextAlphabeticalIndex,
-    typeTextBibliography,
-
-	typeTextBibliographyMark,
-  	
     typeTextTableOfContentSource,
+    
+	typeTextIllustrationIndex,
     typeTextIllustrationIndexSource,
+   
+	typeTextTableIndex,
     typeTextTableIndexSource,
+    
+	typeTextObjectIndex,
     typeTextObjectIndexSource,
+   
+	typeTextUserIndex,
     typeTextUserIndexSource,
+    
+	typeTextAlphabeticalIndex,
     typeTextAlphabeticalIndexSource,
-    typeTextBibliographySource,
+   
+	typeTextBibliography,
+	typeTextBibliographyMark,
+    typeTextBibliographySource,  	
+
+	typeTextVariableInput,
+	typeTextVariableGet,
+	typeTextVariableSet,
+	typeTextVariableDecl,
+	typeTextVariableDecls,
+
+	typeTextUserFieldDecls,
+	typeTextUserFieldDecl,
+	typeTextUserFieldGet,
+	typeTextUserFieldSet,
+	typeTextUserFieldInput,
 
 	typeTextTrackedChanges,
 	typeTextChangedRegion,
@@ -124,6 +146,11 @@ enum ElementType
 	typeTextDeletion,
 	typeTextFormatChange,
 	typeTextInsertion,
+
+	typeTextMeta,
+	typeTextMetaField,
+
+	typeTextTextInput,
 
 	typeShape,
     typeChangeMarks,

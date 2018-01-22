@@ -36,7 +36,6 @@
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/attributes.h>
 
 #include <cpdoccore/odf/odf_document.h>
 

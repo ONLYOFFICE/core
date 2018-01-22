@@ -34,7 +34,7 @@
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/attributes.h>
+#include <cpdoccore/xml/utils.h>
 
 #include "paragraph_elements.h"
 #include "serialize_elements.h"
@@ -341,13 +341,13 @@ void paragraph::drop_cap_text_docx_convert(office_element_ptr first_text_element
 	int textStyle = process_paragraph_attr(attrs_, Context);
 	first_text_paragraph->docx_convert(Context); 
 
-	int str_start	= Context.get_drop_cap_context().Length;
-	int str_size	= store_str.length()-Context.get_drop_cap_context().Length;
+	size_t str_start	= Context.get_drop_cap_context().Length;
+	size_t str_size	= store_str.length() - Context.get_drop_cap_context().Length;
 
 	if (str_size < 0) str_size = 0;										// это если на буквы в буквице разные стили
 	if (str_start > store_str.length()) str_start = store_str.length(); // это если на буквы в буквице разные стили
 
-	str=store_str.substr(str_start, str_size);
+	str = store_str.substr(str_start, str_size);
 }
 
 size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
@@ -1424,7 +1424,119 @@ void text_change_end::docx_convert(oox::docx_conversion_context & Context)
 {
 	Context.end_text_changes (*text_change_id_);
 }
+//---------------------------------------------------------------------------------------------------
+const wchar_t * text_variable_input::ns		= L"text";
+const wchar_t * text_variable_input::name	= L"variable-input";
 
+void text_variable_input::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"office:value-type",		office_value_type_);
+	CP_APPLY_ATTR(L"style:data-style-name",	style_data_style_name_);
+	CP_APPLY_ATTR(L"text:description",		text_description_);
+	CP_APPLY_ATTR(L"text:display",			text_display_);
+	CP_APPLY_ATTR(L"text:name",				text_name_);
+}
+void text_variable_input::add_text(const std::wstring & Text) 
+{
+    text_ = Text;
+}
+std::wostream & text_variable_input::text_to_stream(std::wostream & _Wostream) const
+{
+    _Wostream << xml::utils::replace_text_to_xml( text_ );
+    return _Wostream;
+}
+
+void text_variable_input::docx_convert(oox::docx_conversion_context & Context)
+{
+    std::wostream & strm = Context.output_stream();
+	Context.finish_run();
+	
+	strm << L"<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>";
+	strm << L"<w:r><w:instrText>ASK &quot;" << text_name_.get_value_or(L"") << L"&quot; " << text_description_.get_value_or(L"") << L" \\d ";
+	strm << text_;
+	strm << L"</w:instrText></w:r>";
+	strm << L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
+    strm << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
+
+	strm << L"<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>";
+	strm << L"<w:r><w:instrText>REF &quot;" << text_name_.get_value_or(L"") << L"&quot; </w:instrText></w:r>";
+	strm << L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
+	strm << L"<w:r><w:t>" << text_ << L"</w:t></w:r>";
+	strm << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
+
+}
+//---------------------------------------------------------------------------------------------------
+const wchar_t * text_variable_get::ns	= L"text";
+const wchar_t * text_variable_get::name	= L"variable-get";
+
+void text_variable_get::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"style:data-style-name",	style_data_style_name_);
+	CP_APPLY_ATTR(L"text:display",			text_display_);
+	CP_APPLY_ATTR(L"text:name",				text_name_);
+}
+void text_variable_get::docx_convert(oox::docx_conversion_context & Context)
+{
+
+}
+//---------------------------------------------------------------------------------------------------
+const wchar_t * text_variable_set::ns	= L"text";
+const wchar_t * text_variable_set::name	= L"variable-set";
+
+void text_variable_set::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"office:value-type",		office_value_type_);
+	CP_APPLY_ATTR(L"style:data-style-name",	style_data_style_name_);
+	CP_APPLY_ATTR(L"text:display",			text_display_);
+	CP_APPLY_ATTR(L"text:name",				text_name_);
+
+	CP_APPLY_ATTR(L"office:value",			office_value_);
+	CP_APPLY_ATTR(L"office:boolean-value",	office_boolean_value_);
+	CP_APPLY_ATTR(L"office:date-value",		office_date_value_);
+	CP_APPLY_ATTR(L"office:time-value",		office_time_value_);
+	CP_APPLY_ATTR(L"office:string-value",	office_string_value_);
+	CP_APPLY_ATTR(L"office:currency",		office_currency_);
+	CP_APPLY_ATTR(L"office:formula",		office_formula_);
+}
+void text_variable_set::docx_convert(oox::docx_conversion_context & Context)
+{
+
+}
+//---------------------------------------------------------------------------------------------------
+const wchar_t * text_variable_decl::ns		= L"text";
+const wchar_t * text_variable_decl::name	= L"variable-decl";
+
+void text_variable_decl::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"office:value-type",		office_value_type_);
+	CP_APPLY_ATTR(L"text:display",			text_display_);
+	CP_APPLY_ATTR(L"text:name",				text_name_);
+}
+void text_variable_decl::docx_convert(oox::docx_conversion_context & Context)
+{
+
+}
+//---------------------------------------------------------------------------------------------------
+const wchar_t * text_variable_decls::ns		= L"text";
+const wchar_t * text_variable_decls::name	= L"variable-decls";
+
+void text_variable_decls::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	if CP_CHECK_NAME(L"text", L"variable-decl")
+	{
+		CP_CREATE_ELEMENT(content_);
+	}
+	else
+	{
+	}
+}
+void text_variable_decls::docx_convert(oox::docx_conversion_context & Context)
+{
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+		content_[i]->docx_convert(Context);
+	}
+}
 }
 }
 }

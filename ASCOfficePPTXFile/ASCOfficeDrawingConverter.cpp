@@ -965,7 +965,7 @@ HRESULT CDrawingConverter::AddShapeType(const std::wstring& bsXml)
 
     strXml += L">";
 
-	strXml += (std::wstring)bsXml;
+	strXml += bsXml;
 
     strXml += L"</main>";
 
@@ -3230,7 +3230,7 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
         oWriter.StartNode(L"wp:inline");
 
 		oWriter.StartAttributes();
-        oWriter.WriteAttribute(L"xmlns:wp", (std::wstring)L"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing");
+        oWriter.WriteAttribute(L"xmlns:wp", L"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing");
         oWriter.WriteAttribute(L"distT", margT);
         oWriter.WriteAttribute(L"distB", margB);
         oWriter.WriteAttribute(L"distL", margL);
@@ -3268,7 +3268,7 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 
 	oWriter.StartAttributes();
 
-    oWriter.WriteAttribute(L"xmlns:wp", (std::wstring)L"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing");
+    oWriter.WriteAttribute(L"xmlns:wp", L"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing");
     oWriter.WriteAttribute(L"distT", margT);
     oWriter.WriteAttribute(L"distB", margB);
     oWriter.WriteAttribute(L"distL", margL);
@@ -3282,12 +3282,11 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 
 		if (*zIndex >= 0)
 		{
-            oWriter.WriteAttribute(L"relativeHeight", *zIndex);
+            oWriter.WriteAttribute(L"relativeHeight", (0xF000000 - 0x80000  + *zIndex));
 		}
 		else
         {
-           // DWORD dwIndex = (DWORD)(*zIndex);
-            oWriter.WriteAttribute(L"relativeHeight", -(*zIndex));
+            oWriter.WriteAttribute(L"relativeHeight", (0xF000000 - 0x80000 - *zIndex));
 		}		
 	}
 
@@ -3353,20 +3352,22 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 	{
 		if (*zIndex > 0)
 		{
-            oWriter.WriteAttribute(L"allowOverlap", (std::wstring)L"1");
+            oWriter.WriteAttribute(L"allowOverlap", L"1");
+            oWriter.WriteAttribute(L"behindDoc", L"0");
 		}
 		else if (*zIndex < 0)
 		{
-            oWriter.WriteAttribute(L"behindDoc", (std::wstring)L"1");
+            oWriter.WriteAttribute(L"behindDoc", L"1");
+            oWriter.WriteAttribute(L"allowOverlap", L"0");
 		}
 	}
 
     if (isAllowInCell.is_init())
     {
         if (*isAllowInCell)
-            oWriter.WriteAttribute(L"layoutInCell", (std::wstring)L"1");
+            oWriter.WriteAttribute(L"layoutInCell", L"1");
         else
-            oWriter.WriteAttribute(L"layoutInCell", (std::wstring)L"0");
+            oWriter.WriteAttribute(L"layoutInCell", L"0");
     }
 
 	oWriter.EndAttributes();
@@ -3379,25 +3380,25 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 	if (pPair != oCssStyles.m_mapSettings.end())
 	{
         if (L"char" == pPair->second)
-            oWriter.WriteAttribute(L"relativeFrom", (std::wstring)L"character");
+            oWriter.WriteAttribute(L"relativeFrom", L"character");
         else if (L"page" == pPair->second)
-            oWriter.WriteAttribute(L"relativeFrom", (std::wstring)L"page");
+            oWriter.WriteAttribute(L"relativeFrom", L"page");
         else if (L"margin" == pPair->second)
-            oWriter.WriteAttribute(L"relativeFrom", (std::wstring)L"margin");
+            oWriter.WriteAttribute(L"relativeFrom", L"margin");
         else if (L"left-margin-area" == pPair->second)
-            oWriter.WriteAttribute(L"relativeFrom", (std::wstring)L"leftMargin");
+            oWriter.WriteAttribute(L"relativeFrom", L"leftMargin");
         else if (L"right-margin-area" == pPair->second)
-            oWriter.WriteAttribute(L"relativeFrom", (std::wstring)L"rightMargin");
+            oWriter.WriteAttribute(L"relativeFrom", L"rightMargin");
         else if (L"inner-margin-area" == pPair->second)
-            oWriter.WriteAttribute(L"relativeFrom", (std::wstring)L"insideMargin");
+            oWriter.WriteAttribute(L"relativeFrom", L"insideMargin");
         else if (L"outer-margin-area" == pPair->second)
-            oWriter.WriteAttribute(L"relativeFrom", (std::wstring)L"outsideMargin");
+            oWriter.WriteAttribute(L"relativeFrom", L"outsideMargin");
 		else
-            oWriter.WriteAttribute(L"relativeFrom", (std::wstring)L"column");
+            oWriter.WriteAttribute(L"relativeFrom", L"column");
 	}
 	else
 	{
-        oWriter.WriteAttribute(L"relativeFrom", (std::wstring)L"column");
+        oWriter.WriteAttribute(L"relativeFrom", L"column");
 	}
 
 	oWriter.EndAttributes();
@@ -3430,25 +3431,25 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 	if (pPair != oCssStyles.m_mapSettings.end())
 	{
         if (L"margin" == pPair->second)
-            oWriter.WriteAttribute(L"relativeFrom", (std::wstring)L"margin");
+            oWriter.WriteAttribute(L"relativeFrom", L"margin");
         else if (L"text" == pPair->second)
-            oWriter.WriteAttribute(L"relativeFrom", (std::wstring)L"paragraph");
+            oWriter.WriteAttribute(L"relativeFrom", L"paragraph");
         else if (L"page" == pPair->second)
-            oWriter.WriteAttribute(L"relativeFrom", (std::wstring)L"page");
+            oWriter.WriteAttribute(L"relativeFrom", L"page");
         else if (L"top-margin-area" == pPair->second)
-            oWriter.WriteAttribute(L"relativeFrom", (std::wstring)L"topMargin");
+            oWriter.WriteAttribute(L"relativeFrom", L"topMargin");
         else if (L"bottom-margin-area" == pPair->second)
-            oWriter.WriteAttribute(L"relativeFrom", (std::wstring)L"bottomMargin");
+            oWriter.WriteAttribute(L"relativeFrom", L"bottomMargin");
         else if (L"inner-margin-area" == pPair->second)
-            oWriter.WriteAttribute(L"relativeFrom", (std::wstring)L"insideMargin");
+            oWriter.WriteAttribute(L"relativeFrom", L"insideMargin");
         else if (L"outer-margin-area" == pPair->second)
-            oWriter.WriteAttribute(L"relativeFrom", (std::wstring)L"outsideMargin");
+            oWriter.WriteAttribute(L"relativeFrom", L"outsideMargin");
 		else
-            oWriter.WriteAttribute(L"relativeFrom", (std::wstring)L"line");
+            oWriter.WriteAttribute(L"relativeFrom", L"line");
 	}
 	else
 	{
-        oWriter.WriteAttribute(L"relativeFrom", (std::wstring)L"paragraph");
+        oWriter.WriteAttribute(L"relativeFrom", L"paragraph");
 	}
 
 	oWriter.EndAttributes();
@@ -4391,7 +4392,7 @@ HRESULT CDrawingConverter::LoadClrMap(const std::wstring& bsXml)
 {
 	smart_ptr<PPTX::Logic::ClrMap> pClrMap = new PPTX::Logic::ClrMap();
 	
-    std::wstring strXml = L"<main xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">" + (std::wstring)bsXml + L"</main>";
+    std::wstring strXml = L"<main xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">" + bsXml + L"</main>";
 	XmlUtils::CXmlNode oNode;
 	oNode.FromXmlString(strXml);
 
@@ -4846,6 +4847,9 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 		nullable_int margL; oNode.ReadAttributeBase(L"distL", margL);
 		nullable_int margR; oNode.ReadAttributeBase(L"distR", margR);
 
+		nullable_bool behindDoc;	oNode.ReadAttributeBase(L"behindDoc", behindDoc);
+		nullable_bool allowOverlap; oNode.ReadAttributeBase(L"allowOverlap", allowOverlap);
+
 		if (margL.is_init())
             oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-left", dKoef * (*margL));
 		if (margT.is_init())
@@ -4857,7 +4861,21 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 
 		nullable_int zIndex; oNode.ReadAttributeBase(L"relativeHeight", zIndex);
 		if (zIndex.is_init())
-            oWriter.WriteAttributeCSS_int(L"z-index", *zIndex);
+		{
+			int z_index = 0;
+			if ( *zIndex > 0xF000000)
+			{
+				z_index = *zIndex - 0xF000000 + 0x80000;
+			}
+			else z_index = *zIndex;
+
+			if (((behindDoc.IsInit()) && (*behindDoc == true)) || 
+				((allowOverlap.IsInit()) && (*allowOverlap == false)))
+			{
+				z_index = -z_index;
+			}
+            oWriter.WriteAttributeCSS_int(L"z-index", z_index);
+		}
 
 		XmlUtils::CXmlNode oNodeHorP;
         if (oNode.GetNode(L"wp:positionH", oNodeHorP))
@@ -5078,7 +5096,7 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 
 HRESULT CDrawingConverter::SetFontDir(const std::wstring& bsFontDir)
 {
-	m_strFontDirectory = (std::wstring)bsFontDir;
+	m_strFontDirectory = bsFontDir;
 	return S_OK;
 }
 
@@ -5274,7 +5292,7 @@ HRESULT CDrawingConverter::SetDstContentRels()
 HRESULT CDrawingConverter::SaveDstContentRels(const std::wstring& bsRelsPath)
 {
 	m_pReader->m_pRels->CloseRels();
-	m_pReader->m_pRels->SaveRels((std::wstring)bsRelsPath);
+	m_pReader->m_pRels->SaveRels(bsRelsPath);
 
 	--m_pReader->m_nCurrentRelsStack;
 	if (-1 > m_pReader->m_nCurrentRelsStack)
@@ -5319,7 +5337,7 @@ HRESULT CDrawingConverter::SetFontPicker(COfficeFontPicker* pFontPicker)
 
 HRESULT CDrawingConverter::SetAdditionalParam(const std::wstring& ParamName, BYTE *pArray, size_t szCount)
 {
-    std::wstring name = (std::wstring)ParamName;
+    std::wstring name = ParamName;
     if (name == L"xfrm_override" && pArray)
     {
         PPTX::Logic::Xfrm *pXfrm = (PPTX::Logic::Xfrm*)pArray;
@@ -5331,7 +5349,7 @@ HRESULT CDrawingConverter::SetAdditionalParam(const std::wstring& ParamName, BYT
 }
 HRESULT CDrawingConverter::GetAdditionalParam(const std::wstring& ParamName, BYTE **pArray, size_t& szCount)
 {
-    //std::wstring name = (std::wstring)ParamName;
+    //std::wstring name = ParamName;
     //if (name == L"SerializeImageManager")
     //{
     //    NSBinPptxRW::CBinaryFileWriter oWriter;

@@ -34,7 +34,6 @@
 #include "ruby.h"
 
 #include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/xmlchar.h>
 
 #include "paragraph_elements.h"

@@ -74,9 +74,9 @@ namespace OOX
 			
 			void PrepareWorkbook();
 
-			CWorkbook		*CreateWorkbook ();
-			CSharedStrings  *CreateSharedStrings ();
-			CStyles			*CreateStyles ();
+			void CreateWorkbook ();
+			void CreateSharedStrings ();
+			void CreateStyles ();
 			
 			PPTX::Theme  *GetTheme () const
 			{
@@ -92,6 +92,7 @@ namespace OOX
 			std::vector<CWorksheet*>								m_arWorksheets;	//order as is
 			std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>	m_mapWorksheets; //copy, for fast find - order by rId(name) 
 		private:
+			void PrepareWorksheet(CWorksheet* pWorksheet);
 			void init()
 			{
 				m_bSpreadsheets		= true;

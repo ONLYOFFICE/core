@@ -60,15 +60,20 @@ namespace OOX
 				m_bSpreadsheets = true;
 				
 				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
-				if (xlsx) xlsx->m_pStyles = this;
+				if (xlsx)
+				{
+					xlsx->m_pStyles = this;
+				}
 			}
 			CStyles(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 
 				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
-				if (xlsx) xlsx->m_pStyles = this;
-
+				if (xlsx)
+				{
+					xlsx->m_pStyles = this;
+				}
 				read( oRootPath, oPath );
 			}
 			virtual ~CStyles()

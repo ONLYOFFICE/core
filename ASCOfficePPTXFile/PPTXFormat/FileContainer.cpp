@@ -92,7 +92,6 @@ namespace PPTX
 
 	void FileContainer::read(const OOX::CRels& rels, const OOX::CPath& path)
 	{
-		//OOX::IFileContainer::read(rels, path);
 	}
 	void FileContainer::read(const OOX::CRels& rels, const OOX::CPath& path, FileMap& map, IPPTXEvent* Event)
 	{
@@ -104,9 +103,9 @@ namespace PPTX
 						pSrcFile->type() == OOX::Presentation::FileTypes::NotesSlide) ? true : false;
 		}
 
-        for (boost::unordered_map<std::wstring, OOX::Rels::CRelationShip*>::const_iterator it = rels.m_mapRelations.begin(); it != rels.m_mapRelations.end(); ++it)
+		for (size_t i = 0; i <  rels.m_arRelations.size(); ++i)
 		{       
-			OOX::Rels::CRelationShip* pRelation = it->second;
+			OOX::Rels::CRelationShip* pRelation = rels.m_arRelations[i];
 
  			OOX::CPath normPath = CorrectPathRels(path, pRelation);
 
@@ -178,8 +177,8 @@ namespace PPTX
 
 	void FileContainer::write(OOX::CRels& rels, const OOX::CPath& curdir, const OOX::CPath& directory, OOX::CContentTypes& content) const
 	{
-        boost::unordered_map<std::wstring, size_t> mNamePair;
-        for (boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
+		std::map<std::wstring, size_t> mNamePair;
+        for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
 		{
 			smart_ptr<OOX::File>		pFile	= pPair->second;
 			smart_ptr<OOX::External>	pExt	= pFile.smart_dynamic_cast<OOX::External>();
@@ -230,7 +229,7 @@ namespace PPTX
 
 	void FileContainer::WrittenSetFalse()
 	{
-        for (boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
+        for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
 		{
 			smart_ptr<OOX::File> pFile = pPair->second;
 

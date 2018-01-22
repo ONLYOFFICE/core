@@ -438,9 +438,9 @@ namespace PPTX
 							std::wstring sXmlOptions, sMediaPath, sEmbedPath;
 							BinXlsxRW::CXlsxSerializer::CreateXlsxFolders (sXmlOptions, sDstEmbeddedTemp, sMediaPath, sEmbedPath);
 							
-                            boost::unordered_map<std::wstring, size_t>	old_enum_map	= oXlsx.m_mapEnumeratedGlobal;
-                            NSBinPptxRW::CBinaryFileReader*             old_reader		= oDrawingConverter.m_pReader;
-                            NSBinPptxRW::CRelsGenerator*                old_rels		= pReader->m_pRels;
+							std::map<std::wstring, size_t>	old_enum_map	= oXlsx.m_mapEnumeratedGlobal;
+                            NSBinPptxRW::CBinaryFileReader*	old_reader		= oDrawingConverter.m_pReader;
+                            NSBinPptxRW::CRelsGenerator*	old_rels		= pReader->m_pRels;
 							
 							oXlsx.m_mapEnumeratedGlobal.clear();
 
@@ -1148,7 +1148,7 @@ namespace PPTX
 		{
 			double trim = 0.0;
 			
-			if (parentFileIs<Slide>())
+			if (parentFileIs<FileContainer>())
 			{
 				if (nvPicPr.nvPr.media.is<MediaFile>())
 				{
@@ -1156,7 +1156,7 @@ namespace PPTX
 						(nvPicPr.nvPr.media.as<MediaFile>().name == _T("quickTimeFile")) ||
 						(nvPicPr.nvPr.media.as<MediaFile>().name == _T("audioFile")) )
 					{
-						if (std::wstring (_T("NULL")) == parentFileAs<Slide>().GetLinkFromRId(nvPicPr.nvPr.media.as<MediaFile>().link.get()) )	//	HAVE TRIM
+						if (std::wstring (_T("NULL")) == parentFileAs<FileContainer>().GetLinkFromRId(nvPicPr.nvPr.media.as<MediaFile>().link.get()) )	//	HAVE TRIM
 						{
 							if(nvPicPr.nvPr.extLst.size())
 							{
@@ -1175,15 +1175,15 @@ namespace PPTX
 		{
 			double trim = -1.0;
 			
-			if (parentFileIs<Slide>())
+			if (nvPicPr.nvPr.media.is<MediaFile>())
 			{
-				if (nvPicPr.nvPr.media.is<MediaFile>())
+				if ((nvPicPr.nvPr.media.as<MediaFile>().name == _T("videoFile")) ||
+					(nvPicPr.nvPr.media.as<MediaFile>().name == _T("quickTimeFile")) ||
+					(nvPicPr.nvPr.media.as<MediaFile>().name == _T("audioFile")) )
 				{
-					if ((nvPicPr.nvPr.media.as<MediaFile>().name == _T("videoFile")) ||
-						(nvPicPr.nvPr.media.as<MediaFile>().name == _T("quickTimeFile")) ||
-						(nvPicPr.nvPr.media.as<MediaFile>().name == _T("audioFile")) )
+					if (parentFileIs<FileContainer>())
 					{
-						if (std::wstring (_T("NULL")) == parentFileAs<Slide>().GetLinkFromRId(nvPicPr.nvPr.media.as<MediaFile>().link.get()))	//	HAVE TRIM
+						if (std::wstring (_T("NULL")) == parentFileAs<FileContainer>().GetLinkFromRId(nvPicPr.nvPr.media.as<MediaFile>().link.get()))	//	HAVE TRIM
 						{
 							if(nvPicPr.nvPr.extLst.size())
 							{

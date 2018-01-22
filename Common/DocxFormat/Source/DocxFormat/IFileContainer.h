@@ -60,13 +60,14 @@ namespace OOX
 		IFileContainer(OOX::Document* pMain);
 		virtual ~IFileContainer();
 
-        bool                                                        m_bSpreadsheets;
-        static boost::unordered_map<std::wstring, size_t>			m_mapEnumeratedGlobal;
-		OOX::Document*												m_pMainDocument;
+        bool											m_bSpreadsheets;
+		static std::map<std::wstring, size_t>			m_mapEnumeratedGlobal;
+		OOX::Document*									m_pMainDocument;
+        smart_ptr<OOX::CRels>							m_pCurRels;
 	protected:
-        boost::unordered_map<std::wstring, smart_ptr<OOX::File>>	m_mContainer;
-        boost::unordered_map<std::wstring, std::wstring>			m_mNoWriteContainer;
-        size_t                                                      m_lMaxRid;
+		std::map<std::wstring, smart_ptr<OOX::File>>	m_mContainer;
+        std::map<std::wstring, std::wstring>			m_mNoWriteContainer;
+        size_t											m_lMaxRid;
 
 		void Read (const OOX::CRels& oRels, const OOX::CPath& oRootPath, const CPath& oPath);
 		void Write (const OOX::CPath& oFileName, const CPath& oDir, OOX::CContentTypes& oContent) const;
@@ -83,15 +84,10 @@ namespace OOX
 		template<class TypeOut> 
 		smart_ptr<TypeOut> Get (const RId& rId) const
 		{
-			boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.find(rId.get());
+			std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.find(rId.get());
 			if (pPair == m_mContainer.end ())
 				return smart_ptr<TypeOut>();
 			return pPair->second.smart_dynamic_cast<TypeOut>();
-		}
-
-		OOX::CRels* GetCurRls()
-		{
-			return m_pCurRels;
 		}
 		
 		template<typename T>
@@ -124,9 +120,9 @@ namespace OOX
 	protected:
 		static UnknowTypeFile Unknown;
 	private:
-        boost::unordered_map<std::wstring, size_t>	m_mapAddNamePair;
-        OOX::CRels*                                 m_pCurRels;
-        const RId                                   GetMaxRId();
+        std::map<std::wstring, size_t>	m_mapAddNamePair;
+       
+		const RId						GetMaxRId();
 	};
 
 } // namespace OOX

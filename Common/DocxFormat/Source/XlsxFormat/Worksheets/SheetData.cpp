@@ -33,6 +33,7 @@
 #include "SheetData.h"
 
 #include "../SharedStrings/SharedStrings.h"
+#include "Worksheet.h"
 
 namespace OOX
 {
@@ -150,11 +151,20 @@ void OOX::Spreadsheet::CCell::PrepareForBinaryWriter()
 	CXlsx* xlsx = dynamic_cast<CXlsx*>(m_pMainDocument);
 	if (!xlsx) return;
 
+	if(false == xlsx->m_arWorksheets.back()->m_bPrepareForBinaryWriter) return;
+	
+	if( !xlsx->m_pSharedStrings)
+	{	// еще не прочитался rels
+
+		xlsx->m_arWorksheets.back()->m_bPrepareForBinaryWriter = false;
+		return; 
+	}
+
+	
 	if(m_oType.IsInit())
 	{
 		if(SimpleTypes::Spreadsheet::celltypeInlineStr == m_oType->GetValue())
 		{
-			if(NULL == xlsx->m_pSharedStrings)
 			{
 				xlsx->CreateSharedStrings();
 			}
@@ -172,10 +182,9 @@ void OOX::Spreadsheet::CCell::PrepareForBinaryWriter()
 		}
 		else if(SimpleTypes::Spreadsheet::celltypeStr == m_oType->GetValue() || SimpleTypes::Spreadsheet::celltypeError == m_oType->GetValue())
 		{
-			if(NULL == xlsx->m_pSharedStrings)
-			{
+			if(!xlsx->m_pSharedStrings)
 				xlsx->CreateSharedStrings();
-			}
+
 			std::wstring sValue;
 			if(m_oValue.IsInit())
 				sValue = m_oValue->ToString();

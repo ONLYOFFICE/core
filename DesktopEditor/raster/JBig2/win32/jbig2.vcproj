@@ -937,10 +937,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\source\LeptonLib\viewfiles.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\source\LeptonLib\warper.cpp"
 				>
 			</File>

@@ -2667,17 +2667,14 @@ namespace BinXlsxRW
 
 			if(oHyperlink.m_oRef.IsInit())
 				sRef = oHyperlink.m_oRef.get();
-			if(oHyperlink.m_oRid.IsInit())
+			if(oHyperlink.m_oRid.IsInit() && oWorksheet.m_pCurRels.IsInit())
 			{
-				if(NULL != oWorksheet.GetCurRls())
+				OOX::Rels::CRelationShip* oRels = NULL;
+				oWorksheet.m_pCurRels->GetRel( OOX::RId(oHyperlink.m_oRid->GetValue()), &oRels);
+				if(NULL != oRels && _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink") == oRels->Type() )
 				{
-					OOX::Rels::CRelationShip* oRels = NULL;
-					oWorksheet.GetCurRls()->GetRel( OOX::RId(oHyperlink.m_oRid->GetValue()), &oRels);
-					if(NULL != oRels && _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink") == oRels->Type() )
-					{
-						if(oRels->IsExternal())
-							sHyperlink = oRels->Target().GetPath();
-					}
+					if(oRels->IsExternal())
+						sHyperlink = oRels->Target().GetPath();
 				}
 			}
 			if(oHyperlink.m_oLocation.IsInit())
@@ -4384,26 +4381,24 @@ namespace BinXlsxRW
 				m_oBcw = new BinaryCommonWriter(oBufferedStream);
 			int nCurPos;
 			WriteMainTableStart();
-			OOX::Spreadsheet::CStyles* pStyle = oXlsx.m_pStyles;
 	//SharedString
-			OOX::Spreadsheet::CSharedStrings* pSharedStrings = oXlsx.m_pSharedStrings;
 			OOX::Spreadsheet::CIndexedColors* pIndexedColors = NULL;
-			if(NULL != pStyle && pStyle->m_oColors.IsInit() && pStyle->m_oColors->m_oIndexedColors.IsInit())
-				pIndexedColors = pStyle->m_oColors->m_oIndexedColors.operator ->();
+			if( (oXlsx.m_pStyles) && oXlsx.m_pStyles->m_oColors.IsInit() && oXlsx.m_pStyles->m_oColors->m_oIndexedColors.IsInit())
+				pIndexedColors = oXlsx.m_pStyles->m_oColors->m_oIndexedColors.operator ->();
 
-			if(NULL != pSharedStrings)
+			if(oXlsx.m_pSharedStrings)
 			{
 				nCurPos = WriteTableStart(c_oSerTableTypes::SharedStrings);
 				BinarySharedStringTableWriter oBinarySharedStringTableWriter(oBufferedStream, pEmbeddedFontsManager);
-				oBinarySharedStringTableWriter.Write(*pSharedStrings, pIndexedColors, oXlsx.GetTheme(), m_oFontProcessor);
+				oBinarySharedStringTableWriter.Write(*oXlsx.m_pSharedStrings, pIndexedColors, oXlsx.GetTheme(), m_oFontProcessor);
 				WriteTableEnd(nCurPos);
 			}
 	//Styles
-			if(NULL != pStyle)
+			if(oXlsx.m_pStyles)
 			{
 				nCurPos = WriteTableStart(c_oSerTableTypes::Styles);
 				BinaryStyleTableWriter oBinaryStyleTableWriter(oBufferedStream, pEmbeddedFontsManager);
-				oBinaryStyleTableWriter.Write(*pStyle, oXlsx.GetTheme(), m_oFontProcessor);
+				oBinaryStyleTableWriter.Write(*oXlsx.m_pStyles, oXlsx.GetTheme(), m_oFontProcessor);
 				WriteTableEnd(nCurPos);
 			}
 	////CalcChain
@@ -4417,18 +4412,17 @@ namespace BinXlsxRW
 			//}
 
 	//Workbook
-			OOX::Spreadsheet::CWorkbook* pWorkbook = oXlsx.m_pWorkbook;
-			if(NULL != pWorkbook)
+			if(oXlsx.m_pWorkbook)
 			{
 				nCurPos = WriteTableStart(c_oSerTableTypes::Workbook);
 				BinaryWorkbookTableWriter oBinaryWorkbookTableWriter(oBufferedStream);
-				oBinaryWorkbookTableWriter.Write(*pWorkbook);
+				oBinaryWorkbookTableWriter.Write(*oXlsx.m_pWorkbook);
 				WriteTableEnd(nCurPos);
 
 	//Worksheets
 				nCurPos = WriteTableStart(c_oSerTableTypes::Worksheets);
 				BinaryWorksheetTableWriter oBinaryWorksheetTableWriter(oBufferedStream, pEmbeddedFontsManager, pIndexedColors, oXlsx.GetTheme(), m_oFontProcessor, pOfficeDrawingConverter);
-				oBinaryWorksheetTableWriter.Write(*pWorkbook, oXlsx.m_mapWorksheets); 
+				oBinaryWorksheetTableWriter.Write(*oXlsx.m_pWorkbook, oXlsx.m_mapWorksheets); 
 				WriteTableEnd(nCurPos);
 			}
 

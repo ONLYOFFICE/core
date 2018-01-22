@@ -139,15 +139,14 @@ namespace CSVWriter
 		WCHAR *pWriteBuffer = NULL;
 
 		std::wstring sSheetRId = _T("Sheet1"); // Читаем не по rId, а по имени листа
-		OOX::Spreadsheet::CWorkbook *pWorkbook = oXlsx.m_pWorkbook;
-		if (NULL != pWorkbook)
+		if ( oXlsx.m_pWorkbook )
 		{
 			// Get active sheet
-			if (pWorkbook->m_oBookViews.IsInit() && !pWorkbook->m_oBookViews->m_arrItems.empty())
+			if ( oXlsx.m_pWorkbook->m_oBookViews.IsInit() && ! oXlsx.m_pWorkbook->m_oBookViews->m_arrItems.empty())
 			{
-				if (pWorkbook->m_oBookViews->m_arrItems.front()->m_oActiveTab.IsInit())
+				if ( oXlsx.m_pWorkbook->m_oBookViews->m_arrItems.front()->m_oActiveTab.IsInit())
 				{
-					lActiveSheet = pWorkbook->m_oBookViews->m_arrItems.front()->m_oActiveTab->GetValue();
+					lActiveSheet =  oXlsx.m_pWorkbook->m_oBookViews->m_arrItems.front()->m_oActiveTab->GetValue();
 					if (0 > lActiveSheet)
 						lActiveSheet = 0;
 				}
@@ -155,16 +154,16 @@ namespace CSVWriter
 
 			// Get active sheet rId (для конвертации в CSV нужно использовать name, т.к. это наш бинарник из js-скриптов и еще нет rId
 			// А для json-а нужно пользовать rId, т.к. при открытии они используются
-			if (pWorkbook->m_oSheets.IsInit() && !pWorkbook->m_oSheets->m_arrItems.empty())
+			if ( oXlsx.m_pWorkbook->m_oSheets.IsInit() && ! oXlsx.m_pWorkbook->m_oSheets->m_arrItems.empty())
 			{
-				std::map<int, OOX::Spreadsheet::CSheet*>::iterator pFind = pWorkbook->m_oSheets->mapSheets.find(lActiveSheet);
+				std::map<int, OOX::Spreadsheet::CSheet*>::iterator pFind =  oXlsx.m_pWorkbook->m_oSheets->mapSheets.find(lActiveSheet);
 				
 				OOX::Spreadsheet::CSheet *pSheet = NULL;
 				
-				if (pFind != pWorkbook->m_oSheets->mapSheets.end())
+				if (pFind !=  oXlsx.m_pWorkbook->m_oSheets->mapSheets.end())
 					pSheet = pFind->second;
 				else
-					pSheet = pWorkbook->m_oSheets->m_arrItems.front();
+					pSheet =  oXlsx.m_pWorkbook->m_oSheets->m_arrItems.front();
 
 				sSheetRId = bJSON ? pSheet->m_oRid->GetValue() : pSheet->m_oName.get2();
 			}
@@ -176,7 +175,6 @@ namespace CSVWriter
 				
 				if (NULL != pWorksheet && pWorksheet->m_oSheetData.IsInit())
 				{
-					OOX::Spreadsheet::CSharedStrings *pSharedStrings = oXlsx.m_pSharedStrings;
 					std::wstring sEscape = _T("\"\n");
 					sEscape += sDelimiter;
                     std::wstring sEndJson = std::wstring(_T("]"));
@@ -248,9 +246,9 @@ namespace CSVWriter
                                 {
                                     int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
 
-                                    if (nValue >= 0 && nValue < pSharedStrings->m_arrItems.size())
+                                    if (nValue >= 0 && nValue < oXlsx.m_pSharedStrings->m_arrItems.size())
                                     {
-                                        OOX::Spreadsheet::CSi *pSi = pSharedStrings->m_arrItems[nValue];
+                                        OOX::Spreadsheet::CSi *pSi = oXlsx.m_pSharedStrings->m_arrItems[nValue];
                                         if(NULL != pSi)
                                         {
                                             sCellValue = pSi->ToString();

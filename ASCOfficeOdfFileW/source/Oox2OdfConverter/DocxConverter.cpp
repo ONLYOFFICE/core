@@ -2992,7 +2992,10 @@ void DocxConverter::convert_styles()
 	{
 		if (docx_styles->m_arrStyle[i] == NULL) continue;
 		
-		current_font_size.erase(current_font_size.begin() + 1, current_font_size.end());
+		if (!current_font_size.empty())
+		{
+			current_font_size.erase(current_font_size.begin() + 1, current_font_size.end());
+		}
 
 		convert(docx_styles->m_arrStyle[i]);
 	

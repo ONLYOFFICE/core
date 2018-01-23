@@ -1002,11 +1002,12 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 		CElementPtr pElement = oArrayShapes[nShape]->GetElement(&m_oExMedia, pSlide->m_lOriginalWidth, pSlide->m_lOriginalHeight,
 												pTheme, pLayout, pThemeWrapper, pSlideWrapper, pSlide);
 		
+		CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
+		
 		if (NULL != pElement)
 		{
 			if (pElement->m_bIsBackground && !pElement->m_bHaveAnchor && !bMasterBackGround)
 			{
-				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
 				if (NULL != pShape)
 				{
 					pShape->SetupProperties(pSlide, pTheme, pLayout);
@@ -1019,6 +1020,9 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 			}else
 				AddAnimation ( dwSlideID, pSlide->m_lOriginalWidth, pSlide->m_lOriginalHeight, pElement );
 
+			if (NULL != pShape)
+				pShape->SetupProperties(pSlide, pTheme, pLayout);
+			
 			if (pElement->m_bHaveAnchor)
 			{
 				pSlide->m_arElements.push_back(pElement);

@@ -3275,19 +3275,18 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
     oWriter.WriteAttribute(L"distR", margR);
 
     pPair = oCssStyles.m_mapSettings.find(L"z-index");
-	nullable_int zIndex;
+	nullable_int64 zIndex;
+	
 	if (oCssStyles.m_mapSettings.end() != pPair)
 	{
-		zIndex = (int)parserPoint.FromString(pPair->second);
-
-		if (*zIndex >= 0)
-		{
-            oWriter.WriteAttribute(L"relativeHeight", (0xF000000 - 0x80000  + *zIndex));
-		}
-		else
-        {
-            oWriter.WriteAttribute(L"relativeHeight", (0xF000000 - 0x80000 - *zIndex));
-		}		
+		zIndex = parserPoint.FromString(pPair->second);
+		
+		INT64 zIndex_ = *zIndex >= 0 ? *zIndex : -*zIndex;
+		
+		if (zIndex_ < 0xF000000 && zIndex_ > 0x80000 )
+			zIndex_ = 0xF000000 - 0x80000  + zIndex_;
+		
+		oWriter.WriteAttribute(L"relativeHeight", std::to_wstring(zIndex_));
 	}
 
     XmlUtils::CXmlNode oNodeWrap = oNode.ReadNode(L"w10:wrap");
@@ -3311,6 +3310,7 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 
     nullable_bool isAllowInCell;
     nullable_string sAllowInCell;
+
     oNode.ReadAttributeBase(L"o:allowincell", sAllowInCell);
     if (sAllowInCell.is_init())
     {
@@ -3319,7 +3319,17 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
         if ((L"t" == *sAllowInCell) || (L"true"== *sAllowInCell))
             isAllowInCell = true;
     }
-
+	nullable_bool isAllowOverlap;
+    nullable_string sAllowOverlap;
+	
+	oNode.ReadAttributeBase(L"o:allowoverlap", sAllowOverlap);
+	if (sAllowOverlap.is_init())
+    {
+        if ((L"f" == *sAllowOverlap) || (L"false"== *sAllowOverlap))
+            isAllowOverlap = false;
+        if ((L"t" == *sAllowOverlap) || (L"true"== *sAllowOverlap))
+            isAllowOverlap = true;
+    }
     std::wstring strWrapPoints = oNode.GetAttribute(L"wrapcoords");
     std::wstring strWrapPointsResult;
     if (!strWrapPoints.empty())
@@ -3352,16 +3362,20 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 	{
 		if (*zIndex > 0)
 		{
-            oWriter.WriteAttribute(L"allowOverlap", L"1");
             oWriter.WriteAttribute(L"behindDoc", L"0");
 		}
 		else if (*zIndex < 0)
 		{
             oWriter.WriteAttribute(L"behindDoc", L"1");
-            oWriter.WriteAttribute(L"allowOverlap", L"0");
 		}
 	}
-
+	if (isAllowOverlap.is_init())
+	{
+        if (*isAllowOverlap)
+            oWriter.WriteAttribute(L"allowOverlap", L"1");
+        else
+            oWriter.WriteAttribute(L"allowOverlap", L"0");
+	}
     if (isAllowInCell.is_init())
     {
         if (*isAllowInCell)
@@ -4849,6 +4863,7 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 
 		nullable_bool behindDoc;	oNode.ReadAttributeBase(L"behindDoc", behindDoc);
 		nullable_bool allowOverlap; oNode.ReadAttributeBase(L"allowOverlap", allowOverlap);
+		nullable_bool layoutInCell; oNode.ReadAttributeBase(L"layoutInCell", layoutInCell);
 
 		if (margL.is_init())
             oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-left", dKoef * (*margL));
@@ -4859,22 +4874,26 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 		if (margB.is_init())
             oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-bottom", dKoef * (*margB));
 
-		nullable_int zIndex; oNode.ReadAttributeBase(L"relativeHeight", zIndex);
+		nullable_int64 zIndex; oNode.ReadAttributeBase(L"relativeHeight", zIndex);
 		if (zIndex.is_init())
 		{
-			int z_index = 0;
-			if ( *zIndex > 0xF000000)
-			{
-				z_index = *zIndex - 0xF000000 + 0x80000;
-			}
-			else z_index = *zIndex;
-
-			if (((behindDoc.IsInit()) && (*behindDoc == true)) || 
-				((allowOverlap.IsInit()) && (*allowOverlap == false)))
+			INT64 z_index = *zIndex;
+			
+			if ((behindDoc.IsInit()) && (*behindDoc == true))
 			{
 				z_index = -z_index;
 			}
-            oWriter.WriteAttributeCSS_int(L"z-index", z_index);
+			oWriter.WriteAttributeCSS(L"z-index", std::to_wstring(z_index));
+		}
+
+		if (allowOverlap.is_init())
+		{
+			oWriter.WriteAttributeCSS(L"o:allowoverlap", *allowOverlap ? L"true" : L"false");
+		}
+
+		if (layoutInCell.is_init())
+		{
+			oWriter.WriteAttributeCSS(L"o:allowincell", *layoutInCell ? L"true" : L"false");
 		}
 
 		XmlUtils::CXmlNode oNodeHorP;

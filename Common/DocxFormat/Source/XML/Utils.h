@@ -169,7 +169,20 @@ namespace XmlUtils
 
 		return ( L"true" == sTemp || L"1" == sTemp || L"t" == sTemp || L"on" == sTemp );
 	}
-    AVSINLINE static int     GetInteger (const std::wstring& string)
+	AVSINLINE static INT64     GetInteger64 (const std::wstring& string)
+	{
+        if (string.empty()) return 0;
+
+        try
+        {
+            return _wtoi64(string.c_str());
+        }
+        catch(...)
+        {
+             return 0;
+		}
+    }
+	AVSINLINE static int     GetInteger (const std::wstring& string)
 	{
         if (string.empty()) return 0;
 

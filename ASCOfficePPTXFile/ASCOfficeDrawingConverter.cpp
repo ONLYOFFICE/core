@@ -3281,7 +3281,7 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 	{
 		zIndex = parserPoint.FromString(pPair->second);
 		
-		INT64 zIndex_ = *zIndex >= 0 ? *zIndex : -*zIndex;
+        _INT64 zIndex_ = *zIndex >= 0 ? *zIndex : -*zIndex;
 		
 		if (zIndex_ < 0xF000000 && zIndex_ > 0x80000 )
 			zIndex_ = 0xF000000 - 0x80000  + zIndex_;
@@ -4876,8 +4876,8 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 
 		nullable_int64 zIndex; oNode.ReadAttributeBase(L"relativeHeight", zIndex);
 		if (zIndex.is_init())
-		{
-			INT64 z_index = *zIndex;
+        {
+            _INT64 z_index = *zIndex;
 			
 			if ((behindDoc.IsInit()) && (*behindDoc == true))
 			{

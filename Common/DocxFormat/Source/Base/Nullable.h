@@ -391,14 +391,14 @@ namespace NSCommon
 
         const int& get()const { return  *m_pPointer; }
 	};
-	class nullable_int64 : public nullable_base<INT64>
+    class nullable_int64 : public nullable_base<_INT64>
 	{
 	public:
-		nullable_int64() : nullable_base<INT64>()
+        nullable_int64() : nullable_base<_INT64>()
 		{
 		}
 
-        void normalize(const INT64& min, const INT64& max)
+        void normalize(const _INT64& min, const _INT64& max)
 		{
 			if (IsInit())
 			{
@@ -416,36 +416,36 @@ namespace NSCommon
 					*m_pPointer = 0;
 			}
 		}
-		nullable_int64& operator=(const wchar_t* cwsValue)
+        nullable_int64& operator=(const wchar_t* cwsValue)
 		{
 			RELEASEOBJECT(m_pPointer);
 
 			if ( NULL != cwsValue )
-				m_pPointer = new INT64(XmlUtils::GetInteger64(cwsValue));
+                m_pPointer = new _INT64(XmlUtils::GetInteger64(cwsValue));
 
 			return *this;
 		}
         void operator=(const std::wstring& value)
 		{
             RELEASEOBJECT(this->m_pPointer);
-            this->m_pPointer = new INT64(XmlUtils::GetInteger64(value));
+            this->m_pPointer = new _INT64(XmlUtils::GetInteger64(value));
 		}
-        void operator=(const INT64& value)
+        void operator=(const _INT64& value)
 		{
             RELEASEOBJECT(this->m_pPointer);
-            this->m_pPointer = new INT64(value);
+            this->m_pPointer = new _INT64(value);
 		}
 
-		nullable_int64& operator=(const nullable_int64& oSrc)
+        nullable_int64& operator=(const nullable_int64& oSrc)
 		{
 			RELEASEOBJECT(m_pPointer);
 
 			if (NULL != oSrc.m_pPointer )
-				m_pPointer = new INT64(*oSrc);
+                m_pPointer = new _INT64(*oSrc);
 			return *this;
 		}
 
-        INT64 get_value_or(const INT64& value) const
+        _INT64 get_value_or(const _INT64& value) const
 		{
 			if (NULL == m_pPointer)
 			{
@@ -454,13 +454,13 @@ namespace NSCommon
 			}
 			return *m_pPointer;
 		}
-        INT64& operator*()  { return *m_pPointer; }
-        INT64* operator->() { return  m_pPointer; }
+        _INT64& operator*()  { return *m_pPointer; }
+        _INT64* operator->() { return  m_pPointer; }
 
-        INT64& operator*() const  { return *m_pPointer; }
-        INT64* operator->() const { return  m_pPointer; }
+        _INT64& operator*() const  { return *m_pPointer; }
+        _INT64* operator->() const { return  m_pPointer; }
 
-        const INT64& get()const { return  *m_pPointer; }
+        const _INT64& get()const { return  *m_pPointer; }
 	};
 	class nullable_sizet : public nullable_base<size_t>
 	{

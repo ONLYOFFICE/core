@@ -1,3 +1,6 @@
+VERSION = 2.4.510.0
+DEFINES += INTVER=$$VERSION
+
 # CONFIGURATION
 CONFIG(debug, debug|release) {
     CONFIG += core_debug

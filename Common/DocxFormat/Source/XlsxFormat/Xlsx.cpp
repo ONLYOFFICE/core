@@ -118,8 +118,11 @@ bool OOX::Spreadsheet::CXlsx::Write(const CPath& oDirPath, OOX::CContentTypes &o
 //CApp
     OOX::CApp* pApp = new OOX::CApp(this);
 
-    pApp->SetApplication(_T("OnlyOffice"));
-    pApp->SetAppVersion(_T("5.0"));
+    pApp->SetApplication(L"OnlyOffice");
+
+#if defined(INTVER)
+	pApp->SetAppVersion(#INTVER);
+#endif
     pApp->SetDocSecurity(0);
     pApp->SetScaleCrop(false);
     pApp->SetLinksUpToDate(false);

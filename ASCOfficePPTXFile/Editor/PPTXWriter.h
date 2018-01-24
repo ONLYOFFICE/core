@@ -36,6 +36,7 @@
 #include "DefaultNotesMaster.h"
 #include "DefaultNotesTheme.h"
 
+#define VALUE2WSTR(x) L#x
 
 namespace NSBinPptxRW
 {
@@ -1012,8 +1013,11 @@ namespace NSBinPptxRW
 		{
 			m_oApp.TotalTime = 0;
 			m_oApp.Words = 0;
-			m_oApp.Application = _T("OnlyOffice");
-			m_oApp.PresentationFormat = _T("On-screen Show (4:3)");
+			m_oApp.Application = L"OnlyOffice";
+#if defined(INTVER)
+			m_oApp.AppVersion = VALUE2WSTR(INTVER);
+#endif
+			m_oApp.PresentationFormat = L"On-screen Show (4:3)";
 			m_oApp.Paragraphs = 0;
 			m_oApp.Slides = (int)m_arSlides.size();
 			m_oApp.Notes = (int)m_arSlides.size();

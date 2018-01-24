@@ -39,6 +39,8 @@
 #include "../Common/SimpleTypes_Word.h"
 #include "../Common/SimpleTypes_Shared.h"
 
+#define VALUE2WSTR(x) L#x
+
 namespace OOX
 {
 	class CApp : public OOX::File

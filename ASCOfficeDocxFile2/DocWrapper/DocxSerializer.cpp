@@ -298,8 +298,10 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 				OOX::CApp* pApp = new OOX::CApp(NULL);
 				if (pApp)
 				{
-					pApp->SetApplication(_T("OnlyOffice"));
-					pApp->SetAppVersion(_T("5.0"));
+					pApp->SetApplication(L"OnlyOffice");
+#if defined(INTVER)
+                    pApp->SetAppVersion(VALUE2WSTR(INTVER));
+#endif
 					pApp->SetDocSecurity(0);
 					pApp->SetScaleCrop(false);
 					pApp->SetLinksUpToDate(false);

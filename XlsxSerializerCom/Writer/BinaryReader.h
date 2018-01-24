@@ -4490,7 +4490,6 @@ namespace BinXlsxRW
 
 				oXlsx.m_pTheme = oSaveParams.pTheme;
 			}
-			OOX::Spreadsheet::CSharedStrings* pSharedStrings = NULL;
 			if(-1 != nSharedStringsOffBits)
 			{
 				oBufferedStream.Seek(nSharedStringsOffBits);
@@ -4526,7 +4525,7 @@ namespace BinXlsxRW
 					break;
 				case c_oSerTableTypes::Worksheets:
 					{
-						res = BinaryWorksheetsTableReader(oBufferedStream, *oXlsx.m_pWorkbook, pSharedStrings, oXlsx.m_arWorksheets, oXlsx.m_mapWorksheets, mapMedia, sOutDir, sMediaDir, oSaveParams, pOfficeDrawingConverter, m_mapPivotCacheDefinitions).Read();
+						res = BinaryWorksheetsTableReader(oBufferedStream, *oXlsx.m_pWorkbook, oXlsx.m_pSharedStrings, oXlsx.m_arWorksheets, oXlsx.m_mapWorksheets, mapMedia, sOutDir, sMediaDir, oSaveParams, pOfficeDrawingConverter, m_mapPivotCacheDefinitions).Read();
 					}
 					break;
 				}

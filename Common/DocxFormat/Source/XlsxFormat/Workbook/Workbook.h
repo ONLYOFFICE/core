@@ -71,7 +71,7 @@ namespace OOX
 				m_bSpreadsheets = true;
 
 				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
-				if (xlsx)
+				if ((xlsx) && (!xlsx->m_pWorkbook))
 				{
 					xlsx->m_pWorkbook = this;
 				}
@@ -82,7 +82,7 @@ namespace OOX
 				m_bSpreadsheets = true;				
 				
   				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
-				if (xlsx)
+				if ((xlsx) && (!xlsx->m_pWorkbook))
 				{
 					xlsx->m_pWorkbook = this;
 				}

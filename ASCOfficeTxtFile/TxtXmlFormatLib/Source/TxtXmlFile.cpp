@@ -220,7 +220,7 @@ void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::F
 	{
 		pApp->SetApplication(L"OnlyOffice");
 #if defined(INTVER)
-		pApp->SetAppVersion(VALUE2WSTR(INTVER));
+        pApp->SetAppVersion(VALUE2STR(INTVER));
 #endif
 		pApp->SetDocSecurity(0);
 		pApp->SetScaleCrop(false);

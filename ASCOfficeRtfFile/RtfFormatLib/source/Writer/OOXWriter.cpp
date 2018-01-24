@@ -149,7 +149,7 @@ bool OOXWriter::SaveByItemEnd()
 	{
 		((OOX::CApp*)m_poDocPropsApp)->SetApplication	( L"OnlyOffice" );
 #if defined(INTVER)
-		((OOX::CApp*)m_poDocPropsApp)->SetAppVersion	( VALUE2WSTR(INTVER) );
+        ((OOX::CApp*)m_poDocPropsApp)->SetAppVersion	( VALUE2STR(INTVER) );
 #endif		
 		((OOX::CApp*)m_poDocPropsApp)->write(pathDocProps + FILE_SEPARATOR_STR + L"app.xml", pathDocProps.GetDirectory(), oContentTypes);
 		

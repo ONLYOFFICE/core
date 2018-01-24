@@ -121,7 +121,7 @@ bool OOX::Spreadsheet::CXlsx::Write(const CPath& oDirPath, OOX::CContentTypes &o
     pApp->SetApplication(L"OnlyOffice");
 
 #if defined(INTVER)
-	pApp->SetAppVersion(#INTVER);
+    pApp->SetAppVersion(VALUE2STR(INTVER));
 #endif
     pApp->SetDocSecurity(0);
     pApp->SetScaleCrop(false);

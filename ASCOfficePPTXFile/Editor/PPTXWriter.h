@@ -32,11 +32,10 @@
 #pragma once
 #include "Converter.h"
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/App.h"
 
 #include "DefaultNotesMaster.h"
 #include "DefaultNotesTheme.h"
-
-#define VALUE2WSTR(x) L#x
 
 namespace NSBinPptxRW
 {
@@ -1015,7 +1014,8 @@ namespace NSBinPptxRW
 			m_oApp.Words = 0;
 			m_oApp.Application = L"OnlyOffice";
 #if defined(INTVER)
-			m_oApp.AppVersion = VALUE2WSTR(INTVER);
+            std::string s = VALUE2STR(INTVER);
+            m_oApp.AppVersion = std::wstring(s.begin(), s.end());
 #endif
 			m_oApp.PresentationFormat = L"On-screen Show (4:3)";
 			m_oApp.Paragraphs = 0;

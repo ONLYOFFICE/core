@@ -39,7 +39,8 @@
 #include "../Common/SimpleTypes_Word.h"
 #include "../Common/SimpleTypes_Shared.h"
 
-#define VALUE2WSTR(x) L#x
+#define VALUE_TO_STRING(x) #x
+#define VALUE2STR(x) VALUE_TO_STRING(x)
 
 namespace OOX
 {
@@ -418,7 +419,11 @@ namespace OOX
 		{
 			m_sAppVersion = sVal;
 		}
-		void SetDocSecurity(int nVal)
+        void SetAppVersion(const std::string& sVal)
+        {
+            m_sAppVersion = std::wstring(sVal.begin(), sVal.end());
+        }
+        void SetDocSecurity(int nVal)
 		{
 			m_nDocSecurity = nVal;
 		}

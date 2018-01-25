@@ -301,12 +301,12 @@ void app_file::write(const std::wstring & RootPath)
     resStream << L"<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" "
         L"xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\" >";
    
-	resStream << L"<Application>ONLYOFFICE</Application>"; 
+	resStream << L"<Application>ONLYOFFICE"; 
 #if defined(INTVER)
-            std::string s = VALUE2STR(INTVER);
-            resStream << L"<AppVersion>" << std::wstring(s.begin(), s.end()) << L"</AppVersion>";
+	std::string s = VALUE2STR(INTVER);
+	resStream << L"/" << std::wstring(s.begin(), s.end()) ;
 #endif	
-	resStream << L"</Properties>";
+	resStream << L"</Application></Properties>";
     
     simple_element elm(L"app.xml", resStream.str());
     elm.write(RootPath);

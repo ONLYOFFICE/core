@@ -1011,11 +1011,12 @@ namespace NSBinPptxRW
 		{
 			m_oApp.TotalTime = 0;
 			m_oApp.Words = 0;
-			m_oApp.Application = L"ONLYOFFICE";
+			std::wstring sApplication = L"ONLYOFFICE";
 #if defined(INTVER)
             std::string s = VALUE2STR(INTVER);
-            m_oApp.AppVersion = std::wstring(s.begin(), s.end());
+            sApplication += L"/" + std::wstring(s.begin(), s.end());
 #endif
+			m_oApp.Application = sApplication;
 			m_oApp.PresentationFormat = L"On-screen Show (4:3)";
 			m_oApp.Paragraphs = 0;
 			m_oApp.Slides = (int)m_arSlides.size();

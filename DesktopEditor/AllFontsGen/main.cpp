@@ -410,10 +410,10 @@ namespace NSCommon
             m_nStyle = 0;
         }
 
-        void Apply(int nMask)
+        void Apply1(int nMask)
         {
             BYTE* tmp = m_pTmpSymbols + m_nMin;
-            for (int i = m_nMin; i < m_nMax; ++i, ++tmp)
+            for (int i = m_nMin; i <= m_nMax; ++i, ++tmp)
             {
                 if (nMask == *tmp)
                 {
@@ -421,6 +421,58 @@ namespace NSCommon
                         m_pSymbols[i] = m_nPriority;
                     else if (m_pSymbols[i] > m_nPriority)
                         m_pSymbols[i] = m_nPriority;
+                }
+            }
+
+            if (m_nMax >= m_nMin)
+                memset(m_pTmpSymbols, 0, (m_nMax - m_nMin) * sizeof(BYTE));
+
+            m_nMin = m_nMaxSymbols + 1;
+            m_nMax = -1;
+        }
+
+        void Apply2(int nMask, int nSumPriority)
+        {
+            int nSmallRangeLen = 10;
+
+            BYTE* tmp = m_pTmpSymbols + m_nMin;
+            BYTE* tmpLast = m_pTmpSymbols + m_nMax + 1;
+            BYTE* tmpFirst = NULL;
+            int* pSymbols = NULL;
+            int* pSymbolsLast = NULL;
+            int nPriority = 0;
+
+            while (tmp < tmpLast)
+            {
+                if (nMask != *tmp)
+                {
+                    ++tmp;
+                    continue;
+                }
+
+                tmpFirst = tmp;
+                int nCount = 1;
+                ++tmp;
+
+                while (nMask == *tmp && tmp < tmpLast)
+                {
+                    ++tmp;
+                    nCount++;
+                }
+
+                nPriority = (nCount > nSmallRangeLen) ? m_nPriority : (m_nPriority + nSumPriority);
+
+                pSymbols = m_pSymbols + (tmpFirst - m_pTmpSymbols);
+                pSymbolsLast = pSymbols + nCount + 1;
+
+                while (pSymbols < pSymbolsLast)
+                {
+                    if (*pSymbols == 0)
+                        *pSymbols = nPriority;
+                    else if (*pSymbols > nPriority)
+                        *pSymbols = nPriority;
+
+                    ++pSymbols;
                 }
             }
 
@@ -818,6 +870,9 @@ namespace NSCommon
                 nIndexPriority++;
             }
 
+            int nSumPriority = (int)(arrFontsPriority.size() + 1);
+
+            bool bIsSmallRangesDetect = true;
             for (int index = 0; index < nCountFonts; ++index)
             {
                 std::map<std::wstring, CFontInfoJS>::iterator pPair = mapFonts.find(arrFonts[index]);
@@ -836,7 +891,7 @@ namespace NSCommon
                 if (-1 != info.m_lIndexBI)
                     nCounterFonts++;
 
-                if (1 == nCounterFonts)
+                if (1 == nCounterFonts && !bIsSmallRangesDetect)
                 {
                     std::wstring sPathC = L"";
                     int nFaceIndexC = 0;
@@ -895,7 +950,10 @@ namespace NSCommon
                         oApplicationChecker.CheckSymbols(mapFontFiles2[info.m_lIndexBI], info.m_lFaceIndexBI, &oAllChecker);
                     }
 
-                    oAllChecker.Apply(nMask);
+                    if (bIsSmallRangesDetect)
+                        oAllChecker.Apply2(nMask, nSumPriority);
+                    else
+                        oAllChecker.Apply1(nMask);
                 }
             }
 
@@ -914,8 +972,9 @@ namespace NSCommon
 
                 if (nFontPriority != 0)
                 {
+                    int nFontPriorityIndex = (nFontPriority > nSumPriority) ? (nFontPriority - nSumPriority) : nFontPriority;
                     fprintf(f, "[%d - %d] : ", nFontPriorityStart, i - 1);
-                    std::string sTmp = U_TO_UTF8(arrFontsPriority[nFontPriority - 1].name);
+                    std::string sTmp = U_TO_UTF8(arrFontsPriority[nFontPriorityIndex - 1].name);
                     fprintf(f, sTmp.c_str());
                     fprintf(f, "\n");
                 }
@@ -925,8 +984,9 @@ namespace NSCommon
 
             if (nFontPriority != 0)
             {
+                int nFontPriorityIndex = (nFontPriority > nSumPriority) ? (nFontPriority - nSumPriority) : nFontPriority;
                 fprintf(f, "[%d - %d] : ", nFontPriorityStart, nMaxSymbol - 1);
-                std::string sTmp = U_TO_UTF8(arrFontsPriority[nFontPriority - 1].name);
+                std::string sTmp = U_TO_UTF8(arrFontsPriority[nFontPriorityIndex - 1].name);
                 fprintf(f, sTmp.c_str());
                 fprintf(f, "\n");
             }

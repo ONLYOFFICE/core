@@ -192,15 +192,20 @@ namespace OOX
 			{
 				sXml += _T("<Application>");
 				sXml += m_sApplication.get();
+				if ( m_sAppVersion.IsInit() )
+				{
+					sXml += L"/";
+					sXml += m_sAppVersion.get();
+				}
 				sXml += _T("</Application>");
 			}
 
-			if ( m_sAppVersion.IsInit() )
-			{
-				sXml += _T("<AppVersion>");
-				sXml += m_sAppVersion.get();
-				sXml += _T("</AppVersion>");
-			}
+			//if ( m_sAppVersion.IsInit() ) - only for ms editors versions
+			//{
+			//	sXml += _T("<AppVersion>");
+			//	sXml += m_sAppVersion.get(); // error in ms editors - "2.4.510.0"
+			//	sXml += _T("</AppVersion>");
+			//}
 
 			if ( m_nCharacters.IsInit() )
 			{

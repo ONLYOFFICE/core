@@ -803,11 +803,13 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
     
 	is_style_visible = (!cellStyleName.empty() || defaultColumnCellStyle) ? true : false;
 
-	if ( content_.elements_.size() > 0	|| 
-		!formula.empty()	||
+	if ( content_.elements_.size() > 0	|| attlist_.table_content_validation_name_ || !formula.empty()	||
 		(	t_val == oox::XlsxCellType::n										&& !number_val.empty()) || 
 		(	t_val == oox::XlsxCellType::b										&& bool_val) ||
-		((	t_val == oox::XlsxCellType::str || oox::XlsxCellType::inlineStr)	&& str_val))	is_data_visible = true;
+		((	t_val == oox::XlsxCellType::str || oox::XlsxCellType::inlineStr)	&& str_val))	
+	{
+		is_data_visible = true;
+	}
 
 	if (attlist_.table_number_columns_repeated_ < 199 && last_cell_)	last_cell_ = false;
 	
@@ -887,6 +889,10 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
                     {
                         CP_XML_NODE(L"v")   { CP_XML_CONTENT((int)(bool_val.get())); }
                     }
+
+					if (attlist_.table_content_validation_name_)
+					{
+					}
                 }
 				if ( is_data_visible || (cellStyle && is_style_visible && !last_cell_))
 				{

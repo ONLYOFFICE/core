@@ -434,6 +434,7 @@ namespace NSCommon
         void Apply2(int nMask, int nSumPriority)
         {
             int nSmallRangeLen = 10;
+            int nSmallRangeLenCJK = 30;
 
             BYTE* tmp = m_pTmpSymbols + m_nMin;
             BYTE* tmpLast = m_pTmpSymbols + m_nMax + 1;
@@ -441,6 +442,7 @@ namespace NSCommon
             int* pSymbols = NULL;
             int* pSymbolsLast = NULL;
             int nPriority = 0;
+            int nFirstOffset = 0;
 
             while (tmp < tmpLast)
             {
@@ -460,10 +462,15 @@ namespace NSCommon
                     nCount++;
                 }
 
-                nPriority = (nCount > nSmallRangeLen) ? m_nPriority : (m_nPriority + nSumPriority);
+                nFirstOffset = (int)(tmpFirst - m_pTmpSymbols);
 
-                pSymbols = m_pSymbols + (tmpFirst - m_pTmpSymbols);
+                pSymbols = m_pSymbols + nFirstOffset;
                 pSymbolsLast = pSymbols + nCount + 1;
+
+                if (nFirstOffset > 0x4DFF && nFirstOffset < 0x9FFF)
+                    nPriority = (nCount > nSmallRangeLenCJK) ? m_nPriority : (m_nPriority + nSumPriority);
+                else
+                    nPriority = (nCount > nSmallRangeLen) ? m_nPriority : (m_nPriority + nSumPriority);
 
                 while (pSymbols < pSymbolsLast)
                 {

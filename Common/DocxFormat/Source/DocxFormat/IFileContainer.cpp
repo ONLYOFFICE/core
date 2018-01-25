@@ -115,7 +115,7 @@ namespace OOX
                 if(false == pFile->m_sOutputFilename.empty())
 					oName.SetName(pFile->m_sOutputFilename, false);
 
-				std::map<std::wstring, std::wstring>::const_iterator itFind = m_mNoWriteContainer.find(pPair->first);
+				boost::unordered_map<std::wstring, std::wstring>::const_iterator itFind = m_mNoWriteContainer.find(pPair->first);
 				if(m_mNoWriteContainer.end() == itFind)
 				{
 					OOX::CSystemUtility::CreateDirectories( oCurrent / oDefDir );
@@ -208,7 +208,7 @@ namespace OOX
 				else
 					oName = oName + pNamePair->first;
 
-				std::map<std::wstring, std::wstring>::const_iterator itFind = m_mNoWriteContainer.find(it->first);
+				boost::unordered_map<std::wstring, std::wstring>::const_iterator itFind = m_mNoWriteContainer.find(it->first);
 
                 if(m_mNoWriteContainer.end() == itFind)
 				{
@@ -444,7 +444,7 @@ namespace OOX
 	{
         boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pFind = m_mapContainer.find(rId.get());
 		if ( pFind != m_mapContainer.end())
-			return pPair->second;
+			return pFind->second;
 
 		return smart_ptr<OOX::File>( (OOX::File*)new UnknowTypeFile(m_pMainDocument) );
 	}

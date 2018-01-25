@@ -99,9 +99,9 @@ namespace OOX
 	}
 	void IFileContainer::Write(OOX::CRels& oRels, const OOX::CPath& oCurrent, const OOX::CPath& oDir, OOX::CContentTypes& oContent) const
 	{
-		for (size_t i = 0; i < m_arContainer.size(); ++i)
+		for (boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mapContainer.begin(); pPair != m_mapContainer.end(); ++pPair)
 		{
-			smart_ptr<OOX::File>		&pFile	= m_arContainer[i];
+			smart_ptr<OOX::File>		pFile	= pPair->second;
 
 			smart_ptr<OOX::External>	pExt	= pFile.smart_dynamic_cast<OOX::External>();
 			smart_ptr<OOX::Media>		pMedia  = pFile.smart_dynamic_cast<OOX::Media>();
@@ -169,7 +169,8 @@ namespace OOX
 
 				OOX::CSystemUtility::CreateDirectories( oPath / oDefDir );
 				
-				smart_ptr<OOX::IFileBuilder> pFileBuilder = it->second.smart_dynamic_cast<OOX::IFileBuilder>();
+				smart_ptr<OOX::IFileBuilder> pFileBuilder = pFile.smart_dynamic_cast<OOX::IFileBuilder>();
+				
 				if ( pFileBuilder.is_init() )
 					pFileBuilder->Commit( oPath / oDefDir / oName );
 			}
@@ -189,9 +190,9 @@ namespace OOX
 	{
 		std::map<std::wstring, size_t> mNamepair;
 
-		for (size_t i = 0; i < m_arContainer.size(); ++i)
+		for (boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mapContainer.begin(); pPair != m_mapContainer.end(); ++pPair)
 		{
-			smart_ptr<OOX::File>		&pFile	= m_arContainer[i];
+			smart_ptr<OOX::File>		pFile	= pPair->second;
 
 			smart_ptr<OOX::External>	pExt	= pFile.smart_dynamic_cast<OOX::External>();
 			smart_ptr<OOX::Media>		pMedia  = pFile.smart_dynamic_cast<OOX::Media>();
@@ -208,7 +209,7 @@ namespace OOX
 				else
 					oName = oName + pNamePair->first;
 
-				boost::unordered_map<std::wstring, std::wstring>::const_iterator itFind = m_mNoWriteContainer.find(it->first);
+				boost::unordered_map<std::wstring, std::wstring>::const_iterator itFind = m_mNoWriteContainer.find(pPair->first);
 
                 if(m_mNoWriteContainer.end() == itFind)
 				{
@@ -228,11 +229,11 @@ namespace OOX
 					oDefDir = itFind->second;
 				}
 
-				oRels.Registration( it->first, pFile->type(), oDefDir / oName );
+				oRels.Registration( pPair->first, pFile->type(), oDefDir / oName );
 			}
 			else
 			{
-				oRels.Registration( it->first, pExt );
+				oRels.Registration( pPair->first, pExt );
 			}
 		}
 	}
@@ -241,9 +242,9 @@ namespace OOX
 	{
 		for (size_t i = 0; i < m_arContainer.size(); ++i)
 		{
-			smart_ptr<OOX::File>		&pFile	= m_arContainer[i];
+			smart_ptr<OOX::File> pFile = m_arContainer[i];
 
-			smart_ptr<Image>     pImage = pFile.smart_dynamic_cast<Image>();
+			smart_ptr<Image> pImage = pFile.smart_dynamic_cast<Image>();
 			if ( pImage.is_init() )
 			{
 				pImage->copy_to( oPath );
@@ -262,7 +263,7 @@ namespace OOX
 	{
 		for (size_t i = 0; i < m_arContainer.size(); ++i)
 		{
-			smart_ptr<OOX::File> &pFile	= m_arContainer[i];
+			smart_ptr<OOX::File> pFile	= m_arContainer[i];
 
 			if (oType == pFile->type())
 				return true;

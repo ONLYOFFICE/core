@@ -151,14 +151,17 @@ namespace odf_writer
 					CP_XML_ATTR(L"xmlns:smil", L"urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0");
 					CP_XML_ATTR(L"xmlns:anim", L"urn:oasis:names:tc:opendocument:xmlns:animation:1.0");
 					CP_XML_ATTR(L"xmlns:chartooo", L"http://openoffice.org/2010/chart");
-					CP_XML_ATTR(L"office:version",		L"1.2");		
+					CP_XML_ATTR(L"office:version", L"1.2");		
 		
 					CP_XML_NODE(L"office:meta")
 					{  
 						CP_XML_NODE(L"meta:generator")
 						{
 							CP_XML_STREAM() << L"ONLYOFFICE";
-						}
+#if defined(INTVER)
+							std::sttring s = VALUE2STR(INTVER);
+							CP_XML_STREAM() << L"/" << std::wstring (s.begin(), s.end() );
+#endif					}
 						CP_XML_NODE(L"meta:initial-creator");
 						CP_XML_NODE(L"meta:creation-date");
 						CP_XML_NODE(L"meta:editing-cycles");

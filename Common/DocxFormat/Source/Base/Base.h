@@ -42,6 +42,9 @@
 #define _T(x)       __T(x)
 #define __T(x)      L##x
 
+#define VALUE_TO_STRING(x) #x
+#define VALUE2STR(x) VALUE_TO_STRING(x)
+
 #if defined(_WIN32) || defined (_WIN64)
     #include <TCHAR.H>
     // windows-stype separator for paths i.e. 'c:\home\documents\file.ext'

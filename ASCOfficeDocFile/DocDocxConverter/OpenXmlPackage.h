@@ -165,8 +165,9 @@ namespace DocFileFormat
 		HRESULT SaveOLEObject		( const std::wstring& fileName, const OleObjectFileStructure& oleObjectFileStructure );
 		HRESULT SaveEmbeddedObject	( const std::wstring& fileName, const std::string& data );
 
-		int RegisterDocument();
-		int RegisterDocumentMacros();
+		void RegisterDocPr();
+		void RegisterDocument();
+		void RegisterDocumentMacros();
 		int RegisterFontTable();
 		int RegisterNumbering();
 		int RegisterSettings();

@@ -64,6 +64,8 @@ namespace DocFileFormat
         DocumentContentTypesFile._defaultTypes.insert( make_pair( L"xml", std::wstring( OpenXmlContentTypes::Xml ) ) );
 
         MainRelationshipsFile.Relationships.push_back( Relationship( std::wstring( L"rId1"), OpenXmlRelationshipTypes::OfficeDocument, L"word/document.xml") );
+        MainRelationshipsFile.Relationships.push_back( Relationship( std::wstring( L"rId2"), OpenXmlRelationshipTypes::CoreProperties, L"docProps/core.xml") );
+        MainRelationshipsFile.Relationships.push_back( Relationship( std::wstring( L"rId3"), OpenXmlRelationshipTypes::ExtendedProperties, L"docProps/app.xml") );
 	}
 
 
@@ -195,14 +197,18 @@ namespace DocFileFormat
 		delete storageOut;
 		return S_OK;
 	}
-
-	int OpenXmlPackage::RegisterDocument()
+	void OpenXmlPackage::RegisterDocPr()
 	{
-        return AddPart( L"word", L"document.xml", WordprocessingMLContentTypes::MainDocument, L"");
+        AddPart( L"docProps", L"app.xml", DocPrContentTypes::App, L"");
+        AddPart( L"docProps", L"core.xml", DocPrContentTypes::Core, L"");
 	}
-	int OpenXmlPackage::RegisterDocumentMacros()
+	void OpenXmlPackage::RegisterDocument()
 	{
-        return AddPart( L"word", L"document.xml", WordprocessingMLContentTypes::MainDocumentMacro, L"");
+        AddPart( L"word", L"document.xml", WordprocessingMLContentTypes::MainDocument, L"");
+	}
+	void OpenXmlPackage::RegisterDocumentMacros()
+	{
+        AddPart( L"word", L"document.xml", WordprocessingMLContentTypes::MainDocumentMacro, L"");
 	}
 	int OpenXmlPackage::RegisterVbaProject()
 	{

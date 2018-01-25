@@ -385,7 +385,7 @@ namespace PPTX
 							OOX::CApp* pApp = new OOX::CApp(NULL);
 							if (pApp)
 							{
-								pApp->SetApplication(L"OnlyOffice");
+								pApp->SetApplication(L"ONLYOFFICE");
 #if defined(INTVER)
                                 pApp->SetAppVersion(VALUE2STR(INTVER));
 #endif

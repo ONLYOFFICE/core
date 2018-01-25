@@ -32,7 +32,6 @@
 #pragma once
 #include "Converter.h"
 #include "../../DesktopEditor/common/Directory.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/App.h"
 
 #include "DefaultNotesMaster.h"
 #include "DefaultNotesTheme.h"
@@ -1012,7 +1011,7 @@ namespace NSBinPptxRW
 		{
 			m_oApp.TotalTime = 0;
 			m_oApp.Words = 0;
-			m_oApp.Application = L"OnlyOffice";
+			m_oApp.Application = L"ONLYOFFICE";
 #if defined(INTVER)
             std::string s = VALUE2STR(INTVER);
             m_oApp.AppVersion = std::wstring(s.begin(), s.end());
@@ -1058,7 +1057,6 @@ namespace NSBinPptxRW
 			m_oApp.LinksUpToDate = false;
 			m_oApp.SharedDoc = false;
 			m_oApp.HyperlinksChanged = false;
-			m_oApp.AppVersion = _T("3.0000");			
 		}
 		void CreateDefaultCore()
 		{

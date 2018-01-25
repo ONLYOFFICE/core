@@ -118,7 +118,7 @@ bool OOX::Spreadsheet::CXlsx::Write(const CPath& oDirPath, OOX::CContentTypes &o
 //CApp
     OOX::CApp* pApp = new OOX::CApp(this);
 
-    pApp->SetApplication(L"OnlyOffice");
+    pApp->SetApplication(L"ONLYOFFICE");
 
 #if defined(INTVER)
     pApp->SetAppVersion(VALUE2STR(INTVER));

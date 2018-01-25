@@ -39,9 +39,6 @@
 #include "../Common/SimpleTypes_Word.h"
 #include "../Common/SimpleTypes_Shared.h"
 
-#define VALUE_TO_STRING(x) #x
-#define VALUE2STR(x) VALUE_TO_STRING(x)
-
 namespace OOX
 {
 	class CApp : public OOX::File

@@ -147,7 +147,7 @@ bool OOXWriter::SaveByItemEnd()
 	
 	if (m_poDocPropsApp)
 	{
-		((OOX::CApp*)m_poDocPropsApp)->SetApplication	( L"OnlyOffice" );
+		((OOX::CApp*)m_poDocPropsApp)->SetApplication	( L"ONLYOFFICE" );
 #if defined(INTVER)
         ((OOX::CApp*)m_poDocPropsApp)->SetAppVersion	( VALUE2STR(INTVER) );
 #endif		

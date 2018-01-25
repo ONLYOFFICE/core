@@ -967,26 +967,27 @@ namespace NSCommon
             int nTopBorder = nMaxSymbol + 1;
             for (int i = 0; i < nTopBorder; ++i)
             {
-                if (nFontPriority == arSymbolsAll[i])
+                int nFontPriorityTestSym = arSymbolsAll[i];
+                int nFontPriorityTest = (nFontPriorityTestSym > nSumPriority) ? (nFontPriorityTestSym - nSumPriority) : nFontPriorityTestSym;
+
+                if (nFontPriority == nFontPriorityTest)
                     continue;
 
                 if (nFontPriority != 0)
                 {
-                    int nFontPriorityIndex = (nFontPriority > nSumPriority) ? (nFontPriority - nSumPriority) : nFontPriority;
                     fprintf(f, "[%d - %d] : ", nFontPriorityStart, i - 1);
-                    std::string sTmp = U_TO_UTF8(arrFontsPriority[nFontPriorityIndex - 1].name);
+                    std::string sTmp = U_TO_UTF8(arrFontsPriority[nFontPriority - 1].name);
                     fprintf(f, sTmp.c_str());
                     fprintf(f, "\n");
                 }
-                nFontPriority = arSymbolsAll[i];
+                nFontPriority = nFontPriorityTest;
                 nFontPriorityStart = i;
             }
 
             if (nFontPriority != 0)
             {
-                int nFontPriorityIndex = (nFontPriority > nSumPriority) ? (nFontPriority - nSumPriority) : nFontPriority;
                 fprintf(f, "[%d - %d] : ", nFontPriorityStart, nMaxSymbol - 1);
-                std::string sTmp = U_TO_UTF8(arrFontsPriority[nFontPriorityIndex - 1].name);
+                std::string sTmp = U_TO_UTF8(arrFontsPriority[nFontPriority - 1].name);
                 fprintf(f, sTmp.c_str());
                 fprintf(f, "\n");
             }

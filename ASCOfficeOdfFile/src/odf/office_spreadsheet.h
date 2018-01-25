@@ -62,12 +62,12 @@ public:
 	office_element_ptr			database_ranges_; 
 	office_element_ptr			data_pilot_tables_;
 	office_element_ptr			tracked_changes_;
-
+	office_element_ptr			content_validations_;
+	
 	office_element_ptr_array	content_;
  	
 	// table:calculation-settings
 	// table:consolidation
-	// table:content-validations
 	// table:dde-links
 	// table:label-ranges
 	

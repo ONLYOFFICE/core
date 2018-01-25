@@ -440,9 +440,10 @@ namespace PPTX
 							std::wstring sXmlOptions, sMediaPath, sEmbedPath;
 							BinXlsxRW::CXlsxSerializer::CreateXlsxFolders (sXmlOptions, sDstEmbeddedTemp, sMediaPath, sEmbedPath);
 							
-							std::map<std::wstring, size_t>	old_enum_map	= oXlsx.m_mapEnumeratedGlobal;
-                            NSBinPptxRW::CBinaryFileReader*	old_reader		= oDrawingConverter.m_pReader;
-                            NSBinPptxRW::CRelsGenerator*	old_rels		= pReader->m_pRels;
+							boost::unordered_map<std::wstring, size_t>	old_enum_map = oXlsx.m_mapEnumeratedGlobal;
+                           
+							NSBinPptxRW::CBinaryFileReader*	old_reader	= oDrawingConverter.m_pReader;
+                            NSBinPptxRW::CRelsGenerator*	old_rels	= pReader->m_pRels;
 							
 							oXlsx.m_mapEnumeratedGlobal.clear();
 

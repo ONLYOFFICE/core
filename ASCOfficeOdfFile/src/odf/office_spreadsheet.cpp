@@ -63,6 +63,10 @@ void office_spreadsheet::add_child_element( xml::sax * Reader, const std::wstrin
 	{
 		CP_CREATE_ELEMENT(tracked_changes_);
 	}
+	else if CP_CHECK_NAME(L"table", L"content-validations")
+	{
+		CP_CREATE_ELEMENT(content_validations_);
+	}
 	else
 		CP_CREATE_ELEMENT(content_);
 }

@@ -178,9 +178,11 @@ namespace PPTX
 	void FileContainer::write(OOX::CRels& rels, const OOX::CPath& curdir, const OOX::CPath& directory, OOX::CContentTypes& content) const
 	{
 		std::map<std::wstring, size_t> mNamePair;
-        for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
+       
+        for (boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mapContainer.begin(); pPair != m_mapContainer.end(); ++pPair)
 		{
-			smart_ptr<OOX::File>		pFile	= pPair->second;
+			smart_ptr<OOX::File>		pFile = pPair->second;
+
 			smart_ptr<OOX::External>	pExt	= pFile.smart_dynamic_cast<OOX::External>();
 			smart_ptr<OOX::Media>		pMedia  = pFile.smart_dynamic_cast<OOX::Media>();
 
@@ -217,6 +219,7 @@ namespace PPTX
 
 					OOX::CSystemUtility::CreateDirectories(directory / defdir);
 					pFile->write(directory / defdir / name, directory, content);
+					
 					rels.Registration(pPair->first, pFile->type(), defdir / name);
 				}
 			}
@@ -229,9 +232,9 @@ namespace PPTX
 
 	void FileContainer::WrittenSetFalse()
 	{
-        for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
+		for (size_t i = 0; i < m_arContainer.size(); i++)
 		{
-			smart_ptr<OOX::File> pFile = pPair->second;
+			smart_ptr<OOX::File> &pFile = m_arContainer[i];
 
 			smart_ptr<PPTX::WrapperFile>	pWrapFile = pFile.smart_dynamic_cast<PPTX::WrapperFile>();
 			smart_ptr<PPTX::FileContainer>	pWrapCont = pFile.smart_dynamic_cast<PPTX::FileContainer>();

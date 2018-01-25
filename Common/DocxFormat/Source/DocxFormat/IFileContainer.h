@@ -60,14 +60,16 @@ namespace OOX
 		IFileContainer(OOX::Document* pMain);
 		virtual ~IFileContainer();
 
-        bool											m_bSpreadsheets;
-		static std::map<std::wstring, size_t>			m_mapEnumeratedGlobal;
-		OOX::Document*									m_pMainDocument;
-        smart_ptr<OOX::CRels>							m_pCurRels;
+        bool												m_bSpreadsheets;
+		static boost::unordered_map<std::wstring, size_t>	m_mapEnumeratedGlobal;
+		OOX::Document*										m_pMainDocument;
+        smart_ptr<OOX::CRels>								m_pCurRels;
 	protected:
-		std::map<std::wstring, smart_ptr<OOX::File>>	m_mContainer;
-        std::map<std::wstring, std::wstring>			m_mNoWriteContainer;
-        size_t											m_lMaxRid;
+		std::vector<smart_ptr<OOX::File>>							m_arContainer;
+		boost::unordered_map<std::wstring, smart_ptr<OOX::File>>	m_mapContainer;
+
+        boost::unordered_map<std::wstring, std::wstring>			m_mNoWriteContainer;
+        size_t														m_lMaxRid;
 
 		void Read (const OOX::CRels& oRels, const OOX::CPath& oRootPath, const CPath& oPath);
 		void Write (const OOX::CPath& oFileName, const CPath& oDir, OOX::CContentTypes& oContent) const;
@@ -84,10 +86,10 @@ namespace OOX
 		template<class TypeOut> 
 		smart_ptr<TypeOut> Get (const RId& rId) const
 		{
-			std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.find(rId.get());
-			if (pPair == m_mContainer.end ())
+			boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pFind = m_mapContainer.find(rId.get());
+			if (pFind == m_mapContainer.end ())
 				return smart_ptr<TypeOut>();
-			return pPair->second.smart_dynamic_cast<TypeOut>();
+			return pFind->second.smart_dynamic_cast<TypeOut>();
 		}
 		
 		template<typename T>
@@ -120,9 +122,9 @@ namespace OOX
 	protected:
 		static UnknowTypeFile Unknown;
 	private:
-        std::map<std::wstring, size_t>	m_mapAddNamePair;
+        boost::unordered_map<std::wstring, size_t>	m_mapAddNamePair;
        
-		const RId						GetMaxRId();
+		const RId									GetMaxRId();
 	};
 
 } // namespace OOX

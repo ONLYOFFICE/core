@@ -159,9 +159,10 @@ namespace odf_writer
 						{
 							CP_XML_STREAM() << L"ONLYOFFICE";
 #if defined(INTVER)
-							std::sttring s = VALUE2STR(INTVER);
+							std::string s = VALUE2STR(INTVER);
 							CP_XML_STREAM() << L"/" << std::wstring (s.begin(), s.end() );
-#endif					}
+#endif					
+						}
 						CP_XML_NODE(L"meta:initial-creator");
 						CP_XML_NODE(L"meta:creation-date");
 						CP_XML_NODE(L"meta:editing-cycles");

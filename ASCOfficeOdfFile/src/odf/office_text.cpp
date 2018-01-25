@@ -101,6 +101,10 @@ void office_text::add_child_element( xml::sax * Reader, const std::wstring & Ns,
 	{
 		CP_CREATE_ELEMENT(tracked_changes_);
 	}
+	else if CP_CHECK_NAME(L"table", L"content-validations")
+	{
+		CP_CREATE_ELEMENT(content_validations_);
+	}
 	else if (is_text_content(Ns, Name))
     {
         CP_CREATE_ELEMENT(content_);

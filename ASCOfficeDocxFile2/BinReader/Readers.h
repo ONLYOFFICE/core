@@ -7449,6 +7449,8 @@ public:
 		{
 			PPTX::Logic::CNvPr pNonVisualDrawingProps(L"wp");
 			res = Read1(length, &Binary_DocumentTableReader::ReadDocPr, this, &pNonVisualDrawingProps);
+			
+			pNonVisualDrawingProps.id = pDrawingProperty->m_nDocPr;
 			pDrawingProperty->sDocPr = pNonVisualDrawingProps.toXML2(L"wp:docPr");
 		}
 		else

@@ -733,29 +733,6 @@ void table_shapes::add_child_element( xml::sax * Reader, const std::wstring & Ns
 const wchar_t * table_content_validations::ns = L"table";
 const wchar_t * table_content_validations::name = L"content-validations";
 
-void table_content_validations::docx_convert(oox::docx_conversion_context & Context)
-{
-	for (size_t i = 0 ; i < content_.size(); i++)
-	{
-        content_[i]->docx_convert(Context);
-    }
-}
-void table_content_validations::pptx_convert(oox::pptx_conversion_context & Context)
-{
-	for (size_t i = 0 ; i < content_.size(); i++)
-	{
-        content_[i]->pptx_convert(Context);
-    }
-}
-
-void table_content_validations::xlsx_convert(oox::xlsx_conversion_context & Context) 
-{
-	for (size_t i = 0 ; i < content_.size(); i++)
-	{
-		content_[i]->xlsx_convert(Context);
-    }
-}
-
 void table_content_validations::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
@@ -765,33 +742,6 @@ void table_content_validations::add_child_element( xml::sax * Reader, const std:
 const wchar_t * table_content_validation::ns = L"table";
 const wchar_t * table_content_validation::name = L"content-validation";
 
-void table_content_validation::docx_convert(oox::docx_conversion_context & Context)
-{
-	//for (size_t i = 0 ; i < content_.size(); i++)
-	//{
- //       content_[i]->docx_convert(Context);
- //   }
-}
-void table_content_validation::pptx_convert(oox::pptx_conversion_context & Context)
-{
-	//for (size_t i = 0 ; i < content_.size(); i++)
-	//{
- //       content_[i]->pptx_convert(Context);
- //   }
-}
-
-void table_content_validation::xlsx_convert(oox::xlsx_conversion_context & Context) 
-{
-	Context.start_content_validation(table_name_.get_value_or(L""), table_base_cell_address_.get_value_or(L""));
-	Context.set_content_validation_condition(table_condition_.get_value_or(L""));
-	
-	for (size_t i = 0 ; i < content_.size(); i++)
-	{
-		content_[i]->xlsx_convert(Context);
-    }
-	
-	Context.end_content_validation();
-}
 void table_content_validation::add_attributes(xml::attributes_wc_ptr const & Attributes)
 {
     CP_APPLY_ATTR(L"table:name",				table_name_);

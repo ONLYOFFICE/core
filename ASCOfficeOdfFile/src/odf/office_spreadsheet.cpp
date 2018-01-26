@@ -92,6 +92,9 @@ void office_spreadsheet::xlsx_convert(oox::xlsx_conversion_context & Context)
 	if (database_ranges_)
 		database_ranges_->xlsx_convert(Context);
 
+	if (content_validations_)
+		content_validations_->xlsx_convert(Context);
+
 	if (data_pilot_tables_)
 		data_pilot_tables_->xlsx_convert(Context);
 	

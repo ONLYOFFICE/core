@@ -120,7 +120,7 @@ public:
     xlsx_table_metrics					& get_table_metrics()					{ return xlsx_table_metrics_; }
     xlsx_drawing_context				& get_drawing_context()					{ return xlsx_drawing_context_; }
     xlsx_comments_context				& get_comments_context()				{ return xlsx_comments_context_; }
-	xlsx_conditionalFormatting_context	& get_conditionalFormatting_context()	{return xlsx_conditionalFormatting_context_;}
+	xlsx_conditionalFormatting_context	& get_conditionalFormatting_context()	{ return xlsx_conditionalFormatting_context_;}
 
     void	table_column_last_width(double w) { table_column_last_width_ = w; }
     double	table_column_last_width() const { return table_column_last_width_; };

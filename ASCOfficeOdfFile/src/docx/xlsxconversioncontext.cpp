@@ -437,6 +437,7 @@ void xlsx_conversion_context::end_table()
     get_table_context().serialize_autofilter			(current_sheet().autofilter());
     get_table_context().serialize_sort					(current_sheet().sort());
     get_table_context().serialize_merge_cells			(current_sheet().mergeCells());
+	get_table_context().serialize_data_validation		(current_sheet().dataValidations());
     
 	get_drawing_context().set_odf_packet_path			(root()->get_folder());
     get_drawing_context().process_objects				(get_table_metrics());
@@ -717,14 +718,13 @@ void xlsx_conversion_context::end_hyperlink(std::wstring const & href)
 		xlsx_text_context_.end_span2();
 	}
 }
-void xlsx_conversion_context::start_content_validation(const std::wstring & name, const std::wstring & ref)
+void xlsx_conversion_context::add_content_validation(const std::wstring & name, const std::wstring & ref)
 {
+	get_dataValidations_context().add(name, ref);
 }
-void xlsx_conversion_context::set_content_validation_condition(const std::wstring & val)
+void xlsx_conversion_context::add_content_validation_condition(const std::wstring & name, const std::wstring & val)
 {
-}
-void xlsx_conversion_context::end_content_validation()
-{
+	get_dataValidations_context().add_formula(name, val);
 }
 
 void xlsx_conversion_context::add_pivot_sheet_source (const std::wstring & sheet_name, int index_table_view)

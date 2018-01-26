@@ -688,9 +688,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void docx_convert(oox::docx_conversion_context & Context) ;
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
-    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
@@ -712,9 +710,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void docx_convert(oox::docx_conversion_context & Context) ;
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
-    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );

@@ -643,6 +643,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\docx\xlsx_data_validation.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\docx\xlsx_data_validation.h"
+					>
+				</File>
+				<File
 					RelativePath="..\src\docx\xlsx_defined_names.cpp"
 					>
 				</File>

@@ -53,7 +53,7 @@ namespace odf_reader {
 
 void removeCharsFromString( std::wstring &str, std::wstring charsToRemove ) 
 {
-   for ( unsigned int i = 0; i < charsToRemove.length(); ++i ) 
+   for ( size_t i = 0; i < charsToRemove.length(); ++i ) 
    {
 	   str.erase( std::remove(str.begin(), str.end(), charsToRemove[i]), str.end() );
    }
@@ -292,14 +292,14 @@ void text_format_properties_content::pptx_convert_as_list(oox::pptx_conversion_c
 					w_font = font->name();
 
 				//'Arial' глючит
-				removeCharsFromString(w_font, _T("'"));
+				removeCharsFromString(w_font, L"'");
 			}
 
 			if (w_font.length()>0)
 			{				
 				CP_XML_NODE(L"a:buFont")
 				{			
-					removeCharsFromString(w_font, _T("'"));
+					removeCharsFromString(w_font, L"'");
 					CP_XML_ATTR(L"typeface", w_font);
 					if ((style_font_charset_))
 					{		

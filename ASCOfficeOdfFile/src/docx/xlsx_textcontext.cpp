@@ -49,13 +49,6 @@
 namespace cpdoccore {
 namespace oox {
 
-void removeCharsFromString( std::wstring &str, std::wstring charsToRemove ) 
-{
-   for ( unsigned int i = 0; i < charsToRemove.length(); ++i ) 
-   {
-	   str.erase( std::remove(str.begin(), str.end(), charsToRemove[i]), str.end() );
-   }
-}
 
 class xlsx_text_context::Impl: boost::noncopyable
 {

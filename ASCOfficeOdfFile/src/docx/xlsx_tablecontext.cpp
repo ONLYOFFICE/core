@@ -324,6 +324,10 @@ void xlsx_table_context::serialize_background(std::wostream & _Wostream)
 {
     return state()->serialize_background(_Wostream);
 }
+void xlsx_table_context::serialize_data_validation(std::wostream & _Wostream)
+{
+    return xlsx_conversion_context_->get_dataValidations_context().serialize(_Wostream);
+}
 void xlsx_table_context::serialize_hyperlinks(std::wostream & _Wostream)
 {
     return state()->serialize_hyperlinks(_Wostream);

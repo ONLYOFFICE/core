@@ -54,6 +54,8 @@ public:
     std::wstringstream	sort_;
     std::wstringstream	autofilter_;
 	std::wstringstream	conditionalFormatting_;
+	std::wstringstream  picture_background_;
+	std::wstringstream  dataValidations_;
 	std::wstringstream	ole_objects_;
 	std::wstringstream	page_props_;
 
@@ -138,7 +140,14 @@ std::wostream & xlsx_xml_worksheet::page_properties()
 {
     return impl_->page_props_;
 }
-
+std::wostream & xlsx_xml_worksheet::picture_background()
+{
+    return impl_->picture_background_;
+}
+std::wostream & xlsx_xml_worksheet::dataValidations()
+{
+    return impl_->dataValidations_;
+}
 //---------------------------------------------------------------------------------------
 rels & xlsx_xml_worksheet::sheet_rels()
 {
@@ -178,6 +187,7 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 
 			CP_XML_STREAM() << impl_->conditionalFormatting_.str();
 
+			CP_XML_STREAM() << impl_->dataValidations_.str();
 			if (!impl_->hyperlinks_.str().empty())
             {
                 CP_XML_NODE(L"hyperlinks")
@@ -207,6 +217,7 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 					CP_XML_STREAM() << impl_->ole_objects_.str();
                 }
             }
+			CP_XML_STREAM() << impl_->picture_background_.str();
 
 			//CP_XML_NODE(L"headerFooter){}
 

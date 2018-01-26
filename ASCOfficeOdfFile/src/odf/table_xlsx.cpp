@@ -840,14 +840,20 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 			
 		if (skip_next_cell)break;
 
-        // пустые ячейки пропускаем.
+
+	// пустые ячейки пропускаем.
         if ( is_data_visible || ((cellStyle || defaultColumnCellStyle) && is_style_visible))
         {
-            CP_XML_WRITER(strm)
+			std::wstring ref = oox::getCellAddress(Context.current_table_column(), Context.current_table_row());
+			if (attlist_.table_content_validation_name_)
+			{
+				Context.get_dataValidations_context().activate(*attlist_.table_content_validation_name_, ref);
+			}   
+			CP_XML_WRITER(strm)
             {
                 CP_XML_NODE(L"c")
                 {
-                    CP_XML_ATTR(L"r", oox::getCellAddress(Context.current_table_column(), Context.current_table_row()));
+                    CP_XML_ATTR(L"r", ref);
                     CP_XML_ATTR(L"t", oox::cellType2Str(t_val));
                     CP_XML_ATTR(L"s", xfId_last_set);
 
@@ -890,9 +896,6 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
                         CP_XML_NODE(L"v")   { CP_XML_CONTENT((int)(bool_val.get())); }
                     }
 
-					if (attlist_.table_content_validation_name_)
-					{
-					}
                 }
 				if ( is_data_visible || (cellStyle && is_style_visible && !last_cell_))
 				{
@@ -1185,5 +1188,25 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
     }
 }
 
+void table_content_validations::xlsx_convert(oox::xlsx_conversion_context & Context) 
+{
+	for (size_t i = 0 ; i < content_.size(); i++)
+	{
+		content_[i]->xlsx_convert(Context);
+    }
+}
+void table_content_validation::xlsx_convert(oox::xlsx_conversion_context & Context) 
+{
+	std::wstring name = table_name_.get_value_or(L"");
+	
+	Context.add_content_validation(name, table_base_cell_address_.get_value_or(L""));
+	Context.add_content_validation_condition(name, table_condition_.get_value_or(L""));
+	
+	//for (size_t i = 0 ; i < content_.size(); i++)
+	//{
+	//	content_[i]->xlsx_convert(Context);
+ //   }
+	
+}
 }
 }

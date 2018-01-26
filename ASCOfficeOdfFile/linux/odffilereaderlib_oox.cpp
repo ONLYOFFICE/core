@@ -101,3 +101,4 @@
 #include "../src/docx/xlsx_utils.cpp"
 #include "../src/docx/xlsx_xf.cpp"
 #include "../src/docx/xlsx_pivots_context.cpp"
+#include "../src/docx/xlsx_data_validation.cpp""

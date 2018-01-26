@@ -61,6 +61,8 @@ public:
     std::wostream & comments();
 	std::wostream & autofilter();
 	std::wostream & conditionalFormatting();
+	std::wostream & picture_background();
+	std::wostream & dataValidations();
 	std::wostream & sort();
 	std::wostream & ole_objects();
 	std::wostream & page_properties();

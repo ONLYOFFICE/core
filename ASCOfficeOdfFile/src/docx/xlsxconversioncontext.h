@@ -49,6 +49,7 @@
 #include "xlsx_defined_names.h"
 #include "xlsx_table_metrics.h"
 #include "xlsx_pivots_context.h"
+#include "xlsx_data_validation.h"
 #include "oox_chart_context.h"
 
 #include "mediaitems.h"
@@ -136,9 +137,8 @@ public:
     void start_hyperlink	(const std::wstring & styleName);
     void end_hyperlink		(std::wstring const & href);
 
-	void start_content_validation(const std::wstring & name, const std::wstring & ref);
-		void set_content_validation_condition(const std::wstring & val);
-	void end_content_validation();
+	void add_content_validation(const std::wstring & name, const std::wstring & ref);
+	void add_content_validation_condition(const std::wstring & name, const std::wstring & val);
 
 //------------------------------------------------------------------------------------
 	void add_pivot_sheet_source				(const std::wstring & sheet_name, int index_table_view);
@@ -183,6 +183,7 @@ public:
     xlsx_drawing_context_handle & get_drawing_context_handle();	
     xlsx_comments_context       & get_comments_context();
 	xlsx_comments_context_handle & get_comments_context_handle();
+	xlsx_dataValidations_context& get_dataValidations_context()	{ return xlsx_dataValidations_context_;}
 
     mediaitems & get_mediaitems() { return mediaitems_; }
 
@@ -216,6 +217,7 @@ private:
 	xlsx_pivots_context				xlsx_pivots_context_;
     xlsx_drawing_context_handle     xlsx_drawing_context_handle_;
     xlsx_comments_context_handle    xlsx_comments_context_handle_;
+	xlsx_dataValidations_context	xlsx_dataValidations_context_;
 };
 
 }

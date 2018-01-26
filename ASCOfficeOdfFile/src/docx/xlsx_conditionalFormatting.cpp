@@ -116,7 +116,7 @@ public:
 			int priority = 1;
             CP_XML_WRITER(_Wostream)
             {
-				for (int i = 0 ; i < conditionalFormattings_.size(); i++)
+				for (size_t i = 0 ; i < conditionalFormattings_.size(); i++)
                 {
 					conditionalFormatting & c = conditionalFormattings_[i];
 					
@@ -126,7 +126,7 @@ public:
                     {
  						CP_XML_ATTR(L"sqref", c.ref);
 
-						for (int j = 0 ; j < c.rules.size(); j++)
+						for (size_t j = 0 ; j < c.rules.size(); j++)
 						{
 							if (c.rules[j].type < 1 || c.rules[j].type > 5) continue;
 
@@ -171,7 +171,7 @@ public:
 										if (c.rules[j].minLength)	CP_XML_ATTR(L"minLength", *c.rules[j].minLength);
 										if (c.rules[j].maxLength)	CP_XML_ATTR(L"maxLength", *c.rules[j].maxLength);
 
-										for (int k = 0; k < c.rules[j].cfvo.size(); k++)
+										for (size_t k = 0; k < c.rules[j].cfvo.size(); k++)
 										{
 											c.rules[j].cfvo[k].serialize(CP_XML_STREAM());
 										}
@@ -189,11 +189,11 @@ public:
 									CP_XML_ATTR(L"type", L"colorScale");
 									CP_XML_NODE(L"colorScale")
 									{
-										for (int k = 0; k < c.rules[j].cfvo.size(); k++)
+										for (size_t k = 0; k < c.rules[j].cfvo.size(); k++)
 										{
 											c.rules[j].cfvo[k].serialize(CP_XML_STREAM());
 										}	
-										for (int k = 0; k < c.rules[j].color.size(); k++)
+										for (size_t k = 0; k < c.rules[j].color.size(); k++)
 										{
 											CP_XML_NODE(L"color")
 											{
@@ -209,7 +209,7 @@ public:
 									{
 										if (c.rules[j].showValue)	CP_XML_ATTR(L"showValue", *c.rules[j].showValue);
 										
-										for (int k = 0; k < c.rules[j].cfvo.size(); k++)
+										for (size_t k = 0; k < c.rules[j].cfvo.size(); k++)
 										{
 											c.rules[j].cfvo[k].serialize(CP_XML_STREAM());
 										}										

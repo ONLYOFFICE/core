@@ -1146,12 +1146,12 @@ int main(int argc, char** argv)
 #endif
 
     CApplicationFonts oApplicationF;
-strFontsFolder = L"D:\\Fonts";
+
     if (strFontsFolder.length() != 0)
         oApplicationF.InitializeFromFolder(strFontsFolder, false);
     else
         oApplicationF.Initialize(false);
-strAllFontsJSPath = L"D:\\123.js";
+
     NSCommon::SaveAllFontsJS(oApplicationF, strAllFontsJSPath, strThumbnailsFolder, strFontsSelectionBin);
 
 #ifdef _GENERATE_FONT_MAP_

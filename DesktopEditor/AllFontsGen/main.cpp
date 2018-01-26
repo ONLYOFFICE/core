@@ -36,6 +36,7 @@
 #include "../graphics/GraphicsRenderer.h"
 #include "../common/File.h"
 #include "../graphics/Timer.h"
+#include "../common/StringBuilder.h"
 
 //#define _GENERATE_FONT_MAP_
 
@@ -47,262 +48,6 @@ using namespace std;
 
 namespace NSCommon
 {
-    void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo)
-    {
-        size_t posn = 0;
-        while (std::wstring::npos != (posn = text.find(replaceFrom, posn)))
-        {
-            text.replace(posn, replaceFrom.length(), replaceTo);
-            posn += replaceTo.length();
-        }
-    }
-
-    class CTextItem
-    {
-    protected:
-        wchar_t*	m_pData;
-        size_t		m_lSize;
-
-        wchar_t*	m_pDataCur;
-        size_t		m_lSizeCur;
-
-    public:
-        CTextItem()
-        {
-            m_pData = NULL;
-            m_lSize = 0;
-
-            m_pDataCur	= m_pData;
-            m_lSizeCur	= m_lSize;
-        }
-        CTextItem(const CTextItem& oSrc)
-        {
-            m_pData = NULL;
-            *this = oSrc;
-        }
-        CTextItem& operator=(const CTextItem& oSrc)
-        {
-            RELEASEMEM(m_pData);
-
-            m_lSize		= oSrc.m_lSize;
-            m_lSizeCur	= oSrc.m_lSizeCur;
-            m_pData		= (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-
-            memcpy(m_pData, oSrc.m_pData, m_lSizeCur * sizeof(wchar_t));
-
-            m_pDataCur = m_pData + m_lSizeCur;
-
-            return *this;
-        }
-
-        CTextItem(const size_t& nLen)
-        {
-            m_lSize = nLen;
-            m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-
-            m_lSizeCur = 0;
-            m_pDataCur = m_pData;
-        }
-        CTextItem(wchar_t* pData, const size_t& nLen)
-        {
-            m_lSize = nLen;
-            m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-
-            memcpy(m_pData, pData, m_lSize * sizeof(wchar_t));
-
-            m_lSizeCur = m_lSize;
-            m_pDataCur = m_pData + m_lSize;
-        }
-        CTextItem(wchar_t* pData, BYTE* pUnicodeChecker = NULL)
-        {
-            size_t nLen = GetStringLen(pData);
-
-            m_lSize = nLen;
-            m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-
-            memcpy(m_pData, pData, m_lSize * sizeof(wchar_t));
-
-            m_lSizeCur = m_lSize;
-            m_pDataCur = m_pData + m_lSize;
-
-            if (NULL != pUnicodeChecker)
-            {
-                wchar_t* pMemory = m_pData;
-                while (pMemory < m_pDataCur)
-                {
-                    if (!pUnicodeChecker[*pMemory])
-                        *pMemory = wchar_t(' ');
-                    ++pMemory;
-                }
-            }
-        }
-        virtual ~CTextItem()
-        {
-            RELEASEMEM(m_pData);
-        }
-
-        inline void AddSize(const size_t& nSize)
-        {
-            if (NULL == m_pData)
-            {
-                m_lSize = 1000;
-                if (nSize > m_lSize)
-                    m_lSize = nSize;
-
-                m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-
-                m_lSizeCur = 0;
-                m_pDataCur = m_pData;
-                return;
-            }
-
-            if ((m_lSizeCur + nSize) > m_lSize)
-            {
-                while ((m_lSizeCur + nSize) > m_lSize)
-                {
-                    m_lSize *= 2;
-                }
-
-                wchar_t* pRealloc = (wchar_t*)realloc(m_pData, m_lSize * sizeof(wchar_t));
-                if (NULL != pRealloc)
-                {
-                    // реаллок сработал
-                    m_pData		= pRealloc;
-                    m_pDataCur	= m_pData + m_lSizeCur;
-                }
-                else
-                {
-                    wchar_t* pMalloc = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-                    memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(wchar_t));
-
-                    free(m_pData);
-                    m_pData		= pMalloc;
-                    m_pDataCur	= m_pData + m_lSizeCur;
-                }
-            }
-        }
-
-    public:
-
-        inline void operator+=(const std::wstring& oTemp)
-        {
-            WriteString(oTemp.c_str(), oTemp.length());
-        }
-        inline wchar_t operator[](const size_t& nIndex)
-        {
-            if (nIndex < m_lSizeCur)
-                return m_pData[nIndex];
-
-            return 0;
-        }
-
-        inline void AddSpace()
-        {
-            AddSize(1);
-            *m_pDataCur = wchar_t(' ');
-
-            ++m_lSizeCur;
-            ++m_pDataCur;
-        }
-        inline void CorrectUnicode(const BYTE* pUnicodeChecker)
-        {
-            if (NULL != pUnicodeChecker)
-            {
-                wchar_t* pMemory = m_pData;
-                while (pMemory < m_pDataCur)
-                {
-                    if (!pUnicodeChecker[*pMemory])
-                        *pMemory = wchar_t(' ');
-                    ++pMemory;
-                }
-            }
-        }
-        inline void RemoveLastSpaces()
-        {
-            wchar_t* pMemory = m_pDataCur - 1;
-            while ((pMemory > m_pData) && (wchar_t(' ') == *pMemory))
-            {
-                --pMemory;
-                --m_lSizeCur;
-                --m_pDataCur;
-            }
-
-        }
-        inline bool IsSpace()
-        {
-            if (1 != m_lSizeCur)
-                return false;
-            return (wchar_t(' ') == *m_pData);
-        }
-
-    public:
-        inline void WriteString(const wchar_t* pString, const size_t& nLen)
-        {
-            AddSize(nLen);
-            memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
-            m_pDataCur += nLen;
-            m_lSizeCur += nLen;
-        }
-        inline size_t GetCurSize()
-        {
-            return m_lSizeCur;
-        }
-        inline size_t GetSize()
-        {
-            return m_lSize;
-        }
-        inline void Clear()
-        {
-            RELEASEMEM(m_pData);
-
-            m_pData = NULL;
-            m_lSize = 0;
-
-            m_pDataCur	= m_pData;
-            m_lSizeCur	= 0;
-        }
-        inline void ClearNoAttack()
-        {
-            m_pDataCur	= m_pData;
-            m_lSizeCur	= 0;
-        }
-
-        inline size_t GetStringLen(wchar_t* pData)
-        {
-            wchar_t* s = pData;
-            for (; *s != 0; ++s);
-            return (size_t)(s - pData);
-        }
-
-        inline std::wstring GetCString()
-        {
-            std::wstring str(m_pData, (int)m_lSizeCur);
-            return str;
-        }
-        inline wchar_t* GetBuffer()
-        {
-            return m_pData;
-        }
-    };
-
-    class CStringWriter : public CTextItem
-    {
-    public:
-        CStringWriter() : CTextItem()
-        {
-        }
-        virtual ~CStringWriter()
-        {
-        }
-
-    public:
-
-        inline void Write(CStringWriter& oWriter)
-        {
-            CTextItem::WriteString(oWriter.m_pData, oWriter.m_lSizeCur);
-        }
-    };
-
     class CFontInfoJS
     {
     public:
@@ -765,250 +510,11 @@ namespace NSCommon
             RELEASEOBJECT(pManager);
         }
 
-        if (false)
-        {
-            DWORD dwTime = NSTimers::GetTickCount();
-
-            int nMaxSymbol = 0x10FFFF;
-            int* arSymbolsAll = new int[nMaxSymbol + 1];
-            memset(arSymbolsAll, 0, (nMaxSymbol + 1) * sizeof(int));
-
-            CSymbolSimpleChecker2 oAllChecker(arSymbolsAll, nMaxSymbol);
-
-            std::map<std::wstring, int> mapFontsPriorityStandard;
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Arial", 1));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Times New Roman", 2));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Tahoma", 3));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Cambria", 4));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Calibri", 5));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Verdana", 6));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Georgia", 7));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Open Sans", 8));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Liberation Sans", 9));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Helvetica", 10));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Nimbus Sans L", 11));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"DejaVu Sans", 12));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Liberation Serif", 13));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Trebuchet MS", 14));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Courier New", 15));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Carlito", 16));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Segoe UI", 17));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"MS Gothic", 18));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"SimSun", 19));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Nirmala UI", 20));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Batang", 21));
-            mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"MS Mincho", 22));
-
-            CApplicationFontsSymbols oApplicationChecker;
-
-            std::vector<CFontPriority> arrFontsPriority;
-            std::map<std::wstring, int> mapFontsPriority;
-            for (int index = 0; index < nCountFonts; ++index)
-            {
-                std::map<std::wstring, CFontInfoJS>::iterator pPair = mapFonts.find(arrFonts[index]);
-                CFontInfoJS& info = pPair->second;
-
-                std::map<std::wstring, int>::iterator find = mapFontsPriorityStandard.find(arrFonts[index]);
-
-                if (find != mapFontsPriorityStandard.end())
-                {
-                    CFontPriority f;
-                    f.name = arrFonts[index];
-                    f.priority = find->second;
-                    arrFontsPriority.push_back(f);
-                    continue;
-                }
-
-                int nSize = 0;
-                if (-1 != info.m_lIndexR)
-                {
-                    NSFile::CFileBinary oFile;
-                    if (oFile.OpenFile(mapFontFiles2[info.m_lIndexR]))
-                    {
-                        int nTmp = oFile.GetFileSize();
-                        if (nTmp > nSize)
-                            nSize = nTmp;
-                    }
-                }
-                if (-1 != info.m_lIndexB)
-                {
-                    NSFile::CFileBinary oFile;
-                    if (oFile.OpenFile(mapFontFiles2[info.m_lIndexB]))
-                    {
-                        int nTmp = oFile.GetFileSize();
-                        if (nTmp > nSize)
-                            nSize = nTmp;
-                    }
-                }
-                if (-1 != info.m_lIndexI)
-                {
-                    NSFile::CFileBinary oFile;
-                    if (oFile.OpenFile(mapFontFiles2[info.m_lIndexI]))
-                    {
-                        int nTmp = oFile.GetFileSize();
-                        if (nTmp > nSize)
-                            nSize = nTmp;
-                    }
-                }
-                if (-1 != info.m_lIndexBI)
-                {
-                    NSFile::CFileBinary oFile;
-                    if (oFile.OpenFile(mapFontFiles2[info.m_lIndexBI]))
-                    {
-                        int nTmp = oFile.GetFileSize();
-                        if (nTmp > nSize)
-                            nSize = nTmp;
-                    }
-                }
-
-                CFontPriority f;
-                f.name = arrFonts[index];
-                f.priority = nSize;
-                arrFontsPriority.push_back(f);
-            }
-
-            std::sort(arrFontsPriority.begin(), arrFontsPriority.end(), CFontPriority::Compare);
-
-            int nIndexPriority = 1;
-            for (std::vector<CFontPriority>::iterator i = arrFontsPriority.begin(); i != arrFontsPriority.end(); i++)
-            {
-                CFontPriority& o = *i;
-                mapFontsPriority.insert(std::pair<std::wstring, int>(o.name, nIndexPriority));
-                nIndexPriority++;
-            }
-
-            int nSumPriority = (int)(arrFontsPriority.size() + 1);
-
-            bool bIsSmallRangesDetect = true;
-            for (int index = 0; index < nCountFonts; ++index)
-            {
-                std::map<std::wstring, CFontInfoJS>::iterator pPair = mapFonts.find(arrFonts[index]);
-                CFontInfoJS& info = pPair->second;
-
-                int nPriority = mapFontsPriority.find(arrFonts[index])->second;
-                oAllChecker.m_nPriority = nPriority;
-
-                int nCounterFonts = 0;
-                if (-1 != info.m_lIndexR)
-                    nCounterFonts++;
-                if (-1 != info.m_lIndexB)
-                    nCounterFonts++;
-                if (-1 != info.m_lIndexI)
-                    nCounterFonts++;
-                if (-1 != info.m_lIndexBI)
-                    nCounterFonts++;
-
-                if (1 == nCounterFonts && !bIsSmallRangesDetect)
-                {
-                    std::wstring sPathC = L"";
-                    int nFaceIndexC = 0;
-                    if (-1 != info.m_lIndexR)
-                    {
-                        sPathC = mapFontFiles2[info.m_lIndexR];
-                        nFaceIndexC = info.m_lFaceIndexR;
-                    }
-                    else if (-1 != info.m_lIndexB)
-                    {
-                        sPathC = mapFontFiles2[info.m_lIndexB];
-                        nFaceIndexC = info.m_lFaceIndexB;
-                    }
-                    else if (-1 != info.m_lIndexI)
-                    {
-                        sPathC = mapFontFiles2[info.m_lIndexI];
-                        nFaceIndexC = info.m_lFaceIndexI;
-                    }
-                    else if (-1 != info.m_lIndexBI)
-                    {
-                        sPathC = mapFontFiles2[info.m_lIndexBI];
-                        nFaceIndexC = info.m_lFaceIndexBI;
-                    }
-
-                    CSymbolSimpleChecker checker;
-                    checker.m_nMaxSymbols = nMaxSymbol;
-                    checker.m_pSymbols = arSymbolsAll;
-                    checker.m_nPriority = nPriority;
-                    oApplicationChecker.CheckSymbols(sPathC, nFaceIndexC, &checker);
-                }
-                else
-                {
-                    int nMask = 0;
-                    if (-1 != info.m_lIndexR)
-                    {
-                        oAllChecker.m_nStyle = 1;
-                        nMask |= 1;
-                        oApplicationChecker.CheckSymbols(mapFontFiles2[info.m_lIndexR], info.m_lFaceIndexR, &oAllChecker);
-                    }
-                    if (-1 != info.m_lIndexB)
-                    {
-                        oAllChecker.m_nStyle = 2;
-                        nMask |= 2;
-                        oApplicationChecker.CheckSymbols(mapFontFiles2[info.m_lIndexB], info.m_lFaceIndexB, &oAllChecker);
-                    }
-                    if (-1 != info.m_lIndexI)
-                    {
-                        oAllChecker.m_nStyle = 4;
-                        nMask |= 4;
-                        oApplicationChecker.CheckSymbols(mapFontFiles2[info.m_lIndexI], info.m_lFaceIndexI, &oAllChecker);
-                    }
-                    if (-1 != info.m_lIndexBI)
-                    {
-                        oAllChecker.m_nStyle = 8;
-                        nMask |= 8;
-                        oApplicationChecker.CheckSymbols(mapFontFiles2[info.m_lIndexBI], info.m_lFaceIndexBI, &oAllChecker);
-                    }
-
-                    if (bIsSmallRangesDetect)
-                        oAllChecker.Apply2(nMask, nSumPriority);
-                    else
-                        oAllChecker.Apply1(nMask);
-                }
-            }
-
-            dwTime = NSTimers::GetTickCount() - dwTime;
-
-            FILE* f = fopen("D:\\FONTS_SYMBOLS.txt", "a+");
-            fprintf(f, "time: %d\n", (int)dwTime);
-
-            int nFontPriority = 0;
-            int nFontPriorityStart = 0;
-            int nTopBorder = nMaxSymbol + 1;
-            for (int i = 0; i < nTopBorder; ++i)
-            {
-                int nFontPriorityTestSym = arSymbolsAll[i];
-                int nFontPriorityTest = (nFontPriorityTestSym > nSumPriority) ? (nFontPriorityTestSym - nSumPriority) : nFontPriorityTestSym;
-
-                if (nFontPriority == nFontPriorityTest)
-                    continue;
-
-                if (nFontPriority != 0)
-                {
-                    fprintf(f, "[%d - %d] : ", nFontPriorityStart, i - 1);
-                    std::string sTmp = U_TO_UTF8(arrFontsPriority[nFontPriority - 1].name);
-                    fprintf(f, sTmp.c_str());
-                    fprintf(f, "\n");
-                }
-                nFontPriority = nFontPriorityTest;
-                nFontPriorityStart = i;
-            }
-
-            if (nFontPriority != 0)
-            {
-                fprintf(f, "[%d - %d] : ", nFontPriorityStart, nMaxSymbol - 1);
-                std::string sTmp = U_TO_UTF8(arrFontsPriority[nFontPriority - 1].name);
-                fprintf(f, sTmp.c_str());
-                fprintf(f, "\n");
-            }
-
-            fclose(f);
-
-            delete[] arSymbolsAll;
-        }
-
         // и самое главное. Здесь должен скидываться скрипт для работы со всеми шрифтами.
         // все объекты, которые позволят не знать о существующих фонтах
         if (0 != strFile.length())
         {
-            CStringWriter oWriterJS;
+            NSStringUtils::CStringBuilder oWriterJS;
 
             // сначала все файлы
             size_t nCountFiles = mapFontFiles.size();
@@ -1021,8 +527,8 @@ namespace NSCommon
                 {
                     std::wstring strFontId = pos->first;
 
-                    string_replace(strFontId, L"\\\\", L"\\");
-                    string_replace(strFontId, L"/", L"\\");
+                    NSStringUtils::string_replace(strFontId, L"\\\\", L"\\");
+                    NSStringUtils::string_replace(strFontId, L"/", L"\\");
 
                     int nStart = strFontId.find_last_of(wchar_t('\\'));
                     strFontId = strFontId.substr(nStart + 1);
@@ -1047,28 +553,284 @@ namespace NSCommon
 
             oWriterJS += L"window[\"__fonts_infos\"] = [\n";
 
+            std::map<std::wstring, int> mapFontIndexes;
             for (int index = 0; index < nCountFonts; ++index)
             {
                 std::map<std::wstring, CFontInfoJS>::iterator pPair = mapFonts.find(arrFonts[index]);
-
-                char buffer[1000];
-                sprintf(buffer, "\",%d,%d,%d,%d,%d,%d,%d,%d]", pPair->second.m_lIndexR, pPair->second.m_lFaceIndexR,
-                         pPair->second.m_lIndexI, pPair->second.m_lFaceIndexI,
-                         pPair->second.m_lIndexB, pPair->second.m_lFaceIndexB,
-                         pPair->second.m_lIndexBI, pPair->second.m_lFaceIndexBI);
-
-                std::string sBuffer(buffer);
+                mapFontIndexes.insert(std::pair<std::wstring, int>(arrFonts[index], index));
 
                 oWriterJS += L"[\"";
                 oWriterJS += pPair->second.m_sName;
-                oWriterJS += NSFile::CUtf8Converter::GetUnicodeFromCharPtr(sBuffer);
+
+                oWriterJS.AddSize(120);
+                oWriterJS.AddCharNoCheck('\"');
+                oWriterJS.AddCharNoCheck(',');
+                oWriterJS.AddIntNoCheck(pPair->second.m_lIndexR);
+                oWriterJS.AddCharNoCheck(',');
+                oWriterJS.AddIntNoCheck(pPair->second.m_lFaceIndexR);
+                oWriterJS.AddCharNoCheck(',');
+                oWriterJS.AddIntNoCheck(pPair->second.m_lIndexI);
+                oWriterJS.AddCharNoCheck(',');
+                oWriterJS.AddIntNoCheck(pPair->second.m_lFaceIndexI);
+                oWriterJS.AddCharNoCheck(',');
+                oWriterJS.AddIntNoCheck(pPair->second.m_lIndexB);
+                oWriterJS.AddCharNoCheck(',');
+                oWriterJS.AddIntNoCheck(pPair->second.m_lFaceIndexB);
+                oWriterJS.AddCharNoCheck(',');
+                oWriterJS.AddIntNoCheck(pPair->second.m_lIndexBI);
+                oWriterJS.AddCharNoCheck(',');
+                oWriterJS.AddIntNoCheck(pPair->second.m_lFaceIndexBI);
 
                 if (index != (nCountFonts - 1))
-                    oWriterJS += (L",\n");
+                    oWriterJS += (L"],\n");
                 else
-                    oWriterJS += (L"\n");
+                    oWriterJS += (L"]\n");
             }
-            oWriterJS += (L"];\n\n");            
+            oWriterJS += (L"];\n\n");
+
+            if (true)
+            {
+                //DWORD dwTime = NSTimers::GetTickCount();
+
+                int nMaxSymbol = 0x10FFFF;
+                int* arSymbolsAll = new int[nMaxSymbol + 1];
+                memset(arSymbolsAll, 0, (nMaxSymbol + 1) * sizeof(int));
+
+                CSymbolSimpleChecker2 oAllChecker(arSymbolsAll, nMaxSymbol);
+
+                std::map<std::wstring, int> mapFontsPriorityStandard;
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Arial", 1));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Times New Roman", 2));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Tahoma", 3));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Cambria", 4));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Calibri", 5));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Verdana", 6));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Georgia", 7));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Open Sans", 8));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Liberation Sans", 9));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Helvetica", 10));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Nimbus Sans L", 11));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"DejaVu Sans", 12));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Liberation Serif", 13));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Trebuchet MS", 14));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Courier New", 15));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Carlito", 16));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Segoe UI", 17));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"MS Gothic", 18));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"SimSun", 19));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Nirmala UI", 20));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Batang", 21));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"MS Mincho", 22));
+
+                CApplicationFontsSymbols oApplicationChecker;
+
+                std::vector<CFontPriority> arrFontsPriority;
+                std::map<std::wstring, int> mapFontsPriority;
+                for (int index = 0; index < nCountFonts; ++index)
+                {
+                    std::map<std::wstring, CFontInfoJS>::iterator pPair = mapFonts.find(arrFonts[index]);
+                    CFontInfoJS& info = pPair->second;
+
+                    std::map<std::wstring, int>::iterator find = mapFontsPriorityStandard.find(arrFonts[index]);
+
+                    if (find != mapFontsPriorityStandard.end())
+                    {
+                        CFontPriority f;
+                        f.name = arrFonts[index];
+                        f.priority = find->second;
+                        arrFontsPriority.push_back(f);
+                        continue;
+                    }
+
+                    int nSize = 0;
+                    if (-1 != info.m_lIndexR)
+                    {
+                        NSFile::CFileBinary oFile;
+                        if (oFile.OpenFile(mapFontFiles2[info.m_lIndexR]))
+                        {
+                            int nTmp = oFile.GetFileSize();
+                            if (nTmp > nSize)
+                                nSize = nTmp;
+                        }
+                    }
+                    if (-1 != info.m_lIndexB)
+                    {
+                        NSFile::CFileBinary oFile;
+                        if (oFile.OpenFile(mapFontFiles2[info.m_lIndexB]))
+                        {
+                            int nTmp = oFile.GetFileSize();
+                            if (nTmp > nSize)
+                                nSize = nTmp;
+                        }
+                    }
+                    if (-1 != info.m_lIndexI)
+                    {
+                        NSFile::CFileBinary oFile;
+                        if (oFile.OpenFile(mapFontFiles2[info.m_lIndexI]))
+                        {
+                            int nTmp = oFile.GetFileSize();
+                            if (nTmp > nSize)
+                                nSize = nTmp;
+                        }
+                    }
+                    if (-1 != info.m_lIndexBI)
+                    {
+                        NSFile::CFileBinary oFile;
+                        if (oFile.OpenFile(mapFontFiles2[info.m_lIndexBI]))
+                        {
+                            int nTmp = oFile.GetFileSize();
+                            if (nTmp > nSize)
+                                nSize = nTmp;
+                        }
+                    }
+
+                    CFontPriority f;
+                    f.name = arrFonts[index];
+                    f.priority = nSize;
+                    arrFontsPriority.push_back(f);
+                }
+
+                std::sort(arrFontsPriority.begin(), arrFontsPriority.end(), CFontPriority::Compare);
+
+                int nIndexPriority = 1;
+                for (std::vector<CFontPriority>::iterator i = arrFontsPriority.begin(); i != arrFontsPriority.end(); i++)
+                {
+                    CFontPriority& o = *i;
+                    mapFontsPriority.insert(std::pair<std::wstring, int>(o.name, nIndexPriority));
+                    nIndexPriority++;
+                }
+
+                int nSumPriority = (int)(arrFontsPriority.size() + 1);
+
+                bool bIsSmallRangesDetect = true;
+                for (int index = 0; index < nCountFonts; ++index)
+                {
+                    std::map<std::wstring, CFontInfoJS>::iterator pPair = mapFonts.find(arrFonts[index]);
+                    CFontInfoJS& info = pPair->second;
+
+                    int nPriority = mapFontsPriority.find(arrFonts[index])->second;
+                    oAllChecker.m_nPriority = nPriority;
+
+                    int nCounterFonts = 0;
+                    if (-1 != info.m_lIndexR)
+                        nCounterFonts++;
+                    if (-1 != info.m_lIndexB)
+                        nCounterFonts++;
+                    if (-1 != info.m_lIndexI)
+                        nCounterFonts++;
+                    if (-1 != info.m_lIndexBI)
+                        nCounterFonts++;
+
+                    if (1 == nCounterFonts && !bIsSmallRangesDetect)
+                    {
+                        std::wstring sPathC = L"";
+                        int nFaceIndexC = 0;
+                        if (-1 != info.m_lIndexR)
+                        {
+                            sPathC = mapFontFiles2[info.m_lIndexR];
+                            nFaceIndexC = info.m_lFaceIndexR;
+                        }
+                        else if (-1 != info.m_lIndexB)
+                        {
+                            sPathC = mapFontFiles2[info.m_lIndexB];
+                            nFaceIndexC = info.m_lFaceIndexB;
+                        }
+                        else if (-1 != info.m_lIndexI)
+                        {
+                            sPathC = mapFontFiles2[info.m_lIndexI];
+                            nFaceIndexC = info.m_lFaceIndexI;
+                        }
+                        else if (-1 != info.m_lIndexBI)
+                        {
+                            sPathC = mapFontFiles2[info.m_lIndexBI];
+                            nFaceIndexC = info.m_lFaceIndexBI;
+                        }
+
+                        CSymbolSimpleChecker checker;
+                        checker.m_nMaxSymbols = nMaxSymbol;
+                        checker.m_pSymbols = arSymbolsAll;
+                        checker.m_nPriority = nPriority;
+                        oApplicationChecker.CheckSymbols(sPathC, nFaceIndexC, &checker);
+                    }
+                    else
+                    {
+                        int nMask = 0;
+                        if (-1 != info.m_lIndexR)
+                        {
+                            oAllChecker.m_nStyle = 1;
+                            nMask |= 1;
+                            oApplicationChecker.CheckSymbols(mapFontFiles2[info.m_lIndexR], info.m_lFaceIndexR, &oAllChecker);
+                        }
+                        if (-1 != info.m_lIndexB)
+                        {
+                            oAllChecker.m_nStyle = 2;
+                            nMask |= 2;
+                            oApplicationChecker.CheckSymbols(mapFontFiles2[info.m_lIndexB], info.m_lFaceIndexB, &oAllChecker);
+                        }
+                        if (-1 != info.m_lIndexI)
+                        {
+                            oAllChecker.m_nStyle = 4;
+                            nMask |= 4;
+                            oApplicationChecker.CheckSymbols(mapFontFiles2[info.m_lIndexI], info.m_lFaceIndexI, &oAllChecker);
+                        }
+                        if (-1 != info.m_lIndexBI)
+                        {
+                            oAllChecker.m_nStyle = 8;
+                            nMask |= 8;
+                            oApplicationChecker.CheckSymbols(mapFontFiles2[info.m_lIndexBI], info.m_lFaceIndexBI, &oAllChecker);
+                        }
+
+                        if (bIsSmallRangesDetect)
+                            oAllChecker.Apply2(nMask, nSumPriority);
+                        else
+                            oAllChecker.Apply1(nMask);
+                    }
+                }
+
+                //dwTime = NSTimers::GetTickCount() - dwTime;
+
+                oWriterJS += L"window[\"__fonts_ranges\"] = [\n";
+
+                int nFontPriority = 0;
+                int nFontPriorityStart = 0;
+                int nTopBorder = nMaxSymbol + 1;
+                for (int i = 0; i < nTopBorder; ++i)
+                {
+                    int nFontPriorityTestSym = arSymbolsAll[i];
+                    int nFontPriorityTest = (nFontPriorityTestSym > nSumPriority) ? (nFontPriorityTestSym - nSumPriority) : nFontPriorityTestSym;
+
+                    if (nFontPriority == nFontPriorityTest)
+                        continue;
+
+                    if (nFontPriority != 0)
+                    {
+                        oWriterJS.AddInt(nFontPriorityStart);
+                        oWriterJS.AddCharSafe(',');
+                        oWriterJS.AddInt(i - 1);
+                        oWriterJS.AddCharSafe(',');
+                        oWriterJS.AddInt(mapFontIndexes.find(arrFontsPriority[nFontPriority - 1].name)->second);
+                        oWriterJS.AddCharSafe(',');
+                    }
+                    nFontPriority = nFontPriorityTest;
+                    nFontPriorityStart = i;
+                }
+
+                if (nFontPriority != 0)
+                {
+                    oWriterJS.AddInt(nFontPriorityStart);
+                    oWriterJS.AddCharSafe(',');
+                    oWriterJS.AddInt(nMaxSymbol - 1);
+                    oWriterJS.AddCharSafe(',');
+                    oWriterJS.AddInt(mapFontIndexes.find(arrFontsPriority[nFontPriority - 1].name)->second);
+                    oWriterJS.AddCharSafe(',');
+                }
+
+                oWriterJS.SetCurSize(oWriterJS.GetCurSize() - 1);
+
+                oWriterJS += (L"];\n\n");
+
+                delete[] arSymbolsAll;
+            }
 
             if (true)
             {
@@ -1092,7 +854,7 @@ namespace NSCommon
 
             NSFile::CFileBinary oFile;
             oFile.CreateFileW(strFile);
-            oFile.WriteStringUTF8(oWriterJS.GetCString(), true);
+            oFile.WriteStringUTF8(oWriterJS.GetData(), true);
             oFile.CloseFile();
         }
 
@@ -1384,12 +1146,12 @@ int main(int argc, char** argv)
 #endif
 
     CApplicationFonts oApplicationF;
-
+strFontsFolder = L"D:\\Fonts";
     if (strFontsFolder.length() != 0)
         oApplicationF.InitializeFromFolder(strFontsFolder, false);
     else
         oApplicationF.Initialize(false);
-
+strAllFontsJSPath = L"D:\\123.js";
     NSCommon::SaveAllFontsJS(oApplicationF, strAllFontsJSPath, strThumbnailsFolder, strFontsSelectionBin);
 
 #ifdef _GENERATE_FONT_MAP_

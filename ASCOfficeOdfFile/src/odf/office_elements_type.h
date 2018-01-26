@@ -238,6 +238,9 @@ enum ElementType
     typeTableShapes,
 	typeTableContentValidation,
 	typeTableContentValidations,
+	typeTableHelpMassage,
+	typeTableErrorMassage,
+	typeTableErrorMacro,
 
 	typeTableFilter,
 	typeTableFilterAnd,

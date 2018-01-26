@@ -754,7 +754,35 @@ void table_content_validation::add_child_element( xml::sax * Reader, const std::
 {
     CP_CREATE_ELEMENT(content_);
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// table:content-validation
+const wchar_t * table_error_message::ns = L"table";
+const wchar_t * table_error_message::name = L"error-message";
 
+void table_error_message::add_attributes(xml::attributes_wc_ptr const & Attributes)
+{
+    CP_APPLY_ATTR(L"table:title",			table_title_);
+    CP_APPLY_ATTR(L"table:message-type",	table_message_type_);
+	CP_APPLY_ATTR(L"table:display",			table_display_);
+}
+void table_error_message::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(content_);
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// table:content-validation
+const wchar_t * table_help_message::ns = L"table";
+const wchar_t * table_help_message::name = L"help-message";
 
+void table_help_message::add_attributes(xml::attributes_wc_ptr const & Attributes)
+{
+    CP_APPLY_ATTR(L"table:title",			table_title_);
+    CP_APPLY_ATTR(L"table:message-type",	table_message_type_);
+	CP_APPLY_ATTR(L"table:display",			table_display_);
+}
+void table_help_message::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(content_);
+}
 }
 }

@@ -48,13 +48,18 @@ namespace oox {
 class xlsx_dataValidation
 {
 public:
-	xlsx_dataValidation() {}
+	xlsx_dataValidation() : showErrorMessage(false), showInputMessage(false), showDropDown(false), allowBlank(false) {}
 
 	std::wstring ref;
 	std::wstring activate_ref;
 	std::wstring type;
 	std::wstring formula1;			
 	std::wstring formula2;
+	std::wstring operator_;
+	bool showErrorMessage;
+	bool showInputMessage;
+	bool showDropDown;
+	bool allowBlank;
 };
 typedef shared_ptr<xlsx_dataValidation>::Type xlsx_dataValidation_ptr;
 
@@ -78,6 +83,11 @@ public:
 					CP_XML_NODE(L"dataValidation")
                     {
  						CP_XML_ATTR(L"sqref", it->second->activate_ref);
+ 						CP_XML_ATTR(L"allowBlank", it->second->allowBlank);
+ 						CP_XML_ATTR(L"operator", it->second->operator_);
+ 						CP_XML_ATTR(L"showDropDown", it->second->showDropDown);
+ 						CP_XML_ATTR(L"showErrorMessage", it->second->showErrorMessage);
+ 						CP_XML_ATTR(L"showInputMessage", it->second->showInputMessage);
  						CP_XML_ATTR(L"type", it->second->type);
 
 						if (!it->second->formula1.empty())
@@ -136,9 +146,25 @@ void xlsx_dataValidations_context::activate(const std::wstring & name, const std
 			impl_->mapActivateDataValidations.insert(std::make_pair(name, pFind->second));
 		}
 	}
-
-
 }
+void xlsx_dataValidations_context::add_help_msg(const std::wstring & name, bool val)
+{
+	std::map<std::wstring, xlsx_dataValidation_ptr>::iterator pFind = impl_->mapDataValidations.find(name);
+
+	if (pFind == impl_->mapDataValidations.end()) return;
+	
+	pFind->second->showInputMessage = val;
+}
+
+void xlsx_dataValidations_context::add_error_msg(const std::wstring & name, bool val)
+{
+	std::map<std::wstring, xlsx_dataValidation_ptr>::iterator pFind = impl_->mapDataValidations.find(name);
+
+	if (pFind == impl_->mapDataValidations.end()) return;
+	
+	pFind->second->showErrorMessage = val;
+}
+
 void xlsx_dataValidations_context::add(const std::wstring & name, const std::wstring &ref)
 {
 	xlsx_dataValidation_ptr _new = xlsx_dataValidation_ptr(new xlsx_dataValidation());

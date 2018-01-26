@@ -839,8 +839,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 			t_val = oox::XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
 			
 		if (skip_next_cell)break;
-
-
+	
 	// пустые ячейки пропускаем.
         if ( is_data_visible || ((cellStyle || defaultColumnCellStyle) && is_style_visible))
         {
@@ -1199,14 +1198,27 @@ void table_content_validation::xlsx_convert(oox::xlsx_conversion_context & Conte
 {
 	std::wstring name = table_name_.get_value_or(L"");
 	
-	Context.add_content_validation(name, table_base_cell_address_.get_value_or(L""));
-	Context.add_content_validation_condition(name, table_condition_.get_value_or(L""));
+	Context.get_dataValidations_context().add(name, table_base_cell_address_.get_value_or(L""));
+	Context.get_dataValidations_context().add_formula(name, table_condition_.get_value_or(L""));
 	
-	//for (size_t i = 0 ; i < content_.size(); i++)
-	//{
-	//	content_[i]->xlsx_convert(Context);
- //   }
-	
+	for (size_t i = 0 ; i < content_.size(); i++)
+	{
+		if (content_[i]->get_type() == typeTableErrorMassage)
+		{
+			Context.get_dataValidations_context().add_error_msg(name, true);
+		}
+		else if (content_[i]->get_type() == typeTableErrorMassage)
+		{
+			Context.get_dataValidations_context().add_help_msg(name, true);
+		}
+		content_[i]->xlsx_convert(Context);
+    }
+}
+void table_error_message::xlsx_convert(oox::xlsx_conversion_context & Context) 
+{
+}
+void table_help_message::xlsx_convert(oox::xlsx_conversion_context & Context) 
+{
 }
 }
 }

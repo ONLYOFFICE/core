@@ -137,9 +137,6 @@ public:
     void start_hyperlink	(const std::wstring & styleName);
     void end_hyperlink		(std::wstring const & href);
 
-	void add_content_validation(const std::wstring & name, const std::wstring & ref);
-	void add_content_validation_condition(const std::wstring & name, const std::wstring & val);
-
 //------------------------------------------------------------------------------------
 	void add_pivot_sheet_source				(const std::wstring & sheet_name, int index_table_view);
 

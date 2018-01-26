@@ -46,6 +46,8 @@ public:
 
 	void add(const std::wstring & name, const std::wstring & ref);
 	void add_formula(const std::wstring & name, const std::wstring & f);
+	void add_help_msg(const std::wstring & name, bool val);
+	void add_error_msg(const std::wstring & name, bool val);
 
 	void activate(const std::wstring & name, const std::wstring & ref);
 

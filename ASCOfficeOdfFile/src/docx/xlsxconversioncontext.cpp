@@ -718,15 +718,6 @@ void xlsx_conversion_context::end_hyperlink(std::wstring const & href)
 		xlsx_text_context_.end_span2();
 	}
 }
-void xlsx_conversion_context::add_content_validation(const std::wstring & name, const std::wstring & ref)
-{
-	get_dataValidations_context().add(name, ref);
-}
-void xlsx_conversion_context::add_content_validation_condition(const std::wstring & name, const std::wstring & val)
-{
-	get_dataValidations_context().add_formula(name, val);
-}
-
 void xlsx_conversion_context::add_pivot_sheet_source (const std::wstring & sheet_name, int index_table_view)
 {//ващето в либре жесткая привязка что на одном листе тока одна сводная может быть ..
 	mapPivotsTableView_.insert(std::make_pair(sheet_name, index_table_view));

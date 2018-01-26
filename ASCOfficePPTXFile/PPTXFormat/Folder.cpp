@@ -85,6 +85,7 @@ namespace PPTX
 			{
 				_presentation->m_pJsaProject	= _presentation->Get(OOX::FileTypes::JsaProject).smart_dynamic_cast<OOX::JsaProject>();
 			}
+			_presentation->comments = _presentation->Get(OOX::Presentation::FileTypes::SlideComments).smart_dynamic_cast<PPTX::Comments>();
 		}
 
         for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)

@@ -231,6 +231,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/SimpleTypes_Spreadsheet.h \
     ../Source/XlsxFormat/Workbook.h \
     ../Source/XlsxFormat/WritingElement.h \
+    ../Source/DocxFormat/WorkbookComments.h \
     ../Source/XlsxFormat/Xlsx.h \
     ../Source/XML/Utils.h \
     ../Source/XML/XmlSimple.h \

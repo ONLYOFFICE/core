@@ -39,6 +39,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/WorkbookComments.h"
 #include "../../Common/OfficeFileFormats.h"
 #include "../../Common/Base64.h"
 
@@ -1546,6 +1547,20 @@ namespace BinXlsxRW
 				if(NSFile::CFileBinary::ReadAllBytes(jsaProject->filename().GetPath(), &pData, nBytesCount))
 				{
 					nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::JsaProject);
+					m_oBcw.m_oStream.WriteBYTEArray(pData, nBytesCount);
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+			}
+			//Workbook Comments
+			smart_ptr<OOX::File> fileWorkbookComments = workbook.Get(OOX::Spreadsheet::FileTypes::WorkbookComments);
+			if (fileWorkbookComments.IsInit() && OOX::Spreadsheet::FileTypes::WorkbookComments == fileWorkbookComments->type())
+			{
+				smart_ptr<OOX::Spreadsheet::WorkbookComments> workbookComments = fileWorkbookComments.smart_dynamic_cast<OOX::Spreadsheet::WorkbookComments>();
+				BYTE* pData = NULL;
+				DWORD nBytesCount;
+				if(NSFile::CFileBinary::ReadAllBytes(workbookComments->m_oReadPath.GetPath(), &pData, nBytesCount))
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::Comments);
 					m_oBcw.m_oStream.WriteBYTEArray(pData, nBytesCount);
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}

@@ -49,6 +49,7 @@
 #include "Logic/ClrMap.h"
 #include "Logic/ExtP.h"
 #include "Theme/ClrScheme.h"
+#include "Comments.h"
 
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
@@ -235,6 +236,7 @@ namespace PPTX
 				pWriter->EndRecord();
 			}
 			pWriter->WriteRecord2(9, m_pJsaProject);
+			pWriter->WriteRecord2(10, comments);
 
 			pWriter->EndRecord();
 		}
@@ -362,6 +364,11 @@ namespace PPTX
 						smart_ptr<OOX::File> file = m_pJsaProject.smart_dynamic_cast<OOX::File>();
 						FileContainer::Add(file);
 					}break;
+					case 10:
+					{
+						comments = new PPTX::Comments(OOX::File::m_pMainDocument);
+						comments->fromPPTY(pReader);
+					}break;
 					default:
 					{
 						pReader->SkipRecord();
@@ -479,6 +486,7 @@ namespace PPTX
 		bool						m_bMacroEnabled;
 		smart_ptr<OOX::VbaProject>	m_pVbaProject;
 		smart_ptr<OOX::JsaProject>	m_pJsaProject;
+		smart_ptr<PPTX::Comments>	comments;
 		
         void SetClrMap(Logic::ClrMap map)				{m_clrMap = map;}
         void SetClrScheme(nsTheme::ClrScheme scheme)	{m_clrScheme = scheme;}

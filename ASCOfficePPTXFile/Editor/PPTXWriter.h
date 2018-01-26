@@ -822,6 +822,24 @@ namespace NSBinPptxRW
 					m_oPresentation.notesMasterIdLst[0].rid = (size_t)nCurrentRels;
 					++nCurrentRels;
 				}
+				if (m_oPresentation.comments.is_init())
+				{
+					m_oReader.m_pRels->WritePresentationComments(nComment);
+					OOX::CPath pathFolderCommentDir = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("comments");
+					if (1 == nComment)
+					{
+						NSDirectory::CreateDirectory (pathFolderCommentDir.GetPath());
+					}
+					std::wstring strCommentFile = L"comment" + std::to_wstring(nComment) + L".xml";
+
+					oXmlWriter.ClearNoAttack();
+					m_oPresentation.comments->toXmlWriter(&oXmlWriter);
+
+					OOX::CPath pathComment = pathFolderCommentDir + FILE_SEPARATOR_STR  + strCommentFile;
+					oXmlWriter.SaveToFile(pathComment.GetPath());
+
+					++nComment;
+				}
 
 				m_oReader.m_pRels->EndPresentationRels(m_oPresentation.commentAuthors.is_init(), bNotesMasterPresent, m_oPresentation.m_pVbaProject.is_init(), m_oPresentation.m_pJsaProject.is_init());
 				m_oReader.m_pRels->CloseRels();

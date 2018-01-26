@@ -64,6 +64,7 @@
 #include "../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotTable.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheDefinition.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheRecords.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/WorkbookComments.h"
 
 namespace BinXlsxRW 
 {
@@ -1591,6 +1592,22 @@ namespace BinXlsxRW
 				smart_ptr<OOX::File> oFileJsaProjectFile = oFileJsaProject.smart_dynamic_cast<OOX::File>();
 				m_oWorkbook.Add(oFileJsaProjectFile);
 				m_pOfficeDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(oJsaProject.GetExtention(false));
+			}
+			else if(c_oSerWorkbookTypes::Comments == type)
+			{
+				BYTE* pData = m_oBufferedStream.GetPointer(length);
+				OOX::CPath oWorkbookComments = OOX::Spreadsheet::FileTypes::WorkbookComments.DefaultFileName();
+				std::wstring filePath = m_sDestinationDir  + FILE_SEPARATOR_STR + _T("xl") + FILE_SEPARATOR_STR + oWorkbookComments.GetPath();
+
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(filePath);
+				oFile.WriteFile(pData, length);
+				oFile.CloseFile();
+
+				smart_ptr<OOX::Spreadsheet::WorkbookComments> oFileWorkbookComments(new OOX::Spreadsheet::WorkbookComments(NULL));
+				smart_ptr<OOX::File> oFileWorkbookCommentsFile = oFileWorkbookComments.smart_dynamic_cast<OOX::File>();
+				m_oWorkbook.Add(oFileWorkbookCommentsFile);
+				m_pOfficeDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(oWorkbookComments.GetExtention(false));
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;

@@ -33,12 +33,9 @@
 #ifndef OOX_XLSXCOMMENTS_FILE_INCLUDE_H_
 #define OOX_XLSXCOMMENTS_FILE_INCLUDE_H_
 
-#include "../CommonInclude.h"
+#include "../Xlsx.h"
+#include "../Worksheets/Worksheet.h"
 #include "../SharedStrings/Si.h"
-
-#include "../../DocxFormat/IFileContainer.h"
-
-#include <boost/unordered_map.hpp>
 
 namespace OOX
 {
@@ -271,10 +268,22 @@ namespace OOX
 			CComments(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+				
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
+				if ((xlsx) && (!xlsx->m_arWorksheets.empty()))
+				{
+					xlsx->m_arWorksheets.back()->m_pComments = this;
+				}
 			}
 			CComments(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+				
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
+				if ((xlsx) && (!xlsx->m_arWorksheets.empty()))
+				{
+					xlsx->m_arWorksheets.back()->m_pComments = this;
+				}
 				read( oRootPath, oPath );
 			}
 			virtual ~CComments()

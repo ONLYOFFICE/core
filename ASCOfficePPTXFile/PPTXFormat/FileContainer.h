@@ -55,32 +55,14 @@ namespace PPTX
 		virtual ~FileContainer()
 		{
 		}
-		virtual std::wstring GetImagePathNameFromRId(const OOX::RId& rid)const
-		{
-			smart_ptr<OOX::Image> p = Get<OOX::Image>(rid);
-			if (!p.is_init())
-				return _T("");
-			return p->filename().m_strFilename;
-		}
-		virtual std::wstring GetLinkFromRId(const OOX::RId& rid)const
-		{
-			smart_ptr<OOX::External> pExt = Find(rid).smart_dynamic_cast<OOX::External>();
-			if (pExt.IsInit())
-				return pExt->Uri().m_strFilename;
+		const bool IsExist(const OOX::FileType& oType) const;
 
-			smart_ptr<OOX::Media> pMedia = Find(rid).smart_dynamic_cast<OOX::Media>();
-			if (pMedia.IsInit())
-				return pMedia->filename().m_strFilename;
-
-			return _T("");
-		}
-		virtual std::wstring GetOleFromRId(const OOX::RId& rid)const
-		{
-			smart_ptr<OOX::OleObject> p = Get<OOX::OleObject>(rid);
-			if (!p.is_init())
-				return _T("");
-			return p->filename().m_strFilename;
-		}
+		smart_ptr<OOX::File>	Get(const OOX::FileType& oType);
+		void					Get(const OOX::FileType& oType, std::vector<smart_ptr<OOX::File>> & files);
+		
+		virtual std::wstring GetImagePathNameFromRId(const OOX::RId& rid)const;
+		virtual std::wstring GetLinkFromRId			(const OOX::RId& rid)const;
+		virtual std::wstring GetOleFromRId			(const OOX::RId& rid)const;
 	protected:
 		void read(const OOX::CPath& filename);
 		void read(const OOX::CRels& rels, const OOX::CPath& path);

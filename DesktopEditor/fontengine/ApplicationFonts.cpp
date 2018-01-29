@@ -1406,7 +1406,7 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
     
     BYTE* pDataFontFile = new BYTE[nMaxFontSize];
     
-	for (int nIndex = 0; nIndex < nCount; ++nIndex)
+	for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 	{
         if ((nFlag & 2) != 0)
         {

@@ -79,11 +79,11 @@ namespace PPTX
 			if (_presentation->IsExist(OOX::FileTypes::VbaProject))
 			{
 				_presentation->m_bMacroEnabled	= true;
-				_presentation->m_pVbaProject	= _presentation->Get(OOX::FileTypes::VbaProject).smart_dynamic_cast<OOX::VbaProject>();
+				_presentation->m_pVbaProject = _presentation->Get(OOX::FileTypes::VbaProject).smart_dynamic_cast<OOX::VbaProject>();
 			}
 			if (_presentation->IsExist(OOX::FileTypes::JsaProject))
 			{
-				_presentation->m_pJsaProject	= _presentation->Get(OOX::FileTypes::JsaProject).smart_dynamic_cast<OOX::JsaProject>();
+				_presentation->m_pJsaProject = _presentation->Get(OOX::FileTypes::JsaProject).smart_dynamic_cast<OOX::JsaProject>();
 			}
 			_presentation->comments = _presentation->Get(OOX::Presentation::FileTypes::SlideComments).smart_dynamic_cast<PPTX::Comments>();
 		}
@@ -191,17 +191,17 @@ namespace PPTX
 		return true;//FileContainer::exist(OOX::Presentation::FileTypes::Presentation);
 	}
 
-	void Document::extractPictures(const OOX::CPath& path)
-	{
-		OOX::CSystemUtility::CreateDirectories(path);
-		FileContainer::ExtractPictures(path);
-	}
+	//void Document::extractPictures(const OOX::CPath& path)
+	//{
+	//	OOX::CSystemUtility::CreateDirectories(path);
+	//	FileContainer::ExtractPictures(path);
+	//}
 
-	void Document::extractPictures(const OOX::CPath& source, const OOX::CPath& path)
-	{
-		//read(source);
-		extractPictures(path);
-	}
+	//void Document::extractPictures(const OOX::CPath& source, const OOX::CPath& path)
+	//{
+	//	//read(source);
+	//	extractPictures(path);
+	//}
 
 	long Document::CountFiles(const OOX::CPath& path)
 	{

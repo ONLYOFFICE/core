@@ -34,6 +34,7 @@
 #define OOX_ONLY_WORKBOOK_COMMENTS_INCLUDE_H_
 
 #include "CommonInclude.h"
+#include "Xlsx.h"
 
 namespace OOX
 {
@@ -41,46 +42,54 @@ namespace OOX
     {
         class WorkbookComments : public OOX::File, public IFileContainer
 	{
-	public:
+		public:
             WorkbookComments(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
             {
-            }
+ 				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
+				if (xlsx)
+				{
+					xlsx->m_pWorkbookComments = this;
+				}
+			}
             WorkbookComments(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
             {
-                        read( oRootPath, oPath );
-		}
-		virtual ~WorkbookComments()
-		{
-		}
-                virtual void read(const CPath& oPath)
-                {
-                        //don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-                        CPath oRootPath;
-                        read(oRootPath, oPath);
-                }
-                virtual void read(const CPath& oRootPath, const CPath& oPath)
-                {
-                        m_oReadPath = oPath;
-                        IFileContainer::Read( oRootPath, oPath );
-                }
-                virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
-                {
-                }
-		virtual const FileType type() const
-		{
-			return Spreadsheet::FileTypes::WorkbookComments;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
+				if (xlsx)
+				{
+					xlsx->m_pWorkbookComments = this;
+				}
+				read( oRootPath, oPath );
+			}
+			virtual ~WorkbookComments()
+			{
+			}
+            virtual void read(const CPath& oPath)
+            {
+				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+				CPath oRootPath;
+				read(oRootPath, oPath);
+            }
+            virtual void read(const CPath& oRootPath, const CPath& oPath)
+            {
+				m_oReadPath = oPath;
+				IFileContainer::Read( oRootPath, oPath );
+            }
+            virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
+            {
+            }
+			virtual const FileType type() const
+			{
+				return Spreadsheet::FileTypes::WorkbookComments;
+			}
+			virtual const CPath DefaultDirectory() const
+			{
+				return type().DefaultDirectory();
+			}
+			virtual const CPath DefaultFileName() const
+			{
+				return type().DefaultFileName();
+			}
 
-
-        public:
             CPath m_oReadPath;
 	};
     }

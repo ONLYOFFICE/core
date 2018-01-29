@@ -35,7 +35,6 @@
 #include "../../Common/Base64.h"
 #include "../../Common/ATLDefine.h"
 
-
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Directory.h"
 
@@ -47,17 +46,15 @@
 
 #include "../../ASCOfficeDocxFile2/BinReader/DefaultThemeWriter.h"
 
-#include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
-
-#include "../../Common/DocxFormat/Source/XlsxFormat/Drawing/Drawing.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Drawing/Drawing.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Comments/Comments.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Styles/Styles.h"
-#include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/CalcChain/CalcChain.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/ExternalLinks/ExternalLinks.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/ExternalLinks/ExternalLinkPath.h"
@@ -65,6 +62,10 @@
 #include "../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheDefinition.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheRecords.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/WorkbookComments.h"
+
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
 
 namespace BinXlsxRW 
 {
@@ -1523,10 +1524,10 @@ namespace BinXlsxRW
 	};
 	class BinaryWorkbookTableReader : public Binary_CommonReader<BinaryWorkbookTableReader>
 	{
-		OOX::Spreadsheet::CWorkbook& m_oWorkbook;
-        boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>& m_mapPivotCacheDefinitions;
-        const std::wstring& m_sDestinationDir;
-		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
+		OOX::Spreadsheet::CWorkbook									& m_oWorkbook;
+        boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>	& m_mapPivotCacheDefinitions;
+        const std::wstring											& m_sDestinationDir;
+		NSBinPptxRW::CDrawingConverter								* m_pOfficeDrawingConverter;
 	public:
         BinaryWorkbookTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook, boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>& mapPivotCacheDefinitions, const std::wstring& sDestinationDir, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
 			: Binary_CommonReader(oBufferedStream), m_oWorkbook(oWorkbook), m_mapPivotCacheDefinitions(mapPivotCacheDefinitions), m_sDestinationDir(sDestinationDir), m_pOfficeDrawingConverter(pOfficeDrawingConverter)
@@ -3571,7 +3572,7 @@ namespace BinXlsxRW
 					{
 						int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
 
-                        if (nValue >= 0 && nValue < m_pSharedStrings->m_arrItems.size())
+                        if (nValue >= 0 && nValue < (int)m_pSharedStrings->m_arrItems.size())
 						{
                             OOX::Spreadsheet::CSi *pSi = m_pSharedStrings->m_arrItems[nValue];
 							if(NULL != pSi && !pSi->m_arrItems.empty())

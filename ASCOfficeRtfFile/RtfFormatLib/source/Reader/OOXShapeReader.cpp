@@ -979,8 +979,7 @@ void OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::
 
 	int fmt_index = style_ref->idx.get() -1;
 
-	PPTX::Theme *theme = oParam.oDocx->GetTheme();
-	if (!theme || fmt_index <0) return;
+	if (!oParam.oDocx->m_pTheme || fmt_index <0) return;
 
 	if (style_ref->Color.is<PPTX::Logic::SchemeClr>() == false) return;
 
@@ -990,21 +989,21 @@ void OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::
 	
 	if (type == 1)
 	{
-		if (fmt_index < 1000 && fmt_index < theme->themeElements.fmtScheme.fillStyleLst.size()) 
+		if (fmt_index < 1000 && fmt_index < oParam.oDocx->m_pTheme->themeElements.fmtScheme.fillStyleLst.size()) 
 		{
-			Parse(oParam, pOutput, &theme->themeElements.fmtScheme.fillStyleLst[fmt_index], &color);
+			Parse(oParam, pOutput, &oParam.oDocx->m_pTheme->themeElements.fmtScheme.fillStyleLst[fmt_index], &color);
 		}
-		else if (fmt_index > 1000 && ((fmt_index-1000) < theme->themeElements.fmtScheme.bgFillStyleLst.size()))
+		else if (fmt_index > 1000 && ((fmt_index-1000) < oParam.oDocx->m_pTheme->themeElements.fmtScheme.bgFillStyleLst.size()))
 		{
 			fmt_index -= 1000; 
 
-			Parse(oParam, pOutput, &theme->themeElements.fmtScheme.bgFillStyleLst[fmt_index], &color);	
+			Parse(oParam, pOutput, &oParam.oDocx->m_pTheme->themeElements.fmtScheme.bgFillStyleLst[fmt_index], &color);	
 		}
 	}
 
-	if (type == 2 && fmt_index < theme->themeElements.fmtScheme.lnStyleLst.size())
+	if (type == 2 && fmt_index < oParam.oDocx->m_pTheme->themeElements.fmtScheme.lnStyleLst.size())
 	{
-		Parse(oParam, pOutput, &theme->themeElements.fmtScheme.lnStyleLst[fmt_index], &color);
+		Parse(oParam, pOutput, &oParam.oDocx->m_pTheme->themeElements.fmtScheme.lnStyleLst[fmt_index], &color);
 	}
 
 	//if (style_matrix_ref->getType() == OOX::et_a_effectRef && fmt_index < theme->m_oThemeElements.m_oFmtScheme.m_oEffectStyleLst.m_arrEffectStyle.size())

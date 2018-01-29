@@ -141,7 +141,7 @@ odf_writer::odf_conversion_context* DocxConverter::odf_context()
 PPTX::Theme* DocxConverter::oox_theme()
 {
 	if (docx_document)
-		return docx_document->GetTheme();
+		return docx_document->m_pTheme;
 	else
 		return NULL;
 }
@@ -151,22 +151,17 @@ OOX::IFileContainer* DocxConverter::current_document()
 		return oox_current_child_document;
 	else
 	{
-		OOX::CDocument  *oox_doc = docx_document->GetDocument();
-		return dynamic_cast<OOX::IFileContainer*>(oox_doc);
+		return dynamic_cast<OOX::IFileContainer*>(docx_document->m_pDocument);
 	}
 }
 NSCommon::smart_ptr<OOX::File> DocxConverter::find_file_by_id(std::wstring sId)
 {
-	OOX::CDocument  *oox_doc = docx_document->GetDocument();
-
 	smart_ptr<OOX::File> oFile;
-	if (oox_doc)
-	{
-		if (oox_current_child_document)
-			oFile = oox_current_child_document->Find(sId);
-		else
-			oFile = oox_doc->Find(sId);
-	}
+
+	if (oox_current_child_document)
+		oFile = oox_current_child_document->Find(sId);
+	else if (docx_document->m_pDocument)
+		oFile = docx_document->m_pDocument->Find(sId);
 		
 	return oFile;
 }
@@ -185,10 +180,9 @@ std::wstring DocxConverter::find_link_by_id (std::wstring sId, int type)
 	}
 	if (!ref.empty()) return ref;
 
-	OOX::CDocument  *oox_doc = docx_document->GetDocument();
-	if (oox_doc == NULL) return L"";
+	if (docx_document->m_pDocument == NULL) return L"";
 	
-	oFile	= oox_doc->Find(sId);
+	oFile	= docx_document->m_pDocument->Find(sId);
 	ref		= OoxConverter::find_link_by(oFile, type);
 
 	return ref;
@@ -221,8 +215,7 @@ void DocxConverter::convertDocument()
 
 void DocxConverter::convert_document()
 {
-	const OOX::CDocument* document = docx_document->GetDocument();
-	if (!document)return;
+	if (!docx_document->m_pDocument)return;
 
 	std::vector<_section> sections;
 //----------------------------------------------------------------------------------------------------------
@@ -231,13 +224,13 @@ void DocxConverter::convert_document()
 
 	OOX::Logic::CSectionProperty* prev = NULL;
 
-    for (size_t i = 0; i < document->m_arrItems.size(); ++i)
+    for (size_t i = 0; i < docx_document->m_pDocument->m_arrItems.size(); ++i)
 	{
-		if ((document->m_arrItems[i]) == NULL) continue;
+		if ((docx_document->m_pDocument->m_arrItems[i]) == NULL) continue;
 
-		if (document->m_arrItems[i]->getType() == OOX::et_w_p)
+		if (docx_document->m_pDocument->m_arrItems[i]->getType() == OOX::et_w_p)
 		{
-			OOX::Logic::CParagraph * para = dynamic_cast<OOX::Logic::CParagraph *>(document->m_arrItems[i]);
+			OOX::Logic::CParagraph * para = dynamic_cast<OOX::Logic::CParagraph *>(docx_document->m_pDocument->m_arrItems[i]);
 			
 			if ((para) && (para->m_oParagraphProperty))
 			{
@@ -260,9 +253,9 @@ void DocxConverter::convert_document()
 	}
 	_section section;
 	
-	section.props		= document->m_oSectPr.GetPointer();
+	section.props		= docx_document->m_pDocument->m_oSectPr.GetPointer();
 	section.start_para	= last_section_start;
-	section.end_para	= document->m_arrItems.size(); 
+	section.end_para	= docx_document->m_pDocument->m_arrItems.size(); 
 	section.bContinue	= compare (prev, section.props);
 
 	sections.push_back(section);
@@ -277,7 +270,7 @@ void DocxConverter::convert_document()
 
         for (size_t i = sections[sect].start_para; i < sections[sect].end_para; ++i)
 		{
-			convert(document->m_arrItems[i]);
+			convert(docx_document->m_pDocument->m_arrItems[i]);
 		}
 	}
 }
@@ -1572,7 +1565,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 
 		//nullable<SimpleTypes::CDecimalNumber<>   > m_oCode;
 	}
-	convert(docx_document->GetDocument()->m_oBackground.GetPointer(), 1);//подложка - вот в таком она месте :(, причём одна на все разделы, не как в оо
+	convert(docx_document->m_pDocument->m_oBackground.GetPointer(), 1);//подложка - вот в таком она месте :(, причём одна на все разделы, не как в оо
 			//nullable<ComplexTypes::Word::CTextDirection                  > m_oTextDirection;
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oRtlGutter;
 			//nullable<ComplexTypes::Word::CVerticalJc                     > m_oVAlign;
@@ -1621,7 +1614,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 				if (s->m_arrHeaderReference[i]->m_oId.IsInit())
 				{
 					convert_hdr_ftr(s->m_arrHeaderReference[i]->m_oId->GetValue());
-					convert(docx_document->GetDocument()->m_oBackground.GetPointer(), 2);
+					convert(docx_document->m_pDocument->m_oBackground.GetPointer(), 2);
 				}
 
 				odt_context->end_header_footer();
@@ -1649,7 +1642,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 				if (s->m_arrFooterReference[i]->m_oId.IsInit())
 				{
 					convert_hdr_ftr(s->m_arrFooterReference[i]->m_oId->GetValue());
-					convert(docx_document->GetDocument()->m_oBackground.GetPointer(), 3);
+					convert(docx_document->m_pDocument->m_oBackground.GetPointer(), 3);
 				}
 
 				odt_context->end_header_footer();	
@@ -2335,8 +2328,7 @@ void DocxConverter::convert(SimpleTypes::CTheme<>* oox_font_theme, _CP_OPT(std::
 {
 	if (oox_font_theme == NULL) return;
 
-	PPTX::Theme * docx_theme= docx_document->GetTheme();
-	if (docx_theme == NULL) return;
+	if (docx_document->m_pTheme == NULL) return;
 
 	std::wstring font;
 
@@ -2344,23 +2336,23 @@ void DocxConverter::convert(SimpleTypes::CTheme<>* oox_font_theme, _CP_OPT(std::
 	{
 	case SimpleTypes::themeMajorAscii:
 	case SimpleTypes::themeMajorHAnsi :
-		font = docx_theme->themeElements.fontScheme.majorFont.latin.typeface;
+		font = docx_document->m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;
 		break;
 	case SimpleTypes::themeMajorBidi:
-		font = docx_theme->themeElements.fontScheme.majorFont.cs.typeface;
+		font = docx_document->m_pTheme->themeElements.fontScheme.majorFont.cs.typeface;
 		break;
 	case SimpleTypes::themeMajorEastAsia:
-		font = docx_theme->themeElements.fontScheme.majorFont.ea.typeface;
+		font = docx_document->m_pTheme->themeElements.fontScheme.majorFont.ea.typeface;
 		break;
 	case SimpleTypes::themeMinorAscii:
 	case SimpleTypes::themeMinorHAnsi:
-		font = docx_theme->themeElements.fontScheme.minorFont.latin.typeface;
+		font = docx_document->m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;
 		break;
 	case SimpleTypes::themeMinorBidi:
-		font = docx_theme->themeElements.fontScheme.minorFont.cs.typeface;
+		font = docx_document->m_pTheme->themeElements.fontScheme.minorFont.cs.typeface;
 		break;
 	case SimpleTypes::themeMinorEastAsia:
-		font = docx_theme->themeElements.fontScheme.minorFont.ea.typeface;
+		font = docx_document->m_pTheme->themeElements.fontScheme.minorFont.ea.typeface;
 		break;
 	}
 	if (!font.empty()) odf_font_name = font;
@@ -2867,11 +2859,9 @@ void DocxConverter::convert(SimpleTypes::CHexColor<>		*color,
 	}
 	if(theme_color && result == false)
 	{
-		PPTX::Theme * docx_theme= docx_document->GetTheme();
-		
-		std::map<std::wstring, PPTX::Logic::UniColor>::iterator pFind = docx_theme->themeElements.clrScheme.Scheme.find(theme_color->ToString());
+		std::map<std::wstring, PPTX::Logic::UniColor>::iterator pFind = docx_document->m_pTheme->themeElements.clrScheme.Scheme.find(theme_color->ToString());
 
-		if (pFind != docx_theme->themeElements.clrScheme.Scheme.end())
+		if (pFind != docx_document->m_pTheme->themeElements.clrScheme.Scheme.end())
 		{
 			PPTX::Logic::UniColor & color = pFind->second;
 			
@@ -2890,38 +2880,36 @@ void DocxConverter::convert(ComplexTypes::Word::CColor *color, _CP_OPT(odf_types
 PPTX::Logic::ClrMap* DocxConverter::oox_clrMap()
 {
 	//return current_clrMap; todoooo
-	OOX::CSettings * docx_settings = docx_document->GetSettings();
-	if (!docx_settings) return NULL;
+	if (!docx_document->m_pSettings) return NULL;
 	
-	return docx_settings->m_oClrSchemeMapping.GetPointer();
+	return docx_document->m_pSettings->m_oClrSchemeMapping.GetPointer();
 }
 void DocxConverter::convert_settings()
 {
 	if (!odt_context) return;
 
-	OOX::CSettings * docx_settings = docx_document->GetSettings();
-	if (!docx_settings) return;
+	if (!docx_document->m_pSettings) return;
 
-	if (docx_settings->m_oZoom.IsInit())
+	if (docx_document->m_pSettings->m_oZoom.IsInit())
 	{
 	}
-	if (docx_settings->m_oMirrorMargins.IsInit())
+	if (docx_document->m_pSettings->m_oMirrorMargins.IsInit())
 	{
 		odt_context->page_layout_context()->set_pages_mirrored(true);
 	}
 
-	odt_context->page_layout_context()->even_and_left_headers_ = docx_settings->m_oEvenAndOddHeaders.IsInit();
+	odt_context->page_layout_context()->even_and_left_headers_ = docx_document->m_pSettings->m_oEvenAndOddHeaders.IsInit();
 
-	if (docx_settings->m_oPrintTwoOnOne.IsInit())
+	if (docx_document->m_pSettings->m_oPrintTwoOnOne.IsInit())
 	{
-		if (docx_settings->m_oGutterAtTop.IsInit()){} //portrait
+		if (docx_document->m_pSettings->m_oGutterAtTop.IsInit()){} //portrait
 		else {}//landscape
 	}
 
-	if (docx_settings->m_oDefaultTabStop.IsInit())
+	if (docx_document->m_pSettings->m_oDefaultTabStop.IsInit())
 	{
 		_CP_OPT(odf_types::length) length;
-		convert(docx_settings->m_oDefaultTabStop->m_oVal.GetPointer(), length);
+		convert(docx_document->m_pSettings->m_oDefaultTabStop->m_oVal.GetPointer(), length);
 		
 		odf_writer::odf_style_state_ptr state;
 		if (odt_context->styles_context()->find_odf_default_style_state(odf_types::style_family::Paragraph, state) && state)
@@ -2941,7 +2929,7 @@ void DocxConverter::convert_lists_styles()
 {
 	if (!odt_context) return;
 
-	OOX::CNumbering * lists_styles = docx_document->GetNumbering();
+	OOX::CNumbering * lists_styles = docx_document->m_pNumbering;
 	
 	if (!lists_styles)return;
 
@@ -2979,27 +2967,25 @@ void DocxConverter::convert_lists_styles()
 void DocxConverter::convert_styles()
 {
 	if (!odt_context) return;
-
-	OOX::CStyles * docx_styles = docx_document->GetStyles();
 	
-	if (!docx_styles)return;
+	if (!docx_document->m_pStyles)return;
 
 	//nullable<OOX::CLatentStyles > m_oLatentStyles;
 
-	convert(docx_styles->m_oDocDefaults.GetPointer());
+	convert(docx_document->m_pStyles->m_oDocDefaults.GetPointer());
 
-	for (size_t i=0; i< docx_styles->m_arrStyle.size(); i++)
+	for (size_t i=0; i< docx_document->m_pStyles->m_arrStyle.size(); i++)
 	{
-		if (docx_styles->m_arrStyle[i] == NULL) continue;
+		if (docx_document->m_pStyles->m_arrStyle[i] == NULL) continue;
 		
 		if (!current_font_size.empty())
 		{
 			current_font_size.erase(current_font_size.begin() + 1, current_font_size.end());
 		}
 
-		convert(docx_styles->m_arrStyle[i]);
+		convert(docx_document->m_pStyles->m_arrStyle[i]);
 	
-		if (i == 0 && docx_styles->m_arrStyle[i]->m_oDefault.IsInit() && docx_styles->m_arrStyle[i]->m_oDefault->ToBool())
+		if (i == 0 && docx_document->m_pStyles->m_arrStyle[i]->m_oDefault.IsInit() && docx_document->m_pStyles->m_arrStyle[i]->m_oDefault->ToBool())
 		{
 			//NADIE_COMO_TU.docx тут дефолтовый стиль не прописан явно, берем тот что Normal
 			odf_writer::odf_style_state_ptr def_style_state;
@@ -3285,7 +3271,7 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 	if (oox_num_lvl->m_oLvlPicBulletId.IsInit() && oox_num_lvl->m_oLvlPicBulletId->m_oVal.IsInit())
 	{
 		int id = oox_num_lvl->m_oLvlPicBulletId->m_oVal->GetValue();
-		OOX::CNumbering * lists_styles = docx_document->GetNumbering();
+		OOX::CNumbering * lists_styles = docx_document->m_pNumbering;
 
 		for (size_t i = 0; (lists_styles) && (i < lists_styles->m_arrNumPicBullet.size()); i++)
 		{
@@ -3582,12 +3568,11 @@ void DocxConverter::convert(OOX::Logic::CEndnoteReference* oox_ref)
 }
 void DocxConverter::convert_comment(int oox_comm_id)
 {
-	OOX::CComments * docx_comments = docx_document->GetComments();
-	if (!docx_comments)return;
+	if (!docx_document->m_pComments)return;
 
-	for (size_t comm = 0 ; comm < docx_comments->m_arrComments.size(); comm++)
+	for (size_t comm = 0 ; comm < docx_document->m_pComments->m_arrComments.size(); comm++)
 	{
-		OOX::CComment* oox_comment = docx_comments->m_arrComments[comm];
+		OOX::CComment* oox_comment = docx_document->m_pComments->m_arrComments[comm];
 		
 		if (oox_comment == NULL)					continue;
 		if (oox_comment->m_oId.IsInit() == false)	continue;
@@ -3611,14 +3596,13 @@ void DocxConverter::convert_comment(int oox_comm_id)
 }
 void DocxConverter::convert_footnote(int oox_ref_id)
 {
-	OOX::CFootnotes * footnotes = docx_document->GetFootnotes();
-	if (!footnotes)return;
+	if (!docx_document->m_pFootnotes)return;
 
 	odt_context->start_note(oox_ref_id, 1);
 
-	for (size_t n = 0 ; n < footnotes->m_arrFootnote.size(); n++)
+	for (size_t n = 0 ; n < docx_document->m_pFootnotes->m_arrFootnote.size(); n++)
 	{
-		OOX::CFtnEdn* oox_note = footnotes->m_arrFootnote[n];
+		OOX::CFtnEdn* oox_note = docx_document->m_pFootnotes->m_arrFootnote[n];
 		
 		if (oox_note == NULL)					continue;
 		if (oox_note->m_oId.IsInit() == false)	continue;
@@ -3639,14 +3623,13 @@ void DocxConverter::convert_footnote(int oox_ref_id)
 }
 void DocxConverter::convert_endnote(int oox_ref_id)
 {
-	OOX::CEndnotes * endnotes = docx_document->GetEndnotes();
-	if (!endnotes)return;
+	if (!docx_document->m_pEndnotes)return;
 
 	odt_context->start_note(oox_ref_id, 2);
 
-	for (size_t n = 0 ; n < endnotes->m_arrEndnote.size(); n++)
+	for (size_t n = 0 ; n < docx_document->m_pEndnotes->m_arrEndnote.size(); n++)
 	{
-		OOX::CFtnEdn* oox_note = endnotes->m_arrEndnote[n];
+		OOX::CFtnEdn* oox_note = docx_document->m_pEndnotes->m_arrEndnote[n];
 		
 		if (oox_note == NULL)					continue;
 		if (oox_note->m_oId.IsInit() == false)	continue;

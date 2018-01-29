@@ -32,26 +32,28 @@
 #ifndef BINARY_WRITER
 #define BINARY_WRITER
 
-#include "../../ASCOfficePPTXFile/Editor/BinReaderWriterDefines.h"
-#include "../../DesktopEditor/common/Directory.h"
-
-#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
-#include "../../Common/DocxFormat/Source/XlsxFormat/WorkbookComments.h"
-#include "../../Common/OfficeFileFormats.h"
-#include "../../Common/Base64.h"
-
-#include "../../ASCOfficeDocxFile2/DocWrapper/FontProcessor.h"
-#include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
-#include "../Common/BinReaderWriterDefines.h"
-#include "../Common/Common.h"
-#include "../../ASCOfficePPTXFile/Editor/FontCutter.h"
 #include "../Writer/BinaryReader.h"
 #include "../Reader/CSVReader.h"
 #include "CommonWriter.h"
 #include "ChartFromToBinary.h"
+
+#include "../Common/Common.h"
+#include "../Common/BinReaderWriterDefines.h"
+#include "../../ASCOfficePPTXFile/Editor/BinReaderWriterDefines.h"
+#include "../../DesktopEditor/common/Directory.h"
+
+#include "../../Common/OfficeFileFormats.h"
+#include "../../Common/Base64.h"
+
+#include "../../ASCOfficeDocxFile2/DocWrapper/FontProcessor.h"
+#include "../../ASCOfficePPTXFile/Editor/FontCutter.h"
+
+#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/WorkbookComments.h"
 
 namespace BinXlsxRW 
 {
@@ -1481,42 +1483,43 @@ namespace BinXlsxRW
 	};
 	class BinaryWorkbookTableWriter
 	{
-		BinaryCommonWriter m_oBcw;
+		BinaryCommonWriter		m_oBcw;
+		OOX::Spreadsheet::CXlsx &m_oXlsx;
 	public:
-		BinaryWorkbookTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream):m_oBcw(oCBufferedStream)
+		BinaryWorkbookTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream, OOX::Spreadsheet::CXlsx &oXlsx) : m_oBcw(oCBufferedStream), m_oXlsx(oXlsx)
 		{
-		};
+		}
 		void Write(OOX::Spreadsheet::CWorkbook& workbook)
 		{
 			int nStart = m_oBcw.WriteItemWithLengthStart();
 			WriteWorkbook(workbook);
 			m_oBcw.WriteItemWithLengthEnd(nStart);
-		};
+		}
 		void WriteWorkbook(OOX::Spreadsheet::CWorkbook& workbook)
 		{
 			int nCurPos;
-			//WorkbookPr
+	//WorkbookPr
 			if(workbook.m_oWorkbookPr.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::WorkbookPr);
 				WriteWorkbookPr(workbook.m_oWorkbookPr.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
-			//BookViews
+	//BookViews
 			if(workbook.m_oBookViews.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::BookViews);
 				WriteBookViews(workbook.m_oBookViews.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
-			//DefinedNames
+	//DefinedNames
 			if(workbook.m_oDefinedNames.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::DefinedNames);
 				WriteDefinedNames(workbook.m_oDefinedNames.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
-			//ExternalReferences
+	//ExternalReferences
 			if(workbook.m_oExternalReferences.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalReferences);
@@ -1524,41 +1527,35 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 			
-			smart_ptr<OOX::File> fileVbaProject = workbook.Get(OOX::FileTypes::VbaProject);
-			if (fileVbaProject.IsInit() && OOX::FileTypes::VbaProject == fileVbaProject->type())
+	//Write VbaProject
+			if (NULL != m_oXlsx.m_pVbaProject)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::VbaProject);
 
-                smart_ptr<OOX::VbaProject> vbaProject = fileVbaProject.smart_dynamic_cast<OOX::VbaProject>();
-
-                m_oBcw.m_oStream.StartRecord(0);
-                vbaProject->toPPTY(&m_oBcw.m_oStream);
+				m_oBcw.m_oStream.StartRecord(0);
+                m_oXlsx.m_pVbaProject->toPPTY(&m_oBcw.m_oStream);
                 m_oBcw.m_oStream.EndRecord();
 
                 m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
-			//Write JsaProject
-			smart_ptr<OOX::File> fileJsaProject = workbook.Get(OOX::FileTypes::JsaProject);
-			if (fileJsaProject.IsInit() && OOX::FileTypes::JsaProject == fileJsaProject->type())
+	//Write JsaProject
+			if (NULL != m_oXlsx.m_pJsaProject)
 			{
-				smart_ptr<OOX::JsaProject> jsaProject = fileJsaProject.smart_dynamic_cast<OOX::JsaProject>();
 				BYTE* pData = NULL;
 				DWORD nBytesCount;
-				if(NSFile::CFileBinary::ReadAllBytes(jsaProject->filename().GetPath(), &pData, nBytesCount))
+				if(NSFile::CFileBinary::ReadAllBytes(m_oXlsx.m_pJsaProject->filename().GetPath(), &pData, nBytesCount))
 				{
 					nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::JsaProject);
 					m_oBcw.m_oStream.WriteBYTEArray(pData, nBytesCount);
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
 			}
-			//Workbook Comments
-			smart_ptr<OOX::File> fileWorkbookComments = workbook.Get(OOX::Spreadsheet::FileTypes::WorkbookComments);
-			if (fileWorkbookComments.IsInit() && OOX::Spreadsheet::FileTypes::WorkbookComments == fileWorkbookComments->type())
+	//Workbook Comments
+			if (NULL != m_oXlsx.m_pWorkbookComments)
 			{
-				smart_ptr<OOX::Spreadsheet::WorkbookComments> workbookComments = fileWorkbookComments.smart_dynamic_cast<OOX::Spreadsheet::WorkbookComments>();
 				BYTE* pData = NULL;
 				DWORD nBytesCount;
-				if(NSFile::CFileBinary::ReadAllBytes(workbookComments->m_oReadPath.GetPath(), &pData, nBytesCount))
+				if(NSFile::CFileBinary::ReadAllBytes(m_oXlsx.m_pWorkbookComments->m_oReadPath.GetPath(), &pData, nBytesCount))
 				{
 					nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::Comments);
 					m_oBcw.m_oStream.WriteBYTEArray(pData, nBytesCount);
@@ -1568,14 +1565,14 @@ namespace BinXlsxRW
         }
 		void WriteWorkbookPr(const OOX::Spreadsheet::CWorkbookPr& workbookPr)
 		{
-			//Date1904
+	//Date1904
 			if(workbookPr.m_oDate1904.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookPrTypes::Date1904);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 				m_oBcw.m_oStream.WriteBOOL(workbookPr.m_oDate1904->ToBool());
 			}
-			//DateCompatibility
+	//DateCompatibility
 			if(workbookPr.m_oDateCompatibility.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookPrTypes::DateCompatibility);
@@ -1600,7 +1597,7 @@ namespace BinXlsxRW
 			int nCurPos;
 			if(bookViews.m_arrItems.size() > 0)
 			{
-				//WorkbookView
+	//WorkbookView
 				OOX::Spreadsheet::CWorkbookView* pWorkbookView = static_cast<OOX::Spreadsheet::CWorkbookView*>(bookViews.m_arrItems[0]);
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::WorkbookView);
 				WriteWorkbookView(*pWorkbookView);
@@ -1609,7 +1606,7 @@ namespace BinXlsxRW
         }
 		void WriteWorkbookView(const OOX::Spreadsheet::CWorkbookView& workbookView)
 		{
-			//ActiveTab
+	//ActiveTab
 			if(workbookView.m_oActiveTab.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookViewTypes::ActiveTab);
@@ -1635,7 +1632,7 @@ namespace BinXlsxRW
 			for(size_t i = 0, length = externalReferences.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CExternalReference* pExternalReference = externalReferences.m_arrItems[i];
-				//ExternalReference
+	//ExternalReference
 
 				if(pExternalReference->m_oRid.IsInit())
 				{
@@ -4430,7 +4427,7 @@ namespace BinXlsxRW
 			if(oXlsx.m_pWorkbook)
 			{
 				nCurPos = WriteTableStart(c_oSerTableTypes::Workbook);
-				BinaryWorkbookTableWriter oBinaryWorkbookTableWriter(oBufferedStream);
+				BinaryWorkbookTableWriter oBinaryWorkbookTableWriter(oBufferedStream, oXlsx);
 				oBinaryWorkbookTableWriter.Write(*oXlsx.m_pWorkbook);
 				WriteTableEnd(nCurPos);
 

@@ -32,6 +32,7 @@
 #include "CommonInclude.h"
 
 #include "FileTypes_Spreadsheet.h"
+#include "Xlsx.h"
 
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 #include "../DocxFormat/VmlDrawing.h"
@@ -135,14 +136,21 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CWorksheet( pMain, oRootPath, oFileName, pRelation->rId().ToString() ));
 			else if ( pRelation->Type() == OOX::FileTypes::Theme )
 			{
+				smart_ptr<OOX::File> pFile;
 				if(NSFile::CFileBinary::Exists(oFileName.GetPath()))
 				{
-					return smart_ptr<OOX::File>(new PPTX::Theme( pMain, oFileName ));
+					pFile = smart_ptr<OOX::File>(new PPTX::Theme( pMain, oFileName ));
 				}
 				else
 				{
-					return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
+					pFile = smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 				}
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
+				if (xlsx)
+				{
+					xlsx->m_pTheme = pFile.smart_dynamic_cast<PPTX::Theme>();
+				}
+				return pFile;
 			}
 			else if ( pRelation->Type() == OOX::FileTypes::ThemeOverride )
 				return smart_ptr<OOX::File>(new PPTX::Theme( pMain, oFileName ));

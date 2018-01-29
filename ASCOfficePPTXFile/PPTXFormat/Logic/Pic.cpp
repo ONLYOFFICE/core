@@ -503,12 +503,14 @@ namespace PPTX
 			smart_ptr<OOX::OleObject> ole_file = m_OleObjectFile;
 			if (ole_file.IsInit() == false)
 			{
-				if (pRels != NULL)						ole_file = pRels->Get<OOX::OleObject>(oRId);
-
-				else if(parentFileIs<Slide>())			ole_file = parentFileAs<Slide>().Get<OOX::OleObject>(oRId);
-				else if(parentFileIs<SlideLayout>())	ole_file = parentFileAs<SlideLayout>().Get<OOX::OleObject>(oRId);
-				else if(parentFileIs<SlideMaster>())	ole_file = parentFileAs<SlideMaster>().Get<OOX::OleObject>(oRId);
-				else if(parentFileIs<Theme>())			ole_file = parentFileAs<Theme>().Get<OOX::OleObject>(oRId);
+				if (pRels != NULL)
+					ole_file = pRels->Get<OOX::OleObject>(oRId);
+				else
+				{
+					OOX::IFileContainer* pContainer = dynamic_cast<OOX::IFileContainer*>(const_cast<PPTX::WrapperFile*>(parentFile));
+					if (pContainer)
+						ole_file = pContainer->Get<OOX::OleObject>(oRId);
+				}
 			}
 			return ole_file;
 		}

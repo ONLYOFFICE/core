@@ -73,8 +73,6 @@ namespace PPTX
 		}
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
-			//FileContainer::read(filename, map);
-
 			XmlUtils::CXmlNode oNode;
 			oNode.FromXmlFile(filename.m_strFilename);
 

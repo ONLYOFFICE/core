@@ -47,7 +47,12 @@
 
 OOX::Spreadsheet::CXlsx::~CXlsx()
 {
-    for (size_t i = 0; i < m_arWorksheets.size(); ++i)
+    if(bDeleteWorkbook)			RELEASEOBJECT(m_pWorkbook);
+    if(bDeleteSharedStrings)	RELEASEOBJECT(m_pSharedStrings);
+    if(bDeleteStyles)			RELEASEOBJECT(m_pStyles);
+    if(bDeleteCalcChain)		RELEASEOBJECT(m_pCalcChain);
+	
+	for (size_t i = 0; i < m_arWorksheets.size(); ++i)
     {
         if (bDeleteWorksheets && m_arWorksheets[i])
 		{
@@ -66,8 +71,8 @@ bool OOX::Spreadsheet::CXlsx::Read(const CPath& oFilePath)
 	if (!m_pWorkbook) return false;
 
 //Theme
-	smart_ptr<OOX::File> pFile = m_pWorkbook->Find(OOX::FileTypes::Theme);
-	m_pTheme = pFile.smart_dynamic_cast<PPTX::Theme>();
+	//smart_ptr<OOX::File> pFile = m_pWorkbook->Find(OOX::FileTypes::Theme);
+	//m_pTheme = pFile.smart_dynamic_cast<PPTX::Theme>();
 
     for (size_t i = 0; i < m_arWorksheets.size(); i++)
 	{

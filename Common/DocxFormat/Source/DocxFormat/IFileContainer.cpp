@@ -50,7 +50,7 @@ namespace OOX
 {
     boost::unordered_map<std::wstring, size_t> IFileContainer::m_mapEnumeratedGlobal;
 
-    UnknowTypeFile IFileContainer::Unknown(NULL);
+    UnknowTypeFile IFileContainer::m_oUnknown(NULL);
 
 	IFileContainer::IFileContainer(OOX::Document* pMain) : m_pMainDocument(pMain)
 	{
@@ -238,39 +238,7 @@ namespace OOX
 		}
 	}
 
-	void IFileContainer::ExtractPictures (const OOX::CPath& oPath) const
-	{
-		for (size_t i = 0; i < m_arContainer.size(); ++i)
-		{
-			smart_ptr<OOX::File> pFile = m_arContainer[i];
 
-			smart_ptr<Image> pImage = pFile.smart_dynamic_cast<Image>();
-			if ( pImage.is_init() )
-			{
-				pImage->copy_to( oPath );
-				continue;
-			}
-
-			smart_ptr<IFileContainer> pExt = pFile.smart_dynamic_cast<IFileContainer>();
-			if ( pExt.is_init() )
-			{
-				pExt->ExtractPictures( oPath );
-				continue;
-			}
-		}
-	}
-	const bool IFileContainer::IsExist(const FileType& oType) const
-	{
-		for (size_t i = 0; i < m_arContainer.size(); ++i)
-		{
-			smart_ptr<OOX::File> pFile	= m_arContainer[i];
-
-			if (oType == pFile->type())
-				return true;
-		}
-
-		return false;
-	}
 	const bool IFileContainer::IsExist(const RId& rId) const
 	{
         boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pFind = m_mapContainer.find(rId.get());
@@ -283,17 +251,15 @@ namespace OOX
 		T oFile;
 		return IsExist( oFile.type() );
 	}	
-    std::wstring IFileContainer::IsExistHyperlink(smart_ptr<OOX::HyperLink>& pHyperLink)
+	std::wstring IFileContainer::IsExistHyperlink(const std::wstring & href)
 	{
-        for ( boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mapContainer.begin(); pPair != m_mapContainer.end(); ++pPair)
+         boost::unordered_map<std::wstring, std::wstring>::const_iterator pFind = m_mapHyperlinks.find(href);
+
+		if (pFind != m_mapHyperlinks.end())
 		{
-			if(OOX::FileTypes::HyperLink == pPair->second->type())
-			{
-				smart_ptr<OOX::HyperLink> pCurHyperlink = pPair->second.smart_dynamic_cast<OOX::HyperLink>();
-				if(pCurHyperlink->Uri().GetPath() == pHyperLink->Uri().GetPath())
-					return pPair->first;
-			}
+			return pFind->second;
 		}
+
         return std::wstring();
 	}
 	const bool IFileContainer::IsExternal(const OOX::RId& rId) const
@@ -316,28 +282,7 @@ namespace OOX
 		return true;
 	}
 
-	smart_ptr<OOX::File> IFileContainer::Get(const FileType& oType)
-	{
-		for (size_t i = 0; i < m_arContainer.size(); ++i)
-		{
-			smart_ptr<OOX::File> &pFile	= m_arContainer[i];
-			if (oType == pFile->type())
-				return pFile;
-		}
 
-		return smart_ptr<OOX::File>(new UnknowTypeFile( Unknown ));
-	}
-
-	void IFileContainer::Get(const FileType& oType, std::vector<smart_ptr<OOX::File>> & files)
-	{
-		for (size_t i = 0; i < m_arContainer.size(); ++i)
-		{
-			smart_ptr<OOX::File> &pFile	= m_arContainer[i];
-			
-			if ( oType == pFile->type() )
-				files.push_back(pFile);
-		}
-	}
 	const RId IFileContainer::Add(smart_ptr<OOX::File>& pFile)
 	{
 		const RId rId = GetMaxRId().next();
@@ -347,8 +292,8 @@ namespace OOX
 
 	void IFileContainer::Add (const OOX::RId& rId, smart_ptr<OOX::File>& pFile)
 	{
-		bool bEnumerated = pFile->type().Enumerated();
-		bool bEnumeratedGlobal = pFile->type().EnumeratedGlobal();
+		bool bEnumerated		= pFile->type().Enumerated();
+		bool bEnumeratedGlobal	= pFile->type().EnumeratedGlobal();
 
 		if(true == bEnumeratedGlobal || true == bEnumerated)
 		{
@@ -396,6 +341,12 @@ namespace OOX
 		
 		m_arContainer.push_back(pFile);
 		m_mapContainer [rId.get()] = pFile;
+
+		smart_ptr<OOX::HyperLink> oHyperlinkFile = pFile.smart_dynamic_cast<OOX::HyperLink>();
+		if (oHyperlinkFile.IsInit())
+		{
+			m_mapHyperlinks.insert(std::make_pair( oHyperlinkFile->Uri().GetPath(), rId.get() ));
+		}
 	}
 
 	const RId IFileContainer::AddNoWrite(const smart_ptr<OOX::File>& pFile, const std::wstring& oDefDir)
@@ -413,16 +364,6 @@ namespace OOX
 		m_mapContainer [rId.get()] = pFile;
 		
 		m_mNoWriteContainer[rId.get()] = oDefDir;
-	}
-
-	smart_ptr<OOX::File> IFileContainer::Find(const FileType& oType) const
-	{
-        for (size_t i = 0; i < m_arContainer.size(); ++i)
-		{
-			if ( oType == m_arContainer[i]->type() )
-				return m_arContainer[i];
-		}
-		return smart_ptr<OOX::File>( (OOX::File*)new UnknowTypeFile(m_pMainDocument) );
 	}
 
 	smart_ptr<OOX::File> IFileContainer::Find(const OOX::RId& rId) const
@@ -449,12 +390,6 @@ namespace OOX
 
 		return smart_ptr<OOX::File>( (OOX::File*)new UnknowTypeFile(m_pMainDocument) );
 	}
-
-	smart_ptr<OOX::File> IFileContainer::operator [](const FileType& oType)
-	{
-        return Find( oType );
-	}
-
 	const RId IFileContainer::GetMaxRId()
 	{
 		return RId( m_lMaxRid );

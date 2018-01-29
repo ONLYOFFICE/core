@@ -40,9 +40,11 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Rels.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/ContentTypes.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Media/Media.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
 #include "../../DesktopEditor/common/Directory.h"
+
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/Image.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
 
 #include <boost/unordered_map.hpp>
 
@@ -87,11 +89,70 @@ namespace PPTX
 
 	void FileContainer::read(const OOX::CPath& filename)
 	{
-		//OOX::IFileContainer::read(filename);
 	}
 
 	void FileContainer::read(const OOX::CRels& rels, const OOX::CPath& path)
 	{
+	}
+	const bool FileContainer::IsExist(const OOX::FileType& oType) const
+	{
+		for (size_t i = 0; i < m_arContainer.size(); ++i)
+		{
+			smart_ptr<OOX::File> pFile	= m_arContainer[i];
+
+			if (oType == pFile->type())
+				return true;
+		}
+
+		return false;
+	}
+	smart_ptr<OOX::File> FileContainer::Get(const OOX::FileType& oType)
+	{
+		for (size_t i = 0; i < m_arContainer.size(); ++i)
+		{
+			smart_ptr<OOX::File> &pFile	= m_arContainer[i];
+			if (oType == pFile->type())
+				return pFile;
+		}
+
+		return smart_ptr<OOX::File>(new OOX::UnknowTypeFile( m_oUnknown ));
+	}
+
+	void FileContainer::Get(const OOX::FileType& oType, std::vector<smart_ptr<OOX::File>> & files)
+	{
+		for (size_t i = 0; i < m_arContainer.size(); ++i)
+		{
+			smart_ptr<OOX::File> &pFile	= m_arContainer[i];
+			
+			if ( oType == pFile->type() )
+				files.push_back(pFile);
+		}
+	}
+	std::wstring FileContainer::GetImagePathNameFromRId(const OOX::RId& rid)const
+	{
+		smart_ptr<OOX::Image> p = IFileContainer::Get<OOX::Image>(rid);
+		if (!p.is_init())
+			return _T("");
+		return p->filename().m_strFilename;
+	}
+	std::wstring FileContainer::GetLinkFromRId(const OOX::RId& rid)const
+	{
+		smart_ptr<OOX::External> pExt = Find(rid).smart_dynamic_cast<OOX::External>();
+		if (pExt.IsInit())
+			return pExt->Uri().m_strFilename;
+
+		smart_ptr<OOX::Media> pMedia = Find(rid).smart_dynamic_cast<OOX::Media>();
+		if (pMedia.IsInit())
+			return pMedia->filename().m_strFilename;
+
+		return _T("");
+	}
+	std::wstring FileContainer::GetOleFromRId(const OOX::RId& rid)const
+	{
+		smart_ptr<OOX::OleObject> p = IFileContainer::Get<OOX::OleObject>(rid);
+		if (!p.is_init())
+			return _T("");
+		return p->filename().m_strFilename;
 	}
 	void FileContainer::read(const OOX::CRels& rels, const OOX::CPath& path, FileMap& map, IPPTXEvent* Event)
 	{

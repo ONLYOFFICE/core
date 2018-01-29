@@ -203,14 +203,14 @@ namespace OOX
 		{
 			m_bMacroEnabled = false;
 			
-			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			CDocx* docx = dynamic_cast<CDocx*>(pMain);
 			if (docx) docx->m_pDocument = this;
 		}
 		CDocument(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath) : File(pMain), IFileContainer(pMain)
 		{
 			m_bMacroEnabled = false;
 
-			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			CDocx* docx = dynamic_cast<CDocx*>(pMain);
 			if (docx) docx->m_pDocument = this;
 			
 			read( oRootPath, oPath );
@@ -320,12 +320,14 @@ namespace OOX
 			m_oReadPath = oPath;
 			IFileContainer::Read( oRootPath, oPath );
 			
-			if (IFileContainer::IsExist(OOX::FileTypes::VbaProject))
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if ( (docx ) && (docx->m_pVbaProject) )
 			{
 				m_bMacroEnabled = true;
-			}
+			}	
+
 #ifdef USE_LITE_READER
-			Common::readAllShapeTypes(oPath, m_arrShapeTypes);
+			Common::readAllShapeTypes(oPath, m_arrShapeTypes);//todooo перенести на уровень OOX::Documet чтоли - при чтении xml
 
 			XmlUtils::CXmlLiteReader oReader;
 			

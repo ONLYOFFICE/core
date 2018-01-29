@@ -70,7 +70,7 @@ namespace OOX
 				m_bMacroEnabled	= false;
 				m_bSpreadsheets = true;
 
-				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
 				if ((xlsx) && (!xlsx->m_pWorkbook))
 				{
 					xlsx->m_pWorkbook = this;
@@ -103,7 +103,8 @@ namespace OOX
 				m_oReadPath = oPath;
 				IFileContainer::Read( oRootPath, oPath );
 
-				if (IFileContainer::IsExist(OOX::FileTypes::VbaProject))
+  				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if ( (xlsx ) && (xlsx->m_pVbaProject) )
 				{
 					m_bMacroEnabled = true;
 				}
@@ -235,6 +236,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CWorkbookPr>			m_oWorkbookPr;
 			nullable<OOX::Spreadsheet::CExternalReferences>	m_oExternalReferences;
 			nullable<std::wstring>							m_oPivotCachesXml;
+			
 			bool											m_bMacroEnabled;
 		};
 	} //Spreadsheet

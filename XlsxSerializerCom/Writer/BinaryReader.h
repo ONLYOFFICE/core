@@ -2236,16 +2236,16 @@ namespace BinXlsxRW
 					BYTE* pSourceBuffer = m_oBufferedStream.GetPointer(length);
 					m_oBufferedStream.Seek(nStartPos);
 
-                    std::string sSignature("XLST");
+					std::string sSignature("XLS2");
                     int nSignatureSize      = (int)sSignature.length();
-                    int nDataLengthSize     = sizeof(long);
+					int nDataLengthSize     = sizeof(_INT32);
                     int nJunkSize           = 2;
                     int nWriteBufferLength  = nSignatureSize + nDataLengthSize + length + nJunkSize;
 
                     BYTE* pWriteBuffer = new BYTE[nWriteBufferLength];
                     memcpy(pWriteBuffer, sSignature.c_str(), nSignatureSize);
 
-					memcpy(pWriteBuffer + nSignatureSize, &length, nDataLengthSize);
+					*((_INT32*)(pWriteBuffer + nSignatureSize)) = (_INT32)length;
 					memcpy(pWriteBuffer + nSignatureSize + nDataLengthSize, pSourceBuffer, length);
 					//пишем в конце 0, потому что при редактировании Excel меняет посление байты.
 					memset(pWriteBuffer + nSignatureSize + nDataLengthSize + length, 0, nJunkSize);

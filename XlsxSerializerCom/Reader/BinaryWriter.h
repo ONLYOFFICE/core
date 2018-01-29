@@ -3368,19 +3368,31 @@ namespace BinXlsxRW
 			if(oComment.m_sGfxdata.IsInit())
 			{
                 const std::wstring& sGfxData = oComment.m_sGfxdata.get2();
-                std::wstring sSignatureBase64(_T("WExTV"));
-                if(sSignatureBase64 == sGfxData.substr(0, sSignatureBase64.length()))
+				std::wstring sSignatureBase64Old(_T("WExTV"));//XLST
+				std::wstring sSignatureBase64(_T("WExTM"));//XLS2
+				//compatibility with fact that previously used long that can be 4 or 8 byte
+				bool bCompatibility = sSignatureBase64Old == sGfxData.substr(0, sSignatureBase64Old.length());
+				bool isComment = (sSignatureBase64 == sGfxData.substr(0, sSignatureBase64.length())) || bCompatibility;
+				if(isComment)
 				{
-                    std::string sSignature("XLST");
+					std::string sSignature("XLS2");
                     int nSignatureSize = (int)sSignature.length();
-					int nDataLengthSize = sizeof(long);
+					int nDataLengthSize = bCompatibility ? sizeof(long) : sizeof(_INT32);
 					int nJunkSize = 2;
                     std::string sGfxDataA = std::string(sGfxData.begin(), sGfxData.end());
                     int nDataSize = (int)sGfxDataA.length();
 					BYTE* pBuffer = new BYTE[nDataSize];
                     if(false != Base64::Base64Decode((const char*)sGfxDataA.c_str(), (int)sGfxDataA.length(), pBuffer, &nDataSize))
 					{
-						int nLength = *((long*)(pBuffer + nSignatureSize));
+						int nLength;
+						if (bCompatibility)
+						{
+							nLength = *((long*)(pBuffer + nSignatureSize));
+						}
+						else
+						{
+							nLength = *((_INT32*)(pBuffer + nSignatureSize));
+						}
 						NSBinPptxRW::CBinaryFileReader oBufferedStream;
 						oBufferedStream.Init((BYTE*)pBuffer, nSignatureSize + nDataLengthSize, nLength);
 

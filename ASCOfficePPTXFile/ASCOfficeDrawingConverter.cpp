@@ -937,6 +937,12 @@ void CDrawingConverter::SetEmbedDstPath(const std::wstring& sPath)
 
     NSDirectory::CreateDirectory(sPath);
 }
+
+void CDrawingConverter::ClearShapeTypes()
+{
+	m_mapShapeTypes.clear();
+}
+
 HRESULT CDrawingConverter::AddShapeType(const std::wstring& bsXml)
 {
     std::wstring strXml = L"<main ";
@@ -2830,8 +2836,9 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
 
             if (L"shapetype" == strNameP)
 			{
-				//AddShapeType(oNodeT.GetXml()); 
-                std::wstring strId = oNodeT.GetAttribute(L"id");
+				AddShapeType(oNodeT.GetXml()); 
+                
+				std::wstring strId = oNodeT.GetAttribute(L"id");
 
 				if (strId.length() > 0)
 				{

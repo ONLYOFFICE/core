@@ -186,9 +186,8 @@ namespace OOX
         virtual void read(const CPath& oRootPath, const CPath& oFilePath)
         {
             IFileContainer::Read( oRootPath, oFilePath );
-    #ifdef USE_LITE_READER
 
-            XmlUtils::CXmlLiteReader oReader;
+			XmlUtils::CXmlLiteReader oReader;
 
             if ( !oReader.FromFile( oFilePath.GetPath() ) )
                 return;
@@ -220,7 +219,6 @@ namespace OOX
 					}
                 }
             }
-    #endif
         }
 
         virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const

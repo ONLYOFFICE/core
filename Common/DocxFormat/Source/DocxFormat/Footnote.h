@@ -80,8 +80,6 @@ namespace OOX
 			m_oReadPath = oFilePath;
 			IFileContainer::Read( oRootPath, oFilePath );
 
-			Common::readAllShapeTypes(oFilePath, m_arrShapeTypes);
-
 			XmlUtils::CXmlLiteReader oReader;
 
 			if ( !oReader.FromFile( oFilePath.GetPath() ) )
@@ -158,7 +156,6 @@ namespace OOX
 
 		CPath						m_oReadPath;
         std::vector<OOX::CFtnEdn*>	m_arrFootnote;
-		std::vector<std::wstring>	m_arrShapeTypes;
 	};
 } // namespace OOX
 

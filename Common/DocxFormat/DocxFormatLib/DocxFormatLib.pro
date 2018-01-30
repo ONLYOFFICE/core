@@ -18,8 +18,6 @@ include(../../../Common/base.pri)
 
 DEFINES +=  UNICODE _UNICODE \
             _USE_LIBXML2_READER_ \
-            _USE_XMLLITE_READER_ \
-            USE_LITE_READER \
             LIBXML_READER_ENABLED \
             DONT_WRITE_EMBEDDED_FONTS
 
@@ -72,7 +70,6 @@ SOURCES += \
     ../Source/Common/Index.cpp \
     ../Source/Common/NumFormat.cpp \
     ../Source/Common/Position.cpp \
-    ../Source/Common/Utils.cpp \
     ../Source/Common/Wrap.cpp \
     ../Source/Common/ZIndex.cpp \
     ../Source/Common/SimpleTypes_Word.cpp \
@@ -108,7 +105,6 @@ HEADERS += docxformatlib.h \
     ../Source/Common/SimpleTypes_Word.h \
     ../Source/Common/Size.h \
     ../Source/Common/Unit.h \
-    ../Source/Common/Utils.h \
     ../Source/Common/Wrap.h \
     ../Source/Common/ZIndex.h \
     ../Source/DocxFormat/Drawing/Drawing.h \

@@ -160,7 +160,6 @@ namespace OOX
 	public:
 		virtual void read(const CPath& oFilePath)
 		{
-#ifdef USE_LITE_READER
 			XmlUtils::CXmlLiteReader oReader;
 
 			if ( !oReader.FromFile( oFilePath.GetPath() ) )
@@ -182,22 +181,6 @@ namespace OOX
 						m_oOptimizeForBrowser = oReader;
 				}
 			}
-
-#else
-			XmlUtils::CXmlNode oWebSettings;
-			oWebSettings.FromXmlFile( oFilePath.GetPath(), true );
-
-			if ( _T("w:webSettings") == oWebSettings.GetName() )
-			{
-				XmlUtils::CXmlNode oNode;
-
-				if ( oWebSettings.GetNode( _T("w:allowPNG"), oNode ) )
-					m_oAllowPNG = oNode;
-
-				if ( oWebSettings.GetNode( _T("w:optimizeForBrowser"), oNode ) )
-					m_oOptimizeForBrowser = oNode;
-			}
-#endif
 		}
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{

@@ -980,20 +980,24 @@ HRESULT CDrawingConverter::AddShapeType(const std::wstring& bsXml)
 
 	if (oNode.IsValid())
 	{
-        CPPTShape* pShape = new CPPTShape();
-		pShape->m_bIsShapeType = true;
-
         XmlUtils::CXmlNode oNodeST = oNode.ReadNodeNoNS(L"shapetype");
 
         std::wstring strId = oNodeST.GetAttribute(L"id");
-		pShape->LoadFromXMLShapeType(oNodeST);
 
-		CShapePtr pS = CShapePtr(new CShape(NSBaseShape::unknown, 0));
-		pS->setBaseShape(CBaseShapePtr(pShape));
-		
-		LoadCoordSize(oNodeST, pS);
+		//if (m_mapShapeTypes.find(strId) == m_mapShapeTypes.end())//?? с затиранием ???
+		{
+			CPPTShape* pShape = new CPPTShape();
+			pShape->m_bIsShapeType = true;
+			
+			pShape->LoadFromXMLShapeType(oNodeST);
 
-		m_mapShapeTypes.insert(std::pair<std::wstring, CShapePtr>(strId, pS));			
+			CShapePtr pS = CShapePtr(new CShape(NSBaseShape::unknown, 0));
+			pS->setBaseShape(CBaseShapePtr(pShape));
+			
+			LoadCoordSize(oNodeST, pS);
+
+			m_mapShapeTypes.insert(std::make_pair(strId, pS));			
+		}
     }
 
 	return S_OK;
@@ -1100,6 +1104,12 @@ PPTX::Logic::SpTreeElem CDrawingConverter::ObjectFromXml(const std::wstring& sXm
              }
             else if (strName == L"pict" || strName == L"object")
 			{
+				//сначала shape type
+				XmlUtils::CXmlNode oNodeST;
+				if (oParseNode.GetNode(L"v:shapetype", oNodeST))
+				{
+					AddShapeType(oNodeST.GetXml());
+				}
 				XmlUtils::CXmlNodes oChilds;
                 if (oParseNode.GetNodes(L"*", oChilds))
 				{
@@ -1153,10 +1163,6 @@ PPTX::Logic::SpTreeElem CDrawingConverter::ObjectFromXml(const std::wstring& sXm
 								std::wstring strXmlTemp = oXmlW.GetXmlString();
 #endif
 							}
-						}
-                        else if (L"shapetype" == strNameP)
-						{
-							AddShapeType(oNodeP.GetXml());
 						}
 						else
 						{
@@ -1453,6 +1459,13 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
 			}
             else if (strName == L"pict" || strName == L"object")
 			{
+				//сначала shape type
+				XmlUtils::CXmlNode oNodeST;
+				if (oParseNode.GetNode(L"v:shapetype", oNodeST))
+				{
+					AddShapeType(oNodeST.GetXml());
+				}
+
 				XmlUtils::CXmlNodes oChilds;
                 if (oParseNode.GetNodes(L"*", oChilds))
 				{
@@ -1492,10 +1505,6 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
 								pElem = new PPTX::Logic::SpTreeElem;
 								doc_LoadGroup(pElem, oNodeP, pMainProps, true);
 							}
-						}
-                        else if (L"shapetype" == strNameP)
-						{
-							AddShapeType(oNodeP.GetXml());
 						}
 						else
 						{
@@ -2823,6 +2832,13 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
     if (bIsTop) pTree->m_lGroupIndex = 0;
     else        pTree->m_lGroupIndex = 1;
 
+	//сначала shape type
+	XmlUtils::CXmlNode oNodeST;
+	if (oNode.GetNode(L"v:shapetype", oNodeST))
+	{
+		AddShapeType(oNodeST.GetXml());
+	}
+
 	XmlUtils::CXmlNodes oNodes;
     if (oNode.GetNodes(L"*", oNodes))
 	{
@@ -2834,31 +2850,7 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
 
 			std::wstring strNameP = XmlUtils::GetNameNoNS(oNodeT.GetName());
 
-            if (L"shapetype" == strNameP)
-			{
-				AddShapeType(oNodeT.GetXml()); 
-                
-				std::wstring strId = oNodeT.GetAttribute(L"id");
-
-				if (strId.length() > 0)
-				{
-					if (m_mapShapeTypes.find(strId) == m_mapShapeTypes.end())
-					{
-						CPPTShape* pShape = new CPPTShape();
-						pShape->m_bIsShapeType = true;
-
-						pShape->LoadFromXMLShapeType(oNodeT);
-
-						CShapePtr pS = CShapePtr(new CShape(NSBaseShape::unknown, 0));
-						pS->setBaseShape(CBaseShapePtr(pShape));
-						
-						LoadCoordSize(oNodeT, pS);
-
-						m_mapShapeTypes.insert(std::pair<std::wstring, CShapePtr>(strId, pS));	
-					}
-				}
-			}
-            else if (L"shape"       == strNameP ||
+				if (L"shape"       == strNameP ||
                     L"rect"         == strNameP ||
                     L"oval"         == strNameP ||
                     L"line"         == strNameP ||
@@ -2880,6 +2872,8 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
 				if (_el.is_init())
 					pTree->SpTreeElems.push_back(_el);
 			}
+			else
+				continue;
 		}
 	}
 

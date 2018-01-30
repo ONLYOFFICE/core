@@ -108,6 +108,7 @@ namespace OOX
 				m_pCalcChain		= NULL;
 				m_pVbaProject		= NULL;
 				m_pJsaProject		= NULL;
+				m_pWorkbookComments = NULL;
 
 				bDeleteWorkbook			= false;
 				bDeleteSharedStrings	= false;

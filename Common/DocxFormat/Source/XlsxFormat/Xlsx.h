@@ -49,6 +49,7 @@ namespace OOX
 		class CSharedStrings;
 		class CStyles;
 		class CCalcChain;
+		class WorkbookComments;
 
 		class CXlsx : public OOX::Document, public OOX::IFileContainer 
 		{
@@ -82,12 +83,16 @@ namespace OOX
 			{
 				return (PPTX::Theme  *)(m_pTheme.operator->());
 			}
+			smart_ptr<PPTX::Theme>							m_pTheme;
 
 			CWorkbook*                                      m_pWorkbook;
             CSharedStrings*                                 m_pSharedStrings;
             CStyles*                                        m_pStyles;
             CCalcChain*                                     m_pCalcChain;
-            smart_ptr<PPTX::Theme>                          m_pTheme;
+			OOX::VbaProject*								m_pVbaProject;
+			OOX::JsaProject*								m_pJsaProject;
+            
+			WorkbookComments*								m_pWorkbookComments;
 
 			std::vector<CWorksheet*>								m_arWorksheets;	//order as is
 			std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>	m_mapWorksheets; //copy, for fast find - order by rId(name) 
@@ -101,12 +106,16 @@ namespace OOX
 				m_pSharedStrings	= NULL;
 				m_pStyles			= NULL;
 				m_pCalcChain		= NULL;
+				m_pVbaProject		= NULL;
+				m_pJsaProject		= NULL;
 
 				bDeleteWorkbook			= false;
 				bDeleteSharedStrings	= false;
 				bDeleteStyles			= false;
 				bDeleteCalcChain		= false;
 				bDeleteWorksheets		= false;
+				bDeleteVbaProject		= false;
+				bDeleteJsaProject		= false;
 			}
 
             boost::unordered_map<std::wstring, size_t>	m_mapXlsxEnumeratedGlobal;
@@ -116,6 +125,8 @@ namespace OOX
 			bool bDeleteStyles;
 			bool bDeleteCalcChain;
 			bool bDeleteWorksheets;
+			bool bDeleteVbaProject;
+			bool bDeleteJsaProject;
 		};
 
 	} //Spreadsheet

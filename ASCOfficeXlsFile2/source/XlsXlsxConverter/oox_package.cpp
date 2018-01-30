@@ -37,6 +37,7 @@
 #include <boost/make_shared.hpp>
 
 #include "../../../ASCOfficeOdfFile/include/cpdoccore/utf8cpp/utf8.h"
+#include "../../../Common/DocxFormat/Source/Base/Base.h"
 
 #include "external_items.h"
 #include "../../../DesktopEditor/common/File.h"
@@ -235,8 +236,8 @@ void core_file::write(const std::wstring & RootPath)
     L"xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" "
     L"xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >";
 
-	resStream << L"<dc:creator>ONLYOFFICE</dc:creator>";
-	resStream << L"<cp:lastModifiedBy>ONLYOFFICE</cp:lastModifiedBy>";
+	//resStream << L"<dc:creator>ONLYOFFICE</dc:creator>";
+	//resStream << L"<cp:lastModifiedBy>ONLYOFFICE</cp:lastModifiedBy>";
 	resStream << L"<cp:revision>1</cp:revision>";
     resStream << L"</cp:coreProperties>";
 
@@ -251,8 +252,12 @@ void app_file::write(const std::wstring & RootPath)
     resStream << L"<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" "
         L"xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\" >";
    
-	resStream << L"<Application>ONLYOFFICE Editor</Application>"; 
-    resStream << L"</Properties>";
+	resStream << L"<Application>ONLYOFFICE"; 
+#if defined(INTVER)
+	std::string s = VALUE2STR(INTVER);
+	resStream << L"/" << std::wstring(s.begin(), s.end());
+#endif	    
+	resStream << L"</Application></Properties>";
     
     simple_element elm(L"app.xml", resStream.str());
     elm.write(RootPath);

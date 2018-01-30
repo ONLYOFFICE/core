@@ -113,7 +113,7 @@ static unsigned int* WStringToUtf32(const std::wstring& wsUnicodeText, unsigned 
 				}
 				else
 				{
-					pUnicodes[unLen++] = (unCode | (wTrailing & 0x3FF) + 0x10000);
+                    pUnicodes[unLen++] = ((unCode | (wTrailing & 0x3FF)) + 0x10000);
 				}
 			}
 		}

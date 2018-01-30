@@ -35,6 +35,10 @@
 #include "../../DesktopEditor/raster/BgraFrame.h"
 #include "../../DesktopEditor/common/Directory.h"
 
+#include "../../Common/DocxFormat/Source/DocxFormat/App.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/ContentTypes.h"
+
 namespace ImageHelper
 {
     struct __BITMAPINFOHEADER
@@ -211,6 +215,37 @@ namespace DocFileFormat
 		{
 			RegisterDocument();
 		}
+		OOX::CContentTypes oContentTypes;
+		OOX::CPath pathDocProps = m_strOutputPath + FILE_SEPARATOR_STR + _T("docProps");
+		NSDirectory::CreateDirectory(pathDocProps.GetPath());
+		
+		OOX::CPath DocProps = std::wstring(_T("docProps"));
+
+		OOX::CApp* pApp = new OOX::CApp(NULL);
+		if (pApp)
+		{
+			pApp->SetApplication(L"ONLYOFFICE");
+	#if defined(INTVER)
+			pApp->SetAppVersion(VALUE2STR(INTVER));
+	#endif
+			pApp->SetDocSecurity(0);
+			pApp->SetScaleCrop(false);
+			pApp->SetLinksUpToDate(false);
+			pApp->SetSharedDoc(false);
+			pApp->SetHyperlinksChanged(false);
+			
+			pApp->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, oContentTypes);
+			delete pApp;
+		}				
+		OOX::CCore* pCore = new OOX::CCore(NULL);
+		if (pCore)
+		{
+			pCore->SetCreator(_T(""));
+			pCore->SetLastModifiedBy(_T(""));
+			pCore->write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), DocProps, oContentTypes);
+			delete pCore;
+		} 
+		RegisterDocPr();
 
 		WritePackage();
 

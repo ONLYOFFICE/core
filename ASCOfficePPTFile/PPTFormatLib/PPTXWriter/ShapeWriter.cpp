@@ -247,7 +247,7 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 	else if ((pCF->FontProperties.is_init()) && (!pCF->FontProperties->strFontName.empty()))
 	{
 		oWriter.WriteString(L"<a:latin typeface=\"" + pCF->FontProperties->strFontName + L"\"/>");
-	}
+	}	
 	if (pCF->FontPropertiesEA.is_init())
 	{
 		oWriter.WriteString(L"<a:ea typeface=\"" + pCF->FontPropertiesEA->strFontName + L"\"/>");
@@ -1172,13 +1172,11 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			{
 				if (0 == pCF->Typeface.get())
 				{
-                    std::wstring strProp = _T("<a:latin typeface=\"+mj-lt\"/>");
-					m_oWriter.WriteString(strProp);
+					m_oWriter.WriteString(L"<a:latin typeface=\"+mj-lt\"/>");
 				}
 				else
 				{
-                    std::wstring strProp = _T("<a:latin typeface=\"+mn-lt\"/>");
-					m_oWriter.WriteString(strProp);
+					m_oWriter.WriteString(L"<a:latin typeface=\"+mn-lt\"/>");
 				}
 			}
 			else if (pCF->FontProperties.is_init())

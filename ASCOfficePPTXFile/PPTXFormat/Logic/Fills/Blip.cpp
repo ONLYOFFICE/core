@@ -135,8 +135,14 @@ namespace PPTX
 		{
 			smart_ptr<OOX::OleObject> pOleObject;
 			
-			if (pRels != NULL)						pOleObject = pRels->Get<OOX::OleObject>(oRId);
-			else if(parentFileIs<FileContainer>())	pOleObject = parentFileAs<FileContainer>().Get<OOX::OleObject>(oRId);
+			if (pRels != NULL)
+				pOleObject = pRels->Get<OOX::OleObject>(oRId);
+			else
+			{
+				OOX::IFileContainer* pContainer = dynamic_cast<OOX::IFileContainer*>(const_cast<PPTX::WrapperFile*>(parentFile));
+				if (pContainer)
+					pOleObject = pContainer->Get<OOX::OleObject>(oRId);
+			}
 			
 			if (pOleObject.IsInit())
 				return pOleObject->filename().m_strFilename;

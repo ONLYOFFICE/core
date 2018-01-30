@@ -59,75 +59,65 @@ bool OOXReader::Parse()
 	oReaderParameter.oRtf		= &m_oDocument;
 	oReaderParameter.oReader	= this;
 
-	OOX::CSettings* settings = inputDocxFile.GetSettings();		
-	if (settings)
+	if (inputDocxFile.m_pSettings)
 	{ //важно чтобы первыми читались именно settings (например для footnote)
-		OOXSettingsReader oSettingsReader( settings );
+		OOXSettingsReader oSettingsReader( inputDocxFile.m_pSettings );
 		oSettingsReader.Parse( oReaderParameter );
 	}
 
-	OOX::CFontTable* fontTable = inputDocxFile.GetFontTable();		
-	if (fontTable)
+	if (inputDocxFile.m_pFontTable)
 	{
-		OOXFontTableReader oFontTableReader( fontTable );
+		OOXFontTableReader oFontTableReader( inputDocxFile.m_pFontTable );
 		oFontTableReader.Parse( oReaderParameter );
 	}
 	
-	PPTX::Theme* theme = inputDocxFile.GetTheme();		
-	if (theme)
+	if (inputDocxFile.m_pTheme)
 	{
-		OOXThemeReader oThemeReader( theme );
+		OOXThemeReader oThemeReader( inputDocxFile.m_pTheme );
 		oThemeReader.Parse( oReaderParameter );
 	}
 
-	OOX::CNumbering* numbering = inputDocxFile.GetNumbering();
-	if (numbering)
+	if (inputDocxFile.m_pNumbering)
 	{
-		OOXNumberingReader oNumberingReader( numbering );
+		OOXNumberingReader oNumberingReader( inputDocxFile.m_pNumbering );
 		oNumberingReader.Parse(oReaderParameter );
 	}
 	
-	OOX::CStyles* styles = inputDocxFile.GetStyles();		
-	if (styles)
+	if (inputDocxFile.m_pStyles)
 	{
-		OOXStyleTableReader oStyleTableReader( styles );
+		OOXStyleTableReader oStyleTableReader( inputDocxFile.m_pStyles );
 		oStyleTableReader.Parse( oReaderParameter );
 	}
 	
-	OOX::CApp* app = inputDocxFile.GetApp();		
-	if (app)
+	if (inputDocxFile.m_pApp)
 	{
-		OOXAppReader oDocPropAppReader( app );
+		OOXAppReader oDocPropAppReader( inputDocxFile.m_pApp );
 		oDocPropAppReader.Parse( oReaderParameter );
 	}
 	
-	OOX::CCore* core = inputDocxFile.GetCore();		
-	if (core)
+	if (inputDocxFile.m_pCore)
 	{
-		OOXCoreReader oDocPropCoreReader( core);
+		OOXCoreReader oDocPropCoreReader( inputDocxFile.m_pCore );
 		oDocPropCoreReader.Parse(oReaderParameter  );
 	}
 	
-	OOX::CFootnotes* footnotes  = inputDocxFile.GetFootnotes();		
-	if (footnotes)
+	if (inputDocxFile.m_pFootnotes)
 	{
-		OOXFootnotesReader oFootnotesReader( footnotes );
+		OOXFootnotesReader oFootnotesReader( inputDocxFile.m_pFootnotes );
 		oFootnotesReader.Parse( oReaderParameter);
 	}
 
-	OOX::CEndnotes* endnotes = inputDocxFile.GetEndnotes();		
-	if (endnotes)
+	if (inputDocxFile.m_pEndnotes)
 	{
-		OOXFootnotesReader oEndnotesReader( endnotes );
+		OOXFootnotesReader oEndnotesReader( inputDocxFile.m_pEndnotes );
 		oEndnotesReader.Parse( oReaderParameter);  
 	}
 
-	OOX::CDocument* document = inputDocxFile.GetDocument();		
-	if (document)
+	if (inputDocxFile.m_pDocument)
 	{
-		m_currentContainer = dynamic_cast<OOX::IFileContainer*>(document);
+		m_currentContainer = dynamic_cast<OOX::IFileContainer*>(inputDocxFile.m_pDocument);
 		
-		OOXDocumentReader oDocReader( document );
+		OOXDocumentReader oDocReader( inputDocxFile.m_pDocument );
 		oDocReader.Parse( oReaderParameter );
 	}
 

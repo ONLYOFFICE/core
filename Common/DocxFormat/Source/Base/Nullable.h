@@ -62,8 +62,6 @@ namespace NSCommon
 		{
 			RELEASEOBJECT(m_pPointer);
 		}
-
-	public:
         Type& operator*()  { return *m_pPointer; }
         Type* operator->() { return  m_pPointer; }
 
@@ -73,7 +71,6 @@ namespace NSCommon
         const Type& get()const { return  *m_pPointer; }
         Type& get() { return  *m_pPointer; }
 
-	public:
 		nullable_base<Type>& operator=(const nullable_base<Type> &oOther)
 		{
 			RELEASEOBJECT(m_pPointer);
@@ -95,8 +92,6 @@ namespace NSCommon
 			m_pPointer	= new Type(oSrc);
 			return *this;
 		}
-
-	public:
         bool IsInit() const
 		{ 
 			return (NULL != m_pPointer); 
@@ -166,20 +161,6 @@ namespace NSCommon
                 this->m_pPointer = new Type( cwsValue );
 			return *this;
 		}
-
-        //nullable<Type>& operator=(std::wstring& cwsValue)
-        //{
-        //    RELEASEOBJECT(this->m_pPointer);
-        //    this->m_pPointer = new Type( cwsValue.c_str() );
-        //    return *this;
-        //}
-
-        //nullable<Type>& operator=(const std::wstring& cwsValue)
-        //{
-        //    RELEASEOBJECT(this->m_pPointer);
-        //    this->m_pPointer = new Type( cwsValue.c_str() );
-        //    return *this;
-        //}
 
 		nullable<Type>& operator=(const nullable<Type> &oOther)
 		{
@@ -283,8 +264,6 @@ namespace NSCommon
 		{
 		}
 
-	public:
-
         void operator=(const std::wstring& value)
 		{
             RELEASEOBJECT(this->m_pPointer);
@@ -296,17 +275,6 @@ namespace NSCommon
             RELEASEOBJECT(this->m_pPointer);
             this->m_pPointer	= pType;
 		}
-//#if defined(_WIN32) || defined (_WIN64)
-//		void operator=(const BSTR& value)
-//		{
-//            RELEASEOBJECT(this->m_pPointer);
-//			if (NULL != value)
-//			{
-//                this->m_pPointer = new Type();
-//                this->m_pPointer->_set((std::wstring)value);
-//			}
-//		}
-//#endif
         void operator=(const BYTE& value)
 		{
             RELEASEOBJECT(this->m_pPointer);
@@ -343,7 +311,6 @@ namespace NSCommon
             return this->m_pPointer->get();
 		}
 
-	public:
         Type& operator*()  { return *this->m_pPointer; }
         Type* operator->() { return  this->m_pPointer; }
 
@@ -387,15 +354,6 @@ namespace NSCommon
 
 			return *this;
 		}
-//#if defined(_WIN32) || defined (_WIN64)
-//		void operator=(const BSTR& value)
-//		{
-//            RELEASEOBJECT(this->m_pPointer);
-//			
-//			if (NULL != value)
-//                this->m_pPointer = new int(XmlUtils::GetInteger(value));
-//		}
-//#endif
         void operator=(const std::wstring& value)
 		{
             RELEASEOBJECT(this->m_pPointer);
@@ -425,8 +383,6 @@ namespace NSCommon
 			}
 			return *m_pPointer;
 		}
-
-	public:
         int& operator*()  { return *m_pPointer; }
         int* operator->() { return  m_pPointer; }
 
@@ -434,15 +390,77 @@ namespace NSCommon
         int* operator->() const { return  m_pPointer; }
 
         const int& get()const { return  *m_pPointer; }
+	};
+    class nullable_int64 : public nullable_base<_INT64>
+	{
 	public:
-        std::wstring toString() const
+        nullable_int64() : nullable_base<_INT64>()
 		{
-            std::wstring result;
-			//if (IsInit())
-            //	result = std::to_wstring( get());
-
-			return result;
 		}
+
+        void normalize(const _INT64& min, const _INT64& max)
+		{
+			if (IsInit())
+			{
+				if (*m_pPointer < min)
+					*m_pPointer = min;
+				else if (*m_pPointer > max)
+					*m_pPointer = max;
+			}
+		}
+        void normalize_positive()
+		{
+			if (IsInit())
+			{
+				if (*m_pPointer < 0)
+					*m_pPointer = 0;
+			}
+		}
+        nullable_int64& operator=(const wchar_t* cwsValue)
+		{
+			RELEASEOBJECT(m_pPointer);
+
+			if ( NULL != cwsValue )
+                m_pPointer = new _INT64(XmlUtils::GetInteger64(cwsValue));
+
+			return *this;
+		}
+        void operator=(const std::wstring& value)
+		{
+            RELEASEOBJECT(this->m_pPointer);
+            this->m_pPointer = new _INT64(XmlUtils::GetInteger64(value));
+		}
+        void operator=(const _INT64& value)
+		{
+            RELEASEOBJECT(this->m_pPointer);
+            this->m_pPointer = new _INT64(value);
+		}
+
+        nullable_int64& operator=(const nullable_int64& oSrc)
+		{
+			RELEASEOBJECT(m_pPointer);
+
+			if (NULL != oSrc.m_pPointer )
+                m_pPointer = new _INT64(*oSrc);
+			return *this;
+		}
+
+        _INT64 get_value_or(const _INT64& value) const
+		{
+			if (NULL == m_pPointer)
+			{
+				int ret = value;
+				return ret;
+			}
+			return *m_pPointer;
+		}
+        _INT64& operator*()  { return *m_pPointer; }
+        _INT64* operator->() { return  m_pPointer; }
+
+        _INT64& operator*() const  { return *m_pPointer; }
+        _INT64* operator->() const { return  m_pPointer; }
+
+        const _INT64& get()const { return  *m_pPointer; }
 	};
 	class nullable_sizet : public nullable_base<size_t>
 	{
@@ -494,7 +512,6 @@ namespace NSCommon
 			}
 			return *m_pPointer;
 		}
-	public:
         size_t& operator*()  { return *m_pPointer; }
         size_t* operator->() { return  m_pPointer; }
 
@@ -630,12 +647,6 @@ namespace NSCommon
 
         const bool& get()const { return  *m_pPointer; }
 
-        std::wstring toString() const
-		{
-            std::wstring result;
-
-			return result;
-		}
 	};
     class nullable_string : public nullable_base<std::wstring>
 	{
@@ -679,8 +690,6 @@ namespace NSCommon
 			}
 			return *m_pPointer;
 		}
-
-	public:
         std::wstring& operator*()  { return *m_pPointer; }
         std::wstring* operator->() { return  m_pPointer; }
 

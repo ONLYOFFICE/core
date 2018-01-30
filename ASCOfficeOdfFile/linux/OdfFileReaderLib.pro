@@ -288,6 +288,7 @@ SOURCES += \
     ../src/docx/xlsx_table_state.cpp \
     ../src/docx/xlsx_textcontext.cpp \
     ../src/docx/xlsx_pivots_context.cpp \
+    ../src/docx/xlsx_data_validation.cpp \
     ../src/docx/xlsx_utils.cpp \
     ../src/docx/xlsx_xf.cpp
 }
@@ -551,6 +552,7 @@ HEADERS += \
     ../src/docx/xlsx_table_position.h \
     ../src/docx/xlsx_table_state.h \
     ../src/docx/xlsx_textcontext.h \
+    ../src/docx/xlsx_data_validation.h \
     ../src/docx/xlsx_utils.h \
     ../src/docx/xlsx_xf.h \
     ../include/logging.h \

@@ -43,9 +43,9 @@
 #include "../../DesktopEditor/raster/Metafile/MetaFile.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
 
-#define RASTER_TEST
+//#define RASTER_TEST
 //#define METAFILE_TEST
-//#define ONLINE_WORD_TO_PDF
+#define ONLINE_WORD_TO_PDF
 //#define TO_PDF//#define TO_HTML_RENDERER
 //#define ONLY_TEXT
 
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 
 #ifdef ONLINE_WORD_TO_PDF
     CPdfRenderer oPdfW(&oFonts);
-    oPdfW.SetTempFolder(sDst);
+    oPdfW.SetTempFolder(L"D:\\test\\Document");
     oPdfW.OnlineWordToPdf(L"D:\\test\\123.txt", L"D:\\test\\123.pdf");
     return 0;
 #endif

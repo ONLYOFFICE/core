@@ -356,7 +356,15 @@ namespace NSBinPptxRW
             m_oWriter.WriteString(val);
             m_oWriter.AddCharNoCheck(WCHAR(';'));
         }
-        AVSINLINE void WriteAttributeCSS_int(const std::wstring& strAttributeName, const int& val)
+        AVSINLINE void WriteAttributeCSS(const std::wstring& strAttributeName, const wchar_t* val)
+        {
+            m_oWriter.WriteString(strAttributeName);
+            m_oWriter.AddSize(15);
+            m_oWriter.AddCharNoCheck(WCHAR(':'));
+            m_oWriter.WriteString(val);
+            m_oWriter.AddCharNoCheck(WCHAR(';'));
+        }
+		AVSINLINE void WriteAttributeCSS_int(const std::wstring& strAttributeName, const int& val)
         {
             m_oWriter.WriteString(strAttributeName);
             m_oWriter.AddSize(15);
@@ -404,7 +412,16 @@ namespace NSBinPptxRW
             m_oWriter.WriteString(val);
             m_oWriter.WriteString(g_bstr_node_quote);
         }
-        AVSINLINE void WriteAttribute2(const std::wstring& strAttributeName, const std::wstring& val)
+        AVSINLINE void WriteAttribute(const std::wstring& strAttributeName, const wchar_t* val)
+        {
+            m_oWriter.WriteString(g_bstr_node_space);
+            m_oWriter.WriteString(strAttributeName);
+            m_oWriter.WriteString(g_bstr_node_equal);
+            m_oWriter.WriteString(g_bstr_node_quote);
+            m_oWriter.WriteString(val);
+            m_oWriter.WriteString(g_bstr_node_quote);
+        }
+		AVSINLINE void WriteAttribute2(const std::wstring& strAttributeName, const std::wstring& val)
         {
             m_oWriter.WriteString(g_bstr_node_space);
             m_oWriter.WriteString(strAttributeName);

@@ -158,7 +158,6 @@
 		17A764F11B0F39370046BC0B /* textops.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A763D61B0F39370046BC0B /* textops.cpp */; };
 		17A764F31B0F39370046BC0B /* tiffio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A763D71B0F39370046BC0B /* tiffio.cpp */; };
 		17A764F51B0F39370046BC0B /* tiffiostub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A763D81B0F39370046BC0B /* tiffiostub.cpp */; };
-		17A764F91B0F39370046BC0B /* viewfiles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A763DA1B0F39370046BC0B /* viewfiles.cpp */; };
 		17A764FB1B0F39370046BC0B /* warper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A763DB1B0F39370046BC0B /* warper.cpp */; };
 		17A764FD1B0F39370046BC0B /* watershed.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A763DC1B0F39370046BC0B /* watershed.cpp */; };
 		17A764FF1B0F39370046BC0B /* webpio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A763DE1B0F39370046BC0B /* webpio.cpp */; };
@@ -394,7 +393,6 @@
 		17A763D61B0F39370046BC0B /* textops.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = textops.cpp; sourceTree = "<group>"; };
 		17A763D71B0F39370046BC0B /* tiffio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tiffio.cpp; sourceTree = "<group>"; };
 		17A763D81B0F39370046BC0B /* tiffiostub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tiffiostub.cpp; sourceTree = "<group>"; };
-		17A763DA1B0F39370046BC0B /* viewfiles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = viewfiles.cpp; sourceTree = "<group>"; };
 		17A763DB1B0F39370046BC0B /* warper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = warper.cpp; sourceTree = "<group>"; };
 		17A763DC1B0F39370046BC0B /* watershed.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = watershed.cpp; sourceTree = "<group>"; };
 		17A763DD1B0F39370046BC0B /* watershed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = watershed.h; sourceTree = "<group>"; };
@@ -730,7 +728,6 @@
 				17A763D61B0F39370046BC0B /* textops.cpp */,
 				17A763D71B0F39370046BC0B /* tiffio.cpp */,
 				17A763D81B0F39370046BC0B /* tiffiostub.cpp */,
-				17A763DA1B0F39370046BC0B /* viewfiles.cpp */,
 				17A763DB1B0F39370046BC0B /* warper.cpp */,
 				17A763DC1B0F39370046BC0B /* watershed.cpp */,
 				17A763DD1B0F39370046BC0B /* watershed.h */,
@@ -903,7 +900,6 @@
 				17A7649B1B0F39370046BC0B /* pixcomp.cpp in Sources */,
 				17A764171B0F39370046BC0B /* colorcontent.cpp in Sources */,
 				17A764671B0F39370046BC0B /* jpegiostub.cpp in Sources */,
-				17A764F91B0F39370046BC0B /* viewfiles.cpp in Sources */,
 				17A764AD1B0F39370046BC0B /* psio1stub.cpp in Sources */,
 				17A764CD1B0F39370046BC0B /* rotateamlow.cpp in Sources */,
 				17A763F31B0F39370046BC0B /* bbuffer.cpp in Sources */,

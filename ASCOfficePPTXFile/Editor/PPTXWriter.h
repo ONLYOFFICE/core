@@ -36,7 +36,6 @@
 #include "DefaultNotesMaster.h"
 #include "DefaultNotesTheme.h"
 
-
 namespace NSBinPptxRW
 {
 	class CPPTXWriter
@@ -823,6 +822,24 @@ namespace NSBinPptxRW
 					m_oPresentation.notesMasterIdLst[0].rid = (size_t)nCurrentRels;
 					++nCurrentRels;
 				}
+				if (m_oPresentation.comments.is_init())
+				{
+					m_oReader.m_pRels->WritePresentationComments(nComment);
+					OOX::CPath pathFolderCommentDir = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("comments");
+					if (1 == nComment)
+					{
+						NSDirectory::CreateDirectory (pathFolderCommentDir.GetPath());
+					}
+					std::wstring strCommentFile = L"comment" + std::to_wstring(nComment) + L".xml";
+
+					oXmlWriter.ClearNoAttack();
+					m_oPresentation.comments->toXmlWriter(&oXmlWriter);
+
+					OOX::CPath pathComment = pathFolderCommentDir + FILE_SEPARATOR_STR  + strCommentFile;
+					oXmlWriter.SaveToFile(pathComment.GetPath());
+
+					++nComment;
+				}
 
 				m_oReader.m_pRels->EndPresentationRels(m_oPresentation.commentAuthors.is_init(), bNotesMasterPresent, m_oPresentation.m_pVbaProject.is_init(), m_oPresentation.m_pJsaProject.is_init());
 				m_oReader.m_pRels->CloseRels();
@@ -1012,8 +1029,13 @@ namespace NSBinPptxRW
 		{
 			m_oApp.TotalTime = 0;
 			m_oApp.Words = 0;
-			m_oApp.Application = _T("OnlyOffice");
-			m_oApp.PresentationFormat = _T("On-screen Show (4:3)");
+			std::wstring sApplication = L"ONLYOFFICE";
+#if defined(INTVER)
+            std::string s = VALUE2STR(INTVER);
+            sApplication += L"/" + std::wstring(s.begin(), s.end());
+#endif
+			m_oApp.Application = sApplication;
+			m_oApp.PresentationFormat = L"On-screen Show (4:3)";
 			m_oApp.Paragraphs = 0;
 			m_oApp.Slides = (int)m_arSlides.size();
 			m_oApp.Notes = (int)m_arSlides.size();
@@ -1054,7 +1076,6 @@ namespace NSBinPptxRW
 			m_oApp.LinksUpToDate = false;
 			m_oApp.SharedDoc = false;
 			m_oApp.HyperlinksChanged = false;
-			m_oApp.AppVersion = _T("3.0000");			
 		}
 		void CreateDefaultCore()
 		{

@@ -30,42 +30,32 @@
  *
  */
 #pragma once
-#ifndef OOX_VBA_PROJECT_INCLUDE_H_
-#define OOX_VBA_PROJECT_INCLUDE_H_
 
+#include <cpdoccore/CPOptional.h>
+#include <cpdoccore/CPScopedPtr.h>
+#include <string>
 
-#include "Media.h"
-#include "../../../../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
-#include "../../../../../ASCOfficePPTXFile/Editor/imagemanager.h"
+namespace cpdoccore {
+namespace oox {
 
-#include "../IFileContainer.h"
-#include "../../XlsxFormat/FileTypes_Spreadsheet.h"
-
-namespace OOX
+class xlsx_dataValidations_context
 {
-	class VbaProject : public Media, public OOX::IFileContainer
-	{
-	public:
-		VbaProject( OOX::Document *pMain );
-		VbaProject(OOX::Document *pMain, const CPath& oRootPath, const CPath& filename);
-		virtual void read(const CPath& oRootPath, const CPath& oPath);
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const ;
+public:
+    xlsx_dataValidations_context();
+    ~xlsx_dataValidations_context();
 
-		virtual const FileType type() const
-		{
-			return OOX::FileTypes::VbaProject;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return m_filename.GetFilename();
-		}
-		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-	};
-} // namespace OOX
+	void add(const std::wstring & name, const std::wstring & ref);
+	void add_formula(const std::wstring & name, const std::wstring & f);
+	void add_help_msg(const std::wstring & name, bool val);
+	void add_error_msg(const std::wstring & name, bool val);
 
-#endif // OOX_VBA_PROJECT_INCLUDE_H_
+	void activate(const std::wstring & name, const std::wstring & ref);
+
+    void serialize(std::wostream & _Wostream);
+private:
+    class Impl;
+    _CP_SCOPED_PTR(Impl) impl_;
+};
+
+}
+}

@@ -3016,7 +3016,7 @@ namespace BinDocxRW
 		bool							m_bWriteSectPr;//Записывать ли свойства верхнего уровня в данном экземпляре BinaryOtherTableWriter
 //---------------------------------
 		BinaryDocumentTableWriter(ParamsWriter& oParamsWriter, ParamsDocumentWriter& oParamsDocumentWriter, std::map<int, bool>* mapIgnoreComments, BinaryHeaderFooterTableWriter* oBinaryHeaderFooterTableWriter):
-			m_oParamsWriter(oParamsWriter), m_oParamsDocumentWriter(oParamsDocumentWriter),m_oBcw(oParamsWriter),bpPrs(oParamsWriter, oBinaryHeaderFooterTableWriter),brPrs(oParamsWriter),btblPrs(oParamsWriter),m_oSettings(oParamsWriter.m_oSettings),m_pOfficeDrawingConverter(oParamsWriter.m_pOfficeDrawingConverter),m_mapIgnoreComments(mapIgnoreComments)
+			m_oParamsWriter(oParamsWriter), m_oParamsDocumentWriter(oParamsDocumentWriter), m_oBcw(oParamsWriter),bpPrs(oParamsWriter, oBinaryHeaderFooterTableWriter),brPrs(oParamsWriter),btblPrs(oParamsWriter),m_oSettings(oParamsWriter.m_oSettings),m_pOfficeDrawingConverter(oParamsWriter.m_pOfficeDrawingConverter),m_mapIgnoreComments(mapIgnoreComments)
 		{
 			pBackground		= NULL;
 			pSectPr			= NULL;
@@ -3129,23 +3129,6 @@ namespace BinDocxRW
 					nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Background);
 						WriteBackground(pBackground);
 					m_oBcw.WriteItemEnd(nCurPos);
-				}
-			}
-	//Write JsaProject
-			if (NULL != poDocument)
-			{
-				smart_ptr<OOX::File> pFile = poDocument->Get(OOX::FileTypes::JsaProject);
-				if (pFile.IsInit() && OOX::FileTypes::JsaProject == pFile->type())
-				{
-					OOX::JsaProject& jsaProject = pFile.as<OOX::JsaProject>();
-					BYTE* pData = NULL;
-					DWORD nBytesCount;
-					if(NSFile::CFileBinary::ReadAllBytes(jsaProject.filename().GetPath(), &pData, nBytesCount))
-					{
-						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::JsaProject);
-						m_oBcw.m_oStream.WriteBYTEArray(pData, nBytesCount);
-						m_oBcw.WriteItemEnd(nCurPos);
-					}
 				}
 			}
 		}
@@ -7864,101 +7847,91 @@ namespace BinDocxRW
 				
 				OOX::CDocx oDocx = OOX::CDocx(OOX::CPath(sDir));
 				
-				m_oParamsWriter.m_poTheme	= oDocx.GetTheme();
-				m_oParamsWriter.m_oSettings = oDocx.GetSettings();
+				m_oParamsWriter.m_poTheme	= oDocx.m_pTheme;
+				m_oParamsWriter.m_oSettings = oDocx.m_pSettings;
 
-				*oBufferedStream.m_pTheme = smart_ptr<PPTX::Theme>(oDocx.GetTheme());
+				*oBufferedStream.m_pTheme = smart_ptr<PPTX::Theme>(oDocx.m_pTheme);
 				oBufferedStream.m_pTheme->AddRef();
 				
-				OOX::CFontTable* pFontTable = oDocx.GetFontTable();
-				
-				if(NULL != pFontTable)
-					m_oParamsWriter.m_pFontProcessor->setFontTable(pFontTable);
+				if(NULL != oDocx.m_pFontTable)
+					m_oParamsWriter.m_pFontProcessor->setFontTable(oDocx.m_pFontTable);
 
 				//ищем первый SectPr и расставляем pageBreak
-				OOX::CDocument* poDocument = oDocx.GetDocument();
 
-                if (poDocument == NULL) return;
-				OOX::Logic::CSectionProperty* pFirstSectPr = poDocument->m_oSectPr.GetPointer();
+                if (oDocx.m_pDocument == NULL) return;
+				OOX::Logic::CSectionProperty* pFirstSectPr = oDocx.m_pDocument->m_oSectPr.GetPointer();
 
 				this->WriteMainTableStart();
 
 				int nCurPos = 0;
 				
 		//Write Settings
-				OOX::CSettings* pSettings = oDocx.GetSettings();
-				if(NULL != pSettings)
+				if(NULL != oDocx.m_pSettings)
 				{
 					BinDocxRW::BinarySettingsTableWriter oBinarySettingsTableWriter(m_oParamsWriter);
 					int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Settings);
-					oBinarySettingsTableWriter.Write(*pSettings);
+					oBinarySettingsTableWriter.Write(*oDocx.m_pSettings);
 					this->WriteTableEnd(nCurPos);
 				}
 
 		//Write Comments
-				OOX::CComments* pComments = oDocx.GetComments();
-				OOX::CCommentsExt* pCommentsExt = oDocx.GetCommentsExt();
-				OOX::CPeople* pPeople = oDocx.GetPeople();
-				if(NULL != pComments)
+				if(NULL != oDocx.m_pComments)
 				{
 					BinDocxRW::BinaryCommentsTableWriter oBinaryCommentsTableWriter(m_oParamsWriter);
 					int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Comments);
-					oBinaryCommentsTableWriter.Write(*pComments, pCommentsExt, pPeople, m_oParamsWriter.m_mapIgnoreComments);
+					oBinaryCommentsTableWriter.Write(*oDocx.m_pComments, oDocx.m_pCommentsExt, oDocx.m_pPeople, m_oParamsWriter.m_mapIgnoreComments);
 					this->WriteTableEnd(nCurPos);
 				}
 
 		//Write StyleTable
-				OOX::CStyles* pStyles = oDocx.GetStyles();
 				BinDocxRW::BinaryStyleTableWriter oBinaryStyleTableWriter(m_oParamsWriter);
-				if(NULL != pStyles)
+				if(NULL != oDocx.m_pStyles)
 				{
 					int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Style);
-					oBinaryStyleTableWriter.Write(*pStyles);
+					oBinaryStyleTableWriter.Write(*oDocx.m_pStyles);
 					this->WriteTableEnd(nCurPos);
 				}
 		//Write Numbering
-				OOX::CNumbering* pNumbering = oDocx.GetNumbering();
 				BinDocxRW::BinaryNumberingTableWriter oBinaryNumberingTableWriter(m_oParamsWriter);
-				if(NULL != pNumbering)
+				if(NULL != oDocx.m_pNumbering)
 				{
 					nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Numbering);
-					oBinaryNumberingTableWriter.Write(*pNumbering);
+					oBinaryNumberingTableWriter.Write(*oDocx.m_pNumbering);
 					this->WriteTableEnd(nCurPos);
 				}
 
 				BinDocxRW::BinaryNotesTableWriter oBinaryNotesWriter(m_oParamsWriter);
 		//Write Footnotes
-				OOX::CFootnotes* pFootnotes = oDocx.GetFootnotes();
-				if(NULL != pFootnotes)
+				if(NULL != oDocx.m_pFootnotes)
 				{
 					nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Footnotes);
-					oBinaryNotesWriter.WriteFootnotes(*pFootnotes);
+					oBinaryNotesWriter.WriteFootnotes(*oDocx.m_pFootnotes);
 					this->WriteTableEnd(nCurPos);
 				}
 		//Write Endnotes
-				OOX::CEndnotes* pEndnotes = oDocx.GetEndnotes();
-				if(NULL != pEndnotes)
+				if(NULL != oDocx.m_pEndnotes)
 				{
 					nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Endnotes);
-					oBinaryNotesWriter.WriteEndnotes(*pEndnotes);
+					oBinaryNotesWriter.WriteEndnotes(*oDocx.m_pEndnotes);
 					this->WriteTableEnd(nCurPos);
 				}
 
-				BinDocxRW::BinaryHeaderFooterTableWriter oBinaryHeaderFooterTableWriter(m_oParamsWriter, poDocument, &m_oParamsWriter.m_mapIgnoreComments);
+				BinDocxRW::BinaryHeaderFooterTableWriter oBinaryHeaderFooterTableWriter(m_oParamsWriter, oDocx.m_pDocument, &m_oParamsWriter.m_mapIgnoreComments);
 
 		//Write DocumentTable
-				ParamsDocumentWriter oParamsDocumentWriter(poDocument);
+				ParamsDocumentWriter oParamsDocumentWriter(oDocx.m_pDocument);
 				m_oParamsWriter.m_pCurRels = oParamsDocumentWriter.m_pRels;
 		
 		//DocumentTable всегда пишем последней, чтобы сначала заполнить все вспомогательные структуры, а при заполении документа, вызывать методы типа Style_Add...
 				BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, &m_oParamsWriter.m_mapIgnoreComments, &oBinaryHeaderFooterTableWriter);
-				oBinaryDocumentTableWriter.prepareOfficeDrawingConverter(m_oParamsWriter.m_pOfficeDrawingConverter, oParamsDocumentWriter.m_pRels, poDocument->m_arrShapeTypes);
+				oBinaryDocumentTableWriter.prepareOfficeDrawingConverter(m_oParamsWriter.m_pOfficeDrawingConverter, oParamsDocumentWriter.m_pRels, oDocx.m_pDocument->m_arrShapeTypes);
 				
 				oBinaryDocumentTableWriter.pSectPr			= pFirstSectPr;
-				oBinaryDocumentTableWriter.pBackground		= poDocument->m_oBackground.GetPointer();
-				oBinaryDocumentTableWriter.poDocument		= poDocument;
+				oBinaryDocumentTableWriter.pBackground		= oDocx.m_pDocument->m_oBackground.GetPointer();
+				oBinaryDocumentTableWriter.poDocument		= oDocx.m_pDocument;
 
 				oBinaryDocumentTableWriter.m_bWriteSectPr	= true;
+				
 		//Write Vba
 				if(NULL != oDocx.m_pVbaProject)
 				{
@@ -7966,9 +7939,22 @@ namespace BinDocxRW
 					oBinaryDocumentTableWriter.WriteVbaProject(*oDocx.m_pVbaProject);
 					this->WriteTableEnd(nCurPos);
 				}
+		//Write JsaProject
+				if (NULL != oDocx.m_pJsaProject)
+				{
+					BYTE* pData = NULL;
+					DWORD nBytesCount;
+					if(NSFile::CFileBinary::ReadAllBytes(oDocx.m_pJsaProject->filename().GetPath(), &pData, nBytesCount))
+					{
+						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::JsaProject);
+						m_oBcw.m_oStream.WriteBYTEArray(pData, nBytesCount);
+						m_oBcw.WriteItemEnd(nCurPos);
+					}
+				}
+
 		// Write content
 				nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Document);
-				oBinaryDocumentTableWriter.Write(poDocument->m_arrItems);
+				oBinaryDocumentTableWriter.Write(oDocx.m_pDocument->m_arrItems);
 				this->WriteTableEnd(nCurPos);
 
 				nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::HdrFtr);

@@ -385,8 +385,10 @@ namespace PPTX
 							OOX::CApp* pApp = new OOX::CApp(NULL);
 							if (pApp)
 							{
-								pApp->SetApplication(_T("OnlyOffice"));
-								pApp->SetAppVersion(_T("5.0"));
+								pApp->SetApplication(L"ONLYOFFICE");
+#if defined(INTVER)
+                                pApp->SetAppVersion(VALUE2STR(INTVER));
+#endif
 								pApp->SetDocSecurity(0);
 								pApp->SetScaleCrop(false);
 								pApp->SetLinksUpToDate(false);
@@ -438,9 +440,10 @@ namespace PPTX
 							std::wstring sXmlOptions, sMediaPath, sEmbedPath;
 							BinXlsxRW::CXlsxSerializer::CreateXlsxFolders (sXmlOptions, sDstEmbeddedTemp, sMediaPath, sEmbedPath);
 							
-							std::map<std::wstring, size_t>	old_enum_map	= oXlsx.m_mapEnumeratedGlobal;
-                            NSBinPptxRW::CBinaryFileReader*	old_reader		= oDrawingConverter.m_pReader;
-                            NSBinPptxRW::CRelsGenerator*	old_rels		= pReader->m_pRels;
+							boost::unordered_map<std::wstring, size_t>	old_enum_map = oXlsx.m_mapEnumeratedGlobal;
+                           
+							NSBinPptxRW::CBinaryFileReader*	old_reader	= oDrawingConverter.m_pReader;
+                            NSBinPptxRW::CRelsGenerator*	old_rels	= pReader->m_pRels;
 							
 							oXlsx.m_mapEnumeratedGlobal.clear();
 
@@ -500,12 +503,14 @@ namespace PPTX
 			smart_ptr<OOX::OleObject> ole_file = m_OleObjectFile;
 			if (ole_file.IsInit() == false)
 			{
-				if (pRels != NULL)						ole_file = pRels->Get<OOX::OleObject>(oRId);
-
-				else if(parentFileIs<Slide>())			ole_file = parentFileAs<Slide>().Get<OOX::OleObject>(oRId);
-				else if(parentFileIs<SlideLayout>())	ole_file = parentFileAs<SlideLayout>().Get<OOX::OleObject>(oRId);
-				else if(parentFileIs<SlideMaster>())	ole_file = parentFileAs<SlideMaster>().Get<OOX::OleObject>(oRId);
-				else if(parentFileIs<Theme>())			ole_file = parentFileAs<Theme>().Get<OOX::OleObject>(oRId);
+				if (pRels != NULL)
+					ole_file = pRels->Get<OOX::OleObject>(oRId);
+				else
+				{
+					OOX::IFileContainer* pContainer = dynamic_cast<OOX::IFileContainer*>(const_cast<PPTX::WrapperFile*>(parentFile));
+					if (pContainer)
+						ole_file = pContainer->Get<OOX::OleObject>(oRId);
+				}
 			}
 			return ole_file;
 		}
@@ -658,12 +663,12 @@ namespace PPTX
 				}
 				if (oleObject->m_sShapeId.IsInit() && pVml && !blipFill.blip->embed.IsInit() && blipFill.blip->oleFilepathImage.empty())
 				{					
-                    boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pPair = pVml->m_mapShapes.find(*oleObject->m_sShapeId);
+                    boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVml->m_mapShapes.find(*oleObject->m_sShapeId);
 
-                    if (pVml->m_mapShapes.end() != pPair)
+                    if (pVml->m_mapShapes.end() != pFind)
 					{
-						pPair->second.bUsed = true;
-						OOX::Vml::CVmlCommonElements* pShape = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pPair->second.pElement);
+						pFind->second.bUsed = true;
+						OOX::Vml::CVmlCommonElements* pShape = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pFind->second.pElement);
 
 						if (pShape)
 						{						

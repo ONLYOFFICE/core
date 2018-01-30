@@ -147,9 +147,10 @@ bool OOXWriter::SaveByItemEnd()
 	
 	if (m_poDocPropsApp)
 	{
-		((OOX::CApp*)m_poDocPropsApp)->SetApplication	( L"OnlyOffice" );
-		((OOX::CApp*)m_poDocPropsApp)->SetAppVersion	( L"5.0" );
-		
+		((OOX::CApp*)m_poDocPropsApp)->SetApplication	( L"ONLYOFFICE" );
+#if defined(INTVER)
+        ((OOX::CApp*)m_poDocPropsApp)->SetAppVersion	( VALUE2STR(INTVER) );
+#endif		
 		((OOX::CApp*)m_poDocPropsApp)->write(pathDocProps + FILE_SEPARATOR_STR + L"app.xml", pathDocProps.GetDirectory(), oContentTypes);
 		
 		m_oRels.AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties", L"docProps/app.xml" );

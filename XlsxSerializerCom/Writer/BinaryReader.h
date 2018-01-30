@@ -35,7 +35,6 @@
 #include "../../Common/Base64.h"
 #include "../../Common/ATLDefine.h"
 
-
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Directory.h"
 
@@ -47,23 +46,26 @@
 
 #include "../../ASCOfficeDocxFile2/BinReader/DefaultThemeWriter.h"
 
-#include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
-
-#include "../../Common/DocxFormat/Source/XlsxFormat/Drawing/Drawing.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Drawing/Drawing.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Comments/Comments.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Styles/Styles.h"
-#include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/CalcChain/CalcChain.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/ExternalLinks/ExternalLinks.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/ExternalLinks/ExternalLinkPath.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotTable.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheDefinition.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheRecords.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/WorkbookComments.h"
+
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
 
 namespace BinXlsxRW 
 {
@@ -1522,10 +1524,10 @@ namespace BinXlsxRW
 	};
 	class BinaryWorkbookTableReader : public Binary_CommonReader<BinaryWorkbookTableReader>
 	{
-		OOX::Spreadsheet::CWorkbook& m_oWorkbook;
-        boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>& m_mapPivotCacheDefinitions;
-        const std::wstring& m_sDestinationDir;
-		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
+		OOX::Spreadsheet::CWorkbook									& m_oWorkbook;
+        boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>	& m_mapPivotCacheDefinitions;
+        const std::wstring											& m_sDestinationDir;
+		NSBinPptxRW::CDrawingConverter								* m_pOfficeDrawingConverter;
 	public:
         BinaryWorkbookTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook, boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>& mapPivotCacheDefinitions, const std::wstring& sDestinationDir, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
 			: Binary_CommonReader(oBufferedStream), m_oWorkbook(oWorkbook), m_mapPivotCacheDefinitions(mapPivotCacheDefinitions), m_sDestinationDir(sDestinationDir), m_pOfficeDrawingConverter(pOfficeDrawingConverter)
@@ -1591,6 +1593,22 @@ namespace BinXlsxRW
 				smart_ptr<OOX::File> oFileJsaProjectFile = oFileJsaProject.smart_dynamic_cast<OOX::File>();
 				m_oWorkbook.Add(oFileJsaProjectFile);
 				m_pOfficeDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(oJsaProject.GetExtention(false));
+			}
+			else if(c_oSerWorkbookTypes::Comments == type)
+			{
+				BYTE* pData = m_oBufferedStream.GetPointer(length);
+				OOX::CPath oWorkbookComments = OOX::Spreadsheet::FileTypes::WorkbookComments.DefaultFileName();
+				std::wstring filePath = m_sDestinationDir  + FILE_SEPARATOR_STR + _T("xl") + FILE_SEPARATOR_STR + oWorkbookComments.GetPath();
+
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(filePath);
+				oFile.WriteFile(pData, length);
+				oFile.CloseFile();
+
+				smart_ptr<OOX::Spreadsheet::WorkbookComments> oFileWorkbookComments(new OOX::Spreadsheet::WorkbookComments(NULL));
+				smart_ptr<OOX::File> oFileWorkbookCommentsFile = oFileWorkbookComments.smart_dynamic_cast<OOX::File>();
+				m_oWorkbook.Add(oFileWorkbookCommentsFile);
+				m_pOfficeDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(oWorkbookComments.GetExtention(false));
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -2218,16 +2236,16 @@ namespace BinXlsxRW
 					BYTE* pSourceBuffer = m_oBufferedStream.GetPointer(length);
 					m_oBufferedStream.Seek(nStartPos);
 
-                    std::string sSignature("XLST");
+					std::string sSignature("XLS2");
                     int nSignatureSize      = (int)sSignature.length();
-                    int nDataLengthSize     = sizeof(long);
+					int nDataLengthSize     = sizeof(_INT32);
                     int nJunkSize           = 2;
                     int nWriteBufferLength  = nSignatureSize + nDataLengthSize + length + nJunkSize;
 
                     BYTE* pWriteBuffer = new BYTE[nWriteBufferLength];
                     memcpy(pWriteBuffer, sSignature.c_str(), nSignatureSize);
 
-					memcpy(pWriteBuffer + nSignatureSize, &length, nDataLengthSize);
+					*((_INT32*)(pWriteBuffer + nSignatureSize)) = (_INT32)length;
 					memcpy(pWriteBuffer + nSignatureSize + nDataLengthSize, pSourceBuffer, length);
 					//пишем в конце 0, потому что при редактировании Excel меняет посление байты.
 					memset(pWriteBuffer + nSignatureSize + nDataLengthSize + length, 0, nJunkSize);
@@ -3554,7 +3572,7 @@ namespace BinXlsxRW
 					{
 						int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
 
-                        if (nValue >= 0 && nValue < m_pSharedStrings->m_arrItems.size())
+                        if (nValue >= 0 && nValue < (int)m_pSharedStrings->m_arrItems.size())
 						{
                             OOX::Spreadsheet::CSi *pSi = m_pSharedStrings->m_arrItems[nValue];
 							if(NULL != pSi && !pSi->m_arrItems.empty())
@@ -4490,7 +4508,6 @@ namespace BinXlsxRW
 
 				oXlsx.m_pTheme = oSaveParams.pTheme;
 			}
-			OOX::Spreadsheet::CSharedStrings* pSharedStrings = NULL;
 			if(-1 != nSharedStringsOffBits)
 			{
 				oBufferedStream.Seek(nSharedStringsOffBits);
@@ -4526,7 +4543,7 @@ namespace BinXlsxRW
 					break;
 				case c_oSerTableTypes::Worksheets:
 					{
-						res = BinaryWorksheetsTableReader(oBufferedStream, *oXlsx.m_pWorkbook, pSharedStrings, oXlsx.m_arWorksheets, oXlsx.m_mapWorksheets, mapMedia, sOutDir, sMediaDir, oSaveParams, pOfficeDrawingConverter, m_mapPivotCacheDefinitions).Read();
+						res = BinaryWorksheetsTableReader(oBufferedStream, *oXlsx.m_pWorkbook, oXlsx.m_pSharedStrings, oXlsx.m_arWorksheets, oXlsx.m_mapWorksheets, mapMedia, sOutDir, sMediaDir, oSaveParams, pOfficeDrawingConverter, m_mapPivotCacheDefinitions).Read();
 					}
 					break;
 				}

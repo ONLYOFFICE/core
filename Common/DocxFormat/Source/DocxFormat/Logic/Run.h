@@ -189,6 +189,12 @@ namespace OOX
 						}
 					}
 				}
+
+				if ((m_oRunProperty) && (m_oRunProperty->m_pText))
+				{
+					m_arrItems.push_back( m_oRunProperty->m_pText);
+					m_oRunProperty->m_pText = NULL;
+				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -278,6 +284,11 @@ namespace OOX
 
 					if ( pItem )
 						m_arrItems.push_back( pItem );
+				}
+				if ((m_oRunProperty) && (m_oRunProperty->m_pText))
+				{
+					m_arrItems.push_back( m_oRunProperty->m_pText);
+					m_oRunProperty->m_pText = NULL;
 				}
 			}
 			virtual std::wstring toXML() const

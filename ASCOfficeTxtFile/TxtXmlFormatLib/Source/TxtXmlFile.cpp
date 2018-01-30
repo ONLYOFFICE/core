@@ -218,8 +218,10 @@ void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::F
 	OOX::CApp* pApp = new OOX::CApp(NULL);
 	if (pApp)
 	{
-		pApp->SetApplication(_T("OnlyOffice"));
-		pApp->SetAppVersion(_T("5.07"));
+		pApp->SetApplication(L"ONLYOFFICE");
+#if defined(INTVER)
+        pApp->SetAppVersion(VALUE2STR(INTVER));
+#endif
 		pApp->SetDocSecurity(0);
 		pApp->SetScaleCrop(false);
 		pApp->SetLinksUpToDate(false);

@@ -32,6 +32,7 @@
 #include "CommonInclude.h"
 
 #include "FileTypes_Spreadsheet.h"
+#include "Xlsx.h"
 
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 #include "../DocxFormat/VmlDrawing.h"
@@ -44,6 +45,7 @@
 #include "Workbook/Workbook.h"
 #include "Worksheets/Worksheet.h"
 #include "CalcChain/CalcChain.h"
+#include "WorkbookComments.h"
 
 #include "Table/Table.h"
 #include "ExternalLinks/ExternalLinks.h"
@@ -90,6 +92,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CChartSpace( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == OOX::FileTypes::ExternalLinkPath)
 				return smart_ptr<OOX::File>(new ExternalLinkPath( pMain, oRelation.Target()));
+			else if ( oRelation.Type() == FileTypes::WorkbookComments)
+				return smart_ptr<OOX::File>(new WorkbookComments( pMain, oRootPath, oFileName));
 //common			
 			//else if ( oRelation.Type() == OOX::FileTypes::VmlDrawing )
 			//	return smart_ptr<OOX::File>(new CVmlDrawing( oRootPath, oFileName ));
@@ -132,14 +136,21 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CWorksheet( pMain, oRootPath, oFileName, pRelation->rId().ToString() ));
 			else if ( pRelation->Type() == OOX::FileTypes::Theme )
 			{
+				smart_ptr<OOX::File> pFile;
 				if(NSFile::CFileBinary::Exists(oFileName.GetPath()))
 				{
-					return smart_ptr<OOX::File>(new PPTX::Theme( pMain, oFileName ));
+					pFile = smart_ptr<OOX::File>(new PPTX::Theme( pMain, oFileName ));
 				}
 				else
 				{
-					return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
+					pFile = smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 				}
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
+				if (xlsx)
+				{
+					xlsx->m_pTheme = pFile.smart_dynamic_cast<PPTX::Theme>();
+				}
+				return pFile;
 			}
 			else if ( pRelation->Type() == OOX::FileTypes::ThemeOverride )
 				return smart_ptr<OOX::File>(new PPTX::Theme( pMain, oFileName ));
@@ -184,6 +195,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new OOX::ActiveX_xml( pMain, oRootPath, oFileName ));
 			else if (	pRelation->Type() == OOX::FileTypes::ActiveX_bin)
 				return smart_ptr<OOX::File>(new OOX::ActiveX_bin( pMain, oFileName ));
+			else if ( pRelation->Type() == FileTypes::WorkbookComments)
+				return smart_ptr<OOX::File>(new WorkbookComments( pMain, oRootPath, oFileName));
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 		}

@@ -33,6 +33,7 @@
 
 #include "../Base/Base.h"
 #include "../Base/SmartPtr.h"
+#include "../Base/Types_32.h"
 
 #include <algorithm>
 #include <sstream>
@@ -77,9 +78,9 @@ namespace XmlUtils
 			return true;
 		return false;
 	}
-    AVSINLINE static __int64 GetHex (const std::wstring& string)
+    AVSINLINE static _INT64 GetHex (const std::wstring& string)
 	{
-		__int64 nResult = 0;
+        _INT64 nResult = 0;
         size_t nLen = string.length();
 		for (size_t nIndex = 0; nIndex < nLen; ++nIndex )
 		{
@@ -88,9 +89,9 @@ namespace XmlUtils
 
 		return nResult;
 	}
-    AVSINLINE static __int64 GetHex (const std::string& string)
+    AVSINLINE static _INT64 GetHex (const std::string& string)
 	{
-		__int64 nResult = 0;
+        _INT64 nResult = 0;
         size_t nLen = string.length();
 		for (size_t nIndex = 0; nIndex < nLen; ++nIndex )
 		{
@@ -169,7 +170,20 @@ namespace XmlUtils
 
 		return ( L"true" == sTemp || L"1" == sTemp || L"t" == sTemp || L"on" == sTemp );
 	}
-    AVSINLINE static int     GetInteger (const std::wstring& string)
+    AVSINLINE static _INT64     GetInteger64 (const std::wstring& string)
+	{
+        if (string.empty()) return 0;
+
+        try
+        {
+            return _wtoi64(string.c_str());
+        }
+        catch(...)
+        {
+             return 0;
+		}
+    }
+	AVSINLINE static int     GetInteger (const std::wstring& string)
 	{
         if (string.empty()) return 0;
 

@@ -63,6 +63,10 @@ void office_spreadsheet::add_child_element( xml::sax * Reader, const std::wstrin
 	{
 		CP_CREATE_ELEMENT(tracked_changes_);
 	}
+	else if CP_CHECK_NAME(L"table", L"content-validations")
+	{
+		CP_CREATE_ELEMENT(content_validations_);
+	}
 	else
 		CP_CREATE_ELEMENT(content_);
 }
@@ -87,6 +91,9 @@ void office_spreadsheet::xlsx_convert(oox::xlsx_conversion_context & Context)
        
 	if (database_ranges_)
 		database_ranges_->xlsx_convert(Context);
+
+	if (content_validations_)
+		content_validations_->xlsx_convert(Context);
 
 	if (data_pilot_tables_)
 		data_pilot_tables_->xlsx_convert(Context);

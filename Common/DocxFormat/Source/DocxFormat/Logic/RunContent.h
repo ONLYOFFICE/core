@@ -776,15 +776,13 @@ namespace OOX
 			CText() {}
 			virtual ~CText() {}
 
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("xml:space"), m_oSpace );
 
 				m_sText = oNode.GetText();
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -793,7 +791,7 @@ namespace OOX
 
 				m_sText = oReader.GetText2();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult;
 				

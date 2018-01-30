@@ -52,7 +52,8 @@ namespace OOX
 				m_bSpreadsheets = true;
 
 				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
-				if (xlsx) xlsx->m_pSharedStrings = this;
+				if ((xlsx) && (!xlsx->m_pSharedStrings))
+					xlsx->m_pSharedStrings = this;
 			}
 			CSharedStrings(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
@@ -60,7 +61,8 @@ namespace OOX
                 m_bSpreadsheets = true;
 
   				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
-				if (xlsx) xlsx->m_pSharedStrings = this;
+				if ((xlsx) && (!xlsx->m_pSharedStrings))
+					xlsx->m_pSharedStrings = this;
 
 				read( oRootPath, oPath );
 			}

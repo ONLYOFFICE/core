@@ -803,11 +803,13 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
     
 	is_style_visible = (!cellStyleName.empty() || defaultColumnCellStyle) ? true : false;
 
-	if ( content_.elements_.size() > 0	|| 
-		!formula.empty()	||
+	if ( content_.elements_.size() > 0	|| attlist_.table_content_validation_name_ || !formula.empty()	||
 		(	t_val == oox::XlsxCellType::n										&& !number_val.empty()) || 
 		(	t_val == oox::XlsxCellType::b										&& bool_val) ||
-		((	t_val == oox::XlsxCellType::str || oox::XlsxCellType::inlineStr)	&& str_val))	is_data_visible = true;
+		((	t_val == oox::XlsxCellType::str || oox::XlsxCellType::inlineStr)	&& str_val))	
+	{
+		is_data_visible = true;
+	}
 
 	if (attlist_.table_number_columns_repeated_ < 199 && last_cell_)	last_cell_ = false;
 	
@@ -837,15 +839,20 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 			t_val = oox::XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
 			
 		if (skip_next_cell)break;
-
-        // пустые ячейки пропускаем.
+	
+	// пустые ячейки пропускаем.
         if ( is_data_visible || ((cellStyle || defaultColumnCellStyle) && is_style_visible))
         {
-            CP_XML_WRITER(strm)
+			std::wstring ref = oox::getCellAddress(Context.current_table_column(), Context.current_table_row());
+			if (attlist_.table_content_validation_name_)
+			{
+				Context.get_dataValidations_context().activate(*attlist_.table_content_validation_name_, ref);
+			}   
+			CP_XML_WRITER(strm)
             {
                 CP_XML_NODE(L"c")
                 {
-                    CP_XML_ATTR(L"r", oox::getCellAddress(Context.current_table_column(), Context.current_table_row()));
+                    CP_XML_ATTR(L"r", ref);
                     CP_XML_ATTR(L"t", oox::cellType2Str(t_val));
                     CP_XML_ATTR(L"s", xfId_last_set);
 
@@ -887,6 +894,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
                     {
                         CP_XML_NODE(L"v")   { CP_XML_CONTENT((int)(bool_val.get())); }
                     }
+
                 }
 				if ( is_data_visible || (cellStyle && is_style_visible && !last_cell_))
 				{
@@ -1179,5 +1187,38 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
     }
 }
 
+void table_content_validations::xlsx_convert(oox::xlsx_conversion_context & Context) 
+{
+	for (size_t i = 0 ; i < content_.size(); i++)
+	{
+		content_[i]->xlsx_convert(Context);
+    }
+}
+void table_content_validation::xlsx_convert(oox::xlsx_conversion_context & Context) 
+{
+	std::wstring name = table_name_.get_value_or(L"");
+	
+	Context.get_dataValidations_context().add(name, table_base_cell_address_.get_value_or(L""));
+	Context.get_dataValidations_context().add_formula(name, table_condition_.get_value_or(L""));
+	
+	for (size_t i = 0 ; i < content_.size(); i++)
+	{
+		if (content_[i]->get_type() == typeTableErrorMassage)
+		{
+			Context.get_dataValidations_context().add_error_msg(name, true);
+		}
+		else if (content_[i]->get_type() == typeTableErrorMassage)
+		{
+			Context.get_dataValidations_context().add_help_msg(name, true);
+		}
+		content_[i]->xlsx_convert(Context);
+    }
+}
+void table_error_message::xlsx_convert(oox::xlsx_conversion_context & Context) 
+{
+}
+void table_help_message::xlsx_convert(oox::xlsx_conversion_context & Context) 
+{
+}
 }
 }

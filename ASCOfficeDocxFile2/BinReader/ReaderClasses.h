@@ -318,20 +318,29 @@ public:
     docRGB      Color;
 	CThemeColor ThemeColor; 
 
+	bool bValue;
 	bool bColor;
 	bool bThemeColor;
 	Shd()
 	{
-        Value       = shd_Nil;
+		bValue		= false;
         bColor      = false;
 		bThemeColor = false;
 	}
     std::wstring ToString()
 	{
         std::wstring sShd;
-		if(bColor || (bThemeColor && ThemeColor.IsNoEmpty()))
+		if(bValue || bColor || (bThemeColor && ThemeColor.IsNoEmpty()))
 		{
-            sShd += L"<w:shd w:val=\"clear\" w:color=\"auto\"";
+			sShd += L"<w:shd";
+			if(bValue)
+			{
+				if(shd_Nil == Value)
+					sShd += L" w:val=\"nil\"";
+				else
+					sShd += L" w:val=\"clear\"";
+			}
+			sShd += L" w:color=\"auto\"";
 			if(bColor)
                 sShd += L" w:fill=\"" + Color.ToString() + L"\"";
 			if(bThemeColor && ThemeColor.IsNoEmpty())

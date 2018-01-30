@@ -52,6 +52,7 @@ SOURCES += \
     ../Source/DocxFormat/Logic/Table.cpp \
     ../Source/DocxFormat/Logic/TableProperty.cpp \
     ../Source/DocxFormat/Logic/Vml.cpp \
+    ../Source/DocxFormat/Media/VbaProject.cpp \
     ../Source/DocxFormat/Math/oMath.cpp \
     ../Source/DocxFormat/Math/oMathContent.cpp \
     ../Source/DocxFormat/Math/oMathPara.cpp \
@@ -60,6 +61,7 @@ SOURCES += \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
     ../Source/XlsxFormat/Common.cpp \
     ../Source/XlsxFormat/Xlsx.cpp \
+    ../Source/XlsxFormat/Worksheets/Worksheet.cpp \
     ../Source/XlsxFormat/Worksheets/SheetData.cpp \
     ../Source/DocxFormat/FileFactory.cpp \
     ../Source/DocxFormat/IFileContainer.cpp \
@@ -231,6 +233,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/SimpleTypes_Spreadsheet.h \
     ../Source/XlsxFormat/Workbook.h \
     ../Source/XlsxFormat/WritingElement.h \
+    ../Source/DocxFormat/WorkbookComments.h \
     ../Source/XlsxFormat/Xlsx.h \
     ../Source/XML/Utils.h \
     ../Source/XML/XmlSimple.h \

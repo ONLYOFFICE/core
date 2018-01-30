@@ -266,7 +266,10 @@ private:
 		Shd* pShd = static_cast<Shd*>(poResult);
 		switch(type)
 		{
-		case c_oSerShdType::Value: pShd->Value = m_oBufferedStream.GetUChar();break;
+		case c_oSerShdType::Value:
+			pShd->bValue = true;
+			pShd->Value = m_oBufferedStream.GetUChar();
+			break;
 		case c_oSerShdType::Color:
 			pShd->bColor = true;
 			pShd->Color = ReadColor();
@@ -451,11 +454,8 @@ public:
 			{
 				Shd oShd;
 				oBinary_CommonReader2.ReadShdOut(length, &oShd);
-				if(shd_Nil != oShd.Value)
-				{
-					orPr->bShd = true;
-					orPr->Shd = oShd.ToString();
-				}
+				orPr->bShd = true;
+				orPr->Shd = oShd.ToString();
 				break;
 			}
 		case c_oSerProp_rPrType::RStyle:
@@ -801,15 +801,7 @@ public:
 			{
 				Shd oShd;
 				oBinary_CommonReader2.ReadShdOut(length, &oShd);
-				if(shd_Nil != oShd.Value)
-				{
-					pCStringWriter->WriteString(oShd.ToString());
-				}
-				else
-				{
-                    std::wstring sShd(L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"auto\"/>");
-					pCStringWriter->WriteString(sShd);
-				}
+				pCStringWriter->WriteString(oShd.ToString());
 				break;
 			}
 		case c_oSerProp_pPrType::WidowControl:
@@ -1782,11 +1774,8 @@ public:
 		{
 			Shd oShd;
 			oBinary_CommonReader2.ReadShdOut(length, &oShd);
-			if(shd_Nil != oShd.Value)
-			{
-				pWiterTblPr->Shd = oShd.ToString();
-				m_sCurTableShd = pWiterTblPr->Shd;
-			}
+			pWiterTblPr->Shd = oShd.ToString();
+			m_sCurTableShd = pWiterTblPr->Shd;
 		}
 		else if( c_oSerProp_tblPrType::tblpPr == type )
 		{
@@ -2244,10 +2233,7 @@ public:
 			bCellShd = true;
 			Shd oShd;
 			oBinary_CommonReader2.ReadShdOut(length, &oShd);
-			if(shd_Nil != oShd.Value)
-			{
-				pCStringWriter->WriteString(oShd.ToString());
-			}
+			pCStringWriter->WriteString(oShd.ToString());
 		}
 		else if( c_oSerProp_cellPrType::TableCellBorders == type )
 		{
@@ -7449,6 +7435,8 @@ public:
 		{
 			PPTX::Logic::CNvPr pNonVisualDrawingProps(L"wp");
 			res = Read1(length, &Binary_DocumentTableReader::ReadDocPr, this, &pNonVisualDrawingProps);
+			
+			pNonVisualDrawingProps.id = pDrawingProperty->m_nDocPr;
 			pDrawingProperty->sDocPr = pNonVisualDrawingProps.toXML2(L"wp:docPr");
 		}
 		else

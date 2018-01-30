@@ -193,7 +193,8 @@ namespace BinXlsxRW
 		OleLink = 10,
 		DdeLink = 11,
 		VbaProject = 12,
-		JsaProject = 13
+		JsaProject = 13,
+		Comments = 14
 	};}
 	namespace c_oSerWorkbookVbaProjectTypes{enum c_oSerWorkbookVbaProjectTypes
 	{

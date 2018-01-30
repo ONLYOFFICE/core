@@ -50,8 +50,8 @@ namespace PPTX
 
 		const bool isValid(const OOX::CPath& path) const;
 
-		void extractPictures(const OOX::CPath& path);
-		void extractPictures(const OOX::CPath& source, const OOX::CPath& path);
+		//void extractPictures(const OOX::CPath& path);
+		//void extractPictures(const OOX::CPath& source, const OOX::CPath& path);
 	private:
 		long CountFiles(const OOX::CPath& path);
 	};

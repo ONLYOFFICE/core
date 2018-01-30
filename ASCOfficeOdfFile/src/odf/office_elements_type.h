@@ -233,6 +233,14 @@ enum ElementType
 	typeTableDatabaseRange,
 	typeTableSort,
 	typeTableSortBy,
+	typeTableCalculationSettings,
+    typeTableNullDate,
+    typeTableShapes,
+	typeTableContentValidation,
+	typeTableContentValidations,
+	typeTableHelpMassage,
+	typeTableErrorMassage,
+	typeTableErrorMacro,
 
 	typeTableFilter,
 	typeTableFilterAnd,
@@ -411,9 +419,6 @@ enum ElementType
 
 	typeScriptEventListener,
 
-	typeTableCalculationSettings,
-    typeTableNullDate,
-
     typeNumberNumberStyle,
     typeNumberDataStyle,
     typeNumberText,
@@ -436,7 +441,6 @@ enum ElementType
     typeNumberMinutes,
     typeNumberSeconds,
     typeNumberAmPm,
-    typeTableShapes,
 
     typeChartChart,
     typeChartTitle,

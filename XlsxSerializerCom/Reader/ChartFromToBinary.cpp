@@ -6153,14 +6153,20 @@ namespace BinXlsxRW
 			WriteCT_extLst(*oVal.m_extLst);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		smart_ptr<OOX::File> pFile = oChartSpace.Find(OOX::FileTypes::ThemeOverride);
-		if (pFile.IsInit() && OOX::FileTypes::ThemeOverride == pFile->type())
+
+		std::vector<smart_ptr<OOX::File>>& container =oChartSpace.GetContainer();
+
+		for (size_t i = 0; i < container.size(); ++i)
 		{
-			PPTX::Theme* pThemeOverride = dynamic_cast<PPTX::Theme*>(pFile.operator->());
-	
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceTHEMEOVERRIDE);
-			pThemeOverride->toPPTY(&m_oBcw.m_oStream);
-			m_oBcw.WriteItemEnd(nCurPos);
+			if (OOX::FileTypes::ThemeOverride == container[i]->type())
+			{
+				PPTX::Theme* pThemeOverride = dynamic_cast<PPTX::Theme*>(container[i].operator->());
+		
+				int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceTHEMEOVERRIDE);
+				pThemeOverride->toPPTY(&m_oBcw.m_oStream);
+				m_oBcw.WriteItemEnd(nCurPos);
+				break;
+			}
 		}
 	}
 	void BinaryChartWriter::WriteCT_Boolean(CT_Boolean& oVal)

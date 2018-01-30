@@ -52,7 +52,7 @@ bool OOXHeaderReader::Parse( ReaderParameter oParam, std::wstring sRID, TextItem
 		oOOXTextItemReader.Parse(*it, oParam );
 	}
 	
-	oParam.oReader->m_currentContainer = dynamic_cast<OOX::IFileContainer*>(oParam.oDocx->GetDocument());
+	oParam.oReader->m_currentContainer = dynamic_cast<OOX::IFileContainer*>(oParam.oDocx->m_pDocument);
 	
 	return true;
 }

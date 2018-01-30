@@ -424,6 +424,7 @@ namespace NSBinPptxRW
 		void WriteThemes (int nCount);
 		void WriteSlides (int nCount);
 		void WriteSlideComments	(int nComment);
+		void WritePresentationComments	(int nComment);
 		int WriteChart (int nChartNumber, _INT32 lDocType);
 		int WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode);
 		int WriteHyperlink	(const std::wstring& strLink, const bool& bIsActionInit);		

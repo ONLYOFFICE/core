@@ -45,7 +45,8 @@ public:
     {
         none,
         value,
-        percentage
+        percentage,
+		value_and_percentage
     };
 
     chart_data_label_number() {}

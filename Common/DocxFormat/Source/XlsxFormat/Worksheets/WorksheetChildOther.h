@@ -515,11 +515,11 @@ namespace OOX
 				if (m_oPane.IsInit())
 					m_oPane->toXML(writer);
 				
-				for ( std::list<CSelection*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
 				{
-					if ( *it )
+                    if ( m_arrItems[i] )
 					{
-						(*it)->toXML(writer);
+                        m_arrItems[i]->toXML(writer);
 					}
 				}
 
@@ -625,11 +625,11 @@ namespace OOX
 
 				writer.WriteString(_T("<sheetViews>"));
 				
-				for ( std::list<CSheetView*>::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
 				{
-					if ( *it )
+                    if ( m_arrItems[i] )
 					{
-						(*it)->toXML(writer);
+                        m_arrItems[i]->toXML(writer);
 					}
 				}
 				

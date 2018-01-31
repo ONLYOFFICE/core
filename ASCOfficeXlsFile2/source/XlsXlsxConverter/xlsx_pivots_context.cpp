@@ -93,7 +93,7 @@ void xlsx_pivots_context::dump_rels_cache(int index, rels & Rels)
 	}
 	int i = 0;
 	for (std::unordered_map<std::wstring, std::wstring>::iterator	it =  impl_->caches_[index].externals_.begin(); 
-																	it !=  impl_->caches_[index].externals_.end(); it++, i++)
+																	it !=  impl_->caches_[index].externals_.end(); ++it, i++)
 	{
 		Rels.add(relationship(L"extId" + std::to_wstring(i + 1),							
 						L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLinkPath",

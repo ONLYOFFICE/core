@@ -156,16 +156,16 @@ namespace DocFileFormat
 		file.CloseFile();
 
 		OOX::CPath path(sTempXmlFile);
-		OOX::CDocument docEmbedded(path, path);
+		OOX::CDocument docEmbedded(NULL, path, path);
 
 		bool res = false;
-		for (std::list<OOX::WritingElement*>::iterator it = docEmbedded.m_arrItems.begin(); it != docEmbedded.m_arrItems.end(); it++)
+        for (std::vector<OOX::WritingElement*>::iterator it = docEmbedded.m_arrItems.begin(); it != docEmbedded.m_arrItems.end(); ++it)
 		{
 			if ((*it)->getType() == OOX::et_w_p)
 			{
 				OOX::Logic::CParagraph *paragraph = dynamic_cast<OOX::Logic::CParagraph *>(*it);
 
-				for (std::list<OOX::WritingElement*>::iterator		jt = paragraph->m_arrItems.begin(); 
+                for (std::vector<OOX::WritingElement*>::iterator		jt = paragraph->m_arrItems.begin();
 													(paragraph) && (jt != paragraph->m_arrItems.end()); jt++)
 				{
 					if ((*jt)->getType() == OOX::et_m_oMath)
@@ -178,7 +178,7 @@ namespace DocFileFormat
 					{
 						OOX::Logic::COMathPara *mathPara = dynamic_cast<OOX::Logic::COMathPara *>(*jt);
 						
-						for (std::list<OOX::WritingElement*>::iterator kt = mathPara->m_arrItems.begin(); 
+                        for (std::vector<OOX::WritingElement*>::iterator kt = mathPara->m_arrItems.begin();
 														(mathPara) && (kt != mathPara->m_arrItems.end()); kt++)
 						{
 							if ((*kt)->getType() == OOX::et_m_oMath)
@@ -500,6 +500,7 @@ namespace DocFileFormat
 			{
 				case Global::msoblipEMF:
 				case Global::msoblipWMF:
+				case Global::msoblipPICT:
 				{
 					MetafilePictBlip* metaBlip = static_cast<MetafilePictBlip*>(oBlipEntry->Blip);
 					if (metaBlip)
@@ -567,6 +568,9 @@ namespace DocFileFormat
 		case Global::msoblipWMF:
 			return std::wstring(L".wmf");
 
+		case Global::msoblipPICT:
+			return std::wstring(L".pcz");
+
 		default:
 			return std::wstring(L".png");
 		}
@@ -600,6 +604,9 @@ namespace DocFileFormat
 
 		case Global::msoblipWMF:
 			return std::wstring(OpenXmlContentTypes::Wmf);
+
+		case Global::msoblipPICT:
+			return std::wstring(OpenXmlContentTypes::Pcz);
 
 		case Global::msoblipDIB:
 			return std::wstring(OpenXmlContentTypes::Bmp);

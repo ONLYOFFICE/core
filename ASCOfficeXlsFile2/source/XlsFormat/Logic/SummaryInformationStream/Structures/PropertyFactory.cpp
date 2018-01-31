@@ -52,37 +52,32 @@ PropertyPtr PropertyFactory::ReadProperty(const unsigned int prop_type, XLS::CFS
 	*stream >> value_type;
 	stream->seekFromCurForward(2); // Skip 2 reserved unsigned chars
 
+	value_type = value_type & 0x00ff;
 	switch(prop_type)
 	{
-        case 0x01://CodePage::Type:
-            return PropertyPtr(new PropertyCodePage(value_type, stream));
-        case 0x02://TITLE
-            return PropertyPtr(new PropertyTitle(value_type, stream));
-        case 0x03://SUBJECT
-            return PropertyPtr(new PropertySubject(value_type, stream));
-        case 0x04://AUTHOR
-            return PropertyPtr(new PropertyAuthor(value_type, stream));
-        case 0x05://KEYWORDS
-            return PropertyPtr(new PropertyKeywords(value_type, stream));
-        case 0x06://COMMENTS
-            return PropertyPtr(new PropertyComments(value_type, stream));
-        case 0x0C://CREATE_DTM
-            return PropertyPtr(new PropertyDateCreate(value_type, stream));
-		case 0x0f://PIDSI_WORDCOUNT
-            return PropertyPtr(new PropertyWordCount(value_type, stream));
-		case 0x10://PIDSI_CHARCOUNT
-            return PropertyPtr(new PropertyCharCount(value_type, stream));
-		case 0x13://PIDSI_DOC_SECURITY
-            return PropertyPtr(new PropertyDocSecurity(value_type, stream));
-
-        case 0x08://PIDSI_LASTAUTHOR
-		case 0x0b://PIDSI_LASTPRINTED
-		case 0x0d://PIDSI_LASTSAVE_DTM
-		case 0x12://PIDSI_APPNAME
-		case 0x16://??
-		case 0x17://??
-		default:
-			return PropertyPtr();
+        case 0x01:
+            return PropertyPtr(new PropertyCodePage(prop_type, value_type, stream));
+ 		default:
+		{
+			if (value_type == 0x001E)
+			{
+				return PropertyPtr(new PropertyStr(prop_type, value_type, stream));
+			}
+			else if (value_type == 0x0003)
+			{
+				return PropertyPtr(new PropertyInt(prop_type, value_type, stream));
+			}
+			else if (value_type == 0x000b)
+			{
+				return PropertyPtr(new PropertyBool(prop_type, value_type, stream));
+			}
+			else if (value_type == 0x0040)
+			{
+				return PropertyPtr(new PropertyDTM(prop_type, value_type, stream));
+			}
+			else
+				return PropertyPtr();
+		}break;
 	}
 
 }

@@ -772,11 +772,16 @@ namespace OOX
 	{
 	public:
 		
-		CStyles()
+		CStyles(OOX::Document *pMain) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pStyles = this;			
 		}
-		CStyles(const CPath& oPath)
+		CStyles(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pStyles = this;			
+
 			read( oPath );
 		}
 		virtual ~CStyles()
@@ -794,8 +799,6 @@ namespace OOX
 	public:
 		virtual void read(const CPath& oFilePath)
 		{
-#ifdef USE_LITE_READER
-
 			XmlUtils::CXmlLiteReader oReader;
 			
 			if ( !oReader.FromFile( oFilePath.GetPath() ) )
@@ -830,41 +833,6 @@ namespace OOX
 						m_oLatentStyles = oReader;
 				}
 			}
-#else
-			XmlUtils::CXmlNode oStyles;
-			oStyles.FromXmlFile( oFilePath.GetPath(), true );
-
-			if ( _T("w:styles") == oStyles.GetName() )
-			{
-				XmlUtils::CXmlNode oChild;
-
-				if ( oStyles.GetNode( _T("w:docDefaults"), oChild ) )
-					m_oDocDefaults = oChild;
-
-				if ( oStyles.GetNode( _T("w:latentStyles"), oChild ) )
-					m_oLatentStyles = oChild;
-
-				XmlUtils::CXmlNodes oStyleList;
-				oStyles.GetNodes( _T("w:style"), oStyleList );
-
-				for ( int nStlyeIndex = 0; nStlyeIndex < oStyleList.GetCount(); nStlyeIndex++ )
-				{
-					XmlUtils::CXmlNode oStyleNode;
-					if ( oStyleList.GetAt( nStlyeIndex, oStyleNode ) )
-					{
-                        OOX::CStyle *oStyle  = new OOX::CStyle (oStyleNode);
-						if (oStyle)
-						{
-							if (oStyle->m_oName.IsInit())
-							{
-								m_arrStyleNamesMap[oStyle->m_oName->ToString()] = m_arrStyle.size();
-							}        
-							m_arrStyle.push_back( oStyle );
-						}
-					}
-				}
-			}
-#endif
 		}
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{

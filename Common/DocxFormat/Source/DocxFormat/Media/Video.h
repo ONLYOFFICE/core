@@ -41,18 +41,15 @@ namespace OOX
 	class Video : public Media
 	{
 	public:
-		Video(bool bDocument = true) : Media (bDocument)
+		Video(OOX::Document* pMain, bool bDocument = true) : Media (pMain, bDocument)
 		{
 		}
-		Video(const CPath& filename)
+		Video(OOX::Document* pMain, const CPath& filename, bool bExternal = false) : Media(pMain, filename, bExternal)
 		{
-			read(filename);
 		}
 		virtual ~Video()
 		{
 		}
-
-	public:
 		virtual const FileType type() const
 		{
 			return FileTypes::Video;

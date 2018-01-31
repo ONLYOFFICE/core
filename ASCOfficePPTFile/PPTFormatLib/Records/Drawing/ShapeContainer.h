@@ -959,7 +959,7 @@ public:
 		case NSOfficeDrawing::adjust10Value:
 			{
 				LONG lIndexAdj = pProperty->m_ePID - NSOfficeDrawing::adjustValue;
-				if (lIndexAdj >= 0 && lIndexAdj < pShape->m_arAdjustments.size())
+				if (lIndexAdj >= 0 && lIndexAdj < (LONG)pShape->m_arAdjustments.size())
 				{
 					pShape->m_oCustomVML.LoadAdjusts(lIndexAdj, (LONG)pProperty->m_lValue);
 				}
@@ -1639,7 +1639,7 @@ public:
 			}
 
 //------ shape properties ----------------------------------------------------------------------------------------
-			for (int nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
+			for (size_t nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
 			{
 				CPPTElement oElement;
 				oElement.SetUpProperties(pElement, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties);
@@ -1756,7 +1756,7 @@ public:
 		}
 		else
 		{//image, audio, video ....
-			for (int nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
+			for (size_t nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
 			{
 				CPPTElement oElement;
 				oElement.SetUpProperties(pElement, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties);

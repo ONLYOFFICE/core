@@ -33,6 +33,7 @@
 #ifndef OOX_APP_INCLUDE_H_
 #define OOX_APP_INCLUDE_H_
 
+#include "Docx.h"
 #include "File.h"
 #include "../Base/Nullable.h"
 #include "../Common/SimpleTypes_Word.h"
@@ -43,19 +44,21 @@ namespace OOX
 	class CApp : public OOX::File
 	{
 	public:
-		CApp()
+		CApp(OOX::Document* pMain) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pApp = this;
 		}
-		CApp(const CPath& oPath)
+		CApp(OOX::Document* pMain, const CPath& oPath) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pApp = this;
+
 			read( oPath );
 		}
 		virtual ~CApp()
 		{
 		}
-
-
-	public:
 		virtual void read(const CPath& oPath)
 		{
 			XmlUtils::CXmlNode oProperties;
@@ -189,15 +192,20 @@ namespace OOX
 			{
 				sXml += _T("<Application>");
 				sXml += m_sApplication.get();
+				if ( m_sAppVersion.IsInit() )
+				{
+					sXml += L"/";
+					sXml += m_sAppVersion.get();
+				}
 				sXml += _T("</Application>");
 			}
 
-			if ( m_sAppVersion.IsInit() )
-			{
-				sXml += _T("<AppVersion>");
-				sXml += m_sAppVersion.get();
-				sXml += _T("</AppVersion>");
-			}
+			//if ( m_sAppVersion.IsInit() ) - only for ms editors versions
+			//{
+			//	sXml += _T("<AppVersion>");
+			//	sXml += m_sAppVersion.get(); // error in ms editors - "2.4.510.0"
+			//	sXml += _T("</AppVersion>");
+			//}
 
 			if ( m_nCharacters.IsInit() )
 			{
@@ -393,7 +401,6 @@ namespace OOX
 			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 		}
 
-	public:
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::App;
@@ -414,7 +421,11 @@ namespace OOX
 		{
 			m_sAppVersion = sVal;
 		}
-		void SetDocSecurity(int nVal)
+        void SetAppVersion(const std::string& sVal)
+        {
+            m_sAppVersion = std::wstring(sVal.begin(), sVal.end());
+        }
+        void SetDocSecurity(int nVal)
 		{
 			m_nDocSecurity = nVal;
 		}

@@ -272,6 +272,7 @@ namespace PPTX
 {
 	namespace Logic
 	{		
+		class Pic;
 		class Shape : public WrapperWritingElement
 		{
 		public:
@@ -304,6 +305,7 @@ namespace PPTX
 
 			void FillLevelUp();
 			void Merge(Shape& shape, bool bIsSlidePlaceholder = false);
+			void Merge(Pic& pic, bool bIsSlidePlaceholder = false);
 			bool IsListStyleEmpty();
 
 			void SetLevelUpElement( Shape* p){m_pLevelUp = p;};

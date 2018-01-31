@@ -93,11 +93,11 @@ namespace OOX
 	class ActiveX_xml : public File, public OOX::IFileContainer
 	{
 	public:
-		ActiveX_xml() 
+		ActiveX_xml(OOX::Document *pMain) : File(pMain), OOX::IFileContainer(pMain)
 		{
 			m_bDocument = false;
 		}
-		ActiveX_xml(const CPath& oRootPath, const CPath& filename)
+		ActiveX_xml(OOX::Document *pMain, const CPath& oRootPath, const CPath& filename) : File(pMain), OOX::IFileContainer(pMain)
 		{
 			m_bDocument = false;
 			read( oRootPath, filename );
@@ -195,10 +195,10 @@ namespace OOX
 	class ActiveX_bin : public Media
 	{
 	public:
-		ActiveX_bin(bool bDocument = true) : Media (bDocument)
+		ActiveX_bin(OOX::Document *pMain, bool bDocument = true) : Media (pMain, bDocument)
 		{
 		}
-		ActiveX_bin(const OOX::CPath& filename)
+		ActiveX_bin(OOX::Document *pMain, const OOX::CPath& filename) : Media (pMain)
 		{
 			read(filename);
 		}

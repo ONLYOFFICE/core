@@ -68,6 +68,7 @@
 				ShowProgress="0"
 				Version=""
 				LinkIncremental="2"
+				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"

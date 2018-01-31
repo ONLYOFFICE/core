@@ -290,7 +290,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 {
 	if (m_arrElement == NULL) return false;
 
-	for (std::list<OOX::WritingElement*>::iterator it = m_arrElement->m_arrItems.begin(); it != m_arrElement->m_arrItems.end(); it++)
+    for (std::vector<OOX::WritingElement*>::iterator it = m_arrElement->m_arrItems.begin(); it != m_arrElement->m_arrItems.end(); ++it)
 	{
 		if ((*it) == NULL) continue;
 
@@ -493,10 +493,9 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 				if ((text_box) && (text_box->m_oTxtbxContent.IsInit()))
 				{
 					OOXTextItemReader oTextItemReader;
-					
-					for (size_t i = 0; i < text_box->m_oTxtbxContent->m_arrItems.size(); i++)
-					for (std::list<OOX::WritingElement*>::iterator	it = text_box->m_oTxtbxContent->m_arrItems.begin(); 
-																	it != text_box->m_oTxtbxContent->m_arrItems.end(); it++)
+
+                    for (std::vector<OOX::WritingElement*>::iterator	it = text_box->m_oTxtbxContent->m_arrItems.begin();
+																	it != text_box->m_oTxtbxContent->m_arrItems.end(); ++it)
 					{
 						oTextItemReader.Parse( *it, oParam );
 					}
@@ -980,8 +979,7 @@ void OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::
 
 	int fmt_index = style_ref->idx.get() -1;
 
-	PPTX::Theme *theme = oParam.oDocx->GetTheme();
-	if (!theme || fmt_index <0) return;
+	if (!oParam.oDocx->m_pTheme || fmt_index <0) return;
 
 	if (style_ref->Color.is<PPTX::Logic::SchemeClr>() == false) return;
 
@@ -991,21 +989,21 @@ void OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::
 	
 	if (type == 1)
 	{
-		if (fmt_index < 1000 && fmt_index < theme->themeElements.fmtScheme.fillStyleLst.size()) 
+		if (fmt_index < 1000 && fmt_index < oParam.oDocx->m_pTheme->themeElements.fmtScheme.fillStyleLst.size()) 
 		{
-			Parse(oParam, pOutput, &theme->themeElements.fmtScheme.fillStyleLst[fmt_index], &color);
+			Parse(oParam, pOutput, &oParam.oDocx->m_pTheme->themeElements.fmtScheme.fillStyleLst[fmt_index], &color);
 		}
-		else if (fmt_index > 1000 && ((fmt_index-1000) < theme->themeElements.fmtScheme.bgFillStyleLst.size()))
+		else if (fmt_index > 1000 && ((fmt_index-1000) < oParam.oDocx->m_pTheme->themeElements.fmtScheme.bgFillStyleLst.size()))
 		{
 			fmt_index -= 1000; 
 
-			Parse(oParam, pOutput, &theme->themeElements.fmtScheme.bgFillStyleLst[fmt_index], &color);	
+			Parse(oParam, pOutput, &oParam.oDocx->m_pTheme->themeElements.fmtScheme.bgFillStyleLst[fmt_index], &color);	
 		}
 	}
 
-	if (type == 2 && fmt_index < theme->themeElements.fmtScheme.lnStyleLst.size())
+	if (type == 2 && fmt_index < oParam.oDocx->m_pTheme->themeElements.fmtScheme.lnStyleLst.size())
 	{
-		Parse(oParam, pOutput, &theme->themeElements.fmtScheme.lnStyleLst[fmt_index], &color);
+		Parse(oParam, pOutput, &oParam.oDocx->m_pTheme->themeElements.fmtScheme.lnStyleLst[fmt_index], &color);
 	}
 
 	//if (style_matrix_ref->getType() == OOX::et_a_effectRef && fmt_index < theme->m_oThemeElements.m_oFmtScheme.m_oEffectStyleLst.m_arrEffectStyle.size())
@@ -1046,8 +1044,8 @@ void OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::
 		}
 		if (xfrm->extX.IsInit() && xfrm->extY.IsInit())
 		{
-			pOutput->m_nRelRight	= (int)pOutput->m_nRelLeft + xfrm->offX.get();
-			pOutput->m_nRelBottom	= (int)pOutput->m_nRelTop + xfrm->offY.get();
+			pOutput->m_nRelRight	= (int)pOutput->m_nRelLeft + xfrm->extX.get();
+			pOutput->m_nRelBottom	= (int)pOutput->m_nRelTop + xfrm->extY.get();
 		}
 		else
 		{
@@ -1225,6 +1223,18 @@ bool OOXShapeReader::ParsePic( ReaderParameter oParam, RtfShapePtr& pOutput)
 	if (ooxPic->spPr.ln.IsInit())
 	{
 		Parse(oParam, pOutput, ooxPic->spPr.ln.GetPointer());	
+	}
+//scale picture
+	if (ooxPic->spPr.xfrm.IsInit() && pOutput->m_oPicture)
+	{
+		if (ooxPic->spPr.xfrm->extX.IsInit() && ooxPic->spPr.xfrm->extY.IsInit())
+		{
+			double cx = ooxPic->spPr.xfrm->extX.get();
+			double cy = ooxPic->spPr.xfrm->extY.get();
+
+			pOutput->m_oPicture->m_dScaleX = (pOutput->m_nRight - pOutput->m_nLeft) * 100. / pOutput->m_oPicture->m_nWidthGoal;
+			pOutput->m_oPicture->m_dScaleY = (pOutput->m_nBottom - pOutput->m_nTop)* 100. / pOutput->m_oPicture->m_nHeightGoal;
+		}
 	}
 	return true;		
 }
@@ -1516,7 +1526,7 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 			pOutput->m_nGroupBottom =(pOutput->m_nGroupTop != PROP_DEF  ? pOutput->m_nGroupTop : 0)		+ m_vmlGroup->m_oCoordSize->GetY();
 		}
 
-		for (std::list<OOX::WritingElement*>::iterator	it = m_vmlGroup->m_arrItems.begin(); it != m_vmlGroup->m_arrItems.end(); it++)
+        for (std::vector<OOX::WritingElement*>::iterator	it = m_vmlGroup->m_arrItems.begin(); it != m_vmlGroup->m_arrItems.end(); ++it)
 		{
 			if (*it == NULL) continue;
 

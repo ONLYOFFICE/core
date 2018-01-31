@@ -823,7 +823,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 
 			int series_order = 0;
 
-			for (std::unordered_map<int, std::vector<int>>::iterator it = m_mapTypeChart.begin(); it != m_mapTypeChart.end(); it++)
+			for (std::unordered_map<int, std::vector<int>>::iterator it = m_mapTypeChart.begin(); it != m_mapTypeChart.end(); ++it)
 			{
 				CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[it->first].get());
 

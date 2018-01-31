@@ -59,7 +59,7 @@ namespace PPTX
 
 			return xml;
 		}
-		void Control::AddObjectTo (const std::vector<SpTreeElem> *spTreeElements, NSShapeImageGen::CImageManager* pImageManager) const
+		void Control::AddObjectTo (const std::vector<SpTreeElem> *spTreeElements, NSShapeImageGen::CMediaManager* pMediaManager) const
 		{//проблема переноса картинок !!!
 			if (spid.IsInit() == false) return;
 
@@ -78,15 +78,16 @@ namespace PPTX
 				NSBinPptxRW::CDrawingConverter oDrawingConverter;
 				oDrawingConverter.SetAdditionalParam(_T("parent_spTree"), (BYTE*)spTreeElements, 0);
 	
-				RELEASEOBJECT(oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pImageManager);
-				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pImageManager = pImageManager;
+				RELEASEOBJECT(oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager);
+
+				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pMediaManager;
 
 				oDrawingConverter.SetRels(rels);
 
 				std::wstring *main_props = NULL;
 				HRESULT hRes = oDrawingConverter.AddObject(temp, &main_props);
 
-				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pImageManager =  NULL;
+				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager =  NULL;
 			}
 		}
 		void Control::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter)  const
@@ -104,11 +105,12 @@ namespace PPTX
 				std::wstring temp = _T("<v:object>");
                 temp += xml;
                 temp += L"</v:object>";
+				
 				NSBinPptxRW::CDrawingConverter oDrawingConverter;
 				//oDrawingConverter.SetFontManager(pFontManager);
 
-				RELEASEOBJECT(oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pImageManager);
-				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pImageManager = pWriter->m_pCommon->m_pImageManager;
+				RELEASEOBJECT(oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager);
+				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pWriter->m_pCommon->m_pMediaManager;
 	
 				std::wstring *main_props = NULL;
 
@@ -119,17 +121,17 @@ namespace PPTX
 				{
 					pWriter->WriteBYTEArray(oDrawingConverter.m_pBinaryWriter->GetBuffer(),oDrawingConverter.m_pBinaryWriter->GetPosition());
 				}
-				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pImageManager =  NULL;
+				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager =  NULL;
 			}
 		}
 
-		void Controls::AddObjectsTo (const std::vector<SpTreeElem> *spTreeElements, NSShapeImageGen::CImageManager*	pImageManager) const
+		void Controls::AddObjectsTo (const std::vector<SpTreeElem> *spTreeElements, NSShapeImageGen::CMediaManager*	pMediaManager) const
 		{
 			for (size_t i=0; i < arrControls.size(); ++i)
 			{
 				if (arrControls[i].spid.IsInit() == false) continue;
 
-				arrControls[i].AddObjectTo (spTreeElements, pImageManager );
+				arrControls[i].AddObjectTo (spTreeElements, pMediaManager );
 			}
 		}
 	} // namespace Logic

@@ -76,7 +76,7 @@ namespace BinDocxRW
 }
 namespace NSShapeImageGen
 {
-	class CImageManager;
+	class CMediaManager;
 }
 namespace NSFontCutter
 {
@@ -159,7 +159,7 @@ namespace NSBinPptxRW
 		std::vector<LONG>				m_oNote_Rels;
 		std::vector<LONG>				m_oNotesMasters_Rels;
 
-		NSShapeImageGen::CImageManager*	m_pImageManager;
+		NSShapeImageGen::CMediaManager*	m_pMediaManager;
 		
 		NSFontCutter::CFontDstManager*	m_pNativePicker;
 		COfficeFontPicker*				m_pFontPicker;
@@ -201,7 +201,10 @@ namespace NSBinPptxRW
 
 		int IsDisplayedImage(const std::wstring& strInput);
 
+		_imageManager2Info GenerateMedia(const std::wstring& strInput);
 		_imageManager2Info GenerateImage(const std::wstring& strInput, NSCommon::smart_ptr<OOX::File> & additionalFile, const std::wstring& oleData, std::wstring strBase64Image);
+		
+		_imageManager2Info GenerateMediaExec(const std::wstring& strInput);
 		_imageManager2Info GenerateImageExec(const std::wstring& strInput, const std::wstring& strExts, const std::wstring& strAdditionalImage, int nAdditionalType, const std::wstring& oleData);
 
 		void SaveImageAsPng(const std::wstring& strFileSrc, const std::wstring& strFileDst);
@@ -421,6 +424,7 @@ namespace NSBinPptxRW
 		void WriteThemes (int nCount);
 		void WriteSlides (int nCount);
 		void WriteSlideComments	(int nComment);
+		void WritePresentationComments	(int nComment);
 		int WriteChart (int nChartNumber, _INT32 lDocType);
 		int WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode);
 		int WriteHyperlink	(const std::wstring& strLink, const bool& bIsActionInit);		
@@ -433,6 +437,7 @@ namespace NSBinPptxRW
 		void SaveRels (const std::wstring& strFile);
 
 		_relsGeneratorInfo WriteImage (const std::wstring& strImage, NSCommon::smart_ptr<OOX::File>& additionalFile, const std::wstring& oleData, std::wstring strBase64Image);
+		_relsGeneratorInfo WriteMedia (const std::wstring& strMedia, int type = 0);
 	};
 
 	class CBinaryFileReader

@@ -1287,6 +1287,7 @@ namespace DocFileFormat
 			{
 			case Global::msoblipEMF:
 			case Global::msoblipWMF:
+			case Global::msoblipPICT:
 				{
 					//it's a meta image
 					MetafilePictBlip* metaBlip = static_cast<MetafilePictBlip*>(RecordFactory::ReadRecord(&reader, 0));
@@ -1372,6 +1373,9 @@ namespace DocFileFormat
 
 			case Global::msoblipWMF:
 				return std::wstring( L".wmf" );
+
+			case Global::msoblipPICT:
+				return std::wstring( L".pcz" );
 
 			default:
 				return std::wstring( L".png" );

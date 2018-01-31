@@ -253,7 +253,7 @@ void xlsx_table_context::serialize_sort(std::wostream & _Wostream)
 
 	range = xlsx_data_ranges_map_.equal_range(state()->tableName_);
 
-	for (std::multimap<std::wstring, int>::iterator it = range.first; it != range.second; it++)
+	for (std::multimap<std::wstring, int>::iterator it = range.first; it != range.second; ++it)
 	{
 		xlsx_data_ranges_[it->second]->serialize_sort(_Wostream);
 	}
@@ -271,7 +271,7 @@ void xlsx_table_context::serialize_autofilter(std::wostream & _Wostream)
 
 	range = xlsx_data_ranges_map_.equal_range(state()->tableName_);
 
-	for (std::multimap<std::wstring, int>::iterator it = range.first; it != range.second; it++)
+	for (std::multimap<std::wstring, int>::iterator it = range.first; it != range.second; ++it)
 	{
 		if (xlsx_data_ranges_[it->second]->filter)
 		{
@@ -323,6 +323,10 @@ void xlsx_table_context::serialize_page_properties(std::wostream & _Wostream)
 void xlsx_table_context::serialize_background(std::wostream & _Wostream)
 {
     return state()->serialize_background(_Wostream);
+}
+void xlsx_table_context::serialize_data_validation(std::wostream & _Wostream)
+{
+    return xlsx_conversion_context_->get_dataValidations_context().serialize(_Wostream);
 }
 void xlsx_table_context::serialize_hyperlinks(std::wostream & _Wostream)
 {

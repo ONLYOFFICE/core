@@ -72,7 +72,7 @@ const bool SHAREDSTRINGS::loadContent(BinProcessor& proc)
 
 int SHAREDSTRINGS::serialize(std::wostream & stream)
 {
-	for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); it++)
+	for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); ++it)
 	{
 		(*it)->serialize(stream);
 	}

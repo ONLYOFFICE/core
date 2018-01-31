@@ -407,11 +407,11 @@ namespace formulasconvert {
 	std::wstring is_forbidden(const std::wstring & formula)
 	{
 		std::wstring result = formula;
-		std::map<std::wstring, std::wstring> forbidden_formulas;
+        std::map<std::wstring, std::wstring> forbidden_formulas;
 
 		forbidden_formulas.insert(std::make_pair(L"FORMULA", L"_xlfn.FORMULATEXT"));
 		
-		for (std::map<std::wstring, std::wstring>::iterator it = forbidden_formulas.begin(); it != forbidden_formulas.end(); it++)
+        for (std::map<std::wstring, std::wstring>::iterator it = forbidden_formulas.begin(); it != forbidden_formulas.end(); ++it)
 		{
 			if (boost::algorithm::contains(formula, it->first))
 			{

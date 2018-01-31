@@ -71,7 +71,7 @@ void oox_data_labels::oox_serialize(std::wostream & _Wostream)
         {
 			oox_serialize_default_text(CP_XML_STREAM(), textPr_);
 	
-			for (std::map<int, std::vector<odf_reader::_property>>::iterator it = dLbls_.begin(); it != dLbls_.end(); it++)
+			for (std::map<int, std::vector<odf_reader::_property>>::iterator it = dLbls_.begin(); it != dLbls_.end(); ++it)
 			{
 				CP_XML_NODE(L"c:dLbl")
 				{

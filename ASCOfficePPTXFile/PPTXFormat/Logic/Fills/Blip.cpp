@@ -105,42 +105,28 @@ namespace PPTX
 			{
 				if (pRels != NULL)
 				{
-					smart_ptr<OOX::Image> p = pRels->GetImage(*embed);
+					smart_ptr<OOX::Image> p = pRels->Get<OOX::Image>(*embed);
 					if (p.is_init())
 						return p->filename().m_strFilename;
 				}
 
-				if(parentFileIs<Slide>())
-					return parentFileAs<Slide>().GetMediaFullPathNameFromRId(*embed);
-				else if(parentFileIs<SlideLayout>())
-					return parentFileAs<SlideLayout>().GetMediaFullPathNameFromRId(*embed);
-				else if(parentFileIs<SlideMaster>())
-					return parentFileAs<SlideMaster>().GetMediaFullPathNameFromRId(*embed);
-				else if(parentFileIs<Theme>())
-					return parentFileAs<Theme>().GetMediaFullPathNameFromRId(*embed);
-				else if(parentFileIs<NotesSlide>())
-					return parentFileAs<NotesSlide>().GetMediaFullPathNameFromRId(*embed);
+				if(parentFileIs<FileContainer>())
+					return parentFileAs<FileContainer>().GetImagePathNameFromRId(*embed);
+
 				return _T("");
 			}
 			else if(link.IsInit())
 			{
 				if (pRels != NULL)
 				{
-					smart_ptr<OOX::Image> p = pRels->GetImage(*link);
+					smart_ptr<OOX::Image> p = pRels->Get<OOX::Image>(*link);
 					if (p.is_init())
 						return p->filename().m_strFilename;
 				}
 
-				if(parentFileIs<Slide>())
-					return parentFileAs<Slide>().GetMediaFullPathNameFromRId(*link);
-				else if(parentFileIs<SlideLayout>())
-					return parentFileAs<SlideLayout>().GetMediaFullPathNameFromRId(*link);
-				else if(parentFileIs<SlideMaster>())
-					return parentFileAs<SlideMaster>().GetMediaFullPathNameFromRId(*link);
-				else if(parentFileIs<Theme>())
-					return parentFileAs<Theme>().GetMediaFullPathNameFromRId(*link);
-				else if(parentFileIs<NotesSlide>())
-					return parentFileAs<NotesSlide>().GetMediaFullPathNameFromRId(*link);
+				if(parentFileIs<FileContainer>())
+					return parentFileAs<FileContainer>().GetImagePathNameFromRId(*link);
+
 				return _T("");
 			}
 			return _T("");
@@ -149,12 +135,14 @@ namespace PPTX
 		{
 			smart_ptr<OOX::OleObject> pOleObject;
 			
-			if (pRels != NULL)						pOleObject = pRels->GetOleObject(oRId);
-			else if(parentFileIs<Slide>())			pOleObject = parentFileAs<Slide>().GetOleObject(oRId);
-			else if(parentFileIs<SlideLayout>())	pOleObject = parentFileAs<SlideLayout>().GetOleObject(oRId);
-			else if(parentFileIs<SlideMaster>())	pOleObject = parentFileAs<SlideMaster>().GetOleObject(oRId);
-			else if(parentFileIs<Theme>())			pOleObject = parentFileAs<Theme>().GetOleObject(oRId);
-			else if(parentFileIs<NotesSlide>())		pOleObject = parentFileAs<NotesSlide>().GetOleObject(oRId);
+			if (pRels != NULL)
+				pOleObject = pRels->Get<OOX::OleObject>(oRId);
+			else
+			{
+				OOX::IFileContainer* pContainer = dynamic_cast<OOX::IFileContainer*>(const_cast<PPTX::WrapperFile*>(parentFile));
+				if (pContainer)
+					pOleObject = pContainer->Get<OOX::OleObject>(oRId);
+			}
 			
 			if (pOleObject.IsInit())
 				return pOleObject->filename().m_strFilename;
@@ -250,7 +238,7 @@ namespace PPTX
 				imagePath = this->GetFullPicName(pRels);
 			}
 
-			NSShapeImageGen::CImageInfo oId = pWriter->m_pCommon->m_pImageManager->WriteImage(imagePath, dX, dY, dW, dH, additionalPath, additionalType);
+			NSShapeImageGen::CMediaInfo oId = pWriter->m_pCommon->m_pMediaManager->WriteImage(imagePath, dX, dY, dW, dH, additionalPath, additionalType);
 			std::wstring s = oId.GetPath2();
 
 			pWriter->StartRecord(3);

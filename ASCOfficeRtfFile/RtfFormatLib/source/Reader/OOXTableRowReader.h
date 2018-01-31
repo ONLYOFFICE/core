@@ -63,7 +63,7 @@ public:
 
 		int nCellCount = m_ooxRowTable->m_nCountCell, nCurCell = 0;
 
-		for (std::list<OOX::WritingElement*>::iterator it = m_ooxRowTable->m_arrItems.begin(); it != m_ooxRowTable->m_arrItems.end(); it++)
+        for (std::vector<OOX::WritingElement*>::iterator it = m_ooxRowTable->m_arrItems.begin(); it != m_ooxRowTable->m_arrItems.end(); ++it)
 		{
 			if ( (*it) == NULL )		continue;
 			if ( (*it)->getType() != OOX::et_w_tc)continue;//todooo bookmarks

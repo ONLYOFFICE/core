@@ -124,18 +124,6 @@ namespace OOX
 												_T(""), 
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"));
 
-		const FileType ExternalImage	(L"", L"", 
-												_T(""), 
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"));
-
-		const FileType ExternalAudio	(L"", L"", 
-												_T(""), 
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio"));
-
-		const FileType ExternalVideo	(L"", L"", 
-												_T(""), 
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/video"));
-
 		const FileType Image			(L"media", L"image", 
 												_T(""), 
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"));

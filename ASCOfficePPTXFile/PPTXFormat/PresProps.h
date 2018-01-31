@@ -45,10 +45,10 @@ namespace PPTX
 	class PresProps : public WrapperFile, public PPTX::FileContainer
 	{
 	public:
-		PresProps()
+		PresProps(OOX::Document* pMain) : WrapperFile(pMain), PPTX::FileContainer(pMain)
 		{
 		}
-		PresProps(const OOX::CPath& filename, FileMap& map)
+		PresProps(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), PPTX::FileContainer(pMain)
 		{
 			read(filename, map);
 		}

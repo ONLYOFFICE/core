@@ -47,12 +47,12 @@ bool OOXHeaderReader::Parse( ReaderParameter oParam, std::wstring sRID, TextItem
 	oOutput = TextItemContainerPtr ( new TextItemContainer() );
 	oOOXTextItemReader.m_oTextItems = oOutput;
 
-	for (std::list<OOX::WritingElement*>::iterator it = pHdrFtr->m_arrItems.begin(); it != pHdrFtr->m_arrItems.end(); it++)
+    for (std::vector<OOX::WritingElement*>::iterator it = pHdrFtr->m_arrItems.begin(); it != pHdrFtr->m_arrItems.end(); ++it)
 	{
 		oOOXTextItemReader.Parse(*it, oParam );
 	}
 	
-	oParam.oReader->m_currentContainer = dynamic_cast<OOX::IFileContainer*>(oParam.oDocx->GetDocument());
+	oParam.oReader->m_currentContainer = dynamic_cast<OOX::IFileContainer*>(oParam.oDocx->m_pDocument);
 	
 	return true;
 }

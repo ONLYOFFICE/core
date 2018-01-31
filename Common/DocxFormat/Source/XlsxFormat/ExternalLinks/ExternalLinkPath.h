@@ -43,18 +43,16 @@ namespace OOX
 		class ExternalLinkPath : public External
 		{
 		public:
-			ExternalLinkPath()
+			ExternalLinkPath(OOX::Document* pMain) : External(pMain)
 			{
 			}
-			ExternalLinkPath(const CPath& uri)
+			ExternalLinkPath(OOX::Document* pMain, const CPath& uri) : External(pMain)
 			{
 				read(uri);
 			}
 			~ExternalLinkPath()
 			{
 			}
-
-		public:
 			virtual const FileType type() const
 			{
 				return OOX::FileTypes::ExternalLinkPath;
@@ -71,10 +69,10 @@ namespace OOX
 		class ExternalOleObject : public External
 		{
 		public:
-			ExternalOleObject()
+			ExternalOleObject(OOX::Document* pMain) : External(pMain)
 			{
 			}
-			ExternalOleObject(const CPath& uri)
+			ExternalOleObject(OOX::Document* pMain, const CPath& uri) : External(pMain)
 			{
 				read(uri);
 			}
@@ -82,7 +80,6 @@ namespace OOX
 			{
 			}
 
-		public:
 			virtual const FileType type() const
 			{
 				return OOX::FileTypes::OleObject;

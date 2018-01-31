@@ -47,7 +47,7 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(Hyperlink)
 
-			Hyperlink(std::wstring name = L"hlinkClick")
+			Hyperlink(const std::wstring & name = L"hlinkClick")
 			{
 				m_name = name;
 			}
@@ -107,111 +107,8 @@ namespace PPTX
 				node.ReadAttributeBase(L"endSnd", endSnd);
 			}
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-
-				if (id.is_init())
-				{
-					OOX::IFileContainer* pRels = NULL;
-					if (pWriter->m_pCurrentContainer->is_init())
-						pRels = pWriter->m_pCurrentContainer->operator ->();
-
-					std::wstring str = GetFullHyperlinkName(pRels);
-					pWriter->WriteString1(0, str);
-				}
-
-				pWriter->WriteString2(1, invalidUrl);
-				pWriter->WriteString2(2, action);
-				pWriter->WriteString2(3, tgtFrame);
-				pWriter->WriteString2(4, tooltip);
-				pWriter->WriteBool2(5, history);
-				pWriter->WriteBool2(6, highlightClick);
-				pWriter->WriteBool2(7, endSnd);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord2(0, snd);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				bool bIsPresentUrl = false;
-				std::wstring strUrl = _T("");
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-						{
-							strUrl = pReader->GetString2();
-							bIsPresentUrl = true;
-							break;
-						}
-						case 1:
-						{
-							invalidUrl = pReader->GetString2();
-							break;
-						}
-						case 2:
-						{
-							action = pReader->GetString2();
-							break;
-						}
-						case 3:
-						{
-							tgtFrame = pReader->GetString2();
-							break;
-						}
-						case 4:
-						{
-							tooltip = pReader->GetString2();
-							break;
-						}
-						case 5:
-						{
-							history = pReader->GetBool();
-							break;
-						}
-						case 6:
-						{
-							highlightClick = pReader->GetBool();
-							break;
-						}
-						case 7:
-						{
-							endSnd = pReader->GetBool();
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				if (bIsPresentUrl)
-				{
-					if (strUrl == _T(""))
-						id = _T("");
-					else
-					{
-						LONG lId = pReader->m_pRels->WriteHyperlink(strUrl, action.is_init());
-
-						id = L"rId" + std::to_wstring(lId);
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
-
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(L"a:" + m_name);
@@ -235,7 +132,6 @@ namespace PPTX
 				pWriter->EndNode(L"a:" + m_name);
 			}
 			
-		public:
 			nullable<WavAudioFile>	snd;
 
 			nullable_string			id;				//<OOX::RId> id;//  <xsd:attribute ref="r:id" use="optional"/>
@@ -246,9 +142,8 @@ namespace PPTX
 			nullable_bool			history;		//default="true"
 			nullable_bool			highlightClick;	//default="false"
 			nullable_bool			endSnd;			//default="false"
-		//private:
-		public:
-			std::wstring m_name;
+
+			std::wstring			m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
@@ -256,7 +151,7 @@ namespace PPTX
 					snd->SetParentPointer(this);
 			}
 
-			virtual std::wstring GetFullHyperlinkName(OOX::IFileContainer* pRels)const;
+			virtual std::wstring GetPathFromId(OOX::IFileContainer* pRels, const std::wstring &rId)const;
 		};
 	} // namespace Logic
 } // namespace PPTX

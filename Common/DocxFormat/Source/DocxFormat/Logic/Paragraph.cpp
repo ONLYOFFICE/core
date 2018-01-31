@@ -271,15 +271,15 @@ namespace OOX
 				sResult += m_oParagraphProperty->toXML();
 			}
 
-			for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-			{
-				if ( *it )
-				{
-					if ( (*it)->getType() == OOX::et_w_pPr ) continue;
-					
-					sResult += (*it)->toXML();
-				}
-			}
+            for ( size_t i = 0; i < m_arrItems.size(); ++i)
+            {
+                if ( m_arrItems[i] )
+                {
+                    if ( m_arrItems[i]->getType() == OOX::et_w_pPr ) continue;
+
+                    sResult += m_arrItems[i]->toXML();
+                }
+            }
 
 			sResult += _T("</w:p>");
 

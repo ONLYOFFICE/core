@@ -33,6 +33,7 @@
 #ifndef OOX_VBA_PROJECT_INCLUDE_H_
 #define OOX_VBA_PROJECT_INCLUDE_H_
 
+
 #include "Media.h"
 #include "../../../../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
 #include "../../../../../ASCOfficePPTXFile/Editor/imagemanager.h"
@@ -45,24 +46,11 @@ namespace OOX
 	class VbaProject : public Media, public OOX::IFileContainer
 	{
 	public:
-		VbaProject( ) 
-		{
-		}
-		VbaProject(const CPath& oRootPath, const CPath& filename)
-		{
-			read( oRootPath, filename );
-		}
-		virtual void read(const CPath& oRootPath, const CPath& oPath)
-		{
-			IFileContainer::Read( oRootPath, oPath );
-			
-			Media::read(oPath);
-		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const
-		{
-			content.Registration( type().OverrideType(), directory, filename.GetFilename() );
-			IFileContainer::Write( filename, directory, content );
-		}
+		VbaProject( OOX::Document *pMain );
+		VbaProject(OOX::Document *pMain, const CPath& oRootPath, const CPath& filename);
+		virtual void read(const CPath& oRootPath, const CPath& oPath);
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const ;
+
 		virtual const FileType type() const
 		{
 			return OOX::FileTypes::VbaProject;
@@ -75,50 +63,8 @@ namespace OOX
 		{
 			return m_filename.GetFilename();
 		}
-		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-		{
-			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-
-			pWriter->WriteString1(0, m_filename.GetFilename());
-
-			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			
-			copy_to(pWriter->m_pCommon->m_pImageManager->m_strDstMedia);
-		}
-		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-		{
-			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
-
-			pReader->Skip(1); // start attributes
-			while (true)
-			{
-				BYTE _at = pReader->GetUChar_TypeNode();
-				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-					break;
-
-				switch (_at)
-				{
-					case 0:
-					{
-						std::wstring file_name = pReader->GetString2();
-
-						OOX::CPath inputPath = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + file_name;
-						OOX::CPath outputPath = pReader->m_pRels->m_pManager->GetDstFolder() + FILE_SEPARATOR_STR + _T("vbaProject.bin");
-
-						NSFile::CFileBinary::Copy(inputPath.GetPath(), outputPath.GetPath());
-
-						set_filename(outputPath.GetPath());
-						
-					}break;
-
-					default:
-						break;
-				}
-			}
-			pReader->Seek(_end_rec);
-		}
-
-	protected:
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 	};
 } // namespace OOX
 

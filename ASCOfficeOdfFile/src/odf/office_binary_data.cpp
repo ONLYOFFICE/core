@@ -34,7 +34,6 @@
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/attributes.h>
 
 namespace cpdoccore { 
 namespace odf_reader {

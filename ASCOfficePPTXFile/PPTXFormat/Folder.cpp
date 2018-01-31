@@ -47,16 +47,16 @@
 
 namespace PPTX
 {
-	Folder::Folder()
+	Document::Document() : FileContainer(this)
 	{		
 	}
 
-	Folder::Folder(const OOX::CPath& path, IPPTXEvent* Event)
+	Document::Document(const OOX::CPath& path, IPPTXEvent* Event) : FileContainer(this)
 	{
 		read(path, Event);
 	}
 
-	void Folder::read(const OOX::CPath& path, IPPTXEvent* Event)
+	void Document::read(const OOX::CPath& path, IPPTXEvent* Event)
 	{
 		OOX::CRels rels(path);
 		PPTX::FileMap map;
@@ -79,12 +79,13 @@ namespace PPTX
 			if (_presentation->IsExist(OOX::FileTypes::VbaProject))
 			{
 				_presentation->m_bMacroEnabled	= true;
-				_presentation->m_pVbaProject	= _presentation->Get(OOX::FileTypes::VbaProject).smart_dynamic_cast<OOX::VbaProject>();
+				_presentation->m_pVbaProject = _presentation->Get(OOX::FileTypes::VbaProject).smart_dynamic_cast<OOX::VbaProject>();
 			}
 			if (_presentation->IsExist(OOX::FileTypes::JsaProject))
 			{
-				_presentation->m_pJsaProject	= _presentation->Get(OOX::FileTypes::JsaProject).smart_dynamic_cast<OOX::JsaProject>();
+				_presentation->m_pJsaProject = _presentation->Get(OOX::FileTypes::JsaProject).smart_dynamic_cast<OOX::JsaProject>();
 			}
+			_presentation->comments = _presentation->Get(OOX::Presentation::FileTypes::SlideComments).smart_dynamic_cast<PPTX::Comments>();
 		}
 
         for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
@@ -165,7 +166,7 @@ namespace PPTX
 			Event->Progress(0, 1000000);
 	}
 
-	void Folder::write(const OOX::CPath& path)
+	void Document::write(const OOX::CPath& path)
 	{
 		OOX::CSystemUtility::CreateDirectories(path);
 
@@ -180,29 +181,29 @@ namespace PPTX
 		FileContainer::WrittenSetFalse();
 	}
 
-	void Folder::createFromTemplate(const OOX::CPath& path)
+	void Document::createFromTemplate(const OOX::CPath& path)
 	{
 		//read(path);
 	}
 
-	const bool Folder::isValid(const OOX::CPath& path) const
+	const bool Document::isValid(const OOX::CPath& path) const
 	{
 		return true;//FileContainer::exist(OOX::Presentation::FileTypes::Presentation);
 	}
 
-	void Folder::extractPictures(const OOX::CPath& path)
-	{
-		OOX::CSystemUtility::CreateDirectories(path);
-		FileContainer::ExtractPictures(path);
-	}
+	//void Document::extractPictures(const OOX::CPath& path)
+	//{
+	//	OOX::CSystemUtility::CreateDirectories(path);
+	//	FileContainer::ExtractPictures(path);
+	//}
 
-	void Folder::extractPictures(const OOX::CPath& source, const OOX::CPath& path)
-	{
-		//read(source);
-		extractPictures(path);
-	}
+	//void Document::extractPictures(const OOX::CPath& source, const OOX::CPath& path)
+	//{
+	//	//read(source);
+	//	extractPictures(path);
+	//}
 
-	long Folder::CountFiles(const OOX::CPath& path)
+	long Document::CountFiles(const OOX::CPath& path)
 	{
 		return OOX::CSystemUtility::GetFilesCount(path.GetDirectory(), true);
 	}

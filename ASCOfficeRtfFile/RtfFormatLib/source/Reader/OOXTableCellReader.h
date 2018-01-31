@@ -66,7 +66,7 @@ public:
 			oConditionalTableStyle.ApplyTableStyleToCellBorder( oParam.poTableStyle, oOutputCell.m_oProperty, nCurCell, nCellCount, nCurRow, nRowCount );
 		}
 
-		for (std::list<OOX::WritingElement*>::iterator it = m_ooxTableCell->m_arrItems.begin(); it != m_ooxTableCell->m_arrItems.end(); it++)
+        for (std::vector<OOX::WritingElement*>::iterator it = m_ooxTableCell->m_arrItems.begin(); it != m_ooxTableCell->m_arrItems.end(); ++it)
 		{
 			switch((*it)->getType())
 			{

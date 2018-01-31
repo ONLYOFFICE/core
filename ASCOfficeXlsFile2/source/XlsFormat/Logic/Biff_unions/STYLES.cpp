@@ -86,7 +86,7 @@ const bool STYLES::loadContent(BinProcessor& proc)
 {
 	styles_count = proc.repeated<Parenthesis_STYLES_1>(0, 0);
 	
-	for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); it++)
+	for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); ++it)
 	{
 		Parenthesis_STYLES_1 * style_1 = dynamic_cast<Parenthesis_STYLES_1*>(it->get());
 

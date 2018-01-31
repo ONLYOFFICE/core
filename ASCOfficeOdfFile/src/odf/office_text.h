@@ -67,7 +67,9 @@ private:
     //  TODO: table-decls
 
 	office_element_ptr			tracked_changes_;
-    office_element_ptr_array	content_;
+	office_element_ptr			content_validations_;
+    
+	office_element_ptr_array	content_;
     // TODO: text-page-sequence
     // TODO: office-text-content-epilogue:
     // TODO: table-functions

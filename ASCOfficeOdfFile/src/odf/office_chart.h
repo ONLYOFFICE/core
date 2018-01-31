@@ -60,7 +60,10 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    office_element_ptr_array content_;
+	office_element_ptr			tracked_changes_;
+	office_element_ptr			content_validations_;
+    
+	office_element_ptr_array	content_;
 
 };
 
@@ -105,6 +108,10 @@ private:
 
 public:
     chart_chart_attlist			attlist_;
+	
+	office_element_ptr			tracked_changes_;
+	office_element_ptr			content_validations_;
+	
 	office_element_ptr_array	content_;
 };
 

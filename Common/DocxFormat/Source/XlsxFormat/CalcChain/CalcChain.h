@@ -101,13 +101,20 @@ namespace OOX
 		class CCalcChain : public OOX::File, public OOX::IFileContainer
 		{
 		public:
-			CCalcChain()
+			CCalcChain(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+  				
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if (xlsx) xlsx->m_pCalcChain = this;
 			}
-			CCalcChain(const CPath& oRootPath, const CPath& oPath)
+			CCalcChain(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if (xlsx) xlsx->m_pCalcChain = this;
+
 				read( oRootPath, oPath );
 			}
 			virtual ~CCalcChain()
@@ -172,12 +179,10 @@ namespace OOX
 			}
 			void ClearItems()
 			{
-				for ( std::list<CCalcCell*>::iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-				{
-					if ( *it )
-						delete *it;
-					*it = NULL;
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if ( m_arrItems[i] )delete m_arrItems[i];
+                }
 
 				m_arrItems.clear();
 			}
@@ -189,7 +194,7 @@ namespace OOX
 			}
 
 		public:
-			std::list<CCalcCell *>  m_arrItems;
+            std::vector<CCalcCell *>  m_arrItems;
 		};
 	} //Spreadsheet
 } // namespace OOX

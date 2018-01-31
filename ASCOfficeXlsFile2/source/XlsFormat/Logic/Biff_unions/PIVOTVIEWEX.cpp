@@ -249,7 +249,7 @@ int PIVOTVIEWEX::serialize(std::wostream & strm)
 		{
 			CP_XML_ATTR(L"count", mapKpis.size());
 			
-			for (std::unordered_map<std::wstring, int>::iterator it = mapKpis.begin(); it != mapKpis.end(); it++)
+			for (std::unordered_map<std::wstring, int>::iterator it = mapKpis.begin(); it != mapKpis.end(); ++it)
 			{
 				SXAddl_SXCHierarchy_SXDKPIValue		*value	= NULL;
 				SXAddl_SXCHierarchy_SXDKPIGoal		*goal	= NULL;
@@ -301,7 +301,7 @@ int PIVOTVIEWEX::serialize(std::wostream & strm)
 					CP_XML_ATTR(L"caption",		L"Measures");
 				}
 			}
-			for (std::unordered_map<std::wstring, std::vector<int>>::iterator it = mapDimensions.begin(); it != mapDimensions.end(); it++)
+			for (std::unordered_map<std::wstring, std::vector<int>>::iterator it = mapDimensions.begin(); it != mapDimensions.end(); ++it)
 			{
 				CP_XML_NODE(L"dimension")
 				{
@@ -317,7 +317,7 @@ int PIVOTVIEWEX::serialize(std::wostream & strm)
 		CP_XML_NODE(L"measureGroups")
 		{
 			CP_XML_ATTR(L"count", mapMeasures.size());
-			for (std::unordered_map<std::wstring, std::vector<int>>::iterator it = mapMeasures.begin(); it != mapMeasures.end(); it++)
+			for (std::unordered_map<std::wstring, std::vector<int>>::iterator it = mapMeasures.begin(); it != mapMeasures.end(); ++it)
 			{
 				CP_XML_NODE(L"measureGroup")
 				{
@@ -335,7 +335,7 @@ int PIVOTVIEWEX::serialize(std::wostream & strm)
 		{
 			int i = 0;
 			CP_XML_ATTR(L"count", count_maps);
-			for (std::unordered_map<std::wstring, std::vector<int>>::iterator it = mapMeasures.begin(); it != mapMeasures.end(); it++, i++)
+			for (std::unordered_map<std::wstring, std::vector<int>>::iterator it = mapMeasures.begin(); it != mapMeasures.end(); ++it, i++)
 			{
 				for (size_t j = 0; j < it->second.size(); j++)
 				{

@@ -201,18 +201,24 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			CP_XML_NODE(L"w:keepNext");
 			CP_XML_NODE(L"w:framePr")
 			{
+				CP_XML_ATTR(L"w:dropCap", L"drop");
+				if (Context.get_drop_cap_context().Scale > 0)
+				{
+					CP_XML_ATTR(L"w:lines",Context.get_drop_cap_context().Scale);
+				}
+				else
+				{
+					CP_XML_ATTR(L"w:hSpace", Context.get_drop_cap_context().Space);	
+				}
+				CP_XML_ATTR(L"w:wrap", L"around"); 
 				CP_XML_ATTR(L"w:hAnchor", L"text");
 				CP_XML_ATTR(L"w:vAnchor", L"text");
-				CP_XML_ATTR(L"w:wrap", L"around"); 
-				CP_XML_ATTR(L"w:dropCap", L"drop");
-				CP_XML_ATTR(L"w:hSpace", Context.get_drop_cap_context().Space);	
-				CP_XML_ATTR(L"w:lines",Context.get_drop_cap_context().Scale);
 			}
 			
 			CP_XML_NODE(L"w:spacing")
 			{
 				CP_XML_ATTR(L"w:after", 0); 
-				if (Context.get_drop_cap_context().FontSize>0)
+				if (Context.get_drop_cap_context().FontSize > 0)
 					CP_XML_ATTR(L"w:line", Context.get_drop_cap_context().FontSize);
 				else
 					CP_XML_ATTR(L"w:line", 240);

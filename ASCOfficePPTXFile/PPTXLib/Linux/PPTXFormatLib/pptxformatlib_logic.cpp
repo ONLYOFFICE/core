@@ -29,6 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "../../../PPTXFormat/Logic/Media/WavAudioFile.cpp"
 #include "../../../PPTXFormat/Logic/Colors/SchemeClr.cpp"
 #include "../../../PPTXFormat/Logic/Fills/Blip.cpp"
 #include "../../../PPTXFormat/Logic/Table/TableCell.cpp"

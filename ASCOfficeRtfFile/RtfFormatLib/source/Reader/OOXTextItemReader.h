@@ -114,7 +114,7 @@ public:
 			{
 				OOX::Logic::CSdtContent * pSdt = dynamic_cast<OOX::Logic::CSdtContent*>(ooxElement);
 
-				for (std::list<OOX::WritingElement*>::iterator it = pSdt->m_arrItems.begin(); it != pSdt->m_arrItems.end(); it++)
+                for (std::vector<OOX::WritingElement*>::iterator it = pSdt->m_arrItems.begin(); it != pSdt->m_arrItems.end(); ++it)
 				{
 					Parse( *it, oParam );
 				}

@@ -69,6 +69,11 @@ namespace PPTX
 			DWORD GetLine(Ln& line)const;
 			DWORD GetFill(UniFill& fill)const;
 
+			//void FillLevelUp();
+			//void Merge(CxnSp& cxnSp, bool bIsSlidePlaceholder = false);
+
+			//void SetLevelUpElement( CxnSp* p){m_pLevelUp = p;};
+
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->StartRecord(SPTREE_TYPE_CXNSP);

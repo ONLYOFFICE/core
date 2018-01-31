@@ -42,7 +42,7 @@ namespace OOX
 	class UnknowTypeFile : public File
 	{
 	public:
-		UnknowTypeFile()
+		UnknowTypeFile(OOX::Document* pMain): File(pMain)
 		{
 		}
 		virtual ~UnknowTypeFile()

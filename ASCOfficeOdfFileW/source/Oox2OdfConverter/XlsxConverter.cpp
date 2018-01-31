@@ -31,6 +31,17 @@
  */
 #include "XlsxConverter.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Comments/Comments.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/SharedStrings/SharedStrings.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Styles/Styles.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/CalcChain/CalcChain.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/ExternalLinks/ExternalLinks.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/ExternalLinks/ExternalLinkPath.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotTable.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheDefinition.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheRecords.h"
 
 #include "../OdfFormat/ods_conversion_context.h"
 
@@ -89,7 +100,7 @@ odf_writer::odf_conversion_context* XlsxConverter::odf_context()
 PPTX::Theme* XlsxConverter::oox_theme()
 {
 	if (xlsx_document)
-		return xlsx_document->GetTheme();
+		return xlsx_document->m_pTheme.operator->();
 	else
 		return NULL;
 }
@@ -159,32 +170,30 @@ void XlsxConverter::convert_sheets()
 {
 	if (!ods_context) return;
 	
-	const OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->GetWorkbook();
+	const OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->m_pWorkbook;
 	if (!Workbook) return;
 
-	std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = xlsx_document->GetWorksheets();
+	std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &mapWorksheets = xlsx_document->m_mapWorksheets;
 	
 	if(Workbook->m_oBookViews.IsInit())
 	{	
-		for (std::list<OOX::Spreadsheet::CWorkbookView*>::iterator	it = Workbook->m_oBookViews->m_arrItems.begin(); 
-																	it != Workbook->m_oBookViews->m_arrItems.end(); it++)
+		for (size_t i = 0; i < Workbook->m_oBookViews->m_arrItems.size(); i++)
 		{
-			convert(*it);
+			convert(Workbook->m_oBookViews->m_arrItems[i]);
 		}
 	}
 	if(Workbook->m_oSheets.IsInit())
 	{				
-		for (std::list<OOX::Spreadsheet::CSheet*>::iterator	it = Workbook->m_oSheets->m_arrItems.begin(); 
-															it != Workbook->m_oSheets->m_arrItems.end(); it++)
+		for(size_t i = 0, length = Workbook->m_oSheets->m_arrItems.size(); i < length; ++i)
 		{
-			OOX::Spreadsheet::CSheet* pSheet = *it;
+			OOX::Spreadsheet::CSheet* pSheet = Workbook->m_oSheets->m_arrItems[i];
 				
 			if(pSheet->m_oRid.IsInit())
 			{
                 std::wstring sSheetRId = pSheet->m_oRid.get2().ToString();
-				std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::iterator pItWorksheet = arrWorksheets.find(sSheetRId);
+				std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::iterator pFind = mapWorksheets.find(sSheetRId);
 				
-				if (pItWorksheet->second)
+				if (pFind != mapWorksheets.end())
 				{
 					ods_context->start_sheet();
 						ods_context->current_table().set_table_name(pSheet->m_oName.get2());
@@ -192,7 +201,7 @@ void XlsxConverter::convert_sheets()
 															pSheet->m_oState->GetValue() == SimpleTypes::Spreadsheet::visibleVeryHidden))
 							ods_context->current_table().set_table_hidden(true);
 						
-						convert(pItWorksheet->second);
+						convert(pFind->second);
 					ods_context->end_sheet();	
 				}
 			}
@@ -200,10 +209,9 @@ void XlsxConverter::convert_sheets()
 	}
 	if (Workbook->m_oDefinedNames.IsInit())
 	{
-		for (std::list<OOX::Spreadsheet::CDefinedName*>::iterator	it = Workbook->m_oDefinedNames->m_arrItems.begin(); 
-																	it != Workbook->m_oDefinedNames->m_arrItems.end(); it++)
+		for (size_t i = 0; i < Workbook->m_oDefinedNames->m_arrItems.size(); i++)
 		{
-			convert(*it);
+			convert(Workbook->m_oDefinedNames->m_arrItems[i]);
 		}
 	}
 }
@@ -247,16 +255,13 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	convert(oox_sheet->m_oSheetPr.GetPointer());
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Предобработка
-	if (oox_sheet->m_oHyperlinks.IsInit())
+	//гиперлинки 
+	for (size_t hyp = 0; oox_sheet->m_oHyperlinks.IsInit() && hyp < oox_sheet->m_oHyperlinks->m_arrItems.size(); hyp++)
 	{
-		for (std::list<OOX::Spreadsheet::CHyperlink*>::iterator	it = oox_sheet->m_oHyperlinks->m_arrItems.begin(); 
-																it != oox_sheet->m_oHyperlinks->m_arrItems.end(); it++)
-		{
-			convert(*it, oox_sheet);
-		}	
+		convert(oox_sheet->m_oHyperlinks->m_arrItems[hyp],oox_sheet);
 	}
 	//комментарии
-	std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>::iterator pos = oox_sheet->m_mapComments.begin();
+    boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::iterator pos = oox_sheet->m_mapComments.begin();
 	while ( oox_sheet->m_mapComments.end() != pos )
 	{
 		convert(pos->second);
@@ -265,46 +270,36 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	//todooo для оптимизации - перенести мержи в начало
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	//колонки
-	if (oox_sheet->m_oCols.IsInit())
-	{
 		ods_context->start_columns();
-			for (std::list<OOX::Spreadsheet::CCol*>::iterator	it = oox_sheet->m_oCols->m_arrItems.begin(); 
-																it != oox_sheet->m_oCols->m_arrItems.end(); it++)
+		for (size_t col = 0 ; oox_sheet->m_oCols.IsInit() && col < oox_sheet->m_oCols->m_arrItems.size(); col++)
 			{
-				convert(*it);
+			convert(oox_sheet->m_oCols->m_arrItems[col]);
 			}
 		ods_context->end_columns();
-	}
 
+	//строки
 	if (oox_sheet->m_oSheetData.IsInit() )
 	{
 		ods_context->start_rows();
 			for (size_t row = 0 ; row < oox_sheet->m_oSheetData->m_arrItems.size(); row++)
-			for (std::list<OOX::Spreadsheet::CRow*>::iterator	it = oox_sheet->m_oSheetData->m_arrItems.begin(); 
-																it != oox_sheet->m_oSheetData->m_arrItems.end(); it++)
 			{
-				convert(*it);
+				convert(oox_sheet->m_oSheetData->m_arrItems[row]);
 				
-			//оптимизация памяти - удаляем уже не нужное
-				if ( *it ) delete *it;
-				*it = NULL;
+				if ( oox_sheet->m_oSheetData->m_arrItems[row] )
+					delete oox_sheet->m_oSheetData->m_arrItems[row];
+				oox_sheet->m_oSheetData->m_arrItems[row] = NULL;
 			}
 		ods_context->end_rows();
 		oox_sheet->m_oSheetData.reset();
 	}
 
-	if (oox_sheet->m_oMergeCells.IsInit())
+	//мержи
+	for (size_t mrg = 0 ; oox_sheet->m_oMergeCells.IsInit() && mrg < oox_sheet->m_oMergeCells->m_arrItems.size(); mrg++)
 	{
-		for (std::list<OOX::Spreadsheet::CMergeCell*>::iterator	it = oox_sheet->m_oMergeCells->m_arrItems.begin(); 
-																it != oox_sheet->m_oMergeCells->m_arrItems.end(); it++)
-		{
-			if ((*it) && ((*it)->m_oRef.IsInit()))
-			{
-				ods_context->add_merge_cells((*it)->m_oRef.get());
-			}
+		if (oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.IsInit())
+			ods_context->add_merge_cells(oox_sheet->m_oMergeCells->m_arrItems[mrg]->m_oRef.get());
 		}
-	}
-	if ((oox_sheet->m_oDrawing.IsInit()) && (oox_sheet->m_oDrawing->m_oId.IsInit()))
+	if (oox_sheet->m_oDrawing.IsInit() && oox_sheet->m_oDrawing->m_oId.IsInit())
 	{
 		smart_ptr<OOX::File> oFile = oox_sheet->Find(oox_sheet->m_oDrawing->m_oId->GetValue());
 		if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Drawings == oFile->type())
@@ -336,10 +331,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	//выносные части таблицы
 	if (oox_sheet->m_oTableParts.IsInit())
 	{
-		for (std::list<OOX::Spreadsheet::CTablePart*>::iterator	it = oox_sheet->m_oTableParts->m_arrItems.begin(); 
-																it != oox_sheet->m_oTableParts->m_arrItems.end(); it++)
+		for (size_t i=0 ; i < oox_sheet->m_oTableParts->m_arrItems.size(); i++)
 		{
-			OOX::Spreadsheet::CTablePart *oox_table_part = *it;
+			OOX::Spreadsheet::CTablePart *oox_table_part = oox_sheet->m_oTableParts->m_arrItems[i];
 			if (!oox_table_part)continue;
 			if (!oox_table_part->m_oRId.IsInit())continue;
 
@@ -446,10 +440,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCommentItem * oox_comment)
 
 	if (oox_comment->m_oText.IsInit())
 	{
-		for (std::list<OOX::Spreadsheet::WritingElement*>::iterator	it = oox_comment->m_oText->m_arrItems.begin(); 
-																	it != oox_comment->m_oText->m_arrItems.end(); it++)
+		for(size_t i = 0; i < oox_comment->m_oText->m_arrItems.size(); ++i)
 		{
-			convert(*it);
+			convert(oox_comment->m_oText->m_arrItems[i]);
 		}
 	}
 	ods_context->end_comment();
@@ -462,10 +455,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::CHyperlink *oox_hyperlink,OOX::Spr
 
 	std::wstring ref = oox_hyperlink->m_oRef.IsInit() ? oox_hyperlink->m_oRef.get() : L"";
 	std::wstring link;
-	if (oox_hyperlink->m_oRid.IsInit() && oox_sheet->GetCurRls())
+	
+	if (oox_hyperlink->m_oRid.IsInit() && oox_sheet->m_pCurRels.IsInit())
 	{
 		OOX::Rels::CRelationShip* oRels = NULL;
-		oox_sheet->GetCurRls()->GetRel( OOX::RId(oox_hyperlink->m_oRid->GetValue()), &oRels);
+		oox_sheet->m_pCurRels->GetRel( OOX::RId(oox_hyperlink->m_oRid->GetValue()), &oRels);
 		if(NULL != oRels && _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink") == oRels->Type() )
 		{
 			if(oRels->IsExternal())
@@ -527,9 +521,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRow *oox_row)
 	}else
 		ods_context->current_table().set_row_optimal_height(true);
 
-	for (std::list<OOX::Spreadsheet::CCell*>::iterator	it = oox_row->m_arrItems.begin(); it != oox_row->m_arrItems.end(); it++)
+	for (size_t cell = 0 ; cell < oox_row->m_arrItems.size();cell++)
 	{
-		convert(*it);
+		convert(oox_row->m_arrItems[cell]);
 	}
 	ods_context->end_row();
 }
@@ -585,15 +579,12 @@ void XlsxConverter::convert_sharing_string(int number)
 {
 	if (!ods_context) return;
 	
-	const OOX::Spreadsheet::CSharedStrings *SharedStrings= xlsx_document->GetSharedStrings();
+	const OOX::Spreadsheet::CSharedStrings *SharedStrings= xlsx_document->m_pSharedStrings;
 	if (!SharedStrings) return;
 
-    std::map<int, OOX::Spreadsheet::CSi*>::const_iterator pFind = SharedStrings->m_mapItems.find(number);
+    if (number >=0 && number < SharedStrings->m_arrItems.size())
 
-	if (pFind != SharedStrings->m_mapItems.end())
-	{
-		convert(pFind->second);
-	}
+    convert(SharedStrings->m_arrItems[number]);
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CSi* oox_rtf_text)
@@ -602,9 +593,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSi* oox_rtf_text)
 	
 	ods_context->start_cell_text();
 
-	for (std::list<OOX::Spreadsheet::WritingElement*>::iterator	it = oox_rtf_text->m_arrItems.begin(); it != oox_rtf_text->m_arrItems.end(); it++)
+	for(size_t i = 0; i < oox_rtf_text->m_arrItems.size(); ++i)
 	{
-		convert(*it);
+		convert(oox_rtf_text->m_arrItems[i]);
 	}
 
 	ods_context->end_cell_text();
@@ -665,9 +656,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRun *oox_text_run)
 	convert(oox_text_run->m_oRPr.GetPointer());
 	ods_context->text_context()->start_span(oox_text_run->m_oRPr.GetPointer() ? true : false);
 	
-	for (std::list<OOX::Spreadsheet::CText*>::iterator	it = oox_text_run->m_arrItems.begin(); it != oox_text_run->m_arrItems.end(); it++)
+	for(size_t i = 0; i < oox_text_run->m_arrItems.size(); ++i)
 	{
-		convert(*it);
+		convert(oox_text_run->m_arrItems[i]);
 	}
 	ods_context->text_context()->end_span();
 }
@@ -898,7 +889,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetPr *oox_sheet_pr)
 void XlsxConverter::convert(OOX::Spreadsheet::CWorkbookView *oox_book_views)
 {
 	if (!oox_book_views)return;
-	const OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->GetWorkbook();
+	const OOX::Spreadsheet::CWorkbook *Workbook= xlsx_document->m_pWorkbook;
 	if (!Workbook) return;
 
 	ods_context->settings_context()->start_view();
@@ -946,9 +937,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 {
 	if (!oox_sheet_views)return;
 
-	for (std::list<OOX::Spreadsheet::CSheetView*>::iterator	it = oox_sheet_views->m_arrItems.begin(); it != oox_sheet_views->m_arrItems.end(); it++)
+	for (unsigned long i =0; i < oox_sheet_views->m_arrItems.size(); i++)
 	{
-		OOX::Spreadsheet::CSheetView *sheet_view = *it;
+		OOX::Spreadsheet::CSheetView *sheet_view = oox_sheet_views->m_arrItems[i];
 		if (!sheet_view) continue;
 
 		int view_id = sheet_view->m_oWorkbookViewId->GetValue();
@@ -990,10 +981,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 		bool bPaneY			= false;
 		int ActiveCellX = -1, ActiveCellY = -1;
 
-		for (std::list<OOX::Spreadsheet::CSelection*>::iterator	it = sheet_view->m_arrItems.begin(); 
-																it != sheet_view->m_arrItems.end(); it++)
+		for (size_t j = 0; j < sheet_view->m_arrItems.size(); j++)
 		{
-			OOX::Spreadsheet::CSelection *selection = *it;
+			OOX::Spreadsheet::CSelection *selection = sheet_view->m_arrItems[j];
 
 			if (selection->m_oActiveCell.IsInit())
 			{
@@ -1230,45 +1220,38 @@ void XlsxConverter::convert_styles()
 	ods_context->styles_context()->create_default_style(odf_types::style_family::TableCell);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-	OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->GetStyles();
+	OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->m_pStyles;
 	
 	if (!xlsx_styles)return;
-
-	int i = 0;
 //todooo ?? стоит ли обращать на параметр Count ??
 ////////////форматы данных
-	for (std::list<OOX::Spreadsheet::CNumFmt*>::iterator	it = xlsx_styles->m_oNumFmts->m_arrItems.begin(); 
-						xlsx_styles->m_oNumFmts.IsInit() && it != xlsx_styles->m_oNumFmts->m_arrItems.end(); it++)
+	for (size_t i = 0; xlsx_styles->m_oNumFmts.IsInit() && i < xlsx_styles->m_oNumFmts->m_arrItems.size(); i++)
 	{
-		convert(*it);
+		convert(xlsx_styles->m_oNumFmts->m_arrItems[i]);
 	}
 /////////////стили ячеек
-	for (std::list<OOX::Spreadsheet::CXfs*>::iterator	it = xlsx_styles->m_oCellStyleXfs->m_arrItems.begin(); 
-				xlsx_styles->m_oCellStyleXfs.IsInit() && it != xlsx_styles->m_oCellStyleXfs->m_arrItems.end(); it++)
+	for (size_t i = 0; xlsx_styles->m_oCellStyleXfs.IsInit() && i < xlsx_styles->m_oCellStyleXfs->m_arrItems.size(); i++)
 	{
 		//automatical, root - noname - они тока для named
-		convert(*it , i++, true, true);
+		convert(xlsx_styles->m_oCellStyleXfs->m_arrItems[i] , i, true, true);
 	}
-	for (std::list<OOX::Spreadsheet::CCellStyle*>::iterator	it = xlsx_styles->m_oCellStyles->m_arrItems.begin(); 
-					xlsx_styles->m_oCellStyles.IsInit() && it != xlsx_styles->m_oCellStyles->m_arrItems.end(); it++)
+	for (size_t i = 0; xlsx_styles->m_oCellStyles.IsInit() && i < xlsx_styles->m_oCellStyles->m_arrItems.size(); i++)//styles.xml
 	{
 		//non automatical, root - named 
-		convert(*it); 
+		convert(xlsx_styles->m_oCellStyles->m_arrItems[i]); 
 	}	
-	i = 0;
+
 	//кастомные стили ячеек
-	for (std::list<OOX::Spreadsheet::CXfs*>::iterator	it = xlsx_styles->m_oCellXfs->m_arrItems.begin(); 
-					xlsx_styles->m_oCellXfs.IsInit() && it != xlsx_styles->m_oCellXfs->m_arrItems.end(); it++)
+	for (size_t i = 0; xlsx_styles->m_oCellXfs.IsInit() && i < xlsx_styles->m_oCellXfs->m_arrItems.size(); i++)
 	{
 		//automatical, non root
-		convert(*it, i++, true, false);
+		convert(xlsx_styles->m_oCellXfs->m_arrItems[i], i, true, false);
 	}	
 
 ////////////стили условного форматирования 
-	for (std::list<OOX::Spreadsheet::CDxf*>::iterator	it = xlsx_styles->m_oDxfs->m_arrItems.begin(); 
-						xlsx_styles->m_oDxfs.IsInit() && it != xlsx_styles->m_oDxfs->m_arrItems.end(); it++)
+	for (size_t i=0; xlsx_styles->m_oDxfs.IsInit() && i < xlsx_styles->m_oDxfs->m_arrItems.size(); i++)
 	{
-		convert(*it, i); 
+		convert(xlsx_styles->m_oDxfs->m_arrItems[i], i); 
 	}
 }
 
@@ -1661,7 +1644,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf_types::
 	}
 	if(color->m_oIndexed.IsInit())
 	{
-		OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->GetStyles();
+		OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->m_pStyles;
 	
 		int ind = color->m_oIndexed->GetValue();
 
@@ -1784,7 +1767,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDxf *dxFmt, int oox_dx_id)
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool automatic, bool root)
 {
-	OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->GetStyles();
+	OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->m_pStyles;
 
 	int id_parent	= xfc_style->m_oXfId.IsInit()		? xfc_style->m_oXfId->GetValue()	: -1; 
 	int fill_id		= xfc_style->m_oFillId.IsInit()		? xfc_style->m_oFillId->GetValue()	: -1;
@@ -1927,7 +1910,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing, OOX::Spread
 
 		if (oox_sheet->m_oOleObjects.IsInit() && oox_anchor->m_nId.IsInit())
 		{
-			std::map<int, OOX::Spreadsheet::COleObject*>::const_iterator pFind = oox_sheet->m_oOleObjects->m_mapOleObjects.find(oox_anchor->m_nId.get());
+            boost::unordered_map<int, OOX::Spreadsheet::COleObject*>::const_iterator pFind = oox_sheet->m_oOleObjects->m_mapOleObjects.find(oox_anchor->m_nId.get());
 			if (pFind != oox_sheet->m_oOleObjects->m_mapOleObjects.end())
 			{
 				//??? перенести даные привязки 
@@ -1947,7 +1930,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 {
 	if (!oox_objects) return;
 
-	for (std::map<int, OOX::Spreadsheet::COleObject*>::const_iterator it = oox_objects->m_mapOleObjects.begin(); it != oox_objects->m_mapOleObjects.end(); ++it)
+    for (boost::unordered_map<int, OOX::Spreadsheet::COleObject*>::const_iterator it = oox_objects->m_mapOleObjects.begin(); it != oox_objects->m_mapOleObjects.end(); ++it)
 	{
 		OOX::Spreadsheet::COleObject* object = it->second;
 		ods_context->start_drawings();
@@ -2042,11 +2025,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatting *oox_cond_f
 	{
 		ods_context->current_table().start_conditional_format(oox_cond_fmt->m_oSqRef.get());
 
-		for (std::list<OOX::Spreadsheet::CConditionalFormattingRule*>::iterator	it = oox_cond_fmt->m_arrItems.begin(); 
-																				it != oox_cond_fmt->m_arrItems.end(); it++)
-		{
-			convert(*it);//rule
-		}
+		for (size_t i=0; i< oox_cond_fmt->m_arrItems.size(); i++)
+			convert(oox_cond_fmt->m_arrItems[i]);//rule
 		
 		ods_context->current_table().end_conditional_format();
 	}
@@ -2068,11 +2048,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 			if (oox_cond_rule->m_oOperator.IsInit()) 
 				ods_context->current_table().set_conditional_operator(oox_cond_rule->m_oOperator->GetValue());
 			
-			for (std::list<OOX::Spreadsheet::WritingElement*>::iterator	it = oox_cond_rule->m_arrItems.begin(); 
-																		it != oox_cond_rule->m_arrItems.end(); it++)
-			{
-					convert(*it);
-			}
+				for (size_t i=0; i< oox_cond_rule->m_arrItems.size(); i++)
+					convert(oox_cond_rule->m_arrItems[i]);
 		}	
 		ods_context->current_table().end_conditional_rule();
 	}
@@ -2088,11 +2065,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDataBar *oox_cond_databar)
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMaxLength;
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMinLength;
 			//nullable<SimpleTypes::COnOff<>>					m_oShowValue;
-	for (std::list<OOX::Spreadsheet::CConditionalFormatValueObject*>::iterator	it = oox_cond_databar->m_arrItems.begin(); 
-																				it != oox_cond_databar->m_arrItems.end(); it++)
-	{
-		convert(*it);
-	}
+	for (size_t i=0; i< oox_cond_databar->m_arrItems.size(); i++)
+		convert(oox_cond_databar->m_arrItems[i]);
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CColorScale *oox_cond_colorscale)
 {
@@ -2100,8 +2074,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColorScale *oox_cond_colorscale)
 
 	int index = 0;
 	
-	for (std::list<OOX::Spreadsheet::WritingElement*>::iterator	it = oox_cond_colorscale->m_arrItems.begin(); 
-																it != oox_cond_colorscale->m_arrItems.end(); it++)
+    for (std::vector<OOX::Spreadsheet::WritingElement*>::iterator	it = oox_cond_colorscale->m_arrItems.begin();
+																it != oox_cond_colorscale->m_arrItems.end(); ++it)
 	{
 		if (*it == NULL )continue;
 	
@@ -2128,11 +2102,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CIconSet *oox_cond_iconset)
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMaxLength;
 			//nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMinLength;
 			//nullable<SimpleTypes::COnOff<>>					m_oShowValue;
-	for (std::list<OOX::Spreadsheet::CConditionalFormatValueObject*>::iterator	it = oox_cond_iconset->m_arrItems.begin(); 
-																				it != oox_cond_iconset->m_arrItems.end(); it++)
-	{
-		convert(*it);
-	}
+	for (size_t i=0; i< oox_cond_iconset->m_arrItems.size(); i++)
+		convert(oox_cond_iconset->m_arrItems[i]);
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatValueObject *oox_cond_value)
 {

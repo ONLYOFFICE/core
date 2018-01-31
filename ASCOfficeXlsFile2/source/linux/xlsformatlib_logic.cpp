@@ -760,7 +760,6 @@
 #include "../XlsFormat/Logic/Biff_unions/SXOPER.cpp"
 #include "../XlsFormat/Logic/Biff_unions/SXRANGE.cpp"
 
-#include "../XlsFormat/Logic/SummaryInformationStream/Structures/Property_Structures.cpp"
 #include "../XlsFormat/Logic/SummaryInformationStream/Structures/PropertyFactory.cpp"
 #include "../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySet.cpp"
 #include "../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySetStream.cpp"

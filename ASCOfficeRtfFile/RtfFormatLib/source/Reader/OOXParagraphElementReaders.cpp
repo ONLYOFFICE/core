@@ -120,7 +120,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 {
 	if (m_ooxElement == NULL) return false;
 	
-	for (std::list<OOX::WritingElement*>::iterator it = m_ooxElement->m_arrItems.begin(); it != m_ooxElement->m_arrItems.end(); it++)
+    for (std::vector<OOX::WritingElement*>::iterator it = m_ooxElement->m_arrItems.begin(); it != m_ooxElement->m_arrItems.end(); ++it)
 	{
 		Parse3(oParam , oOutputParagraph, oConditionalTableStyle, poStyle , *it);
 	}
@@ -400,7 +400,7 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 		{
 			OOX::Logic::CSmartTag * pSmartTag = dynamic_cast<OOX::Logic::CSmartTag*>(m_ooxElement);
 
-			for (std::list<OOX::WritingElement*>::iterator it = pSmartTag->m_arrItems.begin(); it != pSmartTag->m_arrItems.end(); it++)
+            for (std::vector<OOX::WritingElement*>::iterator it = pSmartTag->m_arrItems.begin(); it != pSmartTag->m_arrItems.end(); ++it)
 			{
 				OOX::Logic::CRun * pRun = dynamic_cast<OOX::Logic::CRun*>(*it);
 				if (pRun == NULL) continue;
@@ -1018,7 +1018,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 			orPrReader.Parse( oParam, oNewProperty );
 		}
 
-		for (std::list<OOX::WritingElement*>::iterator it = m_ooxRun->m_arrItems.begin(); it != m_ooxRun->m_arrItems.end(); it++)
+        for (std::vector<OOX::WritingElement*>::iterator it = m_ooxRun->m_arrItems.begin(); it != m_ooxRun->m_arrItems.end(); ++it)
 		{
 			Parse(oParam, oOutputParagraph, poStyle, oNewProperty, *it);
 		}

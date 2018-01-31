@@ -68,10 +68,10 @@ public:
 			oBackgroundReader.Parse( oParam, m_poDocument->m_pBackground);
 		}
 		
-		std::list<OOX::WritingElement*>::iterator last_section_start = m_ooxDocument->m_arrItems.begin();
+        std::vector<OOX::WritingElement*>::iterator last_section_start = m_ooxDocument->m_arrItems.begin();
 		
 		//считаем количесво секций и заполняем их свойства .. 
-		for (std::list<OOX::WritingElement*>::iterator it = m_ooxDocument->m_arrItems.begin(); it != m_ooxDocument->m_arrItems.end(); it++)
+        for (std::vector<OOX::WritingElement*>::iterator it = m_ooxDocument->m_arrItems.begin(); it != m_ooxDocument->m_arrItems.end(); ++it)
 		{		
 			if ((*it) == NULL) continue;
 
@@ -125,7 +125,7 @@ public:
 		{
 			m_oTextItemReader.m_oTextItems = m_poDocument->m_aArray[sect].props;
 
-			for (std::list<OOX::WritingElement*>::iterator it = m_poDocument->m_aArray[sect].start_para; it != m_poDocument->m_aArray[sect].end_para; it++)
+            for (std::vector<OOX::WritingElement*>::iterator it = m_poDocument->m_aArray[sect].start_para; it != m_poDocument->m_aArray[sect].end_para; ++it)
 			{
 				m_oTextItemReader.Parse(*it, oParam );
 			}

@@ -128,13 +128,13 @@ namespace OOX
 					WritingStringNullableAttrBool(L"caseSensitive", m_oCaseSensitive);
 					writer.WriteString(L">");
 
-					for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-					{
-						if ( *it )
-						{
-							(*it)->toXML(writer);
-						}
-					}	
+                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    {
+                        if (  m_arrItems[i] )
+                        {
+                            m_arrItems[i]->toXML(writer);
+                        }
+                    }
 
 					writer.WriteString(L"</sortState>");
 				}
@@ -374,13 +374,13 @@ namespace OOX
 					writer.WriteString(L" and=\"1\"");
 				writer.WriteString(L">");
 				
-				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-				{
-					if ( *it )
-					{
-						(*it)->toXML(writer);
-					}
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
 				
 				writer.WriteString(L"</customFilters>");
 			}
@@ -564,13 +564,13 @@ namespace OOX
 					WritingStringNullableAttrBool(L"blank", m_oBlank);
 					writer.WriteString(_T(">"));
 
-					for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-					{
-						if ( *it )
-						{
-							(*it)->toXML(writer);
-						}
-					}
+                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    {
+                        if (  m_arrItems[i] )
+                        {
+                            m_arrItems[i]->toXML(writer);
+                        }
+                    }
 
 					writer.WriteString(_T("</filters>"));
 				}
@@ -795,13 +795,13 @@ namespace OOX
 					WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef->ToString());
 					writer.WriteString(L">");
 					
-					for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-					{
-						if ( *it )
-						{
-							(*it)->toXML(writer);
-						}
-					}
+                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    {
+                        if (  m_arrItems[i] )
+                        {
+                            m_arrItems[i]->toXML(writer);
+                        }
+                    }
 					
 					if(m_oSortState.IsInit())
 						m_oSortState->toXML(writer);

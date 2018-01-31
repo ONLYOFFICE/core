@@ -2780,13 +2780,13 @@ namespace OOX
 				else
 					return _T("");
 
-				for ( ElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-				{
-					if ( *it )
-					{
-						sResult += (*it)->toXML();
-					}
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        sResult += m_arrItems[i]->toXML();
+                    }
+                }
 
 				if ( et_w_hdrShapeDefaults == m_eType )
 					sResult += _T("</w:hdrShapeDefaults>");
@@ -2821,11 +2821,16 @@ namespace OOX
 	class CSettings : public OOX::File
 	{
 	public:
-		CSettings()
+		CSettings(OOX::Document *pMain) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pSettings = this;			
 		}
-		CSettings(const CPath& oPath)
+		CSettings(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pSettings = this;			
+
 			read( oPath );
 		}
 		virtual ~CSettings()
@@ -2842,7 +2847,6 @@ namespace OOX
 	public:
 		virtual void read(const CPath& oFilePath)
 		{
-#ifdef USE_LITE_READER
 			XmlUtils::CXmlLiteReader oReader;
 
 			if ( !oReader.FromFile( oFilePath.GetPath() ) )
@@ -3019,16 +3023,6 @@ namespace OOX
 					}
 				}
 			}
-
-#else
-			XmlUtils::CXmlNode oWebSettings;
-			oWebSettings.FromXmlFile( oFilePath.GetPath(), true );
-
-			if ( _T("w:settings") == oWebSettings.GetName() )
-			{
-				XmlUtils::CXmlNode oNode;
-			}
-#endif
 		}
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{

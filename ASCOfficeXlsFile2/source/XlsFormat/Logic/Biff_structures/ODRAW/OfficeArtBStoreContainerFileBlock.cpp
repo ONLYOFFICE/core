@@ -149,6 +149,7 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 				break;				
 			case OfficeArtRecord::BlipPICT:
 				{
+					pict_type = L".pcz";
 					if (rc_header.recInstance == 0x542)
 						rgbUid1 = ReadMD4Digest(record);
 					else
@@ -165,7 +166,6 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 						isCompressed = true;
 						readCompressedData(record, metafileHeader);
 					}
-					pict_type = L".pic";///???? todooo
 				}
 				break;				
 			case OfficeArtRecord::BlipJPEG:

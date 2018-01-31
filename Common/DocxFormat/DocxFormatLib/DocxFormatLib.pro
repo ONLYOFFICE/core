@@ -18,8 +18,6 @@ include(../../../Common/base.pri)
 
 DEFINES +=  UNICODE _UNICODE \
             _USE_LIBXML2_READER_ \
-            _USE_XMLLITE_READER_ \
-            USE_LITE_READER \
             LIBXML_READER_ENABLED \
             DONT_WRITE_EMBEDDED_FONTS
 
@@ -52,6 +50,7 @@ SOURCES += \
     ../Source/DocxFormat/Logic/Table.cpp \
     ../Source/DocxFormat/Logic/TableProperty.cpp \
     ../Source/DocxFormat/Logic/Vml.cpp \
+    ../Source/DocxFormat/Media/VbaProject.cpp \
     ../Source/DocxFormat/Math/oMath.cpp \
     ../Source/DocxFormat/Math/oMathContent.cpp \
     ../Source/DocxFormat/Math/oMathPara.cpp \
@@ -59,6 +58,9 @@ SOURCES += \
     ../Source/DocxFormat/Docx.cpp \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
     ../Source/XlsxFormat/Common.cpp \
+    ../Source/XlsxFormat/Xlsx.cpp \
+    ../Source/XlsxFormat/Worksheets/Worksheet.cpp \
+    ../Source/XlsxFormat/Worksheets/SheetData.cpp \
     ../Source/DocxFormat/FileFactory.cpp \
     ../Source/DocxFormat/IFileContainer.cpp \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.cpp \
@@ -68,7 +70,6 @@ SOURCES += \
     ../Source/Common/Index.cpp \
     ../Source/Common/NumFormat.cpp \
     ../Source/Common/Position.cpp \
-    ../Source/Common/Utils.cpp \
     ../Source/Common/Wrap.cpp \
     ../Source/Common/ZIndex.cpp \
     ../Source/Common/SimpleTypes_Word.cpp \
@@ -104,16 +105,12 @@ HEADERS += docxformatlib.h \
     ../Source/Common/SimpleTypes_Word.h \
     ../Source/Common/Size.h \
     ../Source/Common/Unit.h \
-    ../Source/Common/Utils.h \
     ../Source/Common/Wrap.h \
     ../Source/Common/ZIndex.h \
     ../Source/DocxFormat/Drawing/Drawing.h \
     ../Source/DocxFormat/Drawing/DrawingBody.h \
     ../Source/DocxFormat/Drawing/DrawingExt.h \
     ../Source/DocxFormat/External/External.h \
-    ../Source/DocxFormat/External/ExternalAudio.h \
-    ../Source/DocxFormat/External/ExternalImage.h \
-    ../Source/DocxFormat/External/ExternalVideo.h \
     ../Source/DocxFormat/External/HyperLink.h \
     ../Source/DocxFormat/Logic/AlternateContent.h \
     ../Source/DocxFormat/Logic/Annotations.h \
@@ -232,6 +229,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/SimpleTypes_Spreadsheet.h \
     ../Source/XlsxFormat/Workbook.h \
     ../Source/XlsxFormat/WritingElement.h \
+    ../Source/DocxFormat/WorkbookComments.h \
     ../Source/XlsxFormat/Xlsx.h \
     ../Source/XML/Utils.h \
     ../Source/XML/XmlSimple.h \

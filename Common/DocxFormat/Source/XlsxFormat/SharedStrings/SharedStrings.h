@@ -33,6 +33,7 @@
 #ifndef OOX_SHAREDSTRINGS_FILE_INCLUDE_H_
 #define OOX_SHAREDSTRINGS_FILE_INCLUDE_H_
 
+#include "../Xlsx.h"
 #include "../CommonInclude.h"
 
 #include "Si.h"
@@ -45,13 +46,24 @@ namespace OOX
 		class CSharedStrings : public OOX::File, public OOX::IFileContainer
 		{
 		public:
-			CSharedStrings()
+			CSharedStrings(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
+                m_nCount        = 0;
 				m_bSpreadsheets = true;
+
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if ((xlsx) && (!xlsx->m_pSharedStrings))
+					xlsx->m_pSharedStrings = this;
 			}
-			CSharedStrings(const CPath& oRootPath, const CPath& oPath)
+			CSharedStrings(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
-				m_bSpreadsheets = true;
+                m_nCount        = 0;
+                m_bSpreadsheets = true;
+
+  				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if ((xlsx) && (!xlsx->m_pSharedStrings))
+					xlsx->m_pSharedStrings = this;
+
 				read( oRootPath, oPath );
 			}
 			virtual ~CSharedStrings()
@@ -100,7 +112,8 @@ namespace OOX
 							if ( _T("si") == sName )
 							{
 								CSi* pItem = new CSi( oReader );
-								m_mapItems.insert(std::make_pair( m_nCount++, pItem ));
+                                m_arrItems.push_back(pItem );
+								m_nCount++;
 							}
 						}
 					}
@@ -114,9 +127,9 @@ namespace OOX
 				WritingStringNullableAttrInt(L"uniqueCount", m_oUniqueCount, m_oUniqueCount->GetValue());
 				writer.WriteString(_T(">"));
 
-				for(auto it = m_mapItems.begin(); it != m_mapItems.end(); it++)
+                for(size_t i = 0; i < m_arrItems.size(); i++)
 				{
-					(it->second)->toXML(writer);
+                    m_arrItems[i]->toXML(writer);
 				}
 
 				writer.WriteString(_T("</sst>"));
@@ -144,7 +157,7 @@ namespace OOX
 			const int AddSi(CSi* pSi)
 			{
 				int nIndex = m_nCount++;
-				m_mapItems.insert(std::make_pair(nIndex, pSi) );
+                m_arrItems.push_back(pSi);
 				return nIndex;
 			}
 		private:
@@ -153,13 +166,13 @@ namespace OOX
 			void ClearItems()
 			{
 				m_nCount = 0;
-				for (auto it = m_mapItems.begin(); it != m_mapItems.end(); it++ )
+                for(size_t i = 0; i < m_arrItems.size(); i++)
 				{
-					if ( it->second )delete (it->second);
+                    if ( m_arrItems[i] )delete m_arrItems[i];
 
-					it->second = NULL;
+                    m_arrItems[i] = NULL;
 				}
-				m_mapItems.clear();
+                m_arrItems.clear();
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -172,7 +185,7 @@ namespace OOX
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oUniqueCount;
-            std::map<int, CSi*>                             m_mapItems;
+            std::vector<CSi*>                               m_arrItems;
 			int												m_nCount;
 
 		};

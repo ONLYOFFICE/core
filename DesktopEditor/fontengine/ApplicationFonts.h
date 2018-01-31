@@ -288,4 +288,24 @@ public:
 	CFontManager* GenerateFontManager();
 };
 
+class CApplicationFontsSymbolsChecker
+{
+public:
+	virtual void Check(const int& nCode, const unsigned int& nIndex) = 0;
+};
+
+class CApplicationFontsSymbols_Private;
+class CApplicationFontsSymbols
+{
+private:
+	CApplicationFontsSymbols_Private* m_internal;
+
+public:
+	CApplicationFontsSymbols();
+	~CApplicationFontsSymbols();
+
+public:
+	void CheckSymbols(const std::wstring& sFile, const int& nFaceIndex, CApplicationFontsSymbolsChecker* pChecker);
+};
+
 #endif

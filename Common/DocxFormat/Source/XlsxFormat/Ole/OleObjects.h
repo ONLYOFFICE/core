@@ -372,7 +372,7 @@ namespace OOX
 			}
 			virtual ~COleObjects()
 			{
-				for(std::map<int, COleObject*>::const_iterator it = m_mapOleObjects.begin(); it != m_mapOleObjects.end(); it++)
+                for(boost::unordered_map<int, COleObject*>::const_iterator it = m_mapOleObjects.begin(); it != m_mapOleObjects.end(); ++it)
 				{
 					delete it->second;
 				}
@@ -390,7 +390,7 @@ namespace OOX
 				if(m_mapOleObjects.size() > 0)
 				{
 					writer.WriteString(L"<oleObjects>");
-					for(std::map<int, COleObject*>::const_iterator it = m_mapOleObjects.begin(); it != m_mapOleObjects.end(); it++)
+                    for(boost::unordered_map<int, COleObject*>::const_iterator it = m_mapOleObjects.begin(); it != m_mapOleObjects.end(); ++it)
 					{
 						it->second->toXML(writer);
 					}
@@ -469,7 +469,7 @@ namespace OOX
 			{
 			}
 		public:
-			std::map<int, COleObject*> m_mapOleObjects;
+            boost::unordered_map<int, COleObject*> m_mapOleObjects;
 		};
 	} //Spreadsheet
 } // namespace OOX

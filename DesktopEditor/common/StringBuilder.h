@@ -249,7 +249,7 @@ namespace NSStringUtils
 
 	public:
 
-                inline void SetText(const std::wstring& bsText)
+		inline void SetText(const std::wstring& bsText)
 		{
 			ClearNoAttack();
 			WriteString(bsText);
@@ -260,6 +260,11 @@ namespace NSStringUtils
 					m_pData[i] = WCHAR(' ');
 			}
 		}
+
+        inline void operator+=(const std::wstring& oTemp)
+        {
+            WriteString(oTemp.c_str(), oTemp.length());
+        }
 
 		inline void WriteStringNoSafe(const wchar_t* pString, size_t nLen)
 		{

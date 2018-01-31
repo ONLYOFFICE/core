@@ -830,6 +830,7 @@
 		69656F521FC2FF800028C4BA /* PresetShapesHeader.h in Headers */ = {isa = PBXBuildFile; fileRef = 69656DCA1FC2FF800028C4BA /* PresetShapesHeader.h */; };
 		696791821D9E8B81002CA4BA /* MathParaWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 696791801D9E8B81002CA4BA /* MathParaWrapper.cpp */; };
 		696791831D9E8B81002CA4BA /* MathParaWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 696791811D9E8B81002CA4BA /* MathParaWrapper.h */; };
+		697DFC1E200F51A700F0A9AF /* WavAudioFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697DFC1D200F51A600F0A9AF /* WavAudioFile.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1659,6 +1660,7 @@
 		69656DCA1FC2FF800028C4BA /* PresetShapesHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PresetShapesHeader.h; sourceTree = "<group>"; };
 		696791801D9E8B81002CA4BA /* MathParaWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MathParaWrapper.cpp; sourceTree = "<group>"; };
 		696791811D9E8B81002CA4BA /* MathParaWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MathParaWrapper.h; sourceTree = "<group>"; };
+		697DFC1D200F51A600F0A9AF /* WavAudioFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WavAudioFile.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2088,6 +2090,7 @@
 				179A44801AC57B83005A27F7 /* AudioCD.h */,
 				179A44811AC57B83005A27F7 /* MediaFile.h */,
 				179A44821AC57B83005A27F7 /* WavAudioFile.h */,
+				697DFC1D200F51A600F0A9AF /* WavAudioFile.cpp */,
 			);
 			path = Media;
 			sourceTree = "<group>";
@@ -3585,6 +3588,7 @@
 				17C1FCBB1ACC429D006B99B3 /* FileFactory.cpp in Sources */,
 				17C1FCBC1ACC429D006B99B3 /* pptxformatlib.cpp in Sources */,
 				17C1FCBD1ACC429D006B99B3 /* TxBody.cpp in Sources */,
+				697DFC1E200F51A700F0A9AF /* WavAudioFile.cpp in Sources */,
 				17C1FCBE1ACC429D006B99B3 /* EffectProperties.cpp in Sources */,
 				17C1FCBF1ACC429D006B99B3 /* EffectLst.cpp in Sources */,
 				695BC03A1C070DEF00817D7E /* ASCSVGWriter.cpp in Sources */,

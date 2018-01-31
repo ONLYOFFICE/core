@@ -37,7 +37,17 @@
 
 #include "../BinWriter/BinReaderWriterDefines.h"
 #include "../../XlsxSerializerCom/Writer/BinaryReader.h"
+
 #include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Document.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/FontTable.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Numbering.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Comments.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Styles.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Footnote.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Settings/Settings.h"
+
 #include "../DocWrapper/XlsxSerializer.h"
 
 #include "../../DesktopEditor/common/ASCVariant.h"
@@ -256,7 +266,10 @@ private:
 		Shd* pShd = static_cast<Shd*>(poResult);
 		switch(type)
 		{
-		case c_oSerShdType::Value: pShd->Value = m_oBufferedStream.GetUChar();break;
+		case c_oSerShdType::Value:
+			pShd->bValue = true;
+			pShd->Value = m_oBufferedStream.GetUChar();
+			break;
 		case c_oSerShdType::Color:
 			pShd->bColor = true;
 			pShd->Color = ReadColor();
@@ -441,11 +454,8 @@ public:
 			{
 				Shd oShd;
 				oBinary_CommonReader2.ReadShdOut(length, &oShd);
-				if(shd_Nil != oShd.Value)
-				{
-					orPr->bShd = true;
-					orPr->Shd = oShd.ToString();
-				}
+				orPr->bShd = true;
+				orPr->Shd = oShd.ToString();
 				break;
 			}
 		case c_oSerProp_rPrType::RStyle:
@@ -791,15 +801,7 @@ public:
 			{
 				Shd oShd;
 				oBinary_CommonReader2.ReadShdOut(length, &oShd);
-				if(shd_Nil != oShd.Value)
-				{
-					pCStringWriter->WriteString(oShd.ToString());
-				}
-				else
-				{
-                    std::wstring sShd(L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"auto\"/>");
-					pCStringWriter->WriteString(sShd);
-				}
+				pCStringWriter->WriteString(oShd.ToString());
 				break;
 			}
 		case c_oSerProp_pPrType::WidowControl:
@@ -1772,11 +1774,8 @@ public:
 		{
 			Shd oShd;
 			oBinary_CommonReader2.ReadShdOut(length, &oShd);
-			if(shd_Nil != oShd.Value)
-			{
-				pWiterTblPr->Shd = oShd.ToString();
-				m_sCurTableShd = pWiterTblPr->Shd;
-			}
+			pWiterTblPr->Shd = oShd.ToString();
+			m_sCurTableShd = pWiterTblPr->Shd;
 		}
 		else if( c_oSerProp_tblPrType::tblpPr == type )
 		{
@@ -2234,10 +2233,7 @@ public:
 			bCellShd = true;
 			Shd oShd;
 			oBinary_CommonReader2.ReadShdOut(length, &oShd);
-			if(shd_Nil != oShd.Value)
-			{
-				pCStringWriter->WriteString(oShd.ToString());
-			}
+			pCStringWriter->WriteString(oShd.ToString());
 		}
 		else if( c_oSerProp_cellPrType::TableCellBorders == type )
 		{
@@ -2981,7 +2977,7 @@ public:
 	int Read()
 	{
 		return ReadTable(&Binary_OtherTableReader::ReadOtherContent, this);
-	};
+	}
 	int ReadOtherContent(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -2991,7 +2987,7 @@ public:
 		}
 		else if(c_oSerOtherTableTypes::DocxTheme == type)
 		{
-			smart_ptr<PPTX::Theme> pTheme = new PPTX::Theme();
+			smart_ptr<PPTX::Theme> pTheme = new PPTX::Theme(NULL);
 			pTheme->fromPPTY(&m_oBufferedStream);
 			NSBinPptxRW::CXmlWriter xmlWriter;
 			pTheme->toXmlWriter(&xmlWriter);
@@ -3000,7 +2996,7 @@ public:
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
-	};
+	}
 	int ReadImageMapContent(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -3043,7 +3039,7 @@ public:
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
-	};
+	}
 };
 class Binary_CommentsTableReader : public Binary_CommonReader<Binary_CommentsTableReader>
 {
@@ -7258,7 +7254,7 @@ public:
 				BinXlsxRW::SaveParams			oSaveParams(m_oFileWriter.m_sThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());
 				BinXlsxRW::BinaryChartReader	oBinaryChartReader(m_oBufferedStream, oSaveParams, m_oFileWriter.m_pDrawingConverter);
 				
-				OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace();
+				OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace(NULL);
 				oBinaryChartReader.ReadCT_ChartSpace(length, &pChartSpace->m_oChartSpace);
 
 				//save xlsx
@@ -7439,6 +7435,8 @@ public:
 		{
 			PPTX::Logic::CNvPr pNonVisualDrawingProps(L"wp");
 			res = Read1(length, &Binary_DocumentTableReader::ReadDocPr, this, &pNonVisualDrawingProps);
+			
+			pNonVisualDrawingProps.id = pDrawingProperty->m_nDocPr;
 			pDrawingProperty->sDocPr = pNonVisualDrawingProps.toXML2(L"wp:docPr");
 		}
 		else

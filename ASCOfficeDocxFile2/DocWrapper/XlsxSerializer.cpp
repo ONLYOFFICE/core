@@ -42,6 +42,7 @@
 #include "ChartWriter.h"
 
 #include "../BinReader/DefaultThemeWriter.h"
+//#include "../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
 
 namespace BinXlsxRW{
 	int g_nCurFormatVersion = 0;
@@ -168,7 +169,7 @@ namespace BinXlsxRW{
 
 	//todo theme path
 		BinXlsxRW::SaveParams			oSaveParams(sThemePath, m_pExternalDrawingConverter->GetContentTypes());
-		OOX::Spreadsheet::CChartSpace	oChartSpace;
+		OOX::Spreadsheet::CChartSpace	oChartSpace(NULL);
 		BinXlsxRW::BinaryChartReader	oBinaryChartReader(*pReader, oSaveParams, m_pExternalDrawingConverter);
 		
 		oBinaryChartReader.ReadCT_ChartSpace(lLength, &oChartSpace.m_oChartSpace);

@@ -35,7 +35,6 @@
 #include <boost/make_shared.hpp>
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/attributes.h>
 
 #include "serialize_elements.h"
 
@@ -729,7 +728,61 @@ void table_shapes::add_child_element( xml::sax * Reader, const std::wstring & Ns
     CP_CREATE_ELEMENT(content_);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// table:content-validations
+const wchar_t * table_content_validations::ns = L"table";
+const wchar_t * table_content_validations::name = L"content-validations";
 
+void table_content_validations::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(content_);
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// table:content-validation
+const wchar_t * table_content_validation::ns = L"table";
+const wchar_t * table_content_validation::name = L"content-validation";
 
+void table_content_validation::add_attributes(xml::attributes_wc_ptr const & Attributes)
+{
+    CP_APPLY_ATTR(L"table:name",				table_name_);
+    CP_APPLY_ATTR(L"table:condition",			table_condition_);
+	CP_APPLY_ATTR(L"table:display-list",		table_display_list_);
+	CP_APPLY_ATTR(L"table:allowempty-cell",		table_allowempty_cell_);
+	CP_APPLY_ATTR(L"table:base-cell-address",	table_base_cell_address_);
+}
+void table_content_validation::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(content_);
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// table:content-validation
+const wchar_t * table_error_message::ns = L"table";
+const wchar_t * table_error_message::name = L"error-message";
+
+void table_error_message::add_attributes(xml::attributes_wc_ptr const & Attributes)
+{
+    CP_APPLY_ATTR(L"table:title",			table_title_);
+    CP_APPLY_ATTR(L"table:message-type",	table_message_type_);
+	CP_APPLY_ATTR(L"table:display",			table_display_);
+}
+void table_error_message::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(content_);
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// table:content-validation
+const wchar_t * table_help_message::ns = L"table";
+const wchar_t * table_help_message::name = L"help-message";
+
+void table_help_message::add_attributes(xml::attributes_wc_ptr const & Attributes)
+{
+    CP_APPLY_ATTR(L"table:title",			table_title_);
+    CP_APPLY_ATTR(L"table:message-type",	table_message_type_);
+	CP_APPLY_ATTR(L"table:display",			table_display_);
+}
+void table_help_message::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(content_);
+}
 }
 }

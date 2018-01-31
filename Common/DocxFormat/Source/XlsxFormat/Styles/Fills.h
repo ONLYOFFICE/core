@@ -316,13 +316,13 @@ namespace OOX
 				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
 				writer.WriteString(L">");
 
-				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-				{
-					if ( *it )
-					{
-						(*it)->toXML(writer);
-					}
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
 				
 				writer.WriteString(L"</fills>");
 			}

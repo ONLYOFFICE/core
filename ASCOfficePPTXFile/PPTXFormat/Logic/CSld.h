@@ -96,7 +96,7 @@ namespace PPTX
 				////проблема переноса картинок !!!
 				//if (controls.IsInit())
 				//{
-				//	controls->AddObjectsTo(&spTree.SpTreeElems, pWriter->m_pCommon->m_pImageManager);
+				//	controls->AddObjectsTo(&spTree.SpTreeElems, pWriter->m_pCommon->m_pMediaManager);
 				//}
 
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);

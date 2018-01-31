@@ -35,7 +35,17 @@
 #include "../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 
-namespace BinXlsxRW {
+namespace OOX
+{
+	namespace Spreadsheet
+	{
+		class CColor;
+		class CIndexedColors;
+	}
+}
+
+namespace BinXlsxRW 
+{
 	class BinaryCommonWriter
 	{
 	public: 

@@ -33,12 +33,9 @@
 #ifndef OOX_XLSXCOMMENTS_FILE_INCLUDE_H_
 #define OOX_XLSXCOMMENTS_FILE_INCLUDE_H_
 
-#include "../CommonInclude.h"
+#include "../Xlsx.h"
+#include "../Worksheets/Worksheet.h"
 #include "../SharedStrings/Si.h"
-
-#include "../../DocxFormat/IFileContainer.h"
-
-#include <unordered_map>
 
 namespace OOX
 {
@@ -87,7 +84,7 @@ namespace OOX
 			}
 			virtual void ClearItems()
 			{
-				m_mapItems.clear();
+                m_arrItems.clear();
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
@@ -100,10 +97,10 @@ namespace OOX
 			{
 				writer.WriteString(L"<authors>");
 
-				for ( std::unordered_map<int, std::wstring>::const_iterator it = m_mapItems.begin(); it != m_mapItems.end(); it++)
-				{
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
 					writer.WriteString(L"<author>");
-						writer.WriteEncodeXmlString(it->second);
+                        writer.WriteEncodeXmlString(m_arrItems[i]);
 					writer.WriteString(L"</author>");
 				}
 				writer.WriteString(L"</authors>");
@@ -115,8 +112,6 @@ namespace OOX
 				if ( oReader.IsEmptyNode() )
 					return;
 
-				int index = 0;
-
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
@@ -124,7 +119,7 @@ namespace OOX
 
 					if ( L"author" == sName )
 					{
-						m_mapItems.insert(std::make_pair(index++, oReader.GetText3()));
+                        m_arrItems.push_back(oReader.GetText3());
 					}
 				}
 			}
@@ -139,7 +134,7 @@ namespace OOX
 			{
 			}
 		public:
-			std::unordered_map<int, std::wstring>  m_mapItems;
+            std::vector<std::wstring>  m_arrItems;
 		};
 		class CComment : public WritingElement
 		{
@@ -230,13 +225,13 @@ namespace OOX
 			{
 				writer.WriteString(L"<commentList>");
 
-				for ( SpreadsheetElemArray::const_iterator it = m_arrItems.begin(); it != m_arrItems.end(); it++)
-				{
-					if ( *it )
-					{
-						(*it)->toXML(writer);
-					}
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
 
 				writer.WriteString(L"</commentList>");
 			}
@@ -270,13 +265,25 @@ namespace OOX
 		class CComments : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CComments()
+			CComments(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+				
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
+				if ((xlsx) && (!xlsx->m_arWorksheets.empty()))
+				{
+					xlsx->m_arWorksheets.back()->m_pComments = this;
+				}
 			}
-			CComments(const CPath& oRootPath, const CPath& oPath)
+			CComments(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+				
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
+				if ((xlsx) && (!xlsx->m_arWorksheets.empty()))
+				{
+					xlsx->m_arWorksheets.back()->m_pComments = this;
+				}
 				read( oRootPath, oPath );
 			}
 			virtual ~CComments()

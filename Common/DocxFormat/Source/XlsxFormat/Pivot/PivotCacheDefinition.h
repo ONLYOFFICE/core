@@ -43,20 +43,20 @@ namespace OOX
 		class CPivotCacheDefinition : public OOX::File, public OOX::IFileContainer
 		{
 		public:
-			CPivotCacheDefinition()
+			CPivotCacheDefinition(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
-                            m_bSpreadsheets = true;
-                            bIsWritten = false;
-                            m_pData = NULL;
-                            m_nDataLength = 0;
-                        }
-                        CPivotCacheDefinition(const CPath& oRootPath, const CPath& oPath)
-                        {
-                            m_bSpreadsheets = true;
-                            bIsWritten = false;
-                            m_pData = NULL;
-                            m_nDataLength = 0;
-                            read( oRootPath, oPath );
+                m_bSpreadsheets = true;
+                bIsWritten = false;
+                m_pData = NULL;
+                m_nDataLength = 0;
+            }
+            CPivotCacheDefinition(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
+            {
+                m_bSpreadsheets = true;
+                bIsWritten = false;
+                m_pData = NULL;
+                m_nDataLength = 0;
+                read( oRootPath, oPath );
 			}
 			virtual ~CPivotCacheDefinition()
 			{

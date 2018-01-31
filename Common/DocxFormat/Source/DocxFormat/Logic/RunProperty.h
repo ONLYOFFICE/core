@@ -737,18 +737,22 @@ namespace OOX
 		public:
 			CRunProperty()
 			{
+				m_pText = NULL;
 				m_bRPRChange = false;
 			}
 			virtual ~CRunProperty()
 			{
+				RELEASEOBJECT(m_pText);
 			}
 			CRunProperty(const XmlUtils::CXmlNode &oNode)
 			{
+				m_pText = NULL;
 				m_bRPRChange = false;
 				fromXML( (XmlUtils::CXmlNode &)oNode );
 			}
 			CRunProperty(const XmlUtils::CXmlLiteReader& oReader)
 			{
+				m_pText = NULL;
 				m_bRPRChange = false;
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 			}
@@ -764,152 +768,8 @@ namespace OOX
 			}
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				if ( _T("w:rPr") != oNode.GetName() )
-					return;
-
-				XmlUtils::CXmlNode oChild;
-
-				if ( oNode.GetNode( _T("w:b"), oChild ) )
-					m_oBold = oChild;
-
-				if ( oNode.GetNode( _T("w:bCs"), oChild ) )
-					m_oBoldCs = oChild;
-
-				if ( oNode.GetNode( _T("w:bdr"), oChild ) )
-					m_oBdr = oChild;
-
-				if ( oNode.GetNode( _T("w:caps"), oChild ) )
-					m_oCaps = oChild;
-
-				if ( oNode.GetNode( _T("w:color"), oChild ) )
-					m_oColor = oChild;
-
-				if ( oNode.GetNode( _T("w:cs"), oChild ) )
-					m_oCs = oChild;
-
-				if ( oNode.GetNode( _T("w:del"), oChild ) )
-					m_oDel = oChild;
-
-				if ( oNode.GetNode( _T("w:dstrike"), oChild ) )
-					m_oDStrike = oChild;
-
-				if ( oNode.GetNode( _T("w:eastAsianLayout"), oChild ) )
-					m_oEastAsianLayout = oChild;
-
-				if ( oNode.GetNode( _T("w:effect"), oChild ) )
-					m_oEffect = oChild;
-
-				if ( oNode.GetNode( _T("w:em"), oChild ) )
-					m_oEm = oChild;
-
-				if ( oNode.GetNode( _T("w:emboss"), oChild ) )
-					m_oEmboss = oChild;
-
-				if ( oNode.GetNode( _T("w:fitText"), oChild ) )
-					m_oFitText = oChild;
-
-				if ( oNode.GetNode( _T("w:highlight"), oChild ) )
-					m_oHighlight = oChild;
-
-				if ( oNode.GetNode( _T("w:ins"), oChild ) )
-					m_oIns = oChild;
-
-				if ( oNode.GetNode( _T("w:i"), oChild ) )
-					m_oItalic = oChild;
-
-				if ( oNode.GetNode( _T("w:iCs"), oChild ) )
-					m_oItalicCs = oChild;
-
-				if ( oNode.GetNode( _T("w:imprint"), oChild ) )
-					m_oImprint = oChild;
-
-				if ( oNode.GetNode( _T("w:kern"), oChild ) )
-					m_oKern = oChild;
-
-				if ( oNode.GetNode( _T("w:lang"), oChild ) )
-					m_oLang = oChild;
-
-				if ( oNode.GetNode( _T("w:noProof"), oChild ) )
-					m_oNoProof = oChild;
-
-				if ( oNode.GetNode( _T("m:oMath"), oChild ) )
-					m_oMath = oChild;
-
-				if ( oNode.GetNode( _T("w:outline"), oChild ) )
-					m_oOutline = oChild;
-
-				if ( oNode.GetNode( _T("w:position"), oChild ) )
-					m_oPosition = oChild;
-
-				if ( oNode.GetNode( _T("w:rFonts"), oChild ) )
-					m_oRFonts = oChild;
-
-				if ( !m_bRPRChange && oNode.GetNode( _T("w:rPrChange"), oChild ) )
-					m_oRPrChange = oChild;
-
-				// В спецификации почему-то написано pStyle, хотя по смыслы, по ссылке в самой
-				// же спецификации и, в конце концов, по алфавиту тут толжно быть rStyle
-				if ( oNode.GetNode( _T("w:rStyle"), oChild ) )
-					m_oRStyle = oChild;
-
-				if ( !m_oRStyle.IsInit() && oNode.GetNode( _T("w:pStyle"), oChild ) )
-					m_oRStyle = oChild;
-
-				if ( oNode.GetNode( _T("w:rtl"), oChild ) )
-					m_oRtL = oChild;
-
-				if ( oNode.GetNode( _T("w:shadow"), oChild ) )
-					m_oShadow = oChild;
-
-				if ( oNode.GetNode( _T("w:shd"), oChild ) )
-					m_oShd = oChild;
-
-				if ( oNode.GetNode( _T("w:smallCaps"), oChild ) )
-					m_oSmallCaps = oChild;
-
-				if ( oNode.GetNode( _T("w:snapToGrid"), oChild ) )
-					m_oSnapToGrid = oChild;
-
-				if ( oNode.GetNode( _T("w:spacing"), oChild ) )
-					m_oSpacing = oChild;
-
-				if ( oNode.GetNode( _T("w:specVanish"), oChild ) )
-					m_oSpecVanish = oChild;
-
-				if ( oNode.GetNode( _T("w:strike"), oChild ) )
-					m_oStrike = oChild;
-
-				if ( oNode.GetNode( _T("w:sz"), oChild ) )
-					m_oSz = oChild;
-
-				if ( oNode.GetNode( _T("w:szCs"), oChild ) )
-					m_oSzCs = oChild;
-
-				if ( oNode.GetNode( _T("w:u"), oChild ) )
-					m_oU = oChild;
-
-				if ( oNode.GetNode( _T("w:vanish"), oChild ) )
-					m_oVanish = oChild;
-
-				if ( oNode.GetNode( _T("w:vertAlign"), oChild ) )
-					m_oVertAlign = oChild;
-
-				if ( oNode.GetNode( _T("w:w"), oChild ) )
-					m_oW = oChild;
-
-				if ( oNode.GetNode( _T("w:webHidden"), oChild ) )
-					m_oWebHidden = oChild;
-
-				if ( oNode.GetNode( _T("w:moveFrom"), oChild ) )
-					m_oMoveFrom = oChild;
-
-				if ( oNode.GetNode( _T("w:moveTo"), oChild ) )
-					m_oMoveTo = oChild;
-
-			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             virtual std::wstring      toXML() const
 			{
                 std::wstring sResult = _T("<w:rPr>");
@@ -1228,9 +1088,6 @@ namespace OOX
 			{
 				return et_w_rPr;
 			}
-
-		public:
-
 			static const CRunProperty Merge(const CRunProperty& oPrev, const CRunProperty& oCurrent)
 			{
 				CRunProperty oProperties;
@@ -1292,8 +1149,7 @@ namespace OOX
 
 				return oResult;
 			}
-				
-		public:
+
 			const bool IsSimple() const
 			{
 				if ( m_oBold.IsInit() )
@@ -1428,9 +1284,6 @@ namespace OOX
 				return true;
 			}
 
-
-		public:
-
 			bool m_bRPRChange; // Является ли данный w:rPr дочерним по отношению к w:rPrChange
 
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBold;
@@ -1480,6 +1333,7 @@ namespace OOX
 			PPTX::Logic::UniFill											m_oTextFill;			
             nullable<PPTX::Logic::Ln>										m_oTextOutline;
 
+			OOX::WritingElement*											m_pText; //temp ... for Run object -> XpertdocOnlineDemoEn.docx
 		};
 
 	} // namespace Logic

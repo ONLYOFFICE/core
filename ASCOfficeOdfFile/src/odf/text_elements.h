@@ -73,7 +73,8 @@ public:
     }
 
     void afterCreate(document_context * ctx);
-   
+ 	void afterReadContent(document_context * ctx);
+  
 	void docx_convert (oox::docx_conversion_context & Context) ;
     void xlsx_convert (oox::xlsx_conversion_context & Context) ;
     void pptx_convert (oox::pptx_conversion_context & Context) ;
@@ -114,7 +115,9 @@ public:
     void pptx_convert(oox::pptx_conversion_context & Context) ;
 
     virtual void afterCreate();
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    virtual void afterReadContent();
+    
+	virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
     paragraph paragraph_;
 
@@ -151,8 +154,9 @@ public:
 	void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 	virtual void afterCreate();
-
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+	virtual void afterReadContent();
+    
+	virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
     p(){};
 	paragraph paragraph_;
@@ -245,7 +249,8 @@ public:
     void docx_convert(oox::docx_conversion_context & Context);
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
-    virtual void afterCreate();
+    
+	virtual void afterCreate();
     virtual void afterReadContent();
 
 private:

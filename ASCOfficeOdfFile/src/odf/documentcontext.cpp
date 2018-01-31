@@ -61,6 +61,7 @@ private:
 
 document_context::document_context() : impl_( new document_context::Impl() )
 {            
+	level = 0;
 }
 
 document_context::~document_context()

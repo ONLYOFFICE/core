@@ -312,14 +312,29 @@ void paragraph::afterCreate(document_context * Context)
     // вызывается сразу после создания объекта
     if (Context)
     {
-        // выставляем у предыдущего параграфа указатель на следующий (т.е. на вновь созданный)
-        if (paragraph * prevPar = Context->get_last_paragraph())
-            prevPar->set_next(this);
-        
-        // запоминаем в контексте вновь созданный параграф
-        Context->set_last_paragraph(this);
+		Context->level++;
+		// выставляем у предыдущего параграфа указатель на следующий (т.е. на вновь созданный)
+
+		if (Context->level == 1)
+		{
+			if (paragraph * prevPar = Context->get_last_paragraph())
+			{
+				prevPar->set_next(this);
+			}
+	        
+			// запоминаем в контексте вновь созданный параграф
+			Context->set_last_paragraph(this);
+		}
     }
 }
+void paragraph::afterReadContent(document_context * Context)
+{
+    if (Context)
+    {
+		Context->level--;
+    }
+}
+
 const wchar_t * emptyParagraphContent = L"<w:pPr></w:pPr><w:r><w:rPr></w:rPr></w:r>";
 
 const wchar_t * emptyParagraphDrawing = L"<w:p><w:pPr></w:pPr></w:p>";
@@ -435,27 +450,6 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 	
 	std::wostream & _Wostream = Context.output_stream();
 
-    if (next_par_)
-    {
-        // проверяем не сменит ли следующий параграф свойства страницы.
-        // если да — устанавливаем контексту флаг на то что необходимо в конце текущего параграфа 
-        // распечатать свойства раздела
-		//проверить ... не она ли текущая - может быть прописан дубляж - и тогда разрыв нарисуется ненужный
-        const std::wstring & next_styleName				= next_par_->attrs_.text_style_name_;
-        const _CP_OPT(std::wstring) next_masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(next_styleName);
-
-        if ((next_masterPageName)  && (Context.get_master_page_name() != *next_masterPageName))
-        {
-            Context.next_dump_page_properties(true);
-			is_empty = false;
-        }
-    } 
-	if (next_section_ || next_end_section_)
-	{
-		Context.get_section_context().get().is_dump_ = true;
-		is_empty = false;
-	}
-
     const _CP_OPT(std::wstring) masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(styleName);
    
 	if (masterPageName)
@@ -469,6 +463,27 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 
 		is_empty = false;
     }    
+
+    if (next_par_)
+    {
+        // проверяем не сменит ли следующий параграф свойства страницы.
+        // если да — устанавливаем контексту флаг на то что необходимо в текущем параграфе
+        // распечатать свойства раздела/секции
+		//проверить ... не она ли текущая - может быть прописан дубляж - и тогда разрыв нарисуется ненужный
+        const std::wstring & next_styleName				= next_par_->attrs_.text_style_name_;
+        const _CP_OPT(std::wstring) next_masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(next_styleName);
+
+        if ((next_masterPageName)  && (Context.get_master_page_name() != *next_masterPageName))
+        {
+            Context.next_dump_page_properties(true);
+			is_empty = false;
+        }
+    } 
+	if (next_section_/* || next_end_section_*/)
+	{
+		Context.get_section_context().get().is_dump_ = true;
+		is_empty = false;
+	}
 	std::wstringstream strm;
 	if (Context.process_page_properties(strm))
 	{
@@ -604,7 +619,10 @@ void h::afterCreate()
 {
     paragraph_.afterCreate( getContext() );
 }
-
+void h::afterReadContent()
+{
+    paragraph_.afterReadContent( getContext() );
+}
 void h::docx_convert(oox::docx_conversion_context & Context) 
 {
     paragraph_.docx_convert(Context);
@@ -627,7 +645,10 @@ void p::afterCreate()
 {
     paragraph_.afterCreate( getContext() );
 }
-
+void p::afterReadContent()
+{
+    paragraph_.afterReadContent( getContext() );
+}
 std::wostream & p::text_to_stream(std::wostream & _Wostream) const
 {
     return paragraph_.text_to_stream(_Wostream);

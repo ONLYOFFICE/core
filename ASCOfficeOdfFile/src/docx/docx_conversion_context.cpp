@@ -777,7 +777,8 @@ void docx_conversion_context::process_section(std::wostream & strm, odf_reader::
 		{
 			double page_width = 0;
 			const odf_reader::page_layout_instance * pp = root()->odf_context().pageLayoutContainer().page_layout_first();
-			if (pp)
+			
+			if ((pp) && (pp->properties()))
 			{
 				odf_reader::style_page_layout_properties_attlist & attr_page = pp->properties()->attlist_;
 				if (attr_page.fo_page_width_)

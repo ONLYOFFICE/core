@@ -45,10 +45,11 @@ class document_context
 public:
     document_context();
     virtual ~document_context();
-
-public:
+				
     void set_last_paragraph(text::paragraph * Paragraph);
     text::paragraph * get_last_paragraph();
+
+	int level;
     
 private:
     class Impl;

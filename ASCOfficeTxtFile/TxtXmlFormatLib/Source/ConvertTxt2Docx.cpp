@@ -78,11 +78,10 @@ namespace Txt2Docx
 
     void Converter::write(/*const std::wstring& path*/XmlUtils::CStringWriter & stringWriter)
     {
-        for (std::vector<OOX::WritingElement*>::iterator	it = converter_->m_outputFile.m_arrItems.begin();
-														it != converter_->m_outputFile.m_arrItems.end(); ++it)
+        for (size_t	i = 0; i < converter_->m_outputFile.m_arrItems.size(); ++i)
 		{
-			if ( *it )
-				stringWriter.WriteString((*it)->toXML());
+			if ( converter_->m_outputFile.m_arrItems[i] )
+				stringWriter.WriteString(converter_->m_outputFile.m_arrItems[i]->toXML());
 		}
 		//BOOL res = converter_->m_outputFile.Write(std_string2string(path.string()));
 		return;
@@ -119,8 +118,10 @@ namespace Txt2Docx
             font.m_sHAnsi.Init();	*font.m_sHAnsi	= L"Courier New";
             font.m_sCs.Init();		*font.m_sCs		= L"Courier New";
 
-            for (std::vector<std::wstring>::iterator line = m_inputFile.m_listContent.begin(); line != m_inputFile.m_listContent.end(); line++)
+            for (size_t i = 0; i < m_inputFile.m_listContent.size(); ++i)
 			{
+				std::wstring & line = m_inputFile.m_listContent[i];
+
 				OOX::Logic::CParagraph			*paragraph	= new OOX::Logic::CParagraph();
 				OOX::Logic::CParagraphProperty	*pPr		= new OOX::Logic::CParagraphProperty();
 				OOX::Logic::CRunProperty		*rPr		= new OOX::Logic::CRunProperty();
@@ -132,17 +133,17 @@ namespace Txt2Docx
 				paragraph->m_arrItems.push_back(pPr);
 				paragraph->m_oParagraphProperty = pPr; //копия для удобства
 				
-				while(line->find(_T("\x08")) != line->npos)
+				while(line.find(_T("\x08")) != line.npos)
 				{
-					line->erase(line->find(_T("\x08")), 1);//, "");
+					line.erase(line.find(_T("\x08")), 1);//, "");
 				}
-				while(line->find(_T("\x09")) != line->npos)
+				while(line.find(_T("\x09")) != line.npos)
                 {
-					int pos = line->find(_T("\x09"));
+					int pos = line.find(_T("\x09"));
 					
 					if (pos > 0)
 					{
-						std::wstring s = line->substr(0, pos - 1);
+						std::wstring s = line.substr(0, pos - 1);
 						if (!s.empty())
 						{
 							OOX::Logic::CRunProperty *rPr_	= new OOX::Logic::CRunProperty();
@@ -152,12 +153,12 @@ namespace Txt2Docx
 						}
 					}
 					paragraph->AddTab();
-					line->erase(0, pos + 1);
+					line.erase(0, pos + 1);
                 }
 			
-				if (!line->empty())
+				if (!line.empty())
 				{
-                    std::wstring s_ = XmlUtils::EncodeXmlString(*line);
+                    std::wstring s_ = XmlUtils::EncodeXmlString(line);
                     paragraph->AddText(s_, rPr);
 				}
 				pDocument->m_arrItems.push_back(paragraph);

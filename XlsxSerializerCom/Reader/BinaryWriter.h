@@ -44,6 +44,7 @@
 
 #include "../../Common/OfficeFileFormats.h"
 #include "../../Common/Base64.h"
+#include "../../Common/OfficeFileErrorDescription.h"
 
 #include "../../ASCOfficeDocxFile2/DocWrapper/FontProcessor.h"
 #include "../../ASCOfficePPTXFile/Editor/FontCutter.h"
@@ -64,7 +65,6 @@ namespace BinXlsxRW
 		BinaryTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream):m_oBcw(oCBufferedStream)
 		{
 		}
-	public:
 		void Write(const OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CTableParts& oTableParts)
 		{
 			int nCurPos = 0;
@@ -4322,10 +4322,10 @@ namespace BinXlsxRW
 		{
 			RELEASEOBJECT(m_oBcw);
 		}
-        bool Open(const std::wstring& sInputDir, const std::wstring& sFileDst, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager,
+        int Open(const std::wstring& sInputDir, const std::wstring& sFileDst, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager,
             NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bIsNoBase64)
 		{
-			bool result = true;
+			int result = 0;
 
 			OOX::CPath path(sFileDst);
 	//создаем папку для media
@@ -4361,13 +4361,18 @@ namespace BinXlsxRW
 					pXlsx = new OOX::Spreadsheet::CXlsx(OOX::CPath(sInputDir));
 				}break;
 			}		
+			if (0 != result)
+			{
+				RELEASEOBJECT(pXlsx);
+				return result;
+			}	
 
 			pXlsx->PrepareWorkbook();
 
-			if (false == result || NULL == pXlsx->m_pWorkbook)
+			if (NULL == pXlsx->m_pWorkbook)
 			{
 				RELEASEOBJECT(pXlsx);
-				return false;
+				return AVS_FILEUTILS_ERROR_CONVERT;
 			}			
 
 			if (BinXlsxRW::c_oFileTypes::JSON == saveFileType)
@@ -4406,7 +4411,7 @@ namespace BinXlsxRW
 					}
 					else
 					{
-						result = false;
+						result = AVS_FILEUTILS_ERROR_CONVERT;
 					}
 					RELEASEARRAYOBJECTS(pbBase64Buffer);
 				}

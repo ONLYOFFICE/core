@@ -36,7 +36,7 @@
 
 #include "../../DesktopEditor/common/File.h"
 #include "../../Common/DocxFormat/Source/Base/unicode_util.h"
-
+#include "../../Common/OfficeFileErrorDescription.h"
 #include "../../UnicodeConverter/UnicodeConverter.h"
 #include "../../UnicodeConverter/UnicodeConverter_Encodings.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
@@ -104,7 +104,7 @@ namespace CSVReader
 			if (conversionOK != eUnicodeConversionResult)
 			{
 				delete [] pStrUtf32;
-				return ansi_2_unicode(data, data_size);
+				return std::wstring();
 			}
 			std::wstring utf32Str ((wchar_t *) pStrUtf32);
 
@@ -138,7 +138,7 @@ namespace CSVReader
 			if (conversionOK != eUnicodeConversionResult)
 			{
 				delete [] pStrUtf32;
-				return ansi_2_unicode(data, data_size);
+				return std::wstring();
 			}
 			std::wstring utf32Str ((wchar_t *) pStrUtf32);
 
@@ -172,7 +172,7 @@ namespace CSVReader
 			if (conversionOK != eUnicodeConversionResult)
 			{
 				delete [] pStrUtf16;
-				return ansi_2_unicode(data, data_size);
+				return std::wstring();
 			}
 			std::wstring utf16Str ((wchar_t *) pStrUtf16);
 
@@ -225,10 +225,10 @@ namespace CSVReader
 		pCell->setRowCol(nRow, nCol);
 		oRow.m_arrItems.push_back(pCell);
 	}
-	bool ReadFromCsvToXlsx(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& sDelimiter)
+	int ReadFromCsvToXlsx(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& sDelimiter)
 	{
 		NSFile::CFileBinary oFile;
-		if (false == oFile.OpenFile(sFileName)) return false;
+		if (false == oFile.OpenFile(sFileName)) return AVS_FILEUTILS_ERROR_CONVERT;
 //-----------------------------------------------------------------------------------
 	// Создадим Workbook
 		oXlsx.CreateWorkbook();
@@ -340,7 +340,7 @@ namespace CSVReader
 
 		if (nSize < 1 && nInputBufferSize > 0)
 		{
-			return false;
+			return AVS_FILEUTILS_ERROR_CONVERT_ICU;
 		}
         const WCHAR *pTemp = sFileDataW.c_str();
 
@@ -466,5 +466,7 @@ namespace CSVReader
 		}
 		oXlsx.m_arWorksheets.push_back(pWorksheet);
 		oXlsx.m_mapWorksheets.insert(std::make_pair(sSheetRId, pWorksheet));
+
+		return 0;
 	}
 }

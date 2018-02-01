@@ -1170,7 +1170,7 @@ void docx_conversion_context::docx_convert_delayed()
     {
         odf_reader::office_element * elm = delayed_elements_.front();
         elm->docx_convert(*this);
-		delayed_elements_.pop_front();
+		delayed_elements_.erase(delayed_elements_.begin(), delayed_elements_.begin() + 1);
     }
 	delayed_converting_=false;
 }

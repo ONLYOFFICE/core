@@ -150,7 +150,6 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("name"),      m_oName )
@@ -159,7 +158,7 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showLastColumn"),      m_oShowLastColumn )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showRowStripes"),      m_oShowRowStripes )
 
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<std::wstring > m_oName;
@@ -242,16 +241,15 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("id"),      m_oId )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("name"),      m_oName )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("totalsRowLabel"),      m_oTotalsRowLabel )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("totalsRowFunction"),      m_oTotalsRowFunction )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("dataDxfId"),      m_oDataDxfId )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("id"),				m_oId )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("name"),			m_oName )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("totalsRowLabel"),	m_oTotalsRowLabel )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("totalsRowFunction"),m_oTotalsRowFunction )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("dataDxfId"),		m_oDataDxfId )
 
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oId;

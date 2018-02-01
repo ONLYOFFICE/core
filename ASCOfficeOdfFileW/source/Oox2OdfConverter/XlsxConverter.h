@@ -48,6 +48,7 @@ namespace OOX
 
 		class CWorksheet;
 		class CTable;
+		class CTableColumns;
 		class CCol;
 		class CRow;
 		class CCell;
@@ -157,6 +158,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CWorksheet			*oox_sheet);
 		void convert(OOX::Spreadsheet::CDefinedName			*oox_defined);
 		void convert(OOX::Spreadsheet::CTable				*oox_table_part);
+		void convert(OOX::Spreadsheet::CTableColumns		*oox_table_part_columns);
 		void convert(OOX::Spreadsheet::CPictureWorksheet	*oox_background);
 		void convert(OOX::Spreadsheet::CHeaderFooter		*oox_header_footer);
 

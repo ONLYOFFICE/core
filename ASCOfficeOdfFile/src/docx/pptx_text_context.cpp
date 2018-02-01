@@ -126,13 +126,13 @@ private:
 
 	std::wstring					base_style_name_;
 	odf_types::style_family::type	base_style_family_;//Presentation Or SpreadSheet
-/////////////lists////////////
-    std::list<std::wstring> list_style_stack_;
+//-------------------------------------------------------------------------------
+    std::vector<std::wstring> list_style_stack_;
     bool first_element_list_item_;
-    // счетчик для нумерации имен созданных в процессе конвертации стилей
-    int new_list_style_number_;
-    // цепочки переименований нумераций
-    boost::unordered_map<std::wstring, std::wstring> list_style_renames_;
+    
+    int new_list_style_number_;	// счетчик для нумерации имен созданных в процессе конвертации стилей
+   
+    boost::unordered_map<std::wstring, std::wstring> list_style_renames_; // цепочки переименований нумераций
    
 	void write_list_styles(std::wostream & strm);
 	//void write_list_properties(std::wostream & strm);

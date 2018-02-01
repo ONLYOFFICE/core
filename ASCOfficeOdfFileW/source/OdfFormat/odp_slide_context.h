@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include <list>
+#include <vector>
 #include "odp_page_state.h"
 
 #include "odf_table_context.h"
@@ -83,7 +83,7 @@ private:
 	odf_table_context			table_context_;
 	odf_comment_context			comment_context_;
 	
-	std::list<odp_page_state>	page_state_list_;
+	std::vector<odp_page_state>	page_state_list_;
 	int							count_slides_;
 
 	friend class odp_conversion_context;

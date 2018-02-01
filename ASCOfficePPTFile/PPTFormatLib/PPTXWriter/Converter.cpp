@@ -187,12 +187,12 @@ void NSPresentationEditor::CPPTXWriter::WriteContentTypes()
 {
     std::wstring strContentTypes = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
 <Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\
-<Default Extension=\"bmp\" ContentType=\"image/bmp\" />\
-<Default Extension=\"png\" ContentType=\"image/png\" />\
-<Default Extension=\"jpeg\" ContentType=\"image/jpeg\" />\
-<Default Extension=\"wmf\" ContentType=\"image/x-wmf\" />\
-<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\" />\
-<Default Extension=\"xml\" ContentType=\"application/xml\" />\
+<Default Extension=\"bmp\" ContentType=\"image/bmp\"/>\
+<Default Extension=\"png\" ContentType=\"image/png\"/>\
+<Default Extension=\"jpeg\" ContentType=\"image/jpeg\"/>\
+<Default Extension=\"wmf\" ContentType=\"image/x-wmf\"/>\
+<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>\
+<Default Extension=\"xml\" ContentType=\"application/xml\"/>\
 <Default Extension=\"gif\" ContentType=\"image/gif\"/>\
 <Default Extension=\"emf\" ContentType=\"image/x-emf\"/>\
 <Default Extension=\"wav\" ContentType=\"audio/wav\"/>\
@@ -207,7 +207,7 @@ void NSPresentationEditor::CPPTXWriter::WriteContentTypes()
 <Default Extension=\"xls\" ContentType=\"application/vnd.ms-excel\"/>\
 <Default Extension=\"xlsx\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"/>\
 <Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\" />\
-<Default Extension=\"jpg\" ContentType=\"application/octet-stream\"/>";
+<Default Extension=\"jpg\" ContentType=\"image/jpeg\"/>";
 
 	if (m_pDocument->m_bMacros)
 	{

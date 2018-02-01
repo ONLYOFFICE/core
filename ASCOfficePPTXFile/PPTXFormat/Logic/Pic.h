@@ -221,6 +221,8 @@ namespace PPTX
 		
 			nullable_int						m_oDxaOrig;
 			nullable_int						m_oDyaOrig;
+
+			nullable_string						m_sAlternateContenteXml;
 		};
 
 		class Pic : public WrapperWritingElement

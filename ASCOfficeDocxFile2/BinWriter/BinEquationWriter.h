@@ -416,7 +416,7 @@ namespace MathEquation
 
 			virtual void BeginEquation()
 			{
-				int nCurPos = WriteItemStart(BinDocxRW::c_oSerParType::OMath);
+				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::OMath);
 				m_aEquationStack.push(nCurPos);
 			}
 			virtual void EndEquation()
@@ -618,7 +618,7 @@ namespace MathEquation
                         nRows = m_aRowsCounter.top();
                         m_aRowsCounter.pop();
                     }
-                    int nPos = m_oStream.GetPosition();
+                    int nPos = 0;
                     if (!m_aRowsPosCounter.empty())
                     {
                         nPos = m_aRowsPosCounter.top();

@@ -335,6 +335,17 @@ namespace PPTX
 							std::wstring strOlePath = pReader->GetString(_embed_data_size);
 							m_OleObjectFile->set_filename(strOlePath, false); //temp !!! for ImageManager original file name
 						}
+						else if (embedded_type == 4)
+						{
+							pReader->Seek(pReader->GetPos() - 4); //roll back to size record
+							std::wstring sXmlContent;
+							pReader->m_pMainDocument->getXmlContentElem(OOX::et_m_oMathPara, *pReader, sXmlContent);
+
+							if (!sXmlContent.empty())
+							{
+								m_sAlternateContenteXml = sXmlContent;
+							}
+						}
 						else if (embedded_type == 1)
 						{
 							m_OleObjectFile = new OOX::OleObject(NULL, true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);

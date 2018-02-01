@@ -137,10 +137,10 @@ namespace BinXlsxRW{
 		oOfficeDrawingConverter.SetFontPicker(pFontPicker);
 
 		BinXlsxRW::BinaryFileWriter oBinaryFileWriter(fp);
-		oBinaryFileWriter.Open(sSrcPath, sDstFileName, pEmbeddedFontsManager, &oOfficeDrawingConverter, sXMLOptions, m_bIsNoBase64);
+		bool result = oBinaryFileWriter.Open(sSrcPath, sDstFileName, pEmbeddedFontsManager, &oOfficeDrawingConverter, sXMLOptions, m_bIsNoBase64);
 
 		RELEASEOBJECT(pFontPicker);
-		return true;
+		return result;
 	}
  	bool CXlsxSerializer::saveChart(NSBinPptxRW::CBinaryFileReader* pReader, long lLength, const std::wstring& sFilepath, const long& lChartNumber)
 	{

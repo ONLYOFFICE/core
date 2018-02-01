@@ -225,19 +225,22 @@ namespace CSVReader
 		pCell->setRowCol(nRow, nCol);
 		oRow.m_arrItems.push_back(pCell);
 	}
-	void ReadFromCsvToXlsx(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& sDelimiter)
+	bool ReadFromCsvToXlsx(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& sDelimiter)
 	{
-		// Создадим Workbook
+		NSFile::CFileBinary oFile;
+		if (false == oFile.OpenFile(sFileName)) return false;
+//-----------------------------------------------------------------------------------
+	// Создадим Workbook
 		oXlsx.CreateWorkbook();
-		// Создадим стили
+	// Создадим стили
 		oXlsx.CreateStyles();
 
-		// Добавим стили для wrap-а
+	// Добавим стили для wrap-а
 		oXlsx.m_pStyles->m_oCellXfs.Init();
 		oXlsx.m_pStyles->m_oCellXfs->m_oCount.Init();
 		oXlsx.m_pStyles->m_oCellXfs->m_oCount->SetValue(2);
 
-		// Normall default
+	// Normall default
 		OOX::Spreadsheet::CXfs* pXfs = NULL;
 		pXfs = new OOX::Spreadsheet::CXfs();
 		pXfs->m_oBorderId.Init();
@@ -251,7 +254,7 @@ namespace CSVReader
 		
 		oXlsx.m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
 
-		// Wrap style
+	// Wrap style
 		pXfs = new OOX::Spreadsheet::CXfs();
 		pXfs->m_oBorderId.Init();
 		pXfs->m_oBorderId->SetValue(0);
@@ -286,176 +289,182 @@ namespace CSVReader
 		oXlsx.m_pWorkbook->m_oSheets.Init();
 		oXlsx.m_pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
 
-		NSFile::CFileBinary oFile;
-		if(oFile.OpenFile(sFileName))
+//-----------------------------------------------------------------------------------
+		DWORD nFileSize = 0;
+		BYTE* pFileData = new BYTE[oFile.GetFileSize()];
+		
+		oFile.ReadFile(pFileData, oFile.GetFileSize(), nFileSize);
+		oFile.CloseFile();
+	//skip bom
+		DWORD nInputBufferSize = nFileSize;
+		BYTE* pInputBuffer = pFileData;
+		if (nInputBufferSize >= 3 && 0xef == pInputBuffer[0] && 0xbb == pInputBuffer[1] && 0xbf == pInputBuffer[2])
 		{
-			DWORD nFileSize = 0;
-			BYTE* pFileData = new BYTE[oFile.GetFileSize()];
-			oFile.ReadFile(pFileData, oFile.GetFileSize(), nFileSize);
-			oFile.CloseFile();
-			//skip bom
-			DWORD nInputBufferSize = nFileSize;
-			BYTE* pInputBuffer = pFileData;
-			if (nInputBufferSize >= 3 && 0xef == pInputBuffer[0] && 0xbb == pInputBuffer[1] && 0xbf == pInputBuffer[2])
-			{
-				nInputBufferSize -= 3;
-				pInputBuffer += 3;
-			}
-			else if (nInputBufferSize >= 2 && ((0xfe == pInputBuffer[0] && 0xff == pInputBuffer[1]) || (0xff == pInputBuffer[0] && 0xfe == pInputBuffer[1])))
-			{
-				nInputBufferSize -= 2;
-				pInputBuffer += 2;
-			}
-			
-			std::wstring sFileDataW;
+			nInputBufferSize -= 3;
+			pInputBuffer += 3;
+		}
+		else if (nInputBufferSize >= 2 && ((0xfe == pInputBuffer[0] && 0xff == pInputBuffer[1]) || (0xff == pInputBuffer[0] && 0xfe == pInputBuffer[1])))
+		{
+			nInputBufferSize -= 2;
+			pInputBuffer += 2;
+		}
+		
+		std::wstring sFileDataW;
 
-			if (nCodePage == 1000)
-			{
-				sFileDataW = ansi_2_unicode(pInputBuffer, nInputBufferSize);
-			}
-			else if (nCodePage == 46)//utf-8
-			{
-				sFileDataW = utf8_2_unicode(pInputBuffer, nInputBufferSize);
-			}
-			else if (nCodePage == 48)//utf-16
-			{
-				sFileDataW = utf16_2_unicode(pInputBuffer, nInputBufferSize);
-			}
-			else if (nCodePage == 50) // utf-32
-			{
-				sFileDataW = utf32_2_unicode(pInputBuffer, nInputBufferSize);
-			}
-			else
-			{
-				const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[nCodePage];
-	            
-				NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
-				sFileDataW = oUnicodeConverter.toUnicode((const char*)pInputBuffer, nInputBufferSize, oEncodindId.Name);
-			}
+		if (nCodePage == 1000)
+		{
+			sFileDataW = ansi_2_unicode(pInputBuffer, nInputBufferSize);
+		}
+		else if (nCodePage == 46)//utf-8
+		{
+			sFileDataW = utf8_2_unicode(pInputBuffer, nInputBufferSize);
+		}
+		else if (nCodePage == 48)//utf-16
+		{
+			sFileDataW = utf16_2_unicode(pInputBuffer, nInputBufferSize);
+		}
+		else if (nCodePage == 50) // utf-32
+		{
+			sFileDataW = utf32_2_unicode(pInputBuffer, nInputBufferSize);
+		}
+		else
+		{
+			const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[nCodePage];
             
-			INT nSize = sFileDataW.length();
-            const WCHAR *pTemp =sFileDataW.c_str();
+			NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
+			sFileDataW = oUnicodeConverter.toUnicode((const char*)pInputBuffer, nInputBufferSize, oEncodindId.Name);
+		}
+ //------------------------------------------------------------------------------------------------------------------------------     
 
-			WCHAR wcDelimiterLeading = L'\0';
-			WCHAR wcDelimiterTrailing = L'\0';
-			int nDelimiterSize = 0;
-			if (sDelimiter.length() > 0)
+		size_t nSize = sFileDataW.length();
+
+		if (nSize < 1 && nInputBufferSize > 0)
+		{
+			return false;
+		}
+        const WCHAR *pTemp = sFileDataW.c_str();
+
+		WCHAR wcDelimiterLeading = L'\0';
+		WCHAR wcDelimiterTrailing = L'\0';
+		int nDelimiterSize = 0;
+		
+		if (sDelimiter.length() > 0)
+		{
+			wcDelimiterLeading = sDelimiter[0];
+			nDelimiterSize = 1;
+			if (2 == sizeof(wchar_t) && 0xD800 <= wcDelimiterLeading && wcDelimiterLeading <= 0xDBFF && sDelimiter.length() > 1)
 			{
-				wcDelimiterLeading = sDelimiter[0];
-				nDelimiterSize = 1;
-				if (2 == sizeof(wchar_t) && 0xD800 <= wcDelimiterLeading && wcDelimiterLeading <= 0xDBFF && sDelimiter.length() > 1)
-				{
-					wcDelimiterTrailing = sDelimiter[1];
-					nDelimiterSize = 2;
-				}
-			}
-
-            const WCHAR wcNewLineN = _T('\n');
-            const WCHAR wcNewLineR = _T('\r');
-            const WCHAR wcQuote = _T('"');
-            const WCHAR wcTab = _T('\t');
-
-            bool bIsWrap = false;
-			WCHAR wcCurrent;
-			INT nStartCell = 0;
-			std::stack<INT> oDeleteChars;
-
-            bool bInQuote = false;
-			INT nIndexRow = 0;
-			INT nIndexCol = 0;
-			OOX::Spreadsheet::CRow *pRow = new OOX::Spreadsheet::CRow();
-			pRow->m_oR.Init();
-			pRow->m_oR->SetValue(nIndexRow + 1);
-			for (INT nIndex = 0; nIndex < nSize; ++nIndex)
-			{
-				wcCurrent = pTemp[nIndex];
-				if (wcDelimiterLeading == wcCurrent && (L'\0' == wcDelimiterTrailing || (nIndex + 1 < nSize && wcDelimiterTrailing == pTemp[nIndex + 1])))
-				{
-					if (bInQuote)
-						continue;
-					// New Cell
-                    std::wstring sCellText(pTemp + nStartCell, nIndex - nStartCell);
-					AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
-                    bIsWrap = false;
-
-					nStartCell = nIndex + nDelimiterSize;
-					if (nStartCell == nSize)
-					{
-						pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
-						pRow = NULL;
-					}
-				}
-				else if (wcNewLineN == wcCurrent || wcNewLineR == wcCurrent)
-				{
-					if (bInQuote)
-					{
-						// Добавим Wrap
-                        bIsWrap = true;
-						continue;
-					}
-					// New line
-					if (nStartCell != nIndex)
-					{
-                        std::wstring sCellText(pTemp + nStartCell, nIndex - nStartCell);
-						AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
-                        bIsWrap = false;
-					}
-
-					if (wcNewLineR == wcCurrent && nIndex + 1 != nSize && wcNewLineN == pTemp[nIndex + 1])
-					{
-						// На комбинацию \r\n должен быть только 1 перенос
-						++nIndex;
-					}
-					
-					nStartCell = nIndex + 1;
-
-					pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
-					pRow = new OOX::Spreadsheet::CRow();
-					pRow->m_oR.Init();
-					pRow->m_oR->SetValue(++nIndexRow + 1);
-					nIndexCol = 0;
-				}
-				else if (wcQuote == wcCurrent)
-				{
-					// Quote
-                    if (false == bInQuote && nStartCell == nIndex && nIndex + 1 != nSize)
-					{
-						// Начало новой ячейки (только если мы сразу после разделителя и не в конце файла)
-						bInQuote = !bInQuote;
-						nStartCell = nIndex + 1;
-					}
-                    else if ( bInQuote )
-					{
-						// Нужно удалить кавычку ограничитель
-						oDeleteChars.push(nIndex);
-
-						// Если следующий символ кавычка, то мы не закончили ограничитель строки (1997,Ford,E350,"Super, ""luxurious"" truck")
-						if (nIndex + 1 != nSize && wcQuote == pTemp[nIndex + 1])
-							++nIndex;
-						else
-							bInQuote = !bInQuote;
-					}
-				}
-				else if (wcTab == wcCurrent)
-				{
-					// delete tab if not delimiter
-					oDeleteChars.push(nIndex);
-				}
-			}
-
-			if (nStartCell != nSize)
-			{
-				// New line
-                std::wstring sCellText(pTemp + nStartCell, nSize - nStartCell);
-				AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
-				pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
-			}
-			else
-			{
-				RELEASEOBJECT(pRow);
+				wcDelimiterTrailing = sDelimiter[1];
+				nDelimiterSize = 2;
 			}
 		}
 
+        const WCHAR wcNewLineN = _T('\n');
+        const WCHAR wcNewLineR = _T('\r');
+        const WCHAR wcQuote = _T('"');
+        const WCHAR wcTab = _T('\t');
+
+        bool bIsWrap = false;
+		WCHAR wcCurrent;
+		INT nStartCell = 0;
+		std::stack<INT> oDeleteChars;
+
+        bool bInQuote = false;
+		INT nIndexRow = 0;
+		INT nIndexCol = 0;
+		OOX::Spreadsheet::CRow *pRow = new OOX::Spreadsheet::CRow();
+		pRow->m_oR.Init();
+		pRow->m_oR->SetValue(nIndexRow + 1);
+		
+		for (size_t nIndex = 0; nIndex < nSize; ++nIndex)
+		{
+			wcCurrent = pTemp[nIndex];
+			if (wcDelimiterLeading == wcCurrent && (L'\0' == wcDelimiterTrailing || (nIndex + 1 < nSize && wcDelimiterTrailing == pTemp[nIndex + 1])))
+			{
+				if (bInQuote)
+					continue;
+				// New Cell
+                std::wstring sCellText(pTemp + nStartCell, nIndex - nStartCell);
+				AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
+                bIsWrap = false;
+
+				nStartCell = nIndex + nDelimiterSize;
+				if (nStartCell == nSize)
+				{
+					pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
+					pRow = NULL;
+				}
+			}
+			else if (wcNewLineN == wcCurrent || wcNewLineR == wcCurrent)
+			{
+				if (bInQuote)
+				{
+					// Добавим Wrap
+                    bIsWrap = true;
+					continue;
+				}
+				// New line
+				if (nStartCell != nIndex)
+				{
+                    std::wstring sCellText(pTemp + nStartCell, nIndex - nStartCell);
+					AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
+                    bIsWrap = false;
+				}
+
+				if (wcNewLineR == wcCurrent && nIndex + 1 != nSize && wcNewLineN == pTemp[nIndex + 1])
+				{
+					// На комбинацию \r\n должен быть только 1 перенос
+					++nIndex;
+				}
+				
+				nStartCell = nIndex + 1;
+
+				pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
+				pRow = new OOX::Spreadsheet::CRow();
+				pRow->m_oR.Init();
+				pRow->m_oR->SetValue(++nIndexRow + 1);
+				nIndexCol = 0;
+			}
+			else if (wcQuote == wcCurrent)
+			{
+				// Quote
+                if (false == bInQuote && nStartCell == nIndex && nIndex + 1 != nSize)
+				{
+					// Начало новой ячейки (только если мы сразу после разделителя и не в конце файла)
+					bInQuote = !bInQuote;
+					nStartCell = nIndex + 1;
+				}
+                else if ( bInQuote )
+				{
+					// Нужно удалить кавычку ограничитель
+					oDeleteChars.push(nIndex);
+
+					// Если следующий символ кавычка, то мы не закончили ограничитель строки (1997,Ford,E350,"Super, ""luxurious"" truck")
+					if (nIndex + 1 != nSize && wcQuote == pTemp[nIndex + 1])
+						++nIndex;
+					else
+						bInQuote = !bInQuote;
+				}
+			}
+			else if (wcTab == wcCurrent)
+			{
+				// delete tab if not delimiter
+				oDeleteChars.push(nIndex);
+			}
+		}
+
+		if (nStartCell != nSize)
+		{
+			// New line
+            std::wstring sCellText(pTemp + nStartCell, nSize - nStartCell);
+			AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
+			pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
+		}
+		else
+		{
+			RELEASEOBJECT(pRow);
+		}
 		oXlsx.m_arWorksheets.push_back(pWorksheet);
+		oXlsx.m_mapWorksheets.insert(std::make_pair(sSheetRId, pWorksheet));
 	}
 }

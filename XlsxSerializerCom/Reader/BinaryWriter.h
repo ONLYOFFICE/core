@@ -4322,9 +4322,11 @@ namespace BinXlsxRW
 		{
 			RELEASEOBJECT(m_oBcw);
 		}
-        void Open(const std::wstring& sInputDir, const std::wstring& sFileDst, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager,
+        bool Open(const std::wstring& sInputDir, const std::wstring& sFileDst, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager,
             NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bIsNoBase64)
 		{
+			bool result = true;
+
 			OOX::CPath path(sFileDst);
 	//создаем папку для media
             std::wstring mediaDir = path.GetDirectory() + L"media";
@@ -4348,16 +4350,25 @@ namespace BinXlsxRW
 			OOX::Spreadsheet::CXlsx *pXlsx = NULL;
 			switch(fileType)
 			{
-			case BinXlsxRW::c_oFileTypes::CSV:
-				pXlsx = new OOX::Spreadsheet::CXlsx();
-				CSVReader::ReadFromCsvToXlsx(sInputDir, *pXlsx, nCodePage, sDelimiter);
-				break;
-			case BinXlsxRW::c_oFileTypes::XLSX:
-			default:
-				pXlsx = new OOX::Spreadsheet::CXlsx(OOX::CPath(sInputDir));
-				break;
+				case BinXlsxRW::c_oFileTypes::CSV:
+				{
+					pXlsx = new OOX::Spreadsheet::CXlsx();
+					result = CSVReader::ReadFromCsvToXlsx(sInputDir, *pXlsx, nCodePage, sDelimiter);
+				}break;
+				case BinXlsxRW::c_oFileTypes::XLSX:
+				default:
+				{
+					pXlsx = new OOX::Spreadsheet::CXlsx(OOX::CPath(sInputDir));
+				}break;
 			}		
+
 			pXlsx->PrepareWorkbook();
+
+			if (false == result || NULL == pXlsx->m_pWorkbook)
+			{
+				RELEASEOBJECT(pXlsx);
+				return false;
+			}			
 
 			if (BinXlsxRW::c_oFileTypes::JSON == saveFileType)
 			{
@@ -4393,11 +4404,17 @@ namespace BinXlsxRW
 						oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
 						oFile.CloseFile();
 					}
+					else
+					{
+						result = false;
+					}
 					RELEASEARRAYOBJECTS(pbBase64Buffer);
 				}
 			}
 
 			RELEASEOBJECT(pXlsx);
+
+			return result;
 		}
 		void intoBindoc(OOX::Spreadsheet::CXlsx &oXlsx, NSBinPptxRW::CBinaryFileWriter &oBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
 		{

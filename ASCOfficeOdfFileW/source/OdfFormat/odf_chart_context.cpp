@@ -1624,9 +1624,9 @@ void odf_chart_context::set_cash(std::wstring format, std::vector<std::wstring> 
 		ref1 = std::wstring(L"local-table.") + utils::getColAddress(start_col) + boost::lexical_cast<std::wstring>(start_row);
 		//
 		if (by_row)
-			ref2 = std::wstring(L"local-table.") + utils::getColAddress(start_col) + boost::lexical_cast<std::wstring>(start_row + count_cash_values);
+			ref2 = std::wstring(L"local-table.") + utils::getColAddress(start_col) + std::to_wstring(start_row + count_cash_values);
 		else
-			ref2 = std::wstring(L"local-table.") + utils::getColAddress(start_col + count_cash_values) + boost::lexical_cast<std::wstring>(start_row);
+			ref2 = std::wstring(L"local-table.") + utils::getColAddress(start_col + count_cash_values) + std::to_wstring(start_row);
 	
 		ref = ref1 + L":" + ref2;
 	}

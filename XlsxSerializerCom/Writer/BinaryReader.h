@@ -34,6 +34,7 @@
 
 #include "../../Common/Base64.h"
 #include "../../Common/ATLDefine.h"
+#include "../../Common/OfficeFileErrorDescription.h"
 
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Directory.h"
@@ -4321,141 +4322,142 @@ namespace BinXlsxRW
 			bool bResultOk = false;
 			NSFile::CFileBinary oFile;
 			
-			if(oFile.OpenFile(sSrcFileName))
+			if (false == oFile.OpenFile(sSrcFileName)) return AVS_FILEUTILS_ERROR_CONVERT;
+
+			DWORD nBase64DataSize = 0;
+			BYTE* pBase64Data = new BYTE[oFile.GetFileSize()];
+			oFile.ReadFile(pBase64Data, oFile.GetFileSize(), nBase64DataSize);
+			oFile.CloseFile();
+
+			//проверяем формат
+			bool bValidFormat = false;
+            std::wstring sSignature(g_sFormatSignature);
+            size_t nSigLength = sSignature.length();
+			if(nBase64DataSize > nSigLength)
 			{
-				DWORD nBase64DataSize = 0;
-				BYTE* pBase64Data = new BYTE[oFile.GetFileSize()];
-				oFile.ReadFile(pBase64Data, oFile.GetFileSize(), nBase64DataSize);
-				oFile.CloseFile();
+                std::string sCurSig((char*)pBase64Data, nSigLength);
+                std::wstring wsCurSig(sCurSig.begin(), sCurSig.end());
 
-				//проверяем формат
-				bool bValidFormat = false;
-                std::wstring sSignature(g_sFormatSignature);
-                size_t nSigLength = sSignature.length();
-				if(nBase64DataSize > nSigLength)
+                if(sSignature == wsCurSig)
 				{
-                    std::string sCurSig((char*)pBase64Data, nSigLength);
-                    std::wstring wsCurSig(sCurSig.begin(), sCurSig.end());
-
-                    if(sSignature == wsCurSig)
-					{
-						bValidFormat = true;
-					}
+					bValidFormat = true;
 				}
-				if(bValidFormat)
+			}
+			if (bValidFormat)
+			{
+				//Читаем из файла версию и длину base64
+				int nIndex = (int)nSigLength;
+				int nType = 0;
+                std::string version = "";
+                std::string dst_len = "";
+				while (true)
 				{
-					//Читаем из файла версию и длину base64
-					int nIndex = (int)nSigLength;
-					int nType = 0;
-                    std::string version = "";
-                    std::string dst_len = "";
-					while (true)
+					nIndex++;
+					BYTE _c = pBase64Data[nIndex];
+					if (_c == ';')
 					{
-						nIndex++;
-						BYTE _c = pBase64Data[nIndex];
-						if (_c == ';')
-						{
 
-							if(0 == nType)
-							{
-								nType = 1;
-								continue;
-							}
-							else
-							{
-								nIndex++;
-								break;
-							}
-						}
 						if(0 == nType)
-                            version += _c;
-						else
-                            dst_len += _c;
-					}
-					int nVersion = g_nFormatVersion;
-					if(!version.empty())
-					{
-						version = version.substr(1);
-						g_nCurFormatVersion = nVersion = std::stoi(version.c_str());
-					}
-					bool bIsNoBase64 = nVersion == g_nFormatVersionNoBase64;
-
-					NSBinPptxRW::CBinaryFileReader& oBufferedStream = *pOfficeDrawingConverter->m_pReader;
-
-					int nDataSize = 0;
-					BYTE* pData = NULL;
-					if (!bIsNoBase64)
-					{
-						nDataSize = atoi(dst_len.c_str());
-						pData = new BYTE[nDataSize];
-						if(Base64::Base64Decode((const char*)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
 						{
-							oBufferedStream.Init(pData, 0, nDataSize);
+							nType = 1;
+							continue;
 						}
 						else
 						{
-							RELEASEARRAYOBJECTS(pData);
+							nIndex++;
+							break;
 						}
+					}
+					if(0 == nType)
+                        version += _c;
+					else
+                        dst_len += _c;
+				}
+				int nVersion = g_nFormatVersion;
+				if(!version.empty())
+				{
+					version = version.substr(1);
+					g_nCurFormatVersion = nVersion = std::stoi(version.c_str());
+				}
+				bool bIsNoBase64 = nVersion == g_nFormatVersionNoBase64;
+
+				NSBinPptxRW::CBinaryFileReader& oBufferedStream = *pOfficeDrawingConverter->m_pReader;
+
+				int nDataSize = 0;
+				BYTE* pData = NULL;
+				if (!bIsNoBase64)
+				{
+					nDataSize = atoi(dst_len.c_str());
+					pData = new BYTE[nDataSize];
+					if(Base64::Base64Decode((const char*)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
+					{
+						oBufferedStream.Init(pData, 0, nDataSize);
 					}
 					else
 					{
-						nDataSize = nBase64DataSize;
-						pData = pBase64Data;
-						oBufferedStream.Init(pData, 0, nDataSize);
-						oBufferedStream.Seek(nIndex);
-					}
-
-					if(NULL != pData)
-					{
-                // File Type
-                        std::wstring sDstPathCSV = sDstPath;
-						BYTE fileType;
-						UINT nCodePage;
-						std::wstring sDelimiter;
-						BYTE saveFileType;
-
-						SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, sDelimiter, saveFileType);
-                // Делаем для CSV перебивку пути, иначе создается папка с одинаковым имеем (для rels) и файл не создается.
-						
-						if (BinXlsxRW::c_oFileTypes::CSV == fileType)
-                            sDstPath = NSSystemPath::GetDirectoryName(sDstPath);
-
-						OOX::Spreadsheet::CXlsx oXlsx;
-						std::wstring params_path = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath();
-                        
-						SaveParams oSaveParams(params_path.c_str(), pOfficeDrawingConverter->GetContentTypes());
-						
-						ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
-
-                        //std::wstring sAdditionalContentTypes = oSaveParams.sAdditionalContentTypes;
-
-      //                  if(NULL != pOfficeDrawingConverter)
-						//{
-      //                      sAdditionalContentTypes += pOfficeDrawingConverter->GetContentTypes();
-						//}
-						oXlsx.PrepareToWrite();
-
-						switch(fileType)
-						{
-						case BinXlsxRW::c_oFileTypes::CSV:
-							CSVWriter::WriteFromXlsxToCsv(sDstPathCSV, oXlsx, nCodePage, sDelimiter, false);
-							break;
-						case BinXlsxRW::c_oFileTypes::XLSX:
-						default:
-							oXlsx.Write(sDstPath, *oSaveParams.pContentTypes);
-							break;
-						}
-						bResultOk = true;
-					}
-					if (!bIsNoBase64)
-					{
 						RELEASEARRAYOBJECTS(pData);
 					}
-
 				}
-				RELEASEARRAYOBJECTS(pBase64Data);
+				else
+				{
+					nDataSize = nBase64DataSize;
+					pData = pBase64Data;
+					oBufferedStream.Init(pData, 0, nDataSize);
+					oBufferedStream.Seek(nIndex);
+				}
+
+				if(NULL != pData)
+				{
+            // File Type
+                    std::wstring sDstPathCSV = sDstPath;
+					BYTE fileType;
+					UINT nCodePage;
+					std::wstring sDelimiter;
+					BYTE saveFileType;
+
+					SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, sDelimiter, saveFileType);
+            // Делаем для CSV перебивку пути, иначе создается папка с одинаковым имеем (для rels) и файл не создается.
+					
+					if (BinXlsxRW::c_oFileTypes::CSV == fileType)
+                        sDstPath = NSSystemPath::GetDirectoryName(sDstPath);
+
+					OOX::Spreadsheet::CXlsx oXlsx;
+					std::wstring params_path = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath();
+                    
+					SaveParams oSaveParams(params_path.c_str(), pOfficeDrawingConverter->GetContentTypes());
+					
+					ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
+
+                    //std::wstring sAdditionalContentTypes = oSaveParams.sAdditionalContentTypes;
+
+  //                  if(NULL != pOfficeDrawingConverter)
+					//{
+  //                      sAdditionalContentTypes += pOfficeDrawingConverter->GetContentTypes();
+					//}
+					oXlsx.PrepareToWrite();
+
+					switch(fileType)
+					{
+					case BinXlsxRW::c_oFileTypes::CSV:
+						CSVWriter::WriteFromXlsxToCsv(sDstPathCSV, oXlsx, nCodePage, sDelimiter, false);
+						break;
+					case BinXlsxRW::c_oFileTypes::XLSX:
+					default:
+						oXlsx.Write(sDstPath, *oSaveParams.pContentTypes);
+						break;
+					}
+					bResultOk = true;
+				}
+				if (!bIsNoBase64)
+				{
+					RELEASEARRAYOBJECTS(pData);
+				}
+
 			}
-			return S_OK;
+			RELEASEARRAYOBJECTS(pBase64Data);
+
+			if (bResultOk)	return 0;
+			else			return AVS_FILEUTILS_ERROR_CONVERT;
 		}
         int ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW::CBinaryFileReader& oBufferedStream, const std::wstring& sFileInDir, const std::wstring& sOutDir, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
 		{

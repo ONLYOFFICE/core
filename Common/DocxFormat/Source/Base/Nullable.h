@@ -145,7 +145,6 @@ namespace NSCommon
                 this->m_pPointer = new Type(oNode);
 			return *this;
 		}
-	#ifdef _USE_XMLLITE_READER_
 		nullable<Type>& operator=(XmlUtils::CXmlLiteReader& oReader)
 		{
             RELEASEOBJECT(this->m_pPointer);
@@ -153,7 +152,6 @@ namespace NSCommon
                 this->m_pPointer = new Type(oReader);
 			return *this;
 		}
-	#endif
 		nullable<Type>& operator=(const wchar_t* cwsValue)
 		{
             RELEASEOBJECT(this->m_pPointer);

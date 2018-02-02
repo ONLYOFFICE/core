@@ -540,6 +540,7 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 	boost::algorithm::to_lower(s);
 	
 	boost::wregex re(L"([a-zA-Z]+)(\\W+)");//(L"(\\w+)");
+	
 	std::list<std::wstring> result;
 	bool b = boost::regex_split(std::back_inserter(result),s, re);
 	result.push_back(s);//последний ..выносится - так уж работает boost.regex_split
@@ -627,12 +628,12 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 
 	int res;
 	int sz=0;
-	for (std::list<std::wstring>::iterator i=result.begin(); i!=result.end(); ++i)
+	for (std::list<std::wstring>::iterator it = result.begin(); it != result.end(); ++it)
 	{
 		office_element_ptr elm;
-		s = *i;
+		s = *it;
 		sz = s.length();
-		if ((res=s.find(L"h")) >=0) 
+		if ((res=s.find(L"h")) >= 0) 
 		{
 			create_element(L"number", L"hours", elm, odf_context_);
 			number_hours* number_hours_ = dynamic_cast<number_hours*>(elm.get());		

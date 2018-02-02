@@ -637,7 +637,7 @@ namespace NExtractTools
 		{
             std::wstring sRes;
 			int nCsvEncoding = 46;//65001 utf8
-			std::wstring cDelimiter = L"";
+			std::wstring cDelimiter = L",";
 
             if(NULL != m_nCsvTxtEncoding)
 				nCsvEncoding = *m_nCsvTxtEncoding;

@@ -184,7 +184,7 @@ namespace Oox2Odf
 
 		void convert(OOX::Logic::CBackground			*oox_background, int type);
 		void convert(OOX::Logic::CSdt					*oox_sdt);
-		void convert(OOX::Logic::CSectionProperty		*oox_section_pr, bool bSection);
+		void convert(OOX::Logic::CSectionProperty		*oox_section_pr, bool bSection, const std::wstring & master_name = L"");
 		void convert(OOX::Logic::CParagraph				*oox_paragraph);
 		void convert(OOX::Logic::CRun					*oox_run);
 		void convert(OOX::Logic::CParagraphProperty		*oox_para_prop,	odf_writer::style_paragraph_properties	*paragraph_properties);

@@ -115,6 +115,10 @@ void ods_conversion_context::set_table_part_autofilter(bool val)
 {
 	table_context_.set_table_part_autofilter(val);
 }
+void ods_conversion_context::add_table_part_column(std::wstring name)
+{
+	table_context_.add_table_part_column(name);
+}
 void ods_conversion_context::end_table_part()
 {
 	table_context_.end_table_part();

@@ -110,6 +110,7 @@ public:
 	void start_table_part	(std::wstring name, std::wstring ref);
 	void end_table_part		();
 	void set_table_part_autofilter(bool val);
+	void add_table_part_column(std::wstring name);
 
 	void start_conditional_formats();
 	void end_conditional_formats(){}

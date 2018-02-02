@@ -213,7 +213,7 @@ void style_table_column_properties::docx_convert(oox::docx_conversion_context & 
 		double kf_max_width_ms =1.;
 
 		const page_layout_instance * pp = Context.root()->odf_context().pageLayoutContainer().page_layout_first();//
-		if (pp)
+		if ((pp) && (pp->properties()))
 		{
 			style_page_layout_properties_attlist & attr_page = pp->properties()->attlist_;
 			if (attr_page.fo_page_width_)

@@ -225,7 +225,8 @@ namespace NSBinPptxRW
         void SetMediaDstPath    (const std::wstring& sMediaPath);
         void SetEmbedDstPath    (const std::wstring& sEmbedPath);
 
-        HRESULT AddShapeType        (const std::wstring& sXml);
+		void ClearShapeTypes	();
+
         HRESULT AddObject           (const std::wstring& sXml, std::wstring** pMainProps);
 
         HRESULT SaveObject          (long lStart, long lLength, const std::wstring& sMainProps, std::wstring & sXml);
@@ -293,6 +294,7 @@ namespace NSBinPptxRW
 
         void    Clear();
 		HRESULT SetCurrentRelsPath();
+        HRESULT AddShapeType        (const std::wstring& sXml);
 	};
 }
 #endif //OOX_IFILE_CONTAINER_INCLUDE_H_

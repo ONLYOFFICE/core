@@ -320,8 +320,6 @@ namespace OOX
 		}
 		virtual void read(const CPath& oFilePath)
 		{
-#ifdef USE_LITE_READER
-
 			XmlUtils::CXmlLiteReader oReader;
 			
 			if ( !oReader.FromFile( oFilePath.GetPath() ) )
@@ -341,7 +339,6 @@ namespace OOX
 						m_arrComments.push_back( new CComment(oReader) );
 				}
 			}
-#endif
 		}
 
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
@@ -436,8 +433,6 @@ namespace OOX
 		}
 		virtual void read(const CPath& oFilePath)
 		{
-#ifdef USE_LITE_READER
-
 			XmlUtils::CXmlLiteReader oReader;
 
 			if ( !oReader.FromFile( oFilePath.GetPath() ) )
@@ -457,7 +452,6 @@ namespace OOX
 						m_arrComments.push_back( new CCommentExt(oReader) );
 				}
 			}
-#endif
 		}
 
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
@@ -598,7 +592,6 @@ namespace OOX
 		}
 		virtual void read(const CPath& oFilePath)
 		{
-#ifdef USE_LITE_READER
 			XmlUtils::CXmlLiteReader oReader;
 
 			if ( !oReader.FromFile( oFilePath.GetPath() ) )
@@ -618,7 +611,6 @@ namespace OOX
 						m_arrPeoples.push_back( new CPerson(oReader) );
 				}
 			}
-#endif
 		}
 
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const

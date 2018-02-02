@@ -184,8 +184,6 @@ namespace OOX
 		{
             CPath oRelsPath = CreateFileName( oFilePath );
 
-#ifdef USE_LITE_READER
-
             XmlUtils::CXmlLiteReader oReader;
 
             if ( !oReader.FromFile( oRelsPath.GetPath() ) )
@@ -217,33 +215,6 @@ namespace OOX
                     }
                 }
             }
-#else
-
-            XmlUtils::CXmlNode oNode;
-
-            if ( oNode.FromXmlFile( oRelsPath.GetPath() ) && _T("Relationships") == oNode.GetName() )
-            {
-                XmlUtils::CXmlNodes oNodes;
-                if ( oNode.GetNodes( _T("Relationship"), oNodes ) )
-                {
-                    XmlUtils::CXmlNode oRelNode;
-                    for ( int nIndex = 0; nIndex < oNodes.GetCount(); nIndex++ )
-                    {
-                        if ( oNodes.GetAt( nIndex, oRelNode ) )
-                        {
-                            Rels::CRelationShip *pRel = new Rels::CRelationShip (oRelNode);
-                            if (pRel) 
-							{
-								std::wstring rid = pRel->rId().get();
-
-								m_arRelations.push_back(pRel);
-								m_mapRelations.insert(std::make_pair( rid, pRel) );
-							}
-                        }
-                    }
-                }
-            }
-#endif
 		}
 		void Write(const CPath& oFilePath) const
 		{

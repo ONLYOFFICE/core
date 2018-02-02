@@ -21,8 +21,6 @@ include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 DEFINES +=  UNICODE \
         _UNICODE \
-        _USE_XMLLITE_READER_ \
-         USE_LITE_READER \
         _USE_LIBXML2_READER_ \
         LIBXML_READER_ENABLED \
         DONT_WRITE_EMBEDDED_FONTS \

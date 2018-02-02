@@ -777,7 +777,8 @@ void docx_conversion_context::process_section(std::wostream & strm, odf_reader::
 		{
 			double page_width = 0;
 			const odf_reader::page_layout_instance * pp = root()->odf_context().pageLayoutContainer().page_layout_first();
-			if (pp)
+			
+			if ((pp) && (pp->properties()))
 			{
 				odf_reader::style_page_layout_properties_attlist & attr_page = pp->properties()->attlist_;
 				if (attr_page.fo_page_width_)
@@ -1169,7 +1170,7 @@ void docx_conversion_context::docx_convert_delayed()
     {
         odf_reader::office_element * elm = delayed_elements_.front();
         elm->docx_convert(*this);
-		delayed_elements_.pop_front();
+		delayed_elements_.erase(delayed_elements_.begin(), delayed_elements_.begin() + 1);
     }
 	delayed_converting_=false;
 }

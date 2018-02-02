@@ -3023,18 +3023,6 @@ namespace BinDocxRW
 			poDocument		= NULL;
 			m_bWriteSectPr	= false; 
 		}
-		void prepareOfficeDrawingConverter(NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, OOX::IFileContainer *rels, std::vector<std::wstring>& aShapeTypes)
-		{
-			smart_ptr<OOX::IFileContainer> oldRels = pOfficeDrawingConverter->GetRels();
-			pOfficeDrawingConverter->SetRels(rels);
-			
-			for(size_t i = 0, length = aShapeTypes.size(); i < length; ++i)
-			{
-                std::wstring& sShapeType = aShapeTypes[i];
-				pOfficeDrawingConverter->AddShapeType(sShapeType);
-			}
-            pOfficeDrawingConverter->SetRels(oldRels);
-		}
 		void WriteVbaProject(OOX::VbaProject& oVbaProject)
 		{
             m_oBcw.m_oStream.StartRecord(0);
@@ -7724,7 +7712,7 @@ namespace BinDocxRW
 			m_oParamsWriter.m_pCurRels = oParamsDocumentWriter.m_pRels;
 
 			int nStart = m_oBcw.WriteItemWithLengthStart();
-			WriteNotes(oFootnotes.m_arrFootnote, oParamsDocumentWriter, oFootnotes.m_arrShapeTypes);
+			WriteNotes(oFootnotes.m_arrFootnote, oParamsDocumentWriter);
 			m_oBcw.WriteItemWithLengthEnd(nStart);
 		}
 		void WriteEndnotes(OOX::CEndnotes& oEndnotes)
@@ -7733,20 +7721,27 @@ namespace BinDocxRW
 			m_oParamsWriter.m_pCurRels = oParamsDocumentWriter.m_pRels;
 
 			int nStart = m_oBcw.WriteItemWithLengthStart();
-			WriteNotes(oEndnotes.m_arrEndnote, oParamsDocumentWriter, oEndnotes.m_arrShapeTypes);
+			WriteNotes(oEndnotes.m_arrEndnote, oParamsDocumentWriter);
 			m_oBcw.WriteItemWithLengthEnd(nStart);
 		}
-        void WriteNotes(const std::vector<OOX::CFtnEdn*>& arrNotes, ParamsDocumentWriter& oParamsDocumentWriter, std::vector<std::wstring>& arrShapeTypes)
+        void WriteNotes(const std::vector<OOX::CFtnEdn*>& arrNotes, ParamsDocumentWriter& oParamsDocumentWriter)
 		{
+			BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, &m_oParamsWriter.m_mapIgnoreComments, NULL);
+			
+			smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
+			m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
+			m_pOfficeDrawingConverter->ClearShapeTypes();
+			
 			int nCurPos = 0;
 			for(size_t i = 0 ; i < arrNotes.size(); ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerNotes::Note);
-				WriteNote(*arrNotes[i], oParamsDocumentWriter, arrShapeTypes);
+				WriteNote(*arrNotes[i], oBinaryDocumentTableWriter);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
+			m_pOfficeDrawingConverter->SetRels(oldRels);
 		}
-        void WriteNote(const OOX::CFtnEdn& oFtnEdn, ParamsDocumentWriter& oParamsDocumentWriter, std::vector<std::wstring>& arrShapeTypes)
+        void WriteNote(const OOX::CFtnEdn& oFtnEdn, BinaryDocumentTableWriter & oBinaryDocumentTableWriter)
 		{
 			int nCurPos = 0;
 			if(oFtnEdn.m_oType.IsInit())
@@ -7761,10 +7756,6 @@ namespace BinDocxRW
 				m_oBcw.m_oStream.WriteLONG(oFtnEdn.m_oId->GetValue());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
-
-			BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, &m_oParamsWriter.m_mapIgnoreComments, NULL);
-			
-			oBinaryDocumentTableWriter.prepareOfficeDrawingConverter(m_pOfficeDrawingConverter, oParamsDocumentWriter.m_pRels, arrShapeTypes);
 			
 			nCurPos = m_oBcw.WriteItemStart(c_oSerNotes::NoteContent);
 			oBinaryDocumentTableWriter.WriteDocumentContent(oFtnEdn.m_arrItems);
@@ -7924,8 +7915,10 @@ namespace BinDocxRW
 		
 		//DocumentTable всегда пишем последней, чтобы сначала заполнить все вспомогательные структуры, а при заполении документа, вызывать методы типа Style_Add...
 				BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, &m_oParamsWriter.m_mapIgnoreComments, &oBinaryHeaderFooterTableWriter);
-				oBinaryDocumentTableWriter.prepareOfficeDrawingConverter(m_oParamsWriter.m_pOfficeDrawingConverter, oParamsDocumentWriter.m_pRels, oDocx.m_pDocument->m_arrShapeTypes);
 				
+				m_oParamsWriter.m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
+				m_oParamsWriter.m_pOfficeDrawingConverter->ClearShapeTypes();
+
 				oBinaryDocumentTableWriter.pSectPr			= pFirstSectPr;
 				oBinaryDocumentTableWriter.pBackground		= oDocx.m_pDocument->m_oBackground.GetPointer();
 				oBinaryDocumentTableWriter.poDocument		= oDocx.m_pDocument;

@@ -634,15 +634,15 @@ void ods_table_state::set_merge_cells(int start_col, int start_row, int end_col,
 
 	if (spanned_cols > 10000)spanned_cols = 1024;
 
-	for (std::list<ods_cell_state>::iterator cell = cells_.begin(); cell != cells_.end(); cell++)
+	for (size_t i = 0; i < cells_.size(); ++i)
 	{
-		if (cell->row > end_row) break;
+		if (cells_[i].row > end_row) break;
 
-		if (cell->row >= start_row)
+		if (cells_[i].row >= start_row)
 		{
-			if (cell->col >= start_col)
+			if (cells_[i].col >= start_col)
 			{
-				table_table_cell* cell_elm = dynamic_cast<table_table_cell*>(cell->elm.get());
+				table_table_cell* cell_elm = dynamic_cast<table_table_cell*>(cells_[i].elm.get());
 				if (cell_elm == NULL)return;
 
 				cell_elm->table_table_cell_attlist_extra_.table_number_columns_spanned_ = spanned_cols;
@@ -668,6 +668,24 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 	}
 
 	std::wstring odfFormula = formulas_converter_table.convert_formula(formula);
+
+	if (std::wstring::npos != odfFormula.find(L"["))
+	{
+		for (size_t i = 0; i < table_parts_.size(); i++)
+		{
+			if (table_parts_[i].in_ref(current_table_column_, current_table_row_))
+			{
+				for (size_t j = 0; j < table_parts_[i].columns.size(); j ++)
+				{
+					std::wstring name = table_parts_[i].name + L"[" + table_parts_[i].columns[j].first + L"]";
+					//Таблица1[ Сумма за кв. 3 ]
+
+					XmlUtils::replace_all(odfFormula, name, table_parts_[i].columns[j].second);
+				}
+				break;
+			}
+		}
+	}
 	
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 	if (cell == NULL)return;
@@ -684,7 +702,7 @@ std::wstring ods_table_state::replace_cell_row(boost::wsmatch const & what)
         int col_formula=0, row_formula=0;
 		utils::parsing_ref(ref_formula, col_formula, row_formula);col_formula--;//инче отсчет с 1
 	
-		ref_formula = utils::getColAddress(col_formula)+boost::lexical_cast<std::wstring>(row_formula+current_table_row_ -tmp_row_);
+		ref_formula = utils::getColAddress(col_formula) + std::to_wstring(row_formula +current_table_row_ - tmp_row_);
 
 
 		return ref_formula;

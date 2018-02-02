@@ -85,7 +85,7 @@ namespace BinXlsxRW{
 		sMediaPath = pathMediaDir.GetPath();
 		sEmbedPath = pathEmbedDir.GetPath();
 	}
-    bool CXlsxSerializer::loadFromFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedDir)
+    int CXlsxSerializer::loadFromFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedDir)
 	{
         std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
 
@@ -97,11 +97,10 @@ namespace BinXlsxRW{
 		oDrawingConverter.SetMediaDstPath(sMediaDir);
 		oDrawingConverter.SetEmbedDstPath(sEmbedDir);
 
-		BinXlsxRW::BinaryFileReader oBinaryFileReader;
-		oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oDrawingConverter, sXMLOptions);
-		return true;
+		BinXlsxRW::BinaryFileReader oBinaryFileReader;		
+		return oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oDrawingConverter, sXMLOptions);
 	}
-    bool CXlsxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sXMLOptions)
+    int CXlsxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sXMLOptions)
 	{
 		COfficeFontPicker* pFontPicker = new COfficeFontPicker();
 		pFontPicker->Init(m_sFontDir);
@@ -137,10 +136,10 @@ namespace BinXlsxRW{
 		oOfficeDrawingConverter.SetFontPicker(pFontPicker);
 
 		BinXlsxRW::BinaryFileWriter oBinaryFileWriter(fp);
-		oBinaryFileWriter.Open(sSrcPath, sDstFileName, pEmbeddedFontsManager, &oOfficeDrawingConverter, sXMLOptions, m_bIsNoBase64);
+		int result = oBinaryFileWriter.Open(sSrcPath, sDstFileName, pEmbeddedFontsManager, &oOfficeDrawingConverter, sXMLOptions, m_bIsNoBase64);
 
 		RELEASEOBJECT(pFontPicker);
-		return true;
+		return result;
 	}
  	bool CXlsxSerializer::saveChart(NSBinPptxRW::CBinaryFileReader* pReader, long lLength, const std::wstring& sFilepath, const long& lChartNumber)
 	{

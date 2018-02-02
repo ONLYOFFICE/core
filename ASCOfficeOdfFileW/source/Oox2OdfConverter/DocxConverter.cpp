@@ -262,6 +262,8 @@ void DocxConverter::convert_document()
 					
 //----------------------------------------------------------------------------------------------------------
 
+	convert(docx_document->m_pDocument->m_oSectPr.GetPointer(), false, L"Standard");
+	
 	odt_context->text_context()->clear_params();
 
 	for (size_t sect = 0; sect < sections.size(); sect++)
@@ -1412,7 +1414,7 @@ void DocxConverter::apply_HF_from(OOX::Logic::CSectionProperty *props, OOX::Logi
 		}
 	}
 }
-void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool bSection)
+void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool bSection, const std::wstring & master_name)
 {
 	if (oox_section_pr == NULL) return;
 	current_section_properties = NULL;
@@ -1437,18 +1439,24 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 		}
 	}
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   if (!last_section_properties && (!bSection || continuous == false || oox_section_pr->m_oTitlePg.IsInit()))
-	{	
-		last_section_properties = oox_section_pr;
-	}
-	else if (!bSection || continuous == false)
+
+	bool bDefault = (master_name == L"Standard");
+	
+	if (!bDefault)
 	{
-        apply_HF_from(last_section_properties, oox_section_pr);
+		if (!last_section_properties && (!bSection || continuous == false || oox_section_pr->m_oTitlePg.IsInit()))
+		{	
+			last_section_properties = oox_section_pr;
+		}
+		else if (!bSection || continuous == false)
+		{
+			apply_HF_from(last_section_properties, oox_section_pr);
+		}
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	if (!bSection || continuous == false)
 	{
-		odt_context->page_layout_context()->add_master_page(bSection ? L"" : L"Standard");
+		odt_context->page_layout_context()->add_master_page(master_name);
 	}
 	
 	bool present_header		= false;
@@ -1585,7 +1593,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 	
 	if (continuous == false || oox_section_pr->m_oTitlePg.IsInit())
 	{
-		OOX::Logic::CSectionProperty*	s = last_section_properties; 
+		OOX::Logic::CSectionProperty*	s = last_section_properties ? last_section_properties : oox_section_pr; 
 		
 		bool present_title_page			= s->m_oTitlePg.IsInit() ? true : false;
 		bool present_odd_even_pages		= odt_context->page_layout_context()->even_and_left_headers_;
@@ -1652,7 +1660,8 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 		if (!add_odd_even_pages_footer	&& present_odd_even_pages)							odt_context->add_empty_footer(1);
 		if (!add_default_footer			&& (present_odd_even_pages || present_title_page))	odt_context->add_empty_footer(0);
 
-		odt_context->is_paragraph_in_current_section_ = true;
+		if (!bDefault)
+			odt_context->is_paragraph_in_current_section_ = true;
 
 		//odt_context->set_master_page_name(odt_context->page_layout_context()->last_master() ?
 		//									  odt_context->page_layout_context()->last_master()->get_name() : L"");
@@ -1694,24 +1703,27 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 		odt_context->add_section_columns(num_columns, 
 			oox_section_pr->m_oCols->m_arrColumns.size() > 0 ? -1 : default_space_pt , separator );
 
-		std::vector<std::pair<double,double>> width_space;
-		
-		for (size_t i = 0; i< oox_section_pr->m_oCols->m_arrColumns.size(); i++)
+		if (num_columns > 1) //
 		{
-			if (oox_section_pr->m_oCols->m_arrColumns[i] == NULL) continue;
+			std::vector<std::pair<double,double>> width_space;
 			
-			double space = default_space_pt;
-			if (oox_section_pr->m_oCols->m_arrColumns[i]->m_oSpace.IsInit())
-				space = oox_section_pr->m_oCols->m_arrColumns[i]->m_oSpace->ToPoints();
-		
-			double w = -1; 
-			if (oox_section_pr->m_oCols->m_arrColumns[i]->m_oW.IsInit())
-				w = oox_section_pr->m_oCols->m_arrColumns[i]->m_oW->ToPoints();
+			for (size_t i = 0; i < oox_section_pr->m_oCols->m_arrColumns.size(); i++)
+			{
+				if (oox_section_pr->m_oCols->m_arrColumns[i] == NULL) continue;
+				
+				double space = default_space_pt;
+				if (oox_section_pr->m_oCols->m_arrColumns[i]->m_oSpace.IsInit())
+					space = oox_section_pr->m_oCols->m_arrColumns[i]->m_oSpace->ToPoints();
 			
-			width_space.push_back(std::pair<double,double>(w, space));
-		}
+				double w = -1; 
+				if (oox_section_pr->m_oCols->m_arrColumns[i]->m_oW.IsInit())
+					w = oox_section_pr->m_oCols->m_arrColumns[i]->m_oW->ToPoints();
+				
+				width_space.push_back(std::pair<double,double>(w, space));
+			}
 
-		odt_context->add_section_column(width_space);
+			odt_context->add_section_column(width_space);
+		}
 	}
 }
 void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)

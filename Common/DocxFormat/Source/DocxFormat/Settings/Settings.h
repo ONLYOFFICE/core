@@ -2847,7 +2847,6 @@ namespace OOX
 	public:
 		virtual void read(const CPath& oFilePath)
 		{
-#ifdef USE_LITE_READER
 			XmlUtils::CXmlLiteReader oReader;
 
 			if ( !oReader.FromFile( oFilePath.GetPath() ) )
@@ -3024,16 +3023,6 @@ namespace OOX
 					}
 				}
 			}
-
-#else
-			XmlUtils::CXmlNode oWebSettings;
-			oWebSettings.FromXmlFile( oFilePath.GetPath(), true );
-
-			if ( _T("w:settings") == oWebSettings.GetName() )
-			{
-				XmlUtils::CXmlNode oNode;
-			}
-#endif
 		}
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{

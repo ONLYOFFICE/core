@@ -233,8 +233,9 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 		Context.set_paragraph_state	(false);		
 		Context.set_run_state		(false);
 
+		Context.get_math_context().base_font_size_ = baseFontHeight_;	
+		
 		Context.start_math_formula();
-			Context.get_math_context().base_font_size_ = baseFontHeight_;	
 			office_math_->oox_convert(Context.get_math_context());
 		Context.end_math_formula();
 

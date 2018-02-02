@@ -268,6 +268,30 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		pos++;
 	}
 	//todooo для оптимизации - перенести мержи в начало
+
+	//выносные части таблицы
+	if (oox_sheet->m_oTableParts.IsInit())
+	{
+		for (size_t i=0 ; i < oox_sheet->m_oTableParts->m_arrItems.size(); i++)
+		{
+			OOX::Spreadsheet::CTablePart *oox_table_part = oox_sheet->m_oTableParts->m_arrItems[i];
+			if (!oox_table_part)continue;
+			if (!oox_table_part->m_oRId.IsInit())continue;
+
+			smart_ptr<OOX::File> oFile = oox_sheet->Find(oox_table_part->m_oRId->GetValue());
+			if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Table == oFile->type())
+			{
+				OOX::Spreadsheet::CTableFile* pTableFile = (OOX::Spreadsheet::CTableFile*)oFile.operator->();
+						
+				if ((pTableFile) && (pTableFile->m_oTable.IsInit()))
+				{				
+					oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(pTableFile);					
+						convert(pTableFile->m_oTable.GetPointer());				
+					oox_current_child_document = NULL;
+				}
+			}
+		}
+	}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 	//колонки
 		ods_context->start_columns();
@@ -328,29 +352,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		}
 		ods_context->end_conditional_formats();
 	}
-	//выносные части таблицы
-	if (oox_sheet->m_oTableParts.IsInit())
-	{
-		for (size_t i=0 ; i < oox_sheet->m_oTableParts->m_arrItems.size(); i++)
-		{
-			OOX::Spreadsheet::CTablePart *oox_table_part = oox_sheet->m_oTableParts->m_arrItems[i];
-			if (!oox_table_part)continue;
-			if (!oox_table_part->m_oRId.IsInit())continue;
 
-			smart_ptr<OOX::File> oFile = oox_sheet->Find(oox_table_part->m_oRId->GetValue());
-			if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Table == oFile->type())
-			{
-				OOX::Spreadsheet::CTableFile* pTableFile = (OOX::Spreadsheet::CTableFile*)oFile.operator->();
-						
-				if ((pTableFile) && (pTableFile->m_oTable.IsInit()))
-				{				
-					oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(pTableFile);					
-						convert(pTableFile->m_oTable.GetPointer());				
-					oox_current_child_document = NULL;
-				}
-			}
-		}
-	}
 /////////////////////////////////////////////////////////////////////////
 	convert(oox_sheet->m_oSheetViews.GetPointer());
 	convert(oox_sheet->m_oHeaderFooter.GetPointer());
@@ -418,10 +420,26 @@ void XlsxConverter::convert(OOX::Spreadsheet::CTable *oox_table_part)
 	if (oox_table_part->m_oAutoFilter.IsInit())
 		ods_context->set_table_part_autofilter(true);
 
+	convert(oox_table_part->m_oTableColumns.GetPointer());
 	OoxConverter::convert(oox_table_part->m_oExtLst.GetPointer());
 	
 	ods_context->end_table_part();
 }
+
+void XlsxConverter::convert(OOX::Spreadsheet::CTableColumns *oox_table_part_columns)
+{
+	if (!oox_table_part_columns) return;
+
+	for (size_t i = 0; i < oox_table_part_columns->m_arrItems.size(); i++)
+	{
+		std::wstring name;
+		if (oox_table_part_columns->m_arrItems[i]->m_oName.IsInit())
+			name = oox_table_part_columns->m_arrItems[i]->m_oName.get2();
+		
+		ods_context->add_table_part_column(name);
+	}
+}
+
 
 void XlsxConverter::convert(OOX::Spreadsheet::CCommentItem * oox_comment)
 {

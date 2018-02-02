@@ -621,6 +621,7 @@ namespace NSCommon
                 mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Nirmala UI", 20));
                 mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Batang", 21));
                 mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"MS Mincho", 22));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Wingdings", 23));
 
                 CApplicationFontsSymbols oApplicationChecker;
 

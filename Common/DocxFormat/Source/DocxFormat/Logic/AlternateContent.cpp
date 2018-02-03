@@ -47,6 +47,8 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( _T("mc:Choice") == sName )
 				{
+					ReadAttributes(oReader, m_oChoiceRequires);
+
 					CRun altRun(oReader);
 					
                     for ( size_t i = 0; i < altRun.m_arrItems.size(); ++i)
@@ -62,6 +64,11 @@ namespace OOX
 				}
 				else if ( _T("mc:Fallback") == sName )
 				{
+					if (m_oChoiceRequires.is_init() && !m_arrChoiceItems.empty())
+					{
+						continue; // не зачем баласт читать - берем более современную или оригинальную версию.
+					}
+					
 					CRun altRun(oReader);
 					
                     for ( size_t i = 0; i < altRun.m_arrItems.size(); ++i)

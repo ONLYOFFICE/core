@@ -312,9 +312,26 @@ namespace SimpleTypes
 				}
                 return this->m_eValue;
 			}
-			virtual std::wstring     ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
-				return _T("0");
+				switch(this->m_eValue)
+				{
+				case themecolorLight1:		return L"lt1";
+                case themecolorDark1:		return L"dk1";
+                case themecolorLight2:		return L"lt2";
+                case themecolorDark2:		return L"dk2";
+                case themecolorAccent1:		return L"accent1";
+                case themecolorAccent2:		return L"accent2";
+                case themecolorAccent3:		return L"accent3";
+                case themecolorAccent4:		return L"accent4";
+                case themecolorAccent5:		return L"accent5";
+                case themecolorAccent6:		return L"accent6";
+                case themecolorHyperlink:	return L"hlink";
+                case themecolorFollowedHyperlink:	return L"folHlink";
+				default:
+					return L"";
+				}
+				return _T("");
 			}
 
 			SimpleType_FromString     (EThemeColor)

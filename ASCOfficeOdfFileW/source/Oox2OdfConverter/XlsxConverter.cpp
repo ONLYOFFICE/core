@@ -556,7 +556,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCell *oox_cell)
 
 	int ifx_style = oox_cell->m_oStyle.IsInit() ? oox_cell->m_oStyle->GetValue() : -1;
 
-	ods_context->start_cell(ref,ifx_style);
+	ods_context->start_cell(ref, ifx_style);
 
 	int value_type = -1;//not defined
 	if (oox_cell->m_oType.IsInit())
@@ -1636,7 +1636,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf_types::
 {
 	if (!color)return;
 
-	unsigned char ucA=0, ucR=0, ucG=0, ucB=0;
+	unsigned char ucA = 0, ucR =0, ucG =0, ucB = 0;
 	bool result = false;
 	
 	if(color->m_oRgb.IsInit())//easy, faster,realy  !!
@@ -1648,18 +1648,18 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf_types::
 		result = true;
 	}
 	
-	if(color->m_oThemeColor.IsInit())
+	if(color->m_oThemeColor.IsInit() && xlsx_document->m_pTheme.IsInit())
 	{
-		std::wstring sColor = color->m_oThemeColor->ToString();
-
-		DWORD argb = 0;
-		result = OoxConverter::convert(sColor, argb) ; 
+		DWORD argb = xlsx_document->m_pTheme->themeElements.clrScheme.GetARGBFromScheme(color->m_oThemeColor->ToString());
 		
 		ucR = (argb & 0x0000FF); 
 		ucB = (argb & 0x00FF00)	>> 8; 
 		ucG = (argb & 0xFF0000)	>> 16; 
 		ucA = argb >> 24; 
+		
+		result = true;
 	}
+
 	if(color->m_oIndexed.IsInit())
 	{
 		OOX::Spreadsheet::CStyles * xlsx_styles = xlsx_document->m_pStyles;

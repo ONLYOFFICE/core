@@ -2926,6 +2926,9 @@ public:
     std::wstring m_sComment;
     std::wstring m_sDocCom;
     std::wstring m_sLinkBase;
+	
+	std::wstring m_sApplication;
+
 	RtfTime m_oCreateTime;
 	RtfTime m_oRevTime;
 	RtfTime m_oPrintTime;

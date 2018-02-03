@@ -47,7 +47,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(ThemeElements)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				clrScheme	= node.ReadNode(_T("a:clrScheme"));
@@ -117,7 +116,6 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-		public:
 			ClrScheme	clrScheme;
 			FontScheme	fontScheme;
 			FmtScheme	fmtScheme;

@@ -2917,10 +2917,10 @@ std::wstring RtfInformation::RenderToRtf(RenderParameter oRenderParameter)
 	{
         sResult += L"{\\comment ";	sResult += RtfChar::renderRtfText( m_sComment, oRenderParameter.poDocument );	sResult += L"}";
 	}
-
-	if( PROP_DEF != m_nVersion )
-        sResult += L"{\\version" + std::to_wstring(m_nVersion) + L"}";
-
+    if( !m_sDocCom.empty() )
+	{
+        sResult += L"{\\doccomm ";	sResult += RtfChar::renderRtfText( m_sDocCom, oRenderParameter.poDocument );	sResult += L"}";
+	}
     if( !m_sDocCom.empty() )
 	{
         sResult += L"{\\doccomm ";	sResult += RtfChar::renderRtfText( m_sDocCom, oRenderParameter.poDocument );	sResult += L"}";
@@ -2977,6 +2977,21 @@ std::wstring RtfInformation::RenderToRtf(RenderParameter oRenderParameter)
 
 	if( PROP_DEF != m_nInternalId )
         sResult += L"{\\id" + std::to_wstring(m_nInternalId) + L"}";
+
+	m_sApplication = L"ONLYOFFICE";
+
+#if defined(INTVER)
+	std::string s = VALUE2STR(INTVER);
+	m_sApplication += L"/" + std::wstring(s.begin(), s.end();
+#endif	
+	if( !m_sApplication.empty() )
+	{
+		sResult += L"{\\*\\userprops ";
+			sResult += L"{\\propname Application}";
+			sResult += L"\\proptype30";
+			sResult += L"{\\staticval " + RtfChar::renderRtfText( m_sApplication, oRenderParameter.poDocument ) + L"}";
+		sResult += L"}";	
+	}
 
     if( !sResult.empty() )
 		sResult = L"{\\info" + sResult + L"}";

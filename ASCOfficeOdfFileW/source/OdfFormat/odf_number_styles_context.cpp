@@ -526,7 +526,8 @@ void odf_number_styles_context::create_percentage_style(number_format_state & st
 	
 	office_element_ptr elm;
 
-	create_numbers(state, elm, office_element_ptr());
+    office_element_ptr empty;
+    create_numbers(state, elm, empty);
 	root_elm->add_child_element(elm); 
 
 	create_element(L"number", L"text", elm, odf_context_);
@@ -576,7 +577,8 @@ void odf_number_styles_context::create_currency_style(number_format_state & stat
 		}
 ///////////////////
 		office_element_ptr elm_number;
-		create_numbers(state, elm_number, office_element_ptr());
+        office_element_ptr empty;
+        create_numbers(state, elm_number, empty);
 //////////////////////////////////////////
 		office_element_ptr elm_text;
 		create_element(L"number", L"text", elm_text, odf_context_);

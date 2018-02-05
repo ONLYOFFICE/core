@@ -3986,8 +3986,19 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 		nullable_string sRid;
 		oNodeFill.ReadAttributeBase(L"r:id", sRid);
 		if (sRid.is_init())
-		{			
-			PPTX::Logic::BlipFill* pBlipFill = new PPTX::Logic::BlipFill();
+		{		
+			PPTX::Logic::BlipFill* pBlipFill = NULL;
+			if (pPicture)
+			{
+				pBlipFill = &pPicture->blipFill;
+			}
+			else
+			{
+				pBlipFill = new PPTX::Logic::BlipFill();
+				
+				pSpPr->Fill.m_type = PPTX::Logic::UniFill::blipFill;
+				pSpPr->Fill.Fill = pBlipFill;
+			}
             pBlipFill->m_namespace = L"a";
 			pBlipFill->blip = new PPTX::Logic::Blip();
 			pBlipFill->blip->embed = new OOX::RId(*sRid);
@@ -4000,9 +4011,6 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 			{
 				pBlipFill->stretch = new PPTX::Logic::Stretch();				
 			}
-
-			pSpPr->Fill.m_type = PPTX::Logic::UniFill::blipFill;
-			pSpPr->Fill.Fill = pBlipFill;
 		}		
 		nullable_string sRotate;
 		oNodeFill.ReadAttributeBase(L"rotate", sRotate);
@@ -4129,7 +4137,19 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 				nullable_string sType;
 				oNodeFillID.ReadAttributeBase(L"type", sType);
 
-				PPTX::Logic::BlipFill* pBlipFill = new PPTX::Logic::BlipFill();
+				PPTX::Logic::BlipFill* pBlipFill = NULL;
+				
+				if (pPicture)
+				{
+					pBlipFill = &pPicture->blipFill;
+				}
+				else
+				{
+					pBlipFill = new PPTX::Logic::BlipFill();
+					
+					pSpPr->Fill.m_type = PPTX::Logic::UniFill::blipFill;
+					pSpPr->Fill.Fill = pBlipFill;
+				}
                 pBlipFill->m_namespace = L"a";
 				pBlipFill->blip = new PPTX::Logic::Blip();
 
@@ -4181,51 +4201,50 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 					else
 						pBlipFill->srcRect->b = str0;
 				}
-
-				if (pShape)
-				{
-					pSpPr->Fill.m_type = PPTX::Logic::UniFill::blipFill;
-					pSpPr->Fill.Fill = pBlipFill;
-				}
-				if (pPicture)
-				{
-					pSpPr->Fill.m_type = PPTX::Logic::UniFill::notInit;
-					pPicture->blipFill = *pBlipFill;
-				}
-
 			}
 		}
 	}
-
-	// default params
-	if (!pSpPr->Fill.Fill.is_init())
+	if (pPicture)
 	{
-		if (pPPTShape->IsWordArt())
-		{
-			PPTX::Logic::NoFill* pNoFill = new PPTX::Logic::NoFill();
-            pNoFill->m_namespace = L"a";
+		pSpPr->Fill.m_type = PPTX::Logic::UniFill::notInit;
 
-			pSpPr->Fill.m_type = PPTX::Logic::UniFill::noFill;
-			pSpPr->Fill.Fill = pNoFill;
+		if (false == pPicture->blipFill.blip.is_init())
+		{//MSF_Lec3-4.docx
+			oElem->InitElem(NULL);
 		}
-		else
+	}
+	else
+	{
+		// default params for fill shape
+		if (!pSpPr->Fill.Fill.is_init())
 		{
-			PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
-            pSolid->m_namespace = L"a";
-			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
-			pSolid->Color.Color->SetRGB(0xFF, 0xFF, 0xFF);
-
-			pSpPr->Fill.m_type = PPTX::Logic::UniFill::solidFill;
-			pSpPr->Fill.Fill = pSolid;
-
-			if (sOpacity.is_init())
+			if (pPPTShape->IsWordArt())
 			{
-				BYTE lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity);
-				PPTX::Logic::ColorModifier oMod;
-                oMod.name = L"alpha";
-				int nA = (int)(lAlpha * 100000.0 / 255.0);
-				oMod.val = nA;
-				pSolid->Color.Color->Modifiers.push_back(oMod);
+				PPTX::Logic::NoFill* pNoFill = new PPTX::Logic::NoFill();
+				pNoFill->m_namespace = L"a";
+
+				pSpPr->Fill.m_type = PPTX::Logic::UniFill::noFill;
+				pSpPr->Fill.Fill = pNoFill;
+			}
+			else
+			{
+				PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+				pSolid->m_namespace = L"a";
+				pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+				pSolid->Color.Color->SetRGB(0xFF, 0xFF, 0xFF);
+
+				pSpPr->Fill.m_type = PPTX::Logic::UniFill::solidFill;
+				pSpPr->Fill.Fill = pSolid;
+
+				if (sOpacity.is_init())
+				{
+					BYTE lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity);
+					PPTX::Logic::ColorModifier oMod;
+					oMod.name = L"alpha";
+					int nA = (int)(lAlpha * 100000.0 / 255.0);
+					oMod.val = nA;
+					pSolid->Color.Color->Modifiers.push_back(oMod);
+				}
 			}
 		}
 	}

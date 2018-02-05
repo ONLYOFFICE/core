@@ -3296,14 +3296,14 @@ namespace BinXlsxRW
 								if (pathImageCache.GetPath().empty() == false)
 								{
 								//add image rels to VmlDrawing
-									NSCommon::smart_ptr<OOX::Image> pImageFileVml(new OOX::Image(false));
+									NSCommon::smart_ptr<OOX::Image> pImageFileVml(new OOX::Image(NULL, false));
 									pImageFileVml->set_filename(pathImageCache, false);
 									
 									smart_ptr<OOX::File> pFileVml = pImageFileVml.smart_dynamic_cast<OOX::File>();
 									m_pCurVmlDrawing->Add(*oPic.blipFill.blip->embed, pFileVml);
 						
 								//add image rels to Worksheet
-									NSCommon::smart_ptr<OOX::Image> pImageFileWorksheet(new OOX::Image(false));
+									NSCommon::smart_ptr<OOX::Image> pImageFileWorksheet(new OOX::Image(NULL, false));
 
 									pImageFileWorksheet->set_filename(pathImageCache, false);
 									

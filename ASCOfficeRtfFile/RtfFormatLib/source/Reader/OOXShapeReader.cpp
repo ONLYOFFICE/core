@@ -1571,7 +1571,7 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 
 		if( m_ooxGroup->grpSpPr.xfrm.IsInit())
 		{
-			double rot = m_ooxGroup->grpSpPr.xfrm->rot.get() / 60000.;
+			double rot = m_ooxGroup->grpSpPr.xfrm->rot.IsInit() ? m_ooxGroup->grpSpPr.xfrm->rot.get() / 60000. : 0.;
 			if (rot > 0.01)
 				pOutput->m_nRotation = (int)(rot * 65535);		
 			

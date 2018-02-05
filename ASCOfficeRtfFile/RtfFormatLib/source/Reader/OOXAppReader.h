@@ -67,10 +67,11 @@ public:
 		{
 			oParam.oRtf->m_oInformation.m_nNumberOfCharactersWithSpace = m_ooxApp->m_nCharactersWithSpaces.get2();
 		}
-		if(m_ooxApp->m_sAppVersion.IsInit())
+
+		if (m_ooxApp->m_sApplication.IsInit())
 		{
-			oParam.oRtf->m_oInformation.m_nVersion= Strings::ToInteger( m_ooxApp->m_sAppVersion.get2() );
-		}		
+			oParam.oRtf->m_oInformation.m_sApplication = m_ooxApp->m_sApplication.get2();
+		}
 
 		return true;
 	}

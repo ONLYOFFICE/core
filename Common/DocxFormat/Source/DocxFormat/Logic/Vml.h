@@ -2454,9 +2454,9 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					std::wstring sName = oReader.GetName();
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("w:txbxContent") == sName )
+					if ( L"txbxContent" == sName ) //namespaces w & wne
 						m_oTxtbxContent = oReader;
 				}
 			}

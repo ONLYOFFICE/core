@@ -288,7 +288,7 @@ namespace PPTX
 				}
 				else if (7 == _at)//OleObject Binary FileName (bin, xls, doc, ... other stream file)
 				{
-					m_OleObjectFile = new OOX::OleObject(false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+					m_OleObjectFile = new OOX::OleObject(NULL, false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 					std::wstring strOlePath = pReader->GetString2();
 					m_OleObjectFile->set_filename(strOlePath, false); //temp !!! for ImageManager original file name
 				}
@@ -297,8 +297,9 @@ namespace PPTX
 			}
 
 			if (m_sData.IsInit() && m_OleObjectFile.IsInit() == false)
-				m_OleObjectFile = new OOX::OleObject(false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
-
+			{
+				m_OleObjectFile = new OOX::OleObject(NULL, false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+			}
 
 			BYTE embedded_type = 0;
 
@@ -874,7 +875,7 @@ namespace PPTX
 						if(oleObject.IsInit() && blipFill.blip.IsInit())
 						{
 							if (oleObject->m_OleObjectFile.IsInit() == false)
-								oleObject->m_OleObjectFile = new OOX::OleObject(false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+								oleObject->m_OleObjectFile = new OOX::OleObject(NULL, false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 							
 							oleObject->m_OleObjectFile->set_filename_cache (blipFill.blip->oleFilepathImage);
 
@@ -958,7 +959,7 @@ namespace PPTX
 
 					if (oleObject->m_OleObjectFile.IsInit() == false)
 					{
-						oleObject->m_OleObjectFile = new OOX::OleObject(false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+						oleObject->m_OleObjectFile = new OOX::OleObject(NULL, false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 						
 						oleObject->m_OleObjectFile->set_filename		(blipFill.blip->oleFilepathBin, false);
 						oleObject->m_OleObjectFile->set_filename_cache	(blipFill.blip->oleFilepathImage);

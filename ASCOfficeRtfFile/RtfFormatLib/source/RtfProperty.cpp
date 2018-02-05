@@ -2982,7 +2982,7 @@ std::wstring RtfInformation::RenderToRtf(RenderParameter oRenderParameter)
 
 #if defined(INTVER)
 	std::string s = VALUE2STR(INTVER);
-	m_sApplication += L"/" + std::wstring(s.begin(), s.end();
+    m_sApplication += L"/" + std::wstring(s.begin(), s.end());
 #endif	
 	if( !m_sApplication.empty() )
 	{

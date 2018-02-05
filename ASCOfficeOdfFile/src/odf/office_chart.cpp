@@ -82,11 +82,11 @@ void chart_chart::add_child_element( xml::sax * Reader, const std::wstring & Ns,
 {
 	if CP_CHECK_NAME(L"text", L"tracked-changes") 
 	{
-		CP_CREATE_ELEMENT(tracked_changes_);
+        //CP_CREATE_ELEMENT(tracked_changes_);
 	}
 	else if CP_CHECK_NAME(L"table", L"content-validations")
 	{
-		CP_CREATE_ELEMENT(content_validations_);
+        //CP_CREATE_ELEMENT(content_validations_);
 	}
 	else
 		CP_CREATE_ELEMENT(content_);

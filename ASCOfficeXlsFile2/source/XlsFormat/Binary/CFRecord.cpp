@@ -56,6 +56,8 @@ CFRecord::CFRecord(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info)
 	stream->read(data_, size_);
 	if(global_info->decryptor && 0 != size_)
 	{
+		size_t block_size = global_info->Version == 0x0500 ? 16 : 1024;
+
 		switch (type_id_) // this would decrease number of checks
 		{
 			case rt_BOF:
@@ -67,11 +69,16 @@ CFRecord::CFRecord(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info)
 			case rt_RRDHead:
 				break;
 			case rt_BoundSheet8:
-				global_info->decryptor->Decrypt(data_ + sizeof(unsigned int), size_ - sizeof(unsigned int), rec_data_pos + sizeof(unsigned int), 1024);
-				break;
+			{
+				if (global_info->Version == 0x0500)
+					global_info->decryptor->Decrypt(data_/* + sizeof(unsigned int)*/, size_/* - sizeof(unsigned int)*/, rec_data_pos, block_size);
+				else
+					global_info->decryptor->Decrypt(data_ + sizeof(unsigned int), size_ - sizeof(unsigned int), rec_data_pos + sizeof(unsigned int), block_size);
+			}break;
 			default:
-				global_info->decryptor->Decrypt(data_, size_, rec_data_pos, 1024);
-				break;
+			{
+				global_info->decryptor->Decrypt(data_, size_, rec_data_pos, block_size);
+			}break;
 		}
 	}
 }

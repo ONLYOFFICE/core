@@ -6612,6 +6612,14 @@
 				RelativePath="..\XlsFormat\Crypt\RC4Crypt.h"
 				>
 			</File>
+			<File
+				RelativePath="..\XlsFormat\Crypt\XORCrypt.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsFormat\Crypt\XORCrypt.h"
+				>
+			</File>
 			<Filter
 				Name="rtl"
 				>

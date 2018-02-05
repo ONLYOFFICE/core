@@ -822,6 +822,7 @@ SOURCES +=  \
     ../XlsFormat/Crypt/BinaryCodec_RCF.cpp \
     ../XlsFormat/Crypt/Decryptor.cpp \
     ../XlsFormat/Crypt/RC4Crypt.cpp \
+    ../XlsFormat/Crypt/XORCrypt.cpp \
     ../XlsFormat/Logging/Log.cpp \
     ../XlsFormat/Logging/Logger.cpp \
     ../Common/utils.cpp \
@@ -1179,6 +1180,7 @@ HEADERS +=  \
     ../XlsFormat/Crypt/Crypt.h \
     ../XlsFormat/Crypt/Decryptor.h \
     ../XlsFormat/Crypt/RC4Crypt.h \
+    ../XlsFormat/Crypt/XORCrypt.h \
     ../XlsFormat/Logging/Log.h \
     ../XlsFormat/Logging/Logger.h \
     ../XlsFormat/Logic/Biff_structures/AddinUdf.h \

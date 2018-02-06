@@ -37,10 +37,12 @@
 
 namespace CRYPT
 {
-	class XOR : public Decryptor
+	class XORDecryptor : public Decryptor
 	{
 	public:
-		XOR(int type, unsigned short key, unsigned short hash, std::wstring password);
+		XORDecryptor(int type, unsigned short key, unsigned short hash, std::wstring password);
+
+		virtual void Init(const unsigned long val);
 
 		virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size);
 		virtual void Decrypt(char* data, const size_t size, const unsigned long block_index);
@@ -56,12 +58,14 @@ namespace CRYPT
 		unsigned short			nType;
 	};
 
-	typedef boost::shared_ptr<XOR> XORPtr;
+	typedef boost::shared_ptr<XORDecryptor> XORDecryptorPtr;
 
 	class RC4Decryptor : public Decryptor
 	{
 	public:
 		RC4Decryptor(_rc4CryptData & header, std::wstring password);
+
+		virtual void Init(const unsigned long val){}
 
 		virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size);
 		virtual void Decrypt(char* data, const size_t size, const unsigned long block_index);

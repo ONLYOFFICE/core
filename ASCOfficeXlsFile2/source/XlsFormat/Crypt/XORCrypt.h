@@ -43,6 +43,8 @@ class XORCrypt : public Crypt
 public:
 	XORCrypt(int type, unsigned short key, unsigned short hash, std::wstring password);
 
+	virtual void Init(const unsigned long val);
+
 	virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size);
 	virtual void Decrypt(char* data, const size_t size, const unsigned long block_index);
 

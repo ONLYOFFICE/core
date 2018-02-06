@@ -64,9 +64,17 @@ namespace CRYPT
 		} EncryptedVerifierHash;
 	};
 
+	struct _xorCryptData
+	{
+		unsigned short key;
+		unsigned short hash;
+	};
+
 	class Crypt
 	{
 	public:
+
+		virtual void Init(const unsigned long val) = 0;
 
 		virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size) = 0;
 		virtual void Decrypt(char* data, const size_t size, const unsigned long block_index) = 0;

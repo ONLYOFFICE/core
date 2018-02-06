@@ -52,6 +52,10 @@ namespace DocFileFormat
 	private:    
 		CRYPT::_rc4CryptData	crypt_data_rc4;
 		CRYPT::_ecmaCryptData	crypt_data_aes;
+		CRYPT::_xorCryptData	crypt_data_xor;
+		
 		bool					bStandard;
+		bool					bXOR;
+		bool					bAES;
 	};
 }

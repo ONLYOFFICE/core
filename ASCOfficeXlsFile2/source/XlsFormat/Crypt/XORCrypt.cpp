@@ -166,14 +166,50 @@ bool XORCrypt::IsVerify()
 {
 	return m_VerifyPassword;
 }
-
+void XORCrypt::Init(const unsigned long val)
+{
+	m_nOffset = val & 0x0F;
+}
 void XORCrypt::Decrypt(char* data, const size_t size, const unsigned long block_index)
 {
+	unsigned char* pnData = (unsigned char*)data;
+    
+	const unsigned char* pnCurrKey = m_pnKey + m_nOffset;
+    const unsigned char* pnKeyLast = m_pnKey + 0x0F;
 
+	if (m_nRotateDistance == 7)
+	{
+		for( const unsigned char* pnDataEnd = pnData + size; pnData < pnDataEnd; ++pnData )
+		{
+			const unsigned char cChar = *pnData ^ *pnCurrKey;
+			if (*pnData && cChar)
+				*pnData = cChar;
+
+			if( pnCurrKey < pnKeyLast )
+				++pnCurrKey;
+			else
+				pnCurrKey = m_pnKey;
+		}
+	}
+	if (m_nRotateDistance == 2)
+	{
+		for( const unsigned char* pnDataEnd = pnData + size; pnData < pnDataEnd; ++pnData )
+		{
+			lclRotateLeft( *pnData, 3 );
+			*pnData ^= *pnCurrKey;
+	       
+			if( pnCurrKey < pnKeyLast )
+				++pnCurrKey; 
+			else
+				pnCurrKey = m_pnKey;
+		}
+	}
+
+	Skip(size);
 }
 void XORCrypt::Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size)
 {
-	m_nOffset = (stream_pos + size) & 0x0F;
+	Init(stream_pos + size);
 
 	unsigned char* pnData = (unsigned char*)data;
     

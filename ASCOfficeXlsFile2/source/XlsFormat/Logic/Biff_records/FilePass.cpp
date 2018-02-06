@@ -59,7 +59,7 @@ void FilePass::readFields(CFRecord& record)
         record >> key.key >> key.verificationBytes;
 
 		record.getGlobalWorkbookInfo()->decryptor = 
-							CRYPT::DecryptorPtr(new CRYPT::XOR(2, key.key, key.verificationBytes, record.getGlobalWorkbookInfo()->password));
+							CRYPT::DecryptorPtr(new CRYPT::XORDecryptor(2, key.key, key.verificationBytes, record.getGlobalWorkbookInfo()->password));
 	}
 	else
 	{
@@ -70,7 +70,7 @@ void FilePass::readFields(CFRecord& record)
 			record >> key;
 		
 			record.getGlobalWorkbookInfo()->decryptor = 
-							CRYPT::DecryptorPtr(new CRYPT::XOR(2, key.key, key.verificationBytes, record.getGlobalWorkbookInfo()->password));
+							CRYPT::DecryptorPtr(new CRYPT::XORDecryptor(2, key.key, key.verificationBytes, record.getGlobalWorkbookInfo()->password));
 		}
 		else
 		{

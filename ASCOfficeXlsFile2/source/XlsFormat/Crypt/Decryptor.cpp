@@ -67,7 +67,7 @@ namespace CRYPT
 	}
 //----------------------------------------------------------------------------------------
 
-	XOR::XOR(int type, unsigned short key, unsigned short hash, std::wstring password) :
+	XORDecryptor::XORDecryptor(int type, unsigned short key, unsigned short hash, std::wstring password) :
 													crypt(new XORCrypt(type, key, hash, password))
 	{
 		nKey	= key;
@@ -75,20 +75,20 @@ namespace CRYPT
 		nType	= type;
 	}
 
-	void XOR::Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size)
+	void XORDecryptor::Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size)
 	{
 		crypt->Decrypt(data, size, stream_pos, block_size);
 	}
-	void XOR::Decrypt(char* data, const size_t size, const unsigned long block_index)
+	void XORDecryptor::Decrypt(char* data, const size_t size, const unsigned long block_index)
 	{
 		crypt->Decrypt(data, size, block_index);
 	}
-	bool XOR::IsVerify()
+	bool XORDecryptor::IsVerify()
 	{
 		return crypt->IsVerify();
 	}
 
-	bool XOR::SetPassword(std::wstring password)
+	bool XORDecryptor::SetPassword(std::wstring password)
 	{
 		crypt.reset();
 		crypt = CryptPtr(new XORCrypt(nType, nKey, nHash, password));
@@ -96,6 +96,12 @@ namespace CRYPT
 		if (crypt)	return crypt->IsVerify();
 		else		return false;
 	}
+
+	void XORDecryptor::Init(const unsigned long val)
+	{
+		crypt->Init(val);
+	}
+
 
 };
 

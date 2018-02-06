@@ -115,10 +115,14 @@ namespace PPTX
 				}
 				else
 				{
-					Logic::BuClr* pClr = new Logic::BuClr();
-					pReader->Skip(5); // len + type(0)
-					pClr->Color.fromPPTY(pReader);
-					m_Color.reset(pClr);					
+					LONG len = pReader->GetLong();
+					if(len > 0)
+					{
+						Logic::BuClr* pClr = new Logic::BuClr();
+						pReader->Skip(1); // type(0)
+						pClr->Color.fromPPTY(pReader);
+						m_Color.reset(pClr);
+					}
 				}
 
 				pReader->Seek(_end_rec);

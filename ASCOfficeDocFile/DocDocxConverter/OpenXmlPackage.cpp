@@ -165,15 +165,21 @@ namespace DocFileFormat
 			{
 				std::wstring path = L"ObjectPool/" + oleObjectFileStructure.objectID;
 
-				std::list<std::wstring> entries = storageInp->entries(path);
+				std::list<std::wstring> entries = storageInp->entries_with_prefix(path);
 				for (std::list<std::wstring>::iterator it = entries.begin(); it != entries.end(); ++it)
 				{
-					POLE::Stream *stream_inp = new POLE::Stream(storageInp, path + L"/"+ (*it));
+					std::wstring stream_name_open = (*it);
+					std::wstring stream_name_create = (*it);
+
+					if (stream_name_open[0] < 32)
+						stream_name_open = stream_name_open.substr(1);
+
+					POLE::Stream *stream_inp = new POLE::Stream(storageInp, path + L"/"+ stream_name_open);
 					if (stream_inp == NULL)continue;
 
 					POLE::uint64 size = stream_inp->size();
 					
-					POLE::Stream *stream_out = new POLE::Stream(storageOut, *it, true, size);
+					POLE::Stream *stream_out = new POLE::Stream(storageOut, stream_name_create, true, size);
 
 					if (stream_out)
 					{

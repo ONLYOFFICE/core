@@ -134,10 +134,11 @@ namespace DocFileFormat
 
 			// Path
             m_pXmlWriter->WriteNodeBegin( L"v:path", true );
+              
+			m_pXmlWriter->WriteAttribute( L"o:extrusionok", L"f");
 
 			if (_isInlineShape)
 			{
-                m_pXmlWriter->WriteAttribute( L"o:extrusionok", L"f");
                 m_pXmlWriter->WriteAttribute( L"gradientshapeok", L"t" );
                 m_pXmlWriter->WriteAttribute( L"o:connecttype", L"rect" );
 			}

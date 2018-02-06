@@ -235,6 +235,7 @@ HEADERS +=  \
     ../../DocDocxConverter/OfficeDrawing/RecordFactory.h \
     ../../DocDocxConverter/OfficeDrawing/RegularContainer.h \
     ../../DocDocxConverter/OfficeDrawing/ShadowStyleBooleanProperties.h \
+    ../../DocDocxConverter/OfficeDrawing/threeDBooleanProperties.h \
     ../../DocDocxConverter/OfficeDrawing/Shape.h \
     ../../DocDocxConverter/OfficeDrawing/ShapeContainer.h \
     ../../DocDocxConverter/OfficeDrawing/ShapeOptions.h \

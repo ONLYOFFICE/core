@@ -71,7 +71,6 @@ namespace DocFileFormat
 			fUsefLockAgainstUngrouping	=	FormatUtils::BitmaskToBool(op,0x2000000);
 		}
 
-	public: 
 
 		bool fLockAgainstGrouping;
 		bool fLockAdjustHandles;

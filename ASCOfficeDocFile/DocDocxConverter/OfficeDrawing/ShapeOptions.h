@@ -582,7 +582,19 @@ namespace DocFileFormat
 			{
 				if (Options[i]->fComplex && Options[i]->op > 0)
 				{			
-					Options[i]->opComplex = std::shared_ptr<unsigned char>(Reader->ReadBytes( Options[i]->op, true ));
+					unsigned int size = Options[i]->op;
+					
+					if (Options[i]->pid == 0x0145 ||
+						Options[i]->pid == 0x0146 ||
+						Options[i]->pid == 0x0197 ||
+						Options[i]->pid == 0x0156 ||
+						Options[i]->pid == 0x0155 ||
+						Options[i]->pid == 0x0151 ||
+						Options[i]->pid == 0x0152 ||
+						Options[i]->pid == 0x0157 ||
+						Options[i]->pid == 0x0158)//mso arrays
+							size += 6;
+					Options[i]->opComplex = std::shared_ptr<unsigned char>(Reader->ReadBytes( size, true ));
 				}
 
 				OptionsByID.insert(std::make_pair(Options[i]->pid, Options[i]));

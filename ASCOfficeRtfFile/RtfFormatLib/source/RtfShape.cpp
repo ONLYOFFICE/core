@@ -55,7 +55,8 @@ void RtfShape::SetDefault()
 	DEFAULT_PROPERTY( m_bLockAnchor )
 	DEFAULT_PROPERTY_DEF( m_eXAnchor, ax_column ) //по умолчанию - привязка к тексту
 	DEFAULT_PROPERTY_DEF( m_eYAnchor, ay_Para )//по умолчанию - привязка к тексту
-
+	DEFAULT_PROPERTY( m_nLockPosition )
+	DEFAULT_PROPERTY( m_nLockRotation )
 //Position absolute
 	DEFAULT_PROPERTY( m_nPositionH )
 	DEFAULT_PROPERTY( m_nPositionHRelative )
@@ -425,6 +426,8 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 	RENDER_RTF_SHAPE_PROP(L"posrelh",	sResult,   	m_nPositionHRelative);
 	RENDER_RTF_SHAPE_PROP(L"posv",		sResult,   	m_nPositionV);
 	RENDER_RTF_SHAPE_PROP(L"posrelv",	sResult,	m_nPositionVRelative);
+	RENDER_RTF_SHAPE_PROP(L"fLockPosition",	sResult,	m_nLockPosition);
+	RENDER_RTF_SHAPE_PROP(L"fLockRotation",	sResult,	m_nLockRotation);
 
     RENDER_RTF_SHAPE_PROP(L"fLayoutInCell",	sResult,	m_bLayoutInCell);
     RENDER_RTF_SHAPE_PROP(L"fAllowOverlap",	sResult,	m_bAllowOverlap);
@@ -538,7 +541,7 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 //Fill
 	if( 0 == m_bFilled )
 		sResult += L"{\\sp{\\sn fFilled}{\\sv 0}}";
-    RENDER_RTF_SHAPE_PROP(L"fillType",		sResult,	m_nFillType );
+	RENDER_RTF_SHAPE_PROP(L"fillType",		sResult,	m_nFillType );
     RENDER_RTF_SHAPE_PROP(L"fillColor",		sResult,	m_nFillColor );
     RENDER_RTF_SHAPE_PROP(L"fillBackColor",	sResult,	m_nFillColor2 );
 	

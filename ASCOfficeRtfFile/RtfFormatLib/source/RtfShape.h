@@ -83,6 +83,8 @@ public:
 	int m_nWrapSideType;			//shpwrkN	Wrap on side (for types 2 and 4 for \shpwrN ):
 	int m_nZOrderRelative;			//shpfblwtxtN	Describes relative z-ordering:
 	int m_bLockAnchor;				//shplockanchor	Lock anchor for a shape.
+	int m_nLockPosition;
+	int m_nLockRotation;
 	
 	_AnchorX m_eXAnchor;
 	_AnchorY m_eYAnchor;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
@@ -31,31 +31,38 @@
  */
 #pragma once
 
-#include "FileInformationBlock.h"
-#include "../../OfficeCryptReader/source/CryptTransform.h"
+#include "Crypt.h"
+#include <Logic/Biff_structures/RC4EncryptionHeader.h>
+#include "BiffDecoder_RCF.h"
 
-#include "IVisitable.h"
-
-namespace DocFileFormat
+namespace CRYPT
 {
-    class IVisible;
-    class FileInformationBlock;
 
-	class EncryptionHeader: public IVisitable
-	{
-    public:
-        friend class WordDocument;
-       
-		virtual ~EncryptionHeader(){}
-        
-		EncryptionHeader( FileInformationBlock* fib, POLE::Stream* tableStream );
-	private:    
-		CRYPT::_rc4CryptData	crypt_data_rc4;
-		CRYPT::_ecmaCryptData	crypt_data_aes;
-		CRYPT::_xorCryptData	crypt_data_xor;
-		
-		bool					bStandard;
-		bool					bXOR;
-		bool					bAES;
-	};
-}
+class XORCrypt : public Crypt
+{
+public:
+	XORCrypt(int type, unsigned short key, unsigned short hash, std::wstring password);
+
+	virtual void Init(const unsigned long val);
+
+	virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size);
+	virtual void Decrypt(char* data, const size_t size, const unsigned long block_index);
+
+	virtual bool IsVerify();
+
+private:
+	void Skip( size_t size );
+
+	unsigned short m_nKey;
+	unsigned short m_nHash;
+
+	std::string m_sPassword;
+	bool m_VerifyPassword;
+
+    unsigned char	m_pnKey[ 16 ];   // Encryption key.
+    size_t			m_nOffset;       // Key offset.
+    int				m_nRotateDistance;
+};
+
+
+} // namespace CRYPT

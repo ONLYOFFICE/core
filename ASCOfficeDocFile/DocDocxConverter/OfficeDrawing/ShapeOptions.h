@@ -49,15 +49,15 @@ namespace DocFileFormat
 		PropertyId_fFlipH=63,
 
 		//Protection
-		fLockAgainstUngrouping=118,
-		fLockRotation=119,
-		fLockAspectRatio=120,
-		fLockPosition=121,
-		fLockAgainstSelect=122,
-		fLockCropping=123,
-		fLockVertices=124,
-		fLockText=125,
-		fLockAdjustHandles=126,
+		//fLockAgainstUngrouping=118,
+		//fLockRotation=119,
+		//fLockAspectRatio=120,
+		//fLockPosition=121,
+		//fLockAgainstSelect=122,
+		//fLockCropping=123,
+		//fLockVertices=124,
+		//fLockText=125,
+		//fLockAdjustHandles=126,
 		protectionBooleans=127,
 
 		//Text
@@ -75,10 +75,7 @@ namespace DocFileFormat
 		txdir=139,
 		ccol=140,
 		dzColMargin=141,
-		fSelectText=187,
-		fAutoTextMargin=188,
-		fRotateText=189,
-		fFitShapeToText=190,
+
 		textBooleanProperties=191,
 
 		//GeoText
@@ -89,21 +86,21 @@ namespace DocFileFormat
 		gtextSpacing=196,
 		gtextFont=197,
 		gtextCSSFont=198,
-		gtextFReverseRows=240,
-		fGtext=241,
-		gtextFVertical=242,
-		gtextFKern=243,
-		gtextFTight=244,
-		gtextFStretch=245,
-		gtextFShrinkFit=246,
-		gtextFBestFit=247,
-		gtextFNormalize=248,
-		gtextFDxMeasure=249,
-		gtextFBold=250,
-		gtextFItalic=251,
-		gtextFUnderline=252,
-		gtextFShadow=253,
-		gtextFSmallcaps=254,
+		//gtextFReverseRows=240,
+		//fGtext=241,
+		//gtextFVertical=242,
+		//gtextFKern=243,
+		//gtextFTight=244,
+		//gtextFStretch=245,
+		//gtextFShrinkFit=246,
+		//gtextFBestFit=247,
+		//gtextFNormalize=248,
+		//gtextFDxMeasure=249,
+		//gtextFBold=250,
+		//gtextFItalic=251,
+		//gtextFUnderline=252,
+		//gtextFShadow=253,
+		//gtextFSmallcaps=254,
 		geometryTextBooleanProperties=255,
 
 		//BLIP
@@ -128,10 +125,7 @@ namespace DocFileFormat
 		movie=274,
 		pictureRecolor=282,
 		picturePreserveGrays=313,
-		fRewind=314,
-		fLooping=315,
-		pictureGray=317,
-		pictureBiLevel=318,
+
 		blipBooleanProperties=319,
 
 		//Geometry
@@ -161,12 +155,7 @@ namespace DocFileFormat
 		pInscribe=343,
 		cxk=344,
 		pFragments=345,
-		fColumnLineOK=377,
-		fShadowOK=378,
-		f3DOK=379,
-		fLineOK=380,
-		fGtextOK=381,
-		fFillShadeShapeOK=382,
+
 		geometryBooleans=383,
 
 		//Fill Style
@@ -205,12 +194,6 @@ namespace DocFileFormat
 		fillBackColorExt=418,
 		fillBackColorExtMod=420,
 
-		fRecolorFillAsPicture=441,
-		fUseShapeAnchor=442,
-		fFilled=443,
-		fHitTestFill=444,
-		fillShape=445,
-		fillUseRect=446,
 		fillStyleBooleanProperties=447,
 
 		//Line Style
@@ -238,12 +221,7 @@ namespace DocFileFormat
 		lineEndArrowLength=469,
 		lineJoinStyle=470,
 		lineEndCapStyle=471,
-		fInsetPen=505,
-		fInsetPenOK=506,
-		fArrowheadsOK=507,
-		fLine=508,
-		fHitTestLine=509,
-		lineFillShape=510,
+
 		lineStyleBooleans=511,
 
 		//Shadow Style
@@ -265,7 +243,7 @@ namespace DocFileFormat
 		shadowWeight=527,
 		shadowOriginX=528,
 		shadowOriginY=529,
-		fShadow=574,
+
 		shadowStyleBooleanProperties=575,
 
 		//Perspective Style
@@ -281,6 +259,7 @@ namespace DocFileFormat
 		perspectiveWeight=585,
 		perspectiveOriginX=586,
 		perspectiveOriginY=587,
+
 		perspectiveStyleBooleanProperties=639,
 
 		//3D Object
@@ -293,9 +272,7 @@ namespace DocFileFormat
 		c3DExtrudePlane=646,
 		c3DExtrusionColor=647,
 		c3DCrMod=648,
-		f3D=700,
-		fc3DMetallic=701,
-		fc3DUseExtrusionColor=702,
+
 		threeDObjectBooleanProperties=703,
 
 		//3D Style
@@ -326,10 +303,7 @@ namespace DocFileFormat
 		c3DFillY=728,
 		c3DFillZ=729,
 		c3DFillIntensity=730,
-		fc3DConstrainRotation=763,
-		fc3DRotationCenterAuto=764,
-		fc3DParallel=765,
-		fc3DKeyHarsh=766,
+
 		threeDStyleBooleanProperties=767,
 
 		//Shape
@@ -343,14 +317,7 @@ namespace DocFileFormat
 		dgmNodeKind=778,
 		dgmLayoutMRU=779,
 		wzEquationXML=780,
-		fPolicyLabel=822,
-		fPolicyBarcode=823,
-		fFlipHQFE5152=824,
-		fFlipVQFE5152=825,
-		fPreferRelativeResize=827,
-		fLockShapeType=828,
-		fInitiator=829,
-		fDeleteAttachedObject=830,
+
 		shapeBooleans=831,
 
 		//Callout
@@ -410,16 +377,9 @@ namespace DocFileFormat
 		wzAccessBlob=936,
 		metroBlob=937,
 		dhgt=938,
-		fLayoutInCell=944,
-		fIsBullet=945,
-		fStandardHR=946,
-		fNoshadeHR=947,
-		fHorizRule=948,
-		fUserDrawn=949,
-		fAllowOverlap=950,
-		fReallyHidden=951,
-		fScriptAnchor=952,
+
 		groupShapeBooleans = 959,
+		
 		relRotation = 964,
 
 		//Unknown HTML
@@ -622,7 +582,19 @@ namespace DocFileFormat
 			{
 				if (Options[i]->fComplex && Options[i]->op > 0)
 				{			
-					Options[i]->opComplex = std::shared_ptr<unsigned char>(Reader->ReadBytes( Options[i]->op, true ));
+					unsigned int size = Options[i]->op;
+					
+					if (Options[i]->pid == 0x0145 ||
+						Options[i]->pid == 0x0146 ||
+						Options[i]->pid == 0x0197 ||
+						Options[i]->pid == 0x0156 ||
+						Options[i]->pid == 0x0155 ||
+						Options[i]->pid == 0x0151 ||
+						Options[i]->pid == 0x0152 ||
+						Options[i]->pid == 0x0157 ||
+						Options[i]->pid == 0x0158)//mso arrays
+							size += 6;
+					Options[i]->opComplex = std::shared_ptr<unsigned char>(Reader->ReadBytes( size, true ));
 				}
 
 				OptionsByID.insert(std::make_pair(Options[i]->pid, Options[i]));

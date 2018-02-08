@@ -267,7 +267,6 @@ namespace DocFileFormat
 		}
 		m_pXmlWriter->WriteNodeBegin( L"v:shape", true );
 		
-		m_pXmlWriter->WriteAttribute( L"type", std::wstring( L"#" + VMLShapeTypeMapping::GenerateTypeId(&type)));
 
 		count_vml_objects++;
 
@@ -275,15 +274,9 @@ namespace DocFileFormat
 			m_shapeId =	L"_x0000_s" + FormatUtils::IntToWideString(1024 + count_vml_objects);
 		
 		m_pXmlWriter->WriteAttribute( L"id", m_shapeId);
+		
+		m_pXmlWriter->WriteAttribute( L"type", std::wstring( L"#" + VMLShapeTypeMapping::GenerateTypeId(&type)));
 
-		if (m_isOlePreview)
-		{
-			m_pXmlWriter->WriteAttribute( L"o:ole", L"" );
-		}
-		else if (m_isBullete)
-		{
-            m_pXmlWriter->WriteAttribute( L"o:bullet", L"1" );
-		}
 //todooo oбъединить с shape_mapping		
 
 		for (size_t i = 0; i < options.size(); i++)
@@ -422,6 +415,15 @@ namespace DocFileFormat
 
 		strStyle +=  L"width:"  + strWidth + L"pt;" + L"height:" + strHeight + L"pt;";
 		m_pXmlWriter->WriteAttribute( L"style", strStyle);
+
+		if (m_isOlePreview)
+		{
+			m_pXmlWriter->WriteAttribute( L"o:ole", L"t" );
+		}
+		else if (m_isBullete)
+		{
+            m_pXmlWriter->WriteAttribute( L"o:bullet", L"1" );
+		}
 
 		m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 		

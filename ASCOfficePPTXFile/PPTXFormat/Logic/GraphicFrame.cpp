@@ -120,7 +120,7 @@ namespace PPTX
 			std::wstring strName		= XmlUtils::GetNameNoNS(oReader.GetName());
 			std::wstring strNamespace	= XmlUtils::GetNamespace(oReader.GetName());
 			
-			if (L"xfrm" == strName && strNamespace != L"xdr")
+			if (L"xfrm" == strName)
 				xfrm = oReader;
 			else if (L"cNvGraphicFramePr" == strName)
 				nvGraphicFramePr.cNvGraphicFramePr.fromXML( oReader );
@@ -320,7 +320,7 @@ namespace PPTX
 					std::wstring strName		= XmlUtils::GetNameNoNS(oNode.GetName());
 					std::wstring strNamespace	= XmlUtils::GetNamespace(oNode.GetName());
 
-					if (L"xfrm" == strName && strNamespace != L"xdr")
+					if (L"xfrm" == strName)
 						xfrm = oNode;
 					else if (L"nvGraphicFramePr" == strName)
 						nvGraphicFramePr = oNode;

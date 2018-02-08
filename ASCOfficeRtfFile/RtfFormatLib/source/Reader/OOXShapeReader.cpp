@@ -652,7 +652,7 @@ void OOXShapeReader::Parse(ReaderParameter oParam, PPTX::Logic::ColorBase *oox_c
 	BYTE alpha = nColor >> 24;
 	if (alpha != 0xff)
 		opacity = alpha;
-	nColor = nColor & 0xff000000;
+	nColor = nColor & 0x00ffffff;
 	//switch( oox_color->m_eType )
 	//{
 	//	case OOX::Drawing::colorSheme:	Parse(oParam, &oox_color->m_oShemeClr,	nColor, opacity);		break;
@@ -1164,7 +1164,7 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 		Parse(oParam, pOutput, ooxShape->spPr.ln.GetPointer());	
 	}
 //---------------------------------------------------------------------
-	PPTX::Logic::TxBody * text_properties = NULL;
+	PPTX::Logic::BodyPr * text_properties = NULL;
 	OOXTextItemReader oTextItemReader;
 	
 	if (ooxShape->txBody.IsInit())
@@ -1174,7 +1174,15 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 			oTextItemReader.Parse(&ooxShape->txBody->Paragrs[i], oParam );
 		}	
 
-		text_properties = ooxShape->txBody.GetPointer();
+		text_properties = ooxShape->txBody->bodyPr.GetPointer();
+	}
+	else if (ooxShape->oTextBoxShape.IsInit())
+	{
+		for (size_t i=0; i < ooxShape->oTextBoxShape->m_arrItems.size(); i++)
+		{
+			oTextItemReader.Parse(ooxShape->oTextBoxShape->m_arrItems[i], oParam );
+		}	
+		text_properties = ooxShape->oTextBoxBodyPr.GetPointer();
 	}
 
 	if (oTextItemReader.m_oTextItems)

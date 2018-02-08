@@ -2455,7 +2455,7 @@ namespace BinXlsxRW
 			{
 				m_pCurWorksheet		= new OOX::Spreadsheet::CWorksheet(NULL);
 				m_pCurSheet			= new OOX::Spreadsheet::CSheet();
-				m_pCurVmlDrawing	= new OOX::CVmlDrawing(false);
+				m_pCurVmlDrawing	= new OOX::CVmlDrawing(NULL, false);
 
 				m_pCurVmlDrawing->m_lObjectIdVML = (long)(1024 * (m_oWorkbook.m_oSheets->m_arrItems.size() + 1) + 1);
 

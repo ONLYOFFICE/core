@@ -896,6 +896,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\DocDocxConverter\OfficeDrawing\threeDBooleanProperties.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\DocDocxConverter\OfficeDrawing\UnknownRecord.h"
 					>
 				</File>

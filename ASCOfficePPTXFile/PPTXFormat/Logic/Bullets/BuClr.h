@@ -57,7 +57,7 @@ namespace PPTX
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
                     std::wstring sName = oReader.GetName();
-
+					Color.fromXML(oReader);
 				}
 			}
 			virtual OOX::EElementType getType () const

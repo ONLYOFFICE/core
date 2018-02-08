@@ -515,6 +515,7 @@ void FillStyleBooleanProperties::load(XLS::CFRecord& record)
 	fillShape					= GETBIT(op, 2);
 	fHitTestFill				= GETBIT(op, 3);
 	fFilled						= GETBIT(op, 4);
+	
 	fUseShapeAnchor				= GETBIT(op, 5);
 	fRecolorFillAsPicture		= GETBIT(op, 6);
 	fUsefNoFillHitTest			= GETBIT(op, 16);

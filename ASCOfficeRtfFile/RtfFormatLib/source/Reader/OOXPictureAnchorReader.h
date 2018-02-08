@@ -287,16 +287,16 @@ public:
 
 				if (m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart.IsInit())
 				{
-					nValueX = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart->m_oX.ToTwips();
-					nValueY = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart->m_oY.ToTwips();
+					nValueX = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart->m_oX.ToEmu();
+					nValueY = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart->m_oY.ToEmu();
 					
 					pOutput->m_aWrapPoints.push_back( std::pair<int,int>(nValueX, nValueY) );
 				}
 
 				for (size_t i = 0; i < m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo.size(); i++ )
 				{
-					nValueX = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo[i]->m_oX.ToTwips();
-					nValueY = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo[i]->m_oY.ToTwips();
+					nValueX = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo[i]->m_oX.ToEmu();
+					nValueY = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo[i]->m_oY.ToEmu();
 					
 					pOutput->m_aWrapPoints.push_back( std::pair<int,int>(nValueX, nValueY) );
 				}

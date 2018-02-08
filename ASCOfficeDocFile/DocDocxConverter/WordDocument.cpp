@@ -174,11 +174,24 @@ namespace DocFileFormat
 			}
 		}
 
-		if (FIB->m_FibBase.fEncrypted && !FIB->m_bOlderVersion)
+		if (FIB->m_FibBase.fEncrypted)
 		{
-			encryptionHeader	=	new EncryptionHeader	(FIB, TableStream);
+			encryptionHeader = new EncryptionHeader	(FIB, TableStream);
 
-			if (encryptionHeader->bStandard)
+			if (encryptionHeader->bXOR)
+			{
+				CRYPT::XORDecryptor Decryptor(1, encryptionHeader->crypt_data_xor.key, encryptionHeader->crypt_data_xor.hash, m_sPassword);
+
+				if (Decryptor.IsVerify() == false) 
+				{
+					Clear();
+
+					if (m_sPassword.empty() )	return AVS_ERROR_DRM;
+					else						return AVS_ERROR_PASSWORD;
+				}
+				if (DecryptOfficeFile(&Decryptor) == false)	return AVS_ERROR_DRM;
+			}
+			else if (encryptionHeader->bStandard)
 			{
 				CRYPT::RC4Decryptor Decryptor(encryptionHeader->crypt_data_rc4, m_sPassword);
 
@@ -192,7 +205,7 @@ namespace DocFileFormat
 				
 				if (DecryptOfficeFile(&Decryptor) == false)	return AVS_ERROR_DRM;
 			}
-			else
+			else if (encryptionHeader->bAES)
 			{
 				CRYPT::ECMADecryptor Decryptor;
 
@@ -208,9 +221,8 @@ namespace DocFileFormat
 				if (DecryptOfficeFile(&Decryptor) == false)	return AVS_ERROR_DRM;
 			}
 			
-			FIB->reset(VirtualStreamReader(WordDocumentStream, 68, false));
+			FIB->reset(VirtualStreamReader(WordDocumentStream, bOlderVersion ? 36 : 68, false));
 		}
-		else if (FIB->m_FibBase.fEncrypted)  return AVS_ERROR_DRM;
 
 //------------------------------------------------------------------------------------------------------------------
 		POLE::Stream			* Summary		= NULL;
@@ -629,19 +641,37 @@ namespace DocFileFormat
 
 		for( std::list<std::wstring>::iterator it = entries_files.begin(); it != entries_files.end(); ++it )
 		{
-			std::wstring fullname = path + *it;
-			DecryptStream(fullname, storageIn, storageOut, Decryptor );
+			std::wstring fullname_create = path + *it;
+
+			if (it->at(0) < 32)
+			{
+				*it = it->substr(1);  // without prefix
+			}
+			std::wstring fullname_open	= path + *it;
+			
+			bool bDecrypt = false;
+
+			if ( std::wstring::npos != fullname_open.find(L"WordDocument") ||
+				 std::wstring::npos != fullname_open.find(L"Data") ||
+				 std::wstring::npos != fullname_open.find(L"Table") ||
+				(std::wstring::npos != fullname_open.find(L"SummaryInformation") &&
+					encryptionHeader->bAES && encryptionHeader->crypt_data_aes.fDocProps)
+				)
+			{
+				bDecrypt = true;
+			}	
+			DecryptStream(fullname_open, storageIn, fullname_create, storageOut, Decryptor, bDecrypt);
 		}  
 	}
-	bool WordDocument::DecryptStream(std::wstring streamName, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor)
+	bool WordDocument::DecryptStream(std::wstring streamName_open, POLE::Storage * storageIn, std::wstring streamName_create, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor, bool bDecrypt)
 	{
-		POLE::Stream *stream = new POLE::Stream(storageIn, streamName);
+		POLE::Stream *stream = new POLE::Stream(storageIn, streamName_open);
 		if (!stream) return false;
 
 		stream->seek(0);
 		POLE::uint64 size_stream = stream->size();
 		
-		POLE::Stream *streamNew = new POLE::Stream(storageOut, streamName, true, size_stream);
+		POLE::Stream *streamNew = new POLE::Stream(storageOut, streamName_create, true, size_stream);
 		if (!streamNew) return false;
 
 		unsigned char* data_stream = new unsigned char[size_stream];
@@ -650,9 +680,9 @@ namespace DocFileFormat
 		unsigned char* data_store = NULL;
 		int size_data_store = 0;		
 		
-		if ( std::wstring::npos != streamName.find(L"WordDocument") )
+		if ( std::wstring::npos != streamName_open.find(L"WordDocument") )
 		{
-			size_data_store = 68;
+			size_data_store = bOlderVersion ? 36 : 68;
 			data_store = new unsigned char[size_data_store];
 		}
 		
@@ -662,14 +692,16 @@ namespace DocFileFormat
 		size_t			size_block	= 0x200;
 		unsigned long	block		= 0;
 
-		for (POLE::uint64 pos = 0; pos < size_stream; pos += size_block, block++)
+		for (POLE::uint64 pos = /*bOlderVersion ? size_data_store :*/ 0; pos < size_stream; pos += size_block, block++)
 		{
 			if (pos + size_block > size_stream)
 				size_block = size_stream - pos;
 
-			Decryptor->Decrypt((char*)data_stream + pos, size_block, block);
+			if (bDecrypt)
+			{
+				Decryptor->Decrypt((char*)data_stream + pos, size_block, block);
+			}
 		}
-
 		
 		if (data_store)
 			memcpy(data_stream, data_store, size_data_store);

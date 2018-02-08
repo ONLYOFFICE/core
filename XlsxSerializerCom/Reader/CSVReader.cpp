@@ -338,10 +338,10 @@ namespace CSVReader
 
 		size_t nSize = sFileDataW.length();
 
-		if (nSize < 1 && nInputBufferSize > 0)
-		{
-			return AVS_FILEUTILS_ERROR_CONVERT_ICU;
-		}
+		//if (nSize < 1 && nInputBufferSize > 0)
+		//{
+		//	return AVS_FILEUTILS_ERROR_CONVERT_ICU;
+		//}
         const WCHAR *pTemp = sFileDataW.c_str();
 
 		WCHAR wcDelimiterLeading = L'\0';

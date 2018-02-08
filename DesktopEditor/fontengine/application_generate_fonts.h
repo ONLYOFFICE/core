@@ -710,11 +710,23 @@ namespace NSCommon
                 mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Courier New", 15));
                 mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Carlito", 16));
                 mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Segoe UI", 17));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"MS Gothic", 18));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"SimSun", 19));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"SimSun", 18));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"MS Gothic", 19));
                 mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Nirmala UI", 20));
                 mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Batang", 21));
                 mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"MS Mincho", 22));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Wingdings", 23));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Microsoft JhengHei", 24));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Microsoft JhengHei UI", 25));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Microsoft YaHei", 26));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"PMingLiU", 27));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"MingLiU", 28));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"DFKai-SB", 29));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"FangSong", 30));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"KaiTi", 31));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"SimKai", 32));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"SimHei", 33));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Meiryo", 34));
 
                 CApplicationFontsSymbols oApplicationChecker;
 

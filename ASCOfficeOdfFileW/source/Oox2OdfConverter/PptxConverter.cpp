@@ -1329,8 +1329,17 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 	if (current_theme && current_clrMap)
 		current_theme->SetColorMap(*current_clrMap);
 
+	std::wstring page_name;
 	if (oox_slide->attrName.IsInit())
-		odp_context->current_slide().set_page_name(oox_slide->attrName.get());
+		page_name = oox_slide->attrName.get();
+	
+
+	if (page_name.empty())
+	{
+		if (type == Slide)
+			page_name = L"Slide_" + std::to_wstring(odp_context->get_pages_count());
+	}
+	odp_context->current_slide().set_page_name(page_name);
 
 	if (type != Notes && type != NotesMaster)
 	{

@@ -1427,7 +1427,7 @@ bool OOXrPrReader::Parse( ReaderParameter oParam, RtfCharProperty& oOutputProper
 
 	if (m_ooxRunProps->m_oPosition.IsInit() && m_ooxRunProps->m_oPosition->m_oVal.IsInit())
 	{
-		int nValue = m_ooxRunProps->m_oPosition->m_oVal->ToTwips();
+		int nValue = m_ooxRunProps->m_oPosition->m_oVal->ToTwips() / 10;
 		if( nValue >= 0 )
 			oOutputProperty.m_nUp = nValue;
 		else

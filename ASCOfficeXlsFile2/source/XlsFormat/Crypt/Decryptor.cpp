@@ -33,6 +33,7 @@
 
 #include "Decryptor.h"
 #include "RC4Crypt.h"
+#include "XORCrypt.h"
 #include <Logic/Biff_structures/RC4EncryptionHeader.h>
 
 namespace CRYPT
@@ -64,6 +65,43 @@ namespace CRYPT
 		if (crypt)	return crypt->IsVerify();
 		else		return false;
 	}
+//----------------------------------------------------------------------------------------
+
+	XORDecryptor::XORDecryptor(int type, unsigned short key, unsigned short hash, std::wstring password) :
+													crypt(new XORCrypt(type, key, hash, password))
+	{
+		nKey	= key;
+		nHash	= hash;
+		nType	= type;
+	}
+
+	void XORDecryptor::Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size)
+	{
+		crypt->Decrypt(data, size, stream_pos, block_size);
+	}
+	void XORDecryptor::Decrypt(char* data, const size_t size, const unsigned long block_index)
+	{
+		crypt->Decrypt(data, size, block_index);
+	}
+	bool XORDecryptor::IsVerify()
+	{
+		return crypt->IsVerify();
+	}
+
+	bool XORDecryptor::SetPassword(std::wstring password)
+	{
+		crypt.reset();
+		crypt = CryptPtr(new XORCrypt(nType, nKey, nHash, password));
+		
+		if (crypt)	return crypt->IsVerify();
+		else		return false;
+	}
+
+	void XORDecryptor::Init(const unsigned long val)
+	{
+		crypt->Init(val);
+	}
+
 
 };
 

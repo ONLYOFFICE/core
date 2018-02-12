@@ -1518,7 +1518,32 @@ bool OOXrPrReader::Parse( ReaderParameter oParam, RtfCharProperty& oOutputProper
 																					m_ooxRunProps->m_oHighlight->m_oVal->Get_G(),
 																					m_ooxRunProps->m_oHighlight->m_oVal->Get_B()));
 	}
-	if( m_ooxRunProps->m_oColor.IsInit() )
+	if ( m_ooxRunProps->m_oTextOutline.IsInit())
+	{
+		if (m_ooxRunProps->m_oTextOutline->Fill.m_type == PPTX::Logic::UniFill::noFill )
+		{
+			oOutputProperty.m_nForeColor = 0xffffff;	//white
+		}
+		else if (m_ooxRunProps->m_oTextOutline->Fill.m_type == PPTX::Logic::UniFill::solidFill )
+		{
+			NSCommon::smart_ptr<PPTX::Logic::SolidFill> fill = m_ooxRunProps->m_oTextOutline->Fill.Fill.smart_dynamic_cast<PPTX::Logic::SolidFill>();
+			
+			unsigned int nColor = 0; //black
+			_CP_OPT(double) opacity;
+			
+			OOXShapeReader::Parse(oParam, fill->Color.Color.operator ->(), nColor, opacity);
+			oOutputProperty.m_nForeColor = nColor;
+		}
+
+		if (oOutputProperty.m_nForeColor != PROP_DEF)
+		{
+			RtfColor rtfColor; 
+			rtfColor.SetRGB(oOutputProperty.m_nForeColor);
+			
+			oOutputProperty.m_nForeColor = oParam.oRtf->m_oColorTable.AddItem(rtfColor);
+		}
+	}
+	else if( m_ooxRunProps->m_oColor.IsInit() )
 	{
 		OOXColorReader oColorReader;
 		RtfColor oColor;
@@ -1965,13 +1990,21 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 	}
 	if( m_ooxSectionProperty->m_oCols.IsInit() )
 	{
-		if(m_ooxSectionProperty->m_oCols->m_oNum.IsInit())
-			oOutput.m_nColumnNumber = m_ooxSectionProperty->m_oCols->m_oNum->GetValue();
-		else 
-			oOutput.m_nColumnNumber = 1;
+		if (!m_ooxSectionProperty->m_oCols->m_arrColumns.empty())
+		{
+			oOutput.m_nColumnNumber = m_ooxSectionProperty->m_oCols->m_arrColumns.size();
+		}
 		
+		if(m_ooxSectionProperty->m_oCols->m_oNum.IsInit())
+		{
+			oOutput.m_nColumnNumber = m_ooxSectionProperty->m_oCols->m_oNum->GetValue();
+		}
+
 		if(m_ooxSectionProperty->m_oCols->m_oSpace.IsInit())
 			oOutput.m_nColumnSpace = m_ooxSectionProperty->m_oCols->m_oSpace->ToTwips(); //todooo twips????	
+
+		if (m_ooxSectionProperty->m_oCols->m_oSep.IsInit())
+			oOutput.m_bColumnLineBetween = m_ooxSectionProperty->m_oCols->m_oSep->ToBool();
 
 		for (size_t i = 0; i < m_ooxSectionProperty->m_oCols->m_arrColumns.size(); i++ )
 		{

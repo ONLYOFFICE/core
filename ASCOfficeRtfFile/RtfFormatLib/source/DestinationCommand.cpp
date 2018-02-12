@@ -2035,6 +2035,12 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 	else if ( L"dxTextRight"	== m_sPropName ) m_oShape.m_nTexpRight		= nValue;
 	else if ( L"dyTextBottom"	== m_sPropName ) m_oShape.m_nTexpBottom		= nValue;
 	else if ( L"anchorText"		== m_sPropName ) m_oShape.m_nAnchorText		= nValue;
+	else if ( L"WrapText"		== m_sPropName ) m_oShape.m_nWrapText		= nValue;
+	else if ( L"txflTextFlow"	== m_sPropName ) m_oShape.m_nTxflTextFlow	= nValue;
+	else if ( L"ccol"			== m_sPropName ) m_oShape.m_nCcol			= nValue;
+	else if ( L"txdir"			== m_sPropName ) m_oShape.m_nTxdir			= nValue;
+	else if ( L"fFitShapeToText"== m_sPropName ) m_oShape.m_bFitShapeToText	= nValue;
+	else if ( L"fFitTextToShape"== m_sPropName ) m_oShape.m_bFitTextToShape	= nValue;
 
 //Geometry
 	else if ( L"adjustValue"	== m_sPropName ) m_oShape.m_nAdjustValue[0]	= nValue;

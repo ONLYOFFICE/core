@@ -40,7 +40,6 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class SolidFill : public WrapperWritingElement
 		{
 		public:
@@ -127,10 +126,8 @@ namespace PPTX
 				if(Color.is_init())
 					fill.Color = Color;
 			}
-		public:
-			UniColor Color;
-
-			std::wstring m_namespace;
+			UniColor		Color;
+			std::wstring	m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

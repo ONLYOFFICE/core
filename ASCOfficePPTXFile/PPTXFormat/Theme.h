@@ -324,15 +324,18 @@ namespace PPTX
 		}
 		DWORD GetARGBFromMap(const std::wstring& str)const
 		{
-			return GetARGBFromScheme(m_map->GetColorSchemeIndex(str));
+			if (m_map)	return GetARGBFromScheme(m_map->GetColorSchemeIndex(str));
+			else		return 0;
 		}
 		DWORD GetBGRAFromMap(const std::wstring& str)const
 		{
-			return GetBGRAFromScheme(m_map->GetColorSchemeIndex(str));
+			if (m_map)	return GetBGRAFromScheme(m_map->GetColorSchemeIndex(str));
+			else		return 0;
 		}
 		DWORD GetABGRFromMap(const std::wstring& str)const
 		{
-			return GetABGRFromScheme(m_map->GetColorSchemeIndex(str));
+			if (m_map)	return GetABGRFromScheme(m_map->GetColorSchemeIndex(str));
+			else		return 0;
 		}
 		void GetLineStyle(int number, Logic::Ln& lnStyle)const
 		{
@@ -357,6 +360,7 @@ namespace PPTX
 
 		void SetColorMap(const Logic::ClrMap& map){m_map = &map;};
 	
+		bool isMapPresent() {return (m_map != NULL);}
 	private:
 		Logic::ClrMap const* m_map;
 	};

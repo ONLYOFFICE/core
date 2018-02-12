@@ -140,14 +140,11 @@ namespace PPTX
 
 				pReader->Seek(_end_rec);
 			}
+			
+			UniColor								Color;
+			nullable_limit<Limit::FontStyleIndex>	idx;
 
-		public:
-			UniColor Color;
-			// Attributes
-			nullable_limit<Limit::FontStyleIndex> idx;
-		//private:
-		public:
-			std::wstring m_name;
+			std::wstring							m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

@@ -90,19 +90,27 @@ void RtfShape::SetDefault()
 
 //Text box
 	DEFAULT_PROPERTY( m_nAnchorText )
-	DEFAULT_PROPERTY_DEF( m_nTexpLeft, 91440 )
-	DEFAULT_PROPERTY_DEF( m_nTexpTop, 45720 )
-	DEFAULT_PROPERTY_DEF( m_nTexpRight, 91440 )
-	DEFAULT_PROPERTY_DEF( m_nTexpBottom, 45720 )
+	
+	//DEFAULT_PROPERTY_DEF( m_nTexpLeft, 91440 )
+	//DEFAULT_PROPERTY_DEF( m_nTexpTop, 45720 )
+	//DEFAULT_PROPERTY_DEF( m_nTexpRight, 91440 )
+	//DEFAULT_PROPERTY_DEF( m_nTexpBottom, 45720 )
+	
 	DEFAULT_PROPERTY( m_nTexpLeft )
 	DEFAULT_PROPERTY( m_nTexpTop )
 	DEFAULT_PROPERTY( m_nTexpRight )
 	DEFAULT_PROPERTY( m_nTexpBottom )
+	
 	DEFAULT_PROPERTY( m_bFitShapeToText )
 	DEFAULT_PROPERTY( m_bFitTextToShape )
 	DEFAULT_PROPERTY( m_nCcol )
 	DEFAULT_PROPERTY( m_nTxdir )
 	DEFAULT_PROPERTY( m_nWrapText )
+	DEFAULT_PROPERTY( m_nTxflTextFlow)
+	DEFAULT_PROPERTY( m_fRotateText)
+	DEFAULT_PROPERTY( m_nScaleText)
+	DEFAULT_PROPERTY( m_fAutoTextMargin)
+	DEFAULT_PROPERTY( m_CdirFont)
 //Geometry
 	for (size_t i = 0; i < 10; i++)
 		DEFAULT_PROPERTY( m_nAdjustValue[i] )
@@ -445,12 +453,12 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 	if (m_sName.empty() == false)
 	{
 		sResult += L"{\\sp{\\sn wzName}{\\sv ";
-		sResult += m_sName + L"}}";	
+		sResult += RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, NULL ) + L"}}";	
 	}
 	if (m_sDescription.empty() == false)
 	{
 		sResult += L"{\\sp{\\sn wzDescription}{\\sv ";
-		sResult += m_sDescription + L"}}";
+		sResult += RtfChar::renderRtfText(m_sDescription, oRenderParameter.poDocument, NULL ) + L"}}";
 	}
 //Rehydration
     //RENDER_RTF_SHAPE_PROP(L"metroBlob",    sResult,   m_sMetroBlob);
@@ -485,6 +493,7 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
     RENDER_RTF_SHAPE_PROP(L"ccol",              sResult,	m_nCcol);
     RENDER_RTF_SHAPE_PROP(L"txdir",             sResult,	m_nTxdir);
     RENDER_RTF_SHAPE_PROP(L"WrapText",          sResult,   	m_nWrapText);
+    RENDER_RTF_SHAPE_PROP(L"txflTextFlow",		sResult,   	m_nTxflTextFlow);
 //Geometry
     RENDER_RTF_SHAPE_PROP(L"adjustValue",       sResult,   	m_nAdjustValue[0] );
     RENDER_RTF_SHAPE_PROP(L"adjust2Value",      sResult,   m_nAdjustValue[1] );

@@ -648,6 +648,8 @@ void OOXShapeReader::Parse(ReaderParameter oParam, PPTX::Logic::ColorBase *oox_c
 {
 	if (!oox_color) return;
 
+	oox_color->SetParentFilePointer(oParam.oDocx->m_pTheme);
+
 	nColor = oox_color->GetARGB(0);
 	BYTE alpha = nColor >> 24;
 	if (alpha != 0xff)
@@ -698,7 +700,10 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 	
 	if (change_sheme_color && oox_solid_fill->Color.getType() == OOX::et_a_schemeClr)
 	{
-		//oox_solid_fill->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
+		PPTX::Logic::SchemeClr *pSchemeColor = new PPTX::Logic::SchemeClr();
+		pSchemeColor->val.set(*change_sheme_color);
+
+		oox_solid_fill->Color.Color.reset(pSchemeColor);
 	}
 	
 	Parse(oParam, oox_solid_fill, nColor, opacity);
@@ -910,21 +915,29 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 	{
 		NSCommon::smart_ptr<PPTX::Logic::SolidFill> fill = oox_line_prop->Fill.Fill.smart_dynamic_cast<PPTX::Logic::SolidFill>();
 		NSCommon::smart_ptr<PPTX::Logic::NoFill> no_fill = oox_line_prop->Fill.Fill.smart_dynamic_cast<PPTX::Logic::NoFill>();
-		if (fill.IsInit())
+		
+		if (no_fill.IsInit())
+		{
+			pOutput->m_bLine = false;
+		}
+		else if (fill.IsInit())
 		{
 			if (change_sheme_color && fill->Color.getType() == OOX::et_a_schemeClr)
 			{
-				//fill->Color.FromString(*change_sheme_color);
-			}			
+				PPTX::Logic::SchemeClr *pSchemeColor = new PPTX::Logic::SchemeClr();
+				pSchemeColor->val.set(*change_sheme_color);
+
+				fill->Color.Color.reset(pSchemeColor);
+			}	
 			unsigned int nColor = 0; //black
 			_CP_OPT(double) opacity;
 			
 			Parse(oParam, fill.operator->(), nColor, opacity);
 			pOutput->m_nLineColor = nColor;
 		}
-		else if (no_fill.IsInit())
+		else
 		{
-			pOutput->m_bLine = false;
+
 		}
 	}
 	if (oox_line_prop->w.IsInit())
@@ -1061,15 +1074,26 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 	PPTX::Logic::Shape	* ooxShape	= dynamic_cast<PPTX::Logic::Shape*>	(m_ooxShape);
 	
 	if (!ooxShape) return false;
+
+	PPTX::Logic::BodyPr *text_properties = NULL;
 	
-	if (ooxShape->oTextBoxBodyPr.IsInit())
+	if (ooxShape->oTextBoxShape.IsInit())
 	{
-		if (ooxShape->oTextBoxBodyPr->fromWordArt.get_value_or(false))
+		text_properties = ooxShape->oTextBoxBodyPr.GetPointer();	
+	}
+
+	if (ooxShape->txBody.IsInit())
+	{
+		text_properties = ooxShape->txBody->bodyPr.GetPointer();	
+	}
+	if (text_properties)
+	{
+		if (text_properties->fromWordArt.get_value_or(false))
 		{
 			pOutput->m_bGtext = 1;
-			if (ooxShape->oTextBoxBodyPr->prstTxWarp.IsInit())
+			if (text_properties->prstTxWarp.IsInit())
 			{
-				SimpleTypes::ETextShapeType type = (SimpleTypes::ETextShapeType)ooxShape->oTextBoxBodyPr->prstTxWarp->prst.GetBYTECode();
+				SimpleTypes::ETextShapeType type = (SimpleTypes::ETextShapeType)text_properties->prstTxWarp->prst.GetBYTECode();
 
 				pOutput->m_nShapeType	= OOX::PrstTx2VmlShapeType(type);
 			}
@@ -1164,9 +1188,50 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 		Parse(oParam, pOutput, ooxShape->spPr.ln.GetPointer());	
 	}
 //---------------------------------------------------------------------
-	PPTX::Logic::BodyPr * text_properties = NULL;
 	OOXTextItemReader oTextItemReader;
 	
+	RtfCharProperty old = oParam.oRtf->m_oDefaultCharProp;
+	if ((oox_sp_style) && (oox_sp_style->fontRef.idx.IsInit()))
+	{
+		std::wstring font_name;
+		if (oox_sp_style->fontRef.idx->GetBYTECode() == 0)
+		{
+			font_name = oParam.oDocx->m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;
+		}
+		else if (oox_sp_style->fontRef.idx->GetBYTECode() == 1)
+		{
+			font_name = oParam.oDocx->m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;
+		}
+		if (!font_name.empty())
+		{
+			RtfFont oCurFont;
+			if( true == oParam.oRtf->m_oFontTable.GetFont( font_name, oCurFont ) )
+			{
+				oParam.oRtf->m_oDefaultCharProp.m_nFont = oCurFont.m_nID;
+			}
+			else
+			{
+				oCurFont.m_sName	= font_name;
+				oCurFont.m_nID		= oParam.oRtf->m_oDefaultCharProp.m_nFont = oParam.oRtf->m_oFontTable.GetCount() + 1;
+				oParam.oRtf->m_oFontTable.AddItem( oCurFont );
+			}			 
+		}
+		if (oox_sp_style->fontRef.Color.is_init())
+		{
+			unsigned int nColor = 0; //black
+			_CP_OPT(double) opacity;
+			
+			OOXShapeReader::Parse(oParam, oox_sp_style->fontRef.Color.Color.operator ->(), nColor, opacity);
+
+			RtfColor rtfColor; 
+			rtfColor.SetRGB(nColor);
+			
+			oParam.oRtf->m_oDefaultCharProp.m_nForeColor = oParam.oRtf->m_oColorTable.AddItem(rtfColor);
+		}
+	}
+	
+	Parse(oParam, pOutput, text_properties);
+
 	if (ooxShape->txBody.IsInit())
 	{
 		for (size_t i=0; i < ooxShape->txBody->Paragrs.size(); i++)
@@ -1174,7 +1239,6 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 			oTextItemReader.Parse(&ooxShape->txBody->Paragrs[i], oParam );
 		}	
 
-		text_properties = ooxShape->txBody->bodyPr.GetPointer();
 	}
 	else if (ooxShape->oTextBoxShape.IsInit())
 	{
@@ -1182,7 +1246,6 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 		{
 			oTextItemReader.Parse(ooxShape->oTextBoxShape->m_arrItems[i], oParam );
 		}	
-		text_properties = ooxShape->oTextBoxBodyPr.GetPointer();
 	}
 
 	if (oTextItemReader.m_oTextItems)
@@ -1198,13 +1261,66 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 		{
 			pOutput->m_aTextItems = oTextItemReader.m_oTextItems;
 		}
+	}
 
-		if (text_properties)
+	oParam.oRtf->m_oDefaultCharProp = old;
+
+	return true;		
+}
+	
+void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::BodyPr *text_props)
+{
+	if (!text_props) return;
+   
+	if (text_props->lIns.IsInit())	pOutput->m_nTexpLeft	= *text_props->lIns;
+	if (text_props->tIns.IsInit())	pOutput->m_nTexpTop		= *text_props->tIns;
+	if (text_props->rIns.IsInit())	pOutput->m_nTexpRight	= *text_props->rIns;
+	if (text_props->bIns.IsInit())	pOutput->m_nTexpBottom	= *text_props->bIns;
+
+	if (text_props->anchor.IsInit())
+	{
+		switch(text_props->anchor->GetBYTECode())
 		{
+		case 0:	pOutput->m_nAnchorText = 2; break;
+		case 4:	pOutput->m_nAnchorText = 0; break;		
+		case 1:	
+		case 2:	
+		case 3:	
+		default:
+			pOutput->m_nAnchorText = 4; break;
 		}
 	}
 
-	return true;		
+	if (text_props->rtlCol.IsInit())
+		pOutput->m_nTxdir = *text_props->rtlCol;
+
+	if (text_props->numCol.IsInit())
+		pOutput->m_nCcol = *text_props->numCol;
+
+	switch(text_props->Fit.type)
+	{
+		case 2: pOutput->m_bFitShapeToText = 1; break;
+		case 3: pOutput->m_bFitTextToShape = 1; break;
+		default:
+			break;
+	}
+	if (text_props->vert.IsInit())
+	{
+		switch(text_props->vert->GetBYTECode())
+		{
+			case 0: pOutput->m_nTxflTextFlow = 1; break;
+			case 2: pOutput->m_nTxflTextFlow = 2; break;
+			case 3: pOutput->m_nTxflTextFlow = 1; break;
+			case 4: pOutput->m_nTxflTextFlow = 2; break;
+			case 5: pOutput->m_nTxflTextFlow = 5; break;
+			case 6: pOutput->m_nTxflTextFlow = 5; break;
+			default:
+				break;
+		}
+	}
+	//nullable_int							rot;
+	//nullable_limit<Limit::TextWrap>		wrap;
+
 }
 
 bool OOXShapeReader::ParsePic( ReaderParameter oParam, RtfShapePtr& pOutput)

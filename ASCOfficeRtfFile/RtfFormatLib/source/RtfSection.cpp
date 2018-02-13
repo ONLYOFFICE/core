@@ -307,13 +307,12 @@ std::wstring RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT	( m_nColumnNumber,		sResult, L"cols" )
 	RENDER_RTF_INT	( m_nColumnSpace,		sResult, L"colsx" )
 	RENDER_RTF_BOOL	( m_bColumnLineBetween, sResult, L"linebetcol" )
-	
-	int nCollFormCount = (int)m_oCollumnProperty.m_aCollumnProperty.size();
-	if( nCollFormCount > 0 )
-	{
-		for( int i = 0; i < nCollFormCount; i++ )
+
+	if (m_nColumnNumber > 1)
+	{	
+		for( size_t i = 0; i < m_oCollumnProperty.m_aCollumnProperty.size(); i++ )
 		{
-            sResult += L"\\colno" + std::to_wstring( i + 1 );
+			sResult += L"\\colno" + std::to_wstring( i + 1 );
 			RENDER_RTF_INT( m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnSpaceToRightOfCol, sResult, L"colsr" )
 			RENDER_RTF_INT( m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth, sResult, L"colw" )
 		}
@@ -575,23 +574,36 @@ std::wstring RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 				}
 			}
         sCollumnFormating += L"<w:cols w:num=\"" + std::to_wstring(m_nColumnNumber) + L"\"";
+
 		if( PROP_DEF != m_nColumnSpace )
             sCollumnFormating += L" w:space=\"" + std::to_wstring(m_nColumnSpace) + L"\"";
-		if( true == bEqualWidth )
-			sCollumnFormating += L" w:equalWidth=\"true\"/>";
+
+		if (m_nColumnNumber > 1)
+		{					
+			if (PROP_DEF != m_bColumnLineBetween)
+				sCollumnFormating += std::wstring(L" w:sep=\"") + (m_bColumnLineBetween ? L"1" : L"0") + L"\"";
+			
+			if( true == bEqualWidth )
+				sCollumnFormating += L" w:equalWidth=\"true\"/>";
+			else
+			{
+				sCollumnFormating += L" w:equalWidth=\"false\">";
+
+				for (size_t i = 0; i < m_oCollumnProperty.m_aCollumnProperty.size(); i++ )
+				{
+					sCollumnFormating += L"<w:col";
+					if( PROP_DEF != m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth )
+						sCollumnFormating += L" w:w=\"" + std::to_wstring(m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth) + L"\"";
+					if( PROP_DEF != m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnSpaceToRightOfCol )
+						sCollumnFormating += L" w:space=\"" + std::to_wstring(m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnSpaceToRightOfCol ) + L"\"";
+					sCollumnFormating += L"/>";
+				}
+				sCollumnFormating += L"</w:cols>";
+			}
+		}
 		else
 		{
-			sCollumnFormating += L" w:equalWidth=\"false\">";
-			for (size_t i = 0; i < m_oCollumnProperty.m_aCollumnProperty.size(); i++ )
-			{
-				sCollumnFormating += L"<w:col";
-				if( PROP_DEF != m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth )
-                    sCollumnFormating += L" w:w=\"" + std::to_wstring(m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth) + L"\"";
-				if( PROP_DEF != m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnSpaceToRightOfCol )
-                    sCollumnFormating += L" w:space=\"" + std::to_wstring(m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnSpaceToRightOfCol ) + L"\"";
-				sCollumnFormating += L"/>";
-			}
-			sCollumnFormating += L"</w:cols>";
+			sCollumnFormating += L"/>";
 		}
         if( false == sCollumnFormating.empty() )
 			sResult += sCollumnFormating;

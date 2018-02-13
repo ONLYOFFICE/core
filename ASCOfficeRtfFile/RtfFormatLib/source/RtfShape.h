@@ -134,6 +134,11 @@ public:
 	int m_nCcol;					//columns
 	int m_nTxdir;					//bidi
 	int m_nWrapText;
+	int m_nTxflTextFlow;
+	int m_fAutoTextMargin;
+	int m_fRotateText;
+	int m_nScaleText;
+	int m_CdirFont;
 //Geometry
 	int m_nAdjustValue[10];	
 //Custom

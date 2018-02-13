@@ -453,12 +453,12 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 	if (m_sName.empty() == false)
 	{
 		sResult += L"{\\sp{\\sn wzName}{\\sv ";
-		sResult += RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, NULL ) + L"}}";	
+        sResult += RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, -1 ) + L"}}";
 	}
 	if (m_sDescription.empty() == false)
 	{
 		sResult += L"{\\sp{\\sn wzDescription}{\\sv ";
-		sResult += RtfChar::renderRtfText(m_sDescription, oRenderParameter.poDocument, NULL ) + L"}}";
+        sResult += RtfChar::renderRtfText(m_sDescription, oRenderParameter.poDocument, -1 ) + L"}}";
 	}
 //Rehydration
     //RENDER_RTF_SHAPE_PROP(L"metroBlob",    sResult,   m_sMetroBlob);

@@ -2325,35 +2325,35 @@ public:
 
 	void Merge( RtfCellProperty& oCellPr )
 	{
-		MERGE_PROPERTY( m_bMergeFirst, oCellPr )
-		MERGE_PROPERTY( m_bMerge, oCellPr )
-		MERGE_PROPERTY( m_bMergeFirstVertical, oCellPr )
-		MERGE_PROPERTY( m_bMergeVertical, oCellPr )
+		MERGE_PROPERTY( m_bMergeFirst,			oCellPr )
+		MERGE_PROPERTY( m_bMerge,				oCellPr )
+		MERGE_PROPERTY( m_bMergeFirstVertical,	oCellPr )
+		MERGE_PROPERTY( m_bMergeVertical,		oCellPr )
 
 		MERGE_PROPERTY( m_bFitText, oCellPr )
-		MERGE_PROPERTY( m_bNoWrap, oCellPr )
+		MERGE_PROPERTY( m_bNoWrap,	oCellPr )
 
-		MERGE_PROPERTY( m_nPaddingLeft, oCellPr )
-		MERGE_PROPERTY( m_nIsPaddingLeft, oCellPr )
-		MERGE_PROPERTY( m_nPaddingRight, oCellPr )
-		MERGE_PROPERTY( m_nIsPaddingRight, oCellPr )
-		MERGE_PROPERTY( m_nPaddingTop, oCellPr )
-		MERGE_PROPERTY( m_nIsPaddingTop, oCellPr )
-		MERGE_PROPERTY( m_nPaddingBottom, oCellPr )
+		MERGE_PROPERTY( m_nPaddingLeft,		oCellPr )
+		MERGE_PROPERTY( m_nIsPaddingLeft,	oCellPr )
+		MERGE_PROPERTY( m_nPaddingRight,	oCellPr )
+		MERGE_PROPERTY( m_nIsPaddingRight,	oCellPr )
+		MERGE_PROPERTY( m_nPaddingTop,		oCellPr )
+		MERGE_PROPERTY( m_nIsPaddingTop,	oCellPr )
+		MERGE_PROPERTY( m_nPaddingBottom,	oCellPr )
 		MERGE_PROPERTY( m_nIsPaddingBottom, oCellPr )
 
-		MERGE_PROPERTY( m_nSpacingLeft, oCellPr )
-		MERGE_PROPERTY( m_nIsSpacingLeft, oCellPr )
-		MERGE_PROPERTY( m_nSpacingRight, oCellPr )
-		MERGE_PROPERTY( m_nIsSpacingRight, oCellPr )
-		MERGE_PROPERTY( m_nSpacingTop, oCellPr )
-		MERGE_PROPERTY( m_nIsSpacingTop, oCellPr )
-		MERGE_PROPERTY( m_nSpacingBottom, oCellPr )
+		MERGE_PROPERTY( m_nSpacingLeft,		oCellPr )
+		MERGE_PROPERTY( m_nIsSpacingLeft,	oCellPr )
+		MERGE_PROPERTY( m_nSpacingRight,	oCellPr )
+		MERGE_PROPERTY( m_nIsSpacingRight,	oCellPr )
+		MERGE_PROPERTY( m_nSpacingTop,		oCellPr )
+		MERGE_PROPERTY( m_nIsSpacingTop,	oCellPr )
+		MERGE_PROPERTY( m_nSpacingBottom,	oCellPr )
 		MERGE_PROPERTY( m_nIsSpacingBottom, oCellPr )
 
-		MERGE_PROPERTY( m_eWidthUnits, oCellPr )
-		MERGE_PROPERTY( m_nWidth, oCellPr )
-		MERGE_PROPERTY( m_bHideMark, oCellPr )
+		MERGE_PROPERTY( m_eWidthUnits,	oCellPr )
+		MERGE_PROPERTY( m_nWidth,		oCellPr )
+		MERGE_PROPERTY( m_bHideMark,	oCellPr )
 
 		m_oBorderDiagonalLR.Merge( oCellPr.m_oBorderDiagonalLR );
 		m_oBorderDiagonalRL.Merge( oCellPr.m_oBorderDiagonalRL );
@@ -2421,11 +2421,11 @@ public:
 
 	int m_nHeight;		//trrhN	Height of a table row in twips. When 0, the height is sufficient for all the text in the line; when positive, the height is guaranteed to be at least the specified height; when negative, the absolute value of the height is used, regardless of the height of the text in the line.
 
-	int				m_nWidthStartInvCell;			//trwWidthBN	Width of invisible cell at the beginning of the row. Used only in cases where rows have different widths.
-	_MetricUnits	m_eMUStartInvCell;		//trftsWidthBN	Units for \trwWidthBN:
+	int	m_nWidthStartInvCell;			//trwWidthBN	Width of invisible cell at the beginning of the row. Used only in cases where rows have different widths.
+	int	m_eMUStartInvCell;		//trftsWidthBN	Units for \trwWidthBN:
 
-	int				m_nWidthEndInvCell;				//trwWidthAN	Width of invisible cell at the end of the row. Used only when rows have different widths.
-	_MetricUnits	m_eMUEndInvCell;		//trftsWidthAN	Units for \trwWidthAN:
+	int	m_nWidthEndInvCell;				//trwWidthAN	Width of invisible cell at the end of the row. Used only when rows have different widths.
+	int	m_eMUEndInvCell;		//trftsWidthAN	Units for \trwWidthAN:
 
 	int m_nGridBefore;	//для oox
 	int m_nGridAfter;	//для oox

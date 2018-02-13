@@ -284,7 +284,7 @@ public:
 			if (m_ooxAnchor->m_oWrapTight->m_oWrapPolygon.IsInit())
 			{
 				int nValueX, nValueY;
-
+ 
 				if (m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart.IsInit())
 				{
 					nValueX = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart->m_oX.ToEmu();

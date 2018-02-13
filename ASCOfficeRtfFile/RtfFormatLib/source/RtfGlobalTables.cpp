@@ -69,7 +69,7 @@ std::wstring RtfListTable::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE;
-		for (size_t i = 0; i < m_aPictureList.GetCount(); i++ )
+		for (int i = 0; i < m_aPictureList.GetCount(); i++ )
 		{
             sResult += L"<w:numPicBullet w:numPicBulletId=\"" + std::to_wstring(i) + L"\">";
 			sResult += m_aPictureList[i]->RenderToOOX(oNewParam);

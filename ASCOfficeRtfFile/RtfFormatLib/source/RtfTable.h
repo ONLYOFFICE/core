@@ -322,10 +322,10 @@ public:
 					RtfTableCellPtr oCurCell = oCurRow->operator [](j);
 
 					int nSpan = 1;
+					
 					if( PROP_DEF != oCurCell->m_oProperty.m_nSpan )
 						nSpan = oCurCell->m_oProperty.m_nSpan;
-					else
-						nSpan = 1;
+
 					if( j == 0 && PROP_DEF != oCurRow->m_oProperty.m_nGridBefore )
 						nCurIndex += oCurRow->m_oProperty.m_nGridBefore;
 					//if( j == oCurRow->m_oProperty.size() - 1 && PROP_DEF != oCurRow->m_oProperty.m_nGridAfter )

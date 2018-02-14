@@ -244,16 +244,23 @@ namespace CSVWriter
 							{
                                 if (pCell->m_oType.IsInit() && SimpleTypes::Spreadsheet::celltypeNumber != pCell->m_oType->GetValue())
                                 {
-                                    int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
+									if(SimpleTypes::Spreadsheet::celltypeStr == pCell->m_oType->GetValue())
+									{
+										sCellValue = pCell->m_oValue->ToString();
+									}
+									else
+									{
+										int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
 
-                                    if (nValue >= 0 && nValue < oXlsx.m_pSharedStrings->m_arrItems.size())
-                                    {
-                                        OOX::Spreadsheet::CSi *pSi = oXlsx.m_pSharedStrings->m_arrItems[nValue];
-                                        if(NULL != pSi)
-                                        {
-                                            sCellValue = pSi->ToString();
-                                        }
-                                    }
+										if (nValue >= 0 && nValue < oXlsx.m_pSharedStrings->m_arrItems.size())
+										{
+											OOX::Spreadsheet::CSi *pSi = oXlsx.m_pSharedStrings->m_arrItems[nValue];
+											if(NULL != pSi)
+											{
+												sCellValue = pSi->ToString();
+											}
+										}
+									}
                                 }
 								else 
 								{

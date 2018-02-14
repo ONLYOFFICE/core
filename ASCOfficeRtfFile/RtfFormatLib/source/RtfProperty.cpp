@@ -56,6 +56,8 @@ std::wstring RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 			case ft_fhiminor:	sResult += L"\\fhiminor";	break;
 			case ft_fdbminor:	sResult += L"\\fdbminor";	break;
 			case ft_fbiminor:	sResult += L"\\fbiminor";	break;
+		default:
+			break;
 		}
         sResult += L"\\f" + std::to_wstring(m_nID);
 
@@ -69,6 +71,8 @@ std::wstring RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 			case ff_fdecor:		sResult += L"\\fdecor";		break;
 			case ff_ftech:		sResult += L"\\ftech";		break;
 			case ff_fbidi:		sResult += L"\\fbidi";		break;
+		default:
+			break;
 		}
 		RENDER_RTF_INT( m_nCharset, sResult, L"fcharset" )
 		RENDER_RTF_INT( m_nPitch, sResult, L"fprq" )
@@ -126,6 +130,8 @@ std::wstring RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 			case ft_fhiminor: sTag = L"latin";	break;
 			case ft_fdbminor: sTag = L"ea";		break;
 			case ft_fbiminor: sTag = L"cs";		break;
+			default:
+				break;
 		}
         if( !sTag.empty() )
 		{
@@ -145,6 +151,8 @@ std::wstring RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 			case ft_fhiminor: sTag = L"latin";	break;
 			case ft_fdbmajor: sTag = L"ea";		break;
 			case ft_fbimajor: sTag = L"cs";		break;
+			default:
+				break;
 		}
         if( !sTag.empty() )
 		{
@@ -185,6 +193,8 @@ std::wstring RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 			case ff_fdecor:		sFamily = L"decorative";	break;
 			case ff_ftech:		sFamily = L"auto";			break;
 			case ff_fbidi:		sFamily = L"auto";			break;
+			default:
+				break;
 		}
         if( !sFamily.empty() )
 		{
@@ -207,6 +217,8 @@ std::wstring RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 				case 0: sPitch = L"default";	break;
 				case 1: sPitch = L"fixed";		break;
 				case 2: sPitch = L"variable";	break;
+				default:
+					break;
 			}
             sResult += L"<w:pitch w:val=\"";
 			sResult += sPitch;
@@ -243,6 +255,8 @@ std::wstring RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 					sHint = L" w:hint=\"cs\"/>";
 				}break;
 				//?? нужно ли описывать default??? todooo
+				default:
+					break;
 			}
 			sResult += L"<w:rFonts w:ascii=\"";
 			sResult += sFontName;
@@ -324,6 +338,8 @@ std::wstring RtfShadingChar::RenderToRtf(RenderParameter oRenderParameter)
 		case st_chbgdkbdiag:	sResult += L"\\chbgdkbdiag";		break;
 		case st_chbgdkcross:	sResult += L"\\chbgdkcross";		break;
 		case st_chbgdkdcross:	sResult += L"\\chbgdkdcross";	break;
+		default:
+			break;
 	}		
 	RENDER_RTF_INT( m_nForeColor, sResult, L"chcfpat" )
 	RENDER_RTF_INT( m_nBackColor, sResult, L"chcbpat" )
@@ -348,6 +364,8 @@ std::wstring RtfShadingPar::RenderToRtf(RenderParameter oRenderParameter)
 		case st_chbgdkbdiag:	sResult += L"\\bgdkbdiag";	break;
 		case st_chbgdkcross:	sResult += L"\\bgdkcross";	break;
 		case st_chbgdkdcross:	sResult += L"\\bgdkdcross";	break;
+		default:
+			break;
 	}		
 	RENDER_RTF_INT( m_nForeColor, sResult, L"cfpat" )
 	RENDER_RTF_INT( m_nBackColor, sResult, L"cbpat" )
@@ -373,6 +391,8 @@ std::wstring RtfShadingCell::RenderToRtf(RenderParameter oRenderParameter)
 		case st_chbgdkbdiag:	sResult += L"\\clbgdkbdiag";	break;
 		case st_chbgdkcross:	sResult += L"\\clbgdkcross";	break;
 		case st_chbgdkdcross:	sResult += L"\\clbgdkdcross";	break;
+		default:
+			break;
 	}	
 	RENDER_RTF_INT( m_nForeColor, sResult, L"clcfpat" )
 	if( PROP_DEF != m_nBackColor )
@@ -401,6 +421,8 @@ std::wstring RtfShadingRow::RenderToRtf(RenderParameter oRenderParameter)
 		case st_chbgdkbdiag:	sResult += L"\\trbgdkbdiag";		break;
 		case st_chbgdkcross:	sResult += L"\\trbgdkcross";		break;
 		case st_chbgdkdcross:	sResult += L"\\trbgdkdcross";	break;
+		default:
+			break;
 	}		
 	RENDER_RTF_INT( m_nForeColor, sResult, L"trcfpat" )
 	RENDER_RTF_INT( m_nBackColor, sResult, L"trcbpat" )
@@ -425,6 +447,8 @@ std::wstring RtfShadingTableStyle::RenderToRtf(RenderParameter oRenderParameter)
 		case st_chbgdkbdiag:	sResult += L"\\tsbgdkbdiag";		break;
 		case st_chbgdkcross:	sResult += L"\\tsbgdkcross";		break;
 		case st_chbgdkdcross:	sResult += L"\\tsbgdkdcross";	break;
+		default:
+			break;
 	}		
 	RENDER_RTF_INT( m_nForeColor, sResult, L"tscellcfpat" )
 	RENDER_RTF_INT( m_nBackColor, sResult, L"tscellcbpat" )
@@ -499,6 +523,8 @@ std::wstring RtfShading::RenderToOOX(RenderParameter oRenderParameter)
 			case st_chbgdkbdiag:	sShading += L" w:val=\"diagStripe\"";				break;
 			case st_chbgdkcross:	sShading += L" w:val=\"horzCross\"";				break;
 			case st_chbgdkdcross:	sShading += L" w:val=\"diagCross\"";				break;
+			default:
+				break;
 		}
 	}
     if( false == sShading.empty() )
@@ -537,6 +563,8 @@ std::wstring RtfBorder::RenderToRtf(RenderParameter oRenderParameter)
 		case bt_brdrengrave:	sResult = L"\\brdrengrave";		break;
 		case bt_brdroutset:		sResult = L"\\brdroutset";		break;
 		case bt_brdrnone:		sResult = L"\\brdrnone";		break;
+		default:
+			break;
 	}
 	if( PROP_DEF != m_nWidth && m_nWidth > 0)
         sResult += L"\\brdrw" + std::to_wstring(m_nWidth );
@@ -593,6 +621,8 @@ std::wstring RtfBorder::RenderToOOX(RenderParameter oRenderParameter)
 		case bt_brdrdashdotstr: sResult += L" w:val=\"dashDotStroked\"";			break;
 		case bt_brdremboss:		sResult += L" w:val=\"threeDEmboss\"";			break;
 		case bt_brdrengrave:	sResult += L" w:val=\"threeDEngrave\"";			break;
+		default:
+			break;
 	}
     if( false == sResult.empty() )
 	{
@@ -670,6 +700,8 @@ std::wstring RtfCharProperty::RenderToRtf(RenderParameter oRenderParameter)
 		case uls_Double_wave:			sResult += L"\\ululdbwave";	break;
 		case uls_Word:					sResult += L"\\ulw";		break;
 		case uls_Wave:					sResult += L"\\ulwave";		break;
+		default:
+			break;
 	}
 	RENDER_RTF_INT( m_nUnderlineColor, sResult, L"ulc" )
 	RENDER_RTF_INT( m_nUp, sResult, L"up" )
@@ -768,6 +800,8 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case 4:	sResult += L"<w:effect w:val=\"antsBlack\"/>";		break;
 		case 5:	sResult += L"<w:effect w:val=\"antsRed\"/>";		break;
 		case 6:	sResult += L"<w:effect w:val=\"shimmer\"/>";		break;
+		default:
+			break;
 	}
 	RENDER_OOX_BOOL	( m_bBold, sResult, L"w:b" )
 	RENDER_OOX_BOOL	( m_bCaps, sResult, L"w:caps" )
@@ -898,6 +932,8 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
             case uls_Double_wave:			sResult += L" w:val=\"wavyDouble\"/>";		break;
             case uls_Word:					sResult += L" w:val=\"words\"/>";			break;
             case uls_Wave:					sResult += L" w:val=\"wave\"/>";				break;
+			default:
+				break;
 		}
 	}
 
@@ -1045,6 +1081,8 @@ std::wstring RtfListLevelProperty::RenderToOOX2(RenderParameter oRenderParameter
 				case 0: sResult += L"<w:suff w:val=\"tab\"/>";		break;
 				case 1: sResult += L"<w:suff w:val=\"space\"/>";		break;
 				case 2: sResult += L"<w:suff w:val=\"nothing\"/>";	break;
+				default:
+					break;
 			}
 		}
 
@@ -1178,6 +1216,8 @@ std::wstring RtfStyle::RenderToOOXBegin(RenderParameter oRenderParameter)
 		case stCharacter :	sType = L"character";	break;
 		case stSection :	sType = L"numbering";	break;
 		case stTable :		sType = L"table";		break;
+		default:
+			break;
 	}
     //sResult += L"<w:style w:type=\"" + sType + L"\" w:styleId=\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\">";
 	sResult += L"<w:style w:type=\"" + sType + L"\" w:styleId=\"" + L"Style_" + std::to_wstring(m_nID) + L"\">";
@@ -1551,6 +1591,8 @@ std::wstring RtfTab::RenderToRtf(RenderParameter oRenderParameter)
 				case tl_mdot:	sResult += L"\\tlmdot";	break;
 				case tl_hyph:	sResult += L"\\tlhyph";	break;
 				case tl_ul:		sResult += L"\\tlul";	break;
+				default:
+					break;
 			}
             sResult += L"\\tb" + std::to_wstring( m_nTab );
 		}
@@ -1562,12 +1604,16 @@ std::wstring RtfTab::RenderToRtf(RenderParameter oRenderParameter)
 				case tl_mdot:	sResult += L"\\tlmdot";	break;
 				case tl_hyph:	sResult += L"\\tlhyph";	break;
 				case tl_ul:		sResult += L"\\tlul";	break;
+				default:
+					break;
 			}
 			switch( m_eKind )
 			{
 				case tk_tqr:	sResult += L"\\tqr";		break;
 				case tk_tqc:	sResult += L"\\tqc";		break;
 				case tk_tqdec:	sResult += L"\\tqdec";	break;
+				default:
+					break;
 			}
             sResult += L"\\tx" + std::to_wstring( m_nTab );
 		}
@@ -1585,6 +1631,8 @@ std::wstring RtfTab::RenderToOOX(RenderParameter oRenderParameter)
         case tl_mdot:	sTab += L" w:leader=\"middleDot\"";     break;
 		case tl_hyph:	sTab += L" w:leader=\"hyphen\"";		break;
 		case tl_ul:		sTab += L" w:leader=\"underscore\"";	break;
+		default:
+			break;
 	}
 	switch( m_eKind )
 	{
@@ -1593,6 +1641,8 @@ std::wstring RtfTab::RenderToOOX(RenderParameter oRenderParameter)
 		case tk_tqc:	sTab += L" w:val=\"center\"";	break;
 		case tk_tqdec:	sTab += L" w:val=\"decimal\"";	break;
 		case tk_tqbar:	sTab += L" w:val=\"bar\"";		break;
+		default:
+			break;
 	}
 	if( PROP_DEF != m_nTab )
         sTab += L" w:pos=\"" + std::to_wstring(m_nTab) + L"\"";
@@ -1611,6 +1661,8 @@ std::wstring RtfFrame::RenderToRtf(RenderParameter oRenderParameter)
 		case hr_phmrg:	sResult += L"\\phmrg";	break;
 		case hr_phpg:	sResult += L"\\phpg";	break;
 		case hr_phcol:	sResult += L"\\phcol";	break;
+		default:
+			break;
 	}
 	if( PROP_DEF != m_nHPos )
 	{
@@ -1626,6 +1678,8 @@ std::wstring RtfFrame::RenderToRtf(RenderParameter oRenderParameter)
 		case hp_posxo: sResult += L"\\posxo";	break;
 		case hp_posxl: sResult += L"\\posxl";	break;
 		case hp_posxr: sResult += L"\\posxr";	break;
+		default:
+			break;
 	}
 
 	switch ( m_eVRef )
@@ -1633,6 +1687,8 @@ std::wstring RtfFrame::RenderToRtf(RenderParameter oRenderParameter)
 		case vr_pvmrg:	sResult += L"\\pvmrg";	break;
 		case vr_pvpg:	sResult += L"\\pvpg";	break;
 		case vr_pvpara: sResult += L"\\pvpara";	break;
+		default:
+			break;
 	}
 	if( PROP_DEF != m_nVPos )
 	{
@@ -1649,6 +1705,8 @@ std::wstring RtfFrame::RenderToRtf(RenderParameter oRenderParameter)
         case vp_posyc:		sResult += L"\\posyc";      break;
         case vp_posyin:		sResult += L"\\posyin";     break;
 		case vp_posyout:	sResult += L"\\posyout";	break;
+		default:
+			break;
 	}
 	RENDER_RTF_INT( m_bLockAnchor, sResult, L"abslock" )
 
@@ -1658,6 +1716,8 @@ std::wstring RtfFrame::RenderToRtf(RenderParameter oRenderParameter)
         case tw_wraparound:		sResult += L"\\wraparound";     break;
         case tw_wraptight:		sResult += L"\\wraptight";      break;
 		case tw_wrapthrough:	sResult += L"\\wrapthrough";	break;
+		default:
+			break;
 	}
 	RENDER_RTF_INT( m_DropcapType, sResult, L"dropcapt" )
 	RENDER_RTF_INT( m_DropcapLines, sResult, L"dropcapli" )
@@ -1696,6 +1756,8 @@ std::wstring RtfFrame::RenderToOOX(RenderParameter oRenderParameter)
 		case hr_phmrg:	sFrame += L" w:hAnchor=\"margin\"";	break;
 		case hr_phpg:	sFrame += L" w:hAnchor=\"page\"";	break;
 		case hr_phcol:	sFrame += L" w:hAnchor=\"text\"";	break;
+		default:
+			break;
 	}
 	RENDER_OOX_INT_ATTRIBUTE( m_nHPos, sFrame, L"w:x" )
 	switch ( m_eHPos )
@@ -1705,12 +1767,16 @@ std::wstring RtfFrame::RenderToOOX(RenderParameter oRenderParameter)
 		case hp_posxo: sFrame += L" w:xAlign=\"outside\"";	break;
 		case hp_posxl: sFrame += L" w:xAlign=\"left\"";		break;
 		case hp_posxr: sFrame += L" w:xAlign=\"right\"";		break;
+		default:
+			break;
 	}
 	switch ( m_eVRef )
 	{	
 		case vr_pvmrg:	sFrame += L" w:vAnchor=\"margin\"";	break;
 		case vr_pvpg:	sFrame += L" w:vAnchor=\"page\"";	break;
 		case vr_pvpara: sFrame += L" w:vAnchor=\"text\"";	break;
+		default:
+			break;
 	}
 	RENDER_OOX_INT_ATTRIBUTE( m_nVPos, sFrame, L"w:y" )
 	switch ( m_eVPos )
@@ -1721,6 +1787,8 @@ std::wstring RtfFrame::RenderToOOX(RenderParameter oRenderParameter)
 		case vp_posyc:		sFrame += L" w:yAlign=\"center\"";	break;
 		case vp_posyin:		sFrame += L" w:yAlign=\"inside\"";	break;
 		case vp_posyout:	sFrame += L" w:yAlign=\"outside\"";	break;
+		default:
+			break;
 	}
 	RENDER_OOX_BOOL_ATTRIBUTE( m_bLockAnchor, sFrame, L"w:anchorLock" )
 	switch ( m_eWrap )
@@ -1729,6 +1797,8 @@ std::wstring RtfFrame::RenderToOOX(RenderParameter oRenderParameter)
 		case tw_wraparound:		sFrame += L" w:wrap=\"around\"";		break;
 		case tw_wraptight:		sFrame += L" w:wrap=\"tight\"";		break;
 		case tw_wrapthrough:	sFrame += L" w:wrap=\"through\"";	break;
+		default:
+			break;
 	}
 	if( 1 == m_DropcapType )		sFrame += L" w:dropCap=\"drop\"";
 	else if( 2 == m_DropcapType )	sFrame += L" w:dropCap=\"margin\"";
@@ -1775,6 +1845,8 @@ std::wstring RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 		case  pa_qk0:	sResult += L"\\qk0";		break;  
 		case  pa_qk10:	sResult += L"\\qk10";	break;  
 		case  pa_qk20:	sResult += L"\\qk20";	break;  
+		default:
+			break;
 	}
 	switch( m_eFontAlign )
 	{
@@ -1784,6 +1856,8 @@ std::wstring RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 		case fa_faroman:	sResult += L"\\faroman";	break;
 		case fa_favar:		sResult += L"\\favar";	break;
 		case fa_fafixed:	sResult += L"\\fafixed";	break;
+		default:
+			break;
 	}
 	RENDER_RTF_INT( m_nIndFirstLine		, sResult, L"fi" );
 	RENDER_RTF_INT( m_nIndLeft			, sResult, L"li" );
@@ -1816,6 +1890,8 @@ std::wstring RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 		case tbw_txbxtwfirstlast:	sResult += L"\\txbxtwfirstlast";	break;
 		case tbw_txbxtwfirst:		sResult += L"\\txbxtwfirst";		break;
 		case tbw_txbxtwlast:		sResult += L"\\txbxtwlast";		break;
+		default:
+			break;
 	}
 	if( PROP_DEF != m_nListId && PROP_DEF != m_nListLevel )
 	{
@@ -1874,6 +1950,8 @@ std::wstring RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 		case tf_frmtxbtlr:	sResult += L"\\frmtxbtlr";	break;
 		case tf_frmtxlrtbv: sResult += L"\\frmtxlrtbv";	break;
 		case tf_frmtxtbrlv: sResult += L"\\frmtxtbrlv";	break;
+		default:
+			break;
 	}
 	if( true == m_oTabs.IsValid() )
 		sResult +=  m_oTabs.RenderToRtf( oRenderParameter );
@@ -1992,6 +2070,8 @@ std::wstring RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case  pa_qk0:	sResult += L"<w:jc w:val=\"lowKashida\" />";		break;
 		case  pa_qk10:	sResult += L"<w:jc w:val=\"mediumKashida\" />";	break;
 		case  pa_qk20:	sResult += L"<w:jc w:val=\"highKashida\" />";	break;
+		default:
+			break;
 	}
 	switch( m_eFontAlign )
 	{
@@ -2001,6 +2081,8 @@ std::wstring RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case fa_faroman:	sResult += L"<w:textAlignment w:val=\"baseline\" />";break;
 		case fa_favar:		sResult += L"<w:textAlignment w:val=\"bottom\" />";	break;
 		case fa_fafixed:	sResult += L"<w:textAlignment w:val=\"bottom\" />";	break;
+		default:
+			break;
 	}
     std::wstring sIndent;
 	if( PROP_DEF != m_nIndFirstLine )
@@ -2072,6 +2154,8 @@ std::wstring RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case tbw_txbxtwfirstlast:	sResult += L"<w:textboxTightWrap w:val=\"firstAndLastLine\"/>";	break;
 		case tbw_txbxtwfirst:		sResult += L"<w:textboxTightWrap w:val=\"firstLineOnly\"/>";	break;
 		case tbw_txbxtwlast:		sResult += L"<w:textboxTightWrap w:val=\"lastLineOnly\"/>";		break;
+		default:
+			break;
 	}
 	if( PROP_DEF != m_nListId && PROP_DEF != m_nListLevel )
         sResult += L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(m_nListLevel) + L"\" /><w:numId w:val=\"" + std::to_wstring(m_nListId) + L"\" /></w:numPr>";
@@ -2136,6 +2220,8 @@ std::wstring RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case tf_frmtxbtlr:	sResult += L"<w:textFlow w:val=\"btlr\" />";	break;
 		case tf_frmtxlrtbv: sResult += L"<w:textFlow w:val=\"lrtbV\" />";break;
 		case tf_frmtxtbrlv: sResult += L"<w:textFlow w:val=\"tbrlV\" />";break;
+		default:
+			break;
 	}
 	if( true == m_oTabs.IsValid() )
 	{
@@ -2176,14 +2262,15 @@ std::wstring RtfCellProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_BOOL( m_bFitText,			sResult, L"clFitText" )
 	RENDER_RTF_BOOL( m_bNoWrap,				sResult, L"clNoWrap" )
 
-	RENDER_RTF_INT( m_nIsPaddingLeft,		sResult, L"clpadfl" )
-	RENDER_RTF_INT( m_nPaddingLeft,			sResult, L"clpadl" )
-	RENDER_RTF_INT( m_nIsPaddingRight,		sResult, L"clpadfr" )
+//https://www.office-forums.com/threads/rtf-file-weirdness-clpadt-vs-clpadl.2163500/
+	RENDER_RTF_INT( m_nPaddingLeft,			sResult, L"clpadt" )	//перепутаны top & left
+	RENDER_RTF_INT( m_nIsPaddingLeft,		sResult, L"clpadft" )	//перепутаны top & left
 	RENDER_RTF_INT( m_nPaddingRight,		sResult, L"clpadr" )
-	RENDER_RTF_INT( m_nIsPaddingTop,		sResult, L"clpadft" )
-	RENDER_RTF_INT( m_nPaddingTop,			sResult, L"clpadt" )
-	RENDER_RTF_INT( m_nIsPaddingBottom,		sResult, L"clpadfb" )
+	RENDER_RTF_INT( m_nIsPaddingRight,		sResult, L"clpadfr" )
+	RENDER_RTF_INT( m_nPaddingTop,			sResult, L"clpadl" )	//перепутаны top & left
+	RENDER_RTF_INT( m_nIsPaddingTop,		sResult, L"clpadfl" )	//перепутаны top & left
 	RENDER_RTF_INT( m_nPaddingBottom,		sResult, L"clpadb" )
+	RENDER_RTF_INT( m_nIsPaddingBottom,		sResult, L"clpadfb" )
 
 	RENDER_RTF_INT( m_nIsSpacingLeft,		sResult, L"clspfl" )
 	RENDER_RTF_INT( m_nSpacingLeft,			sResult, L"clspl" )
@@ -2235,6 +2322,8 @@ std::wstring RtfCellProperty::RenderToRtf(RenderParameter oRenderParameter)
 		case ca_Top:	sResult += L"\\clvertalt";	break;
 		case ca_Center: sResult += L"\\clvertalc";	break;
 		case ca_Bottom: sResult += L"\\clvertalb";	break;
+		default:
+			break;
 	}
 	switch( m_oCellFlow )
 	{
@@ -2243,6 +2332,8 @@ std::wstring RtfCellProperty::RenderToRtf(RenderParameter oRenderParameter)
 		case cf_btlr:	sResult += L"\\cltxbtlr";	break;
 		case cf_lrtbv:	sResult += L"\\cltxlrtbv";	break;
 		case cf_tbrlv:	sResult += L"\\cltxtbrlv";	break;
+		default:
+			break;
 	}
 	RENDER_RTF_INT( m_nWidth, sResult, L"clwWidth" )
 	switch( m_eWidthUnits )
@@ -2251,6 +2342,8 @@ std::wstring RtfCellProperty::RenderToRtf(RenderParameter oRenderParameter)
 		case mu_Auto:		sResult += L"\\clftsWidth1";	break;
 		case mu_Percent:	sResult += L"\\clftsWidth2";	break;
 		case mu_Twips:		sResult += L"\\clftsWidth3";	break;
+		default:
+			break;
 	}
 
     sResult += L"\\cellx" + std::to_wstring(m_nCellx);
@@ -2386,6 +2479,8 @@ std::wstring RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case ca_Top:	sResult += L"<w:vAlign w:val=\"top\"/>";		break;
 		case ca_Center: sResult += L"<w:vAlign w:val=\"center\"/>";	break;
 		case ca_Bottom: sResult += L"<w:vAlign w:val=\"bottom\"/>";	break;
+		default:
+			break;
 	}
 	switch( m_oCellFlow )
 	{
@@ -2394,7 +2489,8 @@ std::wstring RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case cf_btlr:	sResult += L"<w:textDirection w:val=\"btLr\"/>";		break;
 		case cf_lrtbv:	sResult += L"<w:textDirection w:val=\"lrTbV\"/>";	break;
 		case cf_tbrlv:	sResult += L"<w:textDirection w:val=\"tbRlV\"/>";	break;
-
+		default:
+			break;
 	}
 
 	RENDER_OOX_INT( m_nSpan, sResult, L"w:gridSpan" );
@@ -2582,6 +2678,8 @@ std::wstring RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
             //case 2: sResult += L"<w:tblInd w:w=\"" + std::to_wstring(nTableIndent) + L"%%\" w:type=\"pct\"/>",  );break;
             case 3: sResult += L"<w:tblInd w:w=\"" + std::to_wstring(nTableIndent) + L"\" w:type=\"dxa\"/>";    break;
             //default: sResult += L"<w:tblInd w:w=\"" + std::to_wstring(nTableIndent) + L"\" w:type=\"dxa\"/>", nTableIndent );break;
+			default:
+				break;
 		}
 	}
 
@@ -2593,6 +2691,8 @@ std::wstring RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case rj_trql : sResult += L"<w:jc w:val=\"left\"/>";		break;
 		case rj_trqr : sResult += L"<w:jc w:val=\"right\"/>";	break;
 		case rj_trqc : sResult += L"<w:jc w:val=\"center\"/>";	break;
+		default:
+			break;
 	}
 
     std::wstring sFloatingPosition;
@@ -2738,30 +2838,38 @@ std::wstring RtfRowProperty::RenderToRtf(RenderParameter oRenderParameter)
 		case rj_trql : sResult += L"\\trql";	break;
 		case rj_trqr : sResult += L"\\trqr";	break;
 		case rj_trqc : sResult += L"\\trqc";	break;
+		default:
+			break;
 	}
 	RENDER_RTF_INT( m_nHeight, sResult, L"trrh" );
 
-	RENDER_RTF_INT( m_nWidth, sResult, L"trwWidth" );
 	switch( m_eMUWidth )
 	{
 		case mu_Auto:		sResult += L"\\trftsWidth1";	break;
 		case mu_Percent:	sResult += L"\\trftsWidth2";	break;
 		case mu_Twips:		sResult += L"\\trftsWidth3";	break;
+		default:
+			break;
 	}
-	RENDER_RTF_INT( m_nWidthStartInvCell, sResult, L"trwWidthB" );
+	RENDER_RTF_INT( m_nWidth, sResult, L"trwWidth" );
 	switch( m_eMUStartInvCell )
 	{
 		case mu_Auto:		sResult += L"\\trftsWidthB1";	break;
 		case mu_Percent:	sResult += L"\\trftsWidthB2";	break;
 		case mu_Twips:		sResult += L"\\trftsWidthB3";	break;
+		default:
+			break;
 	}
-	RENDER_RTF_INT( m_nWidthEndInvCell, sResult, L"trwWidthA" );
+	RENDER_RTF_INT( m_nWidthStartInvCell, sResult, L"trwWidthB" );
 	switch( m_eMUEndInvCell )
 	{
 		case mu_Auto:		sResult += L"\\trftsWidthA1";	break;
 		case mu_Percent:	sResult += L"\\trftsWidthA2";	break;
 		case mu_Twips:		sResult += L"\\trftsWidthA3";	break;
+		default:
+			break;
 	}
+	RENDER_RTF_INT( m_nWidthEndInvCell, sResult, L"trwWidthA" );
 	sResult +=  RtfTableProperty::RenderToRtf(  oRenderParameter  );
 
 	for (size_t i = 0; i < m_aArray.size(); i++ )
@@ -2791,6 +2899,8 @@ std::wstring RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case rj_trql : sResult += L"<w:jc w:val=\"left\"/>";	break;
 		case rj_trqr : sResult += L"<w:jc w:val=\"right\"/>";	break;
 		case rj_trqc : sResult += L"<w:jc w:val=\"center\"/>";	break;
+		default:
+			break;
 	}
 	if( PROP_DEF != m_nHeight )
 	{
@@ -2806,6 +2916,8 @@ std::wstring RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 		{
         case mu_Percent:	sResult += L"<w:wBefore w:type=\"pct\" w:w=\"" + std::to_wstring(m_nWidthStartInvCell) + L"%\"/>";  break;
         case mu_Twips:		sResult += L"<w:wBefore w:type=\"dxa\" w:w=\"" + std::to_wstring(m_nWidthStartInvCell) + L"\"/>";	break;
+		default:
+			break;
 		}
 	}
 	if( PROP_DEF != m_nWidthEndInvCell )
@@ -2814,6 +2926,8 @@ std::wstring RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 		{
         case mu_Percent:	sResult += L"<w:wAfter w:type=\"pct\" w:w=\"" + std::to_wstring(m_nWidthEndInvCell) + L"%\"/>"; break;
         case mu_Twips:		sResult += L"<w:wAfter w:type=\"dxa\" w:w=\"" + std::to_wstring(m_nWidthEndInvCell) + L"\"/>";	break;
+		default:
+			break;
 		}
 	}
 	RENDER_OOX_INT( m_nGridBefore,	sResult, L"w:gridBefore" )

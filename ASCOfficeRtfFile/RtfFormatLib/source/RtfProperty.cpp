@@ -1341,10 +1341,11 @@ std::wstring RtfParagraphStyle::RenderToOOX(RenderParameter oRenderParameter)
 //			RENDER_RTF_INT( m_nPaddingLeft, sResult, L"tscellpaddl" )
 //			RENDER_RTF_INT( m_nPaddingRight, sResult, L"tscellpaddr" )
 //			RENDER_RTF_INT( m_nPaddingBottom, sResult, L"tscellpaddb" )
-//			RENDER_RTF_INT( m_nIsPaddingTop, sResult, L"tscellpaddft" )
-//			RENDER_RTF_INT( m_nIsPaddingLeft, sResult, L"tscellpaddfl" )
-//			RENDER_RTF_INT( m_nIsPaddingRight, sResult, L"tscellpaddfr" )
-//			RENDER_RTF_INT( m_nIsPaddingBottom, sResult, L"tscellpaddfb" )
+
+//			RENDER_RTF_INT( m_ePaddingTopUnit, sResult, L"tscellpaddft" )
+//			RENDER_RTF_INT( m_ePaddingLeftUnit, sResult, L"tscellpaddfl" )
+//			RENDER_RTF_INT( m_ePaddingRightUnit, sResult, L"tscellpaddfr" )
+//			RENDER_RTF_INT( m_ePaddingBottomUnit, sResult, L"tscellpaddfb" )
 //
 //			switch( m_eAlign )
 //			{
@@ -2264,22 +2265,22 @@ std::wstring RtfCellProperty::RenderToRtf(RenderParameter oRenderParameter)
 
 //https://www.office-forums.com/threads/rtf-file-weirdness-clpadt-vs-clpadl.2163500/
 	RENDER_RTF_INT( m_nPaddingLeft,			sResult, L"clpadt" )	//перепутаны top & left
-	RENDER_RTF_INT( m_nIsPaddingLeft,		sResult, L"clpadft" )	//перепутаны top & left
+	RENDER_RTF_INT( m_ePaddingLeftUnit,		sResult, L"clpadft" )	//перепутаны top & left
 	RENDER_RTF_INT( m_nPaddingRight,		sResult, L"clpadr" )
-	RENDER_RTF_INT( m_nIsPaddingRight,		sResult, L"clpadfr" )
+	RENDER_RTF_INT( m_ePaddingRightUnit,	sResult, L"clpadfr" )
 	RENDER_RTF_INT( m_nPaddingTop,			sResult, L"clpadl" )	//перепутаны top & left
-	RENDER_RTF_INT( m_nIsPaddingTop,		sResult, L"clpadfl" )	//перепутаны top & left
+	RENDER_RTF_INT( m_ePaddingTopUnit,		sResult, L"clpadfl" )	//перепутаны top & left
 	RENDER_RTF_INT( m_nPaddingBottom,		sResult, L"clpadb" )
-	RENDER_RTF_INT( m_nIsPaddingBottom,		sResult, L"clpadfb" )
+	RENDER_RTF_INT( m_ePaddingBottomUnit,	sResult, L"clpadfb" )
 
-	RENDER_RTF_INT( m_nIsSpacingLeft,		sResult, L"clspfl" )
+	RENDER_RTF_INT( m_eSpacingLeftUnit,		sResult, L"clspfl" )
 	RENDER_RTF_INT( m_nSpacingLeft,			sResult, L"clspl" )
-	RENDER_RTF_INT( m_nIsSpacingRight,		sResult, L"clspl" )
+	RENDER_RTF_INT( m_eSpacingRightUnit,	sResult, L"clspl" )
 	RENDER_RTF_INT( m_nSpacingRight,		sResult, L"clspr" )
 
-	RENDER_RTF_INT( m_nIsSpacingTop,		sResult, L"clspft" )
+	RENDER_RTF_INT( m_eSpacingTopUnit,		sResult, L"clspft" )
 	RENDER_RTF_INT( m_nSpacingTop,			sResult, L"clspt" )
-	RENDER_RTF_INT( m_nIsSpacingBottom,		sResult, L"clspfb" )
+	RENDER_RTF_INT( m_eSpacingBottomUnit,	sResult, L"clspfb" )
 	RENDER_RTF_INT( m_nSpacingBottom,		sResult, L"clspb" )
 	
 	RENDER_RTF_BOOL( m_bHideMark,			sResult, L"clhidemark" )
@@ -2336,7 +2337,7 @@ std::wstring RtfCellProperty::RenderToRtf(RenderParameter oRenderParameter)
 			break;
 	}
 	RENDER_RTF_INT( m_nWidth, sResult, L"clwWidth" )
-	switch( m_eWidthUnits )
+	switch( m_eWidthUnit )
 	{
 		case mu_none:		sResult += L"\\clftsWidth0";	break;
 		case mu_Auto:		sResult += L"\\clftsWidth1";	break;
@@ -2362,13 +2363,13 @@ std::wstring RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 	RENDER_OOX_BOOL( m_bNoWrap, sResult, L"w:noWrap" )
 
     std::wstring sMargin;
-	if( 3 == m_nIsPaddingLeft && PROP_DEF != m_nPaddingLeft)
+	if( 3 == m_ePaddingLeftUnit && PROP_DEF != m_nPaddingLeft)
         sResult += L"<w:left w:w=\"" + std::to_wstring(m_nPaddingLeft) + L"\" w:type=\"dxa\"/>";
-	if( 3 == m_nIsPaddingRight && PROP_DEF != m_nPaddingRight)
+	if( 3 == m_ePaddingRightUnit && PROP_DEF != m_nPaddingRight)
         sResult += L"<w:right w:w=\"" + std::to_wstring(m_nPaddingRight) + L"\" w:type=\"dxa\"/>";
-	if( 3 == m_nIsPaddingTop && PROP_DEF != m_nPaddingTop)
+	if( 3 == m_ePaddingTopUnit && PROP_DEF != m_nPaddingTop)
         sResult += L"<w:top w:w=\"" + std::to_wstring(m_nPaddingTop) + L"\" w:type=\"dxa\"/>";
-	if( 3 == m_nIsPaddingBottom && PROP_DEF != m_nPaddingBottom)
+	if( 3 == m_ePaddingBottomUnit && PROP_DEF != m_nPaddingBottom)
         sResult += L"<w:bottom w:w=\"" + std::to_wstring(m_nPaddingBottom) + L"\" w:type=\"dxa\"/>";
 	
     if( !sMargin.empty() )
@@ -2405,9 +2406,9 @@ std::wstring RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 
 	if( PROP_DEF != m_nWidth )
 	{
-		if( mu_Percent ==  m_eWidthUnits )
+		if( mu_Percent ==  m_eWidthUnit )
             sResult += L"<w:tcW w:type=\"pct\" w:w=\"" + std::to_wstring(m_nWidth) + L"%\"/>";
-		else if( mu_Twips ==  m_eWidthUnits )
+		else if( mu_Twips ==  m_eWidthUnit )
             sResult += L"<w:tcW w:type=\"dxa\" w:w=\"" + std::to_wstring(m_nWidth) + L"\"/>";
 	}
 	RENDER_OOX_BOOL( m_bHideMark, sResult, L"w:hideMark" )
@@ -2749,9 +2750,9 @@ std::wstring RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 		sResult += L"/>";
 	}
 
-	if( PROP_DEF != m_nWidth && ( 2 == m_eMUWidth || 3 == m_eMUWidth ))
+	if( PROP_DEF != m_nWidth && ( 2 == m_eWidthUnit || 3 == m_eWidthUnit ))
 	{
-		if( 2 == m_eMUWidth )
+		if( 2 == m_eWidthUnit )
             sResult += L"<w:tblW w:w=\"" + std::to_wstring(m_nWidth) + L"\" w:type=\"pct\"/>";
 		else
             sResult += L"<w:tblW w:w=\"" + std::to_wstring(m_nWidth) + L"\" w:type=\"dxa\"/>";
@@ -2843,7 +2844,7 @@ std::wstring RtfRowProperty::RenderToRtf(RenderParameter oRenderParameter)
 	}
 	RENDER_RTF_INT( m_nHeight, sResult, L"trrh" );
 
-	switch( m_eMUWidth )
+	switch( m_eWidthUnit )
 	{
 		case mu_Auto:		sResult += L"\\trftsWidth1";	break;
 		case mu_Percent:	sResult += L"\\trftsWidth2";	break;

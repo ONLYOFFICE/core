@@ -1174,21 +1174,22 @@ bool RtfTableCellPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader&
     COMMAND_RTF_BOOL( "clNoWrap",	cellProps->m_bNoWrap,				sCommand, hasParameter, parameter )
 
 //https://www.office-forums.com/threads/rtf-file-weirdness-clpadt-vs-clpadl.2163500/
-    COMMAND_RTF_INT ( "clpadft",	cellProps->m_nIsPaddingLeft,		sCommand, hasParameter, parameter )	//перепутаны top & left
+    COMMAND_RTF_INT ( "clpadft",	cellProps->m_ePaddingLeftUnit,		sCommand, hasParameter, parameter )	//перепутаны top & left
     COMMAND_RTF_INT ( "clpadt",		cellProps->m_nPaddingLeft,			sCommand, hasParameter, parameter )	//перепутаны top & left
-    COMMAND_RTF_INT ( "clpadfl",	cellProps->m_nIsPaddingTop,			sCommand, hasParameter, parameter )	//перепутаны top & left
+    COMMAND_RTF_INT ( "clpadfl",	cellProps->m_ePaddingTopUnit,		sCommand, hasParameter, parameter )	//перепутаны top & left
     COMMAND_RTF_INT ( "clpadl",		cellProps->m_nPaddingTop,			sCommand, hasParameter, parameter )	//перепутаны top & left
-    COMMAND_RTF_INT ( "clpadfr",	cellProps->m_nIsPaddingRight,		sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "clpadfr",	cellProps->m_ePaddingRightUnit,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "clpadr",		cellProps->m_nPaddingRight,			sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "clpadfb",	cellProps->m_nIsPaddingBottom,		sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "clpadfb",	cellProps->m_ePaddingBottomUnit,	sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "clpadb",		cellProps->m_nPaddingBottom,		sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "clspfl",		cellProps->m_nIsSpacingLeft,		sCommand, hasParameter, parameter )
+   
+	COMMAND_RTF_INT ( "clspfl",		cellProps->m_eSpacingLeftUnit,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "clspl",		cellProps->m_nSpacingLeft,			sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "clspft",		cellProps->m_nIsSpacingTop,			sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "clspft",		cellProps->m_eSpacingTopUnit,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "clspt",		cellProps->m_nSpacingTop,			sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "clspfr",		cellProps->m_nIsSpacingRight,		sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "clspfr",		cellProps->m_eSpacingRightUnit,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "clspr",		cellProps->m_nSpacingRight,			sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "clspfb",		cellProps->m_nIsSpacingBottom,		sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "clspfb",		cellProps->m_eSpacingBottomUnit,	sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "clspb",		cellProps->m_nSpacingBottom,		sCommand, hasParameter, parameter )
 	
     else if ( "clftsWidth" == sCommand  )
@@ -1197,10 +1198,10 @@ bool RtfTableCellPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 		{
 			switch( parameter )
 			{
-				case 0:cellProps->m_eWidthUnits = mu_none;		break;
-				case 1:cellProps->m_eWidthUnits = mu_Auto;		break;
-				case 2:cellProps->m_eWidthUnits = mu_Percent;	break;
-				case 3:cellProps->m_eWidthUnits = mu_Twips;		break;
+				case 0:	cellProps->m_eWidthUnit = mu_none;		break;
+				case 1:	cellProps->m_eWidthUnit = mu_Auto;		break;
+				case 2:	cellProps->m_eWidthUnit = mu_Percent;	break;
+				case 3:	cellProps->m_eWidthUnit = mu_Twips;		break;
 				default:
 					break;
 			}
@@ -1218,13 +1219,13 @@ bool RtfTableCellPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader&
     COMMAND_RTF_INT ( "cltxtbrlv",	cellProps->m_oCellFlow,		sCommand, true, RtfCellProperty::cf_tbrlv )
 
 //table style
-    COMMAND_RTF_INT ( "tscellpaddfl",	cellProps->m_nIsPaddingLeft,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "tscellpaddfl",	cellProps->m_ePaddingLeftUnit,	sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "tscellpaddl",	cellProps->m_nPaddingLeft,		sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "tscellpaddft",	cellProps->m_nIsPaddingTop,		sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "tscellpaddft",	cellProps->m_ePaddingTopUnit,	sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "tscellpaddt",	cellProps->m_nPaddingTop,		sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "tscellpaddfr",	cellProps->m_nIsPaddingRight,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "tscellpaddfr",	cellProps->m_ePaddingRightUnit,	sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "tscellpaddr",	cellProps->m_nPaddingRight,		sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "tscellpaddfb",	cellProps->m_nIsPaddingBottom,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "tscellpaddfb",	cellProps->m_ePaddingBottomUnit,sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "tscellpaddb",	cellProps->m_nPaddingBottom,	sCommand, hasParameter, parameter )
     COMMAND_RTF_BOOL( "tsnowrap",		cellProps->m_bNoWrap,			sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "tsvertalt",		cellProps->m_eAlign,			sCommand, true, RtfCellProperty::ca_Top )
@@ -1266,10 +1267,10 @@ bool RtfTableRowPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& 
 		{
 			switch( parameter )
 			{
-				case 0:	rowProps->m_eMUWidth = mu_none;		break;
-				case 1:	rowProps->m_eMUWidth = mu_Auto;		break;
-				case 2:	rowProps->m_eMUWidth = mu_Percent;	break;
-				case 3:	rowProps->m_eMUWidth = mu_Twips;	break;
+				case 0:	rowProps->m_eWidthUnit = mu_none;		break;
+				case 1:	rowProps->m_eWidthUnit = mu_Auto;		break;
+				case 2:	rowProps->m_eWidthUnit = mu_Percent;	break;
+				case 3:	rowProps->m_eWidthUnit = mu_Twips;	break;
 				default:
 					break;
 			}
@@ -1356,16 +1357,16 @@ bool RtfTableRowPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& 
 		}
 	}
     COMMAND_RTF_INT ( "trwWidth", rowProps->m_nWidth, sCommand, hasParameter, parameter )
-    else if ( "trleft" == sCommand )
+    else if ( "trftsWidth" == sCommand )
 	{
 		if ( hasParameter )
 		{
 			switch( parameter )
 			{
-				case 0: rowProps->m_eMUWidth = mu_none;		break;
-				case 1: rowProps->m_eMUWidth = mu_Auto;		break;
-				case 2: rowProps->m_eMUWidth = mu_Percent;	break;
-				case 3: rowProps->m_eMUWidth = mu_Twips;	break;
+				case 0: rowProps->m_eWidthUnit = mu_none;		break;
+				case 1: rowProps->m_eWidthUnit = mu_Auto;		break;
+				case 2: rowProps->m_eWidthUnit = mu_Percent;	break;
+				case 3: rowProps->m_eWidthUnit = mu_Twips;		break;
 				default:
 					break;
 			}

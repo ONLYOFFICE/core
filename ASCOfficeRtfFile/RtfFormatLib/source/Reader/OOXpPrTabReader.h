@@ -42,7 +42,7 @@ public:
 	{
 		m_ooxTabs = ooxTabs;
 	}
-	bool Parse( ReaderParameter oParam ,RtfTabs& oOutputProperty)
+	bool Parse( ReaderParameter oParam, RtfTabs& oOutputProperty)
 	{
 		if (m_ooxTabs == NULL) return false;
 

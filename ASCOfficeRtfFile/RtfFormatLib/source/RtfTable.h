@@ -203,8 +203,8 @@ public:
 							nWidth = aCellx[k];
 						else
 							nWidth = aCellx[k] - aCellx[nLastIndex - 1];
-						oCurCell->m_oProperty.m_nWidth = nWidth;
-						oCurCell->m_oProperty.m_eWidthUnits = mu_Twips;
+						oCurCell->m_oProperty.m_nWidth		= nWidth;
+						oCurCell->m_oProperty.m_eWidthUnit	= mu_Twips;
 						nLastIndex = k + 1;
 						break;
 					}
@@ -247,23 +247,27 @@ public:
 				int nGutter = oDocument.m_oProperty.m_nGutterWidth;
 				if( 1 == oDocument.m_oProperty.m_bGutterAtTop )//не учитываем если это Top gutter
 					nGutter = 0;
-				m_oProperty.m_nWidth = oDocument.m_oProperty.m_nPaperWidth - oDocument.m_oProperty.m_nMarginLeft - oDocument.m_oProperty.m_nMarginRight - nGutter;
-				m_oProperty.m_eMUWidth = mu_Twips;
+				m_oProperty.m_nWidth		= oDocument.m_oProperty.m_nPaperWidth - oDocument.m_oProperty.m_nMarginLeft - oDocument.m_oProperty.m_nMarginRight - nGutter;
+				m_oProperty.m_eWidthUnit	= mu_Twips;
 			}
 
 			for (size_t i = 0; i < (int)m_aArray.size(); i++) 
 			{
 				RtfTableRowPtr oCurRow = m_aArray[i];
 				int nCellCount = oCurRow->GetCount();
+				
 				if( oCurRow->m_oProperty.GetCount() < nCellCount )
 					nCellCount = oCurRow->m_oProperty.GetCount();
+				
 				if( nCellCount > 0 )
 				{
 					int nCellWidth = m_oProperty.m_nWidth / nCellCount;
 					int nCurCellX = 0;
+					
 					for (int j = 0; j < nCellCount; j++ )
 					{
 						nCurCellX += nCellWidth;
+						
 						RtfTableCellPtr oCellPtr = (*oCurRow)[j];
 						oCellPtr->m_oProperty.m_nCellx = nCurCellX;
 						oCurRow->m_oProperty[j].m_nCellx = nCurCellX;
@@ -273,7 +277,7 @@ public:
 		}
 		else
 		{
-			for (size_t i = 0; i < (int)m_aArray.size(); i++) 
+			for (size_t i = 0; i < m_aArray.size(); i++) 
 			{
 				RtfTableRowPtr oCurRow= m_aArray[ i ];
 
@@ -286,31 +290,32 @@ public:
 					nLeft += 2 * m_oProperty.m_nDefCellSpLeft;
 				int nDelta = nLeft;//в left учитывается GrindBefore
 
-				if( PROP_DEF != oCurRow->m_oProperty.m_nGridBefore )
-				{
-					int nGridBefore = oCurRow->m_oProperty.m_nGridBefore;
-					if( (int)m_aTableGrid.size() > nGridBefore - 1)
-					{
-						int nWidthBefore = 0;
-						for (int k = 0; k < nGridBefore ; k++ )
-							nWidthBefore += m_aTableGrid[k];
-						oCurRow->m_oProperty.m_nWidthStartInvCell = nWidthBefore;
-						oCurRow->m_oProperty.m_eMUStartInvCell = mu_Twips;
-						nLeft += nWidthBefore;
-					}
-				}
-				if( PROP_DEF != oCurRow->m_oProperty.m_nGridAfter )
-				{
-					int nGridAfter = oCurRow->m_oProperty.m_nGridAfter;
-					if( (int)m_aTableGrid.size() > nGridAfter - 1)
-					{
-						int nWidthAfter = 0;
-						for( int k = (int)m_aTableGrid.size() - 1; k >= (int)m_aTableGrid.size() - 1 - nGridAfter; k-- )
-							nWidthAfter += m_aTableGrid[k];
-						oCurRow->m_oProperty.m_nWidthEndInvCell = nWidthAfter;
-						oCurRow->m_oProperty.m_eMUEndInvCell = mu_Twips;
-					}
-				}
+				//if( PROP_DEF != oCurRow->m_oProperty.m_nGridBefore )
+				//{
+				//	int nGridBefore = oCurRow->m_oProperty.m_nGridBefore;
+				//	if( (int)m_aTableGrid.size() > nGridBefore - 1)
+				//	{
+				//		int nWidthBefore = 0;
+				//		for (int k = 0; k < nGridBefore ; k++ )
+				//			nWidthBefore += m_aTableGrid[k];
+				//		oCurRow->m_oProperty.m_nWidthStartInvCell = nWidthBefore;
+				//		oCurRow->m_oProperty.m_eMUStartInvCell = mu_Twips;
+				//		nLeft += nWidthBefore;
+				//	}
+				//}
+				//if( PROP_DEF != oCurRow->m_oProperty.m_nGridAfter )
+				//{
+				//	int nGridAfter = oCurRow->m_oProperty.m_nGridAfter;
+				//	if( (int)m_aTableGrid.size() > nGridAfter - 1)
+				//	{
+				//		int nWidthAfter = 0;
+				//		
+				//		for( int k = (int)m_aTableGrid.size() - 1; k >= (int)m_aTableGrid.size() - 1 - nGridAfter; k-- )
+				//			nWidthAfter += m_aTableGrid[k];
+				//		oCurRow->m_oProperty.m_nWidthEndInvCell = nWidthAfter;
+				//		oCurRow->m_oProperty.m_eMUEndInvCell = mu_Twips;
+				//	}
+				//}
 
 				if( 0 != nLeft )
 					oCurRow->m_oProperty.m_nLeft = nLeft;

@@ -69,7 +69,7 @@ public:
 	{
 		if (m_ooxTblLook == NULL) return false;
 
-		oOutput.bLastRow = m_ooxTblLook->IsFirstRow();
+		oOutput.bFirstRow = m_ooxTblLook->IsFirstRow();
 		oOutput.bLastRow = m_ooxTblLook->IsLastRow();
 		oOutput.bFirstCol = m_ooxTblLook->IsFirstColumn();
 		oOutput.bLastCol = m_ooxTblLook->IsLastColumn();

@@ -1318,6 +1318,10 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 				break;
 		}
 	}
+	if (text_props->rot.IsInit())
+	{
+		pOutput->m_fRotateText = 1; 
+	}
 	//nullable_int							rot;
 	//nullable_limit<Limit::TextWrap>		wrap;
 
@@ -2019,4 +2023,32 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 		}
 	}
 	return true;
+}
+
+void OOXShapeReader::Parse(ReaderParameter oParam, PPTX::Logic::UniFill *uni_fill, unsigned int & nColor, _CP_OPT(double) &opacity)
+{
+	if (!uni_fill) return;
+
+	if (uni_fill->m_type == PPTX::Logic::UniFill::noFill )
+	{
+		nColor = 0xffffff;	//white
+	}
+	else if (uni_fill->m_type == PPTX::Logic::UniFill::solidFill )
+	{
+		NSCommon::smart_ptr<PPTX::Logic::SolidFill> fill = uni_fill->Fill.smart_dynamic_cast<PPTX::Logic::SolidFill>();
+		
+		Parse(oParam, fill->Color.Color.operator ->(), nColor, opacity);
+	}
+	else if (uni_fill->m_type == PPTX::Logic::UniFill::gradFill )
+	{
+		NSCommon::smart_ptr<PPTX::Logic::GradFill> fill = uni_fill->Fill.smart_dynamic_cast<PPTX::Logic::GradFill>();
+		
+		unsigned int nColor = 0; //black
+		_CP_OPT(double) opacity;
+
+		if (!fill->GsLst.empty())
+		{
+			Parse(oParam, fill->GsLst[0].color.Color.operator ->(), nColor, opacity);
+		}		
+	}
 }

@@ -92,7 +92,7 @@ public:
 	}
 private: 
 	POLE::Storage*	m_piStorage;
-    std::wstring			m_sOleFilename;
+    std::wstring	m_sOleFilename;
 
     std::wstring RenderToOOXOnlyOle(RenderParameter oRenderParameter);
 };

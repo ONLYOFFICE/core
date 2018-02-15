@@ -66,6 +66,7 @@ public:
 	void ParseAdjustment(RtfShape& oShape, std::wstring sAdjustment);
 
 	static bool Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::BlipFill *oox_bitmap_fill);
+	static void Parse(ReaderParameter oParam, PPTX::Logic::UniFill *fill, unsigned int & nColor, _CP_OPT(double) &opacity);
 	static void Parse(ReaderParameter oParam, PPTX::Logic::ColorBase *oox_color, unsigned int & nColor, _CP_OPT(double) &opacity);
 private:
 

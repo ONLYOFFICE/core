@@ -104,9 +104,10 @@ public:
 
 			int nWidthBefore = 0;
 			int nWidthAfter = 0;
-			if( PROP_DEF != oCurRow->m_oProperty.m_nWidthStartInvCell && mu_Twips == oCurRow->m_oProperty.m_eMUStartInvCell)
+			
+			if( PROP_DEF != oCurRow->m_oProperty.m_nWidthStartInvCell && mu_Twips == oCurRow->m_oProperty.m_eWidthStartInvCellUnit)
 				nWidthBefore = oCurRow->m_oProperty.m_nWidthStartInvCell;
-			if( PROP_DEF != oCurRow->m_oProperty.m_nWidthEndInvCell && mu_Twips == oCurRow->m_oProperty.m_eMUEndInvCell)
+			if( PROP_DEF != oCurRow->m_oProperty.m_nWidthEndInvCell && mu_Twips == oCurRow->m_oProperty.m_eWidthEndInvCellUnit)
 				nWidthAfter = oCurRow->m_oProperty.m_nWidthEndInvCell;
 
 			int nDelta = 0;// поправка на margin и  indent и spacing
@@ -114,13 +115,13 @@ public:
 				nDelta = -oCurRow->m_oProperty.m_nLeft;
 			else
 			{
-				if( PROP_DEF != m_oProperty.nTableIndent && 3 == m_oProperty.nTableIndentUnits )
+				if( PROP_DEF != m_oProperty.nTableIndent && 3 == m_oProperty.eTableIndentUnit )
 					nDelta -= m_oProperty.nTableIndent;
-				if( PROP_DEF != m_oProperty.m_nDefCellMarLeft && 3 == m_oProperty.m_nDefCellMarLeftUnits )
+				if( PROP_DEF != m_oProperty.m_nDefCellMarLeft && 3 == m_oProperty.m_eDefCellMarLeftUnit )
 					nDelta += m_oProperty.m_nDefCellMarLeft;
-				if( PROP_DEF != m_oProperty.m_nDefCellSpLeft && 3 == m_oProperty.m_nDefCellSpLeftUnits )
+				if( PROP_DEF != m_oProperty.m_nDefCellSpLeft && 3 == m_oProperty.m_eDefCellSpLeftUnit )
 					nDelta += 2 * m_oProperty.m_nDefCellSpLeft;
-				if( PROP_DEF != oCurRow->m_oProperty.m_nWidthStartInvCell && mu_Twips == oCurRow->m_oProperty.m_eMUStartInvCell)
+				if( PROP_DEF != oCurRow->m_oProperty.m_nWidthStartInvCell && mu_Twips == oCurRow->m_oProperty.m_eWidthStartInvCellUnit)
 					nDelta -= oCurRow->m_oProperty.m_nWidthStartInvCell;
 			}
 
@@ -155,9 +156,9 @@ public:
 
 			int nWidthBefore = 0;
 			int nWidthAfter = 0;
-			if( PROP_DEF != oCurRow->m_oProperty.m_nWidthStartInvCell && mu_Twips == oCurRow->m_oProperty.m_eMUStartInvCell)
+			if( PROP_DEF != oCurRow->m_oProperty.m_nWidthStartInvCell && mu_Twips == oCurRow->m_oProperty.m_eWidthStartInvCellUnit)
 				nWidthBefore = oCurRow->m_oProperty.m_nWidthStartInvCell;
-			if( PROP_DEF != oCurRow->m_oProperty.m_nWidthEndInvCell && mu_Twips == oCurRow->m_oProperty.m_eMUEndInvCell)
+			if( PROP_DEF != oCurRow->m_oProperty.m_nWidthEndInvCell && mu_Twips == oCurRow->m_oProperty.m_eWidthEndInvCellUnit)
 				nWidthAfter = oCurRow->m_oProperty.m_nWidthEndInvCell;
 
 			int nDelta = 0;// поправка на margin и  indent и spacing и border
@@ -165,13 +166,13 @@ public:
 				nDelta = -oCurRow->m_oProperty.m_nLeft;
 			else
 			{
-				if( PROP_DEF != m_oProperty.nTableIndent && 3 == m_oProperty.nTableIndentUnits )
+				if( PROP_DEF != m_oProperty.nTableIndent && 3 == m_oProperty.eTableIndentUnit )
 					nDelta -= m_oProperty.nTableIndent;
-				if( PROP_DEF != m_oProperty.m_nDefCellMarLeft && 3 == m_oProperty.m_nDefCellMarLeftUnits )
+				if( PROP_DEF != m_oProperty.m_nDefCellMarLeft && 3 == m_oProperty.m_eDefCellMarLeftUnit )
 					nDelta += m_oProperty.m_nDefCellMarLeft;
-				if( PROP_DEF != m_oProperty.m_nDefCellSpLeft && 3 == m_oProperty.m_nDefCellSpLeftUnits )
+				if( PROP_DEF != m_oProperty.m_nDefCellSpLeft && 3 == m_oProperty.m_eDefCellSpLeftUnit )
 					nDelta += 2 * m_oProperty.m_nDefCellSpLeft;
-				if( PROP_DEF != oCurRow->m_oProperty.m_nWidthStartInvCell && mu_Twips == oCurRow->m_oProperty.m_eMUStartInvCell)
+				if( PROP_DEF != oCurRow->m_oProperty.m_nWidthStartInvCell && mu_Twips == oCurRow->m_oProperty.m_eWidthStartInvCellUnit)
 					nDelta -= oCurRow->m_oProperty.m_nWidthStartInvCell;
 			}
 
@@ -282,11 +283,11 @@ public:
 				RtfTableRowPtr oCurRow= m_aArray[ i ];
 
 				int nLeft = 0;
-				if( PROP_DEF != m_oProperty.nTableIndent && 3 == m_oProperty.nTableIndentUnits )
+				if( PROP_DEF != m_oProperty.nTableIndent && 3 == m_oProperty.eTableIndentUnit )
 					nLeft += m_oProperty.nTableIndent;
-				if( PROP_DEF != m_oProperty.m_nDefCellMarLeft && 3 == m_oProperty.m_nDefCellMarLeftUnits )
+				if( PROP_DEF != m_oProperty.m_nDefCellMarLeft && 3 == m_oProperty.m_eDefCellMarLeftUnit )
 					nLeft -= m_oProperty.m_nDefCellMarLeft;
-				if( PROP_DEF != m_oProperty.m_nDefCellSpLeft && 3 == m_oProperty.m_nDefCellSpLeftUnits )
+				if( PROP_DEF != m_oProperty.m_nDefCellSpLeft && 3 == m_oProperty.m_eDefCellSpLeftUnit )
 					nLeft += 2 * m_oProperty.m_nDefCellSpLeft;
 				int nDelta = nLeft;//в left учитывается GrindBefore
 

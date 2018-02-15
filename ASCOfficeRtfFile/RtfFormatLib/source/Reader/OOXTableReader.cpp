@@ -165,10 +165,10 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 
 	long nRowCount = m_ooxTable->m_nCountRow, nCurRow = 0;
 
-    for (std::vector<OOX::WritingElement*>::iterator it = m_ooxTable->m_arrItems.begin(); it != m_ooxTable->m_arrItems.end(); ++it)
+    for (size_t i =0; i < m_ooxTable->m_arrItems.size(); ++i)
 	{	
-		if ( (*it) == NULL) continue;
-		if ( (*it)->getType() != OOX::et_w_tr) continue;
+		if ( m_ooxTable->m_arrItems[i] == NULL) continue;
+		if ( m_ooxTable->m_arrItems[i]->getType() != OOX::et_w_tr) continue;
 
 		ReaderParameter newParam	= oParam;
 		newParam.poTableStyle		= poTableStyle;
@@ -178,10 +178,11 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 		//т.к. в RTF нет свойств таблиц и все свойства записываются в свойства row
 		(*((RtfTableProperty*)&oNewRow->m_oProperty)).Merge( oOutputTable.m_oProperty );
 		
-		OOX::Logic::CTr *ooxRow = dynamic_cast<OOX::Logic::CTr *>(*it);
+		OOX::Logic::CTr *ooxRow = dynamic_cast<OOX::Logic::CTr *>(m_ooxTable->m_arrItems[i]);
 		
 		OOXTableRowReader oRowReader(ooxRow, m_ooxTable->m_oTableProperties);
 		oRowReader.Parse( newParam, *oNewRow, nCurRow++, nRowCount );
+		
 		oOutputTable.AddItem( oNewRow );
 	}
 	oOutputTable.CalculateCellx( *oParam.oRtf );

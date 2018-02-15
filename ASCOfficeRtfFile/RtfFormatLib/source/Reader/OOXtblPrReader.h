@@ -37,6 +37,7 @@
 #include "OOXtblpPrReader.h"
 #include "OOXReaderBasic.h"
 #include "OOXtblLookReader.h"
+#include "OOXtcPrReader.h"
 
 #include "../RtfDocument.h"
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Logic/TableProperty.h"
@@ -231,25 +232,8 @@ public:
 		if (m_ooxTableProps->m_oTblStyleColBandSize.IsInit() && m_ooxTableProps->m_oTblStyleColBandSize->m_oVal.IsInit())
 			oOutputProperty.m_nColBandSize = m_ooxTableProps->m_oTblStyleColBandSize->m_oVal->GetValue(); 
 		
-		if( m_ooxTableProps->m_oTblW.IsInit() && m_ooxTableProps->m_oTblW->m_oW.IsInit())
-		{
-			if( m_ooxTableProps->m_oTblW->m_oType.IsInit())
-			{
-				switch(m_ooxTableProps->m_oTblW->m_oType->GetValue())
-				{
-					case SimpleTypes::tblwidthDxa:
-					{
-						oOutputProperty.m_nWidth	= (int)m_ooxTableProps->m_oTblW->m_oW->GetValue();
-						oOutputProperty.m_eMUWidth	= mu_Twips;		
-					}break;
-					case SimpleTypes::tblwidthPct:	
-					{
-						oOutputProperty.m_nWidth	= (int)m_ooxTableProps->m_oTblW->m_oW->GetValue();
-						oOutputProperty.m_eMUWidth	= mu_Percent;	
-					}break;
-				}
-			}
-		}
+		OOXtcPrReader::Parse(m_ooxTableProps->m_oTblW.GetPointer(), oOutputProperty.m_eWidthUnit, oOutputProperty.m_nWidth, true );
+		
 		return true;
 	}
 };

@@ -91,28 +91,13 @@ public:
 
 		if( m_ooxTableCellProps->m_oTcMar.IsInit() )
 		{
-			Parse (m_ooxTableCellProps->m_oTcMar->m_oStart.GetPointer(),	oOutputProperty.m_nIsPaddingLeft,	oOutputProperty.m_nPaddingLeft, false);
-			Parse (m_ooxTableCellProps->m_oTcMar->m_oTop.GetPointer(),		oOutputProperty.m_nIsPaddingTop,	oOutputProperty.m_nPaddingTop, false);
-			Parse (m_ooxTableCellProps->m_oTcMar->m_oEnd.GetPointer(),		oOutputProperty.m_nIsPaddingRight,	oOutputProperty.m_nPaddingRight, false);
-			Parse (m_ooxTableCellProps->m_oTcMar->m_oBottom.GetPointer(),	oOutputProperty.m_nIsPaddingBottom, oOutputProperty.m_nPaddingBottom, false);
+			Parse (m_ooxTableCellProps->m_oTcMar->m_oStart.GetPointer(),	oOutputProperty.m_ePaddingLeftUnit,	oOutputProperty.m_nPaddingLeft, false);
+			Parse (m_ooxTableCellProps->m_oTcMar->m_oTop.GetPointer(),		oOutputProperty.m_ePaddingTopUnit,	oOutputProperty.m_nPaddingTop, false);
+			Parse (m_ooxTableCellProps->m_oTcMar->m_oEnd.GetPointer(),		oOutputProperty.m_ePaddingRightUnit,	oOutputProperty.m_nPaddingRight, false);
+			Parse (m_ooxTableCellProps->m_oTcMar->m_oBottom.GetPointer(),	oOutputProperty.m_ePaddingBottomUnit, oOutputProperty.m_nPaddingBottom, false);
 		}
+		Parse(m_ooxTableCellProps->m_oTcW.GetPointer(),  oOutputProperty.m_eWidthUnit, oOutputProperty.m_nWidth, true);
 
-		if( m_ooxTableCellProps->m_oTcW.IsInit() && m_ooxTableCellProps->m_oTcW->m_oW.IsInit()) 
-		{
-			bool auto_ = false;
-			if (m_ooxTableCellProps->m_oTcW->m_oType.IsInit() && m_ooxTableCellProps->m_oTcW->m_oType->GetValue() == SimpleTypes::tblwidthAuto)
-				auto_ = true;
-
-			if (auto_)
-			{
-				oOutputProperty.m_eWidthUnits = mu_Auto;
-			}
-			else
-			{
-				oOutputProperty.m_nWidth		= (int)m_ooxTableCellProps->m_oTcW->m_oW->GetValue();
-				oOutputProperty.m_eWidthUnits	= m_ooxTableCellProps->m_oTcW->m_oW->IsPercent() ? mu_Percent : mu_Twips;
-			}
-		}
 		if( m_ooxTableCellProps->m_oHideMark.IsInit())
 			oOutputProperty.m_bHideMark = m_ooxTableCellProps->m_oHideMark->m_oVal.ToBool() ? 1 : 0;
 		

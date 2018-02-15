@@ -54,7 +54,14 @@ public:
 		if (m_ooxRowTable == NULL) return false;
 
 		CcnfStyle oConditionStyle;
-		//с начала применяем свойства
+
+		if (nCurRow == 0 && oOutputRow.m_oProperty.m_bAutoFirstRow == 1)
+			oConditionStyle.bFirstRow = true;
+		
+		if (nCurRow == nRowCount - 1 && oOutputRow.m_oProperty.m_bAutoLastRow == 1)
+			oConditionStyle.bLastRow = true;
+
+		//сначала применяем свойства
 		if( m_ooxRowTable->m_pTableRowProperties )
 		{
 			OOXtrPrReader otrPrReader(m_ooxRowTable->m_pTableRowProperties);
@@ -63,10 +70,10 @@ public:
 
 		int nCellCount = m_ooxRowTable->m_nCountCell, nCurCell = 0;
 
-        for (std::vector<OOX::WritingElement*>::iterator it = m_ooxRowTable->m_arrItems.begin(); it != m_ooxRowTable->m_arrItems.end(); ++it)
+        for (size_t i = 0; i < m_ooxRowTable->m_arrItems.size(); ++i)
 		{
-			if ( (*it) == NULL )		continue;
-			if ( (*it)->getType() != OOX::et_w_tc)continue;//todooo bookmarks
+			if ( m_ooxRowTable->m_arrItems[i] == NULL )		continue;
+			if ( m_ooxRowTable->m_arrItems[i]->getType() != OOX::et_w_tc) continue;//todooo bookmarks
 
 			RtfTableCellPtr oNewCell( new RtfTableCell() );
 
@@ -74,7 +81,7 @@ public:
 
             if (nCurCell < m_ooxRowTable->m_arrItems.size())
 			{
-                ooxCell = dynamic_cast<OOX::Logic::CTc *>(*it);
+                ooxCell = dynamic_cast<OOX::Logic::CTc *>(m_ooxRowTable->m_arrItems[i]);
 			}
 
 			OOXTableCellReader oCellReader(ooxCell, m_ooxTableProps );

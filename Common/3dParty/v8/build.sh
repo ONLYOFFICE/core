@@ -50,7 +50,7 @@ fi
 
 if [[ "$platform" == *"mac"* ]]
 then
-CFLAGS="-fPIC" CXXFLAGS="-fPIC -stdlib=libc++" LDFLAGS="-stdlib=libc++"  make native
+CFLAGS="-fPIC" CXXFLAGS="-fPIC -stdlib=libc++" LDFLAGS="-stdlib=libc++"  make native -j $(sysctl -n hw.ncpu)
 
 ccp "./out/native/obj.target/tools/gyp/libv8_base.a" "./../$platform$arch/"
 cp "./out/native/obj.target/tools/gyp/libv8_libbase.a" "./../$platform$arch/"

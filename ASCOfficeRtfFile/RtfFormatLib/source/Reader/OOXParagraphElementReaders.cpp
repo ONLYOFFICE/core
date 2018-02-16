@@ -1520,30 +1520,26 @@ bool OOXrPrReader::Parse( ReaderParameter oParam, RtfCharProperty& oOutputProper
 	}
 	if ( m_ooxRunProps->m_oTextOutline.IsInit())
 	{
-		if (m_ooxRunProps->m_oTextOutline->Fill.m_type == PPTX::Logic::UniFill::noFill )
-		{
-			oOutputProperty.m_nForeColor = 0xffffff;	//white
-		}
-		else if (m_ooxRunProps->m_oTextOutline->Fill.m_type == PPTX::Logic::UniFill::solidFill )
-		{
-			NSCommon::smart_ptr<PPTX::Logic::SolidFill> fill = m_ooxRunProps->m_oTextOutline->Fill.Fill.smart_dynamic_cast<PPTX::Logic::SolidFill>();
-			
-			unsigned int nColor = 0; //black
-			_CP_OPT(double) opacity;
-			
-			OOXShapeReader::Parse(oParam, fill->Color.Color.operator ->(), nColor, opacity);
-			oOutputProperty.m_nForeColor = nColor;
-		}
+		unsigned int nColor = 0; //black
+		_CP_OPT(double) opacity;
 
-		if (oOutputProperty.m_nForeColor != PROP_DEF)
-		{
-			RtfColor rtfColor; 
-			rtfColor.SetRGB(oOutputProperty.m_nForeColor);
-			
-			oOutputProperty.m_nForeColor = oParam.oRtf->m_oColorTable.AddItem(rtfColor);
-		}
+		OOXShapeReader::Parse(oParam, &m_ooxRunProps->m_oTextOutline->Fill, nColor, opacity);
+		
+		RtfColor rtfColor; 
+		rtfColor.SetRGB(nColor);
+
 	}
-	else if( m_ooxRunProps->m_oColor.IsInit() )
+	if ( m_ooxRunProps->m_oTextFill.is_init())
+	{
+		unsigned int nColor = 0; //black
+		_CP_OPT(double) opacity;
+		
+		OOXShapeReader::Parse(oParam, &m_ooxRunProps->m_oTextFill, nColor, opacity);
+
+		RtfColor rtfColor; 
+		rtfColor.SetRGB(nColor);
+	}
+	if( m_ooxRunProps->m_oColor.IsInit() )
 	{
 		OOXColorReader oColorReader;
 		RtfColor oColor;

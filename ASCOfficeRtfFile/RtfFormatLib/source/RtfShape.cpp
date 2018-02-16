@@ -187,9 +187,9 @@ void RtfShape::SetDefault()
 	m_aTextItems	= TextItemContainerPtr();
 	m_oPicture		= RtfPicturePtr();
 	m_bBackground	= false;
-	m_bIsOle		= false;
 	m_bInGroup		= false;
 	m_bIsGroup		= false;
+	m_bIsOle		= false;
 	
 	m_oCharProperty.SetDefault();
 }
@@ -494,6 +494,7 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
     RENDER_RTF_SHAPE_PROP(L"txdir",             sResult,	m_nTxdir);
     RENDER_RTF_SHAPE_PROP(L"WrapText",          sResult,   	m_nWrapText);
     RENDER_RTF_SHAPE_PROP(L"txflTextFlow",		sResult,   	m_nTxflTextFlow);
+	RENDER_RTF_SHAPE_PROP(L"fRotateText",		sResult,   	m_fRotateText);
 //Geometry
     RENDER_RTF_SHAPE_PROP(L"adjustValue",       sResult,   	m_nAdjustValue[0] );
     RENDER_RTF_SHAPE_PROP(L"adjust2Value",      sResult,   m_nAdjustValue[1] );
@@ -687,69 +688,63 @@ std::wstring RtfShape::RenderToOOX(RenderParameter oRenderParameter)
     std::wstring sResult;
 	RtfDocument* poDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
 	
-	TextItemContainerPtr aTempTextItems;
-	
 	if( NSOfficeDrawing::sptPictureFrame == m_nShapeType && 0 != m_aTextItems )
-	{//Значит это Ole обьект с anchor, для него все также только TextBox надо делать по-другому
-		aTempTextItems	= m_aTextItems;
-		m_aTextItems	= TextItemContainerPtr();
-		m_bIsOle		= true;
+	{//test for ole
+		TextItemContainerPtr aTempTextItems	= m_aTextItems;
+
+		m_aTextItems = TextItemContainerPtr();
+		
+		if( 0 != aTempTextItems )
+		{//пишем только Ole обьект
+			//ищем первый ole обьект
+			RtfOlePtr poFirstOle;
+			int nTempTextItemsCount = aTempTextItems->GetCount();
+			for (size_t i = 0; i < nTempTextItemsCount; i++ )
+			{
+				ITextItemPtr piCurTextItem;
+				aTempTextItems->GetItem( piCurTextItem, i );
+				if( NULL != piCurTextItem && TYPE_RTF_PARAGRAPH == piCurTextItem->GetType() )
+				{
+					RtfParagraphPtr poCurParagraph = boost::static_pointer_cast< RtfParagraph, ITextItem >( piCurTextItem );
+					if( NULL != poCurParagraph )
+					{
+						for (size_t j = 0; j < poCurParagraph->GetCount(); j++ )
+						{
+							IDocumentElementPtr piCurIDocumentElement;
+							poCurParagraph->GetItem( piCurIDocumentElement, j );
+							if( NULL != piCurIDocumentElement && TYPE_RTF_OLE == piCurIDocumentElement->GetType() )
+							{
+								//рендерим только Ole часть
+								RenderParameter oNewParam = oRenderParameter;
+								oNewParam.nType = RENDER_TO_OOX_PARAM_OLE_ONLY;
+								oNewParam.nValue = m_nID;
+
+								RtfOlePtr poCurOle = boost::static_pointer_cast< RtfOle, IDocumentElement >( piCurIDocumentElement );
+								if( NULL != poCurOle )
+								{
+									m_sOle += poCurOle->RenderToOOX( oNewParam );
+									if (!m_sOle.empty())
+									{
+										m_bIsOle = true;
+										break;
+									}
+								}
+							}
+						}
+						if( true == m_bIsOle )
+							break;
+					}
+				}
+			}
+			//возвращаем text box на место
+			m_aTextItems = aTempTextItems;
+		}
 	}
 
 	sResult = RenderToOOXBegin(oRenderParameter);
 	
     if( !sResult.empty() )
 		sResult +=  RenderToOOXEnd(oRenderParameter);
-
-    std::wstring sOle;
-	if( 0 != aTempTextItems )
-	{//пишем только Ole обьект
-		//ищем первый ole обьект
-		RtfOlePtr poFirstOle;
-		int nTempTextItemsCount = aTempTextItems->GetCount();
-		for (size_t i = 0; i < nTempTextItemsCount; i++ )
-		{
-			ITextItemPtr piCurTextItem;
-			aTempTextItems->GetItem( piCurTextItem, i );
-			if( NULL != piCurTextItem && TYPE_RTF_PARAGRAPH == piCurTextItem->GetType() )
-			{
-				RtfParagraphPtr poCurParagraph = boost::static_pointer_cast< RtfParagraph, ITextItem >( piCurTextItem );
-				if( NULL != poCurParagraph )
-				{
-					bool bBreak = false;
-					for (size_t j = 0; j < poCurParagraph->GetCount(); j++ )
-					{
-						IDocumentElementPtr piCurIDocumentElement;
-						poCurParagraph->GetItem( piCurIDocumentElement, j );
-						if( NULL != piCurIDocumentElement && TYPE_RTF_OLE == piCurIDocumentElement->GetType() )
-						{
-							//рендерим только Ole часть
-							RenderParameter oNewParam = oRenderParameter;
-							oNewParam.nType = RENDER_TO_OOX_PARAM_OLE_ONLY;
-							oNewParam.nValue = m_nID;
-
-							RtfOlePtr poCurOle = boost::static_pointer_cast< RtfOle, IDocumentElement >( piCurIDocumentElement );
-							if( NULL != poCurOle )
-							{
-								sOle += poCurOle->RenderToOOX( oNewParam );
-								bBreak = true;
-								break;
-							}
-						}
-					}
-					if( true == bBreak )
-						break;
-				}
-			}
-		}
-		//возвращаем text box на место
-		m_aTextItems = aTempTextItems;
-	}
-	
-    if( !sOle.empty() && !sResult.empty())
-	{
-        XmlUtils::replace_all(sResult, L"</w:pict>", sOle + L"</w:pict>" );//todooo переписать
-	}
 	
 	return sResult;
 }
@@ -784,7 +779,14 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		;//child shape
 	else if( RENDER_TO_OOX_PARAM_SHAPE_WSHAPE == oRenderParameter.nType )
 	{//pic bullets
-		sResult += L"<w:pict>";
+		if (m_bIsOle)
+		{
+			sResult += L"<w:object w:dxaOrig=\"0\" w:dyaOrig=\"0\">";
+		}
+		else
+		{
+			sResult += L"<w:pict>";
+		}
 	}
 	else
 	{//работает по умолчанию
@@ -816,7 +818,14 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 				sResult += sCharProp;
 			sResult += L"</w:rPr>";
 		}
-		sResult += L"<w:pict>";
+		if (m_bIsOle)
+		{
+			sResult += L"<w:object w:dxaOrig=\"0\" w:dyaOrig=\"0\">";
+		}
+		else
+		{
+			sResult += L"<w:pict>";
+		}
 	}
 	
     if (oRenderParameter.sValue.empty())
@@ -826,12 +835,13 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 
 	sResult += L"<" + oRenderParameter.sValue;
 
-    if (m_sName.empty())
+	RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
+    sResult += L" id=\"_x0000_s" + std::to_wstring(poDocument->GetShapeId( m_nID )) + L"\"";
+    
+	if (!m_sName.empty())
 	{
-		RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
-        m_sName += L"_x0000_s" + std::to_wstring(poDocument->GetShapeId( m_nID )) + L"";
+		sResult += L" title=\"" + m_sName + L"\"";
 	}
-	sResult += L" id=\"" + m_sName + L"\"";
 
 	if( PROP_DEF != m_nShapeType && 0 != m_nShapeType)
 	{
@@ -1084,7 +1094,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
         sResult += L" style=\"" + sStyle + L"\"";
 	}
 //----------------------------------------------------------------------------------------------------------------------------
-	if( true == m_bIsOle ) sResult += L" o:ole=\"\"";
+	if( false == m_sOle.empty() ) sResult += L" o:ole=\"\"";
 	
 	if( PROP_DEF != m_nGroupLeft && PROP_DEF != m_nGroupTop )
         sResult += L" coordorigin=\"" + std::to_wstring(m_nGroupLeft) + L"," + std::to_wstring(m_nGroupTop) + L"\"";
@@ -1261,7 +1271,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		}
 	}
 
-	if( 0 != m_aTextItems )
+	if( 0 != m_aTextItems && !m_bIsOle)
 	{
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
@@ -1317,16 +1327,19 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 
 			sResult += L"<v:imagedata r:id=\"" + sPicture + L"\"";
 
-			if( PROP_DEF != nCropLeft )
-                sResult += L" cropleft=\"" + std::to_wstring(nCropLeft) + L"f\"";
-			if( PROP_DEF != nCropTop )
-                sResult += L" croptop=\"" + std::to_wstring(nCropTop) + L"f\"";
-			if( PROP_DEF != nCropRight )
-                sResult += L" cropright=\"" + std::to_wstring(nCropRight) + L"f\"";
-			if( PROP_DEF != nCropBottom )
-                sResult += L" cropbottom=\"" + std::to_wstring(nCropBottom) + L"f\"";
+			if (!m_bIsOle)
+			{
+				if( PROP_DEF != nCropLeft )
+					sResult += L" cropleft=\"" + std::to_wstring(nCropLeft) + L"f\"";
+				if( PROP_DEF != nCropTop )
+					sResult += L" croptop=\"" + std::to_wstring(nCropTop) + L"f\"";
+				if( PROP_DEF != nCropRight )
+					sResult += L" cropright=\"" + std::to_wstring(nCropRight) + L"f\"";
+				if( PROP_DEF != nCropBottom )
+					sResult += L" cropbottom=\"" + std::to_wstring(nCropBottom) + L"f\"";
+			}
 
-			sResult += L" o:title=\"\"/>";
+			sResult += L" o:title=\"" + m_sName + L"\"/>";
 		}
 	}
 //-----------------------------------------------------------------------------------------------
@@ -1452,10 +1465,20 @@ std::wstring RtfShape::RenderToOOXEnd(RenderParameter oRenderParameter)
 	if( RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2 == oRenderParameter.nType )
 		;
 	else if( RENDER_TO_OOX_PARAM_SHAPE_WSHAPE == oRenderParameter.nType )
-		sResult += L"</w:pict>";
+	{
+		if (!m_sOle.empty())	sResult += m_sOle + L"</w:object>";
+		else					sResult += L"</w:pict>";
+	}
 	else
 	{
-		sResult += L"</w:pict></w:r>";//работает по умолчанию
+		if (!m_sOle.empty())
+		{
+			sResult += m_sOle + L"</w:object></w:r>";//работает по умолчанию
+		}
+		else
+		{
+			sResult += L"</w:pict></w:r>";//работает по умолчанию
+		}
 		
 		if (m_bDelete)	sResult += L"</w:del>";
 		if (m_bInsert)	sResult += L"</w:ins>";

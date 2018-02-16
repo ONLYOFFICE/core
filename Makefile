@@ -38,6 +38,18 @@ else
 		PACKAGE_VERSION := $(PRODUCT_VERSION)-$(BUILD_NUMBER)
 		ARCH_REPO_DIR := linux
 	endif
+	ifeq ($(UNAME_S),Darwin)
+		PLATFORM := mac
+		SHARED_EXT := .dylib
+		SHELL_EXT := .sh
+		LIB_EXT := .a
+		LIB_PREFIX := lib
+		ARCH_EXT := .tar.gz
+		MAKE := make -j $(shell sysctl -n hw.ncpu)
+		AR := tar -zcvf
+		PACKAGE_VERSION := $(PRODUCT_VERSION)-$(BUILD_NUMBER)
+		ARCH_REPO_DIR := mac
+	endif
 endif
 
 TARGET := $(PLATFORM)_$(ARCHITECTURE)

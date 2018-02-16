@@ -2364,13 +2364,13 @@ std::wstring RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 
     std::wstring sMargin;
 	if( 3 == m_ePaddingLeftUnit && PROP_DEF != m_nPaddingLeft)
-        sResult += L"<w:left w:w=\"" + std::to_wstring(m_nPaddingLeft) + L"\" w:type=\"dxa\"/>";
+        sMargin += L"<w:left w:w=\"" + std::to_wstring(m_nPaddingLeft) + L"\" w:type=\"dxa\"/>";
 	if( 3 == m_ePaddingRightUnit && PROP_DEF != m_nPaddingRight)
-        sResult += L"<w:right w:w=\"" + std::to_wstring(m_nPaddingRight) + L"\" w:type=\"dxa\"/>";
+        sMargin += L"<w:right w:w=\"" + std::to_wstring(m_nPaddingRight) + L"\" w:type=\"dxa\"/>";
 	if( 3 == m_ePaddingTopUnit && PROP_DEF != m_nPaddingTop)
-        sResult += L"<w:top w:w=\"" + std::to_wstring(m_nPaddingTop) + L"\" w:type=\"dxa\"/>";
+        sMargin += L"<w:top w:w=\"" + std::to_wstring(m_nPaddingTop) + L"\" w:type=\"dxa\"/>";
 	if( 3 == m_ePaddingBottomUnit && PROP_DEF != m_nPaddingBottom)
-        sResult += L"<w:bottom w:w=\"" + std::to_wstring(m_nPaddingBottom) + L"\" w:type=\"dxa\"/>";
+        sMargin += L"<w:bottom w:w=\"" + std::to_wstring(m_nPaddingBottom) + L"\" w:type=\"dxa\"/>";
 	
     if( !sMargin.empty() )
 	{
@@ -2531,7 +2531,7 @@ std::wstring RtfTableProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nAutoFit,			sResult, L"trautofit" )
 	RENDER_RTF_INT( m_nGraph,			sResult, L"trgaph" )
 	RENDER_RTF_INT( nTableIndent,		sResult, L"tblind" )
-	RENDER_RTF_INT( nTableIndentUnits,	sResult, L"tblindtype" )
+	RENDER_RTF_INT( eTableIndentUnit,	sResult, L"tblindtype" )
 
 	RENDER_RTF_INT( m_nWrapLeft,		sResult, L"tdfrmtxtLeft" )
 	RENDER_RTF_INT( m_nWrapRight,		sResult, L"tdfrmtxtRight" )
@@ -2589,49 +2589,51 @@ std::wstring RtfTableProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nDefCellMarRight,			sResult, L"trpaddr" );
 	RENDER_RTF_INT( m_nDefCellMarTop,			sResult, L"trpaddt" );
 	RENDER_RTF_INT( m_nDefCellMarBottom,		sResult, L"trpaddb" );
-	RENDER_RTF_INT( m_nDefCellMarLeftUnits,		sResult, L"trpaddfl" );
-	RENDER_RTF_INT( m_nDefCellMarRightUnits,	sResult, L"trpaddfr" );
-	RENDER_RTF_INT( m_nDefCellMarTopUnits,		sResult, L"trpaddft" );
-	RENDER_RTF_INT( m_nDefCellMarBottomUnits,	sResult, L"trpaddfb" );
+	RENDER_RTF_INT( m_eDefCellMarLeftUnit,		sResult, L"trpaddfl" );
+	RENDER_RTF_INT( m_eDefCellMarRightUnit,		sResult, L"trpaddfr" );
+	RENDER_RTF_INT( m_eDefCellMarTopUnit,		sResult, L"trpaddft" );
+	RENDER_RTF_INT( m_eDefCellMarBottomUnit,	sResult, L"trpaddfb" );
+
 	RENDER_RTF_INT( m_nDefCellSpBottom,			sResult, L"trspdb" );
 	RENDER_RTF_INT( m_nDefCellSpLeft,			sResult, L"trspdl" );
 	RENDER_RTF_INT( m_nDefCellSpRight,			sResult, L"trspdr" );
 	RENDER_RTF_INT( m_nDefCellSpTop,			sResult, L"trspdt" );
-	RENDER_RTF_INT( m_nDefCellSpBottomUnits,	sResult, L"trspdfb" );
-	RENDER_RTF_INT( m_nDefCellSpLeftUnits,		sResult, L"trspdfl" );
-	RENDER_RTF_INT( m_nDefCellSpRightUnits,		sResult, L"trspdfr" );
-	RENDER_RTF_INT( m_nDefCellSpTopUnits,		sResult, L"trspdft" );
+	RENDER_RTF_INT( m_eDefCellSpBottomUnit,		sResult, L"trspdfb" );
+	RENDER_RTF_INT( m_eDefCellSpLeftUnit,		sResult, L"trspdfl" );
+	RENDER_RTF_INT( m_eDefCellSpRightUnit,		sResult, L"trspdfr" );
+	RENDER_RTF_INT( m_eDefCellSpTopUnit,		sResult, L"trspdft" );
 
-	if( m_oBorderLeft.IsValid() == true )
-	{
-		sResult += L"\\trbrdrl";
-		sResult += m_oBorderLeft.RenderToRtf( oRenderParameter );
-	}
-	if( m_oBorderRight.IsValid() == true )
-	{
-		sResult += L"\\trbrdrr";
-		sResult += m_oBorderRight.RenderToRtf( oRenderParameter );
-	}
 	if( m_oBorderTop.IsValid() == true )
 	{
 		sResult += L"\\trbrdrt";
 		sResult += m_oBorderTop.RenderToRtf( oRenderParameter );
 	}
+	if( m_oBorderLeft.IsValid() == true )
+	{
+		sResult += L"\\trbrdrl";
+		sResult += m_oBorderLeft.RenderToRtf( oRenderParameter );
+	}
 	if( m_oBorderBottom.IsValid() == true )
 	{
 		sResult += L"\\trbrdrb";
 		sResult += m_oBorderBottom.RenderToRtf( oRenderParameter );
+	}	
+	if( m_oBorderRight.IsValid() == true )
+	{
+		sResult += L"\\trbrdrr";
+		sResult += m_oBorderRight.RenderToRtf( oRenderParameter );
 	}
-	if( m_oBorderVert.IsValid() == true && m_bAutoNoColBand != 1)
+	if( m_oBorderHor.IsValid() == true/*  && m_bAutoNoRowBand != 1*/)
+	{
+		sResult += L"\\trbrdrh";
+		sResult += m_oBorderHor.RenderToRtf( oRenderParameter );
+	}	
+	if( m_oBorderVert.IsValid() == true/* && m_bAutoNoColBand != 1*/)
 	{
 		sResult += L"\\trbrdrv";
 		sResult += m_oBorderVert.RenderToRtf( oRenderParameter );
 	}
-	if( m_oBorderHor.IsValid() == true  && m_bAutoNoRowBand != 1)
-	{
-		sResult += L"\\trbrdrh";
-		sResult += m_oBorderHor.RenderToRtf( oRenderParameter );
-	}
+
 	if( m_oShading.IsValid() == true )
 		sResult += m_oShading.RenderToRtf( oRenderParameter );
 
@@ -2671,17 +2673,9 @@ std::wstring RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 		sResult += L"<w:tblLayout w:type=\"autofit\"/>";
 
 	//сделаем не по документации, а как все остальные юниты !!!
-	if( PROP_DEF != nTableIndent && 1 != nTableIndentUnits  )
+	if( PROP_DEF != nTableIndent && 3 == eTableIndentUnit  )
 	{
-		switch(nTableIndentUnits)
-		{
-			//case 0: sResult += L"<w:tblInd w:w=\"0\" w:type=\"dxa\"/>" );break;
-            //case 2: sResult += L"<w:tblInd w:w=\"" + std::to_wstring(nTableIndent) + L"%%\" w:type=\"pct\"/>",  );break;
-            case 3: sResult += L"<w:tblInd w:w=\"" + std::to_wstring(nTableIndent) + L"\" w:type=\"dxa\"/>";    break;
-            //default: sResult += L"<w:tblInd w:w=\"" + std::to_wstring(nTableIndent) + L"\" w:type=\"dxa\"/>", nTableIndent );break;
-			default:
-				break;
-		}
+		sResult += L"<w:tblInd w:w=\"" + std::to_wstring(nTableIndent) + L"\" w:type=\"dxa\"/>";
 	}
 
 	if( 1 == m_bOverlap )
@@ -2761,19 +2755,19 @@ std::wstring RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 		sResult += L"<w:tblW w:w=\"0\" w:type=\"auto\"/>";
 
     std::wstring sDefCellMargins;
-	if( PROP_DEF != m_nDefCellMarBottom && 3 == m_nDefCellMarBottomUnits )
+	if( PROP_DEF != m_nDefCellMarBottom && 3 == m_eDefCellMarBottomUnit )
         sDefCellMargins += L"<w:bottom w:w=\"" + std::to_wstring(m_nDefCellMarBottom) + L"\" w:type=\"dxa\"/>";
-	if( PROP_DEF != m_nDefCellMarLeft && 3 == m_nDefCellMarLeftUnits )
+	if( PROP_DEF != m_nDefCellMarLeft && 3 == m_eDefCellMarLeftUnit )
         sDefCellMargins += L"<w:left w:w=\"" + std::to_wstring(m_nDefCellMarLeft) + L"\" w:type=\"dxa\"/>";
-	if( PROP_DEF != m_nDefCellMarRight && 3 == m_nDefCellMarRightUnits )
+	if( PROP_DEF != m_nDefCellMarRight && 3 == m_eDefCellMarRightUnit )
         sDefCellMargins += L"<w:right w:w=\"" + std::to_wstring(m_nDefCellMarRight) + L"\" w:type=\"dxa\"/>";
-	if( PROP_DEF != m_nDefCellMarTop && 3 == m_nDefCellMarTopUnits )
+	if( PROP_DEF != m_nDefCellMarTop && 3 == m_eDefCellMarTopUnit )
         sDefCellMargins += L"<w:top w:w=\"" + std::to_wstring(m_nDefCellMarTop) + L"\" w:type=\"dxa\"/>";
 	
     if( !sDefCellMargins.empty() )
         sResult += L"<w:tblCellMar>" + sDefCellMargins + L"</w:tblCellMar>";
 	
-	if( PROP_DEF != m_nDefCellSpBottom && 3 == m_nDefCellSpBottomUnits ) 
+	if( PROP_DEF != m_nDefCellSpBottom && 3 == m_eDefCellSpBottomUnit ) 
         sResult += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(m_nDefCellSpBottom) + L"\" w:type=\"dxa\"/>";
 
 	//if( PROP_DEF != m_nLeft )
@@ -2853,7 +2847,7 @@ std::wstring RtfRowProperty::RenderToRtf(RenderParameter oRenderParameter)
 			break;
 	}
 	RENDER_RTF_INT( m_nWidth, sResult, L"trwWidth" );
-	switch( m_eMUStartInvCell )
+	switch( m_eWidthStartInvCellUnit )
 	{
 		case mu_Auto:		sResult += L"\\trftsWidthB1";	break;
 		case mu_Percent:	sResult += L"\\trftsWidthB2";	break;
@@ -2862,7 +2856,7 @@ std::wstring RtfRowProperty::RenderToRtf(RenderParameter oRenderParameter)
 			break;
 	}
 	RENDER_RTF_INT( m_nWidthStartInvCell, sResult, L"trwWidthB" );
-	switch( m_eMUEndInvCell )
+	switch( m_eWidthEndInvCellUnit )
 	{
 		case mu_Auto:		sResult += L"\\trftsWidthA1";	break;
 		case mu_Percent:	sResult += L"\\trftsWidthA2";	break;
@@ -2913,7 +2907,7 @@ std::wstring RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 
 	if( PROP_DEF != m_nWidthStartInvCell )
 	{
-		switch( m_eMUStartInvCell )
+		switch( m_eWidthStartInvCellUnit )
 		{
         case mu_Percent:	sResult += L"<w:wBefore w:type=\"pct\" w:w=\"" + std::to_wstring(m_nWidthStartInvCell) + L"%\"/>";  break;
         case mu_Twips:		sResult += L"<w:wBefore w:type=\"dxa\" w:w=\"" + std::to_wstring(m_nWidthStartInvCell) + L"\"/>";	break;
@@ -2923,7 +2917,7 @@ std::wstring RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	if( PROP_DEF != m_nWidthEndInvCell )
 	{
-		switch( m_eMUEndInvCell )
+		switch( m_eWidthEndInvCellUnit )
 		{
         case mu_Percent:	sResult += L"<w:wAfter w:type=\"pct\" w:w=\"" + std::to_wstring(m_nWidthEndInvCell) + L"%\"/>"; break;
         case mu_Twips:		sResult += L"<w:wAfter w:type=\"dxa\" w:w=\"" + std::to_wstring(m_nWidthEndInvCell) + L"\"/>";	break;

@@ -44,9 +44,10 @@ private:
 public: 
 	bool m_bBackground;
 	bool m_bIsGroup;
-	bool m_bIsOle;
 	bool m_bInGroup; //local anchor
 
+	std::wstring	m_sOle;
+	bool			m_bIsOle;
 //-----------------------------
 	enum _AnchorTypeShape { st_none, st_inline, st_anchor };
 	enum _AnchorX

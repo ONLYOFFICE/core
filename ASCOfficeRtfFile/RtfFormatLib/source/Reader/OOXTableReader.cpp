@@ -80,8 +80,8 @@ bool OOXtrPrReader::Parse( ReaderParameter oParam , RtfRowProperty& oOutputPrope
 			oOutputProperty.m_nHeight = -oOutputProperty.m_nHeight;
 	}
 
-	OOXtcPrReader::Parse(m_ooxTableRowProps->m_oWBefore.GetPointer(), oOutputProperty.m_eMUStartInvCell, oOutputProperty.m_nWidthStartInvCell);
-	OOXtcPrReader::Parse(m_ooxTableRowProps->m_oWAfter.GetPointer(), oOutputProperty.m_eMUEndInvCell, oOutputProperty.m_nWidthEndInvCell);
+	OOXtcPrReader::Parse(m_ooxTableRowProps->m_oWBefore.GetPointer(), oOutputProperty.m_eWidthStartInvCellUnit, oOutputProperty.m_nWidthStartInvCell);
+	OOXtcPrReader::Parse(m_ooxTableRowProps->m_oWAfter.GetPointer(), oOutputProperty.m_eWidthEndInvCellUnit, oOutputProperty.m_nWidthEndInvCell);
 
 	if( m_ooxTableRowProps->m_oGridBefore.IsInit() && m_ooxTableRowProps->m_oGridBefore->m_oVal.IsInit())
 		oOutputProperty.m_nGridBefore = m_ooxTableRowProps->m_oGridBefore->m_oVal->GetValue();

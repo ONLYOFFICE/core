@@ -268,6 +268,12 @@ ifeq ($(OS),Windows_NT)
 ARTIFACTS += Common/3dParty/v8/$(TARGET)/*/*.dll
 endif
 
+EXT_TARGET += $(DOCBUILDER)
+
+ifneq ($(PLATFORM),mac)
+EXT_TARGET += $(HTMLFILEINTERNAL)
+endif
+
 #Template for next statment:
 #FOO_MAKE := $(basename $(FOO_PRO)).build/Makefile
 #$(FOO): $(FOO_MAKE)
@@ -288,7 +294,7 @@ bin: $(X2T) $(ALLFONTSGEN)
 
 lib: $(PDFWRITER) $(DOCTRENDERER) $(HTMLRENDERER) $(PDFREADER) $(DJVUFILE) $(XPSFILE) $(HTMLFILE) $(UNICODECONVERTER)
 
-ext: $(HTMLFILEINTERNAL) $(DOCBUILDER)
+ext: $(EXT_TARGET)
 
 desktop: $(ASCDOCUMENTSCORE)
 

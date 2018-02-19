@@ -44,6 +44,8 @@
 #include "../freetype_names/FontMaps/FontDictionary.h"
 #endif
 
+//#define RANGES_LOG
+
 using namespace std;
 
 namespace NSCommon
@@ -824,6 +826,15 @@ namespace NSCommon
                         oWriterJS.AddCharSafe(',');
                         oWriterJS.AddInt(mapFontIndexes.find(arrFontsPriority[nFontPriority - 1].name)->second);
                         oWriterJS.AddCharSafe(',');
+
+#ifdef RANGES_LOG
+                        FILE* f = fopen("D:\\fonts.log", "a+");
+                        fprintf(f, "[%d - %d]: ", nFontPriorityStart, i - 1);
+                        std::string sTmp = U_TO_UTF8(arrFontsPriority[nFontPriority - 1].name);
+                        fprintf(f, sTmp.c_str());
+                        fprintf(f, "\n");
+                        fclose(f);
+#endif
                     }
                     nFontPriority = nFontPriorityTest;
                     nFontPriorityStart = i;
@@ -837,6 +848,15 @@ namespace NSCommon
                     oWriterJS.AddCharSafe(',');
                     oWriterJS.AddInt(mapFontIndexes.find(arrFontsPriority[nFontPriority - 1].name)->second);
                     oWriterJS.AddCharSafe(',');
+
+#ifdef RANGES_LOG
+                    FILE* f = fopen("D:\\fonts.log", "a+");
+                    fprintf(f, "[%d - %d]: ", nFontPriorityStart, nMaxSymbol - 1);
+                    std::string sTmp = U_TO_UTF8(arrFontsPriority[nFontPriority - 1].name);
+                    fprintf(f, sTmp.c_str());
+                    fprintf(f, "\n");
+                    fclose(f);
+#endif
                 }
 
                 oWriterJS.SetCurSize(oWriterJS.GetCurSize() - 1);

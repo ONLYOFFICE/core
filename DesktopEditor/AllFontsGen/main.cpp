@@ -481,6 +481,8 @@ namespace NSCommon
                         }
                     }
 
+                    std::wstring sFontName = pPair->second.m_sName;
+
                     if (bIsSymbol)
                     {
                         CFontSelectFormat oSelectFormat;
@@ -491,7 +493,26 @@ namespace NSCommon
                         {
                             pManager->LoadFontFromFile(pInfoCur->m_wsFontPath, 0, 14, dDpi, dDpi);
                         }
-                        oRenderer.put_FontPath(pInfoCur->m_wsFontPath);
+                        oRenderer.put_FontPath(pInfoCur->m_wsFontPath);                        
+                    }
+                    else
+                    {
+                        CFontFile* pFontCheck = pManager->m_pFont;
+
+                        int nCMapIndex = 0;
+                        int unGID = pFontCheck->SetCMapForCharCode(sFontName.at(0), &nCMapIndex);
+                        if (unGID <= 0)
+                        {
+                            CFontSelectFormat oSelectFormat;
+                            oSelectFormat.wsName = new std::wstring(L"Arial");
+                            CFontInfo* pInfoCur = pManager->GetFontInfoByParams(oSelectFormat);
+
+                            if (NULL != pInfoCur)
+                            {
+                                pManager->LoadFontFromFile(pInfoCur->m_wsFontPath, 0, 14, dDpi, dDpi);
+                            }
+                            oRenderer.put_FontPath(pInfoCur->m_wsFontPath);
+                        }
                     }
 
                     oRenderer.put_FontStringGID(FALSE);

@@ -505,7 +505,7 @@ namespace NExtractTools
 							m_oThumbnail = new InputParamsThumbnail();
 							m_oThumbnail->FromXmlNode(oXmlNode);
 						}
-						else if(_T("m_oInput") == sName)
+						else if(_T("m_oInputLimits") == sName)
 						{
 							FromLimitsNode(oXmlNode);
 						}
@@ -633,35 +633,31 @@ namespace NExtractTools
 
 		bool FromLimitsNode(XmlUtils::CXmlNode& oXmlNode)
 		{
-			XmlUtils::CXmlNode oLimitParentNode;
-			if (oXmlNode.GetNode(L"m_oLimits", oLimitParentNode))
+			XmlUtils::CXmlNodes oLimitsNode;
+			if (oXmlNode.GetNodes(L"m_oInputLimit", oLimitsNode))
 			{
-				XmlUtils::CXmlNodes oLimitsNode;
-				if (oLimitParentNode.GetNodes(L"m_oLimit", oLimitsNode))
+				for(int i = 0; i < oLimitsNode.GetCount(); ++i)
 				{
-					for(int i = 0; i < oLimitsNode.GetCount(); ++i)
+					XmlUtils::CXmlNode oLimitNode;
+					if(oLimitsNode.GetAt(i, oLimitNode))
 					{
-						XmlUtils::CXmlNode oLimitNode;
-						if(oLimitsNode.GetAt(i, oLimitNode))
+						std::wstring sType;
+						if (oLimitNode.GetAttributeIfExist(L"type", sType))
 						{
-							std::wstring sType;
-							if (oLimitNode.GetAttributeIfExist(L"type", sType))
-							{
-								std::vector<std::wstring> aTypes;
-								boost::algorithm::split(aTypes, sType, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
+							std::vector<std::wstring> aTypes;
+							boost::algorithm::split(aTypes, sType, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
 
-								InputLimit oLimit;
-								XmlUtils::CXmlNode oZipNode;
-								if (oLimitNode.GetNode(L"m_oZip", oZipNode))
-								{
-									oLimit.compressed = std::stoul(oZipNode.GetAttribute(L"compressed", L"0"));
-									oLimit.uncompressed = std::stoul(oZipNode.GetAttribute(L"uncompressed", L"0"));
-									oLimit.pattern = oZipNode.GetAttribute(L"template", L"");
-								}
-								for (int j = 0; j < aTypes.size(); ++j)
-								{
-									m_mapInputLimits[COfficeFileFormatChecker::GetFormatByExtension(L"." + aTypes[j])] = oLimit;
-								}
+							InputLimit oLimit;
+							XmlUtils::CXmlNode oZipNode;
+							if (oLimitNode.GetNode(L"m_oZip", oZipNode))
+							{
+								oLimit.compressed = std::stoul(oZipNode.GetAttribute(L"compressed", L"0"));
+								oLimit.uncompressed = std::stoul(oZipNode.GetAttribute(L"uncompressed", L"0"));
+								oLimit.pattern = oZipNode.GetAttribute(L"template", L"");
+							}
+							for (int j = 0; j < aTypes.size(); ++j)
+							{
+								m_mapInputLimits[COfficeFileFormatChecker::GetFormatByExtension(L"." + aTypes[j])] = oLimit;
 							}
 						}
 					}

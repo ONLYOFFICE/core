@@ -102,7 +102,9 @@ namespace ZLibZipUtils
 	  int nBufferSize = MultiByteToWideChar( CP_OEMCP, 0, sVal, -1, NULL, 0 );
 	  wchar_t* pBuffer = new wchar_t[nBufferSize];
 	  MultiByteToWideChar( CP_OEMCP, 0, sVal, -1, pBuffer, nBufferSize );
-	  std::wstring sRes(pBuffer, nBufferSize);
+	  //If this parameter is -1, the function processes the entire input string, including the terminating null character.
+	  //Therefore, the resulting Unicode string has a terminating null character, and the length returned by the function includes this character.
+	  std::wstring sRes(pBuffer, nBufferSize - 1);
 	  RELEASEARRAYOBJECTS(pBuffer);
 	  return sRes;
 #else
@@ -948,6 +950,37 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 			}
 			zipClose(zip_file_handle, NULL);
 
+			return true;
+		}
+		return false;
+	}
+
+	bool GetFilesSize(const WCHAR*  zip_file_path, const std::wstring& searchPattern, ULONG& nCommpressed, ULONG& nUncommpressed)
+	{
+		nCommpressed = 0;
+		nUncommpressed = 0;
+		unzFile unzip_file_handle = unzOpenHelp(zip_file_path);
+		if (unzip_file_handle != NULL)
+		{
+			//todo implement true pattern
+			std::wstring searchExt = searchPattern.substr(2);
+			bool isEmptyPattern = 0 == searchExt.length();
+			do
+			{
+				char filename_inzip[256];
+				unz_file_info file_info;
+				unzGetCurrentFileInfo(unzip_file_handle, &file_info, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0);
+				std::wstring filenameW = codepage_issue_fixFromOEM(filename_inzip);
+				std::transform(filenameW.begin(), filenameW.end(), filenameW.begin(), ::tolower);
+				if (isEmptyPattern || NSFile::GetFileExtention(filenameW) == searchExt)
+				{
+					nCommpressed += file_info.compressed_size;
+					nUncommpressed += file_info.uncompressed_size;
+				}
+				// else just skip the erroneous file
+			} while (UNZ_OK == unzGoToNextFile(unzip_file_handle));
+
+			unzClose (unzip_file_handle);
 			return true;
 		}
 		return false;

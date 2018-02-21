@@ -228,7 +228,12 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 
 	sResult += m_oCharProperty.RenderToRtf( oRenderParameter );
 
-	if (( st_inline == m_eAnchorTypeShape || st_none == m_eAnchorTypeShape) && !m_bIsOle)
+	if (m_bIsOle)
+	{
+		m_oPicture->dump_shape_properties = RenderToRtfShapeProperty( oRenderParameter );
+		sResult +=  m_oPicture->RenderToRtf( oRenderParameter );
+	}
+	else if (( st_inline == m_eAnchorTypeShape || st_none == m_eAnchorTypeShape) && !m_bIsOle)
 	{
 		if( NULL != m_oPicture && m_nShapeType == NSOfficeDrawing::sptPictureFrame)
 		{

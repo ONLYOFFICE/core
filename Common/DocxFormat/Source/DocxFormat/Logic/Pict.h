@@ -449,12 +449,10 @@ namespace OOX
 			virtual ~CObject() 
 			{
 			}
-	
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -472,6 +470,8 @@ namespace OOX
 				oSubReader.FromString(sXml);
 				oSubReader.ReadNextNode();//root
 				oSubReader.ReadNextNode();//pict
+
+				ReadAttributes(oSubReader);
 
 				int nCurDepth = oSubReader.GetDepth();
 				while ( oSubReader.ReadNextSiblingNode( nCurDepth ) )
@@ -634,26 +634,37 @@ namespace OOX
 					}
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-				return _T("<w:object />");
+				return _T("<w:object/>");
 			}
 
 			virtual EElementType getType() const
 			{
 				return et_w_object;
 			}
-            nullable<std::wstring> m_sXml;
 
-			// Childs
+            nullable<std::wstring>					m_sXml;
+//-----------------------------------------------------------------------
+			nullable_int							m_oDxaOrig;
+			nullable_int							m_oDyaOrig;
+
 			nullable<OOX::Logic::CControl>			m_oControl;
-//top childs
-			nullable<OOX::Vml::CShapeType>			m_oShapeType;//?? нужен ли отдельно тута???
+
+			nullable<OOX::Vml::CShapeType>			m_oShapeType;
 			nullable<OOX::VmlOffice::COLEObject>	m_oOleObject;
 			
 			nullable<OOX::Vml::CShape>				m_oShape;
-//minor childs
 
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("w:dxaOrig"), m_oDxaOrig )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("w:dxyOrig"), m_oDyaOrig )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 		};
 
 

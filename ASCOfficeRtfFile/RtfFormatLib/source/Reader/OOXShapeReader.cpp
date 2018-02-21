@@ -318,7 +318,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 						std::wstring sImagePath = pImage->filename().GetPath();
 
 						pOutput->m_oPicture = RtfPicturePtr( new RtfPicture() );
-						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sPath );
+						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sTempFolder );
 
 						pOutput->m_nFillType = 2;
 					}
@@ -404,7 +404,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 						std::wstring sImagePath = pImage->filename().GetPath();
 						
-						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sPath );
+						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sTempFolder );
 					}
 				}
 				int nCropedWidthGoal = pOutput->m_oPicture->m_nWidthGoal;
@@ -740,7 +740,7 @@ bool OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 				OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 
 				std::wstring sImagePath = pImage->filename().GetPath();
-				result = WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sPath);
+				result = WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sTempFolder);
 			}
 		}
 		else if (oox_bitmap_fill->blip->link.IsInit())
@@ -1425,20 +1425,12 @@ bool OOXShapeReader::ParsePic( ReaderParameter oParam, RtfShapePtr& pOutput)
 		if (!sOlePath.empty())
 		{
 			ConvertOle2ToOle1(sOlePath, pOutput->m_pOleObject);
-            POLE::Storage *storage = new POLE::Storage(sOlePath.c_str());
-			if ((storage) && (storage->open()))
-			{
-				//ConvertOle2ToOle1(storage, pOutput->m_pOleObject);
-				storage->close();
-				delete( storage );
-
-				std::wstring ole1FileName = Utils::CreateTempFile( oParam.oReader->m_sTempFolder );
+	
+			std::wstring ole1FileName = Utils::CreateTempFile( oParam.oReader->m_sTempFolder );
 				
-				RtfUtility::WriteDataToFileBinary( ole1FileName, pOutput->m_pOleObject->m_oOle1Data.first.get(), pOutput->m_pOleObject->m_oOle1Data.second );
+			RtfUtility::WriteDataToFileBinary( ole1FileName, pOutput->m_pOleObject->m_oOle1Data.first.get(), pOutput->m_pOleObject->m_oOle1Data.second );
 
-				pOutput->m_pOleObject->SetFilename(ole1FileName);
-			}
-			storage = NULL;
+			pOutput->m_pOleObject->SetFilename(ole1FileName);
 		}
 	}
 	return true;		
@@ -1498,27 +1490,27 @@ bool OOXShapeReader::ParseVmlObject	( ReaderParameter oParam , RtfShapePtr& pOut
 			sOlePath = pO->filename().m_strFilename;
 		}
 	}
+	if (pOutput->m_nWidth == PROP_DEF && pOutput->m_nRight != PROP_DEF)
+	{
+		pOutput->m_nWidth = pOutput->m_nRight - (pOutput->m_nLeft == PROP_DEF ? 0 : pOutput->m_nLeft);
+	}
+	if (pOutput->m_nHeight == PROP_DEF && pOutput->m_nBottom != PROP_DEF)
+	{
+		pOutput->m_nHeight = pOutput->m_nBottom - (pOutput->m_nTop == PROP_DEF ? 0 : pOutput->m_nTop);
+	}
 
-	pOutput->m_pOleObject->m_nWidth = pOutput->m_nWidth = pOutput->m_oPicture->m_nWidth = pOutput->m_oPicture->m_nWidthGoal;
-	pOutput->m_pOleObject->m_nHeight = pOutput->m_nHeight = pOutput->m_oPicture->m_nHeight = pOutput->m_oPicture->m_nHeightGoal;
+	if (pOutput->m_nWidth != PROP_DEF)	pOutput->m_pOleObject->m_nWidth = pOutput->m_nWidth;
+	if (pOutput->m_nHeight != PROP_DEF)	pOutput->m_pOleObject->m_nHeight = pOutput->m_nHeight;
 
 	if (!sOlePath.empty())
 	{
 		ConvertOle2ToOle1(sOlePath, pOutput->m_pOleObject);
-        POLE::Storage *storage = new POLE::Storage(sOlePath.c_str());
-		if ((storage) && (storage->open()))
-		{
-			//ConvertOle2ToOle1(storage, pOutput->m_pOleObject);
-			storage->close();
-			delete( storage );
-
-			std::wstring ole1FileName = Utils::CreateTempFile( oParam.oReader->m_sTempFolder );
+		
+		std::wstring ole1FileName = Utils::CreateTempFile( oParam.oReader->m_sTempFolder );
 			
-			RtfUtility::WriteDataToFileBinary( ole1FileName, pOutput->m_pOleObject->m_oOle1Data.first.get(), pOutput->m_pOleObject->m_oOle1Data.second );
+		RtfUtility::WriteDataToFileBinary( ole1FileName, pOutput->m_pOleObject->m_oOle1Data.first.get(), pOutput->m_pOleObject->m_oOle1Data.second );
 
-			pOutput->m_pOleObject->SetFilename(ole1FileName);
-		}
-		storage = NULL;
+		pOutput->m_pOleObject->SetFilename(ole1FileName);
 	}
 	return true;
 }
@@ -2199,8 +2191,8 @@ void OOXShapeReader::ConvertOle2ToOle1(const std::wstring &oleFilePath, RtfOlePt
 	ole1Writer.Header.ClassName.val = std::string(object->m_sOleClass.begin(), object->m_sOleClass.end());
 	ole1Writer.Header.ClassName.size = ole1Writer.Header.ClassName.val.length() + 1;
 
-	ole1Writer.Header.Width	= object->m_nWidth;
-	ole1Writer.Header.Height = object->m_nHeight;
+	//ole1Writer.Header.Width	= object->m_nWidth;
+	//ole1Writer.Header.Height = object->m_nHeight;
 
 	DWORD size = 0;
 	if (false == NSFile::CFileBinary::ReadAllBytes(oleFilePath, &ole1Writer.NativeData, size))
@@ -2230,8 +2222,8 @@ void OOXShapeReader::ConvertOle2ToOle1(POLE::Storage *storage, RtfOlePtr object)
 	ole1Writer.Header.ClassName.val = std::string(object->m_sOleClass.begin(), object->m_sOleClass.end());
 	ole1Writer.Header.ClassName.size = ole1Writer.Header.ClassName.val.length();
 
-	ole1Writer.Header.Width	= object->m_nWidth;
-	ole1Writer.Header.Height = object->m_nHeight;
+	//ole1Writer.Header.Width	= object->m_nWidth;
+	//ole1Writer.Header.Height = object->m_nHeight;
 
 	std::list<std::wstring> entries;
 	entries = storage->entries( L"/" );

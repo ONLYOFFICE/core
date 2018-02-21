@@ -1817,7 +1817,7 @@ bool RtfOleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, st
 		RtfAllPictReader oAllPictReader( *oNewShape );
 		StartSubReader( oAllPictReader, oDocument, oReader );
 		
-		m_oOle.m_oResultPicRead = oNewShape;
+		m_oOle.m_oResultShape = oNewShape;
 	}
 	else
 		return false;

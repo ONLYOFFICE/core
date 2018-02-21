@@ -46,8 +46,7 @@ public:
 	int				m_nHeight;
     std::wstring	m_sOleClass;
 
-	RtfPicturePtr	m_oResultPicWrite;
-	RtfShapePtr		m_oResultPicRead;	//for wrong files 
+	RtfShapePtr		m_oResultShape;	
 
 	std::pair<boost::shared_array<unsigned char>, size_t> m_oOle1Data;
 

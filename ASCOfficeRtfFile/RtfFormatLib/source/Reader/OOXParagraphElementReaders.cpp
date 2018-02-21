@@ -648,8 +648,9 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 			{
 				if (pNewDrawing->m_bIsOle && pNewDrawing->m_pOleObject)
 				{
-					pNewDrawing->m_pOleObject->m_oResultShape = pNewDrawing;				
-					oOutputParagraph.AddItem( m_oResultShape );
+					pNewDrawing->m_pOleObject->m_oResultShape = pNewDrawing;
+
+					oOutputParagraph.AddItem( pNewDrawing->m_pOleObject );
 				}
 				else
 					oOutputParagraph.AddItem( pNewDrawing );

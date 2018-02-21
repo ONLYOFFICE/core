@@ -791,34 +791,42 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 		}
 	}
 
-	ShtProps		*sht_props			= dynamic_cast<ShtProps*>(chart_formats->m_ShtProps.get());
+	ShtProps *sht_props = dynamic_cast<ShtProps*>(chart_formats->m_ShtProps.get());
+	
 	std::wstringstream stream_legend_entries;
 
 	CP_XML_WRITER(_stream)    
 	{
 		CP_XML_NODE(L"c:plotArea")
 		{
-			for (size_t i = 0; i < chart_formats->m_arAXISPARENT.size(); i++)
-			{
-				AXISPARENT* parent		= dynamic_cast<AXISPARENT*>	(chart_formats->m_arAXISPARENT[i].get());
-							ax_parent	= dynamic_cast<AxisParent*>	(parent->m_AxisParent.get());
-							axes		= dynamic_cast<AXES*>		(parent->m_AXES.get());
+			//for (size_t i = 0; i < chart_formats->m_arAXISPARENT.size(); i++)
+			//{
+			//	AXISPARENT* parent		= dynamic_cast<AXISPARENT*>	(chart_formats->m_arAXISPARENT[i].get());
+			//				ax_parent	= dynamic_cast<AxisParent*>	(parent->m_AxisParent.get());
+			//				axes		= dynamic_cast<AXES*>		(parent->m_AXES.get());
 
-				//if (((bool)ax_parent->iax == false) && axes) //primary axes
-				//{
-				//	PlotAreaFRAME	= dynamic_cast<FRAME*>	(axes->m_PlotArea_FRAME.get());
-				//	PlotAreaPos		= dynamic_cast<Pos*>	(parent->m_Pos.get());
-				//	
-				//	if (PlotAreaFRAME && PlotAreaPos)
-				//	{
-				//		PlotAreaPos->m_Frame = PlotAreaFRAME->m_Frame;
-				//	}
-				//}
-			}
+			//	if (((bool)ax_parent->iax == false) && axes) //primary axes
+			//	{
+			//		PlotAreaFRAME	= dynamic_cast<FRAME*>	(axes->m_PlotArea_FRAME.get());
+			//		PlotAreaPos		= dynamic_cast<Pos*>	(parent->m_Pos.get());
+			//		
+			//		//if (PlotAreaFRAME && PlotAreaPos)
+			//		//{
+			//		//	PlotAreaPos->m_Frame = PlotAreaFRAME->m_Frame;
+			//		//}
+			//	}
+			//}
 
-			if (PlotAreaPos && (sht_props) && (sht_props->fAlwaysAutoPlotArea != false))
+			if ((sht_props) && (sht_props->fAlwaysAutoPlotArea != false))
 			{
-				PlotAreaPos->serialize(CP_XML_STREAM());
+				if (chart_formats->m_CrtLayout12A)
+				{
+					chart_formats->m_CrtLayout12A->serialize(CP_XML_STREAM());
+				}
+				else if (PlotAreaPos && (sht_props) && (sht_props->fAlwaysAutoPlotArea != false))
+				{
+					PlotAreaPos->serialize(CP_XML_STREAM());
+				}
 			}
 
 			int series_order = 0;

@@ -31,7 +31,7 @@
  */
 
 #include "HeaderFooter.h"
-#include <Logic/Biff_structures/FrtHeader.h>
+#include "../Biff_structures/FrtHeader.h"
 //#include <Exception/AttributeDataWrong.h>
 
 namespace XLS

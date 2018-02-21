@@ -42,10 +42,14 @@ void RtfShape::SetDefault()
 	m_eAnchorTypeShape = st_none;
 
 //Common
+	DEFAULT_PROPERTY( m_nWidth )
+	DEFAULT_PROPERTY( m_nHeight )
+
 	DEFAULT_PROPERTY( m_nLeft )
 	DEFAULT_PROPERTY( m_nTop )
 	DEFAULT_PROPERTY( m_nBottom )
 	DEFAULT_PROPERTY( m_nRight )
+
 	DEFAULT_PROPERTY( m_nID )
 	DEFAULT_PROPERTY( m_nZOrder )
 	DEFAULT_PROPERTY( m_nHeader )
@@ -224,7 +228,7 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 
 	sResult += m_oCharProperty.RenderToRtf( oRenderParameter );
 
-	if( st_inline == m_eAnchorTypeShape || st_none == m_eAnchorTypeShape)
+	if (( st_inline == m_eAnchorTypeShape || st_none == m_eAnchorTypeShape) && !m_bIsOle)
 	{
 		if( NULL != m_oPicture && m_nShapeType == NSOfficeDrawing::sptPictureFrame)
 		{
@@ -329,7 +333,7 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 				sResult += L"}";
 		}
 	}
-	else	// anchor
+	else	// anchor or ole
 	{
 		sResult += L"{\\shp";
 		sResult += L"{\\*\\shpinst";
@@ -453,12 +457,12 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 	if (m_sName.empty() == false)
 	{
 		sResult += L"{\\sp{\\sn wzName}{\\sv ";
-        sResult += RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, -1 ) + L"}}";
+        sResult += RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, 48 ) + L"}}"; //utf-16
 	}
 	if (m_sDescription.empty() == false)
 	{
 		sResult += L"{\\sp{\\sn wzDescription}{\\sv ";
-        sResult += RtfChar::renderRtfText(m_sDescription, oRenderParameter.poDocument, -1 ) + L"}}";
+        sResult += RtfChar::renderRtfText(m_sDescription, oRenderParameter.poDocument, 48 ) + L"}}"; //utf-16
 	}
 //Rehydration
     //RENDER_RTF_SHAPE_PROP(L"metroBlob",    sResult,   m_sMetroBlob);
@@ -608,7 +612,7 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 	{
         RENDER_RTF_SHAPE_PROP(L"fGtext",    sResult,   m_bGtext );
 		
-		int nCodePage = -1;
+		int nCodePage = 48; //utf-16
 		
         if( m_sGtextFont.empty() == false)
 		{
@@ -648,31 +652,31 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
         if( !m_sSigSetupId.empty() )
 		{
 			sResult += L"{\\sp{\\sn wzSigSetupId}{\\sv ";
-				sResult += RtfChar::renderRtfText(m_sSigSetupId, oRenderParameter.poDocument, 0);
+				sResult += RtfChar::renderRtfText(m_sSigSetupId, oRenderParameter.poDocument, 48); //utf-16
 			sResult += L"}}";
 		}
         if( !m_sSigSetupProvId.empty() )
 		{
 			sResult += L"{\\sp{\\sn wzSigSetupProvId}{\\sv ";
-				sResult += RtfChar::renderRtfText(m_sSigSetupProvId, oRenderParameter.poDocument, 0);
+				sResult += RtfChar::renderRtfText(m_sSigSetupProvId, oRenderParameter.poDocument, 48); //utf-16
 			sResult += L"}}";
 		}
         if( !m_sSigSetupSuggSigner.empty() )
 		{
 			sResult += L"{\\sp{\\sn wzSigSetupSuggSigner}{\\sv ";
-				sResult += RtfChar::renderRtfText(m_sSigSetupSuggSigner, oRenderParameter.poDocument, 0);
+				sResult += RtfChar::renderRtfText(m_sSigSetupSuggSigner, oRenderParameter.poDocument, 48); //utf-16
 			sResult += L"}}";
 		}
         if( !m_sSigSetupSuggSigner2.empty() )
 		{
 			sResult += L"{\\sp{\\sn wzSigSetupSuggSigner2}{\\sv ";
-				sResult += RtfChar::renderRtfText(m_sSigSetupSuggSigner2, oRenderParameter.poDocument, 0);
+				sResult += RtfChar::renderRtfText(m_sSigSetupSuggSigner2, oRenderParameter.poDocument, 48); //utf-16
 			sResult += L"}}";
 		}
         if( !m_sSigSetupSuggSignerEmail.empty() )
 		{
 			sResult += L"{\\sp{\\sn wzSigSetupSuggSignerEmail}{\\sv ";
-				sResult += RtfChar::renderRtfText(m_sSigSetupSuggSignerEmail, oRenderParameter.poDocument, 0);
+				sResult += RtfChar::renderRtfText(m_sSigSetupSuggSignerEmail, oRenderParameter.poDocument, 48); //utf-16
 			sResult += L"}}";
 		}
 	}
@@ -696,8 +700,6 @@ std::wstring RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 		
 		if( 0 != aTempTextItems )
 		{//пишем только Ole обьект
-			//ищем первый ole обьект
-			RtfOlePtr poFirstOle;
 			int nTempTextItemsCount = aTempTextItems->GetCount();
 			for (size_t i = 0; i < nTempTextItemsCount; i++ )
 			{
@@ -725,6 +727,7 @@ std::wstring RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 									m_sOle += poCurOle->RenderToOOX( oNewParam );
 									if (!m_sOle.empty())
 									{
+										m_pOleObject = poCurOle;
 										m_bIsOle = true;
 										break;
 									}

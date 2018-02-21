@@ -40,17 +40,14 @@
 #include <algorithm>
 #include <string>
 
-int _tmain(int argc, _TCHAR* argv[])
+HRESULT convert_single(std::wstring srcFileName)
 {
-	if (argc < 2) return 1;
-
-	std::wstring srcFileName	= argv[1];
 	int n1 = srcFileName.rfind(_T('.'));
-	std::wstring ext_1 = n1 >= 0 ? srcFileName.substr(n1+1, srcFileName.length() - n1) : _T("");
+	std::wstring ext_1 = n1 >= 0 ? srcFileName.substr(n1 + 1, srcFileName.length() - n1) : _T("");
 	
 	std::transform(ext_1.begin(), ext_1.end(), ext_1.begin(), ::tolower);
 
-	std::wstring dstFileName	= argc > 2 ? argv[2] : srcFileName + L"_my." + (ext_1 == L"rtf" ? L"docx" : L"rtf");
+	std::wstring dstFileName	= srcFileName + L"_my." + (ext_1 == L"rtf" ? L"docx" : L"rtf");
 	
 	std::wstring outputDir		= NSDirectory::GetFolderPath(dstFileName);
 	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
@@ -84,3 +81,33 @@ int _tmain(int argc, _TCHAR* argv[])
 	return 0;
 }
 
+
+HRESULT convert_directory(std::wstring pathName)
+{
+	HRESULT hr = S_OK;
+
+	std::vector<std::wstring> arFiles = NSDirectory::GetFiles(pathName, false);
+
+	for (size_t i = 0; i < arFiles.size(); i++)
+	{
+		convert_single(arFiles[i]);
+	}
+	return S_OK;
+}
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+	if (argc < 2) return 1;
+
+	HRESULT hr = -1;
+	if (NSFile::CFileBinary::Exists(argv[1]))
+	{	
+		hr = convert_single(argv[1]);
+	}
+	else if (NSDirectory::Exists(argv[1]))
+	{
+		hr = convert_directory(argv[1]);
+	}
+
+	return hr;
+}

@@ -34,7 +34,7 @@
 #include "RtfWriter.h"
 #include "Utils.h"
 
-std::wstring RtfPicture::GenerateWMF(RenderParameter oRenderParameter)
+std::wstring RtfPicture::GenerateWMF(RenderParameter oRenderParameter) //копия растра в векторе
 {
     std::wstring sResult;
 	sResult += L"{\\pict";
@@ -145,6 +145,10 @@ std::wstring RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 	else
 		m_bIsCopy = false;
 
+    if( true == m_bIsCopy && !m_sPicFilename.empty() )
+	{
+		Utils::RemoveDirOrFile( m_sPicFilename );
+	}
 	poOOXWriter->m_oContentTypes.AddExtension( sMime, sExtension);
 
     std::wstring srId = poRelsWriter->AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image", sFilenameRels);

@@ -35,6 +35,9 @@
 class RtfShape;
 typedef boost::shared_ptr<RtfShape> RtfShapePtr;
 
+class RtfOle;
+typedef boost::shared_ptr<RtfOle> RtfOlePtr;
+
 class RtfShape: public IRenderableProperty, public ItemContainer<RtfShapePtr>
 {
 private:
@@ -48,6 +51,7 @@ public:
 
 	std::wstring	m_sOle;
 	bool			m_bIsOle;
+	RtfOlePtr		m_pOleObject;
 //-----------------------------
 	enum _AnchorTypeShape { st_none, st_inline, st_anchor };
 	enum _AnchorX
@@ -73,10 +77,14 @@ public:
     std::wstring m_sName;
     std::wstring m_sDescription;
 
+	int m_nWidth;
+	int m_nHeight;
+
 	int m_nLeft;					//shpleftN	Specifies position of shape from the left of the anchor. The value N is in twips.
 	int m_nTop;						//shptopN	Specifies position of shape from the top of the anchor. The value N is in twips.
 	int m_nBottom;					//shpbottomN	Specifies position of shape from the bottom of the anchor. The value N is in twips.
 	int m_nRight;					//shprightN	Specifies position of shape from the right of the anchor. The value N is in twips.
+	
 	int m_nID;						//shplidN	A number that is unique to each shape. This keyword is primarily used for linked text boxes. The value N is a long integer.
 	int m_nZOrder;					//shpzN	Describes the z-order of the shape. It starts at 0 for the shape that is furthest from the top, and proceeds to the top most shape (N). The shapes that appear inside the header document will have a separate z-order, compared to the z-order of the shapes in the main document. For instance, both the back-most shape in the header and the back-most main-document shape will have a z-order of 0.
 	int m_nHeader;					//shpfhdrN	Set to 0 if the shape is in the main document. Set to 1 if the shape is in the header document.

@@ -37,14 +37,12 @@
 #include "ConvertationManager.h"
 
 #include <boost/algorithm/string.hpp>
-#include "../../../OfficeUtils/src/OfficeUtils.h"
 
-HRESULT ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
+void ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
 {
-	HRESULT hr = S_FALSE;
+	Ole1FormatReaderWriter ole1Reader(pData, nSize);
 
-	Ole1FormatReader ole1Reader(pData, nSize);
-
+	bool bResult = false;
 	if (ole1Reader.NativeDataSize > 0)
 	{	
 		NSFile::CFileBinary file;
@@ -56,9 +54,13 @@ HRESULT ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
 		POLE::Storage * storageIn = new POLE::Storage(sOle2Name.c_str());			
 		if ( (storageIn) && (storageIn->open(false, false))) //storage in storage
 		{
+			//test package stream??? xls ole -> xlsx ole 
+			bResult = true;
 			storageIn->close();
 		}
-		else
+		delete storageIn;
+		
+		if (!bResult)
 		{
 			POLE::Storage * storageOut = new POLE::Storage(sOle2Name.c_str());			
 			if ( (storageOut) && (storageOut->open(true, true)))
@@ -104,26 +106,37 @@ HRESULT ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
 			//Ole10Native
 				POLE::Stream streamData(storageOut, L"\001Ole10Native", true, ole1Reader.NativeDataSize + 4);
 				streamData.write((BYTE*)&ole1Reader.NativeDataSize, 4);
-				streamData.write(ole1Reader.NativeData, ole1Reader.NativeDataSize);
+
+				_UINT32 sz_write = 0;
+				_UINT32 sz = 4096;
+				while (sz_write < ole1Reader.NativeDataSize)
+				{
+					if (sz_write + sz > ole1Reader.NativeDataSize)
+						sz = ole1Reader.NativeDataSize - sz_write;
+					streamData.write(ole1Reader.NativeData + sz_write, sz);
+					sz_write += sz;
+				}
 				streamData.flush();
 
 				storageOut->close();
 				delete storageOut;
+
+				bResult = true;
 			}
 		}
 	}
-	else	//conv_NI38P7GBIpw1aD84H3k.rtf
+	if (!bResult) //conv_NI38P7GBIpw1aD84H3k.rtf
 	{
 		NSFile::CFileBinary file;
 		
 		file.CreateFileW(sOle2Name);
 		file.WriteFile(pData, nSize);
 		file.CloseFile();
+		
+		bResult = true;
 	}
-	return S_FALSE;
 }
 //-----------------------------------------------------------------------------------------
-
 bool RtfDocumentCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,  std::string sCommand, bool hasParameter, int parameter)
 {
     if		( "ansi"	== sCommand )	oDocument.m_oProperty.m_eCodePage = RtfDocumentProperty::cp_ansi;
@@ -1786,48 +1799,15 @@ bool RtfOleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, st
 
 		if ( 0 != nSize  && pData)
 		{
-			HRESULT hRes = S_FALSE;
+			boost::shared_array<BYTE> buffer(pData);
+			m_oOle.m_oOle1Data = std::make_pair(buffer, nSize);
 
-			//конвертация Ole1 в Ole2
-#if 0//defined(_WIN32) || defined(_WIN64)
-			RtfOle1ToOle2Stream oStream;
-
-			oStream.lpstbl = new OLESTREAMVTBL();
-			oStream.lpstbl->Get = &OleGet1;
-			oStream.lpstbl->Put = &OlePut1;
-			
-			oStream.pBuffer		= pData;
-			oStream.nBufferSize = nSize;
-			oStream.nCurPos		= 0;
-
-            std::wstring sOleStorageName = Utils::CreateTempFile( oReader.m_sTempFolder );
-
-			IStorage* piMSStorage = NULL;
-			if ( SUCCEEDED( StgCreateDocfile( sOleStorageName.c_str(), STGM_READWRITE | STGM_CREATE | STGM_SHARE_EXCLUSIVE | STGM_TRANSACTED/* | STGM_DELETEONRELEASE*/, NULL, &piMSStorage) ) )
-			{
-				hRes = OleConvertOLESTREAMToIStorage( &oStream, piMSStorage, NULL );
-				piMSStorage->Commit( STGC_DEFAULT );
-				RELEASEINTERFACE( piMSStorage );
-			}			
-			delete oStream.lpstbl;
-#else
             std::wstring sOleStorageName = NSDirectory::CreateTempFileWithUniqueName(oReader.m_sTempFolder, L"img");
 
-			hRes = ConvertOle1ToOle2(pData, nSize, sOleStorageName);
-			
-#endif
-			delete[] pData;
-			
-			POLE::Storage * piRootStorage = new POLE::Storage(sOleStorageName.c_str());			
-			if ( piRootStorage)
-			{
-				m_oOle.SetFilename( sOleStorageName.c_str() );
-				m_oOle.SetOle( piRootStorage );
-				hRes = S_OK;
-			}
-
-            if (  hRes != S_OK )
-				Utils::RemoveDirOrFile( sOleStorageName.c_str() );
+	//конвертация Ole1 в Ole2
+			ConvertOle1ToOle2(pData, nSize, sOleStorageName);
+				
+			m_oOle.SetFilename( sOleStorageName.c_str() );
 		}
 	}
     else if ( "result" == sCommand )
@@ -1837,7 +1817,7 @@ bool RtfOleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, st
 		RtfAllPictReader oAllPictReader( *oNewShape );
 		StartSubReader( oAllPictReader, oDocument, oReader );
 		
-		m_oOle.m_oResultPic = oNewShape;
+		m_oOle.m_oResultPicRead = oNewShape;
 	}
 	else
 		return false;

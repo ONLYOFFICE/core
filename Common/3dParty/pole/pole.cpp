@@ -1078,7 +1078,7 @@ void DirTree::save( unsigned char* buffer )
 		convertWStringToUtf16(name, pData, size);
 		if (pData)
 		{
-			memcpy( buffer, pData, size);
+            memcpy( buffer + i * 128, pData, size);
 			delete []pData;
 		}
 	}

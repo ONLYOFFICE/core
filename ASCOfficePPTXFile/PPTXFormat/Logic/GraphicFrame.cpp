@@ -670,7 +670,7 @@ namespace PPTX
 			return xml;
 		}
 
-		void GraphicFrame::ChartToOlePackageInStorage(OOX::IFileContainer* pRels, const std::wstring &sTempDirectory, const std::wstring &sOleFileName)
+		void GraphicFrame::ChartToOlePackageInStorage(OOX::IFileContainer* pRels, const std::wstring &sTempDirectory, int nCurrentGenerateId)
 		{
 			if (!chartRec.IsInit()) return;
 			if (olePic.IsInit()) return;
@@ -685,51 +685,62 @@ namespace PPTX
 			if (!NSFile::CFileBinary::ReadAllBytes(sXlsxFile, &nativeData, nativeDataSize))
 				return;
 
-			std::string sClassName = "Excel.Sheet.8";
-			std::wstring sOleFile = sTempDirectory + FILE_SEPARATOR_STR + sOleFileName;
+			std::string sUserType			= "Chart";
+			std::string sClipboardFormat	= "ExcelML12";
+			std::string sProgram			= "Excel.Sheet.12";
+			
+			std::wstring sOleFile = sTempDirectory + FILE_SEPARATOR_STR + L"OleObject" + std::to_wstring(1024 + nCurrentGenerateId) + L".bin";
 
 			POLE::Storage * storageOut = new POLE::Storage(sOleFile.c_str());			
 			if ( (storageOut) && (storageOut->open(true, true)))
 			{
-				_UINT32 tmp = 0;
-				_UINT32 name_size = sClassName.length() + 1;
+				_UINT32 zero = 0, str_size = 0;
 			//Ole
-				BYTE dataOleInfo[] = {0x01,0x00,0x00,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+				BYTE dataOleInfo[] = {0x01,0x00,0x00,0x02,0x08,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 				POLE::Stream oStream3(storageOut, L"\001Ole", true, 20);
 				oStream3.write(dataOleInfo, 20);
 				oStream3.flush();
 			//CompObj
-				BYTE dataCompObjHeader[28] = {0x01,0x00,0xfe,0xff,0x03,0x0a,0x00,0x00,0xff,0xff,0xff,0xff,0x0a,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0xc0,0x00,0x00,0x00,0x00,0x00,0x00,0x46};
-				POLE::Stream oStream1(storageOut, L"\001CompObj", true, 28 + (name_size + 5) + 2 * (sClassName.length() + 4) + 4 * 4);
+				BYTE dataCompObjHeader[28] = {0x01,0x00,0xfe,0xff,0x03,0x0a,0x00,0x00,0xff,0xff,0xff,0xff
+					,0x30,0x08,0x02
+					//,0x0a,0x00,0x03
+					,0x00,0x00,0x00,0x00,0x00,0xc0,0x00,0x00,0x00,0x00,0x00,0x00,0x46};
+				POLE::Stream oStream1(storageOut, L"\001CompObj", true, 28 +	(sUserType.length() + 5) + 
+																				(sClipboardFormat.length() + 5) + 
+																				(sProgram.length() + 5) + 4 * 4);
 				oStream1.write(dataCompObjHeader, 28);
 
-				oStream1.write((BYTE*)&name_size, 4);
-				oStream1.write((BYTE*)sClassName.c_str(), name_size);
+				str_size = sUserType.length() + 1;
+				oStream1.write((BYTE*)&str_size, 4);
+				oStream1.write((BYTE*)sUserType.c_str(), sUserType.length());
+				oStream1.write((BYTE*)&zero, 1);
 
-				tmp = sClassName.length();
-				oStream1.write((BYTE*)&tmp, 4);
-				oStream1.write((BYTE*)sClassName.c_str(), sClassName.length());
-				oStream1.write((BYTE*)&tmp, 4);
-				oStream1.write((BYTE*)sClassName.c_str(), sClassName.length());
+				str_size = sClipboardFormat.length() + 1;
+				oStream1.write((BYTE*)&str_size, 4);
+				oStream1.write((BYTE*)sClipboardFormat.c_str(), sClipboardFormat.length());
+				oStream1.write((BYTE*)&zero, 1);
+				
+				str_size = sProgram.length() + 1;
+				oStream1.write((BYTE*)&str_size, 4);
+				oStream1.write((BYTE*)sProgram.c_str(), sProgram.length());
+				oStream1.write((BYTE*)&zero, 1);
 
-				tmp = 0x71B239F4;
-				oStream1.write((BYTE*)&tmp, 4); // UnicodeMarker
+				_UINT32 nUnicodeMarker = 0x71B239F4;
+				oStream1.write((BYTE*)&nUnicodeMarker, 4); 
 
-				tmp = 0;
-				oStream1.write((BYTE*)&tmp, 4); // UnicodeUserType
-				oStream1.write((BYTE*)&tmp, 4); // UnicodeClipboardFormat
-				oStream1.write((BYTE*)&tmp, 4); // 
+				oStream1.write((BYTE*)&zero, 4); // UnicodeUserType
+				oStream1.write((BYTE*)&zero, 4); // UnicodeClipboardFormat
+				oStream1.write((BYTE*)&zero, 4); // 
 				oStream1.flush();
 
 			//ObjInfo
-				BYTE dataObjInfo[] = {0x00,0x00,0x03,0x00,0x04,0x00};
+				BYTE dataObjInfo[] = {0x00,0x00,0x03,0x00,0x01,0x00};//{0x00,0x00,0x03,0x00,0x0D,0x00};
 				POLE::Stream oStream2(storageOut, L"\003ObjInfo", true, 6);
 				oStream2.write(dataObjInfo, 6);
 				oStream2.flush();
 
 			//Package
-				POLE::Stream streamData(storageOut, L"Package", true, nativeDataSize + 4);
-				streamData.write((BYTE*)&nativeDataSize, 4);
+				POLE::Stream streamData(storageOut, L"Package", true, nativeDataSize);
 				streamData.write(nativeData, nativeDataSize);
 				streamData.flush();
 
@@ -746,13 +757,6 @@ namespace PPTX
 			olePic->blipFill.blip->oleFilepathImage = NSDirectory::CreateTempFileWithUniqueName(sTempDirectory, L"img");
 
 			NSFile::CFileBinary file;
-
-			//file.OpenFile(L"d:\\111\\Excel.Chart.png");
-			//DWORD size = file.GetFileSize();
-			//BYTE* data = new BYTE[size];
-			//file.ReadFile(data, size,size);
-			//file.CloseFile();
-
 			if (file.CreateFileW(olePic->blipFill.blip->oleFilepathImage))
 			{
 				file.WriteFile(binImagePngChartReplacement, 6171);
@@ -764,8 +768,8 @@ namespace PPTX
 			olePic->oleObject->m_OleObjectFile = new OOX::OleObject(NULL, false, true);
 			olePic->oleObject->m_OleObjectFile->set_filename(sOleFile, false);
 
-			olePic->oleObject->m_sObjectId = std::wstring(L"_36171621123");
-			olePic->oleObject->m_sProgId = std::wstring(sClassName.begin(), sClassName.end());
+			olePic->oleObject->m_sObjectId = std::wstring(L"_3617162112") + std::to_wstring(nCurrentGenerateId);
+			olePic->oleObject->m_sProgId = std::wstring(sProgram.begin(), sProgram.end());
 			//olePic->oleObject->m_sShapeId;
 			olePic->oleObject->m_oType = new Limit::OLEType();
 			olePic->oleObject->m_oUpdateMode = new Limit::OLEUpdateMode();
@@ -805,8 +809,103 @@ namespace PPTX
 			COfficeUtils oCOfficeUtils(NULL);
 			if (S_OK != oCOfficeUtils.ExtractToDirectory(pExternalXslxPackage->filename().GetPath(), sUnpackedXlsx, NULL, 0)) return L"";
 //-------------------------------------------------------
+			std::wstring sXlPath			= sUnpackedXlsx + FILE_SEPARATOR_STR + L"xl";
+			std::wstring sChartPath			= sXlPath + FILE_SEPARATOR_STR + L"charts";
+			std::wstring sDrawingsPath		= sXlPath + FILE_SEPARATOR_STR + L"drawings";
+			std::wstring sChartSheetsPath	= sXlPath + FILE_SEPARATOR_STR + L"chartsheets";
+			
+			NSDirectory::CreateDirectoryW(sChartPath);
+			NSDirectory::CreateDirectoryW(sDrawingsPath);
+			NSDirectory::CreateDirectoryW(sDrawingsPath + FILE_SEPARATOR_STR + L"_rels");
+			NSDirectory::CreateDirectoryW(sChartSheetsPath);
+			NSDirectory::CreateDirectoryW(sChartSheetsPath + FILE_SEPARATOR_STR + L"_rels");
+
+			OOX::Spreadsheet::CT_ExternalData* keepExternalData = pChart->m_oChartSpace.m_externalData;
+			pChart->m_oChartSpace.m_externalData = NULL;
+
+			pChart->write2(sChartPath + FILE_SEPARATOR_STR + L"chart1.xml");
+//----------------
+			NSStringUtils::CStringBuilder sXmlDrawing;
+			sXmlDrawing.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");	
+			sXmlDrawing.WriteString(L"<xdr:wsDr xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" \
+xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
+			sXmlDrawing.WriteString(L"<xdr:absoluteAnchor><xdr:pos x=\"0\" y=\"0\"/><xdr:ext cx=\"2946400\" cy=\"2057400\"/>");			
+			
+			this->xfrm.Init();
+			this->xfrm->offX  = 0; this->xfrm->offY = 0; this->xfrm->extX = 0; this->xfrm->extY = 0;
+
+			NSBinPptxRW::CXmlWriter oXlsxWriter(XMLWRITER_DOC_TYPE_XLSX);
+			this->toXmlWriter(&oXlsxWriter);		
+
+			sXmlDrawing.WriteString(oXlsxWriter.GetXmlString());
+			sXmlDrawing.WriteString(L"<xdr:clientData/></xdr:absoluteAnchor></xdr:wsDr>");
+
+			NSFile::CFileBinary::SaveToFile(sDrawingsPath + FILE_SEPARATOR_STR + L"drawing1.xml", sXmlDrawing.GetData());
+
+			std::wstring sDrawingRels = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n\
+<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
+<Relationship Target=\"../charts/chart1.xml\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart\" \
+Id=\"" + chartRec->id_data->ToString() + L"\"/></Relationships>";
+			
+			NSFile::CFileBinary::SaveToFile(sDrawingsPath + FILE_SEPARATOR_STR + L"drawing1.xml", sXmlDrawing.GetData());
+			NSFile::CFileBinary::SaveToFile(sDrawingsPath + FILE_SEPARATOR_STR + L"_rels" + FILE_SEPARATOR_STR + L"drawing1.xml.rels", sDrawingRels);
+
+//-----------------
+			std::wstring sChartSheet = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n\
+<chartsheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\">\
+<sheetPr/><sheetViews><sheetView showGridLines=\"0\" workbookViewId=\"0\"/></sheetViews><sheetData/><drawing r:id=\"rId1\"/></chartsheet>";
+			
+			std::wstring sChartSheetRels = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n\
+<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
+<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing\" Target=\"../drawings/drawing1.xml\"/>\
+</Relationships>";
 
 
+			NSFile::CFileBinary::SaveToFile(sChartSheetsPath + FILE_SEPARATOR_STR + L"sheet1.xml", sChartSheet);
+			NSFile::CFileBinary::SaveToFile(sChartSheetsPath + FILE_SEPARATOR_STR + L"_rels" + FILE_SEPARATOR_STR + L"sheet1.xml.rels", sChartSheetRels);
+//-----------------
+			std::wstring sWorkbookData;
+			NSFile::CFileBinary::ReadAllTextUtf8(sXlPath + FILE_SEPARATOR_STR + L"workbook.xml", sWorkbookData);
+
+			int pos = (int)sWorkbookData.find(L"<sheets>");
+			if (pos > 0)
+			{
+				pos += 8;//
+				std::wstring sNewWorkbookData = sWorkbookData.substr(0, pos) + 
+					L"<sheet name=\"Chart1\" sheetId=\"2\" state=\"visible\" r:id=\"csId1\"/>" + sWorkbookData.substr(pos);
+			
+				NSFile::CFileBinary::SaveToFile(sXlPath + FILE_SEPARATOR_STR + L"workbook.xml", sNewWorkbookData);
+			}
+			std::wstring sWorkbookRelsData;
+			NSFile::CFileBinary::ReadAllTextUtf8(sXlPath + FILE_SEPARATOR_STR + L"_rels" + FILE_SEPARATOR_STR + L"workbook.xml.rels", sWorkbookRelsData);
+			
+			pos = (int)sWorkbookRelsData.find(L"</Relationships>");
+			if (pos > 0)
+			{
+				std::wstring sNewWorkbookRelsData = sWorkbookRelsData.substr(0, pos) + 
+	L"<Relationship Id=\"csId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet\" \
+Target=\"chartsheets/sheet1.xml\"/>" + sWorkbookRelsData.substr(pos);
+			
+				NSFile::CFileBinary::SaveToFile(sXlPath + FILE_SEPARATOR_STR + L"_rels" + FILE_SEPARATOR_STR + L"workbook.xml.rels", sNewWorkbookRelsData);
+			}
+//-----------------
+			std::wstring sContentTypesData;
+			NSFile::CFileBinary::ReadAllTextUtf8(sUnpackedXlsx + FILE_SEPARATOR_STR + L"[Content_Types].xml", sContentTypesData);
+			
+			pos = (int)sContentTypesData.find(L"</Types>");
+			if (pos > 0)
+			{
+				std::wstring sNewContentTypesData = sContentTypesData.substr(0, pos) + 
+L"<Override PartName=\"/xl/chartsheets/sheet1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.chartsheet+xml\"/>\
+<Override PartName=\"/xl/charts/chart1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.drawingml.chart+xml\"/>\
+<Override PartName=\"/xl/drawings/drawing1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.drawing+xml\"/>"
+				+ sContentTypesData.substr(pos);
+				
+				NSFile::CFileBinary::SaveToFile(sUnpackedXlsx + FILE_SEPARATOR_STR + L"[Content_Types].xml", sNewContentTypesData);
+			}
+			pChart->m_oChartSpace.m_externalData = keepExternalData;
 //-------------------------------------------------------
 			std::wstring sPackedXlsx = sTempDirectory + FILE_SEPARATOR_STR + _T("xlsx_package.xlsx");
 

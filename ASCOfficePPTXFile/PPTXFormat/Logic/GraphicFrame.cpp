@@ -814,11 +814,11 @@ namespace PPTX
 			std::wstring sDrawingsPath		= sXlPath + FILE_SEPARATOR_STR + L"drawings";
 			std::wstring sChartSheetsPath	= sXlPath + FILE_SEPARATOR_STR + L"chartsheets";
 			
-			NSDirectory::CreateDirectoryW(sChartPath);
-			NSDirectory::CreateDirectoryW(sDrawingsPath);
-			NSDirectory::CreateDirectoryW(sDrawingsPath + FILE_SEPARATOR_STR + L"_rels");
-			NSDirectory::CreateDirectoryW(sChartSheetsPath);
-			NSDirectory::CreateDirectoryW(sChartSheetsPath + FILE_SEPARATOR_STR + L"_rels");
+            NSDirectory::CreateDirectory(sChartPath);
+            NSDirectory::CreateDirectory(sDrawingsPath);
+            NSDirectory::CreateDirectory(sDrawingsPath + FILE_SEPARATOR_STR + L"_rels");
+            NSDirectory::CreateDirectory(sChartSheetsPath);
+            NSDirectory::CreateDirectory(sChartSheetsPath + FILE_SEPARATOR_STR + L"_rels");
 
 			OOX::Spreadsheet::CT_ExternalData* keepExternalData = pChart->m_oChartSpace.m_externalData;
 			pChart->m_oChartSpace.m_externalData = NULL;

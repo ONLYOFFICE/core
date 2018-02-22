@@ -292,15 +292,15 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 {
 	if (m_arrElement == NULL) return false;
 
-    for (std::vector<OOX::WritingElement*>::iterator it = m_arrElement->m_arrItems.begin(); it != m_arrElement->m_arrItems.end(); ++it)
+	for (size_t i = 0; i < m_arrElement->m_arrItems.size(); i++ )
 	{
-		if ((*it) == NULL) continue;
+		if (m_arrElement->m_arrItems[i] == NULL) continue;
 
-		switch((*it)->getType())
+		switch(m_arrElement->m_arrItems[i]->getType())
 		{
 			case OOX::et_v_fill:
 			{
-				OOX::Vml::CFill* fill = dynamic_cast<OOX::Vml::CFill*>(*it); 
+				OOX::Vml::CFill* fill = dynamic_cast<OOX::Vml::CFill*>(m_arrElement->m_arrItems[i]); 
 				if (!fill) break;
 				
 				std::wstring srId = fill->m_sId.IsInit() ? fill->m_sId.get2() : L"" ;
@@ -376,7 +376,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 			}break;
 			case OOX::et_v_stroke:
 			{
-				OOX::Vml::CStroke* stroke = dynamic_cast<OOX::Vml::CStroke*>(*it); 
+				OOX::Vml::CStroke* stroke = dynamic_cast<OOX::Vml::CStroke*>(m_arrElement->m_arrItems[i]); 
 				if (!stroke) break;
 				pOutput->m_nLineDashing = stroke->m_oDahsStyle.GetValue(); //совпадают значения
 
@@ -385,7 +385,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 			}break;
 			case OOX::et_v_imagedata:
 			{
-				OOX::Vml::CImageData* image_data = dynamic_cast<OOX::Vml::CImageData*>(*it);
+				OOX::Vml::CImageData* image_data = dynamic_cast<OOX::Vml::CImageData*>(m_arrElement->m_arrItems[i]);
 				if (!image_data) break;
 
 				std::wstring srId = image_data->m_oId.IsInit() ? image_data->m_oId.get2() : L"" ;
@@ -464,7 +464,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 			}break;
 			case OOX::et_wd_wrap:
 			{
-				OOX::VmlWord::CWrap *wrap = dynamic_cast<OOX::VmlWord::CWrap*>(*it);
+				OOX::VmlWord::CWrap *wrap = dynamic_cast<OOX::VmlWord::CWrap*>(m_arrElement->m_arrItems[i]);
 
 				if (wrap->m_oType.IsInit() && pOutput->m_nZOrderRelative == PROP_DEF)
 				{
@@ -490,16 +490,15 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 			}break;
 			case OOX::et_v_textbox:
 			{
-				OOX::Vml::CTextbox *text_box= dynamic_cast<OOX::Vml::CTextbox*>(*it);
+				OOX::Vml::CTextbox *text_box= dynamic_cast<OOX::Vml::CTextbox*>(m_arrElement->m_arrItems[i]);
 
 				if ((text_box) && (text_box->m_oTxtbxContent.IsInit()))
 				{
 					OOXTextItemReader oTextItemReader;
 
-                    for (std::vector<OOX::WritingElement*>::iterator	it = text_box->m_oTxtbxContent->m_arrItems.begin();
-																	it != text_box->m_oTxtbxContent->m_arrItems.end(); ++it)
+					for (size_t i = 0; i < text_box->m_oTxtbxContent->m_arrItems.size(); i++)
 					{
-						oTextItemReader.Parse( *it, oParam );
+						oTextItemReader.Parse( text_box->m_oTxtbxContent->m_arrItems[i], oParam );
 					}
 
 					if( oTextItemReader.m_oTextItems->GetCount() > 0 )
@@ -508,7 +507,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 			}break;
 			case OOX::et_v_textpath:
 			{
-				OOX::Vml::CTextPath *text_path= dynamic_cast<OOX::Vml::CTextPath*>(*it);
+				OOX::Vml::CTextPath *text_path= dynamic_cast<OOX::Vml::CTextPath*>(m_arrElement->m_arrItems[i]);
 				if (text_path)
 				{
 					pOutput->m_bGtext = 1;
@@ -534,7 +533,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 			}break;
 			case OOX::et_o_signatureline:
 			{
-				OOX::VmlOffice::CSignatureLine *signature = dynamic_cast<OOX::VmlOffice::CSignatureLine*>(*it);
+				OOX::VmlOffice::CSignatureLine *signature = dynamic_cast<OOX::VmlOffice::CSignatureLine*>(m_arrElement->m_arrItems[i]);
 				if ( signature )
 				{
 					if (signature->m_oIsSignatureLine.IsInit() && signature->m_oIsSignatureLine->ToBool())
@@ -1414,12 +1413,21 @@ bool OOXShapeReader::ParsePic( ReaderParameter oParam, RtfShapePtr& pOutput)
                 sOlePath= pOleFile->filename().GetPath();
 			}
 		}
+
 		if (pOutput->m_pOleObject->m_nWidth == PROP_DEF)
 		{
+			if (pOutput->m_nWidth == PROP_DEF)
+			{
+				pOutput->m_nWidth = pOutput->m_nRight - pOutput->m_nLeft;
+			}
 			pOutput->m_pOleObject->m_nWidth = pOutput->m_nWidth;
 		}		
 		if (pOutput->m_pOleObject->m_nHeight == PROP_DEF)
 		{
+			if (pOutput->m_nHeight == PROP_DEF)
+			{
+				pOutput->m_nHeight = pOutput->m_nBottom - pOutput->m_nTop;
+			}
 			pOutput->m_pOleObject->m_nHeight = pOutput->m_nHeight;
 		}
 		if (!sOlePath.empty())

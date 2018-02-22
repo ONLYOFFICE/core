@@ -449,8 +449,14 @@ public:
 
 		Size = stream.Tell() - 1;
 		stream.WriteBytes(other, 9);
+		Size = stream.Tell() - 1;
+
 		//padding ???
 
+		char padding[8];
+		memset(padding, 0, 8);
+
+		stream.WriteBytes(padding, (Size / 8 + 1 ) * 8 - Size);
 		Size = stream.Tell() - 1;
 	}
 	ObjectHeader				Header;

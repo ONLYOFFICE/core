@@ -94,12 +94,11 @@ std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 		RenderParameter oNewRenderParameter = oRenderParameter;
 		oNewRenderParameter.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2;
 
-		if (m_oResultPicRead)
+		if (m_oResultShape)
 		{
-			//object without shape - 000195_65276158fedb94v8tebc20.rtf
-			sResult += m_oResultPicRead->RenderToOOX(oNewRenderParameter);
+			sResult += m_oResultShape->RenderToOOX(oNewRenderParameter);
 
-			oNewRenderParameter.nValue = m_oResultPicRead->m_nID;
+			oNewRenderParameter.nValue = m_oResultShape->m_nID;
 		}
 		sResult += RenderToOOXOnlyOle(oNewRenderParameter);
 
@@ -171,7 +170,7 @@ std::wstring RtfOle::RenderToRtf(RenderParameter oRenderParameter)
 			case ot_link:	sResult += L"\\objlink";	break;
 		}
 	}
-	sResult += L"\\f13";
+	//sResult += L"\\f13";
 	sResult += L"\\objsetsize";
 
 	RENDER_RTF_INT( m_nWidth, sResult, L"objw" );
@@ -185,12 +184,17 @@ std::wstring RtfOle::RenderToRtf(RenderParameter oRenderParameter)
         std::wstring str = RtfUtility::RtfInternalEncoder::Encode( m_sOleFilename );
         sResult += L"{\\*\\objdata " + str + L"}";
     }
-	if( NULL != m_oResultPicWrite )
+//-------------------------------------
+	if( NULL != m_oResultShape )
 	{
-        std::wstring str = m_oResultPicWrite->RenderToRtf( oRenderParameter );
-        //sResult += L"{\\result \\pard\\plain" + str + L"}";
-		sResult += L"{\\result {\\*\\shppict" + str  + L"}}";
+        std::wstring str = m_oResultShape->RenderToRtf( oRenderParameter );
+		sResult += L"{\\result {\\pard\\plain" + str + L"}}";
 	}
+	//else if( NULL != m_oResultPicture )
+	//{
+	//		std::wstring str = m_oResultPicture->RenderToRtf( oRenderParameter );
+	//		sResult += L"{\\result {\\*\\shppict" + str  + L"}}";
+	//}
 	sResult += L"}";
 	return sResult;
 }

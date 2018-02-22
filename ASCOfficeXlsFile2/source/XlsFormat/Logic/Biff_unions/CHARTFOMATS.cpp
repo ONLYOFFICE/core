@@ -237,6 +237,10 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 		count--;
 	}
+	if (!m_CrtLayout12A && proc.optional<CrtLayout12A>()) // RP_2064.xls
+	{
+		m_CrtLayout12A = elements_.back();		elements_.pop_back();
+	}
 	if (proc.optional<CRTMLFRT>())
 	{
 		elements_.pop_back();

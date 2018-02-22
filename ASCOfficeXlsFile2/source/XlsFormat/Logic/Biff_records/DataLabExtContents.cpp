@@ -31,7 +31,7 @@
  */
 
 #include "DataLabExtContents.h"
-#include <Logic/Biff_structures/FrtHeader.h>
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {

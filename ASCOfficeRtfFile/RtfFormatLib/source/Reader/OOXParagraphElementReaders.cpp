@@ -622,16 +622,15 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				
 			if (pNewShape->m_bIsOle && pNewShape->m_pOleObject)
 			{
-                TextItemContainerPtr oNewTextItemContainer ( new TextItemContainer() );
-                RtfParagraphPtr pNewPar ( new RtfParagraph() );
+				if (ooxObject->m_oDxaOrig.IsInit())	pNewShape->m_pOleObject->m_nWidth = *ooxObject->m_oDxaOrig;
+				if (ooxObject->m_oDyaOrig.IsInit())	pNewShape->m_pOleObject->m_nHeight = *ooxObject->m_oDyaOrig;
 
-                pNewPar->AddItem( pNewShape->m_pOleObject );
-                oNewTextItemContainer->AddItem( pNewPar );
-                pNewShape->m_aTextItems = oNewTextItemContainer;
-
-				pNewShape->m_pOleObject->m_oResultPicWrite = pNewShape->m_oPicture;				
+				pNewShape->m_pOleObject->m_oResultShape = pNewShape;				
+ 				
+				oOutputParagraph.AddItem( pNewShape->m_pOleObject );
 			}
-			oOutputParagraph.AddItem( pNewShape );
+			else
+				oOutputParagraph.AddItem( pNewShape );
 		}break;
 		case OOX::et_w_drawing:
 		{
@@ -649,17 +648,12 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 			{
 				if (pNewDrawing->m_bIsOle && pNewDrawing->m_pOleObject)
 				{
-	                TextItemContainerPtr oNewTextItemContainer ( new TextItemContainer() );
-					RtfParagraphPtr pNewPar ( new RtfParagraph() );
+					pNewDrawing->m_pOleObject->m_oResultShape = pNewDrawing;
 
-					pNewPar->AddItem( pNewDrawing->m_pOleObject );
-					oNewTextItemContainer->AddItem( pNewPar );
-					pNewDrawing->m_aTextItems = oNewTextItemContainer;
-
-					pNewDrawing->m_pOleObject->m_oResultPicWrite = pNewDrawing->m_oPicture;				
+					oOutputParagraph.AddItem( pNewDrawing->m_pOleObject );
 				}
-
-				oOutputParagraph.AddItem( pNewDrawing );
+				else
+					oOutputParagraph.AddItem( pNewDrawing );
 				bAddDrawing = true;
 			}
 			if (!bAddDrawing)

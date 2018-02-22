@@ -151,6 +151,11 @@ namespace PPTX
 				m_bData = false;
 				ReadAttributes( oReader );
 				FillParentPointersForChilds();
+				
+				if (id_data.IsInit())
+				{
+					m_bData = true;
+				}
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
@@ -158,6 +163,11 @@ namespace PPTX
 
 				node.ReadAttributeBase(L"r:id", id_data);
 				FillParentPointersForChilds();
+
+				if (id_data.IsInit())
+				{
+					m_bData = true;
+				}
 			}
 			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;

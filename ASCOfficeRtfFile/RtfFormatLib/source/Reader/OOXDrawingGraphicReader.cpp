@@ -56,8 +56,7 @@ int OOXGraphicReader::Parse( ReaderParameter oParam , RtfShapePtr & pOutput)
 	if (m_ooxGraphic->chartRec.IsInit())
 	{
 		//сгенерим ole (olePic)
-		std::wstring sOleFileName = L"oleObject" + std::to_wstring(++oParam.oReader->m_nCurOleChartId) + L".bin";
-		m_ooxGraphic->ChartToOlePackageInStorage(oParam.oReader->m_currentContainer, oParam.oReader->m_sTempFolder, sOleFileName);
+		m_ooxGraphic->ChartToOlePackageInStorage(oParam.oReader->m_currentContainer, oParam.oReader->m_sTempFolder, ++oParam.oReader->m_nCurOleChartId);
 	}
 	if (m_ooxGraphic->olePic.IsInit())
 	{

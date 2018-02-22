@@ -35,6 +35,7 @@
 #include "../fontengine/ApplicationFonts.h"
 #include "../graphics/GraphicsRenderer.h"
 #include "../common/File.h"
+#include "../common/Directory.h"
 #include "../graphics/Timer.h"
 #include "../common/StringBuilder.h"
 
@@ -272,7 +273,7 @@ namespace NSCommon
         }
     };
 
-    void SaveAllFontsJS(CApplicationFonts& applicationFonts, std::wstring strFile, std::wstring strFolderThumbnails, std::wstring strFontSelectionBin)
+    void SaveAllFontsJS(CApplicationFonts& applicationFonts, std::wstring strFile, std::wstring strFile2, std::wstring strFolderThumbnails, std::wstring strFontSelectionBin, std::wstring strOutputDir)
     {
         CArray<CFontInfo*>* pList = applicationFonts.GetList()->GetFonts();
         int nCount = pList->GetCount();
@@ -480,6 +481,8 @@ namespace NSCommon
                         }
                     }
 
+                    std::wstring sFontName = pPair->second.m_sName;
+
                     if (bIsSymbol)
                     {
                         CFontSelectFormat oSelectFormat;
@@ -490,7 +493,26 @@ namespace NSCommon
                         {
                             pManager->LoadFontFromFile(pInfoCur->m_wsFontPath, 0, 14, dDpi, dDpi);
                         }
-                        oRenderer.put_FontPath(pInfoCur->m_wsFontPath);
+                        oRenderer.put_FontPath(pInfoCur->m_wsFontPath);                        
+                    }
+                    else
+                    {
+                        CFontFile* pFontCheck = pManager->m_pFont;
+
+                        int nCMapIndex = 0;
+                        int unGID = pFontCheck->SetCMapForCharCode(sFontName.at(0), &nCMapIndex);
+                        if (unGID <= 0)
+                        {
+                            CFontSelectFormat oSelectFormat;
+                            oSelectFormat.wsName = new std::wstring(L"Arial");
+                            CFontInfo* pInfoCur = pManager->GetFontInfoByParams(oSelectFormat);
+
+                            if (NULL != pInfoCur)
+                            {
+                                pManager->LoadFontFromFile(pInfoCur->m_wsFontPath, 0, 14, dDpi, dDpi);
+                            }
+                            oRenderer.put_FontPath(pInfoCur->m_wsFontPath);
+                        }
                     }
 
                     oRenderer.put_FontStringGID(FALSE);
@@ -516,42 +538,100 @@ namespace NSCommon
         // все объекты, которые позволят не знать о существующих фонтах
         if (0 != strFile.length())
         {
+            bool bIsDumpAllFontWeb = (strFile2.empty() || strOutputDir.empty()) ? false : true;
+
+            BYTE correct16[16] = {0xA0, 0x66, 0xD6, 0x20, 0x14, 0x96, 0x47, 0xfa, 0x95, 0x69, 0xB8, 0x50, 0xB0, 0x41, 0x49, 0x48};
+            int nCountIdSymbols = (nCountFonts >= 1000) ? 4 : 3;
+            BYTE encode[32];
+
             NSStringUtils::CStringBuilder oWriterJS;
+            NSStringUtils::CStringBuilder oWriterJS2;
 
             // сначала все файлы
             size_t nCountFiles = mapFontFiles.size();
             if (nCountFiles == 0)
+            {
                 oWriterJS += (L"window[\"__fonts_files\"] = []; \n\n");
+                oWriterJS2 += (L"window[\"__fonts_files\"] = []; \n\n");
+            }
             else
             {
                 std::wstring* pMassFiles = new std::wstring[nCountFiles];
+                std::wstring* pMassFiles2 = new std::wstring[nCountFiles];
+
+                int nCurrentId = 0;
                 for ( std::map<std::wstring, LONG>::iterator pos = mapFontFiles.begin(); pos != mapFontFiles.end(); ++pos)
                 {
                     std::wstring strFontId = pos->first;
 
                     NSStringUtils::string_replace(strFontId, L"\\\\", L"\\");
-                    NSStringUtils::string_replace(strFontId, L"/", L"\\");
-
-                    int nStart = strFontId.find_last_of(wchar_t('\\'));
-                    strFontId = strFontId.substr(nStart + 1);
+                    NSStringUtils::string_replace(strFontId, L"\\", L"/");
 
                     pMassFiles[pos->second] = strFontId;
+
+                    if (bIsDumpAllFontWeb)
+                    {
+                        std::wstring sId = std::to_wstring(nCurrentId++);
+                        int nLenId = (int)sId.length();
+                        while (nLenId < nCountIdSymbols)
+                        {
+                            sId = L"0" + sId;
+                            ++nLenId;
+                        }
+
+                        pMassFiles2[pos->second] = sId;
+                        NSFile::CFileBinary::Copy(strFontId, strOutputDir + L"/" + sId);
+
+                        NSFile::CFileBinary oFileDst;
+                        if (oFileDst.OpenFile(strOutputDir + L"/" + sId, true))
+                        {
+                            DWORD dwRead = (DWORD)(oFileDst.GetFileSize());
+                            if (dwRead > 32)
+                                dwRead = 32;
+
+                            DWORD dwWorked = 0;
+                            oFileDst.SeekFile(0);
+                            oFileDst.ReadFile(encode, dwRead, dwWorked);
+
+                            for (DWORD k = 0; k < dwRead; ++k)
+                                encode[k] ^= correct16[k & 0x0F];
+
+                            oFileDst.SeekFile(0);
+                            oFileDst.WriteFile(encode, dwRead);
+                            oFileDst.CloseFile();
+                        }
+                    }
                 }
 
                 oWriterJS += (L"window[\"__fonts_files\"] = [\n");
+                oWriterJS2 += (L"window[\"__fonts_files\"] = [\n");
                 for (size_t nIndex = 0; nIndex < nCountFiles; ++nIndex)
                 {
                     oWriterJS += (L"\"");
+                    oWriterJS2 += (L"\"");
+
                     oWriterJS += (pMassFiles[nIndex]);
+                    oWriterJS2 += (pMassFiles2[nIndex]);
+
                     if (nIndex != (nCountFiles - 1))
+                    {
                         oWriterJS += (L"\",\n");
+                        oWriterJS2 += (L"\",\n");
+                    }
                     else
+                    {
                         oWriterJS += (L"\"");
+                        oWriterJS2 += (L"\"");
+                    }
                 }
                 oWriterJS += (L"\n];\n\n");
+                oWriterJS2 += (L"\n];\n\n");
 
                 delete [] pMassFiles;
+                delete [] pMassFiles2;
             }
+
+            size_t nPosForWriter2 = oWriterJS.GetCurSize();
 
             oWriterJS += L"window[\"__fonts_infos\"] = [\n";
 
@@ -890,6 +970,16 @@ namespace NSCommon
             oFile.CreateFileW(strFile);
             oFile.WriteStringUTF8(oWriterJS.GetData(), true);
             oFile.CloseFile();
+
+            if (bIsDumpAllFontWeb)
+            {
+                oWriterJS2.Write(oWriterJS, nPosForWriter2);
+
+                NSFile::CFileBinary oFile2;
+                oFile2.CreateFileW(strFile2);
+                oFile2.WriteStringUTF8(oWriterJS2.GetData(), true);
+                oFile2.CloseFile();
+            }
         }
 
         if (0 != strFontSelectionBin.length())
@@ -1104,89 +1194,136 @@ namespace NSCommon
 #endif
 }
 
+std::wstring CorrectDir(const std::wstring& sDir)
+{
+    if (sDir.empty())
+        return L"";
+
+    const wchar_t* data = sDir.c_str();
+
+    std::wstring::size_type pos1 = (data[0] == '\"') ? 1 : 0;
+    std::wstring::size_type pos2 = sDir.length();
+
+    if (data[pos2 - 1] == '\"')
+        --pos2;
+
+    if (pos2 > 0 && ((data[pos2 - 1] == '\\') || (data[pos2 - 1] == '/')))
+        --pos2;
+
+    return sDir.substr(pos1, pos2 - pos1);
+}
+
 #ifdef WIN32
 int wmain(int argc, wchar_t** argv)
 #else
 int main(int argc, char** argv)
 #endif
 {
-#if 0
-    char buf[10];
-    wcout << "[\n";
-    wcout << itoa(argc, buf, 10) << "\n";
+    std::vector<std::wstring> arFontsDirs;
+    bool bIsUseSystemFonts = false;
+    std::wstring strAllFontsWebPath = L"";
+    std::wstring strAllFontsPath = L"";
+    std::wstring strThumbnailsFolder = L"";
+    std::wstring strFontsSelectionBin = L"";
+    std::wstring strOutputDir = L"";
 
     for (int i = 0; i < argc; ++i)
-        wcout << argv[i] << "\n";
-
-    wcout << "]";
-#endif
-
-#if 1
-
+    {
 #ifdef WIN32
-    std::wstring strFontsFolder = L"";
-    if (1 < argc)
-        strFontsFolder = std::wstring(argv[1]);
-    std::wstring strAllFontsJSPath = L"";
-    if (2 < argc)
-        strAllFontsJSPath = std::wstring(argv[2]);
-    std::wstring strThumbnailsFolder = L"";
-    if (3 < argc)
-        strThumbnailsFolder = std::wstring(argv[3]);
-    std::wstring strFontsSelectionBin = L"";
-    if (4 < argc)
-        strFontsSelectionBin = std::wstring(argv[4]);
+        std::wstring sParam(argv[i]);
 #else
-    std::wstring strFontsFolder = L"";
-    if (1 < argc)
-        strFontsFolder = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)argv[1], (LONG)strlen(argv[1]));
-    std::wstring strAllFontsJSPath = L"";
-    if (2 < argc)
-        strAllFontsJSPath = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)argv[2], (LONG)strlen(argv[2]));
-    std::wstring strThumbnailsFolder = L"";
-    if (3 < argc)
-        strThumbnailsFolder = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)argv[3], (LONG)strlen(argv[3]));
-    std::wstring strFontsSelectionBin = L"";
-    if (4 < argc)
-        strFontsSelectionBin = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)argv[4], (LONG)strlen(argv[4]));
+        std::string sParamA(argv[i]);
+        std::wstring sParam = UTF8_TO_U(sParamA);
 #endif
 
-#endif
+        if (sParam.find(L"--") == 0)
+        {
+            std::wstring sKey = L"";
+            std::wstring sValue = L"";
 
-#if 0
+            std::wstring::size_type _pos = sParam.find('=');
+            if (std::wstring::npos == _pos)
+            {
+                sKey = sParam;
+            }
+            else
+            {
+                sKey = sParam.substr(0, _pos);
+                sValue = sParam.substr(_pos + 1);
+            }
 
-#ifdef WIN32
-    //std::wstring strFontsFolder = L"C:/Windows/Fonts";
-    strFontsFolder = L"D:/activex/AVS/Sources/TeamlabOffice/trunk/OfficeWeb/Fonts/native";
-    strAllFontsJSPath = L"D:/AllFontsGenTest/AllFonts.js";
-    strThumbnailsFolder = L"D:/AllFontsGenTest";
-    strFontsSelectionBin = L"D:/AllFontsGenTest/font_selection.bin";
-#endif
+            if (sKey == L"--use-system")
+            {
+                if (sValue == L"1" || sValue == L"true")
+                    bIsUseSystemFonts = true;
+            }
+            else if (sKey == L"--allfonts-web")
+            {
+                strAllFontsWebPath = CorrectDir(sValue);
+            }
+            else if (sKey == L"--allfonts")
+            {
+                strAllFontsPath = CorrectDir(sValue);
+            }
+            else if (sKey == L"--images")
+            {
+                strThumbnailsFolder = CorrectDir(sValue);
+            }
+            else if (sKey == L"--selection")
+            {
+                strFontsSelectionBin = CorrectDir(sValue);
+            }
+            else if (sKey == L"--input")
+            {
+                const wchar_t* src = sValue.c_str();
+                const wchar_t* limit = src + sValue.length();
 
-#if defined(_LINUX) && !defined(_MAC)
-    strFontsFolder = L"";
-    strAllFontsJSPath = L"/home/oleg/AllFontsGen/AllFonts.js";
-    strThumbnailsFolder = L"/home/oleg/AllFontsGen/";
-    strFontsSelectionBin = L"/home/oleg/AllFontsGen/font_selection.bin";
-#endif
+                const wchar_t* srcPrev = src;
+                while (src < limit)
+                {
+                    if (*src == ';')
+                    {
+                        if (srcPrev != src)
+                        {
+                            arFontsDirs.push_back(std::wstring(srcPrev, src - srcPrev));
+                        }
+                        src++;
+                        srcPrev = src;
+                    }
+                    else
+                        src++;
+                }
 
-#ifdef _MAC
-    strFontsFolder = L"";
-    strAllFontsJSPath = L"/Users/Oleg/Desktop/activex/AllFonts.js";
-    strThumbnailsFolder = L"/Users/Oleg/Desktop/activex/";
-    strFontsSelectionBin = L"/Users/Oleg/Desktop/activex/font_selection.bin";
-#endif
+                if (src > srcPrev)
+                {
+                    arFontsDirs.push_back(std::wstring(srcPrev, src - srcPrev));
+                }
+            }
+            else if (sKey == L"--output-web")
+            {
+                strOutputDir = CorrectDir(sValue);
+            }
+        }
+    }
 
-#endif
+    /*
+    --input="D:\OO_FONTS" --allfonts="D:\123\gen\AllFonts.js" --allfonts-web="D:\123\gen\AllFonts2.js" --images="D:\123\gen" --selection="D:\123\gen\font_selection.bin" --output-web="D:\123" --use-system="true"
+    */
 
     CApplicationFonts oApplicationF;
 
-    if (strFontsFolder.length() != 0)
-        oApplicationF.InitializeFromFolder(strFontsFolder, false);
-    else
-        oApplicationF.Initialize(false);
+    std::vector<std::wstring> arFontFiles;
+    if (bIsUseSystemFonts)
+        arFontFiles = oApplicationF.GetSetupFontFiles();
 
-    NSCommon::SaveAllFontsJS(oApplicationF, strAllFontsJSPath, strThumbnailsFolder, strFontsSelectionBin);
+    for (std::vector<std::wstring>::iterator i = arFontsDirs.begin(); i != arFontsDirs.end(); i++)
+    {
+        NSDirectory::GetFiles2(*i, arFontFiles, true);
+    }
+
+    oApplicationF.InitializeFromArrayFiles(arFontFiles, 3);
+
+    NSCommon::SaveAllFontsJS(oApplicationF, strAllFontsPath, strAllFontsWebPath, strThumbnailsFolder, strFontsSelectionBin, strOutputDir);
 
 #ifdef _GENERATE_FONT_MAP_
 

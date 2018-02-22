@@ -411,9 +411,9 @@ namespace NSStringUtils
 			return m_lSize;
 		}
 
-		inline void Write(CStringBuilder& oWriter)
+		inline void Write(CStringBuilder& oWriter, const size_t& offset = 0)
 		{
-			WriteString(oWriter.m_pData, oWriter.m_lSizeCur);
+			WriteString(oWriter.m_pData + offset, oWriter.m_lSizeCur - offset);
 		}
 
 		inline void Clear()

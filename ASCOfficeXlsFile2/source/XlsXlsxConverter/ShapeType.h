@@ -349,7 +349,7 @@ namespace oox
         //case msosptLeftRightArrowCallout : 	return L"leftRightArrowCallout";
         //case msosptUpDownArrowCallout : 		return L"upDownArrowCallout";
         //case msosptQuadArrowCallout : 		return L"quadArrowCallout";
-        //case msosptBevel : 					return L"bevel";
+        case msosptBevel : 						return L"bevel";
         //case msosptLeftBracket : 				return L"leftBracket";
         //case msosptRightBracket : 			return L"rightBracket";
         //case msosptLeftBrace : 				return L"leftBrace";

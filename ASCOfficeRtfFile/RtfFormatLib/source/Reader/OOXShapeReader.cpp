@@ -31,6 +31,8 @@
  */
 #include "OOXShapeReader.h"
 #include "OOXTextItemReader.h"
+#include "../Ole1FormatReader.h"
+#include "../RtfOle.h"
 
 #include "../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/Shape.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTree.h"
@@ -44,7 +46,7 @@
     #define RGB(r,g,b) ((_UINT32)(((BYTE)(r)|((_UINT16)((BYTE)(g))<<8))|(((_UINT32)(BYTE)(b))<<16)))
 #endif
 
-bool ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop)
+bool OOXShapeReader::ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop)
 {
 	if (pShape == NULL)	return false;
 	if (prop == NULL)	return false;
@@ -316,7 +318,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 						std::wstring sImagePath = pImage->filename().GetPath();
 
 						pOutput->m_oPicture = RtfPicturePtr( new RtfPicture() );
-						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sPath );
+						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sTempFolder );
 
 						pOutput->m_nFillType = 2;
 					}
@@ -402,7 +404,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 						std::wstring sImagePath = pImage->filename().GetPath();
 						
-						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sPath );
+						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sTempFolder );
 					}
 				}
 				int nCropedWidthGoal = pOutput->m_oPicture->m_nWidthGoal;
@@ -738,7 +740,7 @@ bool OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 				OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 
 				std::wstring sImagePath = pImage->filename().GetPath();
-				result = WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sPath);
+				result = WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sTempFolder);
 			}
 		}
 		else if (oox_bitmap_fill->blip->link.IsInit())
@@ -1344,6 +1346,16 @@ bool OOXShapeReader::ParsePic( ReaderParameter oParam, RtfShapePtr& pOutput)
 	
 	Parse(oParam, pOutput, &ooxPic->blipFill);
 
+	if (pOutput->m_oPicture->m_sPicFilename.empty() && !ooxPic->blipFill.blip->oleFilepathImage.empty())
+	{
+		pOutput->m_oPicture->eDataType = RtfPicture::dt_png;
+		pOutput->m_oPicture->m_sPicFilename = ooxPic->blipFill.blip->oleFilepathImage;
+		pOutput->m_oPicture->m_bIsCopy = false; //не удалять
+
+		pOutput->m_oPicture->m_nWidthGoal = pOutput->m_nWidth;
+		pOutput->m_oPicture->m_nHeightGoal = pOutput->m_nHeight;
+	}
+
 	if ((oox_sp_style) && (oox_sp_style->lnRef.idx.IsInit()))
 	{
 		Parse(oParam, pOutput, &oox_sp_style->lnRef, 2);
@@ -1364,6 +1376,63 @@ bool OOXShapeReader::ParsePic( ReaderParameter oParam, RtfShapePtr& pOutput)
 			pOutput->m_oPicture->m_dScaleY = (pOutput->m_nBottom - pOutput->m_nTop)* 100. / pOutput->m_oPicture->m_nHeightGoal;
 		}
 	}
+
+	if (ooxPic->oleObject.IsInit())
+	{
+		pOutput->m_bIsOle		= true;									
+		pOutput->m_pOleObject	= RtfOlePtr(new RtfOle());
+		
+		if (ooxPic->oleObject->m_oDxaOrig.IsInit())
+			pOutput->m_pOleObject->m_nWidth = *ooxPic->oleObject->m_oDxaOrig;
+		
+		if (ooxPic->oleObject->m_oDyaOrig.IsInit())
+			pOutput->m_pOleObject->m_nHeight = *ooxPic->oleObject->m_oDyaOrig; 
+	
+		if (ooxPic->oleObject->m_sProgId.IsInit() )
+			pOutput->m_pOleObject->m_sOleClass = *ooxPic->oleObject->m_sProgId;
+		
+		if (ooxPic->oleObject->m_oType.IsInit())
+		{
+			switch( ooxPic->oleObject->m_oType->GetBYTECode())
+			{
+				case SimpleTypes::oletypeLink: 	pOutput->m_pOleObject->m_eOleType = RtfOle::ot_link;	break;
+				case SimpleTypes::oletypeEmbed: pOutput->m_pOleObject->m_eOleType = RtfOle::ot_emb;		break;
+			}
+		}
+		std::wstring sOlePath;
+		if (ooxPic->oleObject->m_OleObjectFile.IsInit())
+		{
+			sOlePath = ooxPic->oleObject->m_OleObjectFile->filename().GetPath();
+		}
+		else if(ooxPic->oleObject->m_oId.IsInit() && oParam.oReader->m_currentContainer)
+		{
+			smart_ptr<OOX::File>		pFile		= oParam.oReader->m_currentContainer->Find(*ooxPic->oleObject->m_oId);			
+			smart_ptr<OOX::OleObject>	pOleFile	= pFile.smart_dynamic_cast<OOX::OleObject>();
+			
+			if (pOleFile.IsInit())
+			{
+                sOlePath= pOleFile->filename().GetPath();
+			}
+		}
+		if (pOutput->m_pOleObject->m_nWidth == PROP_DEF)
+		{
+			pOutput->m_pOleObject->m_nWidth = pOutput->m_nWidth;
+		}		
+		if (pOutput->m_pOleObject->m_nHeight == PROP_DEF)
+		{
+			pOutput->m_pOleObject->m_nHeight = pOutput->m_nHeight;
+		}
+		if (!sOlePath.empty())
+		{
+			ConvertOle2ToOle1(sOlePath, pOutput->m_pOleObject);
+	
+			std::wstring ole1FileName = Utils::CreateTempFile( oParam.oReader->m_sTempFolder );
+				
+			RtfUtility::WriteDataToFileBinary( ole1FileName, pOutput->m_pOleObject->m_oOle1Data.first.get(), pOutput->m_pOleObject->m_oOle1Data.second );
+
+			pOutput->m_pOleObject->SetFilename(ole1FileName);
+		}
+	}
 	return true;		
 }
 bool OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput)
@@ -1377,16 +1446,75 @@ bool OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput)
 
 	if (m_vmlElement ||  m_arrElement)	return ParseVml(oParam , pOutput);
 
-	PPTX::Logic::Shape	* ooxShape	= dynamic_cast<PPTX::Logic::Shape*>	(m_ooxShape);
-//	PPTX::Logic::CxnSp	* cxnShape	= dynamic_cast<PPTX::Logic::CxnSp*>	(m_ooxShape);
-	PPTX::Logic::Pic	* ooxPic	= dynamic_cast<PPTX::Logic::Pic*>	(m_ooxShape);
+	PPTX::Logic::Shape	*ooxShape	= dynamic_cast<PPTX::Logic::Shape*>	(m_ooxShape);
+//	PPTX::Logic::CxnSp	*cxnShape	= dynamic_cast<PPTX::Logic::CxnSp*>	(m_ooxShape);
+	PPTX::Logic::Pic	*ooxPic		= dynamic_cast<PPTX::Logic::Pic*>	(m_ooxShape);
+	
+	OOX::VmlOffice::COLEObject	*vmlOLE = dynamic_cast<OOX::VmlOffice::COLEObject*>	(m_ooxShape);
 
 	if (ooxShape)	return ParseShape(oParam, pOutput);
 	if (ooxPic)		return ParsePic(oParam, pOutput);
 	//if (cxnShape)	return ParseConnector(oParam, pOutput);
+	
+	if (vmlOLE)		return ParseVmlObject(oParam, pOutput);
 
 	return false;
 }
+bool OOXShapeReader::ParseVmlObject	( ReaderParameter oParam , RtfShapePtr& pOutput)
+{
+	OOX::VmlOffice::COLEObject	*vmlOLE = dynamic_cast<OOX::VmlOffice::COLEObject*>	(m_ooxShape);
+	if (!vmlOLE) return false;
+
+	pOutput->m_bIsOle		= true;									
+	pOutput->m_pOleObject	= RtfOlePtr(new RtfOle());
+
+	if( vmlOLE->m_sProgId.IsInit() )
+		pOutput->m_pOleObject->m_sOleClass = vmlOLE->m_sProgId.get2();
+	
+	if(vmlOLE->m_oType.IsInit())
+	{
+		switch( vmlOLE->m_oType->GetValue())
+		{
+			case SimpleTypes::oletypeLink: 	pOutput->m_pOleObject->m_eOleType = RtfOle::ot_link;	break;
+			case SimpleTypes::oletypeEmbed: pOutput->m_pOleObject->m_eOleType = RtfOle::ot_emb;	break;
+		}
+	}
+	std::wstring sOlePath;
+	if (vmlOLE->m_oId.IsInit() && oParam.oReader->m_currentContainer)
+	{
+		smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(vmlOLE->m_oId->GetValue());
+	
+		if ((oFile.IsInit() && (OOX::FileTypes::OleObject == oFile->type())))
+		{
+			OOX::OleObject* pO = (OOX::OleObject*)oFile.operator->();
+			sOlePath = pO->filename().m_strFilename;
+		}
+	}
+	if (pOutput->m_nWidth == PROP_DEF && pOutput->m_nRight != PROP_DEF)
+	{
+		pOutput->m_nWidth = pOutput->m_nRight - (pOutput->m_nLeft == PROP_DEF ? 0 : pOutput->m_nLeft);
+	}
+	if (pOutput->m_nHeight == PROP_DEF && pOutput->m_nBottom != PROP_DEF)
+	{
+		pOutput->m_nHeight = pOutput->m_nBottom - (pOutput->m_nTop == PROP_DEF ? 0 : pOutput->m_nTop);
+	}
+
+	if (pOutput->m_nWidth != PROP_DEF)	pOutput->m_pOleObject->m_nWidth = pOutput->m_nWidth;
+	if (pOutput->m_nHeight != PROP_DEF)	pOutput->m_pOleObject->m_nHeight = pOutput->m_nHeight;
+
+	if (!sOlePath.empty())
+	{
+		ConvertOle2ToOle1(sOlePath, pOutput->m_pOleObject);
+		
+		std::wstring ole1FileName = Utils::CreateTempFile( oParam.oReader->m_sTempFolder );
+			
+		RtfUtility::WriteDataToFileBinary( ole1FileName, pOutput->m_pOleObject->m_oOle1Data.first.get(), pOutput->m_pOleObject->m_oOle1Data.second );
+
+		pOutput->m_pOleObject->SetFilename(ole1FileName);
+	}
+	return true;
+}
+
 void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::UniFill *oox_fill, std::wstring *change_sheme_color)
 {
 	if (!oox_fill) return;
@@ -1906,6 +2034,7 @@ bool OOXBackgroundReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 	}
 	return true;
 }
+
 bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput, std::wstring sTempPath)
 {
 	OOX::CPath ooxPath = sPath;	//для target 
@@ -2050,5 +2179,93 @@ void OOXShapeReader::Parse(ReaderParameter oParam, PPTX::Logic::UniFill *uni_fil
 		{
 			Parse(oParam, fill->GsLst[0].color.Color.operator ->(), nColor, opacity);
 		}		
+	}
+}
+void OOXShapeReader::ConvertOle2ToOle1(const std::wstring &oleFilePath, RtfOlePtr object)
+{
+	if (!object) return;
+	if (oleFilePath.empty()) return;
+
+	Ole1FormatReaderWriter ole1Writer;
+	
+	ole1Writer.Header.ClassName.val = std::string(object->m_sOleClass.begin(), object->m_sOleClass.end());
+	ole1Writer.Header.ClassName.size = ole1Writer.Header.ClassName.val.length() + 1;
+
+	//ole1Writer.Header.Width	= object->m_nWidth;
+	//ole1Writer.Header.Height = object->m_nHeight;
+
+	DWORD size = 0;
+	if (false == NSFile::CFileBinary::ReadAllBytes(oleFilePath, &ole1Writer.NativeData, size))
+		return;
+	ole1Writer.NativeDataSize = size;
+
+	int		ole1DataSize = ole1Writer.NativeDataSize + 2048;
+	BYTE*	ole1Data = new BYTE[ole1DataSize];
+
+	if (ole1Data)
+	{	
+		ole1Writer.Write(ole1Data, ole1DataSize);
+
+		boost::shared_array<BYTE> buffer(ole1Data);
+		object->m_oOle1Data = std::make_pair(buffer, ole1DataSize);
+	}
+	delete []ole1Writer.NativeData;
+}
+
+void OOXShapeReader::ConvertOle2ToOle1(POLE::Storage *storage, RtfOlePtr object)
+{
+	if (!object) return;
+	if (!storage) return;
+
+	Ole1FormatReaderWriter ole1Writer;
+	
+	ole1Writer.Header.ClassName.val = std::string(object->m_sOleClass.begin(), object->m_sOleClass.end());
+	ole1Writer.Header.ClassName.size = ole1Writer.Header.ClassName.val.length();
+
+	//ole1Writer.Header.Width	= object->m_nWidth;
+	//ole1Writer.Header.Height = object->m_nHeight;
+
+	std::list<std::wstring> entries;
+	entries = storage->entries( L"/" );
+	
+	for( std::list<std::wstring>::iterator it = entries.begin(); it != entries.end(); ++it )
+	{
+		std::wstring name = XmlUtils::GetLower(*it);
+
+		if (std::wstring::npos != name.find(L"ole"))	 continue;
+		if (std::wstring::npos != name.find(L"compobj")) continue;
+		if (std::wstring::npos != name.find(L"objinfo")) continue;
+
+		if (std::wstring::npos != name.find(L"native") ||
+			std::wstring::npos != name.find(L"content") ||
+			std::wstring::npos != name.find(L"package"))
+		{
+			POLE::Stream *stream = new POLE::Stream(storage, *it);
+			if (stream)
+			{
+				ole1Writer.NativeDataSize = stream->size();
+
+				ole1Writer.NativeData = new unsigned char[ole1Writer.NativeDataSize];
+				stream->read(ole1Writer.NativeData, ole1Writer.NativeDataSize);
+				delete stream;
+
+				break;
+			}
+		}
+	}
+
+	if (ole1Writer.NativeData)
+	{
+		int		ole1DataSize = ole1Writer.NativeDataSize + 2048;
+		BYTE*	ole1Data = new BYTE[ole1DataSize];
+
+		if (ole1Data)
+		{	
+			ole1Writer.Write(ole1Data, ole1DataSize);
+
+			boost::shared_array<BYTE> buffer(ole1Data);
+			object->m_oOle1Data = std::make_pair(buffer, ole1DataSize);
+		}
+		delete []ole1Writer.NativeData;
 	}
 }

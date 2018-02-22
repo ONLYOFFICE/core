@@ -64,6 +64,7 @@ public:
 
 	int												m_nCurItap;			//для определение вложенности таблицы
 
+	int												m_nCurOleChartId;
 	int												m_nCurFittextId;
 	std::map<int, std::wstring>						m_aBookmarks;
 

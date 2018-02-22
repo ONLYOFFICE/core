@@ -471,4 +471,26 @@ namespace NExtractTools
 		return 0;
     }
 #endif
+	bool InputParams::checkInputLimits()
+	{
+		std::wstring& sFrom = *this->m_sFileFrom;
+		int nFormatFrom = *this->m_nFormatFrom;
+		boost::unordered_map<int, InputLimit>::const_iterator itLimit = this->m_mapInputLimits.find(nFormatFrom);
+		if(itLimit != this->m_mapInputLimits.end())
+		{
+			const InputLimit& oLimit = itLimit->second;
+			if(oLimit.compressed > 0 || oLimit.uncompressed > 0)
+			{
+				ULONG nCompressed = 0;
+				ULONG nUncompressed = 0;
+				COfficeUtils oCOfficeUtils(NULL);
+				oCOfficeUtils.GetFilesSize(sFrom, oLimit.pattern, nCompressed, nUncompressed);
+				if((oLimit.compressed > 0 && nCompressed > oLimit.compressed) || (oLimit.uncompressed > 0 && nUncompressed > oLimit.uncompressed))
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 }

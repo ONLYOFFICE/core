@@ -99,6 +99,9 @@ namespace PPTX
 			SpTreeElem				element;
 
 			std::wstring GetVmlXmlBySpid(smart_ptr<OOX::IFileContainer> & rels)	const;
+
+			void ChartToOlePackageInStorage(OOX::IFileContainer* pRels, const std::wstring &sTempDirectory, int nCurrentGenerateId);
+			std::wstring ChartToXlsx(OOX::IFileContainer* pRels, const std::wstring &sTempDirectory);
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

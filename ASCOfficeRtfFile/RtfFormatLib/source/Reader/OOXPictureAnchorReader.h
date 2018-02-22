@@ -80,19 +80,19 @@ public:
 
 		if( m_ooxAnchor->m_oSimplePos.IsInit())
 		{
-			nLeft	= (int)m_ooxAnchor->m_oSimplePos->m_oX.ToTwips() ;
-			nTop	= (int)m_ooxAnchor->m_oSimplePos->m_oY.ToTwips();
+			pOutput->m_nLeft	= (int)m_ooxAnchor->m_oSimplePos->m_oX.ToTwips() ;
+			pOutput->m_nTop	= (int)m_ooxAnchor->m_oSimplePos->m_oY.ToTwips();
 		}
 		
 		if( m_ooxAnchor->m_oExtent.IsInit() )
 		{
-			nWidth	= (int)m_ooxAnchor->m_oExtent->m_oCx.ToTwips();
-			nHeight = (int)m_ooxAnchor->m_oExtent->m_oCy.ToTwips();
+			pOutput->m_nWidth	= (int)m_ooxAnchor->m_oExtent->m_oCx.ToTwips();
+			pOutput->m_nHeight = (int)m_ooxAnchor->m_oExtent->m_oCy.ToTwips();
 
 			if( PROP_DEF != pOutput->m_nLeft && PROP_DEF != pOutput->m_nTop )//всегда !!
 			{
-				pOutput->m_nRight	= pOutput->m_nLeft	+ nWidth;
-				pOutput->m_nBottom	= pOutput->m_nTop	+ nHeight;
+				pOutput->m_nRight	= pOutput->m_nLeft	+ pOutput->m_nWidth;
+				pOutput->m_nBottom	= pOutput->m_nTop	+ pOutput->m_nHeight;
 			}
 		}
 		if( m_ooxAnchor->m_oPositionH.IsInit() )

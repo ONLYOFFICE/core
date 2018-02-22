@@ -44,6 +44,8 @@ OOXReader::OOXReader( RtfDocument& oDocument, std::wstring  path ): m_oDocument(
 {
 	m_sPath = path;
 	m_nCurItap = 0;
+	m_nCurOleChartId = 0;
+	m_nCurFittextId = 0;
 
 	m_convertationManager = NULL;
 	m_currentContainer = NULL;

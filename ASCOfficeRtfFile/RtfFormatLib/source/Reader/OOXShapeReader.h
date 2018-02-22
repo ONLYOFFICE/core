@@ -62,6 +62,9 @@ public:
 	bool Parse			( ReaderParameter oParam , RtfShapePtr& oOutput);
 	bool ParseVmlChild	( ReaderParameter oParam , RtfShapePtr& oOutput);
 	bool ParseVml		( ReaderParameter oParam , RtfShapePtr& oOutput);
+	bool ParseVmlObject	( ReaderParameter oParam , RtfShapePtr& oOutput);
+	
+	static bool ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop);
 	
 	void ParseAdjustment(RtfShape& oShape, std::wstring sAdjustment);
 
@@ -102,6 +105,8 @@ private:
 		return true;
 	}
 
+	void ConvertOle2ToOle1(POLE::Storage *storage, RtfOlePtr object);
+	void ConvertOle2ToOle1(const std::wstring &oleFilePath, RtfOlePtr object);
 };
 
 class OOXShapeGroupReader
@@ -124,7 +129,7 @@ public:
 	{
 		for (size_t i = 0; i < props.size(); i++)
 		{
-			ParseVmlStyle( pGroupShape, props[i].get());
+			OOXShapeReader::ParseVmlStyle( pGroupShape, props[i].get());
 		}
 		return true;
 	}

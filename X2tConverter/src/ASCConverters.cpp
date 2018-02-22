@@ -3888,6 +3888,11 @@ namespace NExtractTools
 			return AVS_FILEUTILS_ERROR_UNKNOWN;
 		}
 
+		if (!oInputParams.checkInputLimits())
+		{
+			return AVS_FILEUTILS_ERROR_CONVERT_LIMITS;
+		}
+
 		int result = 0;
 		switch(conversion)
 		{

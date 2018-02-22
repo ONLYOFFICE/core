@@ -53,12 +53,15 @@ int OOXGraphicReader::Parse( ReaderParameter oParam , RtfShapePtr & pOutput)
 			return (shapeReader.Parse(oParam, pOutput) ? 1 : 0);
 		}
 	}
+	if (m_ooxGraphic->chartRec.IsInit())
+	{
+		//сгенерим ole (olePic)
+		m_ooxGraphic->ChartToOlePackageInStorage(oParam.oReader->m_currentContainer, oParam.oReader->m_sTempFolder, ++oParam.oReader->m_nCurOleChartId);
+	}
 	if (m_ooxGraphic->olePic.IsInit())
 	{
-		pOutput->m_nShapeType = 75;
-	
-		OOXShapeReader::Parse(oParam, pOutput, &m_ooxGraphic->olePic->blipFill); // тут если false приходит - картинка-потеряшка
-		return 1;
+		OOXShapeReader shapeReader(m_ooxGraphic->olePic.GetPointer());
+		return (shapeReader.Parse(oParam, pOutput) ? 1 : 0);
 	}
 	if (m_ooxGraphic->smartArt.IsInit())
 	{
@@ -69,9 +72,10 @@ int OOXGraphicReader::Parse( ReaderParameter oParam , RtfShapePtr & pOutput)
 			return (groupReader.Parse(oParam, pOutput) ? 1 : 0);
 		}
 	}
+
+	
 //nullable_string			spid;
 //nullable<Table>			table;
-//nullable<ChartRec>		chartRec;
 	return 0;
 }
 

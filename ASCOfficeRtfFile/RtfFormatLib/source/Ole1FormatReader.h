@@ -58,7 +58,7 @@ public:
 		return pCur;
 	}
 
-	unsigned char  ReadUChar()
+	unsigned char ReadUChar()
 	{
 		if (pCur + 1 >= pEnd)
 			return 0;
@@ -66,6 +66,14 @@ public:
 		unsigned char unResult = pCur[0];
 		pCur++;
 		return unResult;
+	};
+	void WriteUChar(unsigned char val)
+	{
+		if (pCur + 1 >= pEnd)
+			return;
+
+		pCur[0] = val;
+		pCur++;
 	};
 	unsigned short ReadUShort()
 	{
@@ -76,14 +84,30 @@ public:
 		pCur += 2;
 		return ushResult;
 	};
-	unsigned int ReadULong()
+	void WriteUShort(unsigned short val)
+	{
+		if (pCur + 2 >= pEnd)
+			return;
+
+		((unsigned short*) pCur)[0] = val;
+		pCur += 2;
+	};
+	_UINT32 ReadULong()
 	{
 		if (pCur + 4 >= pEnd)
 			return 0;
 
-		unsigned int unResult = (unsigned int)((pCur[0] << 0) | ((pCur[1]) << 8) | ((pCur[2]) << 16) | ((pCur[3]) << 24));
+		_UINT32 unResult = (_UINT32)((pCur[0] << 0) | ((pCur[1]) << 8) | ((pCur[2]) << 16) | ((pCur[3]) << 24));
 		pCur += 4;
 		return unResult;
+	};
+	void WriteULong(_UINT32 val)
+	{
+		if (pCur + 4 >= pEnd)
+			return;
+
+		((_UINT32*)pCur)[0] = val;
+		pCur += 4;
 	};
 	double ReadDouble()
 	{
@@ -110,13 +134,25 @@ public:
 	{
 		return (char)ReadUChar();
 	};
-	short          ReadShort()
+	void WriteChar(char val)
+	{
+		WriteUChar((unsigned char)val);
+	};
+	short ReadShort()
 	{
 		return (short)ReadUShort();
 	};
-	int ReadLong()
+	void WriteShort(short val)
 	{
-		return (int)ReadULong();
+		WriteUShort((unsigned short) val);
+	};
+	_INT32 ReadLong()
+	{
+		return (_INT32)ReadULong();
+	};
+	void WriteLong(_INT32 val)
+	{
+		WriteULong((_UINT32)val);
 	};
 	void ReadBytes(char*  pBuffer, unsigned int ulSize)
 	{
@@ -128,6 +164,16 @@ public:
 			pBuffer[ulIndex] = ReadChar();
 		}
 	};
+	void WriteBytes(char*  pBuffer, unsigned int ulSize)
+	{
+		size_t ulRemainSize = (pEnd - pCur);
+		size_t ulFinalSize  = (ulRemainSize > ulSize ? ulSize : ulRemainSize);
+
+		for (size_t ulIndex = 0; ulIndex < ulFinalSize; ulIndex++)
+		{
+			 WriteChar(pBuffer[ulIndex]);
+		}
+	};
 	void ReadBytes(unsigned char*  pBuffer, unsigned int ulSize)
 	{
 		size_t ulRemainSize = (pEnd - pCur);
@@ -135,7 +181,17 @@ public:
 
 		for (size_t ulIndex = 0; ulIndex < ulFinalSize; ulIndex++)
 		{
-			pBuffer[ulIndex] = ReadChar();
+			pBuffer[ulIndex] = ReadUChar();
+		}
+	};
+	void WriteBytes(unsigned char*  pBuffer, unsigned int ulSize)
+	{
+		size_t ulRemainSize = (pEnd - pCur);
+		size_t ulFinalSize  = (ulRemainSize > ulSize ? ulSize : ulRemainSize);
+
+		for (size_t ulIndex = 0; ulIndex < ulFinalSize; ulIndex++)
+		{
+			WriteUChar(pBuffer[ulIndex]);
 		}
 	};
 	void ReadBytes(unsigned short* pBuffer, unsigned int ulSize)
@@ -158,7 +214,7 @@ public:
 			pBuffer[ulIndex] = ReadShort();
 		}
 	}
-	void ReadBytes(unsigned int*  pBuffer, unsigned int ulSize)
+	void ReadBytes(_UINT32*  pBuffer, unsigned int ulSize)
 	{
 		size_t ulRemainSize = (pEnd - pCur) / 4;
 		size_t ulFinalSize  = (ulRemainSize > ulSize ? ulSize : ulRemainSize);
@@ -173,22 +229,32 @@ public:
 		nValue = ReadUChar();
 		return *this;
 	}
+	CDataStream& operator<<(unsigned char nValue)
+	{
+		WriteUChar(nValue);
+		return *this;
+	}
 	CDataStream& operator>>(unsigned short& nValue)
 	{
 		nValue = ReadUShort();
 		return *this;
 	}
-	CDataStream& operator>>(unsigned int&  nValue)
+	CDataStream& operator<<(unsigned short nValue)
+	{
+		WriteUShort(nValue);
+		return *this;
+	}
+	CDataStream& operator>>(_UINT32&  nValue)
 	{
 		nValue = ReadULong();
 		return *this;
 	}
-	CDataStream& operator>>(unsigned long&   nValue)
+	CDataStream& operator<<(_UINT32  nValue)
 	{
-		nValue = ReadULong();
+		WriteULong(nValue);
 		return *this;
 	}
-	CDataStream& operator>>(double&         dValue)
+	CDataStream& operator>>(double& dValue)
 	{
 		dValue = ReadDouble();
 		return *this;
@@ -196,6 +262,11 @@ public:
 	CDataStream& operator>>(char&  nValue)
 	{
 		nValue = ReadChar();
+		return *this;
+	}
+	CDataStream& operator<<(char  nValue)
+	{
+		WriteChar(nValue);
 		return *this;
 	}
 	CDataStream& operator>>(bool&  nValue)
@@ -208,16 +279,22 @@ public:
 		nValue = ReadShort();
 		return *this;
 	}
-	CDataStream& operator>>(int&  nValue)
+	CDataStream& operator<<(short nValue)
+	{
+		WriteShort(nValue);
+		return *this;
+	}
+	CDataStream& operator>>(_INT32&  nValue)
 	{
 		nValue = ReadLong();
 		return *this;
 	}
-	CDataStream& operator>>(long&   nValue)
+	CDataStream& operator<<(_INT32 nValue)
 	{
-		nValue = ReadLong();
+		WriteLong(nValue);
 		return *this;
 	}
+
 
 	bool IsValid() const
 	{
@@ -255,7 +332,7 @@ public:
 		pCur = pBuffer;
 	}
 
-	unsigned int CanRead()
+	unsigned int CanReadWrite()
 	{
 		return (unsigned int)(pEnd - pCur);
 	}
@@ -269,36 +346,55 @@ private:
 };
 struct LengthPrefixedAnsiString
 {
-	_UINT32		size;
+	_UINT32		size = 0;
 	std::string val;
 };
-CDataStream & operator >> (CDataStream & strm, LengthPrefixedAnsiString & str)
+static CDataStream & operator >> (CDataStream & strm, LengthPrefixedAnsiString & str)
 {
 	strm >> str.size;
 	char *s = new char[str.size];
 	strm.ReadBytes(s, str.size);
-	str.val = std::string(s,str.size);
+	str.val = std::string(s, str.size);
 	delete []s;
 	return strm;
 }
+static CDataStream & operator << (CDataStream & strm, LengthPrefixedAnsiString str)
+{
+	strm << str.size;
 
+	strm.WriteBytes((char*)str.val.c_str(), str.size - 1);
+	strm.WriteUChar(0);
+	return strm;
+}
 struct ObjectHeader
 {
-	_UINT32 OLEVersion;
-	_UINT32 FormatID;
+	_UINT32 OLEVersion	= 1281;
+	_UINT32 FormatID	= 2;
 
 	LengthPrefixedAnsiString ClassName;
 
-	_UINT32 Width;
-	_UINT32 Height;
+	_UINT32 Width	= 0;
+	_UINT32 Height	= 0;
 
 };
 
-class Ole1FormatReader
+class Ole1FormatReaderWriter
 {
 public: 
-
-	Ole1FormatReader(BYTE *pData, int Size)
+	Ole1FormatReaderWriter() : NativeData(NULL), NativeDataSize(0), OtherData(NULL), OtherDataSize(0)
+	{
+	}
+	Ole1FormatReaderWriter(BYTE *pData, int Size) : NativeData(NULL), NativeDataSize(0), OtherData(NULL), OtherDataSize(0)
+	{
+		Read(pData, Size);
+	}
+	virtual ~Ole1FormatReaderWriter()
+	{
+		if (OtherData)
+			delete []OtherData;
+		OtherData = NULL;
+	}
+	void Read(BYTE *pData, int Size)
 	{
 		NativeDataSize = 0;
 		if (!pData || Size < 8) return;
@@ -320,15 +416,57 @@ public:
 			NativeData = stream.GetCurPtr();
 			stream.Skip(NativeDataSize);
 
-			int sz = stream.CanRead();
+			if (stream.IsEof())
+				return;
+	// далее графическое представление 
+			OtherDataSize = stream.CanReadWrite();
 
-			/// далее графическое представление 
+			OtherData = new BYTE[OtherDataSize];
+			stream.ReadBytes(OtherData, OtherDataSize);
 		}
 
 	}
+	void Write(BYTE *pData, int &Size)
+	{
+		Size = 0;
+		if (!pData) return;
+		if (NativeDataSize < 1) return;
+
+		CDataStream stream(pData, NativeDataSize + 2048);
+
+		stream << Header.OLEVersion << Header.FormatID;
+
+		stream << Header.ClassName;
+		
+		stream << Header.Width << Header.Height;
+		
+		stream << NativeDataSize;
+			
+		stream.WriteBytes(NativeData, NativeDataSize);
+			
+		/// далее графическое представление 
+		BYTE other[9] = {1, 5, 0, 0, 0, 0, 0, 0, 0};
+
+		Size = stream.Tell() - 1;
+		stream.WriteBytes(other, 9);
+		Size = stream.Tell() - 1;
+
+		//padding ???
+
+		char padding[8];
+		memset(padding, 0, 8);
+
+		stream.WriteBytes(padding, (Size / 8 + 1 ) * 8 - Size);
+		Size = stream.Tell() - 1;
+	}
 	ObjectHeader				Header;
+	
 	_UINT32						NativeDataSize;
 	BYTE						*NativeData;
+
+	_UINT32						OtherDataSize;
+	BYTE						*OtherData;
+	
 	//PresentationObjectHeader	PresentationHeader;
 
 };

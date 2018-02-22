@@ -43,6 +43,9 @@
 #include "../../DesktopEditor/common/StringBuilder.h"
 #include "../../DesktopEditor/common/Path.h"
 
+#include <boost/unordered_map.hpp>
+#include <boost/algorithm/string.hpp>
+
 #include <iostream>
 #include <fstream>
 
@@ -360,6 +363,19 @@ namespace NExtractTools
 		}
 	};
 
+	class InputLimit
+	{
+	public:
+		UINT compressed;
+		UINT uncompressed;
+		std::wstring pattern;
+		InputLimit()
+		{
+			compressed = 0;
+			uncompressed = 0;
+		}
+	};
+
 	class InputParams
 	{
 	public:
@@ -385,6 +401,7 @@ namespace NExtractTools
 		std::wstring* m_sSavePassword;
 		std::wstring* m_sTempDir;
 		bool* m_bIsNoBase64;
+		boost::unordered_map<int, InputLimit> m_mapInputLimits;
 		//output params
 		mutable bool m_bOutputConvertCorrupted;
 	public:
@@ -487,6 +504,10 @@ namespace NExtractTools
 							RELEASEOBJECT(m_oThumbnail);
 							m_oThumbnail = new InputParamsThumbnail();
 							m_oThumbnail->FromXmlNode(oXmlNode);
+						}
+						else if(_T("m_oInputLimits") == sName)
+						{
+							FromLimitsNode(oXmlNode);
 						}
 						else
 						{
@@ -602,6 +623,41 @@ namespace NExtractTools
 									RELEASEOBJECT(m_sCsvDelimiterChar);
 									m_sCsvDelimiterChar = new std::wstring(L"");
 								}
+							}
+						}
+					}
+				}
+			}
+			return true;
+		}
+
+		bool FromLimitsNode(XmlUtils::CXmlNode& oXmlNode)
+		{
+			XmlUtils::CXmlNodes oLimitsNode;
+			if (oXmlNode.GetNodes(L"m_oInputLimit", oLimitsNode))
+			{
+				for(int i = 0; i < oLimitsNode.GetCount(); ++i)
+				{
+					XmlUtils::CXmlNode oLimitNode;
+					if(oLimitsNode.GetAt(i, oLimitNode))
+					{
+						std::wstring sType;
+						if (oLimitNode.GetAttributeIfExist(L"type", sType))
+						{
+							std::vector<std::wstring> aTypes;
+							boost::algorithm::split(aTypes, sType, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
+
+							InputLimit oLimit;
+							XmlUtils::CXmlNode oZipNode;
+							if (oLimitNode.GetNode(L"m_oZip", oZipNode))
+							{
+								oLimit.compressed = std::stoul(oZipNode.GetAttribute(L"compressed", L"0"));
+								oLimit.uncompressed = std::stoul(oZipNode.GetAttribute(L"uncompressed", L"0"));
+								oLimit.pattern = oZipNode.GetAttribute(L"template", L"");
+							}
+							for (int j = 0; j < aTypes.size(); ++j)
+							{
+								m_mapInputLimits[COfficeFileFormatChecker::GetFormatByExtension(L"." + aTypes[j])] = oLimit;
 							}
 						}
 					}
@@ -900,6 +956,7 @@ namespace NExtractTools
         {
             return NULL != m_bDontSaveAdditional && *m_bDontSaveAdditional;
         }
+		bool checkInputLimits();
 	};
 
     static std::wstring string_replaceAll(std::wstring str, const std::wstring& from, const std::wstring& to)

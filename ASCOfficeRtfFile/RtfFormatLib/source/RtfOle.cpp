@@ -50,7 +50,7 @@ std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	else
 	{
-		RtfCharProperty * pCharProps = m_oResultPic ? &m_oResultPic->m_oCharProperty : &m_oCharProperty;
+		RtfCharProperty * pCharProps = &m_oCharProperty;
 //------------------------------------------
 // todooo общая часть с RtfChar
 		bool bInsert = false;
@@ -94,12 +94,11 @@ std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 		RenderParameter oNewRenderParameter = oRenderParameter;
 		oNewRenderParameter.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2;
 
-		if (m_oResultPic)
+		if (m_oResultShape)
 		{
-			m_oResultPic->m_bIsOle = true;
-			sResult += m_oResultPic->RenderToOOX(oNewRenderParameter);
+			sResult += m_oResultShape->RenderToOOX(oNewRenderParameter);
 
-			oNewRenderParameter.nValue = m_oResultPic->m_nID;
+			oNewRenderParameter.nValue = m_oResultShape->m_nID;
 		}
 		sResult += RenderToOOXOnlyOle(oNewRenderParameter);
 
@@ -171,6 +170,9 @@ std::wstring RtfOle::RenderToRtf(RenderParameter oRenderParameter)
 			case ot_link:	sResult += L"\\objlink";	break;
 		}
 	}
+	//sResult += L"\\f13";
+	sResult += L"\\objsetsize";
+
 	RENDER_RTF_INT( m_nWidth, sResult, L"objw" );
 	RENDER_RTF_INT( m_nHeight, sResult, L"objh" );
 
@@ -182,39 +184,17 @@ std::wstring RtfOle::RenderToRtf(RenderParameter oRenderParameter)
         std::wstring str = RtfUtility::RtfInternalEncoder::Encode( m_sOleFilename );
         sResult += L"{\\*\\objdata " + str + L"}";
     }
-	if( NULL != m_oResultPic )
+//-------------------------------------
+	if( NULL != m_oResultShape )
 	{
-        std::wstring str = m_oResultPic->RenderToRtf( oRenderParameter );
-        sResult += L"{\\result \\pard\\plain" + str + L"}";
+        std::wstring str = m_oResultShape->RenderToRtf( oRenderParameter );
+		sResult += L"{\\result {\\pard\\plain" + str + L"}}";
 	}
+	//else if( NULL != m_oResultPicture )
+	//{
+	//		std::wstring str = m_oResultPicture->RenderToRtf( oRenderParameter );
+	//		sResult += L"{\\result {\\*\\shppict" + str  + L"}}";
+	//}
 	sResult += L"}";
 	return sResult;
 }
-
-#if defined(_WIN32) || defined(_WIN64)
-	DWORD CALLBACK OlePut1(LPOLESTREAM oStream, const void FAR* pTarget, DWORD dwRead)
-	{
-		return 0;
-	}
-	DWORD CALLBACK OleGet2(LPOLESTREAM oStream, void FAR* pTarget, DWORD dwRead)
-	{
-		return 0;
-	}
-	DWORD CALLBACK OleGet1(LPOLESTREAM oStream, void FAR* pTarget, DWORD dwRead)
-	{
-		RtfOle1ToOle2Stream* piStream = static_cast<RtfOle1ToOle2Stream*>(oStream);
-		if( piStream->nCurPos + (int)dwRead > piStream->nBufferSize )
-			return 0;
-		memcpy( pTarget, (piStream->pBuffer + piStream->nCurPos) , dwRead );
-		piStream->nCurPos += dwRead;
-		return dwRead;
-	}
-	DWORD CALLBACK OlePut2(LPOLESTREAM oStream, const void FAR* pTarget, DWORD dwWrite)
-	{
-		RtfOle2ToOle1Stream* piStream = static_cast<RtfOle2ToOle1Stream*>(oStream);
-		BYTE* pSource = (BYTE*)pTarget;
-		for( DWORD i = 0; i < dwWrite; i++ )
-			piStream->aBuffer.push_back( pSource[i] );
-		return dwWrite;
-	}
-#endif

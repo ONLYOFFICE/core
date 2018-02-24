@@ -41,7 +41,7 @@ namespace XLS
 
 class CFStreamCacheReader;
 
-// Logical representation of FilePass record in BIFF8
+
 class FilePass: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(FilePass)

@@ -85,6 +85,7 @@ public:
 	bool									bVbaProjectExist;
 	bool									bMacrosExist;
 	bool									bThemePresent;
+	bool									bWorkbookProtectExist;
 
 	unsigned short							CodePage;
 	CRYPT::DecryptorPtr						decryptor;

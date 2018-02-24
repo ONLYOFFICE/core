@@ -709,6 +709,7 @@ void XlsConverter::convert(XLS::GlobalsSubstream* globals)
 	{
 		convert((ODRAW::OfficeArtDgContainer*)globals->m_arHFPictureDrawing[i].get());
 	}
+	globals->serialize_protection(xlsx_context->workbook_protection());
 	
 	globals->serialize_format(xlsx_context->workbook_format());
 

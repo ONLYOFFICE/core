@@ -244,7 +244,7 @@ std::wstring RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 				case 163://Vietnamese
 				case 222://Thai
 				{
-					sHint = L" w:hint=\"eastAsia\"/>";
+					sHint = L" w:hint=\"eastAsia\"";
 				}break;
 				case 177://Hebrew
 				case 178://Arabic
@@ -252,7 +252,7 @@ std::wstring RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 				case 180://Arabic
 				case 181://Hebrew
 				{
-					sHint = L" w:hint=\"cs\"/>";
+					sHint = L" w:hint=\"cs\"";
 				}break;
 				//?? нужно ли описывать default??? todooo
 				default:

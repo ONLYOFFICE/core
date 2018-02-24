@@ -1351,8 +1351,20 @@ bool OOXShapeReader::ParsePic( ReaderParameter oParam, RtfShapePtr& pOutput)
 		pOutput->m_oPicture->m_sPicFilename = ooxPic->blipFill.blip->oleFilepathImage;
 		pOutput->m_oPicture->m_bIsCopy = false; //не удалять
 
-		pOutput->m_oPicture->m_nWidthGoal = pOutput->m_nWidth;
-		pOutput->m_oPicture->m_nHeightGoal = pOutput->m_nHeight;
+		if (pOutput->m_oPicture->m_nWidthGoal == PROP_DEF)
+		{
+			if (pOutput->m_nWidth == PROP_DEF && pOutput->m_nRight != PROP_DEF && pOutput->m_nLeft !=PROP_DEF )
+				pOutput->m_oPicture->m_nWidthGoal = pOutput->m_nRight - pOutput->m_nLeft;
+			else 
+				pOutput->m_oPicture->m_nWidthGoal = pOutput->m_nWidth;
+		}		
+		if (pOutput->m_oPicture->m_nHeightGoal == PROP_DEF)
+		{
+			if (pOutput->m_nHeight == PROP_DEF && pOutput->m_nBottom != PROP_DEF && pOutput->m_nTop !=PROP_DEF)
+				pOutput->m_oPicture->m_nHeightGoal = pOutput->m_nBottom - pOutput->m_nTop;
+			else
+				pOutput->m_oPicture->m_nHeightGoal = pOutput->m_nHeight;
+		}
 	}
 
 	if ((oox_sp_style) && (oox_sp_style->lnRef.idx.IsInit()))
@@ -1416,19 +1428,17 @@ bool OOXShapeReader::ParsePic( ReaderParameter oParam, RtfShapePtr& pOutput)
 
 		if (pOutput->m_pOleObject->m_nWidth == PROP_DEF)
 		{
-			if (pOutput->m_nWidth == PROP_DEF)
-			{
-				pOutput->m_nWidth = pOutput->m_nRight - pOutput->m_nLeft;
-			}
-			pOutput->m_pOleObject->m_nWidth = pOutput->m_nWidth;
+			if (pOutput->m_nWidth == PROP_DEF && pOutput->m_nRight != PROP_DEF && pOutput->m_nLeft !=PROP_DEF )
+				pOutput->m_pOleObject->m_nWidth = pOutput->m_nRight - pOutput->m_nLeft;
+			else 
+				pOutput->m_pOleObject->m_nWidth = pOutput->m_nWidth;
 		}		
 		if (pOutput->m_pOleObject->m_nHeight == PROP_DEF)
 		{
-			if (pOutput->m_nHeight == PROP_DEF)
-			{
-				pOutput->m_nHeight = pOutput->m_nBottom - pOutput->m_nTop;
-			}
-			pOutput->m_pOleObject->m_nHeight = pOutput->m_nHeight;
+			if (pOutput->m_nHeight == PROP_DEF && pOutput->m_nBottom != PROP_DEF && pOutput->m_nTop !=PROP_DEF)
+				pOutput->m_pOleObject->m_nHeight = pOutput->m_nBottom - pOutput->m_nTop;
+			else
+				pOutput->m_pOleObject->m_nHeight = pOutput->m_nHeight;
 		}
 		if (!sOlePath.empty())
 		{

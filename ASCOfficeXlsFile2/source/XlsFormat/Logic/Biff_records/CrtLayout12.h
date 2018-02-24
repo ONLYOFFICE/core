@@ -47,6 +47,7 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	int serialize (std::wostream & _stream);
 
 	static const ElementType	type = typeCrtLayout12;
 

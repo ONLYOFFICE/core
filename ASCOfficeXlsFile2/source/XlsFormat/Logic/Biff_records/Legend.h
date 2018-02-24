@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of Legend record in BIFF8
 class Legend: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Legend)
@@ -47,7 +45,6 @@ public:
 	~Legend();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 

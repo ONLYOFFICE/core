@@ -305,9 +305,6 @@ public:
 		if(m_ooxAnchor->m_oWrapTopAndBottom.IsInit())
 			pOutput->m_nWrapType = 1;
 		
-		OOXGraphicReader oGraphicReader(&m_ooxAnchor->m_oGraphic);
-
-		int result = oGraphicReader.Parse( oParam, pOutput);			
 		if( PROP_DEF == pOutput->m_nBottom && pOutput->m_nTop !=PROP_DEF )
 		{
 			pOutput->m_nBottom	= pOutput->m_nTop	+ nHeight;
@@ -316,6 +313,8 @@ public:
 		{
 			pOutput->m_nRight	= pOutput->m_nLeft	+ nWidth;
 		}
+		OOXGraphicReader oGraphicReader(&m_ooxAnchor->m_oGraphic);
+		int result = oGraphicReader.Parse( oParam, pOutput);			
 		return result;
 	}
 };

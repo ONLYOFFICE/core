@@ -125,9 +125,10 @@ int FRAME::serialize(std::wostream & _stream)
 		{
 			if (bArea)
 			{
-				if (m_GELFRAME && area->fls > 1)
+				if (m_GELFRAME/* && area->fls > 1*/)
 					m_GELFRAME->serialize(CP_XML_STREAM());
-				else if (m_AreaFormat) m_AreaFormat->serialize(CP_XML_STREAM());
+				else if (m_AreaFormat) 
+					m_AreaFormat->serialize(CP_XML_STREAM());
 			}
 			
 			if (m_LineFormat && bLine) m_LineFormat->serialize(CP_XML_STREAM());

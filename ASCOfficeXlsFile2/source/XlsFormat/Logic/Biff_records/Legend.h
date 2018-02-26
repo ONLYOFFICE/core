@@ -52,7 +52,6 @@ public:
 
 	static const ElementType	type = typeLegend;
 
-//-----------------------------
 	_UINT32	x;
 	_UINT32	y;
 	_UINT32	dx;
@@ -65,6 +64,8 @@ public:
 	bool fVert;
 	bool fWasDataTable;
 
+//-----------------------------
+	BaseObjectPtr m_CrtLayout12;
 };
 
 } // namespace XLS

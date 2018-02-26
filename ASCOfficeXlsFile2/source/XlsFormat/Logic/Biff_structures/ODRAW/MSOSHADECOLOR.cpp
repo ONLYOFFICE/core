@@ -54,7 +54,7 @@ XLS::BiffStructurePtr MSOSHADECOLOR::clone()
 
 void MSOSHADECOLOR::load(XLS::CFRecord& record)
 {
-    int raw_color;
+    _UINT32 raw_color;
 	record >> raw_color >> position;
 	color = OfficeArtCOLORREF(raw_color);
 

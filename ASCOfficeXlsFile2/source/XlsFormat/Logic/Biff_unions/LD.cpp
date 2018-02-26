@@ -111,13 +111,17 @@ int LD::serialize (std::wostream & _stream, const std::wstring & entries)
 	ATTACHEDLABEL	*att	= dynamic_cast<ATTACHEDLABEL*>	(m_ATTACHEDLABEL.get());
 	Legend			*legend = dynamic_cast<Legend *>		(m_Legend.get());
 	
-	if (m_CrtLayout12)
-		m_CrtLayout12->serialize(_stream);
-	else if (legend)
-		legend->serialize(_stream, m_countSeries);
-
 	if (!m_CrtLayout12 && !m_Legend)
 		return 0;
+	
+	if (legend)
+	{
+		legend->m_CrtLayout12 = m_CrtLayout12;
+
+		legend->serialize(_stream, m_countSeries);
+	}else if (m_CrtLayout12)
+		m_CrtLayout12->serialize(_stream);
+
 	
 	if (!entries.empty())
 		_stream << entries;

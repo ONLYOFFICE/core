@@ -1826,6 +1826,13 @@ void xlsx_drawing_context::serialize_fill(std::wostream & stream, _drawing_state
 	}
 	else serialize_none_fill(stream);
 }
+void xlsx_drawing_context::clear_fill()
+{
+	if (!current_drawing_states) return;
+	if (current_drawing_states->empty()) return;
+	
+	current_drawing_states->back()->clear_fill();
+}
 void xlsx_drawing_context::serialize_fill(std::wostream & stream)
 {
 	serialize_fill(stream, current_drawing_states->back());

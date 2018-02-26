@@ -155,7 +155,8 @@ extern int g_nCurFormatVersion;
 		Footnotes	= 10,
 		Endnotes	= 11,
 		Background	= 12,
-		VbaProject	= 13
+		VbaProject	= 13,
+		App			= 14
 	};}
 	namespace c_oSerSigTypes{enum c_oSerSigTypes
 	{
@@ -1020,6 +1021,11 @@ extern int g_nCurFormatVersion;
 		PrFntPos = 9,
 		PrEndPos = 10,
 		PrRef = 11
+	};}
+	namespace c_oSerApp{enum c_oSerApp
+	{
+		Application = 0,
+		AppVersion = 1
 	};}
 	namespace c_oSerDocPr{enum c_oSerDocPr
 	{

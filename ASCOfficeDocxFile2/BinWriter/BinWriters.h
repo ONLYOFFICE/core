@@ -60,6 +60,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/HeaderFooter.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/App.h"
 
 namespace BinDocxRW
 {
@@ -7762,6 +7763,38 @@ namespace BinDocxRW
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	};
+	class BinaryAppTableWriter
+	{
+		BinaryCommonWriter m_oBcw;
+		ParamsWriter& m_oParamsWriter;
+	public:
+		BinaryAppTableWriter(ParamsWriter& oParamsWriter):
+			m_oBcw(oParamsWriter),m_oParamsWriter(oParamsWriter)
+		{
+		}
+		void Write(OOX::CApp& oApp)
+		{
+			int nStart = m_oBcw.WriteItemWithLengthStart();
+			WriteProperties(oApp);
+			m_oBcw.WriteItemWithLengthEnd(nStart);
+		}
+		void WriteProperties(OOX::CApp& oApp)
+		{
+			int nCurPos = 0;
+			if (oApp.m_sApplication.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerApp::Application);
+				m_oBcw.m_oStream.WriteStringW3(oApp.m_sApplication.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if (oApp.m_sAppVersion.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerApp::AppVersion);
+				m_oBcw.m_oStream.WriteStringW3(oApp.m_sAppVersion.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
+	};
 	class BinaryFileWriter
 	{
 		BinaryCommonWriter	m_oBcw;
@@ -7904,6 +7937,15 @@ namespace BinDocxRW
 				{
 					nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Endnotes);
 					oBinaryNotesWriter.WriteEndnotes(*oDocx.m_pEndnotes);
+					this->WriteTableEnd(nCurPos);
+				}
+
+		//Write App
+				if(NULL != oDocx.m_pApp)
+				{
+					BinDocxRW::BinaryAppTableWriter oBinaryAppWriter(m_oParamsWriter);
+					nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::App);
+					oBinaryAppWriter.Write(*oDocx.m_pApp);
 					this->WriteTableEnd(nCurPos);
 				}
 

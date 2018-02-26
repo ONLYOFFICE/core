@@ -465,20 +465,6 @@ namespace NSCommon
                     if (pManager->m_pFont)
                     {
                         bIsSymbol = (-1 != (pManager->m_pFont->m_nSymbolic)) ? TRUE : FALSE;
-
-                        if (!bIsSymbol)
-                        {
-                            TT_OS2* pOS2 = (TT_OS2*)FT_Get_Sfnt_Table(pManager->m_pFont->m_pFace, ft_sfnt_os2);
-
-                            int y = 0;
-                            ++y;
-
-                            if (NULL != pOS2)
-                            {
-                                if (0 == (pOS2->ulCodePageRange1 & 0xF0000000))
-                                    bIsSymbol = TRUE;
-                            }
-                        }
                     }
 
                     std::wstring sFontName = pPair->second.m_sName;
@@ -499,9 +485,20 @@ namespace NSCommon
                     {
                         CFontFile* pFontCheck = pManager->m_pFont;
 
-                        int nCMapIndex = 0;
-                        int unGID = pFontCheck->SetCMapForCharCode(sFontName.at(0), &nCMapIndex);
-                        if (unGID <= 0)
+                        int nFontNameLen = (int)sFontName.length();
+                        bool bIsPresentAll = true;
+
+                        for (int nC = 0; nC < nFontNameLen; nC++)
+                        {
+                            int nCMapIndex = 0;
+                            if (0 >= pFontCheck->SetCMapForCharCode(sFontName.at(nC), &nCMapIndex))
+                            {
+                                bIsPresentAll = false;
+                                break;
+                            }
+                        }
+
+                        if (!bIsPresentAll)
                         {
                             CFontSelectFormat oSelectFormat;
                             oSelectFormat.wsName = new std::wstring(L"Arial");

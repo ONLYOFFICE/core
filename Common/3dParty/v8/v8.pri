@@ -8,7 +8,7 @@ INCLUDEPATH += \
 core_windows {
     CORE_V8_PATH_LIBS = $$CORE_V8_PATH_INCLUDE/out.gn/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/obj
 
-    LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libplatform -lv8_libbase -lv8_snapshot  -lv8_libsampler
+    LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libplatform -lv8_libbase -lv8_external_snapshot  -lv8_libsampler
     LIBS += -L$$CORE_V8_PATH_LIBS/third_party/icu -licui18n -licuuc
 
     LIBS += -lwinmm
@@ -20,12 +20,12 @@ core_windows {
 }
 
 core_linux {
-    LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libplatform -lv8_libbase -lv8_snapshot -lv8_libsampler
+    LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libplatform -lv8_libbase -lv8_external_snapshot -lv8_libsampler
     LIBS += -L$$CORE_V8_PATH_LIBS/third_party/icu -licui18n -licuuc
 }
 
 core_mac {
-    LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libplatform -lv8_libbase -lv8_snapshot -lv8_libsampler
+    LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libplatform -lv8_libbase -lv8_external_snapshot -lv8_libsampler
     LIBS += -L$$CORE_V8_PATH_LIBS/third_party/icu -licui18n -licuuc
 
     QMAKE_CXXFLAGS += -Wall -Wno-inconsistent-missing-override

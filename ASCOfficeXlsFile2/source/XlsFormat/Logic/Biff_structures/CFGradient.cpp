@@ -62,8 +62,9 @@ void CFGradientItem::load(CFRecord& record)
 	//record >> val; numGrange = val << 32;
 	//record >> val; numGrange = val;
 	//record.skipNunBytes(8);
-	color.load(record);
 	record >> numGrange;
+	
+	color.load(record);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -89,7 +90,7 @@ void CFGradient::load(CFRecord& record)
 	fClamp		= GETBIT(flags, 0);
 	fBackground	= GETBIT(flags, 1);
 
-	for (int i = 0; i < cInterpCurve; i++)
+	for (unsigned char i = 0; i < cInterpCurve; i++)
 	{
 		CFGradientInterpItemPtr item = CFGradientInterpItemPtr(new CFGradientInterpItem());
 		item->load(record);
@@ -100,7 +101,7 @@ void CFGradient::load(CFRecord& record)
 		rgInterp.push_back(item);
 	}
 
-	for (int i = 0; i < cGradientCurve; i++)
+	for (unsigned char i = 0; i < cGradientCurve; i++)
 	{
 		CFGradientItemPtr item = CFGradientItemPtr(new CFGradientItem());
 		item->load(record);

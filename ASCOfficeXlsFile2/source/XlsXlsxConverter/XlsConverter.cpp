@@ -709,6 +709,7 @@ void XlsConverter::convert(XLS::GlobalsSubstream* globals)
 	{
 		convert((ODRAW::OfficeArtDgContainer*)globals->m_arHFPictureDrawing[i].get());
 	}
+	globals->serialize_protection(xlsx_context->workbook_protection());
 	
 	globals->serialize_format(xlsx_context->workbook_format());
 
@@ -1498,7 +1499,7 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			case NSOfficeDrawing::fillColorExt:
 			{
 				ODRAW::fillColor * fill = (ODRAW::fillColor *)(props[i].get());
-				ODRAW::OfficeArtCOLORREF color(fill->op);
+				ODRAW::OfficeArtCOLORREF color((_UINT32)fill->op);
 				if (!color.sColorRGB.empty())
 					xlsx_context->get_drawing_context().set_fill_color(color.nColorRGB, color.sColorRGB);
 				else if (color. fPaletteIndex)
@@ -1522,7 +1523,7 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			case NSOfficeDrawing::fillBackColorExt:
 			{
 				ODRAW::fillColor * fill = (ODRAW::fillColor *)(props[i].get());
-				ODRAW::OfficeArtCOLORREF color(fill->op);
+				ODRAW::OfficeArtCOLORREF color((_UINT32)fill->op);
 				if (!color.sColorRGB.empty())
 					xlsx_context->get_drawing_context().set_fill_color(color.nColorRGB,color.sColorRGB, true );
 				else if (color. fPaletteIndex)
@@ -1618,7 +1619,7 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 		{
 			case NSOfficeDrawing::lineColor:
 			{
-				ODRAW::OfficeArtCOLORREF color(props[i]->op);
+				ODRAW::OfficeArtCOLORREF color((_UINT32)props[i]->op);
 				if (!color.sColorRGB.empty())
 					xlsx_context->get_drawing_context().set_line_color(color.nColorRGB, color.sColorRGB);
 				else if (color. fPaletteIndex)

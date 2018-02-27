@@ -269,6 +269,16 @@ public:
 
 		std::vector<std::pair<double, _color>> colorsPosition;
 	}fill;
+
+	void clear_fill()
+	{
+		fill.type = fillSolid; 
+		fill.color.SetRGB(0xff, 0xff, 0xff);
+		fill.angle = fill.opacity = fill.opacity2 = fill.focus = 0; 
+		memset(fill.texture_crop, 0, 4 * sizeof(double));
+		fill.texture_crop_enabled = false;
+		fill.colorsPosition.clear();
+	}
 	struct _arrow
 	{
 		_arrow() { enabled = false; start = end = 0; start_length = end_length = end_width = start_width = 2;}
@@ -385,6 +395,8 @@ public:
 		void add_fill_colors		(double position, const std::wstring & color);
 		void add_fill_colors		(double position, int index, int type);		
 		void set_fill_focus			(int val);
+
+		void clear_fill				();
 
 		void set_line_color			(int nColor, const std::wstring & color);
 		void set_line_color			(int index, int type);

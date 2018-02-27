@@ -927,6 +927,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 					{
 						CrtLine* crtLine = dynamic_cast<CrtLine*>(crt->m_arCrtLine[i].get());
 						if (crtLine == NULL) continue;
+						if (crtLine->id == 3) continue; // leaderLines in dLbls
 
 						crtLine->m_iChartType = crt->m_iChartType;
 						crtLine->serialize(CP_XML_STREAM());
@@ -1213,6 +1214,16 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 					text->serialize(_stream);
 				}
 			}
+		}
+
+		for (size_t i = 0 ; i < crt->m_arCrtLine.size(); i++)
+		{
+			CrtLine* crtLine = dynamic_cast<CrtLine*>(crt->m_arCrtLine[i].get());
+			if (crtLine == NULL) continue;
+			if (crtLine->id != 3) continue; // only leaderLines in dLbls
+
+			crtLine->m_iChartType = crt->m_iChartType;
+			crtLine->serialize(_stream);
 		}
 	}
 	return 0;

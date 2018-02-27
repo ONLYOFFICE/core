@@ -36,12 +36,10 @@
 namespace XLS
 {
 
-
-// Logical representation of WINDOW union of records 
 class WINDOW: public CompositeObject
 {
 public:
-	static const ElementType	type = typeWINDOW;
+	static const ElementType type = typeWINDOW;
 	
 	BASE_OBJECT_DEFINE_CLASS_NAME(WINDOW);
 	
@@ -60,7 +58,8 @@ public:
 	BaseObjectPtr				m_Window2;
 	BaseObjectPtr				m_Pane;
 
-	
+
+	GlobalWorkbookInfoPtr		global_info;	
 };
 
 } // namespace XLS

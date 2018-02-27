@@ -47,6 +47,8 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize (std::wostream & _stream);
+
 	static const ElementType type = typePROTECTION;
 
 	BaseObjectPtr	m_WinProtect;

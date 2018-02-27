@@ -140,7 +140,11 @@ const bool ATTACHEDLABEL::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 	
-	proc.optional<CrtLayout12>();
+	if (proc.optional<CrtLayout12>())
+	{
+		m_CrtLayout12 = elements_.back();
+		elements_.pop_back();
+	}
 	if (proc.optional<TEXTPROPS>())
 	{
 		m_TEXTPROPS = elements_.back();
@@ -330,13 +334,23 @@ int ATTACHEDLABEL::serialize(std::wostream & _stream, bool isPosition)
 					}
 				}	
 			}
-			if (m_Pos && isPosition)	m_Pos->serialize(_stream);
-			if (m_FRAME)				m_FRAME->serialize(_stream);
+			if (isPosition)
+			{
+				if (m_CrtLayout12)	m_CrtLayout12->serialize(_stream);
+				else if (m_Pos)		m_Pos->serialize(_stream);
+			}
+			if (m_FRAME)			m_FRAME->serialize(_stream);
 		}
 		else
 		{
-			if (m_Pos && isPosition)	m_Pos->serialize(_stream);
-			if (m_FRAME)				m_FRAME->serialize(_stream);
+			if (isPosition)
+			{
+				if (m_CrtLayout12)	m_CrtLayout12->serialize(_stream);
+				else if (m_Pos)		m_Pos->serialize(_stream);
+			}
+
+			if (m_FRAME)			m_FRAME->serialize(_stream);
+			
 			serialize_txPr(_stream);
 		}
 	

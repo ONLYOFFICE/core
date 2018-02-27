@@ -351,7 +351,7 @@ static const struct ActionNamesEmf
 #ifdef _DEBUG
 			if ( need_skip != 0 && !m_pOutput)
 			{
-                                std::wstring name = actionNamesEmf[ulType].actionName;
+				std::wstring name = actionNamesEmf[ulType].actionName;
 
 				std::wcout << name << L"\t\t(" << ulType << L")\t; skiped = " << need_skip << L"\n";
 			}			

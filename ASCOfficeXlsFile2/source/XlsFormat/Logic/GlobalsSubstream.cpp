@@ -203,6 +203,8 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					{
 						if (!global_info_->decryptor->SetPassword(L"VelvetSweatshop"))
 							return false;
+						else
+							global_info_->bWorkbookProtectExist = true;
 					}
 				}
 			}break;
@@ -263,6 +265,8 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			{
 				if (proc.optional<PROTECTION>())
 				{
+					global_info_->bWorkbookProtectExist = true;
+					
 					m_PROTECTION = elements_.back();
 					elements_.pop_back();
 				}
@@ -746,6 +750,12 @@ void GlobalsSubstream::UpdateDefineNames()
 		}
 		global_info_->arDefineNames.push_back(name);// для имен функций - todooo ... не все функции корректны !! БДИ !!
 	}
+}
+int GlobalsSubstream::serialize_protection(std::wostream & _stream)
+{
+	if (!m_PROTECTION) return 0;
+
+	return m_PROTECTION->serialize(_stream);
 }
 
 int GlobalsSubstream::serialize_format(std::wostream & _stream)

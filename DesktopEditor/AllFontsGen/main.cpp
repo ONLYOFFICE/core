@@ -1223,6 +1223,7 @@ int main(int argc, char** argv)
     std::wstring strThumbnailsFolder = L"";
     std::wstring strFontsSelectionBin = L"";
     std::wstring strOutputDir = L"";
+    int nFontFlag = 3;
 
     for (int i = 0; i < argc; ++i)
     {
@@ -1300,6 +1301,15 @@ int main(int argc, char** argv)
             {
                 strOutputDir = CorrectDir(sValue);
             }
+            else if (sKey == L"--font-format")
+            {
+                // first byte => isSupportCFF
+                // second byte => isUnsupport DFont (mac)
+
+                int nFlag = std::stoi(sValue);
+                if (nFlag > 0)
+                    nFontFlag = nFlag;
+            }
         }
     }
 
@@ -1318,7 +1328,7 @@ int main(int argc, char** argv)
         NSDirectory::GetFiles2(*i, arFontFiles, true);
     }
 
-    oApplicationF.InitializeFromArrayFiles(arFontFiles, 3);
+    oApplicationF.InitializeFromArrayFiles(arFontFiles, nFontFlag);
 
     NSCommon::SaveAllFontsJS(oApplicationF, strAllFontsPath, strAllFontsWebPath, strThumbnailsFolder, strFontsSelectionBin, strOutputDir);
 

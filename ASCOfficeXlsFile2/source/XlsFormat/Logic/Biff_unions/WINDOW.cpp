@@ -64,6 +64,8 @@ const bool WINDOW::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+	global_info = proc.getGlobalWorkbookInfo();
+
 	m_Window2 = elements_.back();
 	elements_.pop_back();
 
@@ -107,6 +109,8 @@ int WINDOW::serialize(std::wostream & stream)
 		{	
 			CP_XML_NODE(L"sheetView")
 			{	
+				if (global_info->bWorkbookProtectExist)	CP_XML_ATTR(L"windowProtection", true);
+
 				if (window2->fSelected)				CP_XML_ATTR(L"tabSelected"		, true);
 				if (window2->fDspFmlaRt)			CP_XML_ATTR(L"showFormulas"		, true);
 				if (!window2->fDspGridRt)			CP_XML_ATTR(L"showGridLines"	, false);

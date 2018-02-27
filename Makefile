@@ -288,6 +288,7 @@ endef
 
 .PHONY : all bin lib clean deploy
 
+.NOTPARALLEL:
 all: lib bin 
 
 bin: $(X2T) $(ALLFONTSGEN)

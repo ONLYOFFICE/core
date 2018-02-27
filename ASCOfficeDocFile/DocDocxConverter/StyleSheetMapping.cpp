@@ -171,7 +171,7 @@ namespace DocFileFormat
 				if ( (*iter)->tapx != NULL )
 				{
 					std::vector<short> tableGrid;
-					TablePropertiesMapping* tpMapping = new TablePropertiesMapping (m_pXmlWriter, sheet, &tableGrid, false);
+					TablePropertiesMapping* tpMapping = new TablePropertiesMapping (m_pXmlWriter, sheet, &tableGrid, NULL, false);
 					(*iter)->tapx->Convert( tpMapping );
 					RELEASEOBJECT( tpMapping );
 				}

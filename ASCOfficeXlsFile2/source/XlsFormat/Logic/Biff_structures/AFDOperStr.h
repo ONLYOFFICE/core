@@ -52,7 +52,6 @@ public:
 	
 	virtual void load(CFRecord& record);
 
-
 	unsigned char	cch;
 	unsigned char	fCompare;	
 

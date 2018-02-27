@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of MDXSTR union of records 
 class MDXSTR: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(MDXSTR)
@@ -49,7 +47,9 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typeMDXSTR;
+	static const ElementType type = typeMDXSTR;
+
+	BaseObjectPtr m_MDXStr;
 };
 
 } // namespace XLS

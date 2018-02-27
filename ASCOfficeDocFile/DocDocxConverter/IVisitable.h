@@ -33,6 +33,9 @@
 
 #include "IMapping.h"
 
+#define GETBITS(from, numL, numH) ((from & (((1 << (numH - numL + 1)) - 1) << numL)) >> numL)
+#define GETBIT(from, num) ((from & (1 << num)) != 0)
+
 namespace DocFileFormat
 {
     class IVisitable

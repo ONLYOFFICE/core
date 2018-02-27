@@ -52,7 +52,7 @@ BaseObjectPtr ObProj::clone()
 
 void ObProj::readFields(CFRecord& record)
 {
-	// the tag doesn't contain data
+	//vba present in file   .. выше .. по наличию собствено стороджа
 }
 
 } // namespace XLS

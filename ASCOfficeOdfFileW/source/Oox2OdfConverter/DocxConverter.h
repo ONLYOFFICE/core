@@ -158,15 +158,11 @@ namespace Oox2Odf
     private:
 		struct _section
 		{
-			_section() : start_para(0), end_para(-1), props(NULL), root(false) {}
+            OOX::Logic::CSectionProperty    *props;
+            size_t							start_para;
+            size_t							end_para;
 
-			_section(OOX::Logic::CSectionProperty *s, int start = 0, int end = -1, bool r = false) : props(s), start_para(start), end_para(end), root(r) {}
-
-			OOX::Logic::CSectionProperty *props;
-			int start_para;
-			int end_para;
-
-			bool root;
+			bool							bContinue = false;
 		}												*current_section_properties;
 		OOX::CDocx										*docx_document;
 		cpdoccore::odf_writer::package::odf_document	*output_document;
@@ -188,7 +184,7 @@ namespace Oox2Odf
 
 		void convert(OOX::Logic::CBackground			*oox_background, int type);
 		void convert(OOX::Logic::CSdt					*oox_sdt);
-		void convert(OOX::Logic::CSectionProperty		*oox_section_pr, bool root = false);
+		void convert(OOX::Logic::CSectionProperty		*oox_section_pr, bool bSection, const std::wstring & master_name = L"");
 		void convert(OOX::Logic::CParagraph				*oox_paragraph);
 		void convert(OOX::Logic::CRun					*oox_run);
 		void convert(OOX::Logic::CParagraphProperty		*oox_para_prop,	odf_writer::style_paragraph_properties	*paragraph_properties);

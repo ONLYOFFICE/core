@@ -31,11 +31,12 @@
  */
 
 #include "PROTECTION.h"
-#include <Logic/Biff_records/WinProtect.h>
-#include <Logic/Biff_records/Protect.h>
-#include <Logic/Biff_records/Password.h>
-#include <Logic/Biff_records/Prot4Rev.h>
-#include <Logic/Biff_records/Prot4RevPass.h>
+
+#include "../Biff_records/WinProtect.h"
+#include "../Biff_records/Protect.h"
+#include "../Biff_records/Password.h"
+#include "../Biff_records/Prot4Rev.h"
+#include "../Biff_records/Prot4RevPass.h"
 
 namespace XLS
 {
@@ -85,8 +86,37 @@ const bool PROTECTION::loadContent(BinProcessor& proc)
 		m_Prot4RevPass = elements_.back();
 		elements_.pop_back();
 	}
-	return true;
+	return m_WinProtect || m_Protect || m_Password;
 }
+int PROTECTION::serialize (std::wostream & _stream)
+{
+	WinProtect		*win_protect	= dynamic_cast<WinProtect*>		(m_WinProtect.get());
+	Protect			*protect		= dynamic_cast<Protect*>		(m_Protect.get());
+	Password		*password		= dynamic_cast<Password*>		(m_Password.get());
+
+	CP_XML_WRITER(_stream)    
+	{
+		CP_XML_NODE(L"workbookProtection") 
+		{
+			if (password)
+			{
+                CP_XML_ATTR(L"workbookPassword", password->wPassword);
+			}
+			if (win_protect)
+			{
+                CP_XML_ATTR(L"lockWindows", (win_protect->fLockWn ? 1 : 0));
+			}
+			if (protect)
+			{
+                CP_XML_ATTR(L"lockStructure", (protect->fLock ? 1 : 0));
+			}
+			
+		}
+		
+	}
+	return 0;
+}
+
 
 } // namespace XLS
 

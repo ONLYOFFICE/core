@@ -44,13 +44,15 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=""
-				PreprocessorDefinitions="USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS"
+				PreprocessorDefinitions="_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
+				EnableEnhancedInstructionSet="0"
 				ProgramDataBaseFileName="$(IntDir)\DocxFormat.pdb"
 				WarningLevel="3"
 				DebugInformationFormat="4"
+				DisableSpecificWarnings="4005;4311;4312"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -112,7 +114,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=""
-				PreprocessorDefinitions="USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED"
+				PreprocessorDefinitions="_USE_LIBXML2_READER_;LIBXML_READER_ENABLED"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -179,7 +181,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories=".\..\Source\XML\libxml2\XML\include;.\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;..\..\ASCOfficeOdtFile\Source\OfficeSvmFile"
-				PreprocessorDefinitions="USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED"
+				PreprocessorDefinitions="_USE_LIBXML2_READER_;LIBXML_READER_ENABLED"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				ProgramDataBaseFileName="$(IntDir)\DocxFormat.pdb"
@@ -244,7 +246,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories=".\..\Source\XML\libxml2\XML\include;.\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;..\..\ASCOfficeOdtFile\Source\OfficeSvmFile"
-				PreprocessorDefinitions="USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED"
+				PreprocessorDefinitions="_USE_LIBXML2_READER_;LIBXML_READER_ENABLED"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				ProgramDataBaseFileName="$(IntDir)\DocxFormat.pdb"
@@ -1204,6 +1206,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Source\DocxFormat\Media\VbaProject.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\DocxFormat\Media\VbaProject.h"
 				>
 			</File>
@@ -1376,14 +1382,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Source\Common\Utils.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\Common\Utils.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Source\Common\Wrap.cpp"
 				>
 			</File>
@@ -1439,15 +1437,7 @@
 				RelativePath="..\Source\XlsxFormat\FileFactory_Spreadsheet.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalOptions="/bigobj"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|x64"
+					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -1477,6 +1467,10 @@
 			</File>
 			<File
 				RelativePath="..\Source\XlsxFormat\WritingElement.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\XlsxFormat\Xlsx.cpp"
 				>
 			</File>
 			<File
@@ -1675,7 +1669,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Source\XlsxFormat\Worksheets\SheetData.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\Source\XlsxFormat\Worksheets\SheetData.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Source\XlsxFormat\Worksheets\Worksheet.cpp"
 					>
 				</File>
 				<File
@@ -2068,10 +2070,6 @@
 		</File>
 		<File
 			RelativePath="..\Source\DocxFormat\WritingElement.h"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\DocxFormat\WritingVector.h"
 			>
 		</File>
 	</Files>

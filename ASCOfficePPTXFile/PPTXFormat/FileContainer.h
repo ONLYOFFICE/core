@@ -33,9 +33,12 @@
 #ifndef PPTX_IFILE_CONTAINER_INCLUDE_H_
 #define PPTX_IFILE_CONTAINER_INCLUDE_H_
 
-#include "../../Common/DocxFormat/Source/DocxFormat/IFileContainer.h"
 #include "FileMap.h"
 #include "PPTXEvent.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/IFileContainer.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/Image.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/External/External.h"
 
 namespace PPTX
 {
@@ -44,7 +47,7 @@ namespace PPTX
 	class FileContainer : public OOX::IFileContainer
 	{
 	public:
-		FileContainer()
+		FileContainer(OOX::Document *pMain) : OOX::IFileContainer(pMain)
 		{
 			m_lPercent = 0;
 			m_bCancelled = false;
@@ -52,7 +55,14 @@ namespace PPTX
 		virtual ~FileContainer()
 		{
 		}
+		const bool IsExist(const OOX::FileType& oType) const;
 
+		smart_ptr<OOX::File>	Get(const OOX::FileType& oType);
+		void					Get(const OOX::FileType& oType, std::vector<smart_ptr<OOX::File>> & files);
+		
+		virtual std::wstring GetImagePathNameFromRId(const OOX::RId& rid)const;
+		virtual std::wstring GetLinkFromRId			(const OOX::RId& rid)const;
+		virtual std::wstring GetOleFromRId			(const OOX::RId& rid)const;
 	protected:
 		void read(const OOX::CPath& filename);
 		void read(const OOX::CRels& rels, const OOX::CPath& path);

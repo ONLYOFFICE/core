@@ -37,6 +37,7 @@
 #include <boost/make_shared.hpp>
 
 #include "../../../ASCOfficeOdfFile/include/cpdoccore/utf8cpp/utf8.h"
+#include "../../../Common/DocxFormat/Source/Base/Base.h"
 
 #include "external_items.h"
 #include "../../../DesktopEditor/common/File.h"
@@ -61,10 +62,13 @@ static std::wstring get_mime_type(const std::wstring & extension)
 	if (L"wav" == extension)	return  L"audio/wav";
 	if (L"bin" == extension)	return  L"application/vnd.openxmlformats-officedocument.oleObject";
 	if (L"xlsx" == extension)	return  L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+	if (L"xls" == extension)	return  L"application/vnd.ms-excel";
+	if (L"doc" == extension)	return  L"application/vnd.ms-word";
 
 	return L"";
 }
 
+//--------------------------------------------------------------------------------------------------------------------------
 content_types_file::content_types_file() : filename_(L"[Content_Types].xml") 
 {}
 
@@ -92,44 +96,71 @@ void content_types_file::set_media(external_items & _Mediaitems)
 {
     BOOST_FOREACH( external_items::item & item, _Mediaitems.items() )
     {
-		if ((item.type == external_items::typeImage || item.type == external_items::typeMedia) && item.mediaInternal)
+		if (!item.mediaInternal) continue;
+
+		std::wstring extension;
+		int n = item.uri.rfind(L".");
+		if (n > 0) extension = item.uri.substr(n + 1);
+
+		if (item.type == external_items::typeImage || item.type == external_items::typeMedia)
 		{
-			int n = item.uri.rfind(L".");
-			if (n > 0)
-			{
-				add_or_find_default(item.uri.substr(n+1, item.uri.length() - n));
-			}
+			add_or_find_default(extension);
+		}
+		else if (item.type == external_items::typeOleObject)
+		{
+			std::wstring link = L"application/vnd.openxmlformats-officedocument.oleObject";
+			
+			if (extension == L"xls" || extension == L"doc") 
+				add_or_find_default(extension);
+			else
+				content_type_.add_override(L"/xl/embeddings/" + item.uri, link);
+		}
+		else if (item.type == external_items::typeActiveX)
+		{
+			std::wstring link = L"application/vnd.ms-office.activeX";
+			content_type_.add_override(L"/xl/activeX/" + item.uri, link);
 		}
 	}
 }
 
 
-/////////////////////////////////////////////////////////////////////////
-
-simple_element::simple_element(const std::wstring & FileName, const std::wstring & Content) : file_name_(FileName)
+//--------------------------------------------------------------------------------------------------------------------------
+simple_element_ptr simple_element::create(const std::wstring & FileName, const std::wstring & Content)
 {
-    //utf8::utf16to8(Content.begin(), Content.end(), std::back_inserter(content_utf8_));
-    //падает на спец символах
-
-    content = Content;
-
+    return boost::make_shared<simple_element>(FileName, Content);
 }
-
+simple_element::simple_element(const std::wstring & fileName, const std::wstring & content) : filename_(fileName), content_(content)
+{
+}
+simple_element_ptr simple_element::create(const std::wstring & FileName, const std::string & contentUtf8)
+{
+    return boost::make_shared<simple_element>(FileName, contentUtf8);
+}
+simple_element::simple_element(const std::wstring & fileName, const std::string & contentUtf8) : filename_(fileName), content_utf8_(contentUtf8)
+{
+}
 void simple_element::write(const std::wstring & RootPath)
 {
-	std::wstring name_ = RootPath + FILE_SEPARATOR_STR +  file_name_;
+	std::wstring name_ = RootPath + FILE_SEPARATOR_STR +  filename_;
 
 	NSFile::CFileBinary file;
 	if ( file.CreateFileW(name_) == true)
 	{
-		std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
-        file.WriteFile((BYTE*)root.c_str(), root.length());
-        //file.WriteFile((BYTE*)content_utf8_.c_str(), content_utf8_.length());
-        file.WriteStringUTF8(content);
+		if (!content_utf8_.empty())
+		{
+			file.WriteFile((BYTE*)content_utf8_.c_str(), content_utf8_.size());
+		}
+		else
+		{
+			std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";			
+			file.WriteFile((BYTE*)root.c_str(), root.length());
+
+			file.WriteStringUTF8(content_);
+		}
         file.CloseFile();
 	}
 }
-
+//--------------------------------------------------------------------------------------------------------------------------
 rels_file::rels_file(std::wstring const & FileName) : filename_(FileName) 
 {};
 
@@ -137,7 +168,6 @@ rels_file_ptr rels_file::create(std::wstring const & FileName)
 {
     return boost::make_shared<rels_file>( boost::ref(FileName) );
 }
-
 void rels_file::write(const std::wstring & RootPath)
 {    
     std::wstringstream resStream;
@@ -172,7 +202,23 @@ void rels_files::add(std::wstring const & Id,
 {
     return add(relationship(Id, Type, Target, TargetMode));
 }
-
+//--------------------------------------------------------------------------------------------
+customXml_content::customXml_content()
+{      
+}
+_CP_PTR(customXml_content) customXml_content::create()
+{
+    return boost::make_shared<customXml_content>();
+}
+//--------------------------------------------------------------------------------------------
+theme_content::theme_content(char* data, size_t size)
+{      
+	content_ = std::string(data, size);
+}
+_CP_PTR(theme_content) theme_content::create(char* data, size_t size)
+{
+    return boost::make_shared<theme_content>(data, size);
+}
 //----------------------------------------------------------------------------------------
 chart_content::chart_content() : rels_file_(rels_file::create(L""))
 {      
@@ -182,13 +228,6 @@ _CP_PTR(chart_content) chart_content::create()
     return boost::make_shared<chart_content>();
 }
 //----------------------------------------------------------------------------------------
-element_ptr simple_element::create(const std::wstring & FileName, const std::wstring & Content)
-{
-    return boost::make_shared<simple_element>(FileName, Content);
-}
-
-////////////
-
 void core_file::write(const std::wstring & RootPath)
 {
     std::wstringstream resStream;
@@ -197,8 +236,8 @@ void core_file::write(const std::wstring & RootPath)
     L"xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" "
     L"xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >";
 
-	resStream << L"<dc:creator>ONLYOFFICE</dc:creator>";
-	resStream << L"<cp:lastModifiedBy>ONLYOFFICE</cp:lastModifiedBy>";
+	//resStream << L"<dc:creator>ONLYOFFICE</dc:creator>";
+	//resStream << L"<cp:lastModifiedBy>ONLYOFFICE</cp:lastModifiedBy>";
 	resStream << L"<cp:revision>1</cp:revision>";
     resStream << L"</cp:coreProperties>";
 
@@ -213,8 +252,12 @@ void app_file::write(const std::wstring & RootPath)
     resStream << L"<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" "
         L"xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\" >";
    
-	resStream << L"<Application>ONLYOFFICE Editor</Application>"; 
-    resStream << L"</Properties>";
+	resStream << L"<Application>ONLYOFFICE"; 
+#if defined(INTVER)
+	std::string s = VALUE2STR(INTVER);
+	resStream << L"/" << std::wstring(s.begin(), s.end());
+#endif	    
+	resStream << L"</Application></Properties>";
     
     simple_element elm(L"app.xml", resStream.str());
     elm.write(RootPath);
@@ -239,37 +282,15 @@ void docProps_files::write(const std::wstring & RootPath)
 ////////////
 
 
-media::media(external_items & _Mediaitems) : mediaitems_(_Mediaitems)
+media::media(external_items & _items) : items_(_items)
 {    
 }
 
 void media::write(const std::wstring & RootPath)
 {
-   // std::wstring path = RootPath + FILE_SEPARATOR_STR + L"media";
-
-   // BOOST_FOREACH( external_items::item & item, mediaitems_.items() )
-   // {
-   //     if (item.mediaInternal && item.type == external_items::typeImage )
-   //     {
-			////std::wstring & file_name  = item.href;
-			////std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + item.outputName;
-			////
-			////NSFile::CFileBinary::Copy(item.href, file_name_out);
-   //     }
-   // }
 
 }
-///////////////////////////////////////////////////////////////////////////////////
 
-
-charts::charts(external_items & _ChartsItems) : chartsitems_(_ChartsItems)
-{    
-}
-
-void charts::write(const std::wstring & RootPath)
-{
-
-}
 
 }
 }

@@ -47,13 +47,13 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
-				DisableSpecificWarnings="4311;4267;4996;4172"
+				DisableSpecificWarnings="4005;4311;4312"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -640,6 +640,14 @@
 				</File>
 				<File
 					RelativePath="..\src\docx\xlsx_conditionalFormatting.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\docx\xlsx_data_validation.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\docx\xlsx_data_validation.h"
 					>
 				</File>
 				<File

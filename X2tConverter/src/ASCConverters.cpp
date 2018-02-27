@@ -509,7 +509,7 @@ namespace NExtractTools
 		m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
         m_oCXlsxSerializer.setFontDir(params.getFontPath());
 
-        return m_oCXlsxSerializer.saveToFile (sTo, sXlsxDir, bXmlOptions ? params.getXmlOptions() : L"") ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+        return m_oCXlsxSerializer.saveToFile (sTo, sXlsxDir, bXmlOptions ? params.getXmlOptions() : L"");
     }
 
     // xslx -> xslt
@@ -572,7 +572,7 @@ namespace NExtractTools
 
         if(SUCCEEDED_X2T(nRes))
         {
-            nRes = m_oCXlsxSerializer.loadFromFile (sTargetBin, sTo, sXmlOptions, sMediaPath, sEmbedPath) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+            nRes = m_oCXlsxSerializer.loadFromFile (sTargetBin, sTo, sXmlOptions, sMediaPath, sEmbedPath);
         }
         //удаляем EditorWithChanges, потому что он не в Temp
         if (sFrom != sTargetBin)
@@ -970,7 +970,8 @@ namespace NExtractTools
 		m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
         m_oCXlsxSerializer.setFontDir(params.getFontPath());
 
-        int nRes = m_oCXlsxSerializer.saveToFile (sResultXlstFileEditor, sCSV, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+        int nRes = m_oCXlsxSerializer.saveToFile (sResultXlstFileEditor, sCSV, params.getXmlOptions());
+
         if (SUCCEEDED_X2T(nRes))
         {
             nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultXlstDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
@@ -1001,10 +1002,10 @@ namespace NExtractTools
         std::wstring sMediaPath;
         std::wstring sEmbedPath;
 
-        int nRes = m_oCXlsxSerializer.saveToFile (sResultXlstFileEditor, sCSV, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+        int nRes = m_oCXlsxSerializer.saveToFile (sResultXlstFileEditor, sCSV, params.getXmlOptions());
         if (SUCCEEDED_X2T(nRes))
         {
-            nRes = m_oCXlsxSerializer.loadFromFile(sResultXlstFileEditor, sTempUnpackedXLSX, params.getXmlOptions(), sMediaPath, sEmbedPath) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+            nRes = m_oCXlsxSerializer.loadFromFile(sResultXlstFileEditor, sTempUnpackedXLSX, params.getXmlOptions(), sMediaPath, sEmbedPath);
             if (SUCCEEDED_X2T(nRes))
             {
                 nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedXLSX, sTo, true)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
@@ -1021,7 +1022,7 @@ namespace NExtractTools
 		m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
         m_oCXlsxSerializer.setFontDir(params.getFontPath());
 
-        return m_oCXlsxSerializer.saveToFile(sTo, sFrom, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+        return m_oCXlsxSerializer.saveToFile(sTo, sFrom, params.getXmlOptions());
     }
     // xlst -> csv
 	int xlst2csv (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
@@ -1046,7 +1047,7 @@ namespace NExtractTools
         std::wstring sMediaPath;
         std::wstring sEmbedPath;
 
-        return m_oCXlsxSerializer.loadFromFile (sTempXlstFileEditor, sCSV, params.getXmlOptions(), sMediaPath, sEmbedPath) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+        return m_oCXlsxSerializer.loadFromFile (sTempXlstFileEditor, sCSV, params.getXmlOptions(), sMediaPath, sEmbedPath);
     }
 	// xslx -> csv
 	int xlsx2csv (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
@@ -1070,13 +1071,13 @@ namespace NExtractTools
        m_oCXlsxSerializer.setFontDir(params.getFontPath());
 
        std::wstring sXMLOptions = _T("");
-       int nRes = m_oCXlsxSerializer.saveToFile (sResultXlstFileEditor, sTempUnpackedXLSX, sXMLOptions) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+       int nRes = m_oCXlsxSerializer.saveToFile (sResultXlstFileEditor, sTempUnpackedXLSX, sXMLOptions);
        if (SUCCEEDED_X2T(nRes))
        {
            std::wstring sMediaPath;
            std::wstring sEmbedPath;
 
-           nRes = m_oCXlsxSerializer.loadFromFile (sResultXlstDir, sCSV, sXMLOptions, sMediaPath, sEmbedPath) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+           nRes = m_oCXlsxSerializer.loadFromFile (sResultXlstDir, sCSV, sXMLOptions, sMediaPath, sEmbedPath);
        }
 
        return nRes;
@@ -1107,7 +1108,7 @@ namespace NExtractTools
 
            m_oCXlsxSerializer.CreateXlsxFolders (sXmlOptions, sTemp, sMediaPath, sEmbedPath);
            
-           nRes = m_oCXlsxSerializer.loadFromFile(sTargetBin, sToTemp, sXmlOptions, sMediaPath, sEmbedPath) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+           nRes = m_oCXlsxSerializer.loadFromFile(sTargetBin, sToTemp, sXmlOptions, sMediaPath, sEmbedPath);
 
            //пишем в Temp и копируем, чтобы не возникало лишних файлов рядом с sTo, а лучше перейти на отдельный метод
            if(SUCCEEDED_X2T(nRes))
@@ -2553,7 +2554,7 @@ namespace NExtractTools
 	}
 	int oox2mscrypt	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
-        std::wstring password = params.getPassword();
+		std::wstring password = params.getSavePassword();
 
 		ECMACryptFile cryptReader;
 
@@ -2987,7 +2988,7 @@ namespace NExtractTools
        {
            if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo)
            {
-				if(params.hasPassword())
+				if(params.hasSavePassword())
 				{
 					std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.docx");
 					nRes = dir2zip(sFrom, sToMscrypt);
@@ -3199,7 +3200,7 @@ namespace NExtractTools
        {
            if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatTo)
            {
-				if(params.hasPassword())
+				if(params.hasSavePassword())
 				{
 					std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.xlsx");
 					nRes = dir2zip(sFrom, sToMscrypt);
@@ -3386,7 +3387,7 @@ namespace NExtractTools
 		{
 			if(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX == nFormatTo)
 			{
-				if(params.hasPassword())
+				if(params.hasSavePassword())
 				{
 					std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.pptx");
 					nRes = dir2zip(sFrom, sToMscrypt);
@@ -3661,7 +3662,7 @@ namespace NExtractTools
    {
 	   bool bMacros = false;
 
-       long hRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), NULL, bMacros);
+       long hRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), sTemp, NULL, bMacros);
        if (AVS_ERROR_DRM == hRes)
        {
            if(!params.getDontSaveAdditional())
@@ -3696,7 +3697,7 @@ namespace NExtractTools
 	{
 		bool bMacros = true;
 		
-		long hRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), NULL, bMacros);
+		long hRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), sTemp, NULL, bMacros);
 		if (AVS_ERROR_DRM == hRes)
 		{
            if(!params.getDontSaveAdditional())
@@ -3740,16 +3741,13 @@ namespace NExtractTools
 
 		bool bMacros = true;
 
-		if (ConvertXls2Xlsx( sFrom, sResultXlsxDir, params.getPassword(), params.getFontPath(), NULL, bMacros)== S_OK)
+        if (ConvertXls2Xlsx( sFrom, sResultXlsxDir, params.getPassword(), params.getFontPath(), sTemp, NULL, bMacros)== S_OK)
         {
             BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
              m_oCXlsxSerializer.setFontDir(params.getFontPath());
 
-            int res =  m_oCXlsxSerializer.saveToFile (sTo, sResultXlsxDir, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-
-            return res;
-
+			return m_oCXlsxSerializer.saveToFile (sTo, sResultXlsxDir, params.getXmlOptions());
         }
         return AVS_FILEUTILS_ERROR_CONVERT;
    }
@@ -3801,6 +3799,23 @@ namespace NExtractTools
 	}
 
 //------------------------------------------------------------------------------------------------------------------
+	int detectMacroInFile(InputParams& oInputParams)
+	{
+        int nRes = 0;// no macro
+		std::wstring sFileFrom	= *oInputParams.m_sFileFrom;
+
+		COfficeFileFormatChecker OfficeFileFormatChecker;
+
+		if (OfficeFileFormatChecker.isOfficeFile(sFileFrom))
+        {
+           if (OfficeFileFormatChecker.bMacroEnabled)
+		   {
+			   nRes = AVS_ERROR_MACRO; 
+		   }
+		}
+
+		return nRes;
+	}
 	int fromInputParams(InputParams& oInputParams)
 	{
 		TConversionDirection conversion  = oInputParams.getConversionDirection();
@@ -3865,13 +3880,17 @@ namespace NExtractTools
 		}
 		else
 		{
-			sTempDir = NSDirectory::GetFolderPath(sFileFrom) + FILE_SEPARATOR_STR + _T("Temp");
-			NSDirectory::CreateDirectory(sTempDir);
+			sTempDir = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetFolderPath(sFileTo));
 		}
 		if (sTempDir.empty())
 		{
 			std::cerr << "Couldn't create temp folder" << std::endl;
 			return AVS_FILEUTILS_ERROR_UNKNOWN;
+		}
+
+		if (!oInputParams.checkInputLimits())
+		{
+			return AVS_FILEUTILS_ERROR_CONVERT_LIMITS;
 		}
 
 		int result = 0;
@@ -4176,6 +4195,14 @@ namespace NExtractTools
 			case TCD_MSCRYPT2:
 			{
 				result = fromMscrypt (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_MSCRYPT2_RAW:
+			{
+				result = mscrypt2oox(sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_2MSCRYPT_RAW:
+			{
+				result = oox2mscrypt(sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
 			case TCD_MSCRYPT2DOCT:
 			case TCD_MSCRYPT2XLST:

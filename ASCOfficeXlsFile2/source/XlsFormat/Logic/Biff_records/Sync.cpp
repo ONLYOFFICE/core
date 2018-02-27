@@ -31,7 +31,7 @@
  */
 
 #include "Sync.h"
-#include <Logic/Biff_structures/CellRef.h>
+#include "../Biff_structures/CellRef.h"
 
 namespace XLS
 {

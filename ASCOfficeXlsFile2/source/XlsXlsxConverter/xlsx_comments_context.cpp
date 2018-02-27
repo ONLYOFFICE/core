@@ -32,11 +32,8 @@
 
 #include "xlsx_comments_context.h"
 
-#include <boost/foreach.hpp>
 #include <iostream>
 #include <boost/lexical_cast.hpp>
-
-
 
 namespace oox {
 

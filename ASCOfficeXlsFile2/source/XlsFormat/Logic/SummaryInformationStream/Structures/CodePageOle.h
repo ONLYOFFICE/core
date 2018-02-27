@@ -31,8 +31,8 @@
  */
 #pragma once
 #include "Property.h"
-
-#include <Binary/BinSmartPointers.h>
+#include "../../../Binary/BinSmartPointers.h"
+#include "../../../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 namespace OLEPS
 {
@@ -40,70 +40,48 @@ namespace OLEPS
 class PropertyCodePage : public Property
 {
 public:
-    PropertyCodePage(const unsigned short value_type, XLS::CFStreamPtr stream);
+    PropertyCodePage(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream);
 	
-	static const unsigned int Type = 0x0001;
-	static const unsigned short DefaultCodePage = 1250;
+	unsigned int Type;
 
+	static const unsigned short DefaultCodePage = 1250;	
 	unsigned short code_page;
 };
 typedef boost::shared_ptr<PropertyCodePage> PropertyCodePagePtr;
 //-----------------------------------------------------------------------------------------
-class PropertyTitle : public Property
+class PropertyStr : public Property
 {
 public:
-    PropertyTitle(const unsigned short value_type, XLS::CFStreamPtr stream);
+    PropertyStr(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream);
 	
-	static const unsigned int Type = 0x0002;
-
-	std::wstring title;
+	std::wstring value;
 };
-typedef boost::shared_ptr<PropertyTitle> PropertyTitlePtr;
+typedef boost::shared_ptr<PropertyStr> PropertyStrPtr;
 //-----------------------------------------------------------------------------------------
-class PropertySubject : public Property
+class PropertyDTM : public Property
 {
 public:
-    PropertySubject(const unsigned short value_type, XLS::CFStreamPtr stream);
+    PropertyDTM(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream);
 	
-	static const unsigned int Type = 0x0003;
-
-	std::wstring subject;
+	std::wstring value;
 };
-typedef boost::shared_ptr<PropertySubject> PropertySubjectPtr;
+typedef boost::shared_ptr<PropertyDTM> PropertyDTMPtr;
 //-----------------------------------------------------------------------------------------
-class PropertyAuthor : public Property
+class PropertyInt : public Property
 {
 public:
-    PropertyAuthor(const unsigned short value_type, XLS::CFStreamPtr stream);
-	static const unsigned int Type = 0x0004;
-	std::wstring author;
+    PropertyInt(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream);
+	
+	_UINT32			value;
 };
-typedef boost::shared_ptr<PropertyAuthor> PropertyAuthorPtr;
+typedef boost::shared_ptr<PropertyInt> PropertyIntPtr;
 //-----------------------------------------------------------------------------------------
-class PropertyKeywords : public Property
+class PropertyBool : public Property
 {
 public:
-    PropertyKeywords(const unsigned short value_type, XLS::CFStreamPtr stream);
-	static const unsigned int Type = 0x0005;
-	std::wstring keywords;
+    PropertyBool(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream);
+	
+	bool value;
 };
-typedef boost::shared_ptr<PropertyKeywords> PropertyKeywordsPtr;
-//-----------------------------------------------------------------------------------------
-class PropertyComments : public Property
-{
-public:
-    PropertyComments(const unsigned short value_type, XLS::CFStreamPtr stream);
-	static const unsigned int Type = 0x0006;
-	std::wstring comments;
-};
-typedef boost::shared_ptr<PropertyComments> PropertyCommentsPtr;
-//-----------------------------------------------------------------------------------------
-class PropertyDateCreate : public Property
-{
-public:
-    PropertyDateCreate(const unsigned short value_type, XLS::CFStreamPtr stream);
-	static const unsigned int Type = 0x000c;
-	std::wstring dateCreate;
-};
-typedef boost::shared_ptr<PropertyDateCreate> PropertyDateCreatesPtr;
+typedef boost::shared_ptr<PropertyDTM> PropertyDTMPtr;
 } // namespace OLEPS

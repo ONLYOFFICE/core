@@ -48,7 +48,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -65,9 +65,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Urlmon.lib"
+				AdditionalDependencies="Urlmon.lib Rpcrt4.lib"
 				LinkIncremental="1"
-				IgnoreDefaultLibraryNames="LIBCMT.lib"
+				IgnoreDefaultLibraryNames=""
 				IgnoreEmbeddedIDL="true"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -408,12 +408,24 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Common\DocxFormat\Source\Base\unicode_util.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\UnicodeConverter\UnicodeConverter.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\DesktopEditor\xml\src\xmldom.cpp"

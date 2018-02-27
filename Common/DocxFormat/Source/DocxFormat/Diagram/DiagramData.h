@@ -163,14 +163,14 @@ namespace OOX
     class CDiagramData : public OOX::File, public OOX::IFileContainer
     {
     public:
-        CDiagramData()
+        CDiagramData(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
         {
         }
-		CDiagramData(const CPath& uri)
+		CDiagramData(OOX::Document* pMain, const CPath& uri) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
 			read(uri.GetDirectory(), uri);
 		}
-		CDiagramData(const CPath& oRootPath, const CPath& oPath)
+		CDiagramData(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
         {
             read( oRootPath, oPath );
         }
@@ -186,9 +186,8 @@ namespace OOX
         virtual void read(const CPath& oRootPath, const CPath& oFilePath)
         {
             IFileContainer::Read( oRootPath, oFilePath );
-    #ifdef USE_LITE_READER
 
-            XmlUtils::CXmlLiteReader oReader;
+			XmlUtils::CXmlLiteReader oReader;
 
             if ( !oReader.FromFile( oFilePath.GetPath() ) )
                 return;
@@ -220,7 +219,6 @@ namespace OOX
 					}
                 }
             }
-    #endif
         }
 
         virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const

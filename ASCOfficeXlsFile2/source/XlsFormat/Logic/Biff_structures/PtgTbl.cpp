@@ -36,9 +36,7 @@
 namespace XLS
 {
 
-
-PtgTbl::PtgTbl()
-:	Ptg(fixed_id)
+PtgTbl::PtgTbl() :	Ptg(fixed_id)
 {
 }
 
@@ -59,7 +57,11 @@ void PtgTbl::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full
 {
 	// The reference coordinates shall be obtained from row/column values.
 	// No textual form need but the empty line.
+	
 	ptg_stack.push(L""); 
+
+	//CellRef ref(row, col, true, true);
+	//ptg_stack.push(ref.toString()); 
 }
 
 

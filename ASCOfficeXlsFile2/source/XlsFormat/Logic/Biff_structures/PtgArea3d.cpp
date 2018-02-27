@@ -41,8 +41,7 @@ namespace XLS
 {
 
 
-PtgArea3d::PtgArea3d(const CellRef& cell_base_ref_init)
-:	cell_base_ref(cell_base_ref_init)
+	PtgArea3d::PtgArea3d(const CellRef& cell_base_ref_init) : cell_base_ref(cell_base_ref_init)
 {
 }
 
@@ -111,21 +110,39 @@ void PtgArea3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
 
 	if (global_info->Version < 0x0600)
 	{
+		ixti = ixals;
 		if (ixals == 0xffff)
 		{
-			std::wstring prefix = XMLSTUFF::xti_indexes2sheet_name(itabFirst, itabLast, global_info->sheets_names);
-			if (!prefix.empty()) prefix += L"!";
+			std::wstring strRange;
+			if(-1 == itabFirst)
+			{
+				strRange = L"#REF";
+			}
+			else
+			{
+				strRange = XMLSTUFF::name2sheet_name(global_info->sheets_info[itabFirst].name, L"");
+				if (itabFirst != itabLast)
+				{
+					strRange += std::wstring(L":") + XMLSTUFF::name2sheet_name(global_info->sheets_info[itabLast].name, L"");
+				}
+			}
+			if (!strRange.empty()) strRange += L"!";
 
-			ptg_stack.push(prefix + range_ref);		
-		}
-		else
-		{//external !!
-			ptg_stack.push(XMLSTUFF::make3dRef(ixals, range_ref, global_info->xti_parsed, full_ref));
+			ptg_stack.push(strRange + range_ref);		
 		}
 	}
-	else
+	if (ixti != 0xffff)
 	{
-		ptg_stack.push(XMLSTUFF::make3dRef(ixti, range_ref, global_info->xti_parsed, full_ref));
+		std::wstring link = global_info->arXti[ixti].link;
+		if (!link.empty() && !range_ref.empty()) 
+			link += L"!";
+
+		if (full_ref && link.empty()) //4673306.xls defined name "Категория"
+		{
+			link = L"#REF!";
+		}
+		
+		ptg_stack.push(link + range_ref); 
 	}
 
 }

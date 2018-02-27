@@ -31,24 +31,22 @@
  */
 
 #include "PROTECTION_COMMON.h"
-#include <Logic/Biff_records/Protect.h>
-#include <Logic/Biff_records/ScenarioProtect.h>
-#include <Logic/Biff_records/ObjProtect.h>
-#include <Logic/Biff_records/Password.h>
+
+#include "../Biff_records/Protect.h"
+#include "../Biff_records/ScenarioProtect.h"
+#include "../Biff_records/ObjProtect.h"
+#include "../Biff_records/Password.h"
 
 namespace XLS
 {
-
 
 PROTECTION_COMMON::PROTECTION_COMMON()
 {
 }
 
-
 PROTECTION_COMMON::~PROTECTION_COMMON()
 {
 }
-
 
 BaseObjectPtr PROTECTION_COMMON::clone()
 {
@@ -59,12 +57,63 @@ BaseObjectPtr PROTECTION_COMMON::clone()
 // PROTECTION_COMMON = [Protect] [ScenarioProtect] [ObjProtect] [Password]
 const bool PROTECTION_COMMON::loadContent(BinProcessor& proc)
 {
-	bool res1 = proc.optional<Protect>();
-	bool res2 = proc.optional<ScenarioProtect>();
-	bool res3 = proc.optional<ObjProtect>();
-	bool res4 = proc.optional<Password>();
+	if (proc.optional<Protect>())
+	{
+		m_Protect = elements_.back();
+		elements_.pop_back();
+	}
+	if (proc.optional<ScenarioProtect>())
+	{
+		m_ScenarioProtect = elements_.back();
+		elements_.pop_back();
+	}
+	if (proc.optional<ObjProtect>())
+	{
+		m_ObjProtect = elements_.back();
+		elements_.pop_back();
+	}
+	if (proc.optional<Password>())
+	{
+		m_Password = elements_.back();
+		elements_.pop_back();
+	}
 
-	return res1 || res2 || res3 || res4;
+	return m_Protect || m_ScenarioProtect || m_ObjProtect || m_Password;
+}
+
+int PROTECTION_COMMON::serialize (std::wostream & _stream)
+{
+	Protect			*protect	= dynamic_cast<Protect*>		(m_Protect.get());
+	Password		*password	= dynamic_cast<Password*>		(m_Password.get());
+	ScenarioProtect	*scenario	= dynamic_cast<ScenarioProtect*>(m_ScenarioProtect.get());
+	ObjProtect		*object		= dynamic_cast<ObjProtect*>		(m_ObjProtect.get());
+
+	CP_XML_WRITER(_stream)    
+	{
+		CP_XML_NODE(L"sheetProtection") 
+		{
+			if (password)
+			{
+                CP_XML_ATTR(L"password", password->wPassword);
+			}
+			if (protect)
+			{
+                CP_XML_ATTR(L"sheet", (protect->fLock ? 1 : 0));
+			}
+			if (object)
+			{
+                CP_XML_ATTR(L"objects", (object->fLockObj ? 1 : 0));
+			}
+			if (scenario)
+			{
+                CP_XML_ATTR(L"scenarios", (scenario->fScenProtect ? 1 : 0));
+			}
+			CP_XML_ATTR(L"selectLockedCells", 1);
+			CP_XML_ATTR(L"selectUnlockedCells", 1);
+		}
+		
+	}
+	return 0;
 }
 
 } // namespace XLS

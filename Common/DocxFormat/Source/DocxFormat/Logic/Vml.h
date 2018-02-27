@@ -711,8 +711,6 @@ namespace OOX
 			{
 			}
 
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CFormulas::fromXML(XmlUtils::CXmlNode& oNode)
@@ -737,11 +735,13 @@ namespace OOX
 			{
 				std::wstring sResult = _T("<v:formulas>");
 
-				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if (m_arrItems[nIndex])
-						sResult += m_arrItems[nIndex]->toXML();
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        sResult += m_arrItems[i]->toXML();
+                    }
+                }
 
 				sResult += _T("</v:formulas>");
 
@@ -937,16 +937,17 @@ namespace OOX
 					}
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<v:handles>");
 
-				for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if (m_arrItems[nIndex])
-						sResult += m_arrItems[nIndex]->toXML();
-				}
-
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        sResult += m_arrItems[i]->toXML();
+                    }
+                }
 				sResult += _T("</v:handles>");
 
 				return sResult;
@@ -2453,9 +2454,9 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					std::wstring sName = oReader.GetName();
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("w:txbxContent") == sName )
+					if ( L"txbxContent" == sName ) //namespaces w & wne
 						m_oTxtbxContent = oReader;
 				}
 			}

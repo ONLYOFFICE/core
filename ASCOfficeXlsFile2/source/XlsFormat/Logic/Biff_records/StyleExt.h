@@ -41,8 +41,6 @@
 namespace XLS
 {
 
-
-// Logical representation of StyleExt record in BIFF8
 class StyleExt: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(StyleExt)
@@ -53,10 +51,9 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeStyleExt;
+	static const ElementType type = typeStyleExt;
 
 	int serialize(std::wostream & stream);
 

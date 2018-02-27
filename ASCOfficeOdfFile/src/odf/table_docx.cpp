@@ -34,7 +34,6 @@
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/attributes.h>
 
 #include "serialize_elements.h"
 #include "odfcontext.h"
@@ -163,7 +162,6 @@ void table_table::docx_convert(oox::docx_conversion_context & Context)
 
     if (inst && inst->content())
         inst->content()->docx_convert(Context);
-
 
 	Context.get_styles_context().docx_serialize_table_style(_Wostream, Context.get_text_tracked_context().dumpTblPr_);
 

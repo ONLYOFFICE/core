@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of PIVOTTH union of records 
 class PIVOTTH: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTTH)
@@ -49,7 +47,11 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typePIVOTTH;
+	static const ElementType type = typePIVOTTH;
+
+	BaseObjectPtr				m_SXTH;
+	std::vector<BaseObjectPtr>	m_arContinueFrt;
+
 };
 
 } // namespace XLS

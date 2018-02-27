@@ -151,7 +151,7 @@ const bool BinReaderProcessor::readChild(BaseObject& object, const bool is_manda
 				if(w_object->read(reader_, parent_, false))
 				{
 					// Remove successfully read object from the wanted objects list
-					wanted_objects.erase(it++);
+					wanted_objects.erase(++it);
 				}
 				else
 				{

@@ -61,6 +61,7 @@ const bool MDTINFO::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+	m_MDTInfo = elements_.back();	elements_.pop_back();
 	proc.repeated<ContinueFrt12>(0, 0);
 	return true;
 }

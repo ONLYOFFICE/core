@@ -118,7 +118,7 @@ const std::wstring Encoding::utf82unicode(const std::string& line)
 		if (conversionOK != eUnicodeConversionResult)
 		{
 			delete [] pStrUtf32;
-            return cp2unicode(line,0);
+            return ansi2unicode(line);
 		}
 		std::wstring utf32Str ((wchar_t *) pStrUtf32);
 

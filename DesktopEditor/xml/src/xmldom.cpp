@@ -228,9 +228,17 @@ namespace XmlUtils
 
 					nCurDepth = GetDepth();
 					if (eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace || eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE)
+					{
 						m_pCurrentNode->m_sText += GetText();
+					}
+					else if (eNodeType == XmlNodeType_CDATA)
+					{
+						m_pCurrentNode->m_sText += GetText();
+					}
 					else if (eNodeType == XmlNodeType_Element)
+					{
 						WriteElement();
+					}
 					else if (eNodeType == XmlNodeType_EndElement)
 					{
 						m_list.pop_back();

@@ -124,18 +124,6 @@ namespace OOX
 												_T(""), 
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"));
 
-		const FileType ExternalImage	(L"", L"", 
-												_T(""), 
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"));
-
-		const FileType ExternalAudio	(L"", L"", 
-												_T(""), 
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio"));
-
-		const FileType ExternalVideo	(L"", L"", 
-												_T(""), 
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/video"));
-
 		const FileType Image			(L"media", L"image", 
 												_T(""), 
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"));
@@ -191,6 +179,10 @@ namespace OOX
 		const FileType VbaData(L"", L"vbaData.xml",
 												_T("application/vnd.ms-word.vbaData+xml"),
 												_T("http://schemas.microsoft.com/office/2006/relationships/wordVbaData"));
+
+		const FileType JsaProject(L"", L"jsaProject.bin",
+												_T(""),
+												_T("http://schemas.onlyoffice.com/jsaProject"));
 
 		const FileType MicrosoftOfficeUnknown(L"embeddings", L"",
 												_T(""),

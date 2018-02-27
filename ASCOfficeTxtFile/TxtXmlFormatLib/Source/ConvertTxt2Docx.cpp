@@ -32,6 +32,15 @@
 #include "ConvertTxt2Docx.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+
+#include "../../../Common/DocxFormat/Source/DocxFormat/Document.h"
+//#include "../../../Common/DocxFormat/Source/DocxFormat/Numbering.h"
+//#include "../../../Common/DocxFormat/Source/DocxFormat/Comments.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Styles.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Footnote.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/HeaderFooter.h"
+
 #include "TxtFormat/TxtFormat.h"
 #include "TxtXmlEvent.h"
 
@@ -69,16 +78,16 @@ namespace Txt2Docx
 
     void Converter::write(/*const std::wstring& path*/XmlUtils::CStringWriter & stringWriter)
     {
-		for (long i=0;i < converter_->m_outputFile.m_arrItems.size(); i++)
+        for (size_t	i = 0; i < converter_->m_outputFile.m_arrItems.size(); ++i)
 		{
-			if (converter_->m_outputFile.m_arrItems[i] != NULL)
+			if ( converter_->m_outputFile.m_arrItems[i] )
 				stringWriter.WriteString(converter_->m_outputFile.m_arrItems[i]->toXML());
 		}
 		//BOOL res = converter_->m_outputFile.Write(std_string2string(path.string()));
 		return;
     }
 
-	Converter_Impl::Converter_Impl(int encoding)
+	Converter_Impl::Converter_Impl(int encoding) : m_outputFile(NULL)
 	{
 		m_inputFile.m_nEncoding = encoding;
 		
@@ -109,8 +118,10 @@ namespace Txt2Docx
             font.m_sHAnsi.Init();	*font.m_sHAnsi	= L"Courier New";
             font.m_sCs.Init();		*font.m_sCs		= L"Courier New";
 
-			for (std::list<std::wstring>::iterator line = m_inputFile.m_listContent.begin(); line != m_inputFile.m_listContent.end(); line++)
+            for (size_t i = 0; i < m_inputFile.m_listContent.size(); ++i)
 			{
+				std::wstring & line = m_inputFile.m_listContent[i];
+
 				OOX::Logic::CParagraph			*paragraph	= new OOX::Logic::CParagraph();
 				OOX::Logic::CParagraphProperty	*pPr		= new OOX::Logic::CParagraphProperty();
 				OOX::Logic::CRunProperty		*rPr		= new OOX::Logic::CRunProperty();
@@ -122,17 +133,17 @@ namespace Txt2Docx
 				paragraph->m_arrItems.push_back(pPr);
 				paragraph->m_oParagraphProperty = pPr; //копия для удобства
 				
-				while(line->find(_T("\x08")) != line->npos)
+				while(line.find(_T("\x08")) != line.npos)
 				{
-					line->erase(line->find(_T("\x08")), 1);//, "");
+					line.erase(line.find(_T("\x08")), 1);//, "");
 				}
-				while(line->find(_T("\x09")) != line->npos)
+				while(line.find(_T("\x09")) != line.npos)
                 {
-					int pos = line->find(_T("\x09"));
+					int pos = line.find(_T("\x09"));
 					
 					if (pos > 0)
 					{
-						std::wstring s = line->substr(0, pos - 1);
+						std::wstring s = line.substr(0, pos - 1);
 						if (!s.empty())
 						{
 							OOX::Logic::CRunProperty *rPr_	= new OOX::Logic::CRunProperty();
@@ -142,12 +153,12 @@ namespace Txt2Docx
 						}
 					}
 					paragraph->AddTab();
-					line->erase(0, pos + 1);
+					line.erase(0, pos + 1);
                 }
 			
-				if (!line->empty())
+				if (!line.empty())
 				{
-                    std::wstring s_ = XmlUtils::EncodeXmlString(*line);
+                    std::wstring s_ = XmlUtils::EncodeXmlString(line);
                     paragraph->AddText(s_, rPr);
 				}
 				pDocument->m_arrItems.push_back(paragraph);

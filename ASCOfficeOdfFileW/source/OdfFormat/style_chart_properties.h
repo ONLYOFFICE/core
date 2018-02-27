@@ -95,6 +95,7 @@ public:
 	_CP_OPT(int) chart_spline_order_;
 	_CP_OPT(int) chart_spline_resolution_;
 	_CP_OPT(int) chart_pie_offset_;	
+	_CP_OPT(bool) chart_pie_bubble_;
 	_CP_OPT(int) chart_interval_minor_divisor_;
 
     _CP_OPT(double) chart_maximum_;
@@ -105,15 +106,15 @@ public:
 	_CP_OPT(double) chart_error_margin_;
 	_CP_OPT(double) chart_error_upper_limit_;
 
-	_CP_OPT(odf_types::chart_interpolation)		chart_interpolation_;
+	_CP_OPT(odf_types::chart_interpolation)			chart_interpolation_;
 	_CP_OPT(odf_types::chart_solid_type)			chart_solid_type_;
-	_CP_OPT(odf_types::chart_label_arrangement)	chart_label_arrangement_;
+	_CP_OPT(odf_types::chart_label_arrangement)		chart_label_arrangement_;
 	_CP_OPT(odf_types::direction)					style_direction_;
-	_CP_OPT(odf_types::chart_series_source)		chart_series_source_;
+	_CP_OPT(odf_types::chart_series_source)			chart_series_source_;
 	_CP_OPT(odf_types::length)						chart_symbol_width_;
 	_CP_OPT(odf_types::length)						chart_symbol_height_;
 	_CP_OPT(odf_types::chart_regression_type)		chart_regression_type_;
-	_CP_OPT(odf_types::chart_data_label_number)	chart_data_label_number_;
+	_CP_OPT(odf_types::chart_data_label_number)		chart_data_label_number_;
 	_CP_OPT(odf_types::chart_error_category)		chart_error_category_;
 
 	_CP_OPT(std::wstring)				chart_axis_label_position_;

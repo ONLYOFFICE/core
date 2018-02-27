@@ -61,9 +61,9 @@ public:
 	{
 		global_info_ = proc.getGlobalWorkbookInfo();
 
-		XLS::GlobalWorkbookInfo::_sheet_size_info zero;
-		XLS::GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info_->current_sheet >=0 ? 
-											global_info_->sheet_size_info[global_info_->current_sheet - 1] : zero;
+		XLS::GlobalWorkbookInfo::_sheet_info zero;
+		XLS::GlobalWorkbookInfo::_sheet_info & sheet_info = global_info_->current_sheet >=0 ? 
+											global_info_->sheets_info[global_info_->current_sheet - 1] : zero;
 		
 		int count, count_row = 0;
 		
@@ -175,9 +175,9 @@ struct _CompareColumnCell
 
 int CELL_GROUP::serialize(std::wostream & stream)
 {
-	XLS::GlobalWorkbookInfo::_sheet_size_info zero;
-	XLS::GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info_->current_sheet >=0 ? 
-										global_info_->sheet_size_info[global_info_->current_sheet - 1] : zero;
+	XLS::GlobalWorkbookInfo::_sheet_info zero;
+	XLS::GlobalWorkbookInfo::_sheet_info & sheet_info = global_info_->current_sheet >=0 ? 
+										global_info_->sheets_info[global_info_->current_sheet - 1] : zero;
 	
 	CP_XML_WRITER(stream)    
     {	
@@ -302,14 +302,19 @@ const bool CELLTABLE::loadContent(BinProcessor& proc)
 	CELL_GROUP cell_group2(shared_formulas_locations_ref_);
 	m_count_CELL_GROUP = proc.repeated(cell_group2, 0, 0);
 
-	proc.repeated<EntExU2>(0, 0);
-
+	int count = proc.repeated<EntExU2>(0, 0);
+	while(count > 0)
+	{
+		m_arEntExU2.insert(m_arEntExU2.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}	
 	return true;
 }
 
 int CELLTABLE::serialize(std::wostream & stream)
 {
-	for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); it++)
+	for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); ++it)
 	{
 		it->get()->serialize(stream);
 	}

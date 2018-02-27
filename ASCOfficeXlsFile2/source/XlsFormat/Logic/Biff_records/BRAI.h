@@ -33,8 +33,8 @@
 
 #include "BiffRecord.h"
 
-#include <Logic/Biff_structures/ChartParsedFormula.h>
-#include <Logic/Biff_structures/CellRangeRef.h>
+#include "../Biff_structures/ChartParsedFormula.h"
+#include "../Biff_structures/CellRangeRef.h"
 
 namespace XLS
 {

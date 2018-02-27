@@ -318,20 +318,29 @@ public:
     docRGB      Color;
 	CThemeColor ThemeColor; 
 
+	bool bValue;
 	bool bColor;
 	bool bThemeColor;
 	Shd()
 	{
-        Value       = shd_Nil;
+		bValue		= false;
         bColor      = false;
 		bThemeColor = false;
 	}
     std::wstring ToString()
 	{
         std::wstring sShd;
-		if(bColor || (bThemeColor && ThemeColor.IsNoEmpty()))
+		if(bValue || bColor || (bThemeColor && ThemeColor.IsNoEmpty()))
 		{
-            sShd += L"<w:shd w:val=\"clear\" w:color=\"auto\"";
+			sShd += L"<w:shd";
+			if(bValue)
+			{
+				if(shd_Nil == Value)
+					sShd += L" w:val=\"nil\"";
+				else
+					sShd += L" w:val=\"clear\"";
+			}
+			sShd += L" w:color=\"auto\"";
 			if(bColor)
                 sShd += L" w:fill=\"" + Color.ToString() + L"\"";
 			if(bThemeColor && ThemeColor.IsNoEmpty())
@@ -355,10 +364,13 @@ class Tab
 public:
 	BYTE Val;
 	double Pos;
+	BYTE Leader;
+	bool bLeader;
 	Tab()
 	{
 		Val = shd_Nil;
 		Pos = 0;
+		bLeader = false;
 	}
 };
 class Tabs
@@ -369,7 +381,7 @@ public:
 class rPr
 {
 private:
-    std::map<std::wstring, int>& m_mapFonts;
+    boost::unordered_map<std::wstring, int>& m_mapFonts;
 public:
 	bool Bold;
 	bool Italic;
@@ -442,7 +454,7 @@ public:
 
 	bool bDoNotWriteNullProp;
 public:
-    rPr(std::map<std::wstring, int>& mapFonts) : m_mapFonts(mapFonts)
+    rPr(boost::unordered_map<std::wstring, int>& mapFonts) : m_mapFonts(mapFonts)
 	{
 		Reset();
 
@@ -1697,7 +1709,7 @@ public:
             std::vector<std::wstring> arSplit;
             boost::algorithm::split(arSplit, pComment->UserName, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 
-            for (int i = 0; i < arSplit.size(); i++)
+            for (size_t i = 0; i < arSplit.size(); i++)
             {
                 sInitials += arSplit[i][0];
             }
@@ -1733,7 +1745,7 @@ public:
 
             bool bFirst = true;
 			int nPrevIndex = 0;
-            for(size_t i = 0; i < sText.length(); i++)
+            for (int i = 0; i < (int)sText.length(); i++)
 			{
                 wchar_t cToken = sText[i];
 				if('\n' == cToken)
@@ -1784,8 +1796,8 @@ w15:paraIdParent=\"" + pComment->m_sParaIdParent + L"\" w15:done=\"" + sDone + L
 };
 class CComments
 {
-	std::map<int, CComment*> m_mapComments;
-    std::map<std::wstring, CComment*> m_mapAuthors;
+    boost::unordered_map<int, CComment*>          m_mapComments;
+    boost::unordered_map<std::wstring, CComment*> m_mapAuthors;
 public:
 	IdCounter m_oFormatIdCounter;
 	IdCounter m_oParaIdCounter;
@@ -1795,7 +1807,7 @@ public:
 	}
 	~CComments()
 	{
-		for (std::map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+        for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
 			delete it->second;
 		}
@@ -1819,7 +1831,7 @@ public:
 	CComment* get(int nInd)
 	{
 		CComment* pRes = NULL;
-		std::map<int, CComment*>::const_iterator pair = m_mapComments.find(nInd);
+        boost::unordered_map<int, CComment*>::const_iterator pair = m_mapComments.find(nInd);
 		if(m_mapComments.end() != pair)
 			pRes = pair->second;
 		return pRes;
@@ -1831,7 +1843,7 @@ public:
     std::wstring writeContent()
 	{
         std::wstring sRes;
-		for (std::map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+        for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
             sRes += (it->second->writeTemplates(CComment::writeContent));
 		}
@@ -1840,7 +1852,7 @@ public:
     std::wstring writeContentExt()
 	{
         std::wstring sRes;
-		for (std::map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+        for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
             sRes += (it->second->writeTemplates(CComment::writeContentExt));
 		}
@@ -1849,7 +1861,7 @@ public:
     std::wstring writePeople()
 	{
         std::wstring sRes;
-        for (std::map<std::wstring, CComment*>::const_iterator it = m_mapAuthors.begin(); it != m_mapAuthors.end(); ++it)
+        for (boost::unordered_map<std::wstring, CComment*>::const_iterator it = m_mapAuthors.begin(); it != m_mapAuthors.end(); ++it)
 		{
             sRes += (it->second->writePeople(it->second));
 		}
@@ -2337,7 +2349,7 @@ public:
 	{
         return Jc.empty() && TableInd.empty() && TableW.empty() && TableCellMar.empty() && TableBorders.empty() && Shd.empty() && tblpPr.empty()&& Style.empty() && Look.empty() && tblPrChange.empty() && TableCellSpacing.empty() && RowBandSize.empty() && ColBandSize.empty();
 	}
-    std::wstring Write(bool bBandSize, bool bLayout)
+	std::wstring Write()
 	{
         std::wstring sRes;
         sRes += L"<w:tblPr>";
@@ -2361,13 +2373,8 @@ public:
             sRes += (TableBorders);
         if(false == Shd.empty())
             sRes += (Shd);
-		if(bLayout)
-		{
-            if(false == Layout.empty())
-                sRes += (Layout);
-			else if(g_nCurFormatVersion < 4)
-                sRes += L"<w:tblLayout w:type=\"fixed\"/>";
-		}
+		if(false == Layout.empty())
+			sRes += (Layout);
         if(false == TableCellMar.empty())
             sRes += (TableCellMar);
         if(false == Look.empty())
@@ -2755,7 +2762,7 @@ public:
 				}
 				if(NULL != tblPr)
 				{
-					pCStringWriter->WriteString(tblPr->Write(false, true));
+					pCStringWriter->WriteString(tblPr->Write());
 				}
                 if(NULL != tblGridChange)
                 {

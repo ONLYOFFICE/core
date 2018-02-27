@@ -1715,7 +1715,7 @@ namespace OOX
 			{
 				ClearItems();
 			}
-			void ClearItems()
+			virtual void ClearItems()
 			{
 				for ( unsigned int nIndex = 0; nIndex < m_arrFooterReference.size(); nIndex++ )
 				{

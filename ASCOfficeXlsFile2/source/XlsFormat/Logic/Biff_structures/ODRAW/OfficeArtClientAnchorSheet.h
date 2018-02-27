@@ -70,6 +70,7 @@ public:
 	XLS::GlobalWorkbookInfoPtr global_info;
 
 	void calculate();
+	void calculate_1();
 
 	_UINT32		_dxL;
 	_UINT32		_dyT;

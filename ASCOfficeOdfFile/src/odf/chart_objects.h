@@ -76,6 +76,7 @@ namespace chart {
 	struct simple
 	{
 		simple() : bEnabled(false) {}
+		
 		bool					bEnabled;
 		std::vector<_property>	properties_; 
  		std::vector<_property>	text_properties_;
@@ -91,6 +92,11 @@ namespace chart {
 
 		treadline(){bEquation = false; bREquation = false;}
 
+	};
+	struct legend : public simple
+    {
+		std::wstring position;
+		std::wstring align;
 	};
 	struct plot_area : public simple
     {

@@ -29,23 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include <Binary/CFRecord.h>
 
 #include "StyleXF.h"
-#include "XFProps.h"
-#include "ExtProp.h"
 
-#include <Binary/CFRecord.h>
+#include "XFProp.h"
+#include "ExtProp.h"
+#include "XFPropColor.h"
+#include "BitMarkedStructs.h"
+#include "XFPropBorder.h"
+#include "../Biff_records/Font.h"
+
 
 namespace XLS
 {
 
 
-StyleXF::StyleXF(size_t& cell_xf_current_id, size_t& style_xf_current_id)
-:	cell_xf_current_id_(cell_xf_current_id), style_xf_current_id_(style_xf_current_id), font_id(0xFFFF)
+StyleXF::StyleXF(size_t& cell_xf_current_id, size_t& style_xf_current_id) :	cell_xf_current_id_(cell_xf_current_id), 
+																			style_xf_current_id_(style_xf_current_id)
 {
-	font_id		= -1;
+	font_id		= 0xFFFF;
 	border_x_id = -1;
 	fill_x_id	= -1;
+	font		= NULL;
 	
 	fill.fls = 0;
 }
@@ -58,9 +64,9 @@ BiffStructurePtr StyleXF::clone()
 
 void StyleXF::load(CFRecord& record)
 {
-	m_GlobalWorkbookInfo = record.getGlobalWorkbookInfo();
+	global_info = record.getGlobalWorkbookInfo();
 
-	if (m_GlobalWorkbookInfo->Version < 0x0600)
+	if (global_info->Version < 0x0600)
 	{
 		_UINT16 flags1;
 		_UINT32 flags2;
@@ -146,86 +152,153 @@ void StyleXF::Update(ExtProp* ext_prop)
 {
 	if (!ext_prop) return;
 
+	FillInfoExt color_out;
+
+	{
+		color_out.enabled		= true;
+		color_out.icv			= ext_prop->extPropData.color.icv;
+		color_out.xclrType		= ext_prop->extPropData.color.xclrType;
+		color_out.nTintShade	= ext_prop->extPropData.color.nTintShade;
+		color_out.xclrValue		= ext_prop->extPropData.color.xclrValue;
+	}
 	switch(ext_prop->extType)
 	{
 		case 0x0004:
 		{
-			fill.foreFillInfo_.enabled		= true;
-			fill.foreFillInfo_.icv			= ext_prop->extPropData.color.icv;
-			fill.foreFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
-			fill.foreFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
-			fill.foreFillInfo_.xclrValue	= ext_prop->extPropData.color.xclrValue;
+			fill.foreFillInfo_ = color_out;
 		}break;
 		case 0x0005:
 		{
-			fill.backFillInfo_.enabled		= true;
-			fill.backFillInfo_.icv			= ext_prop->extPropData.color.icv;
-			fill.backFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
-			fill.backFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
-			fill.backFillInfo_.xclrValue	= ext_prop->extPropData.color.xclrValue;
+			fill.backFillInfo_ = color_out;
 		}break;
 		case 0x0007:
 		{
-			border.topFillInfo_.enabled		= true;
-			border.topFillInfo_.icv			= ext_prop->extPropData.color.icv;
-			border.topFillInfo_.xclrType	= ext_prop->extPropData.color.xclrType;
-			border.topFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
-			border.topFillInfo_.xclrValue	= ext_prop->extPropData.color.xclrValue;			
+			border.topFillInfo_ = color_out;
 		}break;
 		case 0x0008:
 		{
-			border.bottomFillInfo_.enabled		= true;
-			border.bottomFillInfo_.icv			= ext_prop->extPropData.color.icv;
-			border.bottomFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
-			border.bottomFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
-			border.bottomFillInfo_.xclrValue	= ext_prop->extPropData.color.xclrValue;			
+			border.bottomFillInfo_ = color_out;
 		}break;
 		case 0x0009:
 		{
-			border.leftFillInfo_.enabled		= true;
-			border.leftFillInfo_.icv			= ext_prop->extPropData.color.icv;
-			border.leftFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
-			border.leftFillInfo_.nTintShade		= ext_prop->extPropData.color.nTintShade;
-			border.leftFillInfo_.xclrValue		= ext_prop->extPropData.color.xclrValue;			
+			border.leftFillInfo_ = color_out;
 		}break;
 		case 0x000A:
 		{
-			border.rightFillInfo_.enabled		= true;
-			border.rightFillInfo_.icv			= ext_prop->extPropData.color.icv;
-			border.rightFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
-			border.rightFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
-			border.rightFillInfo_.xclrValue		= ext_prop->extPropData.color.xclrValue;			
+			border.rightFillInfo_ = color_out;
 		}break;
 		//case 0x000B:	//diag color
 		//case 0x000C:	//diag color
 		case 0x000D:
 		{
-			font_color.enabled		= true;
-			font_color.icv			= ext_prop->extPropData.color.icv;
-			font_color.xclrType		= ext_prop->extPropData.color.xclrType;
-			font_color.nTintShade	= ext_prop->extPropData.color.nTintShade;
-			font_color.xclrValue	= ext_prop->extPropData.color.xclrValue;			
+			font_color = color_out;
 		}break;
 		//case 0x0006:
 		//	extPropData.gradient_fill.toXML(own_tag);
 		//	break;
 		case 0x000E:
 		{
-			font_id		= ext_prop->extPropData.font_scheme;
+			font_id = ext_prop->extPropData.font_scheme;
 		}break;
 		case 0x000F:
 		{
-			cIndent		= ext_prop->extPropData.indent_level;
+			cIndent = ext_prop->extPropData.indent_level;
 		}break;
 	}
 }
-void StyleXF::Update(XFProps* xfProps)
+void StyleXF::Update(XFProp* xfProp)
 {
-	if (!xfProps) return;
+	if (!xfProp) return;
 
-	std::wstringstream strm;
-	xfProps->serialize_fill(strm);
-	fill.ext = strm.str();
+	XFPropColor* color = dynamic_cast<XFPropColor*>(xfProp->xfPropDataBlob.get());
+	if (color)
+	{
+		FillInfoExt color_out;
+		
+		color_out.enabled		= true;
+		color_out.icv			= color->icv;
+		color_out.xclrType		= color->xclrType;
+		color_out.nTintShade	= color->nTintShade;
+
+		if (color->xclrType == 3)color_out.xclrValue = color->icv;
+		else					 color_out.xclrValue = color->dwRgba.ToRGBA();
+
+		switch(xfProp->xfPropType)
+		{
+			case 0x0001:	fill.foreFillInfo_	= color_out; break;
+			case 0x0002:	fill.backFillInfo_	= color_out; break;
+			case 0x0005:	font_color			= color_out; break;
+		}
+		return;
+	}
+	BIFF_BYTE* byte_ = dynamic_cast<BIFF_BYTE*>(xfProp->xfPropDataBlob.get());
+
+	if (byte_)
+	{
+		switch(xfProp->xfPropType)
+		{
+			case 0x0025:
+			{
+				font_id = *byte_->value();
+				if (font_id >=0 && font_id < global_info->m_arFonts.size())
+				{
+					font = dynamic_cast<Font*>(global_info->m_arFonts[font_id].get());
+				}
+
+			}break;
+			case 0x001C:	if (font) font->fItalic = *byte_->value(); break;
+			case 0x001D:	if (font) font->fStrikeOut = *byte_->value(); break;
+			case 0x001E:	if (font) font->fOutline = *byte_->value(); break;
+			case 0x001F:	if (font) font->fShadow = *byte_->value(); break;
+			case 0x0022:	if (font) font->bCharSet = *byte_->value(); break;
+		}	
+		return;
+	}
+	BIFF_WORD* word = dynamic_cast<BIFF_WORD*>(xfProp->xfPropDataBlob.get());
+
+	if (word)
+	{
+		switch(xfProp->xfPropType)
+		{
+			case 0x0019:	if (font) font->bls	= *word->value(); break;
+			case 0x001A:	if (font) font->uls	= *word->value(); break;		
+			case 0x001B:	if (font) font->sss = *word->value(); break;
+		}
+		return;
+	}
+	BIFF_DWORD* dword = dynamic_cast<BIFF_DWORD*>(xfProp->xfPropDataBlob.get());
+
+	if (dword)
+	{
+		switch(xfProp->xfPropType)
+		{
+			case 0x0024:	if (font) font->dyHeight = *dword->value(); break;
+		}
+		return;	
+	}
+	XFPropBorder *brdr = dynamic_cast<XFPropBorder*>(xfProp->xfPropDataBlob.get());
+	if (brdr)
+	{
+		FillInfoExt color_out;
+		
+		color_out.enabled		= true;
+		color_out.icv			= brdr->color.icv;
+		color_out.xclrType		= brdr->color.xclrType;
+		color_out.nTintShade	= brdr->color.nTintShade;
+
+		if (brdr->color.xclrType == 3)	color_out.xclrValue = brdr->color.icv;
+		else							color_out.xclrValue = brdr->color.dwRgba.ToRGBA();
+
+		switch(xfProp->xfPropType)
+		{
+			case 0x0006:	border.topFillInfo_		= color_out; break;
+			case 0x0007:	border.bottomFillInfo_	= color_out; break;
+			case 0x0008:	border.leftFillInfo_	= color_out; break;
+			case 0x0009:	border.rightFillInfo_	= color_out; break;
+				//horiz, vert, diag
+		}	
+		return;
+	}
 }
 void StyleXF::RegisterFillBorder()
 {
@@ -234,9 +307,15 @@ void StyleXF::RegisterFillBorder()
 		ExtProp* ext_prop = dynamic_cast<ExtProp*>(ext_props[i].get());
 		Update (ext_prop);
 	}
-
-	border_x_id	= m_GlobalWorkbookInfo->RegisterBorderId(border);
-	fill_x_id	= m_GlobalWorkbookInfo->RegisterFillId(fill);
+    for (size_t i = 0; i < xf_props.size(); i++ )
+	{
+		XFProp* xf_prop = dynamic_cast<XFProp*>(xf_props[i].get());
+		Update (xf_prop);
+	}
+	border_x_id	= global_info->RegisterBorderId(border);
+	fill_x_id	= global_info->RegisterFillId(fill);
+	
+	global_info->RegisterFontColorId(font_id, font_color);
 	
 
 }

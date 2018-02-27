@@ -82,7 +82,7 @@ private:
    
 	std::wstring table_style_;
 
-    std::list<std::wstring> table_row_style_stack_;
+    std::vector<std::wstring> table_row_style_stack_;
     
 	std::wstring default_row_cell_style_name_;
     int current_table_column_;
@@ -214,7 +214,7 @@ public:
 private:
 	std::wstringstream			output_stream_;
     pptx_conversion_context &	context_;
-    std::list<pptx_table_state> table_states_;
+    std::vector<pptx_table_state> table_states_;
 };
 
 void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::style_instance *> & style_inst, oox::pptx_conversion_context & Context);

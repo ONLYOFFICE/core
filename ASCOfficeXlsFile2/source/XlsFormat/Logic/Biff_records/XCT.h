@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of XCT record in BIFF8
 class XCT: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(XCT)
@@ -50,9 +48,8 @@ public:
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeXCT;
+	static const ElementType type = typeXCT;
 
-//-----------------------------
 	_UINT16 ccrn;
 	_UINT16 itab;
 	bool itab_exist;

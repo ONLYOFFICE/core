@@ -31,8 +31,8 @@
  */
 
 #include "ExternSheet.h"
-#include <Logic/Biff_structures/XTI.h>
-#include <Logic/Biff_structures/BiffString.h>
+#include "../Biff_structures/XTI.h"
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {
@@ -58,14 +58,14 @@ void ExternSheet::readFields(CFRecord& record)
 	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
 	{
 		unsigned char type;
-		//record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+
 		ShortXLAnsiString stName;
 		record >> type >> stName;
 
-		std::wstring	name	= stName.value();
-		//int				type	= stName.value().substr(0, 1).c_str()[0];
-		if (!name.empty())
-			record.getGlobalWorkbookInfo()->arExternalNames.push_back(name);
+		name = stName.value();
+		//int type	= stName.value().substr(0, 1).c_str()[0];
+		//if (!name.empty())
+		//	record.getGlobalWorkbookInfo()->arExternalNames.push_back(name);
 
 	}
 	else

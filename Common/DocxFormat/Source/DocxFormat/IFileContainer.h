@@ -36,7 +36,7 @@
 #include "RId.h"
 #include "UnknowTypeFile.h"
 #include "IFileBuilder.h"
-#include <map>
+#include <boost/unordered_map.hpp>
 
 namespace OOX 
 {
@@ -44,12 +44,7 @@ namespace OOX
 	class FileType;
 	class CRels;
 	class CContentTypes;
-	
-	class Image;
 	class HyperLink;
-	class OleObject;
-	class ActiveX_xml;
-	class ActiveX_bin;
 }
 
 namespace PPTX
@@ -62,15 +57,20 @@ namespace OOX
 	class IFileContainer
 	{
 	public:
-		IFileContainer();
+		IFileContainer(OOX::Document* pMain);
 		virtual ~IFileContainer();
 
-		bool											m_bSpreadsheets;
-		static std::map<std::wstring, size_t>			m_mapEnumeratedGlobal;
+        bool												m_bSpreadsheets;
+		static boost::unordered_map<std::wstring, size_t>	m_mapEnumeratedGlobal;
+		OOX::Document*										m_pMainDocument;
+        smart_ptr<OOX::CRels>								m_pCurRels;
 	protected:
-        std::map<std::wstring, smart_ptr<OOX::File>>	m_mContainer;
-		std::map<std::wstring, std::wstring>	m_mNoWriteContainer;
-		size_t											m_lMaxRid;
+		static UnknowTypeFile										m_oUnknown;
+		std::vector<smart_ptr<OOX::File>>							m_arContainer;
+		boost::unordered_map<std::wstring, smart_ptr<OOX::File>>	m_mapContainer;
+
+        boost::unordered_map<std::wstring, std::wstring>			m_mNoWriteContainer;
+        size_t														m_lMaxRid;
 
 		void Read (const OOX::CRels& oRels, const OOX::CPath& oRootPath, const CPath& oPath);
 		void Write (const OOX::CPath& oFileName, const CPath& oDir, OOX::CContentTypes& oContent) const;
@@ -82,53 +82,45 @@ namespace OOX
 
 	public:
 		void Read (const OOX::CPath& oRootPath, const OOX::CPath& oPath);
-		void ExtractPictures(const OOX::CPath& oPath) const;
-
-		virtual smart_ptr<Image>					GetImage    (const RId& rId) const;
-		virtual smart_ptr<HyperLink>				GetHyperlink(const RId& rId) const;
-		virtual smart_ptr<OleObject>				GetOleObject(const RId& rId) const;
-		virtual smart_ptr<ActiveX_xml>				GetActiveX_xml(const RId& rId) const;
-		virtual smart_ptr<ActiveX_bin>				GetActiveX_bin(const RId& rId) const;
-		virtual smart_ptr<PPTX::LegacyDiagramText>	GetLegacyDiagramText (const OOX::RId& rId) const;
 		
-		OOX::CRels* GetCurRls()
+		template<class TypeOut> 
+		smart_ptr<TypeOut> Get (const RId& rId) const
 		{
-			return m_pCurRels;
+			boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pFind = m_mapContainer.find(rId.get());
+			if (pFind == m_mapContainer.end ())
+				return smart_ptr<TypeOut>();
+			return pFind->second.smart_dynamic_cast<TypeOut>();
 		}
+
+		std::vector<smart_ptr<OOX::File>>& GetContainer() {return m_arContainer;}
 		
 		template<typename T>
 		const bool IsExist() const;
-		const bool IsExist(const FileType& oType) const;
 		const bool IsExist(const OOX::RId& rId) const;
 		const bool IsExternal(const OOX::RId& rId) const;
-		std::wstring IsExistHyperlink(smart_ptr<OOX::HyperLink>& pHyperLink);
-
-		smart_ptr<OOX::File>	Get(const FileType& oType);
-		void					Get(const FileType& oType, std::vector<smart_ptr<OOX::File>> & files);
-
+		
+		std::wstring IsExistHyperlink(const std::wstring & href);
+		
 		const RId Add(smart_ptr<OOX::File>& pFile);
 		void      Add(const OOX::RId& rId, smart_ptr<OOX::File>& pFile);
+		
 		const RId AddNoWrite(const smart_ptr<OOX::File>& pFile, const std::wstring& oDefDir);
 		void      AddNoWrite(const OOX::RId& rId, const smart_ptr<OOX::File>& pFile, const std::wstring& oDefDir);
 
 		template<typename T> 
         T&                   Find();
-		smart_ptr<OOX::File> Find(const FileType& type) const;
 		smart_ptr<OOX::File> Find(const OOX::RId& type) const;
-
-		void FindAllByType(const FileType& oType, std::map<std::wstring, smart_ptr<OOX::File>>& aOutput) const;
 
 		smart_ptr<OOX::File> operator [](const OOX::RId rId);
 		smart_ptr<OOX::File> operator [](const FileType& oType);
 		
 		void SetGlobalNumberByType(const std::wstring& sOverrideType, int val);
 		int GetGlobalNumberByType(const std::wstring& sOverrideType);
-	protected:
-		static UnknowTypeFile Unknown;
 	private:
-		std::map<std::wstring, size_t>	m_mapAddNamePair;
-		OOX::CRels*						m_pCurRels;
-		const RId						GetMaxRId();
+		const RId				GetMaxRId();
+
+        boost::unordered_map<std::wstring, size_t>			m_mapAddNamePair;
+		boost::unordered_map<std::wstring, std::wstring>	m_mapHyperlinks;      
 	};
 
 } // namespace OOX

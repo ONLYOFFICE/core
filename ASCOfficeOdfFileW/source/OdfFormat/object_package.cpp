@@ -39,7 +39,7 @@
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
 
-#include "../../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 
 namespace cpdoccore 
 {
@@ -77,8 +77,7 @@ namespace odf_writer
 		{
 			return boost::make_shared<simple_element>(FileName, Content, utf8);
 		}
-
-////////////
+//-------------------------------------------------------------------------------
 		content_simple_ptr content_simple::create()
 		{
 			return boost::make_shared<content_simple>();
@@ -87,7 +86,7 @@ namespace odf_writer
 		{
 			return boost::make_shared<content_content>();
 		}
-///////////////
+//-------------------------------------------------------------------------------
 		void manifect_file::add_rels(rels  & r)
 		{
 			std::vector<relationship> & rels = r.relationships();
@@ -152,13 +151,17 @@ namespace odf_writer
 					CP_XML_ATTR(L"xmlns:smil", L"urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0");
 					CP_XML_ATTR(L"xmlns:anim", L"urn:oasis:names:tc:opendocument:xmlns:animation:1.0");
 					CP_XML_ATTR(L"xmlns:chartooo", L"http://openoffice.org/2010/chart");
-					CP_XML_ATTR(L"office:version",		L"1.2");		
+					CP_XML_ATTR(L"office:version", L"1.2");		
 		
 					CP_XML_NODE(L"office:meta")
 					{  
 						CP_XML_NODE(L"meta:generator")
 						{
-							CP_XML_STREAM() << L"ONLYOFFICE Online Editor";
+							CP_XML_STREAM() << L"ONLYOFFICE";
+#if defined(INTVER)
+							std::string s = VALUE2STR(INTVER);
+							CP_XML_STREAM() << L"/" << std::wstring (s.begin(), s.end() );
+#endif					
 						}
 						CP_XML_NODE(L"meta:initial-creator");
 						CP_XML_NODE(L"meta:creation-date");
@@ -174,73 +177,54 @@ namespace odf_writer
 			simple_element elm(L"meta.xml", resStream.str());
 			elm.write(RootPath);
 		}
-		///////////////////////////
-
-		media::media(_mediaitems & mediaitems) : mediaitems_(mediaitems)
+//-------------------------------------------------------------------------------
+		media::media(_mediaitems & mediaitems, const std::wstring internal_folder, int type) : mediaitems_(mediaitems), type_(type), folder_(internal_folder)
 		{    
 		}
 
 		void media::write(const std::wstring & RootPath)
 		{
-			if (mediaitems_.count_media < 1)return;
-
-			std::wstring path = RootPath + FILE_SEPARATOR_STR + L"Media";
-            NSDirectory::CreateDirectory(path);
+			OOX::CPath path (RootPath + (folder_.empty() ? L"" : FILE_SEPARATOR_STR) + folder_);
+            NSDirectory::CreateDirectory(path.GetPath());
 
 			std::vector< _mediaitems::item >  & items =  mediaitems_.items();
+			
 			for (size_t i = 0; i < items.size(); i++)
 			{
-				if (items[i].type == _mediaitems::typeMedia)
+				if (items[i].type == type_)
 				{
-					std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + items[i].odf_ref;
+					OOX::CPath file_name_inp ( items[i].oox_ref);
+					OOX::CPath file_name_out ( RootPath + FILE_SEPARATOR_STR + items[i].odf_ref); //ref содержит уже folder_
 
-					NSFile::CFileBinary::Copy(items[i].oox_ref, file_name_out);
+					NSFile::CFileBinary::Copy(file_name_inp.GetPath(), file_name_out.GetPath());
 				}
 			}
 
-		}
-
-		
-		pictures::pictures(_mediaitems & mediaitems) : mediaitems_(mediaitems)
-		{    
-		}
-
-		void pictures::write(const std::wstring & RootPath)//folder by content.xml
-		{
-			if (mediaitems_.count_image < 1 )return;
-
-			std::wstring path = RootPath + FILE_SEPARATOR_STR + L"Pictures";
-            NSDirectory::CreateDirectory(path);
-
-			std::vector< _mediaitems::item >  & items =  mediaitems_.items();
-			for (size_t i = 0; i < items.size(); i++)
-			{
-				if (items[i].type == _mediaitems::typeImage && items[i].oox_ref.length()>0)
-				{
-					std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + items[i].odf_ref;
-
-					try
-					{
-						NSFile::CFileBinary::Copy(items[i].oox_ref, file_name_out);
-					}catch (...)
-					{
-					}
-				}
-			}
-
-		}
+		}		
+//-------------------------------------------------------------------------------
 		void object_files::set_content(content_content_ptr & _content)
 		{
 			content_.set_content(_content);
 			meta_ = element_ptr(new meta_file());
 		}
-		void object_files::set_media(_mediaitems & mediaitems)
+		void object_files::set_mediaitems(_mediaitems & mediaitems)
 		{
-			media_ = element_ptr( new media(mediaitems) );
-		}
-		void object_files::set_pictures(_mediaitems & mediaitems)
-		{
-			pictures_ = element_ptr( new pictures(mediaitems) );
+			if (mediaitems.count_image > 0)
+			{
+				pictures_ = element_ptr( new media(mediaitems, L"Pictures", 1) );
+			}
+			if (mediaitems.count_media > 0)
+			{
+				media_ = element_ptr( new media(mediaitems, L"Media", 2) );
+			}
+			if (mediaitems.count_object > 0)
+			{
+				oleObjects_ = element_ptr( new media(mediaitems, L"", 3) );
+			}
+			if (mediaitems.count_object > 0)
+			{
+				imageObjects_ = element_ptr( new media(mediaitems, L"ObjectReplacements", 4) );
+			}
 		}
 		void object_files::set_styles(content_simple_ptr & _content)
 		{
@@ -258,8 +242,10 @@ namespace odf_writer
 			
 			if (meta_)		meta_->write(RootPath);
 
-			if (media_)		media_->write(RootPath);
-			if (pictures_)	pictures_->write(RootPath);
+			if (media_) media_->write(RootPath);
+			if (pictures_) pictures_->write(RootPath);
+			if (oleObjects_) oleObjects_->write(RootPath);
+			if (imageObjects_) imageObjects_->write(RootPath);
 		}
 
 		void odf_document::add_object(element_ptr _object, bool root)

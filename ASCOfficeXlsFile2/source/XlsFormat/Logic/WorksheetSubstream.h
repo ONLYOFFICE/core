@@ -31,8 +31,7 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
-#include <Logic/Biff_structures/CellRef.h>
+#include "CommonSubstream.h"
 
 namespace XLS
 {;
@@ -40,7 +39,7 @@ namespace XLS
 class WorksheetSubstream;
 typedef boost::shared_ptr<WorksheetSubstream>	WorksheetSubstreamPtr;
 
-class WorksheetSubstream: public CompositeObject
+class WorksheetSubstream: public CompositeObject, public CommonSubstream
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(WorksheetSubstream)
 public:
@@ -53,49 +52,26 @@ public:
 
 	static const ElementType type = typeWorksheetSubstream;
 
-	GlobalWorkbookInfoPtr			global_info_;
-	size_t							ws_index_;
-
-	BaseObjectPtr					m_GLOBALS;
-	BaseObjectPtr					m_PAGESETUP;
-	BaseObjectPtr					m_BACKGROUND;
 	BaseObjectPtr					m_DefaultRowHeight;
-	BaseObjectPtr					m_COLUMNS;
-	BaseObjectPtr					m_CELLTABLE;
 	BaseObjectPtr					m_SHFMLA_SET;
 	BaseObjectPtr					m_Dimensions;
-	BaseObjectPtr					m_SORTANDFILTER;
-	BaseObjectPtr					m_OBJECTS;
 	BaseObjectPtr					m_CONDFMTS;
-	BaseObjectPtr					m_CodeName;
-	BaseObjectPtr					m_SheetExt;
 	BaseObjectPtr					m_DxGCol;
 	BaseObjectPtr					m_DVAL;
-	BaseObjectPtr					m_DCON;
 	BaseObjectPtr					m_LRng;
+	BaseObjectPtr					m_PLV;
 	
 	std::vector<BaseObjectPtr>		m_arMergeCells;
-	std::vector<BaseObjectPtr>		m_arWINDOW;
-	std::vector<BaseObjectPtr>		m_arCUSTOMVIEW;
 	std::vector<BaseObjectPtr>		m_arPIVOTVIEW;
 	std::vector<BaseObjectPtr>		m_arQUERYTABLE;
-	std::vector<BaseObjectPtr>		m_arFEAT;
-	std::vector<BaseObjectPtr>		m_arFEAT11;
 	std::vector<BaseObjectPtr>		m_arNote;
 	std::vector<BaseObjectPtr>		m_arHLINK;
-	std::vector<BaseObjectPtr>		m_arSORT;
 	std::vector<BaseObjectPtr>		m_arLabel;
-	std::vector<BaseObjectPtr>		m_arHFPicture;
-	std::vector<BaseObjectPtr>		m_arRECORD12;
-
-	std::vector<BiffStructurePtr>	m_arHFPictureDrawing;
+	std::vector<BaseObjectPtr>		m_arBIGNAME;
 
 //-------------------------------------------------------------------
 	std::map<std::wstring, BaseObjectPtr>	mapPivotViews;
 
-private:
-	
-	void LoadHFPicture();		//todoooo - обобщить 
 };
 
 } // namespace XLS

@@ -30,7 +30,7 @@
  *
  */
 #pragma once
-#include "./Formula.h"
+#include "PptFormula.h"
 #include "../Path.h"
 
 #define OPTIMIZE_COMPILE_CONVERT_PPT_TO_PPTX
@@ -1860,18 +1860,18 @@ namespace NSGuidesVML
     };
     class CSlicePath
     {
-    public:
+    private:
+        int		m_nCountElementsPoint; 
+		LONG	m_lX;
+		LONG	m_lY;
+
+	public:
         RulesType m_eRuler;
         std::vector<Aggplus::POINT> m_arPoints;
         std::vector<SPointType> m_arPointsType;
 
-    private:
-        int m_nCountElementsPoint;
-
-    public:
-        CSlicePath(RulesType eType = rtMoveTo)
+		CSlicePath(RulesType rule = rtMoveTo, LONG x = 0, LONG y = 0) : m_lX(x), m_lY(y), m_eRuler(rule)
         {
-            m_eRuler = eType;
             m_nCountElementsPoint = 0;
         }
 
@@ -1884,6 +1884,10 @@ namespace NSGuidesVML
                 SPointType pointType;
 
                 point.x = lParam;
+				if (m_eRuler !=  rtRMoveTo && m_eRuler !=  rtRLineTo && m_eRuler !=  rtRCurveTo)
+				{
+					point.x -= m_lX;
+				}
                 point.y = 0;
                 pointType.x = eParType;
                 pointType.y = ptValue;
@@ -1893,6 +1897,11 @@ namespace NSGuidesVML
             else
             {
                 m_arPoints.back().y = lParam;
+				if (m_eRuler !=  rtRMoveTo && m_eRuler !=  rtRLineTo && m_eRuler !=  rtRCurveTo)
+				{
+					m_arPoints.back().y -= m_lY;
+				}
+
                 m_arPointsType.back().y = eParType;
             }
             ++m_nCountElementsPoint;
@@ -1908,23 +1917,25 @@ namespace NSGuidesVML
         LONG m_lWidth;
         LONG m_lHeight;
 
-        std::vector<LONG> m_arIndexDst;
-        std::vector<CSlicePath> m_arSlicesPath;
-        std::vector<CPartPath> m_arParts;
+		LONG m_lX;
+		LONG m_lY;
 
-        std::wstring strFmlaNum;
-        std::wstring strSign;
-        std::wstring strFrmla;
-        std::wstring strResult;
-        Aggplus::POINT pCurPoint;
-        SPointType pCurPointType;
-        Aggplus::POINT pCurPoint1;
-        SPointType pCurPointType1;
-        Aggplus::POINT pTmpPoint;
-        CFormParam m_oParam;
+        std::vector<LONG>		m_arIndexDst;
+        std::vector<CSlicePath> m_arSlicesPath;
+        std::vector<CPartPath>	m_arParts;
+
+        std::wstring		strFmlaNum;
+        std::wstring		strSign;
+        std::wstring		strFrmla;
+        std::wstring		strResult;
+        Aggplus::POINT		pCurPoint;
+        SPointType			pCurPointType;
+        Aggplus::POINT		pCurPoint1;
+        SPointType			pCurPointType1;
+        Aggplus::POINT		pTmpPoint;
+        CFormParam			m_oParam;
 
         int m_lMaxAdjUse;
-
     public:
         // все в одно не получится, формулы появляются и при конвертации path/adj и т.д.
         NSBinPptxRW::CXmlWriter m_oGuidsRes;
@@ -1934,13 +1945,16 @@ namespace NSGuidesVML
         NSBinPptxRW::CXmlWriter m_oTextRect;
         NSBinPptxRW::CXmlWriter m_oCoef;
 
-    public:
         CFormulaConverter()
         {
             m_lIndexDst = 0;
             m_lIndexSrc = -1;
+
             m_lWidth	= 0;
             m_lHeight	= 0;
+
+			m_lX = 0;
+			m_lY = 0;
 
             m_lMaxAdjUse = -1;
         }
@@ -2125,9 +2139,14 @@ namespace NSGuidesVML
 				if (oPath.m_arParts.size() <= nIndex) 
 					break;
                 const CPartPath& oPart = oPath.m_arParts[nIndex];
-                m_lWidth = oPart.width;
+               
+				m_lWidth = oPart.width;
                 m_lHeight = oPart.height;
-                bool bFill = false;
+                
+				m_lX = oPart.x;
+                m_lY = oPart.y;
+
+				bool bFill = false;
                 bool bStroke = false;
                 std::wstring strValue;
                 FromXML(oArray[nIndex], bFill, bStroke);
@@ -2690,7 +2709,8 @@ namespace NSGuidesVML
                         }
                         else
                         {
-                            CSlicePath oSlice(eRuler);
+                            CSlicePath oSlice(eRuler, m_lX, m_lY);
+
                             m_arSlicesPath.push_back(oSlice);
                         }
                     }

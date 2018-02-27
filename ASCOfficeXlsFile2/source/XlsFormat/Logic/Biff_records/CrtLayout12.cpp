@@ -31,7 +31,7 @@
  */
 
 #include "CrtLayout12.h"
-#include <Logic/Biff_structures/FrtHeader.h>
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
@@ -61,6 +61,77 @@ void CrtLayout12::readFields(CFRecord& record)
 	autolayouttype = GETBITS(flags, 1, 4);
 	record.skipNunBytes(2); // reserved2
 }
+
+int CrtLayout12::serialize (std::wostream & _stream)
+{
+	CP_XML_WRITER(_stream)    
+    {
+		CP_XML_NODE(L"c:layout")
+		{
+			if (wXMode == 0 &&  wYMode == 0 && wWidthMode == 0 && wHeightMode == 0)
+			{
+			}
+			else
+			{
+				CP_XML_NODE(L"c:manualLayout")
+				{
+					if (wXMode > 0)
+					{
+						CP_XML_NODE(L"c:xMode")	
+						{
+							if (wXMode == 1)	CP_XML_ATTR(L"val", L"factor");
+							else				CP_XML_ATTR(L"val", L"edge");
+						}
+					}
+					if (wYMode > 0)
+					{
+						CP_XML_NODE(L"c:yMode")
+						{
+							if (wYMode == 1)	CP_XML_ATTR(L"val", L"factor");
+							else				CP_XML_ATTR(L"val", L"edge");
+						}
+					}
+
+					if (wXMode > 0)
+					{
+						CP_XML_NODE(L"c:x")		{CP_XML_ATTR(L"val", x.data.value);}
+					}
+					if (wYMode > 0)
+					{
+						CP_XML_NODE(L"c:y")		{CP_XML_ATTR(L"val", y.data.value);}
+					}
+					
+					if (wWidthMode > 0)
+					{
+						CP_XML_NODE(L"c:wMode")	
+						{
+							if (wWidthMode == 1)CP_XML_ATTR(L"val", L"factor");
+							else				CP_XML_ATTR(L"val", L"edge");
+						}
+					}
+					if (wHeightMode > 0)
+					{
+						CP_XML_NODE(L"c:hMode")
+						{
+							if (wHeightMode == 1)CP_XML_ATTR(L"val", L"factor");
+							else				CP_XML_ATTR(L"val", L"edge");
+						}
+					}
+					if (wWidthMode > 0)
+					{
+						CP_XML_NODE(L"c:w") {CP_XML_ATTR(L"val", dx.data.value);}
+					}
+					if (wHeightMode > 0)
+					{
+						CP_XML_NODE(L"c:h")	 {CP_XML_ATTR(L"val", dy.data.value);}
+					}
+				}
+			}
+		}
+	}
+	return 0;
+}
+
 
 } // namespace XLS
 

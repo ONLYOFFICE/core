@@ -60,9 +60,6 @@ namespace OOX
 			virtual ~CMathArgNodes()
 			{
 			}
-
-		public:
-
 			const CMathArgNodes &operator =(const XmlUtils::CXmlNode& oNode)
 			{
 				ClearItems();
@@ -75,12 +72,9 @@ namespace OOX
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
-			{
-			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			virtual std::wstring      toXML() const
 			{
@@ -88,13 +82,13 @@ namespace OOX
 
 				std::wstring sResult = _T("<") + sNodeName + _T(">");
 
-				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex])
-					{
-						sResult += m_arrItems[nIndex]->toXML();
-					}
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        sResult += m_arrItems[i]->toXML();
+                    }
+                }
 
 				sResult += _T("</") + sNodeName + _T(">");
 
@@ -108,7 +102,7 @@ namespace OOX
 		private:
 			EElementType	eType;
 		public:
-			std::wstring			sNodeName;
+			std::wstring	sNodeName;
 
 			std::wstring GetMathNodeName(const EElementType & enumType)  const
 			{//todooo вытащить в одно место - пересекается с MathBottomNodes

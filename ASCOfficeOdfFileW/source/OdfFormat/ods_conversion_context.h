@@ -69,7 +69,7 @@ public:
 		void add_column(int start_column, int repeated, int level = 0, bool _default = false);
 	void end_columns();
 
-	void	calculate_font_metrix(std::wstring name, double size, bool italic, bool bold);
+	void calculate_font_metrix(std::wstring name, double size, bool italic, bool bold);
 
 	void start_rows();
 		void start_row(int _start_row, int repeated, int level = 0, bool _default = false);
@@ -110,6 +110,7 @@ public:
 	void start_table_part	(std::wstring name, std::wstring ref);
 	void end_table_part		();
 	void set_table_part_autofilter(bool val);
+	void add_table_part_column(std::wstring name);
 
 	void start_conditional_formats();
 	void end_conditional_formats(){}

@@ -79,6 +79,7 @@ void PtgNameX::loadFields(CFRecord& record)
 void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	RevNamePtr tab_id;
+	
 	if(!extra_data.empty() && (tab_id = boost::dynamic_pointer_cast<RevName>(extra_data.front())))
 	{
 		Log::error("PtgNameX struct for revisions is not assemble.");
@@ -87,39 +88,57 @@ void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 		return;
 	}
 
-	std::wstring _Name;
-	if(nameindex > 0 && nameindex <= global_info->AddinUdfs.size() && !(_Name = global_info->AddinUdfs[nameindex - 1]).empty())
+	if(ixti >= 0 && ixti < global_info->arXti.size())
 	{
-		ptg_stack.push(_Name);
-	}
-	else if(ixti > 0 && ixti <= global_info->xti_parsed.size())
-	{
-		std::wstring sheet = global_info->xti_parsed[ixti-1];
+		std::wstring link = global_info->arXti[ixti].link;
+		std::wstring name;
 
-		if (!sheet.empty()) sheet += L"!";
-		
-		if (nameindex > 0 && nameindex <= global_info->arDefineNames.size())
+		if ((global_info->arXti[ixti].pNames) && (nameindex > 0 && nameindex <= global_info->arXti[ixti].pNames->size()))
 		{
-			_Name = global_info->arDefineNames[nameindex - 1];
+			name = global_info->arXti[ixti].pNames->at(nameindex - 1);
 		}
-
-		if (sheet.empty() && _Name.empty() && nameindex <= global_info->arExternalNames.size() && nameindex > 0)
+		else
 		{
-			_Name = global_info->arExternalNames[nameindex - 1];
-		}
+			name = global_info->arDefineNames[nameindex - 1];
 
-		ptg_stack.push(sheet + _Name);
+			std::map<std::wstring, std::vector<std::wstring>>::iterator pFind = global_info->mapDefineNames.find(name);
+			if (link.empty() && full_ref && pFind != global_info->mapDefineNames.end())
+			{
+				if (ixti < pFind->second.size() && ixti >= 0)
+				{
+					if (!pFind->second[ixti].empty())
+						name = pFind->second[ixti]; //значение 
+				}
+				else
+				{
+					for (size_t i = 0; i < pFind->second.size(); i++)
+					{
+						if (pFind->second[i].empty() == false)
+						{
+							link = L"[" + std::to_wstring(i) + L"]";
+							break;
+						}
+					}
+				}
+			}
+		}
+		if (!link.empty() && !name.empty())
+		{
+			ptg_stack.push(link + L"!" + name);
+		}
+		else if (!name.empty())
+		{
+			ptg_stack.push(name);
+		}
+		else
+			ptg_stack.push(link);		
 	}
 	else
 	{
  		Log::warning("PtgNameX structure is not assemble.");
-		//ptg_stack.push(L"#UNDEFINED_EXTERN_NAME(" + STR::int2wstr(nameindex) + L")!");
-		ptg_stack.push(L""); // This would let us to continue without an error
+		ptg_stack.push(L"");
 	}
 
-
-	// Example of result: "[1]!range"
-	// in the formula window it looks like: "'D:\Projects\AVSWorksheetConverter\bin\InFiles\Blank2003_range.xls'!range"
 }
 
 

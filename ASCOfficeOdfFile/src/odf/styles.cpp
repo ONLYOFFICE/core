@@ -34,7 +34,6 @@
 #include "styles.h"
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 #include <cpdoccore/odf/odf_document.h>
@@ -734,7 +733,7 @@ void style_columns::add_attributes( const xml::attributes_wc_ptr & Attributes )
 void style_columns::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"column" == Name)
-        CP_CREATE_ELEMENT(style_column_);
+        CP_CREATE_ELEMENT(style_columns_);
     else if (L"style" == Ns && L"column-sep" == Name)
         CP_CREATE_ELEMENT(style_column_sep_);
     else
@@ -750,11 +749,10 @@ const wchar_t * style_column::name = L"column";
 void style_column::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"style:rel-width",	style_rel_width_);
-    CP_APPLY_ATTR(L"fo:start-indent",	fo_start_indent_,	length(0.0, length::cm));
-    CP_APPLY_ATTR(L"fo:end-indent",		fo_end_indent_,		length(0.0, length::cm));
-    CP_APPLY_ATTR(L"fo:space-before",	fo_space_before_,	length(0.0, length::cm));
-    CP_APPLY_ATTR(L"fo:space-after",	fo_space_after_,	length(0.0, length::cm));
-    
+    CP_APPLY_ATTR(L"fo:start-indent",	fo_start_indent_);
+    CP_APPLY_ATTR(L"fo:end-indent",		fo_end_indent_);
+    CP_APPLY_ATTR(L"fo:space-before",	fo_space_before_);
+    CP_APPLY_ATTR(L"fo:space-after",	fo_space_after_);    
 }
 
 void style_column::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -764,7 +762,7 @@ void style_column::add_child_element( xml::sax * Reader, const std::wstring & Ns
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_column_sep::ns = L"style";
-const wchar_t * style_column_sep::name = L":column-sep";
+const wchar_t * style_column_sep::name = L"column-sep";
 
 void style_column_sep::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -1349,16 +1347,20 @@ void style_page_layout_properties::docx_serialize(std::wostream & strm, oox::doc
 		{
 			Context.process_section( CP_XML_STREAM(), columns);
 			
-			bool next_page = Context.is_next_dump_page_properties();
+			bool change_page_layout = Context.is_next_dump_page_properties();
 			
 			CP_XML_NODE(L"w:type")
 			{				
-				if (next_page)	CP_XML_ATTR(L"w:val", L"nextPage");
-				else			CP_XML_ATTR(L"w:val", L"continuous");
+				if (change_page_layout)
+				{
+					CP_XML_ATTR(L"w:val", L"nextPage");
+				}
+				else			
+					CP_XML_ATTR(L"w:val", L"continuous");
 			}			
 
 			std::wstring masterPageName = Context.get_master_page_name();
-			bool res = Context.get_headers_footers().write_sectPr(masterPageName, next_page, strm);
+			bool res = Context.get_headers_footers().write_sectPr(masterPageName, change_page_layout, strm);
 			
 			if (res == false)
 			{
@@ -1369,7 +1371,7 @@ void style_page_layout_properties::docx_serialize(std::wostream & strm, oox::doc
 				Context.remove_page_properties();
 				Context.add_page_properties(masterPageNameLayout);
 				
-				bool res = Context.get_headers_footers().write_sectPr(masterPageName, next_page, strm);
+				bool res = Context.get_headers_footers().write_sectPr(masterPageName, change_page_layout, strm);
 			}
 	
 			oox::section_context::_section & section = Context.get_section_context().get();

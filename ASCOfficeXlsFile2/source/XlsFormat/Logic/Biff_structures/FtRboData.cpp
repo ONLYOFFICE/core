@@ -45,7 +45,15 @@ BiffStructurePtr FtRboData::clone()
 
 void FtRboData::load(CFRecord& record)
 {
-	record.skipNunBytes(4); // reserved
+	unsigned short ft, cb;
+	record >> ft >> cb;
+
+	if ( ft != 0x000b && cb != 0x0006)
+	{
+		record.RollRdPtrBack(4);
+		return;
+	}
+	fExist = true;
 
 	record >> idRadNext >> fFirstBtn;
 }

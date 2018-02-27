@@ -49,10 +49,8 @@
 #include "Media/Audio.h"
 #include "Media/Video.h"
 #include "Media/VbaProject.h"
+#include "Media/JsaProject.h"
 #include "External/HyperLink.h"
-#include "External/ExternalVideo.h"
-#include "External/ExternalAudio.h"
-#include "External/ExternalImage.h"
 #include "HeaderFooter.h"
 #include "Numbering.h"
 #include "Comments.h"
@@ -66,7 +64,7 @@
 
 namespace OOX
 {
-	const smart_ptr<OOX::File> CreateFile(const OOX::CPath& oRootPath, const OOX::CPath& oPath, const OOX::Rels::CRelationShip& oRelation)
+	const smart_ptr<OOX::File> CreateFile(const OOX::CPath& oRootPath, const OOX::CPath& oPath, const OOX::Rels::CRelationShip& oRelation, OOX::Document *pMain)
 	{
 		OOX::CPath oRelationFilename = oRelation.Filename();
 		CPath oFileName;
@@ -76,83 +74,79 @@ namespace OOX
 			oFileName = oPath / oRelationFilename;
 
 		if ( oRelation.Type() == FileTypes::Document || oRelation.Type() == FileTypes::DocumentMacro)
-			return smart_ptr<OOX::File>(new CDocument( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new CDocument( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == FileTypes::FontTable)
-			return smart_ptr<OOX::File>(new CFontTable( oFileName ));
+			return smart_ptr<OOX::File>(new CFontTable( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::Style)
-			return smart_ptr<OOX::File>(new CStyles( oFileName ));
+			return smart_ptr<OOX::File>(new CStyles( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::Bibliography)
-			return smart_ptr<OOX::File>(new CBibliography( oFileName ));
+			return smart_ptr<OOX::File>(new CBibliography( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::FootNote)
-			return smart_ptr<OOX::File>(new CFootnotes( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new CFootnotes( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == FileTypes::EndNote)
-			return smart_ptr<OOX::File>(new CEndnotes( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new CEndnotes( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == FileTypes::WebSetting)
-			return smart_ptr<OOX::File>(new CWebSettings( oFileName ));
+			return smart_ptr<OOX::File>(new CWebSettings( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::Numbering)
-			return smart_ptr<OOX::File>(new CNumbering( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new CNumbering( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == FileTypes::Header)
-			return smart_ptr<OOX::File>(new CHdrFtr( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new CHdrFtr( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == FileTypes::Footer)
-			return smart_ptr<OOX::File>(new CHdrFtr( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new CHdrFtr( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == FileTypes::Comments)
-			return smart_ptr<OOX::File>(new CComments( oFileName ));
+			return smart_ptr<OOX::File>(new CComments( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::CommentsExt )
-			return smart_ptr<OOX::File>(new CCommentsExt( oFileName ));
+			return smart_ptr<OOX::File>(new CCommentsExt( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::People )
-			return smart_ptr<OOX::File>(new CPeople( oFileName ));
+			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
 //common		
 		else if ( oRelation.Type() == FileTypes::Setting)
-			return smart_ptr<OOX::File>(new CSettings( oFileName ));
+			return smart_ptr<OOX::File>(new CSettings( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::App )
-			return smart_ptr<OOX::File>(new CApp( oFileName ));
+			return smart_ptr<OOX::File>(new CApp( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::Core)
-			return smart_ptr<OOX::File>(new CCore( oFileName ));
+			return smart_ptr<OOX::File>(new CCore( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::Theme)
-			return smart_ptr<OOX::File>(new PPTX::Theme( oFileName ));
+			return smart_ptr<OOX::File>(new PPTX::Theme( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::ThemeOverride)
-			return smart_ptr<OOX::File>(new PPTX::Theme( oFileName ));
+			return smart_ptr<OOX::File>(new PPTX::Theme( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::HyperLink)
-			return smart_ptr<OOX::File>(new HyperLink( oRelation.Target()));
-		else if (( oRelation.Type() == FileTypes::ExternalVideo ) && ( oRelation.IsExternal() ))
-			return smart_ptr<OOX::File>(new ExternalVideo( oRelation.Target()));
-		else if (( oRelation.Type() == FileTypes::ExternalAudio ) && ( oRelation.IsExternal() ))
-			return smart_ptr<OOX::File>(new ExternalAudio( oRelation.Target()));
-		else if (( oRelation.Type() == FileTypes::ExternalImage ) && ( oRelation.IsExternal() ))
-			return smart_ptr<OOX::File>(new ExternalImage( oRelation.Target()));
-		else if ( oRelation.Type() == FileTypes::Image)
-			return smart_ptr<OOX::File>(new Image( oFileName ));
+			return smart_ptr<OOX::File>(new HyperLink( pMain, oRelation.Target()));
 		else if ( oRelation.Type() == FileTypes::OleObject)
-			return smart_ptr<OOX::File>(new OleObject( oFileName ));
+			return smart_ptr<OOX::File>(new OleObject( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::Image)
+			return smart_ptr<OOX::File>(new Image( pMain, oFileName, oRelation.IsExternal() ));
 		else if ( oRelation.Type() == FileTypes::Audio)
-			return smart_ptr<OOX::File>(new Audio( oFileName ));
+			return smart_ptr<OOX::File>(new Audio( pMain, oFileName, oRelation.IsExternal() ));
 		else if ( oRelation.Type() == FileTypes::Video)
-			return smart_ptr<OOX::File>(new Video( oFileName ));
+			return smart_ptr<OOX::File>(new Video( pMain, oFileName, oRelation.IsExternal() ));
 		else if (oRelation.Type() == FileTypes::Data)			
-			return smart_ptr<OOX::File>(new CDiagramData( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new CDiagramData( pMain, oRootPath, oFileName ));
 		else if (oRelation.Type() == FileTypes::DiagDrawing)
-			return smart_ptr<OOX::File>(new CDiagramDrawing( oRootPath, oFileName )); 
+			return smart_ptr<OOX::File>(new CDiagramDrawing( pMain, oRootPath, oFileName )); 
 		else if (oRelation.Type() == FileTypes::MicrosoftOfficeUnknown) //ms package
-			return smart_ptr<OOX::File>(new OleObject( oFileName, true ));
+			return smart_ptr<OOX::File>(new OleObject( pMain, oFileName, true ));
 		else if ( oRelation.Type() == OOX::FileTypes::VmlDrawing )
-			return smart_ptr<OOX::File>(new CVmlDrawing( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new CVmlDrawing( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::Chart )
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::ActiveX_xml)
-			return smart_ptr<OOX::File>(new OOX::ActiveX_xml( oRootPath, oFileName));
+			return smart_ptr<OOX::File>(new OOX::ActiveX_xml( pMain, oRootPath, oFileName));
 		else if ( oRelation.Type() == OOX::FileTypes::ActiveX_bin)
-			return smart_ptr<OOX::File>(new OOX::ActiveX_bin( oFileName ));
+			return smart_ptr<OOX::File>(new OOX::ActiveX_bin( pMain, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::VbaProject)
-			return smart_ptr<OOX::File>(new OOX::VbaProject( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new OOX::VbaProject( pMain, oRootPath, oFileName ));
 		//else if ( oRelation.Type() == OOX::FileTypes::VbaData)
 		//	return smart_ptr<OOX::File>(new OOX::VbaData( oFileName ));
+		else if ( oRelation.Type() == FileTypes::JsaProject)
+			return smart_ptr<OOX::File>(new JsaProject( pMain, oFileName ));
 
-		return smart_ptr<OOX::File>( new UnknowTypeFile() );
+		return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 	}
 
-	const smart_ptr<OOX::File> CreateFile(const OOX::CPath& oRootPath, const OOX::CPath& oPath, OOX::Rels::CRelationShip* pRelation)
+	const smart_ptr<OOX::File> CreateFile(const OOX::CPath& oRootPath, const OOX::CPath& oPath, OOX::Rels::CRelationShip* pRelation, OOX::Document* pMain)
 	{
-		if (pRelation == NULL) return smart_ptr<OOX::File>( new UnknowTypeFile() );
+		if (pRelation == NULL) return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 
 		OOX::CPath oRelationFilename = pRelation->Filename();
 		CPath oFileName;
@@ -162,84 +156,80 @@ namespace OOX
 			oFileName = oPath / oRelationFilename;
 
 		if ( pRelation->Type() == FileTypes::App )
-			return smart_ptr<OOX::File>(new CApp( oFileName ));
+			return smart_ptr<OOX::File>(new CApp( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Core)
-			return smart_ptr<OOX::File>(new CCore( oFileName ));
+			return smart_ptr<OOX::File>(new CCore( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Document || pRelation->Type() == FileTypes::DocumentMacro)
-			return smart_ptr<OOX::File>(new CDocument( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new CDocument( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Theme)
 		{
 			if(NSFile::CFileBinary::Exists(oFileName.GetPath()))
 			{
-				return smart_ptr<OOX::File>(new PPTX::Theme( oFileName ));
+				return smart_ptr<OOX::File>(new PPTX::Theme( pMain, oFileName ));
 			}
 			else
 			{
-				return smart_ptr<OOX::File>( new UnknowTypeFile() );
+				return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 			}
 		}
 		else if ( pRelation->Type() == FileTypes::ThemeOverride)
-			return smart_ptr<OOX::File>(new PPTX::Theme( oFileName ));
+			return smart_ptr<OOX::File>(new PPTX::Theme( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Setting)
-			return smart_ptr<OOX::File>(new CSettings( oFileName ));
+			return smart_ptr<OOX::File>(new CSettings( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::FontTable)
-			return smart_ptr<OOX::File>(new CFontTable( oFileName ));
+			return smart_ptr<OOX::File>(new CFontTable( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Style)
-			return smart_ptr<OOX::File>(new CStyles( oFileName ));
+			return smart_ptr<OOX::File>(new CStyles( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Bibliography)
-			return smart_ptr<OOX::File>(new CBibliography( oFileName ));
+			return smart_ptr<OOX::File>(new CBibliography( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::FootNote)
-			return smart_ptr<OOX::File>(new CFootnotes( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new CFootnotes( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::EndNote)
-			return smart_ptr<OOX::File>(new CEndnotes( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new CEndnotes( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::WebSetting)
-			return smart_ptr<OOX::File>(new CWebSettings( oFileName ));
+			return smart_ptr<OOX::File>(new CWebSettings( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::HyperLink)
-			return smart_ptr<OOX::File>(new HyperLink( pRelation->Target()));
-		else if (( pRelation->Type() == FileTypes::ExternalVideo ) && ( pRelation->IsExternal() ))
-			return smart_ptr<OOX::File>(new ExternalVideo( pRelation->Target()));
-		else if (( pRelation->Type() == FileTypes::ExternalAudio ) && ( pRelation->IsExternal() ))
-			return smart_ptr<OOX::File>(new ExternalAudio( pRelation->Target()));
-		else if (( pRelation->Type() == FileTypes::ExternalImage ) && ( pRelation->IsExternal() ))
-			return smart_ptr<OOX::File>(new ExternalImage( pRelation->Target()));
-		else if ( pRelation->Type() == FileTypes::Image)
-			return smart_ptr<OOX::File>(new Image( oFileName ));
+			return smart_ptr<OOX::File>(new HyperLink( pMain, pRelation->Target()));
 		else if ( pRelation->Type() == FileTypes::OleObject)
-			return smart_ptr<OOX::File>(new OleObject( oFileName ));
+			return smart_ptr<OOX::File>(new OleObject( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::Image)
+			return smart_ptr<OOX::File>(new Image( pMain, oFileName, pRelation->IsExternal() ));
 		else if ( pRelation->Type() == FileTypes::Audio)
-			return smart_ptr<OOX::File>(new Audio( oFileName ));
+			return smart_ptr<OOX::File>(new Audio( pMain, oFileName, pRelation->IsExternal() ));
 		else if ( pRelation->Type() == FileTypes::Video)
-			return smart_ptr<OOX::File>(new Video( oFileName ));
+			return smart_ptr<OOX::File>(new Video( pMain, oFileName, pRelation->IsExternal() ));
 		else if ( pRelation->Type() == FileTypes::Numbering)
-			return smart_ptr<OOX::File>(new CNumbering( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new CNumbering( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Header)
-			return smart_ptr<OOX::File>(new CHdrFtr( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new CHdrFtr( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Footer)
-			return smart_ptr<OOX::File>(new CHdrFtr( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new CHdrFtr( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Comments)
-			return smart_ptr<OOX::File>(new CComments( oFileName ));
+			return smart_ptr<OOX::File>(new CComments( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::CommentsExt )
-			return smart_ptr<OOX::File>(new CCommentsExt( oFileName ));
+			return smart_ptr<OOX::File>(new CCommentsExt( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::People )
-			return smart_ptr<OOX::File>(new CPeople( oFileName ));
+			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
 		else if (pRelation->Type() == FileTypes::Data)
-			return smart_ptr<OOX::File>(new CDiagramData( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new CDiagramData( pMain, oRootPath, oFileName ));
 		else if (pRelation->Type() == FileTypes::DiagDrawing)
-			return smart_ptr<OOX::File>(new CDiagramDrawing( oRootPath, oFileName )); 
+			return smart_ptr<OOX::File>(new CDiagramDrawing( pMain, oRootPath, oFileName )); 
 		else if (pRelation->Type() == FileTypes::MicrosoftOfficeUnknown) //ms package
-			return smart_ptr<OOX::File>(new OleObject( oFileName, true ));
+			return smart_ptr<OOX::File>(new OleObject( pMain, oFileName, true ));
 		else if ( pRelation->Type() == OOX::FileTypes::Chart )
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::ActiveX_xml)
-			return smart_ptr<OOX::File>(new ActiveX_xml( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new ActiveX_xml( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::ActiveX_bin)
-			return smart_ptr<OOX::File>(new ActiveX_bin( oFileName ));
+			return smart_ptr<OOX::File>(new ActiveX_bin( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::VbaProject)
-			return smart_ptr<OOX::File>(new OOX::VbaProject( oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new OOX::VbaProject( pMain, oRootPath, oFileName ));
 		//else if ( pRelation->Type() == FileTypes::VbaData)
 		//	return smart_ptr<OOX::File>(new OOX::VbaData( oFileName ));
+		else if ( pRelation->Type() == FileTypes::JsaProject)
+			return smart_ptr<OOX::File>(new JsaProject( pMain, oFileName ));
 
-		return smart_ptr<OOX::File>( new UnknowTypeFile() );
+		return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 	}
 
 } // namespace OOX

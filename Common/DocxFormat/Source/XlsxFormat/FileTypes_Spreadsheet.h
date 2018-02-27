@@ -97,6 +97,11 @@ namespace OOX
 			const FileType PivotCacheRecords(L"", L"pivotCacheRecords.xml",
 												_T("application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheRecords+xml"),
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheRecords"), true, true);
+
+			//onlyoffice workbook comments
+			const FileType WorkbookComments(L"", L"workbookComments.bin",
+													_T(""),
+													_T("http://schemas.onlyoffice.com/workbookComments"));
 		
 
 		} // namespace FileTypes

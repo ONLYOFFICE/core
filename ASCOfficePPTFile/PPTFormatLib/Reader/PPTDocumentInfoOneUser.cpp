@@ -195,7 +195,7 @@ void CPPTUserInfo::DecryptStream(POLE::Stream *pStream, int block)
 {
 	int size = pStream->size() - pStream->tell();
 	
-	POLE::Stream *pStreamTmp = new POLE::Stream(m_pStorageDecrypt, "Tmp" + std::to_string(m_arStreamDecrypt.size() + 1), true, size);
+	POLE::Stream *pStreamTmp = new POLE::Stream(m_pStorageDecrypt, L"Tmp" + std::to_wstring(m_arStreamDecrypt.size() + 1), true, size);
 	unsigned char* data_stream = new unsigned char[size]; 
 
 	pStream->read(data_stream, size);
@@ -757,16 +757,14 @@ void CPPTUserInfo::LoadNotes(DWORD dwNoteID, CSlide* pNotes)
 
 	for (size_t nShape = 0; nShape < oArrayShapes.size(); ++nShape)
 	{
-		IElement* pElement = NULL;
-		
-		oArrayShapes[nShape]->GetElement(&pElement, &m_oExMedia, pNotes->m_lOriginalWidth, pNotes->m_lOriginalHeight,
+		CElementPtr pElement = oArrayShapes[nShape]->GetElement(&m_oExMedia, pNotes->m_lOriginalWidth, pNotes->m_lOriginalHeight,
 												pTheme, pLayout, pThemeWrapper, pNotesWrapper, pNotes);
 		
 		if (NULL != pElement)
 		{
 			if (pElement->m_bIsBackground && !pElement->m_bHaveAnchor && !bMasterBackGround)
 			{
-				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement);
+				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
 				if (NULL != pShape)
 				{
 					pShape->SetupProperties(pNotes, pTheme, pLayout);
@@ -774,7 +772,6 @@ void CPPTUserInfo::LoadNotes(DWORD dwNoteID, CSlide* pNotes)
 					pNotes->m_bIsBackground = true;
 					pNotes->m_oBackground	= pShape->m_oBrush;
 				}
-				RELEASEOBJECT(pElement);
 				continue;			
 
 			}
@@ -1002,16 +999,15 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 
 	for (size_t nShape = 0; nShape < oArrayShapes.size(); ++nShape)
 	{
-		IElement* pElement = NULL;
-		
-		oArrayShapes[nShape]->GetElement(&pElement, &m_oExMedia, pSlide->m_lOriginalWidth, pSlide->m_lOriginalHeight,
+		CElementPtr pElement = oArrayShapes[nShape]->GetElement(&m_oExMedia, pSlide->m_lOriginalWidth, pSlide->m_lOriginalHeight,
 												pTheme, pLayout, pThemeWrapper, pSlideWrapper, pSlide);
+		
+		CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
 		
 		if (NULL != pElement)
 		{
 			if (pElement->m_bIsBackground && !pElement->m_bHaveAnchor && !bMasterBackGround)
 			{
-				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement);
 				if (NULL != pShape)
 				{
 					pShape->SetupProperties(pSlide, pTheme, pLayout);
@@ -1019,12 +1015,14 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 					pSlide->m_bIsBackground = true;
 					pSlide->m_oBackground	= pShape->m_oBrush;
 				}
-				RELEASEOBJECT(pElement);
 				continue;			
 
 			}else
 				AddAnimation ( dwSlideID, pSlide->m_lOriginalWidth, pSlide->m_lOriginalHeight, pElement );
 
+			if (NULL != pShape)
+				pShape->SetupProperties(pSlide, pTheme, pLayout);
+			
 			if (pElement->m_bHaveAnchor)
 			{
 				pSlide->m_arElements.push_back(pElement);
@@ -1044,13 +1042,12 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 	
 	//-------------элементы колонтитулов
 	std::multimap<int, int>::iterator it;
-	IElement* pElement = NULL;
-	
+		
 	if (bHasSlideNumber)	AddLayoutSlidePlaceholder(pSlide, MasterSlideNumber, pLayout, true);	
 	
 	if (bHasDate)
 	{
-		IElement *pElement = AddLayoutSlidePlaceholder(pSlide, MasterDate, pLayout, true);
+		CElementPtr pElement = AddLayoutSlidePlaceholder(pSlide, MasterDate, pLayout, true);
 	
 		if (pElement) pElement->m_nFormatDate = nFormatDate;
 	}
@@ -1058,11 +1055,11 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 	if (bHasFooter)	AddLayoutSlidePlaceholder(pSlide, MasterFooter, pLayout, true);
 }
 
-IElement* CPPTUserInfo::AddLayoutSlidePlaceholder (CSlide *pSlide, int placeholderType, CLayout *pLayout, bool idx_only)
+CElementPtr CPPTUserInfo::AddLayoutSlidePlaceholder (CSlide *pSlide, int placeholderType, CLayout *pLayout, bool idx_only)
 {
-	IElement* pElement  = NULL;
+	CElementPtr pElement;
 
-	for (std::multimap<int, int>::iterator it = pLayout->m_mapPlaceholders.begin(); it != pLayout->m_mapPlaceholders.end(); it++)
+	for (std::multimap<int, int>::iterator it = pLayout->m_mapPlaceholders.begin(); it != pLayout->m_mapPlaceholders.end(); ++it)
 	{
 		pElement = NULL;
 		if (it->first == placeholderType )
@@ -1073,7 +1070,7 @@ IElement* CPPTUserInfo::AddLayoutSlidePlaceholder (CSlide *pSlide, int placehold
 
 				pElement = pLayout->m_arElements[it->second]->CreateDublicate();
 				
-				pSlide->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
+				pSlide->m_arElements.push_back(pElement);
 				pSlide->m_mapPlaceholders.insert(std::pair<int, int>(placeholderType, pSlide->m_arElements.size()-1)); 
 			}
 			else
@@ -1092,7 +1089,7 @@ IElement* CPPTUserInfo::AddLayoutSlidePlaceholder (CSlide *pSlide, int placehold
 				{
 					pElement = pLayout->m_arElements[it->second]->CreateDublicate();
 
-					pSlide->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
+					pSlide->m_arElements.push_back(pElement);
 					pSlide->m_mapPlaceholders.insert(std::pair<int, int>(placeholderType, pSlide->m_arElements.size()-1)); 
 				}
 			}
@@ -1102,11 +1099,11 @@ IElement* CPPTUserInfo::AddLayoutSlidePlaceholder (CSlide *pSlide, int placehold
 	return pElement; 
 }
 	
-IElement* CPPTUserInfo::AddThemeLayoutPlaceholder (CLayout *pLayout, int placeholderType, CTheme* pTheme, bool idx_only)
+CElementPtr  CPPTUserInfo::AddThemeLayoutPlaceholder (CLayout *pLayout, int placeholderType, CTheme* pTheme, bool idx_only)
 {
-	IElement* pElement  = NULL;
+	CElementPtr pElement;
 
-	for (std::multimap<int, int>::iterator it = pTheme->m_mapPlaceholders.begin(); it != pTheme->m_mapPlaceholders.end(); it++)
+	for (std::multimap<int, int>::iterator it = pTheme->m_mapPlaceholders.begin(); it != pTheme->m_mapPlaceholders.end(); ++it)
 	{
 		if (it->first == placeholderType )
 		{			
@@ -1116,7 +1113,7 @@ IElement* CPPTUserInfo::AddThemeLayoutPlaceholder (CLayout *pLayout, int placeho
 
 			pElement->m_bPlaceholderSet = true;
 			
-			pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pElement));
+			pLayout->m_arElements.push_back(pElement);
 			pLayout->m_mapPlaceholders.insert(std::pair<int, int>(placeholderType, pLayout->m_arElements.size()-1)); 
 		}
 	}
@@ -1124,9 +1121,9 @@ IElement* CPPTUserInfo::AddThemeLayoutPlaceholder (CLayout *pLayout, int placeho
 	return pElement; //last added
 }
 
-IElement* CPPTUserInfo::AddNewLayoutPlaceholder (CLayout *pLayout, int placeholderType, int placeholderSizePreset)
+CElementPtr CPPTUserInfo::AddNewLayoutPlaceholder (CLayout *pLayout, int placeholderType, int placeholderSizePreset)
 {
-	if (placeholderType < 1) return NULL;
+	if (placeholderType < 1) return CElementPtr();
 
 	CShapeElement* pShape = new CShapeElement(NSBaseShape::ppt, PPTShapes::sptCRect);
 
@@ -1139,10 +1136,12 @@ IElement* CPPTUserInfo::AddNewLayoutPlaceholder (CLayout *pLayout, int placehold
 
 	CorrectPlaceholderType(pShape->m_lPlaceholderType);
 
-	pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pShape));
+	CElementPtr pElement = CElementPtr(pShape);
+
+	pLayout->m_arElements.push_back(pElement);
 	pLayout->m_mapPlaceholders.insert(std::pair<int, int>(pShape->m_lPlaceholderType, pLayout->m_arElements.size()-1)); 
 
-	return pShape;
+	return pElement;
 }
 
 int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool addShapes, bool bMasterObjects)
@@ -1235,7 +1234,7 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 	//if (layoutRecord.m_nGeom==0x0F) return ind; // big object only !!!
 
 	//копируем все элементы без idx которые не были прописаны явно
-	for (std::multimap<int, int>::iterator it = pTheme->m_mapPlaceholders.begin(); it != pTheme->m_mapPlaceholders.end(); it++)
+	for (std::multimap<int, int>::iterator it = pTheme->m_mapPlaceholders.begin(); it != pTheme->m_mapPlaceholders.end(); ++it)
 	{		
 		if (pTheme->m_arElements[it->second]->m_lPlaceholderID >= 0) continue;
 
@@ -1244,7 +1243,7 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 		{
 			if (it1->first == it->first)
 			{
-				IElement* pElemLayout = pLayout->m_arElements[it1->second];
+				CElementPtr pElemLayout = pLayout->m_arElements[it1->second];
 				if (pElemLayout->m_lPlaceholderID == pTheme->m_arElements[it->second]->m_lPlaceholderID)
 				{
 					found = true;
@@ -1254,9 +1253,9 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 		}
 		if (found == false)
 		{
-			IElement *pElemTheme = pTheme->m_arElements[it->second]->CreateDublicate();
+			CElementPtr pElemTheme = pTheme->m_arElements[it->second]->CreateDublicate();
 		
-			pLayout->m_arElements.push_back(dynamic_cast<IElement*>(pElemTheme));
+			pLayout->m_arElements.push_back(pElemTheme);
 			pLayout->m_mapPlaceholders.insert(std::pair<int, int>(it->first, pLayout->m_arElements.size()-1)); 
 		}
 	}
@@ -1275,9 +1274,9 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 	return ind;
 }
 
-IElement* CPPTUserInfo::AddNewThemePlaceholder (CTheme* pTheme, int placeholderType, int placeholderSizePreset)
+CElementPtr CPPTUserInfo::AddNewThemePlaceholder (CTheme* pTheme, int placeholderType, int placeholderSizePreset)
 {
-	if (placeholderType < 1) return NULL;
+	if (placeholderType < 1) return CElementPtr();
 
 	CShapeElement* pShape = new CShapeElement(NSBaseShape::ppt, PPTShapes::sptCRect);
 
@@ -1290,10 +1289,12 @@ IElement* CPPTUserInfo::AddNewThemePlaceholder (CTheme* pTheme, int placeholderT
 
 	CorrectPlaceholderType(pShape->m_lPlaceholderType);
 
-	pTheme->m_arElements.push_back(dynamic_cast<IElement*>(pShape));
+	CElementPtr pElement = CElementPtr(pShape);
+
+	pTheme->m_arElements.push_back(pElement);
 	pTheme->m_mapPlaceholders.insert(std::pair<int, int>(pShape->m_lPlaceholderType, pTheme->m_arElements.size()-1)); 
 
-	return pShape;
+	return pElement;
 }
 void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, const LONG& lOriginHeight)
 {
@@ -1507,16 +1508,15 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 
 	for (size_t nShape = 0; nShape < oArrayShapes.size(); ++nShape)
 	{
-		NSPresentationEditor::IElement* pElement = NULL;
-		oArrayShapes[nShape]->GetElement(&pElement, &m_oExMedia, lOriginWidth, lOriginHeight, pTheme, pLayout, pMasterWrapper, pMasterWrapper);
+		NSPresentationEditor::CElementPtr pElement = oArrayShapes[nShape]->GetElement(&m_oExMedia, lOriginWidth, lOriginHeight, pTheme, pLayout, pMasterWrapper, pMasterWrapper);
 
-		if (NULL != pElement)
+		if (pElement)
 		{
 			AddAnimation ( dwMasterID, lOriginWidth, lOriginHeight, pElement );
 			
 			if (pElement->m_bIsBackground && !pElement->m_bHaveAnchor)
 			{
-				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement);
+				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
 				if (NULL != pShape)
 				{
 					pShape->SetupProperties(NULL, pTheme, pLayout);
@@ -1524,8 +1524,6 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 					pTheme->m_bIsBackground = true;
 					pTheme->m_oBackground = pShape->m_oBrush;
 				}
-
-				RELEASEINTERFACE(pElement);
 				continue;
 			}
 			pTheme->m_arElements.push_back(pElement);
@@ -1756,16 +1754,15 @@ void CPPTUserInfo::LoadMaster(CRecordSlide* pMaster, CSlideInfo *& pMasterWrappe
 
 	for (size_t nShape = 0; nShape < oArrayShapes.size(); ++nShape)
 	{
-		NSPresentationEditor::IElement* pElement = NULL;
-		oArrayShapes[nShape]->GetElement(&pElement, &m_oExMedia, lOriginWidth, lOriginHeight, pTheme, pLayout, pMasterWrapper, pMasterWrapper);
+		NSPresentationEditor::CElementPtr pElement = oArrayShapes[nShape]->GetElement(&m_oExMedia, lOriginWidth, lOriginHeight, pTheme, pLayout, pMasterWrapper, pMasterWrapper);
 
-		if (NULL != pElement)
+		if (pElement)
 		{
 			//AddAnimation ( dwMasterID, lOriginWidth, lOriginHeight, pElement );
 			
 			if (pElement->m_bIsBackground && !pElement->m_bHaveAnchor)
 			{
-				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement);
+				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
 				if (NULL != pShape)
 				{
 					pShape->SetupProperties(NULL, pTheme, pLayout);
@@ -1773,8 +1770,6 @@ void CPPTUserInfo::LoadMaster(CRecordSlide* pMaster, CSlideInfo *& pMasterWrappe
 					pTheme->m_bIsBackground = true;
 					pTheme->m_oBackground = pShape->m_oBrush;
 				}
-
-				RELEASEINTERFACE(pElement);
 				continue;
 			}
 			pTheme->m_arElements.push_back(pElement);
@@ -1948,16 +1943,15 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 
 	for (size_t nShape = 0; nShape < oArrayShapes.size(); ++nShape)
 	{
-		IElement* pElement = NULL;
-		oArrayShapes[nShape]->GetElement(&pElement, &m_oExMedia, lOriginWidth, lOriginHeight, pTheme, pLayout, pThemeWrapper, pMasterWrapper);
+		CElementPtr pElement =oArrayShapes[nShape]->GetElement(&m_oExMedia, lOriginWidth, lOriginHeight, pTheme, pLayout, pThemeWrapper, pMasterWrapper);
 
-		if (NULL != pElement)
+		if (pElement)
 		{
 			AddAnimation ( dwMasterID, lOriginWidth, lOriginHeight, pElement );
 
 			if (pElement->m_bIsBackground && !pElement->m_bHaveAnchor)
 			{
-				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement);
+				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
 
 				if (NULL != pShape)
 				{
@@ -1966,7 +1960,6 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 					pLayout->m_bIsBackground = true;
 					pLayout->m_oBackground	= pShape->m_oBrush;
 				}
-				RELEASEINTERFACE(pElement);
 				continue;
 			}
 
@@ -2385,7 +2378,7 @@ void CPPTUserInfo::LoadExAudio(CRecordsContainer* pExObject)
 	oArrayCString.clear();
 }
 
-void CPPTUserInfo::AddAnimation ( DWORD dwSlideID, double Width, double Height, IElement* pElement )
+void CPPTUserInfo::AddAnimation ( DWORD dwSlideID, double Width, double Height, CElementPtr pElement )
 {
 	std::map <DWORD, Animations::CSlideTimeLine*>::iterator pPair =	m_mapAnimations.find( dwSlideID );
 
@@ -2432,12 +2425,14 @@ void CPPTUserInfo::AddAudioTransition (DWORD dwSlideID, CTransition* pTransition
 	if (NULL==pTransition) 
 		return;
 
-	CAudioElement* pAudio		=	new CAudioElement ();
+	CAudioElement* pAudio = new CAudioElement ();
 	if (pAudio)
 	{
 		pAudio->m_strAudioFileName	=	strFilePath;				
 	}
 	// ??? недоделка ???
+
+	delete pAudio;
 }
 
 void CPPTUserInfo::CreateDefaultStyle(NSPresentationEditor::CTextStyles& pStyle, NSPresentationEditor::CTheme* pTheme)

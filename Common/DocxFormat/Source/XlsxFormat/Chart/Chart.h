@@ -43,11 +43,11 @@ namespace OOX
 		class CChartSpace : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CChartSpace()
+			CChartSpace(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 			}
-			CChartSpace(const CPath& oRootPath, const CPath& oPath)
+			CChartSpace(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 				read( oRootPath, oPath );
@@ -55,8 +55,6 @@ namespace OOX
 			virtual ~CChartSpace()
 			{
 			}
-		public:
-
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)

@@ -192,7 +192,9 @@ namespace BinXlsxRW
 		ExternalBook = 9,
 		OleLink = 10,
 		DdeLink = 11,
-		VbaProject = 12
+		VbaProject = 12,
+		JsaProject = 13,
+		Comments = 14
 	};}
 	namespace c_oSerWorkbookVbaProjectTypes{enum c_oSerWorkbookVbaProjectTypes
 	{
@@ -298,7 +300,8 @@ namespace BinXlsxRW
 		Type = 2,
 		Value = 3,
 		Formula = 4,
-		RefRowCol = 5
+		RefRowCol = 5,
+		ValueText = 6
 	};}
 	namespace c_oSerFormulaTypes{enum c_oSerFormulaTypes
 	{

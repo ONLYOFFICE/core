@@ -79,16 +79,9 @@ bool OOXtrPrReader::Parse( ReaderParameter oParam , RtfRowProperty& oOutputPrope
 		if (m_ooxTableRowProps->m_oTblHeight->m_oHRule.IsInit() && m_ooxTableRowProps->m_oTblHeight->m_oHRule->GetValue() == SimpleTypes::heightruleExact)
 			oOutputProperty.m_nHeight = -oOutputProperty.m_nHeight;
 	}
-	if( m_ooxTableRowProps->m_oWBefore.IsInit() && m_ooxTableRowProps->m_oWBefore->m_oW.IsInit())
-	{
-		oOutputProperty.m_nWidthStartInvCell	= m_ooxTableRowProps->m_oWBefore->m_oW->GetValue();
-		oOutputProperty.m_eMUStartInvCell		= _MetricUnits::mu_Twips;
-	}
-	if( m_ooxTableRowProps->m_oWAfter.IsInit() && m_ooxTableRowProps->m_oWAfter->m_oW.IsInit())
-	{
-		oOutputProperty.m_nWidthEndInvCell		= m_ooxTableRowProps->m_oWAfter->m_oW->GetValue();
-		oOutputProperty.m_eMUEndInvCell			= _MetricUnits::mu_Twips;
-	}
+
+	OOXtcPrReader::Parse(m_ooxTableRowProps->m_oWBefore.GetPointer(), oOutputProperty.m_eWidthStartInvCellUnit, oOutputProperty.m_nWidthStartInvCell);
+	OOXtcPrReader::Parse(m_ooxTableRowProps->m_oWAfter.GetPointer(), oOutputProperty.m_eWidthEndInvCellUnit, oOutputProperty.m_nWidthEndInvCell);
 
 	if( m_ooxTableRowProps->m_oGridBefore.IsInit() && m_ooxTableRowProps->m_oGridBefore->m_oVal.IsInit())
 		oOutputProperty.m_nGridBefore = m_ooxTableRowProps->m_oGridBefore->m_oVal->GetValue();
@@ -172,10 +165,10 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 
 	long nRowCount = m_ooxTable->m_nCountRow, nCurRow = 0;
 
-	for (size_t i = 0; i < m_ooxTable->m_arrItems.size(); i++ )
-	{
-		if (m_ooxTable->m_arrItems[i] == NULL) continue;
-		if (m_ooxTable->m_arrItems[i]->getType() != OOX::et_w_tr) continue;
+    for (size_t i =0; i < m_ooxTable->m_arrItems.size(); ++i)
+	{	
+		if ( m_ooxTable->m_arrItems[i] == NULL) continue;
+		if ( m_ooxTable->m_arrItems[i]->getType() != OOX::et_w_tr) continue;
 
 		ReaderParameter newParam	= oParam;
 		newParam.poTableStyle		= poTableStyle;
@@ -189,6 +182,7 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 		
 		OOXTableRowReader oRowReader(ooxRow, m_ooxTable->m_oTableProperties);
 		oRowReader.Parse( newParam, *oNewRow, nCurRow++, nRowCount );
+		
 		oOutputTable.AddItem( oNewRow );
 	}
 	oOutputTable.CalculateCellx( *oParam.oRtf );

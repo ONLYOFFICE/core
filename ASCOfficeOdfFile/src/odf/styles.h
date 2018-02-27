@@ -674,9 +674,6 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer_left);
 
-/// style_columns
-/// style-columns
-/// style:columns
 class style_columns : public office_element_impl<style_columns>
 {
 public:
@@ -695,15 +692,12 @@ public:
 	_CP_OPT(odf_types::length)	fo_column_gap_;
 
     office_element_ptr			style_column_sep_;
-    office_element_ptr_array	style_column_;
+    office_element_ptr_array	style_columns_;
 
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_columns);
 
-/// style_column
-/// style-column
-/// style:column
 class style_column : public office_element_impl<style_column>
 {
 public:
@@ -719,18 +713,14 @@ private:
 
 public:
     _CP_OPT(odf_types::length)	style_rel_width_;
-    odf_types::length			fo_start_indent_;
-    odf_types::length			fo_end_indent_;
-    odf_types::length			fo_space_before_;
-    odf_types::length			fo_space_after_;
+    _CP_OPT(odf_types::length)	fo_start_indent_;
+    _CP_OPT(odf_types::length)	fo_end_indent_;
+    _CP_OPT(odf_types::length)	fo_space_before_;
+    _CP_OPT(odf_types::length)	fo_space_after_;
     
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_column);
 
-/// style_column_sep
-/// style-column-sep
-/// style:column-sep
 class style_column_sep : public office_element_impl<style_column_sep>
 {
 public:
@@ -751,11 +741,9 @@ public:
     odf_types::vertical_align	style_vertical_align_; //default top
     odf_types::color			style_color_; // default #000000
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_column_sep);
 
 
-///         style:section-properties
 class style_section_properties : public office_element_impl<style_section_properties>
 {
 public:

@@ -62,8 +62,9 @@ namespace DocFileFormat
 
 			for (std::list<SinglePropertyModifier>::iterator oSpmIter = papx->grpprl->begin(); oSpmIter != papx->grpprl->end(); ++oSpmIter)
 			{
-				if (oSpmIter->OpCode == sprmTDefTableShd	|| oSpmIter->OpCode == sprmTDefTableShd2nd || 
-					oSpmIter->OpCode == sprmTDefTableShd2nd || oSpmIter->OpCode == sprmTDefTableShd3rd)
+				if (oSpmIter->OpCode == sprmTDefTableShd	|| 
+					oSpmIter->OpCode == sprmTDefTableShd2nd || 
+					oSpmIter->OpCode == sprmTDefTableShd3rd)
 				{
 					m_bSkipShading97 = TRUE;
 				}

@@ -32,13 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/ChartNumNillable.h>
+#include "../Biff_structures/ChartNumNillable.h"
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
 
-
-// Logical representation of SerAuxTrend record in BIFF8
 class SerAuxTrend: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(SerAuxTrend)
@@ -48,20 +47,19 @@ public:
 	~SerAuxTrend();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeSerAuxTrend;
 
 //-----------------------------
-	unsigned char			regt;
-	unsigned char			ordUser;
-	ChartNumNillable		numIntercept;
-	unsigned char			fEquation;
-	unsigned char			fRSquared;
-	BIFF_DOUBLE				numForecast;
-	BIFF_DOUBLE				numBackcast;
+	unsigned char		regt;
+	unsigned char		ordUser;
+	ChartNumNillable	numIntercept;
+	unsigned char		fEquation;
+	unsigned char		fRSquared;
+	Xnum				numForecast;
+	Xnum				numBackcast;
 
 };
 

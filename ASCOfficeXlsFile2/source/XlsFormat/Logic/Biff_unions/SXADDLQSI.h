@@ -36,11 +36,19 @@
 namespace XLS
 {
 
-
-// Logical representation of SXADDLQSI union of records 
 class SXADDLQSI: public CompositeObject
-{
-	BASE_OBJECT_DEFINE_CLASS_NAME(SXADDLQSI)
+{    
+    struct _sxAddl
+    {
+        _sxAddl(std::vector<_sxAddl> *p, int l) : prev(p), level (l) {}
+
+        std::vector<_sxAddl>*		prev = NULL;
+        int							level = 0;
+        std::vector<BaseObjectPtr>	elements;
+        std::vector<_sxAddl>		levels;
+    };
+
+    BASE_OBJECT_DEFINE_CLASS_NAME(SXADDLQSI)
 public:
 	SXADDLQSI();
 	~SXADDLQSI();
@@ -49,8 +57,12 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typeSXADDLQSI;
-	
+	static const ElementType type = typeSXADDLQSI;	
+
+	BiffStructurePtr	m_SXAddl_SXCQsi_SXDId;
+
+	std::vector<_sxAddl> content;
+	std::vector<_sxAddl> *current;
 };
 
 } // namespace XLS

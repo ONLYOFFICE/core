@@ -32,13 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/AFDOper.h>
+#include "../Biff_structures/AFDOper.h"
 
 namespace XLS
 {
 
-
-// Logical representation of AutoFilter record in BIFF8
 class AutoFilter: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(AutoFilter)
@@ -74,6 +72,9 @@ public:
 	std::wstring str1;
 	std::wstring str2;
 
+//----------------------------------------
+	bool	bExist;
+	_UINT32	size;
 };
 
 } // namespace XLS

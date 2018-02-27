@@ -32,7 +32,7 @@
 #pragma once
 #include "./../BaseShape.h"
 #include "CustomGeomShape.h"
-#include "PPTShapeEnum.h"
+#include "PptShapeEnum.h"
 #include "../../../../../../Common/DocxFormat/Source/DocxFormat/Logic/VmlOfficeDrawing.h"
 
 using namespace NSOfficeDrawing;
@@ -56,240 +56,12 @@ public:
     bool m_bIsStroked;
     nullable<OOX::VmlOffice::CSignatureLine> m_oSignatureLine;
 
-public:
-    CPPTShape() : CBaseShape(), m_arStringTextRects()
-    {
-        m_eType = PPTShapes::sptMin;
+    CPPTShape();
+    virtual ~CPPTShape();
 
-        m_arStringTextRects.push_back(_T("0,0,21600,21600"));
-
-        m_strPathLimoX = _T("");
-        m_strPathLimoY = _T("");
-        m_bIsShapeType = false;
-
-        m_bIsFilled = true;
-        m_bIsStroked = true;
-    }
-
-    ~CPPTShape()
-    {
-    }
-    virtual bool LoadFromXML(const std::wstring& xml)
-    {
-        XmlUtils::CXmlNode oNodePict;
-        if (oNodePict.FromXmlString(xml))
-        {
-            return LoadFromXML(oNodePict);
-        }
-        return false;
-    }
-
-    //virtual bool LoadFromXML(const std::wstring& xml)
-    //{
-    //	XmlUtils::CXmlNode oNodePict;
-    //	if (oNodePict.FromXmlString(xml))
-    //	{
-    //		if (_T("shape") == oNodePict.GetName())
-    //		{
-    //			std::wstring id = oNodePict.GetAttributeOrValue(_T("type"));
-    //			if (id != _T(""))
-    //			{
-    //				SetShapeType((PPTShapes::ShapeType)Strings::ToInteger(id));
-    //			}
-    //			else
-    //			{
-    //				XmlUtils::CXmlNode oNodeTemplate;
-    //				if (oNodePict.GetNode(_T("template"), oNodeTemplate))
-    //				{
-    //					std::wstring strAdj = oNodeTemplate.GetAttributeOrValue(_T("adj"));
-    //					LoadAdjustValuesList(strAdj);
-
-    //					XmlUtils::CXmlNode oNodeGuides;
-    //					if (oNodeTemplate.GetNode(_T("v:formulas"), oNodeGuides))
-    //					{
-    //						LoadGuidesList(oNodeGuides.GetXml());
-    //					}
-
-    //					std::wstring strPath = oNodeTemplate.GetAttributeOrValue(_T("path"));
-    //					LoadPathList(strPath);
-    //				}
-    //			}
-
-    //			XmlUtils::CXmlNode oNodeGuides;
-    //			if (oNodePict.GetNode(_T("path"), oNodeGuides))
-    //			{
-    //				std::wstring strPath = oNodeGuides.GetAttributeOrValue(_T("val"));
-    //				LoadPathList(strPath);
-    //			}
-
-    //			/*XmlUtils::CXmlNode oNodeShapeType;
-    //			if (oNodePict.GetNode(_T("v:shapetype"), oNodeShapeType))
-    //			{
-    //				std::wstring strAdj = oNodeShapeType.GetAttributeOrValue(_T("adj"));
-    //				LoadAdjustValuesList(strAdj);
-
-    //				XmlUtils::CXmlNode oNodeGuides;
-    //				if (oNodeShapeType.GetNode(_T("v:formulas"), oNodeGuides))
-    //				{
-    //					LoadGuidesList(oNodeGuides.GetXml());
-    //				}
-
-    //				std::wstring strPath = oNodeShapeType.GetAttributeOrValue(_T("path"));
-    //				LoadAdjustValuesList(strPath);
-    //			}
-    //			else
-    //			{
-    //				XmlUtils::CXmlNode oNodeShape;
-    //				if (oNodePict.GetNode(_T("v:shape"), oNodeShape))
-    //				{
-    //					std::wstring strAdj = oNodeShape.GetAttributeOrValue(_T("adj"));
-    //					LoadAdjustValuesList(strAdj);
-
-    //					XmlUtils::CXmlNode oNodeGuides;
-    //					if (oNodeShape.GetNode(_T("v:formulas"), oNodeGuides))
-    //					{
-    //						LoadGuidesList(oNodeGuides.GetXml());
-    //					}
-
-    //					std::wstring strPath = oNodeShape.GetAttributeOrValue(_T("path"));
-    //					LoadPathList(strPath);
-    //				}
-    //			}*/
-
-    //			return true;
-    //		}
-    //	}
-
-    //	return false;
-    //}
-
-    virtual bool LoadFromXML(XmlUtils::CXmlNode& oNodePict)
-    {
-        std::wstring id = oNodePict.GetAttributeOrValue(_T("type"));
-        bool isPathList = false;
-        if (id != _T(""))
-        {
-            SetShapeType((PPTShapes::ShapeType)XmlUtils::GetInteger(id));
-        }
-        else
-        {
-            XmlUtils::CXmlNode oNodeTemplate;
-            if (oNodePict.GetNode(_T("template"), oNodeTemplate))
-            {
-                std::wstring strAdj = oNodeTemplate.GetAttributeOrValue(_T("adj"));
-                LoadAdjustValuesList(strAdj);
-
-                XmlUtils::CXmlNode oNodeGuides;
-                if (oNodeTemplate.GetNode(_T("v:formulas"), oNodeGuides))
-                {
-                    LoadGuidesList(oNodeGuides.GetXml());
-                }
-
-                std::wstring strPath = oNodeTemplate.GetAttributeOrValue(_T("path"));
-                if (strPath != _T(""))
-                {
-                    LoadPathList(strPath);
-                    isPathList = true;
-                }
-            }
-        }
-
-        XmlUtils::CXmlNode oNodeGuides;
-        if (oNodePict.GetNode(_T("path"), oNodeGuides))
-        {
-            std::wstring strPath = oNodeGuides.GetAttributeOrValue(_T("val"));
-            if (strPath != _T(""))
-            {
-                LoadPathList(strPath);
-                isPathList = true;
-            }
-        }
-
-        if (!isPathList)
-            ReCalculate();
-        return true;
-    }
-
-    virtual bool LoadFromXMLShapeType(XmlUtils::CXmlNode& oNodeShapeType) // vml object
-    {		// из за особенносей форматирования vmlDrawing могут вылезти пустые текстовые значения - value ..
-        std::wstring sId = oNodeShapeType.GetAttribute(_T("o:spt"));
-
-        bool bIsNeedRecalc = true;
-        if (sId != _T(""))
-        {
-            int id = XmlUtils::GetInteger(sId);
-            if (id > 0)
-            {
-                SetShapeType((PPTShapes::ShapeType)id);
-                //ReCalculate();
-                m_eType = (PPTShapes::ShapeType)id;
-            }
-        }
-        std::wstring strAdj = oNodeShapeType.GetAttribute(_T("adj"));
-        if (strAdj != _T(""))
-            LoadAdjustValuesList(strAdj);
-
-        XmlUtils::CXmlNode oNodeGuides;
-        if (oNodeShapeType.GetNode(_T("v:formulas"), oNodeGuides))
-        {
-            LoadGuidesList(oNodeGuides.GetXml());
-        }
-
-        XmlUtils::CXmlNode oNodePath;
-        if (oNodeShapeType.GetNode(_T("v:path"), oNodePath))
-        {
-            std::wstring strTextR = oNodePath.GetAttribute(_T("textboxrect"));
-            if (strTextR != _T(""))
-                LoadTextRect(strTextR);
-        }
-
-        XmlUtils::CXmlNode oNodeAHs;
-        if (oNodeShapeType.GetNode(_T("v:handles"), oNodeAHs))
-        {
-            LoadAHList(oNodeAHs);
-        }
-
-        std::wstring strPath = oNodeShapeType.GetAttribute(_T("path"));
-        if (strPath != _T(""))
-        {
-            LoadPathList(strPath);
-        }
-
-        XmlUtils::CXmlNode oNodeTextPath;
-        if (oNodeShapeType.GetNode(_T("v:textpath"), oNodeTextPath))
-        {
-            if (m_eType < PPTShapes::ShapeType::sptCTextPlain || m_eType > PPTShapes::ShapeType::sptCTextCanDown)
-                m_eType = PPTShapes::ShapeType::sptCTextPlain;
-        }
-
-        std::wstring strFilled = oNodeShapeType.GetAttribute(_T("filled"));
-        std::wstring strStroked = oNodeShapeType.GetAttribute(_T("stroked"));
-
-        if (strFilled != _T(""))
-        {
-            if (strFilled == _T("false") || strFilled == _T("f"))
-                m_bIsFilled = false;
-            else
-                m_bIsFilled = true;
-        }
-
-        if (strStroked != _T(""))
-        {
-            if (strStroked == _T("false") || strStroked == _T("f"))
-                m_bIsStroked = false;
-            else
-                m_bIsStroked = true;
-        }
-        XmlUtils::CXmlNode oNodeSignature;
-        if (oNodeShapeType.GetNode(_T("o:signatureline"), oNodeSignature))
-        {
-            m_oSignatureLine = oNodeSignature;
-        }
-
-        ReCalculate();
-        return true;
-    }
-
+    virtual bool LoadFromXML(const std::wstring& xml);
+    virtual bool LoadFromXML(XmlUtils::CXmlNode& oNodePict);
+    virtual bool LoadFromXMLShapeType(XmlUtils::CXmlNode& oNodeShapeType);
     virtual bool LoadAdjustValuesList(const std::wstring& xml)
     {
         std::wstring strXml = xml;
@@ -484,8 +256,9 @@ public:
         LoadPathList(m_strPath);
     }
 
-    static CPPTShape* CreateByType(PPTShapes::ShapeType type);
-    virtual const ClassType GetClassType()const
+    static CBaseShapePtr CreateByType(PPTShapes::ShapeType type);
+    
+	virtual const ClassType GetClassType()const
     {
         return NSBaseShape::ppt;
     }
@@ -533,13 +306,13 @@ public:
 
     bool SetShapeType(PPTShapes::ShapeType type)
     {
-        CPPTShape* l_pShape = CreateByType(type);
-        if(l_pShape != NULL)
+        CBaseShapePtr pShape = CreateByType(type);
+       
+		if(pShape)
         {
             m_eType = type;
 
-            SetProperties(l_pShape);
-            delete l_pShape;
+            SetProperties(pShape.get());
             return true;
         }
 
@@ -561,7 +334,7 @@ public:
         if (m_oPath.m_arParts.size() == 0)
             return;
 
-        LONG lWidth	= m_oPath.m_arParts[0].width;
+        LONG lWidth		= m_oPath.m_arParts[0].width;
         LONG lHeight	= m_oPath.m_arParts[0].height;
 
         std::vector<std::wstring> oArray;

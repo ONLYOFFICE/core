@@ -113,9 +113,10 @@ public:
 			case OOX::et_w_sdtContent:
 			{
 				OOX::Logic::CSdtContent * pSdt = dynamic_cast<OOX::Logic::CSdtContent*>(ooxElement);
-				for (size_t i = 0; i < pSdt->m_arrItems.size(); i++)
+
+                for (std::vector<OOX::WritingElement*>::iterator it = pSdt->m_arrItems.begin(); it != pSdt->m_arrItems.end(); ++it)
 				{
-					Parse( pSdt->m_arrItems[i], oParam );
+					Parse( *it, oParam );
 				}
 
 			}break;

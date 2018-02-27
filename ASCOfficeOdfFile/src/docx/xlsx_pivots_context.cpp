@@ -66,9 +66,10 @@ public:
 
 	struct _field_value
 	{
-		_field_value(const std::wstring &val, const std::wstring &type) : sVal(val), sNode(type) {}
+		_field_value(const std::wstring &val, const std::wstring &type, const bool &sd) : sVal(val), sNode(type), show_details(sd) {}
 		std::wstring	sVal;
 		std::wstring	sNode;
+		bool			show_details;
 	};
 	struct _reference
 	{
@@ -141,6 +142,11 @@ public:
 			data_on_row = false;
 			identify_categories = false;
 			drill_enabled = true;
+			grand_total = -1;
+			firstDataRow = 0;
+			firstDataCol = 0;
+			bAxisRow = true;
+			bAxisCol = true;
 		}
 		std::wstring				name;
 		std::wstring				location_ref;
@@ -160,14 +166,21 @@ public:
 		std::vector<int>			col_fields;
 		std::vector<int>			data_fields;
 		
+		int							grand_total = -1;
 		bool						identify_categories = false;
 		bool						drill_enabled = true;
 		bool						ignore_empty_rows = false;
 
 		bool						data_on_row = false;
 		bool						in_group = false;
+//-----------------------------------------------------------------------------
+		int							firstDataRow = 0;
+		int							firstDataCol = 0;
+		bool						bAxisRow = true;
+		bool						bAxisCol = true;
 	}current_;
 
+	void calc_headers();
 	void sort_fields();
 
 	void serialize_view(std::wostream & strm);
@@ -181,7 +194,7 @@ private:
 		std::map<size_t, size_t> count;
 
 		size_t max_size = 0;
-		for (std::map<size_t, size_t>::iterator it = map.begin(); it != map.end(); it++)
+		for (std::map<size_t, size_t>::iterator it = map.begin(); it != map.end(); ++it)
 		{
 			std::map<size_t, size_t>::iterator pFind = count.find(it->second);
 			if (pFind != count.end())
@@ -202,7 +215,7 @@ private:
 
 		size_t found = 0;
 
-		for (std::map<size_t, size_t>::iterator it = count.begin() ; it != count.end(); it++)
+		for (std::map<size_t, size_t>::iterator it = count.begin() ; it != count.end(); ++it)
 		{
 			if (it->second == max_size)
 			{
@@ -216,16 +229,16 @@ private:
 		{
 			if (it->second != found)
 			{
-				std::map<size_t, size_t>::iterator del = it; it++;
+				std::map<size_t, size_t>::iterator del = it; ++it;
 				map.erase(del);
 			}
-			else it++;
+			else ++it;
 		}
 		return true;
 	}
 	void clear_header_map2(std::map<size_t, size_t> & map, std::map<size_t, size_t> & map_by)
 	{//отсев тех кто во втором
-		for (std::map<size_t, size_t>::iterator it = map_by.begin() ; it != map_by.end(); it++)
+		for (std::map<size_t, size_t>::iterator it = map_by.begin() ; it != map_by.end(); ++it)
 		{
 			std::map<size_t, size_t>::iterator pFind = map.find(it->second);
 			if (pFind != map.end())
@@ -279,6 +292,109 @@ private:
 xlsx_pivots_context::xlsx_pivots_context() : impl_(new xlsx_pivots_context::Impl())
 {
 }
+void xlsx_pivots_context::Impl::calc_headers()
+{
+	if (current_.headers.empty()) return;
+
+	std::map<size_t, size_t> mapRowHeader;
+	std::map<size_t, size_t> mapColHeader;
+
+	std::map<size_t, size_t>::iterator pFind;
+
+	size_t min_col = 0xffffff, min_row = 0xffffff;
+	for (size_t i = 0; i < current_.headers.size(); i++)//("F18","F19","F23","G21","H21")
+	{
+		size_t row = 0, col = 0;
+		oox::getCellAddressInv(current_.headers[i], col, row);
+
+		if (col < min_col) min_col = col;
+		if (row < min_row) min_row = row;
+
+		pFind = mapRowHeader.find(row);
+		if (pFind == mapRowHeader.end())
+		{
+			mapRowHeader.insert(std::make_pair(row, col));
+		}
+		else
+		{
+			if (pFind->second > col ) 
+				pFind->second = col;
+		}
+		
+		pFind = mapColHeader.find(col);
+		if (pFind == mapColHeader.end())
+		{
+			mapColHeader.insert(std::make_pair(col, row));
+		}
+		else
+		{
+			if (pFind->second > row ) 
+				pFind->second = row;
+		}
+	}
+	bool resRow = clear_header_map(mapRowHeader);
+	bool resCol = clear_header_map(mapColHeader);
+
+	if (resRow == resCol && resCol == false)
+	{
+		current_.firstDataRow = current_.firstDataCol = 1; 
+	}
+	else if (resRow == false)
+	{
+		current_.bAxisCol = false;
+		clear_header_map2(mapRowHeader, mapColHeader);
+	}
+	else if (resCol == false)
+	{
+		current_.bAxisRow = false;
+		clear_header_map2(mapColHeader, mapRowHeader);
+	}
+
+	if (resRow || resCol)
+	{
+		current_.firstDataCol = mapRowHeader.empty() ? 1 : mapRowHeader.begin()->second - min_col;
+		
+		if (mapColHeader.empty())
+		{
+			pFind = mapRowHeader.end(); pFind--;
+			min_row = pFind->first;
+			current_.firstDataRow = 1;
+		}
+		else
+		{
+			min_row = mapColHeader.begin()->second;
+			if (!mapRowHeader.empty() && current_.page_fields.empty())
+			{
+				if (min_row > mapRowHeader.begin()->first)
+					min_row = mapRowHeader.begin()->first;
+			}
+			current_.firstDataRow = mapColHeader.begin()->second - min_row + 1;
+		}
+	}
+	if (current_.firstDataCol < 1) current_.firstDataCol = 1;
+	if (current_.firstDataRow < 1) current_.firstDataRow = 1;
+
+	std::vector<std::wstring> split_ref;
+	boost::algorithm::split(split_ref, current_.location_ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
+	
+	if (split_ref.size() > 0)
+	{
+		size_t row = 0, col = 0;
+		oox::getCellAddressInv(split_ref[0], col, row);
+
+		if (min_col != 0xffffff && min_row != 0xffffff)
+		{
+			col = min_col;
+			row = min_row;
+		}
+
+		split_ref[0] = oox::getColAddress(col) + oox::getRowAddress(row);
+	}
+	if (split_ref.size() > 1)
+	{
+		current_.location_ref = split_ref[0] + L":" + split_ref[1];
+	}
+}
 void xlsx_pivots_context::Impl::sort_fields()
 {
 	size_t count_skip = 0;
@@ -304,8 +420,10 @@ void xlsx_pivots_context::Impl::sort_fields()
 		}
 	}
 	
-	bool bEmptyRowCache = false, bAddRepeateCol = false;
-	bool bEmptyColCache = false, bAddRepeateRow = false;
+	bool bAddRepeateRow = false;
+	bool bAddRepeateCol = false;
+
+	int count_items_col = -1, count_items_row = -1;
 	
 	int index_current = 0;
 	for (size_t i = 0; i < current_.fields.size(); i++, index_current++)
@@ -349,22 +467,37 @@ void xlsx_pivots_context::Impl::sort_fields()
 			case 0:	// column
 			{
 				if (!current_.fields[i].name.empty())
+				{
 					current_.col_fields.push_back(i);	
 
-				if (current_.fields[i].data_layout)
-				{
-					if ((current_.fields[i].name.empty() && (!current_.identify_categories || current_.fields[i].hierarchy >= 0)) || 
-						current_.fields[i].used_in_referenes )
+					if ( count_items_col < 0)
 					{
-						if ((current_.col_fields.empty()) || (current_.col_fields.back() != -2))
-						{
-							bAddRepeateCol = true;
-						}	
+						count_items_col = current_.fields[i].caches.size();
 					}
+					else
+					{
+						if (count_items_col != current_.fields[i].caches.size())
+							bAddRepeateCol = true;
+					}	
 				}
+				//if (current_.fields[i].data_layout)
+				//{
+				//	bAddRepeateCol = false;
+
+				//	if ((current_.fields[i].name.empty() && (!current_.identify_categories || current_.fields[i].hierarchy >= 0)) || 
+				//		current_.fields[i].used_in_referenes )
+				//	{
+				//		if ((current_.col_fields.empty()) || (current_.col_fields.back() != -2))
+				//		{
+				//			bAddRepeateCol = true;
+				//		}	
+				//	}
+				//}
 				
-				if (current_.fields[i].caches.empty())
-					bEmptyColCache = true;
+				//if (current_.fields[i].caches.empty())
+				//	bEmptyColCache = true;
+
+
 			}break;
 			case 1:	// data
 			{
@@ -405,22 +538,32 @@ void xlsx_pivots_context::Impl::sort_fields()
 			case 4:	// row
 			{
 				if (!current_.fields[i].name.empty())
+				{
 					current_.row_fields.push_back(i);	
+
+					if ( count_items_row < 0)
+					{
+						count_items_row = current_.fields[i].caches.size();
+					}
+					else
+					{
+						if (count_items_row != current_.fields[i].caches.size())
+							bAddRepeateRow = true;
+					}
+				}
 
 				if (current_.fields[i].data_layout)
 				{
 					current_.data_on_row = true;
 
-					if ((current_.fields[i].name.empty() && (!current_.identify_categories || current_.fields[i].hierarchy >= 0)) ||
+					bAddRepeateCol = false;
+
+					if ((current_.fields[i].name.empty() && (current_.fields[i].hierarchy >= 0)) ||
 						current_.fields[i].used_in_referenes )
 					{
 						bAddRepeateRow = true;
 					}
-
 				}
-
-				if (current_.fields[i].caches.empty())
-					bEmptyRowCache = true;
 
 			}break;
 		}
@@ -432,118 +575,14 @@ void xlsx_pivots_context::Impl::sort_fields()
 			i--;
 		}
 	}
-	if (bAddRepeateCol || bEmptyColCache)
+	if (bAddRepeateCol || (count_items_col == 0 && current_.bAxisCol)) ///* || (bEmptyColCache && current_.grand_total < 0)*/?? Financial Execution (template).ods
 		current_.col_fields.push_back(-2);	
 	
-	if (bAddRepeateRow)
+	if (bAddRepeateRow || (count_items_row == 0 && current_.bAxisRow))
 		current_.row_fields.push_back(-2);	
 }
 void xlsx_pivots_context::Impl::serialize_view(std::wostream & strm)
 {
-	if (current_.headers.empty()) return;
-
-	std::map<size_t, size_t> mapRowHeader;
-	std::map<size_t, size_t> mapColHeader;
-
-	std::map<size_t, size_t>::iterator pFind;
-
-	size_t min_col = 0xffffff, min_row = 0xffffff;
-	for (size_t i = 0; i < current_.headers.size(); i++)//("F18","F19","F23","G21","H21")
-	{
-		size_t row = 0, col = 0;
-		oox::getCellAddressInv(current_.headers[i], col, row);
-
-		if (col < min_col) min_col = col;
-		if (row < min_row) min_row = row;
-
-		pFind = mapRowHeader.find(row);
-		if (pFind == mapRowHeader.end())
-		{
-			mapRowHeader.insert(std::make_pair(row, col));
-		}
-		else
-		{
-			if (pFind->second > col ) 
-				pFind->second = col;
-		}
-		
-		pFind = mapColHeader.find(col);
-		if (pFind == mapColHeader.end())
-		{
-			mapColHeader.insert(std::make_pair(col, row));
-		}
-		else
-		{
-			if (pFind->second > row ) 
-				pFind->second = row;
-		}
-	}
-	bool resRow = clear_header_map(mapRowHeader);
-	bool resCol = clear_header_map(mapColHeader);
-
-	size_t firstDataRow, firstDataCol;
-
-	if (resRow == resCol && resCol == false)
-	{
-		firstDataRow = firstDataCol = 1; 
-	}
-	else if (resRow == false)
-	{
-		clear_header_map2(mapRowHeader, mapColHeader);
-	}
-	else if (resCol == false)
-	{
-		clear_header_map2(mapColHeader, mapRowHeader);
-	}
-
-	if (resRow || resCol)
-	{
-		firstDataCol = mapRowHeader.empty() ? 1 : mapRowHeader.begin()->second - min_col;
-		
-		if (mapColHeader.empty())
-		{
-			pFind = mapRowHeader.end(); pFind--;
-			min_row = pFind->first;
-			firstDataRow = 1;
-		}
-		else
-		{
-			min_row = mapColHeader.begin()->second;
-			if (!mapRowHeader.empty() && current_.page_fields.empty())
-			{
-				if (min_row > mapRowHeader.begin()->first)
-					min_row = mapRowHeader.begin()->first;
-			}
-			firstDataRow = mapColHeader.begin()->second - min_row + 1;
-		}
-	}
-	if (firstDataCol < 1) firstDataCol = 1;
-	if (firstDataRow < 1) firstDataRow = 1;
-
-	std::vector<std::wstring> split_ref;
-	boost::algorithm::split(split_ref, current_.location_ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
-	
-	if (split_ref.size() > 0)
-	{
-		size_t row = 0, col = 0;
-		oox::getCellAddressInv(split_ref[0], col, row);
-
-		if (min_col != 0xffffff && min_row != 0xffffff)
-		{
-			col = min_col;
-			row = min_row;
-		}
-
-		split_ref[0] = oox::getColAddress(col) + oox::getRowAddress(row);
-	}
-	std::wstring location_data;
-	if (split_ref.size() > 1)
-	{
-		location_data += split_ref[0] + L":" + split_ref[1];
-	}
-	else location_data = current_.location_ref;
-//------------------------------------------------------------------------------------------------
-			
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"pivotTableDefinition")
@@ -580,11 +619,11 @@ void xlsx_pivots_context::Impl::serialize_view(std::wostream & strm)
 
 			CP_XML_NODE(L"location")
 			{
-				CP_XML_ATTR(L"ref", location_data);
+				CP_XML_ATTR(L"ref", current_.location_ref);
 				
 				CP_XML_ATTR(L"firstHeaderRow", 1 );
-				CP_XML_ATTR(L"firstDataRow", firstDataRow);
-				CP_XML_ATTR(L"firstDataCol", firstDataCol);
+				CP_XML_ATTR(L"firstDataRow", current_.firstDataRow);
+				CP_XML_ATTR(L"firstDataCol", current_.firstDataCol);
 				
 				if (current_.page_fields.empty() == false)
 				{
@@ -660,6 +699,10 @@ void xlsx_pivots_context::Impl::serialize_view(std::wostream & strm)
 									{
 										CP_XML_NODE(L"item")
 										{					 
+											if (current_.fields[i].caches[j].show_details == false)
+											{
+												CP_XML_ATTR(L"sd", 0);
+											}
 											CP_XML_ATTR(L"x", j);
 										}
 									}
@@ -898,7 +941,7 @@ void xlsx_pivots_context::Impl::serialize_type_field(CP_ATTR_NODE, _field & fiel
 }
 void xlsx_pivots_context::Impl::serialize_cache(std::wostream & strm)
 {
-	std::map<std::wstring, bool> used_field_name;
+	std::map<std::wstring, bool> used_field_name, used_field_name_lower;
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"pivotCacheDefinition")
@@ -956,12 +999,24 @@ void xlsx_pivots_context::Impl::serialize_cache(std::wostream & strm)
 
 						if (used_field_name.end() != used_field_name.find(current_.fields[i].name))
 							continue;
+//---------------------------------------------------------------------------
+						used_field_name.insert(std::make_pair(current_.fields[i].name, true)); //дублированые поля
 
-						used_field_name.insert(std::make_pair(current_.fields[i].name, true));
+						std::wstring name = current_.fields[i].name; // в мс "H" и "h" одно имя (
 
+						std::wstring name_lower = XmlUtils::GetLower(name);
+
+						while (used_field_name_lower.end() != used_field_name_lower.find(name_lower))
+						{
+							name += L"_";
+							name_lower = XmlUtils::GetLower(name);
+						}
+
+						used_field_name_lower.insert(std::make_pair(name_lower, true)); 
+//---------------------------------------------------------------------------
 						CP_XML_NODE(L"cacheField")
 						{
-							CP_XML_ATTR(L"name", current_.fields[i].name);
+							CP_XML_ATTR(L"name", name);
 							CP_XML_ATTR(L"numFmtId", 0);
 
 							if (!current_.fields[i].source_groups.empty())
@@ -1181,6 +1236,7 @@ int xlsx_pivots_context::end_table()
 	std::wstringstream	cache_strm;
 	std::wstringstream	rec_strm;
 	
+	impl_->calc_headers();
 	impl_->sort_fields();
 
 	impl_->serialize_view(view_strm);
@@ -1225,6 +1281,10 @@ void xlsx_pivots_context::set_ignore_empty_rows(bool val)
 void xlsx_pivots_context::set_drill(bool val)
 {
 	impl_->current_.drill_enabled = val;
+}
+void xlsx_pivots_context::set_grand_total(int type)
+{
+	impl_->current_.grand_total = type;
 }
 void xlsx_pivots_context::start_field()
 {
@@ -1401,14 +1461,14 @@ void xlsx_pivots_context::set_field_ref_member_type(int type)
 {
 	impl_->current_.fields.back().references.back().member_type = type;
 }
-void xlsx_pivots_context::add_field_cache(int index, std::wstring value)
+void xlsx_pivots_context::add_field_cache(int index, std::wstring value, bool show_details)
 {
 	if (index < 0)
 		index = impl_->current_.fields.back().caches.size();
 
 	while (index > impl_->current_.fields.back().caches.size())
 	{
-		Impl::_field_value f(L"", L"m");
+		Impl::_field_value f(L"", L"m", true);
 
 		impl_->current_.fields.back().caches.push_back(f);
 		impl_->current_.fields.back().bEmpty = true;
@@ -1469,7 +1529,7 @@ void xlsx_pivots_context::add_field_cache(int index, std::wstring value)
 			impl_->current_.fields.back().bString = true;
 		}
 	}
-	impl_->current_.fields.back().caches.push_back(Impl::_field_value(value, node_name));
+	impl_->current_.fields.back().caches.push_back(Impl::_field_value(value, node_name, show_details));
 
 	if (impl_->current_.in_group)
 	{

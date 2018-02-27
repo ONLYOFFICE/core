@@ -41,23 +41,20 @@ namespace DocFileFormat
 
 		GeometryBooleanProperties(unsigned int op)
 		{
-			fFillOK					=	FormatUtils::BitmaskToBool (op, 0x1);
-			fFillShadeShapeOK		=	FormatUtils::BitmaskToBool (op, 0x2);
-			fGtextOK				=	FormatUtils::BitmaskToBool (op, 0x4);
-			fLineOK					=	FormatUtils::BitmaskToBool (op, 0x8);
-			f3DOK					=	FormatUtils::BitmaskToBool (op, 0x10);
-			fShadowOK				=	FormatUtils::BitmaskToBool (op, 0x20);
-
-			fUsefFillOK				=	FormatUtils::BitmaskToBool (op, 0x10000);
-			fUsefFillShadeShapeOK	=	FormatUtils::BitmaskToBool (op, 0x20000);
-			fUsefGtextOK			=	FormatUtils::BitmaskToBool (op, 0x40000);
-			fUsefLineOK				=	FormatUtils::BitmaskToBool (op, 0x80000);
-			fUsef3DOK				=	FormatUtils::BitmaskToBool (op, 0x100000);
-			fUsefShadowOK			=	FormatUtils::BitmaskToBool (op, 0x200000);
+			fUsefShadowOK			= GETBIT(op, 8);
+			fUsef3DOK				= GETBIT(op, 9);
+			fUsefLineOK				= GETBIT(op, 10);
+			fUsefGtextOK			= GETBIT(op, 11);
+			fUsefFillShadeShapeOK	= GETBIT(op, 12);
+			fUsefFillOK				= GETBIT(op, 13);
+			
+			fShadowOK				= GETBIT(op, 22);
+			f3DOK					= GETBIT(op, 23);
+			fLineOK					= GETBIT(op, 24);
+			fGtextOK				= GETBIT(op, 25);
+			fFillShadeShapeOK		= GETBIT(op, 26);
+			fFillOK					= GETBIT(op, 27);
 		}
-
-	public:
-
 		bool fFillOK;
 		bool fFillShadeShapeOK;
 		bool fGtextOK;

@@ -91,7 +91,7 @@ void Font::readFields(CFRecord& record)
 
 	if (global_info->fonts_charsets.find(bCharSet) == global_info->fonts_charsets.end())
 	{
-		global_info->fonts_charsets.insert(global_info->fonts_charsets.begin(), std::pair<int,int>(bCharSet, bFamily));
+		global_info->fonts_charsets.insert(std::make_pair(bCharSet, bFamily));
 	}
 }
 
@@ -138,30 +138,13 @@ int Font::serialize_rPr(std::wostream & stream, bool rtl, bool defRPr, std::wstr
 			}
 			else 
 				CP_XML_ATTR(L"i", false);
-			//if (bCharSet.value())
-			//{
-			//    CP_XML_NODE(L"charset")
-			//    {
-			//        CP_XML_ATTR(L"val", bCharSet);
-			//    }
-			//}
+			
+			switch(sss)
+			{
+				case 1:	CP_XML_ATTR(L"cap", L"all");break;
+				case 2:	CP_XML_ATTR(L"cap", L"small");break;
+			}
 
-
-			//if ((fCondense.value()) && (*fCondense.value()))
-			//{
-			//    CP_XML_NODE(L"condense")
-			//    {
-			//        CP_XML_ATTR(L"val", (int)(*fCondense.value()));
-			//    }
-			//}
-
-			//if ((fExtend.value()) && (fExtend))
-	  //      {
-	  //          CP_XML_NODE(L"extend")
-	  //          {
-	  //              CP_XML_ATTR(L"val", fExtend);
-	  //          }
-	  //      }
 			if ( (icv < 0x7fff) || color_ext.enabled )
 			{
 				if (color_ext.enabled )
@@ -236,66 +219,7 @@ int Font::serialize_rPr(std::wostream & stream, bool rtl, bool defRPr, std::wstr
 			{
 				CP_XML_NODE(namespace_ + L"rtl");
 			}
-			//if ((fOutline.value()) && (fOutline))
-	  //      {
-	  //          CP_XML_NODE(L"outline")
-	  //          {
-	  //              CP_XML_ATTR(L"val", fOutline);
-	  //          }
-	  //      }
 
-			//if (font.scheme)
-			//{
-			//    CP_XML_NODE(L"scheme")
-			//    {
-			//        CP_XML_ATTR(L"val", *font.scheme);
-			//    }
-			//}
-
-			//if ((fShadow.value()) && (fShadow))
-	  //      {
-	  //          CP_XML_NODE(L"shadow")
-	  //          {
-			//		CP_XML_ATTR(L"val", fShadow);
-	  //          }
-	  //      }
-
-			//if ((fStrikeOut.value()) && (fStrikeOut))
-			//{
-			//    CP_XML_NODE(L"strike")
-			//    {
-			//        CP_XML_ATTR(L"val", fStrikeOut);
-			//    }
-			//}
-
-
-
-		//    if ((uls.value()) && (*uls.value() > 0))
-		//    {
-		//        CP_XML_NODE(L"u")
-		//        {
-					//switch(uls)
-					//{
-					//	case 1:		CP_XML_ATTR(L"val", "single");break;
-					//	case 2:		CP_XML_ATTR(L"val", "double");break;
-					//	case 33:	CP_XML_ATTR(L"val", "singleAccounting");break;
-					//	case 34:	CP_XML_ATTR(L"val", "doubleAccounting");break;
-					//}
-		//        }
-		//    }
-
-		//    if ((sss.value()) && (*sss.value() > 0))
-		//    {
-		//        CP_XML_NODE(L"vertAlign")
-		//        {
-					//switch(*sss.value())
-					//{
-					//	case 1:	CP_XML_ATTR(L"val", L"superscript");break;
-					//	case 2:	CP_XML_ATTR(L"val", L"subscript");break;
-					//}
-		//           
-		//        }
-		//    }
 			}
 	}
 	return 0;

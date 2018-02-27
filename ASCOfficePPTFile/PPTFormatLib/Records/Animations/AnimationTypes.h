@@ -526,7 +526,7 @@ namespace Animations
 			//{
 			//	if (RT_ParaBuild == header.RecType)
 			//	{
-			//		rgChildRec	=	new ParaBuildContainer ();
+			//		rgChildRec = new ParaBuildContainer ();
 			//		if (rgChildRec)
 			//			rgChildRec->ReadFromStream (header, pStream);
 			//	}
@@ -982,60 +982,25 @@ namespace Animations
 
 				switch ( VariableType )
 				{
-				case TL_TPID_Display			:
-					pRecord		=	new TimeDisplayType ();
-				case TL_TPID_MasterPos			:
-					pRecord		=	new TimeMasterRelType ();
-				case TL_TPID_SlaveType			:
-					pRecord		=	new TimeSlaveType ();
+				case TL_TPID_Display:			pRecord = new TimeDisplayType ();		break;
+				case TL_TPID_MasterPos:			pRecord = new TimeMasterRelType ();		break;
+				case TL_TPID_SlaveType:			pRecord = new TimeSlaveType ();			break;
+				case TL_TPID_EffectID:			pRecord = new TimeEffectID ();			break;
+				case TL_TPID_EffectDir:			pRecord = new TimeEffectDir ();			break;
+				case TL_TPID_EffectType:		pRecord = new TimeEffectType ();		break;
+				case TL_TPID_AfterEffect:		pRecord = new TimeAfterEffect ();		break;
+				case TL_TPID_SlideCount:		pRecord = new TimeSlideCount ();		break;
+				case TL_TPID_TimeFilter:		pRecord = new TimeNodeTimeFilter ();	break;
+				case TL_TPID_EventFilter:		pRecord = new TimeEventFilter ();		break;
+				case TL_TPID_HideWhenStopped:	pRecord = new TimeHideWhenStopped ();	break;
+				case TL_TPID_GroupID:			pRecord = new TimeGroupID ();			break;
+				case TL_TPID_EffectNodeType:	pRecord = new TimeEffectNodeType ();	break;
+				case TL_TPID_PlaceholderNode:	pRecord = new TimePlaceholderNode ();	break;
+				case TL_TPID_MediaVolume:		pRecord = new TimeMediaVolume ();		break;
+				case TL_TPID_MediaMute:			pRecord = new TimeMediaMute ();			break;
+				case TL_TPID_ZoomToFullScreen:	pRecord = new TimeZoomToFullScreen ();	break;
+				default :
 					break;
-				case TL_TPID_EffectID			:
-					pRecord		=	new TimeEffectID ();
-					break;
-				case TL_TPID_EffectDir			:
-					pRecord		=	new TimeEffectDir ();
-					break;
-				case TL_TPID_EffectType			:
-					pRecord		=	new TimeEffectType ();
-					break;
-				case TL_TPID_AfterEffect		:
-					pRecord		=	new TimeAfterEffect ();
-					break;
-				case TL_TPID_SlideCount			:
-					pRecord		=	new TimeSlideCount ();
-					break;
-				case TL_TPID_TimeFilter			:
-					pRecord		=	new TimeNodeTimeFilter ();
-					break;
-				case TL_TPID_EventFilter		:
-					pRecord		=	new TimeEventFilter ();
-					break;
-				case TL_TPID_HideWhenStopped	:
-					pRecord		=	new TimeHideWhenStopped ();
-					break;
-				case TL_TPID_GroupID			:
-					pRecord		=	new TimeGroupID ();
-					break;
-				case TL_TPID_EffectNodeType		:
-					pRecord		=	new TimeEffectNodeType ();
-					break;
-				case TL_TPID_PlaceholderNode	:
-					pRecord		=	new TimePlaceholderNode ();
-					break;
-				case TL_TPID_MediaVolume		:
-					pRecord		=	new TimeMediaVolume ();
-					break;
-				case TL_TPID_MediaMute			:
-					pRecord		=	new TimeMediaMute ();
-					break;
-				case TL_TPID_ZoomToFullScreen	:
-					pRecord		=	new TimeZoomToFullScreen ();
-					break;
-
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-				default :	assert (0);
-					break;
-#endif
 				}
 
 				pRecord->ReadFromStream  ( ReadHeader, pStream );
@@ -1359,7 +1324,7 @@ namespace Animations
 
 				if ( RT_TimePropertyList == header.RecType )
 				{
-					propertyList		=	new TimePropertyList4TimeBehavior();
+					propertyList = new TimePropertyList4TimeBehavior();
 					if (propertyList)
 					{
 						propertyList->ReadFromStream (header, pStream);
@@ -1371,7 +1336,7 @@ namespace Animations
 
 				if ( RT_TimeVariantList == header.RecType )
 				{
-					stringList		=	new TimeStringListContainer();
+					stringList = new TimeStringListContainer();
 					if (stringList)
 					{
 						stringList->ReadFromStream (header, pStream);
@@ -1420,7 +1385,7 @@ namespace Animations
 
 			if ( RT_TimeVariantList == ReadHeader.RecType )
 			{
-            haveStringList		=	true;
+            haveStringList = true;
 			stringList.ReadFromStream ( ReadHeader, pStream );
 			}
 			}
@@ -2394,8 +2359,8 @@ namespace Animations
 
 				if ( RT_TimePropertyList	== nRecord )
 				{
-                    haveTimePropertyList			=	true;
-					timePropertyList				=	new TimePropertyList4TimeNodeContainer ();
+                    haveTimePropertyList	 = true;
+					timePropertyList	 = new TimePropertyList4TimeNodeContainer ();
 					timePropertyList->ReadFromStream  ( ReadHeader, pStream );
 
 					continue;
@@ -2403,8 +2368,8 @@ namespace Animations
 
 				if ( RT_TimeSetBehaviorContainer == nRecord )
 				{
-                    haveSetBehavior					=	true;
-					timeSetBehavior					=	new TimeSetBehaviorContainer();
+                    haveSetBehavior	 = true;
+					timeSetBehavior		 = new TimeSetBehaviorContainer();
 					timeSetBehavior->ReadFromStream  ( ReadHeader, pStream );
 
 					continue;
@@ -2412,8 +2377,8 @@ namespace Animations
 
 				if ( RT_TimeColorBehaviorContainer == nRecord )
 				{
-                    haveColorBehavior				=	true;
-					timeColorBehavior				=	new TimeColorBehaviorContainer();
+                    haveColorBehavior = true;
+					timeColorBehavior	 = new TimeColorBehaviorContainer();
 					timeColorBehavior->ReadFromStream  ( ReadHeader, pStream );
 
 					continue;
@@ -2421,8 +2386,8 @@ namespace Animations
 
 				if ( RT_TimeClientVisualElement == nRecord )
 				{
-                    haveClientVisualElement			=	true;
-					clientVisualElement				=	new ClientVisualElementContainer ();
+                    haveClientVisualElement	 = true;
+					clientVisualElement	 = new ClientVisualElementContainer ();
 					clientVisualElement->ReadFromStream  ( ReadHeader, pStream );
 
 					continue;
@@ -2433,7 +2398,7 @@ namespace Animations
 					extTimeContainer				=	CAnimationFactory::BuildAnimationObject (nRecord); // ExtTimeNodeContainer
 					if (extTimeContainer)
 					{
-                        haveExtTimeContainer		=	true;
+                        haveExtTimeContainer = true;
 						extTimeContainer->ReadFromStream  ( ReadHeader, pStream );
 						continue;
 					}
@@ -2547,14 +2512,14 @@ namespace Animations
                 if ( ReadHeader.ReadFromStream(pStream) == false)
 					break;
 
-				lCurLen			+=	8 + ReadHeader.RecLen;
+				lCurLen +=	8 + ReadHeader.RecLen;
 
 				//AnimationsClassType nRecord	=	(AnimationsClassType)ReadHeader.RecType;
 				WORD nRecord	=	ReadHeader.RecType;
 
 				if ( RT_TimeExtTimeNodeContainer	==	nRecord )
 				{
-					ExtTimeNodeContainer* pContainer	=	new ExtTimeNodeContainer ();
+					ExtTimeNodeContainer* pContainer = new ExtTimeNodeContainer ();
 					if (pContainer)
 					{
 						pContainer->ReadFromStream  ( ReadHeader, pStream );
@@ -2566,11 +2531,11 @@ namespace Animations
 
 				if ( RT_BuildList	==	nRecord )
 				{
-					buildList	=	new BuildListContainer ();
+					buildList = new BuildListContainer ();
 					if (buildList)
 					{
 						buildList->ReadFromStream  ( ReadHeader, pStream );
-                        haveBuildList				=	true;
+                        haveBuildList = true;
 
 						continue;
 					}
@@ -2590,11 +2555,11 @@ namespace Animations
 
 				if ( RT_TimeSequenceData == nRecord )
 				{
-					timeSequenceDataAtom		=	new TimeSequenceDataAtom ();
+					timeSequenceDataAtom = new TimeSequenceDataAtom ();
 					if (timeSequenceDataAtom)
 					{
 						timeSequenceDataAtom->ReadFromStream  ( ReadHeader, pStream );
-                        haveSequenceAtom		=	true;
+                        haveSequenceAtom = true;
 
 						continue;
 					}
@@ -2602,11 +2567,11 @@ namespace Animations
 
 				if ( RT_TimeIterateData == nRecord )
 				{
-					timeIterateDataAtom		=	new TimeIterateDataAtom ();
+					timeIterateDataAtom = new TimeIterateDataAtom ();
 					if (timeIterateDataAtom)
 					{
 						timeIterateDataAtom->ReadFromStream  ( ReadHeader, pStream );
-                        haveIterateDataAtom		=	true;
+                        haveIterateDataAtom = true;
 
 						continue;
 					}
@@ -2614,7 +2579,7 @@ namespace Animations
 
 				if ( RT_TimePropertyList == nRecord )
 				{
-					timePropertyList			=	new TimePropertyList4TimeNodeContainer ();
+					timePropertyList = new TimePropertyList4TimeNodeContainer ();
 					if (timePropertyList)
 					{
 						timePropertyList->ReadFromStream  ( ReadHeader, pStream );
@@ -2626,22 +2591,22 @@ namespace Animations
 
 				if ( RT_TimeEffectBehaviorContainer == nRecord )
 				{
-					timeEffectBehavior			=	new TimeEffectBehaviorContainer();
+					timeEffectBehavior = new TimeEffectBehaviorContainer();
 					if (timeEffectBehavior)
 					{
 						timeEffectBehavior->ReadFromStream  ( ReadHeader, pStream );
-                        haveEffectBehavior		=	true;
+                        haveEffectBehavior = true;
 						continue;
 					}
 				}
 
 				if ( RT_TimeColorBehaviorContainer == nRecord )
 				{
-					timeColorBehavior			=	new TimeColorBehaviorContainer();
+					timeColorBehavior = new TimeColorBehaviorContainer();
 					if (timeColorBehavior)
 					{
 						timeColorBehavior->ReadFromStream  ( ReadHeader, pStream );
-                        haveColorBehavior		=	true;
+                        haveColorBehavior = true;
 
 						continue;
 					}
@@ -2649,11 +2614,11 @@ namespace Animations
 
 				if ( RT_TimeMotionBehaviorContainer == nRecord )
 				{
-					timeMotionBehavior			=	new TimeMotionBehaviorContainer ();
+					timeMotionBehavior = new TimeMotionBehaviorContainer ();
 					if (timeMotionBehavior)
 					{
 						timeMotionBehavior->ReadFromStream  ( ReadHeader, pStream );
-                        haveMotionBehavior		=	true;
+                        haveMotionBehavior = true;
 
 						continue;
 					}
@@ -2661,11 +2626,11 @@ namespace Animations
 
 				if ( RT_TimeSetBehaviorContainer == nRecord )
 				{
-					timeSetBehavior				=	new TimeSetBehaviorContainer ();
+					timeSetBehavior	 = new TimeSetBehaviorContainer ();
 					if (timeSetBehavior)
 					{
 						timeSetBehavior->ReadFromStream  ( ReadHeader, pStream );
-                        haveSetBehavior			=	true;
+                        haveSetBehavior	 = true;
 
 						continue;
 					}
@@ -2673,11 +2638,11 @@ namespace Animations
 
 				if ( RT_TimeAnimateBehaviorContainer == nRecord )
 				{
-					timeAnimateBehavior			=	new TimeAnimateBehaviorContainer ();
+					timeAnimateBehavior = new TimeAnimateBehaviorContainer ();
 					if (timeAnimateBehavior)
 					{
 						timeAnimateBehavior->ReadFromStream  ( ReadHeader, pStream );
-                        haveAnimateBehavior		=	true;
+                        haveAnimateBehavior = true;
 
 						continue;
 					}
@@ -2685,7 +2650,7 @@ namespace Animations
 
 				if ( RT_TimeRotationBehaviorContainer == nRecord )
 				{
-					timeRotationBehavior		=	new TimeRotationBehaviorContainer ();
+					timeRotationBehavior = new TimeRotationBehaviorContainer ();
 					if (timeRotationBehavior)
 					{
 						timeRotationBehavior->ReadFromStream  ( ReadHeader, pStream );
@@ -2697,11 +2662,11 @@ namespace Animations
 
 				if ( RT_TimeScaleBehaviorContainer == nRecord )
 				{
-					timeScaleBehavior			=	new TimeScaleBehaviorContainer ();
+					timeScaleBehavior = new TimeScaleBehaviorContainer ();
 					if (timeScaleBehavior)
 					{
 						timeScaleBehavior->ReadFromStream  ( ReadHeader, pStream );
-                        haveScaleBehavior		=	true;
+                        haveScaleBehavior = true;
 
 						continue;
 					}
@@ -2709,8 +2674,8 @@ namespace Animations
 
 				if (RT_TimeClientVisualElement == nRecord)
 				{
-                    haveClientVisualElement			=	true;
-					clientVisualElement				=	new ClientVisualElementContainer ();
+                    haveClientVisualElement	 = true;
+					clientVisualElement	 = new ClientVisualElementContainer ();
 					clientVisualElement->ReadFromStream  ( ReadHeader, pStream );
 
 					continue;
@@ -2718,11 +2683,11 @@ namespace Animations
 
 				if ( RT_TimeSlaveContainer == nRecord )
 				{
-					rgSlave						=	new SlaveContainer ();
+					rgSlave			 = new SlaveContainer ();
 					if (rgSlave)
 					{
 						rgSlave->ReadFromStream  ( ReadHeader, pStream );
-                        haveSlaveContainer		=	true;
+                        haveSlaveContainer = true;
 
 						continue;
 					}
@@ -2730,7 +2695,7 @@ namespace Animations
 
 				if (RT_TimeModifierAtom == nRecord)
 				{
-					TimeModifierAtom* atom	=	new TimeModifierAtom ();
+					TimeModifierAtom* atom = new TimeModifierAtom ();
 					if (atom)
 					{
 						atom->ReadFromStream  ( ReadHeader, pStream );
@@ -3176,7 +3141,7 @@ namespace Animations
 						SlaveContainer* pSlave	= pContainer->rgSlave;
 						if(pSlave->haveSetBehavior)				// после анимации к объекту может быть применена дополнительная анимация 
 						{
-                            m_HaveAfterEffect					=	true;
+                            m_HaveAfterEffect	 = true;
 
 							// эффект исчезновения элемента (Appear) 
 							m_oAfterEffect.m_nDuration			=	1.0;
@@ -3336,7 +3301,7 @@ namespace Animations
 			Effects* pEffects = NULL;
 			if (mSearch == m_oAnimation.end())
 			{
-				pEffects		=	new Effects ();
+				pEffects = new Effects ();
 				m_oAnimation.insert(std::pair<DWORD,Effects*>( oEffect.m_nRefID, pEffects));	
 			}else 
 				pEffects = mSearch->second;
@@ -3594,7 +3559,7 @@ namespace Animations
 		{
 			if (2 == container.clientVisualElement.m_oVisualShapeAtom.m_Type)										//	указывает на то что анимация применяется к тексту
 			{
-                m_oTopEffect.m_bIgnoreShape			=	true;
+                m_oTopEffect.m_bIgnoreShape	 = true;
 				m_oTopEffect.m_nTextSequence		=	container.clientVisualElement.m_oVisualShapeAtom.m_nData1;	//	номер параграфа - не нормальзован
                 m_oTopEffect.m_bRemoveEmptyBlocks	=	true;
 
@@ -3792,7 +3757,7 @@ public:
 
 			if (Animations::RT_TimeExtTimeNodeContainer == ReadHeader.RecType)
 			{
-				extTimeNodeContainer	=	new Animations::ExtTimeNodeContainer ();
+				extTimeNodeContainer = new Animations::ExtTimeNodeContainer ();
 				if (extTimeNodeContainer)
 				{
 					extTimeNodeContainer->ReadFromStream  ( ReadHeader, pStream );
@@ -3802,7 +3767,7 @@ public:
 
 			if (Animations::RT_BuildList == ReadHeader.RecType)
 			{
-				buildListContainer		=	new Animations::BuildListContainer ();
+				buildListContainer = new Animations::BuildListContainer ();
 				if (buildListContainer)
 				{
 					buildListContainer->ReadFromStream  ( ReadHeader, pStream );

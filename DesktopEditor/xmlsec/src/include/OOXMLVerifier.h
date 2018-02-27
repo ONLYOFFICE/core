@@ -18,9 +18,12 @@ public:
 public:
     int GetValid();
     std::string GetGuid();
+    std::string GetDate();
     ICertificate* GetCertificate();
     std::string GetImageValidBase64();
     std::string GetImageInvalidBase64();
+
+    std::wstring GetFile();
 
 public:
     void Check();
@@ -40,6 +43,8 @@ public:
 
     int GetSignatureCount();
     COOXMLSignature* GetSignature(const int& index);
+
+    void RemoveSignature(const std::string& sGuid);
 
 private:
     COOXMLVerifier_private* m_internal;

@@ -142,7 +142,13 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode &oNode)
 			{
-				// TO DO: Реализовать CPicture::fromXML(XmlUtils::CXmlNode &oNode)
+				if ( oNode.IsValid() == false)
+					return;
+
+				m_sXml.Init();
+                *m_sXml = oNode.GetXml();	//для pptx dll
+
+				fromStringXML(m_sXml.get());
 			}
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -152,11 +158,15 @@ namespace OOX
                 
                 m_sXml.Init();
                 *m_sXml = oReader.GetOuterXml();	//для pptx dll
-                
+
+				fromStringXML(m_sXml.get());
+			}
+			void fromStringXML(const std::wstring & xml_string)
+			{                
                 std::wstring sBegin(L"<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
                 
                 std::wstring sEnd(L"</root>");
-                std::wstring sXml = sBegin + m_sXml.get() + sEnd;
+                std::wstring sXml = sBegin + xml_string + sEnd;
                                 
 				XmlUtils::CXmlLiteReader oSubReader;
 				
@@ -383,11 +393,13 @@ namespace OOX
 			{
                 std::wstring sResult = _T("<w:pict>");
 
-				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						sResult += m_arrItems[nIndex]->toXML();
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        sResult += m_arrItems[i]->toXML();
+                    }
+                }
 
 				if ( m_oControl.IsInit() )
 					sResult += m_oControl->toXML();
@@ -437,12 +449,10 @@ namespace OOX
 			virtual ~CObject() 
 			{
 			}
-	
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -460,6 +470,8 @@ namespace OOX
 				oSubReader.FromString(sXml);
 				oSubReader.ReadNextNode();//root
 				oSubReader.ReadNextNode();//pict
+
+				ReadAttributes(oSubReader);
 
 				int nCurDepth = oSubReader.GetDepth();
 				while ( oSubReader.ReadNextSiblingNode( nCurDepth ) )
@@ -622,26 +634,37 @@ namespace OOX
 					}
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-				return _T("<w:object />");
+				return _T("<w:object/>");
 			}
 
 			virtual EElementType getType() const
 			{
 				return et_w_object;
 			}
-            nullable<std::wstring> m_sXml;
 
-			// Childs
+            nullable<std::wstring>					m_sXml;
+//-----------------------------------------------------------------------
+			nullable_int							m_oDxaOrig;
+			nullable_int							m_oDyaOrig;
+
 			nullable<OOX::Logic::CControl>			m_oControl;
-//top childs
-			nullable<OOX::Vml::CShapeType>			m_oShapeType;//?? нужен ли отдельно тута???
+
+			nullable<OOX::Vml::CShapeType>			m_oShapeType;
 			nullable<OOX::VmlOffice::COLEObject>	m_oOleObject;
 			
 			nullable<OOX::Vml::CShape>				m_oShape;
-//minor childs
 
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("w:dxaOrig"), m_oDxaOrig )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("w:dxyOrig"), m_oDyaOrig )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 		};
 
 

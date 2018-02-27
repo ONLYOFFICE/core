@@ -29,6 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "XlsxConverter.h"
 #include "PptxConverter.h"
 #include "DocxConverter.h"
 
@@ -203,25 +204,25 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		}
 	}
 //--------------------------------------------------------------------------------------
-	std::wstring odf_ref_image;
+	bool bEmbedded = true;
 	std::wstring pathImage;
 	if (oox_picture->blipFill.blip.IsInit())
 	{
-		bool bEmbedded = true;
 		if (oox_picture->blipFill.blip->embed.IsInit())
 		{
 			std::wstring sID = oox_picture->blipFill.blip->embed->get();
 			pathImage = find_link_by_id(sID, 1);
 			
-			odf_ref_image = odf_context()->add_image(pathImage);
 		}
 		else if (oox_picture->blipFill.blip->link.IsInit())
 		{
-			odf_ref_image = oox_picture->blipFill.blip->link->get();	
+			pathImage = oox_picture->blipFill.blip->link->get();	
 			bEmbedded = false;
 		}
 	}
 //--------------------------------------------------------------------------------------
+	std::wstring odf_ref_image;
+
 	if (oox_picture->nvPicPr.nvPr.media.is_init())
 	{
 		if (oox_picture->nvPicPr.nvPr.media.is<PPTX::Logic::MediaFile>())
@@ -238,7 +239,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 				PPTX::Logic::Ext & ext = oox_picture->nvPicPr.nvPr.extLst[i];
 				if (pathMedia.empty() && ext.link.IsInit())
 				{
-					pathMedia= find_link_by_id(ext.link->get(), 3);
+					pathMedia = find_link_by_id(ext.link->get(), 3);
 					//например файлики mp3
 				}
 				if (ext.st.IsInit())	start	= *ext.st;
@@ -255,6 +256,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 				OoxConverter::convert(&oox_picture->nvPicPr.cNvPr);		
 				OoxConverter::convert(&oox_picture->spPr, oox_picture->style.GetPointer());
 
+				odf_ref_image = bEmbedded ? odf_context()->add_image(pathImage) : pathImage;
 				odf_context()->drawing_context()->set_image_replacement(odf_ref_image);
 				
 				odf_context()->drawing_context()->end_media();
@@ -265,15 +267,32 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 	}
 	if (oox_picture->oleObject.IsInit())
 	{
-			//nullable_limit<Limit::OLEDrawAspectType>m_oDrawAspect;
-			//nullable<OOX::RId>						m_oId;
-			//nullable_string							m_sObjectId;
-			//nullable_string							m_sProgId;
-			//nullable_string							m_sShapeId;
-			//nullable_limit<Limit::OLEType>			m_oType;
-			//nullable_limit<Limit::OLEUpdateMode>	m_oUpdateMode;
+		std::wstring pathOle;
+		
+		if (oox_picture->oleObject->m_oId.IsInit())
+		{
+			pathOle = find_link_by_id(oox_picture->oleObject->m_oId->get(), 4);
+		}
+		std::wstring odf_ref_ole = odf_context()->add_oleobject(pathOle);
+
+		if (!odf_ref_ole.empty())
+		{
+			odf_context()->drawing_context()->start_object_ole(odf_ref_ole);
+
+			if (oox_picture->oleObject->m_sProgId.IsInit())
+			{
+				odf_context()->drawing_context()->set_program(*oox_picture->oleObject->m_sProgId);
+			}
+			odf_ref_image = bEmbedded ? odf_context()->add_imageobject(pathImage) : pathImage; 			
+			odf_context()->drawing_context()->set_image_replacement(odf_ref_image);
+
+			odf_context()->drawing_context()->end_object_ole();
+			return;
+		}
 	}
 //--------------------------------------------------------------------------------------
+	odf_ref_image = bEmbedded ? odf_context()->add_image(pathImage) : pathImage;
+	
 	odf_context()->drawing_context()->start_image(odf_ref_image);
 	{
 		double Width = 0, Height = 0;
@@ -547,9 +566,9 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 
 					//docx_converter->convert(oox_shape->oTextBoxShape.GetPointer());
 					
-					for (size_t i = 0; i < oox_shape->oTextBoxShape->m_arrItems.size(); i++)
+                    for (std::vector<OOX::WritingElement*>::iterator	it = oox_shape->oTextBoxShape->m_arrItems.begin(); it != oox_shape->oTextBoxShape->m_arrItems.end(); ++it)
 					{
-						docx_converter->convert(oox_shape->oTextBoxShape->m_arrItems[i]);
+						docx_converter->convert(*it);
 				
 						convert(oox_shape->oTextBoxBodyPr.GetPointer());
 						
@@ -646,12 +665,48 @@ void OoxConverter::convert(PPTX::Logic::SpPr *oox_spPr, PPTX::Logic::ShapeStyle*
 	if		(effectLst)		convert(effectLst);
 	else if (oox_sp_style)	convert(&oox_sp_style->effectRef, 3);
 
+	//convert(oox_spPr->ExtLst.GetPointer());
+
 	//nullable<OOX::Drawing::CEffectContainer>          EffectDag;
 
 	//nullable<OOX::Drawing::COfficeArtExtensionList>   ExtLst;
 	//nullable<OOX::Drawing::CScene3D>                  Scene3D;
 	//nullable<OOX::Drawing::CShape3D>                  Sp3D;	
 //-----------------------------------------------------------------------------------------------------------------------------
+}
+
+void OoxConverter::convert(OOX::Drawing::COfficeArtExtensionList *ext_list)
+{
+	if (ext_list == NULL)return;
+
+	for (size_t i = 0; i < ext_list->m_arrExt.size(); i++)
+	{
+		convert(ext_list->m_arrExt[i]);
+	}
+}
+
+void OoxConverter::convert(OOX::Drawing::COfficeArtExtension *art_ext)
+{
+	if (art_ext == NULL)return;
+
+	if (art_ext->m_oSparklineGroups.IsInit() || art_ext->m_oAltTextTable.IsInit() || !art_ext->m_arrConditionalFormatting.empty())
+	{
+		XlsxConverter *xlsx_converter = dynamic_cast<XlsxConverter*>(this);
+		if (xlsx_converter)
+		{		
+			xlsx_converter->convert(art_ext->m_oSparklineGroups.GetPointer());
+			xlsx_converter->convert(art_ext->m_oAltTextTable.GetPointer());
+		
+			for (size_t i = 0; i < art_ext->m_arrConditionalFormatting.size(); i++)
+			{
+				xlsx_converter->convert(art_ext->m_arrConditionalFormatting[i]);
+			}	
+		}
+	}
+
+
+	//convert(art_ext->m_oCompatExt.GetPointer());
+	//convert(art_ext->m_oDataModelExt.GetPointer());
 }
 
 void OoxConverter::convert(PPTX::Logic::UniFill *oox_fill, DWORD nARGB)
@@ -1147,6 +1202,10 @@ void OoxConverter::convert(PPTX::Logic::BodyPr *oox_bodyPr)
 		//+ style section
 		//+element text:section в котором параграфы
 	}
+	if (oox_bodyPr->rot.IsInit())
+	{
+		odf_context()->drawing_context()->set_textarea_rotation(oox_bodyPr->rot.get() / 60000);
+	}
 
 	switch(oox_bodyPr->Fit.type)
 	{
@@ -1487,7 +1546,7 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 		}
 														//свойства могут быть приписаны не только к параграфу, но и к самому объекту		
 		odf_writer::style_paragraph_properties* paragraph_properties = odf_context()->text_context()->get_paragraph_properties();
-		odf_writer::style_text_properties*		text_properties = NULL;
+		odf_writer::style_text_properties*		text_properties = odf_context()->text_context()->get_text_properties();
 		
 		if (!paragraph_properties)
 		{

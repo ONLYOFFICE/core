@@ -30,7 +30,7 @@
  *
  */
 #pragma once
-#include "../PPTShape.h"
+#include "../PptShape.h"
 
 // 177
 class CFlowChartOffpageConnectorType : public CPPTShape

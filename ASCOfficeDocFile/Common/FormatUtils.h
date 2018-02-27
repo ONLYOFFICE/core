@@ -501,7 +501,7 @@ namespace DocFileFormat
     
 			facet.widen((char*)bytes, (char*)bytes + size, &result[0]);
 			
-			for (long i=0; i < result.length(); i++)
+			for (size_t i=0; i < result.length(); i++)
 			{
 				STLCollection->push_back(result[i]);
 			}
@@ -536,7 +536,7 @@ namespace DocFileFormat
 					delete [] pStrUtf16;
 					return GetSTLCollectionFromLocale(STLCollection, bytes,size);
 				}
-				for (long i=0; i < nLength; i++)
+				for (unsigned int i = 0; i < nLength; i++)
 				{
 					STLCollection->push_back(pStrUtf16[i]);
 				}
@@ -566,7 +566,7 @@ namespace DocFileFormat
 					delete [] pStrUtf32;
 					return GetSTLCollectionFromLocale(STLCollection, bytes, size);
 				}
-				for (long i=0; i < nLength; i++)
+				for (unsigned int i = 0; i < nLength; i++)
 				{
 					STLCollection->push_back(pStrUtf32[i]);
 				}
@@ -652,7 +652,7 @@ namespace DocFileFormat
 				NSUnicodeConverter::CUnicodeConverter oConverter;
 				std::wstring unicode_string = oConverter.toUnicode((char*)bytes, size, sCodePage.c_str());
 			
-				for (long i=0; i < unicode_string.size(); i++)
+				for (size_t i = 0; i < unicode_string.size(); i++)
 				{
 					STLCollection->push_back(unicode_string[i]);
 				}

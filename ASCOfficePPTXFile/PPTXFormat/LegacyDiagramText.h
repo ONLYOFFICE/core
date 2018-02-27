@@ -45,12 +45,12 @@ namespace PPTX
 	//[MS-PPT] Section 2.9.1; DocumentTextInfoContainer
 	{
 	public:
-		LegacyDiagramText()
+		LegacyDiagramText(OOX::Document *pMain) : OOX::File(pMain)
 		{
 			m_Data		= 0;
 			m_DataSize	= 0;
 		}
-		LegacyDiagramText(const OOX::CPath& filename)
+		LegacyDiagramText(OOX::Document *pMain, const OOX::CPath& filename) : OOX::File(pMain) 
 		{
 			m_Data		= 0;
 			m_DataSize	= 0;

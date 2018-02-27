@@ -58,7 +58,7 @@ namespace DocFileFormat
 		void AddItem( const ITableCellElement& _tableCellElement );
 		bool IsEmpty() const;
 		void Clear();
-		void Convert( IMapping* mapping, TablePropertyExceptions* tapx, const std::vector<short>* grid, int& gridIndex, int cellIndex );
+		void Convert( IMapping* mapping, TablePropertyExceptions* tapx, const std::vector<short>* grid, const std::vector<short>* grid_write, int& gridIndex, int cellIndex );
 		~TableCell();
 
 	private:
@@ -81,7 +81,7 @@ namespace DocFileFormat
 		void AddCell( const TableCell& _tableCell );
 		bool IsEmpty() const;
 		void Clear();
-		void Convert( IMapping* mapping, const std::vector<short>* grid );
+		void Convert( IMapping* mapping, const std::vector<short>* grid, const std::vector<short>* grid_write );
 		~TableRow();
 
 	private:

@@ -47,11 +47,16 @@ namespace OOX
 	{
 	public:
 
-		CEndnotes()
+		CEndnotes(OOX::Document *pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pEndnotes = this;
 		}
-		CEndnotes(const CPath& oRootPath, const CPath& oPath)
+		CEndnotes(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pEndnotes = this;
+
 			read( oRootPath, oPath );
 		}
 		virtual ~CEndnotes()
@@ -64,8 +69,6 @@ namespace OOX
 
 			m_arrEndnote.clear();
 		}
-	public:
-
 		virtual void read(const CPath& oPath)
 		{
 			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -76,8 +79,6 @@ namespace OOX
 		{
 			m_oReadPath = oFilePath;
 			IFileContainer::Read( oRootPath, oFilePath );
-
-			Common::readAllShapeTypes(oFilePath, m_arrShapeTypes);
 
 			XmlUtils::CXmlLiteReader oReader;
 
@@ -106,7 +107,7 @@ namespace OOX
 		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 			std::wstring sXml;
-			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:endnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 wp14\">");
+			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:endnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" mc:Ignorable=\"w14 wp14\">");
 			for ( unsigned int nIndex = 0; nIndex < m_arrEndnote.size(); nIndex++ )
 			{
 				if ( m_arrEndnote[nIndex] )
@@ -118,8 +119,6 @@ namespace OOX
 			oContent.Registration( type().OverrideType(), oDirectory, oPath );
 			IFileContainer::Write( oPath, oDirectory, oContent );
 		}
-
-	public:
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::EndNote;
@@ -132,8 +131,6 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
-
-	public:
 
 		OOX::CFtnEdn *Find(const OOX::Logic::CEndnoteReference& oReference) const
 		{
@@ -148,7 +145,7 @@ namespace OOX
 
 			return NULL;
 		}
-		void       Add(OOX::CFtnEdn* pEndnote)
+        void Add(OOX::CFtnEdn* pEndnote)
 		{
 			m_arrEndnote.push_back( pEndnote );
 		}		
@@ -157,10 +154,8 @@ namespace OOX
 			return (unsigned int)m_arrEndnote.size();
 		}
 
-	public:
 		CPath						m_oReadPath;
-		std::vector<OOX::CFtnEdn*> m_arrEndnote;
-		std::vector<std::wstring>			m_arrShapeTypes;
+        std::vector<OOX::CFtnEdn*>  m_arrEndnote;
 	};
 } // namespace OOX
 #endif // OOX_ENDNOTE_INCLUDE_H_

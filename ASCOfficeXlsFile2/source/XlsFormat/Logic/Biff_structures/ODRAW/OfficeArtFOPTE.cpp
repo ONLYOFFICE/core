@@ -122,8 +122,6 @@ void OfficeArtFOPTE::load(XLS::CFRecord& record)
 	opid		= GETBITS(flags, 0, 13);
 	fBid		= GETBIT(flags, 14);
 	fComplex	= GETBIT(flags, 15);
-
-	// TODO: complex data shall be parsed here
 }
 
 OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
@@ -517,6 +515,7 @@ void FillStyleBooleanProperties::load(XLS::CFRecord& record)
 	fillShape					= GETBIT(op, 2);
 	fHitTestFill				= GETBIT(op, 3);
 	fFilled						= GETBIT(op, 4);
+	
 	fUseShapeAnchor				= GETBIT(op, 5);
 	fRecolorFillAsPicture		= GETBIT(op, 6);
 	fUsefNoFillHitTest			= GETBIT(op, 16);
@@ -544,7 +543,7 @@ void anyString::ReadComplexData(XLS::CFRecord& record)
 #if defined(_WIN32) || defined(_WIN64)
         string_ = std::wstring(record.getCurData<wchar_t>(), op);
 #else
-        string_ = XLS::convertUtf16ToWString(record.getCurData<UTF16>(), op);
+        string_ = convertUtf16ToWString(record.getCurData<UTF16>(), op);
 #endif
 	if (!string_.empty())
 	{

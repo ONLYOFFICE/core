@@ -63,89 +63,83 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/External/ExternalImage.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/External/ExternalAudio.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/External/ExternalVideo.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/UnknowTypeFile.h"
 //
 
 
 namespace PPTX
 {
-	const smart_ptr<OOX::File> FileFactory::CreateFilePPTX(const OOX::CPath& filename, OOX::Rels::CRelationShip& relation, FileMap& map)
+	const smart_ptr<OOX::File> FileFactory::CreateFilePPTX(const OOX::CPath& filename, OOX::Rels::CRelationShip& relation, FileMap& map, OOX::Document *pMain)
 	{
-		if (NSFile::CFileBinary::Exists(filename.GetPath()) == false)
+		if (NSFile::CFileBinary::Exists(filename.GetPath()) == false && !relation.IsExternal())
 		{
 			return smart_ptr<OOX::File>(NULL);
 		}
 		
 		if (relation.Type() == OOX::FileTypes::App)
-			return smart_ptr<OOX::File>(new PPTX::App(filename, map));
+			return smart_ptr<OOX::File>(new PPTX::App(pMain, filename, map));
 		else if (relation.Type() == OOX::FileTypes::Core)
-			return smart_ptr<OOX::File>(new PPTX::Core(filename, map));
+			return smart_ptr<OOX::File>(new PPTX::Core(pMain, filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::Presentation || 
 				 relation.Type() == OOX::Presentation::FileTypes::PresentationMacro)
-			return smart_ptr<OOX::File>(new PPTX::Presentation(filename, map));
+			return smart_ptr<OOX::File>(new PPTX::Presentation(pMain, filename, map));
 		else if (relation.Type() == OOX::FileTypes::Theme)
-			return smart_ptr<OOX::File>(new PPTX::Theme(filename, map));
+			return smart_ptr<OOX::File>(new PPTX::Theme(pMain, filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::SlideMaster)
-			return smart_ptr<OOX::File>(new PPTX::SlideMaster(filename, map));
+			return smart_ptr<OOX::File>(new PPTX::SlideMaster(pMain, filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::SlideLayout)
-			return smart_ptr<OOX::File>(new PPTX::SlideLayout(filename, map));
+			return smart_ptr<OOX::File>(new PPTX::SlideLayout(pMain, filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::Slide)
-			return smart_ptr<OOX::File>(new PPTX::Slide(filename, map));
+			return smart_ptr<OOX::File>(new PPTX::Slide(pMain, filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::HandoutMaster)
-			return smart_ptr<OOX::File>(new PPTX::HandoutMaster(filename, map));
+			return smart_ptr<OOX::File>(new PPTX::HandoutMaster(pMain, filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::NotesMaster)
-			return smart_ptr<OOX::File>(new PPTX::NotesMaster(filename, map));
+			return smart_ptr<OOX::File>(new PPTX::NotesMaster(pMain, filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::NotesSlide)
-			return smart_ptr<OOX::File>(new PPTX::NotesSlide(filename, map));
+			return smart_ptr<OOX::File>(new PPTX::NotesSlide(pMain, filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::PresProps)
-			return smart_ptr<OOX::File>(new PPTX::PresProps(filename, map));
+			return smart_ptr<OOX::File>(new PPTX::PresProps(pMain, filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::ViewProps)
-			return smart_ptr<OOX::File>(new PPTX::ViewProps(filename, map));
+			return smart_ptr<OOX::File>(new PPTX::ViewProps(pMain, filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::TableStyles)
-			return smart_ptr<OOX::File>(new PPTX::TableStyles(filename, map));
+			return smart_ptr<OOX::File>(new PPTX::TableStyles(pMain, filename, map));
 		else if (relation.Type() == OOX::FileTypes::LegacyDiagramText)
-			return smart_ptr<OOX::File>(new PPTX::LegacyDiagramText(filename));
+			return smart_ptr<OOX::File>(new PPTX::LegacyDiagramText(pMain, filename));
 		else if (relation.Type() == OOX::FileTypes::VmlDrawing)
-			return smart_ptr<OOX::File>(new OOX::CVmlDrawing(OOX::CPath(), filename));
+			return smart_ptr<OOX::File>(new OOX::CVmlDrawing(pMain, OOX::CPath(), filename));
 		else if (relation.Type() == OOX::Presentation::FileTypes::CommentAuthors)
-			return smart_ptr<OOX::File>(new PPTX::Authors(filename, map));
+			return smart_ptr<OOX::File>(new PPTX::Authors(pMain, filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::SlideComments)
-			return smart_ptr<OOX::File>(new PPTX::Comments(filename, map));
+			return smart_ptr<OOX::File>(new PPTX::Comments(pMain, filename, map));
 
 		else if (relation.Type() == OOX::FileTypes::Chart)
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace(filename, filename));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace(pMain, filename, filename));
 		else if (relation.Type() == OOX::FileTypes::HyperLink)
-			return smart_ptr<OOX::File>(new OOX::HyperLink(relation.Target()));
-		else if ((relation.Type() == OOX::FileTypes::ExternalImage) && (relation.IsExternal()))
-			return smart_ptr<OOX::File>(new OOX::ExternalImage(relation.Target()));
-		else if ((relation.Type() == OOX::FileTypes::ExternalAudio) && (relation.IsExternal()))
-			return smart_ptr<OOX::File>(new OOX::ExternalAudio(relation.Target()));
-		else if ((relation.Type() == OOX::FileTypes::ExternalVideo) && (relation.IsExternal()))
-			return smart_ptr<OOX::File>(new OOX::ExternalVideo(relation.Target()));
+			return smart_ptr<OOX::File>(new OOX::HyperLink(pMain, relation.Target()));
 		else if (relation.Type() == OOX::FileTypes::Image)
-			return smart_ptr<OOX::File>(new OOX::Image(filename));
+			return smart_ptr<OOX::File>(new OOX::Image(pMain, filename, relation.IsExternal()));
 		else if (relation.Type() == OOX::FileTypes::Audio)
-			return smart_ptr<OOX::File>(new OOX::Audio(filename));
+			return smart_ptr<OOX::File>(new OOX::Audio(pMain, filename, relation.IsExternal()));
 		else if (relation.Type() == OOX::FileTypes::Media)
-			return smart_ptr<OOX::File>(new OOX::Media(filename));
+			return smart_ptr<OOX::File>(new OOX::Media(pMain, filename, relation.IsExternal()));
 		else if (relation.Type() == OOX::FileTypes::Video)
-			return smart_ptr<OOX::File>(new OOX::Video(filename));
+			return smart_ptr<OOX::File>(new OOX::Video(pMain, filename, relation.IsExternal()));
 		else if (relation.Type() == OOX::FileTypes::Data) 
-			return smart_ptr<OOX::File>(new OOX::CDiagramData(filename));
+			return smart_ptr<OOX::File>(new OOX::CDiagramData(pMain, filename));
 		else if (relation.Type() == OOX::FileTypes::DiagDrawing)	
-			return smart_ptr<OOX::File>(new OOX::CDiagramDrawing(filename)); 
+			return smart_ptr<OOX::File>(new OOX::CDiagramDrawing(pMain, filename)); 
 		else if (relation.Type() == OOX::FileTypes::OleObject)
-			return smart_ptr<OOX::File>(new OOX::OleObject(filename));
+			return smart_ptr<OOX::File>(new OOX::OleObject(pMain, filename));
 		else if (relation.Type() == OOX::FileTypes::MicrosoftOfficeUnknown) //ms package
-			return smart_ptr<OOX::File>(new OOX::OleObject( filename, true ));
+			return smart_ptr<OOX::File>(new OOX::OleObject( pMain, filename, true ));
 		else if (relation.Type() == OOX::FileTypes::VbaProject)
-			return smart_ptr<OOX::File>(new OOX::VbaProject( filename, filename ));
+			return smart_ptr<OOX::File>(new OOX::VbaProject( pMain, filename, filename ));
+		else if (relation.Type() == OOX::FileTypes::JsaProject)
+			return smart_ptr<OOX::File>(new OOX::JsaProject( pMain, filename ));
 
-		return smart_ptr<OOX::File>(new OOX::UnknowTypeFile());
+		return smart_ptr<OOX::File>(new OOX::UnknowTypeFile(pMain));
 	}
 
 } // namespace PPTX

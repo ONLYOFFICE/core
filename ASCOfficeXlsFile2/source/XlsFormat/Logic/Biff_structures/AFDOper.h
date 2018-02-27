@@ -32,7 +32,7 @@
 #pragma once
 
 #include <Logic/Biff_records/BiffRecord.h>
-#include <Logic/Biff_structures/BiffString.h>
+#include "BiffString.h"
 
 #include "AFDOperStr.h"
 #include "AFDOperRk.h"
@@ -53,7 +53,6 @@ public:
 	~AFDOper();
 
 	virtual void load(CFRecord& record);
-
 
 	static const ElementType	type = typeAFDOper;
 

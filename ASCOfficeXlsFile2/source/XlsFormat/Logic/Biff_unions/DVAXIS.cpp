@@ -31,19 +31,19 @@
  */
 
 #include "DVAXIS.h"
-#include <Logic/Biff_records/Axis.h>
-#include <Logic/Biff_records/Begin.h>
-#include <Logic/Biff_records/ValueRange.h>
-#include <Logic/Biff_unions/AXM.h>
-#include <Logic/Biff_unions/AXS.h>
-#include <Logic/Biff_unions/CRTMLFRT.h>
-#include <Logic/Biff_records/End.h>
+#include "AXM.h"
+#include "AXS.h"
+#include "CRTMLFRT.h"
 
-#include <Logic/Biff_records/CatSerRange.h>
-#include <Logic/Biff_records/Tick.h>
-#include <Logic/Biff_records/FontX.h>
-#include <Logic/Biff_records/AxisLine.h>
-#include <Logic/Biff_records/LineFormat.h>
+#include "../Biff_records/Axis.h"
+#include "../Biff_records/Begin.h"
+#include "../Biff_records/ValueRange.h"
+#include "../Biff_records/End.h"
+#include "../Biff_records/CatSerRange.h"
+#include "../Biff_records/Tick.h"
+#include "../Biff_records/FontX.h"
+#include "../Biff_records/AxisLine.h"
+#include "../Biff_records/LineFormat.h"
 
 namespace XLS
 {
@@ -72,7 +72,7 @@ const bool DVAXIS::loadContentRead(BinReaderProcessor& proc)
 	bool ok = loadContent(proc);
 	if(ok)
 	{
-		id = proc.getGlobalWorkbookInfo()->GenerateAXESId();
+		id = proc.getGlobalWorkbookInfo()->last_Axes_id++;
 	}
 	return ok;
 }
@@ -152,16 +152,16 @@ int DVAXIS::serialize(std::wostream & _stream)
 				{
 					CP_XML_NODE(L"c:max") 
 					{ 
-						if (bLogarithScale)	CP_XML_ATTR(L"val", pow(10, value_range->numMax));
-						else				CP_XML_ATTR(L"val", value_range->numMax);
+						if (bLogarithScale)	CP_XML_ATTR(L"val", pow(10, value_range->numMax.data.value));
+						else				CP_XML_ATTR(L"val", value_range->numMax.data.value);
 					}
 				}			
 				if (value_range->fAutoMin == false)
 				{
 					CP_XML_NODE(L"c:min") 
 					{
-						if (bLogarithScale)	CP_XML_ATTR(L"val", pow(10, value_range->numMin));
-						else				CP_XML_ATTR(L"val", value_range->numMin); 
+						if (bLogarithScale)	CP_XML_ATTR(L"val", pow(10, value_range->numMin.data.value));
+						else				CP_XML_ATTR(L"val", value_range->numMin.data.value); 
 					}
 				}
 			}
@@ -202,16 +202,16 @@ int DVAXIS::serialize(std::wostream & _stream)
 			{
 				CP_XML_NODE(L"c:majorUnit")
 				{
-					if (bLogarithScale)	CP_XML_ATTR(L"val", pow(10, value_range->numMajor));
-					else				CP_XML_ATTR(L"val", value_range->numMajor);
+					if (bLogarithScale)	CP_XML_ATTR(L"val", pow(10, value_range->numMajor.data.value));
+					else				CP_XML_ATTR(L"val", value_range->numMajor.data.value);
 				}
 			}
 			if (value_range->fAutoMinor == false)
 			{
 				CP_XML_NODE(L"c:minorUnit")
 				{
-					if (bLogarithScale)	CP_XML_ATTR(L"val", pow(10, value_range->numMinor));
-					else				CP_XML_ATTR(L"val", value_range->numMinor);
+					if (bLogarithScale)	CP_XML_ATTR(L"val", pow(10, value_range->numMinor.data.value));
+					else				CP_XML_ATTR(L"val", value_range->numMinor.data.value);
 				}		
 			}
 		}

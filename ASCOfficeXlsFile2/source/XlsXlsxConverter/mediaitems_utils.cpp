@@ -32,11 +32,6 @@
 
 #include "mediaitems_utils.h"
 
-#include <boost/foreach.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/regex.hpp>
-
-#include "../../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../../DesktopEditor/common/Directory.h"
 
 namespace oox {
@@ -58,24 +53,18 @@ std::wstring get_rel_type(external_items::Type type)
     {
     case external_items::typeImage:
         return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image";
-     case external_items::typeChart:
+	case external_items::typeChart:
         return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
-   default:
+	case external_items::typeExternalLink:
+		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLinkPath";
+	case external_items::typeActiveX:
+		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/control";
+	case external_items::typeControlProps:
+		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/ctrlProp";
+	default:
         return L"";
     }
 }
-
-
-
-std::wstring replace_extension(const std::wstring & ext)
-{
-    // TODO
-    if (ext == L"jpg")
-        return L"jpeg";
-    else
-        return ext;
-}
-
 }
 
 }

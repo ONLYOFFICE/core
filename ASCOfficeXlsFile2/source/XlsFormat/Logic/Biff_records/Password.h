@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of Password record in BIFF8
 class Password: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Password)
@@ -47,7 +45,6 @@ public:
 	~Password();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 

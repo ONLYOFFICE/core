@@ -70,9 +70,9 @@ void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 	}	
 	//m_oPreferRelative//типо можно менять размер 
 
-	for (size_t i = 0; i < vml_shape_type->m_arrItems.size(); i++)
+    for (std::vector<OOX::WritingElement*>::iterator	it = vml_shape_type->m_arrItems.begin(); it != vml_shape_type->m_arrItems.end(); ++it)
 	{
-		convert(vml_shape_type->m_arrItems[i]);
+		convert(*it);
 	}
 
     if (vml_shape_type->m_sAdj.IsInit())//настройка дл фигуры заданной формулами
@@ -90,9 +90,9 @@ void OoxConverter::convert(OOX::Vml::CFormulas *vml_formulas)
 {
 	if (vml_formulas == NULL) return;
 
-	for (size_t i = 0; i < vml_formulas->m_arrItems.size(); i++)
+    for (std::vector<OOX::Vml::CF*>::iterator	it = vml_formulas->m_arrItems.begin(); it != vml_formulas->m_arrItems.end(); ++it)
 	{	
-		OOX::Vml::CF *cf = dynamic_cast<OOX::Vml::CF *>(vml_formulas->m_arrItems[i]);
+		OOX::Vml::CF *cf = dynamic_cast<OOX::Vml::CF *>(*it);
 		if (cf == NULL) continue;
 
 		//odf_context()->drawing_context()->add_formula(L"", cf->m_sEqn);
@@ -717,9 +717,9 @@ void OoxConverter::convert(OOX::Vml::CTextbox *vml_textbox)
 	{
 		odf_context()->start_text_context();
 		{
-			for (size_t i = 0; i < vml_textbox->m_oTxtbxContent->m_arrItems.size(); i++)
+            for (std::vector<OOX::WritingElement*>::iterator it = vml_textbox->m_oTxtbxContent->m_arrItems.begin(); it != vml_textbox->m_oTxtbxContent->m_arrItems.end(); ++it)
 			{
-				docx_converter->convert(vml_textbox->m_oTxtbxContent->m_arrItems[i]);
+				docx_converter->convert(*it);
 			}
 			odf_context()->drawing_context()->set_text( odf_context()->text_context());
 		}
@@ -890,9 +890,9 @@ void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 			delete oRgbColor;
 		}
 	}
-	for (size_t i = 0; i < vml_common->m_arrItems.size(); i++)
+    for (std::vector<OOX::WritingElement*>::iterator it = vml_common->m_arrItems.begin(); it != vml_common->m_arrItems.end(); ++it)
 	{
-		convert(vml_common->m_arrItems[i]);
+		convert(*it);
 	}
 
 	if (vml_common->m_oFilled.IsInit() && vml_common->m_oFilled->GetValue() == SimpleTypes::booleanFalse)
@@ -920,27 +920,27 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 			odf_context()->drawing_context()->set_group_shift(vml_group->m_oCoordOrigin->GetX(), vml_group->m_oCoordOrigin->GetY());
 		}		
 
-		for (size_t i  = 0; i < vml_group->m_arrItems.size(); i++)
+        for (std::vector<OOX::WritingElement*>::iterator it = vml_group->m_arrItems.begin(); it != vml_group->m_arrItems.end(); ++it)
 		{
-			if (vml_group->m_arrItems[i] == NULL) continue;
+			if (*it == NULL) continue;
 
-			if (vml_group->m_arrItems[i]->getType() == OOX::et_v_group)
+			if ((*it)->getType() == OOX::et_v_group)
 			{
-				OOX::Vml::CGroup * vml = dynamic_cast<OOX::Vml::CGroup*>(vml_group->m_arrItems[i]);
+				OOX::Vml::CGroup * vml = dynamic_cast<OOX::Vml::CGroup*>(*it);
 				convert(vml);
 				continue;
 			}
 			
-			OOX::Vml::CVmlCommonElements * vml_common = dynamic_cast<OOX::Vml::CVmlCommonElements*>(vml_group->m_arrItems[i]);
+			OOX::Vml::CVmlCommonElements * vml_common = dynamic_cast<OOX::Vml::CVmlCommonElements*>(*it);
 			if (vml_common == NULL) continue; // не элемент
 
 			odf_context()->drawing_context()->start_drawing();						
 			
-			switch(vml_group->m_arrItems[i]->getType())
+			switch((*it)->getType())
 			{
 				case OOX::et_v_shape:
 				{
-					OOX::Vml::CShape * vml = dynamic_cast<OOX::Vml::CShape*>(vml_group->m_arrItems[i]);
+					OOX::Vml::CShape * vml = dynamic_cast<OOX::Vml::CShape*>(*it);
 					bool bSet = false;
 					if (vml)
 					{
@@ -973,7 +973,7 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 				}break;	
 				case OOX::et_v_shapetype:
 				{
-					OOX::Vml::CShapeType * vml = dynamic_cast<OOX::Vml::CShapeType*>(vml_group->m_arrItems[i]);
+					OOX::Vml::CShapeType * vml = dynamic_cast<OOX::Vml::CShapeType*>(*it);
                     SimpleTypes::Vml::SptType sptType = vml->m_oSpt.IsInit() ? static_cast<SimpleTypes::Vml::SptType>(vml->m_oSpt->GetValue()) : SimpleTypes::Vml::sptNotPrimitive;
 
                     odf_context()->drawing_context()->start_shape(OOX::VmlShapeType2PrstShape(sptType));
@@ -982,34 +982,34 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 				}break;
 				case OOX::et_v_oval:
 				{
-					OOX::Vml::COval * vml = dynamic_cast<OOX::Vml::COval*>(vml_group->m_arrItems[i]);
+					OOX::Vml::COval * vml = dynamic_cast<OOX::Vml::COval*>(*it);
 					odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeEllipse);		
 						OoxConverter::convert(vml);					
 					odf_context()->drawing_context()->end_shape();
 				}break;		
 				case OOX::et_v_rect:
 				{
-					OOX::Vml::CRect * vml = dynamic_cast<OOX::Vml::CRect*>(vml_group->m_arrItems[i]);
+					OOX::Vml::CRect * vml = dynamic_cast<OOX::Vml::CRect*>(*it);
 					odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);		
 						OoxConverter::convert(vml);					
 					odf_context()->drawing_context()->end_shape();
 				}break;		
 				case OOX::et_v_line:
 				{
-					OOX::Vml::CLine * vml = dynamic_cast<OOX::Vml::CLine*>(vml_group->m_arrItems[i]);
+					OOX::Vml::CLine * vml = dynamic_cast<OOX::Vml::CLine*>(*it);
 					odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeLine);		
 						OoxConverter::convert(vml);					
 					odf_context()->drawing_context()->end_shape();
 				}break;	
 				case OOX::et_v_curve:
 				{
-					OOX::Vml::CCurve * vml = dynamic_cast<OOX::Vml::CCurve*>(vml_group->m_arrItems[i]);
+					OOX::Vml::CCurve * vml = dynamic_cast<OOX::Vml::CCurve*>(*it);
 					odf_context()->drawing_context()->start_shape(1000);		
 						OoxConverter::convert(vml);					
 					odf_context()->drawing_context()->end_shape();
 				}break;	
 				default: 
-					convert(vml_group->m_arrItems[i]);
+					convert(*it);
 			}
 			odf_context()->drawing_context()->end_drawing();
 		}

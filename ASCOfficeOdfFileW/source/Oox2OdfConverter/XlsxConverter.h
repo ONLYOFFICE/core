@@ -47,8 +47,8 @@ namespace OOX
 		class WritingElement;
 
 		class CWorksheet;
-		class CDrawing;
 		class CTable;
+		class CTableColumns;
 		class CCol;
 		class CRow;
 		class CCell;
@@ -69,8 +69,9 @@ namespace OOX
 		class CDxf;
 		class CCellStyle;
 		class CNumFmt;
-		class CCellAnchor;
+		class COleObjects;
 		class CDrawing;
+		class CCellAnchor;
 		class CFromTo;
 		class CCommentItem;
 		class CDefinedName;
@@ -89,7 +90,9 @@ namespace OOX
 		class CSi;
 		class CWorkbookView;
 		class CPictureWorksheet;
-		class CHeaderFooter;
+		class CHeaderFooter;		
+		class CSparklineGroups;
+		class CAltTextTable;
 	}
 }
 
@@ -126,6 +129,8 @@ namespace Oox2Odf
 	class XlsxConverter : public OoxConverter
 	{
 	public:
+		friend class OoxConverter;
+
 		XlsxConverter(const std::wstring & path, const ProgressCallback* ffCallBack);
 		~XlsxConverter();
 
@@ -153,6 +158,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CWorksheet			*oox_sheet);
 		void convert(OOX::Spreadsheet::CDefinedName			*oox_defined);
 		void convert(OOX::Spreadsheet::CTable				*oox_table_part);
+		void convert(OOX::Spreadsheet::CTableColumns		*oox_table_part_columns);
 		void convert(OOX::Spreadsheet::CPictureWorksheet	*oox_background);
 		void convert(OOX::Spreadsheet::CHeaderFooter		*oox_header_footer);
 
@@ -182,18 +188,19 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CColor				*color,		_CP_OPT(odf_types::color) & odf_color);
 		void convert(OOX::Spreadsheet::CColor				*color,		_CP_OPT(odf_types::background_color) & odf_bckgrd_color);
 		void convert(OOX::Spreadsheet::CBorderProp			*borderProp, std::wstring & odf_border_prop);
-		void convert(OOX::Spreadsheet::CAligment			*aligment,	odf_writer::style_paragraph_properties	* paragraph_properties,
-																		odf_writer::style_table_cell_properties * cell_properties);
+		void convert(OOX::Spreadsheet::CAligment			*aligment,	odf_writer::style_paragraph_properties	*paragraph_properties,
+																		odf_writer::style_table_cell_properties *cell_properties);
 		
-		void convert(OOX::Spreadsheet::CXfs					*cell_style, int oox_id, bool automatic=true, bool root = false);
+		void convert(OOX::Spreadsheet::CXfs					*cell_style, int oox_id, bool automatic = true, bool root = false);
 		void convert(OOX::Spreadsheet::CCellStyle			*cell_style);
 		void convert(OOX::Spreadsheet::CNumFmt				*numFmt);
 		void convert(OOX::Spreadsheet::CDxf					*dxFmt, int oox_id);
 
 		void convert(OOX::Spreadsheet::CCellAnchor					*oox_anchor);
-		void convert(OOX::Spreadsheet::CDrawing						*oox_drawing);
+		void convert(OOX::Spreadsheet::CDrawing						*oox_drawing, OOX::Spreadsheet::CWorksheet *oox_sheet);
+		void convert(OOX::Spreadsheet::COleObjects					*oox_objects, OOX::Spreadsheet::CWorksheet *oox_sheet);
 
-		void convert(OOX::Spreadsheet::CFromTo						*oox_from_to, oox_table_position * pos);
+		void convert(OOX::Spreadsheet::CFromTo						*oox_from_to, oox_table_position *pos);
 
 		void convert(OOX::Spreadsheet::CConditionalFormatting		*oox_cond_fmt);
 		void convert(OOX::Spreadsheet::CConditionalFormattingRule	*oox_cond_rule);
@@ -205,6 +212,9 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CConditionalFormatValueObject*oox_cond_value);
 		void convert(OOX::Spreadsheet::CFormulaCF					*oox_cond_formula);
 		void convert(OOX::Spreadsheet::CSi							*oox_rtf_text);
+
+		void convert(OOX::Spreadsheet::CSparklineGroups				*sparkline);
+		void convert(OOX::Spreadsheet::CAltTextTable				*alt_text);
 
 		void convert(double oox_size,						_CP_OPT(odf_types::length) & odf_size);
 		void convert_sharing_string(int number);

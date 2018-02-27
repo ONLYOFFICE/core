@@ -8,6 +8,9 @@ if exist "depot_tools" (
 	echo "depot_tools already fetched"
 ) else (
 	call git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+	CD depot_tools
+	git reset --hard e29cf7cb78009c80b04ddeab04763e8d218937c2
+	CD ../
 	call powershell -File .\fix-depot_tools.ps1
 )
 

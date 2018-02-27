@@ -37,16 +37,19 @@
 #include "../Common/DocxFormat/Source/Base/Base.h"
 #include "../Common/DocxFormat/Source/Base/Nullable.h"
 
-#include "./Editor/Drawing/Shapes/BaseShape/PPTShape/PPTShapeEnum.h"
+#include "./Editor/Drawing/Shapes/BaseShape/PPTShape/PptShapeEnum.h"
 
 #include <vector>
 #include <map>
 
 class IRenderer;
-class CShape;
-class CPPTShape;
 class CFontManager;
 class COfficeFontPicker;
+
+class CShape;
+typedef boost::shared_ptr<CShape> CShapePtr;
+
+class CPPTShape;
 
 namespace XmlUtils
 {
@@ -187,7 +190,7 @@ namespace NSBinPptxRW
 		};
 
 
-        std::map<std::wstring, CShape*>						m_mapShapeTypes;
+        std::map<std::wstring, CShapePtr>					m_mapShapeTypes;
 
         NSBinPptxRW::CBinaryFileWriter*                     m_pBinaryWriter;
         int                                                 m_lNextId;
@@ -222,7 +225,8 @@ namespace NSBinPptxRW
         void SetMediaDstPath    (const std::wstring& sMediaPath);
         void SetEmbedDstPath    (const std::wstring& sEmbedPath);
 
-        HRESULT AddShapeType        (const std::wstring& sXml);
+		void ClearShapeTypes	();
+
         HRESULT AddObject           (const std::wstring& sXml, std::wstring** pMainProps);
 
         HRESULT SaveObject          (long lStart, long lLength, const std::wstring& sMainProps, std::wstring & sXml);
@@ -273,11 +277,13 @@ namespace NSBinPptxRW
         std::wstring GetVMLShapeXml      (CPPTShape* pPPTShape);
         std::wstring GetVMLShapeXml      (PPTX::Logic::SpTreeElem& oElem);
 
-        void CheckBrushShape        (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, PPTShapes::ShapeType eType, CPPTShape* pPPTShape);
-        void CheckPenShape          (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, PPTShapes::ShapeType eType, CPPTShape* pPPTShape);
+        void CheckBrushShape        (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
+        void CheckPenShape          (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
 
-        void LoadCoordSize			(XmlUtils::CXmlNode& oNode, ::CShape* pShape);
-        std::wstring GetDrawingMainProps (XmlUtils::CXmlNode& oNode, PPTX::CCSS& oCssStyles, CSpTreeElemProps& oProps);
+        void LoadCoordSize			(XmlUtils::CXmlNode& oNode, ::CShapePtr pShape);
+		void LoadCoordPos			(XmlUtils::CXmlNode& oNode, ::CShapePtr pShape);
+       
+		std::wstring GetDrawingMainProps (XmlUtils::CXmlNode& oNode, PPTX::CCSS& oCssStyles, CSpTreeElemProps& oProps);
 
         void ConvertMainPropsToVML  (const std::wstring& sMainProps, NSBinPptxRW::CXmlWriter& oWriter, PPTX::Logic::SpTreeElem& oElem);
         void ConvertPicVML          (PPTX::Logic::SpTreeElem& oElem, const std::wstring& sMainProps, NSBinPptxRW::CXmlWriter& oWriter);
@@ -288,6 +294,7 @@ namespace NSBinPptxRW
 
         void    Clear();
 		HRESULT SetCurrentRelsPath();
+        HRESULT AddShapeType        (const std::wstring& sXml);
 	};
 }
 #endif //OOX_IFILE_CONTAINER_INCLUDE_H_

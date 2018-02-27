@@ -38,14 +38,28 @@ else
 		PACKAGE_VERSION := $(PRODUCT_VERSION)-$(BUILD_NUMBER)
 		ARCH_REPO_DIR := linux
 	endif
+	ifeq ($(UNAME_S),Darwin)
+		PLATFORM := mac
+		SHARED_EXT := .dylib
+		SHELL_EXT := .sh
+		LIB_EXT := .a
+		LIB_PREFIX := lib
+		ARCH_EXT := .tar.gz
+		MAKE := make -j $(shell sysctl -n hw.ncpu)
+		AR := tar -zcvf
+		PACKAGE_VERSION := $(PRODUCT_VERSION)-$(BUILD_NUMBER)
+		ARCH_REPO_DIR := mac
+	endif
 endif
 
 TARGET := $(PLATFORM)_$(ARCHITECTURE)
 
 LIBDIR := build/lib/$(TARGET)
+BINDIR := build/bin/$(TARGET)
 
 ALLFONTSGEN := build/bin/AllFontsGen/$(TARGET)$(EXEC_EXT)
-X2T := build/bin/$(TARGET)/x2t$(EXEC_EXT)
+X2T := $(BINDIR)/x2t$(EXEC_EXT)
+DOCBUILDER := $(BINDIR)/docbuilder$(EXEC_EXT)
 HTMLFILEINTERNAL := $(LIBDIR)/HtmlFileInternal$(EXEC_EXT)
 XLSFORMATLIB := $(LIBDIR)/$(LIB_PREFIX)XlsFormatLib$(LIB_EXT)
 ODFFILEWRITERLIB := $(LIBDIR)/$(LIB_PREFIX)OdfFileWriterLib$(LIB_EXT)
@@ -75,6 +89,7 @@ HUNSPELL := $(LIBDIR)/$(LIB_PREFIX)hunspell$(SHARED_EXT)
 
 TARGETS += $(ALLFONTSGEN)
 TARGETS += $(X2T)
+TARGETS += $(DOCBUILDER)
 TARGETS += $(HTMLFILEINTERNAL)
 TARGETS += $(XLSFORMATLIB)
 TARGETS += $(ODFFILEWRITERLIB)
@@ -105,6 +120,7 @@ TARGETS += $(HUNSPELL)
 X2T_PRO := $(abspath X2tConverter/build/Qt/X2tSLN.pro)
 HTMLFILEINTERNAL_PRO := $(abspath ../desktop-sdk/HtmlFile/Internal/Internal.pro)
 ALLFONTSGEN_PRO := $(abspath DesktopEditor/AllFontsGen/AllFontsGen.pro)
+DOCBUILDER_PRO := $(abspath ../core-ext/docbuilder/test_builder/docbuilder.pro)
 XLSFORMATLIB_PRO := $(abspath ASCOfficeXlsFile2/source/linux/XlsFormatLib.pro)
 ODFFILEWRITERLIB_PRO := $(abspath ASCOfficeOdfFileW/linux/OdfFileWriterLib.pro)
 ODFFILEREADERLIB_PRO := $(abspath ASCOfficeOdfFile/linux/OdfFileReaderLib.pro)
@@ -157,6 +173,7 @@ HUNSPELL_PRO := $(abspath DesktopEditor/hunspell-1.3.3/src/qt/hunspell.pro)
 QT_PROJ += X2T
 QT_PROJ += HTMLFILEINTERNAL
 QT_PROJ += ALLFONTSGEN
+QT_PROJ += DOCBUILDER
 QT_PROJ += XLSFORMATLIB
 QT_PROJ += ODFFILEWRITERLIB
 QT_PROJ += ODFFILEREADERLIB
@@ -214,6 +231,8 @@ ALLFONTSGEN_DEP += $(GRAPHICS)
 ALLFONTSGEN_DEP += $(OFFICEUTILS)
 ALLFONTSGEN_DEP += $(UNICODECONVERTER)
 
+DOCBUILDER_DEP += $(DOCTRENDERER)
+
 HTMLFILE_DEP += $(UNICODECONVERTER)
 
 RTFFORMATLIB_DEP += $(UNICODECONVERTER)
@@ -247,8 +266,12 @@ ARTIFACTS += Common/3dParty/*/$(TARGET)/build/*
 
 ifeq ($(OS),Windows_NT)
 ARTIFACTS += Common/3dParty/v8/$(TARGET)/*/*.dll
-else
-ARTIFACTS += Common/3dParty/v8/$(TARGET)/*.S
+endif
+
+EXT_TARGET += $(DOCBUILDER)
+
+ifneq ($(PLATFORM),mac)
+EXT_TARGET += $(HTMLFILEINTERNAL)
 endif
 
 #Template for next statment:
@@ -271,7 +294,9 @@ bin: $(X2T) $(ALLFONTSGEN)
 
 lib: $(PDFWRITER) $(DOCTRENDERER) $(HTMLRENDERER) $(PDFREADER) $(DJVUFILE) $(XPSFILE) $(HTMLFILE) $(UNICODECONVERTER)
 
-ext: $(ASCDOCUMENTSCORE) $(HTMLFILEINTERNAL)
+ext: $(EXT_TARGET)
+
+desktop: $(ASCDOCUMENTSCORE)
 
 $(foreach proj, $(QT_PROJ), $(eval $(call build_proj_tmpl, $(proj))))
 
@@ -282,6 +307,8 @@ $(HTMLFILEINTERNAL): $(HTMLFILEINTERNAL_DEP)
 $(XPSFILE): $(XPSFILE_DEP)
 
 $(ALLFONTSGEN): $(ALLFONTSGEN_DEP)
+
+$(DOCBUILDER): $(DOCBUILDER_DEP)
 
 $(HTMLFILE): $(HTMLFILE_DEP)
 

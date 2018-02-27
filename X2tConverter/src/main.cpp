@@ -104,50 +104,69 @@ static std::wstring utf8_to_unicode(const char *src)
 
         return getReturnErrorCode(AVS_FILEUTILS_ERROR_CONVERT_PARAMS);
     }
-    std::wstring sArg1, sExePath;
+	std::wstring sArg1, sArg2, sExePath;
 
 #if !defined(_WIN32) && !defined (_WIN64)
     sExePath    = utf8_to_unicode(argv [0]);
     sArg1       = utf8_to_unicode(argv [1]);
+	if (argc >= 3) sArg2   = utf8_to_unicode(argv [2]);
 #else
 	sExePath	= std::wstring(argv [0]);
     sArg1		= std::wstring(argv [1]);
+	if (argc >= 3) sArg2 = std::wstring(argv [2]);
 #endif
 
 	int result = 0;
     std::wstring sXmlExt = _T(".xml");
-    if(sXmlExt == sArg1.substr(sArg1.length() - sXmlExt.length(), sXmlExt.length()))
+    if((sArg1.length() > 3) && (sXmlExt == sArg1.substr(sArg1.length() - sXmlExt.length(), sXmlExt.length())))
 	{
-		result = NExtractTools::FromFile(sArg1);
+		NExtractTools::InputParams oInputParams;
+		if (oInputParams.FromXmlFile(sArg1) && (sArg2.empty() || oInputParams.FromXml(sArg2)))
+		{
+			result = NExtractTools::fromInputParams(oInputParams);
+		}
+		else
+		{
+			result = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+		}
 	}
 	else
 	{
-		std::wstring sArg2, sArg3, sArg4, sArg5;
+		std::wstring sArg3, sArg4, sArg5;
 
 #if !defined(_WIN32) && !defined (_WIN64)
-		if (argc >= 3) sArg2   = utf8_to_unicode(argv [2]);
 		if (argc >= 4) sArg3   = utf8_to_unicode(argv [3]);
 		if (argc >= 5) sArg4   = utf8_to_unicode(argv [4]);
 		if (argc >= 6) sArg5   = utf8_to_unicode(argv [5]);
 #else
-		if (argc >= 3) sArg2 = std::wstring(argv [2]);
 		if (argc >= 4) sArg3 = std::wstring(argv [3]);
 		if (argc >= 5) sArg4 = std::wstring(argv [4]);
 		if (argc >= 6) sArg5 = std::wstring(argv [5]);
 #endif
-		InputParams oInputParams;
-		oInputParams.m_sFileFrom	= new std::wstring(sArg1);
-		oInputParams.m_sFileTo		= new std::wstring(sArg2);
+		if (sArg1 == L"-detectmacro")
+		{
+			InputParams oInputParams;
+			oInputParams.m_sFileFrom	= new std::wstring(sArg2);
+			
+			result = NExtractTools::detectMacroInFile(oInputParams);
+		}
+		else
+		{
+			InputParams oInputParams;
+			oInputParams.m_sFileFrom	= new std::wstring(sArg1);
+			oInputParams.m_sFileTo		= new std::wstring(sArg2);
 
-		if (argc > 3)
-		{
-			oInputParams.m_sFontDir = new std::wstring(sArg3);
+			if (argc > 3)
+			{
+				oInputParams.m_sFontDir = new std::wstring(sArg3);
+			}
+			if (argc > 4)
+			{
+				oInputParams.m_sPassword = new std::wstring(sArg4);
+				oInputParams.m_sSavePassword = new std::wstring(sArg4);
+			}
+			result = NExtractTools::fromInputParams(oInputParams);
 		}
-		if (argc > 4)
-		{
-			oInputParams.m_sPassword = new std::wstring(sArg4);
-		}
-		result = NExtractTools::fromInputParams(oInputParams);
 	}
 
 	return getReturnErrorCode(result);

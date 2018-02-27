@@ -46,9 +46,10 @@ BiffStructurePtr PtgAreaErr3d::clone()
 
 void PtgAreaErr3d::loadFields(CFRecord& record)
 {
+	global_info = record.getGlobalWorkbookInfo();
+
 	record >> ixti;
 	record.skipNunBytes(8); // unused
-	global_info = record.getGlobalWorkbookInfo();
 }
 
 
@@ -62,9 +63,11 @@ void PtgAreaErr3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, boo
 		extra_data.pop();
 		return;
 	}
-
-	ptg_stack.push(XMLSTUFF::make3dRef(ixti, L"#REF!", global_info->xti_parsed));
-
+	std::wstring link = global_info->arXti[ixti].link;
+	if (!link.empty()) 
+		link += L"!";
+	
+	ptg_stack.push(link + L"#REF!"); // full_ref ???
 }
 
 

@@ -63,8 +63,16 @@ namespace DocFileFormat
 {
 	long Converter::Convert(WordDocument* doc, WordprocessingDocument* docx, const ProgressCallback* progress)
 	{
+		if (!doc || !docx) return S_FALSE;
+		
 		ConversionContext context( doc, docx );
 
+	//Write fontTable.xml
+		if (doc->FontTable)
+		{
+			FontTableMapping fontTableMapping( &context );
+			doc->FontTable->Convert( &fontTableMapping );
+		}
 	//Write styles.xml
 		if (doc->Styles)
 		{
@@ -107,14 +115,6 @@ namespace DocFileFormat
 				return S_FALSE;
 			}
 		}
-
-	//Write fontTable.xml
-		if (doc->FontTable)
-		{
-			FontTableMapping fontTableMapping( &context );
-			doc->FontTable->Convert( &fontTableMapping );
-		}
-
 		if ( progress != NULL )
 		{
 			progress->OnProgress( progress->caller, DOC_ONPROGRESSEVENT_ID, 875000 );

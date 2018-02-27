@@ -43,7 +43,7 @@
 namespace XLS
 {
 
-PIVOTCORE::PIVOTCORE()
+PIVOTCORE::PIVOTCORE() : bOLAP( false)
 {
 }
 
@@ -102,11 +102,6 @@ const bool PIVOTCORE::loadContent(BinProcessor& proc)
 	{
 		m_arPIVOTLI.push_back(elements_.front());	elements_.pop_front();
 	}	
-	//count = proc.repeated<PIVOTLI>(0, 0);
-	//while(count--)
-	//{
-	//	m_arPIVOTLI.push_back(elements_.front());	elements_.pop_front();
-	//}
 
 	if (proc.mandatory<PIVOTEX>())
 	{

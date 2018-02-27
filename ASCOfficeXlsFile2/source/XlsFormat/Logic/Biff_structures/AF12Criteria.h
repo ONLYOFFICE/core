@@ -31,8 +31,7 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
-#include <Logic/Biff_structures/BiffString.h>
+#include "BiffString.h"
 #include "AFDOper.h"
 
 namespace XLS
@@ -49,8 +48,7 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
-	static const ElementType	type = typeAF12Criteria;
+	static const ElementType type = typeAF12Criteria;
 
 	AFDOper doper;
 	XLUnicodeStringNoCch str;

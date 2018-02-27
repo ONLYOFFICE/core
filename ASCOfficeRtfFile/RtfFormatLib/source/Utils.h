@@ -695,14 +695,21 @@ public:
                 break;
             }
         }
-        if (sCodePage.empty())
+        if (sCodePage.empty() && nCodepage > 0)
             sCodePage = "CP" + std::to_string(nCodepage);
 
-        unsigned int insize = (unsigned int)(end - start);
-        const char* inptr = (const char*)start.operator ->();
-
-        NSUnicodeConverter::CUnicodeConverter oConverter;
-        return oConverter.toUnicode(inptr, insize, sCodePage.c_str());
+		if (sCodePage.empty())
+		{
+			return std::wstring(start, end);
+		}
+		else
+		{
+			unsigned int insize = (unsigned int)(end - start);
+			const char* inptr = (const char*)start.operator ->();
+			
+			NSUnicodeConverter::CUnicodeConverter oConverter;
+			return oConverter.toUnicode(inptr, insize, sCodePage.c_str());
+		}
     }
     static std::string convert_string(std::wstring::const_iterator start, std::wstring::const_iterator end, int nCodepage = 0)
     {

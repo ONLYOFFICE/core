@@ -150,13 +150,12 @@ void odf_conversion_context::end_document()
 		{
 			object_files->set_content	(content_root_);
 			object_files->set_styles	(content_style_);
-			object_files->set_media		(object.mediaitems);
-			object_files->set_pictures	(object.mediaitems);
+			object_files->set_mediaitems(object.mediaitems);
 			object_files->set_settings	(content_settings_);
 			
 			if (!isRoot)object_files->local_path = object.name + L"/";
 			
-			object.mediaitems.dump_rels(rels_,object_files->local_path);
+			object.mediaitems.dump_rels(rels_, object_files->local_path);
 
 			rels_.add(relationship(std::wstring(L"text/xml"), object_files->local_path + L"styles.xml"));
 			rels_.add(relationship(std::wstring(L"text/xml"), object_files->local_path + L"content.xml"));
@@ -178,7 +177,7 @@ void odf_conversion_context::start_chart()
 	create_object();
 	create_element(L"office", L"chart", objects_.back().content, this, true);
 
-	chart_context_.set_styles_context(styles_context());
+	chart_context_.set_styles_context(odf_conversion_context::styles_context());
 	chart_context_.start_chart(get_current_object_element());
 }
 void odf_conversion_context::start_spreadsheet()
@@ -308,6 +307,24 @@ std::wstring odf_conversion_context::add_media(const std::wstring & file_name)
 	
 	std::wstring odf_ref_name ;	
 	mediaitems()->add_or_find(file_name,_mediaitems::typeMedia, odf_ref_name);
+
+	return odf_ref_name;
+}
+std::wstring odf_conversion_context::add_imageobject(const std::wstring & file_name)
+{
+	if (file_name.empty()) return L"";
+	
+	std::wstring odf_ref_name ;	
+	mediaitems()->add_or_find(file_name,_mediaitems::typeObjectReplacement, odf_ref_name);
+
+	return odf_ref_name;
+}
+std::wstring odf_conversion_context::add_oleobject(const std::wstring & file_name)
+{
+	if (file_name.empty()) return L"";
+	
+	std::wstring odf_ref_name ;	
+	mediaitems()->add_or_find(file_name,_mediaitems::typeOleObject, odf_ref_name);
 
 	return odf_ref_name;
 }

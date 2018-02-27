@@ -1779,7 +1779,7 @@ public:
 	int m_nGraph;			//trgaphN	Half the space between the cells of a table row in twips.
 
 	int nTableIndent;		//tblindN 
-	int nTableIndentUnits;	// tblindtypeN  
+	int eTableIndentUnit;	// tblindtypeN  
 
 	enum _RowJust
 	{
@@ -1803,28 +1803,29 @@ public:
 	int				m_nVPos;				//tposyN	Position table N twips from the top edge of the vertical reference frame.
 
 	int				m_nLeft;
-	int				m_nWidth;				//trwWidthN	Preferred row width. Overrides \trautofitN.
-	_MetricUnits	m_eMUWidth;		//trftsWidthN	Units for \trwWidthN:
+	
+	int				m_nWidth;				//trwWidthN	Width of invisible cell at the end of the row. Used only when rows have different widths.
+	int				m_eWidthUnit;			//trftsWidthN	Units for \trwWidthN:
 
 	int m_nDefCellMarBottom;	//trpaddbN	Default bottom cell margin or padding for the row.
 	int m_nDefCellMarLeft;		//trpaddlN	Default left cell margin or padding for the row.
 	int m_nDefCellMarRight;		//trpaddrN	Default right cell margin or padding for the row.
 	int m_nDefCellMarTop;		//trpaddtN	Default top cell margin or padding for the row.
 
-	int m_nDefCellMarBottomUnits; //Units for \trpaddbN: 0	Null. Ignore \trpaddbN in favor of \trgaphN (Word 97 style padding). 3	Twips.
-	int m_nDefCellMarLeftUnits;
-	int m_nDefCellMarRightUnits;
-	int m_nDefCellMarTopUnits;
+	int m_eDefCellMarBottomUnit; //Units for \trpaddbN: 0	Null. Ignore \trpaddbN in favor of \trgaphN (Word 97 style padding). 3	Twips.
+	int m_eDefCellMarLeftUnit;
+	int m_eDefCellMarRightUnit;
+	int m_eDefCellMarTopUnit;
 
 	int m_nDefCellSpBottom;		//trspdbN	Default bottom cell spacing for the row. The total vertical spacing between adjacent cells is equal to the sum of \trspdtN from the bottom cell and \trspdbN from the top cell, both of which will have the same value when written by Word.
 	int m_nDefCellSpLeft;		//trspdlN
 	int m_nDefCellSpRight;		//trspdrN
 	int m_nDefCellSpTop;		//trspdtN
 
-	int m_nDefCellSpBottomUnits; //trspdfbN Units for \trspdbN: 0	Null. Ignore \trspdbN. 3	Twips.
-	int m_nDefCellSpLeftUnits;
-	int m_nDefCellSpRightUnits;
-	int m_nDefCellSpTopUnits;
+	int m_eDefCellSpBottomUnit; //trspdfbN Units for \trspdbN: 0	Null. Ignore \trspdbN. 3	Twips.
+	int m_eDefCellSpLeftUnit;
+	int m_eDefCellSpRightUnit;
+	int m_eDefCellSpTopUnit;
 
 	RtfBorder m_oBorderLeft;
 	RtfBorder m_oBorderRight;
@@ -1837,12 +1838,12 @@ public:
 	int m_nStyle;
 
 //Autoformatting Flags
-	int m_bAutoFirstRow;		//tbllkhdrrows	Flag sets table autoformat to format the first (header) row.
+	int m_bAutoFirstRow;	//tbllkhdrrows	Flag sets table autoformat to format the first (header) row.
 	int m_bAutoLastRow;		//tbllklastrow	Flag sets table autoformat to format the last row.
-	int m_bAutoFirstCol;		//tbllkhdrcols	Flag sets table autoformat to format the first (header) column.
+	int m_bAutoFirstCol;	//tbllkhdrcols	Flag sets table autoformat to format the first (header) column.
 	int m_bAutoLastCol;		//tbllklastcol	Flag sets table autoformat to format the last column.
-	int m_bAutoNoRowBand;		//tbllknorowband	Specifies row banding conditional formatting shall not be applied.
-	int m_bAutoNoColBand;		//tbllknocolband	Specifies column banding conditional formatting shall not be applied.
+	int m_bAutoNoRowBand;	//tbllknorowband	Specifies row banding conditional formatting shall not be applied.
+	int m_bAutoNoColBand;	//tbllknocolband	Specifies column banding conditional formatting shall not be applied.
 
 	int m_nRowBandSize;		//tscbandshN	Count of rows in a row band
 	int m_nColBandSize;		//tscbandsvN	Count of cells in a cell band
@@ -1868,7 +1869,7 @@ public:
 		DEFAULT_PROPERTY( m_nGraph )
 
 		DEFAULT_PROPERTY( nTableIndent )
-		DEFAULT_PROPERTY( nTableIndentUnits )
+		DEFAULT_PROPERTY( eTableIndentUnit )
 
 		m_eJust = rj_none;
 
@@ -1888,7 +1889,7 @@ public:
 		DEFAULT_PROPERTY( m_nLeft )
 		DEFAULT_PROPERTY( m_nWidth )
 		
-		m_eMUWidth = mu_none;
+		m_eWidthUnit = mu_none;
 
 		//m_nDefCellMarBottom = 0;
 		//m_nDefCellMarRight = 108;
@@ -1899,24 +1900,24 @@ public:
 		DEFAULT_PROPERTY( m_nDefCellMarLeft )
 		DEFAULT_PROPERTY( m_nDefCellMarTop )
 
-		m_nDefCellMarBottomUnits = 3;
-		m_nDefCellMarRightUnits = 3;
-		m_nDefCellMarLeftUnits = 3;
-		m_nDefCellMarTopUnits = 3;
-		//DEFAULT_PROPERTY( m_nDefCellMarBottomUnits )
-		//DEFAULT_PROPERTY( m_nDefCellMarRightUnits )
-		//DEFAULT_PROPERTY( m_nDefCellMarLeftUnits )
-		//DEFAULT_PROPERTY( m_nDefCellMarTopUnits )
+		//m_eDefCellMarBottomUnit = 3;
+		//m_eDefCellMarRightUnit = 3;
+		//m_eDefCellMarLeftUnit = 3;
+		//m_eDefCellMarTopUnit = 3;
+		DEFAULT_PROPERTY( m_eDefCellMarBottomUnit )
+		DEFAULT_PROPERTY( m_eDefCellMarRightUnit )
+		DEFAULT_PROPERTY( m_eDefCellMarLeftUnit )
+		DEFAULT_PROPERTY( m_eDefCellMarTopUnit )
 
 		DEFAULT_PROPERTY( m_nDefCellSpBottom )
 		DEFAULT_PROPERTY( m_nDefCellSpLeft )
 		DEFAULT_PROPERTY( m_nDefCellSpRight )
 		DEFAULT_PROPERTY( m_nDefCellSpTop )
 
-		DEFAULT_PROPERTY( m_nDefCellSpBottomUnits )
-		DEFAULT_PROPERTY( m_nDefCellSpLeftUnits )
-		DEFAULT_PROPERTY( m_nDefCellSpRightUnits )
-		DEFAULT_PROPERTY( m_nDefCellSpTopUnits )
+		DEFAULT_PROPERTY( m_eDefCellSpBottomUnit )
+		DEFAULT_PROPERTY( m_eDefCellSpLeftUnit )
+		DEFAULT_PROPERTY( m_eDefCellSpRightUnit )
+		DEFAULT_PROPERTY( m_eDefCellSpTopUnit )
 
 		m_oBorderLeft.SetEmpty();
 		m_oBorderRight.SetEmpty();
@@ -1949,7 +1950,7 @@ public:
 		MERGE_PROPERTY( m_nAutoFit,			oTablePr )
 		MERGE_PROPERTY( m_nGraph,			oTablePr )
 		MERGE_PROPERTY( nTableIndent,		oTablePr )
-		MERGE_PROPERTY( nTableIndentUnits,	oTablePr )
+		MERGE_PROPERTY( eTableIndentUnit,	oTablePr )
 
 		MERGE_PROPERTY_DEF( m_eJust,	oTablePr, rj_none )
 
@@ -1968,25 +1969,26 @@ public:
 
 		MERGE_PROPERTY( m_nLeft,					oTablePr )
 		MERGE_PROPERTY( m_nWidth,					oTablePr )
-		MERGE_PROPERTY_DEF( m_eMUWidth,				oTablePr, mu_none )
+		
+		MERGE_PROPERTY_DEF( m_eWidthUnit,			oTablePr, mu_none )
 
 		MERGE_PROPERTY( m_nDefCellMarBottom,		oTablePr )
 		MERGE_PROPERTY( m_nDefCellMarRight,			oTablePr )
 		MERGE_PROPERTY( m_nDefCellMarLeft,			oTablePr )
 		MERGE_PROPERTY( m_nDefCellMarTop,			oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarBottomUnits,	oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarRightUnits,	oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarLeftUnits,		oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarTopUnits,		oTablePr )
+		MERGE_PROPERTY( m_eDefCellMarBottomUnit,	oTablePr )
+		MERGE_PROPERTY( m_eDefCellMarRightUnit,		oTablePr )
+		MERGE_PROPERTY( m_eDefCellMarLeftUnit,		oTablePr )
+		MERGE_PROPERTY( m_eDefCellMarTopUnit,		oTablePr )
 
 		MERGE_PROPERTY( m_nDefCellSpBottom,			oTablePr )
 		MERGE_PROPERTY( m_nDefCellSpLeft,			oTablePr )
 		MERGE_PROPERTY( m_nDefCellSpRight,			oTablePr )
 		MERGE_PROPERTY( m_nDefCellSpTop,			oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpBottomUnits,	oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpLeftUnits,		oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpRightUnits,		oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpTopUnits,		oTablePr )
+		MERGE_PROPERTY( m_eDefCellSpBottomUnit,		oTablePr )
+		MERGE_PROPERTY( m_eDefCellSpLeftUnit,		oTablePr )
+		MERGE_PROPERTY( m_eDefCellSpRightUnit,		oTablePr )
+		MERGE_PROPERTY( m_eDefCellSpTopUnit,		oTablePr )
 
 		m_oBorderLeft.Merge	( oTablePr.m_oBorderLeft );
 		m_oBorderRight.Merge( oTablePr.m_oBorderRight );
@@ -2177,25 +2179,25 @@ public:
 	int m_bNoWrap;				//clNoWrap	Do not wrap text for the cell. Only has an effect if the table cell does not have a preferred \clwWidthN, which overrides \trautofitN.
 
 	int m_nPaddingLeft;			//clpadlN	Left cell margin or padding. Overrides \trpaddlN.
-	int m_nIsPaddingLeft;		//clpadflN	Units for \clpadlN:
+	int m_ePaddingLeftUnit;		//clpadflN	Units for \clpadlN:
 	int m_nPaddingRight;
-	int m_nIsPaddingRight;
+	int m_ePaddingRightUnit;	
 	int m_nPaddingTop;
-	int m_nIsPaddingTop;
+	int m_ePaddingTopUnit;	
 	int m_nPaddingBottom;
-	int m_nIsPaddingBottom;
+	int m_ePaddingBottomUnit;	
 
 	int m_nSpacingLeft;			//clsplN	Left cell margin or padding. Overrides \trspdlN.
-	int m_nIsSpacingLeft;		//clspflN	Units for \clsplN:
+	int m_eSpacingLeftUnit;		//clspflN	Units for \clsplN:
 	int m_nSpacingRight;
-	int m_nIsSpacingRight;
+	int m_eSpacingRightUnit;
 	int m_nSpacingTop;
-	int m_nIsSpacingTop;
+	int m_eSpacingTopUnit;
 	int m_nSpacingBottom;
-	int m_nIsSpacingBottom;
+	int m_eSpacingBottomUnit;
 
 	int				m_nWidth;			//clwWidthN	Preferred cell width. Overrides \trautofitN.
-	_MetricUnits	m_eWidthUnits;		//clftsWidthN	Units for \clwWidthN:
+	int				m_eWidthUnit;		//clftsWidthN	Units for \clwWidthN:
 
 	int				m_bHideMark;		//clhidemark	This control word specifies whether the end of cell glyph shall influence the height of the given table row in the table. If it is specified, then only printing characters in this cell shall be used to determine the row height.
 
@@ -2266,24 +2268,24 @@ public:
 		DEFAULT_PROPERTY( m_bNoWrap )
 
 		DEFAULT_PROPERTY( m_nPaddingLeft )
-		DEFAULT_PROPERTY( m_nIsPaddingLeft )
+		DEFAULT_PROPERTY( m_ePaddingLeftUnit )
 		DEFAULT_PROPERTY( m_nPaddingRight )
-		DEFAULT_PROPERTY( m_nIsPaddingRight )
+		DEFAULT_PROPERTY( m_ePaddingRightUnit )
 		DEFAULT_PROPERTY( m_nPaddingTop )
-		DEFAULT_PROPERTY( m_nIsPaddingTop )
+		DEFAULT_PROPERTY( m_ePaddingTopUnit )
 		DEFAULT_PROPERTY( m_nPaddingBottom )
-		DEFAULT_PROPERTY( m_nIsPaddingBottom )
+		DEFAULT_PROPERTY( m_ePaddingBottomUnit )
 
 		DEFAULT_PROPERTY( m_nSpacingLeft )
-		DEFAULT_PROPERTY( m_nIsSpacingLeft )
+		DEFAULT_PROPERTY( m_eSpacingLeftUnit )
 		DEFAULT_PROPERTY( m_nSpacingRight )
-		DEFAULT_PROPERTY( m_nIsSpacingRight )
+		DEFAULT_PROPERTY( m_eSpacingRightUnit )
 		DEFAULT_PROPERTY( m_nSpacingTop )
-		DEFAULT_PROPERTY( m_nIsSpacingTop )
+		DEFAULT_PROPERTY( m_eSpacingTopUnit )
 		DEFAULT_PROPERTY( m_nSpacingBottom )
-		DEFAULT_PROPERTY( m_nIsSpacingBottom )
+		DEFAULT_PROPERTY( m_eSpacingBottomUnit )
 
-		m_eWidthUnits = mu_none;
+		m_eWidthUnit = mu_none;
 		DEFAULT_PROPERTY( m_nWidth )
 		DEFAULT_PROPERTY( m_bHideMark )
 
@@ -2325,35 +2327,35 @@ public:
 
 	void Merge( RtfCellProperty& oCellPr )
 	{
-		MERGE_PROPERTY( m_bMergeFirst, oCellPr )
-		MERGE_PROPERTY( m_bMerge, oCellPr )
-		MERGE_PROPERTY( m_bMergeFirstVertical, oCellPr )
-		MERGE_PROPERTY( m_bMergeVertical, oCellPr )
+		MERGE_PROPERTY( m_bMergeFirst,			oCellPr )
+		MERGE_PROPERTY( m_bMerge,				oCellPr )
+		MERGE_PROPERTY( m_bMergeFirstVertical,	oCellPr )
+		MERGE_PROPERTY( m_bMergeVertical,		oCellPr )
 
 		MERGE_PROPERTY( m_bFitText, oCellPr )
-		MERGE_PROPERTY( m_bNoWrap, oCellPr )
+		MERGE_PROPERTY( m_bNoWrap,	oCellPr )
 
-		MERGE_PROPERTY( m_nPaddingLeft, oCellPr )
-		MERGE_PROPERTY( m_nIsPaddingLeft, oCellPr )
-		MERGE_PROPERTY( m_nPaddingRight, oCellPr )
-		MERGE_PROPERTY( m_nIsPaddingRight, oCellPr )
-		MERGE_PROPERTY( m_nPaddingTop, oCellPr )
-		MERGE_PROPERTY( m_nIsPaddingTop, oCellPr )
-		MERGE_PROPERTY( m_nPaddingBottom, oCellPr )
-		MERGE_PROPERTY( m_nIsPaddingBottom, oCellPr )
+		MERGE_PROPERTY( m_nPaddingLeft,			oCellPr )
+		MERGE_PROPERTY( m_ePaddingLeftUnit,		oCellPr )
+		MERGE_PROPERTY( m_nPaddingRight,		oCellPr )
+		MERGE_PROPERTY( m_ePaddingRightUnit,	oCellPr )
+		MERGE_PROPERTY( m_nPaddingTop,			oCellPr )
+		MERGE_PROPERTY( m_ePaddingTopUnit,		oCellPr )
+		MERGE_PROPERTY( m_nPaddingBottom,		oCellPr )
+		MERGE_PROPERTY( m_ePaddingBottomUnit,	oCellPr )
 
-		MERGE_PROPERTY( m_nSpacingLeft, oCellPr )
-		MERGE_PROPERTY( m_nIsSpacingLeft, oCellPr )
-		MERGE_PROPERTY( m_nSpacingRight, oCellPr )
-		MERGE_PROPERTY( m_nIsSpacingRight, oCellPr )
-		MERGE_PROPERTY( m_nSpacingTop, oCellPr )
-		MERGE_PROPERTY( m_nIsSpacingTop, oCellPr )
-		MERGE_PROPERTY( m_nSpacingBottom, oCellPr )
-		MERGE_PROPERTY( m_nIsSpacingBottom, oCellPr )
+		MERGE_PROPERTY( m_nSpacingLeft,			oCellPr )
+		MERGE_PROPERTY( m_eSpacingLeftUnit,		oCellPr )
+		MERGE_PROPERTY( m_nSpacingRight,		oCellPr )
+		MERGE_PROPERTY( m_eSpacingRightUnit,	oCellPr )
+		MERGE_PROPERTY( m_nSpacingTop,			oCellPr )
+		MERGE_PROPERTY( m_eSpacingTopUnit,		oCellPr )
+		MERGE_PROPERTY( m_nSpacingBottom,		oCellPr )
+		MERGE_PROPERTY( m_eSpacingBottomUnit,	oCellPr )
 
-		MERGE_PROPERTY( m_eWidthUnits, oCellPr )
-		MERGE_PROPERTY( m_nWidth, oCellPr )
-		MERGE_PROPERTY( m_bHideMark, oCellPr )
+		MERGE_PROPERTY( m_eWidthUnit,	oCellPr )
+		MERGE_PROPERTY( m_nWidth,		oCellPr )
+		MERGE_PROPERTY( m_bHideMark,	oCellPr )
 
 		m_oBorderDiagonalLR.Merge( oCellPr.m_oBorderDiagonalLR );
 		m_oBorderDiagonalRL.Merge( oCellPr.m_oBorderDiagonalRL );
@@ -2421,11 +2423,11 @@ public:
 
 	int m_nHeight;		//trrhN	Height of a table row in twips. When 0, the height is sufficient for all the text in the line; when positive, the height is guaranteed to be at least the specified height; when negative, the absolute value of the height is used, regardless of the height of the text in the line.
 
-	int				m_nWidthStartInvCell;			//trwWidthBN	Width of invisible cell at the beginning of the row. Used only in cases where rows have different widths.
-	_MetricUnits	m_eMUStartInvCell;		//trftsWidthBN	Units for \trwWidthBN:
+	int	m_nWidthStartInvCell;		//trwWidthBN	Width of invisible cell at the beginning of the row. Used only in cases where rows have different widths.
+	int	m_eWidthStartInvCellUnit;	//trftsWidthBN	Units for \trwWidthBN:
 
-	int				m_nWidthEndInvCell;				//trwWidthAN	Width of invisible cell at the end of the row. Used only when rows have different widths.
-	_MetricUnits	m_eMUEndInvCell;		//trftsWidthAN	Units for \trwWidthAN:
+	int	m_nWidthEndInvCell;			//trwWidthAN	Width of invisible cell at the end of the row. Used only when rows have different widths.
+	int	m_eWidthEndInvCellUnit;		//trftsWidthAN	Units for \trwWidthAN:
 
 	int m_nGridBefore;	//для oox
 	int m_nGridAfter;	//для oox
@@ -2481,9 +2483,11 @@ public:
 		DEFAULT_PROPERTY( m_nHeight )
 
 		DEFAULT_PROPERTY( m_nWidthStartInvCell )
-		m_eMUStartInvCell = mu_none;
 		DEFAULT_PROPERTY( m_nWidthEndInvCell )
-		m_eMUEndInvCell = mu_none;
+		
+		m_eWidthStartInvCellUnit	= mu_none;
+		m_eWidthEndInvCellUnit		= mu_none;
+		
 		DEFAULT_PROPERTY( m_nGridBefore )
 		DEFAULT_PROPERTY( m_nGridAfter )
 		m_aArray.clear();
@@ -2524,10 +2528,10 @@ public:
 
 		MERGE_PROPERTY( m_nHeight,		oRowPr )
 
-		MERGE_PROPERTY		( m_nWidthStartInvCell,	oRowPr )
-		MERGE_PROPERTY_DEF	( m_eMUStartInvCell,	oRowPr, mu_none )
-		MERGE_PROPERTY		( m_nWidthEndInvCell,	oRowPr )
-		MERGE_PROPERTY_DEF	( m_eMUEndInvCell,		oRowPr, mu_none )
+		MERGE_PROPERTY		( m_nWidthStartInvCell,		oRowPr )
+		MERGE_PROPERTY_DEF	( m_eWidthStartInvCellUnit,	oRowPr, mu_none )
+		MERGE_PROPERTY		( m_nWidthEndInvCell,		oRowPr )
+		MERGE_PROPERTY_DEF	( m_eWidthEndInvCellUnit,	oRowPr, mu_none )
 
 		MERGE_PROPERTY_DEF	( m_nGridBefore,		oRowPr, mu_none )
 		MERGE_PROPERTY_DEF	( m_nGridAfter,			oRowPr, mu_none )
@@ -2926,6 +2930,9 @@ public:
     std::wstring m_sComment;
     std::wstring m_sDocCom;
     std::wstring m_sLinkBase;
+	
+	std::wstring m_sApplication;
+
 	RtfTime m_oCreateTime;
 	RtfTime m_oRevTime;
 	RtfTime m_oPrintTime;

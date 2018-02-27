@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of PIVOTVDTEX union of records 
 class PIVOTVDTEX: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTVDTEX)
@@ -49,7 +47,9 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typePIVOTVDTEX;
+	static const ElementType type = typePIVOTVDTEX;
+
+	BaseObjectPtr m_SXVDTEx;
 };
 
 } // namespace XLS

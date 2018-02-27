@@ -63,7 +63,7 @@ void SXVI::readFields(CFRecord& record)
 	if (cchName > 0 && cchName < 0xFFFF)
 	{
 		stName.setSize(cchName);
-		stName.load(record);
+		record >> stName;
 
 	}
 }
@@ -78,6 +78,11 @@ int SXVI::serialize(std::wostream & strm)
 			if (fMissing)	CP_XML_ATTR(L"m", 1); 
 			if (fHideDetail)CP_XML_ATTR(L"sd", 0); 
 			if (fFormula)	CP_XML_ATTR(L"f", 1);
+
+			if (!stName.value().empty())
+			{
+				CP_XML_ATTR(L"n", stName.value()); 
+			}
 
 			if (itmType == 0)
 			{

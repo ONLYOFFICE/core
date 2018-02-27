@@ -257,13 +257,13 @@ namespace OOX
 		{
 				std::wstring sResult = _T("<w:sdtContent>");
 
-				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-					{
-						sResult += m_arrItems[nIndex]->toXML();
-					}
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if ( m_arrItems[i] )
+                    {
+                        sResult += m_arrItems[i]->toXML();
+                    }
+                }
 
 				sResult += _T("</w:sdtContent>");
 

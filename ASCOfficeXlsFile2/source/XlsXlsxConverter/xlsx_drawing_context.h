@@ -38,7 +38,7 @@
 #include <boost/shared_array.hpp>
 #include "../Common/common.h"
 
-#include <Logic/Biff_structures/ODRAW/OfficeArtFOPTE.h>
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtFOPTE.h"
 
 #include "xlsx_drawings.h"
 
@@ -135,31 +135,39 @@ public:
 						flipH(false), flipV(false), 					
 						bTextBox(false),
 						type_anchor(0),
-						vmlwrite_mode_(false)
+						vml_HF_mode_(false), 
+						hidden(false)
 	{
 		id						= -1;		
 		rotation				= 0;
 		parent_drawing_states	= NULL;
 		custom_path				= -1;
 		custom_x_limo			= 0x80000000;		
-		custom_y_limo			= 0x80000000;		
+		custom_y_limo			= 0x80000000;
+
+		type_control			= -1;
 	}
 
 	external_items::Type	type;
+	bool					hidden;
 	std::wstring			name;
 	std::wstring			description;
 
+	std::wstring			objectId;
+	std::wstring			objectProgId;
+
+	int						type_control;
+
 	struct _anchor
 	{
-		_anchor() : colFrom(-1), rwFrom(-1), colTo(-1), rwTo(0), xFrom(0), yFrom(0),xTo(0),yTo(0){}
-		int					colFrom;
-		int					xFrom;
-		int					rwFrom;
-		int					yFrom;
-		int					colTo;
-		int					xTo;
-		int					rwTo;
-		int					yTo;
+		int					colFrom = -1;
+		int					xFrom = 0;
+		int					rwFrom = -1;
+		int					yFrom = 0;
+		int					colTo = 0;
+		int					xTo = 0;
+		int					rwTo = 0;
+		int					yTo = 0;
 	}						sheet_anchor;
 	_rect					child_anchor;
 	_rect					group_anchor;
@@ -167,8 +175,10 @@ public:
 
 	int						type_anchor;
 	
-	bool					vmlwrite_mode_;
+	bool					vml_HF_mode_;
+	
 	std::wstring			shape;
+	std::wstring			vml_shape;
 
 	int						id;
 	MSOSPT					shape_id;
@@ -199,7 +209,8 @@ public:
 			margins.left = margins.right = 0x00016530;
 			margins.top = margins.bottom = 0x0000b298;
 		}
-		std::wstring	content;	//c форматированием
+		std::wstring	content;		//c форматированием oox
+		std::wstring	vml_content;	//c форматированием vml
 		int				wrap;
 		int				align;
 		int				vert_align;
@@ -258,6 +269,16 @@ public:
 
 		std::vector<std::pair<double, _color>> colorsPosition;
 	}fill;
+
+	void clear_fill()
+	{
+		fill.type = fillSolid; 
+		fill.color.SetRGB(0xff, 0xff, 0xff);
+		fill.angle = fill.opacity = fill.opacity2 = fill.focus = 0; 
+		memset(fill.texture_crop, 0, 4 * sizeof(double));
+		fill.texture_crop_enabled = false;
+		fill.colorsPosition.clear();
+	}
 	struct _arrow
 	{
 		_arrow() { enabled = false; start = end = 0; start_length = end_length = end_width = start_width = 2;}
@@ -284,11 +305,25 @@ public:
 	}line;	
 	struct _object
 	{
-		_object() {visible = false; col = row = 0; id = 0;}
-		int id;
-		bool visible;
-		int col;
-		int row;
+		int				id = 0;
+		bool			bVisible = true;
+		int				col = 0;
+		int				row = 0;
+		bool			bAutoLine = false;
+		bool			bAutoPict = false;
+		std::wstring	macro;
+		std::wstring	link;
+		_CP_OPT(int)	x_val;
+		_CP_OPT(int)	x_min;
+		_CP_OPT(int)	x_max;
+		_CP_OPT(int)	x_inc;
+		_CP_OPT(int)	x_page;
+		_CP_OPT(int)	x_sel;
+		_CP_OPT(int)	x_sel_type;
+		_CP_OPT(int)	lct	;
+		std::wstring	fmlaRange;
+		_CP_OPT(int)	drop_style;
+		_CP_OPT(int)	drop_lines;
 	}object;
 //for group
 	std::vector<_drawing_state_ptr>		drawing_states;
@@ -309,12 +344,15 @@ public:
 	~xlsx_drawing_context(){}
 
 	external_items::Type	getType();
+	int						getLevel();
 
 	xlsx_drawings_rels_ptr get_rels();
 	xlsx_drawings_rels_ptr get_vml_HF_rels();
-	xlsx_drawings_rels_ptr get_vml_comments_rels();
+	xlsx_drawings_rels_ptr get_vml_rels();
+	xlsx_drawings_rels_ptr get_sheet_rels();
 	
 	bool empty();	
+	bool empty_vml();
 	bool empty_vml_HF();
 
 	void start_group();
@@ -324,17 +362,21 @@ public:
 		void start_shape(int type);
 		void start_chart();
 		void start_comment();
+		void start_control(int type);
 
         void set_id			(int id);
 		void set_FlipH		();
 		void set_FlipV		();
 		void set_shape_id	(int id);
 //--------------------------------------------------------------------------------------
-		void set_mode_vmlwrite		(bool val);
-		bool get_mode_vmlwrite		();
+		void set_mode_HF		(bool val);
+		bool get_mode_HF		();
 //--------------------------------------------------------------------------------------
         void set_name				(const std::wstring & str);
         void set_description		(const std::wstring & str);
+        void set_macro				(const std::wstring & str);
+		void set_ole_object			(const std::wstring & id, const std::wstring & info);
+		void set_control_activeX	(const std::wstring & id);
 		
         void set_crop_top			(double val);
         void set_crop_bottom		(double val);
@@ -353,6 +395,8 @@ public:
 		void add_fill_colors		(double position, const std::wstring & color);
 		void add_fill_colors		(double position, int index, int type);		
 		void set_fill_focus			(int val);
+
+		void clear_fill				();
 
 		void set_line_color			(int nColor, const std::wstring & color);
 		void set_line_color			(int index, int type);
@@ -384,6 +428,7 @@ public:
         void set_hyperlink			(const std::wstring & link, const std::wstring & display, bool is_external);
 
 		void set_text				(const std::wstring & text);
+		void set_text_vml			(const std::wstring & text);
 		void set_text_wrap			(int val);
 		void set_text_align			(int val);
 		void set_text_vert_align	(int val);
@@ -404,6 +449,18 @@ public:
 		void set_object_id			(int val);
 		void set_object_visible		(bool val);
 		void set_object_anchor		(int col, int row);
+		void set_object_link		(const std::wstring & fmla);
+		void set_object_x_val		(int val);
+		void set_object_x_min		(int val);
+		void set_object_x_max		(int val);
+		void set_object_x_inc		(int val);
+		void set_object_x_page		(int val);
+		void set_object_x_sel		(int val);
+		void set_object_x_sel_type	(int val);
+		void set_object_lct			(int val);
+		void set_object_fmlaRange	(const std::wstring & fmla);
+		void set_object_drop_style	(int val);
+		void set_object_drop_lines	(int val);
 //---------------------------------------------------------------------------------------------
 		void set_custom_rect		(_rect							& rect);
 		void set_custom_verticles	(std::vector<ODRAW::MSOPOINT>	& points);
@@ -420,23 +477,26 @@ public:
 //------------------------------------------------------------------------------	
 		void serialize_group		();
 		void serialize_shape		(_drawing_state_ptr & drawing_state);
-		void serialize_chart		(_drawing_state_ptr & drawing_state, std::wstring rId );
-		void serialize_pic			(_drawing_state_ptr & drawing_state, std::wstring rId );
-
-		void serialize_shape_comment(_drawing_state_ptr & drawing_state); //part of vml shape
+		void serialize_chart		(_drawing_state_ptr & drawing_state);
+		void serialize_pic			(_drawing_state_ptr & drawing_state);
+		void serialize_control		(_drawing_state_ptr & drawing_state);
 //-----------------------------------------------------------------------------------		
 		void serialize_vml_shape	(_drawing_state_ptr & drawing_state);			
-		void serialize_vml_pic		(_drawing_state_ptr & drawing_state, std::wstring rId );	
+		void serialize_vml_pic		(_drawing_state_ptr & drawing_state);	
 //-----------------------------------------------------------------------------------		
-		void serialize_fill			(std::wostream & stream, _drawing_state_ptr & drawing_state);
-		void serialize_fill			(std::wostream & stream);
+		void serialize_fill			(std::wostream & strm, _drawing_state_ptr & drawing_state);
+		void serialize_fill			(std::wostream & strm);
 //-----------------------------------------------------------------------------------		
-		void serialize				(std::wostream & stream, _drawing_state_ptr & drawing_state);
-		void serialize_vml			(std::wostream & stream, _drawing_state_ptr & drawing_state);		
+		void serialize				(std::wostream & strm, _drawing_state_ptr & drawing_state);		
+		void serialize_object		(std::wostream & strm, _drawing_state_ptr & drawing_state);		
+		void serialize_control		(std::wostream & strm, _drawing_state_ptr & drawing_state);
+		void serialize_control_props(std::wostream & strm, _drawing_state_ptr & drawing_state);
 //-----------------------------------------------------------------------------------		
-		void serialize_vml_HF		(std::wostream & stream);
-		void serialize_vml_comments	(std::wostream & stream);
-		void serialize				(std::wostream & stream);
+		void serialize_controls		(std::wostream & strm);
+		void serialize_objects		(std::wostream & strm);  
+		void serialize_vml_HF		(std::wostream & strm);
+		void serialize_vml			(std::wostream & strm);
+		void serialize				(std::wostream & strm);
 //-----------------------------------------------------------------------------------
 		bool is_lined_shape			(_drawing_state_ptr & drawing_state);
 	void end_drawing();
@@ -448,8 +508,9 @@ private:
 	xlsx_drawing_context_handle	& handle_;
 	
 	xlsx_drawings_rels_ptr		rels_;
-	xlsx_drawings_rels_ptr		vml_comments_rels_;
+	xlsx_drawings_rels_ptr		vml_rels_;
 	xlsx_drawings_rels_ptr		vml_HF_rels_;
+	xlsx_drawings_rels_ptr		sheet_rels_;
 
 	int							count_object;
 	bool						in_chart_;
@@ -457,10 +518,13 @@ private:
 	std::vector<_hlink_desc>	hlinks_;
 
 	std::vector<_drawing_state_ptr>		drawing_states_vml_HF;
-	std::vector<_drawing_state_ptr>		drawing_states_vml_comments;
+	std::vector<_drawing_state_ptr>		drawing_states_vml;
 
 	std::vector<_drawing_state_ptr>		drawing_states;
 	std::vector<_drawing_state_ptr>*	current_drawing_states;
+
+	std::vector<_drawing_state_ptr>		drawing_states_objects;//копии для сериализации ole
+	std::vector<_drawing_state_ptr>		drawing_states_controls;//копии для сериализации control
 	
 	void end_drawing			(_drawing_state_ptr & drawing_state);
 	void reset_fill_pattern		(_drawing_state_ptr & drawing_state);
@@ -474,7 +538,7 @@ private:
 	
 	void serialize_line			(std::wostream & stream, _drawing_state_ptr & drawing_state);
 	void serialize_xfrm			(std::wostream & stream, _drawing_state_ptr & drawing_state);
-	void serialize_anchor		(std::wostream & stream, _drawing_state_ptr & drawing_state);
+	void serialize_anchor		(std::wostream & stream, _drawing_state_ptr & drawing_state, std::wstring ns = L"xdr:");
 	void serialize_text			(std::wostream & stream, _drawing_state_ptr & drawing_state);
 	void serialize_color		(std::wostream & stream, const _color &color, double opacity = 0);
 

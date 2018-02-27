@@ -33,6 +33,8 @@
 #include "RtfParagraph.h"
 #include "RtfShape.h"
 
+#include <boost/smart_ptr/shared_array.hpp>
+
 class RtfOle : public IDocumentElement
 {
 public: 
@@ -42,13 +44,15 @@ public:
 	int				m_nShapeId;
 	int				m_nWidth;
 	int				m_nHeight;
-    std::wstring			m_sOleClass;
-	RtfShapePtr		m_oResultPic;
+    std::wstring	m_sOleClass;
+
+	RtfShapePtr		m_oResultShape;	
+
+	std::pair<boost::shared_array<unsigned char>, size_t> m_oOle1Data;
 
 	RtfCharProperty	m_oCharProperty; // тут могут быть track changes ....
 	RtfOle()
 	{
-		m_piStorage = NULL;
 		SetDefault();
 	}
 	~RtfOle()
@@ -71,12 +75,6 @@ public:
 	{
 		m_sOleFilename = sFilename;
 	}
-	void SetOle( POLE::Storage* piOle )
-	{
-		if (piOle == NULL) return;
-
-		m_piStorage = piOle;
-	}
 	void SetDefault()
 	{
 		m_eOleType	 = ot_none;
@@ -84,48 +82,15 @@ public:
 		m_nWidth	= PROP_DEF;
 		m_nHeight	= PROP_DEF;
 		
-		RELEASEOBJECT( m_piStorage ); 
 		Utils::RemoveDirOrFile( m_sOleFilename );
 		m_sOleFilename = L"";
 
 		m_oCharProperty.SetDefault();
 	}
 private: 
-	POLE::Storage*	m_piStorage;
-    std::wstring			m_sOleFilename;
+    std::wstring	m_sOleFilename;
 
     std::wstring RenderToOOXOnlyOle(RenderParameter oRenderParameter);
 };
 typedef boost::shared_ptr<RtfOle> RtfOlePtr;
 
-
-#if defined (_WIN32) || defined (_WIN64)
-	struct RtfOle1ToOle2Stream : OLESTREAM
-	{
-		BYTE* pBuffer;
-		long nBufferSize;
-		long nCurPos;
-	};
-	struct RtfOle2ToOle1Stream : OLESTREAM
-	{
-		std::vector<BYTE> aBuffer;
-	};
-
-	DWORD CALLBACK OleGet1(LPOLESTREAM oStream, void FAR* pTarget, DWORD dwRead);;
-	DWORD CALLBACK OlePut1(LPOLESTREAM, const void FAR*, DWORD);
-	DWORD CALLBACK OleGet2(LPOLESTREAM oStream, void FAR* pTarget, DWORD dwRead);;
-	DWORD CALLBACK OlePut2(LPOLESTREAM, const void FAR*, DWORD);
-
-#else
-	struct RtfOle1ToOle2Stream :  POLE::Stream
-	{
-		BYTE* pBuffer;
-
-		long nBufferSize;
-		long nCurPos;
-	};
-	struct RtfOle2ToOle1Stream : POLE::Stream
-	{
-		std::vector<BYTE> aBuffer;
-	};
-#endif

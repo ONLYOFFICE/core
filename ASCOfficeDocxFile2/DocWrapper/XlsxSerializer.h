@@ -62,8 +62,8 @@ namespace BinXlsxRW {
 		
         static void CreateXlsxFolders  (const std::wstring& sXmlOptions, const std::wstring& sDstPath, std::wstring& sMediaPath, std::wstring& sEmbedPath);
 
-        bool loadFromFile       (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedPath);
-        bool saveToFile         (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions);
+        int loadFromFile		(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedPath);
+        int saveToFile			(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions);
 		
         bool saveChart          (NSBinPptxRW::CBinaryFileReader* pReader, long lLength, const std::wstring& sFilename, const long& lChartNumber);
 		
@@ -72,7 +72,7 @@ namespace BinXlsxRW {
 		void setDrawingConverter(NSBinPptxRW::CDrawingConverter* pDrawingConverter);
 		void setIsNoBase64		(bool bIsNoBase64);
 
-        void writeChartXlsx     (const std::wstring& sDstFile ,const OOX::Spreadsheet::CChartSpace& oChart);
+		bool writeChartXlsx     (const std::wstring& sDstFile ,const OOX::Spreadsheet::CChartSpace& oChart);
 	};
 }
 #endif	// #ifndef XLSX_SERIALIZER

@@ -35,7 +35,7 @@
 namespace XLS
 {
 
-SupBook::SupBook()
+SupBook::SupBook() : bOleLink(false), bSimple(false), bPath(false)
 {
 }
 
@@ -55,20 +55,131 @@ void SupBook::readFields(CFRecord& record)
 	record >> ctab >> cch;
 	if(0x0001 <= cch && 0x00ff >= cch)
 	{
-		virtPath.setSize(cch);
-		record >> virtPath;
-        //virtPath.EscapeUrlW(); //todooo проверить спец символы !!!
-		//if(virtPath.isConformToVirtPath() && !virtPath.isConformToOleLink())
+		XLUnicodeStringNoCch temp;		
+		temp.setSize(cch);
+		record >> temp;
+
+		origin = temp.value();
+
+		while(!record.isEOF())
 		{
-			record >> rgst;
+			XLUnicodeString temp2;
+			record >> temp2;
+
+			rgst.push_back(temp2.value());
 		}
 	}
-}
+//virt-path = volume / unc-volume / rel-volume / transfer-protocol / startup / alt-startup / library / simple-file-path / ole-link 
 
+//ole-link			= path-string %x0003 path-string 
+//simple-file-path	= [%x0001] 
+//file-path startup	= %x0001 %x0006 file-path
+//alt-startup		= %x0001 %x0007 file-path
+//library			= %x0001 %x0008 file-path
+//transfer-protocol = %x0001 %x0005 count transfer-path
+//transfer-path		= transfer-base-path / "[" transfer-base-path "]" sheet-name 
+//transfer-base-path = transfer-type "://" file-path 
+//transfer-type		= "ftp" / "http" / "https" 
+//rel-volume = %x0001 %x0002 file-path
+//...
+	bool bFilePathType = false;
+	if (!origin.empty())
+	{
+		std::wstring sTmp = origin;
 
-const unsigned short SupBook::getSupportingLinkType() const
-{
-	return cch;
+		while(true)
+		{
+			int pos = sTmp.find(L"\x0001");
+			if (pos >= 0)
+			{
+				if (bSimple)
+				{
+					bFilePathType = true;
+					bPath = true;	//xls_result.xls 
+				}
+				else			bSimple = true; //file name or file path
+
+				virtPath.push_back(sTmp.substr(0, pos));
+				sTmp = sTmp.substr(pos + 1);
+				continue;
+			}
+			pos = sTmp.find(L"\x0002");
+			if (pos >= 0)
+			{
+				if (bSimple)
+					bPath = true;
+				virtPath.push_back(sTmp.substr(0, pos));
+				sTmp = sTmp.substr(pos + 1);
+				continue;
+			}
+			pos = sTmp.find(L"\x0003");
+			if (pos >= 0)
+			{
+				if (bPath)
+				{
+					if (bFilePathType)
+					{
+						virtPath.back() += L"file:///" + sTmp.substr(0, 1) + L":\\" + sTmp.substr(1, pos - 1);
+						bFilePathType = false;
+					}
+					else
+						virtPath.back() += L"/" + sTmp.substr(0, pos);
+				}
+				else
+				{
+					bOleLink = true;
+					virtPath.push_back(sTmp.substr(0, pos));
+				}
+				sTmp = sTmp.substr(pos + 1);
+				continue;
+			}
+			pos = sTmp.find(L"\x0004");
+			if (pos >= 0)
+			{
+				virtPath.push_back(sTmp.substr(0, pos));
+				sTmp = sTmp.substr(pos + 1);
+				continue;
+			}
+			pos = sTmp.find(L"\x0005");
+			if (pos >= 0)
+			{
+				virtPath.push_back(sTmp.substr(0, pos));
+				//skip http size
+				sTmp = sTmp.substr(pos + 2);
+				continue;
+			}
+			pos = sTmp.find(L"\x0006");
+			if (pos >= 0)
+			{
+				virtPath.push_back(sTmp.substr(0, pos));
+				sTmp = sTmp.substr(pos + 1);
+				continue;
+			}
+			pos = sTmp.find(L"\x0007");
+			if (pos >= 0)
+			{
+				virtPath.push_back(sTmp.substr(0, pos));
+				sTmp = sTmp.substr(pos + 1);
+				continue;
+			}
+			pos = sTmp.find(L"\x0008");
+			if (pos >= 0)
+			{
+				virtPath.push_back(sTmp.substr(0, pos));
+				sTmp = sTmp.substr(pos + 1);
+				continue;
+			}
+			break;
+		}
+		if (bPath)
+		{
+			virtPath.back() += L"/" + sTmp;
+		}
+		else
+		{
+			virtPath.push_back(sTmp);
+		}
+	}
 }
 
 

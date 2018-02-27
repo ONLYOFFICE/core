@@ -36,12 +36,6 @@
 namespace XLS
 {
 
-
-FtLbsData::FtLbsData()
-:	fmla(false)
-{
-}
-
 BiffStructurePtr FtLbsData::clone()
 {
 	return BiffStructurePtr(new FtLbsData(*this));
@@ -49,19 +43,27 @@ BiffStructurePtr FtLbsData::clone()
 
 void FtLbsData::load(CFRecord& record, const unsigned short ot)
 {
-	record.skipNunBytes(4); // reserved
+	unsigned short ft, cb;
+	record >> ft >> cb;
+
+	if ( ft != 0x0013)
+	{
+		record.RollRdPtrBack(4);
+		return;
+	}
+	fExist = true;
 
 	fmla.load(record);
 
 	unsigned short flags;
 	record >> cLines >> iSel >> flags >> idEdit;
 
-	fUseCB = GETBIT(flags, 0);
-	fValidPlex = GETBIT(flags, 1);
-	fValidIds = GETBIT(flags, 2);
-	fNo3d = GETBIT(flags, 3);
+	fUseCB		= GETBIT(flags, 0);
+	fValidPlex	= GETBIT(flags, 1);
+	fValidIds	= GETBIT(flags, 2);
+	fNo3d		= GETBIT(flags, 3);
 	wListSelType = GETBITS(flags, 4, 5);
-	lct = GETBITS(flags, 8, 15);
+	lct			= GETBITS(flags, 8, 15);
 
 	if(0x0014 == ot)
 	{

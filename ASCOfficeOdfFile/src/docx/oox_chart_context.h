@@ -103,7 +103,7 @@ public:
 		reset_fill(l.fill_);
 		//floor_.content_= l;
 	}
-	void set_legend(odf_reader::chart::simple & l)
+	void set_legend(odf_reader::chart::legend & l)
 	{
 		reset_fill(l.fill_);
 		legend_.content_= l;

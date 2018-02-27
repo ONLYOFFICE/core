@@ -32,12 +32,10 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
-
-
-// Logical representation of CrtLayout12 record in BIFF8
 class CrtLayout12: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(CrtLayout12)
@@ -47,9 +45,9 @@ public:
 	~CrtLayout12();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
+	int serialize (std::wostream & _stream);
 
 	static const ElementType	type = typeCrtLayout12;
 
@@ -62,10 +60,10 @@ public:
 	CrtLayout12Mode wWidthMode;
 	CrtLayout12Mode wHeightMode;
 	
-	BIFF_DOUBLE x;
-	BIFF_DOUBLE y;
-	BIFF_DOUBLE dx;
-	BIFF_DOUBLE dy;
+	Xnum x;
+	Xnum y;
+	Xnum dx;
+	Xnum dy;
 };
 
 } // namespace XLS

@@ -31,12 +31,13 @@
  */
 
 #include "METADATA.h"
-#include <Logic/Biff_unions/MDTINFO.h>
-#include <Logic/Biff_unions/MDXSTR.h>
-#include <Logic/Biff_unions/MDBLOCK.h>
-#include <Logic/Biff_unions/MDXTUPLESET.h>
-#include <Logic/Biff_records/MDXProp.h>
-#include <Logic/Biff_records/MDXKPI.h>
+#include "MDTINFO.h"
+#include "MDXSTR.h"
+#include "MDBLOCK.h"
+#include "MDXTUPLESET.h"
+
+#include "../Biff_records/MDXProp.h"
+#include "../Biff_records/MDXKPI.h"
 
 namespace XLS
 {
@@ -50,7 +51,6 @@ METADATA::METADATA()
 METADATA::~METADATA()
 {
 }
-
 
 class Parenthesis_METADATA_1: public ABNFParenthesis
 {
@@ -86,11 +86,34 @@ BaseObjectPtr METADATA::clone()
 // METADATA = *MDTINFO *MDXSTR *(MDXTUPLESET / MDXProp / MDXKPI) *MDBLOCK
 const bool METADATA::loadContent(BinProcessor& proc)
 {
-	if(
-		proc.repeated<MDTINFO>(0, 0) ||
-		proc.repeated<MDXSTR>(0, 0) ||
-		proc.repeated<Parenthesis_METADATA_1>(0, 0) ||
-		proc.repeated<MDBLOCK>(0, 0))
+	int count1 = proc.repeated<MDTINFO>(0, 0);
+	while(!elements_.empty())
+	{
+		m_arMDTINFO.insert(m_arMDTINFO.begin(), elements_.back());
+		elements_.pop_back();
+	}
+	
+	int count2 = proc.repeated<MDXSTR>(0, 0);
+	while(!elements_.empty())
+	{
+		m_arMDXSTR.insert(m_arMDXSTR.begin(), elements_.back());
+		elements_.pop_back();
+	}	
+	
+	int count3 = proc.repeated<Parenthesis_METADATA_1>(0, 0);
+	while(!elements_.empty())
+	{
+		m_arMDTSET.insert(m_arMDTSET.begin(), elements_.back());
+		elements_.pop_back();
+	}
+
+	int count4 = proc.repeated<MDBLOCK>(0, 0);
+	while(!elements_.empty())
+	{
+		m_arMDBLOCK.insert(m_arMDBLOCK.begin(), elements_.back());
+		elements_.pop_back();
+	}
+	if (count1 > 0 || count2 > 0 || count3 > 0 || count4 > 0)
 	{
 		return true;
 	}

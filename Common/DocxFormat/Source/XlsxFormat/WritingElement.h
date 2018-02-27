@@ -127,19 +127,21 @@ namespace Spreadsheet
 	class WritingElementWithChilds : public WritingElement
 	{
 	public:
-		WritingElementWithChilds(){}
-		virtual ~WritingElementWithChilds() {ClearItems();}
+        std::vector<ElemType *>  m_arrItems;
+		
+		WritingElementWithChilds() {}
+		virtual ~WritingElementWithChilds() 
+		{
+			ClearItems();
+		}
 		virtual void ClearItems()
 		{
-			for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-			{
-				if ( m_arrItems[nIndex] )delete m_arrItems[nIndex];
-				m_arrItems[nIndex] = NULL;
-			}
-
+            for ( size_t i = 0; i < m_arrItems.size(); ++i)
+            {
+                if ( m_arrItems[i] ) delete m_arrItems[i];
+            }
 			m_arrItems.clear();
 		}
-		std::vector<ElemType *> m_arrItems;
 	};
 }
 }

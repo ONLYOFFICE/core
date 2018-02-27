@@ -47,16 +47,16 @@ public:
 	List12TableStyleClientInfo();
 	~List12TableStyleClientInfo();
 
-	static const ElementType	type = typeList12TableStyleClientInfo;
+	static const ElementType type = typeList12TableStyleClientInfo;
 	
 	virtual void load(CFRecord& record);
 
+	bool	fFirstColumn;
+	bool	fLastColumn;
+	bool	fRowStripes;
+	bool	fColumnStripes;
+	bool	fDefaultStyle;
 
-	unsigned char	fFirstColumn;
-	unsigned char	fLastColumn;
-	unsigned char	fRowStripes;
-	unsigned char	fColumnStripes;
-	unsigned char	fDefaultStyle;
 	XLUnicodeString stListStyleName;
 };
 

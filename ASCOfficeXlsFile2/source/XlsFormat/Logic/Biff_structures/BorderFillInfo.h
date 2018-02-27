@@ -38,13 +38,12 @@ namespace XLS
 
 struct FillInfoExt
 {
-	FillInfoExt()	{enabled = false; xclrType = icv = 0; nTintShade = 0; xclrValue = 0;}
-	bool			enabled;
+	bool			enabled =false;
 
-	unsigned char	xclrType;
-	unsigned char	icv;
-	short			nTintShade;
-	unsigned int	xclrValue;
+	unsigned char	xclrType = 0;
+	unsigned char	icv = 0;
+	short			nTintShade = 0;
+	unsigned int	xclrValue = 0;
 };
 
 struct FillInfo
@@ -56,9 +55,9 @@ struct FillInfo
 	{	
 	}
 
-	unsigned char fls;
-	unsigned char icvFore;
-	unsigned char icvBack;
+	unsigned char fls = 0;
+	unsigned char icvFore = 0;
+	unsigned char icvBack = 0;
 
 	bool operator < (const FillInfo& right) const
 	{
@@ -84,17 +83,17 @@ struct FillInfo
 
 struct BorderInfo
 {
-	unsigned char dgLeft;
-	unsigned char dgRight;
-	unsigned char dgTop;
-	unsigned char dgBottom;
-	unsigned char dgDiag;
-	unsigned char grbitDiag;
-	unsigned char icvLeft;
-	unsigned char icvRight;
-	unsigned char icvTop;
-	unsigned char icvBottom;
-	unsigned char icvDiag;
+	unsigned char dgLeft = 0;
+	unsigned char dgRight = 0;
+	unsigned char dgTop = 0;
+	unsigned char dgBottom = 0;
+	unsigned char dgDiag = 0;
+	unsigned char grbitDiag = 0;
+	unsigned char icvLeft = 0;
+	unsigned char icvRight = 0;
+	unsigned char icvTop = 0;
+	unsigned char icvBottom = 0;
+	unsigned char icvDiag = 0;
 
 	FillInfoExt leftFillInfo_;
 	FillInfoExt rightFillInfo_;

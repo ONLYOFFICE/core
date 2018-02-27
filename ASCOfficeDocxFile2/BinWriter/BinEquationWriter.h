@@ -144,9 +144,13 @@ namespace MathEquation
 			void AddAccent (MEMBELTYPE eType)
 			{
 				LONG lPos = GetSize() - 1;
+
+				if (lPos < 0) return;
+				
 				EquationRun oRun;
 				oRun = arrRun[lPos];
 				RemoveElem(lPos);
+				
 				oRun.bAccent = true;
 				oRun.eType = eType;
 				Add(oRun);
@@ -412,7 +416,7 @@ namespace MathEquation
 
 			virtual void BeginEquation()
 			{
-				int nCurPos = WriteItemStart(BinDocxRW::c_oSerParType::OMath);
+				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::OMath);
 				m_aEquationStack.push(nCurPos);
 			}
 			virtual void EndEquation()
@@ -557,11 +561,11 @@ namespace MathEquation
 				BYTE horAlign;
 				switch(eHorAlign)
 				{
-					case matrixhoralignLeft:		horAlign = SimpleTypes::xalignLeft;
-					case matrixhoralignCenter:		horAlign = SimpleTypes::xalignCenter;
-					case matrixhoralignRight:		horAlign = SimpleTypes::xalignRight;
-					case matrixhoralignEqualSign:	horAlign = SimpleTypes::xalignCenter;
-					case matrixhoralignCommaSign:	horAlign = SimpleTypes::xalignCenter;
+					case matrixhoralignLeft:		horAlign = SimpleTypes::xalignLeft;		break;
+					case matrixhoralignCenter:		horAlign = SimpleTypes::xalignCenter;	break;
+					case matrixhoralignRight:		horAlign = SimpleTypes::xalignRight;	break;
+					case matrixhoralignEqualSign:	horAlign = SimpleTypes::xalignCenter;	break;
+					case matrixhoralignCommaSign:	horAlign = SimpleTypes::xalignCenter;	break;
 				}
 				WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::McJc, horAlign);
 
@@ -1675,7 +1679,7 @@ namespace MathEquation
 
 			void WriteEndNode(BinaryEquationWriter* pWriter)
 			{
-				int nCurPos;
+				int nCurPos = -1;
 				if (!m_aBaseStack.empty())
 				{
 					nCurPos = m_aBaseStack.top();
@@ -1687,14 +1691,20 @@ namespace MathEquation
 				}
 
 				if (bPile && bEqArrayStart)
+				{
 					pWriter->WriteItemEnd(nCurPos);
+				}
 				else if (!bPile && !bEqArrayStart)
+				{
 					pWriter->WriteItemEnd(nCurPos);
+				}
 				else if (!bPile && bEqArrayStart)
 				{					
 					pWriter->m_aRowsCounter.push(nRows);
 					bEqArrayStart = false;
-					pWriter->WriteItemEnd(nCurPos);//eqArr
+					
+					if (nCurPos > 0)
+						pWriter->WriteItemEnd(nCurPos);//eqArr
 
 					if (!m_aBaseStack.empty())
 					{

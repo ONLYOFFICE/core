@@ -31,6 +31,13 @@
  */
 
 #include "AutoFilter12.h"
+#include "../Biff_structures/DXFN12List.h"
+
+#include "../Biff_structures/BiffString.h"
+
+#include "../Biff_structures/AFDOper.h"
+#include "../Biff_structures/AF12Criteria.h"
+#include "../Biff_structures/AF12CellIcon.h"
 
 namespace XLS
 {
@@ -58,19 +65,28 @@ void AutoFilter12::readFields(CFRecord& record)
 	
 	record >> frtRefHeader >> iEntry >> fHideArrow >> ft >> cft >> cCriteria >> cDateGroupings >> flags >> unused2 >> idList;
 
-	_UINT16 _iEntry = iEntry;
-	_UINT32 _fHideArrow = fHideArrow;
-	_UINT32 _ft = ft;
-	_UINT32 _cft = cft;
-	_UINT32 _cCriteria = cCriteria;
-	_UINT32 _cDateGroupings = cDateGroupings;
-	_UINT32 _idList = idList;	
+	_GUID_ guid_num;
+	record >> guid_num;
+	guidSview = STR::guid2bstr(guid_num);
 
-	// TODO доделать
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
-
+//-------------------------------------------------------------------------------------------------------
 	std::list<CFRecordPtr>& recs = continue_records[rt_ContinueFrt12];
 	size_t size = recs.size();
+
+	switch(ft)
+	{
+	case 0x00000000://not exist
+		break;
+	case 0x00000001: rgb = BiffStructurePtr(new DXFN12List); //color
+		break;
+	case 0x00000002: rgb = BiffStructurePtr(new DXFN12List); //font
+		break;
+	case 0x00000003: rgb = BiffStructurePtr(new AF12CellIcon); //icon
+		break;
+	}
+	if (rgb)
+		rgb->load(record);
 
 	while( !recs.empty() )
 	{
@@ -82,11 +98,12 @@ void AutoFilter12::readFields(CFRecord& record)
 		record >> frtRefHeaderContinue;
 		if (frtRefHeaderContinue.rt == 0x087F)
 		{		
-			if ( (ft == BIFF_DWORD(0)) && (cCriteria > 0) )
+			if ( ft == 0 && cCriteria > 0)
 			{
 				AF12CriteriaPtr item(new AF12Criteria);
 				item->load(record);
-				rgbAF12Criteries.push_back(item);
+				
+				arAF12Criteries.push_back(item);
 			}
 		}		
 	}

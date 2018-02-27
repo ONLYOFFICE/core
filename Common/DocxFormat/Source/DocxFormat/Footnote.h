@@ -47,16 +47,21 @@ namespace OOX
 	{
 	public:
 
-		CFootnotes()
+		CFootnotes(OOX::Document *pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pFootnotes = this;
 		}
-		CFootnotes(const CPath& oRootPath, const CPath& oPath)
+		CFootnotes(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pFootnotes = this;
+
 			read( oRootPath, oPath );
 		}
 		virtual ~CFootnotes()
 		{
-			for (unsigned int nIndex = 0; nIndex < m_arrFootnote.size(); nIndex++ )
+            for (size_t nIndex = 0; nIndex < m_arrFootnote.size(); nIndex++ )
 			{
 				if ( m_arrFootnote[nIndex] )
 					delete m_arrFootnote[nIndex];
@@ -74,8 +79,6 @@ namespace OOX
 		{
 			m_oReadPath = oFilePath;
 			IFileContainer::Read( oRootPath, oFilePath );
-
-			Common::readAllShapeTypes(oFilePath, m_arrShapeTypes);
 
 			XmlUtils::CXmlLiteReader oReader;
 
@@ -104,8 +107,8 @@ namespace OOX
 		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 			std::wstring sXml;
-			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:footnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 wp14\">");
-			for (unsigned int nIndex = 0; nIndex < m_arrFootnote.size(); nIndex++ )
+			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:footnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" mc:Ignorable=\"w14 wp14\">");
+            for (size_t nIndex = 0; nIndex < m_arrFootnote.size(); nIndex++ )
 			{
 				if ( m_arrFootnote[nIndex] )
 					sXml += m_arrFootnote[nIndex]->toXML();
@@ -134,7 +137,7 @@ namespace OOX
 			if ( !oReference.m_oId.IsInit() )
 				return NULL;
 
-			for ( unsigned int nIndex = 0; nIndex < m_arrFootnote.size(); nIndex++ )
+            for ( size_t nIndex = 0; nIndex < m_arrFootnote.size(); nIndex++ )
 			{
 				if ( m_arrFootnote[nIndex]->m_oId.IsInit() && ( m_arrFootnote[nIndex]->m_oId == oReference.m_oId ) )
 					return m_arrFootnote[nIndex];
@@ -152,8 +155,7 @@ namespace OOX
 		}
 
 		CPath						m_oReadPath;
-		std::vector<OOX::CFtnEdn*>	m_arrFootnote;
-		std::vector<std::wstring>	m_arrShapeTypes;
+        std::vector<OOX::CFtnEdn*>	m_arrFootnote;
 	};
 } // namespace OOX
 

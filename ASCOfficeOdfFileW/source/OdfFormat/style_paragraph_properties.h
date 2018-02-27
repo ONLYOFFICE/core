@@ -192,9 +192,8 @@ public:
 
     void apply_from( paragraph_format_properties & Other);
 
-	void clear();
+	void clear(bool bEraseDropCap = true);
 
-public:
     _CP_OPT(odf_types::length)				style_line_height_at_least_;         
     _CP_OPT(odf_types::length_or_percent)	style_line_spacing_;                 
     _CP_OPT(odf_types::Bool)				style_font_independent_line_spacing_; 
@@ -277,7 +276,7 @@ public:
 
 	virtual void serialize(std::wostream & strm);
 
-    paragraph_format_properties		content_;
+    paragraph_format_properties content_;
 
 };
 

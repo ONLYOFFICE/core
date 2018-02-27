@@ -30,7 +30,7 @@
  *
  */
 #pragma once
-#include "../PPTShape.h"
+#include "../PptShape.h"
 
 // 122
 class CFlowChartPunchedTapeType : public CPPTShape

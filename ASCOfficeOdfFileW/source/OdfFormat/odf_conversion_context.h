@@ -96,8 +96,10 @@ public:
 	virtual void					start_text_context()	= 0;
 	virtual void					end_text_context()		= 0;
 
-    std::wstring add_image(const std::wstring & image_file_name);
-    std::wstring add_media(const std::wstring & file_name);
+    std::wstring add_image		(const std::wstring & image_file_name);
+    std::wstring add_media		(const std::wstring & file_name);
+    std::wstring add_oleobject	(const std::wstring & ole_file_name);
+    std::wstring add_imageobject(const std::wstring & ole_file_name);
 	
 	virtual odf_style_context		* styles_context();
 	

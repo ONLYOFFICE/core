@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of LBL union of records 
 class LBL: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(LBL)
@@ -51,13 +49,14 @@ public:
 
 	int serialize(std::wostream & stream);
 	
-	static const ElementType	type = typeLBL;
+	static const ElementType type = typeLBL;
 
-	BaseObjectPtr m_Lbl;
+	BaseObjectPtr	m_Lbl;
+	BaseObjectPtr	m_NamePublish;
+	BaseObjectPtr	m_NameCmt;
+	BaseObjectPtr	m_NameFnGrp12;
 //-------------------------------------------------------
-
 	bool isSerialize;
-
 };
 
 } // namespace XLS

@@ -104,9 +104,10 @@ public:
 
 			int nWidthBefore = 0;
 			int nWidthAfter = 0;
-			if( PROP_DEF != oCurRow->m_oProperty.m_nWidthStartInvCell && mu_Twips == oCurRow->m_oProperty.m_eMUStartInvCell)
+			
+			if( PROP_DEF != oCurRow->m_oProperty.m_nWidthStartInvCell && mu_Twips == oCurRow->m_oProperty.m_eWidthStartInvCellUnit)
 				nWidthBefore = oCurRow->m_oProperty.m_nWidthStartInvCell;
-			if( PROP_DEF != oCurRow->m_oProperty.m_nWidthEndInvCell && mu_Twips == oCurRow->m_oProperty.m_eMUEndInvCell)
+			if( PROP_DEF != oCurRow->m_oProperty.m_nWidthEndInvCell && mu_Twips == oCurRow->m_oProperty.m_eWidthEndInvCellUnit)
 				nWidthAfter = oCurRow->m_oProperty.m_nWidthEndInvCell;
 
 			int nDelta = 0;// поправка на margin и  indent и spacing
@@ -114,13 +115,13 @@ public:
 				nDelta = -oCurRow->m_oProperty.m_nLeft;
 			else
 			{
-				if( PROP_DEF != m_oProperty.nTableIndent && 3 == m_oProperty.nTableIndentUnits )
+				if( PROP_DEF != m_oProperty.nTableIndent && 3 == m_oProperty.eTableIndentUnit )
 					nDelta -= m_oProperty.nTableIndent;
-				if( PROP_DEF != m_oProperty.m_nDefCellMarLeft && 3 == m_oProperty.m_nDefCellMarLeftUnits )
+				if( PROP_DEF != m_oProperty.m_nDefCellMarLeft && 3 == m_oProperty.m_eDefCellMarLeftUnit )
 					nDelta += m_oProperty.m_nDefCellMarLeft;
-				if( PROP_DEF != m_oProperty.m_nDefCellSpLeft && 3 == m_oProperty.m_nDefCellSpLeftUnits )
+				if( PROP_DEF != m_oProperty.m_nDefCellSpLeft && 3 == m_oProperty.m_eDefCellSpLeftUnit )
 					nDelta += 2 * m_oProperty.m_nDefCellSpLeft;
-				if( PROP_DEF != oCurRow->m_oProperty.m_nWidthStartInvCell && mu_Twips == oCurRow->m_oProperty.m_eMUStartInvCell)
+				if( PROP_DEF != oCurRow->m_oProperty.m_nWidthStartInvCell && mu_Twips == oCurRow->m_oProperty.m_eWidthStartInvCellUnit)
 					nDelta -= oCurRow->m_oProperty.m_nWidthStartInvCell;
 			}
 
@@ -155,9 +156,9 @@ public:
 
 			int nWidthBefore = 0;
 			int nWidthAfter = 0;
-			if( PROP_DEF != oCurRow->m_oProperty.m_nWidthStartInvCell && mu_Twips == oCurRow->m_oProperty.m_eMUStartInvCell)
+			if( PROP_DEF != oCurRow->m_oProperty.m_nWidthStartInvCell && mu_Twips == oCurRow->m_oProperty.m_eWidthStartInvCellUnit)
 				nWidthBefore = oCurRow->m_oProperty.m_nWidthStartInvCell;
-			if( PROP_DEF != oCurRow->m_oProperty.m_nWidthEndInvCell && mu_Twips == oCurRow->m_oProperty.m_eMUEndInvCell)
+			if( PROP_DEF != oCurRow->m_oProperty.m_nWidthEndInvCell && mu_Twips == oCurRow->m_oProperty.m_eWidthEndInvCellUnit)
 				nWidthAfter = oCurRow->m_oProperty.m_nWidthEndInvCell;
 
 			int nDelta = 0;// поправка на margin и  indent и spacing и border
@@ -165,13 +166,13 @@ public:
 				nDelta = -oCurRow->m_oProperty.m_nLeft;
 			else
 			{
-				if( PROP_DEF != m_oProperty.nTableIndent && 3 == m_oProperty.nTableIndentUnits )
+				if( PROP_DEF != m_oProperty.nTableIndent && 3 == m_oProperty.eTableIndentUnit )
 					nDelta -= m_oProperty.nTableIndent;
-				if( PROP_DEF != m_oProperty.m_nDefCellMarLeft && 3 == m_oProperty.m_nDefCellMarLeftUnits )
+				if( PROP_DEF != m_oProperty.m_nDefCellMarLeft && 3 == m_oProperty.m_eDefCellMarLeftUnit )
 					nDelta += m_oProperty.m_nDefCellMarLeft;
-				if( PROP_DEF != m_oProperty.m_nDefCellSpLeft && 3 == m_oProperty.m_nDefCellSpLeftUnits )
+				if( PROP_DEF != m_oProperty.m_nDefCellSpLeft && 3 == m_oProperty.m_eDefCellSpLeftUnit )
 					nDelta += 2 * m_oProperty.m_nDefCellSpLeft;
-				if( PROP_DEF != oCurRow->m_oProperty.m_nWidthStartInvCell && mu_Twips == oCurRow->m_oProperty.m_eMUStartInvCell)
+				if( PROP_DEF != oCurRow->m_oProperty.m_nWidthStartInvCell && mu_Twips == oCurRow->m_oProperty.m_eWidthStartInvCellUnit)
 					nDelta -= oCurRow->m_oProperty.m_nWidthStartInvCell;
 			}
 
@@ -203,8 +204,8 @@ public:
 							nWidth = aCellx[k];
 						else
 							nWidth = aCellx[k] - aCellx[nLastIndex - 1];
-						oCurCell->m_oProperty.m_nWidth = nWidth;
-						oCurCell->m_oProperty.m_eWidthUnits = mu_Twips;
+						oCurCell->m_oProperty.m_nWidth		= nWidth;
+						oCurCell->m_oProperty.m_eWidthUnit	= mu_Twips;
 						nLastIndex = k + 1;
 						break;
 					}
@@ -247,23 +248,27 @@ public:
 				int nGutter = oDocument.m_oProperty.m_nGutterWidth;
 				if( 1 == oDocument.m_oProperty.m_bGutterAtTop )//не учитываем если это Top gutter
 					nGutter = 0;
-				m_oProperty.m_nWidth = oDocument.m_oProperty.m_nPaperWidth - oDocument.m_oProperty.m_nMarginLeft - oDocument.m_oProperty.m_nMarginRight - nGutter;
-				m_oProperty.m_eMUWidth = mu_Twips;
+				m_oProperty.m_nWidth		= oDocument.m_oProperty.m_nPaperWidth - oDocument.m_oProperty.m_nMarginLeft - oDocument.m_oProperty.m_nMarginRight - nGutter;
+				m_oProperty.m_eWidthUnit	= mu_Twips;
 			}
 
 			for (size_t i = 0; i < (int)m_aArray.size(); i++) 
 			{
 				RtfTableRowPtr oCurRow = m_aArray[i];
 				int nCellCount = oCurRow->GetCount();
+				
 				if( oCurRow->m_oProperty.GetCount() < nCellCount )
 					nCellCount = oCurRow->m_oProperty.GetCount();
+				
 				if( nCellCount > 0 )
 				{
 					int nCellWidth = m_oProperty.m_nWidth / nCellCount;
 					int nCurCellX = 0;
+					
 					for (int j = 0; j < nCellCount; j++ )
 					{
 						nCurCellX += nCellWidth;
+						
 						RtfTableCellPtr oCellPtr = (*oCurRow)[j];
 						oCellPtr->m_oProperty.m_nCellx = nCurCellX;
 						oCurRow->m_oProperty[j].m_nCellx = nCurCellX;
@@ -273,44 +278,45 @@ public:
 		}
 		else
 		{
-			for (size_t i = 0; i < (int)m_aArray.size(); i++) 
+			for (size_t i = 0; i < m_aArray.size(); i++) 
 			{
 				RtfTableRowPtr oCurRow= m_aArray[ i ];
 
 				int nLeft = 0;
-				if( PROP_DEF != m_oProperty.nTableIndent && 3 == m_oProperty.nTableIndentUnits )
+				if( PROP_DEF != m_oProperty.nTableIndent && 3 == m_oProperty.eTableIndentUnit )
 					nLeft += m_oProperty.nTableIndent;
-				if( PROP_DEF != m_oProperty.m_nDefCellMarLeft && 3 == m_oProperty.m_nDefCellMarLeftUnits )
+				if( PROP_DEF != m_oProperty.m_nDefCellMarLeft && 3 == m_oProperty.m_eDefCellMarLeftUnit )
 					nLeft -= m_oProperty.m_nDefCellMarLeft;
-				if( PROP_DEF != m_oProperty.m_nDefCellSpLeft && 3 == m_oProperty.m_nDefCellSpLeftUnits )
+				if( PROP_DEF != m_oProperty.m_nDefCellSpLeft && 3 == m_oProperty.m_eDefCellSpLeftUnit )
 					nLeft += 2 * m_oProperty.m_nDefCellSpLeft;
 				int nDelta = nLeft;//в left учитывается GrindBefore
 
-				if( PROP_DEF != oCurRow->m_oProperty.m_nGridBefore )
-				{
-					int nGridBefore = oCurRow->m_oProperty.m_nGridBefore;
-					if( (int)m_aTableGrid.size() > nGridBefore - 1)
-					{
-						int nWidthBefore = 0;
-						for (int k = 0; k < nGridBefore ; k++ )
-							nWidthBefore += m_aTableGrid[k];
-						oCurRow->m_oProperty.m_nWidthStartInvCell = nWidthBefore;
-						oCurRow->m_oProperty.m_eMUStartInvCell = mu_Twips;
-						nLeft += nWidthBefore;
-					}
-				}
-				if( PROP_DEF != oCurRow->m_oProperty.m_nGridAfter )
-				{
-					int nGridAfter = oCurRow->m_oProperty.m_nGridAfter;
-					if( (int)m_aTableGrid.size() > nGridAfter - 1)
-					{
-						int nWidthAfter = 0;
-						for( int k = (int)m_aTableGrid.size() - 1; k >= (int)m_aTableGrid.size() - 1 - nGridAfter; k-- )
-							nWidthAfter += m_aTableGrid[k];
-						oCurRow->m_oProperty.m_nWidthEndInvCell = nWidthAfter;
-						oCurRow->m_oProperty.m_eMUEndInvCell = mu_Twips;
-					}
-				}
+				//if( PROP_DEF != oCurRow->m_oProperty.m_nGridBefore )
+				//{
+				//	int nGridBefore = oCurRow->m_oProperty.m_nGridBefore;
+				//	if( (int)m_aTableGrid.size() > nGridBefore - 1)
+				//	{
+				//		int nWidthBefore = 0;
+				//		for (int k = 0; k < nGridBefore ; k++ )
+				//			nWidthBefore += m_aTableGrid[k];
+				//		oCurRow->m_oProperty.m_nWidthStartInvCell = nWidthBefore;
+				//		oCurRow->m_oProperty.m_eMUStartInvCell = mu_Twips;
+				//		nLeft += nWidthBefore;
+				//	}
+				//}
+				//if( PROP_DEF != oCurRow->m_oProperty.m_nGridAfter )
+				//{
+				//	int nGridAfter = oCurRow->m_oProperty.m_nGridAfter;
+				//	if( (int)m_aTableGrid.size() > nGridAfter - 1)
+				//	{
+				//		int nWidthAfter = 0;
+				//		
+				//		for( int k = (int)m_aTableGrid.size() - 1; k >= (int)m_aTableGrid.size() - 1 - nGridAfter; k-- )
+				//			nWidthAfter += m_aTableGrid[k];
+				//		oCurRow->m_oProperty.m_nWidthEndInvCell = nWidthAfter;
+				//		oCurRow->m_oProperty.m_eMUEndInvCell = mu_Twips;
+				//	}
+				//}
 
 				if( 0 != nLeft )
 					oCurRow->m_oProperty.m_nLeft = nLeft;
@@ -322,10 +328,10 @@ public:
 					RtfTableCellPtr oCurCell = oCurRow->operator [](j);
 
 					int nSpan = 1;
+					
 					if( PROP_DEF != oCurCell->m_oProperty.m_nSpan )
 						nSpan = oCurCell->m_oProperty.m_nSpan;
-					else
-						nSpan = 1;
+
 					if( j == 0 && PROP_DEF != oCurRow->m_oProperty.m_nGridBefore )
 						nCurIndex += oCurRow->m_oProperty.m_nGridBefore;
 					//if( j == oCurRow->m_oProperty.size() - 1 && PROP_DEF != oCurRow->m_oProperty.m_nGridAfter )

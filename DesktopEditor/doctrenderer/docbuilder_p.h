@@ -546,6 +546,7 @@ namespace NSDoctRenderer
         std::wstring m_strFilePath;
 
         std::wstring m_strAllFonts;
+        bool m_bIsNotUseConfigAllFontsDir;
 
         std::wstring m_sTmpFolder;
         std::wstring m_sFileDir;
@@ -585,6 +586,8 @@ namespace NSDoctRenderer
 
             m_sGlobalVariable = "";
             m_bIsGlobalVariableUse = false;
+
+            m_bIsNotUseConfigAllFontsDir = false;
         }
 
         void Init()
@@ -636,10 +639,18 @@ namespace NSDoctRenderer
 
                         if (std::wstring::npos != strFilePath.find(L"AllFonts.js"))
                         {
-                            m_strAllFonts = strFilePath;
+                            if (!m_bIsNotUseConfigAllFontsDir)
+                            {
+                                m_strAllFonts = strFilePath;
 
-                            if (!NSFile::CFileBinary::Exists(m_strAllFonts) || NSFile::CFileBinary::Exists(sConfigDir + m_strAllFonts))
-                                m_strAllFonts = sConfigDir + m_strAllFonts;
+                                if (!NSFile::CFileBinary::Exists(m_strAllFonts) || NSFile::CFileBinary::Exists(sConfigDir + m_strAllFonts))
+                                    m_strAllFonts = sConfigDir + m_strAllFonts;
+                            }
+                            else
+                            {
+                                m_arrFiles.Add(m_strAllFonts);
+                                continue;
+                            }
                         }
 
                         if (NSFile::CFileBinary::Exists(strFilePath) && !NSFile::CFileBinary::Exists(sConfigDir + strFilePath))
@@ -928,7 +939,7 @@ namespace NSDoctRenderer
             MoveFileOpen(path, sFileCopy);
 
             COfficeFileFormatChecker oChecker;
-            if (!oChecker.isOfficeFile(path))
+            if (!oChecker.isOfficeFile(sFileCopy))
                 return false;
 
             if (oChecker.nFileType & AVS_OFFICESTUDIO_FILE_DOCUMENT)
@@ -944,9 +955,24 @@ namespace NSDoctRenderer
             oBuilder.WriteString(L"</m_sFileFrom><m_sFileTo>");
             oBuilder.WriteEncodeXmlString(m_sFileDir);
             oBuilder.WriteString(L"/Editor.bin</m_sFileTo><m_nFormatTo>8192</m_nFormatTo>");
-            oBuilder.WriteString(L"<m_sFontDir>");
-            oBuilder.WriteEncodeXmlString(m_sX2tPath + L"/sdkjs/common");
-            oBuilder.WriteString(L"</m_sFontDir>");
+
+            if (!m_bIsNotUseConfigAllFontsDir)
+            {
+                oBuilder.WriteString(L"<m_sFontDir>");
+                oBuilder.WriteEncodeXmlString(m_sX2tPath + L"/sdkjs/common");
+                oBuilder.WriteString(L"</m_sFontDir>");
+            }
+            else
+            {
+                oBuilder.WriteString(L"<m_sFontDir>");
+                oBuilder.WriteEncodeXmlString(NSCommon::GetDirectoryName(m_strAllFonts));
+                oBuilder.WriteString(L"</m_sFontDir>");
+
+                oBuilder.WriteString(L"<m_sAllFontsPath>");
+                oBuilder.WriteEncodeXmlString(m_strAllFonts);
+                oBuilder.WriteString(L"</m_sAllFontsPath>");
+            }
+
             oBuilder.WriteString(L"<m_bIsNoBase64>true</m_bIsNoBase64>");
             oBuilder.WriteString(L"<m_sThemeDir>./sdkjs/slide/themes</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
             oBuilder.WriteString(params);
@@ -1144,9 +1170,23 @@ namespace NSDoctRenderer
             else
                 oBuilder.WriteString(L"</m_sThemeDir><m_bFromChanges>true</m_bFromChanges><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
             oBuilder.WriteString(L"<m_nCsvTxtEncoding>46</m_nCsvTxtEncoding><m_nCsvDelimiter>4</m_nCsvDelimiter>");
-            oBuilder.WriteString(L"<m_sFontDir>");
-            oBuilder.WriteEncodeXmlString(m_sX2tPath + L"/sdkjs/common");
-            oBuilder.WriteString(L"</m_sFontDir>");
+
+            if (!m_bIsNotUseConfigAllFontsDir)
+            {
+                oBuilder.WriteString(L"<m_sFontDir>");
+                oBuilder.WriteEncodeXmlString(m_sX2tPath + L"/sdkjs/common");
+                oBuilder.WriteString(L"</m_sFontDir>");
+            }
+            else
+            {
+                oBuilder.WriteString(L"<m_sFontDir>");
+                oBuilder.WriteEncodeXmlString(NSCommon::GetDirectoryName(m_strAllFonts));
+                oBuilder.WriteString(L"</m_sFontDir>");
+
+                oBuilder.WriteString(L"<m_sAllFontsPath>");
+                oBuilder.WriteEncodeXmlString(m_strAllFonts);
+                oBuilder.WriteString(L"</m_sAllFontsPath>");
+            }
 
             int nDoctRendererParam = 0;
             //if (true) // печать пдф (лист = страница)
@@ -1660,6 +1700,8 @@ namespace NSDoctRenderer
                         nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
                     else if (L"pptx" == _builder_params[0])
                         nFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
+                    else if (L"odp" == _builder_params[0])
+                        nFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
                     else if (L"xlsx" == _builder_params[0])
                         nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
                     else if (L"xls" == _builder_params[0])
@@ -1717,6 +1759,11 @@ namespace NSDoctRenderer
             m_pInternal->m_bIsCacheScript = (std::wstring(value) == L"true");
         else if (sParam == "--save-use-only-names")
             m_pInternal->m_sFolderForSaveOnlyUseNames = std::wstring(value);
+        else if (sParam == "--all-fonts-path")
+        {
+            m_pInternal->m_strAllFonts = std::wstring(value);
+            m_pInternal->m_bIsNotUseConfigAllFontsDir = true;
+        }
         else if (sParam == "--argument")
         {
             std::wstring sArg(value);

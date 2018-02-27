@@ -31,17 +31,16 @@
  */
 
 #include "OBJECTS.h"
-#include <Logic/Biff_records/MsoDrawingSelection.h>
-#include <Logic/Biff_records/MsoDrawing.h>
+#include "TEXTOBJECT.h"
+#include "OBJ.h"
+#include "CHART.h"
+#include "IMDATAOBJECT.h"
 
-#include <Logic/Biff_unions/TEXTOBJECT.h>
-#include <Logic/Biff_unions/OBJ.h>
-#include <Logic/Biff_unions/CHART.h>
-#include <Logic/Biff_unions/IMDATAOBJECT.h>
-
-#include <Logic/Biff_records/Continue.h>
-#include <Logic/Biff_records/Obj.h>
-#include <Logic/Biff_records/IMDATA.h>
+#include "../Biff_records/MsoDrawingSelection.h"
+#include "../Biff_records/MsoDrawing.h"
+#include "../Biff_records/Continue.h"
+#include "../Biff_records/Obj.h"
+#include "../Biff_records/IMDATA.h"
 
 namespace XLS
 {
@@ -109,20 +108,19 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{
-		// EXCEPT::LE::UnexpectedProgramPath("Wrong loadContent usage", __FUNCTION__);
 		return false;
 	}
 
 
 	const bool loadContentRead(BinReaderProcessor& proc)
 	{
-		bool res = proc.mandatory(*mso_drawing_);
+		bool res = proc.optional(*mso_drawing_);
 
         Parenthesis_OBJECTS_2 parenthesis_objects_2(mso_drawing_);
         
-		int count = proc.repeated(parenthesis_objects_2, 0, 0);
+		int count2 = proc.repeated(parenthesis_objects_2, 0, 0);
 		
-		return res || count>0;
+		return res || (count2>0);
 	}
 
 	MsoDrawingPtr mso_drawing_;
@@ -138,7 +136,6 @@ BaseObjectPtr OBJECTS::clone()
 
 const bool OBJECTS::loadContent(BinProcessor& proc)
 {
-	// EXCEPT::LE::UnexpectedProgramPath("Wrong loadContent usage", __FUNCTION__);
 	return false;
 }
 

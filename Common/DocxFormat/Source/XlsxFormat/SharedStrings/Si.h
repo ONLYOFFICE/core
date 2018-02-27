@@ -64,28 +64,46 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<si>"));
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-					m_arrItems[i]->toXML(writer);
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
 				writer.WriteString(_T("</si>"));
 			}
 			virtual void toXML2(NSStringUtils::CStringBuilder& writer) const
 			{
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-					m_arrItems[i]->toXML(writer);
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
 			}
 			std::wstring ToString()
 			{
 				std::wstring sRes;
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
+
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
 				{
-					WritingElement* we = m_arrItems[i];
+                    if ( m_arrItems[i] == NULL) continue;
+
+                    OOX::Spreadsheet::WritingElement* we = m_arrItems[i];
+					
 					if(OOX::et_x_r == we->getType())
 					{
-						CRun* pRun = static_cast<CRun*>(we);
-						for(size_t j = 0, length2 = pRun->m_arrItems.size(); j < length2; ++j)
+						OOX::Spreadsheet::CRun* pRun = static_cast<OOX::Spreadsheet::CRun*>(we);
+
+                        for ( std::vector<CText*>::iterator it1 = pRun->m_arrItems.begin(); it1 != pRun->m_arrItems.end(); it1++)
 						{
-							CText* pText = pRun->m_arrItems[j];
-							sRes.append(pText->ToString());
+							CText* pText = *it1;
+							if (pText)
+							{
+								sRes.append(pText->ToString());
+							}
 						}
 					}
 					else if(OOX::et_x_t == we->getType())

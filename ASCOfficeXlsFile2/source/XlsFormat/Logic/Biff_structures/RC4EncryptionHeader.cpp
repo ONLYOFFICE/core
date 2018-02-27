@@ -95,7 +95,7 @@ void RC4EncryptionHeader::load(XLS::CFRecord& record)
 		if (pDataRead)
 		{
 			crypt_data_aes.saltValue = std::string((char*)pDataRead, crypt_data_aes.saltSize);	
-			delete pDataRead;
+			delete []pDataRead;
 		}
 		
 		pDataRead = new unsigned char[0x10];
@@ -119,7 +119,7 @@ void RC4EncryptionHeader::load(XLS::CFRecord& record)
 		if (pDataRead)
 		{
 			crypt_data_aes.encryptedVerifierValue = std::string((char*)pDataRead, szEncryptedVerifierHash);
-			delete pDataRead;
+			delete []pDataRead;
 		}
 
 		pos = record.getRdPtr();

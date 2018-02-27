@@ -41,6 +41,7 @@ namespace DocFileFormat
 {
 	template<class T> class StringTable: public IVisitable
 	{
+		friend class WordDocument;
 		friend class CharacterPropertiesMapping;
 		friend class FontTableMapping;
 		friend class StyleSheetMapping;	
@@ -81,7 +82,7 @@ namespace DocFileFormat
 			}
 		}
 
-		ByteStructure* operator [] ( unsigned int index ) const
+		ByteStructure* operator [] ( size_t index ) const
 		{
 			if ( index < this->Data.size() )
 			{

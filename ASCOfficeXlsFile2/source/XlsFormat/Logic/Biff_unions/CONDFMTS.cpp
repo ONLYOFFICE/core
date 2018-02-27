@@ -31,13 +31,14 @@
  */
 
 #include "CONDFMTS.h"
-#include <Logic/Biff_unions/CONDFMT.h>
-#include <Logic/Biff_unions/CONDFMT12.h>
-#include <Logic/Biff_records/CFEx.h>
-#include <Logic/Biff_records/CF12.h>
-#include <Logic/Biff_records/CF.h>
-#include <Logic/Biff_records/CondFmt.h>
-#include <Logic/Biff_records/CondFmt12.h>
+#include "CONDFMT.h"
+#include "CONDFMT12.h"
+
+#include "../Biff_records/CFEx.h"
+#include "../Biff_records/CF12.h"
+#include "../Biff_records/CF.h"
+#include "../Biff_records/CondFmt.h"
+#include "../Biff_records/CondFmt12.h"
 
 namespace XLS
 {
@@ -84,7 +85,9 @@ public:
 		{
 			return false;
 		}
-		//proc.optional<CF12>(); // TODO: uncomment this and pass a base cell reference to the constructor
+		CellRef ref;
+		CF12 cf (ref);
+		proc.optional(cf); 
 		return true;
 	};
 };
@@ -113,21 +116,30 @@ const bool CONDFMTS::loadContent(BinProcessor& proc)
 
 	count = proc.repeated<Parenthesis_CONDFMTS_2>(0, 0);
 	if (count > 0) res = true;
-	while(count > 0)
+	
+	while(!elements_.empty())
 	{
-		m_arCFEx.insert(m_arCFEx.begin(), elements_.back());
-		elements_.pop_back();
-		count--;
-	}	
-
+		if (elements_.front()->get_type() == typeCFEx)
+		{
+			_data_ex data_ex;
+			data_ex.ex = elements_.front();
+			m_arCFEx.push_back(data_ex);
+		}
+		else
+		{
+			if (!m_arCFEx.empty())
+				m_arCFEx.back().cf12 = elements_.front();
+		}
+		elements_.pop_front();
+	}
+//----------------------------------------------------------------------------
 	for (size_t i = 0 ; i < m_arCFEx.size(); i++)
 	{
-		if (!m_arCFEx[i]) continue;
 
-		CFEx * cfEx = dynamic_cast<CFEx *>(m_arCFEx[i].get());
+		CFEx * cfEx = dynamic_cast<CFEx *>(m_arCFEx[i].ex.get());
 		if (cfEx)
 		{
-			int ind_cf = cfEx->content.icf;
+			size_t ind_cf = cfEx->content.icf;
 
 			for (size_t j = 0 ; j < m_arCONDFMT.size(); j++)
 			{
@@ -139,7 +151,10 @@ const bool CONDFMTS::loadContent(BinProcessor& proc)
 					{
 						CF* cf = dynamic_cast<CF *>(CONDFMT_->m_arCF[ind_cf].get());
 						if (cf)
-							cf->m_CFEx = m_arCFEx[i];
+						{
+							cf->m_CFEx = m_arCFEx[i].ex;
+							cf->m_CF12 = m_arCFEx[i].cf12;
+						}
 					}
 
 				}
@@ -151,7 +166,10 @@ const bool CONDFMTS::loadContent(BinProcessor& proc)
 					{
 						CF12* cf = dynamic_cast<CF12 *>(CONDFMT12_->m_arCF12[ind_cf].get());
 						if (cf)
-							cf->m_CFEx = m_arCFEx[i];
+						{
+							cf->m_CFEx = m_arCFEx[i].ex;
+							cf->m_CF12_2 = m_arCFEx[i].cf12;
+						}
 					}
 				}
 			}

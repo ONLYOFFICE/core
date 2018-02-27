@@ -120,15 +120,19 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_arrItems.size() > 0 )
-				{
-					writer.WriteString(_T("<numFmts"));
-					WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
-					writer.WriteString(_T(">"));
-					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
-					writer.WriteString(_T("</numFmts>"));
-				}
+				if(m_arrItems.empty()) return;
+
+				writer.WriteString(_T("<numFmts"));
+				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
+				writer.WriteString(_T(">"));
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
+				writer.WriteString(_T("</numFmts>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

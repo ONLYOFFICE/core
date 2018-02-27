@@ -62,7 +62,7 @@ public:
 	
 	CellOffsetResender		resender;
 	Cell					cell;
-	BIFF_DWORD				isst;
+	_UINT32					isst;
 
 };
 

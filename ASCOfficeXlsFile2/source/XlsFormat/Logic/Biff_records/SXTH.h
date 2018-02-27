@@ -52,6 +52,7 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	int serialize(std::wostream & strm);
 
 	static const ElementType type = typeSXTH;
 

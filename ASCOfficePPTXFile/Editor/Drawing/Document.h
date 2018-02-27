@@ -103,13 +103,13 @@ namespace NSPresentationEditor
 			size_t nCountElems = pSlide->m_arElements.size();
 			for (size_t i = 0; i < nCountElems; ++i)
 			{
-				IElement* pElement = pSlide->m_arElements[i];
+				CElementPtr pElement = pSlide->m_arElements[i];
 
 				switch (pElement->m_etType)
 				{
 				case etAudio:
 					{
-						CAudioElement* pAudioElem = dynamic_cast<CAudioElement*>(pElement);
+						CAudioElement* pAudioElem = dynamic_cast<CAudioElement*>(pElement.get());
 
 						if (NULL != pAudioElem)
 						{
@@ -147,9 +147,9 @@ namespace NSPresentationEditor
 			}
 		}
 
-		void ResetAutoText(IElement *pElement, vector_string const (&placeholdersReplaceString)[3])
+		void ResetAutoText(CElementPtr pElement, vector_string const (&placeholdersReplaceString)[3])
 		{
-			CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement);
+			CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
 			
 			if (NULL == pShape) return;
 			
@@ -193,7 +193,7 @@ namespace NSPresentationEditor
 				size_t nCountElems = pTheme->m_arElements.size();
 				for (size_t nIndexEl = 0; nIndexEl < nCountElems; ++nIndexEl)
 				{
-					IElement* pElement = pTheme->m_arElements[nIndexEl];
+					CElementPtr pElement = pTheme->m_arElements[nIndexEl];
 
 					if (pElement->m_lPlaceholderType > 0)
 					{
@@ -219,7 +219,7 @@ namespace NSPresentationEditor
 					size_t nCountLayoutElements = pLayout->m_arElements.size();
 					for (size_t nIndexLayoutEl = 0; nIndexLayoutEl < nCountLayoutElements; ++nIndexLayoutEl)
 					{
-						IElement* pElement = pLayout->m_arElements[nIndexLayoutEl];
+						CElementPtr pElement = pLayout->m_arElements[nIndexLayoutEl];
 						
 						if (pElement->m_lPlaceholderType > 0)
 						{
@@ -232,7 +232,7 @@ namespace NSPresentationEditor
 						pElement->m_pTheme = pTheme;
 						pElement->m_pLayout = NULL;
 
-						CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement);
+						CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
 						if (!pLayout->m_bUseThemeColorScheme && NULL != pShape)
 						{
 							int lPhType = pElement->m_lPlaceholderType;
@@ -253,20 +253,20 @@ namespace NSPresentationEditor
 								if (pThemeStyles->m_pLevels[nIndexLevel]->m_oCFRun.Color->m_lSchemeIndex == -1)
 									continue;
 
-								if (pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0].is_init())
+								if (pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0].is_init())
 								{
-									if (pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color.is_init())
+									if (pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color.is_init())
 									{
 
-										if (pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->m_lSchemeIndex != -1)
+										if (pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->m_lSchemeIndex != -1)
 											continue;
 								
 										LONG lIndexSchemeT = pThemeStyles->m_pLevels[nIndexLevel]->m_oCFRun.Color->m_lSchemeIndex;
 
-										pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->m_lSchemeIndex = -1;
-										pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->R = pLayout->m_arColorScheme[lIndexSchemeT].R;
-										pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->G = pLayout->m_arColorScheme[lIndexSchemeT].G;
-										pShape->m_oShape.m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->B = pLayout->m_arColorScheme[lIndexSchemeT].B;
+										pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->m_lSchemeIndex = -1;
+										pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->R = pLayout->m_arColorScheme[lIndexSchemeT].R;
+										pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->G = pLayout->m_arColorScheme[lIndexSchemeT].G;
+										pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->B = pLayout->m_arColorScheme[lIndexSchemeT].B;
 										
 										bIsPlaceholderSetUp = true;
 									}
@@ -301,7 +301,7 @@ namespace NSPresentationEditor
 				size_t nCountElems = pSlide->m_arElements.size();
 				for (size_t nIndexEl = 0; nIndexEl < nCountElems; ++nIndexEl)
 				{
-					IElement* pElement = pSlide->m_arElements[nIndexEl];
+					CElementPtr pElement = pSlide->m_arElements[nIndexEl];
 
 					if (pElement->m_lPlaceholderType > 0)
 					{

@@ -68,7 +68,7 @@ void FileMoniker::load(XLS::CFRecord& record)
 #if defined(_WIN32) || defined(_WIN64)
         unicodePath = std::wstring(record.getCurData<wchar_t>(), cbUnicodePathBytes / 2);
 #else
-        unicodePath = XLS::convertUtf16ToWString(record.getCurData<UTF16>(), cbUnicodePathBytes / 2);
+        unicodePath = convertUtf16ToWString(record.getCurData<UTF16>(), cbUnicodePathBytes / 2);
 #endif
 		record.skipNunBytes(cbUnicodePathBytes);
 	}

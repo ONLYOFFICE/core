@@ -45,12 +45,14 @@ typedef boost::shared_ptr<xlsx_xml_worksheet> xlsx_xml_worksheet_ptr;
 class xlsx_xml_worksheet: boost::noncopyable
 {
 public:
-    xlsx_xml_worksheet(std::wstring const & name);
+    xlsx_xml_worksheet();
     ~xlsx_xml_worksheet();
-public:
-    std::wstring name() const;
-    std::wstring state() const;
-   
+
+	std::wstring	name;
+    std::wstring	state;
+	int				type;
+ 	int				id;
+  
     std::wostream & dimension();
 	std::wostream & sheetViews();
 	std::wostream & cols();
@@ -60,6 +62,8 @@ public:
     std::wostream & hyperlinks();
     std::wostream & mergeCells();
     std::wostream & drawing(); 
+	std::wostream & ole_objects();
+	std::wostream & activeXs();
     //std::wostream & comments(); 
 	std::wostream & sheetSortAndFilters();
 	std::wostream & pageProperties();
@@ -67,7 +71,9 @@ public:
 	std::wostream & conditionalFormatting();
 	std::wostream & picture_background();
 	std::wostream & dataValidations();
-	
+	std::wostream & protection();
+	std::wostream & tableParts();
+
 	rels & sheet_rels();//hyperlink, background image, external, media ...
 
     void write_to(std::wostream & strm);
@@ -75,15 +81,14 @@ public:
     void set_drawing_link		(std::wstring const & fileName, std::wstring const & id);
     void set_vml_drawing_link	(std::wstring const & fileName, std::wstring const & id);
     void set_comments_link		(std::wstring const & fileName, std::wstring const & id);
-	void set_state				(std::wstring const & state);
-    void set_vml_drawing_link_HF(std::wstring const & fileName, std::wstring const & id);
+    void set_vml_HF_drawing_link(std::wstring const & fileName, std::wstring const & id);
 	
 	std::pair<std::wstring, std::wstring> get_drawing_link()		const;
 	std::pair<std::wstring, std::wstring> get_vml_drawing_link()	const;
 	std::pair<std::wstring, std::wstring> get_vml_drawing_HF_link() const;
 	std::pair<std::wstring, std::wstring> get_comments_link()		const;
 
-    static xlsx_xml_worksheet_ptr create(std::wstring const & name);
+    static xlsx_xml_worksheet_ptr create();
 
 private:
     class Impl;

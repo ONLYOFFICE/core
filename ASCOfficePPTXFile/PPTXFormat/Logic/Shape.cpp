@@ -36,6 +36,7 @@
 #include "../SlideMaster.h"
 #include "../Slide.h"
 #include "SpTree.h"
+#include "Pic.h"
 
 namespace PPTX
 {
@@ -493,7 +494,22 @@ namespace PPTX
 			
 			return txBody->lstStyle->IsListStyleEmpty();
 		}
+		void Shape::Merge(Pic& pic, bool bIsSlidePlaceholder)
+		{
+			if (m_pLevelUp)
+				m_pLevelUp->Merge(pic, true);
 
+			pic.nvPicPr.cNvPr	= nvSpPr.cNvPr;
+			pic.nvPicPr.nvPr	= nvSpPr.nvPr;
+
+			spPr.Merge(pic.spPr);
+
+			if (style.is_init())
+			{
+				pic.style = style;
+				pic.style->SetParentFilePointer(parentFile);
+			}
+		}
 		void Shape::Merge(Shape& shape, bool bIsSlidePlaceholder)
 		{
 			if (m_pLevelUp)

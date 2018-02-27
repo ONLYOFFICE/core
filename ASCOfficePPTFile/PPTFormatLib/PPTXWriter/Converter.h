@@ -82,7 +82,7 @@ namespace NSPresentationEditor
 		void WriteTransition	(CStringWriter& oWriter, CTransition& transition);		
 		void WriteColorScheme	(CStringWriter& oWriter, const std::wstring & name, const std::vector<CColor> & colors, bool extra = false);
 		void WriteBackground	(CStringWriter& oWriter, CRelsGenerator& oRels, CBrush& oBackground);
-		void WriteElement		(CStringWriter& oWriter, CRelsGenerator& oRels, IElement* pElement, CLayout* pLayout = NULL);
+		void WriteElement		(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout = NULL);
 		
 
 	};

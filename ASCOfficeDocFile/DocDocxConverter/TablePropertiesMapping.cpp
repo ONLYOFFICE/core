@@ -34,15 +34,13 @@
 
 namespace DocFileFormat
 {
-	TablePropertiesMapping::TablePropertiesMapping (XMLTools::CStringXmlWriter* pWriter, StyleSheet* styles, std::vector<short>* grid, bool isTableStyleNeeded ):
-			PropertiesMapping(pWriter), _tblPr(NULL), _tblGrid(NULL), _tblBorders(NULL), _grid(NULL),
-			brcLeft(NULL), brcTop(NULL), brcBottom(NULL), brcRight(NULL), brcHorz(NULL), brcVert(NULL), _styles(NULL),
+	TablePropertiesMapping::TablePropertiesMapping (XMLTools::CStringXmlWriter* pWriter, StyleSheet* styles, std::vector<short>* grid, std::vector<short>* grid_write, bool isTableStyleNeeded ):
+			PropertiesMapping(pWriter), _tblPr(NULL), _tblGrid(NULL), _tblBorders(NULL), _grid(grid), _grid_write(grid_write),
+			brcLeft(NULL), brcTop(NULL), brcBottom(NULL), brcRight(NULL), brcHorz(NULL), brcVert(NULL), _styles(styles),
 			_isTableStyleNeeded(isTableStyleNeeded)
 {
-	_styles		= styles;
     _tblPr		= new XMLTools::XMLElement( L"w:tblPr");
     _tblBorders = new XMLTools::XMLElement( L"w:tblBorders");
-	_grid		= grid;
 }
 TablePropertiesMapping::~TablePropertiesMapping()
 {
@@ -73,6 +71,9 @@ namespace DocFileFormat
 		short gabHalf		= 0;
 		short marginLeft	= 0;
 		short marginRight	= 0;
+
+		BYTE itcFirst		= 0;
+		BYTE itcLim			= 0;
 
 		for ( std::list<SinglePropertyModifier>::iterator iter = tapx->grpprl->begin(); iter != tapx->grpprl->end(); iter++ )
 		{
@@ -120,7 +121,15 @@ namespace DocFileFormat
 					_tblPr->AppendChild( tblW );
 				}
 				break;
+				case sprmTMerge:
+				{
+					itcFirst = iter->Arguments[0];
+					itcLim = iter->Arguments[1];
+				}break;
+				case sprmTSplit:
+				{
 
+				}break;
 				case sprmOldTJc:
 				case sprmTJc:
 				case sprmTJcRow:
@@ -144,7 +153,7 @@ namespace DocFileFormat
 
 					if ( _isTableStyleNeeded )
 					{
-						int ind = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
+						size_t ind = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
 						
 						std::wstring id = ind < _styles->Styles->size() ? StyleSheetMapping::MakeStyleId( _styles->Styles->at( ind ) ) : L"";
 
@@ -486,7 +495,7 @@ namespace DocFileFormat
 			bWriteGridCol = true;
 		else
 		{
-			for ( unsigned int i = 0, nSize = _grid->size(); i < nSize; i++ )
+			for ( size_t i = 0, nSize = _grid_write->size(); i < nSize; i++ )
 			{
 				if(_grid->at(i) % DocFileFormat::gc_nZeroWidth != 0)
 				{
@@ -497,10 +506,10 @@ namespace DocFileFormat
 		}
 		if(true == bWriteGridCol)
 		{
-			for ( unsigned int i = 0; i < _grid->size(); i++ )		
+			for ( size_t i = 0; i < _grid_write->size(); i++ )		
 			{
                 XMLTools::XMLElement gridCol( L"w:gridCol");
-                XMLTools::XMLAttribute gridColW( L"w:w", FormatUtils::IntToWideString( _grid->at( i ) ) );
+                XMLTools::XMLAttribute gridColW( L"w:w", FormatUtils::IntToWideString( _grid_write->at( i ) ) );
 				gridCol.AppendAttribute( gridColW );
 				_tblGrid->AppendChild( gridCol );
 			}

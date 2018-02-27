@@ -35,6 +35,11 @@
 
 namespace XLS
 {
+struct _oleDbConn
+{
+	BaseObjectPtr				oleDbConn;
+	std::vector<BaseObjectPtr>	arExtString;
+};
 
 class DBQUERYEXT: public CompositeObject
 {
@@ -51,7 +56,7 @@ public:
 	BaseObjectPtr				m_DBQueryExt;
 	BaseObjectPtr				m_ExtString;
 	std::vector<BaseObjectPtr>	m_arExtString;
-
+	std::vector<_oleDbConn>		m_arOleDbConn;
 };
 
 } // namespace XLS

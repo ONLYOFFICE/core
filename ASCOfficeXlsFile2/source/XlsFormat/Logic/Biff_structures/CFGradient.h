@@ -34,6 +34,7 @@
 #include "BiffStructure.h"
 #include "CFVO.h"
 #include "CFColor.h"
+#include "Xnum.h"
 
 namespace XLS
 {
@@ -67,8 +68,7 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
-	double	numGrange;
+	Xnum numGrange;
 	CFColor	color;
 };
 typedef boost::shared_ptr<CFGradientItem> CFGradientItemPtr;

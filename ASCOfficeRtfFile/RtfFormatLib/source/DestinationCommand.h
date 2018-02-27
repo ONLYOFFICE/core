@@ -1148,12 +1148,16 @@ public:
 			RtfShapeReader oShapeReader(m_oShape);
 			StartSubReader( oShapeReader, oDocument, oReader );
 		}
-        if( "shppict" == sCommand )
+        else if( "shppict" == sCommand )
 		{
 			RtfShppictReader oShppictReader(m_oShape);
 			StartSubReader( oShppictReader, oDocument, oReader );
 		}
-        else if( "pict" == sCommand )
+        else if( "nonshppict" == sCommand )
+		{
+			Skip( oDocument, oReader );
+		}
+		else if( "pict" == sCommand )
 		{
 			m_oShape.m_eAnchorTypeShape		= RtfShape::st_inline;
 			m_oShape.m_nShapeType			= NSOfficeDrawing::sptPictureFrame;

@@ -247,7 +247,7 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 	else if ((pCF->FontProperties.is_init()) && (!pCF->FontProperties->strFontName.empty()))
 	{
 		oWriter.WriteString(L"<a:latin typeface=\"" + pCF->FontProperties->strFontName + L"\"/>");
-	}
+	}	
 	if (pCF->FontPropertiesEA.is_init())
 	{
 		oWriter.WriteString(L"<a:ea typeface=\"" + pCF->FontPropertiesEA->strFontName + L"\"/>");
@@ -293,10 +293,10 @@ NSPresentationEditor::CShapeWriter::CShapeWriter()
 	m_pImageElement = NULL;
 	m_pShapeElement = NULL;
 }
-bool NSPresentationEditor::CShapeWriter::SetElement(IElement* pElem)
+bool NSPresentationEditor::CShapeWriter::SetElement(CElementPtr pElem)
 {
-    m_pShapeElement = dynamic_cast<CShapeElement*>(pElem);
-    m_pImageElement = dynamic_cast<CImageElement*>(pElem);
+    m_pShapeElement = dynamic_cast<CShapeElement*>(pElem.get());
+    m_pImageElement = dynamic_cast<CImageElement*>(pElem.get());
 	
 	m_pSimpleGraphicsConverter->PathCommandEnd();
 
@@ -309,7 +309,7 @@ bool NSPresentationEditor::CShapeWriter::SetElement(IElement* pElem)
 
 	if (m_pShapeElement)
 	{
-		m_pShapeElement->m_oShape.GetTextRect(m_oTextRect);
+		m_pShapeElement->m_pShape->GetTextRect(m_oTextRect);
 	}
 
 	m_oWriter.ClearNoAttack();
@@ -787,9 +787,9 @@ void NSPresentationEditor::CShapeWriter::WriteShapeInfo()
 		{
 			if (m_pShapeElement->m_lPlaceholderSizePreset == 1)
 				m_oWriter.WriteString(std::wstring(L" size=\"half\""));
-			if (m_pShapeElement->m_lPlaceholderSizePreset == 2)
+			else if (m_pShapeElement->m_lPlaceholderSizePreset == 2)
 				m_oWriter.WriteString(std::wstring(L" size=\"quarter\""));
-			if (m_pShapeElement->m_lPlaceholderSizePreset == 3)
+			else if (m_pShapeElement->m_lPlaceholderSizePreset == 3)
 			{
 				if (isBodyPlaceholder(m_pShapeElement->m_lPlaceholderType))
 					m_oWriter.WriteString(std::wstring(L" size=\"half\""));
@@ -809,7 +809,7 @@ void NSPresentationEditor::CShapeWriter::WriteShapeInfo()
 }
 void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 {
-	size_t nCount = m_pShapeElement->m_oShape.m_oText.m_arParagraphs.size();
+	size_t nCount = m_pShapeElement->m_pShape->m_oText.m_arParagraphs.size();
 
 	m_oWriter.WriteString(std::wstring(L"<p:txBody>"));
 
@@ -826,21 +826,21 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 	
 //	m_oWriter.WriteString(std::wstring(L" lIns=\"0\" tIns=\"0\" rIns=\"0\" bIns=\"0\""));
 
-	if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 0 )			
+	if (m_pShapeElement->m_pShape->m_oText.m_oAttributes.m_nTextAlignVertical == 0 )			
 		m_oWriter.WriteString(L" anchor=\"t\"");
-	else if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 2 )	
+	else if (m_pShapeElement->m_pShape->m_oText.m_oAttributes.m_nTextAlignVertical == 2 )	
 		m_oWriter.WriteString(L" anchor=\"b\"");
-	else if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 1 )	
+	else if (m_pShapeElement->m_pShape->m_oText.m_oAttributes.m_nTextAlignVertical == 1 )	
 	{
 		m_oWriter.WriteString(L" anchor=\"ctr\"");
 		m_oWriter.WriteString(L" anchorCtr=\"0\"");
 	}
-	if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_dTextRotate > 0)
+	if (m_pShapeElement->m_pShape->m_oText.m_oAttributes.m_dTextRotate > 0)
 	{
-		std::wstring strProp = std::to_wstring((int)(m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_dTextRotate * 60000));
+		std::wstring strProp = std::to_wstring((int)(m_pShapeElement->m_pShape->m_oText.m_oAttributes.m_dTextRotate * 60000));
 		m_oWriter.WriteString(L" rot=\"" + strProp + L"\"");
 	}
-	if (m_pShapeElement->m_oShape.m_oText.m_bVertical)
+	if (m_pShapeElement->m_pShape->m_oText.m_bVertical)
 	{
 		m_oWriter.WriteString(L" vert=\"eaVert\"");
 	}
@@ -853,7 +853,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			m_oWriter.WriteString(std::wstring(L" prst=\"") + prstTxWarp + _T("\">"));
 			m_oWriter.WriteString(std::wstring(L"<a:avLst>"));//модификаторы
 
-			CPPTShape *pPPTShape = dynamic_cast<CPPTShape *>(m_pShapeElement->m_oShape.m_pShape);
+			CPPTShape *pPPTShape = dynamic_cast<CPPTShape *>(m_pShapeElement->m_pShape->getBaseShape().get());
             std::wstring strVal;
 
 			for (int i = 0 ; (pPPTShape) && (i < pPPTShape->m_arAdjustments.size()); i++)
@@ -875,7 +875,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			m_oWriter.WriteString(L"</a:avLst>");
 		m_oWriter.WriteString(L"</a:prstTxWarp>");
 	}
-	if (m_pShapeElement->m_oShape.m_oText.m_bAutoFit)
+	if (m_pShapeElement->m_pShape->m_oText.m_bAutoFit)
 	{
 		m_oWriter.WriteString(L"<a:spAutoFit/>");
 	}
@@ -890,14 +890,14 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 
 	if (!m_bWordArt)
 	{
-		CStylesWriter::ConvertStyles(m_pShapeElement->m_oShape.m_oText.m_oStyles, m_oMetricInfo, m_oWriter);
+		CStylesWriter::ConvertStyles(m_pShapeElement->m_pShape->m_oText.m_oStyles, m_oMetricInfo, m_oWriter);
 	}
 
 	m_oWriter.WriteString(std::wstring(L"</a:lstStyle>"));
 
 	for (size_t nIndexPar = 0; nIndexPar < nCount; ++nIndexPar)
 	{
-		NSPresentationEditor::CParagraph* pParagraph = &m_pShapeElement->m_oShape.m_oText.m_arParagraphs[nIndexPar];
+		NSPresentationEditor::CParagraph* pParagraph = &m_pShapeElement->m_pShape->m_oText.m_arParagraphs[nIndexPar];
 
 		//if (m_bWordArt && nIndexPar == nCount-1)
 		//{
@@ -1172,13 +1172,11 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			{
 				if (0 == pCF->Typeface.get())
 				{
-                    std::wstring strProp = _T("<a:latin typeface=\"+mj-lt\"/>");
-					m_oWriter.WriteString(strProp);
+					m_oWriter.WriteString(L"<a:latin typeface=\"+mj-lt\"/>");
 				}
 				else
 				{
-                    std::wstring strProp = _T("<a:latin typeface=\"+mn-lt\"/>");
-					m_oWriter.WriteString(strProp);
+					m_oWriter.WriteString(L"<a:latin typeface=\"+mn-lt\"/>");
 				}
 			}
 			else if (pCF->FontProperties.is_init())
@@ -1308,12 +1306,14 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertShape()
 		m_oWriter.WriteString(std::wstring(L"</a:xfrm>"));
 	}
 
-	if (m_pShapeElement->m_oShape.m_lDrawType & c_ShapeDrawType_Graphic || m_pShapeElement->m_oShape.m_pShape->m_bCustomShape)
+    CBaseShapePtr shape = m_pShapeElement->m_pShape->getBaseShape();
+
+	if (m_pShapeElement->m_pShape->m_lDrawType & c_ShapeDrawType_Graphic || shape->m_bCustomShape)
 	{
-		m_pShapeElement->m_oShape.ToRenderer(dynamic_cast<IRenderer*>(this), oInfo, m_oMetricInfo, 0.0, 1.0);
+		m_pShapeElement->m_pShape->ToRenderer(dynamic_cast<IRenderer*>(this), oInfo, m_oMetricInfo, 0.0, 1.0);
 	}
 
-	if ((prstGeom.empty() == false || m_pShapeElement->m_bShapePreset) && prstTxWarp.empty() && !m_pShapeElement->m_oShape.m_pShape->m_bCustomShape)
+	if ((prstGeom.empty() == false || m_pShapeElement->m_bShapePreset) && prstTxWarp.empty() && !shape->m_bCustomShape)
 	{
 		if (prstGeom.empty()) prstGeom = L"rect";
 		m_oWriter.WriteString(std::wstring(L"<a:prstGeom"));

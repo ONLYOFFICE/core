@@ -224,8 +224,9 @@ public:
 	bool & get_use_image_replace()
 	{
 		bool res = false;
-		if (frames_.size()>0)	return frames_.back().use_image_replace;
-		else					return res;
+		if (!frames_.empty())	return frames_.back().use_image_replace;
+		else
+			throw;
 	}
 
 	std::wstring & get_text_stream_shape()
@@ -762,7 +763,7 @@ private:
     std::wstring			automatic_parent_style_; 
     std::wstring			current_master_page_name_;
 	std::wstring			text_list_style_name_;
-    std::list<std::wstring> list_style_stack_;
+    std::vector<std::wstring> list_style_stack_;
     bool					first_element_list_item_;
     
 	bool page_break_after_;
@@ -780,9 +781,9 @@ private:
  
     int										new_list_style_number_;	// счетчик для нумерации имен созданных в процессе конвертации стилей
 	NoteType								process_note_;
-    std::list<odf_reader::office_element *> delayed_elements_;
+    std::vector<odf_reader::office_element*> delayed_elements_;
 
-    std::list< const odf_reader::style_text_properties * >	text_properties_stack_;
+    std::vector< const odf_reader::style_text_properties*>	text_properties_stack_;
 	std::map<std::wstring, text_tracked_context::_state>	map_current_changes_;    
     boost::unordered_map<std::wstring, std::wstring>		list_style_renames_;// цепочки переименований нумераций
 };

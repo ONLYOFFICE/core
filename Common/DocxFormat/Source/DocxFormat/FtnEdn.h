@@ -68,7 +68,6 @@ namespace OOX
 		virtual ~CFtnEdn()
 		{
 		}
-	public:
 		virtual void ClearItems()
 		{
 			m_eType = et_Unknown;
@@ -78,10 +77,7 @@ namespace OOX
 
 			WritingElementWithChilds::ClearItems();
 		}
-
-	public:
-
-		virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			if ( _T("w:footnote") == oNode.GetName() )
 				m_eType = et_w_footnote;
@@ -257,7 +253,7 @@ namespace OOX
 					m_arrItems.push_back( pItem );
 			}
 		}
-		void	ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
@@ -265,7 +261,7 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:type"), m_oType )
 			WritingElement_ReadAttributes_End( oReader )
 		}
-        virtual std::wstring      toXML() const
+        virtual std::wstring toXML() const
 		{
 			std::wstring sResult;
 			
@@ -281,13 +277,13 @@ namespace OOX
 
 			sResult += _T(">");
 
-			for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-			{
-				if ( m_arrItems[nIndex] )
-				{
-					sResult += m_arrItems[nIndex]->toXML();
-				}
-			}
+            for ( size_t i = 0; i < m_arrItems.size(); ++i)
+            {
+                if (  m_arrItems[i] )
+                {
+                    sResult += m_arrItems[i]->toXML();
+                }
+            }
 
 			if ( m_eType == et_w_footnote )
 				sResult += _T("</w:footnote>");
@@ -300,16 +296,10 @@ namespace OOX
 		{
 			return m_eType;
 		}
-
-	public:
-
 		void AddParagraph(Logic::CParagraph *pPara)
 		{
 			m_arrItems.push_back( (WritingElement*)pPara );
 		}
-
-	public:
-
 		OOX::EElementType                        m_eType; // <w:footnote> или <w:endnote>
 
 		// Attributes

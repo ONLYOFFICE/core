@@ -57,10 +57,11 @@ public:
 	{
 		if (m_ooxElem == NULL) return false;
 
-		for (size_t i = 0; i < m_ooxElem->m_arrItems.size(); i++)
+        for (std::vector<OOX::WritingElement*>::iterator it = m_ooxElem->m_arrItems.begin(); it != m_ooxElem->m_arrItems.end(); ++it)
 		{
 			RtfMathPtr pNewMath;
-			if (ParseElement(oParam, m_ooxElem->m_arrItems[i], pNewMath))
+			
+			if (ParseElement(oParam, *it, pNewMath))
 			{
 				oOutput.AddItem( pNewMath );
 			}

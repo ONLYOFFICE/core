@@ -87,10 +87,14 @@ namespace BinDocxRW
 
 		BinaryDocumentTableWriter oBinaryDocumentTableWriter(m_oParamsWriter, oParamsDocumentWriter, m_mapIgnoreComments, NULL);
 		
-		oBinaryDocumentTableWriter.prepareOfficeDrawingConverter(m_pOfficeDrawingConverter, oParamsDocumentWriter.m_pRels,  pHdrFtr->m_arrShapeTypes);
-		
+		smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
+		m_pOfficeDrawingConverter->SetRels(oParamsDocumentWriter.m_pRels);
+		m_pOfficeDrawingConverter->ClearShapeTypes();
+
 		nCurPos = m_oBcw.WriteItemStart(c_oSerHdrFtrTypes::HdrFtr_Content);
 		oBinaryDocumentTableWriter.WriteDocumentContent(pHdrFtr->m_arrItems);
 		m_oBcw.WriteItemEnd(nCurPos);
+
+		m_pOfficeDrawingConverter->SetRels(oldRels);
 	}
 }

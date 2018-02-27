@@ -56,7 +56,8 @@ public:
 	std::vector<BaseObjectPtr>	m_arSXDI;
 	std::vector<BaseObjectPtr>	m_arPIVOTLI;
 	BaseObjectPtr				m_PIVOTEX;
-
+//--------------------------------------------------
+	bool	bOLAP;
 };
 
 } // namespace XLS

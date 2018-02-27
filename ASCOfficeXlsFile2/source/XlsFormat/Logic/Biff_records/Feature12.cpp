@@ -39,11 +39,9 @@ Feature12::Feature12()
 {
 }
 
-
 Feature12::~Feature12()
 {
 }
-
 
 BaseObjectPtr Feature12::clone()
 {
@@ -53,6 +51,7 @@ BaseObjectPtr Feature12::clone()
 
 void Feature12::readFields(CFRecord& record)
 {
+	feature11.readFields(record);
 
 }
 

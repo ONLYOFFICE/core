@@ -51,8 +51,6 @@
 #include "Theme.h"
 #include "TableStyles.h"
 
-#include "../../Common/DocxFormat/Source/DocxFormat/Media/Image.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
 
@@ -61,10 +59,10 @@ namespace PPTX
 	class SlideMaster : public WrapperFile, public FileContainer
 	{
 	public:
-		SlideMaster()
+		SlideMaster(OOX::Document* pMain) : WrapperFile(pMain), FileContainer(pMain)
 		{
 		}
-		SlideMaster(const OOX::CPath& filename, FileMap& map)
+		SlideMaster(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), FileContainer(pMain)
 		{
 			read(filename, map);
 		}
@@ -130,58 +128,47 @@ namespace PPTX
 		{
 			return type().DefaultFileName();
 		}
-		void GetLevelUp(Logic::Shape* pShape)
+		void GetLevelUp(WrapperWritingElement* pElem)
 		{
-			if (!pShape) return;
+			Logic::Shape	*pShape	= dynamic_cast<PPTX::Logic::Shape*>(pElem);
+			Logic::Pic		*pPic	= dynamic_cast<PPTX::Logic::Pic*>(pElem);
+			
+			if (!pShape && !pPic) return;
 
-			if(pShape->nvSpPr.nvPr.ph.is_init())
+			Logic::NvPr *pNvPr = NULL;
+			
+			if (pShape)	pNvPr = &pShape->nvSpPr.nvPr;
+			if (pPic)	pNvPr = &pPic->nvPicPr.nvPr;
+
+			if (!pNvPr) return;
+			if (pNvPr->ph.is_init() == false) return;
+
+			std::wstring idx = pNvPr->ph->idx.get_value_or(_T("0"));
+			std::wstring type = pNvPr->ph->type.get_value_or(_T("body"));
+			
+			if (type == _T("ctrTitle")) type = _T("title");
+
+			for (size_t i = 0; i < cSld.spTree.SpTreeElems.size(); ++i)
 			{
-				std::wstring idx = pShape->nvSpPr.nvPr.ph->idx.get_value_or(_T("0"));
-				std::wstring type = pShape->nvSpPr.nvPr.ph->type.get_value_or(_T("body"));
-				
-				if (type == _T("ctrTitle")) type = _T("title");
-
-				for (size_t i = 0; i < cSld.spTree.SpTreeElems.size(); ++i)
+				smart_ptr<Logic::Shape> pMasterShape = cSld.spTree.SpTreeElems[i].GetElem().smart_dynamic_cast<Logic::Shape>();
+				if (pMasterShape.IsInit())
 				{
-					smart_ptr<Logic::Shape> pMasterShape = cSld.spTree.SpTreeElems[i].GetElem().smart_dynamic_cast<Logic::Shape>();
-					if (pMasterShape.IsInit())
+					if (pMasterShape->nvSpPr.nvPr.ph.is_init())
 					{
-						if (pMasterShape->nvSpPr.nvPr.ph.is_init())
+						std::wstring lIdx	= pMasterShape->nvSpPr.nvPr.ph->idx.get_value_or(_T("0"));
+						std::wstring lType	= pMasterShape->nvSpPr.nvPr.ph->type.get_value_or(_T("body"));
+						
+						if (lType == L"ctrTitle")	lType = L"title";
+						if (type == lType)
 						{
-							std::wstring lIdx	= pMasterShape->nvSpPr.nvPr.ph->idx.get_value_or(_T("0"));
-							std::wstring lType	= pMasterShape->nvSpPr.nvPr.ph->type.get_value_or(_T("body"));
+							if (pShape)	pShape->SetLevelUpElement(pMasterShape.operator->());
+							if (pPic)	pPic->SetLevelUpElement(pMasterShape.operator->());
 							
-							if (lType == L"ctrTitle")	lType = L"title";
-							if (type == lType)
-							{
-								pShape->SetLevelUpElement(pMasterShape.operator->());
-								return;
-							}
+							return;
 						}
 					}
 				}
 			}
-		}
-		virtual std::wstring GetMediaFullPathNameFromRId(const OOX::RId& rid)const
-		{
-			smart_ptr<OOX::Image> p = GetImage(rid);
-			if (!p.is_init())
-				return _T("");
-			return p->filename().m_strFilename;
-		}
-		virtual std::wstring GetFullHyperlinkNameFromRId(const OOX::RId& rid)const
-		{
-			smart_ptr<OOX::HyperLink> p = GetHyperlink(rid);
-			if (!p.is_init())
-				return _T("");
-			return p->Uri().m_strFilename;
-		}
-		virtual std::wstring GetOleFromRId(const OOX::RId& rid)const
-		{
-			smart_ptr<OOX::OleObject> p = GetOleObject(rid);
-			if (!p.is_init())
-				return _T("");
-			return p->filename().m_strFilename;
 		}
 
 //---------------------Colors from map---------------------------------------
@@ -372,7 +359,7 @@ namespace PPTX
 		{
 			if(Vml.is_init() && !spid.empty())
 			{
-				std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pPair = Vml->m_mapShapes.find(spid);
+                boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pPair = Vml->m_mapShapes.find(spid);
 				if (Vml->m_mapShapes.end() != pPair)
 				{
 					pPair->second.bUsed = true;

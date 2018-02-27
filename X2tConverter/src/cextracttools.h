@@ -43,6 +43,9 @@
 #include "../../DesktopEditor/common/StringBuilder.h"
 #include "../../DesktopEditor/common/Path.h"
 
+#include <boost/unordered_map.hpp>
+#include <boost/algorithm/string.hpp>
+
 #include <iostream>
 #include <fstream>
 
@@ -165,6 +168,10 @@ namespace NExtractTools
 		TCD_MSCRYPT2XLST,
 		TCD_MSCRYPT2PPTT,
 		TCD_MSCRYPT2BIN,
+
+		TCD_MSCRYPT2_RAW,
+		TCD_2MSCRYPT_RAW,
+
 //
 		TCD_HTML2DOCX,
 		TCD_HTML2DOCT,
@@ -356,6 +363,19 @@ namespace NExtractTools
 		}
 	};
 
+	class InputLimit
+	{
+	public:
+		UINT compressed;
+		UINT uncompressed;
+		std::wstring pattern;
+		InputLimit()
+		{
+			compressed = 0;
+			uncompressed = 0;
+		}
+	};
+
 	class InputParams
 	{
 	public:
@@ -378,8 +398,10 @@ namespace NExtractTools
 		int* m_nDoctParams;
 		std::wstring* m_sHtmlFileInternalPath;
 		std::wstring* m_sPassword;
+		std::wstring* m_sSavePassword;
 		std::wstring* m_sTempDir;
 		bool* m_bIsNoBase64;
+		boost::unordered_map<int, InputLimit> m_mapInputLimits;
 		//output params
 		mutable bool m_bOutputConvertCorrupted;
 	public:
@@ -404,6 +426,7 @@ namespace NExtractTools
 			m_nDoctParams = NULL;
 			m_sHtmlFileInternalPath = NULL;
 			m_sPassword = NULL;
+			m_sSavePassword = NULL;
 			m_sTempDir = NULL;
 			m_bIsNoBase64 = NULL;
 
@@ -430,6 +453,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_nDoctParams);
 			RELEASEOBJECT(m_sHtmlFileInternalPath);
 			RELEASEOBJECT(m_sPassword);
+			RELEASEOBJECT(m_sSavePassword);
 			RELEASEOBJECT(m_sTempDir);
 			RELEASEOBJECT(m_bIsNoBase64);
 		}
@@ -471,13 +495,19 @@ namespace NExtractTools
 						std::wstring sName = oXmlNode.GetName();
 						if(_T("m_oMailMergeSend") == sName)
 						{
+							RELEASEOBJECT(m_oMailMergeSend);
 							m_oMailMergeSend = new InputParamsMailMerge();
 							m_oMailMergeSend->FromXmlNode(oXmlNode);
 						}
 						else if(_T("m_oThumbnail") == sName)
 						{
+							RELEASEOBJECT(m_oThumbnail);
 							m_oThumbnail = new InputParamsThumbnail();
 							m_oThumbnail->FromXmlNode(oXmlNode);
+						}
+						else if(_T("m_oInputLimits") == sName)
+						{
+							FromLimitsNode(oXmlNode);
 						}
 						else
 						{
@@ -485,51 +515,149 @@ namespace NExtractTools
 							if(oXmlNode.GetTextIfExist(sValue))
 							{
 								if(_T("m_sKey") == sName)
+								{
+									RELEASEOBJECT(m_sKey);
 									m_sKey = new std::wstring(sValue);
+								}
 								else if(_T("m_sFileFrom") == sName)
+								{
+									RELEASEOBJECT(m_sFileFrom);
 									m_sFileFrom = new std::wstring(sValue);
+								}
 								else if(_T("m_sFileTo") == sName)
+								{
+									RELEASEOBJECT(m_sFileTo);
 									m_sFileTo = new std::wstring(sValue);
+								}
 								else if(_T("m_nFormatFrom") == sName)
+								{
+									RELEASEOBJECT(m_nFormatFrom);
 									m_nFormatFrom = new int(XmlUtils::GetInteger(sValue));
+								}
 								else if(_T("m_nFormatTo") == sName)
+								{
+									RELEASEOBJECT(m_nFormatTo);
 									m_nFormatTo = new int(XmlUtils::GetInteger(sValue));
+								}
 								else if(_T("m_nCsvTxtEncoding") == sName)
+								{
+									RELEASEOBJECT(m_nCsvTxtEncoding);
 									m_nCsvTxtEncoding = new int(XmlUtils::GetInteger(sValue));
+								}
 								else if(_T("m_nCsvDelimiter") == sName)
+								{
+									RELEASEOBJECT(m_nCsvDelimiter);
 									m_nCsvDelimiter = new int(XmlUtils::GetInteger(sValue));
+								}
 								else if(_T("m_nCsvDelimiterChar") == sName)
+								{
+									RELEASEOBJECT(m_sCsvDelimiterChar);
 									m_sCsvDelimiterChar = new std::wstring(sValue);
+								}
 								else if(_T("m_bPaid") == sName)
+								{
+									RELEASEOBJECT(m_bPaid);
 									m_bPaid = new bool(XmlUtils::GetBoolean2(sValue));
+								}
 								else if(_T("m_bFromChanges") == sName)
+								{
+									RELEASEOBJECT(m_bFromChanges);
 									m_bFromChanges = new bool(XmlUtils::GetBoolean2(sValue));
+								}
 								else if(_T("m_sAllFontsPath") == sName)
+								{
+									RELEASEOBJECT(m_sAllFontsPath);
 									m_sAllFontsPath = new std::wstring(sValue);
+								}
 								else if(_T("m_sFontDir") == sName)
+								{
+									RELEASEOBJECT(m_sFontDir);
 									m_sFontDir = new std::wstring(sValue);
+								}
 								else if(_T("m_sThemeDir") == sName)
+								{
+									RELEASEOBJECT(m_sThemeDir);
 									m_sThemeDir = new std::wstring(sValue);
+								}
 								else if(_T("m_bDontSaveAdditional") == sName)
+								{
+									RELEASEOBJECT(m_bDontSaveAdditional);
 									m_bDontSaveAdditional = new bool(XmlUtils::GetBoolean2(sValue));
+								}
 								else if(_T("m_nDoctParams") == sName)
+								{
+									RELEASEOBJECT(m_nDoctParams);
 									m_nDoctParams = new int(XmlUtils::GetInteger(sValue));
+								}
 								else if(_T("m_sHtmlFileInternalPath") == sName)
+								{
+									RELEASEOBJECT(m_sHtmlFileInternalPath);
 									m_sHtmlFileInternalPath = new std::wstring(sValue);
+								}
 								else if(_T("m_sPassword") == sName)
+								{
+									RELEASEOBJECT(m_sPassword);
 									m_sPassword = new std::wstring(sValue);
+								}
+								else if(_T("m_sSavePassword") == sName)
+								{
+									RELEASEOBJECT(m_sSavePassword);
+									m_sSavePassword = new std::wstring(sValue);
+								}
 								else if(_T("m_sTempDir") == sName)
+								{
+									RELEASEOBJECT(m_sTempDir);
 									m_sTempDir = new std::wstring(sValue);
+								}
 								else if(_T("m_bIsNoBase64") == sName)
+								{
+									RELEASEOBJECT(m_bIsNoBase64);
 									m_bIsNoBase64 = new bool(XmlUtils::GetBoolean2(sValue));
+								}
 							}
 							else if(_T("m_nCsvDelimiterChar") == sName)
 							{
 								std::wstring sNil;
 								if (!oXmlNode.GetAttributeIfExist(L"xsi:nil", sNil))
 								{
+									RELEASEOBJECT(m_sCsvDelimiterChar);
 									m_sCsvDelimiterChar = new std::wstring(L"");
 								}
+							}
+						}
+					}
+				}
+			}
+			return true;
+		}
+
+		bool FromLimitsNode(XmlUtils::CXmlNode& oXmlNode)
+		{
+			XmlUtils::CXmlNodes oLimitsNode;
+			if (oXmlNode.GetNodes(L"m_oInputLimit", oLimitsNode))
+			{
+				for(int i = 0; i < oLimitsNode.GetCount(); ++i)
+				{
+					XmlUtils::CXmlNode oLimitNode;
+					if(oLimitsNode.GetAt(i, oLimitNode))
+					{
+						std::wstring sType;
+						if (oLimitNode.GetAttributeIfExist(L"type", sType))
+						{
+							std::vector<std::wstring> aTypes;
+							boost::algorithm::split(aTypes, sType, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
+
+							InputLimit oLimit;
+							XmlUtils::CXmlNode oZipNode;
+							if (oLimitNode.GetNode(L"m_oZip", oZipNode))
+							{
+								oLimit.compressed = std::stoul(oZipNode.GetAttribute(L"compressed", L"0"));
+								oLimit.uncompressed = std::stoul(oZipNode.GetAttribute(L"uncompressed", L"0"));
+								oLimit.pattern = oZipNode.GetAttribute(L"template", L"");
+							}
+							for (int j = 0; j < aTypes.size(); ++j)
+							{
+								m_mapInputLimits[COfficeFileFormatChecker::GetFormatByExtension(L"." + aTypes[j])] = oLimit;
 							}
 						}
 					}
@@ -545,6 +673,14 @@ namespace NExtractTools
         {
             return (NULL != m_sPassword) ? (*m_sPassword) : L"";
         }
+		bool hasSavePassword() const
+		{
+			return NULL != m_sSavePassword;
+		}
+		std::wstring getSavePassword() const
+		{
+			return (NULL != m_sSavePassword) ? (*m_sSavePassword) : L"";
+		}
 		std::wstring getFontPath() const
         {
             return (NULL != m_sFontDir) ? (*m_sFontDir) : L"";
@@ -557,7 +693,7 @@ namespace NExtractTools
 		{
             std::wstring sRes;
 			int nCsvEncoding = 46;//65001 utf8
-			std::wstring cDelimiter = L"";
+			std::wstring cDelimiter = L",";
 
             if(NULL != m_nCsvTxtEncoding)
 				nCsvEncoding = *m_nCsvTxtEncoding;
@@ -820,6 +956,7 @@ namespace NExtractTools
         {
             return NULL != m_bDontSaveAdditional && *m_bDontSaveAdditional;
         }
+		bool checkInputLimits();
 	};
 
     static std::wstring string_replaceAll(std::wstring str, const std::wstring& from, const std::wstring& to)

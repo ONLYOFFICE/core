@@ -821,7 +821,7 @@ void ECMAEncryptor::UpdateDataIntegrity(unsigned char* data, int  size)
 	cryptData.encryptedHmacKey		= std::string((char*)pEncHmacKey.ptr, pEncHmacKey.size);
 	cryptData.encryptedHmacValue	= std::string((char*)pEncHmacValue.ptr, pEncHmacValue.size);
 }
-
+#define PADDING_SIZE 16 // 8
 int ECMAEncryptor::Encrypt(unsigned char* data_inp_ptr, int size, unsigned char*& data_out_ptr)
 {
 	data_out_ptr = NULL;
@@ -831,10 +831,10 @@ int ECMAEncryptor::Encrypt(unsigned char* data_inp_ptr, int size, unsigned char*
 	_buf empty		(NULL, 0, false);
 
 	int size_out = size;
-	if (size_out % 8 != 0) 
-		size_out = (size_out / 8 + 1) * 8;
+	if (size_out % PADDING_SIZE != 0) 
+		size_out = (size_out / PADDING_SIZE + 1) * PADDING_SIZE;
 	
-	data_out_ptr = new unsigned char[size_out + 8]; // real size + padding + size for realsize
+	data_out_ptr = new unsigned char[size_out +	PADDING_SIZE]; // real size + padding + size for realsize
 	
 	_UINT64 nSize = size;
 	memcpy(data_out_ptr, (unsigned char*)&nSize, 8);
@@ -886,8 +886,8 @@ int ECMAEncryptor::Encrypt(unsigned char* data_inp_ptr, int size, unsigned char*
 
 			EncryptCipher(pDecryptedKey,  iv, pInp, pOut, cryptData.cipherAlgorithm);
 			
-			if (sz % 8 != 0) 
-				sz = (sz / 8 + 1) * 8;
+			if (sz % PADDING_SIZE != 0) 
+				sz = (sz / PADDING_SIZE + 1) * PADDING_SIZE;
 			
 			memcpy(data_out, pOut.ptr, sz);
 

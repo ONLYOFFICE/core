@@ -55,12 +55,13 @@ public:
 
 	static const ElementType	type = typeFeatHdr;
 
+	_UINT16						isf;
+	_UINT32						cbHdrData;
+	EnhancedProtection			protection;
+	OSHARED::PropertyBagStore	prop;
+
 //-----------------------------
 	bool is_contained_in_Globals;
-	SharedFeatureType isf;
-	_UINT32	cbHdrData;
-	EnhancedProtection protection;
-	OSHARED::PropertyBagStore prop;
 };
 
 } // namespace XLS

@@ -84,8 +84,8 @@ public:
 	odf_types::common_border_attlist				common_border_attlist_;
 
  
-	office_element_ptr style_background_image_;
-
+	office_element_ptr			style_background_image_;
+    _CP_OPT(odf_types::Bool)	style_use_optimal_column_width_;
        
 };
 

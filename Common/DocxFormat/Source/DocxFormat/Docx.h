@@ -38,73 +38,45 @@
 #include "Rels.h"
 #include "IFileContainer.h"
 #include "FileTypes.h"
-#include "App.h"
-#include "Core.h"
-#include "Document.h"
-#include "FontTable.h"
-#include "Numbering.h"
-#include "Comments.h"
-#include "Styles.h"
-#include "Footnote.h"
-#include "Endnote.h"
-#include "Settings/WebSettings.h"
-#include "Settings/Settings.h"
-#include "External/HyperLink.h"
-#include "Media/Image.h"
-#include "Media/OleObject.h"
-#include "Media/ActiveX.h"
-#include "Media/VbaProject.h"
-#include "HeaderFooter.h"
-
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 
 #if !defined(_WIN32) && !defined (_WIN64)
 #include <sys/stat.h>
 #endif
-
+namespace PPTX
+{
+	class Theme;
+}
 namespace OOX
 {
-	class CDocx : public OOX::IFileContainer
+	class CApp;
+	class CCore;
+	class CDocument;
+	class CFontTable;
+	class CNumbering;
+	class CStyles;
+	class CFootnotes;
+	class CEndnotes;
+	class CSettings;
+	class CComments;
+	class CCommentsExt;
+	class CPeople;
+	class VbaProject;
+	class JsaProject;
+	class CHdrFtr;
+
+	class CDocx : public OOX::Document, public OOX::IFileContainer
 	{
 	public:
 
-		CDocx()
+		CDocx() : OOX::IFileContainer(dynamic_cast<OOX::Document*>(this))
 		{
-			m_pDocument  = NULL;
-			m_pFontTable = NULL;
-			m_pNumbering = NULL;
-			m_pStyles    = NULL;
-			m_pApp       = NULL;
-			m_pCore      = NULL;
-			m_pEndnotes  = NULL;
-			m_pFootnotes = NULL;
-			m_pSettings  = NULL;
-			m_pTheme     = NULL;
-			m_pComments  = NULL;
-			m_pCommentsExt = NULL;
-			m_pPeople	= NULL;
-			m_pVbaProject = NULL;
+			init();
 		}
-		CDocx(const CPath& oFilePath)
+		CDocx(const CPath& oFilePath) : OOX::IFileContainer(this)
 		{
-			m_pDocument  = NULL;
-			m_pFontTable = NULL;
-			m_pNumbering = NULL;
-			m_pStyles    = NULL;
-			m_pApp       = NULL;
-			m_pCore      = NULL;
-			m_pEndnotes  = NULL;
-			m_pFootnotes = NULL;
-			m_pSettings  = NULL;
-			m_pTheme     = NULL;
-			m_pComments  = NULL;
-			m_pCommentsExt = NULL;
-			m_pPeople	= NULL;
-			m_pVbaProject = NULL;
-
+			init();
 			Read( oFilePath );
 		}
-
         bool Read(const CPath& oFilePath);
         bool Write(const CPath& oFilePath)
 		{
@@ -131,76 +103,8 @@ namespace OOX
             return true;
 		}
 
-		OOX::CDocument  *GetDocument () const
-		{
-			return m_pDocument;
-		}
-		OOX::CFontTable *GetFontTable() const
-		{
-			return m_pFontTable;
-		}
-		OOX::CNumbering *GetNumbering() const
-		{
-			return m_pNumbering;
-		}
-		OOX::CStyles    *GetStyles   () const
-		{
-			return m_pStyles;
-		}
-		OOX::CEndnotes  *GetEndnotes () const
-		{
-			return m_pEndnotes;
-		}
-		OOX::CFootnotes *GetFootnotes() const
-		{
-			return m_pFootnotes;
-		}
-		OOX::CApp       *GetApp      () const
-		{
-			return m_pApp;
-		}
-		OOX::CCore      *GetCore     () const
-		{
-			return m_pCore;
-		}
-		OOX::CSettings  *GetSettings () const
-		{
-			return m_pSettings;
-		}
-		OOX::CComments  *GetComments () const
-		{
-			return m_pComments;
-		}
-		OOX::CCommentsExt  *GetCommentsExt () const
-		{
-			return m_pCommentsExt;
-		}
-		OOX::CPeople  *GetPeople () const
-		{
-			return m_pPeople;
-		}
-
-		PPTX::Theme	*GetTheme () const
-		{
-			return m_pTheme;
-		}
-
-		OOX::CHdrFtr *GetHeaderOrFooter(const OOX::RId& rId) const
-		{
-			if ( m_pDocument )
-			{
-				OOX::IFileContainer* pDocumentContainer = (OOX::IFileContainer*)m_pDocument;
-
-                smart_ptr<OOX::File> pFile = pDocumentContainer->Find( rId );
-				if ( pFile.IsInit() && ( OOX::FileTypes::Header == pFile->type() || OOX::FileTypes::Footer == pFile->type() ) )
-					return (OOX::CHdrFtr*)pFile.operator->();
-				else 
-					return NULL;
-			}
-			
-			return NULL;
-		}
-
+		OOX::CHdrFtr *GetHeaderOrFooter(const OOX::RId& rId) const;
+		
 		OOX::CApp			*m_pApp;
 		OOX::CCore			*m_pCore;
 
@@ -214,10 +118,31 @@ namespace OOX
 		OOX::CComments		*m_pComments;   //			         word/comments.xml
 		OOX::CCommentsExt	*m_pCommentsExt;//					word/commentsExtended.xml
 		OOX::CPeople		*m_pPeople;		//					word/people.xml
+		
 		OOX::VbaProject		*m_pVbaProject;
+		OOX::JsaProject		*m_pJsaProject;
 		
 		PPTX::Theme			*m_pTheme;
 
+private:
+		void init()
+		{
+			m_pDocument  = NULL;
+			m_pFontTable = NULL;
+			m_pNumbering = NULL;
+			m_pStyles    = NULL;
+			m_pApp       = NULL;
+			m_pCore      = NULL;
+			m_pEndnotes  = NULL;
+			m_pFootnotes = NULL;
+			m_pSettings  = NULL;
+			m_pTheme     = NULL;
+			m_pComments  = NULL;
+			m_pCommentsExt	= NULL;
+			m_pPeople		= NULL;
+			m_pVbaProject	= NULL;
+			m_pJsaProject	= NULL;
+		}
 	};
 } // OOX
 

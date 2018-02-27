@@ -56,7 +56,8 @@ const bool CHART::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	if(!proc.mandatory<ChartSheetSubstream>())
+	ChartSheetSubstream chart_sheet(-1);
+	if(!proc.mandatory(chart_sheet))
 	{
 		return false;
 	}

@@ -78,8 +78,36 @@ void ods_table_context::start_table_part(std::wstring name, std::wstring ref)
 
 	table_database_ranges_.root->add_child_element(elm);
 	table_database_ranges_.elements.push_back(elm);
+
+	table_part_state part_state;
+	part_state.name = name;
+	part_state.ref = ref;
+
+	int r = ref.rfind(L":");
+	if (r < 0) return;//тута однозначно .. по правилам оох
+
+	utils::parsing_ref (ref.substr(0, r), part_state.col_start, part_state.row_start);
+	utils::parsing_ref (ref.substr(r + 1, ref.size() - r), part_state.col_end, part_state.row_end);
+
+	state().table_parts_.push_back(part_state);
 }
 
+void ods_table_context::add_table_part_column(std::wstring name)
+{
+	if (state().table_parts_.empty()) return;
+
+	size_t column = state().table_parts_.back().columns.size();
+
+	std::wstring sCol = utils::getColAddress(state().table_parts_.back().col_start + column - 1);
+
+	std::wstring ref;//table name ????
+
+	ref += sCol + std::to_wstring(state().table_parts_.back().row_start);
+	ref += L":";
+	ref += sCol + std::to_wstring(state().table_parts_.back().row_end);
+
+	state().table_parts_.back().columns.push_back(std::make_pair(name, ref));
+}
 void ods_table_context::set_table_part_autofilter(bool val)
 {
 	if (!val) return;
@@ -152,15 +180,13 @@ void ods_table_context::add_defined_range(const std::wstring & name, const std::
 	
 	if (sheet_id >=0)
 	{
-		int i=0;
-		for (std::list<ods_table_state>::iterator iter = table_state_list_.begin(); iter != table_state_list_.end(); iter++)
+		for (size_t i = 0; i < table_state_list_.size(); ++i)
 		{
 			if (i == sheet_id)
 			{
-				iter->add_definded_expression(elm);
+				table_state_list_[i].add_definded_expression(elm);
 				break;
 			}
-			i++;
 		}
 	}
 	else
@@ -187,31 +213,23 @@ void ods_table_context::add_defined_expression(const std::wstring & name, const 
 	named_expression->table_name_		= name;
 	named_expression->table_expression_ = odf_value;
 	
-	if (sheet_id >=0)
+	if (sheet_id >=0 && sheet_id < table_state_list_.size())
 	{
-		int i=0;
-		for (std::list<ods_table_state>::iterator iter = table_state_list_.begin(); iter != table_state_list_.end(); iter++)
+		odf_base_cell = table_state_list_[sheet_id].office_table_name_ + L".$A$1";
+		table_state_list_[sheet_id].add_definded_expression(elm);
+		
+		if ( printable)
 		{
-			if (i == sheet_id)
-			{
-				odf_base_cell = iter->office_table_name_ + L".$A$1";
-				iter->add_definded_expression(elm);
-				if ( printable)
-				{
-					XmlUtils::replace_all( odf_value, L"[", L"");
-					XmlUtils::replace_all( odf_value, L"]", L"");
-					XmlUtils::replace_all( odf_value, L";", L" ");
+			XmlUtils::replace_all( odf_value, L"[", L"");
+			XmlUtils::replace_all( odf_value, L"]", L"");
+			XmlUtils::replace_all( odf_value, L";", L" ");
 
-					iter->set_print_range(odf_value);
-				}
-				break;
-			}
-			i++;
+			table_state_list_[sheet_id].set_print_range(odf_value);
 		}
 	}
 	else
 	{
-		if (!table_defined_expressions_.root)create_element(L"table", L"named-expressions",table_defined_expressions_.root,&context_);
+		if (!table_defined_expressions_.root)create_element(L"table", L"named-expressions", table_defined_expressions_.root,&context_);
 		table_defined_expressions_.root->add_child_element(elm);
 	}
 

@@ -162,7 +162,17 @@ namespace PPTX
 			else if(parentFileIs<TableStyles>())
 				RGB = parentFileAs<TableStyles>().GetARGBFromMap(str);
 			else if(parentFileIs<Theme>())
-				RGB = parentFileAs<Theme>().GetARGBFromMap(str);
+			{
+				Theme & theme = parentFileAs<Theme>();
+				if (theme.isMapPresent())
+				{
+					RGB = parentFileAs<Theme>().GetARGBFromMap(str);
+				}
+				else
+				{
+					RGB = parentFileAs<Theme>().GetABGRFromScheme(str);
+				}
+			}
 			else if(parentFileIs<Presentation>())
 				RGB = parentFileAs<Presentation>().GetARGBFromMap(str);
 			//{

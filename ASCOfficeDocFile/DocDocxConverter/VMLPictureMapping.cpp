@@ -156,33 +156,35 @@ namespace DocFileFormat
 		file.CloseFile();
 
 		OOX::CPath path(sTempXmlFile);
-		OOX::CDocument docEmbedded(path, path);
+		OOX::CDocument docEmbedded(NULL, path, path);
 
 		bool res = false;
-		for (int i = 0 ; i < docEmbedded.m_arrItems.size(); i++)
+        for (std::vector<OOX::WritingElement*>::iterator it = docEmbedded.m_arrItems.begin(); it != docEmbedded.m_arrItems.end(); ++it)
 		{
-			if (docEmbedded.m_arrItems[i]->getType() == OOX::et_w_p)
+			if ((*it)->getType() == OOX::et_w_p)
 			{
-				OOX::Logic::CParagraph *paragraph = dynamic_cast<OOX::Logic::CParagraph *>(docEmbedded.m_arrItems[i]);
+				OOX::Logic::CParagraph *paragraph = dynamic_cast<OOX::Logic::CParagraph *>(*it);
 
-				for (int j = 0; (paragraph) && (j < paragraph->m_arrItems.size()); j++)
+                for (std::vector<OOX::WritingElement*>::iterator		jt = paragraph->m_arrItems.begin();
+													(paragraph) && (jt != paragraph->m_arrItems.end()); jt++)
 				{
-					if (paragraph->m_arrItems[j]->getType() == OOX::et_m_oMath)
+					if ((*jt)->getType() == OOX::et_m_oMath)
 					{
 						res = true;
-                        newXmlString = paragraph->m_arrItems[j]->toXML();
+                        newXmlString = (*jt)->toXML();
 						break;
 					}
-					else if (paragraph->m_arrItems[j]->getType() == OOX::et_m_oMathPara)
+					else if ((*jt)->getType() == OOX::et_m_oMathPara)
 					{
-						OOX::Logic::COMathPara *mathPara = dynamic_cast<OOX::Logic::COMathPara *>(paragraph->m_arrItems[j]);
+						OOX::Logic::COMathPara *mathPara = dynamic_cast<OOX::Logic::COMathPara *>(*jt);
 						
-						for (int k = 0; (mathPara) && (k < mathPara->m_arrItems.size()); k++)
+                        for (std::vector<OOX::WritingElement*>::iterator kt = mathPara->m_arrItems.begin();
+														(mathPara) && (kt != mathPara->m_arrItems.end()); kt++)
 						{
-							if (mathPara->m_arrItems[k]->getType() == OOX::et_m_oMath)
+							if ((*kt)->getType() == OOX::et_m_oMath)
 							{
 								res = true;
-                                newXmlString = mathPara->m_arrItems[k]->toXML();
+                                newXmlString = (*kt)->toXML();
 								break;
 							}
 						}
@@ -265,7 +267,6 @@ namespace DocFileFormat
 		}
 		m_pXmlWriter->WriteNodeBegin( L"v:shape", true );
 		
-		m_pXmlWriter->WriteAttribute( L"type", std::wstring( L"#" + VMLShapeTypeMapping::GenerateTypeId(&type)));
 
 		count_vml_objects++;
 
@@ -273,15 +274,9 @@ namespace DocFileFormat
 			m_shapeId =	L"_x0000_s" + FormatUtils::IntToWideString(1024 + count_vml_objects);
 		
 		m_pXmlWriter->WriteAttribute( L"id", m_shapeId);
+		
+		m_pXmlWriter->WriteAttribute( L"type", std::wstring( L"#" + VMLShapeTypeMapping::GenerateTypeId(&type)));
 
-		if (m_isOlePreview)
-		{
-			m_pXmlWriter->WriteAttribute( L"o:ole", L"" );
-		}
-		else if (m_isBullete)
-		{
-            m_pXmlWriter->WriteAttribute( L"o:bullet", L"1" );
-		}
 //todooo oбъединить с shape_mapping		
 
 		for (size_t i = 0; i < options.size(); i++)
@@ -421,6 +416,15 @@ namespace DocFileFormat
 		strStyle +=  L"width:"  + strWidth + L"pt;" + L"height:" + strHeight + L"pt;";
 		m_pXmlWriter->WriteAttribute( L"style", strStyle);
 
+		if (m_isOlePreview)
+		{
+			m_pXmlWriter->WriteAttribute( L"o:ole", L"t" );
+		}
+		else if (m_isBullete)
+		{
+            m_pXmlWriter->WriteAttribute( L"o:bullet", L"1" );
+		}
+
 		m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 		
 		if (CopyPicture(pict))
@@ -498,6 +502,7 @@ namespace DocFileFormat
 			{
 				case Global::msoblipEMF:
 				case Global::msoblipWMF:
+				case Global::msoblipPICT:
 				{
 					MetafilePictBlip* metaBlip = static_cast<MetafilePictBlip*>(oBlipEntry->Blip);
 					if (metaBlip)
@@ -565,6 +570,9 @@ namespace DocFileFormat
 		case Global::msoblipWMF:
 			return std::wstring(L".wmf");
 
+		case Global::msoblipPICT:
+			return std::wstring(L".pcz");
+
 		default:
 			return std::wstring(L".png");
 		}
@@ -598,6 +606,9 @@ namespace DocFileFormat
 
 		case Global::msoblipWMF:
 			return std::wstring(OpenXmlContentTypes::Wmf);
+
+		case Global::msoblipPICT:
+			return std::wstring(OpenXmlContentTypes::Pcz);
 
 		case Global::msoblipDIB:
 			return std::wstring(OpenXmlContentTypes::Bmp);

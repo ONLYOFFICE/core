@@ -151,3 +151,15 @@ HRESULT COfficeUtils::CompressFilesFromMemory(const std::wstring& zipFile, const
     *result = ZLibZipUtils::CompressFiles(zipFile.c_str(), data_source, pParam, compression_level) ? true : false;
 	return S_OK;
 }
+
+HRESULT COfficeUtils::GetFilesSize(const std::wstring& zipFile, const std::wstring& searchPattern, ULONG& nCommpressed, ULONG& nUncommpressed)
+{
+	if (ZLibZipUtils::GetFilesSize(zipFile.c_str(), searchPattern, nCommpressed, nUncommpressed))
+	{
+		return S_OK;
+	}
+	else
+	{
+		return S_FALSE;
+	}
+}

@@ -45,13 +45,14 @@ typedef bool (*progress_operation)		(void*, long, long);
 
 namespace PPTX
 {
-	class Folder;
+	class Document;
 }
 
 class CPPTXFile : public PPTX::IPPTXEvent
 {
 private:
-	PPTX::Folder*		m_pFolder;
+	PPTX::Document*		m_pPptxDocument;
+
     std::wstring		m_strTempDir;
     std::wstring		m_strDirectory;
 

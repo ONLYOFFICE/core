@@ -578,7 +578,7 @@ namespace NSFontConverter
         double dTemp = 0;
         int nInt;
 
-        if ( ( bNegative = dValue < 0 ) )
+        if ( bNegative = ( dValue < 0 ) )
             dValue = -dValue;
 
         dValue = floor( dValue * pow( (double)10, nPrecision) + 0.5);

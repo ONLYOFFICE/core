@@ -37,7 +37,7 @@
 
 #include "FileType.h"
 #include "WritingElement.h"
-#include <map>
+#include <boost/unordered_map.hpp>
 
 
 namespace OOX
@@ -85,7 +85,7 @@ namespace OOX
                 m_mTable.insert( std::make_pair(  _T("sldm"), _T("application/vnd.ms-powerpoint.slide.macroEnabled.12")));
                 m_mTable.insert( std::make_pair(  _T("sldx"), _T("application/vnd.openxmlformats-officedocument.presentationml.slide")));
                 m_mTable.insert( std::make_pair(  _T("doc"),  _T("application/msword")));
-                m_mTable.insert( std::make_pair(  _T("docm"), _T("aapplication/vnd.ms-word.document.macroEnabled.12")));
+                m_mTable.insert( std::make_pair(  _T("docm"), _T("application/vnd.ms-word.document.macroEnabled.12")));
                 m_mTable.insert( std::make_pair(  _T("docx"), _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document")));
                 m_mTable.insert( std::make_pair(  _T("vml"),  _T("application/vnd.openxmlformats-officedocument.vmlDrawing")));
 			}
@@ -278,11 +278,11 @@ namespace OOX
 		{
 			if (pSrcContentTypes == NULL) return;
 
-			for (std::map<std::wstring, ContentTypes::CDefault>::iterator it = pSrcContentTypes->m_mapDefaults.begin(); it != pSrcContentTypes->m_mapDefaults.end(); ++it)
+            for (boost::unordered_map<std::wstring, ContentTypes::CDefault>::iterator it = pSrcContentTypes->m_mapDefaults.begin(); it != pSrcContentTypes->m_mapDefaults.end(); ++it)
             {
                 AddDefault(it->first);
             }
-			for (std::map<std::wstring, ContentTypes::COverride>::iterator it = pSrcContentTypes->m_mapOverrides.begin(); it != pSrcContentTypes->m_mapOverrides.end(); ++it)
+            for (boost::unordered_map<std::wstring, ContentTypes::COverride>::iterator it = pSrcContentTypes->m_mapOverrides.begin(); it != pSrcContentTypes->m_mapOverrides.end(); ++it)
             {
 				if (m_mapOverrides.find(it->first) == m_mapOverrides.end())
 				{
@@ -294,12 +294,12 @@ namespace OOX
 		{
             std::wstring sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
 
-			for (std::map<std::wstring, ContentTypes::CDefault>::const_iterator it = m_mapDefaults.begin(); it != m_mapDefaults.end(); ++it)
+            for (boost::unordered_map<std::wstring, ContentTypes::CDefault>::const_iterator it = m_mapDefaults.begin(); it != m_mapDefaults.end(); ++it)
             {
                 sXml += it->second.toXML();
             }
 
-            for (std::map<std::wstring, ContentTypes::COverride>::const_iterator it = m_mapOverrides.begin(); it != m_mapOverrides.end(); ++it)
+            for (boost::unordered_map<std::wstring, ContentTypes::COverride>::const_iterator it = m_mapOverrides.begin(); it != m_mapOverrides.end(); ++it)
             {
                 sXml += it->second.toXML();
             }
@@ -371,8 +371,8 @@ namespace OOX
 
 	public:
 
-		std::map<std::wstring, ContentTypes::CDefault>	m_mapDefaults;
-        std::map<std::wstring, ContentTypes::COverride>	m_mapOverrides;
+        boost::unordered_map<std::wstring, ContentTypes::CDefault>	m_mapDefaults;
+        boost::unordered_map<std::wstring, ContentTypes::COverride>	m_mapOverrides;
 	};
 } // namespace OOX
 

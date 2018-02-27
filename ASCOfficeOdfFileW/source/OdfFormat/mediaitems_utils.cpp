@@ -29,11 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
-
 #include "mediaitems_utils.h"
-
-#include <boost/lexical_cast.hpp>
 
 namespace cpdoccore { 
 namespace odf_writer{
@@ -45,9 +41,11 @@ std::wstring get_rel_type(_mediaitems::Type type)
 {
     switch (type)
     {
-    case _mediaitems::typeImage:
-        return L"";
-   default:
+		case _mediaitems::typeOleObject:
+			return L"application/vnd.sun.star.oleobject";
+		case _mediaitems::typeMedia:
+		case _mediaitems::typeImage:
+		default:
         return L"";
     }
 }
@@ -58,6 +56,9 @@ std::wstring get_default_file_name(_mediaitems::Type type)
     {
     case _mediaitems::typeImage:
         return L"image";
+    case _mediaitems::typeOleObject:
+	case _mediaitems::typeObjectReplacement:
+       return L"Object ";
 	default:
         return L"media";
     }
@@ -66,11 +67,15 @@ std::wstring get_default_file_name(_mediaitems::Type type)
 std::wstring create_file_name(const std::wstring & uri, _mediaitems::Type type, size_t Num)
 {
  	std::wstring sExt;
-	int n = uri.rfind(L".");
-	if (n>=0) sExt = uri.substr(n);
-	//todooo проверить
 	
-	return get_default_file_name(type) + boost::lexical_cast<std::wstring>(Num) + sExt;
+	//if (type == _mediaitems::typeOleObject &&
+	//	type == _mediaitems::typeObjectReplacement)
+	{
+		int n = uri.rfind(L".");
+		if (n >= 0) sExt = uri.substr(n);
+	}
+	
+	return get_default_file_name(type) + std::to_wstring(Num) + sExt;
 }
 
 

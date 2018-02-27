@@ -67,7 +67,16 @@ public:
 		for (size_t i = 0; i < chartRels_.size(); i++)
         {
 			rel_ & r = chartRels_[i];
-			if (r.type_ == external_items::typeImage)
+			if (r.type_ == external_items::typeHyperlink)
+			{
+				Rels.add(relationship(
+							r.rid_,
+							L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+							r.target_,
+							L"External")
+				);
+			}
+			else
 			{
 				Rels.add(relationship(
 							r.rid_,
@@ -76,15 +85,6 @@ public:
 							(r.is_internal_ ? L"" : L"External")
 							) 
 					);
-			}
- 			else if (r.type_ == external_items::typeHyperlink)
-			{
-				Rels.add(relationship(
-							r.rid_,
-							L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
-							r.target_,
-							L"External")
-				);
 			}
 		}
     }

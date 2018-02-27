@@ -35,6 +35,10 @@
 #include "../../DesktopEditor/raster/BgraFrame.h"
 #include "../../DesktopEditor/common/Directory.h"
 
+#include "../../Common/DocxFormat/Source/DocxFormat/App.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/ContentTypes.h"
+
 namespace ImageHelper
 {
     struct __BITMAPINFOHEADER
@@ -71,7 +75,7 @@ namespace ImageHelper
 		__BITMAPINFOHEADER * header = (__BITMAPINFOHEADER*)data;
 		if (!header) return result;
 
-		result == Global::msoblipDIB;
+		result = Global::msoblipDIB;
 
 		if (header->biWidth > 100000 || header->biHeight > 100000 || header->biSize != 40)
 		{
@@ -185,7 +189,7 @@ namespace DocFileFormat
 		std::wstring pathWord = m_strOutputPath + FILE_SEPARATOR_STR + L"word" ;
 		NSDirectory::CreateDirectory( pathWord );
 
-		if (bMacros && docFile->GetStorage()->isDirectory("Macros"))
+		if (bMacros && docFile->GetStorage()->isDirectory(L"Macros"))
 		{
 			std::wstring sVbaProjectFile = pathWord + FILE_SEPARATOR_STR + L"vbaProject.bin";
 
@@ -193,7 +197,7 @@ namespace DocFileFormat
 
 			if ((storageVbaProject) && (storageVbaProject->open(true, true)))
 			{			
-				docFile->GetStorage()->copy(0, "Macros/", storageVbaProject, false);
+				docFile->GetStorage()->copy(0, L"Macros/", storageVbaProject, false);
 
 				storageVbaProject->close();
 				delete storageVbaProject;
@@ -211,6 +215,37 @@ namespace DocFileFormat
 		{
 			RegisterDocument();
 		}
+		OOX::CContentTypes oContentTypes;
+		OOX::CPath pathDocProps = m_strOutputPath + FILE_SEPARATOR_STR + _T("docProps");
+		NSDirectory::CreateDirectory(pathDocProps.GetPath());
+		
+		OOX::CPath DocProps = std::wstring(_T("docProps"));
+
+		OOX::CApp* pApp = new OOX::CApp(NULL);
+		if (pApp)
+		{
+			pApp->SetApplication(L"ONLYOFFICE");
+	#if defined(INTVER)
+			pApp->SetAppVersion(VALUE2STR(INTVER));
+	#endif
+			pApp->SetDocSecurity(0);
+			pApp->SetScaleCrop(false);
+			pApp->SetLinksUpToDate(false);
+			pApp->SetSharedDoc(false);
+			pApp->SetHyperlinksChanged(false);
+			
+			pApp->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, oContentTypes);
+			delete pApp;
+		}				
+		OOX::CCore* pCore = new OOX::CCore(NULL);
+		if (pCore)
+		{
+			pCore->SetCreator(_T(""));
+			pCore->SetLastModifiedBy(_T(""));
+			pCore->write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), DocProps, oContentTypes);
+			delete pCore;
+		} 
+		RegisterDocPr();
 
 		WritePackage();
 

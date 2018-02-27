@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of Protect record in BIFF8
 class Protect: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Protect)

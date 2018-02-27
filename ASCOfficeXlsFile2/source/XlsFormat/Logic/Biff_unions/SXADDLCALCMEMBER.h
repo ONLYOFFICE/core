@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of SXADDLCALCMEMBER union of records 
 class SXADDLCALCMEMBER: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(SXADDLCALCMEMBER)

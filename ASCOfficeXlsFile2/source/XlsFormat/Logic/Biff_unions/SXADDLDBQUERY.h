@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of SXADDLDBQUERY union of records 
 class SXADDLDBQUERY: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(SXADDLDBQUERY)
@@ -51,12 +49,6 @@ public:
 
 	static const ElementType	type = typeSXADDLDBQUERY;
 
-	BaseObjectPtr m_SrcConnFile;
-	BaseObjectPtr m_SrcDataFile;
-	BaseObjectPtr m_XMLSource;
-	BaseObjectPtr m_ReconnCond;
-
-	
 };
 
 } // namespace XLS

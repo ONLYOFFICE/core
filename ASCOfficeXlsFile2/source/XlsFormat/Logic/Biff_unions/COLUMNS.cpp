@@ -71,16 +71,16 @@ const bool COLUMNS::loadContent(BinProcessor& proc)
 
 	int last_add = 0;
 
-	for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); it++)
+	for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); ++it)
 	{
 		ColInfo* column_info = dynamic_cast<ColInfo*>(it->get());
 
 		for (int i = column_info->colFirst; i <= column_info->colLast; i++)
 		{
-			global_info_->sheet_size_info.back().customColumnsWidth.insert(std::make_pair(i, column_info->coldx / 256.));
+			global_info_->sheets_info[global_info_->current_sheet - 1].customColumnsWidth.insert(std::make_pair(i, column_info->coldx / 256.));
 			//else if (def_ok)
 			//{
-			//	global_info_->sheet_size_info.back().customColumnsWidth.insert(std::make_pair(i, global_info_->sheet_size_info.back().defaultColumnWidth));
+			//	global_info_->sheets_info.back().customColumnsWidth.insert(std::make_pair(i, global_info_->sheets_info.back().defaultColumnWidth));
 			//}
 		}
 
@@ -97,7 +97,7 @@ int COLUMNS::serialize(std::wostream & stream)
     {
 		CP_XML_NODE(L"cols")
 		{
-			for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); it++)
+			for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); ++it)
 			{
 				ColInfo* column_info = dynamic_cast<ColInfo*>(it->get());
 

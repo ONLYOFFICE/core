@@ -1194,5 +1194,5 @@ bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFi
     oParams.m_strDstFilePath = strDstFile;
 
     return NSDoctRenderer::CDoctRenderer_Private::Doct_renderer_SaveFile(&oParams,
-            pNative, isolate, global_js, args, try_catch, strError, true);
+            pNative, isolate, global_js, args, try_catch, strError, false);
 }

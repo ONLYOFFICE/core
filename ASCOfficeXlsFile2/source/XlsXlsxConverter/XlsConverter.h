@@ -48,18 +48,23 @@ namespace oox
 }
 namespace XLS
 {
-	class BaseObject;
 	class BiffStructure;
 
+	class CompoundFile;
+	typedef boost::shared_ptr<CompoundFile> CompoundFilePtr;
+
+	class BaseObject;
 	typedef boost::shared_ptr<BaseObject> BaseObjectPtr;
 	
 	class GlobalWorkbookInfo;
 	typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;
 
 	class WorkbookStreamObject;
+	class CommonSubstream;
 	class WorksheetSubstream;
 	class GlobalsSubstream;
 	class ChartSheetSubstream;
+	class MacroSheetSubstream;
 	
 	class BACKGROUND;
 	class FORMATTING;
@@ -72,9 +77,13 @@ namespace XLS
 	class IMDATA;
 	class PIVOTVIEW;
 	class PIVOTCACHEDEFINITION;
+	class SUPBOOK;
+	class QUERYTABLE;
+	class FEAT11;
 
 	class Note;
 	class TxO;
+	class Obj;
 }
 
 namespace ODRAW
@@ -93,7 +102,7 @@ namespace ODRAW
 class XlsConverter
 {
 public:
-	XlsConverter(const std::wstring & xls_file, const std::wstring & xlsx_path, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* ffCallBack, bool & bMacros);
+	XlsConverter(const std::wstring & xlsFileName, const std::wstring & xlsxFilePath, const std::wstring & password, const std::wstring & fontsPath, const std::wstring & tempPath, const ProgressCallback* ffCallBack, bool & bMacros);
 	~XlsConverter() ;
 
     oox::xlsx_conversion_context	* xlsx_context;
@@ -103,10 +112,13 @@ public:
 
 	void convert(XLS::BaseObject				* xls_unknown);
 
+	void convert_common(XLS::CommonSubstream* strm);
+
 	void convert(XLS::WorkbookStreamObject		* woorkbook);
 	void convert(XLS::WorksheetSubstream		* sheet);
 	void convert(XLS::ChartSheetSubstream		* chart);
 	void convert(XLS::GlobalsSubstream			* elem);
+	void convert(XLS::MacroSheetSubstream		* chart);
 
 	void convert(XLS::FORMATTING				* formating);
 	void convert(XLS::THEME						* theme);
@@ -117,10 +129,14 @@ public:
 	void convert(XLS::OBJECTS					* objects, XLS::WorksheetSubstream * sheet);
 	void convert(XLS::MSODRAWINGGROUP			* mso_drawing);
 	void convert(XLS::TxO						* text_obj);
+	void convert(XLS::Obj						* obj);
 	void convert(XLS::Note						* note);
 	void convert(XLS::IMDATA					* imadata);
 	void convert(XLS::PIVOTVIEW					* pivot_view);
 	void convert(XLS::PIVOTCACHEDEFINITION		* pivot_cached);
+	void convert(XLS::SUPBOOK					* external);
+	void convert(XLS::QUERYTABLE				* query_table);
+	void convert(XLS::FEAT11					* shared_feature);
 
 	void convert(ODRAW::OfficeArtRecord			* art);
 	void convert(ODRAW::OfficeArtBStoreContainer* art_bstore, int start_id = 0);
@@ -161,4 +177,6 @@ private:
 
 	XLS::BaseObjectPtr				xls_document;	
 	XLS::GlobalWorkbookInfoPtr		xls_global_info;
+
+	XLS::CompoundFilePtr			xls_file;
 };

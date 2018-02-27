@@ -60,7 +60,7 @@ HRESULT convert_single(std::wstring srcFileName)
 	std::wstring dstPath;
 
 	bool bMacros = true;
-	hr = ConvertXls2Xlsx(srcFileName, dstTempPath, L"password", L"C:\\Windows\\Fonts", NULL, bMacros);
+	hr = ConvertXls2Xlsx(srcFileName, dstTempPath, L"2222", L"C:\\Windows\\Fonts", L"C:\\Windows\\Temp", NULL, bMacros);
 
 	if (bMacros)
 	{

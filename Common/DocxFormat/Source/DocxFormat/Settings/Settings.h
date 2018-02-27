@@ -2647,12 +2647,12 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = et_Unknown;
 				// TO DO: Реализовать CShapeDefaults::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{			
 				m_eType = et_Unknown;
 				std::wstring sName = oReader.GetName();
@@ -2769,7 +2769,7 @@ namespace OOX
 				}
 			}
 
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult;
 				
@@ -2780,11 +2780,13 @@ namespace OOX
 				else
 					return _T("");
 
-				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						sResult += m_arrItems[nIndex]->toXML();
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        sResult += m_arrItems[i]->toXML();
+                    }
+                }
 
 				if ( et_w_hdrShapeDefaults == m_eType )
 					sResult += _T("</w:hdrShapeDefaults>");
@@ -2802,7 +2804,7 @@ namespace OOX
 
 		public:
 
-			EElementType                   m_eType;
+			EElementType m_eType;
 
 			// Childs
 
@@ -2819,11 +2821,16 @@ namespace OOX
 	class CSettings : public OOX::File
 	{
 	public:
-		CSettings()
+		CSettings(OOX::Document *pMain) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pSettings = this;			
 		}
-		CSettings(const CPath& oPath)
+		CSettings(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pSettings = this;			
+
 			read( oPath );
 		}
 		virtual ~CSettings()
@@ -2840,7 +2847,6 @@ namespace OOX
 	public:
 		virtual void read(const CPath& oFilePath)
 		{
-#ifdef USE_LITE_READER
 			XmlUtils::CXmlLiteReader oReader;
 
 			if ( !oReader.FromFile( oFilePath.GetPath() ) )
@@ -3017,16 +3023,6 @@ namespace OOX
 					}
 				}
 			}
-
-#else
-			XmlUtils::CXmlNode oWebSettings;
-			oWebSettings.FromXmlFile( oFilePath.GetPath(), true );
-
-			if ( _T("w:settings") == oWebSettings.GetName() )
-			{
-				XmlUtils::CXmlNode oNode;
-			}
-#endif
 		}
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{

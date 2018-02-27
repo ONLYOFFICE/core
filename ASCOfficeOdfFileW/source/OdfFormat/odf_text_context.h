@@ -53,7 +53,7 @@ class style_text_properties;
 class odf_text_context: boost::noncopyable
 {
 public:
-	odf_text_context	(odf_conversion_context *odf_context);
+	odf_text_context	(odf_conversion_context *odf_context, odf_style_context *styles_context);
     ~odf_text_context	();
 public:
  	odf_style_context*		get_styles_context();//для embedded

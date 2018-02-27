@@ -32,8 +32,7 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/CFColor.h>
-//#include <Logic/Biff_structures/BiffString.h>
+#include "CFColor.h"
 
 namespace XLS
 {

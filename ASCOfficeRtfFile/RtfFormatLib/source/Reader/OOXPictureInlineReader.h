@@ -51,7 +51,7 @@ public:
 		pOutput->m_nTop					= 0;
 		pOutput->m_nPositionHRelative	= 3;
 		pOutput->m_nPositionVRelative	= 3;
-		
+
 		int nDistLeft	= m_ooxInline->m_oDistL.IsInit() ? (int)m_ooxInline->m_oDistL->ToTwips() : PROP_DEF;
 		int nDistTop	= m_ooxInline->m_oDistT.IsInit() ? (int)m_ooxInline->m_oDistT->ToTwips() : PROP_DEF;
 		int nDistRight	= m_ooxInline->m_oDistR.IsInit() ? (int)m_ooxInline->m_oDistR->ToTwips() : PROP_DEF;

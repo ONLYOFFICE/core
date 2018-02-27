@@ -31,9 +31,10 @@
  */
 
 #include "MDXTUPLESET.h"
-#include <Logic/Biff_records/MDXTuple.h>
-#include <Logic/Biff_records/MDXSet.h>
-#include <Logic/Biff_records/ContinueFrt12.h>
+
+#include "../Biff_records/MDXTuple.h"
+#include "../Biff_records/MDXSet.h"
+#include "../Biff_records/ContinueFrt12.h"
 
 namespace XLS
 {
@@ -65,6 +66,8 @@ const bool MDXTUPLESET::loadContent(BinProcessor& proc)
 			return false;
 		}
 	}
+	m_MDXVarious = elements_.back();	elements_.pop_back();
+	
 	proc.repeated<ContinueFrt12>(0, 0);
 	return true;
 }

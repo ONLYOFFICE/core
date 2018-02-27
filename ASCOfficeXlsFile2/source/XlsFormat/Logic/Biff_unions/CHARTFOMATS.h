@@ -35,9 +35,6 @@
 
 namespace XLS
 {
-
-
-// Logical representation of CHARTFOMATS union of records 
 class CHARTFORMATS: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(CHARTFORMATS)

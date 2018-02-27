@@ -918,7 +918,7 @@ namespace NSOnlineOfficeBinToPdf
 							SkipInt(current, curindex, nCountDash);
 						}
 					}
-					defaut:
+					default:
 						break;
 					}
 

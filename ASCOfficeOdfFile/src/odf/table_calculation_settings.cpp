@@ -34,7 +34,6 @@
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/attributes.h>
 
 #include "serialize_elements.h"
 
@@ -62,9 +61,9 @@ void table_calculation_settings::add_child_element( xml::sax * Reader, const std
     {
         CP_CREATE_ELEMENT(table_null_date_);
     }
-    else if CP_CHECK_NAME(L"table", L"null-date")
-    {
-    }
+    //else if CP_CHECK_NAME(L"table", L"iteration")
+    //{
+    //}
     else
         CP_NOT_APPLICABLE_ELM();
 }

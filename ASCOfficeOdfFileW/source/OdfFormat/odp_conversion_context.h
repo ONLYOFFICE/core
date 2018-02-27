@@ -52,6 +52,8 @@ public:
 	void start_slide();
 	void end_slide();
 
+	size_t get_pages_count();
+
 	void start_master_slide(std::wstring name);
 	void end_master_slide();
 

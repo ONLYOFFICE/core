@@ -59,16 +59,19 @@ void DConnConnectionOleDb::load(CFRecord& record)
 		record >> val;
 		rgIOleDbValid.push_back(val);
 	}
-	int skip_unused =  2 * (4 - cOleDb) + 2;
+	int skip_unused =  2 * (4 - cOleDb);
 	
 	record.skipNunBytes(skip_unused);
+	
+	record.skipNunBytes(2);
 
 	for (unsigned short i = 0; i < cOleDb; i++)
 	{
 		XLUnicodeStringSegmented val;
 		record >> val;
 		rgConn.push_back(val);
-	}}
+	}
+}
 
 
 } // namespace XLS

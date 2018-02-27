@@ -72,6 +72,8 @@ public:
 			{
 			case SimpleTypes::mergeContinue : oOutputProperty.m_bMerge = 1;			break;
 			case SimpleTypes::mergeRestart  : oOutputProperty.m_bMergeFirst = 1;	break;
+			default:
+				break;
 			}
 		}
 		if( m_ooxTableCellProps->m_oVMerge.IsInit())
@@ -89,45 +91,13 @@ public:
 
 		if( m_ooxTableCellProps->m_oTcMar.IsInit() )
 		{
-			//todooo сделать реализацию с процентами
-			if( m_ooxTableCellProps->m_oTcMar->m_oBottom.IsInit() && m_ooxTableCellProps->m_oTcMar->m_oBottom->m_oW.IsInit())
-			{
-				oOutputProperty.m_nPaddingBottom	= (int)m_ooxTableCellProps->m_oTcMar->m_oBottom->m_oW->GetValue();
-				oOutputProperty.m_nIsPaddingBottom	= 3;
-			}
-			if( m_ooxTableCellProps->m_oTcMar->m_oEnd.IsInit() && m_ooxTableCellProps->m_oTcMar->m_oEnd->m_oW.IsInit())
-			{
-				oOutputProperty.m_nPaddingRight		= (int)m_ooxTableCellProps->m_oTcMar->m_oEnd->m_oW->GetValue();
-				oOutputProperty.m_nIsPaddingRight	= 3;
-			}
-			if( m_ooxTableCellProps->m_oTcMar->m_oStart.IsInit() && m_ooxTableCellProps->m_oTcMar->m_oStart->m_oW.IsInit())
-			{
-				oOutputProperty.m_nPaddingLeft		= (int)m_ooxTableCellProps->m_oTcMar->m_oStart->m_oW->GetValue();
-				oOutputProperty.m_nIsPaddingLeft	= 3;
-			}
-			if( m_ooxTableCellProps->m_oTcMar->m_oTop.IsInit() && m_ooxTableCellProps->m_oTcMar->m_oTop->m_oW.IsInit())
-			{
-				oOutputProperty.m_nPaddingTop	= (int)m_ooxTableCellProps->m_oTcMar->m_oTop->m_oW->GetValue();
-				oOutputProperty.m_nIsPaddingTop = 3;
-			}
+			Parse (m_ooxTableCellProps->m_oTcMar->m_oStart.GetPointer(),	oOutputProperty.m_ePaddingLeftUnit,	oOutputProperty.m_nPaddingLeft, false);
+			Parse (m_ooxTableCellProps->m_oTcMar->m_oTop.GetPointer(),		oOutputProperty.m_ePaddingTopUnit,	oOutputProperty.m_nPaddingTop, false);
+			Parse (m_ooxTableCellProps->m_oTcMar->m_oEnd.GetPointer(),		oOutputProperty.m_ePaddingRightUnit,	oOutputProperty.m_nPaddingRight, false);
+			Parse (m_ooxTableCellProps->m_oTcMar->m_oBottom.GetPointer(),	oOutputProperty.m_ePaddingBottomUnit, oOutputProperty.m_nPaddingBottom, false);
 		}
+		Parse(m_ooxTableCellProps->m_oTcW.GetPointer(),  oOutputProperty.m_eWidthUnit, oOutputProperty.m_nWidth, true);
 
-		if( m_ooxTableCellProps->m_oTcW.IsInit() && m_ooxTableCellProps->m_oTcW->m_oW.IsInit()) 
-		{
-			bool auto_ = false;
-			if (m_ooxTableCellProps->m_oTcW->m_oType.IsInit() && m_ooxTableCellProps->m_oTcW->m_oType->GetValue() == SimpleTypes::tblwidthAuto)
-				auto_ = true;
-
-			if (auto_)
-			{
-				oOutputProperty.m_eWidthUnits = mu_Auto;
-			}
-			else
-			{
-				oOutputProperty.m_nWidth		= (int)m_ooxTableCellProps->m_oTcW->m_oW->GetValue();
-				oOutputProperty.m_eWidthUnits	= m_ooxTableCellProps->m_oTcW->m_oW->IsPercent() ? mu_Percent : mu_Twips;
-			}
-		}
 		if( m_ooxTableCellProps->m_oHideMark.IsInit())
 			oOutputProperty.m_bHideMark = m_ooxTableCellProps->m_oHideMark->m_oVal.ToBool() ? 1 : 0;
 		
@@ -216,24 +186,59 @@ public:
 				case SimpleTypes::verticaljcBottom : oOutputProperty.m_eAlign = RtfCellProperty::ca_Bottom; break;
 				case SimpleTypes::verticaljcCenter : oOutputProperty.m_eAlign = RtfCellProperty::ca_Center; break;
 				case SimpleTypes::verticaljcTop    : oOutputProperty.m_eAlign = RtfCellProperty::ca_Top;	break;
+				default:
+					break;
 			}
 		}
 		if( m_ooxTableCellProps->m_oTextDirection.IsInit() && m_ooxTableCellProps->m_oTextDirection->m_oVal.IsInit())
 		{
 			switch(m_ooxTableCellProps->m_oTextDirection->m_oVal->GetValue())
 			{
-				case SimpleTypes::textdirectionLr  : oOutputProperty.m_oCellFlow = RtfCellProperty::cf_lrtb;	break;
+				case SimpleTypes::textdirectionLr  : oOutputProperty.m_oCellFlow = RtfCellProperty::cf_btlr;	break;
 				case SimpleTypes::textdirectionLrV : oOutputProperty.m_oCellFlow = RtfCellProperty::cf_lrtbv;	break;
 				case SimpleTypes::textdirectionRl  : oOutputProperty.m_oCellFlow = RtfCellProperty::cf_tbrl;	break;
 				case SimpleTypes::textdirectionRlV : oOutputProperty.m_oCellFlow = RtfCellProperty::cf_tbrlv;	break;
-				case SimpleTypes::textdirectionTbV : oOutputProperty.m_oCellFlow = RtfCellProperty::cf_btlr; //??
-				case SimpleTypes::textdirectionTb  : //lrTb .. default
-				default:								break;
+				case SimpleTypes::textdirectionTbV : oOutputProperty.m_oCellFlow = RtfCellProperty::cf_lrtbv;	break;
+				case SimpleTypes::textdirectionTb  : oOutputProperty.m_oCellFlow = RtfCellProperty::cf_lrtb;	break;
+				default:
+					break;
 			}
 		}
 		if (m_ooxTableCellProps->m_oGridSpan.IsInit() && m_ooxTableCellProps->m_oGridSpan->m_oVal.IsInit())
 			oOutputProperty.m_nSpan = m_ooxTableCellProps->m_oGridSpan->m_oVal->GetValue();
 
 		return true;
+	}
+	static void Parse(ComplexTypes::Word::CTblWidth* margin, int& type, int& value, bool full = true )
+	{
+		if (!margin) return;
+		if (false == margin->m_oType.IsInit())	return;
+		if (false == margin->m_oW.IsInit())		return;
+	
+		if (full == true)
+		{
+			switch (margin->m_oType->GetValue())
+			{
+				case SimpleTypes::tblwidthNil:	type = 0; break;
+				case SimpleTypes::tblwidthAuto:	type = 1; break;
+				case SimpleTypes::tblwidthPct:	type = 2; break;
+				case SimpleTypes::tblwidthDxa:	type = 3; break;
+			}
+		}
+		else
+		{
+			switch (margin->m_oType->GetValue())
+			{
+				case SimpleTypes::tblwidthDxa:	type = 3; break;
+				case SimpleTypes::tblwidthAuto:
+				case SimpleTypes::tblwidthNil:	type = 1; break;
+			}
+		}
+		if (margin->m_oType->GetValue() != SimpleTypes::tblwidthNil)
+		{
+			value = (int)margin->m_oW->GetValue();
+		}
+				
+		//todooo сделать реализацию с процентами
 	}
 };

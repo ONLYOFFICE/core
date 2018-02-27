@@ -535,7 +535,7 @@ bool ECMACryptFile::EncryptOfficeFile(std::wstring file_name_inp, std::wstring f
 		return false;
 	}
 //-------------------------------------------------------------------
-	POLE::Stream *pStream = new POLE::Stream(pStorage, "EncryptionInfo", true);
+	POLE::Stream *pStream = new POLE::Stream(pStorage, L"EncryptionInfo", true);
 
 	cryptor.GetCryptData(cryptData);
 
@@ -555,7 +555,7 @@ bool ECMACryptFile::EncryptOfficeFile(std::wstring file_name_inp, std::wstring f
 	pStream->flush();
 	delete pStream;
 //-------------------------------------------------------------------
-	pStream = new POLE::Stream(pStorage, "EncryptedPackage", true, lengthData);
+	pStream = new POLE::Stream(pStorage, L"EncryptedPackage", true, lengthData);
 	
 	pStream->write(data_out, lengthData);
 
@@ -606,7 +606,7 @@ bool ECMACryptFile::DecryptOfficeFile(std::wstring file_name_inp, std::wstring f
 	_ecmaCryptData cryptData;	
 	bool result = false;
 
-	POLE::Stream *pStream = new POLE::Stream(pStorage, "EncryptionInfo");
+	POLE::Stream *pStream = new POLE::Stream(pStorage, L"EncryptionInfo");
 
 	if (pStream)
 	{
@@ -704,7 +704,7 @@ bool ECMACryptFile::DecryptOfficeFile(std::wstring file_name_inp, std::wstring f
 			return false;
 	}
 //------------------------------------------------------------------------------------------------------------
-	pStream = new POLE::Stream(pStorage, "EncryptedPackage");
+	pStream = new POLE::Stream(pStorage, L"EncryptedPackage");
 	if ((pStream) && (pStream->size() > 0))
 	{
 		_UINT64 lengthData, lengthRead = pStream->size();

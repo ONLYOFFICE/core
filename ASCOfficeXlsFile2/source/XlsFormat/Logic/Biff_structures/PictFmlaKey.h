@@ -33,7 +33,7 @@
 
 #include "BiffStructure.h"
 #include "ObjFmla.h"
-#include <Logic/Biff_structures/FtPioGrbit.h>
+#include "FtPioGrbit.h"
 
 namespace XLS
 {
@@ -47,13 +47,15 @@ public:
 	PictFmlaKey();
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typePictFmlaKey;
+	static const ElementType type = typePictFmlaKey;
 
 	virtual void load(CFRecord& record);
 
+	_UINT32			cbKey;
+	std::wstring	keyBuf;	// ActiveX license key
 
-	ObjFmla fmlaLinkedCell;
-	ObjFmla fmlaListFillRange;
+	ObjFmla		fmlaLinkedCell;
+	ObjFmla		fmlaListFillRange;
 };
 
 } // namespace XLS

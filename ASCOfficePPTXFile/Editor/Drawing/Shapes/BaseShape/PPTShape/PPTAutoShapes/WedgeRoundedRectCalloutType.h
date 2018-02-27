@@ -30,7 +30,7 @@
  *
  */
 #pragma once
-#include "../PPTShape.h"
+#include "../PptShape.h"
 
 // 62
 class CWedgeRoundedRectCalloutType : public CPPTShape

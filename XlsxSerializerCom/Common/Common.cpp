@@ -33,10 +33,12 @@
 
 #include "BinReaderWriterDefines.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
+#include "../../Common/DocxFormat/Source/Common/SimpleTypes_Shared.h"
 #include "../../Common/Base64.h"
 #include "../../DesktopEditor/common/Types.h"
+
 #ifndef DISABLE_FILE_DOWNLOADER
-#include "../../Common/FileDownloader/FileDownloader.h"
+	#include "../../Common/FileDownloader/FileDownloader.h"
 #endif
 #include "../../DesktopEditor/common/File.h"
 

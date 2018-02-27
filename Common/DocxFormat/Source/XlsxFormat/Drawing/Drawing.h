@@ -98,11 +98,11 @@ namespace OOX
 		class CDrawing : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CDrawing()
+			CDrawing(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 			}
-			CDrawing(const CPath& oRootPath, const CPath& oPath)
+			CDrawing(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 				read( oRootPath, oPath );

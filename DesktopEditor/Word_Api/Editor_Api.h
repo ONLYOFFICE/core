@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
@@ -821,39 +821,35 @@ namespace NSEditorApi
 		LINK_PROPERTY_OBJECT_JS(CAscColor, Bg)
 	};
 
-	class CAscFillGradColors
-	{
-	private:
-		js_wrapper<CAscColor>*	m_pColors;
-		js_wrapper<int>*		m_pPositions;
-		int m_lCount;
+    class CAscFillGradColors
+    {
+        private:
+        std::vector<CAscColor*>  m_arColors;
+        std::vector<int>         m_arPositions;
 
-	public:
+        public:
 
-		CAscFillGradColors()
-		{
-			m_pColors = NULL;
-			m_pPositions = NULL;
-			m_lCount = 0;			
-		}
-		virtual ~CAscFillGradColors()
-		{
-			if (NULL != m_pColors)
-				delete [] m_pColors;
-			if (NULL != m_pPositions)
-				delete [] m_pPositions;
-		}
+        CAscFillGradColors()
+        {
 
-		int GetCount() { return m_lCount; }
-		js_wrapper<CAscColor>* GetColors() { return m_pColors; }
-		js_wrapper<int>* GetPositions() { return m_pPositions; }
-		void SetColors(js_wrapper<CAscColor>* pColors, js_wrapper<int>* pPositions, int nCount)
-		{
-			m_pColors = pColors;
-			m_pPositions = pPositions;
-			m_lCount = nCount;
-		}
-	};
+        }
+
+        virtual ~CAscFillGradColors()
+        {
+            for (std::vector<CAscColor*>::iterator i = m_arColors.begin(); i != m_arColors.end(); ++i)
+            {
+                CAscColor* data = *i;
+                if (NULL != data)
+                data->Release();
+            }
+        }
+
+        inline std::vector<CAscColor*>& GetColors() {return m_arColors;}
+        inline void AddColor(CAscColor* color) {m_arColors.push_back(color);}
+
+        inline std::vector<int> GetPositions() {return m_arPositions;}
+        inline void AddPosition(int position) {m_arPositions.push_back(position);}
+    };
 
 	class CAscFillGrad : public CAscFillBase
 	{
@@ -2322,9 +2318,9 @@ namespace NSEditorApi
 
 	public:
 		CAscMenuEvent(int nType = -1)
+                    : m_nType(nType)
+                    , m_pData(NULL)
 		{
-			m_nType = nType;
-			m_pData = NULL;
 		}
 		virtual ~CAscMenuEvent()
 		{

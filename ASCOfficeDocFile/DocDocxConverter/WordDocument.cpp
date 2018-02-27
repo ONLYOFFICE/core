@@ -40,8 +40,45 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
 
+#include <unordered_map>
+
 namespace DocFileFormat
 {
+	static const int aCodePages[][2] = {
+		//charset	codepage
+		0,	1252, //ANSI
+		1,	0,//Default
+		2,	42,//Symbol
+		77,	10000,//Mac Roman
+		78,	10001,//Mac Shift Jis
+		79,	10003,//Mac Hangul
+		80,	10008,//Mac GB2312
+		81,	10002,//Mac Big5
+		83,	10005,//Mac Hebrew
+		84,	10004,//Mac Arabic
+		85,	10006,//Mac Greek
+		86,	10081,//Mac Turkish
+		87,	10021,//Mac Thai
+		88,	10029,//Mac East Europe
+		89,	10007,//Mac Russian
+		128,	932,//Shift JIS
+		129,	949,//Hangul
+		130,	1361,//Johab
+		134,	936,//GB2312
+		136,	950,//Big5
+		238,	1250,//Greek
+		161,	1253,//Greek
+		162,	1254,//Turkish
+		163,	1258,//Vietnamese
+		177,	1255,//Hebrew
+		178,	1256, //Arabic
+		186,	1257,//Baltic
+		204,	1251,//Russian
+		222,	874,//Thai
+		238,	1250,//Eastern European
+		254,	437,//PC 437
+		255,	850//OEM
+	};
 	WordDocument::WordDocument (const ProgressCallback* pCallFunc, const std::wstring & sTempFolder ) :	
 		m_PieceTable(NULL), WordDocumentStream(NULL), TableStream(NULL), DataStream(NULL),  FIB(NULL), 
 		Text(NULL), RevisionAuthorTable(NULL), FontTable(NULL), BookmarkNames(NULL), AutoTextNames(NULL), 
@@ -55,12 +92,15 @@ namespace DocFileFormat
 		AnnotationOwners(NULL), DocProperties(NULL), listFormatOverrideTable(NULL), headerAndFooterTable(NULL),
 		AnnotStartPlex(NULL), AnnotEndPlex(NULL), encryptionHeader(NULL)
 	{
-		m_pCallFunc			=	pCallFunc;	
-		m_sTempFolder		=	sTempFolder;
+		m_pCallFunc			= pCallFunc;	
+		m_sTempFolder		= sTempFolder;
 		
-		m_pStorage			=	NULL;
-		officeArtContent	=	NULL;
-		bOlderVersion		=	false;
+		m_pStorage			= NULL;
+		officeArtContent	= NULL;
+		bOlderVersion		= false;
+		
+		bDocumentCodePage	= false;
+		nDocumentCodePage	= ENCODING_WINDOWS_1250;
 	}
 
 	WordDocument::~WordDocument()
@@ -95,7 +135,7 @@ namespace DocFileFormat
             return AVS_ERROR_FILEFORMAT;
 		}
 //-----------------------------------------------------------------------------------------------------------------
-		if (m_pStorage->GetStream ("WordDocument", &WordDocumentStream) == false)
+		if (m_pStorage->GetStream (L"WordDocument", &WordDocumentStream) == false)
 		{
 			Clear();
             return AVS_ERROR_FILEFORMAT;
@@ -121,24 +161,37 @@ namespace DocFileFormat
 
 		if (FIB->m_FibBase.fWhichTblStm)
 		{
-			if (!m_pStorage->GetStream ("1Table", &TableStream))
+			if (!m_pStorage->GetStream (L"1Table", &TableStream))
 			{
-				res	=	m_pStorage->GetStream ("0Table", &TableStream);
+				res	=	m_pStorage->GetStream (L"0Table", &TableStream);
 			}
 		}
 		else
 		{
-			if (!m_pStorage->GetStream ("0Table", &TableStream))
+			if (!m_pStorage->GetStream (L"0Table", &TableStream))
 			{
-				res	=	m_pStorage->GetStream ("1Table", &TableStream);
+				res	=	m_pStorage->GetStream (L"1Table", &TableStream);
 			}
 		}
 
-		if (FIB->m_FibBase.fEncrypted && !FIB->m_bOlderVersion)
+		if (FIB->m_FibBase.fEncrypted)
 		{
-			encryptionHeader	=	new EncryptionHeader	(FIB, TableStream);
+			encryptionHeader = new EncryptionHeader	(FIB, TableStream);
 
-			if (encryptionHeader->bStandard)
+			if (encryptionHeader->bXOR)
+			{
+				CRYPT::XORDecryptor Decryptor(1, encryptionHeader->crypt_data_xor.key, encryptionHeader->crypt_data_xor.hash, m_sPassword);
+
+				if (Decryptor.IsVerify() == false) 
+				{
+					Clear();
+
+					if (m_sPassword.empty() )	return AVS_ERROR_DRM;
+					else						return AVS_ERROR_PASSWORD;
+				}
+				if (DecryptOfficeFile(&Decryptor) == false)	return AVS_ERROR_DRM;
+			}
+			else if (encryptionHeader->bStandard)
 			{
 				CRYPT::RC4Decryptor Decryptor(encryptionHeader->crypt_data_rc4, m_sPassword);
 
@@ -152,7 +205,7 @@ namespace DocFileFormat
 				
 				if (DecryptOfficeFile(&Decryptor) == false)	return AVS_ERROR_DRM;
 			}
-			else
+			else if (encryptionHeader->bAES)
 			{
 				CRYPT::ECMADecryptor Decryptor;
 
@@ -168,18 +221,15 @@ namespace DocFileFormat
 				if (DecryptOfficeFile(&Decryptor) == false)	return AVS_ERROR_DRM;
 			}
 			
-			FIB->reset(VirtualStreamReader(WordDocumentStream, 68, false));
+			FIB->reset(VirtualStreamReader(WordDocumentStream, bOlderVersion ? 36 : 68, false));
 		}
-		else if (FIB->m_FibBase.fEncrypted)  return AVS_ERROR_DRM;
 
 //------------------------------------------------------------------------------------------------------------------
 		POLE::Stream			* Summary		= NULL;
 		POLE::Stream			* DocSummary	= NULL;
 		
-		m_pStorage->GetStream ("SummaryInformation",			&Summary);
-		m_pStorage->GetStream ("DocumentSummaryInformation",	&DocSummary);
-
-		document_code_page = ENCODING_WINDOWS_1250;
+		m_pStorage->GetStream (L"SummaryInformation",			&Summary);
+		m_pStorage->GetStream (L"DocumentSummaryInformation",	&DocSummary);
 		
 		if ((Summary) && (Summary->size() > 0))
 		{
@@ -188,7 +238,10 @@ namespace DocFileFormat
 			int document_code_page1 = summary_info.GetCodePage(); //from software last open 
 			
 			if (document_code_page1 > 0)
-				document_code_page = document_code_page1;		
+			{
+				nDocumentCodePage = document_code_page1;		
+				bDocumentCodePage = true;
+			}
 		}
 		if ((DocSummary) && (DocSummary->size() > 0))
 		{
@@ -197,16 +250,22 @@ namespace DocFileFormat
 			int document_code_page2 = doc_summary_info.GetCodePage();
 
 			if (document_code_page2 > 0)
-				document_code_page = document_code_page2;
+			{
+				nDocumentCodePage = document_code_page2;
+				bDocumentCodePage = true;
+			}
 		}
 		if (!bOlderVersion)
-			document_code_page = ENCODING_UTF16;
+		{
+			nDocumentCodePage = ENCODING_UTF16;
+			bDocumentCodePage = true;
+		}
 
-		FIB->m_CodePage =  document_code_page;
+		FIB->m_CodePage =  nDocumentCodePage;
 //-------------------------------------------------------------------------------------------------
 		try
 		{
-			m_pStorage->GetStream ("Data", &DataStream);
+			m_pStorage->GetStream (L"Data", &DataStream);
 		}
 		catch (...)
 		{
@@ -216,7 +275,7 @@ namespace DocFileFormat
 		if (TableStream->size() < 1 && bOlderVersion)
 		{
 			RELEASEOBJECT(TableStream);
-			m_pStorage->GetStream ("WordDocument", &TableStream);
+			m_pStorage->GetStream (L"WordDocument", &TableStream);
 		}
 
 		RevisionAuthorTable	=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfRMark,		FIB->m_FibWord97.lcbSttbfRMark,			bOlderVersion);
@@ -353,6 +412,31 @@ namespace DocFileFormat
 				return AVS_ERROR_FILEFORMAT;
 			}
 		}
+		if (!bDocumentCodePage && FontTable)
+		{
+			std::unordered_map<int, int> fonts_charsets;
+
+			for ( std::vector<ByteStructure*>::iterator iter = FontTable->Data.begin();!bDocumentCodePage &&  iter != FontTable->Data.end(); iter++ )
+			{
+				FontFamilyName* font = dynamic_cast<FontFamilyName*>( *iter );
+				if (!font) continue;
+
+				if (fonts_charsets.find(font->chs) == fonts_charsets.end())
+				{
+					fonts_charsets.insert(std::make_pair(font->chs, font->ff));
+					
+					for (int i = 0 ; i < sizeof(aCodePages) / 2; i++)
+					{
+						if (aCodePages[i][0] == font->chs && font->chs != 0)
+						{
+							nDocumentCodePage = aCodePages[i][1];
+							bDocumentCodePage = true;
+							break;
+						}
+					}	
+				}
+			}
+		}
 
 		if (FIB->m_FibWord97.lcbClx > 0)
 		{
@@ -371,7 +455,7 @@ namespace DocFileFormat
 			WordDocumentStream->read (bytes, cb);
 
 			Text = new std::vector<wchar_t>();
-			FormatUtils::GetSTLCollectionFromBytes<std::vector<wchar_t> >(Text, bytes, cb, document_code_page);
+			FormatUtils::GetSTLCollectionFromBytes<std::vector<wchar_t> >(Text, bytes, cb, nDocumentCodePage);
 
 			RELEASEARRAYOBJECTS(bytes);
 		}
@@ -483,11 +567,11 @@ namespace DocFileFormat
 			delete storageOut;
 			return false;
 		}
-		DecryptStream( 0, "/", storageIn, storageOut, Decryptor);
+		DecryptStream( 0, L"/", storageIn, storageOut, Decryptor);
 
 		//std::list<std::string> listStream = storageIn->entries();
 
-		//for (std::list<std::string>::iterator it = listStream.begin(); it != listStream.end(); it++)
+		//for (std::list<std::string>::iterator it = listStream.begin(); it != listStream.end(); ++it)
 		//{
 		//	if (storageIn->isDirectory(*it)) 
 		//	{
@@ -514,61 +598,80 @@ namespace DocFileFormat
 		
 		m_pStorage->SetFile(m_sTempDecryptFileName.c_str());
 		
-		if (m_pStorage->GetStream ("WordDocument", &WordDocumentStream) == false) return false;
+		if (m_pStorage->GetStream (L"WordDocument", &WordDocumentStream) == false) return false;
 
 		if (FIB->m_FibBase.fWhichTblStm)
 		{
-			if (!m_pStorage->GetStream ("1Table", &TableStream))	m_pStorage->GetStream ("0Table", &TableStream);
+			if (!m_pStorage->GetStream (L"1Table", &TableStream))	m_pStorage->GetStream (L"0Table", &TableStream);
 		}
 		else
 		{
-			if (!m_pStorage->GetStream ("0Table", &TableStream))	m_pStorage->GetStream ("1Table", &TableStream);
+			if (!m_pStorage->GetStream (L"0Table", &TableStream))	m_pStorage->GetStream (L"1Table", &TableStream);
 		}
 		return true;
 	}
-	void WordDocument::DecryptStream( int level, std::string path, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor)
+	void WordDocument::DecryptStream( int level, std::wstring path, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor)
 	{
-		std::list<std::string> entries, entries_sort;
-		entries = storageIn->entries( path );
+		std::list<std::wstring> entries, entries_files, entries_dir;
+		entries = storageIn->entries_with_prefix( path );
 		
-		for( std::list<std::string>::iterator it = entries.begin(); it != entries.end(); it++ )
+		for( std::list<std::wstring>::iterator it = entries.begin(); it != entries.end(); ++it )
 		{
-			std::string name = *it;
-			std::string fullname = path + name;
+			std::wstring name = *it;
+			std::wstring fullname = path + name;
 	       
 			if( storageIn->isDirectory( fullname ) )
 			{
-				entries_sort.push_back(name);
+				entries_dir.push_back(name);
 			}
 			else
 			{
-				entries_sort.push_front(name);
+				entries_files.push_front(name);
 			}
 		}	    
-		for( std::list<std::string>::iterator it = entries_sort.begin(); it != entries_sort.end(); ++it )
+		for( std::list<std::wstring>::iterator it = entries_dir.begin(); it != entries_dir.end(); ++it )
 		{
-			std::string name = *it;
-			std::string fullname = path + name;
+			std::wstring fullname = path + *it;
 	       
-			if( storageIn->isDirectory( fullname ) )
-			{
-				DecryptStream( level + 1, fullname + "/", storageIn, storageOut, Decryptor );
-			}
-			else
-			{
-				DecryptStream(fullname, storageIn, storageOut, Decryptor );
-			}
+			DecryptStream( level + 1, fullname + L"/", storageIn, storageOut, Decryptor );
+
 		}    
+	//if (bSortFiles)
+		entries_files.sort();
+
+		for( std::list<std::wstring>::iterator it = entries_files.begin(); it != entries_files.end(); ++it )
+		{
+			std::wstring fullname_create = path + *it;
+
+			if (it->at(0) < 32)
+			{
+				*it = it->substr(1);  // without prefix
+			}
+			std::wstring fullname_open	= path + *it;
+			
+			bool bDecrypt = false;
+
+			if ( std::wstring::npos != fullname_open.find(L"WordDocument") ||
+				 std::wstring::npos != fullname_open.find(L"Data") ||
+				 std::wstring::npos != fullname_open.find(L"Table") ||
+				(std::wstring::npos != fullname_open.find(L"SummaryInformation") &&
+					encryptionHeader->bAES && encryptionHeader->crypt_data_aes.fDocProps)
+				)
+			{
+				bDecrypt = true;
+			}	
+			DecryptStream(fullname_open, storageIn, fullname_create, storageOut, Decryptor, bDecrypt);
+		}  
 	}
-	bool WordDocument::DecryptStream(std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor)
+	bool WordDocument::DecryptStream(std::wstring streamName_open, POLE::Storage * storageIn, std::wstring streamName_create, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor, bool bDecrypt)
 	{
-		POLE::Stream *stream = new POLE::Stream(storageIn, streamName);
+		POLE::Stream *stream = new POLE::Stream(storageIn, streamName_open);
 		if (!stream) return false;
 
 		stream->seek(0);
-		int size_stream = stream->size();
+		POLE::uint64 size_stream = stream->size();
 		
-		POLE::Stream *streamNew = new POLE::Stream(storageOut, streamName, true, size_stream);
+		POLE::Stream *streamNew = new POLE::Stream(storageOut, streamName_create, true, size_stream);
 		if (!streamNew) return false;
 
 		unsigned char* data_stream = new unsigned char[size_stream];
@@ -577,24 +680,28 @@ namespace DocFileFormat
 		unsigned char* data_store = NULL;
 		int size_data_store = 0;		
 		
-		if ( std::wstring::npos != streamName.find("WordDocument") )
+		if ( std::wstring::npos != streamName_open.find(L"WordDocument") )
 		{
-			size_data_store = 68;
+			size_data_store = bOlderVersion ? 36 : 68;
 			data_store = new unsigned char[size_data_store];
 		}
 		
 		if (data_store)
 			memcpy(data_store, data_stream, size_data_store);
 
-		int size_block = 0x200;
-		for (int pos = 0, block = 0 ; pos < size_stream; pos += size_block, block++)
+		size_t			size_block	= 0x200;
+		unsigned long	block		= 0;
+
+		for (POLE::uint64 pos = /*bOlderVersion ? size_data_store :*/ 0; pos < size_stream; pos += size_block, block++)
 		{
 			if (pos + size_block > size_stream)
 				size_block = size_stream - pos;
 
-			Decryptor->Decrypt((char*)data_stream + pos, size_block, block);
+			if (bDecrypt)
+			{
+				Decryptor->Decrypt((char*)data_stream + pos, size_block, block);
+			}
 		}
-
 		
 		if (data_store)
 			memcpy(data_stream, data_store, size_data_store);

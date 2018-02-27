@@ -37,11 +37,14 @@
 #include "common.h"
 
 #include "xlsx_textcontext.h"
-#include "xlsx_tablecontext.h"
+#include "xlsx_sheet_context.h"
 #include "xlsx_drawing_context.h"
 #include "xlsx_chart_context.h"
 #include "xlsx_comments_context.h"
 #include "xlsx_pivots_context.h"
+#include "xlsx_external_context.h"
+#include "xlsx_activeX_context.h"
+#include "xlsx_tablecontext.h"
 
 #include "xlsx_output_xml.h"
 
@@ -64,32 +67,52 @@ public:
     void start_document();
     void end_document();
 
-	bool start_table(const std::wstring & name);
-		void set_state(const std::wstring & state);
-		void set_chart_view();
-    void end_table();
+	bool start_sheet();
+		void set_sheet_state(const std::wstring & state);
+		void set_sheet_type(int type);
+ 		void set_sheet_name(const std::wstring & name);
+		void set_sheet_id(int id);
+   void end_sheet();
 
     void start_chart();
-    void end_chart();
+	void end_chart(){}
+
+    void start_table();
+	void end_table();
+
+	std::wstring start_activeX();
+	void end_activeX(){}
+
+    void start_external();
+    void end_external();
 
 	std::wostream					& shared_strings()		{ return xlsx_shared_strings_; }    
  	std::wostream					& defined_names()		{ return xlsx_defined_names_; }    
 	std::wostream					& workbook_views()		{ return xlsx_workbook_views_; }
 	std::wostream					& custom_views()		{ return xlsx_custom_views_; }
+	std::wostream					& workbook_format()		{ return xlsx_workbook_pr_; }	
+	std::wostream					& workbook_protection()	{ return xlsx_workbookProtection_; }
 
-	xlsx_text_context				& get_text_context()	{ return xlsx_text_context_; }
-    xlsx_table_context				& get_table_context()	{ return xlsx_table_context_; }
+	xlsx_text_context				& get_text_context()	{ return text_context_; }
+    xlsx_sheet_context				& get_sheet_context()	{ return sheet_context_; }
     xlsx_xml_worksheet				& current_sheet();
  
 	oox_chart_context				& current_chart();
+	oox_external_context			& current_external();
+	oox_activeX_context				& current_activeX();
 
-	xlsx_pivots_context				& get_pivots_context()	{return xlsx_pivots_context_;}
+	xlsx_pivots_context				& get_pivots_context()	{return pivots_context_;}
 	xlsx_drawing_context			& get_drawing_context();
 	xlsx_drawing_context_handle		& get_drawing_context_handle();	
  	xlsx_comments_context			& get_comments_context();
 	xlsx_comments_context_handle	& get_comments_context_handle();
+ 	xlsx_tables_context				& get_tables_context()	{return tables_context_;}
 
 	external_items & get_mediaitems() { return mediaitems_; }
+
+	void add_connections		(const std::wstring & connections);
+	void add_query_table		(const std::wstring & query_table);
+	void add_control_props		(const std::wstring & target, const std::wstring &props);
 private:
 
     void create_new_sheet(std::wstring const & name);
@@ -97,25 +120,30 @@ private:
     package::xlsx_document				*output_document_;
 
 	external_items						mediaitems_;
+    xlsx_sheet_context					sheet_context_;
+    xlsx_text_context					text_context_;	
+	xlsx_pivots_context					pivots_context_;
+	xlsx_tables_context					tables_context_;
 
-    std::vector<xlsx_xml_worksheet_ptr>			sheets_;
-    std::vector<oox_chart_context_ptr>			charts_;
- 
-    //std::wstringstream                  defaultOutput_;
-    //std::pair<float,float>              maxDigitSize_;
-    //num_format_context                  num_format_context_;
-    //size_t                              default_style_;
+    std::vector<oox_chart_context_ptr>		charts_;    
+	std::vector<oox_external_context_ptr>	externals_;
+	std::vector<oox_activeX_context_ptr>	activeXs_;
 
 	size_t								next_vml_file_id_; //используется для footer/header & comments
-  
-	xlsx_pivots_context					xlsx_pivots_context_;
-    xlsx_table_context					xlsx_table_context_;
-    xlsx_text_context					xlsx_text_context_;
+
+	std::map<int, int>					sheets_map_;
+    std::vector<xlsx_xml_worksheet_ptr>	sheets_;
+
+	std::wstring						connections_;
+	std::map<std::wstring, std::wstring>query_tables_; 
+	std::map<std::wstring, std::wstring>control_props_; 
 
 	std::wstringstream					xlsx_shared_strings_;
 	std::wstringstream					xlsx_defined_names_;
 	std::wstringstream					xlsx_workbook_views_;
 	std::wstringstream					xlsx_custom_views_;
+	std::wstringstream					xlsx_workbook_pr_;
+	std::wstringstream					xlsx_workbookProtection_;
 
     xlsx_drawing_context_handle			xlsx_drawing_context_handle_;
     xlsx_comments_context_handle		xlsx_comments_context_handle_;

@@ -83,6 +83,7 @@ int PIVOTPI::serialize(std::wostream & strm)
 			}
 		}
 	}
+	return 0;
 }
 } // namespace XLS
 

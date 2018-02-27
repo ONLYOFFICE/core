@@ -46,7 +46,6 @@
 #include "Editor/PPTXWriter.h"
 
 #include "PPTXFormat/PPTXEvent.h"
-#include "Editor/PresentationDrawingsDef.h"
 
 CPPTXFile::CPPTXFile(extract_to_directory fCallbackExtract, compress_from_directory fCallbackCompress, progress_operation fCallbackProgress, void* pCallbackArg)
 {
@@ -75,12 +74,12 @@ CPPTXFile::CPPTXFile(extract_to_directory fCallbackExtract, compress_from_direct
 	m_fCallbackProgress = fCallbackProgress;
     m_pCallbackArg      = pCallbackArg;
 
-	m_pFolder		= NULL;
+	m_pPptxDocument		= NULL;
 }
 
 CPPTXFile::~CPPTXFile()
 {
-	RELEASEOBJECT(m_pFolder);
+	RELEASEOBJECT(m_pPptxDocument);
 }
 HRESULT CPPTXFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring sXMLOptions)
 {
@@ -110,21 +109,21 @@ HRESULT CPPTXFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath
 		localTempDir = sSrcFileName;
 	}
 
-	RELEASEOBJECT(m_pFolder);
-	m_pFolder = new PPTX::Folder();
+	RELEASEOBJECT(m_pPptxDocument);
+	m_pPptxDocument = new PPTX::Document();
 
-	if(!m_pFolder->isValid(localTempDir))
+	if(!m_pPptxDocument->isValid(localTempDir))
 	{
-		RELEASEOBJECT(m_pFolder);
+		RELEASEOBJECT(m_pPptxDocument);
 		return S_FALSE;
 	}
-	m_pFolder->read(localTempDir, (PPTX::IPPTXEvent*)this);
+	m_pPptxDocument->read(localTempDir, (PPTX::IPPTXEvent*)this);
 	if(GetPercent() < 1000000)
 	{
-		RELEASEOBJECT(m_pFolder);
+		RELEASEOBJECT(m_pPptxDocument);
 		return S_FALSE;
 	}
-	smart_ptr<PPTX::Presentation> presentation = m_pFolder->Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
+	smart_ptr<PPTX::Presentation> presentation = m_pPptxDocument->Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 	if (!presentation.is_init())
 	{
         NSDirectory::DeleteDirectory(m_strTempDir, false);
@@ -140,12 +139,12 @@ HRESULT CPPTXFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath
 }
 HRESULT CPPTXFile::SaveToFile(std::wstring sDstFileName, std::wstring sSrcPath, std::wstring sXMLOptions)
 {
-	if (NULL == m_pFolder)
+	if (NULL == m_pPptxDocument)
 		return S_FALSE;
 
 	OOX::CPath oPath;
 	oPath.m_strFilename = std::wstring(sSrcPath);
-	m_pFolder->write(oPath);
+	m_pPptxDocument->write(oPath);
 
     std::wstring srcFilePath = sSrcPath;
     std::wstring dstFileName = sDstFileName;
@@ -188,7 +187,7 @@ HRESULT CPPTXFile::GetBluRayXml(std::wstring* pbstrDVDXml)
 }
 HRESULT CPPTXFile::get_DrawingXml(std::wstring* pVal)
 {
-	if ((NULL == m_pFolder) || (NULL == pVal))
+	if ((NULL == m_pPptxDocument) || (NULL == pVal))
 		return S_FALSE;
 
 	return S_OK;
@@ -279,22 +278,22 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(std::wstring bsInput, std::wstring bsOutp
 {
 	OOX::CPath pathInputDirectory = bsInput;
 
-	RELEASEOBJECT(m_pFolder);
-	m_pFolder = new PPTX::Folder();
+	RELEASEOBJECT(m_pPptxDocument);
+	m_pPptxDocument = new PPTX::Document();
 
-	if (!m_pFolder->isValid(pathInputDirectory.GetPath())) // true ???
+	if (!m_pPptxDocument->isValid(pathInputDirectory.GetPath())) // true ???
 	{
-		RELEASEOBJECT(m_pFolder);
+		RELEASEOBJECT(m_pPptxDocument);
 		return S_FALSE;
 	}
 
-	m_pFolder->read(pathInputDirectory.GetPath() + FILE_SEPARATOR_STR, (PPTX::IPPTXEvent*)this);
+	m_pPptxDocument->read(pathInputDirectory.GetPath() + FILE_SEPARATOR_STR, (PPTX::IPPTXEvent*)this);
 	if(GetPercent() < 1000000)
 	{
-		RELEASEOBJECT(m_pFolder);
+		RELEASEOBJECT(m_pPptxDocument);
 		return S_FALSE;
 	}
-	smart_ptr<PPTX::Presentation> presentation = m_pFolder->Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
+	smart_ptr<PPTX::Presentation> presentation = m_pPptxDocument->Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 	if (!presentation.is_init())
 	{
         NSDirectory::DeleteDirectory(m_strTempDir, false);
@@ -314,8 +313,8 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(std::wstring bsInput, std::wstring bsOutp
 	m_strMediaDirectory = pathMedia.GetPath();
 	oBinaryWriter.m_strMainFolder = pathDstFileOutput.GetDirectory();
 
- 	oBinaryWriter.m_pCommon->m_pImageManager->m_strDstMedia = m_strMediaDirectory;
-	oBinaryWriter.m_pCommon->m_pImageManager->SetFontManager(oBinaryWriter.m_pCommon->m_pNativePicker->m_pFontManager);
+ 	oBinaryWriter.m_pCommon->m_pMediaManager->m_strDstMedia = m_strMediaDirectory;
+	oBinaryWriter.m_pCommon->m_pMediaManager->SetFontManager(oBinaryWriter.m_pCommon->m_pNativePicker->m_pFontManager);
 
     NSDirectory::CreateDirectory(m_strMediaDirectory);
 
@@ -330,7 +329,7 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(std::wstring bsInput, std::wstring bsOutp
 		}
 	}
 
-	PPTX2EditorAdvanced::Convert(oBinaryWriter, *m_pFolder, m_strDirectory, pathDstFileOutput.GetPath(), m_bIsNoBase64);
+	PPTX2EditorAdvanced::Convert(oBinaryWriter, *m_pPptxDocument, m_strDirectory, pathDstFileOutput.GetPath(), m_bIsNoBase64);
 
 	return S_OK;
 }

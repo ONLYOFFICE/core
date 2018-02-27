@@ -78,6 +78,8 @@ namespace OOX
 		//class CPresetTextShape;
 		class CInline;
 		class CAnchor;
+		class COfficeArtExtensionList;
+		class COfficeArtExtension;
 	}
 	namespace Spreadsheet
 	{
@@ -395,7 +397,6 @@ public:
 		void convert(PPTX::Logic::StyleRef						*oox_styleRef, int type);
 		void convert(PPTX::Logic::Path2D						*oox_path2D);
 		void convert(PPTX::Logic::PathBase						*oox_path);
-		void convert(PPTX::Logic::BodyPr						*oox_bodyPr);
         void convert(PPTX::Logic::UniFill						*oox_fill, DWORD ARGB = 0);
 		void convert(PPTX::Logic::UniColor						*color, DWORD & nARGB);
         void convert(PPTX::Logic::UniColor						*color, std::wstring & hexString, _CP_OPT(double) & opacity, DWORD ARGB = 0);
@@ -420,7 +421,12 @@ public:
 		void convert(PPTX::Logic::Run							*oox_run);
 		void convert(PPTX::Logic::Fld							*oox_fld);
 		void convert(PPTX::Logic::Br							*oox_br);
+		
 		void convert(PPTX::Logic::TxBody						*oox_txBody, PPTX::Logic::ShapeStyle* oox_style = NULL);
+		void convert_chart_text(PPTX::Logic::TxBody				*oox_txBody);
+		void convert(PPTX::Logic::BodyPr						*oox_bodyPr);
+		void convert_chart_text(PPTX::Logic::BodyPr				*oox_bodyPr);
+		
 		void convert(PPTX::Logic::MathParaWrapper				*oox_math);
 		void convert(PPTX::Logic::NvGraphicFramePr				*oox_framePr);
 		void convert(PPTX::Logic::ChartRec						*oox_chart);
@@ -453,7 +459,9 @@ public:
 		void convert(OOX::Spreadsheet::CT_Area3DChart			*chart);
 		void convert(OOX::Spreadsheet::CT_AreaChart				*chart);
 		void convert(OOX::Spreadsheet::CT_Bar3DChart			*chart);
+		void convert_before(OOX::Spreadsheet::CT_Bar3DChart		*chart);
 		void convert(OOX::Spreadsheet::CT_BarChart				*chart);
+		void convert_before(OOX::Spreadsheet::CT_BarChart		*chart);
 		void convert(OOX::Spreadsheet::CT_Line3DChart			*chart);
 		void convert(OOX::Spreadsheet::CT_LineChart				*chart);
 		void convert(OOX::Spreadsheet::CT_Pie3DChart			*chart);
@@ -514,6 +522,9 @@ public:
 		void convert(OOX::Vml::CGroup					*vml_group);
 		void convert(OOX::Vml::CVmlCommonElements		*vml_attr);
 		void convert(OOX::Vml::CFormulas				*vml_formulas);
+
+		void convert(OOX::Drawing::COfficeArtExtensionList		*ext_list);
+		void convert(OOX::Drawing::COfficeArtExtension			*art_ext);
 	};
 
 } // namespace Oox2Odf

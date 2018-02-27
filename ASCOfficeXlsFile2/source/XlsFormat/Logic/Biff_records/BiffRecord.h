@@ -53,7 +53,7 @@ public:
 	virtual const CFRecordType::TypeId getTypeId() const = 0;  // made virtual to let derived assign their own names (for example, EOF_T)
 
 	static const ElementType	type = typeBiffRecord;
-	virtual ElementType			get_type() const { return type; }
+	virtual ElementType			get_type() { return type; }
 //-----------------------------
 	virtual void readFollowingContinue(CFStreamCacheReader& reader);
 	virtual const bool storeRecordAndDecideProceeding(CFRecordPtr record); // This function is overridden in BiffRecordSplit

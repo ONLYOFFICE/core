@@ -36,16 +36,20 @@
 
 namespace OLEPS
 {
+unsigned short code_page_ = 0;
 
-PropertyCodePage::PropertyCodePage(const unsigned short value_type, XLS::CFStreamPtr stream)
+PropertyCodePage::PropertyCodePage(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream)
+	: Property(prop_type)
 {
 	code_page = 0;
 	if (value_type == Property::VT_I2)
 	{
 		*stream >> code_page;
 	}
+	code_page_ = code_page;
 }
-PropertyTitle::PropertyTitle(const unsigned short value_type, XLS::CFStreamPtr stream)
+PropertyStr::PropertyStr(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream)
+	: Property(prop_type)
 {
 	if (value_type == Property::VT_LPSTR)
 	{
@@ -56,84 +60,41 @@ PropertyTitle::PropertyTitle(const unsigned short value_type, XLS::CFStreamPtr s
 		{
 			char *s = new char[size];
 			stream->read(s,size);
-			title  = STR::toStdWString(s, size, 0);
+			value  = STR::toStdWString(s, size, code_page_);
 			delete []s;
 		}
 	}
 }
-PropertySubject::PropertySubject(const unsigned short value_type, XLS::CFStreamPtr stream)
-{
-	if (value_type == Property::VT_LPSTR)
-	{
-		_UINT32 size;
-		*stream >> size;
-
-		if (size > 0 )
-		{
-			char *s = new char[size];
-			stream->read(s,size);
-			subject  = STR::toStdWString(s, size, 0);
-			delete []s;
-		}
-	}
-}
-PropertyAuthor::PropertyAuthor(const unsigned short value_type, XLS::CFStreamPtr stream)
-{
-	if (value_type == Property::VT_LPSTR)
-	{
-		_UINT32 size;
-		*stream >> size;
-
-		if (size > 0)
-		{
-			char *s = new char[size];
-			stream->read(s, size);
-			author  = STR::toStdWString(std::string(s,size), 0);
-			delete []s;
-		}
-	}
-}
-PropertyKeywords::PropertyKeywords(const unsigned short value_type, XLS::CFStreamPtr stream)
-{
-	if (value_type == Property::VT_LPSTR)
-	{
-		_UINT32 size;
-		*stream >> size;
-
-		if (size > 0)
-		{
-			char *s = new char[size];
-			stream->read(s,size);
-			keywords = STR::toStdWString(std::string(s,size), 0);
-			delete []s;
-		}
-	}
-}
-
-PropertyComments::PropertyComments(const unsigned short value_type, XLS::CFStreamPtr stream)
-{
-	if (value_type == Property::VT_LPSTR)
-	{
-		_UINT32 size;
-		*stream >> size;
-
-		if (size > 0)
-		{
-			char *s = new char[size];
-			stream->read(s,size);
-			comments = STR::toStdWString(s, size, 0);
-			delete []s;
-		}
-	}
-}
-
-PropertyDateCreate::PropertyDateCreate(const unsigned short value_type, XLS::CFStreamPtr stream)
+PropertyDTM::PropertyDTM(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream)
+	: Property(prop_type)
 {
 	_UINT32 dwLowDateTime = 0, dwHighDateTime = 0;
 	if (value_type == Property::VT_FILETIME)
 	{
 		*stream >> dwLowDateTime >> dwHighDateTime;
 	}
+	//todoooo
+}
+PropertyInt::PropertyInt(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream)
+	: Property(prop_type)
+{
+	value = 0;
+	if (value_type == Property::VT_I4)
+	{
+		*stream >> value;
+	}
+}
+PropertyBool::PropertyBool(unsigned int prop_type, const unsigned short value_type, XLS::CFStreamPtr stream)
+	: Property(prop_type)
+{
+	value = false;
+	if (value_type == Property::VT_BOOL)
+	{
+		_UINT32 v;
+		*stream >> v;
 
+		if (v != 0)
+			value = true;
+	}
 }
 } // namespace OLEPS

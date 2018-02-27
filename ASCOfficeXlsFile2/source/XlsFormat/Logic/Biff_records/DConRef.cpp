@@ -122,9 +122,9 @@ void DConRef::check_external()
 {
 	bool bFound = false;
 
-	for (size_t i = 0; !bFilePath && i < global_info_->sheets_names.size(); i++)
+	for (size_t i = 0; !bFilePath && i < global_info_->sheets_info.size(); i++)
 	{
-		if (global_info_->sheets_names[i] == sheet_name)
+		if (global_info_->sheets_info[i].name == sheet_name)
 		{
 			bFound = true;
 			break;

@@ -32,8 +32,13 @@
 //#include "stdafx.h"
 #include "CommonWriter.h"
 #include "../Common/BinReaderWriterDefines.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/SharedStrings/SharedStrings.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Styles/Styles.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
 
-namespace BinXlsxRW {
+namespace BinXlsxRW 
+{
 	BinaryCommonWriter::BinaryCommonWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream):m_oStream(oCBufferedStream)
 	{
 	}
@@ -74,19 +79,30 @@ namespace BinXlsxRW {
 		{
 			bool bEmpty = true;
 			SimpleTypes::Spreadsheet::CHexColor oRgbColor;
+			
 			if(color.m_oIndexed.IsInit())
 			{
 				int nIndex = (int)color.m_oIndexed->GetValue();
-				if(NULL != pIndexedColors && nIndex < pIndexedColors->m_arrItems.size())
+				
+				bool bDefault = true;
+
+				if (pIndexedColors)
 				{
-					OOX::Spreadsheet::CRgbColor* pRgbColor = pIndexedColors->m_arrItems[nIndex];
-					if(pRgbColor->m_oRgb.IsInit())
+					std::map<int, OOX::Spreadsheet::CRgbColor*>::iterator pFind = pIndexedColors->mapIndexedColors.find(nIndex);
+
+					if(pFind != pIndexedColors->mapIndexedColors.end())
 					{
-						bEmpty = false;
-						oRgbColor = pRgbColor->m_oRgb.get();
+						OOX::Spreadsheet::CRgbColor* pRgbColor = pFind->second;
+						if(pRgbColor->m_oRgb.IsInit())
+						{
+							bEmpty = false;
+							oRgbColor = pRgbColor->m_oRgb.get();
+
+							bDefault = false;
+						}
 					}
 				}
-				else
+				if (bDefault)
 				{
 					unsigned char ucA;
 					unsigned char ucR;

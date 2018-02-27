@@ -255,6 +255,20 @@ public:
 
             return sReturn;
         }
+        else if (nAlg == OOXML_HASH_ALG_SHA256)
+        {
+            unsigned char obuf[32];
+            SHA256(pData, (size_t)nSize, obuf);
+
+            char* pBase64_hash = NULL;
+            int nBase64Len_hash = 0;
+            NSFile::CBase64Converter::Encode(obuf, 32, pBase64_hash, nBase64Len_hash, NSBase64::B64_BASE64_FLAG_NOCRLF);
+
+            std::string sReturn(pBase64_hash, nBase64Len_hash);
+            delete [] pBase64_hash;
+
+            return sReturn;
+        }
         return "";
     }
 

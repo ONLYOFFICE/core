@@ -31,7 +31,7 @@
  */
 
 #include "SXADDLSXFILT.h"
-#include <Logic/Biff_records/SXAddl.h>
+#include "../Biff_records/SXAddl.h"
 
 namespace XLS
 {
@@ -56,15 +56,28 @@ BaseObjectPtr SXADDLSXFILT::clone()
 // SXADDLSXFILT = SXAddl_SXCSXfilt_SXDId SXAddl_SXCSXfilt_SXDSXfilt [SXAddl_SXCSXfilt_SXDSXItm] SXAddl_SXCSXfilt_SXDEnd
 const bool SXADDLSXFILT::loadContent(BinProcessor& proc)
 {
-	//if(!proc.mandatory<SXAddl_SXCSXfilt_SXDId>())
-	//{
-	//	return false;
-	//}
-	//proc.mandatory<SXAddl_SXCSXfilt_SXDSXfilt>();
-	//proc.optional<SXAddl_SXCSXfilt_SXDSXItm>();
-	//proc.mandatory<SXAddl_SXCSXfilt_SXDEnd>();
+	bool result = false;
+	while (true)
+	{
+		CFRecordType::TypeId type = proc.getNextRecordType();	
 
-	return true;
+		if (type == rt_SXAddl)
+		{
+			result = true;
+			proc.optional<SXAddl>();
+
+			SXAddl* addl = dynamic_cast<SXAddl*>(elements_.back().get());				
+			if (!addl) continue;
+			
+			if (addl->bEndElement)//?? SXAddl_SXCView_SXDEnd
+				break;
+		}
+		else
+		{
+			break;
+		}
+	}
+	return result;
 }
 
 } // namespace XLS

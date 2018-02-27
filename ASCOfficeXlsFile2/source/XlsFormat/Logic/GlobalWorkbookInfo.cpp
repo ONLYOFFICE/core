@@ -94,17 +94,15 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
     return std::pair<float, float>(width, maxHeight);
 }
 
-GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConverter * xls_converter_)
-:	CodePage(code_page)
+GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConverter * converter) :	CodePage(code_page), xls_converter(converter)
 {
 	fill_x_ids[FillInfo(0, 0, 0)]		= 0;
 	fill_x_ids[FillInfo(17, 64, 65)]	= 1;
 	
-	last_AXES_id			= initial_AXES_id;
+	last_Axes_id			= 0x2000000;
+	last_Extern_id			= 1;
 
 	Version					= 0x0600; 
-
-	xls_converter			= xls_converter_;
 
 	startAddedSharedStrings = 0;
 	current_sheet			= 0;
@@ -119,7 +117,12 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 	defaultDigitFontSize = std::pair<float, float>(0, 0);
 	applicationFonts		= NULL;
 
-	idPivotCache			= 0;
+	bVbaProjectExist		= false;
+	bMacrosExist			= false;
+	bThemePresent			= false;
+	bWorkbookProtectExist	= false;
+
+	idPivotCache			= 0;	
 }
 
 GlobalWorkbookInfo::~GlobalWorkbookInfo()
@@ -173,11 +176,6 @@ void GlobalWorkbookInfo::RegisterPaletteColor(int id, const std::wstring & rgb)
 	colors_palette.insert(std::make_pair(id, rgb));
 }
 
-unsigned int GlobalWorkbookInfo::GenerateAXESId()
-{
-	return last_AXES_id += 1;
-}
-
 void GlobalWorkbookInfo::GetDigitFontSizePixels()
 {
 	if (defaultDigitFontSize.first > 0.01) return;
@@ -189,9 +187,9 @@ void GlobalWorkbookInfo::GetDigitFontSizePixels()
 	}
 
 	defaultDigitFontSize = std::pair<float, float>(7,8);
-	if (m_arFonts->size() < 1) return;
+	if (m_arFonts.empty()) return;
 
-	Font * font = dynamic_cast<Font*>(m_arFonts->at(0).get());
+	Font * font = dynamic_cast<Font*>(m_arFonts[0].get());
 	if (!font) return;
 
 	std::wstring	fontName = font->fontName.value();
@@ -216,8 +214,70 @@ void GlobalWorkbookInfo::GetDigitFontSizePixels()
     }
     catch(...)
     {
-        // TODO: default value!
     }    
+}
+
+void GlobalWorkbookInfo::CalculateAnchor(int colL, int colR, int rwT, int rwB, _UINT32 & x, _UINT32 &y, _UINT32 &cx, _UINT32 & cy)
+{
+	_sheet_info zero;
+	_sheet_info & sheet_info = current_sheet >= 0 ? sheets_info[current_sheet - 1] : zero;
+
+	GetDigitFontSizePixels();
+
+//----------------------------------------------------------------------------------------------------
+	x = y = cx = cy = 0;
+	//1 inch	=	72 point
+	//1 emu		=	360000 * 2.54 inch
+
+	double kfCol	= 1;// 1250.;//360000 / 72. / 4.;
+	double kfRow	= ( 360000 * 2.54 / 72) / 256. ;
+
+	double Digit_Width	= defaultDigitFontSize.first;
+	double Digit_Height = defaultDigitFontSize.second;
+
+	double width = 0, column_width = 0;
+
+	for (int i = 0 ; i < colL; i++)
+	{
+		if (sheet_info.customColumnsWidth.find(i) != sheet_info.customColumnsWidth.end())
+			x +=  256 * kfCol * sheet_info.customColumnsWidth[i];	
+		else 
+			x +=  256 * kfCol * sheet_info.defaultColumnWidth;
+	}
+
+	for (int i = colL ; i < colR; i++)
+	{
+		if (sheet_info.customColumnsWidth.find(i) != sheet_info.customColumnsWidth.end())
+			cx += 256 * kfCol * sheet_info.customColumnsWidth[i];	
+		else 
+			cx += 256 * kfCol * sheet_info.defaultColumnWidth;
+	}
+
+	for (int i = 0 ; i < rwT; i++)
+	{
+		if (sheet_info.customRowsHeight.find(i) != sheet_info.customRowsHeight.end())
+		{
+			y += 256 * kfRow * sheet_info.customRowsHeight[i];	
+		}
+		else 
+			y += 256 * kfRow * sheet_info.defaultRowHeight;	
+	}
+
+	for (int i = rwT ; i < rwB; i++)
+	{
+		if (sheet_info.customRowsHeight.find(i) != sheet_info.customRowsHeight.end())
+		{
+			cy += 256 * kfRow * sheet_info.customRowsHeight[i];	
+		}
+		else 
+			cy += 256 * kfRow * sheet_info.defaultRowHeight;	
+	}
+	cx = ((int)((cx * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
+	cx = (int)(((256. * cx + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width ); //in pixels
+	
+	x = ((int)((x * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
+	x = (int)(((256. * x + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width ); //in pixels
+
 }
 
 

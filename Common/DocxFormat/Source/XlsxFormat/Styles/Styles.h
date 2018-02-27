@@ -33,6 +33,7 @@
 #ifndef OOX_STYLES_FILE_INCLUDE_H_
 #define OOX_STYLES_FILE_INCLUDE_H_
 
+#include "../Xlsx.h"
 #include "../CommonInclude.h"
 
 #include "Borders.h"
@@ -54,13 +55,25 @@ namespace OOX
 		class CStyles : public OOX::File, public OOX::IFileContainer
 		{
 		public:
-			CStyles()
+			CStyles(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+				
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if (xlsx)
+				{
+					xlsx->m_pStyles = this;
+				}
 			}
-			CStyles(const CPath& oRootPath, const CPath& oPath)
+			CStyles(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if (xlsx)
+				{
+					xlsx->m_pStyles = this;
+				}
 				read( oRootPath, oPath );
 			}
 			virtual ~CStyles()
@@ -222,24 +235,26 @@ namespace OOX
 					m_oBorders->m_oCount.Init();
 					m_oBorders->m_oCount->SetValue((unsigned int)m_oBorders->m_arrItems.size());
 				}
-				//cellXfs
+			//cellXfs
 				if(m_oCellXfs.IsInit())
 				{
-					for(size_t i = 0, length = m_oCellXfs->m_arrItems.size(); i < length; ++i)
-					{
-						OOX::Spreadsheet::CXfs* xfs = m_oCellXfs->m_arrItems[i];
-						if (false == xfs->m_oXfId.IsInit())
-						{
-							xfs->m_oXfId.Init();
-							xfs->m_oXfId->SetValue(0);
-						}
-					}
+                    for ( size_t i = 0; i < m_oCellXfs->m_arrItems.size(); ++i)
+                    {
+                        CXfs* xfs = m_oCellXfs->m_arrItems[i];
+
+                        if ((xfs) && (false == xfs->m_oXfId.IsInit()))
+                        {
+                            xfs->m_oXfId.Init();
+                            xfs->m_oXfId->SetValue(0);
+                        }
+
+                    }
 				}
 				//cellStyles
 				if(false == m_oCellStyles.IsInit())
 					m_oCellStyles.Init();
 
-				if(0 == m_oCellStyles->m_arrItems.size())
+				if(m_oCellStyles->m_arrItems.empty())
 				{
 					CCellStyle* pCellStyle = new CCellStyle();
 						pCellStyle->m_oName = _T("Normal");
@@ -247,6 +262,7 @@ namespace OOX
 						pCellStyle->m_oXfId->SetValue(0);
 						pCellStyle->m_oBuiltinId.Init();
 						pCellStyle->m_oBuiltinId->SetValue(0);
+					
 					m_oCellStyles->m_arrItems.push_back(pCellStyle);
 				}
 				if(false == m_oCellStyles->m_oCount.IsInit())
@@ -314,10 +330,10 @@ namespace OOX
 			}
 
 		private:
-			CPath									m_oReadPath;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
+			CPath										m_oReadPath;
 
 		public:
 			nullable<OOX::Spreadsheet::CBorders>		m_oBorders;

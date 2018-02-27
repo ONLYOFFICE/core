@@ -486,14 +486,14 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-		public:
+
 			nullable<PrstTxWarp>		prstTxWarp;
 			TextFit						Fit;
 			nullable<Scene3d>			scene3d;
 			nullable_int				flatTx;
 			nullable<Sp3d>				sp3d;
 
-			// Attributes
+	// Attributes
 			nullable_limit<Limit::TextAnchor>		anchor;
 			nullable_bool							anchorCtr;
 			nullable_int							bIns;
@@ -513,9 +513,8 @@ namespace PPTX
 			nullable_limit<Limit::TextVerticalType> vert;
 			nullable_limit<Limit::VertOverflow>		vertOverflow;
 			nullable_limit<Limit::TextWrap>			wrap;
-		//private:
-		public:
-			mutable std::wstring									m_namespace;
+
+			mutable std::wstring					m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

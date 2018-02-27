@@ -507,7 +507,7 @@ namespace NSFontConverter
                             }
                         }
 
-                        delete sData;
+                        delete []sData;
                     }
 
                     nIndex += nLength + 3;

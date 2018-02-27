@@ -124,11 +124,11 @@ namespace NSPresentationEditor
 	class CLayout;
 	class CSlide;
 
-	class IElement
+class CElement;
+typedef boost::shared_ptr<CElement> CElementPtr;
+
+	class CElement
 	{
-	protected:
-		ULONG m_lCountRef;
-	
 	public:
 		ElementType			m_etType;
 		CDoubleRect			m_rcBounds;
@@ -181,23 +181,7 @@ namespace NSPresentationEditor
 
 		std::wstring		m_sHyperlink;
 
-		virtual ULONG AddRef()
-		{
-			++m_lCountRef;
-			return m_lCountRef;
-		}
-		virtual ULONG Release()
-		{
-			--m_lCountRef;
-			if (0 == m_lCountRef)
-			{
-				delete this;
-				return 0;
-			}
-			return m_lCountRef;
-		}
-
-		IElement()
+		CElement()
 		{
 			m_bIsBackground				= false;
 			m_bHaveAnchor				= true;
@@ -237,12 +221,10 @@ namespace NSPresentationEditor
 			m_bFlipV					= false;
 			m_bLine						= true;
 
-			m_lCountRef					= 1;
-
 			m_pTheme					= NULL;
 			m_pLayout					= NULL;
 		}
-		virtual ~IElement()
+		virtual ~CElement()
 		{
 		}
 
@@ -263,12 +245,11 @@ namespace NSPresentationEditor
 			m_rcBoundsOriginal.top		= dScaleY * m_rcBounds.top;
 			m_rcBoundsOriginal.bottom	= dScaleY * m_rcBounds.bottom;
 		}
-		virtual IElement* CreateDublicate() = 0;
+		virtual CElementPtr CreateDublicate() = 0;
 
-	protected:
-		virtual void SetProperiesToDublicate(IElement* pDublicate)
+		virtual void SetProperiesToDublicate(CElementPtr pDublicate)
 		{
-			if (NULL == pDublicate)
+			if (!pDublicate)
 				return;
 
 			pDublicate->m_bBoundsEnabled			= m_bBoundsEnabled;

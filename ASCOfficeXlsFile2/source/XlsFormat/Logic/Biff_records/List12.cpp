@@ -32,6 +32,10 @@
 
 #include "List12.h"
 
+#include "../Biff_structures/List12BlockLevel.h"
+#include "../Biff_structures/List12TableStyleClientInfo.h"
+#include "../Biff_structures/List12DisplayName.h"
+
 namespace XLS
 {
 
@@ -39,11 +43,9 @@ List12::List12()
 {
 }
 
-
 List12::~List12()
 {
 }
-
 
 BaseObjectPtr List12::clone()
 {
@@ -56,20 +58,20 @@ void List12::readFields(CFRecord& record)
 	record >> lsd;
 	record >> idList;
 
-	unsigned short _lsd = lsd;
-
 	switch (lsd)
 	{
 		case 0:
-			record >> rgbList12BlockLevel;
+			rgbList12 = BiffStructurePtr(new List12BlockLevel);
 			break;
 		case 1:
-			record >> rgbList12TableStyleClientInfo;
+			rgbList12 = BiffStructurePtr(new List12TableStyleClientInfo);
 			break;
 		case 2:
-			record >> rgbList12DisplayName;
+			rgbList12 = BiffStructurePtr(new List12DisplayName);
 			break;
 	}
+	if (rgbList12)
+		rgbList12->load(record);
 }
 
 } // namespace XLS

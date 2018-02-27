@@ -35,11 +35,10 @@
 namespace XLS
 {
 
-XF::XF(size_t& cell_xf_current_id, size_t& style_xf_current_id)
-:	cell(cell_xf_current_id, style_xf_current_id),
-	style(cell_xf_current_id, style_xf_current_id),
-	ixfParent(0)
+XF::XF(size_t& cell_xf_current_id, size_t& style_xf_current_id) :	cell (cell_xf_current_id, style_xf_current_id),
+																	style(cell_xf_current_id, style_xf_current_id)
 {
+	ixfParent = 0;
 }
 
 

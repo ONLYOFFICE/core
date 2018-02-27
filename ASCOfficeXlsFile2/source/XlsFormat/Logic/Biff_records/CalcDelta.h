@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
 
-
-// Logical representation of CalcDelta record in BIFF8
 class CalcDelta: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(CalcDelta)
@@ -54,7 +53,7 @@ public:
 	static const ElementType	type = typeCalcDelta;
 
 //-----------------------------
-	BIFF_DOUBLE numDelta;
+	Xnum numDelta;
 
 };
 

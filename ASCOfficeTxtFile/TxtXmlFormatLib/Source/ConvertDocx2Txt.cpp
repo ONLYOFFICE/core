@@ -38,7 +38,16 @@
 #include "TxtFormat/TxtFormat.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Document.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Numbering.h"
+//#include "../../../Common/DocxFormat/Source/DocxFormat/Comments.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Styles.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Footnote.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/HeaderFooter.h"
+
 #include "Common//ToString.h"
+#include <map>
 
 namespace Docx2Txt
 {
@@ -72,7 +81,7 @@ namespace Docx2Txt
 		OOX::CDocx		m_inputFile;
 
     private:
-        void convert(std::vector<OOX::WritingElement *> & items, std::list<std::wstring>& textOut, TxtXml::ITxtXmlEvent& Event, bool isFirstLevel, 
+        void convert(std::vector<OOX::WritingElement *> & items, std::vector<std::wstring>& textOut, TxtXml::ITxtXmlEvent& Event, bool isFirstLevel,
 							 OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
        
 		int m_lPercent;
@@ -85,7 +94,7 @@ namespace Docx2Txt
 									OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
 
         size_t NoteCount;
-		std::map<std::wstring, std::list<std::wstring>> Notes;
+        std::map<std::wstring, std::vector<std::wstring>> Notes;
 
         static std::wstring IntToLowerLetter	(int number);
         static std::wstring IntToUpperLetter	(int number);
@@ -160,58 +169,48 @@ namespace Docx2Txt
 
 	void Converter_Impl::convert(TxtXml::ITxtXmlEvent& Event)
 	{
-		OOX::CDocument	*pDocument	= NULL;
-		OOX::CStyles	*pStyles	= NULL;
-		OOX::CNumbering *pNumbering = NULL;
-
 		m_lPercent = 100000;
 		m_bCancelled = Event.Progress(0, m_lPercent);
 		if(m_bCancelled)
 			return;
 
-		smart_ptr<OOX::File> pFileD = m_inputFile.Find(OOX::FileTypes::Document);		
-		if (pFileD.IsInit() && OOX::FileTypes::Document == pFileD->type())
-			pDocument = (OOX::CDocument*)pFileD.operator->(); 
-
-		smart_ptr<OOX::File> pFileS = pDocument->Find(OOX::FileTypes::Style);		
-		if (pFileS.IsInit() && OOX::FileTypes::Style == pFileS->type())
-			pStyles =  (OOX::CStyles*)pFileS.operator->(); 
+		OOX::CDocument	*pDocument	= m_inputFile.m_pDocument; 
+		OOX::CStyles	*pStyles	= m_inputFile.m_pStyles;
+		OOX::CNumbering *pNumbering = m_inputFile.m_pNumbering;
 	
-		smart_ptr<OOX::File> pFileN = pDocument->Find(OOX::FileTypes::Numbering);
-		if (pFileN.IsInit() && OOX::FileTypes::Numbering == pFileN->type())
+		if (pNumbering)
 		{
-			pNumbering = (OOX::CNumbering*)pFileN.operator->(); 
-			
 			ListCount = pNumbering->m_arrNum.size();
 			Lists = new int[9 * ListCount];
 			if(Lists == NULL)
 				return;
-			for(int i = 0; i < 9 * ListCount; i++)
+			for (int i = 0; i < 9 * ListCount; i++)
 				Lists[i] = 0;
 		}
-		if(pDocument->m_arrItems.size() > 0)
-		{
-			m_lAddition = 800000;
-			Notes.clear();
-			
-			convert(pDocument->m_arrItems, m_outputFile.m_listContent, Event, true, pDocument, pNumbering, pStyles);
 
-			if(NoteCount != 0)
+		if (!pDocument) return;
+		if (pDocument->m_arrItems.empty()) return;
+
+		m_lAddition = 800000;
+		Notes.clear();
+		
+		convert(pDocument->m_arrItems, m_outputFile.m_listContent, Event, true, pDocument, pNumbering, pStyles);
+
+		if(NoteCount != 0)
+		{
+			m_outputFile.m_listContent.push_back(L"");
+			m_outputFile.m_listContent.push_back(L"---------------------------");
+			
+            for(std::map<std::wstring, std::vector<std::wstring>>::const_iterator iter_map = Notes.begin(); iter_map != Notes.end(); iter_map++)
 			{
-				m_outputFile.m_listContent.push_back(L"");
-				m_outputFile.m_listContent.push_back(L"---------------------------");
+				bool bFirst = true;
 				
-				for(std::map<std::wstring, std::list<std::wstring>>::const_iterator iter_map = Notes.begin(); iter_map != Notes.end(); iter_map++)
+                for(std::vector<std::wstring>::const_iterator iter = iter_map->second.begin(); iter != iter_map->second.end(); iter++)
 				{
-					bool bFirst = true;
+					if (bFirst) m_outputFile.m_listContent.push_back(iter_map->first + L" " + *iter);
+					else		m_outputFile.m_listContent.push_back(*iter);
 					
-					for(std::list<std::wstring>::const_iterator iter = iter_map->second.begin(); iter != iter_map->second.end(); iter++)
-					{
-						if (bFirst) m_outputFile.m_listContent.push_back(iter_map->first + L" " + *iter);
-						else		m_outputFile.m_listContent.push_back(*iter);
-						
-						bFirst = false;
-					}
+					bFirst = false;
 				}
 			}
 		}
@@ -248,17 +247,19 @@ namespace Docx2Txt
 	}
 
 
-	void Converter_Impl::convert(std::vector<OOX::WritingElement *> & items, std::list<std::wstring>& textOut, TxtXml::ITxtXmlEvent& Event, 
+    void Converter_Impl::convert(std::vector<OOX::WritingElement*> & items, std::vector<std::wstring>& textOut, TxtXml::ITxtXmlEvent& Event,
 										bool isFirstLevel, OOX::CDocument *pDocument,  OOX::CNumbering* pNumbering, OOX::CStyles *pStyles)
 	{
-		if(items.size() > 0)
+		if( !items.empty() )
 		{
 			if(isFirstLevel)
 				m_lAddition = m_lAddition / items.size();
 			
-			for (int i=0 ; i< items.size(); i++)
+            for (std::vector<OOX::WritingElement*>::iterator it = items.begin(); it != items.end(); ++it)
 			{
-				OOX::WritingElement * item = items[i];
+				OOX::WritingElement* item = *it;
+
+				if (!item)continue;
 
 				if (item->getType() == OOX::et_w_p)
 				{
@@ -301,6 +302,7 @@ namespace Docx2Txt
 				{
 					//todoooo  проверить - это общий случай - вместо CSdt ... да и Tbl тож
 					OOX::WritingElementWithChilds<OOX::WritingElement> *item_with_items = dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(item);
+					
 					if (item_with_items)
 					{
 						convert(item_with_items->m_arrItems, textOut, Event, false, pDocument, pNumbering, pStyles);
@@ -461,16 +463,22 @@ namespace Docx2Txt
 
 		bool inField = false;
 
-		for (long i=0; i < pParagraph->m_arrItems.size(); i++)
+        for (size_t	i = 0; i < pParagraph->m_arrItems.size(); ++i)
 		{
+			if (pParagraph->m_arrItems[i] == NULL) continue;
+
 			if (pParagraph->m_arrItems[i]->getType() == OOX::et_w_r)
 			{
 				OOX::Logic::CRun *run = dynamic_cast<OOX::Logic::CRun*>(pParagraph->m_arrItems[i]);
-				for (long j = 0 ; j < run->m_arrItems.size();j++)
+
+                for (size_t j = 0; j < run->m_arrItems.size(); ++j)
 				{
+					if (run->m_arrItems[j] == NULL) continue;
+
 					if (run->m_arrItems[j]->getType() == OOX::et_w_fldChar)
 					{
 						OOX::Logic::CFldChar *fldChar = dynamic_cast<OOX::Logic::CFldChar*>(run->m_arrItems[j]);
+
 						if ((fldChar) && (fldChar->m_oFldCharType.IsInit()))
 						{
 							if (fldChar->m_oFldCharType->GetValue() == SimpleTypes::fldchartypeBegin)	inField = true;
@@ -499,48 +507,38 @@ namespace Docx2Txt
 							}
 						}
 						
-						if (run->m_arrItems[j]->getType() == OOX::et_w_footnoteReference || run->m_arrItems[j]->getType() == OOX::et_w_endnoteReference)
+						if (run->m_arrItems[j]->getType() == OOX::et_w_footnoteReference || 
+							pParagraph->m_arrItems[i]->getType() == OOX::et_w_endnoteReference)
 						{// todooo Ref ????
 
-							std::list<std::wstring> notes_content;
+                            std::vector<std::wstring> notes_content;
 
 							OOX::Logic::CFootnoteReference* footnote_ref = dynamic_cast<OOX::Logic::CFootnoteReference*>(run->m_arrItems[j]);
 							OOX::Logic::CEndnoteReference* endnote_ref = dynamic_cast<OOX::Logic::CEndnoteReference*>(run->m_arrItems[j]);
 							NoteCount++;
 
-							if (footnote_ref)
-							{
-								smart_ptr<OOX::File> pFile = pDocument->Find(OOX::FileTypes::FootNote);
-								if (pFile.IsInit())
+							if (footnote_ref && m_inputFile.m_pFootnotes)
+							{								
+								for (size_t r = 0; r < m_inputFile.m_pFootnotes->m_arrFootnote.size(); r++)
 								{
-									OOX::CFootnotes *pFootnotes = (OOX::CFootnotes*)pFile.operator->();
-									for (size_t r = 0; r < pFootnotes->m_arrFootnote.size(); r++)
-									{
-										OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(pFootnotes->m_arrFootnote[r]);
+									OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(m_inputFile.m_pFootnotes->m_arrFootnote[r]);
 
-										if (note && note->m_oId == footnote_ref->m_oId)
-										{
-											convert(pFootnotes->m_arrFootnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
-										}
+									if (note && note->m_oId == footnote_ref->m_oId)
+									{
+										convert(m_inputFile.m_pFootnotes->m_arrFootnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
 									}
 								}
 								Notes.insert(std::make_pair(ToWString(NoteCount), notes_content));
 							}
-							if (endnote_ref)
+							if (endnote_ref && m_inputFile.m_pEndnotes)
 							{
-								smart_ptr<OOX::File> pFile = pDocument->Find(OOX::FileTypes::EndNote);
-								if (pFile.IsInit())
+								for (size_t r =0; r < m_inputFile.m_pEndnotes->m_arrEndnote.size(); r++)
 								{
-									OOX::CEndnotes *pEndnotes = (OOX::CEndnotes*)pFile.operator->();
+									OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(m_inputFile.m_pEndnotes->m_arrEndnote[r]);
 									
-									for (size_t r =0; r < pEndnotes->m_arrEndnote.size(); r++)
+									if (note && note->m_oId == endnote_ref->m_oId)
 									{
-										OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(pEndnotes->m_arrEndnote[r]);
-										
-										if (note && note->m_oId == endnote_ref->m_oId)
-										{
-											convert(pEndnotes->m_arrEndnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
-										}
+										convert(m_inputFile.m_pEndnotes->m_arrEndnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
 									}
 								}
 								Notes.insert(std::make_pair(ToWString(NoteCount), notes_content));

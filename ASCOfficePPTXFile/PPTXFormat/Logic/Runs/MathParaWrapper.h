@@ -53,6 +53,8 @@ namespace PPTX
 			WritingElement_AdditionConstructors(MathParaWrapper)
 
 			MathParaWrapper() {}
+			virtual ~MathParaWrapper();
+
 			MathParaWrapper& operator=(const MathParaWrapper& oSrc);
 
 			virtual OOX::EElementType getType () const

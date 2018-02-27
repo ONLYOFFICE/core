@@ -277,10 +277,10 @@ namespace PPTX
 	public:
 		std::vector<PPTX::Logic::Comment> m_arComments;
 
-		Comments()
+		Comments(OOX::Document* pMain) : WrapperFile(pMain)
 		{
 		}
-		Comments(const OOX::CPath& filename, FileMap& map)
+		Comments(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain)
 		{
 			read(filename, map);
 		}

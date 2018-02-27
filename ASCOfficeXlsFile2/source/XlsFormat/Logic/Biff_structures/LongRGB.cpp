@@ -37,23 +37,19 @@ namespace XLS
 {
 
 
-LongRGBA::LongRGBA()
-:	is_alpha(true)
+LongRGBA::LongRGBA() : is_alpha(true)
 {
 }
 
 
-LongRGBA::LongRGBA(const bool alpha_present)
-:	is_alpha(alpha_present)
+LongRGBA::LongRGBA(const bool alpha_present) : is_alpha(alpha_present)
 {
 }
 
 
-LongRGB::LongRGB()
-:	LongRGBA(false)
+LongRGB::LongRGB() : LongRGBA(false)
 {
 }
-
 
 BiffStructurePtr LongRGBA::clone()
 {
@@ -78,9 +74,14 @@ void LongRGBA::load(CFRecord& record)
 		alpha = 0;
 		record.skipNunBytes(1); // reserved
 	}
+
 	strRGB	= STR::toRGB (red, green, blue);
 	strARGB	= STR::toARGB(red, green, blue, alpha);
 }
 
+_UINT32 LongRGBA::ToRGBA()
+{
+	return ((unsigned int)( ( (unsigned char)(red) )| ( ( (unsigned char)(green) ) << 8 ) | ( ( (unsigned char)(blue) ) << 16 ) | ( (unsigned char)(alpha) << 24 ) ) );
+}
 
 } // namespace XLS

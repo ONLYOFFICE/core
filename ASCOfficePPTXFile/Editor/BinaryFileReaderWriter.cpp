@@ -40,6 +40,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/Video.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/Audio.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
 
 #include "../../Common/Base64.h"
 
@@ -77,14 +78,14 @@ namespace NSBinPptxRW
 		m_pNativePicker = NULL;
 		m_pFontPicker = NULL;
 		m_bDeleteFontPicker = true;
-		m_pImageManager = new NSShapeImageGen::CImageManager();
+		m_pMediaManager = new NSShapeImageGen::CMediaManager();
 	}
 	CCommonWriter::~CCommonWriter()
 	{
 		m_pNativePicker = NULL;
 		if(m_bDeleteFontPicker)
 			RELEASEOBJECT(m_pFontPicker);
-		RELEASEOBJECT(m_pImageManager);
+		RELEASEOBJECT(m_pMediaManager);
 	}
 	void CCommonWriter::CreateFontPicker(COfficeFontPicker* pPicker)
 	{
@@ -185,6 +186,21 @@ namespace NSBinPptxRW
 		}
 		return nRes;
 	}
+	_imageManager2Info CImageManager2::GenerateMedia(const std::wstring& strInput)
+	{
+		std::map<std::wstring, _imageManager2Info>::const_iterator pPair = m_mapImages.find(strInput);
+
+		if (pPair != m_mapImages.end())
+		{
+			return pPair->second;
+		}
+
+		_imageManager2Info oImageManagerInfo = GenerateMediaExec(strInput);
+			
+		m_mapImages[strInput] = oImageManagerInfo;
+
+		return oImageManagerInfo;
+	}
 	_imageManager2Info CImageManager2::GenerateImage(const std::wstring& strInput, NSCommon::smart_ptr<OOX::File> & additionalFile, const std::wstring& oleData, std::wstring strBase64Image)
 	{
 		if (IsNeedDownload(strInput))
@@ -196,7 +212,7 @@ namespace NSBinPptxRW
 		{
 			smart_ptr<OOX::Media> mediaFile = additionalFile.smart_dynamic_cast<OOX::Media>();
 			if (mediaFile.IsInit())
-				mediaFile->set_filename(pPair->second.sFilepathAdditional);
+				mediaFile->set_filename(pPair->second.sFilepathAdditional, false);
 
 			return pPair->second;
 		}
@@ -272,27 +288,30 @@ namespace NSBinPptxRW
 					{
 						typeAdditional = 2;
 
-						std::wstring strMedia = strFolder + strFileName + mediaFile->filename().GetExtention();
-						if (OOX::CSystemUtility::IsFileExist(strMedia))
+						if (!mediaFile->IsExternal())
 						{
-							m_pContentTypes->AddDefault(mediaFile->filename().GetExtention(false));
-							strAdditional = strMedia;
-						}
-						else
-						{
-							strMedia = strFolder + strFileName;
-							
-							if (mediaFile.is<OOX::Audio>()) strMedia += L".wav";
-							if (mediaFile.is<OOX::Video>()) strMedia += L".avi";
-							
+							std::wstring strMedia = strFolder + strFileName + mediaFile->filename().GetExtention();
 							if (OOX::CSystemUtility::IsFileExist(strMedia))
+							{
+								m_pContentTypes->AddDefault(mediaFile->filename().GetExtention(false));
 								strAdditional = strMedia;
+							}
+							else
+							{
+								strMedia = strFolder + strFileName;
+								
+								if (mediaFile.is<OOX::Audio>()) strMedia += L".wav";
+								if (mediaFile.is<OOX::Video>()) strMedia += L".avi";
+								
+								if (OOX::CSystemUtility::IsFileExist(strMedia))
+									strAdditional = strMedia;
+							}
 						}
 					}
 				}
 			}
 		}
-		else if (!strExts.empty())
+		if (!strExts.empty())
 		{
 			m_pContentTypes->AddDefault(strExts.substr(1));
 		}
@@ -309,7 +328,9 @@ namespace NSBinPptxRW
 		{
 			smart_ptr<OOX::Media> mediaFile = additionalFile.smart_dynamic_cast<OOX::Media>();
 			if (mediaFile.IsInit())
-				mediaFile->set_filename(oImageManagerInfo.sFilepathAdditional);
+			{
+				mediaFile->set_filename(oImageManagerInfo.sFilepathAdditional, false);
+			}
 		}
 			
 		if (strBase64Image.empty())
@@ -327,12 +348,12 @@ namespace NSBinPptxRW
 		{
 			//CompObj Stream
 			BYTE dataCompObj[] = {0x01,0x00,0xfe,0xff,0x03,0x0a,0x00,0x00,0xff,0xff,0xff,0xff,0x0c,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0xc0,0x00,0x00,0x00,0x00,0x00,0x00,0x46,0x0c,0x00,0x00,0x00,0x4f,0x4c,0x45,0x20,0x50,0x61,0x63,0x6b,0x61,0x67,0x65,0x00,0x00,0x00,0x00,0x00,0x08,0x00,0x00,0x00,0x50,0x61,0x63,0x6b,0x61,0x67,0x65,0x00,0xf4,0x39,0xb2,0x71,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
-			POLE::Stream oStream1(&oStorage, "\001CompObj", true, arraysize(dataCompObj));
+			POLE::Stream oStream1(&oStorage, L"\001CompObj", true, arraysize(dataCompObj));
 			oStream1.write(dataCompObj, arraysize(dataCompObj));
 			oStream1.flush();
 			//ObjInfo Stream
 			BYTE dataObjInfo[] = {0x00,0x00,0x03,0x00,0x0d,0x00};
-			POLE::Stream oStream2(&oStorage, "\003ObjInfo", true, arraysize(dataObjInfo));
+			POLE::Stream oStream2(&oStorage, L"\003ObjInfo", true, arraysize(dataObjInfo));
 			oStream2.write(dataObjInfo, arraysize(dataObjInfo));
 			oStream2.flush();
 			//Ole10Native Stream
@@ -345,7 +366,7 @@ namespace NSBinPptxRW
 
 			memcpy(head, &nDataSize, sizeof(_UINT32));
 
-			POLE::Stream oStream(&oStorage, "\001Ole10Native", true, arraysize(head) + nDataSize);
+			POLE::Stream oStream(&oStorage, L"\001Ole10Native", true, arraysize(head) + nDataSize);
 			oStream.write(head, arraysize(head));
 			oStream.write(aData, nDataSize);
 			oStream.flush();
@@ -354,6 +375,30 @@ namespace NSBinPptxRW
 			bRes = true;
 		}
 		return bRes;
+	}
+	_imageManager2Info CImageManager2::GenerateMediaExec(const std::wstring& strInput)
+	{
+		OOX::CPath			oPathOutput;
+		_imageManager2Info	oImageManagerInfo;
+		
+		std::wstring strExts;
+        std::wstring strMedia = L"media" + std::to_wstring(++m_lIndexNextImage);
+		
+		int pos = (int)strInput.rfind(L".");
+		if (pos >= 0) 
+		{
+			strExts = strInput.substr(pos);
+			m_pContentTypes->AddDefault(strExts.substr(1));
+		}
+
+		oPathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strMedia + strExts;
+
+		if (oPathOutput.GetPath() != strInput && NSFile::CFileBinary::Exists(strInput))
+		{
+            NSFile::CFileBinary::Copy(strInput, oPathOutput.GetPath());
+			oImageManagerInfo.sFilepathImage = oPathOutput.GetPath();
+		}
+		return oImageManagerInfo;
 	}
 	_imageManager2Info CImageManager2::GenerateImageExec(const std::wstring& strInput, const std::wstring& sExts, const std::wstring& strAdditionalImage, int nAdditionalType, const std::wstring& oleData)
 	{
@@ -1235,7 +1280,15 @@ namespace NSBinPptxRW
 
 		m_pWriter->WriteString(strRels);
 	}
-	void CRelsGenerator::EndPresentationRels(bool bIsCommentsAuthors, bool bIsNotesMaster, bool bIsVbaProject)
+	void CRelsGenerator::WritePresentationComments(int nComment)
+	{
+		std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring( m_lNextRelsID++ ) +
+			L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments\" Target=\"comments/comment" +
+			std::to_wstring(nComment) + L".xml\"/>";
+
+		m_pWriter->WriteString(strRels);
+	}
+	void CRelsGenerator::EndPresentationRels(bool bIsCommentsAuthors, bool bIsNotesMaster, bool bIsVbaProject, bool bIsJsaProject)
 	{
  		if (bIsNotesMaster)
 		{
@@ -1266,6 +1319,12 @@ namespace NSBinPptxRW
                     L"\" Type=\"http://schemas.microsoft.com/office/2006/relationships/vbaProject\" Target=\"vbaProject.bin\"/>";
 			m_pWriter->WriteString(strRels4);
 		}
+		if (bIsJsaProject)
+		{
+			std::wstring strRels5 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+					L"\" Type=\"" + OOX::FileTypes::JsaProject.RelationType() + L"\" Target=\"" + OOX::FileTypes::JsaProject.DefaultFileName().GetPath() + L"\"/>";
+			m_pWriter->WriteString(strRels5);
+		}
 	}
 	int CRelsGenerator::GetNextId()
 	{
@@ -1286,6 +1345,50 @@ namespace NSBinPptxRW
 		std::wstring strMem = m_pWriter->GetData();
 		oFile.WriteStringUTF8(strMem);
 		oFile.CloseFile();
+	}
+	_relsGeneratorInfo CRelsGenerator::WriteMedia(const std::wstring& strImage, int type)
+	{
+		_imageManager2Info oImageManagerInfo = m_pManager->GenerateMedia(strImage);
+		
+		std::wstring strImageRelsPath; 
+		
+		if (m_pManager->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX)	strImageRelsPath = L"media/";
+		else														strImageRelsPath = L"../media/";
+
+		_relsGeneratorInfo oRelsGeneratorInfo;
+		
+		if (!oImageManagerInfo.sFilepathImage.empty())
+		{
+			strImageRelsPath += OOX::CPath(oImageManagerInfo.sFilepathImage).GetFilename();
+
+			std::map<std::wstring, _relsGeneratorInfo>::iterator pPair = m_mapImages.find(strImageRelsPath);
+
+			if (m_mapImages.end() != pPair)
+			{
+				return pPair->second;				
+			}
+			
+			oRelsGeneratorInfo.nImageRId		= m_lNextRelsID++;
+			oRelsGeneratorInfo.sFilepathImage	= oImageManagerInfo.sFilepathImage;
+			
+			std::wstring strRid = L"rId" + std::to_wstring(oRelsGeneratorInfo.nImageRId);
+
+			if (type == 0)
+			{
+				m_pWriter->WriteString( L"<Relationship Id=\"" + strRid + 
+					L"\" Type=\"http://schemas.microsoft.com/office/2007/relationships/media\" Target=\"" + strImageRelsPath +
+					L"\"/>");
+			}
+			else if (type == 1)
+			{
+				m_pWriter->WriteString( L"<Relationship Id=\"" + strRid + 
+					L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio\" Target=\"" + strImageRelsPath +
+					L"\"/>");
+			}		
+		}
+
+		m_mapImages.insert(std::pair<std::wstring, _relsGeneratorInfo>(strImageRelsPath, oRelsGeneratorInfo));
+		return oRelsGeneratorInfo;
 	}
 
 	_relsGeneratorInfo CRelsGenerator::WriteImage(const std::wstring& strImage, smart_ptr<OOX::File> & additionalFile, const std::wstring& oleData, std::wstring strBase64Image = _T(""))
@@ -1363,14 +1466,21 @@ namespace NSBinPptxRW
 			{
 				std::wstring strRid = L"rId" + std::to_wstring(oRelsGeneratorInfo.nMediaRId);
 
-				if (m_pManager->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX)	strMediaRelsPath = L"media/";		
-				else														strMediaRelsPath = L"../media/";
-				
-				strMediaRelsPath += mediaFile->filename().GetFilename();
+				if (mediaFile->IsExternal())
+				{
+					strMediaRelsPath = mediaFile->filename().GetFilename();
+				}
+				else
+				{
+					if (m_pManager->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX)	strMediaRelsPath = L"media/";		
+					else														strMediaRelsPath = L"../media/";
+					
+					strMediaRelsPath += mediaFile->filename().GetFilename();				
 
-				m_pWriter->WriteString( L"<Relationship Id=\"" + strRid
-					+ L"\" Type=\"http://schemas.microsoft.com/office/2007/relationships/media\" Target=\"" +
-					strMediaRelsPath + L"\"/>");
+					m_pWriter->WriteString( L"<Relationship Id=\"" + strRid
+						+ L"\" Type=\"http://schemas.microsoft.com/office/2007/relationships/media\" Target=\"" +
+						strMediaRelsPath + L"\"" + (mediaFile->IsExternal() ? L" TargetMode=\"External\"" : L"") + L"/>");
+				}
 			}
 		}
 		m_mapImages.insert(std::pair<std::wstring, _relsGeneratorInfo>(strImageRelsPath, oRelsGeneratorInfo));

@@ -46,10 +46,10 @@ namespace PPTX
 	class Core : public WrapperFile
 	{
 	public:
-		Core()
+		Core(OOX::Document* pMain) : WrapperFile(pMain)
 		{
 		}
-		Core(const OOX::CPath& filename, FileMap& map)
+		Core(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain)
 		{
 			read(filename, map);
 		}

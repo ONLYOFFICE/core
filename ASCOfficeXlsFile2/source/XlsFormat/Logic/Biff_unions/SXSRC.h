@@ -53,6 +53,7 @@ public:
 
 	BaseObjectPtr	m_source;	
 	bool			bSql;
+	bool			bOLAP;
 };
 
 } // namespace XLS

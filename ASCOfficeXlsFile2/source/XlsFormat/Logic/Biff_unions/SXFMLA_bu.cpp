@@ -127,7 +127,8 @@ void SXFMLA::serialize_attr(CP_ATTR_NODE)
 	
 	global_info->arPivotSxNames = m_arPivotSxNames;
 
-	CP_XML_ATTR(L"formula", sx_fmla->fmla.getAssembledFormula());
+	std::wstring fmla = sx_fmla->fmla.getAssembledFormula();
+	CP_XML_ATTR(L"formula", fmla);
 }
 
 

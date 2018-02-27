@@ -62,7 +62,9 @@ void graphic_format_properties::apply_from(const graphic_format_properties & Oth
 	_CP_APPLY_PROP2(draw_auto_grow_width_);
 	_CP_APPLY_PROP2(draw_fit_to_size_);
 	_CP_APPLY_PROP2(draw_fit_to_contour_);
-	
+    _CP_APPLY_PROP2(draw_wrap_influence_on_position_);
+    _CP_APPLY_PROP2(draw_ole_draw_aspect_);
+
 	_CP_APPLY_PROP2(svg_stroke_color_); 
 	_CP_APPLY_PROP2(svg_stroke_width_);	
 	_CP_APPLY_PROP2(svg_stroke_opacity_); 
@@ -86,7 +88,6 @@ void graphic_format_properties::apply_from(const graphic_format_properties & Oth
     _CP_APPLY_PROP2(style_overflow_behavior_);
     _CP_APPLY_PROP2(style_mirror_);
     _CP_APPLY_PROP2(fo_clip_);
-    _CP_APPLY_PROP2(draw_wrap_influence_on_position_);
 
     common_draw_fill_attlist_.apply_from(Other.common_draw_fill_attlist_);
     common_draw_rel_size_attlist_.apply_from(Other.common_draw_rel_size_attlist_);
@@ -123,6 +124,7 @@ void graphic_format_properties::serialize(std::wostream & _Wostream ,const wchar
 			CP_XML_ATTR_OPT(L"draw:auto-grow-width",			draw_auto_grow_width_);			
 			CP_XML_ATTR_OPT(L"draw:fit-to-size",				draw_fit_to_size_);
 			CP_XML_ATTR_OPT(L"draw:fit-to-contour",				draw_fit_to_contour_);
+			CP_XML_ATTR_OPT(L"draw:ole-draw-aspect",			draw_ole_draw_aspect_);
 			
 			CP_XML_ATTR_OPT(L"draw:stroke",				draw_stroke_); 
 			CP_XML_ATTR_OPT(L"draw:stroke-dash",		draw_stroke_dash_); 

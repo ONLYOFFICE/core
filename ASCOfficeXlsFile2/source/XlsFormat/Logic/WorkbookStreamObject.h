@@ -62,6 +62,7 @@ public:
 
 	std::vector<BaseObjectPtr>			m_arWorksheetSubstream;
 	std::vector<BaseObjectPtr>			m_arMacroSheetSubstream;
+	std::vector<BaseObjectPtr>			m_arChartSheetSubstream;
 	
 	unsigned short code_page_;
 };

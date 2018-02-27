@@ -99,7 +99,7 @@ public:
 			BYTE* pDataUncompress = new BYTE[decompressedSize];
             NSZLib::Decompress(pData, compressedSize, pDataUncompress, decompressedSize);
 
-			RELEASEOBJECT(pData);
+			delete []pData;
 			pData = pDataUncompress;
 		}			
 

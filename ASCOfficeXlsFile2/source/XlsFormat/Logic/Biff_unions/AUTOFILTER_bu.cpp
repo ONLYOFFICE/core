@@ -31,11 +31,13 @@
  */
 
 #include "AUTOFILTER.h"
-#include <Logic/Biff_records/AutoFilterInfo.h>
-#include <Logic/Biff_records/AutoFilter12.h>
-#include <Logic/Biff_records/AutoFilter.h>
-#include <Logic/Biff_records/ContinueFrt12.h>
-#include <Logic/Biff_unions/SORTDATA12.h>
+#include "SORTDATA12.h"
+
+#include "../Biff_records/AutoFilterInfo.h"
+#include "../Biff_records/AutoFilter12.h"
+#include "../Biff_records/AutoFilter.h"
+#include "../Biff_records/ContinueFrt12.h"
+#include "../Biff_structures/AF12Criteria.h"
 
 namespace XLS
 {
@@ -45,11 +47,9 @@ AUTOFILTER::AUTOFILTER()
 {
 }
 
-
 AUTOFILTER::~AUTOFILTER()
 {
 }
-
 
 class Parenthesis_AUTOFILTER_1: public ABNFParenthesis
 {
@@ -78,7 +78,6 @@ BaseObjectPtr AUTOFILTER::clone()
 {
 	return BaseObjectPtr(new AUTOFILTER(*this));
 }
-
 
 // AUTOFILTER = AutoFilterInfo *(AutoFilter / (AutoFilter12 *ContinueFrt12)) *SORTDATA12
 const bool AUTOFILTER::loadContent(BinProcessor& proc)
@@ -145,7 +144,8 @@ int AUTOFILTER::serialize(std::wostream & stream)
 	if (it == pGlobalWorkbookInfoPtr->mapDefineNames.end()) return 0;
 
 	int count_columns = info->cEntries;
-	int ind = pGlobalWorkbookInfoPtr->current_sheet;
+	
+	size_t ind = pGlobalWorkbookInfoPtr->current_sheet;
 	std::wstring ref;
 	
 	if (ind < it->second.size() && ind >= 0)
@@ -159,7 +159,7 @@ int AUTOFILTER::serialize(std::wostream & stream)
 	}
 	if (ref.empty()) return 0;
 
-	std::wstring sheet_name = ind <= pGlobalWorkbookInfoPtr->sheets_names.size() ? pGlobalWorkbookInfoPtr->sheets_names[ind-1] : L"";
+	std::wstring sheet_name = ind <= pGlobalWorkbookInfoPtr->sheets_info.size() ? pGlobalWorkbookInfoPtr->sheets_info[ind-1].name : L"";
 	if (!sheet_name.empty())
 	{
 		int pos = ref.find(sheet_name);
@@ -219,9 +219,9 @@ int AUTOFILTER::serialize(std::wostream & stream)
 								AutoFilter12* af12 = dynamic_cast<AutoFilter12*>(itF->second[j].get());
 								if (af12 == NULL) continue;
 
-								for (size_t k = 0 ; k < af12->rgbAF12Criteries.size(); k++)
+								for (size_t k = 0 ; k < af12->arAF12Criteries.size(); k++)
 								{
-									AF12Criteria * af12Criteria = dynamic_cast<AF12Criteria *>(af12->rgbAF12Criteries[k].get());
+									AF12Criteria * af12Criteria = dynamic_cast<AF12Criteria *>(af12->arAF12Criteries[k].get());
 									if (af12Criteria == NULL) continue;
 
 									CP_XML_NODE(L"filter")

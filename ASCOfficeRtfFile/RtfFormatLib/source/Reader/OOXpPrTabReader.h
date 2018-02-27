@@ -42,7 +42,7 @@ public:
 	{
 		m_ooxTabs = ooxTabs;
 	}
-	bool Parse( ReaderParameter oParam ,RtfTabs& oOutputProperty)
+	bool Parse( ReaderParameter oParam, RtfTabs& oOutputProperty)
 	{
 		if (m_ooxTabs == NULL) return false;
 
@@ -64,6 +64,8 @@ public:
 					case SimpleTypes::tabtlcMiddleDot  : oCurTab.m_eLeader = RtfTab::tl_mdot;	break;
 					case SimpleTypes::tabtlcNone       : break;
 					case SimpleTypes::tabtlcUnderscore : oCurTab.m_eLeader = RtfTab::tl_ul;		break;
+					default:
+						break;
 				}
 			}
 			if (m_ooxTabs->m_arrTabs[i]->m_oVal.IsInit())
@@ -79,6 +81,8 @@ public:
 					case SimpleTypes::tabjcStart   : oCurTab.m_eKind = RtfTab::tk_tql;		break;
 					case SimpleTypes::tabjcRight   : oCurTab.m_eKind = RtfTab::tk_tqr;		break;
 					case SimpleTypes::tabjcLeft    : oCurTab.m_eKind = RtfTab::tk_tql;		break;	
+					default:
+						break;
 				}
 			}
 			if (m_ooxTabs->m_arrTabs[i]->m_oPos.IsInit())

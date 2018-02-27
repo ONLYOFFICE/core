@@ -31,9 +31,10 @@
  */
 
 #include "TABLESTYLES.h"
-#include <Logic/Biff_records/TableStyles.h>
-#include <Logic/Biff_records/TableStyle.h>
-#include <Logic/Biff_records/TableStyleElement.h>
+
+#include "../Biff_records/TableStyles.h"
+#include "../Biff_records/TableStyle.h"
+#include "../Biff_records/TableStyleElement.h"
 
 namespace XLS
 {
@@ -103,7 +104,7 @@ const bool TABLESTYLES::loadContent(BinProcessor& proc)
 			if (m_arTableStyles.size() > 0)
 				m_arTableStyles.back().elements_.push_back(elements_.front());
 		}
-		elements_.pop_back();
+		elements_.pop_front();
 	}	
 	return true;
 }
@@ -127,6 +128,62 @@ int TABLESTYLES::serialize(std::wostream & stream)
 				CP_XML_ATTR(L"defaultTableStyle", styles->rgchDefTableStyle.value());
 			}
 
+			for (size_t i = 0; i < m_arTableStyles.size(); i++)
+			{
+				TableStyle* style = dynamic_cast<TableStyle*>(m_arTableStyles[i].style_.get());
+				if (!style) continue;
+
+				CP_XML_NODE(L"tableStyle")
+				{
+					CP_XML_ATTR(L"count", m_arTableStyles[i].elements_.size());
+					CP_XML_ATTR(L"name", style->rgchName.value());
+					CP_XML_ATTR(L"pivot", style->fIsPivot);
+					
+					for (size_t j = 0; j < m_arTableStyles[i].elements_.size(); j++)
+					{
+						TableStyleElement* elem = dynamic_cast<TableStyleElement*>(m_arTableStyles[i].elements_[j].get());
+						if (!elem) continue;
+
+						CP_XML_NODE(L"tableStyleElement")
+						{
+							CP_XML_ATTR(L"dxfId", elem->index);
+
+							switch(elem->tseType)
+							{
+							case 0x00000000: CP_XML_ATTR(L"type", L"wholeTable");			break;
+							case 0x00000001: CP_XML_ATTR(L"type", L"headerRow");			break;
+							case 0x00000002: CP_XML_ATTR(L"type", L"totalRow");				break;
+							case 0x00000003: CP_XML_ATTR(L"type", L"firstColumn");			break;
+							case 0x00000004: CP_XML_ATTR(L"type", L"lastColumn");			break;
+							case 0x00000005: CP_XML_ATTR(L"type", L"firstRowStripe");		break;
+							case 0x00000006: CP_XML_ATTR(L"type", L"secondRowStripe");		break;
+							case 0x00000007: CP_XML_ATTR(L"type", L"firstColumnStripe");	break;
+							case 0x00000008: CP_XML_ATTR(L"type", L"secondColumnStripe");	break;
+							case 0x00000009: CP_XML_ATTR(L"type", L"firstHeaderCell");		break;
+							case 0x0000000a: CP_XML_ATTR(L"type", L"lastHeaderCell");		break;
+							case 0x0000000b: CP_XML_ATTR(L"type", L"firstTotalCell");		break;
+							case 0x0000000c: CP_XML_ATTR(L"type", L"lastTotalCell");		break;
+							case 0x0000000d: CP_XML_ATTR(L"type", L"firstSubtotalColumn");	break;
+							case 0x0000000e: CP_XML_ATTR(L"type", L"secondSubtotalColumn");	break;
+							case 0x0000000f: CP_XML_ATTR(L"type", L"thirdSubtotalColumn");	break;
+							case 0x00000010: CP_XML_ATTR(L"type", L"firstSubtotalRow");		break;
+							case 0x00000011: CP_XML_ATTR(L"type", L"secondSubtotalRow");	break;
+							case 0x00000012: CP_XML_ATTR(L"type", L"thirdSubtotalRow");		break;
+							case 0x00000013: CP_XML_ATTR(L"type", L"blankRow");				break;
+							case 0x00000014: CP_XML_ATTR(L"type", L"firstColumnSubheading");break;
+							case 0x00000015: CP_XML_ATTR(L"type", L"secondColumnSubheading");break;
+							case 0x00000016: CP_XML_ATTR(L"type", L"thirdColumnSubheading");break;
+							case 0x00000017: CP_XML_ATTR(L"type", L"firstRowSubheading");	break;
+							case 0x00000018: CP_XML_ATTR(L"type", L"secondRowSubheading");	break;
+							case 0x00000019: CP_XML_ATTR(L"type", L"thirdRowSubheading");	break;
+							case 0x0000001a: CP_XML_ATTR(L"type", L"pageFieldLabels");		break;
+							case 0x0000001b: CP_XML_ATTR(L"type", L"pageFieldValues");		break;
+							}
+							
+						}
+					}
+				}
+			}
 		}
 	}
 	return 0;

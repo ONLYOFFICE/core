@@ -79,7 +79,7 @@ void BoundSheet8::readFields(CFRecord& record)
 			hsState = std::wstring (L"hidden");
 			break;
 		case 2:
-			hsState = std::wstring (L"hidden");//(L"veryHidden");
+			hsState = std::wstring (L"veryHidden");
 			break;
 	}
 	if (name_.length() > 31)
@@ -91,9 +91,11 @@ void BoundSheet8::readFields(CFRecord& record)
 	{//file(6).xls
 		name_ = L"Sheet_" + boost::lexical_cast<std::wstring>(record.getGlobalWorkbookInfo()->current_sheet + 1);
 	}
-	
-	record.getGlobalWorkbookInfo()->sheets_names.push_back(name_);
-	record.getGlobalWorkbookInfo()->sheets_state.push_back(hsState);
+
+	GlobalWorkbookInfo::_sheet_info sheet_info;
+	sheet_info.state = hsState;
+	sheet_info.name = name_;
+	record.getGlobalWorkbookInfo()->sheets_info.push_back(sheet_info);
 	
 	dt = GETBITS(flags, 8, 15);
 }

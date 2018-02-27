@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of ObjProtect record in BIFF8
 class ObjProtect: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(ObjProtect)
@@ -51,7 +49,7 @@ public:
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeObjProtect;
+	static const ElementType type = typeObjProtect;
 
 //-----------------------------
 	Boolean<unsigned short> fLockObj;

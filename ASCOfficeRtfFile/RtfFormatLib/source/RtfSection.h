@@ -315,15 +315,11 @@ public:
 	class ColumnProperty
 	{
 	public: 
-		class CollumnVar
+		struct CollumnVar
 		{
-			public: int m_nColumnSpaceToRightOfCol;  // colsrN 	Space to right of column in twips; used to specify formatting for variable-width columns.
-					int m_nColumnWidth;  // colwN 	Width of column in twips; used to override the default constant width setting for variable-width columns.
-					CollumnVar()
-				{
-					m_nColumnSpaceToRightOfCol = PROP_DEF;
-					m_nColumnWidth = PROP_DEF;
-				}
+			int m_nColumnSpaceToRightOfCol	= PROP_DEF;		// colsrN 	Space to right of column in twips; used to specify formatting for variable-width columns.
+			int m_nColumnWidth				= PROP_DEF;		// colwN 	Width of column in twips; used to override the default constant width setting for variable-width columns.
+
 		};
 		std::vector< CollumnVar > m_aCollumnProperty;
 		ColumnProperty()
@@ -569,8 +565,6 @@ public:
 		m_nColumnNumber = 1;
 		DEFAULT_PROPERTY	( m_nColumnSpace )
 		DEFAULT_PROPERTY	( m_bColumnLineBetween )
-
-		m_oCollumnProperty.m_aCollumnProperty.resize( m_nColumnNumber );
 
 		//Footnotes and Endnotes
 		DEFAULT_PROPERTY_DEF( m_eFootnotesJust,		fj_none )

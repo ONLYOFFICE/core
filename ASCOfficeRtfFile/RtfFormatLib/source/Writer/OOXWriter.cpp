@@ -43,6 +43,8 @@
 #include "OOXFootnoteWriter.h"
 
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/App.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Core.h"
 
 #include "../../../../ASCOfficeDocxFile2/BinReader/DefaultThemeWriter.h"
 
@@ -65,8 +67,8 @@ OOXWriter::OOXWriter( RtfDocument& oDocument, std::wstring sPath ) :
 	m_poSettingsWriter	= new OOXSettingsWriter	( *this, m_oDocument );
 	m_poStylesWriter	= new OOXStylesWriter	( *this, m_oDocument );
 
-	m_poDocPropsApp		= new OOX::CApp();
-	m_poDocPropsCore	= new OOX::CCore();
+	m_poDocPropsApp		= new OOX::CApp(NULL);
+	m_poDocPropsCore	= new OOX::CCore(NULL);
 
 //default properties
 
@@ -145,9 +147,10 @@ bool OOXWriter::SaveByItemEnd()
 	
 	if (m_poDocPropsApp)
 	{
-		((OOX::CApp*)m_poDocPropsApp)->SetApplication	( L"OnlyOffice" );
-		((OOX::CApp*)m_poDocPropsApp)->SetAppVersion	( L"5.0" );
-		
+		((OOX::CApp*)m_poDocPropsApp)->SetApplication	( L"ONLYOFFICE" );
+#if defined(INTVER)
+        ((OOX::CApp*)m_poDocPropsApp)->SetAppVersion	( VALUE2STR(INTVER) );
+#endif		
 		((OOX::CApp*)m_poDocPropsApp)->write(pathDocProps + FILE_SEPARATOR_STR + L"app.xml", pathDocProps.GetDirectory(), oContentTypes);
 		
 		m_oRels.AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties", L"docProps/app.xml" );

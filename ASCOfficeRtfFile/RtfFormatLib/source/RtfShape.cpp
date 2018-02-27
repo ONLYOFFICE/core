@@ -35,17 +35,21 @@
 
 #include "../../../UnicodeConverter/UnicodeConverter.h"
 
-#include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/PPTShape.h"
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/PptShape.h"
 
 void RtfShape::SetDefault()
 {
 	m_eAnchorTypeShape = st_none;
 
 //Common
+	DEFAULT_PROPERTY( m_nWidth )
+	DEFAULT_PROPERTY( m_nHeight )
+
 	DEFAULT_PROPERTY( m_nLeft )
 	DEFAULT_PROPERTY( m_nTop )
 	DEFAULT_PROPERTY( m_nBottom )
 	DEFAULT_PROPERTY( m_nRight )
+
 	DEFAULT_PROPERTY( m_nID )
 	DEFAULT_PROPERTY( m_nZOrder )
 	DEFAULT_PROPERTY( m_nHeader )
@@ -55,7 +59,8 @@ void RtfShape::SetDefault()
 	DEFAULT_PROPERTY( m_bLockAnchor )
 	DEFAULT_PROPERTY_DEF( m_eXAnchor, ax_column ) //по умолчанию - привязка к тексту
 	DEFAULT_PROPERTY_DEF( m_eYAnchor, ay_Para )//по умолчанию - привязка к тексту
-
+	DEFAULT_PROPERTY( m_nLockPosition )
+	DEFAULT_PROPERTY( m_nLockRotation )
 //Position absolute
 	DEFAULT_PROPERTY( m_nPositionH )
 	DEFAULT_PROPERTY( m_nPositionHRelative )
@@ -89,19 +94,27 @@ void RtfShape::SetDefault()
 
 //Text box
 	DEFAULT_PROPERTY( m_nAnchorText )
-	DEFAULT_PROPERTY_DEF( m_nTexpLeft, 91440 )
-	DEFAULT_PROPERTY_DEF( m_nTexpTop, 45720 )
-	DEFAULT_PROPERTY_DEF( m_nTexpRight, 91440 )
-	DEFAULT_PROPERTY_DEF( m_nTexpBottom, 45720 )
+	
+	//DEFAULT_PROPERTY_DEF( m_nTexpLeft, 91440 )
+	//DEFAULT_PROPERTY_DEF( m_nTexpTop, 45720 )
+	//DEFAULT_PROPERTY_DEF( m_nTexpRight, 91440 )
+	//DEFAULT_PROPERTY_DEF( m_nTexpBottom, 45720 )
+	
 	DEFAULT_PROPERTY( m_nTexpLeft )
 	DEFAULT_PROPERTY( m_nTexpTop )
 	DEFAULT_PROPERTY( m_nTexpRight )
 	DEFAULT_PROPERTY( m_nTexpBottom )
+	
 	DEFAULT_PROPERTY( m_bFitShapeToText )
 	DEFAULT_PROPERTY( m_bFitTextToShape )
 	DEFAULT_PROPERTY( m_nCcol )
 	DEFAULT_PROPERTY( m_nTxdir )
 	DEFAULT_PROPERTY( m_nWrapText )
+	DEFAULT_PROPERTY( m_nTxflTextFlow)
+	DEFAULT_PROPERTY( m_fRotateText)
+	DEFAULT_PROPERTY( m_nScaleText)
+	DEFAULT_PROPERTY( m_fAutoTextMargin)
+	DEFAULT_PROPERTY( m_CdirFont)
 //Geometry
 	for (size_t i = 0; i < 10; i++)
 		DEFAULT_PROPERTY( m_nAdjustValue[i] )
@@ -178,9 +191,9 @@ void RtfShape::SetDefault()
 	m_aTextItems	= TextItemContainerPtr();
 	m_oPicture		= RtfPicturePtr();
 	m_bBackground	= false;
-	m_bIsOle		= false;
 	m_bInGroup		= false;
 	m_bIsGroup		= false;
+	m_bIsOle		= false;
 	
 	m_oCharProperty.SetDefault();
 }
@@ -215,7 +228,12 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 
 	sResult += m_oCharProperty.RenderToRtf( oRenderParameter );
 
-	if( st_inline == m_eAnchorTypeShape || st_none == m_eAnchorTypeShape)
+	if (m_bIsOle)
+	{
+		m_oPicture->dump_shape_properties = RenderToRtfShapeProperty( oRenderParameter );
+		sResult +=  m_oPicture->RenderToRtf( oRenderParameter );
+	}
+	else if (( st_inline == m_eAnchorTypeShape || st_none == m_eAnchorTypeShape) && !m_bIsOle)
 	{
 		if( NULL != m_oPicture && m_nShapeType == NSOfficeDrawing::sptPictureFrame)
 		{
@@ -320,7 +338,7 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 				sResult += L"}";
 		}
 	}
-	else	// anchor
+	else	// anchor or ole
 	{
 		sResult += L"{\\shp";
 		sResult += L"{\\*\\shpinst";
@@ -425,6 +443,8 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 	RENDER_RTF_SHAPE_PROP(L"posrelh",	sResult,   	m_nPositionHRelative);
 	RENDER_RTF_SHAPE_PROP(L"posv",		sResult,   	m_nPositionV);
 	RENDER_RTF_SHAPE_PROP(L"posrelv",	sResult,	m_nPositionVRelative);
+	RENDER_RTF_SHAPE_PROP(L"fLockPosition",	sResult,	m_nLockPosition);
+	RENDER_RTF_SHAPE_PROP(L"fLockRotation",	sResult,	m_nLockRotation);
 
     RENDER_RTF_SHAPE_PROP(L"fLayoutInCell",	sResult,	m_bLayoutInCell);
     RENDER_RTF_SHAPE_PROP(L"fAllowOverlap",	sResult,	m_bAllowOverlap);
@@ -442,12 +462,12 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 	if (m_sName.empty() == false)
 	{
 		sResult += L"{\\sp{\\sn wzName}{\\sv ";
-		sResult += m_sName + L"}}";	
+        sResult += RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, 48 ) + L"}}"; //utf-16
 	}
 	if (m_sDescription.empty() == false)
 	{
 		sResult += L"{\\sp{\\sn wzDescription}{\\sv ";
-		sResult += m_sDescription + L"}}";
+        sResult += RtfChar::renderRtfText(m_sDescription, oRenderParameter.poDocument, 48 ) + L"}}"; //utf-16
 	}
 //Rehydration
     //RENDER_RTF_SHAPE_PROP(L"metroBlob",    sResult,   m_sMetroBlob);
@@ -482,6 +502,8 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
     RENDER_RTF_SHAPE_PROP(L"ccol",              sResult,	m_nCcol);
     RENDER_RTF_SHAPE_PROP(L"txdir",             sResult,	m_nTxdir);
     RENDER_RTF_SHAPE_PROP(L"WrapText",          sResult,   	m_nWrapText);
+    RENDER_RTF_SHAPE_PROP(L"txflTextFlow",		sResult,   	m_nTxflTextFlow);
+	RENDER_RTF_SHAPE_PROP(L"fRotateText",		sResult,   	m_fRotateText);
 //Geometry
     RENDER_RTF_SHAPE_PROP(L"adjustValue",       sResult,   	m_nAdjustValue[0] );
     RENDER_RTF_SHAPE_PROP(L"adjust2Value",      sResult,   m_nAdjustValue[1] );
@@ -538,7 +560,7 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 //Fill
 	if( 0 == m_bFilled )
 		sResult += L"{\\sp{\\sn fFilled}{\\sv 0}}";
-    RENDER_RTF_SHAPE_PROP(L"fillType",		sResult,	m_nFillType );
+	RENDER_RTF_SHAPE_PROP(L"fillType",		sResult,	m_nFillType );
     RENDER_RTF_SHAPE_PROP(L"fillColor",		sResult,	m_nFillColor );
     RENDER_RTF_SHAPE_PROP(L"fillBackColor",	sResult,	m_nFillColor2 );
 	
@@ -595,7 +617,7 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 	{
         RENDER_RTF_SHAPE_PROP(L"fGtext",    sResult,   m_bGtext );
 		
-		int nCodePage = -1;
+		int nCodePage = 48; //utf-16
 		
         if( m_sGtextFont.empty() == false)
 		{
@@ -635,31 +657,31 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
         if( !m_sSigSetupId.empty() )
 		{
 			sResult += L"{\\sp{\\sn wzSigSetupId}{\\sv ";
-				sResult += RtfChar::renderRtfText(m_sSigSetupId, oRenderParameter.poDocument, 0);
+				sResult += RtfChar::renderRtfText(m_sSigSetupId, oRenderParameter.poDocument, 48); //utf-16
 			sResult += L"}}";
 		}
         if( !m_sSigSetupProvId.empty() )
 		{
 			sResult += L"{\\sp{\\sn wzSigSetupProvId}{\\sv ";
-				sResult += RtfChar::renderRtfText(m_sSigSetupProvId, oRenderParameter.poDocument, 0);
+				sResult += RtfChar::renderRtfText(m_sSigSetupProvId, oRenderParameter.poDocument, 48); //utf-16
 			sResult += L"}}";
 		}
         if( !m_sSigSetupSuggSigner.empty() )
 		{
 			sResult += L"{\\sp{\\sn wzSigSetupSuggSigner}{\\sv ";
-				sResult += RtfChar::renderRtfText(m_sSigSetupSuggSigner, oRenderParameter.poDocument, 0);
+				sResult += RtfChar::renderRtfText(m_sSigSetupSuggSigner, oRenderParameter.poDocument, 48); //utf-16
 			sResult += L"}}";
 		}
         if( !m_sSigSetupSuggSigner2.empty() )
 		{
 			sResult += L"{\\sp{\\sn wzSigSetupSuggSigner2}{\\sv ";
-				sResult += RtfChar::renderRtfText(m_sSigSetupSuggSigner2, oRenderParameter.poDocument, 0);
+				sResult += RtfChar::renderRtfText(m_sSigSetupSuggSigner2, oRenderParameter.poDocument, 48); //utf-16
 			sResult += L"}}";
 		}
         if( !m_sSigSetupSuggSignerEmail.empty() )
 		{
 			sResult += L"{\\sp{\\sn wzSigSetupSuggSignerEmail}{\\sv ";
-				sResult += RtfChar::renderRtfText(m_sSigSetupSuggSignerEmail, oRenderParameter.poDocument, 0);
+				sResult += RtfChar::renderRtfText(m_sSigSetupSuggSignerEmail, oRenderParameter.poDocument, 48); //utf-16
 			sResult += L"}}";
 		}
 	}
@@ -675,69 +697,62 @@ std::wstring RtfShape::RenderToOOX(RenderParameter oRenderParameter)
     std::wstring sResult;
 	RtfDocument* poDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
 	
-	TextItemContainerPtr aTempTextItems;
-	
 	if( NSOfficeDrawing::sptPictureFrame == m_nShapeType && 0 != m_aTextItems )
-	{//Значит это Ole обьект с anchor, для него все также только TextBox надо делать по-другому
-		aTempTextItems	= m_aTextItems;
-		m_aTextItems	= TextItemContainerPtr();
-		m_bIsOle		= true;
+	{//test for ole
+		TextItemContainerPtr aTempTextItems	= m_aTextItems;
+
+		m_aTextItems = TextItemContainerPtr();
+		
+		if( 0 != aTempTextItems )
+		{//пишем только Ole обьект
+			int nTempTextItemsCount = aTempTextItems->GetCount();
+			for (size_t i = 0; i < nTempTextItemsCount; i++ )
+			{
+				ITextItemPtr piCurTextItem;
+				aTempTextItems->GetItem( piCurTextItem, i );
+				if( NULL != piCurTextItem && TYPE_RTF_PARAGRAPH == piCurTextItem->GetType() )
+				{
+					RtfParagraphPtr poCurParagraph = boost::static_pointer_cast< RtfParagraph, ITextItem >( piCurTextItem );
+					if( NULL != poCurParagraph )
+					{
+						for (size_t j = 0; j < poCurParagraph->GetCount(); j++ )
+						{
+							IDocumentElementPtr piCurIDocumentElement;
+							poCurParagraph->GetItem( piCurIDocumentElement, j );
+							if( NULL != piCurIDocumentElement && TYPE_RTF_OLE == piCurIDocumentElement->GetType() )
+							{
+								//рендерим только Ole часть
+								RenderParameter oNewParam = oRenderParameter;
+								oNewParam.nType = RENDER_TO_OOX_PARAM_OLE_ONLY;
+								oNewParam.nValue = m_nID;
+
+								RtfOlePtr poCurOle = boost::static_pointer_cast< RtfOle, IDocumentElement >( piCurIDocumentElement );
+								if( NULL != poCurOle )
+								{
+									m_sOle += poCurOle->RenderToOOX( oNewParam );
+									if (!m_sOle.empty())
+									{
+										m_pOleObject = poCurOle;
+										m_bIsOle = true;
+										break;
+									}
+								}
+							}
+						}
+						if( true == m_bIsOle )
+							break;
+					}
+				}
+			}
+			//возвращаем text box на место
+			m_aTextItems = aTempTextItems;
+		}
 	}
 
 	sResult = RenderToOOXBegin(oRenderParameter);
 	
     if( !sResult.empty() )
 		sResult +=  RenderToOOXEnd(oRenderParameter);
-
-    std::wstring sOle;
-	if( 0 != aTempTextItems )
-	{//пишем только Ole обьект
-		//ищем первый ole обьект
-		RtfOlePtr poFirstOle;
-		int nTempTextItemsCount = aTempTextItems->GetCount();
-		for (size_t i = 0; i < nTempTextItemsCount; i++ )
-		{
-			ITextItemPtr piCurTextItem;
-			aTempTextItems->GetItem( piCurTextItem, i );
-			if( NULL != piCurTextItem && TYPE_RTF_PARAGRAPH == piCurTextItem->GetType() )
-			{
-				RtfParagraphPtr poCurParagraph = boost::static_pointer_cast< RtfParagraph, ITextItem >( piCurTextItem );
-				if( NULL != poCurParagraph )
-				{
-					bool bBreak = false;
-					for (size_t j = 0; j < poCurParagraph->GetCount(); j++ )
-					{
-						IDocumentElementPtr piCurIDocumentElement;
-						poCurParagraph->GetItem( piCurIDocumentElement, j );
-						if( NULL != piCurIDocumentElement && TYPE_RTF_OLE == piCurIDocumentElement->GetType() )
-						{
-							//рендерим только Ole часть
-							RenderParameter oNewParam = oRenderParameter;
-							oNewParam.nType = RENDER_TO_OOX_PARAM_OLE_ONLY;
-							oNewParam.nValue = m_nID;
-
-							RtfOlePtr poCurOle = boost::static_pointer_cast< RtfOle, IDocumentElement >( piCurIDocumentElement );
-							if( NULL != poCurOle )
-							{
-								sOle += poCurOle->RenderToOOX( oNewParam );
-								bBreak = true;
-								break;
-							}
-						}
-					}
-					if( true == bBreak )
-						break;
-				}
-			}
-		}
-		//возвращаем text box на место
-		m_aTextItems = aTempTextItems;
-	}
-	
-    if( !sOle.empty() && !sResult.empty())
-	{
-        XmlUtils::replace_all(sResult, L"</w:pict>", sOle + L"</w:pict>" );//todooo переписать
-	}
 	
 	return sResult;
 }
@@ -772,7 +787,14 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		;//child shape
 	else if( RENDER_TO_OOX_PARAM_SHAPE_WSHAPE == oRenderParameter.nType )
 	{//pic bullets
-		sResult += L"<w:pict>";
+		if (m_bIsOle)
+		{
+			sResult += L"<w:object w:dxaOrig=\"0\" w:dyaOrig=\"0\">";
+		}
+		else
+		{
+			sResult += L"<w:pict>";
+		}
 	}
 	else
 	{//работает по умолчанию
@@ -804,7 +826,14 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 				sResult += sCharProp;
 			sResult += L"</w:rPr>";
 		}
-		sResult += L"<w:pict>";
+		if (m_bIsOle)
+		{
+			sResult += L"<w:object w:dxaOrig=\"0\" w:dyaOrig=\"0\">";
+		}
+		else
+		{
+			sResult += L"<w:pict>";
+		}
 	}
 	
     if (oRenderParameter.sValue.empty())
@@ -814,12 +843,13 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 
 	sResult += L"<" + oRenderParameter.sValue;
 
-    if (m_sName.empty())
+	RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
+    sResult += L" id=\"_x0000_s" + std::to_wstring(poDocument->GetShapeId( m_nID )) + L"\"";
+    
+	if (!m_sName.empty())
 	{
-		RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
-        m_sName += L"_x0000_s" + std::to_wstring(poDocument->GetShapeId( m_nID )) + L"";
+		sResult += L" title=\"" + m_sName + L"\"";
 	}
-	sResult += L" id=\"" + m_sName + L"\"";
 
 	if( PROP_DEF != m_nShapeType && 0 != m_nShapeType)
 	{
@@ -1072,7 +1102,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
         sResult += L" style=\"" + sStyle + L"\"";
 	}
 //----------------------------------------------------------------------------------------------------------------------------
-	if( true == m_bIsOle ) sResult += L" o:ole=\"\"";
+	if( false == m_sOle.empty() ) sResult += L" o:ole=\"\"";
 	
 	if( PROP_DEF != m_nGroupLeft && PROP_DEF != m_nGroupTop )
         sResult += L" coordorigin=\"" + std::to_wstring(m_nGroupLeft) + L"," + std::to_wstring(m_nGroupTop) + L"\"";
@@ -1116,7 +1146,8 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 //Custom
 	if (!m_aPVerticles.empty() || !m_aPSegmentInfo.empty())
 	{
-		CPPTShape * custom_shape = CPPTShape::CreateByType((PPTShapes::ShapeType)m_nShapeType);
+        CBaseShapePtr base_shape = CPPTShape::CreateByType((PPTShapes::ShapeType)m_nShapeType);
+        CPPTShape *custom_shape = dynamic_cast<CPPTShape*>(base_shape.get());
 		if (custom_shape)
 		{
 			custom_shape->m_bCustomShape = true;
@@ -1248,7 +1279,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		}
 	}
 
-	if( 0 != m_aTextItems )
+	if( 0 != m_aTextItems && !m_bIsOle)
 	{
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
@@ -1304,16 +1335,19 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 
 			sResult += L"<v:imagedata r:id=\"" + sPicture + L"\"";
 
-			if( PROP_DEF != nCropLeft )
-                sResult += L" cropleft=\"" + std::to_wstring(nCropLeft) + L"f\"";
-			if( PROP_DEF != nCropTop )
-                sResult += L" croptop=\"" + std::to_wstring(nCropTop) + L"f\"";
-			if( PROP_DEF != nCropRight )
-                sResult += L" cropright=\"" + std::to_wstring(nCropRight) + L"f\"";
-			if( PROP_DEF != nCropBottom )
-                sResult += L" cropbottom=\"" + std::to_wstring(nCropBottom) + L"f\"";
+			if (!m_bIsOle)
+			{
+				if( PROP_DEF != nCropLeft )
+					sResult += L" cropleft=\"" + std::to_wstring(nCropLeft) + L"f\"";
+				if( PROP_DEF != nCropTop )
+					sResult += L" croptop=\"" + std::to_wstring(nCropTop) + L"f\"";
+				if( PROP_DEF != nCropRight )
+					sResult += L" cropright=\"" + std::to_wstring(nCropRight) + L"f\"";
+				if( PROP_DEF != nCropBottom )
+					sResult += L" cropbottom=\"" + std::to_wstring(nCropBottom) + L"f\"";
+			}
 
-			sResult += L" o:title=\"\"/>";
+			sResult += L" o:title=\"" + m_sName + L"\"/>";
 		}
 	}
 //-----------------------------------------------------------------------------------------------
@@ -1439,10 +1473,20 @@ std::wstring RtfShape::RenderToOOXEnd(RenderParameter oRenderParameter)
 	if( RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2 == oRenderParameter.nType )
 		;
 	else if( RENDER_TO_OOX_PARAM_SHAPE_WSHAPE == oRenderParameter.nType )
-		sResult += L"</w:pict>";
+	{
+		if (!m_sOle.empty())	sResult += m_sOle + L"</w:object>";
+		else					sResult += L"</w:pict>";
+	}
 	else
 	{
-		sResult += L"</w:pict></w:r>";//работает по умолчанию
+		if (!m_sOle.empty())
+		{
+			sResult += m_sOle + L"</w:object></w:r>";//работает по умолчанию
+		}
+		else
+		{
+			sResult += L"</w:pict></w:r>";//работает по умолчанию
+		}
 		
 		if (m_bDelete)	sResult += L"</w:del>";
 		if (m_bInsert)	sResult += L"</w:ins>";

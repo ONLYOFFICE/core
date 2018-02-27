@@ -537,7 +537,14 @@ namespace NSShapeImageGen
 
 						bool bIsRaster = true;
 						oWriterSVG.IsRaster(&bIsRaster);
-						if(bIsRaster)
+
+						LONG lSvgDataSize = 0;
+						oWriterSVG.GetSVGDataSize(&lSvgDataSize);
+
+						bool bIsBigestSVG = (lSvgDataSize > 5 * 1024 *1024);
+
+
+						if(bIsRaster || bIsBigestSVG)
 						{
 							//случай растрового wmf/emf
 							if (lWidth <= 0 || lHeight <= 0)

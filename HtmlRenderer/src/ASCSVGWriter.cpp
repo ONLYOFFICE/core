@@ -862,7 +862,12 @@ namespace NSHtmlRenderer
         *bVal	= m_bIsRaster;
 		return S_OK;
 	}
-	// additiaonal params ----------------------------------------------------------------------
+	HRESULT CASCSVGWriter::GetSVGDataSize(LONG* lVal)
+	{
+		*lVal = m_pVectorWriter ?  m_pVectorWriter->m_oSVG.m_oDocument.GetCurSize() : 0;
+		return S_OK;
+	}	
+// additiaonal params ----------------------------------------------------------------------
 	HRESULT CASCSVGWriter::CommandLong(const LONG& lType, const LONG& lCommand)
 	{
 		//todo new command

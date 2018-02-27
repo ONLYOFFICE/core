@@ -468,26 +468,6 @@ v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate)
 v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplateBuilder(v8::Isolate* isolate);
 // --------------------------
 
-// create work with arraytypes
-class MallocArrayBufferAllocator : public v8::ArrayBuffer::Allocator
-{
-public:
-    virtual void* Allocate(size_t length)
-    {
-        void* ret = malloc(length);
-        memset(ret, 0, length);
-        return ret;
-    }
-    virtual void* AllocateUninitialized(size_t length)
-    {
-        return malloc(length);
-    }
-    virtual void Free(void* data, size_t length)
-    {
-        free(data);
-    }
-};
-
 class CChangesWorker
 {
 private:
@@ -1057,46 +1037,147 @@ public:
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
+#if 0
+class CSnapshotScript
+{
+public:
+    bool m_bIsExist;
+    v8::StartupData m_oStartupData;
+
+    CSnapshotScript(const std::wstring& sDir = L"")
+    {
+        m_bIsExist = false;
+        m_oStartupData.data = NULL;
+        m_oStartupData.raw_size = 0;
+
+        std::wstring sFile = sDir + L"/heap_snapshot.bin";
+        if (NSFile::CFileBinary::Exists(sFile))
+        {
+            m_bIsExist = true;
+
+            NSFile::CFileBinary oFile;
+            oFile.OpenFile(sFile);
+            m_oStartupData.raw_size = (int)oFile.GetFileSize();
+            m_oStartupData.data = new char[m_oStartupData.raw_size];
+
+            DWORD dwRead = 0;
+            oFile.ReadFile((BYTE*)m_oStartupData.data, (DWORD)m_oStartupData.raw_size, dwRead);
+            oFile.CloseFile();
+        }
+    }
+
+    bool Generate(const std::string& sScript)
+    {
+        m_oStartupData = {NULL, 0};
+        {
+            v8::SnapshotCreator snapshot_creator;
+            // Obtain an isolate provided by SnapshotCreator.
+            v8::Isolate* isolate = snapshot_creator.GetIsolate();
+            {
+                v8::HandleScope scope(isolate);
+                // Create a new context and optionally run some script.
+                v8::Local<v8::Context> context = v8::Context::New(isolate);
+                //v8::Context::Scope context_scope(context);
+
+                if (!RunExtraCode(isolate, context, sScript.c_str(), "<embedded>"))
+                    return false;
+
+                // Add the possibly customized context to the SnapshotCreator.
+                snapshot_creator.SetDefaultContext(context);
+            }
+            // Use the SnapshotCreator to create the snapshot blob.
+            m_oStartupData = snapshot_creator.CreateBlob(v8::SnapshotCreator::FunctionCodeHandling::kClear);
+        }
+        return true;
+    }
+
+    void Save(const std::wstring& sDir)
+    {
+        if (m_oStartupData.data == NULL)
+            return;
+
+        std::wstring sFile = sDir + L"/heap_snapshot.bin";
+        NSFile::CFileBinary oFile;
+        oFile.CreateFile(sFile);
+        oFile.WriteFile((BYTE*)m_oStartupData.data, (DWORD)m_oStartupData.raw_size);
+        oFile.CloseFile();
+    }
+
+    bool RunExtraCode(v8::Isolate* isolate, v8::Local<v8::Context> context, const char* utf8_source, const char* name)
+    {
+        // Run custom script if provided.
+        v8::TryCatch try_catch(isolate);
+
+        v8::Local<v8::String> source_string;
+        if (!v8::String::NewFromUtf8(isolate, utf8_source, v8::NewStringType::kNormal).ToLocal(&source_string))
+            return false;
+
+        v8::Local<v8::String> resource_name = v8::String::NewFromUtf8(isolate, name, v8::NewStringType::kNormal).ToLocalChecked();
+
+        v8::ScriptOrigin origin(resource_name);
+        v8::ScriptCompiler::Source source(source_string, origin);
+        v8::Local<v8::Script> script;
+
+        bool bRet = v8::ScriptCompiler::Compile(context, &source).ToLocal(&script);
+
+        if (try_catch.HasCaught())
+        {
+            std::string strCode        = to_cstringA(try_catch.Message()->GetSourceLine());
+            std::string strException   = to_cstringA(try_catch.Message()->Get());
+            return false;
+        }
+
+        script->Run();
+
+        if (try_catch.HasCaught())
+        {
+            std::string strCode        = to_cstringA(try_catch.Message()->GetSourceLine());
+            std::string strException   = to_cstringA(try_catch.Message()->Get());
+            return false;
+        }
+        return true;
+    }
+};
+#endif
+
+//////////////////////////////////////////////////////////////////////////////
 class CV8Initializer
 {
 private:
     v8::Platform* m_platform;
-    MallocArrayBufferAllocator m_oAllocator;
+    v8::ArrayBuffer::Allocator* m_pAllocator;
 
 public:
-    CV8Initializer() : m_oAllocator()
+    CV8Initializer()
     {
+        std::wstring sPrW = NSFile::GetProcessPath();
+        std::string sPrA = U_TO_UTF8(sPrW);
+
+        v8::V8::InitializeICUDefaultLocation(sPrA.c_str());
+        v8::V8::InitializeExternalStartupData(sPrA.c_str());
         m_platform = v8::platform::CreateDefaultPlatform();
         v8::V8::InitializePlatform(m_platform);
-
         v8::V8::Initialize();
-        v8::V8::InitializeICU();
-
-#ifndef NEW_V8_ENGINE
-        v8::V8::SetArrayBufferAllocator(&m_oAllocator);
-#endif
     }
     ~CV8Initializer()
     {
         v8::V8::Dispose();
         v8::V8::ShutdownPlatform();
         delete m_platform;
+        delete m_pAllocator;
     }
 
     v8::ArrayBuffer::Allocator* getAllocator()
     {
-        return &m_oAllocator;
+        return m_pAllocator;
     }
 
     v8::Isolate* CreateNew()
     {
-#ifdef NEW_V8_ENGINE
         v8::Isolate::CreateParams create_params;
-        create_params.array_buffer_allocator = &m_oAllocator;
+        m_pAllocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+        create_params.array_buffer_allocator = m_pAllocator;
         return v8::Isolate::New(create_params);
-#else
-        return v8::Isolate::New();
-#endif
     }
 };
 

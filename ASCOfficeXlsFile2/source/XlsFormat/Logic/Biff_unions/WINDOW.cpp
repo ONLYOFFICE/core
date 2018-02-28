@@ -109,7 +109,10 @@ int WINDOW::serialize(std::wostream & stream)
 		{	
 			CP_XML_NODE(L"sheetView")
 			{	
-				if (global_info->bWorkbookProtectExist)	CP_XML_ATTR(L"windowProtection", true);
+				//if (global_info->bWorkbookProtectExist)	
+				//{
+				//	CP_XML_ATTR(L"windowProtection", true);
+				//}
 
 				if (window2->fSelected)				CP_XML_ATTR(L"tabSelected"		, true);
 				if (window2->fDspFmlaRt)			CP_XML_ATTR(L"showFormulas"		, true);

@@ -71,7 +71,7 @@ void PtgNameX::loadFields(CFRecord& record)
 	}
 	else
 		record >> nameindex;
-	
+
 	global_info = record.getGlobalWorkbookInfo();
 }
 
@@ -87,17 +87,21 @@ void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 		extra_data.pop();
 		return;
 	}
-
-	if(ixti >= 0 && ixti < global_info->arXti.size())
+	std::wstring link;
+	std::wstring name;
+	if(ixti >= 0 && ixti < global_info->arXti_External.size())
 	{
-		std::wstring link = global_info->arXti[ixti].link;
-		std::wstring name;
+		link = global_info->arXti_External[ixti].link;
 
-		if ((global_info->arXti[ixti].pNames) && (nameindex > 0 && nameindex <= global_info->arXti[ixti].pNames->size()))
+		if ((global_info->arXti_External[ixti].pNames) && (nameindex > 0 && nameindex <= global_info->arXti_External[ixti].pNames->size()))
 		{
-			name = global_info->arXti[ixti].pNames->at(nameindex - 1);
+			name = global_info->arXti_External[ixti].pNames->at(nameindex - 1);
 		}
-		else
+
+	}
+	if (name.empty())
+	{
+		if (nameindex <= global_info->arDefineNames.size())
 		{
 			name = global_info->arDefineNames[nameindex - 1];
 
@@ -122,23 +126,23 @@ void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 				}
 			}
 		}
-		if (!link.empty() && !name.empty())
-		{
-			ptg_stack.push(link + L"!" + name);
-		}
-		else if (!name.empty())
-		{
-			ptg_stack.push(name);
-		}
 		else
-			ptg_stack.push(link);		
+		{
+ 			Log::warning("PtgNameX is not yet assemble!! Waiting end parsing defined names");
+		}	
+	}
+	if (!link.empty() && !name.empty())
+	{
+		ptg_stack.push(link + L"!" + name);
+	}
+	else if (!name.empty())
+	{
+		ptg_stack.push(name);
 	}
 	else
 	{
- 		Log::warning("PtgNameX structure is not assemble.");
-		ptg_stack.push(L"");
+		ptg_stack.push(link);		
 	}
-
 }
 
 

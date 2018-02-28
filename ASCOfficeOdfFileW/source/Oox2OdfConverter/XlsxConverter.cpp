@@ -1670,7 +1670,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColor *color, _CP_OPT(odf_types::
 		{
 			std::map<int, OOX::Spreadsheet::CRgbColor*>::iterator pFind = xlsx_styles->m_oColors->m_oIndexedColors->mapIndexedColors.find(ind);
 			
-			if (pFind != xlsx_styles->m_oColors->m_oIndexedColors->mapIndexedColors.end());
+			if (pFind != xlsx_styles->m_oColors->m_oIndexedColors->mapIndexedColors.end())
 			{			
 				ucR = pFind->second->m_oRgb->Get_R(); 
 				ucB = pFind->second->m_oRgb->Get_B(); 

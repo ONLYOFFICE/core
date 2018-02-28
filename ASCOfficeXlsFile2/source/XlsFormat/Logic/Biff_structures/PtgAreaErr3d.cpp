@@ -63,7 +63,7 @@ void PtgAreaErr3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, boo
 		extra_data.pop();
 		return;
 	}
-	std::wstring link = global_info->arXti[ixti].link;
+	std::wstring link = global_info->arXti_External[ixti].link;
 	if (!link.empty()) 
 		link += L"!";
 	

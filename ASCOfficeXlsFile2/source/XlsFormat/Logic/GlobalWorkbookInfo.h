@@ -136,6 +136,7 @@ public:
 		std::vector<std::wstring>*	pNames = NULL;
 	};
 	std::vector<_xti>				arXti;
+	std::vector<_xti>				arXti_External;
 	
 	unsigned int					startAddedSharedStrings;
 	std::vector<std::wstring>		arAddedSharedStrings;

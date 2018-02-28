@@ -30,6 +30,9 @@ case "$os" in
   Linux*)   platform="linux" ;;  
   *)        exit ;;
 esac
+
+cd "$SCRIPTPATH"
+
 if [[ "$platform" == "linux" ]]
 then
 ./fetch_linux_correct.sh

@@ -447,6 +447,9 @@ void odf_number_styles_context::create_numbers(number_format_state & state, offi
 			}
 		}
 
+		if (indNumber < 0)
+			indNumber = 0;
+
 		std::wstring str1,str2;
 		boost::wregex re1(L"([^0-9.,]+)");
 		boost::wsmatch result;

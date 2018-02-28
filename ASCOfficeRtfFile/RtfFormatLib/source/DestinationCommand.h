@@ -1819,8 +1819,10 @@ class RtfStyleTableReader: public RtfAbstractReader
 	public: 
 		RtfStyleReader()
 		{
-			m_oCurStyle = RtfParagraphStylePtr ( new RtfParagraphStyle() );
 			m_eInternalState = is_normal;
+			
+			m_oCurStyle = RtfParagraphStylePtr ( new RtfParagraphStyle() );
+			m_oCurStyle->m_nID = 0;
 		}
             bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 			{

@@ -939,6 +939,7 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 	}
     COMMAND_RTF_BOOL( "rtlch",		charProps->m_bRightToLeft,	sCommand, hasParameter, parameter)
     COMMAND_RTF_INT	( "lang",		charProps->m_nLanguage,		sCommand, hasParameter, parameter)
+	COMMAND_RTF_INT	( "langfe",		charProps->m_nLanguageAsian,sCommand, hasParameter, parameter)
 	
     COMMAND_RTF_BOOL( "cs",		charProps->m_nComplexScript, sCommand, hasParameter, parameter)
     COMMAND_RTF_BOOL( "outl",		charProps->m_bOutline,		sCommand, hasParameter, parameter)
@@ -2412,6 +2413,7 @@ void RtfParagraphPropDestination::Finalize( RtfReader& oReader/*, RtfSectionPtr 
 		*m_oCurParagraph->m_oOldList	= oReader.m_oState->m_oCurOldList;
 		
 		m_oCurParagraph->m_oProperty.m_oCharProperty = oReader.m_oState->m_oCharProp;
+		m_oCurParagraph->m_oProperty.m_bInTable = PROP_DEF; // поле (гиперссылка) в таблице
 
 		AddItem( m_oCurParagraph, oReader, false, false );
 		m_oCurParagraph = RtfParagraphPtr(new RtfParagraph());

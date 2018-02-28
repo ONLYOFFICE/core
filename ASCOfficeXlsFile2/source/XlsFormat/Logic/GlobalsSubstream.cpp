@@ -629,6 +629,11 @@ void GlobalsSubstream::UpdateXti()
 
 		ExternSheet* extern_sheet = dynamic_cast<ExternSheet*>(SUPP->m_ExternSheet.get());
 
+		GlobalWorkbookInfo::_xti val;
+
+		val.iSup	= s;
+		val.pNames	= &SUPP->arNames;
+
 		for (size_t i = 0; extern_sheet && i < extern_sheet->rgXTI.size(); i++)
 		{
 			XTI* xti = dynamic_cast<XTI*>(extern_sheet->rgXTI[i].get());
@@ -640,14 +645,14 @@ void GlobalsSubstream::UpdateXti()
 			SupBook *info = dynamic_cast<SupBook*>(index_book->m_SupBook.get());
 			if (!info) continue;
 
-			GlobalWorkbookInfo::_xti val;
+			GlobalWorkbookInfo::_xti val_1;
 		
-			val.iSup	= xti->iSupBook;
-			val.pNames	= &index_book->arNames;
+			val_1.iSup		= xti->iSupBook;
+			val_1.pNames	= &index_book->arNames;
 
 			if( index_book->nExternIndex > 0 )
 			{
-				val.link = L"[" + std::to_wstring(index_book->nExternIndex) + L"]";
+				val_1.link = L"[" + std::to_wstring(index_book->nExternIndex) + L"]";
 			}	
 			if (xti->itabFirst >= 0 /*|| itabLast >= 0*/)
 			{
@@ -666,25 +671,17 @@ void GlobalsSubstream::UpdateXti()
 							strRange += std::wstring(L":") + XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabLast].name, L"");
 						}
 					}
-					val.link = strRange;
+					val_1.link = strRange;
 				}
 				else
 				{
-					val.link = XMLSTUFF::xti_indexes2sheet_name(xti->itabFirst, xti->itabLast, info->rgst, val.link); 
+					val_1.link = XMLSTUFF::xti_indexes2sheet_name(xti->itabFirst, xti->itabLast, info->rgst, val_1.link); 
 				}
 			}
-			global_info_->arXti.push_back(val);
+			global_info_->arXti_External.push_back(val_1);
 		}
-		if (!extern_sheet && !SUPP->m_arExternName.empty())
-		{
-			GlobalWorkbookInfo::_xti val;
-		
-			val.iSup	= s;
-			val.pNames	= &SUPP->arNames;
 
-			global_info_->arXti.push_back(val);
-
-		}
+		global_info_->arXti.push_back(val);
 	}
 }
 

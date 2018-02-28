@@ -902,7 +902,8 @@ public:
 		tk_tqr,		//tqr	Flush-right tab.
 		tk_tqc,		//tqc	Centered tab.
 		tk_tqdec,	//tqdec	Decimal tab.
-		tk_tqbar	//tbN	Bar tab position in twips from the left margin.
+		tk_tqbar,	//tbN	Bar tab position in twips from the left margin.
+		tk_tqclear
 	}	m_eKind;
 	
 	int m_nTab;		//tbN or \txN	Tab position in twips from the left margin.
@@ -1007,7 +1008,8 @@ public:
 	int m_nKerning;			//kerningN	Point size (in half-points) above which to kern character pairs. \kerning0 turns off kerning.
 	int m_bRightToLeft;		//rtlch	Character data following this control word is treated as a right-to-left run.
 	int m_nLanguage;
-	int m_nComplexScript;
+	int m_nLanguageAsian;	// for East Asian text
+	int m_nComplexScript;	// 1 - means South East Asian complex script; 0 - means not South East Asian script
 	int m_bOutline;			//outl*	Outline.
 	int m_bScaps;			//scaps*	Small capitals.
 	int m_bShadow;			//shad*	Shadow.
@@ -1116,6 +1118,7 @@ public:
 		DEFAULT_PROPERTY	( m_nUp )
 		DEFAULT_PROPERTY	( m_nComplexScript )
 		DEFAULT_PROPERTY	( m_nLanguage )
+		DEFAULT_PROPERTY	( m_nLanguageAsian )
 		
 		DEFAULT_PROPERTY	( m_nCrAuth)
 		DEFAULT_PROPERTY	( m_nCrDate)
@@ -1154,6 +1157,7 @@ public:
 		MERGE_PROPERTY( m_nKerning,		oCharPr )
 		MERGE_PROPERTY( m_bRightToLeft, oCharPr )
 		MERGE_PROPERTY( m_nLanguage,	oCharPr )
+		MERGE_PROPERTY( m_nLanguageAsian,oCharPr )
 		MERGE_PROPERTY( m_bOutline,		oCharPr )
 		MERGE_PROPERTY( m_bScaps,		oCharPr )
 		MERGE_PROPERTY( m_bShadow,		oCharPr )
@@ -1614,10 +1618,10 @@ class RtfStyle: public IRenderableProperty
 public: 
 	enum _StyleType { st_none, stParagraph, stCharacter, stSection, stTable, stNumbering} ;
 
-	_StyleType	m_eType;
-    std::wstring		m_sName;
-	int			m_nID;
-    std::wstring		m_sID;
+	_StyleType		m_eType;
+    std::wstring	m_sName;
+	int				m_nID;
+    std::wstring	m_sID;
 
 	int m_bAdditive;
 	int m_nBasedOn;

@@ -239,6 +239,19 @@ int SUPBOOK::serialize_book(std::wostream & strm)
 						}
 					}
 				}
+				if (false == arNames.empty())
+				{
+					CP_XML_NODE(L"definedNames")
+					{
+						for (size_t d = 0; d < arNames.size(); d++)
+						{
+							CP_XML_NODE(L"definedName")
+							{
+								CP_XML_ATTR(L"name", arNames[d]); 
+							}
+						}
+					}
+				}
 				CP_XML_NODE(L"sheetDataSet")
 				{ 
 					for (size_t i = 0; i < m_arXCT.size(); i++)

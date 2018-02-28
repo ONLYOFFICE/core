@@ -89,8 +89,10 @@ std::wstring RtfOldList::RenderToOOX(RenderParameter oRenderParameter)
 			sResult += L"</w:abstractNum>";
 		}
 		else if( RENDER_TO_OOX_PARAM_OLDLIST_OVR == oRenderParameter.nType )
+		{
             sResult += L"<w:num w:numId=\"" + std::to_wstring(m_nLs) +
                     L"\"><w:abstractNumId w:val=\"" + std::to_wstring(m_nLs) + L"\"/></w:num>";
+		}
 		else
 		{
 			if( PROP_DEF != m_nLs && PROP_DEF != m_nIlvl )

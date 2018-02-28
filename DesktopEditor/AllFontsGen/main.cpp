@@ -213,7 +213,7 @@ namespace NSCommon
                 nFirstOffset = (int)(tmpFirst - m_pTmpSymbols);
 
                 pSymbols = m_pSymbols + nFirstOffset;
-                pSymbolsLast = pSymbols + nCount + 1;
+                pSymbolsLast = pSymbols + nCount;
 
                 if (nFirstOffset > 0x4DFF && nFirstOffset < 0x9FFF)
                     nPriority = (nCount > nSmallRangeLenCJK) ? m_nPriority : (m_nPriority + nSumPriority);

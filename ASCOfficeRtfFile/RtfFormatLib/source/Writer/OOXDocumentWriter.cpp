@@ -286,12 +286,6 @@ bool OOXDocumentWriter::SaveByItem()
 			{
 				m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
 			}
-			else
-			{
-				//!!!!
-				m_oFileWriter = NULL;
-			}
-			
 			m_oDocument[0].props->RemoveItem( 0 );//удаляем первый параграф
         }
 	}

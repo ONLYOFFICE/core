@@ -56,8 +56,8 @@ public:
 
 	void fromString(const std::wstring& word);
 
-	_UINT16 ixti;
-	_UINT32 nameindex;
+	_INT16 ixti;
+	_INT32 nameindex;
 private:
 	GlobalWorkbookInfoPtr global_info;
 };

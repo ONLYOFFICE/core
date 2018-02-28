@@ -103,6 +103,10 @@ int LBL::serialize(std::wostream & stream)
 	Lbl *lbl = dynamic_cast<Lbl*>(m_Lbl.get());
 	if (lbl == NULL) return 0;
 		
+	std::wstring name;
+	if (lbl->fBuiltin)	name = lbl->Name;	
+	if (name.empty())	name = lbl->Name_bin.value();
+			
 	std::wstring value = lbl->rgce.getAssembledFormula(lbl->itab == 0 ? true : false);
 	std::wstring description;
 
@@ -138,11 +142,6 @@ int LBL::serialize(std::wostream & stream)
     {
 		CP_XML_NODE(L"definedName")
 		{
-			std::wstring name;
-			if (lbl->fBuiltin)	name = lbl->Name;
-			
-			if (name.empty())	name = lbl->Name_bin.value();
-
 			CP_XML_ATTR(L"name", xml::utils::replace_text_to_xml(name));
 
 			if (!description.empty())

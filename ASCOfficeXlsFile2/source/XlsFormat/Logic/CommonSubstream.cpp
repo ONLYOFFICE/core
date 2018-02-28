@@ -102,13 +102,22 @@ int CommonSubstream::serialize_format(std::wostream & strm)
 				if (!sheet_ext->sheetExtOptional.fNotPublished)	
 					CP_XML_ATTR(L"published" ,false);
 
-				if (sheet_ext->sheetExtOptional.color.xclrType.type == XColorType::XCLRRGB)
+				if (sheet_ext->sheetExtOptional.color.xclrType.type == XColorType::XCLRRGB ||
+					sheet_ext->sheetExtOptional.color.xclrType.type == XColorType::XCLRINDEXED)
 				{
 					CP_XML_NODE(L"tabColor")
 					{
-						CP_XML_ATTR(L"rgb", sheet_ext->sheetExtOptional.color.rgb.strARGB);
+						if (sheet_ext->sheetExtOptional.color.xclrType.type == XColorType::XCLRRGB)
+						{			
+							CP_XML_ATTR(L"rgb", sheet_ext->sheetExtOptional.color.rgb.strARGB);
+						}
+						else if (sheet_ext->sheetExtOptional.color.xclrType.type == XColorType::XCLRINDEXED)
+						{
+							CP_XML_ATTR(L"indexed", sheet_ext->sheetExtOptional.color.icv);
+						}
 					}
 				}
+
 			}
 		}
 	}

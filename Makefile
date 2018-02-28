@@ -33,7 +33,7 @@ else
 		LIB_EXT := .a
 		LIB_PREFIX := lib
 		ARCH_EXT := .tar.gz
-		MAKE := make -j $(shell grep -c ^processor /proc/cpuinfo)
+		MAKE := make
 		AR := tar -zcvf
 		PACKAGE_VERSION := $(PRODUCT_VERSION)-$(BUILD_NUMBER)
 		ARCH_REPO_DIR := linux
@@ -45,7 +45,7 @@ else
 		LIB_EXT := .a
 		LIB_PREFIX := lib
 		ARCH_EXT := .tar.gz
-		MAKE := make -j $(shell sysctl -n hw.ncpu)
+		MAKE := make
 		AR := tar -zcvf
 		PACKAGE_VERSION := $(PRODUCT_VERSION)-$(BUILD_NUMBER)
 		ARCH_REPO_DIR := mac
@@ -288,6 +288,7 @@ endef
 
 .PHONY : all bin lib clean deploy
 
+.NOTPARALLEL:
 all: lib bin 
 
 bin: $(X2T) $(ALLFONTSGEN)

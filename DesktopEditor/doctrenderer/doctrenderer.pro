@@ -41,11 +41,6 @@ HEADERS += doctrenderer.h \
     memorystream.h \
     nativecontrol.h
 
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
-
 # downloader
 DEFINES += BUIDLER_OPEN_DOWNLOAD_ENABLED
 DEFINES += BUIDLER_OPEN_BASE64_ENABLED

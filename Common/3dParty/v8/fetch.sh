@@ -31,5 +31,6 @@ case "$os" in
   *)        exit ;;
 esac
 if [[ "$platform" == "linux" ]]
+then
 ./fetch_linux_correct.sh
 fi

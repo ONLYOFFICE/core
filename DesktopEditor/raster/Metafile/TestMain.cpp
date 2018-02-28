@@ -32,11 +32,13 @@
 //#define _CRTDBG_LEAK_CHECK_DF
 
 #include <vector>
+#include <tchar.h>
 
+#include "../../common/Directory.h"
 #include "../../fontengine/ApplicationFonts.h"
+#include "../../../HtmlRenderer/include/ASCSVGWriter.h"
 #include "MetaFile.h"
 
-using namespace MetaFile;
 
 std::vector<std::wstring> GetAllFilesInFolder(std::wstring wsFolder, std::wstring wsExt)
 {
@@ -61,7 +63,7 @@ std::vector<std::wstring> GetAllFilesInFolder(std::wstring wsFolder, std::wstrin
 	}
 	return vwsNames;
 }
-void ConvertFile(CMetaFile &oMetaFile, std::wstring wsFilePath)
+void ConvertFileToRaster(MetaFile::CMetaFile &oMetaFile, std::wstring wsFilePath)
 {
 	oMetaFile.Close();
 
@@ -69,50 +71,103 @@ void ConvertFile(CMetaFile &oMetaFile, std::wstring wsFilePath)
 	if (oMetaFile.LoadFromFile(wsFilePath.c_str()))
 	{
 		oMetaFile.ConvertToRaster(wsDstFilePath.c_str(), 4, 1000);
+		
+		oMetaFile.Close();
 	}
 }
-void ConvertFolder(CMetaFile &oMetaFile, std::wstring wsFolderPath, const int nType)
+void ConvertFileToSVG(MetaFile::CMetaFile &oMetafile, NSHtmlRenderer::CASCSVGWriter &oWriterSVG, std::wstring wsFilePath)
+{
+	oMetafile.Close();
+
+	std::wstring wsDstFilePath = (wsFilePath.substr(0, wsFilePath.size() - 3)).append(L"svg");
+	
+	if (oMetafile.LoadFromFile(wsFilePath.c_str()))
+	{
+		double x = 0, y = 0, w = 0, h = 0;
+		oMetafile.GetBounds(&x, &y, &w, &h);
+
+		double _max = (w >= h) ? w : h;
+		double dKoef = 100000.0 / _max;
+
+		int WW = (int)(dKoef * w + 0.5);
+		int HH = (int)(dKoef * h + 0.5);
+
+		oWriterSVG.Reset();
+		oWriterSVG.put_Width(WW);
+		oWriterSVG.put_Height(HH);
+		
+		oMetafile.DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);		
+		
+		oWriterSVG.SaveFile(wsDstFilePath);
+
+		oMetafile.Close();
+	}
+}
+void ConvertFolder(MetaFile::CMetaFile &oMetaFile, std::wstring wsFolderPath, const int nType)
 {
 	oMetaFile.Close();
 
-	std::wstring sExt;
+	std::wstring sExt = L"*";
+
+	NSHtmlRenderer::CASCSVGWriter oWriterSVG;		
+	oWriterSVG.SetFontManager(oMetaFile.get_FontManager());
 
 	switch(nType)
 	{
-	case c_lMetaEmf: sExt = L"emf"; break;
-	case c_lMetaWmf: sExt = L"wmf"; break;
-	case c_lMetaSvm: sExt = L"svm"; break;
+		case MetaFile::c_lMetaEmf: sExt = L"emf"; break;
+		case MetaFile::c_lMetaWmf: sExt = L"wmf"; break;
+		case MetaFile::c_lMetaSvm: sExt = L"svm"; break;
 	}
 	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath,  sExt);
-	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
+	
+	for (size_t nIndex = 0; nIndex < vFiles.size(); nIndex++)
 	{
 		std::wstring wsFilePath = wsFolderPath;
 		wsFilePath.append(vFiles.at(nIndex));
-		if (oMetaFile.LoadFromFile(wsFilePath.c_str()))
-		{
-			std::wstring wsDstFilePath = (wsFilePath.substr(0, wsFilePath.size() - 3)).append(L"png");
-
-			double w, h, x, y;
-			oMetaFile.GetBounds(&x, &y, &w, &h);
-			////oMetaFile.ConvertToRaster(wsDstFilePath.c_str(), 4, 500);
-			oMetaFile.ConvertToRaster(wsDstFilePath.c_str(), 4, w);
-			oMetaFile.Close();
-		}
+		
+		ConvertFileToSVG(oMetaFile, oWriterSVG, wsFilePath);
+		//ConvertFileToRaster(oMetaFile, wsFilePath);
 
 		printf("%d of %d %S\n", nIndex, vFiles.size(), vFiles.at(nIndex).c_str());
 	}
 }
 
-void main()
+int _tmain(int argc, _TCHAR* argv[])
 {
 	CApplicationFonts oFonts;
 	oFonts.Initialize();
 
-	CMetaFile oMetaFile(&oFonts);
-	//ConvertFolder(oMetaFile, L"D://test//_svm//1//", c_lMetaSvm);
-	//ConvertFolder(oMetaFile, L"D://Test Files//Wmf//Test//", c_lMetaWmf);
-	ConvertFolder(oMetaFile, L"D://test//_emf//", c_lMetaEmf);
+	std::wstring	sMetafilesFolder	= L"D://test//_emf//";
+	int				nType				= MetaFile::c_lMetaEmf;
+	if (argc > 1)
+		sMetafilesFolder = argv[1];
 
+	if (argc > 2)
+	{
+		try
+		{
+			nType = _wtoi(argv[2]);
+		}
+		catch(...)
+		{
+		}
+	}
+
+	MetaFile::CMetaFile oMetaFile(&oFonts);
+
+	if (NSFile::CFileBinary::Exists(sMetafilesFolder))
+	{	
+		NSHtmlRenderer::CASCSVGWriter oWriterSVG;		
+		oWriterSVG.SetFontManager(oMetaFile.get_FontManager());
+		
+		ConvertFileToSVG(oMetaFile, oWriterSVG, sMetafilesFolder);
+	}
+	else if (NSDirectory::Exists(sMetafilesFolder))
+	{
+		ConvertFolder(oMetaFile, sMetafilesFolder, nType);
+	}
+
+	return 0;
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//_CrtDumpMemoryLeaks();
 }

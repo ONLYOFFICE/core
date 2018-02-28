@@ -90,6 +90,47 @@ namespace NSHtmlRenderer
 		RELEASEOBJECT(m_pFullTransform);
 		RELEASEOBJECT(m_pVectorWriter);
 	}
+	void CASCSVGWriter::Reset()
+	{
+        m_dDpiX = 72;
+        m_dDpiY	= 72;
+
+		m_dWidth = 100;
+		m_dHeight = 100;
+		m_bIsRaster = false;
+
+		m_lClipMode = c_nClipRegionTypeWinding;
+
+		RELEASEOBJECT(m_pSimpleGraphicsConverter);
+
+		RELEASEOBJECT(m_pPen);
+		RELEASEOBJECT(m_pBrush);
+		RELEASEOBJECT(m_pFont);
+		RELEASEOBJECT(m_pInstalledFont);
+		RELEASEOBJECT(m_pBaseTransform);
+		RELEASEOBJECT(m_pTransform);
+		RELEASEOBJECT(m_pFullTransform);
+		RELEASEOBJECT(m_pVectorWriter);
+
+		m_pSimpleGraphicsConverter = new Aggplus::CGraphicsPathSimpleConverter();
+		m_pSimpleGraphicsConverter->SetRenderer(this);
+
+		m_dTransformAngle = 0.0;
+
+		m_pPen = new NSStructures::CPen();
+		m_pBrush = new NSStructures::CBrush();
+		m_pFont = new NSStructures::CFont();
+		m_pInstalledFont = new NSStructures::CFont();
+
+		m_pBaseTransform = new Aggplus::CMatrix();
+		m_pTransform = new Aggplus::CMatrix();
+		m_pFullTransform = new Aggplus::CMatrix();
+
+		m_pVectorWriter = new NSHtmlRenderer::CSVGGraphicsWriter();
+		m_pVectorWriter->m_pSimpleConverter  = m_pSimpleGraphicsConverter;
+		m_pVectorWriter->m_pFullTransform	= m_pFullTransform;
+		m_pVectorWriter->SetSettings(m_pPen, m_pBrush, m_pSimpleGraphicsConverter);
+	}
 
 	HRESULT CASCSVGWriter::get_Type(LONG* lType)
 	{

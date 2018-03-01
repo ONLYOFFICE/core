@@ -57,9 +57,15 @@ public:
 	std::wstring CreateXmlEnd( );
 
 	bool SaveByItemStart( std::wstring sFolder );
-	bool SaveByItem		();
-	bool SaveByItemEnd	();
+	bool SaveByItem();
+	bool SaveByItemEnd();
 
+	bool SaveBySection();
+	
+	int GetCountSections()
+	{
+		return m_oDocument.GetCount();
+	}
 	int GetCount()
 	{
 		int nCount = 0;

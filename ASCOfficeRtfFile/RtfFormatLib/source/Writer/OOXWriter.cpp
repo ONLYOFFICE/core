@@ -100,12 +100,15 @@ OOXWriter::~OOXWriter()
 }
 bool OOXWriter::Save()
 {
-	int nItemsCount = ((OOXDocumentWriter*)m_poDocumentWriter)->GetCount();
+	int nItemsCount = ((OOXDocumentWriter*)m_poDocumentWriter)->GetCountSections();
+	
 	SaveByItemStart();
+	
 	for( int i = 0; i < nItemsCount; i++ )
 	{
-		SaveByItem();
+		SaveBySection();
 	}
+	
 	return SaveByItemEnd();
 }
 bool OOXWriter::SaveByItemStart()
@@ -115,6 +118,10 @@ bool OOXWriter::SaveByItemStart()
 bool OOXWriter::SaveByItem()
 {
 	return ((OOXDocumentWriter*)m_poDocumentWriter)->SaveByItem();
+}
+bool OOXWriter::SaveBySection()
+{
+	return ((OOXDocumentWriter*)m_poDocumentWriter)->SaveBySection();
 }
 bool OOXWriter::SaveByItemEnd()
 {

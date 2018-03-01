@@ -36,6 +36,49 @@
 #include "../../../UnicodeConverter/UnicodeConverter.h"
 
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/PptShape.h"
+#include "../../../DesktopEditor/raster/BgraFrame.h"
+#include "../../../DesktopEditor/raster/Metafile/MetaFile.h"
+
+bool RtfShape::GetPictureResolution(RenderParameter oRenderParameter, int & Width, int &Height)
+{
+	if (!m_oPicture) return false;
+
+	//if (!oRenderParameter.appFonts)
+	//{
+	//	oRenderParameter.appFonts = new CApplicationFonts();
+	//	oRenderParameter.appFonts->Initialize();
+	//}
+
+	std::wstring fileName = m_oPicture->m_sPicFilename;
+
+	if (fileName.empty()) return false;
+
+	CApplicationFonts appFonts;
+	appFonts.Initialize();
+
+	CBgraFrame image;
+	MetaFile::CMetaFile meta_file(/*oRenderParameter.*/&appFonts);
+
+	if ( meta_file.LoadFromFile(fileName.c_str()))
+	{
+		double dX = 0, dY = 0, dW = 0, dH = 0;
+		meta_file.GetBounds(&dX, &dY, &dW, &dH);
+		
+		Width  = dW;
+		Height = dH;
+	}
+	else if ( image.OpenFile(fileName, 0 ))
+	{
+		Width  = image.get_Width();
+		Height = image.get_Height();
+
+		return true;
+	}
+
+
+	return false;
+}
+
 
 void RtfShape::SetDefault()
 {
@@ -928,25 +971,47 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
         //sStyle += L"right:" + std::to_wstring() + L";"			, m_nRelRight);
         sStyle += L"width:" + std::to_wstring(nWidth) + L";height:" + std::to_wstring(nHeight) + L";";
 	}
-	else if( 0 != m_oPicture && PROP_DEF != m_oPicture->m_nWidthGoal	&& PROP_DEF != m_oPicture->m_nHeightGoal 
-							 && PROP_DEF != (int)m_oPicture->m_dScaleX	&& PROP_DEF != (int)m_oPicture->m_dScaleY )
+	else if( 0 != m_oPicture)
 	{
-		float nWidth = (int)(m_oPicture->m_nWidthGoal * m_oPicture->m_dScaleX / 100.);
-		if( PROP_DEF != m_oPicture->m_nCropL )
-			nWidth -= m_oPicture->m_nCropL;
-		if( PROP_DEF != m_oPicture->m_nCropR )
-			nWidth -= m_oPicture->m_nCropR;
+		if (PROP_DEF != m_oPicture->m_nWidthGoal && PROP_DEF != m_oPicture->m_nHeightGoal 
+							 && PROP_DEF != (int)m_oPicture->m_dScaleX	&& PROP_DEF != (int)m_oPicture->m_dScaleY )//scale default = 100.
+		{
+			float nWidth = m_oPicture->m_nWidthGoal * m_oPicture->m_dScaleX / 100.f;
+			if( PROP_DEF != m_oPicture->m_nCropL )
+				nWidth -= m_oPicture->m_nCropL;
+			if( PROP_DEF != m_oPicture->m_nCropR )
+				nWidth -= m_oPicture->m_nCropR;
 
-		float nHeight = (int)(m_oPicture->m_nHeightGoal * m_oPicture->m_dScaleY / 100.);
-		if( PROP_DEF != m_oPicture->m_nCropT )
-			nHeight -= m_oPicture->m_nCropT;
-		if( PROP_DEF != m_oPicture->m_nCropB )
-			nHeight -= m_oPicture->m_nCropB;
+			float nHeight = m_oPicture->m_nHeightGoal * m_oPicture->m_dScaleY / 100.f;
+			if( PROP_DEF != m_oPicture->m_nCropT )
+				nHeight -= m_oPicture->m_nCropT;
+			if( PROP_DEF != m_oPicture->m_nCropB )
+				nHeight -= m_oPicture->m_nCropB;
 
-		if (oRenderParameter.nType ==  RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2)
-            sStyle += L"width:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(nWidth), L"%.2f") + L";height:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(nHeight), L"%.2f") + L";";
+			if (oRenderParameter.nType ==  RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2)
+				sStyle += L"width:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(nWidth), L"%.2f") + L";height:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(nHeight), L"%.2f") + L";";
+			else
+				sStyle += L"width:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(nWidth), L"%.2f") + L"pt;height:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(nHeight), L"%.2f") + L"pt;";
+		}
 		else
-            sStyle += L"width:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(nWidth), L"%.2f") + L"pt;height:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(nHeight), L"%.2f") + L"pt;";
+		{			
+			int fileWidth = 0, fileHeight = 0;
+
+			if (PROP_DEF == m_oPicture->m_nWidth || PROP_DEF == m_oPicture->m_nHeight)
+			{
+				if (GetPictureResolution(oRenderParameter, fileWidth, fileHeight) || fileWidth < 1 || fileHeight < 1)
+				{
+					if (PROP_DEF == m_oPicture->m_nWidth)
+						m_oPicture->m_nWidth = fileWidth *20 / 4 * 3; // px->twip
+					if (PROP_DEF == m_oPicture->m_nHeight)
+						m_oPicture->m_nHeight = fileHeight *20 / 4 * 3;
+				}
+			}
+			if (PROP_DEF != m_oPicture->m_nWidth && PROP_DEF != m_oPicture->m_nHeight)
+			{
+				sStyle += L"width:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(m_oPicture->m_nWidth), L"%.2f") + L"pt;height:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(m_oPicture->m_nHeight), L"%.2f") + L"pt;";
+			}
+		}
 	}
 
 	switch( m_nPositionH )

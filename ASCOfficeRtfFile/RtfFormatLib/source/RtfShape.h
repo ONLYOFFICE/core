@@ -291,5 +291,7 @@ public:
    
 	std::wstring GroupRenderToRtf(RenderParameter oRenderParameter);
     std::wstring GroupRenderToOOX(RenderParameter oRenderParameter);
+
+	bool GetPictureResolution(RenderParameter oRenderParameter, int & Width, int &Height);
 };
 

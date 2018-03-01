@@ -1264,8 +1264,18 @@ std::wstring RtfStyle::RenderToOOXBegin(RenderParameter oRenderParameter)
 		default:
 			break;
 	}
-    //sResult += L"<w:style w:type=\"" + sType + L"\" w:styleId=\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\">";
-	sResult += L"<w:style w:type=\"" + sType + L"\" w:styleId=\"" + L"Style_" + std::to_wstring(m_nID) + L"\">";
+	if (m_sID.empty())
+	{
+		m_sID = L"Style_" + std::to_wstring(m_nID);
+	}
+	sResult += L"<w:style w:type=\"" + sType + L"\" w:styleId=\"" + m_sID + L"\"";
+	
+	if (m_nID == 0 && PROP_DEF == m_nBasedOn)
+	{
+		sResult += L" w:default=\"1\"";
+	}
+
+	sResult += L">";
 	sResult += L"<w:name w:val=\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\"/>";
 
 	if( PROP_DEF != m_nBasedOn )
@@ -1277,6 +1287,7 @@ std::wstring RtfStyle::RenderToOOXBegin(RenderParameter oRenderParameter)
             //sResult += L"<w:basedOn w:val=\"" + XmlUtils::EncodeXmlString( oBaseStyle->m_sName ) + L"\"/>";
 		}
 	}
+
 	//if( PROP_DEF != m_nNext )
     //	sResult += L"<w:next w:val=\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\"/>", );//Todo
 	//if( PROP_DEF != m_nLink )
@@ -2290,11 +2301,11 @@ std::wstring RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 
 	switch ( m_eTextFollow )
 	{
-		case tf_frmtxlrtb:	sResult += L"<w:textFlow w:val=\"lrtb\" />";	break;
-		case tf_frmtxtbrl:	sResult += L"<w:textFlow w:val=\"tbrl\" />";	break;
-		case tf_frmtxbtlr:	sResult += L"<w:textFlow w:val=\"btlr\" />";	break;
-		case tf_frmtxlrtbv: sResult += L"<w:textFlow w:val=\"lrtbV\" />";break;
-		case tf_frmtxtbrlv: sResult += L"<w:textFlow w:val=\"tbrlV\" />";break;
+		case tf_frmtxlrtb:	sResult += L"<w:textFlow w:val=\"lrtb\"/>";	break;
+		case tf_frmtxtbrl:	sResult += L"<w:textFlow w:val=\"tbrl\"/>";	break;
+		case tf_frmtxbtlr:	sResult += L"<w:textFlow w:val=\"btlr\"/>";	break;
+		case tf_frmtxlrtbv: sResult += L"<w:textFlow w:val=\"lrtbV\"/>";break;
+		case tf_frmtxtbrlv: sResult += L"<w:textFlow w:val=\"tbrlV\"/>";break;
 		default:
 			break;
 	}

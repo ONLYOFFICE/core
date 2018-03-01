@@ -75,6 +75,8 @@ public:
 	bool SaveByItem();
 	bool SaveByItemEnd();
 
+	bool SaveBySection();
+
 private: 
 	RtfDocument& m_oDocument;
 };

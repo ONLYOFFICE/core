@@ -1579,8 +1579,8 @@ private:
 	RtfRowProperty oCurRowProperty;
 
 	RtfReader* m_oReader;
-	bool m_bPar;								// если последняя команда была par, то не надо добавлять параграф
 public: 
+	bool					m_bPar;				// если последняя команда была par, то не надо добавлять параграф
 	TextItemContainerPtr	m_oTextItems;		//для разбивки на TextItem
 	RtfTab					m_oCurTab;
 	int						nTargetItap;		//уровень который считается не таблицей ( для того чтобы читать параграфы в таблицах )
@@ -2439,6 +2439,7 @@ public:
 	}
 	void ExitReader(RtfDocument& oDocument, RtfReader& oReader)
 	{
+		oParagraphReaderDestination.m_bPar = true;
 		oParagraphReaderDestination.Finalize( oReader );
 		
 		_section section;

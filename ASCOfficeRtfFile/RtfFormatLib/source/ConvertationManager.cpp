@@ -71,19 +71,21 @@ HRESULT RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std:
     m_poRtfReader = &oReader;
     m_poOOXWriter = &oWriter;
 
-    m_poRtfReader->m_convertationManager = this;
+    //m_poRtfReader->m_convertationManager = this;
 
     bool succes = oReader.Load( );
 
     //сохранение будет поэлементое в обработчике OnCompleteItemRtf
     //надо только завершить
-    if( true == m_bParseFirstItem )
-    {
-        m_bParseFirstItem = false;
-        oWriter.SaveByItemStart( );
-    }
-    m_poOOXWriter->SaveByItem();
-    oWriter.SaveByItemEnd( );
+    //if( true == m_bParseFirstItem )
+    //{
+    //    m_bParseFirstItem = false;
+    //    oWriter.SaveByItemStart( );
+    //}
+    //m_poOOXWriter->SaveByItem();
+    //oWriter.SaveByItemEnd( );
+
+	oWriter.Save();
 
     NSDirectory::DeleteDirectory(oReader.m_sTempFolder);
     NSDirectory::DeleteDirectory(oWriter.m_sTempFolder);

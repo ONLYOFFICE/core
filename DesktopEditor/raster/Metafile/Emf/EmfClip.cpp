@@ -131,10 +131,10 @@ namespace MetaFile
 				{
 					CEmfClipCommandExclude* pExclude = (CEmfClipCommandExclude*)pCommand;
 
-					pOutput->StartClipPath(RGN_AND, ALTERNATE);
-
 					TRectD& oClip = pExclude->m_oClip;
 					TRectD& oBB = pExclude->m_oBB;
+
+					pOutput->StartClipPath(RGN_AND, ALTERNATE);
 
 					pOutput->MoveTo(oClip.dLeft,  oClip.dTop);
 					pOutput->LineTo(oClip.dRight, oClip.dTop);

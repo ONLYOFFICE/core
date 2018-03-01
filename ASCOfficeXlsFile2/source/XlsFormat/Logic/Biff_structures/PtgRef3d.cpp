@@ -128,7 +128,7 @@ void PtgRef3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 	}
 	if (ixti != 0xffff)
 	{
-		std::wstring link = global_info->arXti[ixti].link;
+		std::wstring link = global_info->arXti_External[ixti].link;
 		if (!link.empty() && !cell_ref.empty()) 
 			link += L"!";
 		

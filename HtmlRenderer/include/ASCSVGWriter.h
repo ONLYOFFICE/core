@@ -55,10 +55,11 @@ namespace NSHtmlRenderer
     class CASCSVGWriter : public IRenderer
 	{
 	public:
-                CASCSVGWriter(bool bIsInitializeFonts = true);
+		CASCSVGWriter(bool bIsInitializeFonts = true);
 		~CASCSVGWriter();
 
-	public:
+		void Reset();
+
 		// тип рендерера-----------------------------------------------------------------------------
 		HRESULT get_Type(LONG* lType);
 		//-------- Функции для работы со страницей --------------------------------------------------

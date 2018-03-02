@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -462,7 +462,7 @@ bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader
 		{
 			section.props->m_bFinalize = true;
 			section.props->m_oProperty = oReader.m_oCurSectionProp;
-		}		
+		}
 		_section new_section;
 		new_section.props = RtfSectionPtr( new RtfSection() );
 
@@ -510,8 +510,8 @@ bool RtfBorderCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader
     else if( "brdrsh"			== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrsh;
     else if( "brdrdb"			== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrdb;
     else if( "brdrdot"			== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrdot;
-    else if( "brdrdash"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrdash;
-    else if( "brdrhair"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrhair;
+    else if( "brdrdash"			== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrdash;
+    else if( "brdrhair"			== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrhair;
     else if( "brdrdashsm"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrdashsm;
     else if( "brdrdashd"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrdashd;
     else if( "brdrdashdd"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrdashdd;
@@ -520,22 +520,24 @@ bool RtfBorderCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader
     else if( "brdrtriple"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtriple;
     else if( "brdrtnthsg"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtnthsg;
     else if( "brdrthtnsg"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrthtnsg;
-    else if( "brdrtnthtnsg"	== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtnthtnsg;
+    else if( "brdrtnthtnsg"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtnthtnsg;
     else if( "brdrtnthmg"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtnthmg;
     else if( "brdrthtnmg"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrthtnmg;
-    else if( "brdrtnthtnmg"	== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtnthtnmg;
+    else if( "brdrtnthtnmg"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtnthtnmg;
     else if( "brdrtnthlg"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtnthlg;
     else if( "brdrthtnlg"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrthtnlg;
-    else if( "brdrtnthtnlg"	== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtnthtnlg;
-    else if( "brdrwavy"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrwavy;
+    else if( "brdrtnthtnlg"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtnthtnlg;
+    else if( "brdrwavy"			== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrwavy;
     else if( "brdrwavydb"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrwavydb;
     else if( "brdrdashdotstr"	== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrdashdotstr;
     else if( "brdremboss"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdremboss;
     else if( "brdrengrave"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrengrave;
     else if( "brdroutset"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdroutset;
     else if( "brdrinset"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrinset;
-    else if( "brdrnone"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrnone;
-    else if( "brdrw"			== sCommand )
+    else if( "brdrnone"			== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrnone;
+	else if( "brdrnil"			== sCommand )	oOutput.m_eType = RtfBorder::bt_none;
+	else if( "brdrn"			== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrnone;
+	else if( "brdrw"			== sCommand )
 	{
 		if( true == hasParameter )
 		{
@@ -722,6 +724,7 @@ bool RtfSectionCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReade
 		RtfParagraphReader oParagraphReader(sCommand, oReader);
 		oAbstrReader.StartSubReader( oParagraphReader, oDocument, oReader );
 		
+		oParagraphReader.m_oParPropDest.m_bPar = true;
 		oParagraphReader.m_oParPropDest.Finalize( oReader );
 		
 		TextItemContainerPtr oNewFooterHeader = oParagraphReader.m_oParPropDest.m_oTextItems; 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -218,6 +218,96 @@ bool OOXDocumentWriter::SaveByItemStart( std::wstring sFolder )
 
     m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
     return true;
+}
+bool OOXDocumentWriter::SaveBySection()
+{
+	if( m_oDocument.GetCount() < 1) 
+		return false;
+
+	RenderParameter oNewParam;
+
+	oNewParam.poDocument	= &m_oDocument;
+	oNewParam.poWriter		= &m_oWriter;
+	oNewParam.poRels		= &m_oWriter.m_oDocRels;
+	oNewParam.nType			= RENDER_TO_OOX_PARAM_UNKNOWN;
+
+	std::wstring sXml, sXmlSectProp;	
+	
+	bool bParaPrevEmpty = false, bParaCurrEmpty = false;
+
+	for (int i = 0; i < m_oDocument[0].props->GetCount(); i++)
+	{
+		if (i == m_oDocument[0].props->GetCount() - 1 && m_oDocument.GetCount() > 1)
+		{
+			_section section;
+			if (m_oDocument.GetItem(section, 0))
+			{
+				sXmlSectProp = section.props->RenderToOOX(oNewParam);
+			}	
+		}
+		RtfParagraph *para = dynamic_cast<RtfParagraph *>(m_oDocument[0].props->operator[](i).get());
+		bParaCurrEmpty = (para) ? (para->GetCount() < 1) : true;
+
+		sXml = m_oDocument[0].props->operator[](i)->RenderToOOX(oNewParam);
+
+		if (!sXml.empty() || !sXmlSectProp.empty())
+		{
+			if (sXml.empty())
+			{
+				sXml = L"<w:p><w:pPr>" + sXmlSectProp + L"</w:pPr></w:p>";
+			}
+			else
+			{
+				if (!sXmlSectProp.empty())
+				{
+					if (bParaPrevEmpty && bParaCurrEmpty)
+					{
+						sXml += L"<w:p><w:pPr>" + sXmlSectProp + L"</w:pPr></w:p>";
+					}
+					else
+					{
+						int nFind = -1, nFindPict = -1, pos = sXml.size();
+
+						do
+						{
+							nFindPict	= sXml.rfind(L"<w:pict>", pos);
+							nFind		= sXml.rfind(L"</w:pPr>", pos);
+							pos = nFindPict - 1;
+						}while(nFindPict > 0 && nFind > nFindPict);
+
+						if( -1 != nFind)
+						{
+							sXml.insert( nFind, sXmlSectProp );
+						}
+						else
+						{
+							int Find = sXml.rfind( L"<w:p>" );
+							if( -1 != nFind )
+								sXml.insert( nFind + 5, L"<w:pPr>" + sXmlSectProp + L"</w:pPr>" );
+						}
+					}
+				}	
+			}
+			
+			std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
+			if (m_oFileWriter)
+			{
+				m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
+			}
+		}
+		bParaPrevEmpty = bParaCurrEmpty;
+	}
+
+	if (m_oDocument.GetCount() > 1 )
+	{
+		m_oDocument.RemoveItem( 0 ); //удаляем секцию кроме последней
+	}
+	else
+	{
+		m_oDocument[0].props->m_aArray.clear();
+	}
+
+	return true;
 }
 bool OOXDocumentWriter::SaveByItem()
 {

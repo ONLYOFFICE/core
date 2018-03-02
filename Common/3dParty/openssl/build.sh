@@ -29,6 +29,9 @@ fi
 
 echo "$platform$arch"
 
-perl ./Configure $platform$arch
-./config
+if [ ! -f Makefile ]; then
+  perl ./Configure $platform$arch
+  ./config
+fi
+
 make

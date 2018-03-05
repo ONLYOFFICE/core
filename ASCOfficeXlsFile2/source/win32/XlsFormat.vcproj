@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\XlsFormat; ..\Common"
+				AdditionalIncludeDirectories="..\XlsFormat;..\Common;&quot;..\..\..\DesktopEditor\freetype-2.5.2\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

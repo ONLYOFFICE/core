@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../include;../src/odf/datatypes"
+				AdditionalIncludeDirectories="..\include;..\src\odf\datatypes;..\..\DesktopEditor\freetype-2.5.2\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

@@ -618,15 +618,18 @@ namespace MathEquation
                         nRows = m_aRowsCounter.top();
                         m_aRowsCounter.pop();
                     }
-                    int nPos = 0;
+                    int nPos = -1;
                     if (!m_aRowsPosCounter.empty())
                     {
                         nPos = m_aRowsPosCounter.top();
                         m_aRowsPosCounter.pop();
                     }
 					int nEnd = m_oStream.GetPosition();
-					m_oStream.SetPosition(nPos);
-					m_oStream.WriteLONG(nRows);
+					if (nPos >= 0)
+					{
+						m_oStream.SetPosition(nPos);
+						m_oStream.WriteLONG(nRows);
+					}
 					m_oStream.SetPosition(nEnd);
 
 					ECommandType type; 
@@ -1692,11 +1695,13 @@ namespace MathEquation
 
 				if (bPile && bEqArrayStart)
 				{
-					pWriter->WriteItemEnd(nCurPos);
+					if (nCurPos > 0)
+						pWriter->WriteItemEnd(nCurPos);
 				}
 				else if (!bPile && !bEqArrayStart)
 				{
-					pWriter->WriteItemEnd(nCurPos);
+					if (nCurPos > 0)
+						pWriter->WriteItemEnd(nCurPos);
 				}
 				else if (!bPile && bEqArrayStart)
 				{					

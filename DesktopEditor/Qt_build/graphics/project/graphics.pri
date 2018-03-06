@@ -26,6 +26,7 @@ core_windows {
     NOMINMAX
 
     DEFINES -= UNICODE
+    DEFINES -= _UNICODE
 }
 
 LIB_GRAPHICS_PRI_PATH = $$PWD/../../..

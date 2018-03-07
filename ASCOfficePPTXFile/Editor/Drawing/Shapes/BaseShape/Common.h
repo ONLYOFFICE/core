@@ -88,39 +88,25 @@ namespace NSStringUtils
     {
         return std::to_wstring(val);
     }
+	static void ParseString(std::wstring strDelimeters, std::wstring strSource, 
+		std::vector<std::wstring>& pArrayResults, bool bIsCleared = true)
+	{
+		if (bIsCleared)
+			pArrayResults.clear();
 
-//    static void ParseString(std::wstring strDelimeters, std::wstring strSource,
-//                            std::vector<std::wstring>* pArrayResults, bool bIsCleared = true)
-//    {
-//        if (NULL == pArrayResults)
-//            return;
 
-//        if (bIsCleared)
-//            ArrayResults.clear();
+		boost::algorithm::split(pArrayResults, strSource, boost::algorithm::is_any_of(strDelimeters), boost::algorithm::token_compress_on);
+		
+		while (pArrayResults.size() > 0)
+		{
+			if (pArrayResults[pArrayResults.size() - 1].empty())
+				pArrayResults.erase(pArrayResults.begin() + pArrayResults.size() - 1);
+			else
+				break;
+		}
 
-//        std::wstring resToken;
-//        int curPos= 0;
+	}
 
-//        resToken = strSource.Tokenize(strDelimeters, curPos);
-//        while (resToken != _T(""))
-//        {
-//            ArrayResults.push_back(resToken);
-//            resToken = strSource.Tokenize(strDelimeters, curPos);
-//        };
-
-//    }
-//    static void ParseString(std::vector<char>* pArrayDelimeters, std::wstring strSource,
-//                            std::vector<std::wstring>* pArrayResults, bool bIsCleared = true)
-//    {
-//        if (NULL == pArrayDelimeters)
-//            return;
-
-//        std::wstring strDelimeters = _T("");
-//        for (int nIndex = 0; nIndex < pArrayDelimeters->size(); ++nIndex)
-//            strDelimeters += (*pArrayDelimeters)[nIndex];
-
-//        return ParseString(strDelimeters, strSource, pArrayResults, bIsCleared);
-//    }
     static void ParsePath(std::wstring strSource, std::vector<std::wstring>& ArrayResults)
     {
         std::wstring strPath = strSource;
@@ -209,156 +195,159 @@ namespace NSStringUtils
         return;
     }
 
-    static void ParsePath2(std::wstring strSource, std::vector<std::wstring> & ArrayResults)
+	static void ParsePath2(std::wstring strSource, std::vector<std::wstring>* pArrayResults, bool bIsCleared = true)
     {
+        if (NULL == pArrayResults)
+            return;
+        
         std::wstring strPath = strSource;
-        size_t nLength = strPath.length();
+		int nLength = strPath.length();
         //strPath.Replace(_T(" "), _T(","));
         if (strPath.find(wchar_t('h')) != -1)
-        {
+		{
             wchar_t* pBuff = new wchar_t[nLength + 1];
-            int nCur = 0;
-            for (size_t i = 1; i < nLength; ++i)
-            {
+			int nCur = 0;
+			for (int i = 1; i < nLength; ++i)
+			{
                 wchar_t _c = strPath[i - 1];
                 if (_c != wchar_t('h'))
-                {
-                    pBuff[nCur++] = _c;
-                }
-                else
-                {
+				{
+					pBuff[nCur++] = _c;
+				}
+				else
+				{
                     wchar_t _c1 = strPath[i];
                     if (_c1 == wchar_t('a') ||
-                            _c1 == wchar_t('b') ||
-                            _c1 == wchar_t('c') ||
-                            _c1 == wchar_t('d') ||
-                            _c1 == wchar_t('e') ||
-                            _c1 == wchar_t('f') ||
-                            _c1 == wchar_t('g') ||
-                            _c1 == wchar_t('h') ||
-                            _c1 == wchar_t('i'))
-                    {
-                        ++i;
-                    }
-                }
-            }
+                        _c1 == wchar_t('b') ||
+                        _c1 == wchar_t('c') ||
+                        _c1 == wchar_t('d') ||
+                        _c1 == wchar_t('e') ||
+                        _c1 == wchar_t('f') ||
+                        _c1 == wchar_t('g') ||
+                        _c1 == wchar_t('h') ||
+                        _c1 == wchar_t('i'))
+					{
+						++i;
+					}
+				}
+			}
 
-            if (nLength > 0)
-                pBuff[nCur++] = strPath[nLength - 1];
+			if (nLength > 0)
+				pBuff[nCur++] = strPath[nLength - 1];
 
-            pBuff[nCur] = 0;
+			pBuff[nCur] = 0;
 
-            strPath = std::wstring(pBuff, nCur);
-            nLength = strPath.length();
+			strPath = std::wstring(pBuff, nCur);
+			nLength = strPath.length();
 
-            if (NULL != pBuff)
-            {
-                delete []pBuff;
-                pBuff = NULL;
-            }
-        }
+			if (NULL != pBuff)
+			{
+				delete []pBuff;
+				pBuff = NULL;
+			}
+		}
 
         if (nLength > 0 && strPath[nLength - 1] == wchar_t(','))
-        {
-            strPath += _T("0");
-            ++nLength;
-        }
+		{
+			strPath += _T("0");
+			++nLength;
+		}
 
-        size_t nIndexOld = 0;
-        for (size_t nIndex = 0; nIndex < nLength; ++nIndex)
+        int nIndexOld = 0;
+        for (int nIndex = 0; nIndex < nLength; ++nIndex)
         {
             if (nIndex == (nLength - 1))
-            {
-                ArrayResults.push_back(strPath.substr(nIndexOld));
-                //continue;
-            }
+			{
+				pArrayResults->push_back(strPath.substr(nIndexOld));
+				//continue;
+			}
 
             wchar_t _c	= strPath[nIndex];
             wchar_t _c1	= strPath[nIndex + 1];
 
-            if (_c1 == ',')
-            {
-                if (',' == _c)
-                {
-                    ArrayResults.push_back(_T("0"));
-                }
-                else if (IS_ALPHA(_c))
-                {
-                    ArrayResults.push_back(strPath.substr(nIndexOld, nIndex - nIndexOld + 1));
-                    ArrayResults.push_back(_T("0"));
-                }
-                else if (IS_DIGIT(_c))
-                {
-                    ArrayResults.push_back(strPath.substr(nIndexOld, nIndex - nIndexOld + 1));
-                }
-            }
-            else if (',' == _c)
-            {
-                if (IS_ALPHA(_c1))
-                {
-                    ArrayResults.push_back(_T("0"));
-                    nIndexOld = nIndex + 1;
-                }
-                else if (IS_DIGIT(_c1))
-                {
-                    nIndexOld = nIndex + 1;
-                }
-            }
-            else
-            {
-                bool _isA = IS_ALPHA(_c);
-                bool _isD = _isA ? false : IS_DIGIT(_c);
+			if (_c1 == ',')
+			{
+				if (',' == _c)
+				{
+					pArrayResults->push_back(_T("0"));
+				}
+				else if (IS_ALPHA(_c))
+				{
+					pArrayResults->push_back(strPath.substr(nIndexOld, nIndex - nIndexOld + 1));
+					pArrayResults->push_back(_T("0"));
+				}
+				else if (IS_DIGIT(_c))
+				{
+					pArrayResults->push_back(strPath.substr(nIndexOld, nIndex - nIndexOld + 1));
+				}
+			}
+			else if (',' == _c)
+			{
+				if (IS_ALPHA(_c1))
+				{
+					pArrayResults->push_back(_T("0"));
+					nIndexOld = nIndex + 1;
+				}
+				else if (IS_DIGIT(_c1))
+				{
+					nIndexOld = nIndex + 1;
+				}
+			}
+			else
+			{
+				bool _isA = IS_ALPHA(_c);
+				bool _isD = _isA ? false : IS_DIGIT(_c);
 
-                bool _isA1 = IS_ALPHA(_c1);
-                bool _isD1 = _isA1 ? false : IS_DIGIT(_c1);
+				bool _isA1 = IS_ALPHA(_c1);
+				bool _isD1 = _isA1 ? false : IS_DIGIT(_c1);
 
-                if (_isA && _isD1)
-                {
-                    ArrayResults.push_back(strPath.substr(nIndexOld, nIndex - nIndexOld + 1));
-                    nIndexOld = nIndex + 1;
-                }
-                else if (_isD && _isA1)
-                {
-                    ArrayResults.push_back(strPath.substr(nIndexOld, nIndex - nIndexOld + 1));
-                    nIndexOld = nIndex + 1;
-                }
-                else if (_isD && ('@' == _c1))
-                {
-                    ArrayResults.push_back(strPath.substr(nIndexOld, nIndex - nIndexOld + 1));
+				if (_isA && _isD1)
+				{
+					pArrayResults->push_back(strPath.substr(nIndexOld, nIndex - nIndexOld + 1));
+					nIndexOld = nIndex + 1;
+				}
+				else if (_isD && _isA1)
+				{
+					pArrayResults->push_back(strPath.substr(nIndexOld, nIndex - nIndexOld + 1));
+					nIndexOld = nIndex + 1;
+				}
+				else if (_isD && ('@' == _c1))
+				{
+					pArrayResults->push_back(strPath.substr(nIndexOld, nIndex - nIndexOld + 1));
 
-                    ++nIndex;
-                    nIndexOld = nIndex;
-                }
-                else if (_isD && ('#' == _c1))
-                {
-                    ArrayResults.push_back(strPath.substr(nIndexOld, nIndex - nIndexOld + 1));
+					++nIndex;
+					nIndexOld = nIndex;
+				}
+				else if (_isD && ('#' == _c1))
+				{
+					pArrayResults->push_back(strPath.substr(nIndexOld, nIndex - nIndexOld + 1));
 
-                    ++nIndex;
-                    nIndexOld = nIndex;
-                }
-                else if (_isA && ('@' == _c1))
-                {
-                    ArrayResults.push_back(strPath.substr(nIndexOld, nIndex - nIndexOld + 1));
+					++nIndex;
+					nIndexOld = nIndex;
+				}
+				else if (_isA && ('@' == _c1))
+				{
+					pArrayResults->push_back(strPath.substr(nIndexOld, nIndex - nIndexOld + 1));
 
-                    ++nIndex;
-                    nIndexOld = nIndex;
-                }
-                else if (_isA && ('#' == _c1))
-                {
-                    ArrayResults.push_back(strPath.substr(nIndexOld, nIndex - nIndexOld + 1));
+					++nIndex;
+					nIndexOld = nIndex;
+				}
+				else if (_isA && ('#' == _c1))
+				{
+					pArrayResults->push_back(strPath.substr(nIndexOld, nIndex - nIndexOld + 1));
 
-                    ++nIndex;
-                    nIndexOld = nIndex;
-                }
-                else if (('x' == _c) && _isA1)
-                {
-                    ArrayResults.push_back(_T("x"));
-                    nIndexOld = nIndex + 1;
-                }
-            }
+					++nIndex;
+					nIndexOld = nIndex;
+				}
+				else if (('x' == _c) && _isA1)
+				{
+					pArrayResults->push_back(_T("x"));
+					nIndexOld = nIndex + 1;
+				}				
+			}            
         }
 
-        //boost::algorithm::split(ArrayResults, strPath, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+        //ParseString(_T(","), strPath, pArrayResults, bIsCleared);
         return;
     }
 

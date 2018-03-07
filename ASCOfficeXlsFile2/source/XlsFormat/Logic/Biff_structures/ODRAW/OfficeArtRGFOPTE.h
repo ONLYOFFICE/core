@@ -66,6 +66,8 @@ public:
 	std::vector<OfficeArtFOPTEPtr> LineStyle_props;
 	std::vector<OfficeArtFOPTEPtr> Shadow_props;
 	std::vector<OfficeArtFOPTEPtr> Transform_props;
+	std::vector<OfficeArtFOPTEPtr> Other_props;
+
 	unsigned short options_count;
 };
 

@@ -1655,7 +1655,6 @@ HEADERS +=  \
     ../XlsXlsxConverter/ConvertShapes/PathShape.h \
     ../XlsXlsxConverter/ConvertShapes/PPTShapeEnum.h \
     ../XlsXlsxConverter/ConvertShapes/PresetShapesHeader.h \
-    ../XlsXlsxConverter/ConvertShapes/ShapeUtils.h \
     ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/accentbordercallout1type.h \
     ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/accentbordercallout3type.h \
     ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/accentbordercallout90type.h \

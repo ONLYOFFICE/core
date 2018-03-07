@@ -122,19 +122,19 @@ int Dv::serialize(std::wostream & stream)
 				case typeDvTime:		CP_XML_ATTR(L"type", L"time");		break;
 				case typeDvWhole:		CP_XML_ATTR(L"type", L"whole");		break;
 			}
-			if (!PromptTitle.value().empty())
+			if (PromptTitle.value().size() > 1)
 			{
 				CP_XML_ATTR(L"promtTitle", PromptTitle.value());
 			}
-			if (!Prompt.value().empty())
+			if (Prompt.value().size() > 1)
 			{
 				CP_XML_ATTR(L"promt", Prompt.value());
 			}
-			if (!ErrorTitle.value().empty())
+			if (ErrorTitle.value().size() > 1)
 			{
 				CP_XML_ATTR(L"errorTitle", ErrorTitle.value());
 			}
-			if (!Error.value().empty())
+			if (Error.value().size() > 1)
 			{
 				CP_XML_ATTR(L"error", Error.value());
 			}

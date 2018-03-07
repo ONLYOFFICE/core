@@ -32,13 +32,14 @@
 #pragma once
 
 #include "../BiffStructure.h"
+#include "../HyperlinkObject.h"
+#include "../FixedPoint.h"
+
 #include "OfficeArtCOLORREF.h"
 #include "OfficeArtBlip.h"
-#include "../FixedPoint.h"
 #include "IMsoArray.h"
 #include "MSOSHADECOLOR.h"
 #include "MSO_enums.h"
-#include <Logic/Biff_structures/HyperlinkObject.h>
 
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/Enums.h"
 #include "../../../../XlsXlsxConverter/ConvertShapes/GraphicsPath.h"
@@ -80,7 +81,6 @@ public:
     _INT32 op;
 };
 
-
 class fillColor : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillColor)
@@ -96,6 +96,7 @@ class FixedPoint : public OfficeArtFOPTE
 	
 	double dVal;
 };
+
 class TextBooleanProperties : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(TextBooleanProperties)
@@ -152,6 +153,47 @@ class GeometryTextBooleanProperties : public OfficeArtFOPTE
 	bool fUsegFStrikethrough;
 };
 
+class GroupShapeBooleanProperties : public OfficeArtFOPTE
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(GroupShapeBooleanProperties)
+	
+	virtual void load(XLS::CFRecord& record);
+
+	bool fUsefLayoutInCell;
+	bool fUsefIsBullet;
+	bool fUsefStandardHR;
+	bool fUsefNoshadeHR;
+	bool fUsefHorizRule;
+	bool fUsefUserDrawn;
+	bool fUsefAllowOverlap;
+	bool fUsefReallyHidden;
+	bool fUsefScriptAnchor;
+	bool fUsefEditedWrap;
+	bool fUsefBehindDocument;
+	bool fUsefOnDblClickNotify;
+	bool fUsefIsButton;
+	bool fUsefOneD;
+	bool fUsefHidden;
+	bool fUsefPrint;
+	
+	bool fLayoutInCell;
+	bool fIsBullet;
+	bool fStandardHR;
+	bool fNoshadeHR;
+	bool fHorizRule;
+	bool fUserDrawn;
+	bool fAllowOverlap;
+	bool fReallyHidden;
+	bool fScriptAnchor;
+	bool fEditedWrap;
+	bool fBehindDocument;
+	bool fOnDblClickNotify;
+	bool fIsButton;
+	bool fOneD;
+	bool fHidden;
+	bool fPrint;
+};
+
 class lineColor : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineColor)
@@ -206,6 +248,14 @@ class fillWidth : public OfficeArtFOPTE
 class fillShadeType : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillShadeType)
+	
+	virtual void load(XLS::CFRecord& record);
+		
+	bool msoshadeNone;
+	bool msoshadeGamma;
+	bool msoshadeSigma;
+	bool msoshadeBand;
+	bool msoshadeOneColor;
 };
 
 class FillStyleBooleanProperties : public OfficeArtFOPTE
@@ -247,10 +297,6 @@ class ShapeBooleanProperties : public OfficeArtFOPTE
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(ShapeBooleanProperties)
 };
 
-class GroupShapeBooleanProperties : public OfficeArtFOPTE
-{
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(GroupShapeBooleanProperties)
-};
 class anyString : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(anyString)
@@ -814,6 +860,17 @@ class pihlShape : public OfficeArtFOPTE
 	void ReadComplexData(XLS::CFRecord& record);
 
 	IHlink complex;
+};
+
+class metroBlob : public OfficeArtFOPTE
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(metroBlob)
+
+	void ReadComplexData(XLS::CFRecord& record);
+
+	std::pair<boost::shared_array<unsigned char>, _INT32> data;
+
+	std::wstring xmlString;
 };
 
 

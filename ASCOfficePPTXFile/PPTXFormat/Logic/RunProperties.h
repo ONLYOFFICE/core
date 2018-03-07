@@ -158,12 +158,6 @@ namespace PPTX
 					BYTE _at = pReader->GetUChar_TypeNode();
 					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
 						break;
-
-					switch (_at)
-					{
-						default:
-							break;
-					}
 				}
 				while (pReader->GetPos() < _end_rec)
 				{
@@ -260,12 +254,6 @@ namespace PPTX
 					BYTE _at = pReader->GetUChar_TypeNode();
 					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
 						break;
-
-					switch (_at)
-					{
-						default:
-							break;
-					}
 				}
 				while (pReader->GetPos() < _end_rec)
 				{

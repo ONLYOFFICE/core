@@ -45,70 +45,74 @@ namespace PPTX
 		public:
 			Material()
 			{
-				m_strValue = _T("clear");
+				m_strValue = L"clear";
 			}
 
 			_USE_STRING_OPERATOR
 				
 			virtual void set(const std::wstring& strValue)
 			{
-				if ((_T("clear") == strValue) ||
-					(_T("dkEdge") == strValue) ||
-					(_T("flat") == strValue) ||
-					(_T("legacyMatte") == strValue) ||
-					(_T("legacyMetal") == strValue) ||
-					(_T("legacyPlastic") == strValue) ||
-					(_T("legacyWireframe") == strValue) ||
-					(_T("matte") == strValue) ||
-					(_T("metal") == strValue) ||
-					(_T("plastic") == strValue) ||
-					(_T("powder") == strValue) ||
-					(_T("softEdge") == strValue) ||
-					(_T("softmetal") == strValue) ||
-					(_T("translucentPowder") == strValue) ||
-					(_T("warmMatte") == strValue))
-				{
-					m_strValue = strValue;
-				}
+				m_strValue = strValue;
 			}
 
 			virtual BYTE GetBYTECode() const
 			{
-				if (_T("clear") == m_strValue)
+				if (L"clear" == m_strValue)
 					return 0;
-				if (_T("dkEdge") == m_strValue)
+				if (L"dkEdge" == m_strValue)
 					return 1;
-				if (_T("flat") == m_strValue)
+				if (L"flat" == m_strValue)
 					return 2;
-				if (_T("legacyMatte") == m_strValue)
+				if (L"legacyMatte" == m_strValue)
 					return 3;
-				if (_T("legacyMetal") == m_strValue)
+				if (L"legacyMetal" == m_strValue)
 					return 4;
-				if (_T("legacyPlastic") == m_strValue)
+				if (L"legacyPlastic" == m_strValue)
 					return 5;
-				if (_T("legacyWireframe") == m_strValue)
+				if (L"legacyWireframe" == m_strValue)
 					return 6;
-				if (_T("matte") == m_strValue)
+				if (L"matte" == m_strValue)
 					return 7;
-				if (_T("metal") == m_strValue)
+				if (L"metal" == m_strValue)
 					return 8;
-				if (_T("plastic") == m_strValue)
+				if (L"plastic" == m_strValue)
 					return 9;
-				if (_T("powder") == m_strValue)
+				if (L"powder" == m_strValue)
 					return 10;
-				if (_T("softEdge") == m_strValue)
+				if (L"softEdge" == m_strValue)
 					return 11;
-				if (_T("softmetal") == m_strValue)
+				if (L"softmetal" == m_strValue)
 					return 12;
-				if (_T("translucentPowder") == m_strValue)
+				if (L"translucentPowder" == m_strValue)
 					return 13;
-				if (_T("warmMatte") == m_strValue)
+				if (L"warmMatte" == m_strValue)
 					return 14;
 
 				return 0;
 			}
+			virtual void SetBYTECode(const BYTE& val)
+			{
+				switch (val)
+				{
+					case 0:		m_strValue = L"clear";			break;
+					case 1:		m_strValue = L"dkEdge";			break;
+					case 2:		m_strValue = L"flat";			break;
+					case 3:		m_strValue = L"legacyMatte";	break;
+					case 4:		m_strValue = L"legacyMetal";	break;
+					case 5:		m_strValue = L"legacyPlastic";	break;
+					case 6:		m_strValue = L"legacyWireframe";break;
+					case 7:		m_strValue = L"matte";			break;
+					case 8:		m_strValue = L"metal";			break;
+					case 9:		m_strValue = L"plastic";		break;
+					case 10:	m_strValue = L"powder";			break;
+					case 11:	m_strValue = L"softEdge";		break;
+					case 12:	m_strValue = L"softmetal";		break;
+					case 13:	m_strValue = L"translucentPowder";break;
+					case 14:	m_strValue = L"warmMatte";		break;
+					default:	m_strValue = L"clear";	
+				}
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX
-
 #endif // PPTX_LIMIT_MATERIAL_INCLUDE_H_

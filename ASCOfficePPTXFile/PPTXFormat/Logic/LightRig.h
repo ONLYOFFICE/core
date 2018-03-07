@@ -99,7 +99,64 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("a:lightRig"), oAttr, oValue);
 			}
-		public:
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(_T("a:lightRig"));
+
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(_T("dir"), dir.get());
+				pWriter->WriteAttribute(_T("rig"), rig.get());
+				pWriter->EndAttributes();
+
+				pWriter->Write(rot);
+
+				pWriter->EndNode(_T("a:lightRig"));
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteLimit1(0, dir);
+				pWriter->WriteLimit1(1, rig);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+				
+				pWriter->WriteRecord2(0, rot);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					if (0 == _at)		dir.SetBYTECode(pReader->GetUChar());
+					else if (1 == _at)	rig.SetBYTECode(pReader->GetUChar());
+					else
+						break;
+				}
+
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _at = pReader->GetUChar();
+					switch (_at)
+					{
+						case 0:
+						{
+							rot = new Logic::Rot();
+							rot->fromPPTY(pReader);
+							break;
+						}
+						default:
+							break;
+					}
+				}
+
+				pReader->Seek(_end_rec);
+			}
 			nullable<Rot>		rot;
 
 			Limit::RectAlign	dir;

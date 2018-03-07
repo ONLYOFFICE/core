@@ -61,11 +61,11 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+				
 				if ( oReader.IsEmptyNode() )
 					return;
 				
-				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
-
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{

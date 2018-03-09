@@ -137,8 +137,6 @@ public:
     friend class text_list_level_style_number;
     friend class text_list_level_style_bullet;
     
-	const odf_types::common_text_align & get_common_text_align() const { return common_text_align_; }
-
     odf_types::common_text_align			common_text_align_;
     optional<odf_types::length>::Type		text_space_before_;
     optional<odf_types::length>::Type		text_min_label_width_;

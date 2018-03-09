@@ -178,6 +178,8 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 								Context.set_rtl(false);
 							}
 						}
+						Context.set_margin_left(properties.fo_margin_left_? 20.0 * properties.fo_margin_left_->get_length().get_value_unit(length::pt) : 0); 
+							//for calculate tabs
 					}
                     
 					styleContent->docx_convert(Context);                

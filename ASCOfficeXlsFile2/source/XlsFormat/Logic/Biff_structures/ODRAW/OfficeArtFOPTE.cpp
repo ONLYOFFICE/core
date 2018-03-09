@@ -728,7 +728,7 @@ void metroBlob::ReadComplexData(XLS::CFRecord& record)
 
 	std::wstring tempFileName = global_info->tempDirectory + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
 
-	if (file.CreateFile(tempFileName))
+    if (file.CreateFileW(tempFileName))
 	{
 		file.WriteFile(data.first.get(), data.second);
 		file.CloseFile();

@@ -20,7 +20,8 @@ include(../../../Common/base.pri)
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 DEFINES +=  UNICODE \
-        _UNICODE
+        _UNICODE \
+        DONT_WRITE_EMBEDDED_FONTS
 
 CONFIG(debug, debug|release){
 

@@ -39,10 +39,12 @@
 #include "../Common/TextMark.h"
 #include "../Common/FormatUtils.h"
 
+#include <boost/algorithm/string.hpp>
+
 namespace DocFileFormat
 {
 	DocumentMapping::DocumentMapping(ConversionContext* context, IMapping* caller) : _skipRuns(0), _lastValidPapx(NULL), _lastValidSepx(NULL),
-		_fldCharCounter(0), AbstractOpenXmlMapping( new XMLTools::CStringXmlWriter() ), _sectionNr(0), _footnoteNr(0),
+		AbstractOpenXmlMapping( new XMLTools::CStringXmlWriter() ), _sectionNr(0), _footnoteNr(0),
 		_endnoteNr(0), _commentNr(0), _caller(caller)
 	{
 		m_document				=	NULL;
@@ -50,17 +52,15 @@ namespace DocFileFormat
 		m_bInternalXmlWriter	=	false;
 
 		_writeWebHidden			=	false;
-		_writeInstrText			=	false;
 		_isSectionPageBreak		=	0;
 		_isTextBoxContent		=	false;
 
 //--------------------------------------------
 		_embeddedObject			=	false;
-		_writeInstrText			=	false;
 	}
 
-	DocumentMapping::DocumentMapping(ConversionContext* context, XMLTools::CStringXmlWriter* writer, IMapping* caller):_skipRuns(0),  _lastValidPapx(NULL), _lastValidSepx(NULL), _writeInstrText(false),
-		_fldCharCounter(0), AbstractOpenXmlMapping(writer), _sectionNr(0), _footnoteNr(0), _endnoteNr(0),
+	DocumentMapping::DocumentMapping(ConversionContext* context, XMLTools::CStringXmlWriter* writer, IMapping* caller):_skipRuns(0),  _lastValidPapx(NULL), _lastValidSepx(NULL), 
+		AbstractOpenXmlMapping(writer), _sectionNr(0), _footnoteNr(0), _endnoteNr(0),
 		_commentNr(0), _caller(caller)
 	{
 		m_document				=	NULL;
@@ -68,7 +68,6 @@ namespace DocFileFormat
 		m_bInternalXmlWriter	=	false;
 	
 		_writeWebHidden			=	false;
-		_writeInstrText			=	false;
 		_isSectionPageBreak		=	0;
 		_isTextBoxContent		=	false;
 		_embeddedObject			=	false;
@@ -496,7 +495,7 @@ namespace DocFileFormat
 		{
             textType = std::wstring(L"delText");
 		}
-		else if (_writeInstrText)
+		else if ((!_fieldLevels.empty()) && (_fieldLevels.back().bBegin && !_fieldLevels.back().bSeparate))
 		{
             textType = std::wstring(L"instrText");
 		}
@@ -559,15 +558,20 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteString(elem.GetXMLString());
 			}
 			else if (TextMark::FieldBeginMark == code)
-			{//todooo в отдельный mapping
+			{
+				_fieldLevels.push_back(fieldLevels());
+
 				int cpFieldStart = initialCp + i;
 				int cpFieldEnd = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::FieldEndMark );
 				
-				std::wstring f;
+				std::wstring f, sFieldString;
 				if (cpFieldEnd < (int)m_document->Text->size())
-					f = std::wstring( ( m_document->Text->begin() + cpFieldStart ), ( m_document->Text->begin() + cpFieldEnd + 1 ) );
+					sFieldString = std::wstring( ( m_document->Text->begin() + cpFieldStart ), ( m_document->Text->begin() + cpFieldEnd + 1 ) );
 
-                std::wstring EMBED		( L" EMBED" );
+				std::vector<std::wstring> arField;
+				boost::algorithm::split(arField, sFieldString, boost::algorithm::is_any_of(L"\\"), boost::algorithm::token_compress_on);
+				
+				std::wstring EMBED		( L" EMBED" );
                 std::wstring LINK		( L" LINK" );
                 std::wstring FORM		( L" FORM" );
                 std::wstring Excel		( L" Excel" );
@@ -583,6 +587,11 @@ namespace DocFileFormat
                 std::wstring PAGEREF	( L" PAGEREF" );
                 std::wstring PAGE		( L"PAGE" );
 
+				if (arField.empty() == false)
+					f = arField[0];
+				else
+					f = sFieldString;
+
 				bool bChart			= search( f.begin(), f.end(), chart.begin(),		chart.end())			!= f.end();
 				bool bEMBED			= search( f.begin(), f.end(), EMBED.begin(),		EMBED.end())			!= f.end();
 				bool bLINK			= search( f.begin(), f.end(), LINK.begin(),			LINK.end())				!= f.end();
@@ -592,11 +601,21 @@ namespace DocFileFormat
 				bool bExcel			= search( f.begin(), f.end(), Excel.begin(),		Excel.end())			!= f.end();
 				bool bWord			= search( f.begin(), f.end(), Word.begin(),			Word.end())				!= f.end();
 				bool bHYPERLINK		= search( f.begin(), f.end(), HYPERLINK.begin(),	HYPERLINK.end())		!= f.end();
-				bool bPAGEREF		= search( f.begin(), f.end(), PAGEREF.begin(),		PAGEREF.end())			!= f.end();
 				bool bQUOTE			= search( f.begin(), f.end(), QUOTE.begin(),		QUOTE.end())			!= f.end();
 				bool bEquation		= search( f.begin(), f.end(), Equation.begin(),		Equation.end())			!= f.end();
-				bool bPAGE			= !bPAGEREF && search( f.begin(), f.end(), PAGE.begin(), PAGE.end())		!= f.end();
-			
+				bool bPAGE			= search( f.begin(), f.end(), PAGE.begin(),			PAGE.end())				!= f.end();
+				bool bTOC			= search( f.begin(), f.end(), TOC.begin(),			TOC.end())				!= f.end();
+				
+				bool bPAGEREF = false; 
+				if (bHYPERLINK && arField.size() > 1)
+				{
+					std::wstring f1 = arField[1];
+					bPAGEREF	= search( f1.begin(), f1.end(), PAGEREF.begin(), PAGEREF.end())	!= f1.end();
+				}			
+
+				if (bTOC)
+					_bContentWrite = true;
+
 				if ( bFORM )
 				{
 					std::wstring FORMTEXT		( L" FORMTEXT" );
@@ -634,9 +653,7 @@ namespace DocFileFormat
 
                     m_pXmlWriter->WriteNodeEnd( L"w:fldChar" );
 
-					_writeInstrText = true;
-
-					_fldCharCounter++;
+					_fieldLevels.back().bBegin = true;
 				}
 				else if ( ( bMERGEFORMAT || bExcel || bWord || bOpendocument )
 						&& 
@@ -650,36 +667,40 @@ namespace DocFileFormat
 
                     m_pXmlWriter->WriteNodeEnd( L"w:fldChar" );
 
-					_writeInstrText = true;
-
-					_fldCharCounter++;
+					_fieldLevels.back().bBegin = true;
 				}
-				else if ( (bHYPERLINK && bPAGEREF) || bPAGE)
+				else if (bHYPERLINK && bPAGEREF)
 				{
 					int cpFieldSep2 = cpFieldStart, cpFieldSep1 = cpFieldStart;
 					std::vector<std::wstring> toc;
 
-					if ((search( f.begin(),	f.end(), TOC.begin(),	TOC.end()) != f.end()) || bPAGE)
+					if (arField.size() > 1)
+						f = arField[1];
+
+					if ( _bContentWrite )
 					{
                         m_pXmlWriter->WriteNodeBegin( L"w:fldChar", true );
                             m_pXmlWriter->WriteAttribute( L"w:fldCharType", L"begin" );
                         m_pXmlWriter->WriteNodeEnd( L"", true );
 
-						_writeInstrText = true;	
-						_fldCharCounter++;
+						_fieldLevels.back().bBegin = true;
 					}
 					else
 					{
-						while ( cpFieldSep2 < cpFieldEnd)
+						//while ( cpFieldSep2 < cpFieldEnd)
+						//{
+						//	cpFieldSep2	=	searchNextTextMark(m_document->Text, cpFieldSep1 + 1, TextMark::FieldSeparator);
+						//	std::wstring f1( ( m_document->Text->begin() + cpFieldSep1 ), ( m_document->Text->begin() + cpFieldSep2 + 1 ) );
+						//	toc.push_back(f1);
+						//	
+						//	if (search( f1.begin(),	f1.end(), PAGEREF.begin(), PAGEREF.end()) != f1.end())
+						for (size_t i = 1; i < arField.size(); i++)
 						{
-							cpFieldSep2	=	searchNextTextMark(m_document->Text, cpFieldSep1 + 1, TextMark::FieldSeparator);
-							std::wstring f1( ( m_document->Text->begin() + cpFieldSep1 ), ( m_document->Text->begin() + cpFieldSep2 + 1 ) );
-							toc.push_back(f1);
-							
-							if (search( f1.begin(),	f1.end(), PAGEREF.begin(), PAGEREF.end()) != f1.end())
-							{
-								int d = (int)f1.find(PAGEREF);
+							std::wstring f1 = arField[1];
+							int d = (int)f1.find(PAGEREF);
 
+							if (d > 0)
+							{
 								_writeWebHidden = true;
 								std::wstring _writeTocLink =f1.substr(d + 9);
                                 d = (int)_writeTocLink.find(L" ");
@@ -689,17 +710,10 @@ namespace DocFileFormat
 								_writeAfterRun +=	_writeTocLink;
                                 _writeAfterRun +=	std::wstring (L"\" w:history=\"1\">");
 
-								//if (_writeInstrText == true)
-								//{
-                                //	m_pXmlWriter->WriteNodeBegin( L"w:fldChar" ), true );
-                                //		m_pXmlWriter->WriteAttribute( L"w:fldCharType" ), L"separate" );
-                                //	m_pXmlWriter->WriteNodeEnd( L"" ), true );
-								//}
-								_writeInstrText = false;
-								
+								break;								
 								//cp = cpFieldSep1;
 							}
-							cpFieldSep1 = cpFieldSep2;
+							//cpFieldSep1 = cpFieldSep2;
 						}
 						_skipRuns = 5; //with separator
 					}
@@ -808,15 +822,16 @@ namespace DocFileFormat
                         m_pXmlWriter->WriteAttribute( L"w:fldCharType", L"begin" );
                     m_pXmlWriter->WriteNodeEnd( L"", true );
 
-					_writeInstrText = true;
-					_fldCharCounter++;
+					_fieldLevels.back().bBegin = true;
 				}
 			}
 			else if (TextMark::FieldSeparator == code)
 			{
-				if (_fldCharCounter > 0)
+				if (!_fieldLevels.empty())
 				{
-                    XMLTools::XMLElement elem( L"w:fldChar" );
+					_fieldLevels.back().bSeparate = true;
+                    
+					XMLTools::XMLElement elem( L"w:fldChar" );
                     elem.AppendAttribute( L"w:fldCharType", L"separate" );
 
 					m_pXmlWriter->WriteString( elem.GetXMLString() );
@@ -825,33 +840,32 @@ namespace DocFileFormat
 			}
 			else if (TextMark::FieldEndMark == code)
 			{
-				if (_fldCharCounter > 0)
+				if (!_fieldLevels.empty())
 				{
-					if (_writeInstrText == true && !text.empty())
+					_fieldLevels.back().bEnd = true;
+					
+					if (_fieldLevels.back().bBegin == true && !text.empty())
 					{
 						writeTextElement(text, textType);
 						text.clear();
 					}
-					_writeInstrText = false;
 					
                     XMLTools::XMLElement elem( L"w:fldChar" );
                     elem.AppendAttribute( L"w:fldCharType", L"end" );
 
 					m_pXmlWriter->WriteString( elem.GetXMLString());
 
-					_fldCharCounter--;
+					_fieldLevels.pop_back();
 				}
 				if (_writeWebHidden)
 				{
                     _writeAfterRun	=	std::wstring (L"</w:hyperlink>");
 				}
-				_writeWebHidden	= false;
-				
-				if ( _fldCharCounter == 0 )
-				{	
-					_writeInstrText	= false;
-				}
+				_writeWebHidden	= false;				
 				_embeddedObject = false;
+
+				if (_fieldLevels.empty())
+					_bContentWrite = false;
 			}
 			else if ((TextMark::Symbol == code) && fSpec)
 			{

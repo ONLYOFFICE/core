@@ -153,6 +153,10 @@ public:
 	std::wstring			name;
 	std::wstring			description;
 
+	std::wstring			xmlAlternative;
+	std::wstring			xmlGeomAlternative;
+	std::wstring			xmlTxBodyAlternative;
+
 	std::wstring			objectId;
 	std::wstring			objectProgId;
 
@@ -364,10 +368,13 @@ public:
 		void start_comment();
 		void start_control(int type);
 
+		void set_alternative_drawing(const std::wstring & xml_data);
+
         void set_id			(int id);
 		void set_FlipH		();
 		void set_FlipV		();
 		void set_shape_id	(int id);
+		void set_hidden		(bool val);
 //--------------------------------------------------------------------------------------
 		void set_mode_HF		(bool val);
 		bool get_mode_HF		();

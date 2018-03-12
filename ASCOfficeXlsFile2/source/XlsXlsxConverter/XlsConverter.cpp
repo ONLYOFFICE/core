@@ -84,6 +84,7 @@
 #include "../XlsFormat/Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.h"
 #include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtFOPT.h"
 #include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtFOPTE.h"
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtTertiaryFOPT.h"
 #include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtFSP.h"
 #include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtBlip.h"
 #include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtFSPGR.h"
@@ -1277,7 +1278,11 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 			else //сюда попадать не должно !!!!
 				continue;
 		}
-		if (obj->cmo.fUIObj)	continue; // automatically inserted by the application
+		if (obj->cmo.fUIObj)
+		{
+			group_objects.back().ind++;
+			continue; // automatically inserted by the application
+		}
 		
 		ODRAW::OfficeArtSpContainer *sp = NULL;
 
@@ -1378,6 +1383,10 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 	case XLS::typeOfficeArtFOPT://properties
 		{
 			convert(dynamic_cast<ODRAW::OfficeArtFOPT *>(art));
+		}break;
+	case XLS::typeOfficeArtTertiaryFOPT://properties
+		{
+			convert(dynamic_cast<ODRAW::OfficeArtTertiaryFOPT *>(art));
 		}break;
 	case XLS::typeOfficeArtFSP:
 		{
@@ -1567,6 +1576,10 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			{
 				xlsx_context->get_drawing_context().set_fill_focus(props[i]->op);
 			}break;
+			case NSOfficeDrawing::fillShadeType:
+			{
+				ODRAW::fillShadeType *shadeType = dynamic_cast<ODRAW::fillShadeType*>(props[i].get());
+			}break;
 			case NSOfficeDrawing::fillShadePreset:
 			{
 			}break;
@@ -1594,9 +1607,6 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 					}
 				}
 			}break;
-			case NSOfficeDrawing::fillShadeType:
-			{
-			}break;
 			case NSOfficeDrawing::fillBoolean:
 			{
 				ODRAW::FillStyleBooleanProperties * bools = (ODRAW::FillStyleBooleanProperties *)(props[i].get());
@@ -1605,6 +1615,10 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 					if (bools->fUsefFilled && bools->fFilled == false) 
 						xlsx_context->get_drawing_context().set_fill_type(0);
 				}
+			}break;
+			default:
+			{
+				i =i;
 			}break;
 		}
 	}
@@ -2026,6 +2040,23 @@ void XlsConverter::convert_group_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & p
 					xlsx_context->get_drawing_context().set_hyperlink( sTarget, sDisplay, bExternal);				
 				}
 			}break;
+		case 0x03A9:
+			{
+				ODRAW::metroBlob *alternative_data = dynamic_cast<ODRAW::metroBlob*>(props[i].get());
+				if (alternative_data)
+				{
+					xlsx_context->get_drawing_context().set_alternative_drawing( alternative_data->xmlString);				
+				}
+			}break;
+		case 0x03BF:
+			{
+				ODRAW::GroupShapeBooleanProperties *bools = dynamic_cast<ODRAW::GroupShapeBooleanProperties*>(props[i].get());
+				if (bools)
+				{
+					if (bools->fHidden && bools->fUsefHidden)	
+						xlsx_context->get_drawing_context().set_hidden(true);
+				}
+			}break;
 		}
 	}
 }
@@ -2067,6 +2098,21 @@ void XlsConverter::convert_transform(std::vector<ODRAW::OfficeArtFOPTEPtr> & pro
 			}break;
 		}
 	}
+}
+void XlsConverter::convert(ODRAW::OfficeArtTertiaryFOPT	* fort)
+{
+	if (fort == NULL) return;
+
+	convert_shape			(fort->fopt.Shape_props);
+	convert_group_shape		(fort->fopt.GroupShape_props);
+	convert_transform		(fort->fopt.Transform_props);
+	convert_blip			(fort->fopt.Blip_props);
+	convert_geometry		(fort->fopt.Geometry_props);
+	convert_fill_style		(fort->fopt.FillStyle_props);
+	convert_line_style		(fort->fopt.LineStyle_props);
+	convert_shadow			(fort->fopt.Shadow_props);
+	convert_text			(fort->fopt.Text_props);
+	convert_geometry_text	(fort->fopt.GeometryText_props);
 }
 void XlsConverter::convert(ODRAW::OfficeArtFOPT * fort)
 {

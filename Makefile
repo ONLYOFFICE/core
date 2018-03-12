@@ -264,8 +264,13 @@ ARTIFACTS += build/*
 ARTIFACTS += Common/3dParty/*/$(TARGET)/build/*
 
 
+
 ifeq ($(OS),Windows_NT)
-ARTIFACTS += Common/3dParty/v8/$(TARGET)/*/*.dll
+ARTIFACTS += Common/3dParty/v8/v8/out.gn/$(TARGET)/release/*.dat
+ARTIFACTS += Common/3dParty/v8/v8/out.gn/$(TARGET)/release/obj/*
+else
+ARTIFACTS += Common/3dParty/v8/v8/out.gn/$(TARGET)/*.dat
+ARTIFACTS += Common/3dParty/v8/v8/out.gn/$(TARGET)/obj/*
 endif
 
 EXT_TARGET += $(DOCBUILDER)

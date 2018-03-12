@@ -112,6 +112,10 @@ void OfficeArtRGFOPTE::load(XLS::CFRecord& record)
 		{
 			GroupShape_props.push_back(fopte);
 		}
+		else
+		{
+			Other_props.push_back(fopte);
+		}
 
 		rgfopte.push_back(fopte);
 	}

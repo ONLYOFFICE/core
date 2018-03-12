@@ -43,6 +43,8 @@ namespace PPTX
 	{
 		void Blip::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
+			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+			
 			ReadAttributes( oReader );
 
 			Effects.clear();

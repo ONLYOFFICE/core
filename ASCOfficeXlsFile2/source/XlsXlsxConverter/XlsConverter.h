@@ -95,6 +95,7 @@ namespace ODRAW
 	class OfficeArtFOPT;
 	class OfficeArtFSP;
 	class OfficeArtFOPTE;	
+	class OfficeArtTertiaryFOPT;
 	typedef boost::shared_ptr<OfficeArtFOPTE> OfficeArtFOPTEPtr;
 		
 }
@@ -143,6 +144,7 @@ public:
 	void convert(ODRAW::OfficeArtSpgrContainer	* spgr);
 	void convert(ODRAW::OfficeArtSpContainer	* sp, bool anchor_only = false);
 	void convert(ODRAW::OfficeArtFOPT 			* fort);
+	void convert(ODRAW::OfficeArtTertiaryFOPT	* fort);
 	void convert(ODRAW::OfficeArtFSP 			* fsp);
 
 	std::wstring GetTargetMoniker(XLS::BiffStructure *moniker);

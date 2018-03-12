@@ -129,13 +129,6 @@ int Pos::serialize(std::wostream & _stream)
 				}
 			}
 		}
-		if (m_iLinkObject == 1 || m_iLinkObject == 2 || m_iLinkObject == 3) 
-		{
-			CP_XML_NODE(L"c:overlay")
-			{
-				CP_XML_ATTR(L"val", 0);
-			}
-		}
 	}
 	return 0;
 }

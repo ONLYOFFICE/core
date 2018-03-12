@@ -134,7 +134,7 @@ namespace OOX
 			}
 		}
 
-		AVSINLINE void Normalize();
+        void Normalize();
 
 		void CheckIsRoot()
 		{

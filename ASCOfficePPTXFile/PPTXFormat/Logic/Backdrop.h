@@ -39,7 +39,6 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class Backdrop : public WrapperWritingElement
 		{
 		public:
@@ -115,7 +114,6 @@ namespace PPTX
 				upY = oNodeU.ReadAttributeInt(L"dy");
 				upZ = oNodeU.ReadAttributeInt(L"dz");
 			}
-
 			virtual std::wstring toXML() const
 			{
                 std::wstring str1 = L"<a:anchor x=\"" + std::to_wstring(anchorX) + L"\" y=\"" + std::to_wstring(anchorY) + L"\" z=\"" + std::to_wstring(anchorZ) + L"\"/>";
@@ -126,7 +124,79 @@ namespace PPTX
 
 				return _T("<a:backdrop>") + str1 + str2 + str3 + _T("</a:backdrop>");
 			}
-		public:
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"a:backdrop");
+				pWriter->EndAttributes();
+
+					pWriter->StartNode(L"a:anchor");
+						pWriter->StartAttributes();
+						pWriter->WriteAttribute(L"x", anchorX);
+						pWriter->WriteAttribute(L"y", anchorY);
+						pWriter->WriteAttribute(L"z", anchorZ);
+						pWriter->EndAttributes();
+					pWriter->EndNode(L"a:anchor");
+					pWriter->StartNode(L"a:norm");
+						pWriter->StartAttributes();
+						pWriter->WriteAttribute(L"dx", normX);
+						pWriter->WriteAttribute(L"dy", normY);
+						pWriter->WriteAttribute(L"dz", normZ);
+						pWriter->EndAttributes();
+					pWriter->EndNode(L"a:norm");
+					pWriter->StartNode(L"a:up");
+						pWriter->StartAttributes();
+						pWriter->WriteAttribute(L"dx", upX);
+						pWriter->WriteAttribute(L"dy", upY);
+						pWriter->WriteAttribute(L"dz", upZ);
+						pWriter->EndAttributes();
+					pWriter->EndNode(L"a:up");
+				pWriter->EndNode(L"a:backdrop");
+			}
+
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteInt1(0, anchorX);
+				pWriter->WriteInt1(1, anchorY);
+				pWriter->WriteInt1(2, anchorZ);
+
+				pWriter->WriteInt1(3, normX);
+				pWriter->WriteInt1(4, normY);
+				pWriter->WriteInt1(5, normZ);
+
+				pWriter->WriteInt1(6, upX);
+				pWriter->WriteInt1(7, upY);
+				pWriter->WriteInt1(8, upZ);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					if (0 == _at)		anchorX = pReader->GetLong();
+					else if (1 == _at)	anchorY = pReader->GetLong();
+					else if (2 == _at)	anchorZ = pReader->GetLong();
+					else if (3 == _at)	normX = pReader->GetLong();
+					else if (4 == _at)	normY = pReader->GetLong();
+					else if (5 == _at)	normZ = pReader->GetLong();
+					else if (6 == _at)	upX = pReader->GetLong();
+					else if (7 == _at)	upY = pReader->GetLong();
+					else if (8 == _at)	upZ = pReader->GetLong();
+
+					else
+						break;
+				}
+
+				pReader->Seek(_end_rec);
+			}
 			int anchorX;
 			int anchorY;
 			int anchorZ;

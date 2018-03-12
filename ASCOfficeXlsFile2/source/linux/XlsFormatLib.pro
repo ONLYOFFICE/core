@@ -20,7 +20,8 @@ include(../../../Common/base.pri)
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 DEFINES +=  UNICODE \
-        _UNICODE
+        _UNICODE \
+        DONT_WRITE_EMBEDDED_FONTS
 
 CONFIG(debug, debug|release){
 
@@ -1655,7 +1656,6 @@ HEADERS +=  \
     ../XlsXlsxConverter/ConvertShapes/PathShape.h \
     ../XlsXlsxConverter/ConvertShapes/PPTShapeEnum.h \
     ../XlsXlsxConverter/ConvertShapes/PresetShapesHeader.h \
-    ../XlsXlsxConverter/ConvertShapes/ShapeUtils.h \
     ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/accentbordercallout1type.h \
     ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/accentbordercallout3type.h \
     ../XlsXlsxConverter/ConvertShapes/oldAutoShapes/accentbordercallout90type.h \

@@ -1184,6 +1184,10 @@ int ChartSheetSubstream::serialize_dLbls (std::wostream & _stream, int id, CRT *
 				ATTACHEDLABEL* AT_LABEL = dynamic_cast<ATTACHEDLABEL*>(labels[i].second.get());
 				if (AT_LABEL) 
 				{
+					//if (AT_LABEL->m_CrtLayout12)	AT_LABEL->m_CrtLayout12->serialize(_stream);
+					//else
+					//if (AT_LABEL->m_Pos) AT_LABEL->m_Pos->serialize(_stream);
+					
 					text = dynamic_cast<Text*> (AT_LABEL->m_TextProperties.get());
 					
 					if (AT_LABEL->m_FRAME)

@@ -339,7 +339,7 @@ int ATTACHEDLABEL::serialize(std::wostream & _stream, bool isPosition)
 				if (m_CrtLayout12)	m_CrtLayout12->serialize(_stream);
 				else if (m_Pos)		m_Pos->serialize(_stream);
 			}
-			if (m_FRAME)			m_FRAME->serialize(_stream);
+			if (m_FRAME) m_FRAME->serialize(_stream);
 		}
 		else
 		{
@@ -352,8 +352,14 @@ int ATTACHEDLABEL::serialize(std::wostream & _stream, bool isPosition)
 			if (m_FRAME)			m_FRAME->serialize(_stream);
 			
 			serialize_txPr(_stream);
+		}	
+		if (Pos_ && (Pos_->m_iLinkObject == 1 || Pos_->m_iLinkObject == 2 || Pos_->m_iLinkObject == 3))
+		{
+			CP_XML_NODE(L"c:overlay")
+			{
+				CP_XML_ATTR(L"val", 0);
+			}
 		}
-	
 	}
 	return 0;
 }

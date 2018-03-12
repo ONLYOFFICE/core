@@ -36,7 +36,8 @@
 #endif
 
 #include <math.h>
-#include "ShapeUtils.h"
+
+#include "../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/Common.h"
 
 #include "../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../../DesktopEditor/graphics/aggplustypes.h"

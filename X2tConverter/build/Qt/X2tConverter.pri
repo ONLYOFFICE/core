@@ -147,6 +147,7 @@ CONFIG += core_boost_regex
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 core_windows {
+    LIBS += -lAdvapi32
     LIBS += -lurlmon
     LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -llibxml
 }

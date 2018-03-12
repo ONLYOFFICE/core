@@ -1250,8 +1250,6 @@ CFontInfo* CFontList::GetByParams(CFontSelectFormat& oSelect, bool bIsDictionary
 		if (NULL != oSelect.unCharset)
 			unCharset = *oSelect.unCharset;
 
-		EFontFormat eFontFormat = fontTrueType;
-
 		if ( NULL != oSelect.bFixedWidth )
 			nCurPenalty += GetFixedPitchPenalty( pInfo->m_bIsFixed, *oSelect.bFixedWidth );
 
@@ -1282,7 +1280,7 @@ CFontInfo* CFontList::GetByParams(CFontSelectFormat& oSelect, bool bIsDictionary
 		else if (NULL != oSelect.sFamilyClass)
 			nCurPenalty += GetFamilyUnlikelyPenalty( pInfo->m_sFamilyClass, *oSelect.sFamilyClass );
 		
-		nCurPenalty += GetFontFormatPenalty( pInfo->m_eFontFormat, eFontFormat );
+		//nCurPenalty += GetFontFormatPenalty( pInfo->m_eFontFormat, fontTrueType );
 		nCurPenalty += GetCharsetPenalty( arrCandRanges, unCharset );
 
 		if ( NULL != oSelect.shAvgCharWidth )

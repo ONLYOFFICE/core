@@ -239,7 +239,8 @@ namespace PPTX
 			}
 			else if ( std::wstring::npos != sProgID.find(L"Equation"))
 			{
-				pWriter->StartRecord(1);
+
+                pWriter->StartRecord(1);
 					pWriter->WriteBYTE(4);
 				pWriter->EndRecord();
 

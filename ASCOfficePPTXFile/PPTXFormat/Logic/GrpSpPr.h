@@ -239,7 +239,8 @@ namespace PPTX
 						}
 						case 3:
 						{
-							pReader->SkipRecord();
+							scene3d = new PPTX::Logic::Scene3d();
+							scene3d->fromPPTY(pReader);
 							break;
 						}
 						default:

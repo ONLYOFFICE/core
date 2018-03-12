@@ -1137,9 +1137,8 @@ PPTX::Logic::SpTreeElem CDrawingConverter::ObjectFromXml(const std::wstring& sXm
 								doc_LoadShape(pElem, oNodeP, ppMainProps, true);
 
 #ifdef AVS_OFFICE_DRAWING_DUMP_XML_TEST
-								NSBinPptxRW::CXmlWriter oXmlW;
+								NSBinPptxRW::CXmlWriter oXmlW(XMLWRITER_DOC_TYPE_DOCX);
 								pElem->toXmlWriter(&oXmlW);
-								oXmlW.m_lDocType = XMLWRITER_DOC_TYPE_DOCX;
 								std::wstring strXmlTemp = oXmlW.GetXmlString();
 #endif
 							}
@@ -1157,8 +1156,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::ObjectFromXml(const std::wstring& sXm
 								doc_LoadGroup(pElem, oNodeP, ppMainProps, true);
 
 #ifdef AVS_OFFICE_DRAWING_DUMP_XML_TEST
-								NSBinPptxRW::CXmlWriter oXmlW;
-								oXmlW.m_lDocType = XMLWRITER_DOC_TYPE_DOCX;
+								NSBinPptxRW::CXmlWriter oXmlW(XMLWRITER_DOC_TYPE_DOCX);
 								pElem->toXmlWriter(&oXmlW);
 								std::wstring strXmlTemp = oXmlW.GetXmlString();
 #endif
@@ -1305,9 +1303,8 @@ std::wstring CDrawingConverter::ObjectToDrawingML(const std::wstring& sXml, int 
 	
 	if (oElem.is_init() == false) return L"";
 
-	NSBinPptxRW::CXmlWriter oXmlWriter;
-	oXmlWriter.m_lDocType			= (BYTE)nDocType;
-	oXmlWriter.m_bIsUseOffice2007	= false;
+	NSBinPptxRW::CXmlWriter oXmlWriter(nDocType);
+	oXmlWriter.m_bIsUseOffice2007 = false;
 
 	oXmlWriter.m_bIsTop = true;
 	
@@ -1381,8 +1378,7 @@ std::wstring CDrawingConverter::ObjectToVML	(const std::wstring& sXml)
 	
 	if (oElem.is_init() == false) return L"";
 	
-	NSBinPptxRW::CXmlWriter oXmlWriter;
-	oXmlWriter.m_lDocType = XMLWRITER_DOC_TYPE_DOCX;
+	NSBinPptxRW::CXmlWriter oXmlWriter(XMLWRITER_DOC_TYPE_DOCX);
 	oXmlWriter.m_bIsUseOffice2007 = true;
 
 	oXmlWriter.m_bIsTop = true;
@@ -4598,10 +4594,9 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 	
 	m_pReader->m_nDocumentType = XMLWRITER_DOC_TYPE_PPTX;
 
-	NSBinPptxRW::CXmlWriter oXmlWriter;
+	NSBinPptxRW::CXmlWriter oXmlWriter(XMLWRITER_DOC_TYPE_DOCX);
 	oXmlWriter.m_lObjectIdVML = m_pXmlWriter->m_lObjectIdVML;
 	oXmlWriter.m_lObjectIdOle = m_pXmlWriter->m_lObjectIdOle;
-	oXmlWriter.m_lDocType = XMLWRITER_DOC_TYPE_DOCX;
 	oXmlWriter.m_bIsUseOffice2007 = m_bIsUseConvertion2007;
 
 	oXmlWriter.m_bIsTop = (1 == m_nCurrentIndexObject) ? true : false;

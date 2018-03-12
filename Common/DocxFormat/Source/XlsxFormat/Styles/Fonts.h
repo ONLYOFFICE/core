@@ -63,7 +63,16 @@ namespace OOX
 				writer.WriteString(L"<font>");
 				if(m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit())
 				{
-					WritingStringValAttrEncodeXmlString(L"name", m_oRFont->m_sVal.get());
+					//todo more complex solution
+					//if name more then 31 chars Excel wants to recover xlsx
+					if (m_oRFont->m_sVal->length() <= 31)
+					{
+						WritingStringValAttrEncodeXmlString(L"name", m_oRFont->m_sVal.get());
+					}
+					else
+					{
+						WritingStringValAttrEncodeXmlString(L"name", m_oRFont->m_sVal->substr(0, 31));
+					}
 				}			
 				if(m_oCharset.IsInit() && m_oCharset->m_oCharset.IsInit())
 				{

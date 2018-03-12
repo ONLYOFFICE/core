@@ -37,9 +37,13 @@
 #include <Auxiliary/HelpFunc.h>
 
 #include "../../../DesktopEditor/raster/BgraFrame.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTreeElem.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTree.h"
 
 #include "ConvertShapes/CustomShape.h"
 #include "ConvertShapes/CustomShapeConvert.h"
+
 
 namespace oox {
 
@@ -206,7 +210,26 @@ namespace oox {
 		0x003366FF,	0x0033CCCC,	0x0099CC00,	0x00FFCC00,	0x00FF9900,	0x00FF6600,	0x00666699,	0x00969696,	
 		0x00003366,	0x00339966,	0x00003300,	0x00333300,	0x00993300,	0x00993366,	0x00333399,	0x00333333
 	};
-
+	const static int controlPanelColors2[] = 
+	{
+		0x00000000,	0x00FFFFFF,	0x00000000,	0x00FFFFFF,
+		0x00000000,	0x00000000,	0x00000000,	0x00FFFFFF,	
+		0x00FFFFFF,	0x00000000,	0x00FFFFFF,	0x00FFFFFF,	
+		0x00000000,	0x00000000,	0x00000000,	0x00000000,	
+		0x00FFFFFF,	0x00FFFFFF,	0x00FFFFFF,	0x00000000,	
+		0x00FFFFFF,	0x00000000,	0x00000000,	0x00000000,	
+		0x00000000,	0x00000000,	0x00FFFFFF,	0x00FFFFFF
+	};
+	const static int controlPanelColors1[] = 
+	{
+		0x00FFFFFF,	0x00CCCCCC,	0x00FFFFFF,	0x006363CE,
+		0x00DDDDDD,	0x00DDDDDD,	0x00888888,	0x00000000,	
+		0x00000000,	0x00808080,	0x00B5D5FF,	0x00000000,	
+		0x00FFFFFF,	0x00FFFFFF,	0x007F7F7F,	0x00FBFCC5,	
+		0x00000000,	0x00F7F7F7,	0x00000000,	0x00FFFFFF,	
+		0x00666666,	0x00C0C0C0,	0x00DDDDDD,	0x00C0C0C0,	
+		0x00888888,	0x00FFFFFF,	0x00CCCCCC,	0x00000000
+	};
 	void _color::SetRGB(unsigned char nR, unsigned char  nG, unsigned char  nB)
 	{
 		nRGB = (nR<<16) | (nG<<8) | nB;
@@ -661,6 +684,87 @@ void xlsx_drawing_context::set_shape_id(int id)
 	if (current_drawing_states->back()->bTextBox)	return;
 
 	current_drawing_states->back()->shape_id = (MSOSPT)id;
+}
+void xlsx_drawing_context::set_alternative_drawing(const std::wstring & xml_data)
+{
+	if (xml_data.empty()) return;
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	//if (std::wstring::npos != xml_data.find(L"rId=\"")) return; // чужые ссылки на объекты 
+	
+	XmlUtils::CXmlLiteReader oReader;
+
+	if ( !oReader.FromString( xml_data ) )
+		return;
+	if ( !oReader.ReadNextNode() ) //anchor or object(sp in group)
+		return;
+
+	std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+	if (L"anchor" == sName)
+		oReader.ReadNextNode();
+
+	nullable<PPTX::Logic::SpTreeElem> oElement;
+
+	int nCurDepth = oReader.GetDepth();
+	while ( oReader.ReadNextSiblingNode( nCurDepth ) )
+	{
+		sName = XmlUtils::GetNameNoNS(oReader.GetName());
+		
+		if ( L"graphicFrame" == sName || L"pic" == sName || L"sp" == sName || L"grpSp" == sName || L"cxnSp" == sName || L"AlternateContent" == sName
+			|| L"spTree" )
+		{
+			oElement = oReader;
+		}
+	}
+
+	if (oElement.IsInit())
+	{
+		smart_ptr<PPTX::Logic::Shape> shape = oElement->GetElem().smart_dynamic_cast<PPTX::Logic::Shape>();
+		if (shape.IsInit())
+		{
+			NSBinPptxRW::CXmlWriter writer(XMLWRITER_DOC_TYPE_XLSX);
+			shape->spPr.Geometry.toXmlWriter(&writer);
+
+			if (shape->spPr.scene3d.IsInit())
+				shape->spPr.scene3d->toXmlWriter(&writer);
+			
+			if (shape->spPr.sp3d.IsInit())
+				shape->spPr.sp3d->toXmlWriter(&writer);
+
+			current_drawing_states->back()->xmlGeomAlternative = writer.GetXmlString();
+
+			writer.ClearNoAttack();
+			if ((shape->txBody.IsInit()) && (shape->txBody->bodyPr.IsInit()) && (shape->txBody->bodyPr->prstTxWarp.IsInit()))
+			{//только WordArt
+				shape->txBody->toXmlWriter(&writer);
+				current_drawing_states->back()->xmlTxBodyAlternative = writer.GetXmlString();
+			}
+		}
+		smart_ptr<PPTX::Logic::SpTree> groupShape = oElement->GetElem().smart_dynamic_cast<PPTX::Logic::SpTree>();
+		if (groupShape.IsInit())
+		{//smartArt			
+			NSBinPptxRW::CXmlWriter writer(XMLWRITER_DOC_TYPE_XLSX);
+			groupShape->toXmlWriter(&writer);
+
+			current_drawing_states->back()->xmlAlternative = writer.GetXmlString();
+		}
+	}
+
+	//std::wstring sName = oReader.GetName();
+	//if ( (L"xdr:anchor" == sName || L"xdr:object" == sName) && !oReader.IsEmptyNode() ) //object - 
+	//{
+	//	current_drawing_states->back()->xmlAlternative = oReader.GetInnerXml();
+	//	//fill(color index???) ??? prst ???
+	//}
+}
+void xlsx_drawing_context::set_hidden(bool val)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+	
+	current_drawing_states->back()->hidden = val;
 }
 void xlsx_drawing_context::set_object_visible(bool val)
 {
@@ -1562,26 +1666,33 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 			{
 				serialize_xfrm(CP_XML_STREAM(), drawing_state);
 
-				if (prstGeom.empty() == false)
+				if (false == drawing_state->xmlGeomAlternative.empty())
 				{
-					CP_XML_NODE(L"a:prstGeom")
-					{
-						CP_XML_ATTR(L"prst", prstGeom);
-						if (!drawing_state->wordart.is)	CP_XML_NODE(L"a:avLst");
-					}
-				}
-				else if (customGeom.empty() == false)
-				{
-					CP_XML_NODE(L"a:custGeom")
-					{
-						CP_XML_STREAM() << customGeom;
-					}
+					CP_XML_STREAM() << drawing_state->xmlGeomAlternative;
 				}
 				else
 				{
-					CP_XML_NODE(L"a:prstGeom")
+					if (prstGeom.empty() == false)
 					{
-						CP_XML_ATTR(L"prst", L"rect");
+						CP_XML_NODE(L"a:prstGeom")
+						{
+							CP_XML_ATTR(L"prst", prstGeom);
+							if (!drawing_state->wordart.is)	CP_XML_NODE(L"a:avLst");
+						}
+					}
+					else if (customGeom.empty() == false)
+					{
+						CP_XML_NODE(L"a:custGeom")
+						{
+							CP_XML_STREAM() << customGeom;
+						}
+					}
+					else
+					{
+						CP_XML_NODE(L"a:prstGeom")
+						{
+							CP_XML_ATTR(L"prst", L"rect");
+						}
 					}
 				}
 				if (!is_lined_shape(drawing_state))
@@ -2076,8 +2187,15 @@ void xlsx_drawing_context::serialize_color	(std::wostream & stream, const _color
 
 void xlsx_drawing_context::serialize_text(std::wostream & stream, _drawing_state_ptr & drawing_state)
 {
+	if (!drawing_state) return;
 	if (drawing_state->text.content.empty() && drawing_state->wordart.text.empty()) return;
-
+	
+	if (false == drawing_state->xmlTxBodyAlternative.empty())
+	{
+		stream << drawing_state->xmlTxBodyAlternative;
+		return;
+	}
+	
 	CP_XML_WRITER(stream)    
 	{
 		CP_XML_NODE(L"xdr:txBody")
@@ -2328,7 +2446,14 @@ void xlsx_drawing_context::serialize(std::wostream & stream, _drawing_state_ptr 
 
 			serialize_anchor(CP_XML_STREAM(), drawing_state);
 
-			CP_XML_STREAM() << drawing_state->shape;
+			if (!drawing_state->xmlAlternative.empty())
+			{
+				CP_XML_STREAM() << drawing_state->xmlAlternative;
+			}
+			else
+			{
+				CP_XML_STREAM() << drawing_state->shape;
+			}
 			
 			CP_XML_NODE(L"xdr:clientData");
 		}
@@ -2742,6 +2867,11 @@ void xlsx_drawing_context::set_line_color (int index, int type)
 			color.nRGB = shemeDefaultColor[index];
 			color.sRGB = STR::toRGB(color.nRGB);
 		}
+		else if (index > 64 && index < 92)
+		{
+			color.nRGB = controlPanelColors1[index - 65];
+			color.sRGB = STR::toRGB(color.nRGB);
+		}
 		color.index = -1;
 	}
 
@@ -2795,6 +2925,11 @@ void xlsx_drawing_context::set_fill_color (int index, int type, bool background)
 		if (index < 64)
 		{
 			color.nRGB = shemeDefaultColor[index];
+			color.sRGB = STR::toRGB(color.nRGB);
+		}
+		else if (index > 64 && index < 92)
+		{
+			color.nRGB = background ? controlPanelColors2[index - 65] : controlPanelColors1[index - 65];
 			color.sRGB = STR::toRGB(color.nRGB);
 		}
 		color.index = -1;

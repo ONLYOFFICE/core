@@ -44,7 +44,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Restored)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				name = XmlUtils::GetNameNoNS(node.GetName());
@@ -71,12 +70,10 @@ namespace PPTX
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			}
 
-		public:
 			int				sz;
 			nullable_bool	autoAdjust;
 
-		public:
-			std::wstring name;
+			std::wstring	name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 

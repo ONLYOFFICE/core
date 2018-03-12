@@ -45,7 +45,13 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(Bevel)
-			PPTX_LOGIC_BASE2(Bevel)
+			
+			Bevel(const std::wstring name = L"bevel")
+			{
+				m_name = name;
+			}	
+			virtual ~Bevel() {}		
+			Bevel(const Bevel& oSrc) { *this = oSrc; }
 
 			virtual OOX::EElementType getType() const
 			{
@@ -81,9 +87,23 @@ namespace PPTX
 				oAttr.Write(_T("h"), h);
 				oAttr.WriteLimitNullable(_T("prst"), prst);
 				
-				return XmlUtils::CreateNode(_T("a:") + m_name, oAttr);
+				return XmlUtils::CreateNode(L"a:" + m_name, oAttr);
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"a:" + m_name);
 
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(L"w", w);
+				pWriter->WriteAttribute(L"h", h);
+				if (prst.IsInit())
+				{
+					pWriter->WriteAttribute(L"prst", prst->get());
+				}
+				pWriter->EndAttributes();
+				
+				pWriter->EndNode(L"a:" + m_name);
+			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
@@ -92,14 +112,37 @@ namespace PPTX
 				pWriter->WriteLimit2(2, prst);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
 
-		public:
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					if (0 == _at)		w = pReader->GetLong();
+					else if (1 == _at)	h = pReader->GetLong();
+					else if (2 == _at)
+					{
+						prst = new Limit::BevelType();
+						prst->SetBYTECode(pReader->GetUChar());
+					}
+					else
+						break;
+				}
+
+				pReader->Seek(_end_rec);
+			}
+
 			nullable_int						w;
 			nullable_int						h;
 			nullable_limit<Limit::BevelType>	prst;
-		//private:
-		public:
-			std::wstring								m_name;
+
+			std::wstring						m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

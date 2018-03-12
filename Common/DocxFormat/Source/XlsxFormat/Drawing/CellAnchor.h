@@ -109,8 +109,7 @@ namespace OOX
 				}
 				if(m_oElement.IsInit())
 				{
-					NSBinPptxRW::CXmlWriter oXmlWriter;
-					oXmlWriter.m_lDocType = XMLWRITER_DOC_TYPE_XLSX;
+					NSBinPptxRW::CXmlWriter oXmlWriter(XMLWRITER_DOC_TYPE_XLSX);
 
 					m_oElement->toXmlWriter(&oXmlWriter);
 					writer.WriteString(oXmlWriter.GetXmlString());	

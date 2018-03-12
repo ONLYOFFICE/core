@@ -942,7 +942,7 @@ namespace NSPresentationEditor
             NSStringUtils::CheckPathOn_Fill_Stroke(strPath, m_bFill, m_bStroke);
             std::vector<std::wstring> oArray;
 
-            NSStringUtils::ParsePath2(strPath, oArray);
+            NSStringUtils::ParsePath2(strPath, &oArray);
 
             ParamType eParamType = ptValue;
             RulesType eRuler = rtEnd;

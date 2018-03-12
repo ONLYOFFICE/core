@@ -146,6 +146,7 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfD
 	output_document_			(NULL),
 	process_note_				(noNote),
 	new_list_style_number_		(0),
+	current_margin_left_		(0),
 	is_rtl_						(false),
 	is_paragraph_keep_			(false),
 	is_delete_text_				(false),

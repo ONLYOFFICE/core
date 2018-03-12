@@ -154,11 +154,19 @@ namespace DocFileFormat
 		int								_commentNr;
 		bool							_isTextBoxContent;
 		int								_isSectionPageBreak; //0 - not set, 1 -page break, 2 - continues
-		bool							_writeInstrText;
 		bool							_writeWebHidden;
-		unsigned int					_fldCharCounter;
 		std::wstring					_writeAfterRun;
 		std::wstring					_lastOLEObject;
 		int								_cacheListNum;
+		
+		struct fieldLevels
+		{
+			bool bBegin = false;
+			bool bSeparate = false;
+			//bool bInstrText = false;
+			bool bEnd = false;
+		};
+		std::vector<fieldLevels>		_fieldLevels;
+		bool							_bContentWrite;
 	};
 }

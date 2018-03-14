@@ -65,10 +65,10 @@ public:
 		pOutput->m_bLockAnchor		= m_ooxAnchor->m_oLocked.IsInit()		? m_ooxAnchor->m_oLocked->ToBool()			: false;
 		pOutput->m_nZOrder			= m_ooxAnchor->m_oRelativeHeight.IsInit() ? true : false;
 			
-		int nDistLeft	= m_ooxAnchor->m_oDistL.IsInit() ? (int)m_ooxAnchor->m_oDistL->ToTwips() : PROP_DEF;
-		int nDistTop	= m_ooxAnchor->m_oDistT.IsInit() ? (int)m_ooxAnchor->m_oDistT->ToTwips() : PROP_DEF;
-		int nDistRight	= m_ooxAnchor->m_oDistR.IsInit() ? (int)m_ooxAnchor->m_oDistR->ToTwips() : PROP_DEF;
-		int nDistBottom = m_ooxAnchor->m_oDistB.IsInit() ? (int)m_ooxAnchor->m_oDistB->ToTwips() : PROP_DEF;
+		int nDistLeft	= m_ooxAnchor->m_oDistL.IsInit() ? (int)(m_ooxAnchor->m_oDistL->ToTwips()) : PROP_DEF;
+		int nDistTop	= m_ooxAnchor->m_oDistT.IsInit() ? (int)(m_ooxAnchor->m_oDistT->ToTwips()) : PROP_DEF;
+		int nDistRight	= m_ooxAnchor->m_oDistR.IsInit() ? (int)(m_ooxAnchor->m_oDistR->ToTwips()) : PROP_DEF;
+		int nDistBottom = m_ooxAnchor->m_oDistB.IsInit() ? (int)(m_ooxAnchor->m_oDistB->ToTwips()) : PROP_DEF;
 
 		bool bSimplePos = m_ooxAnchor->m_oSimplePos.IsInit() ? true : false;
 

@@ -79,7 +79,7 @@ public:
 
             OOX::Logic::CTc *ooxCell = NULL;
 
-            if (nCurCell < m_ooxRowTable->m_arrItems.size())
+            if (nCurCell < (int)m_ooxRowTable->m_arrItems.size())
 			{
                 ooxCell = dynamic_cast<OOX::Logic::CTc *>(m_ooxRowTable->m_arrItems[i]);
 			}

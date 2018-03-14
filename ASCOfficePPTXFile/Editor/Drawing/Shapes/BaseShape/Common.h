@@ -201,13 +201,13 @@ namespace NSStringUtils
             return;
         
         std::wstring strPath = strSource;
-		int nLength = strPath.length();
+		size_t nLength = strPath.length();
         //strPath.Replace(_T(" "), _T(","));
-        if (strPath.find(wchar_t('h')) != -1)
+        if (std::wstring::npos != strPath.find(wchar_t('h')))
 		{
             wchar_t* pBuff = new wchar_t[nLength + 1];
 			int nCur = 0;
-			for (int i = 1; i < nLength; ++i)
+			for (size_t i = 1; i < nLength; ++i)
 			{
                 wchar_t _c = strPath[i - 1];
                 if (_c != wchar_t('h'))
@@ -253,8 +253,8 @@ namespace NSStringUtils
 			++nLength;
 		}
 
-        int nIndexOld = 0;
-        for (int nIndex = 0; nIndex < nLength; ++nIndex)
+        size_t nIndexOld = 0;
+        for (size_t nIndex = 0; nIndex < nLength; ++nIndex)
         {
             if (nIndex == (nLength - 1))
 			{

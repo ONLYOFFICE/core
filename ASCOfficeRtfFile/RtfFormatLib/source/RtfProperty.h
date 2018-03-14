@@ -1516,12 +1516,12 @@ public:
 		class ListOverrideLevel
 		{
 			public:
-				int m_nLevelIndex;		//listoverrideformat	Number of list format override levels within this list override (should be either 1, 9, or missing, which means 0).
+				int m_nLevelIndex;	//listoverrideformat	Number of list format override levels within this list override (should be either 1, 9, or missing, which means 0).
 				int m_nStart;		//listoverridestartat	Indicates an override of the start-at value.
 				RtfListLevelProperty m_oLevel;
 				ListOverrideLevel()
 				{
-					m_nLevelIndex = 0;
+					m_nLevelIndex = PROP_DEF;
 					m_nStart = PROP_DEF;
 				}
 		};
@@ -1571,17 +1571,25 @@ public:
         std::wstring RenderToOOX(RenderParameter oRenderParameter)
 		{
             std::wstring sResult;
-			for (size_t i = 0; i < (int)m_aOverrideLevels.size(); i++ )
+			int index_prev = -1, index;
+			for (size_t i = 0; i < m_aOverrideLevels.size(); i++ )
 			{
 				ListOverrideLevel& OverrideLevel = m_aOverrideLevels[i];
 				if ( PROP_DEF != OverrideLevel.m_nLevelIndex )
 				{
-                    sResult += L"<w:lvlOverride w:ilvl=\"" + std::to_wstring(OverrideLevel.m_nLevelIndex) + L"\">";
-					if ( PROP_DEF != OverrideLevel.m_nStart )
-                        sResult += L"<w:startOverride w:val=\"" + std::to_wstring(OverrideLevel.m_nStart) + L"\"/>";
-					sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex);
-					sResult += L"</w:lvlOverride>";
+					index = OverrideLevel.m_nLevelIndex;
 				}
+				else
+				{
+					index = ++index_prev;
+				}
+                sResult += L"<w:lvlOverride w:ilvl=\"" + std::to_wstring(index) + L"\">";
+				if ( PROP_DEF != OverrideLevel.m_nStart )
+                    sResult += L"<w:startOverride w:val=\"" + std::to_wstring(OverrideLevel.m_nStart) + L"\"/>";
+				sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex);
+				sResult += L"</w:lvlOverride>";
+
+				index_prev = index;
 			}
 			return sResult;
 		}
@@ -2221,15 +2229,15 @@ public:
 					ca_Top,	//clvertalt	Text is top-aligned in cell (the default).
 					ca_Center,	//clvertalc	Text is centered vertically in cell.
 					ca_Bottom //clvertalb	Text is bottom-aligned in cell.
-						} CellAlign;
-	CellAlign m_eAlign;
+				} CellAlign;
+	int m_eAlign;
 	typedef enum{ cf_none,
 					cf_lrtb,	//cltxlrtb	Text in a cell flows from left to right and top to bottom (default).
 					cf_tbrl,	//cltxtbrl	Text in a cell flows right to left and top to bottom.
 					cf_btlr,	//cltxbtlr	Text in a cell flows left to right and bottom to top.
 					cf_lrtbv,	//cltxlrtbv	Text in a cell flows left to right and top to bottom, vertical.
 					cf_tbrlv//cltxtbrlv	Text in a cell flows top to bottom and right to left, vertical.
-						} CellFlow;
+				} CellFlow;
 	CellFlow m_oCellFlow;
 
 	int m_nCellx;		//cellxN	Defines the right boundary of a table cell, including its half of the space between cells.
@@ -2304,8 +2312,8 @@ public:
 		
 		m_oShading.SetDefault();
 		DEFAULT_PROPERTY( m_nShadingPctFrom )
+		DEFAULT_PROPERTY( m_eAlign )
 
-		m_eAlign = ca_none;
 		m_oCellFlow = cf_none;
 
 		DEFAULT_PROPERTY( m_nCellx )
@@ -2373,8 +2381,8 @@ public:
 		m_oShading.Merge( oCellPr.m_oShading );
 		MERGE_PROPERTY	( m_nShadingPctFrom, oCellPr)
 
-		MERGE_PROPERTY_DEF( m_eAlign, oCellPr, ca_none )
-		MERGE_PROPERTY_DEF( m_oCellFlow, oCellPr, cf_none )
+		MERGE_PROPERTY( m_eAlign, oCellPr )
+		MERGE_PROPERTY( m_oCellFlow, oCellPr )
 
 		MERGE_PROPERTY( m_nCellx, oCellPr )
 		MERGE_PROPERTY( m_nSpan, oCellPr )
@@ -2417,6 +2425,7 @@ typedef boost::shared_ptr<RtfRowProperty>	RtfRowPropertyPtr;
 class RtfRowProperty: public RtfTableProperty, public ItemContainer< RtfCellProperty >
 {
 public: 
+	int m_nRightToLeft; //bi direction 
 	int m_nIndex;		//irowN	N is the row index of this row.
 	int m_nBandIndex;	//irowbandN	N is the row index of the row, adjusted to account for header rows. A header row has a value of –1.
 
@@ -2483,6 +2492,7 @@ public:
 		DEFAULT_PROPERTY( m_nAutoFit )
 		DEFAULT_PROPERTY( m_bIsHeader )
 		DEFAULT_PROPERTY( m_bKeep )
+		DEFAULT_PROPERTY( m_nRightToLeft )
 
 		DEFAULT_PROPERTY( m_nHeight )
 
@@ -2525,6 +2535,7 @@ public:
 		MERGE_PROPERTY( m_nIndex,		oRowPr )
 		MERGE_PROPERTY( m_nBandIndex,	oRowPr )
 		MERGE_PROPERTY( m_bLastRow,		oRowPr )
+		MERGE_PROPERTY( m_nRightToLeft,	oRowPr )
 
 		MERGE_PROPERTY( m_nAutoFit,		oRowPr )
 		MERGE_PROPERTY( m_bIsHeader,	oRowPr )
@@ -2568,6 +2579,7 @@ typedef boost::shared_ptr<RtfParagraphProperty>		RtfParagraphPropertyPtr;
 class RtfParagraphProperty: public IRenderableProperty
 {
 public: 
+	bool					m_bHidden;
 	bool					m_bOldList;
 	RtfParagraphPropertyPtr m_pOldParagraphProp;
 //-------------
@@ -2593,7 +2605,7 @@ public:
 		pa_qk20,
 	} ParagraphAlign;
 	
-	ParagraphAlign m_eAlign;
+	int m_eAlign;
 	
 	typedef enum 
 	{
@@ -2695,8 +2707,6 @@ public:
 	void SetDefaultRtf()
 	{
 		SetDefault();
-		m_nSpaceAfter = 0;
-		m_nSpaceBetween = 240;
 	}
 	void SetDefaultOOX()
 	{
@@ -2712,8 +2722,8 @@ public:
 		DEFAULT_PROPERTY( m_bPageBB )
 		DEFAULT_PROPERTY( m_nOutlinelevel )
 		DEFAULT_PROPERTY( m_nStyle )
+		DEFAULT_PROPERTY( m_eAlign )
 
-		m_eAlign = pa_none;
 		m_eFontAlign = fa_none;
 
 		DEFAULT_PROPERTY( m_nIndFirstLine )
@@ -2777,6 +2787,7 @@ public:
 		
 		m_oCharProperty.SetDefault();
 
+		m_bHidden			= false;
 		m_bOldList			= false;
 		m_pOldParagraphProp = RtfParagraphPropertyPtr(NULL);
 	}
@@ -2790,7 +2801,7 @@ public:
 		MERGE_PROPERTY		( m_bPageBB,			oParPr )
 		MERGE_PROPERTY		( m_nOutlinelevel,		oParPr )
 		MERGE_PROPERTY		( m_nStyle,				oParPr )
-		MERGE_PROPERTY_DEF	( m_eAlign,				oParPr, pa_none )
+		MERGE_PROPERTY		( m_eAlign,				oParPr )
 		MERGE_PROPERTY_DEF	( m_eFontAlign,			oParPr, fa_none )
 		MERGE_PROPERTY		( m_nIndFirstLine,		oParPr )
 		MERGE_PROPERTY		( m_nIndLeft,			oParPr )

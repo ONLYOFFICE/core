@@ -100,8 +100,8 @@ void RtfShape::SetDefault()
 	DEFAULT_PROPERTY( m_nWrapSideType )
 	DEFAULT_PROPERTY( m_nZOrderRelative )
 	DEFAULT_PROPERTY( m_bLockAnchor )
-	DEFAULT_PROPERTY_DEF( m_eXAnchor, ax_column ) //по умолчанию - привязка к тексту
-	DEFAULT_PROPERTY_DEF( m_eYAnchor, ay_Para )//по умолчанию - привязка к тексту
+	DEFAULT_PROPERTY( m_eXAnchor ) 
+	DEFAULT_PROPERTY( m_eYAnchor )
 	DEFAULT_PROPERTY( m_nLockPosition )
 	DEFAULT_PROPERTY( m_nLockRotation )
 //Position absolute
@@ -209,7 +209,7 @@ void RtfShape::SetDefault()
 	DEFAULT_PROPERTY( m_nFillToLeft )
 	DEFAULT_PROPERTY( m_nFillShadeType )
 //Line
-	DEFAULT_PROPERTY_DEF( m_bLine, true )
+	DEFAULT_PROPERTY( m_bLine )
 	DEFAULT_PROPERTY( m_nLineColor )
 	DEFAULT_PROPERTY( m_nLineStartArrow )
 	DEFAULT_PROPERTY( m_nLineStartArrowWidth )
@@ -324,7 +324,6 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 				m_nWrapType			= 3;
 				m_nWrapSideType		= 0;
 				m_bLockAnchor		= 0;
-				//m_nZOrder			= PROP_DEF;
 				m_nZOrderRelative	= 0;
 				m_nLeft				= m_nTop		= 0;
 				m_nRelBottom		= m_nRelRight	= PROP_DEF;
@@ -748,7 +747,7 @@ std::wstring RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 		
 		if( 0 != aTempTextItems )
 		{//пишем только Ole обьект
-			int nTempTextItemsCount = aTempTextItems->GetCount();
+			size_t nTempTextItemsCount = aTempTextItems->GetCount();
 			for (size_t i = 0; i < nTempTextItemsCount; i++ )
 			{
 				ITextItemPtr piCurTextItem;
@@ -885,9 +884,8 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	}
 
 	sResult += L"<" + oRenderParameter.sValue;
-
-	RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
-    sResult += L" id=\"_x0000_s" + std::to_wstring(poDocument->GetShapeId( m_nID )) + L"\"";
+    
+	sResult += L" id=\"_x0000_s" + std::to_wstring(poRtfDocument->GetShapeId( m_nID )) + L"\"";
     
 	if (!m_sName.empty())
 	{
@@ -903,7 +901,12 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	if( 0 == m_bFilled) sResult += L" filled=\"f\"";
 	else				sResult += L" filled=\"t\"";
 
-	if( 0 == m_bLine)	sResult += L" stroked=\"f\"";
+	if( PROP_DEF == m_bLine)
+	{
+		m_bLine = (m_nShapeType == SimpleTypes::Vml::sptPictureFrame || m_nShapeType == SimpleTypes::Vml::sptTextBox) ? 0 : 1;
+	}
+
+	if ( 0 == m_bLine)	sResult += L" stroked=\"f\"";
 	else				sResult += L" stroked=\"t\"";
 
 	if( PROP_DEF != m_nFillColor)
@@ -921,7 +924,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 //path
 	switch( m_nConnectionType )
 	{
-		case 0: sResult += L" o:connecttype=\"custom\"";		break;
+		case 0: sResult += L" o:connecttype=\"custom\"";	break;
 		case 1: sResult += L" o:connecttype=\"none\"";		break;
 		case 2: sResult += L" o:connecttype=\"rect\"";		break;
 		case 3: sResult += L" o:connecttype=\"segments\"";	break;
@@ -929,16 +932,22 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 //Connectors
 	switch( m_nConnectorStyle )
 	{
-		case 0: sResult += L" o:connectortype=\"straight\"";	break;
+		case 0: sResult += L" o:connectortype=\"straight\"";break;
 		case 1: sResult += L" o:connectortype=\"elbow\"";	break;
 		case 2: sResult += L" o:connectortype=\"curved\"";	break;
-		case 3: sResult += L" o:connectortype=\"none\"";		break;
+		case 3: sResult += L" o:connectortype=\"none\"";	break;
 	}
 
 //-----------------------------------------------------------------------------------------------------------------
     std::wstring sStyle ;
 	if( PROP_DEF != m_nLeft &&  PROP_DEF != m_nRight && PROP_DEF != m_nTop && PROP_DEF != m_nBottom   )
 	{
+		if( PROP_DEF == m_nPositionHRelative && PROP_DEF == m_nPositionVRelative &&
+			PROP_DEF == m_eXAnchor && PROP_DEF == m_eYAnchor)
+		{
+			m_eXAnchor = RtfShape::ax_margin;
+			m_eYAnchor = RtfShape::ay_margin; 
+		}
 		//не пишем если inline
 		if( 3 != m_nPositionHRelative || 3 != m_nPositionVRelative )
 		{
@@ -951,6 +960,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
                 sStyle += L"margin-right:"  + XmlUtils::DoubleToString(RtfUtility::Twip2pt(m_nRight), L"%.2f") + L"pt;";
 			}
 		}
+
 		int nWidth = m_nRight - m_nLeft;
 		int nHeight = m_nBottom - m_nTop;
 		
@@ -1029,6 +1039,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	}
 	if( PROP_DEF != m_nPositionH && PROP_DEF == m_nPositionHRelative )
 		m_nPositionHRelative = 2;
+	
 	if( PROP_DEF != m_nPositionHRelative )
 	{
 		switch( m_nPositionHRelative )
@@ -1126,7 +1137,9 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	else if( PROP_DEF != m_nZOrder )
 		nZIndex = m_nZOrder;
 	else if (oRenderParameter.nType !=  RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2)
-		nZIndex = 100; //на свое усмотрение ставлю 100
+	{
+		nZIndex = poRtfDocument->GetZIndex();
+	}
 
 	if( PROP_DEF != m_nZOrderRelative && PROP_DEF != nZIndex)
 	{
@@ -1691,7 +1704,7 @@ std::wstring RtfShape::GroupRenderToOOX(RenderParameter oRenderParameter)
 	
 	sResult = RenderToOOXBegin( oNewParamGroup );
 
-	for (size_t i = 0; i < (int)m_aArray.size(); i++ )
+	for (size_t i = 0; i < m_aArray.size(); i++ )
 	{
 		RenderParameter oNewParamShape	= oRenderParameter;
 		oNewParamShape.sValue			= L"";

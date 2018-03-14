@@ -95,8 +95,8 @@ public:
 	int m_nLockPosition;
 	int m_nLockRotation;
 	
-	_AnchorX m_eXAnchor;
-	_AnchorY m_eYAnchor;
+	int m_eXAnchor;
+	int m_eYAnchor;
 
 //----------------ShapeProperty--------------------
 //Position absolute

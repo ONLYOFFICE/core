@@ -132,7 +132,7 @@ public:
 	}
 	void RemoveItem( T piRend )
 	{
-		for (size_t i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			if( m_aArray[i] == piRend )
 			{

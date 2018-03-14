@@ -270,9 +270,9 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 
                     if( 0 == sTarget.find( sFileUrl ) )
 					{
-                        int nFirstDDot = sTarget.find( ':', sFileUrl.length() );
-						int nLen = sTarget.length();
-						if( -1 != nFirstDDot && nFirstDDot + 2 < nLen && '\\' == sTarget[nFirstDDot+1] )
+                        size_t nFirstDDot = sTarget.find( ':', sFileUrl.length() );
+						size_t nLen = sTarget.length();
+						if( std::wstring::npos != nFirstDDot && nFirstDDot + 2 < nLen && '\\' == sTarget[nFirstDDot+1] )
 						{
 							if( '\\' != sTarget[nFirstDDot+2] ) 
                                 sTarget.insert( sTarget.begin() + nFirstDDot + 1, '\\'  );
@@ -1893,7 +1893,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 	{
 		if (!m_ooxSectionProperty->m_oCols->m_arrColumns.empty())
 		{
-			oOutput.m_nColumnNumber = m_ooxSectionProperty->m_oCols->m_arrColumns.size();
+			oOutput.m_nColumnNumber = (int)m_ooxSectionProperty->m_oCols->m_arrColumns.size();
 		}
 		
 		if(m_ooxSectionProperty->m_oCols->m_oNum.IsInit())
@@ -2135,7 +2135,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 			oBorderReader.Parse( oParam, oOutput.m_oBorderBottom );
 		}
 	}
-	for (size_t i =0 ; i < m_ooxSectionProperty->m_arrHeaderReference.size() > 0; i++ )
+	for (size_t i = 0 ; i < m_ooxSectionProperty->m_arrHeaderReference.size(); i++ )
 	{
 		OOXHeaderReader oHeaderReader(m_ooxSectionProperty->m_arrHeaderReference[i]);
 		
@@ -2174,7 +2174,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
             }
         }
 	}
-	for (size_t i =0 ; i < m_ooxSectionProperty->m_arrFooterReference.size() > 0; i++ )
+	for (size_t i = 0 ; i < m_ooxSectionProperty->m_arrFooterReference.size(); i++ )
 	{
 		OOXHeaderReader oFooterReader(m_ooxSectionProperty->m_arrFooterReference[i]);
 		

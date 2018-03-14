@@ -447,7 +447,7 @@ namespace NSCommon
 		{
 			if (NULL == m_pPointer)
 			{
-				int ret = value;
+				int ret = (int)value;
 				return ret;
 			}
 			return *m_pPointer;

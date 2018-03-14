@@ -88,7 +88,7 @@ public:
 			sResult += L"</w:tcPr>";
 		}
 
-		for (size_t i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sResult += m_aArray[i]->RenderToOOX( oRenderParameter);
 		}

@@ -536,11 +536,11 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
 		}
         else if ( NULL != strstr((char*)pBuffer, ottFormatLine) )
 		{
-			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_OTT;
+			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT;
 		}
         else if ( NULL != strstr((char*)pBuffer, otsFormatLine) )
 		{
-			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_OTS;
+			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS;
 		}
         else if ( NULL != strstr((char*)pBuffer, otpFormatLine) )
 		{

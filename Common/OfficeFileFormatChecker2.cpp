@@ -521,20 +521,7 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
 	HRESULT hresult = OfficeUtils.LoadFileFromArchive(fileName, L"mimetype", &pBuffer, nBufferSize);
 	if (hresult == S_OK && pBuffer != NULL)
 	{
-		
-        if ( NULL != strstr((char*)pBuffer, odtFormatLine) )
-		{
-			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
-		}
-        else if ( NULL != strstr((char*)pBuffer, odsFormatLine) )
-		{
-			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
-		}
-        else if ( NULL != strstr((char*)pBuffer, odpFormatLine) )
-		{
-			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
-		}
-        else if ( NULL != strstr((char*)pBuffer, ottFormatLine) )
+		if ( NULL != strstr((char*)pBuffer, ottFormatLine) )
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT;
 		}
@@ -545,6 +532,18 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
         else if ( NULL != strstr((char*)pBuffer, otpFormatLine) )
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP;
+		}		
+        else if ( NULL != strstr((char*)pBuffer, odtFormatLine) )
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
+		}
+        else if ( NULL != strstr((char*)pBuffer, odsFormatLine) )
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
+		}
+        else if ( NULL != strstr((char*)pBuffer, odpFormatLine) )
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
 		}
 		else if ( NULL != strstr((char*)pBuffer, epubFormatLine) )
         {
@@ -656,9 +655,6 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
     case AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB:		return L".epub";
     case AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2:		return L".fb2";
     case AVS_OFFICESTUDIO_FILE_DOCUMENT_MOBI:		return L".mobi";
-	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:		return L".docm";
-	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:		return L".dotx";
-	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:		return L".dotm";
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT_FLAT:	return L".fodt";
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT:		return L".ott";
 
@@ -680,9 +676,6 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
     case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS:		return L".xls";
     case AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS:		return L".ods";
     case AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV:		return L".csv";
-	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:	return L".xlsm";
-	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:	return L".xltx";
-	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:	return L".xltm";
 	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS_FLAT:return L".fods";
 	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS:		return L".ots";
 

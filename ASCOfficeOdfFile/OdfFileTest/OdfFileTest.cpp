@@ -57,12 +57,15 @@ HRESULT convert_single(std::wstring srcFileName)
 	switch(fileChecker.nFileType)
 	{
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT:
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT:
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT_FLAT:		dstPath += L"-my.docx"; break;
 	
 	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS:
+	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS:
 	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS_FLAT:	dstPath += L"-my.xlsx"; break;
 	
 	case AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP:
+	case AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP:
 	case AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP_FLAT:	dstPath += L"-my.pptx"; break;
 
 	default:
@@ -77,7 +80,10 @@ HRESULT convert_single(std::wstring srcFileName)
 
 	if (fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT		||
 		fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS	||
-		fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP)
+		fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP ||
+		fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT		||
+		fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS	||
+		fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP)
 	{		
 		srcTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 

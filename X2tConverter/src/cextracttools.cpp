@@ -268,6 +268,9 @@ namespace NExtractTools
                 case AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT:
                 case AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS:
                 case AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP:
+                case AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT:
+                case AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS:
+                case AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP:
                    {
                              if (0 == sExt2.compare(_T(".bin")))		res = TCD_ODF2OOT_BIN;
                         else if (0 == sExt2.compare(_T(".doct")) ||

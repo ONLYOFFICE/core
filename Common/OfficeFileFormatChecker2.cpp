@@ -508,7 +508,10 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
     const char *odtFormatLine = "application/vnd.oasis.opendocument.text";
     const char *odsFormatLine = "application/vnd.oasis.opendocument.spreadsheet";
     const char *odpFormatLine = "application/vnd.oasis.opendocument.presentation";
-    const char *epubFormatLine = "application/epub+zip";
+	const char *ottFormatLine = "application/vnd.oasis.opendocument.text-template";
+	const char *otsFormatLine = "application/vnd.oasis.opendocument.spreadsheet-template";
+ 	const char *otpFormatLine = "application/vnd.oasis.opendocument.presentation-template";
+	const char *epubFormatLine = "application/epub+zip";
 
     COfficeUtils OfficeUtils(NULL);
 	
@@ -523,18 +526,27 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
 		}
-
         else if ( NULL != strstr((char*)pBuffer, odsFormatLine) )
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
 		}
-
         else if ( NULL != strstr((char*)pBuffer, odpFormatLine) )
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
 		}
-
-        else if ( NULL != strstr((char*)pBuffer, epubFormatLine) )
+        else if ( NULL != strstr((char*)pBuffer, ottFormatLine) )
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_OTT;
+		}
+        else if ( NULL != strstr((char*)pBuffer, otsFormatLine) )
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_OTS;
+		}
+        else if ( NULL != strstr((char*)pBuffer, otpFormatLine) )
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP;
+		}
+		else if ( NULL != strstr((char*)pBuffer, epubFormatLine) )
         {
             nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB;
         }

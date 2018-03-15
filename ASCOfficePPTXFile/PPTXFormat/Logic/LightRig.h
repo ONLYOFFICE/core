@@ -82,8 +82,8 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				dir = node.GetAttribute(_T("dir"));
-				rig = node.GetAttribute(_T("rig"));
+				dir = node.GetAttribute(L"dir");
+				rig = node.GetAttribute(L"rig");
 
                 rot = node.ReadNode(L"a:rot");
 				FillParentPointersForChilds();

@@ -3167,7 +3167,7 @@ namespace NExtractTools
            {
                nRes = doc2docx_dir(sFrom, sDocxDir, sTemp, params);
            }
-           else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT == nFormatFrom)
+           else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT == nFormatFrom || AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT == nFormatFrom)
            {
                nRes = odf2oox_dir(sFrom, sDocxDir, sTemp, params);
            }
@@ -3362,7 +3362,7 @@ namespace NExtractTools
            {
                nRes = xls2xlsx_dir(sFrom, sXlsxDir, sTemp, params);
            }
-           else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS == nFormatFrom)
+           else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS == nFormatFrom || AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS == nFormatFrom)
            {
                nRes = odf2oox_dir(sFrom, sXlsxDir, sTemp, params);
            }
@@ -3512,7 +3512,7 @@ namespace NExtractTools
        {
            nRes = ppt2pptx_dir(sFrom, sPptxDir, sTemp, params);
        }
-       else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP == nFormatFrom)
+       else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP == nFormatFrom || AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP == nFormatFrom)
        {
            nRes = odf2oox_dir(sFrom, sPptxDir, sTemp, params);
        }

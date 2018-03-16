@@ -1819,7 +1819,7 @@ bool CFontFile::IsItalic()
 	if (!m_pFace)
 		return false;
 
-	return ((pFace->style_flags & FT_STYLE_FLAG_ITALIC) != 0) ? true : false;
+	return ((m_pFace->style_flags & FT_STYLE_FLAG_ITALIC) != 0) ? true : false;
 }
 
 bool CFontFile::IsBold()
@@ -1827,5 +1827,5 @@ bool CFontFile::IsBold()
 	if (!m_pFace)
 		return false;
 
-	return ((pFace->style_flags & FT_STYLE_FLAG_BOLD) != 0) ? true : false;
+	return ((m_pFace->style_flags & FT_STYLE_FLAG_BOLD) != 0) ? true : false;
 }

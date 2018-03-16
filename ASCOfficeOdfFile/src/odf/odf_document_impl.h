@@ -68,7 +68,7 @@ public:
 	const office_element * get_content() const;
 		  office_element * get_content();
 
-	long get_office_mime_type() {return office_mime_type_;}
+	int get_office_mime_type() {return office_mime_type_;}
 
 	bool get_encrypted(){return encrypted;}
 
@@ -89,13 +89,17 @@ private:
     content_xml_t_ptr styles_xml_;
     content_xml_t_ptr meta_xml_;
     content_xml_t_ptr settings_xml_;
-    content_xml_t_ptr manifest_xml_;
+	content_xml_t_ptr manifest_xml_;
+    
+	std::wstring mimetype_content_file_;
 
     std::wstring base_folder_;
     std::wstring tmp_folder_;
 
-	long office_mime_type_;
+	int office_mime_type_;
 	bool encrypted;
+
+	int GetMimetype(std::wstring value);
             
 };
 

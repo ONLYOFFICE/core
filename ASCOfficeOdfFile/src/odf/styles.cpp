@@ -870,7 +870,7 @@ std::wostream & style_page_layout::text_to_stream(std::wostream & _Wostream) con
 
 void style_page_layout::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    style_page_layout_attlist_.add_attributes(Attributes);
+    attlist_.add_attributes(Attributes);
 }
 
 void style_page_layout::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -931,6 +931,27 @@ void style_page_layout_properties_attlist::add_attributes( const xml::attributes
     CP_APPLY_ATTR(L"style:layout-grid-ruby-below",	style_layout_grid_ruby_below_);  
     CP_APPLY_ATTR(L"style:layout-grid-print",		style_layout_grid_print_);
     CP_APPLY_ATTR(L"style:layout-grid-display",		style_layout_grid_display_);
+}
+
+bool style_page_layout_properties_attlist::compare( const style_page_layout_properties_attlist & attlst )
+{
+ //   CP_APPLY_ATTR(L"fo:page-height",	fo_page_height_);
+ //   CP_APPLY_ATTR(L"style:paper-tray-name",		style_paper_tray_name_);
+ //   CP_APPLY_ATTR(L"style:print-orientation",	style_print_orientation_);
+ //  
+ //   common_num_format_attlist_.add_attributes(Attributes);
+ //   common_num_format_prefix_suffix_attlist_.add_attributes(Attributes);
+	//common_horizontal_margin_attlist_.add_attributes(Attributes);
+ //   common_vertical_margin_attlist_.add_attributes(Attributes);
+ //   common_margin_attlist_.add_attributes(Attributes);
+ //   common_border_attlist_.add_attributes(Attributes);
+ //   common_border_line_width_attlist_.add_attributes(Attributes);
+ //   common_padding_attlist_.add_attributes(Attributes);
+ //   common_shadow_attlist_.add_attributes(Attributes);
+ //   common_background_color_attlist_.add_attributes(Attributes);
+	//common_draw_fill_attlist_.add_attributes(Attributes);
+
+	return false;
 }
 
 namespace {

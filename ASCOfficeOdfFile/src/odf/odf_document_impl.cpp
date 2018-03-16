@@ -161,6 +161,7 @@ odf_document::Impl::Impl(const std::wstring & srcPath, const ProgressCallback* C
 		std::wstring meta_xml		= srcPath + FILE_SEPARATOR_STR + L"meta.xml";
 		std::wstring settings_xml	= srcPath + FILE_SEPARATOR_STR + L"settings.xml";
 		std::wstring manifest_xml	= srcPath + FILE_SEPARATOR_STR + L"META-INF" + FILE_SEPARATOR_STR + L"manifest.xml";
+		std::wstring mimetype_xml	= srcPath + FILE_SEPARATOR_STR + L"mimetype";
 
 		_CP_LOG << L"[info] read manifest.xml" << std::endl;
 		manifest_xml_ = read_file_content(manifest_xml);
@@ -173,6 +174,9 @@ odf_document::Impl::Impl(const std::wstring & srcPath, const ProgressCallback* C
 
 		  _CP_LOG << L"[info] read styles.xml" << std::endl;
 		styles_xml_ = read_file_content(styles_xml);
+
+		_CP_LOG << L"[info] read mimetype" << std::endl;
+		NSFile::CFileBinary::ReadAllTextUtf8(mimetype_xml, mimetype_content_file_); 
 //----------------------------------------------------------------------------------------
 		_CP_LOG << L"[info] parse fonts" << std::endl;
 		parse_fonts(content_xml_ ? content_xml_->get_content() : NULL);
@@ -182,6 +186,11 @@ odf_document::Impl::Impl(const std::wstring & srcPath, const ProgressCallback* C
 
 		_CP_LOG << L"[info] parse manifest" << std::endl;
 		parse_manifests(manifest_xml_ ? manifest_xml_->get_content() : NULL);
+
+		if (!office_mime_type_)
+		{
+			office_mime_type_ = GetMimetype(mimetype_content_file_);
+		}
 
 		_CP_LOG << L"[info] parse settings" << std::endl;
 		parse_settings(settings_xml_ ? settings_xml_->get_content() : NULL);
@@ -305,6 +314,22 @@ void odf_document::Impl::parse_fonts(office_element *element)
     }
     while (0);
 }
+int odf_document::Impl::GetMimetype(std::wstring value)
+{
+	if (std::wstring::npos != value.find(L"application/vnd.oasis.opendocument.text"))
+	{
+		return 1;
+	}
+	else if (std::wstring::npos != value.find(L"application/vnd.oasis.opendocument.spreadsheet"))
+	{
+		return 2;
+	}
+	else if (std::wstring::npos != value.find(L"application/vnd.oasis.opendocument.presentation"))
+	{
+		return 3;
+	}
+	return 0;
+}
 void odf_document::Impl::parse_manifests(office_element *element)
 {
     office_document_base * document = dynamic_cast<office_document_base *>( element );
@@ -322,34 +347,12 @@ void odf_document::Impl::parse_manifests(office_element *element)
 
 		if (entry->full_path_ == L"/")
 		{
-			if (std::wstring::npos != entry->media_type_.find(L"application/vnd.oasis.opendocument.text"))
-			{
-				office_mime_type_ = 1;
-			}
-			else if (std::wstring::npos != entry->media_type_.find(L"application/vnd.oasis.opendocument.spreadsheet"))
-			{
-				office_mime_type_ = 2;
-			}
-			else if (std::wstring::npos != entry->media_type_.find(L"application/vnd.oasis.opendocument.presentation"))
-			{
-				office_mime_type_ = 3;
-			}
+			office_mime_type_ = GetMimetype(entry->media_type_);
 		}
 	}
 	if (!office_mime_type_ && !document->office_mimetype_.empty())
 	{
-		if (std::wstring::npos != document->office_mimetype_.find(L"application/vnd.oasis.opendocument.text"))
-		{
-			office_mime_type_ = 1;
-		}
-		else if (std::wstring::npos != document->office_mimetype_.find(L"application/vnd.oasis.opendocument.spreadsheet"))
-		{
-			office_mime_type_ = 2;
-		}
-		else if (std::wstring::npos != document->office_mimetype_.find(L"application/vnd.oasis.opendocument.presentation"))
-		{
-			office_mime_type_ = 3;
-		}
+		office_mime_type_ = GetMimetype(document->office_mimetype_);
 	}
 }
 

@@ -343,7 +343,6 @@ HEADERS += \
     ../src/odf/office_settings.h \
     ../src/odf/office_spreadsheet.h \
     ../src/odf/office_text.h \
-    ../src/odf/paragraph_content.h \
     ../src/odf/paragraph_elements.h \
     ../src/odf/ruby.h \
     ../src/odf/search_table_cell.h \

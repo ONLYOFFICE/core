@@ -234,8 +234,8 @@ static const struct
     { L"ar-AE" , 	0x3801 	},
     { L"ar-YE" , 	0x2401 	},
     { L"hy-AM" , 	0x042B 	},
-    { L"Cy-az-AZ" , 	0x082C 	},
-    { L"Lt-az-AZ" , 	0x042C 	},
+    { L"Cy-az-AZ" , 0x082C 	},
+    { L"Lt-az-AZ" , 0x042C 	},
     { L"eu-ES" , 	0x042D 	},
     { L"be-BY" , 	0x0423 	},
     { L"bg-BG" , 	0x0402 	},
@@ -314,8 +314,8 @@ static const struct
     { L"ro-RO" , 	0x0418 	},
     { L"ru-RU" , 	0x0419 	},
     { L"sa-IN" , 	0x044F 	},
-    { L"Cy-sr-SP" , 	0x0C1A 	},
-    { L"Lt-sr-SP" , 	0x081A 	},
+    { L"Cy-sr-SP" , 0x0C1A 	},
+    { L"Lt-sr-SP" ,	0x081A 	},
     { L"sk-SK" , 	0x041B 	},
     { L"sl-SI" , 	0x0424 	},
     { L"es-AR" , 	0x2C0A 	},
@@ -348,15 +348,90 @@ static const struct
     { L"tr-TR" , 	0x041F 	},
     { L"uk-UA" , 	0x0422 	},
     { L"ur-PK" , 	0x0420 	},
-    { L"Cy-uz-UZ" , 	0x0843 	},
-    { L"Lt-uz-UZ" , 	0x0443 	},
+    { L"Cy-uz-UZ" , 0x0843 	},
+    { L"Lt-uz-UZ" , 0x0443 	},
     { L"vi-VN" , 	0x042A 	}
 };
 
 class RtfUtility
 {
 public: 
+    static std::map<int, std::string> create_mapEncodingsICU()
+    {
+		std::map<int, std::string> m;
+		m[28596]	= "ISO-8859-6";
+		m[720]		= "DOS-720";
+		m[1256]		= "windows-1256";
 
+		m[28594]	= "ISO-8859-4";
+		m[28603]	= "ISO-8859-13";
+		m[775]		= "IBM775";
+		m[1257]		= "windows-1257";
+
+		m[28604]	= "ISO-8859-14";
+
+		m[28595]	= "ISO-8859-5";
+		m[20866]	= "KOI8-R";
+		m[21866]	= "KOI8-U";
+		m[10007]	= "x-mac-cyrillic";
+		m[855]		= "IBM855";
+		m[866]		= "cp866";
+		m[1251]		= "windows-1251";
+
+		m[852]		= "IBM852";
+		m[1250]		= "windows-1250";
+
+		m[950]		= "Big5";
+		m[936]		= "GB2312";
+
+		m[28592]	= "ISO-8859-2";
+
+		m[28597]	= "ISO-8859-7";
+		m[737]		= "IBM737";
+		m[869]		= "IBM869";
+		m[1253]		= "windows-1253";
+
+		m[28598]	= "ISO-8859-8";
+		m[862]		= "DOS-862";
+		m[1255]		= "windows-1255";
+
+		m[932]		= "Shift_JIS";
+
+		m[949]		= "KS_C_5601-1987";
+		m[51949]	= "EUC-KR";
+
+		m[861]		= "IBM861";
+		m[865]		= "IBM865";
+
+		m[874]		= "windows-874";
+
+		m[28593]	= "ISO-8859-3";
+		m[28599]	= "ISO-8859-9";
+		m[857]		= "IBM857";
+		m[1254]		= "windows-1254";
+
+		m[28591]	= "ISO-8859-1";
+		m[28605]	= "ISO-8859-15";
+		m[850]		= "IBM850";
+		m[858]		= "IBM858";
+		m[860]		= "IBM860";
+		m[863]		= "IBM863";
+		m[437]		= "IBM437";
+		m[1252]		= "windows-1252";
+
+		m[1258]		= "windows-1258";
+
+		m[65001]	= "UTF-8";
+		m[65000]	= "UTF-7";
+
+		m[1200]		= "UTF-16LE";
+		m[1201]		= "UTF-16BE";
+
+		m[12000]	= "UTF-32LE";
+		m[12001]	= "UTF-32BE";
+		return m;
+	}
+	static const std::map<int, std::string> mapEncodingsICU;
 //--------------------------------------------------------------------------------------------
 	static std::wstring convertDateTime (int dt)
 	{
@@ -683,18 +758,58 @@ public:
 
         return 1252;//ANSI
     }
-
     static std::wstring convert_string(std::string::const_iterator start, std::string::const_iterator end, int nCodepage = 0)
     {
-        std::string sCodePage;
-        for (size_t i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i)
+        bool ansi = true;
+        std::wstring sResult;
+
+        size_t insize = end - start;
+		char* inptr = (char*)start.operator ->();
+	
+		if (nCodepage > 0)
         {
-            if (nCodepage == NSUnicodeConverter::Encodings[i].WindowsCodePage)
+#if defined (_WIN32) || defined (_WIN64)
+			int outsize_with_0 = MultiByteToWideChar(nCodepage, 0, inptr, -1, NULL, NULL);
+			sResult.resize(outsize_with_0); 
+			if (MultiByteToWideChar(nCodepage, 0, inptr, -1, (LPWSTR)sResult.c_str(), outsize_with_0) > 0)
             {
-                sCodePage = NSUnicodeConverter::Encodings[i].Name;
-                break;
+				sResult.erase(outsize_with_0 - 1);
+                ansi = false;
             }
+#else
+            std::string sCodepage =  "CP" + std::to_string(nCodepage);
+
+            iconv_t ic= iconv_open("WCHAR_T", sCodepage.c_str());
+            if (ic != (iconv_t) -1)
+            {
+				sResult.resize(insize);
+				char* outptr = (char*)sResult.c_str();
+
+                size_t nconv = 0, avail = (insize) * sizeof(wchar_t);
+                nconv = iconv (ic, &inptr, &insize, outptr, &avail);
+                if (nconv == 0)
+                {
+					sResult.erase(iconv / sizeof(wchar_t));
+					ansi = false;
+                }
+                iconv_close(ic);
+            }
+#endif
         }
+        if (ansi)
+            sResult = std::wstring(start, end);
+
+        return sResult;
+	}
+    static std::wstring convert_string_icu(std::string::const_iterator start, std::string::const_iterator end, int nCodepage = 0)
+    {
+        std::string sCodePage;
+		std::map<int, std::string>::const_iterator pFind = mapEncodingsICU.find(nCodepage);
+		if (pFind != mapEncodingsICU.end())
+		{
+			sCodePage = pFind->second;
+		}
+
         if (sCodePage.empty() && nCodepage > 0)
             sCodePage = "CP" + std::to_string(nCodepage);
 
@@ -708,7 +823,7 @@ public:
 			const char* inptr = (const char*)start.operator ->();
 			
 			NSUnicodeConverter::CUnicodeConverter oConverter;
-			return oConverter.toUnicode(inptr, insize, sCodePage.c_str());
+			return oConverter.toUnicodeExact(inptr, insize, sCodePage.c_str());
 		}
     }
     static std::string convert_string(std::wstring::const_iterator start, std::wstring::const_iterator end, int nCodepage = 0)

@@ -1,6 +1,6 @@
 QT       -= core gui
 
-VERSION = 1.0.0.4
+VERSION = 1.0.0.5
 TARGET = UnicodeConverter
 TEMPLATE = lib
 

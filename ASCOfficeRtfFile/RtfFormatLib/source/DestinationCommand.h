@@ -249,17 +249,18 @@ public:
         else if( "fdbminor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_fdbminor;
         else if( "fbiminor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_fbiminor;
         
-        else if( "fnil"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fnil;
+        else if( "fnil"		== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fnil;
         else if( "froman"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_froman;
         else if( "fswiss"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fswiss;
-        else if( "fmodern" == sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fmodern;
-        else if( "fscript" == sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fscript;
+        else if( "fmodern"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fmodern;
+        else if( "fscript"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fscript;
         else if( "fdecor"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fdecor;
         else if( "ftech"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_ftech;
         else if( "fbidi"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fbidi;
 
         else if( "panose"	== sCommand )	m_eInternalState	= is_panose;
-        else if( "falt"	== sCommand )	m_eInternalState	= is_altname;
+        else if( "falt"		== sCommand )
+			m_eInternalState	= is_altname;
 
         else if( "f" == sCommand )
         {
@@ -339,7 +340,7 @@ public:
             size_t pos = sText.find(';');
             if (std::wstring::npos != pos)
             {
-                sText.erase(pos, 1);
+                sText = sText.substr(0, pos);
 
                 if( std::wstring::npos != sText.find('&') )//todooo выясниснить что значит &;
                 {

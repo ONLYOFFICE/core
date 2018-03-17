@@ -166,13 +166,13 @@ std::wstring RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 	else if( RENDER_TO_OOX_PARAM_FONTTABLE == oRenderParameter.nType )
 	{
         sResult += L"<w:font w:name=\"";
-        sResult += XmlUtils::EncodeXmlString( sFontName );
+        sResult += XmlUtils::EncodeXmlString( sFontName, true );
 		sResult += L"\">";
 		
         if( !m_sAltName.empty() )
 		{
             sResult += L"<w:altName w:val=\"";
-            sResult += XmlUtils::EncodeXmlString( m_sAltName );
+            sResult += XmlUtils::EncodeXmlString( m_sAltName, true );
 			sResult += L"\"/>";
 		}
         if( !m_sPanose.empty() )
@@ -224,8 +224,6 @@ std::wstring RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 			sResult += sPitch;
 			sResult += L"\"/>";
 		}
-
-		//важно
 		sResult += L"</w:font>";
 	}
 	else
@@ -2147,7 +2145,7 @@ std::wstring RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if (PROP_DEF == m_nStyle && PROP_DEF == m_eAlign)
 		m_eAlign = pa_ql;
 
-	if (m_bRtl)
+	if (m_bRtl == 1)
 	{
 		if (m_eAlign == pa_ql)		m_eAlign = pa_qr;
 		else if (m_eAlign == pa_qr) m_eAlign = pa_ql;

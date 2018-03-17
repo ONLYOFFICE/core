@@ -785,12 +785,16 @@ public:
 				sResult.resize(insize);
 				char* outptr = (char*)sResult.c_str();
 
-                size_t nconv = 0, avail = (insize) * sizeof(wchar_t);
-                nconv = iconv (ic, &inptr, &insize, outptr, &avail);
+                size_t nconv = 0, avail = (insize) * sizeof(wchar_t), outsize = insize;
+                nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
                 if (nconv == 0)
                 {
-					sResult.erase(iconv / sizeof(wchar_t));
-					ansi = false;
+                    if (avail > 0)
+                    {
+                        outsize = outsize - avail/sizeof(wchar_t);
+                        sResult.erase(sResult.begin() + outsize);
+                    }
+                    ansi = false;
                 }
                 iconv_close(ic);
             }

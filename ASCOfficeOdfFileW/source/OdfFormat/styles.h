@@ -132,7 +132,6 @@ public:
     static const ElementType type = typeStyleDefaultStyle;
     CPDOCCORE_DEFINE_VISITABLE()
 
-public:
 	default_style() : content_(getContext()) {}
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);

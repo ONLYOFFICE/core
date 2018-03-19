@@ -2301,22 +2301,37 @@ namespace NExtractTools
 
        NSDirectory::CreateDirectory(sTempUnpackedOox);
 
-       if (S_OK == ConvertOO2OOX(sTempUnpackedOdf, sTempUnpackedOox, params.getFontPath(), false, NULL))
-       {
+		int nRes = ConvertODF2OOXml(sTempUnpackedOdf, sTempUnpackedOox, params.getFontPath(), false, NULL);
+		if(SUCCEEDED_X2T(nRes))
+		{
            BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
            m_oCDocxSerializer.setFontDir(params.getFontPath());
 
-           int res =  m_oCDocxSerializer.saveToFile (sTo, sTempUnpackedOox, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+           nRes =  m_oCDocxSerializer.saveToFile (sTo, sTempUnpackedOox, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		return nRes;
+	}
+	int otf2odf(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
+	{
+       std::wstring sTempUnpackedOdf = sTemp + FILE_SEPARATOR_STR + _T("odf_unpacked");
+       NSDirectory::CreateDirectory(sTempUnpackedOdf);
 
-           return res;
-       }
+	   COfficeUtils oCOfficeUtils(NULL);
+       if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedOdf, NULL, 0))
+           return AVS_FILEUTILS_ERROR_CONVERT;;
 
-       return AVS_FILEUTILS_ERROR_CONVERT;
-   }
+		int nRes = ConvertOTF2ODF(sTempUnpackedOdf);
+		if(SUCCEEDED_X2T(nRes))
+		{
+           COfficeUtils oCOfficeUtils(NULL);
+           nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedOdf, sTo, true)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		return nRes;
+	}
 
 	int odf2oox(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
-   {
+	{
        std::wstring sTempUnpackedOox = sTemp + FILE_SEPARATOR_STR + _T("oox_unpacked");
        NSDirectory::CreateDirectory(sTempUnpackedOox);
 
@@ -2325,11 +2340,11 @@ namespace NExtractTools
        {
            COfficeUtils oCOfficeUtils(NULL);
            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedOox, sTo, true)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-       }
-       return nRes;
-   }
+		}
+		return nRes;
+	}
 	int odf2oox_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
-   {
+	{
        std::wstring sTempUnpackedOdf = sTemp + FILE_SEPARATOR_STR + _T("odf_unpacked");
        NSDirectory::CreateDirectory(sTempUnpackedOdf);
 
@@ -2337,8 +2352,8 @@ namespace NExtractTools
        if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedOdf, NULL, 0))
            return AVS_FILEUTILS_ERROR_CONVERT;;
 
-       return S_OK == ConvertOO2OOX(sTempUnpackedOdf, sTo, params.getFontPath(), false, NULL) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-   }
+		return ConvertODF2OOXml(sTempUnpackedOdf, sTo, params.getFontPath(), false, NULL);
+	}
 	//odf flat
 	int odf_flat2oot(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
@@ -2364,18 +2379,17 @@ namespace NExtractTools
 
        NSDirectory::CreateDirectory(sTempUnpackedOox);
 
-       if (S_OK == ConvertOO2OOX(sFrom, sTempUnpackedOox, params.getFontPath(), false, NULL))
-       {
+		int nRes = ConvertODF2OOXml(sFrom, sTempUnpackedOox, params.getFontPath(), false, NULL);
+		if(SUCCEEDED_X2T(nRes))
+		{
            BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
            m_oCDocxSerializer.setFontDir(params.getFontPath());
 
-           int res =  m_oCDocxSerializer.saveToFile (sTo, sTempUnpackedOox, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+           nRes =  m_oCDocxSerializer.saveToFile (sTo, sTempUnpackedOox, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		}
 
-           return res;
-       }
-
-       return AVS_FILEUTILS_ERROR_CONVERT;
+       return nRes;
 	}
 	int odf_flat2oox(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
@@ -2392,7 +2406,7 @@ namespace NExtractTools
 	}
 	int odf_flat2oox_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
-       return S_OK == ConvertOO2OOX(sFrom, sTo, params.getFontPath(), false, NULL) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+       return ConvertODF2OOXml(sFrom, sTo, params.getFontPath(), false, NULL);
 	}
 	// docx -> odt
 	int docx2odt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params )
@@ -4115,6 +4129,10 @@ namespace NExtractTools
 			case TCD_XLS2XLST_BIN:
 			{
 				result = xls2xlst_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_OTF2ODF:
+			{
+				result =  otf2odf (sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
 			case TCD_ODF2OOX:
 			{

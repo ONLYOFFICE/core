@@ -56,7 +56,7 @@ struct 	odf_element_state
 
 	office_element_ptr	style_elm;
 	
-	int level;
+	size_t level;
 };
 
 class odf_master_state

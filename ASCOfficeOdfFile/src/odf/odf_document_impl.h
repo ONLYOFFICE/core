@@ -35,14 +35,19 @@
 #include "odf_content_xml.h"
 #include <cpdoccore/odf/odf_document.h>
 
-namespace cpdoccore { 
-
-namespace oox {
-class docx_conversion_context;
-class xlsx_conversion_context;
-}
-
-namespace odf_reader {
+namespace cpdoccore 
+{ 
+	namespace xml 
+	{
+		class sax;
+	}
+	namespace oox 
+	{
+		class docx_conversion_context;
+		class xlsx_conversion_context;
+	}
+	namespace odf_reader 
+{
 
 class odf_read_context;
 typedef shared_ptr<odf_read_context>::Type odf_read_context_ptr;
@@ -59,6 +64,9 @@ public:
 
     odf_read_context & odf_context();
    
+	static content_xml_t_ptr read_file_content(const std::wstring & Path);
+	content_xml_t_ptr read_file_content(xml::sax * reader_owner);
+
 	bool docx_convert(oox::docx_conversion_context & Context);
     bool xlsx_convert(oox::xlsx_conversion_context & Context);
     bool pptx_convert(oox::pptx_conversion_context & Context);

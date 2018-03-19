@@ -93,20 +93,7 @@ namespace cpdoccore {
 
 namespace odf_reader {
 
-namespace {
-content_xml_t_ptr read_file_content(const std::wstring & Path)
-{
-    xml::sax_ptr Reader = xml::create_sax( Path.c_str());
-    content_xml_t_ptr result( new content_xml_t() );
-    
-	const std::wstring namespacePrefix	= Reader->namespacePrefix();
-	const std::wstring localName		= Reader->nodeLocalName();
-	
-	result->add_child_element(Reader.get(), namespacePrefix, localName);		
-
-    return result;
-}
-content_xml_t_ptr read_file_content(xml::sax * reader_owner)
+content_xml_t_ptr odf_document::Impl::read_file_content(xml::sax * reader_owner)
 {
 	if (!reader_owner) return content_xml_t_ptr();
 
@@ -119,6 +106,18 @@ content_xml_t_ptr read_file_content(xml::sax * reader_owner)
 
     return result;
 }
+
+content_xml_t_ptr odf_document::Impl::read_file_content(const std::wstring & Path)
+{
+	cpdoccore::xml::sax_ptr Reader = cpdoccore::xml::create_sax( Path.c_str());
+    content_xml_t_ptr result( new content_xml_t() );
+    
+	const std::wstring namespacePrefix	= Reader->namespacePrefix();
+	const std::wstring localName		= Reader->nodeLocalName();
+	
+	result->add_child_element(Reader.get(), namespacePrefix, localName);		
+
+    return result;
 }
 odf_document::Impl::Impl(xml::sax * Reader): 
 			context_(new odf_read_context()), base_folder_(L""), pCallBack(NULL), bUserStopConvert (0)

@@ -354,7 +354,7 @@ void odf_drawing_context::check_anchor()
 			set_vertical_pos(0);
 	}
 }
-int odf_drawing_context::get_group_level()
+size_t odf_drawing_context::get_group_level()
 {
 	return impl_->current_level_.size();
 }
@@ -364,7 +364,7 @@ void odf_drawing_context::start_group()
 
 	draw_g* group = dynamic_cast<draw_g*>(group_elm.get());
 
-	int level = impl_->current_level_.size();
+	size_t level = impl_->current_level_.size();
 //////////////////////////
 	
 	odf_group_state_ptr group_state = boost::shared_ptr<odf_group_state>(new odf_group_state(group_elm, level, impl_->current_group_));
@@ -737,7 +737,7 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 		draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_style_name_ = style_name;
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	int level = current_level_.size();
+	size_t level = current_level_.size();
 	
 	if (current_level_.size() > 0)
 		current_level_.back()->add_child_element(draw_elm);
@@ -808,10 +808,10 @@ bool odf_drawing_context::change_text_box_2_wordart()
 	draw_base* draw = dynamic_cast<draw_base*>(draw_elm.get());
 	if (draw == NULL)	return false;
 
-	int sz = impl_->current_level_.size();
+	size_t sz = impl_->current_level_.size();
 	if (sz < 2)			return false;
 
-	int sz_state = impl_->current_drawing_state_.elements_.size();
+	size_t sz_state = impl_->current_drawing_state_.elements_.size();
 	if (sz_state < 2)	return false;
 
 	if (sz > 2) //в группе ??
@@ -1184,8 +1184,9 @@ void odf_drawing_context::set_shadow(int type, std::wstring hexColor, _CP_OPT(do
 {
 	if (!impl_->current_graphic_properties)return;
 
-	int res = 0;
-	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+	size_t res = hexColor.find(L"#");
+	if (std::wstring::npos == res) 
+		hexColor = std::wstring(L"#") + hexColor;
 
 	impl_->current_graphic_properties->draw_shadow_offset_x_ = length(length(dist_pt,length::pt).get_value_unit(length::cm),length::cm);
 	
@@ -1287,8 +1288,9 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 	if (!impl_->current_graphic_properties)	return;
 	if (hexColor.empty()) return;
 	
-	int res = 0;
-	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+	size_t res = hexColor.find(L"#");
+	if (std::wstring::npos == res)
+		hexColor = std::wstring(L"#") + hexColor;
 
 	switch(impl_->current_drawing_part_)
 	{
@@ -1357,8 +1359,9 @@ void odf_drawing_context::add_modifier (std::wstring modifier)
 	if (!impl_->current_drawing_state_.oox_shape_) return;
 
 	boost::algorithm::to_lower(modifier);
-	int res = modifier.find(L"val ");
-	if (res >=0) modifier = modifier.substr(4);
+
+	if ( std::wstring::npos != modifier.find(L"val ") )
+		modifier = modifier.substr(4);
 	
 	impl_->current_drawing_state_.oox_shape_->modifiers += modifier + L" ";
 }
@@ -1901,7 +1904,7 @@ void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) &
 		
 		if (impl_->current_drawing_state_.in_group_)
 		{
-			for( int i = impl_->group_list_.size() - 1; i >= 0 ; i--)
+			for( int i = (int)impl_->group_list_.size() - 1; i >= 0 ; i--)
 			{
 				x = (x + impl_->group_list_[i]->shift_x) * impl_->group_list_[i]->scale_cx ;	
 			}
@@ -1918,7 +1921,7 @@ void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) &
 
 		if (impl_->current_drawing_state_.in_group_)
 		{
-			for( int i = impl_->group_list_.size() - 1; i >= 0 ; i--)
+			for( int i = (int)impl_->group_list_.size() - 1; i >= 0 ; i--)
 			{
 				y = (y + impl_->group_list_[i]->shift_y) * impl_->group_list_[i]->scale_cy;
 			}
@@ -1949,7 +1952,7 @@ void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 	{
 		if (width_pt)
 		{
-			for( int i = impl_->group_list_.size() - 1; i >= 0 ; i--)
+			for( int i = (int)impl_->group_list_.size() - 1; i >= 0 ; i--)
 			{
 				width_pt  = *width_pt * impl_->group_list_[i]->scale_cx;
 			}
@@ -1957,7 +1960,7 @@ void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 		}
 		if (height_pt)
 		{
-			for( int i = impl_->group_list_.size() - 1; i >= 0 ; i--)
+			for( int i = (int)impl_->group_list_.size() - 1; i >= 0 ; i--)
 			{
 				height_pt = *height_pt * impl_->group_list_[i]->scale_cy;
 			}
@@ -2208,8 +2211,8 @@ void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)
 
 	if (!impl_->current_text_properties) return;
 
-	int res = 0;
-	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+	if (std::wstring::npos == hexColor.find(L"#")) 
+		hexColor = std::wstring(L"#") + hexColor;
 
 	impl_->current_text_properties->content_.fo_color_ = hexColor;
 }
@@ -2817,8 +2820,8 @@ void odf_drawing_context::set_gradient_start(std::wstring hexColor, _CP_OPT(doub
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 
-	int res = 0;
-	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+	if (std::wstring::npos == hexColor.find(L"#"))
+		hexColor = std::wstring(L"#") + hexColor;
 	
 	gradient->draw_start_color_		= hexColor;
 	gradient->draw_start_intensity_ = 100.;
@@ -2828,8 +2831,8 @@ void odf_drawing_context::set_gradient_end  (std::wstring hexColor, _CP_OPT(doub
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 
-	int res = 0;
-	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+	if (std::wstring::npos == hexColor.find(L"#"))
+		hexColor = std::wstring(L"#") + hexColor;
 
 	gradient->draw_end_color_		= hexColor;
 	gradient->draw_end_intensity_	= 100.;
@@ -2952,8 +2955,8 @@ void odf_drawing_context::set_hatch_line_color(std::wstring hexColor)
 	draw_hatch * hatch = dynamic_cast<draw_hatch *>(impl_->styles_context_->last_state()->get_office_element().get());
 	if (!hatch) return;
 
-	int res = 0;
-	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+	if (std::wstring::npos == hexColor.find(L"#"))
+		hexColor = std::wstring(L"#") + hexColor;
 	
 	hatch->draw_color_ =  hexColor;
 }
@@ -2961,8 +2964,8 @@ void odf_drawing_context::set_hatch_area_color(std::wstring hexColor)
 {
 	if (!impl_->current_graphic_properties)return;
 
-	int res = 0;
-	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+	if (std::wstring::npos == hexColor.find(L"#"))
+		hexColor = std::wstring(L"#") + hexColor;
 
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_color_ = hexColor;
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_hatch_solid_ = true;

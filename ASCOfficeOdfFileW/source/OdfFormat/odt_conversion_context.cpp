@@ -380,8 +380,8 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
 	if (current_field_.enabled == false) 	return;
 
 	current_field_.type = 0; //users field
-	int res1 = instr.find(L"HYPERLINK");
-	if (res1 >= 0)							//это не поле - это hyperlink
+	size_t res1 = instr.find(L"HYPERLINK");
+	if (std::wstring::npos != res1)							//это не поле - это hyperlink
 	{
 		current_field_.type = 1;
 		
@@ -396,35 +396,35 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
         }
 	}
 	res1 = instr.find(L"NUMPAGES");
-	if (res1 >= 0 && current_field_.type == 0)
+	if (std::wstring::npos != res1 && current_field_.type == 0)
 	{
 		current_field_.type = 3;
 	}	
 	res1 = instr.find(L"PAGEREF");
-	if (res1 >= 0 && current_field_.type == 0 )	//это не поле - это bookmark
+	if (std::wstring::npos != res1 && current_field_.type == 0 )	//это не поле - это bookmark
 	{
 		current_field_.type = 5;
 		if (instr.length() > 9)
 			current_field_.value = instr.substr(9, instr.length()-5);
 	}
 	res1 = instr.find(L"PAGE");
-	if (res1 >= 0 && current_field_.type == 0)
+	if (std::wstring::npos != res1 && current_field_.type == 0)
 	{
 		current_field_.type = 2;
 	}
 	res1 = instr.find(L"TIME");
-	if (res1 >= 0 && current_field_.type == 0)
+	if (std::wstring::npos != res1 && current_field_.type == 0)
 	{
 		current_field_.type = 4;
 	}
 	res1 = instr.find(L"BIBLIOGRAPHY");
-	if (res1 >=0 && current_field_.type == 0)
+	if (std::wstring::npos != res1 && current_field_.type == 0)
 	{
 		current_field_.type = 6;
 	}
 ////////////////////////////////////////// 
 	res1 = instr.find(L"@");
-	if (res1 >= 0)
+	if (std::wstring::npos != res1)
 	{
 		current_field_.format = instr.substr(res1 + 1, instr.length());
 	}
@@ -432,7 +432,7 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
 	if (current_field_.type == 0)
 	{
 		res1 = instr.find(L" ");
-		if (res1 >= 0)
+		if (std::wstring::npos != res1)
 		{
 			current_field_.name = instr.substr(0, res1);
 		}		
@@ -757,7 +757,7 @@ bool odt_conversion_context::start_comment(int oox_comm_id)
 		if (text_context()->current_level_.size() > 0)
 			text_context()->current_level_.back().elm->add_child_element(comm_elm);
 
-		odf_element_state state={comm_elm, L"", office_element_ptr(),(int)text_context()->current_level_.size()};
+		odf_element_state state={comm_elm, L"", office_element_ptr(), text_context()->current_level_.size()};
 		text_context()->current_level_.push_back(state);
 
 		return false; //типо новый
@@ -810,7 +810,7 @@ void odt_conversion_context::start_note(int oox_ref_id, int type)
 	if (text_context()->current_level_.size() > 0)
 		text_context()->current_level_.back().elm->add_child_element(note_elm);
 
-	odf_element_state state = {note_elm, L"", office_element_ptr(), (int)text_context()->current_level_.size()};
+	odf_element_state state = {note_elm, L"", office_element_ptr(), text_context()->current_level_.size()};
 	text_context()->current_level_.push_back(state);
 }
 void odt_conversion_context::start_note_content()
@@ -819,7 +819,7 @@ void odt_conversion_context::start_note_content()
 
     office_element_ptr note_content_element = notes_context_.get_note_content();
 
-	odf_element_state state = {note_content_element, L"", office_element_ptr(), (int)text_context()->current_level_.size()};
+	odf_element_state state = {note_content_element, L"", office_element_ptr(), text_context()->current_level_.size()};
 	text_context()->current_level_.push_back(state);
 
 	start_text_context();

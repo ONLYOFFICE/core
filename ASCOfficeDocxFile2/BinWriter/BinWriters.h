@@ -2506,6 +2506,13 @@ namespace BinDocxRW
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_sts::Style_Next);
 				m_oBcw.m_oStream.WriteStringW(style.m_oNext.get().ToString2());
 			}
+			//Link
+			if(false != style.m_oLink.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSer_sts::Style_Link);
+				m_oBcw.m_oStream.WriteStringW(style.m_oLink.get().ToString2());
+			}
+
 			//qFormat
 			if(false != style.m_oQFormat.IsInit())
 			{

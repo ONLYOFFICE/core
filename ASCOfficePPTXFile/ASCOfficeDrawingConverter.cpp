@@ -2631,7 +2631,55 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 								pShape->txBody->bodyPr->rot = pShape->oTextBoxBodyPr->rot;
 							}catch(...){}
 						}
+						pFind = oCSSParser.m_mapSettings.find(L"mso-fit-shape-to-text");
+						if (pFind != oCSSParser.m_mapSettings.end())
+						{
+							if (pFind->second == L"t" || pFind->second == L"true" || pFind->second == L"1")
+							{
+								if (pShape->txBody.IsInit() == false)                       //для pptx /// todooo схлопнуть
+									pShape->txBody = new PPTX::Logic::TxBody();
 
+								if (!pShape->txBody->bodyPr.IsInit())
+									pShape->txBody->bodyPr = new PPTX::Logic::BodyPr();
+
+								pShape->txBody->bodyPr->Fit.type = PPTX::Logic::TextFit::FitSpAuto;
+								pShape->oTextBoxBodyPr->Fit.type = PPTX::Logic::TextFit::FitSpAuto;
+							}
+						}
+						pFind = oCSSParser.m_mapSettings.find(L"mso-fit-text-to-shape");
+						if (pFind != oCSSParser.m_mapSettings.end())
+						{
+							if (pFind->second == L"t" || pFind->second == L"true" || pFind->second == L"1")
+							{
+								if (pShape->txBody.IsInit() == false)                       //для pptx
+									pShape->txBody = new PPTX::Logic::TxBody();
+
+								if (!pShape->txBody->bodyPr.IsInit())
+									pShape->txBody->bodyPr = new PPTX::Logic::BodyPr();
+
+								pShape->txBody->bodyPr->Fit.type = PPTX::Logic::TextFit::FitNo;//?? todoooo
+								pShape->oTextBoxBodyPr->Fit.type = PPTX::Logic::TextFit::FitNo;//?? todoooo
+
+							}
+						}
+						pFind = oCSSParser.m_mapSettings.find(L"mso-text-scale");
+						if (pFind != oCSSParser.m_mapSettings.end())
+						{
+							try
+							{
+								pShape->oTextBoxBodyPr->Fit.fontScale = (int)(100 * boost::lexical_cast<double>(pFind->second.c_str()));  //для docx, xlsx
+								pShape->oTextBoxBodyPr->Fit.type = PPTX::Logic::TextFit::FitNormAuto;
+								
+								if (pShape->txBody.IsInit() == false)                       //для pptx
+									pShape->txBody = new PPTX::Logic::TxBody();
+
+								if (!pShape->txBody->bodyPr.IsInit())
+									pShape->txBody->bodyPr = new PPTX::Logic::BodyPr();
+
+								pShape->txBody->bodyPr->Fit.fontScale	= pShape->oTextBoxBodyPr->Fit.fontScale;
+								pShape->txBody->bodyPr->Fit.type		= pShape->oTextBoxBodyPr->Fit.type;
+							}catch(...){}
+						}
 					}
 				}
 			}

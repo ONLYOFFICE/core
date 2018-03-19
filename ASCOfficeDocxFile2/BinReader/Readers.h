@@ -2791,6 +2791,10 @@ public:
 			NextId = XmlUtils::EncodeXmlString(NextId);
 			odocStyle->NextId = NextId;
 		}
+		else if(c_oSer_sts::Style_Link == type)
+		{
+			odocStyle->Link = m_oBufferedStream.GetString3(length);
+		}
 		else if(c_oSer_sts::Style_qFormat == type)
 		{
 			odocStyle->bqFormat = true;

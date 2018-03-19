@@ -783,6 +783,7 @@ public:
 	bool bDefault;
     std::wstring BasedOn;
     std::wstring NextId;
+	std::wstring Link;
 	bool qFormat;
 	long uiPriority;
 	bool hidden;
@@ -841,6 +842,12 @@ public:
             if(!NextId.empty())
 			{
                 pCStringWriter->WriteString(L"<w:next w:val=\"" + NextId + L"\"/>");
+			}
+			if(!Link.empty())
+			{
+				pCStringWriter->WriteString(L"<w:link w:val=\"");
+				pCStringWriter->WriteEncodeXmlString(Link);
+				pCStringWriter->WriteString(L"\"/>");
 			}
 			if(bqFormat)
 			{

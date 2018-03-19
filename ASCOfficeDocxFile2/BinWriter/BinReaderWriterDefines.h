@@ -261,7 +261,8 @@ extern int g_nCurFormatVersion;
 		Style_unhideWhenUsed = 14,
 		Style_RowPr = 15,
 		Style_CellPr = 16,
-		Style_TblStylePr = 17
+		Style_TblStylePr = 17,
+		Style_Link = 18
 	};}
 	namespace c_oSerProp_tblStylePrType{enum c_oSerProp_tblStylePrType
 	{

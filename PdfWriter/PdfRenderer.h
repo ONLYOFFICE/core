@@ -1043,7 +1043,7 @@ private:
 	public:
 
 		CFontState() : m_wsPath(L""), m_wsName(L"Arial"), m_lStyle(0), m_bBold(false), m_bItalic(false), m_dCharSpace(0), 
-			m_lFaceIndex(0), m_dSize(10), m_bGid(false)
+			m_lFaceIndex(0), m_dSize(10), m_bGid(false), m_bNeedDoBold(false), m_bNeedDoItalic(false)
 		{
 		}
 
@@ -1058,6 +1058,9 @@ private:
 			m_lFaceIndex = 0;
 			m_dSize      = 10;
 			m_bGid       = false;
+
+			m_bNeedDoBold   = false;
+			m_bNeedDoItalic = false;
 		}
 
 		inline std::wstring GetName()
@@ -1126,6 +1129,22 @@ private:
 		{
 			return m_bItalic;
 		}
+		inline void         SetNeedDoItalic(const bool& bNeedDoItalic)
+		{
+			m_bNeedDoItalic = bNeedDoItalic;
+		}
+		inline void         SetNeedDoBold(const bool& bNeedDoBold)
+		{
+			m_bNeedDoBold = bNeedDoBold;
+		}
+		inline bool         IsNeedDoItalic()
+		{
+			return m_bNeedDoItalic;
+		}
+		inline bool         IsNeedDoBold()
+		{
+			return m_bNeedDoBold;
+		}
 
 	private:
 
@@ -1138,6 +1157,8 @@ private:
 		bool         m_bBold;
 		bool         m_bItalic;
 		double       m_dCharSpace;
+		bool         m_bNeedDoItalic;
+		bool         m_bNeedDoBold;
 	};
 	class CPath
 	{

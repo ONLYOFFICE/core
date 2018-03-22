@@ -2876,13 +2876,6 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
     if (bIsTop) pTree->m_lGroupIndex = 0;
     else        pTree->m_lGroupIndex = 1;
 
-	//сначала shape type
-	XmlUtils::CXmlNode oNodeST;
-	if (oNode.GetNode(L"v:shapetype", oNodeST))
-	{
-		AddShapeType(oNodeST.GetXml());
-	}
-
 	XmlUtils::CXmlNodes oNodes;
     if (oNode.GetNodes(L"*", oNodes))
 	{
@@ -2894,13 +2887,18 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
 
 			std::wstring strNameP = XmlUtils::GetNameNoNS(oNodeT.GetName());
 
-				if (L"shape"       == strNameP ||
-                    L"rect"         == strNameP ||
-                    L"oval"         == strNameP ||
-                    L"line"         == strNameP ||
-                    L"polyline"     == strNameP ||
-                    L"background"   == strNameP ||
-                    L"roundrect"    == strNameP)
+			if (L"shapetype"	== strNameP)
+			{
+				AddShapeType(oNodeT.GetXml());
+			}
+			else if (
+				L"shape"		== strNameP ||
+                L"rect"         == strNameP ||
+                L"oval"         == strNameP ||
+                L"line"         == strNameP ||
+                L"polyline"     == strNameP ||
+                L"background"   == strNameP ||
+                L"roundrect"    == strNameP)
 			{
 				PPTX::Logic::SpTreeElem _el; 
 				doc_LoadShape(&_el, oNodeT, pMainProps, false);

@@ -963,9 +963,10 @@ namespace BinXlsxRW
             OOX::CPath pathThemeOverrideFile = m_oSaveParams.sThemePath + FILE_SEPARATOR_STR + sThemeOverrideName;
 
 			smart_ptr<PPTX::Theme> pTheme = new PPTX::Theme(NULL);
-			pTheme->isThemeOverride = true;
 
 			pTheme->fromPPTY(&m_oBufferedStream);
+			pTheme->isThemeOverride = true;
+			
 			NSBinPptxRW::CXmlWriter xmlWriter;
 			pTheme->toXmlWriter(&xmlWriter);
 			

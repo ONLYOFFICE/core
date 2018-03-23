@@ -77,11 +77,14 @@ namespace PPTX
 		{
 			isThemeOverride = false;
 			m_map = NULL;
-			
-			OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(File::m_pMainDocument);
-			if (docx) docx->m_pTheme = this;
 
 			read(filename, map);
+			
+			OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(File::m_pMainDocument);
+			if (docx && !docx->m_pTheme && !isThemeOverride) 
+			{
+				docx->m_pTheme = this;
+			}	
 		}
 
 		virtual void read(const OOX::CPath& filename, FileMap& map)

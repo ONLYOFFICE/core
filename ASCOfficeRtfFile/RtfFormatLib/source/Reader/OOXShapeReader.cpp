@@ -910,7 +910,7 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 {
 	if (!oox_line_prop)return;
 
-	pOutput->m_bLine = true;
+	pOutput->m_bLine = 1;
 	
 	if (oox_line_prop->Fill.is_init())
 	{
@@ -919,7 +919,7 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 		
 		if (no_fill.IsInit())
 		{
-			pOutput->m_bLine = false;
+			pOutput->m_bLine = 0;
 		}
 		else if (fill.IsInit())
 		{
@@ -1039,7 +1039,7 @@ void OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::
 	
 	double rot = xfrm->rot.IsInit() ? xfrm->rot.get() / 60000. : 0;
 	if (rot > 0.01)
-		pOutput->m_nRotation = rot * 65535;
+		pOutput->m_nRotation = (int)(rot * 65535);
 
 	if (xfrm->flipH.get_value_or(false))	pOutput->m_bFlipH = 1;	
 	if (xfrm->flipV.get_value_or(false))	pOutput->m_bFlipV = 1;

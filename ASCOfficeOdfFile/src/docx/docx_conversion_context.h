@@ -564,6 +564,9 @@ public:
             return temp_stream_;
     }
 
+	void add_user_field			(const std::wstring & name, const std::wstring & value);	
+	std::wstring get_user_field	(const std::wstring & name);
+
     void add_element_to_run		(std::wstring parenStyleId = _T(""));
     void finish_run				();
 	void add_new_run			(std::wstring parentStyleId = _T(""));
@@ -734,6 +737,7 @@ private:
     std::wstringstream		fontTable_xml_;
     std::wstringstream		numbering_xml_;
     std::wstringstream		temp_stream_;
+	std::wstringstream		mimetype_xml_;
     
     std::wstringstream		footer_xml_;
     std::wstringstream		header_xml_;
@@ -791,6 +795,8 @@ private:
     std::vector< const odf_reader::style_text_properties*>	text_properties_stack_;
 	std::map<std::wstring, text_tracked_context::_state>	map_current_changes_;    
     boost::unordered_map<std::wstring, std::wstring>		list_style_renames_;// цепочки переименований нумераций
+	
+	std::map<std::wstring, std::wstring>					map_user_fields;
 };
 
 }

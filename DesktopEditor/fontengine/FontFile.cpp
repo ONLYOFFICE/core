@@ -1812,4 +1812,20 @@ CFontPath* CFontFile::GetGlyphPath(int nCode)
 
 	FT_Done_Glyph( oGlyph );
 	return oGlyphPath.pPath;
-};
+}
+
+bool CFontFile::IsItalic()
+{
+	if (!m_pFace)
+		return false;
+
+	return ((m_pFace->style_flags & FT_STYLE_FLAG_ITALIC) != 0) ? true : false;
+}
+
+bool CFontFile::IsBold()
+{
+	if (!m_pFace)
+		return false;
+
+	return ((m_pFace->style_flags & FT_STYLE_FLAG_BOLD) != 0) ? true : false;
+}

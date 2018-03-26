@@ -1500,6 +1500,16 @@ void docx_conversion_context::end_text_changes (std::wstring id)
 
 	map_current_changes_.erase(it);
 }
+void docx_conversion_context::add_user_field(const std::wstring & name, const std::wstring & value)
+{
+	map_user_fields.insert(std::make_pair(name, value));
+}
+std::wstring docx_conversion_context::get_user_field(const std::wstring & name)
+{
+	std::map<std::wstring, std::wstring>::iterator pFind = map_user_fields.find(name);
+
+	return pFind != map_user_fields.end() ? pFind->second : L"";
+}
 
 }
 }

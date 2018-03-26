@@ -38,24 +38,24 @@ namespace odf_reader {
 
 void content_xml_t::docx_convert(oox::docx_conversion_context & Context) 
 {
-	if (xml_content_)
+	if (content_)
 	{
-	    return xml_content_->docx_convert(Context);
+	    return content_->docx_convert(Context);
 	}
 }
 
 void content_xml_t::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	if (xml_content_)
+	if (content_)
 	{
-	  return xml_content_->xlsx_convert(Context);
+	  return content_->xlsx_convert(Context);
 	}
 }
 void content_xml_t::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	if (xml_content_)
+	if (content_)
 	{
-	  return xml_content_->pptx_convert(Context);
+	  return content_->pptx_convert(Context);
 	}
 }
 
@@ -66,38 +66,33 @@ void content_xml_t::add_child_element( xml::sax * Reader, const std::wstring & N
 {
  	if CP_CHECK_NAME(L"office", L"document")
     {
-        create_element_and_read(Reader, Ns, Name, xml_content_, getContext(), true);
+        create_element_and_read(Reader, Ns, Name, content_, &context_, true);
     }
 	else if CP_CHECK_NAME(L"office", L"document-content")
     {
-        create_element_and_read(Reader, Ns, Name, xml_content_, getContext(), true);
+        create_element_and_read(Reader, Ns, Name, content_, &context_, true);
     }
     else if CP_CHECK_NAME(L"office", L"document-styles")
     {
-        create_element_and_read(Reader, Ns, Name, xml_content_, getContext(), true);
+        create_element_and_read(Reader, Ns, Name, content_, &context_, true);
     }
     else if CP_CHECK_NAME(L"office", L"document-settings")
     {
-        create_element_and_read(Reader, Ns, Name, xml_content_, getContext(), true);
+        create_element_and_read(Reader, Ns, Name, content_, &context_, true);
     }
 	else if CP_CHECK_NAME(L"manifest", L"manifest")
     {
-        create_element_and_read(Reader, Ns, Name, xml_content_, getContext(), true);
+        create_element_and_read(Reader, Ns, Name, content_, &context_, true);
     }
 	else if ( CP_CHECK_NAME(L"math", L"math") || CP_CHECK_NAME(L"", L"math"))
     {
-        create_element_and_read(Reader, Ns, Name, xml_content_, getContext(), true);
+        create_element_and_read(Reader, Ns, Name, content_, &context_, true);
     }	
 }
 
 void content_xml_t::add_text(const std::wstring & Text) 
 {
 }   
-
-document_context * content_xml_t::getContext() 
-{ 
-    return &context_; 
-}
 
 }
 }

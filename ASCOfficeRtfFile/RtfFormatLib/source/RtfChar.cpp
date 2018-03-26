@@ -40,7 +40,7 @@ std::wstring RtfChar::RenderToOOX(RenderParameter oRenderParameter)
 	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
     
     std::wstring sResult;
-    if(RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType)
+    if (RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType)
     {
 		bool bInsert = false;
 		bool bDelete = false;

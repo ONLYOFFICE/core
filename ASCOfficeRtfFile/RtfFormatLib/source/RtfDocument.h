@@ -76,11 +76,21 @@ public:
 	std::vector<RtfOldListPtr> m_aOldLists;
 
 private: 
-	std::vector<int> m_aShapeId;
+	std::vector<int>	m_aShapeId;
+	int					m_nZIndexLast;
 
 public: 
+	int GetZIndex()
+	{
+		return m_nZIndexLast++;
+	}
+	void SetZIndex(int val)
+	{
+		if (m_nZIndexLast < val)
+			m_nZIndexLast = val;
+	}
 	IdGenerator m_oIdGenerator;
-	void SetShapeId( int nShapeId )
+	void SetShapeId( int nShapeId )//todoo -> map
 	{
 		for (size_t i = 0; i < m_aShapeId.size(); i++ )
 		{

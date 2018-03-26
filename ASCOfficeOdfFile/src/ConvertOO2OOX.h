@@ -35,4 +35,6 @@
 
 struct ProgressCallback;
 
-HRESULT ConvertOO2OOX(const std::wstring & srcPath, const std::wstring & dstPath, const std::wstring & fontsPath, bool bOnlyPresentation, const ProgressCallback* CallBack);
+int ConvertODF2OOXml(const std::wstring & srcPath, const std::wstring & dstPath, const std::wstring & fontsPath, bool bOnlyPresentation, const ProgressCallback* CallBack);
+
+int ConvertOTF2ODF(const std::wstring & dstPath);

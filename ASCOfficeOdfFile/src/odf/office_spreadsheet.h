@@ -66,6 +66,9 @@ public:
 	
 	office_element_ptr_array	content_;
  	
+	office_element_ptr			user_fields_;
+	office_element_ptr			variables_;
+ 	office_element_ptr			sequences_;
 	// table:calculation-settings
 	// table:consolidation
 	// table:dde-links
@@ -73,9 +76,6 @@ public:
 	
 	// text:alphabetical-index-auto-mark-file
 	// text:ddeconnection-decls
-	// text:sequence-decls
-	// text:user-fielddecls
-	// text:variable-decls
 };
 CP_REGISTER_OFFICE_ELEMENT2(office_spreadsheet);
 

@@ -5929,7 +5929,7 @@ namespace SimpleTypes
 		}
 		double ToTwips()
 		{
-            return Emu_To_Twips( this->m_eValue );
+            return Emu_To_Twips((double) this->m_eValue );
 		}	
 	};
 
@@ -6189,7 +6189,7 @@ namespace SimpleTypes
 		}
 		double ToTwips()
 		{
-            return Emu_To_Twips( this->m_eValue );
+            return Emu_To_Twips( (double) this->m_eValue );
 		}
 	};
 

@@ -1039,10 +1039,10 @@ bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr,
 		//если нет убрать, если да - добавить
 		if (border_inside_h)
 		{
-			int del_border = border_inside_h->find(L"none");
+			bool del_border = (std::wstring::npos != border_inside_h->find(L"none"));
 			if (row != 1)
 			{
-				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ && del_border>=0)
+				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ && del_border)
 					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ = boost::none;
 
 				else if (border_inside_h && del_border<0)
@@ -1059,10 +1059,10 @@ bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr,
 		}
 		if (border_inside_v)
 		{
-			int del_border = border_inside_v->find(L"none");
+			bool del_border = (std::wstring::npos != border_inside_v->find(L"none"));
 			if (col != 1)
 			{
-				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ && del_border>=0)
+				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ && del_border)
 					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ = boost::none;
 
 				else if (border_inside_h && del_border<0)
@@ -1237,6 +1237,8 @@ bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr)
 	{
 		switch(oox_table_cell_pr->Vert->GetBYTECode())
 		{
+		default:
+			break;
 		//case SimpleTypes::verticaljcBoth   : //??????
 		//	odf_para_props->content_.style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Justify); break;
 		//case SimpleTypes::verticaljcBottom :

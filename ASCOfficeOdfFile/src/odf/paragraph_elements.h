@@ -37,11 +37,11 @@
 #include <cpdoccore/CPWeakPtr.h>
 #include <cpdoccore/xml/nodetype.h>
 
-#include "paragraph_content.h"
 #include "office_elements_create.h"
 
 #include "datatypes/targetframename.h"
 #include "datatypes/noteclass.h"
+#include "datatypes/bool.h"
 
 #include "../docx/docx_conversion_context.h"
 
@@ -53,12 +53,16 @@ namespace odf_reader {
 namespace text {
 
 template <class ElementT>
-class paragraph_content_element :  public paragraph_content_impl<ElementT>
+class paragraph_content_element :  public office_element_impl<ElementT>
 {
+public:
+	void docx_serialize_sdt(const std::wstring & name, office_element_ptr & text, oox::docx_conversion_context & Context);
+	void docx_serialize_field(const std::wstring & field_name, office_element_ptr & text, oox::docx_conversion_context & Context, bool bLock = false);
+	void docx_serialize_run(office_element_ptr & text, oox::docx_conversion_context & Context);
 };
-
+//-------------------------------------------------------------------------------------------------------------------
 // simple text
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 class text : public paragraph_content_element<text>
 {
 public:
@@ -77,10 +81,11 @@ public:
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
 	bool preserve_;
-    text(const std::wstring & Text) :  text_(Text) {preserve_ = true;};
+    
+	text(const std::wstring & Text) :  text_(Text) {preserve_ = true;};
     text() {preserve_ = true;};
 
-    std::wstring & attr_text() { return text_; };
+    std::wstring text_;
 
 private:
     
@@ -88,12 +93,11 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
     virtual void add_text(const std::wstring & Text);
 
-    std::wstring text_;
-
 };
 
+//-------------------------------------------------------------------------------------------------------------------
 // text:s
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 class s : public paragraph_content_element<s>
 {
 public:
@@ -112,20 +116,19 @@ public:
     s(unsigned int c) : text_c_(c) {};
     s() {};
 
-    _CP_OPT(unsigned int) attr_c() const { return text_c_; }
+    _CP_OPT(unsigned int) text_c_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ) ;
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
     virtual void add_text(const std::wstring & Text);
 
-    _CP_OPT(unsigned int) text_c_;
 	_CP_OPT(std::wstring) content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(s);
-
+//-------------------------------------------------------------------------------------------------------------------
 // text:tab
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 class tab : public paragraph_content_element<tab>
 {
 public:
@@ -144,20 +147,19 @@ public:
     
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
    
-	_CP_OPT(unsigned int) attr_tab_ref() const { return text_tab_ref_; }
+    _CP_OPT(unsigned int) text_tab_ref_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
     virtual void add_text(const std::wstring & Text) {}
 
-    _CP_OPT(unsigned int) text_tab_ref_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(tab);
-
+//-------------------------------------------------------------------------------------------------------------------
 // text:line-break
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 class line_break : public paragraph_content_element<line_break>
 {
 public:
@@ -183,9 +185,9 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(line_break);
-
+//-------------------------------------------------------------------------------------------------------------------
 // text:bookmark
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 class bookmark : public paragraph_content_element<bookmark>
 {
 public:
@@ -211,9 +213,9 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(bookmark);
-
+//-------------------------------------------------------------------------------------------------------------------
 // text:bookmark-start
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 class bookmark_start : public paragraph_content_element<bookmark_start>
 {
 public:
@@ -228,20 +230,19 @@ public:
 	bookmark_start() {}
     bookmark_start(const std::wstring & Name) : text_name_(Name){};
 
-    const std::wstring & attr_name() const { return text_name_; }
+    std::wstring text_name_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
     virtual void add_text(const std::wstring & Text) {}
 
-    std::wstring text_name_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(bookmark_start);
-
+//-------------------------------------------------------------------------------------------------------------------
 // text:bookmark-end
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 class bookmark_end : public paragraph_content_element<bookmark_end>
 {
 public:
@@ -256,20 +257,19 @@ public:
 	bookmark_end() {} ;
     bookmark_end(const std::wstring & Name) : text_name_(Name){};
 
-    const std::wstring & attr_name() const { return text_name_; }
+    std::wstring text_name_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
     virtual void add_text(const std::wstring & Text) {}
 
-    std::wstring text_name_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(bookmark_end);
-
+//-------------------------------------------------------------------------------------------------------------------
 // text:reference-mark
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 class reference_mark : public paragraph_content_element<reference_mark>
 {
 public:
@@ -279,27 +279,23 @@ public:
     static const ElementType type = typeTextReferenceMark;
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
-public:
     reference_mark() {};
     reference_mark(const std::wstring & Name) : text_name_(Name){};
     
-    const std::wstring & attr_name() const { return text_name_; }
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    std::wstring text_name_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
     virtual void add_text(const std::wstring & Text) {}
 
-private:
-    std::wstring text_name_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(reference_mark);
-
+//-------------------------------------------------------------------------------------------------------------------
 // text:reference-mark-start
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 class reference_mark_start : public paragraph_content_element<reference_mark_start>
 {
 public:
@@ -309,27 +305,22 @@ public:
     static const ElementType type = typeTextReferenceMarkStart;
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
-public:
     reference_mark_start() {}
     reference_mark_start(const std::wstring & Name) : text_name_(Name){};
 
-    const std::wstring & attr_name() const { return text_name_; }
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+    std::wstring text_name_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
     virtual void add_text(const std::wstring & Text) {}
-
-private:
-    std::wstring text_name_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(reference_mark_start);
-
+//-------------------------------------------------------------------------------------------------------------------
 // text:reference-mark-end
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 class reference_mark_end : public paragraph_content_element<reference_mark_end>
 {
 public:
@@ -344,21 +335,19 @@ public:
 	reference_mark_end() {};
     reference_mark_end(const std::wstring & Name) : text_name_(Name){};
 
-    const std::wstring & attr_name() const { return text_name_; }
+    std::wstring text_name_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
     virtual void add_text(const std::wstring & Text) {}
 
-    std::wstring text_name_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(reference_mark_end);
-
+//-------------------------------------------------------------------------------------------------------------------
 // text:span
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
+//-------------------------------------------------------------------------------------------------------------------
 class span : public paragraph_content_element<span>
 {
 public:
@@ -388,10 +377,9 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(span);
-
+//-------------------------------------------------------------------------------------------------------------------
 // text:a
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
+//-------------------------------------------------------------------------------------------------------------------
 class a : public paragraph_content_element<a>
 {
 public:
@@ -426,10 +414,9 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(a);
-
-
+//-------------------------------------------------------------------------------------------------------------------
 // text:note
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 class note : public paragraph_content_element<note>
 {
 public:
@@ -457,9 +444,9 @@ private:
   
 };
 CP_REGISTER_OFFICE_ELEMENT2(note);
-
+//-------------------------------------------------------------------------------------------------------------------
 // text:ruby
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 class ruby : public paragraph_content_element<ruby>
 {
 public:
@@ -482,20 +469,9 @@ private:
   
 };
 CP_REGISTER_OFFICE_ELEMENT2(ruby);
-
-class common_field_fixed_attlist
-{
-public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    
-private:
-    _CP_OPT(bool) text_fixed_;
-    
-};
-
+//-------------------------------------------------------------------------------------------------------------------
 // text:title
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
+//-------------------------------------------------------------------------------------------------------------------
 class title : public paragraph_content_element<title>
 {
 public:
@@ -511,13 +487,12 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
+	_CP_OPT(odf_types::Bool)	text_fixed_;
+	office_element_ptr			text_;    
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
     virtual void add_text(const std::wstring & Text);
-
-    common_field_fixed_attlist	attlist_;
-    office_element_ptr_array	content_;
 
 };
 
@@ -539,20 +514,18 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
+	_CP_OPT(odf_types::Bool)	text_fixed_;
+	office_element_ptr			text_;    
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
     virtual void add_text(const std::wstring & Text);
-
-    common_field_fixed_attlist	attlist_;
-    office_element_ptr_array	content_;
-
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(chapter);
-
+//-------------------------------------------------------------------------------------------------------------------
 //text:subject
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 class subject : public paragraph_content_element<subject>
 {
 public:
@@ -567,19 +540,17 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
+	_CP_OPT(odf_types::Bool)	text_fixed_;
+	office_element_ptr			text_;     
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
     virtual void add_text(const std::wstring & Text);
-
-    common_field_fixed_attlist	attlist_;
-    office_element_ptr_array	content_;
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(subject);
-
+//-------------------------------------------------------------------------------------------------------------------
 // text:placeholder
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 class text_placeholder : public paragraph_content_element<text_placeholder>
 {
 public:
@@ -593,18 +564,20 @@ public:
 	void pptx_convert(oox::pptx_conversion_context & Context);
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+
+	_CP_OPT(std::wstring)	text_description_;
+	_CP_OPT(std::wstring)	text_placeholder_type_;
+	office_element_ptr		text_;       
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
     virtual void add_text(const std::wstring & Text);
-
-    office_element_ptr_array content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_placeholder);
-
+//-------------------------------------------------------------------------------------------------------------------
 // text:page-number
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 class text_page_number: public paragraph_content_element<text_page_number>
 {
 public:
@@ -621,18 +594,22 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
     virtual void add_text(const std::wstring & Text);
 
-    // todooo attributes
-    office_element_ptr_array text_;
-    
+	_CP_OPT(std::wstring)		style_num_format_;
+	_CP_OPT(odf_types::Bool)	style_num_letter_sync_;
+	_CP_OPT(odf_types::Bool)	text_fixed_;
+	_CP_OPT(int)				text_page_adjust_;
+	_CP_OPT(std::wstring)		text_select_page_; //todooo to type
+
+	office_element_ptr			text_;        
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_page_number);
-
+//-------------------------------------------------------------------------------------------------------------------
 // text:page-count
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 class text_page_count : public paragraph_content_element<text_page_count>
 {
 public:
@@ -645,24 +622,23 @@ public:
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
 
-public:
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
+	_CP_OPT(std::wstring)		style_num_format_;
+	_CP_OPT(odf_types::Bool)	style_num_letter_sync_;
+  
+	office_element_ptr			text_;    
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
     virtual void add_text(const std::wstring & Text);
-
-private:
-    // todooo attributes
-    office_element_ptr_array text_;
     
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_page_count);
-
+//-------------------------------------------------------------------------------------------------------------------
 // text:date 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 class text_date : public paragraph_content_element<text_date>
 {
 public:
@@ -678,23 +654,22 @@ public:
     std::wostream & text_to_stream(std::wostream & _Wostream) const;
 	
 	_CP_OPT(std::wstring)		style_data_style_name_;
-
-	_CP_OPT(bool)				text_fixed_;
+	_CP_OPT(odf_types::Bool)	text_fixed_;
 	_CP_OPT(std::wstring)		text_date_value_;//with format
-
-    office_element_ptr_array	text_;
+  
+	office_element_ptr			text_;    
 
 private:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+	void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
     void add_text(const std::wstring & Text);
     
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_date);
-
+//-------------------------------------------------------------------------------------------------------------------
 // text:modification-date
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------------------------------------------
 class text_modification_date : public text_date
 {
 public:
@@ -706,6 +681,12 @@ public:
 
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
+	
+	_CP_OPT(std::wstring)	style_data_style_name_;
+	_CP_OPT(odf_types::Bool)text_fixed_;
+	_CP_OPT(std::wstring)	text_date_value_;//with format
+  
+	office_element_ptr		text_;    
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_modification_date);
@@ -727,22 +708,22 @@ public:
 
     std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
-	_CP_OPT(std::wstring)		style_data_style_name_;
-	_CP_OPT(bool)				text_fixed_;
-	_CP_OPT(std::wstring)		text_time_value_;//with format
-
-    office_element_ptr_array	text_;
+	_CP_OPT(std::wstring)	style_data_style_name_;
+	_CP_OPT(odf_types::Bool)text_fixed_;
+	_CP_OPT(std::wstring)	text_time_value_;//with format
+  
+	office_element_ptr		text_;    
 
 private:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+	void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
     void add_text(const std::wstring & Text);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_time);
 
 //-------------------------------------------------------------------------------------------------------------------
-// text:modification-date
+// text:modification-time
 //-------------------------------------------------------------------------------------------------------------------
 class text_modification_time : public text_time
 {
@@ -755,6 +736,12 @@ public:
 
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
+	
+	_CP_OPT(std::wstring)	style_data_style_name_;
+	_CP_OPT(odf_types::Bool)text_fixed_;
+	_CP_OPT(std::wstring)	text_time_value_;//with format
+  
+	office_element_ptr		text_;    
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_modification_time);
@@ -778,12 +765,12 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
     virtual void add_text(const std::wstring & Text);
 
-    // todooo attributes
-    office_element_ptr_array text_;
-    
+  	_CP_OPT(odf_types::Bool)text_fixed_;
+	office_element_ptr		text_;    
+	//text:display    
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_file_name);
 
@@ -806,7 +793,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
 	// todooo  attributes
@@ -832,7 +819,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
 	_CP_OPT(std::wstring)		text_name_;
@@ -874,20 +861,270 @@ public:
     static const ElementType type = typeTextSheetName;
     CPDOCCORE_DEFINE_VISITABLE();
 
+	virtual void docx_convert(oox::docx_conversion_context & Context);
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
     virtual void add_text(const std::wstring & Text);
 
-    office_element_ptr_array text_;
+	office_element_ptr	text_;    
     
 };
 CP_REGISTER_OFFICE_ELEMENT2(sheet_name);
+//-------------------------------------------------------------------------------------------------------------------
+// text:author-name
+//-------------------------------------------------------------------------------------------------------------------
+class author_name : public paragraph_content_element<author_name>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextAuthorName;
+    CPDOCCORE_DEFINE_VISITABLE();
 
+    virtual void docx_convert(oox::docx_conversion_context & Context);
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+
+	_CP_OPT(odf_types::Bool)	text_fixed_;
+	office_element_ptr			text_;    
+};
+CP_REGISTER_OFFICE_ELEMENT2(author_name);
+//-------------------------------------------------------------------------------------------------------------------
+// text:author-initials
+//-------------------------------------------------------------------------------------------------------------------
+class author_initials : public paragraph_content_element<author_initials>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextAuthorInitials;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    virtual void docx_convert(oox::docx_conversion_context & Context);
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+
+	_CP_OPT(odf_types::Bool)	text_fixed_;
+	office_element_ptr			text_;    
+};
+CP_REGISTER_OFFICE_ELEMENT2(author_initials);
+//-------------------------------------------------------------------------------------------------------------------
+// text:sender-city
+//-------------------------------------------------------------------------------------------------------------------
+class sender_city : public paragraph_content_element<sender_city>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextSenderCity;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    virtual void docx_convert(oox::docx_conversion_context & Context);
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+
+	_CP_OPT(odf_types::Bool)	text_fixed_;
+	office_element_ptr			text_;    
+};
+CP_REGISTER_OFFICE_ELEMENT2(sender_city);
+//-------------------------------------------------------------------------------------------------------------------
+// text:sender-postal-code
+//-------------------------------------------------------------------------------------------------------------------
+class sender_postal_code : public paragraph_content_element<sender_postal_code>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextSenderPostalCode;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+	
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+
+	_CP_OPT(odf_types::Bool)	text_fixed_;
+	office_element_ptr			text_;    
+};
+CP_REGISTER_OFFICE_ELEMENT2(sender_postal_code);
+//-------------------------------------------------------------------------------------------------------------------
+// text:sender-street
+//-------------------------------------------------------------------------------------------------------------------
+class sender_street : public paragraph_content_element<sender_street>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextSenderStreet;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    virtual void docx_convert(oox::docx_conversion_context & Context);
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+
+	_CP_OPT(odf_types::Bool)	text_fixed_;
+	office_element_ptr			text_;    
+};
+CP_REGISTER_OFFICE_ELEMENT2(sender_street);
+//-------------------------------------------------------------------------------------------------------------------
+// text:sender-state-or-province
+//-------------------------------------------------------------------------------------------------------------------
+class sender_state_or_province : public paragraph_content_element<sender_state_or_province>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextSenderStateOrProvince;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    virtual void docx_convert(oox::docx_conversion_context & Context);
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+
+	_CP_OPT(odf_types::Bool)	text_fixed_;
+	office_element_ptr			text_;    
+};
+CP_REGISTER_OFFICE_ELEMENT2(sender_state_or_province);
+//-------------------------------------------------------------------------------------------------------------------
+// text:sender-email
+//-------------------------------------------------------------------------------------------------------------------
+class sender_email : public paragraph_content_element<sender_email>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextSenderEmail;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    virtual void docx_convert(oox::docx_conversion_context & Context);
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+
+	_CP_OPT(odf_types::Bool)	text_fixed_;
+	office_element_ptr			text_;    
+};
+CP_REGISTER_OFFICE_ELEMENT2(sender_email);
+//-------------------------------------------------------------------------------------------------------------------
+// text:sender-firstname
+//-------------------------------------------------------------------------------------------------------------------
+class sender_firstname : public paragraph_content_element<sender_firstname>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextSenderFirstname;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    virtual void docx_convert(oox::docx_conversion_context & Context);
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+
+	_CP_OPT(odf_types::Bool)	text_fixed_;
+	office_element_ptr			text_;    
+};
+CP_REGISTER_OFFICE_ELEMENT2(sender_firstname);
+//-------------------------------------------------------------------------------------------------------------------
+// text:sender-lastname
+//-------------------------------------------------------------------------------------------------------------------
+class sender_lastname : public paragraph_content_element<sender_lastname>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextSenderLastname;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    virtual void docx_convert(oox::docx_conversion_context & Context);
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+
+	_CP_OPT(odf_types::Bool)	text_fixed_;
+	office_element_ptr			text_;    
+};
+CP_REGISTER_OFFICE_ELEMENT2(sender_lastname);
+//-------------------------------------------------------------------------------------------------------------------
+// text:sender-company
+//-------------------------------------------------------------------------------------------------------------------
+class sender_company : public paragraph_content_element<sender_company>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextSenderCompany;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    virtual void docx_convert(oox::docx_conversion_context & Context);
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+
+	_CP_OPT(odf_types::Bool)	text_fixed_;
+	office_element_ptr			text_;    
+};
+CP_REGISTER_OFFICE_ELEMENT2(sender_company);
+
+//-------------------------------------------------------------------------------------------------------------------
+//text:user-field-get
+//---------------------------------------------------------------------------------------------------
+class text_user_field_get : public paragraph_content_element<text_user_field_get>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeTextUserFieldGet;
+    CPDOCCORE_DEFINE_VISITABLE()
+    
+    virtual void docx_convert(oox::docx_conversion_context & Context);
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+    virtual void add_text(const std::wstring & Text);
+
+	_CP_OPT(std::wstring)	style_data_style_name_;
+	_CP_OPT(std::wstring)	text_display_;
+	_CP_OPT(std::wstring)	text_name_;
+	
+	office_element_ptr		text_;    
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_user_field_get);
+} // namespace text
 //-------------------------------------------------------------------------------------------------------------------
 //presentation:footer
 //-------------------------------------------------------------------------------------------------------------------
-class presentation_footer : public paragraph_content_element<presentation_footer>
+class presentation_footer : public text::paragraph_content_element<presentation_footer>
 {
 public:
     static const wchar_t * ns;
@@ -909,7 +1146,7 @@ CP_REGISTER_OFFICE_ELEMENT2(presentation_footer);
 //-------------------------------------------------------------------------------------------------------------------
 //presentation:date-time
 //-------------------------------------------------------------------------------------------------------------------
-class presentation_date_time: public paragraph_content_element<presentation_date_time>
+class presentation_date_time: public text::paragraph_content_element<presentation_date_time>
 {
 public:
     static const wchar_t * ns;
@@ -927,6 +1164,6 @@ private:
     
 };
 CP_REGISTER_OFFICE_ELEMENT2(presentation_date_time);
-} // namespace text
+
 } // namespace odf_reader
 } // namespace cpdoccore

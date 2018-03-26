@@ -230,7 +230,7 @@ public:
     style_master_page * master_page_by_name(const std::wstring & Name);
 	style_presentation_page_layout * presentation_page_layout_by_name(const std::wstring & Name); 
    
-
+	bool compare_page_properties(const std::wstring & master1, const std::wstring & master2);
 private:
 	std::vector<style_presentation_page_layout*> presentation_page_layouts_;
     instances_array instances_;

@@ -384,8 +384,8 @@ void draw_equation::serialize(std::wostream & _Wostream)
 }
 int draw_enhanced_geometry::parsing(_CP_OPT(std::wstring) val) 
 {
-	int pos=0, res=-1;
-	if (!val)return res;
+	int res = -1;
+	if (!val) return res;
 
 	BOOST_FOREACH(wchar_t c, val.get())
     {
@@ -393,7 +393,9 @@ int draw_enhanced_geometry::parsing(_CP_OPT(std::wstring) val)
 			return res;
 	}
 
-	if ((pos = val->find(L"$"))>=0)return res;
+	if (std::wstring::npos != val->find(L"$"))
+		return res;
+
 	res = boost::lexical_cast<int>(val.get());
 	return res;
 }

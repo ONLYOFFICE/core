@@ -106,7 +106,9 @@ namespace NExtractTools
 
 			if (OfficeFileFormatChecker.isOfficeFile(sFile1))
             {
-                switch (OfficeFileFormatChecker.nFileType)
+				int &type = OfficeFileFormatChecker.nFileType;
+               
+				switch (OfficeFileFormatChecker.nFileType)
 				{
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
@@ -268,6 +270,9 @@ namespace NExtractTools
                 case AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT:
                 case AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS:
                 case AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP:
+                case AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT:
+                case AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS:
+                case AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP:
                    {
                              if (0 == sExt2.compare(_T(".bin")))		res = TCD_ODF2OOT_BIN;
                         else if (0 == sExt2.compare(_T(".doct")) ||
@@ -279,7 +284,13 @@ namespace NExtractTools
                         else if (0 == sExt2.compare(_T(".docm")) ||
                                  0 == sExt2.compare(_T(".xlsm")) ||
                                  0 == sExt2.compare(_T(".pptm")))		res = TCD_ODF2OOX;
-                    }break;
+						else if (0 == sExt2.compare(_T(".odt")) 
+							&& type == AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT)		res = TCD_OTF2ODF;
+ 						else if (0 == sExt2.compare(_T(".ods")) 
+							&& type == AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS)	res = TCD_OTF2ODF;
+						else if (0 == sExt2.compare(_T(".odp")) 
+							&& type == AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP)	res = TCD_OTF2ODF;
+                  }break;
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT_FLAT:
                 case AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS_FLAT:
                 case AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP_FLAT:

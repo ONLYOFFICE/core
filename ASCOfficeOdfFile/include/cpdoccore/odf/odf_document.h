@@ -70,7 +70,7 @@ public:
 	
 	const std::wstring & get_folder() const;
 	
-	long get_office_mime_type();
+	int get_office_mime_type();
 	bool get_encrypted();
 
     class Impl;   

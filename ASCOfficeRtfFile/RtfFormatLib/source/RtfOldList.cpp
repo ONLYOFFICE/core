@@ -59,11 +59,18 @@ std::wstring RtfOldList::RenderToOOX(RenderParameter oRenderParameter)
 			sResult += L"<w:numFmt w:val=\"bullet\"/>";
 			
 			if(!sText.empty() )
-                sResult += L"<w:lvlText w:val=\"" + XmlUtils::EncodeXmlString( sText ) + L"\"/>";
+			{
+				// В символьном шрифте обрезать надо, в других случаях - нет
+				if (/*bIsSymbol && */(sText[0] & 0xF000) != 0)
+				{
+					sText[0] &= 0x00FF;
+				}
+				sResult += L"<w:lvlText w:val=\"" + XmlUtils::EncodeXmlString( sText ) + L"\"/>";
+			}
 			else
 			{
 				sResult += L"<w:lvlText w:val=\"";
-                sResult += 0xf0b7 ;
+                sResult += L'\xF0B7' ;
 				sResult += L"\"/>";
 			}
 			

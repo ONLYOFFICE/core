@@ -105,7 +105,7 @@ namespace PPTX
 				else if (_T("txbx") == strName || _T("textbox") == strName)
 				{
 					if ( oReader.IsEmptyNode() )
-						return;
+						continue;
 							
 					int nParentDepth1 = oReader.GetDepth();
 					while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
@@ -124,7 +124,22 @@ namespace PPTX
 				else if (_T("cNvSpPr") == strName)
 					nvSpPr.cNvSpPr = oReader;
 				else if (_T("txSp") == strName)
-					txBody = oReader;
+				{
+					if ( oReader.IsEmptyNode() )
+						continue;
+							
+					int nParentDepth1 = oReader.GetDepth();
+					while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+					{
+						std::wstring strName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+
+						if (strName1 == L"txBody")
+						{
+							txBody = oReader;
+							break;
+						}
+					}
+				}
 				else if (_T("bodyPr") == strName)
 					oTextBoxBodyPr = oReader;
 			}

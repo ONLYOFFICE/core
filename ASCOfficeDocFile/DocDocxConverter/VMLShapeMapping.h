@@ -40,7 +40,6 @@
 #include "VMLShapeTypeMapping.h"
 #include "TwipsValue.h"
 #include "EmuValue.h"
-#include "MemoryStream.h"
 #include "RGBColor.h"
 #include "FixedPointNumber.h"
 

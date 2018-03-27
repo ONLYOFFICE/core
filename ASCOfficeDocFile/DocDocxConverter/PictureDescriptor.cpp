@@ -44,7 +44,7 @@
 namespace DocFileFormat
 {
 	/// Parses the CHPX for a fcPic an loads the PictureDescriptor at this offset
-	PictureDescriptor::PictureDescriptor(CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size, bool oldVersion) 
+	PictureDescriptor::PictureDescriptor(CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size, int nWordVersion) 
 		: 
 		dxaGoal(0), dyaGoal(0), mx(0), my(0), Type(jpg), mfp(), dxaCropLeft(0), dyaCropTop(0),
 		dxaCropRight(0), dyaCropBottom(0), brcTop(NULL), brcLeft(NULL), brcBottom(NULL), brcRight(NULL), dxaOrigin(0), dyaOrigin(0),
@@ -55,7 +55,7 @@ namespace DocFileFormat
 
 		if ( fc >= 0 )
 		{
-			parse( stream, fc, size, oldVersion);
+			parse( stream, fc, size, nWordVersion);
 		}
 	}
 	PictureDescriptor::PictureDescriptor()
@@ -82,11 +82,11 @@ namespace DocFileFormat
 		RELEASEARRAYOBJECTS(embeddedData);
 		RELEASEARRAYOBJECTS(embeddedDataHeader);
 	}
-	void PictureDescriptor::parse(POLE::Stream* stream, int fc, int sz, bool oldVersion)
+	void PictureDescriptor::parse(POLE::Stream* stream, int fc, int sz, int nWordVersion)
 	{
 		Clear();
 
-		VirtualStreamReader reader(stream, fc, oldVersion);
+		VirtualStreamReader reader(stream, fc, nWordVersion);
 
 		int sz_stream = reader.GetSize();
 
@@ -136,7 +136,7 @@ namespace DocFileFormat
 		int brcl			=	reader.ReadInt16();
 
 	// borders
-		int bytesCount		=	oldVersion ? 2 : 4;
+		int bytesCount		=	(nWordVersion > 0) ? 2 : 4;
 		
 		bytes				=	reader.ReadBytes( bytesCount, true );
 		brcTop				=	new BorderCode( bytes, bytesCount );
@@ -158,7 +158,7 @@ namespace DocFileFormat
 		dyaOrigin			=	reader.ReadInt16();
 
 		int pos_end = reader.GetPosition();
-		if (oldVersion)
+		if (nWordVersion > 0)
 		{
 			int flag = brcl;
 

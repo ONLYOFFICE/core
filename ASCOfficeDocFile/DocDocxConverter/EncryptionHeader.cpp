@@ -37,9 +37,9 @@ namespace DocFileFormat
 {
 	EncryptionHeader::EncryptionHeader( FileInformationBlock* fib, POLE::Stream* tableStream ) : bStandard(false), bXOR(false), bAES(false)
 	{
-		VirtualStreamReader tStream( tableStream, 0, fib->m_bOlderVersion);
+		VirtualStreamReader tStream( tableStream, 0, fib->m_nWordVersion);
 
-		if (fib->m_FibBase.fObfuscation || fib->m_bOlderVersion)
+		if (fib->m_FibBase.fObfuscation || fib->m_nWordVersion > 0)
 		{
 			bXOR = true;
 			

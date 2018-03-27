@@ -98,7 +98,7 @@ void FormFieldData::_FFData::read(VirtualStreamReader *reader)
 	xstzEntryMcr	= readXstz(reader);
 	xstzExitMcr		= readXstz(reader);
 }
-FormFieldData::FormFieldData( int type, const CharacterPropertyExceptions* chpx, POLE::Stream* stream, bool bOlderVersion_ )
+FormFieldData::FormFieldData( int type, const CharacterPropertyExceptions* chpx, POLE::Stream* stream, int nWordVersion )
 {
 	binary_data_size = 0;
 
@@ -139,7 +139,7 @@ FormFieldData::FormFieldData( int type, const CharacterPropertyExceptions* chpx,
 
 	if (fc >= 0 && bNilPICFAndBinData)
 	{
-		VirtualStreamReader reader(stream, fc, bOlderVersion_);
+		VirtualStreamReader reader(stream, fc, nWordVersion);
 
 		int sz_stream = reader.GetSize();
 

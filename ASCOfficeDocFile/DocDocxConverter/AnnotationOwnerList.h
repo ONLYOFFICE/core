@@ -41,7 +41,7 @@ namespace DocFileFormat
 	public: 
 		AnnotationOwnerList(FileInformationBlock* fib, POLE::Stream* tableStream) : std::vector<std::wstring>()
 		{
-			VirtualStreamReader reader(tableStream, fib->m_FibWord97.fcGrpXstAtnOwners, fib->m_bOlderVersion);
+			VirtualStreamReader reader(tableStream, fib->m_FibWord97.fcGrpXstAtnOwners, fib->m_nWordVersion);
 			
 			if (fib->m_FibWord97.fcGrpXstAtnOwners > reader.GetSize()) return;
 

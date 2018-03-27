@@ -385,7 +385,7 @@ namespace DocFileFormat
 		friend class StyleSheetMapping;
 		friend class CharacterPropertiesMapping;
 
-	private:
+	public:
 		/// The name of the style
 		std::wstring xstzName;
 		/// Invariant style identifier 
@@ -450,11 +450,10 @@ namespace DocFileFormat
 		/// If the style doesn't modify table properties, tapx is null.
 		TablePropertyExceptions* tapx;
 
-	public:
 		/// Creates an empty STD object
 		StyleSheetDescription();
 		virtual ~StyleSheetDescription();
 		/// Parses the bytes to retrieve a StyleSheetDescription
-		StyleSheetDescription( unsigned char* bytes, int size, int cbStdBase, POLE::Stream* dataStream, bool older);
+		StyleSheetDescription( unsigned char* bytes, int size, int cbStdBase, POLE::Stream* dataStream, int nWordVersion);
 	};
 }

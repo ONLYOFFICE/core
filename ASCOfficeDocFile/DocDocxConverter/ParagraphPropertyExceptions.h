@@ -59,6 +59,6 @@ namespace DocFileFormat
       }
 
       /// Parses the bytes to retrieve a PAPX
-	  ParagraphPropertyExceptions( unsigned char* bytes, int size, POLE::Stream* dataStream, bool oldVersion);
+	  ParagraphPropertyExceptions( unsigned char* bytes, int size, POLE::Stream* dataStream, int nWordVersion);
   };
 }

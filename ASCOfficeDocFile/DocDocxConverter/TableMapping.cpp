@@ -215,7 +215,7 @@ namespace DocFileFormat
 			int fcRowEnd = documentMapping->findRowEndFc(cp, depth);
 			TablePropertyExceptions tapx (	documentMapping->findValidPapx( fcRowEnd ), 
 											documentMapping->m_document->DataStream,
-											documentMapping->m_document->FIB->m_bOlderVersion);
+											documentMapping->m_document->nWordVersion);
 			
 			std::list<CharacterPropertyExceptions*>* chpxs = documentMapping->m_document->GetCharacterPropertyExceptions( fcRowEnd, fcRowEnd + 1 );
 			TableRowPropertiesMapping trpMapping( documentMapping->GetXMLWriter(), *(chpxs->begin()) );
@@ -315,7 +315,7 @@ namespace DocFileFormat
 
 		papx = documentMapping->findValidPapx(fc);
 
-		TableInfo tai( papx );
+		TableInfo tai( papx, documentMapping->m_document->nWordVersion );
 
 
 		return ( ( tai.fInTable ) && ( ( ( documentMapping->m_document->Text->at( _cp ) == 0x0007 ) && ( tai.iTap <= 1 ) && 
@@ -335,7 +335,7 @@ namespace DocFileFormat
 
 		papx = documentMapping->findValidPapx( fc );
 
-		TableInfo tai( papx );
+		TableInfo tai( papx, documentMapping->m_document->nWordVersion );
 
 		return ( ( tai.fInTable ) && ( ( ( documentMapping->m_document->Text->at( _cp ) == 0x0007 ) && ( tai.iTap <= 1 ) &&
 			( tai.fTtp ) ) ||
@@ -355,7 +355,7 @@ namespace DocFileFormat
 
 		papx = documentMapping->findValidPapx( fc );
 
-		TableInfo tai( papx );
+		TableInfo tai( papx, documentMapping->m_document->nWordVersion );
 
 		return (  ( tai.fInTable ) && ( documentMapping->m_document->Text->at( _cp ) == 0x000D ) && 
 			( !IsCellMarker( _cp ) ) && ( !IsRowMarker( _cp ) ) );
@@ -378,7 +378,7 @@ namespace DocFileFormat
 
 			papx = documentMapping->findValidPapx( fc );
 
-			TableInfo tai( papx );
+			TableInfo tai( papx, documentMapping->m_document->nWordVersion );
 
 			TableRow	tableRow	( documentMapping, _cp );
 			TableCell	tableCell	( documentMapping, _cp );
@@ -390,7 +390,7 @@ namespace DocFileFormat
 
 				papx = documentMapping->findValidPapx( fc );
 
-				tai = TableInfo( papx );
+				tai = TableInfo( papx, documentMapping->m_document->nWordVersion );
 
 				if ( tai.iTap > _depth )
 				{
@@ -405,7 +405,7 @@ namespace DocFileFormat
 
 					papx = documentMapping->findValidPapx( fc );
 
-					tai = TableInfo( papx );
+					tai = TableInfo( papx, documentMapping->m_document->nWordVersion );
 
 					paragraphBeginCP = _cp;
 				}
@@ -524,7 +524,7 @@ namespace DocFileFormat
 
 		TablePropertyExceptions row1Tapx(	documentMapping->findValidPapx( fcRowEnd ), 
 											documentMapping->m_document->DataStream ,
-											documentMapping->m_document->FIB->m_bOlderVersion);
+											documentMapping->m_document->nWordVersion);
 
 		//start table
         documentMapping->GetXMLWriter()->WriteNodeBegin( L"w:tbl" );

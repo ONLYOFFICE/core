@@ -65,7 +65,7 @@ namespace DocFileFormat
 		
 		static int FindIndexbyId(const std::list<ListData*>& listData, int id);
 		/// Converts the number format code of the binary format.
-		static std::wstring GetNumberFormatWideString(int nfc, bool bOlderVersion = false);
+		static std::wstring GetNumberFormatWideString(int nfc, int nWordVersion = 0);
 		
 		virtual ~NumberingMapping();
 

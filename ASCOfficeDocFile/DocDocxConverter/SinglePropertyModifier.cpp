@@ -36,17 +36,20 @@
 
 namespace DocFileFormat
 {
-	SinglePropertyModifier::SinglePropertyModifier( bool oldVersion_) :
-					Arguments(NULL), OpCode(sprmPIstd), fSpec(false), Type(PAP), argumentsSize(0), oldVersion (oldVersion_)
+	SinglePropertyModifier::SinglePropertyModifier(OperationCode opCode, int argumentsSize, unsigned char* arguments) :
+					Arguments(NULL), OpCode(opCode), fSpec(false), Type(PAP), argumentsSize(argumentsSize), nWordVersion (2)
 	{
+		Arguments = new unsigned char[argumentsSize];
+		memcpy(Arguments, arguments, argumentsSize);
 	}
 
-	SinglePropertyModifier::SinglePropertyModifier(unsigned char* bytes, int size, bool oldVersion_) : 
-					Arguments(NULL), OpCode(sprmPIstd), fSpec(false), Type(PAP), argumentsSize(0), oldVersion (oldVersion_)
+	SinglePropertyModifier::SinglePropertyModifier(unsigned char* bytes, int size, int nWordVersion_) : 
+					Arguments(NULL), OpCode(sprmPIstd), fSpec(false), Type(PAP), argumentsSize(0), nWordVersion (nWordVersion_)
 	{
 		unsigned char opSize		= 0;
 		unsigned char opCodeSize	= 0;
-		if (oldVersion)
+		
+		if (nWordVersion > 0)
 		{
 			opCodeSize = 1;
 			//first 1 byte are the operation code ...
@@ -132,9 +135,12 @@ namespace DocFileFormat
 		}
 		else
 		{
-			argumentsSize = opSize;
-			Arguments = new unsigned char[argumentsSize];
-			memcpy( Arguments, ( bytes + opCodeSize ), argumentsSize );
+			argumentsSize = min(size - opCodeSize, opSize);
+			if (argumentsSize > 0)
+			{
+				Arguments = new unsigned char[argumentsSize];
+				memcpy( Arguments, ( bytes + opCodeSize ), argumentsSize );
+			}
 		}
 	}
 
@@ -142,13 +148,13 @@ namespace DocFileFormat
 	{
 		if ( spm.Arguments != NULL )
 		{
-			argumentsSize = spm.argumentsSize;
+			argumentsSize	= spm.argumentsSize;
 			Arguments		= new unsigned char[argumentsSize];
 			memcpy( Arguments, spm.Arguments, argumentsSize );
 			fSpec			= spm.fSpec;
-			OpCode		= spm.OpCode;
+			OpCode			= spm.OpCode;
 			Type			= spm.Type;
-			oldVersion	= spm.oldVersion;
+			nWordVersion 	= spm.nWordVersion;
 		}
 	}
 
@@ -180,7 +186,7 @@ namespace DocFileFormat
 			fSpec			=	spm.fSpec;
 			Type			=	spm.Type;
 			argumentsSize	=	spm.argumentsSize;
-			oldVersion		=	spm.oldVersion;
+			nWordVersion	=	spm.nWordVersion;
 
 			Arguments		=	new unsigned char[argumentsSize];
            

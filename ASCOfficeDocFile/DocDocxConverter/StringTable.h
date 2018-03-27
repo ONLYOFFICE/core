@@ -71,12 +71,12 @@ namespace DocFileFormat
             parse( reader, (unsigned int)reader->GetPosition() );
 		}
 
-		StringTable( POLE::Stream* tableStream, unsigned int fc, unsigned int lcb, bool older ) :
+		StringTable( POLE::Stream* tableStream, unsigned int fc, unsigned int lcb, int nWordVersion ) :
 												code_page(1250), fExtend(false), cbData(0), cbExtra(0)
 		{
 			if ( lcb > 0 )
 			{
-				VirtualStreamReader reader( tableStream, fc, older);
+				VirtualStreamReader reader( tableStream, fc, nWordVersion);
 
 				parse( &reader, fc, lcb ) ;
 			}
@@ -123,25 +123,44 @@ namespace DocFileFormat
 
 			//read cData
 			long cDataStart = reader->GetPosition();
-			unsigned short c = reader->ReadUInt16();
-
-			if ( c != 0xFFFF )
+			unsigned short cb = 0, elem_sz = 0;
+			
+			if (reader->nWordVersion == 2)
 			{
-				if (reader->olderVersion)
-					this->cbData = (int)c; // all size 
+				cb = reader->ReadByte();
+				elem_sz = reader->ReadByte();
+
+				if (elem_sz > 0)
+				{
+					count_elements = cb;
+				}
 				else
-					count_elements = c;
-				
+				{
+					this->cbData = cb; 
+				}
 			}
-			else
+			else if (reader->nWordVersion == 1)
 			{
-				//cData is a 4byte signed Integer, so we need to seek back
-				reader->Seek( (int)( fc + cDataStart ), 0/*STREAM_SEEK_SET*/ );
-
-				this->cbData = reader->ReadInt32();
+				cb = reader->ReadUInt16();
+				this->cbData = cb; // all size 
 			}
+			else if (reader->nWordVersion == 0)
+			{
+				cb = reader->ReadUInt16();
+				if ( cb != 0xFFFF )
+				{
+					count_elements = cb;				
+				}
+				else
+				{
+					//cData is a 4byte signed Integer, so we need to seek back
+					reader->Seek( (int)( fc + cDataStart ), 0/*STREAM_SEEK_SET*/ );
+					this->cbData = reader->ReadInt32();
+				}
+			}
+
 			//read cbExtra
-			if (reader->olderVersion == false)
+			if (reader->nWordVersion == 0)
 			{
 				this->cbExtra = reader->ReadUInt16();
 			}

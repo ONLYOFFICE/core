@@ -120,7 +120,7 @@ namespace DocFileFormat
 
 			if (papx)
 			{
-				TableInfo tai(papx);
+				TableInfo tai(papx, m_document->nWordVersion);
 				if (tai.fInTable)
 				{
 					int cpStart = cp;

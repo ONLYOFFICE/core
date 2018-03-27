@@ -33,6 +33,7 @@
 
 #include "IVisitable.h"
 #include "SinglePropertyModifier.h"
+#include "MemoryStream.h"
 
 #include <list>
 
@@ -48,6 +49,8 @@ namespace DocFileFormat
 		virtual ~PropertyExceptions();
 		PropertyExceptions();
 		PropertyExceptions( const std::list<SinglePropertyModifier>& grpprl );
-		PropertyExceptions( unsigned char* bytes, int size, bool oldVersion );
+		PropertyExceptions( unsigned char* bytes, int size, int nWordVersion );
+
+		void ReadExceptions( unsigned char* bytes, int size, int nWordVersion );
 	};
 }

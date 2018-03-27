@@ -38,7 +38,7 @@ namespace DocFileFormat
 {
 	HeaderAndFooterTable::HeaderAndFooterTable (FileInformationBlock* fib, POLE::Stream* pTableStream)
 	{
-		VirtualStreamReader tableReader (pTableStream, fib->m_FibWord97.fcPlcfHdd, fib->m_bOlderVersion);
+		VirtualStreamReader tableReader (pTableStream, fib->m_FibWord97.fcPlcfHdd, fib->m_nWordVersion);
 
 		if (fib->m_FibWord97.fcPlcfHdd > tableReader.GetSize()) return;
 
@@ -58,7 +58,7 @@ namespace DocFileFormat
 
 			//the first 6 _entries are about footnote and endnote formatting
 			//so skip these _entries
-			int pos = (fib->m_FibBase.fComplex || !fib->m_bOlderVersion) ? 6 : 0;
+			int pos = (fib->m_FibBase.fComplex || !fib->m_nWordVersion) ? 6 : 0;
 			
 			int count			=	( tableSize - pos - 2) / 6;
 			

@@ -40,7 +40,7 @@ namespace DocFileFormat
 
 		//read the user initials (LPXCharBuffer9)
 
-		if (reader->olderVersion)
+		if (reader->nWordVersion > 0)
 		{
 			short cch = reader->ReadByte();
 		

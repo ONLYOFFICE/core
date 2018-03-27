@@ -59,7 +59,7 @@ namespace DocFileFormat
 			bytes = reader->ReadBytes( length, true );
 
 			//It's a real string table
-			if (reader->olderVersion)
+			if (reader->nWordVersion > 0)
 			{
 				FormatUtils::GetSTLCollectionFromBytes<WideString>( newObject, bytes, length, ENCODING_WINDOWS_1250 );
 			}

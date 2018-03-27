@@ -124,7 +124,7 @@ public:
 
 		if (m_Data)
 		{
-			rdByte		=	m_Data[m_Position];
+			rdByte		=	(m_Position < m_Size) ? m_Data[m_Position] : 0;
 			m_Position	+=	sizeof(rdByte);
 		}
 

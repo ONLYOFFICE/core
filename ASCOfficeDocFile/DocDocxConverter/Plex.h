@@ -49,12 +49,12 @@ namespace DocFileFormat
 		bool						m_bIsValid;
 
 	public:
-		Plex(int structureLength, POLE::Stream* stream, unsigned int fc, unsigned int lcb, bool oldVersion) 
+		Plex(int structureLength, POLE::Stream* stream, unsigned int fc, unsigned int lcb, int nWordVersion) 
 			: m_bIsValid(false)
 		{
 			if ((lcb > 0) && (NULL != stream))
 			{
-				VirtualStreamReader reader(stream, (ULONG)fc, oldVersion);
+				VirtualStreamReader reader(stream, (ULONG)fc, nWordVersion);
 
 				if (fc > reader.GetSize()) return;
 

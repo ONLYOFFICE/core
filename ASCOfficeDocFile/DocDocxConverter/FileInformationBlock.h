@@ -38,8 +38,13 @@ namespace DocFileFormat
 {
 	typedef enum FibVersion
 	{
+		Fib1983 = 0x002d,	// WinWord 2
+		Fib1985 = 0x003F,	// 
+//---------------------------------------------------------
+		Fib1989 = 0x0045,	// 
 		Fib1993 = 0x0065,	// Word 6.0
 		Fib1995 = 0x0068,	// Word 7.0 (95)
+//---------------------------------------------------------
 		Fib1996 = 0x0069,	// Word 8.0 (97)		
 		Fib1997 = 0x00C1,		
 		Fib2000 = 0x00D9,
@@ -92,408 +97,397 @@ namespace DocFileFormat
 
 	typedef struct RgLw97
 	{
-		RgLw97() : 	cbMac(0),  ccpText(0), ccpFtn(0),  ccpHdr(0),  ccpAtn(0), ccpEdn(0),  ccpTxbx(0),  ccpHdrTxbx(0) {}
-//----------------------
-		int cbMac;
-		int ccpText;
-		int ccpFtn;
-		int ccpHdr;
-		int ccpAtn;
-		int ccpEdn;
-		int ccpTxbx;
-		int ccpHdrTxbx;
+		int cbMac = 0;
+		int ccpText = 0;
+		int ccpFtn = 0;
+		int ccpHdr = 0;
+		int ccpAtn = 0;
+		int ccpEdn = 0;
+		int ccpTxbx = 0;
+		int ccpHdrTxbx = 0;
 	} RgLw97;
+	
+	typedef struct FibWord2
+	{
+		unsigned int Spare  = 0;
+		unsigned char rgwSpare0[3];
+
+		unsigned int fcPlcMcr = 0;
+		unsigned int lcbPlcMcr = 0;
+
+		unsigned int fcPrEnv = 0;
+		unsigned int lcbPrEnv = 0;
+
+		unsigned int fcSpare5 = 0;
+		unsigned int lcbSpare5 = 0;
+		unsigned int fcSpare6 = 0;
+		unsigned int lcbSpare6 = 0;
+		unsigned int wSpare4 = 0;				
+					
+		unsigned int pnChpFirst = 0;
+		unsigned int pnPapFirst = 0;
+		unsigned int cpnBteChp = 0;
+		unsigned int cpnBtePap = 0;	
+	} FibWord2;
 
 	typedef struct FibWord97
 	{
-		FibWord97() : 
-		 fcStshfOrig (0), 		 lcbStshfOrig (0), 		 fcStshf (0), 		 lcbStshf (0), 		 fcPlcffndRef (0), 		 lcbPlcffndRef (0), 
-		 fcPlcffndTxt (0), 		 lcbPlcffndTxt (0), 	 fcPlcfandRef (0), 	 lcbPlcfandRef (0),  fcPlcfandTxt (0), 		 lcbPlcfandTxt (0), 
-		 fcPlcfSed (0), 		 lcbPlcfSed (0), 		 fcPlcPad (0), 		 lcbPlcPad (0), 	 fcPlcfPhe (0), 		 lcbPlcfPhe (0), 
-		 fcSttbfGlsy (0),		 lcbSttbfGlsy (0), 		 fcPlcfGlsy (0), 	 lcbPlcfGlsy (0), 	 fcPlcfHdd (0), 		 lcbPlcfHdd (0), 
-		 fcPlcfBteChpx (0), 	 lcbPlcfBteChpx (0), 	 fcPlcfBtePapx (0),  lcbPlcfBtePapx (0), fcPlcfSea (0),			 lcbPlcfSea (0), 
-		 fcSttbfFfn (0), 		 lcbSttbfFfn (0), 		 fcPlcfFldMom (0), 	 lcbPlcfFldMom (0),  fcPlcfFldHdr (0), 		 lcbPlcfFldHdr (0), 
-		 fcPlcfFldFtn (0), 		 lcbPlcfFldFtn (0), 	 fcPlcfFldAtn (0), 	 lcbPlcfFldAtn (0),  fcPlcfFldMcr (0), 		 lcbPlcfFldMcr (0), 
-		 fcSttbfBkmk (0), 		 lcbSttbfBkmk (0), 		 fcPlcfBkf (0), 	 lcbPlcfBkf (0), 	 fcPlcfBkl (0), 		 lcbPlcfBkl (0), 
-		 fcCmds (0),			 lcbCmds (0),			 fcSttbfMcr (0), 	 lcbSttbfMcr (0), 	 fcPrDrvr (0),			 lcbPrDrvr (0), 
-		 fcPrEnvPort (0), 		 lcbPrEnvPort (0), 		 fcPrEnvLand (0), 	 lcbPrEnvLand (0), 	 fcWss (0),				 lcbWss (0), 
-		 fcDop (0),				 lcbDop (0),			 fcSttbfAssoc (0), 	 lcbSttbfAssoc (0),  fcClx (0),				 lcbClx (0), 
-		 fcPlcfPgdFtn (0), 		 lcbPlcfPgdFtn (0), 	 fcAutosaveSource (0), lcbAutosaveSource (0),  fcGrpXstAtnOwners (0), lcbGrpXstAtnOwners (0), 
-		 fcSttbfAtnBkmk (0),	 lcbSttbfAtnBkmk (0), 	 fcPlcSpaMom (0), 	 lcbPlcSpaMom (0), 	 fcPlcSpaHdr (0), 		 lcbPlcSpaHdr (0), 
-		 fcPlcfAtnBkf (0), 		 lcbPlcfAtnBkf (0), 	 fcPlcfAtnBkl (0), 	 lcbPlcfAtnBkl (0),  fcPms (0),				 lcbPms (0), 
-		 fcFormFldSttbs (0), 	 lcbFormFldSttbs (0), 	 fcPlcfendRef (0), 	 lcbPlcfendRef (0),  fcPlcfendTxt (0),		 lcbPlcfendTxt (0), 
-		 fcPlcfFldEdn (0), 		 lcbPlcfFldEdn (0), 	 fcDggInfo (0), 	 lcbDggInfo (0), 	 fcSttbfRMark (0), 		 lcbSttbfRMark (0), 
-		 fcSttbfCaption (0), 	 lcbSttbfCaption (0), 	 fcSttbfAutoCaption (0),  lcbSttbfAutoCaption (0),  fcPlcfWkb (0),  lcbPlcfWkb (0), 
-		 fcPlcfSpl (0), 		 lcbPlcfSpl (0), 		 fcPlcftxbxTxt (0),  lcbPlcftxbxTxt (0), fcPlcfFldTxbx (0), 	 lcbPlcfFldTxbx (0), 
-		 fcPlcfHdrtxbxTxt (0), 	 lcbPlcfHdrtxbxTxt (0),  fcPlcffldHdrTxbx (0), lcbPlcffldHdrTxbx (0), fcStwUser (0), 	 lcbStwUser (0), 
-		 fcSttbTtmbd (0),		 lcbSttbTtmbd (0), 		 fcCookieData (0), 	 lcbCookieData (0),  fcPgdMotherOldOld (0),	 lcbPgdMotherOldOld (0), 
-		 fcBkdMotherOldOld (0),  lcbBkdMotherOldOld (0), fcPgdFtnOldOld (0), lcbPgdFtnOldOld (0),fcBkdFtnOldOld (0), 	 lcbBkdFtnOldOld (0), 
-		 fcPgdEdnOldOld (0), 	 lcbPgdEdnOldOld (0), 	 fcBkdEdnOldOld (0), lcbBkdEdnOldOld (0),fcSttbfIntlFld (0),	 lcbSttbfIntlFld (0), 
-		 fcRouteSlip (0),		 lcbRouteSlip (0),		 fcSttbSavedBy (0),  lcbSttbSavedBy (0), fcSttbFnm (0),			 lcbSttbFnm (0), 
-		 fcPlfLst (0),			 lcbPlfLst (0), 		 fcPlfLfo (0), 		 lcbPlfLfo (0), 	 fcPlcfTxbxBkd (0), 	 lcbPlcfTxbxBkd (0), 
-		 fcPlcfTxbxHdrBkd (0), 	 lcbPlcfTxbxHdrBkd (0),  fcDocUndoWord9 (0), lcbDocUndoWord9 (0),fcRgbUse (0),			 lcbRgbUse (0), 
-		 fcUsp (0),				 lcbUsp (0),			 fcUskf (0), 		 lcbUskf (0), 		 fcPlcupcRgbUse (0), 	 lcbPlcupcRgbUse (0), 
-		 fcPlcupcUsp (0), 		 lcbPlcupcUsp (0), 		 fcSttbGlsyStyle (0), lcbSttbGlsyStyle (0), fcPlgosl (0), 		 lcbPlgosl (0), 
-		 fcPlcocx (0),			 lcbPlcocx (0), 		 fcPlcfBteLvc (0), 	 lcbPlcfBteLvc (0),  dwLowDateTime (0),		 dwHighDateTime (0), 
-		 fcPlcfLvcPre10 (0), 	 lcbPlcfLvcPre10 (0), 	 fcPlcfAsumy (0), 	 lcbPlcfAsumy (0), 	 fcPlcfGram (0), 		 lcbPlcfGram (0), 
-		 fcSttbListNames (0), 	 lcbSttbListNames (0), 	 fcSttbfUssr (0), 	 lcbSttbfUssr (0) {}
-		 //-----------------------------------------------------------------
-		unsigned int fcStshfOrig;
-		unsigned int lcbStshfOrig;
-		unsigned int fcStshf;
-		unsigned int lcbStshf;
-		unsigned int fcPlcffndRef;
-		unsigned int lcbPlcffndRef;
-		unsigned int fcPlcffndTxt;
-		unsigned int lcbPlcffndTxt;
-		unsigned int fcPlcfandRef;
-		unsigned int lcbPlcfandRef;
-		unsigned int fcPlcfandTxt;
-		unsigned int lcbPlcfandTxt;
-		unsigned int fcPlcfSed;
-		unsigned int lcbPlcfSed;
-		unsigned int fcPlcPad;
-		unsigned int lcbPlcPad;
-		unsigned int fcPlcfPhe;
-		unsigned int lcbPlcfPhe;
-		unsigned int fcSttbfGlsy;
-		unsigned int lcbSttbfGlsy;
-		unsigned int fcPlcfGlsy;
-		unsigned int lcbPlcfGlsy;
-		unsigned int fcPlcfHdd;
-		unsigned int lcbPlcfHdd;
-		unsigned int fcPlcfBteChpx;
-		unsigned int lcbPlcfBteChpx;
-		unsigned int fcPlcfBtePapx;
-		unsigned int lcbPlcfBtePapx;
-		unsigned int fcPlcfSea;
-		unsigned int lcbPlcfSea;
-		unsigned int fcSttbfFfn;
-		unsigned int lcbSttbfFfn;
-		unsigned int fcPlcfFldMom;
-		unsigned int lcbPlcfFldMom;
-		unsigned int fcPlcfFldHdr;
-		unsigned int lcbPlcfFldHdr;
-		unsigned int fcPlcfFldFtn;
-		unsigned int lcbPlcfFldFtn;
-		unsigned int fcPlcfFldAtn;
-		unsigned int lcbPlcfFldAtn;
-		unsigned int fcPlcfFldMcr;
-		unsigned int lcbPlcfFldMcr;
-		unsigned int fcSttbfBkmk;
-		unsigned int lcbSttbfBkmk;
-		unsigned int fcPlcfBkf;
-		unsigned int lcbPlcfBkf;
-		unsigned int fcPlcfBkl;
-		unsigned int lcbPlcfBkl;
-		unsigned int fcCmds;
-		unsigned int lcbCmds;
-		unsigned int fcSttbfMcr;
-		unsigned int lcbSttbfMcr;
-		unsigned int fcPrDrvr;
-		unsigned int lcbPrDrvr;
-		unsigned int fcPrEnvPort;
-		unsigned int lcbPrEnvPort;
-		unsigned int fcPrEnvLand;
-		unsigned int lcbPrEnvLand;
-		unsigned int fcWss;
-		unsigned int lcbWss;
-		unsigned int fcDop;
-		unsigned int lcbDop;
-		unsigned int fcSttbfAssoc;
-		unsigned int lcbSttbfAssoc;
-		unsigned int fcClx;
-		unsigned int lcbClx;
-		unsigned int fcPlcfPgdFtn;
-		unsigned int lcbPlcfPgdFtn;
-		unsigned int fcAutosaveSource;
-		unsigned int lcbAutosaveSource;
-		unsigned int fcGrpXstAtnOwners;
-		unsigned int lcbGrpXstAtnOwners;
-		unsigned int fcSttbfAtnBkmk;
-		unsigned int lcbSttbfAtnBkmk;
-		unsigned int fcPlcSpaMom;
-		unsigned int lcbPlcSpaMom;
-		unsigned int fcPlcSpaHdr;
-		unsigned int lcbPlcSpaHdr;
-		unsigned int fcPlcfAtnBkf;
-		unsigned int lcbPlcfAtnBkf;
-		unsigned int fcPlcfAtnBkl;
-		unsigned int lcbPlcfAtnBkl;
-		unsigned int fcPms;
-		unsigned int lcbPms;
-		unsigned int fcFormFldSttbs;
-		unsigned int lcbFormFldSttbs;
-		unsigned int fcPlcfendRef;
-		unsigned int lcbPlcfendRef;
-		unsigned int fcPlcfendTxt;
-		unsigned int lcbPlcfendTxt;
-		unsigned int fcPlcfFldEdn;
-		unsigned int lcbPlcfFldEdn;
-		unsigned int fcDggInfo;
-		unsigned int lcbDggInfo;
-		unsigned int fcSttbfRMark;
-		unsigned int lcbSttbfRMark;
-		unsigned int fcSttbfCaption;
-		unsigned int lcbSttbfCaption;
-		unsigned int fcSttbfAutoCaption;
-		unsigned int lcbSttbfAutoCaption;
-		unsigned int fcPlcfWkb;
-		unsigned int lcbPlcfWkb;
-		unsigned int fcPlcfSpl;
-		unsigned int lcbPlcfSpl;
-		unsigned int fcPlcftxbxTxt;
-		unsigned int lcbPlcftxbxTxt;
-		unsigned int fcPlcfFldTxbx;
-		unsigned int lcbPlcfFldTxbx;
-		unsigned int fcPlcfHdrtxbxTxt;
-		unsigned int lcbPlcfHdrtxbxTxt;
-		unsigned int fcPlcffldHdrTxbx;
-		unsigned int lcbPlcffldHdrTxbx;
-		unsigned int fcStwUser;
-		unsigned int lcbStwUser;
-		unsigned int fcSttbTtmbd;
-		unsigned int lcbSttbTtmbd;
-		unsigned int fcCookieData;
-		unsigned int lcbCookieData;
-		unsigned int fcPgdMotherOldOld;
-		unsigned int lcbPgdMotherOldOld;
-		unsigned int fcBkdMotherOldOld;
-		unsigned int lcbBkdMotherOldOld;
-		unsigned int fcPgdFtnOldOld;
-		unsigned int lcbPgdFtnOldOld;
-		unsigned int fcBkdFtnOldOld;
-		unsigned int lcbBkdFtnOldOld;
-		unsigned int fcPgdEdnOldOld;
-		unsigned int lcbPgdEdnOldOld;
-		unsigned int fcBkdEdnOldOld;
-		unsigned int lcbBkdEdnOldOld;
-		unsigned int fcSttbfIntlFld;
-		unsigned int lcbSttbfIntlFld;
-		unsigned int fcRouteSlip;
-		unsigned int lcbRouteSlip;
-		unsigned int fcSttbSavedBy;
-		unsigned int lcbSttbSavedBy;
-		unsigned int fcSttbFnm;
-		unsigned int lcbSttbFnm;
-		unsigned int fcPlfLst;
-		unsigned int lcbPlfLst;
-		unsigned int fcPlfLfo;
-		unsigned int lcbPlfLfo;
-		unsigned int fcPlcfTxbxBkd;
-		unsigned int lcbPlcfTxbxBkd;
-		unsigned int fcPlcfTxbxHdrBkd;
-		unsigned int lcbPlcfTxbxHdrBkd;
-		unsigned int fcDocUndoWord9;
-		unsigned int lcbDocUndoWord9;
-		unsigned int fcRgbUse;
-		unsigned int lcbRgbUse;
-		unsigned int fcUsp;
-		unsigned int lcbUsp;
-		unsigned int fcUskf;
-		unsigned int lcbUskf;
-		unsigned int fcPlcupcRgbUse;
-		unsigned int lcbPlcupcRgbUse;
-		unsigned int fcPlcupcUsp;
-		unsigned int lcbPlcupcUsp;
-		unsigned int fcSttbGlsyStyle;
-		unsigned int lcbSttbGlsyStyle;
-		unsigned int fcPlgosl;
-		unsigned int lcbPlgosl;
-		unsigned int fcPlcocx;
-		unsigned int lcbPlcocx;
-		unsigned int fcPlcfBteLvc;
-		unsigned int lcbPlcfBteLvc;
-		unsigned int dwLowDateTime;
-		unsigned int dwHighDateTime;
-		unsigned int fcPlcfLvcPre10;
-		unsigned int lcbPlcfLvcPre10;
-		unsigned int fcPlcfAsumy;
-		unsigned int lcbPlcfAsumy;
-		unsigned int fcPlcfGram;
-		unsigned int lcbPlcfGram;
-		unsigned int fcSttbListNames;
-		unsigned int lcbSttbListNames;
-		unsigned int fcSttbfUssr;
-		unsigned int lcbSttbfUssr;
+		unsigned int fcStshfOrig = 0;
+		unsigned int lcbStshfOrig = 0;
+		unsigned int fcStshf = 0;
+		unsigned int lcbStshf = 0;
+		unsigned int fcPlcffndRef = 0;
+		unsigned int lcbPlcffndRef = 0;
+		unsigned int fcPlcffndTxt = 0;
+		unsigned int lcbPlcffndTxt = 0;
+		unsigned int fcPlcfandRef = 0;
+		unsigned int lcbPlcfandRef = 0;
+		unsigned int fcPlcfandTxt = 0;
+		unsigned int lcbPlcfandTxt = 0;
+		unsigned int fcPlcfSed = 0;
+		unsigned int lcbPlcfSed = 0;
+		unsigned int fcPlcPad = 0;
+		unsigned int lcbPlcPad = 0;
+		unsigned int fcPlcfPhe = 0;
+		unsigned int lcbPlcfPhe = 0;
+		unsigned int fcSttbfGlsy = 0;
+		unsigned int lcbSttbfGlsy = 0;
+		unsigned int fcPlcfGlsy = 0;
+		unsigned int lcbPlcfGlsy = 0;
+		unsigned int fcPlcfHdd = 0;
+		unsigned int lcbPlcfHdd = 0;
+		unsigned int fcPlcfBteChpx = 0;
+		unsigned int lcbPlcfBteChpx = 0;
+		unsigned int fcPlcfBtePapx = 0;
+		unsigned int lcbPlcfBtePapx = 0;
+		unsigned int fcPlcfSea = 0;
+		unsigned int lcbPlcfSea = 0;
+		unsigned int fcSttbfFfn = 0;
+		unsigned int lcbSttbfFfn = 0;
+		unsigned int fcPlcfFldMom = 0;
+		unsigned int lcbPlcfFldMom = 0;
+		unsigned int fcPlcfFldHdr = 0;
+		unsigned int lcbPlcfFldHdr = 0;
+		unsigned int fcPlcfFldFtn = 0;
+		unsigned int lcbPlcfFldFtn = 0;
+		unsigned int fcPlcfFldAtn = 0;
+		unsigned int lcbPlcfFldAtn = 0;
+		unsigned int fcPlcfFldMcr = 0;
+		unsigned int lcbPlcfFldMcr = 0;
+		unsigned int fcSttbfBkmk = 0;
+		unsigned int lcbSttbfBkmk = 0;
+		unsigned int fcPlcfBkf = 0;
+		unsigned int lcbPlcfBkf = 0;
+		unsigned int fcPlcfBkl = 0;
+		unsigned int lcbPlcfBkl = 0;
+		unsigned int fcCmds = 0;
+		unsigned int lcbCmds = 0;
+		unsigned int fcSttbfMcr = 0;
+		unsigned int lcbSttbfMcr = 0;
+		unsigned int fcPrDrvr = 0;
+		unsigned int lcbPrDrvr = 0;
+		unsigned int fcPrEnvPort = 0;
+		unsigned int lcbPrEnvPort = 0;
+		unsigned int fcPrEnvLand = 0;
+		unsigned int lcbPrEnvLand = 0;
+		unsigned int fcWss = 0;
+		unsigned int lcbWss = 0;
+		unsigned int fcDop = 0;
+		unsigned int lcbDop = 0;
+		unsigned int fcSttbfAssoc = 0;
+		unsigned int lcbSttbfAssoc = 0;
+		unsigned int fcClx = 0;
+		unsigned int lcbClx = 0;
+		unsigned int fcPlcfPgdFtn = 0;
+		unsigned int lcbPlcfPgdFtn = 0;
+		unsigned int fcAutosaveSource = 0;
+		unsigned int lcbAutosaveSource = 0;
+		unsigned int fcGrpXstAtnOwners = 0;
+		unsigned int lcbGrpXstAtnOwners = 0;
+		unsigned int fcSttbfAtnBkmk = 0;
+		unsigned int lcbSttbfAtnBkmk = 0;
+		unsigned int fcPlcSpaMom = 0;
+		unsigned int lcbPlcSpaMom = 0;
+		unsigned int fcPlcSpaHdr = 0;
+		unsigned int lcbPlcSpaHdr = 0;
+		unsigned int fcPlcfAtnBkf = 0;
+		unsigned int lcbPlcfAtnBkf = 0;
+		unsigned int fcPlcfAtnBkl = 0;
+		unsigned int lcbPlcfAtnBkl = 0;
+		unsigned int fcPms = 0;
+		unsigned int lcbPms = 0;
+		unsigned int fcFormFldSttbs = 0;
+		unsigned int lcbFormFldSttbs = 0;
+		unsigned int fcPlcfendRef = 0;
+		unsigned int lcbPlcfendRef = 0;
+		unsigned int fcPlcfendTxt = 0;
+		unsigned int lcbPlcfendTxt = 0;
+		unsigned int fcPlcfFldEdn = 0;
+		unsigned int lcbPlcfFldEdn = 0;
+		unsigned int fcDggInfo = 0;
+		unsigned int lcbDggInfo = 0;
+		unsigned int fcSttbfRMark = 0;
+		unsigned int lcbSttbfRMark = 0;
+		unsigned int fcSttbfCaption = 0;
+		unsigned int lcbSttbfCaption = 0;
+		unsigned int fcSttbfAutoCaption = 0;
+		unsigned int lcbSttbfAutoCaption = 0;
+		unsigned int fcPlcfWkb = 0;
+		unsigned int lcbPlcfWkb = 0;
+		unsigned int fcPlcfSpl = 0;
+		unsigned int lcbPlcfSpl = 0;
+		unsigned int fcPlcftxbxTxt = 0;
+		unsigned int lcbPlcftxbxTxt = 0;
+		unsigned int fcPlcfFldTxbx = 0;
+		unsigned int lcbPlcfFldTxbx = 0;
+		unsigned int fcPlcfHdrtxbxTxt = 0;
+		unsigned int lcbPlcfHdrtxbxTxt = 0;
+		unsigned int fcPlcffldHdrTxbx = 0;
+		unsigned int lcbPlcffldHdrTxbx = 0;
+		unsigned int fcStwUser = 0;
+		unsigned int lcbStwUser = 0;
+		unsigned int fcSttbTtmbd = 0;
+		unsigned int lcbSttbTtmbd = 0;
+		unsigned int fcCookieData = 0;
+		unsigned int lcbCookieData = 0;
+		unsigned int fcPgdMotherOldOld = 0;
+		unsigned int lcbPgdMotherOldOld = 0;
+		unsigned int fcBkdMotherOldOld = 0;
+		unsigned int lcbBkdMotherOldOld = 0;
+		unsigned int fcPgdFtnOldOld = 0;
+		unsigned int lcbPgdFtnOldOld = 0;
+		unsigned int fcBkdFtnOldOld = 0;
+		unsigned int lcbBkdFtnOldOld = 0;
+		unsigned int fcPgdEdnOldOld = 0;
+		unsigned int lcbPgdEdnOldOld = 0;
+		unsigned int fcBkdEdnOldOld = 0;
+		unsigned int lcbBkdEdnOldOld = 0;
+		unsigned int fcSttbfIntlFld = 0;
+		unsigned int lcbSttbfIntlFld = 0;
+		unsigned int fcRouteSlip = 0;
+		unsigned int lcbRouteSlip = 0;
+		unsigned int fcSttbSavedBy = 0;
+		unsigned int lcbSttbSavedBy = 0;
+		unsigned int fcSttbFnm = 0;
+		unsigned int lcbSttbFnm = 0;
+		unsigned int fcPlfLst = 0;
+		unsigned int lcbPlfLst = 0;
+		unsigned int fcPlfLfo = 0;
+		unsigned int lcbPlfLfo = 0;
+		unsigned int fcPlcfTxbxBkd = 0;
+		unsigned int lcbPlcfTxbxBkd = 0;
+		unsigned int fcPlcfTxbxHdrBkd = 0;
+		unsigned int lcbPlcfTxbxHdrBkd = 0;
+		unsigned int fcDocUndoWord9 = 0;
+		unsigned int lcbDocUndoWord9 = 0;
+		unsigned int fcRgbUse = 0;
+		unsigned int lcbRgbUse = 0;
+		unsigned int fcUsp = 0;
+		unsigned int lcbUsp = 0;
+		unsigned int fcUskf = 0;
+		unsigned int lcbUskf = 0;
+		unsigned int fcPlcupcRgbUse = 0;
+		unsigned int lcbPlcupcRgbUse = 0;
+		unsigned int fcPlcupcUsp = 0;
+		unsigned int lcbPlcupcUsp = 0;
+		unsigned int fcSttbGlsyStyle = 0;
+		unsigned int lcbSttbGlsyStyle = 0;
+		unsigned int fcPlgosl = 0;
+		unsigned int lcbPlgosl = 0;
+		unsigned int fcPlcocx = 0;
+		unsigned int lcbPlcocx = 0;
+		unsigned int fcPlcfBteLvc = 0;
+		unsigned int lcbPlcfBteLvc = 0;
+		unsigned int dwLowDateTime = 0;
+		unsigned int dwHighDateTime = 0;
+		unsigned int fcPlcfLvcPre10 = 0;
+		unsigned int lcbPlcfLvcPre10 = 0;
+		unsigned int fcPlcfAsumy = 0;
+		unsigned int lcbPlcfAsumy = 0;
+		unsigned int fcPlcfGram = 0;
+		unsigned int lcbPlcfGram = 0;
+		unsigned int fcSttbListNames = 0;
+		unsigned int lcbSttbListNames = 0;
+		unsigned int fcSttbfUssr = 0;
+		unsigned int lcbSttbfUssr = 0;
 	} FibWord97;
 
 	typedef struct FibWord2000
 	{
-		unsigned int fcPlcfTch;
-		unsigned int lcbPlcfTch;
-		unsigned int fcRmdThreading;
-		unsigned int lcbRmdThreading;
-		unsigned int fcMid;
-		unsigned int lcbMid;
-		unsigned int fcSttbRgtplc;
-		unsigned int lcbSttbRgtplc;
-		unsigned int fcMsoEnvelope;
-		unsigned int lcbMsoEnvelope;
-		unsigned int fcPlcfLad;
-		unsigned int lcbPlcfLad;
-		unsigned int fcRgDofr;
-		unsigned int lcbRgDofr;
-		unsigned int fcPlcosl;
-		unsigned int lcbPlcosl;
-		unsigned int fcPlcfCookieOld;
-		unsigned int lcbPlcfCookieOld;
-		unsigned int fcPgdMotherOld;
-		unsigned int lcbPgdMotherOld;
-		unsigned int fcBkdMotherOld;
-		unsigned int lcbBkdMotherOld;
-		unsigned int fcPgdFtnOld;
-		unsigned int lcbPgdFtnOld;
-		unsigned int fcBkdFtnOld;
-		unsigned int lcbBkdFtnOld;
-		unsigned int fcPgdEdnOld;
-		unsigned int lcbPgdEdnOld;
-		unsigned int fcBkdEdnOld;
-		unsigned int lcbBkdEdnOld;
+		unsigned int fcPlcfTch = 0;
+		unsigned int lcbPlcfTch = 0;
+		unsigned int fcRmdThreading = 0;
+		unsigned int lcbRmdThreading = 0;
+		unsigned int fcMid = 0;
+		unsigned int lcbMid = 0;
+		unsigned int fcSttbRgtplc = 0;
+		unsigned int lcbSttbRgtplc = 0;
+		unsigned int fcMsoEnvelope = 0;
+		unsigned int lcbMsoEnvelope = 0;
+		unsigned int fcPlcfLad = 0;
+		unsigned int lcbPlcfLad = 0;
+		unsigned int fcRgDofr = 0;
+		unsigned int lcbRgDofr = 0;
+		unsigned int fcPlcosl = 0;
+		unsigned int lcbPlcosl = 0;
+		unsigned int fcPlcfCookieOld = 0;
+		unsigned int lcbPlcfCookieOld = 0;
+		unsigned int fcPgdMotherOld = 0;
+		unsigned int lcbPgdMotherOld = 0;
+		unsigned int fcBkdMotherOld = 0;
+		unsigned int lcbBkdMotherOld = 0;
+		unsigned int fcPgdFtnOld = 0;
+		unsigned int lcbPgdFtnOld = 0;
+		unsigned int fcBkdFtnOld = 0;
+		unsigned int lcbBkdFtnOld = 0;
+		unsigned int fcPgdEdnOld = 0;
+		unsigned int lcbPgdEdnOld = 0;
+		unsigned int fcBkdEdnOld = 0;
+		unsigned int lcbBkdEdnOld = 0;
 	} FibWord2000;
 
 	typedef struct FibWord2002
 	{
-		unsigned int fcPlcfPgp;
-		unsigned int lcbPlcfPgp;
-		unsigned int fcPlcfuim;
-		unsigned int lcbPlcfuim;
-		unsigned int fcPlfguidUim;
-		unsigned int lcbPlfguidUim;
-		unsigned int fcAtrdExtra;
-		unsigned int lcbAtrdExtra;
-		unsigned int fcPlrsid;
-		unsigned int lcbPlrsid;
-		unsigned int fcSttbfBkmkFactoid;
-		unsigned int lcbSttbfBkmkFactoid;
-		unsigned int fcPlcfBkfFactoid;
-		unsigned int lcbPlcfBkfFactoid;
-		unsigned int fcPlcfcookie;
-		unsigned int lcbPlcfcookie;
-		unsigned int fcPlcfBklFactoid;
-		unsigned int lcbPlcfBklFactoid;
-		unsigned int fcFactoidData;
-		unsigned int lcbFactoidData;
-		unsigned int fcDocUndo;
-		unsigned int lcbDocUndo;
-		unsigned int fcSttbfBkmkFcc;
-		unsigned int lcbSttbfBkmkFcc;
-		unsigned int fcPlcfBkfFcc;
-		unsigned int lcbPlcfBkfFcc;
-		unsigned int fcPlcfBklFcc;
-		unsigned int lcbPlcfBklFcc;
-		unsigned int fcSttbfbkmkBPRepairs;
-		unsigned int lcbSttbfbkmkBPRepairs;
-		unsigned int fcPlcfbkfBPRepairs;
-		unsigned int lcbPlcfbkfBPRepairs;
-		unsigned int fcPlcfbklBPRepairs;
-		unsigned int lcbPlcfbklBPRepairs;
-		unsigned int fcPmsNew;
-		unsigned int lcbPmsNew;
-		unsigned int fcODSO;
-		unsigned int lcbODSO;
-		unsigned int fcPlcfpmiOldXP;
-		unsigned int lcbPlcfpmiOldXP;
-		unsigned int fcPlcfpmiNewXP;
-		unsigned int lcbPlcfpmiNewXP;
-		unsigned int fcPlcfpmiMixedXP;
-		unsigned int lcbPlcfpmiMixedXP;
-		unsigned int fcPlcffactoid;
-		unsigned int lcbPlcffactoid;
-		unsigned int fcPlcflvcOldXP;
-		unsigned int lcbPlcflvcOldXP;
-		unsigned int fcPlcflvcNewXP;
-		unsigned int lcbPlcflvcNewXP;
-		unsigned int fcPlcflvcMixedXP;
-		unsigned int lcbPlcflvcMixedXP;
+		unsigned int fcPlcfPgp = 0;
+		unsigned int lcbPlcfPgp = 0;
+		unsigned int fcPlcfuim = 0;
+		unsigned int lcbPlcfuim = 0;
+		unsigned int fcPlfguidUim = 0;
+		unsigned int lcbPlfguidUim = 0;
+		unsigned int fcAtrdExtra = 0;
+		unsigned int lcbAtrdExtra = 0;
+		unsigned int fcPlrsid = 0;
+		unsigned int lcbPlrsid = 0;
+		unsigned int fcSttbfBkmkFactoid = 0;
+		unsigned int lcbSttbfBkmkFactoid = 0;
+		unsigned int fcPlcfBkfFactoid = 0;
+		unsigned int lcbPlcfBkfFactoid = 0;
+		unsigned int fcPlcfcookie = 0;
+		unsigned int lcbPlcfcookie = 0;
+		unsigned int fcPlcfBklFactoid = 0;
+		unsigned int lcbPlcfBklFactoid = 0;
+		unsigned int fcFactoidData = 0;
+		unsigned int lcbFactoidData = 0;
+		unsigned int fcDocUndo = 0;
+		unsigned int lcbDocUndo = 0;
+		unsigned int fcSttbfBkmkFcc = 0;
+		unsigned int lcbSttbfBkmkFcc = 0;
+		unsigned int fcPlcfBkfFcc = 0;
+		unsigned int lcbPlcfBkfFcc = 0;
+		unsigned int fcPlcfBklFcc = 0;
+		unsigned int lcbPlcfBklFcc = 0;
+		unsigned int fcSttbfbkmkBPRepairs = 0;
+		unsigned int lcbSttbfbkmkBPRepairs = 0;
+		unsigned int fcPlcfbkfBPRepairs = 0;
+		unsigned int lcbPlcfbkfBPRepairs = 0;
+		unsigned int fcPlcfbklBPRepairs = 0;
+		unsigned int lcbPlcfbklBPRepairs = 0;
+		unsigned int fcPmsNew = 0;
+		unsigned int lcbPmsNew = 0;
+		unsigned int fcODSO = 0;
+		unsigned int lcbODSO = 0;
+		unsigned int fcPlcfpmiOldXP = 0;
+		unsigned int lcbPlcfpmiOldXP = 0;
+		unsigned int fcPlcfpmiNewXP = 0;
+		unsigned int lcbPlcfpmiNewXP = 0;
+		unsigned int fcPlcfpmiMixedXP = 0;
+		unsigned int lcbPlcfpmiMixedXP = 0;
+		unsigned int fcPlcffactoid = 0;
+		unsigned int lcbPlcffactoid = 0;
+		unsigned int fcPlcflvcOldXP = 0;
+		unsigned int lcbPlcflvcOldXP = 0;
+		unsigned int fcPlcflvcNewXP = 0;
+		unsigned int lcbPlcflvcNewXP = 0;
+		unsigned int fcPlcflvcMixedXP = 0;
+		unsigned int lcbPlcflvcMixedXP = 0;
 	} FibWord2002;
 
 	typedef struct FibWord2003
 	{
-		unsigned int fcHplxsdr;
-		unsigned int lcbHplxsdr;
-		unsigned int fcSttbfBkmkSdt;
-		unsigned int lcbSttbfBkmkSdt;
-		unsigned int fcPlcfBkfSdt;
-		unsigned int lcbPlcfBkfSdt;
-		unsigned int fcPlcfBklSdt;
-		unsigned int lcbPlcfBklSdt;
-		unsigned int fcCustomXForm;
-		unsigned int lcbCustomXForm;
-		unsigned int fcSttbfBkmkProt;
-		unsigned int lcbSttbfBkmkProt;
-		unsigned int fcPlcfBkfProt;
-		unsigned int lcbPlcfBkfProt;
-		unsigned int fcPlcfBklProt;
-		unsigned int lcbPlcfBklProt;
-		unsigned int fcSttbProtUser;
-		unsigned int lcbSttbProtUser;
-		unsigned int fcPlcfpmiOld;
-		unsigned int lcbPlcfpmiOld;
-		unsigned int fcPlcfpmiOldInline;
-		unsigned int lcbPlcfpmiOldInline;
-		unsigned int fcPlcfpmiNew;
-		unsigned int lcbPlcfpmiNew;
-		unsigned int fcPlcfpmiNewInline;
-		unsigned int lcbPlcfpmiNewInline;
-		unsigned int fcPlcflvcOld;
-		unsigned int lcbPlcflvcOld;
-		unsigned int fcPlcflvcOldInline;
-		unsigned int lcbPlcflvcOldInline;
-		unsigned int fcPlcflvcNew;
-		unsigned int lcbPlcflvcNew;
-		unsigned int fcPlcflvcNewInline;
-		unsigned int lcbPlcflvcNewInline;
-		unsigned int fcPgdMother;
-		unsigned int lcbPgdMother;
-		unsigned int fcBkdMother;
-		unsigned int lcbBkdMother;
-		unsigned int fcAfdMother;
-		unsigned int lcbAfdMother;
-		unsigned int fcPgdFtn;
-		unsigned int lcbPgdFtn;
-		unsigned int fcBkdFtn;
-		unsigned int lcbBkdFtn;
-		unsigned int fcAfdFtn;
-		unsigned int lcbAfdFtn;
-		unsigned int fcPgdEdn;
-		unsigned int lcbPgdEdn;
-		unsigned int fcBkdEdn;
-		unsigned int lcbBkdEdn;
-		unsigned int fcAfdEdn;
-		unsigned int lcbAfdEdn;
-		unsigned int fcAfd;
-		unsigned int lcbAfd;
+		unsigned int fcHplxsdr = 0;
+		unsigned int lcbHplxsdr = 0;
+		unsigned int fcSttbfBkmkSdt = 0;
+		unsigned int lcbSttbfBkmkSdt = 0;
+		unsigned int fcPlcfBkfSdt = 0;
+		unsigned int lcbPlcfBkfSdt = 0;
+		unsigned int fcPlcfBklSdt = 0;
+		unsigned int lcbPlcfBklSdt = 0;
+		unsigned int fcCustomXForm = 0;
+		unsigned int lcbCustomXForm = 0;
+		unsigned int fcSttbfBkmkProt = 0;
+		unsigned int lcbSttbfBkmkProt = 0;
+		unsigned int fcPlcfBkfProt = 0;
+		unsigned int lcbPlcfBkfProt = 0;
+		unsigned int fcPlcfBklProt = 0;
+		unsigned int lcbPlcfBklProt = 0;
+		unsigned int fcSttbProtUser = 0;
+		unsigned int lcbSttbProtUser = 0;
+		unsigned int fcPlcfpmiOld = 0;
+		unsigned int lcbPlcfpmiOld = 0;
+		unsigned int fcPlcfpmiOldInline = 0;
+		unsigned int lcbPlcfpmiOldInline = 0;
+		unsigned int fcPlcfpmiNew = 0;
+		unsigned int lcbPlcfpmiNew = 0;
+		unsigned int fcPlcfpmiNewInline = 0;
+		unsigned int lcbPlcfpmiNewInline = 0;
+		unsigned int fcPlcflvcOld = 0;
+		unsigned int lcbPlcflvcOld = 0;
+		unsigned int fcPlcflvcOldInline = 0;
+		unsigned int lcbPlcflvcOldInline = 0;
+		unsigned int fcPlcflvcNew = 0;
+		unsigned int lcbPlcflvcNew = 0;
+		unsigned int fcPlcflvcNewInline = 0;
+		unsigned int lcbPlcflvcNewInline = 0;
+		unsigned int fcPgdMother = 0;
+		unsigned int lcbPgdMother = 0;
+		unsigned int fcBkdMother = 0;
+		unsigned int lcbBkdMother = 0;
+		unsigned int fcAfdMother = 0;
+		unsigned int lcbAfdMother = 0;
+		unsigned int fcPgdFtn = 0;
+		unsigned int lcbPgdFtn = 0;
+		unsigned int fcBkdFtn = 0;
+		unsigned int lcbBkdFtn = 0;
+		unsigned int fcAfdFtn = 0;
+		unsigned int lcbAfdFtn = 0;
+		unsigned int fcPgdEdn = 0;
+		unsigned int lcbPgdEdn = 0;
+		unsigned int fcBkdEdn = 0;
+		unsigned int lcbBkdEdn = 0;
+		unsigned int fcAfdEdn = 0;
+		unsigned int lcbAfdEdn = 0;
+		unsigned int fcAfd = 0;
+		unsigned int lcbAfd = 0;
 	} FibWord2003;
 
 	typedef struct FibWord2007
 	{
-		unsigned int fcPlcfmthd;
-		unsigned int lcbPlcfmthd;
-		unsigned int fcSttbfBkmkMoveFrom;
-		unsigned int lcbSttbfBkmkMoveFrom;
-		unsigned int fcPlcfBkfMoveFrom;
-		unsigned int lcbPlcfBkfMoveFrom;
-		unsigned int fcPlcfBklMoveFrom;
-		unsigned int lcbPlcfBklMoveFrom;
-		unsigned int fcSttbfBkmkMoveTo;
-		unsigned int lcbSttbfBkmkMoveTo;
-		unsigned int fcPlcfBkfMoveTo;
-		unsigned int lcbPlcfBkfMoveTo;
-		unsigned int fcPlcfBklMoveTo;
-		unsigned int lcbPlcfBklMoveTo;
-		unsigned int fcSttbfBkmkArto;
-		unsigned int lcbSttbfBkmkArto;
-		unsigned int fcPlcfBkfArto;
-		unsigned int lcbPlcfBkfArto;
-		unsigned int fcPlcfBklArto;
-		unsigned int lcbPlcfBklArto;
-		unsigned int fcArtoData;
-		unsigned int lcbArtoData;
-		unsigned int fcOssTheme;
-		unsigned int lcbOssTheme;
-		unsigned int fcColorSchemeMapping;
-		unsigned int lcbColorSchemeMapping;
+		unsigned int fcPlcfmthd = 0;
+		unsigned int lcbPlcfmthd = 0;
+		unsigned int fcSttbfBkmkMoveFrom = 0;
+		unsigned int lcbSttbfBkmkMoveFrom = 0;
+		unsigned int fcPlcfBkfMoveFrom = 0;
+		unsigned int lcbPlcfBkfMoveFrom = 0;
+		unsigned int fcPlcfBklMoveFrom = 0;
+		unsigned int lcbPlcfBklMoveFrom = 0;
+		unsigned int fcSttbfBkmkMoveTo = 0;
+		unsigned int lcbSttbfBkmkMoveTo = 0;
+		unsigned int fcPlcfBkfMoveTo = 0;
+		unsigned int lcbPlcfBkfMoveTo = 0;
+		unsigned int fcPlcfBklMoveTo = 0;
+		unsigned int lcbPlcfBklMoveTo = 0;
+		unsigned int fcSttbfBkmkArto = 0;
+		unsigned int lcbSttbfBkmkArto = 0;
+		unsigned int fcPlcfBkfArto = 0;
+		unsigned int lcbPlcfBkfArto = 0;
+		unsigned int fcPlcfBklArto = 0;
+		unsigned int lcbPlcfBklArto = 0;
+		unsigned int fcArtoData = 0;
+		unsigned int lcbArtoData = 0;
+		unsigned int fcOssTheme = 0;
+		unsigned int lcbOssTheme = 0;
+		unsigned int fcColorSchemeMapping = 0;
+		unsigned int lcbColorSchemeMapping = 0;
 	} FibWord2007;
 
 	struct FibNew
@@ -507,13 +501,14 @@ namespace DocFileFormat
 	class FileInformationBlock
 	{
 	public:
-		bool			m_bOlderVersion;
+		int				m_nWordVersion;
 		int				m_CodePage;
 		FibBase			m_FibBase;
 		
 		RgW97			m_RgW97;
 		RgLw97			m_RgLw97;
 		
+		FibWord2		m_FibWord2;
 		FibWord97		m_FibWord97;
 		FibWord2000		m_FibWord2000;
 		FibWord2002		m_FibWord2002;
@@ -531,216 +526,344 @@ namespace DocFileFormat
 		{
             if (m_FibBase.nFib > 0 && m_FibBase.nFib <= Fib1995)
 			{
-				/*m_FibWord97.fcSpare0	= */reader.ReadInt32();
-				/*m_FibWord97.fcSpare1	= */reader.ReadInt32();
-				/*m_FibWord97.fcSpare2	= */reader.ReadInt32();
-				/*m_FibWord97.fcSpare3	= */reader.ReadInt32(); //48
+				/*fcSpare0	= */reader.ReadInt32();
+				/*fcSpare1	= */reader.ReadInt32();
+				/*fcSpare2	= */reader.ReadInt32();
+				/*fcSpare3	= */reader.ReadInt32(); //48
 				m_RgLw97.ccpText			= reader.ReadInt32(); 
 				m_RgLw97.ccpFtn				= reader.ReadInt32();
 				m_RgLw97.ccpHdr				= reader.ReadInt32();
 
                 /*m_FibWord97.ccpMcr		= */reader.ReadInt32();
 				m_RgLw97.ccpAtn				= reader.ReadInt32();
-				m_RgLw97.ccpEdn				= reader.ReadInt32();
-				m_RgLw97.ccpTxbx			= reader.ReadInt32();				
-				m_RgLw97.ccpHdrTxbx			= reader.ReadInt32();
 
-				/*m_FibWord97.ccpSpare2	= */reader.ReadInt32();		//84
-				m_FibWord97.fcStshfOrig		= reader.ReadInt32();
-				m_FibWord97.lcbStshfOrig	= reader.ReadInt32();
-				m_FibWord97.fcStshf			= reader.ReadInt32();
-				m_FibWord97.lcbStshf		= reader.ReadInt32();
-				m_FibWord97.fcPlcffndRef	= reader.ReadInt32();
-				m_FibWord97.lcbPlcffndRef	= reader.ReadInt32();	
+				if (m_FibBase.nFib > Fib1985)
+				{
+					m_RgLw97.ccpEdn				= reader.ReadInt32();
+					m_RgLw97.ccpTxbx			= reader.ReadInt32();				
+					m_RgLw97.ccpHdrTxbx			= reader.ReadInt32();
+				}
+				else
+				{
+					/*ccpSpare0	= */			reader.ReadInt32();	
+					/*ccpSpare1	= */			reader.ReadInt32();
+					/*ccpSpare2	= */			reader.ReadInt32();	
+				}
+				/*ccpSpare3	= */			reader.ReadInt32();	
 
-				m_FibWord97.lcbPlcfandTxt	= reader.ReadInt32();//112
+				if (m_FibBase.nFib > Fib1985)
+				{
+					m_FibWord97.fcStshfOrig		= reader.ReadInt32();
+					m_FibWord97.lcbStshfOrig	= reader.ReadInt32();
+					m_FibWord97.fcStshf			= reader.ReadInt32();	//88
+					m_FibWord97.lcbStshf		= reader.ReadInt32();
+					m_FibWord97.fcPlcffndRef	= reader.ReadInt32();
+					m_FibWord97.lcbPlcffndRef	= reader.ReadInt32();	
 
-				m_FibWord97.lcbPlcffndTxt	= reader.ReadInt32();
+					m_FibWord97.lcbPlcfandTxt	= reader.ReadInt32();//112
 
-				m_FibWord97.fcPlcfandRef	= reader.ReadInt32();
-				m_FibWord97.lcbPlcfandRef	= reader.ReadInt32();
+					m_FibWord97.lcbPlcffndTxt	= reader.ReadInt32();
 
-				m_FibWord97.fcPlcfandTxt	= reader.ReadInt32();
-				m_FibWord97.lcbPlcfandTxt	= reader.ReadInt32();
+					m_FibWord97.fcPlcfandRef	= reader.ReadInt32();
+					m_FibWord97.lcbPlcfandRef	= reader.ReadInt32();
 
-				m_FibWord97.fcPlcfSed		= reader.ReadInt32(); //136
-				m_FibWord97.lcbPlcfSed		= reader.ReadInt32();
+					m_FibWord97.fcPlcfandTxt	= reader.ReadInt32();
+					m_FibWord97.lcbPlcfandTxt	= reader.ReadInt32();
 
-				m_FibWord97.fcPlcPad		= reader.ReadInt32();
-				m_FibWord97.lcbPlcPad		= reader.ReadInt32();
+					m_FibWord97.fcPlcfSed		= reader.ReadInt32(); //136
+					m_FibWord97.lcbPlcfSed		= reader.ReadInt32();
 
-				m_FibWord97.fcPlcfPhe		= reader.ReadInt32();
-				m_FibWord97.lcbPlcfPhe		= reader.ReadInt32();
+					m_FibWord97.fcPlcPad		= reader.ReadInt32();
+					m_FibWord97.lcbPlcPad		= reader.ReadInt32();
 
-				m_FibWord97.fcSttbfGlsy		= reader.ReadInt32();
-				m_FibWord97.lcbSttbfGlsy	= reader.ReadInt32();
-				
-				m_FibWord97.fcPlcfGlsy		= reader.ReadInt32();
-				m_FibWord97.lcbPlcfGlsy		= reader.ReadInt32();
-				m_FibWord97.fcPlcfHdd		= reader.ReadInt32();
-				m_FibWord97.lcbPlcfHdd		= reader.ReadInt32();
+					m_FibWord97.fcPlcfPhe		= reader.ReadInt32();
+					m_FibWord97.lcbPlcfPhe		= reader.ReadInt32();
 
-				m_FibWord97.fcPlcfBteChpx	= reader.ReadInt32();
-				m_FibWord97.lcbPlcfBteChpx	= reader.ReadInt32();
+					m_FibWord97.fcSttbfGlsy		= reader.ReadInt32();
+					m_FibWord97.lcbSttbfGlsy	= reader.ReadInt32();
+					
+					m_FibWord97.fcPlcfGlsy		= reader.ReadInt32();
+					m_FibWord97.lcbPlcfGlsy		= reader.ReadInt32();
+					m_FibWord97.fcPlcfHdd		= reader.ReadInt32();
+					m_FibWord97.lcbPlcfHdd		= reader.ReadInt32();
 
-				m_FibWord97.fcPlcfBtePapx 	= reader.ReadInt32();
-				m_FibWord97.lcbPlcfBtePapx	= reader.ReadInt32();
+					m_FibWord97.fcPlcfBteChpx	= reader.ReadInt32();
+					m_FibWord97.lcbPlcfBteChpx	= reader.ReadInt32();
 
-				m_FibWord97.fcPlcfSea		= reader.ReadInt32();
-				m_FibWord97.lcbPlcfSea		= reader.ReadInt32();
+					m_FibWord97.fcPlcfBtePapx 	= reader.ReadInt32();
+					m_FibWord97.lcbPlcfBtePapx	= reader.ReadInt32();
 
-				m_FibWord97.fcSttbfFfn		= reader.ReadInt32();
-				m_FibWord97.lcbSttbfFfn		= reader.ReadInt32();
+					m_FibWord97.fcPlcfSea		= reader.ReadInt32();
+					m_FibWord97.lcbPlcfSea		= reader.ReadInt32();
 
-				m_FibWord97.fcPlcfFldMom	= reader.ReadInt32(); //216
-				m_FibWord97.lcbPlcfFldMom	= reader.ReadInt32();
+					m_FibWord97.fcSttbfFfn		= reader.ReadInt32();
+					m_FibWord97.lcbSttbfFfn		= reader.ReadInt32();
 
-				m_FibWord97.fcPlcfFldHdr	= reader.ReadInt32();
-				m_FibWord97.lcbPlcfFldHdr	= reader.ReadInt32();
+					m_FibWord97.fcPlcfFldMom	= reader.ReadInt32(); //216
+					m_FibWord97.lcbPlcfFldMom	= reader.ReadInt32();
 
-				m_FibWord97.fcPlcfFldFtn	= reader.ReadInt32();
-				m_FibWord97.lcbPlcfFldFtn	= reader.ReadInt32();
+					m_FibWord97.fcPlcfFldHdr	= reader.ReadInt32();
+					m_FibWord97.lcbPlcfFldHdr	= reader.ReadInt32();
 
-				m_FibWord97.fcPlcfFldAtn	= reader.ReadInt32();
-				m_FibWord97.lcbPlcfFldAtn	= reader.ReadInt32();
+					m_FibWord97.fcPlcfFldFtn	= reader.ReadInt32();
+					m_FibWord97.lcbPlcfFldFtn	= reader.ReadInt32();
 
-				m_FibWord97.fcPlcfFldMcr	= reader.ReadInt32();
-				m_FibWord97.lcbPlcfFldMcr	= reader.ReadInt32();
+					m_FibWord97.fcPlcfFldAtn	= reader.ReadInt32();
+					m_FibWord97.lcbPlcfFldAtn	= reader.ReadInt32();
 
-				m_FibWord97.fcSttbfBkmk		= reader.ReadInt32();
-				m_FibWord97.lcbSttbfBkmk	= reader.ReadInt32();
+					m_FibWord97.fcPlcfFldMcr	= reader.ReadInt32();
+					m_FibWord97.lcbPlcfFldMcr	= reader.ReadInt32();
 
-				m_FibWord97.fcPlcfBkf		= reader.ReadInt32();
-				m_FibWord97.lcbPlcfBkf		= reader.ReadInt32();
+					m_FibWord97.fcSttbfBkmk		= reader.ReadInt32();
+					m_FibWord97.lcbSttbfBkmk	= reader.ReadInt32();
 
-				m_FibWord97.fcPlcfBkl		= reader.ReadInt32();
-				m_FibWord97.lcbPlcfBkl		= reader.ReadInt32();
+					m_FibWord97.fcPlcfBkf		= reader.ReadInt32();
+					m_FibWord97.lcbPlcfBkf		= reader.ReadInt32();
 
-				m_FibWord97.fcCmds			= reader.ReadInt32();
-				m_FibWord97.lcbCmds			= reader.ReadInt32();
+					m_FibWord97.fcPlcfBkl		= reader.ReadInt32();
+					m_FibWord97.lcbPlcfBkl		= reader.ReadInt32();
 
-				/*m_FibWord97.fcPlcMcr		= */reader.ReadInt32();
-				/*m_FibWord97.lcbPlcMcr		= */reader.ReadInt32();
+					m_FibWord97.fcCmds			= reader.ReadInt32();
+					m_FibWord97.lcbCmds			= reader.ReadInt32();
 
-				m_FibWord97.fcSttbfMcr		= reader.ReadInt32();
-				m_FibWord97.lcbSttbfMcr		= reader.ReadInt32();
+					/*m_FibWord97.fcPlcMcr		= */reader.ReadInt32();
+					/*m_FibWord97.lcbPlcMcr		= */reader.ReadInt32();
 
-				m_FibWord97.fcPrDrvr		= reader.ReadInt32();
-				m_FibWord97.lcbPrDrvr		= reader.ReadInt32();
+					m_FibWord97.fcSttbfMcr		= reader.ReadInt32();
+					m_FibWord97.lcbSttbfMcr		= reader.ReadInt32();
 
-				m_FibWord97.fcPrEnvPort		= reader.ReadInt32();
-				m_FibWord97.lcbPrEnvPort	= reader.ReadInt32();	//316
+					m_FibWord97.fcPrDrvr		= reader.ReadInt32();
+					m_FibWord97.lcbPrDrvr		= reader.ReadInt32();
 
-				m_FibWord97.fcPrEnvLand		= reader.ReadInt32();
-				m_FibWord97.lcbPrEnvLand	= reader.ReadInt32();
+					m_FibWord97.fcPrEnvPort		= reader.ReadInt32();
+					m_FibWord97.lcbPrEnvPort	= reader.ReadInt32();	//316
 
-				m_FibWord97.fcWss			= reader.ReadInt32();
-				m_FibWord97.lcbWss			= reader.ReadInt32();
+					m_FibWord97.fcPrEnvLand		= reader.ReadInt32();
+					m_FibWord97.lcbPrEnvLand	= reader.ReadInt32();
 
-				m_FibWord97.fcDop			= reader.ReadInt32();
-				m_FibWord97.lcbDop			= reader.ReadInt32();
+					m_FibWord97.fcWss			= reader.ReadInt32();
+					m_FibWord97.lcbWss			= reader.ReadInt32();
 
-				m_FibWord97.fcSttbfAssoc	= reader.ReadInt32();
-				m_FibWord97.lcbSttbfAssoc	= reader.ReadInt32();
+					m_FibWord97.fcDop			= reader.ReadInt32();
+					m_FibWord97.lcbDop			= reader.ReadInt32();
 
-				m_FibWord97.fcClx			= reader.ReadInt32();
-				m_FibWord97.lcbClx			= reader.ReadInt32(); 
-				
-				m_FibWord97.fcPlcfPgdFtn	= reader.ReadInt32();
-				m_FibWord97.lcbPlcfPgdFtn	= reader.ReadInt32();
+					m_FibWord97.fcSttbfAssoc	= reader.ReadInt32();
+					m_FibWord97.lcbSttbfAssoc	= reader.ReadInt32();
 
-				m_FibWord97.fcAutosaveSource	= reader.ReadInt32();
-				m_FibWord97.lcbAutosaveSource	= reader.ReadInt32();
-				m_FibWord97.fcGrpXstAtnOwners	= reader.ReadInt32();
-				m_FibWord97.lcbGrpXstAtnOwners	= reader.ReadInt32();
-				
-				m_FibWord97.fcSttbfAtnBkmk		= reader.ReadInt32();
-				m_FibWord97.lcbSttbfAtnBkmk		= reader.ReadInt32();
-				/*m_FibWord97.wSpare4Fib		= */reader.ReadInt16(); //392
-				/*m_FibWord97.pnChpFirst		= */reader.ReadInt16();
-				/*m_FibWord97.pnPapFirst		= */reader.ReadInt16();
+					m_FibWord97.fcClx			= reader.ReadInt32();
+					m_FibWord97.lcbClx			= reader.ReadInt32(); 
+					
+					m_FibWord97.fcPlcfPgdFtn	= reader.ReadInt32();
+					m_FibWord97.lcbPlcfPgdFtn	= reader.ReadInt32();
 
-				/*m_FibWord97.cpnBteChp			= */reader.ReadInt16();
-				/*m_FibWord97.cpnBtePap			= */reader.ReadInt16();
-				
-				m_FibWord97.fcPlcSpaMom			= reader.ReadInt32();
-				m_FibWord97.lcbPlcSpaMom		= reader.ReadInt32();
+					m_FibWord97.fcAutosaveSource	= reader.ReadInt32();
+					m_FibWord97.lcbAutosaveSource	= reader.ReadInt32();
+					m_FibWord97.fcGrpXstAtnOwners	= reader.ReadInt32();
+					m_FibWord97.lcbGrpXstAtnOwners	= reader.ReadInt32();
+					
+					m_FibWord97.fcSttbfAtnBkmk		= reader.ReadInt32();
+					m_FibWord97.lcbSttbfAtnBkmk		= reader.ReadInt32();
+					
+					m_FibWord2.wSpare4				= reader.ReadInt16(); //392
+					m_FibWord2.pnChpFirst			= reader.ReadInt16();
+					m_FibWord2.pnPapFirst			= reader.ReadInt16();
 
-				m_FibWord97.fcPlcSpaHdr			= reader.ReadInt32();		/*fcPlcfdoaHdr*/
-				m_FibWord97.lcbPlcSpaHdr		= reader.ReadInt32();		/*lcbPlcfdoaHdr*/
+					m_FibWord2.cpnBteChp			= reader.ReadInt16();
+					m_FibWord2.cpnBtePap			= reader.ReadInt16();
+					
+					m_FibWord97.fcPlcSpaMom			= reader.ReadInt32();
+					m_FibWord97.lcbPlcSpaMom		= reader.ReadInt32();
 
-				/*m_FibWord97.fcUnused1			=*/ reader.ReadInt32();
-				/*m_FibWord97.lcbUnused1		=*/ reader.ReadInt32();
-				/*m_FibWord97.fcUnused2			=*/ reader.ReadInt32();
-				/*m_FibWord97.lcbUnused2		=*/ reader.ReadInt32();
+					m_FibWord97.fcPlcSpaHdr			= reader.ReadInt32();		/*fcPlcfdoaHdr*/
+					m_FibWord97.lcbPlcSpaHdr		= reader.ReadInt32();		/*lcbPlcfdoaHdr*/
 
-				m_FibWord97.fcPlcfAtnBkf		= reader.ReadInt32();
-				m_FibWord97.lcbPlcfAtnBkf		= reader.ReadInt32();
-				m_FibWord97.fcPlcfAtnBkl		= reader.ReadInt32();
-				m_FibWord97.lcbPlcfAtnBkl		= reader.ReadInt32();
-				m_FibWord97.fcPms				= reader.ReadInt32();
-				m_FibWord97.lcbPms				= reader.ReadInt32();
-				m_FibWord97.fcFormFldSttbs/*f*/	= reader.ReadInt32();
-				m_FibWord97.lcbFormFldSttbs/*f*/= reader.ReadInt32();
-				
-				m_FibWord97.fcPlcfendRef		= reader.ReadInt32(); //466
-				m_FibWord97.lcbPlcfendRef		= reader.ReadInt32();
-				m_FibWord97.fcPlcfendTxt		= reader.ReadInt32();
-				m_FibWord97.lcbPlcfendTxt		= reader.ReadInt32();
-				m_FibWord97.fcPlcfFldEdn		= reader.ReadInt32();
-				m_FibWord97.lcbPlcfFldEdn		= reader.ReadInt32();
-				/*m_FibWord97.fcPlcfpgdEdn		=*/ reader.ReadInt32();
-				/*m_FibWord97.lcbPlcfpgdEdn		=*/ reader.ReadInt32();
-				/*m_FibWord97.fcUnused3			=*/ reader.ReadInt32();
-				/*m_FibWord97.lcbUnused3		=*/ reader.ReadInt32();
-				m_FibWord97.fcSttbfRMark		= reader.ReadInt32();
-				m_FibWord97.lcbSttbfRMark		= reader.ReadInt32();
-				m_FibWord97.fcSttbfCaption		= reader.ReadInt32();
-				m_FibWord97.lcbSttbfCaption		= reader.ReadInt32();
-				m_FibWord97.fcSttbfAutoCaption	= reader.ReadInt32();
-				m_FibWord97.lcbSttbfAutoCaption	= reader.ReadInt32();
-				m_FibWord97.fcPlcfWkb			= reader.ReadInt32();	//530
-				m_FibWord97.lcbPlcfWkb			= reader.ReadInt32();
-				/*m_FibWord97.fcUnused4			=*/ reader.ReadInt32();
-				/*m_FibWord97.lcbUnused4		=*/ reader.ReadInt32();
-				m_FibWord97.fcPlcftxbxTxt		= reader.ReadInt32();
-				m_FibWord97.lcbPlcftxbxTxt		= reader.ReadInt32();
-				m_FibWord97.fcPlcfFldTxbx		= reader.ReadInt32();
-				m_FibWord97.lcbPlcfFldTxbx		= reader.ReadInt32();
-				m_FibWord97.fcPlcfHdrtxbxTxt	= reader.ReadInt32();
-				m_FibWord97.lcbPlcfHdrtxbxTxt	= reader.ReadInt32();
-				m_FibWord97.fcPlcffldHdrTxbx	= reader.ReadInt32();
-				m_FibWord97.lcbPlcffldHdrTxbx	= reader.ReadInt32();
-				m_FibWord97.fcStwUser			= reader.ReadInt32();
-				m_FibWord97.lcbStwUser			= reader.ReadInt32();
-				m_FibWord97.fcSttbTtmbd			= reader.ReadInt32();
-				m_FibWord97.lcbSttbTtmbd		= reader.ReadInt32();
-				/*m_FibWord97.fcPlcunused		= */reader.ReadInt32();
-				/*m_FibWord97.lcbUnused			= */reader.ReadInt32();
-				
-				m_FibWord97.fcPgdMotherOldOld	= reader.ReadInt32();	/*fcpgdMother.fcPgd*/	//602
-				m_FibWord97.lcbPgdMotherOldOld	= reader.ReadInt32();	/*fcPgdMother.lcbPgd*/	
-				m_FibWord97.fcBkdMotherOldOld	= reader.ReadInt32();	/*fcPgdMother.fcBkd*/
-				m_FibWord97.lcbBkdMotherOldOld	= reader.ReadInt32();	/*fcPgdMother.lcbBkd*/ // ???? size 2 ????
-				
-				m_FibWord97.fcPgdFtnOldOld		= reader.ReadInt32();	/*fcPgdFtn.fcPgd*/
-				m_FibWord97.lcbPgdFtnOldOld		= reader.ReadInt32();	/*rgfcpgdFtn.lcbPgd*/
-				m_FibWord97.fcBkdFtnOldOld		= reader.ReadInt32();	/*rgfcpgdFtn.fcBkd*/
-				m_FibWord97.lcbBkdFtnOldOld		= reader.ReadInt32();	/*rgfcpgdFtn.lcbBkd*/
+					/*m_FibWord97.fcUnused1			=*/ reader.ReadInt32();
+					/*m_FibWord97.lcbUnused1		=*/ reader.ReadInt32();
+					/*m_FibWord97.fcUnused2			=*/ reader.ReadInt32();
+					/*m_FibWord97.lcbUnused2		=*/ reader.ReadInt32();
 
-				m_FibWord97.fcPgdEdnOldOld		= reader.ReadInt32();	/*fcpgdFtn.fcPgd*/
-				m_FibWord97.lcbPgdEdnOldOld		= reader.ReadInt32();	/*rgfcpgdFtn.lcbPgd*/
-				m_FibWord97.fcBkdEdnOldOld		= reader.ReadInt32();	/*rgfcpgdFtn.fcBkd*/
-				m_FibWord97.lcbBkdEdnOldOld		= reader.ReadInt32();	/*rgfcpgdFtn.lcbBkd*/
-				
-				m_FibWord97.fcSttbfIntlFld		= reader.ReadInt32();
-				m_FibWord97.lcbSttbfIntlFld		= reader.ReadInt32();
-				m_FibWord97.fcRouteSlip			= reader.ReadInt32();	//656
-				m_FibWord97.lcbRouteSlip		= reader.ReadInt32();
-				m_FibWord97.fcSttbSavedBy		= reader.ReadInt32();
-				m_FibWord97.lcbSttbSavedBy		= reader.ReadInt32();
-				m_FibWord97.fcSttbFnm			= reader.ReadInt32();
-				m_FibWord97.lcbSttbFnm			= reader.ReadInt32();	//676	
+					m_FibWord97.fcPlcfAtnBkf		= reader.ReadInt32();
+					m_FibWord97.lcbPlcfAtnBkf		= reader.ReadInt32();
+					m_FibWord97.fcPlcfAtnBkl		= reader.ReadInt32();
+					m_FibWord97.lcbPlcfAtnBkl		= reader.ReadInt32();
+					m_FibWord97.fcPms				= reader.ReadInt32();
+					m_FibWord97.lcbPms				= reader.ReadInt32();
+					m_FibWord97.fcFormFldSttbs/*f*/	= reader.ReadInt32();
+					m_FibWord97.lcbFormFldSttbs/*f*/= reader.ReadInt32();
+					
+					m_FibWord97.fcPlcfendRef		= reader.ReadInt32(); //466
+					m_FibWord97.lcbPlcfendRef		= reader.ReadInt32();
+					m_FibWord97.fcPlcfendTxt		= reader.ReadInt32();
+					m_FibWord97.lcbPlcfendTxt		= reader.ReadInt32();
+					m_FibWord97.fcPlcfFldEdn		= reader.ReadInt32();
+					m_FibWord97.lcbPlcfFldEdn		= reader.ReadInt32();
+					/*m_FibWord97.fcPlcfpgdEdn		=*/ reader.ReadInt32();
+					/*m_FibWord97.lcbPlcfpgdEdn		=*/ reader.ReadInt32();
+					/*m_FibWord97.fcUnused3			=*/ reader.ReadInt32();
+					/*m_FibWord97.lcbUnused3		=*/ reader.ReadInt32();
+					m_FibWord97.fcSttbfRMark		= reader.ReadInt32();
+					m_FibWord97.lcbSttbfRMark		= reader.ReadInt32();
+					m_FibWord97.fcSttbfCaption		= reader.ReadInt32();
+					m_FibWord97.lcbSttbfCaption		= reader.ReadInt32();
+					m_FibWord97.fcSttbfAutoCaption	= reader.ReadInt32();
+					m_FibWord97.lcbSttbfAutoCaption	= reader.ReadInt32();
+					m_FibWord97.fcPlcfWkb			= reader.ReadInt32();	//530
+					m_FibWord97.lcbPlcfWkb			= reader.ReadInt32();
+					/*m_FibWord97.fcUnused4			=*/ reader.ReadInt32();
+					/*m_FibWord97.lcbUnused4		=*/ reader.ReadInt32();
+					m_FibWord97.fcPlcftxbxTxt		= reader.ReadInt32();
+					m_FibWord97.lcbPlcftxbxTxt		= reader.ReadInt32();
+					m_FibWord97.fcPlcfFldTxbx		= reader.ReadInt32();
+					m_FibWord97.lcbPlcfFldTxbx		= reader.ReadInt32();
+					m_FibWord97.fcPlcfHdrtxbxTxt	= reader.ReadInt32();
+					m_FibWord97.lcbPlcfHdrtxbxTxt	= reader.ReadInt32();
+					m_FibWord97.fcPlcffldHdrTxbx	= reader.ReadInt32();
+					m_FibWord97.lcbPlcffldHdrTxbx	= reader.ReadInt32();
+					m_FibWord97.fcStwUser			= reader.ReadInt32();
+					m_FibWord97.lcbStwUser			= reader.ReadInt32();
+					m_FibWord97.fcSttbTtmbd			= reader.ReadInt32();
+					m_FibWord97.lcbSttbTtmbd		= reader.ReadInt32();
+					/*m_FibWord97.fcPlcunused		= */reader.ReadInt32();
+					/*m_FibWord97.lcbUnused			= */reader.ReadInt32();
+					
+					m_FibWord97.fcPgdMotherOldOld	= reader.ReadInt32();	/*fcpgdMother.fcPgd*/	//602
+					m_FibWord97.lcbPgdMotherOldOld	= reader.ReadInt32();	/*fcPgdMother.lcbPgd*/	
+					m_FibWord97.fcBkdMotherOldOld	= reader.ReadInt32();	/*fcPgdMother.fcBkd*/
+					m_FibWord97.lcbBkdMotherOldOld	= reader.ReadInt32();	/*fcPgdMother.lcbBkd*/ // ???? size 2 ????
+					
+					m_FibWord97.fcPgdFtnOldOld		= reader.ReadInt32();	/*fcPgdFtn.fcPgd*/
+					m_FibWord97.lcbPgdFtnOldOld		= reader.ReadInt32();	/*rgfcpgdFtn.lcbPgd*/
+					m_FibWord97.fcBkdFtnOldOld		= reader.ReadInt32();	/*rgfcpgdFtn.fcBkd*/
+					m_FibWord97.lcbBkdFtnOldOld		= reader.ReadInt32();	/*rgfcpgdFtn.lcbBkd*/
+
+					m_FibWord97.fcPgdEdnOldOld		= reader.ReadInt32();	/*fcpgdFtn.fcPgd*/
+					m_FibWord97.lcbPgdEdnOldOld		= reader.ReadInt32();	/*rgfcpgdFtn.lcbPgd*/
+					m_FibWord97.fcBkdEdnOldOld		= reader.ReadInt32();	/*rgfcpgdFtn.fcBkd*/
+					m_FibWord97.lcbBkdEdnOldOld		= reader.ReadInt32();	/*rgfcpgdFtn.lcbBkd*/
+					
+					m_FibWord97.fcSttbfIntlFld		= reader.ReadInt32();
+					m_FibWord97.lcbSttbfIntlFld		= reader.ReadInt32();
+					m_FibWord97.fcRouteSlip			= reader.ReadInt32();	//656
+					m_FibWord97.lcbRouteSlip		= reader.ReadInt32();
+					m_FibWord97.fcSttbSavedBy		= reader.ReadInt32();
+					m_FibWord97.lcbSttbSavedBy		= reader.ReadInt32();
+					m_FibWord97.fcSttbFnm			= reader.ReadInt32();
+					m_FibWord97.lcbSttbFnm			= reader.ReadInt32();	//676	
+				}
+				else
+				{
+					m_FibWord97.fcStshfOrig		= reader.ReadInt32();// 0x58
+					m_FibWord97.lcbStshfOrig	= reader.ReadInt16();
+					m_FibWord97.fcStshf			= reader.ReadInt32();
+					m_FibWord97.lcbStshf		= reader.ReadInt16();//0x62
+					
+					m_FibWord97.fcPlcffndRef	= reader.ReadInt32();
+					m_FibWord97.lcbPlcffndRef	= reader.ReadInt16();//0x68
+
+					m_FibWord97.fcPlcffndTxt	= reader.ReadInt32();//0x6a
+					m_FibWord97.lcbPlcffndTxt	= reader.ReadInt16();
+
+					m_FibWord97.fcPlcfandRef	= reader.ReadInt32();//0x70
+					m_FibWord97.lcbPlcfandRef	= reader.ReadInt16();
+					
+					m_FibWord97.fcPlcfandTxt	= reader.ReadInt32();//0x76
+					m_FibWord97.lcbPlcfandTxt	= reader.ReadInt16();
+
+					m_FibWord97.fcPlcfSed		= reader.ReadInt32(); //0x7c
+					m_FibWord97.lcbPlcfSed		= reader.ReadInt16();
+
+					m_FibWord97.fcPlcPad		= reader.ReadInt32();//fcPlcfpgd
+					m_FibWord97.lcbPlcPad		= reader.ReadInt16();//cbPlcfpgd
+
+					m_FibWord97.fcPlcfPhe		= reader.ReadInt32();// 0x88
+					m_FibWord97.lcbPlcfPhe		= reader.ReadInt16();
+
+					m_FibWord97.fcSttbfGlsy		= reader.ReadInt32();
+					m_FibWord97.lcbSttbfGlsy	= reader.ReadInt16();
+					
+					m_FibWord97.fcPlcfGlsy		= reader.ReadInt32();
+					m_FibWord97.lcbPlcfGlsy		= reader.ReadInt16();
+
+					m_FibWord97.fcPlcfHdd		= reader.ReadInt32();// 0x9a
+					m_FibWord97.lcbPlcfHdd		= reader.ReadInt16();
+
+					m_FibWord97.fcPlcfBteChpx	= reader.ReadInt32();
+					m_FibWord97.lcbPlcfBteChpx	= reader.ReadInt16();
+
+					m_FibWord97.fcPlcfBtePapx 	= reader.ReadInt32();// 0xa0
+					m_FibWord97.lcbPlcfBtePapx	= reader.ReadInt16();
+
+					m_FibWord97.fcPlcfSea		= reader.ReadInt32();// 0xac
+					m_FibWord97.lcbPlcfSea		= reader.ReadInt16();
+
+					m_FibWord97.fcSttbfFfn		= reader.ReadInt32();// 0xb2
+					m_FibWord97.lcbSttbfFfn		= reader.ReadInt16();
+
+					m_FibWord97.fcPlcfFldMom	= reader.ReadInt32(); // 0xb8=184
+					m_FibWord97.lcbPlcfFldMom	= reader.ReadInt16();
+
+					m_FibWord97.fcPlcfFldHdr	= reader.ReadInt32();
+					m_FibWord97.lcbPlcfFldHdr	= reader.ReadInt16();
+
+					m_FibWord97.fcPlcfFldFtn	= reader.ReadInt32();
+					m_FibWord97.lcbPlcfFldFtn	= reader.ReadInt16();
+
+					m_FibWord97.fcPlcfFldAtn	= reader.ReadInt32();
+					m_FibWord97.lcbPlcfFldAtn	= reader.ReadInt16();
+
+					m_FibWord97.fcPlcfFldMcr	= reader.ReadInt32();
+					m_FibWord97.lcbPlcfFldMcr	= reader.ReadInt16();
+
+					m_FibWord97.fcSttbfBkmk		= reader.ReadInt32();// 0xd6
+					m_FibWord97.lcbSttbfBkmk	= reader.ReadInt16();
+
+					m_FibWord97.fcPlcfBkf		= reader.ReadInt32();
+					m_FibWord97.lcbPlcfBkf		= reader.ReadInt16();
+
+					m_FibWord97.fcPlcfBkl		= reader.ReadInt32();
+					m_FibWord97.lcbPlcfBkl		= reader.ReadInt16();
+
+					m_FibWord97.fcCmds			= reader.ReadInt32();// 0xe8
+					m_FibWord97.lcbCmds			= reader.ReadInt16();
+
+					m_FibWord2.fcPlcMcr			= reader.ReadInt32();// 0xee
+					m_FibWord2.lcbPlcMcr		= reader.ReadInt16();
+
+					m_FibWord97.fcSttbfMcr		= reader.ReadInt32();// 0xf4
+					m_FibWord97.lcbSttbfMcr		= reader.ReadInt16();
+
+					m_FibWord2.fcPrEnv			= reader.ReadInt32(); // 0xfa
+					m_FibWord2.lcbPrEnv			= reader.ReadInt16();	//316
+
+					m_FibWord97.fcWss			= reader.ReadInt32();// 0x100
+					m_FibWord97.lcbWss			= reader.ReadInt16();
+
+					m_FibWord97.fcDop			= reader.ReadInt32();// 0x106
+					m_FibWord97.lcbDop			= reader.ReadInt16();
+
+					m_FibWord97.fcSttbfAssoc	= reader.ReadInt32();
+					m_FibWord97.lcbSttbfAssoc	= reader.ReadInt16();
+
+					m_FibWord97.fcClx			= reader.ReadInt32(); // 0x112
+					m_FibWord97.lcbClx			= reader.ReadInt16(); 
+					
+					m_FibWord97.fcPlcfPgdFtn	= reader.ReadInt32();
+					m_FibWord97.lcbPlcfPgdFtn	= reader.ReadInt16();
+
+					m_FibWord97.fcAutosaveSource	= reader.ReadInt32();
+					m_FibWord97.lcbAutosaveSource	= reader.ReadInt16();
+					
+					m_FibWord2.fcSpare5 = reader.ReadInt32();
+					m_FibWord2.lcbSpare5 = reader.ReadInt16();
+					m_FibWord2.fcSpare6 = reader.ReadInt32();
+					m_FibWord2.lcbSpare6 = reader.ReadInt16();
+					m_FibWord2.wSpare4 = reader.ReadInt16();					
+					
+					m_FibWord2.pnChpFirst = reader.ReadInt16();
+					m_FibWord2.pnPapFirst = reader.ReadInt16();
+					m_FibWord2.cpnBteChp = reader.ReadInt16();
+					m_FibWord2.cpnBtePap = reader.ReadInt16();	
+				}
 			}
             if (m_FibBase.nFib > Fib1995 || m_FibBase.nFib == 0)
 			{				
@@ -761,7 +884,6 @@ namespace DocFileFormat
 
 				cbRgFcLcb			=	reader.ReadUInt16(); //152
 				
-				//Read the FibRgFcLcb97
 				m_FibWord97.fcStshfOrig		= reader.ReadUInt32(); //154
 				m_FibWord97.lcbStshfOrig	= reader.ReadUInt32(); //158
 				m_FibWord97.fcStshf			= reader.ReadUInt32(); //162
@@ -870,22 +992,22 @@ namespace DocFileFormat
 				reader.ReadUInt32(); //546
 				reader.ReadUInt32(); //550
 				
-				m_FibWord97.fcDggInfo		= reader.ReadUInt32(); //554
-				m_FibWord97.lcbDggInfo		= reader.ReadUInt32(); //558
-				m_FibWord97.fcSttbfRMark	= reader.ReadUInt32(); //562
-				m_FibWord97.lcbSttbfRMark	= reader.ReadUInt32(); //566
-				m_FibWord97.fcSttbfCaption	= reader.ReadUInt32(); //570
+				m_FibWord97.fcDggInfo			= reader.ReadUInt32(); //554
+				m_FibWord97.lcbDggInfo			= reader.ReadUInt32(); //558
+				m_FibWord97.fcSttbfRMark		= reader.ReadUInt32(); //562
+				m_FibWord97.lcbSttbfRMark		= reader.ReadUInt32(); //566
+				m_FibWord97.fcSttbfCaption		= reader.ReadUInt32(); //570
 				m_FibWord97.lcbSttbfCaption		= reader.ReadUInt32(); //574
 				m_FibWord97.fcSttbfAutoCaption	= reader.ReadUInt32(); //578
 				m_FibWord97.lcbSttbfAutoCaption = reader.ReadUInt32(); //582
-				m_FibWord97.fcPlcfWkb		= reader.ReadUInt32(); //586
-				m_FibWord97.lcbPlcfWkb		= reader.ReadUInt32(); //590
-				m_FibWord97.fcPlcfSpl		= reader.ReadUInt32(); //594
-				m_FibWord97.lcbPlcfSpl		= reader.ReadUInt32(); //598
-				m_FibWord97.fcPlcftxbxTxt	= reader.ReadUInt32(); //602
-				m_FibWord97.lcbPlcftxbxTxt	= reader.ReadUInt32(); //606
-				m_FibWord97.fcPlcfFldTxbx	= reader.ReadUInt32(); //610
-				m_FibWord97.lcbPlcfFldTxbx	= reader.ReadUInt32(); //614
+				m_FibWord97.fcPlcfWkb			= reader.ReadUInt32(); //586
+				m_FibWord97.lcbPlcfWkb			= reader.ReadUInt32(); //590
+				m_FibWord97.fcPlcfSpl			= reader.ReadUInt32(); //594
+				m_FibWord97.lcbPlcfSpl			= reader.ReadUInt32(); //598
+				m_FibWord97.fcPlcftxbxTxt		= reader.ReadUInt32(); //602
+				m_FibWord97.lcbPlcftxbxTxt		= reader.ReadUInt32(); //606
+				m_FibWord97.fcPlcfFldTxbx		= reader.ReadUInt32(); //610
+				m_FibWord97.lcbPlcfFldTxbx		= reader.ReadUInt32(); //614
 				m_FibWord97.fcPlcfHdrtxbxTxt	= reader.ReadUInt32(); //618
 				m_FibWord97.lcbPlcfHdrtxbxTxt	= reader.ReadUInt32(); //622
 				m_FibWord97.fcPlcffldHdrTxbx	= reader.ReadUInt32(); //626
@@ -964,7 +1086,7 @@ namespace DocFileFormat
 				m_FibWord2000.fcPlcfTch			= reader.ReadUInt32(); //898
 				m_FibWord2000.lcbPlcfTch		= reader.ReadUInt32(); //902
 				m_FibWord2000.fcRmdThreading	= reader.ReadUInt32(); //906
-				m_FibWord2000.lcbRmdThreading = reader.ReadUInt32(); //910
+				m_FibWord2000.lcbRmdThreading	= reader.ReadUInt32(); //910
 				m_FibWord2000.fcMid				= reader.ReadUInt32(); //914
 				m_FibWord2000.lcbMid			= reader.ReadUInt32(); //918
 				m_FibWord2000.fcSttbRgtplc		= reader.ReadUInt32(); //922
@@ -997,58 +1119,58 @@ namespace DocFileFormat
 				//Read also the fibRgFcLcb2002
 				reader.ReadUInt32(); //1018
 				reader.ReadUInt32(); //1022
-				m_FibWord2002.fcPlcfPgp		= reader.ReadUInt32(); //1026
+				m_FibWord2002.fcPlcfPgp			= reader.ReadUInt32(); //1026
 				m_FibWord2002.lcbPlcfPgp		= reader.ReadUInt32(); //1030
-				m_FibWord2002.fcPlcfuim		= reader.ReadUInt32(); //1034
+				m_FibWord2002.fcPlcfuim			= reader.ReadUInt32(); //1034
 				m_FibWord2002.lcbPlcfuim		= reader.ReadUInt32(); //1038
-				m_FibWord2002.fcPlfguidUim	= reader.ReadUInt32(); //1042
-				m_FibWord2002.lcbPlfguidUim	= reader.ReadUInt32(); //1046
+				m_FibWord2002.fcPlfguidUim		= reader.ReadUInt32(); //1042
+				m_FibWord2002.lcbPlfguidUim		= reader.ReadUInt32(); //1046
 				m_FibWord2002.fcAtrdExtra		= reader.ReadUInt32(); //1050
-				m_FibWord2002.lcbAtrdExtra	= reader.ReadUInt32(); //1054
-				m_FibWord2002.fcPlrsid		= reader.ReadUInt32(); //1058
-				m_FibWord2002.lcbPlrsid		= reader.ReadUInt32(); //1062
+				m_FibWord2002.lcbAtrdExtra		= reader.ReadUInt32(); //1054
+				m_FibWord2002.fcPlrsid			= reader.ReadUInt32(); //1058
+				m_FibWord2002.lcbPlrsid			= reader.ReadUInt32(); //1062
 				m_FibWord2002.fcSttbfBkmkFactoid = reader.ReadUInt32(); //1066
 				m_FibWord2002.lcbSttbfBkmkFactoid = reader.ReadUInt32(); //1070
-				m_FibWord2002.fcPlcfBkfFactoid = reader.ReadUInt32(); //1074
+				m_FibWord2002.fcPlcfBkfFactoid	= reader.ReadUInt32(); //1074
 				m_FibWord2002.lcbPlcfBkfFactoid = reader.ReadUInt32(); //1078
-				m_FibWord2002.fcPlcfcookie	= reader.ReadUInt32(); //1082
-				m_FibWord2002.lcbPlcfcookie	= reader.ReadUInt32(); //1086
+				m_FibWord2002.fcPlcfcookie		= reader.ReadUInt32(); //1082
+				m_FibWord2002.lcbPlcfcookie		= reader.ReadUInt32(); //1086
 				m_FibWord2002.fcPlcfBklFactoid	= reader.ReadUInt32(); //1090
 				m_FibWord2002.lcbPlcfBklFactoid	= reader.ReadUInt32(); //1094
-				m_FibWord2002.fcFactoidData	= reader.ReadUInt32(); //1098
+				m_FibWord2002.fcFactoidData		= reader.ReadUInt32(); //1098
 				m_FibWord2002.lcbFactoidData	= reader.ReadUInt32(); //1102
-				m_FibWord2002.fcDocUndo		= reader.ReadUInt32(); //1106
+				m_FibWord2002.fcDocUndo			= reader.ReadUInt32(); //1106
 				m_FibWord2002.lcbDocUndo		= reader.ReadUInt32(); //1110
 				m_FibWord2002.fcSttbfBkmkFcc	= reader.ReadUInt32(); //1114
-				m_FibWord2002.lcbSttbfBkmkFcc = reader.ReadUInt32(); //1118
-				m_FibWord2002.fcPlcfBkfFcc	= reader.ReadUInt32(); //1122
-				m_FibWord2002.lcbPlcfBkfFcc	= reader.ReadUInt32(); //1126
-				m_FibWord2002.fcPlcfBklFcc	= reader.ReadUInt32(); //1130
-				m_FibWord2002.lcbPlcfBklFcc	= reader.ReadUInt32(); //1134
+				m_FibWord2002.lcbSttbfBkmkFcc	= reader.ReadUInt32(); //1118
+				m_FibWord2002.fcPlcfBkfFcc		= reader.ReadUInt32(); //1122
+				m_FibWord2002.lcbPlcfBkfFcc		= reader.ReadUInt32(); //1126
+				m_FibWord2002.fcPlcfBklFcc		= reader.ReadUInt32(); //1130
+				m_FibWord2002.lcbPlcfBklFcc		= reader.ReadUInt32(); //1134
 				m_FibWord2002.fcSttbfbkmkBPRepairs = reader.ReadUInt32(); //1138
 				m_FibWord2002.lcbSttbfbkmkBPRepairs = reader.ReadUInt32(); //1142
 				m_FibWord2002.fcPlcfbkfBPRepairs = reader.ReadUInt32(); //1146
 				m_FibWord2002.lcbPlcfbkfBPRepairs = reader.ReadUInt32(); //1150
 				m_FibWord2002.fcPlcfbklBPRepairs = reader.ReadUInt32(); //1154
 				m_FibWord2002.lcbPlcfbklBPRepairs = reader.ReadUInt32(); //1158
-				m_FibWord2002.fcPmsNew		= reader.ReadUInt32(); //1162
-				m_FibWord2002.lcbPmsNew		= reader.ReadUInt32(); //1166
+				m_FibWord2002.fcPmsNew			= reader.ReadUInt32(); //1162
+				m_FibWord2002.lcbPmsNew			= reader.ReadUInt32(); //1166
 				m_FibWord2002.fcODSO			= reader.ReadUInt32(); //1170
 				m_FibWord2002.lcbODSO			= reader.ReadUInt32(); //1174
 				m_FibWord2002.fcPlcfpmiOldXP	= reader.ReadUInt32(); //1178
 				m_FibWord2002.lcbPlcfpmiOldXP = reader.ReadUInt32(); //1182
 				m_FibWord2002.fcPlcfpmiNewXP	= reader.ReadUInt32(); //1186
-				m_FibWord2002.lcbPlcfpmiNewXP = reader.ReadUInt32(); //1190
-				m_FibWord2002.fcPlcfpmiMixedXP = reader.ReadUInt32(); //1194
+				m_FibWord2002.lcbPlcfpmiNewXP	= reader.ReadUInt32(); //1190
+				m_FibWord2002.fcPlcfpmiMixedXP	= reader.ReadUInt32(); //1194
 				m_FibWord2002.lcbPlcfpmiMixedXP = reader.ReadUInt32(); //1198
 				reader.ReadUInt32(); //1202
 				reader.ReadUInt32(); //1206
 				m_FibWord2002.fcPlcffactoid		= reader.ReadUInt32(); //1210
-				m_FibWord2002.lcbPlcffactoid		= reader.ReadUInt32(); //1214
-				m_FibWord2002.fcPlcflvcOldXP		= reader.ReadUInt32(); //1218
-				m_FibWord2002.lcbPlcflvcOldXP		= reader.ReadUInt32(); //1222
-				m_FibWord2002.fcPlcflvcNewXP		= reader.ReadUInt32(); //1226
-				m_FibWord2002.lcbPlcflvcNewXP		= reader.ReadUInt32(); //1230
+				m_FibWord2002.lcbPlcffactoid	= reader.ReadUInt32(); //1214
+				m_FibWord2002.fcPlcflvcOldXP	= reader.ReadUInt32(); //1218
+				m_FibWord2002.lcbPlcflvcOldXP	= reader.ReadUInt32(); //1222
+				m_FibWord2002.fcPlcflvcNewXP	= reader.ReadUInt32(); //1226
+				m_FibWord2002.lcbPlcflvcNewXP	= reader.ReadUInt32(); //1230
 				m_FibWord2002.fcPlcflvcMixedXP	= reader.ReadUInt32(); //1234
 				m_FibWord2002.lcbPlcflvcMixedXP	= reader.ReadUInt32(); //1238
 			}
@@ -1056,46 +1178,46 @@ namespace DocFileFormat
 			{
 				//Read also the fibRgFcLcb2003
 				m_FibWord2003.fcHplxsdr			= reader.ReadUInt32();
-				m_FibWord2003.lcbHplxsdr			= reader.ReadUInt32();
-				m_FibWord2003.fcSttbfBkmkSdt		= reader.ReadUInt32();
-				m_FibWord2003.lcbSttbfBkmkSdt		= reader.ReadUInt32();
+				m_FibWord2003.lcbHplxsdr		= reader.ReadUInt32();
+				m_FibWord2003.fcSttbfBkmkSdt	= reader.ReadUInt32();
+				m_FibWord2003.lcbSttbfBkmkSdt	= reader.ReadUInt32();
 				m_FibWord2003.fcPlcfBkfSdt		= reader.ReadUInt32();
 				m_FibWord2003.lcbPlcfBkfSdt		= reader.ReadUInt32();
 				m_FibWord2003.fcPlcfBklSdt		= reader.ReadUInt32();
 				m_FibWord2003.lcbPlcfBklSdt		= reader.ReadUInt32();
 				m_FibWord2003.fcCustomXForm		= reader.ReadUInt32();
-				m_FibWord2003.lcbCustomXForm		= reader.ReadUInt32();
-				m_FibWord2003.fcSttbfBkmkProt		= reader.ReadUInt32();
+				m_FibWord2003.lcbCustomXForm	= reader.ReadUInt32();
+				m_FibWord2003.fcSttbfBkmkProt	= reader.ReadUInt32();
 				m_FibWord2003.lcbSttbfBkmkProt	= reader.ReadUInt32();
 				m_FibWord2003.fcPlcfBkfProt		= reader.ReadUInt32();
-				m_FibWord2003.lcbPlcfBkfProt		= reader.ReadUInt32();
+				m_FibWord2003.lcbPlcfBkfProt	= reader.ReadUInt32();
 				m_FibWord2003.fcPlcfBklProt		= reader.ReadUInt32();
-				m_FibWord2003.lcbPlcfBklProt		= reader.ReadUInt32();
-				m_FibWord2003.fcSttbProtUser		= reader.ReadUInt32();
-				m_FibWord2003.lcbSttbProtUser		= reader.ReadUInt32();
+				m_FibWord2003.lcbPlcfBklProt	= reader.ReadUInt32();
+				m_FibWord2003.fcSttbProtUser	= reader.ReadUInt32();
+				m_FibWord2003.lcbSttbProtUser	= reader.ReadUInt32();
 				reader.ReadUInt32();
 				reader.ReadUInt32();
 				m_FibWord2003.fcPlcfpmiOld		= reader.ReadUInt32();
 				m_FibWord2003.lcbPlcfpmiOld		= reader.ReadUInt32();
-				m_FibWord2003.fcPlcfpmiOldInline	= reader.ReadUInt32();
+				m_FibWord2003.fcPlcfpmiOldInline= reader.ReadUInt32();
 				m_FibWord2003.lcbPlcfpmiOldInline = reader.ReadUInt32();
 				m_FibWord2003.fcPlcfpmiNew		= reader.ReadUInt32();
 				m_FibWord2003.lcbPlcfpmiNew		= reader.ReadUInt32();
-				m_FibWord2003.fcPlcfpmiNewInline	= reader.ReadUInt32();
+				m_FibWord2003.fcPlcfpmiNewInline= reader.ReadUInt32();
 				m_FibWord2003.lcbPlcfpmiNewInline = reader.ReadUInt32();
 				m_FibWord2003.fcPlcflvcOld		= reader.ReadUInt32();
 				m_FibWord2003.lcbPlcflvcOld		= reader.ReadUInt32();
-				m_FibWord2003.fcPlcflvcOldInline	= reader.ReadUInt32();
+				m_FibWord2003.fcPlcflvcOldInline= reader.ReadUInt32();
 				m_FibWord2003.lcbPlcflvcOldInline = reader.ReadUInt32();
 				m_FibWord2003.fcPlcflvcNew		= reader.ReadUInt32();
 				m_FibWord2003.lcbPlcflvcNew		= reader.ReadUInt32();
-				m_FibWord2003.fcPlcflvcNewInline	= reader.ReadUInt32();
+				m_FibWord2003.fcPlcflvcNewInline= reader.ReadUInt32();
 				m_FibWord2003.lcbPlcflvcNewInline = reader.ReadUInt32();
-				m_FibWord2003.fcPgdMother			= reader.ReadUInt32();
+				m_FibWord2003.fcPgdMother		= reader.ReadUInt32();
 				m_FibWord2003.lcbPgdMother		= reader.ReadUInt32();
-				m_FibWord2003.fcBkdMother			= reader.ReadUInt32();
+				m_FibWord2003.fcBkdMother		= reader.ReadUInt32();
 				m_FibWord2003.lcbBkdMother		= reader.ReadUInt32();
-				m_FibWord2003.fcAfdMother			= reader.ReadUInt32();
+				m_FibWord2003.fcAfdMother		= reader.ReadUInt32();
 				m_FibWord2003.lcbAfdMother		= reader.ReadUInt32();
 				m_FibWord2003.fcPgdFtn			= reader.ReadUInt32();
 				m_FibWord2003.lcbPgdFtn			= reader.ReadUInt32();
@@ -1110,24 +1232,24 @@ namespace DocFileFormat
 				m_FibWord2003.fcAfdEdn			= reader.ReadUInt32();
 				m_FibWord2003.lcbAfdEdn			= reader.ReadUInt32();
 				m_FibWord2003.fcAfd				= reader.ReadUInt32();
-				m_FibWord2003.lcbAfd				= reader.ReadUInt32();
+				m_FibWord2003.lcbAfd			= reader.ReadUInt32();
 			}
 			if ( m_FibBase.nFib >= Fib2007 )
 			{
 				//Read also the fibRgFcLcb2007
-				m_FibWord2007.fcPlcfmthd			= reader.ReadUInt32();
-				m_FibWord2007.lcbPlcfmthd			= reader.ReadUInt32();
+				m_FibWord2007.fcPlcfmthd		= reader.ReadUInt32();
+				m_FibWord2007.lcbPlcfmthd		= reader.ReadUInt32();
 				m_FibWord2007.fcSttbfBkmkMoveFrom = reader.ReadUInt32();
 				m_FibWord2007.lcbSttbfBkmkMoveFrom = reader.ReadUInt32();
 				m_FibWord2007.fcPlcfBkfMoveFrom	= reader.ReadUInt32();
-				m_FibWord2007.lcbPlcfBkfMoveFrom	= reader.ReadUInt32();
+				m_FibWord2007.lcbPlcfBkfMoveFrom= reader.ReadUInt32();
 				m_FibWord2007.fcPlcfBklMoveFrom	= reader.ReadUInt32();
-				m_FibWord2007.lcbPlcfBklMoveFrom	= reader.ReadUInt32();
+				m_FibWord2007.lcbPlcfBklMoveFrom= reader.ReadUInt32();
 				m_FibWord2007.fcSttbfBkmkMoveTo	= reader.ReadUInt32();
-				m_FibWord2007.lcbSttbfBkmkMoveTo	= reader.ReadUInt32();
-				m_FibWord2007.fcPlcfBkfMoveTo		= reader.ReadUInt32();
+				m_FibWord2007.lcbSttbfBkmkMoveTo= reader.ReadUInt32();
+				m_FibWord2007.fcPlcfBkfMoveTo	= reader.ReadUInt32();
 				m_FibWord2007.lcbPlcfBkfMoveTo	= reader.ReadUInt32();
-				m_FibWord2007.fcPlcfBklMoveTo		= reader.ReadUInt32();
+				m_FibWord2007.fcPlcfBklMoveTo	= reader.ReadUInt32();
 				m_FibWord2007.lcbPlcfBklMoveTo	= reader.ReadUInt32();
 				reader.ReadUInt32();
 				reader.ReadUInt32();
@@ -1135,22 +1257,22 @@ namespace DocFileFormat
 				reader.ReadUInt32();
 				reader.ReadUInt32();
 				reader.ReadUInt32();
-				m_FibWord2007.fcSttbfBkmkArto		= reader.ReadUInt32();
+				m_FibWord2007.fcSttbfBkmkArto	= reader.ReadUInt32();
 				m_FibWord2007.lcbSttbfBkmkArto	= reader.ReadUInt32();
 				m_FibWord2007.fcPlcfBkfArto		= reader.ReadUInt32();
-				m_FibWord2007.lcbPlcfBkfArto		= reader.ReadUInt32();
+				m_FibWord2007.lcbPlcfBkfArto	= reader.ReadUInt32();
 				m_FibWord2007.fcPlcfBklArto		= reader.ReadUInt32();
-				m_FibWord2007.lcbPlcfBklArto		= reader.ReadUInt32();
-				m_FibWord2007.fcArtoData			= reader.ReadUInt32();
-				m_FibWord2007.lcbArtoData			= reader.ReadUInt32();
+				m_FibWord2007.lcbPlcfBklArto	= reader.ReadUInt32();
+				m_FibWord2007.fcArtoData		= reader.ReadUInt32();
+				m_FibWord2007.lcbArtoData		= reader.ReadUInt32();
 				reader.ReadUInt32();
 				reader.ReadUInt32();
 				reader.ReadUInt32();
 				reader.ReadUInt32();
 				reader.ReadUInt32();
 				reader.ReadUInt32();
-				m_FibWord2007.fcOssTheme				= reader.ReadUInt32();
-				m_FibWord2007.lcbOssTheme				= reader.ReadUInt32();
+				m_FibWord2007.fcOssTheme			= reader.ReadUInt32();
+				m_FibWord2007.lcbOssTheme			= reader.ReadUInt32();
 				m_FibWord2007.fcColorSchemeMapping	= reader.ReadUInt32();
 				m_FibWord2007.lcbColorSchemeMapping	= reader.ReadUInt32();
 			}
@@ -1168,15 +1290,15 @@ namespace DocFileFormat
 		}
 		FileInformationBlock( VirtualStreamReader reader )
 		{
-			m_bOlderVersion = false;
+			m_nWordVersion	= 0;
 			m_CodePage		= 1250;
 
 			unsigned int flag16 = 0;
 			unsigned char flag8 = 0;
 
 			//read the FIB base
-			m_FibBase.wIdent			= reader.ReadUInt16(); //0
-			m_FibBase.nFib				= (FibVersion)reader.ReadUInt16(); //2
+			m_FibBase.wIdent	= reader.ReadUInt16(); //0
+			m_FibBase.nFib		= (FibVersion)reader.ReadUInt16(); //2
 			
 			reader.ReadBytes( 2, false ); //4 //nProduct
 
@@ -1185,36 +1307,47 @@ namespace DocFileFormat
 			
 			flag16 = reader.ReadUInt16(); //10
 			
-			m_FibBase.fDot				= FormatUtils::BitmaskToBool((int)flag16, 0x0001);
-			m_FibBase.fGlsy				= FormatUtils::BitmaskToBool((int)flag16, 0x0002);
-			m_FibBase.fComplex			= FormatUtils::BitmaskToBool((int)flag16, 0x0002);
-            m_FibBase.fHasPic			= FormatUtils::BitmaskToBool((int)flag16, 0x0008);
+			m_FibBase.fDot				= (flag16 & 0x0001) >> 2;
+			m_FibBase.fGlsy				= (flag16 & 0x0002) >> 1;
+			m_FibBase.fComplex			= (flag16 & 0x0004) >> 2;
+            m_FibBase.fHasPic			= (flag16 & 0x0008) >> 3;
             m_FibBase.cQuickSaves		= (WORD)(((int)flag16 & 0x00F0) >> 4);
             m_FibBase.fEncrypted		= FormatUtils::BitmaskToBool((int)flag16, 0x0100);
 			m_FibBase.fWhichTblStm		= FormatUtils::BitmaskToBool((int)flag16, 0x0200);
 			m_FibBase.fReadOnlyRecommended	= FormatUtils::BitmaskToBool((int)flag16, 0x0400);
 			m_FibBase.fWriteReservation	= FormatUtils::BitmaskToBool((int)flag16, 0x0800);
 			m_FibBase.fExtChar			= FormatUtils::BitmaskToBool((int)flag16, 0x1000);
-			m_FibBase.fLoadOverwrite		= FormatUtils::BitmaskToBool((int)flag16, 0x2000);
+			m_FibBase.fLoadOverwrite	= FormatUtils::BitmaskToBool((int)flag16, 0x2000);
 			m_FibBase.fFarEast			= FormatUtils::BitmaskToBool((int)flag16, 0x4000);
 			m_FibBase.fObfuscation		= FormatUtils::BitmaskToBool((int)flag16, 0x8000);
 			
 			m_FibBase.nFibBack			= reader.ReadUInt16(); //12
-			m_FibBase.lKey				= reader.ReadInt32(); //14
-			m_FibBase.envr				= reader.ReadByte(); //18
+
+			if (m_FibBase.nFib < Fib1989)
+			{			
+				m_FibWord2.Spare = reader.ReadInt32();
+				m_FibWord2.rgwSpare0[0] = reader.ReadUInt16();
+				m_FibWord2.rgwSpare0[1] = reader.ReadUInt16();
+				m_FibWord2.rgwSpare0[2] = reader.ReadUInt16();
+			}
+			else
+			{
+				m_FibBase.lKey				= reader.ReadInt32(); //14
+				m_FibBase.envr				= reader.ReadByte(); //18
+				
+				flag8 = reader.ReadByte(); //19
+				
+				m_FibBase.fMac				= FormatUtils::BitmaskToBool((int)flag8, 0x01);
+				m_FibBase.fEmptySpecial		= FormatUtils::BitmaskToBool((int)flag8, 0x02);
+				m_FibBase.fLoadOverridePage	= FormatUtils::BitmaskToBool((int)flag8, 0x04);
+				m_FibBase.fFutureSavedUndo	= FormatUtils::BitmaskToBool((int)flag8, 0x08);
+				m_FibBase.fWord97Saved		= FormatUtils::BitmaskToBool((int)flag8, 0x10);
+				
+				reader.ReadBytes( 4, false ); //20
+			}
 			
-			flag8 = reader.ReadByte(); //19
-			
-			m_FibBase.fMac				= FormatUtils::BitmaskToBool((int)flag8, 0x01);
-			m_FibBase.fEmptySpecial		= FormatUtils::BitmaskToBool((int)flag8, 0x02);
-			m_FibBase.fLoadOverridePage	= FormatUtils::BitmaskToBool((int)flag8, 0x04);
-			m_FibBase.fFutureSavedUndo	= FormatUtils::BitmaskToBool((int)flag8, 0x08);
-			m_FibBase.fWord97Saved		= FormatUtils::BitmaskToBool((int)flag8, 0x10);
-			
-			reader.ReadBytes( 4, false ); //20
-			
-			m_FibBase.fcMin				= reader.ReadInt32(); //24
-			m_FibBase.fcMac				= reader.ReadInt32(); //28
+			m_FibBase.fcMin = reader.ReadInt32(); //24
+			m_FibBase.fcMac = reader.ReadInt32(); //28
 
 			if (m_FibBase.nFib  > Fib1995)
 				csw = reader.ReadUInt16(); //32

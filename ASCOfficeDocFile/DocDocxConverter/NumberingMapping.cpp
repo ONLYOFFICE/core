@@ -338,9 +338,9 @@ namespace DocFileFormat
 	}
 
 
-	std::wstring NumberingMapping::GetNumberFormatWideString(int nfc, bool bOlderVersion)
+	std::wstring NumberingMapping::GetNumberFormatWideString(int nfc, int nWordVersion)
 	{
-		if (bOlderVersion && nfc > 5)
+		if (nWordVersion > 0 && nfc > 5)
 		{
             if (nfc == 0xff)	return std::wstring( L"bullet");
             else				return std::wstring( L"none");
@@ -633,7 +633,7 @@ namespace DocFileFormat
 
 			if ((chpxs != NULL) && (!chpxs->empty()))
 			{
-				PictureDescriptor pict(chpxs->front(), m_document->DataStream, fcEnd - fc, m_document->FIB->m_bOlderVersion);
+				PictureDescriptor pict(chpxs->front(), m_document->DataStream, fcEnd - fc, m_document->nWordVersion);
 
 				if ((pict.mfp.mm > 98) && (pict.shapeContainer != NULL))
 				{

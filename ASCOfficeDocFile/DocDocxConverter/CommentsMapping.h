@@ -95,7 +95,7 @@ namespace DocFileFormat
 						if (fc < 0) break;
 
 						ParagraphPropertyExceptions* papx = findValidPapx(fc);
-						TableInfo tai(papx);
+						TableInfo tai(papx, m_document->nWordVersion);
 
 						if ( tai.fInTable )
 						{

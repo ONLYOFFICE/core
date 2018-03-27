@@ -48,7 +48,7 @@ namespace DocFileFormat
 	{
 		Initialize();
 		
-		VirtualStreamReader tStream( tableStream, fib->m_FibWord97.fcDop, fib->m_bOlderVersion);
+		VirtualStreamReader tStream( tableStream, fib->m_FibWord97.fcDop, fib->m_nWordVersion);
 		
 //setDefaultCompatibilityOptions( fib->m_FibBase.nFib );
 

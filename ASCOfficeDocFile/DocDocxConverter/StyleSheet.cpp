@@ -54,43 +54,130 @@ namespace DocFileFormat
 	/// Parses the streams to retrieve a StyleSheet.
 	StyleSheet::StyleSheet (FileInformationBlock* fib, POLE::Stream* tableStream, POLE::Stream* dataStream) : stshi(NULL), Styles(NULL)
 	{
-		VirtualStreamReader tableReader( tableStream, fib->m_FibWord97.fcStshf, fib->m_bOlderVersion);
+		VirtualStreamReader tableReader( tableStream, fib->m_FibWord97.fcStshf, fib->m_nWordVersion);
 
-		//read size of the STSHI
-		int stshiLengthBytesSize = 2;
-		unsigned char* stshiLengthBytes = tableReader.ReadBytes( stshiLengthBytesSize, true );
-		short cbStshi = FormatUtils::BytesToInt16( stshiLengthBytes, 0, stshiLengthBytesSize );
-		RELEASEARRAYOBJECTS( stshiLengthBytes );
-
-		//read the bytes of the STSHI
-        tableReader.Seek( ( fib->m_FibWord97.fcStshf + 2 ), 0/*STREAM_SEEK_SET*/ );
-		unsigned char* stshi = tableReader.ReadBytes( cbStshi, true );
-
-		//parses STSHI
-		this->stshi = new StyleSheetInformation( stshi, cbStshi );
-		RELEASEARRAYOBJECTS( stshi );
+		short cbStshi = fib->m_FibWord97.lcbStshf;
+		//unsigned char* test = tableReader.ReadBytes( cbStshi, true );
 
 		//create list of STDs
 		Styles = new std::vector<StyleSheetDescription*>();
 
-		for ( int i = 0; i < this->stshi->cstd; i++ )
+		if (fib->m_nWordVersion < 2)
 		{
-			//get the cbStd
-			unsigned short cbStd = tableReader.ReadUInt16();
+			//read size of the STSHI
+			int stshiLengthBytesSize = 2;
+			unsigned char* stshiLengthBytes = tableReader.ReadBytes( stshiLengthBytesSize, true );
+			short cbStshi = FormatUtils::BytesToInt16( stshiLengthBytes, 0, stshiLengthBytesSize );
+			RELEASEARRAYOBJECTS( stshiLengthBytes );
+		
+			//read the bytes of the STSHI        
+			tableReader.Seek( ( fib->m_FibWord97.fcStshf + 2 ), 0/*STREAM_SEEK_SET*/ );
+			unsigned char* stshi = tableReader.ReadBytes( cbStshi, true );
 
-			if ( cbStd != 0 )
+			//parses STSHI
+			this->stshi = new StyleSheetInformation( stshi, cbStshi );
+			RELEASEARRAYOBJECTS( stshi );
+
+			for ( int i = 0; i < this->stshi->cstd; i++ )
 			{
-				//read the STD bytes
-				unsigned char* std = tableReader.ReadBytes( cbStd, true );
+				//get the cbStd
+				unsigned short cbStd = tableReader.ReadUInt16();
 
-				//parse the STD bytes
-				Styles->push_back( new StyleSheetDescription( std, cbStd, (int)this->stshi->cbSTDBaseInFile, dataStream, fib->m_bOlderVersion) );
+				if ( cbStd != 0 )
+				{
+					//read the STD bytes
+					unsigned char* std = tableReader.ReadBytes( cbStd, true );
 
-				RELEASEARRAYOBJECTS( std );
+					//parse the STD bytes
+					Styles->push_back( new StyleSheetDescription( std, cbStd, (int)this->stshi->cbSTDBaseInFile, dataStream, fib->m_nWordVersion) );
+
+					RELEASEARRAYOBJECTS( std );
+				}
+				else
+				{
+					Styles->push_back( NULL );
+				}
 			}
-			else
+		}
+		else
+		{
+			unsigned short i, sz = 0;
+			tableReader.ReadUInt16();
+			
+			unsigned short sz_names = tableReader.ReadUInt16();
+			sz = 2;
+			while(sz < sz_names)
 			{
-				Styles->push_back( NULL );
+				unsigned short sz_name = tableReader.ReadByte(); sz++;
+		
+				StyleSheetDescription* std = new StyleSheetDescription();
+
+				if (sz_name != 0 && sz_name < 0xff)
+				{
+					unsigned char *bytes = tableReader.ReadBytes( sz_name, true );
+					FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &std->xstzName, bytes, sz_name, ENCODING_WINDOWS_1250 );
+					RELEASEARRAYOBJECTS( bytes );
+				}
+				else
+				{
+					if (Styles->empty())
+					{
+						std->sti = Normal;
+						std->xstzName = L"Normal";
+					}
+				}
+
+				Styles->push_back(std);
+
+				sz += sz_name != 0xff ? sz_name : 0;			
+			}
+			unsigned short sz_chpxs = tableReader.ReadUInt16();
+			i = 0;
+			sz = 2;
+			while(sz < sz_chpxs)
+			{
+				unsigned short sz_chpx = tableReader.ReadByte();
+				sz++;
+
+				if (Styles->size() <= i)
+				{
+					StyleSheetDescription* std = new StyleSheetDescription();
+					Styles->push_back(std);
+				}
+				if (sz_chpx != 0 && sz_chpx != 255)
+				{				
+					unsigned char *bytes = tableReader.ReadBytes( sz_chpx, true );
+					Styles->at(i)->chpx = new CharacterPropertyExceptions( bytes, sz_chpx , fib->m_nWordVersion); 
+					RELEASEARRAYOBJECTS( bytes );
+					sz += sz_chpx;			
+				}
+				i++;
+			}			
+ 			unsigned short sz_papxs = tableReader.ReadUInt16();
+			i = 0;
+			sz = 2;
+			while(sz < sz_papxs)
+			{
+				unsigned short sz_papx = tableReader.ReadByte();
+				sz++;
+
+				if ( sz_papx != 255)
+				{				
+					unsigned char *bytes = tableReader.ReadBytes( sz_papx, true );
+					Styles->at(i)->papx = new ParagraphPropertyExceptions( bytes, sz_papx, tableStream, fib->m_nWordVersion );
+					RELEASEARRAYOBJECTS( bytes );
+				
+					sz += sz_papx;			
+				}
+				i++;
+			}			
+ 			unsigned short sz_Estcps = tableReader.ReadUInt16();
+			i = 0;
+			sz = 2;
+			while(sz < sz_Estcps)
+			{
+				Styles->at(i++)->istdBase = tableReader.ReadByte();
+				sz += 1;	
 			}
 		}
 	}

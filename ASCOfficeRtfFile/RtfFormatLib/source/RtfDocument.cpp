@@ -49,6 +49,8 @@ RtfDocument::RtfDocument()
 	m_oProperty.SetDefaultOOX();
 	m_oDefaultCharProp.SetDefaultRtf();
 	m_oDefaultParagraphProp.SetDefaultRtf();
+
+	m_nZIndexLast = 0;
 }
 int RtfDocument::GetType()
 {

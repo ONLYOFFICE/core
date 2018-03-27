@@ -348,7 +348,7 @@ void paragraph::drop_cap_text_docx_convert(office_element_ptr first_text_element
 	text* first_text_paragraph = dynamic_cast<text*>(first_text_element_paragraph.get());
 	if (first_text_paragraph == NULL)return;
 	
-	std::wstring & str = first_text_paragraph->attr_text();
+	std::wstring & str = first_text_paragraph->text_;
 	std::wstring store_str = str;
 
 	if (Context.get_drop_cap_context().Length == -1)Context.get_drop_cap_context().Length = store_str.find(L" ");//find length word
@@ -477,8 +477,11 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 
         if ((next_masterPageName)  && (Context.get_master_page_name() != *next_masterPageName))
         {
-            Context.next_dump_page_properties(true);
-			is_empty = false;
+			if (false == Context.root()->odf_context().pageLayoutContainer().compare_page_properties(Context.get_master_page_name(), *next_masterPageName))
+			{
+				Context.next_dump_page_properties(true);
+				is_empty = false;
+			}
         }
     } 
 	if (next_section_/* || next_end_section_*/)
@@ -836,11 +839,18 @@ void text_section::add_child_element( xml::sax * Reader, const std::wstring & Ns
 
 void text_section::docx_convert(oox::docx_conversion_context & Context)
 {
-	std::wstring current_page_properties = Context.get_page_properties();
-   
-	Context.get_section_context().add_section (text_section_attr_.text_name_, text_section_attr_.text_style_name_.get_value_or(L""), current_page_properties);
-	
-	Context.add_page_properties(current_page_properties);
+	if ( false == Context.get_drawing_state_content())
+	{
+		std::wstring current_page_properties = Context.get_page_properties();
+	   
+		Context.get_section_context().add_section (text_section_attr_.text_name_, text_section_attr_.text_style_name_.get_value_or(L""), current_page_properties);
+		
+		Context.add_page_properties(current_page_properties);
+	}
+	else
+	{
+		//колонки для текста в объектах todooo
+	}
 
    	for (size_t i = 0; i < text_content_.size(); i++)
 	{
@@ -1554,6 +1564,60 @@ void text_variable_decls::add_child_element( xml::sax * Reader, const std::wstri
 	}
 }
 void text_variable_decls::docx_convert(oox::docx_conversion_context & Context)
+{
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+		content_[i]->docx_convert(Context);
+	}
+}
+//---------------------------------------------------------------------------------------------------
+const wchar_t * text_user_field_decl::ns	= L"text";
+const wchar_t * text_user_field_decl::name	= L"user-field-decl";
+
+void text_user_field_decl::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	CP_APPLY_ATTR(L"office:value-type",		office_value_type_);
+	CP_APPLY_ATTR(L"text:name",				text_name_);
+
+	CP_APPLY_ATTR(L"office:value",			office_value_);
+	CP_APPLY_ATTR(L"office:boolean-value",	office_boolean_value_);
+	CP_APPLY_ATTR(L"office:date-value",		office_date_value_);
+	CP_APPLY_ATTR(L"office:time-value",		office_time_value_);
+	CP_APPLY_ATTR(L"office:string-value",	office_string_value_);
+	CP_APPLY_ATTR(L"office:currency",		office_currency_);
+	CP_APPLY_ATTR(L"office:formula",		office_formula_);
+
+}
+void text_user_field_decl::docx_convert(oox::docx_conversion_context & Context)
+{
+	if (!text_name_) return;
+
+	std::wstring value;
+
+	if (office_string_value_)		value = *office_string_value_;
+	else if (office_value_)			value = *office_value_;
+	else if (office_date_value_)	value = *office_date_value_;
+	else if (office_time_value_)	value = *office_time_value_;
+	else if (office_currency_)		value = *office_currency_;
+	else if (office_boolean_value_)	value = *office_boolean_value_;
+
+	Context.add_user_field(*text_name_, value);
+}
+//---------------------------------------------------------------------------------------------------
+const wchar_t * text_user_field_decls::ns	= L"text";
+const wchar_t * text_user_field_decls::name	= L"user-field-decls";
+
+void text_user_field_decls::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	if CP_CHECK_NAME(L"text", L"user-field-decl")
+	{
+		CP_CREATE_ELEMENT(content_);
+	}
+	else
+	{
+	}
+}
+void text_user_field_decls::docx_convert(oox::docx_conversion_context & Context)
 {
 	for (size_t i = 0; i < content_.size(); i++)
 	{

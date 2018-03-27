@@ -840,10 +840,10 @@ public:
     static const ElementType type = typeStylePageLayout;
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
    
-	style_page_layout_attlist	style_page_layout_attlist_;
+	style_page_layout_attlist	attlist_;
+
     office_element_ptr			style_page_layout_properties_;
     office_element_ptr			style_header_style_;
     office_element_ptr			style_footer_style_;
@@ -859,7 +859,8 @@ CP_REGISTER_OFFICE_ELEMENT2(style_page_layout);
 class style_page_layout_properties_attlist
 {
 public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	bool compare( const style_page_layout_properties_attlist & attlist );
+	void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 	void docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context, _CP_OPT(odf_types::length_or_percent) margin_left, 
 																								_CP_OPT(odf_types::length_or_percent) margin_right);

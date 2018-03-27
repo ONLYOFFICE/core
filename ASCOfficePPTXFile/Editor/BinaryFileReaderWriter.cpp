@@ -357,7 +357,7 @@ namespace NSBinPptxRW
 			oStream2.write(dataObjInfo, arraysize(dataObjInfo));
 			oStream2.flush();
 			//Ole10Native Stream
-			std::string sDataUtf8 = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sData.c_str(), sData.size());
+			std::string sDataUtf8 = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sData.c_str(), (LONG)sData.size());
 			BYTE head[] = {0x00,0x00,0x00,0x00};
 			//LittleEndian
 			

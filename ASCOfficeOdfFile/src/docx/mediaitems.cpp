@@ -280,10 +280,9 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 
 void mediaitems::dump_rels(rels & Rels)
 {
-    size_t i = 0;
-    for (int i = 0; i < items_.size(); i++)
+    for (size_t i = 0; i < items_.size(); i++)
     {
-		if (items_[i].count_used > items_[i].count_add) continue; // уже использовали этот релс выше(колонтитул ....)
+		if (items_[i].count_used >= items_[i].count_add) continue; // уже использовали этот релс выше(колонтитул ....)
         
 		Rels.add( relationship(
                 items_[i].Id, 

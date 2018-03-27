@@ -129,14 +129,17 @@ std::wstring RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 		case dt_emf:	sExtension = L"emf"; sMime = L"image/x-emf";	break;
 		case dt_macpict:sExtension = L"pct"; sMime = L"image/x-pict";	break;
 	}
+	if (poOOXWriter->m_sTargetFolder.empty()) return L"rIdtemp"; //test from fields
 
     std::wstring sFilenameRels = L"Image" + std::to_wstring(poRtfDocument->m_oIdGenerator.Generate_ImageIndex()) + L".";
 	sFilenameRels += sExtension;
 	
-    std::wstring sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR +L"media";
-	
+    std::wstring sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + L"word";	
     NSDirectory::CreateDirectory( sFilenameFull );
-	
+
+	sFilenameFull += std::wstring(FILE_SEPARATOR_STR) + L"media";	
+    NSDirectory::CreateDirectory( sFilenameFull );
+
 	sFilenameFull += FILE_SEPARATOR_STR + sFilenameRels;
 	sFilenameRels = L"media/" + sFilenameRels;
 

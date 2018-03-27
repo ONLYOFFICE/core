@@ -157,6 +157,13 @@ std::wstring RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
 	RENDER_OOX_INT( m_nHyphenationRight, sResult, L"w:hyphenationZone" )
 	RENDER_OOX_INT( m_nTabWidth, sResult, L"w:defaultTabStop" )
 	
+	RENDER_OOX_INT( m_nDrawingGridHorizontalSpacing, sResult, L"w:drawingGridHorizontalSpacing" )
+	RENDER_OOX_INT( m_nDrawingGridVerticalSpacing, sResult, L"w:drawingGridVerticalSpacing" )
+	RENDER_OOX_INT( m_nDrawingGridHorizontalOrigin, sResult, L"w:drawingGridVerticalOrigin" )
+	RENDER_OOX_INT( m_nDrawingGridVerticalOrigin, sResult, L"w:drawingGridVerticalOrigin" )
+	RENDER_OOX_INT( m_nDisplayHorizontalDrawingGridEvery, sResult, L"w:displayHorizontalDrawingGridEvery" )
+	RENDER_OOX_INT( m_nDisplayVerticalDrawingGridEvery, sResult, L"w:displayVerticalDrawingGridEvery" )
+
 	if( PROP_DEF != m_nZoom )
         sResult += L"<w:zoom w:percent=\"" + std::to_wstring(m_nZoom) + L"\" />";
 //Page Borders

@@ -59,7 +59,21 @@ public:
 
     std::wstring RenderToOOX(RenderParameter oRenderParameter)
 	{
-        std::wstring sResult = L"<w:tbl>";
+		bool bRowsBidi = false;
+ 		for (size_t i = 0; i < m_aArray.size(); i++)
+		{
+			RtfTableRowPtr &rowPr = m_aArray[i];
+			if ((rowPr) && (rowPr->m_oProperty.m_nRightToLeft == 1))
+			{
+				bRowsBidi = true;
+				break;
+			}
+		}
+
+		if (bRowsBidi && m_oProperty.m_bBidi == PROP_DEF)
+			m_oProperty.m_bBidi = 1;
+
+		std::wstring sResult = L"<w:tbl>";
 		sResult += m_oProperty.RenderToOOX(oRenderParameter);
 		sResult += L"<w:tblGrid>";
 		
@@ -69,7 +83,7 @@ public:
 		}
 		sResult += L"</w:tblGrid>";	
 
-		for (size_t i = 0; i < (int)m_aArray.size(); i++)
+		for (size_t i = 0; i < m_aArray.size(); i++)
 		{
 			sResult += m_aArray[i]->RenderToOOX(oRenderParameter );
 		}
@@ -81,7 +95,7 @@ public:
         std::wstring result;
 		
 		result += L"\n";
-		for (size_t i = 0 ; i < (int)m_aArray.size(); i++)
+		for (size_t i = 0 ; i < m_aArray.size(); i++)
 		{
 			result += m_aArray[i]->RenderToRtf( oRenderParameter );
 		}
@@ -97,7 +111,7 @@ public:
 
 
 		//m_aArray - строки
-		for (size_t nCurRow = 0; nCurRow < (int)m_aArray.size(); nCurRow++ ) 
+		for (size_t nCurRow = 0; nCurRow < m_aArray.size(); nCurRow++ ) 
 		{
 			nLastCellx = 0;
 			RtfTableRowPtr oCurRow = m_aArray[ nCurRow ];
@@ -147,7 +161,7 @@ public:
 				AddToArray( aCellx, nLastCellx + nWidthAfter );
 		}
 		//вычисляем Span
-		for (size_t i = 0; i < (int)m_aArray.size();i++) 
+		for (size_t i = 0; i < m_aArray.size();i++) 
 		{
 			RtfTableRowPtr oCurRow= m_aArray[ i ];
 			//индекс последнего минимального элемента
@@ -252,7 +266,7 @@ public:
 				m_oProperty.m_eWidthUnit	= mu_Twips;
 			}
 
-			for (size_t i = 0; i < (int)m_aArray.size(); i++) 
+			for (size_t i = 0; i < m_aArray.size(); i++) 
 			{
 				RtfTableRowPtr oCurRow = m_aArray[i];
 				int nCellCount = oCurRow->GetCount();

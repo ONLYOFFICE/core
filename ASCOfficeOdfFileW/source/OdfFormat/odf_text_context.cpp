@@ -145,8 +145,8 @@ void odf_text_context::add_text_content(const std::wstring & text)
 		std::wstringstream s1;
 		s1 << (*i);
 		s= s1.str();
-		if (s.length() >0)
-			add_text_space(s.length());
+		if (s.length() > 0)
+			add_text_space((int)s.length());
 	  
 		pos = (*i).position() + s.length();
 	}
@@ -226,7 +226,7 @@ void odf_text_context::start_paragraph(bool styled)
 }
 void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 {
-	int level = current_level_.size();
+	size_t level = current_level_.size();
 	
 	if (single_paragraph_ && level > 0)
 	{
@@ -276,7 +276,7 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 		need_break_ = boost::none;
 	}
 	
-	odf_element_state state={elm,  style_name, style_elm,level};
+	odf_element_state state={elm,  style_name, style_elm, level};
 	text_elements_list_.push_back(state);
 	if (current_level_.size()>0)
 		current_level_.back().elm->add_child_element(elm);
@@ -297,7 +297,7 @@ void odf_text_context::end_paragraph()
 
 void odf_text_context::start_element(office_element_ptr & elm, office_element_ptr style_elm ,std::wstring style_name)
 {
-	int level = current_level_.size();
+	size_t level = current_level_.size();
 
 	odf_element_state state={elm, style_name, style_elm, level};
 
@@ -327,7 +327,7 @@ void odf_text_context::start_span(bool styled)
 	office_element_ptr span_elm;
 	create_element(L"text", L"span", span_elm, odf_context_);
 
-	int level = current_level_.size();
+	size_t level = current_level_.size();
 	
 	std::wstring		style_name;
 	office_element_ptr	style_elm;
@@ -387,7 +387,7 @@ void odf_text_context::start_list_item()
 	office_element_ptr list_elm;
 	create_element(L"text", L"list-item", list_elm, odf_context_);
 
-	int level = current_level_.size();
+	size_t level = current_level_.size();
 	
 	std::wstring style_name;
 	office_element_ptr style_elm;
@@ -422,7 +422,7 @@ void odf_text_context::start_list(std::wstring style_name) //todoooo add new_num
 	office_element_ptr list_elm;
 	create_element(L"text", L"list", list_elm, odf_context_);
 
-	int level = current_level_.size();
+	size_t level = current_level_.size();
 	
 	office_element_ptr style_elm;
 	odf_element_state state = {	list_elm, style_name, style_elm, level};
@@ -575,7 +575,7 @@ void odf_text_context::save_property_break()
 
 	if (paragraph_properties_ == NULL)
 	{
-		for (int i = current_level_.size() - 1; i >= 0; i--)
+		for (int i = (int)current_level_.size() - 1; i >= 0; i--)
 		{
 			office_element_ptr & elm = current_level_[i].elm;
 

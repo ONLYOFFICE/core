@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
@@ -727,6 +727,7 @@
 
 #define ASC_MENU_EVENT_TYPE_CONTEXTMENU_SHOW        102
 #define ASC_MENU_EVENT_TYPE_CONTEXTMENU_UNSHOW      103
+#define ASC_MENU_EVENT_TYPE_CONTEXTMENU_COMMANDS_AVAILIBLE    104
 
 #define ASC_MENU_EVENT_TYPE_CONTEXTMENU_COPY		110
 #define ASC_MENU_EVENT_TYPE_CONTEXTMENU_CUT			111

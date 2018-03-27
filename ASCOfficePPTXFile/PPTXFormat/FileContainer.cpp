@@ -70,8 +70,8 @@ namespace PPTX
 		if (directory[directory.length() - 1] == FILE_SEPARATOR_CHAR)
 			directory = directory.substr(0, directory.length() - 1);
 
-		int pos_ppt = directory.rfind(L"ppt");
-		if (pos_ppt >= 0)
+		size_t pos_ppt = directory.rfind(L"ppt");
+		if (std::wstring::npos != pos_ppt)
 		{
 			directory = directory.substr(0, pos_ppt - 1); //root directory
 		}

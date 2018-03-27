@@ -204,8 +204,8 @@ std::wstring odf_chart_context::Impl::convert_formula(std::wstring oox_formula)
 		//remove table name
 		if (!refs.empty())
 		{		
-			int pos = refs[0].rfind(L"!");//в имени таблички может быть...
-			if (pos > 0)
+			size_t pos = refs[0].rfind(L"!");//в имени таблички может быть...
+			if (std::wstring::npos != pos)
 			{
 				refs[0] = L"local-table!" + refs[0].substr(pos + 1, refs[0].size() - pos);
 			}
@@ -218,8 +218,8 @@ std::wstring odf_chart_context::Impl::convert_formula(std::wstring oox_formula)
 			oox_formula = refs[0];
 			if (refs.size() > 1)
 			{
-				int r = refs[1].rfind(L"!");
-				if (r > 0)
+				size_t r = refs[1].rfind(L"!");
+				if (std::wstring::npos != r)
 				{
 					refs[1] = L"local-table!" + refs[1].substr(r + 1, refs[1].size() - r);
 				}
@@ -345,7 +345,7 @@ void odf_chart_context::start_chart(office_element_ptr & root)
 	
 	office_element_ptr & style_elm = impl_->styles_context_->last_state()->get_office_element();
 	
-	int level = impl_->current_level_.size();
+	size_t level = impl_->current_level_.size();
 	std::wstring style_name;
 	
 	odf_element_state		state={chart_elm, style_name, style_elm, level};
@@ -413,7 +413,7 @@ void odf_chart_context::set_chart_bar_type(int type)
 	if (type == -1)
 	{
 		//нужно вытащить свойство с уровня выше.
-		int sz = impl_->current_level_.size();
+		size_t sz = impl_->current_level_.size();
 		if (sz > 1)
 			impl_->current_level_.back().chart_properties_->content_.chart_solid_type_ = 
 					impl_->current_level_[sz-2].chart_properties_->content_.chart_solid_type_;
@@ -433,10 +433,10 @@ void odf_chart_context::set_chart_bar_direction(int type)
 }
 void odf_chart_context::set_chart_bar_gap_width(std::wstring val)
 {
-	int res = val.find(L"%");
+	size_t res = val.find(L"%");
 
 	bool percent=false;
-	if (res > 0)
+	if (std::wstring::npos != res)
 	{
 		val = val.substr(0,res);
 		percent=true;
@@ -447,10 +447,10 @@ void odf_chart_context::set_chart_bar_gap_width(std::wstring val)
 }
 void odf_chart_context::set_chart_bar_overlap(std::wstring val)
 {
-	int res = val.find(L"%");
+	size_t res = val.find(L"%");
 
 	bool percent = false;
-	if (res > 0)
+	if (std::wstring::npos != res)
 	{
 		val = val.substr(0,res);
 		percent = true;
@@ -761,8 +761,8 @@ void odf_chart_context::end_group_series()
 
 void odf_chart_context::add_domain(std::wstring formula)
 {
-	int level = impl_->current_level_.size();
-	if (level < 1)return;
+	size_t level = impl_->current_level_.size();
+	if (level == 0)return;
 
 	office_element_ptr elm;
 	create_element(L"chart", L"domain", elm, impl_->odf_context_);
@@ -774,7 +774,7 @@ void odf_chart_context::add_domain(std::wstring formula)
 	
 	if (impl_->current_level_.back().elm)impl_->current_level_.back().elm->add_child_element(elm);
 
-	odf_element_state state={elm, L"",office_element_ptr(), level};
+	odf_element_state state={elm, L"", office_element_ptr(), level};
 	impl_->current_chart_state_.elements_.push_back(state);
 }
 
@@ -787,11 +787,12 @@ void odf_chart_context::add_categories(std::wstring odf_formula, office_element_
 	if (categories== NULL)return;
 
 	categories->table_cell_range_address_ = odf_formula;
-	int level = impl_->current_level_.size();
+	
+	size_t level = impl_->current_level_.size();
 	
 	if (axis)axis->add_child_element(elm);
 
-	odf_element_state state={elm, L"",office_element_ptr(), level};
+	odf_element_state state={elm, L"", office_element_ptr(), level};
 	impl_->current_chart_state_.elements_.push_back(state);
 }
 
@@ -948,7 +949,7 @@ void odf_chart_context::end_text()
 		{
 			impl_->current_level_.back().elm->add_child_element(text_context_->text_elements_list_[i].elm);
 		}
-		int level_root = impl_->current_level_.size() + 1;
+		size_t level_root = impl_->current_level_.size() + 1;
 		
 		odf_element_state state={text_context_->text_elements_list_[i].elm, 
 								text_context_->text_elements_list_[i].style_name, 
@@ -1142,10 +1143,10 @@ void odf_chart_context::start_stock_loss_marker()
 }
 void odf_chart_context::set_stock_gain_marker_width(std::wstring val)
 {
-	int res = val.find(L"%");
+	size_t res = val.find(L"%");
 
 	bool percent=false;
-	if (res > 0)
+	if (std::wstring::npos != res)
 	{
 		val = val.substr(0,res);
 		percent=true;
@@ -1154,10 +1155,10 @@ void odf_chart_context::set_stock_gain_marker_width(std::wstring val)
 }
 void odf_chart_context::set_stock_loss_marker_width(std::wstring val)
 {
-	int res = val.find(L"%");
+	size_t res = val.find(L"%");
 
 	bool percent=false;
-	if (res > 0)
+	if (std::wstring::npos != res)
 	{
 		val = val.substr(0,res);
 		percent=true;
@@ -1394,7 +1395,7 @@ void odf_chart_context::set_layout_h(double *val,int mode)
 
 void odf_chart_context::start_element(office_element_ptr & elm, office_element_ptr & style_elm, std::wstring style_name)
 {
-	int level = impl_->current_level_.size();
+	size_t level = impl_->current_level_.size();
 	
 	drawing_context()->start_element(elm, style_elm);
 	//if (impl_->current_level_.size()>0) impl_->current_level_.back()->add_child_element(elm); не надо...наследование через start_element в drawing
@@ -1452,7 +1453,7 @@ void odf_chart_context::end_chart()
 ///////////////////
 
 
-	int cat = 0;
+	size_t cat = 0;
 	for (size_t i = 0; i < impl_->axis_.size() && impl_->categories_.size() > 0; i++)
 	{
 		if (impl_->axis_[i].elm == NULL) continue;
@@ -1564,7 +1565,7 @@ void odf_chart_context::set_cash(std::wstring format, std::vector<std::wstring> 
 
 	if(ref.empty() && label && categories)
 	{
-		for (int i = 0 ; i < impl_->cash_.size(); i++)
+		for (size_t i = 0 ; i < impl_->cash_.size(); i++)
 		{
 			if (impl_->cash_[i].label || impl_->cash_[i].categories)
 			{
@@ -1641,7 +1642,7 @@ void odf_chart_context::set_cash(std::wstring format, std::vector<std::wstring> 
 	{
 		odf_cash_state state = {ref, format, categories, label, data_str};	
 		impl_->cash_.push_back(state);
-		int cash_ind = impl_->cash_.size() - 1;
+		int cash_ind = (int)impl_->cash_.size() - 1;
 
 		impl_->data_cell_ranges_.back().index_cash = cash_ind;	
 
@@ -1770,8 +1771,8 @@ void odf_chart_context::Impl::create_local_table()
 
 		if (refs.size() < 1) continue;
 		
-		int r = refs[0].rfind(L".");//в имени таблички может быть точка
-		if (r > 0)
+		size_t r = refs[0].rfind(L".");//в имени таблички может быть точка
+		if (std::wstring::npos != r)
 		{
 			table_name = refs[0].substr (0, r);
 			refs[0] = refs[0].substr(r + 1, refs[0].size() - r);
@@ -1785,7 +1786,7 @@ void odf_chart_context::Impl::create_local_table()
 		if (refs.size() > 1) 
 		{
 			r = refs[1].rfind(L".");
-			if (r >= 0)
+			if (std::wstring::npos != r)
 				refs[1] = refs[1].substr(r + 1, refs[1].size() - r);
 			utils::parsing_ref( refs[1], col2, row2);
 			
@@ -1850,8 +1851,8 @@ void odf_chart_context::Impl::create_local_table()
 	if (table_state)
 	{
 		current_level_[0].elm->add_child_element(table_elm);
-		int level = current_level_.size();
-		odf_element_state		state={table_elm, L"", office_element_ptr(), level + 1};		
+		size_t level = current_level_.size();
+		odf_element_state		state = {table_elm, L"", office_element_ptr(), level + 1};		
 		current_chart_state_.elements_.push_back(state);
 
 		table_state->set_table_name(table_name);

@@ -259,7 +259,7 @@ void odf_number_styles_context::create(int oox_num_fmt, std::wstring formatCode)
 	}
 
 	number_format_array_.push_back(state);
-	named_link_map_[oox_num_fmt] = number_format_array_.size()-1;
+	named_link_map_[oox_num_fmt] = number_format_array_.size() - 1;
 
 	detect_format(number_format_array_.back());
 }
@@ -342,7 +342,7 @@ void odf_number_styles_context::create_default(int oox_num_fmt, std::wstring for
 ////////////////////////////////////////////
 
 	number_format_array_.push_back(state);
-	named_link_map_[oox_num_fmt] = number_format_array_.size()-1;
+	named_link_map_[oox_num_fmt] = number_format_array_.size() - 1;
 
 	detect_format(number_format_array_.back());
 
@@ -618,14 +618,15 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 	std::list<std::wstring> result;
 	bool b = boost::regex_split(std::back_inserter(result),s, re);
 	result.push_back(s);//последний ..выносится - так уж работает boost.regex_split
-	int res;
-	int sz=0;
+
+	size_t sz = 0;
+	
 	for (std::list<std::wstring>::iterator i=result.begin(); i!=result.end(); ++i)
 	{
 		office_element_ptr elm;
 		s = *i;
 		sz = s.length();
-		if ((res=s.find(L"m")) >=0) 
+		if (std::wstring::npos != s.find(L"m")) 
 		{
 			create_element(L"number", L"month", elm, odf_context_);
 			number_month* number_month_ = dynamic_cast<number_month*>(elm.get());
@@ -634,7 +635,7 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 			if (sz == 1 || sz == 3) number_month_->number_style_ = L"short";
 			if (sz == 2 || sz == 4) number_month_->number_style_ = L"long";
 		}
-		else if ((res=s.find(L"d")) >=0) 
+		else if (std::wstring::npos != s.find(L"d"))
 		{
 			if (sz < 3)
 			{
@@ -657,13 +658,13 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 				}
 			}
 		}
-		else if ((res=s.find(L"y")) >=0) 
+		else if (std::wstring::npos != s.find(L"y"))
 		{
 			create_element(L"number", L"year", elm, odf_context_);
 			number_year* number_year_ = dynamic_cast<number_year*>(elm.get());
 			if (number_year_)
 			{
-				if (sz<3)	number_year_->number_style_ = L"short";
+				if (sz < 3)	number_year_->number_style_ = L"short";
 				else		number_year_->number_style_ = L"long";
 			}
 		}
@@ -700,28 +701,27 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 	bool b = boost::regex_split(std::back_inserter(result),s, re);
 	if (b)result.push_back(s);//последний ..выносится - так уж работает boost.regex_split
 
-	int res;
-	int sz=0;
+	size_t sz=0;
 	for (std::list<std::wstring>::iterator it = result.begin(); it != result.end(); ++it)
 	{
 		office_element_ptr elm;
 		s = *it;
 		sz = s.length();
-		if ((res=s.find(L"h")) >= 0) 
+		if (std::wstring::npos != s.find(L"h"))
 		{
 			create_element(L"number", L"hours", elm, odf_context_);
 			number_hours* number_hours_ = dynamic_cast<number_hours*>(elm.get());		
 			if (number_hours_)
 			{
-				if (sz == 1)number_hours_->number_style_ = L"short";
-				if (sz == 2)number_hours_->number_style_ = L"long";
+				if (sz == 1) number_hours_->number_style_ = L"short";
+				if (sz == 2) number_hours_->number_style_ = L"long";
 			}
 		}
-		else if ((res=s.find(L"am")) >=0/* || (res=s.find(L"pm")) >=0*/)  //излишнее .. 
+		else if (std::wstring::npos != s.find(L"am"))  //излишнее .. 
 		{
 			create_element(L"number", L"am-pm", elm, odf_context_);
 		}
-		else if ((res=s.find(L"m")) >=0 && (res=s.find(L"am")) <0 && (res=s.find(L"pm")) <0 ) 
+		else if (std::wstring::npos != s.find(L"m") && std::wstring::npos == s.find(L"am") && std::wstring::npos == s.find(L"pm")) 
 		{
 			create_element(L"number", L"minutes", elm, odf_context_);
 			number_minutes* number_minutes_ = dynamic_cast<number_minutes*>(elm.get());
@@ -731,7 +731,7 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 				if (sz == 2)number_minutes_->number_style_ = L"long";
 			}
 		}
-		else if ((res=s.find(L"s")) >=0) 
+		else if (std::wstring::npos != s.find(L"s"))
 		{
 			create_element(L"number", L"seconds", elm, odf_context_);
 			number_seconds* number_seconds_ = dynamic_cast<number_seconds*>(elm.get());
@@ -742,7 +742,7 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 				//number_decimal_places_
 			}
 		}
-		else if((res=s.find(L"pm")) <0)//так уж формат делится .. а этот текст нам не нужен
+		else if (std::wstring::npos == s.find(L"pm"))//так уж формат делится .. а этот текст нам не нужен
 		{
 		//////////////////// делитель ////////////////////	
 			if(sz > 1) 

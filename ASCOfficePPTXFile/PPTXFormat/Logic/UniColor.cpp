@@ -251,6 +251,20 @@ namespace PPTX
 
 			pReader->Seek(read_end);
 		}
+		void UniColor::GetColorFrom(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				fromXML(oReader);
+
+				if (Color.is_init())
+					break;
+			}
+		}
 
 		void UniColor::GetColorFrom(XmlUtils::CXmlNode& element)
 		{

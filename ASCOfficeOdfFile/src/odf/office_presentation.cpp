@@ -73,7 +73,18 @@ void office_presentation::add_child_element( xml::sax * Reader, const std::wstri
 	{
 		CP_CREATE_ELEMENT(date_time_decls_);
 	}
-
+	else if CP_CHECK_NAME(L"text", L"user-field-decls")
+	{
+		CP_CREATE_ELEMENT(user_fields_);
+	}
+	else if CP_CHECK_NAME(L"text", L"sequence-decls")
+	{
+		CP_CREATE_ELEMENT(sequences_);
+	}
+	else if CP_CHECK_NAME(L"text", L"variable-decls")
+	{
+		CP_CREATE_ELEMENT(variables_);
+	}
 }
 
 void office_presentation::add_text(const std::wstring & Text)
@@ -134,7 +145,16 @@ void office_presentation::pptx_convert(oox::pptx_conversion_context & Context)
 		std::wstring style_name_ = L"datetime:" + style->presentation_name_.get_value_or(L"");
 		Context.root()->odf_context().drawStyles().add(style_name_, date_time_decls_[i]);
     }
-    for (size_t i = 0; i < pages_.size(); i++)
+	if (user_fields_)
+		user_fields_->pptx_convert(Context);
+
+	if (variables_)
+		variables_->pptx_convert(Context);
+
+	if (sequences_)
+		sequences_->pptx_convert(Context);
+
+	for (size_t i = 0; i < pages_.size(); i++)
     {
         pages_[i]->pptx_convert(Context);
     }

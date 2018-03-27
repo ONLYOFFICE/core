@@ -139,7 +139,7 @@ std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 		}
 		sResult += L"</w:pPr>";
 
-		if( NULL != m_oOldList )
+		if( NULL != m_oOldList)
 		{
 			//для OldList
 			if( false == bCanConvertToNumbering && NULL != m_oOldList->m_oText)
@@ -154,10 +154,9 @@ std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 				for( int i = 0; i < m_oOldList->m_oText->GetCount(); i++ )
 				{
 					sResult += L"<w:r>";
-					sResult += L"<w:rPr>";
-					sResult += oCharProp.RenderToOOX(oRenderParameter);
-					sResult += L"</w:rPr>";
-
+						sResult += L"<w:rPr>";
+							sResult += oCharProp.RenderToOOX(oRenderParameter);
+						sResult += L"</w:rPr>";
 					sResult += m_oOldList->m_oText->m_aArray[ i ]->RenderToOOX(oNewParam);
 					sResult += L"</w:r>";
 				}

@@ -151,6 +151,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
     
     return NExtractTools::xlst_bin2xlsx(from, to, temp, bFromChanges, themeDir, oInputParams);
 }
@@ -163,6 +164,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
     
     return NExtractTools::xlst2xlsx(from, to, temp, bFromChanges, themeDir, oInputParams);
 }

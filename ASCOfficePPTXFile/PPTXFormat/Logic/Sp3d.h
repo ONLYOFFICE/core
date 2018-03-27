@@ -88,9 +88,13 @@ namespace PPTX
 					else if (_T("bevelB") == strName)
 						bevelB = oReader;
 					else if (_T("extrusionClr") == strName)
-						extrusionClr.fromXML(oReader);
+					{
+						extrusionClr.GetColorFrom(oReader);
+					}
 					else if (_T("contourClr") == strName)
-						contourClr.fromXML(oReader);
+					{
+						contourClr.GetColorFrom(oReader);
+					}
 				}
 			}
 
@@ -117,9 +121,13 @@ namespace PPTX
 						else if (_T("bevelB") == strName)
 							bevelB = oNode;
 						else if (_T("extrusionClr") == strName)
+						{
 							extrusionClr.GetColorFrom(oNode);
+						}
 						else if (_T("contourClr") == strName)
+						{
 							contourClr.GetColorFrom(oNode);
+						}
 					}
 				}
 
@@ -163,7 +171,7 @@ namespace PPTX
 				{
 					pWriter->StartNode(_T("a:contourClr"));
 					pWriter->EndAttributes();
-					extrusionClr.toXmlWriter(pWriter);
+					contourClr.toXmlWriter(pWriter);
 					pWriter->EndNode(_T("a:contourClr"));	
 				}
 

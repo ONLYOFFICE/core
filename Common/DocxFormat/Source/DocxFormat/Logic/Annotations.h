@@ -68,8 +68,8 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( _T("w:id"),                   m_oId );
+				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				oNode.ReadAttributeBase( L"w:id",                   m_oId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -80,12 +80,12 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:commentRangeEnd ");
+                std::wstring sResult = L"<w:commentRangeEnd ";
 
-				ComplexTypes_WriteAttribute( _T("w:displacedbyCustomXml=\""), m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute( _T("w:id=\""),                   m_oId );
+				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute( L"w:id=\"",                   m_oId );
 
-				sResult += _T(" />");
+				sResult += L" />";
 
 				return sResult;
 			}
@@ -101,15 +101,15 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),                   m_oId )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-			nullable<SimpleTypes::CDisplacedByCustomXml<> > m_oDisplacedByCustomXml;
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oId;
+			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDecimalNumber<>>			m_oId;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -127,8 +127,8 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( _T("w:id"),                   m_oId );
+				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				oNode.ReadAttributeBase( L"w:id",                   m_oId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -139,12 +139,12 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:commentRangeStart ");
+                std::wstring sResult = L"<w:commentRangeStart ";
 
-				ComplexTypes_WriteAttribute( _T("w:displacedbyCustomXml=\""), m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute( _T("w:id=\""),                   m_oId );
+				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute( L"w:id=\"",                   m_oId );
 
-				sResult += _T(" />");
+				sResult += L" />";
 
 				return sResult;
 			}
@@ -160,15 +160,15 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),                   m_oId )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-			nullable<SimpleTypes::CDisplacedByCustomXml<> > m_oDisplacedByCustomXml;
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oId;
+			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDecimalNumber<>>			m_oId;
 		};
 
 	} // Logic
@@ -190,24 +190,24 @@ namespace OOX
 			}
 
 		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:id"), m_oId );
+				oNode.ReadAttributeBase( L"w:id", m_oId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:customXmlDelRangeEnd ");
+                std::wstring sResult = L"<w:customXmlDelRangeEnd ";
 
-				ComplexTypes_WriteAttribute( _T("w:id=\""), m_oId );
+				ComplexTypes_WriteAttribute( L"w:id=\"", m_oId );
 
-				sResult += _T(" />");
+				sResult += L" />";
 
 				return sResult;
 			}
@@ -222,13 +222,13 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:id"), m_oId )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:id", m_oId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oId;
+			nullable<SimpleTypes::CDecimalNumber<>> m_oId;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -248,53 +248,53 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:author"), m_sAuthor );
-				oNode.ReadAttributeBase( _T("w:date"),   m_oDate );
-				oNode.ReadAttributeBase( _T("w:id"),     m_oID );
-				oNode.ReadAttributeBase( _T("oouserid"), m_sUserId );
+				oNode.ReadAttributeBase( L"w:author", m_sAuthor );
+				oNode.ReadAttributeBase( L"w:date",   m_oDate );
+				oNode.ReadAttributeBase( L"w:id",     m_oID );
+				oNode.ReadAttributeBase( L"oouserid", m_sUserId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:customXmlDelRangeStart ");
+                std::wstring sResult = L"<w:customXmlDelRangeStart ";
 
 				if ( m_sAuthor.IsInit() )
 				{
-					sResult += _T("w:author=\"");
-                    sResult += m_sAuthor.get2();
-					sResult += _T("\" ");
+					sResult += L"w:author=\"";
+                    sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
+					sResult += L"\" ";
 				}
 
 				if ( m_oDate.IsInit() )
 				{
-					sResult += _T("w:date=\"");
+					sResult += L"w:date=\"";
                     sResult += m_oDate->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oID.IsInit() )
 				{
-					sResult += _T("w:id=\"");
+					sResult += L"w:id=\"";
                     sResult += m_oID->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
-					sResult += _T("oouserid=\"");
+					sResult += L"oouserid=\"";
                     sResult += m_sUserId.get2();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -309,19 +309,19 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"), m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),   m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),     m_oID )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author", m_sAuthor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",   m_oDate )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",     m_oID )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-            nullable<std::wstring                   >   m_sAuthor;
-            nullable<SimpleTypes::CDateTime         >   m_oDate;
-            nullable<SimpleTypes::CDecimalNumber<>  >   m_oID;
-            nullable<std::wstring                   >   m_sUserId;
+            nullable<std::wstring>					m_sAuthor;
+            nullable<SimpleTypes::CDateTime>		m_oDate;
+            nullable<SimpleTypes::CDecimalNumber<>> m_oID;
+            nullable<std::wstring>					m_sUserId;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -339,24 +339,24 @@ namespace OOX
 			}
 
 		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:id"), m_oId );
+				oNode.ReadAttributeBase( L"w:id", m_oId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:customXmlInsRangeEnd ");
+                std::wstring sResult = L"<w:customXmlInsRangeEnd ";
 
-				ComplexTypes_WriteAttribute( _T("w:id=\""), m_oId );
+				ComplexTypes_WriteAttribute( L"w:id=\"", m_oId );
 
-				sResult += _T(" />");
+				sResult += L" />";
 
 				return sResult;
 			}
@@ -371,13 +371,13 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:id"), m_oId )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:id", m_oId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oId;
+			nullable<SimpleTypes::CDecimalNumber<>> m_oId;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -397,53 +397,53 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:author"), m_sAuthor );
-				oNode.ReadAttributeBase( _T("w:date"),   m_oDate );
-				oNode.ReadAttributeBase( _T("w:id"),     m_oID );
-				oNode.ReadAttributeBase( _T("oouserid"), m_sUserId );
+				oNode.ReadAttributeBase( L"w:author", m_sAuthor );
+				oNode.ReadAttributeBase( L"w:date",   m_oDate );
+				oNode.ReadAttributeBase( L"w:id",     m_oID );
+				oNode.ReadAttributeBase( L"oouserid", m_sUserId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:customXmlInsRangeStart ");
+                std::wstring sResult = L"<w:customXmlInsRangeStart ";
 
 				if ( m_sAuthor.IsInit() )
 				{
-					sResult += _T("w:author=\"");
-                    sResult += m_sAuthor.get2();
-					sResult += _T("\" ");
+					sResult += L"w:author=\"";
+                    sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
+					sResult += L"\" ";
 				}
 
 				if ( m_oDate.IsInit() )
 				{
-					sResult += _T("w:date=\"");
+					sResult += L"w:date=\"";
                     sResult += m_oDate->GetValue();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oID.IsInit() )
 				{
-					sResult += _T("w:id=\"");
+					sResult += L"w:id=\"";
                     sResult += m_oID->ToString();
-                    sResult += _T("\" ");
+                    sResult += L"\" ";
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
-					sResult += _T("oouserid=\"");
+					sResult += L"oouserid=\"";
                     sResult += m_sUserId.get2();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -458,19 +458,19 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"), m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),   m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),     m_oID )
-                WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author", m_sAuthor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",   m_oDate )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",     m_oID )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-            nullable<std::wstring                   > m_sAuthor;
-            nullable<SimpleTypes::CDateTime         > m_oDate;
-            nullable<SimpleTypes::CDecimalNumber<>  > m_oID;
-            nullable<std::wstring                   > m_sUserId;
+            nullable<std::wstring>					m_sAuthor;
+            nullable<SimpleTypes::CDateTime>		m_oDate;
+            nullable<SimpleTypes::CDecimalNumber<>> m_oID;
+            nullable<std::wstring>					m_sUserId;
 		};
 		//--------------------------------------------------------------------------------
 		// CCustomXmlMoveFromRangeEnd 17.13.5.8 (Part 1)
@@ -487,24 +487,24 @@ namespace OOX
 			}
 
 		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:id"), m_oId );
+				oNode.ReadAttributeBase( L"w:id", m_oId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:customXmlMoveFromRangeEnd ");
+                std::wstring sResult = L"<w:customXmlMoveFromRangeEnd ";
 
-				ComplexTypes_WriteAttribute( _T("w:id=\""), m_oId );
+				ComplexTypes_WriteAttribute( L"w:id=\"", m_oId );
 
-				sResult += _T(" />");
+				sResult += L" />";
 
 				return sResult;
 			}
@@ -519,12 +519,12 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:id"), m_oId )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:id", m_oId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oId;
+			nullable<SimpleTypes::CDecimalNumber<>> m_oId;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -544,53 +544,53 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:author"), m_sAuthor );
-				oNode.ReadAttributeBase( _T("w:date"),   m_oDate );
-				oNode.ReadAttributeBase( _T("w:id"),     m_oID );
-				oNode.ReadAttributeBase( _T("oouserid"), m_sUserId );
+				oNode.ReadAttributeBase( L"w:author", m_sAuthor );
+				oNode.ReadAttributeBase( L"w:date",   m_oDate );
+				oNode.ReadAttributeBase( L"w:id",     m_oID );
+				oNode.ReadAttributeBase( L"oouserid", m_sUserId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:customXmlMoveFromRangeStart ");
+                std::wstring sResult = L"<w:customXmlMoveFromRangeStart ";
 
 				if ( m_sAuthor.IsInit() )
 				{
-					sResult += _T("w:author=\"");
-                    sResult += m_sAuthor.get2();
-					sResult += _T("\" ");
+					sResult += L"w:author=\"";
+                    sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
+					sResult += L"\" ";
 				}
 
 				if ( m_oDate.IsInit() )
 				{
-					sResult += _T("w:date=\"");
+					sResult += L"w:date=\"";
                     sResult += m_oDate->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oID.IsInit() )
 				{
-					sResult += _T("w:id=\"");
+					sResult += L"w:id=\"";
                     sResult += m_oID->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
-					sResult += _T("oouserid=\"");
+					sResult += L"oouserid=\"";
                     sResult += m_sUserId.get2();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -605,19 +605,19 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-                WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"),    m_sAuthor )
-                WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),      m_oDate )
-                WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),        m_oID )
-                WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"),    m_sUserId )
+                WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author",    m_sAuthor )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",      m_oDate )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",        m_oID )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid",    m_sUserId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-            nullable<std::wstring                   > m_sAuthor;
-            nullable<SimpleTypes::CDateTime         > m_oDate;
-            nullable<SimpleTypes::CDecimalNumber<>  > m_oID;
-            nullable<std::wstring                   > m_sUserId;
+            nullable<std::wstring>					m_sAuthor;
+            nullable<SimpleTypes::CDateTime>		m_oDate;
+            nullable<SimpleTypes::CDecimalNumber<>> m_oID;
+            nullable<std::wstring>					m_sUserId;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -635,24 +635,24 @@ namespace OOX
 			}
 
 		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:id"), m_oId );
+				oNode.ReadAttributeBase( L"w:id", m_oId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:customXmlMoveToRangeEnd ");
+                std::wstring sResult = L"<w:customXmlMoveToRangeEnd ";
 
-				ComplexTypes_WriteAttribute( _T("w:id=\""), m_oId );
+				ComplexTypes_WriteAttribute( L"w:id=\"", m_oId );
 
-				sResult += _T(" />");
+				sResult += L" />";
 
 				return sResult;
 			}
@@ -667,12 +667,12 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:id"), m_oId )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:id", m_oId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oId;
+			nullable<SimpleTypes::CDecimalNumber<>> m_oId;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -692,14 +692,14 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:author"), m_sAuthor );
-				oNode.ReadAttributeBase( _T("w:date"),   m_oDate );
-				oNode.ReadAttributeBase( _T("w:id"),     m_oID );
-				oNode.ReadAttributeBase( _T("oouserid"), m_sUserId );
+				oNode.ReadAttributeBase( L"w:author", m_sAuthor );
+				oNode.ReadAttributeBase( L"w:date",   m_oDate );
+				oNode.ReadAttributeBase( L"w:id",     m_oID );
+				oNode.ReadAttributeBase( L"oouserid", m_sUserId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
@@ -707,39 +707,39 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:customXmlMoveToRangeStart ");
+                std::wstring sResult = L"<w:customXmlMoveToRangeStart ";
 
 				if ( m_sAuthor.IsInit() )
 				{
-					sResult += _T("w:author=\"");
-                    sResult += m_sAuthor.get2();
-					sResult += _T("\" ");
+					sResult += L"w:author=\"";
+                    sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
+					sResult += L"\" ";
 				}
 
 				if ( m_oDate.IsInit() )
 				{
-					sResult += _T("w:date=\"");
+					sResult += L"w:date=\"";
                     sResult += m_oDate->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oID.IsInit() )
 				{
-					sResult += _T("w:id=\"");
+					sResult += L"w:id=\"";
                     sResult += m_oID->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
-					sResult += _T("oouserid=\"");
+					sResult += L"oouserid=\"";
                     sResult += m_sUserId.get2();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -754,18 +754,18 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"), m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),   m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),     m_oID )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author", m_sAuthor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",   m_oDate )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",     m_oID )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 
-            nullable<std::wstring                       >   m_sAuthor;
-            nullable<SimpleTypes::CDateTime        >        m_oDate;
-            nullable<SimpleTypes::CDecimalNumber<> >        m_oID;
-            nullable<std::wstring                       >   m_sUserId;
+            nullable<std::wstring>					m_sAuthor;
+            nullable<SimpleTypes::CDateTime>		m_oDate;
+            nullable<SimpleTypes::CDecimalNumber<>>	m_oID;
+            nullable<std::wstring>					m_sUserId;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -783,26 +783,26 @@ namespace OOX
 			}
 
 		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( _T("w:id"),                   m_oId );
+				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				oNode.ReadAttributeBase( L"w:id",                   m_oId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:moveFromRangeEnd ");
+                std::wstring sResult = L"<w:moveFromRangeEnd ";
 
-				ComplexTypes_WriteAttribute( _T("w:displacedbyCustomXml=\""), m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute( _T("w:id=\""),                   m_oId );
+				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute( L"w:id=\"",                   m_oId );
 
-				sResult += _T(" />");
+				sResult += L" />";
 
 				return sResult;
 			}
@@ -817,15 +817,15 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),                   m_oId )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-			nullable<SimpleTypes::CDisplacedByCustomXml<> > m_oDisplacedByCustomXml;
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oId;
+			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDecimalNumber<>>			m_oId;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -843,56 +843,56 @@ namespace OOX
 			}
 
 		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:author"),               m_sAuthor );
-				oNode.ReadAttributeBase( _T("w:colFirst"),             m_oColFirst );
-				oNode.ReadAttributeBase( _T("w:colLast"),              m_oColLast );
-				oNode.ReadAttributeBase( _T("w:date"),                 m_oDate );
-				oNode.ReadAttributeBase( _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( _T("w:id"),                   m_oId );
-				oNode.ReadAttributeBase( _T("w:name"),                 m_sName );
-				oNode.ReadAttributeBase( _T("oouserid"),               m_sUserId );
+				oNode.ReadAttributeBase( L"w:author",               m_sAuthor );
+				oNode.ReadAttributeBase( L"w:colFirst",             m_oColFirst );
+				oNode.ReadAttributeBase( L"w:colLast",              m_oColLast );
+				oNode.ReadAttributeBase( L"w:date",                 m_oDate );
+				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				oNode.ReadAttributeBase( L"w:id",                   m_oId );
+				oNode.ReadAttributeBase( L"w:name",                 m_sName );
+				oNode.ReadAttributeBase( L"oouserid",               m_sUserId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:moveFromRangeStart ");
+                std::wstring sResult = L"<w:moveFromRangeStart ";
 
 				if ( m_sAuthor.IsInit() )
 				{
-					sResult += _T("w:author=\"");
+					sResult += L"w:author=\"";
 					sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
-				ComplexTypes_WriteAttribute( _T("w:colFirst=\""),             m_oColFirst );
-				ComplexTypes_WriteAttribute( _T("w:colLast=\""),              m_oColLast );
-				ComplexTypes_WriteAttribute( _T("w:date=\""),                 m_oDate );
-				ComplexTypes_WriteAttribute( _T("w:displacedbyCustomXml=\""), m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute( _T("w:id=\""),                   m_oId );
+				ComplexTypes_WriteAttribute( L"w:colFirst=\"",             m_oColFirst );
+				ComplexTypes_WriteAttribute( L"w:colLast=\"",              m_oColLast );
+				ComplexTypes_WriteAttribute( L"w:date=\"",                 m_oDate );
+				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute( L"w:id=\"",                   m_oId );
 
 				if ( m_sName.IsInit() )
 				{
-					sResult += _T("w:name=\"");
+					sResult += L"w:name=\"";
 					sResult += XmlUtils::EncodeXmlString(m_sName.get2());
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
-					sResult += _T("oouserid=\"");
+					sResult += L"oouserid=\"";
 					sResult += XmlUtils::EncodeXmlString(m_sUserId.get2());
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -907,27 +907,27 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"),               m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:colFirst"),             m_oColFirst )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:colLast"),              m_oColLast )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),                 m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),                   m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:name"),                 m_sName )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"),              m_sUserId )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author",               m_sAuthor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:colFirst",             m_oColFirst )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:colLast",              m_oColLast )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",                 m_oDate )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:name",                 m_sName )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid",              m_sUserId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-            nullable<std::wstring                              > m_sAuthor;
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oColFirst;
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oColLast;
-			nullable<SimpleTypes::CDateTime               > m_oDate;
-			nullable<SimpleTypes::CDisplacedByCustomXml<> > m_oDisplacedByCustomXml;
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oId;
-            nullable<std::wstring                              > m_sName;
-            nullable<std::wstring                              > m_sUserId;
+            nullable<std::wstring>					m_sAuthor;
+			nullable<SimpleTypes::CDecimalNumber<>> m_oColFirst;
+			nullable<SimpleTypes::CDecimalNumber<>> m_oColLast;
+			nullable<SimpleTypes::CDateTime>		m_oDate;
+			nullable<SimpleTypes::CDisplacedByCustomXml<>> m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDecimalNumber<>> m_oId;
+            nullable<std::wstring>					m_sName;
+            nullable<std::wstring>					m_sUserId;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -945,26 +945,26 @@ namespace OOX
 			}
 
 		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( _T("w:id"),                   m_oId );
+				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				oNode.ReadAttributeBase( L"w:id",                   m_oId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:moveToRangeEnd ");
+                std::wstring sResult = L"<w:moveToRangeEnd ";
 
-				ComplexTypes_WriteAttribute( _T("w:displacedbyCustomXml=\""), m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute( _T("w:id=\""),                   m_oId );
+				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute( L"w:id=\"",                   m_oId );
 
-				sResult += _T(" />");
+				sResult += L" />";
 
 				return sResult;
 			}
@@ -979,14 +979,14 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),                   m_oId )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 
-			nullable<SimpleTypes::CDisplacedByCustomXml<> > m_oDisplacedByCustomXml;
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oId;
+			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDecimalNumber<>>			m_oId;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1004,56 +1004,56 @@ namespace OOX
 			}
 
 		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:author"),               m_sAuthor );
-				oNode.ReadAttributeBase( _T("w:colFirst"),             m_oColFirst );
-				oNode.ReadAttributeBase( _T("w:colLast"),              m_oColLast );
-				oNode.ReadAttributeBase( _T("w:date"),                 m_oDate );
-				oNode.ReadAttributeBase( _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( _T("w:id"),                   m_oId );
-				oNode.ReadAttributeBase( _T("w:name"),                 m_sName );
-				oNode.ReadAttributeBase( _T("oouserid"),               m_sUserId );
+				oNode.ReadAttributeBase( L"w:author",               m_sAuthor );
+				oNode.ReadAttributeBase( L"w:colFirst",             m_oColFirst );
+				oNode.ReadAttributeBase( L"w:colLast",              m_oColLast );
+				oNode.ReadAttributeBase( L"w:date",                 m_oDate );
+				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				oNode.ReadAttributeBase( L"w:id",                   m_oId );
+				oNode.ReadAttributeBase( L"w:name",                 m_sName );
+				oNode.ReadAttributeBase( L"oouserid",               m_sUserId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:moveToRangeStart ");
+                std::wstring sResult = L"<w:moveToRangeStart ";
 
 				if ( m_sAuthor.IsInit() )
 				{
-					sResult += _T("w:author=\"");
+					sResult += L"w:author=\"";
 					sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
-				ComplexTypes_WriteAttribute( _T("w:colFirst=\""),             m_oColFirst );
-				ComplexTypes_WriteAttribute( _T("w:colLast=\""),              m_oColLast );
-				ComplexTypes_WriteAttribute( _T("w:date=\""),                 m_oDate );
-				ComplexTypes_WriteAttribute( _T("w:displacedbyCustomXml=\""), m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute( _T("w:id=\""),                   m_oId );
+				ComplexTypes_WriteAttribute( L"w:colFirst=\"",             m_oColFirst );
+				ComplexTypes_WriteAttribute( L"w:colLast=\"",              m_oColLast );
+				ComplexTypes_WriteAttribute( L"w:date=\"",                 m_oDate );
+				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute( L"w:id=\"",                   m_oId );
 
 				if ( m_sName.IsInit() )
 				{
-					sResult += _T("w:name=\"");
+					sResult += L"w:name=\"";
 					sResult += XmlUtils::EncodeXmlString(m_sName.get2());
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
-					sResult += _T("oouserid=\"");
+					sResult += L"oouserid=\"";
 					sResult += XmlUtils::EncodeXmlString(m_sUserId.get2());
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -1066,29 +1066,28 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"),               m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:colFirst"),             m_oColFirst )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:colLast"),              m_oColLast )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),                 m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),                   m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:name"),                 m_sName )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"),			   m_sUserId )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author",               m_sAuthor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:colFirst",             m_oColFirst )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:colLast",              m_oColLast )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",                 m_oDate )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:name",                 m_sName )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid",				m_sUserId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-            nullable<std::wstring                              > m_sAuthor;
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oColFirst;
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oColLast;
-			nullable<SimpleTypes::CDateTime               > m_oDate;
-			nullable<SimpleTypes::CDisplacedByCustomXml<> > m_oDisplacedByCustomXml;
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oId;
-            nullable<std::wstring                              > m_sName;
-            nullable<std::wstring                              > m_sUserId;
+            nullable<std::wstring> m_sAuthor;
+			nullable<SimpleTypes::CDecimalNumber<>>			m_oColFirst;
+			nullable<SimpleTypes::CDecimalNumber<>>			m_oColLast;
+			nullable<SimpleTypes::CDateTime>				m_oDate;
+			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDecimalNumber<>>			m_oId;
+            nullable<std::wstring>							m_sName;
+            nullable<std::wstring>							m_sUserId;
 		};
 
 		class CMoveFrom : public WritingElementWithChilds<>
@@ -1120,22 +1119,21 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, _T("w:author"), m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"), m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"), m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
+				WritingElement_ReadAttributes_Read_if( oReader, L"w:author", m_sAuthor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date", m_oDate )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id", m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
 			// Attributes
-			nullable<std::wstring >						m_sAuthor;
-			nullable<SimpleTypes::CDateTime >			m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> >	m_oId;
-			nullable<std::wstring > m_sUserId;
+			nullable<std::wstring>						m_sAuthor;
+			nullable<SimpleTypes::CDateTime>			m_oDate;
+			nullable<SimpleTypes::CDecimalNumber<>>		m_oId;
+			nullable<std::wstring>						m_sUserId;
 
 			// Childs
 		};
@@ -1171,20 +1169,20 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, _T("w:author"), m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"), m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"), m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
+				WritingElement_ReadAttributes_Read_if( oReader, L"w:author", m_sAuthor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date", m_oDate )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id", m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
 			// Attributes
-			nullable<std::wstring > m_sAuthor;
-			nullable<SimpleTypes::CDateTime > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<std::wstring > m_sUserId;
+			nullable<std::wstring>					m_sAuthor;
+			nullable<SimpleTypes::CDateTime>		m_oDate;
+			nullable<SimpleTypes::CDecimalNumber<>> m_oId;
+			nullable<std::wstring>					m_sUserId;
 
 			// Childs
 		};
@@ -1212,26 +1210,26 @@ namespace OOX
 			}
 
 		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( _T("w:id"),                   m_oId );
+				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				oNode.ReadAttributeBase( L"w:id",                   m_oId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:bookmarkEnd ");
+                std::wstring sResult = L"<w:bookmarkEnd ";
 
-				ComplexTypes_WriteAttribute( _T("w:displacedbyCustomXml=\""), m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute( _T("w:id=\""),                   m_oId );
+				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute( L"w:id=\"",                   m_oId );
 
-				sResult += _T(" />");
+				sResult += L" />";
 
 				return sResult;
 			}
@@ -1246,15 +1244,15 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),                   m_oId )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-			nullable<SimpleTypes::CDisplacedByCustomXml<> > m_oDisplacedByCustomXml;
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oId;
+			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDecimalNumber<>>			m_oId;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1280,38 +1278,36 @@ namespace OOX
 			}
 
 		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:colFirst"),             m_oColFirst );
-				oNode.ReadAttributeBase( _T("w:colLast"),              m_oColLast );
-				oNode.ReadAttributeBase( _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( _T("w:id"),                   m_oId );
-				oNode.ReadAttributeBase( _T("w:name"),                 m_sName );
+				oNode.ReadAttributeBase( L"w:colFirst",             m_oColFirst );
+				oNode.ReadAttributeBase( L"w:colLast",              m_oColLast );
+				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				oNode.ReadAttributeBase( L"w:id",                   m_oId );
+				oNode.ReadAttributeBase( L"w:name",                 m_sName );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:bookmarkStart ");
+                std::wstring sResult = L"<w:bookmarkStart ";
 
-				ComplexTypes_WriteAttribute( _T("w:colFirst=\""),             m_oColFirst );
-				ComplexTypes_WriteAttribute( _T("w:colLast=\""),              m_oColLast );
-				ComplexTypes_WriteAttribute( _T("w:displacedbyCustomXml=\""), m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute( _T("w:id=\""),                   m_oId );
+				ComplexTypes_WriteAttribute( L"w:colFirst=\"",             m_oColFirst );
+				ComplexTypes_WriteAttribute( L"w:colLast=\"",              m_oColLast );
+				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute( L"w:id=\"",                   m_oId );
 
 				if ( m_sName.IsInit() )
 				{
-					sResult += _T("w:name=\"");
-                    sResult += m_sName.get2();
-					sResult += _T("\" ");
+					sResult += L"w:name=\"" + XmlUtils::EncodeXmlString(m_sName.get2()) + L"\" ";
 				}
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -1324,23 +1320,22 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:colFirst"),             m_oColFirst )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:colLast"),              m_oColLast )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),                   m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:name"),                 m_sName )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:colFirst",             m_oColFirst )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:colLast",              m_oColLast )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:name",                 m_sName )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oColFirst;
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oColLast;
-			nullable<SimpleTypes::CDisplacedByCustomXml<> > m_oDisplacedByCustomXml;
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oId;
-            nullable<std::wstring                              > m_sName;
+			nullable<SimpleTypes::CDecimalNumber<>>			m_oColFirst;
+			nullable<SimpleTypes::CDecimalNumber<>>			m_oColLast;
+			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDecimalNumber<>>			m_oId;
+            nullable<std::wstring>							m_sName;
 		};
 
 	} // Logic
@@ -1361,33 +1356,32 @@ namespace OOX
 			{
 			}
 
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( _T("w:id"),                   m_sId );
+				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				oNode.ReadAttributeBase( L"w:id",                   m_sId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:permEnd ");
+                std::wstring sResult = L"<w:permEnd ";
 
-				ComplexTypes_WriteAttribute( _T("w:displacedbyCustomXml=\""), m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
 
 				if ( m_sId.IsInit() )
 				{
-					sResult += _T("w:id=\"");
+					sResult += L"w:id=\"";
                     sResult += m_sId.get2();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -1402,15 +1396,15 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),                   m_sId )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_sId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-			nullable<SimpleTypes::CDisplacedByCustomXml<> > m_oDisplacedByCustomXml;
-            nullable<std::wstring                              > m_sId;
+			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+            nullable<std::wstring>							m_sId;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1427,17 +1421,16 @@ namespace OOX
 			{
 			}
 
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:colFirst"),             m_oColFirst );
-				oNode.ReadAttributeBase( _T("w:colLast"),              m_oColLast );
-				oNode.ReadAttributeBase( _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( _T("w:ed"),                   m_sEd );
-				oNode.ReadAttributeBase( _T("w:edGrp"),                m_oEdGrp );
-				oNode.ReadAttributeBase( _T("w:id"),                   m_sId );
+				oNode.ReadAttributeBase( L"w:colFirst",             m_oColFirst );
+				oNode.ReadAttributeBase( L"w:colLast",              m_oColLast );
+				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				oNode.ReadAttributeBase( L"w:ed",                   m_sEd );
+				oNode.ReadAttributeBase( L"w:edGrp",                m_oEdGrp );
+				oNode.ReadAttributeBase( L"w:id",                   m_sId );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
@@ -1446,16 +1439,16 @@ namespace OOX
 			}
             virtual std::wstring      toXML() const
 			{
-                std::wstring sResult = _T("<w:permStart ");
+                std::wstring sResult = L"<w:permStart ";
 
-				ComplexTypes_WriteAttribute( _T("w:colFirst=\""),				m_oColFirst );
-				ComplexTypes_WriteAttribute( _T("w:colLast=\""),				m_oColLast );
-				ComplexTypes_WriteAttribute( _T("w:displacedbyCustomXml=\""),	m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute2(_T("w:ed=\""),						m_sEd);
-				ComplexTypes_WriteAttribute( _T("w:edGrp=\""),					m_oEdGrp );
-				ComplexTypes_WriteAttribute2(_T("w:id=\""),						m_sId);
+				ComplexTypes_WriteAttribute( L"w:colFirst=\"",				m_oColFirst );
+				ComplexTypes_WriteAttribute( L"w:colLast=\"",				m_oColLast );
+				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"",	m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute2(L"w:ed=\"",					m_sEd);
+				ComplexTypes_WriteAttribute( L"w:edGrp=\"",					m_oEdGrp );
+				ComplexTypes_WriteAttribute2(L"w:id=\"",					m_sId);
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -1470,23 +1463,23 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:colFirst"),             m_oColFirst )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:colLast"),              m_oColLast )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:displacedbyCustomXml"), m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:ed"),                   m_sEd )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:edGrp"),                m_oEdGrp )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),                   m_sId )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:colFirst",             m_oColFirst )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:colLast",              m_oColLast )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:ed",                   m_sEd )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:edGrp",                m_oEdGrp )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_sId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oColFirst;
-			nullable<SimpleTypes::CDecimalNumber<>        > m_oColLast;
-			nullable<SimpleTypes::CDisplacedByCustomXml<> > m_oDisplacedByCustomXml;
-            nullable<std::wstring                              > m_sEd;
-			nullable<SimpleTypes::CEdGrp<>                > m_oEdGrp;
-            nullable<std::wstring                              > m_sId;
+			nullable<SimpleTypes::CDecimalNumber<>>			m_oColFirst;
+			nullable<SimpleTypes::CDecimalNumber<>>			m_oColLast;
+			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+            nullable<std::wstring>							m_sEd;
+			nullable<SimpleTypes::CEdGrp<>>					m_oEdGrp;
+            nullable<std::wstring>							m_sId;
 		};
 
 	} // Logic
@@ -1506,31 +1499,29 @@ namespace OOX
 			virtual ~CProofErr()
 			{
 			}
-
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:type"), m_oType );
+				oNode.ReadAttributeBase( L"w:type", m_oType );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:proofErr ");
+                std::wstring sResult = L"<w:proofErr ";
 
 				if ( m_oType.IsInit() )
 				{
-					sResult += _T("w:type=\"");
+					sResult += L"w:type=\"";
                     sResult += m_oType->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -1545,13 +1536,13 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:type"), m_oType )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:type", m_oType )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-			nullable<SimpleTypes::CProofErr<> > m_oType;
+			nullable<SimpleTypes::CProofErr<>> m_oType;
 		};
 	} // Logic
 	namespace Logic
@@ -1587,20 +1578,20 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, _T("w:author"), m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"), m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"), m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
+				WritingElement_ReadAttributes_Read_if( oReader, L"w:author", m_sAuthor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date", m_oDate )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id", m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
 			// Attributes
-            nullable<std::wstring > m_sAuthor;
-			nullable<SimpleTypes::CDateTime > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-            nullable<std::wstring > m_sUserId;
+            nullable<std::wstring>					m_sAuthor;
+			nullable<SimpleTypes::CDateTime>		m_oDate;
+			nullable<SimpleTypes::CDecimalNumber<>> m_oId;
+            nullable<std::wstring>					m_sUserId;
 
 			// Childs
 		};
@@ -1622,9 +1613,9 @@ namespace OOX
 			{
 			}
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-            virtual std::wstring      toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_del;
@@ -1636,20 +1627,20 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, _T("w:author"), m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"), m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"), m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
+				WritingElement_ReadAttributes_Read_if( oReader, L"w:author", m_sAuthor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date", m_oDate )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id", m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
 			// Attributes
-            nullable<std::wstring > m_sAuthor;
-			nullable<SimpleTypes::CDateTime > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-            nullable<std::wstring > m_sUserId;
+            nullable<std::wstring>					m_sAuthor;
+			nullable<SimpleTypes::CDateTime>		m_oDate;
+			nullable<SimpleTypes::CDecimalNumber<>> m_oId;
+            nullable<std::wstring>					m_sUserId;
 
 			// Childs
 		};

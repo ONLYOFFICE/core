@@ -169,10 +169,13 @@ public:
 		m_pFont       = NULL;
 		m_dSize       = -1;
 		m_lColor      = 0;
-		m_nAlpha      = 255;
-		m_dCharSpace  = 0;
-		m_dHorScaling = 100;
-		m_nMode       = (int)textrenderingmode_Fill;
+		m_nAlpha       = 255;
+		m_dCharSpace   = 0;
+		m_dHorScaling  = 100;
+		m_nMode        = (int)textrenderingmode_Fill;
+
+		m_bNeedDoItalic = false;
+		m_bNeedDoBold   = false;
 	}
 	~CRendererTextCommand()
 	{
@@ -228,6 +231,17 @@ public:
 	{
 		m_nMode = nMode;
 	}
+	inline void           SetNeedDoItalic(const bool& bItalic)
+	{
+
+
+
+		m_bNeedDoItalic = bItalic;
+	}
+	inline void           SetNeedDoBold(const bool& bBold)
+	{
+		m_bNeedDoBold = bBold;
+	}
 	inline CFontDict*     GetFont() const
 	{
 		return m_pFont;
@@ -256,6 +270,14 @@ public:
 	{
 		return m_nMode;
 	}
+	inline bool           IsNeedDoItalic() const
+	{
+		return m_bNeedDoItalic;
+	}
+	inline bool           IsNeedDoBold() const
+	{
+		return m_bNeedDoBold;
+	}
 
 private:
 
@@ -265,6 +287,8 @@ private:
 	double         m_dY;
 
 	CFontDict*     m_pFont;
+	bool           m_bNeedDoItalic;
+	bool           m_bNeedDoBold;
 	double         m_dSize;
 	LONG           m_lColor;
 	BYTE           m_nAlpha;
@@ -323,6 +347,8 @@ void CPdfRenderer::CCommandManager::Flush()
 			double        dTextSpace = 0;			
 			double       dHorScaling = 100;
 			ETextRenderingMode eMode = textrenderingmode_Fill;
+			bool        isNeedDoBold = false;
+			bool      isNeedDoItalic = false;
 
 			double dPrevX = -1000;
 			double dPrevY = -1000;
@@ -365,11 +391,16 @@ void CPdfRenderer::CCommandManager::Flush()
 					pPage->SetCharSpace(dTextSpace);					
 				}
 
-				if ((int)eMode != pText->GetMode())
+				if ((int)eMode != pText->GetMode() || isNeedDoBold != pText->IsNeedDoBold())
 				{
 					oTextLine.Flush(pPage);
 					eMode = (ETextRenderingMode)pText->GetMode();
-					pPage->SetTextRenderingMode(eMode);
+					isNeedDoBold = pText->IsNeedDoBold();
+
+					if (isNeedDoBold && eMode == textrenderingmode_Fill)
+						pPage->SetTextRenderingMode(textrenderingmode_FillThenStroke);
+					else
+						pPage->SetTextRenderingMode(eMode);
 				}
 
 				if (fabs(dHorScaling - pText->GetHorScaling()) > 0.001)
@@ -377,6 +408,18 @@ void CPdfRenderer::CCommandManager::Flush()
 					oTextLine.Flush(pPage);
 					dHorScaling = pText->GetHorScaling();
 					pPage->SetHorizontalScalling(dHorScaling);
+				}
+
+				if (isNeedDoItalic != pText->IsNeedDoItalic())
+				{
+					oTextLine.Flush(pPage);
+
+					if (pText->IsNeedDoItalic())
+						pPage->SetTextMatrix(1, 0, 0.26, 1, 0, 0);
+					else
+						pPage->SetTextMatrix(1, 0, 0, 1, 0, 0);
+
+					isNeedDoItalic = pText->IsNeedDoItalic();
 				}
 
 				unsigned char* pCodes    = pText->GetCodes();
@@ -1526,6 +1569,8 @@ bool CPdfRenderer::DrawText(unsigned int* pUnicodes, unsigned int unLen, const d
 	pText->SetColor(m_oBrush.GetColor1());
 	pText->SetAlpha((BYTE)m_oBrush.GetAlpha1());
 	pText->SetCharSpace(MM_2_PT(m_oFont.GetCharSpace()));
+	pText->SetNeedDoBold(m_oFont.IsNeedDoBold());
+	pText->SetNeedDoItalic(m_oFont.IsNeedDoItalic());
 
 	return true;
 }
@@ -1579,6 +1624,9 @@ void CPdfRenderer::UpdateFont()
 		}
 	}
 
+	m_oFont.SetNeedDoBold(false);
+	m_oFont.SetNeedDoItalic(false);
+
 	m_pFont = NULL;
 	if (L"" != wsFontPath)
 	{
@@ -1587,6 +1635,16 @@ void CPdfRenderer::UpdateFont()
 		std::wstring wsFontType = m_pFontManager->GetFontType();
 		if (L"TrueType" == wsFontType || L"OpenType" == wsFontType || L"CFF" == wsFontType)
 			m_pFont = m_pDocument->CreateTrueTypeFont(wsFontPath, lFaceIndex);
+
+		CFontFile* pFontFile = m_pFontManager->m_pFont;
+		if (pFontFile)
+		{
+			if (!pFontFile->IsItalic() && m_oFont.IsItalic())
+				m_oFont.SetNeedDoItalic(true);
+
+			if (!pFontFile->IsBold() && m_oFont.IsBold())
+				m_oFont.SetNeedDoBold(true);
+		}
 	}
 }
 void CPdfRenderer::UpdateTransform()

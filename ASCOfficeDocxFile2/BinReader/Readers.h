@@ -7255,7 +7255,15 @@ public:
                 m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_nDocumentType = XMLWRITER_DOC_TYPE_XLSX;
 				m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
 				
-				BinXlsxRW::SaveParams			oSaveParams(m_oFileWriter.m_sThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());
+				std::wstring sThemePath = m_oFileWriter.m_sThemePath;
+
+				size_t nPos = sThemePath.rfind(FILE_SEPARATOR_STR);
+				if (std::wstring::npos != nPos)
+				{
+					sThemePath = sThemePath.substr(0, nPos);
+				}
+					
+				BinXlsxRW::SaveParams			oSaveParams(sThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());
 				BinXlsxRW::BinaryChartReader	oBinaryChartReader(m_oBufferedStream, oSaveParams, m_oFileWriter.m_pDrawingConverter);
 				
 				OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace(NULL);

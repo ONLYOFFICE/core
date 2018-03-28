@@ -52,59 +52,53 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 	
-	FormattedDiskPagePAPX::FormattedDiskPagePAPX( POLE::Stream* wordStream, int offset, POLE::Stream* dataStream, bool oldVersion, bool fComplex): 
+	FormattedDiskPagePAPX::FormattedDiskPagePAPX( POLE::Stream* wordStream, int offset, POLE::Stream* dataStream, int nWordVersion, bool fComplex): 
 																		FormattedDiskPage(), rgbx(NULL), grppapxSize(0), grppapx(NULL)
-    {
-	  Type = Paragraph;
-      WordStream = wordStream;
+	{
+		Type = Paragraph;
+		WordStream = wordStream;
 
-      //read the 512 bytes (FKP)
-      unsigned char* bytes = NULL;
-	  bytes = new unsigned char[512];
-	  
-	  WordStream->seek( offset);
-      WordStream->read( bytes, 512);
+		//read the 512 bytes (FKP)
+		unsigned char* bytes = NULL;
+		bytes = new unsigned char[512];
 
-      //get the count
-      crun = bytes[511];
+		WordStream->seek( offset);
+		WordStream->read( bytes, 512);
 
-	  //create and fill the array with the adresses
-	  rgfcSize	= crun + 1;
-	  rgfc		= new int[rgfcSize];
+		//get the count
+		crun = bytes[511];
 
-	  int j = 0;
+		//create and fill the array with the adresses
+		rgfcSize	= crun + 1;
+		rgfc		= new int[rgfcSize];
+
+		int j = 0;
       
-	  for ( unsigned int i = 0; i < rgfcSize; i++ )
-      {
-	    rgfc[i] = FormatUtils::BytesToInt32( bytes, j, 512 );
-        j += 4;
-	  }
+		for ( unsigned int i = 0; i < rgfcSize; i++ )
+		{
+			rgfc[i] = FormatUtils::BytesToInt32( bytes, j, 512 );
+			j += 4;
+		}
+		rgbx = new BX[crun];
+		grppapxSize = crun;
+		grppapx = new ParagraphPropertyExceptions*[grppapxSize];
 
-      //create arrays
-      rgbx = new BX[crun];
-	  grppapxSize = crun;
-      grppapx = new ParagraphPropertyExceptions*[grppapxSize];
+		for ( unsigned int i = 0; i < grppapxSize; i++ )
+		{
+			grppapx[i] = NULL;
+		}
 
-	  for ( unsigned int i = 0; i < grppapxSize; i++ )
-	  {
-	    grppapx[i] = NULL;
-	  }
+		j = 4 * ( crun + 1 );
 
-      j = 4 * ( crun + 1 );
-
-	  //read the 12 for PHE
-      unsigned char* phe = NULL;
-	  phe = new unsigned char[12];
-
-      unsigned char* papx = NULL;
+		unsigned char phe[12];
       
-		for ( int i = 0; i < crun; i++ )
+		for ( unsigned char i = 0; i < crun; i++ )
 		{
 			BX bx;
 			bx.wordOffset = bytes[j];
 			j++;
 		
-			if (fComplex || !oldVersion)
+			if (fComplex || nWordVersion == 0)
 			{
 				memcpy( phe, ( bytes + j), 12 );
 
@@ -112,6 +106,15 @@ namespace DocFileFormat
 				bx.phe = ParagraphHeight( phe, 12, false );
 
 				j += 12;
+			}
+			else if (nWordVersion == 2)
+			{
+				memcpy( phe, ( bytes + bx.wordOffset * 2  + j + 1), 6);
+
+				//fill the rgbx array
+				bx.phe = ParagraphHeight( phe, 6, false );
+
+				j += 1;
 			}
 			else
 			{
@@ -126,29 +129,26 @@ namespace DocFileFormat
 
 			if ( bx.wordOffset != 0 )
 			{
-				//read first unsigned char of PAPX
-				//PAPX is stored in a FKP; so the first unsigned char is a count of words
 				unsigned char padbyte = 0;
-				unsigned char cw = bytes[bx.wordOffset * 2];
-
+				unsigned char cw = bytes[bx.wordOffset * 2] * 2;
 				//if that unsigned char is zero, it's a pad unsigned char, and the word count is the following unsigned char
 				if ( cw == 0 )
 				{
 					padbyte = 1;
-					cw = bytes[bx.wordOffset * 2 + 1];
+					cw = bytes[bx.wordOffset * 2 + 1] * 2;
 				}
-
 				if ( cw != 0 )
 				{
 					//read the bytes for papx
-					papx = new unsigned char[cw * 2];
-					memcpy( papx, ( bytes + (bx.wordOffset * 2) + padbyte + 1 ), ( cw * 2 ) );
+					unsigned char* papx = new unsigned char[cw];
+					memcpy( papx, ( bytes + (bx.wordOffset * 2) + padbyte + 1 ), cw );
 
 					//parse PAPX and fill grppapx
-					grppapx[i] = new ParagraphPropertyExceptions( papx, ( cw * 2 ), dataStream, oldVersion );
+					grppapx[i] = new ParagraphPropertyExceptions( papx, cw, dataStream, nWordVersion );
 
 					RELEASEARRAYOBJECTS( papx );
 				}
+
 			}
 			else
 			{
@@ -157,7 +157,6 @@ namespace DocFileFormat
 			}
 		}
 
-		RELEASEARRAYOBJECTS( phe );
 		RELEASEARRAYOBJECTS( bytes );
 	}
 
@@ -179,7 +178,7 @@ namespace DocFileFormat
 	
 	  //there are n offsets and n-1 fkp's in the bin table
 
-	  if (fib->m_bOlderVersion && fib->m_FibBase.fComplex == false)
+	  if (fib->m_nWordVersion > 0 && fib->m_FibBase.fComplex == false)
 	  {
 			int	n		= ( ( (int)fib->m_FibWord97.lcbPlcfBtePapx - 8 ) / 6 ) + 1;
 
@@ -202,7 +201,7 @@ namespace DocFileFormat
 				int offset = fkpnr * 512;
 
 				//parse the FKP and add it to the list
-				PAPXlist->push_back( new FormattedDiskPagePAPX( wordStream, offset, dataStream, fib->m_bOlderVersion, fib->m_FibBase.fComplex) );
+				PAPXlist->push_back( new FormattedDiskPagePAPX( wordStream, offset, dataStream, fib->m_nWordVersion, fib->m_FibBase.fComplex) );
 			}
 
 			//if (PAPXlist->back()->rgfc[PAPXlist->back()->rgfcSize-1] < last)
@@ -226,7 +225,7 @@ namespace DocFileFormat
 			int offset = fkpnr * 512;
 
 			//parse the FKP and add it to the list
-			PAPXlist->push_back( new FormattedDiskPagePAPX( wordStream, offset, dataStream, fib->m_bOlderVersion, fib->m_FibBase.fComplex) );
+			PAPXlist->push_back( new FormattedDiskPagePAPX( wordStream, offset, dataStream, fib->m_nWordVersion, fib->m_FibBase.fComplex) );
 		  }
 
 	  }

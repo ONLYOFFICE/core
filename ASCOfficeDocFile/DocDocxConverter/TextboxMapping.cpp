@@ -160,7 +160,7 @@ namespace DocFileFormat
 					break;
 				papx_prev = papx;
 
-				TableInfo tai( papx );
+				TableInfo tai( papx, m_document->nWordVersion );
 
 				if ( tai.fInTable )
 				{

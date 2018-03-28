@@ -94,17 +94,24 @@ namespace DocFileFormat
 		WordDocument (const ProgressCallback* pCallFunc, const std::wstring & tempFolder );
 		virtual ~WordDocument();
 
-		long LoadDocument (const std::wstring & fileName, const std::wstring & password);
+		int LoadDocument(const std::wstring & fileName, const std::wstring & password);
 
-		bool	bOlderVersion;
+		int		nWordVersion;
 		int		nDocumentCodePage;
 		bool	bDocumentCodePage;
+		int		nFontsCodePage;
 		
 		inline StructuredStorageReader* GetStorage() const
 		{
 			return m_pStorage;
 		}
+		inline POLE::Stream* GetDocumentStream() const
+		{
+			return WordDocumentStream;
+		}
 	private:
+		bool LoadDocumentFlat();
+
 		bool DecryptOfficeFile	(CRYPT::Decryptor* Decryptor);
 		
 		bool DecryptStream		(std::wstring streamName_open, POLE::Storage * storageIn, std::wstring streamName_create, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor, bool bDecrypt);

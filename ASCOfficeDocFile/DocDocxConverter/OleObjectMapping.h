@@ -156,26 +156,31 @@ namespace DocFileFormat
 	private:
 		inline void copyEmbeddedObject( const OleObject* ole )
 		{
-			if ( ole != NULL )
+			if ( ole == NULL ) return;
+		
+			std::wstring clsid;
+            std::wstring exelChart = L"Excel.Chart";
+
+			if ( std::search( ole->Program.begin(), ole->Program.end(), exelChart.begin(), exelChart.end() ) == ole->Program.end() )
 			{
-				std::wstring clsid;
-                std::wstring exelChart = L"Excel.Chart";
-
-				if ( std::search( ole->Program.begin(), ole->Program.end(), exelChart.begin(), exelChart.end() ) == ole->Program.end() )
-				{
-					clsid = ole->ClassId;
-				}
-				OleObjectFileStructure object_descr(OleObjectMapping::GetTargetExt( ole->ClipboardFormat ), ole->ObjectId, clsid); 
-
-				if (ole->isEquation || ole->isEmbedded)
-				{
-					object_descr.data = ole->emeddedData;
-				}
-				m_context->_docx->OleObjectsList.push_back(object_descr);
+				clsid = ole->ClassId;
 			}
+			OleObjectFileStructure object_descr(OleObjectMapping::GetTargetExt( ole->ClipboardFormat ), ole->ObjectId, clsid); 
+
+			if (ole->nWordVersion == 2)
+			{
+				object_descr.clsid = ole->ClipboardFormat;
+				object_descr.bNativeOnly = true;
+			}
+			if (ole->isEquation || ole->isEmbedded || ole->nWordVersion == 2)
+			{
+				object_descr.data = ole->emeddedData;
+			}
+
+			m_context->_docx->OleObjectsList.push_back(object_descr);
 		}
 
-	private:  
+
 		ConversionContext*	m_context;
 
 		PictureDescriptor*	_pict;

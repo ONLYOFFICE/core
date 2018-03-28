@@ -39,8 +39,8 @@ namespace DocFileFormat
 	{
 		public:  
 		/// Parses the bytes to retrieve a SectionPropertyExceptions
-		SectionPropertyExceptions( unsigned char* bytes, int size, bool oldVersion ):
-				PropertyExceptions( bytes, size, oldVersion ), isBidi(false)
+		SectionPropertyExceptions( unsigned char* bytes, int size, int nWordVersion ):
+				PropertyExceptions( bytes, size, nWordVersion ), isBidi(false)
 		{
 			for ( std::list<SinglePropertyModifier>::iterator iter = grpprl->begin(); iter != grpprl->end(); iter++ )
 			{

@@ -31,6 +31,8 @@
  */
 #include <iostream>
 
+#include "../../Common/OfficeFileFormatChecker.h"
+#include "../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
@@ -49,6 +51,13 @@
 
 HRESULT convert_single(std::wstring srcFileName)
 {
+	COfficeFileFormatChecker checker;
+
+	if (false == checker.isOfficeFile(srcFileName)) return S_FALSE;	
+	
+	if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC != checker.nFileType &&
+		AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT  != checker.nFileType) return S_FALSE;
+	
 	HRESULT hr = S_OK;
 
 	std::wstring outputDir		= NSDirectory::GetFolderPath(srcFileName);	

@@ -414,6 +414,7 @@ namespace DocFileFormat
 		}
 
 		strStyle +=  L"width:"  + strWidth + L"pt;" + L"height:" + strHeight + L"pt;";
+
 		m_pXmlWriter->WriteAttribute( L"style", strStyle);
 
 		if (m_isOlePreview)
@@ -425,6 +426,21 @@ namespace DocFileFormat
             m_pXmlWriter->WriteAttribute( L"o:bullet", L"1" );
 		}
 
+		{//borders color		
+			if (pict->brcTop)
+				m_pXmlWriter->WriteAttribute( L"o:bordertopcolor", 
+					pict->brcTop->ico.empty() ? FormatUtils::IntToFormattedWideString(pict->brcTop->cv, L"#%06x") : pict->brcTop->ico);
+			if (pict->brcLeft)
+				m_pXmlWriter->WriteAttribute( L"o:borderleftcolor", 
+					pict->brcTop->ico.empty() ? FormatUtils::IntToFormattedWideString(pict->brcLeft->cv, L"#%06x") : pict->brcLeft->ico);
+			if (pict->brcBottom)
+				m_pXmlWriter->WriteAttribute( L"o:borderbottomcolor", 
+					pict->brcTop->ico.empty() ? FormatUtils::IntToFormattedWideString(pict->brcBottom->cv, L"#%06x") : pict->brcBottom->ico);
+			if (pict->brcRight)
+				m_pXmlWriter->WriteAttribute( L"o:borderrightcolor", 
+					pict->brcTop->ico.empty() ? FormatUtils::IntToFormattedWideString(pict->brcRight->cv, L"#%06x") : pict->brcRight->ico);
+
+		}
 		m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 		
 		if (CopyPicture(pict))
@@ -439,7 +455,7 @@ namespace DocFileFormat
 			writePictureBorder( L"bordertop",		pict->brcTop );
 			writePictureBorder( L"borderleft",		pict->brcLeft );
 			writePictureBorder( L"borderbottom",	pict->brcBottom );
-			writePictureBorder( L"borderright",	pict->brcRight );
+			writePictureBorder( L"borderright",		pict->brcRight );
 		}
 
 		m_pXmlWriter->WriteNodeEnd( L"v:shape" );
@@ -476,12 +492,16 @@ namespace DocFileFormat
 				WmfPlaceableFileHeader oWmfHeader = {};
 				oMetaHeader.ToWMFHeader(&oWmfHeader);
 				
-				int lLenHeader = 114 + 22;
+				int lLenHeader = 22 + (pict->embeddedDataHeader ? 114 : 0);
 
 				unsigned char *newData = new unsigned char[pict->embeddedDataSize + lLenHeader];
 				
 				memcpy(newData, (unsigned char *)(&oWmfHeader), 22);
-				memcpy(newData + 22, pict->embeddedDataHeader, 114 );
+
+				if (pict->embeddedDataHeader)
+				{
+					memcpy(newData + 22, pict->embeddedDataHeader, 114 );
+				}
 				
 				memcpy(newData + lLenHeader, pict->embeddedData, pict->embeddedDataSize);
 

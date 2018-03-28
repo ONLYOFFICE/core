@@ -44,7 +44,7 @@ namespace DocFileFormat
 		bool fInnerTableCell;
 		unsigned int iTap;
 
-		TableInfo( ParagraphPropertyExceptions* papx ):
+		TableInfo( ParagraphPropertyExceptions* papx, int  nWordVersion):
 				fInTable(false), fTtp(false), fInnerTtp(false), fInnerTableCell(false), iTap(0)
 		{
 			if ( papx != NULL )
@@ -57,6 +57,12 @@ namespace DocFileFormat
 						case sprmPFInTable:
 						{
 							fInTable = ( iter->Arguments[0] == 1 ) ? (true) : (false);
+
+							if (nWordVersion > 0)
+							{
+								iTap = 1;
+								fInnerTableCell = fInnerTtp = true;
+							}
 						}break;
 		          
 						//case sprmOldPFTtp:

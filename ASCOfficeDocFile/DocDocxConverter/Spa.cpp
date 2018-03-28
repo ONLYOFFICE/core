@@ -69,7 +69,7 @@ namespace DocFileFormat
 			
 			short cb_primitive	= reader->ReadInt16();
 
-			if (pos + cb_primitive > length)
+			if ((cb_primitive < 1) || (pos + cb_primitive > length))
 			{
 				reader->Seek(reader->GetPosition() - 4, 0);
 				break;
@@ -100,7 +100,7 @@ namespace DocFileFormat
 		Spa* pSpa =	new Spa();  
 		if (!pSpa) return NULL;
 		
-		if (reader->olderVersion)
+		if (reader->nWordVersion > 0)
 		{
 			int fc				=	reader->ReadInt32();
 			pSpa->cTxbx			=	reader->ReadUInt16();

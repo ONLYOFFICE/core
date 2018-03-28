@@ -108,7 +108,7 @@ namespace DocFileFormat
 			//STTB			hsttbDropList;
 			void read(VirtualStreamReader* reader);
 		};
-		FormFieldData( int type, const CharacterPropertyExceptions* chpx, POLE::Stream* stream, bool bOlderVersion );
+		FormFieldData( int type, const CharacterPropertyExceptions* chpx, POLE::Stream* stream, int nWordVersion );
 		virtual ~FormFieldData() {}
 	private:
 		friend class FormFieldDataMapping;  

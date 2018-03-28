@@ -41,9 +41,9 @@ namespace DocFileFormat
 		static const int STRUCTURE_SIZE = 30;
 		static const int STRUCTURE_SIZE_OLD = 20;
 
-		static const int GetSize(bool bOldVersion)
+		static const int GetSize(int nWordVersion)
 		{
-			return bOldVersion ? STRUCTURE_SIZE_OLD : STRUCTURE_SIZE;
+			return (nWordVersion > 0) ? STRUCTURE_SIZE_OLD : STRUCTURE_SIZE;
 		}
 
 		inline std::wstring GetUserInitials() const

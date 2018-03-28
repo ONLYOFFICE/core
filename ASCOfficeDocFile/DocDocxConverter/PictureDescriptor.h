@@ -83,16 +83,16 @@ namespace DocFileFormat
 	public:
 		// Parses the CHPX for a fcPic an loads the PictureDescriptor at this offset
 		PictureDescriptor ( );
-		PictureDescriptor ( CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size, bool oldVersion);
+		PictureDescriptor ( CharacterPropertyExceptions* chpx, POLE::Stream* stream, int size, int nWordVersion);
 		virtual ~PictureDescriptor();
 		
-		void parse( POLE::Stream* stream, int fc, int sz, bool oldVersion);
+		void parse( POLE::Stream* stream, int fc, int sz, int nWordVersion);
 
-	private: 
 		
 		// Returns the fcPic into the "data" stream, where the PIC begins.
 		// Returns -1 if the CHPX has no fcPic.
 		static int GetFcPic( const CharacterPropertyExceptions* chpx );
+	private: 
 
 		void Clear();
 

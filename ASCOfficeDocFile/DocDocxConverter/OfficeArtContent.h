@@ -60,7 +60,7 @@ namespace DocFileFormat
 
 		OfficeArtContent (const FileInformationBlock* pFIB, POLE::Stream* pStream): m_pDrawingGroupData(NULL), m_pBackgroud(NULL)
 		{
-			VirtualStreamReader oStearmReader(pStream, 0 , pFIB->m_bOlderVersion);
+			VirtualStreamReader oStearmReader(pStream, 0 , pFIB->m_nWordVersion);
 
 			if (pFIB->m_FibWord97.fcDggInfo > oStearmReader.GetSize()) return;
 

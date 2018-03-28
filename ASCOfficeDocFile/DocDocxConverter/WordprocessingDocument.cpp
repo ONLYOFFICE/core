@@ -304,7 +304,7 @@ namespace DocFileFormat
 
 				if (!iter->data.empty())
 				{
-					SaveEmbeddedObject(fileName, iter->data);
+					SaveEmbeddedObject(fileName, *iter);
 				}
 				else
 				{

@@ -118,70 +118,78 @@ namespace DocFileFormat
 
 	public:
 		/// Creates a new BorderCode with default values
-		BorderCode(): cv(0), dptLineWidth(0), brcType(0), ico( Global::ColorIdentifier[0] ), dptSpace(0), fShadow(false), fFrame(false), fNil(false)
+		BorderCode(): cv(0), dptLineWidth(0), brcType(0), ico( Global::ColorNameIdentifier[0] ), dptSpace(0), fShadow(false), fFrame(false), fNil(false)
 		{
 		}
 
 		/// Parses the unsigned char for a BRC
 		BorderCode( unsigned char* bytes, int size ):
-		cv(0), dptLineWidth(0), brcType(0), ico( Global::ColorIdentifier[0] ), dptSpace(0), fShadow(false), fFrame(false), fNil(false)
+		cv(0), dptLineWidth(0), brcType(0), ico( Global::ColorNameIdentifier[0] ), dptSpace(0), fShadow(false), fFrame(false), fNil(false)
 		{
 			if ( FormatUtils::ArraySum( bytes, size ) ==  ( size * 255 ) )
 			{
-				this->fNil = true;
+				fNil = true;
 			}
 			else if ( size == 8 )
 			{
 				//it's a border code of Word 2000/2003
-				this->cv = FormatUtils::BytesToInt32( bytes, 0, size );
-				this->ico = std::wstring( Global::ColorIdentifier[0] );
+				cv = FormatUtils::BytesToInt32( bytes, 0, size );
+				ico = std::wstring( Global::ColorIdentifier[0] );
 
-				this->dptLineWidth = bytes[4];
-				this->brcType = bytes[5];
+				dptLineWidth = bytes[4];
+				brcType = bytes[5];
 
 				short val = FormatUtils::BytesToInt16( bytes, 6, size );
-				this->dptSpace = val & 0x001F;
+				dptSpace = val & 0x001F;
 
 				//not sure if this is correct, the values from the spec are definitly wrong:
-				this->fShadow = FormatUtils::BitmaskToBool( val, 0x20 );
-				this->fFrame = FormatUtils::BitmaskToBool( val, 0x40 );
+				fShadow = FormatUtils::BitmaskToBool( val, 0x20 );
+				fFrame = FormatUtils::BitmaskToBool( val, 0x40 );
 			}
 			else if ( size == 4 )
 			{
-				//it's a border code of Word 97
 				unsigned short val = FormatUtils::BytesToUInt16( bytes, 0, size );
-				this->dptLineWidth = (unsigned char)( val & 0x00FF );
-				this->brcType = (unsigned char)( ( val & 0xFF00 ) >> 8 );
+
+				dptLineWidth = (unsigned char)( val & 0x00FF );
+				brcType = (unsigned char)( ( val & 0xFF00 ) >> 8 );
+
 				val = FormatUtils::BytesToUInt16( bytes, 2, size );
-				this->ico = FormatUtils::MapValueToWideString( ( val & 0x00FF ), &Global::ColorIdentifier[0][0], 17, 12 );
-				this->dptSpace = ( val & 0x1F00 ) >> 8;
+
+				ico = FormatUtils::MapValueToWideString( ( val & 0x00FF ), &Global::ColorNameIdentifier[0][0], 17, 12 );
+				dptSpace = ( val & 0x1F00 ) >> 8;
 			}
-			else
+			else if (size == 2)
 			{
-				//throw new ByteParseException("Cannot parse the struct BRC, the length of the struct doesn't match");
+				unsigned short val = FormatUtils::BytesToUInt16( bytes, 0, size );
+				
+				dptLineWidth	= GETBITS(val, 0, 2);
+				brcType			= GETBITS(val, 3, 4);
+				fShadow			= GETBIT(val, 5);
+				ico				= FormatUtils::MapValueToWideString(GETBITS(val, 6, 10), &Global::ColorNameIdentifier[0][0], 17, 12 );
+				dptSpace		= GETBITS(val, 11, 15);
+
 			}
 		}
-
 		BorderCode( const BorderCode& bc )
 		{
 			if ( this != &bc )
 			{
-				this->cv = bc.cv;
-				this->dptLineWidth = bc.dptLineWidth;
-				this->brcType = bc.brcType;
-				this->ico = bc.ico;
-				this->dptSpace = bc.dptSpace;
-				this->fShadow = bc.fShadow;
-				this->fFrame = bc.fFrame;
-				this->fNil = bc.fNil;
+				cv				= bc.cv;
+				dptLineWidth	= bc.dptLineWidth;
+				brcType			= bc.brcType;
+				ico				= bc.ico;
+				dptSpace		= bc.dptSpace;
+				fShadow			= bc.fShadow;
+				fFrame			= bc.fFrame;
+				fNil			= bc.fNil;
 			}
 		}
 
 		bool operator == ( const BorderCode& bc )
 		{
-			if ( ( this->cv == bc.cv ) && ( this->dptLineWidth == bc.dptLineWidth ) && ( this->brcType == bc.brcType ) &&
-				( this->ico == bc.ico ) && ( this->dptSpace == bc.dptSpace ) && ( this->fShadow == bc.fShadow ) &&
-				( this->fFrame == bc.fFrame ) && ( this->fNil == bc.fNil ) )
+			if ( ( cv == bc.cv ) && ( dptLineWidth == bc.dptLineWidth ) && ( brcType == bc.brcType ) &&
+				( ico == bc.ico ) && ( dptSpace == bc.dptSpace ) && ( fShadow == bc.fShadow ) &&
+				( fFrame == bc.fFrame ) && ( fNil == bc.fNil ) )
 			{
 				return true;
 			}

@@ -34,51 +34,59 @@
 
 namespace DocFileFormat
 {
-	ParagraphPropertyExceptions::ParagraphPropertyExceptions( unsigned char* bytes, int size, POLE::Stream* dataStream, bool oldVersion): 
-				PropertyExceptions( ( bytes + 2 ), ( size - 2 ),  oldVersion)
-    {
-      if ( size != 0 )
-      {
-	    istd = FormatUtils::BytesToUInt16( bytes, 0, size );
-      }
+	ParagraphPropertyExceptions::ParagraphPropertyExceptions( unsigned char* bytes, int size, POLE::Stream* dataStream, int nWordVersion): 
+				PropertyExceptions( ( bytes + 2 ), ( size - 2 ),  nWordVersion)
+	{
+		if (size < 1) return;
 
-	  VirtualStreamReader *reader = NULL;
+		if (nWordVersion == 2)
+		{
+			istd =  bytes[0];
+			
+			ReadExceptions(( bytes + 7 ), ( size - 7 ), nWordVersion);
 
-      //There is a SPRM that points to an offset in the data stream, 
-      //where a list of SPRM is saved.
-      for ( std::list<SinglePropertyModifier>::iterator iter = grpprl->begin(); iter != grpprl->end(); iter++ )
-      {
-	    SinglePropertyModifier sprm( *iter );
-		  
-		if( ( sprm.OpCode == sprmPHugePapx ) || ( (int)sprm.OpCode == 0x6646 ) )
-        {
-          unsigned int fc = FormatUtils::BytesToUInt32( sprm.Arguments, 0, sprm.argumentsSize );
-		  reader = new VirtualStreamReader( dataStream, (int)fc, oldVersion);
-		  
-          //parse the size of the external grpprl
-		  unsigned char* sizebytes = reader->ReadBytes( 2, true );
-		  
-		  unsigned int grpprlsize = FormatUtils::BytesToUInt16( sizebytes, 0, 2 );
-          
-		  RELEASEARRAYOBJECTS( sizebytes );
-
-          //parse the external grpprl
-		  unsigned char* grpprlBytes = reader->ReadBytes( grpprlsize, true );
-
-		  PropertyExceptions externalPx( grpprlBytes, grpprlsize, oldVersion );
-
-          //assign the external grpprl
-          RELEASEOBJECT( grpprl );
-		  grpprl = new std::list<SinglePropertyModifier>( *(externalPx.grpprl) );
-
-          //remove the sprmPHugePapx
-		  grpprl->remove( sprm );
-
-		  RELEASEARRAYOBJECTS( grpprlBytes );
-		  RELEASEOBJECT( reader )
-
-		  break;
 		}
-      }
+		else 
+		{
+			istd = FormatUtils::BytesToUInt16( bytes, 0, size );
+			VirtualStreamReader *reader = NULL;
+
+			//There is a SPRM that points to an offset in the data stream, 
+			//where a list of SPRM is saved.
+			for ( std::list<SinglePropertyModifier>::iterator iter = grpprl->begin(); iter != grpprl->end(); iter++ )
+			{
+				SinglePropertyModifier sprm( *iter );
+
+				if( ( sprm.OpCode == sprmPHugePapx ) || ( (int)sprm.OpCode == 0x6646 ) )
+				{
+					unsigned int fc = FormatUtils::BytesToUInt32( sprm.Arguments, 0, sprm.argumentsSize );
+					reader = new VirtualStreamReader( dataStream, (int)fc, nWordVersion);
+
+					//parse the size of the external grpprl
+					unsigned char* sizebytes = reader->ReadBytes( 2, true );
+
+					unsigned int grpprlsize = FormatUtils::BytesToUInt16( sizebytes, 0, 2 );
+
+					RELEASEARRAYOBJECTS( sizebytes );
+
+					//parse the external grpprl
+					unsigned char* grpprlBytes = reader->ReadBytes( grpprlsize, true );
+
+					PropertyExceptions externalPx( grpprlBytes, grpprlsize, nWordVersion );
+
+					//assign the external grpprl
+					RELEASEOBJECT( grpprl );
+					grpprl = new std::list<SinglePropertyModifier>( *(externalPx.grpprl) );
+
+					//remove the sprmPHugePapx
+					grpprl->remove( sprm );
+
+					RELEASEARRAYOBJECTS( grpprlBytes );
+					RELEASEOBJECT( reader )
+
+					break;
+				}
+			}
+		}
     }
 }

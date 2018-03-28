@@ -35,7 +35,20 @@
 namespace DocFileFormat
 {
 	/// Creates an empty STD object
-	StyleSheetDescription::StyleSheetDescription() : papx(NULL), chpx(NULL), tapx(NULL)
+	StyleSheetDescription::StyleSheetDescription():	papx(NULL), chpx(NULL), tapx(NULL), sti(User),
+													fAutoRedef(false),
+													fHidden(false),
+													f97LidsSet(false),
+													fCopyLang(false),
+													fPersonalCompose(false),
+													fPersonalReply(false),
+													fPersonal(false),
+													fNoHtmlExport(false),
+													fSemiHidden(false),
+													fLocked(false),
+													fInternalUse(false),
+													stk(paragraph_style),
+													istdBase(0xffffff), cupx (0), istdNext(0xffffff), bchUpe(0)
 	{
 
 	}
@@ -48,8 +61,8 @@ namespace DocFileFormat
 	}
 
 	/// Parses the bytes to retrieve a StyleSheetDescription
-	StyleSheetDescription::StyleSheetDescription (unsigned char* bytes, int size, int cbStdBase, POLE::Stream* dataStream, bool oldVersion) :
-													papx(NULL), chpx(NULL), tapx(NULL),
+	StyleSheetDescription::StyleSheetDescription (unsigned char* bytes, int size, int cbStdBase, POLE::Stream* dataStream, int nWordVersion) :
+													papx(NULL), chpx(NULL), tapx(NULL), sti(User),
 													fAutoRedef(false),
 													fHidden(false),
 													f97LidsSet(false),
@@ -60,8 +73,9 @@ namespace DocFileFormat
 													fNoHtmlExport(false),
 													fSemiHidden(false),
 													fLocked(false),
-													fInternalUse(false)
-
+													fInternalUse(false),
+													stk(paragraph_style),
+													istdBase(0xffffff), cupx (0), istdNext(0xffffff), bchUpe(0)
 	{
 		//parsing the base (fix part)
 
@@ -132,7 +146,7 @@ namespace DocFileFormat
 		unsigned char	characterCount = bytes[cbStdBase];
 		int				upxOffset = 0;
 
-		if (oldVersion)
+		if (nWordVersion > 0)
 		{
 			name = new unsigned char[characterCount];//characters are zero-terminated, so 1 char has 2 bytes:
 			memcpy( name, ( bytes + cbStdBase + 1 ), ( characterCount  ) );
@@ -177,21 +191,21 @@ namespace DocFileFormat
 						{
 							//todooo не реализовано
 							//RELEASEOBJECT( tapx );
-							//tapx = new TablePropertyExceptions( upxBytes, cbUPX,  dataStream, oldVersion); 
+							//tapx = new TablePropertyExceptions( upxBytes, cbUPX,  dataStream, nWordVersion); 
 						}
 						break;
 
 					case 1:
 						{
 							RELEASEOBJECT( papx );
-							papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream, oldVersion);
+							papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream, nWordVersion);
 						}
 						break;
 
 					case 2: 
 						{
 							RELEASEOBJECT( chpx ); 
-							chpx = new CharacterPropertyExceptions( upxBytes, cbUPX , oldVersion); 
+							chpx = new CharacterPropertyExceptions( upxBytes, cbUPX , nWordVersion); 
 						}
 						break;
 					}
@@ -204,14 +218,14 @@ namespace DocFileFormat
 					case 0:
 						{  
 							RELEASEOBJECT( papx );
-							papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream, oldVersion ); 
+							papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream, nWordVersion ); 
 						}
 						break;
 
 					case 1: 
 						{
 							RELEASEOBJECT( chpx );
-							chpx = new CharacterPropertyExceptions( upxBytes, cbUPX, oldVersion); 
+							chpx = new CharacterPropertyExceptions( upxBytes, cbUPX, nWordVersion); 
 						}
 						break;
 					}
@@ -224,7 +238,7 @@ namespace DocFileFormat
 					case 0:
 						{
 							RELEASEOBJECT( papx );
-							papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream, oldVersion );
+							papx = new ParagraphPropertyExceptions( upxBytes, cbUPX, dataStream, nWordVersion );
 						}
 						break;
 					}
@@ -237,7 +251,7 @@ namespace DocFileFormat
 					case 0: 
 						{  
 							RELEASEOBJECT( chpx );
-							chpx = new CharacterPropertyExceptions( upxBytes, cbUPX, oldVersion); 
+							chpx = new CharacterPropertyExceptions( upxBytes, cbUPX, nWordVersion); 
 						}
 						break;
 					}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,20 +45,15 @@ namespace OOX
 	class CBibliography : public OOX::File
 	{
 	public:
-		CBibliography()
+		CBibliography(OOX::Document* pMain) : OOX::File(pMain)
 		{
 
 		}
-		CBibliography(const CPath& oPath)
+		CBibliography(OOX::Document* pMain, const CPath& oPath) : OOX::File(pMain)
 		{
 			read( oPath );
 		}
-		virtual ~CBibliography()
-		{
 
-		}
-
-	public:
 		virtual void read(const CPath& oFilePath)
 		{
 			XmlUtils::CXmlLiteReader oReader;

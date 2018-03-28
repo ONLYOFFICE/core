@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -150,16 +150,15 @@ int XLUnicodeRichExtendedString::serialize (std::wostream & _stream)
 int XLUnicodeRichExtendedString::serialize_rPr	(std::wostream & _stream, int iFmt)
 {
 	if (!pGlobalWorkbookInfoPtr)			return 0;
-	if (!pGlobalWorkbookInfoPtr->m_arFonts) return 0;
 
-	int sz = pGlobalWorkbookInfoPtr->m_arFonts->size();
+	int sz = pGlobalWorkbookInfoPtr->m_arFonts.size();
 	if (iFmt -1 > sz || iFmt < 1) return 0;
 
 	CP_XML_WRITER(_stream)    
 	{
 		CP_XML_NODE(L"rPr")
 		{
-			Font * font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts->at(iFmt-1).get());
+			Font * font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts[iFmt-1].get());
 
 			if (font) font->serialize_properties(CP_XML_STREAM(), true);
 		}
@@ -282,8 +281,8 @@ void XLUnicodeRichExtendedString::loadSymbols(CFRecord& record, const size_t cch
 				char* out_str_char = (char*) out_str;
 				for (int i = 0; i < inp_str_size; i++)
 				{
-					out_str_char[2*i+0] = inp_str.c_str()[i];
-					out_str_char[2*i+1] = 0;
+					out_str_char[2*i + 0] = inp_str.c_str()[i];
+					out_str_char[2*i + 1] = 0;
 				}
 				out_str[inp_str_size] = 0;
 

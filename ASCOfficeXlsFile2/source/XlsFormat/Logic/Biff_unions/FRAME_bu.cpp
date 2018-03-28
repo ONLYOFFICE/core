@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -125,9 +125,10 @@ int FRAME::serialize(std::wostream & _stream)
 		{
 			if (bArea)
 			{
-				if (m_GELFRAME && area->fls > 1)
+				if (m_GELFRAME/* && area->fls > 1*/)
 					m_GELFRAME->serialize(CP_XML_STREAM());
-				else if (m_AreaFormat) m_AreaFormat->serialize(CP_XML_STREAM());
+				else if (m_AreaFormat) 
+					m_AreaFormat->serialize(CP_XML_STREAM());
 			}
 			
 			if (m_LineFormat && bLine) m_LineFormat->serialize(CP_XML_STREAM());

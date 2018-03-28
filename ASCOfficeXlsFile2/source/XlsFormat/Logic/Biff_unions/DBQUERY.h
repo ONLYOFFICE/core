@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,11 +35,13 @@
 
 namespace XLS
 {
-	struct _DbParam
-	{
-		std::wstring	string;
-		BaseObjectPtr	param;
-	};
+struct _DbParam
+{
+	std::wstring	string;
+	BaseObjectPtr	param;
+};
+
+class DBQUERYEXT;
 
 class DBQUERY: public CompositeObject
 {
@@ -53,7 +55,8 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	int serialize(std::wostream & stream);
-	int serialize_connection(std::wostream & strm);
+	
+	int serialize_connection(std::wstring & name);
 
 	BaseObjectPtr				m_DbQry;
 
@@ -62,8 +65,11 @@ public:
 	
 	std::vector<std::wstring>	m_arSXString;
 //------------------------------------------------------
-	GlobalWorkbookInfoPtr	global_info;
-	int						connectionId;
+	BaseObjectPtr				m_DBQUERYEXT;
+	BaseObjectPtr				m_Qsi;
+	BaseObjectPtr				m_DConn;
+
+	GlobalWorkbookInfoPtr		global_info;
 };
 
 } // namespace XLS

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,7 +38,6 @@ namespace XLS
 
 class CellRef;
 
-// Logical representation of CELLTABLE union of records 
 class CELLTABLE: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(CELLTABLE)
@@ -50,13 +49,13 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typeCELLTABLE;
+	static const ElementType type = typeCELLTABLE;
 
 	int serialize(std::wostream & stream);
 
 	std::vector<CellRangeRef>& shared_formulas_locations_ref_;
-
-    int m_count_CELL_GROUP;
+    int							m_count_CELL_GROUP;
+	std::vector<BaseObjectPtr>	m_arEntExU2;
 };
 
 } // namespace XLS

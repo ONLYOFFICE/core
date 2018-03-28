@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -188,7 +188,7 @@ public:
 	office_element_ptr_array	title_odf_context_;
 
 	chart::title				sub_title_;
-	chart::simple				legend_;
+	chart::legend				legend_;
 	chart::plot_area			plot_area_;
 
 	chart::simple				wall_;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -79,7 +79,7 @@ namespace BinXlsxRW {
 					return c_oSerConstants::ReadOk;
 				} 
 				res = (((CallbackType*)poFuncObj)->*fReadFunction)(type, length, arg);
-                if(res == c_oSerConstants::ReadUnknown && length > 0)
+				if(res == c_oSerConstants::ReadUnknown)
 				{
 					m_oBufferedStream.GetPointer(length);
 					res = c_oSerConstants::ReadOk;

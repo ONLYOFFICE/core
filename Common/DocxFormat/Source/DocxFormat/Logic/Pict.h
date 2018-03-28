@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -393,11 +393,13 @@ namespace OOX
 			{
                 std::wstring sResult = _T("<w:pict>");
 
-				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						sResult += m_arrItems[nIndex]->toXML();
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        sResult += m_arrItems[i]->toXML();
+                    }
+                }
 
 				if ( m_oControl.IsInit() )
 					sResult += m_oControl->toXML();
@@ -447,12 +449,10 @@ namespace OOX
 			virtual ~CObject() 
 			{
 			}
-	
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -470,6 +470,8 @@ namespace OOX
 				oSubReader.FromString(sXml);
 				oSubReader.ReadNextNode();//root
 				oSubReader.ReadNextNode();//pict
+
+				ReadAttributes(oSubReader);
 
 				int nCurDepth = oSubReader.GetDepth();
 				while ( oSubReader.ReadNextSiblingNode( nCurDepth ) )
@@ -632,26 +634,37 @@ namespace OOX
 					}
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-				return _T("<w:object />");
+				return _T("<w:object/>");
 			}
 
 			virtual EElementType getType() const
 			{
 				return et_w_object;
 			}
-            nullable<std::wstring> m_sXml;
 
-			// Childs
+            nullable<std::wstring>					m_sXml;
+//-----------------------------------------------------------------------
+			nullable_int							m_oDxaOrig;
+			nullable_int							m_oDyaOrig;
+
 			nullable<OOX::Logic::CControl>			m_oControl;
-//top childs
-			nullable<OOX::Vml::CShapeType>			m_oShapeType;//?? нужен ли отдельно тута???
+
+			nullable<OOX::Vml::CShapeType>			m_oShapeType;
 			nullable<OOX::VmlOffice::COLEObject>	m_oOleObject;
 			
 			nullable<OOX::Vml::CShape>				m_oShape;
-//minor childs
 
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("w:dxaOrig"), m_oDxaOrig )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("w:dxyOrig"), m_oDyaOrig )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 		};
 
 

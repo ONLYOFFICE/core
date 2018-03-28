@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -63,8 +63,16 @@ namespace DocFileFormat
 {
 	long Converter::Convert(WordDocument* doc, WordprocessingDocument* docx, const ProgressCallback* progress)
 	{
+		if (!doc || !docx) return S_FALSE;
+		
 		ConversionContext context( doc, docx );
 
+	//Write fontTable.xml
+		if (doc->FontTable)
+		{
+			FontTableMapping fontTableMapping( &context );
+			doc->FontTable->Convert( &fontTableMapping );
+		}
 	//Write styles.xml
 		if (doc->Styles)
 		{
@@ -107,14 +115,6 @@ namespace DocFileFormat
 				return S_FALSE;
 			}
 		}
-
-	//Write fontTable.xml
-		if (doc->FontTable)
-		{
-			FontTableMapping fontTableMapping( &context );
-			doc->FontTable->Convert( &fontTableMapping );
-		}
-
 		if ( progress != NULL )
 		{
 			progress->OnProgress( progress->caller, DOC_ONPROGRESSEVENT_ID, 875000 );

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -108,37 +108,37 @@ BaseObjectPtr SERIESDATA::clone()
 // SERIESDATA = Dimensions 3(SIIndex *(Number / BoolErr / Blank / Label))
 const bool SERIESDATA::loadContent(BinProcessor& proc)
 {
-	if(!proc.optional<Dimensions>())
-	{
-		return false;
-	}
-
-	if (elements_.size() > 0)
+	bool result = false;
+	if(proc.optional<Dimensions>())
 	{
 		m_Dimensions = elements_.back();
 		elements_.pop_back();
-
+		result = true;
 	}
 
 	int count = proc.repeated<Parenthesis_SERIESDATA_1>(3, 3);
-
-	int count1= elements_.size();
-	while(count1 > 0)
+	if (count > 0)
 	{
-		if ("SIIndex" == elements_.front()->getClassName())
+		result = true;
+
+		int count1= elements_.size();
+		while(count1 > 0)
 		{
-			m_arSIIndex.push_back(elements_.front()); count--;
+			if ("SIIndex" == elements_.front()->getClassName())
+			{
+				m_arSIIndex.push_back(elements_.front()); count--;
+			}
+			else
+			{
+				SIIndex * si_in = dynamic_cast<SIIndex *>(m_arSIIndex.back().get());
+				if (si_in)
+					si_in->m_arData.push_back(elements_.front());
+			}
+			elements_.pop_front(); count1--;
 		}
-		else
-		{
-			SIIndex * si_in = dynamic_cast<SIIndex *>(m_arSIIndex.back().get());
-			if (si_in)
-				si_in->m_arData.push_back(elements_.front());
-		}
-		elements_.pop_front(); count1--;
 	}
 
-	return true;
+	return result;
 }
 
 } // namespace XLS

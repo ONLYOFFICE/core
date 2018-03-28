@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -195,7 +195,14 @@ std::wstring cellType2Str(XlsxCellType::type type)
 
 boost::int64_t convertDate(int Year, int Month, int Day)
 {
-    boost::int64_t daysFrom1900  =  boost::gregorian::date_duration(boost::gregorian::date(Year, Month, Day) - boost::gregorian::date(1900, 1, 1)).days() + 1;
+	if (Year < 1400 || Year >10000)
+		return - 1;
+ 	if (Month < 1 || Month > 12)
+		return - 1;
+	if (Day < 1 || Day > 31)
+		return - 1;
+	
+	boost::int64_t daysFrom1900  =  boost::gregorian::date_duration(boost::gregorian::date(Year, Month, Day) - boost::gregorian::date(1900, 1, 1)).days() + 1;
 
     if (Year <= 1900 && 
         Month <= 2 &&

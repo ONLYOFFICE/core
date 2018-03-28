@@ -43,15 +43,17 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\XlsFormat; ..\Common"
+				AdditionalIncludeDirectories="..\XlsFormat;..\Common;&quot;..\..\..\DesktopEditor\freetype-2.5.2\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
+				EnableEnhancedInstructionSet="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
+				DisableSpecificWarnings="4005;4311;4312"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -372,6 +374,14 @@
 			</File>
 			<File
 				RelativePath="..\XlsFormat\Logic\ChartSheetSubstream.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsFormat\Logic\CommonSubstream.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsFormat\Logic\CommonSubstream.h"
 				>
 			</File>
 			<File
@@ -3114,6 +3124,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\AF12CellIcon.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\AF12CellIcon.h"
+					>
+				</File>
+				<File
 					RelativePath="..\XlsFormat\Logic\Biff_structures\AF12Criteria.cpp"
 					>
 				</File>
@@ -3243,6 +3261,14 @@
 				</File>
 				<File
 					RelativePath="..\XlsFormat\Logic\Biff_structures\BuiltInStyle.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\CachedDiskHeader.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\CachedDiskHeader.h"
 					>
 				</File>
 				<File
@@ -3758,6 +3784,30 @@
 					>
 				</File>
 				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\Feat11Fmla.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\Feat11Fmla.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\Feat11WSSListInfo.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\Feat11WSSListInfo.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\Feat11XMap.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\Feat11XMap.h"
+					>
+				</File>
+				<File
 					RelativePath="..\XlsFormat\Logic\Biff_structures\FeatFormulaErr2.cpp"
 					>
 				</File>
@@ -4091,6 +4141,14 @@
 				</File>
 				<File
 					RelativePath="..\XlsFormat\Logic\Biff_structures\List12TableStyleClientInfo.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\ListParsedFormula.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\ListParsedFormula.h"
 					>
 				</File>
 				<File
@@ -6473,10 +6531,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\XlsFormat\Logic\SummaryInformationStream\Structures\Property_Structures.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\XlsFormat\Logic\SummaryInformationStream\Structures\PropertyFactory.cpp"
 						>
 					</File>
@@ -6556,6 +6610,14 @@
 			</File>
 			<File
 				RelativePath="..\XlsFormat\Crypt\RC4Crypt.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsFormat\Crypt\XORCrypt.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsFormat\Crypt\XORCrypt.h"
 				>
 			</File>
 			<Filter

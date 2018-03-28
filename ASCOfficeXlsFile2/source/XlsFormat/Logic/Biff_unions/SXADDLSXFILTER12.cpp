@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,7 +31,7 @@
  */
 
 #include "SXADDLSXFILTER12.h"
-#include <Logic/Biff_records/SXAddl.h>
+#include "../Biff_records/SXAddl.h"
 
 namespace XLS
 {
@@ -65,40 +65,28 @@ SXADDLSXFILTER12 = SXAddl_SXCSXFilter12_SXDId SXAddl_SXCSXFilter12_SXDSXFilter
 */
 const bool SXADDLSXFILTER12::loadContent(BinProcessor& proc)
 {
-	//if(!proc.mandatory<SXAddl_SXCSXFilter12_SXDId>())
-	//{
-	//	return false;
-	//}
-	//proc.mandatory<SXAddl_SXCSXFilter12_SXDSXFilter>();
+	bool result = false;
+	while (true)
+	{
+		CFRecordType::TypeId type = proc.getNextRecordType();	
 
-	//if(proc.optional<SXAddl_SXCSXFilter12_SXDCaption>())
-	//{
-	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
-	//}
-	//if(proc.optional<SXAddl_SXCSXFilter12_SXDSXFilterDesc>())
-	//{
-	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
-	//}
-	//if(proc.optional<SXAddl_SXCSXFilter12_SXDSXFilterValue1>())
-	//{
-	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
-	//}
-	//if(proc.optional<SXAddl_SXCSXFilter12_SXDSXFilterValue2>())
-	//{
-	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
-	//}
-	//proc.mandatory<SXAddl_SXCSXFilter12_SXDXlsFilter>();
-	//if(proc.optional<SXAddl_SXCSXFilter12_SXDXlsFilterValue1>())
-	//{
-	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
-	//}
-	//if(proc.optional<SXAddl_SXCSXFilter12_SXDXlsFilterValue2>())
-	//{
-	//	proc.repeated<Continue_SxaddlSxString>(0, 0);
-	//}
-	//proc.mandatory<SXAddl_SXCSXFilter12_SXDEnd>();
+		if (type == rt_SXAddl)
+		{
+			result = true;
+			proc.optional<SXAddl>();
 
-	return true;
+			SXAddl* addl = dynamic_cast<SXAddl*>(elements_.back().get());				
+			if (!addl) continue;
+			
+			if (addl->bEndElement)
+				break;
+		}
+		else
+		{
+			break;
+		}
+	}
+	return result;
 }
 
 } // namespace XLS

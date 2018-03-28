@@ -43,17 +43,17 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../include;../src/odf/datatypes"
+				AdditionalIncludeDirectories="..\include;..\src\odf\datatypes;..\..\DesktopEditor\freetype-2.5.2\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
-				DisableSpecificWarnings="4311;4267;4996;4172"
+				DisableSpecificWarnings="4005;4311;4312"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -1109,10 +1109,6 @@
 		</File>
 		<File
 			RelativePath="..\include\cpdoccore\CPColorUtils.h"
-			>
-		</File>
-		<File
-			RelativePath="..\include\cpdoccore\CPHash.h"
 			>
 		</File>
 		<File

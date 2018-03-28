@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,9 +35,6 @@
 
 namespace XLS
 {
-
-
-// Logical representation of DataFormat record in BIFF8
 class DataFormat: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(DataFormat)
@@ -47,11 +44,10 @@ public:
 	~DataFormat();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeDataFormat;
+	static const ElementType type = typeDataFormat;
 
 	_UINT16 xi;
 	_UINT16 yi;

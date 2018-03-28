@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -62,20 +62,20 @@ public:
 	office_element_ptr			database_ranges_; 
 	office_element_ptr			data_pilot_tables_;
 	office_element_ptr			tracked_changes_;
-
+	office_element_ptr			content_validations_;
+	
 	office_element_ptr_array	content_;
  	
+	office_element_ptr			user_fields_;
+	office_element_ptr			variables_;
+ 	office_element_ptr			sequences_;
 	// table:calculation-settings
 	// table:consolidation
-	// table:content-validations
 	// table:dde-links
 	// table:label-ranges
 	
 	// text:alphabetical-index-auto-mark-file
 	// text:ddeconnection-decls
-	// text:sequence-decls
-	// text:user-fielddecls
-	// text:variable-decls
 };
 CP_REGISTER_OFFICE_ELEMENT2(office_spreadsheet);
 

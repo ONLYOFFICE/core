@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,7 +33,6 @@
 #include "office_chart.h"
 
 #include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/attributes.h>
 
 #include "serialize_elements.h"
@@ -81,7 +80,16 @@ void chart_chart::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void chart_chart::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-	CP_CREATE_ELEMENT(content_);
+	if CP_CHECK_NAME(L"text", L"tracked-changes") 
+	{
+        //CP_CREATE_ELEMENT(tracked_changes_);
+	}
+	else if CP_CHECK_NAME(L"table", L"content-validations")
+	{
+        //CP_CREATE_ELEMENT(content_validations_);
+	}
+	else
+		CP_CREATE_ELEMENT(content_);
 }
 void chart_title_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {

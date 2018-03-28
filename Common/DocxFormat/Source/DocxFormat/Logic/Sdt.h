@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -54,12 +54,12 @@ namespace ComplexTypes
 			{
 			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("w:displayText"), m_sDisplayText );
 				oNode.ReadAttributeBase( _T("w:value"),       m_sValue );
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 
@@ -91,7 +91,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:displayText"), m_sDisplayText )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:value"),       m_sValue )
@@ -118,13 +117,13 @@ namespace ComplexTypes
 			{
 			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("w:prefixMappings"), m_sPrefixMappings );
 				oNode.ReadAttributeBase( _T("w:storeItemID"),    m_sStoreItemID );
 				oNode.ReadAttributeBase( _T("w:xpath"),          m_sXPath );
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 
@@ -142,13 +141,6 @@ namespace ComplexTypes
 					sResult += _T("\" ");
 				}
 
-				if ( m_sStoreItemID.IsInit() )
-				{
-					sResult += _T("w:storeItemID=\"");
-                    sResult += m_sStoreItemID.get2();
-					sResult += _T("\" ");
-				}
-
 				if ( m_sXPath.IsInit() )
 				{
 					sResult += _T("w:xpath=\"");
@@ -156,13 +148,18 @@ namespace ComplexTypes
 					sResult += _T("\" ");
 				}
 
+				if ( m_sStoreItemID.IsInit() )
+				{
+					sResult += _T("w:storeItemID=\"");
+                    sResult += m_sStoreItemID.get2();
+					sResult += _T("\" ");
+				}
 				return sResult;
 			}
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:prefixMappings"), m_sPrefixMappings )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:storeItemID"),    m_sStoreItemID )
@@ -191,11 +188,11 @@ namespace ComplexTypes
 			{
 			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 
@@ -236,11 +233,11 @@ namespace ComplexTypes
 			{
 			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 
@@ -256,7 +253,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -281,11 +277,11 @@ namespace ComplexTypes
 			{
 			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 
@@ -302,7 +298,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -327,11 +322,11 @@ namespace ComplexTypes
 			{
 			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("w:multiLine"), m_oMultiLine );
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 
@@ -352,7 +347,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:multiLine"), m_oMultiLine )
 				WritingElement_ReadAttributes_End( oReader )
@@ -382,7 +376,7 @@ namespace OOX
 			}
 			virtual ~CSdtComboBox()
 			{
-				for ( unsigned int nIndex = 0; nIndex < m_arrListItem.size(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < m_arrListItem.size(); nIndex++ )
 				{
 					if ( m_arrListItem[nIndex] )
 						delete m_arrListItem[nIndex];
@@ -395,7 +389,7 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("w:lastValue"), m_sLastValue );
 
@@ -414,7 +408,7 @@ namespace OOX
 				}
 			}
 
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
@@ -432,7 +426,7 @@ namespace OOX
 					}
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult;
 				
@@ -445,7 +439,7 @@ namespace OOX
 				else
 					sResult = _T("<w:comboBox>");
 
-				for (unsigned  int nIndex = 0; nIndex < m_arrListItem.size(); nIndex++ )
+				for (size_t nIndex = 0; nIndex < m_arrListItem.size(); nIndex++ )
 				{
 					sResult += _T("<w:listItem ");
 					if (m_arrListItem[nIndex])
@@ -467,7 +461,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:lastValue"), m_sLastValue )
 				WritingElement_ReadAttributes_End( oReader )
@@ -498,7 +491,7 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("w:fullDate"), m_oFullDate );
 
@@ -510,7 +503,7 @@ namespace OOX
 				WritingElement_ReadNode( oNode, oChild, _T("w:storeMappedDateAs"), m_oStoreMappedDateAs );
 			}
 
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
@@ -531,7 +524,7 @@ namespace OOX
 						m_oStoreMappedDateAs = oReader;
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult;
 				
@@ -562,7 +555,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:fullDate"), m_oFullDate )
 				WritingElement_ReadAttributes_End( oReader )
@@ -596,7 +588,7 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNode oChild;
 
@@ -605,7 +597,7 @@ namespace OOX
 				WritingElement_ReadNode( oNode, oChild, _T("w:docPartUnique"),   m_oDocPartUnique );
 			}
 
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -622,7 +614,7 @@ namespace OOX
 						m_oDocPartUnique = oReader;
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<w:docPartList>");
 
@@ -634,7 +626,7 @@ namespace OOX
 
 				return sResult;
 			}
-			std::wstring      toXML2(const std::wstring& sName) const
+			std::wstring toXML2(const std::wstring& sName) const
 			{
 				std::wstring sResult = L"<" + sName + L">";
 
@@ -670,7 +662,7 @@ namespace OOX
 			}
 			virtual ~CSdtDropDownList()
 			{
-				for ( unsigned int nIndex = 0; nIndex < m_arrListItem.size(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < m_arrListItem.size(); nIndex++ )
 				{
 					if ( m_arrListItem[nIndex] )
 						delete m_arrListItem[nIndex];
@@ -681,9 +673,7 @@ namespace OOX
 				m_arrListItem.clear();
 			}
 
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("w:lastValue"), m_sLastValue );
 
@@ -702,7 +692,7 @@ namespace OOX
 				}
 			}
 
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				ReadAttributes( oReader );
 
@@ -720,7 +710,7 @@ namespace OOX
 					}
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult;
 				
@@ -733,7 +723,7 @@ namespace OOX
 				else
 					sResult = _T("<w:dropDownList>");
 
-				for (unsigned  int nIndex = 0; nIndex < m_arrListItem.size(); nIndex++ )
+				for (size_t nIndex = 0; nIndex < m_arrListItem.size(); nIndex++ )
 				{
 					sResult += _T("<w:listItem ");
 					if (m_arrListItem[nIndex])
@@ -754,7 +744,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:lastValue"), m_sLastValue )
 				WritingElement_ReadAttributes_End( oReader )
@@ -782,16 +771,14 @@ namespace OOX
 			{
 			}
 
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNode oChild;
 
 				WritingElement_ReadNode( oNode, oChild, _T("w:docPart"), m_oDocPart );
 			}
 
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -804,7 +791,7 @@ namespace OOX
 						m_oDocPart = oReader;
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<w:placeholder>");
 
@@ -841,7 +828,7 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNode oChild;
 
@@ -849,7 +836,7 @@ namespace OOX
 					m_oRPr = oChild;
 			}
 
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -862,7 +849,7 @@ namespace OOX
 						m_oRPr = oReader;
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<w:sdtEndPr>");
 
@@ -917,7 +904,7 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = sdttypeUnknown;
 
@@ -932,7 +919,7 @@ namespace OOX
 				if ( sdttypeUnknown == m_eType && oNode.GetNode( _T("w:citation"), oChild ) )
 					m_eType = sdttypeCitation;
 
-				if ( sdttypeUnknown == m_eType && oNode.GetNode( _T("w:alias"), oChild ) )
+				if ( sdttypeUnknown == m_eType && oNode.GetNode( _T("w:comboBox"), oChild ) )
 				{
 					m_oComboBox = oChild;
 					m_eType = sdttypeComboBox;
@@ -1011,7 +998,7 @@ namespace OOX
 				}
 			}
 
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				m_eType = sdttypeUnknown;
 
@@ -1089,21 +1076,21 @@ namespace OOX
 					}
 				}
 			}
-			std::wstring      toXMLStart() const
+			std::wstring toXMLStart() const
 			{
 				std::wstring sResult = _T("<w:sdtPr>");
 
 				WritingElement_WriteNode_2( m_oRPr );
-				WritingElement_WriteNode_1( _T("<w:alias "),         m_oAlias );
-				WritingElement_WriteNode_1( _T("<w:label "),         m_oLabel );
-				WritingElement_WriteNode_1( _T("<w:tabIndex "),      m_oTabIndex );
-				WritingElement_WriteNode_1( _T("<w:lock "),          m_oLock );
+				WritingElement_WriteNode_1( L"<w:alias ",         m_oAlias );
+				WritingElement_WriteNode_1( L"<w:id ",            m_oId );
+				WritingElement_WriteNode_1( L"<w:label ",         m_oLabel );
+				WritingElement_WriteNode_1( L"<w:tabIndex ",      m_oTabIndex );
+				WritingElement_WriteNode_1( L"<w:lock ",          m_oLock );
 				WritingElement_WriteNode_2( m_oPlaceHolder );
-				WritingElement_WriteNode_1( _T("<w:showingPlcHdr "), m_oShowingPlcHdr );
-				WritingElement_WriteNode_1( _T("<w:dataBinding "),   m_oDataBinding );
-				WritingElement_WriteNode_1( _T("<w:temporary "),     m_oTemporary );
-				WritingElement_WriteNode_1( _T("<w:id "),            m_oId );
-				WritingElement_WriteNode_1( _T("<w:tag "),           m_oTag );
+				WritingElement_WriteNode_1( L"<w:showingPlcHdr ", m_oShowingPlcHdr );
+				WritingElement_WriteNode_1( L"<w:dataBinding ",   m_oDataBinding );
+				WritingElement_WriteNode_1( L"<w:temporary ",     m_oTemporary );
+				WritingElement_WriteNode_1( L"<w:tag ",           m_oTag );
 
 				switch(m_eType)
 				{
@@ -1186,12 +1173,12 @@ namespace OOX
 
 				return sResult;
 			}
-			std::wstring      toXMLEnd() const
+			std::wstring toXMLEnd() const
 			{
 				return _T("</w:sdtPr>");
 			}
 
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				return toXMLStart() + toXMLEnd();
 			}
@@ -1233,8 +1220,8 @@ namespace OOX
 			{
 			}
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
@@ -1261,7 +1248,7 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNode oChild;
 
@@ -1275,7 +1262,7 @@ namespace OOX
 					m_oSdtPr = oChild;
 			}
 
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -1292,7 +1279,7 @@ namespace OOX
 						m_oSdtPr = oReader;
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<w:sdt>");
 

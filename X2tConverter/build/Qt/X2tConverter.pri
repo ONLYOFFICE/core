@@ -7,9 +7,6 @@
 QT       -= core
 QT       -= gui
 
-VERSION = 2.4.482.0
-DEFINES += INTVER=$$VERSION
-
 TARGET = x2t
 CORE_ROOT_DIR = $$PWD/../../..
 PWD_ROOT_DIR = $$PWD
@@ -44,11 +41,6 @@ core_linux_64 {
 DEFINES += UNICODE \
     _UNICODE \
     _USE_LIBXML2_READER_ \
-    _USE_XMLLITE_READER_ \
-    USE_LITE_READER \
-    PPTX_DEF\
-    PPT_DEF\
-    ENABLE_PPT_TO_PPTX_CONVERT\
     #DISABLE_FILE_DOWNLOADER \
     FILTER_FLATE_DECODE_ENABLED \
     CXIMAGE_DONT_DECLARE_TCHAR \
@@ -63,6 +55,7 @@ DEFINES += DJVU_USE_DYNAMIC_LIBRARY
 DEFINES += HTMLRENDERER_USE_DYNAMIC_LIBRARY
 DEFINES += HTMLFILE_USE_DYNAMIC_LIBRARY
 DEFINES += UNICODECONVERTER_USE_DYNAMIC_LIBRARY
+DEFINES += FILE_FORMAT_CHECKER_WITH_MACRO
 
 core_windows {
     INCLUDEPATH += ../../../OfficeUtils/src/zlib-1.2.3
@@ -154,6 +147,7 @@ CONFIG += core_boost_regex
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 core_windows {
+    LIBS += -lAdvapi32
     LIBS += -lurlmon
     LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -llibxml
 }

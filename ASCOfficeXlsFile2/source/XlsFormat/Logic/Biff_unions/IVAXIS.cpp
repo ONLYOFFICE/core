@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -67,7 +67,7 @@ const bool IVAXIS::loadContentRead(BinReaderProcessor& proc)
 	bool ok = loadContent(proc);
 	if(ok)
 	{
-		id = proc.getGlobalWorkbookInfo()->GenerateAXESId();
+		id = proc.getGlobalWorkbookInfo()->last_Axes_id++;
 	}
 	return ok;
 }

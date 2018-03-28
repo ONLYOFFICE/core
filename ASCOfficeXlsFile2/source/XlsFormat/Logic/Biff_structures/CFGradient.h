@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,6 +34,7 @@
 #include "BiffStructure.h"
 #include "CFVO.h"
 #include "CFColor.h"
+#include "Xnum.h"
 
 namespace XLS
 {
@@ -67,8 +68,7 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
-	double	numGrange;
+	Xnum numGrange;
 	CFColor	color;
 };
 typedef boost::shared_ptr<CFGradientItem> CFGradientItemPtr;

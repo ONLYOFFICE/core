@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -63,6 +63,22 @@ void office_spreadsheet::add_child_element( xml::sax * Reader, const std::wstrin
 	{
 		CP_CREATE_ELEMENT(tracked_changes_);
 	}
+	else if CP_CHECK_NAME(L"table", L"content-validations")
+	{
+		CP_CREATE_ELEMENT(content_validations_);
+	}
+	else if CP_CHECK_NAME(L"text", L"user-field-decls")
+	{
+		CP_CREATE_ELEMENT(user_fields_);
+	}
+	else if CP_CHECK_NAME(L"text", L"sequence-decls")
+	{
+		CP_CREATE_ELEMENT(sequences_);
+	}
+	else if CP_CHECK_NAME(L"text", L"variable-decls")
+	{
+		CP_CREATE_ELEMENT(variables_);
+	}
 	else
 		CP_CREATE_ELEMENT(content_);
 }
@@ -82,11 +98,23 @@ void office_spreadsheet::xlsx_convert(oox::xlsx_conversion_context & Context)
     Context.start_office_spreadsheet(this);
     _CP_LOG << L"[info][xlsx] process spreadsheet (" << content_.size() << L" tables)" << std::endl;
    
+	if (user_fields_)
+		user_fields_->xlsx_convert(Context);
+
+	if (variables_)
+		variables_->xlsx_convert(Context);
+
+	if (sequences_)
+		sequences_->xlsx_convert(Context);
+
 	if (named_expressions_)
 		named_expressions_->xlsx_convert(Context);
        
 	if (database_ranges_)
 		database_ranges_->xlsx_convert(Context);
+
+	if (content_validations_)
+		content_validations_->xlsx_convert(Context);
 
 	if (data_pilot_tables_)
 		data_pilot_tables_->xlsx_convert(Context);

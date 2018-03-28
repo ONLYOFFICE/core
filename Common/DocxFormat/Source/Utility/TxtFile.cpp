@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -47,13 +47,13 @@ TxtFile::TxtFile(const boost::filesystem::wpath& path)
 }
 
 
-const std::list<std::string> TxtFile::readAnsi() const
+const std::vector<std::string> TxtFile::readAnsi() const
 {
 	std::ifstream file(m_path.string().c_str());
 	if (file.bad())
 		throw log_runtime_error("can't open text file");
 
-	std::list<std::string> result;
+    std::vector<std::string> result;
 	while (!file.eof())
 	{
 		std::string str;
@@ -90,14 +90,14 @@ const std::list<std::string> TxtFile::readAnsi() const
 }
 
 
-const std::list<std::wstring> TxtFile::readUnicode() const
+const std::vector<std::wstring> TxtFile::readUnicode() const
 {
 	std::wifstream file(m_path.string().c_str(), std::ios_base::binary);
 	if (file.bad())
 		throw log_runtime_error("can't open text file");
 
 	file.imbue(std::locale(std::locale(), new ucs2_conversion()));
-	std::list<std::wstring> result;
+    std::vector<std::wstring> result;
 
 	while (!file.eof())
 	{
@@ -110,14 +110,14 @@ const std::list<std::wstring> TxtFile::readUnicode() const
 }
 
 
-const std::list<std::wstring> TxtFile::readUnicodeWithOutBOM() const
+const std::vector<std::wstring> TxtFile::readUnicodeWithOutBOM() const
 {
 	std::wifstream file(m_path.string().c_str(), std::ios_base::binary);
 	if (file.bad())
 		throw log_runtime_error("can't open text file");
 
 	file.imbue(std::locale(std::locale(), new ucs2_conversion()));
-	std::list<std::wstring> result;
+    std::vector<std::wstring> result;
 
 	while (!file.eof())
 	{
@@ -130,14 +130,14 @@ const std::list<std::wstring> TxtFile::readUnicodeWithOutBOM() const
 }
 
 
-const std::list<std::wstring> TxtFile::readBigEndian() const
+const std::vector<std::wstring> TxtFile::readBigEndian() const
 {
 	std::wifstream file(m_path.string().c_str(), std::ios_base::binary);
 	if (file.bad())
 		throw log_runtime_error("can't open text file");
 
 	file.imbue(std::locale(std::locale(), new ube_conversion()));
-	std::list<std::wstring> result;
+    std::vector<std::wstring> result;
 
 	while (!file.eof())
 	{
@@ -150,13 +150,13 @@ const std::list<std::wstring> TxtFile::readBigEndian() const
 }
 
 
-const std::list<std::string> TxtFile::readUtf8() const
+const std::vector<std::string> TxtFile::readUtf8() const
 {
 	std::ifstream file(m_path.string().c_str());
 	if (file.bad())
 		throw log_runtime_error("can't open text file");
 
-	std::list<std::string> result;
+    std::vector<std::string> result;
 	file.ignore(3);
 
 	while (!file.eof())
@@ -169,13 +169,13 @@ const std::list<std::string> TxtFile::readUtf8() const
 }
 
 
-const std::list<std::string> TxtFile::readUtf8withoutPref() const
+const std::vector<std::string> TxtFile::readUtf8withoutPref() const
 {
 	std::ifstream file(m_path.string().c_str());
 	if (file.bad())
 		throw log_runtime_error("can't open text file");
 
-	std::list<std::string> result;
+    std::vector<std::string> result;
 
 	while (!file.eof())
 	{
@@ -187,7 +187,7 @@ const std::list<std::string> TxtFile::readUtf8withoutPref() const
 }
 
 
-void TxtFile::writeAnsi(const std::list<std::string>& content) const
+void TxtFile::writeAnsi(const std::vector<std::string>& content) const
 {
 	setAnsiStamp();
 	std::ofstream file(m_path.string().c_str());
@@ -202,7 +202,7 @@ void TxtFile::writeAnsi(const std::list<std::string>& content) const
 }
 
 
-void TxtFile::writeUnicode(const std::list<std::wstring>& content) const
+void TxtFile::writeUnicode(const std::vector<std::wstring>& content) const
 {
 	setUnicodeStamp();
 	std::wofstream file(m_path.string().c_str(), std::ios_base::binary | std::ios_base::app);
@@ -218,7 +218,7 @@ void TxtFile::writeUnicode(const std::list<std::wstring>& content) const
 }
 
 
-void TxtFile::writeBigEndian(const std::list<std::wstring>& content) const
+void TxtFile::writeBigEndian(const std::vector<std::wstring>& content) const
 {
 	setBigEndianStamp();
 	std::wofstream file(m_path.string().c_str(), std::ios_base::binary | std::ios_base::app);
@@ -234,7 +234,7 @@ void TxtFile::writeBigEndian(const std::list<std::wstring>& content) const
 }
 
 
-void TxtFile::writeUtf8(const std::list<std::string>& content) const
+void TxtFile::writeUtf8(const std::vector<std::string>& content) const
 {
 	setUtf8Stamp();
 	std::ofstream file(m_path.string().c_str(), std::ios_base::app);
@@ -249,7 +249,7 @@ void TxtFile::writeUtf8(const std::list<std::string>& content) const
 }
 
 
-void TxtFile::writeUtf8withoutPref(const std::list<std::string>& content) const
+void TxtFile::writeUtf8withoutPref(const std::vector<std::string>& content) const
 {
 	std::ofstream file(m_path.string().c_str());
 

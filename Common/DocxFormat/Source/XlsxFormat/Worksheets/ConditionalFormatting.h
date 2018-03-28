@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,6 +42,50 @@ namespace OOX
 	{
 		//необработано:
 		//<extLst>
+		class CFormulaCF : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CFormulaCF)
+			CFormulaCF()
+			{
+				m_sNodeName = L"formula";
+			}
+			virtual ~CFormulaCF()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<" + m_sNodeName + L">");
+				writer.WriteEncodeXmlString(m_sText);
+				writer.WriteString(L"</" + m_sNodeName + L">");
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_sNodeName = oReader.GetName();
+
+				if (oReader.IsEmptyNode())
+					return;
+
+				m_sText = oReader.GetText3();
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_x_FormulaCF;
+			}
+
+			std::wstring m_sNodeName;
+			std::wstring m_sText;
+		};
+
+
 		class CConditionalFormatValueObject : public WritingElement
 		{
 		public:
@@ -75,8 +119,16 @@ namespace OOX
 			{
 				ReadAttributes(oReader);
 				
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
+				if (oReader.IsEmptyNode())
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while (oReader.ReadNextSiblingNode(nCurDepth))
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					if (L"formula" == sName || L"f" == sName)
+						m_oFormula = oReader;
+				}
 			}
 
 			virtual EElementType getType () const
@@ -102,9 +154,11 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>						m_oGte;
 			nullable<SimpleTypes::Spreadsheet::ST_CfvoType<>>	m_oType;	
 			nullable<std::wstring>								m_oVal;
+
+			nullable<CFormulaCF>								m_oFormula;
 		};
 
-		class CColorScale : public WritingElementWithChilds<WritingElement>
+		class CColorScale : public WritingElementWithChilds<>
 		{
 		public:
 			WritingElement_AdditionConstructors(CColorScale)
@@ -128,8 +182,13 @@ namespace OOX
                     std::wstring sValue;
 					writer.WriteString(_T("<colorScale>"));
 
-					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
+                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    {
+                        if (  m_arrItems[i] )
+                        {
+                            m_arrItems[i]->toXML(writer);
+                        }
+                    }
 
 					writer.WriteString(_T("</colorScale>"));
 				}
@@ -190,8 +249,13 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
+                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    {
+                        if (  m_arrItems[i] )
+                        {
+                            m_arrItems[i]->toXML(writer);
+                        }
+                    }
 
 					m_oColor->toXML2(writer, _T("color"));
 
@@ -242,45 +306,6 @@ namespace OOX
 			nullable<CColor>								m_oColor;
 		};
 
-		class CFormulaCF : public WritingElement
-		{
-		public:
-			WritingElement_AdditionConstructors(CFormulaCF)
-			CFormulaCF()
-			{
-			}
-			virtual ~CFormulaCF()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(_T("<formula>"));
-				writer.WriteEncodeXmlString(m_sText);
-				writer.WriteString(_T("</formula>"));
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if (oReader.IsEmptyNode())
-					return;
-
-				m_sText = oReader.GetText3();
-			}
-
-			virtual EElementType getType () const
-			{
-				return et_x_FormulaCF;
-			}
-
-			std::wstring m_sText;
-		};
-
 		class CIconSet : public WritingElementWithChilds<CConditionalFormatValueObject>
 		{
 		public:
@@ -320,8 +345,13 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
+                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    {
+                        if (  m_arrItems[i] )
+                        {
+                            m_arrItems[i]->toXML(writer);
+                        }
+                    }
 
 					writer.WriteString(_T("</iconSet>"));
 				}
@@ -414,8 +444,13 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
+                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    {
+                        if (  m_arrItems[i] )
+                        {
+                            m_arrItems[i]->toXML(writer);
+                        }
+                    }
 
 					writer.WriteString(_T("</cfRule>"));
 				}
@@ -518,9 +553,10 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				bool isValid = false;
-				for(size_t i = 0; i < m_arrItems.size(); ++i)
+
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
 				{
-					if(m_arrItems[i]->isValid())
+                    if ( (m_arrItems[i]) && (m_arrItems[i]->isValid()) )
 					{
 						isValid = true;
 						break;
@@ -538,8 +574,13 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
+                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    {
+                        if (  m_arrItems[i] )
+                        {
+                            m_arrItems[i]->toXML(writer);
+                        }
+                    }
 
 					writer.WriteString(_T("</conditionalFormatting>"));
 				}

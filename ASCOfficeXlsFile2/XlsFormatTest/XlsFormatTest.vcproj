@@ -43,10 +43,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="../../../DesktopEditor/xml/libxml2/include;../../DesktopEditor/xml/build/vs2005;../../DesktopEditor/freetype-2.5.2/include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_USE_LIBXML2_READER_;USE_LITE_READER;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)\XlsFileTestD.pdb"
 				WarningLevel="3"
@@ -365,6 +366,70 @@
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\DesktopEditor\xml\src\xmldom.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DesktopEditor\xml\src\xmllight.cpp"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Common"
+			>
+			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\XlsxSerializerCom\Reader\ChartFromToBinary.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\ChartWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\XlsxSerializerCom\Common\Common.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\XlsxSerializerCom\Reader\CommonWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\XlsxSerializerCom\Reader\CSVReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\XlsxSerializerCom\Writer\CSVWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\FileDownloader\FileDownloader_win.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\OfficeFileFormatChecker2.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\BinReader\Readers.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp"
+				>
 			</File>
 		</Filter>
 	</Files>

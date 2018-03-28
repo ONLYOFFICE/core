@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -75,11 +75,8 @@ office_element_creator * office_element_creator::get()
 {
     if (!instance_)
     {
-        if (!instance_)
-        {
-            office_element_creator * temp = new office_element_creator();
-            instance_ = temp;                
-        }
+		office_element_creator * temp = new office_element_creator();
+		instance_ = temp;                
     }
 
     return instance_;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,16 +35,13 @@
 namespace XLS
 {
 
-WsBool::WsBool(const bool is_dialog_sheet)
-:	fDialog(is_dialog_sheet)
+WsBool::WsBool(bool & is_dialog_sheet) : fDialog(is_dialog_sheet)
 {
 }
-
 
 WsBool::~WsBool()
 {
 }
-
 
 BaseObjectPtr WsBool::clone()
 {
@@ -56,16 +53,17 @@ void WsBool::readFields(CFRecord& record)
 {
 	unsigned short flags;
 	record >> flags;
+	
 	fShowAutoBreaks = GETBIT(flags, 0);
-	fDialog = GETBIT(flags, 4);
-	fApplyStyles = GETBIT(flags, 5);
-	fRowSumsBelow = GETBIT(flags, 6);
-	fColSumsRight = GETBIT(flags, 7);
-	fFitToPage = GETBIT(flags, 8);
-	fDspGuts = GETBIT(flags, 10);
-	fSyncHoriz = GETBIT(flags, 12);
-	fSyncVert = GETBIT(flags, 13);
-	fAltExprEval = GETBIT(flags, 14);
+	fDialog			= GETBIT(flags, 4);
+	fApplyStyles	= GETBIT(flags, 5);
+	fRowSumsBelow	= GETBIT(flags, 6);
+	fColSumsRight	= GETBIT(flags, 7);
+	fFitToPage		= GETBIT(flags, 8);
+	fDspGuts		= GETBIT(flags, 10);
+	fSyncHoriz		= GETBIT(flags, 12);
+	fSyncVert		= GETBIT(flags, 13);
+	fAltExprEval	= GETBIT(flags, 14);
 	fAltFormulaEntry = GETBIT(flags, 15);
 }
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -88,9 +88,13 @@ namespace PPTX
 					else if (_T("bevelB") == strName)
 						bevelB = oReader;
 					else if (_T("extrusionClr") == strName)
-						extrusionClr.fromXML(oReader);
+					{
+						extrusionClr.GetColorFrom(oReader);
+					}
 					else if (_T("contourClr") == strName)
-						contourClr.fromXML(oReader);
+					{
+						contourClr.GetColorFrom(oReader);
+					}
 				}
 			}
 
@@ -117,9 +121,13 @@ namespace PPTX
 						else if (_T("bevelB") == strName)
 							bevelB = oNode;
 						else if (_T("extrusionClr") == strName)
+						{
 							extrusionClr.GetColorFrom(oNode);
+						}
 						else if (_T("contourClr") == strName)
+						{
 							contourClr.GetColorFrom(oNode);
+						}
 					}
 				}
 
@@ -142,7 +150,10 @@ namespace PPTX
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("contourW"), contourW);
 				pWriter->WriteAttribute(_T("extrusionH"), extrusionH);
-				pWriter->WriteAttribute(_T("prstMaterial"), prstMaterial);
+				if (prstMaterial.IsInit())
+				{
+					pWriter->WriteAttribute(_T("prstMaterial"), prstMaterial->get());
+				}
 				pWriter->WriteAttribute(_T("z"), z);
 				pWriter->EndAttributes();
 				
@@ -160,7 +171,7 @@ namespace PPTX
 				{
 					pWriter->StartNode(_T("a:contourClr"));
 					pWriter->EndAttributes();
-					extrusionClr.toXmlWriter(pWriter);
+					contourClr.toXmlWriter(pWriter);
 					pWriter->EndNode(_T("a:contourClr"));	
 				}
 
@@ -181,8 +192,66 @@ namespace PPTX
 				pWriter->WriteRecord1(2, extrusionClr);
 				pWriter->WriteRecord1(3, contourClr);
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
 
-		public:
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					if (0 == _at)		contourW	= pReader->GetLong();
+					else if (1 == _at)	extrusionH	= pReader->GetLong();
+					else if (2 == _at)
+					{
+						prstMaterial = new Limit::Material();
+						prstMaterial->SetBYTECode(pReader->GetUChar());
+					}
+					else if (3 == _at)	z = pReader->GetLong();
+
+					else
+						break;
+				}
+
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _at = pReader->GetUChar();
+					switch (_at)
+					{
+						case 0:
+						{
+							bevelT = new Logic::Bevel(L"bevelT");
+							bevelT->fromPPTY(pReader);
+							break;
+						}
+						case 1:
+						{
+							bevelB = new Logic::Bevel(L"bevelB");
+							bevelB->fromPPTY(pReader);
+							break;
+						}
+						case 2:
+						{
+							extrusionClr.fromPPTY(pReader);
+							break;
+						}
+						case 3:
+						{
+							contourClr.fromPPTY(pReader);
+							break;
+						}
+						default:
+							break;
+					}
+				}
+
+				pReader->Seek(_end_rec);
+			}
+			
 			nullable_int					contourW;
 			nullable_int					extrusionH;
 			nullable_limit<Limit::Material> prstMaterial;

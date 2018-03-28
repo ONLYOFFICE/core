@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,8 +38,8 @@ namespace DocFileFormat
 	{
 		if (m_context)
 		{
-			m_document		=	m_context->GetDocument();
-			m_xmldocument	=	m_context->GetXmlDocument();
+			m_document		=	m_context->_doc;
+			m_xmldocument	=	m_context->_docx;
 		}
 	}
 
@@ -582,7 +582,7 @@ namespace DocFileFormat
 // The style id is used for a reverse reference. 
 // It can happen that the reference points to the wrong style.
 
-		if (styleIndex != ListData::ISTD_NIL)
+		if (styleIndex != ListData::ISTD_NIL && styleIndex < m_document->Styles->Styles->size())
 		{
             m_pXmlWriter->WriteNodeBegin( L"w:pStyle", TRUE );
             m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::XmlEncode(StyleSheetMapping::MakeStyleId(m_document->Styles->Styles->at(styleIndex))));

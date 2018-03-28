@@ -33,10 +33,22 @@ else
 		LIB_EXT := .a
 		LIB_PREFIX := lib
 		ARCH_EXT := .tar.gz
-		MAKE := make -j $(shell grep -c ^processor /proc/cpuinfo)
+		MAKE := make
 		AR := tar -zcvf
 		PACKAGE_VERSION := $(PRODUCT_VERSION)-$(BUILD_NUMBER)
 		ARCH_REPO_DIR := linux
+	endif
+	ifeq ($(UNAME_S),Darwin)
+		PLATFORM := mac
+		SHARED_EXT := .dylib
+		SHELL_EXT := .sh
+		LIB_EXT := .a
+		LIB_PREFIX := lib
+		ARCH_EXT := .tar.gz
+		MAKE := make
+		AR := tar -zcvf
+		PACKAGE_VERSION := $(PRODUCT_VERSION)-$(BUILD_NUMBER)
+		ARCH_REPO_DIR := mac
 	endif
 endif
 
@@ -252,10 +264,19 @@ ARTIFACTS += build/*
 ARTIFACTS += Common/3dParty/*/$(TARGET)/build/*
 
 
+
 ifeq ($(OS),Windows_NT)
-ARTIFACTS += Common/3dParty/v8/$(TARGET)/*/*.dll
+ARTIFACTS += Common/3dParty/v8/v8/out.gn/$(TARGET)/release/*.dat
+ARTIFACTS += Common/3dParty/v8/v8/out.gn/$(TARGET)/release/obj/*
 else
-ARTIFACTS += Common/3dParty/v8/$(TARGET)/*.S
+ARTIFACTS += Common/3dParty/v8/v8/out.gn/$(TARGET)/*.dat
+ARTIFACTS += Common/3dParty/v8/v8/out.gn/$(TARGET)/obj/*
+endif
+
+EXT_TARGET += $(DOCBUILDER)
+
+ifneq ($(PLATFORM),mac)
+EXT_TARGET += $(HTMLFILEINTERNAL)
 endif
 
 #Template for next statment:
@@ -272,13 +293,14 @@ endef
 
 .PHONY : all bin lib clean deploy
 
+.NOTPARALLEL:
 all: lib bin 
 
 bin: $(X2T) $(ALLFONTSGEN)
 
 lib: $(PDFWRITER) $(DOCTRENDERER) $(HTMLRENDERER) $(PDFREADER) $(DJVUFILE) $(XPSFILE) $(HTMLFILE) $(UNICODECONVERTER)
 
-ext: $(HTMLFILEINTERNAL) $(DOCBUILDER)
+ext: $(EXT_TARGET)
 
 desktop: $(ASCDOCUMENTSCORE)
 

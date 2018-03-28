@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -306,11 +306,14 @@ void docx_serialize_level_justification(std::wostream & strm, style_list_level_p
 {
     std::wstring w_lvlJc;
 
-    const text_align textAlign = listLevelProperties ? 
-        listLevelProperties->get_common_text_align().fo_text_align_.get_value_or( text_align(text_align::Left) ) : 
-    text_align(text_align::Left);
+    text_align textAlign(text_align::Left);
+	
+	if ((listLevelProperties)  && (listLevelProperties->common_text_align_.fo_text_align_)) 
+	{
+		textAlign = *listLevelProperties->common_text_align_.fo_text_align_;
+	}
 
-    if (textAlign.get_type() == text_align::Right)
+    if (textAlign.get_type() == text_align::Right || textAlign.get_type() == text_align::End)
         w_lvlJc = L"right";
     else if (textAlign.get_type() == text_align::Center)
         w_lvlJc = L"center";

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -105,7 +105,8 @@ void odt_conversion_context::start_document()
 	
 	root_document_		= get_current_object_element();
 	root_text_			= dynamic_cast<office_text*>(root_document_.get());
-	main_text_context_	= new odf_text_context(this); 
+	
+	main_text_context_	= new odf_text_context(this, styles_context()); 
 
 	page_layout_context()->set_styles_context(styles_context());
 
@@ -117,7 +118,7 @@ void odt_conversion_context::start_document()
 void odt_conversion_context::end_document()
 {
 	//add sections to root
-	for (size_t i = 0; i< sections_.size(); i++)
+	for (size_t i = 0; i < sections_.size(); i++)
 	{
 		root_document_->add_child_element(sections_[i].elm);
 	}
@@ -182,7 +183,8 @@ odf_text_context* odt_conversion_context::text_context()
 } 
 void odt_conversion_context::start_text_context()
 {
-	odf_text_context_ptr new_text_context_ = boost::shared_ptr<odf_text_context>(new odf_text_context(this));
+	odf_text_context_ptr new_text_context_ = boost::shared_ptr<odf_text_context>(new odf_text_context(this, /*odf_conversion_context::*/styles_context()));
+	//объекты с текстом в колонтитулах
 	if (!new_text_context_)return;
 
 	text_context_.push_back(new_text_context_);
@@ -198,17 +200,18 @@ void odt_conversion_context::add_text_content(const std::wstring & text)
 {
 	if (drop_cap_state_.enabled)
 	{
-		int count = text.size();
+		int count = text.length();
 		drop_cap_state_.characters += count;
-		if (drop_cap_state_.inline_style == false)
+		
+		style_text_properties * props = text_context()->get_text_properties();
+		if (props)
 		{
-			style_text_properties * props = text_context()->get_text_properties();
-			if (props)
+			if (drop_cap_state_.inline_style == false)
 			{
 				std::wstring f_name = props->content_.fo_font_family_.get_value_or(L"Arial");
-				double f_size = props->content_.fo_font_size_.get_value_or(font_size(length(12,length::pt))).get_length().get_value_unit(length::pt);
-				
-                drop_cap_state_.characters_size_pt += utils::calculate_size_font_symbols(text, f_name, f_size, applicationFonts_);
+				double f_size = props->content_.fo_font_size_.get_value_or(font_size(length(12, length::pt))).get_length().get_value_unit(length::pt);
+					
+				drop_cap_state_.characters_size_pt += utils::calculate_size_font_symbols(text, f_name, f_size, applicationFonts_);
 			}
 		}
 	}
@@ -377,8 +380,8 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
 	if (current_field_.enabled == false) 	return;
 
 	current_field_.type = 0; //users field
-	int res1 = instr.find(L"HYPERLINK");
-	if (res1 >= 0)							//это не поле - это hyperlink
+	size_t res1 = instr.find(L"HYPERLINK");
+	if (std::wstring::npos != res1)							//это не поле - это hyperlink
 	{
 		current_field_.type = 1;
 		
@@ -393,35 +396,35 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
         }
 	}
 	res1 = instr.find(L"NUMPAGES");
-	if (res1 >= 0 && current_field_.type == 0)
+	if (std::wstring::npos != res1 && current_field_.type == 0)
 	{
 		current_field_.type = 3;
 	}	
 	res1 = instr.find(L"PAGEREF");
-	if (res1 >= 0 && current_field_.type == 0 )	//это не поле - это bookmark
+	if (std::wstring::npos != res1 && current_field_.type == 0 )	//это не поле - это bookmark
 	{
 		current_field_.type = 5;
 		if (instr.length() > 9)
 			current_field_.value = instr.substr(9, instr.length()-5);
 	}
 	res1 = instr.find(L"PAGE");
-	if (res1 >= 0 && current_field_.type == 0)
+	if (std::wstring::npos != res1 && current_field_.type == 0)
 	{
 		current_field_.type = 2;
 	}
 	res1 = instr.find(L"TIME");
-	if (res1 >= 0 && current_field_.type == 0)
+	if (std::wstring::npos != res1 && current_field_.type == 0)
 	{
 		current_field_.type = 4;
 	}
 	res1 = instr.find(L"BIBLIOGRAPHY");
-	if (res1 >=0 && current_field_.type == 0)
+	if (std::wstring::npos != res1 && current_field_.type == 0)
 	{
 		current_field_.type = 6;
 	}
 ////////////////////////////////////////// 
 	res1 = instr.find(L"@");
-	if (res1 >= 0)
+	if (std::wstring::npos != res1)
 	{
 		current_field_.format = instr.substr(res1 + 1, instr.length());
 	}
@@ -429,7 +432,7 @@ void odt_conversion_context::set_field_instr(std::wstring instr)
 	if (current_field_.type == 0)
 	{
 		res1 = instr.find(L" ");
-		if (res1 >= 0)
+		if (std::wstring::npos != res1)
 		{
 			current_field_.name = instr.substr(0, res1);
 		}		
@@ -478,6 +481,14 @@ int odt_conversion_context::get_current_section_columns()
 }
 void odt_conversion_context::add_section(bool continuous)
 {
+//--dump first elements to root------------------------------------------------
+	for (size_t i = 0; i< current_root_elements_.size(); i++)
+	{
+		root_document_->add_child_element(current_root_elements_[i].elm);
+	}
+	current_root_elements_.clear();
+
+//----------------------------------------------------------------------------
 	odt_section_state state;
 	
 	state.empty			= true;
@@ -496,7 +507,7 @@ void odt_conversion_context::add_section(bool continuous)
 }
 void odt_conversion_context::add_section_columns(int count, double space_pt, bool separator)
 {
-	if (sections_.size() < 1 || count < 1) return;
+	if (sections_.empty() || count < 1) return;
 
 	style* style_ = dynamic_cast<style*>(sections_.back().style_elm.get());
 	if (!style_)return;
@@ -504,8 +515,10 @@ void odt_conversion_context::add_section_columns(int count, double space_pt, boo
 	style_section_properties	* section_properties	= style_->content_.get_style_section_properties();
 	
 	create_element(L"style", L"columns",section_properties->style_columns_,this);	
+	
 	style_columns* columns = dynamic_cast<style_columns*>(section_properties->style_columns_.get());
 	if (!columns)return;
+
 	sections_.back().count_columns	= count;
 
 						columns->fo_column_count_	= count;
@@ -517,14 +530,14 @@ void odt_conversion_context::add_section_columns(int count, double space_pt, boo
 		style_column_sep* sep = dynamic_cast<style_column_sep*>(columns->style_column_sep_.get());
 		if (sep)//default set
 		{
-			sep->style_width_			= length(0,length::cm);
+			sep->style_width_			= length(0.035, length::cm);
 			sep->style_height_			= percent(100);
 			sep->style_vertical_align_	= vertical_align(vertical_align::Middle);
 			sep->style_color_			= color(L"#000000");	
 		}
 	}
 }
-void odt_conversion_context::add_section_column(std::vector<std::pair<double,double>> width_space)
+void odt_conversion_context::add_section_column(std::vector<std::pair<double, double>> width_space)
 {
 	if (sections_.size() < 1 || width_space.size() < 1) return;
 
@@ -542,15 +555,14 @@ void odt_conversion_context::add_section_column(std::vector<std::pair<double,dou
 	{
 		if (width_space[i].first >= 0) 
 		
-			width_all += width_space[i].first/* + width_space[i].second*/;
+			width_all += width_space[i].first + width_space[i].second;
 	}
-
-	double curr = 0;
-	int width_absolute = 0;
 
 	if (width_all < 1)	return;
 
 	section_properties->style_editable_ = false;
+
+	double last_space = 0;
 
 	for (size_t i = 0; i < width_space.size() && width_all > 0 ; i++)
 	{
@@ -560,17 +572,16 @@ void odt_conversion_context::add_section_column(std::vector<std::pair<double,dou
 		style_column* col = dynamic_cast<style_column*>(col_elm.get());
 		if (!col) continue;
 
-		int val =  (width_space[i].first/* + width_space[i].second*/)* 65535. /width_all /*:65535 - width_absolute*/;
+		int val =  (width_space[i].first)* 65535. / width_all ;
 		col->style_rel_width_ = odf_types::percent_rel(val);
-		width_absolute += val;
 		
-		//col->fo_start_indent_ = odf_types::length(curr,odf_types::length::pt);
-		//curr += width_space[0].first;
-		//
-		//col->fo_end_indent_ = odf_types::length(curr,odf_types::length::pt);
-		//curr += width_space[0].second;
+		col->fo_start_indent_ = odf_types::length(last_space / 2, odf_types::length::pt);
+		
+		col->fo_end_indent_ = odf_types::length(width_space[i].second / 2, odf_types::length::pt);
 		
 		columns->add_child_element(col_elm);
+
+		last_space = width_space[i].second;
 
 	}
 }
@@ -661,9 +672,9 @@ void odt_conversion_context::set_no_list()
 }
 void odt_conversion_context::flush_section()
 {
-	if (sections_.size() > 0 && sections_.back().empty)
+	if (!sections_.empty() && sections_.back().empty)
 	{
-		for (size_t i=0; i< current_root_elements_.size(); i++)
+		for (size_t i = 0; i < current_root_elements_.size(); i++)
 		{
 			if ((sections_.back().continuous && i < 2) || !sections_.back().continuous)
 				// при вставлении параграфа возможен искусственный разрыв в параграфах - см add_page_break
@@ -696,7 +707,7 @@ void odt_conversion_context::start_run(bool styled)
 	if (is_hyperlink_ && text_context_.size() > 0) return;
 	
 
-	if (current_field_.started== false && current_field_.type >1 && current_field_.enabled ==true && !current_field_.in_span)
+	if (current_field_.started == false && current_field_.type > 1 && current_field_.enabled == true && !current_field_.in_span)
 	{
 		text_context()->start_field(current_field_.type);
 		current_field_.started = true;
@@ -704,7 +715,14 @@ void odt_conversion_context::start_run(bool styled)
 	
 	text_context()->start_span(styled);
 
-	if (current_field_.started== false && current_field_.type >1 && current_field_.enabled ==true && current_field_.in_span)//поле стартуется в span - нужно для сохранения стиля
+	if (drop_cap_state_.enabled)
+	{
+		style_text_properties *props = text_context()->get_text_properties();
+		if (props)
+			props->apply_from(dynamic_cast<style_text_properties*>(drop_cap_state_.text_properties.get()));
+
+	}
+	if (current_field_.started == false && current_field_.type > 1 && current_field_.enabled == true && current_field_.in_span)//поле стартуется в span - нужно для сохранения стиля
 	{
 		text_context()->start_field(current_field_.type);
 		current_field_.started = true;
@@ -739,7 +757,7 @@ bool odt_conversion_context::start_comment(int oox_comm_id)
 		if (text_context()->current_level_.size() > 0)
 			text_context()->current_level_.back().elm->add_child_element(comm_elm);
 
-		odf_element_state state={comm_elm, L"", office_element_ptr(),(int)text_context()->current_level_.size()};
+		odf_element_state state={comm_elm, L"", office_element_ptr(), text_context()->current_level_.size()};
 		text_context()->current_level_.push_back(state);
 
 		return false; //типо новый
@@ -792,7 +810,7 @@ void odt_conversion_context::start_note(int oox_ref_id, int type)
 	if (text_context()->current_level_.size() > 0)
 		text_context()->current_level_.back().elm->add_child_element(note_elm);
 
-	odf_element_state state = {note_elm, L"", office_element_ptr(), (int)text_context()->current_level_.size()};
+	odf_element_state state = {note_elm, L"", office_element_ptr(), text_context()->current_level_.size()};
 	text_context()->current_level_.push_back(state);
 }
 void odt_conversion_context::start_note_content()
@@ -801,7 +819,7 @@ void odt_conversion_context::start_note_content()
 
     office_element_ptr note_content_element = notes_context_.get_note_content();
 
-	odf_element_state state = {note_content_element, L"", office_element_ptr(), (int)text_context()->current_level_.size()};
+	odf_element_state state = {note_content_element, L"", office_element_ptr(), text_context()->current_level_.size()};
 	text_context()->current_level_.push_back(state);
 
 	start_text_context();
@@ -944,7 +962,14 @@ void odt_conversion_context::end_change (int id, int type)
 //	return (text_changes_state_.current_types.back() == 2);
 //}
 //--------------------------------------------------------------------------------------------------------
-
+style_text_properties* odt_conversion_context::get_drop_cap_properties() 
+{
+	if (!drop_cap_state_.text_properties)
+	{
+		create_element(L"style", L"text-properties", drop_cap_state_.text_properties, this);
+	}
+	return dynamic_cast<style_text_properties *>(drop_cap_state_.text_properties.get());
+}
 void odt_conversion_context::start_drop_cap(style_paragraph_properties *paragraph_properties)
 {
 	if (drop_cap_state_.enabled) 
@@ -966,6 +991,8 @@ void odt_conversion_context::set_drop_cap_lines(int lines)
 
 	style_drop_cap *drop_cap = dynamic_cast<style_drop_cap*>(drop_cap_state_.paragraph_properties->content_.style_drop_cap_.get());
 	if (drop_cap)drop_cap->style_lines_ = lines;
+
+	drop_cap_state_.lines = lines;
 }
 void odt_conversion_context::set_drop_cap_margin(bool val)
 {
@@ -976,7 +1003,7 @@ void odt_conversion_context::end_drop_cap()
 {
 	if (!drop_cap_state_.enabled) return;
 
-	if (drop_cap_state_.characters >0 && drop_cap_state_.paragraph_properties)
+	if (drop_cap_state_.characters > 0 && drop_cap_state_.paragraph_properties)
 	{
 		style_drop_cap *drop_cap = dynamic_cast<style_drop_cap*>(drop_cap_state_.paragraph_properties->content_.style_drop_cap_.get());
 		if (drop_cap)

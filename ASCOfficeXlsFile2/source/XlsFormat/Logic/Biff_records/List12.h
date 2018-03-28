@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,16 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/FrtHeader.h>
-#include <Logic/Biff_structures/List12BlockLevel.h>
-#include <Logic/Biff_structures/List12TableStyleClientInfo.h>
-#include <Logic/Biff_structures/List12DisplayName.h>
+#include "../Biff_structures/FrtHeader.h"
+
 
 namespace XLS
 {
 
-
-// Logical representation of List12 record in BIFF8
 class List12: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(List12)
@@ -51,19 +47,16 @@ public:
 	~List12();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeList12;
+	static const ElementType type = typeList12;
 
 	FrtHeader	frtHeader;
 	_UINT16		lsd;
 	_UINT32		idList;
 
-	List12BlockLevel				rgbList12BlockLevel;
-	List12TableStyleClientInfo		rgbList12TableStyleClientInfo;
-	List12DisplayName				rgbList12DisplayName;
+	BiffStructurePtr rgbList12;
 };
 
 } // namespace XLS

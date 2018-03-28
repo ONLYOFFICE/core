@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -74,11 +74,11 @@ namespace DocFileFormat
 	private:
 		POLE::Storage	*oleStorage;
 	  
-		void processLinkInfoStream		( const std::string& linkStream );      
-		void processEquationNativeStream( const std::string& eqStream );
-		void processPICStream			( const std::string& picStream );
-		void processCompObjStream		( const std::string& compStream );
-		void processOleStream			( const std::string& oleStreamName );
+		void processLinkInfoStream		( const std::wstring& linkStream );      
+		void processEquationNativeStream( const std::wstring& eqStream );
+		void processPICStream			( const std::wstring& picStream );
+		void processCompObjStream		( const std::wstring& compStream );
+		void processOleStream			( const std::wstring& oleStreamName );
 
 		std::wstring getOleEntryName	( const CharacterPropertyExceptions* chpx );
 };

@@ -43,15 +43,16 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\XlsFormat; ..\Common"
+				AdditionalIncludeDirectories="..\XlsFormat; ..\Common;..\..\..\DesktopEditor\freetype-2.5.2\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
+				DisableSpecificWarnings="4005;4311;4312"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -345,6 +346,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_activeX_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_activeX_context.h"
+				>
+			</File>
+			<File
 				RelativePath="..\XlsXlsxConverter\xlsx_chart_context.cpp"
 				>
 			</File>
@@ -393,6 +402,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_external_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_external_context.h"
+				>
+			</File>
+			<File
 				RelativePath="..\XlsXlsxConverter\xlsx_hyperlinks.cpp"
 				>
 			</File>
@@ -422,6 +439,14 @@
 			</File>
 			<File
 				RelativePath="..\XlsXlsxConverter\xlsx_pivots_context.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_sheet_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_sheet_context.h"
 				>
 			</File>
 			<File

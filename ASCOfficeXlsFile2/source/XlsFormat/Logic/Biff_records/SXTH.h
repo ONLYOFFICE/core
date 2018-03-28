@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,6 +52,7 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	int serialize(std::wostream & strm);
 
 	static const ElementType type = typeSXTH;
 

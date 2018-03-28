@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,10 +46,12 @@ class FtLbsData : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(FtLbsData)
 public:
-	FtLbsData();
+	FtLbsData() : fmla(false), fExist(false)
+	{
+	}
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeFtLbsData;
+	static const ElementType type = typeFtLbsData;
 
 	virtual void load(CFRecord& record, const unsigned short ot);
 
@@ -72,6 +74,7 @@ public:
 	std::vector<XLUnicodeString> rgLines;
 	std::vector<Boolean<unsigned char>> bsels;
 
+	bool fExist;
 };
 
 } // namespace XLS

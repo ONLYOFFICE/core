@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -254,7 +254,7 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 				oNewParametr.nType = RENDER_TO_OOX_PARAM_RUN;
 				sResult +=  m_pResult->m_pTextItems->m_aArray[0]->RenderToOOX(oNewParametr);
 
-				for (size_t i = 1; i < m_pResult->m_pTextItems->GetCount(); i++)
+				for (int i = 1; i < m_pResult->m_pTextItems->GetCount(); i++)
 				{
 					RtfParagraph *paragraph = dynamic_cast<RtfParagraph *>(m_pResult->m_pTextItems->m_aArray[i].get());
 					if (paragraph)

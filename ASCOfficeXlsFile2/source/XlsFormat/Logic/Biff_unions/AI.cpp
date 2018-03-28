@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,10 +31,8 @@
  */
 
 #include "AI.h"
-#include <Logic/Biff_records/BRAI.h>
-#include <Logic/Biff_records/SeriesText.h>
-
-//#include <Logic/Biff_unions/PAGESETUP.h>
+#include "../Biff_records/BRAI.h"
+#include "../Biff_records/SeriesText.h"
 
 namespace XLS
 {
@@ -81,17 +79,18 @@ bool AI::empty()
 
 	BRAI* brai	= dynamic_cast<BRAI*>(m_BRAI.get());
 
+	bool bEmpty = true;
 	if (brai)		
 	{
 		std::wstring forumla = brai->formula.getAssembledFormula();		
-		return forumla.empty();
+		bEmpty = forumla.empty();
 	}
 	SeriesText * text = dynamic_cast<SeriesText *>(m_SeriesText.get());
-	if (text)
+	if (text && bEmpty)
 	{
-		return text->stText.value().empty();
+		bEmpty = text->stText.value().empty();
 	}
-	return false;
+	return bEmpty;
 }
 
 int AI::serialize(std::wostream & _stream)

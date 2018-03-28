@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -162,8 +162,10 @@ int CUSTOMVIEW::serialize(std::wostream & stream)
 
 			CP_XML_NODE(L"pane")
 			{
-  				if (userSView->operNumX != 0)	CP_XML_ATTR(L"xSplit", userSView->operNumX);
-  				if (userSView->operNumY != 0)	CP_XML_ATTR(L"ySplit", userSView->operNumY);
+				if (userSView->operNumX.data.value != 0)	
+					CP_XML_ATTR(L"xSplit", std::to_wstring(userSView->operNumX.data.value));
+  				if (userSView->operNumY.data.value != 0)	
+					CP_XML_ATTR(L"ySplit", std::to_wstring(userSView->operNumY.data.value));
 
 				if (userSView->pane_top_left_cell != L"A1")CP_XML_ATTR(L"topLeftCell",	userSView->pane_top_left_cell);
 

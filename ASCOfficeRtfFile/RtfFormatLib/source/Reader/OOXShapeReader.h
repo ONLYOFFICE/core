@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -62,18 +62,23 @@ public:
 	bool Parse			( ReaderParameter oParam , RtfShapePtr& oOutput);
 	bool ParseVmlChild	( ReaderParameter oParam , RtfShapePtr& oOutput);
 	bool ParseVml		( ReaderParameter oParam , RtfShapePtr& oOutput);
+	bool ParseVmlObject	( ReaderParameter oParam , RtfShapePtr& oOutput);
+	
+	static bool ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop);
 	
 	void ParseAdjustment(RtfShape& oShape, std::wstring sAdjustment);
 
 	static bool Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::BlipFill *oox_bitmap_fill);
+	static void Parse(ReaderParameter oParam, PPTX::Logic::UniFill *fill, unsigned int & nColor, _CP_OPT(double) &opacity);
+	static void Parse(ReaderParameter oParam, PPTX::Logic::ColorBase *oox_color, unsigned int & nColor, _CP_OPT(double) &opacity);
 private:
 
 	bool ParseShape( ReaderParameter oParam , RtfShapePtr& oOutput);
 	bool ParsePic( ReaderParameter oParam , RtfShapePtr& oOutput);
 
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::BodyPr *text_properties);
 	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::Xfrm *xfrm);
 	
-	void Parse(ReaderParameter oParam, PPTX::Logic::ColorBase	*oox_color,			unsigned int & nColor, _CP_OPT(double) &opacity);
 	void Parse(ReaderParameter oParam, PPTX::Logic::SolidFill	*oox_solid_fill,	unsigned int & nColor, _CP_OPT(double) &opacity);
 	
 	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::StyleRef	*style_ref, int type);
@@ -100,6 +105,8 @@ private:
 		return true;
 	}
 
+	void ConvertOle2ToOle1(POLE::Storage *storage, RtfOlePtr object);
+	void ConvertOle2ToOle1(const std::wstring &oleFilePath, RtfOlePtr object);
 };
 
 class OOXShapeGroupReader
@@ -122,7 +129,7 @@ public:
 	{
 		for (size_t i = 0; i < props.size(); i++)
 		{
-			ParseVmlStyle( pGroupShape, props[i].get());
+			OOXShapeReader::ParseVmlStyle( pGroupShape, props[i].get());
 		}
 		return true;
 	}

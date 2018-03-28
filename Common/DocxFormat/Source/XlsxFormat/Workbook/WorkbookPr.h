@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -62,9 +62,24 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<workbookPr"));
-				WritingStringNullableAttrInt(L"defaultThemeVersion", m_oDefaultThemeVersion, m_oDefaultThemeVersion->GetValue());
+				WritingStringNullableAttrBool(L"allowRefreshQuery", m_oAllowRefreshQuery);
+				WritingStringNullableAttrBool(L"autoCompressPictures", m_oAutoCompressPictures);
+				WritingStringNullableAttrBool(L"backupFile", m_oBackupFile);
+				WritingStringNullableAttrBool(L"checkCompatibility", m_oCheckCompatibility);
+				WritingStringNullableAttrBool(L"codeName", m_oCodeName);
 				WritingStringNullableAttrBool(L"date1904", m_oDate1904);
 				WritingStringNullableAttrBool(L"dateCompatibility", m_oDateCompatibility);
+				WritingStringNullableAttrInt(L"defaultThemeVersion", m_oDefaultThemeVersion, m_oDefaultThemeVersion->GetValue());
+				WritingStringNullableAttrBool(L"filterPrivacy", m_oFilterPrivacy);
+				WritingStringNullableAttrBool(L"hidePivotFieldList", m_oHidePivotFieldList);
+				WritingStringNullableAttrBool(L"promptedSolutions", m_oPromptedSolutions);
+				WritingStringNullableAttrBool(L"publishItems", m_oPublishItems);
+				WritingStringNullableAttrBool(L"refreshAllConnections", m_oRefreshAllConnections);
+				WritingStringNullableAttrBool(L"showBorderUnselectedTables", m_oShowBorderUnselectedTables);
+				WritingStringNullableAttrBool(L"showInkAnnotation", m_oShowInkAnnotation);
+				WritingStringNullableAttrBool(L"showObjects", m_oShowObjects);
+				WritingStringNullableAttrBool(L"showPivotChartFilter", m_oShowPivotChartFilter);
+				WritingStringNullableAttrString(L"updateLinks", m_oUpdateLinks, m_oUpdateLinks->ToString());
 				writer.WriteString(_T("/>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)

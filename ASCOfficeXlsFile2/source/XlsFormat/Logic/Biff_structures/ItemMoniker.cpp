@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -65,7 +65,7 @@ void ItemMoniker::load(XLS::CFRecord& record)
 #if defined(_WIN32) || defined(_WIN64)
         delimiterUnicode = std::wstring(record.getCurData<wchar_t>(), sizeof_delimiterUnicode / 2);
 #else
-        delimiterUnicode = XLS::convertUtf16ToWString(record.getCurData<UTF16>(), sizeof_delimiterUnicode / 2);
+        delimiterUnicode = convertUtf16ToWString(record.getCurData<UTF16>(), sizeof_delimiterUnicode / 2);
 #endif
         record.skipNunBytes(sizeof_delimiterUnicode);
 	}
@@ -80,7 +80,7 @@ void ItemMoniker::load(XLS::CFRecord& record)
 #if defined(_WIN32) || defined(_WIN64)
         itemUnicode = std::wstring(record.getCurData<wchar_t>(), sizeof_itemUnicode / 2);
 #else
-        itemUnicode = XLS::convertUtf16ToWString(record.getCurData<UTF16>(), sizeof_itemUnicode / 2);
+        itemUnicode = convertUtf16ToWString(record.getCurData<UTF16>(), sizeof_itemUnicode / 2);
 #endif
         record.skipNunBytes(sizeof_itemUnicode);
 	}

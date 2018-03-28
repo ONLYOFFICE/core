@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -71,7 +71,7 @@ void PtgNameX::loadFields(CFRecord& record)
 	}
 	else
 		record >> nameindex;
-	
+
 	global_info = record.getGlobalWorkbookInfo();
 }
 
@@ -79,6 +79,7 @@ void PtgNameX::loadFields(CFRecord& record)
 void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	RevNamePtr tab_id;
+	
 	if(!extra_data.empty() && (tab_id = boost::dynamic_pointer_cast<RevName>(extra_data.front())))
 	{
 		Log::error("PtgNameX struct for revisions is not assemble.");
@@ -86,40 +87,62 @@ void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 		extra_data.pop();
 		return;
 	}
-
-	std::wstring _Name;
-	if(nameindex > 0 && nameindex <= global_info->AddinUdfs.size() && !(_Name = global_info->AddinUdfs[nameindex - 1]).empty())
+	std::wstring link;
+	std::wstring name;
+	if(ixti >= 0 && ixti < global_info->arXti_External.size())
 	{
-		ptg_stack.push(_Name);
+		link = global_info->arXti_External[ixti].link;
+
+		if ((global_info->arXti_External[ixti].pNames) && (nameindex > 0 && nameindex <= global_info->arXti_External[ixti].pNames->size()))
+		{
+			name = global_info->arXti_External[ixti].pNames->at(nameindex - 1);
+		}
+
 	}
-	else if(ixti > 0 && ixti <= global_info->xti_parsed.size())
+	if (name.empty())
 	{
-		std::wstring sheet = global_info->xti_parsed[ixti-1];
-
-		if (!sheet.empty()) sheet += L"!";
-		
-		if (nameindex > 0 && nameindex <= global_info->arDefineNames.size())
+		if (nameindex <= global_info->arDefineNames.size())
 		{
-			_Name = global_info->arDefineNames[nameindex - 1];
-		}
+			name = global_info->arDefineNames[nameindex - 1];
 
-		if (sheet.empty() && _Name.empty() && nameindex <= global_info->arExternalNames.size() && nameindex > 0)
+			std::map<std::wstring, std::vector<std::wstring>>::iterator pFind = global_info->mapDefineNames.find(name);
+			if (link.empty() && full_ref && pFind != global_info->mapDefineNames.end())
+			{
+				if (ixti < pFind->second.size() && ixti >= 0)
+				{
+					if (!pFind->second[ixti].empty())
+						name = pFind->second[ixti]; //значение 
+				}
+				else
+				{
+					for (size_t i = 0; i < pFind->second.size(); i++)
+					{
+						if (pFind->second[i].empty() == false)
+						{
+							link = L"[" + std::to_wstring(i) + L"]";
+							break;
+						}
+					}
+				}
+			}
+		}
+		else
 		{
-			_Name = global_info->arExternalNames[nameindex - 1];
-		}
-
-		ptg_stack.push(sheet + _Name);
+ 			Log::warning("PtgNameX is not yet assemble!! Waiting end parsing defined names");
+		}	
+	}
+	if (!link.empty() && !name.empty())
+	{
+		ptg_stack.push(link + L"!" + name);
+	}
+	else if (!name.empty())
+	{
+		ptg_stack.push(name);
 	}
 	else
 	{
- 		Log::warning("PtgNameX structure is not assemble.");
-		//ptg_stack.push(L"#UNDEFINED_EXTERN_NAME(" + STR::int2wstr(nameindex) + L")!");
-		ptg_stack.push(L""); // This would let us to continue without an error
+		ptg_stack.push(link);		
 	}
-
-
-	// Example of result: "[1]!range"
-	// in the formula window it looks like: "'D:\Projects\AVSWorksheetConverter\bin\InFiles\Blank2003_range.xls'!range"
 }
 
 

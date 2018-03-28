@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,6 +41,7 @@ namespace DocFileFormat
 {
 	template<class T> class StringTable: public IVisitable
 	{
+		friend class WordDocument;
 		friend class CharacterPropertiesMapping;
 		friend class FontTableMapping;
 		friend class StyleSheetMapping;	
@@ -81,7 +82,7 @@ namespace DocFileFormat
 			}
 		}
 
-		ByteStructure* operator [] ( unsigned int index ) const
+		ByteStructure* operator [] ( size_t index ) const
 		{
 			if ( index < this->Data.size() )
 			{

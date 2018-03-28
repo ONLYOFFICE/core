@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -275,6 +275,8 @@ namespace oox
         case msosptRectangle : 					return L"rect";
         case msosptRoundRectangle : 			return L"roundRect";
         case msosptEllipse : 					return L"ellipse";
+        case msosptPictureFrame : 				return L"rect";
+		case msosptHostControl :				return L"rect";
         //case msosptDiamond : 					return L"diamond";
         case msosptIsocelesTriangle :			return L"triangle";
         //case msosptRightTriangle : 			return L"rtTriangle";
@@ -347,7 +349,7 @@ namespace oox
         //case msosptLeftRightArrowCallout : 	return L"leftRightArrowCallout";
         //case msosptUpDownArrowCallout : 		return L"upDownArrowCallout";
         //case msosptQuadArrowCallout : 		return L"quadArrowCallout";
-        //case msosptBevel : 					return L"bevel";
+        case msosptBevel : 						return L"bevel";
         //case msosptLeftBracket : 				return L"leftBracket";
         //case msosptRightBracket : 			return L"rightBracket";
         //case msosptLeftBrace : 				return L"leftBrace";

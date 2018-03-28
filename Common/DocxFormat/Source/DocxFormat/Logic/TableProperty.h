@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -1752,9 +1752,7 @@ namespace OOX
 			virtual ~CTcMar()
 			{
 			}
-
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				if ( _T("w:tcMar") != oNode.GetName() )
 					return;
@@ -1772,7 +1770,7 @@ namespace OOX
 				if ( !m_oStart.IsInit() )
 					WritingElement_ReadNode( oNode, oChild, _T("w:left"),  m_oStart );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -1790,7 +1788,7 @@ namespace OOX
 					else if ( !m_oStart.IsInit() && _T("w:left")  == sName ) m_oStart = oReader;
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<w:tcMar>");
 
@@ -1811,10 +1809,10 @@ namespace OOX
 			static const CTcMar Merge(const CTcMar& oPrev, const CTcMar& oCurrent)
 			{
 				CTcMar oProperties;
-				oProperties.m_oBottom            = Merge( oPrev.m_oBottom,            oCurrent.m_oBottom );
-				oProperties.m_oEnd            = Merge( oPrev.m_oEnd,            oCurrent.m_oEnd );
-				oProperties.m_oStart            = Merge( oPrev.m_oStart,            oCurrent.m_oStart );
-				oProperties.m_oTop            = Merge( oPrev.m_oTop,            oCurrent.m_oTop );
+				oProperties.m_oBottom	= Merge( oPrev.m_oBottom,	oCurrent.m_oBottom );
+				oProperties.m_oEnd		= Merge( oPrev.m_oEnd,		oCurrent.m_oEnd );
+				oProperties.m_oStart	= Merge( oPrev.m_oStart,	oCurrent.m_oStart );
+				oProperties.m_oTop		= Merge( oPrev.m_oTop,		oCurrent.m_oTop );
 
 				return oProperties;
 			}
@@ -1830,7 +1828,6 @@ namespace OOX
 
 				return oResult;
 			}
-		public:
 
 			nullable<ComplexTypes::Word::CTblWidth > m_oBottom;
 			nullable<ComplexTypes::Word::CTblWidth > m_oEnd;

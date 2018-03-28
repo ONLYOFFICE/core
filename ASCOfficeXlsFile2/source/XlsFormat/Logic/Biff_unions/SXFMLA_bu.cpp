@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -127,7 +127,8 @@ void SXFMLA::serialize_attr(CP_ATTR_NODE)
 	
 	global_info->arPivotSxNames = m_arPivotSxNames;
 
-	CP_XML_ATTR(L"formula", sx_fmla->fmla.getAssembledFormula());
+	std::wstring fmla = sx_fmla->fmla.getAssembledFormula();
+	CP_XML_ATTR(L"formula", fmla);
 }
 
 

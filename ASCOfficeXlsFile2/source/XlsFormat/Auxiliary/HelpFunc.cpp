@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -513,50 +513,48 @@ const std::wstring tab2sheet_name(const short tabid, std::vector<std::wstring>& 
 	}
 	return L"#REF";
 }
-
-//
-const std::wstring xti2sheets(const unsigned short ixti, std::vector<std::wstring>& xti_parsed)
+const std::wstring name2sheet_name(std::wstring name, const std::wstring prefix)
 {
-	if(ixti >= 0 && static_cast<unsigned short>(ixti) < xti_parsed.size())
-	{
-		return xti_parsed[ixti];
-	}
-	return L"#REF!";
-}
-//
-const std::wstring xti_indexes2sheet_name(const short itabFirst, const short itabLast, std::vector<std::wstring>& sheets_names)
-{
-	if(-1 == itabFirst)
-	{
-		return L"#REF";
-	}
 	static boost::wregex correct_sheet_name(L"^\\'.+?\\'$");
-    static boost::wregex test_sheet_name(L"[\\s)(\\':.-]+");
+    static boost::wregex test_sheet_name(L"[\\s)(\\!\\'&:-]+"); //.??? 6442946.xls
 	
-	std::wstring sheet_first = tab2sheet_name(itabFirst, sheets_names);
+	std::wstring sheet_first = prefix + name;
+	
 	if(!boost::regex_search(sheet_first.begin(), sheet_first.end(), correct_sheet_name))
 	{	
 		if(boost::regex_search(sheet_first.begin(), sheet_first.end(), test_sheet_name))
 		{	
 			sheet_first = boost::algorithm::replace_all_copy(sheet_first, L"'", L"''"); 
-			sheet_first = std::wstring(L"\'") + sheet_first + std::wstring(L"\'");
+			sheet_first = std::wstring(L"'") + sheet_first + std::wstring(L"'");
 		}
 	}
-	else
+	return sheet_first;
+}
+const std::wstring xti_indexes2sheet_name(const short tabFirst, const short tabLast, std::vector<std::wstring>& names, const std::wstring prefix)
+{
+	if(-1 == tabFirst)
 	{
-		//todooo найти хоть один файл где в апострофах уже есть внутренний не экранированный апостроф
-		//static boost::wregex test_sheet_name1(L"[\']+");
-		//if(boost::regex_search(sheet_first.begin() + 1, sheet_first.end() - 1, test_sheet_name1))
-		//{	
-		//	sheet_first = boost::algorithm::replace_all_copy(sheet_first.begin()+1, sheet_first.end() - 1 , L"'", L"''"); 
-		//	sheet_first = std::wstring(L"\'") + sheet_first + std::wstring(L"\'");
-		//}
+		return L"#REF";
+	}
+	static boost::wregex correct_sheet_name(L"^\\'.+?\\'$");
+    static boost::wregex test_sheet_name(L"[\\s)(\\!\\'&:-]+"); //.??? 6442946.xls
+	
+	std::wstring sheet_first = prefix + tab2sheet_name(tabFirst, names);
+	
+	if(!boost::regex_search(sheet_first.begin(), sheet_first.end(), correct_sheet_name))
+	{	
+		if(boost::regex_search(sheet_first.begin(), sheet_first.end(), test_sheet_name))
+		{	
+			sheet_first = boost::algorithm::replace_all_copy(sheet_first, L"'", L"''"); 
+			sheet_first = std::wstring(L"'") + sheet_first + std::wstring(L"'");
+		}
 	}
 
+
 	std::wstring sheet_last;
-	if (itabLast != itabFirst)
+	if (tabLast != tabFirst)
 	{
-		sheet_last = tab2sheet_name(itabLast, sheets_names);
+		sheet_last = std::wstring(L":") + prefix + tab2sheet_name(tabLast, names);
 		
 		if(!boost::regex_search(sheet_last.begin(), sheet_last.end(), correct_sheet_name))
 		{	
@@ -566,24 +564,9 @@ const std::wstring xti_indexes2sheet_name(const short itabFirst, const short ita
 				sheet_last = std::wstring(L"\'") + sheet_last + std::wstring(L"\'");
 			}
 		}
-		sheet_last = std::wstring(L":") + sheet_last;
 	}
 
 	return sheet_first + sheet_last;
-}
-
-const std::wstring make3dRef(const unsigned short ixti, const std::wstring cell_ref, std::vector<std::wstring>& xti_parsed, bool full_ref)
-{
-	std::wstring sheets_prefix = xti2sheets(ixti, xti_parsed);
-	
-	if(L"#REF!" == sheets_prefix)
-	{
-		return sheets_prefix;
-	}
-	else if (!sheets_prefix.empty())				sheets_prefix += L"!";
-	else if (sheets_prefix.empty() && full_ref)		sheets_prefix += L"#REF!";
-	
-	return sheets_prefix + cell_ref;
 }
 
 

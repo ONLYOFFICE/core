@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,6 +48,8 @@
 #include "OleObjectMapping.h"
 #include "ConversionContext.h"
 #include "IMapping.h"
+#include "FormFieldData.h"
+#include "FormFieldDataMapping.h"
 
 namespace DocFileFormat
 {
@@ -108,15 +110,15 @@ namespace DocFileFormat
 	// Writes the table starts at the given cp value
 		int writeTable		( int initialCp, unsigned int nestingLevel );
 	// Builds a list that contains the width of the several columns of the table.
-		std::vector<short>* buildTableGrid( int initialCp, unsigned int nestingLevel );
+		bool buildTableGrid( int initialCp, unsigned int nestingLevel, std::vector<short>& grid, std::vector<short>& grid_write );
 	// Finds the FC of the next row end mark.
 		int findRowEndFc		( int initialCp, int& rowEndCp, unsigned int nestingLevel );
 	// Finds the FC of the next row end mark.
 		int findRowEndFc		( int initialCp, unsigned int nestingLevel );
 	// Writes the table row that starts at the given cp value and ends at the next row end mark
-		int writeTableRow		( int initialCp, std::vector<short>* grid, unsigned int nestingLevel );
+		int writeTableRow		( int initialCp, std::vector<short>* grid, std::vector<short>* grid_write, unsigned int nestingLevel );
 	// Writes the table cell that starts at the given cp value and ends at the next cell end mark
-		int writeTableCell		( int initialCp, TablePropertyExceptions* tapx, std::vector<short>* grid, int& gridIndex, int cellIndex, unsigned int nestingLevel );
+		int writeTableCell		( int initialCp, TablePropertyExceptions* tapx, std::vector<short>* grid, std::vector<short>* grid_write, int& gridIndex, int cellIndex, unsigned int nestingLevel );
 		int findCellEndCp		( int initialCp, unsigned int nestingLevel );
 		
 		bool writeBookmarks		( int cp );
@@ -152,11 +154,19 @@ namespace DocFileFormat
 		int								_commentNr;
 		bool							_isTextBoxContent;
 		int								_isSectionPageBreak; //0 - not set, 1 -page break, 2 - continues
-		bool							_writeInstrText;
 		bool							_writeWebHidden;
-		unsigned int					_fldCharCounter;
 		std::wstring					_writeAfterRun;
 		std::wstring					_lastOLEObject;
 		int								_cacheListNum;
+		
+		struct fieldLevels
+		{
+			bool bBegin = false;
+			bool bSeparate = false;
+			//bool bInstrText = false;
+			bool bEnd = false;
+		};
+		std::vector<fieldLevels>		_fieldLevels;
+		bool							_bContentWrite;
 	};
 }

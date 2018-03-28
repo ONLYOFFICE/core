@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of Legend record in BIFF8
 class Legend: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Legend)
@@ -47,7 +45,6 @@ public:
 	~Legend();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
@@ -55,7 +52,6 @@ public:
 
 	static const ElementType	type = typeLegend;
 
-//-----------------------------
 	_UINT32	x;
 	_UINT32	y;
 	_UINT32	dx;
@@ -68,6 +64,8 @@ public:
 	bool fVert;
 	bool fWasDataTable;
 
+//-----------------------------
+	BaseObjectPtr m_CrtLayout12;
 };
 
 } // namespace XLS

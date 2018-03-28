@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,9 +36,6 @@
 
 namespace XLS
 {
-
-
-// Logical representation of CondFmt record in BIFF8
 class CondFmt: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(CondFmt)
@@ -48,20 +45,18 @@ public:
 	~CondFmt();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeCondFmt;
+	static const ElementType type = typeCondFmt;
 
 	const CellRef getLocation() const;
 
-//-----------------------------
-	_UINT16		ccf;
-	bool		fToughRecalc;
-	_UINT16		nID;
-	SqRefU		sqref;
-	BIFF_BSTR	refBound;
+	_UINT16			ccf;
+	bool			fToughRecalc;
+	_UINT16			nID;
+	SqRefU			sqref;
+	std::wstring	refBound;
 };
 
 typedef boost::shared_ptr<CondFmt> CondFmtPtr;

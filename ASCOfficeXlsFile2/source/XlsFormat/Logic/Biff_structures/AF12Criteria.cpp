@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -56,7 +56,7 @@ void AF12Criteria::load(CFRecord& record)
 	doper.m_bAutoFilter = false;
 	record >> doper;
 
-	if (doper.vt == BIFF_BYTE(0x06))
+	if (doper.vt == 0x06)
 	{
 		unsigned char _cch = doper.vtValueStr.cch;
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,6 +49,8 @@ void OfficeArtRecord::load(XLS::CFRecord& record)
 
 	record >> rh_own;
 	loadFields(record);
+
+	//Log::warning(STR::int2str(rh_own.recType, 16));
 }
 
 

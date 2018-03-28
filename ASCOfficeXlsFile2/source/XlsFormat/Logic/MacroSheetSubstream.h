@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,18 +31,19 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "CommonSubstream.h"
 
 namespace XLS
 {;
+
 class MacroSheetSubstream;
-typedef boost::shared_ptr<MacroSheetSubstream>			MacroSheetSubstreamPtr;
-// Logical representation of MacroSheetSubstream union of records 
-class MacroSheetSubstream: public CompositeObject
+typedef boost::shared_ptr<MacroSheetSubstream> MacroSheetSubstreamPtr;
+
+class MacroSheetSubstream : public CompositeObject, public CommonSubstream
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(MacroSheetSubstream)
 public:
-	MacroSheetSubstream();
+	MacroSheetSubstream(const size_t ws_index);
 	~MacroSheetSubstream();
 
 	BaseObjectPtr clone();
@@ -51,10 +52,12 @@ public:
 
 	static const ElementType	type = typeMacroSheetSubstream;
 
-	BaseObjectPtr				m_GLOBALS;
-	BaseObjectPtr				m_OBJECTS;
-	std::vector<BaseObjectPtr>	m_arCUSTOMVIEW;
-	
+	BaseObjectPtr					m_DxGCol;
+	BaseObjectPtr					m_Dimensions;
+
+	BaseObjectPtr					m_MACROSORTANDFILTER;
+
+	std::vector<BaseObjectPtr>		m_arNote;
 };
 
 } // namespace XLS

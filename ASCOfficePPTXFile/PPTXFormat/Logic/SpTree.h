@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -212,7 +212,6 @@ namespace PPTX
 
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
 				{
-					//nvGrpSpPr.cNvPr.toXmlWriter2(_T("wpg"), pWriter);
 					nvGrpSpPr.cNvGrpSpPr.toXmlWriter2(_T("wpg"), pWriter);
 				}
 				else

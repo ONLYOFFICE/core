@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -68,7 +68,7 @@ const bool XFS::loadContent(BinProcessor& proc)
 	int cellXfs_count		= 0;
 	
     XF xf(cell_xf_current_id, style_xf_current_id);
-    int count = proc.repeated(xf ,16, 0);
+    int count = proc.repeated(xf , 0/*16*/, 0); // "Stock symbols comparison1.xls" (второй FORMATING)
 
 	int ind = 0;
 	while (count > 0 && elements_.size() > 0)
@@ -101,9 +101,10 @@ const bool XFS::loadContent(BinProcessor& proc)
 	
 	if(proc.optional<XFCRC>())
 	{
-		elements_.pop_back(); // Crc не нужен
+		m_XFCRC = elements_.back(); elements_.pop_back(); 
+		XFCRC* crc = dynamic_cast<XFCRC*>(m_XFCRC.get());
 
-		count = proc.repeated<XFExt>(16, 4050);
+		count = proc.repeated<XFExt>(0/*16*/, 4050); // 074_JKH.OPEN.INFO.PRICE.VO_зПТПДУЛЙЕ ПЛТХЗБ юЕМСВЙОУЛПК ПВМ ...
 		while (count > 0)
 		{
 			if (elements_.empty()) break;

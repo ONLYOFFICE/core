@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -76,6 +76,7 @@ namespace chart {
 	struct simple
 	{
 		simple() : bEnabled(false) {}
+		
 		bool					bEnabled;
 		std::vector<_property>	properties_; 
  		std::vector<_property>	text_properties_;
@@ -91,6 +92,11 @@ namespace chart {
 
 		treadline(){bEquation = false; bREquation = false;}
 
+	};
+	struct legend : public simple
+    {
+		std::wstring position;
+		std::wstring align;
 	};
 	struct plot_area : public simple
     {

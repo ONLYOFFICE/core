@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,7 +33,7 @@
 #ifndef TXT_FILE_INCLUDE_H_
 #define TXT_FILE_INCLUDE_H_
 
-#include <list>
+#include <vector>
 #include <string>
 
 namespace Txt
@@ -57,11 +57,11 @@ namespace Txt
 		
         const bool isValid	(const std::wstring& filename) const;
 		
-		std::list<std::wstring>		m_listContent;			//unicode  (ранее было utf8)
+        std::vector<std::wstring>	m_listContent;			//unicode  (ранее было utf8)
 		int							m_listContentSize;		//для вывода процентов конвертации
 		int							m_nEncoding;
 	private:
-		void correctUnicode(std::list<std::wstring>& oList);
+        void correctUnicode(std::vector<std::wstring>& oList);
 		bool IsUnicodeSymbol( wchar_t symbol );
 	};
 } // namespace Txt

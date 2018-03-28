@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -155,7 +155,8 @@ extern int g_nCurFormatVersion;
 		Footnotes	= 10,
 		Endnotes	= 11,
 		Background	= 12,
-		VbaProject	= 13
+		VbaProject	= 13,
+		App			= 14
 	};}
 	namespace c_oSerSigTypes{enum c_oSerSigTypes
 	{
@@ -344,7 +345,9 @@ extern int g_nCurFormatVersion;
 		FramePr = 30,
 		SectPr = 31,
 		numPr_Ins =  32,
-		pPrChange = 33
+		pPrChange = 33,
+		outlineLvl = 34,
+		Tab_Item_Leader = 35
 	};}
 	namespace c_oSerProp_rPrType{enum c_oSerProp_rPrType
 	{
@@ -475,7 +478,10 @@ extern int g_nCurFormatVersion;
 		MoveFromRangeEnd = 19,
 		MoveToRangeStart = 20,
 		MoveToRangeEnd = 21,
-		JsaProject = 22
+		JsaProject = 22,
+		BookmarkStart = 23,
+		BookmarkEnd = 24
+
 	};}
 	namespace c_oSerDocTableType{enum c_oSerDocTableType
 	{
@@ -490,7 +496,9 @@ extern int g_nCurFormatVersion;
 		Cell_Pr =  7,
 		Cell_Content =  8,
 		tblGridChange = 9,
-		Sdt = 10
+		Sdt = 10,
+		BookmarkStart = 11,
+		BookmarkEnd = 12
 	};}
 	namespace c_oSerRunType{enum c_oSerRunType
 	{
@@ -503,8 +511,8 @@ extern int g_nCurFormatVersion;
 		image = 6,
 		table = 7,
 		Content = 8,
-		fldstart = 9,
-		fldend = 10,
+		fldstart_deprecated = 9,
+		fldend_deprecated = 10,
 		CommentReference = 11,
 		pptxDrawing = 12,
         object = 14,
@@ -521,7 +529,10 @@ extern int g_nCurFormatVersion;
 		endnoteRef = 25,
 		footnoteReference = 26,
 		endnoteReference = 27,
-		arPr = 28
+		arPr = 28,
+		fldChar = 29,
+		instrText = 30,
+		delInstrText = 31
 	};}
 	namespace c_oSerVbaProjectTypes{enum c_oSerVbaProjectType
 	{
@@ -896,7 +907,9 @@ extern int g_nCurFormatVersion;
 		Ins = 62,
 		Del = 63,
 		columnbreak = 64,
-		ARPr = 65
+		ARPr = 65,
+		BookmarkStart = 66,
+		BookmarkEnd = 67
 	};}
 	namespace c_oSer_FramePrType{ enum c_oSer_FramePrType
 	{		
@@ -929,7 +942,8 @@ extern int g_nCurFormatVersion;
 	{
 		Content = 0,
 		Instr = 1,
-		FFData = 2
+		FFData = 2,
+		CharType = 3
 	};}
 	namespace c_oSer_ColorThemeType{ enum c_oSer_ColorThemeType
 	{
@@ -1007,6 +1021,11 @@ extern int g_nCurFormatVersion;
 		PrFntPos = 9,
 		PrEndPos = 10,
 		PrRef = 11
+	};}
+	namespace c_oSerApp{enum c_oSerApp
+	{
+		Application = 0,
+		AppVersion = 1
 	};}
 	namespace c_oSerDocPr{enum c_oSerDocPr
 	{
@@ -1099,6 +1118,14 @@ extern int g_nCurFormatVersion;
 		Id = 5,
 		Name = 6,
 		UserId = 7
+	};}
+	namespace c_oSerBookmark{enum c_oSerBookmark
+	{
+		Id = 0,
+		Name = 1,
+		DisplacedByCustomXml = 2,
+		ColFirst = 3,
+		ColLast = 4
 	};}
 }
 

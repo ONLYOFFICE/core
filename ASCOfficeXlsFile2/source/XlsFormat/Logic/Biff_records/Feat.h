@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,16 +32,14 @@
 #pragma once
 
 #include "BiffRecordContinued.h"
-#include <Logic/Biff_structures/CellRangeRef.h>
-#include <Logic/Biff_structures/FeatProtection.h>
-#include <Logic/Biff_structures/FeatFormulaErr2.h>
-#include <Logic/Biff_structures/FeatSmartTag.h>
+#include "../Biff_structures/CellRangeRef.h"
+#include "../Biff_structures/FeatProtection.h"
+#include "../Biff_structures/FeatFormulaErr2.h"
+#include "../Biff_structures/FeatSmartTag.h"
 
 namespace XLS
 {
 
-
-// Logical representation of Feat record in BIFF8
 class Feat: public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Feat)
@@ -51,23 +49,18 @@ public:
 	~Feat();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeFeat;
 
-//-----------------------------
-	SharedFeatureType isf;
-	_UINT16 cref;
-	_UINT32	cbFeatData;
+	_UINT16				isf;
+	_UINT16				cref;
+	_UINT32				cbFeatData;
 	BiffStructurePtrVector refs;
-	BIFF_BSTR sqref;
+	std::wstring		sqref;
 
-	FeatProtection protection;
-	FeatFormulaErr2 formula_err;
-	FeatSmartTag smart_tag;
-
+	BiffStructurePtr	is_object;
 };
 
 } // namespace XLS

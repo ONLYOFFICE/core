@@ -14,6 +14,9 @@ public:
 
     std::wstring    m_sFolder;
 
+    std::wstring    m_sFile;
+    std::string     m_sDate;
+
     XmlUtils::CXmlNode   m_node; // signature file
 
     class CXmlStackNamespaces
@@ -144,6 +147,10 @@ public:
     {
         return m_guid;
     }
+    std::string GetDate()
+    {
+        return m_sDate;
+    }
     ICertificate* GetCertificate()
     {
         return m_cert;
@@ -155,6 +162,11 @@ public:
     std::string GetImageInvalidBase64()
     {
         return m_sImageInvalidBase64;
+    }
+
+    std::wstring GetFile()
+    {
+        return m_sFile;
     }
 
 public:
@@ -178,6 +190,19 @@ public:
         std::wstring sSetupID = FindFirstChild(firstChild, L"SetupID").GetText();
         m_guid = U_TO_UTF8(sSetupID);
 
+        if (m_guid.empty())
+        {
+            std::wstring sFile = m_sFile;
+            NSStringUtils::string_replace(sFile, L"\\", L"/");
+
+            std::wstring::size_type posSign = sFile.find(L"/_xmlsignatures");
+            if (std::wstring::npos != posSign)
+            {
+                sFile = sFile.substr(posSign);
+            }
+            m_guid = U_TO_UTF8(sFile);
+        }
+
         // 2) Images
         XmlUtils::CXmlNode nodeImageValid = GetObjectById("idValidSigLnImg");
         if (nodeImageValid.IsValid())
@@ -193,6 +218,13 @@ public:
             m_valid = OOXML_SIGNATURE_INVALID;
             return;
         }
+
+        XmlUtils::CXmlNode nodeSignProperties = GetObjectSignedProperties();
+        XmlUtils::CXmlNode nodeSignedSignatureProperties = nodeSignProperties.ReadNodeNoNS(L"SignedSignatureProperties");
+        XmlUtils::CXmlNode nodeST = nodeSignedSignatureProperties.ReadNodeNoNS(L"SigningTime");
+        std::wstring sDateW = nodeST.GetText();
+        if (!sDateW.empty())
+            m_sDate = U_TO_UTF8(sDateW);
 
         XmlUtils::CXmlNodes nodesManifestRefs = nodeManifect.ReadNode(L"Manifest").GetNodes(L"Reference");
         int nRefsCount = nodesManifestRefs.GetCount();
@@ -267,6 +299,25 @@ public:
             oNodes.GetAt(i, tmp);
             if (sId == tmp.GetAttributeA("Id"))
                 return tmp;
+        }
+        XmlUtils::CXmlNode ret;
+        return ret;
+    }
+
+    XmlUtils::CXmlNode GetObjectSignedProperties()
+    {
+        XmlUtils::CXmlNodes oNodes = m_node.GetNodes(L"Object");
+        int nCount = oNodes.GetCount();
+        for (int i = 0; i < nCount; i++)
+        {
+            XmlUtils::CXmlNode tmp;
+            oNodes.GetAt(i, tmp);
+
+            XmlUtils::CXmlNode nodeQ = tmp.ReadNodeNoNS(L"QualifyingProperties");
+            if (nodeQ.IsValid())
+            {
+                return nodeQ.ReadNodeNoNS(L"SignedProperties");
+            }
         }
         XmlUtils::CXmlNode ret;
         return ret;
@@ -456,6 +507,10 @@ std::string COOXMLSignature::GetGuid()
 {
     return m_internal->GetGuid();
 }
+std::string COOXMLSignature::GetDate()
+{
+    return m_internal->GetDate();
+}
 
 ICertificate* COOXMLSignature::GetCertificate()
 {
@@ -482,6 +537,7 @@ class COOXMLVerifier_private
 public:
     std::wstring                            m_sFolder;
     std::vector<COOXMLSignature*>           m_arSignatures;
+    std::vector<std::wstring>               m_arSignaturesFiles;
 
 public:
     COOXMLVerifier_private(const std::wstring& sFolder)
@@ -515,11 +571,13 @@ public:
                 continue;
 
             COOXMLSignature* pSignature = new COOXMLSignature();
+            pSignature->m_internal->m_sFile = sFile;
             pSignature->m_internal->m_node = nodeSig;
             pSignature->m_internal->m_sFolder = m_sFolder;
             pSignature->Check();
 
             m_arSignatures.push_back(pSignature);
+            m_arSignaturesFiles.push_back(sFile);
         }
     }
     ~COOXMLVerifier_private()
@@ -530,6 +588,107 @@ public:
             RELEASEOBJECT(v);
         }
         m_arSignatures.clear();
+    }
+
+    void RemoveSignature(const std::string& sGuid)
+    {
+        int nCountSignatures = m_arSignatures.size();
+        if (0 == nCountSignatures)
+            return;
+
+        bool bIsRemoveAll = sGuid.empty();
+        std::wstring sFile;
+
+        if (!bIsRemoveAll)
+        {
+            for (int i = 0; i < nCountSignatures; ++i)
+            {
+                COOXMLSignature* pSignature = m_arSignatures.at(i);
+                if (pSignature->GetGuid() == sGuid)
+                {
+                    sFile = m_arSignaturesFiles.at(i);
+                    m_arSignatures.erase(m_arSignatures.begin() + i);
+                    delete pSignature;
+                }                
+            }
+
+            bIsRemoveAll = m_arSignatures.empty();
+        }
+
+        if (!sFile.empty())
+            NSFile::CFileBinary::Remove(sFile);
+
+        if (!bIsRemoveAll && sFile.empty())
+            return;
+
+        XmlUtils::CXmlNode oContentTypes;
+        if (!oContentTypes.FromXmlFile(m_sFolder + L"/[Content_Types].xml"))
+            return;
+
+        std::wstring sXml = L"<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">";
+        XmlUtils::CXmlNodes oNodes;
+        if (oContentTypes.GetNodes(L"*", oNodes))
+        {
+            int nCount = oNodes.GetCount();
+
+            for (int i = 0; i < nCount; ++i)
+            {
+                XmlUtils::CXmlNode oNode;
+                oNodes.GetAt(i, oNode);
+
+                if (bIsRemoveAll)
+                {
+                    if (L"Default" == oNode.GetName() && L"sigs" == oNode.GetAttribute(L"Extension"))
+                        continue;
+                    if (L"Override" == oNode.GetName() && L"application/vnd.openxmlformats-package.digital-signature-xmlsignature+xml" == oNode.GetAttribute(L"ContentType"))
+                        continue;
+
+                    sXml += oNode.GetXml();
+                }
+                else
+                {
+                    std::wstring sFileFound = sFile.substr(m_sFolder.length());
+                    if (L"Override" == oNode.GetName() &&
+                        L"application/vnd.openxmlformats-package.digital-signature-xmlsignature+xml" == oNode.GetAttribute(L"ContentType") &&
+                        sFileFound == oNode.GetAttribute(L"PartName"))
+                        continue;
+
+                    sXml += oNode.GetXml();
+                }
+            }
+        }
+        sXml += L"</Types>";
+        NSFile::CFileBinary::SaveToFile(m_sFolder + L"/[Content_Types].xml", sXml);
+
+        if (bIsRemoveAll)
+        {
+            NSDirectory::DeleteDirectory(m_sFolder + L"/_xmlsignatures");
+
+            XmlUtils::CXmlNode oRels;
+            if (!oRels.FromXmlFile(m_sFolder + L"/_rels/.rels"))
+                return;
+
+            sXml = L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
+            XmlUtils::CXmlNodes oNodes;
+            if (oRels.GetNodes(L"*", oNodes))
+            {
+                int nCount = oNodes.GetCount();
+
+                for (int i = 0; i < nCount; ++i)
+                {
+                    XmlUtils::CXmlNode oNode;
+                    oNodes.GetAt(i, oNode);
+
+                    if (L"Relationship" == oNode.GetName() &&
+                        L"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/origin" == oNode.GetAttribute(L"Type"))
+                        continue;
+
+                    sXml += oNode.GetXml();
+                }
+            }
+            sXml += L"</Relationships>";
+            NSFile::CFileBinary::SaveToFile(m_sFolder + L"/_rels/.rels", sXml);
+        }
     }
 };
 
@@ -553,4 +712,12 @@ COOXMLSignature* COOXMLVerifier::GetSignature(const int& index)
     if (index >= (int)m_internal->m_arSignatures.size())
         return NULL;
     return m_internal->m_arSignatures[index];
+}
+
+void COOXMLVerifier::RemoveSignature(const std::string& sGuid)
+{
+    std::wstring sFolder = m_internal->m_sFolder;
+    m_internal->RemoveSignature(sGuid);
+    RELEASEOBJECT(m_internal);
+    m_internal = new COOXMLVerifier_private(sFolder);
 }

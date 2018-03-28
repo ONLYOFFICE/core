@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,8 +49,8 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		NSCommon::smart_ptr<OOX::File> CreateFile(const OOX::CPath& oRootPath, const CPath& oPath, const OOX::Rels::CRelationShip& oRelation);
-        NSCommon::smart_ptr<OOX::File> CreateFile(const OOX::CPath& oRootPath, const OOX::CPath& oPath,  OOX::Rels::CRelationShip* pRelation);
+		NSCommon::smart_ptr<OOX::File> CreateFile(const OOX::CPath& oRootPath, const CPath& oPath, const OOX::Rels::CRelationShip& oRelation, OOX::Document *pMain);
+        NSCommon::smart_ptr<OOX::File> CreateFile(const OOX::CPath& oRootPath, const OOX::CPath& oPath,  OOX::Rels::CRelationShip* pRelation, OOX::Document *pMain);
 	}
 } // namespace OOX
 

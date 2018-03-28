@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -192,14 +192,14 @@ public:
 	{
 		if (!bIsCompressed)
 		{
-			m_pMetaFile		= pCompress;
-			m_lMetaFileSize = lUncompressSize;
+			m_pMetaFile		= new BYTE[lCompressSize];
+			m_lMetaFileSize = lCompressSize;
+			memcpy(m_pMetaFile, pCompress, lCompressSize);
 		}
 		else
 		{
 			ULONG lSize = lUncompressSize;
 			m_pMetaFile = new BYTE[lUncompressSize];
-            //bool bRes	= NSZLib::Decompress(pCompress, (ULONG)lCompressSize, m_pMetaFile, lSize);
 
 			HRESULT res = S_OK;
 			COfficeUtils* pOfficeUtils = new COfficeUtils(NULL); 
@@ -340,6 +340,8 @@ typedef enum _BlipCompression
 
 			if (typeCode == 0xf01b)
 			{
+				oMetaFile.m_sExtension	= L".wmf";
+				
 				WmfPlaceableFileHeader oWmfHeader = {};
 				oMetaHeader.ToWMFHeader(&oWmfHeader);
 				
@@ -349,24 +351,12 @@ typedef enum _BlipCompression
 
 				oMetaFile.SetHeader(pMetaHeader, lLenHeader);	
 			}
-			
+			if (typeCode == 0xf01c)
+			{
+				oMetaFile.m_sExtension	= L".pcz";
+				//decompress???
+			}
 			oMetaFile.SetData(m_pvBits, oMetaHeader.cbSave, oMetaHeader.cbSize, 0 == oMetaHeader.compression);
-
-			//if (pos < sz)
-			//{
-			//	NSFile::CFileBinary oFile;
-
-			//	if (oFile.CreateFile(L"d:\\blop.dat"))
-			//	{
-			//		BYTE * d = Reader->ReadBytes( sz - pos, true );
-			//		if (d)
-			//		{
-			//			oFile.WriteFile (d, sz - pos);
-			//			delete []d;
-			//			oFile.CloseFile();
-			//		}
-			//	}
-			//}
 		}
 
 		virtual ~MetafilePictBlip()

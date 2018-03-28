@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of WinProtect record in BIFF8
 class WinProtect: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(WinProtect)
@@ -47,11 +45,10 @@ public:
 	~WinProtect();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeWinProtect;
+	static const ElementType type = typeWinProtect;
 
 //-----------------------------
 	Boolean<unsigned short> fLockWn;

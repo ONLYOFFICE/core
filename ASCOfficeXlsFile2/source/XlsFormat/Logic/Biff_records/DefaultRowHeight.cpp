@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -65,7 +65,10 @@ void DefaultRowHeight::readFields(CFRecord& record)
 	
 	record >> miyRw;
 
-	global_info->sheet_size_info.back().defaultRowHeight = miyRw / 20.;
+	if (!global_info->sheets_info.empty())
+	{
+		global_info->sheets_info.back().defaultRowHeight = miyRw / 20.;
+	}
 
 }
 

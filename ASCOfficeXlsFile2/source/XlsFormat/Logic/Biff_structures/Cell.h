@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,7 +33,7 @@
 
 #include "BiffStructure.h"
 #include "CellRef.h"
-#include <Logic/Biff_structures/BitMarkedStructs.h>
+#include "BitMarkedStructs.h"
 
 namespace XLS
 {
@@ -50,7 +50,6 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
-
 
 	const CellRef getLocation() const;
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -233,8 +233,9 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 		Context.set_paragraph_state	(false);		
 		Context.set_run_state		(false);
 
+		Context.get_math_context().base_font_size_ = baseFontHeight_;	
+		
 		Context.start_math_formula();
-			Context.get_math_context().base_font_size_ = baseFontHeight_;	
 			office_math_->oox_convert(Context.get_math_context());
 		Context.end_math_formula();
 
@@ -401,7 +402,7 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		std::vector<std::wstring>		cell_cash;
 		std::vector<std::wstring>		cat_cash;
 
-		calc_cache_series (domain_cell_range_adress_,	domain_cash);
+		calc_cache_series (domain_cell_range_adress_,			domain_cash);
 		calc_cache_series (series_[i].cell_range_address_,		cell_cash);
 		
 		if (categories_.size() >0)
@@ -462,10 +463,19 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 
 	std::sort(axises_.begin(), axises_.end(), axises_sort());//file_1_ (1).odp
 	
-	bool x_enabled = false;
-	bool y_enabled = false;
-	bool z_enabled = false;
+	bool x_enabled	= false;
+	bool y_enabled	= false;
+	bool z_enabled	= false;
+	bool is3D		= false;
 	
+	_CP_OPT(bool) boolVal;
+	odf_reader::GetProperty(plot_area_.properties_, L"three-dimensional", boolVal);
+
+	if ((boolVal) && (*boolVal)) 
+	{
+		is3D = true;
+	}
+
 	for (int i = 0; i < axises_.size(); i++)
 	{
 		axis & a  = axises_[i];
@@ -481,6 +491,8 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 
 			if (class_ == chart_stock && a.type_ == 3 )		
 				a.type_ = 4; //шкала дат.
+
+			if (is3D) a.type_ = 1; // шкала категорий
 			
 			x_enabled = true;
 		}
@@ -499,13 +511,25 @@ void object_odf_context::oox_convert(oox::oox_chart_context & chart_context)
 		}
 		else if (a.dimension_ == L"z")
 		{
-			chart_context.set_3D_chart (true);
+			is3D = true;
 			continue;
 			a.type_ = 2;
 			z_enabled = true;
 		}
 
 		chart_context.add_axis(a.type_, a);
+	}
+
+	if (is3D)
+	{
+		if (!z_enabled)
+		{
+			chart::axis a;
+			a.type_ = 0;	// blank
+
+			chart_context.add_axis(a.type_, a);
+		}
+		chart_context.set_3D_chart (true);
 	}
 }
 
@@ -739,6 +763,28 @@ void process_build_object::visit(const chart_footer& val)
 void process_build_object::visit(const chart_legend& val)
 {
 	object_odf_context_.legend_.bEnabled = true;
+	object_odf_context_.legend_.position = L"r"; 
+
+	if (val.attlist_.chart_legend_position_)
+	{
+		std::wstring pos = val.attlist_.chart_legend_position_.get();
+		
+		if ( pos == L"bottom")		object_odf_context_.legend_.position = L"b"; 
+		if ( pos == L"start")		object_odf_context_.legend_.position = L"l"; 
+		if ( pos == L"top")			object_odf_context_.legend_.position = L"t"; 
+		if ( pos == L"top-end")		object_odf_context_.legend_.position = L"tr"; 
+		if ( pos == L"top-start")	object_odf_context_.legend_.position = L"tl"; 
+		if ( pos == L"bottom-start")	object_odf_context_.legend_.position = L"bl"; 
+		if ( pos == L"bottom-end")	object_odf_context_.legend_.position = L"br"; 
+	}
+	if (val.attlist_.chart_legend_align_)
+	{
+		std::wstring align = val.attlist_.chart_legend_align_.get();
+		
+		//if ( pos == L"start")		object_odf_context_.legend_.align = L"b"; 
+		//if ( pos == L"center")		object_odf_context_.legend_.align = L"l"; 
+		//if ( pos == L"end")			object_odf_context_.legend_.align = L"t"; 
+	}
 	
 	ApplyChartProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.properties_);
 	ApplyGraphicProperties	(val.attlist_.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.legend_.graphic_properties_,object_odf_context_.legend_.fill_);

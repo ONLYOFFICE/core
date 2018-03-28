@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -39,6 +39,7 @@
 #include "../XlsFormat/Logic/WorksheetSubstream.h"
 #include "../XlsFormat/Logic/GlobalsSubstream.h"
 #include "../XlsFormat/Logic/ChartSheetSubstream.h"
+#include "../XlsFormat/Logic/MacroSheetSubstream.h"
 
 #include "../XlsFormat/Logic/BinProcessor.h"
 #include "../XlsFormat/Logic/SummaryInformationStream/SummaryInformation.h"
@@ -60,37 +61,44 @@
 #include "../XlsFormat/Logic/Biff_unions/PIVOTVIEW.h"
 #include "../XlsFormat/Logic/Biff_unions/PIVOTCACHE.h"
 #include "../XlsFormat/Logic/Biff_unions/PIVOTCACHEDEFINITION.h"
+#include "../XlsFormat/Logic/Biff_unions/SUPBOOK.h"
+#include "../XlsFormat/Logic/Biff_unions/QUERYTABLE.h"
+#include "../XlsFormat/Logic/Biff_unions/FEAT.h"
+#include "../XlsFormat/Logic/Biff_unions/FEAT11.h"
 
-#include <Logic/Biff_records/BkHim.h>
-#include <Logic/Biff_records/HLink.h>
-#include <Logic/Biff_records/MsoDrawingGroup.h>
-#include <Logic/Biff_records/MsoDrawing.h>
-#include <Logic/Biff_records/Obj.h>
-#include <Logic/Biff_records/TxO.h>
-#include <Logic/Biff_records/IMDATA.h>
-#include <Logic/Biff_records/Note.h>
+#include "../XlsFormat/Logic/Biff_records/BkHim.h"
+#include "../XlsFormat/Logic/Biff_records/HLink.h"
+#include "../XlsFormat/Logic/Biff_records/MsoDrawingGroup.h"
+#include "../XlsFormat/Logic/Biff_records/MsoDrawing.h"
+#include "../XlsFormat/Logic/Biff_records/Obj.h"
+#include "../XlsFormat/Logic/Biff_records/TxO.h"
+#include "../XlsFormat/Logic/Biff_records/IMDATA.h"
+#include "../XlsFormat/Logic/Biff_records/Note.h"
+#include "../XlsFormat/Logic/Biff_records/WsBool.h"
+#include "../XlsFormat/Logic/Biff_records/Theme.h"
 
-#include <Logic/Biff_structures/URLMoniker.h>
-#include <Logic/Biff_structures/FileMoniker.h>
+#include "../XlsFormat/Logic/Biff_structures/URLMoniker.h"
+#include "../XlsFormat/Logic/Biff_structures/FileMoniker.h"
 
-#include <Logic/Biff_structures/ODRAW/OfficeArtBStoreContainer.h>
-#include <Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.h>
-#include <Logic/Biff_structures/ODRAW/OfficeArtFOPT.h>
-#include <Logic/Biff_structures/ODRAW/OfficeArtFOPTE.h>
-#include <Logic/Biff_structures/ODRAW/OfficeArtFSP.h>
-#include <Logic/Biff_structures/ODRAW/OfficeArtBlip.h>
-#include <Logic/Biff_structures/ODRAW/OfficeArtFSPGR.h>
-#include <Logic/Biff_structures/ODRAW/OfficeArtClientAnchorSheet.h>
-#include <Logic/Biff_structures/ODRAW/OfficeArtClientAnchorHF.h>
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtBStoreContainer.h"
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.h"
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtFOPT.h"
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtFOPTE.h"
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtTertiaryFOPT.h"
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtFSP.h"
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtBlip.h"
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtFSPGR.h"
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtClientAnchorSheet.h"
+#include "../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtClientAnchorHF.h"
 
 #include "xlsx_conversion_context.h"
 #include "xlsx_package.h"
 
 #include <simple_xml_writer.h>
 #include <utils.h>
+#include "../../../OfficeUtils/src/OfficeUtils.h"
 
-#include <boost/lexical_cast.hpp>
-#include <boost/utility.hpp>
+//#include <boost/utility.hpp>
 
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/raster/BgraFrame.h"
@@ -121,9 +129,9 @@ typedef struct tagBITMAPCOREHEADER {
 } BITMAPCOREHEADER;
 #endif
 
-XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _xlsx_path, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* CallBack, bool & bMacros) 
+XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring & xlsxFilePath, const std::wstring & password, const std::wstring & fontsPath, const std::wstring & tempPath, const ProgressCallback* CallBack, bool & bMacros) 
 {
-	xlsx_path			= _xlsx_path;
+	xlsx_path			= xlsxFilePath;
 	output_document		= NULL;
 	xlsx_context		= NULL;
 	
@@ -135,9 +143,9 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 
 	try
 	{
-		XLS::CompoundFile cfile(xls_file, XLS::CompoundFile::cf_ReadMode);
+		xls_file = boost::shared_ptr<XLS::CompoundFile>(new XLS::CompoundFile(xlsFileName, XLS::CompoundFile::cf_ReadMode));
 
-		if (cfile.isError())
+		if (xls_file->isError())
 		{
 			return;
 		}
@@ -145,22 +153,8 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 		XLS::CFStreamPtr summary;
 		XLS::CFStreamPtr doc_summary;
 
-		try
-		{
-			summary = cfile.getNamedStream("SummaryInformation");
-		}
-		catch (...)
-		{
-		}
-
-		try
-		{
-			doc_summary = cfile.getNamedStream("DocumentSummaryInformation");
-		}
-		catch (...)
-		{
-			return;
-		}
+		summary		= xls_file->getNamedStream(L"SummaryInformation");
+		doc_summary = xls_file->getNamedStream(L"DocumentSummaryInformation");
 
         _UINT16 workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
 		if(summary)
@@ -182,8 +176,9 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 		
 		xls_global_info->fontsDirectory = fontsPath;
 		xls_global_info->password		= password;
+		xls_global_info->tempDirectory	= tempPath;
 
-		XLS::CFStreamCacheReader stream_reader(cfile.getWorkbookStream(), xls_global_info);
+		XLS::CFStreamCacheReader stream_reader(xls_file->getWorkbookStream(), xls_global_info);
 
 		xls_document = boost::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));
 	
@@ -196,38 +191,44 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 			if (xls_global_info->decryptor->IsVerify() == false) return;
 		}
 
-		if (cfile.storage_->isDirectory("_SX_DB_CUR"))
+		if (xls_file->storage_->isDirectory(L"_SX_DB_CUR"))
 		{
-			std::list<std::string> listStream = cfile.storage_->entries("_SX_DB_CUR");
+			std::list<std::wstring> listStream = xls_file->storage_->entries(L"_SX_DB_CUR");
 
 			int last_index = 0;
-			for (std::list<std::string>::iterator it = listStream.begin(); it != listStream.end(); it++)
+			for (std::list<std::wstring>::iterator it = listStream.begin(); it != listStream.end(); ++it)
 			{
-				XLS::CFStreamCacheReader pivot_cache_reader(cfile.getNamedStream("_SX_DB_CUR/" + *it), xls_global_info);
+				XLS::CFStreamPtr pivot_cache_stream = xls_file->getNamedStream(L"_SX_DB_CUR/" + *it);
+				
+				if (!pivot_cache_stream) continue;
+				if (pivot_cache_stream->getStreamSize() < 1) continue;
+
+				XLS::CFStreamCacheReader pivot_cache_reader(pivot_cache_stream, xls_global_info);
+
 				XLS::BaseObjectPtr pivot_cache = boost::shared_ptr<XLS::PIVOTCACHE>(new XLS::PIVOTCACHE());
 				
 				XLS::BinReaderProcessor proc(pivot_cache_reader , pivot_cache.get() , true);
 				proc.mandatory(*pivot_cache.get());
 
-				int index = XmlUtils::GetHex(*it);
+				int index = XmlUtils::GetHex(*it); //hexadecimal digits uniquely identifying
 
 				xls_global_info->mapPivotCacheStream.insert(std::make_pair(index, pivot_cache));
 
 				last_index = index;
 			}
 		}
-		if (bMacros && cfile.storage_->isDirectory("_VBA_PROJECT_CUR"))
+		if (bMacros && xls_file->storage_->isDirectory(L"_VBA_PROJECT_CUR"))
 		{
 			std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";	
 			NSDirectory::CreateDirectory(xl_path.c_str());
 
 			std::wstring sVbaProjectFile = xl_path + FILE_SEPARATOR_STR + L"vbaProject.bin";
 
-			POLE::Storage *storageVbaProject	= new POLE::Storage(sVbaProjectFile.c_str());
+			POLE::Storage *storageVbaProject = new POLE::Storage(sVbaProjectFile.c_str());
 
 			if ((storageVbaProject) && (storageVbaProject->open(true, true)))
 			{			
-				cfile.copy(0, "_VBA_PROJECT_CUR/", storageVbaProject, false);
+				xls_file->copy(0, L"_VBA_PROJECT_CUR/", storageVbaProject, false);
 
 				storageVbaProject->close();
 				delete storageVbaProject;
@@ -237,6 +238,94 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 		}
 		else 
 			bMacros = false;
+
+		XLS::CFStreamPtr controls = xls_file->getNamedStream(L"Ctls");
+		if(controls)
+		{
+			unsigned long size = controls->getStreamSize();
+			boost::shared_array<BYTE> buffer(new BYTE[size]);
+			
+			controls->read(buffer.get(), size);
+
+			xls_global_info->controls_data = std::make_pair(buffer, size);			
+		}
+		XLS::CFStreamPtr listdata = xls_file->getNamedStream(L"List Data");
+		if(listdata)
+		{
+			unsigned long size = listdata->getStreamSize();
+			boost::shared_array<BYTE> buffer(new BYTE[size]);
+			
+			listdata->read(buffer.get(), size);
+
+			xls_global_info->listdata_data = std::make_pair(buffer, size);			
+		}
+		if (xls_file->storage_->isDirectory(L"MsoDataStore"))
+		{
+			std::list<std::wstring> msoStores = xls_file->storage_->entries(L"MsoDataStore");
+
+			int index = 0;
+			for (std::list<std::wstring>::iterator it = msoStores.begin(); it != msoStores.end(); ++it)
+			{
+				XLS::CFStreamPtr item_stream  = xls_file->getNamedStream(L"MsoDataStore/" + *it + L"/Item");
+				XLS::CFStreamPtr props_stream = xls_file->getNamedStream(L"MsoDataStore/" + *it + L"/Properties");
+
+				if (!item_stream || !props_stream) continue;
+				
+				unsigned long item_size = item_stream->getStreamSize();
+				unsigned long props_size = props_stream->getStreamSize();
+
+				oox::package::customXml_content_ptr content = oox::package::customXml_content::create();
+	
+				char *item_buffer = new char[item_size];
+				if (item_buffer)
+				{
+					item_stream->read(item_buffer, item_size);				
+					content->set_item(item_buffer, item_size);
+					delete []item_buffer;
+				}
+				char *props_buffer = new char[props_size];
+
+				if (props_buffer)
+				{
+					props_stream->read(props_buffer, props_size);
+					content->set_props(props_buffer, props_size);
+					delete []props_buffer;
+				}
+				output_document->add_customXml(content);	
+			}
+		}
+		XLS::CFStreamPtr toolbar_data = xls_file->getNamedStream(L"XCB");
+		if(toolbar_data)
+		{
+			std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";	
+			NSDirectory::CreateDirectory(xl_path.c_str());
+
+			std::wstring sToolbarsFile = xl_path + FILE_SEPARATOR_STR + L"attachedToolbars.bin";
+
+			//POLE::Storage *storageToolbars = new POLE::Storage(sToolbarsFile.c_str());
+
+			//if ((storageToolbars) && (storageToolbars->open(true, true)))
+			//{			
+			//	toolbar_data->copy(L"attachedToolbars", storageToolbars);
+
+			//	storageToolbars->close();
+			//	delete storageToolbars;
+
+			//	output_document->get_xl_files().add_attachedToolbars();
+			//}		
+			NSFile::CFileBinary file;
+            if (file.CreateFileW(sToolbarsFile))
+			{
+				unsigned long size = toolbar_data->getStreamSize();
+				boost::shared_array<BYTE> buffer(new BYTE[size]);
+				
+				toolbar_data->read(buffer.get(), size);
+				file.WriteFile(buffer.get(), size);
+				file.CloseFile();
+
+				output_document->get_xl_files().add_attachedToolbars();
+			}
+		}
 	}
 	catch(...)
 	{
@@ -321,28 +410,33 @@ void XlsConverter::convert(XLS::BaseObject	*xls_unknown)
 	{
 	case XLS::typeHLINK:
 		{
-			XLS::HLINK * hlink = dynamic_cast<XLS::HLINK *>(xls_unknown);
+			XLS::HLINK * hlink = dynamic_cast<XLS::HLINK*>(xls_unknown);
 			convert(hlink);
 		}break;
 	case XLS::typeLBL:	
 		{
-			XLS::LBL * lbl = dynamic_cast<XLS::LBL *>(xls_unknown);
+			XLS::LBL * lbl = dynamic_cast<XLS::LBL*>(xls_unknown);
 			convert(lbl);
 		}break;
 	case XLS::typeOBJECTS:
 		{
-			XLS::OBJECTS * obj = dynamic_cast<XLS::OBJECTS *>(xls_unknown);
-			convert(obj);
+			XLS::OBJECTS * obj = dynamic_cast<XLS::OBJECTS*>(xls_unknown);
+			convert(obj, NULL);
 		}break;
 	case XLS::typeTxO:
 		{
-			XLS::TxO * txo = dynamic_cast<XLS::TxO *>(xls_unknown);
+			XLS::TxO * txo = dynamic_cast<XLS::TxO*>(xls_unknown);
 			convert(txo);
+		}break;
+	case XLS::typeObj:
+		{
+			XLS::Obj * obj = dynamic_cast<XLS::Obj*>(xls_unknown);
+			convert(obj);
 		}break;
 	case XLS::typeAnyObject:	
 	default:
 		{
-			for (std::list<XLS::BaseObjectPtr>::iterator it = xls_unknown->elements_.begin(); it != xls_unknown->elements_.end(); it++)
+			for (std::list<XLS::BaseObjectPtr>::iterator it = xls_unknown->elements_.begin(); it != xls_unknown->elements_.end(); ++it)
 			{
 				(*it)->serialize(xlsx_context->current_sheet().sheetData());
 			}
@@ -355,72 +449,56 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 {
 	if (woorkbook == NULL) return;
 
-	convert((XLS::GlobalsSubstream*)woorkbook->m_GlobalsSubstream.get());
+	convert(dynamic_cast<XLS::GlobalsSubstream*>(woorkbook->m_GlobalsSubstream.get()));
 
-	int count_sheets = 0, count_chart_sheets = 0;
     for (size_t i = 0 ; i < woorkbook->m_arWorksheetSubstream.size(); i++)
 	{
-		if (woorkbook->m_arWorksheetSubstream[i]->get_type() == XLS::typeWorksheetSubstream)
-		{
-			count_sheets++;
-			xls_global_info->current_sheet = count_sheets;
-		
-			xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"Sheet_" + std::to_wstring(count_sheets));
-			xlsx_context->set_state(xls_global_info->sheets_state.size() > i ? xls_global_info->sheets_state[i] : L"visible");
-
+		xlsx_context->start_sheet();
 			convert(dynamic_cast<XLS::WorksheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get()));
-		}
-		else if (woorkbook->m_arWorksheetSubstream[i]->get_type() == XLS::typeChartSheetSubstream)
-		{
-			count_chart_sheets++;
-			xls_global_info->current_sheet = -1; 
-			xlsx_context->start_table(xls_global_info->sheets_names.size() > i ? xls_global_info->sheets_names[i] : L"ChartSheet_" + std::to_wstring(count_chart_sheets));
-
-			xlsx_context->set_chart_view();
-
-			XLS::ChartSheetSubstream* chart = dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_arWorksheetSubstream[i].get());
-
-			convert_chart_sheet(chart);
-		}
-
-		xlsx_context->end_table();
+		xlsx_context->end_sheet();
+	}
+	for (size_t i = 0 ; i < woorkbook->m_arChartSheetSubstream.size(); i++)
+	{
+		xlsx_context->start_sheet();
+			convert_chart_sheet(dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_arChartSheetSubstream[i].get()));
+		xlsx_context->end_sheet();
+	}
+	for (size_t i = 0 ; i < woorkbook->m_arMacroSheetSubstream.size(); i++)
+	{
+		xlsx_context->start_sheet();
+			convert(dynamic_cast<XLS::MacroSheetSubstream*>(woorkbook->m_arMacroSheetSubstream[i].get()));
+		xlsx_context->end_sheet();
 	}
 
-	for (std::list<XLS::BaseObjectPtr>::iterator it = woorkbook->elements_.begin(); it != woorkbook->elements_.end(); it++)
+	for (std::list<XLS::BaseObjectPtr>::iterator it = woorkbook->elements_.begin(); it != woorkbook->elements_.end(); ++it)
 	{
 		convert(it->get());
 	}
+
+	xlsx_context->add_connections(xls_global_info->connections_stream.str());
 }
 
-void XlsConverter::convert (XLS::WorksheetSubstream* sheet)
+void XlsConverter::convert_common (XLS::CommonSubstream* sheet)
 {
 	if (sheet == NULL) return;
-
-	if (sheet->m_arWINDOW.size() > 0)
-	{
-		sheet->m_arWINDOW[0]->serialize(xlsx_context->current_sheet().sheetViews());
-	}
-	if (sheet->m_Dimensions)
-	{
-		sheet->m_Dimensions->serialize(xlsx_context->current_sheet().dimension());
-	}
-	if (sheet->m_SheetExt)
-	{
-		sheet->m_SheetExt->serialize(xlsx_context->current_sheet().sheetProperties());
-		// todooo + GLOBALS->WsBool
-	}
+	
+	xls_global_info->current_sheet = sheet->ws_index_ + 1; 
+		
 	if (sheet->m_GLOBALS)
 	{
-		XLS::GLOBALS * globals  = dynamic_cast<XLS::GLOBALS *>(sheet->m_GLOBALS.get());
-		XLS::COLUMNS * columns = dynamic_cast<XLS::COLUMNS *>(sheet->m_COLUMNS.get());
-
-		if (columns)
-		{
-			globals->m_DefColWidth	= columns->m_DefColWidth; 
-		}
-		globals->m_DxGCol = sheet->m_DxGCol;
-		
 		sheet->m_GLOBALS->serialize(xlsx_context->current_sheet().sheetFormat());
+	}
+	
+	if (!sheet->m_arWINDOW.empty())
+	{
+		sheet->m_arWINDOW[0]->serialize(xlsx_context->current_sheet().sheetViews());
+	}	
+	
+	sheet->serialize_format(xlsx_context->current_sheet().sheetProperties());
+
+	if (sheet->m_PROTECTION)
+	{
+		sheet->m_PROTECTION->serialize(xlsx_context->current_sheet().protection());
 	}
 	if (sheet->m_COLUMNS)
 	{
@@ -430,68 +508,15 @@ void XlsConverter::convert (XLS::WorksheetSubstream* sheet)
 	{
 		sheet->m_CELLTABLE->serialize(xlsx_context->current_sheet().sheetData());
 	}
-	if (sheet->m_arMergeCells.size() > 0)
-	{
-		CP_XML_WRITER(xlsx_context->current_sheet().mergeCells())    
-		{
-			CP_XML_NODE(L"mergeCells")
-			{  		
-                for (size_t i = 0 ; i < sheet->m_arMergeCells.size(); i++)
-				{
-					sheet->m_arMergeCells[i]->serialize(CP_XML_STREAM());
-				}
-			}
-		}
-	}
-    for (size_t i = 0 ; i < sheet->m_arHLINK.size(); i++)
-	{
-		convert((XLS::HLINK*)sheet->m_arHLINK[i].get());
-	}
-
 	if (sheet->m_SORTANDFILTER)
 	{
 		sheet->m_SORTANDFILTER->serialize(xlsx_context->current_sheet().sheetSortAndFilters());
-	}
-
-	if (sheet->m_CONDFMTS)
-	{
-		sheet->m_CONDFMTS->serialize(xlsx_context->current_sheet().conditionalFormatting());
-	}
-
-	if (sheet->m_DVAL)
-	{
-		sheet->m_DVAL->serialize(xlsx_context->current_sheet().dataValidations());
-	}
-
-	for (size_t i = 0; i < sheet->m_arPIVOTVIEW.size(); i++)
-	{
-		convert((XLS::PIVOTVIEW*)sheet->m_arPIVOTVIEW[i].get());
-	}
-
-	convert((XLS::OBJECTS*)sheet->m_OBJECTS.get(), sheet);
-
-	if (!sheet->m_arNote.empty() && xls_global_info->Version < 0x0600)
-	{
-		xlsx_context->get_drawing_context().start_drawing(0);
-		for (size_t i = 0 ; i < sheet->m_arNote.size(); i++)
-		{
-			xlsx_context->get_drawing_context().start_drawing(0x0019);
-				convert(dynamic_cast<XLS::Note*>(sheet->m_arNote[i].get()));
-			xlsx_context->get_drawing_context().end_drawing();
-		}
-		xlsx_context->get_drawing_context().end_group();
-	}
-
+	}	
 	if (sheet->m_PAGESETUP)
 	{
 		sheet->m_PAGESETUP->serialize(xlsx_context->current_sheet().pageProperties());
 	}
 
-	for (size_t i = 0 ; i < sheet->m_arHFPictureDrawing.size(); i++)
-	{
-		//convert(dynamic_cast<XLS::Note*>(sheet->sheet->m_arHFPictureDrawing[i].get(), 
-	}
- 	
 	if (sheet->m_arCUSTOMVIEW.size() > 0)
 	{
 		CP_XML_WRITER(xlsx_context->current_sheet().customViews())    
@@ -515,49 +540,225 @@ void XlsConverter::convert (XLS::WorksheetSubstream* sheet)
 	{
 		convert((ODRAW::OfficeArtDgContainer*)sheet->m_arHFPictureDrawing[i].get());
 	}
+
+	//for (size_t i = 0 ; i < sheet->m_arFEAT.size(); i++)
+	//{
+	//	convert(dynamic_cast<XLS::FEAT*>(sheet->m_arFEAT.get()));
+	//}
+
+	for (size_t i = 0 ; i < sheet->m_arFEAT11.size(); i++)
+	{
+		convert(dynamic_cast<XLS::FEAT11*>(sheet->m_arFEAT11[i].get()));
+	}
 }
 
-void XlsConverter::convert(XLS::GlobalsSubstream* global)
+void XlsConverter::convert (XLS::WorksheetSubstream* sheet)
 {
-	if (global == NULL) return;
+	if (sheet == NULL) return;
 	
-	convert((XLS::FORMATTING*)global->m_Formating.get());
-	
-	convert((XLS::THEME*)global->m_THEME.get());
+	std::wstring name = xls_global_info->sheets_info[sheet->ws_index_].name;
+	if (name.empty()) 
+		name = L"Sheet_" + std::to_wstring(sheet->ws_index_ + 1);
 
-	convert((XLS::SHAREDSTRINGS*)global->m_SHAREDSTRINGS.get());
+	xlsx_context->set_sheet_type(1);
+	xlsx_context->set_sheet_name(name) ;
+	xlsx_context->set_sheet_id(sheet->ws_index_ + 1);
+	xlsx_context->set_sheet_state(xls_global_info->sheets_info[sheet->ws_index_].state);
 
-    for (size_t i = 0 ; i < global->m_arLBL.size(); i++)
+	if (sheet->m_GLOBALS)
 	{
-		convert((XLS::LBL*)global->m_arLBL[i].get());
+		XLS::GLOBALS * globals  = dynamic_cast<XLS::GLOBALS *>(sheet->m_GLOBALS.get());
+		XLS::COLUMNS * columns = dynamic_cast<XLS::COLUMNS *>(sheet->m_COLUMNS.get());
+
+		if (columns)
+		{
+			globals->m_DefColWidth	= columns->m_DefColWidth; 
+		}
+		globals->m_DxGCol = sheet->m_DxGCol;		
+
+		if (globals->is_dialog)
+			xlsx_context->set_sheet_type(2);
 	}
 
-    for (size_t i = 0 ; i < global->m_arMSODRAWINGGROUP.size(); i++)
+	convert_common(dynamic_cast<XLS::CommonSubstream*>(sheet));
+
+	convert((XLS::OBJECTS*)sheet->m_OBJECTS.get(), sheet);
+
+	if (sheet->m_Dimensions)
 	{
-		convert((XLS::MSODRAWINGGROUP*)global->m_arMSODRAWINGGROUP[i].get());
+		sheet->m_Dimensions->serialize(xlsx_context->current_sheet().dimension());
+	}	
+	if (sheet->m_arMergeCells.size() > 0)
+	{
+		CP_XML_WRITER(xlsx_context->current_sheet().mergeCells())    
+		{
+			CP_XML_NODE(L"mergeCells")
+			{  		
+                for (size_t i = 0 ; i < sheet->m_arMergeCells.size(); i++)
+				{
+					sheet->m_arMergeCells[i]->serialize(CP_XML_STREAM());
+				}
+			}
+		}
+	}
+    for (size_t i = 0 ; i < sheet->m_arHLINK.size(); i++)
+	{
+		convert((XLS::HLINK*)sheet->m_arHLINK[i].get());
+	}
+	if (sheet->m_CONDFMTS)
+	{
+		sheet->m_CONDFMTS->serialize(xlsx_context->current_sheet().conditionalFormatting());
+	}
+	if (sheet->m_DVAL)
+	{
+		sheet->m_DVAL->serialize(xlsx_context->current_sheet().dataValidations());
+	}
+	if (!sheet->m_arNote.empty() && xls_global_info->Version < 0x0600)
+	{
+		xlsx_context->get_drawing_context().start_drawing(0);
+		for (size_t i = 0 ; i < sheet->m_arNote.size(); i++)
+		{
+			xlsx_context->get_drawing_context().start_drawing(0x0019);
+				convert(dynamic_cast<XLS::Note*>(sheet->m_arNote[i].get()));
+			xlsx_context->get_drawing_context().end_drawing();
+		}
+		xlsx_context->get_drawing_context().end_group();
 	}
 
-	for (size_t i = 0 ; i < global->m_arHFPictureDrawing.size(); i++)
+	for (size_t i = 0; i < sheet->m_arQUERYTABLE.size(); i++)
 	{
-		convert((ODRAW::OfficeArtDgContainer*)global->m_arHFPictureDrawing[i].get());
+		convert(dynamic_cast<XLS::QUERYTABLE*>(sheet->m_arQUERYTABLE[i].get()));
 	}
-
-    for (size_t i = 0 ; i < global->m_arWindow1.size(); i++)
+	for (size_t i = 0; i < sheet->m_arPIVOTVIEW.size(); i++)
 	{
-		global->m_arWindow1[i]->serialize(xlsx_context->workbook_views());
+		convert((XLS::PIVOTVIEW*)sheet->m_arPIVOTVIEW[i].get());
 	}
-    for (size_t i = 0 ; i < global->m_arUserBView.size(); i++)
-	{
-		global->m_arUserBView[i]->serialize(xlsx_context->custom_views());
-	}
-
-	for (size_t i = 0 ; i < global->m_arPIVOTCACHEDEFINITION.size(); i++)
-	{
-		convert((XLS::PIVOTCACHEDEFINITION*)global->m_arPIVOTCACHEDEFINITION[i].get());
-	}
-	xlsx_context->get_pivots_context().add_connections(xls_global_info->connections_stream.str());
 }
 
+void XlsConverter::convert (XLS::MacroSheetSubstream* sheet)
+{
+	if (sheet == NULL) return;
+
+	xls_global_info->current_sheet = sheet->ws_index_ + 1; 
+	
+	std::wstring name = xls_global_info->sheets_info[sheet->ws_index_].name;
+	if (name.empty()) 
+		name = L"MacroSheet_" + std::to_wstring(sheet->ws_index_ + 1);
+
+	xlsx_context->set_sheet_type(4);
+	xlsx_context->set_sheet_name(name) ;
+	xlsx_context->set_sheet_id(sheet->ws_index_ + 1);
+	xlsx_context->set_sheet_state(xls_global_info->sheets_info[sheet->ws_index_].state);
+
+	if (sheet->m_GLOBALS)
+	{
+		XLS::GLOBALS * globals  = dynamic_cast<XLS::GLOBALS *>(sheet->m_GLOBALS.get());
+		XLS::COLUMNS * columns = dynamic_cast<XLS::COLUMNS *>(sheet->m_COLUMNS.get());
+
+		if (columns)
+		{
+			globals->m_DefColWidth	= columns->m_DefColWidth; 
+		}
+		globals->m_DxGCol = sheet->m_DxGCol;		
+
+		if (globals->is_dialog)
+			xlsx_context->set_sheet_type(2);
+	}
+	convert_common(dynamic_cast<XLS::CommonSubstream*>(sheet));
+
+	convert((XLS::OBJECTS*)sheet->m_OBJECTS.get(), NULL);
+
+	if (sheet->m_Dimensions)
+	{
+		sheet->m_Dimensions->serialize(xlsx_context->current_sheet().dimension());
+	}
+	
+	if (!sheet->m_arNote.empty() && xls_global_info->Version < 0x0600)
+	{
+		xlsx_context->get_drawing_context().start_drawing(0);
+		for (size_t i = 0 ; i < sheet->m_arNote.size(); i++)
+		{
+			xlsx_context->get_drawing_context().start_drawing(0x0019);
+				convert(dynamic_cast<XLS::Note*>(sheet->m_arNote[i].get()));
+			xlsx_context->get_drawing_context().end_drawing();
+		}
+		xlsx_context->get_drawing_context().end_group();
+	}
+}
+
+void XlsConverter::convert(XLS::GlobalsSubstream* globals)
+{
+	if (globals == NULL) return;
+	
+	convert((XLS::THEME*)globals->m_THEME.get());
+	
+	convert((XLS::FORMATTING*)globals->m_Formating.get());	
+
+	convert((XLS::SHAREDSTRINGS*)globals->m_SHAREDSTRINGS.get());
+
+    for (size_t i = 0 ; i < globals->m_arLBL.size(); i++)
+	{
+		convert((XLS::LBL*)globals->m_arLBL[i].get());
+	}
+
+    for (size_t i = 0 ; i < globals->m_arMSODRAWINGGROUP.size(); i++)
+	{
+		convert((XLS::MSODRAWINGGROUP*)globals->m_arMSODRAWINGGROUP[i].get());
+	}
+
+	for (size_t i = 0 ; i < globals->m_arHFPictureDrawing.size(); i++)
+	{
+		convert((ODRAW::OfficeArtDgContainer*)globals->m_arHFPictureDrawing[i].get());
+	}
+	globals->serialize_protection(xlsx_context->workbook_protection());
+	
+	globals->serialize_format(xlsx_context->workbook_format());
+
+    for (size_t i = 0 ; i < globals->m_arWindow1.size(); i++)
+	{
+		globals->m_arWindow1[i]->serialize(xlsx_context->workbook_views());
+	}
+    for (size_t i = 0 ; i < globals->m_arUserBView.size(); i++)
+	{
+		globals->m_arUserBView[i]->serialize(xlsx_context->custom_views());
+	}
+
+	for (size_t i = 0 ; i < globals->m_arSUPBOOK.size(); i++)
+	{
+		convert((XLS::SUPBOOK*)globals->m_arSUPBOOK[i].get());
+	}
+
+	for (size_t i = 0 ; i < xls_global_info->arPIVOTCACHEDEFINITION.size(); i++)
+	{
+		convert((XLS::PIVOTCACHEDEFINITION*)xls_global_info->arPIVOTCACHEDEFINITION[i].get());
+	}
+}
+
+void XlsConverter::convert_chart_sheet(XLS::ChartSheetSubstream* chartsheet)
+{
+	if (chartsheet == NULL) return;
+		
+	xls_global_info->current_sheet = chartsheet->ws_index_ + 1; 
+	
+	std::wstring name = xls_global_info->sheets_info[chartsheet->ws_index_].name;
+	if (name.empty()) 
+		name = L"ChartSheet_" + std::to_wstring(chartsheet->ws_index_ + 1);
+
+	xlsx_context->set_sheet_type(3);
+	xlsx_context->set_sheet_name(name) ;
+	xlsx_context->set_sheet_id(chartsheet->ws_index_ + 1);
+	xlsx_context->set_sheet_state(xls_global_info->sheets_info[chartsheet->ws_index_].state);
+
+	convert_common(dynamic_cast<XLS::CommonSubstream*>(chartsheet));
+
+	if (xlsx_context->get_drawing_context().start_drawing(0x0005))		
+	{
+		xlsx_context->get_drawing_context().set_id(1);
+		convert(chartsheet);
+
+		xlsx_context->get_drawing_context().end_drawing();
+	}
+}
 typedef boost::unordered_map<XLS::FillInfo, int>	mapFillInfo;
 typedef boost::unordered_map<XLS::BorderInfo, int>	mapBorderInfo;
 
@@ -583,7 +784,7 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 				std::vector<XLS::FillInfo> fills_out;
 				fills_out.resize(xls_global_info->fill_x_ids.size());
 
-				for (mapFillInfo::iterator it = xls_global_info->fill_x_ids.begin(); it != xls_global_info->fill_x_ids.end(); it++)
+				for (mapFillInfo::iterator it = xls_global_info->fill_x_ids.begin(); it != xls_global_info->fill_x_ids.end(); ++it)
 				{
 					fills_out[it->second] = it->first;
 				}
@@ -599,7 +800,7 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 				std::vector<XLS::BorderInfo> borders_out;
 				borders_out.resize(xls_global_info->border_x_ids.size());
 
-				for (mapBorderInfo::iterator it = xls_global_info->border_x_ids.begin(); it != xls_global_info->border_x_ids.end(); it++)
+				for (mapBorderInfo::iterator it = xls_global_info->border_x_ids.begin(); it != xls_global_info->border_x_ids.end(); ++it)
 				{
 					borders_out[it->second] = it->first;
 				}
@@ -664,7 +865,6 @@ std::wstring XlsConverter::WriteMediaFile(char *data, int size, std::wstring typ
 	bool res = false;
 	std::wstring file_name = L"image" + std::to_wstring(id);
 	
-
 	if (type_ext == L"dib_data")
 	{
 		bool bPNG = false;
@@ -792,11 +992,29 @@ void XlsConverter::convert(ODRAW::OfficeArtBStoreContainer* art_bstore, int star
 		WriteMediaFile(art_bstore->rgfb[i]->pict_data, art_bstore->rgfb[i]->pict_size, art_bstore->rgfb[i]->pict_type, bin_id);
 	}
 }
+void XlsConverter::convert(XLS::FEAT11 * shared_feature)
+{
+	if (!shared_feature) return;
+
+	for (size_t i = 0; i < shared_feature->m_arFEAT.size(); i++)
+	{
+		xlsx_context->start_table();
+
+		std::wstringstream strm;
+		shared_feature->serialize(strm, i);
+
+		xlsx_context->get_tables_context().add_table(strm.str());
+
+		xlsx_context->end_table();	
+	}
+}
 
 void XlsConverter::convert(XLS::HLINK * HLINK_)
 {
+	if (!HLINK_) return;
 	XLS::HLink * hLink = dynamic_cast<XLS::HLink*>(HLINK_->m_HLink.get());
-	
+	if (!hLink) return;
+
 	std::wstring target;
 	
 	bool bExternal = false;
@@ -815,7 +1033,7 @@ void XlsConverter::convert(XLS::HLINK * HLINK_)
 
 	if (display.empty())	display = target;
 
-	xlsx_context->get_table_context().add_hyperlink( hLink->ref8.toString(), target, display, bExternal);
+	xlsx_context->get_sheet_context().add_hyperlink( hLink->ref8.toString(), target, display, bExternal);
 }
 
 void XlsConverter::convert(XLS::LBL * def_name)
@@ -872,9 +1090,45 @@ void XlsConverter::convert(XLS::BACKGROUND * back)
 
 }
 
-void XlsConverter::convert(XLS::THEME* theme)
+void XlsConverter::convert(XLS::THEME* THEME_)
 {
-	if (theme == NULL) return;
+	if (THEME_ == NULL) return;
+
+	XLS::Theme *theme = dynamic_cast<XLS::Theme*>(THEME_->m_Theme.get());
+	if (!theme) return;
+
+	if (theme->nThemeDataSize < 1) return;
+
+	std::wstring tempThemePath = xls_global_info->tempDirectory + FILE_SEPARATOR_STR + L"theme.temp";
+	
+	NSFile::CFileBinary file;	
+	if (!file.CreateFileW(tempThemePath)) return;
+
+	file.WriteFile((BYTE*)theme->pThemeData.get(), theme->nThemeDataSize);
+	file.CloseFile();
+
+	COfficeUtils OfficeUtils(NULL);
+	
+	ULONG nBufferSize = 0;
+	BYTE *pBuffer = NULL;
+
+	HRESULT hresult = OfficeUtils.LoadFileFromArchive(tempThemePath, L"theme1.xml", &pBuffer, nBufferSize);// todooo - parsing ThemeManager
+
+	if (hresult != S_OK || pBuffer == NULL)
+		hresult = OfficeUtils.LoadFileFromArchive(tempThemePath, L"theme/theme1.xml", &pBuffer, nBufferSize);
+	
+	if (hresult != S_OK || pBuffer == NULL)
+		hresult = OfficeUtils.LoadFileFromArchive(tempThemePath, L"theme/theme/theme1.xml", &pBuffer, nBufferSize);
+	//???  переписать по нормальному
+	if (hresult == S_OK && pBuffer != NULL)
+	{
+		xls_global_info->bThemePresent = true;
+		oox::package::theme_content_ptr content = oox::package::theme_content::create((char*)pBuffer, nBufferSize);
+		output_document->get_xl_files().add_theme(content);
+
+		delete []pBuffer;
+		pBuffer = NULL;
+	}
 }
 
 struct _group_object
@@ -916,17 +1170,6 @@ void XlsConverter::convert_old(XLS::OBJECTS* objects, XLS::WorksheetSubstream * 
 		
 		if (type_object == 0) 
 			continue;
-		//{
-		//	_group_object gr;		
-		//	if (group_objects.back().ind < group_objects.back().spgr->child_records.size())
-		//	{
-		//		gr.spgr		= dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
-		//		gr.count	= gr.spgr->child_records.size();
-		//		group_objects.push_back(gr);
-		//	}
-		//	else //сюда попадать не должно !!!!
-		//		continue;
-		//}
 
 		if (xlsx_context->get_drawing_context().start_drawing(type_object))
 		{
@@ -945,9 +1188,9 @@ void XlsConverter::convert_old(XLS::OBJECTS* objects, XLS::WorksheetSubstream * 
 			{
 				convert(obj->old_version.additional[i].get());
 			}
-
 			convert(image_obj);
 			convert(chart);
+			convert(obj);
 
 			xlsx_context->get_drawing_context().end_drawing();
 		}
@@ -956,13 +1199,6 @@ void XlsConverter::convert_old(XLS::OBJECTS* objects, XLS::WorksheetSubstream * 
 			elem++;
 			count++;
 		}	
-		//while ((group_objects.size() >0) && (group_objects.back().ind >= group_objects.back().count))
-		//{
-		//	group_objects.back().spgr = NULL;
-		//	group_objects.pop_back();
-		//	
-		//	xlsx_context->get_drawing_context().end_group();
-		//}
 	}
 }
 void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * sheet)
@@ -1024,13 +1260,11 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 
 		if (text_obj)
 		{ 
-			if (type_object <0) type_object = 0x0006;			
+			if (type_object < 0) type_object = 0x0006;			
 		}
 
 //-----------------------------------------------------------------------------
-		if (type_object < 0)continue;
-		
-		ODRAW::OfficeArtSpContainer *sp			= NULL;
+		if (type_object < 0)	continue;
 
 		if (type_object == 0)
 		{
@@ -1038,12 +1272,20 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 			if (group_objects.back().ind < group_objects.back().spgr->child_records.size())
 			{
 				gr.spgr		= dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
-				gr.count	= gr.spgr->child_records.size();
+				gr.count	= gr.spgr ? gr.spgr->child_records.size() : 0;
 				group_objects.push_back(gr);
 			}
 			else //сюда попадать не должно !!!!
 				continue;
 		}
+		if (obj->cmo.fUIObj)
+		{
+			group_objects.back().ind++;
+			continue; // automatically inserted by the application
+		}
+		
+		ODRAW::OfficeArtSpContainer *sp = NULL;
+
 		if ((group_objects.size() > 0) && (group_objects.back().spgr ) && ( group_objects.back().ind < group_objects.back().count))
 		{
 			sp	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(group_objects.back().spgr->child_records[group_objects.back().ind++].get());
@@ -1065,7 +1307,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 			{	
 				text_obj->preserve_enabled = true;
 
-				for (size_t i = 0 ; i < sheet->m_arNote.size(); i++)
+				for (size_t i = 0 ; sheet && i < sheet->m_arNote.size(); i++)
 				{
 					XLS::Note* note = dynamic_cast<XLS::Note*>(sheet->m_arNote[i].get());
 					if ((note) && (note->note_sh.idObj == obj->cmo.id))
@@ -1077,6 +1319,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 			}
 			convert(text_obj);
 			convert(chart);
+			convert(obj);
 
 			xlsx_context->get_drawing_context().end_drawing();
 		}
@@ -1098,7 +1341,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 void XlsConverter::convert(ODRAW::OfficeArtSpgrContainer * spgr)
 {
 	if (spgr == NULL) return;
-	if (spgr->anchor_type_ != ODRAW::OfficeArtRecord::CA_HF) return; //todooo проверить что тока для header/footer это нужно
+	if (spgr->anchor_type_ != ODRAW::OfficeArtRecord::CA_HF) return;
 
 	for (size_t i = 0; i < spgr->child_records.size(); i++)
 	{
@@ -1106,7 +1349,7 @@ void XlsConverter::convert(ODRAW::OfficeArtSpgrContainer * spgr)
 
 		if (xlsx_context->get_drawing_context().start_drawing(type_object))
 		{
-			xlsx_context->get_drawing_context().set_mode_vmlwrite(true);
+			xlsx_context->get_drawing_context().set_mode_HF(true);
 			convert(spgr->child_records[i].get());
 
 			xlsx_context->get_drawing_context().end_drawing();
@@ -1141,6 +1384,10 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 		{
 			convert(dynamic_cast<ODRAW::OfficeArtFOPT *>(art));
 		}break;
+	case XLS::typeOfficeArtTertiaryFOPT://properties
+		{
+			convert(dynamic_cast<ODRAW::OfficeArtTertiaryFOPT *>(art));
+		}break;
 	case XLS::typeOfficeArtFSP:
 		{
 			convert(dynamic_cast<ODRAW::OfficeArtFSP *>(art));
@@ -1166,7 +1413,12 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 			ODRAW::OfficeArtClientAnchorSheet * ch = dynamic_cast<ODRAW::OfficeArtClientAnchorSheet *>(art);
         
 			ch->calculate();
-			//xlsx_context->get_drawing_context().set_child_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
+			if (xlsx_context->get_drawing_context().getType()	== oox::external_items::typeGroup &&
+				xlsx_context->get_drawing_context().getLevel()	== 1)
+			{
+				ch->calculate_1();
+				xlsx_context->get_drawing_context().set_child_anchor(ch->_x, ch->_y, ch->_cx, ch->_cy);
+			}
 			xlsx_context->get_drawing_context().set_sheet_anchor(ch->colL, ch->_dxL, ch->rwT, ch->_dyT, ch->colR, ch->_dxR, ch->rwB, ch->_dyB);
 		}break;
 	case XLS::typeOfficeArtBStoreContainer:
@@ -1256,7 +1508,7 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			case NSOfficeDrawing::fillColorExt:
 			{
 				ODRAW::fillColor * fill = (ODRAW::fillColor *)(props[i].get());
-				ODRAW::OfficeArtCOLORREF color(fill->op);
+				ODRAW::OfficeArtCOLORREF color((_UINT32)fill->op);
 				if (!color.sColorRGB.empty())
 					xlsx_context->get_drawing_context().set_fill_color(color.nColorRGB, color.sColorRGB);
 				else if (color. fPaletteIndex)
@@ -1280,7 +1532,7 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			case NSOfficeDrawing::fillBackColorExt:
 			{
 				ODRAW::fillColor * fill = (ODRAW::fillColor *)(props[i].get());
-				ODRAW::OfficeArtCOLORREF color(fill->op);
+				ODRAW::OfficeArtCOLORREF color((_UINT32)fill->op);
 				if (!color.sColorRGB.empty())
 					xlsx_context->get_drawing_context().set_fill_color(color.nColorRGB,color.sColorRGB, true );
 				else if (color. fPaletteIndex)
@@ -1324,12 +1576,16 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			{
 				xlsx_context->get_drawing_context().set_fill_focus(props[i]->op);
 			}break;
+			case NSOfficeDrawing::fillShadeType:
+			{
+				ODRAW::fillShadeType *shadeType = dynamic_cast<ODRAW::fillShadeType*>(props[i].get());
+			}break;
 			case NSOfficeDrawing::fillShadePreset:
 			{
 			}break;
 			case NSOfficeDrawing::fillShadeColors:
 			{
-				ODRAW::fillShadeColors *shadeColors = (ODRAW::fillShadeColors *)(props[i].get());
+				ODRAW::fillShadeColors *shadeColors = dynamic_cast<ODRAW::fillShadeColors*>(props[i].get());
 
 				for (size_t i = 0 ; (shadeColors) && (i < shadeColors->fillShadeColors_complex.data.size()); i++)
 				{
@@ -1351,9 +1607,6 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 					}
 				}
 			}break;
-			case NSOfficeDrawing::fillShadeType:
-			{
-			}break;
 			case NSOfficeDrawing::fillBoolean:
 			{
 				ODRAW::FillStyleBooleanProperties * bools = (ODRAW::FillStyleBooleanProperties *)(props[i].get());
@@ -1362,6 +1615,10 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 					if (bools->fUsefFilled && bools->fFilled == false) 
 						xlsx_context->get_drawing_context().set_fill_type(0);
 				}
+			}break;
+			default:
+			{
+				i =i;
 			}break;
 		}
 	}
@@ -1376,7 +1633,7 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 		{
 			case NSOfficeDrawing::lineColor:
 			{
-				ODRAW::OfficeArtCOLORREF color(props[i]->op);
+				ODRAW::OfficeArtCOLORREF color((_UINT32)props[i]->op);
 				if (!color.sColorRGB.empty())
 					xlsx_context->get_drawing_context().set_line_color(color.nColorRGB, color.sColorRGB);
 				else if (color. fPaletteIndex)
@@ -1498,7 +1755,7 @@ void XlsConverter::convert_blip(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 				std::wstring target;
 
 				int id = props[i]->op;
-				if (xlsx_context->get_drawing_context().get_mode_vmlwrite()) 
+				if (xlsx_context->get_drawing_context().get_mode_HF()) 
 					id += 3000;
 				
 				std::wstring rId = xlsx_context->get_mediaitems().find_image(id , target, isIternal);
@@ -1639,11 +1896,11 @@ void XlsConverter::convert_geometry_text(std::vector<ODRAW::OfficeArtFOPTEPtr> &
 				ODRAW::GeometryTextBooleanProperties *bools = dynamic_cast<ODRAW::GeometryTextBooleanProperties*>(props[i].get());
 				if (bools) 
 				{
-					if (bools->fUsegFBold		&& bools->fBold)		xlsx_context->get_drawing_context().set_wordart_bold	(true); 
-					if (bools->fUsegFItalic		&& bools->fItalic)		xlsx_context->get_drawing_context().set_wordart_italic	(true); 
-					if (bools->fUsegFVertical	&& bools->fVertical)	xlsx_context->get_drawing_context().set_wordart_vertical(true); 
-					if (bools->fUsegFUnderline	&& bools->fUnderline)	xlsx_context->get_drawing_context().set_wordart_underline(true); 
-					if (bools->fStrikethrough	&& bools->fStrikethrough)xlsx_context->get_drawing_context().set_wordart_strike(true);
+					if (bools->fUsegFBold			&& bools->fBold)		xlsx_context->get_drawing_context().set_wordart_bold	(true); 
+					if (bools->fUsegFItalic			&& bools->fItalic)		xlsx_context->get_drawing_context().set_wordart_italic	(true); 
+					if (bools->fUsegFVertical		&& bools->fVertical)	xlsx_context->get_drawing_context().set_wordart_vertical(true); 
+					if (bools->fUsegFUnderline		&& bools->fUnderline)	xlsx_context->get_drawing_context().set_wordart_underline(true); 
+					if (bools->fUsegFStrikethrough	&& bools->fStrikethrough)xlsx_context->get_drawing_context().set_wordart_strike(true);
 
 					//if (bools->fUsegFShrinkFit && bools->fShrinkFit)
 				}
@@ -1783,6 +2040,23 @@ void XlsConverter::convert_group_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & p
 					xlsx_context->get_drawing_context().set_hyperlink( sTarget, sDisplay, bExternal);				
 				}
 			}break;
+		case 0x03A9:
+			{
+				ODRAW::metroBlob *alternative_data = dynamic_cast<ODRAW::metroBlob*>(props[i].get());
+				if (alternative_data)
+				{
+					xlsx_context->get_drawing_context().set_alternative_drawing( alternative_data->xmlString);				
+				}
+			}break;
+		case 0x03BF:
+			{
+				ODRAW::GroupShapeBooleanProperties *bools = dynamic_cast<ODRAW::GroupShapeBooleanProperties*>(props[i].get());
+				if (bools)
+				{
+					if (bools->fHidden && bools->fUsefHidden)	
+						xlsx_context->get_drawing_context().set_hidden(true);
+				}
+			}break;
 		}
 	}
 }
@@ -1817,13 +2091,28 @@ void XlsConverter::convert_transform(std::vector<ODRAW::OfficeArtFOPTEPtr> & pro
 		{
 			case 0x0004:
 			{
-				double d = props[i]->op / 65536.;
-				d *= 60000; //60 000 per 1 gr - 19.5.5 oox 
+				double d = props[i]->op / 65536.;				
+				if (d < 0) d += 360;
 
-				xlsx_context->get_drawing_context().set_rotation((int)d);
+				xlsx_context->get_drawing_context().set_rotation(d);
 			}break;
 		}
 	}
+}
+void XlsConverter::convert(ODRAW::OfficeArtTertiaryFOPT	* fort)
+{
+	if (fort == NULL) return;
+
+	convert_shape			(fort->fopt.Shape_props);
+	convert_group_shape		(fort->fopt.GroupShape_props);
+	convert_transform		(fort->fopt.Transform_props);
+	convert_blip			(fort->fopt.Blip_props);
+	convert_geometry		(fort->fopt.Geometry_props);
+	convert_fill_style		(fort->fopt.FillStyle_props);
+	convert_line_style		(fort->fopt.LineStyle_props);
+	convert_shadow			(fort->fopt.Shadow_props);
+	convert_text			(fort->fopt.Text_props);
+	convert_geometry_text	(fort->fopt.GeometryText_props);
 }
 void XlsConverter::convert(ODRAW::OfficeArtFOPT * fort)
 {
@@ -1853,7 +2142,7 @@ void XlsConverter::convert(XLS::SHAREDSTRINGS* sharedstrings)
 			CP_XML_ATTR(L"xmlns", "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
 			if (sharedstrings)
 			{	
-				for (std::list<XLS::BaseObjectPtr>::iterator it = sharedstrings->elements_.begin(); it != sharedstrings->elements_.end(); it++)
+				for (std::list<XLS::BaseObjectPtr>::iterator it = sharedstrings->elements_.begin(); it != sharedstrings->elements_.end(); ++it)
 				{
 					(*it)->serialize(CP_XML_STREAM());
 				}
@@ -1873,14 +2162,10 @@ void XlsConverter::convert(XLS::SHAREDSTRINGS* sharedstrings)
 		}
 	}
 }
-
 void XlsConverter::convert(XLS::TxO * text_obj)
 {
 	if (text_obj == NULL) return;
 	
-	std::wstringstream strm;
-	text_obj->serialize(strm);
-
 	int rot = text_obj->rot;
 
 	if (rot > 0)
@@ -1912,22 +2197,150 @@ void XlsConverter::convert(XLS::TxO * text_obj)
 	xlsx_context->get_drawing_context().set_text_align		(text_obj->hAlignment);
 	xlsx_context->get_drawing_context().set_text_vert_align	(text_obj->vAlignment);
 	
+	std::wstringstream strm, strm_vml;
+
+	text_obj->serialize(strm);	
 	xlsx_context->get_drawing_context().set_text(strm.str());
+
+	text_obj->serialize_vml(strm_vml);	
+	xlsx_context->get_drawing_context().set_text_vml(strm_vml.str());
+
 }
 
-void XlsConverter::convert_chart_sheet(XLS::ChartSheetSubstream * chart)
+void XlsConverter::convert(XLS::Obj * obj)
 {
-	if (chart == NULL) return;
-		
-	if (xlsx_context->get_drawing_context().start_drawing(0x0005))		
-	{
-		xlsx_context->get_drawing_context().set_id(1);
-		convert(chart);
+	if ( obj == NULL ) return;
 
-		xlsx_context->get_drawing_context().end_drawing();
+//controls & objects
+	if ( obj->cmo.ot == 8 && obj->pictFmla.fExist && obj->pictFlags.fExist)
+	{
+		std::wstring info;
+		if (obj->pictFmla.fmla.bFmlaExist)
+		{
+			if (obj->pictFmla.fmla.bInfoExist)
+				info = obj->pictFmla.fmla.embedInfo.strClass.value();
+		}
+		if (obj->pictFlags.fCtl && obj->pictFlags.fPrstm)//Controls Storage
+		{
+		//binary data
+			xlsx_context->get_mediaitems().create_activeX_path(xlsx_path);
+			
+			std::wstring target_bin;
+			std::wstring objectId_bin = xlsx_context->get_mediaitems().add_control_activeX(target_bin);
+
+			NSFile::CFileBinary file;
+			if ( file.CreateFileW(xlsx_context->get_mediaitems().activeX_path() + target_bin) )
+			{		
+				file.WriteFile(xls_global_info->controls_data.first.get() + obj->pictFmla.lPosInCtlStm, obj->pictFmla.cbBufInCtlStm);
+				file.CloseFile();
+			}
+			std::wstring objectId_xml = xlsx_context->start_activeX();	
+			xlsx_context->get_drawing_context().set_control_activeX(objectId_xml);
+	
+			xlsx_context->current_activeX().setDataBinRid(objectId_bin, target_bin);
+			xlsx_context->current_activeX().setProgId(info);
+			xlsx_context->current_activeX().setLicense(obj->pictFmla.key.keyBuf);
+
+		}
+		else if (!obj->pictFlags.fPrstm) 
+		{
+			std::wstring object_stream;
+			if (obj->pictFlags.fDde)	object_stream = L"LNK";
+			else						object_stream = L"MBD";
+		
+			object_stream += XmlUtils::IntToString(obj->pictFmla.lPosInCtlStm, L"%08X") + L"/";
+			if (xls_file->storage_->isDirectory(object_stream))
+			{
+				xlsx_context->get_mediaitems().create_embeddings_path(xlsx_path);
+				
+				std::wstring target;
+				std::wstring objectId = xlsx_context->get_mediaitems().add_embedding(target, info);
+
+				POLE::Storage *storageOle = new POLE::Storage((xlsx_context->get_mediaitems().embeddings_path() + target).c_str());
+
+				if ((storageOle) && (storageOle->open(true, true)))
+				{			
+					xls_file->copy(0, object_stream, storageOle, false, true);
+
+					storageOle->close();
+					delete storageOle;
+				}
+				xlsx_context->current_sheet().sheet_rels().add(oox::relationship(
+					objectId, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject", L"../embeddings/" + target));
+
+				xlsx_context->get_drawing_context().set_ole_object(objectId, info);
+			}
+		}
+		if (obj->pictFmla.key.fmlaLinkedCell.bFmlaExist)
+		{
+			std::wstring link = obj->pictFmla.key.fmlaLinkedCell.fmla.getAssembledFormula(true);
+			xlsx_context->get_drawing_context().set_object_link(link);
+		}
+		if (obj->pictFmla.key.fmlaListFillRange.bFmlaExist)
+		{
+			std::wstring link = obj->pictFmla.key.fmlaListFillRange.fmla.getAssembledFormula(true);
+			xlsx_context->get_drawing_context().set_object_fmlaRange(link);
+		}
+	}
+	if (obj->sbs.fExist)
+	{
+		xlsx_context->get_drawing_context().set_object_x_val(obj->sbs.iVal);
+		xlsx_context->get_drawing_context().set_object_x_min(obj->sbs.iMin);
+		xlsx_context->get_drawing_context().set_object_x_max(obj->sbs.iMax);
+		xlsx_context->get_drawing_context().set_object_x_inc(obj->sbs.dInc);
+		xlsx_context->get_drawing_context().set_object_x_page(obj->sbs.dPage);
+	}
+	if (obj->list.fExist)
+	{
+		xlsx_context->get_drawing_context().set_object_x_sel(obj->list.iSel);
+		xlsx_context->get_drawing_context().set_object_x_sel_type(obj->list.wListSelType);
+		xlsx_context->get_drawing_context().set_object_lct(obj->list.lct);
+
+		if (obj->list.fmla.bFmlaExist)
+		{
+			std::wstring link = obj->list.fmla.fmla.getAssembledFormula(true);
+			xlsx_context->get_drawing_context().set_object_fmlaRange(link);
+		}
+		if (obj->list.dropData)
+		{
+			xlsx_context->get_drawing_context().set_object_drop_style(obj->list.dropData->wStyle);
+			xlsx_context->get_drawing_context().set_object_drop_lines(obj->list.dropData->cLine);
+		}
+	}
+	if (obj->checkBox.fExist)
+	{
+	//unsigned short fChecked;
+	//unsigned short accel;
+	//bool fNo3d;
+	}
+	if (obj->radioButton.fExist)
+	{
+	//unsigned short idRadNext;
+	//Boolean<unsigned short> fFirstBtn;
+	}
+	if (obj->edit.fExist)
+	{
+	//unsigned short ivtEdit;
+	//Boolean<unsigned short> fMultiLine;
+	//unsigned short fVScroll;
+	//unsigned short id;
+	}
+	bool full_ref = false;
+	if (obj->cmo.ot > 0x06) full_ref = true;
+	
+	if (obj->linkFmla.fExist && obj->linkFmla.fmla.bFmlaExist)
+	{		
+		std::wstring link = obj->linkFmla.fmla.fmla.getAssembledFormula(full_ref);
+		xlsx_context->get_drawing_context().set_object_link(link);
+	}
+	if (obj->macro.fExist && obj->macro.fmla.bFmlaExist)
+	{
+		std::wstring macro = obj->macro.fmla.fmla.getAssembledFormula(full_ref);
+		xlsx_context->get_drawing_context().set_macro(macro);
 	}
 }
-void XlsConverter::convert(XLS::ChartSheetSubstream * chart)
+
+void XlsConverter::convert(XLS::ChartSheetSubstream* chart)
 {
 	if (chart == NULL) return;
 
@@ -1935,7 +2348,7 @@ void XlsConverter::convert(XLS::ChartSheetSubstream * chart)
 	//convert(chart->m_OBJECTSCHART.get());непонятные какие то текстбоксы - пустые и бз привязок
 }
 
-void XlsConverter::convert(XLS::PIVOTVIEW * pivot_view)
+void XlsConverter::convert(XLS::PIVOTVIEW* pivot_view)
 {
 	if (pivot_view == NULL) return;
 
@@ -1953,7 +2366,7 @@ void XlsConverter::convert(XLS::PIVOTVIEW * pivot_view)
 	}
 }
 
-void XlsConverter::convert(XLS::PIVOTCACHEDEFINITION * pivot_cached)
+void XlsConverter::convert(XLS::PIVOTCACHEDEFINITION* pivot_cached)
 {
 	if (pivot_cached == NULL) return;
 
@@ -1968,4 +2381,30 @@ void XlsConverter::convert(XLS::PIVOTCACHEDEFINITION * pivot_cached)
 	{
 		xlsx_context->get_pivots_context().add_cache_external(xls_global_info->mapPivotCacheExternal);
 	}
+}
+
+void XlsConverter::convert(XLS::SUPBOOK* external)
+{
+	if (external == NULL) return;
+	if (external->IsExternal() == false) return;
+
+	xlsx_context->start_external();
+
+	external->serialize(xlsx_context->current_external().externalData());
+
+	if (!external->sExternPathLink.empty()) //??? 
+	{
+		xlsx_context->current_external().add_rels(false, L"rId1", external->sExternPathLink, oox::external_items::typeExternalLink);
+	}
+
+	xlsx_context->end_external();
+}
+void XlsConverter::convert(XLS::QUERYTABLE* query_table)
+{
+	if (query_table == NULL) return;
+
+	std::wstringstream strm;		
+	query_table->serialize(strm);
+
+	xlsx_context->add_query_table(strm.str());
 }

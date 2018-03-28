@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -246,7 +246,7 @@ namespace PPTX
 				m_elem.reset(new Logic::Pic(oReader));
 			else if (name == _T("cxnSp"))
 				m_elem.reset(new Logic::CxnSp(oReader));
-			else if (name == _T("grpSp") || name == _T("wgp") || name == _T("spTree") || name == _T("lockedCanvas"))
+			else if (name == _T("grpSp") || name == _T("wgp") || name == _T("spTree") || name == _T("lockedCanvas") || name == _T("wpc"))
 				m_elem.reset(new Logic::SpTree(oReader));
 			else if (name == _T("graphicFrame"))
 			{
@@ -296,7 +296,7 @@ namespace PPTX
 				m_elem.reset(new Logic::Pic(node));
 			else if (name == _T("cxnSp"))
 				m_elem.reset(new Logic::CxnSp(node));
-			else if (name == _T("grpSp") || name == _T("wgp") || name == _T("spTree") || name == _T("lockedCanvas"))
+			else if (name == _T("grpSp") || name == _T("wgp") || name == _T("spTree") || name == _T("lockedCanvas") || name == _T("wpc"))
 				m_elem.reset(new Logic::SpTree(node));
 			else if (name == _T("graphicFrame"))
 				m_elem.reset(new Logic::GraphicFrame(node));
@@ -358,12 +358,12 @@ namespace PPTX
 
 					if (_type == SPTREE_TYPE_AUDIO)	
 					{
-						OOX::Audio *pAudio = new OOX::Audio(pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+						OOX::Audio *pAudio = new OOX::Audio(NULL, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 						p->blipFill.additionalFile = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(pAudio));
 					}
 					else if (_type == SPTREE_TYPE_VIDEO)
 					{
-						OOX::Video* pVideo = new OOX::Video(pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+						OOX::Video* pVideo = new OOX::Video(NULL, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 						p->blipFill.additionalFile = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(pVideo));
 					}
 					

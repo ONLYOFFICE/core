@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -63,6 +63,12 @@ public:
 	int m_nTabWidth;				//(defaultTabStop)\deftabN	Default tab width in twips (default is 720, i.e., 0.5").
 	int m_nZoom;					// viewscaleN 	Zoom level of the document; the N argument is a value representing a percentage (default is 100).
 
+	int m_nDrawingGridHorizontalSpacing;
+	int m_nDrawingGridVerticalSpacing;
+	int m_nDrawingGridHorizontalOrigin;
+	int m_nDrawingGridVerticalOrigin;
+	int m_nDisplayHorizontalDrawingGridEvery;	//def = 3
+	int m_nDisplayVerticalDrawingGridEvery;		//def = 0
 
 //Page Borders
 	int m_bDorderSurroundHeader; //(bordersDoNotSurroundHeader)\pgbrdrhead	Page border surrounds header.
@@ -197,6 +203,13 @@ public:
 		m_nDisplayBackground		= PROP_DEF;
 		m_bUseTabAlignment			= PROP_DEF;
 
+		m_nDrawingGridHorizontalSpacing		= PROP_DEF;
+		m_nDrawingGridVerticalSpacing		= PROP_DEF;
+		m_nDrawingGridHorizontalOrigin		= PROP_DEF;
+		m_nDrawingGridVerticalOrigin		= PROP_DEF;
+		m_nDisplayHorizontalDrawingGridEvery= PROP_DEF;		//def = 3
+		m_nDisplayVerticalDrawingGridEvery	= PROP_DEF;		//def = 0
+
 		m_aSpecialFootnotes.clear();
 		m_nFootnoteNumberingFormat	= PROP_DEF;
 		m_nFootnoteStart			= PROP_DEF;
@@ -315,15 +328,11 @@ public:
 	class ColumnProperty
 	{
 	public: 
-		class CollumnVar
+		struct CollumnVar
 		{
-			public: int m_nColumnSpaceToRightOfCol;  // colsrN 	Space to right of column in twips; used to specify formatting for variable-width columns.
-					int m_nColumnWidth;  // colwN 	Width of column in twips; used to override the default constant width setting for variable-width columns.
-					CollumnVar()
-				{
-					m_nColumnSpaceToRightOfCol = PROP_DEF;
-					m_nColumnWidth = PROP_DEF;
-				}
+			int m_nColumnSpaceToRightOfCol	= PROP_DEF;		// colsrN 	Space to right of column in twips; used to specify formatting for variable-width columns.
+			int m_nColumnWidth				= PROP_DEF;		// colwN 	Width of column in twips; used to override the default constant width setting for variable-width columns.
+
 		};
 		std::vector< CollumnVar > m_aCollumnProperty;
 		ColumnProperty()
@@ -570,8 +579,6 @@ public:
 		DEFAULT_PROPERTY	( m_nColumnSpace )
 		DEFAULT_PROPERTY	( m_bColumnLineBetween )
 
-		m_oCollumnProperty.m_aCollumnProperty.resize( m_nColumnNumber );
-
 		//Footnotes and Endnotes
 		DEFAULT_PROPERTY_DEF( m_eFootnotesJust,		fj_none )
 		DEFAULT_PROPERTY	( m_nFootnotesStart )
@@ -669,7 +676,7 @@ public:
 		if( RENDER_TO_RTF_PARAM_NO_SECT != oRenderParameter.nType )
 			sResult += L"\\sectd";
 
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for( size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
 		}

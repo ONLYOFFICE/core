@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -30,14 +30,17 @@
  *
  */
 #include "MathParaWrapper.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Math/oMathPara.h"
-#include "../../../ASCOfficeDocxFile2/BinWriter/BinWriters.h"
-#include "../../../ASCOfficeDocxFile2/BinReader/FileWriter.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Math/oMathPara.h"
+#include "../../../../ASCOfficeDocxFile2/BinWriter/BinWriters.h"
+#include "../../../../ASCOfficeDocxFile2/BinReader/FileWriter.h"
 
 namespace PPTX
 {
 	namespace Logic
 	{
+		MathParaWrapper::~MathParaWrapper()
+		{
+		}
 		MathParaWrapper& MathParaWrapper::operator=(const MathParaWrapper& oSrc)
 		{
 			//todo

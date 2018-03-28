@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of PIVOTCACHEDEFINITION union of records 
 class PIVOTCACHEDEFINITION: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTCACHEDEFINITION)
@@ -52,14 +50,17 @@ public:
 	int serialize_definitions(std::wostream & stream);
 	int serialize_records(std::wostream & stream);
 
-	static const ElementType	type = typePIVOTCACHEDEFINITION;
+	static const ElementType type = typePIVOTCACHEDEFINITION;
 
 	BaseObjectPtr	m_SXStreamID;
 	BaseObjectPtr	m_SXVS;
 	BaseObjectPtr	m_SXSRC;
 	BaseObjectPtr	m_SXADDLCACHE;
-
+//--------------------------------------------------------------------------
 	GlobalWorkbookInfoPtr global_info_;
+
+	BaseObjectPtr	m_PIVOTVIEWEX;
+	BaseObjectPtr	m_PIVOTADDL;
 };
 
 } // namespace XLS

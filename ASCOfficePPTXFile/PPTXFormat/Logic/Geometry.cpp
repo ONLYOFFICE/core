@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,7 +53,8 @@ namespace PPTX
 
 				lpShapeElement = new NSPresentationEditor::CShapeElement(NSBaseShape::pptx, (int)_lspt);
 				std::wstring strAdjustValues = lpGeom.GetODString();
-				lpShapeElement->m_oShape.m_pShape->LoadAdjustValuesList(strAdjustValues);
+				
+				lpShapeElement->m_pShape->getBaseShape()->LoadAdjustValuesList(strAdjustValues);
 			}
 			else if (this->is<PPTX::Logic::CustGeom>())
 			{
@@ -70,19 +71,21 @@ namespace PPTX
 
 			LONG lCoordSize = 100000;
 
-			lpShapeElement->m_oShape.m_pShape->SetWidthHeightLogic(dCoordSizeX, dCoordSizeY);
-			lpShapeElement->m_oShape.m_pShape->ReCalculate();
+			lpShapeElement->m_pShape->getBaseShape()->SetWidthHeightLogic(dCoordSizeX, dCoordSizeY);
+			lpShapeElement->m_pShape->getBaseShape()->ReCalculate();
 
 			pOOXToVMLRenderer->put_Width((double)lCoordSize / dCoordSizeX);
 			pOOXToVMLRenderer->put_Height((double)lCoordSize / dCoordSizeY);						
 
 			CGeomShapeInfo oInfo;
+			
 			oInfo.m_dLeft	= 0;
 			oInfo.m_dTop	= 0;
+			
 			oInfo.m_dWidth	= dCoordSizeX;
 			oInfo.m_dHeight	= dCoordSizeY;
 
-			NSPresentationEditor::CPath& oPath = lpShapeElement->m_oShape.m_pShape->m_oPath;
+			NSPresentationEditor::CPath& oPath = lpShapeElement->m_pShape->getBaseShape()->m_oPath;
 			
 			COOXToVMLGeometry* pOOXToVMLGeometry = dynamic_cast<COOXToVMLGeometry*>(pOOXToVMLRenderer);
 
@@ -108,19 +111,19 @@ namespace PPTX
 			if(NULL != pOOXToVMLGeometry)
 				pOOXToVMLGeometry->ResultPath(&strPath);
 
-			if (lpShapeElement->m_oShape.m_pShape->m_arTextRects.size() <= 0)
+			if (lpShapeElement->m_pShape->getBaseShape()->m_arTextRects.size() <= 0)
 			{
 				strRect = _T("0,0,100000,100000");
 			}
 			else
 			{
-				Aggplus::RECT& txRect = lpShapeElement->m_oShape.m_pShape->m_arTextRects[0];
+				Aggplus::RECT& txRect = lpShapeElement->m_pShape->getBaseShape()->m_arTextRects[0];
 				//double dkoefX = (double)lCoordSize / max(1, dCoordSizeX);
 				//double dkoefY = (double)lCoordSize / max(1, dCoordSizeY);
 
 				double _dWidth = ShapeSize;
 				double _dHeight = ShapeSize;
-				lpShapeElement->m_oShape.m_pShape->GetWidthHeightLogic(_dWidth, _dHeight);
+				lpShapeElement->m_pShape->getBaseShape()->GetWidthHeightLogic(_dWidth, _dHeight);
 
                 double dkoefX = (double)lCoordSize / (std::max)(1., _dWidth);
                 double dkoefY = (double)lCoordSize / (std::max)(1., _dHeight);
@@ -130,6 +133,8 @@ namespace PPTX
                             std::to_wstring((int)(dkoefX * txRect.right))   + L"," +
                             std::to_wstring((int)(dkoefY * txRect.bottom));
 			}
+            if (lpShapeElement)
+                delete lpShapeElement;
         }
 	}
 }

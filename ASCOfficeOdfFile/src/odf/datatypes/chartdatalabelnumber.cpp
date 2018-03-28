@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,9 +41,10 @@ std::wostream & operator << (std::wostream & _Wostream, const chart_data_label_n
 {
 	switch(_Val.get_type())
 	{
-	case   chart_data_label_number::none: _Wostream <<  L"none"; break;
-	case   chart_data_label_number::value: _Wostream <<  L"value"; break;
-	case   chart_data_label_number::percentage : _Wostream <<  L"percentage"; break;
+	case chart_data_label_number::none:					_Wostream <<  L"none"; break;
+	case chart_data_label_number::value:				_Wostream <<  L"value"; break;
+	case chart_data_label_number::percentage :			_Wostream <<  L"percentage"; break;
+	case chart_data_label_number::value_and_percentage:	_Wostream <<  L"value-and-percentage"; break;
 	}
     return _Wostream;    
 }
@@ -59,9 +60,10 @@ chart_data_label_number chart_data_label_number::parse(const std::wstring & Str)
         return chart_data_label_number( value );
     else if (tmp == L"percentage")
         return chart_data_label_number( percentage );
-    else
+	else if (tmp == L"value-and-percentage")
+		return chart_data_label_number( value_and_percentage );
+	else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return chart_data_label_number( none );
     }
 }

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,6 +33,7 @@
 #ifndef OOX_CORE_INCLUDE_H_
 #define OOX_CORE_INCLUDE_H_
 
+#include "Docx.h"
 #include "File.h"
 #include "../Base/Nullable.h"
 
@@ -41,11 +42,16 @@ namespace OOX
 	class CCore : public OOX::File
 	{
 	public:
-		CCore()
+		CCore(OOX::Document* pMain) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pCore = this;
 		}
-		CCore(const CPath& oPath)
+		CCore(OOX::Document* pMain, const CPath& oPath) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pCore = this;
+
 			read( oPath );
 		}
 		virtual ~CCore()

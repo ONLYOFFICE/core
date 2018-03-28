@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -75,7 +75,6 @@ void HyperlinkMoniker::load(XLS::CFRecord& record)
 	{
 		data.reset(new URLMoniker);
 	}
-
 	else if (FileMoniker_CLSID == clsid)
 	{
 		data.reset(new FileMoniker);
@@ -94,10 +93,13 @@ void HyperlinkMoniker::load(XLS::CFRecord& record)
 	}
 	else
 	{
-		// EXCEPT::RT::WrongBiffRecord("Unsupported type of HyperlinkMoniker.", record.getTypeString());
+		//throw;
 	}
 
-	record >> *data;
+	if (data)
+	{
+		data->load(record);
+	}
 }
 
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,11 +31,11 @@
  */
 
 #include "WINDOW.h"
-#include <Logic/Biff_records/Window2.h>
-#include <Logic/Biff_records/PLV.h>
-#include <Logic/Biff_records/Scl.h>
-#include <Logic/Biff_records/Pane.h>
-#include <Logic/Biff_records/Selection.h>
+#include "../Biff_records/Window2.h"
+#include "../Biff_records/PLV.h"
+#include "../Biff_records/Scl.h"
+#include "../Biff_records/Pane.h"
+#include "../Biff_records/Selection.h"
 
 namespace XLS
 {
@@ -64,6 +64,8 @@ const bool WINDOW::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+	global_info = proc.getGlobalWorkbookInfo();
+
 	m_Window2 = elements_.back();
 	elements_.pop_back();
 
@@ -107,6 +109,11 @@ int WINDOW::serialize(std::wostream & stream)
 		{	
 			CP_XML_NODE(L"sheetView")
 			{	
+				//if (global_info->bWorkbookProtectExist)	
+				//{
+				//	CP_XML_ATTR(L"windowProtection", true);
+				//}
+
 				if (window2->fSelected)				CP_XML_ATTR(L"tabSelected"		, true);
 				if (window2->fDspFmlaRt)			CP_XML_ATTR(L"showFormulas"		, true);
 				if (!window2->fDspGridRt)			CP_XML_ATTR(L"showGridLines"	, false);
@@ -129,9 +136,9 @@ int WINDOW::serialize(std::wostream & stream)
 				{
 					CP_XML_ATTR(L"view", L"pageLayout");
 				}
-				if ((window2->topLeftCell.value()) && (*window2->topLeftCell.value() != L"A1"))
+				if (window2->topLeftCell != L"A1")
 				{
-					CP_XML_ATTR(L"topLeftCell", *window2->topLeftCell.value());
+					CP_XML_ATTR(L"topLeftCell", window2->topLeftCell);
 				}
 				if ( window2->icvHdr != (_UINT16)64)
 				{
@@ -159,8 +166,8 @@ int WINDOW::serialize(std::wostream & stream)
 						if (pane->x != (_INT32)0)	CP_XML_ATTR(L"xSplit", pane->x);
 						if (pane->y != (_INT32)0)	CP_XML_ATTR(L"ySplit", pane->y);
 						
-						if ((pane->topLeftCell.value()) && (*pane->topLeftCell.value() != L"A1"))
-							CP_XML_ATTR(L"topLeftCell", *pane->topLeftCell.value());
+						if (pane->topLeftCell != L"A1")
+							CP_XML_ATTR(L"topLeftCell", pane->topLeftCell);
 						switch(pane->pnnAcct)
 						{
 						case PaneType::REVTPNNBOTRIGHT:	CP_XML_ATTR(L"activePane", L"bottomRight");	break;

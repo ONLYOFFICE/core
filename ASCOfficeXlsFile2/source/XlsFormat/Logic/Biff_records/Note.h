@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,13 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/NoteSh.h>
-#include <Logic/Biff_structures/NoteRR.h>
+#include "../Biff_structures/NoteSh.h"
+#include "../Biff_structures/NoteRR.h"
 
 namespace XLS
 {
-
-// Logical representation of Note record in BIFF8
 class Note: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Note)
@@ -49,15 +47,12 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeNote;
+	static const ElementType type = typeNote;
 
 	NoteSh note_sh;
 // 	NoteRR note_rr;
-
-
 };
 
 } // namespace XLS

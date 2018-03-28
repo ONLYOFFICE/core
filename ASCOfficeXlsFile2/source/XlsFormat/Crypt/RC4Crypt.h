@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,6 +42,8 @@ class RC4Crypt : public Crypt
 {
 public:
 	RC4Crypt(CRYPT::_rc4CryptData & data, std::wstring password);
+
+	virtual void Init(const unsigned long val){}
 
 	virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size);
 	virtual void Decrypt(char* data, const size_t size, const unsigned long block_index);

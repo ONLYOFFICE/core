@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,14 +32,13 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/CellOffsetResender.h>
-#include <Logic/Biff_structures/Cell.h>
+#include "../Biff_structures/CellOffsetResender.h"
+#include "../Biff_structures/Cell.h"
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
 
-
-// Logical representation of Number record in BIFF8
 class Number: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Number)
@@ -59,13 +58,11 @@ public:
 
 	const CellRef getLocation() const;
 
-//-----------------------------
-	GlobalWorkbookInfoPtr	global_info_;
 	CellOffsetResender		resender;
 	Cell					cell;
-	BIFF_DOUBLE				num;
-
-
+	Xnum					num;
+//-----------------------------
+	GlobalWorkbookInfoPtr	global_info_;
 };
 
 } // namespace XLS

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,6 +37,7 @@
 #include "../../../ASCOfficePPTXFile/Editor/DefaultNotesTheme.h"
 
 #include "../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
+#include "../../../ASCOfficeXlsFile2/source/Common/simple_xml_writer.h"
 #include "../../../DesktopEditor/common/Directory.h"
 
 #include "../Reader/PPTDocumentInfo.h"
@@ -60,8 +61,6 @@ namespace NSPresentationEditor
         static std::wstring g_string_core = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
 <cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\
 <dc:title>Slide 1</dc:title>\
-<dc:creator>OnlyOffice</dc:creator>\
-<cp:lastModifiedBy>OnlyOffice</cp:lastModifiedBy>\
 <cp:revision>1</cp:revision>\
 </cp:coreProperties>");
 	}
@@ -188,12 +187,12 @@ void NSPresentationEditor::CPPTXWriter::WriteContentTypes()
 {
     std::wstring strContentTypes = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
 <Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\
-<Default Extension=\"bmp\" ContentType=\"image/bmp\" />\
-<Default Extension=\"png\" ContentType=\"image/png\" />\
-<Default Extension=\"jpeg\" ContentType=\"image/jpeg\" />\
-<Default Extension=\"wmf\" ContentType=\"image/x-wmf\" />\
-<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\" />\
-<Default Extension=\"xml\" ContentType=\"application/xml\" />\
+<Default Extension=\"bmp\" ContentType=\"image/bmp\"/>\
+<Default Extension=\"png\" ContentType=\"image/png\"/>\
+<Default Extension=\"jpeg\" ContentType=\"image/jpeg\"/>\
+<Default Extension=\"wmf\" ContentType=\"image/x-wmf\"/>\
+<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>\
+<Default Extension=\"xml\" ContentType=\"application/xml\"/>\
 <Default Extension=\"gif\" ContentType=\"image/gif\"/>\
 <Default Extension=\"emf\" ContentType=\"image/x-emf\"/>\
 <Default Extension=\"wav\" ContentType=\"audio/wav\"/>\
@@ -208,7 +207,7 @@ void NSPresentationEditor::CPPTXWriter::WriteContentTypes()
 <Default Extension=\"xls\" ContentType=\"application/vnd.ms-excel\"/>\
 <Default Extension=\"xlsx\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"/>\
 <Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\" />\
-<Default Extension=\"jpg\" ContentType=\"application/octet-stream\"/>";
+<Default Extension=\"jpg\" ContentType=\"image/jpeg\"/>";
 
 	if (m_pDocument->m_bMacros)
 	{
@@ -278,60 +277,127 @@ void NSPresentationEditor::CPPTXWriter::WriteContentTypes()
 
 void NSPresentationEditor::CPPTXWriter::WriteApp(CFile& oFile)
 {
-    std::wstring str1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\">\
-<TotalTime>0</TotalTime>\
-<Words>0</Words>\
-<Application>OnlyOffice</Application>\
-<PresentationFormat>On-screen Show (4:3)</PresentationFormat>\
-<Paragraphs>0</Paragraphs>");
+	std::wstringstream strm;
 
-	oFile.WriteStringUTF8(str1);
-
-    oFile.WriteStringUTF8(L"<Slides>" + std::to_wstring(m_pDocument->m_arSlides.size()) + L"</Slides>");
-    oFile.WriteStringUTF8(L"<Notes>" + std::to_wstring(m_pDocument->m_arNotes.size()) + L"</Notes>");
-
-    oFile.WriteStringUTF8(L"<HiddenSlides>0</HiddenSlides>\
-                          <MMClips>2</MMClips>\
-                          <ScaleCrop>false</ScaleCrop>\
-                          <HeadingPairs>\
-                          <vt:vector size=\"4\" baseType=\"variant\">");
-
-	int nCountThemes = (int)m_pDocument->m_arThemes.size();
-	int nCountSlides = (int)m_pDocument->m_arSlides.size();
-
-    std::wstring strThemes = L"<vt:variant><vt:lpstr>Theme</vt:lpstr></vt:variant><vt:variant><vt:i4>" +std::to_wstring(nCountThemes) +
-            L"</vt:i4></vt:variant>";
-
-    std::wstring strSlides = L"<vt:variant><vt:lpstr>Slide Titles</vt:lpstr></vt:variant><vt:variant><vt:i4>" +
-            std::to_wstring(nCountSlides) + L"</vt:i4></vt:variant></vt:vector></HeadingPairs>";
-
-    std::wstring strTitles = L"<TitlesOfParts><vt:vector size=\"" + std::to_wstring(nCountSlides + nCountThemes) + L"\" baseType=\"lpstr\">";
-
-    oFile.WriteStringUTF8(strThemes + strSlides + strTitles);
-
-    std::wstring strMemory = _T("");
-	for (int i = 1; i <= nCountThemes; ++i)
+ 	CP_XML_WRITER(strm)
 	{
-        strMemory += L"<vt:lpstr>Theme " + std::to_wstring(i) + L"</vt:lpstr>";
+		CP_XML_NODE(L"Properties")
+		{
+			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties");
+			CP_XML_ATTR(L"xmlns:vt", L"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypess");
+		}
+		CP_XML_NODE(L"Application")
+		{
+			CP_XML_STREAM() << 0;
+		}
+#if defined(INTVER)
+		CP_XML_NODE(L"AppVersion")
+		{
+			std::string s = VALUE2STR(INTVER);
+			CP_XML_STREAM() << std::wstring(s.begin(), s.end());
+		}
+#endif	
+		CP_XML_NODE(L"TotalTime")
+		{
+			CP_XML_STREAM() << 0;
+		}
+		CP_XML_NODE(L"Words")
+		{
+			CP_XML_STREAM() << 0;
+		}
+		CP_XML_NODE(L"PresentationFormat")
+		{
+			CP_XML_STREAM() << L"On-screen Show (4:3)";
+		}
+		CP_XML_NODE(L"Paragraphs")
+		{
+			CP_XML_STREAM() << 0;
+		}
+		CP_XML_NODE(L"Slides")
+		{
+			CP_XML_STREAM() << m_pDocument->m_arSlides.size();
+		}
+		CP_XML_NODE(L"Notes")
+		{
+			CP_XML_STREAM() << m_pDocument->m_arNotes.size();
+		}
+		CP_XML_NODE(L"HiddenSlides")
+		{
+			CP_XML_STREAM() << 0;
+		}
+		CP_XML_NODE(L"MMClips")
+		{
+			CP_XML_STREAM() << 2;
+		}
+		CP_XML_NODE(L"ScaleCrop")
+		{
+			CP_XML_STREAM() << L"false";
+		}
+		CP_XML_NODE(L"HeadingPairs")
+		{
+			CP_XML_NODE(L"vt:vector")
+			{
+				CP_XML_ATTR(L"size", 4);
+				CP_XML_ATTR(L"baseType", L"variant");
+				
+				CP_XML_NODE(L"vt:variant")
+				{
+					CP_XML_ATTR(L"vt:lpstr", L"Theme");
+				}
+				CP_XML_NODE(L"vt:variant")
+				{
+					CP_XML_ATTR(L"vt:i4", m_pDocument->m_arThemes.size());
+				}
+				CP_XML_NODE(L"vt:variant")
+				{
+					CP_XML_ATTR(L"vt:lpstr", L"Slide Titles");
+				}
+				CP_XML_NODE(L"vt:variant")
+				{
+					CP_XML_ATTR(L"vt:i4", m_pDocument->m_arSlides.size());
+				}
+			}
+		}
+		CP_XML_NODE(L"TitlesOfParts")
+		{
+			CP_XML_NODE(L"vt:vector")
+			{
+				CP_XML_ATTR(L"size", m_pDocument->m_arSlides.size() + m_pDocument->m_arThemes.size());
+				CP_XML_ATTR(L"baseType", L"lpstr");
+
+				for (size_t i = 1; i <= m_pDocument->m_arThemes.size(); ++i)
+				{
+					CP_XML_NODE(L"vt:lpstr")
+					{
+						CP_XML_STREAM() <<  L"Theme " << i;
+					}	
+				}
+				for (size_t i = 1; i <= m_pDocument->m_arSlides.size(); ++i)
+				{
+					CP_XML_NODE(L"vt:lpstr")
+					{
+						CP_XML_STREAM() <<  L"Slide " << i;
+					}
+				}
+			}
+		}
+
+		CP_XML_NODE(L"Company");
+		CP_XML_NODE(L"LinksUpToDate")
+		{
+			CP_XML_STREAM() <<  L"false";
+		}
+		CP_XML_NODE(L"SharedDoc")
+		{
+			CP_XML_STREAM() <<  L"false";
+		}
+		CP_XML_NODE(L"HyperlinksChanged")
+		{
+			CP_XML_STREAM() <<  L"false";
+		}
 	}
-	for (int i = 1; i <= nCountSlides; ++i)
-	{
-        strMemory += L"<vt:lpstr>Slide " + std::to_wstring(i) + L"</vt:lpstr>";
-	}
-
-    std::wstring str5 = _T("</vt:vector>\
-</TitlesOfParts>\
-<Company></Company>\
-<LinksUpToDate>false</LinksUpToDate>\
-<SharedDoc>false</SharedDoc>\
-<HyperlinksChanged>false</HyperlinksChanged>\
-<AppVersion>4.4000</AppVersion>\
-</Properties>");
-
-	strMemory += str5;
-
-	oFile.WriteStringUTF8(strMemory);
+	oFile.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+	oFile.WriteStringUTF8(strm.str());
 }
 
 void NSPresentationEditor::CPPTXWriter::WritePresInfo()
@@ -794,7 +860,7 @@ void NSPresentationEditor::CPPTXWriter::WriteBackground(CStringWriter& oWriter, 
 	oWriter.WriteString(std::wstring(L"</p:bgPr></p:bg>"));
 }
 
-void NSPresentationEditor::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerator& oRels, IElement* pElement, CLayout* pLayout)
+void NSPresentationEditor::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)
 {
 	if (!pElement) return;
 
@@ -817,7 +883,7 @@ void NSPresentationEditor::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRe
 					if ((pElement->m_lPlaceholderType == pLayout->m_arElements[nIndex]->m_lPlaceholderType) &&
 						(pElement->m_lPlaceholderID == pLayout->m_arElements[nIndex]->m_lPlaceholderID))
 					{
-						IElement* pElLayout = pLayout->m_arElements[nIndex];
+						CElementPtr pElLayout = pLayout->m_arElements[nIndex];
 						
 						bool bIsEqualTransform = ((pElement->m_dRotate == pElLayout->m_dRotate) 
 							&& (pElement->m_bFlipH == pElLayout->m_bFlipH) && (pElement->m_bFlipV == pElLayout->m_bFlipV));
@@ -959,7 +1025,7 @@ void NSPresentationEditor::CPPTXWriter::WriteSlide(int nIndexSlide)
 
 void NSPresentationEditor::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CTransition& transition)
 {
-	if (!transition.m_nEffectType == 0xFF)	return;
+	if (transition.m_nEffectType == 0xFF)	return;
 
 	std::wstring type;
 	

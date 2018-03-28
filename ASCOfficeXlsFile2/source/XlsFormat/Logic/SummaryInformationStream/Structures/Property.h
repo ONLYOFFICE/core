@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,14 +35,15 @@
 
 namespace OLEPS
 {
-
-// The only necessity of this class is to place all properties into a single array
 class Property
 {
 public:
-	Property();
-	virtual ~Property() = 0;
+	Property(unsigned int type) : Type(type) {}
+	virtual ~Property()
+	{
+	}
 
+	unsigned int Type;
 	enum ValueTypes
 	{
 		VT_I2 = 0x0002,

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,7 +44,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Restored)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				name = XmlUtils::GetNameNoNS(node.GetName());
@@ -71,12 +70,10 @@ namespace PPTX
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			}
 
-		public:
 			int				sz;
 			nullable_bool	autoAdjust;
 
-		public:
-			std::wstring name;
+			std::wstring	name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 

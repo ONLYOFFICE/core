@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -136,41 +136,6 @@ namespace NSCustomShapesConvert
 			bottom	*= dKoef;
 		}
 	};
-
-	//class CRectF
-	//{
-	//public:
-	//	float X;
-	//	float Y;
-	//	float Width;
-	//	float Height;
-
-	//public:
-	//	CRectF()
-	//	{
-	//		X		= 0;
-	//		Y		= 0;
-	//		Width	= 0;
-	//		Height	= 0;
-	//	}
-	//	CRectF(const CRectF& oSrc)
-	//	{
-	//		*this = oSrc;
-	//	}
-	//	CRectF& operator=(const CRectF& oSrc)
-	//	{
-	//		X		= oSrc.X;
-	//		Y		= oSrc.Y;
-	//		Width	= oSrc.Width;
-	//		Height	= oSrc.Height;
-
-	//		return *this;
-	//	}
-	//	bool Equals(const CRect& oSrc)
-	//	{
-	//		return ((X == oSrc.X) && (Y == oSrc.Y) && (Width == oSrc.Width) && (Height == oSrc.Height));
-	//	}
-	//};
 
 	class CGeomShapeInfo
 	{
@@ -314,7 +279,7 @@ namespace NSCustomShapesConvert
 
 	enum RulesType
 	{
-		// VML
+// VML
 		rtLineTo			= 0,	// 2*
 		rtCurveTo			= 1,	// 6*
 		rtMoveTo			= 2,	// 2
@@ -360,58 +325,14 @@ namespace NSCustomShapesConvert
 	class CGraphicPath
 	{
 	public:
-		//virtual void InternalFromXmlNode(XmlUtils::CXmlNode& oXmlNode)
-		//{
-		//	Metric		= XmlUtils::GetInteger(oXmlNode.GetAttributeOrValue(_T("metric"), _T("0")));
-		//	m_bStroke	= (1 == XmlUtils::GetInteger(oXmlNode.GetAttributeOrValue(_T("stroke"), _T("0"))));
-		//	m_bFill		= (1 == XmlUtils::GetInteger(oXmlNode.GetAttributeOrValue(_T("fill"), _T("0"))));
-
-		//	m_dWidthMM	= XmlUtils::GetDouble(oXmlNode.GetAttributeOrValue(_T("widthmm"), _T("210")));
-		//	m_dHeightMM = XmlUtils::GetDouble(oXmlNode.GetAttributeOrValue(_T("heightmm"), _T("190")));
-
-		//	m_dAngle	= XmlUtils::GetDouble(oXmlNode.GetAttributeOrValue(_T("angle"), _T("0")));
-		//	m_lFlags	= XmlUtils::GetInteger(oXmlNode.GetAttributeOrValue(_T("flags"), _T("0")));
-
-		//	m_oBounds.left		= XmlUtils::GetDouble(oXmlNode.GetAttributeOrValue(_T("bounds-left"),		_T("0")));
-		//	m_oBounds.top		= XmlUtils::GetDouble(oXmlNode.GetAttributeOrValue(_T("bounds-top"),		_T("0")));
-		//	m_oBounds.right		= XmlUtils::GetDouble(oXmlNode.GetAttributeOrValue(_T("bounds-right"),	_T("0")));
-		//	m_oBounds.bottom	= XmlUtils::GetDouble(oXmlNode.GetAttributeOrValue(_T("bounds-bottom"),	_T("0")));
-
-		//	XmlUtils::CXmlNodes oNodes;
-		//	oXmlNode.GetNodes(_T("part"), oNodes);
-		//	for (int nIndex = 0; nIndex < oNodes.GetCount(); ++nIndex)
-		//	{
-		//		CPart oPart;
-		//		XmlUtils::CXmlNode oNode;
-		//		oNodes.GetAt(nIndex, oNode);
-		//		oPart.FromXmlNode(oNode);
-  //              m_arParts.push_back(oPart);
-		//	}
-
-		//	//XmlUtils::CXmlNode oPenNode;
-		//	//if (oXmlNode.GetNode(_T("pen"), oPenNode))
-		//	//{
-		//	//	Pen.FromXmlNode(oPenNode);
-		//	//}
-		//	//XmlUtils::CXmlNode oBrushNode;
-		//	//if (oXmlNode.GetNode(_T("brush"), oBrushNode))
-		//	//{
-		//	//	Brush.FromXmlNode(oBrushNode);
-		//	//}
-		//}					
 		virtual void InternalClear()
 		{
 			m_lFlags	= 0;
 		}
-
-	public:
-
 		CGraphicPath()
 		{
 			InternalClear();
 		}
-	public:
-
 		class CPart
 		{
 		public:
@@ -1028,9 +949,6 @@ namespace NSCustomShapesConvert
 		{
             m_arParts.clear();
 		}
-
-	public:
-
         std::vector<CPart> m_arParts;
 
 		int m_lFlags;

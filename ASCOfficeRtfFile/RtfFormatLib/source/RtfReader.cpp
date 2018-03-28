@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,8 +33,9 @@
 #include "Writer/OOXWriter.h"
 #include "DestinationCommand.h"
 
+const std::map<int, std::string> RtfUtility::mapEncodingsICU = RtfUtility::create_mapEncodingsICU();
 
-RtfReader::RtfReader(RtfDocument& oDocument, std::wstring sFilename ):m_oDocument(oDocument),m_sFilename(sFilename)
+RtfReader::RtfReader(RtfDocument& oDocument, std::wstring sFilename ) : m_oDocument(oDocument), m_sFilename(sFilename)
 {
 	m_oState = ReaderStatePtr(new ReaderState());
 	m_nFootnote = PROP_DEF;
@@ -116,7 +117,13 @@ std::wstring RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharS
         if( -1 == nCodepage )
             nCodepage = CP_ACP;
 
-        sResult = RtfUtility::convert_string(sCharString.begin(), sCharString.end(), nCodepage);
+        sResult = RtfUtility::convert_string_icu(sCharString.begin(), sCharString.end(), nCodepage);
+
+		if (!sCharString.empty() && sResult.empty())
+		{
+			//code page not support in icu !!!
+			sResult = RtfUtility::convert_string(sCharString.begin(), sCharString.end(), nCodepage);
+		}
     }
     return sResult;
 }

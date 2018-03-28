@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,6 +44,15 @@ BiffStructurePtr List12BlockLevel::clone()
 
 List12BlockLevel::List12BlockLevel()
 {		
+	cbdxfHeader			= 0xffffffff;
+	istnHeader			= 0xffffffff;
+	cbdxfData			= 0xffffffff;
+	istnData			= 0xffffffff;
+	cbdxfAgg			= 0xffffffff;
+	istnAgg				= 0xffffffff;
+	cbdxfBorder			= 0xffffffff;
+	cbdxfHeaderBorder	= 0xffffffff;
+	cbdxfAggBorder		= 0xffffffff;
 }
 
 
@@ -64,17 +73,35 @@ void List12BlockLevel::load(CFRecord& record)
 	record >> cbdxfAggBorder;
 	
 	if (cbdxfHeader)
+	{
+		dxfHeader.size = cbdxfHeader;
 		record >> dxfHeader;
+	}
 	if (cbdxfData)
+	{
+		dxfData.size = cbdxfData;
 		record >> dxfData;
+	}
 	if (cbdxfAgg)
+	{
+		dxfAgg.size = cbdxfAgg;
 		record >> dxfAgg;
+	}
 	if (cbdxfBorder)
+	{
+		dxfBorder.size = cbdxfBorder;
 		record >> dxfBorder;
+	}
 	if (cbdxfHeaderBorder)
+	{
+		dxfHeaderBorder.size = cbdxfHeaderBorder;
 		record >> dxfHeaderBorder;
+	}
 	if (cbdxfAggBorder)
+	{
+		dxfAggBorder.size = cbdxfAggBorder;
 		record >> dxfAggBorder;
+	}
 	if (istnHeader != -1)
 		record >> stHeader;
 	if (istnData != -1)

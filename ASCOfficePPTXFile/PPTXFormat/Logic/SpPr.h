@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -152,77 +152,7 @@ namespace PPTX
 				pWriter->WriteRecord2(6, sp3d);
 			}
 
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					if (0 == _at)
-					{
-						bwMode = new Limit::BWMode();
-						bwMode->SetBYTECode(pReader->GetUChar());
-					}
-					else
-						break;
-				}
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							xfrm = new Logic::Xfrm();
-							xfrm->fromPPTY(pReader);
-							break;
-						}
-						case 1:
-						{
-							Geometry.fromPPTY(pReader);
-							break;
-						}
-						case 2:
-						{
-							Fill.fromPPTY(pReader);
-							break;
-						}
-						case 3:
-						{
-							ln = new Logic::Ln();
-							ln->fromPPTY(pReader);
-							break;
-						}
-						case 4:
-						{
-							pReader->SkipRecord();
-							break;
-						}
-						case 5:
-						{
-							pReader->SkipRecord();
-							break;
-						}
-						case 6:
-						{
-							pReader->SkipRecord();
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
-
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			void Merge(SpPr& spPr)const;
 
 		public:

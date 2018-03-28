@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,13 +51,13 @@ namespace NSUnicodeConverter
         CUnicodeConverter();
         ~CUnicodeConverter();
 
-    public:
         std::string fromUnicode(const wchar_t* sInput, const unsigned int& nInputLen, const char* converterName);
         std::string fromUnicode(const std::wstring& sSrc, const char* sCodePage);
 
         std::wstring toUnicode(const char* sInput, const unsigned int& nInputLen, const char* converterName);
         std::wstring toUnicode(const std::string& sSrc, const char* sCodePage);
 
+        std::wstring toUnicodeExact(const char* sInput, const unsigned int& nInputLen, const char* converterName);
     private:
         CUnicodeConverter_Private* m_pInternal;
 	};

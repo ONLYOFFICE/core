@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -123,18 +123,18 @@ namespace PPTX
 						oWriter.StartNode(_T("w:ind"));
 						oWriter.StartAttributes();
 						if (oPar.pPr->marL.is_init())
-							oWriter.WriteAttribute(_T("w:left"), (int)((double)(*pPr->marL) / 635));
+							oWriter.WriteAttribute(_T("w:left"), (int)((double)(*pPr->marL) / 635.) + 0.5);
 						if (oPar.pPr->marR.is_init())
-							oWriter.WriteAttribute(_T("w:right"), (int)((double)(*pPr->marR) / 635));
+							oWriter.WriteAttribute(_T("w:right"), (int)((double)(*pPr->marR) / 635.) + 0.5);
 						if (oPar.pPr->indent.is_init())
-							oWriter.WriteAttribute(_T("w:firstLine"), (int)((double)(*pPr->indent) / 635));
+							oWriter.WriteAttribute(_T("w:firstLine"), (int)((double)(*pPr->indent) / 635.) + 0.5);
 						oWriter.EndAttributes();
 						oWriter.EndNode(_T("w:ind"));
 					}
 
                     if (true)
 					{
-						oWriter.WriteString(_T("<w:spacing w:before=\"0\" w:after=\"0\" />"));
+						oWriter.WriteString(_T("<w:spacing w:before=\"0\" w:after=\"0\"/>"));
 					}
 
 					if (pPr->algn.is_init())

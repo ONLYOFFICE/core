@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of METADATA union of records 
 class METADATA: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(METADATA)
@@ -49,7 +47,13 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typeMETADATA;
+	static const ElementType type = typeMETADATA;
+
+	std::vector<BaseObjectPtr>	m_arMDTINFO;
+	std::vector<BaseObjectPtr>	m_arMDXSTR;
+	std::vector<BaseObjectPtr>	m_arMDTSET;
+	std::vector<BaseObjectPtr>	m_arMDBLOCK;
+
 };
 
 } // namespace XLS

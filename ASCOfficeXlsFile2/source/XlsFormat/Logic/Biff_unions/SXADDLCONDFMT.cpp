@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,8 +31,8 @@
  */
 
 #include "SXADDLCONDFMT.h"
-#include <Logic/Biff_records/SXAddl.h>
-#include <Logic/Biff_unions/SXADDLSXRULE.h>
+
+#include "../Biff_records/SXAddl.h"
 
 namespace XLS
 {
@@ -57,14 +57,8 @@ BaseObjectPtr SXADDLCONDFMT::clone()
 // SXADDLCONDFMT = SXAddl_SXCSXCondFmt_SXDSXCondFmt *SXADDLSXRULE SXAddl_SXCSXCondFmt_SXDEnd
 const bool SXADDLCONDFMT::loadContent(BinProcessor& proc)
 {
-	//if(!proc.mandatory<SXAddl_SXCSXCondFmt_SXDSXCondFmt>())
-	//{
-	//	return false;
-	//}
-	//proc.repeated<SXADDLSXRULE>(0, 0);
-	//proc.mandatory<SXAddl_SXCSXCondFmt_SXDEnd>();
+	return false;
 
-	return true;
 }
 
 } // namespace XLS

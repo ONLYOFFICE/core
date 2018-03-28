@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,28 +44,28 @@ BiffStructurePtr FtPioGrbit::clone()
 
 void FtPioGrbit::load(CFRecord& record)
 {
-	//record.skipNunBytes(4); // reserved
 	unsigned short ft, cb;
-	record >> ft;
-	record >> cb;
+	record >> ft >> cb;
 
-	if (record.getDataSize() == record.getRdPtr())
+	if ( ft != 0x0008 || cb != 2)
 	{
 		record.RollRdPtrBack(4);
 		return;
 	}
+	fExist = true;
 
 	unsigned short flags;
 	record >> flags;
-	fAutoPict = GETBIT(flags, 0);
-	fDde = GETBIT(flags, 1);
-	fPrintCalc = GETBIT(flags, 2);
-	fIcon = GETBIT(flags, 3);
-	fCtl = GETBIT(flags, 4);
-	fPrstm = GETBIT(flags, 5);
-	fCamera = GETBIT(flags, 7);
+
+	fAutoPict	= GETBIT(flags, 0);
+	fDde		= GETBIT(flags, 1);
+	fPrintCalc	= GETBIT(flags, 2);
+	fIcon		= GETBIT(flags, 3);
+	fCtl		= GETBIT(flags, 4);
+	fPrstm		= GETBIT(flags, 5);
+	fCamera		= GETBIT(flags, 7);
 	fDefaultSize = GETBIT(flags, 8);
-	fAutoLoad = GETBIT(flags, 9);
+	fAutoLoad	= GETBIT(flags, 9);
 }
 
 

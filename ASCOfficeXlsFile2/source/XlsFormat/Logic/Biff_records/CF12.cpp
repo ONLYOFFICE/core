@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -173,7 +173,7 @@ int CF12::serialize(std::wostream & stream)
 								case 4:	CP_XML_ATTR(L"type", L"percent");		break;
 								case 5:	CP_XML_ATTR(L"type", L"percentile");	break;
 								default:
-									CP_XML_ATTR(L"type", L"percentile");		break;
+									CP_XML_ATTR(L"type", L"num");				break;
 							}	
 							if (cfvo.cfvoType == 7)
 								CP_XML_ATTR(L"val", cfvo.fmla.getAssembledFormula()); 
@@ -186,7 +186,7 @@ int CF12::serialize(std::wostream & stream)
 						CP_XML_NODE(L"color")
 						{
 							CFColor & color = gradient->rgCurve[i]->color;
-							switch(color.type)
+							switch(color.xclrType.type)
 							{
 							case 1: CP_XML_ATTR(L"indexed",	color.icv);			break;
 							case 2:	CP_XML_ATTR(L"rgb",		color.rgb.strARGB);	break;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -56,9 +56,11 @@ public:
 		//	RtfSectionProperty		m_oSectionProp;
 			ReaderStatePtr			m_pSaveState;
             std::string             m_sCurText;
+			bool					m_bControlPresent;
 			
 			ReaderState()
 			{
+				m_bControlPresent = false;
 				m_nUD = 1;
 				m_oCharProp.SetDefaultRtf();
 				m_oParagraphProp.SetDefaultRtf();
@@ -74,7 +76,7 @@ public:
     RtfLex              m_oLex;
     int                 m_nFootnote; //толко для симовола chftn. основано на том что вложенных footnote быть не может
     int                 m_nDefFont;
-    std::wstring             m_sTempFolder;
+    std::wstring		m_sTempFolder;
 
 	RtfReader(RtfDocument& oDocument, std::wstring sFilename );
 	~RtfReader()
@@ -159,7 +161,10 @@ public:
                         if( m_oTok.Key == "42" )
 							m_bSkip = true;
                         if( m_oTok.Key == "39" && true == m_oTok.HasParameter )
+						{
                             oReader.m_oState->m_sCurText += m_oTok.Parameter ;
+							oReader.m_oState->m_bControlPresent = true;
+						}
 						break;
 				case RtfToken::Text:
                         oReader.m_oState->m_sCurText += m_oTok.Key;
@@ -266,6 +271,7 @@ public:
 		{
             std::wstring sResult = ExecuteTextInternalCodePage(oReader.m_oState->m_sCurText, oDocument, oReader);
             oReader.m_oState->m_sCurText.erase();
+			oReader.m_oState->m_bControlPresent = false;
             if(sResult.length() > 0)
 			{
                 std::string str;

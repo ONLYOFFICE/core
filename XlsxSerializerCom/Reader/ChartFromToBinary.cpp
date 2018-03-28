@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,6 +34,9 @@
 #include "../Common/BinReaderWriterDefines.h"
 #include "../../ASCOfficePPTXFile/Editor/BinReaderWriterDefines.h"
 #include "../../ASCOfficeDocxFile2/BinReader/DefaultThemeWriter.h"
+
+#include "../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
+#include "../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 
 using namespace OOX::Spreadsheet;
 
@@ -893,8 +896,12 @@ namespace BinXlsxRW
 		}
 		else if(c_oserct_chartspaceCLRMAPOVR == type)
 		{
+			BYTE typeRec1 = m_oBufferedStream.GetUChar();
+			
 			poVal->m_oClrMapOvr = new PPTX::Logic::ClrMap();
-			res = Read1(length, &BinaryChartReader::ReadCT_ClrMapOvr, this, poVal->m_oClrMapOvr.GetPointer());
+
+			poVal->m_oClrMapOvr->m_name = L"c:clrMapOvr";
+			poVal->m_oClrMapOvr->fromPPTY(&m_oBufferedStream);
 		}
 		else if(c_oserct_chartspacePIVOTSOURCE == type)
 		{
@@ -955,10 +962,11 @@ namespace BinXlsxRW
 
             OOX::CPath pathThemeOverrideFile = m_oSaveParams.sThemePath + FILE_SEPARATOR_STR + sThemeOverrideName;
 
-			smart_ptr<PPTX::Theme> pTheme = new PPTX::Theme();
-			pTheme->isThemeOverride = true;
+			smart_ptr<PPTX::Theme> pTheme = new PPTX::Theme(NULL);
 
 			pTheme->fromPPTY(&m_oBufferedStream);
+			pTheme->isThemeOverride = true;
+			
 			NSBinPptxRW::CXmlWriter xmlWriter;
 			pTheme->toXmlWriter(&xmlWriter);
 			
@@ -1020,22 +1028,6 @@ namespace BinXlsxRW
 		if(length > 0)
 		{
 			poVal->m_name = L"c:txPr";
-			long nCurPos = m_oBufferedStream.GetPos();
-
-			BYTE typeRec1 = m_oBufferedStream.GetUChar();
-			poVal->fromPPTY(&m_oBufferedStream);
-
-			m_oBufferedStream.Seek(nCurPos + length);
-		}
-		return res;
-	}
-	int BinaryChartReader::ReadCT_ClrMapOvr(BYTE type, long length, void* poResult)
-	{
-		int res = c_oSerConstants::ReadOk;
-		PPTX::Logic::ClrMap* poVal = static_cast<PPTX::Logic::ClrMap*>(poResult);
-		if(length > 0)
-		{
-			poVal->m_name = L"c:clrMapOvr";
 			long nCurPos = m_oBufferedStream.GetPos();
 
 			BYTE typeRec1 = m_oBufferedStream.GetUChar();
@@ -6162,13 +6154,20 @@ namespace BinXlsxRW
 			WriteCT_extLst(*oVal.m_extLst);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		smart_ptr<OOX::File> pFile = oChartSpace.Find(OOX::FileTypes::ThemeOverride);
-		if (pFile.IsInit() && OOX::FileTypes::ThemeOverride == pFile->type())
+
+		std::vector<smart_ptr<OOX::File>>& container =oChartSpace.GetContainer();
+
+		for (size_t i = 0; i < container.size(); ++i)
 		{
-			PPTX::Theme* pThemeOverride = static_cast<PPTX::Theme*>(pFile.operator->());
-	
-			m_oBcw.m_oStream.WriteBYTE(c_oserct_chartspaceTHEMEOVERRIDE);
-			pThemeOverride->toPPTY(&m_oBcw.m_oStream);
+			if (OOX::FileTypes::ThemeOverride == container[i]->type())
+			{
+				PPTX::Theme* pThemeOverride = dynamic_cast<PPTX::Theme*>(container[i].operator->());
+		
+				int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceTHEMEOVERRIDE);
+				pThemeOverride->toPPTY(&m_oBcw.m_oStream);
+				m_oBcw.WriteItemEnd(nCurPos);
+				break;
+			}
 		}
 	}
 	void BinaryChartWriter::WriteCT_Boolean(CT_Boolean& oVal)

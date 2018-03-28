@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,10 +44,10 @@ namespace PPTX
 	class NotesSlide : public WrapperFile, public FileContainer
 	{
 	public:
-		NotesSlide()
+		NotesSlide(OOX::Document* pMain) : WrapperFile(pMain), FileContainer(pMain)
 		{
 		}
-		NotesSlide(const OOX::CPath& filename, FileMap& map)
+		NotesSlide(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), FileContainer(pMain)
 		{
 			read(filename, map);
 		}
@@ -87,33 +87,6 @@ namespace PPTX
 		virtual const OOX::CPath DefaultFileName() const
 		{
 			return type().DefaultFileName();
-		}
-		virtual std::wstring GetMediaFullPathNameFromRId(const OOX::RId& rid)const
-		{
-			smart_ptr<OOX::Image> p = GetImage(rid);
-			if (!p.is_init())
-				return _T("");
-			return p->filename().m_strFilename;
-		}
-		virtual std::wstring GetFullHyperlinkNameFromRId(const OOX::RId& rid)const
-		{
-			smart_ptr<OOX::HyperLink> p = GetHyperlink(rid);
-			if (!p.is_init())
-				return _T("");
-			return p->Uri().m_strFilename;
-		}
-		virtual std::wstring GetLinkFromRId(const OOX::RId& rid)const
-		{
-			//return relsTable.Links.GetTargetById(rid);
-			smart_ptr<OOX::External> pExt = Find(rid).smart_dynamic_cast<OOX::External>();
-			if (pExt.IsInit())
-				return pExt->Uri().m_strFilename;
-
-			smart_ptr<OOX::Media> pMedia = Find(rid).smart_dynamic_cast<OOX::Media>();
-			if (pMedia.IsInit())
-				return pMedia->filename().m_strFilename;
-
-			return _T("");
 		}
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{

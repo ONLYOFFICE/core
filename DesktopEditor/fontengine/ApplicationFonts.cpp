@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -1250,8 +1250,6 @@ CFontInfo* CFontList::GetByParams(CFontSelectFormat& oSelect, bool bIsDictionary
 		if (NULL != oSelect.unCharset)
 			unCharset = *oSelect.unCharset;
 
-		EFontFormat eFontFormat = fontTrueType;
-
 		if ( NULL != oSelect.bFixedWidth )
 			nCurPenalty += GetFixedPitchPenalty( pInfo->m_bIsFixed, *oSelect.bFixedWidth );
 
@@ -1282,7 +1280,7 @@ CFontInfo* CFontList::GetByParams(CFontSelectFormat& oSelect, bool bIsDictionary
 		else if (NULL != oSelect.sFamilyClass)
 			nCurPenalty += GetFamilyUnlikelyPenalty( pInfo->m_sFamilyClass, *oSelect.sFamilyClass );
 		
-		nCurPenalty += GetFontFormatPenalty( pInfo->m_eFontFormat, eFontFormat );
+		//nCurPenalty += GetFontFormatPenalty( pInfo->m_eFontFormat, fontTrueType );
 		nCurPenalty += GetCharsetPenalty( arrCandRanges, unCharset );
 
 		if ( NULL != oSelect.shAvgCharWidth )
@@ -1406,7 +1404,7 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
     
     BYTE* pDataFontFile = new BYTE[nMaxFontSize];
     
-	for (int nIndex = 0; nIndex < nCount; ++nIndex)
+	for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 	{
         if ((nFlag & 2) != 0)
         {
@@ -1909,3 +1907,90 @@ void CApplicationFonts::InitFromReg()
 }
 
 #endif
+
+// Symbols
+class CApplicationFontsSymbols_Private
+{
+public:
+	FT_Library m_library;
+	FT_Parameter* m_params;
+	BYTE* m_pData;
+
+	CApplicationFontsSymbols_Private()
+	{
+		m_library = NULL;
+		m_pData = NULL;
+		m_params = NULL;
+
+		if (FT_Init_FreeType(&m_library))
+			return;
+
+		m_params = (FT_Parameter *)::malloc( sizeof(FT_Parameter) * 4 );
+		m_params[0].tag  = FT_MAKE_TAG( 'i', 'g', 'p', 'f' );
+		m_params[0].data = NULL;
+		m_params[1].tag  = FT_MAKE_TAG( 'i', 'g', 'p', 's' );
+		m_params[1].data = NULL;
+		m_params[2].tag  = FT_PARAM_TAG_IGNORE_PREFERRED_FAMILY;
+		m_params[2].data = NULL;
+		m_params[3].tag  = FT_PARAM_TAG_IGNORE_PREFERRED_SUBFAMILY;
+		m_params[3].data = NULL;
+
+		int nSize = 100000000;
+		m_pData = new BYTE[nSize];
+	}
+	~CApplicationFontsSymbols_Private()
+	{
+		RELEASEARRAYOBJECTS(m_pData);
+
+		if (m_params)
+			::free( m_params );
+
+		if (m_library)
+			FT_Done_FreeType(m_library);
+	}
+};
+
+CApplicationFontsSymbols::CApplicationFontsSymbols()
+{
+	m_internal = new CApplicationFontsSymbols_Private();
+}
+CApplicationFontsSymbols::~CApplicationFontsSymbols()
+{
+	RELEASEOBJECT(m_internal);
+}
+
+void CApplicationFontsSymbols::CheckSymbols(const std::wstring& sFile, const int& nFaceIndex, CApplicationFontsSymbolsChecker* pChecker)
+{
+	CFontStream oStream;
+	if (!oStream.CreateFromFile(sFile, m_internal->m_pData))
+		return;;
+
+	FT_Open_Args oOpenArgs;
+	oOpenArgs.flags			= FT_OPEN_MEMORY | FT_OPEN_PARAMS;
+	oOpenArgs.memory_base	= oStream.m_pData;
+	oOpenArgs.memory_size	= oStream.m_lSize;
+
+	oOpenArgs.num_params = 4;
+	oOpenArgs.params     = m_internal->m_params;
+
+	FT_Face pFace = NULL;
+	if (FT_Open_Face(m_internal->m_library, &oOpenArgs, nFaceIndex, &pFace))
+		return;
+
+	for (int nCharMap = 0; nCharMap < pFace->num_charmaps; nCharMap++)
+	{
+		FT_Set_Charmap(pFace, pFace->charmaps[nCharMap]);
+
+		FT_UInt indexG;
+		FT_ULong character = FT_Get_First_Char(pFace, &indexG);
+
+		while (indexG)
+		{
+			pChecker->Check((int)character, indexG);
+			character = FT_Get_Next_Char(pFace, character, &indexG);
+		}
+	}
+
+	FT_Done_Face( pFace );
+}
+//

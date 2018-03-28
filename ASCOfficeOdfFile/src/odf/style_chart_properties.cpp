@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -88,8 +88,8 @@ void style_chart_properties::add_attributes( const xml::attributes_wc_ptr & Attr
 
 	_CP_OPT(int) iVal;
 
- 	//CP_APPLY_ATTR(L"chart:symbol-type",		iVal);		if (iVal)content_.push_back(_property(L"symbol-type",			iVal.get()));
-   CP_APPLY_ATTR(L"chart:gap-width",		iVal);			if (iVal)content_.push_back(_property(L"gap-width",				iVal.get()));
+ 	//CP_APPLY_ATTR(L"chart:symbol-type",	iVal);			if (iVal)content_.push_back(_property(L"symbol-type",			iVal.get()));
+	CP_APPLY_ATTR(L"chart:gap-width",		iVal);			if (iVal)content_.push_back(_property(L"gap-width",				iVal.get()));
     CP_APPLY_ATTR(L"chart:overlap",			iVal);			if (iVal)content_.push_back(_property(L"overlap",				iVal.get()));
     CP_APPLY_ATTR(L"chart:spline-order",	iVal);			if (iVal)content_.push_back(_property(L"spline-order",			iVal.get()));
     CP_APPLY_ATTR(L"chart:spline-resolution",iVal);			if (iVal)content_.push_back(_property(L"spline-resolution",		iVal.get()));
@@ -100,8 +100,8 @@ void style_chart_properties::add_attributes( const xml::attributes_wc_ptr & Attr
 
     CP_APPLY_ATTR(L"chart:maximum",			dVal);	if (dVal)content_.push_back(_property(L"maximum",			dVal.get()));
     CP_APPLY_ATTR(L"chart:minimum",			dVal);	if (dVal)content_.push_back(_property(L"minimum",			dVal.get()));
-    CP_APPLY_ATTR(L"chart:origin",			dVal);	if (dVal)content_.push_back(_property(L"origin",				dVal.get()));
-    CP_APPLY_ATTR(L"chart:interval-major",	dVal);	if (dVal)content_.push_back(_property(L"interval-major",		dVal.get()));
+    CP_APPLY_ATTR(L"chart:origin",			dVal);	if (dVal)content_.push_back(_property(L"origin",			dVal.get()));
+    CP_APPLY_ATTR(L"chart:interval-major",	dVal);	if (dVal)content_.push_back(_property(L"interval-major",	dVal.get()));
     CP_APPLY_ATTR(L"chart:error-percentage",dVal);	if (dVal)content_.push_back(_property(L"error-percentage",	dVal.get()));
     CP_APPLY_ATTR(L"chart:error-margin",	dVal);	if (dVal)content_.push_back(_property(L"error-margin",		dVal.get()));
     CP_APPLY_ATTR(L"chart:error-lower-limit",dVal); if (dVal)content_.push_back(_property(L"error-lower-limit",	dVal.get()));

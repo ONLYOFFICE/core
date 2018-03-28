@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,18 +40,24 @@
 
 #include "../Common/SimpleTypes_Word.h"
 #include "../Common/SimpleTypes_Shared.h"
-
+#include "../SystemUtility/File.h"
+	
 namespace OOX
 {
 	class CFontTable : public OOX::File
 	{
 	public:
 
-		CFontTable()
+		CFontTable(OOX::Document *pMain) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pFontTable = this;
 		}
-		CFontTable(const CPath &oFilePath)
+		CFontTable(OOX::Document *pMain, const CPath &oFilePath) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pFontTable = this;
+
 			read( oFilePath );
 		}
 

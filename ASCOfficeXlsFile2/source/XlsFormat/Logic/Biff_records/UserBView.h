@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -58,10 +58,10 @@ public:
 	_UINT16			tabId;
 	std::wstring	guid;
 	
-	BIFF_DWORD		x;
-	BIFF_DWORD		y;
-	BIFF_DWORD		dx;
-	BIFF_DWORD		dy;
+	_UINT32		x;
+	_UINT32		y;
+	_UINT32		dx;
+	_UINT32		dy;
 
 	_UINT16			wTabRatio;
 

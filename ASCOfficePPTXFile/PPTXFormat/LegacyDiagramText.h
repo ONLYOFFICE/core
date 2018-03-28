@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,12 +45,12 @@ namespace PPTX
 	//[MS-PPT] Section 2.9.1; DocumentTextInfoContainer
 	{
 	public:
-		LegacyDiagramText()
+		LegacyDiagramText(OOX::Document *pMain) : OOX::File(pMain)
 		{
 			m_Data		= 0;
 			m_DataSize	= 0;
 		}
-		LegacyDiagramText(const OOX::CPath& filename)
+		LegacyDiagramText(OOX::Document *pMain, const OOX::CPath& filename) : OOX::File(pMain) 
 		{
 			m_Data		= 0;
 			m_DataSize	= 0;

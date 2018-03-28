@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,6 +35,9 @@
 #include "OfficeArtBlip.h"
 #include <bitset>
 #include <utils.h>
+
+#include "../../../../../../OfficeUtils/src/OfficeUtils.h"
+
 
 namespace ODRAW
 {
@@ -122,8 +125,6 @@ void OfficeArtFOPTE::load(XLS::CFRecord& record)
 	opid		= GETBITS(flags, 0, 13);
 	fBid		= GETBIT(flags, 14);
 	fComplex	= GETBIT(flags, 15);
-
-	// TODO: complex data shall be parsed here
 }
 
 OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
@@ -423,6 +424,9 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 		case 0x0382:
 			fopte = OfficeArtFOPTEPtr(new pihlShape);
 			break;
+		case 0x03A9:
+			fopte = OfficeArtFOPTEPtr(new metroBlob);
+			break;
 		case 0x03BF:
 			fopte = OfficeArtFOPTEPtr(new GroupShapeBooleanProperties);
 			break;
@@ -507,6 +511,54 @@ void GeometryTextBooleanProperties::load(XLS::CFRecord& record)
 	fSmallcaps		= GETBIT(op,  1);
 	fStrikethrough	= GETBIT(op,  0);
 }
+void GroupShapeBooleanProperties::load(XLS::CFRecord& record)
+{
+	OfficeArtFOPTE::load(record);
+
+	fUsefLayoutInCell	= GETBIT(op, 31);
+	fUsefIsBullet		= GETBIT(op, 30);
+	fUsefStandardHR		= GETBIT(op, 29);
+	fUsefNoshadeHR		= GETBIT(op, 28);
+	fUsefHorizRule		= GETBIT(op, 27);
+	fUsefUserDrawn		= GETBIT(op, 26);
+	fUsefAllowOverlap	= GETBIT(op, 25);
+	fUsefReallyHidden	= GETBIT(op, 24);
+	fUsefScriptAnchor	= GETBIT(op, 23);
+	fUsefEditedWrap		= GETBIT(op, 22);
+	fUsefBehindDocument	= GETBIT(op, 21);
+	fUsefOnDblClickNotify	= GETBIT(op, 20);
+	fUsefIsButton		= GETBIT(op, 19);
+	fUsefOneD			= GETBIT(op, 18);
+	fUsefHidden			= GETBIT(op, 17);
+	fUsefPrint			= GETBIT(op, 16);
+	
+	fLayoutInCell		= GETBIT(op, 15);
+	fIsBullet			= GETBIT(op, 14);
+	fStandardHR			= GETBIT(op, 13);
+	fNoshadeHR			= GETBIT(op, 12);
+	fHorizRule			= GETBIT(op, 11);
+	fUserDrawn			= GETBIT(op, 10);
+	fAllowOverlap		= GETBIT(op,  9);
+	fReallyHidden		= GETBIT(op,  8);
+	fScriptAnchor		= GETBIT(op,  7);
+	fEditedWrap			= GETBIT(op,  6);
+	fBehindDocument		= GETBIT(op,  5);
+	fOnDblClickNotify	= GETBIT(op,  4);
+	fIsButton			= GETBIT(op,  3);
+	fOneD				= GETBIT(op,  2);
+	fHidden				= GETBIT(op,  1);
+	fPrint				= GETBIT(op,  0);
+}
+void fillShadeType::load(XLS::CFRecord& record)
+{
+	OfficeArtFOPTE::load(record);
+	
+	msoshadeNone		= GETBIT(op, 0);
+	msoshadeGamma		= GETBIT(op, 1);
+	msoshadeSigma		= GETBIT(op, 2);
+	msoshadeBand		= GETBIT(op, 3);
+	msoshadeOneColor	= GETBIT(op, 4);
+}
 
 void FillStyleBooleanProperties::load(XLS::CFRecord& record)
 {
@@ -517,6 +569,7 @@ void FillStyleBooleanProperties::load(XLS::CFRecord& record)
 	fillShape					= GETBIT(op, 2);
 	fHitTestFill				= GETBIT(op, 3);
 	fFilled						= GETBIT(op, 4);
+	
 	fUseShapeAnchor				= GETBIT(op, 5);
 	fRecolorFillAsPicture		= GETBIT(op, 6);
 	fUsefNoFillHitTest			= GETBIT(op, 16);
@@ -544,7 +597,7 @@ void anyString::ReadComplexData(XLS::CFRecord& record)
 #if defined(_WIN32) || defined(_WIN64)
         string_ = std::wstring(record.getCurData<wchar_t>(), op);
 #else
-        string_ = XLS::convertUtf16ToWString(record.getCurData<UTF16>(), op);
+        string_ = convertUtf16ToWString(record.getCurData<UTF16>(), op);
 #endif
 	if (!string_.empty())
 	{
@@ -658,6 +711,44 @@ void pihlShape::ReadComplexData(XLS::CFRecord& record)
 	int pos = record.getRdPtr();
 
 	record >> complex;
+}
+void metroBlob::ReadComplexData(XLS::CFRecord& record)
+{
+	int pos = record.getRdPtr();
+
+	data = std::make_pair(boost::shared_array<unsigned char>(new unsigned char[op]), op);
+
+	memcpy(data.first.get(), record.getCurData<unsigned char>(), op);
+
+	record.skipNunBytes(op);
+//------------------------------
+	XLS::GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
+
+	NSFile::CFileBinary file;
+
+	std::wstring tempFileName = global_info->tempDirectory + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
+
+    if (file.CreateFileW(tempFileName))
+	{
+		file.WriteFile(data.first.get(), data.second);
+		file.CloseFile();
+	}
+	COfficeUtils officeUtils(NULL);
+
+	BYTE *utf8Data = NULL; 
+	ULONG utf8DataSize = 0;
+	if (S_OK != officeUtils.LoadFileFromArchive(tempFileName, L"drs/shapexml.xml", &utf8Data, utf8DataSize))
+	{
+		officeUtils.LoadFileFromArchive(tempFileName, L"drs/diagrams/drawing1.xml", &utf8Data, utf8DataSize);
+	}
+
+	if (utf8Data && utf8DataSize > 0)
+	{
+		xmlString = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf8Data, utf8DataSize);
+
+		delete []utf8Data;
+	}
+	NSFile::CFileBinary::Remove(tempFileName);
 }
 //---------------------------------------------------------------------------------------------
 MSOPOINT::MSOPOINT()

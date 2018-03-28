@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,12 +37,8 @@
     #include "../../../Common/FileDownloader/FileDownloader.h"
 #endif
 
+#include "Shapes/BaseShape/PPTShape/Ppt2PptxShapeConverter.h"
 
-#ifdef ENABLE_PPT_TO_PPTX_CONVERT
-	#include "Shapes/BaseShape/PPTShape/ppt2pptxshapeconverter.h"
-#endif
-
-#if defined(PPTX_DEF)
 namespace PPTX2EditorAdvanced
 {
     AVSINLINE OOXMLShapes::ShapeType GetShapeTypeFromStr(const std::wstring& str)//const
@@ -284,11 +280,11 @@ namespace PPTX2EditorAdvanced
 		return OOXMLShapes::sptNil;
 	}
 }
-#endif
+
 
 namespace NSPresentationEditor
 {
-	class CImageElement : public IElement
+	class CImageElement : public CElement
 	{
 	public:
 		std::wstring	m_strImageFileName;
@@ -310,7 +306,7 @@ namespace NSPresentationEditor
 
 		std::wstring	m_sImageName;
 
-		CImageElement() : IElement()
+		CImageElement() : CElement()
 		{
 			m_etType = etPicture;
 			
@@ -332,11 +328,13 @@ namespace NSPresentationEditor
 		virtual ~CImageElement()
 		{
 		}
-		virtual IElement* CreateDublicate()
+		virtual CElementPtr CreateDublicate()
 		{
 			CImageElement* pImageElement = new CImageElement();
+
+			CElementPtr	pElement = CElementPtr(	pImageElement );
 			
-			SetProperiesToDublicate((IElement*)pImageElement);
+			SetProperiesToDublicate(pElement);
 
 			pImageElement->m_strImageFileName		= m_strImageFileName;
 			pImageElement->m_nAlpha					= m_nAlpha;
@@ -353,11 +351,8 @@ namespace NSPresentationEditor
 			pImageElement->m_bImagePresent			= m_bImagePresent;
 			pImageElement->m_bOLE					= m_bOLE;
 
-			return (IElement*)pImageElement;
+			return pElement;
 		}
-		
-#ifdef ENABLE_PPT_TO_PPTX_CONVERT
-
         AVSINLINE std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false)
 		{
 			NSGuidesVML::CFormParam pParamCoef;
@@ -383,7 +378,6 @@ namespace NSPresentationEditor
 			return strXmlPPTX;
 		}
 
-#endif
 		AVSINLINE std::wstring DownloadImage(const std::wstring& strFile)
 		{
 #ifndef DISABLE_FILE_DOWNLOADER
@@ -397,79 +391,90 @@ namespace NSPresentationEditor
 		}
 	};
 
-	class CShapeElement : public IElement
+	class CShapeElement : public CElement
 	{
 	public:
 		NSBaseShape::ClassType m_ClassType;
 
 		int			m_lShapeType;
-		CShape		m_oShape;
+		CShapePtr	m_pShape;
 		bool		m_bShapePreset; // or rect (
 		
-		CShapeElement(NSBaseShape::ClassType ClassType, int eType) : IElement(), m_lShapeType(eType), m_oShape(ClassType, eType)
+		CShapeElement(NSBaseShape::ClassType ClassType, int eType) : CElement()
 		{
+			m_lShapeType			= eType;
 			m_ClassType				= ClassType;			
 			m_etType				= etShape;
 
-			m_oShape.m_rcBounds		= m_rcBounds;
+			m_pShape = CShapePtr( new CShape(ClassType, eType));
 
-			m_oShape.m_dStartTime	= m_dStartTime;
-			m_oShape.m_dStartTime	= m_dEndTime;
+			m_pShape->m_rcBounds		= m_rcBounds;
+
+			m_pShape->m_dStartTime	= m_dStartTime;
+			m_pShape->m_dStartTime	= m_dEndTime;
 
 			m_bShapePreset			= false;
+
 		}
 
-		CShapeElement() : m_oShape(NSBaseShape::unknown, 0x1000)
+		CShapeElement() : CElement()
 		{
 			m_lShapeType	= 0x1000;
 			m_etType		= etShape;
 			m_bShapePreset	= false;
+			
+			m_pShape = CShapePtr( new CShape(NSBaseShape::unknown, 0x1000));
 		}
 
-        CShapeElement(const std::wstring& str) : IElement(), m_oShape(NSBaseShape::unknown, 0x1000)
+        CShapeElement(const std::wstring& str) : CElement()
 		{
 			m_lShapeType	= 0x1000;
 			m_bShapePreset	= false;
 
-			m_oShape.LoadFromXML(str);
-			m_ClassType = m_oShape.m_pShape->GetClassType();
+			m_pShape = CShapePtr( new CShape(NSBaseShape::unknown, 0x1000));
+			m_pShape->LoadFromXML(str);
+			
+			m_ClassType = m_pShape->getBaseShape()->GetClassType();
 		}
 		virtual void NormalizeCoordsByMetric()
 		{
-			IElement::NormalizeCoordsByMetric();
+			CElement::NormalizeCoordsByMetric();
 
 			double dScaleX				= (double)m_oMetric.m_lUnitsHor / m_oMetric.m_lMillimetresHor;
 			double dScaleY				= (double)m_oMetric.m_lUnitsVer	/ m_oMetric.m_lMillimetresVer;
 
-			m_oShape.m_oText.m_oBounds.left		= (int)(dScaleX * m_oShape.m_oText.m_oBounds.left);
-			m_oShape.m_oText.m_oBounds.right	= (int)(dScaleX * m_oShape.m_oText.m_oBounds.right);
-			m_oShape.m_oText.m_oBounds.top		= (int)(dScaleY * m_oShape.m_oText.m_oBounds.top);
-			m_oShape.m_oText.m_oBounds.bottom	= (int)(dScaleY * m_oShape.m_oText.m_oBounds.bottom);
+			m_pShape->m_oText.m_oBounds.left		= (int)(dScaleX * m_pShape->m_oText.m_oBounds.left);
+			m_pShape->m_oText.m_oBounds.right	= (int)(dScaleX * m_pShape->m_oText.m_oBounds.right);
+			m_pShape->m_oText.m_oBounds.top		= (int)(dScaleY * m_pShape->m_oText.m_oBounds.top);
+			m_pShape->m_oText.m_oBounds.bottom	= (int)(dScaleY * m_pShape->m_oText.m_oBounds.bottom);
 		}
 		virtual ~CShapeElement()
 		{
 		}
 
-		virtual IElement* CreateDublicate()
+		virtual CElementPtr CreateDublicate()
 		{
 			CShapeElement* pShapeElement = new CShapeElement(m_ClassType, m_lShapeType);
 			
-			SetProperiesToDublicate((IElement*)pShapeElement);
+			CElementPtr	pElement = CElementPtr(	pShapeElement );
+			
+			SetProperiesToDublicate(pElement);
 
 			pShapeElement->m_lShapeType		= m_lShapeType;
 			pShapeElement->m_bShapePreset	= m_bShapePreset;
 
-			m_oShape.SetToDublicate(&pShapeElement->m_oShape);
-			return (IElement*)pShapeElement;
+			m_pShape->SetToDublicate(pShapeElement->m_pShape.get());
+			
+			return pElement;
 		}
 		bool SetUpTextPlaceholder(std::wstring newText);
 		
 		virtual void SetupProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
 		{
-			m_oShape.m_oText.m_lPlaceholderType = m_lPlaceholderType;
-			m_oShape.m_oText.m_lPlaceholderID	= m_lPlaceholderID;
+			m_pShape->m_oText.m_lPlaceholderType = m_lPlaceholderType;
+			m_pShape->m_oText.m_lPlaceholderID	= m_lPlaceholderID;
 
-			m_oShape.m_pShape->ReCalculate();
+			m_pShape->getBaseShape()->ReCalculate();
 
 			SetupTextProperties(pSlide, pTheme, pLayout);
 
@@ -482,11 +487,9 @@ namespace NSPresentationEditor
 
 		void CalculateColor(CColor& oColor, CSlide* pSlide, CTheme* pTheme, CLayout* pLayout);
 
-#ifdef ENABLE_PPT_TO_PPTX_CONVERT
-
         AVSINLINE std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false)
 		{
-			CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_oShape.m_pShape);
+			CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_pShape->getBaseShape().get());
 			if (NULL == pPPTShape)
 			{
 				// такого быть не может
@@ -588,7 +591,7 @@ namespace NSPresentationEditor
 #else
         std::wstring ConvertPPTtoPPTX(CPPTShape* pPPTShape, const NSGuidesVML::CFormParam& pCoef, bool bIsNamespace = false)
 		{
-			if (pPPTShape->m_eType == PPTShapes::sptCRect || pPPTShape->m_eType == PPTShapes::sptCFrame)
+			if (pPPTShape->m_eType == PPTShapes::sptCRect || pPPTShape->m_eType == PPTShapes::sptCFrame || pPPTShape->m_eType == PPTShapes::sptCTextBox)
 			{
 				if (bIsNamespace)
 				{
@@ -608,7 +611,7 @@ namespace NSPresentationEditor
 			{
 				if (bIsNamespace)
 				{
-					return _T("<a:prstGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" prst=\"line\"><a:avLst/></a:prstGeom>");
+					return _T("<a:prstGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" prst=\"ellipse\"><a:avLst/></a:prstGeom>");
 				}
 				return _T("<a:prstGeom prst=\"ellipse\"><a:avLst/></a:prstGeom>");
 			}
@@ -688,7 +691,6 @@ namespace NSPresentationEditor
 		}
 #endif
 
-#endif
 		
 	};
 
@@ -723,11 +725,12 @@ namespace NSPresentationEditor
 		{
 		}
 
-		virtual IElement* CreateDublicate()
+		virtual CElementPtr CreateDublicate()
 		{
 			CAudioElement* pAudioElement = new CAudioElement();
+			CElementPtr	pElement = CElementPtr(	pAudioElement );
 			
-			SetProperiesToDublicate((CImageElement*)pAudioElement);
+			SetProperiesToDublicate(pElement);
 
 			pAudioElement->m_strAudioFileName	= m_strAudioFileName;
 			pAudioElement->m_nAmplify			= m_nAmplify;
@@ -739,7 +742,7 @@ namespace NSPresentationEditor
 			pAudioElement->m_dClipStartTime		= m_dClipStartTime;
 			pAudioElement->m_dClipEndTime		= m_dClipEndTime;
 
-			return (IElement*)pAudioElement;
+			return pElement;
 		}
 	};
 	class CVideoElement : public CImageElement
@@ -770,11 +773,13 @@ namespace NSPresentationEditor
 		{
 		}
 		
-		virtual IElement* CreateDublicate()
+		virtual CElementPtr CreateDublicate()
 		{
 			CVideoElement* pVideoElement = new CVideoElement();
 			
-			SetProperiesToDublicate((CImageElement*)pVideoElement);
+			CElementPtr	pElement = CElementPtr(	pVideoElement );
+			
+			SetProperiesToDublicate(pElement);
 
 			pVideoElement->m_strVideoFileName	=	m_strVideoFileName;
 			pVideoElement->m_nAlpha				=	m_nAlpha;
@@ -785,7 +790,7 @@ namespace NSPresentationEditor
 			pVideoElement->m_dClipEndTime		=	m_dClipEndTime;
 			pVideoElement->m_bLoop				=	m_bLoop;
 
-			return (IElement*)pVideoElement;
+			return pElement;
 		}
 	};
 

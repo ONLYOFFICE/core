@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,7 +33,26 @@
 #include "../RtfDocument.h"
 #include "../RtfField.h"
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/App.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Core.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Document.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/FontTable.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Numbering.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Comments.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Styles.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Footnote.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Settings/WebSettings.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Settings/Settings.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Media/Image.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/HeaderFooter.h"
 
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 class RtfConvertationManager;
 
 class OOXReader
@@ -45,6 +64,7 @@ public:
 
 	int												m_nCurItap;			//для определение вложенности таблицы
 
+	int												m_nCurOleChartId;
 	int												m_nCurFittextId;
 	std::map<int, std::wstring>						m_aBookmarks;
 

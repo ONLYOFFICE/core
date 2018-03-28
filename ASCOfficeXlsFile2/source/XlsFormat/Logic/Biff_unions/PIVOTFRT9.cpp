@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,10 +31,11 @@
  */
 
 #include "PIVOTFRT9.h"
-#include <Logic/Biff_records/QsiSXTag.h>
-#include <Logic/Biff_unions/DBQUERYEXT.h>
-#include <Logic/Biff_unions/PIVOTVIEWEX.h>
-#include <Logic/Biff_records/SXViewEx9.h>
+#include "DBQUERYEXT.h"
+#include "PIVOTVIEWEX.h"
+
+#include "../Biff_records/QsiSXTag.h"
+#include "../Biff_records/SXViewEx9.h"
 
 namespace XLS
 {
@@ -58,6 +59,8 @@ BaseObjectPtr PIVOTFRT9::clone()
 // PIVOTFRT9 = QsiSXTag [DBQUERYEXT] [PIVOTVIEWEX] SXViewEx9
 const bool PIVOTFRT9::loadContent(BinProcessor& proc)
 {
+	GlobalWorkbookInfoPtr global_info = proc.getGlobalWorkbookInfo();
+
 	if(!proc.mandatory<QsiSXTag>())
 	{
 		return false;
@@ -69,6 +72,10 @@ const bool PIVOTFRT9::loadContent(BinProcessor& proc)
 	{
 		m_DBQUERYEXT = elements_.back();
 		elements_.pop_back();
+		
+		//QsiSXTag* qsi = dynamic_cast<QsiSXTag*>(m_QsiSXTag.get());
+		//global_info->mapDBQueryExt.insert(std::make_pair(qsi->stName.value(), m_DBQUERYEXT));
+
 	}
 	if (proc.optional<PIVOTVIEWEX>())
 	{

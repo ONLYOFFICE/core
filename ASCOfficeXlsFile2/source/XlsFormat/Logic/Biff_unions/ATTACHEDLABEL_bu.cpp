@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,23 +31,22 @@
  */
 
 #include "ATTACHEDLABEL.h"
-#include <Logic/Biff_records/Text.h>
-#include <Logic/Biff_records/Begin.h>
-#include <Logic/Biff_records/Pos.h>
-#include <Logic/Biff_records/FontX.h>
-#include <Logic/Biff_records/AlRuns.h>
-#include <Logic/Biff_records/ObjectLink.h>
-#include <Logic/Biff_records/DataLabExtContents.h>
-#include <Logic/Biff_records/CrtLayout12.h>
-#include <Logic/Biff_records/End.h>
-#include <Logic/Biff_records/SeriesText.h>
-#include <Logic/Biff_records/Font.h>
-#include <Logic/Biff_records/FrtWrapper.h>
+#include "AI.h"
+#include "FRAME.h"
+#include "TEXTPROPS.h"
+#include "CRTMLFRT.h"
 
-#include <Logic/Biff_unions/AI.h>
-#include <Logic/Biff_unions/FRAME.h>
-#include <Logic/Biff_unions/TEXTPROPS.h>
-#include <Logic/Biff_unions/CRTMLFRT.h>
+#include "../Biff_records/Text.h"
+#include "../Biff_records/Begin.h"
+#include "../Biff_records/Pos.h"
+#include "../Biff_records/FontX.h"
+#include "../Biff_records/AlRuns.h"
+#include "../Biff_records/ObjectLink.h"
+#include "../Biff_records/DataLabExtContents.h"
+#include "../Biff_records/CrtLayout12.h"
+#include "../Biff_records/End.h"
+#include "../Biff_records/SeriesText.h"
+#include "../Biff_records/Font.h"
 
 #include <utils.h>
 
@@ -141,7 +140,11 @@ const bool ATTACHEDLABEL::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 	
-	proc.optional<CrtLayout12>();
+	if (proc.optional<CrtLayout12>())
+	{
+		m_CrtLayout12 = elements_.back();
+		elements_.pop_back();
+	}
 	if (proc.optional<TEXTPROPS>())
 	{
 		m_TEXTPROPS = elements_.back();
@@ -149,7 +152,7 @@ const bool ATTACHEDLABEL::loadContent(BinProcessor& proc)
 	}
 	
 	proc.optional<CRTMLFRT>();
-	proc.optional<FrtWrapper>();
+
 	proc.mandatory<End>();			elements_.pop_back();
 
 	return true;
@@ -331,16 +334,32 @@ int ATTACHEDLABEL::serialize(std::wostream & _stream, bool isPosition)
 					}
 				}	
 			}
-			if (m_Pos && isPosition)	m_Pos->serialize(_stream);
-			if (m_FRAME)				m_FRAME->serialize(_stream);
+			if (isPosition)
+			{
+				if (m_CrtLayout12)	m_CrtLayout12->serialize(_stream);
+				else if (m_Pos)		m_Pos->serialize(_stream);
+			}
+			if (m_FRAME) m_FRAME->serialize(_stream);
 		}
 		else
 		{
-			if (m_Pos && isPosition)	m_Pos->serialize(_stream);
-			if (m_FRAME)				m_FRAME->serialize(_stream);
+			if (isPosition)
+			{
+				if (m_CrtLayout12)	m_CrtLayout12->serialize(_stream);
+				else if (m_Pos)		m_Pos->serialize(_stream);
+			}
+
+			if (m_FRAME)			m_FRAME->serialize(_stream);
+			
 			serialize_txPr(_stream);
+		}	
+		if (Pos_ && (Pos_->m_iLinkObject == 1 || Pos_->m_iLinkObject == 2 || Pos_->m_iLinkObject == 3))
+		{
+			CP_XML_NODE(L"c:overlay")
+			{
+				CP_XML_ATTR(L"val", 0);
+			}
 		}
-	
 	}
 	return 0;
 }
@@ -348,12 +367,11 @@ int ATTACHEDLABEL::serialize(std::wostream & _stream, bool isPosition)
 int ATTACHEDLABEL::serialize_rPr (std::wostream & _stream, int iFmt, bool rtl, bool defRPr)
 {
 	if (!pGlobalWorkbookInfoPtr)			return 0;
-	if (!pGlobalWorkbookInfoPtr->m_arFonts) return 0;
 
-	int sz = pGlobalWorkbookInfoPtr->m_arFonts->size();
+	int sz = pGlobalWorkbookInfoPtr->m_arFonts.size();
 	if (iFmt -1 > sz || iFmt < 1) return 0;
 
-	Font * font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts->at(iFmt-1).get());
+	Font * font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts[iFmt-1].get());
 
 	Text * text_props = dynamic_cast<Text*>(m_TextProperties.get());
 	

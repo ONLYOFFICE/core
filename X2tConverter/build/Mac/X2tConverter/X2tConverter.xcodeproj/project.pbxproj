@@ -23,6 +23,7 @@
 /* Begin PBXBuildFile section */
 		17C8DEC71ACD696100902C85 /* X2tConverter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17C27A191AC2DB3D00E1D003 /* X2tConverter.mm */; };
 		17C8DECC1ACD696100902C85 /* X2tConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17C27A171AC2DB3D00E1D003 /* X2tConverter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6911A9691F6036DA0061AB4D /* OfficeFileErrorDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 6911A9681F6036DA0061AB4D /* OfficeFileErrorDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		691A8BD31E2FA68F00DCB54A /* liblibxml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 691A8BD01E2FA67E00DCB54A /* liblibxml2.a */; };
 		69415F271CB51C37003E771B /* libOfficeUtils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F241CB51C2A003E771B /* libOfficeUtils.a */; };
 		69415F311CB51D41003E771B /* libASCOfficeDocxFile2Lib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17E17F5B1AC457CD00BEA2EA /* libASCOfficeDocxFile2Lib_ios.a */; };
@@ -44,6 +45,7 @@
 		6967B1101E27A65600A129E2 /* OfficeFileFormatChecker2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B10E1E27A65600A129E2 /* OfficeFileFormatChecker2.cpp */; };
 		6967B1D11E27B9D700A129E2 /* libRtfFormatLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6967B1CE1E27B9C500A129E2 /* libRtfFormatLib.a */; };
 		6967BEB01E27D16A00A129E2 /* ASCConverters_ios.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BEAF1E27D16A00A129E2 /* ASCConverters_ios.cpp */; };
+		696DD7CF1F5D98220021D0F3 /* libOfficeCryptReader.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 696DD7CE1F5D981A0021D0F3 /* libOfficeCryptReader.a */; };
 		698AF4C31C0745980080D889 /* libicu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 698AF4C01C0740960080D889 /* libicu.a */; };
 		69DA32F11CEE100E00E10AF0 /* libagg_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA323D1CEE092A00E10AF0 /* libagg_ios.a */; };
 		69DA32F21CEE100E00E10AF0 /* libcximage_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA322B1CEE087D00E10AF0 /* libcximage_ios.a */; };
@@ -268,6 +270,20 @@
 			remoteGlobalIDString = 6967B1281E27B44D00A129E2;
 			remoteInfo = RtfFormatLib;
 		};
+		696DD7CD1F5D981A0021D0F3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 696DD7C91F5D981A0021D0F3 /* OfficeCryptReader.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 69880EE01F4D79BC00E4C541;
+			remoteInfo = OfficeCryptReader;
+		};
+		696DD7D01F5D98270021D0F3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 696DD7C91F5D981A0021D0F3 /* OfficeCryptReader.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 69880EDF1F4D79BC00E4C541;
+			remoteInfo = OfficeCryptReader;
+		};
 		698AF4BF1C0740960080D889 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 698AF4BB1C0740960080D889 /* icu.xcodeproj */;
@@ -429,6 +445,7 @@
 		17C27A191AC2DB3D00E1D003 /* X2tConverter.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = X2tConverter.mm; sourceTree = "<group>"; };
 		17C8DED01ACD696100902C85 /* libX2tConverter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libX2tConverter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17E17F561AC457CD00BEA2EA /* ASCOfficeDocxFile2Lib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ASCOfficeDocxFile2Lib.xcodeproj; path = ../../../../ASCOfficeDocxFile2/Mac/ASCOfficeDocxFile2Lib.xcodeproj; sourceTree = "<group>"; };
+		6911A9681F6036DA0061AB4D /* OfficeFileErrorDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfficeFileErrorDescription.h; path = ../../../../../Common/OfficeFileErrorDescription.h; sourceTree = "<group>"; };
 		691A8BCB1E2FA67E00DCB54A /* libxml2.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libxml2.xcodeproj; path = ../../../../DesktopEditor/xml/mac/libxml2.xcodeproj; sourceTree = "<group>"; };
 		69415F1F1CB51C29003E771B /* OfficeUtils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OfficeUtils.xcodeproj; path = ../../../../OfficeUtils/OfficeUtils.xcodeproj; sourceTree = "<group>"; };
 		69415FAE1CB5243F003E771B /* mng.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = mng.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/mng/mng.xcodeproj; sourceTree = "<group>"; };
@@ -449,6 +466,8 @@
 		6967B10E1E27A65600A129E2 /* OfficeFileFormatChecker2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OfficeFileFormatChecker2.cpp; path = ../../../../../Common/OfficeFileFormatChecker2.cpp; sourceTree = "<group>"; };
 		6967B1C91E27B9C400A129E2 /* RtfFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RtfFormatLib.xcodeproj; path = ../../../../ASCOfficeRtfFile/RtfFormatLib/Mac/RtfFormatLib.xcodeproj; sourceTree = "<group>"; };
 		6967BEAF1E27D16A00A129E2 /* ASCConverters_ios.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ASCConverters_ios.cpp; path = ../../../../src/ASCConverters_ios.cpp; sourceTree = "<group>"; };
+		696DD7C11F5D97DB0021D0F3 /* libcryptopp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcryptopp.a; path = ../../../../Common/3dParty/cryptopp/libcryptopp.a; sourceTree = "<group>"; };
+		696DD7C91F5D981A0021D0F3 /* OfficeCryptReader.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OfficeCryptReader.xcodeproj; path = ../../../../OfficeCryptReader/mac/OfficeCryptReader/OfficeCryptReader.xcodeproj; sourceTree = "<group>"; };
 		698AF4BB1C0740960080D889 /* icu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = icu.xcodeproj; path = ../../../../UnicodeConverter/icubuilds/mac/icu/icu.xcodeproj; sourceTree = "<group>"; };
 		69DA32261CEE087D00E10AF0 /* cximage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cximage.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/cximage.xcodeproj; sourceTree = "<group>"; };
 		69DA322C1CEE08DC00E10AF0 /* metafile.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = metafile.xcodeproj; path = ../../../../DesktopEditor/mac_build/metafile/metafile.xcodeproj; sourceTree = "<group>"; };
@@ -467,6 +486,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				696DD7CF1F5D98220021D0F3 /* libOfficeCryptReader.a in Frameworks */,
 				691A8BD31E2FA68F00DCB54A /* liblibxml2.a in Frameworks */,
 				6967B1D11E27B9D700A129E2 /* libRtfFormatLib.a in Frameworks */,
 				6967B10A1E27A41B00A129E2 /* libPdfWriter.a in Frameworks */,
@@ -502,6 +522,7 @@
 		17C27A0B1AC2DB3C00E1D003 = {
 			isa = PBXGroup;
 			children = (
+				696DD7C91F5D981A0021D0F3 /* OfficeCryptReader.xcodeproj */,
 				691A8BCB1E2FA67E00DCB54A /* libxml2.xcodeproj */,
 				6967B1C91E27B9C400A129E2 /* RtfFormatLib.xcodeproj */,
 				6967B1031E27A41300A129E2 /* PdfWriter.xcodeproj */,
@@ -530,6 +551,7 @@
 				69415F1F1CB51C29003E771B /* OfficeUtils.xcodeproj */,
 				17C27A161AC2DB3C00E1D003 /* SDK */,
 				17C27A151AC2DB3C00E1D003 /* Products */,
+				696DD7C01F5D97DB0021D0F3 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -644,6 +666,7 @@
 			isa = PBXGroup;
 			children = (
 				6967B1181E27A9D500A129E2 /* OfficeFileFormatChecker */,
+				6911A9681F6036DA0061AB4D /* OfficeFileErrorDescription.h */,
 				6967BEAF1E27D16A00A129E2 /* ASCConverters_ios.cpp */,
 				6967AFB31E27940600A129E2 /* ASCConverters.h */,
 				6967AFAE1E2793A500A129E2 /* cextracttools.cpp */,
@@ -689,6 +712,22 @@
 			isa = PBXGroup;
 			children = (
 				6967B1CE1E27B9C500A129E2 /* libRtfFormatLib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		696DD7C01F5D97DB0021D0F3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				696DD7C11F5D97DB0021D0F3 /* libcryptopp.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		696DD7CA1F5D981A0021D0F3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				696DD7CE1F5D981A0021D0F3 /* libOfficeCryptReader.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -789,6 +828,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6967AFB11E2793A500A129E2 /* cextracttools.h in Headers */,
+				6911A9691F6036DA0061AB4D /* OfficeFileErrorDescription.h in Headers */,
 				6967B10F1E27A65600A129E2 /* OfficeFileFormatChecker.h in Headers */,
 				6967AFB51E27940600A129E2 /* ASCConverters.h in Headers */,
 				17C8DECC1ACD696100902C85 /* X2tConverter.h in Headers */,
@@ -809,6 +849,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				696DD7D11F5D98270021D0F3 /* PBXTargetDependency */,
 				691A8BD21E2FA68900DCB54A /* PBXTargetDependency */,
 				6967B1D01E27B9D000A129E2 /* PBXTargetDependency */,
 				6967B10C1E27A42500A129E2 /* PBXTargetDependency */,
@@ -847,7 +888,7 @@
 		17C27A0C1AC2DB3C00E1D003 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0710;
+				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = "Ascensio System SIA";
 			};
 			buildConfigurationList = 17C27A0F1AC2DB3C00E1D003 /* Build configuration list for PBXProject "X2tConverter" */;
@@ -924,6 +965,10 @@
 				{
 					ProductGroup = 69415FAF1CB5243F003E771B /* Products */;
 					ProjectRef = 69415FAE1CB5243F003E771B /* mng.xcodeproj */;
+				},
+				{
+					ProductGroup = 696DD7CA1F5D981A0021D0F3 /* Products */;
+					ProjectRef = 696DD7C91F5D981A0021D0F3 /* OfficeCryptReader.xcodeproj */;
 				},
 				{
 					ProductGroup = 69415F201CB51C29003E771B /* Products */;
@@ -1078,6 +1123,13 @@
 			fileType = archive.ar;
 			path = libRtfFormatLib.a;
 			remoteRef = 6967B1CD1E27B9C500A129E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		696DD7CE1F5D981A0021D0F3 /* libOfficeCryptReader.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libOfficeCryptReader.a;
+			remoteRef = 696DD7CD1F5D981A0021D0F3 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		698AF4C01C0740960080D889 /* libicu.a */ = {
@@ -1265,6 +1317,11 @@
 			name = RtfFormatLib;
 			targetProxy = 6967B1CF1E27B9D000A129E2 /* PBXContainerItemProxy */;
 		};
+		696DD7D11F5D98270021D0F3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = OfficeCryptReader;
+			targetProxy = 696DD7D01F5D98270021D0F3 /* PBXContainerItemProxy */;
+		};
 		698AF4C21C0745930080D889 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = icu;
@@ -1345,13 +1402,21 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
@@ -1359,6 +1424,7 @@
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -1371,7 +1437,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1387,13 +1453,21 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
@@ -1401,13 +1475,14 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
@@ -1417,6 +1492,8 @@
 		17C8DECE1ACD696100902C85 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				ENABLE_BITCODE = NO;
 				EXECUTABLE_PREFIX = lib;
@@ -1449,7 +1526,11 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lc++",
+				);
 				PRODUCT_NAME = X2tConverter;
 				PUBLIC_HEADERS_FOLDER_PATH = ../include;
 				SDKROOT = iphoneos;
@@ -1460,6 +1541,8 @@
 		17C8DECF1ACD696100902C85 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				ENABLE_BITCODE = NO;
 				EXECUTABLE_PREFIX = lib;
@@ -1491,7 +1574,11 @@
 					"$(PROJECT_DIR)/../../../../Common/3dParty/boost/boost_1_58_0",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lc++",
+				);
 				PRODUCT_NAME = X2tConverter;
 				PUBLIC_HEADERS_FOLDER_PATH = ../include;
 				SDKROOT = iphoneos;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,7 +32,6 @@
 
 #include "XFPropGradientStop.h"
 #include <Binary/CFRecord.h>
-
 #include <simple_xml_writer.h>
 
 namespace XLS
@@ -59,7 +58,7 @@ int XFPropGradientStop::serialize(std::wostream & stream)
 		CP_XML_NODE(L"stop")
 		{	
 			CP_XML_ATTR(L"position", numPosition);
-			color.serialize(CP_XML_STREAM());
+			color.serialize(CP_XML_STREAM(), L"color");
 		}
 	}
 	return 0;

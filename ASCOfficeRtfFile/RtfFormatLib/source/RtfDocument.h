@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,15 +37,16 @@
 #include "RtfMath.h"
 #include "RtfShape.h"
 
+namespace OOX
+{
+	class WritingElement;
+}
+
 struct _section
 {
-	_section() : start_para(0), end_para(-1) {}
-
-	_section(RtfSectionPtr &p, int start = 0, int end = -1) : props(p), start_para(start), end_para(end) {}
-
-	RtfSectionPtr props;
-	int start_para;
-	int end_para;
+	RtfSectionPtr								props;
+    std::vector<OOX::WritingElement*>::iterator	start_para;
+    std::vector<OOX::WritingElement*>::iterator	end_para;
 };
 
 class RtfDocument : public ItemContainer<_section>
@@ -75,11 +76,21 @@ public:
 	std::vector<RtfOldListPtr> m_aOldLists;
 
 private: 
-	std::vector<int> m_aShapeId;
+	std::vector<int>	m_aShapeId;
+	int					m_nZIndexLast;
 
 public: 
+	int GetZIndex()
+	{
+		return m_nZIndexLast++;
+	}
+	void SetZIndex(int val)
+	{
+		if (m_nZIndexLast < val)
+			m_nZIndexLast = val;
+	}
 	IdGenerator m_oIdGenerator;
-	void SetShapeId( int nShapeId )
+	void SetShapeId( int nShapeId )//todoo -> map
 	{
 		for (size_t i = 0; i < m_aShapeId.size(); i++ )
 		{

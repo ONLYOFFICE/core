@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -108,6 +108,10 @@ void table_data_pilot_table::xlsx_convert(oox::xlsx_conversion_context & Context
 		Context.get_pivots_context().set_view_target_range(ref);
 		Context.get_pivots_context().set_view_target_table_name(sheet_name);
 	}
+	if (table_grand_total_)
+	{
+		Context.get_pivots_context().set_grand_total(table_grand_total_->get_type());
+	}
 
 	if (table_buttons_)
 	{
@@ -122,6 +126,9 @@ void table_data_pilot_table::xlsx_convert(oox::xlsx_conversion_context & Context
 	}
 	if (table_identify_categories_)
 		Context.get_pivots_context().set_identify_categories(table_identify_categories_->get());
+
+	if (table_ignore_empty_rows_)
+		Context.get_pivots_context().set_ignore_empty_rows(table_ignore_empty_rows_->get());
 
 	if (table_drill_down_ondouble_click_)
 		Context.get_pivots_context().set_drill(table_drill_down_ondouble_click_->get());
@@ -155,6 +162,7 @@ void table_data_pilot_field::add_attributes( const xml::attributes_wc_ptr & Attr
 	CP_APPLY_ATTR(L"loext:ignore-selected-page"	, loext_ignore_selected_page_);
 	CP_APPLY_ATTR(L"table:selected-page"		, table_selected_page_);
 	CP_APPLY_ATTR(L"table:is-data-layout-field"	, table_is_data_layout_field_);
+	CP_APPLY_ATTR(L"tableooo:display-name"		, table_display_name_);
 }
 
 void table_data_pilot_field::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -175,6 +183,9 @@ void table_data_pilot_field::xlsx_convert(oox::xlsx_conversion_context & Context
 	
 	Context.get_pivots_context().set_field_name(table_source_field_name_.get_value_or(L""));
 	
+	if (table_display_name_)
+		Context.get_pivots_context().set_field_display(*table_display_name_);
+
 	if (table_is_data_layout_field_)
 		Context.get_pivots_context().set_field_data_layout(table_is_data_layout_field_->get());
 	
@@ -217,7 +228,24 @@ void table_data_pilot_field_reference::add_attributes( const xml::attributes_wc_
 
 void table_data_pilot_field_reference::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-
+	Context.get_pivots_context().start_field_reference();
+	if (table_field_name_)
+	{
+		Context.get_pivots_context().set_field_ref_name(*table_field_name_);
+	}
+	if (table_type_)
+	{
+		Context.get_pivots_context().set_field_ref_type(table_type_->get_type());
+	}
+	if (table_member_name_)
+	{
+		Context.get_pivots_context().set_field_ref_member_name(*table_member_name_);
+	}		
+	if (table_member_type_)
+	{
+		Context.get_pivots_context().set_field_ref_member_type(table_member_type_->get_type());
+	}
+	Context.get_pivots_context().end_field_reference();
 }
 //-------------------------------------------------------------------------------------------------
 const wchar_t * table_database_source_table::ns		= L"table";
@@ -405,6 +433,8 @@ void table_data_pilot_groups::xlsx_convert(oox::xlsx_conversion_context & Contex
 {
 	if (table_grouped_by_)
 		Context.get_pivots_context().set_field_groups(table_grouped_by_->get_type());
+	else
+		Context.get_pivots_context().set_field_groups(7);
 
 	if (table_source_field_name_)
 		Context.get_pivots_context().set_field_groups_source(*table_source_field_name_);
@@ -429,10 +459,16 @@ void table_data_pilot_group::add_child_element( xml::sax * Reader, const std::ws
 }
 void table_data_pilot_group::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    for (size_t i = 0; i < content_.size(); i++)
+	Context.get_pivots_context().start_field_group();
+	
+	if (table_name_)
+		Context.get_pivots_context().set_field_group_name (*table_name_);
+    
+	for (size_t i = 0; i < content_.size(); i++)
     {
 		content_[i]->xlsx_convert(Context);
 	}
+	Context.get_pivots_context().end_field_group();
 }
 //-------------------------------------------------------------------------------------------------
 const wchar_t * table_data_pilot_members::ns	= L"table";
@@ -462,7 +498,7 @@ void table_data_pilot_member::add_attributes( const xml::attributes_wc_ptr & Att
 
 void table_data_pilot_member::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.get_pivots_context().add_field_cache(-1, table_name_.get_value_or(L""));
+	Context.get_pivots_context().add_field_cache(-1, table_name_.get_value_or(L""), table_show_details_ ? table_show_details_->get() : true);
 }
 //-------------------------------------------------------------------------------------------------
 const wchar_t * table_data_pilot_group_member::ns	= L"table";
@@ -470,12 +506,12 @@ const wchar_t * table_data_pilot_group_member::name	= L"data-pilot-group-member"
 
 void table_data_pilot_group_member::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	CP_APPLY_ATTR(L"table:name",	table_name_);
+	CP_APPLY_ATTR(L"table:name", table_name_);
 }
 
 void table_data_pilot_group_member::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-
+	Context.get_pivots_context().add_field_cache(-1, table_name_.get_value_or(L""));
 }
 //-------------------------------------------------------------------------------------------------
 const wchar_t * table_data_pilot_subtotals::ns		= L"table";

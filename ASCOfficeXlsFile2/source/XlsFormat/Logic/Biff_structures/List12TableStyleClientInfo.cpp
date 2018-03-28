@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -57,11 +57,11 @@ void List12TableStyleClientInfo::load(CFRecord& record)
 	unsigned short flags;
 	record >> flags;
 
-	fFirstColumn = static_cast<unsigned char>(GETBITS(flags, 0, 1));
-	fLastColumn = static_cast<unsigned char>(GETBITS(flags, 1, 2));
-	fRowStripes = static_cast<unsigned char>(GETBITS(flags, 3, 4));
-	fColumnStripes = static_cast<unsigned char>(GETBITS(flags, 5, 6));
-	fDefaultStyle  = static_cast<unsigned char>(GETBITS(flags, 9, 10));
+	fFirstColumn	= GETBIT(flags, 0);
+	fLastColumn		= GETBIT(flags, 1);
+	fRowStripes		= GETBIT(flags, 2);
+	fColumnStripes	= GETBIT(flags, 3);
+	fDefaultStyle	= GETBIT(flags, 6);
 
 	record >> stListStyleName;
 }

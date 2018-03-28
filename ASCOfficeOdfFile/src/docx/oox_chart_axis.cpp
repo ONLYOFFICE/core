@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,13 +48,19 @@ _CP_PTR(oox_axis_content) oox_axis_content::create(int type)
 
 oox_axis_content::oox_axis_content(int type/*,std::wstring name*/)
 {
-    //id_ = abs((int)*((_UINT32*)this));
-    id_ = abs((long)this);
-	type_=type;		//dimension
+	if (type == 0)
+	{
+		id_  = 0;
+	}
+	else
+	{
+		id_  = abs((long)this);
+	}
+	type_ = type;
 }
 void oox_axis_content::oox_serialize(std::wostream & _Wostream)
 {
-	if (id_ <0 )return;//not activate
+	if (id_ < 1 )return; //not activate, blank axis
  
 	CP_XML_WRITER(_Wostream)
     {

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -546,6 +546,7 @@ enum ElementType
 	typeBopPopCustomPiesIndices,
 	typeIXFCellMulBlankSpecial,
 	typeAddinUdf,
+	typeAF12CellIcon,
 	typeAF12Criteria,
 	typeAFDOper,
 	typeAFDOperRk,
@@ -557,6 +558,7 @@ enum ElementType
 	typeBookExt_Conditional11,
 	typeBookExt_Conditional12,
 	typeBuiltInStyle,
+	typeCachedDiskHeader,
 	typeCell,
 	typeCellOffsetResender,
 	typeCellRangeRef,
@@ -593,6 +595,14 @@ enum ElementType
 	typeFactoidData,
 	typeFeat11FdaAutoFilter,
 	typeFeat11FieldDataItem,
+	typeFeat11RgSharepointIdDel,
+	typeFeat11RgSharepointIdChange,
+	typeFeat11RgInvalidCells,
+	typeFeat11XMapEntry2,
+	typeFeat11XMapEntry,
+	typeFeat11XMap,
+	typeFeat11Fmla,
+	typeFeat11WSSListInfo,
 	typeFeatFormulaErr2,
 	typeFeatProtection,
 	typeFeatSmartTag,

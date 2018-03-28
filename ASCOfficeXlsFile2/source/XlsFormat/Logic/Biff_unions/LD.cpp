@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -90,7 +90,11 @@ const bool LD::loadContent(BinProcessor& proc)
 		m_FRAME = elements_.back();
 		elements_.pop_back();
 	}
-	proc.optional<CrtLayout12>();
+	if (proc.optional<CrtLayout12>())
+	{
+		m_CrtLayout12 = elements_.back();
+		elements_.pop_back();
+	}
 	
 	if (proc.optional<TEXTPROPS>())
 	{
@@ -107,9 +111,17 @@ int LD::serialize (std::wostream & _stream, const std::wstring & entries)
 	ATTACHEDLABEL	*att	= dynamic_cast<ATTACHEDLABEL*>	(m_ATTACHEDLABEL.get());
 	Legend			*legend = dynamic_cast<Legend *>		(m_Legend.get());
 	
-	if (legend == NULL) return 0;
+	if (!m_CrtLayout12 && !m_Legend)
+		return 0;
+	
+	if (legend)
+	{
+		legend->m_CrtLayout12 = m_CrtLayout12;
 
-	legend->serialize(_stream, m_countSeries);
+		legend->serialize(_stream, m_countSeries);
+	}else if (m_CrtLayout12)
+		m_CrtLayout12->serialize(_stream);
+
 	
 	if (!entries.empty())
 		_stream << entries;

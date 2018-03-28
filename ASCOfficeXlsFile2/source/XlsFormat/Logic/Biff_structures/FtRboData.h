@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,15 +43,19 @@ class FtRboData : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(FtRboData)
 public:
+	FtRboData() : fExist(false)
+	{
+	}	
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeFtRboData;
+	static const ElementType type = typeFtRboData;
 
 	virtual void load(CFRecord& record);
 
-
 	unsigned short idRadNext;
 	Boolean<unsigned short> fFirstBtn;
+
+	bool fExist;
 };
 
 } // namespace XLS

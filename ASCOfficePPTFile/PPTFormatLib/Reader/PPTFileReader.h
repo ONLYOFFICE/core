@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,7 +51,7 @@ protected:
  	CFStreamPtr GetEncryptedSummaryStream();
 	CFStreamPtr GetDocumentSummaryStream();   
 	
-	CFStreamPtr GetStreamByName(const std::string & name);
+	CFStreamPtr GetStreamByName(const std::wstring & name);
 
 	bool ReadCurrentUser(POLE::Stream *pStm);
 	void ReadEncryptedSummary();

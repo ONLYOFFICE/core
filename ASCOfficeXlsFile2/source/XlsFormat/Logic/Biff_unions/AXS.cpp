@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -259,14 +259,13 @@ int AXS::serialize(std::wostream & _stream)
 
 int AXS::serialize_rPr (std::wostream & _stream, int iFmt, _CP_OPT(unsigned int) color, bool rtl, bool defRPr)
 {
-	if (!pGlobalWorkbookInfoPtr)			return 0;
-	if (!pGlobalWorkbookInfoPtr->m_arFonts) return 0;
+	if (!pGlobalWorkbookInfoPtr) return 0;
 
 	Font * font = NULL;
-	int sz = pGlobalWorkbookInfoPtr->m_arFonts->size();
+	int sz = pGlobalWorkbookInfoPtr->m_arFonts.size();
 	
 	if (iFmt > 0 && iFmt <= sz)
-		font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts->at(iFmt-1).get());
+		font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts.at(iFmt-1).get());
 
 	if (font)
 	{

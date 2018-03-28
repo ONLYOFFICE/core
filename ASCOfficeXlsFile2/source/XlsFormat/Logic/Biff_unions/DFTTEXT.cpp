@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,12 +31,13 @@
  */
 
 #include "DFTTEXT.h"
-#include <Logic/Biff_records/DataLabExt.h>
-#include <Logic/Biff_records/StartObject.h>
-#include <Logic/Biff_records/DefaultText.h>
-#include <Logic/Biff_records/EndObject.h>
+#include "ATTACHEDLABEL.h"
 
-#include <Logic/Biff_unions/ATTACHEDLABEL.h>
+#include "../Biff_records/DataLabExt.h"
+#include "../Biff_records/DataLabExtContents.h"
+#include "../Biff_records/StartObject.h"
+#include "../Biff_records/DefaultText.h"
+#include "../Biff_records/EndObject.h"
 
 namespace XLS
 {
@@ -66,26 +67,30 @@ const bool DFTTEXT::loadContent(BinProcessor& proc)
 		m_DataLabExt = elements_.back();
 		elements_.pop_back();
 
-		proc.mandatory<StartObject>();	elements_.pop_back();
+		if (proc.optional<StartObject>())	elements_.pop_back();
 
-		proc.mandatory<DefaultText>();
-		
-		m_DefaultText = elements_.back();
-		elements_.pop_back();
 	}
-	else
+	
+	if(proc.mandatory<DefaultText>())
 	{
-		if(!proc.mandatory<DefaultText>())
-		{
-			return false;
-		}
 		m_DefaultText = elements_.back();
 		elements_.pop_back();
 	}
 
-	proc.mandatory<ATTACHEDLABEL>();
-	m_ATTACHEDLABEL = elements_.back();
-	elements_.pop_back();
+	if (proc.optional<DataLabExtContents>())
+	{
+		m_DataLabExtContents = elements_.back();
+		elements_.pop_back();
+	}	
+	
+	if (!m_DefaultText && !m_DataLabExtContents)
+		return false;
+
+	if (proc.mandatory<ATTACHEDLABEL>())
+	{
+		m_ATTACHEDLABEL = elements_.back();
+		elements_.pop_back();
+	}
 
 	if (proc.optional<EndObject>()) elements_.pop_back();
 

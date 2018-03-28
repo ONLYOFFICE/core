@@ -206,10 +206,14 @@ public:
         return sReturn;
     }
 
-    virtual std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlg)
+    virtual std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlgS)
     {
-        if (nAlg == OOXML_HASH_ALG_INVALID)
+        if (nAlgS == OOXML_HASH_ALG_INVALID)
             return "";
+
+        int nAlg = nAlgS;
+        if ((nAlg == OOXML_HASH_ALG_SHA256) && !IsWindowsVistaOrGreater())
+            nAlg = OOXML_HASH_ALG_SHA1;
 
         BOOL bResult = TRUE;
         DWORD dwKeySpec = 0;
@@ -222,7 +226,7 @@ public:
         bResult = (NULL != m_context) ? CryptAcquireCertificatePrivateKey(m_context, 0, NULL, &hCryptProv, &dwKeySpec, NULL) : FALSE;
 
         if (!bResult)
-            bResult = CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
+            bResult = CryptAcquireContext(&hCryptProv, NULL, NULL, (nAlg == OOXML_HASH_ALG_SHA256) ? PROV_RSA_AES : PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
 
         if (!bResult)
             return "";
@@ -400,9 +404,26 @@ private:
         {
         case OOXML_HASH_ALG_SHA1:
             return CALG_SHA1;
+        case OOXML_HASH_ALG_SHA256:
+            return CALG_SHA_256;
         default:
             return CALG_SHA1;
         }
+    }
+
+    bool IsWindowsVistaOrGreater()
+    {
+        OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0, 0, 0, 0 };
+        DWORDLONG const dwlConditionMask = VerSetConditionMask(
+            VerSetConditionMask(VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL),
+                    VER_MINORVERSION, VER_GREATER_EQUAL),
+                    VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
+
+        osvi.dwMajorVersion = HIBYTE(_WIN32_WINNT_VISTA);
+        osvi.dwMinorVersion = LOBYTE(_WIN32_WINNT_VISTA);
+        osvi.wServicePackMajor = 0;
+
+        return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
     }
 };
 

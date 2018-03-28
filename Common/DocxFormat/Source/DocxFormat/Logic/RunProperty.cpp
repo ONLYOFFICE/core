@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -30,6 +30,7 @@
  *
  */
 #include "RunProperty.h"
+#include "RunContent.h"
 
 namespace OOX
 {
@@ -164,7 +165,26 @@ namespace OOX
 				if ( _T("w:b") == sName )
 					m_oBold = oReader;
 				else if ( _T("w:bCs") == sName )
-					m_oBoldCs = oReader;
+				{
+					if (!oReader.IsEmptyNode())
+					{
+						m_oBoldCs.Init();
+
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							std::wstring sName1 = oReader.GetName();
+
+							if ( _T("w:t") == sName1 )
+							{
+								m_pText = new CText( oReader );
+								break;
+							}
+						}
+					}
+					else
+						m_oBoldCs = oReader;
+				}
 				else if ( _T("w:bdr") == sName )
 					m_oBdr = oReader;
 				else if ( _T("w:caps") == sName )
@@ -269,6 +289,159 @@ namespace OOX
 				}
 			}
 		}
+
+		void CRunProperty::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			if ( _T("w:rPr") != oNode.GetName() )
+				return;
+
+			XmlUtils::CXmlNode oChild;
+
+			if ( oNode.GetNode( _T("w:b"), oChild ) )
+				m_oBold = oChild;
+
+			if ( oNode.GetNode( _T("w:bCs"), oChild ) )
+			{
+				m_oBoldCs = oChild;
+				
+				XmlUtils::CXmlNode oChild1;
+				if (oChild.GetNode(L"w:t", oChild1))
+				{
+					m_pText = new CText(oChild1);	//XpertdocOnlineDemoEn.docx
+				}
+			}
+			if ( oNode.GetNode( _T("w:bdr"), oChild ) )
+				m_oBdr = oChild;
+
+			if ( oNode.GetNode( _T("w:caps"), oChild ) )
+				m_oCaps = oChild;
+
+			if ( oNode.GetNode( _T("w:color"), oChild ) )
+				m_oColor = oChild;
+
+			if ( oNode.GetNode( _T("w:cs"), oChild ) )
+				m_oCs = oChild;
+
+			if ( oNode.GetNode( _T("w:del"), oChild ) )
+				m_oDel = oChild;
+
+			if ( oNode.GetNode( _T("w:dstrike"), oChild ) )
+				m_oDStrike = oChild;
+
+			if ( oNode.GetNode( _T("w:eastAsianLayout"), oChild ) )
+				m_oEastAsianLayout = oChild;
+
+			if ( oNode.GetNode( _T("w:effect"), oChild ) )
+				m_oEffect = oChild;
+
+			if ( oNode.GetNode( _T("w:em"), oChild ) )
+				m_oEm = oChild;
+
+			if ( oNode.GetNode( _T("w:emboss"), oChild ) )
+				m_oEmboss = oChild;
+
+			if ( oNode.GetNode( _T("w:fitText"), oChild ) )
+				m_oFitText = oChild;
+
+			if ( oNode.GetNode( _T("w:highlight"), oChild ) )
+				m_oHighlight = oChild;
+
+			if ( oNode.GetNode( _T("w:ins"), oChild ) )
+				m_oIns = oChild;
+
+			if ( oNode.GetNode( _T("w:i"), oChild ) )
+				m_oItalic = oChild;
+
+			if ( oNode.GetNode( _T("w:iCs"), oChild ) )
+				m_oItalicCs = oChild;
+
+			if ( oNode.GetNode( _T("w:imprint"), oChild ) )
+				m_oImprint = oChild;
+
+			if ( oNode.GetNode( _T("w:kern"), oChild ) )
+				m_oKern = oChild;
+
+			if ( oNode.GetNode( _T("w:lang"), oChild ) )
+				m_oLang = oChild;
+
+			if ( oNode.GetNode( _T("w:noProof"), oChild ) )
+				m_oNoProof = oChild;
+
+			if ( oNode.GetNode( _T("m:oMath"), oChild ) )
+				m_oMath = oChild;
+
+			if ( oNode.GetNode( _T("w:outline"), oChild ) )
+				m_oOutline = oChild;
+
+			if ( oNode.GetNode( _T("w:position"), oChild ) )
+				m_oPosition = oChild;
+
+			if ( oNode.GetNode( _T("w:rFonts"), oChild ) )
+				m_oRFonts = oChild;
+
+			if ( !m_bRPRChange && oNode.GetNode( _T("w:rPrChange"), oChild ) )
+				m_oRPrChange = oChild;
+
+			// В спецификации почему-то написано pStyle, хотя по смыслы, по ссылке в самой
+			// же спецификации и, в конце концов, по алфавиту тут толжно быть rStyle
+			if ( oNode.GetNode( _T("w:rStyle"), oChild ) )
+				m_oRStyle = oChild;
+
+			if ( !m_oRStyle.IsInit() && oNode.GetNode( _T("w:pStyle"), oChild ) )
+				m_oRStyle = oChild;
+
+			if ( oNode.GetNode( _T("w:rtl"), oChild ) )
+				m_oRtL = oChild;
+
+			if ( oNode.GetNode( _T("w:shadow"), oChild ) )
+				m_oShadow = oChild;
+
+			if ( oNode.GetNode( _T("w:shd"), oChild ) )
+				m_oShd = oChild;
+
+			if ( oNode.GetNode( _T("w:smallCaps"), oChild ) )
+				m_oSmallCaps = oChild;
+
+			if ( oNode.GetNode( _T("w:snapToGrid"), oChild ) )
+				m_oSnapToGrid = oChild;
+
+			if ( oNode.GetNode( _T("w:spacing"), oChild ) )
+				m_oSpacing = oChild;
+
+			if ( oNode.GetNode( _T("w:specVanish"), oChild ) )
+				m_oSpecVanish = oChild;
+
+			if ( oNode.GetNode( _T("w:strike"), oChild ) )
+				m_oStrike = oChild;
+
+			if ( oNode.GetNode( _T("w:sz"), oChild ) )
+				m_oSz = oChild;
+
+			if ( oNode.GetNode( _T("w:szCs"), oChild ) )
+				m_oSzCs = oChild;
+
+			if ( oNode.GetNode( _T("w:u"), oChild ) )
+				m_oU = oChild;
+
+			if ( oNode.GetNode( _T("w:vanish"), oChild ) )
+				m_oVanish = oChild;
+
+			if ( oNode.GetNode( _T("w:vertAlign"), oChild ) )
+				m_oVertAlign = oChild;
+
+			if ( oNode.GetNode( _T("w:w"), oChild ) )
+				m_oW = oChild;
+
+			if ( oNode.GetNode( _T("w:webHidden"), oChild ) )
+				m_oWebHidden = oChild;
+
+			if ( oNode.GetNode( _T("w:moveFrom"), oChild ) )
+				m_oMoveFrom = oChild;
+
+			if ( oNode.GetNode( _T("w:moveTo"), oChild ) )
+				m_oMoveTo = oChild;
+		}
+
 	} // Logic
 } // ComplexTypes
 

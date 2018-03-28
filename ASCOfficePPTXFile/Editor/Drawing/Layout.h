@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,7 +37,7 @@ namespace NSPresentationEditor
 	class CLayout
 	{
 	public:
-		std::vector<IElement*>	m_arElements;
+		std::vector<CElementPtr>m_arElements;
 		std::vector<CColor>		m_arColorScheme;
 		std::multimap<int,int>	m_mapPlaceholders;
 
@@ -66,7 +66,7 @@ namespace NSPresentationEditor
 		std::wstring			m_strLayoutType;
 
 		std::wstring			m_sName;
-	public:
+
 		CLayout() 
 		{
 			Clear();
@@ -81,12 +81,10 @@ namespace NSPresentationEditor
 		{
 			Clear();
 		
-			m_arElements			= oSrc.m_arElements;
-
-			size_t nCount = m_arElements.size();
+			size_t nCount = oSrc.m_arElements.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 			{
-				ADDREFINTERFACE((m_arElements[nIndex]));
+				m_arElements.push_back(oSrc.m_arElements[nIndex]->CreateDublicate());
 			}
 
 			m_mapPlaceholders		= oSrc.m_mapPlaceholders;
@@ -108,7 +106,8 @@ namespace NSPresentationEditor
 			m_bHasFooter			= oSrc.m_bHasFooter;
 			m_nFormatDate			= oSrc.m_nFormatDate;
 
-			for (int i = 0 ; i < 3 ; i++) m_PlaceholdersReplaceString[i] = oSrc.m_PlaceholdersReplaceString[i];
+			for (int i = 0 ; i < 3 ; i++) 
+				m_PlaceholdersReplaceString[i] = oSrc.m_PlaceholdersReplaceString[i];
 
 			m_bShowMasterShapes		= oSrc.m_bShowMasterShapes;
 			m_strLayoutType			= oSrc.m_strLayoutType;
@@ -127,15 +126,8 @@ namespace NSPresentationEditor
 			m_lOriginalHeight	= m_oInfo.m_lUnitsVer;
 		}
 
-	public:
 		void Clear()
 		{
-			size_t nCount = m_arElements.size();
-			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
-			{
-				RELEASEINTERFACE((m_arElements[nIndex]));
-			}
-
 			m_arElements.clear();
 			m_mapPlaceholders.clear();
 			
@@ -143,7 +135,9 @@ namespace NSPresentationEditor
 			m_bHasSlideNumber	= false;
 			m_bHasFooter		= false;
 			m_nFormatDate		= 1;
-			for (int i = 0 ; i < 3 ; i++) m_PlaceholdersReplaceString[i].clear();
+			
+			for (int i = 0 ; i < 3 ; i++) 
+				m_PlaceholdersReplaceString[i].clear();
 
 			m_bUseThemeColorScheme	= true;
 			m_bShowMasterShapes		= true;
@@ -159,12 +153,11 @@ namespace NSPresentationEditor
 
 			for (size_t nIndex = 0; nIndex < m_arElements.size(); ++nIndex)
 			{
-				IElement* pElem = m_arElements[nIndex];
+				CElementPtr pElem = m_arElements[nIndex];
 				if (NULL != pElem)
 				{
 					m_arElements[nIndex] = pElem->CreateDublicate();
 				}
-				RELEASEINTERFACE(pElem);
 			}
 		}
 
@@ -175,24 +168,21 @@ namespace NSPresentationEditor
 			return pNew;
 		}
 
-		IElement* GetPlaceholder(LONG lID, bool bIsAddRef)
+		CElementPtr GetPlaceholder(LONG lID)
 		{
 			size_t nCount = m_arElements.size();
 			
 			for (size_t i = 0; i < nCount; ++i)
 			{
-				IElement* pElem = m_arElements[i];
+				CElementPtr pElem = m_arElements[i];
 
 				if (pElem->m_lPlaceholderType == lID)
 				{
-					if (bIsAddRef)
-						ADDREFINTERFACE(pElem);
-
 					return pElem;
 				}
 			}
 			
-			return NULL;
+			return CElementPtr();
 		}
 
 		LONG GetCountPlaceholderWithType(LONG lType)
@@ -209,10 +199,6 @@ namespace NSPresentationEditor
 			
 			return lFound;
 		}
-
-	public:
-
-
 		NSPresentationEditor::CColor GetColor(const LONG& lIndexScheme)
 		{
 			if (lIndexScheme < (LONG)m_arColorScheme.size())

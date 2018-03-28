@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -191,14 +191,14 @@ namespace OOX
     class CDiagramDrawing : public OOX::File, public OOX::IFileContainer
     {
     public:
-        CDiagramDrawing()
+        CDiagramDrawing(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
         {
         }
-		CDiagramDrawing(const CPath& uri)
+		CDiagramDrawing(OOX::Document* pMain, const CPath& uri) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
 			read(uri.GetDirectory(), uri);
 		}
-		CDiagramDrawing(const CPath& oRootPath, const CPath& oPath)
+		CDiagramDrawing(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
         {
             read( oRootPath, oPath );
         }

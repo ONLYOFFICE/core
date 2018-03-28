@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,7 +34,6 @@
 
 #include "style_paragraph_properties.h"
 
-#include <boost/lexical_cast.hpp>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 #include "../docx/docx_conversion_context.h"
@@ -201,18 +200,24 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			CP_XML_NODE(L"w:keepNext");
 			CP_XML_NODE(L"w:framePr")
 			{
+				CP_XML_ATTR(L"w:dropCap", L"drop");
+				if (Context.get_drop_cap_context().Scale > 0)
+				{
+					CP_XML_ATTR(L"w:lines",Context.get_drop_cap_context().Scale);
+				}
+				else
+				{
+					CP_XML_ATTR(L"w:hSpace", Context.get_drop_cap_context().Space);	
+				}
+				CP_XML_ATTR(L"w:wrap", L"around"); 
 				CP_XML_ATTR(L"w:hAnchor", L"text");
 				CP_XML_ATTR(L"w:vAnchor", L"text");
-				CP_XML_ATTR(L"w:wrap", L"around"); 
-				CP_XML_ATTR(L"w:dropCap", L"drop");
-				CP_XML_ATTR(L"w:hSpace", Context.get_drop_cap_context().Space);	
-				CP_XML_ATTR(L"w:lines",Context.get_drop_cap_context().Scale);
 			}
 			
 			CP_XML_NODE(L"w:spacing")
 			{
 				CP_XML_ATTR(L"w:after", 0); 
-				if (Context.get_drop_cap_context().FontSize>0)
+				if (Context.get_drop_cap_context().FontSize > 0)
 					CP_XML_ATTR(L"w:line", Context.get_drop_cap_context().FontSize);
 				else
 					CP_XML_ATTR(L"w:line", 240);
@@ -440,6 +445,13 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context)
 	
 	int tab_pos = (int)( 20.0 * style_position_.get_value_unit(length::pt) ) ;
 	int min_tab_pos = (int)( 20.0 * def_tab.get_value_unit(length::pt) ) ;
+
+	int margin_left_pos = Context.get_margin_left();
+
+	if ((style_type_) && (style_type_->get_type() == style_type::Right))
+	{
+		tab_pos += margin_left_pos;
+	}
 
 	if (tab_pos < min_tab_pos)
 		tab_pos = min_tab_pos;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -493,27 +493,24 @@ namespace OOX
 		public:
 			CTr()
 			{
-				m_nCountCell =0;
-				m_oTableRowProperties = NULL;
+				m_nCountCell = 0;
+				m_pTableRowProperties = NULL;
 			}
 			CTr(XmlUtils::CXmlNode &oNode)
 			{
-				m_nCountCell =0;
-				m_oTableRowProperties = NULL;
+				m_nCountCell = 0;
+				m_pTableRowProperties = NULL;
 				fromXML( oNode );
 			}
 			CTr(XmlUtils::CXmlLiteReader& oReader)
 			{
-				m_nCountCell =0;
-				m_oTableRowProperties = NULL;
+				m_nCountCell = 0;
+				m_pTableRowProperties = NULL;
 				fromXML( oReader );
 			}
 			virtual ~CTr()
 			{
 			}
-
-		public:
-
 			const CTr &operator =(const XmlUtils::CXmlNode& oNode)
 			{
 				ClearItems();
@@ -526,10 +523,9 @@ namespace OOX
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
-
 			virtual void ClearItems()
 			{
-				m_oTableRowProperties = NULL;
+				m_pTableRowProperties = NULL;
 				m_oRsidDel.reset();
 				m_oRsidR.reset();
 				m_oRsidRPr.reset();
@@ -538,12 +534,9 @@ namespace OOX
 				WritingElementWithChilds::ClearItems();
 
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_tr;
@@ -563,7 +556,7 @@ namespace OOX
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidTr;
 
 			// Childs
-			OOX::Logic::CTableRowProperties*	m_oTableRowProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
+			OOX::Logic::CTableRowProperties*	m_pTableRowProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
 		};
 
 		//--------------------------------------------------------------------------------
@@ -575,65 +568,51 @@ namespace OOX
 			CTc()
 			{
 				m_nNumCol = 0;
-				m_oTableCellProperties = NULL;
+				m_pTableCellProperties = NULL;
 			}
 			CTc(XmlUtils::CXmlNode &oNode)
 			{
 				m_nNumCol = 0;
-				m_oTableCellProperties = NULL;
+				m_pTableCellProperties = NULL;
 				fromXML( oNode );
 			}
 			CTc(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_nNumCol = 0;
-				m_oTableCellProperties = NULL;
+				m_pTableCellProperties = NULL;
 				fromXML( oReader );
 			}
 			virtual ~CTc()
 			{
 			}
-
-		public:
-
 			const CTc &operator =(const XmlUtils::CXmlNode& oNode)
 			{
 				ClearItems();
+				
 				fromXML( (XmlUtils::CXmlNode&)oNode );
 				return *this;
 			}
 			const CTc &operator =(const XmlUtils::CXmlLiteReader& oReader)
 			{
 				ClearItems();
+				
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
 			virtual void ClearItems()
 			{
-				m_oTableCellProperties = NULL;
+				m_pTableCellProperties = NULL;
 				m_nNumCol = 0;
 				m_sId.reset();
 
 				WritingElementWithChilds::ClearItems();
 			}
 
-			CTableCellProperties *GetProperties()
-			{
-				for ( int nIndex = (int)m_arrItems.size() - 1; nIndex >= 0; nIndex-- )
-				{
-					if ( m_arrItems[nIndex] && OOX::et_w_tcPr == m_arrItems[nIndex]->getType() )
-					{
-						return ((CTableCellProperties*)m_arrItems[nIndex]);
-					}
-				}
-
-				return NULL;
-			}
-
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_tc;
@@ -644,14 +623,11 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
-			int                            m_nNumCol; // Номер колонки
-
-			// Attributes
-			nullable<std::wstring >             m_sId;
-
-			// Childs
-			OOX::Logic::CTableCellProperties*		m_oTableCellProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
+			int									m_nNumCol; // Номер колонки
+		// Attributes
+			nullable<std::wstring >				m_sId;
+		// Childs
+			OOX::Logic::CTableCellProperties*	m_pTableCellProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
 		};
 
 	} // namespace Logic

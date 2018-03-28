@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -63,7 +63,7 @@ void SXVI::readFields(CFRecord& record)
 	if (cchName > 0 && cchName < 0xFFFF)
 	{
 		stName.setSize(cchName);
-		stName.load(record);
+		record >> stName;
 
 	}
 }
@@ -78,6 +78,11 @@ int SXVI::serialize(std::wostream & strm)
 			if (fMissing)	CP_XML_ATTR(L"m", 1); 
 			if (fHideDetail)CP_XML_ATTR(L"sd", 0); 
 			if (fFormula)	CP_XML_ATTR(L"f", 1);
+
+			if (!stName.value().empty())
+			{
+				CP_XML_ATTR(L"n", stName.value()); 
+			}
 
 			if (itmType == 0)
 			{

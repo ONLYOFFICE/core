@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -59,11 +59,18 @@ std::wstring RtfOldList::RenderToOOX(RenderParameter oRenderParameter)
 			sResult += L"<w:numFmt w:val=\"bullet\"/>";
 			
 			if(!sText.empty() )
-                sResult += L"<w:lvlText w:val=\"" + XmlUtils::EncodeXmlString( sText ) + L"\"/>";
+			{
+				// В символьном шрифте обрезать надо, в других случаях - нет
+				if (/*bIsSymbol && */(sText[0] & 0xF000) != 0)
+				{
+					sText[0] &= 0x00FF;
+				}
+				sResult += L"<w:lvlText w:val=\"" + XmlUtils::EncodeXmlString( sText ) + L"\"/>";
+			}
 			else
 			{
 				sResult += L"<w:lvlText w:val=\"";
-                sResult += 0xf0b7 ;
+                sResult += L'\xF0B7' ;
 				sResult += L"\"/>";
 			}
 			
@@ -89,8 +96,10 @@ std::wstring RtfOldList::RenderToOOX(RenderParameter oRenderParameter)
 			sResult += L"</w:abstractNum>";
 		}
 		else if( RENDER_TO_OOX_PARAM_OLDLIST_OVR == oRenderParameter.nType )
+		{
             sResult += L"<w:num w:numId=\"" + std::to_wstring(m_nLs) +
                     L"\"><w:abstractNumId w:val=\"" + std::to_wstring(m_nLs) + L"\"/></w:num>";
+		}
 		else
 		{
 			if( PROP_DEF != m_nLs && PROP_DEF != m_nIlvl )

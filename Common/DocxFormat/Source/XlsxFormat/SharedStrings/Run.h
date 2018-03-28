@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,7 +43,7 @@ namespace OOX
 	namespace Spreadsheet
 	{
 		//необработано:
-		class CRun : public WritingElementWithChilds<CText>
+		class CRun : public OOX::Spreadsheet::WritingElementWithChilds<CText>
 		{
 		public:
 			WritingElement_AdditionConstructors(CRun)
@@ -66,10 +66,14 @@ namespace OOX
 				if(m_oRPr.IsInit())
 					m_oRPr->toXML(writer);
 				
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-				{
-					m_arrItems[i]->toXML(writer);
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
+
 				writer.WriteString(_T("</r>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)

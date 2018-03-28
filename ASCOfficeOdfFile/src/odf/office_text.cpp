@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -68,6 +68,9 @@ bool is_text_content(const std::wstring & ns, const std::wstring & name)
             name == L"list" ||
             name == L"numbered-paragraph" ||
             name == L"section" ||
+            name == L"page-sequence" ||
+            name == L"soft-page-break" ||
+
             name == L"table-of-content" ||
             name == L"illustration-index" ||
             name == L"table-index" ||
@@ -75,13 +78,13 @@ bool is_text_content(const std::wstring & ns, const std::wstring & name)
             name == L"user-index" ||
             name == L"alphabetical-index" ||
             name == L"bibliography" ||
+			name == L"alphabetical-index-auto-mark-file" ||
 
             name == L"change" ||
             name == L"change-start" ||
             name == L"change-end"
 
             );
-    
     }
     else if (ns == L"table")
     {
@@ -101,6 +104,22 @@ void office_text::add_child_element( xml::sax * Reader, const std::wstring & Ns,
 	{
 		CP_CREATE_ELEMENT(tracked_changes_);
 	}
+	else if CP_CHECK_NAME(L"table", L"content-validations")
+	{
+		CP_CREATE_ELEMENT(table_content_validations_);
+	}
+	else if CP_CHECK_NAME(L"text", L"user-field-decls")
+	{
+		CP_CREATE_ELEMENT(user_fields_);
+	}
+	else if CP_CHECK_NAME(L"text", L"sequence-decls")
+	{
+		CP_CREATE_ELEMENT(sequences_);
+	}
+	else if CP_CHECK_NAME(L"text", L"variable-decls")
+	{
+		CP_CREATE_ELEMENT(variables_);
+	}
 	else if (is_text_content(Ns, Name))
     {
         CP_CREATE_ELEMENT(content_);
@@ -111,6 +130,15 @@ void office_text::add_child_element( xml::sax * Reader, const std::wstring & Ns,
 
 void office_text::docx_convert(oox::docx_conversion_context & Context)
 {
+	if (user_fields_)
+		user_fields_->docx_convert(Context);
+	
+	if (variables_)
+		variables_->docx_convert(Context);
+	
+	if (sequences_)
+		sequences_->docx_convert(Context);
+	
 	if (tracked_changes_)
 		tracked_changes_->docx_convert(Context);
 

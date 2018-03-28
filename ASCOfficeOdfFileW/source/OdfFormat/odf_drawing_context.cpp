@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -222,6 +222,7 @@ struct odf_drawing_state
 	_CP_OPT(presentation_class)	presentation_class_;
 	_CP_OPT(std::wstring)		presentation_placeholder_;
 
+	std::wstring				program_;
 	std::wstring				replacement_;
 	std::wstring				path_;
 	std::wstring				view_box_;
@@ -353,7 +354,7 @@ void odf_drawing_context::check_anchor()
 			set_vertical_pos(0);
 	}
 }
-int odf_drawing_context::get_group_level()
+size_t odf_drawing_context::get_group_level()
 {
 	return impl_->current_level_.size();
 }
@@ -363,7 +364,7 @@ void odf_drawing_context::start_group()
 
 	draw_g* group = dynamic_cast<draw_g*>(group_elm.get());
 
-	int level = impl_->current_level_.size();
+	size_t level = impl_->current_level_.size();
 //////////////////////////
 	
 	odf_group_state_ptr group_state = boost::shared_ptr<odf_group_state>(new odf_group_state(group_elm, level, impl_->current_group_));
@@ -736,7 +737,7 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 		draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_style_name_ = style_name;
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	int level = current_level_.size();
+	size_t level = current_level_.size();
 	
 	if (current_level_.size() > 0)
 		current_level_.back()->add_child_element(draw_elm);
@@ -807,10 +808,10 @@ bool odf_drawing_context::change_text_box_2_wordart()
 	draw_base* draw = dynamic_cast<draw_base*>(draw_elm.get());
 	if (draw == NULL)	return false;
 
-	int sz = impl_->current_level_.size();
+	size_t sz = impl_->current_level_.size();
 	if (sz < 2)			return false;
 
-	int sz_state = impl_->current_drawing_state_.elements_.size();
+	size_t sz_state = impl_->current_drawing_state_.elements_.size();
 	if (sz_state < 2)	return false;
 
 	if (sz > 2) //в группе ??
@@ -1183,8 +1184,9 @@ void odf_drawing_context::set_shadow(int type, std::wstring hexColor, _CP_OPT(do
 {
 	if (!impl_->current_graphic_properties)return;
 
-	int res = 0;
-	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+	size_t res = hexColor.find(L"#");
+	if (std::wstring::npos == res) 
+		hexColor = std::wstring(L"#") + hexColor;
 
 	impl_->current_graphic_properties->draw_shadow_offset_x_ = length(length(dist_pt,length::pt).get_value_unit(length::cm),length::cm);
 	
@@ -1286,8 +1288,9 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 	if (!impl_->current_graphic_properties)	return;
 	if (hexColor.empty()) return;
 	
-	int res = 0;
-	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+	size_t res = hexColor.find(L"#");
+	if (std::wstring::npos == res)
+		hexColor = std::wstring(L"#") + hexColor;
 
 	switch(impl_->current_drawing_part_)
 	{
@@ -1356,8 +1359,9 @@ void odf_drawing_context::add_modifier (std::wstring modifier)
 	if (!impl_->current_drawing_state_.oox_shape_) return;
 
 	boost::algorithm::to_lower(modifier);
-	int res = modifier.find(L"val ");
-	if (res >=0) modifier = modifier.substr(4);
+
+	if ( std::wstring::npos != modifier.find(L"val ") )
+		modifier = modifier.substr(4);
 	
 	impl_->current_drawing_state_.oox_shape_->modifiers += modifier + L" ";
 }
@@ -1900,7 +1904,7 @@ void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) &
 		
 		if (impl_->current_drawing_state_.in_group_)
 		{
-			for( int i = impl_->group_list_.size() - 1; i >= 0 ; i--)
+			for( int i = (int)impl_->group_list_.size() - 1; i >= 0 ; i--)
 			{
 				x = (x + impl_->group_list_[i]->shift_x) * impl_->group_list_[i]->scale_cx ;	
 			}
@@ -1917,7 +1921,7 @@ void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) &
 
 		if (impl_->current_drawing_state_.in_group_)
 		{
-			for( int i = impl_->group_list_.size() - 1; i >= 0 ; i--)
+			for( int i = (int)impl_->group_list_.size() - 1; i >= 0 ; i--)
 			{
 				y = (y + impl_->group_list_[i]->shift_y) * impl_->group_list_[i]->scale_cy;
 			}
@@ -1948,7 +1952,7 @@ void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 	{
 		if (width_pt)
 		{
-			for( int i = impl_->group_list_.size() - 1; i >= 0 ; i--)
+			for( int i = (int)impl_->group_list_.size() - 1; i >= 0 ; i--)
 			{
 				width_pt  = *width_pt * impl_->group_list_[i]->scale_cx;
 			}
@@ -1956,7 +1960,7 @@ void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 		}
 		if (height_pt)
 		{
-			for( int i = impl_->group_list_.size() - 1; i >= 0 ; i--)
+			for( int i = (int)impl_->group_list_.size() - 1; i >= 0 ; i--)
 			{
 				height_pt = *height_pt * impl_->group_list_[i]->scale_cy;
 			}
@@ -2100,6 +2104,36 @@ void odf_drawing_context::set_line_dash_preset(int style)
 			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::Solid);	 break;
 	}
 }
+void odf_drawing_context::set_paragraph_properties(style_paragraph_properties *paragraph_properties)
+{
+	if (impl_->current_drawing_state_.elements_.empty()) return;
+
+	if (!impl_->current_paragraph_properties)
+	{
+		draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
+		if (draw)
+		{
+			if(!draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
+			{
+				impl_->styles_context_->create_style(L"", style_family::Paragraph, true, false, -1);		
+			
+				office_element_ptr & style_shape_elm = impl_->styles_context_->last_state()->get_office_element();
+				style* style_ = dynamic_cast<style*>(style_shape_elm.get());
+				if (style_)
+				{
+					impl_->current_paragraph_properties = style_->content_.get_style_paragraph_properties();
+					draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_ = style_->style_name_;
+				}
+			}
+			else
+			{
+				//??? find by name
+			}
+		}
+	}
+	if (impl_->current_paragraph_properties)
+		impl_->current_paragraph_properties ->apply_from(paragraph_properties);
+}
 
 void odf_drawing_context::set_textarea_vertical_align(int align)
 {
@@ -2135,6 +2169,18 @@ void odf_drawing_context::set_textarea_fit_to_size(bool val)
 	impl_->current_graphic_properties->draw_fit_to_size_ = val;
 }
 
+void odf_drawing_context::set_textarea_rotation(double val)
+{
+	odf_style_state_ptr style_state = impl_->styles_context_->last_state(style_family::Paragraph);
+	if (style_state)
+	{
+		impl_->current_text_properties = style_state->get_text_properties();
+	}
+
+	if (!impl_->current_text_properties) return;
+
+	impl_->current_text_properties->content_.style_text_rotation_angle_ = (int)val;
+}
 
 void odf_drawing_context::set_textarea_font(std::wstring & latin, std::wstring & cs, std::wstring & ea)
 {
@@ -2165,8 +2211,8 @@ void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)
 
 	if (!impl_->current_text_properties) return;
 
-	int res = 0;
-	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+	if (std::wstring::npos == hexColor.find(L"#")) 
+		hexColor = std::wstring(L"#") + hexColor;
 
 	impl_->current_text_properties->content_.fo_color_ = hexColor;
 }
@@ -2247,36 +2293,6 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 				break;
 		}
 	}
-}
-void odf_drawing_context::set_paragraph_properties(style_paragraph_properties *paragraph_properties)
-{
-	if (impl_->current_drawing_state_.elements_.empty()) return;
-
-	if (!impl_->current_paragraph_properties)
-	{
-		draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
-		if (draw)
-		{
-			if(!draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
-			{
-				impl_->styles_context_->create_style(L"", style_family::Paragraph, true, false, -1);		
-			
-				office_element_ptr & style_shape_elm = impl_->styles_context_->last_state()->get_office_element();
-				style* style_ = dynamic_cast<style*>(style_shape_elm.get());
-				if (style_)
-				{
-					impl_->current_paragraph_properties = style_->content_.get_style_paragraph_properties();
-					draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_ = style_->style_name_;
-				}
-			}
-			else
-			{
-				//??? find by name
-			}
-		}
-	}
-	if (impl_->current_paragraph_properties)
-		impl_->current_paragraph_properties ->apply_from(paragraph_properties);
 }
 void odf_drawing_context::set_textarea_padding(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom)//in pt
 {
@@ -2460,8 +2476,6 @@ void odf_drawing_context::start_action(std::wstring value)
 				event_->attlist_.presentation_action_ = L"first-page";
 			else if (std::wstring::npos != value.find(L"lastslide"))
 				event_->attlist_.presentation_action_ = L"last-page";
-			else if (std::wstring::npos != value.find(L"endshow"))
-				event_->attlist_.presentation_action_ = L"end";
 			else if (std::wstring::npos != value.find(L"endshow"))
 				event_->attlist_.presentation_action_ = L"end";
 		}
@@ -2655,6 +2669,10 @@ void odf_drawing_context::start_object_ole(std::wstring ref)
 {
 	start_frame();
 	
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill::none;
+	impl_->current_graphic_properties->draw_stroke_ = line_style(line_style::None);
+	impl_->current_graphic_properties->draw_ole_draw_aspect_ = 1;
+//------------------------------------------------------------------------------------------------------	
 	office_element_ptr object_elm;
 	create_element(L"draw", L"object-ole", object_elm, impl_->odf_context_);
 
@@ -2680,6 +2698,11 @@ void odf_drawing_context::end_object_ole()
 void odf_drawing_context::set_image_replacement(std::wstring ref)
 {
 	impl_->current_drawing_state_.replacement_ = ref;
+}
+
+void odf_drawing_context::set_program(std::wstring program)
+{
+	impl_->current_drawing_state_.program_ = program;
 }
 
 bool odf_drawing_context::is_exist_content()
@@ -2797,8 +2820,8 @@ void odf_drawing_context::set_gradient_start(std::wstring hexColor, _CP_OPT(doub
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 
-	int res = 0;
-	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+	if (std::wstring::npos == hexColor.find(L"#"))
+		hexColor = std::wstring(L"#") + hexColor;
 	
 	gradient->draw_start_color_		= hexColor;
 	gradient->draw_start_intensity_ = 100.;
@@ -2808,8 +2831,8 @@ void odf_drawing_context::set_gradient_end  (std::wstring hexColor, _CP_OPT(doub
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 
-	int res = 0;
-	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+	if (std::wstring::npos == hexColor.find(L"#"))
+		hexColor = std::wstring(L"#") + hexColor;
 
 	gradient->draw_end_color_		= hexColor;
 	gradient->draw_end_intensity_	= 100.;
@@ -2932,8 +2955,8 @@ void odf_drawing_context::set_hatch_line_color(std::wstring hexColor)
 	draw_hatch * hatch = dynamic_cast<draw_hatch *>(impl_->styles_context_->last_state()->get_office_element().get());
 	if (!hatch) return;
 
-	int res = 0;
-	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+	if (std::wstring::npos == hexColor.find(L"#"))
+		hexColor = std::wstring(L"#") + hexColor;
 	
 	hatch->draw_color_ =  hexColor;
 }
@@ -2941,8 +2964,8 @@ void odf_drawing_context::set_hatch_area_color(std::wstring hexColor)
 {
 	if (!impl_->current_graphic_properties)return;
 
-	int res = 0;
-	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+	if (std::wstring::npos == hexColor.find(L"#"))
+		hexColor = std::wstring(L"#") + hexColor;
 
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_color_ = hexColor;
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_hatch_solid_ = true;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -162,7 +162,17 @@ namespace PPTX
 			else if(parentFileIs<TableStyles>())
 				RGB = parentFileAs<TableStyles>().GetARGBFromMap(str);
 			else if(parentFileIs<Theme>())
-				RGB = parentFileAs<Theme>().GetARGBFromMap(str);
+			{
+				Theme & theme = parentFileAs<Theme>();
+				if (theme.isMapPresent())
+				{
+					RGB = parentFileAs<Theme>().GetARGBFromMap(str);
+				}
+				else
+				{
+					RGB = parentFileAs<Theme>().GetABGRFromScheme(str);
+				}
+			}
 			else if(parentFileIs<Presentation>())
 				RGB = parentFileAs<Presentation>().GetARGBFromMap(str);
 			//{

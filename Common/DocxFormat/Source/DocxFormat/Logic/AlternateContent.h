@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -71,8 +71,6 @@ namespace OOX
 				}
 				m_arrFallbackItems.clear();
 			}
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
@@ -85,10 +83,17 @@ namespace OOX
 			{
 				return OOX::et_mc_alternateContent;
 			}
-		public:
-		
-			std::vector<WritingElement *> m_arrChoiceItems;
-			std::vector<WritingElement *> m_arrFallbackItems;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader, nullable_string & oRequires)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, (L"Requires"), oRequires )
+				WritingElement_ReadAttributes_End( oReader )
+
+			}
+			nullable_string					m_oChoiceRequires;
+	
+			std::vector<WritingElement *>	m_arrChoiceItems;
+			std::vector<WritingElement *>	m_arrFallbackItems;
 		};
 	} // namespace Words
 } // namespace OOX

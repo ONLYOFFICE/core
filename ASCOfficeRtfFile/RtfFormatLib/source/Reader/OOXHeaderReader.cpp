@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -47,12 +47,12 @@ bool OOXHeaderReader::Parse( ReaderParameter oParam, std::wstring sRID, TextItem
 	oOutput = TextItemContainerPtr ( new TextItemContainer() );
 	oOOXTextItemReader.m_oTextItems = oOutput;
 
-	for (size_t i=0; i < pHdrFtr->m_arrItems.size(); i++)
+    for (std::vector<OOX::WritingElement*>::iterator it = pHdrFtr->m_arrItems.begin(); it != pHdrFtr->m_arrItems.end(); ++it)
 	{
-		oOOXTextItemReader.Parse(pHdrFtr->m_arrItems[i], oParam );
+		oOOXTextItemReader.Parse(*it, oParam );
 	}
 	
-	oParam.oReader->m_currentContainer = dynamic_cast<OOX::IFileContainer*>(oParam.oDocx->GetDocument());
+	oParam.oReader->m_currentContainer = dynamic_cast<OOX::IFileContainer*>(oParam.oDocx->m_pDocument);
 	
 	return true;
 }

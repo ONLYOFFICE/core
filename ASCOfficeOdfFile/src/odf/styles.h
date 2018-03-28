@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -674,9 +674,6 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer_left);
 
-/// style_columns
-/// style-columns
-/// style:columns
 class style_columns : public office_element_impl<style_columns>
 {
 public:
@@ -695,15 +692,12 @@ public:
 	_CP_OPT(odf_types::length)	fo_column_gap_;
 
     office_element_ptr			style_column_sep_;
-    office_element_ptr_array	style_column_;
+    office_element_ptr_array	style_columns_;
 
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_columns);
 
-/// style_column
-/// style-column
-/// style:column
 class style_column : public office_element_impl<style_column>
 {
 public:
@@ -719,18 +713,14 @@ private:
 
 public:
     _CP_OPT(odf_types::length)	style_rel_width_;
-    odf_types::length			fo_start_indent_;
-    odf_types::length			fo_end_indent_;
-    odf_types::length			fo_space_before_;
-    odf_types::length			fo_space_after_;
+    _CP_OPT(odf_types::length)	fo_start_indent_;
+    _CP_OPT(odf_types::length)	fo_end_indent_;
+    _CP_OPT(odf_types::length)	fo_space_before_;
+    _CP_OPT(odf_types::length)	fo_space_after_;
     
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_column);
 
-/// style_column_sep
-/// style-column-sep
-/// style:column-sep
 class style_column_sep : public office_element_impl<style_column_sep>
 {
 public:
@@ -751,11 +741,9 @@ public:
     odf_types::vertical_align	style_vertical_align_; //default top
     odf_types::color			style_color_; // default #000000
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_column_sep);
 
 
-///         style:section-properties
 class style_section_properties : public office_element_impl<style_section_properties>
 {
 public:
@@ -852,10 +840,10 @@ public:
     static const ElementType type = typeStylePageLayout;
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
    
-	style_page_layout_attlist	style_page_layout_attlist_;
+	style_page_layout_attlist	attlist_;
+
     office_element_ptr			style_page_layout_properties_;
     office_element_ptr			style_header_style_;
     office_element_ptr			style_footer_style_;
@@ -871,7 +859,8 @@ CP_REGISTER_OFFICE_ELEMENT2(style_page_layout);
 class style_page_layout_properties_attlist
 {
 public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	bool compare( const style_page_layout_properties_attlist & attlist );
+	void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 	void docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context, _CP_OPT(odf_types::length_or_percent) margin_left, 
 																								_CP_OPT(odf_types::length_or_percent) margin_right);

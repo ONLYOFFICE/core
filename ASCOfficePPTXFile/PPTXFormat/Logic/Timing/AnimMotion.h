@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -105,7 +105,7 @@ namespace PPTX
 
 					oValue.m_strValue += XmlUtils::CreateNode(_T("p:by"), oAttr1);
 				}
-				if (fromY.IsInit() || fromY.IsInit())
+				if (fromX.IsInit() || fromY.IsInit())
 				{
 					XmlUtils::CAttribute oAttr1;
 					oAttr1.Write(_T("x"), fromX);

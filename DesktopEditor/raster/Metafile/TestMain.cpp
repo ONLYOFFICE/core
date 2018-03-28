@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -111,7 +111,7 @@ void main()
 	CMetaFile oMetaFile(&oFonts);
 	//ConvertFolder(oMetaFile, L"D://test//_svm//1//", c_lMetaSvm);
 	//ConvertFolder(oMetaFile, L"D://Test Files//Wmf//Test//", c_lMetaWmf);
-	ConvertFolder(oMetaFile, L"D://test//_emf", c_lMetaEmf);
+	ConvertFolder(oMetaFile, L"D://test//_emf//", c_lMetaEmf);
 
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//_CrtDumpMemoryLeaks();

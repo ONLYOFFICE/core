@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include <list>
+#include <vector>
 #include "odp_page_state.h"
 
 #include "odf_table_context.h"
@@ -83,7 +83,7 @@ private:
 	odf_table_context			table_context_;
 	odf_comment_context			comment_context_;
 	
-	std::list<odp_page_state>	page_state_list_;
+	std::vector<odp_page_state>	page_state_list_;
 	int							count_slides_;
 
 	friend class odp_conversion_context;

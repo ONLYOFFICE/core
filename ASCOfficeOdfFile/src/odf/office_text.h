@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -61,17 +61,14 @@ private:
     virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
     bool text_global_;
-    // TODO: office-text-content-prelude:
-    //  TODO: office-forms
-    //  TODO: text-decls
-    //  TODO: table-decls
 
 	office_element_ptr			tracked_changes_;
-    office_element_ptr_array	content_;
-    // TODO: text-page-sequence
-    // TODO: office-text-content-epilogue:
-    // TODO: table-functions
-
+	office_element_ptr			table_content_validations_;
+	office_element_ptr			user_fields_;
+	office_element_ptr			variables_;
+ 	office_element_ptr			sequences_;
+   
+	office_element_ptr_array	content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(office_text);
 //----------------------------------------------------------------------------------------------------

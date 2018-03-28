@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -149,24 +149,24 @@ namespace OOX
 
 		std::wstring CDir::toXML() const
 		{
-				std::wstring sResult = _T("<w:dir");
-				if(m_oVal.IsInit())
+			std::wstring sResult = _T("<w:dir");
+			if(m_oVal.IsInit())
+            {
+                sResult += _T(" val=\"") + m_oVal->ToString() + _T("\"");
+            }
+			sResult += _T(">");
+			
+            for ( size_t i = 0; i < m_arrItems.size(); ++i)
+            {
+                if ( m_arrItems[i] )
                 {
-                    sResult += _T(" val=\"") + m_oVal->ToString() + _T("\"");
+                    sResult += m_arrItems[i]->toXML();
                 }
-				sResult += _T(">");
-				
-				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-					{
-						sResult += m_arrItems[nIndex]->toXML();
-					}
-				}
+            }
 
-				sResult += _T("</w:dir>");
+			sResult += _T("</w:dir>");
 
-				return sResult;
+			return sResult;
 		}
 
 	} // namespace Logic

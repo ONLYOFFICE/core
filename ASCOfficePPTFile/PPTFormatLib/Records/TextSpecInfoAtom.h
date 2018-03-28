@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -70,7 +70,7 @@ public:
 
 			int sz = pStream->tell() - m_lOffsetInStream;
 
-			if (sz >= m_oHeader.RecLen)
+			if (sz >= (int)m_oHeader.RecLen)
 				break;
 		}
 
@@ -85,7 +85,7 @@ public:
 		if (m_arrSIs.size() < 1) return;
 
 		int pos_text = 0, pos_si = 0;
-		int ind = 0;
+		size_t ind = 0;
 		
 		for (size_t i = 0; i < pText->m_arParagraphs.size(); i++)
 		{

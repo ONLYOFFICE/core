@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT=$(readlink -f "$0")
+SCRIPT=$(readlink -f "$0" || grealpath "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
 os=$(uname -s)
@@ -71,6 +71,6 @@ cd ./icu/source/
 ./runConfigureICU MacOSX
 make
 cd ../../
-cp "./icu/source/lib/libicudata.55.1.dylib" "build/llibicudata.55.1.dylib"
+cp "./icu/source/lib/libicudata.55.1.dylib" "build/libicudata.55.1.dylib"
 cp "./icu/source/lib/libicuuc.55.1.dylib" "build/libicuuc.55.1.dylib"
 fi

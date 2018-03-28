@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -1837,6 +1837,8 @@ namespace PdfReader
 							oBase64.Encode((unsigned char *)seBuffer->GetBuffer(), seBuffer->GetLength());
 							oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
 							oXmlWriter.WriteNodeEnd(L"ToUnicode");
+							
+							delete seBuffer;
 						}
 						oDictItem.Free();
 
@@ -1940,6 +1942,8 @@ namespace PdfReader
 									oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
 
 									oXmlWriter.WriteNodeEnd(L"UseCMap");
+									
+									delete seBuffer;
 								}
 								oEncItem.Free();
 							}
@@ -1958,6 +1962,8 @@ namespace PdfReader
 							oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
 							oXmlWriter.WriteNodeEnd(L"Stream");
 							oXmlWriter.WriteNodeEnd(L"Encoding");
+							
+							delete seBuffer;
 						}
 						oDictItem.Free();
 
@@ -2368,6 +2374,8 @@ namespace PdfReader
 											oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
 
 											oXmlWriter.WriteNodeEnd(L"CIDToGIDMap");
+											
+											delete seBuffer;
 										}
 										oFontItem.Free();
 

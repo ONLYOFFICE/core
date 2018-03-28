@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,12 +45,11 @@ class xlsx_conversion_context;
 class xlsx_text_context: boost::noncopyable
 {
 public:
-    //xlsx_text_context();
 	xlsx_text_context();
     ~xlsx_text_context();
 public:
-	void set_local_styles_container	(/*odf_reader::styles_container *local_styles_*/);
-	void set_cell_text_properties	(/*odf_reader::text_format_properties_content *text_properties*/);    
+	void set_local_styles_container	();
+	void set_cell_text_properties	();    
     
     void			start_paragraph(const std::wstring & styleName);
     void			end_paragraph();

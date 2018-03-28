@@ -1,4 +1,4 @@
-﻿/*====================================================================*
+/*====================================================================*
  -  Copyright (C) 2001 Leptonica.  All rights reserved.
  -  This software is distributed in the hope that it will be
  -  useful, but with NO WARRANTY OF ANY KIND.
@@ -371,7 +371,10 @@ l_int32  ignore;
        snprintf(buf, L_BUF_SIZE,
                "wgnuplot -persist %s", gplot->cmdname);
 #endif  /* _WIN32 */
+
+#if !defined(_IOS)
     ignore = system(buf);
+#endif
     return 0;
 }
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -47,20 +47,37 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( _T("mc:Choice") == sName )
 				{
+					ReadAttributes(oReader, m_oChoiceRequires);
+
 					CRun altRun(oReader);
 					
-					for (unsigned int i = 0; i < altRun.m_arrItems.size(); ++i)
-						m_arrChoiceItems.push_back(altRun.m_arrItems[i]);
+                    for ( size_t i = 0; i < altRun.m_arrItems.size(); ++i)
+                    {
+                        if ( altRun.m_arrItems[i] )
+						{			
+                            m_arrChoiceItems.push_back(altRun.m_arrItems[i]);
+						}
+					}
 					
 					//без RemoveAll они очистятся вместе с altRun
 					altRun.m_arrItems.clear();
 				}
 				else if ( _T("mc:Fallback") == sName )
 				{
+					if (m_oChoiceRequires.is_init() && !m_arrChoiceItems.empty())
+					{
+						continue; // не зачем баласт читать - берем более современную или оригинальную версию.
+					}
+					
 					CRun altRun(oReader);
 					
-					for (unsigned int i = 0; i < altRun.m_arrItems.size(); ++i)
-						m_arrFallbackItems.push_back(altRun.m_arrItems[i]);
+                    for ( size_t i = 0; i < altRun.m_arrItems.size(); ++i)
+                    {
+                        if ( altRun.m_arrItems[i] )
+                        {
+                            m_arrFallbackItems.push_back(altRun.m_arrItems[i]);
+						}
+					}
 					
 					//без RemoveAll они очистятся вместе с altRun
 					altRun.m_arrItems.clear();

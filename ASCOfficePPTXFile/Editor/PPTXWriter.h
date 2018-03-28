@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,7 +36,6 @@
 #include "DefaultNotesMaster.h"
 #include "DefaultNotesTheme.h"
 
-
 namespace NSBinPptxRW
 {
 	class CPPTXWriter
@@ -65,6 +64,7 @@ namespace NSBinPptxRW
 		std::vector<LONG>					m_arNotesSlides_Master;
 		std::vector<LONG>					m_arNotesMasters_Theme;
 		
+		PPTX::Document					m_oDocument;
 		PPTX::Presentation				m_oPresentation;
 		PPTX::TableStyles				m_oTableStyles;
 		OOX::CVmlDrawing				m_oVmlDrawing;
@@ -78,7 +78,9 @@ namespace NSBinPptxRW
 
 	public:
 
-		CPPTXWriter()
+		CPPTXWriter() : m_oPresentation(&m_oDocument), m_oTableStyles(&m_oDocument), m_oVmlDrawing(&m_oDocument), 
+						m_oApp(&m_oDocument), m_oCore(&m_oDocument), m_oViewProps(&m_oDocument), m_oPresProps(&m_oDocument), m_oDefaultNote(&m_oDocument)
+
 		{
 			m_strDstFolder = _T("");
             m_bIsDefaultNoteMaster = true;
@@ -274,7 +276,12 @@ namespace NSBinPptxRW
 				size_t _countL = m_arSlideMasters_Theme[i].m_arLayouts.size();				
 				for (size_t j = 0; j < _countL; ++j)
 				{
-					m_arSlideLayouts_Master[m_arSlideMasters_Theme[i].m_arLayouts[j]] = (LONG)i;
+					int index = m_arSlideMasters_Theme[i].m_arLayouts[j];
+					
+					if (index >= 0 && index < m_arSlideLayouts_Master.size())
+					{
+						m_arSlideLayouts_Master[index] = (LONG)i;
+					}
 				}
 			}
 
@@ -350,7 +357,11 @@ namespace NSBinPptxRW
 
 			for (size_t i = 0; i < m_arNotesMasters_Theme.size(); i++)
 			{
-				arThemesSave[m_arNotesMasters_Theme[i]] = true;
+				int index = m_arNotesMasters_Theme[i];
+				if (index >= 0 && index < arThemesSave.size())
+				{
+					arThemesSave[index] = true;
+				}
 			}
 			LONG lCurrectTheme = 0;
 			for (LONG i = 0; i < nCountMasters; ++i)
@@ -386,7 +397,7 @@ namespace NSBinPptxRW
 						continue;
 					}
 
-					PPTX::Theme elm;
+					PPTX::Theme elm(&m_oDocument);
 					m_arThemes.push_back(elm);
 
 					m_oReader.m_pRels->Clear();
@@ -425,7 +436,7 @@ namespace NSBinPptxRW
 				
 				for (LONG i = 0; i < nCountMasters; ++i)
 				{
-					PPTX::SlideMaster elm;
+					PPTX::SlideMaster elm(&m_oDocument);
 					m_arSlideMasters.push_back(elm);
 
 					m_oReader.m_pRels->Clear();
@@ -475,7 +486,7 @@ namespace NSBinPptxRW
 				
 				for (LONG i = 0; i < nCountLayouts; ++i)
 				{
-					PPTX::SlideLayout elm;
+					PPTX::SlideLayout elm(&m_oDocument);
 					m_arSlideLayouts.push_back(elm);
 
 					m_oReader.m_pRels->Clear();
@@ -512,7 +523,7 @@ namespace NSBinPptxRW
 			
 					for (LONG i = 0; i < lCount; ++i)
 					{
-						PPTX::NotesSlide elm;
+						PPTX::NotesSlide elm(&m_oDocument);
 						m_arNotesSlides.push_back(elm);
 						
 						m_oReader.m_pRels->Clear();
@@ -559,7 +570,7 @@ namespace NSBinPptxRW
 					NSDirectory::CreateDirectory(pathFolder.GetPath());
 					NSDirectory::CreateDirectory(pathFolderRels.GetPath());
 					
-					PPTX::NotesMaster elm;
+					PPTX::NotesMaster elm(&m_oDocument);
 					m_arNotesMasters.push_back(elm);
 					
 					m_oReader.m_pRels->Clear();
@@ -604,7 +615,7 @@ namespace NSBinPptxRW
 				
 				for (LONG i = 0; i < nCountSlides; ++i)
 				{
-					PPTX::Slide elm;
+					PPTX::Slide elm(&m_oDocument);
 					m_arSlides.push_back(elm);
 
 					m_oReader.m_pRels->Clear();
@@ -811,6 +822,24 @@ namespace NSBinPptxRW
 					m_oPresentation.notesMasterIdLst[0].rid = (size_t)nCurrentRels;
 					++nCurrentRels;
 				}
+				if (m_oPresentation.comments.is_init())
+				{
+					m_oReader.m_pRels->WritePresentationComments(nComment);
+					OOX::CPath pathFolderCommentDir = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("comments");
+					if (1 == nComment)
+					{
+						NSDirectory::CreateDirectory (pathFolderCommentDir.GetPath());
+					}
+					std::wstring strCommentFile = L"comment" + std::to_wstring(nComment) + L".xml";
+
+					oXmlWriter.ClearNoAttack();
+					m_oPresentation.comments->toXmlWriter(&oXmlWriter);
+
+					OOX::CPath pathComment = pathFolderCommentDir + FILE_SEPARATOR_STR  + strCommentFile;
+					oXmlWriter.SaveToFile(pathComment.GetPath());
+
+					++nComment;
+				}
 
 				m_oReader.m_pRels->EndPresentationRels(m_oPresentation.commentAuthors.is_init(), bNotesMasterPresent, m_oPresentation.m_pVbaProject.is_init(), m_oPresentation.m_pJsaProject.is_init());
 				m_oReader.m_pRels->CloseRels();
@@ -1000,8 +1029,13 @@ namespace NSBinPptxRW
 		{
 			m_oApp.TotalTime = 0;
 			m_oApp.Words = 0;
-			m_oApp.Application = _T("OnlyOffice");
-			m_oApp.PresentationFormat = _T("On-screen Show (4:3)");
+			std::wstring sApplication = L"ONLYOFFICE";
+#if defined(INTVER)
+            std::string s = VALUE2STR(INTVER);
+            sApplication += L"/" + std::wstring(s.begin(), s.end());
+#endif
+			m_oApp.Application = sApplication;
+			m_oApp.PresentationFormat = L"On-screen Show (4:3)";
 			m_oApp.Paragraphs = 0;
 			m_oApp.Slides = (int)m_arSlides.size();
 			m_oApp.Notes = (int)m_arSlides.size();
@@ -1042,7 +1076,6 @@ namespace NSBinPptxRW
 			m_oApp.LinksUpToDate = false;
 			m_oApp.SharedDoc = false;
 			m_oApp.HyperlinksChanged = false;
-			m_oApp.AppVersion = _T("3.0000");			
 		}
 		void CreateDefaultCore()
 		{

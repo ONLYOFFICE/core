@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -74,6 +74,8 @@ void Qsi::readFields(CFRecord& record)
 	fibitAtrBdr		= GETBIT(flags2, 3);
 	fibitAtrPat		= GETBIT(flags2, 4);
 	fibitAtrProt	= GETBIT(flags2, 5);
+
+	record.skipNunBytes(2);	//unused
 }
 
 } // namespace XLS

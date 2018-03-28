@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,13 +43,13 @@ namespace OOX
 		class CPivotTable : public OOX::File, public OOX::IFileContainer
 		{
 		public:
-			CPivotTable()
+			CPivotTable(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 				m_pData = NULL;
 				m_nDataLength = 0;
 			}
-			CPivotTable(const CPath& oRootPath, const CPath& oPath)
+			CPivotTable(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 				m_pData = NULL;
@@ -60,8 +60,6 @@ namespace OOX
 			{
 				ClearItems();
 			}
-		public:
-
 			virtual void read(const CPath& oPath)
 			{
 			}

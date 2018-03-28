@@ -21,13 +21,8 @@ include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 DEFINES +=  UNICODE \
         _UNICODE \
-        PPTX_DEF \
-        PPT_DEF \
-        ENABLE_PPT_TO_PPTX_CONVERT \
         _USE_LIBXML2_READER_ \
         LIBXML_READER_ENABLED \
-        USE_LITE_READER \
-        _USE_XMLLITE_READER_ \
         _PRESENTATION_WRITER_ \
         _SVG_CONVERT_TO_IMAGE_  \
         DONT_WRITE_EMBEDDED_FONTS

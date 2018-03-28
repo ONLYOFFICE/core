@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,8 +38,6 @@
 namespace XLS
 {
 
-
-// Logical representation of Selection record in BIFF8
 class Selection: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Selection)
@@ -49,7 +47,6 @@ public:
 	~Selection();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
@@ -57,15 +54,14 @@ public:
 
 	int serialize(std::wostream & stream);
 
-//-----------------------------
 	PaneType	pnn;
 
-	R_RwU		rwAct;
-	ColU		colAct;
-	_INT16	irefAct;
+	R_RwU			rwAct;
+	ColU			colAct;
+	_INT16			irefAct;
 	
-	BIFF_BSTR	sqref;
-	BIFF_BSTR	activeCell;
+	std::wstring	sqref;
+	std::wstring	activeCell;
 };
 
 } // namespace XLS

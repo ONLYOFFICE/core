@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,6 +42,7 @@
 #include "ChartWriter.h"
 
 #include "../BinReader/DefaultThemeWriter.h"
+//#include "../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
 
 namespace BinXlsxRW{
 	int g_nCurFormatVersion = 0;
@@ -84,23 +85,22 @@ namespace BinXlsxRW{
 		sMediaPath = pathMediaDir.GetPath();
 		sEmbedPath = pathEmbedDir.GetPath();
 	}
-    bool CXlsxSerializer::loadFromFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedDir)
+    int CXlsxSerializer::loadFromFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedDir)
 	{
         std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
 
-        NSBinPptxRW::CDrawingConverter oDrawingConverter;
+		NSBinPptxRW::CDrawingConverter oDrawingConverter;
 		
         oDrawingConverter.SetDstPath(sDstPath + FILE_SEPARATOR_STR + L"xl");
         oDrawingConverter.SetSrcPath(strFileInDir, 2);
 
-        oDrawingConverter.SetMediaDstPath(sMediaDir);
+		oDrawingConverter.SetMediaDstPath(sMediaDir);
 		oDrawingConverter.SetEmbedDstPath(sEmbedDir);
 
-		BinXlsxRW::BinaryFileReader oBinaryFileReader;
-		oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oDrawingConverter, sXMLOptions);
-		return true;
+		BinXlsxRW::BinaryFileReader oBinaryFileReader;		
+		return oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oDrawingConverter, sXMLOptions);
 	}
-    bool CXlsxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sXMLOptions)
+    int CXlsxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sXMLOptions)
 	{
 		COfficeFontPicker* pFontPicker = new COfficeFontPicker();
 		pFontPicker->Init(m_sFontDir);
@@ -136,10 +136,10 @@ namespace BinXlsxRW{
 		oOfficeDrawingConverter.SetFontPicker(pFontPicker);
 
 		BinXlsxRW::BinaryFileWriter oBinaryFileWriter(fp);
-		oBinaryFileWriter.Open(sSrcPath, sDstFileName, pEmbeddedFontsManager, &oOfficeDrawingConverter, sXMLOptions, m_bIsNoBase64);
+		int result = oBinaryFileWriter.Open(sSrcPath, sDstFileName, pEmbeddedFontsManager, &oOfficeDrawingConverter, sXMLOptions, m_bIsNoBase64);
 
 		RELEASEOBJECT(pFontPicker);
-		return true;
+		return result;
 	}
  	bool CXlsxSerializer::saveChart(NSBinPptxRW::CBinaryFileReader* pReader, long lLength, const std::wstring& sFilepath, const long& lChartNumber)
 	{
@@ -168,7 +168,7 @@ namespace BinXlsxRW{
 
 	//todo theme path
 		BinXlsxRW::SaveParams			oSaveParams(sThemePath, m_pExternalDrawingConverter->GetContentTypes());
-		OOX::Spreadsheet::CChartSpace	oChartSpace;
+		OOX::Spreadsheet::CChartSpace	oChartSpace(NULL);
 		BinXlsxRW::BinaryChartReader	oBinaryChartReader(*pReader, oSaveParams, m_pExternalDrawingConverter);
 		
 		oBinaryChartReader.ReadCT_ChartSpace(lLength, &oChartSpace.m_oChartSpace);

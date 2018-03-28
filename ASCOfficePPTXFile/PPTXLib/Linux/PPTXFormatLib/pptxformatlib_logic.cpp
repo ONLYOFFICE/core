@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,6 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "../../../PPTXFormat/Logic/Media/WavAudioFile.cpp"
 #include "../../../PPTXFormat/Logic/Colors/SchemeClr.cpp"
 #include "../../../PPTXFormat/Logic/Fills/Blip.cpp"
 #include "../../../PPTXFormat/Logic/Table/TableCell.cpp"

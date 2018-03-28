@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,8 +46,7 @@ std::wostream & operator << (std::wostream & _Wostream, const Bool & _Val)
 }
 Bool Bool::parse(const std::wstring & Str)
 {
-    std::wstring tmp = Str;
-	XmlUtils::GetLower(tmp);
+    std::wstring tmp = XmlUtils::GetLower(Str);
 
 	if (tmp == L"0" || tmp == L"false") return Bool(false);
 	else return Bool(true);

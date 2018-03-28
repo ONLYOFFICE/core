@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,21 +48,24 @@
 #include "../Source/DocxFormat/Math/oMath.cpp"
 #include "../Source/DocxFormat/Math/oMathContent.cpp"
 #include "../Source/DocxFormat/Math/oMathPara.cpp"
-#include "../Source/MathEquation/MathEquation.cpp"
+#include "../Source/DocxFormat/Media/VbaProject.cpp"
 #include "../Source/DocxFormat/Docx.cpp"
-#include "../Source/XlsxFormat/Chart/ChartSerialize.cpp"
-#include "../Source/XlsxFormat/Common.cpp"
 #include "../Source/DocxFormat/FileFactory.cpp"
 #include "../Source/DocxFormat/IFileContainer.cpp"
-#include "../Source/XlsxFormat/FileFactory_Spreadsheet.cpp"
 #include "../Source/DocxFormat/Drawing/DrawingExt.cpp"
+#include "../Source/MathEquation/MathEquation.cpp"
 #include "../Source/Common/Align.cpp"
 #include "../Source/Common/Color.cpp"
 #include "../Source/Common/Index.cpp"
 #include "../Source/Common/NumFormat.cpp"
 #include "../Source/Common/Position.cpp"
-#include "../Source/Common/Utils.cpp"
 #include "../Source/Common/Wrap.cpp"
 #include "../Source/Common/ZIndex.cpp"
 #include "../Source/Common/SimpleTypes_Word.cpp"
 #include "../Source/SystemUtility/SystemUtility.cpp"
+#include "../Source/XlsxFormat/Chart/ChartSerialize.cpp"
+#include "../Source/XlsxFormat/Common.cpp"
+#include "../Source/XlsxFormat/FileFactory_Spreadsheet.cpp"
+#include "../Source/XlsxFormat/Xlsx.cpp"
+#include "../Source/XlsxFormat/Worksheets/SheetData.cpp"
+#include "../Source/XlsxFormat/Worksheets/Worksheet.cpp"

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/FrtHeader.h"
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
-
-
-// Logical representation of CrtLayout12A record in BIFF8
 class CrtLayout12A: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(CrtLayout12A)
@@ -47,12 +46,32 @@ public:
 	~CrtLayout12A();
 
 	BaseObjectPtr clone();
-
 	
-	void readFields(CFRecord& record);
+	void readFields (CFRecord& record);
+	int serialize (std::wostream & _stream);
 
-	static const ElementType	type = typeCrtLayout12A;
+	static const ElementType type = typeCrtLayout12A;
 
+	FrtHeader	frtheader;
+	_UINT32		dwCheckSum;
+
+	bool		fLayoutTargetInner;
+
+	short		xTL;
+	short		yTL;
+	short		xBR;
+	short		yBR;
+
+	CrtLayout12Mode	wXMode;
+	CrtLayout12Mode	wYMode;
+
+	CrtLayout12Mode	wWidthMode;
+	CrtLayout12Mode	wHeightMode;
+	
+	Xnum			x;
+	Xnum			y;
+	Xnum			dx;
+	Xnum			dy;
 };
 
 } // namespace XLS

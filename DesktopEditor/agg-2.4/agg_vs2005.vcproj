@@ -53,6 +53,7 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				StructMemberAlignment="0"
+				EnableEnhancedInstructionSet="0"
 				PrecompiledHeaderFile=""
 				AssemblerListingLocation="$(ConfigurationName)\agg2d.pch"
 				ObjectFile="$(ConfigurationName)\"
@@ -61,6 +62,7 @@
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
+				DisableSpecificWarnings="4005;4311;4312"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

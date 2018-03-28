@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "simple_xml_writer.h"
+#include <simple_xml_writer.h>
 
 #include "oox_content_type.h"
 #include "namespaces.h"
@@ -102,23 +102,7 @@ const wchar_t * content_type::name = L"Types";
                 elm.xml_to_stream(CP_XML_STREAM());
             }            
         }
-    }
-
-    //_Wostream << L"<Types ";
-    //CP_XML_SERIALIZE_ATTR(L"xmlns", xmlns::types.value);
-    //_Wostream << L">";
-
-    //BOOST_FOREACH(const xml::element_wc & elm, default_)
-    //{
-    //    elm.xml_to_stream(_Wostream);        
-    //}
-
-    //BOOST_FOREACH(const xml::element_wc & elm, override_)
-    //{
-    //    elm.xml_to_stream(_Wostream);        
-    //}
-
-    //_Wostream << L"</Types>";
+	}
     return _Wostream;
 }
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,11 +41,11 @@ namespace OOX
 	class OleObject : public Media
 	{
 	public:
-		OleObject(bool bMsPackage = false, bool bDocument = true) : Media (bDocument)
+		OleObject(OOX::Document *pMain, bool bMsPackage = false, bool bDocument = true) : Media (pMain, bDocument)
 		{
 			m_bMsPackage = bMsPackage;
 		}
-		OleObject(const OOX::CPath& filename, bool bMsPackage = false)
+		OleObject(OOX::Document *pMain, const OOX::CPath& filename, bool bMsPackage = false) : Media (pMain)
 		{
 			m_bMsPackage = bMsPackage;
 			read(filename);

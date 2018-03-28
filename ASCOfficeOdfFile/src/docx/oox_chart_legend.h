@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,7 +48,7 @@ public:
  
     void oox_serialize(std::wostream & _Wostream);
 
-	odf_reader::chart::simple content_;  
+	odf_reader::chart::legend content_;  
 private:
 	
 	cpdoccore::oox::oox_layout layout_;	//layout (Layout) §21.2.2.88

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,7 +33,6 @@
 #include "table.h"
 
 #include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/attributes.h>
 
 #include "serialize_elements.h"
@@ -163,7 +162,6 @@ void table_table::docx_convert(oox::docx_conversion_context & Context)
 
     if (inst && inst->content())
         inst->content()->docx_convert(Context);
-
 
 	Context.get_styles_context().docx_serialize_table_style(_Wostream, Context.get_text_tracked_context().dumpTblPr_);
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -56,8 +56,8 @@ public:
 
 	void fromString(const std::wstring& word);
 
-	_UINT16 ixti;
-	_UINT32 nameindex;
+	_INT16 ixti;
+	_INT32 nameindex;
 private:
 	GlobalWorkbookInfoPtr global_info;
 };

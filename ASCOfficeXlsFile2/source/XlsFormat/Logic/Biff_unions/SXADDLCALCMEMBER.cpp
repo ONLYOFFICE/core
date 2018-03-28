@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,7 +31,7 @@
  */
 
 #include "SXADDLCALCMEMBER.h"
-#include <Logic/Biff_records/SXAddl.h>
+#include "../Biff_records/SXAddl.h"
 
 namespace XLS
 {
@@ -56,16 +56,7 @@ BaseObjectPtr SXADDLCALCMEMBER::clone()
 // SXADDLCALCMEMBER = (SXAddl_SXCView_SXDCalcMember [SXAddl_SXCView_SXDCalcMemString *Continue_SxaddlSxString])
 const bool SXADDLCALCMEMBER::loadContent(BinProcessor& proc)
 {
-	//if(!proc.mandatory<SXAddl_SXCView_SXDCalcMember>())
-	//{
-	//	return false;
-	//}
-	//if(proc.optional<SXAddl_SXCView_SXDCalcMemString>())
-	//{
-	//	int count = proc.repeated<Continue_SxaddlSxString>(0, 0);
-	//}
-
-	return true;
+	return false;
 }
 
 } // namespace XLS

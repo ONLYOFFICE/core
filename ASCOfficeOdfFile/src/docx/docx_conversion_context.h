@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -224,8 +224,9 @@ public:
 	bool & get_use_image_replace()
 	{
 		bool res = false;
-		if (frames_.size()>0)	return frames_.back().use_image_replace;
-		else					return res;
+		if (!frames_.empty())	return frames_.back().use_image_replace;
+		else
+			throw;
 	}
 
 	std::wstring & get_text_stream_shape()
@@ -563,6 +564,9 @@ public:
             return temp_stream_;
     }
 
+	void add_user_field			(const std::wstring & name, const std::wstring & value);	
+	std::wstring get_user_field	(const std::wstring & name);
+
     void add_element_to_run		(std::wstring parenStyleId = _T(""));
     void finish_run				();
 	void add_new_run			(std::wstring parentStyleId = _T(""));
@@ -689,9 +693,12 @@ public:
     StreamsManPtr	get_stream_man() const				{ return streams_man_; }
     void			set_stream_man(StreamsManPtr Sm)	{ streams_man_ = Sm; }
 
-    void set_rtl(bool Val)	{ is_rtl_ = Val; }
+    void set_rtl(bool val)	{ is_rtl_ = val; }
     bool get_rtl() const	{return is_rtl_;}
    
+	void set_margin_left(int val)	{current_margin_left_ = val;}
+	int get_margin_left()			{return current_margin_left_;}
+
 	void set_process_note		(NoteType Val) { process_note_ = Val; }
 	NoteType get_process_note	() const		{ return process_note_; }
 	void add_note_reference		();
@@ -730,6 +737,7 @@ private:
     std::wstringstream		fontTable_xml_;
     std::wstringstream		numbering_xml_;
     std::wstringstream		temp_stream_;
+	std::wstringstream		mimetype_xml_;
     
     std::wstringstream		footer_xml_;
     std::wstringstream		header_xml_;
@@ -762,7 +770,7 @@ private:
     std::wstring			automatic_parent_style_; 
     std::wstring			current_master_page_name_;
 	std::wstring			text_list_style_name_;
-    std::list<std::wstring> list_style_stack_;
+    std::vector<std::wstring> list_style_stack_;
     bool					first_element_list_item_;
     
 	bool page_break_after_;
@@ -778,13 +786,17 @@ private:
     bool is_rtl_; // right-to-left
     bool is_paragraph_keep_; 
  
-    int										new_list_style_number_;	// счетчик для нумерации имен созданных в процессе конвертации стилей
-	NoteType								process_note_;
-    std::list<odf_reader::office_element *> delayed_elements_;
+	int current_margin_left_;
+    int new_list_style_number_;	// счетчик для нумерации имен созданных в процессе конвертации стилей
+	NoteType process_note_;
+    
+	std::vector<odf_reader::office_element*> delayed_elements_;
 
-    std::list< const odf_reader::style_text_properties * >	text_properties_stack_;
+    std::vector< const odf_reader::style_text_properties*>	text_properties_stack_;
 	std::map<std::wstring, text_tracked_context::_state>	map_current_changes_;    
     boost::unordered_map<std::wstring, std::wstring>		list_style_renames_;// цепочки переименований нумераций
+	
+	std::map<std::wstring, std::wstring>					map_user_fields;
 };
 
 }

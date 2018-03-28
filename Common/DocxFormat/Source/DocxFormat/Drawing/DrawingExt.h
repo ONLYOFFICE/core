@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,24 +53,20 @@ namespace OOX
 			CCompatExt()
 			{
 			}
-			virtual ~CCompatExt()
-			{
-			}
+			virtual ~CCompatExt();
 
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
                 //todo
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -90,11 +86,7 @@ namespace OOX
 			}
 
 		public:
-
-			// Attributes
             nullable<std::wstring> m_sSpId;
-
-			// Childs
 		};
 		class CDataModelExt : public WritingElement
 		{
@@ -159,8 +151,6 @@ namespace OOX
 			{
 			}
 			virtual ~COfficeArtExtension();
-
-		public:
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{

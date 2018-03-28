@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,6 +35,7 @@
 #include "../../XlsxSerializerCom/Common/Common.h"
 #include "../../DesktopEditor/fontengine/FontManager.h"
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include <boost/unordered_map.hpp>
 
 namespace Writers
 {
@@ -48,7 +49,7 @@ namespace Writers
         CApplicationFonts       m_oApplicationFonts;
         CFontManager*           m_pFontManager;
 	public:
-        std::map<std::wstring, int> m_mapFonts;
+        boost::unordered_map<std::wstring, int> m_mapFonts;
 
 		FontTableWriter(std::wstring sDir, std::wstring sFontDir, bool bNoFontDir):m_sDir(sDir)
 		{
@@ -81,7 +82,7 @@ namespace Writers
 			bool bCalibri = false;
 			bool bTimes = false;
 			bool bCambria = false;
-            for (std::map<std::wstring, int>::const_iterator it = m_mapFonts.begin(); it != m_mapFonts.end(); ++it)
+            for (boost::unordered_map<std::wstring, int>::const_iterator it = m_mapFonts.begin(); it != m_mapFonts.end(); ++it)
 			{
                 const std::wstring& sFontName = it->first;
 				if(_T("Calibri") == sFontName)

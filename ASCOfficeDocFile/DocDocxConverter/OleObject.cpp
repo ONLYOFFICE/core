@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,35 +46,35 @@ OleObject::OleObject( const CharacterPropertyExceptions* chpx, StructuredStorage
 	  
 	HRESULT res = S_OK;
 	
-	POLE::Stream* ObjectPoolStorage = new POLE::Stream(oleStorage, "ObjectPool");
+	POLE::Stream* ObjectPoolStorage = new POLE::Stream(oleStorage, L"ObjectPool");
 
 	if (ObjectPoolStorage)
 	{
 		ObjectId = getOleEntryName( chpx );
 		
-		std::string sObjectId( ObjectId.begin(), ObjectId.end() );
+		std::wstring sObjectId( ObjectId.begin(), ObjectId.end() );
 		{		
-			std::string name = "ObjectPool/" + sObjectId + "/";
-			processOleStream(  name + "Ole"  );
+			std::wstring name = L"ObjectPool/" + sObjectId + L"/";
+			processOleStream(  name + L"Ole"  );
 
 			if ( bLinked )
 			{
-			  processLinkInfoStream( name +  "LinkInfo"  );
+			  processLinkInfoStream( name +  L"LinkInfo"  );
 			}
 			else
 			{
-			  processCompObjStream(  name +  "CompObj"  );
+			  processCompObjStream(  name +  L"CompObj"  );
 			}
 			
-			processPICStream(  name +  "PIC"  );
+			processPICStream(  name +  L"PIC"  );
 
-			processEquationNativeStream(  name +  "Equation Native"  );
+			processEquationNativeStream(  name +  L"Equation Native"  );
 		}
 		delete  ObjectPoolStorage;
 	}
 }
 
-void OleObject::processLinkInfoStream( const std::string& linkStream )
+void OleObject::processLinkInfoStream( const std::wstring& linkStream )
 {
 	try
 	{
@@ -125,7 +125,7 @@ void OleObject::processLinkInfoStream( const std::string& linkStream )
 	}
 }
       
-void OleObject::processEquationNativeStream( const std::string& eqStream )
+void OleObject::processEquationNativeStream( const std::wstring& eqStream )
 {
 	try
 	{
@@ -156,7 +156,7 @@ void OleObject::processEquationNativeStream( const std::string& eqStream )
 	}
 }
 
-void OleObject::processPICStream( const std::string& picStream )
+void OleObject::processPICStream( const std::wstring& picStream )
 {
 	try
 	{
@@ -191,7 +191,7 @@ void OleObject::processPICStream( const std::string& picStream )
 	}
 }
 
-void OleObject::processCompObjStream( const std::string& compStream )
+void OleObject::processCompObjStream( const std::wstring& compStream )
 {
 	try
 	{
@@ -206,11 +206,11 @@ void OleObject::processCompObjStream( const std::string& compStream )
 			//skip the CompObjHeader
 			reader.ReadBytes( 28, false );
 
-			int sz_obj = reader.GetSize() - reader.GetPosition();
+			unsigned int sz_obj = reader.GetSize() - reader.GetPosition();
 
 			if (sz_obj > 4)
 			{
-				UserType		= reader.ReadLengthPrefixedAnsiString(sz_obj);
+				UserType = reader.ReadLengthPrefixedAnsiString(sz_obj);
 
 				sz_obj = reader.GetSize() - reader.GetPosition();
 				if (sz_obj > 4)
@@ -218,7 +218,7 @@ void OleObject::processCompObjStream( const std::string& compStream )
 
 				sz_obj = reader.GetSize() - reader.GetPosition();
 				if (sz_obj > 4)
-					Program			= reader.ReadLengthPrefixedAnsiString(sz_obj);
+					Program = reader.ReadLengthPrefixedAnsiString(sz_obj);
 			}
 			delete pCompStream;
 		}
@@ -228,7 +228,7 @@ void OleObject::processCompObjStream( const std::string& compStream )
 	}
 }
 
-void OleObject::processOleStream( const std::string& oleStreamName )
+void OleObject::processOleStream( const std::wstring& oleStreamName )
 {
 	try
 	{

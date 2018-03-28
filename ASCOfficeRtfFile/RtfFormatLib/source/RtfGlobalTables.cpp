@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -69,7 +69,7 @@ std::wstring RtfListTable::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE;
-		for (size_t i = 0; i < m_aPictureList.GetCount(); i++ )
+		for (int i = 0; i < m_aPictureList.GetCount(); i++ )
 		{
             sResult += L"<w:numPicBullet w:numPicBulletId=\"" + std::to_wstring(i) + L"\">";
 			sResult += m_aPictureList[i]->RenderToOOX(oNewParam);

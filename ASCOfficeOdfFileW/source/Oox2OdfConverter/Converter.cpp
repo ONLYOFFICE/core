@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,11 +52,17 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Presentation.h"
 
+#include "../../../Common/DocxFormat/Source/DocxFormat/Logic/Vml.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/CxnSp.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/GraphicFrame.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Pic.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SmartArt.h"
+
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
 
 #define PROGRESSEVENT_ID	0
 
@@ -285,6 +291,14 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			{
 				convert(dynamic_cast<OOX::VmlWord::CWrap*>(oox_unknown));
 			}break;
+			case OOX::et_a_extLst:
+			{
+				convert(dynamic_cast<OOX::Drawing::COfficeArtExtensionList*>(oox_unknown));
+			}break;
+			case OOX::et_a_ext:
+			{
+				convert(dynamic_cast<OOX::Drawing::COfficeArtExtension*>(oox_unknown));
+			}break;
 			// "ненужные" элементы
 			case OOX::et_w_softHyphen:
 			case OOX::et_w_proofErr:
@@ -327,6 +341,13 @@ std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type)
 
 		if (pMedia)
 			ref = pMedia->filename().GetPath();
+	}
+	if (type == 4)
+	{
+		OOX::OleObject* pOleObject = dynamic_cast<OOX::OleObject*>(oFile.operator->());
+
+		if (pOleObject)
+			ref = pOleObject->filename().GetPath();
 	}
 	return ref;
 }

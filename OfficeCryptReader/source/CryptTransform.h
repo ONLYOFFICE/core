@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -65,6 +65,7 @@ class Decryptor
 		virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size) = 0;
 		virtual void Decrypt(char* data, const size_t size, const unsigned long block_index) = 0;
 		virtual bool SetPassword(std::wstring password) = 0;
+		virtual void Init(const unsigned long val) = 0;
 		virtual bool IsVerify() = 0;
 
 };
@@ -73,21 +74,21 @@ typedef boost::shared_ptr<Decryptor> DecryptorPtr;
 struct _ecmaCryptData
 {
 //default ms2010		
-	_ecmaCryptData() :	cipherAlgorithm(CRYPT_METHOD::AES_CBC), hashAlgorithm(CRYPT_METHOD::SHA1), spinCount(100000), 
-					keySize(0x10), hashSize(0x14), blockSize(0x10), saltSize(0x10), bAgile(true)
+	//_ecmaCryptData() :	cipherAlgorithm(), hashAlgorithm(), spinCount(100000), 
+	//				keySize(0x10), hashSize(), blockSize(0x10), saltSize(0x10), bAgile(true)
 //default ms2013/ms2016
 	//_cryptData(): cipherAlgorithm(CRYPT_METHOD::AES_CBC), hashAlgorithm(CRYPT_METHOD::SHA256), spinCount(100000), 
 	//				keySize(0x20), hashSize(0x40), blockSize(0x10), saltSize(0x10), bAgile(true)
-	{
-	}
-	CRYPT_METHOD::_cipherAlgorithm	cipherAlgorithm;
-	CRYPT_METHOD::_hashAlgorithm	hashAlgorithm;
+	//{
+	//}
+	CRYPT_METHOD::_cipherAlgorithm	cipherAlgorithm = CRYPT_METHOD::AES_CBC;
+	CRYPT_METHOD::_hashAlgorithm	hashAlgorithm = CRYPT_METHOD::SHA1;
 
-	int			spinCount;
-	int			keySize;
-	int			hashSize;
-	int			blockSize;
-	int			saltSize;
+	int			spinCount	= 100000;
+	int			keySize		= 0x10;
+	int			hashSize	= 0x14;
+	int			blockSize	= 0x10;
+	int			saltSize	= 0x10;
 
 	std::string dataSaltValue;
 	std::string saltValue;
@@ -98,9 +99,11 @@ struct _ecmaCryptData
 	std::string encryptedHmacKey;
 	std::string encryptedHmacValue;
 
-	bool bAgile;
+	bool bAgile	= true;
 
 //..........
+
+	bool fDocProps = true;
 
 };
 class ECMAEncryptor 
@@ -129,6 +132,7 @@ public:
 	ECMADecryptor();
 	virtual ~ECMADecryptor();
 
+	virtual void Init(const unsigned long val) {}
 	
 	virtual void Decrypt (char* data, const size_t size, const unsigned long stream_pos, const size_t block_size);
 	virtual void Decrypt (char* data, const size_t size, const unsigned long start_iv_block);

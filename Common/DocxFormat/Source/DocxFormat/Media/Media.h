@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,13 +42,15 @@ namespace OOX
 	class Media : public File
 	{
 	public:
-		Media(bool bDocument = true)
+		Media(OOX::Document *pMain, bool bDocument = true) : File(pMain)
 		{
+			m_bExternal = false;
 			m_bDocument = bDocument;
 		}
-		Media(const CPath& filename)
+		Media(OOX::Document *pMain, const CPath& filename, bool bExternal = false) : File(pMain)
 		{
-			read(filename);
+			m_bExternal	= bExternal;			
+			m_filename	= filename;
 		}
 		virtual ~Media()
 		{
@@ -64,15 +66,21 @@ namespace OOX
 		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const
 		{
 		}
-		void set_filename(const std::wstring & file_path)
+		void set_filename(const std::wstring & file_path, bool bExternal)
 		{
+			m_bExternal			= bExternal;
 			m_filename			= file_path;
 			m_sOutputFilename	= m_filename.GetFilename();
 		}
-		void set_filename(CPath & file_path)
+		void set_filename(CPath & file_path, bool bExternal)
 		{
+			m_bExternal			= bExternal;
 			m_filename			= file_path;
 			m_sOutputFilename	= file_path.GetFilename();
+		}
+		bool IsExternal()
+		{
+			return m_bExternal;
 		}
 		CPath filename()
 		{
@@ -80,6 +88,8 @@ namespace OOX
 		}
 		virtual void copy_to(const CPath& path) const
 		{
+			if (m_bExternal) return;
+
 			OOX::CPath pathSaveItem =  path + FILE_SEPARATOR_STR + m_filename.GetFilename();
             
 			NSFile::CFileBinary::Copy(m_filename.GetPath(), pathSaveItem.GetPath());
@@ -95,6 +105,7 @@ namespace OOX
 		}
 	protected:
 		CPath	m_filename;
+		bool	m_bExternal;
 		bool	m_bDocument; //for upper/lower level rels (defaultDirectory)
 	};
 } // namespace OOX

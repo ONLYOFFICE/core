@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecordContinued.h> 
+#include "BiffRecordContinued.h" 
 
 #if !defined(_WIN32) && !defined(_WIN64)
 
@@ -109,9 +109,7 @@
 namespace XLS
 {
 
-
-// Logical representation of Pls record in BIFF8
-class Pls : public BiffRecordContinued
+	class Pls : public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Pls)
 	BASE_OBJECT_DEFINE_CLASS_NAME(Pls)

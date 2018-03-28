@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,10 +29,15 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include <Binary/CFRecord.h>
 
 #include "XFProps.h"
-#include <Binary/CFRecord.h>
-#include <Logic/Biff_structures/BitMarkedStructs.h>
+#include "XFProp.h"
+#include "XFPropColor.h"
+#include "XFPropGradient.h"
+#include "XFPropGradientStop.h"
+
+#include "BitMarkedStructs.h"
 
 namespace XLS
 {
@@ -43,8 +48,6 @@ BiffStructurePtr XFProps::clone()
 	return BiffStructurePtr(new XFProps(*this));
 }
 
-
-
 void XFProps::load(CFRecord& record)
 {
 	arXFPropBorder.is_present = false;
@@ -54,21 +57,24 @@ void XFProps::load(CFRecord& record)
 	
 	for(int i = 0; i < cprops; ++i)
 	{
-		XFProp prop;
-		record >> prop;
+		XFPropPtr prop(new XFProp);
+		if (!prop) continue;
 
-		if	(prop.xfPropType >=  0 && prop.xfPropType <=  3)
+		prop->load(record);
+		rgExt.push_back(prop);
+
+		if	(prop->xfPropType >=  0 && prop->xfPropType <=  3)
 		{
 			arXFPropFill.push_back(prop);
 		}
-		else if (prop.xfPropType == 4)		
+		else if (prop->xfPropType == 4)		
 		{
 			arXFPropGradient.push_back(prop);
 		}
-		else if (prop.xfPropType >=  6 && prop.xfPropType <= 14)
+		else if (prop->xfPropType >=  6 && prop->xfPropType <= 14)
 		{
 			arXFPropBorder.is_present = true;
-			switch(prop.xfPropType)
+			switch(prop->xfPropType)
 			{
 				case 6: arXFPropBorder.top		= prop; break;
 				case 7: arXFPropBorder.bottom	= prop; break;
@@ -78,20 +84,20 @@ void XFProps::load(CFRecord& record)
 					arXFPropBorder.other.push_back(prop);
 			}
 		}
-		else if (prop.xfPropType >= 15 && prop.xfPropType <= 22 || prop.xfPropType == 42)	
+		else if (prop->xfPropType >= 15 && prop->xfPropType <= 22 || prop->xfPropType == 42)	
 		{
 			arXFPropAlignment.push_back(prop);
 		}
-		else if	(prop.xfPropType >= 24 && prop.xfPropType <= 37 || prop.xfPropType ==  5)	
+		else if	(prop->xfPropType >= 24 && prop->xfPropType <= 37 || prop->xfPropType ==  5)	
 		{
 			arXFPropFont.push_back(prop);
 		}
-		else if (prop.xfPropType >= 38 && prop.xfPropType <= 41)
+		else if (prop->xfPropType >= 38 && prop->xfPropType <= 41)
 		{
 			bool skip_codes = false;
-			if (prop.xfPropType == 0x0029)
+			if (prop->xfPropType == 0x0029)
 			{
-				BIFF_WORD* word = dynamic_cast<BIFF_WORD*>(prop.xfPropDataBlob.get());
+				BIFF_WORD* word = dynamic_cast<BIFF_WORD*>(prop->xfPropDataBlob.get());
 				if ((word) && (word->value() == (_UINT16)30))
 				{
 					skip_codes = true;
@@ -101,7 +107,7 @@ void XFProps::load(CFRecord& record)
 			if (!skip_codes)
 				arXFPropNumFmt.push_back(prop);	
 		}
-		else if (prop.xfPropType >= 43 && prop.xfPropType <= 44)	
+		else if (prop->xfPropType >= 43 && prop->xfPropType <= 44)	
 		{
 			arXFPropProtection.push_back(prop);		
 		}
@@ -115,23 +121,23 @@ int XFProps::serialize_fill(std::wostream & stream)
 {
 	if (arXFPropFill.empty()) return 0;
 
-	CP_XML_WRITER(stream)    
-    {
-		XFProp			*pPatternType = NULL;
-		XFPropGradient	*pGradient = NULL;
-
-		for (size_t i = 0; i < arXFPropFill.size(); i++)
+	XFProp			*pPatternType = NULL;
+	XFPropGradient	*pGradient = NULL;
+	
+	for (size_t i = 0; i < arXFPropFill.size(); i++)
+	{
+		switch(arXFPropFill[i]->xfPropType)
 		{
-			switch(arXFPropFill[i].xfPropType)
-			{
-			case 1:
-			case 0: pPatternType	= &arXFPropFill[i];	break;
-			case 3: pGradient		= dynamic_cast<XFPropGradient*>(arXFPropFill[i].xfPropDataBlob.get());		break;
-			}
+		case 0: pPatternType	= arXFPropFill[i].get();	break;
+		case 3: pGradient		= dynamic_cast<XFPropGradient*>(arXFPropFill[i]->xfPropDataBlob.get());		break;
 		}
+
+	}
+	CP_XML_WRITER(stream)    
+	{
 		CP_XML_NODE(L"fill")
-		{	
-			if (pGradient || arXFPropGradient.size() > 0)
+		{
+			if (pGradient || arXFPropGradient.size() > 0) 
 			{
 				CP_XML_NODE(L"gradientFill")
 				{
@@ -140,26 +146,37 @@ int XFProps::serialize_fill(std::wostream & stream)
 
 					for (size_t i = 0 ; i < arXFPropGradient.size(); i++)
 					{
-						if (arXFPropGradient[i].xfPropDataBlob == NULL) continue;
-						arXFPropGradient[i].xfPropDataBlob->serialize(CP_XML_STREAM());
+						if (arXFPropGradient[i]->xfPropDataBlob == NULL) continue;
+						arXFPropGradient[i]->xfPropDataBlob->serialize(CP_XML_STREAM());
 					}
 				}
 			}
-			else if (pPatternType)
+			else
 			{
 				CP_XML_NODE(L"patternFill")
 				{
-					pPatternType->serialize_attr(CP_GET_XML_NODE());
-					
+					if (pPatternType)
+					{
+						pPatternType->serialize_attr(CP_GET_XML_NODE());					
+					}	
 					for (size_t i = 0; i < arXFPropFill.size(); i++)
 					{
-						arXFPropFill[i].serialize(CP_XML_STREAM());
+						XFPropColor *pColor = dynamic_cast<XFPropColor*>(arXFPropFill[i]->xfPropDataBlob.get());
+						if (!pColor) continue;
+
+						std::wstring sNode = L"color";
+						switch(arXFPropFill[i]->xfPropType)
+						{
+						case 1: sNode = L"fgColor"; break;
+						case 2: sNode = L"bgColor"; break;
+						}
+
+						pColor->serialize(CP_XML_STREAM(), sNode);
 					}
 				}
 			}
 		}
 	}
-
 	return 0;
 }
 
@@ -173,7 +190,7 @@ int XFProps::serialize(std::wostream & strm, bool dxf)
 			{	
 				for (size_t i = 0; i < arXFPropFont.size(); i++)
 				{
-					arXFPropFont[i].serialize(CP_XML_STREAM());
+					arXFPropFont[i]->serialize(CP_XML_STREAM());
 				}
 			}
 		}
@@ -185,11 +202,11 @@ int XFProps::serialize(std::wostream & strm, bool dxf)
 				{
 					if (dxf)
 					{
-						arXFPropNumFmt[i].serialize_attr(CP_GET_XML_NODE());
+						arXFPropNumFmt[i]->serialize_attr(CP_GET_XML_NODE());
 					}
 					else
 					{
-						arXFPropNumFmt[i].serialize(CP_XML_STREAM());
+						arXFPropNumFmt[i]->serialize(CP_XML_STREAM());
 					}
 				}
 			}
@@ -202,7 +219,7 @@ int XFProps::serialize(std::wostream & strm, bool dxf)
 			{	
 				for (size_t i = 0; i < arXFPropAlignment.size(); i++)
 				{
-					arXFPropAlignment[i].serialize(CP_XML_STREAM());
+					arXFPropAlignment[i]->serialize(CP_XML_STREAM());
 				}
 			}
 		}
@@ -219,7 +236,7 @@ int XFProps::serialize(std::wostream & strm, bool dxf)
 				//----------------------------------------
 				for (size_t i = 0; i < arXFPropBorder.other.size(); i++)
 				{
-					arXFPropBorder.other[i].serialize(CP_XML_STREAM());
+					arXFPropBorder.other[i]->serialize(CP_XML_STREAM());
 				}
 			}
 		}	

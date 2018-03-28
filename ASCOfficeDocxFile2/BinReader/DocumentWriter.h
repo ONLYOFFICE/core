@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -55,7 +55,9 @@ namespace Writers
 			oFile.CreateFileW(filePath.GetPath());			
                 oFile.WriteStringUTF8( std::wstring(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>")));
                 oFile.WriteStringUTF8( std::wstring(_T("<w:document \
-xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
 xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
 xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
 xmlns:v=\"urn:schemas-microsoft-com:vml\" \

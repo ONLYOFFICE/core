@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -69,7 +69,8 @@ class odf_text_context;
 class table_table;
 class style;
 
-namespace utils {
+namespace utils 
+{
 	static std::wstring getColAddress(size_t col)
 	{
 		static const size_t r = (L'Z' - L'A' + 1);
@@ -78,8 +79,8 @@ namespace utils {
 
 		if (r0 > 0)
 		{
-			const std::wstring rest = getColAddress(col - r*r0);
-			const std::wstring res = getColAddress(r0-1) + rest;
+			const std::wstring rest = getColAddress(col - r * r0);
+			const std::wstring res = getColAddress(r0 - 1) + rest;
 			return res;
 		}
 		else
@@ -210,6 +211,24 @@ struct ods_shared_formula_state
     int moving_type; //1 - col, 2 - row
 };
 
+struct table_part_state
+{
+	std::wstring name;
+	std::wstring ref;
+
+	int col_start = 0;
+	int row_start = 0;
+
+	int col_end = 0;
+	int row_end = 0;
+
+	bool in_ref(int col, int row)
+	{
+		return (col >= col_start && col <= col_end && row >= row_start && row <= row_end);
+	}
+
+	std::vector<std::pair<std::wstring, std::wstring>> columns; //name, odf_ref
+};
 struct ods_array_formula_state
 {
 	std::wstring formula;
@@ -274,7 +293,7 @@ public:
 				void set_conditional_formula(std::wstring formula);
                 void set_conditional_value(int type, std::wstring value );
                 void set_conditional_iconset(int type_iconset);
-				void add_conditional_colorscale(_CP_OPT(odf_types::color) color);
+				void add_conditional_colorscale(int index, _CP_OPT(odf_types::color) color);
 				void set_conditional_databar_color(_CP_OPT(odf_types::color) color);
 				
 				void set_conditional_style_name(std::wstring style_name);
@@ -341,11 +360,13 @@ private:
 	
 	std::vector<office_element_ptr> current_level_;//постоянно меняющийся список уровней ("0-й элемент - сама таблица)
 	
-	std::list<ods_cell_state>	cells_;
+	std::vector<ods_cell_state>	cells_;
 	long						cells_size_;
 	
 	std::vector<ods_hyperlink_state>		hyperlinks_;
 	std::vector<ods_shared_formula_state>	shared_formulas_;
+
+	std::vector<table_part_state>			table_parts_;
 
 	odf_drawing_context		drawing_context_;	
 

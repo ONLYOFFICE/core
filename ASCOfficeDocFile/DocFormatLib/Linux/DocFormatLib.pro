@@ -21,8 +21,6 @@ include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 DEFINES +=  UNICODE \
         _UNICODE \
-        _USE_XMLLITE_READER_ \
-         USE_LITE_READER \
         _USE_LIBXML2_READER_ \
         LIBXML_READER_ENABLED \
         DONT_WRITE_EMBEDDED_FONTS \
@@ -94,6 +92,7 @@ SOURCES += \
     ../../DocDocxConverter/VMLShapeTypeMapping.cpp \
     ../../DocDocxConverter/WordDocument.cpp \
     ../../DocDocxConverter/WordprocessingDocument.cpp \
+    ../../DocDocxConverter/FormFieldData.cpp \
     ../../DocDocxConverter/OfficeDrawing/Record.cpp \
     ../../DocDocxConverter/OfficeDrawing/RecordFactory.cpp \
     ../../DocDocxConverter/OfficeDrawing/ShapeTypeFactory.cpp
@@ -236,6 +235,7 @@ HEADERS +=  \
     ../../DocDocxConverter/OfficeDrawing/RecordFactory.h \
     ../../DocDocxConverter/OfficeDrawing/RegularContainer.h \
     ../../DocDocxConverter/OfficeDrawing/ShadowStyleBooleanProperties.h \
+    ../../DocDocxConverter/OfficeDrawing/threeDBooleanProperties.h \
     ../../DocDocxConverter/OfficeDrawing/Shape.h \
     ../../DocDocxConverter/OfficeDrawing/ShapeContainer.h \
     ../../DocDocxConverter/OfficeDrawing/ShapeOptions.h \

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,8 +31,7 @@
  */
 
 #include "Theme.h"
-#include <fstream>
-#include <iostream>      // endl
+#include "../../../DesktopEditor/common/File.h"
 
 namespace XLS
 {
@@ -59,13 +58,15 @@ void Theme::readFields(CFRecord& record)
 	{
 		//default theme
 	}
-	else if (dwThemeVersion == 0)
+	//else if (dwThemeVersion == 0)
+	else
 	{
 		nThemeDataSize = record.getDataSize() - record.getRdPtr();
 		pThemeData = boost::shared_array<char>(new char[nThemeDataSize]);
 
 		memcpy(pThemeData.get(), record.getCurData<char>(), nThemeDataSize);
 		record.skipNunBytes(nThemeDataSize);
+
 	}
 }
 

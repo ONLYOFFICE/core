@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -60,7 +60,6 @@ public:
     
 	std::vector<_pivot_cache>	caches_;
 	std::vector<_pivot_view>	views_;
-	std::wstring				connections_;
 };
 
 xlsx_pivots_context::xlsx_pivots_context() : impl_(new xlsx_pivots_context::Impl())
@@ -83,10 +82,7 @@ int xlsx_pivots_context::get_cache_count()
 {
 	return (int)impl_->caches_.size();
 }
-bool xlsx_pivots_context::is_connections()
-{
-	return !impl_->connections_.empty();
-}
+
 void xlsx_pivots_context::dump_rels_cache(int index, rels & Rels)
 {
 	if (impl_->caches_[index].records_.empty() == false)
@@ -97,7 +93,7 @@ void xlsx_pivots_context::dump_rels_cache(int index, rels & Rels)
 	}
 	int i = 0;
 	for (std::unordered_map<std::wstring, std::wstring>::iterator	it =  impl_->caches_[index].externals_.begin(); 
-																	it !=  impl_->caches_[index].externals_.end(); it++, i++)
+																	it !=  impl_->caches_[index].externals_.end(); ++it, i++)
 	{
 		Rels.add(relationship(L"extId" + std::to_wstring(i + 1),							
 						L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLinkPath",
@@ -117,18 +113,6 @@ void xlsx_pivots_context::write_cache_definitions_to(int index, std::wostream & 
 {
 	strm << impl_->caches_[index].definitions_;
 }
-void xlsx_pivots_context::write_connections_to(std::wostream & strm)
-{
-	CP_XML_WRITER(strm)    
-    {
-		CP_XML_NODE(L"connections")
-		{
-            CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
-
-			CP_XML_STREAM() << impl_->connections_;
-		}
-	}
-}
 
 void xlsx_pivots_context::write_cache_records_to(int index, std::wostream & strm)
 {
@@ -146,13 +130,6 @@ int xlsx_pivots_context::add_view(std::wstring table_view, int indexCache)
 	impl_->views_.push_back(v);
 
 	return (int)impl_->views_.size();
-}
-
-void xlsx_pivots_context::add_connections(std::wstring connections)
-{
-	if (connections.empty()) return;
-
-	impl_->connections_ = connections;
 }
 
 int xlsx_pivots_context::get_view_count()

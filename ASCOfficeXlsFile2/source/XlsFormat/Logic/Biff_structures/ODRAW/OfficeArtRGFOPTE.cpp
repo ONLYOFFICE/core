@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -111,6 +111,10 @@ void OfficeArtRGFOPTE::load(XLS::CFRecord& record)
 		else if (type_prop	>= 0x07C0	&&	type_prop < 0x07C6) //2.3.5 Group Shape 2
 		{
 			GroupShape_props.push_back(fopte);
+		}
+		else
+		{
+			Other_props.push_back(fopte);
 		}
 
 		rgfopte.push_back(fopte);

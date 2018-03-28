@@ -26,11 +26,6 @@ include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 DEFINES += UNICODE \
     _UNICODE \
     _USE_LIBXML2_READER_ \
-    _USE_XMLLITE_READER_ \
-    USE_LITE_READER \
-    PPTX_DEF\
-    PPT_DEF\
-    ENABLE_PPT_TO_PPTX_CONVERT \
     AVS_USE_CONVERT_PPTX_TOCUSTOM_VML \
     #DISABLE_FILE_DOWNLOADER \
     CXIMAGE_DONT_DECLARE_TCHAR \
@@ -49,8 +44,6 @@ INCLUDEPATH += \
     ../../../../Common/ASCDocxFormat/Source \
     ../../../../DesktopEditor/xml/libxml2/include
 
-SOURCES += pptxformatlib.cpp
-
 core_release {
 SOURCES += \
     pptxformatlib_logic.cpp
@@ -58,6 +51,7 @@ SOURCES += \
 
 core_debug {
 SOURCES += \
+    ../../../PPTXFormat/Logic/Media/WavAudioFile.cpp \
     ../../../PPTXFormat/Logic/Colors/SchemeClr.cpp \
     ../../../PPTXFormat/Logic/Fills/Blip.cpp \
     ../../../PPTXFormat/Logic/Table/TableCell.cpp \
@@ -95,14 +89,19 @@ SOURCES += \
     ../../../PPTXFormat/Folder.cpp
 }
 
-SOURCES += \
+SOURCES += pptxformatlib.cpp \
+    ../../../Editor/Drawing/Shapes/BaseShape/BaseShape.cpp \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PptFormula.cpp \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PptShape.cpp \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTXShape/PptxFormula.cpp \
     ../../../ASCOfficeDrawingConverter.cpp \
     ../../../ASCOfficePPTXFileRealization.cpp \
     ../../../Editor/BinaryFileReaderWriter.cpp \
     ../../../Editor/FontPicker.cpp \
     ../../../Editor/Drawing/TextAttributesEx.cpp \
     ../../../Editor/Drawing/Elements.cpp \
-    ../../../../HtmlRenderer/src/ASCSVGWriter.cpp
+    ../../../../HtmlRenderer/src/ASCSVGWriter.cpp \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTXShape/PptxShape.cpp
 
 HEADERS += pptxformatlib.h \
     ../../../ASCOfficeDrawingConverter.h \
@@ -488,8 +487,7 @@ HEADERS += pptxformatlib.h \
     ../../../Editor/imagemanager.h \
     ../../../Editor/PPTXWriter.h \
     ../../../Editor/WMFToImageConverter.h \
-    ../../../Editor/PresentationDrawingsDef.h \
-    ../../../Editor/DefaultNotesMaster.h \
+     ../../../Editor/DefaultNotesMaster.h \
     ../../../Editor/DefaultNotesTheme.h \
     ../../../../Common/DocxFormat/Source/Base/Nullable.h \
     ../../../../HtmlRenderer/include/ASCSVGWriter.h \
@@ -500,7 +498,148 @@ HEADERS += pptxformatlib.h \
     ../../../PPTXFormat/ShowPr/Present.h \
     ../../../PPTXFormat/ShowPr/ShowPr.h \
     ../../../PPTXFormat/ShowPr/SldAll.h \
-    ../../../PPTXFormat/ShowPr/SldRg.h
+    ../../../PPTXFormat/ShowPr/SldRg.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/AccentBorderCallout2Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/AccentCallout1Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/AccentCallout2Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/AccentCallout3Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/AccentCallout90Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/ActionButtonBack.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/ActionButtonBeginning.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/ActionButtonBlank.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/ActionButtonDocument.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/ActionButtonEnd.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/ActionButtonHelp.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/ActionButtonHome.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/ActionButtonInfo.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/ActionButtonMovie.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/ActionButtonNext.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/ActionButtonReturn.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/ActionButtonSound.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/BentArrowType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/BentConnector.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/BentUpArrowType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/BevelType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/BlockArcType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/BorderCallout1Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/BorderCallout2Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/BorderCallout3Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/BorderCallout90Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/BracePairType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/BracketPairType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/Callout1Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/Callout2Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/Callout3Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/Callout90Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/CanType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/ChevronType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/CircularArrowType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/CloudCalloutType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/CubeType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/CurvedConnector.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/CurvedDownArrowType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/CurvedLeftArrowType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/CurvedRightArrowType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/CurvedUpArrowType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/DiamondType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/DonutType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/DownArrowCalloutType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/DownArrowType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/EllipseRibbon2Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/EllipseRibbonType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/EllipseType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartAlternateProcessType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartCollateType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartConnectorType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartDecisionType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartDelayType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartDisplayType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartDocumentType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartExtractType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartInputOutputType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartInternalStorageType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartMagneticDiskType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartMagneticDrumType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartMagneticTapeType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartManualInputType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartManualOperationType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartMergeType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartMultidocumentType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartOffpageConnectorType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartOnlineStorageType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartOrType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartPredefinedProcessType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartPreparationType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartProcessType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartPunchedCardType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartPunchedTapeType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartSortType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartSummingJunctionType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FlowChartTerminatorType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/FoldedCornerType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/HeartType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/HexagonType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/HomePlateType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/HorisontalScrollType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/IrregularSealOneType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/IrregularSealTwo.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/IsoscelesTriangleType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/LeftArrowCalloutType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/LeftArrowType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/LeftBraceType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/LeftBracketType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/LeftRightArrowCalloutType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/LeftRightArrowType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/LeftRightUpArrow.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/LeftUpArrowType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/LightningBoltType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/LineType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/MoonType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/NoSmokingType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/NotchedRightArrowType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/OctagonType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/ParallelogramType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/PentagonType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/PlaqueType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/PlusType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/QuadArrowCalloutType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/QuadArrowType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/RectangleType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/RibbonDownType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/RibbonUpType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/RightArrowCalloutType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/RightArrowType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/RightBracetype.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/RightBracketType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/RightTriangleType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/RoundedRectangleType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/Seal4Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/Seal8Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/Seal16Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/Seal24Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/Seal32Type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/SmileyFaceType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/Startype.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/StraightConnectorType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/StripedRightArrowType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/SunType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/TextboxType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/TrapezoidType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/UpArrowCalloutType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/UpArrowType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/UpDownArrowCalloutType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/UpDownArrowType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/UturnArrowType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/VerticalScrollType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/WaveDoubleType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/WaveType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/WedgeEllipseCalloutType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/WedgeRectCalloutType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/WedgeRoundedRectCalloutType.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/accentbordercallout1type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/accentbordercallout3type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/accentbordercallout90type.h \
+    ../../../Editor/Drawing/Shapes/BaseShape/PPTShape/PPTAutoShapes/arctype.h
 
 core_windows {
     SOURCES += \

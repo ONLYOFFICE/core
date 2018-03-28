@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -39,11 +39,9 @@ Feature12::Feature12()
 {
 }
 
-
 Feature12::~Feature12()
 {
 }
-
 
 BaseObjectPtr Feature12::clone()
 {
@@ -53,6 +51,7 @@ BaseObjectPtr Feature12::clone()
 
 void Feature12::readFields(CFRecord& record)
 {
+	feature11.readFields(record);
 
 }
 

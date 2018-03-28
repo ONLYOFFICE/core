@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -109,8 +109,7 @@ namespace OOX
 				}
 				if(m_oElement.IsInit())
 				{
-					NSBinPptxRW::CXmlWriter oXmlWriter;
-					oXmlWriter.m_lDocType = XMLWRITER_DOC_TYPE_XLSX;
+					NSBinPptxRW::CXmlWriter oXmlWriter(XMLWRITER_DOC_TYPE_XLSX);
 
 					m_oElement->toXmlWriter(&oXmlWriter);
 					writer.WriteString(oXmlWriter.GetXmlString());	
@@ -154,18 +153,18 @@ namespace OOX
 							smart_ptr<PPTX::Logic::Shape> shape = m_oElement->GetElem().smart_dynamic_cast<PPTX::Logic::Shape>();
 							if (shape.IsInit())
 							{
-								if (shape->nvSpPr.cNvPr.oleSpid.IsInit())
+								m_nId = shape->nvSpPr.cNvPr.id;
+								if (shape->nvSpPr.cNvPr.vmlSpid.IsInit())
 								{
-									//ссылка на объект 
-									m_bShapeOle = true;
-									m_sSpId = shape->nvSpPr.cNvPr.oleSpid.get();
+									//ссылка на объект или шейп в vmlDrawing
+									m_sVmlSpId = shape->nvSpPr.cNvPr.vmlSpid.get();
 								}
 							}
 							smart_ptr<PPTX::Logic::GraphicFrame> frame = m_oElement->GetElem().smart_dynamic_cast<PPTX::Logic::GraphicFrame>();
-							if ((frame.IsInit())  &&	(frame->oleSpid.IsInit()))
+							if ((frame.IsInit()) && (frame->vmlSpid.IsInit()))
 							{
 								//ссылка на объект или шейп в vmlDrawing
-								m_sSpId = frame->oleSpid.get();
+								m_sVmlSpId = frame->vmlSpid.get();
 							}
 						}
 					}
@@ -220,7 +219,8 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>					m_oAlternateContent;
 
 		//для удобства
-			nullable<std::wstring>							m_sSpId;
+			nullable<std::wstring>							m_sVmlSpId;
+			nullable<int>									m_nId; 
 		};
 	} //Spreadsheet
 } // namespace OOX

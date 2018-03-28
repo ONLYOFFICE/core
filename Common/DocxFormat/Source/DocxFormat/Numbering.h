@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -808,11 +808,16 @@ namespace OOX
 	class CNumbering : public OOX::File, public IFileContainer
 	{
 	public:
-		CNumbering()
+		CNumbering(OOX::Document *pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pNumbering = this;			
 		}
-		CNumbering(const CPath& oRootPath, const CPath& oPath)
+		CNumbering(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pNumbering = this;			
+
 			read( oRootPath, oPath );
 		}
 		virtual ~CNumbering()
@@ -849,7 +854,6 @@ namespace OOX
 		virtual void read(const CPath& oRootPath, const CPath& oFilePath)
 		{
 			IFileContainer::Read( oRootPath, oFilePath );
-#ifdef USE_LITE_READER
 
 			XmlUtils::CXmlLiteReader oReader;
 			
@@ -885,59 +889,6 @@ namespace OOX
 					}
 				}
 			}
-#else
-			XmlUtils::CXmlNode oNumbering;
-			oNumbering.FromXmlFile( oFilePath.GetPath(), true );
-
-			if ( _T("w:numbering") == oNumbering.GetName() )
-			{
-				XmlUtils::CXmlNodes oAbstractNumList;
-				oNumbering.GetNodes( _T("w:abstractNum"), oAbstractNumList );
-
-				for ( int nIndex = 0; nIndex < oAbstractNumList.GetCount(); nIndex++ )
-				{
-					XmlUtils::CXmlNode oAbstractNumNode;
-					if ( oAbstractNumList.GetAt( nIndex, oAbstractNumNode ) )
-					{
-                        //OOX::Numbering::CAbstractNum oAbstractNum = oAbstractNumNode;
-
-                        m_arrAbstractNum.push_back( /*oAbstractNum*/ new OOX::Numbering::CAbstractNum (oAbstractNumNode) );
-					}
-				}
-
-				XmlUtils::CXmlNodes oNumList;
-				oNumbering.GetNodes( _T("w:num"), oNumList );
-
-				for ( int nIndex = 0; nIndex < oNumList.GetCount(); nIndex++ )
-				{
-					XmlUtils::CXmlNode oNumNode;
-					if ( oNumList.GetAt( nIndex, oNumNode ) )
-					{
-                        //OOX::Numbering::CNum oNum = oNumNode;
-                        m_arrNum.push_back( /*oNum*/ new OOX::Numbering::CNum (oNumNode) );
-					}
-				}
-
-				XmlUtils::CXmlNode oNumIdPicBulletNode;
-				if ( oNumbering.GetNode( _T("w:numIdMacAtCleanup"), oNumIdPicBulletNode ) )
-					m_oNumIdMacAtCleanup = oNumIdPicBulletNode;
-
-				// TO DO:  ак будут сделаны классы CDrawing, нужно будет сделать чтение
-				//        w:numPicBullet
-				XmlUtils::CXmlNodes oNumPicList;
-				oNumbering.GetNodes( _T("w:numPicBullet"), oNumPicList );
-
-				for ( int nIndex = 0; nIndex < oNumPicList.GetCount(); nIndex++ )
-				{
-					XmlUtils::CXmlNode oNumNode;
-					if ( oNumPicList.GetAt( nIndex, oNumNode ) )
-					{
-                        //OOX::Numbering::CNumPicBullet oNum = oNumNode;
-                        m_arrNumPicBullet.push_back( /*oNum*/ new OOX::Numbering::CNumPicBullet (oNumNode) );
-					}
-				}
-			}
-#endif
 		}
 
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const

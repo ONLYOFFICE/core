@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -83,8 +83,13 @@ void table_format_properties::serialize(std::wostream & _Wostream,const wchar_t 
 			common_keep_with_next_attlist_.serialize(CP_GET_XML_NODE());
 			common_border_attlist_.serialize(CP_GET_XML_NODE());
 			
-			if (style_background_image_) style_background_image_->serialize(_Wostream);
 			CP_XML_ATTR_OPT(L"table:align", table_align_);
+
+//not from specification !! 			
+			CP_XML_ATTR_OPT(L"style:use-optimal-column-width",	style_use_optimal_column_width_);
+//not from specification !! 			
+			
+			if (style_background_image_) style_background_image_->serialize(_Wostream);
 		}
 	}
 }
@@ -109,7 +114,8 @@ void table_format_properties::apply_from(const table_format_properties & Other)
 	common_keep_with_next_attlist_.apply_from(Other.common_keep_with_next_attlist_);
 	common_border_attlist_.apply_from(Other.common_border_attlist_);
 	
-	style_background_image_ = Other.style_background_image_;
+	style_background_image_			= Other.style_background_image_;
+    style_use_optimal_column_width_ = Other.style_use_optimal_column_width_;
 }
 
 // style:table-properties
@@ -145,9 +151,10 @@ void style_table_column_properties_attlist::serialize(std::wostream & _Wostream,
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR_OPT(L"style:column-width", style_column_width_);
-			CP_XML_ATTR_OPT(L"style:rel-column-width", style_rel_column_width_);
-			CP_XML_ATTR_OPT(L"style:use-optimal-column-width", style_use_optimal_column_width_);
+			CP_XML_ATTR_OPT(L"style:column-width",				style_column_width_);
+			CP_XML_ATTR_OPT(L"style:rel-column-width",			style_rel_column_width_);
+			CP_XML_ATTR_OPT(L"style:use-optimal-column-width",	style_use_optimal_column_width_);
+			
 			common_break_attlist_.serialize(CP_GET_XML_NODE());
 		}
 	}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,9 +33,11 @@
 #ifndef OOX_SHAREDSTRINGS_FILE_INCLUDE_H_
 #define OOX_SHAREDSTRINGS_FILE_INCLUDE_H_
 
+#include "../Xlsx.h"
 #include "../CommonInclude.h"
 
 #include "Si.h"
+#include <map>
 
 namespace OOX
 {
@@ -44,21 +46,30 @@ namespace OOX
 		class CSharedStrings : public OOX::File, public OOX::IFileContainer
 		{
 		public:
-			CSharedStrings()
+			CSharedStrings(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
+                m_nCount        = 0;
 				m_bSpreadsheets = true;
+
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if ((xlsx) && (!xlsx->m_pSharedStrings))
+					xlsx->m_pSharedStrings = this;
 			}
-			CSharedStrings(const CPath& oRootPath, const CPath& oPath)
+			CSharedStrings(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
-				m_bSpreadsheets = true;
+                m_nCount        = 0;
+                m_bSpreadsheets = true;
+
+  				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if ((xlsx) && (!xlsx->m_pSharedStrings))
+					xlsx->m_pSharedStrings = this;
+
 				read( oRootPath, oPath );
 			}
 			virtual ~CSharedStrings()
 			{
 				ClearItems();
 			}
-		public:
-
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -89,6 +100,8 @@ namespace OOX
 				{
 					ReadAttributes( oReader );
 
+					m_nCount = 0;
+
 					if ( !oReader.IsEmptyNode() )
 					{
 						int nSharedStringsDepth = oReader.GetDepth();
@@ -96,13 +109,12 @@ namespace OOX
 						{
 							sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-							WritingElement *pItem = NULL;
-
 							if ( _T("si") == sName )
-								pItem = new CSi( oReader );
-
-							if ( pItem )
-								m_arrItems.push_back( pItem );
+							{
+								CSi* pItem = new CSi( oReader );
+                                m_arrItems.push_back(pItem );
+								m_nCount++;
+							}
 						}
 					}
 				}		
@@ -115,8 +127,10 @@ namespace OOX
 				WritingStringNullableAttrInt(L"uniqueCount", m_oUniqueCount, m_oUniqueCount->GetValue());
 				writer.WriteString(_T(">"));
 
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-					m_arrItems[i]->toXML(writer);
+                for(size_t i = 0; i < m_arrItems.size(); i++)
+				{
+                    m_arrItems[i]->toXML(writer);
+				}
 
 				writer.WriteString(_T("</sst>"));
                 std::wstring sPath = oPath.GetPath();
@@ -142,8 +156,8 @@ namespace OOX
 			}
 			const int AddSi(CSi* pSi)
 			{
-				int nIndex = (int)m_arrItems.size();
-				m_arrItems.push_back( pSi );
+				int nIndex = m_nCount++;
+                m_arrItems.push_back(pSi);
 				return nIndex;
 			}
 		private:
@@ -151,30 +165,28 @@ namespace OOX
 
 			void ClearItems()
 			{
-				for (size_t nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				m_nCount = 0;
+                for(size_t i = 0; i < m_arrItems.size(); i++)
 				{
-					if ( m_arrItems[nIndex] )delete m_arrItems[nIndex];
+                    if ( m_arrItems[i] )delete m_arrItems[i];
 
-					m_arrItems[nIndex] = NULL;
+                    m_arrItems[i] = NULL;
 				}
-				m_arrItems.clear();
+                m_arrItems.clear();
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("uniqueCount"),      m_oUniqueCount )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, _T("count"),		m_oCount )
+					WritingElement_ReadAttributes_Read_if ( oReader, _T("uniqueCount"),	m_oUniqueCount )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oUniqueCount;
-
-			std::vector<WritingElement *>         m_arrItems;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oUniqueCount;
+            std::vector<CSi*>                               m_arrItems;
+			int												m_nCount;
 
 		};
 	} //Spreadsheet

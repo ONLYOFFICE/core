@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -67,12 +67,12 @@ PropertySet::PropertySet(XLS::CFStreamPtr stream, const unsigned int property_se
 	{
 		if (stream->getStreamPointer() - property_set_offset > Size)
 			break;
-		PropertyPtr next_property = PropertyFactory::ReadProperty(prop_offsets[i].PropertyIdentifier, stream, property_set_offset + prop_offsets[i].Offset);
-		if(next_property) // Skip the property if the corresponding class is not implemented
+		PropertyPtr property_ = PropertyFactory::ReadProperty(prop_offsets[i].PropertyIdentifier, stream, property_set_offset + prop_offsets[i].Offset);
+		if(property_) // Skip the property if the corresponding class is not implemented
 		{
-			properties.push_back(next_property);
+			properties.insert(std::make_pair(property_->Type, property_));
 
-            PropertyCodePagePtr property_CodePage = boost::dynamic_pointer_cast<PropertyCodePage>(next_property);
+            PropertyCodePagePtr property_CodePage = boost::dynamic_pointer_cast<PropertyCodePage>(property_);
 			if(property_CodePage)
 			{
 				code_page = property_CodePage->code_page;

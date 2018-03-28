@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -65,10 +65,10 @@ public:
 		pOutput->m_bLockAnchor		= m_ooxAnchor->m_oLocked.IsInit()		? m_ooxAnchor->m_oLocked->ToBool()			: false;
 		pOutput->m_nZOrder			= m_ooxAnchor->m_oRelativeHeight.IsInit() ? true : false;
 			
-		int nDistLeft	= m_ooxAnchor->m_oDistL.IsInit() ? (int)m_ooxAnchor->m_oDistL->ToTwips() : PROP_DEF;
-		int nDistTop	= m_ooxAnchor->m_oDistT.IsInit() ? (int)m_ooxAnchor->m_oDistT->ToTwips() : PROP_DEF;
-		int nDistRight	= m_ooxAnchor->m_oDistR.IsInit() ? (int)m_ooxAnchor->m_oDistR->ToTwips() : PROP_DEF;
-		int nDistBottom = m_ooxAnchor->m_oDistB.IsInit() ? (int)m_ooxAnchor->m_oDistB->ToTwips() : PROP_DEF;
+		int nDistLeft	= m_ooxAnchor->m_oDistL.IsInit() ? (int)(m_ooxAnchor->m_oDistL->ToTwips()) : PROP_DEF;
+		int nDistTop	= m_ooxAnchor->m_oDistT.IsInit() ? (int)(m_ooxAnchor->m_oDistT->ToTwips()) : PROP_DEF;
+		int nDistRight	= m_ooxAnchor->m_oDistR.IsInit() ? (int)(m_ooxAnchor->m_oDistR->ToTwips()) : PROP_DEF;
+		int nDistBottom = m_ooxAnchor->m_oDistB.IsInit() ? (int)(m_ooxAnchor->m_oDistB->ToTwips()) : PROP_DEF;
 
 		bool bSimplePos = m_ooxAnchor->m_oSimplePos.IsInit() ? true : false;
 
@@ -284,19 +284,19 @@ public:
 			if (m_ooxAnchor->m_oWrapTight->m_oWrapPolygon.IsInit())
 			{
 				int nValueX, nValueY;
-
+ 
 				if (m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart.IsInit())
 				{
-					nValueX = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart->m_oX.ToTwips();
-					nValueY = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart->m_oY.ToTwips();
+					nValueX = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart->m_oX.ToEmu();
+					nValueY = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart->m_oY.ToEmu();
 					
 					pOutput->m_aWrapPoints.push_back( std::pair<int,int>(nValueX, nValueY) );
 				}
 
 				for (size_t i = 0; i < m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo.size(); i++ )
 				{
-					nValueX = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo[i]->m_oX.ToTwips();
-					nValueY = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo[i]->m_oY.ToTwips();
+					nValueX = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo[i]->m_oX.ToEmu();
+					nValueY = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo[i]->m_oY.ToEmu();
 					
 					pOutput->m_aWrapPoints.push_back( std::pair<int,int>(nValueX, nValueY) );
 				}
@@ -305,9 +305,6 @@ public:
 		if(m_ooxAnchor->m_oWrapTopAndBottom.IsInit())
 			pOutput->m_nWrapType = 1;
 		
-		OOXGraphicReader oGraphicReader(&m_ooxAnchor->m_oGraphic);
-
-		int result = oGraphicReader.Parse( oParam, pOutput);			
 		if( PROP_DEF == pOutput->m_nBottom && pOutput->m_nTop !=PROP_DEF )
 		{
 			pOutput->m_nBottom	= pOutput->m_nTop	+ nHeight;
@@ -316,6 +313,8 @@ public:
 		{
 			pOutput->m_nRight	= pOutput->m_nLeft	+ nWidth;
 		}
+		OOXGraphicReader oGraphicReader(&m_ooxAnchor->m_oGraphic);
+		int result = oGraphicReader.Parse( oParam, pOutput);			
 		return result;
 	}
 };

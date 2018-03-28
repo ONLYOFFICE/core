@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -410,7 +410,7 @@ private:
             }
 
             if (carry > 0)
-                temp.insert(0, 1, (carry+'0'));
+                temp.insert(0, 1, (char)(carry+'0'));
 
             temp.append((n1.length() - i - 1), '0'); // as like mult by 10, 100, 1000, 10000 and so on
 

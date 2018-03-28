@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -69,7 +69,7 @@ const bool AXISPARENT::loadContent(BinProcessor& proc)
 	m_AxisParent = elements_.back();
 	elements_.pop_back();
 	
-	proc.mandatory<Begin>();		elements_.pop_back();
+	if (proc.optional<Begin>())		elements_.pop_back();
 
 	if (proc.optional<Pos>())
 	{
@@ -93,7 +93,7 @@ const bool AXISPARENT::loadContent(BinProcessor& proc)
 		count--;
 	}	
 
-	if (proc.mandatory<End>())			elements_.pop_back();
+	if (proc.optional<End>())	elements_.pop_back();
 
 	return true;
 }

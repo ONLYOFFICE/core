@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,12 +31,11 @@
  */
 
 #include "FONTLIST.h"
-#include <Logic/Biff_records/FrtFontList.h>
-#include <Logic/Biff_records/StartObject.h>
-#include <Logic/Biff_records/Font.h>
-#include <Logic/Biff_records/Fbi.h>
-#include <Logic/Biff_records/EndObject.h>
-#include <Logic/Biff_records/FrtWrapper.h>
+#include "../Biff_records/FrtFontList.h"
+#include "../Biff_records/StartObject.h"
+#include "../Biff_records/Font.h"
+#include "../Biff_records/Fbi.h"
+#include "../Biff_records/EndObject.h"
 
 namespace XLS
 {
@@ -88,9 +87,9 @@ const bool FONTLIST::loadContent(BinProcessor& proc)
 		return false;
 	}
 	proc.mandatory<StartObject>();					elements_.pop_back();
+	
 	proc.repeated<Parenthesis_FONTLIST_1>(0, 0);
 
-	proc.optional<FrtWrapper>();
 	proc.mandatory<EndObject>();					elements_.pop_back();
 
 	return true;

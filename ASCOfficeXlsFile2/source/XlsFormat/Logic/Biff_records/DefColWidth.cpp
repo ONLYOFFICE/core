@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -55,7 +55,10 @@ void DefColWidth::readFields(CFRecord& record)
 	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
 	record >> cchdefColWidth;
 
-	global_info->sheet_size_info.back().defaultColumnWidth = cchdefColWidth ;
+	if (!global_info->sheets_info.empty())
+	{
+		global_info->sheets_info.back().defaultColumnWidth = cchdefColWidth ;
+	}
 }
 
 } // namespace XLS

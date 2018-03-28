@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,13 +35,13 @@
 
 namespace DocFileFormat
 {
-	TableCellPropertiesMapping::TableCellPropertiesMapping (XMLTools::CStringXmlWriter* pWriter, const std::vector<short>* tableGrid, int gridIndex, int cellIndex) : 
+	TableCellPropertiesMapping::TableCellPropertiesMapping (XMLTools::CStringXmlWriter* pWriter, const std::vector<short>* grid, const std::vector<short>* grid_write, int gridIndex, int cellIndex) : 
 										PropertiesMapping(pWriter)
 	{
 		_width		=	0;
 
 		_gridIndex	=	gridIndex;
-		_grid		=	tableGrid;
+		_grid		=	grid;
 		_cellIndex	=	cellIndex;
 
 		_brcTop		=	NULL;
@@ -75,6 +75,8 @@ namespace DocFileFormat
 		TablePropertyExceptions* tapx	=	static_cast<TablePropertyExceptions*>(visited);
 		int nComputedCellWidth			=	0;
 
+		_gridSpan = 1;
+
 		std::list<SinglePropertyModifier>::const_reverse_iterator rend = tapx->grpprl->rend();
 		for (std::list<SinglePropertyModifier>::const_reverse_iterator iter = tapx->grpprl->rbegin(); iter != rend; ++iter)
 		{
@@ -87,7 +89,7 @@ namespace DocFileFormat
 					int cc = tdef.numberOfColumns;
 
 					_tGrid = tdef.rgdxaCenter;
-                    _tcDef = tdef.rgTc80[(std::min)(_cellIndex,  (int)tdef.rgTc80.size() - 1)];	// NOTE: fix for crash
+                    _tcDef = tdef.rgTc80[(std::min)(_cellIndex,  (int)tdef.rgTc80.size() - 1)];	
 
                     appendValueElement( _tcPr, L"textDirection", FormatUtils::MapValueToWideString( _tcDef.textFlow, &Global::TextFlowMap[0][0], 6, 6 ), false );
 
@@ -111,13 +113,19 @@ namespace DocFileFormat
 					{
                         appendValueElement( _tcPr, L"noWrap", L"", true );
 					}
-
-                    nComputedCellWidth = (short)( tdef.rgdxaCenter[(size_t)(std::min)(_cellIndex,  (int)tdef.rgTc80.size() - 1) + 1] -
-                        tdef.rgdxaCenter[(std::min)(_cellIndex, (int)tdef.rgTc80.size() - 1)] );	// NOTE: fix for crash
+					int ind = (std::min)(_cellIndex,  (int)tdef.rgTc80.size() - 1);
+					int ind1 = ind; 
+					while (ind1 < tdef.rgdxaCenter.size() - 1)
+					{
+						int sz = tdef.rgdxaCenter[ ind1 + 1] - tdef.rgdxaCenter[ ind1 ] ;
+						if (sz > 1)
+							break;
+						ind1++;
+					}
+					nComputedCellWidth = tdef.rgdxaCenter[ ind1 + 1] - tdef.rgdxaCenter[ ind ] ;	
 
 					if (!IsTableBordersDefined(tapx->grpprl))
-					{											//borders
-
+					{
 						RELEASEOBJECT(_brcTop);
 						_brcTop = new BorderCode(*_tcDef.brcTop);
 
@@ -134,8 +142,7 @@ namespace DocFileFormat
 				break;
 
 				case sprmTCellPadding:
-				{							//margins
-
+				{
 					unsigned char first		=	iter->Arguments[0];
 					unsigned char lim		=	iter->Arguments[1];
 					unsigned char ftsMargin	=	iter->Arguments[3];
@@ -165,7 +172,6 @@ namespace DocFileFormat
 					}
 				}
 				break;
-
 				case sprmTDefTableShd80:
 				{
 					if (!tapx->IsSkipShading97())	// если такой операнд единственный то учитываем его, иначе скипаем его
@@ -270,24 +276,23 @@ namespace DocFileFormat
 			}
 		}
 
-		//width
-        XMLTools::XMLElement    tcW     ( L"w:tcW" );
-        XMLTools::XMLAttribute  tcWType ( L"w:type", FormatUtils::MapValueToWideString( _ftsWidth, &Global::CellWidthTypeMap[0][0], 4, 5 ) );
-        XMLTools::XMLAttribute  tcWVal  ( L"w:w", FormatUtils::IntToWideString( _width ) );
+		XMLTools::XMLElement    tcW     ( L"w:tcW" );
+		
 
-        tcW.AppendAttribute( tcWType );
+		XMLTools::XMLAttribute  tcWVal  ( L"w:w", FormatUtils::IntToWideString( _width > 1 ? _width : nComputedCellWidth) );
+		XMLTools::XMLAttribute  tcWType ( L"w:type",  _width > 1 ? FormatUtils::MapValueToWideString( _ftsWidth, &Global::CellWidthTypeMap[0][0], 4, 5 ) : L"dxa" );
+
+		tcW.AppendAttribute( tcWType );
 		tcW.AppendAttribute( tcWVal );
 		_tcPr->AppendChild( tcW );
 
-		//grid span
-		_gridSpan = 1;
 
 		if ( ( _gridIndex < (int)_grid->size() ) && ( nComputedCellWidth > _grid->at( _gridIndex ) ) )
 		{
 			//check the number of merged cells
 			int w = _grid->at( _gridIndex );
 
-			for ( unsigned int i = _gridIndex + 1; i < _grid->size(); i++ )
+			for ( size_t i = _gridIndex + 1; i < _grid->size(); i++ )
 			{
 				_gridSpan++;
 

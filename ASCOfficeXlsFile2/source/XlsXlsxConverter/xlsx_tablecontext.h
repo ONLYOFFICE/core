@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,53 +31,30 @@
  */
 #pragma once
 
-#include <list>
-
-#include "xlsx_drawing_context.h"
-#include "xlsx_comments_context.h"
-#include "xlsx_hyperlinks.h"
+#include "oox_package.h"
 
 namespace oox {
 
-class xlsx_conversion_context;
-class xlsx_text_context;
+class xlsx_tables_context;
+typedef _CP_PTR(xlsx_tables_context) xlsx_tables_context_ptr;
 
-struct table_state
-{
-	table_state(xlsx_conversion_context & Context);
-
-	xlsx_hyperlinks				hyperlinks_;
-	xlsx_drawing_context		drawing_context_;
-	xlsx_comments_context		comments_context_;
-
-};
-typedef _CP_PTR(table_state) table_state_ptr;
-
-class xlsx_table_context
+class xlsx_tables_context
 {
 public:
-    xlsx_table_context(xlsx_conversion_context & Context);
+    xlsx_tables_context();
+    ~xlsx_tables_context();
 
-public:
-	void start_table(const std::wstring & name);
-		void set_chart_view();
-    void end_table();
+	void add_table(std::wstring table);
+	void write_to (int index, std::wostream & strm);
+	void dump_rels(int index, rels & Rels);
 
-	xlsx_drawing_context	& get_drawing_context();
-	xlsx_comments_context	& get_comments_context();
-	//
-	table_state_ptr & state();
-
-	std::wstring	add_hyperlink(std::wstring const & ref, std::wstring const & target, std::wstring const & display, bool bExternal);
-	void			dump_rels_hyperlinks(rels & Rels);
-	void			serialize_hyperlinks(std::wostream & _Wostream);
+	int get_count();
 
 private:
-    xlsx_conversion_context		& context_;
-
-	std::list<table_state_ptr>	tables_state_;
+    class Impl;
+    _CP_PTR(Impl) impl_;
+              
 };
-
 
 }
 

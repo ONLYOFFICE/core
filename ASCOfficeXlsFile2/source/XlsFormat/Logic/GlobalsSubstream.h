@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,7 +53,10 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typeGlobalsSubstream;
+	static const ElementType type = typeGlobalsSubstream;
+
+	int serialize_format(std::wostream & _stream);
+	int serialize_protection(std::wostream & _stream);
 	
 	BaseObjectPtr					m_THEME;
 	BaseObjectPtr					m_Formating;
@@ -64,14 +67,23 @@ public:
 	BaseObjectPtr					m_Country;
 	BaseObjectPtr					m_WriteProtect;
 	BaseObjectPtr					m_PROTECTION;
+	BaseObjectPtr					m_RRTabId;
+	BaseObjectPtr					m_FNGROUPS;
+	BaseObjectPtr					m_BookExt;
+	BaseObjectPtr					m_CodeName;
+	BaseObjectPtr					m_METADATA;
+	BaseObjectPtr					m_MTRSettings;
 
+	std::vector<BaseObjectPtr>		m_arBIGNAME;
 	std::vector<BaseObjectPtr>		m_arHFPicture;
 	std::vector<BaseObjectPtr>		m_arLBL;
 	std::vector<BaseObjectPtr>		m_arMSODRAWINGGROUP;
 	std::vector<BaseObjectPtr>		m_arWindow1;
 	std::vector<BaseObjectPtr>		m_arUserBView;
+	std::vector<BaseObjectPtr>		m_arBUNDLESHEET;
 	std::vector<BaseObjectPtr>		m_arSUPBOOK;
-	std::vector<BaseObjectPtr>		m_arPIVOTCACHEDEFINITION;
+	//std::vector<BaseObjectPtr>	m_arPIVOTCACHEDEFINITION; -> GlobalWorkbookInfo
+	std::vector<BaseObjectPtr>		m_arDConn;
 
 	std::vector<BiffStructurePtr>	m_arHFPictureDrawing;
 	
@@ -80,6 +92,8 @@ public:
 
 private:
 	void LoadHFPicture();
+	void UpdateXti();
+	void UpdateDefineNames();
 };
 
 } // namespace XLS

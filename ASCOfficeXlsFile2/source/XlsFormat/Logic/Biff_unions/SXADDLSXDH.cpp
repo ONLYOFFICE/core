@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,7 +31,7 @@
  */
 
 #include "SXADDLSXDH.h"
-#include <Logic/Biff_records/SXAddl.h>
+#include "../Biff_records/SXAddl.h"
 
 namespace XLS
 {
@@ -56,14 +56,28 @@ BaseObjectPtr SXADDLSXDH::clone()
 // SXADDLSXDH = SXAddl_SXCSXDH_SXDId *SXAddl_SXCSXDH_SXDSxdh SXAddl_SXCSXDH_SXDEnd
 const bool SXADDLSXDH::loadContent(BinProcessor& proc)
 {
+	bool result = false;
+	while (true)
+	{
+		CFRecordType::TypeId type = proc.getNextRecordType();	
 
-	//if(!proc.mandatory<SXAddl_SXCSXDH_SXDId>())
-	//{
-	//	return false;
-	//}
-	//proc.repeated<SXAddl_SXCSXDH_SXDSxdh>(0, 0);
-	//proc.mandatory<SXAddl_SXCSXDH_SXDEnd>();
-	return true;
+		if (type == rt_SXAddl)
+		{
+			result = true;
+			proc.optional<SXAddl>();
+
+			SXAddl* addl = dynamic_cast<SXAddl*>(elements_.back().get());				
+			if (!addl) continue;
+			
+			if (addl->bEndElement)
+				break;
+		}
+		else
+		{
+			break;
+		}
+	}
+	return result;
 }
 
 } // namespace XLS

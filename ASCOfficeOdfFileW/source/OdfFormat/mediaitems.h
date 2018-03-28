@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,13 +42,14 @@ class rels;
 class _mediaitems
 {
 public:
-    enum Type { typeUnknown = 0, typeImage, typeMedia};
-	//oleObject ???
+    enum Type { typeUnknown = 0, typeImage, typeMedia, typeOleObject, typeObjectReplacement};
 
     _mediaitems()
     {
- 		count_image		=0;
- 		count_media		=0;
+ 		count_image			= 0;
+ 		count_media			= 0;
+ 		count_object		= 0;
+ 		count_image_object	= 0;
 	}
 
     struct item 
@@ -66,6 +67,8 @@ public:
 	
 	size_t count_image;
 	size_t count_media;
+	size_t count_object;
+	size_t count_image_object;
 
     void add_or_find(const std::wstring & oox_ref, Type type, std::wstring & odf_ref);
     

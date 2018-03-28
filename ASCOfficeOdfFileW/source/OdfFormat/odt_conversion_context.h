@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -113,6 +113,9 @@ public:
 		void set_drop_cap_lines	(int lines);
 		void set_drop_cap_margin(bool val);
 	void end_drop_cap			();
+	bool in_drop_cap			() {return drop_cap_state_.enabled;}
+	style_text_properties* get_drop_cap_properties();
+	int get_drop_cap_lines() {return drop_cap_state_.lines;}
 
 	bool start_comment			(int oox_comment_id);
 	void end_comment			(int oox_comment_id);
@@ -203,14 +206,25 @@ private:
 
 	struct _drop_cap_state
 	{
-		void clear(){enabled = false; paragraph_properties = NULL;	characters = 0; inline_style = true; characters_size_pt =0;}
+		void clear()
+		{
+			enabled = false; 
+			paragraph_properties = NULL;	
+			characters = 0; 
+			inline_style = true; 
+			characters_size_pt = 0;
+			lines = 0;
+			text_properties = office_element_ptr();
+		}
 
-		bool enabled;
-		style_paragraph_properties *paragraph_properties;
+		bool enabled = false;
+		style_paragraph_properties	*paragraph_properties = NULL;
+		office_element_ptr			text_properties;
 
-		int		characters;
-		bool	inline_style;
-		double	characters_size_pt;
+		int		lines = 0;
+		int		characters = 0;
+		bool	inline_style = false;
+		double	characters_size_pt = 0;
 	}drop_cap_state_;
 
 };

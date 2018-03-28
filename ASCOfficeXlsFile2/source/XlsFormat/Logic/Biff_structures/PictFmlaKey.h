@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,7 +33,7 @@
 
 #include "BiffStructure.h"
 #include "ObjFmla.h"
-#include <Logic/Biff_structures/FtPioGrbit.h>
+#include "FtPioGrbit.h"
 
 namespace XLS
 {
@@ -47,13 +47,15 @@ public:
 	PictFmlaKey();
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typePictFmlaKey;
+	static const ElementType type = typePictFmlaKey;
 
 	virtual void load(CFRecord& record);
 
+	_UINT32			cbKey;
+	std::wstring	keyBuf;	// ActiveX license key
 
-	ObjFmla fmlaLinkedCell;
-	ObjFmla fmlaListFillRange;
+	ObjFmla		fmlaLinkedCell;
+	ObjFmla		fmlaListFillRange;
 };
 
 } // namespace XLS

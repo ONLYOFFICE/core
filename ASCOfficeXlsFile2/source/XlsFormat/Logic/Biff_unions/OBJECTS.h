@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -39,7 +39,6 @@ namespace XLS
 class  MsoDrawing;
 typedef boost::shared_ptr<MsoDrawing> MsoDrawingPtr;
 
-// Logical representation of OBJECTS union of records 
 class OBJECTS: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(OBJECTS)
@@ -53,12 +52,11 @@ public:
 
 	virtual const bool loadContentRead(BinReaderProcessor& proc);
 
-	static const ElementType	type = typeOBJECTS;
+	static const ElementType type = typeOBJECTS;
 
 	bool is_inside_chart_sheet_;
 
-	MsoDrawingPtr								m_MsoDrawing;
-	
+	MsoDrawingPtr m_MsoDrawing;	
 };
 
 } // namespace XLS

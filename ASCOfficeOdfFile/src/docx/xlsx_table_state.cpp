@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -133,7 +133,8 @@ xlsx_table_state::xlsx_table_state(xlsx_conversion_context * Context, std::wstri
     xlsx_drawing_context_	(Context->get_drawing_context_handle()),
     xlsx_comments_context_	(Context->get_comments_context_handle()),
     table_column_last_width_(0.0),
-	in_cell(false)
+	in_cell(false),
+	bEndTable(false)
 
 {        
 	memset(&group_row_,0,sizeof(_group_row));

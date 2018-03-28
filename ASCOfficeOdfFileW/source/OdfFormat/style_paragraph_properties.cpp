@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -269,8 +269,15 @@ void style_paragraph_properties::apply_from(style_paragraph_properties * Other)
 	content_.apply_from(Other->content_);
 }
 
-void paragraph_format_properties::clear()
+void paragraph_format_properties::clear(bool bEraseDropCap)
 {
+	if (bEraseDropCap)
+	{
+		style_drop_cap_ = office_element_ptr();
+		fo_text_indent_	= boost::none;
+	}
+	style_tab_stops_			= office_element_ptr();
+	style_background_image_		= office_element_ptr();
 	fo_line_height_				= boost::none;
 	style_line_height_at_least_	= boost::none;
 	style_line_spacing_			= boost::none;
@@ -287,7 +294,6 @@ void paragraph_format_properties::clear()
 	style_register_true_		= boost::none;
 	fo_margin_left_				= boost::none;
 	fo_margin_right_			= boost::none; 
-	//fo_text_indent_			= boost::none;//заточено под буквицу
 	style_auto_text_indent_		= boost::none;
 	fo_margin_top_				= boost::none;
 	fo_margin_bottom_			= boost::none;
@@ -318,7 +324,11 @@ void paragraph_format_properties::clear()
 	text_number_lines_			= boost::none; 
 	style_shadow_				= boost::none;
 
-	//todooo borders
+	common_border_attlist_.fo_border_		= boost::none;
+    common_border_attlist_.fo_border_top_	= boost::none;
+    common_border_attlist_.fo_border_bottom_= boost::none;
+	common_border_attlist_.fo_border_left_	= boost::none;
+	common_border_attlist_.fo_border_right_	= boost::none;
 }
 
 void paragraph_format_properties::apply_from(paragraph_format_properties & Other)

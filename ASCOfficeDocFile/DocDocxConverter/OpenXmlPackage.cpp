@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,6 +43,7 @@
 #include "MainDocumentMapping.h"
 #include "OleObjectMapping.h"
 #include "VMLPictureMapping.h"
+#include "FormFieldDataMapping.h"
 
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
@@ -63,6 +64,8 @@ namespace DocFileFormat
         DocumentContentTypesFile._defaultTypes.insert( make_pair( L"xml", std::wstring( OpenXmlContentTypes::Xml ) ) );
 
         MainRelationshipsFile.Relationships.push_back( Relationship( std::wstring( L"rId1"), OpenXmlRelationshipTypes::OfficeDocument, L"word/document.xml") );
+        MainRelationshipsFile.Relationships.push_back( Relationship( std::wstring( L"rId2"), OpenXmlRelationshipTypes::CoreProperties, L"docProps/core.xml") );
+        MainRelationshipsFile.Relationships.push_back( Relationship( std::wstring( L"rId3"), OpenXmlRelationshipTypes::ExtendedProperties, L"docProps/app.xml") );
 	}
 
 
@@ -136,15 +139,17 @@ namespace DocFileFormat
 	{
 		NSFile::CFileBinary file;
 		file.CreateFileW(fileName);
-		file.WriteFile((BYTE*)data.c_str(), data.size());
+		file.WriteFile((BYTE*)data.c_str(), (_UINT32)data.size());
 		file.CloseFile();
 		return S_OK;
 	}
 	HRESULT OpenXmlPackage::SaveOLEObject( const std::wstring& fileName, const OleObjectFileStructure& oleObjectFileStructure )
 	{
+		if (docFile == NULL) return S_FALSE;
+
 		POLE::Storage *storageOut = new POLE::Storage(fileName.c_str());
+		if (storageOut == NULL) return S_FALSE;
 		
-		if (storageOut == NULL || docFile == NULL) return S_FALSE;
 		if (storageOut->open(true, true)==false)
 		{	
 			delete storageOut;
@@ -154,22 +159,27 @@ namespace DocFileFormat
 		POLE::Storage *storageInp = docFile->GetStorage()->GetStorage();
 
 		{
-			std::string id(oleObjectFileStructure.objectID.begin(),oleObjectFileStructure.objectID.end());
-
-			POLE::Stream* oleStorage = new POLE::Stream(storageInp, id);
+			POLE::Stream* oleStorage = new POLE::Stream(storageInp, oleObjectFileStructure.objectID);
 
 			if (oleStorage)
 			{
-				std::string path = "ObjectPool/" + id;
-				std::list<std::string> entries = storageInp->entries(path);
-				for (std::list<std::string>::iterator it = entries.begin(); it != entries.end(); it++)
+				std::wstring path = L"ObjectPool/" + oleObjectFileStructure.objectID;
+
+				std::list<std::wstring> entries = storageInp->entries_with_prefix(path);
+				for (std::list<std::wstring>::iterator it = entries.begin(); it != entries.end(); ++it)
 				{
-					POLE::Stream *stream_inp = new POLE::Stream(storageInp, path + "/"+ (*it));
+					std::wstring stream_name_open = (*it);
+					std::wstring stream_name_create = (*it);
+
+					if (stream_name_open[0] < 32)
+						stream_name_open = stream_name_open.substr(1);
+
+					POLE::Stream *stream_inp = new POLE::Stream(storageInp, path + L"/"+ stream_name_open);
 					if (stream_inp == NULL)continue;
 
-					int size = stream_inp->size();
+					POLE::uint64 size = stream_inp->size();
 					
-					POLE::Stream *stream_out = new POLE::Stream(storageOut, *it, true, size);
+					POLE::Stream *stream_out = new POLE::Stream(storageOut, stream_name_create, true, size);
 
 					if (stream_out)
 					{
@@ -193,14 +203,18 @@ namespace DocFileFormat
 		delete storageOut;
 		return S_OK;
 	}
-
-	int OpenXmlPackage::RegisterDocument()
+	void OpenXmlPackage::RegisterDocPr()
 	{
-        return AddPart( L"word", L"document.xml", WordprocessingMLContentTypes::MainDocument, L"");
+        AddPart( L"docProps", L"app.xml", DocPrContentTypes::App, L"");
+        AddPart( L"docProps", L"core.xml", DocPrContentTypes::Core, L"");
 	}
-	int OpenXmlPackage::RegisterDocumentMacros()
+	void OpenXmlPackage::RegisterDocument()
 	{
-        return AddPart( L"word", L"document.xml", WordprocessingMLContentTypes::MainDocumentMacro, L"");
+        AddPart( L"word", L"document.xml", WordprocessingMLContentTypes::MainDocument, L"");
+	}
+	void OpenXmlPackage::RegisterDocumentMacros()
+	{
+        AddPart( L"word", L"document.xml", WordprocessingMLContentTypes::MainDocumentMacro, L"");
 	}
 	int OpenXmlPackage::RegisterVbaProject()
 	{

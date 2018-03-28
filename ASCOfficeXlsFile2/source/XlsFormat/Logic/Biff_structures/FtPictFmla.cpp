@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,17 +36,10 @@
 namespace XLS
 {
 
-
-FtPictFmla::FtPictFmla()
-:	fmla(true)
-{
-}
-
 BiffStructurePtr FtPictFmla::clone()
 {
 	return BiffStructurePtr(new FtPictFmla(*this));
 }
-
 
 void FtPictFmla::load(CFRecord& record, int linkSize)
 {
@@ -74,11 +67,8 @@ void FtPictFmla::load(CFRecord& record, int linkSize)
                 record >> nNameIdx;
 				record.skipNunBytes(12); 
                 
-				//const ExtName* pExtName = GetOldRoot().pExtNameBuff->GetNameByIndex( nRefIdx, nNameIdx );
-    //            if( pExtName && pExtName->IsOLE() )
-    //                mnStorageId = pExtName->nStorageId;
             }
-            else if( nToken == 2)//XclTokenArrayHelper::GetTokenId( EXC_TOKID_TBL, EXC_TOKCLASS_NONE ) )
+            else if( nToken == 2)
             {
                 bEmbedded = true;
 
@@ -103,7 +93,17 @@ void FtPictFmla::load(CFRecord& record, int linkSize)
 
 void FtPictFmla::load(CFRecord& record, FtPioGrbit& pictFlags)
 {
-	record.skipNunBytes(4); // reserved
+	short ft, size;
+	record >> ft; // must be 
+	if (ft != 0x0009)
+	{
+		record.RollRdPtrBack(2);
+		return;
+	}
+	fExist = true;
+
+	record >> size;
+	if (size < 1) return;
 
 	fmla.load(record);
 
@@ -111,12 +111,11 @@ void FtPictFmla::load(CFRecord& record, FtPioGrbit& pictFlags)
 	{
 		record >> lPosInCtlStm;
 	}
-	record >> lPosInCtlStm;
 	if(pictFlags.fPrstm)
 	{
 		record >> cbBufInCtlStm;
 	}
-	if(pictFlags.fPrstm)
+	if(pictFlags.fCtl)
 	{
 		key.load(record);
 	}

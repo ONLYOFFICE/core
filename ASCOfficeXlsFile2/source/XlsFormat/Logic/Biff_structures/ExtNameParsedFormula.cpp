@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,14 +37,12 @@
 #include "ExtPtgRefErr3D.h"
 #include "ExtPtgAreaErr3D.h"
 #include "ExtPtgErr.h"
-//#include <Exception/UnexpectedProgramPath.h>
 
 namespace XLS
 {
 
 
-ExtNameParsedFormula::ExtNameParsedFormula()
-:	ParsedFormula(CellRef())
+ExtNameParsedFormula::ExtNameParsedFormula() :	ParsedFormula(CellRef())
 {
 }
 

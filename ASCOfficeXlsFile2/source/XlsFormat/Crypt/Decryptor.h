@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,10 +37,35 @@
 
 namespace CRYPT
 {
+	class XORDecryptor : public Decryptor
+	{
+	public:
+		XORDecryptor(int type, unsigned short key, unsigned short hash, std::wstring password);
+
+		virtual void Init(const unsigned long val);
+
+		virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size);
+		virtual void Decrypt(char* data, const size_t size, const unsigned long block_index);
+		
+		virtual bool SetPassword(std::wstring password);
+
+		virtual bool IsVerify();
+
+	private:
+		CryptPtr				crypt;
+		unsigned short			nKey;
+		unsigned short			nHash;
+		unsigned short			nType;
+	};
+
+	typedef boost::shared_ptr<XORDecryptor> XORDecryptorPtr;
+
 	class RC4Decryptor : public Decryptor
 	{
 	public:
 		RC4Decryptor(_rc4CryptData & header, std::wstring password);
+
+		virtual void Init(const unsigned long val){}
 
 		virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size);
 		virtual void Decrypt(char* data, const size_t size, const unsigned long block_index);

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -174,21 +174,13 @@ namespace odf_writer
 		class media : public element
 		{
 		public:
-			media(_mediaitems & mediaitems);
+			media(_mediaitems & mediaitems, const std::wstring internal_folder, int type);
 			virtual void write(const std::wstring & RootPath);
 
 		private:
-			_mediaitems & mediaitems_;
-		        
-		};
-		class pictures : public element
-		{
-		public:
-			pictures(_mediaitems & mediaitems);
-			virtual void write(const std::wstring & RootPath);
-
-		private:
-			_mediaitems & mediaitems_;
+			_mediaitems&	mediaitems_;
+			int				type_;
+			std::wstring	folder_;
 		        
 		};
 		class object_files : public element
@@ -201,8 +193,7 @@ namespace odf_writer
 			void set_styles		(content_simple_ptr & _styles);
 			void set_settings	(content_simple_ptr & _settings);
 			
-			void set_media		(_mediaitems & mediaitems);    
-			void set_pictures	(_mediaitems & mediaitems);    
+			void set_mediaitems	(_mediaitems & mediaitems);    
 
 			virtual void write(const std::wstring & RootPath);
 
@@ -212,16 +203,18 @@ namespace odf_writer
 			styles_file		styles_;
 			
 			element_ptr		meta_;
+
 			element_ptr		media_;
 			element_ptr		pictures_;
-		};
-		
+			element_ptr		oleObjects_;
+			element_ptr		imageObjects_;
+		};		
 		class odf_document : public element
 		{
 		public:
 			odf_document(std::wstring type);
 			
-			void add_object(element_ptr _object,bool root=false);
+			void add_object(element_ptr _object,bool root = false);
 			
 			void set_rels(rels & r);
 			

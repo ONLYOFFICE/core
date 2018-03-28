@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,14 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/BookExt_Conditional11.h>
-#include <Logic/Biff_structures/BookExt_Conditional12.h>
+
+#include "../Biff_structures/BookExt_Conditional11.h"
+#include "../Biff_structures/BookExt_Conditional12.h"
 
 namespace XLS
 {
-
-
-// Logical representation of BookExt record in BIFF8
 class BookExt: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(BookExt)
@@ -49,13 +47,11 @@ public:
 	~BookExt();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeBookExt;
+	static const ElementType type = typeBookExt;
 
-//-----------------------------
 	_UINT32	cb;
 
 	bool fDontAutoRecover;

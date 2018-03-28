@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -193,7 +193,8 @@ namespace BinXlsxRW
 		OleLink = 10,
 		DdeLink = 11,
 		VbaProject = 12,
-		JsaProject = 13
+		JsaProject = 13,
+		Comments = 14
 	};}
 	namespace c_oSerWorkbookVbaProjectTypes{enum c_oSerWorkbookVbaProjectTypes
 	{
@@ -203,6 +204,8 @@ namespace BinXlsxRW
 	{
 		Date1904 = 0,
 		DateCompatibility = 1,
+		HidePivotFieldList = 2,
+		ShowPivotChartFilter = 3
 	};}
 	namespace c_oSerWorkbookViewTypes{enum c_oSerWorkbookViewTypes
 	{
@@ -297,7 +300,8 @@ namespace BinXlsxRW
 		Type = 2,
 		Value = 3,
 		Formula = 4,
-		RefRowCol = 5
+		RefRowCol = 5,
+		ValueText = 6
 	};}
 	namespace c_oSerFormulaTypes{enum c_oSerFormulaTypes
 	{

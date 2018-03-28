@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -83,32 +83,93 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
-				oValue.Write(camera);
-				oValue.Write(lightRig);
+				
+				oValue.WriteNullable(camera);
+				oValue.WriteNullable(lightRig);
 				oValue.WriteNullable(backdrop);
 
-				return XmlUtils::CreateNode(_T("a:scene3d"), oValue);
+				return XmlUtils::CreateNode(L"a:scene3d", oValue);
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
-				// TODO:
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+				pWriter->WriteRecord2(0, camera);
+				pWriter->WriteRecord2(1, lightRig);
+				pWriter->WriteRecord2(2, backdrop);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					break;
+				}
+
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _at = pReader->GetUChar();
+					switch (_at)
+					{
+						case 0:
+						{
+							camera = new Logic::Camera();
+							camera->fromPPTY(pReader);
+							break;
+						}
+						case 1:
+						{
+							lightRig = new Logic::LightRig();
+							lightRig->fromPPTY(pReader);
+							break;
+						}
+						case 2:
+						{
+							backdrop = new Logic::Backdrop();
+							backdrop->fromPPTY(pReader);
+							break;
+						}
+						default:
+							break;
+					}
+				}
+
+				pReader->Seek(_end_rec);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				// TODO:	
+				pWriter->StartNode(L"a:scene3d");
+				
+				pWriter->StartAttributes();
+				pWriter->EndAttributes();
+
+				pWriter->Write(camera);
+				pWriter->Write(lightRig);
+				pWriter->Write(backdrop);
+
+				pWriter->EndNode(L"a:scene3d");	
 			}
 
-		public:
-			Camera				camera;
-			LightRig			lightRig;
+			nullable<Camera>	camera;
+			nullable<LightRig>	lightRig;
 			nullable<Backdrop>	backdrop;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				camera.SetParentPointer(this);
-				lightRig.SetParentPointer(this);
+				if(camera.IsInit())
+					camera->SetParentPointer(this);
+				if(lightRig.IsInit())
+					lightRig->SetParentPointer(this);
 				if(backdrop.IsInit())
 					backdrop->SetParentPointer(this);
 			}

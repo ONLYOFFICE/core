@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,7 +41,7 @@ namespace DocFileFormat
 	{
 		TC80()
 		{
-			horzMerge = wWidth = 0;
+			wWidth = horzMerge =0;
 			
 			textFlow	=	Global::lrTb;
 			vertMerge	=	Global::fvmClear;
@@ -95,12 +95,13 @@ namespace DocFileFormat
 			int pointer = 1;
 
 			// rgdxaCenter
-
 			for (int i = 0; i < numberOfColumns + 1; ++i)
 			{
-				rgdxaCenter.push_back(FormatUtils::BytesToInt16(bytes, pointer, size));
+				int pos = FormatUtils::BytesToInt16(bytes, pointer, size);
+				rgdxaCenter.push_back(pos);
 				pointer += 2;
 			}
+
 
 			// rgTc80
 

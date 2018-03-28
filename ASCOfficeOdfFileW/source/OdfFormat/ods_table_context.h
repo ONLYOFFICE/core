@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,8 +52,6 @@ struct table_additional_elements_state
 	std::vector<office_element_ptr> elements;
 };
 
-
-/// \class ods_table_context
 class ods_table_context
 {
 public:
@@ -76,13 +74,14 @@ public:
 	
 	void start_table_part(std::wstring name, std::wstring ref);
 		void set_table_part_autofilter(bool val);
+		void add_table_part_column(std::wstring name);
 	void end_table_part();
 
 private:
 
     ods_conversion_context & context_;
 
-	std::list<ods_table_state>		table_state_list_;
+	std::vector<ods_table_state>	table_state_list_;
 	
 	table_additional_elements_state	table_defined_expressions_;
 	table_additional_elements_state	table_database_ranges_;

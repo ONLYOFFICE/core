@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -47,30 +47,17 @@ namespace DocFileFormat
 
 		virtual ~ConversionContext()
 		{
-
 		}
 
-		// Adds a new RSID to the set
 		inline void AddRsid(const std::wstring& rsid)
 		{
 			if (AllRsids.find(rsid) == AllRsids.end())
 				AllRsids.insert(rsid);
 		}
 
-		inline WordDocument* GetDocument()
-		{
-			return _doc;
-		}
-
-		inline WordprocessingDocument* GetXmlDocument()
-		{
-			return _docx;
-		}
-	
-	public:
 		WordprocessingDocument*		_docx;	
 		WordDocument*				_doc;	
-		/// A set thta contains all revision ids.
+
 		std::set<std::wstring>		AllRsids;
 	};
 }

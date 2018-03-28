@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -179,6 +179,7 @@ namespace NSHtmlRenderer
 		HRESULT SaveFile(const std::wstring& strFileSave);
 		HRESULT ReInit();
 		HRESULT IsRaster(bool* bVal);
+		HRESULT GetSVGDataSize(LONG* lVal);
 		// additiaonal params ----------------------------------------------------------------------
 		HRESULT CommandLong(const LONG& lType, const LONG& lCommand);
 		HRESULT CommandDouble(const LONG& lType, const double& dCommand);

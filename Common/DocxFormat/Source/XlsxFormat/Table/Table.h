@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -150,7 +150,6 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("name"),      m_oName )
@@ -159,7 +158,7 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showLastColumn"),      m_oShowLastColumn )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showRowStripes"),      m_oShowRowStripes )
 
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<std::wstring > m_oName;
@@ -242,16 +241,15 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("id"),      m_oId )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("name"),      m_oName )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("totalsRowLabel"),      m_oTotalsRowLabel )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("totalsRowFunction"),      m_oTotalsRowFunction )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("dataDxfId"),      m_oDataDxfId )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("id"),				m_oId )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("name"),			m_oName )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("totalsRowLabel"),	m_oTotalsRowLabel )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("totalsRowFunction"),m_oTotalsRowFunction )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("dataDxfId"),		m_oDataDxfId )
 
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oId;
@@ -282,17 +280,21 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_arrItems.size() > 0)
-				{
-					writer.WriteString(L"<tableColumns");
-					WritingStringAttrInt(L"count", (int)m_arrItems.size());
-					writer.WriteString(L">");
-					
-					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
-					
-					writer.WriteString(L"</tableColumns>");
-				}
+				if(m_arrItems.empty()) return;
+
+				writer.WriteString(L"<tableColumns");
+				WritingStringAttrInt(L"count", (int)m_arrItems.size());
+				writer.WriteString(L">");
+				
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
+				
+				writer.WriteString(L"</tableColumns>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -428,18 +430,18 @@ namespace OOX
 					WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CRelationshipId > m_oRef;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oHeaderRowCount;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oTotalsRowCount;
+			nullable<SimpleTypes::CRelationshipId >				m_oRef;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<> >	m_oHeaderRowCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<> >	m_oTotalsRowCount;
 			nullable<std::wstring > m_oDisplayName;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oTableBorderDxfId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<> >	m_oTableBorderDxfId;
 
-			nullable<CAutofilter > m_oAutoFilter;
-			nullable<CSortState > m_oSortState;
-			nullable<CTableColumns > m_oTableColumns;
-			nullable<CTableStyleInfo > m_oTableStyleInfo;
+			nullable<CAutofilter >								m_oAutoFilter;
+			nullable<CSortState >								m_oSortState;
+			nullable<CTableColumns >							m_oTableColumns;
+			nullable<CTableStyleInfo >							m_oTableStyleInfo;
 
-			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
+			nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 		};
 		class CTablePart : public WritingElement
 		{
@@ -512,17 +514,21 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_arrItems.size() > 0)
-				{
-					writer.WriteString(L"<tableParts");
-					WritingStringAttrInt(L"count", (int)m_arrItems.size());
-					writer.WriteString(L">");
-					
-					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
-					
-					writer.WriteString(L"</tableParts>");	
-				}
+				if(m_arrItems.empty()) return;
+
+				writer.WriteString(L"<tableParts");
+				WritingStringAttrInt(L"count", (int)m_arrItems.size());
+				writer.WriteString(L">");
+				
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if ( m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
+				
+				writer.WriteString(L"</tableParts>");	
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -564,11 +570,11 @@ namespace OOX
 		class CTableFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CTableFile()
+			CTableFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 			}
-			CTableFile(const CPath& oRootPath, const CPath& oPath)
+			CTableFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 				read( oRootPath, oPath );

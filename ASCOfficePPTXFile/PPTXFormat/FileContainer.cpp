@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,7 +43,10 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
 #include "../../DesktopEditor/common/Directory.h"
 
-#include <map>
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/Image.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
+
+#include <boost/unordered_map.hpp>
 
 namespace PPTX
 {
@@ -67,8 +70,8 @@ namespace PPTX
 		if (directory[directory.length() - 1] == FILE_SEPARATOR_CHAR)
 			directory = directory.substr(0, directory.length() - 1);
 
-		int pos_ppt = directory.rfind(L"ppt");
-		if (pos_ppt >= 0)
+		size_t pos_ppt = directory.rfind(L"ppt");
+		if (std::wstring::npos != pos_ppt)
 		{
 			directory = directory.substr(0, pos_ppt - 1); //root directory
 		}
@@ -86,12 +89,70 @@ namespace PPTX
 
 	void FileContainer::read(const OOX::CPath& filename)
 	{
-		//OOX::IFileContainer::read(filename);
 	}
 
 	void FileContainer::read(const OOX::CRels& rels, const OOX::CPath& path)
 	{
-		//OOX::IFileContainer::read(rels, path);
+	}
+	const bool FileContainer::IsExist(const OOX::FileType& oType) const
+	{
+		for (size_t i = 0; i < m_arContainer.size(); ++i)
+		{
+			smart_ptr<OOX::File> pFile	= m_arContainer[i];
+
+			if (oType == pFile->type())
+				return true;
+		}
+
+		return false;
+	}
+	smart_ptr<OOX::File> FileContainer::Get(const OOX::FileType& oType)
+	{
+		for (size_t i = 0; i < m_arContainer.size(); ++i)
+		{
+			smart_ptr<OOX::File> &pFile	= m_arContainer[i];
+			if (oType == pFile->type())
+				return pFile;
+		}
+
+		return smart_ptr<OOX::File>(new OOX::UnknowTypeFile( m_oUnknown ));
+	}
+
+	void FileContainer::Get(const OOX::FileType& oType, std::vector<smart_ptr<OOX::File>> & files)
+	{
+		for (size_t i = 0; i < m_arContainer.size(); ++i)
+		{
+			smart_ptr<OOX::File> &pFile	= m_arContainer[i];
+			
+			if ( oType == pFile->type() )
+				files.push_back(pFile);
+		}
+	}
+	std::wstring FileContainer::GetImagePathNameFromRId(const OOX::RId& rid)const
+	{
+		smart_ptr<OOX::Image> p = IFileContainer::Get<OOX::Image>(rid);
+		if (!p.is_init())
+			return _T("");
+		return p->filename().m_strFilename;
+	}
+	std::wstring FileContainer::GetLinkFromRId(const OOX::RId& rid)const
+	{
+		smart_ptr<OOX::External> pExt = Find(rid).smart_dynamic_cast<OOX::External>();
+		if (pExt.IsInit())
+			return pExt->Uri().m_strFilename;
+
+		smart_ptr<OOX::Media> pMedia = Find(rid).smart_dynamic_cast<OOX::Media>();
+		if (pMedia.IsInit())
+			return pMedia->filename().m_strFilename;
+
+		return _T("");
+	}
+	std::wstring FileContainer::GetOleFromRId(const OOX::RId& rid)const
+	{
+		smart_ptr<OOX::OleObject> p = IFileContainer::Get<OOX::OleObject>(rid);
+		if (!p.is_init())
+			return _T("");
+		return p->filename().m_strFilename;
 	}
 	void FileContainer::read(const OOX::CRels& rels, const OOX::CPath& path, FileMap& map, IPPTXEvent* Event)
 	{
@@ -103,11 +164,9 @@ namespace PPTX
 						pSrcFile->type() == OOX::Presentation::FileTypes::NotesSlide) ? true : false;
 		}
 
-		size_t nCount = rels.m_arrRelations.size();
-
-        for (size_t i = 0; i < nCount; ++i)
-		{
-			OOX::Rels::CRelationShip* pRelation = rels.m_arrRelations[i];
+		for (size_t i = 0; i <  rels.m_arRelations.size(); ++i)
+		{       
+			OOX::Rels::CRelationShip* pRelation = rels.m_arRelations[i];
 
  			OOX::CPath normPath = CorrectPathRels(path, pRelation);
 
@@ -115,9 +174,9 @@ namespace PPTX
 
             if (bIsSlide && (pRelation->Type() == OOX::FileTypes::HyperLink ||
                              pRelation->Type() == OOX::Presentation::FileTypes::Slide))
-			{// + external audio, video ...
+			{// + external audio, video ... - в обычных ...
 
-                smart_ptr<OOX::File> file = smart_ptr<OOX::File>(new OOX::HyperLink(pRelation->Target()));
+				smart_ptr<OOX::File> file = smart_ptr<OOX::File>(new OOX::HyperLink(OOX::IFileContainer::m_pMainDocument, pRelation->Target()));
 
 				if (pRelation->Type() == OOX::Presentation::FileTypes::Slide)
 				{
@@ -140,7 +199,7 @@ namespace PPTX
 				{
 					long percent = Event ? Event->GetPercent() : 0;
 
-					smart_ptr<OOX::File> file = PPTX::FileFactory::CreateFilePPTX(normPath, *pRelation, map);
+					smart_ptr<OOX::File> file = PPTX::FileFactory::CreateFilePPTX(normPath, *pRelation, map, OOX::IFileContainer::m_pMainDocument);
 
 					if (file.IsInit() == false)
 						continue;
@@ -180,11 +239,16 @@ namespace PPTX
 	void FileContainer::write(OOX::CRels& rels, const OOX::CPath& curdir, const OOX::CPath& directory, OOX::CContentTypes& content) const
 	{
 		std::map<std::wstring, size_t> mNamePair;
-		for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
+       
+        for (boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mapContainer.begin(); pPair != m_mapContainer.end(); ++pPair)
 		{
-			smart_ptr<OOX::File>     pFile = pPair->second;
-			smart_ptr<OOX::External> pExt  = pFile.smart_dynamic_cast<OOX::External>();
-			if ( !pExt.IsInit() )
+			smart_ptr<OOX::File>		pFile = pPair->second;
+
+			smart_ptr<OOX::External>	pExt	= pFile.smart_dynamic_cast<OOX::External>();
+			smart_ptr<OOX::Media>		pMedia  = pFile.smart_dynamic_cast<OOX::Media>();
+
+			bool bExternal = pExt.IsInit() || ((pMedia.IsInit()) && (pMedia->IsExternal()));
+			if ( !bExternal )
 			{
 				smart_ptr<PPTX::WrapperFile> file = pFile.smart_dynamic_cast<PPTX::WrapperFile>();
 
@@ -216,6 +280,7 @@ namespace PPTX
 
 					OOX::CSystemUtility::CreateDirectories(directory / defdir);
 					pFile->write(directory / defdir / name, directory, content);
+					
 					rels.Registration(pPair->first, pFile->type(), defdir / name);
 				}
 			}
@@ -228,9 +293,9 @@ namespace PPTX
 
 	void FileContainer::WrittenSetFalse()
 	{
-		for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
+		for (size_t i = 0; i < m_arContainer.size(); i++)
 		{
-			smart_ptr<OOX::File> pFile = pPair->second;
+			smart_ptr<OOX::File> &pFile = m_arContainer[i];
 
 			smart_ptr<PPTX::WrapperFile>	pWrapFile = pFile.smart_dynamic_cast<PPTX::WrapperFile>();
 			smart_ptr<PPTX::FileContainer>	pWrapCont = pFile.smart_dynamic_cast<PPTX::FileContainer>();

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of MDBLOCK union of records 
 class MDBLOCK: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(MDBLOCK)
@@ -49,7 +47,9 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typeMDBLOCK;
+	static const ElementType type = typeMDBLOCK;
+
+	BaseObjectPtr	m_MDB;
 };
 
 } // namespace XLS

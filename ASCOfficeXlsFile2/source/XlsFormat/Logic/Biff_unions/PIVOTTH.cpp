@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,8 +31,9 @@
  */
 
 #include "PIVOTTH.h"
-#include <Logic/Biff_records/SXTH.h>
-#include <Logic/Biff_records/ContinueFrt.h>
+
+#include "../Biff_records/SXTH.h"
+#include "../Biff_records/ContinueFrt.h"
 
 namespace XLS
 {
@@ -61,8 +62,14 @@ const bool PIVOTTH::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.repeated<ContinueFrt>(0, 0);
+	m_SXTH = elements_.front(); elements_.pop_front();
+	int count = proc.repeated<ContinueFrt>(0, 0);
 
+	while(count--)
+	{
+		m_arContinueFrt.insert(m_arContinueFrt.begin(), elements_.back());
+		elements_.pop_back();
+	}
 	return true;
 }
 

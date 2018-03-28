@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -58,7 +58,7 @@ void TxtQry::readFields(CFRecord& record)
 	unsigned short reserved, flags1, unused1;
 	unsigned char unused2, flags2;
 
-	record >> rt >> flags1 >> unused1 >> rowStartAt >> flags2 >> chCustom >> unused2 >> itwf >> chDecimal >> chThousSep;
+	record >> rt >> reserved >> flags1 >> unused1 >> rowStartAt >> flags2 >> chCustom >> unused2 >> itwf >> chDecimal >> chThousSep;
 
 	fFile			=  GETBIT(flags1, 0);
 	fDelimited		=  GETBIT(flags1, 1);

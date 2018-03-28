@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -127,7 +127,9 @@ static int isnan (double d) {
 
 #if defined(_MSC_VER)
 #define mkdir(p,m) _mkdir(p)
+#if _MSC_VER < 1900
 #define snprintf _snprintf
+#endif
 #if _MSC_VER < 1500
 #define vsnprintf(b,c,f,a) _vsnprintf(b,c,f,a)
 #endif

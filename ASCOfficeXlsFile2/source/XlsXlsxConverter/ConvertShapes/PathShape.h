@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -229,18 +229,20 @@ namespace NSCustomShapesConvert
 	
 	class CSlice
 	{
-	public:
-		RulesType m_eRuler;
-        std::vector<Aggplus::POINT> m_arPoints;
-
 	private:
 		int m_nCountElementsPoint;
-
 	public:
-		CSlice(RulesType eType = rtMoveTo)
+		RulesType					m_eRuler;
+        std::vector<Aggplus::POINT> m_arPoints;
+		//LONG						m_lX;
+		//LONG						m_lY;
+
+		CSlice(RulesType eType = rtMoveTo/*, LONG x = 0, LONG y = 0*/)
 		{
 			m_eRuler = eType;
 			m_nCountElementsPoint = 0;
+			//m_lX = x;
+			//m_lY = y;
 		}
 
 		void AddParam(LONG lParam)
@@ -249,13 +251,13 @@ namespace NSCustomShapesConvert
 			if (0 == lPoint)
 			{
                 Aggplus::POINT point;
-				point.x = lParam;
+				point.x = lParam/* - m_lX*/;
 				point.y = 0;
 				m_arPoints.push_back(point);
 			}
 			else
 			{
-				m_arPoints[m_arPoints.size() - 1].y = lParam;
+				m_arPoints[m_arPoints.size() - 1].y = lParam/* - m_lY*/;
 			}
 			++m_nCountElementsPoint;
 		}
@@ -263,7 +265,8 @@ namespace NSCustomShapesConvert
 		{
 			m_eRuler = oSrc.m_eRuler;
 			m_arPoints.clear();
-			for (int nIndex = 0; nIndex < oSrc.m_arPoints.size(); ++nIndex)
+			
+			for (size_t nIndex = 0; nIndex < oSrc.m_arPoints.size(); ++nIndex)
 			{
 				m_arPoints.push_back(oSrc.m_arPoints[nIndex]);
 			}
@@ -547,7 +550,7 @@ namespace NSCustomShapesConvert
 			LONG lValue;
 			bool bRes = true;
 
-			for (int nIndex = 0; nIndex < oArray.size(); ++nIndex)
+			for (size_t nIndex = 0; nIndex < oArray.size(); ++nIndex)
 			{
 				lValue = GetValue(oArray[nIndex], eParamType, bRes);
 				if (bRes)
@@ -595,7 +598,8 @@ namespace NSCustomShapesConvert
 			height = oSrc.height;
 
 			m_arSlices.clear();
-			for (int nIndex = 0; nIndex < oSrc.m_arSlices.size(); ++nIndex)
+			
+			for (size_t nIndex = 0; nIndex < oSrc.m_arSlices.size(); ++nIndex)
 			{
 				m_arSlices.push_back(oSrc.m_arSlices[nIndex]);
 			}
@@ -615,7 +619,7 @@ namespace NSCustomShapesConvert
 
 			NSStringUtils::ParseString(_T("e"), strPath, oArray);
 
-			for (int nIndex = 0; nIndex < oArray.size(); ++nIndex)
+			for (size_t nIndex = 0; nIndex < oArray.size(); ++nIndex)
 			{
 				CPartPath oPath;
 				m_arParts.push_back(oPath);
@@ -626,7 +630,8 @@ namespace NSCustomShapesConvert
 		CPath& operator =(const CPath& oSrc)
 		{
 			m_arParts.clear();
-			for (int nIndex = 0; nIndex < oSrc.m_arParts.size(); ++nIndex)
+			
+			for (size_t nIndex = 0; nIndex < oSrc.m_arParts.size(); ++nIndex)
 			{
 				m_arParts.push_back(oSrc.m_arParts[nIndex]);
 			}
@@ -635,7 +640,7 @@ namespace NSCustomShapesConvert
 
 		void SetCoordsize(LONG lWidth, LONG lHeight)
 		{
-			for (int nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
+			for (size_t nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
 			{
 				m_arParts[nIndex].width		= lWidth;
 				m_arParts[nIndex].height	= lHeight;

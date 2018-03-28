@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -69,8 +69,13 @@ namespace OpenXmlContentTypes
     static const wchar_t* Tiff					=	L"image/tiff";
     static const wchar_t* Wmf					=	L"image/x-wmf";
     static const wchar_t* Bmp					=	L"image/bmp";
+	static const wchar_t* Pcz					=	L"image/x-pcz";
 }
-
+namespace DocPrContentTypes
+{
+    static const wchar_t* App			=	L"application/vnd.openxmlformats-officedocument.extended-properties+xml";
+    static const wchar_t* Core			=	L"application/vnd.openxmlformats-package.core-properties+xml";
+}
 namespace WordprocessingMLContentTypes
 {
 	// WordprocessingML content types
@@ -136,7 +141,7 @@ namespace OpenXmlNamespaces
 
 namespace OpenXmlRelationshipTypes
 {
-    static const wchar_t* CoreProperties		=	L"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties";
+	static const wchar_t* CoreProperties		=	L"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties";
     static const wchar_t* ExtendedProperties	=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties";
 
     static const wchar_t* Theme					=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme";

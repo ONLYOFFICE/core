@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,13 +32,11 @@
 #pragma once
 #include "RtfProperty.h"
 #include "Utils.h"
-//#include "../Common/MediaFormatDefine.h"
 
 class RtfPicture : public IDocumentElement
 {
 public: 
 	typedef enum {dt_none, dt_png, dt_jpg, dt_emf, dt_wmf, dt_apm, dt_macpict}DataType;
-	//		RtfShape m_oShapeProp;
 
 	DataType eDataType;
 
@@ -108,10 +106,6 @@ public:
 		DEFAULT_PROPERTY( m_nCropR )
 		DEFAULT_PROPERTY( m_nCropB )
 		
-        if( true == m_bIsCopy && !m_sPicFilename.empty() )
-		{
-			Utils::RemoveDirOrFile( m_sPicFilename );
-		}
 		m_sPicFilename = L"";
 	}
     std::wstring RenderToRtf(RenderParameter oRenderParameter);

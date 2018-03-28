@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,6 +31,8 @@
  */
 #include "OOXShapeReader.h"
 #include "OOXTextItemReader.h"
+#include "../Ole1FormatReader.h"
+#include "../RtfOle.h"
 
 #include "../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/Shape.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTree.h"
@@ -44,7 +46,7 @@
     #define RGB(r,g,b) ((_UINT32)(((BYTE)(r)|((_UINT16)((BYTE)(g))<<8))|(((_UINT32)(BYTE)(b))<<16)))
 #endif
 
-bool ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop)
+bool OOXShapeReader::ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop)
 {
 	if (pShape == NULL)	return false;
 	if (prop == NULL)	return false;
@@ -316,7 +318,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 						std::wstring sImagePath = pImage->filename().GetPath();
 
 						pOutput->m_oPicture = RtfPicturePtr( new RtfPicture() );
-						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sPath );
+						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sTempFolder );
 
 						pOutput->m_nFillType = 2;
 					}
@@ -402,7 +404,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 						std::wstring sImagePath = pImage->filename().GetPath();
 						
-						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sPath );
+						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sTempFolder );
 					}
 				}
 				int nCropedWidthGoal = pOutput->m_oPicture->m_nWidthGoal;
@@ -493,7 +495,7 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 				if ((text_box) && (text_box->m_oTxtbxContent.IsInit()))
 				{
 					OOXTextItemReader oTextItemReader;
-					
+
 					for (size_t i = 0; i < text_box->m_oTxtbxContent->m_arrItems.size(); i++)
 					{
 						oTextItemReader.Parse( text_box->m_oTxtbxContent->m_arrItems[i], oParam );
@@ -647,11 +649,13 @@ void OOXShapeReader::Parse(ReaderParameter oParam, PPTX::Logic::ColorBase *oox_c
 {
 	if (!oox_color) return;
 
+	oox_color->SetParentFilePointer(oParam.oDocx->m_pTheme);
+
 	nColor = oox_color->GetARGB(0);
 	BYTE alpha = nColor >> 24;
 	if (alpha != 0xff)
 		opacity = alpha;
-	nColor = nColor & 0xff000000;
+	nColor = nColor & 0x00ffffff;
 	//switch( oox_color->m_eType )
 	//{
 	//	case OOX::Drawing::colorSheme:	Parse(oParam, &oox_color->m_oShemeClr,	nColor, opacity);		break;
@@ -697,7 +701,10 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 	
 	if (change_sheme_color && oox_solid_fill->Color.getType() == OOX::et_a_schemeClr)
 	{
-		//oox_solid_fill->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
+		PPTX::Logic::SchemeClr *pSchemeColor = new PPTX::Logic::SchemeClr();
+		pSchemeColor->val.set(*change_sheme_color);
+
+		oox_solid_fill->Color.Color.reset(pSchemeColor);
 	}
 	
 	Parse(oParam, oox_solid_fill, nColor, opacity);
@@ -732,7 +739,7 @@ bool OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 				OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 
 				std::wstring sImagePath = pImage->filename().GetPath();
-				result = WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sPath);
+				result = WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sTempFolder);
 			}
 		}
 		else if (oox_bitmap_fill->blip->link.IsInit())
@@ -903,27 +910,35 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 {
 	if (!oox_line_prop)return;
 
-	pOutput->m_bLine = true;
+	pOutput->m_bLine = 1;
 	
 	if (oox_line_prop->Fill.is_init())
 	{
 		NSCommon::smart_ptr<PPTX::Logic::SolidFill> fill = oox_line_prop->Fill.Fill.smart_dynamic_cast<PPTX::Logic::SolidFill>();
 		NSCommon::smart_ptr<PPTX::Logic::NoFill> no_fill = oox_line_prop->Fill.Fill.smart_dynamic_cast<PPTX::Logic::NoFill>();
-		if (fill.IsInit())
+		
+		if (no_fill.IsInit())
+		{
+			pOutput->m_bLine = 0;
+		}
+		else if (fill.IsInit())
 		{
 			if (change_sheme_color && fill->Color.getType() == OOX::et_a_schemeClr)
 			{
-				//fill->Color.FromString(*change_sheme_color);
-			}			
+				PPTX::Logic::SchemeClr *pSchemeColor = new PPTX::Logic::SchemeClr();
+				pSchemeColor->val.set(*change_sheme_color);
+
+				fill->Color.Color.reset(pSchemeColor);
+			}	
 			unsigned int nColor = 0; //black
 			_CP_OPT(double) opacity;
 			
 			Parse(oParam, fill.operator->(), nColor, opacity);
 			pOutput->m_nLineColor = nColor;
 		}
-		else if (no_fill.IsInit())
+		else
 		{
-			pOutput->m_bLine = false;
+
 		}
 	}
 	if (oox_line_prop->w.IsInit())
@@ -978,8 +993,7 @@ void OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::
 
 	int fmt_index = style_ref->idx.get() -1;
 
-	PPTX::Theme *theme = oParam.oDocx->GetTheme();
-	if (!theme || fmt_index <0) return;
+	if (!oParam.oDocx->m_pTheme || fmt_index <0) return;
 
 	if (style_ref->Color.is<PPTX::Logic::SchemeClr>() == false) return;
 
@@ -989,21 +1003,21 @@ void OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::
 	
 	if (type == 1)
 	{
-		if (fmt_index < 1000 && fmt_index < theme->themeElements.fmtScheme.fillStyleLst.size()) 
+		if (fmt_index < 1000 && fmt_index < oParam.oDocx->m_pTheme->themeElements.fmtScheme.fillStyleLst.size()) 
 		{
-			Parse(oParam, pOutput, &theme->themeElements.fmtScheme.fillStyleLst[fmt_index], &color);
+			Parse(oParam, pOutput, &oParam.oDocx->m_pTheme->themeElements.fmtScheme.fillStyleLst[fmt_index], &color);
 		}
-		else if (fmt_index > 1000 && ((fmt_index-1000) < theme->themeElements.fmtScheme.bgFillStyleLst.size()))
+		else if (fmt_index > 1000 && ((fmt_index-1000) < oParam.oDocx->m_pTheme->themeElements.fmtScheme.bgFillStyleLst.size()))
 		{
 			fmt_index -= 1000; 
 
-			Parse(oParam, pOutput, &theme->themeElements.fmtScheme.bgFillStyleLst[fmt_index], &color);	
+			Parse(oParam, pOutput, &oParam.oDocx->m_pTheme->themeElements.fmtScheme.bgFillStyleLst[fmt_index], &color);	
 		}
 	}
 
-	if (type == 2 && fmt_index < theme->themeElements.fmtScheme.lnStyleLst.size())
+	if (type == 2 && fmt_index < oParam.oDocx->m_pTheme->themeElements.fmtScheme.lnStyleLst.size())
 	{
-		Parse(oParam, pOutput, &theme->themeElements.fmtScheme.lnStyleLst[fmt_index], &color);
+		Parse(oParam, pOutput, &oParam.oDocx->m_pTheme->themeElements.fmtScheme.lnStyleLst[fmt_index], &color);
 	}
 
 	//if (style_matrix_ref->getType() == OOX::et_a_effectRef && fmt_index < theme->m_oThemeElements.m_oFmtScheme.m_oEffectStyleLst.m_arrEffectStyle.size())
@@ -1025,7 +1039,7 @@ void OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::
 	
 	double rot = xfrm->rot.IsInit() ? xfrm->rot.get() / 60000. : 0;
 	if (rot > 0.01)
-		pOutput->m_nRotation = rot * 65535;
+		pOutput->m_nRotation = (int)(rot * 65535);
 
 	if (xfrm->flipH.get_value_or(false))	pOutput->m_bFlipH = 1;	
 	if (xfrm->flipV.get_value_or(false))	pOutput->m_bFlipV = 1;
@@ -1044,8 +1058,8 @@ void OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::
 		}
 		if (xfrm->extX.IsInit() && xfrm->extY.IsInit())
 		{
-			pOutput->m_nRelRight	= (int)pOutput->m_nRelLeft + xfrm->offX.get();
-			pOutput->m_nRelBottom	= (int)pOutput->m_nRelTop + xfrm->offY.get();
+			pOutput->m_nRelRight	= (int)pOutput->m_nRelLeft + xfrm->extX.get();
+			pOutput->m_nRelBottom	= (int)pOutput->m_nRelTop + xfrm->extY.get();
 		}
 		else
 		{
@@ -1061,15 +1075,26 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 	PPTX::Logic::Shape	* ooxShape	= dynamic_cast<PPTX::Logic::Shape*>	(m_ooxShape);
 	
 	if (!ooxShape) return false;
+
+	PPTX::Logic::BodyPr *text_properties = NULL;
 	
-	if (ooxShape->oTextBoxBodyPr.IsInit())
+	if (ooxShape->oTextBoxShape.IsInit())
 	{
-		if (ooxShape->oTextBoxBodyPr->fromWordArt.get_value_or(false))
+		text_properties = ooxShape->oTextBoxBodyPr.GetPointer();	
+	}
+
+	if (ooxShape->txBody.IsInit())
+	{
+		text_properties = ooxShape->txBody->bodyPr.GetPointer();	
+	}
+	if (text_properties)
+	{
+		if (text_properties->fromWordArt.get_value_or(false))
 		{
 			pOutput->m_bGtext = 1;
-			if (ooxShape->oTextBoxBodyPr->prstTxWarp.IsInit())
+			if (text_properties->prstTxWarp.IsInit())
 			{
-				SimpleTypes::ETextShapeType type = (SimpleTypes::ETextShapeType)ooxShape->oTextBoxBodyPr->prstTxWarp->prst.GetBYTECode();
+				SimpleTypes::ETextShapeType type = (SimpleTypes::ETextShapeType)text_properties->prstTxWarp->prst.GetBYTECode();
 
 				pOutput->m_nShapeType	= OOX::PrstTx2VmlShapeType(type);
 			}
@@ -1164,9 +1189,50 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 		Parse(oParam, pOutput, ooxShape->spPr.ln.GetPointer());	
 	}
 //---------------------------------------------------------------------
-	PPTX::Logic::TxBody * text_properties = NULL;
 	OOXTextItemReader oTextItemReader;
 	
+	RtfCharProperty old = oParam.oRtf->m_oDefaultCharProp;
+	if ((oox_sp_style) && (oox_sp_style->fontRef.idx.IsInit()))
+	{
+		std::wstring font_name;
+		if (oox_sp_style->fontRef.idx->GetBYTECode() == 0)
+		{
+			font_name = oParam.oDocx->m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;
+		}
+		else if (oox_sp_style->fontRef.idx->GetBYTECode() == 1)
+		{
+			font_name = oParam.oDocx->m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;
+		}
+		if (!font_name.empty())
+		{
+			RtfFont oCurFont;
+			if( true == oParam.oRtf->m_oFontTable.GetFont( font_name, oCurFont ) )
+			{
+				oParam.oRtf->m_oDefaultCharProp.m_nFont = oCurFont.m_nID;
+			}
+			else
+			{
+				oCurFont.m_sName	= font_name;
+				oCurFont.m_nID		= oParam.oRtf->m_oDefaultCharProp.m_nFont = oParam.oRtf->m_oFontTable.GetCount() + 1;
+				oParam.oRtf->m_oFontTable.AddItem( oCurFont );
+			}			 
+		}
+		if (oox_sp_style->fontRef.Color.is_init())
+		{
+			unsigned int nColor = 0; //black
+			_CP_OPT(double) opacity;
+			
+			OOXShapeReader::Parse(oParam, oox_sp_style->fontRef.Color.Color.operator ->(), nColor, opacity);
+
+			RtfColor rtfColor; 
+			rtfColor.SetRGB(nColor);
+			
+			oParam.oRtf->m_oDefaultCharProp.m_nForeColor = oParam.oRtf->m_oColorTable.AddItem(rtfColor);
+		}
+	}
+	
+	Parse(oParam, pOutput, text_properties);
+
 	if (ooxShape->txBody.IsInit())
 	{
 		for (size_t i=0; i < ooxShape->txBody->Paragrs.size(); i++)
@@ -1174,7 +1240,13 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 			oTextItemReader.Parse(&ooxShape->txBody->Paragrs[i], oParam );
 		}	
 
-		text_properties = ooxShape->txBody.GetPointer();
+	}
+	else if (ooxShape->oTextBoxShape.IsInit())
+	{
+		for (size_t i=0; i < ooxShape->oTextBoxShape->m_arrItems.size(); i++)
+		{
+			oTextItemReader.Parse(ooxShape->oTextBoxShape->m_arrItems[i], oParam );
+		}	
 	}
 
 	if (oTextItemReader.m_oTextItems)
@@ -1190,13 +1262,70 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 		{
 			pOutput->m_aTextItems = oTextItemReader.m_oTextItems;
 		}
+	}
 
-		if (text_properties)
+	oParam.oRtf->m_oDefaultCharProp = old;
+
+	return true;		
+}
+	
+void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::BodyPr *text_props)
+{
+	if (!text_props) return;
+   
+	if (text_props->lIns.IsInit())	pOutput->m_nTexpLeft	= *text_props->lIns;
+	if (text_props->tIns.IsInit())	pOutput->m_nTexpTop		= *text_props->tIns;
+	if (text_props->rIns.IsInit())	pOutput->m_nTexpRight	= *text_props->rIns;
+	if (text_props->bIns.IsInit())	pOutput->m_nTexpBottom	= *text_props->bIns;
+
+	if (text_props->anchor.IsInit())
+	{
+		switch(text_props->anchor->GetBYTECode())
 		{
+		case 0:	pOutput->m_nAnchorText = 2; break;
+		case 4:	pOutput->m_nAnchorText = 0; break;		
+		case 1:	
+		case 2:	
+		case 3:	
+		default:
+			pOutput->m_nAnchorText = 4; break;
 		}
 	}
 
-	return true;		
+	if (text_props->rtlCol.IsInit())
+		pOutput->m_nTxdir = *text_props->rtlCol;
+
+	if (text_props->numCol.IsInit())
+		pOutput->m_nCcol = *text_props->numCol;
+
+	switch(text_props->Fit.type)
+	{
+		case 2: pOutput->m_bFitShapeToText = 1; break;
+		case 3: pOutput->m_bFitTextToShape = 1; break;
+		default:
+			break;
+	}
+	if (text_props->vert.IsInit())
+	{
+		switch(text_props->vert->GetBYTECode())
+		{
+			case 0: pOutput->m_nTxflTextFlow = 1; break;
+			case 2: pOutput->m_nTxflTextFlow = 2; break;
+			case 3: pOutput->m_nTxflTextFlow = 1; break;
+			case 4: pOutput->m_nTxflTextFlow = 2; break;
+			case 5: pOutput->m_nTxflTextFlow = 5; break;
+			case 6: pOutput->m_nTxflTextFlow = 5; break;
+			default:
+				break;
+		}
+	}
+	if (text_props->rot.IsInit())
+	{
+		pOutput->m_fRotateText = 1; 
+	}
+	//nullable_int							rot;
+	//nullable_limit<Limit::TextWrap>		wrap;
+
 }
 
 bool OOXShapeReader::ParsePic( ReaderParameter oParam, RtfShapePtr& pOutput)
@@ -1216,6 +1345,28 @@ bool OOXShapeReader::ParsePic( ReaderParameter oParam, RtfShapePtr& pOutput)
 	
 	Parse(oParam, pOutput, &ooxPic->blipFill);
 
+	if (pOutput->m_oPicture->m_sPicFilename.empty() && !ooxPic->blipFill.blip->oleFilepathImage.empty())
+	{
+		pOutput->m_oPicture->eDataType = RtfPicture::dt_png;
+		pOutput->m_oPicture->m_sPicFilename = ooxPic->blipFill.blip->oleFilepathImage;
+		pOutput->m_oPicture->m_bIsCopy = false; //не удалять
+
+		if (pOutput->m_oPicture->m_nWidthGoal == PROP_DEF)
+		{
+			if (pOutput->m_nWidth == PROP_DEF && pOutput->m_nRight != PROP_DEF && pOutput->m_nLeft !=PROP_DEF )
+				pOutput->m_oPicture->m_nWidthGoal = pOutput->m_nRight - pOutput->m_nLeft;
+			else 
+				pOutput->m_oPicture->m_nWidthGoal = pOutput->m_nWidth;
+		}		
+		if (pOutput->m_oPicture->m_nHeightGoal == PROP_DEF)
+		{
+			if (pOutput->m_nHeight == PROP_DEF && pOutput->m_nBottom != PROP_DEF && pOutput->m_nTop !=PROP_DEF)
+				pOutput->m_oPicture->m_nHeightGoal = pOutput->m_nBottom - pOutput->m_nTop;
+			else
+				pOutput->m_oPicture->m_nHeightGoal = pOutput->m_nHeight;
+		}
+	}
+
 	if ((oox_sp_style) && (oox_sp_style->lnRef.idx.IsInit()))
 	{
 		Parse(oParam, pOutput, &oox_sp_style->lnRef, 2);
@@ -1223,6 +1374,82 @@ bool OOXShapeReader::ParsePic( ReaderParameter oParam, RtfShapePtr& pOutput)
 	if (ooxPic->spPr.ln.IsInit())
 	{
 		Parse(oParam, pOutput, ooxPic->spPr.ln.GetPointer());	
+	}
+//scale picture
+	if (ooxPic->spPr.xfrm.IsInit() && pOutput->m_oPicture)
+	{
+		if (ooxPic->spPr.xfrm->extX.IsInit() && ooxPic->spPr.xfrm->extY.IsInit())
+		{
+			double cx = ooxPic->spPr.xfrm->extX.get();
+			double cy = ooxPic->spPr.xfrm->extY.get();
+
+			pOutput->m_oPicture->m_dScaleX = (pOutput->m_nRight - pOutput->m_nLeft) * 100. / pOutput->m_oPicture->m_nWidthGoal;
+			pOutput->m_oPicture->m_dScaleY = (pOutput->m_nBottom - pOutput->m_nTop)* 100. / pOutput->m_oPicture->m_nHeightGoal;
+		}
+	}
+
+	if (ooxPic->oleObject.IsInit())
+	{
+		pOutput->m_bIsOle		= true;									
+		pOutput->m_pOleObject	= RtfOlePtr(new RtfOle());
+		
+		if (ooxPic->oleObject->m_oDxaOrig.IsInit())
+			pOutput->m_pOleObject->m_nWidth = *ooxPic->oleObject->m_oDxaOrig;
+		
+		if (ooxPic->oleObject->m_oDyaOrig.IsInit())
+			pOutput->m_pOleObject->m_nHeight = *ooxPic->oleObject->m_oDyaOrig; 
+	
+		if (ooxPic->oleObject->m_sProgId.IsInit() )
+			pOutput->m_pOleObject->m_sOleClass = *ooxPic->oleObject->m_sProgId;
+		
+		if (ooxPic->oleObject->m_oType.IsInit())
+		{
+			switch( ooxPic->oleObject->m_oType->GetBYTECode())
+			{
+				case SimpleTypes::oletypeLink: 	pOutput->m_pOleObject->m_eOleType = RtfOle::ot_link;	break;
+				case SimpleTypes::oletypeEmbed: pOutput->m_pOleObject->m_eOleType = RtfOle::ot_emb;		break;
+			}
+		}
+		std::wstring sOlePath;
+		if (ooxPic->oleObject->m_OleObjectFile.IsInit())
+		{
+			sOlePath = ooxPic->oleObject->m_OleObjectFile->filename().GetPath();
+		}
+		else if(ooxPic->oleObject->m_oId.IsInit() && oParam.oReader->m_currentContainer)
+		{
+			smart_ptr<OOX::File>		pFile		= oParam.oReader->m_currentContainer->Find(*ooxPic->oleObject->m_oId);			
+			smart_ptr<OOX::OleObject>	pOleFile	= pFile.smart_dynamic_cast<OOX::OleObject>();
+			
+			if (pOleFile.IsInit())
+			{
+                sOlePath= pOleFile->filename().GetPath();
+			}
+		}
+
+		if (pOutput->m_pOleObject->m_nWidth == PROP_DEF)
+		{
+			if (pOutput->m_nWidth == PROP_DEF && pOutput->m_nRight != PROP_DEF && pOutput->m_nLeft !=PROP_DEF )
+				pOutput->m_pOleObject->m_nWidth = pOutput->m_nRight - pOutput->m_nLeft;
+			else 
+				pOutput->m_pOleObject->m_nWidth = pOutput->m_nWidth;
+		}		
+		if (pOutput->m_pOleObject->m_nHeight == PROP_DEF)
+		{
+			if (pOutput->m_nHeight == PROP_DEF && pOutput->m_nBottom != PROP_DEF && pOutput->m_nTop !=PROP_DEF)
+				pOutput->m_pOleObject->m_nHeight = pOutput->m_nBottom - pOutput->m_nTop;
+			else
+				pOutput->m_pOleObject->m_nHeight = pOutput->m_nHeight;
+		}
+		if (!sOlePath.empty())
+		{
+			ConvertOle2ToOle1(sOlePath, pOutput->m_pOleObject);
+	
+			std::wstring ole1FileName = Utils::CreateTempFile( oParam.oReader->m_sTempFolder );
+				
+			RtfUtility::WriteDataToFileBinary( ole1FileName, pOutput->m_pOleObject->m_oOle1Data.first.get(), pOutput->m_pOleObject->m_oOle1Data.second );
+
+			pOutput->m_pOleObject->SetFilename(ole1FileName);
+		}
 	}
 	return true;		
 }
@@ -1237,16 +1464,75 @@ bool OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput)
 
 	if (m_vmlElement ||  m_arrElement)	return ParseVml(oParam , pOutput);
 
-	PPTX::Logic::Shape	* ooxShape	= dynamic_cast<PPTX::Logic::Shape*>	(m_ooxShape);
-//	PPTX::Logic::CxnSp	* cxnShape	= dynamic_cast<PPTX::Logic::CxnSp*>	(m_ooxShape);
-	PPTX::Logic::Pic	* ooxPic	= dynamic_cast<PPTX::Logic::Pic*>	(m_ooxShape);
+	PPTX::Logic::Shape	*ooxShape	= dynamic_cast<PPTX::Logic::Shape*>	(m_ooxShape);
+//	PPTX::Logic::CxnSp	*cxnShape	= dynamic_cast<PPTX::Logic::CxnSp*>	(m_ooxShape);
+	PPTX::Logic::Pic	*ooxPic		= dynamic_cast<PPTX::Logic::Pic*>	(m_ooxShape);
+	
+	OOX::VmlOffice::COLEObject	*vmlOLE = dynamic_cast<OOX::VmlOffice::COLEObject*>	(m_ooxShape);
 
 	if (ooxShape)	return ParseShape(oParam, pOutput);
 	if (ooxPic)		return ParsePic(oParam, pOutput);
 	//if (cxnShape)	return ParseConnector(oParam, pOutput);
+	
+	if (vmlOLE)		return ParseVmlObject(oParam, pOutput);
 
 	return false;
 }
+bool OOXShapeReader::ParseVmlObject	( ReaderParameter oParam , RtfShapePtr& pOutput)
+{
+	OOX::VmlOffice::COLEObject	*vmlOLE = dynamic_cast<OOX::VmlOffice::COLEObject*>	(m_ooxShape);
+	if (!vmlOLE) return false;
+
+	pOutput->m_bIsOle		= true;									
+	pOutput->m_pOleObject	= RtfOlePtr(new RtfOle());
+
+	if( vmlOLE->m_sProgId.IsInit() )
+		pOutput->m_pOleObject->m_sOleClass = vmlOLE->m_sProgId.get2();
+	
+	if(vmlOLE->m_oType.IsInit())
+	{
+		switch( vmlOLE->m_oType->GetValue())
+		{
+			case SimpleTypes::oletypeLink: 	pOutput->m_pOleObject->m_eOleType = RtfOle::ot_link;	break;
+			case SimpleTypes::oletypeEmbed: pOutput->m_pOleObject->m_eOleType = RtfOle::ot_emb;	break;
+		}
+	}
+	std::wstring sOlePath;
+	if (vmlOLE->m_oId.IsInit() && oParam.oReader->m_currentContainer)
+	{
+		smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(vmlOLE->m_oId->GetValue());
+	
+		if ((oFile.IsInit() && (OOX::FileTypes::OleObject == oFile->type())))
+		{
+			OOX::OleObject* pO = (OOX::OleObject*)oFile.operator->();
+			sOlePath = pO->filename().m_strFilename;
+		}
+	}
+	if (pOutput->m_nWidth == PROP_DEF && pOutput->m_nRight != PROP_DEF)
+	{
+		pOutput->m_nWidth = pOutput->m_nRight - (pOutput->m_nLeft == PROP_DEF ? 0 : pOutput->m_nLeft);
+	}
+	if (pOutput->m_nHeight == PROP_DEF && pOutput->m_nBottom != PROP_DEF)
+	{
+		pOutput->m_nHeight = pOutput->m_nBottom - (pOutput->m_nTop == PROP_DEF ? 0 : pOutput->m_nTop);
+	}
+
+	if (pOutput->m_nWidth != PROP_DEF)	pOutput->m_pOleObject->m_nWidth = pOutput->m_nWidth;
+	if (pOutput->m_nHeight != PROP_DEF)	pOutput->m_pOleObject->m_nHeight = pOutput->m_nHeight;
+
+	if (!sOlePath.empty())
+	{
+		ConvertOle2ToOle1(sOlePath, pOutput->m_pOleObject);
+		
+		std::wstring ole1FileName = Utils::CreateTempFile( oParam.oReader->m_sTempFolder );
+			
+		RtfUtility::WriteDataToFileBinary( ole1FileName, pOutput->m_pOleObject->m_oOle1Data.first.get(), pOutput->m_pOleObject->m_oOle1Data.second );
+
+		pOutput->m_pOleObject->SetFilename(ole1FileName);
+	}
+	return true;
+}
+
 void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::UniFill *oox_fill, std::wstring *change_sheme_color)
 {
 	if (!oox_fill) return;
@@ -1514,31 +1800,31 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 			pOutput->m_nGroupBottom =(pOutput->m_nGroupTop != PROP_DEF  ? pOutput->m_nGroupTop : 0)		+ m_vmlGroup->m_oCoordSize->GetY();
 		}
 
-		for (size_t i = 0; i < m_vmlGroup->m_arrItems.size() ; i++ )
+        for (std::vector<OOX::WritingElement*>::iterator	it = m_vmlGroup->m_arrItems.begin(); it != m_vmlGroup->m_arrItems.end(); ++it)
 		{
-			if (m_vmlGroup->m_arrItems[i] == NULL) continue;
+			if (*it == NULL) continue;
 
-			if (m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_group)
+			if ((*it)->getType() == OOX::et_v_group)
 			{
 				RtfShapePtr pNewShape( new RtfShape() );
 				
-				OOXShapeGroupReader oShapeReader(dynamic_cast<OOX::Vml::CGroup*>(m_vmlGroup->m_arrItems[i]));
+				OOXShapeGroupReader oShapeReader(dynamic_cast<OOX::Vml::CGroup*>(*it));
 				
 				if( true == oShapeReader.Parse( oParam, pNewShape ) )
 					 pOutput->AddItem( pNewShape );
 			}
-			else if (	m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_arc		||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_line		||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_oval		||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_shape		||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_rect		||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_roundrect ||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_polyline	||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_shapetype)
+			else if (	(*it)->getType() == OOX::et_v_arc		||
+						(*it)->getType() == OOX::et_v_line		||
+						(*it)->getType() == OOX::et_v_oval		||
+						(*it)->getType() == OOX::et_v_shape		||
+						(*it)->getType() == OOX::et_v_rect		||
+						(*it)->getType() == OOX::et_v_roundrect ||
+						(*it)->getType() == OOX::et_v_polyline	||
+						(*it)->getType() == OOX::et_v_shapetype)
 			{
 				RtfShapePtr pNewShape ( new RtfShape() );//set type .. .todooo
 				
-				OOXShapeReader oShapeReader(dynamic_cast<OOX::Vml::CVmlCommonElements*>(m_vmlGroup->m_arrItems[i]));
+				OOXShapeReader oShapeReader(dynamic_cast<OOX::Vml::CVmlCommonElements*>(*it));
 				
 				pNewShape->m_bInGroup = true;
 				if( true == oShapeReader.Parse( oParam, pNewShape ) )
@@ -1559,7 +1845,7 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 
 		if( m_ooxGroup->grpSpPr.xfrm.IsInit())
 		{
-			double rot = m_ooxGroup->grpSpPr.xfrm->rot.get() / 60000.;
+			double rot = m_ooxGroup->grpSpPr.xfrm->rot.IsInit() ? m_ooxGroup->grpSpPr.xfrm->rot.get() / 60000. : 0.;
 			if (rot > 0.01)
 				pOutput->m_nRotation = (int)(rot * 65535);		
 			
@@ -1766,6 +2052,7 @@ bool OOXBackgroundReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 	}
 	return true;
 }
+
 bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput, std::wstring sTempPath)
 {
 	OOX::CPath ooxPath = sPath;	//для target 
@@ -1883,4 +2170,120 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 		}
 	}
 	return true;
+}
+
+void OOXShapeReader::Parse(ReaderParameter oParam, PPTX::Logic::UniFill *uni_fill, unsigned int & nColor, _CP_OPT(double) &opacity)
+{
+	if (!uni_fill) return;
+
+	if (uni_fill->m_type == PPTX::Logic::UniFill::noFill )
+	{
+		nColor = 0xffffff;	//white
+	}
+	else if (uni_fill->m_type == PPTX::Logic::UniFill::solidFill )
+	{
+		NSCommon::smart_ptr<PPTX::Logic::SolidFill> fill = uni_fill->Fill.smart_dynamic_cast<PPTX::Logic::SolidFill>();
+		
+		Parse(oParam, fill->Color.Color.operator ->(), nColor, opacity);
+	}
+	else if (uni_fill->m_type == PPTX::Logic::UniFill::gradFill )
+	{
+		NSCommon::smart_ptr<PPTX::Logic::GradFill> fill = uni_fill->Fill.smart_dynamic_cast<PPTX::Logic::GradFill>();
+		
+		unsigned int nColor = 0; //black
+		_CP_OPT(double) opacity;
+
+		if (!fill->GsLst.empty())
+		{
+			Parse(oParam, fill->GsLst[0].color.Color.operator ->(), nColor, opacity);
+		}		
+	}
+}
+void OOXShapeReader::ConvertOle2ToOle1(const std::wstring &oleFilePath, RtfOlePtr object)
+{
+	if (!object) return;
+	if (oleFilePath.empty()) return;
+
+	Ole1FormatReaderWriter ole1Writer;
+	
+	ole1Writer.Header.ClassName.val = std::string(object->m_sOleClass.begin(), object->m_sOleClass.end());
+	ole1Writer.Header.ClassName.size = ole1Writer.Header.ClassName.val.length() + 1;
+
+	//ole1Writer.Header.Width	= object->m_nWidth;
+	//ole1Writer.Header.Height = object->m_nHeight;
+
+	DWORD size = 0;
+	if (false == NSFile::CFileBinary::ReadAllBytes(oleFilePath, &ole1Writer.NativeData, size))
+		return;
+	ole1Writer.NativeDataSize = size;
+
+	int		ole1DataSize = ole1Writer.NativeDataSize + 2048;
+	BYTE*	ole1Data = new BYTE[ole1DataSize];
+
+	if (ole1Data)
+	{	
+		ole1Writer.Write(ole1Data, ole1DataSize);
+
+		boost::shared_array<BYTE> buffer(ole1Data);
+		object->m_oOle1Data = std::make_pair(buffer, ole1DataSize);
+	}
+	delete []ole1Writer.NativeData;
+}
+
+void OOXShapeReader::ConvertOle2ToOle1(POLE::Storage *storage, RtfOlePtr object)
+{
+	if (!object) return;
+	if (!storage) return;
+
+	Ole1FormatReaderWriter ole1Writer;
+	
+	ole1Writer.Header.ClassName.val = std::string(object->m_sOleClass.begin(), object->m_sOleClass.end());
+	ole1Writer.Header.ClassName.size = ole1Writer.Header.ClassName.val.length();
+
+	//ole1Writer.Header.Width	= object->m_nWidth;
+	//ole1Writer.Header.Height = object->m_nHeight;
+
+	std::list<std::wstring> entries;
+	entries = storage->entries( L"/" );
+	
+	for( std::list<std::wstring>::iterator it = entries.begin(); it != entries.end(); ++it )
+	{
+		std::wstring name = XmlUtils::GetLower(*it);
+
+		if (std::wstring::npos != name.find(L"ole"))	 continue;
+		if (std::wstring::npos != name.find(L"compobj")) continue;
+		if (std::wstring::npos != name.find(L"objinfo")) continue;
+
+		if (std::wstring::npos != name.find(L"native") ||
+			std::wstring::npos != name.find(L"content") ||
+			std::wstring::npos != name.find(L"package"))
+		{
+			POLE::Stream *stream = new POLE::Stream(storage, *it);
+			if (stream)
+			{
+				ole1Writer.NativeDataSize = stream->size();
+
+				ole1Writer.NativeData = new unsigned char[ole1Writer.NativeDataSize];
+				stream->read(ole1Writer.NativeData, ole1Writer.NativeDataSize);
+				delete stream;
+
+				break;
+			}
+		}
+	}
+
+	if (ole1Writer.NativeData)
+	{
+		int		ole1DataSize = ole1Writer.NativeDataSize + 2048;
+		BYTE*	ole1Data = new BYTE[ole1DataSize];
+
+		if (ole1Data)
+		{	
+			ole1Writer.Write(ole1Data, ole1DataSize);
+
+			boost::shared_array<BYTE> buffer(ole1Data);
+			object->m_oOle1Data = std::make_pair(buffer, ole1DataSize);
+		}
+		delete []ole1Writer.NativeData;
+	}
 }

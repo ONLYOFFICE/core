@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -61,6 +61,8 @@ public:
     std::wostream & comments();
 	std::wostream & autofilter();
 	std::wostream & conditionalFormatting();
+	std::wostream & picture_background();
+	std::wostream & dataValidations();
 	std::wostream & sort();
 	std::wostream & ole_objects();
 	std::wostream & page_properties();

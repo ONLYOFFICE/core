@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,6 +49,7 @@
 #include "Logic/ClrMap.h"
 #include "Logic/ExtP.h"
 #include "Theme/ClrScheme.h"
+#include "Comments.h"
 
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
@@ -58,11 +59,11 @@ namespace PPTX
 	class Presentation : public WrapperFile, public PPTX::FileContainer
 	{
 	public:
-		Presentation()
+		Presentation(OOX::Document *pMain) : WrapperFile(pMain), PPTX::FileContainer(pMain)
 		{
 			m_bMacroEnabled = false;
 		}
-		Presentation(const OOX::CPath& filename, FileMap& map)
+		Presentation(OOX::Document *pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), PPTX::FileContainer(pMain)
 		{
 			m_bMacroEnabled = false;
 			read(filename, map);
@@ -72,8 +73,6 @@ namespace PPTX
 		}
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
-			//FileContainer::read(filename, map);
-
 			XmlUtils::CXmlNode oNode;
 			oNode.FromXmlFile(filename.m_strFilename);
 
@@ -235,6 +234,7 @@ namespace PPTX
 				pWriter->EndRecord();
 			}
 			pWriter->WriteRecord2(9, m_pJsaProject);
+			pWriter->WriteRecord2(10, comments);
 
 			pWriter->EndRecord();
 		}
@@ -336,7 +336,7 @@ namespace PPTX
 					}break;
 					case 6:
 					{
-						commentAuthors = new PPTX::Authors();
+						commentAuthors = new PPTX::Authors(File::m_pMainDocument);
 						commentAuthors->fromPPTY(pReader);						
 					}break;
 					case 7:
@@ -346,7 +346,7 @@ namespace PPTX
 					}break;
 					case 8:
 					{
-						m_pVbaProject = new OOX::VbaProject();
+						m_pVbaProject = new OOX::VbaProject(File::m_pMainDocument);
 						m_pVbaProject->fromPPTY(pReader);
 						
 						smart_ptr<OOX::File> file = m_pVbaProject.smart_dynamic_cast<OOX::File>();
@@ -356,11 +356,16 @@ namespace PPTX
 					}break;
 					case 9:
 					{
-						m_pJsaProject = new OOX::JsaProject();
+						m_pJsaProject = new OOX::JsaProject(File::m_pMainDocument);
 						m_pJsaProject->fromPPTY(pReader);
 
 						smart_ptr<OOX::File> file = m_pJsaProject.smart_dynamic_cast<OOX::File>();
 						FileContainer::Add(file);
+					}break;
+					case 10:
+					{
+						comments = new PPTX::Comments(OOX::File::m_pMainDocument);
+						comments->fromPPTY(pReader);
 					}break;
 					default:
 					{
@@ -479,6 +484,7 @@ namespace PPTX
 		bool						m_bMacroEnabled;
 		smart_ptr<OOX::VbaProject>	m_pVbaProject;
 		smart_ptr<OOX::JsaProject>	m_pJsaProject;
+		smart_ptr<PPTX::Comments>	comments;
 		
         void SetClrMap(Logic::ClrMap map)				{m_clrMap = map;}
         void SetClrScheme(nsTheme::ClrScheme scheme)	{m_clrScheme = scheme;}

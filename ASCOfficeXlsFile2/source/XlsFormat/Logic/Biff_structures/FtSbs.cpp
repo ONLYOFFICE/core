@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,7 +36,6 @@
 namespace XLS
 {
 
-
 BiffStructurePtr FtSbs::clone()
 {
 	return BiffStructurePtr(new FtSbs(*this));
@@ -44,10 +43,15 @@ BiffStructurePtr FtSbs::clone()
 
 void FtSbs::load(CFRecord& record)
 {
-	//record.skipNunBytes(4); // reserved
+	unsigned short ft, cb;
+	record >> ft >> cb;
 
-	record >> ft;
-	record >> cb;
+	if ( ft != 0x000c && cb != 0x0014)
+	{
+		record.RollRdPtrBack(4);
+		return;
+	}
+	fExist = true;
 
 	record.skipNunBytes(4); // unused1
 
@@ -55,10 +59,10 @@ void FtSbs::load(CFRecord& record)
 
 	record >> iVal >> iMin >> iMax >> dInc >> dPage >> fHoriz >> dxScroll >> flags;
 
-	fDraw = GETBIT(flags, 0);
+	fDraw			= GETBIT(flags, 0);
 	fDrawSliderOnly = GETBIT(flags, 1);
-	fTrackElevator = GETBIT(flags, 2);
-	fNo3d = GETBIT(flags, 3);
+	fTrackElevator	= GETBIT(flags, 2);
+	fNo3d			= GETBIT(flags, 3);
 }
 
 

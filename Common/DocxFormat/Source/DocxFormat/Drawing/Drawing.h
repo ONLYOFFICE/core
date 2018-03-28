@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -92,7 +92,6 @@ namespace OOX
 			{
 				return OOX::et_wp_effectExtent;
 			}
-		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
@@ -103,7 +102,6 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("b"), m_oB )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-		public:
 			SimpleTypes::CCoordinate m_oB;
 			SimpleTypes::CCoordinate m_oL;
 			SimpleTypes::CCoordinate m_oR;
@@ -122,9 +120,38 @@ namespace OOX
 			virtual ~CPosH()
 			{
 			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				// TO DO: Реализовать
+				node.ReadAttributeBase( L"relativeFrom",	m_oRelativeFrom );				
+
+				XmlUtils::CXmlNodes oNodes;
+				if (node.GetNodes(_T("*"), oNodes))
+				{
+					int nCount = oNodes.GetCount();
+					for (int i = 0; i < nCount; ++i)
+					{
+						XmlUtils::CXmlNode oNode;
+						oNodes.GetAt(i, oNode);
+
+						std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+						if ( _T("align") == sName )
+						{
+							m_oAlign = oNode.GetText();
+							m_bAlign = true;
+						}
+						else if ( _T("posOffset") == sName )
+						{
+							m_oPosOffset = oNode.GetText();
+							m_bAlign = false;
+						}
+						else if ( _T("pctPosHOffset") == sName )
+						{
+							m_oPctOffset = oNode.GetText();
+							m_bAlign = false;
+						}
+					}
+				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -179,7 +206,6 @@ namespace OOX
 			{
 				return OOX::et_wp_positionH;
 			}
-		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 	// Читаем атрибуты
@@ -187,7 +213,6 @@ namespace OOX
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("relativeFrom"), m_oRelativeFrom )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-		public:
 			bool IsAlign() const
 			{
 				return m_bAlign;
@@ -218,11 +243,38 @@ namespace OOX
 			virtual ~CPosV()
 			{
 			}
-
-		public:
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				// TO DO: Реализовать
+				node.ReadAttributeBase( L"relativeFrom",	m_oRelativeFrom );				
+
+				XmlUtils::CXmlNodes oNodes;
+				if (node.GetNodes(_T("*"), oNodes))
+				{
+					int nCount = oNodes.GetCount();
+					for (int i = 0; i < nCount; ++i)
+					{
+						XmlUtils::CXmlNode oNode;
+						oNodes.GetAt(i, oNode);
+
+						std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+						if ( _T("align") == sName )
+						{
+							m_oAlign = oNode.GetText();
+							m_bAlign = true;
+						}
+						else if ( _T("posOffset") == sName )
+						{
+							m_oPosOffset = oNode.GetText();
+							m_bAlign = false;
+						}
+						else if ( _T("pctPosVOffset") == sName )
+						{
+							m_oPctOffset = oNode.GetText();
+							m_bAlign = false;
+						}
+					}
+				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -276,16 +328,12 @@ namespace OOX
 			{
 				return OOX::et_wp_positionV;
 			}
-		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("relativeFrom"), m_oRelativeFrom )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
-		public:
-
 			bool IsAlign() const
 			{
 				return m_bAlign;
@@ -314,10 +362,27 @@ namespace OOX
 			virtual ~CSizeRelH()
 			{
 			}
-		public:
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				// TO DO: Реализовать
+				node.ReadAttributeBase( L"relativeFrom",	m_oRelativeFrom );				
+				
+				XmlUtils::CXmlNodes oNodes;
+				if (node.GetNodes(_T("*"), oNodes))
+				{
+					int nCount = oNodes.GetCount();
+					for (int i = 0; i < nCount; ++i)
+					{
+						XmlUtils::CXmlNode oNode;
+						oNodes.GetAt(i, oNode);
+
+						std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+						if ( _T("pctHeight") == sName )
+						{
+							m_oPctWidth = oNode.GetText();
+						}
+					}
+				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -382,10 +447,27 @@ namespace OOX
 			virtual ~CSizeRelV()
 			{
 			}
-		public:
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				// TO DO: Реализовать
+				node.ReadAttributeBase( L"relativeFrom",	m_oRelativeFrom );				
+				
+				XmlUtils::CXmlNodes oNodes;
+				if (node.GetNodes(_T("*"), oNodes))
+				{
+					int nCount = oNodes.GetCount();
+					for (int i = 0; i < nCount; ++i)
+					{
+						XmlUtils::CXmlNode oNode;
+						oNodes.GetAt(i, oNode);
+
+						std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+						if ( _T("pctHeight") == sName )
+						{
+							m_oPctHeight = oNode.GetText();
+						}
+					}
+				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -482,11 +564,29 @@ namespace OOX
 			virtual ~CWrapSquare()
 			{
 			}
-
-		public:
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				// TO DO: Реализовать
+				node.ReadAttributeBase( L"distB",	m_oDistB );				
+				node.ReadAttributeBase( L"distL",	m_oDistL );				
+				node.ReadAttributeBase( L"distR",	m_oDistR );				
+				node.ReadAttributeBase( L"distT",	m_oDistT );				
+				node.ReadAttributeBase( L"wrapText",	m_oWrapText );	
+
+				XmlUtils::CXmlNodes oNodes;
+				if (node.GetNodes(_T("*"), oNodes))
+				{
+					int nCount = oNodes.GetCount();
+					for (int i = 0; i < nCount; ++i)
+					{
+						XmlUtils::CXmlNode oNode;
+						oNodes.GetAt(i, oNode);
+
+						std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+						if ( _T("effectExtents") == sName )
+							m_oEffectExtent = oNode;
+					}
+				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -503,7 +603,7 @@ namespace OOX
 						m_oEffectExtent = oReader;
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = _T("<wp:wrapSquare ");
 				if(m_oWrapText.IsInit())
@@ -566,12 +666,35 @@ namespace OOX
 				}
 				m_arrLineTo.clear();
 			}
-
-		public:
-
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				// TO DO: Реализовать
+				node.ReadAttributeBase( L"edited",	m_oEdited );	
+
+				XmlUtils::CXmlNodes oNodes;
+				
+				bool bStart = false;
+				if (node.GetNodes(_T("*"), oNodes))
+				{
+					int nCount = oNodes.GetCount();
+					for (int i = 0; i < nCount; ++i)
+					{
+						XmlUtils::CXmlNode oNode;
+						oNodes.GetAt(i, oNode);
+
+						std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+						if ( _T("start") == sName )
+						{
+							m_oStart = oNode;
+							bStart = true;
+						}
+						else if ( bStart && _T("lineTo") == sName )
+						{
+							ComplexTypes::Drawing::CPoint2D *oPoint = new ComplexTypes::Drawing::CPoint2D(oNode);
+							if (oPoint) m_arrLineTo.push_back( oPoint );
+						}
+					}
+				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -646,12 +769,29 @@ namespace OOX
 			virtual ~CWrapThrough()
 			{
 			}
-
-		public:
-
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				// TO DO: Реализовать
+				node.ReadAttributeBase( L"distL",		m_oDistL );				
+				node.ReadAttributeBase( L"distR",		m_oDistR );				
+				node.ReadAttributeBase( L"wrapText",	m_oWrapText );	
+
+				XmlUtils::CXmlNodes oNodes;
+				if (node.GetNodes(_T("*"), oNodes))
+				{
+					int nCount = oNodes.GetCount();
+					for (int i = 0; i < nCount; ++i)
+					{
+						XmlUtils::CXmlNode oNode;
+						oNodes.GetAt(i, oNode);
+
+						std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+						if ( _T("wrapPolygon") == sName )
+						{
+							m_oWrapPolygon = oNode;
+						}
+					}
+				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -717,9 +857,25 @@ namespace OOX
 			virtual ~CWrapTight()
 			{
 			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				// TO DO: Реализовать
+				XmlUtils::CXmlNodes oNodes;
+				if (node.GetNodes(_T("*"), oNodes))
+				{
+					int nCount = oNodes.GetCount();
+					for (int i = 0; i < nCount; ++i)
+					{
+						XmlUtils::CXmlNode oNode;
+						oNodes.GetAt(i, oNode);
+
+						std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+						if ( _T("wrapPolygon") == sName )
+						{
+							m_oWrapPolygon = oNode;
+						}
+					}
+				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -785,9 +941,26 @@ namespace OOX
 			virtual ~CWrapTopBottom()
 			{
 			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				// TO DO: Реализовать
+				node.ReadAttributeBase( L"distB",	m_oDistB );				
+				node.ReadAttributeBase( L"distT",	m_oDistT );				
+
+				XmlUtils::CXmlNodes oNodes;
+				if (node.GetNodes(_T("*"), oNodes))
+				{
+					int nCount = oNodes.GetCount();
+					for (int i = 0; i < nCount; ++i)
+					{
+						XmlUtils::CXmlNode oNode;
+						oNodes.GetAt(i, oNode);
+
+						std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+						if ( _T("effectExtents") == sName )
+							m_oEffectExtent = oNode;
+					}
+				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -862,11 +1035,69 @@ namespace OOX
 			virtual ~CAnchor()
 			{
 			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
+				ReadAttributes(node);
 				m_eWrapType = anchorwrapUnknown;
 
-				// TO DO: Реализовать
+				XmlUtils::CXmlNodes oNodes;
+				if (node.GetNodes(_T("*"), oNodes))
+				{
+					int nCount = oNodes.GetCount();
+					for (int i = 0; i < nCount; ++i)
+					{
+						XmlUtils::CXmlNode oNode;
+						oNodes.GetAt(i, oNode);
+
+						std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+						if ( _T("docPr") == sName )
+							m_oDocPr = oNode;
+						else if ( _T("effectExtent") == sName )
+							m_oEffectExtent = oNode;
+						else if ( _T("extent") == sName )
+							m_oExtent = oNode;
+						else if ( _T("positionH") == sName )
+							m_oPositionH = oNode;
+						else if ( _T("positionV") == sName )
+							m_oPositionV = oNode;
+						else if ( _T("simplePos") == sName )
+							m_oSimplePos = oNode;
+						else if ( _T("sizeRelH") == sName )
+							m_oSizeRelH = oNode;
+						else if ( _T("sizeRelV") == sName )
+							m_oSizeRelV = oNode;
+						else if ( false == m_eWrapType.IsInit() )
+						{
+							if ( _T("wrapNone") == sName )
+							{
+								m_oWrapNone = oNode;
+								m_eWrapType = anchorwrapNone;
+							}
+							else if ( _T("wrapSquare") == sName )
+							{
+								m_oWrapSquare = oNode;
+								m_eWrapType = anchorwrapSquare;
+							}
+							else if ( _T("wrapThrough") == sName )
+							{
+								m_oWrapThrough = oNode;
+								m_eWrapType = anchorwrapThrough;
+							}
+							else if ( _T("wrapTight") == sName )
+							{
+								m_oWrapTight = oNode;
+								m_eWrapType = anchorwrapTight;
+							}
+							else if ( _T("wrapTopAndBottom") == sName )
+							{
+								m_oWrapTopAndBottom = oNode;
+								m_eWrapType = anchorwrapTopAndBottom;
+							}
+						}
+					}
+					m_oGraphic.fromXML(node);
+				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -985,6 +1216,20 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("simplePos"),      m_bSimplePos )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+			void ReadAttributes(XmlUtils::CXmlNode& oNode)
+			{
+				oNode.ReadAttributeBase( L"allowOverlap",	m_oAllowOverlap );				
+				oNode.ReadAttributeBase( L"behindDoc",      m_oBehindDoc );
+				oNode.ReadAttributeBase( L"distB",          m_oDistB );
+				oNode.ReadAttributeBase( L"distL",          m_oDistL );
+				oNode.ReadAttributeBase( L"distR",          m_oDistR );
+				oNode.ReadAttributeBase( L"distT",          m_oDistT );
+				oNode.ReadAttributeBase( L"hidden",         m_oHidden );
+				oNode.ReadAttributeBase( L"layoutInCell",   m_oLayoutInCell );
+				oNode.ReadAttributeBase( L"locked",         m_oLocked );
+				oNode.ReadAttributeBase( L"relativeHeight", m_oRelativeHeight );
+				oNode.ReadAttributeBase( L"simplePos",      m_bSimplePos );
+			}
 		public:
 			nullable<EAnchorWrapType>								m_eWrapType;
 
@@ -1031,9 +1276,30 @@ namespace OOX
 			virtual ~CInline()
 			{
 			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				// TO DO: Реализовать
+				ReadAttributes( node );
+
+				XmlUtils::CXmlNodes oNodes;
+				if (node.GetNodes(_T("*"), oNodes))
+				{
+					int nCount = oNodes.GetCount();
+					for (int i = 0; i < nCount; ++i)
+					{
+						XmlUtils::CXmlNode oNode;
+						oNodes.GetAt(i, oNode);
+
+						std::wstring sName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+						if ( _T("docPr") == sName )
+							m_oDocPr = oNode;
+						else if ( _T("effectExtent") == sName )
+							m_oEffectExtent = oNode;
+						else if ( _T("extent") == sName )
+							m_oExtent = oNode;
+					}
+					m_oGraphic.fromXML(node);
+				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1090,6 +1356,13 @@ namespace OOX
 				return OOX::et_wp_inline;
 			}
 		private:
+			void ReadAttributes(XmlUtils::CXmlNode& oNode)
+			{
+				oNode.ReadAttributeBase( L"distB",          m_oDistB );
+				oNode.ReadAttributeBase( L"distL",          m_oDistL );
+				oNode.ReadAttributeBase( L"distR",          m_oDistR );
+				oNode.ReadAttributeBase( L"distT",          m_oDistT );
+			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -1148,9 +1421,31 @@ namespace OOX
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				// TO DO: Реализовать
+				XmlUtils::CXmlNodes oNodes;
+				if (node.GetNodes(_T("*"), oNodes))
+				{
+					int nCount = oNodes.GetCount();
+					for (int i = 0; i < nCount; ++i)
+					{
+						XmlUtils::CXmlNode oNode;
+						oNodes.GetAt(i, oNode);
+
+						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+						if (_T("inline") == strName)
+						{
+							m_oInline = oNode;
+							m_bAnchor = false;
+						}
+						else if (_T("anchor") == strName)
+						{
+							m_oAnchor = oNode;
+							m_bAnchor = true;
+						}
+					}
+				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

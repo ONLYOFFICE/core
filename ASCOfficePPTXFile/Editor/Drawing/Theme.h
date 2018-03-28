@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -57,7 +57,7 @@ namespace NSPresentationEditor
 		bool							m_bIsBackground;
 		CBrush							m_oBackground;
 
-		std::vector<IElement*>			m_arElements;
+		std::vector<CElementPtr>		m_arElements;
 
 		CMetricInfo						m_oInfo;
 
@@ -133,11 +133,6 @@ namespace NSPresentationEditor
 
 			m_arElements = oSrc.m_arElements;
 
-			nCount = m_arElements.size();
-			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
-			{
-				ADDREFINTERFACE((m_arElements[nIndex]));
-			}
 			CreateDublicateElements();
 
 			for (long nIndexStyle = 0; nIndexStyle < g_ThemeTextStylesCount; ++nIndexStyle)
@@ -154,23 +149,16 @@ namespace NSPresentationEditor
 			size_t nCount = m_arElements.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 			{
-				IElement* pElem = m_arElements[nIndex];
+				CElementPtr pElem = m_arElements[nIndex];
 				if (NULL != pElem)
 				{
 					m_arElements[nIndex] = pElem->CreateDublicate();
 				}
-				RELEASEINTERFACE(pElem);
 			}
 		}
 
 		void Clear()
 		{
-			size_t nCount = m_arElements.size();
-			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
-			{
-				RELEASEINTERFACE((m_arElements[nIndex]));
-			}
-
 			m_arElements.clear();
 			m_arLayouts.clear();
 			m_mapTitleLayout.clear();
@@ -186,15 +174,13 @@ namespace NSPresentationEditor
 			m_bHasFooter		= false;
 			m_nFormatDate		= 1;
 		
-			for (int i = 0 ; i < 3 ; i++) m_PlaceholdersReplaceString[i].clear();
+			for (int i = 0 ; i < 3 ; i++) 
+				m_PlaceholdersReplaceString[i].clear();
 		}
 
 		~CTheme()
 		{
 		}
-
-	public:
-
 		NSPresentationEditor::CColor GetColor(const LONG& lIndexScheme)
 		{
 			if (lIndexScheme < (LONG)m_arColorScheme.size())

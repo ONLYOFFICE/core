@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -60,7 +60,7 @@ void SXTH::readFields(CFRecord& record)
 	record >> stUnique >> stDisplay >> stDefault >> stAll >> stDimension;
 
 	record >> cisxvd;
-	for (int i = 0; i < cisxvd; i++)
+	for (_UINT32 i = 0; i < cisxvd; i++)
 	{
 		if (record.getRdPtr() + 4 > record.getDataSize())
 			break;
@@ -69,7 +69,7 @@ void SXTH::readFields(CFRecord& record)
 		rgisxvd.push_back(val);
 	}
 	record >> cHiddenMemberSets;
-	for (int i = 0; i < cHiddenMemberSets; i++)
+	for (_UINT32 i = 0; i < cHiddenMemberSets; i++)
 	{
 		HiddenMemberSet val;
 		record >> val;
@@ -92,6 +92,83 @@ void SXTH::readFields(CFRecord& record)
 	fDragToPage					= GETBIT(flags2, 2);
 	fDragToData					= GETBIT(flags2, 3);
 	fDragToHide					= GETBIT(flags2, 4);
+}
+
+int SXTH::serialize(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"cacheHierarchy")
+		{ 
+			CP_XML_ATTR(L"uniqueName",				stUnique.value());
+			CP_XML_ATTR(L"caption",					stDisplay.value());
+			if (fMeasure)
+			{
+				CP_XML_ATTR(L"measure", true);
+				//CP_XML_ATTR(L"measureGroup", stDimension.value());
+				if (cisxvd > 0)
+					CP_XML_ATTR(L"oneField", cisxvd);
+			}
+			else
+			{
+				CP_XML_ATTR(L"attribute",				!fKeyAttributeHierarchy); 
+				//keyAttribute
+				CP_XML_ATTR(L"defaultMemberUniqueName", stDefault.value());
+				CP_XML_ATTR(L"allUniqueName",			stAll.value());
+				CP_XML_ATTR(L"dimensionUniqueName",		stDimension.value());
+				CP_XML_ATTR(L"unbalanced", 0);//SXAddl_SXCHierarchy_SXDInfo12
+				//hidden
+			}
+			CP_XML_ATTR(L"count", 0);//levels in this hierarchy.
+
+			if (cisxvd > 0)
+			{
+				CP_XML_NODE(L"fieldsUsage")
+				{
+					CP_XML_ATTR(L"count", cisxvd);
+					for (size_t i = 0; i < rgisxvd.size(); i++)
+					{
+						CP_XML_NODE(L"fieldUsage")
+						{
+							CP_XML_ATTR(L"x", rgisxvd[i]);
+						}
+					}
+				}
+			}
+		}
+	}
+	//bool			fMeasure;
+	//bool			fOutlineMode;
+	//bool			fEnableMultiplePageItems;
+	//bool			fSubtotalAtTop;
+	//bool			fSet;
+	//bool			fDontShowFList;
+	//bool			fAttributeHierarchy;
+	//bool			fTimeHierarchy;
+	//bool			fFilterInclusive;
+	//bool			fKeyAttributeHierarchy;
+	//bool			fKPI;	
+	//SXAxis			sxaxis;		
+	//_INT32			isxvd;
+	//_INT32			csxvdXl;
+	//bool			fDragToRow;
+	//bool			fDragToColumn;
+	//bool			fDragToPage;
+	//bool			fDragToData;
+	//bool			fDragToHide;
+
+	//XLUnicodeString	stUnique;
+	//XLUnicodeString	stDisplay;
+	//XLUnicodeString	stDefault;
+	//XLUnicodeString	stAll;
+	//XLUnicodeString	stDimension;
+	//
+	//_UINT32				cisxvd;
+	//std::vector<_INT32>	rgisxvd;
+
+	//_UINT32						cHiddenMemberSets;
+	//std::vector<HiddenMemberSet>	rgHiddenMemberSets;	
+	return 0;
 }
 
 } // namespace XLS

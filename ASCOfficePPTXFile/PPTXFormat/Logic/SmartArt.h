@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -151,6 +151,11 @@ namespace PPTX
 				m_bData = false;
 				ReadAttributes( oReader );
 				FillParentPointersForChilds();
+				
+				if (id_data.IsInit())
+				{
+					m_bData = true;
+				}
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
@@ -158,6 +163,11 @@ namespace PPTX
 
 				node.ReadAttributeBase(L"r:id", id_data);
 				FillParentPointersForChilds();
+
+				if (id_data.IsInit())
+				{
+					m_bData = true;
+				}
 			}
 			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;

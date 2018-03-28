@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -39,8 +39,6 @@
 namespace XLS
 {
 
-
-// Logical representation of Lbl record in BIFF8
 class Lbl: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Lbl)
@@ -51,15 +49,10 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeLbl;
 
-
-	const XLUnicodeStringNoCch getName() const;
-
-//-----------------------------
 	bool fHidden;
 	bool fFunc;
 	bool fOB;
@@ -70,11 +63,11 @@ public:
 	bool fPublished;
 	bool fWorkbookParam;
 	
-	unsigned char	chKey;
-	_UINT16 itab;
-	XLUnicodeStringNoCch Name_bin;
-	BIFF_BSTR Name;
-	NameParsedFormula rgce;
+	unsigned char			chKey;
+	_UINT16					itab;
+	XLUnicodeStringNoCch	Name_bin;
+	std::wstring			Name;
+	NameParsedFormula		rgce;
 
 };
 

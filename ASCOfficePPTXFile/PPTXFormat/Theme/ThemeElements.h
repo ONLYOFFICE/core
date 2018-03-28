@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -47,7 +47,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(ThemeElements)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				clrScheme	= node.ReadNode(_T("a:clrScheme"));
@@ -117,7 +116,6 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-		public:
 			ClrScheme	clrScheme;
 			FontScheme	fontScheme;
 			FmtScheme	fmtScheme;

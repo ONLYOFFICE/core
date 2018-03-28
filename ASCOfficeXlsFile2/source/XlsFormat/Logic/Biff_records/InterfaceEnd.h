@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,7 +36,6 @@
 namespace XLS
 {
 
-// Logical representation of InterfaceEnd record in BIFF8
 class InterfaceEnd: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(InterfaceEnd)
@@ -47,6 +46,7 @@ public:
 
 	BaseObjectPtr clone();
 
+	static const ElementType type = typeInterfaceEnd;
 	
 	void readFields(CFRecord& record);
 

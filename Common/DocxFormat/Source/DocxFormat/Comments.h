@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,18 +51,17 @@ namespace OOX
 	{
 	public:
 		WritingElement_AdditionConstructors(CComment)
-			CComment()
+			
+		CComment()
 		{
 		}
 		virtual ~CComment()
 		{
 		}
-
-	public:
-		virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
 		{
 		}
-		virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 		{
 			ReadAttributes( oReader );
 
@@ -75,74 +74,74 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				WritingElement *pItem = NULL;
 
-				/*if ( _T("w:altChunk") == sName )
+				/*if ( L"w:altChunk" ==sName )
 				pItem = new Logic::AltChunk( oItem );
-				else */if ( _T("w:bookmarkEnd") == sName )
+				else */if ( L"w:bookmarkEnd" ==sName )
 					pItem = new Logic::CBookmarkEnd( oReader );
-				else if ( _T("w:bookmarkStart") == sName )
+				else if ( L"w:bookmarkStart" ==sName )
 					pItem = new Logic::CBookmarkStart( oReader );
-				else if ( _T("w:commentRangeEnd") == sName )
+				else if ( L"w:commentRangeEnd" ==sName )
 					pItem = new Logic::CCommentRangeEnd( oReader );
-				else if ( _T("w:commentRangeStart") == sName )
+				else if ( L"w:commentRangeStart" ==sName )
 					pItem = new Logic::CCommentRangeStart( oReader );
-				//else if ( _T("w:customXml") == sName )
+				//else if ( L"w:customXml" ==sName )
 				//	pItem = new Logic::CCustomXml( oReader );
-				else if ( _T("w:customXmlDelRangeEnd") == sName )
+				else if ( L"w:customXmlDelRangeEnd" ==sName )
 					pItem = new Logic::CCustomXmlDelRangeEnd( oReader );
-				else if ( _T("w:customXmlDelRangeStart") == sName )
+				else if ( L"w:customXmlDelRangeStart" ==sName )
 					pItem = new Logic::CCustomXmlDelRangeStart( oReader );
-				else if ( _T("w:customXmlInsRangeEnd") == sName )
+				else if ( L"w:customXmlInsRangeEnd" ==sName )
 					pItem = new Logic::CCustomXmlInsRangeEnd( oReader );
-				else if ( _T("w:customXmlInsRangeStart") == sName )
+				else if ( L"w:customXmlInsRangeStart" ==sName )
 					pItem = new Logic::CCustomXmlInsRangeStart( oReader );
-				else if ( _T("w:customXmlMoveFromRangeEnd") == sName ) 
+				else if ( L"w:customXmlMoveFromRangeEnd" ==sName ) 
 					pItem = new Logic::CCustomXmlMoveFromRangeEnd( oReader );
-				else if ( _T("w:customXmlMoveFromRangeStart") == sName )
+				else if ( L"w:customXmlMoveFromRangeStart" ==sName )
 					pItem = new Logic::CCustomXmlMoveFromRangeStart( oReader );
-				else if ( _T("w:customXmlMoveToRangeEnd") == sName ) 
+				else if ( L"w:customXmlMoveToRangeEnd" ==sName ) 
 					pItem = new Logic::CCustomXmlMoveToRangeEnd( oReader );
-				else if ( _T("w:customXmlMoveToRangeStart") == sName )
+				else if ( L"w:customXmlMoveToRangeStart" ==sName )
 					pItem = new Logic::CCustomXmlMoveToRangeStart( oReader );
-				else if ( _T("w:del") == sName )
+				else if ( L"w:del" ==sName )
 					pItem = new Logic::CDel( oReader );
-				else if ( _T("w:ins") == sName )
+				else if ( L"w:ins" ==sName )
 					pItem = new Logic::CIns( oReader );
-				else if ( _T("w:moveFrom") == sName )
+				else if ( L"w:moveFrom" ==sName )
 					pItem = new Logic::CMoveFrom( oReader );
-				else if ( _T("w:moveFromRangeEnd") == sName )
+				else if ( L"w:moveFromRangeEnd" ==sName )
 					pItem = new Logic::CMoveFromRangeEnd( oReader );
-				else if ( _T("w:moveFromRangeStart") == sName )
+				else if ( L"w:moveFromRangeStart" ==sName )
 					pItem = new Logic::CMoveFromRangeStart( oReader );
-				else if ( _T("w:moveTo") == sName )
+				else if ( L"w:moveTo" ==sName )
 					pItem = new Logic::CMoveTo( oReader );
-				else if ( _T("w:moveToRangeEnd") == sName )
+				else if ( L"w:moveToRangeEnd" ==sName )
 					pItem = new Logic::CMoveToRangeEnd( oReader );
-				else if ( _T("w:moveToRangeStart") == sName )
+				else if ( L"w:moveToRangeStart" ==sName )
 					pItem = new Logic::CMoveToRangeStart( oReader );
-				else if ( _T("m:oMath") == sName )
+				else if ( L"m:oMath" ==sName )
 					pItem = new Logic::COMath( oReader );
-				else if ( _T("m:oMathPara") == sName )
+				else if ( L"m:oMathPara" ==sName )
 					pItem = new Logic::COMathPara( oReader );
-				else if ( _T("w:p") == sName )
+				else if ( L"w:p" ==sName )
 					pItem = new Logic::CParagraph( oReader );
-				else if ( _T("w:permEnd") == sName )
+				else if ( L"w:permEnd" ==sName )
 					pItem = new Logic::CPermEnd( oReader );
-				else if ( _T("w:permStart") == sName )
+				else if ( L"w:permStart" ==sName )
 					pItem = new Logic::CPermStart( oReader );
-				else if ( _T("w:proofErr") == sName )
+				else if ( L"w:proofErr" ==sName )
 					pItem = new Logic::CProofErr( oReader );
-				else if ( _T("w:sdt") == sName )
+				else if ( L"w:sdt" ==sName )
 					pItem = new Logic::CSdt( oReader );
-				else if ( _T("w:tbl") == sName )
+				else if ( L"w:tbl" ==sName )
 					pItem = new Logic::CTbl( oReader );
 
 				if ( pItem )
 					m_arrItems.push_back( pItem );
 			}
 		}
-		virtual std::wstring      toXML() const
+		virtual std::wstring toXML() const
 		{
-			std::wstring sResult = _T("");
+			std::wstring sResult = L"";
 			return sResult;
 		}
 
@@ -157,12 +156,12 @@ namespace OOX
 			return sRes;
 		}
 	private:
-		std::wstring getTextArr(const std::vector<WritingElement* > & arrItems, bool& bFirstPar) const
+        std::wstring getTextArr(const std::vector<WritingElement* > & arrItems, bool& bFirstPar) const
 		{
 			std::wstring sRes;
-			for(size_t i = 0, length = arrItems.size(); i < length; ++i)
+            for ( size_t i = 0; i < arrItems.size(); ++i)
 			{
-				WritingElement* item = arrItems[i];
+                WritingElement* item = arrItems[i];
 				if (item == NULL) continue;
 
 				switch(item->getType())
@@ -221,7 +220,7 @@ namespace OOX
 						if(bFirstPar)
 							bFirstPar = false;
 						else
-                            sRes += _T("\n");
+                            sRes += L"\n";
 						OOX::Logic::CParagraph* pParagraph = static_cast<OOX::Logic::CParagraph*>(item);
 						sRes += getTextArr(pParagraph->m_arrItems, bFirstPar);
 					}
@@ -234,7 +233,7 @@ namespace OOX
 					break;
 				case OOX::et_w_cr:
 				case OOX::et_w_br:
-                    sRes += _T("\n");
+                    sRes += L"\n";
 					break;
 				case OOX::et_w_nonBreakHyphen:
 					{
@@ -243,7 +242,7 @@ namespace OOX
 						break;
 					}
 				case OOX::et_w_tab:
-                    sRes += _T(" ");
+                    sRes += L" ";
 					break;
 				case OOX::et_w_sym:
 					{
@@ -271,14 +270,13 @@ namespace OOX
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
-                WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"),        m_oAuthor )
-                WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),          m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oodata"),          m_oOOData )
-                WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),            m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:initials"),      m_oInitials )
-				WritingElement_ReadAttributes_End( oReader )
+                WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author",        m_oAuthor )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",          m_oDate )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"oodata",          m_oOOData )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",            m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:initials",      m_oInitials )
+			WritingElement_ReadAttributes_End( oReader )
 		}
 
 	public:
@@ -299,25 +297,29 @@ namespace OOX
 	class CComments : public OOX::File
 	{
 	public:
-		CComments()
+		CComments(OOX::Document *pMain) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pComments = this;			
 		}
-		CComments(const CPath& oPath)
+		CComments(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pComments = this;			
+
 			read( oPath );
 		}
 		virtual ~CComments()
 		{
 			for(size_t i = 0, length = m_arrComments.size(); i < length; ++i)
+			{
 				if (m_arrComments[i]) delete m_arrComments[i];
+				m_arrComments[i] = NULL;
+			}
 			m_arrComments.clear();
 		}
-	public:
-
 		virtual void read(const CPath& oFilePath)
 		{
-#ifdef USE_LITE_READER
-
 			XmlUtils::CXmlLiteReader oReader;
 			
 			if ( !oReader.FromFile( oFilePath.GetPath() ) )
@@ -327,25 +329,21 @@ namespace OOX
 				return;
 
 			std::wstring sName = oReader.GetName();
-			if ( _T("w:comments") == sName && !oReader.IsEmptyNode() )
+			if ( L"w:comments" == sName && !oReader.IsEmptyNode() )
 			{
 				int nNumberingDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nNumberingDepth ) )
 				{
 					sName = oReader.GetName();
-					if ( _T("w:comment") == sName )
+					if ( L"w:comment" == sName )
 						m_arrComments.push_back( new CComment(oReader) );
 				}
 			}
-#endif
 		}
 
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 		}
-
-	public:
-
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::Comments;
@@ -358,8 +356,6 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
-
-	public:
 
 		std::vector<CComment*> m_arrComments;
 
@@ -374,21 +370,19 @@ namespace OOX
 		virtual ~CCommentExt()
 		{
 		}
-
-	public:
-		virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
 		{
 		}
-		virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 		{
 			ReadAttributes( oReader );
 
 			if ( !oReader.IsEmptyNode() )
 				oReader.ReadTillEnd();
 		}
-		virtual std::wstring      toXML() const
+		virtual std::wstring toXML() const
 		{
-			std::wstring sResult = _T("");
+			std::wstring sResult = L"";
 			return sResult;
 		}
 
@@ -399,18 +393,15 @@ namespace OOX
 	private:
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w15:paraId"),      m_oParaId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w15:paraIdParent"), m_oParaIdParent )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w15:done"), m_oDone )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w15:paraId",			m_oParaId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w15:paraIdParent",	m_oParaIdParent )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w15:done",			m_oDone )
+			WritingElement_ReadAttributes_End( oReader )
 		}
 
 	public:
-
-		// Attributes
-
+	// Attributes
 		nullable<SimpleTypes::CLongHexNumber<> > m_oParaId;
 		nullable<SimpleTypes::CLongHexNumber<> > m_oParaIdParent;
 		nullable<SimpleTypes::COnOff<> > m_oDone;
@@ -419,25 +410,29 @@ namespace OOX
 	class CCommentsExt : public OOX::File
 	{
 	public:
-		CCommentsExt()
+		CCommentsExt(OOX::Document *pMain) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pCommentsExt = this;			
 		}
-		CCommentsExt(const CPath& oPath)
+		CCommentsExt(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pCommentsExt = this;			
+
 			read( oPath );
 		}
 		virtual ~CCommentsExt()
 		{
 			for(size_t i = 0, length = m_arrComments.size(); i < length; ++i)
+			{
 				if (m_arrComments[i]) delete m_arrComments[i];
+				m_arrComments[i] = NULL;
+			}
 			m_arrComments.clear();
 		}
-	public:
-
 		virtual void read(const CPath& oFilePath)
 		{
-#ifdef USE_LITE_READER
-
 			XmlUtils::CXmlLiteReader oReader;
 
 			if ( !oReader.FromFile( oFilePath.GetPath() ) )
@@ -447,25 +442,21 @@ namespace OOX
 				return;
 
 			std::wstring sName = oReader.GetName();
-			if ( _T("w15:commentsEx") == sName && !oReader.IsEmptyNode() )
+			if ( L"w15:commentsEx" == sName && !oReader.IsEmptyNode() )
 			{
 				int nNumberingDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nNumberingDepth ) )
 				{
 					sName = oReader.GetName();
-					if ( _T("w15:commentEx") == sName )
+					if ( L"w15:commentEx" == sName )
 						m_arrComments.push_back( new CCommentExt(oReader) );
 				}
 			}
-#endif
 		}
 
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 		}
-
-	public:
-
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::CommentsExt;
@@ -479,10 +470,7 @@ namespace OOX
 			return type().DefaultFileName();
 		}
 
-	public:
-
 		std::vector<CCommentExt*> m_arrComments;
-
 	};
 
 	class CPresenceInfo : public WritingElement
@@ -495,12 +483,10 @@ namespace OOX
 		virtual ~CPresenceInfo()
 		{
 		}
-
-	public:
-		virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
 		{
 		}
-		virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 		{
 			ReadAttributes( oReader );
 
@@ -509,7 +495,7 @@ namespace OOX
 		}
 		virtual std::wstring      toXML() const
 		{
-			std::wstring sResult = _T("");
+			std::wstring sResult = L"";
 			return sResult;
 		}
 
@@ -520,17 +506,14 @@ namespace OOX
 	private:
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w15:providerId"),      m_oProviderId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w15:userId"), m_oUserId )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w15:providerId",		m_oProviderId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w15:userId",			m_oUserId )
+			WritingElement_ReadAttributes_End( oReader )
 		}
 
 	public:
-
-		// Attributes
-
+	// Attributes
 		nullable<std::wstring > m_oProviderId;
 		nullable<std::wstring > m_oUserId;
 	};
@@ -545,12 +528,10 @@ namespace OOX
 		virtual ~CPerson()
 		{
 		}
-
-	public:
-		virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
 		{
 		}
-		virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 		{
 			ReadAttributes( oReader );
 
@@ -561,13 +542,13 @@ namespace OOX
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
 				std::wstring sName = oReader.GetName();
-				if ( _T("w15:presenceInfo") == sName )
+				if ( L"w15:presenceInfo" ==sName )
 					m_oPresenceInfo = oReader;
 			}
 		}
-		virtual std::wstring      toXML() const
+		virtual std::wstring toXML() const
 		{
-			std::wstring sResult = _T("");
+			std::wstring sResult = L"";
 			return sResult;
 		}
 
@@ -578,27 +559,29 @@ namespace OOX
 	private:
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w15:author"),      m_oAuthor )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Read_if ( oReader, L"w15:author", m_oAuthor )
+			WritingElement_ReadAttributes_End( oReader )
 		}
 
 	public:
-
-		// Attributes
+	// Attributes
 		nullable<std::wstring > m_oAuthor;
-
 		nullable<CPresenceInfo> m_oPresenceInfo;
 	};
 	class CPeople : public OOX::File
 	{
 	public:
-		CPeople()
+		CPeople(OOX::Document *pMain) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pPeople = this;			
 		}
-		CPeople(const CPath& oPath)
+		CPeople(OOX::Document *pMain, const CPath& oPath) : OOX::File(pMain)
 		{
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if (docx) docx->m_pPeople = this;			
+
 			read( oPath );
 		}
 		virtual ~CPeople()
@@ -607,11 +590,8 @@ namespace OOX
 				if (m_arrPeoples[i]) delete m_arrPeoples[i];
 			m_arrPeoples.clear();
 		}
-	public:
-
 		virtual void read(const CPath& oFilePath)
 		{
-#ifdef USE_LITE_READER
 			XmlUtils::CXmlLiteReader oReader;
 
 			if ( !oReader.FromFile( oFilePath.GetPath() ) )
@@ -621,25 +601,21 @@ namespace OOX
 				return;
 
 			std::wstring sName = oReader.GetName();
-			if ( _T("w15:people") == sName && !oReader.IsEmptyNode() )
+			if ( L"w15:people" == sName && !oReader.IsEmptyNode() )
 			{
 				int nNumberingDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nNumberingDepth ) )
 				{
 					sName = oReader.GetName();
-					if ( _T("w15:person") == sName )
+					if ( L"w15:person" == sName )
 						m_arrPeoples.push_back( new CPerson(oReader) );
 				}
 			}
-#endif
 		}
 
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 		}
-
-	public:
-
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::People;
@@ -652,8 +628,6 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
-
-	public:
 
 		std::vector<CPerson*> m_arrPeoples;
 	};

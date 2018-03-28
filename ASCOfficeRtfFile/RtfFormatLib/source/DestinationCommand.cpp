@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,77 +38,105 @@
 
 #include <boost/algorithm/string.hpp>
 
-HRESULT ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
+void ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
 {
-	HRESULT hr = S_FALSE;
+	Ole1FormatReaderWriter ole1Reader(pData, nSize);
 
-	Ole1FormatReader ole1Reader(pData, nSize);
-
+	bool bResult = false;
 	if (ole1Reader.NativeDataSize > 0)
 	{	
-		POLE::Storage * storageOut = new POLE::Storage(sOle2Name.c_str());			
-		if ( (storageOut) && (storageOut->open(true, true)))
+		NSFile::CFileBinary file;
+		
+		file.CreateFileW(sOle2Name);
+		file.WriteFile(ole1Reader.NativeData, ole1Reader.NativeDataSize);
+		file.CloseFile();		
+		
+		POLE::Storage * storageIn = new POLE::Storage(sOle2Name.c_str());			
+		if ( (storageIn) && (storageIn->open(false, false))) //storage in storage
 		{
-			_UINT32 tmp = 0;
-			std::string name = ole1Reader.Header.ClassName.val;
-			_UINT32 name_size = name.length() + 1;
-		//Ole
-			BYTE dataOleInfo[] = {0x01,0x00,0x00,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
-			POLE::Stream oStream3(storageOut, "\001Ole", true, 20);
-			oStream3.write(dataOleInfo, 20);
-			oStream3.flush();
-		//CompObj
-			BYTE dataCompObjHeader[28] = {0x01,0x00,0xfe,0xff,0x03,0x0a,0x00,0x00,0xff,0xff,0xff,0xff,0x0a,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0xc0,0x00,0x00,0x00,0x00,0x00,0x00,0x46};
-			POLE::Stream oStream1(storageOut, "\001CompObj", true, 28 + (name_size + 5) + 2 * (ole1Reader.Header.ClassName.size + 4) + 4 * 4);
-			oStream1.write(dataCompObjHeader, 28);
+			//test package stream??? xls ole -> xlsx ole 
+			bResult = true;
+			storageIn->close();
+		}
+		delete storageIn;
+		
+		if (!bResult)
+		{
+			POLE::Storage * storageOut = new POLE::Storage(sOle2Name.c_str());			
+			if ( (storageOut) && (storageOut->open(true, true)))
+			{
+				_UINT32 tmp = 0;
+				std::string name = ole1Reader.Header.ClassName.val;
+				_UINT32 name_size = (_UINT32)name.length() + 1;
+			//Ole
+				BYTE dataOleInfo[] = {0x01,0x00,0x00,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+				POLE::Stream oStream3(storageOut, L"\001Ole", true, 20);
+				oStream3.write(dataOleInfo, 20);
+				oStream3.flush();
+			//CompObj
+				BYTE dataCompObjHeader[28] = {0x01,0x00,0xfe,0xff,0x03,0x0a,0x00,0x00,0xff,0xff,0xff,0xff,0x0a,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0xc0,0x00,0x00,0x00,0x00,0x00,0x00,0x46};
+				POLE::Stream oStream1(storageOut, L"\001CompObj", true, 28 + (name_size + 5) + 2 * (ole1Reader.Header.ClassName.size + 4) + 4 * 4);
+				oStream1.write(dataCompObjHeader, 28);
 
-			oStream1.write((BYTE*)&name_size, 4);
-			oStream1.write((BYTE*)name.c_str(), name_size);
+				oStream1.write((BYTE*)&name_size, 4);
+				oStream1.write((BYTE*)name.c_str(), name_size);
 
-			//oStream1.write((BYTE*)&ole1Reader.Header.ClassName.size, 4);
-			//oStream1.write((BYTE*)ole1Reader.Header.ClassName.val.c_str(), ole1Reader.Header.ClassName.size);
+				//oStream1.write((BYTE*)&ole1Reader.Header.ClassName.size, 4);
+				//oStream1.write((BYTE*)ole1Reader.Header.ClassName.val.c_str(), ole1Reader.Header.ClassName.size);
 
-			oStream1.write((BYTE*)&ole1Reader.Header.ClassName.size, 4);
-			oStream1.write((BYTE*)ole1Reader.Header.ClassName.val.c_str(), ole1Reader.Header.ClassName.size);
-			oStream1.write((BYTE*)&ole1Reader.Header.ClassName.size, 4);
-			oStream1.write((BYTE*)ole1Reader.Header.ClassName.val.c_str(), ole1Reader.Header.ClassName.size);
+				oStream1.write((BYTE*)&ole1Reader.Header.ClassName.size, 4);
+				oStream1.write((BYTE*)ole1Reader.Header.ClassName.val.c_str(), ole1Reader.Header.ClassName.size);
+				oStream1.write((BYTE*)&ole1Reader.Header.ClassName.size, 4);
+				oStream1.write((BYTE*)ole1Reader.Header.ClassName.val.c_str(), ole1Reader.Header.ClassName.size);
 
-			tmp = 0x71B239F4;
-			oStream1.write((BYTE*)&tmp, 4); // UnicodeMarker
+				tmp = 0x71B239F4;
+				oStream1.write((BYTE*)&tmp, 4); // UnicodeMarker
 
-			tmp = 0;
-			oStream1.write((BYTE*)&tmp, 4); // UnicodeUserType
-			oStream1.write((BYTE*)&tmp, 4); // UnicodeClipboardFormat
-			oStream1.write((BYTE*)&tmp, 4); // 
-			oStream1.flush();
+				tmp = 0;
+				oStream1.write((BYTE*)&tmp, 4); // UnicodeUserType
+				oStream1.write((BYTE*)&tmp, 4); // UnicodeClipboardFormat
+				oStream1.write((BYTE*)&tmp, 4); // 
+				oStream1.flush();
 
-		//ObjInfo
-			BYTE dataObjInfo[] = {0x00,0x00,0x03,0x00,0x04,0x00};
-			POLE::Stream oStream2(storageOut, "\003ObjInfo", true, 6);
-			oStream2.write(dataObjInfo, 6);
-			oStream2.flush();
-		//Ole10Native
-			POLE::Stream streamData(storageOut, "\001Ole10Native", true, ole1Reader.NativeDataSize + 4);
-			streamData.write((BYTE*)&ole1Reader.NativeDataSize, 4);
-			streamData.write(ole1Reader.NativeData, ole1Reader.NativeDataSize);
-			streamData.flush();
+			//ObjInfo
+				BYTE dataObjInfo[] = {0x00,0x00,0x03,0x00,0x04,0x00};
+				POLE::Stream oStream2(storageOut, L"\003ObjInfo", true, 6);
+				oStream2.write(dataObjInfo, 6);
+				oStream2.flush();
+			//Ole10Native
+				POLE::Stream streamData(storageOut, L"\001Ole10Native", true, ole1Reader.NativeDataSize + 4);
+				streamData.write((BYTE*)&ole1Reader.NativeDataSize, 4);
 
-			storageOut->close();
-			delete storageOut;
+				_UINT32 sz_write = 0;
+				_UINT32 sz = 4096;
+				while (sz_write < ole1Reader.NativeDataSize)
+				{
+					if (sz_write + sz > ole1Reader.NativeDataSize)
+						sz = ole1Reader.NativeDataSize - sz_write;
+					streamData.write(ole1Reader.NativeData + sz_write, sz);
+					sz_write += sz;
+				}
+				streamData.flush();
+
+				storageOut->close();
+				delete storageOut;
+
+				bResult = true;
+			}
 		}
 	}
-	else	//conv_NI38P7GBIpw1aD84H3k.rtf
+	if (!bResult) //conv_NI38P7GBIpw1aD84H3k.rtf
 	{
 		NSFile::CFileBinary file;
 		
 		file.CreateFileW(sOle2Name);
 		file.WriteFile(pData, nSize);
 		file.CloseFile();
+		
+		bResult = true;
 	}
-	return S_FALSE;
 }
 //-----------------------------------------------------------------------------------------
-
 bool RtfDocumentCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,  std::string sCommand, bool hasParameter, int parameter)
 {
     if		( "ansi"	== sCommand )	oDocument.m_oProperty.m_eCodePage = RtfDocumentProperty::cp_ansi;
@@ -132,6 +160,14 @@ bool RtfDocumentCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRead
 			oReader.m_nDefFont = parameter;
 		}
 	}
+	else if ( "dgmargin" == sCommand )//Drawing grid to follow margins.
+	{
+
+	}
+	else if ( "dgsnap" == sCommand )//Snap to drawing grid.
+	{
+
+	}
     COMMAND_RTF_INT	( "themelang",		oDocument.m_oProperty.m_nThemelang,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT	( "themelangfe",	oDocument.m_oProperty.m_nThemelangfe,	sCommand, hasParameter, parameter )
     COMMAND_RTF_INT	( "themelangcs",	oDocument.m_oProperty.m_nThemelangcs,	sCommand, hasParameter, parameter )
@@ -150,7 +186,16 @@ bool RtfDocumentCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRead
     COMMAND_RTF_BOOL( "pgbrdrfoot", oDocument.m_oProperty.m_bDorderSurroundFotter, sCommand, hasParameter, parameter )
     COMMAND_RTF_BOOL( "pgbrdrsnap", oDocument.m_oProperty.m_bAlignBordersAndEdges, sCommand, hasParameter, parameter )
 
-//Page Information
+    COMMAND_RTF_INT	( "dghspace",		oDocument.m_oProperty.m_nDrawingGridHorizontalSpacing,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT	( "dgvspace",		oDocument.m_oProperty.m_nDrawingGridVerticalSpacing,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT	( "dghorigin",		oDocument.m_oProperty.m_nDrawingGridHorizontalOrigin,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT	( "dgvorigin",		oDocument.m_oProperty.m_nDrawingGridVerticalOrigin,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT	( "dghshow",		oDocument.m_oProperty.m_nDisplayHorizontalDrawingGridEvery,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT	( "dgvshow",		oDocument.m_oProperty.m_nDisplayVerticalDrawingGridEvery,	sCommand, hasParameter, parameter )
+
+	COMMAND_RTF_INT	( "viewscale",		oDocument.m_oProperty.m_nZoom,	sCommand, hasParameter, parameter )
+
+//Page Informationf
     else if ( "paperw" == sCommand )
 	{
 		if ( hasParameter )
@@ -435,13 +480,12 @@ bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader
 			section.props->m_bFinalize = true;
 			section.props->m_oProperty = oReader.m_oCurSectionProp;
 		}
-					
-		RtfSectionPtr oNewSection ( new RtfSection() );
-		
-		_section new_section(oNewSection);
+		_section new_section;
+		new_section.props = RtfSectionPtr( new RtfSection() );
+
 		oDocument.AddItem( new_section );
 		
-		oParagraphReaderDestination.m_oTextItems	= oNewSection;
+		oParagraphReaderDestination.m_oTextItems = new_section.props;
 
 		//вручную обнуляем footer, т.к. sectd может встретиться и после field
 		///?????
@@ -483,8 +527,8 @@ bool RtfBorderCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader
     else if( "brdrsh"			== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrsh;
     else if( "brdrdb"			== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrdb;
     else if( "brdrdot"			== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrdot;
-    else if( "brdrdash"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrdash;
-    else if( "brdrhair"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrhair;
+    else if( "brdrdash"			== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrdash;
+    else if( "brdrhair"			== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrhair;
     else if( "brdrdashsm"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrdashsm;
     else if( "brdrdashd"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrdashd;
     else if( "brdrdashdd"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrdashdd;
@@ -493,22 +537,24 @@ bool RtfBorderCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader
     else if( "brdrtriple"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtriple;
     else if( "brdrtnthsg"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtnthsg;
     else if( "brdrthtnsg"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrthtnsg;
-    else if( "brdrtnthtnsg"	== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtnthtnsg;
+    else if( "brdrtnthtnsg"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtnthtnsg;
     else if( "brdrtnthmg"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtnthmg;
     else if( "brdrthtnmg"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrthtnmg;
-    else if( "brdrtnthtnmg"	== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtnthtnmg;
+    else if( "brdrtnthtnmg"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtnthtnmg;
     else if( "brdrtnthlg"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtnthlg;
     else if( "brdrthtnlg"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrthtnlg;
-    else if( "brdrtnthtnlg"	== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtnthtnlg;
-    else if( "brdrwavy"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrwavy;
+    else if( "brdrtnthtnlg"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrtnthtnlg;
+    else if( "brdrwavy"			== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrwavy;
     else if( "brdrwavydb"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrwavydb;
     else if( "brdrdashdotstr"	== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrdashdotstr;
     else if( "brdremboss"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdremboss;
     else if( "brdrengrave"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrengrave;
     else if( "brdroutset"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdroutset;
     else if( "brdrinset"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrinset;
-    else if( "brdrnone"		== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrnone;
-    else if( "brdrw"			== sCommand )
+    else if( "brdrnone"			== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrnone;
+	else if( "brdrnil"			== sCommand )	oOutput.m_eType = RtfBorder::bt_none;
+	else if( "brdrn"			== sCommand )	oOutput.m_eType = RtfBorder::bt_brdrnone;
+	else if( "brdrw"			== sCommand )
 	{
 		if( true == hasParameter )
 		{
@@ -695,6 +741,7 @@ bool RtfSectionCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReade
 		RtfParagraphReader oParagraphReader(sCommand, oReader);
 		oAbstrReader.StartSubReader( oParagraphReader, oDocument, oReader );
 		
+		oParagraphReader.m_oParPropDest.m_bPar = true;
 		oParagraphReader.m_oParPropDest.Finalize( oReader );
 		
 		TextItemContainerPtr oNewFooterHeader = oParagraphReader.m_oParPropDest.m_oTextItems; 
@@ -912,6 +959,7 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 	}
     COMMAND_RTF_BOOL( "rtlch",		charProps->m_bRightToLeft,	sCommand, hasParameter, parameter)
     COMMAND_RTF_INT	( "lang",		charProps->m_nLanguage,		sCommand, hasParameter, parameter)
+	COMMAND_RTF_INT	( "langfe",		charProps->m_nLanguageAsian,sCommand, hasParameter, parameter)
 	
     COMMAND_RTF_BOOL( "cs",		charProps->m_nComplexScript, sCommand, hasParameter, parameter)
     COMMAND_RTF_BOOL( "outl",		charProps->m_bOutline,		sCommand, hasParameter, parameter)
@@ -972,7 +1020,11 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 	{
 		charProps->m_nRevised = 1;
 	}	
-    else if ( "deleted" == sCommand )
+	else if ( "v" == sCommand )
+	{
+		charProps->m_bHidden = 1;
+	}
+	else if ( "deleted" == sCommand )
 	{
 		charProps->m_nDeleted = 1;
 	}	
@@ -1059,25 +1111,25 @@ bool RtfParagraphPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 	}
     COMMAND_RTF_INT ( "faauto",		paragraphProps->m_eFontAlign,		sCommand, true, RtfParagraphProperty::fa_faauto )
     COMMAND_RTF_INT ( "fahang",		paragraphProps->m_eFontAlign,		sCommand, true, RtfParagraphProperty::fa_fahang )
-    COMMAND_RTF_INT ( "facenter",		paragraphProps->m_eFontAlign,		sCommand, true, RtfParagraphProperty::fa_facenter )
-    COMMAND_RTF_INT ( "faroman",		paragraphProps->m_eFontAlign,		sCommand, true, RtfParagraphProperty::fa_faroman )
-    COMMAND_RTF_INT ( "favar",			paragraphProps->m_eFontAlign,		sCommand, true, RtfParagraphProperty::fa_favar )
-    COMMAND_RTF_INT ( "fafixed",		paragraphProps->m_eFontAlign,		sCommand, true, RtfParagraphProperty::fa_fafixed )
+    COMMAND_RTF_INT ( "facenter",	paragraphProps->m_eFontAlign,		sCommand, true, RtfParagraphProperty::fa_facenter )
+    COMMAND_RTF_INT ( "faroman",	paragraphProps->m_eFontAlign,		sCommand, true, RtfParagraphProperty::fa_faroman )
+    COMMAND_RTF_INT ( "favar",		paragraphProps->m_eFontAlign,		sCommand, true, RtfParagraphProperty::fa_favar )
+    COMMAND_RTF_INT ( "fafixed",	paragraphProps->m_eFontAlign,		sCommand, true, RtfParagraphProperty::fa_fafixed )
     COMMAND_RTF_INT ( "fi",			paragraphProps->m_nIndFirstLine,	sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "li",			paragraphProps->m_nIndLeft,			sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "ri",			paragraphProps->m_nIndRight,		sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "lin",			paragraphProps->m_nIndStart,		sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "rin",			paragraphProps->m_nIndEnd,			sCommand, hasParameter, parameter )
-    COMMAND_RTF_BOOL( "adjustright",	paragraphProps->m_bIndRightAuto,	sCommand, hasParameter, parameter )
-    COMMAND_RTF_BOOL( "indmirror",		paragraphProps->m_bIndMirror,		sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "lin",		paragraphProps->m_nIndStart,		sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "rin",		paragraphProps->m_nIndEnd,			sCommand, hasParameter, parameter )
+    COMMAND_RTF_BOOL( "adjustright",paragraphProps->m_bIndRightAuto,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_BOOL( "indmirror",	paragraphProps->m_bIndMirror,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "sb",			paragraphProps->m_nSpaceBefore,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "sa",			paragraphProps->m_nSpaceAfter,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "sbauto",		paragraphProps->m_nSpaceBeforeAuto,	sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "saauto",		paragraphProps->m_nSpaceAfterAuto,	sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "lisb",			paragraphProps->m_nSpaceBeforeLine,	sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "lisa",			paragraphProps->m_nSpaceAfterLine,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "lisb",		paragraphProps->m_nSpaceBeforeLine,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "lisa",		paragraphProps->m_nSpaceAfterLine,	sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "slmult",		paragraphProps->m_nSpaceMultiLine,	sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "ilvl",			paragraphProps->m_nListLevel,		sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "ilvl",		paragraphProps->m_nListLevel,		sCommand, hasParameter, parameter )
 
     COMMAND_RTF_BOOL( "absnoovrlp",	paragraphProps->m_bOverlap,			sCommand, hasParameter, parameter )
 
@@ -1128,18 +1180,18 @@ bool RtfParagraphPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader&
     COMMAND_RTF_INT ( "posxr",			paragraphProps->m_oFrame.m_eHPos,		sCommand, true, RtfFrame::hp_posxr )
     COMMAND_RTF_INT ( "pvmrg",			paragraphProps->m_oFrame.m_eVRef,		sCommand, true, RtfFrame::vr_pvmrg )
     COMMAND_RTF_INT ( "pvpg",			paragraphProps->m_oFrame.m_eVRef,		sCommand, true, RtfFrame::vr_pvpg )
-    COMMAND_RTF_INT ( "pvpara",		paragraphProps->m_oFrame.m_eVRef,		sCommand, true, RtfFrame::vr_pvpara )
+    COMMAND_RTF_INT ( "pvpara",			paragraphProps->m_oFrame.m_eVRef,		sCommand, true, RtfFrame::vr_pvpara )
     COMMAND_RTF_INT ( "posy",			paragraphProps->m_oFrame.m_nVPos,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "posnegy",		paragraphProps->m_oFrame.m_nVPos,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "posyt",			paragraphProps->m_oFrame.m_eVPos,		sCommand, true, RtfFrame::vp_posyt )
-    COMMAND_RTF_INT ( "posyil",		paragraphProps->m_oFrame.m_eVPos,		sCommand, true, RtfFrame::vp_posyil )
+    COMMAND_RTF_INT ( "posyil",			paragraphProps->m_oFrame.m_eVPos,		sCommand, true, RtfFrame::vp_posyil )
     COMMAND_RTF_INT ( "posyb",			paragraphProps->m_oFrame.m_eVPos,		sCommand, true, RtfFrame::vp_posyb )
     COMMAND_RTF_INT ( "posyc",			paragraphProps->m_oFrame.m_eVPos,		sCommand, true, RtfFrame::vp_posyc )
-    COMMAND_RTF_INT ( "posyin",		paragraphProps->m_oFrame.m_eVPos,		sCommand, true, RtfFrame::vp_posyin )
+    COMMAND_RTF_INT ( "posyin",			paragraphProps->m_oFrame.m_eVPos,		sCommand, true, RtfFrame::vp_posyin )
     COMMAND_RTF_INT ( "posyout",		paragraphProps->m_oFrame.m_eVPos,		sCommand, true, RtfFrame::vp_posyout )
     COMMAND_RTF_BOOL( "abslock",		paragraphProps->m_oFrame.m_bLockAnchor, sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "wrapdefault",	paragraphProps->m_oFrame.m_eWrap,		sCommand, true, RtfFrame::tw_wrapdefault )
-    COMMAND_RTF_INT ( "wraparound",	paragraphProps->m_oFrame.m_eWrap,		sCommand, true, RtfFrame::tw_wraparound )
+    COMMAND_RTF_INT ( "wraparound",		paragraphProps->m_oFrame.m_eWrap,		sCommand, true, RtfFrame::tw_wraparound )
     COMMAND_RTF_INT ( "wraptight",		paragraphProps->m_oFrame.m_eWrap,		sCommand, true, RtfFrame::tw_wraptight )
     COMMAND_RTF_INT ( "wrapthrough",	paragraphProps->m_oFrame.m_eWrap,		sCommand, true, RtfFrame::tw_wrapthrough )
     COMMAND_RTF_INT ( "dropcapt",		paragraphProps->m_oFrame.m_DropcapType, sCommand, hasParameter, parameter )
@@ -1150,8 +1202,8 @@ bool RtfParagraphPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader&
     COMMAND_RTF_INT ( "frmtxlrtb",		paragraphProps->m_eTextFollow,			sCommand, true, RtfParagraphProperty::tf_frmtxlrtb )
     COMMAND_RTF_INT ( "frmtxtbrl",		paragraphProps->m_eTextFollow,			sCommand, true, RtfParagraphProperty::tf_frmtxtbrl )
     COMMAND_RTF_INT ( "frmtxbtlr",		paragraphProps->m_eTextFollow,			sCommand, true, RtfParagraphProperty::tf_frmtxbtlr )
-    COMMAND_RTF_INT ( "frmtxlrtbv",	paragraphProps->m_eTextFollow,			sCommand, true, RtfParagraphProperty::tf_frmtxlrtbv )
-    COMMAND_RTF_INT ( "frmtxtbrlv",	paragraphProps->m_eTextFollow,			sCommand, true, RtfParagraphProperty::tf_frmtxtbrlv )
+    COMMAND_RTF_INT ( "frmtxlrtbv",		paragraphProps->m_eTextFollow,			sCommand, true, RtfParagraphProperty::tf_frmtxlrtbv )
+    COMMAND_RTF_INT ( "frmtxtbrlv",		paragraphProps->m_eTextFollow,			sCommand, true, RtfParagraphProperty::tf_frmtxtbrlv )
 	
 	else
 	{
@@ -1169,26 +1221,28 @@ bool RtfTableCellPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 
     COMMAND_RTF_BOOL( "clmgf",		cellProps->m_bMergeFirst,			sCommand, hasParameter, parameter )
     COMMAND_RTF_BOOL( "clmrg",		cellProps->m_bMerge,				sCommand, hasParameter, parameter )
-    COMMAND_RTF_BOOL( "clvmgf",	cellProps->m_bMergeFirstVertical,	sCommand, hasParameter, parameter )
-    COMMAND_RTF_BOOL( "clvmrg",	cellProps->m_bMergeVertical,		sCommand, hasParameter, parameter )
-    COMMAND_RTF_BOOL( "clFitText", cellProps->m_bFitText,				sCommand, hasParameter, parameter )
+    COMMAND_RTF_BOOL( "clvmgf",		cellProps->m_bMergeFirstVertical,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_BOOL( "clvmrg",		cellProps->m_bMergeVertical,		sCommand, hasParameter, parameter )
+    COMMAND_RTF_BOOL( "clFitText",	cellProps->m_bFitText,				sCommand, hasParameter, parameter )
     COMMAND_RTF_BOOL( "clNoWrap",	cellProps->m_bNoWrap,				sCommand, hasParameter, parameter )
 
-    COMMAND_RTF_INT ( "clpadfl",	cellProps->m_nIsPaddingLeft,		sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "clpadl",	cellProps->m_nPaddingLeft,			sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "clpadft",	cellProps->m_nIsPaddingTop,			sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "clpadt",	cellProps->m_nPaddingTop,			sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "clpadfr",	cellProps->m_nIsPaddingRight,		sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "clpadr",	cellProps->m_nPaddingRight,			sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "clpadfb",	cellProps->m_nIsPaddingBottom,		sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "clpadb",	cellProps->m_nPaddingBottom,		sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "clspfl",	cellProps->m_nIsSpacingLeft,		sCommand, hasParameter, parameter )
+//https://www.office-forums.com/threads/rtf-file-weirdness-clpadt-vs-clpadl.2163500/
+    COMMAND_RTF_INT ( "clpadft",	cellProps->m_ePaddingLeftUnit,		sCommand, hasParameter, parameter )	//перепутаны top & left
+    COMMAND_RTF_INT ( "clpadt",		cellProps->m_nPaddingLeft,			sCommand, hasParameter, parameter )	//перепутаны top & left
+    COMMAND_RTF_INT ( "clpadfl",	cellProps->m_ePaddingTopUnit,		sCommand, hasParameter, parameter )	//перепутаны top & left
+    COMMAND_RTF_INT ( "clpadl",		cellProps->m_nPaddingTop,			sCommand, hasParameter, parameter )	//перепутаны top & left
+    COMMAND_RTF_INT ( "clpadfr",	cellProps->m_ePaddingRightUnit,		sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "clpadr",		cellProps->m_nPaddingRight,			sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "clpadfb",	cellProps->m_ePaddingBottomUnit,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "clpadb",		cellProps->m_nPaddingBottom,		sCommand, hasParameter, parameter )
+   
+	COMMAND_RTF_INT ( "clspfl",		cellProps->m_eSpacingLeftUnit,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "clspl",		cellProps->m_nSpacingLeft,			sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "clspft",	cellProps->m_nIsSpacingTop,			sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "clspft",		cellProps->m_eSpacingTopUnit,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "clspt",		cellProps->m_nSpacingTop,			sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "clspfr",	cellProps->m_nIsSpacingRight,		sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "clspfr",		cellProps->m_eSpacingRightUnit,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "clspr",		cellProps->m_nSpacingRight,			sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "clspfb",	cellProps->m_nIsSpacingBottom,		sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "clspfb",		cellProps->m_eSpacingBottomUnit,	sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "clspb",		cellProps->m_nSpacingBottom,		sCommand, hasParameter, parameter )
 	
     else if ( "clftsWidth" == sCommand  )
@@ -1197,10 +1251,12 @@ bool RtfTableCellPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 		{
 			switch( parameter )
 			{
-				case 0:cellProps->m_eWidthUnits = mu_none;break;
-				case 1:cellProps->m_eWidthUnits = mu_Auto;break;
-				case 2:cellProps->m_eWidthUnits = mu_Percent;break;
-				case 3:cellProps->m_eWidthUnits = mu_Twips;break;
+				case 0:	cellProps->m_eWidthUnit = mu_none;		break;
+				case 1:	cellProps->m_eWidthUnit = mu_Auto;		break;
+				case 2:	cellProps->m_eWidthUnit = mu_Percent;	break;
+				case 3:	cellProps->m_eWidthUnit = mu_Twips;		break;
+				default:
+					break;
 			}
 		}
 	}
@@ -1216,13 +1272,13 @@ bool RtfTableCellPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader&
     COMMAND_RTF_INT ( "cltxtbrlv",	cellProps->m_oCellFlow,		sCommand, true, RtfCellProperty::cf_tbrlv )
 
 //table style
-    COMMAND_RTF_INT ( "tscellpaddfl",	cellProps->m_nIsPaddingLeft,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "tscellpaddfl",	cellProps->m_ePaddingLeftUnit,	sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "tscellpaddl",	cellProps->m_nPaddingLeft,		sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "tscellpaddft",	cellProps->m_nIsPaddingTop,		sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "tscellpaddft",	cellProps->m_ePaddingTopUnit,	sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "tscellpaddt",	cellProps->m_nPaddingTop,		sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "tscellpaddfr",	cellProps->m_nIsPaddingRight,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "tscellpaddfr",	cellProps->m_ePaddingRightUnit,	sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "tscellpaddr",	cellProps->m_nPaddingRight,		sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "tscellpaddfb",	cellProps->m_nIsPaddingBottom,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "tscellpaddfb",	cellProps->m_ePaddingBottomUnit,sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "tscellpaddb",	cellProps->m_nPaddingBottom,	sCommand, hasParameter, parameter )
     COMMAND_RTF_BOOL( "tsnowrap",		cellProps->m_bNoWrap,			sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "tsvertalt",		cellProps->m_eAlign,			sCommand, true, RtfCellProperty::ca_Top )
@@ -1243,68 +1299,35 @@ bool RtfTableRowPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& 
 	if (!rowProps) return false;
 	
     if ( "trowd"				== sCommand )	rowProps->SetDefaultRtf();
-    else if ( "nesttableprops" == sCommand )	rowProps->SetDefaultRtf();
+    else if ( "nesttableprops"	== sCommand )	rowProps->SetDefaultRtf();
 	
     COMMAND_RTF_INT	( "irow",			rowProps->m_nIndex,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT	( "irowband",		rowProps->m_nBandIndex,	sCommand, hasParameter, parameter )
     COMMAND_RTF_BOOL( "lastrow",		rowProps->m_bLastRow,	sCommand, hasParameter, parameter )
     COMMAND_RTF_BOOL( "trhdr",			rowProps->m_bIsHeader,	sCommand, hasParameter, parameter )
-    COMMAND_RTF_BOOL( "trkeep",		rowProps->m_bKeep,		sCommand, hasParameter, parameter )
+    COMMAND_RTF_BOOL( "trkeep",			rowProps->m_bKeep,		sCommand, hasParameter, parameter )
     COMMAND_RTF_BOOL( "trkeepfollow",	rowProps->m_bKeep,		sCommand, hasParameter, parameter )
 
     COMMAND_RTF_INT	( "trql",			rowProps->m_eJust,		sCommand, true, RtfRowProperty::rj_trql )
     COMMAND_RTF_INT	( "trqr",			rowProps->m_eJust,		sCommand, true, RtfRowProperty::rj_trqr )
     COMMAND_RTF_INT	( "trqc",			rowProps->m_eJust,		sCommand, true, RtfRowProperty::rj_trqc )
 
-    COMMAND_RTF_INT	( "trrh",			rowProps->m_nHeight,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT	( "trrh",			rowProps->m_nHeight,				sCommand, hasParameter, parameter )
 
-    else if ( "trftsWidth" == sCommand )
-	{
-		if ( hasParameter )
-		{
-			switch( parameter )
-			{
-			case 0:	rowProps->m_eMUWidth = mu_none;		break;
-			case 1:	rowProps->m_eMUWidth = mu_Auto;		break;
-			case 2:	rowProps->m_eMUWidth = mu_Percent;	break;
-			case 3:	rowProps->m_eMUWidth = mu_Twips;	break;
-			}
-		}
-	}
-    COMMAND_RTF_INT ( "trwWidth", rowProps->m_nWidth, sCommand, hasParameter, parameter )
-    else if ( "trftsWidthB" == sCommand )
-	{
-		if ( hasParameter )
-		{
-			switch( parameter )
-			{
-			case 0:	rowProps->m_eMUStartInvCell = mu_none;		break;
-			case 1:	rowProps->m_eMUStartInvCell = mu_Auto;		break;
-			case 2:	rowProps->m_eMUStartInvCell = mu_Percent;	break;
-			case 3:	rowProps->m_eMUStartInvCell = mu_Twips;		break;
-			}
-		}
-	}
-    COMMAND_RTF_INT ( "trwWidthB", rowProps->m_nWidthStartInvCell, sCommand, hasParameter, parameter )
-    else if ( "trftsWidthA" == sCommand )
-	{
-		if ( hasParameter )
-		{
-			switch( parameter )
-			{
-			case 0:	rowProps->m_eMUEndInvCell = mu_none;		break;
-			case 1:	rowProps->m_eMUEndInvCell = mu_Auto;		break;
-			case 2:	rowProps->m_eMUEndInvCell = mu_Percent;	break;
-			case 3:	rowProps->m_eMUEndInvCell = mu_Twips;	break;
-			}
-		}
-	}
-    COMMAND_RTF_INT ( "trwWidthA",		rowProps->m_nWidthEndInvCell,	sCommand, hasParameter, parameter )
-    COMMAND_RTF_BOOL( "taprtl",		rowProps->m_bBidi,				sCommand, hasParameter, parameter )
+	COMMAND_RTF_INT ( "trftsWidth",		rowProps->m_eWidthUnit,				sCommand, hasParameter, parameter )
+	COMMAND_RTF_INT ( "trwWidth",		rowProps->m_nWidth,					sCommand, hasParameter, parameter )
+	
+	COMMAND_RTF_INT ( "trftsWidthB",	rowProps->m_eWidthStartInvCellUnit, sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "trwWidthB",		rowProps->m_nWidthStartInvCell,		sCommand, hasParameter, parameter )
+
+    COMMAND_RTF_INT ( "trftsWidthA",	rowProps->m_eWidthEndInvCellUnit,	sCommand, hasParameter, parameter )    
+	COMMAND_RTF_INT ( "trwWidthA",		rowProps->m_nWidthEndInvCell,		sCommand, hasParameter, parameter )
+
+    COMMAND_RTF_BOOL( "taprtl",			rowProps->m_bBidi,				sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "trautofit",		rowProps->m_nAutoFit,			sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "trgaph",		rowProps->m_nGraph,				sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "tblind",		rowProps->nTableIndent,			sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "tblindtype",	rowProps->nTableIndentUnits,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "trgaph",			rowProps->m_nGraph,				sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "tblind",			rowProps->nTableIndent,			sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "tblindtype",		rowProps->eTableIndentUnit,		sCommand, hasParameter, parameter )
 
     COMMAND_RTF_INT ( "tdfrmtxtLeft",	rowProps->m_nWrapLeft,			sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "tdfrmtxtRight",	rowProps->m_nWrapRight,			sCommand, hasParameter, parameter )
@@ -1312,26 +1335,26 @@ bool RtfTableRowPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& 
     COMMAND_RTF_INT ( "tdfrmtxtBottom", rowProps->m_nWrapBottom,		sCommand, hasParameter, parameter )
     COMMAND_RTF_BOOL( "tabsnoovrlp",	rowProps->m_bOverlap,			sCommand, hasParameter, parameter )
 
-    COMMAND_RTF_INT ( "tphmrg",		rowProps->m_eHRef, sCommand, true, RtfTableProperty::hr_phmrg )
+    COMMAND_RTF_INT ( "tphmrg",			rowProps->m_eHRef, sCommand, true, RtfTableProperty::hr_phmrg )
     COMMAND_RTF_INT ( "tphpg",			rowProps->m_eHRef, sCommand, true, RtfTableProperty::hr_phpg )
-    COMMAND_RTF_INT ( "tphcol",		rowProps->m_eHRef, sCommand, true, RtfTableProperty::hr_phcol )
+    COMMAND_RTF_INT ( "tphcol",			rowProps->m_eHRef, sCommand, true, RtfTableProperty::hr_phcol )
     COMMAND_RTF_INT ( "tposx",			rowProps->m_nHPos, sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "tposnegx",		rowProps->m_nHPos, sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "tposxc",		rowProps->m_eHPos, sCommand, true, RtfTableProperty::hp_posxc )
-    COMMAND_RTF_INT ( "tposxi",		rowProps->m_eHPos, sCommand, true, RtfTableProperty::hp_posxi )
-    COMMAND_RTF_INT ( "tposxo",		rowProps->m_eHPos, sCommand, true, RtfTableProperty::hp_posxo )
-    COMMAND_RTF_INT ( "tposxl",		rowProps->m_eHPos, sCommand, true, RtfTableProperty::hp_posxl )
-    COMMAND_RTF_INT ( "tposxr",		rowProps->m_eHPos, sCommand, true, RtfTableProperty::hp_posxr )
+    COMMAND_RTF_INT ( "tposxc",			rowProps->m_eHPos, sCommand, true, RtfTableProperty::hp_posxc )
+    COMMAND_RTF_INT ( "tposxi",			rowProps->m_eHPos, sCommand, true, RtfTableProperty::hp_posxi )
+    COMMAND_RTF_INT ( "tposxo",			rowProps->m_eHPos, sCommand, true, RtfTableProperty::hp_posxo )
+    COMMAND_RTF_INT ( "tposxl",			rowProps->m_eHPos, sCommand, true, RtfTableProperty::hp_posxl )
+    COMMAND_RTF_INT ( "tposxr",			rowProps->m_eHPos, sCommand, true, RtfTableProperty::hp_posxr )
 
-    COMMAND_RTF_INT ( "tpvmrg",		rowProps->m_eVRef, sCommand, true, RtfTableProperty::vr_pvmrg )
+    COMMAND_RTF_INT ( "tpvmrg",			rowProps->m_eVRef, sCommand, true, RtfTableProperty::vr_pvmrg )
     COMMAND_RTF_INT ( "tpvpg",			rowProps->m_eVRef, sCommand, true, RtfTableProperty::vr_pvpg )
     COMMAND_RTF_INT ( "tpvpara",		rowProps->m_eVRef, sCommand, true, RtfTableProperty::vr_pvpara )
     COMMAND_RTF_INT ( "tposy",			rowProps->m_nVPos, sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "tposnegy",		rowProps->m_nVPos, sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "tposyt",		rowProps->m_eVPos, sCommand, true, RtfTableProperty::vp_posyt )
+    COMMAND_RTF_INT ( "tposyt",			rowProps->m_eVPos, sCommand, true, RtfTableProperty::vp_posyt )
     COMMAND_RTF_INT ( "tposyil",		rowProps->m_eVPos, sCommand, true, RtfTableProperty::vp_posyil )
-    COMMAND_RTF_INT ( "tposyb",		rowProps->m_eVPos, sCommand, true, RtfTableProperty::vp_posyb )
-    COMMAND_RTF_INT ( "tposyc",		rowProps->m_eVPos, sCommand, true, RtfTableProperty::vp_posyc )
+    COMMAND_RTF_INT ( "tposyb",			rowProps->m_eVPos, sCommand, true, RtfTableProperty::vp_posyb )
+    COMMAND_RTF_INT ( "tposyc",			rowProps->m_eVPos, sCommand, true, RtfTableProperty::vp_posyc )
     COMMAND_RTF_INT ( "tposyin",		rowProps->m_eVPos, sCommand, true, RtfTableProperty::vp_posyin )
     COMMAND_RTF_INT ( "tposyout",		rowProps->m_eVPos, sCommand, true, RtfTableProperty::vp_posyout )
 
@@ -1343,21 +1366,25 @@ bool RtfTableRowPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& 
 			if ( PROP_DEF == rowProps->nTableIndent )
 			{
 				rowProps->nTableIndent = parameter;
-				rowProps->nTableIndentUnits = 3;
+				
+				if ( PROP_DEF == rowProps->eTableIndentUnit )
+					rowProps->eTableIndentUnit = 3;
 			}
 		}
 	}
     COMMAND_RTF_INT ( "trwWidth", rowProps->m_nWidth, sCommand, hasParameter, parameter )
-    else if ( "trleft" == sCommand )
+    else if ( "trftsWidth" == sCommand )
 	{
 		if ( hasParameter )
 		{
 			switch( parameter )
 			{
-			case 0: rowProps->m_eMUWidth = mu_none;		break;
-			case 1: rowProps->m_eMUWidth = mu_Auto;		break;
-			case 2: rowProps->m_eMUWidth = mu_Percent;	break;
-			case 3: rowProps->m_eMUWidth = mu_Twips;	break;
+				case 0: rowProps->m_eWidthUnit = mu_none;		break;
+				case 1: rowProps->m_eWidthUnit = mu_Auto;		break;
+				case 2: rowProps->m_eWidthUnit = mu_Percent;	break;
+				case 3: rowProps->m_eWidthUnit = mu_Twips;		break;
+				default:
+					break;
 			}
 		}
 	}
@@ -1365,20 +1392,21 @@ bool RtfTableRowPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& 
     COMMAND_RTF_INT ( "trpaddl",	rowProps->m_nDefCellMarLeft,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "trpaddr",	rowProps->m_nDefCellMarRight,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "trpaddt",	rowProps->m_nDefCellMarTop,			sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "trpaddfb",	rowProps->m_nDefCellMarBottomUnits,	sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "trpaddfl",	rowProps->m_nDefCellMarLeftUnits,	sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "trpaddfr",	rowProps->m_nDefCellMarRightUnits,	sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "trpaddft",	rowProps->m_nDefCellMarTopUnits,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "trpaddfb",	rowProps->m_eDefCellMarBottomUnit,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "trpaddfl",	rowProps->m_eDefCellMarLeftUnit,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "trpaddfr",	rowProps->m_eDefCellMarRightUnit,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "trpaddft",	rowProps->m_eDefCellMarTopUnit,		sCommand, hasParameter, parameter )
+
     COMMAND_RTF_INT ( "trspdb",		rowProps->m_nDefCellSpBottom,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "trspdl",		rowProps->m_nDefCellSpLeft,			sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "trspdr",		rowProps->m_nDefCellSpRight,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "trspdt",		rowProps->m_nDefCellSpTop,			sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "trspdfb",	rowProps->m_nDefCellSpBottomUnits,	sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "trspdfl",	rowProps->m_nDefCellSpLeftUnits,	sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "trspdfr",	rowProps->m_nDefCellSpRightUnits,	sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "trspdft",	rowProps->m_nDefCellSpTopUnits,		sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "trspdfb",	rowProps->m_eDefCellSpBottomUnit,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "trspdfl",	rowProps->m_eDefCellSpLeftUnit,		sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "trspdfr",	rowProps->m_eDefCellSpRightUnit,	sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "trspdft",	rowProps->m_eDefCellSpTopUnit,		sCommand, hasParameter, parameter )
 	
-    COMMAND_RTF_INT ( "ts",				rowProps->m_nStyle,			sCommand, hasParameter, parameter )
+    COMMAND_RTF_INT ( "ts",			rowProps->m_nStyle,					sCommand, hasParameter, parameter )
 
     COMMAND_RTF_INT ( "tbllkhdrrows",	rowProps->m_bAutoFirstRow,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "tbllklastrow",	rowProps->m_bAutoLastRow,		sCommand, hasParameter, parameter )
@@ -1392,6 +1420,9 @@ bool RtfTableRowPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& 
 	
     COMMAND_RTF_INT ( "trdate",			rowProps->m_nTrDate,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "trauth",			rowProps->m_nTrAuth,		sCommand, hasParameter, parameter )
+
+	else if ( "rtlrow" == sCommand ) rowProps->m_nRightToLeft = 1;
+	else if ( "ltrrow" == sCommand ) rowProps->m_nRightToLeft = 0;
 
 	else
 		return false;
@@ -1429,11 +1460,9 @@ bool RtfOldShapeReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReade
 		StartSubReader( oParagraphReader, oDocument, oReader );
 		m_oShape.m_aTextItems = oParagraphReader.m_oParPropDest.m_oTextItems;
 	}
-    //else if ( "shpbxignore"	== sCommand )	m_oShape.m_eXAnchor		= RtfShape::ax_ignore;
     else if ( "dobxpage"		== sCommand )	m_oShape.m_eXAnchor		= RtfShape::ax_page;
     else if ( "dobxmargin"		== sCommand )	m_oShape.m_eXAnchor		= RtfShape::ax_margin;
     else if ( "dobxcolumn"		== sCommand )	m_oShape.m_eXAnchor		= RtfShape::ax_column;
-    //else if ( "shpbyignore"	== sCommand )	m_oShape.m_eYAnchor		= RtfShape::ay_ignore;
     else if ( "dobypage"		== sCommand )	m_oShape.m_eYAnchor		= RtfShape::ay_page;
     else if ( "dobymargin"		== sCommand )	m_oShape.m_eYAnchor		= RtfShape::ay_margin;
     else if ( "dobypara"		== sCommand )	m_oShape.m_eYAnchor		= RtfShape::ay_Para;
@@ -1454,7 +1483,11 @@ bool RtfOldShapeReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReade
         else if ( "dofblwtxt"	== sCommand	)	m_oShape.m_nZOrderRelative	= parameter;
         else if ( "dplinew"		== sCommand )	m_oShape.m_nLineWidth		= parameter;
         else if ( "dodhgt"		== sCommand )	m_oShape.m_nZOrder			= parameter;
-        else if ( "dpfillpat"	== sCommand )
+		else if ( "dptxbxmar"	== sCommand )
+		{
+			m_oShape.m_nTexpLeft = m_oShape.m_nTexpTop = m_oShape.m_nTexpRight = m_oShape.m_nTexpBottom = RtfUtility::Twips2Emu(parameter);
+		}
+		else if ( "dpfillpat"	== sCommand )
 		{
 			m_oShape.m_nFillType = parameter;	
 			if (m_oShape.m_nFillType == 0) m_oShape.m_bFilled = false;
@@ -1521,20 +1554,24 @@ bool RtfShapeReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, 
     else if ( "shpz" == sCommand )
 	{
 		if ( hasParameter )
+		{
 			m_oShape.m_nZOrder = parameter;
+			
+			oDocument.SetZIndex(abs(m_oShape.m_nZOrder));
+		}
 	}
     else if ( "shpfhdr" == sCommand )
 	{
 		if ( hasParameter )
 			m_oShape.m_nHeader = parameter;
 	}
-    //else if ( "shpbxignore" == sCommand )	m_oShape.m_eXAnchor = RtfShape::ax_ignore;
+    else if ( "shpbxignore" == sCommand )	m_oShape.m_eXAnchor = RtfShape::ax_none; // PHy2.rtf
     else if ( "shpbxpage" == sCommand )		m_oShape.m_eXAnchor = RtfShape::ax_page;
-    else if ( "shpbxmargin" == sCommand )		m_oShape.m_eXAnchor = RtfShape::ax_margin;
-    else if ( "shpbxcolumn" == sCommand )		m_oShape.m_eXAnchor = RtfShape::ax_column;
-    //else if ( "shpbyignore" == sCommand )	m_oShape.m_eYAnchor = RtfShape::ay_ignore;
+    else if ( "shpbxmargin" == sCommand )	m_oShape.m_eXAnchor = RtfShape::ax_margin;
+    else if ( "shpbxcolumn" == sCommand )	m_oShape.m_eXAnchor = RtfShape::ax_column;
+    else if ( "shpbyignore" == sCommand )	m_oShape.m_eYAnchor = RtfShape::ay_none; // PHy2.rtf
     else if ( "shpbypage" == sCommand )		m_oShape.m_eYAnchor = RtfShape::ay_page;
-    else if ( "shpbymargin" == sCommand )		m_oShape.m_eYAnchor = RtfShape::ay_margin;
+    else if ( "shpbymargin" == sCommand )	m_oShape.m_eYAnchor = RtfShape::ay_margin;
     else if ( "shpbypara" == sCommand )		m_oShape.m_eYAnchor = RtfShape::ay_Para;
     else if ( "shpwr" == sCommand )
 	{
@@ -1766,7 +1803,7 @@ void RtfOleBinReader::GetData( BYTE** ppData, long& nSize)
 			(*ppData)[pos++] = nByte;
 		}
 	}
-	nSize = pos;
+	nSize = (long)pos;
 }
 bool RtfOleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 {
@@ -1796,48 +1833,15 @@ bool RtfOleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, st
 
 		if ( 0 != nSize  && pData)
 		{
-			HRESULT hRes = S_FALSE;
+			boost::shared_array<BYTE> buffer(pData);
+			m_oOle.m_oOle1Data = std::make_pair(buffer, nSize);
 
-			//конвертация Ole1 в Ole2
-#if 0//defined(_WIN32) || defined(_WIN64)
-			RtfOle1ToOle2Stream oStream;
-
-			oStream.lpstbl = new OLESTREAMVTBL();
-			oStream.lpstbl->Get = &OleGet1;
-			oStream.lpstbl->Put = &OlePut1;
-			
-			oStream.pBuffer		= pData;
-			oStream.nBufferSize = nSize;
-			oStream.nCurPos		= 0;
-
-            std::wstring sOleStorageName = Utils::CreateTempFile( oReader.m_sTempFolder );
-
-			IStorage* piMSStorage = NULL;
-			if ( SUCCEEDED( StgCreateDocfile( sOleStorageName.c_str(), STGM_READWRITE | STGM_CREATE | STGM_SHARE_EXCLUSIVE | STGM_TRANSACTED/* | STGM_DELETEONRELEASE*/, NULL, &piMSStorage) ) )
-			{
-				hRes = OleConvertOLESTREAMToIStorage( &oStream, piMSStorage, NULL );
-				piMSStorage->Commit( STGC_DEFAULT );
-				RELEASEINTERFACE( piMSStorage );
-			}			
-			delete oStream.lpstbl;
-#else
             std::wstring sOleStorageName = NSDirectory::CreateTempFileWithUniqueName(oReader.m_sTempFolder, L"img");
 
-			hRes = ConvertOle1ToOle2(pData, nSize, sOleStorageName);
-			
-#endif
-			delete[] pData;
-			
-			POLE::Storage * piRootStorage = new POLE::Storage(sOleStorageName.c_str());			
-			if ( piRootStorage)
-			{
-				m_oOle.SetFilename( sOleStorageName.c_str() );
-				m_oOle.SetOle( piRootStorage );
-				hRes = S_OK;
-			}
-
-            if (  hRes != S_OK )
-				Utils::RemoveDirOrFile( sOleStorageName.c_str() );
+	//конвертация Ole1 в Ole2
+			ConvertOle1ToOle2(pData, nSize, sOleStorageName);
+				
+			m_oOle.SetFilename( sOleStorageName.c_str() );
 		}
 	}
     else if ( "result" == sCommand )
@@ -1847,7 +1851,7 @@ bool RtfOleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, st
 		RtfAllPictReader oAllPictReader( *oNewShape );
 		StartSubReader( oAllPictReader, oDocument, oReader );
 		
-		m_oOle.m_oResultPic = oNewShape;
+		m_oOle.m_oResultShape = oNewShape;
 	}
 	else
 		return false;
@@ -1927,6 +1931,9 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 	else if ( L"posrelv"			== m_sPropName ) m_oShape.m_nPositionVRelative	= nValue;
 	else if ( L"fLayoutInCell"		== m_sPropName ) m_oShape.m_bLayoutInCell		= nValue;
 	else if ( L"fAllowOverlap"		== m_sPropName ) m_oShape.m_bAllowOverlap		= nValue;
+	else if ( L"fLockPosition"		== m_sPropName ) m_oShape.m_nLockPosition		= nValue;
+	else if ( L"fLockRotation"		== m_sPropName ) m_oShape.m_nLockRotation		= nValue;
+
 //Position relative
 	else if ( L"pctHorizPos"		== m_sPropName ) m_oShape.m_nPositionHPct		= nValue;
 	else if ( L"pctVertPos"			== m_sPropName ) m_oShape.m_nPositionVPct		= nValue;
@@ -1955,7 +1962,8 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 		{
 			XmlUtils::replace_all(splitted[i], L")", L"");
 			XmlUtils::replace_all(splitted[i], L"(", L"");
-			int pos = splitted[i].find(L",");
+			
+			int pos = (int)splitted[i].find(L",");
 
             int x = 0, y = 0;
             try
@@ -1982,7 +1990,8 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 		{
 			XmlUtils::replace_all(splitted[i], L")", L"");
 			XmlUtils::replace_all(splitted[i], L"(", L"");
-			int pos = splitted[i].find(L",");
+			
+			int pos = (int)splitted[i].find(L",");
 
             int x = 0, y = 0;
             try
@@ -2033,6 +2042,13 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 	else if ( L"dxTextRight"	== m_sPropName ) m_oShape.m_nTexpRight		= nValue;
 	else if ( L"dyTextBottom"	== m_sPropName ) m_oShape.m_nTexpBottom		= nValue;
 	else if ( L"anchorText"		== m_sPropName ) m_oShape.m_nAnchorText		= nValue;
+	else if ( L"WrapText"		== m_sPropName ) m_oShape.m_nWrapText		= nValue;
+	else if ( L"txflTextFlow"	== m_sPropName ) m_oShape.m_nTxflTextFlow	= nValue;
+	else if ( L"ccol"			== m_sPropName ) m_oShape.m_nCcol			= nValue;
+	else if ( L"txdir"			== m_sPropName ) m_oShape.m_nTxdir			= nValue;
+	else if ( L"fFitShapeToText"== m_sPropName ) m_oShape.m_bFitShapeToText	= nValue;
+	else if ( L"fFitTextToShape"== m_sPropName ) m_oShape.m_bFitTextToShape	= nValue;
+	else if ( L"fRotateText"	== m_sPropName ) m_oShape.m_fRotateText		= nValue;
 
 //Geometry
 	else if ( L"adjustValue"	== m_sPropName ) m_oShape.m_nAdjustValue[0]	= nValue;
@@ -2082,7 +2098,8 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 		{
 			XmlUtils::replace_all(splitted[i], L")", L"");
 			XmlUtils::replace_all(splitted[i], L"(", L"");
-			int pos = splitted[i].find(L",");
+			
+			int pos = (int)splitted[i].find(L",");
 
             int col = 0, pos_col = 0;
             try
@@ -2153,8 +2170,8 @@ bool RtfTrackerChangesReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& 
     else if ( "clbrdrr" == sCommand )		m_eInternalState = is_borderCellRight;
     else if ( "clbrdrb" == sCommand )		m_eInternalState = is_borderCellBottom;
 
-    else if ( "tsbrdrdgl" == sCommand )	m_eInternalState = is_borderCellLR;
-    else if ( "tsbrdrdgr" == sCommand )	m_eInternalState = is_borderCellRL;
+    else if ( "tsbrdrdgl" == sCommand )		m_eInternalState = is_borderCellLR;
+    else if ( "tsbrdrdgr" == sCommand )		m_eInternalState = is_borderCellRL;
 
     else if ( "trbrdrl" == sCommand )		m_eInternalState = is_borderRowLeft;
     else if ( "trbrdrr" == sCommand )		m_eInternalState = is_borderRowRight;
@@ -2162,7 +2179,8 @@ bool RtfTrackerChangesReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& 
     else if ( "trbrdrb" == sCommand )		m_eInternalState = is_borderRowBottom;
     else if ( "trbrdrv" == sCommand )		m_eInternalState = is_borderRowVer;
     else if ( "trbrdrh" == sCommand )		m_eInternalState = is_borderRowHor;
-    else if ( "tsbrdrh" == sCommand ) 		m_eInternalState = is_borderRowHor;
+    
+	else if ( "tsbrdrh" == sCommand ) 		m_eInternalState = is_borderRowHor;
     else if ( "tsbrdrv" == sCommand )		m_eInternalState = is_borderRowVer;
     else if ( "tsbrdrl" == sCommand )		m_eInternalState = is_borderRowLeft;
     else if ( "tsbrdrt" == sCommand )		m_eInternalState = is_borderRowTop;
@@ -2198,6 +2216,8 @@ bool RtfTrackerChangesReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& 
 			case is_borderTop:
 				bResult = RtfBorderCommand::ExecuteCommand( oDocument, oReader, sCommand, hasParameter, parameter, m_pParagraphProps->m_oBorderTop );
 				break;
+			default:
+				break;
 			}
 			if (bResult) return true;
 
@@ -2229,6 +2249,8 @@ bool RtfTrackerChangesReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& 
 				break;
 			case is_borderRowVer :
 				bResult = RtfBorderCommand::ExecuteCommand( oDocument, oReader,sCommand, hasParameter, parameter, m_pTableRowProps->m_oBorderVert );
+				break;
+			default:
 				break;
 			}
 			if ( bResult )	return true;
@@ -2427,6 +2449,7 @@ void RtfParagraphPropDestination::Finalize( RtfReader& oReader/*, RtfSectionPtr 
 		*m_oCurParagraph->m_oOldList	= oReader.m_oState->m_oCurOldList;
 		
 		m_oCurParagraph->m_oProperty.m_oCharProperty = oReader.m_oState->m_oCharProp;
+		m_oCurParagraph->m_oProperty.m_bInTable = PROP_DEF; // поле (гиперссылка) в таблице
 
 		AddItem( m_oCurParagraph, oReader, false, false );
 		m_oCurParagraph = RtfParagraphPtr(new RtfParagraph());
@@ -2933,9 +2956,9 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
     else if ( "brdrb"	== sCommand )		m_eInternalState = is_borderBottom;
     else if ( "brdrl"	== sCommand )		m_eInternalState = is_borderLeft;
     else if ( "brdrr"	== sCommand )		m_eInternalState = is_borderRight;
-    //else if ( "brdrbtw" == sCommand )	m_eInternalState = is_borderRight;
+    //else if ( "brdrbtw" == sCommand )		m_eInternalState = is_borderRight;
     else if ( "brdrbar" == sCommand )		m_eInternalState = is_borderBar;
-    else if ( "box"	== sCommand )		m_eInternalState = is_borderBox;
+    else if ( "box"	== sCommand )			m_eInternalState = is_borderBox;
 
     else if ( "cldglu" == sCommand )		m_eInternalState = is_borderCellLR;
     else if ( "cldgll" == sCommand )		m_eInternalState = is_borderCellRL;
@@ -2953,7 +2976,8 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
     else if ( "trbrdrb" == sCommand )		m_eInternalState = is_borderRowBottom;
     else if ( "trbrdrv" == sCommand )		m_eInternalState = is_borderRowVer;
     else if ( "trbrdrh" == sCommand )		m_eInternalState = is_borderRowHor;
-    else if ( "tsbrdrh" == sCommand ) 		m_eInternalState = is_borderRowHor;
+    
+	else if ( "tsbrdrh" == sCommand ) 		m_eInternalState = is_borderRowHor;
     else if ( "tsbrdrv" == sCommand )		m_eInternalState = is_borderRowVer;
     else if ( "tsbrdrl" == sCommand )		m_eInternalState = is_borderRowLeft;
     else if ( "tsbrdrt" == sCommand )		m_eInternalState = is_borderRowTop;
@@ -3020,6 +3044,8 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 			break;
 		case is_borderRowVer :
 			bResult = RtfBorderCommand::ExecuteCommand( oDocument, oReader,sCommand, hasParameter, parameter, oReader.m_oState->m_oRowProperty.m_oBorderVert );
+			break;
+		default:
 			break;
 		}
 		if ( bResult )	return true;

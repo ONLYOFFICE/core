@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,13 +34,13 @@
 #include "RtfWriter.h"
 #include "Utils.h"
 
-std::wstring RtfPicture::GenerateWMF(RenderParameter oRenderParameter)
+std::wstring RtfPicture::GenerateWMF(RenderParameter oRenderParameter) //копия растра в векторе
 {
     std::wstring sResult;
 	sResult += L"{\\pict";
 
-	RENDER_RTF_INT( 100,			sResult, L"picscalex" )
-	RENDER_RTF_INT( 100,			sResult, L"picscaley" )
+	RENDER_RTF_INT( (int)m_dScaleX, sResult, L"picscalex" )
+	RENDER_RTF_INT( (int)m_dScaleY, sResult, L"picscaley" )
 
 	RENDER_RTF_INT( m_nCropL,		sResult, L"piccropl" )
 	RENDER_RTF_INT( m_nCropT,		sResult, L"piccropt" )
@@ -129,14 +129,17 @@ std::wstring RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 		case dt_emf:	sExtension = L"emf"; sMime = L"image/x-emf";	break;
 		case dt_macpict:sExtension = L"pct"; sMime = L"image/x-pict";	break;
 	}
+	if (poOOXWriter->m_sTargetFolder.empty()) return L"rIdtemp"; //test from fields
 
     std::wstring sFilenameRels = L"Image" + std::to_wstring(poRtfDocument->m_oIdGenerator.Generate_ImageIndex()) + L".";
 	sFilenameRels += sExtension;
 	
-    std::wstring sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR +L"media";
-	
+    std::wstring sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + L"word";	
     NSDirectory::CreateDirectory( sFilenameFull );
-	
+
+	sFilenameFull += std::wstring(FILE_SEPARATOR_STR) + L"media";	
+    NSDirectory::CreateDirectory( sFilenameFull );
+
 	sFilenameFull += FILE_SEPARATOR_STR + sFilenameRels;
 	sFilenameRels = L"media/" + sFilenameRels;
 
@@ -145,6 +148,10 @@ std::wstring RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 	else
 		m_bIsCopy = false;
 
+    if( true == m_bIsCopy && !m_sPicFilename.empty() )
+	{
+		Utils::RemoveDirOrFile( m_sPicFilename );
+	}
 	poOOXWriter->m_oContentTypes.AddExtension( sMime, sExtension);
 
     std::wstring srId = poRelsWriter->AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image", sFilenameRels);

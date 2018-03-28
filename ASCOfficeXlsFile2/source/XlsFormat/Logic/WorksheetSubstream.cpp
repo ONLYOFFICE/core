@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,6 +51,9 @@
 #include "Biff_records/BOF.h"
 #include "Biff_records/DefaultRowHeight.h"
 #include "Biff_records/Label.h"
+#include "Biff_records/List12.h"
+#include "Biff_records/PLV.h"
+#include "Biff_records/CFEx.h"
 
 #include "Biff_unions/BACKGROUND.h"
 #include "Biff_unions/BIGNAME.h"
@@ -80,23 +83,18 @@
 namespace XLS
 {;
 
-
-WorksheetSubstream::WorksheetSubstream(const size_t ws_index)
-:	ws_index_(ws_index)
+WorksheetSubstream::WorksheetSubstream(const size_t ws_index) :	CommonSubstream(ws_index)
 {
 }
-
 
 WorksheetSubstream::~WorksheetSubstream()
 {
 }
 
-
 BaseObjectPtr WorksheetSubstream::clone()
 {
 	return BaseObjectPtr(new WorksheetSubstream(*this));
 }
-
 
 /*
 WORKSHEETCONTENT = [Uncalced] Index GLOBALS PAGESETUP [HeaderFooter] [BACKGROUND] *BIGNAME [PROTECTION] 
@@ -109,11 +107,7 @@ WORKSHEET = BOF WORKSHEETCONTENT
 const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 {
 	global_info_ = proc.getGlobalWorkbookInfo();
-	
-	GlobalWorkbookInfo::_sheet_size_info sheet_size_info;
-	
-	global_info_->sheet_size_info.push_back(sheet_size_info);
-	global_info_->current_sheet = global_info_->sheet_size_info.size();
+	global_info_->current_sheet = ws_index_ + 1; 
 
 	global_info_->cmt_rules	= 0;
 
@@ -145,8 +139,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			case rt_CalcMode:
 			case rt_PrintRowCol:
 			{
-				GLOBALS globals(false);
-				if (proc.mandatory(globals))
+				if (proc.mandatory<GLOBALS>())
 				{
 					m_GLOBALS = elements_.back();
 					elements_.pop_back();
@@ -210,8 +203,27 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back();
 				}
 			}break;
-			case rt_BigName:		proc.repeated<BIGNAME>(0, 0);		break;
-			case rt_Protect:		proc.optional<PROTECTION_COMMON>();	break;
+			case rt_BigName:		
+			{
+				count = proc.repeated<BIGNAME>(0, 0);
+				while(count > 0)
+				{
+					m_arBIGNAME.insert(m_arNote.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
+			case rt_Protect:		
+			case rt_ScenarioProtect:		
+			case rt_ObjProtect:		
+			case rt_Password:		
+			{
+				if (proc.optional<PROTECTION_COMMON>())
+				{
+					m_PROTECTION = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_ScenMan:		proc.optional<SCENARIOS>();			break;	
 			case rt_Sort:
 			case rt_AutoFilterInfo:
@@ -336,7 +348,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back(); 
 					
 					DxGCol* dx = dynamic_cast<DxGCol*>(m_DxGCol.get());
-					global_info_->sheet_size_info.back().defaultColumnWidth = dx->dxgCol / 256.;
+					global_info_->sheets_info.back().defaultColumnWidth = dx->dxgCol / 256.;
 				}
 			}break;				
 			case rt_MergeCells:
@@ -431,6 +443,10 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					count--;
 				}
 			}break;
+			case rt_List12://LCA BI - Financial Report Usage2010.xls ??
+			{
+				count = proc.repeated<List12>	(0, 0);
+			}break;
 			case rt_FeatHdr11:
 			{
 				count = proc.repeated<FEAT11>	(0, 0);
@@ -439,6 +455,18 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					m_arFEAT11.insert(m_arFEAT11.begin(), elements_.back());
 					elements_.pop_back();
 					count--;
+				}
+			}break;
+			case rt_CFEx:	//Calculadora.xls не в FORMATING
+			{
+				count = proc.repeated<CFEx>	(0, 0);
+			}break;
+			case rt_PLV:	//Calculadora.xls не в FORMATING
+			{
+				if (proc.optional<PLV>())
+				{
+					m_PLV = elements_.back();
+					elements_.pop_back();
 				}
 			}break;
 			case rt_HeaderFooter:		
@@ -462,48 +490,6 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 
 	return true;
 }
-void WorksheetSubstream::LoadHFPicture()
-{
-	if (m_arHFPicture.empty()) return;
-
-	int current_size_hf = 0, j = 0;
-	for ( size_t i = 0; i < m_arHFPicture.size(); i++)
-	{
-		HFPicture* hf = dynamic_cast<HFPicture*>(m_arHFPicture[i].get());
-		if ((hf) && (hf->recordDrawingGroup))
-		{
-			if (!hf->fContinue && current_size_hf > 0)
-			{
-				XLS::CFRecord record(CFRecordType::ANY_TYPE, global_info_);
-				for (; j < i; j++)
-				{
-					hf = dynamic_cast<HFPicture*>(m_arHFPicture[j].get());
-					record.appendRawData(hf->recordDrawingGroup);
-				}
-				ODRAW::OfficeArtDgContainerPtr rgDrawing = ODRAW::OfficeArtDgContainerPtr(new ODRAW::OfficeArtDgContainer(ODRAW::OfficeArtRecord::CA_HF));
-				rgDrawing->loadFields(record);
-				m_arHFPictureDrawing.push_back(rgDrawing);
-				current_size_hf = 0;
-
-			}
-			current_size_hf += hf->recordDrawingGroup->getDataSize();
-		}
-	}
-	if (current_size_hf > 0)
-	{
-		XLS::CFRecord record(ODRAW::OfficeArtRecord::DggContainer, global_info_);
-		for (; j < m_arHFPicture.size(); j++)
-		{
-			HFPicture* hf = dynamic_cast<HFPicture*>(m_arHFPicture[j].get());
-			record.appendRawData(hf->recordDrawingGroup);
-		}
-		ODRAW::OfficeArtDgContainerPtr rgDrawing = ODRAW::OfficeArtDgContainerPtr(new ODRAW::OfficeArtDgContainer(ODRAW::OfficeArtRecord::CA_HF));
-		rgDrawing->loadFields(record);
-		m_arHFPictureDrawing.push_back(rgDrawing);
-	}
-}
-
-
 
 } // namespace XLS
 

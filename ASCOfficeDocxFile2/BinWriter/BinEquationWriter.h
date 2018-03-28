@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -416,7 +416,7 @@ namespace MathEquation
 
 			virtual void BeginEquation()
 			{
-				int nCurPos = WriteItemStart(BinDocxRW::c_oSerParType::OMath);
+				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::OMath);
 				m_aEquationStack.push(nCurPos);
 			}
 			virtual void EndEquation()
@@ -618,15 +618,18 @@ namespace MathEquation
                         nRows = m_aRowsCounter.top();
                         m_aRowsCounter.pop();
                     }
-                    int nPos = m_oStream.GetPosition();
+                    int nPos = -1;
                     if (!m_aRowsPosCounter.empty())
                     {
                         nPos = m_aRowsPosCounter.top();
                         m_aRowsPosCounter.pop();
                     }
 					int nEnd = m_oStream.GetPosition();
-					m_oStream.SetPosition(nPos);
-					m_oStream.WriteLONG(nRows);
+					if (nPos >= 0)
+					{
+						m_oStream.SetPosition(nPos);
+						m_oStream.WriteLONG(nRows);
+					}
 					m_oStream.SetPosition(nEnd);
 
 					ECommandType type; 
@@ -1692,11 +1695,13 @@ namespace MathEquation
 
 				if (bPile && bEqArrayStart)
 				{
-					pWriter->WriteItemEnd(nCurPos);
+					if (nCurPos > 0)
+						pWriter->WriteItemEnd(nCurPos);
 				}
 				else if (!bPile && !bEqArrayStart)
 				{
-					pWriter->WriteItemEnd(nCurPos);
+					if (nCurPos > 0)
+						pWriter->WriteItemEnd(nCurPos);
 				}
 				else if (!bPile && bEqArrayStart)
 				{					

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -30,8 +30,11 @@
  *
  */
 #pragma once
+
 #include "Path.h"
 #include "../../../../../Common/DocxFormat/Source/Common/SimpleTypes_Base.h"
+
+#include <boost/shared_ptr.hpp>
 
 namespace NSPresentationEditor
 {
@@ -61,7 +64,10 @@ namespace NSPresentationEditor
             return (*this);
         }
     };
-    //
+
+	class CBaseShape;
+	typedef boost::shared_ptr<CBaseShape> CBaseShapePtr;
+
     class CBaseShape
     {
     public:
@@ -120,7 +126,7 @@ namespace NSPresentationEditor
 
         virtual void AddGuide(const std::wstring& strGuide)	{}
 
-        static CBaseShape* CreateByType(ClassType ClassType, int ShapeType);
+        static CBaseShapePtr CreateByType(ClassType ClassType, int ShapeType);
 
         virtual const ClassType GetClassType()const				= 0;
         bool SetType(ClassType ClassType, int ShapeType);

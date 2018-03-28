@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -99,11 +99,13 @@ int GELFRAME::serialize(std::wostream & _stream)
 	GelFrame * frame = dynamic_cast<GelFrame*>(m_GelFrame.get());
 	if (frame == NULL) return 0;
 
-		global_info->xls_converter->convert(&frame->OPT1);
-		global_info->xls_converter->convert(&frame->OPT2);
+	global_info->xls_converter->xlsx_context->get_drawing_context().clear_fill();
 
-		global_info->xls_converter->xlsx_context->get_drawing_context().serialize_fill(_stream);
-		//global_info->xls_converter->xlsx_context->get_drawing_context().serialize_line(_stream);
+	global_info->xls_converter->convert(&frame->OPT1);
+	global_info->xls_converter->convert(&frame->OPT2);
+
+	global_info->xls_converter->xlsx_context->get_drawing_context().serialize_fill(_stream);
+	//global_info->xls_converter->xlsx_context->get_drawing_context().serialize_line(_stream);
 
 	return 0;
 }

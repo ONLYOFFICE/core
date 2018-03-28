@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,7 +53,7 @@ namespace odf_reader {
 
 void removeCharsFromString( std::wstring &str, std::wstring charsToRemove ) 
 {
-   for ( unsigned int i = 0; i < charsToRemove.length(); ++i ) 
+   for ( size_t i = 0; i < charsToRemove.length(); ++i ) 
    {
 	   str.erase( std::remove(str.begin(), str.end(), charsToRemove[i]), str.end() );
    }
@@ -292,14 +292,14 @@ void text_format_properties_content::pptx_convert_as_list(oox::pptx_conversion_c
 					w_font = font->name();
 
 				//'Arial' глючит
-				removeCharsFromString(w_font, _T("'"));
+				removeCharsFromString(w_font, L"'");
 			}
 
 			if (w_font.length()>0)
 			{				
 				CP_XML_NODE(L"a:buFont")
 				{			
-					removeCharsFromString(w_font, _T("'"));
+					removeCharsFromString(w_font, L"'");
 					CP_XML_ATTR(L"typeface", w_font);
 					if ((style_font_charset_))
 					{		
@@ -1236,12 +1236,19 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
     {
          int fontSize=0;
 		 if (Context.get_drop_cap_context().state()==2)
+		 {
 			 fontSize = process_font_size(fo_font_size_, Context.get_styles_context().get_current_processed_style(),false,
 				 Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7);//вместо 1 ДОЛЖНОБЫТЬ коэфф. межстрочного интервала!!!
+
+			 if (fontSize < 1)
+				 fontSize = Context.get_drop_cap_context().FontSize / 7.52;
+		 }
 		 else
+		 {
 			 fontSize = process_font_size(fo_font_size_, Context.get_styles_context().get_current_processed_style());
+		 }
        
-		 if (fontSize>0)
+		if (fontSize >  0)
 		{
             _rPr << L"<w:sz w:val=\"" << fontSize << "\" />";
 		}

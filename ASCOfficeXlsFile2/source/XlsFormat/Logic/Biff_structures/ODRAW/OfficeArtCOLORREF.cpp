@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,12 +37,11 @@ namespace ODRAW
 {
 
 
-OfficeArtCOLORREF::OfficeArtCOLORREF()
+OfficeArtCOLORREF::OfficeArtCOLORREF() : index(-1), nColorRGB(-1)
 {
-	index = -1;
 }
 
-OfficeArtCOLORREF::OfficeArtCOLORREF(const int raw_data)
+OfficeArtCOLORREF::OfficeArtCOLORREF(const _UINT32 raw_data) : index(-1), nColorRGB(-1)
 {
 	red		= GETBITS(raw_data, 0, 7);
 	green	= GETBITS(raw_data, 8, 15);
@@ -54,10 +53,9 @@ OfficeArtCOLORREF::OfficeArtCOLORREF(const int raw_data)
 	fSchemeIndex	= GETBIT(raw_data, 27);
 	fSysIndex		= GETBIT(raw_data, 28);
 
-
 	if(!fSchemeIndex && !fPaletteIndex && !fSysIndex)
 	{
-		nColorRGB	= (blue<<16) + (green<<8) + (red);
+		nColorRGB	= (blue << 16) + (green << 8) + (red);
 		sColorRGB	= STR::toRGB(red, green, blue);
 	}
 	else if(fSchemeIndex)
@@ -70,7 +68,7 @@ OfficeArtCOLORREF::OfficeArtCOLORREF(const int raw_data)
 	}
 	else if(fSysIndex)
 	{
-		index = (blue<<16) + (green<<8) + (red);
+		index = (blue << 16) + (green << 8) + (red);
 	}
 }
 

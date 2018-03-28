@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -113,9 +113,10 @@ public:
 			case OOX::et_w_sdtContent:
 			{
 				OOX::Logic::CSdtContent * pSdt = dynamic_cast<OOX::Logic::CSdtContent*>(ooxElement);
-				for (size_t i = 0; i < pSdt->m_arrItems.size(); i++)
+
+                for (std::vector<OOX::WritingElement*>::iterator it = pSdt->m_arrItems.begin(); it != pSdt->m_arrItems.end(); ++it)
 				{
-					Parse( pSdt->m_arrItems[i], oParam );
+					Parse( *it, oParam );
 				}
 
 			}break;

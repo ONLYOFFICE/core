@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,6 +40,7 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/raster/Metafile/MetaFile.h"
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../Common/DocxFormat/Source/Base/Base.h"
 
 namespace cpdoccore { 
 namespace oox {
@@ -284,8 +285,8 @@ void core_file::write(const std::wstring & RootPath)
     L"xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" "
     L"xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >";
 
-	//resStream << L"<dc:creator>ONLYOFFICE Online Editor</dc:creator>";
-	//resStream << L"<cp:lastModifiedBy>ONLYOFFICE Online Editor</cp:lastModifiedBy>";
+	//resStream << L"<dc:creator>ONLYOFFICE</dc:creator>";
+	//resStream << L"<cp:lastModifiedBy>ONLYOFFICE</cp:lastModifiedBy>";
 	resStream << L"<cp:revision>1</cp:revision>";
     resStream << L"</cp:coreProperties>";
 
@@ -300,8 +301,12 @@ void app_file::write(const std::wstring & RootPath)
     resStream << L"<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" "
         L"xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\" >";
    
-	resStream << L"<Application>OnlyOffice</Application>"; 
-    resStream << L"</Properties>";
+	resStream << L"<Application>ONLYOFFICE"; 
+#if defined(INTVER)
+	std::string s = VALUE2STR(INTVER);
+	resStream << L"/" << std::wstring(s.begin(), s.end()) ;
+#endif	
+	resStream << L"</Application></Properties>";
     
     simple_element elm(L"app.xml", resStream.str());
     elm.write(RootPath);

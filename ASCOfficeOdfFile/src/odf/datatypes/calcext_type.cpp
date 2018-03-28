@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -58,6 +58,9 @@ std::wostream & operator << (std::wostream & _Wostream, const calcext_type & _Va
         break;
     case calcext_type::Minimum:
         _Wostream << L"minimum";
+		break;
+	case calcext_type::Percentile:
+        _Wostream << L"percentile";
         break;
     default:
         break;
@@ -84,6 +87,8 @@ calcext_type calcext_type::parse(const std::wstring & Str)
         return calcext_type( Minimum );
     else if (tmp == L"formula")
         return calcext_type( Formula );
+	else if (tmp == L"percentile")
+        return calcext_type( Percentile );
 	else
     {
         return calcext_type( Number );

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -67,10 +67,11 @@ public:
 		{
 			oParam.oRtf->m_oInformation.m_nNumberOfCharactersWithSpace = m_ooxApp->m_nCharactersWithSpaces.get2();
 		}
-		if(m_ooxApp->m_sAppVersion.IsInit())
+
+		if (m_ooxApp->m_sApplication.IsInit())
 		{
-			oParam.oRtf->m_oInformation.m_nVersion= Strings::ToInteger( m_ooxApp->m_sAppVersion.get2() );
-		}		
+			oParam.oRtf->m_oInformation.m_sApplication = m_ooxApp->m_sApplication.get2();
+		}
 
 		return true;
 	}

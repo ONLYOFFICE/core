@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,9 +31,9 @@
  */
 
 #include "FEAT.h"
-#include <Logic/Biff_records/FeatHdr.h>
-#include <Logic/Biff_records/Feat.h>
-#include <Logic/Biff_records/ContinueFrt.h>
+#include "../Biff_records/FeatHdr.h"
+#include "../Biff_records/Feat.h"
+#include "../Biff_records/ContinueFrt.h"
 
 namespace XLS
 {
@@ -64,7 +64,9 @@ public:
 		{
 			return false;
 		}
-		proc.repeated<ContinueFrt>(0, 0);
+		
+		int count = proc.repeated<ContinueFrt>(0, 0);
+		
 		return true;
 	};
 };
@@ -85,8 +87,27 @@ const bool FEAT::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.repeated<Parenthesis_FEAT_1>(0, 0);
+	m_FeatHdr = elements_.back();
+	elements_.pop_back();
 
+	int count = proc.repeated<Parenthesis_FEAT_1>(0, 0);
+
+	while(!elements_.empty())
+	{
+		if (elements_.front()->get_type() == typeFeat)
+		{
+			_data new_data;
+			new_data.m_Feat = elements_.front();
+
+			m_arFEAT.push_back(new_data);
+		}
+		else
+		{
+			m_arFEAT.back().m_arContinueFrt.push_back(elements_.front());
+		}
+
+		elements_.pop_front();
+	}
 	return true;
 }
 

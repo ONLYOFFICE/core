@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,14 +35,19 @@
 #include "odf_content_xml.h"
 #include <cpdoccore/odf/odf_document.h>
 
-namespace cpdoccore { 
-
-namespace oox {
-class docx_conversion_context;
-class xlsx_conversion_context;
-}
-
-namespace odf_reader {
+namespace cpdoccore 
+{ 
+	namespace xml 
+	{
+		class sax;
+	}
+	namespace oox 
+	{
+		class docx_conversion_context;
+		class xlsx_conversion_context;
+	}
+	namespace odf_reader 
+{
 
 class odf_read_context;
 typedef shared_ptr<odf_read_context>::Type odf_read_context_ptr;
@@ -59,6 +64,9 @@ public:
 
     odf_read_context & odf_context();
    
+	static content_xml_t_ptr read_file_content(const std::wstring & Path);
+	content_xml_t_ptr read_file_content(xml::sax * reader_owner);
+
 	bool docx_convert(oox::docx_conversion_context & Context);
     bool xlsx_convert(oox::xlsx_conversion_context & Context);
     bool pptx_convert(oox::pptx_conversion_context & Context);
@@ -68,7 +76,7 @@ public:
 	const office_element * get_content() const;
 		  office_element * get_content();
 
-	long get_office_mime_type() {return office_mime_type_;}
+	int get_office_mime_type() {return office_mime_type_;}
 
 	bool get_encrypted(){return encrypted;}
 
@@ -89,13 +97,17 @@ private:
     content_xml_t_ptr styles_xml_;
     content_xml_t_ptr meta_xml_;
     content_xml_t_ptr settings_xml_;
-    content_xml_t_ptr manifest_xml_;
+	content_xml_t_ptr manifest_xml_;
+    
+	std::wstring mimetype_content_file_;
 
     std::wstring base_folder_;
     std::wstring tmp_folder_;
 
-	long office_mime_type_;
+	int office_mime_type_;
 	bool encrypted;
+
+	int GetMimetype(std::wstring value);
             
 };
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,8 +31,8 @@
  */
 
 #include "PIVOTVDTEX.h"
-#include <Logic/Biff_records/SXVDTEx.h>
-#include <Logic/Biff_records/ContinueFrt.h>
+#include "../Biff_records/SXVDTEx.h"
+#include "../Biff_records/ContinueFrt.h"
 
 namespace XLS
 {
@@ -61,6 +61,8 @@ const bool PIVOTVDTEX::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+	m_SXVDTEx = elements_.back(); elements_.pop_back();
+	
 	proc.repeated<ContinueFrt>(0, 0);
 	return true;
 }

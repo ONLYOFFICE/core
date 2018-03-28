@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,8 +31,8 @@
  */
 
 #include "SXADDLFIELD.h"
-#include <Logic/Biff_records/SXAddl.h>
-#include <Logic/Biff_unions/SXADDLFIELD12.h>
+
+#include "../Biff_records/SXAddl.h"
 
 namespace XLS
 {
@@ -60,23 +60,8 @@ SXADDLFIELD = [SXAddl_SXCField_SXDId *Continue_SxaddlSxString SXAddl_SXCField_SX
 */
 const bool SXADDLFIELD::loadContent(BinProcessor& proc)
 {
-	//if(proc.optional<SXAddl_SXCField_SXDId>())
-	//{
-	//	int count = proc.repeated<Continue_SxaddlSxString>(0, 0);
-	//	if (proc.mandatory<SXAddl_SXCField_SXDVer10Info>())
-	//	{
-	//	}
-	//	if (proc.mandatory<SXAddl_SXCField_SXDEnd>())
-	//	{
-	//	}
-	//	if (proc.optional<SXADDLFIELD12>())
-	//	{
-	//	}
-	//	return true;
-	//}
+	return false;
 
-	//return proc.optional<SXADDLFIELD12>();
-	return true;
 }
 
 } // namespace XLS

@@ -335,8 +335,8 @@ namespace internal
     inline bool starts_with_bom (octet_iterator it, octet_iterator end)
     {
         return (
-            ((it != end) && (internal::mask8(*it++)) == bom[0]) &&
-            ((it != end) && (internal::mask8(*it++)) == bom[1]) &&
+            ((it != end) && (internal::mask8(*++it)) == bom[0]) &&
+            ((it != end) && (internal::mask8(*++it)) == bom[1]) &&
             ((it != end) && (internal::mask8(*it))   == bom[2])
            );
     }
@@ -346,8 +346,8 @@ namespace internal
     inline bool is_bom (octet_iterator it)
     {
         return (
-            (internal::mask8(*it++)) == bom[0] &&
-            (internal::mask8(*it++)) == bom[1] &&
+            (internal::mask8(*++it)) == bom[0] &&
+            (internal::mask8(*++it)) == bom[1] &&
             (internal::mask8(*it))   == bom[2]
            );
     }

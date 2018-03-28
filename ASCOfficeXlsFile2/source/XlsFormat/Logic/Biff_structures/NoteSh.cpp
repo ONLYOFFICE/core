@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,7 +37,6 @@
 namespace XLS
 {
 
-
 NoteSh::NoteSh()
 {
 	x_ = y_ = 0;
@@ -47,13 +46,11 @@ NoteSh::NoteSh()
 	fColHidden	= false;
 }
 
-
 NoteSh::NoteSh(CFRecord& record)
 {
 	x_ = y_ = 0;
 	load(record);
 }
-
 
 BiffStructurePtr NoteSh::clone()
 {
@@ -91,9 +88,9 @@ void NoteSh::load(CFRecord& record)
 //-----------------------------------------------------------------------
 void NoteSh::calculate()
 {
-	XLS::GlobalWorkbookInfo::_sheet_size_info zero;
-	XLS::GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info->current_sheet >=0 ? 
-										global_info->sheet_size_info[global_info->current_sheet - 1] : zero;
+	XLS::GlobalWorkbookInfo::_sheet_info zero;
+	XLS::GlobalWorkbookInfo::_sheet_info & sheet_info = global_info->current_sheet >= 0 ? 
+										global_info->sheets_info[global_info->current_sheet - 1] : zero;
 
 	ref_ = CellRef(row, col, true, true).toString();
 

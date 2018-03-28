@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,8 +37,6 @@
 namespace XLS
 {
 
-
-// Logical representation of Window2 record in BIFF8
 class Window2: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Window2)
@@ -53,7 +51,6 @@ public:
 
 	static const ElementType	type = typeWindow2;
 
-//-----------------------------
 	bool fDspFmlaRt;
 	bool fDspGridRt;
 	bool fDspRwColRt;
@@ -76,7 +73,7 @@ public:
 	
 	_UINT16		wScaleSLV;
 	_UINT16		wScaleNormal;
-	BIFF_BSTR	topLeftCell;
+	std::wstring	topLeftCell;
 };
 
 } // namespace XLS

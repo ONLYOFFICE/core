@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -54,48 +54,51 @@ BaseObjectPtr FilePass::clone()
 
 void FilePass::readFields(CFRecord& record)
 {
-	bool bEnabled = false;
-	
-	record >> wEncryptionType;
-	
-	if(wEncryptionType == 0)
+	if (record.getGlobalWorkbookInfo()->Version == 0x0500) 
 	{
-		record >> key;
-		Log::info("FilePass: Encryption type: XOR");
-		return;
+        record >> key.key >> key.verificationBytes;
+
+		record.getGlobalWorkbookInfo()->decryptor = 
+							CRYPT::DecryptorPtr(new CRYPT::XORDecryptor(2, key.key, key.verificationBytes, record.getGlobalWorkbookInfo()->password));
 	}
 	else
 	{
-		bEnabled = true;
-
-		majorVer = *record.getCurData<unsigned short>();
-
-		cryptHeaderPtr = CRYPTO::RC4EncryptionHeaderPtr(new CRYPTO::RC4EncryptionHeader());
-
-		cryptHeaderPtr->bStandard = 0x0001 == majorVer ? true : false; // _S2dvT1xU_R3bOPwre4_.xls
-
-		cryptHeaderPtr->load (record);
+		record >> wEncryptionType;
 		
-		if (cryptHeaderPtr->bStandard)
+		if(wEncryptionType == 0)
 		{
+			record >> key;
+		
 			record.getGlobalWorkbookInfo()->decryptor = 
-						CRYPT::DecryptorPtr(new CRYPT::RC4Decryptor(cryptHeaderPtr->crypt_data_rc4, record.getGlobalWorkbookInfo()->password));
+							CRYPT::DecryptorPtr(new CRYPT::XORDecryptor(2, key.key, key.verificationBytes, record.getGlobalWorkbookInfo()->password));
 		}
 		else
 		{
-			record.getGlobalWorkbookInfo()->decryptor = 
-						CRYPT::DecryptorPtr(new CRYPT::ECMADecryptor());
-			
-			CRYPT::ECMADecryptor *crypter = dynamic_cast<CRYPT::ECMADecryptor *>(record.getGlobalWorkbookInfo()->decryptor.get());
+			majorVer = *record.getCurData<unsigned short>();
 
-			crypter->SetCryptData(cryptHeaderPtr->crypt_data_aes);
-			crypter->SetPassword(record.getGlobalWorkbookInfo()->password);
+			cryptHeaderPtr = CRYPTO::RC4EncryptionHeaderPtr(new CRYPTO::RC4EncryptionHeader());
+
+			cryptHeaderPtr->bStandard = 0x0001 == majorVer ? true : false; // _S2dvT1xU_R3bOPwre4_.xls
+
+			cryptHeaderPtr->load (record);
+			
+			if (cryptHeaderPtr->bStandard)
+			{
+				record.getGlobalWorkbookInfo()->decryptor = 
+							CRYPT::DecryptorPtr(new CRYPT::RC4Decryptor(cryptHeaderPtr->crypt_data_rc4, record.getGlobalWorkbookInfo()->password));
+			}
+			else
+			{
+				record.getGlobalWorkbookInfo()->decryptor = 
+							CRYPT::DecryptorPtr(new CRYPT::ECMADecryptor());
+				
+				CRYPT::ECMADecryptor *crypter = dynamic_cast<CRYPT::ECMADecryptor *>(record.getGlobalWorkbookInfo()->decryptor.get());
+
+				crypter->SetCryptData(cryptHeaderPtr->crypt_data_aes);
+				crypter->SetPassword(record.getGlobalWorkbookInfo()->password);
+			}
 		}
 	}
-
-	if (bEnabled == false && record.getGlobalWorkbookInfo()->decryptor)
-		record.getGlobalWorkbookInfo()->decryptor.reset();
-
 }
 
 } // namespace XLS

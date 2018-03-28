@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -59,16 +59,19 @@ void DConnConnectionOleDb::load(CFRecord& record)
 		record >> val;
 		rgIOleDbValid.push_back(val);
 	}
-	int skip_unused =  2 * (4 - cOleDb) + 2;
+	int skip_unused =  2 * (4 - cOleDb);
 	
 	record.skipNunBytes(skip_unused);
+	
+	record.skipNunBytes(2);
 
 	for (unsigned short i = 0; i < cOleDb; i++)
 	{
 		XLUnicodeStringSegmented val;
 		record >> val;
 		rgConn.push_back(val);
-	}}
+	}
+}
 
 
 } // namespace XLS

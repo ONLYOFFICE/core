@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -57,9 +57,9 @@ static const std::vector<Out> transform(const std::vector<In>& lines, const Out(
 
 
 template<typename Out, typename In>
-static const std::list<Out> transform(const std::list<In>& lines, const Out(*func)(const In&))
+static const std::vector<Out> transform(const std::vector<In>& lines, const Out(*func)(const In&))
 {
-	std::list<Out> result;
+    std::vector<Out> result;
 	BOOST_FOREACH(const In& line, lines)
 	{
 		result.push_back(func(line));

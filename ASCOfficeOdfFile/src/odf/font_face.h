@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -144,7 +144,6 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(svg_font_face_name);
 
 //  svg:definition-src
@@ -164,9 +163,7 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(svg_definition_src);
-
 
 //  style:font-face
 class style_font_face : public office_element_impl<style_font_face>
@@ -233,7 +230,6 @@ public:
 
     friend class odf_document;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(style_font_face);
 
 //  office-font-face-decls
@@ -257,7 +253,6 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(office_font_face_decls);
 
 }

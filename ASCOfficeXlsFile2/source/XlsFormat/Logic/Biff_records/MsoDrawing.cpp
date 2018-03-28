@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,6 +31,7 @@
  */
 
 #include "MsoDrawing.h"
+#include "../Biff_structures/ODRAW/OfficeArtRecord.h"
 
 namespace XLS
 {
@@ -67,16 +68,36 @@ void MsoDrawing::readFields()
 		rgChildRec.rh_own.recLen = stored_record->getDataSize();
 
 		rgChildRec.loadFields(*stored_record);
+		
+		if (stored_record->getRdPtr()  < stored_record->getDataSize())
+		{
+			int g = 0;
+		}
 	}
-
 	isReading = true;
 }
 
 void MsoDrawing::readFields(CFRecord& record)
 {
-	record >> rgChildRec;
-
-	isReading = true;
+	ODRAW::OfficeArtRecordHeader rh_test;
+	record >> rh_test;
+	record.RollRdPtrBack(8);//sizeof(OfficeArtRecordHeader)
+	
+	if (rh_test.recType == 0xF002) //OfficeArtDgContainer
+	{
+		record >> rgChildRec;
+		isReading = true;
+	}
+	else if ((rh_test.recType & 0xF000) == 0xF000)
+	{
+		//074_JKH.OPEN.INFO.PRICE.VO_зПТПДУЛЙЕ ПЛТХЗБ юЕМСВЙОУЛПК ПВМБУФЙ_пбп юЕМСВЙОУЛПЕ БЧЙБРТЕДРТЙСФЙЕ.xls
+		rgChildRec.rh_own.recLen = record.getDataSize();
+		rgChildRec.loadFields(record); 
+		isReading = true;
+	}
+	else
+	{
+	}
 }
 
 

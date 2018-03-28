@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,10 +32,12 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include "XFProp.h"
 
 namespace XLS
 {
+
+class XFProp;
+typedef boost::shared_ptr<XFProp> XFPropPtr;
 
 class CFRecord;
 
@@ -56,27 +58,31 @@ public:
 
 	int serialize_fill(std::wostream & stream);
 	
-	std::vector<XFProp> arXFPropFont;
-	std::vector<XFProp> arXFPropNumFmt;
-	std::vector<XFProp> arXFPropFill;
-	std::vector<XFProp> arXFPropAlignment;
+	std::vector<XFPropPtr> arXFPropFont;
+	std::vector<XFPropPtr> arXFPropNumFmt;
+	std::vector<XFPropPtr> arXFPropFill;
+	std::vector<XFPropPtr> arXFPropAlignment;
 	
 	struct _b
 	{
-		bool is_present;
+		bool is_present = false;
 
-		_CP_OPT(XFProp) left;
-		_CP_OPT(XFProp) right;
-		_CP_OPT(XFProp) top;
-		_CP_OPT(XFProp) bottom;
-		std::vector<XFProp> other;
+		XFPropPtr left;
+		XFPropPtr right;
+		XFPropPtr top;
+		XFPropPtr bottom;
+		
+		std::vector<XFPropPtr> other;
 	}arXFPropBorder;
 
-	std::vector<XFProp> arXFPropProtection;
-	std::vector<XFProp> arXFPropGradient;
+	std::vector<XFPropPtr> arXFPropProtection;
+	std::vector<XFPropPtr> arXFPropGradient;
 
 //-----------------------------------------------------
+	BiffStructurePtrVector rgExt;
+
 	bool			fNewBorder;
+	bool			bPresent;
 };
 
 } // namespace XLS

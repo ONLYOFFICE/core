@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -57,6 +57,8 @@ namespace writer
         static const char colon = ':';
         static const char amp = '&';
         static const char apos = '\'';
+        static const char a = '\x0a';
+
         static const char * cdata_open() { return "<![CDATA["; }
         static const char * cdata_close() { return "]]>"; }
         static const char * amp_str(){ return "&amp;"; }
@@ -64,6 +66,7 @@ namespace writer
         static const char * right_brocket_str() { return "&gt;"; }
         static const char * apos_str() { return "&apos;"; }
         static const char * quote_str() { return "&quot;"; }
+		static const char * a_str() { return "&#10;"; } 
     };
 
     template <>
@@ -78,14 +81,17 @@ namespace writer
         static const wchar_t colon = L':';
         static const wchar_t amp = L'&';
         static const wchar_t apos = L'\'';
-        static const wchar_t * cdata_open() { return L"<![CDATA["; }
+        static const wchar_t a = L'\x0a';
+
+		static const wchar_t * cdata_open() { return L"<![CDATA["; }
         static const wchar_t * cdata_close() { return L"]]>"; }
         static const wchar_t * amp_str(){ return L"&amp;"; }
         static const wchar_t * left_brocket_str() { return L"&lt;"; }
         static const wchar_t * right_brocket_str() { return L"&gt;"; }
         static const wchar_t * apos_str() { return L"&apos;"; }
         static const wchar_t * quote_str() { return L"&quot;"; }
-    };
+ 		static const wchar_t * a_str() { return L"&#10;"; } 
+   };
 
     template <class V>
     class element;
@@ -279,7 +285,9 @@ namespace writer
                 case chars<T>::quote: 
                     wr_.puts(chars<T>::quote_str()); break;
 
-                default: 
+                 case chars<T>::a: 
+                    wr_.puts(chars<T>::a_str()); break;
+               default: 
                     wr_.putc(*str); break;
                 }
             }

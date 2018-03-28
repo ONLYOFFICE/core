@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -154,7 +154,7 @@ namespace cpdoccore
 			if (val)
 			{
                 std::wstring tmp = *val;
-				XmlUtils::GetLower(tmp);
+				tmp = XmlUtils::GetLower(tmp);
                 return  optional<bool>::Type((tmp == xml_char_value_type::trueVal));
 			}
 			else

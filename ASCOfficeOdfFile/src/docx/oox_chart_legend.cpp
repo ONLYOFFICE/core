@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,7 +32,7 @@
 
 
 #include <boost/functional.hpp>
-#include <cpdoccore/CPHash.h>
+#include <cpdoccore/CPOptional.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 #include "oox_chart_legend.h"
@@ -52,10 +52,9 @@ void oox_chart_legend::oox_serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE(L"c:legend")
         {
-
 			CP_XML_NODE(L"c:legendPos")
 			{
-				CP_XML_ATTR(L"val", "r");//  "b" | "l" |  "r" |  "t"// == bottom left right top
+				CP_XML_ATTR(L"val", content_.position);
 
 			}
             layout_.oox_serialize(CP_XML_STREAM());		

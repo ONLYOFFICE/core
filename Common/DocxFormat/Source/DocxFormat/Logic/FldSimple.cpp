@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -245,40 +245,40 @@ namespace OOX
 
 		std::wstring CFldSimple::toXML() const
 		{
-				std::wstring sResult = _T("<w:fldSimple ");
+			std::wstring sResult = _T("<w:fldSimple ");
 
-				sResult += _T("w:dirty=\"");
-				sResult += m_oDirty.ToString();
+			sResult += _T("w:dirty=\"");
+			sResult += m_oDirty.ToString();
+			sResult += _T("\" ");
+			sResult += _T("w:fldLock=\"");
+			sResult += m_oFldLock.ToString();
+			sResult += _T("\" ");
+
+			if ( m_sInstr.IsInit() )
+			{
+				sResult += _T("w:instr=\"");
+                sResult += m_sInstr.get2();
 				sResult += _T("\" ");
-				sResult += _T("w:fldLock=\"");
-				sResult += m_oFldLock.ToString();
-				sResult += _T("\" ");
+			}
 
-				if ( m_sInstr.IsInit() )
-				{
-					sResult += _T("w:instr=\"");
-                    sResult += m_sInstr.get2();
-					sResult += _T("\" ");
-				}
+			sResult += _T(">");
 
-				sResult += _T(">");
+			if (m_oFFData.IsInit())
+			{
+				sResult += m_oFFData->toXML();
+			}
 
-				if (m_oFFData.IsInit())
-				{
-					sResult += m_oFFData->toXML();
-				}
+            for ( size_t i = 0; i < m_arrItems.size(); ++i)
+            {
+                if ( m_arrItems[i] )
+                {
+                    sResult += m_arrItems[i]->toXML();
+                }
+            }
 
-				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-					{
-						sResult += m_arrItems[nIndex]->toXML();
-					}
-				}
+			sResult += _T("</w:fldSimple>");
 
-				sResult += _T("</w:fldSimple>");
-
-				return sResult;
+			return sResult;
 		}
 
 	} // namespace Logic

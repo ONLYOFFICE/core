@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,7 +44,11 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(WavAudioFile)
-			PPTX_LOGIC_BASE2(WavAudioFile)
+			
+			WavAudioFile(const std::wstring & name = L"wavAudioFile")
+			{
+				m_name = name;
+			}
 
 			WavAudioFile& operator=(const WavAudioFile& oSrc)
 			{
@@ -100,14 +104,17 @@ namespace PPTX
 				
 				pWriter->EndNode(_T("a:") + m_name);
 			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-		public:
-			nullable_string name;
-			OOX::RId		embed;
-		public:
-			std::wstring			m_name;
+			nullable_string			name;
+			OOX::RId				embed;
+
+			std::wstring			m_name; //node name
 		protected:
 			virtual void FillParentPointersForChilds(){};
+			
+			std::wstring GetPathFromId(OOX::IFileContainer* pRels, const std::wstring & rId) const;
 		};
 	} // namespace Logic
 } // namespace PPTX

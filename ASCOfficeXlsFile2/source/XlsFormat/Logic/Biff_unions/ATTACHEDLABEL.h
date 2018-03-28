@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of ATTACHEDLABEL union of records 
 class ATTACHEDLABEL: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(ATTACHEDLABEL)
@@ -65,6 +63,7 @@ public:
 	BaseObjectPtr m_ObjectLink;
 	BaseObjectPtr m_DataLabExtContents;
 	BaseObjectPtr m_TEXTPROPS;
+	BaseObjectPtr m_CrtLayout12;
 
 	short	m_iLinkObject;
 	bool	m_bUsed;

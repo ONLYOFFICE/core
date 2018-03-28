@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -104,7 +104,7 @@ public:
 	void end_drawing();
 	void end_drawing_background(odf_types::common_draw_fill_attlist & common_draw_attlist);
 	
-	int	get_group_level();	
+	size_t	get_group_level();	
 	void start_group();		
 		void set_group_flip_H	(bool bVal);
 		void set_group_flip_V	(bool bVal);
@@ -152,6 +152,8 @@ public:
 
 	void add_image_replacement();
 	void set_image_replacement(std::wstring ref);
+
+	void set_program(std::wstring program);
 
 	bool isLineShape();
 	void corrected_line_fill();
@@ -229,6 +231,7 @@ public:
 	void set_textarea_fontcolor		(std::wstring hexColor);
 	void set_textarea_font			(std::wstring & latin, std::wstring & cs, std::wstring & ea);
 	void set_textarea_fit_to_size	(bool val);
+	void set_textarea_rotation		(double val);
 
 	void set_placeholder_id			(std::wstring val);
 	void set_placeholder_type		(int val);

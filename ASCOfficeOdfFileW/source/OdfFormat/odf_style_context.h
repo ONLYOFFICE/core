@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,6 +52,7 @@ typedef shared_ptr<odf_style_context>::Type odf_style_context_ptr;
 
 class style;
 class paragraph_format_properties;
+class text_format_properties_content;
 
 class odf_style_context
 {
@@ -94,7 +95,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////
 	void calc_paragraph_properties(std::wstring style_name, odf_types::style_family::type family, paragraph_format_properties * result);
-
+	void calc_text_properties(std::wstring style_name, odf_types::style_family::type family, text_format_properties_content * result);
 //////////////////////////////////////////////////////////////////////
 	std::wstring find_odf_style_name (int oox_id_style, odf_types::style_family::type family, bool root, bool automatic);//xlsx only
 	bool		 find_odf_style_state(int oox_id_style, odf_types::style_family::type family, odf_style_state_ptr & state, bool root, bool automatic);//xlsx only

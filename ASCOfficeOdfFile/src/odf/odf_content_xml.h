@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,19 +43,15 @@ class content_xml_t : public common::read_doc_element
 public:
     content_xml_t()
     {}
-
-public:
     office_element * get_content()
     {
-        return xml_content_.get();
+        return content_.get();
     }
 
     const office_element * get_content() const
     {
-        return xml_content_.get();
+        return content_.get();
     }
-
-public:
     void docx_convert(oox::docx_conversion_context & Context);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
@@ -64,13 +60,14 @@ public:
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_text(const std::wstring & Text);
-    document_context * getContext();
-
-private:
-    office_element_ptr xml_content_;
+    
     friend class odf_document;
-    document_context context_;
+	
+    office_element_ptr	content_;
+    document_context	context_;
 };
+
+typedef shared_ptr<content_xml_t>::Type content_xml_t_ptr;
 
 }
 }

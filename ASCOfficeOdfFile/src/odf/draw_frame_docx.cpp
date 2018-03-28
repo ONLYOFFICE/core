@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -1383,7 +1383,13 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 }
 void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 {
-	if (Context.get_drawing_context().get_current_level() > 0 && !Context.get_drawing_context().in_group() )
+	bool bImage = false;
+	if (content_.empty() == false)
+	{
+		if (content_[0]->get_type() == typeDrawImage)
+			bImage = true;
+	}
+	if (Context.get_drawing_context().get_current_level() > 0 && !Context.get_drawing_context().in_group() && !bImage)
     {
         Context.add_delayed_element(this);
         return;

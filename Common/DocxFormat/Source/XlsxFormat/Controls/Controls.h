@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -305,15 +305,14 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_mapControls.size() > 0)
+				if(m_mapControls.empty()) return;
+				
+				writer.WriteString(L"<controls>");
+				for(std::map<int, CControl*>::const_iterator it = m_mapControls.begin(); it != m_mapControls.end(); it++)
 				{
-					writer.WriteString(L"<controls>");
-					for(std::map<int, CControl*>::const_iterator it = m_mapControls.begin(); it != m_mapControls.end(); it++)
-					{
-						it->second->toXML(writer);
-					}
-					writer.WriteString(L"</controls>");
+					it->second->toXML(writer);
 				}
+				writer.WriteString(L"</controls>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

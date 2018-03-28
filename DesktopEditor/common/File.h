@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -850,35 +850,37 @@ namespace NSFile
 		static bool Copy(const std::wstring&  strSrc, const std::wstring&  strDst)
 		{
 			if (strSrc == strDst)
-                            return true;
+				return true;
 
-                        std::ifstream src;
-                        std::ofstream dst;
+			std::ifstream src;
+			std::ofstream dst;
 
-                        int nLenBuffer = 1024 * 1024; // 10
-                        CFileBinary oFile;
-                        if (oFile.OpenFile(strSrc))
-                        {
-                            int nFileSize = (int)oFile.GetFileSize();
-                            if (nFileSize < nLenBuffer)
-                                nLenBuffer = nFileSize;
-                        }
+			int nLenBuffer = 1024 * 1024; // 10
+			CFileBinary oFile;
+			if (oFile.OpenFile(strSrc))
+			{
+				int nFileSize = (int)oFile.GetFileSize();
+				if (nFileSize < nLenBuffer)
+					nLenBuffer = nFileSize;
 
-                        char* pBuffer_in = NULL;
-                        char* pBuffer_out = NULL;
+				oFile.CloseFile();
+			}
 
-                        if (nLenBuffer > 0)
-                        {
-                            pBuffer_in = new char[nLenBuffer];
-                            pBuffer_out = new char[nLenBuffer];
+			char* pBuffer_in = NULL;
+			char* pBuffer_out = NULL;
 
-                            src.rdbuf()->pubsetbuf(pBuffer_in, nLenBuffer);
-                            dst.rdbuf()->pubsetbuf(pBuffer_out, nLenBuffer);
-                        }
+			if (nLenBuffer > 0)
+			{
+				pBuffer_in = new char[nLenBuffer];
+				pBuffer_out = new char[nLenBuffer];
+
+				src.rdbuf()->pubsetbuf(pBuffer_in, nLenBuffer);
+				dst.rdbuf()->pubsetbuf(pBuffer_out, nLenBuffer);
+			}
 
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-                        src.open(strSrc.c_str(), std::ios::binary);
-                        dst.open(strDst.c_str(), std::ios::binary);
+			src.open(strSrc.c_str(), std::ios::binary);
+			dst.open(strDst.c_str(), std::ios::binary);
 #else
 			BYTE* pUtf8Src = NULL;
 			LONG lLenSrc = 0;
@@ -887,25 +889,26 @@ namespace NSFile
 			LONG lLenDst = 0;
 			CUtf8Converter::GetUtf8StringFromUnicode(strDst.c_str(), strDst.length(), pUtf8Dst, lLenDst, false);
 
-                        src.open((char*)pUtf8Src, std::ios::binary);
-                        dst.open((char*)pUtf8Dst, std::ios::binary);
+			src.open((char*)pUtf8Src, std::ios::binary);
+			dst.open((char*)pUtf8Dst, std::ios::binary);
 
 			delete [] pUtf8Src;
 			delete [] pUtf8Dst;
 #endif
 
-                        bool bRet = false;
+			bool bRet = false;
+			
 			if (src.is_open() && dst.is_open())
 			{
 				dst << src.rdbuf();
 				src.close();
 				dst.close();
 
-                                bRet = true;
+				bRet = true;
 			}
-                        RELEASEARRAYOBJECTS(pBuffer_in);
-                        RELEASEARRAYOBJECTS(pBuffer_out);
-                        return bRet;
+			RELEASEARRAYOBJECTS(pBuffer_in);
+			RELEASEARRAYOBJECTS(pBuffer_out);
+			return bRet;
 		}
 		static bool Remove(const std::wstring& strFileName)
 		{

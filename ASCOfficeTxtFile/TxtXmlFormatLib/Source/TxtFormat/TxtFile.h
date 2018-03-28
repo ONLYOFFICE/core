@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,7 +34,7 @@
 #define UTILITY_TXT_FILE_INCLUDE_H_
 
 #include <string>
-#include <list>
+#include <vector>
 
 #include "../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 
@@ -43,17 +43,17 @@ class TxtFile
 public:
 	TxtFile(const std::wstring & path);
 
-	const std::list<std::string>	readAnsiOrCodePage();
-    const std::list<std::wstring>	readUnicodeFromBytes(char *file_data, long file_size);
-	const std::list<std::wstring>	readUnicode();
-	//const std::list<std::wstring>	readUnicodeWithOutBOM(); /// не используем
-	const std::list<std::wstring>	readBigEndian();
-	const std::list<std::string>	readUtf8();
+    const std::vector<std::string>	readAnsiOrCodePage();
+    const std::vector<std::wstring>	readUnicodeFromBytes(char *file_data, long file_size);
+    const std::vector<std::wstring>	readUnicode();
+    //const std::vector<std::wstring>	readUnicodeWithOutBOM(); /// не используем
+    const std::vector<std::wstring>	readBigEndian();
+    const std::vector<std::string>	readUtf8();
 
-	void writeAnsiOrCodePage	(const std::list<std::string>& content);
-	void writeUnicode			(const std::list<std::wstring>& content);
-	void writeBigEndian			(const std::list<std::wstring>& content);
-	void writeUtf8				(const std::list<std::string>& content);
+    void writeAnsiOrCodePage	(const std::vector<std::string>& content);
+    void writeUnicode			(const std::vector<std::wstring>& content);
+    void writeBigEndian			(const std::vector<std::wstring>& content);
+    void writeUtf8				(const std::vector<std::string>& content);
 
 	const bool	isUnicode();
 	const bool	isBigEndian();

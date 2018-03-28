@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -90,6 +90,11 @@ void odp_conversion_context::end_document()
 {
 	odf_conversion_context::end_document();
 }
+
+size_t odp_conversion_context::get_pages_count()
+{
+	return root_presentation_->pages_.size();
+}
 void odp_conversion_context::start_slide()
 {
 	slide_context_.set_styles_context(styles_context());
@@ -132,8 +137,7 @@ void odp_conversion_context::end_layout_slide()
 }
 void odp_conversion_context::start_text_context()
 {
-	text_context_ = new odf_text_context(this);
-	text_context_->set_styles_context(slide_context_.get_styles_context());
+	text_context_ = new odf_text_context(this, slide_context_.get_styles_context());
 }
 void odp_conversion_context::end_text_context()
 {

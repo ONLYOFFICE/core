@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,7 +53,6 @@ namespace DocFileFormat
 
 		PathParser (const unsigned char* pSegmentInfo, unsigned int pSegmentInfoSize, const unsigned char* pVertices, unsigned int pVerticesSize, std::vector<_guides> & guides)
 		{
-			int offset = 6;
 			
 			if ((pSegmentInfo != NULL) && (pSegmentInfoSize > 0))
 			{
@@ -63,6 +62,7 @@ namespace DocFileFormat
 				
 				unsigned short cbElement = 4;
 
+				int offset = 6;
 				if (cb == 0xfff0)
 					cbElement = 2;
 
@@ -86,24 +86,27 @@ namespace DocFileFormat
 				unsigned short nElemsAlloc	=	FormatUtils::BytesToUInt16(pVertices, 2, pVerticesSize);
 				unsigned short cb			=	FormatUtils::BytesToUInt16(pVertices, 4, pVerticesSize);
 
-				unsigned short cbElement = cb;
+				unsigned short cbElement = 4;
 
 				if (cb == 0xfff0)
-					cbElement = 4;
+					cbElement = 2;
+
+				int offset = 6;
 
 				for (unsigned short i = 0; i < nElems; ++i)
 				{				
 					POINT point;	
 					if (cbElement == 4)
 					{
-						point.x	= FormatUtils::BytesToInt16(pVertices + offset, (i * cbElement), pVerticesSize - offset);
-						point.y	= FormatUtils::BytesToInt16(pVertices + offset, (i * cbElement) + (cbElement / 2), pVerticesSize - offset);
+						point.x	= FormatUtils::BytesToInt32(pVertices + offset, 0, pVerticesSize - offset);
+						point.y	= FormatUtils::BytesToInt32(pVertices + offset + cbElement, 0 , pVerticesSize - offset);
 					}
 					else
 					{
-						point.x	= FormatUtils::BytesToInt32(pVertices + offset, (i * cbElement), pVerticesSize - offset);
-						point.y	= FormatUtils::BytesToInt32(pVertices + offset, (i * cbElement) + (cbElement / 2), pVerticesSize - offset);
+						point.x	= FormatUtils::BytesToInt16(pVertices + offset, 0, pVerticesSize - offset);
+						point.y	= FormatUtils::BytesToInt16(pVertices + offset + cbElement, 0 , pVerticesSize - offset);
 					}
+					offset += cbElement * 2;
 
 					LONG lMinF = (LONG)0x80000000;
 					if (lMinF <= point.x)

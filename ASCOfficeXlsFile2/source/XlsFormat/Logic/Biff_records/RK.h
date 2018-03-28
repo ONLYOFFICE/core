@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,14 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/RkRec.h>
-#include <Logic/Biff_structures/Cell.h>
+#include "../Biff_structures/RkRec.h"
+#include "../Biff_structures/Cell.h"
 
 namespace XLS
 {
 
-
-// Logical representation of RK record in BIFF8
 class RK: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(RK)
@@ -49,7 +47,6 @@ public:
 	~RK();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 

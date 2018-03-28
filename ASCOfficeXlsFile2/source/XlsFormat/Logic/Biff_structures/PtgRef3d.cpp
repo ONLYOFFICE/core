@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,8 +41,7 @@ namespace XLS
 {
 
 
-PtgRef3d::PtgRef3d(const CellRef& cell_base_ref_init)
-:	cell_base_ref(cell_base_ref_init)
+PtgRef3d::PtgRef3d(const CellRef& cell_base_ref_init) :	cell_base_ref(cell_base_ref_init)
 {
 }
 
@@ -106,22 +105,38 @@ void PtgRef3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 
 	if (global_info->Version < 0x0600)
 	{
+		ixti = ixals;
 		if (ixals == 0xffff)
 		{
-			std::wstring prefix = XMLSTUFF::xti_indexes2sheet_name(itabFirst, itabLast, global_info->sheets_names);
-			if (!prefix.empty()) prefix += L"!";
+			std::wstring strRange;
+			if(-1 == itabFirst)
+			{
+				strRange = L"#REF";
+			}
+			else
+			{
+				strRange = XMLSTUFF::name2sheet_name(global_info->sheets_info[itabFirst].name, L"");
+				if (itabFirst != itabLast)
+				{
+					strRange += std::wstring(L":") + XMLSTUFF::name2sheet_name(global_info->sheets_info[itabLast].name, L"");
+				}
+			}
+			if (!strRange.empty()) strRange += L"!";
 
-			ptg_stack.push(prefix + cell_ref);
-		}
-		else
-		{
-			ptg_stack.push(XMLSTUFF::make3dRef(ixals, cell_ref, global_info->xti_parsed, full_ref)); // from External !
+			ptg_stack.push(strRange + cell_ref);
 		}
 	}
-	else
+	if (ixti != 0xffff)
 	{
-		cell_ref = XMLSTUFF::make3dRef(ixti, cell_ref, global_info->xti_parsed, full_ref);
-		ptg_stack.push(cell_ref);
+		std::wstring link = global_info->arXti_External[ixti].link;
+		if (!link.empty() && !cell_ref.empty()) 
+			link += L"!";
+		
+		if (full_ref && link.empty()) //Stock symbols comparison1.xls defined name "check_phrase"
+		{
+			link = L"#REF!";
+		}
+		ptg_stack.push(link + cell_ref);
 	}
 }
 

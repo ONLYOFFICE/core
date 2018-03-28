@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,11 +38,11 @@
 
 namespace PPTX
 {
-	class Folder : public PPTX::FileContainer
+	class Document : public OOX::Document, public PPTX::FileContainer
 	{
 	public:
-		Folder();
-		Folder(const OOX::CPath& path, IPPTXEvent* Event);
+		Document();
+		Document(const OOX::CPath& path, IPPTXEvent* Event);
 
 		void read(const OOX::CPath& path, IPPTXEvent* Event);
 		void write(const OOX::CPath& path);
@@ -50,8 +50,8 @@ namespace PPTX
 
 		const bool isValid(const OOX::CPath& path) const;
 
-		void extractPictures(const OOX::CPath& path);
-		void extractPictures(const OOX::CPath& source, const OOX::CPath& path);
+		//void extractPictures(const OOX::CPath& path);
+		//void extractPictures(const OOX::CPath& source, const OOX::CPath& path);
 	private:
 		long CountFiles(const OOX::CPath& path);
 	};

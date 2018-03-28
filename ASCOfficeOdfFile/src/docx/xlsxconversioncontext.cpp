@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -437,6 +437,7 @@ void xlsx_conversion_context::end_table()
     get_table_context().serialize_autofilter			(current_sheet().autofilter());
     get_table_context().serialize_sort					(current_sheet().sort());
     get_table_context().serialize_merge_cells			(current_sheet().mergeCells());
+	get_table_context().serialize_data_validation		(current_sheet().dataValidations());
     
 	get_drawing_context().set_odf_packet_path			(root()->get_folder());
     get_drawing_context().process_objects				(get_table_metrics());

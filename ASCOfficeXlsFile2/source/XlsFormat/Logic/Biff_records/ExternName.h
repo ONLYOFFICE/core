@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,11 +48,10 @@ class ExternName: public BiffRecord
 	BIFF_RECORD_DEFINE_TYPE_INFO(ExternName)
 	BASE_OBJECT_DEFINE_CLASS_NAME(ExternName)
 public:
-	ExternName(const unsigned short supporting_link_type);
+	ExternName(const unsigned short supporting_link_type, bool bOle);
 	~ExternName();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
@@ -64,24 +63,13 @@ public:
 	bool fWantPict;
 	bool fOle;
 	bool fOleLink;
-	_UINT16 cf;
+	short cf;
 	bool fIcon;
 	BiffStructurePtr body;
 
 //-----------------------------
-	_UINT16 supbook_cch;
-
-	//if(0x3A01 == supbook_cch)
-	//{
-	//	if(!body)
-	//	{
-	//		body = BiffStructurePtr(new AddinUdf);
-	//	}
-	//}
-	//else
-	//{
-	//}
-
+	_UINT16		supbook_cch;
+	bool		bOleVirtualPath;
 };
 
 typedef boost::shared_ptr<ExternName> ExternNamePtr;

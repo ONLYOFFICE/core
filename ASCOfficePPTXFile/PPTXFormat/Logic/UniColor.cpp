@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -250,6 +250,20 @@ namespace PPTX
 			}
 
 			pReader->Seek(read_end);
+		}
+		void UniColor::GetColorFrom(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				fromXML(oReader);
+
+				if (Color.is_init())
+					break;
+			}
 		}
 
 		void UniColor::GetColorFrom(XmlUtils::CXmlNode& element)

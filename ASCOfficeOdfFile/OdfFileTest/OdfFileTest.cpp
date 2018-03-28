@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,7 +49,7 @@
 
 HRESULT convert_single(std::wstring srcFileName)
 {
-	HRESULT hr = S_OK;
+	int nResult = 0;
 
 	COfficeFileFormatChecker fileChecker(srcFileName);
 
@@ -57,16 +57,19 @@ HRESULT convert_single(std::wstring srcFileName)
 	switch(fileChecker.nFileType)
 	{
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT:
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT:
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT_FLAT:		dstPath += L"-my.docx"; break;
 	
 	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS:
+	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS:
 	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS_FLAT:	dstPath += L"-my.xlsx"; break;
 	
 	case AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP:
+	case AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP:
 	case AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP_FLAT:	dstPath += L"-my.pptx"; break;
 
 	default:
-		return S_FALSE;
+		return -1;
 	}
 //---------------------------------------------------------------------------------------------------
 	COfficeUtils oCOfficeUtils(NULL);
@@ -77,12 +80,15 @@ HRESULT convert_single(std::wstring srcFileName)
 
 	if (fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT		||
 		fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS	||
-		fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP)
+		fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP ||
+		fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT		||
+		fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS	||
+		fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP)
 	{		
 		srcTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
 		if (S_OK != oCOfficeUtils.ExtractToDirectory(srcFileName.c_str(), srcTempPath.c_str(), NULL, 0))
-			return S_FALSE;
+			return -2;
 	}
 	else // flat
 	{
@@ -90,21 +96,22 @@ HRESULT convert_single(std::wstring srcFileName)
 	}
     _CP_LOG << L"[info] " << srcFileName << std::endl;
 	
-	hr = ConvertOO2OOX(srcTempPath, dstTempPath, L"C:\\Windows\\Fonts", false, NULL);
+	nResult = ConvertODF2OOXml(srcTempPath, dstTempPath, L"C:\\Windows\\Fonts", false, NULL);
 
 	if (srcTempPath != srcFileName)
 	{
 		NSDirectory::DeleteDirectory(srcTempPath);
 	}
 
-	if (hr != S_OK)  return hr;
-   
-	if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath.c_str(), true))
-        return hr;
+	if (nResult == 0)
+	{   
+		if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath.c_str(), true))
+			nResult = -2;
+	}
 	
 	NSDirectory::DeleteDirectory(dstTempPath);
 
-	return hr;
+	return nResult;
 }
 
 HRESULT convert_directory(std::wstring pathName)
@@ -125,6 +132,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	if (argc < 2) return 1;
 
 	HRESULT hr = -1;
+
 	if (NSFile::CFileBinary::Exists(argv[1]))
 	{	
 		hr = convert_single(argv[1]);

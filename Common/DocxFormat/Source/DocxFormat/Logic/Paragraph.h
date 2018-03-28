@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -72,43 +72,33 @@ namespace OOX
 			{
 				m_oParagraphProperty = NULL;
 			}
-
-		public:
-
 			const CParagraph &operator =(const XmlUtils::CXmlNode& oNode)
 			{
-				Clear();
+				ClearItems();
+				
 				fromXML( (XmlUtils::CXmlNode&)oNode );
 				return *this;
 			}
 
 			const CParagraph &operator =(const XmlUtils::CXmlLiteReader& oReader)
 			{
-				Clear();
+				ClearItems();
+				
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
 
-		public:
-
-			void Clear()
+			virtual void ClearItems()
 			{
 				m_oRsidDel.reset();
 				m_oRsidP.reset();
 				m_oRsidR.reset();
 				m_oRsidRDefault.reset();
 				m_oRsidRPr.reset();
-				
-				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.clear();
+			
 				m_oParagraphProperty = NULL;
+				
+				WritingElementWithChilds<>::ClearItems();
 			}
 
 			void AddRun(CRun *pRun);

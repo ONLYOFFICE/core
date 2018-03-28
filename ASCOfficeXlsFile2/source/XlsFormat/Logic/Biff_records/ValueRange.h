@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,12 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
 
-
-// Logical representation of ValueRange record in BIFF8
 class ValueRange: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(ValueRange)
@@ -53,11 +52,11 @@ public:
 	static const ElementType	type = typeValueRange;
 
 //-----------------------------
-	BIFF_DOUBLE numMin;
-	BIFF_DOUBLE numMax;
-	BIFF_DOUBLE numMajor;
-	BIFF_DOUBLE numMinor;
-	BIFF_DOUBLE numCross;
+	Xnum numMin;
+	Xnum numMax;
+	Xnum numMajor;
+	Xnum numMinor;
+	Xnum numCross;
 
 	bool fAutoMin;
 	bool fAutoMax;

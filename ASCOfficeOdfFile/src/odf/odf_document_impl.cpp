@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -93,20 +93,7 @@ namespace cpdoccore {
 
 namespace odf_reader {
 
-namespace {
-content_xml_t_ptr read_file_content(const std::wstring & Path)
-{
-    xml::sax_ptr Reader = xml::create_sax( Path.c_str());
-    content_xml_t_ptr result( new content_xml_t() );
-    
-	const std::wstring namespacePrefix	= Reader->namespacePrefix();
-	const std::wstring localName		= Reader->nodeLocalName();
-	
-	result->add_child_element(Reader.get(), namespacePrefix, localName);		
-
-    return result;
-}
-content_xml_t_ptr read_file_content(xml::sax * reader_owner)
+content_xml_t_ptr odf_document::Impl::read_file_content(xml::sax * reader_owner)
 {
 	if (!reader_owner) return content_xml_t_ptr();
 
@@ -119,6 +106,18 @@ content_xml_t_ptr read_file_content(xml::sax * reader_owner)
 
     return result;
 }
+
+content_xml_t_ptr odf_document::Impl::read_file_content(const std::wstring & Path)
+{
+	cpdoccore::xml::sax_ptr Reader = cpdoccore::xml::create_sax( Path.c_str());
+    content_xml_t_ptr result( new content_xml_t() );
+    
+	const std::wstring namespacePrefix	= Reader->namespacePrefix();
+	const std::wstring localName		= Reader->nodeLocalName();
+	
+	result->add_child_element(Reader.get(), namespacePrefix, localName);		
+
+    return result;
 }
 odf_document::Impl::Impl(xml::sax * Reader): 
 			context_(new odf_read_context()), base_folder_(L""), pCallBack(NULL), bUserStopConvert (0)
@@ -161,6 +160,7 @@ odf_document::Impl::Impl(const std::wstring & srcPath, const ProgressCallback* C
 		std::wstring meta_xml		= srcPath + FILE_SEPARATOR_STR + L"meta.xml";
 		std::wstring settings_xml	= srcPath + FILE_SEPARATOR_STR + L"settings.xml";
 		std::wstring manifest_xml	= srcPath + FILE_SEPARATOR_STR + L"META-INF" + FILE_SEPARATOR_STR + L"manifest.xml";
+		std::wstring mimetype_xml	= srcPath + FILE_SEPARATOR_STR + L"mimetype";
 
 		_CP_LOG << L"[info] read manifest.xml" << std::endl;
 		manifest_xml_ = read_file_content(manifest_xml);
@@ -173,6 +173,9 @@ odf_document::Impl::Impl(const std::wstring & srcPath, const ProgressCallback* C
 
 		  _CP_LOG << L"[info] read styles.xml" << std::endl;
 		styles_xml_ = read_file_content(styles_xml);
+
+		_CP_LOG << L"[info] read mimetype" << std::endl;
+		NSFile::CFileBinary::ReadAllTextUtf8(mimetype_xml, mimetype_content_file_); 
 //----------------------------------------------------------------------------------------
 		_CP_LOG << L"[info] parse fonts" << std::endl;
 		parse_fonts(content_xml_ ? content_xml_->get_content() : NULL);
@@ -182,6 +185,11 @@ odf_document::Impl::Impl(const std::wstring & srcPath, const ProgressCallback* C
 
 		_CP_LOG << L"[info] parse manifest" << std::endl;
 		parse_manifests(manifest_xml_ ? manifest_xml_->get_content() : NULL);
+
+		if (!office_mime_type_)
+		{
+			office_mime_type_ = GetMimetype(mimetype_content_file_);
+		}
 
 		_CP_LOG << L"[info] parse settings" << std::endl;
 		parse_settings(settings_xml_ ? settings_xml_->get_content() : NULL);
@@ -305,6 +313,22 @@ void odf_document::Impl::parse_fonts(office_element *element)
     }
     while (0);
 }
+int odf_document::Impl::GetMimetype(std::wstring value)
+{
+	if (std::wstring::npos != value.find(L"application/vnd.oasis.opendocument.text"))
+	{
+		return 1;
+	}
+	else if (std::wstring::npos != value.find(L"application/vnd.oasis.opendocument.spreadsheet"))
+	{
+		return 2;
+	}
+	else if (std::wstring::npos != value.find(L"application/vnd.oasis.opendocument.presentation"))
+	{
+		return 3;
+	}
+	return 0;
+}
 void odf_document::Impl::parse_manifests(office_element *element)
 {
     office_document_base * document = dynamic_cast<office_document_base *>( element );
@@ -322,34 +346,12 @@ void odf_document::Impl::parse_manifests(office_element *element)
 
 		if (entry->full_path_ == L"/")
 		{
-			if (std::wstring::npos != entry->media_type_.find(L"application/vnd.oasis.opendocument.text"))
-			{
-				office_mime_type_ = 1;
-			}
-			else if (std::wstring::npos != entry->media_type_.find(L"application/vnd.oasis.opendocument.spreadsheet"))
-			{
-				office_mime_type_ = 2;
-			}
-			else if (std::wstring::npos != entry->media_type_.find(L"application/vnd.oasis.opendocument.presentation"))
-			{
-				office_mime_type_ = 3;
-			}
+			office_mime_type_ = GetMimetype(entry->media_type_);
 		}
 	}
 	if (!office_mime_type_ && !document->office_mimetype_.empty())
 	{
-		if (std::wstring::npos != document->office_mimetype_.find(L"application/vnd.oasis.opendocument.text"))
-		{
-			office_mime_type_ = 1;
-		}
-		else if (std::wstring::npos != document->office_mimetype_.find(L"application/vnd.oasis.opendocument.spreadsheet"))
-		{
-			office_mime_type_ = 2;
-		}
-		else if (std::wstring::npos != document->office_mimetype_.find(L"application/vnd.oasis.opendocument.presentation"))
-		{
-			office_mime_type_ = 3;
-		}
+		office_mime_type_ = GetMimetype(document->office_mimetype_);
 	}
 }
 

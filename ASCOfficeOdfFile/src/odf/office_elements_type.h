@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -69,14 +69,38 @@ enum ElementType
     typeTextTime,
     typeTextModificationTime,
     typeTextFileName,
-    typeTextSequence,
     typeTextSheetName,
+    typeTextTemplateName,
+	typeTextDropDown,
+	typeTextLabel,
+	typeTextSenderCompany,
+	typeTextSenderFirstname,
+	typeTextSenderLastname,
+	typeTextSenderTitle,
+	typeTextSenderPosition,
+	typeTextSenderEmail,
+	typeTextSenderFax,
+	typeTextSenderPhonePrivate,
+	typeTextSenderPhoneWork,
+	typeTextSenderStreet,
+	typeTextSenderCity,
+	typeTextSenderCountry,
+	typeTextSenderPostalCode,
+	typeTextSenderStateOrProvince,
+	typeTextAuthorInitials,
+	typeTextAuthorName,
+
+    typeTextSequenceDecls,
+    typeTextSequenceDecl,
+    typeTextSequence,
 
 	typePresentationFooter,
 	typePresentationDateTime,
 
 	typeDcCreator,
 	typeDcDate,
+
+	typeDrawA,
 
     typeTextH,
     typeTextP,
@@ -90,28 +114,42 @@ enum ElementType
     typeTextSectionSource,
     typeTextIndexTitle,
     typeTextIndexBody,
-
-    typeTextNumberedParagraph,    
-   
-    typeDrawA,
+    typeTextNumberedParagraph, 
+	typeTextExpression,    
 
     typeTextTableOfContent,
-    typeTextIllustrationIndex,
-    typeTextTableIndex,
-    typeTextObjectIndex,
-    typeTextUserIndex,
-    typeTextAlphabeticalIndex,
-    typeTextBibliography,
-
-	typeTextBibliographyMark,
-  	
     typeTextTableOfContentSource,
+    
+	typeTextIllustrationIndex,
     typeTextIllustrationIndexSource,
+   
+	typeTextTableIndex,
     typeTextTableIndexSource,
+    
+	typeTextObjectIndex,
     typeTextObjectIndexSource,
+   
+	typeTextUserIndex,
     typeTextUserIndexSource,
+    
+	typeTextAlphabeticalIndex,
     typeTextAlphabeticalIndexSource,
-    typeTextBibliographySource,
+   
+	typeTextBibliography,
+	typeTextBibliographyMark,
+    typeTextBibliographySource,  	
+
+	typeTextVariableInput,
+	typeTextVariableGet,
+	typeTextVariableSet,
+	typeTextVariableDecl,
+	typeTextVariableDecls,
+
+	typeTextUserFieldDecls,
+	typeTextUserFieldDecl,
+	typeTextUserFieldGet,
+	typeTextUserFieldSet,
+	typeTextUserFieldInput,
 
 	typeTextTrackedChanges,
 	typeTextChangedRegion,
@@ -124,6 +162,11 @@ enum ElementType
 	typeTextDeletion,
 	typeTextFormatChange,
 	typeTextInsertion,
+
+	typeTextMeta,
+	typeTextMetaField,
+
+	typeTextTextInput,
 
 	typeShape,
     typeChangeMarks,
@@ -206,6 +249,14 @@ enum ElementType
 	typeTableDatabaseRange,
 	typeTableSort,
 	typeTableSortBy,
+	typeTableCalculationSettings,
+    typeTableNullDate,
+    typeTableShapes,
+	typeTableContentValidation,
+	typeTableContentValidations,
+	typeTableHelpMassage,
+	typeTableErrorMassage,
+	typeTableErrorMacro,
 
 	typeTableFilter,
 	typeTableFilterAnd,
@@ -384,9 +435,6 @@ enum ElementType
 
 	typeScriptEventListener,
 
-	typeTableCalculationSettings,
-    typeTableNullDate,
-
     typeNumberNumberStyle,
     typeNumberDataStyle,
     typeNumberText,
@@ -409,7 +457,6 @@ enum ElementType
     typeNumberMinutes,
     typeNumberSeconds,
     typeNumberAmPm,
-    typeTableShapes,
 
     typeChartChart,
     typeChartTitle,

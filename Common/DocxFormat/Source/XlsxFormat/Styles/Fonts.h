@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -56,14 +56,23 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{ 
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(_T("<font>"));
+				writer.WriteString(L"<font>");
 				if(m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit())
 				{
-					WritingStringValAttrEncodeXmlString(L"name", m_oRFont->m_sVal.get());
+					//todo more complex solution
+					//if name more then 31 chars Excel wants to recover xlsx
+					if (m_oRFont->m_sVal->length() <= 31)
+					{
+						WritingStringValAttrEncodeXmlString(L"name", m_oRFont->m_sVal.get());
+					}
+					else
+					{
+						WritingStringValAttrEncodeXmlString(L"name", m_oRFont->m_sVal->substr(0, 31));
+					}
 				}			
 				if(m_oCharset.IsInit() && m_oCharset->m_oCharset.IsInit())
 				{
@@ -76,54 +85,54 @@ namespace OOX
 				if(m_oBold.IsInit())
 				{
 					if(SimpleTypes::onoffTrue == m_oBold->m_oVal.GetValue())
-						writer.WriteString(_T("<b/>"));
+						writer.WriteString(L"<b/>");
 					else
-						writer.WriteString(_T("<b val=\"0\"/>"));
+						writer.WriteString(L"<b val=\"0\"/>");
 				}
 				if(m_oItalic.IsInit())
 				{
 					if(SimpleTypes::onoffTrue == m_oItalic->m_oVal.GetValue())
-						writer.WriteString(_T("<i/>"));
+						writer.WriteString(L"<i/>");
 					else
-						writer.WriteString(_T("<i val=\"0\"/>"));
+						writer.WriteString(L"<i val=\"0\"/>");
 				}
 				if(m_oStrike.IsInit())
 				{
 					if(SimpleTypes::onoffTrue == m_oStrike->m_oVal.GetValue())
-						writer.WriteString(_T("<strike/>"));
+						writer.WriteString(L"<strike/>");
 					else
-						writer.WriteString(_T("<strike val=\"0\"/>"));
+						writer.WriteString(L"<strike val=\"0\"/>");
 				}
 				if(m_oOutline.IsInit())
 				{
 					if(SimpleTypes::onoffTrue == m_oOutline->m_oVal.GetValue())
-						writer.WriteString(_T("<outline/>"));
+						writer.WriteString(L"<outline/>");
 					else
-						writer.WriteString(_T("<outline val=\"0\"/>"));
+						writer.WriteString(L"<outline val=\"0\"/>");
 				}
 				if(m_oShadow.IsInit())
 				{
 					if(SimpleTypes::onoffTrue == m_oShadow->m_oVal.GetValue())
-						writer.WriteString(_T("<shadow/>"));
+						writer.WriteString(L"<shadow/>");
 					else
-						writer.WriteString(_T("<shadow val=\"0\"/>"));
+						writer.WriteString(L"<shadow val=\"0\"/>");
 				}
 				if(m_oCondense.IsInit())
 				{
 					if(SimpleTypes::onoffTrue == m_oCondense->m_oVal.GetValue())
-						writer.WriteString(_T("<condense/>"));
+						writer.WriteString(L"<condense/>");
 					else
-						writer.WriteString(_T("<condense val=\"0\"/>"));
+						writer.WriteString(L"<condense val=\"0\"/>");
 				}
 				if(m_oExtend.IsInit())
 				{
 					if(SimpleTypes::onoffTrue == m_oExtend->m_oVal.GetValue())
-						writer.WriteString(_T("<extend/>"));
+						writer.WriteString(L"<extend/>");
 					else
-						writer.WriteString(_T("<extend val=\"0\"/>"));
+						writer.WriteString(L"<extend val=\"0\"/>");
 				}
 				if(m_oColor.IsInit())
-					m_oColor->toXML2(writer, _T("color"));
+					m_oColor->toXML2(writer, L"color");
 				if(m_oSz.IsInit() && m_oSz->m_oVal.IsInit())
 				{
 					WritingStringValAttrDouble(L"sz", m_oSz->m_oVal->GetValue());
@@ -152,7 +161,7 @@ namespace OOX
 				{
 					WritingStringValAttrString(L"scheme", m_oScheme->m_oFontScheme->ToString());
 				}
-				writer.WriteString(_T("</font>"));
+				writer.WriteString(L"</font>");
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -166,35 +175,35 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("b") == sName )
+					if ( L"b" == sName )
 						m_oBold = oReader;
-					else if ( _T("charset") == sName )
+					else if ( L"charset" == sName )
 						m_oCharset = oReader;
-					else if ( _T("color") == sName )
+					else if ( L"color" == sName )
 						m_oColor = oReader;
-					else if ( _T("condense") == sName )
+					else if ( L"condense" == sName )
 						m_oCondense = oReader;
-					else if ( _T("extend") == sName )
+					else if ( L"extend" == sName )
 						m_oExtend = oReader;
-					else if ( _T("family") == sName )
+					else if ( L"family" == sName )
 						m_oFamily = oReader;
-					else if ( _T("i") == sName )
+					else if ( L"i" == sName )
 						m_oItalic = oReader;
-					else if ( _T("name") == sName )
+					else if ( L"name" == sName )
 						m_oRFont = oReader;
-					else if ( _T("outline") == sName )
+					else if ( L"outline" == sName )
 						m_oOutline = oReader;
-					else if ( _T("scheme") == sName )
+					else if ( L"scheme" == sName )
 						m_oScheme = oReader;
-					else if ( _T("shadow") == sName )
+					else if ( L"shadow" == sName )
 						m_oShadow = oReader;
-					else if ( _T("strike") == sName )
+					else if ( L"strike" == sName )
 						m_oStrike = oReader;
-					else if ( _T("sz") == sName )
+					else if ( L"sz" == sName )
 						m_oSz = oReader;
-					else if ( _T("u") == sName )
+					else if ( L"u" == sName )
 						m_oUnderline = oReader;
-					else if ( _T("vertAlign") == sName )
+					else if ( L"vertAlign" == sName )
 						m_oVertAlign = oReader;
 				}
 			}
@@ -210,20 +219,20 @@ namespace OOX
 			}
 		public:
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oBold;
-			nullable<CCharset>												m_oCharset;
-			nullable<CColor>												m_oColor;
+			nullable<CCharset>														m_oCharset;
+			nullable<CColor>														m_oColor;
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oCondense;
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oExtend;
-			nullable<CFontFamily >											m_oFamily;
+			nullable<CFontFamily >													m_oFamily;
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oItalic;
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oOutline;
-			nullable<ComplexTypes::Spreadsheet::String>							m_oRFont;
-			nullable<CFontScheme>											m_oScheme;
+			nullable<ComplexTypes::Spreadsheet::String>								m_oRFont;
+			nullable<CFontScheme>													m_oScheme;
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oShadow;
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oStrike;
 			nullable<ComplexTypes::Spreadsheet::CDouble>							m_oSz;
-			nullable<CUnderline>											m_oUnderline;
-			nullable<CVerticalAlign>										m_oVertAlign;
+			nullable<CUnderline>													m_oUnderline;
+			nullable<CVerticalAlign>												m_oVertAlign;
 		};
 		class CFonts : public WritingElementWithChilds<CFont>
 		{
@@ -240,31 +249,43 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(_T("<fonts"));
+				writer.WriteString(L"<fonts");
 				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
-				writer.WriteString(_T(">"));
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-					m_arrItems[i]->toXML(writer);
-				writer.WriteString(_T("</fonts>"));
+				writer.WriteString(L">");
+
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
+				writer.WriteString(L"</fonts>");
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( oReader.IsEmptyNode() )
 					return;
 
+				int index = 0;
+
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("font") == sName )
-						m_arrItems.push_back( new CFont( oReader ));
+					if ( L"font" == sName )
+					{
+						CFont *pFont = new CFont( oReader );
+						m_arrItems.push_back( pFont );
+						m_mapFonts.insert(std::make_pair(index++, pFont));
+					}
 				}
 			}
 
@@ -282,15 +303,13 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, L"count", m_oCount )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			std::map<int, CFont*>							m_mapFonts;
 		};
 	} //Spreadsheet
 } // namespace OOX

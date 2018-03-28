@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -96,8 +96,10 @@ public:
 	virtual void					start_text_context()	= 0;
 	virtual void					end_text_context()		= 0;
 
-    std::wstring add_image(const std::wstring & image_file_name);
-    std::wstring add_media(const std::wstring & file_name);
+    std::wstring add_image		(const std::wstring & image_file_name);
+    std::wstring add_media		(const std::wstring & file_name);
+    std::wstring add_oleobject	(const std::wstring & ole_file_name);
+    std::wstring add_imageobject(const std::wstring & ole_file_name);
 	
 	virtual odf_style_context		* styles_context();
 	

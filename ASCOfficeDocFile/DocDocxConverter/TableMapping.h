@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -58,7 +58,7 @@ namespace DocFileFormat
 		void AddItem( const ITableCellElement& _tableCellElement );
 		bool IsEmpty() const;
 		void Clear();
-		void Convert( IMapping* mapping, TablePropertyExceptions* tapx, const std::vector<short>* grid, int& gridIndex, int cellIndex );
+		void Convert( IMapping* mapping, TablePropertyExceptions* tapx, const std::vector<short>* grid, const std::vector<short>* grid_write, int& gridIndex, int cellIndex );
 		~TableCell();
 
 	private:
@@ -81,7 +81,7 @@ namespace DocFileFormat
 		void AddCell( const TableCell& _tableCell );
 		bool IsEmpty() const;
 		void Clear();
-		void Convert( IMapping* mapping, const std::vector<short>* grid );
+		void Convert( IMapping* mapping, const std::vector<short>* grid, const std::vector<short>* grid_write );
 		~TableRow();
 
 	private:

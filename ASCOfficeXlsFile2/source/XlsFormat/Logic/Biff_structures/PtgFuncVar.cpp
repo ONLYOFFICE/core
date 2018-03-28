@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -95,7 +95,6 @@ void PtgFuncVar::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool 
 				func_name == L"DAYSINMONTH"	||
 				func_name == L"ISLEAPYEAR"	||
 				func_name == L"MONTHS"		||
-				func_name == L"WEEKS"		||
 				func_name == L"WEEKSINYEAR"	||
 				func_name == L"YEARS")
 		{

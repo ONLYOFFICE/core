@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -47,17 +47,18 @@ public:
 	ObjFmla(const bool is_part_of_FtPictFmla);
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeObjFmla;
+	static const ElementType type = typeObjFmla;
 
 	virtual void load(CFRecord& record);
 
-
 	ObjectParsedFormula fmla;
 
-	bool is_part_of_FtPictFmla_;
-	bool fmla_found;
-	PictFmlaEmbedInfo embedInfo;
+	bool bFmlaExist;
+	bool bInfoExist;
 
+	PictFmlaEmbedInfo embedInfo;
+private:
+	bool is_part_of_FtPictFmla_;
 };
 
 } // namespace XLS

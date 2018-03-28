@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,7 +31,7 @@
  */
 
 #include "Feat.h"
-#include <Logic/Biff_structures/FrtHeader.h>
+#include "../Biff_structures/FrtHeader.h"
 
 namespace XLS
 {
@@ -45,43 +45,48 @@ Feat::~Feat()
 {
 }
 
-
 BaseObjectPtr Feat::clone()
 {
 	return BaseObjectPtr(new Feat(*this));
 }
+//		ISFPROTECTION	= 0x0002, // Specifies the enhanced protection type. 
+//		ISFFEC2			= 0x0003, // Specifies the ignored formula errors type.
+//		ISFFACTOID		= 0x0004, // Specifies the smart tag type.
+//		ISFLIST			= 0x0005, // Specifies the list type.
 
 void Feat::readFields(CFRecord& record)
 {
 	FrtHeader frtHeader(rt_Feat);
-	record >> frtHeader;
-	record >> isf;
+	
+	record >> frtHeader >> isf;
 	record.skipNunBytes(5); // reserved
+
 	record >> cref >> cbFeatData;
 	record.skipNunBytes(2); // reserved
-	std::wstring  sqref_str;
+	
 	for (int i = 0; i < cref ; ++i)
 	{
 		Ref8U reff;
 		record >> reff;
 		refs.push_back(BiffStructurePtr(new Ref8U(reff)));
-		sqref_str += std::wstring (reff.toString().c_str()) + ((i == cref - 1) ? L"" : L" ");
+		
+		sqref += reff.toString() + ((i == cref - 1) ? L"" : L" ");
 	}
-	sqref = sqref_str;
 
 	switch(isf)
 	{
-		case SharedFeatureType::ISFPROTECTION:
-			record >> protection;
+		case 0x0002://ISFPROTECTION:
+			is_object = BiffStructurePtr(new FeatProtection);
 			break;
-		case SharedFeatureType::ISFFEC2:
-			record >> formula_err;
+		case 0x0003://ISFFEC2:
+			is_object = BiffStructurePtr(new FeatFormulaErr2);
 			break;
-		case SharedFeatureType::ISFFACTOID:
-			record >> smart_tag;
+		case 0x0004://ISFFACTOID:
+			is_object = BiffStructurePtr(new FeatSmartTag);
 			break;
 	}
-
+	if (is_object)
+		is_object->load(record);
 }
 
 } // namespace XLS

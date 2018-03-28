@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -69,7 +69,6 @@ namespace DocFileFormat
 {
 	class WordDocument: public IVisitable
 	{
-		/*Mapping classes with direct access to the Word Document.*/
 		friend class FootnotesMapping;
 		friend class EndnotesMapping;
         friend class CommentsMapping;
@@ -98,7 +97,8 @@ namespace DocFileFormat
 		long LoadDocument (const std::wstring & fileName, const std::wstring & password);
 
 		bool	bOlderVersion;
-		int		document_code_page;
+		int		nDocumentCodePage;
+		bool	bDocumentCodePage;
 		
 		inline StructuredStorageReader* GetStorage() const
 		{
@@ -107,8 +107,8 @@ namespace DocFileFormat
 	private:
 		bool DecryptOfficeFile	(CRYPT::Decryptor* Decryptor);
 		
-		bool DecryptStream		(std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor);
-		void DecryptStream		(int level, std::string streamName, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor);
+		bool DecryptStream		(std::wstring streamName_open, POLE::Storage * storageIn, std::wstring streamName_create, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor, bool bDecrypt);
+		void DecryptStream		(int level, std::wstring streamName, POLE::Storage * storageIn, POLE::Storage * storageOut, CRYPT::Decryptor* Decryptor);
 		
 		inline OfficeArtContent* GetOfficeArt ()
 		{

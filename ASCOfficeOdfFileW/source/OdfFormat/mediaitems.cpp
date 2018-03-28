@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,7 +44,7 @@ namespace cpdoccore {
 namespace odf_writer {
 
 
-_mediaitems::item::item(	std::wstring const & _oox_ref,
+_mediaitems::item::item(std::wstring const & _oox_ref,
                        Type _type,
                        std::wstring const & _odf_ref
 					   )
@@ -58,27 +58,35 @@ _mediaitems::item::item(	std::wstring const & _oox_ref,
 
 void _mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wstring & odf_ref)
 {
-	std::wstring output_sub_path;//
+	std::wstring output_sub_path;
 	std::wstring output_fileName;
 	int number=0;
 	
 	if (type == typeImage)
 	{
 		output_sub_path = L"Pictures/";
-		number= count_image+1;
+		number = count_image + 1;
 	}
-	else
+	else if (type == typeMedia)
 	{
 		output_sub_path = L"Media/";
-		number= count_media+1;
+		number = count_media + 1;
 	}
-
-	
-	output_fileName = utils::media::create_file_name(oox_ref, type, number);//guid???
+	else if (type == typeOleObject)
+	{
+		output_sub_path = L"";
+		number = count_object + 1;
+	}
+	else if (type == typeObjectReplacement)
+	{
+		output_sub_path = L"ObjectReplacements/";
+		number = count_image_object + 1;
+	}	
+	output_fileName = utils::media::create_file_name(oox_ref, type, number); //guid???
 	
 	std::wstring input_path = oox_ref;
 
-#if defined (_WIN32) || defined(_WIN64) // + mac???
+#if defined (_WIN32) || defined(_WIN64) 
     boost::to_lower(input_path);
 #endif
 
@@ -92,16 +100,25 @@ void _mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wst
 			break;
 		}
 	}
-	if (output_path .length() < 1)
+	if (output_path.empty())
 	{
 		output_path = ( output_sub_path + output_fileName) ;
 		if ( type == typeImage)
 		{
 			count_image++;
 		}
-		else
+		else if ( type == typeMedia)
+		{
 			count_media++;
-
+		}
+		else if ( type == typeOleObject)
+		{
+			count_object++;
+		}
+		else if ( type == typeObjectReplacement)
+		{
+			count_image_object++;
+		}
 		
 		items_.push_back( item(input_path, type, xml::utils::replace_text_to_xml(output_path)) );
 	}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,6 +32,8 @@
 
 #include "CrtLayout12A.h"
 
+#include <simple_xml_writer.h>
+
 namespace XLS
 {
 
@@ -39,11 +41,9 @@ CrtLayout12A::CrtLayout12A()
 {
 }
 
-
 CrtLayout12A::~CrtLayout12A()
 {
 }
-
 
 BaseObjectPtr CrtLayout12A::clone()
 {
@@ -52,10 +52,88 @@ BaseObjectPtr CrtLayout12A::clone()
 
 void CrtLayout12A::readFields(CFRecord& record)
 {
-#pragma message("####################### CrtLayout12A record is not implemented")
-	Log::error("CrtLayout12A record is not implemented.");
+	unsigned short flags, reserved;
+	record >> frtheader >> dwCheckSum >> flags;
 
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+	fLayoutTargetInner = GETBIT(flags, 0);
+
+	record >> xTL >> yTL >> xBR >> yBR;
+
+	record >> wXMode >> wYMode >> wWidthMode >> wHeightMode;
+	
+	record >> x >> y >> dx >> dy >> reserved;
+}
+
+int CrtLayout12A::serialize (std::wostream & _stream)
+{
+	CP_XML_WRITER(_stream)    
+    {
+		CP_XML_NODE(L"c:layout")
+		{
+			if (wXMode == 0 &&  wYMode == 0 && wWidthMode == 0 && wHeightMode == 0)
+			{
+			}
+			else
+			{
+				CP_XML_NODE(L"c:manualLayout")
+				{
+					CP_XML_NODE(L"c:layoutTarget"){CP_XML_ATTR(L"val", fLayoutTargetInner ? L"inner" : L"outer");}
+
+					if (wXMode > 0)
+					{
+						CP_XML_NODE(L"c:xMode")	
+						{
+							if (wXMode == 1)	CP_XML_ATTR(L"val", L"factor");
+							else				CP_XML_ATTR(L"val", L"edge");
+						}
+					}
+					if (wYMode > 0)
+					{
+						CP_XML_NODE(L"c:yMode")
+						{
+							if (wYMode == 1)	CP_XML_ATTR(L"val", L"factor");
+							else				CP_XML_ATTR(L"val", L"edge");
+						}
+					}
+
+					if (wXMode > 0)
+					{
+						CP_XML_NODE(L"c:x")		{CP_XML_ATTR(L"val", x.data.value);}
+					}
+					if (wYMode > 0)
+					{
+						CP_XML_NODE(L"c:y")		{CP_XML_ATTR(L"val", y.data.value);}
+					}
+					
+					if (wWidthMode > 0)
+					{
+						CP_XML_NODE(L"c:wMode")	
+						{
+							if (wWidthMode == 1)CP_XML_ATTR(L"val", L"factor");
+							else				CP_XML_ATTR(L"val", L"edge");
+						}
+					}
+					if (wHeightMode > 0)
+					{
+						CP_XML_NODE(L"c:hMode")
+						{
+							if (wHeightMode == 1)CP_XML_ATTR(L"val", L"factor");
+							else				CP_XML_ATTR(L"val", L"edge");
+						}
+					}
+					if (wWidthMode > 0)
+					{
+						CP_XML_NODE(L"c:w") {CP_XML_ATTR(L"val", dx.data.value);}
+					}
+					if (wHeightMode > 0)
+					{
+						CP_XML_NODE(L"c:h")	 {CP_XML_ATTR(L"val", dy.data.value);}
+					}
+				}
+			}
+		}
+	}
+	return 0;
 }
 
 } // namespace XLS

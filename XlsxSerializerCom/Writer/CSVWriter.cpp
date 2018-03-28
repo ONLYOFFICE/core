@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,6 +33,11 @@
 #include "../../UnicodeConverter/UnicodeConverter.h"
 #include "../../UnicodeConverter/UnicodeConverter_Encodings.h"
 #include "../../DesktopEditor/common/StringBuilder.h"
+
+#include "../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/SharedStrings/SharedStrings.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Styles/Styles.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
 
 namespace CSVWriter
 {
@@ -134,15 +139,14 @@ namespace CSVWriter
 		WCHAR *pWriteBuffer = NULL;
 
 		std::wstring sSheetRId = _T("Sheet1"); // Читаем не по rId, а по имени листа
-		OOX::Spreadsheet::CWorkbook *pWorkbook = oXlsx.GetWorkbook();
-		if (NULL != pWorkbook)
+		if ( oXlsx.m_pWorkbook )
 		{
 			// Get active sheet
-			if (pWorkbook->m_oBookViews.IsInit() && 0 < pWorkbook->m_oBookViews->m_arrItems.size())
+			if ( oXlsx.m_pWorkbook->m_oBookViews.IsInit() && ! oXlsx.m_pWorkbook->m_oBookViews->m_arrItems.empty())
 			{
-				if (pWorkbook->m_oBookViews->m_arrItems[0]->m_oActiveTab.IsInit())
+				if ( oXlsx.m_pWorkbook->m_oBookViews->m_arrItems.front()->m_oActiveTab.IsInit())
 				{
-					lActiveSheet = pWorkbook->m_oBookViews->m_arrItems[0]->m_oActiveTab->GetValue();
+					lActiveSheet =  oXlsx.m_pWorkbook->m_oBookViews->m_arrItems.front()->m_oActiveTab->GetValue();
 					if (0 > lActiveSheet)
 						lActiveSheet = 0;
 				}
@@ -150,25 +154,27 @@ namespace CSVWriter
 
 			// Get active sheet rId (для конвертации в CSV нужно использовать name, т.к. это наш бинарник из js-скриптов и еще нет rId
 			// А для json-а нужно пользовать rId, т.к. при открытии они используются
-			if (pWorkbook->m_oSheets.IsInit() && 0 <= pWorkbook->m_oSheets->m_arrItems.size())
+			if ( oXlsx.m_pWorkbook->m_oSheets.IsInit() && ! oXlsx.m_pWorkbook->m_oSheets->m_arrItems.empty())
 			{
-				OOX::Spreadsheet::CSheet *pSheet;
-				if (lActiveSheet <= pWorkbook->m_oSheets->m_arrItems.size())
-					pSheet = pWorkbook->m_oSheets->m_arrItems[lActiveSheet];
+				std::map<int, OOX::Spreadsheet::CSheet*>::iterator pFind =  oXlsx.m_pWorkbook->m_oSheets->mapSheets.find(lActiveSheet);
+				
+				OOX::Spreadsheet::CSheet *pSheet = NULL;
+				
+				if (pFind !=  oXlsx.m_pWorkbook->m_oSheets->mapSheets.end())
+					pSheet = pFind->second;
 				else
-					pSheet = pWorkbook->m_oSheets->m_arrItems[0];
+					pSheet =  oXlsx.m_pWorkbook->m_oSheets->m_arrItems.front();
 
 				sSheetRId = bJSON ? pSheet->m_oRid->GetValue() : pSheet->m_oName.get2();
 			}
 
-			std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();
-			std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::const_iterator pPair = arrWorksheets.find(sSheetRId);
-			if (pPair != arrWorksheets.end())
+			std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::const_iterator pFind = oXlsx.m_mapWorksheets.find(sSheetRId);
+			if (pFind != oXlsx.m_mapWorksheets.end())
 			{
-				OOX::Spreadsheet::CWorksheet *pWorksheet = pPair->second;
+				OOX::Spreadsheet::CWorksheet *pWorksheet = pFind->second;
+				
 				if (NULL != pWorksheet && pWorksheet->m_oSheetData.IsInit())
 				{
-					OOX::Spreadsheet::CSharedStrings *pSharedStrings = oXlsx.GetSharedStrings();
 					std::wstring sEscape = _T("\"\n");
 					sEscape += sDelimiter;
                     std::wstring sEndJson = std::wstring(_T("]"));
@@ -180,10 +186,11 @@ namespace CSVWriter
 					if (bJSON)
                         CSVWriter::WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sBkt, nCodePage);
 
-					INT nRowCurrent = 1;
-					for (INT i = 0; i < pWorksheet->m_oSheetData->m_arrItems.size(); ++i)
+                    INT nRowCurrent = 1;
+                    for (size_t i = 0; i < pWorksheet->m_oSheetData->m_arrItems.size(); ++i)
 					{
-						OOX::Spreadsheet::CRow *pRow = static_cast<OOX::Spreadsheet::CRow *>(pWorksheet->m_oSheetData->m_arrItems[i]);
+                        OOX::Spreadsheet::CRow *pRow = pWorksheet->m_oSheetData->m_arrItems[i];
+
 						INT nRow = pRow->m_oR.IsInit() ? pRow->m_oR->GetValue() : 0 == i ? nRowCurrent : nRowCurrent + 1;
 
 						if (bJSON)
@@ -198,13 +205,15 @@ namespace CSVWriter
 							}
 						}
 
-						INT nColCurrent = 1;
+                        INT nColCurrent = 1;
                         bool bIsWriteCell = false; // Нужно только для записи JSON-а
-						for (INT j = 0; j < pRow->m_arrItems.size(); ++j)
+
+                        for (size_t j = 0; j < pRow->m_arrItems.size(); ++j)
 						{
 							INT nRowTmp = 0;
 							INT nCol = 0;
-							OOX::Spreadsheet::CCell *pCell = static_cast<OOX::Spreadsheet::CCell *>(pRow->m_arrItems[j]);
+                            OOX::Spreadsheet::CCell *pCell = pRow->m_arrItems[j];
+
 							if (pCell->isInitRef())
 							{
 								pCell->getRowCol(nRowTmp, nCol);
@@ -233,18 +242,26 @@ namespace CSVWriter
 							std::wstring sCellValue = _T("");
 							if (pCell->m_oValue.IsInit())
 							{
-								if (pCell->m_oType.IsInit() && SimpleTypes::Spreadsheet::celltypeNumber != pCell->m_oType->GetValue())
-								{
-									int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
-									if (0 <= nValue && nValue < pSharedStrings->m_arrItems.size())
+                                if (pCell->m_oType.IsInit() && SimpleTypes::Spreadsheet::celltypeNumber != pCell->m_oType->GetValue())
+                                {
+									if(SimpleTypes::Spreadsheet::celltypeStr == pCell->m_oType->GetValue())
 									{
-										OOX::Spreadsheet::CSi *pSi = static_cast<OOX::Spreadsheet::CSi *>(pSharedStrings->m_arrItems[nValue]);
-										if(NULL != pSi)
+										sCellValue = pCell->m_oValue->ToString();
+									}
+									else
+									{
+										int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
+
+										if (nValue >= 0 && nValue < oXlsx.m_pSharedStrings->m_arrItems.size())
 										{
-											sCellValue = pSi->ToString();
+											OOX::Spreadsheet::CSi *pSi = oXlsx.m_pSharedStrings->m_arrItems[nValue];
+											if(NULL != pSi)
+											{
+												sCellValue = pSi->ToString();
+											}
 										}
 									}
-								}
+                                }
 								else 
 								{
 									sCellValue = pCell->m_oValue->ToString();

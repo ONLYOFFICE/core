@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,8 +41,6 @@
 namespace XLS
 {
 
-
-// Logical representation of StyleExt record in BIFF8
 class StyleExt: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(StyleExt)
@@ -53,10 +51,9 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeStyleExt;
+	static const ElementType type = typeStyleExt;
 
 	int serialize(std::wostream & stream);
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -101,21 +101,26 @@ namespace OOX
 		class CCalcChain : public OOX::File, public OOX::IFileContainer
 		{
 		public:
-			CCalcChain()
+			CCalcChain(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+  				
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if (xlsx) xlsx->m_pCalcChain = this;
 			}
-			CCalcChain(const CPath& oRootPath, const CPath& oPath)
+			CCalcChain(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+				if (xlsx) xlsx->m_pCalcChain = this;
+
 				read( oRootPath, oPath );
 			}
 			virtual ~CCalcChain()
 			{
 				ClearItems();
 			}
-		public:
-
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -172,27 +177,24 @@ namespace OOX
 			{
 				return m_oReadPath;
 			}
-
-		private:
-			CPath									m_oReadPath;
 			void ClearItems()
 			{
-				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if ( m_arrItems[i] )delete m_arrItems[i];
+                }
 
 				m_arrItems.clear();
 			}
+		private:
+			CPath m_oReadPath;
+
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
 
 		public:
-			std::vector<CCalcCell *>         m_arrItems;
+            std::vector<CCalcCell *>  m_arrItems;
 		};
 	} //Spreadsheet
 } // namespace OOX

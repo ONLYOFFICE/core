@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,27 +33,25 @@
 #include "xlsx_output_xml.h"
 #include <boost/make_shared.hpp>
 
-#include "simple_xml_writer.h"
+#include <simple_xml_writer.h>
 
 namespace oox {
 
-/// \class  xlsx_xml_worksheet::Impl
+
 class xlsx_xml_worksheet::Impl
 {
 public:
-    Impl(std::wstring const & name) : name_(name)
+    Impl() 
 	{
-		state_ = L"visible";
 	}
-    
-	std::wstring name_;
-	std::wstring state_;
-  
+
 	std::wstringstream  cols_;
 	std::wstringstream  sheetPr_;
 	std::wstringstream  sheetFormatPr_;
     std::wstringstream  sheetData_;
     std::wstringstream  mergeCells_;
+	std::wstringstream  ole_objects_;
+	std::wstringstream  activeXs_;
     std::wstringstream  drawing_;
     std::wstringstream  hyperlinks_;
     std::wstringstream  comments_;
@@ -65,6 +63,8 @@ public:
 	std::wstringstream  conditionalFormatting_;
 	std::wstringstream  picture_background_;
 	std::wstringstream  dataValidations_;
+	std::wstringstream  protection_;
+	std::wstringstream  tableParts_;
 
 	rels rels_;
 
@@ -77,25 +77,16 @@ public:
 	std::wstring vml_drawingName_;
 	std::wstring vml_drawingId_;
 
-	std::wstring vml_drawingName_HF_;
-	std::wstring vml_drawingId_HF_;
+	std::wstring vml_HF_drawingName_;
+	std::wstring vml_HF_drawingId_;
 };
 
-std::wstring xlsx_xml_worksheet::name() const
+xlsx_xml_worksheet_ptr xlsx_xml_worksheet::create()
 {
-    return impl_->name_;
-}
-std::wstring xlsx_xml_worksheet::state() const
-{
-    return impl_->state_;
-}
-xlsx_xml_worksheet_ptr xlsx_xml_worksheet::create(std::wstring const & name)
-{
-    return boost::make_shared<xlsx_xml_worksheet>(name);
+    return boost::make_shared<xlsx_xml_worksheet>();
 }
 
-xlsx_xml_worksheet::xlsx_xml_worksheet(std::wstring const & name)
- : impl_(new xlsx_xml_worksheet::Impl(name))
+xlsx_xml_worksheet::xlsx_xml_worksheet() : impl_(new xlsx_xml_worksheet::Impl()), type(1), id(0)
 {
 }
 
@@ -131,6 +122,14 @@ std::wostream & xlsx_xml_worksheet::sheetData()
 std::wostream & xlsx_xml_worksheet::mergeCells()
 {
     return impl_->mergeCells_;
+}
+std::wostream & xlsx_xml_worksheet::ole_objects()
+{
+    return impl_->ole_objects_;
+}
+std::wostream & xlsx_xml_worksheet::activeXs()
+{
+    return impl_->activeXs_;
 }
 
 std::wostream & xlsx_xml_worksheet::drawing()
@@ -169,6 +168,14 @@ std::wostream & xlsx_xml_worksheet::dataValidations()
 {
     return impl_->dataValidations_;
 }
+std::wostream & xlsx_xml_worksheet::protection()
+{
+    return impl_->protection_;
+}
+std::wostream & xlsx_xml_worksheet::tableParts()
+{
+    return impl_->tableParts_;
+}
 //-----------------------------------------------------------------
 rels & xlsx_xml_worksheet::sheet_rels()
 {
@@ -176,13 +183,28 @@ rels & xlsx_xml_worksheet::sheet_rels()
 }
 void xlsx_xml_worksheet::write_to(std::wostream & strm)
 {
+	std::wstring node_name;
+	switch(type)
+	{
+	case 2: node_name = L"dialogsheet";		break;
+	case 3: node_name = L"chartsheet";		break;
+	case 4: node_name = L"xm:macrosheet";	break;
+	case 1:
+	default: node_name = L"worksheet";		break;
+	}
     CP_XML_WRITER(strm)
     {
-        CP_XML_NODE(L"worksheet")
+        CP_XML_NODE(node_name)
         {
             CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");        
             CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+			if (type == 4)
+			{
+				CP_XML_ATTR(L"xmlns:xm", L"http://schemas.microsoft.com/office/excel/2006/main");
+			}
             CP_XML_ATTR(L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006");
+			CP_XML_ATTR(L"xmlns:xdr", L"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing");
+			CP_XML_ATTR(L"xmlns:x14", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
             CP_XML_ATTR(L"mc:Ignorable", L"x14ac");
             CP_XML_ATTR(L"xmlns:x14ac", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac");
 
@@ -197,6 +219,9 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
             {
                 CP_XML_STREAM() << impl_->sheetData_.str();
             }
+
+			CP_XML_STREAM() << impl_->protection_.str();
+
 			//оказывается порядок нахождения элементов важен !!! (для office 2010)
 			//объединенные ячейки раньше чем гиперлинки !!!
 
@@ -216,22 +241,45 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 
             CP_XML_STREAM() << impl_->drawing_.str();
 		
-			if (!impl_->commentsId_.empty() && !impl_->vml_drawingId_.empty())
+			if (!impl_->vml_drawingId_.empty())
 			{
 				CP_XML_NODE(L"legacyDrawing")
 				{
 					CP_XML_ATTR(L"r:id", impl_->vml_drawingId_);
 				}
 			}
-			if (!impl_->vml_drawingId_HF_.empty())
+			if (!impl_->vml_HF_drawingId_.empty())
 			{
 				CP_XML_NODE(L"legacyDrawingHF")
 				{
-					CP_XML_ATTR(L"r:id", impl_->vml_drawingId_HF_);
+					CP_XML_ATTR(L"r:id", impl_->vml_HF_drawingId_);
 				}
 			}
+			if (!impl_->ole_objects_.str().empty())
+            {
+                CP_XML_NODE(L"oleObjects")
+                {
+					CP_XML_STREAM() << impl_->ole_objects_.str();
+                }
+            }	
 			
 			CP_XML_STREAM() << impl_->picture_background_.str();
+			
+			if (!impl_->activeXs_.str().empty())
+			{
+                CP_XML_NODE(L"controls")
+                {
+					CP_XML_STREAM() << impl_->activeXs_.str();
+                }
+			}
+
+			if (!impl_->tableParts_.str().empty())
+			{
+                CP_XML_NODE(L"tableParts")
+                {
+					CP_XML_STREAM() << impl_->tableParts_.str();
+                }
+			}
 
 			//CP_XML_NODE(L"rowBreaks){}
 
@@ -239,10 +287,7 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 		}
     }
 }
-void xlsx_xml_worksheet::set_state (std::wstring const & state)
-{
-	impl_->state_ = state;
-}
+
 void xlsx_xml_worksheet::set_drawing_link(std::wstring const & fileName, std::wstring const & id)
 {
     impl_->drawingName_		= fileName;
@@ -258,10 +303,10 @@ void xlsx_xml_worksheet::set_vml_drawing_link(std::wstring const & fileName, std
     impl_->vml_drawingName_		= fileName;
     impl_->vml_drawingId_		= id;      
 }
-void xlsx_xml_worksheet::set_vml_drawing_link_HF(std::wstring const & fileName, std::wstring const & id)
+void xlsx_xml_worksheet::set_vml_HF_drawing_link(std::wstring const & fileName, std::wstring const & id)
 {
-    impl_->vml_drawingName_HF_	= fileName;
-    impl_->vml_drawingId_HF_	= id;      
+    impl_->vml_HF_drawingName_	= fileName;
+    impl_->vml_HF_drawingId_	= id;      
 }
 std::pair<std::wstring, std::wstring> xlsx_xml_worksheet::get_drawing_link() const
 {
@@ -277,7 +322,7 @@ std::pair<std::wstring, std::wstring> xlsx_xml_worksheet::get_vml_drawing_link()
 }
 std::pair<std::wstring, std::wstring> xlsx_xml_worksheet::get_vml_drawing_HF_link() const
 {
-    return std::pair<std::wstring, std::wstring>(impl_->vml_drawingName_HF_, impl_->vml_drawingId_HF_);
+    return std::pair<std::wstring, std::wstring>(impl_->vml_HF_drawingName_, impl_->vml_HF_drawingId_);
 }
 
 }

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -351,7 +351,7 @@ static const struct ActionNamesEmf
 #ifdef _DEBUG
 			if ( need_skip != 0 && !m_pOutput)
 			{
-                                std::wstring name = actionNamesEmf[ulType].actionName;
+				std::wstring name = actionNamesEmf[ulType].actionName;
 
 				std::wcout << name << L"\t\t(" << ulType << L")\t; skiped = " << need_skip << L"\n";
 			}			

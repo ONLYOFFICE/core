@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of PROTECTION union of records 
 class PROTECTION: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(PROTECTION)
@@ -49,7 +47,9 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typePROTECTION;
+	int serialize (std::wostream & _stream);
+
+	static const ElementType type = typePROTECTION;
 
 	BaseObjectPtr	m_WinProtect;
 	BaseObjectPtr	m_Protect;

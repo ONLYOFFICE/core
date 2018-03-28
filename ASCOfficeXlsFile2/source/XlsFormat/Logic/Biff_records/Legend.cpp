@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,6 +31,7 @@
  */
 
 #include "Legend.h"
+#include "CrtLayout12.h"
 
 namespace XLS
 {
@@ -68,11 +69,19 @@ void Legend::readFields(CFRecord& record)
 
 int Legend::serialize(std::wostream & _stream, int size)
 {
+	CrtLayout12 *crtLayout = dynamic_cast<CrtLayout12 *> (m_CrtLayout12.get());
+	
 	double x1Kf = x / 4000.;
 	double y1Kf = y / 4000.;
 
 	double x2Kf = (4000 - dx - x) / 4000.;
 	double y2Kf = (4000 - dy - y) / 4000.;
+
+	if ((crtLayout) && (crtLayout->wXMode == 0 &&  crtLayout->wYMode == 0 && crtLayout->wWidthMode == 0 && crtLayout->wHeightMode == 0))
+	{
+		fAutoPosX = true;
+		fAutoPosY = true;
+	}
 
 	CP_XML_WRITER(_stream)    
 	{
@@ -112,6 +121,11 @@ int Legend::serialize(std::wostream & _stream, int size)
 				}
 			}
 			CP_XML_NODE(L"c:layout");
+			CP_XML_NODE(L"c:overlay") {CP_XML_ATTR(L"val", 0);}
+		}
+		else if (m_CrtLayout12)
+		{
+			m_CrtLayout12->serialize(_stream);
 			CP_XML_NODE(L"c:overlay") {CP_XML_ATTR(L"val", 0);}
 		}
 		else

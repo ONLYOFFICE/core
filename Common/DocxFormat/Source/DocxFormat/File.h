@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,12 +43,12 @@ namespace OOX
 	class File
 	{
 	public:
-		File(){
+		File(OOX::Document *pMain) : m_pMainDocument(pMain)
+		{
 			m_bDoNotAddRels = false;
 		}
 		virtual ~File(){}
 
-	public:
 		virtual void read(const CPath& filename)                                                        = 0;
 		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const = 0;
 
@@ -58,13 +58,15 @@ namespace OOX
 		
 		std::wstring	m_sOutputFilename;
 		bool			m_bDoNotAddRels;
+		
+		OOX::Document *m_pMainDocument;
 	};
 	class FileGlobalEnumerated : public File
 	{
 	private:
 		int m_nGlobalNumber;
 	public:
-		FileGlobalEnumerated()
+		FileGlobalEnumerated(OOX::Document* pMain) : File(pMain)
 		{
 			m_nGlobalNumber = 0;
 		}

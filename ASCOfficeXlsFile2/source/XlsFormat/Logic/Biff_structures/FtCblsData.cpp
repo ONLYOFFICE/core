@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,16 +37,22 @@
 namespace XLS
 {
 
-
 BiffStructurePtr FtCblsData::clone()
 {
 	return BiffStructurePtr(new FtCblsData(*this));
 }
 
-
 void FtCblsData::load(CFRecord& record)
 {
-	record.skipNunBytes(4); // reserved
+	unsigned short ft, cb;
+	record >> ft >> cb;
+
+	if ( ft != 0x000a && cb != 0x000c)
+	{
+		record.RollRdPtrBack(4);
+		return;
+	}
+	fExist = true;
 
 	record >> fChecked >> accel;
 	record.skipNunBytes(2); // reserved

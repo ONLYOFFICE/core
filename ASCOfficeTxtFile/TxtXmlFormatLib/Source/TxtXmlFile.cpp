@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -39,6 +39,9 @@
 #include "Common/StlUtils.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+
+#include "../../../Common/DocxFormat/Source/DocxFormat/App.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Core.h"
 
 namespace NSBinPptxRW
 {
@@ -212,11 +215,13 @@ void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::F
 	
     OOX::CPath DocProps = std::wstring(_T("docProps"));
 
-	OOX::CApp* pApp = new OOX::CApp();
+	OOX::CApp* pApp = new OOX::CApp(NULL);
 	if (pApp)
 	{
-		pApp->SetApplication(_T("OnlyOffice"));
-		pApp->SetAppVersion(_T("5.0"));
+		pApp->SetApplication(L"ONLYOFFICE");
+#if defined(INTVER)
+        pApp->SetAppVersion(VALUE2STR(INTVER));
+#endif
 		pApp->SetDocSecurity(0);
 		pApp->SetScaleCrop(false);
 		pApp->SetLinksUpToDate(false);
@@ -226,7 +231,7 @@ void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::F
 		pApp->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, oContentTypes);
 		delete pApp;
 	}				
-	OOX::CCore* pCore = new OOX::CCore();
+	OOX::CCore* pCore = new OOX::CCore(NULL);
 	if (pCore)
 	{
 		pCore->SetCreator(_T(""));

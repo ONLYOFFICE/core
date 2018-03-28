@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,6 +49,7 @@ global_info_(global_info)
 	skippable_records_names.push_back("StartBlock");
 	skippable_records_names.push_back("EndBlock");
 	skippable_records_names.push_back("ChartFrtInfo");
+	skippable_records_names.push_back("FrtWrapper");
 }
 
 
@@ -100,7 +101,7 @@ CFRecordPtr CFStreamCacheReader::getNextRecord(const CFRecordType::TypeId desira
 		}
 		if(skippable_records_names.end() != std::find(skippable_records_names.begin(), skippable_records_names.end(), rec_name))
 		{
-			Log::warning("The extracted record has been skipped (" + rec_name + ")");
+			//Log::warning("The extracted record has been skipped (" + rec_name + ")");
 			records_cache.pop_front();
 			continue;
 		}

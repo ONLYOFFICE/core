@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,8 +40,7 @@ namespace ODRAW
 {
 
 
-OfficeArtClientAnchorSheet::OfficeArtClientAnchorSheet()
-:	OfficeArtRecord(0x00, ClientAnchor)
+OfficeArtClientAnchorSheet::OfficeArtClientAnchorSheet() :	OfficeArtRecord(0x00, ClientAnchor)
 {
 	_x = _y = _cx = _cy = 0;
 }
@@ -79,9 +78,9 @@ void OfficeArtClientAnchorSheet::calculate()
 {
 	global_info->GetDigitFontSizePixels();
 
-	XLS::GlobalWorkbookInfo::_sheet_size_info zero;
-	XLS::GlobalWorkbookInfo::_sheet_size_info & sheet_info = global_info->current_sheet >=0 ? 
-										global_info->sheet_size_info[global_info->current_sheet - 1] : zero;
+	XLS::GlobalWorkbookInfo::_sheet_info zero;
+	XLS::GlobalWorkbookInfo::_sheet_info & sheet_info = global_info->current_sheet >= 0 ? 
+										global_info->sheets_info[global_info->current_sheet - 1] : zero;
 
 //----------------------------------------------------------------------------------------------------
 	//1 inch	=	72 point
@@ -92,7 +91,7 @@ void OfficeArtClientAnchorSheet::calculate()
 
 	double Digit_Width	= global_info->defaultDigitFontSize.first;
 	double Digit_Height = global_info->defaultDigitFontSize.second;
-	double width = 0 , column_width = 0;
+	double width = 0, column_width = 0;
 
 	if (sheet_info.customColumnsWidth.find(colL) != sheet_info.customColumnsWidth.end())
 	{
@@ -129,47 +128,68 @@ void OfficeArtClientAnchorSheet::calculate()
 	}
 	else 
 		_dyB = dyB * kfRow * sheet_info.defaultRowHeight;	
+}
+void OfficeArtClientAnchorSheet::calculate_1()
+{
+	global_info->GetDigitFontSizePixels();
 
-//----------------------------------------------------------------------------------------------------
-	//for (int i = 0 ; i < colL; i++)
-	//{
-	//	if (sheet_info.customColumnsWidth.find(i) != sheet_info.customColumnsWidth.end())
-	//		_x +=  256 * kfCol * sheet_info.customColumnsWidth[i];	
-	//	else 
-	//		_x +=  256 * kfCol * sheet_info.defaultColumnWidth;
-	//}
-	//_x += _dxL;
+	XLS::GlobalWorkbookInfo::_sheet_info zero;
+	XLS::GlobalWorkbookInfo::_sheet_info & sheet_info = global_info->current_sheet >= 0 ? 
+										global_info->sheets_info[global_info->current_sheet - 1] : zero;
+	
+	double kfRow	= ( 360000 * 2.54 / 72) / 256. ;
+	double Digit_Width	= global_info->defaultDigitFontSize.first;
+	double Digit_Height = global_info->defaultDigitFontSize.second;
+	double column_width = 0;
 
-	//for (int i = colL ; i < colR; i++)
-	//{
-	//	if (sheet_info.customColumnsWidth.find(i) != sheet_info.customColumnsWidth.end())
-	//		_cx += 256 * kfCol * sheet_info.customColumnsWidth[i];	
-	//	else 
-	//		_cx += 256 * kfCol * sheet_info.defaultColumnWidth;
-	//}
-	//_cx += _dxR;
+	for (int i = 0 ; i < colL; i++)
+	{
+		if (sheet_info.customColumnsWidth.find(i) != sheet_info.customColumnsWidth.end())
+			column_width +=  sheet_info.customColumnsWidth[i];	
+		else 
+			column_width +=   sheet_info.defaultColumnWidth;
+	}
+	_x = ((int)((column_width * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
+	_x = (int)(((256. * _x + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width ); //in pixels
 
-	//for (int i = 0 ; i < rwT; i++)
-	//{
-	//	if (sheet_info.customRowsHeight.find(i) != sheet_info.customRowsHeight.end())
-	//	{
-	//		_y += 256 * kfRow * sheet_info.customRowsHeight[i];	
-	//	}
-	//	else 
-	//		_y += 256 * kfRow * sheet_info.defaultRowHeight;	
-	//}
-	//_y += _dyT;
+	_x = _x  * 9525. + _dxL;
 
-	//for (int i = rwT ; i < rwB; i++)
-	//{
-	//	if (sheet_info.customRowsHeight.find(i) != sheet_info.customRowsHeight.end())
-	//	{
-	//		_cy += 256 * kfRow * sheet_info.customRowsHeight[i];	
-	//	}
-	//	else 
-	//		_cy += 256 * kfRow * sheet_info.defaultRowHeight;	
-	//}
-	//_cy += _dyT;
+	column_width = 0;
+	for (int i = 0; i < colR; i++)
+	{
+		if (sheet_info.customColumnsWidth.find(i) != sheet_info.customColumnsWidth.end())
+			column_width += sheet_info.customColumnsWidth[i];	
+		else 
+			column_width += sheet_info.defaultColumnWidth;
+	}
+	_cx = ((int)((column_width * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
+	_cx = (int)(((256. * _cx + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width ); //in pixels
+	
+	_cx += _cx * 9525. + _dxR - _x;
+
+	for (int i = 0 ; i < rwT; i++)
+	{
+		if (sheet_info.customRowsHeight.find(i) != sheet_info.customRowsHeight.end())
+		{
+			_y += 256 * kfRow * sheet_info.customRowsHeight[i];	
+		}
+		else 
+			_y += 256 * kfRow * sheet_info.defaultRowHeight;	
+	}
+	_y += _dyT;
+
+	for (int i = 0 ; i < rwB; i++)
+	{
+		if (sheet_info.customRowsHeight.find(i) != sheet_info.customRowsHeight.end())
+		{
+			_cy += 256 * kfRow * sheet_info.customRowsHeight[i];	
+		}
+		else 
+			_cy += 256 * kfRow * sheet_info.defaultRowHeight;	
+	}
+	_cy += _dyT - _y;
+
+
 }
 
 

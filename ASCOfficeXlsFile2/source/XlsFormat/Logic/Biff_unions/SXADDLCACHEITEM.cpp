@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,7 +31,7 @@
  */
 
 #include "SXADDLCACHEITEM.h"
-#include <Logic/Biff_records/SXAddl.h>
+#include "../Biff_records/SXAddl.h"
 
 namespace XLS
 {
@@ -46,67 +46,35 @@ SXADDLCACHEITEM::~SXADDLCACHEITEM()
 {
 }
 
-
-class Parenthesis_SXADDLCACHEITEM_1: public ABNFParenthesis
-{
-	BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_SXADDLCACHEITEM_1)
-public:
-	BaseObjectPtr clone()
-	{
-		return BaseObjectPtr(new Parenthesis_SXADDLCACHEITEM_1(*this));
-	}
-
-	const bool loadContent(BinProcessor& proc)
-	{
-		//if(!proc.mandatory<SXAddl_SXCCacheItem_SXDSxrmitmDisp>())
-		//{
-		//	return false;
-		//}
-		//proc.repeated<Continue_SxaddlSxString>(0, 0);
-		return true;
-	};
-};
-
-
-class Parenthesis_SXADDLCACHEITEM_2: public ABNFParenthesis
-{
-	BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_SXADDLCACHEITEM_2)
-public:
-	BaseObjectPtr clone()
-	{
-		return BaseObjectPtr(new Parenthesis_SXADDLCACHEITEM_2(*this));
-	}
-
-	const bool loadContent(BinProcessor& proc)
-	{
-		//if(!proc.mandatory<SXAddl_SXCCacheItem_SXDItmMpMapCount>())
-		//{
-		//	return false;
-		//}
-		//proc.mandatory<SXAddl_SXCCacheItem_SXDItmMpropMap>();
-		return true;
-	};
-};
-
-
-// SXADDLCACHEITEM = SXAddl_SXCCacheItem_SXDId [SXAddl_SXCCacheItem_SXDSxrmitmDisp *Continue_SxaddlSxString] 
 BaseObjectPtr SXADDLCACHEITEM::clone()
 {
 	return BaseObjectPtr(new SXADDLCACHEITEM(*this));
 }
 
-
+// SXADDLCACHEITEM = SXAddl_SXCCacheItem_SXDId [SXAddl_SXCCacheItem_SXDSxrmitmDisp *Continue_SxaddlSxString] 
 //                   *(SXAddl_SXCCacheItem_SXDItmMpMapCount SXAddl_SXCCacheItem_SXDItmMpropMap)
 const bool SXADDLCACHEITEM::loadContent(BinProcessor& proc)
 {
-	//if(!proc.mandatory<SXAddl_SXCCacheItem_SXDId>())
-	//{
-	//	return false;
-	//}
-	//proc.optional<Parenthesis_SXADDLCACHEITEM_1>();
-	//proc.repeated<Parenthesis_SXADDLCACHEITEM_2>(0, 0);
+	bool result = false;
+	while (true)
+	{
+		CFRecordType::TypeId type = proc.getNextRecordType();	
 
-	return true;
+		if (type == rt_SXAddl)
+		{
+			result = true;
+			proc.optional<SXAddl>();
+
+			SXAddl* addl = dynamic_cast<SXAddl*>(elements_.back().get());				
+			if (!addl) continue;
+			
+			if (addl->bEndElement)
+				break;
+		}
+		else
+			break;
+	}
+	return result;
 }
 
 } // namespace XLS

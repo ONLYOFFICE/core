@@ -19,8 +19,6 @@ include(../../../Common/base.pri)
 DEFINES += UNICODE \
            _UNICODE \
            _USE_LIBXML2_READER_ \
-           _USE_XMLLITE_READER_ \
-            USE_LITE_READER \
             DONT_WRITE_EMBEDDED_FONTS \
             LIBXML_READER_ENABLED
 

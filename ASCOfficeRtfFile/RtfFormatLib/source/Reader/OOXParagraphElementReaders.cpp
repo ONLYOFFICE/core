@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -120,9 +120,9 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 {
 	if (m_ooxElement == NULL) return false;
 	
-	for (size_t i = 0; i< m_ooxElement->m_arrItems.size(); i++)
+    for (std::vector<OOX::WritingElement*>::iterator it = m_ooxElement->m_arrItems.begin(); it != m_ooxElement->m_arrItems.end(); ++it)
 	{
-		Parse3(oParam , oOutputParagraph, oConditionalTableStyle, poStyle , m_ooxElement->m_arrItems[i]);
+		Parse3(oParam , oOutputParagraph, oConditionalTableStyle, poStyle , *it);
 	}
 	return true;
 }
@@ -270,9 +270,9 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 
                     if( 0 == sTarget.find( sFileUrl ) )
 					{
-                        int nFirstDDot = sTarget.find( ':', sFileUrl.length() );
-						int nLen = sTarget.length();
-						if( -1 != nFirstDDot && nFirstDDot + 2 < nLen && '\\' == sTarget[nFirstDDot+1] )
+                        size_t nFirstDDot = sTarget.find( ':', sFileUrl.length() );
+						size_t nLen = sTarget.length();
+						if( std::wstring::npos != nFirstDDot && nFirstDDot + 2 < nLen && '\\' == sTarget[nFirstDDot+1] )
 						{
 							if( '\\' != sTarget[nFirstDDot+2] ) 
                                 sTarget.insert( sTarget.begin() + nFirstDDot + 1, '\\'  );
@@ -400,9 +400,9 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 		{
 			OOX::Logic::CSmartTag * pSmartTag = dynamic_cast<OOX::Logic::CSmartTag*>(m_ooxElement);
 
-			for (size_t i = 0 ; i < pSmartTag->m_arrItems.size(); i++)
+            for (std::vector<OOX::WritingElement*>::iterator it = pSmartTag->m_arrItems.begin(); it != pSmartTag->m_arrItems.end(); ++it)
 			{
-				OOX::Logic::CRun * pRun = dynamic_cast<OOX::Logic::CRun*>(pSmartTag->m_arrItems[i]);
+				OOX::Logic::CRun * pRun = dynamic_cast<OOX::Logic::CRun*>(*it);
 				if (pRun == NULL) continue;
 
 				OOXRunReader oRunReader(pRun);
@@ -597,142 +597,40 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		case OOX::et_w_object:
 		{
 			OOX::Logic::CObject * ooxObject = dynamic_cast<OOX::Logic::CObject*>(ooxItem);
+
+			RtfShapePtr pNewShape ( new RtfShape() );
 			if (ooxObject)
-			{
-				long nOleWidth = PROP_DEF;
-				long nOleHeight = PROP_DEF;
-
-				RtfShapePtr aPictShape;
-				RtfOlePtr	oCurOle;
-
-				if (ooxObject->m_oShape.IsInit())
+			{//важна последовательность обработки
+				OOXShapeReader oShapeReaderType(ooxObject->m_oShapeType.GetPointer());
+				oShapeReaderType.Parse( oParam, pNewShape );
+				
+				OOXShapeReader oShapeReaderShape(ooxObject->m_oShape.GetPointer());
+				oShapeReaderShape.Parse( oParam, pNewShape );
+				
+				for (size_t i = 0; i < ooxObject->m_arrItems.size(); ++i)
 				{
-					RtfShapePtr oNewShape ( new RtfShape() );
-					
-					oNewShape->m_eAnchorTypeShape	= RtfShape::st_inline;
-					oNewShape->m_oCharProperty		= oNewProperty;
-					
-					OOXShapeReader oShapeReader(ooxObject->m_oShape.GetPointer());
-					if( true == oShapeReader.Parse( oParam, oNewShape ) )
-						 aPictShape = oNewShape;
-				}
+					OOXShapeReader oShapeReader(ooxObject->m_arrItems[i]);
+					oShapeReader.Parse( oParam, pNewShape );
+				}			
 
-				if (ooxObject->m_oOleObject.IsInit())
-				{
-					RtfOlePtr oNewOle ( new RtfOle() );
-					
-					oNewOle->m_nWidth	= nOleWidth; //?? todooo
-					oNewOle->m_nHeight	= nOleHeight;
-
-					int nShapeId = PROP_DEF;
-					if (ooxObject->m_oOleObject->m_sShapeId.IsInit())
-						nShapeId = oParam.oReader->m_oOOXIdGenerator.GetId(ooxObject->m_oOleObject->m_sShapeId.get2());
-					
-					if( PROP_DEF != nShapeId )
-					{
-						oNewOle->m_nShapeId = nShapeId;
-						//ставим соответствующий shape
-						if( NULL != aPictShape && aPictShape->m_nID == nShapeId )
-							aPictShape->m_bIsOle = true;									
-					}
-					if( ooxObject->m_oOleObject->m_sProgId.IsInit() )
-						oNewOle->m_sOleClass = ooxObject->m_oOleObject->m_sProgId.get2();
-					
-					if(ooxObject->m_oOleObject->m_oType.IsInit())
-					{
-						switch( ooxObject->m_oOleObject->m_oType->GetValue())
-						{
-							case SimpleTypes::oletypeLink: 	oNewOle->m_eOleType = RtfOle::ot_link;	break;
-							case SimpleTypes::oletypeEmbed: oNewOle->m_eOleType = RtfOle::ot_emb;	break;
-						}
-					}
-					if(ooxObject->m_oOleObject->m_oId.IsInit())
-					{
-						std::wstring sRelativePath;
-						
-						if (oParam.oReader->m_currentContainer)
-						{ 
-							smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(ooxObject->m_oOleObject->m_oId->GetValue());
-						
-							if ((oFile.IsInit() && (OOX::FileTypes::OleObject == oFile->type())))
-							{
-								OOX::OleObject* pO = (OOX::OleObject*)oFile.operator->();
-                                sRelativePath = pO->filename().m_strFilename;
-							}
-						}
-						//todooo проверить что тут за путь ..
-						std::wstring sOlePath = sRelativePath;
-
-                        POLE::Storage *storage = new POLE::Storage(sOlePath.c_str());
-						if (storage)
-						{
-							//RtfOle2ToOle1Stream oStream;
-							//oStream.lpstbl = new OLESTREAMVTBL();
-							//oStream.lpstbl->Get = &OleGet2;
-							//oStream.lpstbl->Put = &OlePut2;
-							//todooo convert ole2 to ole1
-							//if( SUCCEEDED( OleConvertIStorageToOLESTREAM( piStorage, &oStream ) ) )
-							//{
-							//	//сохраняем в файл
-							//	std::wstring sOleStorageName = Utils::CreateTempFile( oParam.oReader->m_sTempFolder );
-							//	HANDLE hFile = CreateFile ( sOleStorageName, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
-							//	if( INVALID_HANDLE_VALUE != hFile )
-							//	{
-							//		DWORD dwByteWrite = 0;
-							//		WriteFile( hFile, oStream.aBuffer.GetData(), (DWORD)oStream.aBuffer.size(), &dwByteWrite, NULL );
-							//		CloseHandle( hFile );
-
-							//		oNewOle->SetFilename( sOleStorageName );
-							//		//только сейчас запоминаем
-							//		oCurOle = oNewOle;
-							//	}
-							//	else
-							//		Utils::RemoveDirOrFile( sOleStorageName );
-							//}
-							delete( storage );
-						}
-					}
-				}
-				if( NULL != aPictShape)
-				{
-					aPictShape->m_nShapeType = 75;//NSOfficeDrawing::sptPictureFrame;
-					//надо пересчитать размеры картинки так чтобы scalex == 100 и scaley = 100
-					//если scalex != 100, то после редактирование ole киртинка сжимается(растягивается)
-					if( NULL != aPictShape->m_oPicture )
-					{
-						if( PROP_DEF != (int)aPictShape->m_oPicture->m_dScaleX && PROP_DEF != (int)aPictShape->m_oPicture->m_dScaleY &&
-							PROP_DEF != aPictShape->m_oPicture->m_nWidthGoal && PROP_DEF != aPictShape->m_oPicture->m_nHeightGoal )
-						{
-							if( 100 != (int)aPictShape->m_oPicture->m_dScaleX )
-							{
-								aPictShape->m_oPicture->m_nWidthGoal =  long (( aPictShape->m_oPicture->m_dScaleX / 100.0 ) * aPictShape->m_oPicture->m_nWidthGoal );
-								aPictShape->m_oPicture->m_dScaleX = 100;
-							}
-							if( 100 != (int)aPictShape->m_oPicture->m_dScaleY )
-							{
-								aPictShape->m_oPicture->m_nHeightGoal =  long (( aPictShape->m_oPicture->m_dScaleY / 100.0 ) * aPictShape->m_oPicture->m_nHeightGoal );
-								aPictShape->m_oPicture->m_dScaleY = 100;
-							}
-						}
-					}
-				}
-				if( NULL != aPictShape && NULL != oCurOle )
-				{
-					TextItemContainerPtr oNewTextItemContainer ( new TextItemContainer() );
-					RtfParagraphPtr pNewPar ( new RtfParagraph() );
-
-					pNewPar->AddItem( oCurOle );
-					oNewTextItemContainer->AddItem( pNewPar );
-					aPictShape->m_aTextItems = oNewTextItemContainer;
-
-					oCurOle->m_oResultPic = aPictShape;
-					oOutputParagraph.AddItem( oCurOle );
-				}
-				else if (NULL != aPictShape)
-				{
-					oOutputParagraph.AddItem( aPictShape );
-				}
+				OOXShapeReader oShapeReaderControl(ooxObject->m_oControl.GetPointer());
+				oShapeReaderControl.Parse( oParam, pNewShape );
+				
+				OOXShapeReader oShapeReaderObject(ooxObject->m_oOleObject.GetPointer());
+				oShapeReaderObject.Parse( oParam, pNewShape );
 			}
+				
+			if (pNewShape->m_bIsOle && pNewShape->m_pOleObject)
+			{
+				if (ooxObject->m_oDxaOrig.IsInit())	pNewShape->m_pOleObject->m_nWidth = *ooxObject->m_oDxaOrig;
+				if (ooxObject->m_oDyaOrig.IsInit())	pNewShape->m_pOleObject->m_nHeight = *ooxObject->m_oDyaOrig;
+
+				pNewShape->m_pOleObject->m_oResultShape = pNewShape;				
+ 				
+				oOutputParagraph.AddItem( pNewShape->m_pOleObject );
+			}
+			else
+				oOutputParagraph.AddItem( pNewShape );
 		}break;
 		case OOX::et_w_drawing:
 		{
@@ -748,8 +646,15 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 
 			if (result == 1)
 			{
-				 oOutputParagraph.AddItem( pNewDrawing );
-				 bAddDrawing = true;
+				if (pNewDrawing->m_bIsOle && pNewDrawing->m_pOleObject)
+				{
+					pNewDrawing->m_pOleObject->m_oResultShape = pNewDrawing;
+
+					oOutputParagraph.AddItem( pNewDrawing->m_pOleObject );
+				}
+				else
+					oOutputParagraph.AddItem( pNewDrawing );
+				bAddDrawing = true;
 			}
 			if (!bAddDrawing)
 			{
@@ -1018,9 +923,9 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 			orPrReader.Parse( oParam, oNewProperty );
 		}
 
-		for (size_t i =0 ; i < m_ooxRun->m_arrItems.size(); i++)
+        for (std::vector<OOX::WritingElement*>::iterator it = m_ooxRun->m_arrItems.begin(); it != m_ooxRun->m_arrItems.end(); ++it)
 		{
-			Parse(oParam, oOutputParagraph, poStyle, oNewProperty, m_ooxRun->m_arrItems[i]);
+			Parse(oParam, oOutputParagraph, poStyle, oNewProperty, *it);
 		}
 	}
 	return true;
@@ -1427,7 +1332,7 @@ bool OOXrPrReader::Parse( ReaderParameter oParam, RtfCharProperty& oOutputProper
 
 	if (m_ooxRunProps->m_oPosition.IsInit() && m_ooxRunProps->m_oPosition->m_oVal.IsInit())
 	{
-		int nValue = m_ooxRunProps->m_oPosition->m_oVal->ToTwips();
+		int nValue = m_ooxRunProps->m_oPosition->m_oVal->ToTwips() / 10;
 		if( nValue >= 0 )
 			oOutputProperty.m_nUp = nValue;
 		else
@@ -1517,6 +1422,27 @@ bool OOXrPrReader::Parse( ReaderParameter oParam, RtfCharProperty& oOutputProper
 		oOutputProperty.m_nHightlited = oParam.oRtf->m_oColorTable.AddItem(RtfColor(m_ooxRunProps->m_oHighlight->m_oVal->Get_R(),
 																					m_ooxRunProps->m_oHighlight->m_oVal->Get_G(),
 																					m_ooxRunProps->m_oHighlight->m_oVal->Get_B()));
+	}
+	if ( m_ooxRunProps->m_oTextOutline.IsInit())
+	{
+		unsigned int nColor = 0; //black
+		_CP_OPT(double) opacity;
+
+		OOXShapeReader::Parse(oParam, &m_ooxRunProps->m_oTextOutline->Fill, nColor, opacity);
+		
+		RtfColor rtfColor; 
+		rtfColor.SetRGB(nColor);
+
+	}
+	if ( m_ooxRunProps->m_oTextFill.is_init())
+	{
+		unsigned int nColor = 0; //black
+		_CP_OPT(double) opacity;
+		
+		OOXShapeReader::Parse(oParam, &m_ooxRunProps->m_oTextFill, nColor, opacity);
+
+		RtfColor rtfColor; 
+		rtfColor.SetRGB(nColor);
 	}
 	if( m_ooxRunProps->m_oColor.IsInit() )
 	{
@@ -1965,13 +1891,21 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 	}
 	if( m_ooxSectionProperty->m_oCols.IsInit() )
 	{
-		if(m_ooxSectionProperty->m_oCols->m_oNum.IsInit())
-			oOutput.m_nColumnNumber = m_ooxSectionProperty->m_oCols->m_oNum->GetValue();
-		else 
-			oOutput.m_nColumnNumber = 1;
+		if (!m_ooxSectionProperty->m_oCols->m_arrColumns.empty())
+		{
+			oOutput.m_nColumnNumber = (int)m_ooxSectionProperty->m_oCols->m_arrColumns.size();
+		}
 		
+		if(m_ooxSectionProperty->m_oCols->m_oNum.IsInit())
+		{
+			oOutput.m_nColumnNumber = m_ooxSectionProperty->m_oCols->m_oNum->GetValue();
+		}
+
 		if(m_ooxSectionProperty->m_oCols->m_oSpace.IsInit())
 			oOutput.m_nColumnSpace = m_ooxSectionProperty->m_oCols->m_oSpace->ToTwips(); //todooo twips????	
+
+		if (m_ooxSectionProperty->m_oCols->m_oSep.IsInit())
+			oOutput.m_bColumnLineBetween = m_ooxSectionProperty->m_oCols->m_oSep->ToBool();
 
 		for (size_t i = 0; i < m_ooxSectionProperty->m_oCols->m_arrColumns.size(); i++ )
 		{
@@ -2201,7 +2135,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 			oBorderReader.Parse( oParam, oOutput.m_oBorderBottom );
 		}
 	}
-	for (size_t i =0 ; i < m_ooxSectionProperty->m_arrHeaderReference.size() > 0; i++ )
+	for (size_t i = 0 ; i < m_ooxSectionProperty->m_arrHeaderReference.size(); i++ )
 	{
 		OOXHeaderReader oHeaderReader(m_ooxSectionProperty->m_arrHeaderReference[i]);
 		
@@ -2240,7 +2174,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
             }
         }
 	}
-	for (size_t i =0 ; i < m_ooxSectionProperty->m_arrFooterReference.size() > 0; i++ )
+	for (size_t i = 0 ; i < m_ooxSectionProperty->m_arrFooterReference.size(); i++ )
 	{
 		OOXHeaderReader oFooterReader(m_ooxSectionProperty->m_arrFooterReference[i]);
 		

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -165,8 +165,9 @@ namespace DocFileFormat
 		HRESULT SaveOLEObject		( const std::wstring& fileName, const OleObjectFileStructure& oleObjectFileStructure );
 		HRESULT SaveEmbeddedObject	( const std::wstring& fileName, const std::string& data );
 
-		int RegisterDocument();
-		int RegisterDocumentMacros();
+		void RegisterDocPr();
+		void RegisterDocument();
+		void RegisterDocumentMacros();
 		int RegisterFontTable();
 		int RegisterNumbering();
 		int RegisterSettings();

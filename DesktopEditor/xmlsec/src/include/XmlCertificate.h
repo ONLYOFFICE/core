@@ -7,6 +7,7 @@
 
 #define OOXML_HASH_ALG_SHA1         0
 #define OOXML_HASH_ALG_INVALID      1
+#define OOXML_HASH_ALG_SHA256       2
 
 #define OPEN_SSL_WARNING_OK         0
 #define OPEN_SSL_WARNING_ERR        1

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,6 +36,7 @@
 #include "../SlideMaster.h"
 #include "../Slide.h"
 #include "SpTree.h"
+#include "Pic.h"
 
 namespace PPTX
 {
@@ -104,7 +105,7 @@ namespace PPTX
 				else if (_T("txbx") == strName || _T("textbox") == strName)
 				{
 					if ( oReader.IsEmptyNode() )
-						return;
+						continue;
 							
 					int nParentDepth1 = oReader.GetDepth();
 					while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
@@ -123,7 +124,22 @@ namespace PPTX
 				else if (_T("cNvSpPr") == strName)
 					nvSpPr.cNvSpPr = oReader;
 				else if (_T("txSp") == strName)
-					txBody = oReader;
+				{
+					if ( oReader.IsEmptyNode() )
+						continue;
+							
+					int nParentDepth1 = oReader.GetDepth();
+					while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+					{
+						std::wstring strName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+
+						if (strName1 == L"txBody")
+						{
+							txBody = oReader;
+							break;
+						}
+					}
+				}
 				else if (_T("bodyPr") == strName)
 					oTextBoxBodyPr = oReader;
 			}
@@ -493,7 +509,22 @@ namespace PPTX
 			
 			return txBody->lstStyle->IsListStyleEmpty();
 		}
+		void Shape::Merge(Pic& pic, bool bIsSlidePlaceholder)
+		{
+			if (m_pLevelUp)
+				m_pLevelUp->Merge(pic, true);
 
+			pic.nvPicPr.cNvPr	= nvSpPr.cNvPr;
+			pic.nvPicPr.nvPr	= nvSpPr.nvPr;
+
+			spPr.Merge(pic.spPr);
+
+			if (style.is_init())
+			{
+				pic.style = style;
+				pic.style->SetParentFilePointer(parentFile);
+			}
+		}
 		void Shape::Merge(Shape& shape, bool bIsSlidePlaceholder)
 		{
 			if (m_pLevelUp)

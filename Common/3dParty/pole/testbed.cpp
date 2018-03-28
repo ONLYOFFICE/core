@@ -19,44 +19,44 @@
 
 POLE::Storage* storage = 0;
 
-bool DirectoryExists( const char* dirname ){
+bool DirectoryExists( const wchar_t* dirname ){
 
-    if( _access( dirname, 0 ) == 0 ){
+    if( _waccess( dirname, 0 ) == 0 ){
 
-        struct stat status;
-        stat( dirname, &status );
+        struct _stat32 status;
+        _wstat32( dirname, &status );
 
         return (status.st_mode & S_IFDIR) != 0;
     }
     return false;
 }
 
-void visit( int indent, POLE::Storage* storage, std::string path )
+void visit( int indent, POLE::Storage* storage, std::wstring path )
 {
-	std::list<std::string> entries;
+	std::list<std::wstring> entries;
 	entries = storage->entries( path );
 
-	std::list<std::string>::iterator it;
+	std::list<std::wstring>::iterator it;
 	for( it = entries.begin(); it != entries.end(); ++it )
 	{
-		std::string name = *it;
-		std::string fullname = path + name;
+		std::wstring name = *it;
+		std::wstring fullname = path + name;
 		for( int j = 0; j < indent; j++ ) 
 			std::cout << "    ";
 		POLE::Stream* ss = new POLE::Stream( storage, fullname );
-		std::cout << name;
+		std::wcout << name;
 		if( ss )
 			if( !ss->fail() )std::cout << "  (" << ss->size() << ")";
 		std::cout << std::endl;
 		delete ss;
 
 		if( storage->isDirectory( fullname ) )
-			visit( indent+1, storage, fullname + "/" );
+			visit( indent+1, storage, fullname + L"/" );
 	}
 
 }
 
-bool extract( POLE::Storage* storage, const char* stream_name, const char* outfile )
+bool extract( POLE::Storage* storage, const wchar_t* stream_name, const wchar_t* outfile )
 {
   POLE::Stream* stream = new POLE::Stream( storage, stream_name );
   if( !stream )
@@ -86,29 +86,29 @@ bool extract( POLE::Storage* storage, const char* stream_name, const char* outfi
   return true;
 }
 
-void extractDir(POLE::Storage* storage, std::string outDir, std::string path, int &nFolders, int &nFiles)
+void extractDir(POLE::Storage* storage, std::wstring outDir, std::wstring path, int &nFolders, int &nFiles)
 {
-	const char *cOutDir = outDir.c_str();
+	const wchar_t *cOutDir = outDir.c_str();
 	if (DirectoryExists(cOutDir))
 	{
 		std::cout << "You should not specify a directory for output that already exists." << std::endl;
 		return;
 	}
 
-	_mkdir(cOutDir);
+	_wmkdir(cOutDir);
 	nFolders++;
-	std::list<std::string> entries;
+	std::list<std::wstring> entries;
 	entries = storage->entries( path );
 
-	std::list<std::string>::iterator it;
+	std::list<std::wstring>::iterator it;
 	for( it = entries.begin(); it != entries.end(); ++it )
 	{
-		std::string name = *it;
-		std::string fullname = path + name;
+		std::wstring name = *it;
+		std::wstring fullname = path + name;
 		if (storage->isDirectory(fullname))
 		{
-			std::string outdirchild = outDir + name;
-			extractDir(storage, outdirchild + "/", fullname + "/", nFolders, nFiles);
+			std::wstring outdirchild = outDir + name;
+			extractDir(storage, outdirchild + L"/", fullname + L"/", nFolders, nFiles);
 		}
 		else
 		{
@@ -124,8 +124,8 @@ void extractDir(POLE::Storage* storage, std::string outDir, std::string path, in
 				return;
 			}
 			std::ofstream file;
-			std::string outfname = outDir + name;
-			const char *coutfname = outfname.c_str();
+			std::wstring outfname = outDir + name;
+			const wchar_t *coutfname = outfname.c_str();
 			file.open(coutfname, std::ios::binary|std::ios::out);
 			unsigned long bytesLeft = stream->size();
 			unsigned char buffer[4096];
@@ -147,10 +147,10 @@ void extractDir(POLE::Storage* storage, std::string outDir, std::string path, in
 	}
 }
 
-bool AddFile2Storage(POLE::Storage* storage, std::string inFile, std::string name)
+bool AddFile2Storage(POLE::Storage* storage, std::wstring inFile, std::wstring name)
 {
 	std::ifstream file;
-	const char *cinfname = inFile.c_str();
+	const wchar_t *cinfname = inFile.c_str();
 	file.open(cinfname, std::ios::binary|std::ios::in);
 	// find size of input file
 	file.seekg( 0, std::ios::end );
@@ -191,15 +191,15 @@ bool AddFile2Storage(POLE::Storage* storage, std::string inFile, std::string nam
 
 void AddDir2Storage(POLE::Storage* storage, std::wstring inDir, std::wstring name, int &nFolders, int &nFiles)
 {
-	WIN32_FIND_DATA ffd;
+	WIN32_FIND_DATAW ffd;
 	HANDLE h;
 
 
-	std::wstring inDirLcl = inDir + "*";
+	std::wstring inDirLcl = inDir + L"*";
 	std::wstring outNameLcl = name;
 
 	const wchar_t *cInDir = inDirLcl.c_str();
-	h = FindFirstFile(cInDir, &ffd);
+	h = FindFirstFileW(cInDir, &ffd);
 	if (h == INVALID_HANDLE_VALUE)
 		return;
 	nFolders++;
@@ -207,22 +207,22 @@ void AddDir2Storage(POLE::Storage* storage, std::wstring inDir, std::wstring nam
 	{
 		if (ffd.cFileName[0] == '.')
 		{
-			if (ffd.cFileName[1] == 0 || (ffd.cFileName[1] == '.' && ffd.cFileName[2] == 0))
+			if (ffd.cFileName[1] == 0 || (ffd.cFileName[1] == L'.' && ffd.cFileName[2] == 0))
 				continue;
 		}
 		outNameLcl = name + ffd.cFileName;
 		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 		{
-			outNameLcl += "/";
+			outNameLcl += L"/";
 			inDirLcl = inDir + ffd.cFileName;
-			inDirLcl += "\\";
+			inDirLcl += L"\\";
 			AddDir2Storage(storage, inDirLcl, outNameLcl, nFolders, nFiles);
 		}
 		else
 		{
 			std::ifstream file;
-			std::string infname = inDir + ffd.cFileName;
-			const char *cinfname = infname.c_str();
+			std::wstring infname = inDir + ffd.cFileName;
+			const wchar_t *cinfname = infname.c_str();
 			file.open(cinfname, std::ios::binary|std::ios::in);
 			// find size of input file
 			file.seekg( 0, std::ios::end );
@@ -249,12 +249,12 @@ void AddDir2Storage(POLE::Storage* storage, std::wstring inDir, std::wstring nam
 			nFiles++;
 		}
 	}
-	while (FindNextFile(h, &ffd) != 0);
+	while (FindNextFileW(h, &ffd) != 0);
 }
 
 
 
-void cmdOpen(std::list<std::string> &entries)
+void cmdOpen(std::list<std::wstring> &entries)
 {
 	if (entries.size() < 1)
 		std::cout << "You must enter the name of an existing file formatted as structured storage." << std::endl;
@@ -262,20 +262,23 @@ void cmdOpen(std::list<std::string> &entries)
 	{
 		if (storage != 0)
 			storage->close();
-		std::string ssName = entries.front();
+		std::wstring ssName = entries.front();
 		entries.pop_front();
-		storage = new POLE::Storage(ssName.c_str());
+		
+		std::wstring sName(ssName.begin(), ssName.end());
+		storage = new POLE::Storage(sName.c_str());
+		
 		bool bWrite = false;
 		bool bCreate = false;
 		if (entries.size() > 0)
 		{
-			std::string modifiers = entries.front();
+			std::wstring modifiers = entries.front();
 			for (unsigned idx = 0; idx < modifiers.size(); idx++)
 			{
-				char c = modifiers[idx];
-				if (c == 'c')
+				wchar_t c = modifiers[idx];
+				if (c == L'c')
 					bCreate = true;
-				else if (c == 'w')
+				else if (c == L'w')
 					bWrite = true;
 			}
 		}
@@ -299,7 +302,7 @@ void cmdOpen(std::list<std::string> &entries)
 	}
 }
 
-void cmdClose(std::list<std::string> &entries)
+void cmdClose(std::list<std::wstring> &entries)
 {
 	if (storage)
 	{
@@ -309,11 +312,11 @@ void cmdClose(std::list<std::string> &entries)
 	}
 }
 
-void cmdStats(std::list<std::string> &entries)
+void cmdStats(std::list<std::wstring> &entries)
 {
 	if (storage)
 	{
-		unsigned int nDirs, nUUDirs, nBBs, nUUBBs, nSBs, nUUSBs;
+		unsigned __int64 nDirs, nUUDirs, nBBs, nUUBBs, nSBs, nUUSBs;
 		storage->GetStats(&nDirs, &nUUDirs, &nBBs, &nUUBBs, &nSBs, &nUUSBs);
 		printf("%d Directory Entries, %d unused.\n", nDirs, nUUDirs);
 		printf("%d Big Blocks, %d unused.\n", nBBs, nUUBBs);
@@ -321,7 +324,7 @@ void cmdStats(std::list<std::string> &entries)
 	}
 }
 
-void cmdVisit(std::list<std::string> &entries)
+void cmdVisit(std::list<std::wstring> &entries)
 {
 	if (!storage)
 		std::cout << "No storage is opened." << std::endl;
@@ -330,7 +333,7 @@ void cmdVisit(std::list<std::string> &entries)
 		if (entries.size() > 0)
 			visit(0, storage, entries.front());
 		else
-			visit(0, storage, "/");
+			visit(0, storage, L"/");
 	}
 }
 
@@ -347,12 +350,12 @@ void cmdExtract(std::list<std::wstring> &entries)
 		std::wstring filePath = entries.front();
 		if (storage->isDirectory(ssPath))
 		{
-			if (filePath[filePath.size()-1] != '/')
-				filePath += '/';
-			if (ssPath[0] != '/')
-				ssPath = '/' + ssPath;
-			if (ssPath[ssPath.size()-1] != '/')
-				ssPath += '/';
+			if (filePath[filePath.size()-1] != L'/')
+				filePath += L'/';
+			if (ssPath[0] != L'/')
+				ssPath = L'/' + ssPath;
+			if (ssPath[ssPath.size()-1] != L'/')
+				ssPath += L'/';
 			int nFiles = 0;
 			int nFolders = 0;
 			extractDir(storage, filePath, ssPath, nFolders, nFiles);
@@ -374,7 +377,7 @@ void cmdAdd(std::list<std::wstring> &entries)
 		std::cout << "You must specify a path in the open storage to be created or modified, and a source file or folder." << std::endl;
 	else if (!storage->isWriteable())
 		std::cout << "The open storage cannot be modified." << std::endl;
-	else if (entries.front() != "/" && storage->exists(entries.front()))
+	else if (entries.front() != L"/" && storage->exists(entries.front()))
 		std::cout << "The specified storage node already exists - to save it again, first delete it." << std::endl;
 	else
 	{
@@ -383,12 +386,12 @@ void cmdAdd(std::list<std::wstring> &entries)
 		std::wstring filePath = entries.front();
 		if (DirectoryExists(filePath.c_str()))
 		{
-			if (filePath[filePath.size()-1] != '/')
-				filePath += '/';
-			if (ssPath[0] != '/')
-				ssPath = '/' + ssPath;
-			if (ssPath[ssPath.size()-1] != '/')
-				ssPath += '/';
+			if (filePath[filePath.size()-1] != L'/')
+				filePath += L'/';
+			if (ssPath[0] != L'/')
+				ssPath = L'/' + ssPath;
+			if (ssPath[ssPath.size()-1] != L'/')
+				ssPath += L'/';
 			int nFiles = 0;
 			int nFolders = 0;
 			AddDir2Storage(storage, filePath, ssPath, nFolders, nFiles);
@@ -402,7 +405,7 @@ void cmdAdd(std::list<std::wstring> &entries)
 	}
 }
 
-void cmdDelete(std::list<std::string> &entries)
+void cmdDelete(std::list<std::wstring> &entries)
 {
 	if (!storage)
 		std::cout << "No storage is opened." << std::endl;
@@ -419,13 +422,13 @@ void cmdDelete(std::list<std::string> &entries)
 	}
 }
 
-bool cmdQuit(std::list<std::string> &entries)
+bool cmdQuit(std::list<std::wstring> &entries)
 {
 	cmdClose(entries);
 	return true;
 }
 
-void cmdHelp(std::list<std::string> &entries)
+void cmdHelp(std::list<std::wstring> &entries)
 {
 	std::cout << "You can enter any of the following commands. Note that they are case sensitive." << std::endl;
 	std::cout << "open filePath [modifier] - modifiers can be any combination of r, w, or c (create)" << std::endl;
@@ -481,67 +484,78 @@ std::list<std::string> clineParse(std::string inCmd)
 	return outWords;
 }
 
-//int main(int argc, char* argv[])
-//{
-//	if( argc > 1 )
-//	{
-//		std::cout << "Usage:" << std::endl;
-//		std::cout << argv[0] << " This takes no arguments - type help in the console window for information. " << std::endl;
-//		return 0;
-//	}
-//
-//	std::string command;
-//	while (true)
-//	{
-//		std::getline(std::cin, command);
-//		std::list<std::string> entries = clineParse(command);
-//		if (entries.size() == 0)
-//			continue;
-//		std::string cmdWord = entries.front();
-//		entries.pop_front();
-//		if (cmdWord.compare("open") == 0)
-//			cmdOpen(entries);
-//		else if (cmdWord.compare("visit") == 0)
-//			cmdVisit(entries);
-//		else if (cmdWord.compare("extract") == 0)
-//			cmdExtract(entries);
-//		else if (cmdWord.compare("add") == 0)
-//			cmdAdd(entries);
-//		else if (cmdWord.compare("delete") == 0)
-//			cmdDelete(entries);
-//		else if (cmdWord.compare("stats") == 0)
-//			cmdStats(entries);
-//		else if (cmdWord.compare("close") == 0)
-//			cmdClose(entries);
-//		else if (cmdWord.compare("quit") == 0)
-//		{
-//			if (cmdQuit(entries))
-//				break;
-//		}
-//		else
-//			cmdHelp(entries);
-//	}
-//#if 0
-//		std::list<std::string>::iterator it;
-//		for( it = entries.begin(); it != entries.end(); ++it )
-//			std::cout << *it << std::endl;
-//	open filename [modifier] (modifier can be r, w, c)
-//visit [sspath]
-//extract sspath fpath
-//add sspath fpath
-//delete sspath
-//close
-//
-//	std::string indir = argv[1];
-//	char* outfile = argv[2];
-//	if (indir[indir.length()-1] != '\\')
-//		indir += "\\";
-//	POLE::Storage* storage = new POLE::Storage(outfile);
-//	storage->open(true, true);
-//	AddDir2Storage(storage, indir, "/");
-//	storage->close();
-//	storage->open();
-//	visit(0, storage, "/");
-//	storage->close();
-//#endif
-//}
+int wmain(int argc, wchar_t* argv[])
+{
+	//if( argc > 1 )
+	//{
+	//	std::cout << "Usage:" << std::endl;
+	//	std::cout << argv[0] << " This takes no arguments - type help in the console window for information. " << std::endl;
+	//	return 0;
+	//}
+	std::list<std::wstring> entries;
+
+	entries.push_back(L"open");
+	entries.push_back(argv[2]);
+	entries.push_back(L"cw");
+
+	entries.push_back(L"add");
+	entries.push_back(L"/");
+	entries.push_back(argv[1]);
+	entries.push_back(L"close");
+
+	std::string command;
+	while (true)
+	{
+		//std::getline(std::cin, command);
+		//std::list<std::string> entries = clineParse(command);
+		if (entries.size() == 0)
+			continue;
+		std::wstring cmdWord = entries.front();
+		entries.pop_front();
+		if (cmdWord.compare(L"open") == 0)
+			cmdOpen(entries);
+		else if (cmdWord.compare(L"visit") == 0)
+			cmdVisit(entries);
+		else if (cmdWord.compare(L"extract") == 0)
+			cmdExtract(entries);
+		else if (cmdWord.compare(L"add") == 0)
+			cmdAdd(entries);
+		else if (cmdWord.compare(L"delete") == 0)
+			cmdDelete(entries);
+		else if (cmdWord.compare(L"stats") == 0)
+			cmdStats(entries);
+		else if (cmdWord.compare(L"close") == 0)
+			cmdClose(entries);
+		else if (cmdWord.compare(L"quit") == 0)
+		{
+			if (cmdQuit(entries))
+				break;
+		}
+		else
+			cmdHelp(entries);
+	}
+#if 0
+		std::list<std::string>::iterator it;
+		for( it = entries.begin(); it != entries.end(); ++it )
+			std::cout << *it << std::endl;
+	open filename [modifier] (modifier can be r, w, c)
+visit [sspath]
+extract sspath fpath
+add sspath fpath
+delete sspath
+close
+
+	std::string indir = argv[1];
+	char* outfile = argv[2];
+	if (indir[indir.length()-1] != '\\')
+		indir += "\\";
+	POLE::Storage* storage = new POLE::Storage(outfile);
+	storage->open(true, true);
+	AddDir2Storage(storage, indir, "/");
+	storage->close();
+	storage->open();
+	visit(0, storage, "/");
+	storage->close();
+#endif
+	return 0;
+}

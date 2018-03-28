@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -80,12 +80,9 @@ int LabelSst::serialize(std::wostream & stream)
 			
 			CP_XML_ATTR(L"t", L"s");
 			
-			if (isst.value())
+			CP_XML_NODE(L"v")
 			{
-				CP_XML_NODE(L"v")
-				{
-					CP_XML_STREAM() << isst;
-				}
+				CP_XML_STREAM() << isst;
 			}
 		}			
 	}

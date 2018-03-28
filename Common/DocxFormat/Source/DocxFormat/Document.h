@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,7 +37,6 @@
 
 #include "../Common/SimpleTypes_Word.h"
 #include "../Common/SimpleTypes_Shared.h"
-#include "../Common/Utils.h"
 
 #include "WritingElement.h"
 #include "File.h"
@@ -73,8 +72,6 @@ namespace OOX
 			virtual ~CBackground()
 			{
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("w:color"),      m_oColor );
@@ -199,27 +196,25 @@ namespace OOX
 	class CDocument : public OOX::File, public IFileContainer
 	{
 	public:
-		CDocument()
+		CDocument(OOX::Document *pMain) : File(pMain), IFileContainer(pMain)
 		{
 			m_bMacroEnabled = false;
+			
+			CDocx* docx = dynamic_cast<CDocx*>(pMain);
+			if (docx) docx->m_pDocument = this;
 		}
-		CDocument(const CPath& oRootPath, const CPath& oPath)
+		CDocument(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath) : File(pMain), IFileContainer(pMain)
 		{
 			m_bMacroEnabled = false;
+
+			CDocx* docx = dynamic_cast<CDocx*>(pMain);
+			if (docx) docx->m_pDocument = this;
 			
 			read( oRootPath, oPath );
 		}
 		virtual ~CDocument()
 		{
-			for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-			{
-				if ( m_arrItems[nIndex] )
-					delete m_arrItems[nIndex];
-
-				m_arrItems[nIndex] = NULL;
-			}
-
-			m_arrItems.clear();
+			ClearItems();
 		}
 
 		virtual void read(const CPath& oPath)
@@ -311,7 +306,9 @@ namespace OOX
 				}
 
 				if ( pItem )
+				{
 					m_arrItems.push_back( pItem );
+				}
 			}
 		}
 
@@ -320,12 +317,11 @@ namespace OOX
 			m_oReadPath = oPath;
 			IFileContainer::Read( oRootPath, oPath );
 			
-			if (IFileContainer::IsExist(OOX::FileTypes::VbaProject))
+			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
+			if ( (docx ) && (docx->m_pVbaProject) )
 			{
 				m_bMacroEnabled = true;
-			}
-#ifdef USE_LITE_READER
-			Common::readAllShapeTypes(oPath, m_arrShapeTypes);
+			}	
 
 			XmlUtils::CXmlLiteReader oReader;
 			
@@ -358,130 +354,45 @@ namespace OOX
 					}
 				}
 			}			
-
-#else
-
-			XmlUtils::CXmlNode oDocument;
-			oDocument.FromXmlFile2( oPath.GetPath() );
-			if ( _T("w:document") == oDocument.GetName() )
-			{
-				oDocument.ReadAttributeBase( _T("w:conformance"), m_oConformance );
-
-				XmlUtils::CXmlNode oBackground;
-				if ( oDocument.GetNode( _T("w:background"), oBackground ) )
-					m_oBackground = oBackground;
-
-				XmlUtils::CXmlNode oBody;
-				if ( oDocument.GetNode( _T("w:body"), oBody ) )
-				{
-					XmlUtils::CXmlNodes oBodyChilds;
-					if ( oBody.GetNodes( _T("*"), oBodyChilds ) )
-					{
-						XmlUtils::CXmlNode oItem;
-						for (unsigned  int nIndex = 0; nIndex < oBodyChilds.GetCount(); nIndex++ )
-						{
-							if ( oBodyChilds.GetAt( nIndex, oItem ) )
-							{
-								std::wstring sName = oItem.GetName();
-								WritingElement *pItem = NULL;
-
-								/*if ( _T("w:altChunk") == sName )
-									pItem = new Logic::CAltChunk( oItem );
-								else*/ if ( _T("w:bookmarkEnd") == sName )
-									pItem = new Logic::CBookmarkEnd( oItem );
-								else if ( _T("w:bookmarkStart") == sName )
-									pItem = new Logic::CBookmarkStart( oItem );
-								else if ( _T("w:commentRangeEnd") == sName )
-									pItem = new Logic::CCommentRangeEnd( oItem );
-								else if ( _T("w:commentRangeStart") == sName )
-									pItem = new Logic::CCommentRangeStart( oItem );
-								//else if ( _T("w:customXml") == sName )
-								//	pItem = new Logic::CCustomXml( oItem );
-								else if ( _T("w:customXmlDelRangeEnd") == sName )
-									pItem = new Logic::CCustomXmlDelRangeEnd( oItem );
-								else if ( _T("w:customXmlDelRangeStart") == sName )
-									pItem = new Logic::CCustomXmlDelRangeStart( oItem );
-								else if ( _T("w:customXmlInsRangeEnd") == sName )
-									pItem = new Logic::CCustomXmlInsRangeEnd( oItem );
-								else if ( _T("w:customXmlInsRangeStart") == sName )
-									pItem = new Logic::CCustomXmlInsRangeStart( oItem );
-								else if ( _T("w:customXmlMoveFromRangeEnd") == sName ) 
-									pItem = new Logic::CCustomXmlMoveFromRangeEnd( oItem );
-								else if ( _T("w:customXmlMoveFromRangeStart") == sName )
-									pItem = new Logic::CCustomXmlMoveFromRangeStart( oItem );
-								else if ( _T("w:customXmlMoveToRangeEnd") == sName ) 
-									pItem = new Logic::CCustomXmlMoveToRangeEnd( oItem );
-								else if ( _T("w:customXmlMoveToRangeStart") == sName )
-									pItem = new Logic::CCustomXmlMoveToRangeStart( oItem );
-								//else if ( _T("w:del") == sName )
-								//	pItem = new Logic::CDel( oItem );
-								//else if ( _T("w:ins") == sName )
-								//	pItem = new Logic::CIns( oItem );
-								//else if ( _T("w:moveFrom") == sName )
-								//	pItem = new Logic::CMoveFrom( oItem );
-								else if ( _T("w:moveFromRangeEnd") == sName )
-									pItem = new Logic::CMoveFromRangeEnd( oItem );
-								else if ( _T("w:moveFromRangeStart") == sName )
-									pItem = new Logic::CMoveFromRangeStart( oItem );
-								//else if ( _T("w:moveTo") == sName )
-								//	pItem = new Logic::CMoveTo( oItem );
-								else if ( _T("w:moveToRangeEnd") == sName )
-									pItem = new Logic::CMoveToRangeEnd( oItem );
-								else if ( _T("w:moveToRangeStart") == sName )
-									pItem = new Logic::CMoveToRangeStart( oItem );
-								else if ( _T("m:oMath") == sName )
-									pItem = new Logic::COMath( oItem );
-								else if ( _T("m:oMathPara") == sName )
-									pItem = new Logic::COMathPara( oItem );
-								else if ( _T("w:p") == sName )
-									pItem = new Logic::CParagraph( oItem );
-								else if ( _T("w:permEnd") == sName )
-									pItem = new Logic::CPermEnd( oItem );
-								else if ( _T("w:permStart") == sName )
-									pItem = new Logic::CPermStart( oItem );
-								else if ( _T("w:proofErr") == sName )
-									pItem = new Logic::CProofErr( oItem );
-								else if ( _T("w:sdt") == sName )
-									pItem = new Logic::CSdt( oItem );
-								else if ( _T("w:sectPr") == sName )
-									m_oSectPr = oItem;
-								else if ( _T("w:tbl") == sName )
-									pItem = new Logic::CTbl( oItem );
-
-								if ( pItem )
-									m_arrItems.push_back( pItem );
-							}
-						}
-					}
-				}
-			}	
-#endif
 		}
 		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			std::wstring sXml;
+			std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document";
 
 			if ( SimpleTypes::conformanceclassTransitional != m_oConformance.GetValue() )
-			{
-				sXml += _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document w:conformance=\"");
+			{		
+				sXml += L" w:conformance=\"";
 				sXml += m_oConformance.ToString();
-				sXml += _T("\" xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 wp14\">");
+				sXml += L"\"";
 			}
-			else
-			{
-				sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 wp14\">");
-			}
+sXml += L" xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
+xmlns:v=\"urn:schemas-microsoft-com:vml\" \
+xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
+xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
+xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
+xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
+xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
+xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
+xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
+mc:Ignorable=\"w14 wp14\">";
 
 			if ( m_oBackground.IsInit() )
 				sXml += m_oBackground->toXML();
 
 			sXml += _T("<w:body>");
 
-			for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+            for ( size_t i = 0; i < m_arrItems.size(); ++i)
 			{
-				if ( m_arrItems[nIndex] )
+                if ( m_arrItems[i] )
 				{
-					sXml += m_arrItems[nIndex]->toXML();
+                    sXml += m_arrItems[i]->toXML();
 				}
 			}
 
@@ -512,14 +423,11 @@ namespace OOX
 		{
 			return m_oReadPath;
 		}
-	public:
-
 		void ClearItems()
 		{
-			for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+            for ( size_t i = 0; i < m_arrItems.size(); ++i)
 			{
-				if ( m_arrItems[nIndex] )delete m_arrItems[nIndex];
-				m_arrItems[nIndex] = NULL;
+                if ( m_arrItems[i] )delete m_arrItems[i];
 			}
 			m_arrItems.clear();
 		}
@@ -564,11 +472,12 @@ namespace OOX
 
 			//m_arrItems.push_back( pPara );
 		}
+		
 		void AddSpaceToLast(const int nCount)
 		{
-			if ( m_arrItems.size() > 0 && et_w_p == m_arrItems[m_arrItems.size() - 1]->getType() )
+			if ( (!m_arrItems.empty()) && (et_w_p == m_arrItems.back()->getType()) )
 			{
-				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems[m_arrItems.size() - 1];
+				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems.back();
 				pPara->AddSpace( nCount );
 			}
 		}
@@ -596,9 +505,9 @@ namespace OOX
 		}
 		void AddTextToLast(std::wstring& sText)
 		{
-			if ( m_arrItems.size() > 0 && et_w_p == m_arrItems[m_arrItems.size() - 1]->getType() )
+			if ( (!m_arrItems.empty()) && (et_w_p == m_arrItems.back()->getType()) )
 			{
-				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems[m_arrItems.size() - 1];
+				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems.back();
 				pPara->AddText( sText );
 			}
 		}
@@ -610,7 +519,7 @@ namespace OOX
 
 			Logic::CParagraph* pPara = (Logic::CParagraph*)pNewElement;
 
-			smart_ptr<OOX::File> oHyperlink = smart_ptr<OOX::File>( new OOX::HyperLink( sNameHref ) );
+			smart_ptr<OOX::File> oHyperlink = smart_ptr<OOX::File>( new OOX::HyperLink(File::m_pMainDocument, sNameHref ) );
 			const OOX::RId rId = Add( oHyperlink );
 
 			// TO DO: Сделать добавление гиперссылок в параграфах
@@ -620,11 +529,11 @@ namespace OOX
 		}
 		void AddHyperlinkToLast(std::wstring& sNameHref, std::wstring& sText)
 		{
-			if ( m_arrItems.size() > 0 && et_w_p == m_arrItems[m_arrItems.size() - 1]->getType() )
+			if ( (!m_arrItems.empty()) && (et_w_p == m_arrItems.back()->getType()) )
 			{
-				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems[m_arrItems.size() - 1];
+				OOX::Logic::CParagraph* pPara = (OOX::Logic::CParagraph*)m_arrItems.back();
 
-				smart_ptr<OOX::File> oHyperlink = smart_ptr<OOX::File>( new OOX::HyperLink( sNameHref ) );
+				smart_ptr<OOX::File> oHyperlink = smart_ptr<OOX::File>( new OOX::HyperLink( File::m_pMainDocument, sNameHref ) );
 				const OOX::RId rId = Add( oHyperlink );
 
 				// TO DO: Сделать добавление гиперссылок в параграфах
@@ -650,9 +559,7 @@ namespace OOX
 		nullable<OOX::Logic::CSectionProperty> m_oSectPr;
 		nullable<OOX::Logic::CBackground     > m_oBackground;
 
-		std::vector<WritingElement *>			m_arrItems;
-		std::vector<std::wstring>				m_arrShapeTypes;
-
+        std::vector<WritingElement *>			m_arrItems;
 	};
 
 } // namespace OOX

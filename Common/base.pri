@@ -1,3 +1,6 @@
+VERSION = 2.4.523.0
+DEFINES += INTVER=$$VERSION
+
 # CONFIGURATION
 CONFIG(debug, debug|release) {
     CONFIG += core_debug
@@ -66,6 +69,7 @@ core_mac {
 core_windows {
     CONFIG -= debug_and_release debug_and_release_target
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
+    QMAKE_CXXFLAGS -= -Zc:strictStrings
     QMAKE_CXXFLAGS += /MP
 }
 

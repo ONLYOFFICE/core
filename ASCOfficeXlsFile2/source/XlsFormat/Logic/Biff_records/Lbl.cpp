@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,8 +44,7 @@ const wchar_t* const AutoFilterDefineNames[] =
 };
 
 
-Lbl::Lbl()
-:	rgce(false), fGrp(0)
+Lbl::Lbl() : rgce(false), fGrp(0)
 {
 }
 
@@ -167,10 +166,6 @@ void Lbl::readFields(CFRecord& record)
 	}
 }
 
-const XLUnicodeStringNoCch Lbl::getName() const
-{
-	return Name_bin;
-}
 
 } // namespace XLS
 

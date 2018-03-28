@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -56,7 +56,8 @@ const bool CHART::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	if(!proc.mandatory<ChartSheetSubstream>())
+	ChartSheetSubstream chart_sheet(-1);
+	if(!proc.mandatory(chart_sheet))
 	{
 		return false;
 	}

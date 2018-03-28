@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,14 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/DXFN.h>
-#include <Logic/Biff_structures/CFParsedFormulaNoCCE.h>
+#include "../Biff_structures/DXFN.h"
+#include "../Biff_structures/CFParsedFormulaNoCCE.h"
 
 namespace XLS
 {
 
-
-// Logical representation of CF record in BIFF8
 class CF: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(CF)
@@ -50,7 +48,6 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeCF;
@@ -69,6 +66,7 @@ public:
 	CFParsedFormulaNoCCE rgce2;
 
 	BaseObjectPtr	m_CFEx;
+	BaseObjectPtr	m_CF12;
 
 	GlobalWorkbookInfoPtr global_info_;
 };

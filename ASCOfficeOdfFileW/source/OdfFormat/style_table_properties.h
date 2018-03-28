@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -84,8 +84,8 @@ public:
 	odf_types::common_border_attlist				common_border_attlist_;
 
  
-	office_element_ptr style_background_image_;
-
+	office_element_ptr			style_background_image_;
+    _CP_OPT(odf_types::Bool)	style_use_optimal_column_width_;
        
 };
 

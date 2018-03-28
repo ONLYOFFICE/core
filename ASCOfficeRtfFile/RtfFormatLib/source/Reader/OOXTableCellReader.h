@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,9 +53,9 @@ public:
 	{
 		if (m_ooxTableCell == NULL) return false;
 
-		if( m_ooxTableCell->m_oTableCellProperties )
+		if( m_ooxTableCell->m_pTableCellProperties )
 		{
-			OOXtcPrReader oCellPropReader(m_ooxTableCell->m_oTableCellProperties, m_ooxTableProps);
+			OOXtcPrReader oCellPropReader(m_ooxTableCell->m_pTableCellProperties, m_ooxTableProps);
 			oCellPropReader.Parse( oParam, oOutputCell.m_oProperty, oConditionalTableStyle, nCurCell, nCellCount, nCurRow, nRowCount );//может поменяться на любой condition (firstRow)
 		}
 		else
@@ -66,13 +66,13 @@ public:
 			oConditionalTableStyle.ApplyTableStyleToCellBorder( oParam.poTableStyle, oOutputCell.m_oProperty, nCurCell, nCellCount, nCurRow, nRowCount );
 		}
 
-		for (size_t i = 0; i < m_ooxTableCell->m_arrItems.size(); i++ )
+        for (std::vector<OOX::WritingElement*>::iterator it = m_ooxTableCell->m_arrItems.begin(); it != m_ooxTableCell->m_arrItems.end(); ++it)
 		{
-			switch(m_ooxTableCell->m_arrItems[i]->getType())
+			switch((*it)->getType())
 			{
 				case OOX::et_w_p:
 				{
-					OOX::Logic::CParagraph * pParagraph = dynamic_cast<OOX::Logic::CParagraph*>(m_ooxTableCell->m_arrItems[i]);
+					OOX::Logic::CParagraph * pParagraph = dynamic_cast<OOX::Logic::CParagraph*>(*it);
 			
 					RtfParagraphPtr oNewParagraph( new RtfParagraph() );
 					//применяем к новому параграфу default property
@@ -92,7 +92,7 @@ public:
 				}break;
 				case OOX::et_w_tbl:
 				{
-					OOX::Logic::CTbl * pTbl = dynamic_cast<OOX::Logic::CTbl*>(m_ooxTableCell->m_arrItems[i]);
+					OOX::Logic::CTbl * pTbl = dynamic_cast<OOX::Logic::CTbl*>(*it);
 					
 					oParam.oReader->m_nCurItap ++ ;
 					RtfTablePtr oNewTabel( new RtfTable() );
@@ -104,7 +104,7 @@ public:
 				default:
 				{
 					//todooo - универсальный риадер
-					//OOXElementReader oElementReader(m_ooxTableCell->m_arrItems[i]);
+					//OOXElementReader oElementReader((*it));
 					//ITextItemPtr *rtfElement = oElementReader.Parse( oParam);
 					//oOutputCell.AddItem( rtfElement );
 				}break;

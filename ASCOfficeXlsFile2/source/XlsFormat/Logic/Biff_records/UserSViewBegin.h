@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,13 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/PaneType.h>
+#include "../Biff_structures/PaneType.h"
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
 
-
-// Logical representation of UserSViewBegin record in BIFF8
 class UserSViewBegin: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(UserSViewBegin)
@@ -56,7 +55,7 @@ public:
 //-----------------------------
 	std::wstring	guid;
 	TabId			iTabid;
-	BIFF_DWORD		wScale;
+	_UINT32			wScale;
 	Icv				icvHdr;
 	PaneType		pnnSel;
 
@@ -88,8 +87,8 @@ public:
 	bool fRuler;
 
 	std::wstring	ref8TopLeft;
-	BIFF_DOUBLE		operNumX;
-	BIFF_DOUBLE		operNumY;
+	Xnum			operNumX;
+	Xnum			operNumY;
 	
 	ForwardOnlyParam<unsigned short> colRPane;
 	ForwardOnlyParam<unsigned short> rwBPane;

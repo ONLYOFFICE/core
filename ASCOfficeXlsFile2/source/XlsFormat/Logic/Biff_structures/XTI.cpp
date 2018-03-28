@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,6 +31,10 @@
  */
 
 #include "XTI.h"
+#include "../GlobalsSubstream.h"
+#include "../Biff_unions/SUPBOOK.h"
+#include "../Biff_records/SupBook.h"
+
 #include <Binary/CFRecord.h>
 
 namespace XLS
@@ -48,17 +52,6 @@ void XTI::load(CFRecord& record)
 		return;
 
 	record >> iSupBook >> itabFirst >> itabLast;
-
-	if (itabFirst < 0 && itabLast < 0)
-	{
-		record.getGlobalWorkbookInfo()->xti_parsed.push_back(L"");
-	}
-	else
-	{
-		std::wstring name = XMLSTUFF::xti_indexes2sheet_name(itabFirst, itabLast, record.getGlobalWorkbookInfo()->sheets_names);
-		if (name == L"#REF") name += L"!";
-		record.getGlobalWorkbookInfo()->xti_parsed.push_back( name );
-	}
 }
 
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,8 +37,6 @@
 namespace XLS
 {
 
-
-// Logical representation of FEAT11 union of records 
 class FEAT11: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(FEAT11)
@@ -49,22 +47,23 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+	int serialize(std::wostream & stream, size_t index);
 
 	static const ElementType	type = typeFEAT11;
-
-	BaseObjectPtr					m_FeatHdr11;
 
 	struct _data
 	{
 		BaseObjectPtr					m_Feature; //11 or 12
-		BaseObjectPtr					m_AutoFilter12;
 		std::vector<BaseObjectPtr>		m_arList12;
-		std::vector<BaseObjectPtr>		m_arList12_second;
-		std::vector<BaseObjectPtr>		m_arAutoFilter12;
+		
+		BaseObjectPtr					m_AutoFilter12;
+		std::vector<BaseObjectPtr>		m_arList12_2;
+		
 		BaseObjectPtr					m_SORTDATA12;
 	};
 
-	std::vector<_data>					m_arFEAT;
+	BaseObjectPtr			m_FeatHdr11;
+	std::vector<_data>		m_arFEAT;
 };
 
 } // namespace XLS

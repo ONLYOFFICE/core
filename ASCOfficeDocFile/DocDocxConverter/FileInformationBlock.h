@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -531,7 +531,6 @@ namespace DocFileFormat
 		{
             if (m_FibBase.nFib > 0 && m_FibBase.nFib <= Fib1995)
 			{
-				m_RgLw97.cbMac				= reader.ReadInt32();//32
 				/*m_FibWord97.fcSpare0	= */reader.ReadInt32();
 				/*m_FibWord97.fcSpare1	= */reader.ReadInt32();
 				/*m_FibWord97.fcSpare2	= */reader.ReadInt32();
@@ -1220,9 +1219,12 @@ namespace DocFileFormat
 			if (m_FibBase.nFib  > Fib1995)
 				csw = reader.ReadUInt16(); //32
 
-            if (m_FibBase.nFib > Fib1995 || m_FibBase.nFib == 0)
-			{	
-				
+			if (m_FibBase.nFib > 0 && m_FibBase.nFib <= Fib1995)
+			{
+				m_RgLw97.cbMac = reader.ReadInt32();//32
+			}
+			else if (m_FibBase.nFib > Fib1995 || m_FibBase.nFib == 0)
+			{					
 				//read the RgW97
 				reader.ReadBytes( 26, false ); //34 
 				m_RgW97.lidFE = reader.ReadUInt16(); //60
@@ -1231,7 +1233,7 @@ namespace DocFileFormat
 
 				//read the RgLW97
 
-				m_RgLw97.cbMac		=	reader.ReadInt32(); //64
+				m_RgLw97.cbMac =	reader.ReadInt32(); //64
 			}
 			reset(reader);
 		}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -250,7 +250,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 									CP_XML_CONTENT(values_[i].numRef_.formula);
 							}
 						
-							if (values_[i].numRef_.num_cache_count>0)
+							if (values_[i].numRef_.num_cache_count > 0)
 							{
 								CP_XML_NODE(L"c:numCache")
 								{

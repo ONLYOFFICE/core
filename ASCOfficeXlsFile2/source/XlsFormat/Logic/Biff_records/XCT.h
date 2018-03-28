@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of XCT record in BIFF8
 class XCT: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(XCT)
@@ -50,9 +48,8 @@ public:
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeXCT;
+	static const ElementType type = typeXCT;
 
-//-----------------------------
 	_UINT16 ccrn;
 	_UINT16 itab;
 	bool itab_exist;

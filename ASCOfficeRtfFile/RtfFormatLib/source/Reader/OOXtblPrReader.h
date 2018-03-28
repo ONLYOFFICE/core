@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,6 +37,7 @@
 #include "OOXtblpPrReader.h"
 #include "OOXReaderBasic.h"
 #include "OOXtblLookReader.h"
+#include "OOXtcPrReader.h"
 
 #include "../RtfDocument.h"
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Logic/TableProperty.h"
@@ -78,26 +79,9 @@ public:
 				oOutputProperty.m_nStyle = oTableStyle->m_nID;
 			}
 		}
-		if(m_ooxTableProps->m_oTblInd.IsInit() )
-		{
-			SimpleTypes::ETblWidth eType = m_ooxTableProps->m_oTblInd->m_oType.IsInit() ? m_ooxTableProps->m_oTblInd->m_oType->GetValue() : SimpleTypes::tblwidthNil;
-			double dValue = m_ooxTableProps->m_oTblInd->m_oW.IsInit() ? m_ooxTableProps->m_oTblInd->m_oW->GetValue() : 0;
-		
-			switch(eType)
-			{
-			case SimpleTypes::tblwidthDxa://сделаем не по документации, а как все остальные юниты !!!
-				{
-					oOutputProperty.nTableIndentUnits	= 3;
-					oOutputProperty.nTableIndent		= (int)dValue;
-					oOutputProperty.m_nLeft				= (int)oOutputProperty.nTableIndent;
-				}break;
-			case SimpleTypes::tblwidthPct:
-				{
-				//	oOutputProperty.nTableIndentUnits = 3;
-				//	oOutputProperty.nTableIndent = Strings::ToInteger( sValue );
-				}break;
-			}
-		}
+		OOXtcPrReader::Parse(m_ooxTableProps->m_oTblInd.GetPointer(), oOutputProperty.eTableIndentUnit, oOutputProperty.nTableIndent, false);
+		oOutputProperty.m_nLeft = oOutputProperty.nTableIndent;
+
 		if( m_ooxTableProps->m_oTblLayout.IsInit() && m_ooxTableProps->m_oTblLayout->m_oType.IsInit())
 		{
 			if( m_ooxTableProps->m_oTblLayout->m_oType->GetValue() ==  SimpleTypes::tbllayouttypeAutofit)	oOutputProperty.m_nAutoFit = 1;
@@ -164,66 +148,37 @@ public:
 		}
 		if( m_ooxTableProps->m_oTblCellMar.IsInit() )
 		{			
-			_MetricUnits eMetric = mu_none;
-			int nValue = PROP_DEF;
-			//if( mu_Twips == eMetric && PROP_DEF != nValue )
-			//todooo сделать вариант с процентми
-			if( m_ooxTableProps->m_oTblCellMar->m_oBottom.IsInit() && m_ooxTableProps->m_oTblCellMar->m_oBottom->m_oW.IsInit())
-			{
-				oOutputProperty.m_nDefCellMarBottomUnits= 3;
-				oOutputProperty.m_nDefCellMarBottom		= (int)m_ooxTableProps->m_oTblCellMar->m_oBottom->m_oW->GetValue();
-			}
-			if(m_ooxTableProps->m_oTblCellMar->m_oStart.IsInit() && m_ooxTableProps->m_oTblCellMar->m_oStart->m_oW.IsInit())
-			{
-				oOutputProperty.m_nDefCellMarLeftUnits	= 3;
-				oOutputProperty.m_nDefCellMarLeft		= (int)m_ooxTableProps->m_oTblCellMar->m_oStart->m_oW->GetValue();
-			}
-			if(m_ooxTableProps->m_oTblCellMar->m_oEnd.IsInit() && m_ooxTableProps->m_oTblCellMar->m_oEnd->m_oW.IsInit() )
-			{
-				oOutputProperty.m_nDefCellMarRightUnits	= 3;
-				oOutputProperty.m_nDefCellMarRight		= (int)m_ooxTableProps->m_oTblCellMar->m_oEnd->m_oW->GetValue();
-			}
-			if(m_ooxTableProps->m_oTblCellMar->m_oTop.IsInit() && m_ooxTableProps->m_oTblCellMar->m_oTop->m_oW.IsInit())
-			{
-				oOutputProperty.m_nDefCellMarTopUnits	= 3;
-				oOutputProperty.m_nDefCellMarTop		= (int)m_ooxTableProps->m_oTblCellMar->m_oTop->m_oW->GetValue();
-			}
+			OOXtcPrReader::Parse(m_ooxTableProps->m_oTblCellMar->m_oBottom.GetPointer(),	oOutputProperty.m_eDefCellMarBottomUnit,	oOutputProperty.m_nDefCellMarBottom,	false);
+			OOXtcPrReader::Parse(m_ooxTableProps->m_oTblCellMar->m_oStart.GetPointer(),		oOutputProperty.m_eDefCellMarLeftUnit,		oOutputProperty.m_nDefCellMarLeft,		false);
+			OOXtcPrReader::Parse(m_ooxTableProps->m_oTblCellMar->m_oEnd.GetPointer(),		oOutputProperty.m_eDefCellMarRightUnit,		oOutputProperty.m_nDefCellMarRight,		false);
+			OOXtcPrReader::Parse(m_ooxTableProps->m_oTblCellMar->m_oTop.GetPointer(),		oOutputProperty.m_eDefCellMarTopUnit,		oOutputProperty.m_nDefCellMarTop,		false);
+
 		}
-		if( m_ooxTableProps->m_oTblCellSpacing.IsInit() && m_ooxTableProps->m_oTblCellSpacing->m_oW.IsInit())
+
+		if( m_ooxTableProps->m_oTblCellSpacing.IsInit())
 		{
-			//todooo тут тоже не было изначально варианта с процентами
-			//mu_Twips == eMetric && PROP_DEF != nValue )
-			{
-				double nValue = m_ooxTableProps->m_oTblCellSpacing->m_oW->GetValue();
+			OOXtcPrReader::Parse(m_ooxTableProps->m_oTblCellSpacing.GetPointer(), oOutputProperty.m_eDefCellSpTopUnit, oOutputProperty.m_nDefCellSpTop, false);
+			
+			oOutputProperty.m_eDefCellSpBottomUnit	= oOutputProperty.m_eDefCellSpTopUnit;
+			oOutputProperty.m_eDefCellSpLeftUnit	= oOutputProperty.m_eDefCellSpTopUnit;
+			oOutputProperty.m_eDefCellSpRightUnit	= oOutputProperty.m_eDefCellSpTopUnit;
 
-				oOutputProperty.m_nDefCellSpTopUnits	= 3;
-				oOutputProperty.m_nDefCellSpBottomUnits = 3;
-				oOutputProperty.m_nDefCellSpLeftUnits	= 3;
-				oOutputProperty.m_nDefCellSpRightUnits	= 3;
-
-				oOutputProperty.m_nDefCellSpTop		= (int)nValue;
-				oOutputProperty.m_nDefCellSpBottom	= (int)nValue;
-				oOutputProperty.m_nDefCellSpLeft	= (int)nValue;
-				oOutputProperty.m_nDefCellSpRight	= (int)nValue;
-			}
+			oOutputProperty.m_nDefCellSpBottom	= oOutputProperty.m_nDefCellSpTop;
+			oOutputProperty.m_nDefCellSpLeft	= oOutputProperty.m_nDefCellSpTop;
+			oOutputProperty.m_nDefCellSpRight	= oOutputProperty.m_nDefCellSpTop;
 		}
 		if( m_ooxTableProps->m_oTblLook.IsInit())
 		{
 			OOXtblLookReader oLookReader(m_ooxTableProps->m_oTblLook.GetPointer());
 			CtblLook oLook;
 			oLookReader.Parse( oParam, oLook );
-			if( true == oLook.bFirstRow )
-				oOutputProperty.m_bAutoFirstRow = 1;
-			if( true == oLook.bLastRow )
-				oOutputProperty.m_bAutoLastRow = 1;
-			if( true == oLook.bFirstCol )
-				oOutputProperty.m_bAutoFirstCol = 1;
-			if( true == oLook.bLastCol )
-				oOutputProperty.m_bAutoLastCol = 1;
-			if( true == oLook.bNoHBand )
-				oOutputProperty.m_bAutoNoRowBand = 1;
-			if( true == oLook.bNoVBand )
-				oOutputProperty.m_bAutoNoColBand = 1;
+			
+			if ( oLook.bFirstRow )	oOutputProperty.m_bAutoFirstRow = 1;
+			if ( oLook.bLastRow )	oOutputProperty.m_bAutoLastRow = 1;
+			if ( oLook.bFirstCol )	oOutputProperty.m_bAutoFirstCol = 1;
+			if ( oLook.bLastCol )	oOutputProperty.m_bAutoLastCol = 1;
+			if ( oLook.bNoHBand )	oOutputProperty.m_bAutoNoRowBand = 1;
+			if ( oLook.bNoVBand )	oOutputProperty.m_bAutoNoColBand = 1;
 		}
 		if (m_ooxTableProps->m_oTblStyleRowBandSize.IsInit() && m_ooxTableProps->m_oTblStyleRowBandSize->m_oVal.IsInit())
 			oOutputProperty.m_nRowBandSize = m_ooxTableProps->m_oTblStyleRowBandSize->m_oVal->GetValue(); 
@@ -231,25 +186,8 @@ public:
 		if (m_ooxTableProps->m_oTblStyleColBandSize.IsInit() && m_ooxTableProps->m_oTblStyleColBandSize->m_oVal.IsInit())
 			oOutputProperty.m_nColBandSize = m_ooxTableProps->m_oTblStyleColBandSize->m_oVal->GetValue(); 
 		
-		if( m_ooxTableProps->m_oTblW.IsInit() && m_ooxTableProps->m_oTblW->m_oW.IsInit())
-		{
-			if( m_ooxTableProps->m_oTblW->m_oType.IsInit())
-			{
-				switch(m_ooxTableProps->m_oTblW->m_oType->GetValue())
-				{
-					case SimpleTypes::tblwidthDxa:
-					{
-						oOutputProperty.m_nWidth	= (int)m_ooxTableProps->m_oTblW->m_oW->GetValue();
-						oOutputProperty.m_eMUWidth	= mu_Twips;		
-					}break;
-					case SimpleTypes::tblwidthPct:	
-					{
-						oOutputProperty.m_nWidth	= (int)m_ooxTableProps->m_oTblW->m_oW->GetValue();
-						oOutputProperty.m_eMUWidth	= mu_Percent;	
-					}break;
-				}
-			}
-		}
+		OOXtcPrReader::Parse(m_ooxTableProps->m_oTblW.GetPointer(), oOutputProperty.m_eWidthUnit, oOutputProperty.m_nWidth, true );
+		
 		return true;
 	}
 };

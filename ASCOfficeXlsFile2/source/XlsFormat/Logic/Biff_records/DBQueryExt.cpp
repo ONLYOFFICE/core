@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -70,11 +70,19 @@ void DBQueryExt::readFields(CFRecord& record)
 		case 4:	grbitDbt.reset(new ConnGrbitDbtWeb);	break;
 		case 5:	grbitDbt.reset(new ConnGrbitDbtOledb);	break;
 		case 7:	grbitDbt.reset(new ConnGrbitDbtAdo);	break;
+		default:
+			record.skipNunBytes(2); break;	//unused
+			
 	}
-	record >> flags1 >> bVerDbqueryEdit >> bVerDbqueryRefreshed >> bVerDbqueryRefreshableMin;
+	if (grbitDbt)
+	{
+		grbitDbt->load(record);
+	}
+
+	record >> flags2 >> bVerDbqueryEdit >> bVerDbqueryRefreshed >> bVerDbqueryRefreshableMin;
 	
-	fTxtWiz			= GETBIT(flags1, 0);
-	fTableNames		= GETBIT(flags1, 1);
+	fTxtWiz			= GETBIT(flags2, 0);
+	fTableNames		= GETBIT(flags2, 1);
 
 	record.skipNunBytes(3); //unused
 

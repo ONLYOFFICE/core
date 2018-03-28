@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,8 +51,12 @@ namespace NSFile
     {
         m_pFile = fopen(fileSystemRepresentation(sFileName), bRewrite ? "rb+" : "rb");
         
-        if (NULL == m_pFile)
+        if (NULL == m_pFile) {
+#if DEBUG
+            printf ("NSFile::OpenFile - error open file : %s\n",strerror(errno));
+#endif
             return false;
+        }
         
         fseek(m_pFile, 0, SEEK_END);
         m_lFileSize = ftell(m_pFile);
@@ -81,8 +85,12 @@ namespace NSFile
     {
         m_pFile = fopen(fileSystemRepresentation(sFileName), "wb");
         
-        if (NULL == m_pFile)
+        if (NULL == m_pFile) {
+#if DEBUG
+            printf ("NSFile::CreateFileW - error create file : %s\n",strerror(errno));
+#endif
             return false;
+        }
         
         m_lFilePosition = 0;
         return true;

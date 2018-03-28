@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT=$(readlink -f "$0")
+SCRIPT=$(readlink -f "$0" || grealpath "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
 cd "$SCRIPTPATH"/openssl
@@ -29,6 +29,9 @@ fi
 
 echo "$platform$arch"
 
-perl ./Configure $platform$arch
-./config
+if [ ! -f Makefile ]; then
+  perl ./Configure $platform$arch
+  ./config
+fi
+
 make

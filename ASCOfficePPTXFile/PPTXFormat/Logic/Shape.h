@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -272,6 +272,7 @@ namespace PPTX
 {
 	namespace Logic
 	{		
+		class Pic;
 		class Shape : public WrapperWritingElement
 		{
 		public:
@@ -304,6 +305,7 @@ namespace PPTX
 
 			void FillLevelUp();
 			void Merge(Shape& shape, bool bIsSlidePlaceholder = false);
+			void Merge(Pic& pic, bool bIsSlidePlaceholder = false);
 			bool IsListStyleEmpty();
 
 			void SetLevelUpElement( Shape* p){m_pLevelUp = p;};

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -109,6 +109,11 @@ namespace DocFileFormat
 			cbName		=	Reader->ReadByte();
 			unused2		=	Reader->ReadByte();
 			unused3		=	Reader->ReadByte();
+
+			if (btMacOS != btWin32)
+			{
+				btWin32 = btMacOS = (Global::BlipType)this->Instance;
+			}
 
 			if (BodySize > 0x24)
 			{

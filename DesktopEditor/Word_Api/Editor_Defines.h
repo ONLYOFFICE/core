@@ -1,5 +1,5 @@
-﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+/*
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -727,6 +727,7 @@
 
 #define ASC_MENU_EVENT_TYPE_CONTEXTMENU_SHOW        102
 #define ASC_MENU_EVENT_TYPE_CONTEXTMENU_UNSHOW      103
+#define ASC_MENU_EVENT_TYPE_CONTEXTMENU_COMMANDS_AVAILIBLE    104
 
 #define ASC_MENU_EVENT_TYPE_CONTEXTMENU_COPY		110
 #define ASC_MENU_EVENT_TYPE_CONTEXTMENU_CUT			111
@@ -749,6 +750,8 @@
 #define ASC_MENU_EVENT_TYPE_SET_CHART_DATA          460
 
 #define ASC_MENU_EVENT_TYPE_ERROR                   500
+
+#define ASC_EVENT_TYPE_DROP_OPERATION_COPY_TEXT     600
 
 #define ASC_MENU_EVENT_TYPE_COLOR_SCHEMES           2404    //  CAscColorSchemes
 #define ASC_MENU_EVENT_TYPE_CHANGE_COLOR_SCHEME     2415    //  SET(int)

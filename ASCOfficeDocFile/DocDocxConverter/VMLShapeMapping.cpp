@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -39,6 +39,7 @@
 #include "OfficeDrawing/Shapetypes/RectangleType.h"
 #include "OfficeDrawing/Shapetypes/RoundedRectangleType.h"
 
+#include "OfficeDrawing/threeDBooleanProperties.h"
 #include "OfficeDrawing/OfficeArtClientTextbox.h"
 #include "OfficeDrawing/DiagramBooleanProperties.h"
 #include "OfficeDrawing/GeometryBooleanProperties.h"
@@ -277,10 +278,13 @@ namespace DocFileFormat
 		double ShadowOriginY	=	0;
 		unsigned int xCoord		=	0;
 		unsigned int yCoord		=	0;
-		bool stroked			=	true;
-		bool filled				=	true;
+		
+		bool bStroked			=	true;
+		bool bFilled			=	true;
 		bool hasTextbox			=	false;
 		bool layoutInCell		=	true; //anmeldebogenfos.doc
+		bool b3D				=	false;
+		bool bShadow			=	false;
 		
 		int ndxTextLeft			=	-1;
 		int ndyTextTop			=	-1;
@@ -292,15 +296,15 @@ namespace DocFileFormat
 		int	nAdjValues			=	0;
 		int	nLTxID				=	-1;
 
-		std::wstring					sTextboxStyle;
-		
-		ShadowStyleBooleanProperties	shadowBoolean(0);
-		
+		std::wstring				sTextboxStyle;
+				
 		OptionEntryPtr				opSegmentInfo;
 		OptionEntryPtr				opVerticles;
 		OptionEntryPtr				opInscribe;
 		OptionEntryPtr				opConnectAngles;
 		OptionEntryPtr				opConnectLocs;
+
+		ThreeDStyleBooleanProperties threeDStyleProps_(0);
 
 		for (size_t i = 0; i < options.size(); i++)
 		{
@@ -313,12 +317,19 @@ namespace DocFileFormat
 					GeometryBooleanProperties booleans(iter->op);
 					if (booleans.fUsefLineOK && !booleans.fLineOK)
 					{
-						stroked	=	false;
+						bStroked	=	false;
 					}
-
 					if (booleans.fUsefFillOK && !booleans.fFillOK)
 					{
-						filled	=	false;
+						bFilled	=	false;
+					}
+					if (booleans.fUsef3DOK && booleans.f3DOK)
+					{
+						b3D	=	true;
+					}
+					if (booleans.fUsefShadowOK && booleans.fShadowOK)
+					{
+						bShadow	=	true;
 					}
 				}
 				break;
@@ -327,7 +338,12 @@ namespace DocFileFormat
 					FillStyleBooleanProperties booleans(iter->op);
 					if (booleans.fUsefFilled && !booleans.fFilled)
 					{
-						filled = false;
+						bFilled = false;
+					}
+
+					if (booleans.fUsefUseShapeAnchor && booleans.fUseShapeAnchor)
+					{
+						appendValueAttribute(&m_fill, L"rotate", L"t");
 					}
 				}break;
 			case lineStyleBooleans:
@@ -335,7 +351,7 @@ namespace DocFileFormat
 					LineStyleBooleanProperties booleans(iter->op);
 					if (booleans.fUsefLine && !booleans.fLine)
 					{
-						stroked = false;
+						bStroked = false;
 					}
 				}
 				break;
@@ -536,6 +552,7 @@ namespace DocFileFormat
 			case fillFocus:
 				{
 					appendValueAttribute(&m_fill, L"focus", ( FormatUtils::IntToWideString( iter->op ) + L"%"  ));
+					appendValueAttribute(&m_fill, L"focussize", L"");
 				}break;
 			case fillType:
 				{
@@ -575,7 +592,7 @@ namespace DocFileFormat
 				break;
 			case fillBackOpacity:
 				{
-					appendValueAttribute(&m_fill, L"opacity2", (FormatUtils::IntToWideString(iter->op) + L"f"));
+					appendValueAttribute(&m_fill, L"o:opacity2", (FormatUtils::IntToWideString(iter->op) + L"f"));
 				}break;
 // SHADOW
 			case shadowType:
@@ -620,7 +637,8 @@ namespace DocFileFormat
 				}break;
 			case shadowStyleBooleanProperties:
 				{
-					shadowBoolean	=	ShadowStyleBooleanProperties(iter->op);
+					ShadowStyleBooleanProperties props(iter->op);
+
 				}break;
 // OLE
 			case pictureId:
@@ -649,11 +667,19 @@ namespace DocFileFormat
 						appendValueAttribute(&m_imagedata, L"o:title", FormatUtils::XmlEncode(name));
 				}break;
 // 3D STYLE
-			case f3D:
 			case threeDStyleBooleanProperties:
+				{
+                    threeDStyleProps_ = ThreeDStyleBooleanProperties(iter->op);
+				}break;
 			case threeDObjectBooleanProperties:
-				break;
+				{
+                    ThreeDObjectBooleanProperties booleans(iter->op);
 
+					if (booleans.fUsef3D && !booleans.f3D) b3D = false;
+				}break;
+			case c3DRenderMode:
+				{
+				}break;
 			case c3DExtrudeBackward:
 				{
 					EmuValue backwardValue( (int)iter->op );
@@ -686,28 +712,34 @@ namespace DocFileFormat
 					appendValueAttribute(&m_3dstyle, L"color", color);
 				}break;
 			case c3DSkewAngle:
+				if (threeDStyleProps_.fUsefc3DParallel && threeDStyleProps_.fc3DParallel)
 				{
 					FixedPointNumber skewAngle( iter->op );
 					appendValueAttribute(&m_3dstyle, L"skewangle", FormatUtils::DoubleToWideString( skewAngle.ToAngle() ));
 				}break;
 			case c3DXViewpoint:
+				if (threeDStyleProps_.fUsefc3DParallel && !threeDStyleProps_.fc3DParallel)
 				{
 					ViewPointX = EmuValue( FixedPointNumber( iter->op ).Integral );
 				}break;
 			case c3DYViewpoint:
-				{
+				if (threeDStyleProps_.fUsefc3DParallel && !threeDStyleProps_.fc3DParallel)
+				{				
 					ViewPointY = EmuValue( FixedPointNumber( iter->op ).Integral );
 				}break;
 			case c3DZViewpoint:
+				if (threeDStyleProps_.fUsefc3DParallel && !threeDStyleProps_.fc3DParallel)
 				{
 					ViewPointZ = EmuValue( FixedPointNumber( iter->op ).Integral );
 				}break;
 			case c3DOriginX:
+				if (threeDStyleProps_.fUsefc3DParallel && !threeDStyleProps_.fc3DParallel)
 				{
 					FixedPointNumber dOriginX( iter->op );
 					viewPointOriginX = ( dOriginX.Integral / 65536.0 );
 				}break;
 			case c3DOriginY:
+				if (threeDStyleProps_.fUsefc3DParallel && !threeDStyleProps_.fc3DParallel)
 				{
 					FixedPointNumber dOriginY( iter->op );
 					viewPointOriginY = (dOriginY.Integral / 65536.0 );
@@ -746,7 +778,7 @@ namespace DocFileFormat
 
 					text = FormatUtils::XmlEncode(text);
 
-					if (0 <= text.find(L"\n"))
+					if (std::wstring::npos != text.find(L"\n"))
 					{
 						m_textpath.AppendText(text);
 					}
@@ -756,7 +788,7 @@ namespace DocFileFormat
 			case gtextFont:
 				{
 					std::wstring font = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex.get(), (iter->op)/2);
-					int i = font.size();
+					size_t i = font.size();
 					while (i > 0)
 					{
 						if (font[i-1] != 0) break;
@@ -831,12 +863,12 @@ namespace DocFileFormat
 			xCoord = 21600;
 			yCoord = 21600;
 		}
-		if ( !filled )
+		if ( !bFilled )
 		{
 			m_pXmlWriter->WriteAttribute( L"filled", L"f" );
 		}
 
-		if ( !stroked )
+		if ( !bStroked )
 		{
 			m_pXmlWriter->WriteAttribute( L"stroked", L"f" );
 		}
@@ -927,60 +959,59 @@ namespace DocFileFormat
 // write shadow
 		if (m_shadow.GetAttributeCount() > 0)
 		{
-			if (shadowBoolean.fShadow)
-			{
-				appendValueAttribute(&m_shadow, L"on", L"t" );
-			}
-
+			appendValueAttribute(&m_shadow, L"on", bShadow ? L"t" : L"f" );
 			m_pXmlWriter->WriteString(m_shadow.GetXMLString());
 		}
+
+//write the viewpoint
+		if ( ( ViewPointX != 0 ) || ( ViewPointY != 0 ) || ( ViewPointZ != 0 ) )
+		{
+			std::wstring viewPoint;
+
+			if ( ViewPointX != 0 )
+			{
+				viewPoint += FormatUtils::IntToWideString( ViewPointX ) + L"pt";
+			}
+			viewPoint += L",";
+			if ( ViewPointY != 0 )
+			{
+				viewPoint += FormatUtils::IntToWideString( ViewPointY ) + L"pt";
+			}
+			viewPoint += L",";
+			if ( ViewPointZ != 0 )
+			{
+				viewPoint += FormatUtils::IntToWideString( ViewPointZ ) + L"pt";
+			}
+
+			appendValueAttribute(&m_3dstyle, L"viewpoint", viewPoint);
+		}
+// write the viewpointorigin
+		if ( ( viewPointOriginX != 0 ) || ( viewPointOriginY != 0 ) )
+		{
+			std::wstring viewPointOrigin;
+
+			if ( viewPointOriginX != 0 )
+			{
+				viewPointOrigin += FormatUtils::DoubleToFormattedWideString( viewPointOriginX, L"%.2f" );
+			}
+
+			if ( viewPointOriginY != 0 )
+			{
+				viewPointOrigin += L",";
+				viewPointOrigin += FormatUtils::DoubleToFormattedWideString( viewPointOriginY, L"%.2f" );
+			}
+
+			appendValueAttribute(&m_3dstyle, L"viewpointorigin", viewPointOrigin);
+		}
+
 //write 3d style 
 		if (m_3dstyle.GetAttributeCount() > 0)
 		{
-			appendValueAttribute(&m_3dstyle, L"v:ext", L"view" );
-			appendValueAttribute(&m_3dstyle, L"on", L"t" );
-
-//write the viewpoint
-			if ( ( ViewPointX != 0 ) || ( ViewPointY != 0 ) || ( ViewPointZ != 0 ) )
+			if (b3D)
 			{
-				std::wstring viewPoint;
-
-				if ( ViewPointX != 0 )
-				{
-					viewPoint += FormatUtils::IntToWideString( ViewPointX ) + L"pt";
-				}
-				viewPoint += L",";
-				if ( ViewPointY != 0 )
-				{
-					viewPoint += FormatUtils::IntToWideString( ViewPointY ) + L"pt";
-				}
-				viewPoint += L",";
-				if ( ViewPointZ != 0 )
-				{
-					viewPoint += FormatUtils::IntToWideString( ViewPointZ ) + L"pt";
-				}
-
-				appendValueAttribute(&m_3dstyle, L"viewpoint", viewPoint);
+				appendValueAttribute(&m_3dstyle, L"v:ext", L"view" ); //??? вытащить
 			}
-// write the viewpointorigin
-			if ( ( viewPointOriginX != 0 ) || ( viewPointOriginY != 0 ) )
-			{
-				std::wstring viewPointOrigin;
-
-				if ( viewPointOriginX != 0 )
-				{
-					viewPointOrigin += FormatUtils::DoubleToFormattedWideString( viewPointOriginX, L"%.2f" );
-				}
-
-				if ( viewPointOriginY != 0 )
-				{
-					viewPointOrigin += L",";
-					viewPointOrigin += FormatUtils::DoubleToFormattedWideString( viewPointOriginY, L"%.2f" );
-				}
-
-				appendValueAttribute(&m_3dstyle, L"viewpointorigin", viewPointOrigin);
-			}
-
+			appendValueAttribute(&m_3dstyle, L"on", b3D ? L"t" : L"f" );
 			m_pXmlWriter->WriteString(m_3dstyle.GetXMLString());
 		}
 // write wrap
@@ -1287,6 +1318,7 @@ namespace DocFileFormat
 			{
 			case Global::msoblipEMF:
 			case Global::msoblipWMF:
+			case Global::msoblipPICT:
 				{
 					//it's a meta image
 					MetafilePictBlip* metaBlip = static_cast<MetafilePictBlip*>(RecordFactory::ReadRecord(&reader, 0));
@@ -1372,6 +1404,9 @@ namespace DocFileFormat
 
 			case Global::msoblipWMF:
 				return std::wstring( L".wmf" );
+
+			case Global::msoblipPICT:
+				return std::wstring( L".pcz" );
 
 			default:
 				return std::wstring( L".png" );
@@ -1965,7 +2000,7 @@ namespace DocFileFormat
         {
             int index = (DWORD)val - 0x80000000;
 		
-			if (index >= 0 && index < m_arrGuides.size())
+			if (index >= 0 && index < (int)m_arrGuides.size())
 			{
 				new_val = m_arrGuides[index].param3;
 			}
@@ -2132,7 +2167,7 @@ namespace DocFileFormat
 	
 	void VMLShapeMapping::ApplyPrimitives(DrawingPrimitives * primitives)
 	{
-		int index = 0;
+		size_t index = 0;
 
 		while(true)
 		{
@@ -2144,7 +2179,7 @@ namespace DocFileFormat
 
 	static int currentTextBoxIndex = 1;
 	
-	int VMLShapeMapping::ApplyPrimitive(DrawingPrimitives * primitives, int index)
+	size_t VMLShapeMapping::ApplyPrimitive(DrawingPrimitives * primitives, size_t index)
 	{
 		if (!primitives) return index++;
 		if (index >= primitives->size()) return index++;
@@ -2243,11 +2278,11 @@ namespace DocFileFormat
 			{
 				//strStyle += L"left:"		+ FormatUtils::IntToWideString( x.ToPoints()) + L"pt;";
 				//strStyle += L"top:"		+ FormatUtils::IntToWideString( y.ToPoints()) + L"pt;";
-				strStyle +=	L"width:"		+ FormatUtils::IntToWideString( w.ToPoints()) + L"pt;";
-				strStyle +=	L"height:"		+ FormatUtils::IntToWideString( h.ToPoints()) + L"pt;";
+				strStyle +=	L"width:"		+ FormatUtils::IntToWideString( (int)w.ToPoints()) + L"pt;";
+				strStyle +=	L"height:"		+ FormatUtils::IntToWideString( (int)h.ToPoints()) + L"pt;";
 
-				strStyle += L"margin-left:"	+ FormatUtils::IntToWideString( x.ToPoints()) + L"pt;";
-				strStyle +=	L"margin-top:"	+ FormatUtils::IntToWideString( y.ToPoints()) + L"pt;";
+				strStyle += L"margin-left:"	+ FormatUtils::IntToWideString( (int)x.ToPoints()) + L"pt;";
+				strStyle +=	L"margin-top:"	+ FormatUtils::IntToWideString( (int)y.ToPoints()) + L"pt;";
 
 				std::wstring xMargin;
 				std::wstring yMargin;

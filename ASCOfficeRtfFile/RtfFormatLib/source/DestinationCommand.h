@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -249,17 +249,18 @@ public:
         else if( "fdbminor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_fdbminor;
         else if( "fbiminor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_fbiminor;
         
-        else if( "fnil"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fnil;
+        else if( "fnil"		== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fnil;
         else if( "froman"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_froman;
         else if( "fswiss"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fswiss;
-        else if( "fmodern" == sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fmodern;
-        else if( "fscript" == sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fscript;
+        else if( "fmodern"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fmodern;
+        else if( "fscript"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fscript;
         else if( "fdecor"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fdecor;
         else if( "ftech"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_ftech;
         else if( "fbidi"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fbidi;
 
         else if( "panose"	== sCommand )	m_eInternalState	= is_panose;
-        else if( "falt"	== sCommand )	m_eInternalState	= is_altname;
+        else if( "falt"		== sCommand )
+			m_eInternalState	= is_altname;
 
         else if( "f" == sCommand )
         {
@@ -316,7 +317,7 @@ public:
 
     std::wstring RemoveLastUnchar(std::wstring str)
 	{
-		int i = 1;
+		size_t i = 1;
 		while(true)
 		{
 			if (i > str.length())
@@ -336,16 +337,20 @@ public:
             m_oFont.m_sAltName += sText;
         else if( is_normal == m_eInternalState && sText.length() > 0)
         {
-            int pos = sText.find(';');
-            if (pos >= 0)
+            size_t pos = sText.find(';');
+            if (std::wstring::npos != pos)
             {
-                sText.erase(pos, 1);
+                sText = sText.substr(0, pos);
 
-                if( sText.find('&') !=0  )//todooo выясниснить что значит &;
+                if( std::wstring::npos != sText.find('&') )//todooo выясниснить что значит &;
                 {
                     //sText.Remove('&'); //
                     m_oFont.m_sName += RemoveLastUnchar(sText);
                 }
+				else
+				{
+                    m_oFont.m_sName += sText;
+				}
 
                 //todooo при добавлении могут быть повторы - убрать нннадо - goldwingSetting.rtf
 				oDocument.m_oFontTable.DirectAddItem( m_oFont );
@@ -421,8 +426,8 @@ public:
 		//Romanization_Armenian.rtf
 		//{\colortbl\red0\blue159\green82;\red0\blue0\green0;\red255\blue255\green255;\red0\blue156\green90;\red169\blue86\green0;}
 		//{\colortbl;\red0\green0\blue0;\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;
-            int pos = oText.find(';');
-			if( -1 != pos)
+            size_t pos = oText.find(';');
+			if( std::wstring::npos != pos)
 			{
 				if( true == m_bIsSet )
 				{
@@ -1148,12 +1153,16 @@ public:
 			RtfShapeReader oShapeReader(m_oShape);
 			StartSubReader( oShapeReader, oDocument, oReader );
 		}
-        if( "shppict" == sCommand )
+        else if( "shppict" == sCommand )
 		{
 			RtfShppictReader oShppictReader(m_oShape);
 			StartSubReader( oShppictReader, oDocument, oReader );
 		}
-        else if( "pict" == sCommand )
+        else if( "nonshppict" == sCommand )
+		{
+			Skip( oDocument, oReader );
+		}
+		else if( "pict" == sCommand )
 		{
 			m_oShape.m_eAnchorTypeShape		= RtfShape::st_inline;
 			m_oShape.m_nShapeType			= NSOfficeDrawing::sptPictureFrame;
@@ -1388,7 +1397,7 @@ private:
         std::wstring sCharFont;
 
         std::wstring sField = m_oField.m_pInsert->m_pTextItems->RenderToOOX(oNewParametr);
-        int nStartTokenize = 0;
+        size_t nStartTokenize = 0;
 
         int nCommand = 0; //0 - none; 1 - \f; 3 - other
 
@@ -1415,19 +1424,19 @@ private:
         {
             std::wstring sResTokenize = arResult[i];
 
-            int nTokenLen = sResTokenize.length();
+            size_t nTokenLen = sResTokenize.length();
 			if( nTokenLen > 0 && sResTokenize[0] == '\"' && sResTokenize[nTokenLen - 1] != '\"' ) //текст в кавычках считается как один
 			{
 				//ищем следующую кавычку
-                int nNextQuot = sField.find( '\"', nStartTokenize );
-				if( -1 != nNextQuot )
+                size_t nNextQuot = sField.find( '\"', nStartTokenize );
+				if( std::wstring::npos != nNextQuot )
 				{
                     sResTokenize = sField.substr( nStartTokenize - nTokenLen, nNextQuot - nStartTokenize + nTokenLen );
 					nStartTokenize = nNextQuot + 1;
 
                     for (; i < arResult.size(); i++)
                     {
-                        if ( 0 <= arResult[i].find( '\"'))
+                        if ( std::wstring::npos != arResult[i].find( '\"'))
                             break;
                     }
 				}
@@ -1435,9 +1444,9 @@ private:
 			if( nTokenLen > 0 && sResTokenize[0] == '\"' && sResTokenize[nTokenLen - 1] == '\"' )
                 sResTokenize = sResTokenize.substr( 1, nTokenLen - 2 );			
 
-            if( -1 != sResTokenize.find( L"\\f" ) )
+            if( std::wstring::npos != sResTokenize.find( L"\\f" ) )
 				nCommand = 1;
-            else if( -1 != sResTokenize.find( L"\\" ) )
+            else if( std::wstring::npos != sResTokenize.find( L"\\" ) )
 				nCommand = 3;
 			else if( 1 == nCommand )
 			{
@@ -1451,7 +1460,7 @@ private:
 			else
 				nCommand = 0;
 
-            nStartTokenize += (int)sResTokenize.length();
+            nStartTokenize += sResTokenize.length();
 		}
 
 		std::wstring sResult;
@@ -1575,8 +1584,8 @@ private:
 	RtfRowProperty oCurRowProperty;
 
 	RtfReader* m_oReader;
-	bool m_bPar;								// если последняя команда была par, то не надо добавлять параграф
 public: 
+	bool					m_bPar;				// если последняя команда была par, то не надо добавлять параграф
 	TextItemContainerPtr	m_oTextItems;		//для разбивки на TextItem
 	RtfTab					m_oCurTab;
 	int						nTargetItap;		//уровень который считается не таблицей ( для того чтобы читать параграфы в таблицах )
@@ -1815,8 +1824,10 @@ class RtfStyleTableReader: public RtfAbstractReader
 	public: 
 		RtfStyleReader()
 		{
-			m_oCurStyle = RtfParagraphStylePtr ( new RtfParagraphStyle() );
 			m_eInternalState = is_normal;
+			
+			m_oCurStyle = RtfParagraphStylePtr ( new RtfParagraphStyle() );
+			m_oCurStyle->m_nID = 0;
 		}
             bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 			{
@@ -2018,8 +2029,8 @@ class RtfStyleTableReader: public RtfAbstractReader
 			{
                 while (true)
                 {
-                    int pos = sText.find(';');
-                    if (pos < 0) break;
+                    size_t pos = sText.find(';');
+                    if (std::wstring::npos == pos) break;
 
                     sText.erase(pos, 1);
                 }
@@ -2050,8 +2061,10 @@ class RtfStyleTableReader: public RtfAbstractReader
 							RtfTableStylePtr m_oCurTableStyle = boost::static_pointer_cast< RtfTableStyle, RtfStyle >( m_oCurStyle );
 							m_oCurTableStyle->m_oCharProp = oReader.m_oState->m_oCharProp;
 							m_oCurTableStyle->m_oParProp = oReader.m_oState->m_oParagraphProp;
+							
 							if( PROP_DEF == m_oCurTableStyle->m_oParProp.m_nSpaceBetween )
 								m_oCurTableStyle->m_oParProp.m_nSpaceBetween = 240;//интервал - единичный
+							
 							m_oCurTableStyle->m_oTableProp = oReader.m_oState->m_oRowProperty;
 							m_oCurTableStyle->m_oRowProp = oReader.m_oState->m_oRowProperty;
 							//m_oCurTableStyle->m_oTableStyleProperty = m_oTableStyleProperty;
@@ -2280,21 +2293,35 @@ private:
 			lfolevelReader( RtfListOverrideProperty::ListOverrideLevels::ListOverrideLevel& oOverrideLevel ):m_oOverrideLevel(oOverrideLevel)
 			{
 			}
-            bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
+			bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 			{
-              if( "lfolevel" == sCommand)
-				  return true;
-              COMMAND_RTF_INT( "listoverrideformat", m_oOverrideLevel.m_nLevelIndex, sCommand, hasParameter, parameter )
-              COMMAND_RTF_INT( "listoverridestartat", m_oOverrideLevel.m_nStart, sCommand, hasParameter, parameter )
-              else if( "listlevel" == sCommand )
-			  {
-				  m_oOverrideLevel.m_oLevel.m_nLevel = m_oOverrideLevel.m_nLevelIndex;
-				  RtfListTableReader::ListReader::ListLevelReader oListLevelReader( m_oOverrideLevel.m_oLevel );
-				  StartSubReader( oListLevelReader, oDocument, oReader );
-			  }
-			  else
-				  return false;
-			  return true;
+				if( "lfolevel" == sCommand)
+					return true;
+				COMMAND_RTF_INT( "listoverrideformat", m_oOverrideLevel.m_nLevelIndex, sCommand, hasParameter, parameter )
+				else if( "listoverridestartat" == sCommand )
+				{
+					m_oOverrideLevel.m_nStart = 0; //индикатор
+					if( true == hasParameter )
+						m_oOverrideLevel.m_nStart = parameter;
+				}
+				else if( "levelstartat" == sCommand && m_oOverrideLevel.m_nStart == 0 && hasParameter)
+				{
+					m_oOverrideLevel.m_nStart = parameter;
+				}
+				else if( "listlevel" == sCommand )
+				{
+					m_oOverrideLevel.m_oLevel.m_nLevel = m_oOverrideLevel.m_nLevelIndex;
+					RtfListTableReader::ListReader::ListLevelReader oListLevelReader( m_oOverrideLevel.m_oLevel );
+					StartSubReader( oListLevelReader, oDocument, oReader );
+				}
+				else if( "ls" == sCommand )
+				{
+					if( true == hasParameter )
+						m_oOverrideLevel.m_nLevelIndex = parameter;
+				}
+				else
+					return false;
+				return true;
 			}
 		};
 		private: 
@@ -2320,8 +2347,10 @@ private:
                 else if( "lfolevel" == sCommand )
 				{
 					RtfListOverrideProperty::ListOverrideLevels::ListOverrideLevel oOverrideLevel;
+					
 					lfolevelReader olfolevelReader( oOverrideLevel );
 					StartSubReader( olfolevelReader, oDocument, oReader );
+
 					m_oProperty.m_oOverrideLevels.m_aOverrideLevels.push_back( oOverrideLevel );
 				}
 				else
@@ -2433,6 +2462,7 @@ public:
 	}
 	void ExitReader(RtfDocument& oDocument, RtfReader& oReader)
 	{
+		oParagraphReaderDestination.m_bPar = true;
 		oParagraphReaderDestination.Finalize( oReader );
 		
 		_section section;

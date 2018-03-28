@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -73,7 +73,7 @@ public:
 private:
     docx_conversion_context	&	context_;    
     std::wstring				table_style_;
-    std::list<std::wstring>		table_row_style_stack_;
+    std::vector<std::wstring>	table_row_style_stack_;
     std::wstring				default_row_cell_style_name_;
     int							current_table_column_;
     unsigned int				columns_spanned_num_;
@@ -188,7 +188,7 @@ public:
 
 private:
     docx_conversion_context & context_;
-    std::list<docx_table_state> table_states_;
+    std::vector<docx_table_state> table_states_;
 };
 
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,7 +46,7 @@ class OfficeArtCOLORREF : public XLS::BiffStructure
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtCOLORREF)
 public:
 	OfficeArtCOLORREF();
-    OfficeArtCOLORREF(const int raw_data);
+    OfficeArtCOLORREF(const _UINT32 raw_data);
 	XLS::BiffStructurePtr clone();
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtCOLORREF;

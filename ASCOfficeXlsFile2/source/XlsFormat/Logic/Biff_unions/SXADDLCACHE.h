@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,10 +35,19 @@
 
 namespace XLS
 {
-
 class SXADDLCACHE: public CompositeObject
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(SXADDLCACHE)
+    struct _sxAddl
+    {
+        _sxAddl(std::vector<_sxAddl> *p, int l) : prev(p), level (l) {}
+
+        std::vector<_sxAddl>*			prev = NULL;
+        int								level = 0;
+        std::vector<BiffStructurePtr>	elements;
+        std::vector<_sxAddl>			levels;
+    };
+
+    BASE_OBJECT_DEFINE_CLASS_NAME(SXADDLCACHE)
 public:
 	SXADDLCACHE();
 	~SXADDLCACHE();
@@ -47,14 +56,10 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typeSXADDLCACHE;
-
-	BaseObjectPtr	m_SXCCache_SXDId;
-	BaseObjectPtr	m_SXDVer10Info;
-	BaseObjectPtr	m_SXDVerSXMacro;
-	BaseObjectPtr	m_SXADDLDBQUERY;
-	BaseObjectPtr	m_SXADDLCACHE12;
+	static const ElementType type = typeSXADDLCACHE;
 	
+	std::vector<_sxAddl> content;
+	std::vector<_sxAddl> *current;
 };
 
 } // namespace XLS

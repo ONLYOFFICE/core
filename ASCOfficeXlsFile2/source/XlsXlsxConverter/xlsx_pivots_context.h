@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -54,7 +54,6 @@ public:
 
 	void write_cache_definitions_to	(int index, std::wostream & strm);
 	void write_cache_records_to		(int index, std::wostream & strm);
-	void write_connections_to		(std::wostream & strm);
 
 	void write_table_view_to		(int index, std::wostream & strm);
 
@@ -62,8 +61,6 @@ public:
 	void dump_rels_view	(int index, rels & Rels);
 
 	void add_connections(std::wstring connections);
-	bool is_connections();
-
 private:
     class Impl;
     _CP_PTR(Impl) impl_;

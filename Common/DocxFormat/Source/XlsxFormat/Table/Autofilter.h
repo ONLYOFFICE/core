@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -121,15 +121,20 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_oRef.IsInit() && m_arrItems.size() > 0)
+				if(m_oRef.IsInit() && !m_arrItems.empty())
 				{
 					writer.WriteString(L"<sortState");
 					WritingStringAttrEncodeXmlString(L"ref", m_oRef->ToString());
 					WritingStringNullableAttrBool(L"caseSensitive", m_oCaseSensitive);
 					writer.WriteString(L">");
 
-					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
+                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    {
+                        if (  m_arrItems[i] )
+                        {
+                            m_arrItems[i]->toXML(writer);
+                        }
+                    }
 
 					writer.WriteString(L"</sortState>");
 				}
@@ -362,18 +367,22 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_arrItems.size() > 0)
-				{
-					writer.WriteString(L"<customFilters");
-					if (m_oAnd.IsInit() && true == m_oAnd->ToBool())
-						writer.WriteString(L" and=\"1\"");
-					writer.WriteString(L">");
-					
-					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
-					
-					writer.WriteString(L"</customFilters>");
-				}
+				if(m_arrItems.empty()) return;
+				
+				writer.WriteString(L"<customFilters");
+				if (m_oAnd.IsInit() && true == m_oAnd->ToBool())
+					writer.WriteString(L" and=\"1\"");
+				writer.WriteString(L">");
+				
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
+				
+				writer.WriteString(L"</customFilters>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -549,14 +558,19 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_arrItems.size() > 0 || m_oBlank.IsInit())
+				if(!m_arrItems.empty() || m_oBlank.IsInit())
 				{
 					writer.WriteString(_T("<filters"));
 					WritingStringNullableAttrBool(L"blank", m_oBlank);
 					writer.WriteString(_T(">"));
 
-					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
+                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    {
+                        if (  m_arrItems[i] )
+                        {
+                            m_arrItems[i]->toXML(writer);
+                        }
+                    }
 
 					writer.WriteString(_T("</filters>"));
 				}
@@ -781,8 +795,13 @@ namespace OOX
 					WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef->ToString());
 					writer.WriteString(L">");
 					
-					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-						m_arrItems[i]->toXML(writer);
+                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                    {
+                        if (  m_arrItems[i] )
+                        {
+                            m_arrItems[i]->toXML(writer);
+                        }
+                    }
 					
 					if(m_oSortState.IsInit())
 						m_oSortState->toXML(writer);
@@ -816,17 +835,13 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"),      m_oRef )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, _T("ref"),      m_oRef )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oRef;
-
-			nullable<CSortState > m_oSortState;
+			nullable<CSortState >					m_oSortState;
 		};
 	} //Spreadsheet
 } // namespace OOX

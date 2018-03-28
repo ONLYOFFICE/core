@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,6 +52,10 @@ namespace DocFileFormat
 	private:    
 		CRYPT::_rc4CryptData	crypt_data_rc4;
 		CRYPT::_ecmaCryptData	crypt_data_aes;
+		CRYPT::_xorCryptData	crypt_data_xor;
+		
 		bool					bStandard;
+		bool					bXOR;
+		bool					bAES;
 	};
 }

@@ -432,7 +432,12 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
         builder.WriteString(L"<SignatureProperties><SignatureProperty Id=\"idOfficeV1Details\" Target=\"#idPackageSignature\">");
         builder.WriteString(L"<SignatureInfoV1 xmlns=\"http://schemas.microsoft.com/office/2006/digsig\">");
         builder.WriteString(L"<SetupID>");
-        builder.WriteString(m_guid);
+
+        std::wstring sGUID = m_guid;
+        if (0 == sGUID.find(L"/_xmlsignatures"))
+            sGUID = L"";
+
+        builder.WriteString(sGUID);
         builder.WriteString(L"</SetupID>");
         builder.WriteString(L"<SignatureText></SignatureText>");
         builder.WriteString(L"<SignatureImage>");

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,8 +37,7 @@ namespace XLS
 {
 
 
-ObjFmla::ObjFmla(const bool is_part_of_FtPictFmla)
-:	is_part_of_FtPictFmla_(is_part_of_FtPictFmla)
+ObjFmla::ObjFmla(const bool is_part_of_FtPictFmla) : is_part_of_FtPictFmla_(is_part_of_FtPictFmla), bFmlaExist(false), bInfoExist(false)
 {
 }
 
@@ -46,7 +45,6 @@ BiffStructurePtr ObjFmla::clone()
 {
 	return BiffStructurePtr(new ObjFmla(*this));
 }
-
 
 void ObjFmla::load(CFRecord& record)
 {
@@ -56,14 +54,16 @@ void ObjFmla::load(CFRecord& record)
 
 	if(0 != cbFmla)
 	{
+		bFmlaExist = true;
+
 		fmla.load(record);
 
 		if(is_part_of_FtPictFmla_ && fmla.HasPtgTbl())
 		{
 			record >> embedInfo;
+			bInfoExist = true;
 		}
 	}
-
 
 	size_t data_size = record.getRdPtr() - start_ptr;
 	size_t padding_size = cbFmla - data_size;

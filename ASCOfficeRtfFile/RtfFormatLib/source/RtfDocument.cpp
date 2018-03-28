@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,14 +41,16 @@
 
 RtfDocument::RtfDocument()
 {
-    RtfSectionPtr s(new RtfSection());
-    _section section(s, 0, 0);
-	
+    _section section;
+	section.props = RtfSectionPtr(new RtfSection());
+
 	m_aArray.push_back( section );
 	
 	m_oProperty.SetDefaultOOX();
 	m_oDefaultCharProp.SetDefaultRtf();
 	m_oDefaultParagraphProp.SetDefaultRtf();
+
+	m_nZIndexLast = 0;
 }
 int RtfDocument::GetType()
 {

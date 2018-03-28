@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,9 +36,7 @@
 namespace XLS
 {
 
-
-PictFmlaKey::PictFmlaKey()
-:	fmlaLinkedCell(false), fmlaListFillRange(false)
+PictFmlaKey::PictFmlaKey() : fmlaLinkedCell(false), fmlaListFillRange(false)
 {
 }
 
@@ -49,10 +47,19 @@ BiffStructurePtr PictFmlaKey::clone()
 
 void PictFmlaKey::load(CFRecord& record)
 {
-	_UINT32 cbKey;
 	record >> cbKey;
 
-	record.skipNunBytes(cbKey); // ActiveX license key is here
+	if (cbKey > 0)
+	{
+		char *buf = new char[cbKey];
+		memcpy(buf, record.getCurData<char>(), cbKey);
+		
+		std::string str = std::string(buf, cbKey);
+		keyBuf =std::wstring(str.begin(), str.end());
+
+		record.skipNunBytes(cbKey); 
+		delete []buf;
+	}
 
 	fmlaLinkedCell.load(record);
 	fmlaListFillRange.load(record);

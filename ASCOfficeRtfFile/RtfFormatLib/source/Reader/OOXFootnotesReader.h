@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -135,14 +135,14 @@ public:
 		int nId = ooxFtnEdn->m_oId->GetValue();
 		OOXTextItemReader oTextItemReader;
 		
-		for (size_t i = 0 ; i < ooxFtnEdn->m_arrItems.size(); i++)
-		{			
+        for (std::vector<OOX::WritingElement*>::iterator it = ooxFtnEdn->m_arrItems.begin(); it != ooxFtnEdn->m_arrItems.end(); ++it)
+		{	
 			if( nSeparatorId == nId )
 			{
 				TextItemContainerPtr oNewTextItem ( new TextItemContainer() );
 				oTextItemReader.m_oTextItems = oNewTextItem;
 				
-				if( true == oTextItemReader.Parse( ooxFtnEdn->m_arrItems[i], oParam ) )
+				if( true == oTextItemReader.Parse( *it, oParam ) )
 				{
 					if( true == bFootnote )
 						oParam.oRtf->m_oFootnoteSep = oNewTextItem;
@@ -155,7 +155,7 @@ public:
 				TextItemContainerPtr oNewTextItem ( new TextItemContainer() );
 				oTextItemReader.m_oTextItems = oNewTextItem;
 				
-				if( true == oTextItemReader.Parse( ooxFtnEdn->m_arrItems[i], oParam ) )
+				if( true == oTextItemReader.Parse( *it, oParam ) )
 				{
 					if( true == bFootnote )
 						oParam.oRtf->m_oFootnoteCon = oNewTextItem;
@@ -168,7 +168,7 @@ public:
 				TextItemContainerPtr oNewTextItem ( new TextItemContainer() );
 				oTextItemReader.m_oTextItems = oNewTextItem;
 				
-				if( true == oTextItemReader.Parse( ooxFtnEdn->m_arrItems[i], oParam ) )
+				if( true == oTextItemReader.Parse( *it, oParam ) )
 				{
 					if( true == bFootnote )
 						oParam.oReader->m_mapFootnotes[ nId] = oNewTextItem;

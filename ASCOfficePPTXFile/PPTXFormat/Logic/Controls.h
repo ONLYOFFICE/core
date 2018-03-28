@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,8 +48,7 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Control)
 
-		public:
-			void AddObjectTo (const std::vector<SpTreeElem> *spTreeElements, NSShapeImageGen::CImageManager* pImageManager) const ;
+			void AddObjectTo (const std::vector<SpTreeElem> *spTreeElements, NSShapeImageGen::CMediaManager* pMediaManager) const ;
 			
 			std::wstring GetVmlXmlBySpid(std::wstring spid, smart_ptr<OOX::IFileContainer> & rels) const ;
 			
@@ -163,6 +162,7 @@ namespace PPTX
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(_T("p:controls"));
+				pWriter->EndAttributes();
 
 				for (size_t i = 0; i < arrControls.size(); ++i)
 					arrControls[i].toXmlWriter(pWriter);
@@ -175,7 +175,7 @@ namespace PPTX
 				for (size_t i = 0; i <arrControls.size(); i++)
 					arrControls[i].toPPTY(pWriter);
 			}	
-			void AddObjectsTo (const std::vector<PPTX::Logic::SpTreeElem> *spTreeElements, NSShapeImageGen::CImageManager* pImageManager) const;
+			void AddObjectsTo (const std::vector<PPTX::Logic::SpTreeElem> *spTreeElements, NSShapeImageGen::CMediaManager* pMediaManager) const;
 
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{

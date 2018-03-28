@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -66,6 +66,7 @@ public:
 
 	void start_table(office_element_ptr &elm, bool styled = false);
 		void set_default_column_width(double width);
+		void set_optimal_column_width(bool val);
 		void change_current_column_width(double width);
 	void end_table();
 	

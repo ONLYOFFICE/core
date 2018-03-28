@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,18 +43,16 @@ namespace OOX
 		class ExternalLinkPath : public External
 		{
 		public:
-			ExternalLinkPath()
+			ExternalLinkPath(OOX::Document* pMain) : External(pMain)
 			{
 			}
-			ExternalLinkPath(const CPath& uri)
+			ExternalLinkPath(OOX::Document* pMain, const CPath& uri) : External(pMain)
 			{
 				read(uri);
 			}
 			~ExternalLinkPath()
 			{
 			}
-
-		public:
 			virtual const FileType type() const
 			{
 				return OOX::FileTypes::ExternalLinkPath;
@@ -71,10 +69,10 @@ namespace OOX
 		class ExternalOleObject : public External
 		{
 		public:
-			ExternalOleObject()
+			ExternalOleObject(OOX::Document* pMain) : External(pMain)
 			{
 			}
-			ExternalOleObject(const CPath& uri)
+			ExternalOleObject(OOX::Document* pMain, const CPath& uri) : External(pMain)
 			{
 				read(uri);
 			}
@@ -82,7 +80,6 @@ namespace OOX
 			{
 			}
 
-		public:
 			virtual const FileType type() const
 			{
 				return OOX::FileTypes::OleObject;

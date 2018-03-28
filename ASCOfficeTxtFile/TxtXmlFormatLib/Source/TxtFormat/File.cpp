@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,7 +44,7 @@ namespace Txt
 	}
 	File::~File()
 	{
-			m_listContent.clear();
+        m_listContent.clear();
 	}
     void File::read(const std::wstring& filename, int code_page) // насильственное чтение в кодировке
 	{
@@ -55,10 +55,10 @@ namespace Txt
 
         TxtFile file(filename);
 
-		std::list<std::string> codePageContent	= file.readAnsiOrCodePage();	
+        std::vector<std::string> codePageContent	= file.readAnsiOrCodePage();
 		m_listContentSize						= file.getLinesCount();
 
-		for (std::list<std::string>::const_iterator iter = codePageContent.begin(); iter != codePageContent.end(); ++iter)
+        for (std::vector<std::string>::const_iterator iter = codePageContent.begin(); iter != codePageContent.end(); ++iter)
 		{
 			m_listContent.push_back(Encoding::cp2unicode(*iter, code_page));
 		}
@@ -118,8 +118,8 @@ namespace Txt
 	{
         TxtFile file(filename);
 		
-		std::list<std::string> result;
-		for (std::list<std::wstring>::const_iterator iter = m_listContent.begin(); iter != m_listContent.end(); ++iter)
+        std::vector<std::string> result;
+        for (std::vector<std::wstring>::const_iterator iter = m_listContent.begin(); iter != m_listContent.end(); ++iter)
 		{
 			result.push_back(Encoding::unicode2cp(*iter,code_page));
 		}
@@ -161,9 +161,9 @@ namespace Txt
 			return true;
         return NSFile::CFileBinary::Exists(filename);
 	}
-	void File::correctUnicode(std::list<std::wstring>& input)
+    void File::correctUnicode(std::vector<std::wstring>& input)
 	{
-		for(std::list<std::wstring>::iterator iter = input.begin(); iter != input.end(); iter++)
+        for(std::vector<std::wstring>::iterator iter = input.begin(); iter != input.end(); iter++)
 		{
 			const std::wstring& inputStr = *iter;
 			std::wstring outputStr;

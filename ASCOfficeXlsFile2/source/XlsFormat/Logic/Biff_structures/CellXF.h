@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,6 +36,8 @@
 
 namespace XLS
 {
+class XFProps;
+class ExtProp;
 
 class CFRecord;
 class GlobalWorkbookInfo;
@@ -59,7 +61,7 @@ public:
 	bool			fWrap;
 	unsigned char	alcV;
 	bool			fJustLast;
-	unsigned char	trot;
+	unsigned short	trot;
 	unsigned char	cIndent;
 	bool			fShrinkToFit;
 	unsigned char	iReadOrder;
@@ -74,19 +76,23 @@ public:
 	BorderInfo border;
 	FillInfo fill;
 
-	BiffStructurePtrVector ext_props;
-
 	FillInfoExt		font_color;
 	size_t			font_id;
 
 	bool			fHasXFExt;
 	bool			fsxButton;
+//------------------------------------------------------------------
+	BiffStructurePtrVector ext_props;
+	BiffStructurePtrVector xf_props;
 
 	size_t border_x_id;
 	size_t fill_x_id;
 
 	size_t& cell_xf_current_id_;
 	size_t& style_xf_current_id_;
+	
+	void Update(ExtProp* extProp); // xls style
+	void Update(XFProps* xfProps); //xlsx style
 
 	void RegisterFillBorder();
 };

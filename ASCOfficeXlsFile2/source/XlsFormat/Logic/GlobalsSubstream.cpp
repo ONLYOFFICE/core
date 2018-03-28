@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,69 +31,73 @@
  */
 
 #include "GlobalsSubstream.h"
-#include <Logic/AnyObject.h>
-#include <Logic/Biff_records/BOF.h>
-#include <Logic/Biff_records/WriteProtect.h>
-#include <Logic/Biff_records/FilePass.h>
-#include <Logic/Biff_records/Template.h>
-#include <Logic/Biff_unions/INTERFACE.h>
-#include <Logic/Biff_records/WriteAccess.h>
-#include <Logic/Biff_records/FileSharing.h>
-#include <Logic/Biff_records/CodePage.h>
-#include <Logic/Biff_records/Lel.h>
-#include <Logic/Biff_records/DSF.h>
-#include <Logic/Biff_records/Excel9File.h>
-#include <Logic/Biff_records/RRTabId.h>
-#include <Logic/Biff_records/ObProj.h>
-#include <Logic/Biff_records/ObNoMacros.h>
-#include <Logic/Biff_records/CodeName.h>
-#include <Logic/Biff_unions/FNGROUPS.h>
-#include <Logic/Biff_records/Lbl.h>
-#include <Logic/Biff_records/OleObjectSize.h>
-#include <Logic/Biff_unions/PROTECTION.h>
-#include <Logic/Biff_records/Window1.h>
-#include <Logic/Biff_records/Backup.h>
-#include <Logic/Biff_records/HideObj.h>
-#include <Logic/Biff_records/Date1904.h>
-#include <Logic/Biff_records/CalcPrecision.h>
-#include <Logic/Biff_records/RefreshAll.h>
-#include <Logic/Biff_records/BookBool.h>
-#include <Logic/Biff_unions/FORMATTING.h>
-#include <Logic/Biff_unions/PIVOTCACHEDEFINITION.h>
-#include <Logic/Biff_unions/DOCROUTE.h>
-#include <Logic/Biff_records/UserBView.h>
-#include <Logic/Biff_records/UsesELFs.h>
-#include <Logic/Biff_unions/BUNDLESHEET.h>
-#include <Logic/Biff_unions/METADATA.h>
-#include <Logic/Biff_records/MTRSettings.h>
-#include <Logic/Biff_records/ForceFullCalculation.h>
-#include <Logic/Biff_records/Country.h>
-#include <Logic/Biff_unions/SUPBOOK.h>
-#include <Logic/Biff_unions/LBL.h>
-#include <Logic/Biff_unions/RTD.h>
-#include <Logic/Biff_records/RecalcId.h>
-#include <Logic/Biff_records/HFPicture.h>
-#include <Logic/Biff_unions/MSODRAWINGGROUP.h>
-#include <Logic/Biff_unions/SHAREDSTRINGS.h>
-#include <Logic/Biff_records/ExtSST.h>
-#include <Logic/Biff_records/WebPub.h>
-#include <Logic/Biff_records/WOpt.h>
-#include <Logic/Biff_records/CrErr.h>
-#include <Logic/Biff_records/BookExt.h>
-#include <Logic/Biff_records/FeatHdr.h>
-#include <Logic/Biff_records/DConn.h>
-#include <Logic/Biff_unions/THEME.h>
-#include <Logic/Biff_records/CompressPictures.h>
-#include <Logic/Biff_records/Compat12.h>
-#include <Logic/Biff_records/GUIDTypeLib.h>
-#include <Logic/Biff_records/EOF.h>
-#include <Logic/Biff_records/BOF.h>
-#include <Logic/Biff_records/MDTInfo.h>
-#include <Logic/Biff_records/ExternSheet.h>
-#include <Logic/Biff_records/XFExt.h>
-#include <Logic/Biff_records/XFCRC.h>
-#include <Logic/Biff_records/DXF.h>
-#include <Logic/Biff_unions/STYLES.h>
+#include "AnyObject.h"
+
+#include "Biff_unions/INTERFACE.h"
+#include "Biff_unions/PROTECTION.h"
+#include "Biff_unions/FNGROUPS.h"
+#include "Biff_unions/FORMATTING.h"
+#include "Biff_unions/PIVOTCACHEDEFINITION.h"
+#include "Biff_unions/DOCROUTE.h"
+#include "Biff_unions/BUNDLESHEET.h"
+#include "Biff_unions/METADATA.h"
+#include "Biff_unions/SUPBOOK.h"
+#include "Biff_unions/LBL.h"
+#include "Biff_unions/RTD.h"
+#include "Biff_unions/MSODRAWINGGROUP.h"
+#include "Biff_unions/SHAREDSTRINGS.h"
+#include "Biff_unions/THEME.h"
+#include "Biff_unions/STYLES.h"
+
+#include "Biff_records/BOF.h"
+#include "Biff_records/WriteProtect.h"
+#include "Biff_records/FilePass.h"
+#include "Biff_records/Template.h"
+#include "Biff_records/WriteAccess.h"
+#include "Biff_records/FileSharing.h"
+#include "Biff_records/CodePage.h"
+#include "Biff_records/Lel.h"
+#include "Biff_records/DSF.h"
+#include "Biff_records/Excel9File.h"
+#include "Biff_records/RRTabId.h"
+#include "Biff_records/ObProj.h"
+#include "Biff_records/ObNoMacros.h"
+#include "Biff_records/CodeName.h"
+#include "Biff_records/Lbl.h"
+#include "Biff_records/OleObjectSize.h"
+#include "Biff_records/Window1.h"
+#include "Biff_records/Backup.h"
+#include "Biff_records/HideObj.h"
+#include "Biff_records/Date1904.h"
+#include "Biff_records/CalcPrecision.h"
+#include "Biff_records/RefreshAll.h"
+#include "Biff_records/BookBool.h"
+#include "Biff_records/UserBView.h"
+#include "Biff_records/UsesELFs.h"
+#include "Biff_records/MTRSettings.h"
+#include "Biff_records/ForceFullCalculation.h"
+#include "Biff_records/Country.h"
+#include "Biff_records/RecalcId.h"
+#include "Biff_records/HFPicture.h"
+#include "Biff_records/ExtSST.h"
+#include "Biff_records/WebPub.h"
+#include "Biff_records/WOpt.h"
+#include "Biff_records/CrErr.h"
+#include "Biff_records/BookExt.h"
+#include "Biff_records/FeatHdr.h"
+#include "Biff_records/DConn.h"
+#include "Biff_records/CompressPictures.h"
+#include "Biff_records/Compat12.h"
+#include "Biff_records/GUIDTypeLib.h"
+#include "Biff_records/EOF.h"
+#include "Biff_records/BOF.h"
+#include "Biff_records/MDTInfo.h"
+#include "Biff_records/ExternSheet.h"
+#include "Biff_records/XFExt.h"
+#include "Biff_records/XFCRC.h"
+#include "Biff_records/DXF.h"
+#include "Biff_records/SupBook.h"
+#include "Biff_records/NameCmt.h"
 
 #include "Biff_structures/ODRAW/OfficeArtDgContainer.h"
 
@@ -136,8 +140,7 @@ static const int aCodePages[][2] = {
     255,	850//OEM
 };
 
-GlobalsSubstream::GlobalsSubstream(const unsigned short code_page)
-:	code_page_(code_page)
+GlobalsSubstream::GlobalsSubstream(const unsigned short code_page) :	code_page_(code_page)
 {
 }
 
@@ -175,11 +178,11 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 				if (proc.optional<BOF>())
 				{
 					BOF *bof = dynamic_cast<BOF*>(elements_.back().get());
-					proc.getGlobalWorkbookInfo()->Version = bof->vers;
-					if (proc.getGlobalWorkbookInfo()->Version < 0x0600)
+					global_info_->Version = bof->vers;
+					if (global_info_->Version < 0x0600)
 					{				
 
-						proc.getGlobalWorkbookInfo()->CodePage = 0; //???
+						global_info_->CodePage = 0; //???
 					}
 				}
 			}break;
@@ -195,11 +198,13 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			{
 				if (proc.optional<FilePass>())
 				{					
-					if (( proc.getGlobalWorkbookInfo()->decryptor)  &&
-						( proc.getGlobalWorkbookInfo()->decryptor->IsVerify() == false))
+					if (( global_info_->decryptor)  &&
+						( global_info_->decryptor->IsVerify() == false))
 					{
-						if (!proc.getGlobalWorkbookInfo()->decryptor->SetPassword(L"VelvetSweatshop"))
+						if (!global_info_->decryptor->SetPassword(L"VelvetSweatshop"))
 							return false;
+						else
+							global_info_->bWorkbookProtectExist = true;
 					}
 				}
 			}break;
@@ -214,18 +219,54 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			case rt_InterfaceHdr:		proc.optional<INTERFACE_T>();	break;
 			case rt_WriteAccess:		proc.optional<WriteAccess>();	break;
 			case rt_Lel:				proc.repeated<Lel>(0, 2047);	break;
-			case rt_DSF:				proc.optional<DSF>();			break;
+			case rt_DSF:				proc.optional<DSF>();			break; //resered record
 			case rt_Excel9File:			proc.optional<Excel9File>();	break;
-			case rt_RRTabId:			proc.optional<RRTabId>();		break;
-			case rt_ObProj:				proc.optional<ObProj>();		break;
-			case rt_ObNoMacros:			proc.optional<ObNoMacros>();	break;
-			case rt_CodeName:			proc.optional<CodeName>();		break;
-			case rt_BuiltInFnGroupCount:proc.optional<FNGROUPS>();		break;
+			case rt_RRTabId:
+			{
+				if (proc.optional<RRTabId>())
+				{
+					m_RRTabId = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_ObProj:				
+			{
+				if (proc.optional<ObProj>())	
+				{
+					global_info_->bVbaProjectExist	= true;
+					global_info_->bMacrosExist		= true;
+				}
+			}break;
+			case rt_ObNoMacros:	
+			{
+				if (proc.optional<ObNoMacros>())
+				{
+					global_info_->bMacrosExist = false; //empty VbaProject
+				}
+			}break;
+			case rt_CodeName:
+			{
+				if (proc.optional<CodeName>())
+				{
+					m_CodeName = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_BuiltInFnGroupCount:
+			{
+				if (proc.optional<FNGROUPS>())
+				{
+					m_FNGROUPS = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_OleObjectSize:		proc.optional<OleObjectSize>();	break;
 			case rt_WinProtect:			
 			{
 				if (proc.optional<PROTECTION>())
 				{
+					global_info_->bWorkbookProtectExist = true;
+					
 					m_PROTECTION = elements_.back();
 					elements_.pop_back();
 				}
@@ -243,7 +284,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					if ((CodePage_) && (CodePage_->cv != 0/* && CodePage_->cv != 1200*/))
 						code_page_ = CodePage_->cv;
 
-					proc.getGlobalWorkbookInfo()->CodePage = code_page_;
+					global_info_->CodePage = code_page_;
 				}
 			}break;
 			case rt_Window1:
@@ -276,7 +317,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 						int countryDef = Country_->iCountryDef;
 						int countryWinIni = Country_->iCountryWinIni;
 
-						proc.getGlobalWorkbookInfo()->CodePage;
+						global_info_->CodePage;
 					}
 				}	
 			}break;
@@ -295,8 +336,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 
 						if (fmts)
 						{		
-							proc.getGlobalWorkbookInfo()->cellStyleDxfs_count	= fmts->m_arDXF.size(); 
-							proc.getGlobalWorkbookInfo()->m_arFonts				= &fmts->m_arFonts;
+							global_info_->cellStyleDxfs_count	= fmts->m_arDXF.size(); 
 						}
 					}
 					//else
@@ -309,8 +349,8 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					//		fmts->concatinate(fmts_add);
 					//		elements_.pop_back();
 
-					//		proc.getGlobalWorkbookInfo()->cellStyleDxfs_count	= fmts->m_arDXF.size(); 
-					//		proc.getGlobalWorkbookInfo()->m_arFonts				= &fmts->m_arFonts;
+					//		global_info_->cellStyleDxfs_count	= fmts->m_arDXF.size(); 
+					//		global_info_->m_arFonts				= &fmts->m_arFonts;
 					//	}
 					//}
 				}		
@@ -320,7 +360,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 				count = proc.repeated<PIVOTCACHEDEFINITION>(0, 0);	
 				while(count > 0)
 				{
-					m_arPIVOTCACHEDEFINITION.insert(m_arPIVOTCACHEDEFINITION.begin(), elements_.back());
+					global_info_->arPIVOTCACHEDEFINITION.insert(global_info_->arPIVOTCACHEDEFINITION.begin(), elements_.back());
 					elements_.pop_back();
 					count--;
 				}
@@ -339,9 +379,32 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					count--;
 				}
 			}break;
-			case rt_BoundSheet8:			proc.repeated<BUNDLESHEET>(1, 0);		break;
-			case rt_MDTInfo:				proc.optional<METADATA>();				break;
-			case rt_MTRSettings:			proc.optional<MTRSettings>();			break;
+			case rt_BoundSheet8:			
+			{
+				count = proc.repeated<BUNDLESHEET>(1, 0);	
+				while(count > 0)
+				{
+					m_arBUNDLESHEET.insert(m_arBUNDLESHEET.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
+			case rt_MDTInfo:
+			{
+				if (proc.optional<METADATA>())
+				{
+					m_METADATA = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_MTRSettings:
+			{
+				if (proc.optional<MTRSettings>())
+				{
+					m_MTRSettings = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_ForceFullCalculation:	proc.optional<ForceFullCalculation>();	break;
 			case rt_SupBook:
 			{
@@ -394,7 +457,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					m_SHAREDSTRINGS = elements_.back();
 					elements_.pop_back();
 
-					proc.getGlobalWorkbookInfo()->startAddedSharedStrings = shared_strings.size_;
+					global_info_->startAddedSharedStrings = shared_strings.size_;
 				}
 			}break;
 			case rt_ExtSST:
@@ -408,13 +471,41 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			case rt_WebPub:				proc.repeated<WebPub>(0, 0);			break;
 			case rt_WOpt:				proc.repeated<WOpt>(0, 0);				break;
 			case rt_CrErr:				proc.optional<CrErr>();					break;
-			case rt_BookExt:			proc.optional<BookExt>();				break;
+			case rt_BookExt:
+			{
+				if (proc.optional<BookExt>())
+				{
+					m_BookExt = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_FeatHdr:
 			{
 				FeatHdr feat_hdr(true);
 				proc.repeated(feat_hdr, 0, 0);
 			}break;
-			case rt_DConn:				proc.repeated<DConn>(0, 0);				break;
+			case rt_DConn:
+			{
+				count = proc.repeated<DConn>(0, 0);
+				while(count > 0)
+				{
+					DConn *conn = dynamic_cast<DConn*>(elements_.back().get());
+					if (conn)
+					{
+						if (conn->id.bType == 1)
+						{
+							global_info_->mapStrConnection.insert(std::make_pair(conn->id.string.strTotal, elements_.back()));
+						}
+						else if (conn->id.bType == 2)
+						{
+							global_info_->mapIdConnection.insert(std::make_pair(conn->id.sxStreamID.idStm, elements_.back()));
+						}
+					}
+					m_arDConn.insert(m_arDConn.begin(), elements_.back());
+					elements_.pop_back();
+					count--;
+				}
+			}break;
 			case rt_Theme:
 			{
 				if (proc.optional<THEME>())
@@ -464,24 +555,26 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 		}
 	}
 
-	if (proc.getGlobalWorkbookInfo()->CodePage == 0)
+	if (global_info_->CodePage == 0)
 	{	//try from charsets ... todooo make local set on each record (aka Label)
 		//from ixfe -> ifnt from xf -> arFonts
-		for (std::map<int, int>::iterator it = proc.getGlobalWorkbookInfo()->fonts_charsets.begin()
-			; proc.getGlobalWorkbookInfo()->CodePage == 0 && it != proc.getGlobalWorkbookInfo()->fonts_charsets.end()
-			; it++)
+		for (std::map<int, int>::iterator it = global_info_->fonts_charsets.begin()
+			; global_info_->CodePage == 0 && it != global_info_->fonts_charsets.end()
+			; ++it)
 		{
 			for (int i = 0 ; i < sizeof(aCodePages) / 2; i++)
 			{
 				if (aCodePages[i][0] == it->first)
 				{
-					proc.getGlobalWorkbookInfo()->CodePage = aCodePages[i][1];
+					global_info_->CodePage = aCodePages[i][1];
 					break;
 				}
 			}
 		}
 	}
 	LoadHFPicture();	
+	UpdateXti();
+	UpdateDefineNames();
 
 	return true;
 }
@@ -490,7 +583,7 @@ void GlobalsSubstream::LoadHFPicture()
 {
 	if (m_arHFPicture.empty()) return;
 
-	int current_size_hf = 0, j = 0;
+	size_t current_size_hf = 0, j = 0;
 	for ( size_t i = 0; i < m_arHFPicture.size(); i++)
 	{
 		HFPicture* hf = dynamic_cast<HFPicture*>(m_arHFPicture[i].get());
@@ -525,6 +618,164 @@ void GlobalsSubstream::LoadHFPicture()
 		rgDrawing->loadFields(record);
 		m_arHFPictureDrawing.push_back(rgDrawing);
 	}
+}
+
+void GlobalsSubstream::UpdateXti()
+{
+	for (size_t s = 0; s < m_arSUPBOOK.size(); s++)
+	{
+		SUPBOOK* SUPP = dynamic_cast<SUPBOOK*>(m_arSUPBOOK[s].get());
+		if (!SUPP) continue;
+
+		ExternSheet* extern_sheet = dynamic_cast<ExternSheet*>(SUPP->m_ExternSheet.get());
+
+		GlobalWorkbookInfo::_xti val;
+
+		val.iSup	= s;
+		val.pNames	= &SUPP->arNames;
+
+		for (size_t i = 0; extern_sheet && i < extern_sheet->rgXTI.size(); i++)
+		{
+			XTI* xti = dynamic_cast<XTI*>(extern_sheet->rgXTI[i].get());
+			if (!xti) continue;
+
+			SUPBOOK* index_book = dynamic_cast<SUPBOOK*>(m_arSUPBOOK[xti->iSupBook].get());
+			if (!index_book) continue;
+
+			SupBook *info = dynamic_cast<SupBook*>(index_book->m_SupBook.get());
+			if (!info) continue;
+
+			GlobalWorkbookInfo::_xti val_1;
+		
+			val_1.iSup		= xti->iSupBook;
+			val_1.pNames	= &index_book->arNames;
+
+			if( index_book->nExternIndex > 0 )
+			{
+				val_1.link = L"[" + std::to_wstring(index_book->nExternIndex) + L"]";
+			}	
+			if (xti->itabFirst >= 0 /*|| itabLast >= 0*/)
+			{
+				if (info->rgst.empty() && index_book->nExternIndex < 0)
+				{
+					std::wstring strRange;
+					if(-1 == xti->itabFirst)
+					{
+						strRange = L"#REF";
+					}
+					else
+					{
+						strRange = XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabFirst].name, L"");
+						if (xti->itabFirst != xti->itabLast)
+						{
+							strRange += std::wstring(L":") + XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabLast].name, L"");
+						}
+					}
+					val_1.link = strRange;
+				}
+				else
+				{
+					val_1.link = XMLSTUFF::xti_indexes2sheet_name(xti->itabFirst, xti->itabLast, info->rgst, val_1.link); 
+				}
+			}
+			global_info_->arXti_External.push_back(val_1);
+		}
+
+		global_info_->arXti.push_back(val);
+	}
+}
+
+void GlobalsSubstream::UpdateDefineNames()
+{
+	for (size_t s = 0; s < m_arLBL.size(); s++)
+	{
+		LBL* LBL_ = dynamic_cast<LBL*>(m_arLBL[s].get());
+		if (!LBL_) continue;
+
+		Lbl *lbl = dynamic_cast<Lbl*>(LBL_->m_Lbl.get());
+		if (!lbl) continue;
+
+		std::wstring name;
+		std::wstring comment;
+
+		if (lbl->fBuiltin)	name = lbl->Name;	
+		if (name.empty())	name = lbl->Name_bin.value();
+		
+		NameCmt *namecmt = dynamic_cast<NameCmt*>(LBL_->m_NameCmt.get());
+		if (namecmt)
+		{
+			if (name.empty())
+				name = namecmt->name.value();
+			comment = namecmt->comment.value();
+		}
+		
+		std::wstring value = lbl->rgce.getAssembledFormula(lbl->fWorkbookParam/*lbl->itab == 0 ? true : false*/);
+
+		if (!value.empty() && !name.empty())
+		{
+			int ind_sheet = lbl->itab;
+
+			std::map<std::wstring, std::vector<std::wstring>>::iterator it = global_info_->mapDefineNames.find(name);
+			
+			if (it != global_info_->mapDefineNames.end())
+			{
+				while ( it->second.size() <= ind_sheet)
+				{
+					it->second.push_back(L"");
+				}
+				it->second[ind_sheet] = value;
+				//it->second.push_back(value);
+			}
+			else
+			{
+				std::vector<std::wstring> ar(ind_sheet + 1);
+			
+				ar[ind_sheet] = value;
+				//ar.push_back(value);
+
+				global_info_->mapDefineNames.insert(std::make_pair(name, ar));
+			}
+			LBL_->isSerialize = true;
+		}
+		else
+		{
+			if (lbl->fFunc)
+			{
+				if (name == L"FORMULA") //"general_formulas.xls"
+						name = L"_xludf." + name;
+			}
+		}
+		global_info_->arDefineNames.push_back(name);// для имен функций - todooo ... не все функции корректны !! БДИ !!
+	}
+}
+int GlobalsSubstream::serialize_protection(std::wostream & _stream)
+{
+	if (!m_PROTECTION) return 0;
+
+	return m_PROTECTION->serialize(_stream);
+}
+
+int GlobalsSubstream::serialize_format(std::wostream & _stream)
+{
+	BookExt *book_ext = dynamic_cast<BookExt*>(m_BookExt.get());
+	CodeName *code_name = dynamic_cast<CodeName*>(m_CodeName.get());
+
+	CP_XML_WRITER(_stream)    
+	{
+		CP_XML_NODE(L"workbookPr")
+		{
+			if (code_name)
+			{
+				CP_XML_ATTR(L"codeName", code_name->value);
+			}
+			if (book_ext)
+			{
+				CP_XML_ATTR(L"hidePivotFieldList",	book_ext->fHidePivotList);
+				CP_XML_ATTR(L"filterPrivacy",		book_ext->fFilterPrivacy);
+			}
+		}
+	}
+	return 0;
 }
 
 } // namespace XLS

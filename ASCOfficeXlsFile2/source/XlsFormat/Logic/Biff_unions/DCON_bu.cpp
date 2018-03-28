@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,10 +31,10 @@
  */
 
 #include "DCON.h"
-#include <Logic/Biff_records/DCon.h>
-#include <Logic/Biff_records/DConName.h>
-#include <Logic/Biff_records/DConBin.h>
-#include <Logic/Biff_records/DConRef.h>
+#include "../Biff_records/DCon.h"
+#include "../Biff_records/DConName.h"
+#include "../Biff_records/DConBin.h"
+#include "../Biff_records/DConRef.h"
 
 namespace XLS
 {
@@ -74,7 +74,6 @@ BaseObjectPtr DCON::clone()
 	return BaseObjectPtr(new DCON(*this));
 }
 
-
 // DCON = DCon *(DConName / DConBin / DConRef)
 const bool DCON::loadContent(BinProcessor& proc)
 {
@@ -82,8 +81,16 @@ const bool DCON::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.repeated<Parenthesis_DCON_1>(0, 0);
+	m_DCon = elements_.back();
+	elements_.pop_back();
 
+	int count = proc.repeated<Parenthesis_DCON_1>(0, 0);
+	while(count > 0)
+	{
+		m_arDCon.insert(m_arDCon.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
 	return true;
 }
 

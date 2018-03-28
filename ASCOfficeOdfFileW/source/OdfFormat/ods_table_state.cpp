@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -634,15 +634,15 @@ void ods_table_state::set_merge_cells(int start_col, int start_row, int end_col,
 
 	if (spanned_cols > 10000)spanned_cols = 1024;
 
-	for (std::list<ods_cell_state>::iterator cell = cells_.begin(); cell != cells_.end(); cell++)
+	for (size_t i = 0; i < cells_.size(); ++i)
 	{
-		if (cell->row > end_row) break;
+		if (cells_[i].row > end_row) break;
 
-		if (cell->row >= start_row)
+		if (cells_[i].row >= start_row)
 		{
-			if (cell->col >= start_col)
+			if (cells_[i].col >= start_col)
 			{
-				table_table_cell* cell_elm = dynamic_cast<table_table_cell*>(cell->elm.get());
+				table_table_cell* cell_elm = dynamic_cast<table_table_cell*>(cells_[i].elm.get());
 				if (cell_elm == NULL)return;
 
 				cell_elm->table_table_cell_attlist_extra_.table_number_columns_spanned_ = spanned_cols;
@@ -668,6 +668,24 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 	}
 
 	std::wstring odfFormula = formulas_converter_table.convert_formula(formula);
+
+	if (std::wstring::npos != odfFormula.find(L"["))
+	{
+		for (size_t i = 0; i < table_parts_.size(); i++)
+		{
+			if (table_parts_[i].in_ref(current_table_column_, current_table_row_))
+			{
+				for (size_t j = 0; j < table_parts_[i].columns.size(); j ++)
+				{
+					std::wstring name = table_parts_[i].name + L"[" + table_parts_[i].columns[j].first + L"]";
+					//Таблица1[ Сумма за кв. 3 ]
+
+					XmlUtils::replace_all(odfFormula, name, table_parts_[i].columns[j].second);
+				}
+				break;
+			}
+		}
+	}
 	
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 	if (cell == NULL)return;
@@ -684,7 +702,7 @@ std::wstring ods_table_state::replace_cell_row(boost::wsmatch const & what)
         int col_formula=0, row_formula=0;
 		utils::parsing_ref(ref_formula, col_formula, row_formula);col_formula--;//инче отсчет с 1
 	
-		ref_formula = utils::getColAddress(col_formula)+boost::lexical_cast<std::wstring>(row_formula+current_table_row_ -tmp_row_);
+		ref_formula = utils::getColAddress(col_formula) + std::to_wstring(row_formula +current_table_row_ - tmp_row_);
 
 
 		return ref_formula;
@@ -1137,20 +1155,20 @@ void ods_table_state::start_conditional_rule(int rule_type)
 				boost::algorithm::split(splitted, test, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 				cell = splitted[0];
 
-				condition->calcext_condition_attr_.calcext_base_cell_address_ = table + cell;
+				condition->attr_.calcext_base_cell_address_ = table + cell;
 			}
 			switch(rule_type)
 			{
-				case 4: condition->calcext_condition_attr_.calcext_value_	= L"contains-text( )"; break;
-				case 5: condition->calcext_condition_attr_.calcext_value_	= L"is-error"; break;
-				case 6: condition->calcext_condition_attr_.calcext_value_	= L"contains-text()"; break;
-				case 8: condition->calcext_condition_attr_.calcext_value_	= L"duplicate"; break;
-				case 9: condition->calcext_condition_attr_.calcext_value_	= L"formula-is()"; break;
-				case 11: condition->calcext_condition_attr_.calcext_value_	= L"not-contains-text( )"; break;
-				case 12: condition->calcext_condition_attr_.calcext_value_	= L"is-no-error"; break;
-				case 13: condition->calcext_condition_attr_.calcext_value_	= L"not-contains-text()"; break;
-				case 15: condition->calcext_condition_attr_.calcext_value_	= L"top-elements()"; break;//bottom-elements ???
-				case 16: condition->calcext_condition_attr_.calcext_value_	= L"unique"; break;
+				case 4: condition->attr_.calcext_value_	= L"contains-text( )"; break;
+				case 5: condition->attr_.calcext_value_	= L"is-error"; break;
+				case 6: condition->attr_.calcext_value_	= L"contains-text()"; break;
+				case 8: condition->attr_.calcext_value_	= L"duplicate"; break;
+				case 9: condition->attr_.calcext_value_	= L"formula-is()"; break;
+				case 11: condition->attr_.calcext_value_	= L"not-contains-text( )"; break;
+				case 12: condition->attr_.calcext_value_	= L"is-no-error"; break;
+				case 13: condition->attr_.calcext_value_	= L"not-contains-text()"; break;
+				case 15: condition->attr_.calcext_value_	= L"top-elements()"; break;//bottom-elements ???
+				case 16: condition->attr_.calcext_value_	= L"unique"; break;
 				case 0: /*aboveAverage*/
 				case 1: /*beginsWith*/
 				case 2: /*cellIs*/
@@ -1178,9 +1196,9 @@ void ods_table_state::set_conditional_formula(std::wstring formula)
 		
 		std::wstring operator_;
 		bool s = false;
-		if (condition->calcext_condition_attr_.calcext_value_)//есть опреатор
+		if (condition->attr_.calcext_value_)//есть опреатор
 		{
-			operator_ = *condition->calcext_condition_attr_.calcext_value_;
+			operator_ = *condition->attr_.calcext_value_;
 			int f = operator_.find(L"("); 
 			if (f > 0) 
 			{
@@ -1188,7 +1206,7 @@ void ods_table_state::set_conditional_formula(std::wstring formula)
 				operator_ = operator_.substr(0,operator_.length() - 2);
 			}
 		}		
-		condition->calcext_condition_attr_.calcext_value_= operator_ + (s ? L"(": L"") + odfFormula + (s ? L")": L"");
+		condition->attr_.calcext_value_= operator_ + (s ? L"(": L"") + odfFormula + (s ? L")": L"");
 	}
 }
 void ods_table_state::set_conditional_style_name(std::wstring style_name)
@@ -1196,8 +1214,8 @@ void ods_table_state::set_conditional_style_name(std::wstring style_name)
 	calcext_condition*	condition	 = dynamic_cast<calcext_condition*>	 (current_level_.back().get());
 	calcext_date_is*	date_is		 = dynamic_cast<calcext_date_is*>	 (current_level_.back().get());
 
-	if (condition)	condition->calcext_condition_attr_.calcext_apply_style_name_= style_name;
-	if (date_is)	date_is->calcext_date_is_attr_.calcext_style_				= style_name;
+	if (condition)	condition->attr_.calcext_apply_style_name_	= style_name;
+	if (date_is)	date_is->attr_.calcext_style_				= style_name;
 }
 void ods_table_state::set_conditional_operator(int _operator)
 {
@@ -1206,18 +1224,18 @@ void ods_table_state::set_conditional_operator(int _operator)
 	{
 		switch(_operator)
 		{
-		case 0:	condition->calcext_condition_attr_.calcext_value_ = L"begins-with()";	break;
-		case 1:	condition->calcext_condition_attr_.calcext_value_ = L"between()";		break;
-		case 2:	condition->calcext_condition_attr_.calcext_value_ = L"contains-text()"; break;
-		case 3:	condition->calcext_condition_attr_.calcext_value_ = L"ends-with()";		break;
-		case 4:	condition->calcext_condition_attr_.calcext_value_ = L"=";				break;
-		case 5:	condition->calcext_condition_attr_.calcext_value_ = L">";				break;
-		case 6:	condition->calcext_condition_attr_.calcext_value_ = L">=";				break;
-		case 7:	condition->calcext_condition_attr_.calcext_value_ = L"<";				break;
-		case 8:	condition->calcext_condition_attr_.calcext_value_ = L"<=";				break;
-		case 9:	condition->calcext_condition_attr_.calcext_value_ = L"not-between()";	 break;
-		case 10:condition->calcext_condition_attr_.calcext_value_ = L"not-contains-text()"; break;
-		case 11:condition->calcext_condition_attr_.calcext_value_ = L"!=";				break;
+		case 0:	condition->attr_.calcext_value_ = L"begins-with()";	break;
+		case 1:	condition->attr_.calcext_value_ = L"between()";		break;
+		case 2:	condition->attr_.calcext_value_ = L"contains-text()"; break;
+		case 3:	condition->attr_.calcext_value_ = L"ends-with()";		break;
+		case 4:	condition->attr_.calcext_value_ = L"=";				break;
+		case 5:	condition->attr_.calcext_value_ = L">";				break;
+		case 6:	condition->attr_.calcext_value_ = L">=";				break;
+		case 7:	condition->attr_.calcext_value_ = L"<";				break;
+		case 8:	condition->attr_.calcext_value_ = L"<=";				break;
+		case 9:	condition->attr_.calcext_value_ = L"not-between()";	 break;
+		case 10:condition->attr_.calcext_value_ = L"not-contains-text()"; break;
+		case 11:condition->attr_.calcext_value_ = L"!=";				break;
 		}
 	}
 }
@@ -1229,8 +1247,8 @@ void ods_table_state::set_conditional_value(int type, std::wstring value )
 
 	if (icon_set || data_bar)
 	{
-		office_element_ptr		elm;
-		create_element(L"calcext", L"formatting-entry",elm, context_);
+		office_element_ptr elm;
+		create_element(L"calcext", L"formatting-entry", elm, context_);
 		
 		current_level_.back()->add_child_element(elm);
 
@@ -1247,13 +1265,14 @@ void ods_table_state::set_conditional_value(int type, std::wstring value )
 				case 3: //Number
 				default: entry->calcext_type_ = calcext_type(calcext_type::Number);
 			}
+			entry->calcext_value_ = value;
 		}
 	}
 
 	if (color_scale)
 	{
-		office_element_ptr		elm;
-		create_element(L"calcext", L"color-scale-entry",elm, context_);
+		office_element_ptr elm;
+		create_element(L"calcext", L"color-scale-entry", elm, context_);
 		
 		current_level_.back()->add_child_element(elm);
 
@@ -1263,13 +1282,14 @@ void ods_table_state::set_conditional_value(int type, std::wstring value )
 			switch(type)
 			{				
 				case 0: //Formula	
-				case 1: entry->calcext_type_ = calcext_type(calcext_type::Maximum); break;
-				case 2: entry->calcext_type_ = calcext_type(calcext_type::Minimum); break;
-				case 4: entry->calcext_type_ = calcext_type(calcext_type::Percent); break;
-				case 5: //Percentile		
+				case 1: entry->calcext_type_ = calcext_type(calcext_type::Maximum);		break;
+				case 2: entry->calcext_type_ = calcext_type(calcext_type::Minimum);		break;
+				case 4: entry->calcext_type_ = calcext_type(calcext_type::Percent);		break;
+				case 5: entry->calcext_type_ = calcext_type(calcext_type::Percentile);	break;
 				case 3: //Number
 				default: entry->calcext_type_ = calcext_type(calcext_type::Number);
 			}
+			entry->calcext_value_ = value;
 		}
 		///color???? - прихоодят выше уровнем !!
 	}
@@ -1281,11 +1301,22 @@ void ods_table_state::set_conditional_iconset(int type_iconset)
 
 	if (cond_format)
 	{
-		cond_format->calcext_icon_set_attr_.calcext_icon_set_type_ = iconset_type((iconset_type::type)type_iconset);
+		cond_format->attr_.calcext_icon_set_type_ = iconset_type((iconset_type::type)type_iconset);
 	}
 }
-void ods_table_state::add_conditional_colorscale(_CP_OPT(color) color)
+void ods_table_state::add_conditional_colorscale(int index, _CP_OPT(color) color)
 {
+	calcext_color_scale *scale = dynamic_cast<calcext_color_scale*>(current_level_.back().get());
+
+	if (!scale) return;
+	if (index >= scale->content_.size() || index < 0) return;
+
+	calcext_color_scale_entry* color_scale_entry = dynamic_cast<calcext_color_scale_entry*>(scale->content_[index].get());
+
+	if (color_scale_entry)
+	{
+		color_scale_entry->calcext_color_ = color;
+	}
 }
 void ods_table_state::set_conditional_databar_color(_CP_OPT(color) color)
 {
@@ -1293,7 +1324,7 @@ void ods_table_state::set_conditional_databar_color(_CP_OPT(color) color)
 
 	if (cond_format)
 	{
-		cond_format->calcext_data_bar_attr_.calcext_positive_color_ = color;
+		cond_format->attr_.calcext_positive_color_ = color;
 	}
 }
 

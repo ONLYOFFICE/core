@@ -1,32 +1,33 @@
 CORE_V8_PATH_INCLUDE    = $$PWD/v8
-CORE_V8_PATH_LIBS       = $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX
+CORE_V8_PATH_LIBS       = $$CORE_V8_PATH_INCLUDE/out.gn/$$CORE_BUILDS_PLATFORM_PREFIX/obj
 
 INCLUDEPATH += \
     $$CORE_V8_PATH_INCLUDE \
     $$CORE_V8_PATH_INCLUDE/include
 
 core_windows {
-    CORE_V8_PATH_LIBS = $$CORE_V8_PATH_LIBS/$$CORE_BUILDS_CONFIGURATION_PREFIX
+    CORE_V8_PATH_LIBS = $$CORE_V8_PATH_INCLUDE/out.gn/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/obj
 
-    LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base_0 -lv8_base_1 -lv8_base_2 -lv8_base_3 -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_external_snapshot
-    LIBS += -L$$CORE_V8_PATH_LIBS -licui18n -licuuc
+    LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libplatform -lv8_libbase -lv8_snapshot -lv8_libsampler
+    LIBS += -L$$CORE_V8_PATH_LIBS/third_party/icu -licui18n -licuuc
 
     LIBS += -lwinmm
     LIBS += -ladvapi32
     LIBS += -lShell32
+
+    LIBS += -lDbgHelp
+    LIBS += -lShlwapi
 }
 
 core_linux {
-    LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libplatform -lv8_libbase -lv8_nosnapshot -lv8_external_snapshot
-    LIBS += -L$$CORE_V8_PATH_LIBS -licui18n -licuuc -licudata
+    LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libplatform -lv8_libbase -lv8_snapshot -lv8_libsampler
+    LIBS += -L$$CORE_V8_PATH_LIBS/third_party/icu -licui18n -licuuc
 }
 
 core_mac {
-    LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_external_snapshot
-    LIBS += -L$$CORE_V8_PATH_LIBS -licui18n -licuuc -lv8_libsampler
+    LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libplatform -lv8_libbase -lv8_snapshot -lv8_libsampler
+    LIBS += -L$$CORE_V8_PATH_LIBS/third_party/icu -licui18n -licuuc
 
     QMAKE_CXXFLAGS += -Wall -Wno-inconsistent-missing-override
     QMAKE_CFLAGS += -Wall -Wno-inconsistent-missing-override
 }
-
-DEFINES += NEW_V8_ENGINE

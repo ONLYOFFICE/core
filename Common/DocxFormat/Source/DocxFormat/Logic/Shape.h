@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -132,9 +132,9 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    std::wstring sName = oReader.GetName();
+                    std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( L"w:txbxContent" == sName )
+					if ( L"txbxContent" == sName) //namespaces w & wne
 						m_oTxtbxContent = oReader;				
 				}
 			}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -83,12 +83,9 @@ int Number::serialize(std::wostream & stream)
 			{
 				CP_XML_ATTR(L"s", cell.ixfe - global_info_->cellStyleXfs_count);
 			}
-			if (num.value())
+			CP_XML_NODE(L"v")
 			{
-				CP_XML_NODE(L"v")
-				{
-					CP_XML_STREAM() << STR::double2str(num);
-				}
+				CP_XML_STREAM() << std::to_wstring(num.data.value);
 			}
 		}			
 	}

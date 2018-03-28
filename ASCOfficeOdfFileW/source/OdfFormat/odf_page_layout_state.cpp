@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,8 +46,8 @@ namespace odf_writer {
 
 odf_master_state::odf_master_state(office_element_ptr & master_elm )
 {        
-	int level =0;
-	odf_element_state state = {master_elm,L"",office_element_ptr(),level};
+	size_t level =0;
+	odf_element_state state = {master_elm, L"", office_element_ptr(), level};
 	
 	elements_.push_back(state);
 
@@ -57,7 +57,7 @@ odf_master_state::odf_master_state(office_element_ptr & master_elm )
 
 office_element_ptr & odf_master_state::get_root()
 {
-	if (elements_.size() >0)
+	if (elements_.size() > 0)
 		return elements_[0].elm;
 	else
 		throw;
@@ -71,8 +71,8 @@ office_element_ptr & odf_master_state::get_last_element()
 }
 void odf_master_state::add_child(office_element_ptr & child_elm, office_element_ptr  style_elm, std::wstring style_name )
 {
-	int level =current_level_.size();
-	odf_element_state state = {child_elm, style_name, style_elm,level};
+	size_t level = current_level_.size();
+	odf_element_state state = {child_elm, style_name, style_elm, level};
 	
 	elements_.push_back(state);
 	current_level_.back()->add_child_element(child_elm);
@@ -146,7 +146,7 @@ void odf_layout_state::add_child(office_element_ptr & child_elm, office_element_
 {
 	if (current_level_.size() < 1) return;
 
-	int level =current_level_.size();
+	size_t level = current_level_.size();
 	odf_element_state state = {child_elm, style_name, style_elm,level};
 	
 	elements_.push_back(state);

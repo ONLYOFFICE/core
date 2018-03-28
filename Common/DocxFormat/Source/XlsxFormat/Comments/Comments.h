@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,12 +33,9 @@
 #ifndef OOX_XLSXCOMMENTS_FILE_INCLUDE_H_
 #define OOX_XLSXCOMMENTS_FILE_INCLUDE_H_
 
-#include "../CommonInclude.h"
+#include "../Xlsx.h"
+#include "../Worksheets/Worksheet.h"
 #include "../SharedStrings/Si.h"
-
-#include "../../DocxFormat/IFileContainer.h"
-
-#include <map>
 
 namespace OOX
 {
@@ -74,7 +71,7 @@ namespace OOX
 				return m_nRow.IsInit() && m_nCol.IsInit() && m_sAuthor.IsInit();
 			}
 		};
-		class CAuthors : public WritingElementWithChilds<std::wstring>
+		class CAuthors : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CAuthors)
@@ -83,26 +80,32 @@ namespace OOX
 			}
 			virtual ~CAuthors()
 			{
+				ClearItems();
+			}
+			virtual void ClearItems()
+			{
+                m_arrItems.clear();
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(L"<authors>");
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-				{
+
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
 					writer.WriteString(L"<author>");
-					writer.WriteEncodeXmlString(*m_arrItems[i]);
+                        writer.WriteEncodeXmlString(m_arrItems[i]);
 					writer.WriteString(L"</author>");
 				}
 				writer.WriteString(L"</authors>");
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -114,8 +117,10 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("author") == sName )
-						m_arrItems.push_back(new std::wstring(oReader.GetText3()));
+					if ( L"author" == sName )
+					{
+                        m_arrItems.push_back(oReader.GetText3());
+					}
 				}
 			}
 
@@ -128,6 +133,8 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
+		public:
+            std::vector<std::wstring>  m_arrItems;
 		};
 		class CComment : public WritingElement
 		{
@@ -144,7 +151,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
@@ -186,13 +193,10 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"),      m_oRef )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("authorId"),      m_oAuthorId )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, L"ref",      m_oRef )
+					WritingElement_ReadAttributes_Read_if ( oReader, L"authorId", m_oAuthorId )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oRef;
@@ -215,15 +219,20 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(L"<commentList>");
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-				{
-					m_arrItems[i]->toXML(writer);
-				}
+
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
+
 				writer.WriteString(L"</commentList>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -238,7 +247,7 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("comment") == sName )
+					if ( L"comment" == sName )
 						m_arrItems.push_back(new CComment(oReader));
 				}
 			}
@@ -256,20 +265,30 @@ namespace OOX
 		class CComments : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CComments()
+			CComments(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+				
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
+				if ((xlsx) && (!xlsx->m_arWorksheets.empty()))
+				{
+					xlsx->m_arWorksheets.back()->m_pComments = this;
+				}
 			}
-			CComments(const CPath& oRootPath, const CPath& oPath)
+			CComments(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+				
+				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
+				if ((xlsx) && (!xlsx->m_arWorksheets.empty()))
+				{
+					xlsx->m_arWorksheets.back()->m_pComments = this;
+				}
 				read( oRootPath, oPath );
 			}
 			virtual ~CComments()
 			{
 			}
-		public:
-
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -290,7 +309,7 @@ namespace OOX
 					return;
 
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if ( _T("comments") == sName )
+				if ( L"comments" == sName )
 				{
 					ReadAttributes( oReader );
 
@@ -301,9 +320,9 @@ namespace OOX
 						{
 							sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-							if ( _T("authors") == sName )
+							if ( L"authors" == sName )
 								m_oAuthors = oReader;
-							else if ( _T("commentList") == sName )
+							else if ( L"commentList" == sName )
 								m_oCommentList = oReader;
 						}
 					}
@@ -312,12 +331,12 @@ namespace OOX
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
 				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><comments xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">"));
+				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><comments xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">");
 				if(m_oAuthors.IsInit())
 					m_oAuthors->toXML(sXml);
 				if(m_oCommentList.IsInit())
 					m_oCommentList->toXML(sXml);
-				sXml.WriteString(_T("</comments>"));
+				sXml.WriteString(L"</comments>");
 
                 std::wstring sPath = oPath.GetPath();
                 NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
@@ -366,7 +385,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
@@ -394,12 +413,9 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),      m_oId )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, L"r:id", m_oId )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oId;

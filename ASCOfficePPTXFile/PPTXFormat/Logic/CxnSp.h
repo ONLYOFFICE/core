@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -68,6 +68,11 @@ namespace PPTX
 
 			DWORD GetLine(Ln& line)const;
 			DWORD GetFill(UniFill& fill)const;
+
+			//void FillLevelUp();
+			//void Merge(CxnSp& cxnSp, bool bIsSlidePlaceholder = false);
+
+			//void SetLevelUpElement( CxnSp* p){m_pLevelUp = p;};
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{

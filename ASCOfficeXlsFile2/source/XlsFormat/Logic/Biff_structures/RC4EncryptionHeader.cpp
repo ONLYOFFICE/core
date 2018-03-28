@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2017
+ * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -95,7 +95,7 @@ void RC4EncryptionHeader::load(XLS::CFRecord& record)
 		if (pDataRead)
 		{
 			crypt_data_aes.saltValue = std::string((char*)pDataRead, crypt_data_aes.saltSize);	
-			delete pDataRead;
+			delete []pDataRead;
 		}
 		
 		pDataRead = new unsigned char[0x10];
@@ -119,7 +119,7 @@ void RC4EncryptionHeader::load(XLS::CFRecord& record)
 		if (pDataRead)
 		{
 			crypt_data_aes.encryptedVerifierValue = std::string((char*)pDataRead, szEncryptedVerifierHash);
-			delete pDataRead;
+			delete []pDataRead;
 		}
 
 		pos = record.getRdPtr();

@@ -51,6 +51,7 @@ SOURCES += \
     ../Source/DocxFormat/Logic/TableProperty.cpp \
     ../Source/DocxFormat/Logic/Vml.cpp \
     ../Source/DocxFormat/Media/VbaProject.cpp \
+    ../Source/DocxFormat/Media/JsaProject.cpp \
     ../Source/DocxFormat/Math/oMath.cpp \
     ../Source/DocxFormat/Math/oMathContent.cpp \
     ../Source/DocxFormat/Math/oMathPara.cpp \

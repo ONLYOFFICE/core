@@ -49,6 +49,7 @@
 #include "../Source/DocxFormat/Math/oMathContent.cpp"
 #include "../Source/DocxFormat/Math/oMathPara.cpp"
 #include "../Source/DocxFormat/Media/VbaProject.cpp"
+#include "../Source/DocxFormat/Media/JsaProject.cpp"
 #include "../Source/DocxFormat/Docx.cpp"
 #include "../Source/DocxFormat/FileFactory.cpp"
 #include "../Source/DocxFormat/IFileContainer.cpp"

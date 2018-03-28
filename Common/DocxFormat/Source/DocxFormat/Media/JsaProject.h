@@ -34,6 +34,9 @@
 #define OOX_ONLY_JSA_PROJECT_INCLUDE_H_
 
 #include "Media.h"
+#include "../../../../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
+#include "../../../../../ASCOfficePPTXFile/Editor/imagemanager.h"
+
 #include "../../XlsxFormat/FileTypes_Spreadsheet.h"
 
 namespace OOX
@@ -41,13 +44,8 @@ namespace OOX
 	class JsaProject : public Media
 	{
 	public:
-		JsaProject( OOX::Document *pMain ) : Media(pMain)
-		{
-		}
-		JsaProject(OOX::Document *pMain, const CPath& filename) : Media(pMain)
-		{
-			read(filename);
-		}
+		JsaProject( OOX::Document *pMain );
+		JsaProject(OOX::Document *pMain, const CPath& filename);
 		virtual ~JsaProject()
 		{
 		}
@@ -63,36 +61,8 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
-		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-		{
-			BYTE* pData = NULL;
-			DWORD nBytesCount;
-			if(NSFile::CFileBinary::ReadAllBytes(m_filename.GetPath(), &pData, nBytesCount))
-			{
-				pWriter->WriteBYTEArray(pData, nBytesCount);
-			}
-		}
-		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-		{
-			LONG _length = pReader->GetLong();
-			LONG _end_rec = pReader->GetPos() + _length;
-
-			if (_length > 0)
-			{
-				BYTE* pData = pReader->GetPointer(_length);
-				std::wstring filePath = pReader->m_pRels->m_pManager->GetDstFolder() + FILE_SEPARATOR_STR + OOX::FileTypes::JsaProject.DefaultFileName().GetPath();
-
-				NSFile::CFileBinary oFile;
-				oFile.CreateFileW(filePath);
-				oFile.WriteFile(pData, _length);
-				oFile.CloseFile();
-
-				pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(OOX::FileTypes::JsaProject.DefaultFileName().GetExtention(false));
-
-				set_filename(filePath, false);
-			}
-			pReader->Seek(_end_rec);
-		}
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 	};
 } // namespace OOX
 

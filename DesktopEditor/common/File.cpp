@@ -53,7 +53,7 @@ namespace NSFile
         
         if (NULL == m_pFile) {
 #if DEBUG
-            printf ("NSFile::OpenFile - error open file : %s\n",strerror(errno));
+        //    printf ("NSFile::OpenFile - error open file : %s\n",strerror(errno));
 #endif
             return false;
         }
@@ -87,7 +87,7 @@ namespace NSFile
         
         if (NULL == m_pFile) {
 #if DEBUG
-            printf ("NSFile::CreateFileW - error create file : %s\n",strerror(errno));
+        //    printf ("NSFile::CreateFileW - error create file : %s\n",strerror(errno));
 #endif
             return false;
         }

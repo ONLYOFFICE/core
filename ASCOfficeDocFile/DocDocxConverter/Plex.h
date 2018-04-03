@@ -43,14 +43,14 @@ namespace DocFileFormat
 		friend class TextboxMapping;
 
 	protected:
-		static const int CP_LENGTH = 4;
+		int							CP_LENGTH;
 		std::vector<int>			CharacterPositions;
 		std::vector<ByteStructure*>	Elements;
 		bool						m_bIsValid;
 
 	public:
 		Plex(int structureLength, POLE::Stream* stream, unsigned int fc, unsigned int lcb, int nWordVersion) 
-			: m_bIsValid(false)
+			: m_bIsValid(false), CP_LENGTH(/*nWordVersion == 2 ? 2 :*/ 4)
 		{
 			if ((lcb > 0) && (NULL != stream))
 			{

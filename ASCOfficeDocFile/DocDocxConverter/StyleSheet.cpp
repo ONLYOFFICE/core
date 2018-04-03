@@ -112,24 +112,58 @@ namespace DocFileFormat
 		
 				StyleSheetDescription* std = new StyleSheetDescription();
 
-				if (sz_name != 0 && sz_name < 0xff)
+				if (sz_name != 0 && sz_name < 0xde)
 				{
+					//user style
 					unsigned char *bytes = tableReader.ReadBytes( sz_name, true );
 					FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &std->xstzName, bytes, sz_name, ENCODING_WINDOWS_1250 );
 					RELEASEARRAYOBJECTS( bytes );
 				}
+				// ms style
+				else if (sz_name == 0)
+				{
+					//defpr
+				}
 				else
 				{
-					if (Styles->empty())
-					{
-						std->sti = Normal;
-						std->xstzName = L"Normal";
-					}
+					int ind = 255 - sz_name;
+					std::wstring names [] = {L"Normal", L"Heading1", L"Heading2", L"Heading3", L"Heading4", L"Heading5", L"Heading6", L"Heading7", 
+						L"Heading8", L"Heading9", L"FootnoteText", L"FootnoteReference", L"Header", L"Footer", L"IndexHeading", L"LineNumber"};
+					_StyleIdentifier sti[] = {Normal, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, Heading7, Heading8, Heading9,
+					FootnoteText, FootnoteReference, Header, Footer, IndexHeading, LineNumber};
+					
+					std->sti = sti[ind];
+					std->xstzName = names[ind];
 				}
+//	0	Normal	standard PAP(standard PAP has all fields cleared to 0), standard CHP ( chp.hps = 20, all other fields set to 0).
+//
+//	255	Normal indent 	pap.dxaLeft = 720.
+///* Heading levels */
+//	254	heading 1	pap.dyaBefore = 240 (12 points), chp.fBold = negation of Normal style's chp.fBold, chp.kul = 1 (single underline), chp.hps = 24, chp.ftc = 2 .
+//	253	heading 2	pap.dyaBefore = 120 (6 points), chp.fBold = negation of Normal style's chp.fBold, chp.hps = 24,  chp.ftc = 2
+//	252	heading 3	pap.dxaLeft = 360, chp.fBold = negation of Normal style's chp.fBold, chp.hps = 24; 
+//	251	heading 4	pap.dxaLeft = 360, chp.kul = 1 (single underline), chp.hps = 24; 
+//	250	heading 5	pap.dxaLeft = 720, chp.fBold = negation of Normal style's chp.fBold, chp.hps = 20; 
+//	249	heading 6	pap.dxaLeft = 720, chp.kul = 1 (single underline), chp.hps = 20; 
+//	248	heading 7	pap.dxaLeft = 720, chp.fItalic = negation of Normal style's chp.fItalic, chp.hps = 20; 
+//	247	heading 8	pap.dxaLeft = 720, chp.fItalic = negation of Normal style's chp.fItalic, chp.hps = 20; 
+//	246	heading 9	pap.dxaLeft = 720, chp.fItalic = negation of Normal style's chp.fItalic, chp.hps = 20; 
+//	245	footnote text	chp.hps = 20
+//	244	footnote reference	chp.hps = 16; hpsPos = 6
+//	243	header	When running a U.S. system file:
+//				pap.itbdMac = 2, pap.rgdxaTab[0] = 3 * 1440, pap.rgtbd[0].jc = 1, pap.rgtbd[0].tlc = 0, pap.rgdxaTab[1] = 6* 1440, pap.rgtbd[1].jc = 1, pap.rgtbd[1].tlc = 0; 
+//			When running an International metric system:
+//				pap.itbdMac = 2, pap.rgdxaTab[0] =3969, pap.rgtbd[0].jc = 1, pap.rgtbd[0].tlc = 0, pap.rgdxaTab[1] = 8504, pap.rgtbd[1].jc = 1, pap.rgtbd[1].tlc = 0;
+//	242	footer	When running a U.S. system file:
+//				pap.itbdMac = 2, pap.rgdxaTab[0] = 3 * 1440, pap.rgtbd[0].jc = 1, pap.rgtbd[0].tlc = 0, pap.rgdxaTab[1] = 6* 1440, pap.rgtbd[1].jc = 1, pap.rgtbd[1].tlc = 0; 
+//			When running an International metric system:
+//				pap.itbdMac = 2, pap.rgdxaTab[0] =3969, pap.rgtbd[0].jc = 1, pap.rgtbd[0].tlc = 0, pap.rgdxaTab[1] = 8504, pap.rgtbd[1].jc = 1, pap.rgtbd[1].tlc = 0;
+//	241	index heading 	same as properties for Normal style (stc == 0)
+//	240	line number	same as properties for Normal style (stc == 0)
 
 				Styles->push_back(std);
 
-				sz += sz_name != 0xff ? sz_name : 0;			
+				sz += sz_name < 0xde ? sz_name : 0;			
 			}
 			unsigned short sz_chpxs = tableReader.ReadUInt16();
 			i = 0;

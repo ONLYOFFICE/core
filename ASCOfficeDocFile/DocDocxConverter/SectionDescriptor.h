@@ -41,19 +41,22 @@ namespace DocFileFormat
     friend class WordDocument;
 
     private:
-      static const int SED_LENGTH = 12;
       short fn;
       short fnMpr;
       int fcMpr;
       /// A signed integer that specifies the position in the WordDocument Stream where a Sepx structure is located.
       int fcSepx;
 
+		static const int STRUCTURE_SIZE = 12;
+		static const int STRUCTURE_SIZE_OLD = 6;
     public:
-      static const int STRUCTURE_SIZE = 12;
-
-      SectionDescriptor()
-	  {
-	  }
+		static const int GetSize(int nWordVersion)
+		{
+			return (nWordVersion == 2) ? STRUCTURE_SIZE_OLD : STRUCTURE_SIZE;
+		}
+		SectionDescriptor() : fn(0), fnMpr(0), fcMpr(0), fcSepx(0)
+		{
+		}
 
 	  virtual ~SectionDescriptor()
 	  {
@@ -63,10 +66,20 @@ namespace DocFileFormat
 	  {
         SectionDescriptor *newObject = new SectionDescriptor();
 
-	    newObject->fn = reader->ReadInt16();
-        newObject->fcSepx = reader->ReadInt32();
-        newObject->fnMpr = reader->ReadInt16();
-        newObject->fcMpr = reader->ReadInt32();
+		if (reader->nWordVersion == 2)
+		{
+			newObject->fn = reader->ReadInt16();
+			newObject->fcSepx = reader->ReadInt32();
+			//newObject->fnMpr = reader->ReadInt16();
+			//newObject->fcMpr = reader->ReadInt16();
+		}
+		else
+		{
+			newObject->fn = reader->ReadInt16();
+			newObject->fcSepx = reader->ReadInt32();
+			newObject->fnMpr = reader->ReadInt16();
+			newObject->fcMpr = reader->ReadInt32();
+		}
 
         return static_cast<ByteStructure*>( newObject );
       }

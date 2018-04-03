@@ -177,7 +177,8 @@ namespace DocFileFormat
 		unsigned short cConsecHypLim;
         // Reserved
 		unsigned short wSpare2;
-        // Date and time document was created
+ 		unsigned short wSpare3;
+       // Date and time document was created
 		DateAndTime dttmCreated;
         // Date and time document was last revised
 		DateAndTime dttmRevised;

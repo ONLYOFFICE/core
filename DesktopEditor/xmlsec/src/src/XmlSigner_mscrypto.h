@@ -134,6 +134,89 @@ public:
     virtual int VerifySelf()
     {
         return OPEN_SSL_WARNING_OK;
+
+        // test trusted!!!
+        HRESULT hResult = S_OK;
+
+        HCERTCHAINENGINE            hChainEngine    = NULL;
+        PCCERT_CHAIN_CONTEXT        pChainContext   = NULL;
+
+        CERT_ENHKEY_USAGE           EnhkeyUsage     = {0};
+        CERT_USAGE_MATCH            CertUsage       = {0};
+        CERT_CHAIN_PARA             ChainPara       = {0};
+        CERT_CHAIN_POLICY_PARA      ChainPolicy     = {0};
+        CERT_CHAIN_POLICY_STATUS    PolicyStatus    = {0};
+        CERT_CHAIN_ENGINE_CONFIG    EngineConfig    = {0};
+
+        //---------------------------------------------------------
+        // Initialize data structures for chain building.
+
+        EnhkeyUsage.cUsageIdentifier        = 0;
+        EnhkeyUsage.rgpszUsageIdentifier    = NULL;
+
+        CertUsage.dwType = USAGE_MATCH_TYPE_AND;
+        CertUsage.Usage  = EnhkeyUsage;
+
+        ChainPara.cbSize            = sizeof(ChainPara);
+        ChainPara.RequestedUsage    = CertUsage;
+
+        ChainPolicy.cbSize = sizeof(ChainPolicy);
+
+        PolicyStatus.cbSize = sizeof(PolicyStatus);
+
+        EngineConfig.cbSize = sizeof(EngineConfig);
+        EngineConfig.dwUrlRetrievalTimeout = 0;
+
+        DWORD dwChainFlags = 0;
+        dwChainFlags |= CERT_CHAIN_ENABLE_PEER_TRUST;
+
+        if (!CertCreateCertificateChainEngine(&EngineConfig, &hChainEngine))
+        {
+            hResult = HRESULT_FROM_WIN32( GetLastError() );
+            goto onEnd;
+        }
+
+        if (!CertGetCertificateChain(hChainEngine,          // use the default chain engine
+                                    m_context,              // pointer to the end certificate
+                                    NULL,                   // use the default time
+                                    NULL,                   // search no additional stores
+                                    &ChainPara,             // use AND logic and enhanced key usage
+                                                            //  as indicated in the ChainPara
+                                                            //  data structure
+                                    dwChainFlags,
+                                    NULL,                   // currently reserved
+                                    &pChainContext))        // return a pointer to the chain created
+        {
+            hResult = HRESULT_FROM_WIN32( GetLastError() );
+            goto onEnd;
+        }
+
+        if (!CertVerifyCertificateChainPolicy(CERT_CHAIN_POLICY_BASE, // use the base policy
+                                              pChainContext,          // pointer to the chain
+                                              &ChainPolicy,
+                                              &PolicyStatus ))        // return a pointer to the policy status
+        {
+            hResult = HRESULT_FROM_WIN32( GetLastError() );
+            goto onEnd;
+        }
+
+        if (PolicyStatus.dwError != S_OK)
+        {
+            hResult = PolicyStatus.dwError;
+
+            // Instruction: If the PolicyStatus.dwError is CRYPT_E_NO_REVOCATION_CHECK or CRYPT_E_REVOCATION_OFFLINE, it indicates errors in obtaining
+            //				revocation information. These can be ignored since the retrieval of revocation information depends on network availability
+            goto onEnd;
+        }
+
+onEnd:
+        if (NULL != pChainContext)
+            CertFreeCertificateChain( pChainContext );
+
+        if (NULL != hChainEngine)
+            CertFreeCertificateChainEngine( hChainEngine );
+
+        return (S_OK == hResult) ? OPEN_SSL_WARNING_OK : OPEN_SSL_WARNING_NOVERIFY;
     }
 
 public:

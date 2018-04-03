@@ -110,7 +110,7 @@ namespace DocFileFormat
 		int countText		=	m_document->FIB->m_RgLw97.ccpText;
 		int countTextRel	=	m_document->FIB->m_RgLw97.ccpText - 1;
 							
-		while (cp < countText)
+		while (cp < countText && cp >= 0)
 		{
 			fc = m_document->FindFileCharPos(cp);
 				
@@ -135,7 +135,7 @@ namespace DocFileFormat
 				else
 				{
 					//this PAPX is for a normal paragraph
-					cp = writeParagraph(cp);
+					cp = writeParagraph(cp, countTextRel);
 				}
 			}
 			else

@@ -93,7 +93,7 @@ namespace DocFileFormat
 						else
 						{
 							//this PAPX is for a normal paragraph
-							cp = writeParagraph( cp );
+							cp = writeParagraph( cp, 0x7fffffff );
 						}
 						while (cp <= cpStart)	//conv_fQioC665ib4ngHkDGY4__docx.doc
 							cp++;

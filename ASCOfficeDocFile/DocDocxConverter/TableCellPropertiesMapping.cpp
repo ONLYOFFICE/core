@@ -280,7 +280,8 @@ namespace DocFileFormat
 		
 
 		XMLTools::XMLAttribute  tcWVal  ( L"w:w", FormatUtils::IntToWideString( _width > 1 ? _width : nComputedCellWidth) );
-		XMLTools::XMLAttribute  tcWType ( L"w:type",  _width > 1 ? FormatUtils::MapValueToWideString( _ftsWidth, &Global::CellWidthTypeMap[0][0], 4, 5 ) : L"dxa" );
+		XMLTools::XMLAttribute  tcWType ( L"w:type",  _width > 1 ? FormatUtils::MapValueToWideString( _ftsWidth, &Global::CellWidthTypeMap[0][0], 4, 5 ) :
+			(nComputedCellWidth > 0 ? L"dxa" : L"auto"));
 
 		tcW.AppendAttribute( tcWType );
 		tcW.AppendAttribute( tcWVal );

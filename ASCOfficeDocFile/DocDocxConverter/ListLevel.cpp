@@ -116,6 +116,10 @@ namespace DocFileFormat
 
     void NumberingLevelDescriptor::Parse(unsigned char * data, int length )
     {
+		if (length < 16)
+		{
+			return;
+		}
         bEnabled        = true;
 
         nfc				= FormatUtils::BytesToUChar(data, 0, length);

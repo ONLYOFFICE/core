@@ -53,7 +53,7 @@ namespace DocFileFormat
 
 	PropertyExceptions::PropertyExceptions( unsigned char* bytes, int size, int nWordVersion ) : grpprl(NULL)
 	{
-		if (nWordVersion == 2)
+		if (nWordVersion >= 2)//word 2.0 or 1.0
 			return;
 
 		ReadExceptions(bytes, size, nWordVersion);
@@ -80,12 +80,16 @@ namespace DocFileFormat
 				unsigned short code  = (nWordVersion > 0) ?	FormatUtils::BytesToUChar	( bytes, sprmStart, size ) :
 															FormatUtils::BytesToUInt16	( bytes, sprmStart, size ) ;
 
-				if (nWordVersion > 0 && code == 0) 
+				OperationCode opCode = (OperationCode)(nWordVersion == 2 ?  OpCode93To95[code] : code);
+				
+				if (nWordVersion > 0 && opCode == 0) 
 				{
 					sprmStart++;
 					continue;
-				}
-				OperationCode opCode = (OperationCode)code;
+				}				
+
+				//if (nWordVersion == 2)
+				//	bytes[sprmStart]= (unsigned char)opCode;
 				short opSize = -1;
 
 				if (nWordVersion > 0)

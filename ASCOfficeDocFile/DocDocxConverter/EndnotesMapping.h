@@ -91,7 +91,7 @@ namespace DocFileFormat
 						else
 						{
 							//this PAPX is for a normal paragraph
-							cp = writeParagraph( cp );
+							cp = writeParagraph( cp, 0x7fffffff );
 						}
 					}
 

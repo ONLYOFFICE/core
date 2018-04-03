@@ -2026,11 +2026,19 @@ namespace DocFileFormat
             nElemSize = 4;
             bTruncated = true;
         }
+		if (nElemSize == 0)
+		{
+			nElemSize = 2; //enredobar.doc
+		}
         long dwSize = nElems * nElemSize;
 
         if (opGuides->op - 6 != (dwSize))
         {
             bool b = false;
+			if (nElems > 0x7fff)
+			{
+				dwSize = (opGuides->op - 6);
+			}
         }
 		int count = dwSize / nElemSize;  //1x (int or short)
 		for (int i = 0; i < count; ++i)
@@ -2070,12 +2078,19 @@ namespace DocFileFormat
             nElemSize = 4;
             bTruncated = true;
         }
-
+		if (nElemSize == 0)
+		{
+			nElemSize = 2; //enredobar.doc
+		}
         long dwSize = nElems * nElemSize;
 
         if (opLocs->op - 6 != (dwSize))
         {
             bool b = false;
+			if (nElems > 0x7fff)
+			{
+				dwSize = (opLocs->op - 6);
+			}
         }
 		int count = dwSize / nElemSize;  //2x (int or short)
 		

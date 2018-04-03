@@ -53,7 +53,10 @@ namespace DocFileFormat
 		{
 			opCodeSize = 1;
 			//first 1 byte are the operation code ...
-			OpCode = (OperationCode)FormatUtils::BytesToUChar( bytes, 0, size );
+			unsigned char code = FormatUtils::BytesToUChar( bytes, 0, size );
+			
+			OpCode = (OperationCode)(nWordVersion == 2 ?  OpCode93To95[code] : code);
+
 			if (OpCode == 0 && size == 4)
 			{
 				//так записывается rgb цвет (

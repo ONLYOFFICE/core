@@ -272,7 +272,7 @@ bool OleObject::processCompObjStream( const std::wstring& compStream )
 
 		POLE::Stream* pCompStream = new POLE::Stream(oleStorage, compStream);
 
-		if ( pCompStream )
+		if ( (pCompStream) && (!pCompStream->fail()) )
 		{
 			VirtualStreamReader reader( pCompStream, 0, false);
 			processCompObjStream(reader);

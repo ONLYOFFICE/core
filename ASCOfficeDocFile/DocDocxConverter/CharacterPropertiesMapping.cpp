@@ -129,357 +129,360 @@ namespace DocFileFormat
 			parent->AppendChild( *webHidden );
 			RELEASEOBJECT( webHidden );
 		}
-		std::list<SinglePropertyModifier>::iterator end = sprms->end();
-		for (std::list<SinglePropertyModifier>::iterator iter = sprms->begin(); iter != end; ++iter)
+		if ((sprms) && (!sprms->empty()))
 		{
-			int nProperty = 0; //for unknown test
-
-			switch ( (int)( iter->OpCode ) )
+			std::list<SinglePropertyModifier>::iterator end = sprms->end();
+			for (std::list<SinglePropertyModifier>::iterator iter = sprms->begin(); iter != end; ++iter)
 			{
-			case sprmOldCIstd :
-			case sprmCIstd :	//	style id 
+				int nProperty = 0; //for unknown test
+
+				switch ( (int)( iter->OpCode ) )
 				{
-					if (_isRunStyleNeeded && !_webHidden)
+				case sprmOldCIstd :
+				case sprmCIstd :	//	style id 
 					{
-						_currentIstd = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
-						if (_currentIstd < _doc->Styles->Styles->size())
+						if (_isRunStyleNeeded && !_webHidden)
 						{
-                            appendValueElement( parent, L"rStyle", StyleSheetMapping::MakeStyleId( _doc->Styles->Styles->at( _currentIstd ) ), true );
+							_currentIstd = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+							if (_currentIstd < _doc->Styles->Styles->size())
+							{
+								appendValueElement( parent, L"rStyle", StyleSheetMapping::MakeStyleId( _doc->Styles->Styles->at( _currentIstd ) ), true );
+							}
+						}
+					}break;	
+
+				case sprmCFBiDi :
+					appendFlagElement( parent, *iter, L"rtl", true );
+					_isRTL = true;
+					break;
+
+				case sprmOldCFBold :
+				case sprmCFBold :
+					appendFlagElement( parent, *iter, L"b", true );
+					break;
+
+				case sprmCFBoldBi :
+					appendFlagElement( parent, *iter, L"bCs", true );
+					break;
+
+				case sprmOldCFCaps :
+				case sprmCFCaps :
+					appendFlagElement( parent, *iter, L"caps", true );
+					break;
+
+				case sprmCFComplexScripts :
+					appendFlagElement( parent, *iter, L"cs", true );
+					break;
+
+				case sprmCFDStrike :
+					appendFlagElement( parent, *iter, L"dstrike", true );
+					break;
+
+				case sprmCFEmboss :
+					appendFlagElement( parent, *iter, L"emboss", true );
+					break;
+
+				case sprmCFImprint :
+					appendFlagElement( parent, *iter, L"imprint", true );
+					break;
+
+				case sprmOldCFItalic :
+				case sprmCFItalic :
+					appendFlagElement( parent, *iter, L"i", true );
+					break;
+
+				case sprmCFItalicBi:
+					appendFlagElement( parent, *iter, L"iCs", true );
+					break;
+
+				case 0x0875:
+					appendFlagElement( parent, *iter, L"noProof", true );
+					break;
+
+				case sprmOldCFOutline:
+				case sprmCFOutline:
+					appendFlagElement( parent, *iter, L"outline", true );
+					break;
+
+				case sprmOldCFShadow:
+				case sprmCFShadow:
+					appendFlagElement( parent, *iter, L"shadow", true );
+					break;
+
+				case sprmOldCFSmallCaps:
+				case sprmCFSmallCaps:
+					appendFlagElement( parent, *iter, L"smallCaps", true );
+					break;
+
+				case sprmCFSpecVanish:
+					appendFlagElement( parent, *iter, L"specVanish", true );
+					break;
+
+				case sprmOldCFStrike:
+				case sprmCFStrike:
+					appendFlagElement( parent, *iter, L"strike", true );
+					break;
+
+				case sprmOldCFVanish:
+				case sprmCFVanish:
+					appendFlagElement( parent, *iter, L"vanish", true );
+					break;
+
+				case 0x0811:
+					appendFlagElement( parent, *iter, L"webHidden", true );
+					break;
+
+				case sprmOldCIss:
+				case sprmCIss:
+					if (iter->argumentsSize > 0 && iter->Arguments[0] < 3)	//Metaevan.doc
+						appendValueElement( parent, L"vertAlign", FormatUtils::MapValueToWideString( iter->Arguments[0], &SuperscriptIndex[0][0], 3, 12 ), true );
+					break;	
+
+				case sprmCRgLid0_80:
+				case sprmCRgLid0:
+					{	//latin					
+						LanguageId langid( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+
+						LanguageIdMapping* langIDMapping = new LanguageIdMapping( lang, Default );
+
+						langid.Convert( langIDMapping );
+
+						RELEASEOBJECT( langIDMapping );
+					}break;	
+
+				case sprmOldCLid:
+				case sprmCRgLid1_80:
+				case sprmCRgLid1:
+					{	//east asia				
+						LanguageId langid( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+
+						LanguageIdMapping* langIDMapping = new LanguageIdMapping( lang, EastAsian );
+
+						langid.Convert( langIDMapping );
+
+						RELEASEOBJECT( langIDMapping );
+					}break;
+
+				case sprmCLidBi:
+					{					
+						LanguageId langid( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+
+						LanguageIdMapping* langIDMapping = new LanguageIdMapping( lang, Complex );
+
+						langid.Convert( langIDMapping );
+
+						RELEASEOBJECT( langIDMapping );
+					}break;	
+
+				case sprmCBrc80:
+				case sprmCBrc:
+					{  //borders
+						XMLTools::XMLElement bdr( L"w:bdr" );
+						BorderCode bc( iter->Arguments, iter->argumentsSize );
+						appendBorderAttributes( &bc, &bdr );
+						parent->AppendChild( bdr );
+					}break;		
+
+				case sprmCShd80:
+				case sprmCShd:
+					{  //shading
+						ShadingDescriptor desc( iter->Arguments, iter->argumentsSize );
+
+						appendShading( parent, desc );
+					}break;		
+
+				case sprmOldCIco:
+				case sprmCIco:
+				case sprmCIcoBi:
+					{//color
+						colorVal->SetValue( FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::ColorIdentifier[0][0], 17, 12 ));
+					}break;
+
+				case sprmCCv:
+					{
+						std::wstringstream sstream;
+
+						sstream << boost::wformat(L"%02x%02x%02x") % iter->Arguments[0] % /*G*/iter->Arguments[1] % /*B*/iter->Arguments[2];
+						colorVal->SetValue(sstream.str());
+					}break;	
+
+				case sprmCOldHighlight:
+					{
+						appendValueElement( parent, L"highlight", FormatUtils::MapValueToWideString( iter->Arguments[1], &Global::ColorNameIdentifier[0][0], 17, 12 ), true );
+					}break;	
+				case sprmCHighlight:
+					{
+						appendValueElement( parent, L"highlight", FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::ColorNameIdentifier[0][0], 17, 12 ), true );
+					}break;	
+
+				case sprmOldCDxaSpace:
+				case sprmCDxaSpace:
+					{
+						appendValueElement( parent, L"spacing", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
+					}break;
+
+				case sprmCFtcBi :
+					{//default from FontTable
+						size_t nIndex	=	FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize);
+						if( nIndex < _doc->FontTable->Data.size() )
+						{
+							FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
+							if (ffn)
+								m_sDefaultFont = ffn->xszFtn;
+						}
+					}break;
+
+				case sprmCHpsBi :
+					{
+						appendValueElement( parent, L"szCs",
+							FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );						
+					}
+					break;
+	// Font Size in points (2~3276) default 20-half-points
+				case sprmOldCHps :
+					{
+						appendValueElement (parent, L"sz",
+							FormatUtils::IntToWideString (FormatUtils::BytesToUChar (iter->Arguments, 0, iter->argumentsSize) ),
+							true );
+					}break;
+				case sprmCHps : 
+					{  
+						appendValueElement (parent, L"sz",
+							FormatUtils::IntToWideString (FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize) ), true );						
+					}break;
+
+				case sprmCMajority :
+					{	//for complex props
+					}break;
+
+				case sprmOldCHpsPos: 
+					{	// The vertical position, in half-points, of text relative to the normal position. (MUST be between -3168 and 3168)
+						short nVertPos = FormatUtils::BytesToUChar(iter->Arguments, 0, iter->argumentsSize);
+						appendValueElement (parent, L"position", nVertPos, true);
+					}break;
+				case sprmCHpsPos: 
+					{	// The vertical position, in half-points, of text relative to the normal position. (MUST be between -3168 and 3168)
+						short nVertPos = FormatUtils::BytesToInt16(iter->Arguments, 0, iter->argumentsSize);
+						appendValueElement (parent, L"position", nVertPos, true);
+					}break;
+
+				case sprmOldCHpsKern:
+				case sprmCHpsKern:
+					{
+						appendValueElement( parent, L"kern", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
+					}break;
+
+				case sprmOldCFtc:
+				case sprmCRgFtc0:
+					{	// font family
+						size_t nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+						
+						if( nIndex < _doc->FontTable->Data.size() )
+						{
+							XMLTools::XMLAttribute* ascii = new XMLTools::XMLAttribute( L"w:ascii" );
+							FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
+							m_sAsciiFont = ffn->xszFtn;
+							ascii->SetValue( FormatUtils::XmlEncode(m_sAsciiFont, true));
+							rFonts->AppendAttribute( *ascii );
+							RELEASEOBJECT( ascii );
+						}
+					}break;
+
+				case sprmCRgFtc1:
+					{
+						size_t nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+
+						if( nIndex >= 0 && nIndex < _doc->FontTable->Data.size() )
+						{
+							XMLTools::XMLAttribute* eastAsia = new XMLTools::XMLAttribute( L"w:eastAsia" );
+							FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
+							m_sEastAsiaFont = ffn->xszFtn;
+							eastAsia->SetValue( FormatUtils::XmlEncode(m_sEastAsiaFont));
+							rFonts->AppendAttribute( *eastAsia );
+							RELEASEOBJECT( eastAsia );
 						}
 					}
-				}break;	
+					break;
 
-			case sprmCFBiDi :
-                appendFlagElement( parent, *iter, L"rtl", true );
-				_isRTL = true;
-				break;
-
-			case sprmOldCFBold :
-			case sprmCFBold :
-                appendFlagElement( parent, *iter, L"b", true );
-				break;
-
-			case sprmCFBoldBi :
-                appendFlagElement( parent, *iter, L"bCs", true );
-				break;
-
-			case sprmOldCFCaps :
-			case sprmCFCaps :
-                appendFlagElement( parent, *iter, L"caps", true );
-				break;
-
-			case sprmCFComplexScripts :
-                appendFlagElement( parent, *iter, L"cs", true );
-				break;
-
-			case sprmCFDStrike :
-                appendFlagElement( parent, *iter, L"dstrike", true );
-				break;
-
-			case sprmCFEmboss :
-                appendFlagElement( parent, *iter, L"emboss", true );
-				break;
-
-			case sprmCFImprint :
-                appendFlagElement( parent, *iter, L"imprint", true );
-				break;
-
-			case sprmOldCFItalic :
-			case sprmCFItalic :
-                appendFlagElement( parent, *iter, L"i", true );
-				break;
-
-			case sprmCFItalicBi:
-                appendFlagElement( parent, *iter, L"iCs", true );
-				break;
-
-			case 0x0875:
-                appendFlagElement( parent, *iter, L"noProof", true );
-				break;
-
-			case sprmOldCFOutline:
-			case sprmCFOutline:
-                appendFlagElement( parent, *iter, L"outline", true );
-				break;
-
-			case sprmOldCFShadow:
-			case sprmCFShadow:
-                appendFlagElement( parent, *iter, L"shadow", true );
-				break;
-
-			case sprmOldCFSmallCaps:
-			case sprmCFSmallCaps:
-                appendFlagElement( parent, *iter, L"smallCaps", true );
-				break;
-
-			case sprmCFSpecVanish:
-                appendFlagElement( parent, *iter, L"specVanish", true );
-				break;
-
-			case sprmOldCFStrike:
-			case sprmCFStrike:
-                appendFlagElement( parent, *iter, L"strike", true );
-				break;
-
-			case sprmOldCFVanish:
-			case sprmCFVanish:
-                appendFlagElement( parent, *iter, L"vanish", true );
-				break;
-
-			case 0x0811:
-                appendFlagElement( parent, *iter, L"webHidden", true );
-				break;
-
-			case sprmOldCIss:
-			case sprmCIss:
-				if (iter->argumentsSize > 0 && iter->Arguments[0] < 3)	//Metaevan.doc
-					appendValueElement( parent, L"vertAlign", FormatUtils::MapValueToWideString( iter->Arguments[0], &SuperscriptIndex[0][0], 3, 12 ), true );
-				break;	
-
-			case sprmCRgLid0_80:
-			case sprmCRgLid0:
-				{	//latin					
-					LanguageId langid( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
-
-					LanguageIdMapping* langIDMapping = new LanguageIdMapping( lang, Default );
-
-					langid.Convert( langIDMapping );
-
-					RELEASEOBJECT( langIDMapping );
-				}break;	
-
-			case sprmOldCLid:
-			case sprmCRgLid1_80:
-			case sprmCRgLid1:
-				{	//east asia				
-					LanguageId langid( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
-
-					LanguageIdMapping* langIDMapping = new LanguageIdMapping( lang, EastAsian );
-
-					langid.Convert( langIDMapping );
-
-					RELEASEOBJECT( langIDMapping );
-				}break;
-
-			case sprmCLidBi:
-				{					
-					LanguageId langid( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
-
-					LanguageIdMapping* langIDMapping = new LanguageIdMapping( lang, Complex );
-
-					langid.Convert( langIDMapping );
-
-					RELEASEOBJECT( langIDMapping );
-				}break;	
-
-			case sprmCBrc80:
-			case sprmCBrc:
-				{  //borders
-                    XMLTools::XMLElement bdr( L"w:bdr" );
-					BorderCode bc( iter->Arguments, iter->argumentsSize );
-					appendBorderAttributes( &bc, &bdr );
-					parent->AppendChild( bdr );
-				}break;		
-
-			case sprmCShd80:
-			case sprmCShd:
-				{  //shading
-					ShadingDescriptor desc( iter->Arguments, iter->argumentsSize );
-
-					appendShading( parent, desc );
-				}break;		
-
-			case sprmOldCIco:
-			case sprmCIco:
-			case sprmCIcoBi:
-				{//color
-					colorVal->SetValue( FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::ColorIdentifier[0][0], 17, 12 ));
-				}break;
-
-			case sprmCCv:
-				{
-					std::wstringstream sstream;
-
-					sstream << boost::wformat(L"%02x%02x%02x") % iter->Arguments[0] % /*G*/iter->Arguments[1] % /*B*/iter->Arguments[2];
-                    colorVal->SetValue(sstream.str());
-				}break;	
-
-			case sprmCOldHighlight:
-				{
-                    appendValueElement( parent, L"highlight", FormatUtils::MapValueToWideString( iter->Arguments[1], &Global::ColorIdentifier[0][0], 17, 12 ), true );
-				}break;	
-			case sprmCHighlight:
-				{
-                    appendValueElement( parent, L"highlight", FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::ColorIdentifier[0][0], 17, 12 ), true );
-				}break;	
-
-			case sprmOldCDxaSpace:
-			case sprmCDxaSpace:
-				{
-                    appendValueElement( parent, L"spacing", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
-				}break;
-
-			case sprmCFtcBi :
-				{//default from FontTable
-					size_t nIndex	=	FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize);
-					if( nIndex < _doc->FontTable->Data.size() )
+				case sprmCRgFtc2:
 					{
-						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
-						if (ffn)
-							m_sDefaultFont = ffn->xszFtn;
-					}
-				}break;
+						size_t nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
 
-			case sprmCHpsBi :
-				{
-                    appendValueElement( parent, L"szCs",
-						FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );						
-				}
-				break;
-// Font Size in points (2~3276) default 20-half-points
-			case sprmOldCHps :
-				{
-                    appendValueElement (parent, L"sz",
-						FormatUtils::IntToWideString (FormatUtils::BytesToUChar (iter->Arguments, 0, iter->argumentsSize) ),
-						true );
-				}break;
-			case sprmCHps : 
-				{  
-                    appendValueElement (parent, L"sz",
-						FormatUtils::IntToWideString (FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize) ), true );						
-				}break;
-
-			case sprmCMajority :
-				{	//for complex props
-				}break;
-
-			case sprmOldCHpsPos: 
-				{	// The vertical position, in half-points, of text relative to the normal position. (MUST be between -3168 and 3168)
-					short nVertPos = FormatUtils::BytesToUChar(iter->Arguments, 0, iter->argumentsSize);
-                    appendValueElement (parent, L"position", nVertPos, true);
-				}break;
-			case sprmCHpsPos: 
-				{	// The vertical position, in half-points, of text relative to the normal position. (MUST be between -3168 and 3168)
-					short nVertPos = FormatUtils::BytesToInt16(iter->Arguments, 0, iter->argumentsSize);
-                    appendValueElement (parent, L"position", nVertPos, true);
-				}break;
-
-			case sprmOldCHpsKern:
-			case sprmCHpsKern:
-				{
-                    appendValueElement( parent, L"kern", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
-				}break;
-
-			case sprmOldCFtc:
-			case sprmCRgFtc0:
-				{	// font family
-					size_t nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
-					
-					if( nIndex < _doc->FontTable->Data.size() )
-					{
-                        XMLTools::XMLAttribute* ascii = new XMLTools::XMLAttribute( L"w:ascii" );
-						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
-						m_sAsciiFont = ffn->xszFtn;
-						ascii->SetValue( FormatUtils::XmlEncode(m_sAsciiFont, true));
-						rFonts->AppendAttribute( *ascii );
-						RELEASEOBJECT( ascii );
-					}
-				}break;
-
-			case sprmCRgFtc1:
-				{
-					size_t nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
-
-					if( nIndex >= 0 && nIndex < _doc->FontTable->Data.size() )
-					{
-                        XMLTools::XMLAttribute* eastAsia = new XMLTools::XMLAttribute( L"w:eastAsia" );
-						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
-						m_sEastAsiaFont = ffn->xszFtn;
-						eastAsia->SetValue( FormatUtils::XmlEncode(m_sEastAsiaFont));
-						rFonts->AppendAttribute( *eastAsia );
-						RELEASEOBJECT( eastAsia );
-					}
-				}
-				break;
-
-			case sprmCRgFtc2:
-				{
-					size_t nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
-
-					if( nIndex>=0 && nIndex < _doc->FontTable->Data.size() )
-					{
-                        XMLTools::XMLAttribute* ansi = new XMLTools::XMLAttribute( L"w:hAnsi" );
-						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
-						m_shAnsiFont = ffn->xszFtn;
-						ansi->SetValue( FormatUtils::XmlEncode(m_shAnsiFont));
-						rFonts->AppendAttribute( *ansi );
-						RELEASEOBJECT( ansi );
-					}
-				}break;			
-
-			case sprmOldCKul:
-			case sprmCKul:
-				{	//Underlining
-                    appendValueElement( parent, L"u", FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::UnderlineCode[0][0], 56, 16 ), true );
-				}
-				break;		
-
-			case sprmCCharScale:
-				{	//char width
-                    appendValueElement( parent, L"w", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
-				}break;	
-							
-			case sprmCSfxText:
-				{	//animation
-                    appendValueElement( parent, L"effect", FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::TextAnimation[0][0], 7, 16 ), true );
-				}break;	
-
-			case sprmCIdctHint:
-				{
-					switch(iter->Arguments[0])
-					{
-					case 0:		break;	// default
-					case 1:		break;	// eastAsia
-					case 2:		break;	// cs
-					case 0xFF:	break;	//No ST_Hint equivalent
-					}
-
-				}break;
-
-			case sprmCPbiIBullet:
-				{
-					int nIndex = FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize );
-					if (nIndex >=0)
-					{
-						std::map<int, int>::iterator it = _doc->PictureBulletsCPsMap.find(nIndex);
-						if (it != _doc->PictureBulletsCPsMap.end())
+						if( nIndex>=0 && nIndex < _doc->FontTable->Data.size() )
 						{
-							//добавить
+							XMLTools::XMLAttribute* ansi = new XMLTools::XMLAttribute( L"w:hAnsi" );
+							FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
+							m_shAnsiFont = ffn->xszFtn;
+							ansi->SetValue( FormatUtils::XmlEncode(m_shAnsiFont));
+							rFonts->AppendAttribute( *ansi );
+							RELEASEOBJECT( ansi );
 						}
+					}break;			
+
+				case sprmOldCKul:
+				case sprmCKul:
+					{	//Underlining
+						appendValueElement( parent, L"u", FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::UnderlineCode[0][0], 56, 16 ), true );
 					}
-				}break;
+					break;		
 
-			case sprmCPbiGrf:
-				{
-					//used picture bullet
-					int val = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+				case sprmCCharScale:
+					{	//char width
+						appendValueElement( parent, L"w", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
+					}break;	
+								
+				case sprmCSfxText:
+					{	//animation
+						appendValueElement( parent, L"effect", FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::TextAnimation[0][0], 7, 16 ), true );
+					}break;	
 
-				}break;
+				case sprmCIdctHint:
+					{
+						switch(iter->Arguments[0])
+						{
+						case 0:		break;	// default
+						case 1:		break;	// eastAsia
+						case 2:		break;	// cs
+						case 0xFF:	break;	//No ST_Hint equivalent
+						}
 
-			case sprmCRsidProp:
-			case sprmCRsidText:
-				break;
+					}break;
 
-			default:
-				if (iter->argumentsSize == 2)
-				{
-					nProperty = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
-				}else
-					if (iter->argumentsSize == 1)
-				{
-					nProperty = FormatUtils::BytesToUChar( iter->Arguments, 0, iter->argumentsSize );
+				case sprmCPbiIBullet:
+					{
+						int nIndex = FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize );
+						if (nIndex >=0)
+						{
+							std::map<int, int>::iterator it = _doc->PictureBulletsCPsMap.find(nIndex);
+							if (it != _doc->PictureBulletsCPsMap.end())
+							{
+								//добавить
+							}
+						}
+					}break;
+
+				case sprmCPbiGrf:
+					{
+						//used picture bullet
+						int val = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+
+					}break;
+
+				case sprmCRsidProp:
+				case sprmCRsidText:
+					break;
+
+				default:
+					if (iter->argumentsSize == 2)
+					{
+						nProperty = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
+					}else
+						if (iter->argumentsSize == 1)
+					{
+						nProperty = FormatUtils::BytesToUChar( iter->Arguments, 0, iter->argumentsSize );
+					}
+					break;
 				}
-				break;
 			}
 		}
 

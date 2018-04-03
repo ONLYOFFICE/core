@@ -57,12 +57,6 @@ namespace DocFileFormat
 						case sprmPFInTable:
 						{
 							fInTable = ( iter->Arguments[0] == 1 ) ? (true) : (false);
-
-							if (nWordVersion > 0)
-							{
-								iTap = 1;
-								fInnerTableCell = fInnerTtp = true;
-							}
 						}break;
 		          
 						//case sprmOldPFTtp:

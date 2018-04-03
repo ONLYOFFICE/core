@@ -293,7 +293,7 @@ namespace DocFileFormat
 			documentMapping = static_cast<DocumentMapping*>(mapping);
 		}
 
-		documentMapping->writeParagraph( cpStart );
+		documentMapping->writeParagraph( cpStart, 0x7fffffff );
 	}
 
 }

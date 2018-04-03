@@ -143,8 +143,13 @@ namespace DocFileFormat
 
 		std::wstring	xst; //64 chars ansi
 
-	public:
 		static const int STRUCTURE_SIZE = 212;
+		static const int STRUCTURE_SIZE_OLD = 10;
+    public:
+		static const int GetSize(int nWordVersion)
+		{
+			return (nWordVersion == 2) ? STRUCTURE_SIZE_OLD : STRUCTURE_SIZE;
+		}
         virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
 		
 		virtual ~OutlineListDescriptor();

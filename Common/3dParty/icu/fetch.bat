@@ -43,9 +43,9 @@ if exist %VC64% (
 call "%VC%\vcvarsall.bat" %MACHINE%
 
 if "%platform%" == "win_64" (
-	devenv.com icu\source\allinone\allinone.sln /build "Release|x64"
+	MSBuild.exe icu\source\allinone\allinone.sln /p:Configuration=Release /p:Platform="X64"
 ) else (
-	devenv.com icu\source\allinone\allinone.sln /build "Release|Win32"
+	MSBuild.exe icu\source\allinone\allinone.sln /p:Configuration=Release /p:Platform="Win32"
 )
 
 if "%platform%" == "win_64" (

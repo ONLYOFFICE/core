@@ -257,7 +257,7 @@ namespace agg
 			projects[3] = project(bounds.x2, bounds.y2);
 
 			double min = projects[0].x * projects[0].x + projects[0].y * projects[0].y;
-			if (projects[0].x * m_cos + projects[0].y * m_sin)
+			if ((projects[0].x * m_cos + projects[0].y * m_sin) < 0)
 				min = -min;
 
 			double max = min;
@@ -307,6 +307,14 @@ namespace agg
 			{
 				if ( t < m_pPosSubColors[i] )
 				{
+					if (i == 1 && t < m_pPosSubColors[0])
+					{
+						// меньше меньшего
+						m_color_table[index] = m_pSubColors[0];
+						bFindColor = true;
+						break;
+					}
+
 					t = (t - m_pPosSubColors[i - 1]) / (m_pPosSubColors[i] - m_pPosSubColors[i - 1]);
 					m_color_table[index] = m_pSubColors[i - 1].gradient( m_pSubColors[i], t );
 					
@@ -437,6 +445,14 @@ namespace agg
 
 			for (int i = 1; i < m_nCountSubColors; ++i)
 			{
+				if (i == 1 && t < m_pPosSubColors[0])
+				{
+					// меньше меньшего
+					m_color_table[index] = m_pSubColors[0];
+					bFindColor = true;
+					break;
+				}
+
 				if ( t < m_pPosSubColors[i] )
 				{
 					t = (t - m_pPosSubColors[i - 1]) / (m_pPosSubColors[i] - m_pPosSubColors[i - 1]);

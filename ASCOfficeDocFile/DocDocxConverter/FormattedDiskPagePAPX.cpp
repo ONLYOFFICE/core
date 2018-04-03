@@ -113,8 +113,6 @@ namespace DocFileFormat
 
 				//fill the rgbx array
 				bx.phe = ParagraphHeight( phe, 6, false );
-
-				j += 1;
 			}
 			else
 			{

@@ -492,7 +492,7 @@ namespace DocFileFormat
 
 					pos++;
 
-					for( int i=0; i < itbdDelMax; i++ )
+					for( int i = 0; i < itbdDelMax; i++ )
 					{
                         XMLTools::XMLElement tab( L"w:tab" );
 

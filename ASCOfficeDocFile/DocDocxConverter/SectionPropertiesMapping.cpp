@@ -98,11 +98,11 @@ namespace DocFileFormat
         XMLTools::XMLElement endnotePr	(L"w:endnotePr");
         XMLTools::XMLElement pgNumType	(L"w:pgNumType");
 
-		HeaderAndFooterTable* pTable	=	_ctx->_doc->headerAndFooterTable;
+		HeaderAndFooterTable* pTable = _ctx->_doc->headerAndFooterTable;
 
 		if (pTable)
 		{
-			unsigned char fHF = 255; //all headers & footers
+			unsigned char fHF = _ctx->_doc->nWordVersion == 0 ? 255 : 0; //all headers & footers
 			for (std::list<SinglePropertyModifier>::iterator iter = sepx->grpprl->begin(); iter != sepx->grpprl->end(); ++iter)
 			{
 				switch (iter->OpCode)
@@ -132,17 +132,29 @@ namespace DocFileFormat
 					}break;
 				}
 			}
-			// Header
+			if (_ctx->_doc->nWordVersion == 2)
+			{
+				if (GETBIT(fHF, 0)) WriteSectionStory (pTable->GetNextHeaderFooter(), std::wstring(L"headerReference"), std::wstring(L"even"));
+				if (GETBIT(fHF, 1))	WriteSectionStory (pTable->GetNextHeaderFooter(), std::wstring(L"headerReference"), std::wstring(L"default"));
+				if (GETBIT(fHF, 2))	WriteSectionStory (pTable->GetNextHeaderFooter(), std::wstring(L"footerReference"), std::wstring(L"even"));
+				if (GETBIT(fHF, 3))	WriteSectionStory (pTable->GetNextHeaderFooter(), std::wstring(L"footerReference"), std::wstring(L"default"));
+				if (GETBIT(fHF, 4))	WriteSectionStory (pTable->GetNextHeaderFooter(), std::wstring(L"headerReference"), std::wstring(L"first"));
+				if (GETBIT(fHF, 5))	WriteSectionStory (pTable->GetNextHeaderFooter(), std::wstring(L"footerReference"), std::wstring(L"first"));
+			}
+			else
+			{
+				// Header
 
-			if (FormatUtils::GetBitFromInt(fHF, 0)) WriteSectionStory (pTable->GetEvenHeaders  (m_nSelectProperties), std::wstring(L"headerReference"), std::wstring(L"even"));
-			if (FormatUtils::GetBitFromInt(fHF, 1))	WriteSectionStory (pTable->GetOddHeaders   (m_nSelectProperties), std::wstring(L"headerReference"), std::wstring(L"default"));
-			if (FormatUtils::GetBitFromInt(fHF, 4))	WriteSectionStory (pTable->GetFirstHeaders (m_nSelectProperties), std::wstring(L"headerReference"), std::wstring(L"first"));
+				if (FormatUtils::GetBitFromInt(fHF, 0)) WriteSectionStory (pTable->GetEvenHeaders  (m_nSelectProperties), std::wstring(L"headerReference"), std::wstring(L"even"));
+				if (FormatUtils::GetBitFromInt(fHF, 1))	WriteSectionStory (pTable->GetOddHeaders   (m_nSelectProperties), std::wstring(L"headerReference"), std::wstring(L"default"));
+				if (FormatUtils::GetBitFromInt(fHF, 4))	WriteSectionStory (pTable->GetFirstHeaders (m_nSelectProperties), std::wstring(L"headerReference"), std::wstring(L"first"));
 
-			// Footer
+				// Footer
 
-			if (FormatUtils::GetBitFromInt(fHF, 2))	WriteSectionStory (pTable->GetEvenFooters  (m_nSelectProperties), std::wstring(L"footerReference"), std::wstring(L"even"));
-			if (FormatUtils::GetBitFromInt(fHF, 3))	WriteSectionStory (pTable->GetOddFooters   (m_nSelectProperties), std::wstring(L"footerReference"), std::wstring(L"default"));
-			if (FormatUtils::GetBitFromInt(fHF, 5))	WriteSectionStory (pTable->GetFirstFooters (m_nSelectProperties), std::wstring(L"footerReference"), std::wstring(L"first"));
+				if (FormatUtils::GetBitFromInt(fHF, 2))	WriteSectionStory (pTable->GetEvenFooters  (m_nSelectProperties), std::wstring(L"footerReference"), std::wstring(L"even"));
+				if (FormatUtils::GetBitFromInt(fHF, 3))	WriteSectionStory (pTable->GetOddFooters   (m_nSelectProperties), std::wstring(L"footerReference"), std::wstring(L"default"));
+				if (FormatUtils::GetBitFromInt(fHF, 5))	WriteSectionStory (pTable->GetFirstFooters (m_nSelectProperties), std::wstring(L"footerReference"), std::wstring(L"first"));
+			}
 		}
 
 		//MUST be ignored if the section does not have page number restart enabled.([MS-DOC] — v20101113. стр 152)
@@ -216,7 +228,10 @@ namespace DocFileFormat
 			case sprmOldSBOrientation:
 			case sprmSBOrientation:
 				//orientation
-                appendValueAttribute( &pgSz, L"w:orient", FormatUtils::MapValueToWideString( iter->Arguments[0], &PageOrientationMap[0][0], 3, 10 ) );
+				if (_ctx->_doc->nWordVersion == 2)
+					appendValueAttribute( &pgSz, L"w:orient", FormatUtils::MapValueToWideString( iter->Arguments[0] + 1, &PageOrientationMap[0][0], 3, 10 ) );
+				else
+					appendValueAttribute( &pgSz, L"w:orient", FormatUtils::MapValueToWideString( iter->Arguments[0], &PageOrientationMap[0][0], 3, 10 ) );
 				break;
 
 //paper source

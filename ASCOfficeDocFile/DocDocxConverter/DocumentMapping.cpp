@@ -145,7 +145,7 @@ namespace DocFileFormat
 	// Writes a Paragraph that starts at the given cp and 
 	// ends at the next paragraph end mark or section end mark
 
-	int DocumentMapping::writeParagraph(int cp) 
+	int DocumentMapping::writeParagraph(int cp, int cpEnd) 
 	{
 		//search the paragraph end
 		int cpParaEnd = cp;
@@ -175,7 +175,7 @@ namespace DocFileFormat
 			{
 				cpParaEnd++;
 				
-				return writeParagraph(cp, cpParaEnd, false);
+				return writeParagraph(cp, min(cpEnd, cpParaEnd), false);
 			}
 		}
 
@@ -191,8 +191,8 @@ namespace DocFileFormat
 		int		fc							=	m_document->FindFileCharPos(cp); 
 		int		fcEnd						=	m_document->FindFileCharPos(cpEnd);
 
-		if (fc < 0 || fcEnd < 0) 
-			return 0;
+		if (fc < 0 || fcEnd < 0 || fc == fcEnd) 
+			return -1;
 		
 		ParagraphPropertyExceptions* papx	=	findValidPapx(fc);
 
@@ -1596,7 +1596,7 @@ namespace DocFileFormat
 			else
 			{
 				//this PAPX is for a normal paragraph
-				cp = writeParagraph( cp );
+				cp = writeParagraph( cp, 0x7fffffff );
 			}
 		}
 
@@ -1745,13 +1745,8 @@ namespace DocFileFormat
 	// Checks if the CHPX is special
 	bool DocumentMapping::isSpecial(CharacterPropertyExceptions* chpx)
 	{
-		/*
-		for (list<SinglePropertyModifier>::iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); ++iter)
-		{
-		short value	=	FormatUtils::BytesToInt16 (iter->Arguments, 0, iter->argumentsSize);
-		int c = 0;
-		}
-		*/
+		if (!chpx) return false;
+		if (!chpx->grpprl)	 return false;
 
 		for (std::list<SinglePropertyModifier>::iterator iter = chpx->grpprl->begin(); iter != chpx->grpprl->end(); ++iter)
 		{

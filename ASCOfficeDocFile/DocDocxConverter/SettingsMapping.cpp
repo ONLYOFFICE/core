@@ -56,7 +56,7 @@ namespace DocFileFormat
 
 		//zoom
 		m_oXmlWriter.WriteNodeBegin	( L"w:zoom",  TRUE );
-		m_oXmlWriter.WriteAttribute	( L"w:percent",  FormatUtils::IntToWideString( dop->wScaleSaved ) );
+		m_oXmlWriter.WriteAttribute	( L"w:percent",  FormatUtils::IntToWideString( dop->wScaleSaved > 0 ? dop->wScaleSaved : 100 ) );
 
 		if ( dop->zkSaved != 0 )
 		{

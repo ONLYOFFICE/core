@@ -772,8 +772,8 @@ namespace DocFileFormat
 					m_FibWord97.fcPlcfSed		= reader.ReadInt32(); //0x7c
 					m_FibWord97.lcbPlcfSed		= reader.ReadInt16();
 
-					m_FibWord97.fcPlcPad		= reader.ReadInt32();//fcPlcfpgd
-					m_FibWord97.lcbPlcPad		= reader.ReadInt16();//cbPlcfpgd
+					m_FibWord97.fcPlcPad		= reader.ReadInt32();
+					m_FibWord97.lcbPlcPad		= reader.ReadInt16();
 
 					m_FibWord97.fcPlcfPhe		= reader.ReadInt32();// 0x88
 					m_FibWord97.lcbPlcfPhe		= reader.ReadInt16();
@@ -832,37 +832,43 @@ namespace DocFileFormat
 					m_FibWord97.fcSttbfMcr		= reader.ReadInt32();// 0xf4
 					m_FibWord97.lcbSttbfMcr		= reader.ReadInt16();
 
-					m_FibWord2.fcPrEnv			= reader.ReadInt32(); // 0xfa
-					m_FibWord2.lcbPrEnv			= reader.ReadInt16();	//316
+					m_FibWord97.fcPrDrvr		= reader.ReadInt32();// 
+					m_FibWord97.lcbPrDrvr		= reader.ReadInt16();
 
-					m_FibWord97.fcWss			= reader.ReadInt32();// 0x100
+					m_FibWord97.fcPrEnvPort		= reader.ReadInt32();// 
+					m_FibWord97.lcbPrEnvPort		= reader.ReadInt16();
+
+					m_FibWord97.fcPrEnvLand		= reader.ReadInt32();// 
+					m_FibWord97.lcbPrEnvLand	= reader.ReadInt16();
+
+					m_FibWord97.fcWss			= reader.ReadInt32();// 268
 					m_FibWord97.lcbWss			= reader.ReadInt16();
 
-					m_FibWord97.fcDop			= reader.ReadInt32();// 0x106
+					m_FibWord97.fcDop			= reader.ReadInt32();
 					m_FibWord97.lcbDop			= reader.ReadInt16();
 
 					m_FibWord97.fcSttbfAssoc	= reader.ReadInt32();
-					m_FibWord97.lcbSttbfAssoc	= reader.ReadInt16();
+					m_FibWord97.lcbSttbfAssoc	= reader.ReadInt16();;
 
-					m_FibWord97.fcClx			= reader.ReadInt32(); // 0x112
+					m_FibWord97.fcClx			= reader.ReadInt32(); 
 					m_FibWord97.lcbClx			= reader.ReadInt16(); 
 					
-					m_FibWord97.fcPlcfPgdFtn	= reader.ReadInt32();
+					m_FibWord97.fcPlcfPgdFtn	= reader.ReadInt32(); //292
 					m_FibWord97.lcbPlcfPgdFtn	= reader.ReadInt16();
 
 					m_FibWord97.fcAutosaveSource	= reader.ReadInt32();
 					m_FibWord97.lcbAutosaveSource	= reader.ReadInt16();
 					
-					m_FibWord2.fcSpare5 = reader.ReadInt32();
-					m_FibWord2.lcbSpare5 = reader.ReadInt16();
-					m_FibWord2.fcSpare6 = reader.ReadInt32();
-					m_FibWord2.lcbSpare6 = reader.ReadInt16();
-					m_FibWord2.wSpare4 = reader.ReadInt16();					
+					m_FibWord2.fcSpare5				= reader.ReadInt32();
+					m_FibWord2.lcbSpare5			= reader.ReadInt16();
+					m_FibWord2.fcSpare6				= reader.ReadInt32();
+					m_FibWord2.lcbSpare6			= reader.ReadInt16();
+					m_FibWord2.wSpare4				= reader.ReadInt16();					
 					
-					m_FibWord2.pnChpFirst = reader.ReadInt16();
-					m_FibWord2.pnPapFirst = reader.ReadInt16();
-					m_FibWord2.cpnBteChp = reader.ReadInt16();
-					m_FibWord2.cpnBtePap = reader.ReadInt16();	
+					m_FibWord2.pnChpFirst			= reader.ReadInt16();
+					m_FibWord2.pnPapFirst			= reader.ReadInt16();
+					m_FibWord2.cpnBteChp			= reader.ReadInt16();
+					m_FibWord2.cpnBtePap			= reader.ReadInt16();	
 				}
 			}
             if (m_FibBase.nFib > Fib1995 || m_FibBase.nFib == 0)

@@ -125,21 +125,14 @@ namespace DocFileFormat
 			long cDataStart = reader->GetPosition();
 			unsigned short cb = 0, elem_sz = 0;
 			
-			if (reader->nWordVersion == 2)
-			{
-				cb = reader->ReadByte();
-				elem_sz = reader->ReadByte();
+			//if (reader->nWordVersion == 2)
+			//{
+			//	unsigned char * bytes = reader->ReadBytes(lcb, true);
+			//	reader->Seek( (int)fc, 0/*STREAM_SEEK_SET*/ );
+			//	delete []bytes;
+			//}
 
-				if (elem_sz > 0)
-				{
-					count_elements = cb;
-				}
-				else
-				{
-					this->cbData = cb; 
-				}
-			}
-			else if (reader->nWordVersion == 1)
+			if (reader->nWordVersion > 0)
 			{
 				cb = reader->ReadUInt16();
 				this->cbData = cb; // all size 

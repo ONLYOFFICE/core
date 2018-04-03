@@ -322,9 +322,9 @@ namespace DocFileFormat
 			FootnoteReferenceCharactersPlex	=	new Plex<FootnoteDescriptor>(FootnoteDescriptor::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcffndRef, FIB->m_FibWord97.lcbPlcffndRef, nWordVersion);
 		}
 	
-		if (FIB->m_FibWord97.lcbPlcPad > 0)
+		if (nWordVersion > 0 && FIB->m_FibWord97.lcbPlcPad > 0)
 		{
-			OutlineListDescriptorPlex		=	new Plex<OutlineListDescriptor>(OutlineListDescriptor::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcPad, FIB->m_FibWord97.lcbPlcPad, nWordVersion);
+			OutlineListDescriptorPlex =	new Plex<OutlineListDescriptor>(OutlineListDescriptor::GetSize(nWordVersion),	TableStream, FIB->m_FibWord97.fcPlcPad, FIB->m_FibWord97.lcbPlcPad, nWordVersion);
 		}
 
 		if (FIB->m_RgLw97.ccpEdn > 0)
@@ -335,7 +335,7 @@ namespace DocFileFormat
 
 		if (FIB->m_RgLw97.ccpHdr > 0)
 		{
-			HeaderStoriesPlex				=	new Plex<EmptyStructure>( EmptyStructure::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfHdd, FIB->m_FibWord97.lcbPlcfHdd, nWordVersion);
+			HeaderStoriesPlex =	new Plex<EmptyStructure>( EmptyStructure::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfHdd, FIB->m_FibWord97.lcbPlcfHdd, nWordVersion);
 		}
 
 		if (FIB->m_RgLw97.ccpAtn > 0)
@@ -348,7 +348,7 @@ namespace DocFileFormat
 
 		TextboxIndividualPlex				=	new Plex<FTXBXS>			(FTXBXS::STRUCTURE_SIZE,			TableStream, FIB->m_FibWord97.fcPlcftxbxTxt,	FIB->m_FibWord97.lcbPlcftxbxTxt,	nWordVersion);
 
-		SectionPlex							=	new Plex<SectionDescriptor>	(SectionDescriptor::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfSed,		FIB->m_FibWord97.lcbPlcfSed,		nWordVersion);
+		SectionPlex							=	new Plex<SectionDescriptor>	(SectionDescriptor::GetSize(nWordVersion),	TableStream, FIB->m_FibWord97.fcPlcfSed,		FIB->m_FibWord97.lcbPlcfSed,		nWordVersion);
 		
 		BookmarkStartPlex					=	new Plex<BookmarkFirst>		(BookmarkFirst::STRUCTURE_SIZE,		TableStream, FIB->m_FibWord97.fcPlcfBkf,		FIB->m_FibWord97.lcbPlcfBkf,		nWordVersion);
 		BookmarkEndPlex						=	new Plex<EmptyStructure>	(EmptyStructure::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfBkl,		FIB->m_FibWord97.lcbPlcfBkl,		nWordVersion);
@@ -550,8 +550,8 @@ namespace DocFileFormat
 				VirtualStreamReader wordReader( WordDocumentStream, sed->fcSepx, nWordVersion);
 
 				//!!!TODO: cbSepx is the size in bytes of the rest properties part!!!
-				short cbSepx	=	wordReader.ReadInt16();
-				unsigned char* bytes		=	wordReader.ReadBytes( ( cbSepx /*- 2*/ ), true );
+				short cbSepx			=	nWordVersion == 2 ? wordReader.ReadByte() : wordReader.ReadInt16();
+				unsigned char* bytes	=	wordReader.ReadBytes( ( cbSepx /*- 2*/ ), true );
 
 				AllSepx->insert( std::pair<int, SectionPropertyExceptions*>( cp, new SectionPropertyExceptions( bytes, ( cbSepx /*- 2*/ ), nWordVersion ) ) );
 

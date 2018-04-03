@@ -52,18 +52,85 @@ namespace DocFileFormat
 		
 //setDefaultCompatibilityOptions( fib->m_FibBase.nFib );
 
-		unsigned int size		= fib->m_FibWord97.lcbDop;
-		unsigned char* bytes	= tStream.ReadBytes( size, true );
+		unsigned int size = fib->m_FibWord97.lcbDop;
+		unsigned char* bytes = NULL;
 
         try
         {
-            if ( size > 0 )
+			if (fib->m_nWordVersion == 2)	
+			{
+				unsigned char* Temp = tStream.ReadBytes(size, true);
+				tStream.Seek(fib->m_FibWord97.fcDop, 0);
+				delete []Temp;
+
+				unsigned char flags1 = tStream.ReadByte();
+				
+				fFacingPages	= GETBIT(flags1, 0);
+				fWindowControl	= GETBIT(flags1, 1);
+				Fpc				= GETBITS(flags1, 5, 6);
+				bool fWide		= GETBIT(flags1, 7);
+				
+				grpfIhdt		= tStream.ReadByte();
+				
+				unsigned short flags2 = tStream.ReadUInt16();
+				rncFtn			= GETBIT(flags2, 0);
+				nFtn			= GETBITS(flags2, 1, 15);
+
+				unsigned char irmBar	= tStream.ReadByte();
+
+				unsigned char flags3	= tStream.ReadByte();
+				unsigned char irmProps	= GETBITS(flags3, 0, 6);
+				fRevMarking				= GETBIT(flags3, 7);
+				
+				unsigned short flags4 = tStream.ReadUInt16();
+				fBackup			= GETBIT(flags4, 0);
+				fExactWords		= GETBIT(flags4, 1);
+				fPagHidden		= GETBIT(flags4, 2);
+				fPagResults		= GETBIT(flags4, 3);
+				fLockAtn		= GETBIT(flags4, 4);
+				fMirrorMargins	= GETBIT(flags4, 5);
+				bool fKeepFileFormat	= GETBIT(flags4, 6);
+				fDflttrueType	= GETBIT(flags4, 7);
+
+				fPagSuppressTopSpacing	= GETBIT(flags4, 8);
+				fMaybeRTLTables			= GETBIT(flags4, 9);
+
+				bool fSpares = tStream.ReadUInt16();
+				dxaTab = tStream.ReadUInt16();
+
+				wSpare = tStream.ReadUInt16();//ftcDefaultBi
+				dxaHotZ = tStream.ReadUInt16();
+
+				wSpare2 = tStream.ReadUInt16();
+				wSpare3 = tStream.ReadUInt16();
+				
+                dttmCreated = DateAndTime( tStream.ReadUInt32() );
+				dttmRevised = DateAndTime( tStream.ReadUInt32() );
+				dttmLastPrint = DateAndTime( tStream.ReadUInt32() );
+				
+				nRevision = tStream.ReadUInt16();
+				tmEdited = tStream.ReadUInt32();
+
+				cWords = tStream.ReadUInt32();
+				cCh = tStream.ReadUInt32();
+				cPg = tStream.ReadUInt16();
+
+				unsigned short rgwSpareDocSum[2];
+				rgwSpareDocSum[0] = tStream.ReadUInt16();
+				rgwSpareDocSum[1] = tStream.ReadUInt16();
+
+			}
+            else if ( size > 0 )
             {
-                fFacingPages	= FormatUtils::GetBitFromBytes( bytes, 2, 0 );
+				bytes	= tStream.ReadBytes( size, true );
+               
+				fFacingPages	= FormatUtils::GetBitFromBytes( bytes, 2, 0 );
                 fWindowControl	= FormatUtils::GetBitFromBytes( bytes, 2, 1 );
                 fPMHMainDoc		= FormatUtils::GetBitFromBytes( bytes, 2, 2 );
                 grfSuppression	= (short)FormatUtils::GetUIntFromBytesBits( bytes, 2, 3, 2 );
-                Fpc				= (short)(short)FormatUtils::GetUIntFromBytesBits( bytes, 2, 5, 2 );
+                Fpc				= (short)FormatUtils::GetUIntFromBytesBits( bytes, 2, 5, 2 );
+
+				grpfIhdt		= FormatUtils::BytesToUChar( bytes, 1, size );
 
                 rncFtn			= (short)FormatUtils::GetUIntFromBytesBits( ( bytes + 2 ), 2, 0, 2 );
                 nFtn			= (short)FormatUtils::GetUIntFromBytesBits( ( bytes + 2 ), 2, 2, 14 );
@@ -545,6 +612,7 @@ namespace DocFileFormat
       fSwapBordersFacingPgs = false;
       dxaTab = 0;
       wSpare = 0;
+	  wSpare3 = 0;
       dxaHotZ = 0;
       cConsecHypLim = 0;
       wSpare2 = 0;

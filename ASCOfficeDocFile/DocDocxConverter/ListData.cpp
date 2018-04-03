@@ -152,37 +152,53 @@ namespace DocFileFormat
 	}
 	OutlineListDescriptor::OutlineListDescriptor( unsigned char * data, int length )
 	{
-		int pos = 0;
+		if (length < 212)
+		{
+			//int sz  =  FormatUtils::BytesToUChar(data, 0, length);
+			int pos = 0;
 
-		for (int i = 0 ; i < 9; i++)
-		{
-            lvl[i].Parse(data + pos, length - pos);
-			pos += 16;
+			for (int i = 0 ; i < 9; i++)
+			{
+				lvl[i].Parse(data + pos, 1);
+				pos += 1;
+			}
 		}
+		else
+		{
+			int pos = 0;
 
-        fRestartHdr	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
-		fSpareOlst2	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
-		fSpareOlst3	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
-		fSpareOlst4	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
-		
-		short strLen = length - pos;
-		
-		while (strLen > 0)
-		{
-			if (data[strLen + 20 - 1] != 0)
-				break;
-			strLen--;
+			for (int i = 0 ; i < 9; i++)
+			{
+				lvl[i].Parse(data + pos, length - pos);
+				pos += 16;
+			}
+
+			fRestartHdr	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
+			fSpareOlst2	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
+			fSpareOlst3	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
+			fSpareOlst4	= FormatUtils::BytesToUChar(data, pos, length); pos += 2;
+			
+			short strLen = length - pos;
+			
+			while (strLen > 0)
+			{
+				if (data[strLen + 20 - 1] != 0)
+					break;
+				strLen--;
+			}
+			if (strLen > 0)
+			{
+				FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(xst), data + 20, ( strLen ), ENCODING_WINDOWS_1250);
+			}	
 		}
-		if (strLen > 0)
-		{
-			FormatUtils::GetSTLCollectionFromBytes<std::wstring>( &(xst), data + 20, ( strLen ), ENCODING_WINDOWS_1250);
-		}	
 	}
 
 	ByteStructure* OutlineListDescriptor::ConstructObject(VirtualStreamReader* reader, int length)
 	{
-		unsigned char *data = reader->ReadBytes(212, true);
-		OutlineListDescriptor *newObject = new OutlineListDescriptor(data, 212);
+		int sz = GetSize(reader->nWordVersion);
+
+		unsigned char *data = reader->ReadBytes(sz, true);
+		OutlineListDescriptor *newObject = new OutlineListDescriptor(data, sz);
 
 		delete []data;
 

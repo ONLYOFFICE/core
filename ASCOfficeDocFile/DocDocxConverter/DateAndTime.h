@@ -59,29 +59,30 @@ namespace DocFileFormat
       short wdy;
 
     public:
-      /// Creates a new DateAndTime with default values
-      DateAndTime()
-      {
-        setDefaultValues();
-      }
-
-      /// Parses the unsigned char sto retrieve a DateAndTime
-      DateAndTime( unsigned char* bytes, int size )
-      {
-        if ( size == 4 )
-        {
-          this->mint    = (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 0, 6 );
-          this->hr      = (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 6, 5 );
-          this->dom     = (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 11, 5 );
-          this->mon     = (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 16, 4 );
-          this->yr      = (short)( 1900 + FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 20, 9 ) );
-          this->wdy     = (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 29, 3 );
-        }
-        else
-        {
-          //throw new ByteParseException("Cannot parse the struct DTTM, the length of the struct doesn't match");
-        }
-      }
+		DateAndTime()
+		{
+			setDefaultValues();
+		}
+		DateAndTime( unsigned int val )
+		{
+			DateAndTime((unsigned char*)&val, 4);
+		}
+		DateAndTime( unsigned char* bytes, int size )
+		{
+			if ( size == 4 )
+			{
+			  this->mint    = (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 0, 6 );
+			  this->hr      = (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 6, 5 );
+			  this->dom     = (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 11, 5 );
+			  this->mon     = (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 16, 4 );
+			  this->yr      = (short)( 1900 + FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 20, 9 ) );
+			  this->wdy     = (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 29, 3 );
+			}
+			else
+			{
+			  //throw new ByteParseException("Cannot parse the struct DTTM, the length of the struct doesn't match");
+			}
+		}
 #if defined(_WIN32) || defined(_WIN64)
 	  SYSTEMTIME ToSYSTEMTIME()
       {

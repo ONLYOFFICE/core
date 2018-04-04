@@ -1,8 +1,8 @@
 SET SCRIPTPATH=%~dp0
 CD /D %~dp0
 
-SET ICU_MAJOR_VER=55
-SET ICU_MINOR_VER=1
+SET ICU_MAJOR_VER=60
+SET ICU_MINOR_VER=2
 
 SET platform=win_32
 if defined ProgramFiles(x86) (

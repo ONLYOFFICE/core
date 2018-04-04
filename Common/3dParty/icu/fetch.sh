@@ -66,6 +66,11 @@ fi
 
 make
 
+if [ ! -d "$SCRIPTPATH/$platform$arch/usr/local" ]
+then
+  DESTDIR="$SCRIPTPATH/$platform$arch" make install
+fi
+
 cd ../../
 
 cp "./icu/source/lib/libicudata$SHARED_LIB_EXT" "build/libicudata$SHARED_LIB_EXT"

@@ -3,14 +3,28 @@
 SCRIPT=$(readlink -f "$0" || grealpath "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
+ICU_MAJOR_VER=60
+ICU_MINOR_VER=2
+
+SHARED_LIB_VER=$ICU_MAJOR_VER.$ICU_MINOR_VER
+
 os=$(uname -s)
 platform=""
 
 case "$os" in
-  Linux*)   platform="linux" ;;
-  Darwin*)  platform="mac" ;; 
+  Linux*)
+    platform="linux"
+    BUILD_PLATFORM=Linux
+    SHARED_LIB_EXT=.so.$SHARED_LIB_VER
+    ;;
+  Darwin*)
+    platform="mac"
+    BUILD_PLATFORM=MacOSX
+    SHARED_LIB_EXT=.$SHARED_LIB_VER.dylib
+    ;;
   *)        exit ;;
 esac
+
 
 architecture=$(uname -m)
 arch=""
@@ -31,46 +45,28 @@ cd "$SCRIPTPATH/$platform$arch"
 
 if [ -d "build" ]
 then
-echo ""
+ echo ""
 else
-mkdir "build"
+ mkdir "build"
 fi
 
-if [[ "$platform" == *"linux"* ]]
-then
-if [[ -f "./icu.zip" ]]
-then 
-echo "icu already downloaded"
-else
-if [[ "$arch" == *"_64"* ]]
-then
-wget -O icu.zip http://download.icu-project.org/files/icu4c/55.1/icu4c-55_1-RHEL6-x64.tgz
-else
-wget -O icu.zip http://download.icu-project.org/files/icu4c/55.1/icu4c-55_1-RHEL6-i386.tgz
-fi
-fi
 if [ -d "./icu" ]
 then
-echo "icu already extracted"
+  echo "icu already exported"
 else
-7z x -so "./icu.zip" | tar xf -
-fi
-cp "./usr/local/lib/libicudata.so.55.1" "build/libicudata.so.55"
-cp "./usr/local/lib/libicuuc.so.55.1" "build/libicuuc.so.55"
+  svn export http://source.icu-project.org/repos/icu/tags/release-$ICU_MAJOR_VER-$ICU_MINOR_VER/icu4c ./icu
 fi
 
-if [[ "$platform" == *"mac"* ]]
-then
-if [ -d "./icu" ]
-then
-echo "icu already extracted"
-else
-svn export http://source.icu-project.org/repos/icu/icu/tags/release-55-1 ./icu
-fi
 cd ./icu/source/
-./runConfigureICU MacOSX
-make
-cd ../../
-cp "./icu/source/lib/libicudata.55.1.dylib" "build/libicudata.55.1.dylib"
-cp "./icu/source/lib/libicuuc.55.1.dylib" "build/libicuuc.55.1.dylib"
+
+if [ ! -f "./Makefile" ]
+then
+ ./runConfigureICU $BUILD_PLATFORM
 fi
+
+make
+
+cd ../../
+
+cp "./icu/source/lib/libicudata$SHARED_LIB_EXT" "build/libicudata$SHARED_LIB_EXT"
+cp "./icu/source/lib/libicuuc$SHARED_LIB_EXT" "build/libicuuc$SHARED_LIB_EXT"

@@ -19,7 +19,7 @@ core_linux {
 }
 
 core_mac {
-    INCLUDEPATH += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/icu/source/common
+    INCLUDEPATH += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/usr/local/include
 
     LIBS        += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build/libicuuc.60.2.dylib
     LIBS        += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build/libicudata.60.2.dylib

@@ -200,7 +200,7 @@ void odt_conversion_context::add_text_content(const std::wstring & text)
 {
 	if (drop_cap_state_.enabled)
 	{
-		int count = text.length();
+        int count = (int)text.length();
 		drop_cap_state_.characters += count;
 		
 		style_text_properties * props = text_context()->get_text_properties();

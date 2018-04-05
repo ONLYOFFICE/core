@@ -3013,6 +3013,7 @@ namespace BinDocxRW
 		OOX::Logic::CSectionProperty*	pSectPr;
 		OOX::Logic::CBackground *		pBackground;
 		OOX::CDocument*					poDocument;
+		OOX::JsaProject*				pJsaProject;
 		
 		bool							m_bWriteSectPr;//Записывать ли свойства верхнего уровня в данном экземпляре BinaryOtherTableWriter
 //---------------------------------
@@ -3022,6 +3023,7 @@ namespace BinDocxRW
 			pBackground		= NULL;
 			pSectPr			= NULL;
 			poDocument		= NULL;
+			pJsaProject		= NULL;
 			m_bWriteSectPr	= false; 
 		}
 		void WriteVbaProject(OOX::VbaProject& oVbaProject)
@@ -3118,6 +3120,19 @@ namespace BinDocxRW
 					nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Background);
 						WriteBackground(pBackground);
 					m_oBcw.WriteItemEnd(nCurPos);
+				}
+			}
+		//Write JsaProject
+			if (NULL != pJsaProject)
+			{
+				BYTE* pData = NULL;
+				DWORD nBytesCount;
+				if(NSFile::CFileBinary::ReadAllBytes(pJsaProject->filename().GetPath(), &pData, nBytesCount))
+				{
+					nCurPos = m_oBcw.WriteItemStart(c_oSerParType::JsaProject);
+					m_oBcw.m_oStream.WriteBYTEArray(pData, nBytesCount);
+					m_oBcw.WriteItemEnd(nCurPos);
+					RELEASEARRAYOBJECTS(pData);
 				}
 			}
 		}
@@ -7964,6 +7979,7 @@ namespace BinDocxRW
 				oBinaryDocumentTableWriter.pSectPr			= pFirstSectPr;
 				oBinaryDocumentTableWriter.pBackground		= oDocx.m_pDocument->m_oBackground.GetPointer();
 				oBinaryDocumentTableWriter.poDocument		= oDocx.m_pDocument;
+				oBinaryDocumentTableWriter.pJsaProject		= oDocx.m_pJsaProject;	
 
 				oBinaryDocumentTableWriter.m_bWriteSectPr	= true;
 				
@@ -7974,18 +7990,6 @@ namespace BinDocxRW
 					oBinaryDocumentTableWriter.WriteVbaProject(*oDocx.m_pVbaProject);
 					this->WriteTableEnd(nCurPos);
 				}
-		//Write JsaProject
-				if (NULL != oDocx.m_pJsaProject)
-				{
-					BYTE* pData = NULL;
-					DWORD nBytesCount;
-					if(NSFile::CFileBinary::ReadAllBytes(oDocx.m_pJsaProject->filename().GetPath(), &pData, nBytesCount))
-					{
-						nCurPos = m_oBcw.WriteItemStart(c_oSerParType::JsaProject);
-						m_oBcw.m_oStream.WriteBYTEArray(pData, nBytesCount);
-						m_oBcw.WriteItemEnd(nCurPos);
-					}
-				}
 
 		// Write content
 				nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Document);
@@ -7993,7 +7997,7 @@ namespace BinDocxRW
 				this->WriteTableEnd(nCurPos);
 
 				nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::HdrFtr);
-				oBinaryHeaderFooterTableWriter.Write();
+				oBinaryHeaderFooterTableWriter.Write();	
 				this->WriteTableEnd(nCurPos);
 
 				if(NULL != m_oParamsWriter.m_poTheme)

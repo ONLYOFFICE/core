@@ -29,41 +29,84 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef OOX_ONLY_JSA_PROJECT_INCLUDE_H_
-#define OOX_ONLY_JSA_PROJECT_INCLUDE_H_
+#include "JsaProject.h"
+
+#include "../Docx.h"
+#include "../../XlsxFormat/Xlsx.h"
 
 #include "Media.h"
 #include "../../../../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
 #include "../../../../../ASCOfficePPTXFile/Editor/imagemanager.h"
 
+#include "../IFileContainer.h"
 #include "../../XlsxFormat/FileTypes_Spreadsheet.h"
+
 
 namespace OOX
 {
-	class JsaProject : public Media
+	JsaProject::JsaProject( OOX::Document *pMain ) : Media(pMain)
 	{
-	public:
-		JsaProject( OOX::Document *pMain );
-		JsaProject(OOX::Document *pMain, const CPath& filename);
-		virtual ~JsaProject()
+		OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(pMain);
+		if (docx)
 		{
+			docx->m_pJsaProject = this;
 		}
-		virtual const FileType type() const
+		else
 		{
-			return FileTypes::JsaProject;
+			OOX::Spreadsheet::CXlsx* xlsx = dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain);
+			if (xlsx)
+			{
+				xlsx->m_pJsaProject = this;
+			}
 		}
-		virtual const CPath DefaultDirectory() const
+	}
+	JsaProject::JsaProject(OOX::Document *pMain, const CPath& filename) : Media(pMain)
+	{
+		OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(pMain);
+		if (docx)
 		{
-			return type().DefaultDirectory();
+			docx->m_pJsaProject = this;
 		}
-		virtual const CPath DefaultFileName() const
+		else
 		{
-			return type().DefaultFileName();
+			OOX::Spreadsheet::CXlsx* xlsx = dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain);
+			if (xlsx)
+			{
+				xlsx->m_pJsaProject = this;
+			}
 		}
-		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-	};
-} // namespace OOX
+		read(filename);
+	}
 
-#endif // OOX_ONLY_JSA_PROJECT_INCLUDE_H_
+	void JsaProject::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		BYTE* pData = NULL;
+		DWORD nBytesCount;
+		if(NSFile::CFileBinary::ReadAllBytes(m_filename.GetPath(), &pData, nBytesCount))
+		{
+			pWriter->WriteBYTEArray(pData, nBytesCount);
+		}
+	}
+	void JsaProject::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		LONG _length = pReader->GetLong();
+		LONG _end_rec = pReader->GetPos() + _length;
+
+		if (_length > 0)
+		{
+			BYTE* pData = pReader->GetPointer(_length);
+			std::wstring filePath = pReader->m_pRels->m_pManager->GetDstFolder() + FILE_SEPARATOR_STR + OOX::FileTypes::JsaProject.DefaultFileName().GetPath();
+
+			NSFile::CFileBinary oFile;
+			oFile.CreateFileW(filePath);
+			oFile.WriteFile(pData, _length);
+			oFile.CloseFile();
+
+			pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(OOX::FileTypes::JsaProject.DefaultFileName().GetExtention(false));
+
+			set_filename(filePath, false);
+		}
+		pReader->Seek(_end_rec);
+	}
+
+} // namespace OOX

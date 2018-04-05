@@ -175,7 +175,7 @@ namespace DocFileFormat
 			{
 				cpParaEnd++;
 				
-				return writeParagraph(cp, min(cpEnd, cpParaEnd), false);
+                return writeParagraph(cp, (std::min)(cpEnd, cpParaEnd), false);
 			}
 		}
 

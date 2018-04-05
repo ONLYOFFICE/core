@@ -138,7 +138,7 @@ namespace DocFileFormat
 		}
 		else
 		{
-			argumentsSize = min(size - opCodeSize, opSize);
+            argumentsSize = (std::min)(size - opCodeSize, (int)opSize);
 			if (argumentsSize > 0)
 			{
 				Arguments = new unsigned char[argumentsSize];

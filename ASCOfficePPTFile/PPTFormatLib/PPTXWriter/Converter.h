@@ -72,7 +72,7 @@ namespace NSPresentationEditor
 		void WritePresInfo		();
 		void WriteAll			();
 		void WriteThemes		();
-		void WriteTheme			(CTheme* pTheme, int & nIndexTheme, int & nStartLayout, int Type = 1);
+		void WriteTheme			(CTheme* pTheme, int & nIndexTheme, int & nStartLayout);
 		void WriteSlides		();
 		void WriteNotes			();
 		void WriteLayout		(CLayout& oLayout, int nIndexLayout, int nStartLayout, int nIndexTheme);

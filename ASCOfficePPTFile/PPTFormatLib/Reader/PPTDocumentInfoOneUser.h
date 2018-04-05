@@ -44,6 +44,7 @@ using namespace NSPresentationEditor;
 class CPPTUserInfo : public CDocument
 {
 public:
+
 	CUserEdit										m_oUser;
 	std::map<DWORD, DWORD>							m_mapOffsetInPIDs;
 	CRecordDocument									m_oDocument;
@@ -145,7 +146,7 @@ public:
 	void LoadNoMainMaster	(DWORD dwMasterID, const LONG& lOriginWidth, const LONG& lOriginHeight);
 	void LoadMainMaster		(DWORD dwMasterID, const LONG& lOriginWidth, const LONG& lOriginHeight);
 	
-    void LoadMaster(CRecordSlide* pMaster, CSlideInfo *& pMasterWrapper, CTheme *& pTheme);
+	void LoadMaster(_typeMaster type, CRecordSlide* pMaster, CSlideInfo *& pMasterWrapper, CTheme *& pTheme);
 
 	void LoadSlideFromPrevUsers			(DWORD dwSlideID);
 	void LoadMasterFromPrevUsers		(DWORD dwSlideID);

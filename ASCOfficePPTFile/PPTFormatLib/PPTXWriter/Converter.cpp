@@ -285,115 +285,128 @@ void NSPresentationEditor::CPPTXWriter::WriteApp(CFile& oFile)
 		{
 			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties");
 			CP_XML_ATTR(L"xmlns:vt", L"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypess");
-		}
-		CP_XML_NODE(L"Application")
-		{
-			CP_XML_STREAM() << 0;
-		}
-#if defined(INTVER)
-		CP_XML_NODE(L"AppVersion")
-		{
+
+			CP_XML_NODE(L"TotalTime")
+			{
+				CP_XML_STREAM() << 0;
+			}
+			CP_XML_NODE(L"Words")
+			{
+				CP_XML_STREAM() << 0;
+			}
+			std::wstring sApplication = L"ONLYOFFICE";
+	#if defined(INTVER)
 			std::string s = VALUE2STR(INTVER);
-			CP_XML_STREAM() << std::wstring(s.begin(), s.end());
-		}
-#endif	
-		CP_XML_NODE(L"TotalTime")
-		{
-			CP_XML_STREAM() << 0;
-		}
-		CP_XML_NODE(L"Words")
-		{
-			CP_XML_STREAM() << 0;
-		}
-		CP_XML_NODE(L"PresentationFormat")
-		{
-			CP_XML_STREAM() << L"On-screen Show (4:3)";
-		}
-		CP_XML_NODE(L"Paragraphs")
-		{
-			CP_XML_STREAM() << 0;
-		}
-		CP_XML_NODE(L"Slides")
-		{
-			CP_XML_STREAM() << m_pDocument->m_arSlides.size();
-		}
-		CP_XML_NODE(L"Notes")
-		{
-			CP_XML_STREAM() << m_pDocument->m_arNotes.size();
-		}
-		CP_XML_NODE(L"HiddenSlides")
-		{
-			CP_XML_STREAM() << 0;
-		}
-		CP_XML_NODE(L"MMClips")
-		{
-			CP_XML_STREAM() << 2;
-		}
-		CP_XML_NODE(L"ScaleCrop")
-		{
-			CP_XML_STREAM() << L"false";
-		}
-		CP_XML_NODE(L"HeadingPairs")
-		{
-			CP_XML_NODE(L"vt:vector")
+			sApplication += L"/" + std::wstring(s.begin(), s.end());
+	#endif
+			CP_XML_NODE(L"Application")
 			{
-				CP_XML_ATTR(L"size", 4);
-				CP_XML_ATTR(L"baseType", L"variant");
-				
-				CP_XML_NODE(L"vt:variant")
-				{
-					CP_XML_ATTR(L"vt:lpstr", L"Theme");
-				}
-				CP_XML_NODE(L"vt:variant")
-				{
-					CP_XML_ATTR(L"vt:i4", m_pDocument->m_arThemes.size());
-				}
-				CP_XML_NODE(L"vt:variant")
-				{
-					CP_XML_ATTR(L"vt:lpstr", L"Slide Titles");
-				}
-				CP_XML_NODE(L"vt:variant")
-				{
-					CP_XML_ATTR(L"vt:i4", m_pDocument->m_arSlides.size());
-				}
+				CP_XML_STREAM() << sApplication;
 			}
-		}
-		CP_XML_NODE(L"TitlesOfParts")
-		{
-			CP_XML_NODE(L"vt:vector")
+			//CP_XML_NODE(L"AppVersion")
+			//{
+			//	CP_XML_STREAM() << L"1.0";
+			//}
+			CP_XML_NODE(L"Paragraphs")
 			{
-				CP_XML_ATTR(L"size", m_pDocument->m_arSlides.size() + m_pDocument->m_arThemes.size());
-				CP_XML_ATTR(L"baseType", L"lpstr");
-
-				for (size_t i = 1; i <= m_pDocument->m_arThemes.size(); ++i)
-				{
-					CP_XML_NODE(L"vt:lpstr")
-					{
-						CP_XML_STREAM() <<  L"Theme " << i;
-					}	
-				}
-				for (size_t i = 1; i <= m_pDocument->m_arSlides.size(); ++i)
-				{
-					CP_XML_NODE(L"vt:lpstr")
-					{
-						CP_XML_STREAM() <<  L"Slide " << i;
-					}
-				}
+				CP_XML_STREAM() << 0;
 			}
-		}
+			//CP_XML_NODE(L"PresentationFormat")
+			//{
+			//	CP_XML_STREAM() << L"On-screen Show (4:3)";
+			//}			
+			//CP_XML_NODE(L"Slides")
+			//{
+			//	CP_XML_STREAM() << m_pDocument->m_arSlides.size();
+			//}
+			//CP_XML_NODE(L"Notes")
+			//{
+			//	CP_XML_STREAM() << m_pDocument->m_arNotes.size();
+			//}
+			//CP_XML_NODE(L"HiddenSlides")
+			//{
+			//	CP_XML_STREAM() << 0;
+			//}
+			//CP_XML_NODE(L"MMClips")
+			//{
+			//	CP_XML_STREAM() << 0;
+			//}
+			//CP_XML_NODE(L"ScaleCrop")
+			//{
+			//	CP_XML_STREAM() << L"false";
+			//}
+			//CP_XML_NODE(L"HeadingPairs")
+			//{
+			//	CP_XML_NODE(L"vt:vector")
+			//	{
+			//		CP_XML_ATTR(L"size", 4);
+			//		CP_XML_ATTR(L"baseType", L"variant");
+			//		
+			//		CP_XML_NODE(L"vt:variant")
+			//		{
+			//			CP_XML_NODE(L"vt:lpstr")
+			//			{
+			//				CP_XML_STREAM() << L"Theme";
+			//			}
+			//		}
+			//		CP_XML_NODE(L"vt:variant")
+			//		{
+			//			CP_XML_NODE(L"vt:i4")
+			//			{
+			//				CP_XML_STREAM() << m_pDocument->m_arThemes.size();
+			//			}
+			//		}
+			//		CP_XML_NODE(L"vt:variant")
+			//		{
+			//			CP_XML_NODE(L"vt:lpstr")
+			//			{
+			//				CP_XML_STREAM() << L"Slide Titles";
+			//			}
+			//		}
+			//		CP_XML_NODE(L"vt:variant")
+			//		{
+			//			CP_XML_NODE(L"vt:i4")
+			//				CP_XML_STREAM() << m_pDocument->m_arSlides.size();
+			//		}
+			//	}
+			//}
+			//CP_XML_NODE(L"TitlesOfParts")
+			//{
+			//	CP_XML_NODE(L"vt:vector")
+			//	{
+			//		CP_XML_ATTR(L"size", m_pDocument->m_arSlides.size() + m_pDocument->m_arThemes.size());
+			//		CP_XML_ATTR(L"baseType", L"lpstr");
 
-		CP_XML_NODE(L"Company");
-		CP_XML_NODE(L"LinksUpToDate")
-		{
-			CP_XML_STREAM() <<  L"false";
-		}
-		CP_XML_NODE(L"SharedDoc")
-		{
-			CP_XML_STREAM() <<  L"false";
-		}
-		CP_XML_NODE(L"HyperlinksChanged")
-		{
-			CP_XML_STREAM() <<  L"false";
+			//		for (size_t i = 1; i <= m_pDocument->m_arThemes.size(); ++i)
+			//		{
+			//			CP_XML_NODE(L"vt:lpstr")
+			//			{
+			//				CP_XML_STREAM() <<  L"Theme " << i;
+			//			}	
+			//		}
+			//		for (size_t i = 1; i <= m_pDocument->m_arSlides.size(); ++i)
+			//		{
+			//			CP_XML_NODE(L"vt:lpstr")
+			//			{
+			//				CP_XML_STREAM() <<  L"Slide " << i;
+			//			}
+			//		}
+			//	}
+			//}
+
+			////CP_XML_NODE(L"Company");
+			//CP_XML_NODE(L"LinksUpToDate")
+			//{
+			//	CP_XML_STREAM() <<  L"false";
+			//}
+			//CP_XML_NODE(L"SharedDoc")
+			//{
+			//	CP_XML_STREAM() <<  L"false";
+			//}
+			//CP_XML_NODE(L"HyperlinksChanged")
+			//{
+			//	CP_XML_STREAM() <<  L"false";
+			//}
 		}
 	}
 	oFile.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
@@ -577,14 +590,14 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 
 	for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
 	{
-		WriteTheme(&m_pDocument->m_arThemes[i], nIndexTheme, nStartLayout, 1);
+		WriteTheme(&m_pDocument->m_arThemes[i], nIndexTheme, nStartLayout);
 	}
 
-	WriteTheme(m_pDocument->m_pNotesMaster, nIndexTheme, nStartLayout, 2);
-	WriteTheme(m_pDocument->m_pHandoutMaster, nIndexTheme, nStartLayout, 3);
+	WriteTheme(m_pDocument->m_pNotesMaster, nIndexTheme, nStartLayout);
+	WriteTheme(m_pDocument->m_pHandoutMaster, nIndexTheme, nStartLayout);
 }
 
-void NSPresentationEditor::CPPTXWriter::WriteTheme(CTheme* pTheme, int & nIndexTheme, int & nStartLayout, int Type)
+void NSPresentationEditor::CPPTXWriter::WriteTheme(CTheme* pTheme, int & nIndexTheme, int & nStartLayout)
 {		
 	if (!pTheme) return;
 
@@ -665,15 +678,15 @@ void NSPresentationEditor::CPPTXWriter::WriteTheme(CTheme* pTheme, int & nIndexT
 	CStringWriter oWriter;
 	oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
 	
-	if (Type == 1)
+	if (pTheme->m_eType == typeMaster)
 	{
 		oWriter.WriteString(L"<p:sldMaster xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">");
 	}
-	else if (Type == 2)
+	else if (pTheme->m_eType == typeNotesMaster)
 	{
 		oWriter.WriteString(L"<p:notesMaster xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">");
 	}
-	else if (Type == 3)
+	else if (pTheme->m_eType == typeHandoutMaster)
 	{
 		oWriter.WriteString(L"<p:handoutMaster xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">");
 	}
@@ -688,12 +701,22 @@ void NSPresentationEditor::CPPTXWriter::WriteTheme(CTheme* pTheme, int & nIndexT
 
 	for (size_t nEl = 0; nEl < pTheme->m_arElements.size(); ++nEl)
 	{
+		if (!pTheme->m_arElements[nEl]) continue;
+
 		if (isBodyPlaceholder(pTheme->m_arElements[nEl]->m_lPlaceholderType))
-			pTheme->m_arElements[nEl]->m_lPlaceholderType =100; //body тип прописывать !!
+			pTheme->m_arElements[nEl]->m_lPlaceholderType = 100; //body тип прописывать !!
 
 		if (pTheme->m_arElements[nEl]->m_bBoundsEnabled == false)
 			continue;
 		
+		if (pTheme->m_eType == typeNotesMaster ||
+			pTheme->m_eType == typeHandoutMaster)
+		{
+			pTheme->m_arElements[nEl]->m_lPlaceholderID = -1;
+			
+			if (pTheme->m_eType == typeHandoutMaster)
+				pTheme->m_arElements[nEl]->m_lPlaceholderSizePreset = -1;
+		}
 		WriteElement(oWriter, oRels, pTheme->m_arElements[nEl]);
 	}
 
@@ -702,7 +725,7 @@ void NSPresentationEditor::CPPTXWriter::WriteTheme(CTheme* pTheme, int & nIndexT
     std::wstring strOverrideColorScheme = _T("<p:clrMap bg1=\"lt1\" tx1=\"dk1\" bg2=\"lt2\" tx2=\"dk2\" accent1=\"accent1\" accent2=\"accent2\" accent3=\"accent3\" accent4=\"accent4\" accent5=\"accent5\" accent6=\"accent6\" hlink=\"hlink\" folHlink=\"folHlink\"/>");
 	oWriter.WriteString(strOverrideColorScheme);
 
-	if (Type == 1)
+	if (pTheme->m_eType == typeMaster)
 	{	
 		oWriter.WriteString(std::wstring(L"<p:sldLayoutIdLst>"));
 
@@ -726,7 +749,7 @@ void NSPresentationEditor::CPPTXWriter::WriteTheme(CTheme* pTheme, int & nIndexT
 		if (!pTheme->m_bHasFooter)		oWriter.WriteString(std::wstring(L" ftr=\"0\""));
 		oWriter.WriteString(std::wstring(L"/>"));
 	}
-	if (Type == 1)
+	if (pTheme->m_eType == typeMaster)
 	{	
 		oWriter.WriteString(std::wstring(L"<p:txStyles>"));
 
@@ -744,7 +767,7 @@ void NSPresentationEditor::CPPTXWriter::WriteTheme(CTheme* pTheme, int & nIndexT
 		
 		oWriter.WriteString(std::wstring(L"</p:txStyles>"));
 	}
-	else if (Type == 2)
+	else if (pTheme->m_eType == typeNotesMaster)
 	{	
 		oWriter.WriteString(std::wstring(L"<p:notesStyle>"));
 		CStylesWriter::ConvertStyles(pTheme->m_pStyles[1], pTheme->m_oInfo, oWriter, 9);
@@ -753,7 +776,8 @@ void NSPresentationEditor::CPPTXWriter::WriteTheme(CTheme* pTheme, int & nIndexT
 
 	std::wstring strSlideMasterFile;
 	std::wstring strSlideMasterRelsFile;
-	if (Type == 1)
+	
+	if (pTheme->m_eType == typeMaster)
 	{
 		oWriter.WriteString(std::wstring(L"</p:sldMaster>"));
 		
@@ -763,7 +787,7 @@ void NSPresentationEditor::CPPTXWriter::WriteTheme(CTheme* pTheme, int & nIndexT
 		strSlideMasterRelsFile = L"slideMaster" + std::to_wstring(nIndexTheme + 1) + L".xml.rels";
 		strSlideMasterRelsFile = strPptDirectory + _T("slideMasters") + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + strSlideMasterRelsFile;
 	}
-	else if (Type == 2)
+	else if (pTheme->m_eType == typeNotesMaster)
 	{
 		oWriter.WriteString(std::wstring(L"</p:notesMaster>"));
 	
@@ -773,7 +797,7 @@ void NSPresentationEditor::CPPTXWriter::WriteTheme(CTheme* pTheme, int & nIndexT
 		strSlideMasterRelsFile = L"notesMaster1.xml.rels";
 		strSlideMasterRelsFile = strPptDirectory + _T("notesMasters") + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + strSlideMasterRelsFile;
 	}
-	else if (Type == 3)
+	else if (pTheme->m_eType == typeHandoutMaster)
 	{
 		oWriter.WriteString(std::wstring(L"</p:handoutMaster>"));
 	
@@ -933,6 +957,11 @@ void NSPresentationEditor::CPPTXWriter::WriteLayout(CLayout& oLayout, int nIndex
 	size_t nElements = oLayout.m_arElements.size();
 	for (size_t nEl = 0; nEl < nElements; ++nEl)
 	{
+		if (!oLayout.m_arElements[nEl])
+			continue;
+
+		oLayout.m_arElements[nEl]->m_lPlaceholderSizePreset = -1;
+
 		WriteElement(oWriter, oRels,  oLayout.m_arElements[nEl]);
 	}
 

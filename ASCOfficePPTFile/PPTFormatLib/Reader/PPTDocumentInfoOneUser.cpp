@@ -1559,7 +1559,7 @@ void CPPTUserInfo::LoadMasters(const LONG& lOriginWidth, const LONG& lOriginHeig
 	{
 		std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapNotesMasters.begin();
 	
-		LoadMaster(pPair->second, m_pNotesMasterWrapper, m_pNotesMaster);
+		LoadMaster(typeNotesMaster, pPair->second, m_pNotesMasterWrapper, m_pNotesMaster);
 	}
 
 	LoadHandoutMasterFromPrevUsers(0);
@@ -1567,10 +1567,10 @@ void CPPTUserInfo::LoadMasters(const LONG& lOriginWidth, const LONG& lOriginHeig
 	{
 		std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapHandoutMasters.begin();
 	
-		LoadMaster(pPair->second, m_pHandoutMasterWrapper, m_pHandoutMaster);
+		LoadMaster(typeHandoutMaster, pPair->second, m_pHandoutMasterWrapper, m_pHandoutMaster);
 	}
 }
-void CPPTUserInfo::LoadMaster(CRecordSlide* pMaster, CSlideInfo *& pMasterWrapper, CTheme *& pTheme)
+void CPPTUserInfo::LoadMaster(_typeMaster type, CRecordSlide* pMaster, CSlideInfo *& pMasterWrapper, CTheme *& pTheme)
 {
     if (pMaster == NULL)
         return; 
@@ -1609,7 +1609,7 @@ void CPPTUserInfo::LoadMaster(CRecordSlide* pMaster, CSlideInfo *& pMasterWrappe
 		}
 	}
 
-	pTheme = new CTheme();
+	pTheme = new CTheme(type);
 
 	pTheme->m_lOriginalWidth	= lOriginWidth;
 	pTheme->m_lOriginalHeight	= lOriginHeight;
@@ -1970,8 +1970,8 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 			{
 				if (pElement->m_lPlaceholderID >=0)
 				{
-					if (pElement->m_lPlaceholderType == MasterSlideNumber) pLayout->m_bHasSlideNumber	= true;
-					if (pElement->m_lPlaceholderType == MasterDate)		pLayout->m_bHasDate			= true;
+					if (pElement->m_lPlaceholderType == MasterSlideNumber)	pLayout->m_bHasSlideNumber	= true;
+					if (pElement->m_lPlaceholderType == MasterDate)			pLayout->m_bHasDate			= true;
 					if (pElement->m_lPlaceholderType == MasterFooter)		pLayout->m_bHasFooter		= true;
 				}
 				pLayout->m_mapPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pLayout->m_arElements.size()-1)); 

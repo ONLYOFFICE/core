@@ -138,6 +138,8 @@ namespace NSPresentationEditor
 	class CShapeWriter : public IRenderer
 	{
 	private:
+		void ParseXmlAlternative(const std::wstring & xml);
+
 		NSPresentationEditor::CStringWriter		m_oWriterPath;
 		NSPresentationEditor::CStringWriter		m_oWriterVML;
 		NSPresentationEditor::CStringWriter		m_oWriter;
@@ -154,6 +156,10 @@ namespace NSPresentationEditor
 
 		bool									m_bWordArt;
 		bool									m_bTextBox;
+
+		std::wstring							m_xmlGeomAlternative;
+		std::wstring							m_xmlTxBodyAlternative;
+		std::wstring							m_xmlAlternative;
 	public:	
 
 		CShapeWriter();

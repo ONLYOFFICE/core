@@ -37,6 +37,7 @@
 #include "../Reader/SlidePersist.cpp"
 #include "../Records/Animations/AnimationTypes.cpp"
 #include "../Records/Drawing/ArtBlip.cpp"
+#include "../Records/Drawing/ShapeContainer.cpp"
 
 #include "../PPTXWriter/Converter.cpp"
 #include "../PPTXWriter/ShapeWriter.cpp"

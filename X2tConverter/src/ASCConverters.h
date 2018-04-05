@@ -176,6 +176,9 @@ namespace NExtractTools
 	int html2doct		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
     int html2docx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 
+	int html_zip2doct_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+	int html_zip2doct		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+    int html_zip2docx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 //-------------------------------------------------------------------------------------------------------------------------------------------------
     int dir2zip			(const std::wstring &sFrom, const std::wstring &sTo);
     int zip2dir			(const std::wstring &sFrom, const std::wstring &sTo);

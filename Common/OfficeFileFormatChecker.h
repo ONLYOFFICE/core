@@ -72,6 +72,8 @@ public:
 	bool isPptFormatFile	(POLE::Storage *storage);
     bool isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage);
 
+	bool isDocFlatFormatFile	(unsigned char* pBuffer,int dwBytes);
+
 	bool isRtfFormatFile	(unsigned char* pBuffer,int dwBytes);
 	bool isHtmlFormatFile	(unsigned char* pBuffer,int dwBytes, bool testCloseTag);
 	bool isPdfFormatFile	(unsigned char* pBuffer,int dwBytes);

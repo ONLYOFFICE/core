@@ -127,7 +127,27 @@ public:
 							long lSlideWidth, long lSlideHeight, CTheme* pTheme, CLayout* pLayout, 
 							CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide = NULL);
 	void RecalcGroupShapeAnchor(CDoubleRect& rcChildAnchor);
-	NSPresentationEditor::ElementType GetTypeElem(SPT eType);
+	NSPresentationEditor::ElementType GetTypeElem(SPT eType)
+	{
+		switch (eType)
+		{
+			//case sptMin:
+		case sptMax:
+		case sptNil:
+			{
+				return etShape;
+			}
+		case sptPictureFrame:
+			{
+				return etPicture;
+			}
+		default:
+			{
+				return etShape;
+			}
+		};
+		return etShape;
+	}
     AVSINLINE std::wstring GetFileName(std::wstring strFilePath)
 	{
         int nIndex = strFilePath.rfind(wchar_t('\\'));

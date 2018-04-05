@@ -852,7 +852,7 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 	{
 		NSFile::CFileBinary file;
 
-		std::wstring temp = NSDirectory::GetTempPathW();
+        std::wstring temp = NSDirectory::GetTempPath();
 
 		std::wstring tempFileName = temp + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
 

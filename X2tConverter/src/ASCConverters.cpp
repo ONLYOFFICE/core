@@ -2675,7 +2675,7 @@ namespace NExtractTools
 
 				NSFile::CFileBinary file;
 
-				if (file.CreateFile(sTempHtml))
+                if (file.CreateFileW(sTempHtml))
 				{
 					file.WriteFile(buffer, size_stream);
 					file.CloseFile();

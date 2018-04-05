@@ -40,6 +40,7 @@ namespace NSPresentationEditor
 	class CTheme
 	{
 	public:
+		_typeMaster						m_eType;
 		std::map<_UINT64, LONG>			m_mapGeomToLayout;// типовые шаблоны
 		std::map<DWORD, LONG>			m_mapTitleLayout; // заголовочные шаблоны
 		
@@ -77,8 +78,8 @@ namespace NSPresentationEditor
 		vector_string					m_PlaceholdersReplaceString[3]; //0-dates, 1 - headers, 2 - footers
 
 //------------------------------------------------------------------------------------
-		CTheme() : m_arColorScheme(), m_arFonts(), m_arBrushes(),
-			m_arPens(), m_arEffects(), m_arLayouts()
+		CTheme(_typeMaster type = typeMaster) : m_arColorScheme(), m_arFonts(), m_arBrushes(),
+			m_arPens(), m_arEffects(), m_arLayouts(), m_eType(type)
 		{
 			Clear();
 		}
@@ -90,6 +91,7 @@ namespace NSPresentationEditor
 
 		CTheme& operator=(const CTheme& oSrc)
 		{
+			m_eType				=	oSrc.m_eType;
 			m_arColorScheme		=	oSrc.m_arColorScheme;
 			m_arFonts			=	oSrc.m_arFonts;
 			m_arBrushes			=	oSrc.m_arBrushes;
@@ -106,7 +108,10 @@ namespace NSPresentationEditor
 			m_bHasFooter		=	oSrc.m_bHasFooter;
 			m_nFormatDate		=	oSrc.m_nFormatDate;
 
-			for (size_t i = 0 ; i < 3 ; i++) m_PlaceholdersReplaceString[i] = oSrc.m_PlaceholdersReplaceString[i];
+			for (size_t i = 0 ; i < 3 ; i++) 
+			{
+				m_PlaceholdersReplaceString[i] = oSrc.m_PlaceholdersReplaceString[i];
+			}
 
 			for (size_t i = 0; i < oSrc.m_arExtraColorScheme.size(); ++i)
 			{

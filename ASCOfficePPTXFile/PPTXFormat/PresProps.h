@@ -78,7 +78,7 @@ namespace PPTX
 		}
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
-			pWriter->StartRecord(NSMainTables::PresProps);
+			pWriter->StartRecord(NSBinPptxRW::NSMainTables::PresProps);
 
 			pWriter->WriteRecordArray(0, 0, ClrMru);
 			pWriter->WriteRecord2(1, showPr);

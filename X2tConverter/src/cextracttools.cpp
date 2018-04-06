@@ -313,6 +313,12 @@ namespace NExtractTools
                         else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_MSCRYPT2PPTT;
  						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_MSCRYPT2BIN;
 					}break;
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER:
+					{
+							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_HTMLZIP2DOCX;
+						else if (0 == sExt2.compare(_T(".doct")))		res = TCD_HTMLZIP2DOCT;
+						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_HTMLZIP2DOCT_BIN;
+					}break;
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML:
 					{
 							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_HTML2DOCX;

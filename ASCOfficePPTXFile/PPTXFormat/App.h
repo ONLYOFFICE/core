@@ -39,8 +39,6 @@
 #include "Logic/PartTitle.h"
 #include "Logic/HeadingVariant.h"
 
-using namespace NSBinPptxRW;
-
 namespace PPTX
 {
 	class App : public WrapperFile
@@ -130,9 +128,9 @@ namespace PPTX
 
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
-			pWriter->StartRecord(NSMainTables::App);
+			pWriter->StartRecord(NSBinPptxRW::NSMainTables::App);
 
-			pWriter->WriteBYTE(g_nodeAttributeStart);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
 			pWriter->WriteString2(0, Template);
 			pWriter->WriteString2(1, Application);
@@ -153,7 +151,7 @@ namespace PPTX
 			pWriter->WriteBool2(14, SharedDoc);
 			pWriter->WriteBool2(15, HyperlinksChanged);
 
-			pWriter->WriteBYTE(g_nodeAttributeEnd);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->EndRecord();
 		}

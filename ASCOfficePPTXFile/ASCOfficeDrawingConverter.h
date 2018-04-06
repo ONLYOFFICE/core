@@ -279,6 +279,7 @@ namespace NSBinPptxRW
 
         void CheckBrushShape        (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
         void CheckPenShape          (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
+		void CheckBorderShape		(PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
 
         void LoadCoordSize			(XmlUtils::CXmlNode& oNode, ::CShapePtr pShape);
 		void LoadCoordPos			(XmlUtils::CXmlNode& oNode, ::CShapePtr pShape);

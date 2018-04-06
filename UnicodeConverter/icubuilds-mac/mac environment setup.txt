@@ -1,0 +1,13 @@
+﻿не поставляет icu бинарники под мак
+можно делать свой проект, но как обновляться?
+
+делаем так:
+cd ./activex/AVS/Sources/TeamlabOffice/trunk/ServerComponents/UnicodeConverter/icubuilds-mac
+
+svn export http://source.icu-project.org/repos/icu/icu/tags/release-55-1
+
+cd release-55-1/source/
+
+./runConfigureICU MacOSX
+
+make

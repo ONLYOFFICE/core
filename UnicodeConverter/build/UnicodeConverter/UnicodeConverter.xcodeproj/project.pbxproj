@@ -249,10 +249,10 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/include/,
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/**",
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/common",
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/i18n",
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/io",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds-mac/icu/**",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds-mac/icu/icu/common",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds-mac/icu/icu/i18n",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds-mac/icu/icu/io",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -278,10 +278,10 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/include/,
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/**",
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/common",
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/i18n",
-					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/io",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds-mac/icu/**",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds-mac/icu/icu/common",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds-mac/icu/icu/i18n",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds-mac/icu/icu/io",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";

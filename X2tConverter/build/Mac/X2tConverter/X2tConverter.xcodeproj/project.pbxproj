@@ -46,7 +46,6 @@
 		6967B1D11E27B9D700A129E2 /* libRtfFormatLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6967B1CE1E27B9C500A129E2 /* libRtfFormatLib.a */; };
 		6967BEB01E27D16A00A129E2 /* ASCConverters_ios.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BEAF1E27D16A00A129E2 /* ASCConverters_ios.cpp */; };
 		696DD7CF1F5D98220021D0F3 /* libOfficeCryptReader.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 696DD7CE1F5D981A0021D0F3 /* libOfficeCryptReader.a */; };
-		698AF4C31C0745980080D889 /* libicu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 698AF4C01C0740960080D889 /* libicu.a */; };
 		69DA32F11CEE100E00E10AF0 /* libagg_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA323D1CEE092A00E10AF0 /* libagg_ios.a */; };
 		69DA32F21CEE100E00E10AF0 /* libcximage_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA322B1CEE087D00E10AF0 /* libcximage_ios.a */; };
 		69DA32F31CEE100E00E10AF0 /* libDocxFormatLib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA325B1CEE099000E10AF0 /* libDocxFormatLib_ios.a */; };
@@ -57,6 +56,7 @@
 		69DA32F81CEE100E00E10AF0 /* libPPTXFormatLib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA32611CEE09BB00E10AF0 /* libPPTXFormatLib_ios.a */; };
 		69DA32F91CEE100E00E10AF0 /* libraster_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA32491CEE094A00E10AF0 /* libraster_ios.a */; };
 		69EC66D91E01775B003527E2 /* libUnicodeConverter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69EC66D21E01770D003527E2 /* libUnicodeConverter.a */; };
+		8A9FAC2B207772E1007787F6 /* libicu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A9FAC27207772CC007787F6 /* libicu.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -284,20 +284,6 @@
 			remoteGlobalIDString = 69880EDF1F4D79BC00E4C541;
 			remoteInfo = OfficeCryptReader;
 		};
-		698AF4BF1C0740960080D889 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 698AF4BB1C0740960080D889 /* icu.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 173241801BBECF8400E67992;
-			remoteInfo = icu;
-		};
-		698AF4C11C0745930080D889 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 698AF4BB1C0740960080D889 /* icu.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1732417F1BBECF8400E67992;
-			remoteInfo = icu;
-		};
 		69DA322A1CEE087D00E10AF0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 69DA32261CEE087D00E10AF0 /* cximage.xcodeproj */;
@@ -438,6 +424,20 @@
 			remoteGlobalIDString = 69EC66C01E0176F2003527E2;
 			remoteInfo = UnicodeConverter;
 		};
+		8A9FAC26207772CC007787F6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8A9FAC22207772CC007787F6 /* icu.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 173241801BBECF8400E67992;
+			remoteInfo = icu;
+		};
+		8A9FAC29207772D9007787F6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8A9FAC22207772CC007787F6 /* icu.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1732417F1BBECF8400E67992;
+			remoteInfo = icu;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -468,7 +468,6 @@
 		6967BEAF1E27D16A00A129E2 /* ASCConverters_ios.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ASCConverters_ios.cpp; path = ../../../../src/ASCConverters_ios.cpp; sourceTree = "<group>"; };
 		696DD7C11F5D97DB0021D0F3 /* libcryptopp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcryptopp.a; path = ../../../../Common/3dParty/cryptopp/libcryptopp.a; sourceTree = "<group>"; };
 		696DD7C91F5D981A0021D0F3 /* OfficeCryptReader.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OfficeCryptReader.xcodeproj; path = ../../../../OfficeCryptReader/mac/OfficeCryptReader/OfficeCryptReader.xcodeproj; sourceTree = "<group>"; };
-		698AF4BB1C0740960080D889 /* icu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = icu.xcodeproj; path = ../../../../UnicodeConverter/icubuilds/mac/icu/icu.xcodeproj; sourceTree = "<group>"; };
 		69DA32261CEE087D00E10AF0 /* cximage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cximage.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/cximage.xcodeproj; sourceTree = "<group>"; };
 		69DA322C1CEE08DC00E10AF0 /* metafile.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = metafile.xcodeproj; path = ../../../../DesktopEditor/mac_build/metafile/metafile.xcodeproj; sourceTree = "<group>"; };
 		69DA32381CEE092900E10AF0 /* agg.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = agg.xcodeproj; path = ../../../../DesktopEditor/mac_build/agg/agg.xcodeproj; sourceTree = "<group>"; };
@@ -479,6 +478,7 @@
 		69DA32561CEE099000E10AF0 /* DocxFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DocxFormatLib.xcodeproj; path = ../../../../Common/DocxFormat/Mac/DocxFormatLib.xcodeproj; sourceTree = "<group>"; };
 		69DA325C1CEE09BB00E10AF0 /* PPTXFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PPTXFormatLib.xcodeproj; path = ../../../../ASCOfficePPTXFile/PPTXLib/Mac/PPTXFormatLib.xcodeproj; sourceTree = "<group>"; };
 		69EC66CD1E01770C003527E2 /* UnicodeConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UnicodeConverter.xcodeproj; path = ../../../../UnicodeConverter/build/UnicodeConverter/UnicodeConverter.xcodeproj; sourceTree = "<group>"; };
+		8A9FAC22207772CC007787F6 /* icu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = icu.xcodeproj; path = icu/icu.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -486,6 +486,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8A9FAC2B207772E1007787F6 /* libicu.a in Frameworks */,
 				696DD7CF1F5D98220021D0F3 /* libOfficeCryptReader.a in Frameworks */,
 				691A8BD31E2FA68F00DCB54A /* liblibxml2.a in Frameworks */,
 				6967B1D11E27B9D700A129E2 /* libRtfFormatLib.a in Frameworks */,
@@ -512,7 +513,6 @@
 				69415FE01CB52455003E771B /* libmng_ios.a in Frameworks */,
 				69415F311CB51D41003E771B /* libASCOfficeDocxFile2Lib_ios.a in Frameworks */,
 				69415F271CB51C37003E771B /* libOfficeUtils.a in Frameworks */,
-				698AF4C31C0745980080D889 /* libicu.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -522,6 +522,7 @@
 		17C27A0B1AC2DB3C00E1D003 = {
 			isa = PBXGroup;
 			children = (
+				8A9FAC22207772CC007787F6 /* icu.xcodeproj */,
 				696DD7C91F5D981A0021D0F3 /* OfficeCryptReader.xcodeproj */,
 				691A8BCB1E2FA67E00DCB54A /* libxml2.xcodeproj */,
 				6967B1C91E27B9C400A129E2 /* RtfFormatLib.xcodeproj */,
@@ -543,7 +544,6 @@
 				69DA32381CEE092900E10AF0 /* agg.xcodeproj */,
 				69DA322C1CEE08DC00E10AF0 /* metafile.xcodeproj */,
 				69DA32261CEE087D00E10AF0 /* cximage.xcodeproj */,
-				698AF4BB1C0740960080D889 /* icu.xcodeproj */,
 				17E17F561AC457CD00BEA2EA /* ASCOfficeDocxFile2Lib.xcodeproj */,
 				69DA32501CEE095900E10AF0 /* freetype.xcodeproj */,
 				69DA325C1CEE09BB00E10AF0 /* PPTXFormatLib.xcodeproj */,
@@ -732,14 +732,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		698AF4BC1C0740960080D889 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				698AF4C01C0740960080D889 /* libicu.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		69DA32271CEE087D00E10AF0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -820,6 +812,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		8A9FAC23207772CC007787F6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8A9FAC27207772CC007787F6 /* libicu.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -849,6 +849,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				8A9FAC2A207772D9007787F6 /* PBXTargetDependency */,
 				696DD7D11F5D98270021D0F3 /* PBXTargetDependency */,
 				691A8BD21E2FA68900DCB54A /* PBXTargetDependency */,
 				6967B1D01E27B9D000A129E2 /* PBXTargetDependency */,
@@ -873,7 +874,6 @@
 				69415FE51CB5246B003E771B /* PBXTargetDependency */,
 				69415FE21CB5245A003E771B /* PBXTargetDependency */,
 				69415FDF1CB5244D003E771B /* PBXTargetDependency */,
-				698AF4C21C0745930080D889 /* PBXTargetDependency */,
 				69DA32EE1CEE100400E10AF0 /* PBXTargetDependency */,
 				17C8DEDC1ACD6A3900902C85 /* PBXTargetDependency */,
 			);
@@ -935,8 +935,8 @@
 					ProjectRef = 6967B0CC1E27A35E00A129E2 /* HtmlFile.xcodeproj */;
 				},
 				{
-					ProductGroup = 698AF4BC1C0740960080D889 /* Products */;
-					ProjectRef = 698AF4BB1C0740960080D889 /* icu.xcodeproj */;
+					ProductGroup = 8A9FAC23207772CC007787F6 /* Products */;
+					ProjectRef = 8A9FAC22207772CC007787F6 /* icu.xcodeproj */;
 				},
 				{
 					ProductGroup = 69415FC41CB5243F003E771B /* Products */;
@@ -1132,13 +1132,6 @@
 			remoteRef = 696DD7CD1F5D981A0021D0F3 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		698AF4C01C0740960080D889 /* libicu.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libicu.a;
-			remoteRef = 698AF4BF1C0740960080D889 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		69DA322B1CEE087D00E10AF0 /* libcximage_ios.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1207,6 +1200,13 @@
 			fileType = archive.ar;
 			path = libUnicodeConverter.a;
 			remoteRef = 69EC66D11E01770D003527E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8A9FAC27207772CC007787F6 /* libicu.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libicu.a;
+			remoteRef = 8A9FAC26207772CC007787F6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1322,11 +1322,6 @@
 			name = OfficeCryptReader;
 			targetProxy = 696DD7D01F5D98270021D0F3 /* PBXContainerItemProxy */;
 		};
-		698AF4C21C0745930080D889 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = icu;
-			targetProxy = 698AF4C11C0745930080D889 /* PBXContainerItemProxy */;
-		};
 		69DA32D71CEE0FF300E10AF0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = graphics;
@@ -1376,6 +1371,11 @@
 			isa = PBXTargetDependency;
 			name = UnicodeConverter;
 			targetProxy = 69EC66D71E01774D003527E2 /* PBXContainerItemProxy */;
+		};
+		8A9FAC2A207772D9007787F6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = icu;
+			targetProxy = 8A9FAC29207772D9007787F6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

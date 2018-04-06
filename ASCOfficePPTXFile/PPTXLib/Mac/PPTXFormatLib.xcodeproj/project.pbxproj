@@ -831,6 +831,7 @@
 		696791821D9E8B81002CA4BA /* MathParaWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 696791801D9E8B81002CA4BA /* MathParaWrapper.cpp */; };
 		696791831D9E8B81002CA4BA /* MathParaWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 696791811D9E8B81002CA4BA /* MathParaWrapper.h */; };
 		697DFC1E200F51A700F0A9AF /* WavAudioFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697DFC1D200F51A600F0A9AF /* WavAudioFile.cpp */; };
+		8A9FACE120777BA7007787F6 /* Structures.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A9FACE020777BA7007787F6 /* Structures.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1661,6 +1662,7 @@
 		696791801D9E8B81002CA4BA /* MathParaWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MathParaWrapper.cpp; sourceTree = "<group>"; };
 		696791811D9E8B81002CA4BA /* MathParaWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MathParaWrapper.h; sourceTree = "<group>"; };
 		697DFC1D200F51A600F0A9AF /* WavAudioFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WavAudioFile.cpp; sourceTree = "<group>"; };
+		8A9FACE020777BA7007787F6 /* Structures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Structures.h; path = Drawing/Structures.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2272,6 +2274,7 @@
 				17D91A211AC5A4DF0096D788 /* PPTXWriter.h */,
 				17D91A221AC5A4DF0096D788 /* WMFToImageConverter.h */,
 				17D91A231AC5A4DF0096D788 /* XmlWriter.h */,
+				8A9FACE020777BA7007787F6 /* Structures.h */,
 			);
 			name = Editor;
 			path = ../../Editor;
@@ -2787,6 +2790,7 @@
 				69656F061FC2FF800028C4BA /* CSnip2DiagRect.h in Headers */,
 				17C1FCF51ACC429D006B99B3 /* HslEffect.h in Headers */,
 				69656DDA1FC2FF800028C4BA /* AccentCallout1Type.h in Headers */,
+				8A9FACE120777BA7007787F6 /* Structures.h in Headers */,
 				17C1FCF61ACC429D006B99B3 /* NotesTextViewPr.h in Headers */,
 				69656EA51FC2FF800028C4BA /* CDonut.h in Headers */,
 				17C1FCF71ACC429D006B99B3 /* AlphaCeiling.h in Headers */,

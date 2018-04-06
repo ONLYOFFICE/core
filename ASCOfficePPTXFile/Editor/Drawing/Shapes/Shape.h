@@ -82,6 +82,7 @@ public:
 	LONG					m_lDrawType;
 
 	std::wstring			m_strPPTXShape;
+	std::wstring			m_strXmlString; //alternative
 
 	NSBaseShape::ClassType  m_classType;
 

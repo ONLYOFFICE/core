@@ -81,13 +81,13 @@
 # include <io.h>
 #endif
 
-#ifdef UNIX
+#ifdef __unix__
 # ifndef HAS_MEMMAP
 #  define HAS_MEMMAP 1
 # endif
 #endif
 
-#ifdef UNIX
+#ifdef __unix__
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <unistd.h>
@@ -98,7 +98,7 @@
 #endif
 
 #ifdef macintosh
-# ifndef UNIX
+# ifndef __unix__
 #  include <unistd.h>
 _MSL_IMP_EXP_C int _dup(int);
 _MSL_IMP_EXP_C int _dup2(int,int);
@@ -673,13 +673,13 @@ urlfopen(const GURL &url,const char mode[])
 #endif
 }
 
-#ifdef UNIX
+#ifdef __unix__
 static int
 urlopen(const GURL &url, const int mode, const int perm)
 {
   return open((const char *)url.NativeFilename(),mode,perm);
 }
-#endif /* UNIX */
+#endif /* __unix__ */
 
 GUTF8String
 ByteStream::Stdio::init(const GURL &url, const char mode[])
@@ -1006,7 +1006,7 @@ ByteStream::create(const GURL &url,char const * const xmode)
 {
   GP<ByteStream> retval;
   const char *mode = ((xmode) ? xmode : "rb");
-#ifdef UNIX
+#ifdef __unix__
   if (!strcmp(mode,"rb")) 
     {
       int fd = urlopen(url,O_RDONLY,0777);

@@ -40,7 +40,7 @@
 #include <vector>
 #include <map>
 
-#ifdef LINUX
+#ifdef __unix__
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdio.h>
@@ -359,7 +359,7 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
     NSFile::CFileBinary::Remove(sTempFileForParams);
 #endif
 
-#ifdef LINUX
+#ifdef __unix__
     std::wstring sTempFileForParams = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"XML");
     NSFile::CFileBinary oFile;
     oFile.CreateFileW(sTempFileForParams);

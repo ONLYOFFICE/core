@@ -48,7 +48,7 @@
 #define U_TO_UTF8(val) NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(val.c_str(), (LONG)val.length())
 #define UTF8_TO_U(val) NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)val.c_str(), (LONG)val.length())
 
-#if defined(__linux__) || defined(_MAC) && !defined(_IOS)
+#if defined(__unix__) || defined(_MAC) && !defined(_IOS)
 #include <unistd.h>
 #include <string.h>
 #endif
@@ -1160,7 +1160,7 @@ namespace NSFile
         return std::wstring(buf);
 #endif
 
-#if defined(__linux__) || defined(_MAC) && !defined(_IOS)
+#if defined(__unix__) || defined(_MAC) && !defined(_IOS)
         char buf[NS_FILE_MAX_PATH];
         memset(buf, 0, NS_FILE_MAX_PATH);
         if (readlink ("/proc/self/exe", buf, NS_FILE_MAX_PATH) <= 0)

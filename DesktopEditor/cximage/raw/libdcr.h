@@ -42,7 +42,7 @@
  #include <sys/types.h>
 #endif
 
-#if defined(_LINUX) || defined(__APPLE__)
+#if defined(__unix__) || defined(__APPLE__)
  #include <setjmp.h>
  #include <sys/types.h>
  #define _swab   swab

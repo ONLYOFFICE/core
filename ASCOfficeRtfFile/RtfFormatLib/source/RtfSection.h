@@ -643,7 +643,7 @@ public:
 		DEFAULT_PROPERTY( m_nSrAuth)
 		DEFAULT_PROPERTY( m_nSrDate)
 
-		m_pOldSectionProp = RtfSectionPropertyPtr(NULL);
+		m_pOldSectionProp = RtfSectionPropertyPtr();
 	}
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);

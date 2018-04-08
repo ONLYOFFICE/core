@@ -50,7 +50,7 @@ CBaseShapePtr CBaseShape::CreateByType(NSBaseShape::ClassType ClassType, int Sha
 		return CPPTShape::CreateByType((PPTShapes::ShapeType)ShapeType);
 	}
 
-	return NULL;
+	return {};
 }
 
 bool CBaseShape::SetType(NSBaseShape::ClassType ClassType, int ShapeType)

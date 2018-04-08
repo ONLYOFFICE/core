@@ -1061,7 +1061,7 @@ CElementPtr CPPTUserInfo::AddLayoutSlidePlaceholder (CSlide *pSlide, int placeho
 
 	for (std::multimap<int, int>::iterator it = pLayout->m_mapPlaceholders.begin(); it != pLayout->m_mapPlaceholders.end(); ++it)
 	{
-		pElement = NULL;
+		pElement = {};
 		if (it->first == placeholderType )
 		{
 			if (idx_only == false)

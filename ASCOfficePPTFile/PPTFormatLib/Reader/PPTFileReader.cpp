@@ -53,7 +53,7 @@ CPPTFileReader::CPPTFileReader(POLE::Storage *pStorage, std::wstring strTemp):
 	   m_pStorage(pStorage),  
        m_bIsPPTFile(false),
 	   m_nPresentationCodePage(1250),
-	   m_pDocumentStream(NULL),  m_pPictureStream(NULL),	m_pDocumentSummaryStream(NULL), m_pEncryptedSummaryStream(NULL),
+	   m_pDocumentStream(),  m_pPictureStream(),	m_pDocumentSummaryStream(), m_pEncryptedSummaryStream(),
 	   m_strTmpDirectory(strTemp),
 	   m_oDocumentInfo()
 { 

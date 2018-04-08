@@ -67,7 +67,7 @@ SerArPtr SerAr::createSerAr(const unsigned char type)
 		break;
 	}
     
-    return NULL; // TODO: need fixed
+    return {}; // TODO: need fixed
 }
 
 

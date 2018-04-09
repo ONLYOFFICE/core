@@ -39,8 +39,6 @@
 #include "Limit/ContentStatus.h"
 #include "FileTypes.h"
 
-using namespace NSBinPptxRW;
-
 namespace PPTX
 {
 	class Core : public WrapperFile
@@ -105,9 +103,9 @@ namespace PPTX
 
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
-			pWriter->StartRecord(NSMainTables::Core);
+			pWriter->StartRecord(NSBinPptxRW::NSMainTables::Core);
 
-			pWriter->WriteBYTE(g_nodeAttributeStart);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
 			pWriter->WriteString2(0, title);
 			pWriter->WriteString2(1, creator);
@@ -116,7 +114,7 @@ namespace PPTX
 			pWriter->WriteString2(4, created);
 			pWriter->WriteString2(5, modified);
 
-			pWriter->WriteBYTE(g_nodeAttributeEnd);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->EndRecord();
 		}

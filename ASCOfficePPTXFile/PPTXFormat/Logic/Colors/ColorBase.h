@@ -548,9 +548,18 @@ namespace PPTX
 		public:
 			void SetHexString(const std::wstring& val)
 			{
-				red		= HexString2Int(val.substr(0, 2));
-				green	= HexString2Int(val.substr(2, 2));
-				blue	= HexString2Int(val.substr(4, 2));
+				if (val.length() == 6)
+				{
+					red		= HexString2Int(val.substr(0, 2));
+					green	= HexString2Int(val.substr(2, 2));
+					blue	= HexString2Int(val.substr(4, 2));
+				}
+				else if (val.length() == 3)
+				{
+					red		= HexString2Int(val.substr(0, 1) + val.substr(0, 1));
+					green	= HexString2Int(val.substr(1, 1) + val.substr(1, 1));
+					blue	= HexString2Int(val.substr(2, 1) + val.substr(2, 1));
+				}
 			}
 
 			std::vector<ColorModifier> Modifiers;

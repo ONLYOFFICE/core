@@ -209,25 +209,25 @@ namespace NSBinPptxRW
 			LONG nCountSlides	= 0;
 			bool bNotesMasterPresent = false;
 
-			pPair = m_mainTables.find(NSMainTables::Themes);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Themes);
 			if (m_mainTables.end()  != pPair)
 			{
 				m_oReader.Seek(pPair->second);
 				nCountThemes = m_oReader.GetLong();
 			}
-			pPair = m_mainTables.find(NSMainTables::SlideMasters);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::SlideMasters);
 			if (m_mainTables.end()  != pPair)
 			{
 				m_oReader.Seek(pPair->second);
 				nCountMasters = m_oReader.GetLong();
 			}
-			pPair = m_mainTables.find(NSMainTables::SlideLayouts);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::SlideLayouts);
 			if (m_mainTables.end()  != pPair)
 			{
 				m_oReader.Seek(pPair->second);
 				nCountLayouts = m_oReader.GetLong();
 			}
-			pPair = m_mainTables.find(NSMainTables::Slides);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Slides);
 			if (m_mainTables.end()  != pPair)
 			{
 				m_oReader.Seek(pPair->second);
@@ -256,7 +256,7 @@ namespace NSBinPptxRW
 				m_arSlides_Notes.push_back(-1);			
 
 	// ThemeRels
-			pPair = m_mainTables.find(NSMainTables::ThemeRels);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::ThemeRels);
 			if (m_mainTables.end()  != pPair)
 			{
 				m_oReader.Seek(pPair->second);
@@ -286,7 +286,7 @@ namespace NSBinPptxRW
 			}
 
 	// готово, теперь нужно слайдам проставить шаблоны
-			pPair = m_mainTables.find(NSMainTables::SlideRels);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::SlideRels);
 			if (m_mainTables.end()  != pPair)
 			{
 				m_oReader.Seek(pPair->second);
@@ -304,7 +304,7 @@ namespace NSBinPptxRW
 						m_arSlides_Layout[index++] = m_oReader.GetULong();
 				}
 			}
-			pPair = m_mainTables.find(NSMainTables::SlideNotesRels);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::SlideNotesRels);
 			if (m_mainTables.end()  != pPair)
 			{
 				m_oReader.Seek(pPair->second);
@@ -323,7 +323,7 @@ namespace NSBinPptxRW
 				}
 			}
 
-			pPair = m_mainTables.find(NSMainTables::NotesMastersRels);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::NotesMastersRels);
 			if (m_mainTables.end()  != pPair)
 			{
 				m_oReader.Seek(pPair->second);
@@ -377,7 +377,7 @@ namespace NSBinPptxRW
 				m_arSlideMasters_Theme[i].m_lThemeIndex = arThemesDst[i];
 			}			
 	// themes
-			pPair = m_mainTables.find(NSMainTables::Themes);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Themes);
 			if (m_mainTables.end()  != pPair)
 			{
                 OOX::CPath pathFolder = m_oReader.m_strFolderThemes;
@@ -420,7 +420,7 @@ namespace NSBinPptxRW
 			}
 
 	// slideMasters
-			pPair = m_mainTables.find(NSMainTables::SlideMasters);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::SlideMasters);
 			if (m_mainTables.end()  != pPair)
 			{
                 OOX::CPath pathFolder = m_strDstFolder  + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("slideMasters");
@@ -472,7 +472,7 @@ namespace NSBinPptxRW
 			}
 
 	// slideLayouts
-			pPair = m_mainTables.find(NSMainTables::SlideLayouts);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::SlideLayouts);
 			if (m_mainTables.end()  != pPair)
 			{
                 OOX::CPath pathFolder = m_strDstFolder + FILE_SEPARATOR_STR+ _T("ppt")  + FILE_SEPARATOR_STR + _T("slideLayouts");
@@ -507,7 +507,7 @@ namespace NSBinPptxRW
 				}
 			}
 	// notes
-			pPair = m_mainTables.find(NSMainTables::NotesSlides);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::NotesSlides);
 			if (m_mainTables.end()  != pPair)
 			{
 				m_oReader.Seek(pPair->second);
@@ -556,7 +556,7 @@ namespace NSBinPptxRW
 				}
 			}
 	// noteMasters
-			pPair = m_mainTables.find(NSMainTables::NotesMasters);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::NotesMasters);
 			if (m_mainTables.end()  != pPair)
 			{
 				m_oReader.Seek(pPair->second);
@@ -601,7 +601,7 @@ namespace NSBinPptxRW
 			}
 	// slides
 			int nComment = 1;
-			pPair = m_mainTables.find(NSMainTables::Slides);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Slides);
 			if (m_mainTables.end()  != pPair)
 			{
                 OOX::CPath pathFolder = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("slides");
@@ -658,7 +658,7 @@ namespace NSBinPptxRW
             if (false)
 			{
 				// app
-				pPair = m_mainTables.find(NSMainTables::App);
+				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::App);
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
@@ -666,7 +666,7 @@ namespace NSBinPptxRW
 				}
 
 				// core
-				pPair = m_mainTables.find(NSMainTables::Core);
+				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Core);
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
@@ -674,7 +674,7 @@ namespace NSBinPptxRW
 				}
 
 				// tableStyles
-				pPair = m_mainTables.find(NSMainTables::TableStyles);
+				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::TableStyles);
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
@@ -682,7 +682,7 @@ namespace NSBinPptxRW
 				}
 
 				// presProps
-				pPair = m_mainTables.find(NSMainTables::PresProps);
+				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::PresProps);
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
@@ -690,7 +690,7 @@ namespace NSBinPptxRW
 				}
 
 				// viewProps
-				pPair = m_mainTables.find(NSMainTables::ViewProps);
+				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::ViewProps);
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
@@ -707,7 +707,7 @@ namespace NSBinPptxRW
 				CreateDefaultViewProps();
 
 		// presProps
-				pPair = m_mainTables.find(NSMainTables::PresProps);
+				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::PresProps);
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
@@ -718,7 +718,7 @@ namespace NSBinPptxRW
 					CreateDefaultPresProps();
 				}
 
-				pPair = m_mainTables.find(NSMainTables::TableStyles);
+				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::TableStyles);
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
@@ -771,7 +771,7 @@ namespace NSBinPptxRW
 			
 	// presentation
 			bool bIsAuthors = false;
-			pPair = m_mainTables.find(NSMainTables::Presentation);
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Presentation);
 			if (m_mainTables.end()  != pPair)
 			{
                 OOX::CPath pathFolder		= m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt");

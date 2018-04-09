@@ -46,8 +46,6 @@
 #include "ViewProps/SlideViewPr.h"
 #include "ViewProps/SorterViewPr.h"
 
-using namespace NSBinPptxRW;
-
 namespace PPTX
 {
 	class ViewProps : public WrapperFile, public PPTX::FileContainer
@@ -126,14 +124,14 @@ namespace PPTX
 
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
-			pWriter->StartRecord(NSMainTables::ViewProps);
+			pWriter->StartRecord(NSBinPptxRW::NSMainTables::ViewProps);
 
-			pWriter->WriteBYTE(g_nodeAttributeStart);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
 			pWriter->WriteLimit2(0, attrLastView);
 			pWriter->WriteBool2(1, attrShowComments);
 
-			pWriter->WriteBYTE(g_nodeAttributeEnd);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord2(0, GridSpacing);
 			pWriter->WriteRecord2(1, NormalViewPr);

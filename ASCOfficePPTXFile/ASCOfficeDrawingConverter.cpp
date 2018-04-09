@@ -59,7 +59,6 @@
 
 const double g_emu_koef	= 25.4 * 36000 / 72.0;
 
-using namespace NSGuidesVML;
 
 void DUMP_MESSAGE_TO_FILE(const char* strMessage)
 {
@@ -853,6 +852,10 @@ bool CElementProps::CopyProperty(ASC_VARIANT& oDst, const ASC_VARIANT& oSrc)
 	}
 	return true;
 }
+
+namespace NSBinPptxRW
+{
+
 CDrawingConverter::CElement::CElement()
 {
 	m_pElement	= NULL;
@@ -2864,6 +2867,8 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 			CheckPenShape(elem, oNodeShape, pPPTShape);		
 		
 		CheckBrushShape(elem, oNodeShape, pPPTShape);
+
+		CheckBorderShape(elem, oNodeShape, pPPTShape);
 	}
 }
 
@@ -3913,6 +3918,84 @@ void CDrawingConverter::SendMainProps(const std::wstring& strMainProps, std::wst
 {
 	*pMainProps = new std::wstring();
 	**pMainProps = strMainProps;
+}
+void CDrawingConverter::CheckBorderShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape)
+{
+	if (!oElem) return;
+
+	PPTX::Logic::Shape* pShape		= dynamic_cast<PPTX::Logic::Shape*>	(oElem->GetElem().operator ->());
+	PPTX::Logic::Pic*	pPicture	= dynamic_cast<PPTX::Logic::Pic*>	(oElem->GetElem().operator ->());
+
+	PPTX::Logic::SpPr *pSpPr = NULL;
+
+	if (pShape)		pSpPr = &pShape->spPr; 	
+	if (pPicture)	pSpPr = &pPicture->spPr;
+
+	if (!pSpPr) return;
+	
+	if ( (pSpPr->ln.IsInit()) && (pSpPr->ln->Fill.m_type != PPTX::Logic::UniFill::noFill) )
+		return; //дублирование обрамлением линией
+
+	nullable_string sColorBorder;
+	oNode.ReadAttributeBase(L"o:borderleftcolor", sColorBorder);
+	
+	XmlUtils::CXmlNode oNodeBorder = oNode.ReadNode(L"w10:borderleft");
+
+	if (oNodeBorder.IsValid())
+	{
+		pSpPr->ln.Init();
+		nullable_int nWidthBorder;
+		oNode.ReadAttributeBase(L"width", nWidthBorder);
+		
+		nullable_string sTypeBorder;
+		oNode.ReadAttributeBase(L"type", sTypeBorder);
+
+		if (sTypeBorder.IsInit())
+		{
+			SimpleTypes::CBorderType<> borderType;
+			borderType.FromString(sTypeBorder.get());
+			
+			if (borderType.GetValue() > 0 && 
+				borderType.GetValue() < 6)
+			{
+				pSpPr->ln->prstDash.Init();
+				pSpPr->ln->prstDash->val = new PPTX::Limit::PrstDashVal();
+				switch(borderType.GetValue())
+				{
+					case SimpleTypes::bordertypeDash:			pSpPr->ln->prstDash->val->SetBYTECode(3); break;
+					case SimpleTypes::bordertypeDashDotDot:		pSpPr->ln->prstDash->val->SetBYTECode(5); break;
+					case SimpleTypes::bordertypeDashDotStroked:	pSpPr->ln->prstDash->val->SetBYTECode(1); break;
+					case SimpleTypes::bordertypeDashedSmall:	pSpPr->ln->prstDash->val->SetBYTECode(0); break;
+					case SimpleTypes::bordertypeDot:			pSpPr->ln->prstDash->val->SetBYTECode(2); break;
+					case SimpleTypes::bordertypeDotDash:		pSpPr->ln->prstDash->val->SetBYTECode(1); break;
+				}
+			}
+
+		}
+		if (nWidthBorder.IsInit())
+		{
+			pSpPr->ln->w = *nWidthBorder * g_emu_koef;//pt to emu
+		}
+		if (sColorBorder.IsInit())
+		{
+			PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+            pSolid->m_namespace = L"a";
+			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+			
+			if (std::wstring::npos != sColorBorder->find(L"#"))
+			{
+				pSolid->Color.Color->SetHexString(sColorBorder->substr(1));
+			}
+			else
+			{
+				//"red", L"black" , .. to color
+			}
+
+			pSpPr->ln->Fill.m_type	= PPTX::Logic::UniFill::solidFill;
+			pSpPr->ln->Fill.Fill	= pSolid;
+
+		}
+	}
 }
 
 void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape)
@@ -5571,4 +5654,5 @@ void CDrawingConverter::SetFontManager(CFontManager* pFontManager)
 	{
 		m_pBinaryWriter->m_pCommon->m_pMediaManager->SetFontManager(pFontManager);
 	}
+}
 }

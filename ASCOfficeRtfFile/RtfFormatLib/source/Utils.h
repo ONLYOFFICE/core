@@ -776,7 +776,7 @@ public:
 				sResult.erase(outsize_with_0 - 1);
                 ansi = false;
             }
-#else
+#elif defined(__linux__)
             std::string sCodepage =  "CP" + std::to_string(nCodepage);
 
             iconv_t ic= iconv_open("WCHAR_T", sCodepage.c_str());

@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "FileDownloader.h"
+#include "FileDownloader_private.h"
 
 
 #include <wininet.h>
@@ -342,7 +342,7 @@ protected:
     }
 };
 
-CFileDownloader::CFileDownloader(std::wstring sFileUrl, bool bDelete)
+CFileDownloader_private::CFileDownloader_private(std::wstring sFileUrl, bool bDelete)
 {
     m_pInternal = new CFileDownloaderBaseWin(sFileUrl, bDelete);
 }

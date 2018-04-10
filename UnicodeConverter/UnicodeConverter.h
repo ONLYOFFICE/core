@@ -57,7 +57,11 @@ namespace NSUnicodeConverter
         std::wstring toUnicode(const char* sInput, const unsigned int& nInputLen, const char* converterName);
         std::wstring toUnicode(const std::string& sSrc, const char* sCodePage);
 
+        std::wstring toUnicode(const char* sInput, const unsigned int& nInputLen, int nCodePage);
+        std::wstring toUnicode(const std::string& sSrc, int nCodePage);
+
         std::wstring toUnicodeExact(const char* sInput, const unsigned int& nInputLen, const char* converterName);
+        std::wstring toUnicodeExact(const char* sInput, const unsigned int& nInputLen, int nCodePage);
     private:
         CUnicodeConverter_Private* m_pInternal;
 	};

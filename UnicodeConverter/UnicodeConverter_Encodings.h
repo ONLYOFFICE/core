@@ -32,6 +32,10 @@
 #ifndef _SERVER_COMPONENTS_UNICODE_CONVERTER_ENCODINGS_H
 #define _SERVER_COMPONENTS_UNICODE_CONVERTER_ENCODINGS_H
 
+#pragma once
+
+#include <map>
+
 namespace NSUnicodeConverter
 {
     struct EncodindId
@@ -116,6 +120,86 @@ namespace NSUnicodeConverter
         { 50,   12000, "UTF-32LE",         "Unicode (UTF-32)" },
         { 51,   12001, "UTF-32BE",         "Unicode (UTF-32 Big Endian)" }
     };
+
+    static std::map<int, std::string> create_mapEncodingsICU()
+    {
+		std::map<int, std::string> m;
+		m[28596]	= "ISO-8859-6";
+		m[720]		= "DOS-720";
+		m[1256]		= "windows-1256";
+
+		m[28594]	= "ISO-8859-4";
+		m[28603]	= "ISO-8859-13";
+		m[775]		= "IBM775";
+		m[1257]		= "windows-1257";
+
+		m[28604]	= "ISO-8859-14";
+
+		m[28595]	= "ISO-8859-5";
+		m[20866]	= "KOI8-R";
+		m[21866]	= "KOI8-U";
+		m[10007]	= "x-mac-cyrillic";
+		m[855]		= "IBM855";
+		m[866]		= "cp866";
+		m[1251]		= "windows-1251";
+
+		m[852]		= "IBM852";
+		m[1250]		= "windows-1250";
+
+		m[950]		= "Big5";
+		m[936]		= "GB2312";
+
+		m[28592]	= "ISO-8859-2";
+
+		m[28597]	= "ISO-8859-7";
+		m[737]		= "IBM737";
+		m[869]		= "IBM869";
+		m[1253]		= "windows-1253";
+
+		m[28598]	= "ISO-8859-8";
+		m[862]		= "DOS-862";
+		m[1255]		= "windows-1255";
+
+		m[932]		= "Shift_JIS";
+
+		m[949]		= "KS_C_5601-1987";
+		m[51949]	= "EUC-KR";
+
+		m[861]		= "IBM861";
+		m[865]		= "IBM865";
+
+		m[874]		= "windows-874";
+
+		m[28593]	= "ISO-8859-3";
+		m[28599]	= "ISO-8859-9";
+		m[857]		= "IBM857";
+		m[1254]		= "windows-1254";
+
+		m[28591]	= "ISO-8859-1";
+		m[28605]	= "ISO-8859-15";
+		m[850]		= "IBM850";
+		m[858]		= "IBM858";
+		m[860]		= "IBM860";
+		m[863]		= "IBM863";
+		m[437]		= "IBM437";
+		m[1252]		= "windows-1252";
+
+		m[1258]		= "windows-1258";
+
+		m[65001]	= "UTF-8";
+		m[65000]	= "UTF-7";
+
+		m[1200]		= "UTF-16LE";
+		m[1201]		= "UTF-16BE";
+
+		m[12000]	= "UTF-32LE";
+		m[12001]	= "UTF-32BE";
+
+		m[10000]	= "macintosh";
+		return m;
+	}
+    static const std::map<int, std::string> mapEncodingsICU = create_mapEncodingsICU();
+
 }
 
 #endif // _SERVER_COMPONENTS_UNICODE_CONVERTER_ENCODINGS_H

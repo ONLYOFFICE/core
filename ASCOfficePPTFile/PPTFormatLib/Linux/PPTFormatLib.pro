@@ -175,6 +175,7 @@ SOURCES += \
     ../Reader/SlidePersist.cpp \
     ../Records/Animations/AnimationTypes.cpp \
     ../Records/Drawing/ArtBlip.cpp \
+    ../Records/Drawing/ShapeContainer.cpp \
     ../PPTXWriter/Converter.cpp \
     ../PPTXWriter/ShapeWriter.cpp
 }

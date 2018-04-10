@@ -66,10 +66,10 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
   
-    text_text(const std::wstring & Text) :  text_(Text) {};
-    text_text() {};
+    text_text(const std::wstring & Text) :  text_(Text) {}
+    text_text() {}
 
-    std::wstring & attr_text() { return text_; };
+    std::wstring & attr_text() { return text_; }
 
     virtual void add_text(const std::wstring & Text);
 
@@ -263,7 +263,7 @@ public:
 
 public:
     text_reference_mark_start() {}
-    text_reference_mark_start(const std::wstring & Name) : text_name_(Name){};
+    text_reference_mark_start(const std::wstring & Name) : text_name_(Name){}
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}

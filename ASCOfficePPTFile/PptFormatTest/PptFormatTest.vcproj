@@ -44,7 +44,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../DesktopEditor/xml/build/vs2005;../../DesktopEditor/xml/libxml2/include"
+				AdditionalIncludeDirectories="../../DesktopEditor/xml/build/vs2005;../../DesktopEditor/xml/libxml2/include;&quot;../../DesktopEditor/freetype-2.5.2/include&quot;"
 				PreprocessorDefinitions="_DEBUG;_CONSOLE;_USE_MATH_DEFINES;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;_PRESENTATION_WRITER_;_SVG_CONVERT_TO_IMAGE_;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -346,7 +346,35 @@
 			Name="common"
 			>
 			<File
+				RelativePath="..\..\ASCOfficePPTXFile\Editor\BinaryFileReaderWriter.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\XlsxSerializerCom\Reader\ChartFromToBinary.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\XlsxSerializerCom\Common\Common.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\XlsxSerializerCom\Reader\CommonWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\XlsxSerializerCom\Reader\CSVReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\XlsxSerializerCom\Writer\CSVWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\FileDownloader\FileDownloader_win.cpp"
 				>
 			</File>
 			<File
@@ -354,11 +382,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCOfficeDocxFile2\BinReader\Readers.cpp"
+				RelativePath="..\..\Common\3dParty\pole\pole.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\UnicodeConverter\UnicodeConverter.cpp"
+				RelativePath="..\..\ASCOfficeDocxFile2\BinReader\Readers.cpp"
 				>
 			</File>
 			<File
@@ -371,7 +399,27 @@
 			</File>
 		</Filter>
 		<File
+			RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\ChartWriter.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp"
+			>
+		</File>
+		<File
 			RelativePath="PptFormatTest.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\build\lib\win_32\UnicodeConverter.lib"
+			>
+		</File>
+		<File
+			RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp"
 			>
 		</File>
 	</Files>

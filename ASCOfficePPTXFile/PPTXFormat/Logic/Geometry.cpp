@@ -93,18 +93,14 @@ namespace PPTX
 				pOOXToVMLGeometry->NewShape();
 
 			NSPresentationEditor::CGraphicPath oGrPath;			
-			CMetricInfo oMetricInfo;
 
 			for (size_t nIndex = 0; nIndex < oPath.m_arParts.size(); ++nIndex)
 			{
 				oGrPath.Clear();
-				oPath.m_arParts[nIndex].ToRendererOOX(&oGrPath, oInfo, oMetricInfo, NSBaseShape::pptx);
+				oPath.m_arParts[nIndex].ToRendererOOX(&oGrPath, oInfo, NSBaseShape::pptx);
 
 				pOOXToVMLRenderer->put_PenAlpha(oGrPath.m_bStroke ? 255 : 0);
 				pOOXToVMLRenderer->put_BrushAlpha1(oGrPath.m_bFill ? 255 : 0);
-
-				oGrPath.m_dWidthMM = (double)lCoordSize / dCoordSizeX;
-				oGrPath.m_dHeightMM = (double)lCoordSize / dCoordSizeY;
 
 				oGrPath.Draw(pOOXToVMLRenderer);
 			}

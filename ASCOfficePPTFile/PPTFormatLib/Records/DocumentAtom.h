@@ -53,8 +53,6 @@ public:
 
 	BOOL1 m_bShowComments;
 
-public:
-	
 	CRecordDocumentAtom()
 	{
 	}

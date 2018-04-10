@@ -33,7 +33,6 @@
 
 #include "unicode/utypes.h"
 #include "unicode/ustring.h"
-#include "unicode/ures.h"
 #include "unicode/ucnv.h"     /* C   Converter API    */
 
 #include "../DesktopEditor/common/File.h"

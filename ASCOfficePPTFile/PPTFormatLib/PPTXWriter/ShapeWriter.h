@@ -135,18 +135,14 @@ namespace NSPresentationEditor
 		return _T("body");
 	}
 
-	class CShapeWriter : public IRenderer
+	class CShapeWriter
 	{
 	private:
 		NSPresentationEditor::CStringWriter		m_oWriterPath;
 		NSPresentationEditor::CStringWriter		m_oWriterVML;
 		NSPresentationEditor::CStringWriter		m_oWriter;
-		NSPresentationEditor::CDoubleRect		m_oBounds;
-		NSPresentationEditor::CDoubleRect		m_oTextRect;
-		NSPresentationEditor::CMetricInfo		m_oMetricInfo;
 
-		NSPresentationEditor::CShapeElement*	m_pShapeElement;
-		NSPresentationEditor::CImageElement*	m_pImageElement;
+		NSPresentationEditor::CElementPtr		m_pElement;
 		
 		NSPresentationEditor::CRelsGenerator*	m_pRels;
 
@@ -154,6 +150,10 @@ namespace NSPresentationEditor
 
 		bool									m_bWordArt;
 		bool									m_bTextBox;
+		
+		std::wstring							m_xmlGeomAlternative;
+		std::wstring							m_xmlTxBodyAlternative;
+		std::wstring							m_xmlAlternative;
 	public:	
 
 		CShapeWriter();
@@ -172,13 +172,16 @@ namespace NSPresentationEditor
 
 		bool SetElement(CElementPtr pElem);
 //--------------------------------------------------------------------
-            std::wstring	ConvertShape	();
+			std::wstring	ConvertGroup	();
+			std::wstring	ConvertShape	();
             std::wstring	ConvertImage	();
             std::wstring	ConvertLine		(CPen		& pen);
             std::wstring	ConvertShadow	(CShadow	& shadow);
             std::wstring	ConvertBrush	(CBrush		& brush);
 			std::wstring	ConvertLineEnd	(unsigned char cap, unsigned char length, unsigned char width);
     static	std::wstring	ConvertColor	(CColor		& color, long alpha);
+
+	void	ParseXmlAlternative(const std::wstring & xml);
 // тип рендерера-----------------------------------------------------------------------------
     virtual HRESULT get_Type(LONG* lType)	;
 //-------- Функции для работы со страницей --------------------------------------------------
@@ -395,9 +398,6 @@ namespace NSPresentationEditor
 
 		CFont							m_oInstalledFont;
 
-		double							m_dWidth;
-		double							m_dHeight;
-
 	public:
 		inline void MoveTo(const double& dX, const double& dY)
 		{
@@ -447,8 +447,8 @@ namespace NSPresentationEditor
 			m_oWriterPath.WriteString(str);
 		}
 
+		void WriteGroupInfo();
 		void WriteShapeInfo();
-
 		void WriteImageInfo();
 		void WriteTextInfo();
 	};

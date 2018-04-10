@@ -55,11 +55,7 @@
 #include "../../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
-#ifndef EMU_MM
-#define EMU_MM 36000.0
-#endif
-
-#define		FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
+#define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
 
 using namespace NSOfficeDrawing;
 using namespace NSPresentationEditor;
@@ -95,25 +91,17 @@ public:
 
 	bool bGroupShape;
 
-	RECT* m_pGroupBounds;
-	RECT* m_pGroupClientAnchor;
-
 	CRecordShapeContainer()
 	{
 		bGroupShape = false;
 
 		m_pStream = NULL;
 
-		m_pGroupBounds = NULL;
-		m_pGroupClientAnchor = NULL;
 	}
 
 	~CRecordShapeContainer()
 	{
 		m_pStream = NULL;
-
-		m_pGroupBounds = NULL;
-		m_pGroupClientAnchor = NULL;
 	}
 
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
@@ -123,10 +111,10 @@ public:
 	}
 
 
-	CElementPtr GetElement (CExMedia* pMapIDs,
-							long lSlideWidth, long lSlideHeight, CTheme* pTheme, CLayout* pLayout, 
+	CElementPtr GetElement (bool inGroup, CExMedia* pMapIDs,
+							CTheme* pTheme, CLayout* pLayout, 
 							CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide = NULL);
-	void RecalcGroupShapeAnchor(CDoubleRect& rcChildAnchor);
+
 	NSPresentationEditor::ElementType GetTypeElem(SPT eType)
 	{
 		switch (eType)

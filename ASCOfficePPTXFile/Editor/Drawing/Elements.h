@@ -408,7 +408,7 @@ namespace NSPresentationEditor
 
 			m_pShape = CShapePtr( new CShape(ClassType, eType));
 
-			m_pShape->m_rcBounds		= m_rcBounds;
+			m_pShape->m_rcBounds	= m_bChildAnchorEnabled ? m_rcChildAnchor : m_rcAnchor;
 
 			m_pShape->m_dStartTime	= m_dStartTime;
 			m_pShape->m_dStartTime	= m_dEndTime;
@@ -436,18 +436,18 @@ namespace NSPresentationEditor
 			
 			m_ClassType = m_pShape->getBaseShape()->GetClassType();
 		}
-		virtual void NormalizeCoordsByMetric()
-		{
-			CElement::NormalizeCoordsByMetric();
+		//virtual void NormalizeCoordsByMetric()
+		//{
+		//	CElement::NormalizeCoordsByMetric();
 
-			double dScaleX				= (double)m_oMetric.m_lUnitsHor / m_oMetric.m_lMillimetresHor;
-			double dScaleY				= (double)m_oMetric.m_lUnitsVer	/ m_oMetric.m_lMillimetresVer;
+		//	double dScaleX				= (double)m_oMetric.m_lUnitsHor / m_oMetric.m_lMillimetresHor;
+		//	double dScaleY				= (double)m_oMetric.m_lUnitsVer	/ m_oMetric.m_lMillimetresVer;
 
-			m_pShape->m_oText.m_oBounds.left		= (int)(dScaleX * m_pShape->m_oText.m_oBounds.left);
-			m_pShape->m_oText.m_oBounds.right	= (int)(dScaleX * m_pShape->m_oText.m_oBounds.right);
-			m_pShape->m_oText.m_oBounds.top		= (int)(dScaleY * m_pShape->m_oText.m_oBounds.top);
-			m_pShape->m_oText.m_oBounds.bottom	= (int)(dScaleY * m_pShape->m_oText.m_oBounds.bottom);
-		}
+		//	m_pShape->m_oText.m_oBounds.left		= (int)(dScaleX * m_pShape->m_oText.m_oBounds.left);
+		//	m_pShape->m_oText.m_oBounds.right	= (int)(dScaleX * m_pShape->m_oText.m_oBounds.right);
+		//	m_pShape->m_oText.m_oBounds.top		= (int)(dScaleY * m_pShape->m_oText.m_oBounds.top);
+		//	m_pShape->m_oText.m_oBounds.bottom	= (int)(dScaleY * m_pShape->m_oText.m_oBounds.bottom);
+		//}
 		virtual ~CShapeElement()
 		{
 		}
@@ -793,6 +793,34 @@ namespace NSPresentationEditor
 			return pElement;
 		}
 	};
+
+	class CGroupElement : public CElement
+	{
+	public:
+		CGroupElement() : CElement()
+		{
+			m_etType = etGroup;
+		}
+		virtual ~CGroupElement()
+		{
+		}
+		virtual CElementPtr CreateDublicate()
+		{
+			CGroupElement* pGroupElement = new CGroupElement();
+
+			CElementPtr	pElement = CElementPtr(	pGroupElement );
+			
+			SetProperiesToDublicate(pElement);
+
+			return pElement;
+		}
+        AVSINLINE std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false)
+		{
+
+			return L"";		
+		}
+	};
+
 
 }
 

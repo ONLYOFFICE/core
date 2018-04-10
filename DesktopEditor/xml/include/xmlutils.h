@@ -35,10 +35,15 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <deque>
 
-#include "../../common/File.h"
-#include "../../common/StringBuilder.h"
+#include "../../DesktopEditor/common/StringBuilder.h"
+
+#ifndef XMLUTILS_USE_DYNAMIC_LIBRARY
+#define XMLUTILS_DECL_EXPORT
+#else
+#include "../../DesktopEditor/common/base_export.h"
+#define XMLUTILS_DECL_EXPORT Q_DECL_EXPORT
+#endif
 
 namespace XmlUtils
 {
@@ -66,7 +71,7 @@ namespace XmlUtils
 	} XmlNodeType;
 
 	class CXmlLiteReader_Private;
-	class CXmlLiteReader
+	class XMLUTILS_DECL_EXPORT CXmlLiteReader
 	{
 	protected:
 		CXmlLiteReader_Private* m_pInternal;
@@ -77,7 +82,7 @@ namespace XmlUtils
 		
         public:
 
-                void Clear();
+		void Clear();
 		bool IsValid();
 
 		bool FromFile	(const wchar_t* sFilePath);
@@ -116,35 +121,20 @@ namespace XmlUtils
         bool IsEmptyElement();
 	};
 
-	class IXmlDOMDocument
+	class XMLUTILS_DECL_EXPORT IXmlDOMDocument
 	{
 	private:
 		unsigned int m_lRef;
 
 	public:
-		IXmlDOMDocument()
-		{
-			m_lRef = 1;
-		}
-		virtual ~IXmlDOMDocument()
-		{
-		}
+		IXmlDOMDocument();
+		virtual ~IXmlDOMDocument();
 
-		virtual unsigned int AddRef()
-		{
-			++m_lRef;
-			return m_lRef;
-		}
-		virtual unsigned int Release()
-		{
-			unsigned int lReturn = --m_lRef;
-			if (0 == m_lRef)
-				delete this;
-			return lReturn;
-		}
+		virtual unsigned int AddRef();
+		virtual unsigned int Release();
 	};
 
-	class CXmlNodeBase : public IXmlDOMDocument
+	class XMLUTILS_DECL_EXPORT CXmlNodeBase : public IXmlDOMDocument
 	{
 	public:
 		IXmlDOMDocument* m_pDocument;
@@ -166,7 +156,7 @@ namespace XmlUtils
 	};
 
 	class CXmlNode;
-	class CXmlNodes
+	class XMLUTILS_DECL_EXPORT CXmlNodes
 	{
 	private:
 		std::vector<CXmlNode> m_nodes;
@@ -181,7 +171,7 @@ namespace XmlUtils
 	};
 
 
-	class CXmlNode
+	class XMLUTILS_DECL_EXPORT CXmlNode
 	{
 	private:
 		CXmlNodeBase* m_pBase;
@@ -255,75 +245,25 @@ namespace XmlUtils
 
 		CXmlNode& operator=(const CXmlNode& oSrc);
 
-        public:
-                std::wstring private_GetXml();
-                std::wstring private_GetXml(const std::wstring& strDefaultValue = L"");
-                std::wstring private_GetXmlFast();
-                std::wstring private_GetXmlFast(const std::wstring& strDefaultValue);
+public:
+        std::wstring private_GetXml();
+        std::wstring private_GetXml(const std::wstring& strDefaultValue = L"");
+        std::wstring private_GetXmlFast();
+        std::wstring private_GetXmlFast(const std::wstring& strDefaultValue);
 
-        public:
-                template <typename T>
-                void LoadArray(const std::wstring& sName, std::vector<T>& arList)
-                {
-                    CXmlNodes oNodes;
-                    if (GetNodes(sName, oNodes))
-                    {
-                        int nCount = oNodes.GetCount();
-                        for (int i = 0; i < nCount; ++i)
-                        {
-                            CXmlNode oItem;
-                            oNodes.GetAt(i, oItem);
-
-                            arList.push_back(T());
-                            arList[i].fromXML(oItem);
-                        }
-                    }
-                }
-                template <typename T>
-                void LoadArray(const std::wstring& sName, const std::wstring& sSubName, std::vector<T>& arList)
-                {
-                    CXmlNode oNode;
-                    if (GetNode(sName, oNode))
-                        oNode.LoadArray(sSubName, arList);
-                }
-                template<typename T>
-                void ReadAttributeBase(const wchar_t* bsName, T& value)
-                {
-                    std::wstring sAttr;
-                    if (GetAttributeIfExist(bsName, sAttr))
-                        value = sAttr;
-                }
-                template<typename T>
-                void ReadAllAttributes(T& strNames, T& strValues)
-                {
-                    if (!IsValid())
-                        return;
-
-                    std::map<std::string, std::string>::iterator p;
-                    for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
-                    {
-                        strNames.push_back  (NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->first.c_str(), (long)p->first.length()));
-                        strValues.push_back (NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->second.c_str(), (long)p->second.length()));
-                    }
-                }
-                template<typename T>
-                void ReadAllAttributesA(T& strNames, T& strValues)
-                {
-                    if (!IsValid())
-                        return;
-
-                    std::map<std::string, std::string>::iterator p;
-                    for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
-                    {
-                        strNames.push_back(p->first);
-                        strValues.push_back(p->second);
-                    }
-                }
-                template <typename T>
-                void ReadNodeValueBase(const wchar_t* bsName, T& value)
-                {
-                    value = ReadNodeTextBase(bsName);
-                }
+public:
+        template <typename T>
+        void LoadArray(const std::wstring& sName, std::vector<T>& arList);
+        template <typename T>
+        void LoadArray(const std::wstring& sName, const std::wstring& sSubName, std::vector<T>& arList);
+        template<typename T>
+        void ReadAttributeBase(const wchar_t* bsName, T& value);
+        template<typename T>
+        void ReadAllAttributes(T& strNames, T& strValues);
+        template<typename T>
+        void ReadAllAttributesA(T& strNames, T& strValues);
+        template <typename T>
+        void ReadNodeValueBase(const wchar_t* bsName, T& value);
 
 	private:
 		void SetBase(CXmlNodeBase* pBase);
@@ -332,123 +272,33 @@ namespace XmlUtils
 	};
 
 
-	class CXmlWriter
+	class XMLUTILS_DECL_EXPORT CXmlWriter
 	{
 		std::wstring m_str;
 	
 	public:
 
-		CXmlWriter()
-		{
-		}
+		CXmlWriter();
 		
-		std::wstring GetXmlString()
-		{
-			return m_str;
-		}
-		void SetXmlString(const std::wstring& strValue)
-		{
-			m_str = strValue;
-		}
+		std::wstring GetXmlString();
+		void SetXmlString(const std::wstring& strValue);
 		
-		bool SaveToFile(const std::wstring& strFilePath/*, bool bEncodingToUTF8 = false*/)
-		{
-			return NSFile::CFileBinary::SaveToFile(strFilePath, m_str);
-		}
-		void WriteString(const std::wstring& strValue)
-		{
-			m_str += strValue;
-		}
-        void WriteInteger(int Value)
-		{
-            m_str += std::to_wstring(Value);
-		}
-		void WriteDouble(double Value)
-		{
-            m_str += std::to_wstring(Value);
-		}
-		void WriteBoolean(bool Value)
-		{
-			if (Value)
-				m_str += (L"true");
-			else
-				m_str += (L"false");
-		}
-		void WriteNodeBegin(const std::wstring& strNodeName, bool bAttributed = false)
-		{
-			m_str += (L"<") + strNodeName;
-
-			if (!bAttributed)
-				m_str += (L">");
-		}
-		void WriteNodeEnd(const std::wstring& strNodeName, bool bEmptyNode = false, bool bEndNode = true)
-		{
-			if (bEmptyNode)
-			{
-				if (bEndNode)
-					m_str += (L" />");
-				else
-					m_str += (L">");
-			}
-			else
-				m_str += (L"</") + strNodeName + (L">");
-		}
-		void WriteNode(const std::wstring& strNodeName, const std::wstring& strNodeValue)
-		{
-			if (strNodeValue.empty())
-				m_str += L"<" + strNodeName + L"/>";
-			else
-				m_str += L"<" + strNodeName + L">" + strNodeValue + L"</" + strNodeName + L">";
-		}
-        void WriteNode(const std::wstring& strNodeName, int nValue, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = L"")
-		{
-			WriteNodeBegin(strNodeName);
-			WriteString(strTextBeforeValue);
-            WriteInteger(nValue);
-			WriteString(strTextAfterValue);
-			WriteNodeEnd(strNodeName);
-		}
-		void WriteNode(const std::wstring& strNodeName, double dValue)
-		{
-			WriteNodeBegin(strNodeName);
-			WriteDouble(dValue);
-			WriteNodeEnd(strNodeName);
-		}
-		void WriteAttribute(const std::wstring& strAttributeName, const std::wstring& strAttributeValue)
-		{
-			m_str += L" " + strAttributeName + L"=\"" + strAttributeValue + L"\"";
-		}
-        void WriteAttribute(const std::wstring& strAttributeName, int nValue, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = (L""))
-		{
-			WriteString(L" " + strAttributeName + L"=");
-			WriteString(L"\"");
-			WriteString(strTextBeforeValue);
-            WriteInteger(nValue);
-			WriteString(strTextAfterValue);
-			WriteString(L"\"");
-		}
-		void WriteAttribute(const std::wstring& strAttributeName, double dValue)
-		{
-			WriteString(L" " + strAttributeName + L"=");
-			WriteString(L"\"");
-			WriteDouble(dValue);
-			WriteString(L"\"");
-		}
+		bool SaveToFile(const std::wstring& strFilePath/*, bool bEncodingToUTF8 = false*/);
+		void WriteString(const std::wstring& strValue);
+		void WriteInteger(int Value);
+		void WriteDouble(double Value);
+		void WriteBoolean(bool Value);
+		void WriteNodeBegin(const std::wstring& strNodeName, bool bAttributed = false);
+		void WriteNodeEnd(const std::wstring& strNodeName, bool bEmptyNode = false, bool bEndNode = true);
+		void WriteNode(const std::wstring& strNodeName, const std::wstring& strNodeValue);
+		void WriteNode(const std::wstring& strNodeName, int nValue, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = L"");
+		void WriteNode(const std::wstring& strNodeName, double dValue);
+		void WriteAttribute(const std::wstring& strAttributeName, const std::wstring& strAttributeValue);
+		void WriteAttribute(const std::wstring& strAttributeName, int nValue, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = (L""));
+		void WriteAttribute(const std::wstring& strAttributeName, double dValue);
 	};
-	static inline std::wstring GetNameNoNS(const std::wstring & strNodeName)
-	{
-		int nFind = (int)strNodeName.find(L":");
-		if (-1 == nFind)
-			return strNodeName;
-		return strNodeName.substr(nFind + 1);
-	}
-    static inline std::wstring GetNamespace(const std::wstring& strNodeName)
-	{
-		int nFind = (int)strNodeName.find(L":");
-		if (-1 == nFind)
-			return L"";
-		return strNodeName.substr(0, nFind);
-	}
+	std::wstring GetNameNoNS(const std::wstring & strNodeName);
+	std::wstring GetNamespace(const std::wstring& strNodeName);
 }
 
 #endif // _BUILD_XMLUTILS_CROSSPLATFORM_H_

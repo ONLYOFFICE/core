@@ -34,7 +34,14 @@
 
 #include "OfficeUtilsCommon.h"
 
-class COfficeUtils
+#ifndef OFFICEUTILS_USE_DYNAMIC_LIBRARY
+#define OFFICEUTILS_DECL_EXPORT
+#else
+#include "../../DesktopEditor/common/base_export.h"
+#define OFFICEUTILS_DECL_EXPORT Q_DECL_EXPORT
+#endif
+
+class OFFICEUTILS_DECL_EXPORT COfficeUtils
 {
 private:
 	OnProgressCallback* m_fCallback;

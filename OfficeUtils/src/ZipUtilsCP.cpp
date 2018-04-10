@@ -32,7 +32,6 @@
 #include "ZipUtilsCP.h"
 #include <memory>
 #include <algorithm>
-#include "CSLocker.h"
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/Path.h"
 

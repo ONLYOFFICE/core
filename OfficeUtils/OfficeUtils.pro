@@ -8,9 +8,7 @@ win32 {
     CONFIG += build_all_zlib
 }
 
-mac {
-    #QMAKE_MAC_SDK = macosx10.11
-}
+CONFIG += build_all_zlib
 
 CORE_ROOT_DIR = $$PWD/..
 PWD_ROOT_DIR = $$PWD

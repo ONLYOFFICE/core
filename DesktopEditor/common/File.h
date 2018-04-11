@@ -54,6 +54,10 @@
 #undef GetTempPath
 #endif
 
+#if defined(CreateFile)
+#undef CreateFile
+#endif
+
 namespace NSFile
 {
 	#define WriteUtf16_WCHAR(code, p)				\

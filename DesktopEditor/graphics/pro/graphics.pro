@@ -78,7 +78,14 @@ HEADERS += \
     ./../MetafileToGraphicsRenderer.h \
     ./../structures.h \
     ./../Graphics.h \
-    ./../GraphicsRenderer.h
+    ./../GraphicsRenderer.h \
+    \
+    ./../../fontengine/ApplicationFonts.h \
+    ./../../fontengine/FontFile.h \
+    ./../../fontengine/FontPath.h \
+    ./../../fontengine/GlyphString.h \
+    ./../../fontengine/FontManager.h
+
 
 SOURCES += \
     ./../Matrix.cpp \
@@ -91,7 +98,13 @@ SOURCES += \
     ./../Clip.cpp \
     ./../Graphics.cpp \
     ./../GraphicsRenderer.cpp \
-    ./../Image.cpp
+    ./../Image.cpp \
+    \
+    ./../../fontengine/ApplicationFonts.cpp \
+    ./../../fontengine/FontFile.cpp \
+    ./../../fontengine/FontManager.cpp \
+    ./../../fontengine/FontPath.cpp \
+    ./../../fontengine/GlyphString.cpp
 
 SOURCES += $$PWD/graphics_pri.cpp
 

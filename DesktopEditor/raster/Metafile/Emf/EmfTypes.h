@@ -184,6 +184,10 @@
 
 #define EMR_MAX                        122
 
+#else
+
+#include <windows.h>
+
 #endif
 
 #ifndef EMR_SMALLTEXTOUT

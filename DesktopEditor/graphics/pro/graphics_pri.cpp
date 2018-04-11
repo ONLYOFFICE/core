@@ -91,12 +91,6 @@
 #include "../../../freetype-2.5.2/src/smooth/smooth.c"
 */
 
-#include "../../../fontengine/ApplicationFonts.cpp"
-#include "../../../fontengine/FontFile.cpp"
-#include "../../../fontengine/FontManager.cpp"
-#include "../../../fontengine/FontPath.cpp"
-#include "../../../fontengine/GlyphString.cpp"
-
 #include "../../../fontengine/fontconverter/StringExt.cpp"
 #include "../../../fontengine/fontconverter/Hash.cpp"
 #include "../../../fontengine/fontconverter/FontConverter.cpp"

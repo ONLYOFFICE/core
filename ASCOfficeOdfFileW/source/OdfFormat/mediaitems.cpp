@@ -60,7 +60,7 @@ void _mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wst
 {
 	std::wstring output_sub_path;
 	std::wstring output_fileName;
-	int number=0;
+    size_t number = 0;
 	
 	if (type == typeImage)
 	{

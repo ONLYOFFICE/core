@@ -38,6 +38,7 @@
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
+#include "../../Common/3dParty/pole/pole.h"
 
 #include "../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
 #include "../../ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.h"
@@ -2655,15 +2656,51 @@ namespace NExtractTools
        std::wstring sPathInternal = NULL != params.m_sHtmlFileInternalPath ? *params.m_sHtmlFileInternalPath : L"";
        return 0 == oHtmlFile.Convert(arFiles, sTo, sPathInternal) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
    }
+ 	//html in container
+	int html_zip2doct_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		std::vector<std::wstring> arFiles;
+		
+		POLE::Storage storage(sFrom.c_str());
+		if (storage.open())
+		{
+			POLE::Stream stream(&storage, L"WordDocument");	
+			
+			POLE::uint64 size_stream = stream.size();
+			unsigned char *buffer = new unsigned char[size_stream];
+			if (buffer)
+			{
+				stream.read(buffer, size_stream);
+				std::wstring sTempHtml = sTemp + FILE_SEPARATOR_STR + L"tempHtml.html";
+
+				NSFile::CFileBinary file;
+
+                if (file.CreateFileW(sTempHtml))
+				{
+					file.WriteFile(buffer, size_stream);
+					file.CloseFile();
+				
+					arFiles.push_back(sTempHtml);
+				}
+				delete []buffer;
+			}
+		}
+		else //in zip
+		{
+		}				
+		CHtmlFile oHtmlFile;
+		std::wstring sPathInternal = NULL != params.m_sHtmlFileInternalPath ? *params.m_sHtmlFileInternalPath : L"";
+		return 0 == oHtmlFile.Convert(arFiles, sTo, sPathInternal) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+	}
 	//mht
 	int mht2doct_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
-   {
+	{
        CHtmlFile oHtmlFile;
        std::wstring sPathInternal = NULL != params.m_sHtmlFileInternalPath ? *params.m_sHtmlFileInternalPath : L"";
        return 0 == oHtmlFile.ConvertMht(sFrom, sTo, sPathInternal) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-   }
+	}
 	int epub2doct_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
-   {
+	{
        std::wstring sEpubDir = sTemp + FILE_SEPARATOR_STR + _T("epub_unpacked");
        NSDirectory::CreateDirectory(sEpubDir);
        int nRes = zip2dir(sFrom, sEpubDir);
@@ -3773,6 +3810,14 @@ namespace NExtractTools
 		
 		return nRes;
 	}
+	int html_zip2doct_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
+	{
+		std::wstring sResultDoctDir = NSFile::GetDirectoryName(sTo);
+
+        int nRes = html_zip2doct_dir(sFrom, sResultDoctDir, sTemp, params);
+		
+		return nRes;
+	}
 	int html2doct(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
         std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
@@ -3789,6 +3834,22 @@ namespace NExtractTools
         }
 		return nRes;
 	}
+	int html_zip2doct(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
+	{
+        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
+        std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+
+        NSDirectory::CreateDirectory(sResultDoctDir);
+
+        int nRes = html_zip2doct_dir(sFrom, sResultDoctDir, sTemp, params);
+
+        if (SUCCEEDED_X2T(nRes))
+        {
+            COfficeUtils oCOfficeUtils(NULL);
+            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDoctDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+        }
+		return nRes;
+	}
     int html2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
         std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
@@ -3797,6 +3858,29 @@ namespace NExtractTools
         NSDirectory::CreateDirectory(sResultDoctDir);
 
         int nRes = html2doct_dir(sFrom, sResultDoctDir, sTemp, params);
+        if (SUCCEEDED_X2T(nRes))
+		{
+			std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
+			NSDirectory::CreateDirectory(sDocxDir);
+
+			nRes = doct_bin2docx_dir(sResultDoctFileEditor, L"", sDocxDir, false, L"", params);
+			if (SUCCEEDED_X2T(nRes))
+			{
+				COfficeUtils oCOfficeUtils(NULL);
+				nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sDocxDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+			}
+		}
+		return nRes;
+	}
+
+    int html_zip2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
+	{
+        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
+        std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+
+        NSDirectory::CreateDirectory(sResultDoctDir);
+
+        int nRes = html_zip2doct_dir(sFrom, sResultDoctDir, sTemp, params);
         if (SUCCEEDED_X2T(nRes))
 		{
 			std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
@@ -4236,15 +4320,26 @@ namespace NExtractTools
 			{
 				result = html2docx (sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
+			case TCD_HTMLZIP2DOCX:
+			{
+				result = html_zip2docx (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
 			case TCD_HTML2DOCT:
 			{
 				result = html2doct (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_HTMLZIP2DOCT:
+			{
+				result = html_zip2doct (sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
 			case TCD_HTML2DOCT_BIN:
 			{
 				result = html2doct_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
-			
+			case TCD_HTMLZIP2DOCT_BIN:
+			{
+				result = html_zip2doct_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;			
 			//TCD_FB22DOCX,
 			//TCD_FB22DOCT,
 			//TCD_FB22DOCT_BIN,

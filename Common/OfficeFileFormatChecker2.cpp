@@ -144,20 +144,29 @@ bool COfficeFileFormatChecker::isDocFormatFile	(POLE::Storage * storage)
 
 	POLE::Stream stream(storage, L"WordDocument");	
 	
-	unsigned char buffer[10];
-	if (stream.read(buffer,10) > 0)
+	unsigned char buffer[64];
+	if (stream.read(buffer, 64) > 0)
 	{
 		//ms office 2007 encrypted contains stream WordDocument !!
 		std::list<std::wstring> entries = storage->entries(L"DataSpaces");
 		if (entries.size() > 0)
 			return false;
-
-#if defined FILE_FORMAT_CHECKER_WITH_MACRO
+		
+		if ((buffer[0] == 0xEC && buffer[1] == 0xA5) ||		// word 1997-2003
+			(buffer[0] == 0xDC && buffer[1] == 0xA5) ||		// word 1995
+			(buffer[0] == 0xDB && buffer[1] == 0xA5))		// word 2.0
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
+		}
+		else if ( isHtmlFormatFile(buffer, 64, false) )
+        {
+            nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER;
+            return true;
+        }
 		if (storage->isDirectory(L"Macros"))
 		{
 			bMacroEnabled = true;
 		}
-#endif
 		return true;
 	}
 
@@ -193,13 +202,22 @@ bool COfficeFileFormatChecker::isXlsFormatFile	(POLE::Storage * storage)
 			}
 		}
 	}
-#if defined FILE_FORMAT_CHECKER_WITH_MACRO
 	if (storage->isDirectory(L"_VBA_PROJECT_CUR"))
 	{
 		bMacroEnabled = true;
 	}
-#endif
 	return true;
+}
+bool COfficeFileFormatChecker::isDocFlatFormatFile	(unsigned char* pBuffer, int dwBytes)
+{
+	if (pBuffer == NULL) return false;
+
+	if ((pBuffer[0] == 0xEC && pBuffer[1] == 0xA5) ||	
+		(pBuffer[0] == 0xDC && pBuffer[1] == 0xA5) || 
+		(pBuffer[0] == 0xDB && pBuffer[1] == 0xA5))
+		return true;
+
+	return false;
 }
 
 bool COfficeFileFormatChecker::isPptFormatFile	(POLE::Storage * storage)
@@ -236,8 +254,8 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
     {
         if ( isDocFormatFile(&storage) )
         {
-            nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
-            return true;
+			//nFileType внутри
+			return true;
         }
         else if ( isXlsFormatFile(&storage) )
         {
@@ -265,7 +283,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
             nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO;
             return true;
         }
-    }
+	}
 
     COfficeUtils OfficeUtils(NULL);
     if (OfficeUtils.IsArchive(fileName) == S_OK)
@@ -335,6 +353,11 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
 		{
 			//nFileType
 		}
+		else if (isDocFlatFormatFile(buffer,sizeRead) )
+		{
+            nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT; // without compaund container
+		}
+
 //------------------------------------------------------------------------------------------------
 		file.CloseFile();
 

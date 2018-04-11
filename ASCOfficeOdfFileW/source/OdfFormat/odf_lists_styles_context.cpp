@@ -490,7 +490,7 @@ void odf_lists_styles_context::set_numeric_format(std::wstring val)
 		}
 		if (r1 < 0) return;//??
 
-		r1 = s.find(L"%", 1);
+        r1 = (int)s.find(L"%", 1);
 		if (r1 >0)
 		{
 			int level = 0;
@@ -498,7 +498,7 @@ void odf_lists_styles_context::set_numeric_format(std::wstring val)
 			int r2=0;
 			while (r2 < s.length())
 			{
-				r2 = s.find(L"%", r2);
+                r2 = (int)s.find(L"%", r2);
 				if (r2 >=0) level++;
 				else break;
 				r2++;

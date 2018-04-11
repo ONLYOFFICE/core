@@ -35,6 +35,11 @@
 #include "../../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ShapeType.h"
 #include "../../../Common/MS-LCID.h"
 
+
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTreeElem.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTree.h"
+
 #ifndef EMU_MM
 #define EMU_MM 36000.0
 #endif
@@ -307,6 +312,10 @@ bool NSPresentationEditor::CShapeWriter::SetElement(CElementPtr pElem)
 	m_bWordArt		= false;
 	m_bTextBox		= false;
 
+	m_xmlGeomAlternative.clear();
+	m_xmlTxBodyAlternative.clear();
+	m_xmlAlternative.clear();
+	
 	if (m_pShapeElement)
 	{
 		m_pShapeElement->m_pShape->GetTextRect(m_oTextRect);
@@ -811,6 +820,13 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 {
 	size_t nCount = m_pShapeElement->m_pShape->m_oText.m_arParagraphs.size();
 
+	if (false == m_xmlTxBodyAlternative.empty())
+	{
+		m_oWriter.WriteString(m_xmlTxBodyAlternative);
+
+		return;
+	}
+
 	m_oWriter.WriteString(std::wstring(L"<p:txBody>"));
 
 	m_oWriter.WriteString(std::wstring(L"<a:bodyPr" ));
@@ -1227,6 +1243,59 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 	m_oWriter.WriteString(str5);
 }
 
+void NSPresentationEditor::CShapeWriter::ParseXmlAlternative(const std::wstring & xml)
+{
+	XmlUtils::CXmlLiteReader oReader;
+
+	if ( !oReader.FromString( xml ) )
+		return;
+	if ( !oReader.ReadNextNode() )
+		return;
+
+	std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+	nullable<PPTX::Logic::SpTreeElem> oElement;
+
+	if ( L"graphicFrame" == sName || L"pic" == sName || L"sp" == sName || L"grpSp" == sName || L"cxnSp" == sName || L"AlternateContent" == sName
+		|| L"spTree" )
+	{
+		oElement = oReader;
+	}
+
+	if (oElement.IsInit())
+	{
+		smart_ptr<PPTX::Logic::Shape> shape = oElement->GetElem().smart_dynamic_cast<PPTX::Logic::Shape>();
+		if (shape.IsInit())
+		{
+			NSBinPptxRW::CXmlWriter writer(XMLWRITER_DOC_TYPE_PPTX);
+			shape->spPr.Geometry.toXmlWriter(&writer);
+
+			if (shape->spPr.scene3d.IsInit())
+				shape->spPr.scene3d->toXmlWriter(&writer);
+			
+			if (shape->spPr.sp3d.IsInit())
+				shape->spPr.sp3d->toXmlWriter(&writer);
+
+			m_xmlGeomAlternative = writer.GetXmlString();
+
+			writer.ClearNoAttack();
+			if ((shape->txBody.IsInit()) && (shape->txBody->bodyPr.IsInit()) && (shape->txBody->bodyPr->prstTxWarp.IsInit()))
+			{//только WordArt
+				shape->txBody->toXmlWriter(&writer);
+				m_xmlTxBodyAlternative = writer.GetXmlString();
+			}
+		}
+		smart_ptr<PPTX::Logic::SpTree> groupShape = oElement->GetElem().smart_dynamic_cast<PPTX::Logic::SpTree>();
+		if (groupShape.IsInit())
+		{//smartArt			
+			NSBinPptxRW::CXmlWriter writer(XMLWRITER_DOC_TYPE_PPTX);
+			groupShape->toXmlWriter(&writer);
+
+			m_xmlAlternative = writer.GetXmlString();
+		}
+	}
+}
+
 std::wstring NSPresentationEditor::CShapeWriter::ConvertShape()
 {
 	if (m_pImageElement) return ConvertImage();
@@ -1254,6 +1323,12 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertShape()
 			m_bTextBox = true;
 		if (oox::msosptLine == (oox::MSOSPT)m_pShapeElement->m_lShapeType)	
 			m_pShapeElement->m_bLine = true;
+	}
+
+
+	if (m_pShapeElement->m_pShape && !m_pShapeElement->m_pShape->m_strXmlString.empty())
+	{
+		ParseXmlAlternative(m_pShapeElement->m_pShape->m_strXmlString);
 	}
 
 	m_oWriter.WriteString(std::wstring(L"<p:sp>"));
@@ -1313,30 +1388,37 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertShape()
 		m_pShapeElement->m_pShape->ToRenderer(dynamic_cast<IRenderer*>(this), oInfo, m_oMetricInfo, 0.0, 1.0);
 	}
 
-	if ((prstGeom.empty() == false || m_pShapeElement->m_bShapePreset) && prstTxWarp.empty() && !shape->m_bCustomShape)
+	if (!m_xmlGeomAlternative.empty())
 	{
-		if (prstGeom.empty()) prstGeom = L"rect";
-		m_oWriter.WriteString(std::wstring(L"<a:prstGeom"));
-		{
-			m_oWriter.WriteString(std::wstring(L" prst=\"") + prstGeom + std::wstring(L"\">"));
-			if (!m_bWordArt)	
-			{
-				m_oWriter.WriteString(std::wstring(L"<a:avLst/>"));
-			}
-		}
-		m_oWriter.WriteString(std::wstring(L"</a:prstGeom>"));	
-	}
-	else if (prstTxWarp.empty())
-	{
-		m_oWriter.WriteString(m_pShapeElement->ConvertPPTShapeToPPTX());
+		m_oWriter.WriteString(m_xmlGeomAlternative);
 	}
 	else
 	{
-		//word art
-		m_oWriter.WriteString(std::wstring(L"<a:prstGeom prst=\"rect\"/>"));
+		if ((prstGeom.empty() == false || m_pShapeElement->m_bShapePreset) && prstTxWarp.empty() && !shape->m_bCustomShape)
+		{
+			if (prstGeom.empty()) prstGeom = L"rect";
+			m_oWriter.WriteString(std::wstring(L"<a:prstGeom"));
+			{
+				m_oWriter.WriteString(std::wstring(L" prst=\"") + prstGeom + std::wstring(L"\">"));
+				if (!m_bWordArt)	
+				{
+					m_oWriter.WriteString(std::wstring(L"<a:avLst/>"));
+				}
+			}
+			m_oWriter.WriteString(std::wstring(L"</a:prstGeom>"));	
+		}
+		else if (prstTxWarp.empty())
+		{
+			m_oWriter.WriteString(m_pShapeElement->ConvertPPTShapeToPPTX());
+		}
+		else
+		{
+			//word art
+			m_oWriter.WriteString(std::wstring(L"<a:prstGeom prst=\"rect\"/>"));
+		}
 	}
 
-	if (!m_bWordArt)
+	if (false == m_bWordArt)
 	{
 		m_oWriter.WriteString(ConvertBrush(m_pShapeElement->m_oBrush));
 		if (m_pShapeElement->m_bLine)

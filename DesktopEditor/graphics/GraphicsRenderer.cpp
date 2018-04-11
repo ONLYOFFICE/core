@@ -1132,13 +1132,13 @@ HRESULT CGraphicsRenderer::CommandString(const LONG& lType, const std::wstring& 
 HRESULT CGraphicsRenderer::StartConvertCoordsToIdentity()
 {
 	m_bUseTransformCoordsToIdentity = true;
-	m_pPath->m_pTransform = m_pRenderer->GetFullTransform();
+	m_pPath->m_internal->m_pTransform = m_pRenderer->GetFullTransform();
 	return S_OK;
 }
 HRESULT CGraphicsRenderer::EndConvertCoordsToIdentity()
 {
 	m_bUseTransformCoordsToIdentity = false;
-	m_pPath->m_pTransform = NULL;
+	m_pPath->m_internal->m_pTransform = NULL;
 	return S_OK;
 }
 

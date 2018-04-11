@@ -57,6 +57,16 @@ INCLUDEPATH += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/png \
     $$LIB_GRAPHICS_PRI_PATH/cximage/zlib
 
+HEADERS += \
+    ./../Matrix.h \
+    ./../Matrix_private.h \
+    ./../GraphicsPath.h \
+    ./../GraphicsPath_private.h
+
+SOURCES += \
+    ./../Matrix.cpp \
+    ./../GraphicsPath.cpp
+
 SOURCES += $$PWD/graphics_pri.cpp
 
 SOURCES += $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/src/base/ftbbox.c \

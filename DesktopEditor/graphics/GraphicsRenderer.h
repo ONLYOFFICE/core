@@ -301,8 +301,8 @@ public:
 	inline void SetCoordTransformOffset(double dOffsetX, double dOffsetY)
 	{
 		Aggplus::CMatrix* pCoord = m_pRenderer->GetCoordTransform();
-		pCoord->m_agg_mtx.tx = dOffsetX;
-		pCoord->m_agg_mtx.ty = dOffsetY;
+		pCoord->m_internal->m_agg_mtx.tx = dOffsetX;
+		pCoord->m_internal->m_agg_mtx.ty = dOffsetY;
 
 		m_pRenderer->CalculateFullTransform();
 	}

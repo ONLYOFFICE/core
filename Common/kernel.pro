@@ -23,8 +23,9 @@ include(../OfficeUtils/OfficeUtils.pri)
 include(../DesktopEditor/xml/build/qt/libxml2.pri)
 
 # DOWNLOADER
-HEADERS += ./FileDownloader/FileDownloader.h
-HEADERS += ./FileDownloader/FileDownloader_private.h
+HEADERS += \
+    ./FileDownloader/FileDownloader.h \
+    ./FileDownloader/FileDownloader_private.h
 
 SOURCES += ./FileDownloader/FileDownloader.cpp
 
@@ -47,3 +48,27 @@ core_mac {
 
     LIBS += -framework AppKit
 }
+
+# BLOCKER
+DEFINES += CRITICALSECTION_USE_DYNAMIC_LIBRARY
+HEADERS += \
+    ./../DesktopEditor/graphics/TemporaryCS.h
+
+SOURCES += \
+    ./../DesktopEditor/graphics/TemporaryCS.cpp
+
+# THREAD
+DEFINES += BASETHREAD_USE_DYNAMIC_LIBRARY
+HEADERS += \
+    ./../DesktopEditor/graphics/BaseThread.h
+
+SOURCES += \
+    ./../DesktopEditor/graphics/BaseThread.cpp
+
+# TIMER
+DEFINES += TIMER_USE_DYNAMIC_LIBRARY
+HEADERS += \
+    ./../DesktopEditor/graphics/Timer.h
+
+SOURCES += \
+    ./../DesktopEditor/graphics/Timer.cpp

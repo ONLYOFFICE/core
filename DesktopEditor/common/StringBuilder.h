@@ -33,6 +33,7 @@
 #define _BUILD_STRING_BUILDER_CROSSPLATFORM_H_
 
 #include <string>
+#include <string.h>
 #include <algorithm>
 
 #include "Types.h"

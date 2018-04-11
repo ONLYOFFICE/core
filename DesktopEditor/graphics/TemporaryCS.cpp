@@ -32,6 +32,23 @@
 #include "TemporaryCS.h"
 #include "../common/Types.h"
 
+namespace NSCriticalSection
+{
+    class CRITICAL_SECTION_NATIVE
+    {
+    public:
+        CRITICAL_SECTION_NATIVE()
+        {
+        }
+        virtual ~CRITICAL_SECTION_NATIVE()
+        {
+        }
+
+        virtual void Enter() = 0;
+        virtual void Leave() = 0;
+    };
+}
+
 #if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)
 
 #include "windows.h"

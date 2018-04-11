@@ -62,14 +62,36 @@ HEADERS += \
     ./../Matrix_private.h \
     ./../GraphicsPath.h \
     ./../GraphicsPath_private.h \
+    \
     ./../../raster/BgraFrame.h \
-    ./../../raster/ImageFileFormatChecker.h
+    ./../../raster/ImageFileFormatChecker.h \
+    \
+    ./../ArrowHead.h \
+    ./../Brush.h \
+    ./../Clip.h \
+    ./../Color.h \
+    ./../Defines.h \
+    ./../Graphics.h \
+    ./../Image.h \
+    ./../ImagesFileCache.h \
+    ./../MetafileToRenderer.h \
+    ./../MetafileToGraphicsRenderer.h \
+    ./../structures.h \
+    ./../Graphics.h \
+    ./../GraphicsRenderer.h
 
 SOURCES += \
     ./../Matrix.cpp \
     ./../GraphicsPath.cpp \
     ./../../raster/BgraFrame.cpp \
-    ./../../raster/ImageFileFormatChecker.cpp
+    ./../../raster/ImageFileFormatChecker.cpp \
+    \
+    ./../ArrowHead.cpp \
+    ./../Brush.cpp \
+    ./../Clip.cpp \
+    ./../Graphics.cpp \
+    ./../GraphicsRenderer.cpp \
+    ./../Image.cpp
 
 SOURCES += $$PWD/graphics_pri.cpp
 

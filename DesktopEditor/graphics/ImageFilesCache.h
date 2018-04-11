@@ -39,6 +39,10 @@
 #include "../raster/Metafile/MetaFile.h"
 #include "../common/File.h"
 
+#if defined (GetTempPath)
+#undef GetTempPath
+#endif
+
 class CCacheImage
 {
 private:

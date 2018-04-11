@@ -29,13 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "../../../graphics/ArrowHead.cpp"
-#include "../../../graphics/Brush.cpp"
-#include "../../../graphics/Clip.cpp"
-#include "../../../graphics/Graphics.cpp"
-#include "../../../graphics/GraphicsRenderer.cpp"
-#include "../../../graphics/Image.cpp"
-
 #include "../../../agg-2.4/src/agg_arc.cpp"
 #include "../../../agg-2.4/src/agg_bezier_arc.cpp"
 #include "../../../agg-2.4/src/agg_arrowhead.cpp"

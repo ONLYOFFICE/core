@@ -35,8 +35,8 @@
 #define UNKNOWN_CHARSET 3 // для случаев, когда задано значение DEFAULT_CHARSET, но 
                           // на самом деле charset не учитывается
 
-#include "FontManager.h"
 #include <vector>
+#include "FontManager.h"
 
 class CFontSelectFormat
 {

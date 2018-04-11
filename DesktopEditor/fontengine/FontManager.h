@@ -32,9 +32,9 @@
 #ifndef _BUILD_FONT_ENGINE_FONTMANAGER_H_
 #define _BUILD_FONT_ENGINE_FONTMANAGER_H_
 
-#include "FontFile.h"
 #include <map>
 #include <list>
+#include "FontFile.h"
 
 class CFontSelectFormat;
 class CFontInfo;

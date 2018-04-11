@@ -30,13 +30,17 @@
  *
  */
 
-#include "EmfFile.h"
-
 #include "../../../common/String.h"
 #include "../../../fontengine/FontManager.h"
 
+#include "EmfFile.h"
+
 #ifdef _DEBUG
-	#include <iostream>
+    #include <iostream>
+#endif
+
+#if defined(DrawText)
+#undef DrawText
 #endif
 
 namespace MetaFile

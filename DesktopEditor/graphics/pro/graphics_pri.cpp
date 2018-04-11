@@ -33,11 +33,8 @@
 #include "../../../graphics/Brush.cpp"
 #include "../../../graphics/Clip.cpp"
 #include "../../../graphics/Graphics.cpp"
-#include "../../../graphics/GraphicsPath.cpp"
 #include "../../../graphics/GraphicsRenderer.cpp"
 #include "../../../graphics/Image.cpp"
-#include "../../../graphics/Matrix.cpp"
-#include "../../../graphics/TemporaryCS.cpp"
 
 #include "../../../agg-2.4/src/agg_arc.cpp"
 #include "../../../agg-2.4/src/agg_bezier_arc.cpp"
@@ -400,8 +397,6 @@
 #include "../../../cximage/CxImage/xmemfile.cpp"
 */
 
-#include "../../../raster/ImageFileFormatChecker.cpp"
-#include "../../../raster/BgraFrame.cpp"
 #include "../../../raster/Jp2/J2kFile.cpp"
 #include "../../../raster/Jp2/Reader.cpp"
 #include "../../../raster/Metafile/Common/MetaFileTypes.cpp"

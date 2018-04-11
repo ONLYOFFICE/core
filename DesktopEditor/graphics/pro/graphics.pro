@@ -61,11 +61,15 @@ HEADERS += \
     ./../Matrix.h \
     ./../Matrix_private.h \
     ./../GraphicsPath.h \
-    ./../GraphicsPath_private.h
+    ./../GraphicsPath_private.h \
+    ./../../raster/BgraFrame.h \
+    ./../../raster/ImageFileFormatChecker.h
 
 SOURCES += \
     ./../Matrix.cpp \
-    ./../GraphicsPath.cpp
+    ./../GraphicsPath.cpp \
+    ./../../raster/BgraFrame.cpp \
+    ./../../raster/ImageFileFormatChecker.cpp
 
 SOURCES += $$PWD/graphics_pri.cpp
 

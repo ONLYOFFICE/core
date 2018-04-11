@@ -210,7 +210,7 @@ std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int 
 	if (!ansiStr.empty() && sTextBack.empty())
 	{
 		//code page not support in icu !!!
-		sTextBack = RtfUtility::convert_string(ansiStr.begin(), ansiStr.end(), nCodepage);
+        sTextBack = RtfUtility::convert_string(ansiStr.begin(), ansiStr.end(), nCodePage);
 	}
 
     //обратное преобразование чтобы понять какие символы свонвертировались неправильно

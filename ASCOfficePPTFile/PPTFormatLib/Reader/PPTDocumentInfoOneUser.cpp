@@ -29,6 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include <boost/make_shared.hpp>
+
 #include "PPTDocumentInfo.h"
 
 #include "../Records/ExMIDIAudioContainer.h"
@@ -71,6 +73,9 @@ CPPTUserInfo::CPPTUserInfo() :	CDocument(),
 	m_bHasSlideNumber		= false;
 	m_bHasFooter			= false;
 	m_nFormatDate			= 1;
+
+	m_current_elements		= NULL;
+	m_current_level			= 0;
 }
 
 CPPTUserInfo::~CPPTUserInfo()
@@ -471,18 +476,10 @@ void CPPTUserInfo::ReadExtenalObjects(std::wstring strFolderMem)
 	for (size_t nIndex = 0; nIndex < oArrayFonts.size(); ++nIndex)
 	{
 		CFont oFont;
-		oFont.Name = oArrayFonts[nIndex]->m_strFaceName;
+		oFont.Name		= oArrayFonts[nIndex]->m_strFaceName;
 		oFont.Charset	= oArrayFonts[nIndex]->m_lfCharSet;
 
-		switch (oArrayFonts[nIndex]->m_lfPitchAndFamily / 0x10)
-		{
-		case 1: {oFont.PitchFamily = _T("roman"); break;}
-		case 2: {oFont.PitchFamily = _T("swiss"); break;}
-		case 3: {oFont.PitchFamily = _T("modern"); break;}
-		case 4: {oFont.PitchFamily = _T("script"); break;}
-		case 5: {oFont.PitchFamily = _T("decorative"); break;}
-		default: {oFont.PitchFamily = _T("unknown"); break;}
-		}
+		oFont.PitchFamily = oArrayFonts[nIndex]->m_lfPitchAndFamily;
 
 		m_arrFonts.push_back(oFont);
 	}
@@ -544,20 +541,23 @@ void CPPTUserInfo::FromDocument()
 		for (int i = 0 ; i < 3; i++) m_PlaceholdersReplaceString[i] = oArrayHeadersFootersInfo[0]->m_HeadersFootersString[i];
 	}
 
-	LONG lOriginWidth		=	oArrayDoc[0]->m_oSlideSize.X;
-	LONG lOriginHeight		=	oArrayDoc[0]->m_oSlideSize.Y;
+	double master_to_emu = 1./576. ;//inch
 
-	m_oInfo.m_lUnitsHor			= lOriginWidth;
-	m_oInfo.m_lUnitsVer			= lOriginHeight;
-	m_oInfo.m_lMillimetresHor	= (LONG)(c_dMasterUnitsToMillimetreKoef * lOriginWidth);
-	m_oInfo.m_lMillimetresVer	= (LONG)(c_dMasterUnitsToMillimetreKoef * lOriginHeight);
+	master_to_emu *= 72;//pt
+	master_to_emu *= 12700;//emu
 
-	m_bRtl						= (oArrayDoc[0]->m_bRightToLeft!=0);
-	m_bShowComments				= (oArrayDoc[0]->m_bShowComments!=0);
+	m_lSlideWidth	= (oArrayDoc[0]->m_oSlideSize.X * 1587.5 + 0.5);
+	m_lSlideHeight	= (oArrayDoc[0]->m_oSlideSize.Y * 1587.5 + 0.5);
 
-	LoadMasters(lOriginWidth, lOriginHeight);
+	m_lNotesWidth	= (oArrayDoc[0]->m_oNotesSize.X * 1587.5 + 0.5);
+	m_lNotesHeight	= (oArrayDoc[0]->m_oNotesSize.Y * 1587.5 + 0.5);
 
-	double DurationSlide	=	PPT_DEFAULT_SLIDE_DURATION;
+	m_bRtl			= (oArrayDoc[0]->m_bRightToLeft!=0);
+	m_bShowComments	= (oArrayDoc[0]->m_bShowComments!=0);
+
+	LoadMasters();
+
+	double DurationSlide = PPT_DEFAULT_SLIDE_DURATION;
 
 	m_arSlides.reserve(m_arrSlidesOrder.size());
 	for (size_t i = 0; i < m_arrSlidesOrder.size(); i++)
@@ -590,12 +590,6 @@ void CPPTUserInfo::FromDocument()
 		pSlide->m_dEndTime			= DurationSlide;
 		pSlide->m_dDuration			= DurationSlide;
 
-		pSlide->m_lOriginalWidth	= lOriginWidth;
-		pSlide->m_lOriginalHeight	= lOriginHeight;
-
-		pSlide->m_lWidth			= (LONG)(c_dMasterUnitsToMillimetreKoef * lOriginWidth);
-		pSlide->m_lHeight			= (LONG)(c_dMasterUnitsToMillimetreKoef * lOriginHeight);
-
 		LoadSlide ( pPair->first, pSlide);
 	}
 
@@ -615,16 +609,10 @@ void CPPTUserInfo::FromDocument()
 
 		CSlide* pSlide = m_arNotes.back();
 
-		pSlide->m_lOriginalWidth	= lOriginWidth;
-		pSlide->m_lOriginalHeight	= lOriginHeight;
-
-		pSlide->m_lWidth			= (LONG)(c_dMasterUnitsToMillimetreKoef * lOriginWidth);
-		pSlide->m_lHeight			= (LONG)(c_dMasterUnitsToMillimetreKoef * lOriginHeight);
-
 		LoadNotes ( pPair->first, pSlide);
 	}
 	
-	CalculateEditor(m_oInfo);
+	CalculateEditor();
 }
 
 void CPPTUserInfo::LoadNotes(DWORD dwNoteID, CSlide* pNotes)
@@ -681,7 +669,7 @@ void CPPTUserInfo::LoadNotes(DWORD dwNoteID, CSlide* pNotes)
 	pSlide->m_lNotesID	= m_arNotes.size() - 1;
 //-----------------------------------------------------
 
-	CTheme		* pTheme		= m_pNotesMaster;
+	CTheme		* pTheme		= m_pNotesMaster.get();
 	CSlideInfo	* pThemeWrapper	= m_pNotesMasterWrapper;
 
 	CLayout* pLayout	= NULL;
@@ -749,41 +737,44 @@ void CPPTUserInfo::LoadNotes(DWORD dwNoteID, CSlide* pNotes)
 		for (int i = 0 ; i < 3; i++) 
 			pNotes->m_PlaceholdersReplaceString[i] = oArrayHeadersFootersInfo[0]->m_HeadersFootersString[i];
 	}
-//------------- читаем все элементы ------------------------------------------------------------------------------------------
 	pNotes->m_bIsBackground		= false;
 	
-	std::vector<CRecordShapeContainer*> oArrayShapes;
-	pRecordSlide->GetRecordsByType(&oArrayShapes, true);
+//-------------------------------------------------------------------------------------------------------
+	std::vector<CRecordDrawingContainer*> oArrayDrawing;
 
-	for (size_t nShape = 0; nShape < oArrayShapes.size(); ++nShape)
+	pRecordSlide->GetRecordsByType(&oArrayDrawing, true);
+
+	m_current_level = 0;
+	m_current_elements = &pNotes->m_arElements;
+	
+	if (!oArrayDrawing.empty())
 	{
-		CElementPtr pElement = oArrayShapes[nShape]->GetElement(&m_oExMedia, pNotes->m_lOriginalWidth, pNotes->m_lOriginalHeight,
-												pTheme, pLayout, pThemeWrapper, pNotesWrapper, pNotes);
-		
-		if (NULL != pElement)
+		for (size_t nIndex = 0; nIndex < oArrayDrawing[0]->m_arRecords.size(); ++nIndex)
 		{
-			if (pElement->m_bIsBackground && !pElement->m_bHaveAnchor && !bMasterBackGround)
+			CRecordGroupShapeContainer* pGroup = dynamic_cast<CRecordGroupShapeContainer*>(oArrayDrawing[0]->m_arRecords[nIndex]);
+
+			if (pGroup)
 			{
-				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
-				if (NULL != pShape)
+				LoadGroupShapeContainer(pGroup, NULL, pTheme, pLayout, pThemeWrapper, pNotesWrapper, pNotes);
+			}
+			else
+			{
+				CRecordShapeContainer* pShapeGroup = dynamic_cast<CRecordShapeContainer*>(oArrayDrawing[0]->m_arRecords[nIndex]);
+				if (pShapeGroup)
 				{
-					pShape->SetupProperties(pNotes, pTheme, pLayout);
+					CElementPtr pElement = pShapeGroup->GetElement(false, &m_oExMedia,
+												pTheme, pLayout, pThemeWrapper, pNotesWrapper, pNotes);
+					
+					CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
+					if (NULL != pShape && pShape->m_bIsBackground && !pShape->m_bHaveAnchor)
+					{
+						pShape->SetupProperties(pNotes, pTheme, pLayout);
 
-					pNotes->m_bIsBackground = true;
-					pNotes->m_oBackground	= pShape->m_oBrush;
+						pNotes->m_bIsBackground = true;
+						pNotes->m_oBackground	= pShape->m_oBrush;
+					}
 				}
-				continue;			
-
-			}
-
-			if (pElement->m_bHaveAnchor)
-			{
-				pNotes->m_arElements.push_back(pElement);
-			}
-			if ( pElement->m_lPlaceholderType >0)
-			{
-				pNotes->m_mapPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pNotes->m_arElements.size()-1)); 
-			}
+			}			
 		}
 	}
 }
@@ -873,7 +864,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 //-----------------	
 	pSlide->m_lThemeID			= pPairTheme->second;
 	
-	CTheme		* pTheme		= &m_arThemes		[pSlide->m_lThemeID];
+	CTheme		* pTheme		= m_arThemes		[pSlide->m_lThemeID].get();
 	CSlideInfo	* pThemeWrapper	= &m_arMasterWrapper[pSlide->m_lThemeID];
 
 	CLayout* pLayout	= NULL;
@@ -884,7 +875,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 		//основан на заголовочном шаблоне
 		pSlide->m_bShowMasterShapes = bMasterObjects;
 		pSlide->m_lLayoutID			= pPairLayoutTitle->second;
-		pLayout						= &pTheme->m_arLayouts[pSlide->m_lLayoutID];
+		pLayout						= pTheme->m_arLayouts[pSlide->m_lLayoutID].get();
 	}
 	else
 	{
@@ -896,13 +887,13 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 		{
 			pSlide->m_lLayoutID = AddNewLayout(pTheme, pRecordSlide, true, bMasterObjects);
 
-			pLayout				= &pTheme->m_arLayouts[pSlide->m_lLayoutID];
+			pLayout				= pTheme->m_arLayouts[pSlide->m_lLayoutID].get();
 			pLayout->m_bShowMasterShapes	= true;
 		}
 		else
 		{
 			pSlide->m_lLayoutID = pPairLayoutGeom->second;
-			pLayout				= &pTheme->m_arLayouts[pSlide->m_lLayoutID];
+			pLayout				= pTheme->m_arLayouts[pSlide->m_lLayoutID].get();
 		}
 	}
 
@@ -990,57 +981,47 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 			pSlide->m_sName = oArrayStrings[i]->m_strText;
 		}
 	}
-//------------- читаем все элементы ------------------------------------------------------------------------------------------
-	std::vector<CRecordShapeContainer*> oArrayShapes;
+	pSlide->m_bIsBackground = false;
+//-------------------------------------------------------------------------------------------------------
+	std::vector<CRecordDrawingContainer*> oArrayDrawing;
+	pRecordSlide->GetRecordsByType(&oArrayDrawing, true);
 
-	pRecordSlide->GetRecordsByType(&oArrayShapes, true);
-
-	pSlide->m_bIsBackground		= false;
-
-	for (size_t nShape = 0; nShape < oArrayShapes.size(); ++nShape)
+	m_current_level = 0;
+	m_current_elements = &pSlide->m_arElements;
+	
+	if (!oArrayDrawing.empty())
 	{
-		CElementPtr pElement = oArrayShapes[nShape]->GetElement(&m_oExMedia, pSlide->m_lOriginalWidth, pSlide->m_lOriginalHeight,
-												pTheme, pLayout, pThemeWrapper, pSlideWrapper, pSlide);
-		
-		CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
-		
-		if (NULL != pElement)
+		for (size_t nIndex = 0; nIndex < oArrayDrawing[0]->m_arRecords.size(); ++nIndex)
 		{
-			if (pElement->m_bIsBackground && !pElement->m_bHaveAnchor && !bMasterBackGround)
+			CRecordGroupShapeContainer* pGroup = dynamic_cast<CRecordGroupShapeContainer*>(oArrayDrawing[0]->m_arRecords[nIndex]);
+
+			if (pGroup)
 			{
-				if (NULL != pShape)
+				LoadGroupShapeContainer(pGroup, NULL, pTheme, pLayout, pThemeWrapper, pSlideWrapper, pSlide);
+			}
+			else
+			{
+				CRecordShapeContainer* pShapeGroup = dynamic_cast<CRecordShapeContainer*>(oArrayDrawing[0]->m_arRecords[nIndex]);
+				if (pShapeGroup)
 				{
-					pShape->SetupProperties(pSlide, pTheme, pLayout);
+					CElementPtr pElement = pShapeGroup->GetElement(false, &m_oExMedia,
+															pTheme, pLayout, pThemeWrapper, pSlideWrapper, pSlide);
+					
+					if (pElement->m_bIsBackground && !pElement->m_bHaveAnchor && !bMasterBackGround)
+					{
+						CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
+						if (NULL != pShape && pSlide)
+						{
+							pShape->SetupProperties(pSlide, pTheme, pLayout);
 
-					pSlide->m_bIsBackground = true;
-					pSlide->m_oBackground	= pShape->m_oBrush;
+							pSlide->m_bIsBackground = true;
+							pSlide->m_oBackground	= pShape->m_oBrush;
+						}
+					}
 				}
-				continue;			
-
-			}else
-				AddAnimation ( dwSlideID, pSlide->m_lOriginalWidth, pSlide->m_lOriginalHeight, pElement );
-
-			if (NULL != pShape)
-				pShape->SetupProperties(pSlide, pTheme, pLayout);
-			
-			if (pElement->m_bHaveAnchor)
-			{
-				pSlide->m_arElements.push_back(pElement);
-			}
-			if ( pElement->m_lPlaceholderType >0)
-			{
-				pSlide->m_mapPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pSlide->m_arElements.size()-1)); 
-			}
+			}			
 		}
 	}
-	
-	//даты и номера могут быть и не только в колонтитулах
-	//todooo ... возможно нужно все перенести плейсхолдеры без ID a-la как в AddLayout
-	
-	//AddLayoutSlidePlaceholder(pSlide, MasterSlideNumber	, pLayout); 
-	//AddLayoutSlidePlaceholder(pSlide, MasterDate		, pLayout);
-	
-	//-------------элементы колонтитулов
 	std::multimap<int, int>::iterator it;
 		
 	if (bHasSlideNumber)	AddLayoutSlidePlaceholder(pSlide, MasterSlideNumber, pLayout, true);	
@@ -1055,42 +1036,126 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 	if (bHasFooter)	AddLayoutSlidePlaceholder(pSlide, MasterFooter, pLayout, true);
 }
 
+void CPPTUserInfo::LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroupContainer, std::vector<CElementPtr>* pParentElements, CTheme* pTheme, CLayout* pLayout,												
+											CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide)
+{
+	if (!pGroupContainer) return;
+	if (pGroupContainer->m_arRecords.empty()) return;
+
+	CRecordShapeContainer* pShapeGroup = dynamic_cast<CRecordShapeContainer*>(pGroupContainer->m_arRecords[0]);
+	
+	CElementPtr pElement;
+	if (pShapeGroup)
+	{
+		pShapeGroup->bGroupShape = true;
+
+		pElement = pShapeGroup->GetElement(m_current_level > 1, &m_oExMedia, pTheme, pLayout, pThemeWrapper, pSlideWrapper, pSlide);
+	}
+
+	if (!pElement) return;
+	pElement->m_pParentElements = pParentElements;
+	m_current_elements->push_back(pElement);
+	
+	m_current_level++;
+	
+	pParentElements = m_current_elements;
+	m_current_elements = &pElement->m_pChildElements;
+
+	for (size_t i = 1; i < pGroupContainer->m_arRecords.size(); i++)
+	{
+		CRecordGroupShapeContainer* pGroup = dynamic_cast<CRecordGroupShapeContainer*>(pGroupContainer->m_arRecords[i]);
+
+		if (pGroup)
+		{
+			LoadGroupShapeContainer(pGroup, pParentElements,  pTheme, pLayout, pThemeWrapper, pSlideWrapper, pSlide);
+		}
+		else
+		{
+			pShapeGroup = dynamic_cast<CRecordShapeContainer*>(pGroupContainer->m_arRecords[i]);
+			if (pShapeGroup)
+			{
+				CElementPtr pElement = pShapeGroup->GetElement(m_current_level > 1, &m_oExMedia, pTheme, pLayout, pThemeWrapper, pSlideWrapper, pSlide);
+				
+				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
+				
+				if (NULL != pElement)
+				{
+					pElement->m_pParentElements = pParentElements;
+
+					//	AddAnimation ( dwSlideID, pSlide->m_lOriginalWidth, pSlide->m_lOriginalHeight, pElement );
+
+					if (NULL != pShape)
+						pShape->SetupProperties(pSlide, pTheme, pLayout);
+
+					if ( pElement->m_lPlaceholderType > 0)
+					{
+						if (pSlide)
+						{
+							pSlide->m_mapPlaceholders.insert(std::make_pair(pElement->m_lPlaceholderType, pElement)); 
+						}
+						else if (pTheme)
+						{
+							pTheme->m_mapPlaceholders.insert(std::make_pair(pElement->m_lPlaceholderType, pElement)); 
+						}
+						else
+						{
+							if (pElement->m_lPlaceholderID >= 0)
+							{
+								if (pElement->m_lPlaceholderType == MasterSlideNumber)	pLayout->m_bHasSlideNumber	= true;
+								if (pElement->m_lPlaceholderType == MasterDate)			pLayout->m_bHasDate			= true;
+								if (pElement->m_lPlaceholderType == MasterFooter)		pLayout->m_bHasFooter		= true;
+							}
+							pLayout->m_mapPlaceholders.insert(std::make_pair(pElement->m_lPlaceholderType, pElement)); 
+						}
+					}
+					if (pElement->m_bHaveAnchor)
+					{
+						m_current_elements->push_back(pElement);
+					}
+				}
+			}
+		}
+	}
+
+	m_current_level--;
+	m_current_elements = m_current_elements->front()->m_pParentElements;
+}
 CElementPtr CPPTUserInfo::AddLayoutSlidePlaceholder (CSlide *pSlide, int placeholderType, CLayout *pLayout, bool idx_only)
 {
 	CElementPtr pElement;
-
-	for (std::multimap<int, int>::iterator it = pLayout->m_mapPlaceholders.begin(); it != pLayout->m_mapPlaceholders.end(); ++it)
+	
+	for (std::multimap<int, CElementPtr>::iterator it = pLayout->m_mapPlaceholders.begin(); it != pLayout->m_mapPlaceholders.end(); ++it)
 	{
-		pElement = NULL;
+		CElementPtr pElementPlaceholder = it->second;
 		if (it->first == placeholderType )
 		{
 			if (idx_only == false)
 			{
-				if (pLayout->m_arElements[it->second]->m_lPlaceholderID >= 0 ) continue;
+				if (pElementPlaceholder->m_lPlaceholderID >= 0 ) continue;
 
-				pElement = pLayout->m_arElements[it->second]->CreateDublicate();
+				pElement = pElementPlaceholder->CreateDublicate();
 				
 				pSlide->m_arElements.push_back(pElement);
-				pSlide->m_mapPlaceholders.insert(std::pair<int, int>(placeholderType, pSlide->m_arElements.size()-1)); 
+				pSlide->m_mapPlaceholders.insert(std::make_pair(placeholderType, pElement)); 
 			}
 			else
 			{
-				if (pLayout->m_arElements[it->second]->m_lPlaceholderID < 0 ) continue;
+				if (pElementPlaceholder->m_lPlaceholderID < 0 ) continue;
 
-				for (std::multimap<int, int>::iterator it1 = pSlide->m_mapPlaceholders.begin(); it1 != pSlide->m_mapPlaceholders.end(); it1++)
+				for (std::multimap<int, CElementPtr>::iterator it1 = pSlide->m_mapPlaceholders.begin(); it1 != pSlide->m_mapPlaceholders.end(); it1++)
 				{
-					if (it1->first == placeholderType && pSlide->m_arElements[it1->second]->m_lPlaceholderID >= 0)
+					if (it1->first == placeholderType && (it1->second)->m_lPlaceholderID >= 0)
 					{
-						pElement = pSlide->m_arElements[it1->second];
+						pElement = it1->second;
 						break;
 					}
 				}
-				if (pElement == NULL)
+				if (!pElement)
 				{
-					pElement = pLayout->m_arElements[it->second]->CreateDublicate();
+					pElement = pElementPlaceholder->CreateDublicate();
 
 					pSlide->m_arElements.push_back(pElement);
-					pSlide->m_mapPlaceholders.insert(std::pair<int, int>(placeholderType, pSlide->m_arElements.size()-1)); 
+					pSlide->m_mapPlaceholders.insert(std::make_pair(placeholderType, pElement)); 
 				}
 			}
 		}
@@ -1103,18 +1168,20 @@ CElementPtr  CPPTUserInfo::AddThemeLayoutPlaceholder (CLayout *pLayout, int plac
 {
 	CElementPtr pElement;
 
-	for (std::multimap<int, int>::iterator it = pTheme->m_mapPlaceholders.begin(); it != pTheme->m_mapPlaceholders.end(); ++it)
+	for (std::multimap<int, CElementPtr>::iterator it = pTheme->m_mapPlaceholders.begin(); it != pTheme->m_mapPlaceholders.end(); ++it)
 	{
+		CElementPtr pElementPlaceholder = it->second;
+
 		if (it->first == placeholderType )
 		{			
-			if (idx_only && pTheme->m_arElements[it->second]->m_lPlaceholderID < 0) continue;
+			if (idx_only && pElementPlaceholder->m_lPlaceholderID < 0) continue;
 			
-			pElement = pTheme->m_arElements[it->second]->CreateDublicate();
+			pElement = pElementPlaceholder->CreateDublicate();
 
 			pElement->m_bPlaceholderSet = true;
 			
 			pLayout->m_arElements.push_back(pElement);
-			pLayout->m_mapPlaceholders.insert(std::pair<int, int>(placeholderType, pLayout->m_arElements.size()-1)); 
+			pLayout->m_mapPlaceholders.insert(std::make_pair(placeholderType, pElement)); 
 		}
 	}
 
@@ -1132,14 +1199,15 @@ CElementPtr CPPTUserInfo::AddNewLayoutPlaceholder (CLayout *pLayout, int placeho
 	
 	pShape->m_bPlaceholderSet			= false;
 	pShape->m_bLine						= false;
-	pShape->m_bBoundsEnabled			= false;
+	pShape->m_bAnchorEnabled			= false;
+	pShape->m_bChildAnchorEnabled		= false;
 
 	CorrectPlaceholderType(pShape->m_lPlaceholderType);
 
 	CElementPtr pElement = CElementPtr(pShape);
 
 	pLayout->m_arElements.push_back(pElement);
-	pLayout->m_mapPlaceholders.insert(std::pair<int, int>(pShape->m_lPlaceholderType, pLayout->m_arElements.size()-1)); 
+	pLayout->m_mapPlaceholders.insert(std::make_pair(pShape->m_lPlaceholderType, pElement)); 
 
 	return pElement;
 }
@@ -1158,18 +1226,9 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 	
 	int ind = pTheme->m_arLayouts.size();
 	
-	CLayout layout;
-	pTheme->m_arLayouts.push_back(layout);
-	CLayout *pLayout = &pTheme->m_arLayouts.back();
+	pTheme->m_arLayouts.push_back(boost::make_shared<NSPresentationEditor::CLayout>());
+	CLayout *pLayout = pTheme->m_arLayouts.back().get();
 	
-	pLayout = &pTheme->m_arLayouts.back();
-
-	pLayout->m_lOriginalWidth	= pTheme->m_lOriginalWidth;
-	pLayout->m_lOriginalHeight	= pTheme->m_lOriginalHeight;
-
-	pLayout->m_lWidth			= (LONG)(c_dMasterUnitsToMillimetreKoef * pLayout->m_lOriginalWidth);
-	pLayout->m_lHeight			= (LONG)(c_dMasterUnitsToMillimetreKoef * pLayout->m_lOriginalHeight);
-
 	pLayout->m_bUseThemeColorScheme = true;
 	pLayout->m_bShowMasterShapes	= true;
 
@@ -1234,17 +1293,18 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 	//if (layoutRecord.m_nGeom==0x0F) return ind; // big object only !!!
 
 	//копируем все элементы без idx которые не были прописаны явно
-	for (std::multimap<int, int>::iterator it = pTheme->m_mapPlaceholders.begin(); it != pTheme->m_mapPlaceholders.end(); ++it)
+	for (std::multimap<int, CElementPtr>::iterator it = pTheme->m_mapPlaceholders.begin(); it != pTheme->m_mapPlaceholders.end(); ++it)
 	{		
-		if (pTheme->m_arElements[it->second]->m_lPlaceholderID >= 0) continue;
+		CElementPtr pElemTheme = it->second;
+		if (pElemTheme->m_lPlaceholderID >= 0) continue;
 
 		bool found = false;
-		for (std::multimap<int, int>::iterator it1 = pLayout->m_mapPlaceholders.begin(); it1 != pLayout->m_mapPlaceholders.end(); it1++)
+		for (std::multimap<int, CElementPtr>::iterator it1 = pLayout->m_mapPlaceholders.begin(); it1 != pLayout->m_mapPlaceholders.end(); it1++)
 		{
 			if (it1->first == it->first)
 			{
-				CElementPtr pElemLayout = pLayout->m_arElements[it1->second];
-				if (pElemLayout->m_lPlaceholderID == pTheme->m_arElements[it->second]->m_lPlaceholderID)
+				CElementPtr pElemLayout = it1->second;
+				if (pElemLayout->m_lPlaceholderID == pElemTheme->m_lPlaceholderID)
 				{
 					found = true;
 					break;
@@ -1253,10 +1313,10 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 		}
 		if (found == false)
 		{
-			CElementPtr pElemTheme = pTheme->m_arElements[it->second]->CreateDublicate();
+			CElementPtr pElement = pElemTheme->CreateDublicate();
 		
-			pLayout->m_arElements.push_back(pElemTheme);
-			pLayout->m_mapPlaceholders.insert(std::pair<int, int>(it->first, pLayout->m_arElements.size()-1)); 
+			pLayout->m_arElements.push_back(pElement);
+			pLayout->m_mapPlaceholders.insert(std::make_pair(it->first, pElement)); 
 		}
 	}
 
@@ -1285,18 +1345,19 @@ CElementPtr CPPTUserInfo::AddNewThemePlaceholder (CTheme* pTheme, int placeholde
 	
 	pShape->m_bPlaceholderSet			= false;
 	pShape->m_bLine						= false;
-	pShape->m_bBoundsEnabled			= false;
+	pShape->m_bAnchorEnabled			= false;
+	pShape->m_bChildAnchorEnabled		= false;
 
 	CorrectPlaceholderType(pShape->m_lPlaceholderType);
 
 	CElementPtr pElement = CElementPtr(pShape);
 
 	pTheme->m_arElements.push_back(pElement);
-	pTheme->m_mapPlaceholders.insert(std::pair<int, int>(pShape->m_lPlaceholderType, pTheme->m_arElements.size()-1)); 
+	pTheme->m_mapPlaceholders.insert(std::make_pair(pShape->m_lPlaceholderType, pElement)); 
 
 	return pElement;
 }
-void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, const LONG& lOriginHeight)
+void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID)
 {
 	std::map<DWORD, LONG>::iterator pPair = m_mapMasterToTheme.find(dwMasterID);
 	if (pPair != m_mapMasterToTheme.end())
@@ -1354,12 +1415,8 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	
 	m_mapMasterToTheme.insert(std::pair<DWORD, LONG>(dwMasterID, lIndexTheme));
 
-	CTheme theme;
-	m_arThemes.push_back(theme);
-	CTheme* pTheme = &m_arThemes[lIndexTheme];
-
-	pTheme->m_lOriginalWidth	= lOriginWidth;
-	pTheme->m_lOriginalHeight	= lOriginHeight;
+	m_arThemes.push_back(boost::make_shared<NSPresentationEditor::CTheme>());
+	CTheme* pTheme = m_arThemes[lIndexTheme].get();
 
 	std::vector<CRecordHeadersFootersContainer*> oArrayHeadersFootersInfo;
 	pMaster->GetRecordsByType(&oArrayHeadersFootersInfo, true, false);
@@ -1497,53 +1554,56 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	if (pMasterWrapper->m_pStyles[2].is_init())
 		pTheme->m_pStyles[3].ApplyAfter(pMasterWrapper->m_pStyles[3].get());
 
-	// ---------------------------------------------------------------------------------
-	// читаем все элементы...-----------------------------------------------------------
-	std::vector<CRecordShapeContainer*> oArrayShapes;
-	pMaster->GetRecordsByType(&oArrayShapes, true);
-
 	pTheme->CalculateStyles();
 	
 	CLayout* pLayout = NULL; // ну нету тут разметок ...!!
+// ---------------------------------------------------------------------------------
 
-	for (size_t nShape = 0; nShape < oArrayShapes.size(); ++nShape)
+	std::vector<CRecordDrawingContainer*> oArrayDrawing;
+	pMaster->GetRecordsByType(&oArrayDrawing, true);
+
+	m_current_level = 0;
+	m_current_elements = &pTheme->m_arElements;
+	
+	if (!oArrayDrawing.empty())
 	{
-		NSPresentationEditor::CElementPtr pElement = oArrayShapes[nShape]->GetElement(&m_oExMedia, lOriginWidth, lOriginHeight, pTheme, pLayout, pMasterWrapper, pMasterWrapper);
-
-		if (pElement)
+		for (size_t nIndex = 0; nIndex < oArrayDrawing[0]->m_arRecords.size(); ++nIndex)
 		{
-			AddAnimation ( dwMasterID, lOriginWidth, lOriginHeight, pElement );
-			
-			if (pElement->m_bIsBackground && !pElement->m_bHaveAnchor)
-			{
-				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
-				if (NULL != pShape)
-				{
-					pShape->SetupProperties(NULL, pTheme, pLayout);
+			CRecordGroupShapeContainer* pGroup = dynamic_cast<CRecordGroupShapeContainer*>(oArrayDrawing[0]->m_arRecords[nIndex]);
 
-					pTheme->m_bIsBackground = true;
-					pTheme->m_oBackground = pShape->m_oBrush;
-				}
-				continue;
-			}
-			pTheme->m_arElements.push_back(pElement);
-			
-			if ( pElement->m_lPlaceholderType >0)
+			if (pGroup)
 			{
-				pTheme->m_mapPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pTheme->m_arElements.size()-1)); 
+				LoadGroupShapeContainer(pGroup, NULL, pTheme, pLayout, pMasterWrapper, pMasterWrapper);
 			}
+			else
+			{
+				CRecordShapeContainer* pShapeGroup = dynamic_cast<CRecordShapeContainer*>(oArrayDrawing[0]->m_arRecords[nIndex]);
+				if (pShapeGroup)
+				{
+					CElementPtr pElement = pShapeGroup->GetElement(false, &m_oExMedia, pTheme, pLayout, pMasterWrapper, pMasterWrapper);
+					
+					CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
+					if (NULL != pShape)
+					{
+						pShape->SetupProperties(NULL, pTheme, pLayout);
+
+						pTheme->m_bIsBackground = true;
+						pTheme->m_oBackground = pShape->m_oBrush;
+					}
+				}
+			}			
 		}
 	}
 }
 
-void CPPTUserInfo::LoadMasters(const LONG& lOriginWidth, const LONG& lOriginHeight)
+void CPPTUserInfo::LoadMasters()
 {
 	for (size_t i = 0; i< m_arrMastersOrder.size(); i++)
 	{
 		std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapMasters.find(m_arrMastersOrder[i]);
 		if (pPair == m_mapMasters.end())continue;			
 	
-		LoadMainMaster(pPair->first, lOriginWidth, lOriginHeight);
+		LoadMainMaster(pPair->first);
 	}
 
 	for (size_t i = 0; i< m_arrMastersOrder.size(); i++)
@@ -1551,7 +1611,7 @@ void CPPTUserInfo::LoadMasters(const LONG& lOriginWidth, const LONG& lOriginHeig
 		std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapMasters.find(m_arrMastersOrder[i]);
 		if (pPair == m_mapMasters.end())continue;			
 	
-		LoadNoMainMaster(pPair->first, lOriginWidth, lOriginHeight);
+		LoadNoMainMaster(pPair->first);
 	}
 
 	LoadNotesMasterFromPrevUsers(0);
@@ -1559,7 +1619,7 @@ void CPPTUserInfo::LoadMasters(const LONG& lOriginWidth, const LONG& lOriginHeig
 	{
 		std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapNotesMasters.begin();
 	
-		LoadMaster(pPair->second, m_pNotesMasterWrapper, m_pNotesMaster);
+		LoadMaster(typeNotesMaster, pPair->second, m_pNotesMasterWrapper, m_pNotesMaster);
 	}
 
 	LoadHandoutMasterFromPrevUsers(0);
@@ -1567,16 +1627,14 @@ void CPPTUserInfo::LoadMasters(const LONG& lOriginWidth, const LONG& lOriginHeig
 	{
 		std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapHandoutMasters.begin();
 	
-		LoadMaster(pPair->second, m_pHandoutMasterWrapper, m_pHandoutMaster);
+		LoadMaster(typeHandoutMaster, pPair->second, m_pHandoutMasterWrapper, m_pHandoutMaster);
 	}
 }
-void CPPTUserInfo::LoadMaster(CRecordSlide* pMaster, CSlideInfo *& pMasterWrapper, CTheme *& pTheme)
+void CPPTUserInfo::LoadMaster(_typeMaster type, CRecordSlide* pMaster, CSlideInfo *& pMasterWrapper, CThemePtr & pTheme)
 {
     if (pMaster == NULL)
         return; 
 	
-	LONG lOriginWidth = 0, lOriginHeight = 0;
-
 	bool bMasterColorScheme = false;
     bool bMasterBackGround	= false;
     bool bMasterObjects		= false;
@@ -1609,10 +1667,7 @@ void CPPTUserInfo::LoadMaster(CRecordSlide* pMaster, CSlideInfo *& pMasterWrappe
 		}
 	}
 
-	pTheme = new CTheme();
-
-	pTheme->m_lOriginalWidth	= lOriginWidth;
-	pTheme->m_lOriginalHeight	= lOriginHeight;
+	pTheme = boost::make_shared<NSPresentationEditor::CTheme>(type);
 
 	std::vector<CRecordHeadersFootersContainer*> oArrayHeadersFootersInfo;
 	pMaster->GetRecordsByType(&oArrayHeadersFootersInfo, true, false);
@@ -1719,7 +1774,7 @@ void CPPTUserInfo::LoadMaster(CRecordSlide* pMaster, CSlideInfo *& pMasterWrappe
 		pMasterWrapper->m_pStyles[lType] = new NSPresentationEditor::CTextStyles();
 		pMasterWrapper->m_pStyles[lType]->SetStyles((NSPresentationEditor::CTextStyles*)oArrayTextMasters[i]);
 
-		CTheme::CalculateStyle(pTheme, pMasterWrapper->m_pStyles[lType].get());
+		CTheme::CalculateStyle(pTheme.get(), pMasterWrapper->m_pStyles[lType].get());
 	}
 	if (pMasterWrapper->m_pStyles[3].is_init())
 		pMasterWrapper->m_pStyles[3]->ApplyBefore(m_oDefaultTextStyle);
@@ -1727,7 +1782,7 @@ void CPPTUserInfo::LoadMaster(CRecordSlide* pMaster, CSlideInfo *& pMasterWrappe
 		pMasterWrapper->m_pStyles[3] = m_oDefaultTextStyle;
 
 	CTextStyles oPPTDefaultStyle;
-	CreateDefaultStyle(oPPTDefaultStyle, pTheme);
+	CreateDefaultStyle(oPPTDefaultStyle, pTheme.get());
 	oPPTDefaultStyle.ApplyAfter(m_oDefaultTextStyle);
 
 	// выставим стили теме
@@ -1743,45 +1798,48 @@ void CPPTUserInfo::LoadMaster(CRecordSlide* pMaster, CSlideInfo *& pMasterWrappe
 	if (pMasterWrapper->m_pStyles[2].is_init())
 		pTheme->m_pStyles[3].ApplyAfter(pMasterWrapper->m_pStyles[3].get());
 
-	// ---------------------------------------------------------------------------------
-	// читаем все элементы...-----------------------------------------------------------
-	std::vector<CRecordShapeContainer*> oArrayShapes;
-	pMaster->GetRecordsByType(&oArrayShapes, true);
-
 	pTheme->CalculateStyles();
 	
 	CLayout* pLayout = NULL; // ну нету тут разметок ...!!
+	
+//-------------------------------------------------------------------------------------------------------
+	std::vector<CRecordDrawingContainer*> oArrayDrawing;
+	pMaster->GetRecordsByType(&oArrayDrawing, true);
 
-	for (size_t nShape = 0; nShape < oArrayShapes.size(); ++nShape)
+	m_current_level = 0;
+	m_current_elements = &pTheme->m_arElements;
+	
+	if (!oArrayDrawing.empty())
 	{
-		NSPresentationEditor::CElementPtr pElement = oArrayShapes[nShape]->GetElement(&m_oExMedia, lOriginWidth, lOriginHeight, pTheme, pLayout, pMasterWrapper, pMasterWrapper);
-
-		if (pElement)
+		for (size_t nIndex = 0; nIndex < oArrayDrawing[0]->m_arRecords.size(); ++nIndex)
 		{
-			//AddAnimation ( dwMasterID, lOriginWidth, lOriginHeight, pElement );
-			
-			if (pElement->m_bIsBackground && !pElement->m_bHaveAnchor)
-			{
-				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
-				if (NULL != pShape)
-				{
-					pShape->SetupProperties(NULL, pTheme, pLayout);
+			CRecordGroupShapeContainer* pGroup = dynamic_cast<CRecordGroupShapeContainer*>(oArrayDrawing[0]->m_arRecords[nIndex]);
 
-					pTheme->m_bIsBackground = true;
-					pTheme->m_oBackground = pShape->m_oBrush;
-				}
-				continue;
-			}
-			pTheme->m_arElements.push_back(pElement);
-			
-			if ( pElement->m_lPlaceholderType > 0)
+			if (pGroup)
 			{
-				pTheme->m_mapPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pTheme->m_arElements.size()-1)); 
+				LoadGroupShapeContainer(pGroup, NULL, pTheme.get(), pLayout, pMasterWrapper, pMasterWrapper);
 			}
+			else
+			{
+				CRecordShapeContainer* pShapeGroup = dynamic_cast<CRecordShapeContainer*>(oArrayDrawing[0]->m_arRecords[nIndex]);
+				if (pShapeGroup)
+				{
+					CElementPtr pElement = pShapeGroup->GetElement(false, &m_oExMedia, pTheme.get(), pLayout, pMasterWrapper, pMasterWrapper);
+					
+					CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
+					if (NULL != pShape && pShape->m_bIsBackground && !pShape->m_bHaveAnchor)
+					{
+						pShape->SetupProperties(NULL, pTheme.get(), pLayout);
+
+						pTheme->m_bIsBackground = true;
+						pTheme->m_oBackground = pShape->m_oBrush;
+					}
+				}
+			}			
 		}
 	}
 }
-void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, const LONG& lOriginHeight)
+void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID)
 {
 	std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapMasters.find(dwMasterID);
 
@@ -1849,7 +1907,7 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 	m_mapMasterToTheme.insert(std::pair<DWORD, LONG>(dwMasterID, pPairTheme->second));
 
 	CSlideInfo	* pThemeWrapper	= &m_arMasterWrapper[pPairTheme->second];
-	CTheme		* pTheme		= &m_arThemes		[pPairTheme->second];
+	CTheme		* pTheme		= m_arThemes		[pPairTheme->second].get();
 
 	std::wstring strLayoutType = ConvertLayoutType(oArraySlideAtoms[0]->m_oLayout.m_nGeom, oArraySlideAtoms[0]->m_oLayout.m_pPlaceHolderID);
 	
@@ -1857,8 +1915,9 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 
 	int lLayoutID = AddNewLayout(pTheme, pCurMaster, false, false);
 	
-	pLayout							= &pTheme->m_arLayouts[lLayoutID];
+	pLayout							= pTheme->m_arLayouts[lLayoutID].get();
 	pLayout->m_bShowMasterShapes	= false;
+	pLayout->m_bIsTitleMaster		= true;
 
 	pTheme->m_mapTitleLayout[dwMasterID] = lLayoutID;
 
@@ -1937,46 +1996,41 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 			pLayout->m_sName = oArrayStrings[i]->m_strText;
 		}
 	}
-	// читаем все элементы...
-	std::vector<CRecordShapeContainer*> oArrayShapes;
-	pCurMaster->GetRecordsByType(&oArrayShapes, true);
+//-------------------------------------------------------------------------------------------------------
+	std::vector<CRecordDrawingContainer*> oArrayDrawing;
+	pCurMaster->GetRecordsByType(&oArrayDrawing, true);
 
-	for (size_t nShape = 0; nShape < oArrayShapes.size(); ++nShape)
+	m_current_level = 0;
+	m_current_elements = &pLayout->m_arElements;
+	
+	if (!oArrayDrawing.empty())
 	{
-		CElementPtr pElement =oArrayShapes[nShape]->GetElement(&m_oExMedia, lOriginWidth, lOriginHeight, pTheme, pLayout, pThemeWrapper, pMasterWrapper);
-
-		if (pElement)
+		for (size_t nIndex = 0; nIndex < oArrayDrawing[0]->m_arRecords.size(); ++nIndex)
 		{
-			AddAnimation ( dwMasterID, lOriginWidth, lOriginHeight, pElement );
+			CRecordGroupShapeContainer* pGroup = dynamic_cast<CRecordGroupShapeContainer*>(oArrayDrawing[0]->m_arRecords[nIndex]);
 
-			if (pElement->m_bIsBackground && !pElement->m_bHaveAnchor)
+			if (pGroup)
 			{
-				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
-
-				if (NULL != pShape)
-				{
-					pShape->SetupProperties(NULL, pTheme, pLayout);
-
-					pLayout->m_bIsBackground = true;
-					pLayout->m_oBackground	= pShape->m_oBrush;
-				}
-				continue;
+				LoadGroupShapeContainer(pGroup, NULL, NULL, pLayout, pThemeWrapper, pMasterWrapper);
 			}
-
-			pElement->m_bPlaceholderSet = true;
-			pLayout->m_arElements.push_back(pElement);
-			
-			if ( pElement->m_lPlaceholderType >0)
+			else
 			{
-				if (pElement->m_lPlaceholderID >=0)
+				CRecordShapeContainer* pShapeGroup = dynamic_cast<CRecordShapeContainer*>(oArrayDrawing[0]->m_arRecords[nIndex]);
+				if (pShapeGroup)
 				{
-					if (pElement->m_lPlaceholderType == MasterSlideNumber) pLayout->m_bHasSlideNumber	= true;
-					if (pElement->m_lPlaceholderType == MasterDate)		pLayout->m_bHasDate			= true;
-					if (pElement->m_lPlaceholderType == MasterFooter)		pLayout->m_bHasFooter		= true;
-				}
-				pLayout->m_mapPlaceholders.insert(std::pair<int, int>(pElement->m_lPlaceholderType, pLayout->m_arElements.size()-1)); 
-			}
+					CElementPtr pElement = pShapeGroup->GetElement(false, &m_oExMedia, pTheme, pLayout, pThemeWrapper, pMasterWrapper);
+					
+					CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
+					
+					if (NULL != pShape && pShape->m_bIsBackground && !pShape->m_bHaveAnchor)
+					{
+						pShape->SetupProperties(NULL, pTheme, pLayout);
 
+						pLayout->m_bIsBackground = true;
+						pLayout->m_oBackground	= pShape->m_oBrush;
+					}
+				}
+			}			
 		}
 	}
 

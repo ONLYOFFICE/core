@@ -121,6 +121,9 @@ public:
 	bool											m_bRtl;
 	bool											m_bShowComments;
 
+	int												m_current_level;
+	std::vector<CElementPtr>*						m_current_elements;
+
 //-----------------------------------------------------------------------------------------------------
 	CPPTUserInfo();
 	~CPPTUserInfo();
@@ -140,12 +143,12 @@ public:
 	void LoadSlide(DWORD dwSlideID, CSlide* pSlide);
 	void LoadNotes(DWORD dwNotesID, CSlide* pSlide);
 	
-	void LoadMasters(const LONG& lOriginWidth, const LONG& lOriginHeight);
+	void LoadMasters();
 	
-	void LoadNoMainMaster	(DWORD dwMasterID, const LONG& lOriginWidth, const LONG& lOriginHeight);
-	void LoadMainMaster		(DWORD dwMasterID, const LONG& lOriginWidth, const LONG& lOriginHeight);
+	void LoadNoMainMaster	(DWORD dwMasterID);
+	void LoadMainMaster		(DWORD dwMasterID);
 	
-    void LoadMaster(CRecordSlide* pMaster, CSlideInfo *& pMasterWrapper, CTheme *& pTheme);
+    void LoadMaster(_typeMaster type, CRecordSlide* pMaster, CSlideInfo *& pMasterWrapper, CThemePtr & pTheme);
 
 	void LoadSlideFromPrevUsers			(DWORD dwSlideID);
 	void LoadMasterFromPrevUsers		(DWORD dwSlideID);
@@ -321,4 +324,7 @@ public:
 	
 	CElementPtr	AddThemeLayoutPlaceholder	(CLayout *pLayout,	int placeholderType, CTheme* pTheme, bool idx_only = false);
 	CElementPtr	AddLayoutSlidePlaceholder	(CSlide *pSlide,	int placeholderType, CLayout *pLayout, bool idx_only = false);
+
+	void LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroup, std::vector<CElementPtr>* pParentElements, 
+		CTheme* pTheme, CLayout* pLayout, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide = NULL);
 };

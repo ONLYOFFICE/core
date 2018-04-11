@@ -38,11 +38,12 @@ namespace NSPresentationEditor
 {
 	enum ElementType
 	{
-		etVideo		 = 0,
-		etAudio		 = 1,
-		etPicture    = 2,
-		etShape      = 3,
-		etText		 = 4
+		etGroup		 = 0,
+		etVideo		 = 1,
+		etAudio		 = 2,
+		etPicture    = 3,
+		etShape      = 4,
+		etText		 = 5
 	};
 
 	enum enumPlaceholderType
@@ -124,17 +125,22 @@ namespace NSPresentationEditor
 	class CLayout;
 	class CSlide;
 
-class CElement;
-typedef boost::shared_ptr<CElement> CElementPtr;
+	class CElement;
+	typedef boost::shared_ptr<CElement> CElementPtr;
 
 	class CElement
 	{
 	public:
 		ElementType			m_etType;
-		CDoubleRect			m_rcBounds;
-		CDoubleRect			m_rcBoundsOriginal;
-		bool				m_bBoundsEnabled;
+		
+		CDoubleRect			m_rcChildAnchor;
+		CDoubleRect			m_rcAnchor;
+		CDoubleRect			m_rcGroupAnchor;
 
+		bool				m_bChildAnchorEnabled;
+		bool				m_bAnchorEnabled;
+		bool				m_bGroupAnchorEnabled;
+		
 		double				m_dStartTime;
 		double				m_dEndTime;
 
@@ -158,9 +164,6 @@ typedef boost::shared_ptr<CElement> CElementPtr;
 		int					m_lPlaceholderUserStr;
 		int					m_nFormatDate;
 
-		// метрика
-		CMetricInfo			m_oMetric;
-
 		double				m_dRotate;			// угол поворота в градусах
 		bool				m_bFlipH;			// симметричное отражение относительно горизонтальной оси
 		bool				m_bFlipV;			// симметричное отражение относительно вертикальной оси
@@ -171,8 +174,6 @@ typedef boost::shared_ptr<CElement> CElementPtr;
 		bool				m_bHaveAnchor;	
 		bool				m_bHidden;
 
-		bool				m_bIsChangeable;	// можно ли редактировать элемент
-
 		CTheme*				m_pTheme;
 		CLayout*			m_pLayout;
 
@@ -181,14 +182,19 @@ typedef boost::shared_ptr<CElement> CElementPtr;
 
 		std::wstring		m_sHyperlink;
 
+		std::vector<CElementPtr>*	m_pParentElements;
+		std::vector<CElementPtr>	m_pChildElements;
+
 		CElement()
 		{
 			m_bIsBackground				= false;
 			m_bHaveAnchor				= true;
 			m_bHidden					= false;
 
-			m_bIsChangeable				= true;
-			
+			m_bChildAnchorEnabled		= false;
+			m_bAnchorEnabled			= false;
+			m_bGroupAnchorEnabled		= false;
+
 			m_lID						= -1;
 			m_lLayoutID					= -1;
 
@@ -199,20 +205,8 @@ typedef boost::shared_ptr<CElement> CElementPtr;
 			m_lPlaceholderUserStr		= -1;
 			m_nFormatDate				= 1;
 
-			m_etType					= etPicture;
-			
-			m_bBoundsEnabled			= true;
-			
-			m_rcBounds.left				= 0; 
-			m_rcBounds.top				= 0;
-			m_rcBounds.right			= 1; 
-			m_rcBounds.bottom			= 1;
-
-			m_rcBoundsOriginal.left		= 0; 
-			m_rcBoundsOriginal.top		= 0;
-			m_rcBoundsOriginal.right	= 1; 
-			m_rcBoundsOriginal.bottom	= 1;
-
+			m_etType					= etShape;
+						
 			m_dStartTime				= 0.0;
 			m_dEndTime					= 30.0;
 
@@ -223,28 +217,12 @@ typedef boost::shared_ptr<CElement> CElementPtr;
 
 			m_pTheme					= NULL;
 			m_pLayout					= NULL;
+			m_pParentElements			= NULL;
 		}
 		virtual ~CElement()
 		{
 		}
 
-		virtual void NormalizeCoords(double dScaleX, double dScaleY)
-		{
-			m_rcBounds.left		= dScaleX * m_rcBoundsOriginal.left;
-			m_rcBounds.right	= dScaleX * m_rcBoundsOriginal.right;
-			m_rcBounds.top		= dScaleY * m_rcBoundsOriginal.top;
-			m_rcBounds.bottom	= dScaleY * m_rcBoundsOriginal.bottom;
-		}
-		virtual void NormalizeCoordsByMetric()
-		{
-			double dScaleX				= (double)m_oMetric.m_lUnitsHor / m_oMetric.m_lMillimetresHor;
-			double dScaleY				= (double)m_oMetric.m_lUnitsVer	/ m_oMetric.m_lMillimetresVer;
-			
-			m_rcBoundsOriginal.left		= dScaleX * m_rcBounds.left;
-			m_rcBoundsOriginal.right	= dScaleX * m_rcBounds.right;
-			m_rcBoundsOriginal.top		= dScaleY * m_rcBounds.top;
-			m_rcBoundsOriginal.bottom	= dScaleY * m_rcBounds.bottom;
-		}
 		virtual CElementPtr CreateDublicate() = 0;
 
 		virtual void SetProperiesToDublicate(CElementPtr pDublicate)
@@ -252,18 +230,19 @@ typedef boost::shared_ptr<CElement> CElementPtr;
 			if (!pDublicate)
 				return;
 
-			pDublicate->m_bBoundsEnabled			= m_bBoundsEnabled;
-
 			pDublicate->m_bIsBackground				= m_bIsBackground;	
 			pDublicate->m_bHaveAnchor				= m_bHaveAnchor;
 			pDublicate->m_bHidden					= m_bHidden;
-			
-			pDublicate->m_bIsChangeable				= m_bIsChangeable;
-			
+
 			pDublicate->m_etType					= m_etType;
 			
-			pDublicate->m_rcBounds					= m_rcBounds;
-			pDublicate->m_rcBoundsOriginal			= m_rcBoundsOriginal;
+			pDublicate->m_rcChildAnchor				= m_rcChildAnchor;
+			pDublicate->m_rcAnchor					= m_rcAnchor;
+			pDublicate->m_rcGroupAnchor				= m_rcGroupAnchor;
+
+			pDublicate->m_bChildAnchorEnabled		= m_bChildAnchorEnabled;
+			pDublicate->m_bAnchorEnabled			= m_bAnchorEnabled;
+			pDublicate->m_bGroupAnchorEnabled		= m_bGroupAnchorEnabled;
 
 			pDublicate->m_dStartTime				= m_dStartTime;
 			pDublicate->m_dEndTime					= m_dEndTime;
@@ -284,8 +263,6 @@ typedef boost::shared_ptr<CElement> CElementPtr;
 			pDublicate->m_lPlaceholderUserStr		= m_lPlaceholderUserStr;
 			pDublicate->m_nFormatDate				= m_nFormatDate;
 
-			pDublicate->m_oMetric					= m_oMetric;
-
 			pDublicate->m_dRotate					= m_dRotate;
 			pDublicate->m_bFlipH					= m_bFlipH;
 			pDublicate->m_bFlipV					= m_bFlipV;
@@ -297,6 +274,17 @@ typedef boost::shared_ptr<CElement> CElementPtr;
 			pDublicate->m_oPen						= m_oPen;
 			pDublicate->m_oBrush					= m_oBrush;
 			pDublicate->m_oShadow					= m_oShadow;
+		}
+
+		void NormalizeCoordsByMetric()
+		{
+			if (!m_bAnchorEnabled) return;
+			double dScale = 1587.5; //master to emu
+			
+			m_rcAnchor.left		= dScale * m_rcAnchor.left;
+			m_rcAnchor.right	= dScale * m_rcAnchor.right;
+			m_rcAnchor.top		= dScale * m_rcAnchor.top;
+			m_rcAnchor.bottom	= dScale * m_rcAnchor.bottom;
 		}
 	};
 }

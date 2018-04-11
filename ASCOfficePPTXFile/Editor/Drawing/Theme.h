@@ -44,7 +44,7 @@ namespace NSPresentationEditor
 		std::map<_UINT64, LONG>			m_mapGeomToLayout;// типовые шаблоны
 		std::map<DWORD, LONG>			m_mapTitleLayout; // заголовочные шаблоны
 		
-		std::multimap<int,int>			m_mapPlaceholders;
+		std::multimap<int,CElementPtr>	m_mapPlaceholders;
 
 		std::vector<CColor>				m_arColorScheme;
 		std::vector<CFont>				m_arFonts;
@@ -53,21 +53,16 @@ namespace NSPresentationEditor
 
 		std::vector<CEffects>			m_arEffects;
 		CTextStyles						m_pStyles[g_ThemeTextStylesCount];
-		std::vector<CLayout>			m_arLayouts;
+		std::vector<CLayoutPtr>			m_arLayouts;
 
 		bool							m_bIsBackground;
 		CBrush							m_oBackground;
 
 		std::vector<CElementPtr>		m_arElements;
 
-		CMetricInfo						m_oInfo;
-
 		std::wstring					m_sThemeName;
 		
 		std::vector<std::vector<CColor>>m_arExtraColorScheme;
-
-		long							m_lOriginalWidth;
-		long							m_lOriginalHeight;
 	
 		bool							m_bHasDate;
 		bool							m_bHasSlideNumber;
@@ -83,85 +78,6 @@ namespace NSPresentationEditor
 		{
 			Clear();
 		}
-
-		CTheme(const CTheme& oSrc)
-		{
-			*this = oSrc;
-		}
-
-		CTheme& operator=(const CTheme& oSrc)
-		{
-			m_eType				=	oSrc.m_eType;
-			m_arColorScheme		=	oSrc.m_arColorScheme;
-			m_arFonts			=	oSrc.m_arFonts;
-			m_arBrushes			=	oSrc.m_arBrushes;
-			m_arPens			=	oSrc.m_arPens;
-			m_arEffects			=	oSrc.m_arEffects;
-			
-			m_sThemeName		=	oSrc.m_sThemeName;
-
-			m_lOriginalWidth	=	oSrc.m_lOriginalWidth ;
-			m_lOriginalHeight	=	oSrc.m_lOriginalHeight;
-
-			m_bHasDate			=	oSrc.m_bHasDate;
-			m_bHasSlideNumber	=	oSrc.m_bHasSlideNumber;
-			m_bHasFooter		=	oSrc.m_bHasFooter;
-			m_nFormatDate		=	oSrc.m_nFormatDate;
-
-			for (size_t i = 0 ; i < 3 ; i++) 
-			{
-				m_PlaceholdersReplaceString[i] = oSrc.m_PlaceholdersReplaceString[i];
-			}
-
-			for (size_t i = 0; i < oSrc.m_arExtraColorScheme.size(); ++i)
-			{
-				m_arExtraColorScheme.push_back(oSrc.m_arExtraColorScheme[i]);
-			}
-
-			for (int i = 0; i < g_ThemeTextStylesCount; ++i)
-				m_pStyles[i] = oSrc.m_pStyles[i];
-
-			m_arLayouts			= oSrc.m_arLayouts;
-			m_mapTitleLayout	= oSrc.m_mapTitleLayout;
-			m_mapGeomToLayout	= oSrc.m_mapGeomToLayout;
-			m_mapPlaceholders	= oSrc.m_mapPlaceholders;
-	
-			m_bIsBackground		= oSrc.m_bIsBackground;
-			m_oBackground		= oSrc.m_oBackground;
-
-			// теперь сделаем копию всех элементов layout'ов
-			size_t nCount = m_arLayouts.size();
-			for (size_t i = 0; i < nCount; ++i)
-			{
-				m_arLayouts[i].CreateDublicateElements();
-			}
-
-			m_arElements = oSrc.m_arElements;
-
-			CreateDublicateElements();
-
-			for (long nIndexStyle = 0; nIndexStyle < g_ThemeTextStylesCount; ++nIndexStyle)
-			{
-				m_pStyles[nIndexStyle] = oSrc.m_pStyles[nIndexStyle];
-			}
-
-			return (*this);
-		}
-
-		void CreateDublicateElements()
-		{
-			// просто из всех своих элементов делаем дубликата
-			size_t nCount = m_arElements.size();
-			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
-			{
-				CElementPtr pElem = m_arElements[nIndex];
-				if (NULL != pElem)
-				{
-					m_arElements[nIndex] = pElem->CreateDublicate();
-				}
-			}
-		}
-
 		void Clear()
 		{
 			m_arElements.clear();
@@ -169,8 +85,6 @@ namespace NSPresentationEditor
 			m_mapTitleLayout.clear();
 			m_mapGeomToLayout.clear();
 			m_mapPlaceholders.clear();
-
-			m_lOriginalWidth = m_lOriginalHeight = 0;
 
 			m_sThemeName		= L"Default";
 			
@@ -183,7 +97,7 @@ namespace NSPresentationEditor
 				m_PlaceholdersReplaceString[i].clear();
 		}
 
-		~CTheme()
+		virtual ~CTheme()
 		{
 		}
 		NSPresentationEditor::CColor GetColor(const LONG& lIndexScheme)
@@ -308,4 +222,6 @@ namespace NSPresentationEditor
 			}
 		}
 	};
+	typedef boost::shared_ptr<CTheme> CThemePtr;
+
 }

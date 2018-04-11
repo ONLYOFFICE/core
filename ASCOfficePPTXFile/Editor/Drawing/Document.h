@@ -39,39 +39,43 @@ namespace NSPresentationEditor
 	class CDocument
 	{
 	public:
-		std::vector<CTheme>		m_arThemes;
+		long m_lSlideWidth;
+		long m_lSlideHeight;
+
+		long m_lNotesWidth;
+		long m_lNotesHeight;
+
+		std::vector<CThemePtr>	m_arThemes;
 		std::vector<CSlide*>	m_arSlides;
 		std::vector<CSlide*>	m_arNotes;
 
-		CTheme*					m_pNotesMaster;
-		CTheme*					m_pHandoutMaster;
-
-		CMetricInfo				m_oInfo;
+		CThemePtr				m_pNotesMaster;
+		CThemePtr				m_pHandoutMaster;
 
 		bool					m_bMacros;
 		std::wstring			m_sVbaProjectFile;
 
 		CDocument() : m_bMacros (false)
-		{
-			m_pHandoutMaster	= NULL;
-			m_pNotesMaster		= NULL;
+		{			
+			m_lSlideWidth	= 0;
+			m_lSlideHeight	= 0;
+
+			m_lNotesWidth	= 0;
+			m_lNotesHeight	= 0;
 		}
 
-		~CDocument()
+		virtual ~CDocument()
 		{
 			Clear();
 		}
 
-		inline void Clear()
+		void Clear()
 		{
 			m_arThemes.clear();
 			try
 			{
 				ClearSlides();
 				ClearNotes();
-				
-				RELEASEOBJECT(m_pHandoutMaster);				
-				RELEASEOBJECT(m_pNotesMaster);
 			}catch(...)
 			{
 			}
@@ -175,19 +179,14 @@ namespace NSPresentationEditor
 			}
 		}
 
-		void CalculateEditor(const NSPresentationEditor::CMetricInfo& oInfo, bool bIsPlaceholderSetUp = false)
+		void CalculateEditor(bool bIsPlaceholderSetUp = false)
 		{
 			// автозамены и поля настраиваем тут во избежания путаницы
-
-			m_oInfo = oInfo;
-
-			double dScaleX = (double)m_oInfo.m_lMillimetresHor / m_oInfo.m_lUnitsHor;
-			double dScaleY = (double)m_oInfo.m_lMillimetresVer / m_oInfo.m_lUnitsVer;
 
 			size_t nCountThemes = m_arThemes.size();
 			for (size_t i = 0; i < nCountThemes; ++i)
 			{
-				CTheme* pTheme = &m_arThemes[i];
+				CTheme* pTheme = m_arThemes[i].get();
 				pTheme->CalculateStyles();
 
 				size_t nCountElems = pTheme->m_arElements.size();
@@ -201,20 +200,12 @@ namespace NSPresentationEditor
 					}
 					pElement->m_pTheme = pTheme;
 					pElement->m_pLayout = NULL;
-					
-					pElement->m_oMetric = m_oInfo;
-					pElement->NormalizeCoords(dScaleX, dScaleY);
 				}
 
 				size_t nCountLayouts = pTheme->m_arLayouts.size();
 				for (size_t nIndexL = 0; nIndexL < nCountLayouts; ++nIndexL)
 				{
-					CLayout* pLayout = &pTheme->m_arLayouts[nIndexL];
-
-					pLayout->m_lOriginalWidth	= m_oInfo.m_lUnitsHor;
-					pLayout->m_lOriginalHeight	= m_oInfo.m_lUnitsVer;
-					pLayout->m_lWidth			= m_oInfo.m_lMillimetresHor;
-					pLayout->m_lHeight			= m_oInfo.m_lMillimetresVer;
+					CLayout* pLayout = pTheme->m_arLayouts[nIndexL].get();
 
 					size_t nCountLayoutElements = pLayout->m_arElements.size();
 					for (size_t nIndexLayoutEl = 0; nIndexLayoutEl < nCountLayoutElements; ++nIndexLayoutEl)
@@ -225,9 +216,6 @@ namespace NSPresentationEditor
 						{
 							ResetAutoText(pElement, pLayout->m_PlaceholdersReplaceString);
 						}
-
-						pElement->m_oMetric = m_oInfo;
-						pElement->NormalizeCoords(dScaleX, dScaleY);
 
 						pElement->m_pTheme = pTheme;
 						pElement->m_pLayout = NULL;
@@ -282,20 +270,15 @@ namespace NSPresentationEditor
 			{
 				CSlide* pSlide = m_arSlides[i];
 
-				pSlide->m_lOriginalWidth	= m_oInfo.m_lUnitsHor;
-				pSlide->m_lOriginalHeight	= m_oInfo.m_lUnitsVer;
-				pSlide->m_lWidth			= m_oInfo.m_lMillimetresHor;
-				pSlide->m_lHeight			= m_oInfo.m_lMillimetresVer;
-
 				CTheme* pTheme = NULL;
 				if ((0 <= pSlide->m_lThemeID) && (pSlide->m_lThemeID < (LONG)nCountThemes))
-					pTheme = &m_arThemes[pSlide->m_lThemeID];
+					pTheme = m_arThemes[pSlide->m_lThemeID].get();
 
 				CLayout* pLayout = NULL;
 				if (NULL != pTheme)
 				{
 					if ((0 <= pSlide->m_lLayoutID) && (pSlide->m_lLayoutID < (LONG)pTheme->m_arLayouts.size()))
-						pLayout = &pTheme->m_arLayouts[pSlide->m_lLayoutID];
+						pLayout = pTheme->m_arLayouts[pSlide->m_lLayoutID].get();
 				}
 
 				size_t nCountElems = pSlide->m_arElements.size();
@@ -310,7 +293,6 @@ namespace NSPresentationEditor
 					pElement->m_pTheme = pTheme;
 					pElement->m_pLayout = pLayout;
 
-					pElement->m_oMetric = m_oInfo;
 				}
 
 				if (NULL != pLayout && bIsPlaceholderSetUp)

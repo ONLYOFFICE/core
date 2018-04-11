@@ -204,9 +204,16 @@ std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int 
 
 	ansiStr = RtfUtility::convert_string(unicodeStr.begin(), unicodeStr.end(), nCodePage);
 
-    std::wstring sTextBack  = RtfUtility::convert_string(ansiStr.begin(), ansiStr.end(), nCodePage);
-    //обратное преобразование чтобы понять какие символы свонвертировались неправильно
+    // std::wstring sTextBack  = RtfUtility::convert_string(ansiStr.begin(), ansiStr.end(), nCodePage);
+    std::wstring sTextBack  = RtfUtility::convert_string_icu(ansiStr.begin(), ansiStr.end(), nCodePage);
 
+	if (!ansiStr.empty() && sTextBack.empty())
+	{
+		//code page not support in icu !!!
+		sTextBack = RtfUtility::convert_string(ansiStr.begin(), ansiStr.end(), nCodepage);
+	}
+
+    //обратное преобразование чтобы понять какие символы свонвертировались неправильно
     while (sTextBack.length() < sText.length())
 		sTextBack += L"-";
 

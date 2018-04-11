@@ -472,7 +472,7 @@ namespace NSPresentationEditor
     public:
         CColor Color;
         long Alpha;
-        double Size;
+        long Size;
 
 		unsigned char DashStyle;
 		unsigned char LineStyle;
@@ -579,7 +579,7 @@ namespace NSPresentationEditor
         void SetDefaultParams()
         {
             Alpha = 255;
-            Size  = 0.26458;
+            Size  = 9524;
 
 			LineStyle	= 0; //single(Simple)
 			DashStyle	= 0; //Solid
@@ -896,9 +896,8 @@ namespace NSPresentationEditor
         bool			StringGID;
         double			CharSpace;
 
-        std::wstring	PitchFamily;
+        BYTE			PitchFamily;
         BYTE			Charset;
-        std::wstring	Panose;
         bool			Monospace;
 
         bool IsEqual(CFont* pFont)
@@ -962,9 +961,8 @@ namespace NSPresentationEditor
             StringGID = false;
             CharSpace = 0.0;
 
-            PitchFamily	= _T("");
+            PitchFamily	= 0;
             Charset		= 0;
-            Panose		= _T("");
             Monospace	= false;
         }
 
@@ -991,7 +989,6 @@ namespace NSPresentationEditor
 
             PitchFamily	= other.PitchFamily;
             Charset		= other.Charset;
-            Panose		= other.Panose;
             Monospace	= other.Monospace;
 
             return *this;

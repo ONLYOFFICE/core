@@ -46,45 +46,6 @@ namespace NSCustomShapesConvert
 	const double c_dInchToMillimetreKoef		= 25.4;
 	const double c_dMasterUnitsToMillimetreKoef = c_dMasterUnitsToInchKoef * c_dInchToMillimetreKoef;
 
-	class CMetricInfo
-	{
-	public:
-		DWORD m_lUnitsHor;
-		DWORD m_lUnitsVer;
-
-		DWORD m_lMillimetresHor;
-		DWORD m_lMillimetresVer;
-
-	public:
-		CMetricInfo()
-		{
-			m_lUnitsHor = 5000;
-			m_lUnitsVer = 5000;
-
-			m_lMillimetresHor = 5000;
-			m_lMillimetresVer = 5000;
-		}
-
-		CMetricInfo& operator =(const CMetricInfo& oSrc)
-		{
-			m_lUnitsHor = oSrc.m_lUnitsHor;
-			m_lUnitsVer = oSrc.m_lUnitsVer;
-			m_lMillimetresHor = oSrc.m_lMillimetresHor;
-			m_lMillimetresVer = oSrc.m_lMillimetresVer;
-
-			return *this;
-		}
-
-		void SetUnitsContainerSize(DWORD lSizeX, DWORD lSizeY)
-		{
-			m_lUnitsHor = lSizeX;
-			m_lUnitsVer = lSizeY;
-
-			m_lMillimetresHor = (DWORD)(m_lUnitsHor * c_dMasterUnitsToMillimetreKoef);
-			m_lMillimetresVer = (DWORD)(m_lUnitsVer * c_dMasterUnitsToMillimetreKoef);
-		}
-	};
-
 	class CDoubleRect
 	{
 	public:

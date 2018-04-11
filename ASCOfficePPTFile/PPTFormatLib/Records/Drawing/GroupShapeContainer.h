@@ -36,23 +36,10 @@
 
 class CRecordGroupShapeContainer : public CRecordsContainer
 {
-private:
-	RECT m_rcGroupBounds;
-	RECT m_rcGroupClientAnchor;
-
 public:
 	
 	CRecordGroupShapeContainer()
 	{
-		m_rcGroupBounds.left = 0;
-		m_rcGroupBounds.top = 0;
-		m_rcGroupBounds.right = 0;
-		m_rcGroupBounds.bottom = 0;
-
-		m_rcGroupClientAnchor.left = 0;
-		m_rcGroupClientAnchor.top = 0;
-		m_rcGroupClientAnchor.right = 0;
-		m_rcGroupClientAnchor.bottom = 0;
 	}
 
 	~CRecordGroupShapeContainer()
@@ -61,5 +48,4 @@ public:
 
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 
-	void SetGroupRect();
 };

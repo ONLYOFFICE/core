@@ -41,10 +41,6 @@
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
 
 
-#ifndef EMU_MM
-#define EMU_MM 36000.0
-#endif
-
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
 
 using namespace NSOfficeDrawing;
@@ -237,6 +233,13 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
 			}
 			break;
 		}
+	case NSPresentationEditor::etGroup:
+		{
+			for (long i = 0; i < lCount; ++i)
+			{
+				SetUpProperty(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
+			}
+		}break;
 	case NSPresentationEditor::etShape:
 		{
 			CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElement.get());
@@ -600,7 +603,7 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 	}break;
 	case lineWidth:
 	{
-		pElement->m_oPen.Size	= (double)pProperty->m_lValue / EMU_MM;
+		pElement->m_oPen.Size	= (double)pProperty->m_lValue;
 		pElement->m_bLine		= true;				
 	}break;
 	case lineStyle:
@@ -677,11 +680,11 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 	}break;
 	case shadowOffsetX:
 		{
-			pElement->m_oShadow.DistanceX = ((int)pProperty->m_lValue) / EMU_MM;
+			pElement->m_oShadow.DistanceX = pProperty->m_lValue;
 		}break;
 	case shadowOffsetY:
 		{
-			pElement->m_oShadow.DistanceY = ((int)pProperty->m_lValue) / EMU_MM;
+			pElement->m_oShadow.DistanceY = pProperty->m_lValue;
 		}break;
 	case shadowScaleXToX:
 		{
@@ -701,11 +704,11 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 		}break;
 	case shadowPerspectiveX:
 		{
-			pElement->m_oShadow.PerspectiveX = ((int)pProperty->m_lValue);// / EMU_MM;//FIXED_POINT(pProperty->m_lValue);
+			pElement->m_oShadow.PerspectiveX = pProperty->m_lValue;
 		}break;
 	case shadowPerspectiveY:
 		{
-			pElement->m_oShadow.PerspectiveY = ((int)pProperty->m_lValue) ;// EMU_MM;//FIXED_POINT(pProperty->m_lValue);
+			pElement->m_oShadow.PerspectiveY = pProperty->m_lValue;
 		}break;
 	case shadowBoolean:
 		{
@@ -971,19 +974,19 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 		}break;
 	case NSOfficeDrawing::dxTextLeft:
 		{
-			pParentShape->m_dTextMarginX = (double)pProperty->m_lValue / EMU_MM;				
+			pParentShape->m_dTextMarginX = pProperty->m_lValue;				
 		}break;
 	case NSOfficeDrawing::dxTextRight:
 		{
-			pParentShape->m_dTextMarginRight = (double)pProperty->m_lValue / EMU_MM;
+			pParentShape->m_dTextMarginRight = pProperty->m_lValue;
 		}break;
 	case NSOfficeDrawing::dyTextTop:
 		{
-			pParentShape->m_dTextMarginY = (double)pProperty->m_lValue / EMU_MM;
+			pParentShape->m_dTextMarginY = pProperty->m_lValue;
 		}break;
 	case NSOfficeDrawing::dyTextBottom:
 		{
-			pParentShape->m_dTextMarginBottom = (double)pProperty->m_lValue / EMU_MM;
+			pParentShape->m_dTextMarginBottom = pProperty->m_lValue;
 		}break;
 	case NSOfficeDrawing::WrapText:
 		{
@@ -1205,12 +1208,10 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 }
 
 
-CElementPtr CRecordShapeContainer::GetElement (CExMedia* pMapIDs,
-						long lSlideWidth, long lSlideHeight, CTheme* pTheme, CLayout* pLayout, 
+CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
+						CTheme* pTheme, CLayout* pLayout, 
 						CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide)
 {
-	if (bGroupShape) return CElementPtr();
-
 	CElementPtr pElement;
 
 	std::vector<CRecordShape*> oArrayShape;
@@ -1283,15 +1284,13 @@ CElementPtr CRecordShapeContainer::GetElement (CExMedia* pMapIDs,
 			}
 		}
 	}
-	// раньше искался шейп - и делался дубликат. Теперь думаю это не нужно
-	// нужно ориентироваться на placeholder (type & id)						
 	if (!pElement)
 	{
 		switch (eType)
 		{
 		case sptMax:
 		case sptNil:
-					break;
+			break;
 		case sptPictureFrame:
 			{
 				std::vector<CRecordExObjRefAtom*> oArrayEx;
@@ -1362,15 +1361,23 @@ CElementPtr CRecordShapeContainer::GetElement (CExMedia* pMapIDs,
 			}break;
 		default:
 			{
-				// shape
-				CShapeElement* pShape = new CShapeElement(NSBaseShape::ppt, eType);
-				CPPTShape *ppt_shape = dynamic_cast<CPPTShape *>(pShape->m_pShape->getBaseShape().get());
-
-				if ( (ppt_shape) && (OOXMLShapes::sptCustom == ppt_shape->m_eType))
+				if (bGroupShape)
 				{
-					pShape->m_bShapePreset = true;
+					CGroupElement* pGroupElem = new CGroupElement();
+					pElement = CElementPtr(pGroupElem);
+				}			
+				else
+				{
+					// shape
+					CShapeElement* pShape = new CShapeElement(NSBaseShape::ppt, eType);
+					CPPTShape *ppt_shape = dynamic_cast<CPPTShape *>(pShape->m_pShape->getBaseShape().get());
+
+					if ( (ppt_shape) && (OOXMLShapes::sptCustom == ppt_shape->m_eType))
+					{
+						pShape->m_bShapePreset = true;
+					}
+					pElement = CElementPtr(pShape);		
 				}
-				pElement = CElementPtr(pShape);					
 			}break;
 		}
 	}
@@ -1378,7 +1385,7 @@ CElementPtr CRecordShapeContainer::GetElement (CExMedia* pMapIDs,
 	if (!pElement)
 		return pElement;
 
-	pElement->m_lID		= oArrayShape[0]->m_nID;
+	pElement->m_lID			= oArrayShape[0]->m_nID;
 	pElement->m_lLayoutID	= lMasterID;
 
 //---------внешние ссылки 
@@ -1428,10 +1435,10 @@ CElementPtr CRecordShapeContainer::GetElement (CExMedia* pMapIDs,
 		
 		if (pLayout)
 		{
-			std::multimap<int, int>::iterator it = pLayout->m_mapPlaceholders.find(pElement->m_lPlaceholderType);
+			std::multimap<int, CElementPtr>::iterator it = pLayout->m_mapPlaceholders.find(pElement->m_lPlaceholderType);
 			if (it != pLayout->m_mapPlaceholders.end())
 			{
-				pElement->m_lPlaceholderID = pLayout->m_arElements[it->second]->m_lPlaceholderID;
+				pElement->m_lPlaceholderID = (it->second)->m_lPlaceholderID;
 			}
 		}
 	}
@@ -1469,75 +1476,56 @@ CElementPtr CRecordShapeContainer::GetElement (CExMedia* pMapIDs,
 		}
 	}
 //------------- привязки ---------------------------------------------------------------------------------
+	std::vector<CRecordGroupShape*> oArrayGroupShape;
+	this->GetRecordsByType(&oArrayGroupShape, true, true);
+
+	if (0 != oArrayGroupShape.size())
+	{
+		pElement->m_rcGroupAnchor.left	= (LONG)oArrayGroupShape[0]->m_oBounds.left;
+		pElement->m_rcGroupAnchor.top	= (LONG)oArrayGroupShape[0]->m_oBounds.top;
+		pElement->m_rcGroupAnchor.right	= (LONG)oArrayGroupShape[0]->m_oBounds.right;
+		pElement->m_rcGroupAnchor.bottom	= (LONG)oArrayGroupShape[0]->m_oBounds.bottom;
+		
+		pElement->m_bGroupAnchorEnabled	= true;
+	}
 	std::vector<CRecordClientAnchor*> oArrayAnchor;
 	this->GetRecordsByType(&oArrayAnchor, true, true);
 
-	bool bAnchor = false;
-
 	if (0 != oArrayAnchor.size())
 	{
-		pElement->m_rcBoundsOriginal.left		= (LONG)oArrayAnchor[0]->m_oBounds.Left;
-		pElement->m_rcBoundsOriginal.top		= (LONG)oArrayAnchor[0]->m_oBounds.Top;
-		pElement->m_rcBoundsOriginal.right		= (LONG)oArrayAnchor[0]->m_oBounds.Right;
-		pElement->m_rcBoundsOriginal.bottom	= (LONG)oArrayAnchor[0]->m_oBounds.Bottom;
-		
-		pElement->m_bBoundsEnabled	= true;
-		bAnchor = true;
+		pElement->m_rcAnchor.left	= (LONG)oArrayAnchor[0]->m_oBounds.Left;
+		pElement->m_rcAnchor.top	= (LONG)oArrayAnchor[0]->m_oBounds.Top;
+		pElement->m_rcAnchor.right	= (LONG)oArrayAnchor[0]->m_oBounds.Right;
+		pElement->m_rcAnchor.bottom	= (LONG)oArrayAnchor[0]->m_oBounds.Bottom;
+
+		pElement->m_bAnchorEnabled	= true;
 	}
-	else
+
+	std::vector<CRecordChildAnchor*> oArrayChildAnchor;
+	this->GetRecordsByType(&oArrayChildAnchor, true, true);
+
+	if (0 != oArrayChildAnchor.size())
 	{
-		std::vector<CRecordChildAnchor*> oArrayChildAnchor;
-		this->GetRecordsByType(&oArrayChildAnchor, true, true);
+		pElement->m_rcChildAnchor.left	= oArrayChildAnchor[0]->m_oBounds.left;
+		pElement->m_rcChildAnchor.top	= oArrayChildAnchor[0]->m_oBounds.top;
+		pElement->m_rcChildAnchor.right	= oArrayChildAnchor[0]->m_oBounds.right;
+		pElement->m_rcChildAnchor.bottom	= oArrayChildAnchor[0]->m_oBounds.bottom;
 
-		if (0 != oArrayChildAnchor.size())
-		{
-			pElement->m_rcBoundsOriginal.left		= oArrayChildAnchor[0]->m_oBounds.left;
-			pElement->m_rcBoundsOriginal.top		= oArrayChildAnchor[0]->m_oBounds.top;
-			pElement->m_rcBoundsOriginal.right		= oArrayChildAnchor[0]->m_oBounds.right;
-			pElement->m_rcBoundsOriginal.bottom	= oArrayChildAnchor[0]->m_oBounds.bottom;
-
-			RecalcGroupShapeAnchor(pElement->m_rcBoundsOriginal);
-		
-			pElement->m_bBoundsEnabled	= true;
-			bAnchor = true;
-		}
-		else
-		{			
-			if (oArrayShape[0]->m_bBackground)
-			{
-				// здесь background
-				pElement->m_rcBoundsOriginal.left		= 0;
-				pElement->m_rcBoundsOriginal.top		= 0;
-				pElement->m_rcBoundsOriginal.right		= lSlideWidth;
-				pElement->m_rcBoundsOriginal.bottom	= lSlideHeight;
-			}
-			else
-			{
-				// не понятно...			
-				pElement->m_rcBoundsOriginal.left		= 0;
-				pElement->m_rcBoundsOriginal.top		= 0;
-				pElement->m_rcBoundsOriginal.right		= 0;
-				pElement->m_rcBoundsOriginal.bottom	= 0;
-			}
-		}
+		pElement->m_bChildAnchorEnabled	= true;
 	}
-
-	double dScaleX = c_dMasterUnitsToMillimetreKoef;
-	double dScaleY = c_dMasterUnitsToMillimetreKoef;
-
-	pElement->NormalizeCoords(dScaleX, dScaleY);
 
 	pElement->m_bFlipH = oArrayShape[0]->m_bFlipH;
 	pElement->m_bFlipV = oArrayShape[0]->m_bFlipV;
 
 
-	if (pElementLayout && bAnchor)
+	if (pElementLayout && (pElement->m_bAnchorEnabled || pElement->m_bChildAnchorEnabled))
 	{
-		pElementLayout->m_rcBoundsOriginal	= pElement->m_rcBoundsOriginal;
-		pElementLayout->m_rcBounds			= pElement->m_rcBounds;
+		pElementLayout->m_rcAnchor			= pElement->m_rcAnchor;
+		pElementLayout->m_rcChildAnchor		= pElement->m_rcChildAnchor;
 
-		pElementLayout->m_bPlaceholderSet	= true;
-		pElementLayout->m_bBoundsEnabled	= true;
+		pElementLayout->m_bPlaceholderSet		= true;
+		pElementLayout->m_bAnchorEnabled		= pElement->m_bAnchorEnabled;
+		pElementLayout->m_bChildAnchorEnabled	= pElement->m_bChildAnchorEnabled;
 	}
 //--------- наличие текста --------------------------------------------------------------------------
 	CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElement.get());
@@ -1690,17 +1678,34 @@ CElementPtr CRecordShapeContainer::GetElement (CExMedia* pMapIDs,
 		}
 		if (((dAngle > 45) && (dAngle < 135)) || ((dAngle > 225) && (dAngle < 315)))
 		{
-			double dW = pShapeElem->m_rcBounds.GetWidth();
-			double dH = pShapeElem->m_rcBounds.GetHeight();
+			if (pShapeElem->m_bAnchorEnabled)
+			{
+				double dW = pShapeElem->m_rcAnchor.GetWidth();
+				double dH = pShapeElem->m_rcAnchor.GetHeight();
 
-			double dCx = (pShapeElem->m_rcBounds.left + pShapeElem->m_rcBounds.right) / 2.0;
-			double dCy = (pShapeElem->m_rcBounds.top + pShapeElem->m_rcBounds.bottom) / 2.0;
+				double dCx = (pShapeElem->m_rcAnchor.left + pShapeElem->m_rcAnchor.right) / 2.0;
+				double dCy = (pShapeElem->m_rcAnchor.top + pShapeElem->m_rcAnchor.bottom) / 2.0;
 
-			pShapeElem->m_rcBounds.left		= dCx - dH / 2.0;
-			pShapeElem->m_rcBounds.right	= dCx + dH / 2.0;
+				pShapeElem->m_rcAnchor.left		= dCx - dH / 2.0;
+				pShapeElem->m_rcAnchor.right	= dCx + dH / 2.0;
 
-			pShapeElem->m_rcBounds.top		= dCy - dW / 2.0;
-			pShapeElem->m_rcBounds.bottom	= dCy + dW / 2.0;
+				pShapeElem->m_rcAnchor.top		= dCy - dW / 2.0;
+				pShapeElem->m_rcAnchor.bottom	= dCy + dW / 2.0;
+			}
+			if (pShapeElem->m_bChildAnchorEnabled)
+			{
+				double dW = pShapeElem->m_rcChildAnchor.GetWidth();
+				double dH = pShapeElem->m_rcChildAnchor.GetHeight();
+
+				double dCx = (pShapeElem->m_rcChildAnchor.left + pShapeElem->m_rcChildAnchor.right) / 2.0;
+				double dCy = (pShapeElem->m_rcChildAnchor.top + pShapeElem->m_rcChildAnchor.bottom) / 2.0;
+
+				pShapeElem->m_rcChildAnchor.left		= dCx - dH / 2.0;
+				pShapeElem->m_rcChildAnchor.right	= dCx + dH / 2.0;
+
+				pShapeElem->m_rcChildAnchor.top		= dCy - dW / 2.0;
+				pShapeElem->m_rcChildAnchor.bottom	= dCy + dW / 2.0;
+			}
 		}
 		
 		std::vector<CRecordMasterTextPropAtom*> oArrayMasterTextProp;
@@ -1729,50 +1734,17 @@ CElementPtr CRecordShapeContainer::GetElement (CExMedia* pMapIDs,
 	{
 		pElement->m_dStartTime		= pSlide->m_dStartTime;
 		pElement->m_dEndTime		= pSlide->m_dEndTime;
-
-		pElement->m_oMetric.SetUnitsContainerSize(pSlide->m_lOriginalWidth, pSlide->m_lOriginalHeight);
 	}
 	else
 	{
 		pElement->m_dStartTime		= 0;
 		pElement->m_dEndTime		= 0;
-
-		pElement->m_oMetric.SetUnitsContainerSize(lSlideWidth, lSlideHeight);
 	}
 
 	pElement->m_bIsBackground	=	(true == oArrayShape[0]->m_bBackground);
 	pElement->m_bHaveAnchor		=	(true == oArrayShape[0]->m_bHaveAnchor);
 
 	return pElement;
-}
-
-void CRecordShapeContainer::RecalcGroupShapeAnchor(CDoubleRect& rcChildAnchor)
-{
-
-	if ((NULL == m_pGroupBounds) || (NULL == m_pGroupClientAnchor))
-	{
-		rcChildAnchor.left		= 0;///= dScaleX;
-		rcChildAnchor.top		= 0;//= dScaleY;
-		rcChildAnchor.bottom	= 0;//= dScaleY;
-		rcChildAnchor.right 	= 0;//= dScaleX;
-		return;
-	}
-
-	// здесь переводим координаты, чтобы они не зависили от группы
-	long lWidthClient	= m_pGroupClientAnchor->right	- m_pGroupClientAnchor->left;
-	long lHeightClient	= m_pGroupClientAnchor->bottom	- m_pGroupClientAnchor->top;
-	
-	long lWidthGroup	= m_pGroupBounds->right			- m_pGroupBounds->left;
-	long lHeightGroup	= m_pGroupBounds->bottom		- m_pGroupBounds->top;
-
-	double dScaleX = (double)(lWidthClient) / (lWidthGroup);
-	double dScaleY = (double)(lHeightClient) / (lHeightGroup);
-	
-	rcChildAnchor.left		= m_pGroupClientAnchor->left	+ (long)(dScaleX * (rcChildAnchor.left	- m_pGroupBounds->left));
-	rcChildAnchor.right		= m_pGroupClientAnchor->left	+ (long)(dScaleX * (rcChildAnchor.right - m_pGroupBounds->left));
-
-	rcChildAnchor.top		= m_pGroupClientAnchor->top		+ (long)(dScaleY * (rcChildAnchor.top	- m_pGroupBounds->top));
-	rcChildAnchor.bottom	= m_pGroupClientAnchor->top		+ (long)(dScaleY * (rcChildAnchor.bottom - m_pGroupBounds->top));
 }
 
 void CRecordShapeContainer::ApplyThemeStyle(CElementPtr pElem, CTheme* pTheme, CRecordMasterTextPropAtom* master_levels)
@@ -2301,105 +2273,4 @@ void CRecordGroupShapeContainer::ReadFromStream(SRecordHeader & oHeader, POLE::S
 {
 	CRecordsContainer::ReadFromStream(oHeader, pStream);
 
-	// вот... а теперь нужно взять и узнать перерасчет системы координат
-	std::vector<CRecordShapeContainer*> oArrayShapes;
-	GetRecordsByType(&oArrayShapes, false, false);
-
-	if (!oArrayShapes.empty())
-		oArrayShapes[0]->bGroupShape = true;//тут описание самой группы
-
-	int nIndexBreak = -1;
-	for (size_t nIndex = 0; nIndex < oArrayShapes.size(); ++nIndex)
-	{
-		std::vector<CRecordGroupShape*> oArrayGroupShapes;
-		oArrayShapes[nIndex]->GetRecordsByType(&oArrayGroupShapes, false, true);
-
-		if ( oArrayGroupShapes.size() > 0 )
-		{
-			m_rcGroupBounds.left	= oArrayGroupShapes[0]->m_oBounds.left;
-			m_rcGroupBounds.top		= oArrayGroupShapes[0]->m_oBounds.top;
-			m_rcGroupBounds.right	= oArrayGroupShapes[0]->m_oBounds.right;
-			m_rcGroupBounds.bottom	= oArrayGroupShapes[0]->m_oBounds.bottom;
-
-			std::vector<CRecordClientAnchor*> oArrayClients;
-			oArrayShapes[nIndex]->GetRecordsByType(&oArrayClients, false, true);
-
-			if ( oArrayClients.size() > 0)
-			{
-				m_rcGroupClientAnchor.left		= (LONG)oArrayClients[0]->m_oBounds.Left;
-				m_rcGroupClientAnchor.top		= (LONG)oArrayClients[0]->m_oBounds.Top;
-				m_rcGroupClientAnchor.right		= (LONG)oArrayClients[0]->m_oBounds.Right;
-				m_rcGroupClientAnchor.bottom	= (LONG)oArrayClients[0]->m_oBounds.Bottom;
-			}
-			else
-			{
-				std::vector<CRecordChildAnchor*> oArrayChilds;
-				oArrayShapes[nIndex]->GetRecordsByType(&oArrayChilds, false, true);
-				
-				if ( oArrayChilds.size() > 0)
-				{
-					m_rcGroupClientAnchor.left		= (LONG)oArrayChilds[0]->m_oBounds.left;
-					m_rcGroupClientAnchor.top		= (LONG)oArrayChilds[0]->m_oBounds.top;
-					m_rcGroupClientAnchor.right		= (LONG)oArrayChilds[0]->m_oBounds.right;
-					m_rcGroupClientAnchor.bottom	= (LONG)oArrayChilds[0]->m_oBounds.bottom;
-				}
-			}
-
-			nIndexBreak = nIndex;
-			break;
-		}
-	}
-
-	LONG lW1 = m_rcGroupBounds.right		- m_rcGroupBounds.left;
-	LONG lH1 = m_rcGroupBounds.bottom		- m_rcGroupBounds.top;
-	LONG lW2 = m_rcGroupClientAnchor.right	- m_rcGroupClientAnchor.left;
-	LONG lH2 = m_rcGroupClientAnchor.bottom - m_rcGroupClientAnchor.top;
-
-    bool bIsRecalc = ((lW1 > 0) && (lH1 > 0) && (lW2 > 0) && (lH2 > 0));
-	if (bIsRecalc)
-	{
-		for (size_t nIndex = 0; nIndex < oArrayShapes.size(); ++nIndex)
-		{
-			if (nIndex != nIndexBreak)
-			{
-				oArrayShapes[nIndex]->m_pGroupBounds		= &m_rcGroupBounds;
-				oArrayShapes[nIndex]->m_pGroupClientAnchor	= &m_rcGroupClientAnchor;
-			}
-		}
-	}
 }
-
-void CRecordGroupShapeContainer::SetGroupRect()
-{
-	std::vector<CRecordGroupShapeContainer*> oArrayGroupContainer;
-	this->GetRecordsByType(&oArrayGroupContainer, false, false);
-
-	int nCountGroups = oArrayGroupContainer.size();
-	for (int i = 0; i < nCountGroups; ++i)
-	{
-		LONG lWidthGroup	= m_rcGroupBounds.right			- m_rcGroupBounds.left;
-		LONG lHeightGroup	= m_rcGroupBounds.bottom		- m_rcGroupBounds.top;
-		LONG lWidthClient	= m_rcGroupClientAnchor.right	- m_rcGroupClientAnchor.left;
-		LONG lHeightClient	= m_rcGroupClientAnchor.bottom	- m_rcGroupClientAnchor.top;
-
-        bool bIsRecalc = ((lWidthClient > 0) && (lHeightClient > 0) && (lWidthGroup > 0) && (lHeightGroup > 0));
-
-		if (bIsRecalc)
-		{
-			// здесь переводим координаты, чтобы они не зависили от группы
-			double dScaleX = (double)(lWidthClient) / (lWidthGroup);
-			double dScaleY = (double)(lHeightClient) / (lHeightGroup);
-			
-			RECT* prcChildAnchor = &oArrayGroupContainer[i]->m_rcGroupClientAnchor;
-
-			prcChildAnchor->left	= m_rcGroupClientAnchor.left + (LONG)(dScaleX * (prcChildAnchor->left	- m_rcGroupBounds.left));
-			prcChildAnchor->right	= m_rcGroupClientAnchor.left + (LONG)(dScaleX * (prcChildAnchor->right	- m_rcGroupBounds.left));
-
-			prcChildAnchor->top		= m_rcGroupClientAnchor.top	 + (LONG)(dScaleY * (prcChildAnchor->top	- m_rcGroupBounds.top));
-			prcChildAnchor->bottom	= m_rcGroupClientAnchor.top  + (LONG)(dScaleY * (prcChildAnchor->bottom	- m_rcGroupBounds.top));
-		}
-
-		oArrayGroupContainer[i]->SetGroupRect();
-	}
-}
-

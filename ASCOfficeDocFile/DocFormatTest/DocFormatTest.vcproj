@@ -455,7 +455,7 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\UnicodeConverter\UnicodeConverter.cpp"
+			RelativePath="..\..\build\lib\win_32\DEBUG\UnicodeConverter.lib"
 			>
 		</File>
 		<File

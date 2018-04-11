@@ -33,7 +33,6 @@
 
 #include "unicode/utypes.h"
 #include "unicode/ustring.h"
-#include "unicode/ures.h"
 #include "unicode/ucnv.h"     /* C   Converter API    */
 
 #include "../DesktopEditor/common/File.h"
@@ -118,6 +117,47 @@ namespace NSUnicodeConverter
             return fromUnicode(sInput.c_str(), (unsigned int)sInput.size(), converterName);
         }
 
+        std::wstring toUnicode(const char* sInput, const unsigned int& nInputLen, int nCodePage)
+        {
+            std::wstring sRes = L"";
+            UErrorCode status = U_ZERO_ERROR;
+            UConverter* conv = ucnv_openCCSID(nCodePage, UCNV_UNKNOWN, &status);
+            if (U_SUCCESS(status))
+            {
+                std::string sss = ucnv_getName(conv, &status);
+                int iii = ucnv_getCCSID(conv, &status);
+
+                //UConverter* conv = ucnv_openCCSID(5347, UCNV_IBM, &status);
+                if (U_SUCCESS(status))
+                {
+                    const char* source = sInput;
+                    const char* sourceLimit = source + nInputLen;
+
+                    unsigned int uBufSize = (nInputLen / ucnv_getMinCharSize(conv));
+                    UChar* targetStart = (UChar*)malloc(uBufSize * sizeof(UChar));
+                    UChar* target = targetStart;
+                    UChar* targetLimit = target + uBufSize;
+
+                    ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, TRUE, &status);
+                    if (U_SUCCESS(status))
+                    {
+                        unsigned int nTargetSize = target - targetStart;
+                        sRes.resize(nTargetSize * 2);// UTF-16 uses 2 code-points per char
+                        int32_t nResLen = 0;
+                        u_strToWCS(&sRes[0], sRes.size(), &nResLen, targetStart, nTargetSize, &status);
+                        sRes.resize(nResLen);
+                    }
+                    ucnv_close(conv);
+                }
+            }
+
+            if (sRes.empty() && nInputLen > 0)
+            {
+                std::string ws(sInput, nInputLen);
+                sRes = std::wstring(ws.begin(), ws.end());
+            }
+            return sRes;
+        }
         std::wstring toUnicode(const char* sInput, const unsigned int& nInputLen, const char* converterName)
         {
             std::wstring sRes = L"";
@@ -196,9 +236,49 @@ namespace NSUnicodeConverter
 
             return sRes;
         }
+        std::wstring toUnicodeExact(const char* sInput, const unsigned int& nInputLen, int nCodePage)
+        {
+            std::wstring sRes = L"";
+            UErrorCode status = U_ZERO_ERROR;
+            UConverter* conv = ucnv_openCCSID(nCodePage, UCNV_UNKNOWN, &status);
+            if (U_SUCCESS(status))
+            {
+                std::string sss = ucnv_getName(conv, &status);
+                int iii = ucnv_getCCSID(conv, &status);
+
+                //UConverter* conv = ucnv_openCCSID(5347, UCNV_IBM, &status);
+                if (U_SUCCESS(status))
+                {
+                    const char* source = sInput;
+                    const char* sourceLimit = source + nInputLen;
+
+                    unsigned int uBufSize = (nInputLen / ucnv_getMinCharSize(conv));
+                    UChar* targetStart = (UChar*)malloc(uBufSize * sizeof(UChar));
+                    UChar* target = targetStart;
+                    UChar* targetLimit = target + uBufSize;
+
+                    ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, TRUE, &status);
+                    if (U_SUCCESS(status))
+                    {
+                        unsigned int nTargetSize = target - targetStart;
+                        sRes.resize(nTargetSize * 2);// UTF-16 uses 2 code-points per char
+                        int32_t nResLen = 0;
+                        u_strToWCS(&sRes[0], sRes.size(), &nResLen, targetStart, nTargetSize, &status);
+                        sRes.resize(nResLen);
+                    }
+                    ucnv_close(conv);
+                }
+            }
+
+            return sRes;
+        }
         inline std::wstring toUnicode(const std::string& sInput, const char* converterName)
         {
             return toUnicode(sInput.c_str(), (unsigned int)sInput.size(), converterName);
+        }
+        inline std::wstring toUnicode(const std::string& sInput, int nCodePage)
+        {
+            return toUnicode(sInput.c_str(), (unsigned int)sInput.size(), nCodePage);
         }
     };
 }
@@ -233,5 +313,17 @@ namespace NSUnicodeConverter
     std::wstring CUnicodeConverter::toUnicode(const std::string &sSrc, const char *sCodePage)
     {
         return m_pInternal->toUnicode(sSrc, sCodePage);
+    }
+    std::wstring CUnicodeConverter::toUnicode(const char* sInput, const unsigned int& nInputLen, int nCodePage)
+    {
+        return m_pInternal->toUnicode(sInput, nInputLen, nCodePage);
+    }
+    std::wstring CUnicodeConverter::toUnicode(const std::string &sSrc, int nCodePage)
+    {
+        return m_pInternal->toUnicode(sSrc, nCodePage);
+    }
+    std::wstring CUnicodeConverter::toUnicodeExact(const char* sInput, const unsigned int& nInputLen, int nCodePage)
+    {
+        return m_pInternal->toUnicodeExact(sInput, nInputLen, nCodePage);
     }
 }

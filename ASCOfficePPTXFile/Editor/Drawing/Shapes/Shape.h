@@ -123,10 +123,10 @@ public:
 				m_pShape->SetType(NSBaseShape::ppt, ShapeType_);
 			}
 
-			m_dTextMarginX		= 2.54;
-			m_dTextMarginY		= 1.27;
-			m_dTextMarginRight	= 2.54;
-			m_dTextMarginBottom	= 1.27;
+			m_dTextMarginX		= 91440;
+			m_dTextMarginY		= 45720;
+			m_dTextMarginRight	= 91440;
+			m_dTextMarginBottom	= 45720;
 
 			m_dWidthLogic		= ShapeSizeVML;
 			m_dHeightLogic		= ShapeSizeVML;
@@ -159,147 +159,22 @@ public:
 	}
 	virtual void GetTextRect(CGeomShapeInfo& oInfo)
 	{
-		// пока сделаем типо - заглушку
-		// здесь - пересчет координат, у нас пока textrect = bounds
-		// поэтому пока ничего не меняем...
-
-		bool bIsFound = false;
-
-		if (m_classType == NSBaseShape::ppt)
-		{
-			// не очень удобно мне пересчет ректов вести
-			// сделаю так, отдельным методом в ппт
-			double dPercentLeft		= 0;
-			double dPercentTop		= 0;
-			double dPercentRight	= 0;
-			double dPercentBottom	= 0;
-
-			if (NSBaseShape::ppt == m_pShape->GetClassType())
-			{
-				// как будто могло быть иначе
-				CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_pShape.get());
-				if (NULL != pPPTShape)
-				{
-					pPPTShape->CalcTextRectOffsets(dPercentLeft, dPercentTop, dPercentRight, dPercentBottom);
-
-					oInfo.m_dLeft	+= (dPercentLeft * oInfo.m_dWidth);
-					oInfo.m_dTop	+= (dPercentTop * oInfo.m_dHeight);
-
-					oInfo.m_dWidth	-= ((dPercentLeft + dPercentRight) * oInfo.m_dWidth);
-					oInfo.m_dHeight	-= ((dPercentTop + dPercentBottom) * oInfo.m_dHeight);
-				}
-			}
-
-			// только учтем маргины
-			oInfo.m_dLeft	+= m_dTextMarginX;
-			oInfo.m_dTop	+= m_dTextMarginY;
-			oInfo.m_dWidth  -= (m_dTextMarginX + m_dTextMarginRight);
-			oInfo.m_dHeight -= (m_dTextMarginY + m_dTextMarginBottom);	
-
-			bIsFound = true;
-		}
-		if (m_classType == NSBaseShape::pptx)
-		{
-			if (0 < m_pShape->m_arTextRects.size())
-			{
-                double koef = (std::max)(oInfo.m_dWidth, oInfo.m_dHeight)/ShapeSize;
-				oInfo.m_dLeft += m_pShape->m_arTextRects[0].left * koef;
-				oInfo.m_dTop += m_pShape->m_arTextRects[0].top * koef;
-				oInfo.m_dWidth = (m_pShape->m_arTextRects[0].right - m_pShape->m_arTextRects[0].left) * koef;
-				oInfo.m_dHeight = (m_pShape->m_arTextRects[0].bottom - m_pShape->m_arTextRects[0].top) * koef;
-
-				oInfo.m_dLeft	+= m_dTextMarginX;
-				oInfo.m_dTop	+= m_dTextMarginY;
-				oInfo.m_dWidth  -= (m_dTextMarginX + m_dTextMarginRight);
-				oInfo.m_dHeight -= (m_dTextMarginY + m_dTextMarginBottom);
-			}
-
-			bIsFound = true;
-		}
-
-		if (oInfo.m_dWidth < 0)
-			oInfo.m_dWidth = 1;
-		if (oInfo.m_dHeight < 0)
-			oInfo.m_dHeight = 1;
+		oInfo.m_dLeft	= m_dTextMarginX;
+		oInfo.m_dTop	= m_dTextMarginY;
+		oInfo.m_dWidth	= m_dTextMarginRight - m_dTextMarginX;
+		oInfo.m_dHeight	= m_dTextMarginBottom - m_dTextMarginY;
 	}
 
 	virtual void GetTextRect(CDoubleRect& oInfo)
 	{
-		// пока сделаем типо - заглушку
-		// здесь - пересчет координат, у нас пока textrect = bounds
-		// поэтому пока ничего не меняем...
-
-		double dLeft	= oInfo.left;
-		double dTop		= oInfo.top;
-		double dWidth	= oInfo.GetWidth();
-		double dHeight	= oInfo.GetHeight();
-
-		bool bIsFound = false;
-
-		if (m_classType == NSBaseShape::ppt)
-		{
-			// не очень удобно мне пересчет ректов вести
-			// сделаю так, отдельным методом в ппт
-			double dPercentLeft		= 0;
-			double dPercentTop		= 0;
-			double dPercentRight	= 0;
-			double dPercentBottom	= 0;
-
-			if ((m_pShape) && (NSBaseShape::ppt == m_pShape->GetClassType()))
-			{
-				// как будто могло быть иначе
-				CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_pShape.get());
-				if (NULL != pPPTShape)
-				{
-					//pPPTShape->CalcTextRectOffsets(dPercentLeft, dPercentTop, dPercentRight, dPercentBottom);
-
-					//dLeft	+= (dPercentLeft * dWidth);
-					//dTop	+= (dPercentTop * dHeight);
-
-					//dWidth	-= ((dPercentLeft + dPercentRight) * dWidth);
-					//dHeight	-= ((dPercentTop + dPercentBottom) * dHeight);
-				}
-			}
-
-			// только учтем маргины
-			dLeft	+= m_dTextMarginX;
-			dTop	+= m_dTextMarginY;
-			dWidth  -= (m_dTextMarginX + m_dTextMarginRight);
-			dHeight -= (m_dTextMarginY + m_dTextMarginBottom);	
-
-			bIsFound = true;
-		}
-		if (m_classType == NSBaseShape::pptx && m_pShape)
-		{
-
-			if (0 < m_pShape->m_arTextRects.size())
-			{
-                double koef = (std::max)(dWidth, dHeight)/ShapeSize;
-				dLeft	+= m_pShape->m_arTextRects[0].left * koef;
-				dTop	+= m_pShape->m_arTextRects[0].top * koef;
-				dWidth	= (m_pShape->m_arTextRects[0].right - m_pShape->m_arTextRects[0].left) * koef;
-				dHeight = (m_pShape->m_arTextRects[0].bottom - m_pShape->m_arTextRects[0].top) * koef;
-
-				dLeft	+= m_dTextMarginX;
-				dTop	+= m_dTextMarginY;
-				dWidth  -= (m_dTextMarginX + m_dTextMarginRight);
-				dHeight -= (m_dTextMarginY + m_dTextMarginBottom);
-			}
-
-			bIsFound = true;
-		}
-
-		if (dWidth < 0)			dWidth  = 1;
-		if (dHeight < 0)		dHeight = 1;
-		
-		oInfo.left		= dLeft;
-		oInfo.top		= dTop;
-		oInfo.right		= dLeft + dWidth;
-		oInfo.bottom	= dTop + dHeight;
+		oInfo.left		= m_dTextMarginX;
+		oInfo.top		= m_dTextMarginY;
+		oInfo.right		= m_dTextMarginRight;
+		oInfo.bottom	= m_dTextMarginBottom;
 	}
 
 
-	void ToRenderer(IRenderer* pRenderer, CGeomShapeInfo& oGeomInfo, CMetricInfo& pInfo, double dStartTime, double dEndTime)
+	void ToRenderer(IRenderer* pRenderer, CGeomShapeInfo& oGeomInfo, double dStartTime, double dEndTime)
 	{
 		if (m_pShape == NULL) 
 			return;
@@ -316,12 +191,12 @@ public:
 			CBrush	brush; //копии с уровня выше нужны
 			CPen	pen;
 
-			m_pShape->ToRenderer(pRenderer, oGeomInfo, dStartTime, dEndTime, pen, brush, pInfo);
+			m_pShape->ToRenderer(pRenderer, oGeomInfo, dStartTime, dEndTime, pen, brush);
 		}
 	}
 
 
-        virtual bool LoadFromXML(const std::wstring& xml)
+	virtual bool LoadFromXML(const std::wstring& xml)
 	{
 		XmlUtils::CXmlNode oNodePict;
 		if (oNodePict.FromXmlString(xml))

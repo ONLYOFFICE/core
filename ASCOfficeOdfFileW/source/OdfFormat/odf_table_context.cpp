@@ -517,7 +517,7 @@ void odf_table_context::set_cell_row_span_restart()
 	int col = impl_->current_table().current_column-1;
 	odf_column_state & state = impl_->current_table().columns[col];
 
-	int sz = state.spanned_row_cell.size();
+	size_t sz = state.spanned_row_cell.size();
 	
 	if (sz  > 1)
 	{

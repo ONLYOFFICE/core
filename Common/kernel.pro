@@ -35,6 +35,8 @@ core_windows {
 
     LIBS += -lAdvapi32
     LIBS += -lurlmon
+    LIBS += -lRpcrt4
+    LIBS += -lShell32
 }
 core_linux {
     SOURCES += \
@@ -72,3 +74,28 @@ HEADERS += \
 
 SOURCES += \
     ./../DesktopEditor/graphics/Timer.cpp
+
+# PATH
+DEFINES += PATH_USE_DYNAMIC_LIBRARY
+HEADERS += ./../DesktopEditor/common/Path.h
+SOURCES += ./../DesktopEditor/common/Path.cpp
+
+# STRINGS
+DEFINES += STRINGBUILDER_USE_DYNAMIC_LIBRARY
+HEADERS += ./../DesktopEditor/common/StringBuilder.h
+SOURCES += ./../DesktopEditor/common/StringBuilder.cpp
+
+# BASE64
+DEFINES += BASE64_USE_DYNAMIC_LIBRARY
+HEADERS += ./../DesktopEditor/common/Base64.h
+SOURCES += ./../DesktopEditor/common/Base64.cpp
+
+# FILE
+DEFINES += FILE_USE_DYNAMIC_LIBRARY
+HEADERS += ./../DesktopEditor/common/File.h
+SOURCES += ./../DesktopEditor/common/File.cpp
+
+# DIRECTORY
+DEFINES += DIRECTORY_USE_DYNAMIC_LIBRARY
+HEADERS += ./../DesktopEditor/common/Directory.h
+SOURCES += ./../DesktopEditor/common/Directory.cpp

@@ -34,84 +34,19 @@
 
 #include <string>
 #include <string.h>
-#include "File.h"
 
-#if defined(_WIN32) || defined (_WIN64)
-    #include <tchar.h>
-#elif __linux__ || MAC
-    #include <libgen.h>
+#ifndef PATH_USE_DYNAMIC_LIBRARY
+#define PATH_DECL_EXPORT
+#else
+#include "./base_export.h"
+#define PATH_DECL_EXPORT Q_DECL_EXPORT
 #endif
 
 namespace NSSystemPath
 {
-	static std::wstring GetDirectoryName(const std::wstring& strFileName)
-	{
-		std::wstring sRes;
-		//_wsplitpath return directory path, including trailing slash.
-		//dirname() returns the string up to, but not including, the final '/',
-#if defined(_WIN32) || defined (_WIN64)
-		wchar_t tDrive[256];
-		wchar_t tFolder[256];
-		_wsplitpath( strFileName.c_str(), tDrive, tFolder, NULL, NULL );
-		sRes.append(tDrive);
-		sRes.append(tFolder);
-		if(sRes.length() > 0)
-			sRes.erase(sRes.length()-1);
-#elif __linux__ || MAC
-		BYTE* pUtf8 = NULL;
-		LONG lLen = 0;
-		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strFileName.c_str(), strFileName.length(), pUtf8, lLen, false);
-		char* pDirName = dirname((char*)pUtf8);
-		sRes = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pDirName, strlen(pDirName));
-		delete [] pUtf8;
-#endif
-        return sRes;
-	}
-	static std::wstring GetFileName(const std::wstring& strFileName)
-	{
-		std::wstring sRes;
-#if defined(_WIN32) || defined (_WIN64)
-		wchar_t tFilename[256];
-		wchar_t tExt[256];
-		_wsplitpath( strFileName.c_str(), NULL, NULL, tFilename, tExt );
-		sRes.append(tFilename);
-		sRes.append(tExt);
-		return sRes;
-#elif __linux__ || MAC
-		BYTE* pUtf8 = NULL;
-		LONG lLen = 0;
-		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strFileName.c_str(), strFileName.length(), pUtf8, lLen, false);
-		char* pBaseName = basename((char*)pUtf8);
-		sRes = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pBaseName, strlen(pBaseName));
-		delete [] pUtf8;
-#endif
-		return sRes;
-	}
-	static std::wstring Combine(const std::wstring& strLeft, const std::wstring& strRight)
-	{
-		std::wstring sRes;
-		bool bLeftSlash = false;
-		bool bRightSlash = false;
-		if(strLeft.length() > 0)
-		{
-			wchar_t cLeft = strLeft[strLeft.length() - 1];
-			bLeftSlash = ('/' == cLeft) || ('\\' == cLeft);
-		}
-		if(strRight.length() > 0)
-		{
-			wchar_t cRight = strRight[0];
-			bRightSlash = ('/' == cRight) || ('\\' == cRight);
-		}
-		if(bLeftSlash && bRightSlash)
-		{
-			sRes = strLeft + strRight.substr(1);
-		}
-		else if(!bLeftSlash && !bRightSlash)
-            sRes = strLeft + L"/" + strRight;
-		else
-			sRes = strLeft + strRight;
-		return sRes;
-	}
+    PATH_DECL_EXPORT std::wstring GetDirectoryName(const std::wstring& strFileName);
+    PATH_DECL_EXPORT std::wstring GetFileName(const std::wstring& strFileName);
+    PATH_DECL_EXPORT std::wstring Combine(const std::wstring& strLeft, const std::wstring& strRight);
 }
 
 #endif //_BUILD_PATH_CROSSPLATFORM_H_

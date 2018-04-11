@@ -33,6 +33,7 @@
 #define _BUILD_GRAPHICSPATH_H_
 
 #include "AggPlusEnums.h"
+#include "./config.h"
 
 #include "IRenderer.h"
 
@@ -42,7 +43,7 @@
 namespace Aggplus
 {
     class CGraphicsPath_private;
-    class CGraphicsPath : public ISimpleGraphicsPath
+    class GRAPHICS_DECL_EXPORT CGraphicsPath : public ISimpleGraphicsPath
     {
     public:
         CGraphicsPath();
@@ -102,7 +103,7 @@ namespace Aggplus
     };
 
     class CGraphicsPathSimpleConverter_private;
-    class CGraphicsPathSimpleConverter : public ISimpleGraphicsPath
+    class GRAPHICS_DECL_EXPORT CGraphicsPathSimpleConverter : public ISimpleGraphicsPath
     {
     private:
         IRenderer* m_pRenderer;

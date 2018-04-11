@@ -33,11 +33,12 @@
 #define _BUILD_MATRIX_H_
 
 #include "AggPlusEnums.h"
+#include "./config.h"
 
 namespace Aggplus
 {
     class CMatrix_private;
-    class CMatrix
+    class GRAPHICS_DECL_EXPORT CMatrix
     {
     public:
         CMatrix(double m11, double m12, double m21, double m22, double dx, double dy);

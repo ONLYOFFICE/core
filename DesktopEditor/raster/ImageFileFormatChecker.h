@@ -34,6 +34,7 @@
 
 #include <string>
 #include "../common/Types.h"
+#include "./../graphics/config.h"
 
 enum __ENUM_CXIMAGE_FORMATS
 {
@@ -63,7 +64,7 @@ enum __ENUM_CXIMAGE_FORMATS
     _CXIMAGE_FORMAT_SVM = 23
 };
 
-class CImageFileFormatChecker
+class GRAPHICS_DECL_EXPORT CImageFileFormatChecker
 {
 public:
 	__ENUM_CXIMAGE_FORMATS eFileType;

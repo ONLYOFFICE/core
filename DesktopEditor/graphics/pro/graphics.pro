@@ -47,6 +47,8 @@ core_windows {
     LIBS += -lUser32
 }
 
+DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
+
 LIB_GRAPHICS_PRI_PATH = $$PWD/../..
 
 INCLUDEPATH += \
@@ -58,6 +60,8 @@ INCLUDEPATH += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/zlib
 
 HEADERS += \
+    ./../config.h \
+    \
     ./../Matrix.h \
     ./../Matrix_private.h \
     ./../GraphicsPath.h \
@@ -73,7 +77,7 @@ HEADERS += \
     ./../Defines.h \
     ./../Graphics.h \
     ./../Image.h \
-    ./../ImagesFileCache.h \
+    ./../ImageFilesCache.h \
     ./../MetafileToRenderer.h \
     ./../MetafileToGraphicsRenderer.h \
     ./../structures.h \

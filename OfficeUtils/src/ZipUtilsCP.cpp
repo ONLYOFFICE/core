@@ -39,6 +39,10 @@
     #import <Foundation/Foundation.h>
 #endif
 
+#if !defined(_WIN32) && !defined (_WIN64)
+#include <unistd.h>
+#endif
+
 #define WRITEBUFFERSIZE 8192
 #define READBUFFERSIZE 8192
 

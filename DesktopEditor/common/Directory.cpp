@@ -53,6 +53,7 @@
 #endif
 
 #include "Directory.h"
+#include <string.h>
 
 namespace NSDirectory
 {

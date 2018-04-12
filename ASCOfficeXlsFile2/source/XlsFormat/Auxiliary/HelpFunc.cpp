@@ -41,6 +41,8 @@
 
 #if defined(_WIN32) || defined(__WIN64)
 	#include "Windows.h"
+#else
+    #include "iconv.h"
 #endif
 
 namespace AUX

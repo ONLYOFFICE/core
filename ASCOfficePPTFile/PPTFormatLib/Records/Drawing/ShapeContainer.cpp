@@ -235,6 +235,8 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
 		}
 	case NSPresentationEditor::etGroup:
 		{
+			pElement->m_bLine = false;
+			pElement->m_bIsFilled = false;
 			for (long i = 0; i < lCount; ++i)
 			{
 				SetUpProperty(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
@@ -255,6 +257,11 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
 				SetUpPropertyShape(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
 			}
 
+			if (false == pElement->m_bIsFilled)
+			{
+				pElement->m_oBrush.Type = c_BrushTypeNoFill;
+			}
+
 			if (NULL != pPPTShape)
 			{
 				pPPTShape->m_oCustomVML.ToCustomShape(pPPTShape, pPPTShape->m_oManager);
@@ -269,8 +276,6 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
 
 void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
 {
-	bool bIsFilled	= true;
-
 	switch (pProperty->m_ePID)
 	{
 	case wzName:
@@ -308,7 +313,7 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 		}break;
 	case fillType:
 		{
-			DWORD dwType = pProperty->m_lValue;
+			_UINT32 dwType = pProperty->m_lValue;
 			switch(dwType)
 			{
 				case NSOfficeDrawing::fillPattern:
@@ -424,6 +429,11 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 				pElement->m_oBrush.Color2 = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
 			else
 				oAtom.ToColor(&pElement->m_oBrush.Color2);
+			
+			if (pElement->m_bIsBackground && pElement->m_oBrush.Type == c_BrushTypeNoFill )
+			{
+				pElement->m_oBrush.Type = c_BrushTypeSolid;
+			}
 		}break;
 	case fillOpacity:
 		{
@@ -458,10 +468,8 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 			pElement->m_oBrush.Rectable		= true;
 		}break;
 	case fillBackground:
-		{
-			//bIsFilled = false;
-			break;
-		}
+		{			
+		}break;
 	case fillShadeType:
 		{
 			bool bShadeNone		= GETBIT(pProperty->m_lValue, 31);
@@ -489,7 +497,7 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 				oAtom.FromValue(*pCompl);	pCompl++;                    
 				oAtom.ToColor(&color);
 					
-				DWORD dwPosition = *pCompl; pCompl++;
+				_UINT32 dwPosition = *pCompl; pCompl++;
 				pElement->m_oBrush.ColorsPosition.push_back(std::pair<CColor, double>(color, 100. * FIXED_POINT_unsigned(dwPosition)));
 			}
 		}break;
@@ -515,7 +523,7 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 			bool bUsebRecolorFillAsPictures = (0x40 == (0x40 & flag2));
 
 			if (bUsebFilled)
-				bIsFilled = bFilled;
+				pElement->m_bIsFilled = bFilled;
 
 			break;
 		}
@@ -544,7 +552,7 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 			//	pElement->m_bLine = bLineOk;//?? todooo проверить - не сраюатывает ! 1 (82).ppt
 
 			if (bUseFillOk)
-				bIsFilled = bFillOk;
+				pElement->m_bIsFilled = bFillOk;
 
 			break;
 		}
@@ -679,12 +687,12 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 		//оттенок двойной тени
 	}break;
 	case shadowOffsetX:
-		{
-			pElement->m_oShadow.DistanceX = pProperty->m_lValue;
+		{//signed
+			pElement->m_oShadow.DistanceX = (_INT32)pProperty->m_lValue;
 		}break;
 	case shadowOffsetY:
-		{
-			pElement->m_oShadow.DistanceY = pProperty->m_lValue;
+		{//signed
+			pElement->m_oShadow.DistanceY = (_INT32)pProperty->m_lValue;
 		}break;
 	case shadowScaleXToX:
 		{
@@ -767,11 +775,6 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 		}break;
 	default:
 		break;
-	}
-
-	if (!bIsFilled)
-	{
-		pElement->m_oBrush.Type = c_BrushTypeNoFill;
 	}
 }
 
@@ -1171,6 +1174,10 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 				break;
 			}
 		}break;
+	case NSOfficeDrawing::txflTextFlow:
+		{
+			pParentShape->m_oText.m_nTextFlow = pProperty->m_lValue;
+		}break;
 	case NSOfficeDrawing::textBoolean:
 		{
 			BYTE flag1 = (BYTE)(pProperty->m_lValue);
@@ -1517,6 +1524,8 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 	pElement->m_bFlipH = oArrayShape[0]->m_bFlipH;
 	pElement->m_bFlipV = oArrayShape[0]->m_bFlipV;
 
+	pElement->m_bIsBackground	=	(true == oArrayShape[0]->m_bBackground);
+	pElement->m_bHaveAnchor		=	(true == oArrayShape[0]->m_bHaveAnchor);
 
 	if (pElementLayout && (pElement->m_bAnchorEnabled || pElement->m_bChildAnchorEnabled))
 	{
@@ -1587,9 +1596,9 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 		}
 
 //------ shape properties ----------------------------------------------------------------------------------------
+		CPPTElement oElement;
 		for (size_t nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
 		{
-			CPPTElement oElement;
 			oElement.SetUpProperties(pElement, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties);
 		}
 
@@ -1721,9 +1730,9 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 	}
 	else
 	{//image, audio, video ....
+		CPPTElement oElement;
 		for (size_t nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
 		{
-			CPPTElement oElement;
 			oElement.SetUpProperties(pElement, pTheme, pSlideWrapper, pSlide, &oArrayOptions[nIndexProp]->m_oProperties);
 		}
 
@@ -1740,9 +1749,6 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 		pElement->m_dStartTime		= 0;
 		pElement->m_dEndTime		= 0;
 	}
-
-	pElement->m_bIsBackground	=	(true == oArrayShape[0]->m_bBackground);
-	pElement->m_bHaveAnchor		=	(true == oArrayShape[0]->m_bHaveAnchor);
 
 	return pElement;
 }

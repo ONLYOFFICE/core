@@ -41,13 +41,10 @@ public:
 	
 	// просто данные. будут обновляться по мере прибытия
 	// Text.Bytes/Chars.Atom
-	DWORD m_lCount; 
+	_UINT32 m_lCount; 
 
-public:
 	std::vector<CTextPFRun_ppt> m_arrPFs;
 	std::vector<CTextCFRun_ppt> m_arrCFs;
-
-public:
 	
 	CRecordStyleTextPropAtom()
 	{
@@ -65,8 +62,8 @@ public:
 		m_oHeader = oHeader;
 		StreamUtils::StreamPosition(m_lOffsetInStream, pStream);
 
-		DWORD lMemCount = 0;
-		DWORD lCountItems = 0;
+		_UINT32 lMemCount = 0;
+		_UINT32 lCountItems = 0;
 
 		if (0 == m_lCount)
 		{

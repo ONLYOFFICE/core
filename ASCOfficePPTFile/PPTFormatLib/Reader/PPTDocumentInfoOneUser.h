@@ -45,7 +45,7 @@ class CPPTUserInfo : public CDocument
 {
 public:
 	CUserEdit										m_oUser;
-	std::map<DWORD, DWORD>							m_mapOffsetInPIDs;
+	std::map<_UINT32, _UINT32>							m_mapOffsetInPIDs;
 	CRecordDocument									m_oDocument;
 	
 	CEncryptionHeader								m_oEncryptionHeader;
@@ -55,22 +55,22 @@ public:
 	POLE::Storage*									m_pStorageDecrypt;
 	std::vector<CFStreamPtr>						m_arStreamDecrypt; // на каждый Persist свой ... оО
 	
-	std::map<DWORD, CRecordSlide*>					m_mapSlides;
-	std::map<DWORD, CRecordSlide*>					m_mapMasters;
-	std::map<DWORD, CRecordSlide*>					m_mapNotes;
+	std::map<_UINT32, CRecordSlide*>					m_mapSlides;
+	std::map<_UINT32, CRecordSlide*>					m_mapMasters;
+	std::map<_UINT32, CRecordSlide*>					m_mapNotes;
 
-	std::map<DWORD, CRecordSlide*>					m_mapNotesMasters;
-	std::map<DWORD, CRecordSlide*>					m_mapHandoutMasters;
+	std::map<_UINT32, CRecordSlide*>					m_mapNotesMasters;
+	std::map<_UINT32, CRecordSlide*>					m_mapHandoutMasters;
 
-	std::vector<DWORD>								m_arrSlidesOrder;
-	std::vector<DWORD>								m_arrMastersOrder;
-	std::vector<DWORD>								m_arrNotesOrder;
+	std::vector<_UINT32>								m_arrSlidesOrder;
+	std::vector<_UINT32>								m_arrMastersOrder;
+	std::vector<_UINT32>								m_arrNotesOrder;
 
 	// перевод id мастера в индекс темы/шаблона
-	std::map<DWORD, LONG>							m_mapMasterToTheme;
+	std::map<_UINT32, LONG>							m_mapMasterToTheme;
 
 	// original id -> natural id
-	std::map<DWORD, DWORD>							m_mapMasterOriginalIds;
+	std::map<_UINT32, _UINT32>							m_mapMasterOriginalIds;
 
 	// это как бы ППT-шная обертка над слайдом
 	std::vector<CSlideInfo>							m_arSlideWrapper;
@@ -99,12 +99,12 @@ public:
 	int												m_lIndexThisUser;
 
 	// Animations structures
-	std::map <DWORD, Animations::CSlideTimeLine*>	m_mapAnimations;
+	std::map <_UINT32, Animations::CSlideTimeLine*>	m_mapAnimations;
 
 	double											m_nWriteSlideTimeOffset;
 	double											m_nWriteSlideTime;
 
-	std::map<DWORD, CSlideShowSlideInfoAtom>		m_mapTransitions;
+	std::map<_UINT32, CSlideShowSlideInfoAtom>		m_mapTransitions;
 
 	// номера "пустых" картинок - в эти пути не будем сохранять
     std::vector<int>								m_arOffsetPictures;
@@ -140,21 +140,21 @@ public:
 
 	void NormalizeCoords(long lWidth, long lHeight);
 
-	void LoadSlide(DWORD dwSlideID, CSlide* pSlide);
-	void LoadNotes(DWORD dwNotesID, CSlide* pSlide);
+	void LoadSlide(_UINT32 dwSlideID, CSlide* pSlide);
+	void LoadNotes(_UINT32 dwNotesID, CSlide* pSlide);
 	
 	void LoadMasters();
 	
-	void LoadNoMainMaster	(DWORD dwMasterID);
-	void LoadMainMaster		(DWORD dwMasterID);
+	void LoadNoMainMaster	(_UINT32 dwMasterID);
+	void LoadMainMaster		(_UINT32 dwMasterID);
 	
     void LoadMaster(_typeMaster type, CRecordSlide* pMaster, CSlideInfo *& pMasterWrapper, CThemePtr & pTheme);
 
-	void LoadSlideFromPrevUsers			(DWORD dwSlideID);
-	void LoadMasterFromPrevUsers		(DWORD dwSlideID);
-	void LoadNotesFromPrevUsers			(DWORD dwSlideID);
-	void LoadNotesMasterFromPrevUsers	(DWORD dwSlideID);
-	void LoadHandoutMasterFromPrevUsers	(DWORD dwSlideID);
+	void LoadSlideFromPrevUsers			(_UINT32 dwSlideID);
+	void LoadMasterFromPrevUsers		(_UINT32 dwSlideID);
+	void LoadNotesFromPrevUsers			(_UINT32 dwSlideID);
+	void LoadNotesMasterFromPrevUsers	(_UINT32 dwSlideID);
+	void LoadHandoutMasterFromPrevUsers	(_UINT32 dwSlideID);
 
 	void LoadExternal(CRecordExObjListContainer* pExObjects);
 
@@ -313,8 +313,8 @@ public:
 		return _T("blank");
 	}
 	
-	void AddAnimation		(DWORD dwSlideID, double Width, double Height, CElementPtr pElement);
-	void AddAudioTransition (DWORD dwSlideID, CTransition* pTransition, const std::wstring& strFilePath);
+	void AddAnimation		(_UINT32 dwSlideID, double Width, double Height, CElementPtr pElement);
+	void AddAudioTransition (_UINT32 dwSlideID, CTransition* pTransition, const std::wstring& strFilePath);
 
 	int			AddNewLayout(NSPresentationEditor::CTheme* pTheme, CRecordSlide* pRecordSlide, bool addShapes, bool bMasterObjects);
 	

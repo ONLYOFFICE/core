@@ -37,7 +37,7 @@ class CSlideShowSlideInfoAtom : public CUnknownRecord
 public:
 
 	INT		m_nSlideTime;
-	DWORD	m_nSoundRef;
+	_UINT32	m_nSoundRef;
 
 	BYTE	m_nEffectDirection;
 	BYTE	m_nEffectType;
@@ -108,7 +108,7 @@ public:
 		m_bAutoAdvance		=	(0x04 == (0x04 & bValue));
 		m_bCursorVisible	=	(0x10 == (0x10 & bValue));
 
-		//DWORD dwValue		=	StreamUtils::ReadDWORD ( pStream );
+		//_UINT32 dwValue		=	StreamUtils::ReadDWORD ( pStream );
 		//m_nSpeed			=	( 0x01 == ( 0x01 & ((BYTE)dwValue) ) );
 		m_nSpeed			=	StreamUtils::ReadBYTE( pStream );
 		StreamUtils::StreamSkip(3, pStream);

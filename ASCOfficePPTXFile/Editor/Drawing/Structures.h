@@ -186,20 +186,20 @@ namespace NSPresentationEditor
             return *this;
         }
 
-        DWORD ToValue()
+        _UINT32 ToValue()
         {
-            DWORD dwVal = (R | (G << 8) | (B << 16));
+            _UINT32 dwVal = (R | (G << 8) | (B << 16));
             return dwVal;
         }
-        DWORD ToValue_RGB()
+        _UINT32 ToValue_RGB()
         {
-            DWORD dwVal = (B | (G << 8) | (R << 16));
+            _UINT32 dwVal = (B | (G << 8) | (R << 16));
             return dwVal;
         }
 
-        DWORD ToValueProperty()
+        _UINT32 ToValueProperty()
         {
-            DWORD dwVal = 0;
+            _UINT32 dwVal = 0;
             if (!bSchemeIndex)
             {
                 dwVal = (R | (G << 8) | (B << 16));
@@ -219,7 +219,7 @@ namespace NSPresentationEditor
             Index = -1;
         }
 
-        void FromValue(DWORD dwValue)
+        void FromValue(_UINT32 dwValue)
         {
 
             R	= static_cast<unsigned char>(GETBITS(dwValue, 0, 7));

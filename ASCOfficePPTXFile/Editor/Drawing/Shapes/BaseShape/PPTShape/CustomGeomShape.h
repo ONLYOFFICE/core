@@ -568,13 +568,13 @@ namespace NSCustomVML
                 LONG lMaxF = (LONG)0x8000007F;
                 if (lMinF <= oPoint.x)
                 {
-                    int nGuideIndex = (DWORD)oPoint.x - 0x80000000;
+                    int nGuideIndex = (_UINT32)oPoint.x - 0x80000000;
 
                     bool b = false;
                 }
                 if (lMinF <= oPoint.y)
                 {
-                    int nGuideIndex = (DWORD)oPoint.y - 0x80000000;
+                    int nGuideIndex = (_UINT32)oPoint.y - 0x80000000;
 
                     bool b = false;
                 }
@@ -591,7 +591,7 @@ namespace NSCustomVML
             
 			for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
             {
-                DWORD v = oReader.ReadLONG();
+                _UINT32 v = oReader.ReadLONG();
 				double val = (double)((WORD)(v >> 16) + ((WORD)(v) / 65536.0));
 				m_arConnectionSitesDir.push_back(val);
 			}
@@ -625,13 +625,13 @@ namespace NSCustomVML
                 LONG lMaxF = (LONG)0x8000007F;
                 if (lMinF <= oPoint.x)
                 {
-                    int nGuideIndex = (DWORD)oPoint.x - 0x80000000;
+                    int nGuideIndex = (_UINT32)oPoint.x - 0x80000000;
 
                     bool b = false;
                 }
                 if (lMinF <= oPoint.y)
                 {
-                    int nGuideIndex = (DWORD)oPoint.y - 0x80000000;
+                    int nGuideIndex = (_UINT32)oPoint.y - 0x80000000;
 
                     bool b = false;
                 }
@@ -674,13 +674,13 @@ namespace NSCustomVML
                 LONG lMaxF = (LONG)0x8000007F;
                 if (lMinF <= oPoint.x)
                 {
-                    int nGuideIndex = (DWORD)oPoint.x - 0x80000000;
+                    int nGuideIndex = (_UINT32)oPoint.x - 0x80000000;
 
                     bool b = false;
                 }
                 if (lMinF <= oPoint.y)
                 {
-                    int nGuideIndex = (DWORD)oPoint.y - 0x80000000;
+                    int nGuideIndex = (_UINT32)oPoint.y - 0x80000000;
 
                     bool b = false;
                 }
@@ -850,8 +850,8 @@ namespace NSCustomVML
                 {
                     nGuideIndex_x = nGuideIndex_y = -1;
 
-                    if (lMaxF > m_arVertices[nIndex].x )	nGuideIndex_x = (DWORD)m_arVertices[nIndex].x - (DWORD)lMinF;
-                    if (lMaxF > m_arVertices[nIndex].y )	nGuideIndex_y = (DWORD)m_arVertices[nIndex].y - (DWORD)lMinF;
+                    if (lMaxF > m_arVertices[nIndex].x )	nGuideIndex_x = (_UINT32)m_arVertices[nIndex].x - (_UINT32)lMinF;
+                    if (lMaxF > m_arVertices[nIndex].y )	nGuideIndex_y = (_UINT32)m_arVertices[nIndex].y - (_UINT32)lMinF;
 
                     if (nGuideIndex_x >= 0 )
                     {
@@ -897,12 +897,12 @@ namespace NSCustomVML
                         {
                             if (rtFillColor == m_arSegments[nS].m_eRuler)
                             {
-                                m_oBrush.Color1 = (DWORD)m_arVertices[nStart].x;
-                                m_oBrush.Color2 = (DWORD)m_arVertices[nStart].y;
+                                m_oBrush.Color1 = (_UINT32)m_arVertices[nStart].x;
+                                m_oBrush.Color2 = (_UINT32)m_arVertices[nStart].y;
                             }
                             else
                             {
-                                m_oPen.Color	= (DWORD)m_arVertices[nStart].x;
+                                m_oPen.Color	= (_UINT32)m_arVertices[nStart].x;
                             }
                         }
                         nEnd = nStart + m_arSegments[nS].m_nCount;
@@ -927,8 +927,8 @@ namespace NSCustomVML
                     {
                         nGuideIndex_x = nGuideIndex_y = -1;
 
-                        if (lMaxF > m_arVertices[nV].x )	nGuideIndex_x = (DWORD)m_arVertices[nV].x - (DWORD)lMinF;
-                        if (lMaxF > m_arVertices[nV].y )	nGuideIndex_y = (DWORD)m_arVertices[nV].y - (DWORD)lMinF;
+                        if (lMaxF > m_arVertices[nV].x )	nGuideIndex_x = (_UINT32)m_arVertices[nV].x - (_UINT32)lMinF;
+                        if (lMaxF > m_arVertices[nV].y )	nGuideIndex_y = (_UINT32)m_arVertices[nV].y - (_UINT32)lMinF;
 
                         std::wstring str = _T("");
                         if (nGuideIndex_x >= 0 && nGuideIndex_x < (int)m_arGuides.size())

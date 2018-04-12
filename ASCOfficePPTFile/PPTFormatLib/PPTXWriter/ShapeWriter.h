@@ -264,8 +264,8 @@ namespace NSPresentationEditor
     virtual HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h);
 
 //-------- Маркеры для команд ---------------------------------------------------------------
-	virtual HRESULT BeginCommand(const DWORD& lType);
-	virtual HRESULT EndCommand(const DWORD& lType)	;
+	virtual HRESULT BeginCommand(const _UINT32& lType);
+	virtual HRESULT EndCommand(const _UINT32& lType)	;
 
 //-------- Функции для работы с Graphics Path -----------------------------------------------
 	virtual HRESULT PathCommandMoveTo(const double& x, const double& y);
@@ -291,8 +291,8 @@ namespace NSPresentationEditor
 	virtual HRESULT DrawImageFromFile(const std::wstring&, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha = 255);	
 
 // transform --------------------------------------------------------------------------------
-	virtual HRESULT GetCommandParams(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, DWORD* lFlags);
-	virtual HRESULT SetCommandParams(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, DWORD lFlags);
+	virtual HRESULT GetCommandParams(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, _UINT32* lFlags);
+	virtual HRESULT SetCommandParams(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, _UINT32 lFlags);
 	virtual HRESULT SetTransform(const double& m1, const double& m2, const double& m3, const double& m4, const double& m5, const double& m6);
 	virtual HRESULT GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF);
 	virtual HRESULT ResetTransform();

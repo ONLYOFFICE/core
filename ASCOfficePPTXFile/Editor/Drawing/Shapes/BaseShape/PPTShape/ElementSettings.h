@@ -45,12 +45,11 @@ public:
     NSOfficeDrawing::PropertyId		m_ePID;
     bool							m_bIsBlip;
     bool							m_bComplex;
-    DWORD							m_lValue;
+    _UINT32							m_lValue;
     BYTE*							m_pOptions;
     // чтобы не плодить классы - это value, когда m_bComplex == true
     bool							m_bIsTruncated;
 
-public:
     CProperty()
     {
         m_ePID = NSOfficeDrawing::left;
@@ -176,7 +175,6 @@ public:
     // тем более это класс - не связанный с RecordHeader
     long m_lCount;
 
-public:
     CProperties() : m_arProperties()
     {
     }
@@ -203,19 +201,10 @@ public:
         }
     }
 
-    std::wstring ToString()
-    {
-        std::wstring str;
-//        for (size_t nIndex = 0; nIndex < m_arProperties.size(); ++nIndex)
-//        {
-//            str += m_arProperties[nIndex].ToString();
-//        }
-        return _T("<Properties>") + str + _T("</Properties>");
-    }
 
-    DWORD GetLen()
+    _UINT32 GetLen()
     {
-        DWORD dwLen = 6 * m_lCount;
+        _UINT32 dwLen = 6 * m_lCount;
         for (long nIndex = 0; nIndex < m_lCount; ++nIndex)
         {
             if (m_arProperties[nIndex].m_bComplex)

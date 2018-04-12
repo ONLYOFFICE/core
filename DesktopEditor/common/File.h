@@ -865,6 +865,7 @@ namespace NSFile
 
 				oFile.CloseFile();
 			}
+			else return false;
 
 			char* pBuffer_in = NULL;
 			char* pBuffer_out = NULL;

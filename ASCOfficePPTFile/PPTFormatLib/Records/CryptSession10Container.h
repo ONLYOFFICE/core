@@ -38,8 +38,8 @@ public:
 	CRecordEncryptedSummary(){}
 	~CRecordEncryptedSummary(){}
 
-	DWORD			StreamOffset;
-	DWORD			StreamSize;
+	_UINT32			StreamOffset;
+	_UINT32			StreamSize;
 	unsigned short	Block;
 	unsigned char	NameSize;
 	bool			fStream;

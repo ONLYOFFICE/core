@@ -35,26 +35,24 @@
 class CRecordUserEditAtom : public CUnknownRecord
 {
 public:
-	DWORD m_nLastSlideIdRef;
+	_UINT32 m_nLastSlideIdRef;
 
 	USHORT m_nVersion;			// must be 0x0000
 	BYTE m_nMinorVersion;		// must be 0x00
 	BYTE m_nMajorVersion;		// must be 0x03
 
-	DWORD m_nOffsetLastEdit;    // offset to prev UserEditAtom (0 - if no)
+	_UINT32 m_nOffsetLastEdit;    // offset to prev UserEditAtom (0 - if no)
 
-	DWORD m_nOffsetPersistDirectory;	// offset to PersistDirectoryAtom in PPTDocStream (for this user)
+	_UINT32 m_nOffsetPersistDirectory;	// offset to PersistDirectoryAtom in PPTDocStream (for this user)
 
-	DWORD m_nOffsetDocPersistIdRef;		// offset to PersistObjectDirectory in DocContainer must be 0x00000001
+	_UINT32 m_nOffsetDocPersistIdRef;		// offset to PersistObjectDirectory in DocContainer must be 0x00000001
 
-	DWORD m_nPersistIdSeed;				// for next
+	_UINT32 m_nPersistIdSeed;				// for next
 
-	DWORD m_nEncryptSessionPersistIdRef;
+	_UINT32 m_nEncryptSessionPersistIdRef;
 
 	USHORT m_nLastView;
 
-public:
-	
 	CRecordUserEditAtom()
 	{
 		m_nEncryptSessionPersistIdRef = 0;

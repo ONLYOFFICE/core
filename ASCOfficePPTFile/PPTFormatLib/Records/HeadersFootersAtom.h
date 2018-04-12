@@ -106,7 +106,7 @@ public:
 class CRecordMetaCharacterAtom : public CUnknownRecord
 {
 public:
-	DWORD m_nPosition;
+	_UINT32 m_nPosition;
 
 
 	CRecordMetaCharacterAtom()
@@ -149,7 +149,7 @@ public:
 class CRecordDateTimeMetaAtom : public CRecordGenericDateMetaAtom
 {
 public:
-	DWORD m_FormatID;
+	_UINT32 m_FormatID;
 	
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{

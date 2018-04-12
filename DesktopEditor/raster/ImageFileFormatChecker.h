@@ -64,7 +64,7 @@ enum __ENUM_CXIMAGE_FORMATS
     _CXIMAGE_FORMAT_SVM = 23
 };
 
-class GRAPHICS_DECL_EXPORT CImageFileFormatChecker
+class GRAPHICS_DECL CImageFileFormatChecker
 {
 public:
 	__ENUM_CXIMAGE_FORMATS eFileType;

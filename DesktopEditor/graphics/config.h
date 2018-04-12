@@ -33,10 +33,14 @@
 #define _GRAPHICS_CONFIG_H_
 
 #ifndef GRAPHICS_USE_DYNAMIC_LIBRARY
-#define GRAPHICS_DECL_EXPORT
+#define GRAPHICS_DECL
 #else
 #include "./../common/base_export.h"
-#define GRAPHICS_DECL_EXPORT Q_DECL_EXPORT
+#ifdef GRAPHICS_USE_DYNAMIC_LIBRARY_BUILDING
+#define GRAPHICS_DECL Q_DECL_EXPORT
+#else
+#define GRAPHICS_DECL Q_DECL_IMPORT
+#endif
 #endif
 
 #endif //_GRAPHICS_CONFIG_H_

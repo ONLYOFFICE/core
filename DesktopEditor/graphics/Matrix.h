@@ -38,7 +38,7 @@
 namespace Aggplus
 {
     class CMatrix_private;
-    class GRAPHICS_DECL_EXPORT CMatrix
+    class GRAPHICS_DECL CMatrix
     {
     public:
         CMatrix(double m11, double m12, double m21, double m22, double dx, double dy);

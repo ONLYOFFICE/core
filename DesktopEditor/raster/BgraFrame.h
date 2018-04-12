@@ -36,7 +36,7 @@
 #include "../common/Types.h"
 #include "./../graphics/config.h"
 
-class GRAPHICS_DECL_EXPORT CBgraFrame
+class GRAPHICS_DECL CBgraFrame
 {
 private:
 	int m_nFileType;

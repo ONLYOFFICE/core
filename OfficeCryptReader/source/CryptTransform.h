@@ -104,8 +104,22 @@ struct _ecmaCryptData
 //..........
 
 	bool fDocProps = true;
-
 };
+struct _odfCryptData
+{
+	CRYPT_METHOD::_cipherAlgorithm	cipherAlgorithm = CRYPT_METHOD::AES_CBC;
+	CRYPT_METHOD::_hashAlgorithm	hashAlgorithm = CRYPT_METHOD::SHA1;
+
+	int			spinCount	= 100000;
+	int			keySize		= 0x10;
+	int			hashSize	= 0x14;
+	int			saltSize	= 0x10;
+
+	std::string saltValue;
+	std::string initializationVector;
+	std::string checksumData;
+};
+//---------------------------------------------------------------------------------------------------
 class ECMAEncryptor 
 {
 public:
@@ -150,6 +164,31 @@ private:
 
 	std::wstring	password;
 	_ecmaCryptData	cryptData;
+	bool			bVerify;
+};
+
+class ODFDecryptor : public Decryptor
+{
+public:
+	ODFDecryptor();
+	virtual ~ODFDecryptor();
+
+	virtual void Init(const unsigned long val) {}
+	
+	virtual void Decrypt (char* data, const size_t size, const unsigned long stream_pos, const size_t block_size){}
+	virtual void Decrypt (char* data, const size_t size, const unsigned long start_iv_block);
+	
+	virtual bool SetPassword (std::wstring password);
+	virtual bool IsVerify();
+
+	void SetCryptData(_odfCryptData &data);
+	
+	void Decrypt (unsigned char* data, int  size, unsigned char*& data_out, unsigned long start_iv_block);
+
+private:
+
+	std::wstring	password;
+	_odfCryptData	cryptData;
 	bool			bVerify;
 };
 

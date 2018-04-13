@@ -38,9 +38,11 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-odf_document::odf_document(const std::wstring & Folder, const ProgressCallback* CallBack) : impl_(new Impl(Folder, CallBack))
+odf_document::odf_document(const std::wstring & SrcPath, const std::wstring & TempPath, const std::wstring & Password, const ProgressCallback* CallBack) 
+	: impl_(new Impl(SrcPath, TempPath, Password, CallBack))
 {}
-odf_document::odf_document( xml::sax * Reader) : impl_(new Impl(Reader))
+
+odf_document::odf_document( xml::sax * Reader, const std::wstring & TempPath) : impl_(new Impl(Reader, TempPath))
 {}
 
 odf_document::~odf_document()
@@ -70,6 +72,11 @@ const std::wstring & odf_document::get_folder() const
     return impl_->get_folder();
 }
 
+const std::wstring & odf_document::get_temp_folder() const
+{
+    return impl_->get_temp_folder();
+}
+
 int odf_document::get_office_mime_type() 
 {
 	return impl_->get_office_mime_type();
@@ -77,6 +84,10 @@ int odf_document::get_office_mime_type()
 bool odf_document::get_encrypted() 
 {
 	return impl_->get_encrypted();
+}
+bool odf_document::get_error() 
+{
+	return impl_->get_error();
 }
 bool odf_document::UpdateProgress(long Complete)
 {

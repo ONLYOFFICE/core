@@ -358,6 +358,10 @@ enum ElementType
 	typeManifestEntry,
 	typeManifestEncryptionData,
 
+	typeManifestAlgorithm,
+	typeManifestStartKeyGeneration,
+	typeManifestKeyDerivation,
+
 	typeOfficeSettings,
 	typeOfficeSettingsConfigItemSet,
 	typeOfficeSettingsConfigItem,

@@ -77,6 +77,7 @@ HRESULT convert_single(std::wstring srcFileName)
 	std::wstring outputDir		= NSDirectory::GetFolderPath(dstPath);
 	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 	std::wstring srcTempPath;
+	std::wstring srcTempPath2 = NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
 	if (fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT		||
 		fileChecker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS	||
@@ -96,12 +97,13 @@ HRESULT convert_single(std::wstring srcFileName)
 	}
     _CP_LOG << L"[info] " << srcFileName << std::endl;
 	
-	nResult = ConvertODF2OOXml(srcTempPath, dstTempPath, L"C:\\Windows\\Fonts", false, NULL);
+	nResult = ConvertODF2OOXml(srcTempPath, dstTempPath, L"C:\\Windows\\Fonts", srcTempPath2, L"password", NULL);
 
 	if (srcTempPath != srcFileName)
 	{
 		NSDirectory::DeleteDirectory(srcTempPath);
 	}
+	NSDirectory::DeleteDirectory(srcTempPath2);
 
 	if (nResult == 0)
 	{   

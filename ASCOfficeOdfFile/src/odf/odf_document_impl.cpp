@@ -85,6 +85,8 @@
 
 #include "../progressCallback.h"
 
+#include "../../../OfficeCryptReader/source/CryptTransform.h"
+
 #define PROGRESSEVENT_ID 0
 
 namespace cpdoccore { 
@@ -119,11 +121,12 @@ content_xml_t_ptr odf_document::Impl::read_file_content(const std::wstring & Pat
 
     return result;
 }
-odf_document::Impl::Impl(xml::sax * Reader): 
-			context_(new odf_read_context()), base_folder_(L""), pCallBack(NULL), bUserStopConvert (0)
+odf_document::Impl::Impl(xml::sax * Reader, const std::wstring & tempPath): 
+			context_(new odf_read_context()), base_folder_(L""), pCallBack(NULL), bUserStopConvert (0), bError(false)
 {
 	office_mime_type_ = 0;
-	encrypted = false;
+
+	tmp_folder_original_ = tempPath;
 
 	content_xml_ = read_file_content(Reader);
 	
@@ -141,30 +144,59 @@ odf_document::Impl::Impl(xml::sax * Reader):
 		_CP_LOG << L"[info] parse settings" << std::endl;
 		parse_settings(content_xml_->get_content());
 			
-		tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetTempPath());
+		tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(tempPath);
 	}
 }
 
-odf_document::Impl::Impl(const std::wstring & srcPath, const ProgressCallback* CallBack) : 
-			context_(new odf_read_context()), pCallBack(CallBack), bUserStopConvert (0)
+odf_document::Impl::Impl(const std::wstring & srcPath, const std::wstring & tempPath, const std::wstring & Password, const ProgressCallback* CallBack) : 
+			context_(new odf_read_context()), pCallBack(CallBack), bUserStopConvert (0), bError(false)
 {
 	office_mime_type_ = 0;
-	encrypted = false;
+
+	tmp_folder_original_ = tempPath;
 
 	if (NSDirectory::Exists(srcPath))
 	{
 		base_folder_ = srcPath; 
 
-		std::wstring content_xml	= srcPath + FILE_SEPARATOR_STR + L"content.xml";
-		std::wstring styles_xml		= srcPath + FILE_SEPARATOR_STR + L"styles.xml";
-		std::wstring meta_xml		= srcPath + FILE_SEPARATOR_STR + L"meta.xml";
-		std::wstring settings_xml	= srcPath + FILE_SEPARATOR_STR + L"settings.xml";
 		std::wstring manifest_xml	= srcPath + FILE_SEPARATOR_STR + L"META-INF" + FILE_SEPARATOR_STR + L"manifest.xml";
 		std::wstring mimetype_xml	= srcPath + FILE_SEPARATOR_STR + L"mimetype";
+
+		_CP_LOG << L"[info] read mimetype" << std::endl;
+		NSFile::CFileBinary::ReadAllTextUtf8(mimetype_xml, mimetype_content_file_); 
 
 		_CP_LOG << L"[info] read manifest.xml" << std::endl;
 		manifest_xml_ = read_file_content(manifest_xml);
 
+		_CP_LOG << L"[info] parse manifest" << std::endl;
+		parse_manifests(manifest_xml_ ? manifest_xml_->get_content() : NULL);
+
+		if (!office_mime_type_)
+		{
+			office_mime_type_ = GetMimetype(mimetype_content_file_);
+		}
+
+		if (false == map_encryptions_.empty())
+		{
+			if (Password.empty()) return;
+
+			//decrypt files
+			tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(tempPath);
+
+			bError = !decrypt_folder(base_folder_, tmp_folder_);
+
+			if (bError)
+				return;
+
+			base_folder_ = tmp_folder_;
+		}
+
+		std::wstring content_xml	= base_folder_ + FILE_SEPARATOR_STR + L"content.xml";
+		std::wstring styles_xml		= base_folder_ + FILE_SEPARATOR_STR + L"styles.xml";
+		std::wstring meta_xml		= base_folder_ + FILE_SEPARATOR_STR + L"meta.xml";
+		std::wstring settings_xml	= base_folder_ + FILE_SEPARATOR_STR + L"settings.xml";
+
+//-----------------------------------------------------------------------------------------------------
 		  _CP_LOG << L"[info] read settings.xml" << std::endl;
 		settings_xml_ = read_file_content(settings_xml);
 
@@ -174,22 +206,12 @@ odf_document::Impl::Impl(const std::wstring & srcPath, const ProgressCallback* C
 		  _CP_LOG << L"[info] read styles.xml" << std::endl;
 		styles_xml_ = read_file_content(styles_xml);
 
-		_CP_LOG << L"[info] read mimetype" << std::endl;
-		NSFile::CFileBinary::ReadAllTextUtf8(mimetype_xml, mimetype_content_file_); 
 //----------------------------------------------------------------------------------------
 		_CP_LOG << L"[info] parse fonts" << std::endl;
 		parse_fonts(content_xml_ ? content_xml_->get_content() : NULL);
 
 		_CP_LOG << L"[info] parse styles" << std::endl;
 		parse_styles(styles_xml_ ? styles_xml_->get_content() : NULL);
-
-		_CP_LOG << L"[info] parse manifest" << std::endl;
-		parse_manifests(manifest_xml_ ? manifest_xml_->get_content() : NULL);
-
-		if (!office_mime_type_)
-		{
-			office_mime_type_ = GetMimetype(mimetype_content_file_);
-		}
 
 		_CP_LOG << L"[info] parse settings" << std::endl;
 		parse_settings(settings_xml_ ? settings_xml_->get_content() : NULL);
@@ -214,7 +236,7 @@ odf_document::Impl::Impl(const std::wstring & srcPath, const ProgressCallback* C
 			_CP_LOG << L"[info] parse settings" << std::endl;
 			parse_settings(content_xml_->get_content());
 
-			tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetTempPath());
+			tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(tempPath);
 		}
 	}
 
@@ -225,11 +247,135 @@ odf_document::Impl::~Impl()
 	if (!tmp_folder_.empty())
 		NSDirectory::DeleteDirectory(tmp_folder_);
 }
+
+bool odf_document::Impl::decrypt_folder (const std::wstring & srcPath, const std::wstring & dstPath)
+{
+	std::vector<std::wstring> arFiles		= NSDirectory::GetFiles(srcPath, false);
+	std::vector<std::wstring> arDirectories	= NSDirectory::GetDirectories(srcPath);
+	
+	bool result = true;
+	for (size_t i = 0; i < arFiles.size(); ++i)
+	{
+		std::wstring sFileName = NSFile::GetFileName(arFiles[i]);
+		
+		std::map<std::wstring, std::pair<office_element_ptr, int>>::iterator pFind = map_encryptions_.find(arFiles[i]);
+		if ( pFind != map_encryptions_.end() )
+		{
+			result = decrypt_file(arFiles[i], dstPath + FILE_SEPARATOR_STR + sFileName, pFind->second.first, pFind->second.second);
+			
+			if (false == result)
+				break;
+		}
+		else
+		{
+			NSFile::CFileBinary::Copy(arFiles[i], dstPath + FILE_SEPARATOR_STR + sFileName);
+		}
+	}
+	for (size_t i = 0; result && i < arDirectories.size(); ++i)
+	{
+		std::wstring sDirName = NSFile::GetFileName(arDirectories[i]);
+		
+		NSDirectory::CreateDirectory(dstPath + FILE_SEPARATOR_STR + sDirName);
+
+		result = decrypt_folder(arDirectories[i], dstPath + FILE_SEPARATOR_STR + sDirName);
+	}
+	return result;
+}
+std::string DecodeBase64(const std::wstring & value1)
+{
+	int nLength = 0;
+	unsigned char *pData = NULL;
+	std::string result;
+
+	std::string value(value1.begin(), value1.end());
+
+	NSFile::CBase64Converter::Decode(value.c_str(), value.length(), pData, nLength);
+	if (pData)
+	{
+		result = std::string((char*)pData, nLength);
+		delete []pData; pData = NULL;
+	}
+	return result;
+}
+bool odf_document::Impl::decrypt_file (const std::wstring & srcPath, const std::wstring & dstPath, office_element_ptr data, int size )
+{
+	manifest_encryption_data* encryption_data = dynamic_cast<manifest_encryption_data*>(data.get());
+	if (!encryption_data) return false;
+
+	//std::wstring checksum_;
+	//std::wstring checksum_type_;
+
+	manifest_algorithm*				algorithm = dynamic_cast<manifest_algorithm*>(encryption_data->algorithm_.get());
+	manifest_key_derivation*		key_derivation = dynamic_cast<manifest_key_derivation*>(encryption_data->key_derivation_.get());
+	manifest_start_key_generation*	start_key_generation = dynamic_cast<manifest_start_key_generation*>(encryption_data->start_key_generation_.get());
+
+	CRYPT::ODFDecryptor		decryptor;
+	CRYPT::_odfCryptData	cryptData;
+	
+	cryptData.saltValue	= DecodeBase64(key_derivation->salt_);	
+	cryptData.saltSize = cryptData.saltValue.length(); 
+	
+	cryptData.hashSize = start_key_generation->key_size_;
+		
+	cryptData.checksumData = DecodeBase64(encryption_data->checksum_);
+	cryptData.initializationVector = DecodeBase64(algorithm->initialisation_vector_);
+	
+//------------------------------------------------------------------------------------------
+	cryptData.hashAlgorithm		= CRYPT_METHOD::SHA256; 
+	cryptData.spinCount			= key_derivation->iteration_count_;
+	cryptData.cipherAlgorithm	= CRYPT_METHOD::AES_CBC;
+	cryptData.keySize			= 256 /8;	
+
+	decryptor.SetCryptData(cryptData);
+	
+	if (!decryptor.SetPassword(L"password"))
+	{
+		return false;
+	}
+//------------------------------------------------------------------------------------------------------------
+	bool result = false;
+
+	NSFile::CFileBinary file_inp;
+	if (file_inp.OpenFile(srcPath))
+	{
+		_UINT64 lengthData, lengthRead = file_inp.GetFileSize();
+
+		unsigned char* data		= new unsigned char[lengthRead];
+		unsigned char* data_out	= NULL;
+		DWORD dwSizeRead = 0;
+		
+		int readTrue = file_inp.ReadFile(data, lengthRead, dwSizeRead); 
+		int readData = readTrue - 8; 
+
+		lengthData = *((_UINT64*)data);
+
+		decryptor.Decrypt(data + 8, readData, data_out, 0);//todoo сделать покусочное чтение декриптование
+
+		if (data_out)
+		{
+			NSFile::CFileBinary file_out;
+            file_out.CreateFileW(dstPath);
+			file_out.WriteFile(data_out, lengthData);
+			file_out.CloseFile();
+
+			delete []data_out;
+			result = true;
+		}
+		
+		delete []data;
+	}
+	return result;
+}
+const std::wstring & odf_document::Impl::get_temp_folder() const 
+{
+	return tmp_folder_original_; 
+}
 const std::wstring & odf_document::Impl::get_folder() const 
 {
 	if (!base_folder_.empty())	return base_folder_; 
 	else return tmp_folder_;
 }
+
 bool odf_document::Impl::UpdateProgress(long nComplete)
 {
 	if (pCallBack)
@@ -341,8 +487,16 @@ void odf_document::Impl::parse_manifests(office_element *element)
 
 		manifest_entry * entry = dynamic_cast<manifest_entry *>(elm.get());
 		if (!entry)continue;
+		
+		if (entry->encryption_data_)
+		{
+			std::wstring file_path = entry->full_path_;
 
-		if (entry->full_path_ == L"content.xml" && entry->encryption_) encrypted = true;
+			XmlUtils::replace_all( file_path, L"/", FILE_SEPARATOR_STR);
+			file_path = base_folder_ + FILE_SEPARATOR_STR + file_path;
+
+			map_encryptions_.insert(std::make_pair(file_path, std::make_pair(entry->encryption_data_, entry->size)));
+		}
 
 		if (entry->full_path_ == L"/")
 		{

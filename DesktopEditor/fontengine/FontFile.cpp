@@ -1671,7 +1671,7 @@ INT CFontFile::GetString2C(CGlyphString& oString)
 	return TRUE;
 }
 
-std::wstring CFontFile::GetFontFormat() const
+std::wstring CFontFile::GetFontFormat()
 {
 	if (!m_pFace)
 		return L"";
@@ -1772,7 +1772,7 @@ static int GlyphPathCubicTo(const FT_Vector *pFirstControlPoint, const FT_Vector
 	return 0;
 }
 
-CFontPath* CFontFile::GetGlyphPath(int nCode) 
+NSFonts::IFontPath* CFontFile::GetGlyphPath(int nCode)
 { 
 	FT_UInt unGID = SetCMapForCharCode2( nCode );
 	if (unGID <= 0)

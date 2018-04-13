@@ -50,6 +50,8 @@ core_windows {
 DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
 DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY_BUILDING
 
+#DEFINES += BUILD_FONT_NAMES_DICTIONARY
+
 LIB_GRAPHICS_PRI_PATH = $$PWD/../..
 
 INCLUDEPATH += \
@@ -89,8 +91,10 @@ HEADERS += \
     ./../../fontengine/FontFile.h \
     ./../../fontengine/FontPath.h \
     ./../../fontengine/GlyphString.h \
-    ./../../fontengine/FontManager.h
-
+    ./../../fontengine/FontManager.h \
+    \
+    ./Fonts.h \
+    ./Graphics.h
 
 SOURCES += \
     ./../Matrix.cpp \
@@ -109,7 +113,9 @@ SOURCES += \
     ./../../fontengine/FontFile.cpp \
     ./../../fontengine/FontManager.cpp \
     ./../../fontengine/FontPath.cpp \
-    ./../../fontengine/GlyphString.cpp
+    ./../../fontengine/GlyphString.cpp \
+    \
+    ./Fonts.cpp
 
 SOURCES += $$PWD/graphics_pri.cpp
 

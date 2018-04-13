@@ -504,7 +504,7 @@ namespace Aggplus
 
 		pManager->LoadString1(strText, 0, 0);
 
-		TBBox oBox = pManager->MeasureString();
+        TBBox oBox = pManager->MeasureString();
 
 		*lWidth		= (double)oBox.fMaxX - oBox.fMinX;
 		*lHeight	= (double)oBox.fMaxY - oBox.fMinY;

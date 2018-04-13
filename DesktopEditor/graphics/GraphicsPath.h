@@ -43,7 +43,7 @@
 namespace Aggplus
 {
     class CGraphicsPath_private;
-    class GRAPHICS_DECL CGraphicsPath : public ISimpleGraphicsPath
+    class GRAPHICS_DECL CGraphicsPath : public NSFonts::ISimpleGraphicsPath
     {
     public:
         CGraphicsPath();
@@ -103,7 +103,7 @@ namespace Aggplus
     };
 
     class CGraphicsPathSimpleConverter_private;
-    class GRAPHICS_DECL CGraphicsPathSimpleConverter : public ISimpleGraphicsPath
+    class GRAPHICS_DECL CGraphicsPathSimpleConverter : public NSFonts::ISimpleGraphicsPath
     {
     private:
         IRenderer* m_pRenderer;

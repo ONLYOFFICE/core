@@ -144,7 +144,7 @@ private:
 
 class CFontStream;
 class CFontManager;
-class CFontFile
+class CFontFile : public NSFonts::IFontFile
 {
 public:
 	double m_arrdFontMatrix[6];
@@ -265,11 +265,11 @@ public:
 
     void CheckHintsSupport();
 
-	std::wstring GetFontFormat() const;
+    std::wstring GetFontFormat();
 	unsigned int GetNameIndex(const std::wstring& wsName) const;
 
 	// path
-	CFontPath* GetGlyphPath(int nCode);
+    NSFonts::IFontPath* GetGlyphPath(int nCode);
 
 	bool IsItalic();
 	bool IsBold();

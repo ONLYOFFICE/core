@@ -94,7 +94,8 @@ HEADERS += \
     ./../../fontengine/FontManager.h \
     \
     ./Fonts.h \
-    ./Graphics.h
+    ./Graphics.h \
+    ./Image.h
 
 SOURCES += \
     ./../Matrix.cpp \

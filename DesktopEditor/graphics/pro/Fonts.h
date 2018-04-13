@@ -352,10 +352,6 @@ namespace NSFonts
         std::vector<std::wstring> names;
     };
 
-    GRAPHICS_DECL CFontInfo* FromBuffer(BYTE*& pBuffer, std::wstring strDir);
-    GRAPHICS_DECL LONG GetBufferLen(CFontInfo* pInfo, std::wstring strDirectory = L"", bool bIsOnlyFileName = false);
-    GRAPHICS_DECL void ToBuffer(CFontInfo* pInfo, BYTE*& pBuffer, std::wstring strDirectory = L"", bool bIsOnlyFileName = false);
-
     class CLibrary_private;
     class CLibrary
     {

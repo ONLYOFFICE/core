@@ -38,12 +38,18 @@
 #include <iostream>
 #include <fstream>
 
+#include "../../../../../UnicodeConverter/UnicodeConverter_Encodings.h"
+
 static std::wstring nsstring_to_wstring(NSString* nsstring)
 {
     NSStringEncoding encode = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE);
     NSData* data = [nsstring dataUsingEncoding:encode];
     return std::wstring((wchar_t*) data.bytes, data.length / sizeof(wchar_t));
 }
+
+@implementation Encoding
+
+@end
 
 @implementation X2tConverter
 
@@ -111,6 +117,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     return NExtractTools::doct2docx(from, to, temp, bFromChanges, themeDir, oInputParams);
 }
+
 - (int)sdk_xlsx2xlst_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
     std::wstring from = nsstring_to_wstring(nsFrom);
     std::wstring to = nsstring_to_wstring(nsTo);
@@ -168,6 +175,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     return NExtractTools::xlst2xlsx(from, to, temp, bFromChanges, themeDir, oInputParams);
 }
+
 - (int)sdk_pptx2pptt_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
     std::wstring from = nsstring_to_wstring(nsFrom);
     std::wstring to = nsstring_to_wstring(nsTo);
@@ -222,6 +230,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     return NExtractTools::pptt2pptx(from, to, temp, bFromChanges, themeDir, oInputParams);
 }
+
 - (int)sdk_csv2xlst:(NSString*)nsFrom nsTo:(NSString*)nsTo xmlOptions:(NSString*)xmlOptions nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
     std::wstring from = nsstring_to_wstring(nsFrom);
     std::wstring to = nsstring_to_wstring(nsTo);
@@ -248,12 +257,33 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
     
     if (self.password) {
         oInputParams.m_sPassword = new std::wstring(nsstring_to_wstring(self.password));
     }
     
     return NExtractTools::csv2xlsx(from, to, temp, oInputParams);
+}
+- (int)sdk_csv2xlst_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo nsFontPath:(NSString*)nsFontPath {
+    std::wstring from = nsstring_to_wstring(nsFrom);
+    std::wstring to = nsstring_to_wstring(nsTo);
+    
+    NExtractTools::InputParams oInputParams;
+    oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
+    
+    if (self.delimiter != nil && self.delimiter.length > 0) {
+        oInputParams.m_sCsvDelimiterChar = new std::wstring(nsstring_to_wstring(self.delimiter));
+    }
+    if (self.encoding) {
+        oInputParams.m_nCsvTxtEncoding = new int(self.encoding.intValue);
+    }
+ 
+    oInputParams.m_nFormatFrom = new int(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV);
+    oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET);
+    
+    return NExtractTools::csv2xlst_bin(from, to, oInputParams);
 }
 - (int)sdk_xlst2csv:(NSString*)nsFrom nsTo:(NSString*)nsTo xmlOptions:(NSString*)xmlOptions nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath {
     std::wstring from = nsstring_to_wstring(nsFrom);
@@ -264,6 +294,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
     
     return NExtractTools::xlst2csv(from, to, temp, oInputParams);
 }
@@ -276,6 +307,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     
     NExtractTools::InputParams oInputParams;
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
+    oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
     
     return NExtractTools::xlsx2csv(from, to, temp, oInputParams);
 }
@@ -291,6 +323,32 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     std::wstring to = nsstring_to_wstring(nsTo);
     
     return NExtractTools::zip2dir(from, to);
+}
+
++ (NSArray *)delimiters {
+    NSMutableArray *values = [[NSMutableArray alloc]init];
+    
+    [values addObject:[NSString stringWithFormat:@"\t"]];
+    [values addObject:[NSString stringWithFormat:@";"]];
+    [values addObject:[NSString stringWithFormat:@":"]];
+    [values addObject:[NSString stringWithFormat:@","]];
+    [values addObject:[NSString stringWithFormat:@" "]];
+    
+    return values;
+}
+
++ (NSArray <Encoding *> *)encodingings {
+    NSMutableArray *values = [[NSMutableArray alloc]init];
+    for (int i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i) {
+        Encoding *encoding = [[Encoding alloc]init];
+        encoding.index = NSUnicodeConverter::Encodings[i].Index;
+        encoding.codePage = NSUnicodeConverter::Encodings[i].WindowsCodePage;
+        encoding.name = [NSString stringWithFormat:@"%s", NSUnicodeConverter::Encodings[i].Name];
+        encoding.displayName = [NSString stringWithFormat:@"%s", NSUnicodeConverter::Encodings[i].DisplayName];
+        [values addObject:encoding];
+    }
+    
+    return values;
 }
 
 @end

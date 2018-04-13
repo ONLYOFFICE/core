@@ -847,7 +847,7 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 				
 				if (NULL != m_pCache)
 				{
-					pCacheImage = m_pCache->Lock(m_oBrush.TexturePath);
+                    pCacheImage = (CCacheImage*)m_pCache->Lock(m_oBrush.TexturePath);
 
 					pTextureBrush = new Aggplus::CBrushTexture(pCacheImage->GetImage(), oMode);
 				}
@@ -905,7 +905,7 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 				
 				if (NULL != m_pCache)
 				{
-					pCacheImage = m_pCache->Lock(m_oBrush.TexturePath);
+                    pCacheImage = (CCacheImage*)m_pCache->Lock(m_oBrush.TexturePath);
 
 					pTextureBrush = new Aggplus::CBrushTexture(pCacheImage->GetImage(), oMode);
 				}
@@ -1050,7 +1050,7 @@ HRESULT CGraphicsRenderer::DrawImageFromFile(const std::wstring& bstrVal, const 
 	CCacheImage* pCacheImage = NULL;
     if (NULL != m_pCache)
 	{
-		pCacheImage = m_pCache->Lock(bstrVal);
+        pCacheImage = (CCacheImage*)m_pCache->Lock(bstrVal);
 	}
     else
     {

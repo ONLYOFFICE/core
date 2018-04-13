@@ -116,7 +116,8 @@ SOURCES += \
     ./../../fontengine/FontPath.cpp \
     ./../../fontengine/GlyphString.cpp \
     \
-    ./Fonts.cpp
+    ./Fonts.cpp \
+    ./Image.cpp
 
 SOURCES += $$PWD/graphics_pri.cpp
 

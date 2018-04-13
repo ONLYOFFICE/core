@@ -29,48 +29,27 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _GRAPHICS_EXPORTS_IMAGE_H_
-#define _GRAPHICS_EXPORTS_IMAGE_H_
 
-#include "../../common/Types.h"
-#include "./Fonts.h"
+#include "../ImageFilesCache.h"
 
 namespace NSImages
 {
-    class ICacheImage
-    {
-    public:
-        ICacheImage() {}
-        virtual ~ICacheImage() {}
-
-        virtual LONG AddRef() = 0;
-        virtual LONG Release() = 0;
-    };
-
     namespace NSCacheImage
     {
-        ICacheImage* Create(NSFonts::IApplicationFonts* pFonts, const std::wstring& sFile = L"");
+        ICacheImage* Create(NSFonts::IApplicationFonts* pFonts, const std::wstring& sFile)
+        {
+            if (sFile.empty())
+                return new CCacheImage((CApplicationFonts*)pFonts);
+            return new CCacheImage((CApplicationFonts*)pFonts, sFile);
+        }
     }
-
-    class IImageFilesCache
-    {
-    public:
-        IImageFilesCache() {}
-        virtual ~IImageFilesCache() {}
-
-        virtual void Clear() = 0;
-
-        virtual ICacheImage* Lock(const std::wstring& strFile) = 0;
-
-        virtual LONG AddRef() = 0;
-        virtual LONG Release() = 0;
-
-        void SetApplicationFonts(NSFonts::IApplicationFonts* pApplicationFonts);
-    };
 
     namespace NSFilesCache
     {
-        IImageFilesCache* Create(NSFonts::IApplicationFonts* pFonts);
+        IImageFilesCache* Create(NSFonts::IApplicationFonts* pFonts)
+        {
+            return new CImageFilesCache((CApplicationFonts*)pFonts);
+        }
     }
 }
 

@@ -136,7 +136,7 @@ namespace NSStreamReader
 			oRun.lCount = StreamUtils::ReadDWORD(pStream);
 		}
 		
-		DWORD dwFlags = StreamUtils::ReadDWORD(pStream);
+		_UINT32 dwFlags = StreamUtils::ReadDWORD(pStream);
 		BYTE flag1 = (BYTE)(dwFlags);
 		BYTE flag2 = (BYTE)(dwFlags >> 8);
 
@@ -169,7 +169,7 @@ namespace NSStreamReader
 		}
 		if (oRun.bPp10ext)
 		{
-			DWORD dwFlags = StreamUtils::ReadDWORD(pStream);
+			_UINT32 dwFlags = StreamUtils::ReadDWORD(pStream);
 			BYTE flag1 = (BYTE)(dwFlags);
 			BYTE flag2 = (BYTE)(dwFlags >> 8);
 			BYTE flag3 = (BYTE)(dwFlags >> 16);
@@ -181,7 +181,7 @@ namespace NSStreamReader
 
 		/*if (bSmartTag)
 		{
-			DWORD tabStopsCount = StreamUtils::ReadDWORD(pStream);
+			_UINT32 tabStopsCount = StreamUtils::ReadDWORD(pStream);
 			arSmartTags.clear();
 
 			for (int i = 0; i < (int)tabStopsCount; ++i)
@@ -196,7 +196,7 @@ namespace NSStreamReader
 		double dScaleX				= 625 * 2.54 ;
 		//1/576 inch = 72/576 pt = 360000 *72 * 2.54 /(72*576) emu
 
-		DWORD dwFlags = StreamUtils::ReadDWORD(pStream);
+		_UINT32 dwFlags = StreamUtils::ReadDWORD(pStream);
 		BYTE flag1 = (BYTE)(dwFlags);
 		BYTE flag2 = (BYTE)(dwFlags >> 8);
 		BYTE flag3 = (BYTE)(dwFlags >> 16);
@@ -272,7 +272,7 @@ void CTextPFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 			m_lLevel = 0x0004;
 	}
 
-	DWORD dwFlags = StreamUtils::ReadDWORD(pStream);
+	_UINT32 dwFlags = StreamUtils::ReadDWORD(pStream);
 	BYTE flag1 = (BYTE)(dwFlags);
 	BYTE flag2 = (BYTE)(dwFlags >> 8);
 	BYTE flag3 = (BYTE)(dwFlags >> 16);
@@ -441,7 +441,7 @@ void CTextCFRun_ppt::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 		m_lCount	= StreamUtils::ReadLONG(pStream);
 	}
 
-	DWORD dwFlags = StreamUtils::ReadDWORD(pStream);
+	_UINT32 dwFlags = StreamUtils::ReadDWORD(pStream);
 	BYTE flag1 = (BYTE)(dwFlags);
 	BYTE flag2 = (BYTE)(dwFlags >> 8);
 	BYTE flag3 = (BYTE)(dwFlags >> 16);

@@ -134,7 +134,7 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 				}
 				if ( pPF->bulletFontProperties->nFontCharset > 0)
 				{
-					oWriter.WriteString(std::wstring(L" charset=\"") + std::to_wstring(pPF->bulletFontProperties->nFontCharset) + L"\"");
+					oWriter.WriteString(std::wstring(L" charset=\"") + std::to_wstring((char)pPF->bulletFontProperties->nFontCharset) + L"\"");
 				}
 				oWriter.WriteString(std::wstring(L"/>"));
 
@@ -531,7 +531,7 @@ std::wstring NSPresentationEditor::CShapeWriter::ConvertShadow(CShadow	& shadow)
 		if (shadow.DistanceY < 0 && shadow.DistanceX < 0) dir /=2;
 
 		strDir	= L" dir=\"" + std::to_wstring((int)(dir * 60000)) + L"\"";
-		strDist	= L" dist=\"" + std::to_wstring((int)(dist * 36000)) + L"\"";	
+		strDist	= L" dist=\"" + std::to_wstring((int)dist) + L"\"";	
 	}
 
 	std::wstring strSY;
@@ -703,20 +703,22 @@ void NSPresentationEditor::CShapeWriter::WriteImageInfo()
 	
 	if ((pVideoElement) && (!pVideoElement->m_strVideoFileName.empty()))
 	{
-		std::wstring strRid = m_pRels->WriteVideo(pVideoElement->m_strVideoFileName);
+		bool bExternal = false;
+		std::wstring strRid = m_pRels->WriteVideo(pVideoElement->m_strVideoFileName, bExternal);
 	
 		m_oWriter.WriteString(L"<a:videoFile r:link=\"" + strRid + L"\"/>");
 
-		sMediaFile = pVideoElement->m_strVideoFileName;
+		sMediaFile = bExternal ? L"" : pVideoElement->m_strVideoFileName;
 	}
 
 	if ((pAudioElement) && (!pAudioElement->m_strAudioFileName.empty()))
 	{
-		std::wstring strRid = m_pRels->WriteAudio(pAudioElement->m_strAudioFileName);
+		bool bExternal = false;
+		std::wstring strRid = m_pRels->WriteAudio(pAudioElement->m_strAudioFileName, bExternal);
 
 		m_oWriter.WriteString(L"<a:audioFile r:link=\"" + strRid + L"\"/>");
 		
-		sMediaFile = pAudioElement->m_strAudioFileName;
+		sMediaFile = bExternal ? L"" : pAudioElement->m_strAudioFileName;
 	}
 	if (sMediaFile.empty() == false)
 	{
@@ -877,12 +879,12 @@ void NSPresentationEditor::CShapeWriter::WriteShapeInfo()
 }
 void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 {
-	if (false == m_xmlTxBodyAlternative.empty())
-	{
-		m_oWriter.WriteString(m_xmlTxBodyAlternative);
+	//if (false == m_xmlTxBodyAlternative.empty())
+	//{
+	//	m_oWriter.WriteString(m_xmlTxBodyAlternative);
 
-		return;
-	}
+	//	return;
+	//}
 	CShapeElement* pShapeElement = dynamic_cast<CShapeElement*>(m_pElement.get());
 	if (!pShapeElement) return;
 
@@ -917,7 +919,17 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 		std::wstring strProp = std::to_wstring((int)(pShapeElement->m_pShape->m_oText.m_oAttributes.m_dTextRotate * 60000));
 		m_oWriter.WriteString(L" rot=\"" + strProp + L"\"");
 	}
-	if (pShapeElement->m_pShape->m_oText.m_bVertical)
+	if (pShapeElement->m_pShape->m_oText.m_nTextFlow >= 0)
+	{
+		switch(pShapeElement->m_pShape->m_oText.m_nTextFlow)
+		{
+			case 1: 
+			case 3: m_oWriter.WriteString(L" vert=\"vert\"");			break;
+			case 2: m_oWriter.WriteString(L" vert=\"vert270\"");		break;
+			case 5: m_oWriter.WriteString(L" vert=\"wordArtVert\"");	break;
+		}
+	}
+	else if (pShapeElement->m_pShape->m_oText.m_bVertical)
 	{
 		m_oWriter.WriteString(L" vert=\"eaVert\"");
 	}
@@ -1098,7 +1110,7 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 					}
 					if ( pPF->bulletFontProperties->nFontCharset > 0)
 					{
-						m_oWriter.WriteString(std::wstring(L" charset=\"") + std::to_wstring(pPF->bulletFontProperties->nFontCharset) + L"\"");
+						m_oWriter.WriteString(std::wstring(L" charset=\"") + std::to_wstring((char)pPF->bulletFontProperties->nFontCharset) + L"\"");
 					}
 					m_oWriter.WriteString(std::wstring(L"/>"));
 				}
@@ -1755,7 +1767,7 @@ HRESULT NSPresentationEditor::CShapeWriter::get_PenColor(LONG* lColor)
 }
 HRESULT NSPresentationEditor::CShapeWriter::put_PenColor(const LONG&  lColor)
 {
-	BYTE lScheme = ((DWORD)(lColor)) >> 24;
+	BYTE lScheme = ((_UINT32)(lColor)) >> 24;
 
 	if (0xFF != lScheme)
 		m_oPen.Color.SetBGR(lColor);
@@ -1883,7 +1895,7 @@ HRESULT NSPresentationEditor::CShapeWriter::get_BrushColor1(LONG* lColor)
 }
 HRESULT NSPresentationEditor::CShapeWriter::put_BrushColor1(const LONG& lColor)
 {
-	BYTE lScheme = ((DWORD)(lColor)) >> 24;
+	BYTE lScheme = ((_UINT32)(lColor)) >> 24;
 
 	if (0xFF != lScheme)
 		m_oBrush.Color1.SetBGR(lColor);
@@ -2239,7 +2251,7 @@ HRESULT NSPresentationEditor::CShapeWriter::CommandDrawTextEx(const std::wstring
 	return S_OK;
 }
 //-------- Маркеры для команд ---------------------------------------------------------------
-HRESULT NSPresentationEditor::CShapeWriter::BeginCommand(const DWORD& lType)
+HRESULT NSPresentationEditor::CShapeWriter::BeginCommand(const _UINT32& lType)
 {
 	if (c_nPathType == lType)
 	{
@@ -2250,7 +2262,7 @@ HRESULT NSPresentationEditor::CShapeWriter::BeginCommand(const DWORD& lType)
 
 	return S_OK;
 }
-HRESULT NSPresentationEditor::CShapeWriter::EndCommand(const DWORD& lType)
+HRESULT NSPresentationEditor::CShapeWriter::EndCommand(const _UINT32& lType)
 {
 	m_lCurrentCommandType = -1;
 	return S_OK;
@@ -2413,11 +2425,11 @@ HRESULT NSPresentationEditor::CShapeWriter::DrawImageFromFile(const std::wstring
 	return S_OK;
 }
 // transform --------------------------------------------------------------------------------
-HRESULT NSPresentationEditor::CShapeWriter::GetCommandParams(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, DWORD* lFlags)
+HRESULT NSPresentationEditor::CShapeWriter::GetCommandParams(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, _UINT32* lFlags)
 {
 	return S_OK;
 }
-HRESULT NSPresentationEditor::CShapeWriter::SetCommandParams(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, DWORD lFlags)
+HRESULT NSPresentationEditor::CShapeWriter::SetCommandParams(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, _UINT32 lFlags)
 {
 	if ((dWidth <= 1) || (dHeight <= 1))
 		lFlags = 0;

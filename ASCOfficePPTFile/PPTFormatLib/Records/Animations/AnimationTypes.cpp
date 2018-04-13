@@ -234,7 +234,7 @@ namespace Animations
         return std::wstring (_T(""));
 	}
 
-    std::wstring Helpers::GetEffectTypeOfGroup ( DWORD Value )
+    std::wstring Helpers::GetEffectTypeOfGroup ( _UINT32 Value )
 	{
 		if ( 0x00000001	==	Value )
             return std::wstring ( _T("Entrance") );
@@ -252,7 +252,7 @@ namespace Animations
         return std::wstring ( _T("") );
 	}
 	//	the corresponding effect type is an entrance or an exit effect
-    std::wstring Helpers::GetEffectEntranceOrExitNameByID ( DWORD EffectID )
+    std::wstring Helpers::GetEffectEntranceOrExitNameByID ( _UINT32 EffectID )
 	{
 		switch ( EffectID )
 		{
@@ -322,7 +322,7 @@ namespace Animations
 	}
 
 	//	the corresponding effect type is an emphasis effect
-    std::wstring Helpers::GetEffectEmphasisNameByID ( DWORD EffectID )
+    std::wstring Helpers::GetEffectEmphasisNameByID ( _UINT32 EffectID )
 	{
 		switch ( EffectID )
 		{
@@ -368,7 +368,7 @@ namespace Animations
         return std::wstring(_T("Unknown EffectID"));
 	}
 	//	the corresponding effect type is a motion path effect
-    std::wstring Helpers::GetEffectMotionPathNameByID ( DWORD EffectID )
+    std::wstring Helpers::GetEffectMotionPathNameByID ( _UINT32 EffectID )
 	{
 		switch ( EffectID )
 		{
@@ -443,7 +443,7 @@ namespace Animations
         return std::wstring(_T("Unknown EffectID"));
 	}
 
-    std::wstring Helpers::GetEffectNameByID ( DWORD EffectType, DWORD EffectID )
+    std::wstring Helpers::GetEffectNameByID ( _UINT32 EffectType, _UINT32 EffectID )
 	{
 		switch ( EffectType )
 		{

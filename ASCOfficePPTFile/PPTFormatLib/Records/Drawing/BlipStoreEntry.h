@@ -39,10 +39,10 @@ public:
 	NSOfficeDrawing::BlipType m_btMacOS;
 	
 	BYTE m_pRgbUid[16];
-	WORD m_nTag;
-	DWORD m_nSize;
-	DWORD m_nCountRef;
-	DWORD m_nFoDelay;
+	unsigned short m_nTag;
+	_UINT32 m_nSize;
+	_UINT32 m_nCountRef;
+	_UINT32 m_nFoDelay;
 
 	NSOfficeDrawing::BlipUsage m_eUsage;
 	BYTE m_nLenName;

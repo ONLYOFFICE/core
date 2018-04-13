@@ -50,8 +50,8 @@ public:
 	std::vector<NSPresentationEditor::CTextRange> m_arRanges;
 
 	std::wstring	m_strText;
-	DWORD			m_nTextType;
-	DWORD			m_lStyleThemeIndex;
+	_UINT32			m_nTextType;
+	_UINT32			m_lStyleThemeIndex;
 
 public:
 	CTextFullSettings() : m_arRanges()

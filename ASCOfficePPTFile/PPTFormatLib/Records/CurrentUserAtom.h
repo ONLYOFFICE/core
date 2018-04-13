@@ -38,10 +38,10 @@
 class CRecordCurrentUserAtom : public CUnknownRecord
 {
 public:
-	DWORD m_nSize;		// must be 0x00000014
-	DWORD m_nToken;		// encrypt or not
+	_UINT32 m_nSize;		// must be 0x00000014
+	_UINT32 m_nToken;		// encrypt or not
 
-	DWORD m_nOffsetToCurEdit;   // offset to UserEditAtom in PPTDocStream
+	_UINT32 m_nOffsetToCurEdit;   // offset to UserEditAtom in PPTDocStream
 
 	USHORT m_nLenUserName;  
 
@@ -52,7 +52,7 @@ public:
 	std::string		m_strANSIUserName;
 	std::wstring	m_strUNICODEUserName;
 
-	DWORD m_nRelVersion;  // 0x00000008 or 0x00000009
+	_UINT32 m_nRelVersion;  // 0x00000008 or 0x00000009
 
 
 	CRecordCurrentUserAtom() : m_nToken(0)

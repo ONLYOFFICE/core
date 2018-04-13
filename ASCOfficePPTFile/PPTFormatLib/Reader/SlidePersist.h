@@ -41,8 +41,8 @@
 class CTextFullSettings;
 struct SSlidePersist
 {
-	DWORD m_nPsrRef;
-	DWORD m_nSlideID;
+	_UINT32 m_nPsrRef;
+	_UINT32 m_nSlideID;
 
 	std::vector<CTextFullSettings> m_arTextAttrs;
 

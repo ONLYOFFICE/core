@@ -38,10 +38,10 @@
 class CPersistDirectoryEntry
 {
 public:
-	DWORD m_nPersistID;			// PersistOffsetID[index] = m_nPersistID + index
-	DWORD m_nPersistCount;
+	_UINT32 m_nPersistID;			// PersistOffsetID[index] = m_nPersistID + index
+	_UINT32 m_nPersistCount;
 
-	std::vector<DWORD> m_arPersistOffsets;
+	std::vector<_UINT32> m_arPersistOffsets;
 
 public:
 
@@ -51,17 +51,17 @@ public:
 		m_nPersistCount = 0;
 	}
 
-	DWORD FromStream(POLE::Stream* pStream)
+	_UINT32 FromStream(POLE::Stream* pStream)
 	{
-		DWORD nFlag = StreamUtils::ReadDWORD(pStream);
+		_UINT32 nFlag = StreamUtils::ReadDWORD(pStream);
 		m_nPersistID = (nFlag & 0x000FFFFF);			// 20 bit
 		m_nPersistCount = (nFlag & 0xFFF00000) >> 20;	// 12 bit
 
 		m_arPersistOffsets.clear();
 
-		for (DWORD index = 0; index < m_nPersistCount; ++index)
+		for (_UINT32 index = 0; index < m_nPersistCount; ++index)
 		{
-			DWORD Mem = StreamUtils::ReadDWORD(pStream);
+			_UINT32 Mem = StreamUtils::ReadDWORD(pStream);
 			m_arPersistOffsets.push_back(Mem);
 		}
 
@@ -88,8 +88,8 @@ public:
 	{
 		m_oHeader = oHeader;
 		
-		DWORD nCountRead = 0;
-		DWORD nCountEnries = 0;
+		_UINT32 nCountRead = 0;
+		_UINT32 nCountEnries = 0;
 		while (nCountRead < m_oHeader.RecLen)
 		{
 			CPersistDirectoryEntry elm;
@@ -100,18 +100,18 @@ public:
 		}
 	}
 
-	void ToMap(std::map<DWORD, DWORD>* pMap)
+	void ToMap(std::map<_UINT32, _UINT32>* pMap)
 	{
 		pMap->clear();
 
 		for (size_t nEntry = 0; nEntry < m_arEntries.size(); ++nEntry)
 		{
-			DWORD nPID = m_arEntries[nEntry].m_nPersistID;
+			_UINT32 nPID = m_arEntries[nEntry].m_nPersistID;
 
 			for (size_t nIndex = 0; nIndex < m_arEntries[nEntry].m_nPersistCount; ++nIndex)
 			{
-				DWORD nOffset = m_arEntries[nEntry].m_arPersistOffsets[nIndex];
-				pMap->insert(std::pair<DWORD, DWORD>(nPID, nOffset));
+				_UINT32 nOffset = m_arEntries[nEntry].m_arPersistOffsets[nIndex];
+				pMap->insert(std::pair<_UINT32, _UINT32>(nPID, nOffset));
 				++nPID;
 			}
 		}

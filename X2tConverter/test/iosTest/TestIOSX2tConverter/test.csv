@@ -1,0 +1,22 @@
+id,location_id,attention,address_1,address_2,city,state_province,postal_code,country
+1,1,Fair Oaks Intergenerational Center,2600 Middlefield Road,,Redwood City,CA,94063,US
+2,2,PFS Second Career Services,24 Second Avenue,,San Mateo,CA,94401,US
+3,3,PFS Senior Peer Counseling,24 Second Avenue,,San Mateo,CA,94403,US
+4,4,PFS Family Visitation Center,24 Second Avenue,,San Mateo,CA,94401,US
+5,5,Economic Self - Sufficiency Program,24 Second Avenue,,San Mateo,CA,94401,US
+6,6,Little House,800 Middle Avenue,,Menlo Park,CA,94025-9881,US
+7,7,Rosener House,500 Arbor Road,,Menlo Park,CA,94025,US
+8,8,Meals on Wheels - South County,800 Middle Avenue,,Menlo Park,CA,94025-9881,US
+9,9,Fair Oaks Branch,2510 Middlefield Road,,Redwood City,CA,94063,US
+10,10,Main Library,1044 Middlefield Road,,Redwood City,CA,94063,US
+11,11,Schaberg Branch,2140 Euclid Avenue,,Redwood City,CA,94061,US
+12,12,Project Read,1044 Middlefield Road,2nd Floor,Redwood City,CA,94063,US
+13,13,Redwood Shores Branch,399 Marine Parkway,,Redwood City,CA,94065,US
+14,14,Salvation Army,P.O. Box 1147,,Redwood City,CA,94064,US
+15,15,Adult Rehabilitation Center,1500 Valencia Street,,San Francisco,CA,94110,US
+16,16,Salvation Army,P.O. Box 61868,,Sunnyvale,CA,94088,US
+17,17,Salvation Army,409 South Spruce Avenue,,South San Francisco,CA,94080,US
+18,18,Redwood City Free Medical Clinic,114 Fifth Avenue,,Redwood City,CA,94063,US
+19,19,San Mateo Free Medical/Dental,19 West 39th Avenue,,San Mateo,CA,94403,US
+20,20,,123 Main Street,,Fairfax,VA,22031,US
+21,22,The Foodies,2013 Avenue of the fellows,Suite 100,San Francisco,CA,90210,US

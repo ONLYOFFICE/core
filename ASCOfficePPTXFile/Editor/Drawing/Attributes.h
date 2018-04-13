@@ -66,8 +66,7 @@ namespace NSPresentationEditor
             eftHyperlink= 3,
             eftObject	= 4
         };
-    public:
-        DWORD			m_dwID;
+        _UINT32			m_dwID;
         std::wstring	m_strFilePath;
 
         // clip
@@ -77,7 +76,6 @@ namespace NSPresentationEditor
         // loop
         bool			m_bLoop;
 
-    public:
         CExFilesInfo()
         {
             m_dwID			= 0;
@@ -118,7 +116,6 @@ namespace NSPresentationEditor
 
         std::vector<CExFilesInfo>	m_arAudioCollection;
 
-    public:
         void Clear()
         {
             m_arVideos.clear();
@@ -127,7 +124,6 @@ namespace NSPresentationEditor
             m_arAudioCollection.clear();
         }
 
-    public:
         CExMedia() : m_arVideos(), m_arImages(), m_arAudios()
         {
         }
@@ -150,7 +146,7 @@ namespace NSPresentationEditor
 
             return *this;
         }
-        CExFilesInfo* LockHyperlink(DWORD dwID)
+        CExFilesInfo* LockHyperlink(_UINT32 dwID)
         {
             size_t nCount = m_arHyperlinks.size();
             for (size_t i = 0; i < nCount; ++i)
@@ -163,7 +159,7 @@ namespace NSPresentationEditor
 
             return NULL;
         }
-        CExFilesInfo* LockVideo(DWORD dwID)
+        CExFilesInfo* LockVideo(_UINT32 dwID)
         {
             size_t nCount = m_arVideos.size();
             for (size_t i = 0; i < nCount; ++i)
@@ -176,7 +172,7 @@ namespace NSPresentationEditor
 
             return NULL;
         }
-        CExFilesInfo* LockImage(DWORD dwID)
+        CExFilesInfo* LockImage(_UINT32 dwID)
         {
             size_t nCount = m_arImages.size();
             for (size_t i = 0; i < nCount; ++i)
@@ -189,7 +185,7 @@ namespace NSPresentationEditor
 
             return NULL;
         }
-        CExFilesInfo* LockAudio(DWORD dwID)
+        CExFilesInfo* LockAudio(_UINT32 dwID)
         {
             size_t nCount = m_arAudios.size();
             for (size_t i = 0; i < nCount; ++i)
@@ -202,7 +198,7 @@ namespace NSPresentationEditor
 
             return NULL;
         }
-        CExFilesInfo* LockAudioFromCollection(DWORD dwID)
+        CExFilesInfo* LockAudioFromCollection(_UINT32 dwID)
         {
             size_t nCount = m_arAudioCollection.size();
             for (size_t i = 0; i < nCount; ++i)
@@ -216,7 +212,7 @@ namespace NSPresentationEditor
             return NULL;
         }
 
-        CExFilesInfo* Lock(DWORD dwID, CExFilesInfo::ExFilesType& eType)
+        CExFilesInfo* Lock(_UINT32 dwID, CExFilesInfo::ExFilesType& eType)
         {
             CExFilesInfo* pInfo = NULL;
 
@@ -266,7 +262,7 @@ namespace NSPresentationEditor
     {
         return std::to_wstring(val);
     }
-    static inline std::wstring ToString(DWORD val)
+    static inline std::wstring ToString(_UINT32 val)
     {
         return std::to_wstring(val);
     }
@@ -289,7 +285,6 @@ namespace NSPresentationEditor
 
         LONG m_lSchemeIndex;
 
-    public:
         CColor()
         {
             R = 0;
@@ -299,7 +294,7 @@ namespace NSPresentationEditor
 
             m_lSchemeIndex = -1;
         }
-        CColor(DWORD rgb)
+        CColor(_UINT32 rgb)
         {
             CreateColor(rgb);
         }
@@ -317,7 +312,7 @@ namespace NSPresentationEditor
         {
             return ((R == oSrc.R) && (G == oSrc.G) && (B == oSrc.B) && (m_lSchemeIndex == oSrc.m_lSchemeIndex));
         }
-        static CColor CreateColor(DWORD dwColor)
+        static CColor CreateColor(_UINT32 dwColor)
         {
             CColor oColor;
             oColor.R = (BYTE)(dwColor >> 16);
@@ -329,7 +324,7 @@ namespace NSPresentationEditor
             return oColor;
         }
 
-        CColor& operator =(const DWORD& oSrc)
+        CColor& operator =(const _UINT32& oSrc)
         {
             R = (BYTE)(oSrc >> 8);
             G = (BYTE)(oSrc >> 16);
@@ -339,7 +334,7 @@ namespace NSPresentationEditor
             m_lSchemeIndex = -1;
             return (*this);
         }
-        void SetSBGR(const DWORD& lBGR)
+        void SetSBGR(const _UINT32& lBGR)
         {
             R = (BYTE)(lBGR);
             G = (BYTE)(lBGR >> 8);
@@ -398,7 +393,7 @@ namespace NSPresentationEditor
 
         std::wstring ToString()
         {
-            DWORD dwColor = 0;
+            _UINT32 dwColor = 0;
             dwColor |= R;
             dwColor |= (G << 8);
             dwColor |= (B << 16);
@@ -452,7 +447,7 @@ namespace NSPresentationEditor
                 m_lSchemeIndex = -1;
             }
         }
-        void FromDWORD(DWORD dwVal)
+        void From_UINT32(_UINT32 dwVal)
         {
 
         }
@@ -603,9 +598,6 @@ namespace NSPresentationEditor
             MiterLimit	= 0.5;
         }
 
-
-    public:
-
         CPen()
         {
             SetDefaultParams();
@@ -671,8 +663,6 @@ namespace NSPresentationEditor
         double			LinearAngle;
 
         std::vector<std::pair<CColor, double>> ColorsPosition;
-
-    public:
 
         inline LONG ConstantCompatible(LONG nConstant)
         {
@@ -768,8 +758,6 @@ namespace NSPresentationEditor
 
             ColorsPosition.clear();
         }
-
-    public:
 
         CBrush()
         {
@@ -1027,8 +1015,8 @@ namespace NSPresentationEditor
         void SetDefaultParams()
         {
             Visible		= false;
-            DistanceX	= 0.5;
-            DistanceY	= 0.5;
+            DistanceX	= 25400;
+            DistanceY	= 25400;
             BlurSize	= 0;
             Alpha		= 255;
 

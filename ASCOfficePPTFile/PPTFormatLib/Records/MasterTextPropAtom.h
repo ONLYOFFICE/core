@@ -37,8 +37,8 @@ class CRecordMasterTextPropAtom : public CUnknownRecord
 public:
 	struct SMasterTextPropRun
 	{
-		DWORD lCount;
-		WORD lIndentLevel;
+		_UINT32 lCount;
+		unsigned short lIndentLevel;
 
 		SMasterTextPropRun()
 		{

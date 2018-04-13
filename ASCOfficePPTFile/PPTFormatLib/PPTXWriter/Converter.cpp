@@ -1240,10 +1240,10 @@ void NSPresentationEditor::CPPTXWriter::WriteTransition(CStringWriter& oWriter, 
 			param_name2	= L"orient";
 			switch(transition.m_nEffectDirection)
 			{
-				case 0:	param_value = L"horz";	param_value2 = L"out";	break;
-				case 1:	param_value = L"horz";	param_value2 = L"in";	break;
-				case 2:	param_value = L"vert";	param_value2 = L"out";	break;
-				case 3:	param_value = L"vert";	param_value2 = L"in";	break;
+				case 0:	param_value2 = L"horz";	param_value = L"out";	break;
+				case 1:	param_value2 = L"horz";	param_value = L"in";	break;
+				case 2:	param_value2 = L"vert";	param_value = L"out";	break;
+				case 3:	param_value2 = L"vert";	param_value = L"in";	break;
 			}
 		}break;
 	case 17:
@@ -1309,7 +1309,8 @@ void NSPresentationEditor::CPPTXWriter::WriteTransition(CStringWriter& oWriter, 
 	oWriter.WriteString(L"/>");
 	if (transition.m_bAudioPresent)
 	{
-		std::wstring rId = m_pShapeWriter->m_pRels->WriteAudio(transition.m_oAudio.m_strAudioFileName);
+		bool bExternal = false;
+		std::wstring rId = m_pShapeWriter->m_pRels->WriteAudio(transition.m_oAudio.m_strAudioFileName, bExternal);
 		oWriter.WriteString(std::wstring(L"<p:sndAc><p:stSnd>"));
 		oWriter.WriteString(L"<p:snd r:embed=\"" + rId + L"\" name=\"" + transition.m_oAudio.m_sImageName + L"\"/>");
 		oWriter.WriteString(std::wstring(L"</p:stSnd></p:sndAc>"));

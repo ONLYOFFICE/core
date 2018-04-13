@@ -62,7 +62,7 @@ namespace NSPresentationEditor
 		
         return _T("<") + strName + _T(">") + std::to_wstring( (int)prop.get() ) + _T("</") + strName + _T(">");
 	}
-    static std::wstring ToNode(const NSCommon::nullable_base<DWORD>& prop, const std::wstring& strName)
+    static std::wstring ToNode(const NSCommon::nullable_base<_UINT32>& prop, const std::wstring& strName)
 	{
         if (!prop.is_init()) return L"";
 		
@@ -476,7 +476,7 @@ namespace NSPresentationEditor
 	{
 	public:
 		bool bIsExt;
-		DWORD lCount;
+		_UINT32 lCount;
 
 		bool bSpell;
 		bool bLang;
@@ -495,7 +495,7 @@ namespace NSPresentationEditor
 
 		bool bGramma;
 
-		std::vector<DWORD> arSmartTags;
+		std::vector<_UINT32> arSmartTags;
 
 	public:
 

@@ -1461,13 +1461,14 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 
 		if (!odf_document_ && !href.empty())
 		{			
+			std::wstring tempPath	= Context.root()->get_temp_folder();
 			std::wstring folderPath = Context.root()->get_folder();
 			std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 
 			// normalize path ???? todooo
 			XmlUtils::replace_all( objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
 
-			odf_document_ = odf_document_ptr(new odf_document(objectPath, NULL));    
+			odf_document_ = odf_document_ptr(new odf_document(objectPath, tempPath, L"", NULL));    
 		}
 //---------------------------------------------------------------------------------------------------------------------
 		draw_frame*				frame			= NULL;

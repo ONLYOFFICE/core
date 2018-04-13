@@ -128,34 +128,83 @@ const wchar_t * office_document_settings::name = L"document-settings";
 
 // manifest:manifest
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * manifest_manifest::ns = L"manifest";
+const wchar_t * manifest_manifest::ns	= L"manifest";
 const wchar_t * manifest_manifest::name = L"manifest";
 
 // manifest:file-entry
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * manifest_entry::ns = L"manifest";
-const wchar_t * manifest_entry::name = L"file-entry";
+const wchar_t * manifest_entry::ns		= L"manifest";
+const wchar_t * manifest_entry::name	= L"file-entry";
 
 void manifest_entry::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"manifest:media-type", media_type_, std::wstring(L""));
     CP_APPLY_ATTR(L"manifest:full-path", full_path_, std::wstring(L""));
+	CP_APPLY_ATTR(L"manifest:size",	size, 0);
 }
 void manifest_entry::add_child_element(cpdoccore::xml::sax *Reader, const std::wstring &Ns, const std::wstring &Name)
 {
 	if CP_CHECK_NAME(L"manifest", L"encryption-data")
-        CP_CREATE_ELEMENT(encryption_);
+	{
+        CP_CREATE_ELEMENT(encryption_data_);
+	}
 }
-// manifest:file-entry
+// manifest:encryption-data
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * manifest_encryption_data::ns = L"manifest";
 const wchar_t * manifest_encryption_data::name = L"encryption-data";
 
 void manifest_encryption_data::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"manifest:checksum", manifest_checksum_, std::wstring(L""));
-    CP_APPLY_ATTR(L"manifest:checksum-type", manifest_checksum_type_, std::wstring(L""));
+    CP_APPLY_ATTR(L"manifest:checksum", checksum_, std::wstring(L""));
+    CP_APPLY_ATTR(L"manifest:checksum-type", checksum_type_, std::wstring(L""));
+}
+void manifest_encryption_data::add_child_element(cpdoccore::xml::sax *Reader, const std::wstring &Ns, const std::wstring &Name)
+{
+	if CP_CHECK_NAME(L"manifest", L"algorithm")
+	{
+        CP_CREATE_ELEMENT(algorithm_);
+	}
+	else if CP_CHECK_NAME(L"manifest", L"key-derivation")
+	{
+        CP_CREATE_ELEMENT(key_derivation_);
+	}
+	else if CP_CHECK_NAME(L"manifest", L"start-key-generation")
+	{
+        CP_CREATE_ELEMENT(start_key_generation_);
+	}
+}
+// manifest:algorithm
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * manifest_algorithm::ns = L"manifest";
+const wchar_t * manifest_algorithm::name = L"algorithm";
 
+void manifest_algorithm::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"manifest:algorithm-name", algorithm_name, std::wstring(L""));
+    CP_APPLY_ATTR(L"manifest:initialisation-vector", initialisation_vector_, std::wstring(L""));
+}
+// manifest:key-derivation
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * manifest_key_derivation::ns = L"manifest";
+const wchar_t * manifest_key_derivation::name = L"key-derivation";
+
+void manifest_key_derivation::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"manifest:key-derivation-name", key_derivation_name_, std::wstring(L""));
+    CP_APPLY_ATTR(L"manifest:key-size", key_size_, 16);
+    CP_APPLY_ATTR(L"manifest:iteration-count", iteration_count_, 100000);
+    CP_APPLY_ATTR(L"manifest:salt", salt_, std::wstring(L""));
+}
+// manifest:start-key-generation
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * manifest_start_key_generation::ns = L"manifest";
+const wchar_t * manifest_start_key_generation::name = L"start-key-generation";
+
+void manifest_start_key_generation::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"manifest:start-key-generation-name", start_key_generation_name_, std::wstring(L""));
+    CP_APPLY_ATTR(L"manifest:key-size", key_size_, 20);
 }
 }
 }

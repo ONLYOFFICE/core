@@ -218,11 +218,11 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 			{
 				WORD vtType = 0x4D42;
 				fileImage.WriteFile((void*)&vtType, 2);
-				DWORD dwLen = oHeader.RecLen - lOffset;
+				_UINT32 dwLen = oHeader.RecLen - lOffset;
 				fileImage.WriteFile((void*)&dwLen, 4);
-				DWORD dwRes = 0;
+				_UINT32 dwRes = 0;
 				fileImage.WriteFile((void*)&dwRes, 4);
-				DWORD dwOffset = 2;
+				_UINT32 dwOffset = 2;
 				fileImage.WriteFile((void*)&dwOffset, 4);
 			}
 			fileImage.WriteFile((void*)pImage, oHeader.RecLen - lOffset);

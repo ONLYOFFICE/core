@@ -42,7 +42,7 @@ namespace NSPresentationEditor
 	public:
 		_typeMaster						m_eType;
 		std::map<_UINT64, LONG>			m_mapGeomToLayout;// типовые шаблоны
-		std::map<DWORD, LONG>			m_mapTitleLayout; // заголовочные шаблоны
+		std::map<_UINT32, LONG>			m_mapTitleLayout; // заголовочные шаблоны
 		
 		std::multimap<int,CElementPtr>	m_mapPlaceholders;
 

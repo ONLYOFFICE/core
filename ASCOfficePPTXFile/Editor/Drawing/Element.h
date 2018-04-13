@@ -169,6 +169,7 @@ namespace NSPresentationEditor
 		bool				m_bFlipV;			// симметричное отражение относительно вертикальной оси
 
 		bool				m_bLine;
+		bool				m_bIsFilled;
 
 		bool				m_bIsBackground;	
 		bool				m_bHaveAnchor;	
@@ -214,6 +215,7 @@ namespace NSPresentationEditor
 			m_bFlipH					= false;
 			m_bFlipV					= false;
 			m_bLine						= true;
+			m_bIsFilled					= true;
 
 			m_pTheme					= NULL;
 			m_pLayout					= NULL;
@@ -267,6 +269,7 @@ namespace NSPresentationEditor
 			pDublicate->m_bFlipH					= m_bFlipH;
 			pDublicate->m_bFlipV					= m_bFlipV;
 			pDublicate->m_bLine						= m_bLine;
+			pDublicate->m_bIsFilled					= m_bIsFilled;
 
 			pDublicate->m_pTheme					= m_pTheme;
 			pDublicate->m_pLayout					= m_pLayout;

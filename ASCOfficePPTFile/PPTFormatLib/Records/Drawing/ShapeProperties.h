@@ -39,8 +39,6 @@ class CRecordShapeProperties : public CUnknownRecord
 public:
 	CProperties m_oProperties;
 
-public:
-	
 	CRecordShapeProperties()
 	{
 	}
@@ -48,7 +46,6 @@ public:
 	~CRecordShapeProperties()
 	{
 	}
-
 
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{
@@ -58,7 +55,7 @@ public:
 		StreamUtils::StreamPosition(lPosition, pStream);
 
 		m_oProperties.FromStream(pStream, m_oHeader.RecInstance);
-		DWORD dwLen = m_oProperties.GetLen();
+		_UINT32 dwLen = m_oProperties.GetLen();
 
 		// это на всякий случай, может там напридумывают проперти с complex - 
 		// которые мы не поддерживаем...

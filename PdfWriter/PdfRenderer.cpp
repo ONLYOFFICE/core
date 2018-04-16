@@ -44,7 +44,6 @@
 #include "../DesktopEditor/graphics/structures.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/raster/ImageFileFormatChecker.h"
-#include "../DesktopEditor/cximage/CxImage/ximage.h"
 #include "../DesktopEditor/fontengine/ApplicationFonts.h"
 #include "../DesktopEditor/fontengine/FontManager.h"
 #include "../DesktopEditor/raster/Metafile/MetaFile.h"
@@ -1521,15 +1520,13 @@ PdfWriter::CImageDict* CPdfRenderer::LoadImage(Aggplus::CImage* pImage, const BY
 		}
 	}
 
-	CxImage oCxImage;
-	if (!oCxImage.CreateFromArray(pData, nImageW, nImageH, 32, nStride, (pImage->GetStride() >= 0) ? true : false))
-		return NULL;
-
-	oCxImage.SetJpegQualityF(85.0f);
+    CBgraFrame oFrame;
+    oFrame.FromImage(pImage);
+    oFrame.SetJpegQuality(85.0);
 
 	BYTE* pBuffer = NULL;
 	int nBufferSize = 0;
-	if (!oCxImage.Encode(pBuffer, nBufferSize, bJpeg ? CXIMAGE_FORMAT_JPG : CXIMAGE_FORMAT_JP2))
+    if (!oFrame.Encode(pBuffer, nBufferSize, bJpeg ? _CXIMAGE_FORMAT_JPG : _CXIMAGE_FORMAT_JP2))
 		return NULL;
 
 	if (!pBuffer || !nBufferSize)

@@ -39,7 +39,6 @@
 // TODO: write JPG from Photoshop...
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
-#include "../../DesktopEditor/cximage/CxImage/ximage.h"
 namespace NSImageReSaver
 {
     static void CorrectImage(const wchar_t* wsFileName, BYTE*& pBuffer, int& nBufferSize, unsigned int& unWidth, unsigned int& unHeight)
@@ -73,25 +72,15 @@ namespace NSImageReSaver
         if (!oFrame.OpenFile(wsFileName))
             return;
 
-        int nImageW = oFrame.get_Width();
-        int nImageH = oFrame.get_Height();
-        BYTE* pData = oFrame.get_Data();
-        int nStride = 4 * nImageW;
-
-        CxImage oCxImage;
-        if (!oCxImage.CreateFromArray(pData, nImageW, nImageH, 32, nStride, (oFrame.get_Stride() >= 0) ? true : false))
-            return;
-
-        oCxImage.SetJpegQualityF(85.0f);
-
-        if (!oCxImage.Encode(pBuffer, nBufferSize, CXIMAGE_FORMAT_JPG))
+        oFrame.SetJpegQuality(85.0);
+        if (!oFrame.Encode(pBuffer, nBufferSize, _CXIMAGE_FORMAT_JPG))
             return;
 
         if (!pBuffer || !nBufferSize)
             return;
 
-        unWidth = (unsigned int)nImageW;
-        unHeight = (unsigned int)nImageH;
+        unWidth = (unsigned int)oFrame.get_Width();
+        unHeight = (unsigned int)oFrame.get_Height();
     }
 }
 

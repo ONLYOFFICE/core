@@ -337,6 +337,7 @@ void CBgraFrame::Clear()
     m_lStride	= 0;
     m_pData		= NULL;
     m_bIsGrayScale  = false;
+    m_dJpegSaveQuality = -1;
 }
 
 void CBgraFrame::ClearNoAttack()
@@ -379,6 +380,11 @@ void CBgraFrame::put_Data(BYTE* pData)
 bool CBgraFrame::IsGrayScale()
 {
     return m_bIsGrayScale;
+}
+
+void CBgraFrame::SetJpegQuality(const double& value)
+{
+    m_dJpegSaveQuality = value;
 }
 
 bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileType)
@@ -436,7 +442,7 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 			return false;
 		
 		CxImage img;
-		if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, lBitsPerPixel * 8, lStride, (m_lStride >= 0) ? true : false))
+        if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, lBitsPerPixel * 8, lStride, (m_lStride >= 0) ? true : false));
 			return false;
 
 		if (!img.Encode(oFile.GetFileNative(), nFileType))
@@ -445,6 +451,17 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 		oFile.CloseFile();
 	}
 	return true;
+}
+bool CBgraFrame::Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType)
+{
+    CxImage oCxImage;
+    if (!oCxImage.CreateFromArray(m_pData, m_lWidth, m_lHeight, 32, 4 * m_lWidth, (m_lStride >= 0) ? true : false))
+        return false;
+
+    if (CXIMAGE_FORMAT_JPG == nFileType && -1 != m_dJpegSaveQuality)
+        oCxImage.SetJpegQualityF((float)m_dJpegSaveQuality);
+
+    return oCxImage.Encode(pBuffer, nSize, nFileType);
 }
 bool CBgraFrame::Resize(const long& nNewWidth, const long& nNewHeight, bool bDestroyData)
 {

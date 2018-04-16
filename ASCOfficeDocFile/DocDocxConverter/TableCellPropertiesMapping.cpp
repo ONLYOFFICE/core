@@ -35,7 +35,7 @@
 
 namespace DocFileFormat
 {
-	TableCellPropertiesMapping::TableCellPropertiesMapping (XMLTools::CStringXmlWriter* pWriter, const std::vector<short>* grid, const std::vector<short>* grid_write, int gridIndex, int cellIndex) : 
+	TableCellPropertiesMapping::TableCellPropertiesMapping (XMLTools::CStringXmlWriter* pWriter, const std::vector<short>* grid, int gridIndex, int cellIndex) : 
 										PropertiesMapping(pWriter)
 	{
 		_width		=	0;
@@ -140,6 +140,10 @@ namespace DocFileFormat
 					}
 				}
 				break;
+
+				case sprmTDxaCol:
+				{
+				}break;
 
 				case sprmTCellPadding:
 				{

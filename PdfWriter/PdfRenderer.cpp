@@ -29,6 +29,9 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "../DesktopEditor/common/File.h"
+#include "../DesktopEditor/common/Directory.h"
+
 #include "PdfRenderer.h"
 
 #include "Src/Document.h"
@@ -48,8 +51,17 @@
 
 #include "OnlineOfficeBinToPdf.h"
 
-#include "../DesktopEditor/common/File.h"
-#include "../DesktopEditor/common/Directory.h"
+#if defined(GetTempPath)
+#undef GetTempPath
+#endif
+
+#if defined(CreateFile)
+#undef CreateFile
+#endif
+
+#if defined(CreateDirectory)
+#undef CreateDirectory
+#endif
 
 #define MM_2_PT(X) ((X) * 72.0 / 25.4)
 #define PT_2_MM(X) ((X) * 25.4 / 72.0)
@@ -1441,7 +1453,7 @@ HRESULT CPdfRenderer::DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const uns
 	UpdateTransform();
 	
 	CImageDict* pPdfImage = m_pDocument->CreateImage();
-	pPdfImage->LoadBW(pImageBuffer, unWidth, unHeight);
+    pPdfImage->LoadBW((Pix*)pImageBuffer->native(), unWidth, unHeight);
 	m_pPage->DrawImage(pPdfImage, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH));
 
 	m_pPage->GrRestore();
@@ -1474,7 +1486,7 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbi
 	m_pPage->GrSave();
 	UpdateTransform();
 	CImageDict* pPdfImage = LoadImage((Aggplus::CImage*)pImage, 255);
-	pPdfImage->LoadMask(pMaskBuffer, unMaskWidth, unMaskHeight);
+    pPdfImage->LoadMask((Pix*)pMaskBuffer->native(), unMaskWidth, unMaskHeight);
 	m_pPage->DrawImage(pPdfImage, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH));
 	m_pPage->GrRestore();
 	return S_OK;

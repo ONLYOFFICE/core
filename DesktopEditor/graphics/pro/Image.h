@@ -34,6 +34,7 @@
 
 #include "../../common/Types.h"
 #include "./Fonts.h"
+#include "./../IRenderer.h"
 
 namespace NSImages
 {
@@ -86,6 +87,30 @@ namespace NSImages
         bool Create(int width, int height, int depth);
         void SetPixel(int x, int y, int val);
         void Destroy();
+        void* native();
+    };
+}
+
+namespace MetaFile
+{
+    const int c_lMetaWmf = 0x01;
+    const int c_lMetaEmf = 0x02;
+    const int c_lMetaSvg = 0x04;
+    const int c_lMetaSvm = 0x05;
+
+    class GRAPHICS_DECL IMetaFile
+    {
+    public:
+        IMetaFile(NSFonts::IApplicationFonts *pAppFonts) {}
+        virtual ~IMetaFile() {}
+
+        virtual bool LoadFromFile(const wchar_t* wsFilePath) = 0;
+        virtual bool DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight) = 0;
+        virtual void Close() = 0;
+        virtual void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH) = 0;
+        virtual int GetType() = 0;
+        virtual void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1) = 0;
+        virtual NSFonts::IFontManager* get_FontManager() = 0;
     };
 }
 

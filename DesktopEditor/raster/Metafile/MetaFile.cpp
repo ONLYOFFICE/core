@@ -40,9 +40,9 @@
 
 namespace MetaFile
 {
-	CMetaFile::CMetaFile(CApplicationFonts *pAppFonts)
+	CMetaFile::CMetaFile(NSFonts::IApplicationFonts *pAppFonts) : MetaFile::IMetaFile(pAppFonts)
 	{
-		m_pAppFonts = pAppFonts;
+		m_pAppFonts = (CApplicationFonts*)pAppFonts;
 
 		// Создаем менеджер шрифтов с собственным кэшем
 		m_pFontManager = (CFontManager*)pAppFonts->GenerateFontManager();
@@ -61,7 +61,7 @@ namespace MetaFile
 		Close();
 		RELEASEINTERFACE(m_pFontManager);
 	}
-	CFontManager* CMetaFile::get_FontManager()
+	NSFonts::IFontManager* CMetaFile::get_FontManager()
 	{
 		return m_pFontManager;
 	}

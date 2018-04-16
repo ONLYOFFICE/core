@@ -80,6 +80,7 @@ HEADERS += \
     \
     ./../../raster/BgraFrame.h \
     ./../../raster/ImageFileFormatChecker.h \
+    ./../../raster/Metafile/Metafile.h \
     \
     ./../ArrowHead.h \
     ./../Brush.h \
@@ -90,7 +91,8 @@ HEADERS += \
     ./../Image.h \
     ./../ImageFilesCache.h \
     ./../MetafileToRenderer.h \
-    ./../MetafileToGraphicsRenderer.h \
+    ./../MetafileToRendererCheck.h \
+    ./../MetafileToGraphicsRenderer.h \    
     ./../structures.h \
     ./../Graphics.h \
     ./../GraphicsRenderer.h \
@@ -118,6 +120,7 @@ SOURCES += \
     ./../Graphics.cpp \
     ./../GraphicsRenderer.cpp \
     ./../Image.cpp \
+    ./../MetafileToRenderer.cpp \
     \
     ./../../fontengine/ApplicationFonts.cpp \
     ./../../fontengine/FontFile.cpp \

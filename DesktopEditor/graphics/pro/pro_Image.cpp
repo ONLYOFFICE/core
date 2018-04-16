@@ -94,5 +94,10 @@ namespace NSImages
         pixDestroy(&m_internal->m_pix);
         m_internal->m_pix = NULL;
     }
+
+    void* CPixJbig2::native()
+    {
+        return (void*)m_internal->m_pix;
+    }
 }
 

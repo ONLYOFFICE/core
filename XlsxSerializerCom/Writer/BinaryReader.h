@@ -1786,7 +1786,7 @@ namespace BinXlsxRW
 		int ReadCalcPr(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
-			OOX::Spreadsheet::CСalcPr* calcPr = static_cast<OOX::Spreadsheet::CСalcPr*>(poResult);
+            OOX::Spreadsheet::CCalcPr* calcPr = static_cast<OOX::Spreadsheet::CCalcPr*>(poResult);
 			if(c_oSerCalcPrTypes::CalcId == type)
 			{
 				calcPr->m_oCalcId.Init();

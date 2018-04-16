@@ -239,7 +239,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CWorkbookPr>			m_oWorkbookPr;
 			nullable<OOX::Spreadsheet::CExternalReferences>	m_oExternalReferences;
 			nullable<std::wstring>							m_oPivotCachesXml;
-			nullable<OOX::Spreadsheet::CСalcPr>				m_oCalcPr;
+            nullable<OOX::Spreadsheet::CCalcPr>				m_oCalcPr;
 			
 			bool											m_bMacroEnabled;
 		};

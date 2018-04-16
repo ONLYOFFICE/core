@@ -37,7 +37,7 @@
 
 namespace NSImages
 {
-    class ICacheImage
+    class GRAPHICS_DECL ICacheImage
     {
     public:
         ICacheImage() {}
@@ -49,10 +49,10 @@ namespace NSImages
 
     namespace NSCacheImage
     {
-        ICacheImage* Create(NSFonts::IApplicationFonts* pFonts, const std::wstring& sFile = L"");
+        GRAPHICS_DECL ICacheImage* Create(NSFonts::IApplicationFonts* pFonts, const std::wstring& sFile = L"");
     }
 
-    class IImageFilesCache
+    class GRAPHICS_DECL IImageFilesCache
     {
     public:
         IImageFilesCache() {}
@@ -70,7 +70,7 @@ namespace NSImages
 
     namespace NSFilesCache
     {
-        IImageFilesCache* Create(NSFonts::IApplicationFonts* pFonts);
+        GRAPHICS_DECL IImageFilesCache* Create(NSFonts::IApplicationFonts* pFonts);
     }
 }
 

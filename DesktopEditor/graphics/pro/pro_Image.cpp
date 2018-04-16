@@ -29,41 +29,26 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _GRAPHICS_EXPORTS_GRAPHICS_H_
-#define _GRAPHICS_EXPORTS_GRAPHICS_H_
 
-#include "../../graphics/GraphicsPath.h"
+#include "../ImageFilesCache.h"
 
-#include "../../raster/BgraFrame.h"
-#include "../../raster/ImageFileFormatChecker.h"
-
-#include "./Image.h"
-
-#include "../IRenderer.h"
-
-namespace NSGraphics
+namespace NSImages
 {
-    class GRAPHICS_DECL IGraphicsRenderer : public IRenderer
+    namespace NSCacheImage
     {
-    public:
-        IGraphicsRenderer() {}
-        virtual ~IGraphicsRenderer() {}
+        ICacheImage* Create(NSFonts::IApplicationFonts* pFonts, const std::wstring& sFile)
+        {
+            if (sFile.empty())
+                return new CCacheImage((CApplicationFonts*)pFonts);
+            return new CCacheImage((CApplicationFonts*)pFonts, sFile);
+        }
+    }
 
-    public:
-        virtual void SetImageCache(NSImages::IImageFilesCache* pCache) = 0;
-        virtual void SetFontManager(NSFonts::IFontManager* pManager = NULL) = 0;
-        virtual void CheckFontManager() = 0;
-
-        virtual NSFonts::IFontManager* GetFontManager() = 0;
-
-        virtual void CloseFont() = 0;
-
-    public:
-        virtual void CreateFromBgraFrame(CBgraFrame* pFrame) = 0;
-        virtual void SetCoordTransformOffset(double dOffsetX, double dOffsetY) = 0;
-    };
-
-    GRAPHICS_DECL IGraphicsRenderer* Create();
+    namespace NSFilesCache
+    {
+        IImageFilesCache* Create(NSFonts::IApplicationFonts* pFonts)
+        {
+            return new CImageFilesCache((CApplicationFonts*)pFonts);
+        }
+    }
 }
-
-#endif // _GRAPHICS_EXPORTS_GRAPHICS_H_

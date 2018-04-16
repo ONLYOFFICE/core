@@ -287,7 +287,7 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
             for( DWORD i = 0; i < 256; ++i )
             {
                 DWORD a = (i * 255 + nMaxAlpha / 2) / nMaxAlpha;
-                table[i] = (a > 255) ? 255 : a;
+                table[i] = (BYTE)((a > 255) ? 255 : a);
             }
 
             BYTE* src = pAlpha;

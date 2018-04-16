@@ -353,7 +353,7 @@ namespace NSFonts
     };
 
     class CLibrary_private;
-    class CLibrary
+    class GRAPHICS_DECL CLibrary
     {
     public:
         CLibrary_private* m_internal;
@@ -365,7 +365,7 @@ namespace NSFonts
 
 namespace NSFonts
 {
-    class ISimpleGraphicsPath
+    class GRAPHICS_DECL ISimpleGraphicsPath
     {
     public:
         virtual bool _MoveTo(double x, double y)													= 0;
@@ -374,7 +374,7 @@ namespace NSFonts
         virtual bool _Close()																		= 0;
     };
 
-    class IFontPath
+    class GRAPHICS_DECL IFontPath
     {
     public:
         IFontPath() {}
@@ -392,7 +392,7 @@ namespace NSFonts
 
 namespace NSFonts
 {
-    class IFontStream
+    class GRAPHICS_DECL IFontStream
     {
     public:
         IFontStream() {}
@@ -405,7 +405,7 @@ namespace NSFonts
         virtual int CreateFromFile(const std::wstring& strFileName, unsigned char* pDataUse = NULL) = 0;
     };
 
-    class IApplicationFontStreams
+    class GRAPHICS_DECL IApplicationFontStreams
     {
     public:
         IApplicationFontStreams() {}
@@ -430,7 +430,7 @@ namespace NSFonts
 
 namespace NSFonts
 {
-    class IFontFile
+    class GRAPHICS_DECL IFontFile
     {
     public:
         IFontFile() {}
@@ -461,7 +461,7 @@ namespace NSFonts
 
 namespace NSFonts
 {
-    class IFontsCache
+    class GRAPHICS_DECL IFontsCache
     {
     public:
         IFontsCache() {}
@@ -484,7 +484,7 @@ namespace NSFonts
 namespace NSFonts
 {
     class IApplicationFonts;
-    class IFontManager
+    class GRAPHICS_DECL IFontManager
     {
     public:
         IFontManager() {}
@@ -554,7 +554,7 @@ namespace NSFonts
 
 namespace NSFonts
 {
-    class IFontList
+    class GRAPHICS_DECL IFontList
     {
     public:
         IFontList() {}
@@ -565,7 +565,7 @@ namespace NSFonts
         virtual CFontInfo* GetByParams(CFontSelectFormat& oSelect, bool bIsDictionaryUse = true) = 0;
     };
 
-    class IApplicationFonts
+    class GRAPHICS_DECL IApplicationFonts
     {
     public:
         IApplicationFonts() {}
@@ -601,14 +601,14 @@ namespace NSFonts
 
 namespace NSFonts
 {
-    class CApplicationFontsSymbolsChecker
+    class GRAPHICS_DECL CApplicationFontsSymbolsChecker
     {
     public:
         virtual void Check(const int& nCode, const unsigned int& nIndex) = 0;
     };
 
     class CApplicationFontsSymbols_Private;
-    class CApplicationFontsSymbols
+    class GRAPHICS_DECL CApplicationFontsSymbols
     {
     private:
         CApplicationFontsSymbols_Private* m_internal;

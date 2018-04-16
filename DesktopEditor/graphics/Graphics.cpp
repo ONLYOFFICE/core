@@ -1015,8 +1015,7 @@ namespace Aggplus
 
 		while (TRUE)
 		{
-			TGlyph* pGlyph = NULL;
-			float fX = 0, fY = 0;
+            TGlyph* pGlyph = NULL;
 
 			bRes = pFont->GetNextChar2(pGlyph, fX, fY);
 
@@ -1061,7 +1060,6 @@ namespace Aggplus
         while (TRUE)
         {
             TGlyph* pGlyph = NULL;
-            float fX = 0, fY = 0;
 
             bRes = pFont->GetNextChar2(pGlyph, fX, fY);
 
@@ -1106,8 +1104,7 @@ namespace Aggplus
 
 		while (TRUE)
 		{
-			TGlyph* pGlyph = NULL;
-			float fX = 0, fY = 0;
+            TGlyph* pGlyph = NULL;
 
 			bRes = pFont->GetNextChar2(pGlyph, fX, fY);
 
@@ -1127,12 +1124,6 @@ namespace Aggplus
 		if (pBrush->GetType() != BrushTypeSolidColor)
 			return TRUE;
 
-		double mass[6];
-		m_oTransform.GetElements(mass);
-
-		double _x = x;
-		double _y = y;
-
 		Aggplus::CGraphicsPath oPath;
 		oPath.AddString(strText, pFont, x, y);
 
@@ -1144,12 +1135,6 @@ namespace Aggplus
 	{		
 		if (pBrush->GetType() != BrushTypeSolidColor)
 			return TRUE;
-
-		double mass[6];
-		m_oTransform.GetElements(mass);
-
-		double _x = x;
-		double _y = y;
 
 		Aggplus::CGraphicsPath oPath;
 		oPath.AddStringC(lText, pFont, x, y);

@@ -30,27 +30,12 @@
  *
  */
 
-#include "../ImageFilesCache.h"
+#include "../GraphicsRenderer.h"
 
-namespace NSImages
+namespace NSGraphics
 {
-    namespace NSCacheImage
+    IGraphicsRenderer* Create()
     {
-        ICacheImage* Create(NSFonts::IApplicationFonts* pFonts, const std::wstring& sFile)
-        {
-            if (sFile.empty())
-                return new CCacheImage((CApplicationFonts*)pFonts);
-            return new CCacheImage((CApplicationFonts*)pFonts, sFile);
-        }
-    }
-
-    namespace NSFilesCache
-    {
-        IImageFilesCache* Create(NSFonts::IApplicationFonts* pFonts)
-        {
-            return new CImageFilesCache((CApplicationFonts*)pFonts);
-        }
+        return new CGraphicsRenderer();
     }
 }
-
-#endif // _GRAPHICS_EXPORTS_IMAGE_H_

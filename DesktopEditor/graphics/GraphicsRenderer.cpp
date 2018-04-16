@@ -148,7 +148,7 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 	}
 }
 
-CGraphicsRenderer::CGraphicsRenderer()
+CGraphicsRenderer::CGraphicsRenderer() : NSGraphics::IGraphicsRenderer()
 {
 	m_pRenderer = NULL;
 	m_pPath		= NULL;
@@ -185,14 +185,14 @@ CGraphicsRenderer::~CGraphicsRenderer()
 	RELEASEINTERFACE(m_pCache);
 }
 
-void CGraphicsRenderer::SetImageCache(CImageFilesCache* pCache)
+void CGraphicsRenderer::SetImageCache(NSImages::IImageFilesCache* pCache)
 {
 	RELEASEINTERFACE(m_pCache);
-	m_pCache = pCache;
+    m_pCache = (CImageFilesCache*)pCache;
 	ADDREFINTERFACE(m_pCache);
 }
 
-void CGraphicsRenderer::SetFontManager(CFontManager* pManager)
+void CGraphicsRenderer::SetFontManager(NSFonts::IFontManager* pManager)
 {
 	RELEASEINTERFACE(m_pFontManager);		
 	if (NULL == pManager)
@@ -202,7 +202,7 @@ void CGraphicsRenderer::SetFontManager(CFontManager* pManager)
 	}
 	else
 	{
-		m_pFontManager = pManager;
+        m_pFontManager = (CFontManager*)pManager;
 		ADDREFINTERFACE(m_pFontManager);
 	}
 }
@@ -212,7 +212,7 @@ void CGraphicsRenderer::CheckFontManager()
 		SetFontManager(NULL);
 }
 
-CFontManager* CGraphicsRenderer::GetFontManager()
+NSFonts::IFontManager* CGraphicsRenderer::GetFontManager()
 {
 	return m_pFontManager;
 }

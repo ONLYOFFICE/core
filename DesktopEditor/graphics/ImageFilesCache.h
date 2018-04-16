@@ -112,7 +112,7 @@ public:
 	}
 };
 
-class CImageFilesCache
+class CImageFilesCache : public NSImages::IImageFilesCache
 {
 private:
 	std::map<std::wstring, CCacheImage*> m_mapImages;

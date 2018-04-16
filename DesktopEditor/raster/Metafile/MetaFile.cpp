@@ -40,6 +40,11 @@
 
 namespace MetaFile
 {
+	IMetaFile* Create(NSFonts::IApplicationFonts *pAppFonts)
+	{
+		return new CMetaFile(pAppFonts);
+	}
+
 	CMetaFile::CMetaFile(NSFonts::IApplicationFonts *pAppFonts) : MetaFile::IMetaFile(pAppFonts)
 	{
 		m_pAppFonts = (CApplicationFonts*)pAppFonts;

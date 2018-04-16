@@ -112,6 +112,8 @@ namespace MetaFile
         virtual void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1) = 0;
         virtual NSFonts::IFontManager* get_FontManager() = 0;
     };
+
+    GRAPHICS_DECL IMetaFile* Create(NSFonts::IApplicationFonts *pAppFonts);
 }
 
 #endif // _GRAPHICS_EXPORTS_IMAGE_H_

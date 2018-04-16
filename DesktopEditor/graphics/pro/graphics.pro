@@ -121,6 +121,7 @@ SOURCES += \
     ./../GraphicsRenderer.cpp \
     ./../Image.cpp \
     ./../MetafileToRenderer.cpp \
+    ./../../raster/Metafile.cpp \
     \
     ./../../fontengine/ApplicationFonts.cpp \
     ./../../fontengine/FontFile.cpp \

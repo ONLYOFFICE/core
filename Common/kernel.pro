@@ -86,6 +86,9 @@ SOURCES += ./../DesktopEditor/common/Path.cpp
 HEADERS += ./../DesktopEditor/common/StringBuilder.h
 SOURCES += ./../DesktopEditor/common/StringBuilder.cpp
 
+HEADERS += ./../DesktopEditor/common/String.h
+SOURCES += ./../DesktopEditor/common/String.cpp
+
 # BASE64
 HEADERS += ./../DesktopEditor/common/Base64.h
 SOURCES += ./../DesktopEditor/common/Base64.cpp

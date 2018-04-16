@@ -72,6 +72,21 @@ namespace NSImages
     {
         GRAPHICS_DECL IImageFilesCache* Create(NSFonts::IApplicationFonts* pFonts);
     }
+
+    class CPixJbig2_private;
+    class GRAPHICS_DECL CPixJbig2
+    {
+    private:
+        CPixJbig2_private* m_internal;
+
+    public:
+        CPixJbig2();
+        ~CPixJbig2();
+
+        bool Create(int width, int height, int depth);
+        void SetPixel(int x, int y, int val);
+        void Destroy();
+    };
 }
 
 #endif // _GRAPHICS_EXPORTS_IMAGE_H_

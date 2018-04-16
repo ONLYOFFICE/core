@@ -33,7 +33,7 @@
 #include "internal/internal.h"
 #include "internal/ftobjs.h"
 #include "../common/Types.h"
-#include "../common/String.h"
+#include "../common/File.h"
 
 #ifndef max
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
@@ -1677,7 +1677,7 @@ std::wstring CFontFile::GetFontFormat()
 		return L"";
 
 	const char* sFormat = FT_Get_X11_Font_Format(m_pFace);
-	return NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)sFormat, strlen(sFormat));
+    return NSFile::CUtf8Converter::GetUnicodeFromCharPtr(sFormat, strlen(sFormat));
 }
 unsigned int CFontFile::GetNameIndex(const std::wstring& wsName) const
 {

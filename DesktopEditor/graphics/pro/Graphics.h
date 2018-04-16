@@ -58,6 +58,8 @@ namespace NSGraphics
 
         virtual void CloseFont() = 0;
 
+        virtual void SetSwapRGB(bool bValue) = 0;
+
     public:
         virtual void CreateFromBgraFrame(CBgraFrame* pFrame) = 0;
         virtual void SetCoordTransformOffset(double dOffsetX, double dOffsetY) = 0;

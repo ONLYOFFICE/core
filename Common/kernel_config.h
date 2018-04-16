@@ -29,70 +29,18 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#ifndef _KERNEL_CONFIG_H_
+#define _KERNEL_CONFIG_H_
 
-#include "../ImageFilesCache.h"
+#ifndef KERNEL_USE_DYNAMIC_LIBRARY
+#define KERNEL_DECL
+#else
+#include "./../DesktopEditor/common/base_export.h"
+#ifdef KERNEL_USE_DYNAMIC_LIBRARY_BUILDING
+#define KERNEL_DECL Q_DECL_EXPORT
+#else
+#define KERNEL_DECL Q_DECL_IMPORT
+#endif
+#endif
 
-namespace NSImages
-{
-    namespace NSCacheImage
-    {
-        ICacheImage* Create(NSFonts::IApplicationFonts* pFonts, const std::wstring& sFile)
-        {
-            if (sFile.empty())
-                return new CCacheImage((CApplicationFonts*)pFonts);
-            return new CCacheImage((CApplicationFonts*)pFonts, sFile);
-        }
-    }
-
-    namespace NSFilesCache
-    {
-        IImageFilesCache* Create(NSFonts::IApplicationFonts* pFonts)
-        {
-            return new CImageFilesCache((CApplicationFonts*)pFonts);
-        }
-    }
-}
-
-#include "../../raster/JBig2/source/Encoder/jbig2enc.h"
-#include "../../raster/JBig2/source/LeptonLib/allheaders.h"
-namespace NSImages
-{
-    class CPixJbig2_private
-    {
-    public:
-        Pix* m_pix;
-
-    public:
-        CPixJbig2_private()
-        {
-            m_pix = NULL;
-        }
-    };
-
-    CPixJbig2::CPixJbig2()
-    {
-        m_internal = new CPixJbig2_private();
-    }
-    CPixJbig2::~CPixJbig2()
-    {
-        RELEASEOBJECT(m_internal);
-    }
-
-    bool CPixJbig2::Create(int width, int height, int depth)
-    {
-        m_internal->m_pix = pixCreate(width, height, depth);
-        return (m_internal->m_pix) ? true : false;
-    }
-
-    void CPixJbig2::SetPixel(int x, int y, int val)
-    {
-        pixSetPixel(m_internal->m_pix, x, y, val);
-    }
-
-    void CPixJbig2::Destroy()
-    {
-        pixDestroy(&m_internal->m_pix);
-        m_internal->m_pix = NULL;
-    }
-}
-
+#endif //_GRAPHICS_CONFIG_H_

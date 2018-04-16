@@ -33,19 +33,14 @@
 
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"
-#include "../DesktopEditor/graphics/IRenderer.h"
-#include "../DesktopEditor/raster/BgraFrame.h"
-#include "../DesktopEditor/graphics/Image.h"
-#include "../DesktopEditor/common/String.h"
-
-#include "../DesktopEditor/fontengine/FontManager.h"
-#include "../DesktopEditor/fontengine/ApplicationFonts.h"
-#include "../DesktopEditor/raster/BgraFrame.h"
-#include "../DesktopEditor/graphics/GraphicsRenderer.h"
 
 #include "../PdfWriter/PdfRenderer.h"
-#include "../DesktopEditor/raster/JBig2/source/Encoder/jbig2enc.h"
-#include "../DesktopEditor/raster/JBig2/source/LeptonLib/allheaders.h"
+
+#include "../DesktopEditor/graphics/pro/Fonts.h"
+#include "../DesktopEditor/graphics/pro/Graphics.h"
+#include "../DesktopEditor/graphics/pro/Image.h"
+
+#include "../../DesktopEditor/common/String.h"
 
 #define VER_DPI		96
 #define HOR_DPI		96
@@ -89,7 +84,7 @@ namespace NSDjvu
 	}
 }
 
-CDjVuFileImplementation::CDjVuFileImplementation(CApplicationFonts* pFonts)
+CDjVuFileImplementation::CDjVuFileImplementation(NSFonts::IApplicationFonts* pFonts)
 {
 	m_pDoc = NULL;
 	std::wstring wsTempPath = NSFile::CFileBinary::GetTempPath();
@@ -212,13 +207,13 @@ void               CDjVuFileImplementation::ConvertToRaster(int nPageIndex, cons
     if (!m_pApplicationFonts)
         return;
 
-    CFontManager *pFontManager = m_pApplicationFonts->GenerateFontManager();
-	CFontsCache* pFontCache = new CFontsCache();
+    NSFonts::IFontManager *pFontManager = m_pApplicationFonts->GenerateFontManager();
+    NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
     pFontCache->SetStreams(m_pApplicationFonts->GetStreams());
 	pFontManager->SetOwnerCache(pFontCache);
 
-	CGraphicsRenderer oRenderer;
-	oRenderer.SetFontManager(pFontManager);
+    NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
+    pRenderer->SetFontManager(pFontManager);
 
 	double dPageDpiX, dPageDpiY;
 	double dWidth, dHeight;
@@ -238,16 +233,17 @@ void               CDjVuFileImplementation::ConvertToRaster(int nPageIndex, cons
 	oFrame.put_Height(nHeight);
 	oFrame.put_Stride(-4 * nWidth);
 
-	oRenderer.CreateFromBgraFrame(&oFrame);
-	oRenderer.SetSwapRGB(false);
-	oRenderer.put_Width(dWidth);
-	oRenderer.put_Height(dHeight);
+    pRenderer->CreateFromBgraFrame(&oFrame);
+    pRenderer->SetSwapRGB(false);
+    pRenderer->put_Width(dWidth);
+    pRenderer->put_Height(dHeight);
 
 	bool bBreak = false;
-	DrawPageOnRenderer(&oRenderer, nPageIndex, &bBreak);
+    DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
 
 	oFrame.SaveFile(wsDstPath, nImageType);
 	RELEASEINTERFACE(pFontManager);
+    RELEASEOBJECT(pRenderer);
 }
 void               CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsDstPath)
 {
@@ -587,20 +583,21 @@ void               CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer,
 			}
 
 			GP<GBitmap> pBitmap = pPage->get_bitmap(oRectAll, oRectAll, 4);
-			Pix* pPix = pixCreate(lImageWidth, lImageHeight, 1);
-			if (pPix)
+
+            NSImages::CPixJbig2 oPix;
+            if (oPix.Create(lImageWidth, lImageHeight, 1))
 			{
 				for (int nY = 0; nY < lImageHeight; nY++)
 				{
 					BYTE* pLine = pBitmap->operator [](nY);
 					for (int nX = 0; nX < lImageWidth; nX++, pLine++)
 					{
-						pixSetPixel(pPix, nX, lImageHeight - 1 - nY, *pLine);
+                        oPix.SetPixel(nX, lImageHeight - 1 - nY, *pLine);
 					}
 				}
 
-				pPdf->DrawImageWith1bppMask((IGrObject*)&oImage, pPix, lImageWidth, lImageHeight, 0, 0, dWidth, dHeight);
-				pixDestroy(&pPix);
+                pPdf->DrawImageWith1bppMask((IGrObject*)&oImage, &oPix, lImageWidth, lImageHeight, 0, 0, dWidth, dHeight);
+                oPix.Destroy();
 			}
 		}		
 	}	
@@ -609,20 +606,20 @@ void               CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer,
 		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
 		GP<GBitmap> pBitmap = pPage->get_bitmap(oRectAll, oRectAll, 4);
 
-		Pix* pPix = pixCreate(lImageWidth, lImageHeight, 1);
-		if (pPix)
+        NSImages::CPixJbig2 oPix;
+        if (oPix.Create(lImageWidth, lImageHeight, 1))
 		{
 			for (int nY = 0; nY < lImageHeight; nY++)
 			{
 				BYTE* pLine = pBitmap->operator [](nY);
 				for (int nX = 0; nX < lImageWidth; nX++, pLine++)
 				{
-					pixSetPixel(pPix, nX, lImageHeight - 1 - nY, *pLine);
+                    oPix.SetPixel(nX, lImageHeight - 1 - nY, *pLine);
 				}
 			}
 
-			pPdf->DrawImage1bpp(pPix, lImageWidth, lImageHeight, 0, 0, dWidth, dHeight);
-			pixDestroy(&pPix);
+            pPdf->DrawImage1bpp(&oPix, lImageWidth, lImageHeight, 0, 0, dWidth, dHeight);
+            oPix.Destroy();
 		}
 	}
 	else
@@ -664,20 +661,20 @@ void               CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer,
 				int nPaletteEntries = pBitmap->get_grays();
 				if (nPaletteEntries <= 2)
 				{
-					Pix* pPix = pixCreate(lImageWidth, lImageHeight, 1);
-					if (pPix)
+                    NSImages::CPixJbig2 oPix;
+                    if (oPix.Create(lImageWidth, lImageHeight, 1))
 					{
 						for (int nY = 0; nY < lImageHeight; nY++)
 						{
 							BYTE* pLine = pBitmap->operator [](nY);
 							for (int nX = 0; nX < lImageWidth; nX++, pLine++)
 							{
-								pixSetPixel(pPix, nX, lImageHeight - 1 - nY, *pLine);
+                                oPix.Create(nX, lImageHeight - 1 - nY, *pLine);
 							}
 						}
 
-						pPdf->DrawImage1bpp(pPix, lImageWidth, lImageHeight, 0, 0, dWidth, dHeight);
-						pixDestroy(&pPix);
+                        pPdf->DrawImage1bpp(&oPix, lImageWidth, lImageHeight, 0, 0, dWidth, dHeight);
+                        oPix.Destroy();
 					}
 				}
 				else
@@ -943,7 +940,7 @@ void               CDjVuFileImplementation::DrawPageText(IRenderer* pRenderer, d
 }
 void               CDjVuFileImplementation::ParseCoords(const std::wstring& wsCoordsStr, double* pdCoords, double dKoef)
 {
-	std::vector<std::wstring> vCoords = NSStringExt::Split(wsCoordsStr, L',');
+    std::vector<std::wstring> vCoords = NSStringExt::Split(wsCoordsStr, L',');
 	if (vCoords.size() >= 4)
 	{
 		for (int nIndex = 0; nIndex < 4; nIndex++)

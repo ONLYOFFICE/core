@@ -3,8 +3,17 @@ QT       -= core gui
 TARGET = graphics
 TEMPLATE = lib
 
-CONFIG += shared
-CONFIG += plugin
+CONFIG += graphics_dynamic_library
+
+graphics_dynamic_library {
+    CONFIG += shared
+    CONFIG += plugin
+
+    DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
+    DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY_BUILDING
+} else {
+    CONFIG += static
+}
 
 CORE_ROOT_DIR = $$PWD/../../..
 PWD_ROOT_DIR = $$PWD
@@ -22,6 +31,8 @@ DEFINES += \
     MNG_ACCESS_CHUNKS \
     MNG_STORE_CHUNKS\
     MNG_ERROR_TELLTALE
+
+DEFINES += STRING_EXT_NO_CODEPAGES
 
 core_linux {
     DEFINES += \
@@ -46,9 +57,6 @@ core_windows {
     LIBS += -lShell32
     LIBS += -lUser32
 }
-
-DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
-DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY_BUILDING
 
 #DEFINES += BUILD_FONT_NAMES_DICTIONARY
 

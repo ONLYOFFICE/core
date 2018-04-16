@@ -35,10 +35,12 @@
 #include "AggPlusEnums.h"
 #include "IRenderer.h"
 
+#include "config.h"
+
 namespace Aggplus
 {
 
-class CImage : public IGrObject
+class GRAPHICS_DECL CImage : public IGrObject
 {
 public:
 	friend class CGraphics;
@@ -87,7 +89,7 @@ public:
 	UINT* Reserved;
 };
 
-class CBitmap : public CImage
+class GRAPHICS_DECL CBitmap : public CImage
 {
 public:
 	CBitmap(LONG width, LONG height, PixelFormat format = PixelFormat32bppARGB);	

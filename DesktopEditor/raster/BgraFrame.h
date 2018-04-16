@@ -36,6 +36,7 @@
 #include "../common/Types.h"
 #include "./../graphics/config.h"
 #include "./../common/IGrObject.h"
+#include "./../graphics/Image.h"
 
 class GRAPHICS_DECL CBgraFrame
 {

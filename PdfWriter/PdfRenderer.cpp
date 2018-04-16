@@ -46,11 +46,10 @@
 #include "../DesktopEditor/fontengine/FontManager.h"
 #include "../DesktopEditor/raster/Metafile/MetaFile.h"
 
-#include "../DesktopEditor/common/File.h"
-#include "../DesktopEditor/common/Directory.h"
-
 #include "OnlineOfficeBinToPdf.h"
 
+#include "../DesktopEditor/common/File.h"
+#include "../DesktopEditor/common/Directory.h"
 
 #define MM_2_PT(X) ((X) * 72.0 / 25.4)
 #define PT_2_MM(X) ((X) * 25.4 / 72.0)
@@ -471,7 +470,7 @@ void CPdfRenderer::CCommandManager::SetTransform(const double& m11, const double
 // CPdfRenderer
 //
 //----------------------------------------------------------------------------------------
-CPdfRenderer::CPdfRenderer(CApplicationFonts* pAppFonts) : m_oCommandManager(this)
+CPdfRenderer::CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts) : m_oCommandManager(this)
 {
 	m_pAppFonts = pAppFonts;
 
@@ -1431,7 +1430,7 @@ HRESULT CPdfRenderer::PathCommandTextPdf(const std::wstring& bsUnicodeText, cons
 {
 	return S_OK;
 }
-HRESULT CPdfRenderer::DrawImage1bpp(Pix* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH)
+HRESULT CPdfRenderer::DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH)
 {
 	m_oCommandManager.Flush();
 
@@ -1465,7 +1464,7 @@ HRESULT CPdfRenderer::SetRadialGradient(const double& dX0, const double& dY0, co
 	m_oBrush.SetRadialGradientPattern(dX0, dY0, dR0, dX1, dY1, dR1);
 	return S_OK;
 }
-HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, Pix* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH)
+HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH)
 {
 	m_oCommandManager.Flush();
 
@@ -1611,11 +1610,11 @@ void CPdfRenderer::UpdateFont()
 
 		if (!bFind)
 		{
-			CFontSelectFormat oFontSelect;
+            NSFonts::CFontSelectFormat oFontSelect;
 			oFontSelect.wsName = new std::wstring(m_oFont.GetName());
 			oFontSelect.bItalic = new INT(m_oFont.IsItalic() ? 1 : 0);
 			oFontSelect.bBold   = new INT(m_oFont.IsBold() ? 1 : 0);
-			CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect, false);
+            NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect, false);
 
 			wsFontPath = pFontInfo->m_wsFontPath;
 			lFaceIndex = pFontInfo->m_lIndex;
@@ -1636,7 +1635,7 @@ void CPdfRenderer::UpdateFont()
 		if (L"TrueType" == wsFontType || L"OpenType" == wsFontType || L"CFF" == wsFontType)
 			m_pFont = m_pDocument->CreateTrueTypeFont(wsFontPath, lFaceIndex);
 
-		CFontFile* pFontFile = m_pFontManager->m_pFont;
+        NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
 		if (pFontFile)
 		{
 			if (!pFontFile->IsItalic() && m_oFont.IsItalic())

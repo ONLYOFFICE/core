@@ -31,9 +31,8 @@
  */
 #include "DjVu.h"
 #include "DjVuFileImplementation.h"
-#include "../DesktopEditor/fontengine/ApplicationFonts.h"
 
-CDjVuFile::CDjVuFile(CApplicationFonts* pFonts)
+CDjVuFile::CDjVuFile(NSFonts::IApplicationFonts* pFonts)
 {
     m_pImplementation = new CDjVuFileImplementation(pFonts);
 }

@@ -20,12 +20,15 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfWriter
 #UnicodeConverter
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter
 
-CONFIG += build_all_zlib build_zlib_as_sources
-include(../OfficeUtils/OfficeUtils.pri)
+DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
+DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel -lgraphics
 
-CONFIG += build_cximage_zlib_disable
-include(../DesktopEditor/Qt_build/graphics/project/graphics.pri)
-include(../DesktopEditor/xml/build/qt/libxml2.pri)
+DEFINES -= \
+    UNICODE \
+    _UNICODE
+
+DEFINES += NOMINMAX
 
 core_linux {
     DEFINES += \

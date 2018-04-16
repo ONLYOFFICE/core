@@ -32,17 +32,12 @@
 #ifndef _BUILD_TEMPORARY_CS_H_
 #define _BUILD_TEMPORARY_CS_H_
 
-#ifndef CRITICALSECTION_USE_DYNAMIC_LIBRARY
-#define CRITICALSECTION_DECL_EXPORT
-#else
-#include "../common/base_export.h"
-#define CRITICALSECTION_DECL_EXPORT Q_DECL_EXPORT
-#endif
+#include "../../Common/kernel_config.h"
 
 namespace NSCriticalSection
 {
     class CRITICAL_SECTION_NATIVE;
-    class CRITICALSECTION_DECL_EXPORT CRITICAL_SECTION
+    class KERNEL_DECL CRITICAL_SECTION
 	{
 	private:
 		CRITICAL_SECTION_NATIVE* m_pCS;
@@ -59,7 +54,7 @@ namespace NSCriticalSection
 	};
 }
 
-class CRITICALSECTION_DECL_EXPORT CTemporaryCS
+class KERNEL_DECL CTemporaryCS
 {
 public:
 	CTemporaryCS(NSCriticalSection::CRITICAL_SECTION* cs);

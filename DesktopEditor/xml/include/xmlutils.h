@@ -38,13 +38,6 @@
 
 #include "../../DesktopEditor/common/StringBuilder.h"
 
-#ifndef XMLUTILS_USE_DYNAMIC_LIBRARY
-#define XMLUTILS_DECL_EXPORT
-#else
-#include "../../DesktopEditor/common/base_export.h"
-#define XMLUTILS_DECL_EXPORT Q_DECL_EXPORT
-#endif
-
 namespace XmlUtils
 {
 	typedef enum XmlNodeType
@@ -71,7 +64,7 @@ namespace XmlUtils
 	} XmlNodeType;
 
 	class CXmlLiteReader_Private;
-	class XMLUTILS_DECL_EXPORT CXmlLiteReader
+	class KERNEL_DECL CXmlLiteReader
 	{
 	protected:
 		CXmlLiteReader_Private* m_pInternal;
@@ -121,7 +114,7 @@ namespace XmlUtils
         bool IsEmptyElement();
 	};
 
-	class XMLUTILS_DECL_EXPORT IXmlDOMDocument
+	class KERNEL_DECL IXmlDOMDocument
 	{
 	private:
 		unsigned int m_lRef;
@@ -134,29 +127,9 @@ namespace XmlUtils
 		virtual unsigned int Release();
 	};
 
-	class XMLUTILS_DECL_EXPORT CXmlNodeBase : public IXmlDOMDocument
-	{
-	public:
-		IXmlDOMDocument* m_pDocument;
-
-		std::map<std::string, std::string> m_attributes;
-		std::vector<CXmlNodeBase*> m_nodes;
-		std::wstring m_sText;
-		std::wstring m_sName;
-
-	public:
-		CXmlNodeBase();
-		~CXmlNodeBase();
-
-		void AddRefDoc();
-		void ReleaseDoc();
-
-		std::wstring GetXml();
-		void GetXml(NSStringUtils::CStringBuilder& oWriter);
-	};
-
+	class CXmlNodeBase;
 	class CXmlNode;
-	class XMLUTILS_DECL_EXPORT CXmlNodes
+	class KERNEL_DECL CXmlNodes
 	{
 	private:
 		std::vector<CXmlNode> m_nodes;
@@ -171,7 +144,7 @@ namespace XmlUtils
 	};
 
 
-	class XMLUTILS_DECL_EXPORT CXmlNode
+	class KERNEL_DECL CXmlNode
 	{
 	private:
 		CXmlNodeBase* m_pBase;
@@ -272,8 +245,9 @@ public:
 	};
 
 
-	class XMLUTILS_DECL_EXPORT CXmlWriter
+	class KERNEL_DECL CXmlWriter
 	{
+	private:
 		std::wstring m_str;
 	
 	public:
@@ -297,8 +271,6 @@ public:
 		void WriteAttribute(const std::wstring& strAttributeName, int nValue, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = (L""));
 		void WriteAttribute(const std::wstring& strAttributeName, double dValue);
 	};
-	std::wstring GetNameNoNS(const std::wstring & strNodeName);
-	std::wstring GetNamespace(const std::wstring& strNodeName);
 }
 
 #endif // _BUILD_XMLUTILS_CROSSPLATFORM_H_

@@ -37,16 +37,11 @@
 #include <algorithm>
 #include "Types.h"
 
-#ifndef STRINGBUILDER_USE_DYNAMIC_LIBRARY
-#define STRINGBUILDER_DECL_EXPORT
-#else
-#include "./base_export.h"
-#define STRINGBUILDER_DECL_EXPORT Q_DECL_EXPORT
-#endif
+#include "../../Common/kernel_config.h"
 
 namespace NSStringUtils
 {
-    class STRINGBUILDER_DECL_EXPORT CStringBuilderA
+    class KERNEL_DECL CStringBuilderA
 	{
 	private:
 		char*		m_pData;
@@ -81,7 +76,7 @@ namespace NSStringUtils
         char* GetBuffer();
 	};
 
-    class STRINGBUILDER_DECL_EXPORT CStringBuilder
+    class KERNEL_DECL CStringBuilder
 	{
 	private:
 		wchar_t*	m_pData;
@@ -153,8 +148,8 @@ namespace NSStringUtils
         unsigned char CheckCode(const wchar_t& c);
 	};
 
-    STRINGBUILDER_DECL_EXPORT void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo);
-    STRINGBUILDER_DECL_EXPORT void string_replaceA(std::string& text, const std::string& replaceFrom, const std::string& replaceTo);
+    KERNEL_DECL void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo);
+    KERNEL_DECL void string_replaceA(std::string& text, const std::string& replaceFrom, const std::string& replaceTo);
 }
 
 #endif // _BUILD_STRING_BUILDER_CROSSPLATFORM_H_

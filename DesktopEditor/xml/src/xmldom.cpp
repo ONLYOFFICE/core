@@ -35,6 +35,45 @@
 
 namespace XmlUtils
 {
+    std::wstring GetNameNoNS(const std::wstring & strNodeName)
+    {
+        int nFind = (int)strNodeName.find(L":");
+        if (-1 == nFind)
+            return strNodeName;
+        return strNodeName.substr(nFind + 1);
+    }
+    std::wstring GetNamespace(const std::wstring& strNodeName)
+    {
+        int nFind = (int)strNodeName.find(L":");
+        if (-1 == nFind)
+            return L"";
+        return strNodeName.substr(0, nFind);
+    }
+}
+
+namespace XmlUtils
+{
+    class CXmlNodeBase : public IXmlDOMDocument
+    {
+    public:
+        IXmlDOMDocument* m_pDocument;
+
+        std::map<std::string, std::string> m_attributes;
+        std::vector<CXmlNodeBase*> m_nodes;
+        std::wstring m_sText;
+        std::wstring m_sName;
+
+    public:
+        CXmlNodeBase();
+        ~CXmlNodeBase();
+
+        void AddRefDoc();
+        void ReleaseDoc();
+
+        std::wstring GetXml();
+        void GetXml(NSStringUtils::CStringBuilder& oWriter);
+    };
+
 	CXmlNodeBase::CXmlNodeBase()
 	{
 		m_pDocument = NULL;
@@ -830,20 +869,20 @@ namespace XmlUtils
 		if (NULL != pBaseOld)
 			pBaseOld->Release();
 	}
-	std::wstring CXmlNode::GetNamespace(const std::wstring& strNodeName)
-	{
-		int nFind = strNodeName.find(wchar_t(':'));
-		if (-1 == nFind)
-			return L"";
-		return strNodeName.substr(0, nFind);
-	}
-	std::wstring CXmlNode::GetNameNoNS(const std::wstring& strNodeName)
-	{
-		int nFind = strNodeName.find(wchar_t(':'));
-		if (-1 == nFind)
-			return strNodeName;
-		return strNodeName.substr(nFind + 1);
-	}
+    std::wstring CXmlNode::GetNamespace(const std::wstring& strNodeName)
+    {
+        int nFind = strNodeName.find(wchar_t(':'));
+        if (-1 == nFind)
+            return L"";
+        return strNodeName.substr(0, nFind);
+    }
+    std::wstring CXmlNode::GetNameNoNS(const std::wstring& strNodeName)
+    {
+        int nFind = strNodeName.find(wchar_t(':'));
+        if (-1 == nFind)
+            return strNodeName;
+        return strNodeName.substr(nFind + 1);
+    }
 }
 
 namespace XmlUtils
@@ -943,23 +982,5 @@ namespace XmlUtils
         WriteString(L"\"");
         WriteDouble(dValue);
         WriteString(L"\"");
-    }
-}
-
-namespace XmlUtils
-{
-    std::wstring GetNameNoNS(const std::wstring & strNodeName)
-    {
-        int nFind = (int)strNodeName.find(L":");
-        if (-1 == nFind)
-            return strNodeName;
-        return strNodeName.substr(nFind + 1);
-    }
-    std::wstring GetNamespace(const std::wstring& strNodeName)
-    {
-        int nFind = (int)strNodeName.find(L":");
-        if (-1 == nFind)
-            return L"";
-        return strNodeName.substr(0, nFind);
     }
 }

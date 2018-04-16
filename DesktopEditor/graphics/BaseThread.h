@@ -46,21 +46,16 @@ typedef DWORD ASC_THREAD_ID;
 typedef pthread_t ASC_THREAD_ID;
 #endif
 
-#ifndef BASETHREAD_USE_DYNAMIC_LIBRARY
-#define BASETHREAD_DECL_EXPORT
-#else
-#include "../common/base_export.h"
-#define BASETHREAD_DECL_EXPORT Q_DECL_EXPORT
-#endif
+#include "../../Common/kernel_config.h"
 
 namespace NSThreads
 {
-    BASETHREAD_DECL_EXPORT ASC_THREAD_ID GetCurrentThreadId();
+    KERNEL_DECL ASC_THREAD_ID GetCurrentThreadId();
 
-    BASETHREAD_DECL_EXPORT void Sleep(int nMilliseconds);
+    KERNEL_DECL void Sleep(int nMilliseconds);
 
     class CThreadDescriptor;
-    class BASETHREAD_DECL_EXPORT CBaseThread
+    class KERNEL_DECL CBaseThread
 	{
 	protected:
 		CThreadDescriptor*	m_hThread;

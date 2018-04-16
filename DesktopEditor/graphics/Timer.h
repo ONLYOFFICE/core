@@ -34,18 +34,11 @@
 
 #include "BaseThread.h"
 
-#ifndef TIMER_USE_DYNAMIC_LIBRARY
-#define TIMER_DECL_EXPORT
-#else
-#include "../common/base_export.h"
-#define TIMER_DECL_EXPORT Q_DECL_EXPORT
-#endif
-
 namespace NSTimers
 {
-    TIMER_DECL_EXPORT DWORD GetTickCount();
+    KERNEL_DECL DWORD GetTickCount();
 
-    class TIMER_DECL_EXPORT CTimer : public NSThreads::CBaseThread
+    class KERNEL_DECL CTimer : public NSThreads::CBaseThread
 	{
 	private:
 		DWORD	m_dwInterval;

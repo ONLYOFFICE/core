@@ -273,13 +273,13 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     oInputParams.m_sFontDir = new std::wstring(nsstring_to_wstring(nsFontPath));
     oInputParams.m_bIsNoBase64 = new bool(self.isNoBase64);
     
-    if (self.delimiter != nil && self.delimiter.length > 0) {
-        oInputParams.m_sCsvDelimiterChar = new std::wstring(nsstring_to_wstring(self.delimiter));
+    if (self.delimiter != nil) {
+        oInputParams.m_nCsvDelimiter = new int(self.delimiter.intValue);
     }
-    if (self.encoding) {
+    if (self.encoding != nil) {
         oInputParams.m_nCsvTxtEncoding = new int(self.encoding.intValue);
     }
- 
+    
     oInputParams.m_nFormatFrom = new int(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV);
     oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET);
     
@@ -325,7 +325,7 @@ static std::wstring nsstring_to_wstring(NSString* nsstring)
     return NExtractTools::zip2dir(from, to);
 }
 
-+ (NSArray *)delimiters {
++ (NSArray <NSString *> *)delimiters {
     NSMutableArray *values = [[NSMutableArray alloc]init];
     
     [values addObject:[NSString stringWithFormat:@"\t"]];

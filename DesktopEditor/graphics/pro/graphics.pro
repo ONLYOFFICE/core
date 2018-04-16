@@ -92,6 +92,7 @@ HEADERS += \
     ./../../fontengine/FontPath.h \
     ./../../fontengine/GlyphString.h \
     ./../../fontengine/FontManager.h \
+    ./../../fontengine/FontConverter.h \
     \
     ./Fonts.h \
     ./Graphics.h \

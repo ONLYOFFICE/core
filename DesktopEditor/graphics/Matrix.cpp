@@ -189,6 +189,41 @@ namespace Aggplus
 	{
         return m_internal->m_agg_mtx.ty;
 	}
+
+    double CMatrix::sx() const
+    {
+        return m_internal->m_agg_mtx.sx;
+    }
+    double CMatrix::sy() const
+    {
+        return m_internal->m_agg_mtx.sy;
+    }
+    double CMatrix::shx() const
+    {
+        return m_internal->m_agg_mtx.shx;
+    }
+    double CMatrix::shy() const
+    {
+        return m_internal->m_agg_mtx.shy;
+    }
+    double CMatrix::tx() const
+    {
+        return m_internal->m_agg_mtx.tx;
+    }
+    double CMatrix::ty() const
+    {
+        return m_internal->m_agg_mtx.ty;
+    }
+
+    void CMatrix::SetElements(const double& sx, const double& shy, const double& shx, const double& sy, const double& tx, const double& ty)
+    {
+        m_internal->m_agg_mtx.sx = sx;
+        m_internal->m_agg_mtx.shy = shy;
+        m_internal->m_agg_mtx.shx = shx;
+        m_internal->m_agg_mtx.sy = sy;
+        m_internal->m_agg_mtx.tx = tx;
+        m_internal->m_agg_mtx.ty = ty;
+    }
 	
 	Status CMatrix::GetElements(REAL* m) const
 	{
@@ -249,16 +284,32 @@ namespace Aggplus
 		}
 	}
 
-	bool CMatrix::IsIdentity() const
+    bool CMatrix::IsIdentity(const double& eps) const
 	{
-        return m_internal->m_agg_mtx.is_identity();
+        return m_internal->m_agg_mtx.is_identity(eps);
 	}
-	bool CMatrix::IsIdentity2() const
+    bool CMatrix::IsIdentity2(const double& eps) const
 	{
         agg::trans_affine& m = m_internal->m_agg_mtx;
-        return agg::is_equal_eps(m.sx,  1.0, agg::affine_epsilon) &&
-               agg::is_equal_eps(m.shy, 0.0, agg::affine_epsilon) &&
-               agg::is_equal_eps(m.shx, 0.0, agg::affine_epsilon) &&
-               agg::is_equal_eps(m.sy,  1.0, agg::affine_epsilon);
+        return agg::is_equal_eps(m.sx,  1.0, eps) &&
+               agg::is_equal_eps(m.shy, 0.0, eps) &&
+               agg::is_equal_eps(m.shx, 0.0, eps) &&
+               agg::is_equal_eps(m.sy,  1.0, eps);
 	}
+
+    bool CMatrix::IsEqual(const CMatrix* mm1, const CMatrix* mm2, const double& eps, bool bIsOnlyMain)
+    {
+        agg::trans_affine& m1 = mm1->m_internal->m_agg_mtx;
+        agg::trans_affine& m2 = mm2->m_internal->m_agg_mtx;
+
+        bool bMain = (fabs(m1.sx  - m2.sx) < eps &&
+                      fabs(m1.sy  - m2.sy) < eps &&
+                      fabs(m1.shx - m2.shx) < eps &&
+                      fabs(m1.shy - m2.shy) < eps) ? true : false;
+
+        if (!bMain || bIsOnlyMain)
+            return bMain;
+
+        return (fabs(m1.tx - m2.tx) < eps && fabs(m1.ty - m2.ty) < eps) ? true : false;
+    }
 }

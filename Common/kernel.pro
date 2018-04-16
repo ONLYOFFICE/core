@@ -10,8 +10,11 @@ CONFIG += plugin
 
 CONFIG += core_static_link_libstd
 
-DEFINES += OFFICEUTILS_USE_DYNAMIC_LIBRARY
-DEFINES += XMLUTILS_USE_DYNAMIC_LIBRARY
+DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
+DEFINES += KERNEL_USE_DYNAMIC_LIBRARY_BUILDING
+
+# CONFIG
+HEADERS += ./kernel_config.h
 
 CORE_ROOT_DIR = $$PWD/..
 PWD_ROOT_DIR = $$PWD
@@ -51,8 +54,10 @@ core_mac {
     LIBS += -framework AppKit
 }
 
+# CONFIG
+HEADERS += ./kernel_config.h
+
 # BLOCKER
-DEFINES += CRITICALSECTION_USE_DYNAMIC_LIBRARY
 HEADERS += \
     ./../DesktopEditor/graphics/TemporaryCS.h
 
@@ -60,7 +65,6 @@ SOURCES += \
     ./../DesktopEditor/graphics/TemporaryCS.cpp
 
 # THREAD
-DEFINES += BASETHREAD_USE_DYNAMIC_LIBRARY
 HEADERS += \
     ./../DesktopEditor/graphics/BaseThread.h
 
@@ -68,7 +72,6 @@ SOURCES += \
     ./../DesktopEditor/graphics/BaseThread.cpp
 
 # TIMER
-DEFINES += TIMER_USE_DYNAMIC_LIBRARY
 HEADERS += \
     ./../DesktopEditor/graphics/Timer.h
 
@@ -76,26 +79,21 @@ SOURCES += \
     ./../DesktopEditor/graphics/Timer.cpp
 
 # PATH
-DEFINES += PATH_USE_DYNAMIC_LIBRARY
 HEADERS += ./../DesktopEditor/common/Path.h
 SOURCES += ./../DesktopEditor/common/Path.cpp
 
 # STRINGS
-DEFINES += STRINGBUILDER_USE_DYNAMIC_LIBRARY
 HEADERS += ./../DesktopEditor/common/StringBuilder.h
 SOURCES += ./../DesktopEditor/common/StringBuilder.cpp
 
 # BASE64
-DEFINES += BASE64_USE_DYNAMIC_LIBRARY
 HEADERS += ./../DesktopEditor/common/Base64.h
 SOURCES += ./../DesktopEditor/common/Base64.cpp
 
 # FILE
-DEFINES += FILE_USE_DYNAMIC_LIBRARY
 HEADERS += ./../DesktopEditor/common/File.h
 SOURCES += ./../DesktopEditor/common/File.cpp
 
 # DIRECTORY
-DEFINES += DIRECTORY_USE_DYNAMIC_LIBRARY
 HEADERS += ./../DesktopEditor/common/Directory.h
 SOURCES += ./../DesktopEditor/common/Directory.cpp

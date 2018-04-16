@@ -33,8 +33,9 @@
 #define _BUILD_FONT_CONVERTER_H
 
 #include <string>
+#include "../graphics/config.h"
 
-class CFontConverter
+class GRAPHICS_DECL CFontConverter
 {
 public:
     bool ToOTF(std::wstring sFontIn, std::wstring sFontOut, unsigned int* pSymbols, int nCount, std::wstring sName, long nFlag);

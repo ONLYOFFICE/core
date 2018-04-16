@@ -36,12 +36,7 @@
 #include <limits.h>
 #include "Types.h"
 
-#ifndef BASE64_USE_DYNAMIC_LIBRARY
-#define BASE64_DECL_EXPORT
-#else
-#include "./base_export.h"
-#define BASE64_DECL_EXPORT Q_DECL_EXPORT
-#endif
+#include "../../Common/kernel_config.h"
 
 namespace NSBase64
 {
@@ -51,15 +46,15 @@ namespace NSBase64
 
 	#define _BASE64_INT_MAX				2147483647
 	
-    BASE64_DECL_EXPORT int Base64EncodeGetRequiredLength(int nSrcLen, DWORD dwFlags = B64_BASE64_FLAG_NONE);
+    KERNEL_DECL int Base64EncodeGetRequiredLength(int nSrcLen, DWORD dwFlags = B64_BASE64_FLAG_NONE);
 
-    BASE64_DECL_EXPORT int Base64DecodeGetRequiredLength(int nSrcLen);
+    KERNEL_DECL int Base64DecodeGetRequiredLength(int nSrcLen);
 
-    BASE64_DECL_EXPORT int Base64Encode(const BYTE *pbSrcData, int nSrcLen, BYTE* szDest, int *pnDestLen, DWORD dwFlags = B64_BASE64_FLAG_NONE);
+    KERNEL_DECL int Base64Encode(const BYTE *pbSrcData, int nSrcLen, BYTE* szDest, int *pnDestLen, DWORD dwFlags = B64_BASE64_FLAG_NONE);
 
-    BASE64_DECL_EXPORT int DecodeBase64Char(unsigned int ch);
+    KERNEL_DECL int DecodeBase64Char(unsigned int ch);
 
-    BASE64_DECL_EXPORT int Base64Decode(const char* szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen);
+    KERNEL_DECL int Base64Decode(const char* szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen);
 }
 
 #endif//_BUILD_BASE64_CROSSPLATFORM_DEFINE

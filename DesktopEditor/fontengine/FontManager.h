@@ -155,7 +155,7 @@ public:
 	~CFontManager();
 
 public:
-	void AfterLoad();
+    virtual void AfterLoad();
 
     virtual void Initialize();
     virtual void SetOwnerCache(NSFonts::IFontsCache* pCache);
@@ -174,6 +174,8 @@ public:
     virtual int GetAscender() { return m_lAscender; }
     virtual int GetDescender() { return m_lDescender; }
     virtual int GetLineHeight() { return m_lLineHeight; }
+
+    virtual std::wstring GetName() { return m_sName; }
 
     virtual double UpdateSize(const double& dOldSize, const double& dDpi, const double& dNewDpi);
 	

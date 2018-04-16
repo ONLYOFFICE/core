@@ -33,6 +33,7 @@
 #include "../common/File.h"
 #include "../cximage/CxImage/ximage.h"
 #include "ImageFileFormatChecker.h"
+#include "../graphics/Image.h"
 
 #include "Jp2/J2kFile.h"
 #include "JBig2/source/JBig2File.h"
@@ -498,4 +499,14 @@ bool CBgraFrame::ReColorPatternImage(const std::wstring& strFileName, unsigned i
 		return true;
 	}
 	return false;
+}
+
+void CBgraFrame::FromImage(IGrObject* pGrObject)
+{
+    Aggplus::CImage* pImage = (Aggplus::CImage*)pGrObject;
+
+    this->put_Width((int)pImage->GetWidth());
+    this->put_Height((int)pImage->GetHeight());
+    this->put_Stride((int)pImage->GetStride());
+    this->put_Data(pImage->GetData());
 }

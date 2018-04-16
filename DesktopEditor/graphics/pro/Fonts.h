@@ -451,6 +451,8 @@ namespace NSFonts
 
         virtual bool IsItalic() = 0;
         virtual bool IsBold() = 0;
+
+        virtual int IsUnicodeRangeAvailable(unsigned long ulBit, unsigned int un4ByteIndex) = 0;
     };
 
     namespace NSFontFile
@@ -505,8 +507,12 @@ namespace NSFonts
         virtual int GetDescender() = 0;
         virtual int GetLineHeight() = 0;
 
+        virtual std::wstring GetName() = 0;
+
         virtual void Initialize() = 0;
         virtual void SetOwnerCache(IFontsCache* pCache) = 0;
+
+        virtual void AfterLoad() = 0;
 
         virtual double UpdateSize(const double& dOldSize, const double& dDpi, const double& dNewDpi) = 0;
 

@@ -49,33 +49,31 @@
 	#endif
 #endif
 
-#ifndef DIRECTORY_USE_DYNAMIC_LIBRARY
-#define DIRECTORY_DECL_EXPORT
-#else
-#include "./base_export.h"
-#define DIRECTORY_DECL_EXPORT Q_DECL_EXPORT
+#if defined(CreateDirectory)
+#undef CreateDirectory
 #endif
 
+#include "../../Common/kernel_config.h"
 namespace NSDirectory
 {
 #ifdef _IOS
-    DIRECTORY_DECL_EXPORT void GetFiles2_ios(std::wstring strDirectory, std::vector<std::wstring>& oArray, bool bIsRecursion);
+    KERNEL_DECL void GetFiles2_ios(std::wstring strDirectory, std::vector<std::wstring>& oArray, bool bIsRecursion);
 #endif
-    DIRECTORY_DECL_EXPORT void GetFiles2(std::wstring strDirectory, std::vector<std::wstring>& oArray, bool bIsRecursion = false);
+    KERNEL_DECL void GetFiles2(std::wstring strDirectory, std::vector<std::wstring>& oArray, bool bIsRecursion = false);
 
-    DIRECTORY_DECL_EXPORT std::vector<std::wstring> GetFiles(std::wstring strDirectory, bool bIsRecursion = false);
-    DIRECTORY_DECL_EXPORT std::vector<std::wstring> GetDirectories(std::wstring strDirectory);
-    DIRECTORY_DECL_EXPORT bool Exists(const std::wstring& strDirectory);
-    DIRECTORY_DECL_EXPORT bool CreateDirectory(const std::wstring& strDirectory);
-    DIRECTORY_DECL_EXPORT bool CreateDirectories(const std::wstring& strDirectory);
-    DIRECTORY_DECL_EXPORT void DeleteDirectory(const std::wstring& strDirectory, bool deleteRoot = true);
-    DIRECTORY_DECL_EXPORT std::wstring GetFolderPath(const std::wstring& wsFolderPath);
-    DIRECTORY_DECL_EXPORT std::wstring CreateTempFileWithUniqueName (const std::wstring & strFolderPathRoot, std::wstring Prefix);
-    DIRECTORY_DECL_EXPORT std::wstring CreateDirectoryWithUniqueName (const std::wstring & strFolderPathRoot);
-    DIRECTORY_DECL_EXPORT std::wstring GetTempPath();
+    KERNEL_DECL std::vector<std::wstring> GetFiles(std::wstring strDirectory, bool bIsRecursion = false);
+    KERNEL_DECL std::vector<std::wstring> GetDirectories(std::wstring strDirectory);
+    KERNEL_DECL bool Exists(const std::wstring& strDirectory);
+    KERNEL_DECL bool CreateDirectory(const std::wstring& strDirectory);
+    KERNEL_DECL bool CreateDirectories(const std::wstring& strDirectory);
+    KERNEL_DECL void DeleteDirectory(const std::wstring& strDirectory, bool deleteRoot = true);
+    KERNEL_DECL std::wstring GetFolderPath(const std::wstring& wsFolderPath);
+    KERNEL_DECL std::wstring CreateTempFileWithUniqueName (const std::wstring & strFolderPathRoot, std::wstring Prefix);
+    KERNEL_DECL std::wstring CreateDirectoryWithUniqueName (const std::wstring & strFolderPathRoot);
+    KERNEL_DECL std::wstring GetTempPath();
 
-    DIRECTORY_DECL_EXPORT int GetFilesCount(const std::wstring& path, const bool& recursive);
-    DIRECTORY_DECL_EXPORT bool PathIsDirectory(const std::wstring& pathName);
+    KERNEL_DECL int GetFilesCount(const std::wstring& path, const bool& recursive);
+    KERNEL_DECL bool PathIsDirectory(const std::wstring& pathName);
 }
 
 #endif //_BUILD_DIRECTORY_CROSSPLATFORM_H_

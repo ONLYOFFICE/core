@@ -65,12 +65,23 @@ namespace Aggplus
         double OffsetX() const;
         double OffsetY() const;
 
+        double sx() const;
+        double sy() const;
+        double shx() const;
+        double shy() const;
+        double tx() const;
+        double ty() const;
+
+        void SetElements(const double& sx, const double& shy, const double& shx, const double& sy, const double& tx = 0, const double& ty = 0);
+
         Status GetElements(float* m) const;
         Status GetElements(double* m) const;
 
         void Reset();
-        bool IsIdentity() const;
-        bool IsIdentity2() const;
+        bool IsIdentity(const double& eps = 0.00001) const;
+        bool IsIdentity2(const double& eps = 0.00001) const;
+
+        static bool IsEqual(const CMatrix* m1, const CMatrix* m2, const double& eps = 0.001, bool bIsOnlyMain = false);
 
         const CMatrix& operator=(const CMatrix& Src);
 

@@ -32,9 +32,10 @@
 #pragma once
 
 #include <string>
+#include "kernel_config.h"
 
 class CFileDownloader_private;
-class CFileDownloader
+class KERNEL_DECL CFileDownloader
 {
 protected:
     // создаем в зависимости от платформы

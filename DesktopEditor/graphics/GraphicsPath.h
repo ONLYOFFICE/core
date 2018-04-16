@@ -38,7 +38,7 @@
 #include "IRenderer.h"
 
 #include "Matrix.h"
-#include "../fontengine/FontManager.h"
+#include "../graphics/pro/Fonts.h"
 
 namespace Aggplus
 {
@@ -85,9 +85,9 @@ namespace Aggplus
         virtual bool _CurveTo(double x1, double y1, double x2, double y2, double x3, double y3);
         virtual bool _Close();
 
-        Status AddString(const std::wstring& strText, CFontManager* pFont, double x, double y);
-        Status AddString(const unsigned int* pGids, const unsigned int nGidsCount, CFontManager* pFont, double x, double y);
-        Status AddStringC(const LONG& lText, CFontManager* pFont, double x, double y);
+        Status AddString(const std::wstring& strText, NSFonts::IFontManager* pFont, double x, double y);
+        Status AddString(const unsigned int* pGids, const unsigned int nGidsCount, NSFonts::IFontManager* pFont, double x, double y);
+        Status AddStringC(const LONG& lText, NSFonts::IFontManager* pFont, double x, double y);
         void z_Stroke(const double& size);
         void Widen(const double& size, const Aggplus::LineJoin& join, const CMatrix* matrix, float flatness);
 
@@ -128,12 +128,12 @@ namespace Aggplus
         bool PathCommandEnd();
         bool PathCommandStart();
         bool PathCommandGetCurrentPoint(double* fX, double* fY);
-        bool PathCommandText(const std::wstring& bsText, CFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset);
-        bool PathCommandTextEx(std::wstring& bsText, std::wstring& bsGidText, CFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags);
+        bool PathCommandText(const std::wstring& bsText, NSFonts::IFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset);
+        bool PathCommandTextEx(std::wstring& bsText, std::wstring& bsGidText, NSFonts::IFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags);
 
-        bool PathCommandText2(const int* pUnicodes, const int* pGids, const int& nCount, CFontManager* pManager,
+        bool PathCommandText2(const int* pUnicodes, const int* pGids, const int& nCount, NSFonts::IFontManager* pManager,
                               const double& x, const double& y, const double& w, const double& h);
-        bool PathCommandText2(const std::wstring& sUnicodes, const int* pGids, const int& nCount, CFontManager* pManager,
+        bool PathCommandText2(const std::wstring& sUnicodes, const int* pGids, const int& nCount, NSFonts::IFontManager* pManager,
                               const double& x, const double& y, const double& w, const double& h);
 
         bool PathCommandGetBounds(double& left, double& top, double& width, double &height);
@@ -148,7 +148,7 @@ namespace Aggplus
         bool _Start();
 
     protected:
-        bool AddString(const std::wstring& bstrText, CFontManager* pFont, double x, double y);
+        bool AddString(const std::wstring& bstrText, NSFonts::IFontManager* pFont, double x, double y);
 
         int EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection);
         double AngToEllPrm(double fAngle, double fXRad, double fYRad);

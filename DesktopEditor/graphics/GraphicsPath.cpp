@@ -437,7 +437,7 @@ namespace Aggplus
 		return (Ok == CloseFigure());
 	}
 
-	Status CGraphicsPath::AddString(const std::wstring& strText, CFontManager* pFont, double x, double y)
+    Status CGraphicsPath::AddString(const std::wstring& strText, NSFonts::IFontManager* pFont, double x, double y)
 	{
 		if (NULL == pFont)
 			return InvalidParameter;
@@ -446,7 +446,7 @@ namespace Aggplus
 		pFont->LoadString1(strText, (float)x, (float)y);
 		return (TRUE == pFont->GetStringPath(this)) ? Ok : InvalidParameter;
 	}
-    Status CGraphicsPath::AddString(const unsigned int* pGids, const unsigned int nGidsCount, CFontManager* pFont, double x, double y)
+    Status CGraphicsPath::AddString(const unsigned int* pGids, const unsigned int nGidsCount, NSFonts::IFontManager* pFont, double x, double y)
     {
         if (NULL == pFont)
             return InvalidParameter;
@@ -456,7 +456,7 @@ namespace Aggplus
         return (TRUE == pFont->GetStringPath(this)) ? Ok : InvalidParameter;
     }
 
-	Status CGraphicsPath::AddStringC(const LONG& lText, CFontManager* pFont, double x, double y)
+    Status CGraphicsPath::AddStringC(const LONG& lText, NSFonts::IFontManager* pFont, double x, double y)
 	{
 		if (NULL == pFont)
 			return InvalidParameter;
@@ -854,11 +854,11 @@ namespace Aggplus
         m_internal->m_agg_ps.last_vertex(fX, fY);
 		return true;
 	}
-	bool CGraphicsPathSimpleConverter::PathCommandText(const std::wstring& bsText, CFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
+    bool CGraphicsPathSimpleConverter::PathCommandText(const std::wstring& bsText, NSFonts::IFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
 	{
 		return AddString(bsText, pManager, fX, fY + fBaseLineOffset);
 	}
-	bool CGraphicsPathSimpleConverter::PathCommandTextEx(std::wstring& bsText, std::wstring& bsGidText, CFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
+    bool CGraphicsPathSimpleConverter::PathCommandTextEx(std::wstring& bsText, std::wstring& bsGidText, NSFonts::IFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
 	{
 		if (!bsGidText.empty())
 		{
@@ -868,7 +868,7 @@ namespace Aggplus
 		return PathCommandText(bsText, pManager, fX, fY, fWidth, fHeight, fBaseLineOffset);
 	}
 
-    bool CGraphicsPathSimpleConverter::PathCommandText2(const int* pUnicodes, const int* pGids, const int& nCount, CFontManager* pManager,
+    bool CGraphicsPathSimpleConverter::PathCommandText2(const int* pUnicodes, const int* pGids, const int& nCount, NSFonts::IFontManager* pManager,
                           const double& x, const double& y, const double& w, const double& h)
     {
         if (NULL == pGids)
@@ -884,7 +884,7 @@ namespace Aggplus
             return (TRUE == pManager->GetStringPath(this)) ? true : false;
         }
     }
-    bool CGraphicsPathSimpleConverter::PathCommandText2(const std::wstring& sUnicodes, const int* pGids, const int& nCount, CFontManager* pManager,
+    bool CGraphicsPathSimpleConverter::PathCommandText2(const std::wstring& sUnicodes, const int* pGids, const int& nCount, NSFonts::IFontManager* pManager,
                           const double& x, const double& y, const double& w, const double& h)
     {
         if (NULL == pGids)
@@ -1028,7 +1028,7 @@ namespace Aggplus
 		return true;
 	}
 
-	bool CGraphicsPathSimpleConverter::AddString(const std::wstring& bstrText, CFontManager* pFont, double x, double y)
+    bool CGraphicsPathSimpleConverter::AddString(const std::wstring& bstrText, NSFonts::IFontManager* pFont, double x, double y)
 	{
 		if (NULL == pFont)
 			return false;

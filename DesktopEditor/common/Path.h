@@ -34,19 +34,13 @@
 
 #include <string>
 #include <string.h>
-
-#ifndef PATH_USE_DYNAMIC_LIBRARY
-#define PATH_DECL_EXPORT
-#else
-#include "./base_export.h"
-#define PATH_DECL_EXPORT Q_DECL_EXPORT
-#endif
+#include "../../Common/kernel_config.h"
 
 namespace NSSystemPath
 {
-    PATH_DECL_EXPORT std::wstring GetDirectoryName(const std::wstring& strFileName);
-    PATH_DECL_EXPORT std::wstring GetFileName(const std::wstring& strFileName);
-    PATH_DECL_EXPORT std::wstring Combine(const std::wstring& strLeft, const std::wstring& strRight);
+    KERNEL_DECL std::wstring GetDirectoryName(const std::wstring& strFileName);
+    KERNEL_DECL std::wstring GetFileName(const std::wstring& strFileName);
+    KERNEL_DECL std::wstring Combine(const std::wstring& strLeft, const std::wstring& strRight);
 }
 
 #endif //_BUILD_PATH_CROSSPLATFORM_H_

@@ -36,12 +36,7 @@
 #include <stdio.h>
 #include "Base64.h"
 
-#ifndef FILE_USE_DYNAMIC_LIBRARY
-#define FILE_DECL_EXPORT
-#else
-#include "./base_export.h"
-#define FILE_DECL_EXPORT Q_DECL_EXPORT
-#endif
+#include "../../Common/kernel_config.h"
 
 #define U_TO_UTF8(val) NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(val.c_str(), (LONG)val.length())
 #define UTF8_TO_U(val) NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)val.c_str(), (LONG)val.length())
@@ -88,7 +83,7 @@ namespace NSFile
         }
 	};   
 
-    class FILE_DECL_EXPORT CUtf8Converter
+    class KERNEL_DECL CUtf8Converter
 	{
 	public:
 
@@ -114,7 +109,7 @@ namespace NSFile
         static std::wstring GetWStringFromUTF16(const unsigned short* pUtf16, LONG lCount);
 	};
 
-    class FILE_DECL_EXPORT CFileBinary
+    class KERNEL_DECL CFileBinary
 	{
 	protected:
 		FILE* m_pFile;
@@ -158,7 +153,7 @@ namespace NSFile
         static FILE* OpenFileNative(const std::wstring& sFileName, const std::wstring& sMode);
 	};
 
-    class FILE_DECL_EXPORT CBase64Converter
+    class KERNEL_DECL CBase64Converter
 	{
 	public:
         static bool Encode(BYTE* pDataSrc, int nLenSrc, char*& pDataDst, int& nLenDst, DWORD dwFlags = NSBase64::B64_BASE64_FLAG_NONE);
@@ -169,13 +164,13 @@ namespace NSFile
 namespace NSFile
 {
     #define NS_FILE_MAX_PATH 32768
-    FILE_DECL_EXPORT std::wstring GetProcessPath();
-    FILE_DECL_EXPORT std::wstring GetProcessDirectory();
+    KERNEL_DECL std::wstring GetProcessPath();
+    KERNEL_DECL std::wstring GetProcessDirectory();
 
     // CommonFunctions
-    FILE_DECL_EXPORT std::wstring GetFileExtention(const std::wstring& sPath);
-    FILE_DECL_EXPORT std::wstring GetFileName(const std::wstring& sPath);
-    FILE_DECL_EXPORT std::wstring GetDirectoryName(const std::wstring& sPath);
+    KERNEL_DECL std::wstring GetFileExtention(const std::wstring& sPath);
+    KERNEL_DECL std::wstring GetFileName(const std::wstring& sPath);
+    KERNEL_DECL std::wstring GetDirectoryName(const std::wstring& sPath);
 }
 
 #endif //_BUILD_FILE_CROSSPLATFORM_H_

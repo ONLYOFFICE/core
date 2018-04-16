@@ -35,6 +35,7 @@
 #include <string>
 #include "../common/Types.h"
 #include "./../graphics/config.h"
+#include "./../common/IGrObject.h"
 
 class GRAPHICS_DECL CBgraFrame
 {
@@ -77,6 +78,9 @@ public:
 	bool Resize(const long& nNewWidth, const long& nNewHeight, bool bDestroyData = true);
 
 	bool ReColorPatternImage(const std::wstring& strFileName, unsigned int rgbColorBack, unsigned int rgbColorFore);
+
+public:
+    void FromImage(IGrObject* pGraphics);
 };
 
 #endif

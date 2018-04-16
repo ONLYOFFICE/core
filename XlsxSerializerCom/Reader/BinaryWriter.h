@@ -1519,6 +1519,12 @@ namespace BinXlsxRW
 				WriteDefinedNames(workbook.m_oDefinedNames.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
+			if (workbook.m_oCalcPr.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::CalcPr);
+				WriteCalcPr(workbook.m_oCalcPr.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
 	//ExternalReferences
 			if(workbook.m_oExternalReferences.IsInit())
 			{
@@ -1626,6 +1632,88 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
         }
+		void WriteCalcPr(const OOX::Spreadsheet::CСalcPr& CCalcPr)
+		{
+			int nCurPos = 0;
+			if(CCalcPr.m_oCalcId.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerCalcPrTypes::CalcId);
+				m_oBcw.m_oStream.WriteULONG(CCalcPr.m_oCalcId->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(CCalcPr.m_oCalcMode.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerCalcPrTypes::CalcMode);
+				m_oBcw.m_oStream.WriteBYTE((BYTE)CCalcPr.m_oCalcMode->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(CCalcPr.m_oFullCalcOnLoad.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerCalcPrTypes::FullCalcOnLoad);
+				m_oBcw.m_oStream.WriteBOOL(CCalcPr.m_oFullCalcOnLoad->ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(CCalcPr.m_oRefMode.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerCalcPrTypes::RefMode);
+				m_oBcw.m_oStream.WriteBYTE((BYTE)CCalcPr.m_oRefMode->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(CCalcPr.m_oIterate.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerCalcPrTypes::Iterate);
+				m_oBcw.m_oStream.WriteBOOL(CCalcPr.m_oIterate->ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(CCalcPr.m_oIterateCount.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerCalcPrTypes::IterateCount);
+				m_oBcw.m_oStream.WriteULONG(CCalcPr.m_oIterateCount->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(CCalcPr.m_oIterateDelta.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerCalcPrTypes::IterateDelta);
+				m_oBcw.m_oStream.WriteDoubleReal(CCalcPr.m_oIterateDelta->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(CCalcPr.m_oFullPrecision.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerCalcPrTypes::FullPrecision);
+				m_oBcw.m_oStream.WriteBOOL(CCalcPr.m_oFullPrecision->ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(CCalcPr.m_oCalcCompleted.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerCalcPrTypes::CalcCompleted);
+				m_oBcw.m_oStream.WriteBOOL(CCalcPr.m_oCalcCompleted->ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(CCalcPr.m_oCalcOnSave.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerCalcPrTypes::CalcOnSave);
+				m_oBcw.m_oStream.WriteBOOL(CCalcPr.m_oCalcOnSave->ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(CCalcPr.m_oConcurrentCalc.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerCalcPrTypes::ConcurrentCalc);
+				m_oBcw.m_oStream.WriteBOOL(CCalcPr.m_oConcurrentCalc->ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(CCalcPr.m_oConcurrentManualCount.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerCalcPrTypes::ConcurrentManualCount);
+				m_oBcw.m_oStream.WriteULONG(CCalcPr.m_oConcurrentManualCount->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(CCalcPr.m_oForceFullCalc.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerCalcPrTypes::ForceFullCalc);
+				m_oBcw.m_oStream.WriteBOOL(CCalcPr.m_oForceFullCalc->ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+		}
 		void WriteExternalReferences(const OOX::Spreadsheet::CExternalReferences& externalReferences, OOX::Spreadsheet::CWorkbook& workbook)
 		{
 			int nCurPos;

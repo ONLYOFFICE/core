@@ -1004,6 +1004,7 @@ namespace OOX
 		et_x_Borders, // <borders>
 		et_x_Border,
 		et_x_BorderProp,
+		et_x_CalcPr, // <calcPr>
 		et_x_CellStyles,
 		et_x_CellStyle,
 		et_x_CellStyleXfs,

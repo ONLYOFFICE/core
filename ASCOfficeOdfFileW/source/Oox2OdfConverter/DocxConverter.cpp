@@ -1267,11 +1267,58 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 	}
 	if (oox_paragraph_pr->m_oShd.IsInit())
 	{
-		_CP_OPT(odf_types::color) odf_color;
-		convert(oox_paragraph_pr->m_oShd->m_oFill.GetPointer(), oox_paragraph_pr->m_oShd->m_oThemeFill.GetPointer(),
-			oox_paragraph_pr->m_oShd->m_oThemeFillTint.GetPointer(), oox_paragraph_pr->m_oShd->m_oThemeShade.GetPointer(), odf_color);
-		if (odf_color)
-			paragraph_properties->content_.fo_background_color_ = *odf_color;
+		int type_shading = 100; //solid
+		if (oox_paragraph_pr->m_oShd->m_oVal.IsInit())
+		{
+            switch(oox_paragraph_pr->m_oShd->m_oVal->GetValue())
+			{
+			case SimpleTypes::shdClear                 : type_shading = 0;	break;
+			case SimpleTypes::shdNil                   : type_shading = 0;	break;
+			case SimpleTypes::shdPct10                 : type_shading = 10;	break;;
+			case SimpleTypes::shdPct12                 : type_shading = 12;	break;
+			case SimpleTypes::shdPct15                 : type_shading = 15;	break;
+			case SimpleTypes::shdPct20                 : type_shading = 20;	break;
+			case SimpleTypes::shdPct25                 : type_shading = 25;	break;
+			case SimpleTypes::shdPct30                 : type_shading = 30;	break;
+			case SimpleTypes::shdPct35                 : type_shading = 35;	break;
+			case SimpleTypes::shdPct37                 : type_shading = 37;	break;
+			case SimpleTypes::shdPct40                 : type_shading = 40;	break;
+			case SimpleTypes::shdPct45                 : type_shading = 45;	break;
+			case SimpleTypes::shdPct5                  : type_shading = 5;	break;
+			case SimpleTypes::shdPct55                 : type_shading = 55;	break;
+			case SimpleTypes::shdPct60                 : type_shading = 60;	break;
+			case SimpleTypes::shdPct62                 : type_shading = 62;	break;
+			case SimpleTypes::shdPct65                 : type_shading = 65;	break;
+			case SimpleTypes::shdPct70                 : type_shading = 70;	break;
+			case SimpleTypes::shdPct75                 : type_shading = 75;	break;
+			case SimpleTypes::shdPct80                 : type_shading = 80;	break;
+			case SimpleTypes::shdPct85                 : type_shading = 85;	break;
+			case SimpleTypes::shdPct87                 : type_shading = 87;	break;
+			case SimpleTypes::shdPct90                 : type_shading = 90;	break;
+			case SimpleTypes::shdPct95                 : type_shading = 95;	break;
+			case SimpleTypes::shdSolid                 : type_shading = 100;break;
+			//case SimpleTypes::shdDiagCross             : type_shading = 2;	break;
+			//case SimpleTypes::shdDiagStripe            : type_shading = 3;	break;
+			//case SimpleTypes::shdHorzCross             : type_shading = 4;	break;
+			//case SimpleTypes::shdHorzStripe            : type_shading = 6;	break;
+			//case SimpleTypes::shdReverseDiagStripe     : type_shading = 7;	break;
+			//case SimpleTypes::shdThinDiagCross         : type_shading = 8;	break;
+			//case SimpleTypes::shdThinDiagStripe        : type_shading = 9;	break;
+			//case SimpleTypes::shdThinHorzCross         : type_shading = 10;	break;
+			//case SimpleTypes::shdThinHorzStripe        : type_shading = 11;	break;
+			//case SimpleTypes::shdThinReverseDiagStripe : type_shading = 12;	break;
+			//case SimpleTypes::shdThinVertStripe        : type_shading = 13;	break;
+			//case SimpleTypes::shdVertStripe            : type_shading = 14;	break;
+			}
+		}
+		if (type_shading != 0)
+		{
+			_CP_OPT(odf_types::color) odf_color;
+			convert(oox_paragraph_pr->m_oShd->m_oFill.GetPointer(), oox_paragraph_pr->m_oShd->m_oThemeFill.GetPointer(),
+				oox_paragraph_pr->m_oShd->m_oThemeFillTint.GetPointer(), oox_paragraph_pr->m_oShd->m_oThemeShade.GetPointer(), odf_color);
+			if (odf_color)
+				paragraph_properties->content_.fo_background_color_ = *odf_color;
+		}
 	}
 	if (oox_paragraph_pr->m_oTextDirection.IsInit() && oox_paragraph_pr->m_oTextDirection->m_oVal.IsInit())
 	{

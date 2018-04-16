@@ -407,7 +407,10 @@ namespace DocFileFormat
 
         return AddPart( mapping, L"word", fileName, VMLPictureMapping::GetContentType( blipType ), OpenXmlRelationshipTypes::Image );
 	}
-
+	int OpenXmlPackage::RegisterHyperlink(const IMapping* mapping, const std::wstring& link)
+	{
+        return AddPart(mapping, L"", link, L"", OpenXmlRelationshipTypes::Hyperlink, L"External");
+	}
 	int OpenXmlPackage::RegisterOLEObject(const IMapping* mapping, const std::wstring& objectType)
 	{
         std::wstring fileName = ( std::wstring( L"embeddings/oleObject" ) + FormatUtils::IntToWideString( ++_oleCounter ) + OleObjectMapping::GetTargetExt(objectType));

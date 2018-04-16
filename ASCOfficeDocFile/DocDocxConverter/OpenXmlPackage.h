@@ -178,6 +178,7 @@ namespace DocFileFormat
 		int RegisterEndnotes();
 		int RegisterComments();
 		int RegisterImage			( const IMapping* mapping, Global::BlipType blipType );
+		int RegisterHyperlink		( const IMapping* mapping, const std::wstring& link);
 		int RegisterOLEObject		( const IMapping* mapping, const std::wstring& objectType );
 		int RegisterPackage			( const IMapping* mapping, const std::wstring& objectType);
 		int RegisterExternalOLEObject( const IMapping* mapping, const std::wstring& objectType, const std::wstring& uri );

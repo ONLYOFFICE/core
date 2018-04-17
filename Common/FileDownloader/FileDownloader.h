@@ -32,7 +32,7 @@
 #pragma once
 
 #include <string>
-#include "kernel_config.h"
+#include "../kernel_config.h"
 
 class CFileDownloader_private;
 class KERNEL_DECL CFileDownloader

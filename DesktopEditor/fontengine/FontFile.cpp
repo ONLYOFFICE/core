@@ -1829,3 +1829,24 @@ bool CFontFile::IsBold()
 
 	return ((m_pFace->style_flags & FT_STYLE_FLAG_BOLD) != 0) ? true : false;
 }
+
+bool CFontFile::IsSymbolic(bool bIsOS2Check)
+{
+    if (!m_pFace)
+        return false;
+
+    bool bIsSymbol = (-1 != m_nSymbolic) ? true : false;
+
+    if (!bIsSymbol && bIsOS2Check)
+    {
+        TT_OS2* pOS2 = (TT_OS2*)FT_Get_Sfnt_Table(m_pFace, ft_sfnt_os2);
+
+        if (NULL != pOS2)
+        {
+            if (0 == (pOS2->ulCodePageRange1 & 0xF0000000))
+                bIsSymbol = true;
+        }
+    }
+
+    return bIsSymbol;
+}

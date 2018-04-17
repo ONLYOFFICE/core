@@ -460,6 +460,8 @@ namespace NSFonts
         virtual bool IsItalic() = 0;
         virtual bool IsBold() = 0;
 
+        virtual bool IsSymbolic(bool bIsOS2Check = false) = 0;
+
         virtual int IsUnicodeRangeAvailable(unsigned long ulBit, unsigned int un4ByteIndex) = 0;
     };
 
@@ -577,6 +579,7 @@ namespace NSFonts
     public:
 		virtual std::vector<NSFonts::CFontInfo*>* GetFonts() = 0;
         virtual CFontInfo* GetByParams(CFontSelectFormat& oSelect, bool bIsDictionaryUse = true) = 0;
+        virtual void ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory = L"", bool bIsOnlyFileName = false) = 0;
     };
 
     class GRAPHICS_DECL IApplicationFonts

@@ -271,8 +271,10 @@ public:
 	// path
     NSFonts::IFontPath* GetGlyphPath(int nCode);
 
-	bool IsItalic();
-	bool IsBold();
+    virtual bool IsItalic();
+    virtual bool IsBold();
+
+    virtual bool IsSymbolic(bool bIsOS2Check = false);
 };
 
 //-------------------------------------------------------------------------------------------------------------------------------

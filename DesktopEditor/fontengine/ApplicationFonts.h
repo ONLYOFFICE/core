@@ -112,7 +112,7 @@ private:
 
 public:
     static EFontFormat GetFontFormat(FT_Face pFace);
-    void ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory = L"", bool bIsOnlyFileName = false);
+    virtual void ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory = L"", bool bIsOnlyFileName = false);
 
 public:
 	void LoadFromArrayFiles (std::vector<std::wstring>& arrFiles, int nFlag = 0);

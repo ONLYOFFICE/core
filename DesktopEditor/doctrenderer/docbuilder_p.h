@@ -759,8 +759,8 @@ namespace NSDoctRenderer
 
             if (!bIsEqual || bIsCheckSystemFonts)
             {
-                CApplicationFonts oApplicationF;
-                std::vector<std::wstring> strFontsW_Cur = oApplicationF.GetSetupFontFiles();
+                NSFonts::IApplicationFonts* pApplicationF;
+                std::vector<std::wstring> strFontsW_Cur = pApplicationF->GetSetupFontFiles();
 
                 if (strFonts.size() != strFontsW_Cur.size())
                     bIsEqual = false;
@@ -798,9 +798,11 @@ namespace NSDoctRenderer
                     }
                     oFile.CloseFile();
 
-                    oApplicationF.InitializeFromArrayFiles(strFontsW_Cur, 2);
-                    NSCommon::SaveAllFontsJS(oApplicationF, strAllFontsJSPath, L"", strFontsSelectionBin);
+                    pApplicationF->InitializeFromArrayFiles(strFontsW_Cur, 2);
+                    NSCommon::SaveAllFontsJS(pApplicationF, strAllFontsJSPath, L"", strFontsSelectionBin);
                 }
+
+                RELEASEOBJECT(pApplicationF);
             }
         }
 

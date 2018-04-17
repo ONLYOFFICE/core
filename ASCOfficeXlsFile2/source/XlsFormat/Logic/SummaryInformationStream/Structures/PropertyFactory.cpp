@@ -59,11 +59,11 @@ PropertyPtr PropertyFactory::ReadProperty(const unsigned int prop_type, XLS::CFS
             return PropertyPtr(new PropertyCodePage(prop_type, value_type, stream));
  		default:
 		{
-			if (value_type == 0x001E)
+/*			if (value_type == 0x001E)
 			{
 				return PropertyPtr(new PropertyStr(prop_type, value_type, stream));
 			}
-			else if (value_type == 0x0003)
+			else */if (value_type == 0x0003)
 			{
 				return PropertyPtr(new PropertyInt(prop_type, value_type, stream));
 			}

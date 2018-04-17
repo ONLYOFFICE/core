@@ -32,8 +32,6 @@ DEFINES += \
     MNG_STORE_CHUNKS\
     MNG_ERROR_TELLTALE
 
-DEFINES += STRING_EXT_NO_CODEPAGES
-
 core_linux {
     DEFINES += \
     HAVE_UNISTD_H
@@ -121,7 +119,6 @@ SOURCES += \
     ./../GraphicsRenderer.cpp \
     ./../Image.cpp \
     ./../MetafileToRenderer.cpp \
-    ./../../raster/Metafile.cpp \
     \
     ./../../fontengine/ApplicationFonts.cpp \
     ./../../fontengine/FontFile.cpp \

@@ -37,7 +37,7 @@
 
 #include <sstream>
 
-#include "../../OfficeUtils/src/zlib-1.2.3/zlib.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
 #define DEFLATE_BUF_SIZ  ((int)(STREAM_BUF_SIZ * 1.1) + 13)
 
@@ -363,39 +363,34 @@ namespace PdfWriter
 	{
 		unsigned long nRet = OK;
 
-		z_stream pZStream;
-		Bytef inbuf[STREAM_BUF_SIZ];
-		Bytef otbuf[DEFLATE_BUF_SIZ];
+        CDeflate ZStream;
+        BYTE inbuf[STREAM_BUF_SIZ];
+        BYTE otbuf[DEFLATE_BUF_SIZ];
 		BYTE ebuf[DEFLATE_BUF_SIZ];
 
 		// initialize input stream
 		pStream->Seek(0, SeekSet);
 
 		// initialize decompression stream.
-		MemSet(&pZStream, 0x00, sizeof(z_stream));
-		pZStream.next_out  = otbuf;
-		pZStream.avail_out = DEFLATE_BUF_SIZ;
+        ZStream.SetOut(otbuf, DEFLATE_BUF_SIZ);
+        ZStream.Init(DEFLATE_DEFAULT_COMPRESSION, -1);
+        ZStream.SetIn(inbuf, 0);
 
-		deflateInit_(&pZStream, Z_DEFAULT_COMPRESSION, ZLIB_VERSION, sizeof(z_stream));
-
-		pZStream.next_in  = inbuf;
-		pZStream.avail_in = 0;
 		for (;;)
 		{
 			unsigned int unSize = STREAM_BUF_SIZ;
 			pStream->Read(inbuf, &unSize);
 
-			pZStream.next_in  = inbuf;
-			pZStream.avail_in = unSize;
+            ZStream.SetIn(inbuf, unSize);
 
 			if (0 == unSize)
 				break;
 
-			while (pZStream.avail_in > 0)
+            while (ZStream.GetAvailIn() > 0)
 			{
-				deflate(&pZStream, Z_NO_FLUSH);
+                ZStream.Process(DEFLATE_NO_FLUSH);
 
-				if (pZStream.avail_out == 0)
+                if (ZStream.GetAvailOut() == 0)
 				{
 					if (pEncrypt)
 					{
@@ -405,8 +400,7 @@ namespace PdfWriter
 					else
 						Write(otbuf, DEFLATE_BUF_SIZ);
 
-					pZStream.next_out  = otbuf;
-					pZStream.avail_out = DEFLATE_BUF_SIZ;
+                    ZStream.SetOut(otbuf, DEFLATE_BUF_SIZ);
 				}
 			}
 		}
@@ -414,19 +408,19 @@ namespace PdfWriter
 		bool bEnd = false;
 		for (;;)
 		{
-			nRet = deflate(&pZStream, Z_FINISH);
-			if (Z_OK != nRet && Z_STREAM_END != nRet)
+            nRet = ZStream.Process(DEFLATE_FINISH);
+            if (DEFLATE_OK != nRet && DEFLATE_STREAM_END != nRet)
 			{
-				deflateEnd(&pZStream);
+                ZStream.End();
 				return;
 			}
 
-			if (Z_STREAM_END == nRet)
+            if (DEFLATE_STREAM_END == nRet)
 				bEnd = true;
 
-			if (pZStream.avail_out < DEFLATE_BUF_SIZ)
+            if (ZStream.GetAvailOut() < DEFLATE_BUF_SIZ)
 			{
-				unsigned int osize = DEFLATE_BUF_SIZ - pZStream.avail_out;
+                unsigned int osize = DEFLATE_BUF_SIZ - ZStream.GetAvailOut();
 				if (pEncrypt)
 				{
 					pEncrypt->CryptBuf(otbuf, ebuf, osize);
@@ -435,15 +429,14 @@ namespace PdfWriter
 				else
 					Write(otbuf, osize);
 
-				pZStream.next_out  = otbuf;
-				pZStream.avail_out = DEFLATE_BUF_SIZ;
+                ZStream.SetOut(otbuf, DEFLATE_BUF_SIZ);
 			}
 
 			if (bEnd)
 				break;
 		}
 
-		deflateEnd(&pZStream);
+        ZStream.End();
 	}
 	void           CStream::WriteStream(CStream* pStream, unsigned int unFilter, CEncrypt *pEncrypt)
 	{

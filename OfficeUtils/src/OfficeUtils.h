@@ -57,4 +57,41 @@ public:
 
 };
 
+#define DEFLATE_OK            0
+#define DEFLATE_STREAM_END    1
+
+#define DEFLATE_NO_FLUSH      0
+#define DEFLATE_PARTIAL_FLUSH 1 /* will be removed, use Z_SYNC_FLUSH instead */
+#define DEFLATE_SYNC_FLUSH    2
+#define DEFLATE_FULL_FLUSH    3
+#define DEFLATE_FINISH        4
+#define DEFLATE_BLOCK         5
+
+#define DEFLATE_NO_COMPRESSION         0
+#define DEFLATE_BEST_SPEED             1
+#define DEFLATE_BEST_COMPRESSION       9
+#define DEFLATE_DEFAULT_COMPRESSION  (-1)
+
+class CDeflate_private;
+class KERNEL_DECL CDeflate
+{
+private:
+    CDeflate_private* m_internal;
+
+public:
+    CDeflate();
+    ~CDeflate();
+
+public:
+    void SetIn(BYTE* next_in, UINT avail_in, ULONG total_in = -1);
+    void SetOut(BYTE* next_out, UINT avail_out, ULONG total_out = -1);
+
+    UINT GetAvailIn();
+    UINT GetAvailOut();
+
+    void Init(int level, int stream_size = -1);
+    int Process(int flush);
+    void End();
+};
+
 #endif

@@ -75,6 +75,7 @@ namespace NSImages
     }
     CPixJbig2::~CPixJbig2()
     {
+        Destroy();
         RELEASEOBJECT(m_internal);
     }
 
@@ -98,6 +99,65 @@ namespace NSImages
     void* CPixJbig2::native()
     {
         return (void*)m_internal->m_pix;
+    }
+
+    class CJbig2Context_private
+    {
+    public:
+        jbig2ctx* m_context;
+
+    public:
+        CJbig2Context_private()
+        {
+            m_context = NULL;
+        }
+        ~CJbig2Context_private()
+        {
+        }
+    };
+
+    CJbig2Context::CJbig2Context()
+    {
+        m_internal = new CJbig2Context_private();
+    }
+    CJbig2Context::~CJbig2Context()
+    {
+        Destroy();
+        RELEASEOBJECT(m_internal);
+    }
+
+    bool CJbig2Context::IsInit()
+    {
+        return (m_internal->m_context != NULL) ? true : false;
+    }
+
+    void CJbig2Context::Init(float thresh, float weight, int xres, int yres, bool full_headers, int refine_level)
+    {
+        m_internal->m_context = jbig2_init(thresh, weight, xres, yres, full_headers, refine_level);
+    }
+
+    BYTE* CJbig2Context::PagesComplete(int* const length)
+    {
+        return jbig2_pages_complete(m_internal->m_context, length);
+    }
+
+    BYTE* CJbig2Context::ProducePage(int page_no, int xres, int yres, int *const length)
+    {
+        return jbig2_produce_page(m_internal->m_context, page_no, xres, yres, length);
+    }
+
+    void CJbig2Context::AddPage(CPixJbig2* pix)
+    {
+        jbig2_add_page(m_internal->m_context, (Pix*)pix->native());
+    }
+
+    void CJbig2Context::Destroy()
+    {
+        if (!m_internal->m_context)
+            return;
+
+        jbig2_destroy(m_internal->m_context);
+        m_internal->m_context = NULL;
     }
 }
 

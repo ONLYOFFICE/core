@@ -33,9 +33,7 @@
 #define _PDF_WRITER_SRC_IMAGE_H
 
 #include "Objects.h"
-
-struct jbig2ctx;
-struct Pix;
+#include "../../DesktopEditor/graphics/pro/Image.h"
 
 namespace PdfWriter
 {
@@ -68,8 +66,8 @@ namespace PdfWriter
 		void LoadSMask(const BYTE* pBgra, unsigned int unWidth, unsigned int unHeight, unsigned char lAlpha = 255, bool bVerFlip = false);
 		void LoadSMask(const BYTE* pBuffer, unsigned int unSize, unsigned int unWidth, unsigned int unHeight);
 		void LoadBW(const BYTE* pImage, unsigned int unWidth, unsigned int unHeight, unsigned int unStride);
-		void LoadBW(Pix* pPix, unsigned int unWidth, unsigned int unHeight);
-		void LoadMask(Pix* pPix, unsigned int unWidth, unsigned int unHeight);
+        void LoadBW(NSImages::CPixJbig2* pPix, unsigned int unWidth, unsigned int unHeight);
+        void LoadMask(NSImages::CPixJbig2* pPix, unsigned int unWidth, unsigned int unHeight);
 
 	private:
 
@@ -86,15 +84,15 @@ namespace PdfWriter
 		CJbig2Global(CXref* pXref);
 		~CJbig2Global();
 		void AddImage(const BYTE* pImage, unsigned int unWidth, unsigned int unHeight, unsigned int unStride, CStream* pImageStream);
-		void AddImage(Pix* pPix, CStream* pImageStream);
+        void AddImage(NSImages::CPixJbig2* pPix, CStream* pImageStream);
 		void FlushStreams();
 		int  GetImagesCount();
 
 	private:
 
-		CXref*                m_pXref;
-		jbig2ctx*             m_pContext;
-		std::vector<CStream*> m_vImages;
+        CXref*                  m_pXref;
+        NSImages::CJbig2Context m_pContext;
+        std::vector<CStream*>   m_vImages;
 	};
 }
 

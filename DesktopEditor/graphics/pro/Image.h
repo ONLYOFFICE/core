@@ -89,6 +89,24 @@ namespace NSImages
         void Destroy();
         void* native();
     };
+
+    class CJbig2Context_private;
+    class GRAPHICS_DECL CJbig2Context
+    {
+    private:
+        CJbig2Context_private* m_internal;
+
+    public:
+        CJbig2Context();
+        ~CJbig2Context();
+
+        bool IsInit();
+        void Init(float thresh, float weight, int xres, int yres, bool full_headers, int refine_level);
+        BYTE* PagesComplete(int* const length);
+        BYTE* ProducePage(int page_no, int xres, int yres, int *const length);
+        void AddPage(CPixJbig2* pix);
+        void Destroy();
+    };
 }
 
 namespace MetaFile

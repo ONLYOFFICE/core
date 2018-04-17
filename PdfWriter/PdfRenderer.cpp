@@ -44,9 +44,8 @@
 #include "../DesktopEditor/graphics/structures.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/raster/ImageFileFormatChecker.h"
-#include "../DesktopEditor/fontengine/ApplicationFonts.h"
-#include "../DesktopEditor/fontengine/FontManager.h"
-#include "../DesktopEditor/raster/Metafile/MetaFile.h"
+#include "../DesktopEditor/graphics/pro/Fonts.h"
+#include "../DesktopEditor/graphics/pro/Image.h"
 
 #include "OnlineOfficeBinToPdf.h"
 
@@ -487,7 +486,7 @@ CPdfRenderer::CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts) : m_oCommandMa
 
 	// Создаем менеджер шрифтов с собственным кэшем
 	m_pFontManager = pAppFonts->GenerateFontManager();
-	CFontsCache* pMeasurerCache = new CFontsCache();
+    NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
 	pMeasurerCache->SetStreams(pAppFonts->GetStreams());
 	m_pFontManager->SetOwnerCache(pMeasurerCache);
 
@@ -1350,12 +1349,14 @@ HRESULT CPdfRenderer::DrawImageFromFile(const std::wstring& wsImagePath, const d
 	if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_EMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_SVM == oImageFormat.eFileType)
 	{
 		// TODO: Реализовать отрисовку метафайлов по-нормальному
-		MetaFile::CMetaFile oMeta(m_pAppFonts);
-		oMeta.LoadFromFile(wsImagePath.c_str());
+        MetaFile::IMetaFile* pMeta = MetaFile::Create(m_pAppFonts);
+        pMeta->LoadFromFile(wsImagePath.c_str());
 
 		double dNewW = std::max(10.0, dW) / 25.4 * 300;
 		std::wstring wsTempFile = GetTempFile();
-		oMeta.ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
+        pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
+
+        RELEASEOBJECT(pMeta);
 
 		pAggImage = new Aggplus::CImage(wsTempFile);
 	}
@@ -1452,7 +1453,7 @@ HRESULT CPdfRenderer::DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const uns
 	UpdateTransform();
 	
 	CImageDict* pPdfImage = m_pDocument->CreateImage();
-    pPdfImage->LoadBW((Pix*)pImageBuffer->native(), unWidth, unHeight);
+    pPdfImage->LoadBW(pImageBuffer, unWidth, unHeight);
 	m_pPage->DrawImage(pPdfImage, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH));
 
 	m_pPage->GrRestore();
@@ -1485,7 +1486,7 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbi
 	m_pPage->GrSave();
 	UpdateTransform();
 	CImageDict* pPdfImage = LoadImage((Aggplus::CImage*)pImage, 255);
-    pPdfImage->LoadMask((Pix*)pMaskBuffer->native(), unMaskWidth, unMaskHeight);
+    pPdfImage->LoadMask(pMaskBuffer, unMaskWidth, unMaskHeight);
 	m_pPage->DrawImage(pPdfImage, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH));
 	m_pPage->GrRestore();
 	return S_OK;
@@ -1753,8 +1754,8 @@ void CPdfRenderer::UpdateBrush()
 		else if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_EMF == oImageFormat.eFileType || _CXIMAGE_FORMAT_SVM == oImageFormat.eFileType)
 		{
 			// TODO: Реализовать отрисовку метафайлов по-нормальному
-			MetaFile::CMetaFile oMeta(m_pAppFonts);
-			oMeta.LoadFromFile(wsTexturePath.c_str());
+            MetaFile::IMetaFile* pMeta = MetaFile::Create(m_pAppFonts);
+            pMeta->LoadFromFile(wsTexturePath.c_str());
 
 			double dL, dR, dT, dB;
 			m_oPath.GetBounds(dL, dT, dR, dB);
@@ -1762,7 +1763,9 @@ void CPdfRenderer::UpdateBrush()
 			double dNewW = std::max(10.0, dR - dL) / 72 * 300;
 
 			std::wstring wsTempFile = GetTempFile();
-			oMeta.ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
+            pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
+
+            RELEASEOBJECT(pMeta);
 
 			Aggplus::CImage oImage(wsTempFile);
 			nImageW = abs((int)oImage.GetWidth());

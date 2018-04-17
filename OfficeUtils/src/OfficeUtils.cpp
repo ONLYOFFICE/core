@@ -163,3 +163,67 @@ HRESULT COfficeUtils::GetFilesSize(const std::wstring& zipFile, const std::wstri
 		return S_FALSE;
 	}
 }
+
+class CDeflate_private
+{
+public:
+    z_stream m_stream;
+
+public:
+    CDeflate_private()
+    {
+        memset(&m_stream, 0x00, sizeof(z_stream));
+    }
+};
+
+CDeflate::CDeflate()
+{
+    m_internal = new CDeflate_private();
+}
+CDeflate::~CDeflate()
+{
+    delete m_internal;
+}
+
+void CDeflate::SetIn(BYTE* next_in, UINT avail_in, ULONG total_in)
+{
+    m_internal->m_stream.next_in = next_in;
+    m_internal->m_stream.avail_in = avail_in;
+
+    if (-1 != total_in)
+        m_internal->m_stream.total_in = total_in;
+}
+
+void CDeflate::SetOut(BYTE* next_out, UINT avail_out, ULONG total_out)
+{
+    m_internal->m_stream.next_out = next_out;
+    m_internal->m_stream.avail_out = avail_out;
+
+    if (-1 != total_out)
+        m_internal->m_stream.total_out = total_out;
+}
+
+UINT CDeflate::GetAvailIn()
+{
+    return m_internal->m_stream.avail_in;
+}
+
+UINT CDeflate::GetAvailOut()
+{
+    return m_internal->m_stream.avail_out;
+}
+
+void CDeflate::Init(int level, int stream_size)
+{
+    deflateInit_(&m_internal->m_stream, level, ZLIB_VERSION, (stream_size == -1) ? sizeof(z_stream) : stream_size);
+}
+
+int CDeflate::Process(int flush)
+{
+    return deflate(&m_internal->m_stream, flush);
+}
+
+void CDeflate::End()
+{
+    deflateEnd(&m_internal->m_stream);
+}

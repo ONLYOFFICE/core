@@ -3774,11 +3774,9 @@ namespace PdfReader
 		memset(m_arrInBuffer, 0, flateZlibWindow);
 		memset(m_arrBuffer, 0, flateZlibWindow);
 
-		m_oZStream.zalloc = Z_NULL;
-		m_oZStream.zfree  = Z_NULL;
-		m_oZStream.opaque = Z_NULL;
+        m_oZStream.ClearFuncs();
 
-		inflateInit(&m_oZStream);
+        m_oZStream.Init();
 	}
 
 	FlateZlibStream::~FlateZlibStream()
@@ -3789,7 +3787,7 @@ namespace PdfReader
 		}
 		delete m_pStream;
 
-		inflateEnd(&m_oZStream);
+        m_oZStream.End();
 	}
 
 	void FlateZlibStream::Reset()
@@ -3800,14 +3798,9 @@ namespace PdfReader
 		m_bEndOfBlock = true;
 		m_bEOF        = true;
 
-
-		inflateEnd(&m_oZStream);
-
-		m_oZStream.zalloc = Z_NULL;
-		m_oZStream.zfree  = Z_NULL;
-		m_oZStream.opaque = Z_NULL;
-
-		inflateInit(&m_oZStream);
+        m_oZStream.End();
+        m_oZStream.ClearFuncs();
+        m_oZStream.Init();
 
 		m_pStream->Reset();
 
@@ -3911,27 +3904,25 @@ namespace PdfReader
 				m_arrInBuffer[unIndex] = nChar;
 			}
 
-			m_oZStream.avail_in = unInSize;
-			m_oZStream.next_in  = (Bytef *)m_arrInBuffer;
+            m_oZStream.SetIn(m_arrInBuffer, unInSize);
 
 			m_bEndOfBlock = false;
 		}
 
-		m_oZStream.avail_out = flateZlibWindow;
-		m_oZStream.next_out  = (Bytef *)m_arrBuffer;
+        m_oZStream.SetOut(m_arrBuffer, flateZlibWindow);
 
-		int nRet = inflate(&m_oZStream, Z_NO_FLUSH);
+        int nRet = m_oZStream.Process(DEFLATE_NO_FLUSH);
 
-		if (nRet == Z_DATA_ERROR || nRet == Z_MEM_ERROR)
+        if (nRet == DEFLATE_DATA_ERROR || nRet == DEFLATE_MEM_ERROR)
 		{
 			m_nRemain = 0;
 			m_bEOF = m_bEndOfBlock = true;
 			return;
 		}
 
-		m_nRemain = flateZlibWindow - m_oZStream.avail_out;
+        m_nRemain = flateZlibWindow - m_oZStream.GetAvailOut();
 
-		if (m_oZStream.avail_out != 0)
+        if (m_oZStream.GetAvailOut() != 0)
 			m_bEndOfBlock = true;
 
 		return;

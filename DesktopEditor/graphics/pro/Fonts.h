@@ -558,6 +558,8 @@ namespace NSFonts
         virtual std::wstring GetFontType() = 0;
         virtual void SetSubpixelRendering(const bool& hmul, const bool& vmul) = 0;
 
+        virtual unsigned int GetNameIndex(const std::wstring& wsName) = 0;
+
     public:
         static IFontFile* LoadFontFile(CLibrary& library, IFontStream* pStream, int lFaceIndex);
     };

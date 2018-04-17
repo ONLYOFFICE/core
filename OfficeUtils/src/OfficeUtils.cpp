@@ -227,3 +227,75 @@ void CDeflate::End()
 {
     deflateEnd(&m_internal->m_stream);
 }
+
+///////////////////////////////////////////
+class CInflate_private
+{
+public:
+    z_stream m_stream;
+
+public:
+    CInflate_private()
+    {
+        memset(&m_stream, 0x00, sizeof(z_stream));
+    }
+};
+
+CInflate::CInflate()
+{
+    m_internal = new CInflate_private();
+}
+CInflate::~CInflate()
+{
+    delete m_internal;
+}
+
+void CInflate::SetIn(BYTE* next_in, UINT avail_in, ULONG total_in)
+{
+    m_internal->m_stream.next_in = next_in;
+    m_internal->m_stream.avail_in = avail_in;
+
+    if (-1 != total_in)
+        m_internal->m_stream.total_in = total_in;
+}
+
+void CInflate::SetOut(BYTE* next_out, UINT avail_out, ULONG total_out)
+{
+    m_internal->m_stream.next_out = next_out;
+    m_internal->m_stream.avail_out = avail_out;
+
+    if (-1 != total_out)
+        m_internal->m_stream.total_out = total_out;
+}
+
+UINT CInflate::GetAvailIn()
+{
+    return m_internal->m_stream.avail_in;
+}
+
+UINT CInflate::GetAvailOut()
+{
+    return m_internal->m_stream.avail_out;
+}
+
+void CInflate::Init()
+{
+    inflateInit(&m_internal->m_stream);
+}
+
+int CInflate::Process(int flush)
+{
+    return inflate(&m_internal->m_stream, flush);
+}
+
+void CInflate::End()
+{
+    inflateEnd(&m_internal->m_stream);
+}
+
+void CInflate::ClearFuncs()
+{
+    m_internal->m_stream.zalloc = Z_NULL;
+    m_internal->m_stream.zfree  = Z_NULL;
+    m_internal->m_stream.opaque = Z_NULL;
+}

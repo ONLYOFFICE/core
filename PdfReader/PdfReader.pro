@@ -23,8 +23,6 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel -lgraphics
 
 core_windows {
 
-DEFINES -= NOMINMAX
-
 LIBS += -lgdi32 \
         -ladvapi32 \
         -luser32 \

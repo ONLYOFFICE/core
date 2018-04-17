@@ -28,8 +28,6 @@ DEFINES -= \
     UNICODE \
     _UNICODE
 
-DEFINES += NOMINMAX
-
 core_linux {
     DEFINES += \
     HAVE_UNISTD_H \

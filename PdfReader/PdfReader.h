@@ -41,6 +41,7 @@
 
 #include "Src/ErrorConstants.h"
 #include "../DesktopEditor/common/officedrawingfile.h"
+#include "../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace PdfReader
 {
@@ -49,7 +50,7 @@ namespace PdfReader
 	{
 	public:
 
-        CPdfReader(CApplicationFonts* fonts);
+        CPdfReader(NSFonts::IApplicationFonts* fonts);
         virtual ~CPdfReader();
 
         virtual bool LoadFromFile(const std::wstring& file, const std::wstring& options = L"",
@@ -73,7 +74,7 @@ namespace PdfReader
 		int          GetImagesCount();
 
         void         SetCMapFolder(const wchar_t* wsCMapFolder);
-		CFontManager*GetFontManager();
+        NSFonts::IFontManager* GetFontManager();
 				     
 	private:
         CPdfReader_Private* m_pInternal;

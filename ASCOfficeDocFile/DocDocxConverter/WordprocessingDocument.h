@@ -39,6 +39,7 @@ namespace DocFileFormat
 	{
 		friend class Converter;
 		friend class MainDocumentMapping;
+		friend class DocumentMapping;
 		friend class CommandTableMapping;
 		friend class StyleSheetMapping;
 		friend class NumberingMapping;

@@ -40,14 +40,14 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		class CСalcPr : public WritingElement
-		{
-		public:
-			WritingElement_AdditionConstructors(CСalcPr)
-			CСalcPr()
+    class CCalcPr : public WritingElement
+    {
+    public:
+        WritingElement_AdditionConstructors(CCalcPr)
+            CCalcPr()
 			{
 			}
-			virtual ~CСalcPr()
+            virtual ~CCalcPr()
 			{
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)

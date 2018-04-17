@@ -43,10 +43,10 @@
 
 @property (strong) NSString* password;
 @property (assign) BOOL isNoBase64;
-@property (strong) NSString* delimiter;
+@property (strong) NSNumber* delimiter;
 @property (assign) NSNumber* encoding;
 
-+ (NSArray *)delimiters;
++ (NSArray <NSString *> *)delimiters;
 + (NSArray <Encoding *> *)encodingings;
 
 - (int)sdk_docx2doct_bin:(NSString*)nsFrom nsTo:(NSString*)nsTo nsTemp:(NSString*)nsTemp nsFontPath:(NSString*)nsFontPath;

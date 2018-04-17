@@ -1632,7 +1632,7 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
         }
-		void WriteCalcPr(const OOX::Spreadsheet::CСalcPr& CCalcPr)
+        void WriteCalcPr(const OOX::Spreadsheet::CCalcPr& CCalcPr)
 		{
 			int nCurPos = 0;
 			if(CCalcPr.m_oCalcId.IsInit())

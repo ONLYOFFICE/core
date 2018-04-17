@@ -55,6 +55,14 @@ struct TBBox
     float fMaxY;
 };
 
+struct TBBoxAdvance
+{
+    TBBox box;
+
+    float fAdvanceX;
+    float fAdvanceY;
+};
+
 namespace NSFonts
 {
     class CFontSelectFormat
@@ -524,7 +532,7 @@ namespace NSFonts
         virtual int LoadString3C(const int& gid, const float& fX, const float& fY) = 0;
         virtual int LoadString2C(const int& wsBuffer, const float& fX, const float& fY) = 0;
 
-        virtual TBBox MeasureChar2(const LONG& lUnicode) = 0;
+        virtual TBBoxAdvance MeasureChar2(const LONG& lUnicode) = 0;
         virtual TBBox MeasureString() = 0;
         virtual TBBox MeasureString2() = 0;
 

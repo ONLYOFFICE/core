@@ -192,7 +192,7 @@ public:
 
     virtual TFontCacheSizes MeasureChar(const LONG& lUnicode);
 
-    virtual TBBox MeasureChar2(const LONG& lUnicode);
+    virtual TBBoxAdvance MeasureChar2(const LONG& lUnicode);
     virtual TBBox MeasureString();
     virtual TBBox MeasureString2();
 	

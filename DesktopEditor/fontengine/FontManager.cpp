@@ -399,12 +399,17 @@ TFontCacheSizes CFontManager::MeasureChar(const LONG &lUnicode)
 	return m_pFont->GetChar(lUnicode);
 }
 
-TBBox CFontManager::MeasureChar2(const LONG& lUnicode)
+TBBoxAdvance CFontManager::MeasureChar2(const LONG& lUnicode)
 {
-    TBBox oBox;
+    TBBoxAdvance ret;
     if (NULL == m_pFont)
-        return oBox;
-    return m_pFont->GetChar(lUnicode).oBBox;
+        return ret;
+
+    TFontCacheSizes sizes = m_pFont->GetChar(lUnicode);
+    ret.box = sizes.oBBox;
+    ret.fAdvanceX = sizes.fAdvanceX;
+    ret.fAdvanceY = sizes.fAdvanceY;
+    return ret;
 }
 
 int CFontManager::GetKerning(UINT unPrevGID, UINT unGID)

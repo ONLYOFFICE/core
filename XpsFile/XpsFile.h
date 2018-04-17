@@ -40,12 +40,13 @@
 #endif
 
 #include "../DesktopEditor/common/officedrawingfile.h"
+#include "../DesktopEditor/graphics/pro/Fonts.h"
 
 class CXpsFile_Private;
 class XPS_DECL_EXPORT CXpsFile : public IOfficeDrawingFile
 {
 public:
-    CXpsFile(CApplicationFonts* fonts);
+    CXpsFile(NSFonts::IApplicationFonts* fonts);
     virtual ~CXpsFile();
 
     virtual bool LoadFromFile(const std::wstring& file, const std::wstring& options = L"",

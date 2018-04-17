@@ -52,6 +52,19 @@ namespace NSCriticalSection
 		void Enter();
 		void Leave();
 	};
+
+    class KERNEL_DECL CRITICAL_SECTION_SMART
+    {
+    private:
+        CRITICAL_SECTION* m_pCS;
+
+    public:
+        CRITICAL_SECTION_SMART();
+        ~CRITICAL_SECTION_SMART();
+
+        void Enter();
+        void Leave();
+    };
 }
 
 class KERNEL_DECL CTemporaryCS

@@ -353,7 +353,7 @@ namespace NSPresentationEditor
 		{
 			if (NULL == m_pFontManager)
 			{
-				m_pFontManager = new CFontManager();
+                m_pFontManager = NSFonts::NSFontManager::Create();
 				m_pFontManager->Initialize();
 			}
 
@@ -375,7 +375,7 @@ namespace NSPresentationEditor
 	public:
 
 		Aggplus::CGraphicsPathSimpleConverter*		m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
-		CFontManager*								m_pFontManager;					// менеджер шрифтов
+        NSFonts::IFontManager*						m_pFontManager;					// менеджер шрифтов
 
 		Aggplus::CMatrix							m_oBaseTransform;	// матрица перерасчета координатных осей (здесь: миллиметры -> пикселы)
 		Aggplus::CMatrix							m_oTransform;		// текущая матрица преобразований рендерера

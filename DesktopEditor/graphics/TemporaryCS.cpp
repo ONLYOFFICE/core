@@ -156,6 +156,27 @@ namespace NSCriticalSection
 		if (NULL != m_pCS)
 			m_pCS->Leave();
 	}
+
+    CRITICAL_SECTION_SMART::CRITICAL_SECTION_SMART()
+    {
+        m_pCS = new CRITICAL_SECTION();
+        m_pCS->InitializeCriticalSection();
+    }
+    CRITICAL_SECTION_SMART::~CRITICAL_SECTION_SMART()
+    {
+        m_pCS->DeleteCriticalSection();
+        RELEASEOBJECT(m_pCS);
+    }
+    void CRITICAL_SECTION_SMART::Enter()
+    {
+        if (NULL != m_pCS)
+            m_pCS->Enter();
+    }
+    void CRITICAL_SECTION_SMART::Leave()
+    {
+        if (NULL != m_pCS)
+            m_pCS->Leave();
+    }
 }
 
 CTemporaryCS::CTemporaryCS(NSCriticalSection::CRITICAL_SECTION* cs)

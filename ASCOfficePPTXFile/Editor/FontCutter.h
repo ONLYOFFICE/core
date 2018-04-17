@@ -32,8 +32,9 @@
 #pragma once
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "BinReaderWriterDefines.h"
-#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../Common/Base64.h"
+#include "../../DesktopEditor/common/Array.h"
 #include "../../Common/DocxFormat/Source/Base/Nullable.h"
 
 #include <map>
@@ -115,7 +116,7 @@ namespace NSFontCutter
 			m_strEmbeddedFontsFolder = _T("");
 		}
 
-		void CheckFont(const std::wstring& strName, CFontManager* pManager)
+		void CheckFont(const std::wstring& strName, NSFonts::IFontManager* pManager)
 		{
 			std::map<std::wstring, CEmbeddedFontInfo>::const_iterator pPair = m_mapFontsEmbeddded.find(strName);
 			if (pPair != m_mapFontsEmbeddded.end())
@@ -124,10 +125,10 @@ namespace NSFontCutter
 			CEmbeddedFontInfo oInfo;
 			oInfo.Name = strName;
 
-			CArray<CFontInfo*> aFontInfos = pManager->GetAllStylesByFontName(strName);
-			for(int i = 0; i < aFontInfos.GetCount(); ++i)
+			std::vector<NSFonts::CFontInfo*> aFontInfos = pManager->GetAllStylesByFontName(strName);
+			for(std::vector<NSFonts::CFontInfo*>::iterator i = aFontInfos.begin(); i != aFontInfos.end(); i++)
 			{
-				CFontInfo* pFontInfo = aFontInfos[i];
+				NSFonts::CFontInfo* pFontInfo = *i;
                 if(0 != pFontInfo->m_bBold && 0 != pFontInfo->m_bItalic)
 				{
 					oInfo.PathBoldItalic = std::wstring(pFontInfo->m_wsFontPath.c_str());

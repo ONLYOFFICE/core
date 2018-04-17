@@ -29,6 +29,11 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
+#if defined(CreateDirectory)
+#undef CreateDirectory
+#endif
+
 #ifndef _BUILD_DIRECTORY_CROSSPLATFORM_H_
 #define _BUILD_DIRECTORY_CROSSPLATFORM_H_
 
@@ -47,10 +52,6 @@
 		#define FILE_SEPARATOR_CHAR '/'
         #define FILE_SEPARATOR_STR L"/"
 	#endif
-#endif
-
-#if defined(CreateDirectory)
-#undef CreateDirectory
 #endif
 
 #include "../../Common/kernel_config.h"

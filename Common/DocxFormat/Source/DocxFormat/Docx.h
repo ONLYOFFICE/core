@@ -86,12 +86,7 @@ namespace OOX
             //return false;
 
 			// Создаем папку
-#if defined(_WIN32) || defined (_WIN64)
-			CreateDirectoryW( oFilePath.GetPath().c_str(), NULL );
-#else
-            std::string sFileParthUtf8 = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(oFilePath.GetPath());
-            mkdir (sFileParthUtf8.c_str(),  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-#endif
+			NSDirectory::CreateDirectory(oFilePath.GetPath());
 
 			OOX::CRels         oRels;
 			OOX::CContentTypes oContent;

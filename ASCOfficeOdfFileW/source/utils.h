@@ -43,8 +43,6 @@
 #include "../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../ASCOfficeOdfFile/src/docx/measuredigits.h"
 
-class CFontManager;
-
 namespace _graphics_utils_
 {
         bool static GetResolution(const wchar_t* fileName, double & Width, double &Height) //pt
@@ -137,7 +135,7 @@ namespace _graphics_utils_
 #endif
 		return result;
 	}
-        double	static calculate_size_symbol_asc(std::wstring name, double size, bool italic, bool bold , CApplicationFonts *appFonts)
+		double	static calculate_size_symbol_asc(std::wstring name, double size, bool italic, bool bold , NSFonts::IApplicationFonts *appFonts)
 	{
             std::pair<float,float> val = cpdoccore::utils::GetMaxDigitSizePixels(name, size, 96., 0 , appFonts);
 

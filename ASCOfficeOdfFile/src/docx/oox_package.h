@@ -42,7 +42,10 @@
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../../DesktopEditor/common/Directory.h"
 
-class CApplicationFonts;
+namespace NSFonts
+{
+    class IApplicationFonts;
+}
 
 namespace cpdoccore { 
 namespace oox {
@@ -202,14 +205,14 @@ private:
 class media : public element
 {
 public:
-    media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts);
+    media(mediaitems & _Mediaitems, NSFonts::IApplicationFonts *pAppFonts);
 
 public:
     virtual void write(const std::wstring & RootPath);
 
 private:
     mediaitems			& mediaitems_;
-	CApplicationFonts	* appFonts_;
+    NSFonts::IApplicationFonts	* appFonts_;
         
 };
 

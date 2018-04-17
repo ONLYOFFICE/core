@@ -52,11 +52,11 @@ namespace DocWrapper {
 	{
 	}
 	
-	void FontProcessor::setFontManager(CFontManager* pFontManager)
+    void FontProcessor::setFontManager(NSFonts::IFontManager* pFontManager)
 	{
 		m_pFontManager = pFontManager;
 	}
-	CFontManager* FontProcessor::getFontManager()
+    NSFonts::IFontManager* FontProcessor::getFontManager()
 	{
 		return m_pFontManager;
 	}
@@ -88,7 +88,7 @@ namespace DocWrapper {
 	
 	std::wstring FontProcessor::getFont(const NSCommon::nullable<OOX::Spreadsheet::CFontScheme>& oScheme, const NSCommon::nullable<ComplexTypes::Spreadsheet::String>& oRFont, const NSCommon::nullable<OOX::Spreadsheet::CCharset>& oCharset, const NSCommon::nullable<OOX::Spreadsheet::CFontFamily >& oFamily, PPTX::Theme* pTheme)
 	{
-		CFontSelectFormat oFontSelectFormat;
+        NSFonts::CFontSelectFormat oFontSelectFormat;
         std::wstring sFontName;
 		if(NULL != pTheme && oScheme.IsInit() && oScheme->m_oFontScheme.IsInit())
 		{
@@ -125,7 +125,7 @@ namespace DocWrapper {
 		}
 
         std::wstring sRes;
-		CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
+        NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
 		if(NULL != pFontInfo)
 			sRes = pFontInfo->m_wsFontName;
 		else
@@ -135,7 +135,7 @@ namespace DocWrapper {
 	}
 	void FontProcessor::addToFontMap(OOX::CFont& font)
 	{
-		CFontSelectFormat oFontSelectFormat;
+        NSFonts::CFontSelectFormat oFontSelectFormat;
         std::wstring sFontName;
 
         if(font.m_sName.empty())
@@ -221,7 +221,7 @@ namespace DocWrapper {
 			*oFontSelectFormat.ulCodeRange2 = ulCodeRange2;
 		}
 
-		CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
+        NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
 		if(NULL != pFontInfo)
 			fontMap[sFontName] = pFontInfo->m_wsFontName;
 		else

@@ -5648,7 +5648,7 @@ smart_ptr<OOX::IFileContainer> CDrawingConverter::GetRels()
 {
 	return *m_pBinaryWriter->m_pCurrentContainer;
 }
-void CDrawingConverter::SetFontManager(CFontManager* pFontManager)
+void CDrawingConverter::SetFontManager(NSFonts::IFontManager* pFontManager)
 {
 	if(NULL != m_pBinaryWriter && NULL != m_pBinaryWriter->m_pCommon && NULL != m_pBinaryWriter->m_pCommon->m_pMediaManager)
 	{

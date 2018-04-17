@@ -38,11 +38,11 @@ core_windows {
 }
 
 INCLUDEPATH += \
-    ../../../../DesktopEditor/freetype-2.5.2/include \
     ../../../../Common/ASCDocxFormat/Source/Utility \
     ../../../../Common/ASCDocxFormat/Source/XML \
-    ../../../../Common/ASCDocxFormat/Source \
-    ../../../../DesktopEditor/xml/libxml2/include
+    ../../../../Common/ASCDocxFormat/Source
+
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel -lgraphics
 
 core_release {
 SOURCES += \

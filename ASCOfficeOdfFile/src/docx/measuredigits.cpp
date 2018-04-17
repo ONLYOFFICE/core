@@ -36,8 +36,7 @@
 
 #include <float.h>
 
-#include "../../DesktopEditor/fontengine/FontManager.h"
-#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace cpdoccore {
 namespace utils {
@@ -49,7 +48,7 @@ namespace
     class MeasureError : public Error {};
 }
 
-std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, CFontManager *pFontManager)
+std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, NSFonts::IFontManager *pFontManager)
 {
     if (pFontManager == NULL) return std::pair<float, float>(7,8);
 
@@ -102,7 +101,7 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
 }
 
 
-std::pair<float, float> GetMaxDigitSizePixels(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, CApplicationFonts *appFonts)
+std::pair<float, float> GetMaxDigitSizePixels(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, NSFonts::IApplicationFonts *appFonts)
 {
     try 
     {
@@ -110,13 +109,12 @@ std::pair<float, float> GetMaxDigitSizePixels(const std::wstring & fontName, dou
 
         if (appFonts)
         {
-            CFontManager *pFontManager = appFonts->GenerateFontManager();
+            NSFonts::IFontManager *pFontManager = appFonts->GenerateFontManager();
 
             std::pair<float, float> val = GetMaxDigitSizePixelsImpl(fontName, fontSize, dpi, fontStyle, pFontManager);
 
             if (pFontManager)
-            {
-                pFontManager->m_pApplication = NULL;
+            {                
                 delete pFontManager;
             }
 

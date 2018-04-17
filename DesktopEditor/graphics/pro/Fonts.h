@@ -463,6 +463,10 @@ namespace NSFonts
         virtual bool IsSymbolic(bool bIsOS2Check = false) = 0;
 
         virtual int IsUnicodeRangeAvailable(unsigned long ulBit, unsigned int un4ByteIndex) = 0;
+
+        virtual void CheckTextMatrix() = 0;
+        virtual bool SetTextMatrix(const double& fA, const double& fB, const double& fC, const double fD, double fE, double fF) = 0;
+        virtual void SetFontMatrix(const double& fA, const double& fB, const double& fC, const double fD, double fE, double fF) = 0;
     };
 
     namespace NSFontFile

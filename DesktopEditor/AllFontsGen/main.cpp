@@ -32,8 +32,7 @@
 #include <iostream>
 #include <set>
 
-#include "../fontengine/ApplicationFonts.h"
-#include "../graphics/GraphicsRenderer.h"
+#include "../graphics/pro/Graphics.h"
 #include "../common/File.h"
 #include "../common/Directory.h"
 #include "../graphics/Timer.h"

@@ -60,7 +60,7 @@ namespace odf_writer {
 namespace utils
 {
 
-double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name, double font_size, CApplicationFonts *appFonts)
+double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name, double font_size, NSFonts::IApplicationFonts *appFonts)
 {
     double appr_px = _graphics_utils_::calculate_size_symbol_asc(font_name, font_size, false, false, appFonts);
 	

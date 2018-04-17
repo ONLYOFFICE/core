@@ -36,7 +36,7 @@
 #include <map>
 #include <string>
 
-#include "../../DesktopEditor/common/StringBuilder.h"
+#include "../../common/StringBuilder.h"
 
 namespace XmlUtils
 {
@@ -271,6 +271,9 @@ public:
 		void WriteAttribute(const std::wstring& strAttributeName, int nValue, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = (L""));
 		void WriteAttribute(const std::wstring& strAttributeName, double dValue);
 	};
+
+	std::wstring KERNEL_DECL GetNameNoNS(const std::wstring & strNodeName);
+	std::wstring KERNEL_DECL GetNamespace(const std::wstring& strNodeName);
 }
 
 #endif // _BUILD_XMLUTILS_CROSSPLATFORM_H_

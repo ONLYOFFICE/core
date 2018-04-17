@@ -504,7 +504,7 @@ void ppt_files::add_notesMaster(slide_content_ptr slide)
 {
     notesMaster_files_.add_slide(slide);
 }
-void ppt_files::set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts)
+void ppt_files::set_media(mediaitems & _Mediaitems, NSFonts::IApplicationFonts *pAppFonts)
 {
 	if (_Mediaitems.count_image + _Mediaitems.count_media > 0)
 	{

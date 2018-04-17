@@ -33,8 +33,7 @@
 #define FONT_TABLE_WRITER
 
 #include "../../XlsxSerializerCom/Common/Common.h"
-#include "../../DesktopEditor/fontengine/FontManager.h"
-#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include <boost/unordered_map.hpp>
 
 namespace Writers
@@ -46,32 +45,28 @@ namespace Writers
 	{
         XmlUtils::CStringWriter	m_oWriter;
         std::wstring            m_sDir;
-        CApplicationFonts       m_oApplicationFonts;
-        CFontManager*           m_pFontManager;
+        NSFonts::IApplicationFonts* m_pApplicationFonts;
+        NSFonts::IFontManager*      m_pFontManager;
 	public:
         boost::unordered_map<std::wstring, int> m_mapFonts;
 
 		FontTableWriter(std::wstring sDir, std::wstring sFontDir, bool bNoFontDir):m_sDir(sDir)
 		{
+            m_pApplicationFonts = NSFonts::NSApplication::Create();
 			m_pFontManager = NULL;
 			if(!bNoFontDir)
 			{
                 if(sFontDir.empty())
-					m_oApplicationFonts.Initialize();
+                    m_pApplicationFonts->Initialize();
 				else
-					m_oApplicationFonts.InitializeFromFolder(sFontDir);
-				CFontList* pFontList = m_oApplicationFonts.GetList();
-				if(NULL != pFontList)
-				{
-					std::wstring sDefaultFont(_T("Arial"));
-					pFontList->SetDefaultFont(sDefaultFont);
-				}
-				m_pFontManager = m_oApplicationFonts.GenerateFontManager();
+                    m_pApplicationFonts->InitializeFromFolder(sFontDir);
+                m_pFontManager = m_pApplicationFonts->GenerateFontManager();
 			}
 		}
 		~FontTableWriter()
 		{
 			RELEASEOBJECT(m_pFontManager);
+            RELEASEOBJECT(m_pApplicationFonts);
 		}
 
 		void Write()
@@ -116,11 +111,11 @@ namespace Writers
 			bool bUsePanose = false;
 			if(NULL != m_pFontManager)
 			{
-				CFontSelectFormat oFontSelectFormat;
+                NSFonts::CFontSelectFormat oFontSelectFormat;
 				oFontSelectFormat.wsName = new std::wstring;
                 *oFontSelectFormat.wsName = sFontName;
 
-				CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
+                NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
 				if(NULL != pFontInfo)
 				{
 					for (size_t i = 0; i < 10; ++i)

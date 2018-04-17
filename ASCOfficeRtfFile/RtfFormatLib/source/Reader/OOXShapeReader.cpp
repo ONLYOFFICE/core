@@ -2141,16 +2141,17 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 	{
 		if (pOutput.eDataType == RtfPicture::dt_emf || pOutput.eDataType == RtfPicture::dt_wmf)
 		{
-			MetaFile::CMetaFile meta(NULL);
-			if (meta.LoadFromFile(sPath.c_str()))
+            MetaFile::IMetaFile* meta = MetaFile::Create(NULL);
+            if (meta->LoadFromFile(sPath.c_str()))
 			{
 				double dX, dY, dW, dH;
-				meta.GetBounds(&dX, &dY, &dW, &dH);
-				meta.Close();
+                meta->GetBounds(&dX, &dY, &dW, &dH);
+                meta->Close();
 				
 				pOutput.m_nWidthGoal	= (int)(dW * 15);  //pixels to twip 
 				pOutput.m_nHeightGoal	= (int)(dH * 15);  //pixels to twip;
 			}
+            RELEASEOBJECT(meta);
 			//Запоминаем только имя
 			pOutput.m_sPicFilename = sPath;
 			pOutput.m_bIsCopy = false; //не удалять 

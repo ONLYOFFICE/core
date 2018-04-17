@@ -35,8 +35,6 @@
 #include "../../PdfWriter/OnlineOfficeBinToPdf.h"
 #include "cextracttools.h"
 
-#include "../../DesktopEditor/common/Path.h"
-#include "../../DesktopEditor/common/Directory.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../../Common/3dParty/pole/pole.h"
 
@@ -52,7 +50,7 @@
 #include "../../ASCOfficeOdfFileW/source/Oox2OdfConverter/Oox2OdfConverter.h"
 #include "../../DesktopEditor/doctrenderer/doctrenderer.h"
 #include "../../DesktopEditor/doctrenderer/docbuilder.h"
-#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
 #include "../../PdfReader/PdfReader.h"
 #include "../../PdfReader/Src/ErrorConstants.h"
@@ -63,19 +61,22 @@
 #include "../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ConvertXls2Xlsx.h"
 #include "../../OfficeCryptReader/source/ECMACryptFile.h"
 
+#include "../../DesktopEditor/common/Path.h"
+#include "../../DesktopEditor/common/Directory.h"
+
 #include <iostream>
 #include <fstream>
 
 namespace NExtractTools
 {
-    void initApplicationFonts(CApplicationFonts& oApplicationFonts, InputParams& params)
+    void initApplicationFonts(NSFonts::IApplicationFonts* pApplicationFonts, InputParams& params)
     {
 		std::wstring sFontPath = params.getFontPath();
         
 		if(sFontPath.empty())
-            oApplicationFonts.Initialize();
+            pApplicationFonts->Initialize();
         else
-            oApplicationFonts.InitializeFromFolder(sFontPath);
+            pApplicationFonts->InitializeFromFolder(sFontPath);
     }
 	std::wstring getExtentionByRasterFormat(int format)
 	{
@@ -1122,72 +1123,76 @@ namespace NExtractTools
 	// bin -> pdf
 	int bin2pdf (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
 	{
-		CApplicationFonts oApplicationFonts;
-		initApplicationFonts(oApplicationFonts, params);
-		CPdfRenderer pdfWriter(&oApplicationFonts);
+        NSFonts::IApplicationFonts* pApplicationFonts;
+        initApplicationFonts(pApplicationFonts, params);
+        CPdfRenderer pdfWriter(pApplicationFonts);
 		pdfWriter.SetTempFolder(sTemp);
 		pdfWriter.SetThemesPlace(sThemeDir);
 		int nReg = (bPaid == false) ? 0 : 1;
+        int nRet = 0;
 		if (params.getIsNoBase64())
 		{
-			return S_OK == pdfWriter.OnlineWordToPdfFromBinary(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+            nRet = S_OK == pdfWriter.OnlineWordToPdfFromBinary(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 		else
 		{
-			return S_OK == pdfWriter.OnlineWordToPdf(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+            nRet = S_OK == pdfWriter.OnlineWordToPdf(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
+        RELEASEOBJECT(pApplicationFonts);
+        return nRet;
 	}
 	int bin2image (const std::wstring &sTFileDir, BYTE* pBuffer, LONG lBufferLen, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams& params)
 	{
 		long nRes = 0;
-		CApplicationFonts oApplicationFonts;
-		initApplicationFonts(oApplicationFonts, params);
+        NSFonts::IApplicationFonts* pApplicationFonts;
+        initApplicationFonts(pApplicationFonts, params);
 		NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
-		imageWriter.wsHtmlPlace = sTFileDir;
-		imageWriter.wsThemesPlace = sThemeDir;
-		imageWriter.wsTempDir = sTemp;
-		imageWriter.appFonts = &oApplicationFonts;
+        imageWriter.SetHtmlPlace(sTFileDir);
+        imageWriter.SetThemesPlace(sThemeDir);
+        imageWriter.SetTempDir(sTemp);
+        imageWriter.SetApplication(pApplicationFonts);
 		if(NULL != params.m_oThumbnail)
 		{
 			InputParamsThumbnail* oThumbnail = params.m_oThumbnail;
 			if(NULL != oThumbnail->format)
 			{
-				imageWriter.m_nRasterFormat = *oThumbnail->format;
+                imageWriter.SetRasterFormat(*oThumbnail->format);
 			}
 			if(NULL != oThumbnail->aspect)
 			{
-				imageWriter.m_nSaveType = *oThumbnail->aspect;
+                imageWriter.SetSaveType(*oThumbnail->aspect);
 			}
 			if(NULL != oThumbnail->first)
 			{
-				imageWriter.m_bIsOnlyFirst = *oThumbnail->first;
+                imageWriter.SetIsOnlyFirst(*oThumbnail->first);
 			}
 			if(NULL != oThumbnail->width)
 			{
-				imageWriter.m_nRasterW = *oThumbnail->width;
+                imageWriter.SetRasterW(*oThumbnail->width);
 			}
 			if(NULL != oThumbnail->height)
 			{
-				imageWriter.m_nRasterH = *oThumbnail->height;
+                imageWriter.SetRasterH(*oThumbnail->height);
 			}
 		}
 		std::wstring sThumbnailDir;
-		if(imageWriter.m_bIsOnlyFirst)
+        if(imageWriter.GetIsOnlyFirst())
 		{
-			imageWriter.m_sFileName = sTo;
+            imageWriter.SetFileName(sTo);
 		}
 		else
 		{
 			sThumbnailDir = sTemp + FILE_SEPARATOR_STR + L"thumbnails";
 			NSDirectory::CreateDirectory(sThumbnailDir);
-			imageWriter.m_sFileName = sThumbnailDir + FILE_SEPARATOR_STR + L"image" + getExtentionByRasterFormat(imageWriter.m_nRasterFormat);
+            imageWriter.SetFileName(sThumbnailDir + FILE_SEPARATOR_STR + L"image" + getExtentionByRasterFormat(imageWriter.GetRasterFormat()));
 		}
 		nRes = imageWriter.ConvertBuffer(pBuffer, lBufferLen) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-		if(!imageWriter.m_bIsOnlyFirst)
+        if(!imageWriter.GetIsOnlyFirst())
 		{
 			COfficeUtils oCOfficeUtils(NULL);
 			nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 		}
+        RELEASEOBJECT(pApplicationFonts);
 		return nRes;
 	}
 	int bin2imageBase64 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams& params)
@@ -1251,13 +1256,14 @@ namespace NExtractTools
        }
        else
        {
-           CApplicationFonts oApplicationFonts;
-           initApplicationFonts(oApplicationFonts, params);
-           CPdfRenderer pdfWriter(&oApplicationFonts);
+           NSFonts::IApplicationFonts* pApplicationFonts;
+           initApplicationFonts(pApplicationFonts, params);
+           CPdfRenderer pdfWriter(pApplicationFonts);
            pdfWriter.SetTempFolder(sTemp);
            pdfWriter.SetThemesPlace(sThemeDir);
            int nReg = (bPaid == false) ? 0 : 1;
            nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sPdfBinFile, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+           RELEASEOBJECT(pApplicationFonts);
        }
        //удаляем sPdfBinFile, потому что он не в Temp
        if (NSFile::CFileBinary::Exists(sPdfBinFile))
@@ -2796,13 +2802,14 @@ namespace NExtractTools
                            {
                                sFilePathOut += _T(".pdf");
 
-                               CApplicationFonts oApplicationFonts;
-                               initApplicationFonts(oApplicationFonts, params);
-                               CPdfRenderer pdfWriter(&oApplicationFonts);
+                               NSFonts::IApplicationFonts* pApplicationFonts;
+                               initApplicationFonts(pApplicationFonts, params);
+                               CPdfRenderer pdfWriter(pApplicationFonts);
                                pdfWriter.SetTempFolder(sTemp);
                                pdfWriter.SetThemesPlace(sThemeDir);
                                int nReg = (bPaid == false) ? 0 : 1;
                                nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sFilePathIn, sFilePathOut)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+                               RELEASEOBJECT(pApplicationFonts);
                            }
                            else if (NSDoctRenderer::DoctRendererFormat::FormatFile::HTML == eTypeTo)
                            {
@@ -2822,7 +2829,7 @@ namespace NExtractTools
        }
        return nRes;
    }
-	int PdfDjvuXpsToRenderer(IOfficeDrawingFile** ppReader, IRenderer* pRenderer, const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, CApplicationFonts* pApplicationFonts)
+    int PdfDjvuXpsToRenderer(IOfficeDrawingFile** ppReader, IRenderer* pRenderer, const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, NSFonts::IApplicationFonts* pApplicationFonts)
    {
        int nRes = 0;
        IOfficeDrawingFile* pReader = NULL;
@@ -2899,7 +2906,7 @@ namespace NExtractTools
        return nRes;
    }
 
-	int PdfDjvuXpsToImage(IOfficeDrawingFile** ppReader, const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, CApplicationFonts* pApplicationFonts)
+    int PdfDjvuXpsToImage(IOfficeDrawingFile** ppReader, const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, NSFonts::IApplicationFonts* pApplicationFonts)
 	{
 		int nRes = 0;
 		IOfficeDrawingFile* pReader = NULL;
@@ -3630,8 +3637,8 @@ namespace NExtractTools
 	int fromCrossPlatform(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
    {
        int nRes = 0;
-       CApplicationFonts oApplicationFonts;
-       initApplicationFonts(oApplicationFonts, params);
+       NSFonts::IApplicationFonts* pApplicationFonts;
+       initApplicationFonts(pApplicationFonts, params);
        if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
        {
            if(nFormatFrom == nFormatTo)
@@ -3640,10 +3647,10 @@ namespace NExtractTools
            }
            else
            {
-               CPdfRenderer pdfWriter(&oApplicationFonts);
+               CPdfRenderer pdfWriter(pApplicationFonts);
                pdfWriter.SetTempFolder(sTemp);
                IOfficeDrawingFile* pReader = NULL;
-               nRes = PdfDjvuXpsToRenderer(&pReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, params, &oApplicationFonts);
+               nRes = PdfDjvuXpsToRenderer(&pReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, params, pApplicationFonts);
                pdfWriter.SaveToFile(sTo);
                RELEASEOBJECT(pReader);
            }
@@ -3659,20 +3666,21 @@ namespace NExtractTools
            NSHtmlRenderer::CASCHTMLRenderer3 oHtmlRenderer;
            oHtmlRenderer.CreateOfficeFile(sToDir);
            IOfficeDrawingFile* pReader = NULL;
-           nRes = PdfDjvuXpsToRenderer(&pReader, &oHtmlRenderer, sFrom, nFormatFrom, sTo, sTemp, params, &oApplicationFonts);
+           nRes = PdfDjvuXpsToRenderer(&pReader, &oHtmlRenderer, sFrom, nFormatFrom, sTo, sTemp, params, pApplicationFonts);
            oHtmlRenderer.CloseFile(params.getIsNoBase64());
            RELEASEOBJECT(pReader);
        }
 	   else if(0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
 	   {
 		   IOfficeDrawingFile* pReader = NULL;
-		   nRes = PdfDjvuXpsToImage(&pReader, sFrom, nFormatFrom, sTo, sTemp, params, &oApplicationFonts);
+           nRes = PdfDjvuXpsToImage(&pReader, sFrom, nFormatFrom, sTo, sTemp, params, pApplicationFonts);
 		   RELEASEOBJECT(pReader);
 	   }
        else
        {
            nRes = AVS_FILEUTILS_ERROR_CONVERT;
        }
+       RELEASEOBJECT(pApplicationFonts);
        return nRes;
    }
 	int fromCanvasPdf(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)

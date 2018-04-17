@@ -45,7 +45,7 @@
 #include "../odf/odfcontext.h"
 #include "../odf/calcs_styles.h"
 
-#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 
 namespace cpdoccore { 
@@ -76,7 +76,7 @@ xlsx_conversion_context::xlsx_conversion_context(odf_reader::odf_document * odfD
 	mediaitems_		(odf_document_->get_folder()),
 	xlsx_drawing_context_handle_(mediaitems_)
 {
-     applicationFonts_ = new CApplicationFonts();
+     applicationFonts_ = NSFonts::NSApplication::Create();
 }
 
 void xlsx_conversion_context::set_output_document (package::xlsx_document * document)

@@ -29,6 +29,18 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#if defined(GetTempPath)
+#undef GetTempPath
+#endif
+
+#if defined(CreateFile)
+#undef CreateFile
+#endif
+
+#if defined(CopyFile)
+#undef CopyFile
+#endif
+
 #ifndef _BUILD_FILE_CROSSPLATFORM_H_
 #define _BUILD_FILE_CROSSPLATFORM_H_
 
@@ -43,14 +55,6 @@
 
 #ifndef MAX_PATH
     #define MAX_PATH 1024
-#endif
-
-#if defined(GetTempPath)
-#undef GetTempPath
-#endif
-
-#if defined(CreateFile)
-#undef CreateFile
 #endif
 
 namespace NSFile

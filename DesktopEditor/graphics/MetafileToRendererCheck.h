@@ -29,59 +29,55 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _BUILD_METAFILE_TO_GRRENDERER_H_
-#define _BUILD_METAFILE_TO_GRRENDERER_H_
+#ifndef _BUILD_METAFILE_TO_IRENDERER_CHECK_H_
+#define _BUILD_METAFILE_TO_IRENDERER_CHECK_H_
 
 #pragma once
 
-#include "./MetafileToRenderer.h"
+#include "MetafileToRenderer.h"
+#include "../common/Array.h"
 
 namespace NSOnlineOfficeBinToPdf
 {
-    class CMetafileToRenderterRaster_private;
-    class GRAPHICS_DECL CMetafileToRenderterRaster : public IMetafileToRenderter
-    {
-    private:
-        CMetafileToRenderterRaster_private* m_internal;
+    class CMetafilePageInfo
+	{
+	public:
+		double width;
+		double height;
 
-    public:
-        CMetafileToRenderterRaster(IRenderer* pRenderer);
-        virtual ~CMetafileToRenderterRaster();
+		BYTE* data;
 
-    public:
-        virtual std::wstring GetImagePath(const std::wstring& sImagePath);
-        bool ConvertBuffer(BYTE* pBuffer, LONG lBufferLen);
+	public:
+		CMetafilePageInfo()
+		{
+			width = 0;
+			height = 0;
 
-    public:
-        std::wstring GetHtmlPlace();
-        void SetHtmlPlace(const std::wstring& value);
+			data = NULL;
+		}
+	};
 
-        std::wstring GetThemesPlace();
-        void SetThemesPlace(const std::wstring& value);
+	class CMetafilePagesInfo
+	{
+	public:
+		int PagesCount;
+		CArray<CMetafilePageInfo> arSizes;
 
-        std::wstring GetTempDir();
-        void SetTempDir(const std::wstring& value);
+	public:
+		CMetafilePagesInfo()
+		{
+			PagesCount = 0;
+		}
 
-        std::wstring GetFileName();
-        void SetFileName(const std::wstring& value);
+	public:
+		inline void AddPage()
+		{
+			++PagesCount;
+			arSizes.Add();
+		}
 
-        void SetApplication(NSFonts::IApplicationFonts* pFonts);
-
-        int GetRasterFormat();
-        void SetRasterFormat(const int& value);
-
-        int GetSaveType();
-        void SetSaveType(const int& value);
-
-        int GetRasterW();
-        void SetRasterW(const int& value);
-
-        int GetRasterH();
-        void SetRasterH(const int& value);
-
-        bool GetIsOnlyFirst();
-        void SetIsOnlyFirst(const bool& value);
+        void CheckBuffer(BYTE* pBuffer, LONG lBufferLen);
     };
 }
 
-#endif // _BUILD_METAFILE_TO_GRRENDERER_H_
+#endif // _BUILD_METAFILE_TO_IRENDERER_H_

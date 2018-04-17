@@ -36,6 +36,8 @@
 
 #include <cpdoccore/utf8cpp/utf8.h>
 
+#include "../../../DesktopEditor/common/Directory.h"
+
 namespace cpdoccore { 
 namespace oox {
 namespace package {
@@ -275,7 +277,7 @@ void xl_files::add_sheet(sheet_content_ptr sheet)
     sheets_files_.add_sheet(sheet);
 }
 
-void xl_files::set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts)
+void xl_files::set_media(mediaitems & _Mediaitems, NSFonts::IApplicationFonts *pAppFonts)
 {
 	if (_Mediaitems.count_image + _Mediaitems.count_media > 0)
 	{

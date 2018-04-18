@@ -13,15 +13,9 @@ DESTDIR = $$PWD/../../build/bin/AllFontsGen
 
 TARGET = $$CORE_BUILDS_PLATFORM_PREFIX
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lgraphics -lOfficeUtils -lUnicodeConverter
-
-DEFINES += \
-    _QT \
-    FT2_BUILD_LIBRARY
-
-INCLUDEPATH += \
-    ../agg-2.4/include \
-    ../freetype-2.5.2/include
+DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
+DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lgraphics -lkernel -lUnicodeConverter
 
 core_windows {
     DEFINES += \

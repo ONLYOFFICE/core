@@ -467,6 +467,8 @@ namespace NSFonts
         virtual void CheckTextMatrix() = 0;
         virtual bool SetTextMatrix(const double& fA, const double& fB, const double& fC, const double fD, double fE, double fF) = 0;
         virtual void SetFontMatrix(const double& fA, const double& fB, const double& fC, const double fD, double fE, double fF) = 0;
+
+        virtual int SetCMapForCharCode(long lUnicode, int *pnCMapIndex) = 0;
     };
 
     namespace NSFontFile

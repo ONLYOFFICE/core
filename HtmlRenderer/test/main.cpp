@@ -41,7 +41,7 @@
 
 #include "../../DesktopEditor/raster/BgraFrame.h"
 
-//#include "../include/ASCSVGWriter.h"
+#include "../include/ASCSVGWriter.h"
 
 //#define RASTER_TEST
 //#define METAFILE_TEST
@@ -65,15 +65,16 @@ int main(int argc, char *argv[])
 #ifdef METAFILE_TEST
 
     NSHtmlRenderer::CASCSVGWriter oWriterSVG;
-    oWriterSVG.SetFontManager(oFonts.GenerateFontManager());
+    NSFonts::IFontManager* pManager = pFonts->GenerateFontManager();
+    oWriterSVG.SetFontManager(pManager);
 
-    MetaFile::CMetaFile oMetafile(&oFonts);
+    MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
 
-    //oMetafile.LoadFromFile(L"D:\\2\\ppt\\media\\image4.wmf");
-    oMetafile.LoadFromFile(L"/home/oleg/activex/1/image2.wmf");
+    //pMetafile->LoadFromFile(L"D:\\2\\ppt\\media\\image4.wmf");
+    pMetafile->LoadFromFile(L"/home/oleg/activex/1/image2.wmf");
 
     double x = 0, y = 0, w = 0, h = 0;
-    oMetafile.GetBounds(&x, &y, &w, &h);
+    pMetafile->GetBounds(&x, &y, &w, &h);
 
     double _max = (w >= h) ? w : h;
     double dKoef = 100000.0 / _max;
@@ -83,10 +84,12 @@ int main(int argc, char *argv[])
 
     oWriterSVG.put_Width(WW);
     oWriterSVG.put_Height(HH);
-    oMetafile.DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
+    pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
 
     oWriterSVG.SaveFile(L"/home/oleg/activex/1/oleg.svg");
 
+    RELEASEOBJECT(pMetafile);
+    RELEASEINTERFACE(pManager);
     RELEASEOBJECT(pFonts);
     return 0;
 

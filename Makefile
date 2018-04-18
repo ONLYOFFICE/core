@@ -81,7 +81,6 @@ XPSFILE := $(LIBDIR)/$(LIB_PREFIX)XpsFile$(SHARED_EXT)
 HTMLFILE := $(LIBDIR)/$(LIB_PREFIX)HtmlFile$(SHARED_EXT)
 UNICODECONVERTER := $(LIBDIR)/$(LIB_PREFIX)UnicodeConverter$(SHARED_EXT)
 ASCDOCUMENTSCORE := $(LIBDIR)/$(LIB_PREFIX)ascdocumentscore$(SHARED_EXT)
-LIBXML := $(LIBDIR)/$(LIB_PREFIX)libxml$(LIB_EXT)
 LICENSEMANAGER := $(LIBDIR)/$(LIB_PREFIX)LicenceManager$(LIB_EXT)
 OOXMLSIGNATURE := $(LIBDIR)/$(LIB_PREFIX)ooxmlsignature$(LIB_EXT)
 HUNSPELL := $(LIBDIR)/$(LIB_PREFIX)hunspell$(SHARED_EXT)
@@ -111,7 +110,6 @@ TARGETS += $(XPSFILE)
 TARGETS += $(HTMLFILE)
 TARGETS += $(UNICODECONVERTER)
 TARGETS += $(ASCDOCUMENTSCORE)
-TARGETS += $(LIBXML)
 TARGETS += $(LICENSEMANAGER)
 TARGETS += $(OOXMLSIGNATURE)
 TARGETS += $(HUNSPELL)
@@ -132,7 +130,7 @@ PDFWRITER_PRO := $(abspath PdfWriter/PdfWriter.pro)
 ASCOFFICEDOCXFILE2LIB_PRO := $(abspath ASCOfficeDocxFile2/Linux/ASCOfficeDocxFile2Lib.pro)
 PPTXFORMATLIB_PRO := $(abspath ASCOfficePPTXFile/PPTXLib/Linux/PPTXFormatLib/PPTXFormatLib.pro)
 DOCXFORMATLIB_PRO := $(abspath Common/DocxFormat/DocxFormatLib/DocxFormatLib.pro)
-GRAPHICS_PRO := $(abspath DesktopEditor/Qt_build/graphics/project/graphics.pro)
+GRAPHICS_PRO := $(abspath DesktopEditor/graphics/pro/graphics.pro)
 DOCTRENDERER_PRO := $(abspath DesktopEditor/doctrenderer/doctrenderer.pro)
 HTMLRENDERER_PRO := $(abspath HtmlRenderer/htmlrenderer.pro)
 PDFREADER_PRO := $(abspath PdfReader/PdfReader.pro)
@@ -141,7 +139,6 @@ XPSFILE_PRO := $(abspath XpsFile/XpsFile.pro)
 HTMLFILE_PRO := $(abspath HtmlFile/HtmlFile.pro)
 UNICODECONVERTER_PRO := $(abspath UnicodeConverter/UnicodeConverter.pro)
 ASCDOCUMENTSCORE_PRO := $(abspath ../desktop-sdk/ChromiumBasedEditors/lib/AscDocumentsCore_$(PLATFORM).pro)
-LIBXML_PRO := $(abspath DesktopEditor/xml/build/qt/libxml2.pro)
 LICENSEMANAGER_PRO := $(abspath LicenceManager/linux/LicenseManager.pro)
 OOXMLSIGNATURE_PRO := $(abspath DesktopEditor/xmlsec/src/ooxmlsignature.pro)
 HUNSPELL_PRO := $(abspath DesktopEditor/hunspell-1.3.3/src/qt/hunspell.pro)
@@ -193,7 +190,6 @@ QT_PROJ += XPSFILE
 QT_PROJ += HTMLFILE
 QT_PROJ += UNICODECONVERTER
 QT_PROJ += ASCDOCUMENTSCORE
-QT_PROJ += LIBXML
 QT_PROJ += LICENSEMANAGER
 QT_PROJ += OOXMLSIGNATURE
 QT_PROJ += HUNSPELL
@@ -220,7 +216,6 @@ QT_PROJ += KERNEL
 # X2T_DEP += $(UNICODECONVERTER)
 
 HTMLFILEINTERNAL_DEP += $(GRAPHICS)
-HTMLFILEINTERNAL_DEP += $(LIBXML)
 HTMLFILEINTERNAL_DEP += $(UNICODECONVERTER)
 
 XPSFILE_DEP += $(PDFWRITER)
@@ -262,11 +257,8 @@ ASCDOCUMENTSCORE_DEP += $(PDFREADER)
 ASCDOCUMENTSCORE_DEP += $(DJVUFILE)
 ASCDOCUMENTSCORE_DEP += $(XPSFILE)
 #ASCDOCUMENTSCORE_DEP += $(LICENSEMANAGER)
-ASCDOCUMENTSCORE_DEP += $(LIBXML)
 ASCDOCUMENTSCORE_DEP += $(OOXMLSIGNATURE)
 ASCDOCUMENTSCORE_DEP += $(HUNSPELL)
-
-OOXMLSIGNATURE_DEP += $(LIBXML)
 
 PDFREADER_DEP += $(HTMLRENDERER)
 PDFREADER_DEP += $(UNICODECONVERTER)
@@ -276,9 +268,6 @@ PDFREADER_DEP += $(GRAPHICS)
 PDFWRITER_DEP += $(UNICODECONVERTER)
 PDFWRITER_DEP += $(KERNEL)
 PDFWRITER_DEP += $(GRAPHICS)
-PDFWRITER_DEP += $(LIBXML)
-
-KERNEL_DEP += $(LIBXML)
 
 ARCHIVE := ./$(PACKAGE_NAME)$(ARCH_EXT)
 
@@ -357,10 +346,6 @@ $(ASCDOCUMENTSCORE): $(ASCDOCUMENTSCORE_DEP)
 $(PDFREADER): $(PDFREADER_DEP)
 
 $(PDFWRITER): $(PDFWRITER_DEP)
-
-$(KERNEL): $(KERNEL_DEP)
-
-$(OOXMLSIGNATURE): $(OOXMLSIGNATURE_DEP)
 
 %.build/Makefile: %.pro
 	mkdir -p $(dir $@) && cd $(dir $@) && qmake -r $<

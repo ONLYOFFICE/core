@@ -1123,7 +1123,7 @@ namespace NExtractTools
 	// bin -> pdf
 	int bin2pdf (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
 	{
-        NSFonts::IApplicationFonts* pApplicationFonts;
+        NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
         initApplicationFonts(pApplicationFonts, params);
         CPdfRenderer pdfWriter(pApplicationFonts);
 		pdfWriter.SetTempFolder(sTemp);
@@ -1144,7 +1144,7 @@ namespace NExtractTools
 	int bin2image (const std::wstring &sTFileDir, BYTE* pBuffer, LONG lBufferLen, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams& params)
 	{
 		long nRes = 0;
-        NSFonts::IApplicationFonts* pApplicationFonts;
+        NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
         initApplicationFonts(pApplicationFonts, params);
 		NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
         imageWriter.SetHtmlPlace(sTFileDir);
@@ -1256,7 +1256,7 @@ namespace NExtractTools
        }
        else
        {
-           NSFonts::IApplicationFonts* pApplicationFonts;
+           NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
            initApplicationFonts(pApplicationFonts, params);
            CPdfRenderer pdfWriter(pApplicationFonts);
            pdfWriter.SetTempFolder(sTemp);
@@ -2802,7 +2802,7 @@ namespace NExtractTools
                            {
                                sFilePathOut += _T(".pdf");
 
-                               NSFonts::IApplicationFonts* pApplicationFonts;
+                               NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
                                initApplicationFonts(pApplicationFonts, params);
                                CPdfRenderer pdfWriter(pApplicationFonts);
                                pdfWriter.SetTempFolder(sTemp);
@@ -3637,7 +3637,7 @@ namespace NExtractTools
 	int fromCrossPlatform(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
    {
        int nRes = 0;
-       NSFonts::IApplicationFonts* pApplicationFonts;
+       NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
        initApplicationFonts(pApplicationFonts, params);
        if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
        {

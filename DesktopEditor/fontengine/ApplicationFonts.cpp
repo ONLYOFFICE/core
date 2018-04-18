@@ -924,7 +924,7 @@ void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory,
 {
     LONG lDataSize = sizeof(INT);
     size_t nFontsCount = (size_t)m_pList.size();
-    for (std::vector<NSFonts::CFontInfo*>::iterator iter; iter != m_pList.end(); iter++)
+    for (std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++)
     {
         lDataSize += NSFonts::GetBufferLen(*iter, strDirectory, bIsOnlyFileName);
     }
@@ -935,7 +935,7 @@ void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory,
     *(INT*)pDataMem = (INT)nFontsCount;
     pDataMem += sizeof(INT);
 
-    for (std::vector<NSFonts::CFontInfo*>::iterator iter; iter != m_pList.end(); iter++)
+    for (std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++)
     {
         NSFonts::ToBuffer(*iter, pDataMem, strDirectory, bIsOnlyFileName);
     }
@@ -1075,7 +1075,7 @@ NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, 
 std::vector<NSFonts::CFontInfo*> CFontList::GetAllByName(const std::wstring& strFontName)
 {
     std::vector<NSFonts::CFontInfo*> aRes;
-    for (std::vector<NSFonts::CFontInfo*>::iterator iter; iter != m_pList.end(); iter++)
+    for (std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++)
 	{
         NSFonts::CFontInfo* pInfo = *iter;
         if (pInfo->m_wsFontName == strFontName)

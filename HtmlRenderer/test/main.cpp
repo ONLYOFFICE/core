@@ -45,9 +45,9 @@
 
 //#define RASTER_TEST
 //#define METAFILE_TEST
-#define ONLINE_WORD_TO_PDF
+//#define ONLINE_WORD_TO_PDF
 //#define TO_PDF
-//#define TO_HTML_RENDERER
+#define TO_HTML_RENDERER
 //#define ONLY_TEXT
 
 int main(int argc, char *argv[])

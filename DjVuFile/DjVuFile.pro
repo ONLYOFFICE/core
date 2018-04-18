@@ -15,14 +15,11 @@ CORE_ROOT_DIR = $$PWD/..
 PWD_ROOT_DIR = $$PWD
 include(../Common/base.pri)
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfWriter
-
-#UnicodeConverter
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfWriter -lUnicodeConverter
 
 DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
 DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel -lgraphics
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel -lgraphics
 
 DEFINES -= \
     UNICODE \

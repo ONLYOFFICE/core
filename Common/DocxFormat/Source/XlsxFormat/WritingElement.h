@@ -32,7 +32,7 @@
 #pragma once
 
 #include "../DocxFormat/WritingElement.h"
-#include "../../../DesktopEditor/common/StringBuilder.h"
+#include "../../../../DesktopEditor/common/StringBuilder.h"
 
 namespace OOX
 {

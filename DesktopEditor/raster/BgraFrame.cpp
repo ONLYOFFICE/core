@@ -525,5 +525,12 @@ void CBgraFrame::FromImage(IGrObject* pGrObject)
     this->put_Width((int)pImage->GetWidth());
     this->put_Height((int)pImage->GetHeight());
     this->put_Stride((int)pImage->GetStride());
-    this->put_Data(pImage->GetData());
+
+    int nSize = 4 * m_lWidth * m_lHeight;
+
+    if (nSize > 0)
+    {
+        m_pData = new BYTE[nSize];
+        memcpy(m_pData, pImage->GetData(), nSize);
+    }
 }

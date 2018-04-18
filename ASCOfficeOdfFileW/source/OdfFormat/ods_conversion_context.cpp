@@ -30,6 +30,13 @@
  *
  */
 
+#ifndef min
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#endif
+#ifndef max
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#endif
+
 #include <boost/algorithm/string.hpp>
 
 #include "../utils.h"

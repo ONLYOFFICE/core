@@ -126,7 +126,7 @@ void CApplicationFontStreams::Clear()
     for (std::map<std::wstring, CFontStream*>::iterator iter = m_mapStreams.begin(); iter != m_mapStreams.end(); ++iter)
     {
         CFontStream* pFile = iter->second;
-        RELEASEOBJECT(pFile);
+        RELEASEINTERFACE(pFile);
     }
     m_mapStreams.clear();
 }

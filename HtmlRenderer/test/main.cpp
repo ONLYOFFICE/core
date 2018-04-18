@@ -31,7 +31,7 @@
  */
 //#include <QCoreApplication>
 
-#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 #include "../../PdfReader/PdfReader.h"
 #include "../../DjVuFile/DjVu.h"
@@ -39,14 +39,15 @@
 #include "../../PdfWriter/PdfRenderer.h"
 #include "../include/HTMLRenderer3.h"
 
-#include "../include/ASCSVGWriter.h"
-#include "../../DesktopEditor/raster/Metafile/MetaFile.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
+
+//#include "../include/ASCSVGWriter.h"
 
 //#define RASTER_TEST
 //#define METAFILE_TEST
 #define ONLINE_WORD_TO_PDF
-//#define TO_PDF//#define TO_HTML_RENDERER
+//#define TO_PDF
+//#define TO_HTML_RENDERER
 //#define ONLY_TEXT
 
 int main(int argc, char *argv[])
@@ -58,8 +59,8 @@ int main(int argc, char *argv[])
     return 0;
 #endif
 
-    CApplicationFonts oFonts;
-    oFonts.Initialize();
+    NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
+    pFonts->Initialize();
 
 #ifdef METAFILE_TEST
 
@@ -86,14 +87,16 @@ int main(int argc, char *argv[])
 
     oWriterSVG.SaveFile(L"/home/oleg/activex/1/oleg.svg");
 
+    RELEASEOBJECT(pFonts);
     return 0;
 
 #endif
 
 #ifdef ONLINE_WORD_TO_PDF
-    CPdfRenderer oPdfW(&oFonts);
+    CPdfRenderer oPdfW(pFonts);
     oPdfW.SetTempFolder(L"D:\\test\\Document");
     oPdfW.OnlineWordToPdf(L"D:\\test\\123.txt", L"D:\\test\\123.pdf");
+    RELEASEOBJECT(pFonts);
     return 0;
 #endif
 
@@ -109,7 +112,8 @@ int main(int argc, char *argv[])
     std::wstring sFile = L"/home/oleg/GIT/ddd/ZfAvCwDsowJALpClgmE_/source/ZfAvCwDsowJALpClgmE_.pdf";
 #else
     //std::wstring sFile = L"D:\\ddd\\ZfAvCwDsowJALpClgmE_\\source\\ZfAvCwDsowJALpClgmE_.pdf";
-    std::wstring sFile = L"D:\\ddd\\knopk5_0.pdf";
+    //std::wstring sFile = L"D:\\2.pdf";
+    std::wstring sFile = L"D:\\5.xps";
 #endif
 
 #ifdef WIN32
@@ -125,9 +129,9 @@ int main(int argc, char *argv[])
     //std::wstring sDst = L"/home/oleg/activex/1";
 
     IOfficeDrawingFile* pReader = NULL;
-    pReader = new PdfReader::CPdfReader(&oFonts);
-    //pReader = new CDjVuFile(&oFonts);
-    //pReader = new CXpsFile(&oFonts);
+    //pReader = new PdfReader::CPdfReader(pFonts);
+    //pReader = new CDjVuFile(pFonts);
+    pReader = new CXpsFile(pFonts);
 
     pReader->SetTempDirectory(sDst);
     pReader->LoadFromFile(sFile);
@@ -143,7 +147,7 @@ int main(int argc, char *argv[])
     oRenderer.CreateOfficeFile(sDst);
 #endif
 #else
-    CPdfRenderer oRenderer(&oFonts);
+    CPdfRenderer oRenderer(pFonts);
     oRenderer.SetTempFolder(sDst);
 #endif
 
@@ -187,8 +191,9 @@ int main(int argc, char *argv[])
     oRenderer.CloseFile();
 #endif
 #else
-    oRenderer.SaveToFile(L"/home/oleg/activex/1/1.pdf");
+    oRenderer.SaveToFile(L"D:/11.pdf");
 #endif
 
+    RELEASEOBJECT(pFonts);
     return 0;
 }

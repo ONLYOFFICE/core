@@ -1,4 +1,4 @@
-﻿/*
+﻿ /*
  * (c) Copyright Ascensio System SIA 2010-2018
  *
  * This program is a free software product. You can redistribute it and/or
@@ -33,11 +33,11 @@
 
 #include <vector>
 #include <string>
+#include <boost/shared_ptr.hpp>
 
 #include "IdGenerator.h"
 #include "RtfDefine.h"
 
-#include <boost/shared_ptr.hpp>
 #include "../../../ASCOfficeOdfFile/include/cpdoccore/CPOptional.h"
 
 enum _MetricUnits{ mu_none, mu_Auto, mu_Percent, mu_Twips };

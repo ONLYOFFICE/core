@@ -36,6 +36,10 @@
 #include "../Base/SmartPtr.h"
 #include "../SystemUtility/SystemUtility.h"
 
+#ifdef CreateFile
+#undef CreateFile
+#endif
+
 namespace OOX
 {
 	class Document;

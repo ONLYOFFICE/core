@@ -41,6 +41,10 @@
 #undef CopyFile
 #endif
 
+#if defined(DeleteFile)
+#undef DeleteFile
+#endif
+
 #ifndef _BUILD_FILE_CROSSPLATFORM_H_
 #define _BUILD_FILE_CROSSPLATFORM_H_
 

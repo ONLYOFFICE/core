@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../RtfDocument.h"
+#include "../../../../DesktopEditor/common/Directory.h"
 
 class OOXRelsWriter
 {

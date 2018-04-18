@@ -20,8 +20,8 @@ DEFINES += XPS_USE_DYNAMIC_LIBRARY
 DEFINES += DJVU_USE_DYNAMIC_LIBRARY
 DEFINES += HTMLRENDERER_USE_DYNAMIC_LIBRARY
 
-INCLUDEPATH += \
-    ../../DesktopEditor/freetype-2.5.2/include
+DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
+DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
 
 TEMPLATE = app
 
@@ -29,8 +29,8 @@ CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lgraphics
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lOfficeUtils
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel -lgraphics
+
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lHtmlRenderer
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfReader
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDjVuFile
@@ -51,8 +51,7 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     LIBS += -lz
 }
 
-SOURCES += main.cpp \
-    ../src/ASCSVGWriter.cpp
+SOURCES += main.cpp
 
-HEADERS += \
-    ../include/ASCSVGWriter.h
+#SOURCES += ../src/ASCSVGWriter.cpp
+#HEADERS += ../include/ASCSVGWriter.h

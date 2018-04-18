@@ -80,7 +80,7 @@ public:
 	}
 	~CFontList()
 	{
-        for ( std::vector<NSFonts::CFontInfo*>::iterator iter; iter != m_pList.end(); iter++ )
+        for ( std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++ )
 		{
             NSFonts::CFontInfo* pTemp = *iter;
 			RELEASEOBJECT(pTemp);

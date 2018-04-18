@@ -49,8 +49,8 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"type", type);
-				node.ReadAttributeBase(L"cmd", cmd);
+                XmlMacroReadAttributeBase(node, L"type", type);
+                XmlMacroReadAttributeBase(node, L"cmd", cmd);
 
 				cBhvr	= node.ReadNode(_T("p:cBhvr"));
 

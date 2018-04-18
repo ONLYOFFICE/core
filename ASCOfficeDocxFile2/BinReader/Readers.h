@@ -53,6 +53,8 @@
 #include "../../DesktopEditor/common/ASCVariant.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
+#include "../../DesktopEditor/common/Directory.h"
+
 namespace BinDocxRW {
 
 enum ETblStyleOverrideType

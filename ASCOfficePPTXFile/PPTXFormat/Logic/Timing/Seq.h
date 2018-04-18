@@ -55,9 +55,9 @@ namespace PPTX
 				nextCondLst = node.ReadNode(_T("p:nextCondLst"));
 				prevCondLst = node.ReadNode(_T("p:prevCondLst"));
 
-				node.ReadAttributeBase(L"concurrent", concurrent);
-				node.ReadAttributeBase(L"nextAc", nextAc);
-				node.ReadAttributeBase(L"prevAc", prevAc);
+                XmlMacroReadAttributeBase(node, L"concurrent", concurrent);
+                XmlMacroReadAttributeBase(node, L"nextAc", nextAc);
+                XmlMacroReadAttributeBase(node, L"prevAc", prevAc);
 
 				FillParentPointersForChilds();
 			}

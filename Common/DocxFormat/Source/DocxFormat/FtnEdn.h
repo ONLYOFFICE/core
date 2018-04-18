@@ -86,8 +86,8 @@ namespace OOX
 			else 
 				return;
 
-			oNode.ReadAttributeBase( _T("w:id"),   m_oId   );
-			oNode.ReadAttributeBase( _T("w:type"), m_oType );
+			XmlMacroReadAttributeBase( oNode, _T("w:id"),   m_oId   );
+			XmlMacroReadAttributeBase( oNode, _T("w:type"), m_oType );
 
 			XmlUtils::CXmlNodes oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
@@ -357,7 +357,7 @@ namespace OOX
 			else 
 				return;
 
-			oNode.ReadAttributeBase( _T("w:id"),   m_oId   );
+			XmlMacroReadAttributeBase( oNode, _T("w:id"),   m_oId   );
 		}
 		virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{

@@ -51,7 +51,7 @@ namespace PPTX
 				cx = node.ReadAttributeInt(L"cx");
 				cy = node.ReadAttributeInt(L"cy");
 
-				node.ReadAttributeBase(L"type", type);
+				XmlMacroReadAttributeBase(node, L"type", type);
 
 				Normalize();
 			}

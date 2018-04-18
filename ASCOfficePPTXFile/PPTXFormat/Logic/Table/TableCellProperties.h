@@ -143,14 +143,14 @@ namespace PPTX
 				Fill.GetFillFrom(node);
 	//			<xsd:element name="headers" type="CT_Headers" minOccurs="0"/> 
 
-				node.ReadAttributeBase(L"marL", MarL);
-				node.ReadAttributeBase(L"marR", MarR);
-				node.ReadAttributeBase(L"marT", MarT);
-				node.ReadAttributeBase(L"marB", MarB);
-				node.ReadAttributeBase(L"vert", Vert);
-				node.ReadAttributeBase(L"anchor", Anchor);
-				node.ReadAttributeBase(L"anchorCtr", AnchorCtr);
-				node.ReadAttributeBase(L"horzOverflow", HorzOverflow);
+				XmlMacroReadAttributeBase(node, L"marL", MarL);
+				XmlMacroReadAttributeBase(node, L"marR", MarR);
+				XmlMacroReadAttributeBase(node, L"marT", MarT);
+				XmlMacroReadAttributeBase(node, L"marB", MarB);
+				XmlMacroReadAttributeBase(node, L"vert", Vert);
+				XmlMacroReadAttributeBase(node, L"anchor", Anchor);
+				XmlMacroReadAttributeBase(node, L"anchorCtr", AnchorCtr);
+				XmlMacroReadAttributeBase(node, L"horzOverflow", HorzOverflow);
 
 				FillParentPointersForChilds();
 			}

@@ -74,10 +74,10 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:color"),      m_oColor );
-				oNode.ReadAttributeBase( _T("w:themeColor"), m_oThemeColor );
-				oNode.ReadAttributeBase( _T("w:themeShade"), m_oThemeShade );
-				oNode.ReadAttributeBase( _T("w:themeTint"),  m_oThemeTint );
+				XmlMacroReadAttributeBase( oNode, _T("w:color"),      m_oColor );
+				XmlMacroReadAttributeBase( oNode, _T("w:themeColor"), m_oThemeColor );
+				XmlMacroReadAttributeBase( oNode, _T("w:themeShade"), m_oThemeShade );
+				XmlMacroReadAttributeBase( oNode, _T("w:themeTint"),  m_oThemeTint );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

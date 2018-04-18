@@ -33,6 +33,7 @@
 #define _BUILD_XMLUTILS_CROSSPLATFORM_H_
 
 #include <vector>
+#include <list>
 #include <map>
 #include <string>
 
@@ -136,6 +137,7 @@ namespace XmlUtils
 
 	public:
 		CXmlNodes();
+		~CXmlNodes();
 		bool IsValid();
 		int GetCount();
 		bool GetAt(int nIndex, CXmlNode& oXmlNode);
@@ -174,6 +176,10 @@ namespace XmlUtils
 		std::wstring ReadAttribute(const std::wstring& strAttibuteName);
 
 		int GetAttributesCount();
+		void GetAllAttributes(std::vector<std::wstring>& names, std::vector<std::wstring>& values);
+		void GetAllAttributes(std::vector<std::string>& names, std::vector<std::string>& values);
+		void GetAllAttributes(std::list<std::wstring>& names, std::list<std::wstring>& values);
+		void GetAllAttributes(std::list<std::string>& names, std::list<std::string>& values);
 		
 		std::string GetAttributeA(const std::string& sName, const std::string& _default = "");
 		std::string GetAttributeA(const std::wstring& sName, const std::string& _default = "");
@@ -218,25 +224,11 @@ namespace XmlUtils
 
 		CXmlNode& operator=(const CXmlNode& oSrc);
 
-public:
+    public:
         std::wstring private_GetXml();
         std::wstring private_GetXml(const std::wstring& strDefaultValue = L"");
         std::wstring private_GetXmlFast();
         std::wstring private_GetXmlFast(const std::wstring& strDefaultValue);
-
-public:
-        template <typename T>
-        void LoadArray(const std::wstring& sName, std::vector<T>& arList);
-        template <typename T>
-        void LoadArray(const std::wstring& sName, const std::wstring& sSubName, std::vector<T>& arList);
-        template<typename T>
-        void ReadAttributeBase(const wchar_t* bsName, T& value);
-        template<typename T>
-        void ReadAllAttributes(T& strNames, T& strValues);
-        template<typename T>
-        void ReadAllAttributesA(T& strNames, T& strValues);
-        template <typename T>
-        void ReadNodeValueBase(const wchar_t* bsName, T& value);
 
 	private:
 		void SetBase(CXmlNodeBase* pBase);
@@ -274,6 +266,38 @@ public:
 
 	std::wstring KERNEL_DECL GetNameNoNS(const std::wstring & strNodeName);
 	std::wstring KERNEL_DECL GetNamespace(const std::wstring& strNodeName);
+
+    #define XmlMacroLoadArray(node, name, list, type)   \
+    {                                                   \
+        XmlUtils::CXmlNodes oNodes;                     \
+        if (node.GetNodes(name, oNodes))                \
+        {                                               \
+            int nCount = oNodes.GetCount();             \
+            for (int i = 0; i < nCount; ++i)            \
+            {                                           \
+                XmlUtils::CXmlNode oItem;               \
+                oNodes.GetAt(i, oItem);                 \
+                list.push_back(type());                 \
+                list[i].fromXML(oItem);                 \
+            }                                           \
+        }                                               \
+    }
+    #define XmlMacroLoadArrayS(node, name, subname, list, type)     \
+    {                                                               \
+        XmlUtils::CXmlNode oNode;                                   \
+        if (node.GetNode(sName, oNode))                             \
+            LoadArrayMacro(oNode, subname, list, type);             \
+    }
+    #define XmlMacroReadAttributeBase(node, name, value)    \
+    {                                                       \
+        std::wstring sAttr;                                 \
+        if (node.GetAttributeIfExist(name, sAttr))          \
+            value = sAttr;                                  \
+    }
+    #define XmlMacroReadNodeValueBase(node, name, value)    \
+    {                                                       \
+        value = node.ReadNodeTextBase(name);                \
+    }
 }
 
 #endif // _BUILD_XMLUTILS_CROSSPLATFORM_H_

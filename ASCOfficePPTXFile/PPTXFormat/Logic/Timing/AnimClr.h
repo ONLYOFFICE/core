@@ -51,8 +51,8 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"clrSpc", clrSpc);
-				node.ReadAttributeBase(L"dir", dir);
+                XmlMacroReadAttributeBase(node, L"clrSpc", clrSpc);
+                XmlMacroReadAttributeBase(node, L"dir", dir);
 
 				cBhvr	= node.ReadNode(_T("cBhvr"));
 
@@ -71,15 +71,15 @@ namespace PPTX
 					XmlUtils::CXmlNode oHSL;
 					if (oNodeBy.GetNode(_T("p:rgb"), oRGB))
 					{
-						oRGB.ReadAttributeBase(L"r", byR);
-						oRGB.ReadAttributeBase(L"g", byG);
-						oRGB.ReadAttributeBase(L"b", byB);
+                        XmlMacroReadAttributeBase(oRGB, L"r", byR);
+                        XmlMacroReadAttributeBase(oRGB, L"g", byG);
+                        XmlMacroReadAttributeBase(oRGB, L"b", byB);
 					}
-					else if (oNodeBy.GetNode(_T("p:hsl"), oRGB))
+                    else if (oNodeBy.GetNode(_T("p:hsl"), oHSL))
 					{
-						oHSL.ReadAttributeBase(L"h", byH);
-						oHSL.ReadAttributeBase(L"s", byS);
-						oHSL.ReadAttributeBase(L"l", byL);
+                        XmlMacroReadAttributeBase(oHSL, L"h", byH);
+                        XmlMacroReadAttributeBase(oHSL, L"s", byS);
+                        XmlMacroReadAttributeBase(oHSL, L"l", byL);
 					}
 				}
 

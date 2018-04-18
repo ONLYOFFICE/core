@@ -113,15 +113,15 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:color"),      m_oColor );
-				oNode.ReadAttributeBase( _T("w:frame"),      m_oFrame );
-				oNode.ReadAttributeBase( _T("w:shadow"),     m_oShadow );
-				oNode.ReadAttributeBase( _T("w:space"),      m_oSpace );
-				oNode.ReadAttributeBase( _T("w:sz"),         m_oSz );
-				oNode.ReadAttributeBase( _T("w:themeColor"), m_oThemeColor );
-				oNode.ReadAttributeBase( _T("w:themeShade"), m_oThemeShade );
-				oNode.ReadAttributeBase( _T("w:themeTint"),  m_oThemeTint );
-				oNode.ReadAttributeBase( _T("w:val"),        m_oVal );
+				XmlMacroReadAttributeBase(oNode,  _T("w:color"),      m_oColor );
+				XmlMacroReadAttributeBase(oNode,  _T("w:frame"),      m_oFrame );
+				XmlMacroReadAttributeBase(oNode,  _T("w:shadow"),     m_oShadow );
+				XmlMacroReadAttributeBase(oNode,  _T("w:space"),      m_oSpace );
+				XmlMacroReadAttributeBase(oNode,  _T("w:sz"),         m_oSz );
+				XmlMacroReadAttributeBase(oNode,  _T("w:themeColor"), m_oThemeColor );
+				XmlMacroReadAttributeBase(oNode,  _T("w:themeShade"), m_oThemeShade );
+				XmlMacroReadAttributeBase(oNode,  _T("w:themeTint"),  m_oThemeTint );
+				XmlMacroReadAttributeBase(oNode,  _T("w:val"),        m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -247,9 +247,9 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:bidi"),     m_oBidi );
-				oNode.ReadAttributeBase( _T("w:eastAsia"), m_oEastAsia );
-				oNode.ReadAttributeBase( _T("w:val"),      m_oVal );
+				XmlMacroReadAttributeBase(oNode,  _T("w:bidi"),     m_oBidi );
+				XmlMacroReadAttributeBase(oNode,  _T("w:eastAsia"), m_oEastAsia );
+				XmlMacroReadAttributeBase(oNode,  _T("w:val"),      m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -320,7 +320,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -373,15 +373,15 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:color"),          m_oColor );
-				oNode.ReadAttributeBase( _T("w:fill"),           m_oFill );
-				oNode.ReadAttributeBase( _T("w:themeColor"),     m_oThemeColor );
-				oNode.ReadAttributeBase( _T("w:themeFill"),      m_oThemeFill );
-				oNode.ReadAttributeBase( _T("w:themeFillShade"), m_oThemeFillShade );
-				oNode.ReadAttributeBase( _T("w:themeFillTint"),  m_oThemeFillTint );
-				oNode.ReadAttributeBase( _T("w:themeShade"),     m_oThemeShade );
-				oNode.ReadAttributeBase( _T("w:themeTint"),      m_oThemeTint );
-				oNode.ReadAttributeBase( _T("w:val"),            m_oVal );
+				XmlMacroReadAttributeBase(oNode,  _T("w:color"),          m_oColor );
+				XmlMacroReadAttributeBase(oNode,  _T("w:fill"),           m_oFill );
+				XmlMacroReadAttributeBase(oNode,  _T("w:themeColor"),     m_oThemeColor );
+				XmlMacroReadAttributeBase(oNode,  _T("w:themeFill"),      m_oThemeFill );
+				XmlMacroReadAttributeBase(oNode,  _T("w:themeFillShade"), m_oThemeFillShade );
+				XmlMacroReadAttributeBase(oNode,  _T("w:themeFillTint"),  m_oThemeFillTint );
+				XmlMacroReadAttributeBase(oNode,  _T("w:themeShade"),     m_oThemeShade );
+				XmlMacroReadAttributeBase(oNode,  _T("w:themeTint"),      m_oThemeTint );
+				XmlMacroReadAttributeBase(oNode,  _T("w:val"),            m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -509,8 +509,8 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:type"), m_oType );
-				oNode.ReadAttributeBase( _T("w:w"),    m_oW );
+				XmlMacroReadAttributeBase( oNode, _T("w:type"), m_oType );
+				XmlMacroReadAttributeBase( oNode, _T("w:w"),    m_oW );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -574,7 +574,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -626,7 +626,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -677,7 +677,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_sVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_sVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -738,7 +738,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -791,7 +791,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -843,10 +843,10 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:themeColor"), m_oThemeColor );
-				oNode.ReadAttributeBase( _T("w:themeShade"), m_oThemeShade );
-				oNode.ReadAttributeBase( _T("w:themeTint"),  m_oThemeTint );
-				oNode.ReadAttributeBase( _T("w:val"),        m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:themeColor"), m_oThemeColor );
+				XmlMacroReadAttributeBase( oNode, _T("w:themeShade"), m_oThemeShade );
+				XmlMacroReadAttributeBase( oNode, _T("w:themeTint"),  m_oThemeTint );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"),        m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -927,7 +927,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -979,8 +979,8 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:format"), m_sFormat );
-				oNode.ReadAttributeBase( _T("w:val"),    m_oVal );
+				XmlMacroReadAttributeBase(oNode, _T("w:format"), m_sFormat );
+				XmlMacroReadAttributeBase(oNode, _T("w:val"),    m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1043,7 +1043,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase(oNode,  _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1097,7 +1097,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode,  _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1149,7 +1149,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1201,7 +1201,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("r:id"), m_oId );
+				XmlMacroReadAttributeBase( oNode, _T("r:id"), m_oId );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1254,7 +1254,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1308,7 +1308,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1362,19 +1362,19 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:evenHBand"),           m_oEvenHBand );
-				oNode.ReadAttributeBase( _T("w:evenVBand"),           m_oEvenVBand );
-				oNode.ReadAttributeBase( _T("w:firstColumn"),         m_oFirstColumn );
-				oNode.ReadAttributeBase( _T("w:firstRow"),            m_oFirstRow );
-				oNode.ReadAttributeBase( _T("w:firstRowFirstColumn"), m_oFirstRowFirstColumn );
-				oNode.ReadAttributeBase( _T("w:firstRowLastColumn"),  m_oFirstRowLastColumn );
-				oNode.ReadAttributeBase( _T("w:lastColumn"),          m_oLastColumn );
-				oNode.ReadAttributeBase( _T("w:lastRow"),             m_oLastRow );
-				oNode.ReadAttributeBase( _T("w:lastRowFirstColumn"),  m_oLastRowFirstColumn );
-				oNode.ReadAttributeBase( _T("w:lastRowLastColumn"),   m_oLastRowLastColumn );
-				oNode.ReadAttributeBase( _T("w:oddHBand"),            m_oOddHBand );
-				oNode.ReadAttributeBase( _T("w:oddVBand"),            m_oOddVBand );
-				oNode.ReadAttributeBase( _T("w:val"),                 m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:evenHBand"),           m_oEvenHBand );
+				XmlMacroReadAttributeBase( oNode, _T("w:evenVBand"),           m_oEvenVBand );
+				XmlMacroReadAttributeBase( oNode, _T("w:firstColumn"),         m_oFirstColumn );
+				XmlMacroReadAttributeBase( oNode, _T("w:firstRow"),            m_oFirstRow );
+				XmlMacroReadAttributeBase( oNode, _T("w:firstRowFirstColumn"), m_oFirstRowFirstColumn );
+				XmlMacroReadAttributeBase( oNode, _T("w:firstRowLastColumn"),  m_oFirstRowLastColumn );
+				XmlMacroReadAttributeBase( oNode, _T("w:lastColumn"),          m_oLastColumn );
+				XmlMacroReadAttributeBase( oNode, _T("w:lastRow"),             m_oLastRow );
+				XmlMacroReadAttributeBase( oNode, _T("w:lastRowFirstColumn"),  m_oLastRowFirstColumn );
+				XmlMacroReadAttributeBase( oNode, _T("w:lastRowLastColumn"),   m_oLastRowLastColumn );
+				XmlMacroReadAttributeBase( oNode, _T("w:oddHBand"),            m_oOddHBand );
+				XmlMacroReadAttributeBase( oNode, _T("w:oddVBand"),            m_oOddVBand );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"),                 m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1534,7 +1534,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1588,10 +1588,10 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:author"), m_sAuthor );
-				oNode.ReadAttributeBase( _T("w:date"),   m_oDate );
-				oNode.ReadAttributeBase( _T("w:id"),     m_oId );
-				oNode.ReadAttributeBase( _T("oouserid"), m_sUserId );
+				XmlMacroReadAttributeBase( oNode, _T("w:author"), m_sAuthor );
+				XmlMacroReadAttributeBase( oNode, _T("w:date"),   m_oDate );
+				XmlMacroReadAttributeBase( oNode, _T("w:id"),     m_oId );
+				XmlMacroReadAttributeBase( oNode, _T("oouserid"), m_sUserId );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1671,7 +1671,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1719,7 +1719,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1772,7 +1772,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1851,7 +1851,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1904,7 +1904,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1961,8 +1961,8 @@ namespace ComplexTypes
 		public:
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("x"), m_oX );
-				oNode.ReadAttributeBase( _T("y"), m_oY );
+				XmlMacroReadAttributeBase( oNode, _T("x"), m_oX );
+				XmlMacroReadAttributeBase( oNode, _T("y"), m_oY );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -2014,8 +2014,8 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("cx"), m_oCx );
-				oNode.ReadAttributeBase( _T("cy"), m_oCy );
+				XmlMacroReadAttributeBase( oNode, _T("cx"), m_oCx );
+				XmlMacroReadAttributeBase( oNode, _T("cy"), m_oCy );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

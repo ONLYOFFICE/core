@@ -42,8 +42,6 @@ INCLUDEPATH += \
     ../../../../Common/ASCDocxFormat/Source/XML \
     ../../../../Common/ASCDocxFormat/Source
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel -lgraphics
-
 core_release {
 SOURCES += \
     pptxformatlib_logic.cpp

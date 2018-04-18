@@ -300,7 +300,7 @@ namespace PPTX
 					}
 					else if (L"legacyDrawing" == strName)
 					{
-						oNode.ReadAttributeBase(L"spid", vmlSpid);
+                        XmlMacroReadAttributeBase(oNode, L"spid", vmlSpid);
 						result = true;
 					}
 					else

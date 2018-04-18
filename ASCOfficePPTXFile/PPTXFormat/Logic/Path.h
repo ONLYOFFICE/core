@@ -75,7 +75,7 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"path", path);
+				XmlMacroReadAttributeBase(node, L"path", path);
 				rect = node.ReadNodeNoNS(_T("fillToRect"));
 				
 				FillParentPointersForChilds();

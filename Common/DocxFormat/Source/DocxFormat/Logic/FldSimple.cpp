@@ -59,9 +59,9 @@ namespace OOX
 
 		void    CFldSimple::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			oNode.ReadAttributeBase( _T("w:dirty"),   m_oDirty );
-			oNode.ReadAttributeBase( _T("w:fldLock"), m_oFldLock );
-			oNode.ReadAttributeBase( _T("w:instr"),   m_sInstr );
+            XmlMacroReadAttributeBase( oNode, _T("w:dirty"),   m_oDirty );
+            XmlMacroReadAttributeBase( oNode, _T("w:fldLock"), m_oFldLock );
+            XmlMacroReadAttributeBase( oNode, _T("w:instr"),   m_sInstr );
 
 			XmlUtils::CXmlNodes oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )

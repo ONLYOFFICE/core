@@ -114,7 +114,7 @@ namespace PPTX
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());
 
-				node.ReadAttributeBase(L"bwMode", bwMode);
+				XmlMacroReadAttributeBase(node, L"bwMode", bwMode);
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))

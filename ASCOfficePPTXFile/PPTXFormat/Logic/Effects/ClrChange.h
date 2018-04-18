@@ -94,7 +94,7 @@ namespace PPTX
                 node1 = node.ReadNode(_T("a:clrTo"));
                 ClrTo.GetColorFrom(node1);
 
-                node.ReadAttributeBase(L"useA", useA);
+                XmlMacroReadAttributeBase(node, L"useA", useA);
 				FillParentPointersForChilds();
 			}
 

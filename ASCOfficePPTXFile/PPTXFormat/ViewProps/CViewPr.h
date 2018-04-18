@@ -49,7 +49,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"varScale", attrVarScale);
+                XmlMacroReadAttributeBase(node, L"varScale", attrVarScale);
 
 				Scale	= node.ReadNode(_T("p:scale"));
 				Origin	= node.ReadNode(_T("p:origin"));

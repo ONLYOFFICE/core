@@ -61,12 +61,12 @@ namespace OOX
 
 		void    CHyperlink::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			oNode.ReadAttributeBase( _T("w:anchor"),      m_sAnchor );
-			oNode.ReadAttributeBase( _T("w:docLocation"), m_sDocLocation );
-			oNode.ReadAttributeBase( _T("w:history"),     m_oHistory );
-			oNode.ReadAttributeBase( _T("r:id"),          m_oId );
-			oNode.ReadAttributeBase( _T("w:tgtFrame"),    m_sTgtFrame );
-			oNode.ReadAttributeBase( _T("w:tooltip"),     m_sTooltip );
+            XmlMacroReadAttributeBase( oNode, _T("w:anchor"),      m_sAnchor );
+            XmlMacroReadAttributeBase( oNode, _T("w:docLocation"), m_sDocLocation );
+            XmlMacroReadAttributeBase( oNode, _T("w:history"),     m_oHistory );
+            XmlMacroReadAttributeBase( oNode, _T("r:id"),          m_oId );
+            XmlMacroReadAttributeBase( oNode, _T("w:tgtFrame"),    m_sTgtFrame );
+            XmlMacroReadAttributeBase( oNode, _T("w:tooltip"),     m_sTooltip );
 
 			XmlUtils::CXmlNodes oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )

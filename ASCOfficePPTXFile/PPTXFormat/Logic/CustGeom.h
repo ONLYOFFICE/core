@@ -186,21 +186,21 @@ namespace PPTX
 			{
 				XmlUtils::CXmlNode oNode;
 				if (node.GetNode(_T("a:avLst"), oNode))
-					oNode.LoadArray(_T("a:gd"), avLst);
+					XmlMacroLoadArray(oNode, _T("a:gd"), avLst, Gd);
 				if (node.GetNode(_T("a:gdLst"), oNode))
-					oNode.LoadArray(_T("a:gd"), gdLst);
+					XmlMacroLoadArray(oNode, _T("a:gd"), gdLst, Gd);
 				
 				if (node.GetNode(_T("a:ahLst"), oNode))
 				{
-					oNode.LoadArray(_T("a:ahPolar"), ahLst);
-					oNode.LoadArray(_T("a:ahXY"), ahLst);
+					XmlMacroLoadArray(oNode, _T("a:ahPolar"), ahLst, AhBase);
+					XmlMacroLoadArray(oNode, _T("a:ahXY"), ahLst, AhBase);
 				}
 
 				if (node.GetNode(_T("a:cxnLst"), oNode))
-					oNode.LoadArray(_T("a:cxn"), cxnLst);
+					XmlMacroLoadArray(oNode, _T("a:cxn"), cxnLst, Cxn);
 
 				if (node.GetNode(_T("a:pathLst"), oNode))
-					oNode.LoadArray(_T("a:path"), pathLst);
+					XmlMacroLoadArray(oNode, _T("a:path"), pathLst, Path2D);
 
 				rect = node.ReadNodeNoNS(_T("rect"));
 

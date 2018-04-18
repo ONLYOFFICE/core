@@ -102,7 +102,7 @@ namespace PPTX
 						if (oNode.IsValid())
 						{
 							type = JoinMiter;
-							oNode.ReadAttributeBase(L"lim", lim);
+							XmlMacroReadAttributeBase(oNode, L"lim", lim);
 						}
 					}
 				}
@@ -122,7 +122,7 @@ namespace PPTX
 				else if (name == _T("miter"))
 				{
 					type = JoinMiter;
-					node.ReadAttributeBase(L"lim", lim);
+					XmlMacroReadAttributeBase(node, L"lim", lim);
 				}
 
 				Normalize();

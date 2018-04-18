@@ -68,8 +68,8 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( L"w:id",                   m_oId );
+				XmlMacroReadAttributeBase( oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				XmlMacroReadAttributeBase( oNode, L"w:id",                   m_oId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -127,8 +127,8 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( L"w:id",                   m_oId );
+				XmlMacroReadAttributeBase( oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				XmlMacroReadAttributeBase( oNode, L"w:id",                   m_oId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -192,7 +192,7 @@ namespace OOX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:id", m_oId );
+				XmlMacroReadAttributeBase(oNode, L"w:id", m_oId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -250,10 +250,10 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:author", m_sAuthor );
-				oNode.ReadAttributeBase( L"w:date",   m_oDate );
-				oNode.ReadAttributeBase( L"w:id",     m_oID );
-				oNode.ReadAttributeBase( L"oouserid", m_sUserId );
+				XmlMacroReadAttributeBase( oNode, L"w:author", m_sAuthor );
+				XmlMacroReadAttributeBase( oNode, L"w:date",   m_oDate );
+				XmlMacroReadAttributeBase( oNode, L"w:id",     m_oID );
+				XmlMacroReadAttributeBase( oNode, L"oouserid", m_sUserId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -341,7 +341,7 @@ namespace OOX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:id", m_oId );
+				XmlMacroReadAttributeBase( oNode, L"w:id", m_oId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -399,10 +399,10 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:author", m_sAuthor );
-				oNode.ReadAttributeBase( L"w:date",   m_oDate );
-				oNode.ReadAttributeBase( L"w:id",     m_oID );
-				oNode.ReadAttributeBase( L"oouserid", m_sUserId );
+				XmlMacroReadAttributeBase( oNode, L"w:author", m_sAuthor );
+				XmlMacroReadAttributeBase( oNode, L"w:date",   m_oDate );
+				XmlMacroReadAttributeBase( oNode, L"w:id",     m_oID );
+				XmlMacroReadAttributeBase( oNode, L"oouserid", m_sUserId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -489,7 +489,7 @@ namespace OOX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:id", m_oId );
+				XmlMacroReadAttributeBase( oNode, L"w:id", m_oId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -546,10 +546,10 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:author", m_sAuthor );
-				oNode.ReadAttributeBase( L"w:date",   m_oDate );
-				oNode.ReadAttributeBase( L"w:id",     m_oID );
-				oNode.ReadAttributeBase( L"oouserid", m_sUserId );
+				XmlMacroReadAttributeBase( oNode, L"w:author", m_sAuthor );
+				XmlMacroReadAttributeBase( oNode, L"w:date",   m_oDate );
+				XmlMacroReadAttributeBase( oNode, L"w:id",     m_oID );
+				XmlMacroReadAttributeBase( oNode, L"oouserid", m_sUserId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -637,7 +637,7 @@ namespace OOX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:id", m_oId );
+				XmlMacroReadAttributeBase( oNode, L"w:id", m_oId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -694,10 +694,10 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:author", m_sAuthor );
-				oNode.ReadAttributeBase( L"w:date",   m_oDate );
-				oNode.ReadAttributeBase( L"w:id",     m_oID );
-				oNode.ReadAttributeBase( L"oouserid", m_sUserId );
+				XmlMacroReadAttributeBase( oNode, L"w:author", m_sAuthor );
+				XmlMacroReadAttributeBase( oNode, L"w:date",   m_oDate );
+				XmlMacroReadAttributeBase( oNode, L"w:id",     m_oID );
+				XmlMacroReadAttributeBase( oNode, L"oouserid", m_sUserId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -785,8 +785,8 @@ namespace OOX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( L"w:id",                   m_oId );
+				XmlMacroReadAttributeBase( oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				XmlMacroReadAttributeBase( oNode, L"w:id",                   m_oId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -845,14 +845,14 @@ namespace OOX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:author",               m_sAuthor );
-				oNode.ReadAttributeBase( L"w:colFirst",             m_oColFirst );
-				oNode.ReadAttributeBase( L"w:colLast",              m_oColLast );
-				oNode.ReadAttributeBase( L"w:date",                 m_oDate );
-				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( L"w:id",                   m_oId );
-				oNode.ReadAttributeBase( L"w:name",                 m_sName );
-				oNode.ReadAttributeBase( L"oouserid",               m_sUserId );
+				XmlMacroReadAttributeBase( oNode, L"w:author",               m_sAuthor );
+				XmlMacroReadAttributeBase( oNode, L"w:colFirst",             m_oColFirst );
+				XmlMacroReadAttributeBase( oNode, L"w:colLast",              m_oColLast );
+				XmlMacroReadAttributeBase( oNode, L"w:date",                 m_oDate );
+				XmlMacroReadAttributeBase( oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				XmlMacroReadAttributeBase( oNode, L"w:id",                   m_oId );
+				XmlMacroReadAttributeBase( oNode, L"w:name",                 m_sName );
+				XmlMacroReadAttributeBase( oNode, L"oouserid",               m_sUserId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -947,8 +947,8 @@ namespace OOX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( L"w:id",                   m_oId );
+				XmlMacroReadAttributeBase( oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				XmlMacroReadAttributeBase( oNode, L"w:id",                   m_oId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -1006,14 +1006,14 @@ namespace OOX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:author",               m_sAuthor );
-				oNode.ReadAttributeBase( L"w:colFirst",             m_oColFirst );
-				oNode.ReadAttributeBase( L"w:colLast",              m_oColLast );
-				oNode.ReadAttributeBase( L"w:date",                 m_oDate );
-				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( L"w:id",                   m_oId );
-				oNode.ReadAttributeBase( L"w:name",                 m_sName );
-				oNode.ReadAttributeBase( L"oouserid",               m_sUserId );
+				XmlMacroReadAttributeBase( oNode, L"w:author",               m_sAuthor );
+				XmlMacroReadAttributeBase( oNode, L"w:colFirst",             m_oColFirst );
+				XmlMacroReadAttributeBase( oNode, L"w:colLast",              m_oColLast );
+				XmlMacroReadAttributeBase( oNode, L"w:date",                 m_oDate );
+				XmlMacroReadAttributeBase( oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				XmlMacroReadAttributeBase( oNode, L"w:id",                   m_oId );
+				XmlMacroReadAttributeBase( oNode, L"w:name",                 m_sName );
+				XmlMacroReadAttributeBase( oNode, L"oouserid",               m_sUserId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -1212,8 +1212,8 @@ namespace OOX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( L"w:id",                   m_oId );
+				XmlMacroReadAttributeBase(oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				XmlMacroReadAttributeBase(oNode, L"w:id",                   m_oId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -1280,11 +1280,11 @@ namespace OOX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:colFirst",             m_oColFirst );
-				oNode.ReadAttributeBase( L"w:colLast",              m_oColLast );
-				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( L"w:id",                   m_oId );
-				oNode.ReadAttributeBase( L"w:name",                 m_sName );
+				XmlMacroReadAttributeBase(oNode, L"w:colFirst",             m_oColFirst );
+				XmlMacroReadAttributeBase(oNode, L"w:colLast",              m_oColLast );
+				XmlMacroReadAttributeBase(oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				XmlMacroReadAttributeBase(oNode, L"w:id",                   m_oId );
+				XmlMacroReadAttributeBase(oNode, L"w:name",                 m_sName );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -1358,8 +1358,8 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( L"w:id",                   m_sId );
+				XmlMacroReadAttributeBase(oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				XmlMacroReadAttributeBase(oNode, L"w:id",                   m_sId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -1423,12 +1423,12 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:colFirst",             m_oColFirst );
-				oNode.ReadAttributeBase( L"w:colLast",              m_oColLast );
-				oNode.ReadAttributeBase( L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				oNode.ReadAttributeBase( L"w:ed",                   m_sEd );
-				oNode.ReadAttributeBase( L"w:edGrp",                m_oEdGrp );
-				oNode.ReadAttributeBase( L"w:id",                   m_sId );
+				XmlMacroReadAttributeBase(oNode, L"w:colFirst",             m_oColFirst );
+				XmlMacroReadAttributeBase(oNode, L"w:colLast",              m_oColLast );
+				XmlMacroReadAttributeBase(oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
+				XmlMacroReadAttributeBase(oNode, L"w:ed",                   m_sEd );
+				XmlMacroReadAttributeBase(oNode, L"w:edGrp",                m_oEdGrp );
+				XmlMacroReadAttributeBase(oNode, L"w:id",                   m_sId );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -1501,7 +1501,7 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( L"w:type", m_oType );
+				XmlMacroReadAttributeBase(oNode, L"w:type", m_oType );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{

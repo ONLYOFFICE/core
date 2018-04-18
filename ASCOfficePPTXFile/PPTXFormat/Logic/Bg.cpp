@@ -66,7 +66,7 @@ namespace PPTX
 
 		void Bg::fromXML(XmlUtils::CXmlNode& node)
 		{
-			node.ReadAttributeBase(L"bwMode", bwMode);
+            XmlMacroReadAttributeBase(node, L"bwMode", bwMode);
 			bgPr	= node.ReadNodeNoNS(_T("bgPr"));
 			bgRef	= node.ReadNodeNoNS(_T("bgRef"));
 

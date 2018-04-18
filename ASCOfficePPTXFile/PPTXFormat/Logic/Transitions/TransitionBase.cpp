@@ -136,7 +136,7 @@ namespace PPTX
 		void TransitionSerialize::fromXML(XmlUtils::CXmlNode& node)
 		{
 			m_strNodeName = node.GetName();
-			node.ReadAllAttributes(m_strAttributesNames, m_strAttributesValues);
+            node.GetAllAttributes(m_strAttributesNames, m_strAttributesValues);
 		}
 
 		std::wstring TransitionSerialize::toXML() const

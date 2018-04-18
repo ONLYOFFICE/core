@@ -28,8 +28,6 @@ DEFINES +=  UNICODE \
 INCLUDEPATH += ../../ASCOfficeOdfFile/include
 INCLUDEPATH += ../../ASCOfficeOdfFile/src/odf/datatypes
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel -lgraphics
-
 CONFIG(debug, debug|release){
 DEFINES +=  _DEBUG
 }

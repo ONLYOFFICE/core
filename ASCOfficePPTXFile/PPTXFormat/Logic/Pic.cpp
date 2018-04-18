@@ -68,19 +68,19 @@ namespace PPTX
 	{
 		void COLEObject::fromXML(XmlUtils::CXmlNode& node)
 		{
-			node.ReadAttributeBase(L"DrawAspect",	m_oDrawAspect);
-			node.ReadAttributeBase(L"r:id",			m_oId);
-			node.ReadAttributeBase(L"ObjectID",		m_sObjectId);
-			node.ReadAttributeBase(L"ProgID",		m_sProgId);
-			node.ReadAttributeBase(L"ShapeID",		m_sShapeId);
-			node.ReadAttributeBase(L"Type",			m_oType);
-			node.ReadAttributeBase(L"UpdateMode",	m_oUpdateMode);
+            XmlMacroReadAttributeBase(node, L"DrawAspect",	m_oDrawAspect);
+            XmlMacroReadAttributeBase(node, L"r:id",		m_oId);
+            XmlMacroReadAttributeBase(node, L"ObjectID",	m_sObjectId);
+            XmlMacroReadAttributeBase(node, L"ProgID",		m_sProgId);
+            XmlMacroReadAttributeBase(node, L"ShapeID",		m_sShapeId);
+            XmlMacroReadAttributeBase(node, L"Type",		m_oType);
+            XmlMacroReadAttributeBase(node, L"UpdateMode",	m_oUpdateMode);
 
 			std::wstring ole_bin, ole_image, mspackage;
 			
-			node.ReadAttributeBase(L"pathbin", ole_bin);
-			node.ReadAttributeBase(L"pathimg", ole_image);
-			node.ReadAttributeBase(L"mspackage", mspackage);
+            XmlMacroReadAttributeBase(node, L"pathbin", ole_bin);
+            XmlMacroReadAttributeBase(node, L"pathimg", ole_image);
+            XmlMacroReadAttributeBase(node, L"mspackage", mspackage);
 
 			if (m_OleObjectFile.IsInit() == false && !ole_bin.empty())
 			{
@@ -1489,8 +1489,8 @@ namespace PPTX
 		{
 			oleObject.Init();
 			
-			node.ReadAttributeBase(L"progId",	oleObject->m_sProgId);
-			node.ReadAttributeBase(L"r:id",		oleObject->m_oId);
+            XmlMacroReadAttributeBase(node, L"progId",	oleObject->m_sProgId);
+            XmlMacroReadAttributeBase(node, L"r:id",		oleObject->m_oId);
 			
 			int imgW = node.GetAttributeInt(std::wstring(L"imgW"), 0);			
 			if(imgW > 0)
@@ -1509,7 +1509,7 @@ namespace PPTX
 					blipFill.blip.Init();
 				blipFill.blip->oleRid = oleObject->m_oId->get();
 			}
-			node.ReadAttributeBase(L"spid",	oleObject->m_sShapeId);
+            XmlMacroReadAttributeBase(node, L"spid",	oleObject->m_sShapeId);
 		}
 	} // namespace Logic
 } // namespace PPTX

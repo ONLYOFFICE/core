@@ -63,7 +63,8 @@ namespace PPTX
 				CViewPr = node.ReadNode(_T("p:cViewPr"));
 				SldLst.clear();
 
-				node.ReadNode(_T("p:sldLst")).LoadArray(_T("p:sld"), SldLst);
+                XmlUtils::CXmlNode nodeLst = node.ReadNode(_T("p:sldLst"));
+                XmlMacroLoadArray(node, _T("p:sld"), SldLst, nsViewProps::Sld);
 			}
 			virtual std::wstring toXML() const
 			{

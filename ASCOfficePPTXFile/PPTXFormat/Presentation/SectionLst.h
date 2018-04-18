@@ -48,13 +48,13 @@ namespace PPTX
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"id", id);
-				node.ReadAttributeBase(L"name", name);
+				XmlMacroReadAttributeBase(node, L"id", id);
+				XmlMacroReadAttributeBase(node, L"name", name);
 
 				XmlUtils::CXmlNode oNodeSldIdLst;
 				if (node.GetNode(L"p14:sldIdLst", oNodeSldIdLst))
 				{
-					oNodeSldIdLst.LoadArray(L"p14:sldId", arSldIdLst);
+					XmlMacroLoadArray(oNodeSldIdLst, L"p14:sldId", arSldIdLst, Logic::XmlId);
 				}
 			}
 

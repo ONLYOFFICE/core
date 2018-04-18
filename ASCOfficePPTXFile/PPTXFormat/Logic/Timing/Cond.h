@@ -52,14 +52,14 @@ namespace PPTX
 			{
 				name	= XmlUtils::GetNameNoNS(node.GetName());
 		
-				node.ReadAttributeBase(L"delay", delay);
-				node.ReadAttributeBase(L"evt", evt);
+                XmlMacroReadAttributeBase(node, L"delay", delay);
+                XmlMacroReadAttributeBase(node, L"evt", evt);
 
 				XmlUtils::CXmlNode oNode;
 				if (node.GetNode(_T("p:tn"), oNode))
-					oNode.ReadAttributeBase(L"val", tn);
+                    XmlMacroReadAttributeBase(oNode, L"val", tn)
 				else if (node.GetNode(_T("p:rtn"), oNode))
-					oNode.ReadAttributeBase(L"val", rtn);
+                    XmlMacroReadAttributeBase(oNode, L"val", rtn)
 
 				tgtEl = node.ReadNode(_T("p:tgtEl"));
 				

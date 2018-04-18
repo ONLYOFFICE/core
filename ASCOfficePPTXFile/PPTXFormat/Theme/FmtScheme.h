@@ -73,16 +73,16 @@ namespace PPTX
                 name = node.GetAttribute(_T("name"));
 
 				XmlUtils::CXmlNode oNode1 = node.ReadNode(_T("a:fillStyleLst"));
-				oNode1.LoadArray(_T("*"), fillStyleLst);
+				XmlMacroLoadArray(oNode1, _T("*"), fillStyleLst, Logic::UniFill);
 
 				XmlUtils::CXmlNode oNode2 = node.ReadNode(_T("a:lnStyleLst"));
-				oNode2.LoadArray(_T("a:ln"), lnStyleLst);
+				XmlMacroLoadArray(oNode2, _T("a:ln"), lnStyleLst, Logic::Ln);
 
 				XmlUtils::CXmlNode oNode3 = node.ReadNode(_T("a:effectStyleLst"));
-				oNode3.LoadArray(_T("a:effectStyle"), effectStyleLst);
+				XmlMacroLoadArray(oNode3, _T("a:effectStyle"), effectStyleLst, Logic::EffectStyle);
 
 				XmlUtils::CXmlNode oNode4 = node.ReadNode(_T("a:bgFillStyleLst"));
-				oNode4.LoadArray(_T("*"), bgFillStyleLst);
+				XmlMacroLoadArray(oNode4, _T("*"), bgFillStyleLst, Logic::UniFill);
 
 				FillParentPointersForChilds();
 			}

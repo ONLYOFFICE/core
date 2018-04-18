@@ -79,10 +79,10 @@ namespace OOX
 			}
             virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("Id"),         m_rId );
-				oNode.ReadAttributeBase( _T("Target"),     m_oTarget );
-				oNode.ReadAttributeBase( _T("Type"),       m_sType );
-				oNode.ReadAttributeBase( _T("TargetMode"), m_sMode );
+				XmlMacroReadAttributeBase( oNode,  _T("Id"),         m_rId );
+				XmlMacroReadAttributeBase( oNode,  _T("Target"),     m_oTarget );
+				XmlMacroReadAttributeBase( oNode,  _T("Type"),       m_sType );
+				XmlMacroReadAttributeBase( oNode,  _T("TargetMode"), m_sMode );
 			}
             virtual std::wstring toXML() const
 			{

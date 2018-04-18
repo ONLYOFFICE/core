@@ -72,7 +72,7 @@ namespace PPTX
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"ref", ref);
+                XmlMacroReadAttributeBase(node, L"ref", ref);
 			}
 
 			virtual std::wstring toXML() const

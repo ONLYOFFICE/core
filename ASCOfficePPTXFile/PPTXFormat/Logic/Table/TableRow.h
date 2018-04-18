@@ -89,7 +89,7 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				Height = node.ReadAttributeInt(L"h");
-				node.LoadArray(_T("a:tc"), Cells);
+				XmlMacroLoadArray(node, _T("a:tc"), Cells, TableCell);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const

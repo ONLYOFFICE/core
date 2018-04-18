@@ -48,10 +48,10 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"spid", spid);
+                XmlMacroReadAttributeBase(node, L"spid", spid);
 				grpId = node.ReadAttributeInt(L"grpId");
-				node.ReadAttributeBase(L"uiExpand", uiExpand);
-				node.ReadAttributeBase(L"bld", bld);
+                XmlMacroReadAttributeBase(node, L"uiExpand", uiExpand);
+                XmlMacroReadAttributeBase(node, L"bld", bld);
 
 				Normalize();
 

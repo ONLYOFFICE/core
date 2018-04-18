@@ -100,20 +100,20 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"algn", algn);
-				node.ReadAttributeBase(L"blurRad", blurRad);
-				node.ReadAttributeBase(L"dir", dir);
-				node.ReadAttributeBase(L"dist", dist);
-				node.ReadAttributeBase(L"kx", kx);
-				node.ReadAttributeBase(L"ky", ky);
-				node.ReadAttributeBase(L"rotWithShape", rotWithShape);
-				node.ReadAttributeBase(L"sx", sx);
-				node.ReadAttributeBase(L"sy", sy);
-				node.ReadAttributeBase(L"stA", stA);
-				node.ReadAttributeBase(L"endA", endA);
-				node.ReadAttributeBase(L"stPos", stPos);
-				node.ReadAttributeBase(L"endPos", endPos);
-				node.ReadAttributeBase(L"fadeDir", fadeDir);
+				XmlMacroReadAttributeBase(node, L"algn", algn);
+				XmlMacroReadAttributeBase(node, L"blurRad", blurRad);
+				XmlMacroReadAttributeBase(node, L"dir", dir);
+				XmlMacroReadAttributeBase(node, L"dist", dist);
+				XmlMacroReadAttributeBase(node, L"kx", kx);
+				XmlMacroReadAttributeBase(node, L"ky", ky);
+				XmlMacroReadAttributeBase(node, L"rotWithShape", rotWithShape);
+				XmlMacroReadAttributeBase(node, L"sx", sx);
+				XmlMacroReadAttributeBase(node, L"sy", sy);
+				XmlMacroReadAttributeBase(node, L"stA", stA);
+				XmlMacroReadAttributeBase(node, L"endA", endA);
+				XmlMacroReadAttributeBase(node, L"stPos", stPos);
+				XmlMacroReadAttributeBase(node, L"endPos", endPos);
+				XmlMacroReadAttributeBase(node, L"fadeDir", fadeDir);
 
 				Normalize();
 			}

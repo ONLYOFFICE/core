@@ -86,7 +86,7 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				Color.GetColorFrom(node);
-				node.ReadAttributeBase(L"rad", rad);
+				XmlMacroReadAttributeBase(node, L"rad", rad);
 				
 				FillParentPointersForChilds();
 				Normalize();

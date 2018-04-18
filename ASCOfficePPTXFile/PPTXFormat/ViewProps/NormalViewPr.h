@@ -49,12 +49,12 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"horzBarState", attrHorzBarState);
-				node.ReadAttributeBase(L"vertBarState", attrVertBarState);
+                XmlMacroReadAttributeBase(node, L"horzBarState", attrHorzBarState);
+                XmlMacroReadAttributeBase(node, L"vertBarState", attrVertBarState);
 
-				node.ReadAttributeBase(L"preferSingleView", attrPreferSingleView);
-				node.ReadAttributeBase(L"showOutlineIcons", attrShowOutlineIcons);
-				node.ReadAttributeBase(L"snapVertSplitter", attrSnapVertSplitter);
+                XmlMacroReadAttributeBase(node, L"preferSingleView", attrPreferSingleView);
+                XmlMacroReadAttributeBase(node, L"showOutlineIcons", attrShowOutlineIcons);
+                XmlMacroReadAttributeBase(node, L"snapVertSplitter", attrSnapVertSplitter);
 
 				restoredLeft	= node.ReadNodeNoNS(_T("restoredLeft"));
 				restoredTop		= node.ReadNodeNoNS(_T("restoredTop"));

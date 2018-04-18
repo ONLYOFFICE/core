@@ -53,14 +53,14 @@ namespace PPTX
 				if (node.GetNode(_T("a:bldChart"), oNode))
 				{
 					chart		= true;
-					oNode.ReadAttributeBase(L"bld", bldChart);
-					oNode.ReadAttributeBase(L"animBg", animBg);
+                    XmlMacroReadAttributeBase(oNode, L"bld", bldChart);
+                    XmlMacroReadAttributeBase(oNode, L"animBg", animBg);
 				}
 				else if (node.GetNode(_T("a:bldDgm"), oNode))
 				{
 					chart		= false;
-					oNode.ReadAttributeBase(L"bld", bldDgm);
-					oNode.ReadAttributeBase(L"rev", rev);
+                    XmlMacroReadAttributeBase(oNode, L"bld", bldDgm);
+                    XmlMacroReadAttributeBase(oNode, L"rev", rev);
 				}
 				else
 					chart.reset();

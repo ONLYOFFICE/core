@@ -385,8 +385,8 @@ namespace NSFonts
     class GRAPHICS_DECL IFontPath
     {
     public:
-        IFontPath() {}
-        virtual ~IFontPath() {}
+        IFontPath();
+        virtual ~IFontPath();
 
     public:
         virtual int ToInterface(ISimpleGraphicsPath* pPath) = 0;
@@ -403,8 +403,8 @@ namespace NSFonts
     class GRAPHICS_DECL IFontStream
     {
     public:
-        IFontStream() {}
-        virtual ~IFontStream() {}
+        IFontStream();
+        virtual ~IFontStream();
 
         virtual int AddRef() = 0;
         virtual int Release() = 0;
@@ -416,8 +416,8 @@ namespace NSFonts
     class GRAPHICS_DECL IApplicationFontStreams
     {
     public:
-        IApplicationFontStreams() {}
-        virtual ~IApplicationFontStreams() {}
+        IApplicationFontStreams();
+        virtual ~IApplicationFontStreams();
 
     public:
         virtual IFontStream* GetStream(const std::wstring& strFile) = 0;
@@ -441,8 +441,8 @@ namespace NSFonts
     class GRAPHICS_DECL IFontFile
     {
     public:
-        IFontFile() {}
-        virtual ~IFontFile() {}
+        IFontFile();
+        virtual ~IFontFile();
 
     public:
         virtual std::string GetStyleName() = 0;
@@ -480,8 +480,8 @@ namespace NSFonts
     class GRAPHICS_DECL IFontsCache
     {
     public:
-        IFontsCache() {}
-        virtual ~IFontsCache() {}
+        IFontsCache();
+        virtual ~IFontsCache();
 
         virtual void Clear() = 0;
         virtual void SetCacheSize(const int& lMaxSize) = 0;
@@ -503,8 +503,8 @@ namespace NSFonts
     class GRAPHICS_DECL IFontManager
     {
     public:
-        IFontManager() {}
-        virtual ~IFontManager() {}
+        IFontManager();
+        virtual ~IFontManager();
 
         virtual IFontsCache* GetCache() = 0;
         virtual IApplicationFonts* GetApplication() = 0;
@@ -579,8 +579,8 @@ namespace NSFonts
     class GRAPHICS_DECL IFontList
     {
     public:
-        IFontList() {}
-        ~IFontList() {}
+        IFontList();
+        virtual ~IFontList();
 
     public:
 		virtual std::vector<NSFonts::CFontInfo*>* GetFonts() = 0;
@@ -591,8 +591,8 @@ namespace NSFonts
     class GRAPHICS_DECL IApplicationFonts
     {
     public:
-        IApplicationFonts() {}
-        ~IApplicationFonts() {}
+        IApplicationFonts();
+        virtual ~IApplicationFonts();
 
     public:
         virtual IFontsCache* GetCache() = 0;

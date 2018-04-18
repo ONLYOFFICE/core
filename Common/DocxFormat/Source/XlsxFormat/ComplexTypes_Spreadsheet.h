@@ -62,7 +62,7 @@ namespace ComplexTypes
 
 				virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 				{
-					oNode.ReadAttributeBase( _T("val"), m_oVal );
+					XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
 				}
 				virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 				{
@@ -105,7 +105,7 @@ namespace ComplexTypes
 
 				virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 				{
-					oNode.ReadAttributeBase( _T("val"), m_oVal );
+					XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
 				}
 				virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 				{
@@ -153,7 +153,7 @@ namespace ComplexTypes
 
 				virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 				{
-					oNode.ReadAttributeBase( _T("val"), m_sVal );
+					XmlMacroReadAttributeBase( oNode, _T("val"), m_sVal );
 				}
 				virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 				{
@@ -211,7 +211,7 @@ namespace ComplexTypes
 
 				virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 				{
-					oNode.ReadAttributeBase( _T("val"), m_oVal );
+					XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
 				}
 				virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 				{
@@ -260,7 +260,7 @@ namespace ComplexTypes
 
 				virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 				{
-					oNode.ReadAttributeBase( _T("val"), m_oVal );
+					XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
 				}
 				virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 				{
@@ -309,7 +309,7 @@ namespace ComplexTypes
 
 				virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 				{
-					oNode.ReadAttributeBase( _T("val"), m_oVal );
+					XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
 				}
 				virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 				{
@@ -358,7 +358,7 @@ namespace ComplexTypes
 
 				virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 				{
-					oNode.ReadAttributeBase( _T("val"), m_oVal );
+					XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
 				}
 				virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 				{
@@ -407,7 +407,7 @@ namespace ComplexTypes
 
 				virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 				{
-					oNode.ReadAttributeBase( _T("val"), m_oVal );
+					XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
 				}
 				virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 				{
@@ -456,7 +456,7 @@ namespace ComplexTypes
 
 				virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 				{
-					oNode.ReadAttributeBase( _T("val"), m_oVal );
+					XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
 				}
 				virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 				{
@@ -505,7 +505,7 @@ namespace ComplexTypes
 
 				virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 				{
-					oNode.ReadAttributeBase( _T("val"), m_oVal );
+					XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
 				}
 				virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 				{
@@ -554,7 +554,7 @@ namespace ComplexTypes
 
 				virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 				{
-					oNode.ReadAttributeBase( _T("val"), m_oVal );
+					XmlMacroReadAttributeBase( oNode, _T("val"), m_oVal );
 				}
 				virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 				{

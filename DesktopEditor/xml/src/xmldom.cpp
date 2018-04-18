@@ -147,6 +147,9 @@ namespace XmlUtils
 	CXmlNodes::CXmlNodes() : m_nodes()
 	{
 	}
+    CXmlNodes::~CXmlNodes()
+    {
+    }
 	bool CXmlNodes::IsValid()
 	{
 		return true;
@@ -490,6 +493,38 @@ namespace XmlUtils
 		else 
 			return 0;
 	}
+    void CXmlNode::GetAllAttributes(std::vector<std::wstring>& names, std::vector<std::wstring>& values)
+    {
+        for (std::map<std::string, std::string>::iterator p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+        {
+            names.push_back(UTF8_TO_U(p->first));
+            values.push_back(UTF8_TO_U(p->second));
+        }
+    }
+    void CXmlNode::GetAllAttributes(std::vector<std::string>& names, std::vector<std::string>& values)
+    {
+        for (std::map<std::string, std::string>::iterator p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+        {
+            names.push_back(p->first);
+            values.push_back(p->second);
+        }
+    }
+    void CXmlNode::GetAllAttributes(std::list<std::wstring>& names, std::list<std::wstring>& values)
+    {
+        for (std::map<std::string, std::string>::iterator p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+        {
+            names.push_back(UTF8_TO_U(p->first));
+            values.push_back(UTF8_TO_U(p->second));
+        }
+    }
+    void CXmlNode::GetAllAttributes(std::list<std::string>& names, std::list<std::string>& values)
+    {
+        for (std::map<std::string, std::string>::iterator p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+        {
+            names.push_back(p->first);
+            values.push_back(p->second);
+        }
+    }
 	bool CXmlNode::GetAttributeIfExist(const std::wstring& sName, std::wstring& sOutput)
 	{
 		bool bRes = false;
@@ -795,70 +830,7 @@ namespace XmlUtils
 		NSStringUtils::CStringBuilder oWriter;
 		m_pBase->GetXml(oWriter);
 		return oWriter.GetData();
-	}
-
-    template <typename T>
-    void CXmlNode::LoadArray(const std::wstring& sName, std::vector<T>& arList)
-    {
-        CXmlNodes oNodes;
-        if (GetNodes(sName, oNodes))
-        {
-            int nCount = oNodes.GetCount();
-            for (int i = 0; i < nCount; ++i)
-            {
-                CXmlNode oItem;
-                oNodes.GetAt(i, oItem);
-
-                arList.push_back(T());
-                arList[i].fromXML(oItem);
-            }
-        }
-    }
-    template <typename T>
-    void CXmlNode::LoadArray(const std::wstring& sName, const std::wstring& sSubName, std::vector<T>& arList)
-    {
-        CXmlNode oNode;
-        if (GetNode(sName, oNode))
-            oNode.LoadArray(sSubName, arList);
-    }
-    template<typename T>
-    void CXmlNode::ReadAttributeBase(const wchar_t* bsName, T& value)
-    {
-        std::wstring sAttr;
-        if (GetAttributeIfExist(bsName, sAttr))
-            value = sAttr;
-    }
-    template<typename T>
-    void CXmlNode::ReadAllAttributes(T& strNames, T& strValues)
-    {
-        if (!IsValid())
-            return;
-
-        std::map<std::string, std::string>::iterator p;
-        for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
-        {
-            strNames.push_back  (NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->first.c_str(), (long)p->first.length()));
-            strValues.push_back (NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->second.c_str(), (long)p->second.length()));
-        }
-    }
-    template<typename T>
-    void CXmlNode::ReadAllAttributesA(T& strNames, T& strValues)
-    {
-        if (!IsValid())
-            return;
-
-        std::map<std::string, std::string>::iterator p;
-        for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
-        {
-            strNames.push_back(p->first);
-            strValues.push_back(p->second);
-        }
-    }
-    template <typename T>
-    void CXmlNode::ReadNodeValueBase(const wchar_t* bsName, T& value)
-    {
-        value = ReadNodeTextBase(bsName);
-    }
+	}    
 
 	void CXmlNode::SetBase(CXmlNodeBase* pBase)
 	{

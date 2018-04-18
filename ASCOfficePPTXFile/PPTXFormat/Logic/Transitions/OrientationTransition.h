@@ -53,7 +53,7 @@ namespace PPTX
 			void fromXML(XmlUtils::CXmlNode& node)
 			{
 				name	= XmlUtils::GetNameNoNS(node.GetName());
-				node.ReadAttributeBase(L"dir", dir);
+                XmlMacroReadAttributeBase(node, L"dir", dir);
 			}
 
 			std::wstring toXML() const

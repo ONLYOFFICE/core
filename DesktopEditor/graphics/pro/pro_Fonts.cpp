@@ -49,6 +49,8 @@ namespace NSFonts
 
 namespace NSFonts
 {
+    IFontPath::IFontPath() {}
+    IFontPath::~IFontPath() {}
     namespace NSFontPath
     {
         IFontPath* Create()
@@ -57,6 +59,8 @@ namespace NSFonts
         }
     }
 
+    IFontStream::IFontStream() {}
+    IFontStream::~IFontStream() {}
     namespace NSStream
     {
         IFontStream* Create()
@@ -65,6 +69,8 @@ namespace NSFonts
         }
     }
 
+    IApplicationFontStreams::IApplicationFontStreams() {}
+    IApplicationFontStreams::~IApplicationFontStreams() {}
     namespace NSApplicationFontStream
     {
         IApplicationFontStreams* Create()
@@ -73,6 +79,8 @@ namespace NSFonts
         }
     }
 
+    IFontFile::IFontFile() {}
+    IFontFile::~IFontFile() {}
     namespace NSFontFile
     {
         IFontFile* Create()
@@ -81,6 +89,8 @@ namespace NSFonts
         }
     }
 
+    IFontsCache::IFontsCache() {}
+    IFontsCache::~IFontsCache() {}
     namespace NSFontCache
     {
         IFontsCache* Create()
@@ -89,6 +99,8 @@ namespace NSFonts
         }
     }
 
+    IFontManager::IFontManager() {}
+    IFontManager::~IFontManager() {}
     namespace NSFontManager
     {
         IFontManager* Create()
@@ -97,6 +109,11 @@ namespace NSFonts
         }
     }
 
+    IFontList::IFontList() {}
+    IFontList::~IFontList() {}
+
+    IApplicationFonts::IApplicationFonts() {}
+    IApplicationFonts::~IApplicationFonts() {}
     namespace NSApplication
     {
         IApplicationFonts* Create()

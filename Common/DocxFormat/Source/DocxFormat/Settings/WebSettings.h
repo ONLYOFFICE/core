@@ -106,8 +106,8 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"),    m_oVal );
-				oNode.ReadAttributeBase( _T("w:target"), m_oTarget );
+				XmlMacroReadAttributeBase( oNode, _T("w:val"),    m_oVal );
+				XmlMacroReadAttributeBase( oNode, _T("w:target"), m_oTarget );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

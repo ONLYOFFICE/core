@@ -1294,46 +1294,65 @@ namespace DocFileFormat
 		ParagraphPropertyExceptions* papx_prev = NULL;
 
 		short max_boundary = -1;
-		short count_column = 0;
+
+		bool fEndNestingLevel = false;
+
+		unsigned int iTap_current = 1;
 		
 		while ( tai.fInTable )
 		{
-			short current_count_column = 0;
-			//check all SPRMs of this TAPX
+			iTap_current = 1;
+
 			for ( std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); iter++ )
 			{
-				//find the tDef SPRM
 				DWORD code = iter->OpCode;
 
 				switch(iter->OpCode)
 				{
-					case sprmTDefTable:
-					case sprmOldTDefTable:
+					case sprmPFInnerTableCell:
+					case sprmPFInnerTtp:
 					{
-						//SprmTDefTable tdef(iter->Arguments, iter->argumentsSize);
-						//int itcMac = tdef.numberOfColumns;
+						fEndNestingLevel = ( iter->Arguments[0] == 1 ) ? (true) : (false);
+					}break;
 
-						unsigned char itcMac = iter->Arguments[0];
-
-						short boundary1, boundary2;
-						for (unsigned char i = 0; i < itcMac; i++)
-						{
-							boundary1 = FormatUtils::BytesToInt16( iter->Arguments + 1, i * 2 , iter->argumentsSize );
-							boundary2 = FormatUtils::BytesToInt16( iter->Arguments + 1, ( i + 1 ) * 2, iter->argumentsSize );
-
-							AddBoundary(boundary1, boundary2, boundaries);
-						}
-						if (max_boundary < boundary2)
-							max_boundary = boundary2;
-
-						AddBoundary(boundary2, max_boundary, boundaries);
+					case sprmPItap:
+					{
+						iTap_current = FormatUtils::BytesToUInt32( iter->Arguments, 0, iter->argumentsSize );
 					}break;
 				}
 			}
+			if (nestingLevel == iTap_current)
+			{
+				for ( std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); iter++ )
+				{
+					//find the tDef SPRM
+					DWORD code = iter->OpCode;
 
-			if (current_count_column > count_column)
-				count_column = current_count_column;
+					switch(iter->OpCode)
+					{
+						case sprmTDefTable:
+						case sprmOldTDefTable:
+						{
+							unsigned char itcMac = iter->Arguments[0];
 
+							short boundary1, boundary2;
+							for (unsigned char i = 0; i < itcMac; i++)
+							{
+								boundary1 = FormatUtils::BytesToInt16( iter->Arguments + 1, i * 2 , iter->argumentsSize );
+								boundary2 = FormatUtils::BytesToInt16( iter->Arguments + 1, ( i + 1 ) * 2, iter->argumentsSize );
+
+								AddBoundary(boundary1, boundary2, boundaries);
+							}
+							if (max_boundary < boundary2)
+								max_boundary = boundary2;
+
+							AddBoundary(boundary2, max_boundary, boundaries);
+						}break;
+					}
+				}
+			}
+			if (nestingLevel > 1 && fEndNestingLevel && !boundaries.empty())
+				break;
 			//get the next papx
 			papx = findValidPapx( fcRowEnd );
 			tai = TableInfo( papx, m_document->nWordVersion );
@@ -1342,6 +1361,7 @@ namespace DocFileFormat
 			if (papx_prev && papx_prev == papx )
 				break;//file(12).doc
 			papx_prev = papx;
+
 		}
 
 		if ( !boundaries.empty() )
@@ -1358,7 +1378,7 @@ namespace DocFileFormat
 
 	void DocumentMapping::AddBoundary(short boundary1, short boundary2, std::map<short, short> &boundaries)
 	{
-		if (boundary2 - boundary1 < 10)
+		if (boundary2 - boundary1 < 3)
 			return;
 
 		std::map<short, short>::iterator pFind = boundaries.find(boundary1);
@@ -1582,10 +1602,8 @@ namespace DocFileFormat
 		int cp = initialCp;
 		int cpCellEnd	= findCellEndCp( initialCp, nestingLevel );
 
-		//start w:tc
-        m_pXmlWriter->WriteNodeBegin( L"w:tc" );
-
-		TableCellPropertiesMapping* tcpMapping = new TableCellPropertiesMapping( m_pXmlWriter, grid, gridIndex, cellIndex );
+		XMLTools::CStringXmlWriter writerTcPr;
+		TableCellPropertiesMapping* tcpMapping = new TableCellPropertiesMapping( &writerTcPr, grid, gridIndex, cellIndex, nestingLevel );
 
 		if ( tapx != NULL )
 		{
@@ -1594,7 +1612,18 @@ namespace DocFileFormat
 
 		gridIndex = gridIndex + tcpMapping->GetGridSpan();
 
+		bool bCoverCell = tcpMapping->IsCoverCell();
+
 		RELEASEOBJECT( tcpMapping );
+
+		if (bCoverCell)
+		{
+			return cpCellEnd;
+		}
+
+		//start w:tc
+        m_pXmlWriter->WriteNodeBegin( L"w:tc" );
+		m_pXmlWriter->WriteString(writerTcPr.GetXmlString());
 
 		//write the paragraphs of the cell
 		while ( cp < cpCellEnd )

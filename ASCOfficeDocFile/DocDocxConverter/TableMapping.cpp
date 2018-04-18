@@ -118,12 +118,10 @@ namespace DocFileFormat
 
 	//find cell end
 		int cpCellEnd = documentMapping->findCellEndCp(cp, depth);
-
-	//start w:tc
-		documentMapping->GetXMLWriter()->WriteNodeBegin( L"w:tc" );
 		
 	//convert the properties
-		TableCellPropertiesMapping tcpMapping(documentMapping->GetXMLWriter(), grid, gridIndex, nCellIndex);
+		XMLTools::CStringXmlWriter writerTcPr;
+		TableCellPropertiesMapping tcpMapping(&writerTcPr, grid, gridIndex, nCellIndex, depth);
 
 		if ( tapx != NULL )
 		{
@@ -131,6 +129,15 @@ namespace DocFileFormat
 		}
 
 		gridIndex += tcpMapping.GetGridSpan();
+		
+		if (tcpMapping.IsCoverCell())
+		{
+			return;
+		}		
+	//start w:tc
+		documentMapping->GetXMLWriter()->WriteNodeBegin( L"w:tc" );
+		
+		documentMapping->GetXMLWriter()->WriteString(writerTcPr.GetXmlString());
 
 		documentMapping->_lastValidPapx = papxBackup;
 		documentMapping->_lastValidSepx = sepxBackup;

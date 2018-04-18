@@ -38,12 +38,6 @@
 
 using namespace NSPresentationEditor;
 
-
-namespace NSZLib
-{
-    bool Decompress(const BYTE* pSrcBuffer, const ULONG& lSrcBufferLen,
-								BYTE* pDstBuffer, ULONG& lDstBufferLen);
-}
 namespace CRYPT
 {
 	class ECMADecryptor;

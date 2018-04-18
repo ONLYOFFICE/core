@@ -125,4 +125,9 @@ public:
     void End();
 };
 
+namespace NSZip
+{
+    bool KERNEL_DECL Decompress(const BYTE* pSrcBuffer, const ULONG& lSrcBufferLen, BYTE* pDstBuffer, ULONG& lDstBufferLen);
+}
+
 #endif

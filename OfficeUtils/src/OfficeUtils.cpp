@@ -299,3 +299,21 @@ void CInflate::ClearFuncs()
     m_internal->m_stream.zfree  = Z_NULL;
     m_internal->m_stream.opaque = Z_NULL;
 }
+
+namespace  NSZip
+{
+    bool Decompress(const BYTE* pSrcBuffer, const ULONG& lSrcBufferLen, BYTE* pDstBuffer, ULONG& lDstBufferLen)
+    {
+        try
+        {
+            if (Z_OK == uncompress(pDstBuffer, &lDstBufferLen, pSrcBuffer, lSrcBufferLen))
+            {
+                return true;
+            }
+        }
+        catch(...)
+        {
+        }
+        return false;
+    }
+}

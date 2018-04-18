@@ -33,6 +33,7 @@
 
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.h"
 #include "SlidePersist.h"
+#include "../../../OfficeUtils/src/OfficeUtils.h"
 
 
 using namespace NSPresentationEditor;
@@ -235,7 +236,7 @@ public:
 		{
 			ULONG lSize = lUncompressSize;
 			m_pMetaFile = new BYTE[lUncompressSize];
-            bool bRes	= NSZLib::Decompress(pCompress, (ULONG)lCompressSize, m_pMetaFile, lSize);
+            bool bRes	= NSZip::Decompress(pCompress, (ULONG)lCompressSize, m_pMetaFile, lSize);
 			if (bRes)
 			{
 				m_lMetaFileSize = (LONG)lSize;

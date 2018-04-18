@@ -33,10 +33,6 @@ INCLUDEPATH += \
     ../../../DesktopEditor/freetype-2.5.2/include \
     ../../../DesktopEditor/xml/libxml2/include
 
-core_windows {
-    INCLUDEPATH += ../../../OfficeUtils/src/zlib-1.2.3
-}
-
 HEADERS += \
     ../PPTFormatLib.h \
     ../Reader/ClassesAtom.h \

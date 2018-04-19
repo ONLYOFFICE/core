@@ -372,10 +372,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\pro\graphics_pri.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\GraphicsPath.cpp"
 				>
 			</File>

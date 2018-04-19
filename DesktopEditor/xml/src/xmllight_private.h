@@ -32,7 +32,7 @@
 #ifndef _BUILD_XMLLIGHT_PRIVATE_CROSSPLATFORM_H_
 #define _BUILD_XMLLIGHT_PRIVATE_CROSSPLATFORM_H_
 
-#include "../../DesktopEditor/common/File.h"
+#include "../../../DesktopEditor/common/File.h"
 
 #include "../libxml2/libxml.h"
 #include "../libxml2/include/libxml/xmlreader.h"

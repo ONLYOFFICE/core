@@ -334,6 +334,22 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\..\DesktopEditor\common\Base64.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DesktopEditor\common\Directory.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DesktopEditor\common\File.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Common\FileDownloader\FileDownloader.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Common\FileDownloader\FileDownloader_win.cpp"
 				>
 				<FileConfiguration
@@ -346,6 +362,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\DesktopEditor\common\Path.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Common\3dParty\pole\pole.cpp"
 				>
 				<FileConfiguration
@@ -356,6 +376,14 @@
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\DesktopEditor\common\String.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\DesktopEditor\common\StringBuilder.cpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\UnicodeConverter\UnicodeConverter.cpp"

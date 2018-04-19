@@ -92,15 +92,15 @@ namespace XmlUtils
 		bool ReadTillEnd(int nDepth = -2);
 		
 		std::wstring	GetName();
-        std::string     GetNameA();
-        int             GetDepth();
-        bool            IsEmptyNode();
+                std::string     GetNameA();
+                int             GetDepth();
+                bool            IsEmptyNode();
 
 		std::wstring	GetText();
-        std::string     GetTextA();
+                std::string     GetTextA();
 
 		std::wstring	GetText2();
-        std::string     GetText2A();
+                std::string     GetText2A();
 		
 		std::wstring	GetText3();
 
@@ -112,7 +112,11 @@ namespace XmlUtils
 		bool MoveToNextAttribute();
 		bool MoveToElement();
 
-        bool IsEmptyElement();
+                bool IsEmptyElement();
+
+                std::wstring GetNamespacePrefix();
+                XmlNodeType GetNodeType();
+                bool IsDefaultAttribute();
 	};
 
 	class KERNEL_DECL IXmlDOMDocument

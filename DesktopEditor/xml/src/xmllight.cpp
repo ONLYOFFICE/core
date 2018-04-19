@@ -187,4 +187,17 @@ namespace XmlUtils
 	{
 		return m_pInternal->IsEmptyElement();
 	}
+
+    std::wstring CXmlLiteReader::GetNamespacePrefix()
+    {
+        return m_pInternal->GetNamespacePrefix();
+    }
+    XmlNodeType CXmlLiteReader::GetNodeType()
+    {
+        return m_pInternal->GetNodeType();
+    }
+    bool CXmlLiteReader::IsDefaultAttribute()
+    {
+        return m_pInternal->IsDefaultAttribute();
+    }
 }

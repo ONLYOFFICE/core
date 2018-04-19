@@ -254,7 +254,7 @@ void ods_table_state::add_column(office_element_ptr & elm, unsigned int repeated
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(style_elm.get());
 	if (style)style_name = style->style_name_;
 
-	ods_element_state state = {elm, repeated, style_name, style_elm, defaut_column_width_ , current_level_.size()};
+    ods_element_state state = {elm, repeated, style_name, style_elm, defaut_column_width_ , (unsigned int)current_level_.size()};
   
 	if (repeated > 10000)repeated = 1024;//????
 
@@ -343,7 +343,7 @@ void ods_table_state::add_row(office_element_ptr & elm, unsigned int repeated, o
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(style_elm.get());
 	if (style)style_name = style->style_name_;
 
-	ods_element_state state = {elm, repeated, style_name, style_elm, defaut_row_height_ , current_level_.size()};
+    ods_element_state state = {elm, repeated, style_name, style_elm, defaut_row_height_ , (unsigned int)current_level_.size()};
   
     rows_.push_back(state);
 

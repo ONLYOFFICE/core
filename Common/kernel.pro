@@ -23,6 +23,7 @@ include(../Common/base.pri)
 CONFIG += build_all_zlib build_zlib_as_sources
 include(../OfficeUtils/OfficeUtils.pri)
 
+CONFIG += core_static_link_xml_full
 include(../DesktopEditor/xml/build/qt/libxml2.pri)
 
 # DOWNLOADER

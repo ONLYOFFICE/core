@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT=$(readlink -f "$0" || grealpath "$0")
+SCRIPT=$(readlink -n "$0" || grealpath "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
 os=$(uname -s)

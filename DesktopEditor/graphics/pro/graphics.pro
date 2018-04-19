@@ -9,9 +9,9 @@ graphics_dynamic_library {
     CONFIG += shared
     CONFIG += plugin
 
-    DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
     DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY_BUILDING
 } else {
+    DEFINES += GRAPHICS_NO_USE_DYNAMIC_LIBRARY
     CONFIG += static
 }
 

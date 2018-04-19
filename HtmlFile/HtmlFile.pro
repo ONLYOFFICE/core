@@ -16,7 +16,6 @@ CORE_ROOT_DIR = $$PWD/..
 PWD_ROOT_DIR = $$PWD
 include(../Common/base.pri)
 
-DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel
 
 core_linux {

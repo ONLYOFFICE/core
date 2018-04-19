@@ -17,8 +17,6 @@ include(../Common/base.pri)
 
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfWriter -lUnicodeConverter
 
-DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
-DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel -lgraphics
 
 DEFINES -= \

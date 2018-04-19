@@ -16,8 +16,6 @@ include(../Common/base.pri)
 DEFINES += XPS_USE_DYNAMIC_LIBRARY
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfWriter
 
-DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
-DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel -lgraphics
 
 core_windows {

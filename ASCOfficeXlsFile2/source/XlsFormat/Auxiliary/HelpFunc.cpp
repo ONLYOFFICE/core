@@ -450,7 +450,7 @@ const size_t hex_str2int(const std::wstring::const_iterator& it_begin, const std
 	}
 	return numeric;
 }
-const std::wstring toStdWStringSystem(std::string ansi_string, const unsigned int code_page)
+std::wstring toStdWStringSystem(std::string ansi_string, const unsigned int code_page)
 {
     bool ansi = true;
     std::wstring sResult;
@@ -497,7 +497,7 @@ const std::wstring toStdWStringSystem(std::string ansi_string, const unsigned in
 
     return sResult;
 }
-const std::wstring toStdWString(std::string ansi_string, const unsigned int code_page)
+std::wstring toStdWString(std::string ansi_string, const unsigned int code_page)
 {
     std::string sCodePage;
 	std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);
@@ -517,7 +517,7 @@ const std::wstring toStdWString(std::string ansi_string, const unsigned int code
 		return oConverter.toUnicode(ansi_string, code_page);
 	}
 }
-const std::wstring	toStdWString(char* ansi, int size, const unsigned int code_page)
+std::wstring	toStdWString(char* ansi, int size, const unsigned int code_page)
 {
     std::string sCodePage;
 	std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);
@@ -537,7 +537,7 @@ const std::wstring	toStdWString(char* ansi, int size, const unsigned int code_pa
 		return oConverter.toUnicode(ansi, size, code_page);
 	}
 }
-const std::string toStdString(std::wstring wide_string, const unsigned int code_page)
+std::string toStdString(std::wstring wide_string, const unsigned int code_page)
 {
     std::string sCodePage;
 	std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);

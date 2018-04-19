@@ -74,6 +74,7 @@ public:
 	void start_rows();
 		void start_row(int _start_row, int repeated, int level = 0, bool _default = false);
 		void end_row();
+		void add_row_repeated();
 
 		void start_cell(std::wstring & ref, int xfd_style);
 		void end_cell();

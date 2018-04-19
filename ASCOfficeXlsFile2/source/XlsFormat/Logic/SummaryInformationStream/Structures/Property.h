@@ -32,18 +32,22 @@
 #pragma once
 
 #include <boost/shared_ptr.hpp>
+#include "../../../Binary/BinSmartPointers.h"
 
 namespace OLEPS
 {
 class Property
 {
 public:
-	Property(unsigned int type) : Type(type) {}
+	Property(unsigned int prop_type_, unsigned short value_type_) : prop_type(prop_type_), value_type(value_type_) {}
 	virtual ~Property()
 	{
 	}
+	virtual bool Read(XLS::CFStreamPtr stream) = 0;
 
-	unsigned int Type;
+	unsigned int	prop_type;
+	unsigned short	value_type;
+
 	enum ValueTypes
 	{
 		VT_I2 = 0x0002,
@@ -70,6 +74,7 @@ public:
 		VT_CF = 0x0047,
 		VT_CLSID = 0x0047,
 	};
+
 
 };
 

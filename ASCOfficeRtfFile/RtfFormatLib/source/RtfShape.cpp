@@ -1180,7 +1180,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
         sResult += L" style=\"" + sStyle + L"\"";
 	}
 //----------------------------------------------------------------------------------------------------------------------------
-	if( false == m_sOle.empty() ) sResult += L" o:ole=\"\"";
+	if (m_bIsOle) sResult += L" o:ole=\"\"";
 	
 	if( PROP_DEF != m_nGroupLeft && PROP_DEF != m_nGroupTop )
         sResult += L" coordorigin=\"" + std::to_wstring(m_nGroupLeft) + L"," + std::to_wstring(m_nGroupTop) + L"\"";

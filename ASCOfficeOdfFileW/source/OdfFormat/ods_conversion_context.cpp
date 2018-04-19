@@ -178,14 +178,17 @@ void ods_conversion_context::end_sheet()
 	
 	styles_context()->reset_defaults();
 }
-
+void ods_conversion_context::add_row_repeated()
+{
+	current_table().add_row_repeated();
+}
 void ods_conversion_context::start_row(int _start_row, int repeated, int level, bool _default)
 {
-	if (_start_row > current_table().current_row()+1)
+	if (_start_row > current_table().current_row() + 1)
 	{
 		int repeated_default = _start_row - current_table().current_row()-1;
 		
-		start_row(_start_row-repeated_default, repeated_default,0, true);
+		start_row(_start_row - repeated_default, repeated_default, 0, true);
 		end_row();
 	}
 /////////////////////////////////////////////////////////////////
@@ -416,7 +419,7 @@ void ods_conversion_context::end_rows()
 		repeated -= (1 + rows);
 	}
 
-	if (repeated > 0)
+	if (repeated > 0 && current_table().get_last_row_repeated() < 1024)
 	{
 		start_row(current_table().current_row() + 1, repeated, 0, true);
 		end_row();

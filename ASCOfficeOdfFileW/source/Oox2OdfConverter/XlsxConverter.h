@@ -163,7 +163,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CHeaderFooter		*oox_header_footer);
 
 		void convert(OOX::Spreadsheet::CCol					*oox_column);
-		void convert(OOX::Spreadsheet::CRow					*oox_row);
+		void convert(OOX::Spreadsheet::CRow					*oox_row, OOX::Spreadsheet::CRow *oox_row_prev);
 		void convert(OOX::Spreadsheet::CCell				*oox_cell);
 
 		void convert(OOX::Spreadsheet::CRun					*oox_text_run);

@@ -3091,6 +3091,21 @@ namespace BinXlsxRW
 					OOX::Spreadsheet::CCellAnchor*	pCellAnchor = NULL;
                     
 					if (!pOleObject) continue;
+
+					smart_ptr<OOX::OleObject>	pFileOleObject;
+					nullable<OOX::RId>			pRId;
+
+					if (pOleObject->m_oRid.IsInit())
+					{
+						pRId = new OOX::RId( pOleObject->m_oRid->GetValue());
+
+						//ищем физический файл ( rId относительно sheet)
+						smart_ptr<OOX::File> pFile = oWorksheet.Find(pRId.get());
+						pFileOleObject = pFile.smart_dynamic_cast<OOX::OleObject>();
+					}
+					if (false == pFileOleObject.IsInit()) continue;
+					
+					if (!( pFileOleObject->IsExist() || pFileOleObject->IsExternal() )) continue;
 					
 					std::wstring sShapeId = L"_x0000_s" + std::to_wstring(pOleObject->m_oShapeId->GetValue());
 					if (pVmlDrawing)
@@ -3139,19 +3154,15 @@ namespace BinXlsxRW
 
 						if (pOleObject->m_oProgId.IsInit())
 							olePic->oleObject->m_sProgId = pOleObject->m_oProgId.get();
-						if (pOleObject->m_oRid.IsInit())
+						
+						olePic->oleObject->m_oId = pRId;
+						olePic->oleObject->m_OleObjectFile = pFileOleObject;
+
+						if (olePic->oleObject->m_OleObjectFile.IsInit())
 						{
-							olePic->oleObject->m_oId = new OOX::RId( pOleObject->m_oRid->GetValue());
-
-							//ищем физический файл ( rId относительно sheet)
-							smart_ptr<OOX::File> pFile = oWorksheet.Find(olePic->oleObject->m_oId.get());
-							olePic->oleObject->m_OleObjectFile = pFile.smart_dynamic_cast<OOX::OleObject>();
-
-							if (olePic->oleObject->m_OleObjectFile.IsInit())
-							{
-								olePic->blipFill.blip->oleFilepathBin = olePic->oleObject->m_OleObjectFile->filename().GetPath();
-							}
+							olePic->blipFill.blip->oleFilepathBin = olePic->oleObject->m_OleObjectFile->filename().GetPath();
 						}
+
 						OOX::Image*		pImageFileCache = NULL;
 						std::wstring	sIdImageFileCache;
 						if ((NULL != pShapeElem) && (OOX::et_v_shapetype != pShapeElem->getType()))
@@ -3232,7 +3243,6 @@ namespace BinXlsxRW
 				{
 					if (it->second.bUsed == false)
 					{//Bonetti Martínez. cálculo estructural de pilotes y pilas.xlsx						
-						it->second.bUsed = true;
 						OOX::WritingElement* pElem = it->second.pElement;
 						if(OOX::et_v_shapetype != pElem->getType())
 						{
@@ -3262,6 +3272,7 @@ namespace BinXlsxRW
 								}
 							}
 						}
+						it->second.bUsed = true;
 					}
 				}
 			}

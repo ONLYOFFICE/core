@@ -39,12 +39,12 @@ namespace OLEPS
 
 class PropertyFactory 
 {
-private:
-	PropertyFactory();
-
 public:
+	PropertyFactory() : code_page (0) {}
 
-	static PropertyPtr ReadProperty(const unsigned int prop_type, XLS::CFStreamPtr stream, const unsigned int property_offset);
+	unsigned short code_page;
+
+	PropertyPtr ReadProperty(const unsigned int prop_type, XLS::CFStreamPtr stream, const unsigned int property_offset);
 	
 };
 

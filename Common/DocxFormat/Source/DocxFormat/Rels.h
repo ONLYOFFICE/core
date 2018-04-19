@@ -56,14 +56,25 @@ namespace OOX
 		public:
 			WritingElement_AdditionConstructors(CRelationShip)
 
-            CRelationShip(const OOX::RId& rId, const std::wstring& sType, const OOX::CPath& oFilePath) : m_rId(rId), m_oTarget(oFilePath), m_sType(sType)
+            CRelationShip(const OOX::RId& rId, const std::wstring& sType, const OOX::CPath& oFilePath, bool bExternal = false) : m_rId(rId), m_oTarget(oFilePath), m_sType(sType)
 			{
 				XmlUtils::replace_all(m_oTarget.m_strFilename, L" ", L"_");
+
+				if (bExternal)
+				{
+					m_sMode == L"External";
+				}
 			}
 
-            CRelationShip(const OOX::RId& rId, const smart_ptr<External> pExternal): m_rId(rId), m_oTarget(pExternal->Uri()), m_sType(pExternal->type().RelationType())
+            CRelationShip(const OOX::RId& rId, const smart_ptr<External> pExternal) : m_rId(rId)
 			{
                 m_sMode = new std::wstring( _T("External") );
+
+				if (pExternal.IsInit())
+				{
+					m_oTarget	= pExternal->Uri();
+					m_sType		= pExternal->type().RelationType();
+				}
 			}
 
             virtual ~CRelationShip()
@@ -143,8 +154,9 @@ namespace OOX
 			{
 				if ( !m_sMode.IsInit() )
 					return false;
-                return ( *m_sMode == _T("External" ));
+                return ( *m_sMode == L"External");
 			}
+
             const RId rId() const
 			{
 				return m_rId;
@@ -242,12 +254,13 @@ namespace OOX
 		}
 
 
-		void Registration(const RId& rId, const FileType& oType, const CPath& oPath)
+		void Registration(const RId& rId, const FileType& oType, const CPath& oPath, bool bExternal = false)
 		{
 			if( FileTypes::Unknow == oType ) return;
 
-			std::wstring strFileName	= oPath.m_strFilename;
-            std::wstring strDir			= oPath.GetDirectory() + _T("");
+			std::wstring strFileName = oPath.m_strFilename;
+           
+			std::wstring strDir = oPath.GetDirectory() + _T("");
 
 			Rels::CRelationShip* pRel = NULL;
 
@@ -255,18 +268,18 @@ namespace OOX
 			{
 				if ( oType.RelationType() == L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject" )
 				{
-					strFileName += L".bin";
-					pRel = new Rels::CRelationShip( rId, oType.RelationType(), strDir + strFileName );
+					strFileName += (strFileName.empty() ? L"" : L".bin");
+					pRel = new Rels::CRelationShip( rId, oType.RelationType(), strDir + strFileName, bExternal );
 				}
 				else if ( oType.RelationType() == L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" )
 				{
 					strFileName += L".wmf" ;					
-					pRel = new Rels::CRelationShip( rId, oType.RelationType(), strDir + strFileName );
+					pRel = new Rels::CRelationShip( rId, oType.RelationType(), strDir + strFileName, bExternal );
 				}
 			}
 			else
 			{
-				pRel = new Rels::CRelationShip( rId, oType.RelationType(), oPath.GetPath());
+				pRel = new Rels::CRelationShip( rId, oType.RelationType(), oPath.GetPath(), bExternal);
 				
 			}
 			if (pRel)

@@ -158,6 +158,12 @@ void manifest_encryption_data::add_attributes( const xml::attributes_wc_ptr & At
 {
     CP_APPLY_ATTR(L"manifest:checksum", checksum_, std::wstring(L""));
     CP_APPLY_ATTR(L"manifest:checksum-type", checksum_type_, std::wstring(L""));
+
+	size_t nFind = checksum_type_.find(L"#");	
+	if (nFind != std::wstring::npos)
+	{
+		checksum_type_ = checksum_type_.substr(nFind + 1);
+	}
 }
 void manifest_encryption_data::add_child_element(cpdoccore::xml::sax *Reader, const std::wstring &Ns, const std::wstring &Name)
 {
@@ -183,6 +189,12 @@ void manifest_algorithm::add_attributes( const xml::attributes_wc_ptr & Attribut
 {
     CP_APPLY_ATTR(L"manifest:algorithm-name", algorithm_name, std::wstring(L""));
     CP_APPLY_ATTR(L"manifest:initialisation-vector", initialisation_vector_, std::wstring(L""));
+
+	size_t nFind = algorithm_name.find(L"#");
+	if (nFind != std::wstring::npos)
+	{
+		algorithm_name = algorithm_name.substr(nFind + 1);
+	}
 }
 // manifest:key-derivation
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -195,6 +207,12 @@ void manifest_key_derivation::add_attributes( const xml::attributes_wc_ptr & Att
     CP_APPLY_ATTR(L"manifest:key-size", key_size_, 16);
     CP_APPLY_ATTR(L"manifest:iteration-count", iteration_count_, 100000);
     CP_APPLY_ATTR(L"manifest:salt", salt_, std::wstring(L""));
+	
+	size_t nFind = key_derivation_name_.find(L"#");	
+	if (nFind != std::wstring::npos)
+	{
+		key_derivation_name_ = key_derivation_name_.substr(nFind + 1);
+	}
 }
 // manifest:start-key-generation
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -205,6 +223,12 @@ void manifest_start_key_generation::add_attributes( const xml::attributes_wc_ptr
 {
     CP_APPLY_ATTR(L"manifest:start-key-generation-name", start_key_generation_name_, std::wstring(L""));
     CP_APPLY_ATTR(L"manifest:key-size", key_size_, 20);
+
+	size_t nFind = start_key_generation_name_.find(L"#");
+	if (nFind != std::wstring::npos)
+	{
+		start_key_generation_name_ = start_key_generation_name_.substr(nFind + 1);
+	}
 }
 }
 }

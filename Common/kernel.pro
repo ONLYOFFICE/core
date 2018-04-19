@@ -49,7 +49,7 @@ core_linux {
 }
 core_mac {
     OBJECTIVE_SOURCES += \
-        ./Common/FileDownloader/FileDownloader_mac.mm
+        ./FileDownloader/FileDownloader_mac.mm
 
     LIBS += -framework AppKit
 }

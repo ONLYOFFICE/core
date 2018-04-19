@@ -138,11 +138,11 @@ namespace NSStringUtils
         void AddIntNoCheckDel100(int val);
         void AddDouble(double val, int count);
 
-        inline void WriteHexByteNoSafe(const unsigned char& value);
-        inline void WriteHexByte(const unsigned char& value);
-        inline void WriteHexInt3(const unsigned int& value);
-        inline void WriteHexColor3(const unsigned char& r, const unsigned char& g, const unsigned char& b);
-        inline void WriteHexColor3(const unsigned int& value);
+        void WriteHexByteNoSafe(const unsigned char& value);
+        void WriteHexByte(const unsigned char& value);
+        void WriteHexInt3(const unsigned int& value);
+        void WriteHexColor3(const unsigned char& r, const unsigned char& g, const unsigned char& b);
+        void WriteHexColor3(const unsigned int& value);
 
 	protected:
         unsigned char CheckCode(const wchar_t& c);

@@ -34,6 +34,7 @@
 
 #include "Common.h"
 #include <vector>
+#include <math.h>
 #include "../../DesktopEditor/graphics/GraphicsPath.h"
 
 namespace NSHtmlRenderer

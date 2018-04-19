@@ -38,6 +38,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <math.h>
 
 #ifndef PDFWRITER_USE_DYNAMIC_LIBRARY
 #define PDFWRITER_DECL_EXPORT

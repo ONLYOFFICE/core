@@ -132,9 +132,9 @@ namespace NSFile
 
         void CloseFile();
 
-        inline FILE* GetFileNative();
-        inline long GetFileSize();
-        inline long GetFilePosition();
+        FILE* GetFileNative();
+        long GetFileSize();
+        long GetFilePosition();
 
         bool OpenFile(const std::wstring& sFileName, bool bRewrite = false);
         bool CreateFileW(const std::wstring& sFileName);

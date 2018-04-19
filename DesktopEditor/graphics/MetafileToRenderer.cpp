@@ -34,6 +34,10 @@
 #include "./MetafileToRendererCheck.h"
 #include "agg_math.h"
 
+#if !defined(_WIN32) && !defined(_WIN64)
+#include "../common/String.h"
+#endif
+
 IMetafileToRenderter::IMetafileToRenderter(IRenderer* pRenderer)
 {
     m_pRenderer = pRenderer;

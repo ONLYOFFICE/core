@@ -31,6 +31,7 @@
  */
 #include "ContextState.h"
 #include "StaticResources.h"
+#include <math.h>
 
 #ifndef xpsUnitToMM
 #define xpsUnitToMM(x) ((x) * 25.4 / 96)

@@ -33,6 +33,7 @@
 #define _BUILD_STRING_CROSSPLATFORM_H_
 
 #include <string>
+#include <string.h>
 #include <vector>
 #include <sstream>
 #include <algorithm>

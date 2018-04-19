@@ -49,6 +49,7 @@
 #define _BUILD_FILE_CROSSPLATFORM_H_
 
 #include <string>
+#include <string.h>
 #include <stdio.h>
 #include "Base64.h"
 

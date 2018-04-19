@@ -717,6 +717,42 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="_lib"
+			>
+			<File
+				RelativePath="..\..\..\build\lib\win_32\doctrenderer.lib"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\build\lib\win_32\HtmlFile.lib"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\build\lib\win_32\HtmlRenderer.lib"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\build\bin\icu\win_32\icuuc.lib"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\build\lib\win_32\kernel.lib"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\build\lib\win_32\PdfReader.lib"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\build\lib\win_32\PdfWriter.lib"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\build\lib\win_32\XpsFile.lib"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath="..\..\src\ASCConverters.cpp"
 			>
@@ -738,35 +774,11 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\..\build\lib\win_32\doctrenderer.lib"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\build\lib\win_32\HtmlFile.lib"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\build\lib\win_32\HtmlRenderer.lib"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\build\bin\icu\win_32\icuuc.lib"
-			>
-		</File>
-		<File
 			RelativePath="..\..\src\main.cpp"
 			>
 		</File>
 		<File
 			RelativePath="..\..\..\Common\OfficeFileFormatChecker2.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\build\lib\win_32\PdfReader.lib"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\build\lib\win_32\PdfWriter.lib"
 			>
 		</File>
 		<File
@@ -779,10 +791,6 @@
 		</File>
 		<File
 			RelativePath="..\..\..\DesktopEditor\xml\src\xmllight.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\build\lib\win_32\XpsFile.lib"
 			>
 		</File>
 	</Files>

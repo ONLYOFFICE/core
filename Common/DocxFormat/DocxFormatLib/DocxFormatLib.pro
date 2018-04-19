@@ -17,13 +17,7 @@ CONFIG += core_x2t
 include(../../../Common/base.pri)
 
 DEFINES +=  UNICODE _UNICODE \
-            _USE_LIBXML2_READER_ \
-            LIBXML_READER_ENABLED \
             DONT_WRITE_EMBEDDED_FONTS
-
-INCLUDEPATH += \
-    ../../../DesktopEditor/freetype-2.5.2/include \
-    ../../../DesktopEditor/xml/libxml2/include
 
 #BOOST
 include($$PWD/../../3dParty/boost/boost.pri)

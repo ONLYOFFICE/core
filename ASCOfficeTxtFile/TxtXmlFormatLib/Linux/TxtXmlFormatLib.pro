@@ -18,13 +18,7 @@ include(../../../Common/base.pri)
 
 DEFINES += UNICODE \
            _UNICODE \
-           _USE_LIBXML2_READER_ \
-            DONT_WRITE_EMBEDDED_FONTS \
-            LIBXML_READER_ENABLED
-
-INCLUDEPATH += \
-    ../../../DesktopEditor/freetype-2.5.2/include \
-    ../../../DesktopEditor/xml/libxml2/include
+            DONT_WRITE_EMBEDDED_FONTS
 
 #BOOST
 include($$PWD/../../../Common/3dParty/boost/boost.pri)

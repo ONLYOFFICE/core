@@ -32,7 +32,7 @@
 #ifndef _GRAPHICS_CONFIG_H_
 #define _GRAPHICS_CONFIG_H_
 
-#ifndef GRAPHICS_USE_DYNAMIC_LIBRARY
+#ifdef GRAPHICS_NO_USE_DYNAMIC_LIBRARY
 #define GRAPHICS_DECL
 #else
 #include "./../common/base_export.h"

@@ -32,7 +32,7 @@
 #ifndef _KERNEL_CONFIG_H_
 #define _KERNEL_CONFIG_H_
 
-#ifndef KERNEL_USE_DYNAMIC_LIBRARY
+#ifdef KERNEL_NO_USE_DYNAMIC_LIBRARY
 #define KERNEL_DECL
 #else
 #include "./../DesktopEditor/common/base_export.h"

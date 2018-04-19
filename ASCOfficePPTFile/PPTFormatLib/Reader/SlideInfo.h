@@ -113,7 +113,7 @@ public:
 		return *this;
 	}
 
-	std::wstring GetFileNamePicture(DWORD lIndex)
+	std::wstring GetFileNamePicture(_UINT32 lIndex)
 	{
 		std::map<int, std::wstring>::iterator pic = m_mapFilePictures->find(lIndex);
 

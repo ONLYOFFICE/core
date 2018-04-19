@@ -37,24 +37,16 @@ namespace NSPresentationEditor
 	class CLayout
 	{
 	public:
-		std::vector<CElementPtr>m_arElements;
-		std::vector<CColor>		m_arColorScheme;
-		std::multimap<int,int>	m_mapPlaceholders;
 
+		std::vector<CElementPtr>		m_arElements;
+		std::vector<CColor>				m_arColorScheme;
+		std::multimap<int, CElementPtr>	m_mapPlaceholders;
+
+		bool					m_bIsTitleMaster;
 		bool					m_bUseThemeColorScheme;
-
-		// "настоящие"(в логической системе координат), чтобы масштабировать
-		long					m_lOriginalWidth;
-		long					m_lOriginalHeight;
 
 		bool					m_bIsBackground;
 		CBrush					m_oBackground;
-
-		// размеры в миллиметрах
-		long					m_lWidth;   
-		long					m_lHeight; 	
-
-		CMetricInfo				m_oInfo;
 
 		bool					m_bHasDate;
 		bool					m_bHasSlideNumber;
@@ -71,65 +63,12 @@ namespace NSPresentationEditor
 		{
 			Clear();
 		}
-
-		CLayout(const CLayout& oSrc)
-		{
-			*this = oSrc;
-		}
-
-		CLayout& operator=(const CLayout& oSrc)
-		{
-			Clear();
-		
-			size_t nCount = oSrc.m_arElements.size();
-			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
-			{
-				m_arElements.push_back(oSrc.m_arElements[nIndex]->CreateDublicate());
-			}
-
-			m_mapPlaceholders		= oSrc.m_mapPlaceholders;
-			m_arColorScheme			= oSrc.m_arColorScheme;
-
-			m_bUseThemeColorScheme	= oSrc.m_bUseThemeColorScheme;
-
-			m_lOriginalWidth		= oSrc.m_lOriginalWidth;
-			m_lOriginalHeight		= oSrc.m_lOriginalHeight;
-
-			m_lWidth				= oSrc.m_lWidth;   
-			m_lHeight				= oSrc.m_lHeight; 
-
-			m_bIsBackground			= oSrc.m_bIsBackground;
-			m_oBackground			= oSrc.m_oBackground;
-
-			m_bHasDate				= oSrc.m_bHasDate;
-			m_bHasSlideNumber		= oSrc.m_bHasSlideNumber;
-			m_bHasFooter			= oSrc.m_bHasFooter;
-			m_nFormatDate			= oSrc.m_nFormatDate;
-
-			for (int i = 0 ; i < 3 ; i++) 
-				m_PlaceholdersReplaceString[i] = oSrc.m_PlaceholdersReplaceString[i];
-
-			m_bShowMasterShapes		= oSrc.m_bShowMasterShapes;
-			m_strLayoutType			= oSrc.m_strLayoutType;
-
-			m_sName					= oSrc.m_sName;
-
-			return *this;
-		}
-
-		void SetMetricInfo(const CMetricInfo& oInfo)
-		{
-			m_oInfo  = oInfo;
-			m_lWidth			= m_oInfo.m_lMillimetresHor;
-			m_lHeight			= m_oInfo.m_lMillimetresVer;
-			m_lOriginalWidth	= m_oInfo.m_lUnitsHor;
-			m_lOriginalHeight	= m_oInfo.m_lUnitsVer;
-		}
-
 		void Clear()
 		{
 			m_arElements.clear();
 			m_mapPlaceholders.clear();
+
+			m_bIsTitleMaster	= false;
 			
 			m_bHasDate			= false;
 			m_bHasSlideNumber	= false;
@@ -143,8 +82,6 @@ namespace NSPresentationEditor
 			m_bShowMasterShapes		= true;
 			m_strLayoutType			= _T("obj");
 			m_bIsBackground			= false;
-
-			m_lWidth = m_lHeight = m_lOriginalWidth = m_lOriginalHeight = 0;
 		}
 
 		void CreateDublicateElements()
@@ -159,13 +96,6 @@ namespace NSPresentationEditor
 					m_arElements[nIndex] = pElem->CreateDublicate();
 				}
 			}
-		}
-
-		CLayout* CreateDublicate()
-		{
-			CLayout* pNew = new CLayout(*this);
-			pNew->CreateDublicateElements();
-			return pNew;
 		}
 
 		CElementPtr GetPlaceholder(LONG lID)
@@ -241,5 +171,6 @@ namespace NSPresentationEditor
 					lTypeStyle = 0;
 			}
 		}
-	};
+	};	
+	typedef boost::shared_ptr<CLayout> CLayoutPtr;
 }

@@ -33,8 +33,6 @@
 #include "Writer/OOXWriter.h"
 #include "DestinationCommand.h"
 
-const std::map<int, std::string> RtfUtility::mapEncodingsICU = RtfUtility::create_mapEncodingsICU();
-
 RtfReader::RtfReader(RtfDocument& oDocument, std::wstring sFilename ) : m_oDocument(oDocument), m_sFilename(sFilename)
 {
 	m_oState = ReaderStatePtr(new ReaderState());

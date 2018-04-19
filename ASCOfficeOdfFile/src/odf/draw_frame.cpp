@@ -274,7 +274,7 @@ void draw_object::add_child_element( xml::sax * Reader, const std::wstring & Ns,
     if CP_CHECK_NAME(L"office", L"document")
     {
 		//embedded
-		odf_document_ = odf_document_ptr( new odf_document(Reader));
+		odf_document_ = odf_document_ptr( new odf_document(Reader, NSDirectory::GetTempPath()));
     }
 }
 

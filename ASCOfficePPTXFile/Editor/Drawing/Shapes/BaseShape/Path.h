@@ -1010,21 +1010,18 @@ namespace NSPresentationEditor
             }
         }
 
-		std::wstring ToXml(CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo, NSBaseShape::ClassType ClassType)
+		std::wstring ToXml(CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, NSBaseShape::ClassType ClassType)
         {
             return _T("");
         }
 
-        void ToRenderer(CGraphicPath* pRenderer, CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo, NSBaseShape::ClassType ClassType)
+        void ToRenderer(CGraphicPath* pRenderer, CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, NSBaseShape::ClassType ClassType)
         {
             pRenderer->m_bStroke	= m_bStroke;
             pRenderer->m_bFill		= m_bFill;
 
             pRenderer->Pen			= pPen;
             pRenderer->Brush		= pFore;
-
-            pRenderer->m_dWidthMM	= pInfo.m_lMillimetresHor;
-            pRenderer->m_dHeightMM	= pInfo.m_lMillimetresVer;
 
             //pRenderer->SetCommandParams(pGeomInfo.m_dRotate, pGeomInfo.m_dLeft, pGeomInfo.m_dTop,
             //	pGeomInfo.m_dWidth, pGeomInfo.m_dHeight, pGeomInfo.GetFlags());
@@ -1041,14 +1038,11 @@ namespace NSPresentationEditor
             //pRenderer->SetCommandParams(0, -1, -1, -1, -1, 0);
         }
 
-        void ToRendererOOX(CGraphicPath* pRenderer, CGeomShapeInfo& pGeomInfo, CMetricInfo& pInfo, NSBaseShape::ClassType ClassType)
+        void ToRendererOOX(CGraphicPath* pRenderer, CGeomShapeInfo& pGeomInfo, NSBaseShape::ClassType ClassType)
         {
             pRenderer->m_bStroke	= m_bStroke;
             pRenderer->m_bFill		= m_bFill;
-
-            pRenderer->m_dWidthMM	= pInfo.m_lMillimetresHor;
-            pRenderer->m_dHeightMM	= pInfo.m_lMillimetresVer;
-
+  
             for (size_t nIndex = 0; nIndex < m_arSlices.size(); ++nIndex)
             {
                 m_arSlices[nIndex].ToRenderer(pRenderer, pGeomInfo, width, height, ClassType);
@@ -1119,18 +1113,18 @@ namespace NSPresentationEditor
                 m_arParts.back().FromXML(oArray[nIndex], pManager);
             }
         }
-        std::wstring ToXml(CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo, NSBaseShape::ClassType ClassType)
+        std::wstring ToXml(CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, NSBaseShape::ClassType ClassType)
         {
             std::wstring strResult = _T("");
             for (size_t nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
             {
-                strResult += m_arParts[nIndex].ToXml(pGeomInfo, dStartTime, dEndTime, pPen, pFore, pInfo, ClassType);
+                strResult += m_arParts[nIndex].ToXml(pGeomInfo, dStartTime, dEndTime, pPen, pFore, ClassType);
             }
             return strResult;
         }
 
         void ToRenderer(IRenderer* pRenderer, CGeomShapeInfo& pGeomInfo, double dStartTime,
-                        double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo, NSBaseShape::ClassType ClassType)
+                        double dEndTime, CPen& pPen, CBrush& pFore, NSBaseShape::ClassType ClassType)
         {
             CGraphicPath oPath;
             oPath.Pen	= pPen;
@@ -1139,7 +1133,7 @@ namespace NSPresentationEditor
             for (size_t nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
             {
                 oPath.Clear();
-                m_arParts[nIndex].ToRenderer(&oPath, pGeomInfo, dStartTime, dEndTime, pPen, pFore, pInfo, ClassType);
+                m_arParts[nIndex].ToRenderer(&oPath, pGeomInfo, dStartTime, dEndTime, pPen, pFore, ClassType);
 
                 oPath.Draw(pRenderer);
             }

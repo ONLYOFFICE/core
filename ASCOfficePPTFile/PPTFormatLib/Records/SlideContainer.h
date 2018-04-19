@@ -49,7 +49,7 @@ public:
 	int						m_IndexUser;
 	
 private:
-	DWORD m_lCountReferences;
+	_UINT32 m_lCountReferences;
 
 public:
 	

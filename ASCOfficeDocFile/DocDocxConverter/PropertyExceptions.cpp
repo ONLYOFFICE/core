@@ -60,7 +60,7 @@ namespace DocFileFormat
 	}
 	void PropertyExceptions::ReadExceptions(unsigned char* bytes, int size, int nWordVersion)
 	{
-		RELEASEOBJECT( grpprl );
+ 		RELEASEOBJECT( grpprl );
 
 		grpprl = new std::list<SinglePropertyModifier>();
 

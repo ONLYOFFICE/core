@@ -128,21 +128,22 @@ namespace DocFileFormat
 			if ( bx.wordOffset != 0 )
 			{
 				unsigned char padbyte = 0;
-				unsigned char cw = bytes[bx.wordOffset * 2] * 2;
+				unsigned char cw = bytes[bx.wordOffset * 2];
 				//if that unsigned char is zero, it's a pad unsigned char, and the word count is the following unsigned char
 				if ( cw == 0 )
 				{
 					padbyte = 1;
-					cw = bytes[bx.wordOffset * 2 + 1] * 2;
+					cw = bytes[bx.wordOffset * 2 + 1];
 				}
 				if ( cw != 0 )
 				{
+					int sz = cw * 2;
 					//read the bytes for papx
-					unsigned char* papx = new unsigned char[cw];
-					memcpy( papx, ( bytes + (bx.wordOffset * 2) + padbyte + 1 ), cw );
+					unsigned char* papx = new unsigned char[sz];
+					memcpy( papx, ( bytes + (bx.wordOffset * 2) + padbyte + 1 ), sz );
 
 					//parse PAPX and fill grppapx
-					grppapx[i] = new ParagraphPropertyExceptions( papx, cw, dataStream, nWordVersion );
+					grppapx[i] = new ParagraphPropertyExceptions( papx, sz, dataStream, nWordVersion );
 
 					RELEASEARRAYOBJECTS( papx );
 				}

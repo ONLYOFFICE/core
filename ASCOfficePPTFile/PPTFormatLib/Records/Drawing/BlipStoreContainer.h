@@ -52,13 +52,13 @@ public:
 
 		pArray->clear();
 
-		std::map<DWORD, int> image_map;
+		std::map<_UINT32, int> image_map;
 		for (size_t nIndex = 0; nIndex < m_arRecords.size(); ++nIndex)
 		{
 			CRecordBlipStoreEntry* pEntry = dynamic_cast<CRecordBlipStoreEntry*>(m_arRecords[nIndex]);
 			if (NULL != pEntry)
 			{
-				image_map.insert(std::pair<DWORD, int>(pEntry->m_nFoDelay, pArray->size()));
+				image_map.insert(std::pair<_UINT32, int>(pEntry->m_nFoDelay, pArray->size()));
 
 				int offset = pEntry->m_nFoDelay;
 				if (0 == pEntry->m_oHeader.RecInstance)	offset = -1;

@@ -35,7 +35,7 @@
 class CRecordExMediaAtom : public CUnknownRecord
 {
 public:
-	DWORD m_nExObjID;
+	_UINT32 m_nExObjID;
 	
 	bool m_bLoop;
 	bool m_bRewind;

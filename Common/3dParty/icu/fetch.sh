@@ -16,11 +16,13 @@ case "$os" in
     platform="linux"
     BUILD_PLATFORM=Linux
     SHARED_LIB_EXT=.so.$SHARED_LIB_VER
+    SHARED_LIB_SHORT_EXT=.so.$ICU_MAJOR_VER
     ;;
   Darwin*)
     platform="mac"
     BUILD_PLATFORM=MacOSX
     SHARED_LIB_EXT=.$SHARED_LIB_VER.dylib
+    SHARED_LIB_SHORT_EXT=.$ICU_MAJOR_VER.dylib
     ;;
   *)        exit ;;
 esac
@@ -66,7 +68,12 @@ fi
 
 make
 
+if [ ! -d "$SCRIPTPATH/$platform$arch/usr/local" ]
+then
+  DESTDIR="$SCRIPTPATH/$platform$arch" make install
+fi
+
 cd ../../
 
-cp "./icu/source/lib/libicudata$SHARED_LIB_EXT" "build/libicudata$SHARED_LIB_EXT"
-cp "./icu/source/lib/libicuuc$SHARED_LIB_EXT" "build/libicuuc$SHARED_LIB_EXT"
+cp "./icu/source/lib/libicudata$SHARED_LIB_EXT" "build/libicudata$SHARED_LIB_SHORT_EXT"
+cp "./icu/source/lib/libicuuc$SHARED_LIB_EXT" "build/libicuuc$SHARED_LIB_SHORT_EXT"

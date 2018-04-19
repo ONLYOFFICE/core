@@ -253,7 +253,7 @@ typedef BYTE BOOL1;
 #define		RECORD_TEXT_MASTER_STYLE10_ATOM								0x0FB2	//	RT_TextMasterStyle10Atom			TextMasterStyle10Atom 
 
 
-static std::string GetRecordName(DWORD dwType)
+static std::string GetRecordName(_UINT32 dwType)
 {
 	std::string strName = ("Unknown");
 	

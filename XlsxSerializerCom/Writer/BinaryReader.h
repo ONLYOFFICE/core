@@ -1556,6 +1556,11 @@ namespace BinXlsxRW
 				m_oWorkbook.m_oDefinedNames.Init();
 				res = Read1(length, &BinaryWorkbookTableReader::ReadDefinedNames, this, poResult);
 			}
+			else if(c_oSerWorkbookTypes::CalcPr == type)
+			{
+				m_oWorkbook.m_oCalcPr.Init();
+				res = Read1(length, &BinaryWorkbookTableReader::ReadCalcPr, this, m_oWorkbook.m_oCalcPr.GetPointer());
+			}
 			else if(c_oSerWorkbookTypes::ExternalReferences == type)
 			{
 				m_oWorkbook.m_oExternalReferences.Init();
@@ -1778,6 +1783,79 @@ namespace BinXlsxRW
 				res = c_oSerConstants::ReadUnknown;
 			return res;
         }
+		int ReadCalcPr(BYTE type, long length, void* poResult)
+		{
+			int res = c_oSerConstants::ReadOk;
+            OOX::Spreadsheet::CCalcPr* calcPr = static_cast<OOX::Spreadsheet::CCalcPr*>(poResult);
+			if(c_oSerCalcPrTypes::CalcId == type)
+			{
+				calcPr->m_oCalcId.Init();
+				calcPr->m_oCalcId->SetValue(m_oBufferedStream.GetULong());
+			}
+			else if(c_oSerCalcPrTypes::CalcMode == type)
+			{
+				calcPr->m_oCalcMode.Init();
+				calcPr->m_oCalcMode->SetValue((SimpleTypes::Spreadsheet::ECalcMode)m_oBufferedStream.GetUChar());
+			}
+			else if(c_oSerCalcPrTypes::FullCalcOnLoad == type)
+			{
+				calcPr->m_oFullCalcOnLoad.Init();
+				calcPr->m_oFullCalcOnLoad->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSerCalcPrTypes::RefMode == type)
+			{
+				calcPr->m_oRefMode.Init();
+				calcPr->m_oRefMode->SetValue((SimpleTypes::Spreadsheet::ERefMode)m_oBufferedStream.GetUChar());
+			}
+			else if(c_oSerCalcPrTypes::Iterate == type)
+			{
+				calcPr->m_oIterate.Init();
+				calcPr->m_oIterate->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSerCalcPrTypes::IterateCount == type)
+			{
+				calcPr->m_oIterateCount.Init();
+				calcPr->m_oIterateCount->SetValue(m_oBufferedStream.GetULong());
+			}
+			else if(c_oSerCalcPrTypes::IterateDelta == type)
+			{
+				calcPr->m_oIterateDelta.Init();
+				calcPr->m_oIterateDelta->SetValue(m_oBufferedStream.GetDoubleReal());
+			}
+			else if(c_oSerCalcPrTypes::FullPrecision == type)
+			{
+				calcPr->m_oFullPrecision.Init();
+				calcPr->m_oFullPrecision->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSerCalcPrTypes::CalcCompleted == type)
+			{
+				calcPr->m_oCalcCompleted.Init();
+				calcPr->m_oCalcCompleted->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSerCalcPrTypes::CalcOnSave == type)
+			{
+				calcPr->m_oCalcOnSave.Init();
+				calcPr->m_oCalcOnSave->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSerCalcPrTypes::ConcurrentCalc == type)
+			{
+				calcPr->m_oConcurrentCalc.Init();
+				calcPr->m_oConcurrentCalc->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSerCalcPrTypes::ConcurrentManualCount == type)
+			{
+				calcPr->m_oConcurrentManualCount.Init();
+				calcPr->m_oConcurrentManualCount->SetValue(m_oBufferedStream.GetULong());
+			}
+			else if(c_oSerCalcPrTypes::ForceFullCalc == type)
+			{
+				calcPr->m_oForceFullCalc.Init();
+				calcPr->m_oForceFullCalc->FromBool(m_oBufferedStream.GetBool());
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		}
 		int ReadExternalBook(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CExternalLink* extLink = static_cast<OOX::Spreadsheet::CExternalLink*>(poResult);

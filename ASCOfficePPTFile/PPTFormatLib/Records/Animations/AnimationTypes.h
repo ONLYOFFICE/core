@@ -44,8 +44,8 @@ inline int sort (const long* a, const long* b) { return *a > *b ? 1 : -1; }
 #if !defined(_WIN32) && !defined (_WIN64)
 
     typedef struct _FILETIME {
-        DWORD dwLowDateTime;
-        DWORD dwHighDateTime;
+        _UINT32 dwLowDateTime;
+        _UINT32 dwHighDateTime;
     } FILETIME;
 
     typedef struct _SYSTEMTIME {
@@ -108,7 +108,7 @@ namespace Animations
 		RT_TimeSlaveContainer				=	0xF145
 	};
 
-	enum TimeNodeTypeEnum : DWORD
+	enum TimeNodeTypeEnum : _UINT32
 	{
 		TL_TNT_Parallel				=	0x00000000,	//  Parallel time node whose child nodes can start simultaneously. 
 		TL_TNT_Sequential			=	0x00000001,	//	Sequential time node whose child nodes can only start sequentially and each child can only start after its previous sibling has started.  
@@ -145,7 +145,7 @@ namespace Animations
 		TL_TPID_ZoomToFullScreen	=	0x0000001A	//  Whether to zoom a media object to full screen. 
 	};
 
-	enum TriggerObjectEnum : DWORD
+	enum TriggerObjectEnum : _UINT32
 	{
 		TL_TOT_None					=	0x00000000,	//	None.  
 		TL_TOT_VisualElement		=	0x00000001,	//	An animatable object. 
@@ -153,7 +153,7 @@ namespace Animations
 		TL_TOT_RuntimeNodeRef		=	0x00000003	//	Runtime child time nodes. 
 	};
 
-	enum TimeVisualElementEnum : DWORD 
+	enum TimeVisualElementEnum : _UINT32 
 	{
 		TL_TVET_Shape				=	0x00000000,	//  Applies to the shape and all its text. 
 		TL_TVET_Page				=	0x00000001,	//  Applies to the slide.  
@@ -165,13 +165,13 @@ namespace Animations
 		TL_TVET_AllTextRange		=	0x00000008	//	Applies to all text of the shape
 	};
 
-	enum TimeAnimateBehaviorValueTypeEnum : DWORD
+	enum TimeAnimateBehaviorValueTypeEnum : _UINT32
 	{
 		TL_TABVT_String				=	0x00000000, //	Animate text content. 
 		TL_TABVT_Number				=	0x00000001,	//	Animate a numeric property. 
 		TL_TABVT_Color				=	0x00000002	//	Animate a color property. 
 	};
-	enum ElementTypeEnum : DWORD
+	enum ElementTypeEnum : _UINT32
 	{
 		TL_ET_ShapeType				=	0x00000001,	//	The animation targets a shape or some part of a shape. 
 		TL_ET_SoundType				=	0x00000002	//	The animation targets a sound file that does not correspond to a shape.  
@@ -301,15 +301,15 @@ namespace Animations
         static std::wstring GetTimeAnimateBehaviorValueTypeEnum	( TimeAnimateBehaviorValueTypeEnum Value );
         static std::wstring GetAnimationClassName				( AnimationsClassType Value );
 
-        static std::wstring GetEffectTypeOfGroup				( DWORD Value );
+        static std::wstring GetEffectTypeOfGroup				( _UINT32 Value );
 		//	the corresponding effect type is an entrance or an exit effect
-        static std::wstring GetEffectEntranceOrExitNameByID		( DWORD EffectID );
+        static std::wstring GetEffectEntranceOrExitNameByID		( _UINT32 EffectID );
 		//	the corresponding effect type is an emphasis effect
-        static std::wstring GetEffectEmphasisNameByID			( DWORD EffectID );
+        static std::wstring GetEffectEmphasisNameByID			( _UINT32 EffectID );
 		//	the corresponding effect type is a motion path effect
-        static std::wstring GetEffectMotionPathNameByID			( DWORD EffectID );
+        static std::wstring GetEffectMotionPathNameByID			( _UINT32 EffectID );
 
-        static std::wstring GetEffectNameByID					( DWORD EffectType, DWORD EffectID );
+        static std::wstring GetEffectNameByID					( _UINT32 EffectType, _UINT32 EffectID );
 	};
 }
 
@@ -329,7 +329,7 @@ namespace Animations
 			buildId			=	StreamUtils::ReadDWORD ( pStream );
 			shapeIdRef		=	StreamUtils::ReadDWORD ( pStream );
 
-			DWORD Value		=	StreamUtils::ReadDWORD ( pStream );
+			_UINT32 Value		=	StreamUtils::ReadDWORD ( pStream );
 
 			fExpanded		=	( 0x01 == ( 0x01 & ((BYTE)Value) ) ); 
 			fUIExpanded		=	( 0x02 == ( 0x02 & ((BYTE)Value) ) );
@@ -339,9 +339,9 @@ namespace Animations
 
 	public:
 
-		DWORD	buildType;			//	1	-	Paragraph build type,	2	-	Chart build type,	3	-	Diagram build type
-		DWORD	buildId;
-		DWORD	shapeIdRef;
+		_UINT32	buildType;			//	1	-	Paragraph build type,	2	-	Chart build type,	3	-	Diagram build type
+		_UINT32	buildId;
+		_UINT32	shapeIdRef;
 
         bool	fExpanded;
         bool	fUIExpanded;
@@ -359,7 +359,7 @@ namespace Animations
 			paraBuild					=	StreamUtils::ReadDWORD ( pStream );
 			buildLevel					=	StreamUtils::ReadDWORD ( pStream );
 
-			DWORD Value					=	StreamUtils::ReadDWORD ( pStream );
+			_UINT32 Value					=	StreamUtils::ReadDWORD ( pStream );
 
 			fAnimBackground				=	( 0x01 == ( 0x01 & ((BYTE)Value) ) ); 
 			fReverse					=	( 0x02 == ( 0x02 & ((BYTE)Value) ) );
@@ -379,21 +379,21 @@ namespace Animations
 
 	public:
 
-		DWORD	paraBuild;			//	0	-	All paragraphs in the shape animate at the same time. 
+		_UINT32	paraBuild;			//	0	-	All paragraphs in the shape animate at the same time. 
 		//	1	-	Paragraph levels 1 to n – 1 in the shape animate separately.
 		//			All paragraph levels n or greater animate at the same time. 
 		//	2	-	Applies a custom animation paragraph build type to the 
 		//			paragraphs of the shape. 
 		//	3	-	The shape and all paragraphs within the shape animate as one 
 		//			graphical object. 
-		DWORD	buildLevel;
+		_UINT32	buildLevel;
 
         bool	fAnimBackground;
         bool	fReverse;
         bool	fUserSetAnimBackground;
         bool	fAutomatic;
 
-		DWORD	delayTime;
+		_UINT32	delayTime;
 	};	
 	struct LevelInfoAtom : public CUnknownRecord
 	{
@@ -410,7 +410,7 @@ namespace Animations
 
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x0 && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == RT_LevelInfoAtom && m_oHeader.RecLen == 0x00000004; }
 
-		DWORD	level;			
+		_UINT32	level;			
 	};
 
 	struct ParaBuildLevel
@@ -640,7 +640,7 @@ namespace Animations
 	public:
 
 		TimeVariantTypeEnum		m_Type;
-		DWORD					m_Value;
+		_UINT32					m_Value;
 	};
 
 	struct TimeVariantFloat : public TimeVariant
@@ -746,7 +746,7 @@ namespace Animations
 	// structures for ExtTimeNodeContainer
 	struct TimeNodeAtom : public CUnknownRecord
 	{
-		static const DWORD RT_TimeSequenceData = 0xF141;
+		static const _UINT32 RT_TimeSequenceData = 0xF141;
 
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -757,7 +757,7 @@ namespace Animations
 #endif
 			//	LONG lPos = 0;	StreamUtils::StreamPosition(lPos, pStream);
 
-			StreamUtils::StreamSkip ( sizeof ( DWORD ), pStream );
+			StreamUtils::StreamSkip ( sizeof ( _UINT32 ), pStream );
 
 			//	0x00000000  Does not restart. 
 			//	0x00000001  Can restart at any time.  
@@ -775,14 +775,14 @@ namespace Animations
 			//	0x00000004  Same as 0x00000001.  
 			m_dwFill				=	StreamUtils::ReadDWORD ( pStream );
 
-			StreamUtils::StreamSkip ( sizeof ( DWORD ), pStream );
-			StreamUtils::StreamSkip ( sizeof ( DWORD ),	pStream );
+			StreamUtils::StreamSkip ( sizeof ( _UINT32 ), pStream );
+			StreamUtils::StreamSkip ( sizeof ( _UINT32 ),	pStream );
 
 			// duration: 0xFFFFFFFF specifies that the duration of the time node is infinite, 
 			// and that its actual duration is determined by the durations of its child nodes. 
 			m_nDuration				=	StreamUtils::ReadLONG ( pStream );
 
-			DWORD Value				=	StreamUtils::ReadDWORD ( pStream );
+			_UINT32 Value				=	StreamUtils::ReadDWORD ( pStream );
 
 			m_bFillProperty			=	( 0x01 == ( 0x01 & ((BYTE)Value) ) ); 
 			m_bRestartProperty		=	( 0x02 == ( 0x02 & ((BYTE)Value) ) );
@@ -797,9 +797,9 @@ namespace Animations
 
 	public:
 
-		DWORD				m_dwRestart;
+		_UINT32				m_dwRestart;
 		TimeNodeTypeEnum	m_dwType;
-		DWORD				m_dwFill;
+		_UINT32				m_dwFill;
 		long				m_nDuration;
 
 		bool				m_bFillProperty;
@@ -823,9 +823,9 @@ namespace Animations
 			m_nNextAction					=	StreamUtils::ReadDWORD ( pStream );
 			m_nPreviousAction				=	StreamUtils::ReadDWORD ( pStream );
 
-			StreamUtils::StreamSkip ( sizeof ( DWORD ),	pStream );
+			StreamUtils::StreamSkip ( sizeof ( _UINT32 ),	pStream );
 
-			DWORD Value						=	StreamUtils::ReadDWORD ( pStream );
+			_UINT32 Value						=	StreamUtils::ReadDWORD ( pStream );
 
 			m_bConcurrencyPropertyUsed		=	( 0x01 == ( 0x01 & ((BYTE)Value) ) ); 
 			m_bNextActionPropertyUsed		=	( 0x02 == ( 0x02 & ((BYTE)Value) ) );
@@ -844,9 +844,9 @@ namespace Animations
 
 	public:
 
-		DWORD		m_nConcurrency;
-		DWORD		m_nNextAction;
-		DWORD		m_nPreviousAction;
+		_UINT32		m_nConcurrency;
+		_UINT32		m_nNextAction;
+		_UINT32		m_nPreviousAction;
 
 		bool		m_bConcurrencyPropertyUsed;
 		bool		m_bNextActionPropertyUsed;
@@ -941,7 +941,7 @@ namespace Animations
 	struct TimePropertyList4TimeNodeContainer : public CUnknownRecord
 	{
 	public:
-		//static const DWORD RT_TimePropertyList = 0xF13D;	//	Specifies a TimePropertyList4TimeNodeContainer or TimePropertyList4TimeBehavior.  
+		//static const _UINT32 RT_TimePropertyList = 0xF13D;	//	Specifies a TimePropertyList4TimeNodeContainer or TimePropertyList4TimeBehavior.  
 
 		TimePropertyList4TimeNodeContainer ()
 		{
@@ -1060,7 +1060,7 @@ namespace Animations
 
 		// helper
 
-		inline const DWORD& GetEffectNodeType () const
+		inline const _UINT32& GetEffectNodeType () const
 		{
 			return m_EffectNodeType.m_Value;
 		}
@@ -1081,7 +1081,7 @@ namespace Animations
 	struct TimePropertyList4TimeBehavior : public CUnknownRecord
 	{
 	public:
-		//static const DWORD RT_TimePropertyList = 0xF13D;	//	Specifies a TimePropertyList4TimeNodeContainer or TimePropertyList4TimeBehavior.  
+		//static const _UINT32 RT_TimePropertyList = 0xF13D;	//	Specifies a TimePropertyList4TimeNodeContainer or TimePropertyList4TimeBehavior.  
 
 		TimePropertyList4TimeBehavior ()
 		{
@@ -1151,9 +1151,9 @@ namespace Animations
 
 		TimeVisualElementEnum	m_Type;	
 		ElementTypeEnum			m_RefType;
-		DWORD					m_nObjectIdRef;		//	ShapeIdRef || SoundIdRef
-		DWORD					m_nData1;
-		DWORD					m_nData2;		
+		_UINT32					m_nObjectIdRef;		//	ShapeIdRef || SoundIdRef
+		_UINT32					m_nData1;
+		_UINT32					m_nData2;		
 	};
 
 	struct VisualPageAtom : public CUnknownRecord
@@ -1245,7 +1245,7 @@ namespace Animations
 #endif
 			// LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
 
-			DWORD dwFlags					=	StreamUtils::ReadDWORD ( pStream );
+			_UINT32 dwFlags					=	StreamUtils::ReadDWORD ( pStream );
 
 			m_bAdditivePropertyUsed			=	( 0x01 == ( 0x01 & ((BYTE)dwFlags) ) );
 			m_bAttributeNamesPropertyUsed	=	( 0x04 == ( 0x04 & ((BYTE)dwFlags) ) );
@@ -1270,9 +1270,9 @@ namespace Animations
 		bool	m_bAdditivePropertyUsed;
 		bool	m_bAttributeNamesPropertyUsed;
 
-		DWORD	m_nBehaviorAdditive;
-		DWORD	m_nBehaviorAccumulate;
-		DWORD	m_nBehaviorTransform;
+		_UINT32	m_nBehaviorAdditive;
+		_UINT32	m_nBehaviorAccumulate;
+		_UINT32	m_nBehaviorTransform;
 	};
 
 	struct TimeBehaviorContainer : public CUnknownRecord
@@ -1428,7 +1428,7 @@ namespace Animations
 #endif
 			// LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
 
-			DWORD dwFlags				=	StreamUtils::ReadDWORD ( pStream );
+			_UINT32 dwFlags				=	StreamUtils::ReadDWORD ( pStream );
 
 			m_bTransitionPropertyUsed	= ( 0x01 == ( 0x01 & ((BYTE)dwFlags) ) );
 			m_bTypePropertyUsed			= ( 0x02 == ( 0x02 & ((BYTE)dwFlags) ) );
@@ -1454,7 +1454,7 @@ namespace Animations
 		bool	m_bProgressPropertyUsed;
 		bool	m_bRuntimeContextObsolete;
 
-		DWORD	m_nEffectTransition;
+		_UINT32	m_nEffectTransition;
 	};
 
 	struct TimeEffectBehaviorContainer : public CUnknownRecord
@@ -1553,8 +1553,8 @@ namespace Animations
 	public:
 
 		TriggerObjectEnum	m_TriggerObject;
-		DWORD				m_nTriggerEvent;
-		DWORD				m_nID;
+		_UINT32				m_nTriggerEvent;
+		_UINT32				m_nID;
 		LONG				m_nTimeDelay;
 	};
 
@@ -1614,7 +1614,7 @@ namespace Animations
 			iterateDirection					=	StreamUtils::ReadDWORD ( pStream );
 			iterateIntervalType					=	StreamUtils::ReadDWORD ( pStream );
 
-			DWORD Value							=	StreamUtils::ReadDWORD ( pStream );
+			_UINT32 Value							=	StreamUtils::ReadDWORD ( pStream );
 
 			fIterateDirectionPropertyUsed		=	( 0x01 == ( 0x01 & ((BYTE)Value) ) ); 
 			fIterateTypePropertyUsed			=	( 0x02 == ( 0x02 & ((BYTE)Value) ) );
@@ -1648,7 +1648,7 @@ namespace Animations
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			if( IsCorrect () == false ) return;
 #endif
-			DWORD Value						=	StreamUtils::ReadDWORD ( pStream );
+			_UINT32 Value						=	StreamUtils::ReadDWORD ( pStream );
 
 			m_bByPropertyUsed				=	( 0x01 == ( 0x01 & ((BYTE)Value) ) ); 
 			m_bFromPropertyUsed				=	( 0x02 == ( 0x02 & ((BYTE)Value) ) );
@@ -1692,7 +1692,7 @@ namespace Animations
 		FLOAT	m_nYFROM;
 		FLOAT	m_nXTO;
 		FLOAT	m_nYTO;
-		DWORD	m_nBehaviorOrigin;
+		_UINT32	m_nBehaviorOrigin;
 	};
 
 	struct TimeMotionBehaviorContainer : public CUnknownRecord
@@ -1758,7 +1758,7 @@ namespace Animations
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			if( IsCorrect () == false ) return;
 #endif
-			DWORD Value						=	StreamUtils::ReadDWORD ( pStream );
+			_UINT32 Value						=	StreamUtils::ReadDWORD ( pStream );
 
 			m_bToPropertyUsed				=	( 0x01 == ( 0x01 & ((BYTE)Value) ) ); 
 			m_bValueTypePropertyUsed		=	( 0x02 == ( 0x02 & ((BYTE)Value) ) );
@@ -1834,7 +1834,7 @@ namespace Animations
 #endif
 			m_nCalcMode						=	StreamUtils::ReadDWORD ( pStream );
 
-			DWORD Value						=	StreamUtils::ReadDWORD ( pStream );
+			_UINT32 Value						=	StreamUtils::ReadDWORD ( pStream );
 
 			m_bByPropertyUsed				=	( 0x01 == ( 0x01 & ((BYTE)Value) ) ); 
 			m_bFromPropertyUsed				=	( 0x02 == ( 0x02 & ((BYTE)Value) ) );
@@ -1856,7 +1856,7 @@ namespace Animations
 
 	public:
 
-		DWORD								m_nCalcMode;
+		_UINT32								m_nCalcMode;
 
 		bool								m_bByPropertyUsed;
 		bool								m_bFromPropertyUsed;
@@ -2043,7 +2043,7 @@ namespace Animations
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			if( IsCorrect () == false ) return;
 #endif
-			DWORD src						=	StreamUtils::ReadDWORD ( pStream );
+			_UINT32 src						=	StreamUtils::ReadDWORD ( pStream );
 
 			fByPropertyUsed					=	( 0x01 == ( 0x01 & ((BYTE)src) ) ); 
 			fFromPropertyUsed				=	( 0x02 == ( 0x02 & ((BYTE)src) ) );
@@ -2069,7 +2069,7 @@ namespace Animations
 		float	fBy;
 		float	fFrom;
 		float	fTo;
-		DWORD	rotationDirection;		//	0	-	rotate clockwise,	1	-	rotate counter clockwise
+		_UINT32	rotationDirection;		//	0	-	rotate clockwise,	1	-	rotate counter clockwise
 	};
 	struct TimeRotationBehaviorContainer  : public CUnknownRecord
 	{
@@ -2110,7 +2110,7 @@ namespace Animations
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			if( IsCorrect () == false ) return;
 #endif
-			DWORD src						=	StreamUtils::ReadDWORD ( pStream );
+			_UINT32 src						=	StreamUtils::ReadDWORD ( pStream );
 
 			fByPropertyUsed					=	( 0x01 == ( 0x01 & ((BYTE)src) ) ); 
 			fFromPropertyUsed				=	( 0x02 == ( 0x02 & ((BYTE)src) ) );
@@ -2178,10 +2178,10 @@ namespace Animations
 {
 	struct TimeAnimateColorBy
 	{
-		DWORD model;			//	0	-	RGB,	1	-	HSL,	2	-	IndexScheme
-		DWORD component0;
-		DWORD component1;
-		DWORD component2;
+		_UINT32 model;			//	0	-	RGB,	1	-	HSL,	2	-	IndexScheme
+		_UINT32 component0;
+		_UINT32 component1;
+		_UINT32 component2;
 
 		inline unsigned long FRGB (BYTE alpha = 0xFF)	//	
 		{
@@ -2191,10 +2191,10 @@ namespace Animations
 
 	struct TimeAnimateColor
 	{
-		DWORD model;			//	0	-	RGB,	2	-	IndexScheme
-		DWORD red;
-		DWORD green;
-		DWORD blue;
+		_UINT32 model;			//	0	-	RGB,	2	-	IndexScheme
+		_UINT32 red;
+		_UINT32 green;
+		_UINT32 blue;
 
 		inline unsigned long FRGB (BYTE alpha = 0xFF)
 		{
@@ -2230,7 +2230,7 @@ namespace Animations
 
 	public:
 
-		DWORD	flag;
+		_UINT32	flag;
 
         bool	fByPropertyUsed;
         bool	fFromPropertyUsed;
@@ -2785,7 +2785,7 @@ namespace Animations
 
 	struct SlideTime10Atom : public CUnknownRecord
 	{
-		static const DWORD RT_SlideTime10Atom	=	0x2EEB;
+		static const _UINT32 RT_SlideTime10Atom	=	0x2EEB;
 
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -2820,7 +2820,7 @@ namespace Animations
 
 	struct SlideFlags10Atom : public CUnknownRecord
 	{
-		static const DWORD RT_SlideFlags10Atom = 0x2EEA;
+		static const _UINT32 RT_SlideFlags10Atom = 0x2EEA;
 
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -2829,7 +2829,7 @@ namespace Animations
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			if( IsCorrect () == false ) return;
 #endif
-			DWORD Value = 0L;
+			_UINT32 Value = 0L;
 			pStream->read ((unsigned char*) &Value, sizeof ( Value ));
 
 			m_bPreserveMaster			=	( 0x01 == ( 0x01 & ((BYTE)Value) ) );
@@ -2852,7 +2852,7 @@ namespace Animations
 
 	struct HashCode10Atom : public CUnknownRecord
 	{
-		//static const DWORD RT_HashCodeAtom	=	0x2B00;
+		//static const _UINT32 RT_HashCodeAtom	=	0x2B00;
 
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
@@ -2861,8 +2861,8 @@ namespace Animations
 #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			if( IsCorrect () == false ) return;
 #endif
-			DWORD Value; 
-			pStream->read ( (unsigned char*) &Value, sizeof ( DWORD ) );
+			_UINT32 Value; 
+			pStream->read ( (unsigned char*) &Value, sizeof ( _UINT32 ) );
 		}
 
 		virtual bool IsCorrect ( )
@@ -2880,7 +2880,7 @@ namespace Animations
 {
 	typedef NSPresentationEditor::CAnimationSimple Effect;
 	typedef std::vector <Effect> Effects;
-	typedef std::map<DWORD,Effects*> EffectsMap;
+	typedef std::map<_UINT32,Effects*> EffectsMap;
 	typedef std::vector <double> TimeArray;
 }
 
@@ -3302,7 +3302,7 @@ namespace Animations
 			if (mSearch == m_oAnimation.end())
 			{
 				pEffects = new Effects ();
-				m_oAnimation.insert(std::pair<DWORD,Effects*>( oEffect.m_nRefID, pEffects));	
+				m_oAnimation.insert(std::pair<_UINT32,Effects*>( oEffect.m_nRefID, pEffects));	
 			}else 
 				pEffects = mSearch->second;
 
@@ -3582,7 +3582,7 @@ namespace Animations
 
 				sort(m_arParIndexer.begin(), m_arParIndexer.end());
 
-				for (std::map<DWORD, Effects*>::iterator pPair = m_oAnimation.begin(); pPair != m_oAnimation.end(); ++pPair)
+				for (std::map<_UINT32, Effects*>::iterator pPair = m_oAnimation.begin(); pPair != m_oAnimation.end(); ++pPair)
 				{
 					Effects* arEffects = pPair->second;
 					if (arEffects)
@@ -3683,7 +3683,7 @@ namespace Animations
 		//
 		inline void Clear ()
 		{
-			for (std::map<DWORD,Effects*>::iterator pPair = m_oAnimation.begin(); pPair != m_oAnimation.end(); ++pPair)
+			for (std::map<_UINT32,Effects*>::iterator pPair = m_oAnimation.begin(); pPair != m_oAnimation.end(); ++pPair)
 			{
 				RELEASEOBJECT(pPair->second);
 			}

@@ -83,28 +83,38 @@ int ConvertOdp2Pptx(cpdoccore::odf_reader::odf_document & inputOdf, const std::w
 
     return 0;
 }
-int ConvertODF2OOXml(const std::wstring & srcPath, const std::wstring & dstPath, const std::wstring & fontsPath, bool bOnlyPresentation, const ProgressCallback* CallBack)
+int ConvertODF2OOXml(const std::wstring & srcPath, const std::wstring & dstPath, const std::wstring & fontsPath, const std::wstring & tempPath, const std::wstring & password, const ProgressCallback* CallBack)
 {
 	int nResult = 0;
 
 	try 
     {
-		cpdoccore::odf_reader::odf_document inputOdf(srcPath, CallBack);
+		cpdoccore::odf_reader::odf_document inputOdf(srcPath, tempPath, password, CallBack);
 		
-		int type = inputOdf.get_office_mime_type();
-		bool encrypted = inputOdf.get_encrypted();
+		int type		= inputOdf.get_office_mime_type();
+		bool bEncrypted	= inputOdf.get_encrypted();
+		bool bError		= inputOdf.get_error();
 
-		if (encrypted) return AVS_ERROR_DRM;
-
-		if (bOnlyPresentation && type != 3)return AVS_ERROR_UNEXPECTED;
+		if (bError)
+		{
+			if (bEncrypted)
+			{
+				if (password.empty())	return AVS_ERROR_DRM;
+				else					return AVS_ERROR_PASSWORD;
+			}
+			else
+			{
+				return AVS_ERROR_FILEFORMAT;
+			}
+		}
 
 		switch (type)
 		{
 		case 1:
-			nResult = ConvertOdt2Docx(inputOdf,dstPath, fontsPath);
+			nResult = ConvertOdt2Docx(inputOdf, dstPath, fontsPath);
 			break;
 		case 2:
-			nResult = ConvertOds2Xlsx(inputOdf,dstPath, fontsPath);
+			nResult = ConvertOds2Xlsx(inputOdf, dstPath, fontsPath);
 			break;
 		case 3:
 			nResult = ConvertOdp2Pptx(inputOdf, dstPath, fontsPath);

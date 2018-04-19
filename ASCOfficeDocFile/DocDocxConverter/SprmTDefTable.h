@@ -177,8 +177,6 @@ namespace DocFileFormat
 			}
 		}
 
-	private: 
-
 		unsigned char numberOfColumns;
 		
 		/// An array of 16-bit signed integer that specifies horizontal distance in twips.

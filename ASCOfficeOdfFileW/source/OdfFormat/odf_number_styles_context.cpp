@@ -545,9 +545,9 @@ void odf_number_styles_context::create_currency_style(number_format_state & stat
 {
 	create_element(L"number", L"currency-style", root_elm, odf_context_);
 	{
-		int res1 = state.format_code[0].rfind(L"]");
-		int res2 = state.format_code[0].rfind(L"#");
-		int res3 = state.format_code[0].rfind(L"0");
+        int res1 = (int)state.format_code[0].rfind(L"]");
+        int res2 = (int)state.format_code[0].rfind(L"#");
+        int res3 = (int)state.format_code[0].rfind(L"0");
 
 		office_element_ptr elm_symbol;
 		create_element(L"number", L"currency-symbol", elm_symbol, odf_context_);

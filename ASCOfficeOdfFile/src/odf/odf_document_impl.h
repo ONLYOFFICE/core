@@ -58,8 +58,9 @@ typedef shared_ptr<content_xml_t>::Type content_xml_t_ptr;
 class odf_document::Impl
 {
 public:
-    Impl(const std::wstring & Folder, const ProgressCallback* CallBack);
-	Impl(xml::sax * Reader);
+    Impl(const std::wstring & SrcPath, const std::wstring & TempPath, const std::wstring & Password, const ProgressCallback* CallBack);
+	
+	Impl(xml::sax * Reader, const std::wstring & TempPath);
 	virtual ~Impl();
 
     odf_read_context & odf_context();
@@ -72,19 +73,22 @@ public:
     bool pptx_convert(oox::pptx_conversion_context & Context);
 
     const std::wstring & get_folder() const;
+    const std::wstring & get_temp_folder() const;
    
 	const office_element * get_content() const;
 		  office_element * get_content();
 
 	int get_office_mime_type() {return office_mime_type_;}
 
-	bool get_encrypted(){return encrypted;}
+	bool get_encrypted() {return (false == map_encryptions_.empty());}
+	bool get_error() {return bError;}
 
 	bool UpdateProgress(long Complete);
     
 private:
 	const ProgressCallback* pCallBack;
 	short bUserStopConvert;
+	bool bError;
    
 	odf_read_context_ptr context_;
     
@@ -92,6 +96,9 @@ private:
     void parse_fonts	(office_element *elemen);
 	void parse_manifests(office_element *element);
     void parse_settings	(office_element *element);
+
+	bool decrypt_folder (const std::wstring & srcPath, const std::wstring & dstPath);
+	bool decrypt_file (const std::wstring & srcPath, const std::wstring & dstPath, office_element_ptr data, int size );
 
     content_xml_t_ptr content_xml_;
     content_xml_t_ptr styles_xml_;
@@ -103,11 +110,13 @@ private:
 
     std::wstring base_folder_;
     std::wstring tmp_folder_;
+    std::wstring tmp_folder_original_;
 
 	int office_mime_type_;
-	bool encrypted;
 
 	int GetMimetype(std::wstring value);
+
+	std::map<std::wstring, std::pair<office_element_ptr, int>> map_encryptions_;
             
 };
 

@@ -685,9 +685,9 @@ namespace DocFileFormat
 
 					if ( _bContentWrite )
 					{
-                        m_pXmlWriter->WriteNodeBegin( L"w:fldChar", true );
-                            m_pXmlWriter->WriteAttribute( L"w:fldCharType", L"begin" );
-                        m_pXmlWriter->WriteNodeEnd( L"", true );
+						m_pXmlWriter->WriteNodeBegin( L"w:fldChar", true );
+							m_pXmlWriter->WriteAttribute( L"w:fldCharType", L"begin" );
+						m_pXmlWriter->WriteNodeEnd( L"", true );
 
 						_fieldLevels.back().bBegin = true;
 					}
@@ -702,12 +702,12 @@ namespace DocFileFormat
 							{
 								_writeWebHidden = true;
 								std::wstring _writeTocLink =f1.substr(d + 9);
-                                d = (int)_writeTocLink.find(L" ");
+								d = (int)_writeTocLink.find(L" ");
 								_writeTocLink = _writeTocLink.substr(0, d);
 								
-                                _writeAfterRun	=	std::wstring (L"<w:hyperlink w:anchor = \"");
+								_writeAfterRun	=	std::wstring (L"<w:hyperlink w:anchor = \"");
 								_writeAfterRun +=	_writeTocLink;
-                                _writeAfterRun +=	std::wstring (L"\" w:history=\"1\">");
+								_writeAfterRun +=	std::wstring (L"\" w:history=\"1\">");
 
 								break;								
 								//cp = cpFieldSep1;
@@ -717,7 +717,28 @@ namespace DocFileFormat
 						_skipRuns = 5; //with separator
 					}
 				}
-				else if (	bEMBED  ||	bLINK ||	bQUOTE)						
+				//else if ( bHYPERLINK )
+				//{//todooo - выделение гиперссылки отдельно
+				//	std::vector<std::wstring> arRefs;
+				//	boost::algorithm::split(arRefs, f, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+				//	
+				//	std::wstring sLink = arRefs[2];
+				//	m_pXmlWriter->WriteNodeBegin( L"w:hyperlink", true );
+
+				//	int relID = m_context->_docx->RegisterHyperlink(_caller, sLink);
+				//	m_pXmlWriter->WriteAttribute( L"r:id", L"rId"+ FormatUtils::IntToWideString( relID ) );
+				//	m_pXmlWriter->WriteAttribute( L"w:history", 1 );
+				//	m_pXmlWriter->WriteNodeEnd( L"", true, false );
+
+				//	if (arRefs.size() > 2)
+				//	{
+				//		writeTextElement(arRefs[3].substr(1, arRefs[3].length() - 2), textType);
+				//	}
+				//	m_pXmlWriter->WriteNodeEnd( L"w:hyperlink", false, true );
+
+				//	_skipRuns = 1;
+				//}
+				else if ( bEMBED ||	(bLINK && !bHYPERLINK)|| bQUOTE)						
 				{
 					int cpPic		=	searchNextTextMark(m_document->Text, cpFieldStart,	TextMark::Picture);
 					int cpFieldSep	=	searchNextTextMark(m_document->Text, cpFieldStart,	TextMark::FieldSeparator);
@@ -840,19 +861,21 @@ namespace DocFileFormat
 			else if (TextMark::FieldEndMark == code)
 			{
 				if (!_fieldLevels.empty())
-				{
-					_fieldLevels.back().bEnd = true;
-					
-					if (_fieldLevels.back().bBegin == true && !text.empty())
+				{					
+					if (!text.empty())
 					{
 						writeTextElement(text, textType);
 						text.clear();
-					}
+					}			
+					if (_fieldLevels.back().bBegin)
+					{					
+						_fieldLevels.back().bEnd = true;
 					
-                    XMLTools::XMLElement elem( L"w:fldChar" );
-                    elem.AppendAttribute( L"w:fldCharType", L"end" );
+						XMLTools::XMLElement elem( L"w:fldChar" );
+						elem.AppendAttribute( L"w:fldCharType", L"end" );
 
-					m_pXmlWriter->WriteString( elem.GetXMLString());
+						m_pXmlWriter->WriteString( elem.GetXMLString());
+					}
 
 					_fieldLevels.pop_back();
 				}
@@ -1151,20 +1174,7 @@ namespace DocFileFormat
 			if ( fc >= nMinVal )
 			{
 				ret = m_document->AllPapx->find(nMinVal)->second;
-//?				if (!ret && m_document->AllPapx->size() > 0)
-//?				{
-//?					map<int, ParagraphPropertyExceptions*>::iterator it = m_document->AllPapx->end();
-//?					it--;
-//?					do
-//?					{
-//?						if (it->first < nMinVal && it->second)
-//?							break;
-//?						it--;
-//?					}
-//?					while(it != m_document->AllPapx->begin());
-//?
-//?					ret = it->second;
-//?				}
+
 				_lastValidPapx = ret;
 			}
 		}
@@ -1215,8 +1225,8 @@ namespace DocFileFormat
 		TableInfo tai( papx, m_document->nWordVersion );
 
 		//build the table grid
-		std::vector<short> grid, grid_write;
-		buildTableGrid( cp, nestingLevel, grid, grid_write );
+		std::vector<short> grid;
+		buildTableGrid( cp, nestingLevel, grid);
 
 		//find first row end
 		int fcRowEnd = findRowEndFc( cp, nestingLevel );
@@ -1227,7 +1237,7 @@ namespace DocFileFormat
         m_pXmlWriter->WriteNodeBegin( L"w:tbl" );
 
 		//Convert it
-		TablePropertiesMapping *tpMapping = new TablePropertiesMapping( m_pXmlWriter, m_document->Styles, &grid, &grid_write );
+		TablePropertiesMapping *tpMapping = new TablePropertiesMapping( m_pXmlWriter, m_document->Styles, &grid);
 
 		row1Tapx.Convert( tpMapping );
 
@@ -1240,7 +1250,7 @@ namespace DocFileFormat
 			//only convert the cells with the given nesting level
 			while ( tai.iTap == nestingLevel )
 			{
-				cp = writeTableRow( cp, &grid, &grid_write, nestingLevel );
+				cp = writeTableRow( cp, &grid, nestingLevel );
 				//?fc = m_document->FindFileCharPos(cp );
 				fc = m_document->m_PieceTable->FileCharacterPositions->operator []( cp );
 				papx = findValidPapx( fc );
@@ -1253,7 +1263,7 @@ namespace DocFileFormat
 			//convert until the end of table is reached
 			while ( tai.fInTable )
 			{
-				cp = writeTableRow( cp, &grid, &grid_write, nestingLevel );
+				cp = writeTableRow( cp, &grid, nestingLevel );
 				fc = m_document->FindFileCharPos( cp );
 
 				papx = findValidPapx( fc );
@@ -1268,12 +1278,11 @@ namespace DocFileFormat
 	}
 
 	// Builds a list that contains the width of the several columns of the table.
-	bool DocumentMapping::buildTableGrid(int initialCp, unsigned int nestingLevel, std::vector<short>& grid, std::vector<short>& grid_write)
+	bool DocumentMapping::buildTableGrid(int initialCp, unsigned int nestingLevel, std::vector<short>& grid)
 	{
 		ParagraphPropertyExceptions* backup = _lastValidPapx;
 
-		std::vector<short> boundaries;
-		std::vector<short> boundaries_all;
+		std::map<short, short> boundaries;
 		
 		int cp = initialCp;
 		int fc = m_document->FindFileCharPos( cp );
@@ -1284,53 +1293,66 @@ namespace DocFileFormat
 		int fcRowEnd = findRowEndFc( cp, cp, nestingLevel );
 		ParagraphPropertyExceptions* papx_prev = NULL;
 
+		short max_boundary = -1;
+
+		bool fEndNestingLevel = false;
+
+		unsigned int iTap_current = 1;
+		
 		while ( tai.fInTable )
 		{
-			//check all SPRMs of this TAPX
+			iTap_current = 1;
+
 			for ( std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); iter++ )
 			{
-				//find the tDef SPRM
 				DWORD code = iter->OpCode;
 
 				switch(iter->OpCode)
 				{
-				case sprmTDefTable:
-				case sprmOldTDefTable:
-				{
-					unsigned char itcMac = iter->Arguments[0];
-
-						while(boundaries.size() < itcMac + 1)
-							boundaries.push_back(-0x7fff);
-
-						short boundary0 = -0x7fff;
-						for (unsigned char i = 0; i < itcMac; i++)
+					case sprmPFInnerTableCell:
+					case sprmPFInnerTtp:
 					{
-						short boundary1 = FormatUtils::BytesToInt16( iter->Arguments, 1 + ( i * 2 ), iter->argumentsSize );
-							short boundary2 = FormatUtils::BytesToInt16( iter->Arguments, 1 + ( ( i + 1 ) * 2 ), iter->argumentsSize );
+						fEndNestingLevel = ( iter->Arguments[0] == 1 ) ? (true) : (false);
+					}break;
 
-							if (boundary2 - boundary1 > 1 && boundary1 - boundary0 > 1)
+					case sprmPItap:
+					{
+						iTap_current = FormatUtils::BytesToUInt32( iter->Arguments, 0, iter->argumentsSize );
+					}break;
+				}
+			}
+			if (nestingLevel == iTap_current)
+			{
+				for ( std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); iter++ )
+				{
+					//find the tDef SPRM
+					DWORD code = iter->OpCode;
+
+					switch(iter->OpCode)
+					{
+						case sprmTDefTable:
+						case sprmOldTDefTable:
 						{
-								if ( boundaries[i] == -0x7fff || boundaries[i+1] == -0x7fff)
-								{
-									boundaries[i]	= boundary1;
-									boundaries[i+1]	= boundary2;
-								}
-							}
-							if ( find( boundaries_all.begin(), boundaries_all.end(), boundary1 ) == boundaries_all.end() )
+							unsigned char itcMac = iter->Arguments[0];
+
+							short boundary1, boundary2;
+							for (unsigned char i = 0; i < itcMac; i++)
 							{
-								boundaries_all.push_back( boundary1 );
-						}
+								boundary1 = FormatUtils::BytesToInt16( iter->Arguments + 1, i * 2 , iter->argumentsSize );
+								boundary2 = FormatUtils::BytesToInt16( iter->Arguments + 1, ( i + 1 ) * 2, iter->argumentsSize );
 
-							if ( find( boundaries_all.begin(), boundaries_all.end(), boundary2 ) == boundaries_all.end() )
-						{
-								boundaries_all.push_back( boundary2 );
-						}
-							boundary0 = boundary1;
+								AddBoundary(boundary1, boundary2, boundaries);
+							}
+							if (max_boundary < boundary2)
+								max_boundary = boundary2;
+
+							AddBoundary(boundary2, max_boundary, boundaries);
 						}break;
 					}
 				}
 			}
-
+			if (nestingLevel > 1 && fEndNestingLevel && !boundaries.empty())
+				break;
 			//get the next papx
 			papx = findValidPapx( fcRowEnd );
 			tai = TableInfo( papx, m_document->nWordVersion );
@@ -1339,28 +1361,53 @@ namespace DocFileFormat
 			if (papx_prev && papx_prev == papx )
 				break;//file(12).doc
 			papx_prev = papx;
-		}
 
-		//build the grid based on the boundaries
-		sort( boundaries_all.begin(), boundaries_all.end() );
+		}
 
 		if ( !boundaries.empty() )
 		{
-			for ( size_t i = 0; i < ( boundaries.size() - 1 ); i++ )
+			for ( std::map<short, short>::iterator it = boundaries.begin(); it != boundaries.end(); ++it)
 			{
-				grid_write.push_back(  boundaries[i + 1] - boundaries[i] );
-			}
-		}
-		if ( !boundaries_all.empty() )
-		{
-			for ( size_t i = 0; i < ( boundaries_all.size() - 1 ); i++ )
-			{
-				grid.push_back( boundaries_all[i + 1] - boundaries_all[i] );
+				grid.push_back( it->second );
 			}
 		}
 		_lastValidPapx = backup;
 
 		return true;
+	}
+
+	void DocumentMapping::AddBoundary(short boundary1, short boundary2, std::map<short, short> &boundaries)
+	{
+		if (boundary2 - boundary1 < 3)
+			return;
+
+		std::map<short, short>::iterator pFind = boundaries.find(boundary1);
+
+		while(true)
+		{
+			if (pFind == boundaries.end())
+			{
+				boundaries.insert(std::make_pair(boundary1, boundary2 - boundary1));
+				break;
+			}
+			else if (pFind->second != boundary2 - boundary1)
+			{
+				if (pFind->second > boundary2 - boundary1)
+				{
+					short new_size = boundary2 - boundary1;
+					boundary1 = boundary2;
+					boundary2 = pFind->second + pFind->first;
+					pFind->second = new_size;
+				}
+				else
+				{
+					boundary1 = pFind->second + pFind->first;
+				}
+				pFind = boundaries.find(boundary1);
+			}
+			else
+				break;
+		}
 	}
 
 	// Finds the FC of the next row end mark.
@@ -1480,7 +1527,7 @@ namespace DocFileFormat
 	}
 
 	/// Writes the table row that starts at the given cp value and ends at the next row end mark
-	int DocumentMapping::writeTableRow(int initialCp, std::vector<short>* grid, std::vector<short>* grid_write, unsigned int nestingLevel)
+	int DocumentMapping::writeTableRow(int initialCp, std::vector<short>* grid, unsigned int nestingLevel)
 	{
 		int cp = initialCp;
 		int fc = m_document->FindFileCharPos( cp );
@@ -1510,7 +1557,7 @@ namespace DocFileFormat
 			//Write until the first "inner trailer paragraph" is reached
 			while ( !( ( m_document->Text->at( cp ) == TextMark::ParagraphEnd ) && ( tai.fInnerTtp ) ) && tai.fInTable )
 			{
-				cp = writeTableCell( cp, &tapx, grid, grid_write, gridIndex, cellIndex, nestingLevel );
+				cp = writeTableCell( cp, &tapx, grid, gridIndex, cellIndex, nestingLevel );
 				cellIndex++;
 
 				//each cell has it's own PAPX
@@ -1527,7 +1574,7 @@ namespace DocFileFormat
 			while ( !( ( m_document->Text->at( cp ) == TextMark::CellOrRowMark ) && ( tai.fTtp ) ) 
 				&& tai.fInTable )
 			{
-				cp = writeTableCell( cp, &tapx, grid, grid_write, gridIndex, cellIndex, nestingLevel );
+				cp = writeTableCell( cp, &tapx, grid, gridIndex, cellIndex, nestingLevel );
 				cellIndex++;
 
 				//each cell has it's own PAPX
@@ -1550,15 +1597,13 @@ namespace DocFileFormat
 	}
 
 	/// Writes the table cell that starts at the given cp value and ends at the next cell end mark
-	int DocumentMapping::writeTableCell(int initialCp, TablePropertyExceptions* tapx, std::vector<short>* grid, std::vector<short>* grid_write, int& gridIndex, int cellIndex, unsigned int nestingLevel )  
+	int DocumentMapping::writeTableCell(int initialCp, TablePropertyExceptions* tapx, std::vector<short>* grid, int& gridIndex, int cellIndex, unsigned int nestingLevel )  
 	{
 		int cp = initialCp;
 		int cpCellEnd	= findCellEndCp( initialCp, nestingLevel );
 
-		//start w:tc
-        m_pXmlWriter->WriteNodeBegin( L"w:tc" );
-
-		TableCellPropertiesMapping* tcpMapping = new TableCellPropertiesMapping( m_pXmlWriter, grid, grid_write, gridIndex, cellIndex );
+		XMLTools::CStringXmlWriter writerTcPr;
+		TableCellPropertiesMapping* tcpMapping = new TableCellPropertiesMapping( &writerTcPr, grid, gridIndex, cellIndex, nestingLevel );
 
 		if ( tapx != NULL )
 		{
@@ -1567,7 +1612,18 @@ namespace DocFileFormat
 
 		gridIndex = gridIndex + tcpMapping->GetGridSpan();
 
+		bool bCoverCell = tcpMapping->IsCoverCell();
+
 		RELEASEOBJECT( tcpMapping );
+
+		if (bCoverCell)
+		{
+			return cpCellEnd;
+		}
+
+		//start w:tc
+        m_pXmlWriter->WriteNodeBegin( L"w:tc" );
+		m_pXmlWriter->WriteString(writerTcPr.GetXmlString());
 
 		//write the paragraphs of the cell
 		while ( cp < cpCellEnd )

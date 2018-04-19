@@ -345,19 +345,33 @@ namespace NSPresentationEditor
 			if (strImage.empty())	return WriteHyperlinkImage(CorrectXmlString3(strImagePath), true);			
 									return WriteHyperlinkImage(strImage, false);
 		}
-        inline std::wstring WriteAudio(const std::wstring& strAudioPath)
+        inline std::wstring WriteAudio(const std::wstring& strAudioPath, bool & bExternal)
 		{
 			std::wstring strAudio = m_pManager->GenerateAudio(strAudioPath);
 
-			if (strAudio.empty())	return WriteHyperlinkAudio(CorrectXmlString3(strAudioPath), true);			
-									return WriteHyperlinkAudio(strAudio, false);
+			if (strAudio.empty())
+			{
+				bExternal = true;
+				return WriteHyperlinkAudio(CorrectXmlString3(strAudioPath), true);			
+			}
+			else
+			{
+				return WriteHyperlinkAudio(strAudio, false);
+			}
 		}		
-        inline std::wstring WriteVideo(const std::wstring& strVideoPath)
+        inline std::wstring WriteVideo(const std::wstring& strVideoPath, bool & bExternal)
 		{
 			std::wstring strVideo = m_pManager->GenerateVideo(strVideoPath);
 
-			if (strVideo.empty())	return WriteHyperlinkVideo(CorrectXmlString3(strVideoPath), true);			
-									return WriteHyperlinkVideo(strVideo, false);
+			if (strVideo.empty())
+			{
+				bExternal = true;
+				return WriteHyperlinkVideo(CorrectXmlString3(strVideoPath), true);			
+			}
+			else
+			{
+				return WriteHyperlinkVideo(strVideo, false);
+			}
 		}
 	};
 }

@@ -200,21 +200,21 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-	std::wstring media_type_;
-	std::wstring full_path_;
+	std::wstring		media_type_;
+	std::wstring		full_path_;
+	int					size;
 
-	office_element_ptr encryption_;
+	office_element_ptr	encryption_data_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(manifest_entry);
-
 
 // manifest:encryption-data
 class manifest_encryption_data  : public office_element
 {
 public:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_text(const std::wstring & Text){}
 
 	static const wchar_t * ns;
@@ -226,15 +226,83 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-	std::wstring manifest_checksum_;
-	std::wstring manifest_checksum_type_;
+	std::wstring checksum_;
+	std::wstring checksum_type_;
 
-	//childs
-	//manifest:algorithm
-	//manifest:key-derivation 
+	office_element_ptr algorithm_;
+	office_element_ptr key_derivation_;
+	office_element_ptr start_key_generation_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(manifest_encryption_data);
+
+// manifest:algorithm
+class manifest_algorithm  : public office_element
+{
+public:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_text(const std::wstring & Text){}
+
+	static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeManifestAlgorithm;
+
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	std::wstring algorithm_name;
+	std::wstring initialisation_vector_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(manifest_algorithm);
+
+// manifest:key_derivation
+class manifest_key_derivation  : public office_element
+{
+public:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_text(const std::wstring & Text){}
+
+	static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeManifestKeyDerivation;
+
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	std::wstring	key_derivation_name_;
+	int				key_size_;
+	int				iteration_count_;
+	std::wstring	salt_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(manifest_key_derivation);
+
+// manifest:start-key-generation
+class manifest_start_key_generation  : public office_element
+{
+public:
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_text(const std::wstring & Text){}
+
+	static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeManifestStartKeyGeneration;
+
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_;
+
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	std::wstring	start_key_generation_name_;
+	int				key_size_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(manifest_start_key_generation);
 
 }
 }

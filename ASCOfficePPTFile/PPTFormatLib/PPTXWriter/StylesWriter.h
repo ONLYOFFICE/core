@@ -88,28 +88,27 @@ public:
 		return L"auto";
 	}
 
-    static std::wstring ConvertStyles(NSPresentationEditor::CTextStyles& oStyles, NSPresentationEditor::CMetricInfo& oMetricInfo, int nCount = 10)
+    static std::wstring ConvertStyles(NSPresentationEditor::CTextStyles& oStyles, int nCount = 10)
 	{
 		NSPresentationEditor::CStringWriter oWriter;
-		ConvertStyles(oStyles, oMetricInfo, oWriter, nCount);
+		ConvertStyles(oStyles, oWriter, nCount);
 		return oWriter.GetData();
 	}
-	static void ConvertStyles(NSPresentationEditor::CTextStyles& oStyles, NSPresentationEditor::CMetricInfo& oMetricInfo, 
-		NSPresentationEditor::CStringWriter& oWriter, int nCount = 10)
+	static void ConvertStyles(NSPresentationEditor::CTextStyles& oStyles, NSPresentationEditor::CStringWriter& oWriter, int nCount = 10)
 	{
 		for (int i = 0; i < nCount; ++i)
 		{
 			if (oStyles.m_pLevels[i].is_init())
-				ConvertStyleLevel(oStyles.m_pLevels[i].get(), oMetricInfo, oWriter, i);
+				ConvertStyleLevel(oStyles.m_pLevels[i].get(), oWriter, i);
 		}
 	}
-    static std::wstring ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLevel, NSPresentationEditor::CMetricInfo& oMetricInfo, const int& nLevel)
+    static std::wstring ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLevel, const int& nLevel)
 	{
 		NSPresentationEditor::CStringWriter oWriter;
-		ConvertStyleLevel(oLevel, oMetricInfo, oWriter, nLevel);
+		ConvertStyleLevel(oLevel, oWriter, nLevel);
 		return oWriter.GetData();
 	}
 
-	static void ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLevel, NSPresentationEditor::CMetricInfo& oMetricInfo,
+	static void ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLevel,
 		NSPresentationEditor::CStringWriter& oWriter, const int& nLevel);
 };

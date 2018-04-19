@@ -46,7 +46,7 @@ namespace NSPresentationEditor
 	{
 	public:
 		LONG	m_lTextMasterType; // only ppt property
-		DWORD	m_lTextType;
+		_UINT32	m_lTextType;
 		
 		int		m_lStyleThemeIndex;
 		
@@ -62,6 +62,9 @@ namespace NSPresentationEditor
 
         bool	m_bVertical;
 		bool	m_bAutoFit;
+
+		int 	m_nTextFlow;
+
 
 		int		m_lWrapMode; // 0 - square, default; 1 - none wrap
 
@@ -100,6 +103,7 @@ namespace NSPresentationEditor
 			m_bVertical			= false;
 			m_bAutoFit			= false;
 			m_lWrapMode			= 0;
+			m_nTextFlow			= -1;
 
 			m_lTextMasterType	= -1;
 		}
@@ -118,6 +122,7 @@ namespace NSPresentationEditor
 			m_bVertical		= oSrc.m_bVertical;
 			m_lWrapMode		= oSrc.m_lWrapMode;
 			m_bAutoFit		= oSrc.m_bAutoFit;
+			m_nTextFlow		= oSrc.m_nTextFlow;
 
 			m_arParagraphs.insert(m_arParagraphs.end(), oSrc.m_arParagraphs.begin(), oSrc.m_arParagraphs.end());
 			m_oRuler = oSrc.m_oRuler;

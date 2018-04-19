@@ -44,17 +44,9 @@ namespace NSPresentationEditor
 		LONG m_lSlideID;	//for notes rels
 		LONG m_lNotesID;	//for slide rels
 
-		std::vector<CElementPtr>m_arElements;
-		CSlideShowInfo			m_oSlideShow;
-		std::multimap<int,int>	m_mapPlaceholders;
-
-		// размеры в миллиметрах
-		long					m_lWidth;   
-		long					m_lHeight; 
-
-		// а вот эти - "настоящие" (в логической системе координат), чтобы масштабировать
-		long					m_lOriginalWidth;
-		long					m_lOriginalHeight;
+		std::vector<CElementPtr>		m_arElements;
+		CSlideShowInfo					m_oSlideShow;
+		std::multimap<int,CElementPtr>	m_mapPlaceholders;
 
 		double					m_dStartTime;
 		double					m_dEndTime;
@@ -67,8 +59,6 @@ namespace NSPresentationEditor
 		bool					m_bUseLayoutColorScheme;
 		bool					m_bShowMasterShapes;
 
-		CMetricInfo				m_oInfo;
-		
 		vector_string			m_PlaceholdersReplaceString[3];
 		std::wstring			m_strComment;
 		std::wstring			m_sName;
@@ -92,12 +82,6 @@ namespace NSPresentationEditor
 			m_lSlideID			= -1;
 			m_lNotesID			= -1;
 
-			m_lWidth			= 270;   
-			m_lHeight			= 190; 
-
-			m_lOriginalWidth	= 6000;
-			m_lOriginalHeight	= 5000;
-			
 			m_dStartTime		= 0.0;
 			m_dEndTime			= 0.0;
 			m_dDuration			= 30000.0;
@@ -129,12 +113,6 @@ namespace NSPresentationEditor
 			m_lNotesID			= oSrc.m_lNotesID;
 			m_lSlideID			= oSrc.m_lSlideID;
 
-			m_lWidth			= oSrc.m_lWidth;
-			m_lHeight			= oSrc.m_lHeight;
-
-			m_lOriginalWidth	= oSrc.m_lOriginalWidth;
-			m_lOriginalHeight	= oSrc.m_lOriginalHeight;
-			
 			m_dStartTime		= oSrc.m_dStartTime;
 			m_dEndTime			= oSrc.m_dEndTime;
 			m_dDuration			= oSrc.m_dDuration;
@@ -148,16 +126,6 @@ namespace NSPresentationEditor
 
 			m_strComment		= oSrc.m_strComment;
 			m_sName				= oSrc.m_sName;
-		}
-
-
-		void SetMetricInfo(const CMetricInfo& oInfo)
-		{
-			m_oInfo  = oInfo;
-			m_lWidth			= m_oInfo.m_lMillimetresHor;
-			m_lHeight			= m_oInfo.m_lMillimetresVer;
-			m_lOriginalWidth	= m_oInfo.m_lUnitsHor;
-			m_lOriginalHeight	= m_oInfo.m_lUnitsVer;
 		}
 
 		void SetUpPlaceholderStyles(NSPresentationEditor::CLayout* pLayout)

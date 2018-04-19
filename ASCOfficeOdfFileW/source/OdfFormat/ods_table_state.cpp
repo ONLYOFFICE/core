@@ -400,11 +400,11 @@ bool ods_table_state::is_cell_comment()
 
 int ods_table_state::is_cell_hyperlink(int col, int row)
 {
-	for (size_t i=0; i < hyperlinks_.size();i++)
+    for (size_t i = 0; i < hyperlinks_.size(); i++)
 	{
 		if (hyperlinks_[i].col == col && hyperlinks_[i].row == row)
 		{
-			return  i;
+            return  (int)i;
 		}
 	}
 	return -1;
@@ -415,7 +415,7 @@ int ods_table_state::is_cell_comment(int col, int row, short repeate_col)
 	{
 		if ((comments_[i].col < col + repeate_col && comments_[i].col >= col) && comments_[i].row == row)
 		{
-			return  i;
+            return  (int)i;
 		}
 	}
 	return -1;

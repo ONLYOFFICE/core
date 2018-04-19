@@ -2302,7 +2302,7 @@ namespace NExtractTools
 
        NSDirectory::CreateDirectory(sTempUnpackedOox);
 
-		int nRes = ConvertODF2OOXml(sTempUnpackedOdf, sTempUnpackedOox, params.getFontPath(), false, NULL);
+	   int nRes = ConvertODF2OOXml(sTempUnpackedOdf, sTempUnpackedOox, params.getFontPath(), sTemp, params.getPassword(), NULL);
 		if(SUCCEEDED_X2T(nRes))
 		{
            BinDocxRW::CDocxSerializer m_oCDocxSerializer;
@@ -2353,7 +2353,7 @@ namespace NExtractTools
        if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedOdf, NULL, 0))
            return AVS_FILEUTILS_ERROR_CONVERT;;
 
-		return ConvertODF2OOXml(sTempUnpackedOdf, sTo, params.getFontPath(), false, NULL);
+		return ConvertODF2OOXml(sTempUnpackedOdf, sTo, params.getFontPath(), sTemp, params.getPassword(), NULL);
 	}
 	//odf flat
 	int odf_flat2oot(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
@@ -2380,7 +2380,7 @@ namespace NExtractTools
 
        NSDirectory::CreateDirectory(sTempUnpackedOox);
 
-		int nRes = ConvertODF2OOXml(sFrom, sTempUnpackedOox, params.getFontPath(), false, NULL);
+		int nRes = ConvertODF2OOXml(sFrom, sTempUnpackedOox, params.getFontPath(), sTemp, params.getPassword(), NULL);
 		if(SUCCEEDED_X2T(nRes))
 		{
            BinDocxRW::CDocxSerializer m_oCDocxSerializer;
@@ -2407,7 +2407,7 @@ namespace NExtractTools
 	}
 	int odf_flat2oox_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
-       return ConvertODF2OOXml(sFrom, sTo, params.getFontPath(), false, NULL);
+		return ConvertODF2OOXml(sFrom, sTo, params.getFontPath(), sTemp, params.getPassword(), NULL);
 	}
 	// docx -> odt
 	int docx2odt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params )

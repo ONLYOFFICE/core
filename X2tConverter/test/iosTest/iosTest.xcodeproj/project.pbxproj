@@ -23,6 +23,7 @@
 		69920A431E016FAB00E7E6EE /* libX2tConverter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69920A401E016F9700E7E6EE /* libX2tConverter.a */; };
 		699690731E2F925200B620CD /* libc++abi.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 699690721E2F925200B620CD /* libc++abi.tbd */; };
 		69BE370C1F60129600CBA47B /* crypted.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = 69BE370B1F60129600CBA47B /* crypted.xlsx */; };
+		8A94F3CB207CE7D600EC05D2 /* test.csv in Resources */ = {isa = PBXBuildFile; fileRef = 8A94F3C9207CE7D600EC05D2 /* test.csv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +66,7 @@
 		69920A3A1E016F9700E7E6EE /* X2tConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = X2tConverter.xcodeproj; path = ../../build/Mac/X2tConverter/X2tConverter.xcodeproj; sourceTree = "<group>"; };
 		699690721E2F925200B620CD /* libc++abi.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++abi.tbd"; path = "usr/lib/libc++abi.tbd"; sourceTree = SDKROOT; };
 		69BE370B1F60129600CBA47B /* crypted.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = crypted.xlsx; sourceTree = "<group>"; };
+		8A94F3C9207CE7D600EC05D2 /* test.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.csv; sourceTree = "<group>"; };
 		8A9FAD36207781C5007787F6 /* OfficeFileErrorDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfficeFileErrorDescription.h; path = ../../../../Common/OfficeFileErrorDescription.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -146,6 +148,7 @@
 				17DAB70D1ACC3B90005AF479 /* demo.docx */,
 				697CDFE72049649800C2638C /* empty.docx */,
 				697CDFE92049649800C2638C /* empty.xlsx */,
+				8A94F3C9207CE7D600EC05D2 /* test.csv */,
 			);
 			name = Files;
 			sourceTree = "<group>";
@@ -195,7 +198,7 @@
 		17DAB6701ACC371E005AF479 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Ascensio System SIA";
 				TargetAttributes = {
 					17DAB6771ACC371E005AF479 = {
@@ -244,6 +247,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8A94F3CB207CE7D600EC05D2 /* test.csv in Resources */,
 				69BE370C1F60129600CBA47B /* crypted.xlsx in Resources */,
 				17DAB6871ACC371F005AF479 /* Main.storyboard in Resources */,
 				17DAB68C1ACC371F005AF479 /* LaunchScreen.xib in Resources */,
@@ -312,12 +316,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -369,12 +375,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;

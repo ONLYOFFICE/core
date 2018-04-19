@@ -111,13 +111,6 @@ namespace NSPresentationEditor
     {
         LONG X;
         LONG Y;
-
-//        std::wstring ToString()
-//        {
-//            std::wstring str = _T("");
-//            str.Format(_T("<Point info='(%d,%d)' />"), X, Y);
-//            return str;
-//        }
     };
 
     struct SRectAtom
@@ -126,13 +119,6 @@ namespace NSPresentationEditor
         LONG Top;
         LONG Right;
         LONG Bottom;
-
-//        std::wstring ToString()
-//        {
-//            std::wstring str = _T("");
-//            str.Format(_T("<Rect info='(%d,%d,%d,%d)' />"), Left, Top, Right, Bottom);
-//            return str;
-//        }
     };
 
     struct SSmallRectAtom
@@ -141,13 +127,6 @@ namespace NSPresentationEditor
         SHORT Top;
         SHORT Right;
         SHORT Bottom;
-
-//        std::wstring ToString()
-//        {
-//            std::wstring str = _T("");
-//            str.Format(_T("Rect(%d,%d,%d,%d)"), Left, Top, Right, Bottom);
-//            return str;
-//        }
     };
 
     struct SColorAtom
@@ -207,35 +186,20 @@ namespace NSPresentationEditor
             return *this;
         }
 
-//        std::wstring ToString()
-//        {
-//            std::wstring str = _T("");
-//            str.Format(_T("<Color R='%d' G='%d' B='%d' index='%d' />"), R, G, B, Index);
-//            return str;
-//        }
-
-//        std::wstring ToString(std::wstring name)
-//        {
-//            std::wstring str = _T("");
-//            str.Format(_T(" R='%d' G='%d' B='%d' index='%d' />"), R, G, B, Index);
-//            str = _T("<Color_") + name + str;
-//            return str;
-//        }
-
-        DWORD ToValue()
+        _UINT32 ToValue()
         {
-            DWORD dwVal = (R | (G << 8) | (B << 16));
+            _UINT32 dwVal = (R | (G << 8) | (B << 16));
             return dwVal;
         }
-        DWORD ToValue_RGB()
+        _UINT32 ToValue_RGB()
         {
-            DWORD dwVal = (B | (G << 8) | (R << 16));
+            _UINT32 dwVal = (B | (G << 8) | (R << 16));
             return dwVal;
         }
 
-        DWORD ToValueProperty()
+        _UINT32 ToValueProperty()
         {
-            DWORD dwVal = 0;
+            _UINT32 dwVal = 0;
             if (!bSchemeIndex)
             {
                 dwVal = (R | (G << 8) | (B << 16));
@@ -255,18 +219,8 @@ namespace NSPresentationEditor
             Index = -1;
         }
 
-        void FromValue(DWORD dwValue)
+        void FromValue(_UINT32 dwValue)
         {
-            //R = (BYTE)(dwValue);
-            //G = (BYTE)(dwValue >> 8);
-            //B = (BYTE)(dwValue >> 16);
-            //Index = (BYTE)(dwValue >> 24);
-
-            //bPaletteIndex = (0x01 == (Index & 0x01));
-            //bPaletteRGB = (0x02 == (Index & 0x02));
-            //bSystemRGB = (0x04 == (Index & 0x04));
-            //bSchemeIndex = (0x08 == (Index & 0x08));
-            //bSysIndex = (0x10 == (Index & 0x10));
 
             R	= static_cast<unsigned char>(GETBITS(dwValue, 0, 7));
             G	= static_cast<unsigned char>(GETBITS(dwValue, 8, 15));
@@ -319,41 +273,6 @@ namespace NSPresentationEditor
     {
         UINT Begin;
         UINT End;
-
-//        std::wstring ToString()
-//        {
-//            std::wstring str = _T("");
-//            str.Format(_T("TextRange(%d,%d)"), Begin, End);
-//            return str;
-//        }
     };
 
-    class CElemInfo
-    {
-    public:
-        bool m_bIsBackground;
-        bool m_bIsChangeable;
-
-        LONG m_lID;
-
-        CElemInfo()
-        {
-            m_bIsBackground = false;
-            m_bIsChangeable	= false;
-
-            m_lID = 0;
-        }
-        CElemInfo(const CElemInfo& oSrc)
-        {
-            *this = oSrc;
-        }
-        CElemInfo& operator=(const CElemInfo& oSrc)
-        {
-            m_bIsBackground = oSrc.m_bIsBackground;
-            m_bIsChangeable	= oSrc.m_bIsChangeable;
-            m_lID			= oSrc.m_lID;
-
-            return *this;
-        }
-    };
-}
+ }

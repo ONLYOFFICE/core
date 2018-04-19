@@ -106,7 +106,7 @@ namespace DocFileFormat
 		cellElements.clear();
 	}
 
-	void TableCell::Convert(IMapping* mapping, TablePropertyExceptions* tapx, const std::vector<short>* grid, const std::vector<short>* grid_write, int& gridIndex, int nCellIndex)
+	void TableCell::Convert(IMapping* mapping, TablePropertyExceptions* tapx, const std::vector<short>* grid, int& gridIndex, int nCellIndex)
 	{
 		if (NULL != mapping)
 		{
@@ -118,12 +118,10 @@ namespace DocFileFormat
 
 	//find cell end
 		int cpCellEnd = documentMapping->findCellEndCp(cp, depth);
-
-	//start w:tc
-		documentMapping->GetXMLWriter()->WriteNodeBegin( L"w:tc" );
 		
 	//convert the properties
-		TableCellPropertiesMapping tcpMapping(documentMapping->GetXMLWriter(), grid, grid_write, gridIndex, nCellIndex);
+		XMLTools::CStringXmlWriter writerTcPr;
+		TableCellPropertiesMapping tcpMapping(&writerTcPr, grid, gridIndex, nCellIndex, depth);
 
 		if ( tapx != NULL )
 		{
@@ -131,6 +129,15 @@ namespace DocFileFormat
 		}
 
 		gridIndex += tcpMapping.GetGridSpan();
+		
+		if (tcpMapping.IsCoverCell())
+		{
+			return;
+		}		
+	//start w:tc
+		documentMapping->GetXMLWriter()->WriteNodeBegin( L"w:tc" );
+		
+		documentMapping->GetXMLWriter()->WriteString(writerTcPr.GetXmlString());
 
 		documentMapping->_lastValidPapx = papxBackup;
 		documentMapping->_lastValidSepx = sepxBackup;
@@ -193,7 +200,7 @@ namespace DocFileFormat
 		cells.clear();
 	}
 
-	void TableRow::Convert(IMapping* mapping, const std::vector<short>* grid, const std::vector<short>* grid_write)
+	void TableRow::Convert(IMapping* mapping, const std::vector<short>* grid)
 	{
 		if ( mapping != NULL )
 		{
@@ -234,7 +241,7 @@ namespace DocFileFormat
 			{
 				for ( std::list<TableCell>::iterator iter = cells.begin(); iter != cells.end(); iter++ )
 				{
-					iter->Convert( mapping, &tapx, grid, grid_write, gridIndex, nCellIndex++);
+					iter->Convert( mapping, &tapx, grid, gridIndex, nCellIndex++);
 				}
 			}
 
@@ -516,8 +523,8 @@ namespace DocFileFormat
 		SectionPropertyExceptions* sepxBackup	=	documentMapping->_lastValidSepx;
 
 		//build the table grid
-		std::vector<short> grid, grid_write;
-		documentMapping->buildTableGrid( cpStart, depth, grid, grid_write );
+		std::vector<short> grid;
+		documentMapping->buildTableGrid( cpStart, depth, grid);
 
 		//find first row end
 		int fcRowEnd = documentMapping->findRowEndFc( cpStart, depth );
@@ -530,7 +537,7 @@ namespace DocFileFormat
         documentMapping->GetXMLWriter()->WriteNodeBegin( L"w:tbl" );
 
 		//Convert it
-		TablePropertiesMapping tpMapping( documentMapping->GetXMLWriter(), documentMapping->m_document->Styles, &grid, &grid_write );
+		TablePropertiesMapping tpMapping( documentMapping->GetXMLWriter(), documentMapping->m_document->Styles, &grid);
 
 		row1Tapx.Convert( &tpMapping );
 
@@ -539,7 +546,7 @@ namespace DocFileFormat
 
 		for ( std::list<TableRow>::iterator iter = rows.begin(); iter != rows.end(); iter++ )
 		{
-			iter->Convert( mapping, &grid, &grid_write );  
+			iter->Convert( mapping, &grid );  
 		}
 
 		//close w:tbl

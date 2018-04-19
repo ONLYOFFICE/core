@@ -68,7 +68,7 @@ public:
 		if (m_oHeader.IsContainer())
 		{
 			// а по-другому и быть не могло...
-			DWORD lSymbolCount = 0;
+			_UINT32 lSymbolCount = 0;
 
 			UINT lCurLen = 0;
 			SRecordHeader oRec;
@@ -128,12 +128,12 @@ public:
 					if (NULL != pChars)
 					{
 						m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_strText = pChars->m_strText;
-						lSymbolCount = (DWORD)pChars->m_strText.length();
+						lSymbolCount = (_UINT32)pChars->m_strText.length();
 					}
 					else if (NULL != pBytes)
 					{
 						m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_strText = pBytes->m_strText;
-						lSymbolCount = (DWORD)pBytes->m_strText.length();
+						lSymbolCount = (_UINT32)pBytes->m_strText.length();
 					}					
 					
 					if (RECORD_TYPE_STYLE_TEXTPROP_ATOM == oRec.RecType)

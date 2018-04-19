@@ -194,7 +194,8 @@ namespace BinXlsxRW
 		DdeLink = 11,
 		VbaProject = 12,
 		JsaProject = 13,
-		Comments = 14
+		Comments = 14,
+		CalcPr = 15
 	};}
 	namespace c_oSerWorkbookVbaProjectTypes{enum c_oSerWorkbookVbaProjectTypes
 	{
@@ -218,6 +219,22 @@ namespace BinXlsxRW
         LocalSheetId = 2,
         Hidden = 3,
 		Comment = 4
+	};}
+	namespace c_oSerCalcPrTypes{enum c_oSerCalcPrTypes
+	{
+		CalcId = 0,
+		CalcMode = 1,
+		FullCalcOnLoad = 2,
+		RefMode = 3,
+		Iterate = 4,
+		IterateCount = 5,
+		IterateDelta = 6,
+		FullPrecision = 7,
+		CalcCompleted = 8,
+		CalcOnSave = 9,
+		ConcurrentCalc = 10,
+		ConcurrentManualCount = 11,
+		ForceFullCalc = 12
 	};}
 	namespace c_oSerWorksheetsTypes{enum c_oSerWorksheetsTypes
 	{

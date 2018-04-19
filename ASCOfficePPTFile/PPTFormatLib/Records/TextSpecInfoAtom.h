@@ -38,7 +38,7 @@ public:
 	// нужно еще хранить позицию в стриме, 
 	// указатель на начало
 	LONG											m_lOffsetInStream;
-	DWORD											m_lCount; 
+	_UINT32											m_lCount; 
 
 	std::vector<NSPresentationEditor::CTextSIRun>	m_arrSIs;
 
@@ -59,7 +59,7 @@ public:
 		m_oHeader = oHeader;
 		StreamUtils::StreamPosition(m_lOffsetInStream, pStream);
 
-		DWORD lMemCount = 0;
+		_UINT32 lMemCount = 0;
 		while (true)
 		{
 			NSPresentationEditor::CTextSIRun elm;

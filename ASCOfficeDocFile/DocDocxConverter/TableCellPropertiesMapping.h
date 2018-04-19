@@ -58,12 +58,17 @@ namespace DocFileFormat
 	public:	
 
 		virtual ~TableCellPropertiesMapping();
-		TableCellPropertiesMapping (XMLTools::CStringXmlWriter* pWriter, const std::vector<short>* grid, const std::vector<short>* grid_write, int gridIndex, int cellIndex);
+		TableCellPropertiesMapping (XMLTools::CStringXmlWriter* pWriter, const std::vector<short>* grid, int gridIndex, int cellIndex, unsigned int depth);
 		virtual void Apply( IVisitable* visited );
 	
 		inline int GetGridSpan() const
 		{
 			return _gridSpan;
+		}
+
+		inline bool IsCoverCell() const
+		{
+			return _bCoverCell;
 		}
 
 	private:
@@ -79,12 +84,13 @@ namespace DocFileFormat
         XMLTools::XMLElement* _tcMar;
         XMLTools::XMLElement* _tcBorders;
 		
-		const std::vector<short>* _grid;
-		std::vector<short>		_tGrid;
+		const std::vector<short>*	_grid;
+		std::vector<short>			_tGrid;
 
-		short _width;
-		Global::CellWidthType _ftsWidth;
-		TC80 _tcDef;
+		short					_width;
+		Global::CellWidthType	_ftsWidth;
+		TC80					_tcDef;
+		unsigned int			_depth;
 
 		BorderCode* _brcTop;
 		BorderCode* _brcLeft;
@@ -92,5 +98,6 @@ namespace DocFileFormat
 		BorderCode* _brcBottom;
 
 		int		_gridSpan;
+		bool	_bCoverCell;
 	};
 }

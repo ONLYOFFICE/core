@@ -57,8 +57,8 @@ class odf_read_context;
 class odf_document
 {
 public:
-    odf_document(const std::wstring & Folder, const ProgressCallback* CallBack);
-	odf_document(xml::sax * Reader);
+    odf_document(const std::wstring & SrcPath, const std::wstring & TempPath, const std::wstring& Password, const ProgressCallback* CallBack);
+	odf_document(xml::sax * Reader, const std::wstring & TempPath);
 	
 	~odf_document();
 
@@ -68,10 +68,12 @@ public:
     bool xlsx_convert(oox::xlsx_conversion_context & Context);
 	bool pptx_convert(oox::pptx_conversion_context & Context);
 	
-	const std::wstring & get_folder() const;
+	const std::wstring & get_folder()		const;
+	const std::wstring & get_temp_folder()	const;
 	
-	int get_office_mime_type();
-	bool get_encrypted();
+	int		get_office_mime_type();
+	bool	get_encrypted();
+	bool	get_error();
 
     class Impl;   
     Impl * get_impl() { return impl_.get(); }

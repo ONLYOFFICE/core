@@ -35,9 +35,11 @@
 
 namespace DocFileFormat
 {
-	TableCellPropertiesMapping::TableCellPropertiesMapping (XMLTools::CStringXmlWriter* pWriter, const std::vector<short>* grid, const std::vector<short>* grid_write, int gridIndex, int cellIndex) : 
+	TableCellPropertiesMapping::TableCellPropertiesMapping (XMLTools::CStringXmlWriter* pWriter, 
+		const std::vector<short>* grid, int gridIndex, int cellIndex, unsigned int depth) : 
 										PropertiesMapping(pWriter)
 	{
+		_depth		=	depth;
 		_width		=	0;
 
 		_gridIndex	=	gridIndex;
@@ -75,9 +77,25 @@ namespace DocFileFormat
 		TablePropertyExceptions* tapx	=	static_cast<TablePropertyExceptions*>(visited);
 		int nComputedCellWidth			=	0;
 
-		_gridSpan = 1;
+		_gridSpan = 0;
+		_bCoverCell = false;
 
+		unsigned int iTap_current = 1;
+
+		for ( std::list<SinglePropertyModifier>::iterator iter = tapx->grpprl->begin(); iter != tapx->grpprl->end(); iter++ )
+		{
+			DWORD code = iter->OpCode;
+
+			switch(iter->OpCode)
+			{
+				case sprmPItap:
+				{
+					iTap_current = FormatUtils::BytesToUInt32( iter->Arguments, 0, iter->argumentsSize );
+				}break;
+			}
+		}
 		std::list<SinglePropertyModifier>::const_reverse_iterator rend = tapx->grpprl->rend();
+
 		for (std::list<SinglePropertyModifier>::const_reverse_iterator iter = tapx->grpprl->rbegin(); iter != rend; ++iter)
 		{
 			switch (iter->OpCode)
@@ -113,16 +131,39 @@ namespace DocFileFormat
 					{
                         appendValueElement( _tcPr, L"noWrap", L"", true );
 					}
-					int ind = (std::min)(_cellIndex,  (int)tdef.rgTc80.size() - 1);
-					int ind1 = ind; 
-					while (ind1 < tdef.rgdxaCenter.size() - 1)
+					//int ind = (std::min)(_cellIndex,  (int)tdef.rgTc80.size() - 1);
+					//int ind1 = ind; 
+					//while (ind1 < tdef.rgdxaCenter.size() - 1)
+					//{
+					//	int sz = tdef.rgdxaCenter[ ind1 + 1] - tdef.rgdxaCenter[ ind1 ] ;
+					//	if (sz > 1)
+					//		break;
+					//	ind1++;
+					//}
+
+					if (tdef.rgTc80[_cellIndex].horzMerge == 1)
 					{
-						int sz = tdef.rgdxaCenter[ ind1 + 1] - tdef.rgdxaCenter[ ind1 ] ;
-						if (sz > 1)
-							break;
-						ind1++;
+						for (size_t i = _cellIndex; i < tdef.rgTc80.size(); i++)
+						{
+							if (tdef.rgTc80[i].horzMerge < 1)
+								break;
+						
+							nComputedCellWidth += tdef.rgdxaCenter[ i + 1] - tdef.rgdxaCenter[ i ] ;
+							_gridSpan++;
+						}
 					}
-					nComputedCellWidth = tdef.rgdxaCenter[ ind1 + 1] - tdef.rgdxaCenter[ ind ] ;	
+					else if (tdef.rgTc80[_cellIndex].horzMerge == 2)
+					{//skip cover cell
+						_gridSpan = 1;
+						nComputedCellWidth = 0;
+						_bCoverCell = true;
+
+					}
+					else
+					{
+						_gridSpan = 1;
+						nComputedCellWidth += tdef.rgdxaCenter[ _cellIndex + 1] - tdef.rgdxaCenter[ _cellIndex ] ;
+					}
 
 					if (!IsTableBordersDefined(tapx->grpprl))
 					{
@@ -140,6 +181,10 @@ namespace DocFileFormat
 					}
 				}
 				break;
+
+				case sprmTDxaCol:
+				{
+				}break;
 
 				case sprmTCellPadding:
 				{
@@ -288,23 +333,24 @@ namespace DocFileFormat
 		_tcPr->AppendChild( tcW );
 
 
-		if ( ( _gridIndex < (int)_grid->size() ) && ( nComputedCellWidth > _grid->at( _gridIndex ) ) )
+		//if ( ( _gridIndex < (int)_grid->size() ) && ( nComputedCellWidth > _grid->at( _gridIndex ) ) )
+		//{
+		//	//check the number of merged cells
+		//	int w = _grid->at( _gridIndex );
+
+		//	for ( size_t i = _gridIndex + 1; i < _grid->size(); i++ )
+		//	{
+		//		_gridSpan++;
+
+		//		w += _grid->at( i );
+
+		//		if ( w >= nComputedCellWidth )
+		//		{
+		//			break;
+		//		}
+		//	}
+		if (_gridSpan > 1)
 		{
-			//check the number of merged cells
-			int w = _grid->at( _gridIndex );
-
-			for ( size_t i = _gridIndex + 1; i < _grid->size(); i++ )
-			{
-				_gridSpan++;
-
-				w += _grid->at( i );
-
-				if ( w >= nComputedCellWidth )
-				{
-					break;
-				}
-			}
-
             appendValueElement( _tcPr, L"gridSpan", FormatUtils::IntToWideString( _gridSpan ), true );
 		}
 

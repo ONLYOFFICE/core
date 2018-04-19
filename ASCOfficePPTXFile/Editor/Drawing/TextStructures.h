@@ -62,7 +62,7 @@ namespace NSPresentationEditor
 		
         return _T("<") + strName + _T(">") + std::to_wstring( (int)prop.get() ) + _T("</") + strName + _T(">");
 	}
-    static std::wstring ToNode(const NSCommon::nullable_base<DWORD>& prop, const std::wstring& strName)
+    static std::wstring ToNode(const NSCommon::nullable_base<_UINT32>& prop, const std::wstring& strName)
 	{
         if (!prop.is_init()) return L"";
 		
@@ -86,13 +86,11 @@ namespace NSPresentationEditor
 	public:
 		BYTE					FontNameProp;
 		std::wstring			strFontName;
-		std::wstring			strPanose;
-		std::wstring			strPitchFamily;
-		LONG					lFontFixed;
-		std::vector<BYTE>		arFontCharsets;
+		BYTE					nPitchFamily;
+		bool					bFontFixed;
+		BYTE					nFontCharset;
 
-	public:
-		CFontProperties() : FontNameProp(0), strFontName(_T("")), strPanose(_T("")), strPitchFamily(_T("")), lFontFixed(0), arFontCharsets()
+		CFontProperties() : FontNameProp(0), bFontFixed(false), nPitchFamily(0), nFontCharset(0)
 		{
 		}
 		~CFontProperties()
@@ -106,12 +104,9 @@ namespace NSPresentationEditor
 		{
 			FontNameProp		= oSrc.FontNameProp;
 			strFontName			= oSrc.strFontName;
-			strPanose			= oSrc.strPanose;
-			strPitchFamily		= oSrc.strPitchFamily;
-			lFontFixed			= oSrc.lFontFixed;
-
-			for (size_t i =0 ; i< oSrc.arFontCharsets.size(); i++)
-				arFontCharsets.push_back(oSrc.arFontCharsets[i]);
+			nPitchFamily		= oSrc.nPitchFamily;
+			bFontFixed			= oSrc.bFontFixed;
+			nFontCharset		= oSrc.nFontCharset;
 
 			return *this;
 		}
@@ -119,11 +114,9 @@ namespace NSPresentationEditor
 		AVSINLINE void SetFont(CFont& oFont)
 		{
 			strFontName		= oFont.Name;
-			strPanose		= oFont.Panose;
-			strPitchFamily	= oFont.PitchFamily;
-			lFontFixed		= (LONG)oFont.Monospace;
-			arFontCharsets.clear();
-			arFontCharsets.push_back(oFont.Charset);
+			nPitchFamily	= oFont.PitchFamily;
+			bFontFixed		= oFont.Monospace;
+			nFontCharset	= oFont.Charset;
 		}
 	};
 
@@ -154,11 +147,7 @@ namespace NSPresentationEditor
 		NSCommon::nullable_base<CFontProperties>	FontPropertiesEA;
 		NSCommon::nullable_base<CFontProperties>	FontPropertiesSym;
 
-	public:
-
-		CTextCFRun() : FontBold(), FontItalic(), FontUnderline(), FontStrikeout(), FontShadow(),
-			Typeface(), EAFontRef(), AnsiFontRef(), SymbolFontRef(),
-			BaseLineOffset(), Color(), Size(), FontProperties(), Cap()
+		CTextCFRun()
 		{
 		}
 		CTextCFRun(const CTextCFRun& oSrc)
@@ -287,9 +276,7 @@ namespace NSPresentationEditor
 
 		NSCommon::nullable_base<WORD>				wrapFlags;
 
-		CTextPFRun() : hasBullet(), bulletFontRef(), bulletSize(), bulletChar(), bulletColor(),
-			textAlignment(), lineSpacing(), spaceBefore(), spaceAfter(), leftMargin(), indent(),
-			defaultTabSize(), tabStops(), bIsOneLine(false), fontAlign(), wrapFlags()
+		CTextPFRun() : bIsOneLine(false)
 		{
 		}
 
@@ -423,11 +410,7 @@ namespace NSPresentationEditor
 		NSCommon::nullable_base<LONG>	Indent4;
 		NSCommon::nullable_base<LONG>	Indent5;
 
-
-	public:
-		CTextRuler() : DefaultTabSize(), CLevels(), TabStops(),
-			LeftMargin1(), LeftMargin2(), LeftMargin3(), LeftMargin4(), LeftMargin5(),
-			Indent1(), Indent2(), Indent3(), Indent4(), Indent5(), tabsStops()
+		CTextRuler() 
 		{
 		}
 
@@ -493,7 +476,7 @@ namespace NSPresentationEditor
 	{
 	public:
 		bool bIsExt;
-		DWORD lCount;
+		_UINT32 lCount;
 
 		bool bSpell;
 		bool bLang;
@@ -512,7 +495,7 @@ namespace NSPresentationEditor
 
 		bool bGramma;
 
-		std::vector<DWORD> arSmartTags;
+		std::vector<_UINT32> arSmartTags;
 
 	public:
 
@@ -630,7 +613,7 @@ namespace NSPresentationEditor
 		bool				m_bField;
 		bool				m_bBreak;
 
-		CSpan() : m_oRun(), m_strText(_T("")), m_bField(false), m_bBreak(false)
+		CSpan() : m_bField(false), m_bBreak(false)
 		{
 		}
 		CSpan(const CSpan& oSrc)
@@ -658,7 +641,7 @@ namespace NSPresentationEditor
 		CTextCFRun m_oCFRun;
 
 	public:
-		CTextStyleLevel() : m_oPFRun(), m_oCFRun()
+		CTextStyleLevel() 
 		{
 		}
 		CTextStyleLevel(const CTextStyleLevel& oSrc)
@@ -685,35 +668,6 @@ namespace NSPresentationEditor
 		}
 	};
 
-	//нигде не применяется ???
-	//class CTextFullInfo
-	//{
-	//public:
-	//	CTextPFRun m_oPF;
-	//	CTextCFRun m_oCF;
-	//	CTextRuler m_oRuler;
-	//	CTextSIRun m_oSI;
-
-	//public:
-	//	CTextFullInfo() : m_oPF(), m_oCF(), m_oRuler(), m_oSI()
-	//	{
-	//	}
-
-	//	CTextFullInfo(const CTextFullInfo& oSrc)
-	//	{
-	//		*this = oSrc;
-	//	}
-
-	//	CTextFullInfo& operator=(const CTextFullInfo& oSrc)
-	//	{
-	//		m_oPF		= oSrc.m_oPF;
-	//		m_oCF		= oSrc.m_oCF;
-	//		m_oRuler	= oSrc.m_oRuler;
-	//		m_oSI		= oSrc.m_oSI;
-	//		return *this;
-	//	}
-	//};
-	
 	class CTextStyles
 	{
 	public:
@@ -801,7 +755,7 @@ namespace NSPresentationEditor
 		std::vector<CSpan>	m_arSpans;
 
 	public:
-		CParagraph() : m_oPFRun(), m_arSpans()
+		CParagraph() 
 		{
 			m_lTextType			= -1;
 			m_lTextLevel		= 0;

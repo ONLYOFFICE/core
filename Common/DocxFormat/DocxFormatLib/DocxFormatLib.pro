@@ -211,6 +211,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Table/Autofilter.h \
     ../Source/XlsxFormat/Table/Table.h \
     ../Source/XlsxFormat/Workbook/BookViews.h \
+	../Source/XlsxFormat/Workbook/CalcPr.h \
     ../Source/XlsxFormat/Workbook/DefinedNames.h \
     ../Source/XlsxFormat/Workbook/Sheets.h \
     ../Source/XlsxFormat/Workbook/Workbook.h \

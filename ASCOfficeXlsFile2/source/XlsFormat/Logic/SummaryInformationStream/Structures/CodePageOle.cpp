@@ -60,7 +60,14 @@ PropertyStr::PropertyStr(unsigned int prop_type, const unsigned short value_type
 		{
 			char *s = new char[size];
 			stream->read(s,size);
-			value  = STR::toStdWString(s, size, code_page_);
+			try
+			{
+				value  = STR::toStdWString(s, size, code_page_);
+			}
+			catch(...)
+			{
+				value  = STR::toStdWStringSystem(std::string(s, size), code_page_);
+			}
 			delete []s;
 		}
 	}

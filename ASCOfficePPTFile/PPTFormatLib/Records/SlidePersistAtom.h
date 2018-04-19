@@ -35,16 +35,14 @@
 class CRecordSlidePersistAtom : public CUnknownRecord
 {
 public:
-	DWORD m_nPsrRef;
+	_UINT32 m_nPsrRef;
 	
 	bool m_bShouldCollapse;
 	bool m_bNonOutlineData;
 
 	INT m_nNumberText;
-	DWORD m_nSlideID;
+	_UINT32 m_nSlideID;
 
-public:
-	
 	CRecordSlidePersistAtom()
 	{
 	}

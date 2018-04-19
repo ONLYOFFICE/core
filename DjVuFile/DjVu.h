@@ -39,6 +39,7 @@
 #endif
 
 #include "../DesktopEditor/common/officedrawingfile.h"
+#include "../DesktopEditor/graphics/pro/Fonts.h"
 
 // работаем через класс CDjVuFileImplementation, чтобы когда цеплялся данный h-файл, ничего лишнего не инклюдилось
 class CDjVuFileImplementation;
@@ -50,7 +51,7 @@ private:
 
 public:
 
-    CDjVuFile(CApplicationFonts* fonts);
+    CDjVuFile(NSFonts::IApplicationFonts* fonts);
     virtual ~CDjVuFile();
 
     virtual bool LoadFromFile(const std::wstring& file, const std::wstring& options = L"",

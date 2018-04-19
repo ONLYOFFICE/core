@@ -25,10 +25,8 @@ DEFINES +=  UNICODE \
             LIBXML_READER_ENABLED \
             DONT_WRITE_EMBEDDED_FONTS
 
-INCLUDEPATH += ../../DesktopEditor/freetype-2.5.2/include
 INCLUDEPATH += ../../ASCOfficeOdfFile/include
 INCLUDEPATH += ../../ASCOfficeOdfFile/src/odf/datatypes
-INCLUDEPATH += ../../DesktopEditor/xml/libxml2/include
 
 CONFIG(debug, debug|release){
 DEFINES +=  _DEBUG

@@ -35,7 +35,9 @@
 
 #include "ColorBase.h"
 #include "./../../Limit/SysClrVal.h"
-#include "../../../Common/DocxFormat/Source/Base/ASCWinAPI.h" // GetSysColor
+#include "../../../../Common/DocxFormat/Source/Base/ASCWinAPI.h" // GetSysColor
+
+
 
 namespace PPTX
 {
@@ -145,7 +147,7 @@ namespace PPTX
 			{
 				val = node.GetAttribute(_T("val"));
 				Modifiers.clear();
-				node.LoadArray(_T("*"), Modifiers);
+                XmlMacroLoadArray(node, _T("*"), Modifiers, ColorModifier);
 			}
 			virtual OOX::EElementType getType() const
 			{

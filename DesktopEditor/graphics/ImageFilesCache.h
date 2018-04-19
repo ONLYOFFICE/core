@@ -39,7 +39,13 @@
 #include "../raster/Metafile/MetaFile.h"
 #include "../common/File.h"
 
-class CCacheImage
+#if defined (GetTempPath)
+#undef GetTempPath
+#endif
+
+#include "../graphics/pro/Image.h"
+
+class CCacheImage : public NSImages::ICacheImage
 {
 private:
 	Aggplus::CImage m_oImage;
@@ -78,12 +84,16 @@ public:
 		m_lRef = 1;
 	}
 
-	LONG AddRef()
+    virtual ~CCacheImage()
+    {
+    }
+
+    virtual LONG AddRef()
 	{
 		++m_lRef;
 		return m_lRef;
 	}
-	LONG Release()
+    virtual LONG Release()
 	{
 		--m_lRef;
 
@@ -102,7 +112,7 @@ public:
 	}
 };
 
-class CImageFilesCache
+class CImageFilesCache : public NSImages::IImageFilesCache
 {
 private:
 	std::map<std::wstring, CCacheImage*> m_mapImages;
@@ -124,13 +134,13 @@ public:
 		m_oCS.InitializeCriticalSection();
 	}
 
-	~CImageFilesCache()
+    virtual ~CImageFilesCache()
 	{
 		Clear();
 		m_oCS.DeleteCriticalSection();
 	}
 
-	void Clear()
+    virtual void Clear()
 	{
 		CTemporaryCS oCS(&m_oCS);
 
@@ -142,7 +152,7 @@ public:
 		m_mapImages.clear();
 	}
 
-	CCacheImage* Lock(const std::wstring& strFile)
+    virtual NSImages::ICacheImage* Lock(const std::wstring& strFile)
 	{
 		CTemporaryCS oCS(&m_oCS);
 
@@ -178,12 +188,12 @@ public:
 		return pImage;
 	}
 	
-	LONG AddRef()
+    virtual LONG AddRef()
 	{
 		++m_lRef;
 		return m_lRef;
 	}
-	LONG Release()
+    virtual LONG Release()
 	{
 		m_oCS.Enter();
 		--m_lRef;
@@ -199,7 +209,7 @@ public:
 		return m_lRef;
 	}
     
-    void SetApplicationFonts(CApplicationFonts* pApplicationFonts)
+    virtual void SetApplicationFonts(CApplicationFonts* pApplicationFonts)
     {
         m_pApplicationFonts = pApplicationFonts;
     }

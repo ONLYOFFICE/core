@@ -167,7 +167,7 @@ namespace OOX
 				else if ( _T("m:zeroWid") == sNodeName )
 					eType = et_m_zeroWid;
 
-				oNode.ReadAttributeBase( _T("m:val"), m_val );
+				XmlMacroReadAttributeBase( oNode, _T("m:val"), m_val );
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{

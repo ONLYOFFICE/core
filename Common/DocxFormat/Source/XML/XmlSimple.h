@@ -31,12 +31,12 @@
  */
 #pragma once
 
-#include "../../../DesktopEditor/xml/include/xmlutils.h"
+#include "../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../Base/Nullable.h"
 #include "../XML/Utils.h"
 
-#include "../../../DesktopEditor/common/File.h"
-#include "../../../DesktopEditor/common/Directory.h"
+#include "../../../../DesktopEditor/common/File.h"
+#include "../../../../DesktopEditor/common/Directory.h"
 #include "../SystemUtility/SystemUtility.h"
 
 namespace XmlUtils

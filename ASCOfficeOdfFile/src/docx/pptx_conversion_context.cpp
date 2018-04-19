@@ -45,7 +45,7 @@
 
 #include "pptx_default_serializes.h"
 
-#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace cpdoccore { 
 
@@ -72,7 +72,7 @@ pptx_conversion_context::pptx_conversion_context( odf_reader::odf_document * odf
 	,last_idx_placeHolder	(1)
 	,last_uniq_big_id		(1)
 {
-    applicationFonts_ = new CApplicationFonts();
+    applicationFonts_ = NSFonts::NSApplication::Create();
 }
 
 pptx_conversion_context::~pptx_conversion_context()

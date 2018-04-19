@@ -70,8 +70,8 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"pos", pos);
-				node.ReadAttributeBase(L"algn", algn);
+				XmlMacroReadAttributeBase(node, L"pos", pos);
+				XmlMacroReadAttributeBase(node, L"algn", algn);
 
 				FillParentPointersForChilds();
 			}

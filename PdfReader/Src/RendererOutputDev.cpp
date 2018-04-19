@@ -42,7 +42,7 @@
 #include "XmlUtils.h"
 
 #include "../../DesktopEditor/graphics/Image.h"
-#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Array.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
@@ -305,7 +305,7 @@ namespace PdfReader
 	//--------------------------------------------------------------------------------------
 	// RendererOutputDev
 	//--------------------------------------------------------------------------------------
-	RendererOutputDev::RendererOutputDev(GlobalParams *pGlobalParams, IRenderer *pRenderer, CFontManager* pFontManager, CFontList *pFontList)
+    RendererOutputDev::RendererOutputDev(GlobalParams *pGlobalParams, IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
 	{
 		m_pFontManager  = pFontManager;
 		m_pGlobalParams = pGlobalParams;
@@ -910,7 +910,7 @@ namespace PdfReader
 				// TODO: Сначала тут мы должны проверить, если ищется один из 14 стандартных шрифтов,
 				//       тогда мы должны вернуть путь к стандартному шрифту.
 
-				CFontInfo* pFontInfo = NULL;
+                NSFonts::CFontInfo* pFontInfo = NULL;
 				if (m_pFontManager)
 				{
 					Ref *pRef = pFont->GetID();
@@ -919,7 +919,7 @@ namespace PdfReader
 					oRefObject.Fetch(m_pXref, &oFontObject);
 					oRefObject.Free();
 
-					CFontSelectFormat oFontSelect;
+                    NSFonts::CFontSelectFormat oFontSelect;
 					std::wstring wsFontBaseName = pFont->GetBaseName()->GetWString();
 					if (oFontObject.IsDict())
 					{

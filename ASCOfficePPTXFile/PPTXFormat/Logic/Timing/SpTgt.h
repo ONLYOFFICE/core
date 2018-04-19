@@ -58,12 +58,12 @@ namespace PPTX
 				XmlUtils::CXmlNode oNodeMem;
 				if (node.GetNode(_T("p:subSp"), oNodeMem))
 				{
-					oNodeMem.ReadAttributeBase(L"spid", subSpid);
+                    XmlMacroReadAttributeBase(oNodeMem, L"spid", subSpid);
 				}
 				else if (node.GetNode(_T("p:oleChartEl"), oNodeMem))
 				{
-					oNodeMem.ReadAttributeBase(L"type", type);
-					oNodeMem.ReadAttributeBase(L"lvl", lvl);
+                    XmlMacroReadAttributeBase(oNodeMem, L"type", type);
+                    XmlMacroReadAttributeBase(oNodeMem, L"lvl", lvl);
 				}
 				else
 				{

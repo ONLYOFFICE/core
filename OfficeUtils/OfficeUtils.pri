@@ -43,13 +43,11 @@ SOURCES += \
 }	
 	
 HEADERS +=  \
-    $$SOURCES_UTILS/OfficeUtilsCommon.h \
-    $$SOURCES_UTILS/OfficeUtils.h \
-    $$SOURCES_UTILS/ASCOfficeCriticalSection.h \
-    $$SOURCES_UTILS/CSLocker.h \
-    $$SOURCES_UTILS/ZipUtilsCP.h \
-    $$SOURCES_UTILS/zlib-1.2.3/contrib/minizip/crypt.h \
-    $$SOURCES_UTILS/zlib-1.2.3/contrib/minizip/ioapi.h \
-    $$SOURCES_UTILS/zlib-1.2.3/contrib/minizip/mztools.h \
-    $$SOURCES_UTILS/zlib-1.2.3/contrib/minizip/unzip.h \
-    $$SOURCES_UTILS/zlib-1.2.3/contrib/minizip/zip.h
+    $$PWD/src/OfficeUtilsCommon.h \
+    $$PWD/src/OfficeUtils.h \
+    $$PWD/src/ZipUtilsCP.h \
+    $$PWD/src/zlib-1.2.3/contrib/minizip/crypt.h \
+    $$PWD/src/zlib-1.2.3/contrib/minizip/ioapi.h \
+    $$PWD/src/zlib-1.2.3/contrib/minizip/mztools.h \
+    $$PWD/src/zlib-1.2.3/contrib/minizip/unzip.h \
+    $$PWD/src/zlib-1.2.3/contrib/minizip/zip.h

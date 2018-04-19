@@ -116,22 +116,22 @@ namespace PPTX
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());
 
-				node.ReadAttributeBase(L"txBox", txBox);
+				XmlMacroReadAttributeBase(node, L"txBox", txBox);
 				
 				XmlUtils::CXmlNode l_Locks;
 				if (node.GetNode(_T("a:spLocks"), l_Locks))
 				{
-					l_Locks.ReadAttributeBase(L"noAdjustHandles", noAdjustHandles);
-					l_Locks.ReadAttributeBase(L"noChangeArrowheads", noChangeArrowheads);
-					l_Locks.ReadAttributeBase(L"noChangeAspect", noChangeAspect);
-					l_Locks.ReadAttributeBase(L"noChangeShapeType", noChangeShapeType);
-					l_Locks.ReadAttributeBase(L"noEditPoints", noEditPoints);
-					l_Locks.ReadAttributeBase(L"noGrp", noGrp);
-					l_Locks.ReadAttributeBase(L"noMove", noMove);
-					l_Locks.ReadAttributeBase(L"noResize", noResize);
-					l_Locks.ReadAttributeBase(L"noRot", noRot);
-					l_Locks.ReadAttributeBase(L"noSelect", noSelect);
-					l_Locks.ReadAttributeBase(L"noTextEdit", noTextEdit);
+					XmlMacroReadAttributeBase(l_Locks, L"noAdjustHandles", noAdjustHandles);
+					XmlMacroReadAttributeBase(l_Locks, L"noChangeArrowheads", noChangeArrowheads);
+					XmlMacroReadAttributeBase(l_Locks, L"noChangeAspect", noChangeAspect);
+					XmlMacroReadAttributeBase(l_Locks, L"noChangeShapeType", noChangeShapeType);
+					XmlMacroReadAttributeBase(l_Locks, L"noEditPoints", noEditPoints);
+					XmlMacroReadAttributeBase(l_Locks, L"noGrp", noGrp);
+					XmlMacroReadAttributeBase(l_Locks, L"noMove", noMove);
+					XmlMacroReadAttributeBase(l_Locks, L"noResize", noResize);
+					XmlMacroReadAttributeBase(l_Locks, L"noRot", noRot);
+					XmlMacroReadAttributeBase(l_Locks, L"noSelect", noSelect);
+					XmlMacroReadAttributeBase(l_Locks, L"noTextEdit", noTextEdit);
 				}
 			}
 			virtual std::wstring toXML() const

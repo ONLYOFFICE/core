@@ -76,9 +76,9 @@ namespace PPTX
 			XmlUtils::CXmlNode oNode;
 			oNode.FromXmlFile(filename.m_strFilename);
 
-			oNode.ReadAttributeBase(L"show", show);
-			oNode.ReadAttributeBase(L"showMasterPhAnim", showMasterPhAnim);
-			oNode.ReadAttributeBase(L"showMasterSp", showMasterSp);
+            XmlMacroReadAttributeBase(oNode, L"show", show);
+            XmlMacroReadAttributeBase(oNode, L"showMasterPhAnim", showMasterPhAnim);
+            XmlMacroReadAttributeBase(oNode, L"showMasterSp", showMasterSp);
 
 			cSld		= oNode.ReadNode(_T("p:cSld"));
 			if (cSld.IsInit())

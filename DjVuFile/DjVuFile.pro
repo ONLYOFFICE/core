@@ -15,17 +15,15 @@ CORE_ROOT_DIR = $$PWD/..
 PWD_ROOT_DIR = $$PWD
 include(../Common/base.pri)
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfWriter
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfWriter -lUnicodeConverter
 
-#UnicodeConverter
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter
+DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
+DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel -lgraphics
 
-CONFIG += build_all_zlib build_zlib_as_sources
-include(../OfficeUtils/OfficeUtils.pri)
-
-CONFIG += build_cximage_zlib_disable
-include(../DesktopEditor/Qt_build/graphics/project/graphics.pri)
-include(../DesktopEditor/xml/build/qt/libxml2.pri)
+DEFINES -= \
+    UNICODE \
+    _UNICODE
 
 core_linux {
     DEFINES += \

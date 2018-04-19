@@ -51,7 +51,7 @@
 #include "oox_rels.h"
 #include "logging.h"
 
-#include "../../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 static int current_id_changes = 0;
@@ -158,7 +158,7 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfD
 	odf_document_				(OdfDocument)
 {
 	streams_man_		= streams_man::create(temp_stream_);
-	applicationFonts_	= new CApplicationFonts();
+    applicationFonts_	= NSFonts::NSApplication::Create();
 }
 docx_conversion_context::~docx_conversion_context()
 {

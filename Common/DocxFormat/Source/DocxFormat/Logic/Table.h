@@ -57,7 +57,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:w"), m_oW );
+				XmlMacroReadAttributeBase( oNode, _T("w:w"), m_oW );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

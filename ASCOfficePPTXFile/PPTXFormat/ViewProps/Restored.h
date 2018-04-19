@@ -49,7 +49,7 @@ namespace PPTX
 				name = XmlUtils::GetNameNoNS(node.GetName());
 
 				sz = node.ReadAttributeInt(L"sz");
-				node.ReadAttributeBase(L"autoAdjust", autoAdjust);
+                XmlMacroReadAttributeBase(node, L"autoAdjust", autoAdjust);
 				
 				Normalize();
 			}

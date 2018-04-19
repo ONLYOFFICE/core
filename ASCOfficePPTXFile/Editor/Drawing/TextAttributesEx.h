@@ -30,12 +30,15 @@
  *
  */
 #pragma once
-#include "Structures.h"
-#include "TextStructures.h"
 
 #if !defined(_WIN32) && !defined (_WIN64)
     #include "../../../DesktopEditor/graphics/aggplustypes.h"
+#else
+    #include <windows.h>
 #endif
+
+#include "Structures.h"
+#include "TextStructures.h"
 
 namespace NSPresentationEditor
 {

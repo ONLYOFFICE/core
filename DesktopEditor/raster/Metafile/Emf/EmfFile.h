@@ -38,9 +38,13 @@
 #include "EmfPlayer.h"
 #include "EmfPath.h"
 
+#if defined(DrawText)
+#undef DrawText
+#endif
+
 namespace MetaFile
 {
-	class CEmfFile : virtual public IMetaFileBase
+	class CEmfFile : public IMetaFileBase
 	{
 	public:
 
@@ -48,12 +52,12 @@ namespace MetaFile
 		{
 			m_pPath = NULL;
 			m_pDC   = m_oPlayer.GetDC();
-		};
+		}
 
 		~CEmfFile()
 		{
 			ClearFile();
-		};
+		}
 
 		TEmfRectL* GetBounds()
 		{

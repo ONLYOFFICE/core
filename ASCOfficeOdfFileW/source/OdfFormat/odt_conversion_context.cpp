@@ -29,7 +29,12 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
+#ifndef min
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#endif
+#ifndef max
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#endif
 
 #include <boost/regex.hpp>
 
@@ -60,7 +65,7 @@ namespace odf_writer {
 namespace utils
 {
 
-double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name, double font_size, CApplicationFonts *appFonts)
+double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name, double font_size, NSFonts::IApplicationFonts *appFonts)
 {
     double appr_px = _graphics_utils_::calculate_size_symbol_asc(font_name, font_size, false, false, appFonts);
 	

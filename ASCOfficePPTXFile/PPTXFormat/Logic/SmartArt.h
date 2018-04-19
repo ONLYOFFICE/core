@@ -78,10 +78,10 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"r:dm", id_data);
-				node.ReadAttributeBase(L"r:cs", id_color);
-				node.ReadAttributeBase(L"r:lo", id_layout);
-				node.ReadAttributeBase(L"r:qs", id_style);
+				XmlMacroReadAttributeBase(node, L"r:dm", id_data);
+				XmlMacroReadAttributeBase(node, L"r:cs", id_color);
+				XmlMacroReadAttributeBase(node, L"r:lo", id_layout);
+				XmlMacroReadAttributeBase(node, L"r:qs", id_style);
 				//FillParentPointersForChilds();
 			}
 			virtual std::wstring toXML() const
@@ -161,7 +161,7 @@ namespace PPTX
 			{
 				m_bData = false;
 
-				node.ReadAttributeBase(L"r:id", id_data);
+				XmlMacroReadAttributeBase(node, L"r:id", id_data);
 				FillParentPointersForChilds();
 
 				if (id_data.IsInit())

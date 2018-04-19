@@ -38,14 +38,7 @@
 #include <stdlib.h>
 #include "ftimage.h"
 
-class ISimpleGraphicsPath
-{
-public:
-	virtual bool _MoveTo(double x, double y)													= 0;
-	virtual bool _LineTo(double x, double y)													= 0;
-	virtual bool _CurveTo(double x1, double y1, double x2, double y2, double x3, double y3)		= 0;
-	virtual bool _Close()																		= 0;
-};
+#include "../graphics/pro/Fonts.h"
 
 //-------------------------------------------------------------------------------------------------------------------------------
 // TPathPoint
@@ -89,12 +82,12 @@ struct TPathHint
 // CFontPath
 //-------------------------------------------------------------------------------------------------------------------------------
 
-class CFontPath 
+class CFontPath : public NSFonts::IFontPath
 {
 public:
 
 	CFontPath();
-	~CFontPath();
+    virtual ~CFontPath();
 
 	void Append(CFontPath *pPath);
 
@@ -128,7 +121,7 @@ public:
 	// Добавляем флаг StrokeAdjust.
 	void AddStrokeAdjustHint(int nFirstControl, int nSecondControl, int nFirstPoint, int nLastPoint);
 	
-	INT ToInterface(ISimpleGraphicsPath* pPath);
+    virtual int ToInterface(NSFonts::ISimpleGraphicsPath* pPath);
 
 private:
 

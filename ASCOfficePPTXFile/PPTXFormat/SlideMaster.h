@@ -76,7 +76,7 @@ namespace PPTX
 			XmlUtils::CXmlNode oNode;
 			oNode.FromXmlFile(filename.m_strFilename);
 
-			oNode.ReadAttributeBase(L"preserve", preserve);
+            XmlMacroReadAttributeBase(oNode, L"preserve", preserve);
 			
 			cSld = oNode.ReadNode(_T("p:cSld"));
 			cSld.SetParentFilePointer(this);
@@ -88,7 +88,7 @@ namespace PPTX
 			XmlUtils::CXmlNode oNodeList;
 			if (oNode.GetNode(_T("p:sldLayoutIdLst"), oNodeList))
 			{
-				oNodeList.LoadArray(_T("p:sldLayoutId"), sldLayoutIdLst);
+                XmlMacroLoadArray(oNodeList, _T("p:sldLayoutId"), sldLayoutIdLst, Logic::XmlId);
 
 				size_t count = sldLayoutIdLst.size();
 				for (size_t i = 0; i < count; ++i)

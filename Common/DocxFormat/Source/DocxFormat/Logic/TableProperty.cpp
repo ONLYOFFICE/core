@@ -75,10 +75,10 @@ namespace OOX
 			if ( _T("w:tblPrChange") != oNode.GetName() )
 				return;
 
-			oNode.ReadAttributeBase( _T("w:author"), m_sAuthor );
-			oNode.ReadAttributeBase( _T("w:date"),   m_oDate );
-			oNode.ReadAttributeBase( _T("w:id"),     m_oId );
-			oNode.ReadAttributeBase( _T("oouserid"), m_sUserId );
+            XmlMacroReadAttributeBase( oNode, _T("w:author"), m_sAuthor );
+            XmlMacroReadAttributeBase( oNode, _T("w:date"),   m_oDate );
+            XmlMacroReadAttributeBase( oNode, _T("w:id"),     m_oId );
+            XmlMacroReadAttributeBase( oNode, _T("oouserid"), m_sUserId );
 
 			XmlUtils::CXmlNode oNode_tblPr;
 
@@ -202,10 +202,10 @@ namespace OOX
 			if ( _T("w:trPrChange") != oNode.GetName() )
 				return;
 
-			oNode.ReadAttributeBase( _T("w:author"), m_sAuthor );
-			oNode.ReadAttributeBase( _T("w:date"),   m_oDate );
-			oNode.ReadAttributeBase( _T("w:id"),     m_oId );
-			oNode.ReadAttributeBase( _T("oouserid"), m_sUserId );
+            XmlMacroReadAttributeBase( oNode, _T("w:author"), m_sAuthor );
+            XmlMacroReadAttributeBase( oNode, _T("w:date"),   m_oDate );
+            XmlMacroReadAttributeBase( oNode, _T("w:id"),     m_oId );
+            XmlMacroReadAttributeBase( oNode, _T("oouserid"), m_sUserId );
 
 			XmlUtils::CXmlNode oNode_tblPr;
 
@@ -331,10 +331,10 @@ namespace OOX
 			if ( _T("w:tcPrChange") != oNode.GetName() )
 				return;
 
-			oNode.ReadAttributeBase( _T("w:author"), m_sAuthor );
-			oNode.ReadAttributeBase( _T("w:date"),   m_oDate );
-			oNode.ReadAttributeBase( _T("w:id"),     m_oId );
-			oNode.ReadAttributeBase( _T("oouserid"), m_sUserId );
+            XmlMacroReadAttributeBase( oNode, _T("w:author"), m_sAuthor );
+            XmlMacroReadAttributeBase( oNode, _T("w:date"),   m_oDate );
+            XmlMacroReadAttributeBase( oNode, _T("w:id"),     m_oId );
+            XmlMacroReadAttributeBase( oNode, _T("oouserid"), m_sUserId );
 
 			XmlUtils::CXmlNode oNode_tcPr;
 

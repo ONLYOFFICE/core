@@ -56,10 +56,10 @@ namespace PPTX
 		void EffectDag::fromXML(XmlUtils::CXmlNode& node)
 		{
 			m_name	= node.GetName();
-			node.ReadAttributeBase(L"name", name);
-			node.ReadAttributeBase(L"type", type);
+            XmlMacroReadAttributeBase(node, L"name", name);
+            XmlMacroReadAttributeBase(node, L"type", type);
             Effects.clear();
-			node.LoadArray(_T("*"), Effects);
+            XmlMacroLoadArray(node, _T("*"), Effects, UniEffect);
 
 			FillParentPointersForChilds();
 		}

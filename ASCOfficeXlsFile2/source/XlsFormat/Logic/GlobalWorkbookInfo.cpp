@@ -35,14 +35,13 @@
 
 #include <Logic/Biff_records/Font.h>
 
-#include "../../../DesktopEditor/fontengine/FontManager.h"
-#include "../../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../../DesktopEditor/graphics/pro/Fonts.h"
 
 
 namespace XLS
 {
 
-std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, CFontManager *pFontManager)
+std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, NSFonts::IFontManager *pFontManager)
 {
 	if (pFontManager == NULL) return std::pair<float, float>(7,8);
 
@@ -182,7 +181,7 @@ void GlobalWorkbookInfo::GetDigitFontSizePixels()
 
 	if (applicationFonts == NULL)
 	{
-		applicationFonts = new CApplicationFonts();
+        applicationFonts = NSFonts::NSApplication::Create();
 		applicationFonts->InitializeFromFolder(fontsDirectory);
 	}
 
@@ -199,13 +198,12 @@ void GlobalWorkbookInfo::GetDigitFontSizePixels()
     {
         if (applicationFonts)
         {
-            CFontManager *pFontManager = applicationFonts->GenerateFontManager();
+            NSFonts::IFontManager *pFontManager = applicationFonts->GenerateFontManager();
 
             std::pair<float, float> val = GetMaxDigitSizePixelsImpl(fontName, fontSize, 96., 0, pFontManager);
 
             if (pFontManager)
             {
-                pFontManager->m_pApplication = NULL;
                 delete pFontManager;
             }
 

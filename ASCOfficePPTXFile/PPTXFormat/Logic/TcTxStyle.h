@@ -50,8 +50,8 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"i", i);
-				node.ReadAttributeBase(L"b", b);
+                XmlMacroReadAttributeBase(node, L"i", i);
+                XmlMacroReadAttributeBase(node, L"b", b);
 
                 fontRef = node.ReadNodeNoNS(_T("fontRef"));
 				Color.GetColorFrom(node);

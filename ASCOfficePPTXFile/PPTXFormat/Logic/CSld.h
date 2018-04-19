@@ -56,7 +56,7 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"name", attrName);
+                XmlMacroReadAttributeBase(node, L"name", attrName);
 				
 				bg			= node.ReadNode(_T("p:bg"));
 				spTree		= node.ReadNodeNoNS(_T("spTree"));

@@ -307,7 +307,7 @@ namespace NSHtmlRenderer
     class CFontManagerWrapper
     {
     private:
-        ::CFontManager*	m_pManager;
+        NSFonts::IFontManager*	m_pManager;
     public:
         CHFontInfo m_oCurrentInfo;
         NSStructures::CFont*			m_pFont;
@@ -319,7 +319,7 @@ namespace NSHtmlRenderer
         {
             m_pManager = NULL;
         }
-        void Init(CApplicationFonts* pApplicationFonts)
+        void Init(NSFonts::IApplicationFonts* pApplicationFonts)
         {
             RELEASEOBJECT(m_pManager);
             m_pManager = pApplicationFonts->GenerateFontManager();
@@ -433,10 +433,24 @@ namespace NSHtmlRenderer
         void LoadFontMetrics()
         {
             m_pManager->AfterLoad();
-            m_oCurrentInfo.m_lAscent = (m_pManager->m_lAscender < 0) ? ((USHORT)(-m_pManager->m_lAscender)) : (USHORT)m_pManager->m_lAscender;
-            m_oCurrentInfo.m_lDescent = (m_pManager->m_lDescender < 0) ? ((USHORT)(-m_pManager->m_lDescender)) : (USHORT)m_pManager->m_lDescender;
-            m_oCurrentInfo.m_lLineHeight = (m_pManager->m_lLineHeight < 0) ? ((USHORT)(-m_pManager->m_lLineHeight)) : (USHORT)m_pManager->m_lLineHeight;
-            m_oCurrentInfo.m_lUnitsPerEm = (m_pManager->m_lUnits_Per_Em < 0) ? ((USHORT)(-m_pManager->m_lUnits_Per_Em)) : (USHORT)m_pManager->m_lUnits_Per_Em;
+            int lA = m_pManager->GetAscender();
+            int lD = m_pManager->GetDescender();
+            int lL = m_pManager->GetLineHeight();
+            int lU = m_pManager->GetUnitsPerEm();
+
+            if (lA < 0)
+                lA = -lA;
+            if (lD < 0)
+                lD = -lD;
+            if (lL < 0)
+                lL = -lL;
+            if (lU < 0)
+                lU = -lU;
+
+            m_oCurrentInfo.m_lAscent = (USHORT)(lA);
+            m_oCurrentInfo.m_lDescent = (USHORT)(lD);
+            m_oCurrentInfo.m_lLineHeight = (USHORT)(lL);
+            m_oCurrentInfo.m_lUnitsPerEm = (USHORT)(lD);
         }
     };
 
@@ -477,7 +491,7 @@ namespace NSHtmlRenderer
             m_lCountSymbols = 0;
             m_lCountSpaces = 0;
         }
-        void Init(CApplicationFonts* pApplicationFonts)
+        void Init(NSFonts::IApplicationFonts* pApplicationFonts)
         {
             m_oFontManager.Init(pApplicationFonts);
         }
@@ -657,14 +671,12 @@ namespace NSHtmlRenderer
 
             m_oMeta.WriteBYTE(nLenMetaCommands);
 
-            agg::trans_affine* _src = &m_pTransform->m_agg_mtx;
-
             double _dumpSize = writer->m_dCurrentFontSize;
             double _dumpMtx[4];
-            _dumpMtx[0] = _src->sx;
-            _dumpMtx[1] = _src->shy;
-            _dumpMtx[2] = _src->shx;
-            _dumpMtx[3] = _src->sy;
+            _dumpMtx[0] = m_pTransform->sx();
+            _dumpMtx[1] = m_pTransform->shy();
+            _dumpMtx[2] = m_pTransform->shx();
+            _dumpMtx[3] = m_pTransform->sy();
 
             double dTextScale = std::min( sqrt( _dumpMtx[2] * _dumpMtx[2] + _dumpMtx[3] * _dumpMtx[3] ), sqrt( _dumpMtx[0] * _dumpMtx[0] + _dumpMtx[1] * _dumpMtx[1] ) );
 
@@ -687,18 +699,13 @@ namespace NSHtmlRenderer
             }
             if (bIsTransform)
             {
-                agg::trans_affine* _dst = &m_pLastTransform->m_agg_mtx;
-
-                _dst->sx = _src->sx;
-                _dst->shx = _src->shx;
-                _dst->shy = _src->shy;
-                _dst->sy = _src->sy;
+                m_pLastTransform->SetElements(m_pTransform->sx(), m_pTransform->shy(), m_pTransform->shx(), m_pTransform->sy(), m_pLastTransform->tx(), m_pLastTransform->ty());
 
                 m_oLine.m_bIsSetUpTransform = true;
-                m_oLine.m_sx = _src->sx;
-                m_oLine.m_shx = _src->shx;
-                m_oLine.m_shy = _src->shy;
-                m_oLine.m_sy = _src->sy;
+                m_oLine.m_sx = m_pTransform->sx();
+                m_oLine.m_shx = m_pTransform->shx();
+                m_oLine.m_shy = m_pTransform->shy();
+                m_oLine.m_sy = m_pTransform->sy();
 
                 m_oMeta.WriteBYTE(CMetafile::ctCommandTextTransform);
                 //m_oMeta.WriteDouble(_dst->sx);
@@ -812,14 +819,7 @@ namespace NSHtmlRenderer
             {
                 // выставится трансформ!!!
                 // cравнивать нужно с ним!!!
-                agg::trans_affine* _dst = &m_pLastTransform->m_agg_mtx;
-
-                _dst->sx = m_oLine.m_sx;
-                _dst->shx = m_oLine.m_shx;
-                _dst->shy = m_oLine.m_shy;
-                _dst->sy = m_oLine.m_sy;
-                _dst->tx = 0;
-                _dst->ty = 0;
+                m_pLastTransform->SetElements(m_oLine.m_sx, m_oLine.m_shy, m_oLine.m_shx, m_oLine.m_sy);
             }
 
             // скидываем линию в поток pMeta

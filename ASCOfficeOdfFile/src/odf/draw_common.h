@@ -50,11 +50,9 @@
 #include "datatypes/targetframename.h"
 #include "datatypes/common_attlists.h"
 
-//class CApplicationFonts;
-
 namespace _image_file_
 {
-	bool GetResolution(const wchar_t* fileName, int & Width, int &Height, CApplicationFonts	* appFonts);
+    bool GetResolution(const wchar_t* fileName, int & Width, int &Height, NSFonts::IApplicationFonts	* appFonts);
 }
 
 namespace cpdoccore { 
@@ -76,7 +74,7 @@ void Compute_GraphicFill(const odf_types::common_draw_fill_attlist & props,
 						 const office_element_ptr & style_image, styles_lite_container &styles, oox::_oox_fill & fill, bool txbx = false);
 
 typedef double double_4[4];
-bool parse_clipping(std::wstring strClipping,std::wstring fileName,double_4 & clip_rect, CApplicationFonts	* appFonts);
+bool parse_clipping(std::wstring strClipping,std::wstring fileName,double_4 & clip_rect, NSFonts::IApplicationFonts	* appFonts);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class draw_a : public office_element_impl<draw_a>
 {  

@@ -48,7 +48,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"showFormatting", attrShowFormatting);
+                XmlMacroReadAttributeBase(node, L"showFormatting", attrShowFormatting);
 				CViewPr = node.ReadNode(_T("p:cViewPr"));
 
 				FillParentPointersForChilds();

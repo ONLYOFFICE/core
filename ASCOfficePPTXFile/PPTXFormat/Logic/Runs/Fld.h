@@ -104,7 +104,7 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				id = node.GetAttribute(_T("id"));
-				node.ReadAttributeBase(L"type", type);
+				XmlMacroReadAttributeBase(node, L"type", type);
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))

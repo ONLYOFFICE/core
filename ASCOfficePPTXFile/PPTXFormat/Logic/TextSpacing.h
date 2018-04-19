@@ -86,8 +86,11 @@ namespace PPTX
 			{
 				m_name = node.GetName();
 
-				node.ReadNode(_T("a:spcPct")).ReadAttributeBase(L"val", spcPct);
-				node.ReadNode(_T("a:spcPts")).ReadAttributeBase(L"val", spcPts);
+				XmlUtils::CXmlNode node1 = node.ReadNode(_T("a:spcPct"));
+				XmlMacroReadAttributeBase(node1, L"val", spcPct);
+
+				XmlUtils::CXmlNode node2 = node.ReadNode(_T("a:spcPts"));
+				XmlMacroReadAttributeBase(node2, L"val", spcPts);
 
 				Normalize();
 			}

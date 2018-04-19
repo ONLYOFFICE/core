@@ -33,7 +33,7 @@
 
 #include <map>
 
-#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace NSCommon{
 	template<class Type> class nullable;
@@ -68,15 +68,15 @@ namespace DocWrapper
 {
 	class FontProcessor 
 	{
-		CFontManager* m_pFontManager;
+        NSFonts::IFontManager* m_pFontManager;
         std::map<std::wstring, std::wstring> fontMap;
 
 	public:
 		FontProcessor();
 		~FontProcessor();
 		
-		void setFontManager(CFontManager* pFontManager);
-		CFontManager* getFontManager();
+        void setFontManager(NSFonts::IFontManager* pFontManager);
+        NSFonts::IFontManager* getFontManager();
 		void setFontTable(OOX::CFontTable* fontTable);
 		
         std::wstring getFont(const std::wstring& name);

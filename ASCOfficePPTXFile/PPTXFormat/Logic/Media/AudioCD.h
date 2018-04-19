@@ -71,11 +71,11 @@ namespace PPTX
 
 				oMem		= node.ReadNode(_T("a:st"));
 				stTrack		= oMem.ReadAttributeInt(L"track");
-				oMem.ReadAttributeBase(L"time", stTime);
+				XmlMacroReadAttributeBase(oMem, L"time", stTime);
 
 				oMem		= node.ReadNode(_T("a:end"));
 				endTrack	= oMem.ReadAttributeInt(L"track");
-				oMem.ReadAttributeBase(L"time", endTime);
+				XmlMacroReadAttributeBase(oMem, L"time", endTime);
 
 				Normalize();
 			}

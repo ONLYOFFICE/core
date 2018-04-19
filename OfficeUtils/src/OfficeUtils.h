@@ -33,8 +33,9 @@
 #define OFFICE_UTILS_H
 
 #include "OfficeUtilsCommon.h"
+#include "../../Common/kernel_config.h"
 
-class COfficeUtils
+class KERNEL_DECL COfficeUtils
 {
 private:
 	OnProgressCallback* m_fCallback;
@@ -55,5 +56,78 @@ public:
 	HRESULT GetFilesSize			(const std::wstring& zipFile, const std::wstring& searchPattern, ULONG& nCommpressed, ULONG& nUncommpressed);
 
 };
+
+#define DEFLATE_NO_FLUSH      0
+#define DEFLATE_PARTIAL_FLUSH 1 /* will be removed, use DEFLATE_SYNC_FLUSH instead */
+#define DEFLATE_SYNC_FLUSH    2
+#define DEFLATE_FULL_FLUSH    3
+#define DEFLATE_FINISH        4
+#define DEFLATE_BLOCK         5
+
+#define DEFLATE_OK             0
+#define DEFLATE_STREAM_END     1
+#define DEFLATE_NEED_DICT      2
+#define DEFLATE_ERRNO         (-1)
+#define DEFLATE_STREAM_ERROR  (-2)
+#define DEFLATE_DATA_ERROR    (-3)
+#define DEFLATE_MEM_ERROR     (-4)
+#define DEFLATE_BUF_ERROR     (-5)
+#define DEFLATE_VERSION_ERROR (-6)
+
+#define DEFLATE_NO_COMPRESSION         0
+#define DEFLATE_BEST_SPEED             1
+#define DEFLATE_BEST_COMPRESSION       9
+#define DEFLATE_DEFAULT_COMPRESSION  (-1)
+
+class CDeflate_private;
+class KERNEL_DECL CDeflate
+{
+private:
+    CDeflate_private* m_internal;
+
+public:
+    CDeflate();
+    ~CDeflate();
+
+public:
+    void SetIn(BYTE* next_in, UINT avail_in, ULONG total_in = -1);
+    void SetOut(BYTE* next_out, UINT avail_out, ULONG total_out = -1);
+
+    UINT GetAvailIn();
+    UINT GetAvailOut();
+
+    void Init(int level, int stream_size = -1);
+    int Process(int flush);
+    void End();
+};
+
+class CInflate_private;
+class KERNEL_DECL CInflate
+{
+private:
+    CInflate_private* m_internal;
+
+public:
+    CInflate();
+    ~CInflate();
+
+public:
+    void SetIn(BYTE* next_in, UINT avail_in, ULONG total_in = -1);
+    void SetOut(BYTE* next_out, UINT avail_out, ULONG total_out = -1);
+
+    UINT GetAvailIn();
+    UINT GetAvailOut();
+
+    void ClearFuncs();
+
+    void Init();
+    int Process(int flush);
+    void End();
+};
+
+namespace NSZip
+{
+    bool KERNEL_DECL Decompress(const BYTE* pSrcBuffer, const ULONG& lSrcBufferLen, BYTE* pDstBuffer, ULONG& lDstBufferLen);
+}
 
 #endif

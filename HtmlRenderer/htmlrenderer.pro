@@ -10,21 +10,17 @@ CONFIG += plugin
 
 CONFIG += core_static_link_libstd
 
+DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
+DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
+
 DEFINES += HTMLRENDERER_USE_DYNAMIC_LIBRARY
 
 CORE_ROOT_DIR = $$PWD/..
 PWD_ROOT_DIR = $$PWD
 include(../Common/base.pri)
 
-CONFIG += build_all_zlib build_zlib_as_sources
-include(../OfficeUtils/OfficeUtils.pri)
-
-CONFIG += build_cximage_zlib_disable
-include(../DesktopEditor/Qt_build/graphics/project/graphics.pri)
-include(../DesktopEditor/xml/build/qt/libxml2.pri)
-
 #UnicodeConverter
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter -lkernel -lgraphics
 
 core_windows {
 LIBS += -lgdi32 \
@@ -32,10 +28,6 @@ LIBS += -lgdi32 \
         -luser32 \
         -lshell32
 }
-
-INCLUDEPATH += \
-            ../../DesktopEditor/agg-2.4/include \
-            ../../DesktopEditor/freetype-2.5.2/include
 
 SOURCES +=  \
     src/HTMLRenderer3.cpp

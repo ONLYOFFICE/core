@@ -108,8 +108,8 @@ namespace PPTX
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());
 
-				node.ReadAttributeBase(L"isPhoto", isPhoto);
-				node.ReadAttributeBase(L"userDrawn", userDrawn);
+				XmlMacroReadAttributeBase(node, L"isPhoto", isPhoto);
+				XmlMacroReadAttributeBase(node, L"userDrawn", userDrawn);
 
 				ph = node.ReadNodeNoNS(_T("ph"));
 				media.GetMediaFrom(node);

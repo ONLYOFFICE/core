@@ -53,23 +53,23 @@ namespace PPTX
 				XmlUtils::CXmlNode oNodeBy;
 				if (node.GetNode(_T("p:by"), oNodeBy))
 				{
-					oNodeBy.ReadAttributeBase(L"x", byX);
-					oNodeBy.ReadAttributeBase(L"y", byY);
+                    XmlMacroReadAttributeBase(oNodeBy, L"x", byX);
+                    XmlMacroReadAttributeBase(oNodeBy, L"y", byY);
 				}
 				XmlUtils::CXmlNode oNodeFrom;
 				if (node.GetNode(_T("p:from"), oNodeFrom))
 				{
-					oNodeFrom.ReadAttributeBase(L"x", fromX);
-					oNodeFrom.ReadAttributeBase(L"y", fromY);
+                    XmlMacroReadAttributeBase(oNodeFrom, L"x", fromX);
+                    XmlMacroReadAttributeBase(oNodeFrom, L"y", fromY);
 				}
 				XmlUtils::CXmlNode oNodeTo;
 				if (node.GetNode(_T("p:to"), oNodeTo))
 				{
-					oNodeTo.ReadAttributeBase(L"x", toX);
-					oNodeTo.ReadAttributeBase(L"y", toY);
+                    XmlMacroReadAttributeBase(oNodeTo, L"x", toX);
+                    XmlMacroReadAttributeBase(oNodeTo, L"y", toY);
 				}
 
-				node.ReadAttributeBase(L"zoomContents", zoomContents);
+                XmlMacroReadAttributeBase(node, L"zoomContents", zoomContents);
 
 				FillParentPointersForChilds();
 			}

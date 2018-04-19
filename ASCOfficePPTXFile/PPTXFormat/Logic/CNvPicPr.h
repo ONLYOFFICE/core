@@ -118,22 +118,22 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"preferRelativeResize", preferRelativeResize);
+				XmlMacroReadAttributeBase(node, L"preferRelativeResize", preferRelativeResize);
 
 				XmlUtils::CXmlNode oNode;
 				if (node.GetNode(_T("a:picLocks"), oNode))
 				{
-					oNode.ReadAttributeBase(L"noAdjustHandles", noAdjustHandles);
-					oNode.ReadAttributeBase(L"noChangeArrowheads", noChangeArrowheads);
-					oNode.ReadAttributeBase(L"noChangeAspect", noChangeAspect);
-					oNode.ReadAttributeBase(L"noChangeShapeType", noChangeShapeType);
-					oNode.ReadAttributeBase(L"noCrop", noCrop);
-					oNode.ReadAttributeBase(L"noEditPoints", noEditPoints);
-					oNode.ReadAttributeBase(L"noGrp", noGrp);
-					oNode.ReadAttributeBase(L"noMove", noMove);
-					oNode.ReadAttributeBase(L"noResize", noResize);
-					oNode.ReadAttributeBase(L"noRot", noRot);
-					oNode.ReadAttributeBase(L"noSelect", noSelect);
+					XmlMacroReadAttributeBase(oNode, L"noAdjustHandles", noAdjustHandles);
+					XmlMacroReadAttributeBase(oNode, L"noChangeArrowheads", noChangeArrowheads);
+					XmlMacroReadAttributeBase(oNode, L"noChangeAspect", noChangeAspect);
+					XmlMacroReadAttributeBase(oNode, L"noChangeShapeType", noChangeShapeType);
+					XmlMacroReadAttributeBase(oNode, L"noCrop", noCrop);
+					XmlMacroReadAttributeBase(oNode, L"noEditPoints", noEditPoints);
+					XmlMacroReadAttributeBase(oNode, L"noGrp", noGrp);
+					XmlMacroReadAttributeBase(oNode, L"noMove", noMove);
+					XmlMacroReadAttributeBase(oNode, L"noResize", noResize);
+					XmlMacroReadAttributeBase(oNode, L"noRot", noRot);
+					XmlMacroReadAttributeBase(oNode, L"noSelect", noSelect);
 				}
 			}
 

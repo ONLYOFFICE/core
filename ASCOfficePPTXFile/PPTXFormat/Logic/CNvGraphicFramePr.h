@@ -101,12 +101,12 @@ namespace PPTX
 				XmlUtils::CXmlNode oNode = node.ReadNodeNoNS(L"graphicFrameLocks");	
 				if (oNode.IsValid())
 				{
-					oNode.ReadAttributeBase(L"noChangeAspect",	noChangeAspect);
-					oNode.ReadAttributeBase(L"noDrilldown",		noDrilldown);
-					oNode.ReadAttributeBase(L"noGrp",			noGrp);
-					oNode.ReadAttributeBase(L"noMove",			noMove);
-					oNode.ReadAttributeBase(L"noResize",		noResize);
-					oNode.ReadAttributeBase(L"noSelect",		noSelect);
+					XmlMacroReadAttributeBase(oNode, L"noChangeAspect",	noChangeAspect);
+					XmlMacroReadAttributeBase(oNode, L"noDrilldown",		noDrilldown);
+					XmlMacroReadAttributeBase(oNode, L"noGrp",			noGrp);
+					XmlMacroReadAttributeBase(oNode, L"noMove",			noMove);
+					XmlMacroReadAttributeBase(oNode, L"noResize",		noResize);
+					XmlMacroReadAttributeBase(oNode, L"noSelect",		noSelect);
 				}
 			}
 

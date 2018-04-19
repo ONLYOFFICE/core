@@ -73,7 +73,7 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"thresh", thresh);
+                XmlMacroReadAttributeBase(node, L"thresh", thresh);
 				Normalize();
 			}
 

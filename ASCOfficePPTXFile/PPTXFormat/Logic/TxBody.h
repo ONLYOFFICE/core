@@ -123,7 +123,7 @@ namespace PPTX
 				bodyPr		= node.ReadNode(_T("a:bodyPr"));
 				lstStyle	= node.ReadNode(_T("a:lstStyle"));
 
-				node.LoadArray(_T("a:p"), Paragrs);
+				XmlMacroLoadArray(node, _T("a:p"), Paragrs, Paragraph);
 
 				FillParentPointersForChilds();
 			}

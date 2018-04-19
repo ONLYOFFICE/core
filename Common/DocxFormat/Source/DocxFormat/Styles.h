@@ -61,12 +61,12 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:locked"),         m_oLocked );
-				oNode.ReadAttributeBase( _T("w:name"),           m_sName );
-				oNode.ReadAttributeBase( _T("w:qFormat"),        m_oQFormat );
-				oNode.ReadAttributeBase( _T("w:semiHidden"),     m_oSemiHidden );
-				oNode.ReadAttributeBase( _T("w:uiPriority"),     m_oUiPriority );
-				oNode.ReadAttributeBase( _T("w:unhideWhenUsed"), m_oUnhideWhenUsed );
+				XmlMacroReadAttributeBase( oNode, _T("w:locked"),         m_oLocked );
+				XmlMacroReadAttributeBase( oNode, _T("w:name"),           m_sName );
+				XmlMacroReadAttributeBase( oNode, _T("w:qFormat"),        m_oQFormat );
+				XmlMacroReadAttributeBase( oNode, _T("w:semiHidden"),     m_oSemiHidden );
+				XmlMacroReadAttributeBase( oNode, _T("w:uiPriority"),     m_oUiPriority );
+				XmlMacroReadAttributeBase( oNode, _T("w:unhideWhenUsed"), m_oUnhideWhenUsed );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -164,7 +164,7 @@ namespace OOX
 				if ( _T("w:tblStylePr") != oNode.GetName() )
 					return;
 
-				oNode.ReadAttributeBase( _T("w:type"), m_oType );
+				XmlMacroReadAttributeBase( oNode, _T("w:type"), m_oType );
 
 				XmlUtils::CXmlNode oChild;
 				WritingElement_ReadNode( oNode, oChild, _T("w:pPr"),   m_oParPr );
@@ -430,12 +430,12 @@ namespace OOX
 			if ( _T("w:latentStyles") != oNode.GetName() )
 				return;
 
-			oNode.ReadAttributeBase( _T("w:count"),             m_oCount );
-			oNode.ReadAttributeBase( _T("w:defLockedState"),    m_oDefLockedState );
-			oNode.ReadAttributeBase( _T("w:defQFormat"),        m_oDefQFormat );
-			oNode.ReadAttributeBase( _T("w:defSemiHidden"),     m_oDefSemiHidden );
-			oNode.ReadAttributeBase( _T("w:defUIPriority"),     m_oDefUiPriority );
-			oNode.ReadAttributeBase( _T("w:defUnhideWhenUsed"), m_oDefUnhideWhenUsed );
+			XmlMacroReadAttributeBase( oNode, _T("w:count"),             m_oCount );
+			XmlMacroReadAttributeBase( oNode, _T("w:defLockedState"),    m_oDefLockedState );
+			XmlMacroReadAttributeBase( oNode, _T("w:defQFormat"),        m_oDefQFormat );
+			XmlMacroReadAttributeBase( oNode, _T("w:defSemiHidden"),     m_oDefSemiHidden );
+			XmlMacroReadAttributeBase( oNode, _T("w:defUIPriority"),     m_oDefUiPriority );
+			XmlMacroReadAttributeBase( oNode, _T("w:defUnhideWhenUsed"), m_oDefUnhideWhenUsed );
 
 			XmlUtils::CXmlNodes oList;
 			if ( oNode.GetNodes( _T("w:lsdException"), oList ) )
@@ -579,10 +579,10 @@ namespace OOX
 			if ( _T("w:style") != oNode.GetName() )
 				return;
 
-			oNode.ReadAttributeBase( _T("w:customStyle"), m_oCustomStyle );
-			oNode.ReadAttributeBase( _T("w:default"),     m_oDefault );
-			oNode.ReadAttributeBase( _T("w:styleId"),     m_sStyleId );
-			oNode.ReadAttributeBase( _T("w:type"),        m_oType );
+			XmlMacroReadAttributeBase( oNode, _T("w:customStyle"), m_oCustomStyle );
+			XmlMacroReadAttributeBase( oNode, _T("w:default"),     m_oDefault );
+			XmlMacroReadAttributeBase( oNode, _T("w:styleId"),     m_sStyleId );
+			XmlMacroReadAttributeBase( oNode, _T("w:type"),        m_oType );
 
 			XmlUtils::CXmlNode oChild;
 

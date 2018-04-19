@@ -57,7 +57,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.LoadArray(_T("*"), list);
+                XmlMacroLoadArray(node,_T("*"), list, BuildNodeBase);
 				FillParentPointersForChilds();
 			}
 

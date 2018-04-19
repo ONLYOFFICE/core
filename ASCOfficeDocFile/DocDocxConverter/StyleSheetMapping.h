@@ -55,7 +55,7 @@ namespace DocFileFormat
 		/// Generates a style id for custom style names or returns the build-in identifier for build-in styles.
 		static std::wstring MakeStyleId( StyleSheetDescription* std );
 		static std::map<std::wstring, std::wstring> m_mapStyleId;
-		static OfficeCriticalSection m_mapStyleIdLock;
+        static NSCriticalSection::CRITICAL_SECTION_SMART m_mapStyleIdLock;
 		virtual ~StyleSheetMapping();
 
 	private:

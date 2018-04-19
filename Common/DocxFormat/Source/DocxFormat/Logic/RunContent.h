@@ -56,8 +56,8 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode &oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:type"),  m_oType  );
-				oNode.ReadAttributeBase( _T("w:clear"), m_oClear );
+				XmlMacroReadAttributeBase( oNode, _T("w:type"),  m_oType  );
+				XmlMacroReadAttributeBase( oNode, _T("w:clear"), m_oClear );
 			}
 
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -140,7 +140,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("r:id"), m_oId );
+				XmlMacroReadAttributeBase( oNode, _T("r:id"), m_oId );
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -315,7 +315,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("xml:space"), m_oSpace );
+				XmlMacroReadAttributeBase( oNode, _T("xml:space"), m_oSpace );
 
 				m_sText = oNode.GetText();
 			}
@@ -559,9 +559,9 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:alignment"),  m_oAlignment );
-				oNode.ReadAttributeBase( _T("w:leader"),     m_oLeader );
-				oNode.ReadAttributeBase( _T("w:relativeTo"), m_oRelativeTo );
+				XmlMacroReadAttributeBase( oNode, _T("w:alignment"),  m_oAlignment );
+				XmlMacroReadAttributeBase( oNode, _T("w:leader"),     m_oLeader );
+				XmlMacroReadAttributeBase( oNode, _T("w:relativeTo"), m_oRelativeTo );
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -700,8 +700,8 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:char"), m_oChar );
-				oNode.ReadAttributeBase( _T("w:font"), m_oFont );
+				XmlMacroReadAttributeBase( oNode, _T("w:char"), m_oChar );
+				XmlMacroReadAttributeBase( oNode, _T("w:font"), m_oFont );
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -778,7 +778,7 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("xml:space"), m_oSpace );
+				XmlMacroReadAttributeBase( oNode, _T("xml:space"), m_oSpace );
 
 				m_sText = oNode.GetText();
 			}
@@ -997,7 +997,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:id"), m_oId );
+				XmlMacroReadAttributeBase( oNode, _T("w:id"), m_oId );
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1101,7 +1101,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("xml:space"), m_oSpace );
+				XmlMacroReadAttributeBase( oNode, _T("xml:space"), m_oSpace );
 
 				m_sText = oNode.GetText();
 			}
@@ -1218,8 +1218,8 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:customMarkFollows"), m_oCustomMarkFollows );
-				oNode.ReadAttributeBase( _T("w:id"),                m_oId );
+				XmlMacroReadAttributeBase( oNode, _T("w:customMarkFollows"), m_oCustomMarkFollows );
+				XmlMacroReadAttributeBase( oNode, _T("w:id"),                m_oId );
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1332,8 +1332,8 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:customMarkFollows"), m_oCustomMarkFollows );
-				oNode.ReadAttributeBase( _T("w:id"),                m_oId );
+				XmlMacroReadAttributeBase( oNode, _T("w:customMarkFollows"), m_oCustomMarkFollows );
+				XmlMacroReadAttributeBase( oNode, _T("w:id"),                m_oId );
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1413,7 +1413,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("xml:space"), m_oSpace );
+				XmlMacroReadAttributeBase( oNode, _T("xml:space"), m_oSpace );
 
 				m_sText = oNode.GetText();
 			}

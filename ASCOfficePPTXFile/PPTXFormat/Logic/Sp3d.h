@@ -100,10 +100,10 @@ namespace PPTX
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"contourW", contourW);
-				node.ReadAttributeBase(L"extrusionH", extrusionH);
-				node.ReadAttributeBase(L"prstMaterial", prstMaterial);
-				node.ReadAttributeBase(L"z", z);
+				XmlMacroReadAttributeBase(node, L"contourW", contourW);
+				XmlMacroReadAttributeBase(node, L"extrusionH", extrusionH);
+				XmlMacroReadAttributeBase(node, L"prstMaterial", prstMaterial);
+				XmlMacroReadAttributeBase(node, L"z", z);
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))

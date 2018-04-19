@@ -97,11 +97,11 @@ namespace PPTX
             txBody			= node.ReadNodeNoNS(_T("txBody"));
 			CellProperties	= node.ReadNode(_T("a:tcPr"));
 
-			node.ReadAttributeBase(L"rowSpan", RowSpan);
-			node.ReadAttributeBase(L"gridSpan", GridSpan);
-			node.ReadAttributeBase(L"hMerge", HMerge);
-			node.ReadAttributeBase(L"vMerge", VMerge);
-			node.ReadAttributeBase(L"id", Id);
+            XmlMacroReadAttributeBase(node, L"rowSpan", RowSpan);
+            XmlMacroReadAttributeBase(node, L"gridSpan", GridSpan);
+            XmlMacroReadAttributeBase(node, L"hMerge", HMerge);
+            XmlMacroReadAttributeBase(node, L"vMerge", VMerge);
+            XmlMacroReadAttributeBase(node, L"id", Id);
 
 			FillParentPointersForChilds();
 		}

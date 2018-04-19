@@ -33,16 +33,18 @@
 
 #include "RtfDefine.h"
 
+#if !defined (_WIN32) && !defined (_WIN64)
+    #include "iconv.h"
+#else
+    #include <windows.h>
+#endif
+
 #include "../../../Common/FileWriter.h"
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 #include "../../../UnicodeConverter/UnicodeConverter.h"
 
 #include "UniversalConverterUtils.h"
-
-#if !defined (_WIN32) && !defined (_WIN64)
-    #include "iconv.h"
-#endif
 
 #include <boost/date_time.hpp>
 

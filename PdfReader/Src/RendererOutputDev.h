@@ -33,7 +33,7 @@
 #define _PDF_READER_RENDERER_OUTPUTDEV_H
 
 #include "../../DesktopEditor/graphics/IRenderer.h"
-#include "../../DesktopEditor/fontengine/FontManager.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/graphics/TemporaryCS.h"
 
 #include "OutputDevice.h"
@@ -118,7 +118,7 @@ namespace PdfReader
 	{
 	public:
 
-		RendererOutputDev(GlobalParams *pGlobalParams, IRenderer *pRenderer, CFontManager* pFontManager, CFontList *pFontList = NULL);
+        RendererOutputDev(GlobalParams *pGlobalParams, IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList = NULL);
 		virtual ~RendererOutputDev();
 		virtual bool UpSideDown()
 		{
@@ -279,7 +279,7 @@ namespace PdfReader
 		IRenderer*                    m_pRenderer;
 		long                          m_lRendererType;
 		double                        m_arrMatrix[6];
-		CFontManager*                 m_pFontManager;
+        NSFonts::IFontManager*        m_pFontManager;
 
 		GrTextClip                   *m_pBufferTextClip;
 

@@ -52,8 +52,8 @@ namespace PPTX
 			{
 				m_name = node.GetName();
 
-				node.ReadAttributeBase(L"styleId", styleId);
-				node.ReadAttributeBase(L"styleName", styleName);
+                XmlMacroReadAttributeBase(node, L"styleId", styleId);
+                XmlMacroReadAttributeBase(node, L"styleName", styleName);
 
 				tblBg		= node.ReadNode(_T("a:tblBg"));
 				wholeTbl	= node.ReadNode(_T("a:wholeTbl"));

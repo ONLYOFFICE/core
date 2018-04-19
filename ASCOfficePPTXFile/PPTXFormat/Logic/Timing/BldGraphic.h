@@ -49,9 +49,9 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				bldSub		= node.ReadNode(_T("p:bldSub"));
-				node.ReadAttributeBase(L"spid", spid);
+                XmlMacroReadAttributeBase(node, L"spid", spid);
 				grpId = node.ReadAttributeInt(L"grpId");
-				node.ReadAttributeBase(L"uiExpand", uiExpand);
+                XmlMacroReadAttributeBase(node, L"uiExpand", uiExpand);
 
 				Normalize();
 

@@ -61,15 +61,15 @@ namespace PPTX
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"authorId", authorId);
-				node.ReadAttributeBase(L"dt", dt);
-				node.ReadAttributeBase(L"idx", idx);
+				XmlMacroReadAttributeBase(node, L"authorId", authorId);
+				XmlMacroReadAttributeBase(node, L"dt", dt);
+				XmlMacroReadAttributeBase(node, L"idx", idx);
 
 				XmlUtils::CXmlNode oNodePos = node.ReadNode(_T("p:pos"));
 				if (oNodePos.IsValid())
 				{
-					oNodePos.ReadAttributeBase(L"x", pos_x);
-					oNodePos.ReadAttributeBase(L"y", pos_y);
+					XmlMacroReadAttributeBase(oNodePos, L"x", pos_x);
+					XmlMacroReadAttributeBase(oNodePos, L"y", pos_y);
 				}
 				
 				XmlUtils::CXmlNode oNodeText = node.ReadNode(_T("p:text"));
@@ -99,8 +99,8 @@ namespace PPTX
 								{
 									XmlUtils::CXmlNode oNodeParent = oNodeTI.ReadNode(_T("p15:parentCm"));
 
-									oNodeParent.ReadAttributeBase(L"authorId", parentAuthorId);
-									oNodeParent.ReadAttributeBase(L"idx", parentCommentId);
+									XmlMacroReadAttributeBase(oNodeParent, L"authorId", parentAuthorId);
+									XmlMacroReadAttributeBase(oNodeParent, L"idx", parentCommentId);
 
 									bIsFound1 = true;
 								}
@@ -129,8 +129,8 @@ namespace PPTX
 						{
 							XmlUtils::CXmlNode oNodeParent = oNodeTI.ReadNode(_T("p15:parentCm"));
 
-							oNodeParent.ReadAttributeBase(L"authorId", parentAuthorId);
-							oNodeParent.ReadAttributeBase(L"idx", parentCommentId);
+							XmlMacroReadAttributeBase(oNodeParent, L"authorId", parentAuthorId);
+							XmlMacroReadAttributeBase(oNodeParent, L"idx", parentCommentId);
 						}
 					}
 				}

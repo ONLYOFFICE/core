@@ -47,7 +47,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(_T("showScrollbar"), showScrollbar);
+                XmlMacroReadAttributeBase(node, _T("showScrollbar"), showScrollbar);
 			}
 			virtual std::wstring toXML() const
 			{

@@ -35,7 +35,7 @@
 #include "Utils.h"
 #include "FontTTWriter.h"
 
-#include "../../DesktopEditor/fontengine/FontManager.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/common/File.h"
 
 #include <string>

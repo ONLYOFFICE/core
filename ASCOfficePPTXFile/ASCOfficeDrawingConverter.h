@@ -42,8 +42,9 @@
 #include <vector>
 #include <map>
 
+#include "./../DesktopEditor/graphics/pro/Fonts.h"
+
 class IRenderer;
-class CFontManager;
 class COfficeFontPicker;
 
 class CShape;
@@ -258,7 +259,7 @@ namespace NSBinPptxRW
 		void WriteRels				(const std::wstring& sType, const std::wstring& sTarget, const std::wstring& sTargetMode, long* lId);
 		void Registration			(const std::wstring& sType, const std::wstring& oDirectory, const std::wstring& oFilename);
 
-		void SetFontManager         (CFontManager* pFontManager);
+        void SetFontManager         (NSFonts::IFontManager* pFontManager);
 
         void SetDocumentChartsCount (int val);
         int  GetDocumentChartsCount ();

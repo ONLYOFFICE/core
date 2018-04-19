@@ -34,7 +34,7 @@
 
 #include "../../common/File.h"
 #include <algorithm>
-#include "../../fontengine/ApplicationFonts.h"
+#include "../../graphics/pro/Fonts.h"
 #include "../../common/StringBuilder.h"
 
 class CFontInfoJS

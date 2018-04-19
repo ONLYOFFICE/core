@@ -77,7 +77,7 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				Colors.clear();
-				node.LoadArray(_T("*"), Colors);
+                XmlMacroLoadArray(node, _T("*"), Colors, UniColor);
 				FillParentPointersForChilds();
 			}
 			virtual std::wstring toXML() const

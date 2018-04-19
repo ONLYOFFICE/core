@@ -128,30 +128,30 @@ namespace PPTX
 				XmlUtils::CXmlNode l_Locks;
 				if (node.GetNode(_T("a:cxnSpLocks"), l_Locks))
 				{
-					l_Locks.ReadAttributeBase(L"noAdjustHandles", noAdjustHandles);
-					l_Locks.ReadAttributeBase(L"noChangeArrowheads", noChangeArrowheads);
-					l_Locks.ReadAttributeBase(L"noChangeAspect", noChangeAspect);
-					l_Locks.ReadAttributeBase(L"noChangeShapeType", noChangeShapeType);
-					l_Locks.ReadAttributeBase(L"noEditPoints", noEditPoints);
-					l_Locks.ReadAttributeBase(L"noGrp", noGrp);
-					l_Locks.ReadAttributeBase(L"noMove", noMove);
-					l_Locks.ReadAttributeBase(L"noResize", noResize);
-					l_Locks.ReadAttributeBase(L"noRot", noRot);
-					l_Locks.ReadAttributeBase(L"noSelect", noSelect);
+                    XmlMacroReadAttributeBase(l_Locks, L"noAdjustHandles", noAdjustHandles);
+                    XmlMacroReadAttributeBase(l_Locks, L"noChangeArrowheads", noChangeArrowheads);
+                    XmlMacroReadAttributeBase(l_Locks, L"noChangeAspect", noChangeAspect);
+                    XmlMacroReadAttributeBase(l_Locks, L"noChangeShapeType", noChangeShapeType);
+                    XmlMacroReadAttributeBase(l_Locks, L"noEditPoints", noEditPoints);
+                    XmlMacroReadAttributeBase(l_Locks, L"noGrp", noGrp);
+                    XmlMacroReadAttributeBase(l_Locks, L"noMove", noMove);
+                    XmlMacroReadAttributeBase(l_Locks, L"noResize", noResize);
+                    XmlMacroReadAttributeBase(l_Locks, L"noRot", noRot);
+                    XmlMacroReadAttributeBase(l_Locks, L"noSelect", noSelect);
 				}
 
 				XmlUtils::CXmlNode l_Cxn;
 				if (node.GetNode(_T("a:stCxn"), l_Cxn))
 				{
-					l_Cxn.ReadAttributeBase(L"id", stCxn_id);
-					l_Cxn.ReadAttributeBase(L"idx", stCxn_idx);
+                    XmlMacroReadAttributeBase(l_Cxn, L"id", stCxn_id);
+                    XmlMacroReadAttributeBase(l_Cxn, L"idx", stCxn_idx);
 				}
 
 				XmlUtils::CXmlNode l_endCxn;
 				if (node.GetNode(_T("a:endCxn"), l_endCxn))
 				{
-					l_endCxn.ReadAttributeBase(L"id", endCxn_id);
-					l_endCxn.ReadAttributeBase(L"idx", endCxn_idx);
+                    XmlMacroReadAttributeBase(l_endCxn, L"id", endCxn_id);
+                    XmlMacroReadAttributeBase(l_endCxn, L"idx", endCxn_idx);
 				}
 			}
 

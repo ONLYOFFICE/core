@@ -118,32 +118,32 @@ namespace PPTX
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());
 
-				node.ReadAttributeBase(L"anchor", anchor);
-				node.ReadAttributeBase(L"anchorCtr", anchorCtr);
-				node.ReadAttributeBase(L"bIns", bIns);
-				node.ReadAttributeBase(L"compatLnSpc", compatLnSpc);
-				node.ReadAttributeBase(L"forceAA", forceAA);
-				node.ReadAttributeBase(L"fromWordArt", fromWordArt);
-				node.ReadAttributeBase(L"horzOverflow", horzOverflow);
-				node.ReadAttributeBase(L"lIns", lIns);
-				node.ReadAttributeBase(L"numCol", numCol);
-				node.ReadAttributeBase(L"rIns", rIns);
-				node.ReadAttributeBase(L"rot", rot);
-				node.ReadAttributeBase(L"rtlCol", rtlCol);
-				node.ReadAttributeBase(L"spcCol", spcCol);
-				node.ReadAttributeBase(L"spcFirstLastPara", spcFirstLastPara);
-				node.ReadAttributeBase(L"tIns", tIns);
-				node.ReadAttributeBase(L"upright", upright);
-				node.ReadAttributeBase(L"vert", vert);
-				node.ReadAttributeBase(L"vertOverflow", vertOverflow);
-				node.ReadAttributeBase(L"wrap", wrap);
+				XmlMacroReadAttributeBase(node, L"anchor", anchor);
+				XmlMacroReadAttributeBase(node, L"anchorCtr", anchorCtr);
+				XmlMacroReadAttributeBase(node, L"bIns", bIns);
+				XmlMacroReadAttributeBase(node, L"compatLnSpc", compatLnSpc);
+				XmlMacroReadAttributeBase(node, L"forceAA", forceAA);
+				XmlMacroReadAttributeBase(node, L"fromWordArt", fromWordArt);
+				XmlMacroReadAttributeBase(node, L"horzOverflow", horzOverflow);
+				XmlMacroReadAttributeBase(node, L"lIns", lIns);
+				XmlMacroReadAttributeBase(node, L"numCol", numCol);
+				XmlMacroReadAttributeBase(node, L"rIns", rIns);
+				XmlMacroReadAttributeBase(node, L"rot", rot);
+				XmlMacroReadAttributeBase(node, L"rtlCol", rtlCol);
+				XmlMacroReadAttributeBase(node, L"spcCol", spcCol);
+				XmlMacroReadAttributeBase(node, L"spcFirstLastPara", spcFirstLastPara);
+				XmlMacroReadAttributeBase(node, L"tIns", tIns);
+				XmlMacroReadAttributeBase(node, L"upright", upright);
+				XmlMacroReadAttributeBase(node, L"vert", vert);
+				XmlMacroReadAttributeBase(node, L"vertOverflow", vertOverflow);
+				XmlMacroReadAttributeBase(node, L"wrap", wrap);
 
 				Fit.GetTextFitFrom(node);
 				prstTxWarp	= node.ReadNode(_T("a:prstTxWarp"));
 				scene3d		= node.ReadNode(_T("a:scene3d"));
 				
 				XmlUtils::CXmlNode oNode = node.ReadNodeNoNS(_T("flatTx"));
-				oNode.ReadAttributeBase(L"z", flatTx);
+				XmlMacroReadAttributeBase(oNode, L"z", flatTx);
 				
 				sp3d		= node.ReadNode(_T("a:sp3d"));
 

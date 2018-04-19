@@ -34,10 +34,7 @@
 
 #include <stdio.h>
 #include "Object.h"
-
-#include "zlib.h"
-
-//#pragma comment(lib, "zlib.lib")
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
 namespace PdfReader
 {
@@ -462,7 +459,7 @@ namespace PdfReader
 		virtual void Reset()
 		{
 		}
-		virtual void Close(){};
+        virtual void Close(){}
 		virtual int GetChar();
 		virtual int LookChar();
 		virtual int GetPos()
@@ -847,7 +844,7 @@ namespace PdfReader
 
 	private:
 
-		z_stream          m_oZStream;                     // Zlib поток 
+        CInflate          m_oZStream;                     // Zlib поток
 		StreamPredictor  *m_pPredictor;                   // Predictor
 		unsigned int      m_nInSize;                      // Размер входного буффера
 		unsigned char     m_arrInBuffer[flateZlibWindow]; // Входной буффер

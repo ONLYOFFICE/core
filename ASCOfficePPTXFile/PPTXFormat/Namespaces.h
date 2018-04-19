@@ -33,7 +33,7 @@
 #ifndef PPTXOOX_NAMESPACES_INCLUDE_H_
 #define PPTXOOX_NAMESPACES_INCLUDE_H_
 
-#include "../../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../Common/DocxFormat/Source/Base/Base.h"
 
 namespace PPTX
 {

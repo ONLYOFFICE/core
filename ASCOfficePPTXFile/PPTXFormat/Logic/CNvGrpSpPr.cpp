@@ -58,13 +58,13 @@ namespace PPTX
 			XmlUtils::CXmlNode oNode;
 			if (node.GetNode(_T("a:grpSpLocks"), oNode))
 			{
-				oNode.ReadAttributeBase(L"noChangeAspect", noChangeAspect);
-				oNode.ReadAttributeBase(L"noGrp", noGrp);
-				oNode.ReadAttributeBase(L"noMove", noMove);
-				oNode.ReadAttributeBase(L"noResize", noResize);
-				oNode.ReadAttributeBase(L"noRot", noRot);
-				oNode.ReadAttributeBase(L"noSelect", noSelect);
-				oNode.ReadAttributeBase(L"noUngrp", noUngrp);
+                XmlMacroReadAttributeBase(oNode, L"noChangeAspect", noChangeAspect);
+                XmlMacroReadAttributeBase(oNode, L"noGrp", noGrp);
+                XmlMacroReadAttributeBase(oNode, L"noMove", noMove);
+                XmlMacroReadAttributeBase(oNode, L"noResize", noResize);
+                XmlMacroReadAttributeBase(oNode, L"noRot", noRot);
+                XmlMacroReadAttributeBase(oNode, L"noSelect", noSelect);
+                XmlMacroReadAttributeBase(oNode, L"noUngrp", noUngrp);
 			}
 		}
 		void CNvGrpSpPr::ReadAttributesLocks(XmlUtils::CXmlLiteReader& oReader)

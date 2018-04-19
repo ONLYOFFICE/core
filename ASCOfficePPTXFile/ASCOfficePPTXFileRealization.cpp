@@ -34,6 +34,7 @@
 #include "PPTXFormat/PPTXEvent.h"
 
 #if defined(_WIN32) || defined (_WIN64)
+    #include <windows.h>
     #include <shellapi.h>
     #include <shlobj.h>
     #include <shlwapi.h>

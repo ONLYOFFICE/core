@@ -34,6 +34,30 @@
 
 namespace XmlUtils
 {
+    IXmlDOMDocument::IXmlDOMDocument()
+    {
+        m_lRef = 1;
+    }
+    IXmlDOMDocument::~IXmlDOMDocument()
+    {
+    }
+
+    unsigned int IXmlDOMDocument::AddRef()
+    {
+        ++m_lRef;
+        return m_lRef;
+    }
+    unsigned int IXmlDOMDocument::Release()
+    {
+        unsigned int lReturn = --m_lRef;
+        if (0 == m_lRef)
+            delete this;
+        return lReturn;
+    }
+}
+
+namespace XmlUtils
+{
 	CXmlLiteReader::CXmlLiteReader()
 	{
 		m_pInternal = new CXmlLiteReader_Private();

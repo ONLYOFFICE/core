@@ -87,12 +87,12 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				name	= node.GetName();
-				node.ReadAttributeBase(L"val", val);
+				XmlMacroReadAttributeBase(node, L"val", val);
 
 				if (XmlUtils::GetNameNoNS(name) == _T("alpha"))
 				{
 					nullable_string sTmp;
-					node.ReadAttributeBase(L"val", sTmp);
+					XmlMacroReadAttributeBase(node, L"val", sTmp);
 
                     if (val.is_init() && sTmp.is_init() && std::wstring::npos != sTmp->find(L"%"))
 						*val = (*val) * 1000;

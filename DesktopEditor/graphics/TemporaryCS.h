@@ -32,19 +32,12 @@
 #ifndef _BUILD_TEMPORARY_CS_H_
 #define _BUILD_TEMPORARY_CS_H_
 
+#include "../../Common/kernel_config.h"
+
 namespace NSCriticalSection
 {
-	class CRITICAL_SECTION_NATIVE
-	{
-	public:
-		CRITICAL_SECTION_NATIVE() {};
-		virtual ~CRITICAL_SECTION_NATIVE() {};
-
-		virtual void Enter() = 0;
-		virtual void Leave() = 0;
-	};
-
-	class CRITICAL_SECTION
+    class CRITICAL_SECTION_NATIVE;
+    class KERNEL_DECL CRITICAL_SECTION
 	{
 	private:
 		CRITICAL_SECTION_NATIVE* m_pCS;
@@ -59,9 +52,22 @@ namespace NSCriticalSection
 		void Enter();
 		void Leave();
 	};
+
+    class KERNEL_DECL CRITICAL_SECTION_SMART
+    {
+    private:
+        CRITICAL_SECTION* m_pCS;
+
+    public:
+        CRITICAL_SECTION_SMART();
+        ~CRITICAL_SECTION_SMART();
+
+        void Enter();
+        void Leave();
+    };
 }
 
-class CTemporaryCS
+class KERNEL_DECL CTemporaryCS
 {
 public:
 	CTemporaryCS(NSCriticalSection::CRITICAL_SECTION* cs);

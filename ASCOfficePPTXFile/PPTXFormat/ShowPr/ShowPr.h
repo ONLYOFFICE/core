@@ -54,10 +54,10 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(_T("loop"), loop);
-				node.ReadAttributeBase(_T("showAnimation"), showAnimation);
-				node.ReadAttributeBase(_T("showNarration"), showNarration);
-				node.ReadAttributeBase(_T("useTimings"), useTimings);
+                XmlMacroReadAttributeBase(node, _T("loop"), loop);
+                XmlMacroReadAttributeBase(node, _T("showAnimation"), showAnimation);
+                XmlMacroReadAttributeBase(node, _T("showNarration"), showNarration);
+                XmlMacroReadAttributeBase(node, _T("useTimings"), useTimings);
 
 				Browse = node.ReadNodeNoNS(_T("browse"));
 				CustShow = node.ReadNodeNoNS(_T("custShow"));

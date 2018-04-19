@@ -30,6 +30,13 @@
  *
  */
 
+#ifndef min
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#endif
+#ifndef max
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#endif
+
 #include <boost/algorithm/string.hpp>
 
 #include "../utils.h"
@@ -54,7 +61,7 @@ namespace odf_writer {
 namespace utils
 {
 
-void calculate_size_font_symbols(_font_metrix & metrix, CApplicationFonts *appFonts)
+void calculate_size_font_symbols(_font_metrix & metrix, NSFonts::IApplicationFonts *appFonts)
 {
     double appr_px = _graphics_utils_::calculate_size_symbol_asc(metrix.font_name, metrix.font_size, metrix.italic, metrix.bold, appFonts);
 	

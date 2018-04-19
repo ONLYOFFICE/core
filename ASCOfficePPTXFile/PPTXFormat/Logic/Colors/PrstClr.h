@@ -77,7 +77,7 @@ namespace PPTX
 			{
 				val = node.GetAttribute(_T("val"));
 				Modifiers.clear();
-				node.LoadArray(_T("*"), Modifiers);
+                XmlMacroLoadArray(node, _T("*"), Modifiers, ColorModifier);
 			}
 
 			virtual std::wstring toXML() const

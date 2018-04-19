@@ -32,12 +32,12 @@
 #pragma once
 #include <boost/lexical_cast.hpp>
 
-#include "../../../../DesktopEditor/xml/include/xmlutils.h"
-#include "../../../../DesktopEditor/common/File.h"
-
 #include "../../../3dParty/pole/pole.h"
 #include "../Base/unicode_util.h"
 #include "../Base/Types_32.h"
+
+#include "../../../../DesktopEditor/xml/include/xmlutils.h"
+#include "../../../../DesktopEditor/common/File.h"
 
 class CFile 
 {
@@ -198,7 +198,7 @@ public:
     {
         return _Open(strFileName, false, true, true);
     }
-    HRESULT SetPosition( ULONG64 nPos )
+    HRESULT SetPosition( ULONG nPos )
     {
         if (m_pFile && nPos <= (ULONG)m_lFileSize)
         {
@@ -211,11 +211,11 @@ public:
             return !m_pFile ? S_FALSE : S_OK;
         }
     }
-    LONG64  GetPosition()
+    ULONG  GetPosition()
     {
-        return m_lFilePosition;
+        return (ULONG)m_lFilePosition;
     }
-    HRESULT SkipBytes(ULONG64 nCount)
+    HRESULT SkipBytes(ULONG nCount)
     {
         return SetPosition(m_lFilePosition + nCount);
     }
@@ -233,7 +233,7 @@ public:
         return S_OK;
     }
 
-    ULONG64 GetFileSize()
+    ULONG GetFileSize()
     {
         return m_lFileSize;
     }
@@ -475,7 +475,7 @@ namespace CDirectory
     {
         return NSFile::CFileBinary::Remove(strFileName);
     }
-    static bool CopyFile (std::wstring strExists, std::wstring strNew)
+    static bool CopyFile (const std::wstring& strExists, const std::wstring& strNew)
     {
         return NSFile::CFileBinary::Copy(strExists, strNew);
     }

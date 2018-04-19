@@ -36,9 +36,17 @@
 #include <string>
 #include "Types.h"
 
-#include "../../DesktopEditor/fontengine/FontManager.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/common/File.h"
+
+#include <ft2build.h>
+#include FT_OUTLINE_H
+#include FT_SIZES_H
+#include FT_GLYPH_H
+#include FT_TRUETYPE_IDS_H
 #include FT_TRUETYPE_TABLES_H
+#include FT_XFREE86_H
+#include FT_ADVANCES_H
 
 #ifdef CreateFont
 #undef CreateFont
@@ -115,7 +123,7 @@ namespace PdfWriter
 					  
 		char*             GetTTFontTag();
 		void              AddFreeTypeFont(CFontCidTrueType* pFont);
-		FT_Library        GetFreeTypeLibrary();
+        FT_Library        GetFreeTypeLibrary();
 		CExtGrState*      FindExtGrState(double dAlphaStroke = -1, double dAlphaFill = -1, EBlendMode eMode = blendmode_Unknown, int nStrokeAdjustment = -1);
 		void              SaveToStream(CStream* pStream);
 		void              PrepareEncryption();

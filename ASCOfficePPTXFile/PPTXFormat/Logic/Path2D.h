@@ -99,14 +99,14 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				node.ReadAttributeBase(L"extrusionOk", extrusionOk);
-				node.ReadAttributeBase(L"fill", fill);
-				node.ReadAttributeBase(L"h", h);
-				node.ReadAttributeBase(L"stroke", stroke);
-				node.ReadAttributeBase(L"w", w);
+				XmlMacroReadAttributeBase(node, L"extrusionOk", extrusionOk);
+				XmlMacroReadAttributeBase(node, L"fill", fill);
+				XmlMacroReadAttributeBase(node, L"h", h);
+				XmlMacroReadAttributeBase(node, L"stroke", stroke);
+				XmlMacroReadAttributeBase(node, L"w", w);
 
 				Paths.clear();
-				node.LoadArray(_T("*"), Paths);
+				XmlMacroLoadArray(node, _T("*"), Paths, UniPath2D);
 				
 				FillParentPointersForChilds();
 			}

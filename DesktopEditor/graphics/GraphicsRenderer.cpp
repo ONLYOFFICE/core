@@ -148,7 +148,7 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 	}
 }
 
-CGraphicsRenderer::CGraphicsRenderer()
+CGraphicsRenderer::CGraphicsRenderer() : NSGraphics::IGraphicsRenderer()
 {
 	m_pRenderer = NULL;
 	m_pPath		= NULL;
@@ -185,14 +185,14 @@ CGraphicsRenderer::~CGraphicsRenderer()
 	RELEASEINTERFACE(m_pCache);
 }
 
-void CGraphicsRenderer::SetImageCache(CImageFilesCache* pCache)
+void CGraphicsRenderer::SetImageCache(NSImages::IImageFilesCache* pCache)
 {
 	RELEASEINTERFACE(m_pCache);
-	m_pCache = pCache;
+    m_pCache = (CImageFilesCache*)pCache;
 	ADDREFINTERFACE(m_pCache);
 }
 
-void CGraphicsRenderer::SetFontManager(CFontManager* pManager)
+void CGraphicsRenderer::SetFontManager(NSFonts::IFontManager* pManager)
 {
 	RELEASEINTERFACE(m_pFontManager);		
 	if (NULL == pManager)
@@ -202,7 +202,7 @@ void CGraphicsRenderer::SetFontManager(CFontManager* pManager)
 	}
 	else
 	{
-		m_pFontManager = pManager;
+        m_pFontManager = (CFontManager*)pManager;
 		ADDREFINTERFACE(m_pFontManager);
 	}
 }
@@ -212,7 +212,7 @@ void CGraphicsRenderer::CheckFontManager()
 		SetFontManager(NULL);
 }
 
-CFontManager* CGraphicsRenderer::GetFontManager()
+NSFonts::IFontManager* CGraphicsRenderer::GetFontManager()
 {
 	return m_pFontManager;
 }
@@ -847,7 +847,7 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 				
 				if (NULL != m_pCache)
 				{
-					pCacheImage = m_pCache->Lock(m_oBrush.TexturePath);
+                    pCacheImage = (CCacheImage*)m_pCache->Lock(m_oBrush.TexturePath);
 
 					pTextureBrush = new Aggplus::CBrushTexture(pCacheImage->GetImage(), oMode);
 				}
@@ -905,7 +905,7 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 				
 				if (NULL != m_pCache)
 				{
-					pCacheImage = m_pCache->Lock(m_oBrush.TexturePath);
+                    pCacheImage = (CCacheImage*)m_pCache->Lock(m_oBrush.TexturePath);
 
 					pTextureBrush = new Aggplus::CBrushTexture(pCacheImage->GetImage(), oMode);
 				}
@@ -1050,7 +1050,7 @@ HRESULT CGraphicsRenderer::DrawImageFromFile(const std::wstring& bstrVal, const 
 	CCacheImage* pCacheImage = NULL;
     if (NULL != m_pCache)
 	{
-		pCacheImage = m_pCache->Lock(bstrVal);
+        pCacheImage = (CCacheImage*)m_pCache->Lock(bstrVal);
 	}
     else
     {
@@ -1132,13 +1132,13 @@ HRESULT CGraphicsRenderer::CommandString(const LONG& lType, const std::wstring& 
 HRESULT CGraphicsRenderer::StartConvertCoordsToIdentity()
 {
 	m_bUseTransformCoordsToIdentity = true;
-	m_pPath->m_pTransform = m_pRenderer->GetFullTransform();
+	m_pPath->m_internal->m_pTransform = m_pRenderer->GetFullTransform();
 	return S_OK;
 }
 HRESULT CGraphicsRenderer::EndConvertCoordsToIdentity()
 {
 	m_bUseTransformCoordsToIdentity = false;
-	m_pPath->m_pTransform = NULL;
+	m_pPath->m_internal->m_pTransform = NULL;
 	return S_OK;
 }
 

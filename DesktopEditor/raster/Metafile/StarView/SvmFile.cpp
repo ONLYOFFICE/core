@@ -45,6 +45,10 @@
 #include "SvmEnums.h"
 #include "SvmObjects.h"
 
+#if defined(DrawText)
+#undef DrawText
+#endif
+
 #define DEBUG_CSvmParser 0
 
 namespace MetaFile

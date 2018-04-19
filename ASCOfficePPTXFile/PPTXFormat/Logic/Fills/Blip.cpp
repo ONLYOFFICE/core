@@ -67,12 +67,12 @@ namespace PPTX
 		{
 			m_namespace = XmlUtils::GetNamespace(node.GetName());
 
-			node.ReadAttributeBase(L"r:embed", embed);
-			node.ReadAttributeBase(L"r:link", link);
-			node.ReadAttributeBase(L"cstate", cstate);
+            XmlMacroReadAttributeBase(node, L"r:embed", embed);
+            XmlMacroReadAttributeBase(node, L"r:link", link);
+            XmlMacroReadAttributeBase(node, L"cstate", cstate);
 
 			Effects.clear();
-			node.LoadArray(_T("*"), Effects);
+            XmlMacroLoadArray(node, _T("*"), Effects, UniEffect);
 
 			FillParentPointersForChilds();
 		}

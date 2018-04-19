@@ -76,18 +76,18 @@ namespace PPTX
 			XmlUtils::CXmlNode oNode;
 			oNode.FromXmlFile(filename.m_strFilename);
 
-			oNode.ReadAttributeBase(L"autoCompressPictures", attrAutoCompressPictures);
-			oNode.ReadAttributeBase(L"bookmarkIdSeed", attrBookmarkIdSeed);
-			oNode.ReadAttributeBase(L"compatMode", attrCompatMode);
-			oNode.ReadAttributeBase(L"conformance", attrConformance);
-			oNode.ReadAttributeBase(L"embedTrueTypeFonts", attrEmbedTrueTypeFonts);
-			oNode.ReadAttributeBase(L"firstSlideNum", attrFirstSlideNum);
-			oNode.ReadAttributeBase(L"removePersonalInfoOnSave", attrRemovePersonalInfoOnSave);
-			oNode.ReadAttributeBase(L"rtl", attrRtl);
-			oNode.ReadAttributeBase(L"saveSubsetFonts", attrSaveSubsetFonts);
-			oNode.ReadAttributeBase(L"serverZoom", attrServerZoom);
-			oNode.ReadAttributeBase(L"showSpecialPlsOnTitleSld", attrShowSpecialPlsOnTitleSld);
-			oNode.ReadAttributeBase(L"strictFirstAndLastChars", attrStrictFirstAndLastChars);
+			XmlMacroReadAttributeBase(oNode, L"autoCompressPictures", attrAutoCompressPictures);
+			XmlMacroReadAttributeBase(oNode, L"bookmarkIdSeed", attrBookmarkIdSeed);
+			XmlMacroReadAttributeBase(oNode, L"compatMode", attrCompatMode);
+			XmlMacroReadAttributeBase(oNode, L"conformance", attrConformance);
+			XmlMacroReadAttributeBase(oNode, L"embedTrueTypeFonts", attrEmbedTrueTypeFonts);
+			XmlMacroReadAttributeBase(oNode, L"firstSlideNum", attrFirstSlideNum);
+			XmlMacroReadAttributeBase(oNode, L"removePersonalInfoOnSave", attrRemovePersonalInfoOnSave);
+			XmlMacroReadAttributeBase(oNode, L"rtl", attrRtl);
+			XmlMacroReadAttributeBase(oNode, L"saveSubsetFonts", attrSaveSubsetFonts);
+			XmlMacroReadAttributeBase(oNode, L"serverZoom", attrServerZoom);
+			XmlMacroReadAttributeBase(oNode, L"showSpecialPlsOnTitleSld", attrShowSpecialPlsOnTitleSld);
+			XmlMacroReadAttributeBase(oNode, L"strictFirstAndLastChars", attrStrictFirstAndLastChars);
 
 			//custDataLst (Customer Data List)
 			//custShowLst (List of Custom Shows)
@@ -99,7 +99,7 @@ namespace PPTX
 			XmlUtils::CXmlNode oNodeEmbeddedFonts;
 			if (oNode.GetNode(_T("p:embeddedFontLst"), oNodeEmbeddedFonts))
 			{
-				oNodeEmbeddedFonts.LoadArray(_T("p:embeddedFont"), embeddedFontLst);
+				XmlMacroLoadArray(oNodeEmbeddedFonts, _T("p:embeddedFont"), embeddedFontLst, nsPresentation::EmbeddedFont);
 
 				for (size_t i = 0; i < embeddedFontLst.size(); ++i)
 					embeddedFontLst[i].SetParentFilePointer(this);
@@ -109,7 +109,7 @@ namespace PPTX
 			XmlUtils::CXmlNode oNodeHMList;
 			if (oNode.GetNode(_T("p:handoutMasterIdLst"), oNodeHMList))
 			{
-				oNodeHMList.LoadArray(_T("p:handoutMasterId"), handoutMasterIdLst);
+				XmlMacroLoadArray(oNodeHMList, _T("p:handoutMasterId"), handoutMasterIdLst, Logic::XmlId);
 
 				for (size_t i = 0; i < handoutMasterIdLst.size(); ++i)
 					handoutMasterIdLst[i].SetParentFilePointer(this);
@@ -125,7 +125,7 @@ namespace PPTX
 			XmlUtils::CXmlNode oNodeMIDList;
 			if (oNode.GetNode(_T("p:notesMasterIdLst"), oNodeMIDList))
 			{
-				oNodeMIDList.LoadArray(_T("p:notesMasterId"), notesMasterIdLst);
+				XmlMacroLoadArray(oNodeMIDList, _T("p:notesMasterId"), notesMasterIdLst, Logic::XmlId);
 
 				for (size_t i = 0; i < notesMasterIdLst.size(); ++i)
 					notesMasterIdLst[i].SetParentFilePointer(this);
@@ -143,7 +143,7 @@ namespace PPTX
 			XmlUtils::CXmlNode oNode_sldId;
 			if (oNode.GetNode(_T("p:sldIdLst"), oNode_sldId))
 			{
-				oNode_sldId.LoadArray(_T("p:sldId"), sldIdLst);
+				XmlMacroLoadArray(oNode_sldId, _T("p:sldId"), sldIdLst, Logic::XmlId);
 
 				for (size_t i = 0; i < sldIdLst.size(); ++i)
 					sldIdLst[i].SetParentFilePointer(this);
@@ -153,7 +153,7 @@ namespace PPTX
 			XmlUtils::CXmlNode oNode_sldM_Id;
 			if (oNode.GetNode(_T("p:sldMasterIdLst"), oNode_sldM_Id))
 			{
-				oNode_sldM_Id.LoadArray(_T("p:sldMasterId"), sldMasterIdLst);
+				XmlMacroLoadArray(oNode_sldM_Id, _T("p:sldMasterId"), sldMasterIdLst, Logic::XmlId);
 
 				for (size_t i = 0; i < sldMasterIdLst.size(); ++i)
 					sldMasterIdLst[i].SetParentFilePointer(this);

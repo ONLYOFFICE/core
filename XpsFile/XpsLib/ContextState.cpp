@@ -31,6 +31,7 @@
  */
 #include "ContextState.h"
 #include "StaticResources.h"
+#include <math.h>
 
 #ifndef xpsUnitToMM
 #define xpsUnitToMM(x) ((x) * 25.4 / 96)
@@ -84,13 +85,15 @@ namespace XPS
 	}
 	double  CContextState::NormalizeTransform()
 	{
-		agg::trans_affine& oMatrix = m_oCurrentTransform.m_agg_mtx;
-		double dDet = sqrt(oMatrix.sx * oMatrix.sy - oMatrix.shx * oMatrix.shy);
+        double elems[6];
+        m_oCurrentTransform.GetElements(elems);
 
-		oMatrix.sx  /= dDet;
-		oMatrix.shx /= dDet;
-		oMatrix.sy  /= dDet;
-		oMatrix.shy /= dDet;
+        double dDet = sqrt(elems[0] * elems[3] - elems[1] * elems[2]);
+
+        elems[0] /= dDet;
+        elems[1] /= dDet;
+        elems[2] /= dDet;
+        elems[3] /= dDet;
 
 		SetTransformToRenderer();
 
@@ -120,9 +123,8 @@ namespace XPS
 	{
 		if (m_pRenderer)
 		{
-			m_pRenderer->SetTransform(m_oCurrentTransform.m_agg_mtx.sx, m_oCurrentTransform.m_agg_mtx.shy,
-									  m_oCurrentTransform.m_agg_mtx.shx, m_oCurrentTransform.m_agg_mtx.sy,
-									  xpsUnitToMM(m_oCurrentTransform.m_agg_mtx.tx), xpsUnitToMM(m_oCurrentTransform.m_agg_mtx.ty));
+            m_pRenderer->SetTransform(m_oCurrentTransform.sx(), m_oCurrentTransform.shy(), m_oCurrentTransform.shx(), m_oCurrentTransform.sy(),
+                                      xpsUnitToMM(m_oCurrentTransform.tx()), xpsUnitToMM(m_oCurrentTransform.ty()));
 		}
 	}	
 	void    CContextState::SetClipToRenderer(const CWString& wsClip)

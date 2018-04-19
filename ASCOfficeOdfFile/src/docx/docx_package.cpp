@@ -140,7 +140,7 @@ void word_files::update_rels(docx_conversion_context & Context)
     Context.dump_notes			(rels_files_.get_rel_file()->get_rels());
 }
 
-void word_files::set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts)
+void word_files::set_media(mediaitems & _Mediaitems, NSFonts::IApplicationFonts *pAppFonts)
 {
 	if (_Mediaitems.count_image + _Mediaitems.count_media > 0)
 	{

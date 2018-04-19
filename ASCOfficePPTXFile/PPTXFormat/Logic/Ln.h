@@ -108,10 +108,10 @@ namespace PPTX
 			{
 				m_name = node.GetName();
 
-				node.ReadAttributeBase(L"algn", algn);
-				node.ReadAttributeBase(L"cap", cap);
-				node.ReadAttributeBase(L"cmpd", cmpd);
-				node.ReadAttributeBase(L"w", w);
+				XmlMacroReadAttributeBase(node, L"algn", algn);
+				XmlMacroReadAttributeBase(node, L"cap", cap);
+				XmlMacroReadAttributeBase(node, L"cmpd", cmpd);
+				XmlMacroReadAttributeBase(node, L"w", w);
 
 				Fill.GetFillFrom(node);
 				prstDash = node.ReadNodeNoNS(_T("prstDash"));

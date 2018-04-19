@@ -36,8 +36,6 @@
 #include "../../../ASCOfficeDocFile/DocDocxConverter/MemoryStream.h"
 #include "../../../OfficeCryptReader/source/CryptTransform.h"
 
-#include <zlib.h>
-
 using namespace NSPresentationEditor;
 
 namespace NSPresentationEditor
@@ -105,25 +103,6 @@ namespace NSPresentationEditor
 		};
 		color.SetRGB(palette[index][0], palette[index][1], palette[index][2]);
 		return color;
-	}
-}
-
-namespace NSZLib
-{
-	bool Decompress(const BYTE* pSrcBuffer, const ULONG& lSrcBufferLen,
-								BYTE* pDstBuffer, ULONG& lDstBufferLen)
-	{
-		try
-		{
-			if (Z_OK == uncompress(pDstBuffer, &lDstBufferLen, pSrcBuffer, lSrcBufferLen))
-			{
-                return true;
-			}
-		}
-		catch(...)
-		{
-		}
-        return false;
 	}
 }
 

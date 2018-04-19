@@ -61,9 +61,9 @@ namespace OOX
 
             virtual void fromXML(XmlUtils::CXmlNode &oNode)
 			{
-				oNode.ReadAttributeBase( _T("r:id"),      m_rId  );
-				oNode.ReadAttributeBase( _T("w:name"),    m_sName );
-				oNode.ReadAttributeBase( _T("w:shapeid"), m_sShapeId );
+				XmlMacroReadAttributeBase( oNode, _T("r:id"),      m_rId  );
+				XmlMacroReadAttributeBase( oNode, _T("w:name"),    m_sName );
+				XmlMacroReadAttributeBase( oNode, _T("w:shapeid"), m_sShapeId );
 			}
 
             virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)

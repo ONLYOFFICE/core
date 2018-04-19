@@ -38,8 +38,9 @@
 #include <map>
 #include <vector>
 
-#include "../../DesktopEditor/fontengine/FontManager.h"
 #include "../../DesktopEditor/common/File.h"
+
+#include <ft2build.h>
 #include FT_TRUETYPE_TABLES_H
 
 namespace PdfWriter

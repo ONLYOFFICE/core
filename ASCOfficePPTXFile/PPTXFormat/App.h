@@ -63,39 +63,39 @@ namespace PPTX
 			XmlUtils::CXmlNode oNode;
 			oNode.FromXmlFile(filename.m_strFilename);
 
-			oNode.ReadNodeValueBase(L"Template", Template);
-			oNode.ReadNodeValueBase(L"TotalTime", TotalTime);
-			oNode.ReadNodeValueBase(L"Words", Words);
-			oNode.ReadNodeValueBase(L"Application", Application);
-			oNode.ReadNodeValueBase(L"PresentationFormat", PresentationFormat);
-			oNode.ReadNodeValueBase(L"Paragraphs", Paragraphs);
-			oNode.ReadNodeValueBase(L"Slides", Slides);
-			oNode.ReadNodeValueBase(L"Notes", Notes);
-			oNode.ReadNodeValueBase(L"HiddenSlides", HiddenSlides);
-			oNode.ReadNodeValueBase(L"MMClips", MMClips);
-			oNode.ReadNodeValueBase(L"ScaleCrop", ScaleCrop);
+            XmlMacroReadNodeValueBase(oNode, L"Template", Template);
+            XmlMacroReadNodeValueBase(oNode, L"TotalTime", TotalTime);
+            XmlMacroReadNodeValueBase(oNode, L"Words", Words);
+            XmlMacroReadNodeValueBase(oNode, L"Application", Application);
+            XmlMacroReadNodeValueBase(oNode, L"PresentationFormat", PresentationFormat);
+            XmlMacroReadNodeValueBase(oNode, L"Paragraphs", Paragraphs);
+            XmlMacroReadNodeValueBase(oNode, L"Slides", Slides);
+            XmlMacroReadNodeValueBase(oNode, L"Notes", Notes);
+            XmlMacroReadNodeValueBase(oNode, L"HiddenSlides", HiddenSlides);
+            XmlMacroReadNodeValueBase(oNode, L"MMClips", MMClips);
+            XmlMacroReadNodeValueBase(oNode, L"ScaleCrop", ScaleCrop);
 
 			XmlUtils::CXmlNode oHP = oNode.ReadNode(_T("HeadingPairs"));
 			XmlUtils::CXmlNode oNodeVector1;
 			if (oHP.GetNode(_T("vt:vector"), oNodeVector1))
 			{
-				oNodeVector1.ReadAttributeBase(_T("size"), m_Headings);
-				oNodeVector1.LoadArray(_T("vt:variant"), HeadingPairs);
+                XmlMacroReadAttributeBase(oNodeVector1, _T("size"), m_Headings);
+                XmlMacroLoadArray(oNodeVector1, _T("vt:variant"), HeadingPairs, Logic::HeadingVariant);
 			}
 
 			XmlUtils::CXmlNode oTP = oNode.ReadNode(_T("TitlesOfParts"));
 			XmlUtils::CXmlNode oNodeVector2;
 			if (oTP.GetNode(_T("vt:vector"), oNodeVector2))
 			{
-				oNodeVector2.ReadAttributeBase(_T("size"), m_VectorSize);
-				oNodeVector2.LoadArray(_T("vt:variant"), TitlesOfParts);
+                XmlMacroReadAttributeBase(oNodeVector2, _T("size"), m_VectorSize);
+                XmlMacroLoadArray(oNodeVector2, _T("vt:variant"), TitlesOfParts, Logic::PartTitle);
 			}
 
-			oNode.ReadNodeValueBase(L"Company", Company);
-			oNode.ReadNodeValueBase(L"LinksUpToDate", LinksUpToDate);
-			oNode.ReadNodeValueBase(L"SharedDoc", SharedDoc);
-			oNode.ReadNodeValueBase(L"HyperlinksChanged", HyperlinksChanged);
-			oNode.ReadNodeValueBase(L"AppVersion", AppVersion);
+            XmlMacroReadAttributeBase(oNode, L"Company", Company);
+            XmlMacroReadAttributeBase(oNode, L"LinksUpToDate", LinksUpToDate);
+            XmlMacroReadAttributeBase(oNode, L"SharedDoc", SharedDoc);
+            XmlMacroReadAttributeBase(oNode, L"HyperlinksChanged", HyperlinksChanged);
+            XmlMacroReadAttributeBase(oNode, L"AppVersion", AppVersion);
 			
 			//Characters = document.Root.element("Characters").text();
 			//CharactersWithSpaces = document.Root.element("CharactersWithSpaces").text();

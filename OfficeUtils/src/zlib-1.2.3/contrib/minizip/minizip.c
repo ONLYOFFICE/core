@@ -12,7 +12,7 @@
 #include <errno.h>
 #include <fcntl.h>
 
-#if defined(unix) || defined(_LINUX) 
+#if defined(unix) || defined(__unix__) 
 # include <unistd.h>
 # include <utime.h>
 # include <sys/types.h>

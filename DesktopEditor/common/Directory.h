@@ -42,7 +42,7 @@
     #include "windef.h"
     #include <shlobj.h>
     #include <Rpc.h>
-#elif __linux__
+#elif __unix__
     #include <sys/types.h>
     #include <sys/stat.h>
     #include <unistd.h>
@@ -316,7 +316,7 @@ namespace NSDirectory
 #if defined(_WIN32) || defined (_WIN64)
 		DWORD dwAttrib = ::GetFileAttributesW(strDirectory.c_str());
 		return (dwAttrib != INVALID_FILE_ATTRIBUTES && 0 != (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
-#elif __linux__
+#elif __unix__
         BYTE* pUtf8 = NULL;
         LONG lLen = 0;
         NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strDirectory.c_str(), strDirectory.length(), pUtf8, lLen, false);

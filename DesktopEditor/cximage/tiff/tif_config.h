@@ -35,7 +35,7 @@
 /* The size of a `long', as computed by sizeof. */
 #define SIZEOF_LONG 4
 
-#ifndef _LINUX
+#ifndef __unix__
 /* Signed 64-bit type */
 #define TIFF_INT64_T signed __int64
 
@@ -43,7 +43,7 @@
 #define TIFF_UINT64_T unsigned __int64
 #endif
 
-#ifdef _LINUX
+#ifdef __unix__
 #include <inttypes.h>
 
 /* Signed 64-bit type */

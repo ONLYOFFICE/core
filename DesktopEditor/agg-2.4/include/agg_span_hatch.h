@@ -6,6 +6,7 @@
 #include "agg_math.h"
 #include "agg_array.h"
 #include "agg_trans_affine.h"
+#include "agg_span_gradient.h" // _hypot 
 
 namespace agg
 {

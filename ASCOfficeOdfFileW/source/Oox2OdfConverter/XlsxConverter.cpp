@@ -30,13 +30,6 @@
  *
  */
 //
-//#ifndef min
-//#define min(a,b) ((a) < (b) ? (a) : (b))
-//#endif
-//#ifndef max
-//#define max(a,b) ((a) > (b) ? (a) : (b))
-//#endif
-
 #include "XlsxConverter.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"

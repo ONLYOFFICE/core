@@ -29,12 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#ifndef min
-//#define min(a,b) ((a) < (b) ? (a) : (b))
-//#endif
-//#ifndef max
-//#define max(a,b) ((a) > (b) ? (a) : (b))
-//#endif
 
 #include "XlsxConverter.h"
 #include "PptxConverter.h"

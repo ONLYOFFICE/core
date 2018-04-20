@@ -66,18 +66,8 @@ bool PropertyStr::Read (XLS::CFStreamPtr stream)
 
 			try
 			{
-				std::string sCodePage;
-				std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);
-				if (pFind != NSUnicodeConverter::mapEncodingsICU.end())
-				{
-					sCodePage = pFind->second;
-				}
-
-				if (!sCodePage.empty() && size > 0)
-				{
-					NSUnicodeConverter::CUnicodeConverter oConverter;
-					value = oConverter.toUnicode(s, size, sCodePage.c_str());
-				}			
+				value  = size > 0 ? STR::toStdWString(std::string(s, size), code_page) : L"";
+		
 			}
 			catch(...)
 			{

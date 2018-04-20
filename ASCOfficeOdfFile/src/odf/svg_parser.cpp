@@ -109,14 +109,20 @@ namespace svg_path
 				aChar = rStr[++io_rPos];
 			}
 		}
-
+		bool result = false;
 		if(!sNumberString.empty())
 		{
-			o_fRetval = boost::lexical_cast<double>(sNumberString);
-			return true;
+			try
+			{
+				o_fRetval = boost::lexical_cast<double>(sNumberString);
+				result = true;
+			}
+			catch(...)
+			{
+			}
 		}
 
-		return false;
+		return result;
 	}
 
 	bool importDoubleAndSpaces( double& o_fRetval, int& io_rPos, const std::wstring& rStr, const int nLen )

@@ -271,7 +271,7 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 
 	sResult += m_oCharProperty.RenderToRtf( oRenderParameter );
 
-	if (m_bIsOle)
+	if (m_bIsOle && m_oPicture)
 	{
 		m_oPicture->dump_shape_properties = RenderToRtfShapeProperty( oRenderParameter );
 		sResult +=  m_oPicture->RenderToRtf( oRenderParameter );
